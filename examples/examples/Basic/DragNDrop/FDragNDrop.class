@@ -1,0 +1,108 @@
+' Gambas class file
+
+PRIVATE $iKey AS Integer
+PRIVATE CONST MIME_TYPE AS String = "text/x-gambas-dragndrop-example"
+
+PUBLIC SUB imgIcon_MouseMove()
+
+  IF Mouse.Left THEN
+    Drag.Icon = LAST.Picture
+    LAST.Drag(LAST.Picture.Image)
+  ENDIF
+
+END
+
+PUBLIC SUB TreeView1_Drag()
+
+  IF Drag.Type <> Drag.Image THEN STOP EVENT
+
+END
+
+PUBLIC SUB TreeView1_DragMove()
+
+  'IF Drag.Type <> Drag.Image THEN STOP EVENT
+
+'   WITH TreeView1
+'     IF .Find(Drag.X, Drag.Y) THEN
+'       TRY .Current.Selected = FALSE
+'     ELSE
+'       .Item.Selected = TRUE
+'     ENDIF
+'   END WITH
+
+END
+
+PUBLIC SUB TreeView1_Drop()
+
+  DIM sKey AS String
+
+  IF Drag.Type <> Drag.Image THEN
+    STOP EVENT
+    RETURN
+  ENDIF
+
+  WITH TreeView1
+
+    IF NOT .Find(Drag.X, Drag.Y) THEN
+      sKey = .Item.Key
+    ENDIF
+
+    INC $iKey
+    .Add($iKey, "#" & $iKey, Drag.Data.Picture, sKey).EnsureVisible
+  END WITH
+
+END
+
+PUBLIC SUB TreeView1_MouseMove()
+
+  DIM hPict AS Picture
+
+  IF NOT Mouse.Left THEN RETURN
+
+  WITH TreeView1
+    IF .Find(Mouse.X, Mouse.Y) THEN RETURN
+    IF NOT .Key THEN RETURN
+
+    hPict = NEW Picture(32 + 8 + .Font.Width(.Current.Text), 32, TRUE)
+    Draw.Begin(hPict)
+      Draw.Picture(.Current.Picture, 0, 0)
+      Draw.Font = .Font
+      Draw.Text(.Current.Text, 34, 0, hPict.Width, 32, Align.Left)
+    Draw.End
+
+    Drag.Icon = hPict
+    .Drag(.Key, MIME_TYPE)
+  END WITH
+
+END
+
+PUBLIC SUB imgHole_Drag()
+
+  IF Drag.Type = Drag.Text THEN
+    IF Drag.Format = MIME_TYPE THEN
+      RETURN
+    ENDIF
+  ENDIF
+
+  STOP EVENT
+
+END
+
+PUBLIC SUB imgHole_Drop()
+
+  TreeView1.Remove(Drag.Data)
+
+END
+
+PUBLIC SUB Form_Open()
+
+  ME.Center
+  TreeView1.Add("Test", "Test", Picture["drop.png"])
+
+END
+
+PUBLIC SUB TreeView1_Click()
+
+
+
+END

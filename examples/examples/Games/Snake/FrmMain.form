@@ -1,0 +1,89 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(25.75,20.5,79,61.25)
+  Font = Font["Bold"]
+  Background = &H000000&
+  Foreground = &HFF0000&
+  Text = ("")
+  Icon = Picture["FrmIcon.png"]
+  Border = Window.Fixed
+  { MenuGame Menu
+    Text = ("&Game")
+    { MenuNew Menu
+      Text = ("&New")
+      Shortcut = "Ctrl+N"
+    }
+    { MenuPause Menu
+      Text = ("&Pause")
+      Shortcut = "F3"
+    }
+    { MenuSep Menu
+      Text = ("")
+    }
+    { MenuQuit Menu
+      Text = ("&Quit")
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { MenuSpeed Menu
+    Text = ("&Speed")
+    { MenuGrandMa Menu
+      Text = ("&GrandMa")
+    }
+    { MenuCool Menu
+      Text = ("&Cool")
+    }
+    { MenuSpeedFreak Menu
+      Text = ("&Speed Freak")
+    }
+    { MenuAutoAdvanceSpeed Menu
+      Text = ("&Auto Advance Speed (Challenge ME)")
+      Checked = True
+    }
+  }
+  { MenuHelp Menu
+    Text = ("&Help")
+    { MenuHowToPlay Menu
+      Text = ("&How To Play")
+      Shortcut = "F1"
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { MenuAbout Menu
+      Text = ("&About")
+    }
+  }
+  { LblScore Label
+    MoveScaled(2,1,37,5)
+    Font = Font["16"]
+    Background = &H000000&
+    Foreground = &HFF0000&
+    Text = ("")
+  }
+  { LblSpeed Label
+    MoveScaled(40,1,37,5)
+    Font = Font["16"]
+    Background = &H000000&
+    Foreground = &HFF0000&
+    Text = ("")
+  }
+  { dwg DrawingArea
+    MoveScaled(2,6,75,50)
+    Font = Font["14"]
+    Mouse = Mouse.Blank
+    Cached = True
+    Focus = True
+  }
+  { TmrEngine #Timer
+    #X = 0
+    #Y = 432
+    Delay = 100
+  }
+  { TimerApple #Timer
+    #X = 592
+    #Y = 432
+    Delay = 10000
+  }
+}

@@ -1,0 +1,120 @@
+' Gambas class file
+
+PRIVATE $aFound AS NEW Object[]
+
+PUBLIC SUB ClearFound()
+
+  tvwFind.Rows.Count = 0
+  $aFound.Clear
+  
+END
+
+PUBLIC SUB AddFound(sName AS String, iLine AS Integer, iCol AS Integer, iLen AS Integer, sText AS String)
+  
+  $aFound.Add([sName, iLine + 1, iCol, sText, iLen, FALSE])
+  IF $aFound.Count > 1 THEN 
+    IF $aFound[$aFound.Max][0] = $aFound[$aFound.Max - 1][0] THEN
+      $aFound[$aFound.Max][5] = $aFound[$aFound.Max - 1][5]
+    ELSE
+      $aFound[$aFound.Max][5] = NOT $aFound[$aFound.Max - 1][5]
+    ENDIF
+  ENDIF
+  tvwFind.Rows.Count = $aFound.Count
+  
+END
+
+' PUBLIC SUB SelectFound(sName AS String, iLine AS Integer, iCol AS Integer, iLen AS Integer)
+'   
+'   DIM sKey AS String
+'   
+'   sKey = FindKey(sName)
+'   IF NOT sKey THEN RETURN 
+'   
+'   sKey = KEY_FIND & sKey & "@" & Format(iLine, "000000") & "." & Format(iCol, "00000") & "." & iLen
+'   TRY ProjectTree[sKey].Selected = TRUE
+'   
+' END
+
+PUBLIC SUB _new()
+
+  WITH tvwFind
+    .Columns.Count = 4  
+    .Columns[0].Width = Desktop.Scale * 16
+    .Columns[0].Text = ("Class")
+    .Columns[1].Width = Desktop.Scale * 8
+    .Columns[1].Text = ("Line")
+    .Columns[2].Width = Desktop.Scale * 8
+    .Columns[2].Text = ("Column")
+    .Columns[3].Text = ("Text")    
+  END WITH
+
+END
+
+PUBLIC SUB Form_Open()
+
+  Settings.Read(ME)
+
+END
+
+PUBLIC SUB tvwFind_Data(Row AS Integer, Column AS Integer)
+
+  WITH tvwFind.Data
+    .Text = $aFound[Row][Column]
+
+    IF Row THEN
+      IF Column = 0 THEN 
+        IF $aFound[Row - 1][0] = .Text THEN 
+          .Text = ""
+        ENDIF
+      ELSE IF Column = 1 THEN
+        IF $aFound[Row - 1][0] = $aFound[Row][0] AND $aFound[Row - 1][1] = $aFound[Row][1] THEN 
+          .Text = "-"
+        ENDIF
+      ENDIF
+    ENDIF 
+    
+    .Background = If($aFound[Row][5], Color.LightBackground, Color.TextBackground)
+    
+  END WITH
+
+END
+
+PUBLIC SUB tvwFind_Select()
+
+  DIM aFind AS Variant[]
+  DIM iLine AS Integer
+  DIM iCol AS Integer
+  DIM iLen AS Integer 
+  DIM hEdit AS Editor
+  DIM sPath AS String
+
+  IF $aFound.Count = 0 THEN RETURN
+  aFind = $aFound[tvwFind.Row]
+  
+  sPath = Project.FindPath(aFind[0])
+  IF NOT sPath THEN RETURN
+  
+  Project.OpenFile(sPath)
+
+  hEdit = Project.Files[sPath].Editor
+  iLine = aFind[1] - 1
+  iCol = aFind[2] - 1
+  iLen = aFind[4]
+  hEdit.Goto(iLine, iCol, TRUE)
+  hEdit.Select(iLine, iCol, iLine, iCol + iLen)
+  
+  'Project.ProjectTree[sSave].Selected = TRUE
+
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(ME)  
+
+END
+
+PUBLIC SUB ReadConfig()
+  
+  tvwFind.Font.Grade = If(Settings["/UseSmallFont", FALSE], -1, 0)
+
+END

@@ -1,0 +1,125 @@
+' Gambas class file
+
+PUBLIC SUB Form_Resize()
+
+  svwImage.Move(0, 0, ME.ClientW, ME.ClientH)
+
+END
+
+PUBLIC SUB mnuOpen_Click()
+
+  DIM hImage AS Image
+
+  Dialog.Path = "/usr/share/wallpapers"
+  IF NOT Exist(Dialog.Path) THEN
+    Dialog.Path = User.Home
+  ENDIF
+
+  Dialog.Filter = ["*.jpg; *.jpeg; *.png; *.bmp", "Picture files"]
+
+  IF Dialog.OpenFile() THEN RETURN
+
+  hImage = Image.Load(Dialog.Path)
+
+  dwgImage.Resize(hImage.Width, hImage.Height)
+  dwgImage.Clear()
+
+  Draw.Begin(dwgImage)
+  Draw.Fillcolor = Color.Gray
+  Draw.FillStyle = Fill.Solid
+  Draw.Rect(0, 0, hImage.Width, hImage.Height)
+  Draw.Image(hImage, 0, 0)
+  Draw.End
+
+  dwgImage.Visible = TRUE
+
+CATCH
+
+  Message.Warning(Error.Text & " !")
+
+END
+
+PUBLIC SUB mnuQuit_Click()
+
+  ME.Close
+
+END
+
+'PUBLIC SUB dwgImage_Draw()
+'
+'  IF hPict THEN Draw.Picture(0, 0, hPict)
+'
+'END
+
+PUBLIC SUB mnuStart_Click()
+
+  timDraw.Enabled = NOT timDraw.Enabled
+
+  IF timDraw.Enabled THEN
+    mnuStart.Text = "&Stop"
+  ELSE
+    mnuStart.Text = "&Start"
+  ENDIF
+
+END
+
+PUBLIC SUB timDraw_Timer()
+
+  DIM iInd AS Integer
+  DIM X1 AS Integer
+  DIM Y1 AS Integer
+  DIM X2 AS Integer
+  DIM Y2 AS Integer
+  DIM W AS Integer
+  DIM H AS Integer
+  DIM eTime AS Float
+
+  Draw.Begin(dwgImage)
+
+  FOR iInd = 1 TO 16
+
+    Draw.FillColor = Int(Rnd(&HFFFFFF&))
+    'Draw.ForeColor = Int(Rnd(&HFFFFFF&))
+    Draw.FillStyle = Fill.Solid
+
+    X1 = Int(Rnd(dwgImage.Width))
+    Y1 = Int(Rnd(dwgImage.Height))
+    W = Int(Rnd(8, 16))
+    H = Int(Rnd(8, 16))
+
+    'REPEAT
+    '  X2 = Int(Rnd(dwgImage.Width))
+    'UNTIL X2 <> X1
+
+    'REPEAT
+    '  Y2 = Int(Rnd(dwgImage.Height))
+    'UNTIL Y2 <> Y1
+
+    'IF (X1 > X2) THEN SWAP X1, X2
+    'IF (Y1 > Y2) THEN SWAP Y1, Y2
+
+    'Draw.Ellipse(X1, Y1, X2 - X1 + 1, Y2 - Y1 + 1)
+    Draw.Rect(X1 - W, Y1 - H, W + W, H + H)
+    'Draw.Polyline([X1 + W / 2, Y1, X1 + W - 1, Y1 + H - 1, X1, Y1 + H - 1])
+    'Draw.Point(X1, Y1)
+
+  NEXT
+
+  Draw.End
+
+  'dwgImage.Refresh
+
+END
+
+
+PUBLIC SUB mnuAbout_Click()
+
+  Message.Info("A simple image viewer example by\nBenoit Minisini (gambas@users.sourceforge.net)")
+
+END
+
+PUBLIC SUB timUpdate_Timer()
+
+  dwgImage.Refresh
+
+END

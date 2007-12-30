@@ -1,0 +1,97 @@
+' Gambas class file
+
+INHERITS UserControl
+
+EVENT Change
+
+PROPERTY Text AS String
+PROPERTY TextFont AS Font
+PROPERTY Picture AS Picture
+'PROPERTY Enabled AS Boolean
+PROPERTY Visible AS Boolean
+PROPERTY READ Container AS Container
+
+PRIVATE frmContainer AS FToolBar
+
+PUBLIC SUB _new()
+
+  frmContainer = NEW FToolBar(ME)
+  ME._Container = frmContainer.GetContainer()
+  'Object.Attach(frmContainer, ME, "ToolBar")
+
+END
+
+
+PUBLIC FUNCTION GetButtonHeight() AS Integer
+
+  RETURN frmContainer.GetButtonHeight()
+
+END
+
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN frmContainer.GetTitle()
+
+END
+
+PRIVATE SUB Text_Write(sText AS String)
+
+  frmContainer.SetTitle(sText)
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  RETURN frmContainer.GetPicture()
+
+END
+
+PRIVATE SUB Picture_Write(hPict AS Picture)
+
+  frmContainer.SetPicture(hPict)
+
+END
+
+PUBLIC SUB _Change()
+
+  RAISE Change
+
+END
+
+PRIVATE FUNCTION Visible_Read() AS Boolean
+
+  RETURN SUPER.Visible  
+
+END
+
+PRIVATE SUB Visible_Write(Value AS Boolean)
+
+  DIM hToolPanel AS ToolPanel
+  
+  IF Value = SUPER.Visible THEN RETURN
+  
+  SUPER.Visible = Value
+  hToolPanel = ME.Parent.Parent
+  hToolPanel.ToolPanel_Resize
+
+END
+
+
+PRIVATE FUNCTION TextFont_Read() AS Font
+
+  RETURN frmContainer.GetTextFont()  
+
+END
+
+PRIVATE SUB TextFont_Write(Value AS Font)
+
+  frmContainer.SetTextFont(Value)
+
+END
+
+PRIVATE FUNCTION Container_Read() AS Container
+
+  RETURN frmContainer.GetContainer()  
+
+END

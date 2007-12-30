@@ -1,0 +1,297 @@
+' Gambas class file
+
+PRIVATE $dDate AS Date
+PRIVATE $dStart AS Date
+PRIVATE $dMonth AS Date
+PRIVATE $dLast AS Date
+PRIVATE $iDisabledColor AS Integer
+
+PUBLIC SUB _new()
+  
+  DIM iMonth AS Integer
+  
+  FOR iMonth = 1 TO 12
+    cmbMonth.Add(DConv(Format(Date(1972, iMonth, 1), "mmmm")))
+  NEXT 
+
+  $dDate = Now  
+  SetDate()
+  
+  $iDisabledColor = GetDisabledColor()
+  
+END
+
+PRIVATE SUB GetDisabledColor() AS Integer
+
+  DIM H, S, V AS Integer
+  
+  H = Color[Color.Foreground].Hue
+  S = 0 'Color[Color.Foreground].Saturation
+  V = Color[Color.Foreground].Value
+  
+  IF V < 128 THEN
+    V = 255 - (255 - Color[Color.Foreground].Value) / 4
+  ELSE 
+    V /= 4
+  ENDIF 
+  
+  RETURN Color.HSV(H, S, V)
+
+END
+
+
+
+PRIVATE SUB GetParent() AS DateChooser
+  
+  RETURN ME.Parent
+  
+END
+
+
+PRIVATE SUB SetDate(OPTIONAL iYear AS Integer, OPTIONAL iMonth AS Integer, OPTIONAL iDay AS Integer)
+  
+  DIM dMonth AS Date
+  DIM dDate AS Date
+
+  IF iYear <= 0 THEN iYear = Year($dDate)
+  IF iMonth <= 0 THEN iMonth = Month($dDate)
+  IF iDay <= 0 THEN iDay = Day($dDate)
+  
+  DO  
+    TRY dDate = Date(iYear, iMonth, iDay)
+    IF NOT ERROR THEN BREAK 
+    DEC iDay
+    IF iDay < 29 THEN RETURN
+  LOOP
+
+  $dDate = dDate
+  
+  dMonth = Date(Year(dDate), Month(dDate), 1)
+  
+  IF dMonth <> $dMonth THEN
+  
+    $dMonth = dMonth
+    
+    cmbMonth.Index = Month($dMonth) - 1
+    txtYear.Value = Year($dMonth)
+    
+    iDay = WeekDay($dMonth) - 1
+    IF iDay < 1 THEN iDay += 7
+    $dStart = $dMonth - iDay
+    
+  ENDIF
+    
+  dwgMonth.Refresh
+  
+  IF $dDate <> $dLast THEN 
+    $dLast = $dDate
+    GetParent()._Change    
+  ENDIF
+  
+END
+
+
+PUBLIC SUB SetValue(dDate AS Date)
+  
+  SetDate(Year(dDate), Month(dDate), Day(dDate))
+  
+END
+
+PUBLIC SUB GetValue() AS Date
+  
+  RETURN Date($dDate)
+  
+END
+
+
+PUBLIC SUB dwgMonth_Draw()
+
+  DIM I, J AS Integer
+  DIM X, Y, W, H AS Integer
+  DIM XD, YD AS Integer
+  DIM dDate AS Date
+  DIM iForeground AS Integer
+  DIM iBackground AS Integer
+  
+  iForeground = dwgMonth.Foreground 'Draw.Foreground
+  iBackground = dwgMonth.Background 'Draw.Background
+  
+  W = dwgMonth.ClientW / 7
+  H = dwgMonth.ClientH / 7
+  
+  IF W = 0 OR H = 0 THEN RETURN
+  
+  XD = 0 '(Draw.W - W * 7) / 2
+  YD = dwgMonth.ClientH - H * 6
+  
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.None
+  
+  Draw.FillColor = Color.SelectedBackground
+  Draw.Foreground = Color.SelectedForeground
+  Draw.Font = dwgMonth.Font
+  Draw.Font.Bold = TRUE
+  
+  X = XD
+  Y = 0
+  FOR I = 0 TO 4
+    Draw.Rect(X, Y, W, YD)
+    Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
+    X += W
+  NEXT  
+  
+  Draw.FillColor = iBackground
+  Draw.Foreground = Color.SelectedBackground
+
+  FOR I = 5 TO 6
+    Draw.Rect(X, Y, W, YD)
+    Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
+    X += W
+  NEXT
+
+  Draw.LineStyle = Line.Solid
+  Draw.Foreground = iForeground
+  Draw.Line(XD, YD - 1, XD + Draw.W - 1, YD - 1)
+
+  Draw.LineStyle = Line.None
+  dDate = $dStart
+  Y = YD
+  FOR J = 0 TO 5
+    X = XD
+    FOR I = 0 TO 6
+
+      IF CInt(dDate) = CInt($dDate) THEN
+        Draw.FillColor = Color.SelectedBackground
+        Draw.Foreground = Color.SelectedForeground
+      ELSE IF Month(dDate) <> Month($dMonth) THEN 
+        Draw.FillColor = iBackground
+        Draw.Foreground = $iDisabledColor
+      ELSE
+        Draw.FillColor = iBackground
+        Draw.Foreground = iForeground
+      ENDIF
+
+      Draw.Rect(X, Y, W, H)
+
+      Draw.Font.Bold = CInt(Now) = CInt(dDate)
+
+      Draw.Text(Day(dDate), X, Y, W, H, Align.Center)
+      
+      IF CInt(Now) = CInt(dDate) THEN 
+        Draw.LineStyle = Line.Solid
+        Draw.FillStyle = Fill.None
+        Draw.Foreground = iForeground
+        Draw.Rect(X, Y, W, H)
+        Draw.FillStyle = Fill.Solid
+        Draw.LineStyle = Line.None
+      ENDIF
+
+      X += W
+      INC dDate
+      
+    NEXT 
+    Y += H
+  NEXT
+
+END
+
+PUBLIC SUB cmbMonth_Click()
+
+  SetDate(0, cmbMonth.Index + 1)
+
+END
+
+PUBLIC SUB btnPrevMonth_Click()
+
+  IF Month($dMonth) = 1 THEN 
+    SetDate(Year($dMonth) - 1, 12)
+  ELSE 
+    SetDate(0, Month($dMonth) - 1)
+  ENDIF  
+
+END
+
+PUBLIC SUB btnNextMonth_Click()
+
+  IF Month($dMonth) = 12 THEN 
+    SetDate(Year($dMonth) + 1, 1)
+  ELSE 
+    SetDate(0, Month($dMonth) + 1)
+  ENDIF  
+
+END
+
+PUBLIC SUB txtYear_Change()
+
+  SetDate(txtYear.Value)
+
+END
+
+PUBLIC SUB btnPrevYear_Click()
+
+  SetDate(Year($dMonth) - 1)
+
+END
+
+PUBLIC SUB btnNextYear_Click()
+
+  SetDate(Year($dMonth) + 1)
+
+END
+
+PUBLIC SUB dwgMonth_KeyPress()
+
+  SELECT CASE Key.Code
+  
+    CASE Key.Left
+      DEC $dDate
+      SetDate
+  
+    CASE Key.Right
+      INC $dDate
+      SetDate
+  
+    CASE Key.Up
+      $dDate -= 7
+      SetDate
+  
+    CASE Key.Down
+      $dDate += 7
+      SetDate
+  
+  END SELECT   
+
+END
+
+PUBLIC SUB dwgMonth_MouseDown()
+
+  DIM W, H AS Integer
+  DIM XD, YD AS Integer
+  
+  W = dwgMonth.ClientW / 7
+  H = dwgMonth.ClientH / 7
+  
+  IF W = 0 OR H = 0 THEN RETURN
+  
+  XD = 0 '(Draw.W - W * 7) / 2
+  YD = dwgMonth.ClientH - H * 6
+
+  IF Mouse.Y < YD THEN RETURN 
+  
+  $dDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
+  SetDate
+
+END
+
+PUBLIC SUB btnReload_Click()
+
+  $dDate = Now
+  SetDate  
+
+END
+
+PUBLIC SUB dwgMonth_DblClick()
+
+  GetParent()._Activate
+
+END

@@ -1,0 +1,95 @@
+' Gambas class file
+
+EXPORT
+
+INHERITS UserControl
+
+PUBLIC CONST _Properties AS String = "*"
+PUBLIC CONST _DefaultEvent AS String = "Activate"
+
+EVENT Activate
+'EVENT WindowMenu
+
+PROPERTY ActiveWindow AS Window
+'PROPERTY ShowTitle AS Boolean
+PROPERTY READ Children AS Object[]
+PROPERTY Font AS Font
+
+PRIVATE hWorkspace AS FWorkspace
+
+PUBLIC SUB _new()
+  
+  hWorkspace = NEW FWorkspace(ME)
+  'ME.Container = hWorkspace.Container
+  
+END
+
+PUBLIC SUB Add(hWindow AS Window, OPTIONAL Resizable AS Boolean) AS Window
+  
+  hWorkspace.Add(hWindow, Resizable)
+  
+  RETURN hWindow
+  
+END
+
+' PUBLIC SUB SetResizable(Window AS Window, Resizable AS Boolean, OPTIONAL Grid AS Integer)
+'   
+'   hWorkspace.SetResizable(Window, Resizable, Grid)
+'   
+' END
+
+
+PRIVATE FUNCTION ActiveWindow_Read() AS Window
+
+  RETURN hWorkspace.GetActiveWindow()
+
+END
+
+PRIVATE SUB ActiveWindow_Write(Value AS Window)
+
+  hWorkspace.Activate(Value)
+
+END
+
+PRIVATE FUNCTION Children_Read() AS Object[]
+
+  RETURN hWorkspace.GetWindows()
+
+END
+
+PUBLIC SUB _Activate()
+  
+  RAISE Activate
+  
+END
+
+' PUBLIC SUB _Menu()
+'   
+'   RAISE WindowMenu
+'   
+' END
+
+PRIVATE FUNCTION ShowTitle_Read() AS Boolean
+
+  RETURN hWorkspace.IsShowTitle()
+
+END
+
+PRIVATE SUB ShowTitle_Write(Value AS Boolean)
+
+  hWorkspace.SetShowTitle(Value)
+
+END
+
+
+PRIVATE FUNCTION Font_Read() AS Font
+
+  RETURN hWorkspace.TitleBar.Font  
+
+END
+
+PRIVATE SUB Font_Write(Value AS Font)
+
+  hWorkspace.TitleBar.Font = Value
+
+END

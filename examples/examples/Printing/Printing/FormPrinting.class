@@ -1,0 +1,285 @@
+' Gambas class file
+
+'''
+' Name: FormPrinting
+' Author: Timothy Marshal-Nichols
+' eMail: timothy@m-nichols.freeserve.co.uk
+' Version: 1.2
+' Version Date: August 2006
+' Version History:
+'   1.1 - 18 June 2006
+'     Update to work with version 1.9.32 of Gambas
+'     Added scroll bars to the image and drawing tabs
+'     Added fit to page check boxs to printing an image or drawing
+'   1.2 - 02 August 2006
+'     Added a word wrap option to printing text
+'     Added the print two images tab
+'   1.3 - 12 Sept 2006
+'     New format file filter in open file dialog
+'
+'''
+' Licence Information
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+'
+' http://www.gnu.org/licenses/gpl.html
+'
+'''
+' Description:
+'
+' This form provides a demo of the functions in ModulePrinting.
+'
+'''
+' Developed using Gambas2 Version
+'
+'  Version: 1.9.35
+'
+' Gambas Components Used:
+'
+' gb - Gambas internal native classes
+' gb.qt - Graphical QT toolkit component
+'
+' Look in the Project menu then Properties... and select
+' the Components tab. Check that the listed components
+' are in the project.
+'
+'''
+' External Dependencies:
+'
+' None
+'
+'''
+' Class Usage:
+'
+' Set as startup class
+'
+'''
+
+PRIVATE displayImage AS Image
+PRIVATE displayDrawing AS Drawing
+PRIVATE imageTop AS Image
+PRIVATE imageBottom AS Image
+
+'''
+''' Form events
+'''
+
+PUBLIC SUB Form_Open()
+  ' Set up image drawing area
+  DrawingAreaImage.BackColor = Color.White
+  DrawingAreaImage.Cached = TRUE
+  DrawingAreaImage.Resize(128, 128)
+  ' Set up drawing (SVG) drawing area
+  DrawingAreaDrawing.BackColor = Color.White
+  DrawingAreaDrawing.Cached = TRUE
+  DrawingAreaDrawing.Resize(128, 128)
+  ' Set up two images drawing area
+  DrawingAreaTopImage.BackColor = Color.White
+  DrawingAreaTopImage.Cached = TRUE
+  DrawingAreaTopImage.Resize(128, 128)
+  DrawingAreaBottomImage.BackColor = Color.White
+  DrawingAreaBottomImage.Cached = TRUE
+  DrawingAreaBottomImage.Resize(128, 128)
+  ' Disable printing
+  ToolButtonPrintImage.Enabled = FALSE
+  ToolButtonPrintDrawing.Enabled = FALSE
+  ToolButtonPrintTwoImgEx1.Enabled = FALSE
+  ToolButtonPrintTwoImgEx2.Enabled = FALSE
+  ' Load read me text
+  TextAreaText.Text = File.Load("ReadMe.txt")
+  ' Set default file dialog path
+  Dialog.Path = User.Home
+END
+
+PUBLIC SUB Form_Resize()
+  TextAreaText.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - TextAreaText.Top)
+  ScrollViewImage.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - ScrollViewImage.Top)
+  ScrollViewDrawing.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - ScrollViewDrawing.Top)
+  HSplitTwoImages.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - HSplitTwoImages.Top)
+  TextLabelAbout.Resize(TabStripItems.ClientWidth - (2 * TextLabelAbout.Left), TabStripItems.ClientHeight - (2 * TextLabelAbout.Top))
+END
+
+'''
+''' Text Buttons
+'''
+
+' Open a text file and show it in the text area
+PUBLIC SUB ToolButtonOpenText_Click()
+  ' Show open file dialog
+  Dialog.Filter = ["*.txt", "Text Files", "*", "All Files"]
+  IF Dialog.OpenFile() THEN RETURN
+  ' Load text content into text area
+  ToolButtonPrintText.Enabled = FALSE
+  TextAreaText.Text = File.Load(Dialog.Path)
+  ToolButtonPrintText.Enabled = TRUE
+CATCH
+  Message.Warning("Could not open file:\n\n\t" & Dialog.Path & "\n\n" & ERROR.Text)
+END
+
+' Show the font dialog and set the font for the text area
+PUBLIC SUB ToolButtonFont_Click()
+  Dialog.Font = TextAreaText.Font
+  IF Dialog.SelectFont() THEN RETURN
+  TextAreaText.Font = Dialog.Font
+END
+
+' Show the color dialog and set the text color for the text area
+PUBLIC SUB ToolButtonTextColor_Click()
+  Dialog.Color = TextAreaText.ForeColor
+  IF Dialog.SelectColor() THEN RETURN
+  TextAreaText.ForeColor = Dialog.Color
+END
+
+PUBLIC SUB CheckBoxWordWrap_Click()
+  TextAreaText.Wrap = CheckBoxWordWrap.Value
+END
+
+' Call the print method for a text
+PUBLIC SUB ToolButtonPrintText_Click()
+  ModulePrintText.PrintText(TextAreaText.Text, TextAreaText.Font, TextAreaText.ForeColor, CheckBoxWordWrap.Value)
+END
+
+'''
+''' Image buttons
+'''
+
+' Open a image file and draw it
+PUBLIC SUB ToolButtonOpenImage_Click()
+  ' Show open file dialog
+  Dialog.Filter = FileFilter()
+  IF Dialog.OpenFile() THEN RETURN
+  ToolButtonPrintImage.Enabled = FALSE
+  ' Load image
+  displayImage = Image.Load(Dialog.path)
+  ' Resize drawing area and clear it
+  DrawingAreaImage.Resize(displayImage.Width, displayImage.Height)
+  DrawingAreaImage.Clear
+  ' Draw the opened image
+  Draw.Begin(DrawingAreaImage)
+  Draw.Image(displayImage, 0, 0)
+  Draw.End
+  ' Only enable printing if we have loaded an image
+  ToolButtonPrintImage.Enabled = TRUE
+CATCH
+  Message.Warning("Could not open file:\n\n\t" & Dialog.Path & "\n\n" & ERROR.Text)
+END
+
+' Call the print method for a image
+PUBLIC SUB ToolButtonPrintImage_Click()
+  ModulePrintImage.PrintImage(displayImage, CheckBoxFitImage.Value)
+END
+
+'''
+''' Drawing Buttons
+'''
+
+' Open a SVG file and draw it
+PUBLIC SUB ToolButtonOpenDrawing_Click()
+  ' Show open file dialog
+  Dialog.Filter = ["*.svg", "Scalable Vector Graphics", "*", "All Files"]
+  IF Dialog.OpenFile() THEN RETURN
+  ToolButtonPrintDrawing.Enabled = FALSE
+  ' Load svg drawing
+  displayDrawing = Drawing.Load(Dialog.Path)
+  ' Resize drawing area and clear it
+  DrawingAreaDrawing.Clear
+  DrawingAreaDrawing.Resize(displayDrawing.Width, displayDrawing.Height)
+  ' Draw opened svg file
+  Draw.Begin(DrawingAreaDrawing)
+  Draw.Drawing(displayDrawing, 0, 0)
+  Draw.End
+  ToolButtonPrintDrawing.Enabled = TRUE
+CATCH
+  Message.Warning("Could not open file:\n\n\t" & Dialog.Path & "\n\n" & ERROR.Text)
+END
+
+' Call the print method for a drawing
+PUBLIC SUB ToolButtonPrintDrawing_Click()
+  ModulePrintDrawing.PrintDrawing(displayDrawing, CheckBoxFitDrawing.Value)
+END
+
+'''
+''' Two Images Tab Buttons
+'''
+
+PUBLIC SUB ToolButtonOpenTwoImages_Click()
+  Dialog.Filter = FileFilter()
+  IF Dialog.OpenFile() THEN RETURN
+  ToolButtonPrintTwoImgEx1.Enabled = FALSE
+  ToolButtonPrintTwoImgEx2.Enabled = FALSE
+  IF LAST.Tag = "Top" THEN
+    ' Older versions of Gambas require
+    'imageTop = NEW Image
+    'imageTop.Load(Dialog.path)
+    imageTop = Image.Load(Dialog.path)
+    DrawScreenImage(DrawingAreaTopImage, imageTop)
+  ELSE
+    ' Older versions of Gambas require
+    'imageBottom = NEW Image
+    'imageBottom.Load(Dialog.path)
+    imageBottom = Image.Load(Dialog.path)
+    DrawScreenImage(DrawingAreaBottomImage, imageBottom)
+  END IF
+  ' Only enable printing if we have loaded both images
+  IF imageTop <> NULL AND imageBottom <> NULL THEN
+    ToolButtonPrintTwoImgEx1.Enabled = TRUE
+    ToolButtonPrintTwoImgEx2.Enabled = TRUE
+  END IF
+CATCH
+  Message.Info("Could not open file\n" & Dialog.Path & "\n" & Error.Text)
+END
+
+PUBLIC SUB ToolButtonPrintTwoImgEx1_Click()
+   ModulePrintTwoImages.PrintTwoImages(imageTop, TextAreaTopImage.Text, imageBottom, TextAreaBottomImage.Text)
+END
+
+PUBLIC SUB ToolButtonPrintTwoImgEx2_Click()
+  ModulePrintTwoImgWordWrap.PrintImage(imageTop, TextAreaTopImage.Text, imageBottom, TextAreaBottomImage.Text)
+END
+
+'''
+''' Functions
+'''
+
+' This function returns the file formats supported by an image or picture
+PRIVATE FUNCTION FileFilter() AS String[]
+  DIM filter AS NEW String[]
+  filter.Add("*.png *.jpeg *.jpg *.bmp *.gif *.xpm")
+  filter.Add("All Graphics")
+  filter.Add("*.png")
+  filter.Add("Portable Network Graphics")
+  filter.Add("*.jpeg *.jpg")
+  filter.Add("Joint Photographic Experts Group")
+  filter.Add("*.bmp")
+  filter.Add("Windows Bitmap (*.bmp)")
+  filter.Add("*.bmp")
+  filter.Add("Graphics Interchange Format")
+  filter.Add("*.xpm")
+  filter.Add("X PixMap")
+  filter.Add("*")
+  filter.Add("All Files")
+  RETURN filter
+END
+
+PRIVATE SUB DrawScreenImage(drawScreen AS DrawingArea, img AS Image)
+  drawScreen.Resize(img.Width, img.Height)
+  drawScreen.Clear
+  Draw.Begin(drawScreen)
+  Draw.Image(img, 0, 0)
+  Draw.End
+END
+
+''' End of class FormPrinting '''
+

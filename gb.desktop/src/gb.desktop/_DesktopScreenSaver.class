@@ -1,0 +1,44 @@
+' Gambas class file
+
+EXPORT
+CREATE STATIC
+
+STATIC PROPERTY READ Enabled AS Boolean
+
+STATIC PUBLIC SUB Suspend(Window AS Window)
+  
+  Main.RunXdgUtil("xdg-screensaver", ["suspend", CStr(Window.Id)])
+  
+END
+
+STATIC PUBLIC SUB Resume(Window AS Window)
+  
+  Main.RunXdgUtil("xdg-screensaver", ["resume", CStr(Window.Id)])
+  
+END
+
+STATIC PUBLIC SUB Activate()
+  
+  Main.RunXdgUtil("xdg-screensaver", ["activate"])
+  
+END
+
+STATIC PUBLIC SUB Lock()
+  
+  Main.RunXdgUtil("xdg-screensaver", ["lock"])
+  
+END
+
+STATIC PUBLIC SUB Reset()
+  
+  Main.RunXdgUtil("xdg-screensaver", ["reset"])
+  
+END
+
+
+STATIC PRIVATE FUNCTION Enabled_Read() AS Boolean
+
+  Main.RunXdgUtil("xdg-screensaver", ["status"])
+  RETURN LCase(Trim(Main.Result)) = "enabled"
+
+END

@@ -1,0 +1,22 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,28.5,16.25)
+  Text = ("About...")
+  Border = Window.Fixed
+  { Image1 PictureBox
+    MoveScaled(2,2,4,4)
+    Picture = Picture["notepad.png"]
+    Stretch = True
+  }
+  { btnOK Button
+    MoveScaled(8,12,12,3)
+    Text = ("OK")
+    Default = True
+    Cancel = True
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(8,2,20,7)
+    Text = ("This is a little notepad sample program.")
+  }
+}

@@ -1,0 +1,69 @@
+' Gambas module file
+
+PUBLIC SUB make_boards()
+  
+  DIM i AS Byte
+  DIM j AS Byte
+  
+  ' Create the board design objects
+
+  Global.boarddesign.Resize(2)
+
+  FOR i = 0 TO Global.boarddesign.Count - 1
+    Global.boarddesign[i] = NEW CBoardDesign
+    FOR j = 1 TO 7
+      Global.boarddesign[i].Row.Add(0)
+      Global.boarddesign[i].Placed.Add(0)
+    NEXT
+  NEXT
+
+END
+
+PUBLIC SUB fill_boards()
+  
+  ' Fill the board design Array
+
+  WITH Global.boarddesign[0]
+    .Name = "Original"
+
+    .Row[0] = 28
+    .Row[1] = 28
+    .Row[2] = 127
+    .Row[3] = 127
+    .Row[4] = 127
+    .Row[5] = 28
+    .Row[6] = 28
+
+    .Placed[0] = 28
+    .Placed[1] = 28
+    .Placed[2] = 127
+    .Placed[3] = 119
+    .Placed[4] = 127
+    .Placed[5] = 28
+    .Placed[6] = 28
+    
+    .Finish = 28
+  END WITH
+  
+  WITH Global.boarddesign[1]
+    .Name = "Plus"
+    
+    .Row[0] = 28
+    .Row[1] = 28
+    .Row[2] = 127
+    .Row[3] = 127
+    .Row[4] = 127
+    .Row[5] = 28
+    .Row[6] = 28
+
+    .Placed[0] = 0
+    .Placed[1] = 8
+    .Placed[2] = 8
+    .Placed[3] = 62
+    .Placed[4] = 8
+    .Placed[5] = 8
+    .Placed[6] = 0
+    
+    .Finish = 28
+  END WITH
+END

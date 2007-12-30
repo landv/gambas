@@ -1,0 +1,130 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(2.7143,30.4286,53,62)
+  Text = ("Import CSV file")
+  Border = Window.Fixed
+  { lblTitle Label
+    MoveScaled(1,1,44,5)
+    Font = Font["16,Bold"]
+    Text = ("Import CSV file")
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(46,1,6,6)
+    Picture = Picture["img/32/import.png"]
+    Stretch = True
+  }
+  { tabImport TabStrip
+    MoveScaled(1,7,51,50)
+    Count = 3
+    Index = 0
+    Text = ("Options")
+    { Label8 Label
+      MoveScaled(1,1,36,3)
+      Font = Font["Bold"]
+      Text = ("Source")
+    }
+    { txtPath TextBox
+      MoveScaled(2,5,47,3)
+      Background = Color.Background
+      Text = ("")
+      ReadOnly = True
+    }
+    { Label6 Label
+      MoveScaled(2,9,24,3)
+      Text = ("Charset")
+    }
+    { Label7 Label
+      MoveScaled(2,13,23,3)
+      Text = ("End of line")
+    }
+    { Label2 Label
+      MoveScaled(2,17,23,3)
+      Text = ("Delimiter character")
+    }
+    { Label3 Label
+      MoveScaled(2,21,23,3)
+      Text = ("Enclose character")
+    }
+    { chkStrip CheckBox
+      MoveScaled(2,25,47,3)
+      Text = ("Strip useless white spaces")
+    }
+    { Label9 Label
+      MoveScaled(1,29,36,3)
+      Font = Font["Bold"]
+      Text = ("Destination")
+    }
+    { Label1 Label
+      MoveScaled(2,33,11,3)
+      Text = ("Table")
+    }
+    { chkFirstLine CheckBox
+      MoveScaled(2,37,47,3)
+      Text = ("The first line contains field names")
+    }
+    { Label5 Label
+      MoveScaled(2,41,12,3)
+      Text = ("Key field")
+    }
+    { cmbDelim ComboBox
+      MoveScaled(27,17,22,3)
+      Text = ("")
+      List = [("Tab"), ("Space"), (","), (";"), (":")]
+    }
+    { cmbEscape ComboBox
+      MoveScaled(27,21,22,3)
+      Text = ("")
+      List = [(""), ("'"), ("\"")]
+    }
+    { cmbTable ComboBox
+      MoveScaled(14,33,35,3)
+      Text = ("")
+    }
+    { cmbKey ComboBox
+      MoveScaled(14,41,35,3)
+      Enabled = False
+      Text = ("")
+      ReadOnly = True
+    }
+    { cmbCharset ComboBox
+      MoveScaled(27,9,22,3)
+      Text = ("")
+      List = [("UTF-8"), ("ISO 8859-1"), ("ISO 8859-15"), ("WINDOWS-1252")]
+    }
+    { cmbEndOfLine ComboBox
+      MoveScaled(27,13,22,3)
+      Text = ("")
+      ReadOnly = True
+      List = [("Unix"), ("Windows"), ("Mac")]
+    }
+    Index = 1
+    Text = ("Messages")
+    { lstMessage ListBox
+      MoveScaled(1,1,49,41)
+    }
+    Index = 2
+    Text = ("Preview")
+    { txtPreview TextArea
+      MoveScaled(1,1,49,41)
+      Font = Font["Monospace"]
+      Text = ("")
+      ReadOnly = True
+    }
+    Index = 0
+  }
+  { btnOK Button
+    MoveScaled(25,58,13,3)
+    Text = ("Import")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(39,58,13,3)
+    Text = ("Close")
+    Cancel = True
+  }
+  { pgbImport ProgressBar
+    MoveScaled(1,58,22,3)
+    Visible = False
+  }
+}

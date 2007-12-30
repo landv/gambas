@@ -1,0 +1,74 @@
+' Gambas class file
+
+PRIVATE nPage AS Integer = 1
+PRIVATE hPdf AS PdfDocument
+PRIVATE hScale AS Float = 1
+
+PUBLIC SUB SpinBox1_Change()
+
+  RefreshPage
+
+END
+
+PRIVATE SUB RefreshPage()
+
+  DIM hPic AS Picture
+  DIM eTime AS Float
+
+  eTime = Timer
+  'INC Application.Busy
+  TRY hPic = hPdf[SpinBox1.Value].GetPicture()
+  'DEC Application.Busy
+  IF NOT hPic THEN 
+    DrawingArea1.Hide
+    RETURN
+  ENDIF
+  PRINT Format(Timer - eTime, "#0.##0 s")
+  DrawingArea1.Resize(hPic.Width, hPic.Height)
+  Draw.Begin(DrawingArea1)
+  Draw.Picture(hPic, 0, 0)
+  Draw.End()
+  DrawingArea1.Show
+  ME.Caption = File.Name(Dialog.Path) & " - " & hPic.Width & "x" & hPic.Height
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  SpinBox1.Value = 1
+
+END
+
+PUBLIC SUB btnOpen_Click()
+
+  Dialog.Filter = ["*.pdf", "PDF files"]
+  IF Dialog.OpenFile() THEN RETURN
+
+  hPdf = NEW PdfDocument
+  hPdf.Open(Dialog.Path)
+  hPdf.Scale = 1
+  SpinBox1.MaxValue = hPdf.Count
+  RefreshPage
+
+CATCH 
+
+  Message.Error("Unable to open this PDF file.\n\n" & Error.Text)
+
+END
+
+PUBLIC SUB btnZoomIn_Click()
+
+  IF NOT hPdf THEN RETURN
+  hPdf.Scale *= Sqr(2)
+  RefreshPage
+  
+END
+
+PUBLIC SUB btnZoomOut_Click()
+
+  IF NOT hPdf THEN RETURN
+  hPdf.Scale /= Sqr(2)
+  RefreshPage
+  
+END

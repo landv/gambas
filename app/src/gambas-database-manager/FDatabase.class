@@ -1,0 +1,98 @@
+' Gambas class file
+
+STATIC PRIVATE $hServer AS CServer
+STATIC PRIVATE $sDatabase AS String
+
+STATIC PUBLIC FUNCTION Run(hServer AS CServer, OPTIONAL sDatabase AS String) AS Boolean
+
+  DIM hForm AS Form
+
+  $hServer = hServer
+  $sDatabase = sDatabase
+
+  hForm = NEW FDatabase
+  RETURN NOT hForm.ShowModal()
+
+END
+
+' PRIVATE SUB GetInfo()
+'   
+'   WITH $hServer.Handle
+'     .Open
+'     .User.Find($sUser)
+'     txtPassword.Text = .User.Password
+'     $bIgnore = TRUE
+'     chkAdmin.Value = .User.Administrator
+'     $bIgnore = FALSE
+'   END WITH
+' 
+' FINALLY
+'     
+'   $hServer.Handle.Close
+'   
+' CATCH
+'   
+'   Message.Error(Error.Text)
+'   btnOK.Enabled = FALSE
+'   
+' END
+
+
+PUBLIC SUB _new()
+  
+  txtServer.Text = $hServer.Name
+  
+'   IF $sUser THEN
+'   
+'     ME.Title = ("Edit user")
+'   
+'     txtName.Text= $sUser
+'     txtName.ReadOnly = TRUE  
+' 
+'     GetInfo
+'     
+'     txtPassword.SetFocus
+'     
+'   ELSE
+  
+  ME.Title = ("Create database")
+  txtName.SetFocus
+    
+'   ENDIF
+  
+  lblTitle.Text = ME.Title
+  
+END
+
+
+PUBLIC SUB btnOK_Click()
+
+  DIM sDatabase AS String
+  
+'   IF $sUser THEN
+'   
+'     IF $hServer.EditUser($sUser, Trim(txtPassword.Text)) THEN RETURN
+'   
+'   ELSE
+  
+  sDatabase = Trim(txtName.Text)
+  IF NOT sDatabase THEN
+    Message.Warning(("Please type a database name."))
+    RETURN
+  ENDIF
+  
+  IF $hServer.CreateDatabase(sDatabase) THEN RETURN
+    
+'   ENDIF
+
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close()
+
+END
+
+

@@ -1,0 +1,115 @@
+' Gambas module file
+
+PUBLIC Objects AS NEW Collection
+PUBLIC world_Gravity AS Float = 0.9
+PUBLIC world_Bounce AS Float = 0.7
+PUBLIC world_SlideFloor AS Float = 0.9
+PUBLIC isDrawing AS Boolean
+
+PUBLIC SUB AddBall(OPTIONAL x AS Integer = -1, OPTIONAL y AS Integer = -1)
+  DIM cB AS NEW cBall
+  IF x = -1 THEN
+    cB.x = Rnd(1, 100)
+    cB.y = Rnd(1, 100)
+  ELSE
+    cB.x = x
+    cb.y = y
+  END IF
+  cb.ax = Rnd(-100, 100)
+  cB.col = Rnd(1, 90000000)
+  objects.Add(cB, Str(objects.Count + 1))
+  FMain.cB.Add(Str(objects.Count))
+END
+
+
+PRIVATE SUB DoGravity()
+  DIM myBall AS cBall
+  FOR EACH myBall IN Objects
+      IF fmain.togGrav.value THEN myBall.ay = myBall.ay + world_Gravity '// Make Gravity
+      myBall.x = myBall.x + myBall.ax '// Move Ball
+      myBall.y = myBall.y + myBall.ay
+      IF myBall.x >= FMain.dW.width - 5 OR myBall.x <= 0 THEN '// Ball collidated on wall (left/right)
+        myBall.ax = (myBall.ax * world_Bounce) * -1 '// Reverse Ball direction and include world_Bounce
+      END IF
+      IF myBall.y > FMain.dW.Height - 10 OR myBall.y < 10 THEN '// Ball collidated on Floor or Sky
+        IF myball.y < 10 AND FMain.togSky.value = FALSE THEN myball.ay = (myball.ay * world_Bounce) * -1 '// If Sky is disabled no not bounce
+        IF myball.y > 10 THEN myball.ay = (myball.ay * world_Bounce) * -1 '// On floor make bounce for sure
+      END IF
+      IF (((FMain.dW.Height - 10) - myBall.y) <= 1) AND (Abs(myBall.ay) <= 2) AND FMain.togGrav.Value THEN '// If ball is n floor and to slow to jump up again stop the ball (y)
+        myball.y = (FMain.dW.Height - 10)
+        myball.ay = 0
+      END IF
+
+      IF myball.ay = 0 AND myball.y = (FMain.dW.Height - 10) THEN '// If ball is already on floor decrease the roll speed depending on world_SlideFloor factor.
+        IF myball.ax < 0.1 THEN
+          myball.ax = Abs(myball.ax) * world_SlideFloor * -1
+        ELSE IF myball.ax > 0.1 THEN
+          myball.ax = Abs(myball.ax) * world_SlideFloor 
+        ELSE 
+          myball.ax = 0 '// If ball is moving to slow stop it
+        END IF
+      END IF
+
+      IF myball.y > FMain.dW.Height - 10 THEN '// Make sure befor painting that the ball is inside your viewport. (floor)
+        myball.y = FMain.dW.Height - 10
+      ELSE IF myball.y <= 10 AND FMain.togSky.Value = FALSE THEN 
+        myball.y = 12
+      END IF
+      IF myball.x > FMain.dW.width - 5 THEN '// Make sure befor painting that the ball is inside your viewport. (left\right wall)
+        myball.x = FMain.dW.Width - 5
+      ELSE IF myball.x < 0 THEN 
+        myball.x = 0
+      END IF  
+  NEXT 
+END
+
+
+PRIVATE SUB DrawWorld()
+  DIM myBall AS cBall  
+  DIM index AS Integer
+  IF isDrawing = FALSE THEN
+    isDrawing = TRUE
+    TRY Draw.begin(FMain.dW)
+    Draw.Rect(0, 12, FMain.dW.Width - 6, FMain.dW.Height - 17)
+    Draw.FillStyle = 1
+    FOR EACH myBall IN Objects
+      index = index + 1
+      Draw.ForeColor = myBall.col
+      Draw.Ellipse(myBall.x, myBall.y, 5, 5) 
+      IF Str(index) = FMain.cB.Text THEN 
+        Draw.FillStyle = 0
+        Draw.ForeColor = Color.Red
+        IF FMain.togFocus.value THEN Draw.Ellipse(myBall.x - 3, myBall.y - 3, 11, 11) 
+        FMain.lblX.Caption = Str(Round(myBall.x))
+        FMain.lblY.Caption = Str(Round(myBall.y))
+        IF myball.y <= 0 THEN 
+          FMain.lblOutOfRange.Visible = TRUE
+        ELSE 
+          FMain.lblOutOfRange.Visible = FALSE
+        END IF
+        FMain.lblaX.Caption = Str(Round(myBall.ax))
+        FMain.lblaY.Caption = Str(Round(myBall.ay))
+        Draw.FillStyle = 1
+      END IF
+    NEXT
+    Draw.End
+    IF FMain.cB.Text = "ALL" THEN 
+      FMain.lblX.Caption = "%null%"
+      FMain.lblY.Caption = "%null%"
+      FMain.lblaX.Caption = "%null%"
+      FMain.lblaY.Caption = "%null%"
+      FMain.lblOutOfRange.Visible = FALSE
+    END IF
+    isDrawing = FALSE
+  END IF
+END
+
+PUBLIC SUB Render()
+  
+  DoGravity
+  IF FMain.togClear.Value THEN FMain.dW.Clear()
+  WAIT 0.001
+  DrawWorld
+  
+END
+

@@ -1,0 +1,133 @@
+' Gambas class file
+
+STATIC PRIVATE $hReport AS Report 
+PRIVATE colDa AS NEW Object[]
+STATIC PUBLIC SUB Run(hReport AS Report)
+  
+  DIM hFrm AS frmPreview
+  $hReport = hReport
+  hFrm = NEW frmPreview
+  hfrm.ShowModal
+  
+END
+
+
+
+PUBLIC SUB Form_Open()
+DIM da AS NEW DrawingArea(ME)
+DIM pan AS Panel
+DIM PageLabel AS Label
+DIM i AS Integer
+DIM fZoom AS Float = 0.1
+'da.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fZoom)
+$hReport.Resolution = Desktop.Resolution
+Draw.Begin(da)
+$hReport.Zoom = fZoom
+'MRTools.ReportZoom = fZoom
+$hReport.layout()
+draw.end
+da.Delete
+lblTotPages.Text = " / " & $hReport.count
+FOR i = 1 TO $hReport.count
+  pan = NEW Panel(ListContainer1)
+  
+  da = NEW DrawingArea(pan) AS "daThumbs"
+  da.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fZoom)
+  pan.Height = da.Height + 10
+  da.Move((pan.Width - da.w) / 2, 5)
+  da.Show
+  da.BackColor = color.White
+  da.Cached = TRUE
+  PageLabel = NEW Label(da)
+  PageLabel.BackColor = color.LightGray
+  PageLabel.Text = i
+  PageLabel.Height = 6
+  'PageLabel.Font = font["-1"]
+  PageLabel.AutoResize = TRUE
+  PageLabel.Border = Border.Plain
+  draw.Begin(da)
+    $hReport.draw(i)
+  draw.end
+  'da.Tag = i
+  'colDa.Add(da)
+NEXT  
+ListContainer1.Index = 0
+ListContainer1_Click
+END
+
+PUBLIC SUB daThumbs_MouseUp()
+  
+  
+  
+  
+END
+
+
+PUBLIC SUB ListContainer1_Click()
+
+    DIM fZoom AS Float
+  'message("ok")
+   fZoom = (ScrollView2.ClientWidth - 20) / MRTools.UnitsToPixels($hReport.Width)
+  darep.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fzoom)
+  darep.Cached = TRUE
+  darep.BackColor = color.White
+  $hReport.Zoom = fZoom
+  draw.Begin(darep)
+    $hReport.Draw(ListContainer1.Index + 1)
+  draw.end
+  txtCurPage.Text = ListContainer1.Index + 1
+
+END
+
+PUBLIC SUB txtCurPage_KeyPress()
+
+IF key.Code <> key.Return THEN RETURN 
+IF Val(txtCurPage.text) < 1 OR Val(txtCurPage.Text) > ListContainer1.count THEN 
+  
+  Balloon.Error("You must to give a Valid page number.", LAST)
+  txtCurPage.Text = ListContainer1.Index + 1
+ELSE
+    ListContainer1.Index = Val(txtCurPage.text) - 1
+    
+ENDIF
+
+CATCH
+END
+
+
+
+PUBLIC SUB ToolButton1_Click()
+
+IF NOT Printer.Setup() THEN 
+  $hReport.Orientation = Printer.Orientation
+  $hReport.Size = Printer.Size
+  
+  ListContainer1.Clear
+  Form_Open
+  
+ENDIF
+
+END
+
+PUBLIC SUB Form_Resize()
+
+  ListContainer1_Click  
+
+END
+
+PUBLIC SUB ToolButton2_Click()
+
+  DIM i AS Integer
+  INC Application.Busy
+  draw.Begin(Printer)
+  $hReport.Zoom = 1
+  $hReport.Resolution = Printer.Resolution
+  $hReport.layout
+
+  FOR i = 1 TO $hReport.count
+    $hReport.Draw(i)
+    IF i < Report.count THEN Printer.NewPage  
+  NEXT
+  draw.End
+  DEC Application.Busy
+END

@@ -1,0 +1,284 @@
+' Gambas class file
+
+PUBLIC Name AS String
+PUBLIC Parent AS String
+PUBLIC Symbols AS Collection
+PUBLIC Creatable AS Boolean
+PUBLIC AutoCreatable AS Boolean
+PUBLIC Component AS String
+PUBLIC ParentComponent AS String
+PUBLIC DefaultEvent AS String
+PUBLIC Events AS String[]
+PUBLIC PropertyList AS String[]
+PUBLIC Properties AS Collection
+PUBLIC VirtualControl AS Boolean
+PUBLIC DrawWith AS String
+PUBLIC Container AS Boolean
+PUBLIC Form AS Boolean
+PUBLIC MultiContainer AS Boolean
+PUBLIC DefaultWidth AS Short
+PUBLIC DefaultHeight AS Short
+
+PUBLIC SUB _new(sName AS String, OPTIONAL sParent AS String)
+
+  DIM hSym AS CSymbolInfo
+
+  Name = sName
+  {Parent} = sParent
+  Symbols = NEW Collection(gb.Text)
+
+  IF {Parent} THEN
+    ParentComponent = CComponent.Classes[sParent].Component
+    'IF ERROR THEN
+    '  STOP
+    '  Error.Raise(Error.Text)
+    'ENDIF
+    FOR EACH hSym IN CComponent.Classes[sParent].Symbols
+      Symbols[hSym.Name] = hSym
+    NEXT
+  ENDIF
+
+END
+
+
+
+PUBLIC SUB InitControl(hWin AS Form)
+
+  DIM aProp AS String[]
+  DIM sProp AS String
+  DIM sStr AS String
+  DIM sParent AS String
+  DIM hProp AS CPropertyInfo
+  DIM hSym AS CSymbolInfo
+  'DIM hCtrl AS Object
+  DIM sDefVal AS String
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+  DIM hClass AS CClassInfo
+  DIM bRemove AS Boolean
+  DIM aCont AS String[]
+  DIM sKind AS String
+
+  'DEBUG Component;; Name
+
+  'IF NOT Symbols.Exist("_Properties") THEN RETURN
+
+  ' IF CComponent.All[Component].Type = "Form" THEN
+  '   IF Name = "Form" OR Name = "Control" THEN
+  '     hCtrl = hWin
+  '   ENDIF
+  ' ENDIF
+
+  'IF NOT hCtrl THEN
+
+    VirtualControl = CComponent.All[Component].Virtuals.Find(Name) >= 0
+
+    'IF Component LIKE "gb.qt*" THEN
+
+    '   hClass = ME
+    '   DO
+    '     'hSym = hClass.Symbols["_new"]
+    '     'PRINT Name; " -> "; hSym.Signature
+    '     'IF Len(hSym.Signature) And Left$(hSym.Signature) <> "[" THEN
+    '     'IF hClass.Name = "Connection" THEN STOP
+    '     IF VirtualControl THEN
+    '       TRY hCtrl = NEW (hClass.Name)
+    '     ELSE
+    '       TRY hCtrl = NEW (hClass.Name, hWin)
+    '     ENDIF
+    ' 
+    '     IF hCtrl THEN BREAK
+    ' 
+    '     TRY hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
+    '     IF ERROR THEN BREAK
+    '   LOOP
+    '   
+    ' 'ENDIF
+    ' 
+    ' IF NOT hCtrl THEN hCtrl = NEW Frame(hWin)
+
+  'ENDIF
+
+  aCont = CComponent.All[Component].Containers
+  Container = aCont.Find(Name) >= 0 OR Name = "Form" OR Name = "Menu"
+  Form = Name = "Form"
+
+  MultiContainer = CComponent.All[Component].MultiContainers.Find(Name) >= 0 OR Name = "TabStrip"
+
+  TRY sProp = Symbols["_Properties"].Value
+
+  sParent = Parent
+  WHILE Left$(sProp) = "*"
+    sProp = Mid$(sProp, 3)
+    sStr = ""
+    TRY sStr = CComponent.Classes[sParent].Symbols["_Properties"].Value 
+    IF sStr THEN 
+      IF sProp THEN
+        sProp = sStr & "," & sProp
+      ELSE 
+        sProp = sStr
+      ENDIF 
+    ENDIF
+    sParent = CComponent.Classes[sParent].Parent
+  WEND
+
+'   IF Left$(sProp) = "*" THEN
+'     sProp = Mid$(sProp, 3)
+'     sParent = CComponent.Classes[Parent].Symbols["_Properties"].Value
+'     IF Left(sParent, Len(CPropertyInfo.EVENT_NAME)) = CPropertyInfo.EVENT_NAME THEN
+'       sParent = Mid$(sParent, Len(CPropertyInfo.EVENT_NAME) + 2)
+'     ENDIF
+'     IF sParent THEN
+'       IF sProp THEN sProp = "," & sProp
+'       sProp = sParent & sProp
+'     ENDIF
+'   ENDIF
+
+  Properties = NEW Collection
+  FOR EACH sProp IN Split(sProp)
+
+    ' Name can be "Name{Kind}=Default"
+    iPos = InStr(sProp, "{")
+    IF iPos THEN
+      iPos2 = InStr(sProp, "}", iPos + 1)
+      IF iPos2 = 0 THEN iPos2 = Len(sProp)
+      sKind = Mid$(sProp, iPos + 1, iPos2 - iPos - 1)
+      sProp = Left$(sProp, iPos - 1) & Mid$(sProp, iPos2 + 1)
+    ELSE 
+      sKind = ""
+    ENDIF
+    iPos = InStr(sProp, "=")
+    IF iPos THEN
+      sDefVal = Mid$(sProp, iPos + 1)
+      sProp = Left$(sProp, iPos - 1)
+    ELSE
+      sDefVal = ""
+    ENDIF
+
+    bRemove = Left(sProp) = "-"
+    IF bRemove THEN sProp = Mid$(sProp, 2)
+
+    ' IF sProp = "Action" AND Name = "ToolBar" THEN 
+    '   DEBUG CComponent.Classes.Count;; Component;; CComponent.Classes[Component &/ Name].Symbols[sProp]
+    '   STOP
+    ' ENDIF
+
+    IF bRemove THEN
+      Properties[sProp] = NULL
+    ELSE
+
+      IF Component THEN
+        'PRINT "? "; Component; ": "; Name; "."; sProp
+        IF NOT CComponent.Classes[Component &/ Name].Symbols[sProp] THEN
+          ERROR Component; ": "; Name; "."; sProp; " declared but not implemented"
+          CONTINUE
+        ENDIF
+      ENDIF
+
+      hProp = NEW CPropertyInfo(Component, Name, sProp, sKind, NULL, FALSE, VirtualControl, sDefVal)
+      Properties[sProp] = hProp
+    ENDIF
+
+  NEXT
+
+  TRY DefaultEvent = Symbols["_DefaultEvent"].Value
+
+  Events = NEW String[]
+  FOR EACH hSym IN Symbols
+    IF hSym.Kind = ":" THEN
+      IF Left$(hSym.Name) = ":" THEN
+        Events.Add(Mid$(hSym.Name, 2))
+      ELSE
+        Events.Add(hSym.Name)
+      ENDIF
+    ENDIF
+  NEXT
+  Events.Sort
+
+  ' Taille par défaut
+  
+  'IF Name = "Button" THEN STOP
+  TRY sStr = Symbols["_DefaultSize"].Value 
+  IF sStr THEN 
+    aCont = Split(sStr)
+    TRY DefaultWidth = Val(aCont[0]) * Desktop.Scale
+    TRY DefaultHeight = Val(aCont[1]) * Desktop.Scale
+  ENDIF
+  
+  ' Modification des propriétés
+
+  PropertyList = NEW String[]
+
+  FOR EACH hProp IN Properties
+    PropertyList.Add(hProp.Name)
+  NEXT
+
+  IF VirtualControl THEN
+
+    Properties["Y"] = NEW CPropertyInfo("", Name, "Y", "", hWin, TRUE)
+    PropertyList.Add("Y", 0)
+    Properties["X"] = NEW CPropertyInfo("", Name, "X", "", hWin, TRUE)
+    PropertyList.Add("X", 0)
+
+  ENDIF
+
+  IF {Form} THEN 
+    Properties[CPropertyInfo.SCALE_NAME] = NEW CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", NULL)
+    PropertyList.Add(CPropertyInfo.SCALE_NAME, 0)
+  ENDIF
+
+  Properties[CPropertyInfo.EVENT_NAME] = NEW CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "", NULL)
+  PropertyList.Add(CPropertyInfo.EVENT_NAME, 0)
+
+  'IF Name = "Timer" THEN
+  TRY DrawWith = Symbols["_DrawWith"].Value
+  'IF DrawWith THEN ?Me. <= CRASH!
+  '  PRINT ME.Name;; "->";; DrawWith
+  'ENDIF
+
+  ' IF hCtrl <> hWin THEN
+  '   TRY hCtrl.Delete
+  ' ENDIF
+END
+
+
+PUBLIC FUNCTION GetProperties() AS Collection
+
+  IF Properties THEN
+    IF Properties.Count THEN
+      RETURN Properties
+    ENDIF
+  ENDIF
+
+  IF {Parent} THEN
+    RETURN CComponent.Classes[ParentComponent &/ {Parent}].GetProperties()
+  ENDIF
+
+END
+
+
+PUBLIC FUNCTION Inherits(sClass AS String) AS Boolean
+
+  IF {Parent} = sClass THEN RETURN TRUE
+  IF NOT Parent THEN RETURN FALSE
+  RETURN CComponent.Classes[ParentComponent &/ Parent].Inherits(sClass)
+
+END
+
+
+' PRIVATE FUNCTION IsContainer(hCtrl AS Control) AS Boolean
+' 
+'   DIM hCont AS Container
+'   DIM hUser AS UserControl
+' 
+'   TRY hUser = hCtrl
+'   IF NOT ERROR THEN RETURN FALSE
+' 
+'   TRY hCont = hCtrl
+'   IF NOT ERROR THEN RETURN TRUE
+' 
+'   IF Name = "Menu" THEN RETURN TRUE
+' 
+'   RETURN FALSE
+' 
+' END

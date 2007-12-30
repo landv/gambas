@@ -1,0 +1,270 @@
+' Gambas class file
+
+EXPORT
+INHERITS ReportControl
+PRIVATE $bWordWrap AS Boolean
+PROPERTY WordWrap AS Boolean
+PRIVATE $sText AS String
+PRIVATE $iAlignment AS Integer '= Align.Center
+PRIVATE $fZoom AS Float
+PROPERTY Text AS String
+
+PROPERTY Alignment AS Integer
+
+
+PRIVATE FUNCTION WordWrap_Read() AS Boolean
+
+  RETURN $bWordWrap
+
+END
+
+PRIVATE SUB WordWrap_Write(Value AS Boolean)
+
+  $bWordWrap = Value
+
+END
+
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN $sText
+
+END
+
+PRIVATE SUB Text_Write(Value AS String)
+
+  $sText = Value
+
+END
+
+PRIVATE FUNCTION Alignment_Read() AS Integer
+
+  RETURN $iAlignment
+
+END
+
+PRIVATE SUB Alignment_Write(Value AS Integer)
+
+  $iAlignment = Value
+
+END
+
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+
+  DIM hMyHints AS NEW TSizeHint
+  DIM fTextHeight AS Float
+  DIM fTextWidth AS Float
+  $fZoom = 1.0
+  
+  hMyHints.Height = ME._Height + (2 * ME._Padding)
+  
+  
+  IF NOT IsNull(ME.Font) THEN draw.Font = ME.Font
+  draw.Font.size = draw.Font.size
+ 
+  IF ME._Width = 0 THEN 
+    hMyHints.Width = AvailableW
+  ELSE  
+    hMyHints.Width = ME._Width
+  ENDIF
+
+  IF ME._RelativeWidth THEN hMyHints.Width = TotalWidth * ME._Width / 100
+  IF hMyHints.Width > AvailableW THEN hMyHints.Width = AvailableW
+
+  fTextHeight = MRTools.PixelsToUnits(DrawHtmlText($sText, 0, 0, MRTools.UnitsToPixels(hMyHints.Width), 0, TRUE))
+  
+  IF hMyHints.Height < fTextHeight THEN hMyHints.Height = fTextHeight + (2 * ME._Padding)
+  
+  RETURN hMyHints
+  
+END
+
+PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  $fZoom = MRTools.ReportZoom
+  Draw.ForeColor = ME.ForeColor
+  
+  'Set the Font if it is initialized
+  IF NOT IsNull(ME.Font) THEN Draw.Font = ME.Font
+  draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
+  
+  Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    DrawHtmlText($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom) ', $iAlignment)
+  Draw.Clip.Enabled = FALSE
+END
+
+
+PUBLIC FUNCTION DrawHtmlText(sText AS String, x AS Integer, y AS Integer, w AS Integer, h AS Integer, OPTIONAL TestMode AS Boolean = FALSE) AS Integer
+  DIM bInTag AS Boolean
+  DIM i AS Integer
+  DIM sTag AS String
+  DIM s, sLine AS String
+  DIM aLine AS String[]
+  DIM iLineHeight AS Integer
+  DIM iLineWidth AS Integer
+  DIM curLineHeight AS Integer
+  DIM iLastCharHeight AS Integer
+  DIM iPadding AS Integer = 2 * MRTools.UnitsToPixels(ME.Padding) * MRTools.ReportZoom
+  DIM bEscape AS Boolean
+  'iLastCharHeight = draw.TextHeight(" ")
+  sText = Replace(sText, "\n", NULL, gb.text)
+  sText = Replace(sText, "<br>", "\n", gb.text)
+  aline = Split(sText, "\n")
+  FOR EACH sText IN aLine
+  iLineHeight += curLineHeight
+  iLineWidth = 0
+  curLineHeight = iLastCharHeight
+  
+  FOR i = 1 TO Len(sText)
+  
+    s = Mid(sText, i, 1)
+    IF s = "\\" THEN 
+      bEscape = TRUE
+      CONTINUE 
+    ENDIF
+    IF s = "<" AND NOT bEscape THEN 
+      bInTag = TRUE
+    ENDIF
+    IF bInTag THEN 
+      stag &= s
+    ELSE 
+      IF $bWordWrap AND IF s = " " AND NOT bInTag THEN 
+        IF iLineWidth + GetWordWidth(Mid(sText, i + 1)) > w - iPadding THEN 
+          iLineWidth = 0
+          iLineHeight += curLineHeight
+          curLineHeight = iLastCharHeight
+          s = ""
+        ENDIF 
+      ENDIF
+
+      IF NOT TestMode THEN Draw.Text(s, x + iLineWidth, y + iLineHeight)
+      iLineWidth += draw.TextWidth(s)
+      iLastCharHeight = draw.TextHeight(s)
+      IF iLastCharHeight > curLineHeight THEN curLineHeight = iLastCharHeight
+      
+      sLine &= s
+    ENDIF 
+    IF s = ">" AND NOT bEscape THEN 
+      bInTag = FALSE
+      FlagManager(sTag)
+      sTag = ""
+    ENDIF  
+    bEscape = FALSE
+  NEXT
+  NEXT 
+  RETURN iLineHeight + 2 * curLineHeight
+END
+
+PUBLIC SUB FlagManager(sText AS String)
+  
+  DIM aFlags AS String[]
+  DIM sFlagName AS String
+  DIM s, ss, snewText AS String
+  DIM i AS Integer
+  'Format the text for a better treatment
+  
+  aFlags = Scan(sText, "<* *>")
+  IF aFlags.Count = 0 THEN aFlags = Scan(sText, "<*>")
+  IF aFlags.Count > 1 THEN
+  snewText = Left(aFlags[1], 1)
+  FOR i = 2 TO Len(aFlags[1])
+  
+    s = Mid(aFlags[1], i, 1)
+    ss = s
+    IF s = "=" AND Mid(aFlags[1], i - 1, 1) <> " " THEN ss = " ="
+    IF s = "=" AND Mid(aFlags[1], i + 1, 1) <> "=" THEN ss &= " "
+    snewText &= ss
+  NEXT 
+  
+  aFlags[1] = snewText
+  ENDIF 
+  sFlagName = aFlags[0]
+
+  SELECT CASE UCase(sFlagName)
+    CASE "B"
+      draw.Font.Bold = TRUE
+    CASE "/B"
+      draw.Font.Bold = FALSE
+    CASE "I"
+      draw.Font.Italic = TRUE
+    CASE "/I"
+      draw.Font.Italic = FALSE
+    CASE "U"
+      draw.Font.Underline = TRUE
+    CASE "/U"
+      draw.Font.Underline = FALSE
+    CASE "FONT"
+      aFlags = Split(aFlags[1], " ")
+    
+    FOR i = 0 TO aFlags.max
+      IF aFlags[i] = "=" THEN
+      SELECT CASE LCase(aFlags[i - 1]) 
+        CASE "color"
+          aFlags[i + 1] = Replace(Replace(Replace(aFlags[i + 1], "'", NULL), Chr(34), NULL), "#", "&h")
+          aFlags[i + 1] &= IIf(Right(aFlags[i + 1], 1) = "&", "", "&")
+          Draw.ForeColor = Val(aFlags[i + 1])
+        CASE "face"
+          draw.Font.Name = Replace(Replace(aFlags[i + 1], "'", NULL), Chr(34), NULL)
+        CASE "size"
+          ss = Replace(Replace(aFlags[i + 1], "'", NULL), Chr(34), NULL)
+          IF Left(ss, 1) = "+" OR Left(ss, 1) = "-" THEN
+            draw.Font = Font[ss]
+            draw.Font.Size = draw.Font.Size * MRTools.ReportZoom
+          ELSE 
+            draw.Font.Size = Val(ss) * $fZoom
+          ENDIF 
+      END SELECT
+      ENDIF
+    NEXT
+
+    CASE "/FONT"
+      Draw.Font = ME.Font
+      draw.Font.Size = ME.Font.Size * $fZoom
+      Draw.ForeColor = ME.ForeColor
+  END SELECT
+
+  CATCH
+END
+
+
+PRIVATE FUNCTION GetWordWidth(sText AS String) AS Integer
+  DIM iForeColor AS Integer
+  DIM hFont AS Font
+  DIM bInTag AS Boolean
+  DIM i AS Integer
+  DIM sTag AS String
+  DIM s, sLine AS String
+  DIM aLine AS String[]
+  DIM iLineHeight AS Integer
+  DIM iLineWidth AS Integer
+  DIM curLineHeight AS Integer
+  
+  hFont = draw.Font
+  iForeColor = draw.ForeColor
+  iLineHeight += curLineHeight
+  iLineWidth = 0
+  curLineHeight = 0
+  
+  FOR i = 1 TO Len(sText)
+  
+    s = Mid(sText, i, 1)
+    IF s = " " AND NOT bInTag THEN BREAK 
+    IF s = "<" THEN 
+      bInTag = TRUE
+    ENDIF
+    IF bInTag THEN 
+      stag &= s
+    ELSE 
+      iLineWidth += draw.TextWidth(s)
+    ENDIF 
+    IF s = ">" THEN 
+      bInTag = FALSE
+      FlagManager(sTag)
+      sTag = ""
+    ENDIF  
+    
+  NEXT
+  draw.Font = hFont 
+  draw.ForeColor = iForeColor
+  RETURN iLineWidth
+END

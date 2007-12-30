@@ -1,0 +1,21 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0.25,2.5,24,16)
+  Font = Font["8"]
+  Text = ("")
+  Icon = Picture["img/16/magic.png"]
+  Persistent = True
+  Border = Window.None
+  SkipTaskbar = True
+  Arrangement = Arrange.Fill
+  { panComp Panel
+    MoveScaled(0,0,13,9)
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { lvwComp ListView
+      MoveScaled(0,0,7,6)
+      Border = False
+    }
+  }
+}

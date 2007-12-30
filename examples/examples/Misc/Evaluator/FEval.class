@@ -1,0 +1,46 @@
+' Gambas class file
+
+PRIVATE $hExpr AS NEW Expression
+PRIVATE $cEnv AS NEW Collection
+
+STATIC PUBLIC SUB Main()
+  
+  DIM hForm AS Form
+  
+  hForm = NEW FEval
+  hForm.Show
+  
+END
+
+
+PUBLIC SUB btnUpdate_Click()
+
+  DIM cCol AS NEW Collection
+
+  IF $hExpr.Text <> txtExpr.Text THEN
+    $hExpr.Text = txtExpr.Text
+  ENDIF
+  
+  'cEnv.Compare = gb.Case
+  
+  $cEnv["a"] = Val(txtValueA.Text)
+  $cEnv["b"] = Val(txtValueB.Text)
+  $cEnv["x"] = Val(txtValueX.Text)
+  $cEnv["y"] = Val(txtValueY.Text)
+  
+  $hExpr.Compile
+  $hExpr.Environment = $cEnv
+  
+  txtResult.Text = Str($hExpr.Value)
+  
+CATCH
+
+  txtResult.Text = Error.Text
+
+END
+
+PUBLIC SUB btnClose_Click()
+
+  ME.Close
+
+END

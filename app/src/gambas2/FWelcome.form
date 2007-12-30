@@ -1,0 +1,107 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,2,63,63)
+  Background = Color.TextBackground
+  Foreground = Color.TextForeground
+  Text = ("Welcome to Gambas II")
+  Icon = Picture["img/logo/new-logo-32.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { panBackground Panel
+    MoveScaled(1,1,61,16)
+    Background = Color.SelectedBackground
+    Foreground = Color.Background
+    { panTitle Panel
+      MoveScaled(1,1,59,15)
+      { lblGambas Label
+        MoveScaled(0,0,32,7)
+        Font = Font["Bold,+10"]
+        Foreground = Color.SelectedForeground
+        AutoResize = True
+        Text = ("Gambas")
+        Alignment = Align.TopNormal
+      }
+      { lblVersion Label
+        MoveScaled(30,0,13,7)
+        Font = Font["Bold,+5"]
+        Background = Color.SelectedBackground
+        Foreground = &H9FCFFF&
+        Ignore = True
+        Text = ("")
+        Alignment = Align.TopNormal
+      }
+      { Label1 Label
+        MoveScaled(1,7,26,3)
+        Font = Font["Underline"]
+        Text = ("http://gambas.sourceforge.net")
+      }
+      { lblMessage TextLabel
+        MoveScaled(1,10,41,4)
+        Font = Font["Bold,8"]
+        Padding = 1
+        AutoResize = True
+        Text = ("This program is published under the GNU General Public Licence.")
+      }
+      { Panel1 Panel
+        MoveScaled(3,15,6,1)
+      }
+    }
+    { imgGambas PictureBox
+      MoveScaled(45,1,15,15)
+      Background = Color.SelectedBackground
+      Picture = Picture["img/logo/new-logo.png"]
+      Stretch = True
+      Alignment = Align.TopRight
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,18,61,44)
+    Expand = True
+    { panButton Panel
+      MoveScaled(1,5,30,19)
+      Foreground = Color.TextForeground
+    }
+    { panList Panel
+      MoveScaled(31,2,29,30)
+      Visible = False
+      Background = Color.SelectedBackground
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Spacing = 4
+      Padding = 4
+      { lblList Label
+        MoveScaled(1,0,24,2)
+        Font = Font["Bold"]
+        Foreground = Color.SelectedForeground
+        Text = ("")
+        Alignment = Align.TopNormal
+      }
+      { chkSortRecent CheckBox
+        MoveScaled(1,3,38,1)
+        Font = Font["8"]
+        Foreground = Color.SelectedForeground
+        Text = ("Sort by path")
+      }
+      { svwExample ScrollView
+        MoveScaled(1,7,23,18)
+        Background = Color.TextBackground
+        Foreground = Color.TextForeground
+        Expand = True
+        Arrangement = Arrange.Vertical
+        Border = False
+        ScrollBar = Scroll.Vertical
+      }
+      { svwRecent ScrollView
+        MoveScaled(3,11,23,18)
+        Background = Color.TextBackground
+        Foreground = Color.TextForeground
+        Expand = True
+        Arrangement = Arrange.Vertical
+        Border = False
+        ScrollBar = Scroll.Vertical
+      }
+    }
+  }
+}

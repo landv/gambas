@@ -1,0 +1,1 @@
+../../../gb.qt/src/share/CDraw_desc.h

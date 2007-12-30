@@ -1,0 +1,83 @@
+' Gambas class file
+
+'PRIVATE UDPServer AS UdpSocket
+PUBLIC SUB Button1_Click()
+
+  DIM MyFrm AS FrmClient
+  MyFrm = NEW FrmClient
+  MyFrm.Visible = TRUE
+
+  
+
+END
+
+'//////////////////////////////////////////////////
+' Server Stuff
+'//////////////////////////////////////////////////
+PUBLIC SUB Button2_Click()
+
+  IF UDPServer.Status <= Net.Inactive THEN
+    UDPServer.Bind(Val(TextBox1.Text))
+    IF UDPServer.Status = Net.Active THEN
+      Button2.Text = ("Stop")
+      TextBox1.Enabled = FALSE
+    END IF
+  ELSE
+    CLOSE #UDPServer
+    Button2.Text = ("Start !")
+    TextBox1.Enabled = TRUE
+  END IF    
+
+END
+
+'PUBLIC SUB Form_Open()
+'
+'  UDPServer = NEW UdpSocket AS "UDPServer"
+'
+'END
+
+PUBLIC SUB Form_Close()
+
+  IF UDPServer.Status > 0 THEN CLOSE #UDPServer
+
+END
+
+PUBLIC SUB UDPServer_Error()
+  
+  Button2.Text = "Start !"
+  TextBox1.Enabled = TRUE
+  SELECT CASE UDPServer.Status
+    CASE Net.CannotBindSocket
+      Message.Error(("Unable to Bind to that port"))
+    CASE Net.CannotCreateSocket
+      Message.Error(("System does not allow to create a socket"))
+    CASE Net.CannotRead
+      Message.Error(("Error Sending Data"))
+    CASE Net.CannotWrite
+      Message.Error(("Error Receiving Data"))
+  END SELECT
+  
+END
+
+PUBLIC SUB UDPServer_Read()
+  
+  DIM sCadRet AS String
+  DIM sCad AS String
+  DIM MyLoop AS Integer 
+
+  sCadRet = ""
+  READ #UDPServer, sCad, Lof(UDPserver)
+  TextArea1.Text = TextArea1.Text & ("Received data from : ") & UDPServer.SourceHost & ":" & UDPServer.SourcePort & Chr(13) & Chr(10)
+  TextArea1.Text = TextArea1.Text & ("Data --> ") & sCad & Chr(13) & Chr(10)
+  IF Len(sCad) > 0 THEN
+    FOR myloop = Len(sCad) TO 1 STEP -1
+      sCadRet = sCadRet & Mid(sCad, myloop, 1)
+    NEXT
+    UDPServer.TargetHost = UDPServer.SourceHost
+    UDPServer.TargetPort = UDPServer.SourcePort
+    WRITE #UDPServer, sCadRet, Len(sCadRet)
+  END IF
+  
+END
+
+

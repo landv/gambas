@@ -1,0 +1,304 @@
+' Gambas class file
+
+PRIVATE $sTool AS String
+
+PRIVATE CONST WIDTH AS Integer = 40
+
+PRIVATE $cToolBar AS NEW Collection
+PRIVATE $sToolBar AS String
+PRIVATE $sLastToolBar AS String
+
+PRIVATE $W AS Integer
+PRIVATE $H AS Integer
+
+PRIVATE $sLastLib AS String
+PRIVATE $iSize AS Integer
+'PRIVATE $bAnimate AS Boolean
+
+PRIVATE $aOrder AS NEW String[]
+
+PUBLIC SUB _new()
+  
+  Settings.Read(ME)
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+  DIM iInd AS Integer
+  DIM hCtrl AS Control
+
+  $aOrder = ["Form", "Dialog", "Container", "Data", "Network", "Special"]
+
+  ReadConfig
+  SetTool
+  'MoveToolBar
+
+END
+
+
+PRIVATE FUNCTION AddToolBar(sToolBar AS String, sType AS String) AS FToolBar
+
+  DIM hToolBar AS FToolBar
+
+  IF NOT $cToolBar.Exist(sToolBar) THEN
+
+    IF $cToolBar.Count THEN INC tabTool.Count
+    tabTool.Index = tabTool.Count - 1
+    tabTool.Text = sToolBar
+
+    hToolBar = NEW FToolBar(sToolBar, sType, tabTool) AS "ToolBar"
+    $cToolBar[sToolBar] = hToolBar
+
+    IF NOT $sToolbar THEN $sToolbar = sToolBar
+
+  ENDIF
+
+  RETURN $cToolBar[sToolBar]
+
+END
+
+
+' PRIVATE SUB MoveToolbar(OPTIONAL bAnim AS Boolean)
+' 
+'   DIM hToolBar AS FToolBar
+'   DIM Y AS Integer
+'   DIM H AS Integer
+'   DIM iInd AS Integer
+'   DIM bCurrent AS Boolean
+' 
+'   RETURN
+' 
+'   FOR EACH hToolBar IN $cToolBar
+' 
+'     bCurrent = $cToolBar.Key = $sToolBar
+'     hToolBar.ShowToolBar(TRUE)
+' 
+'     IF bAnim AND $bAnimate THEN
+'       IF ((hToolBar.Y < Y) AND $cToolBar.Key = $sLastToolBar) OR ((hToolBar.Y > Y) AND bCurrent) THEN
+'         FOR iInd = hToolBAR.Y TO Y STEP 8 * Sgn(Y - hToolBAR.Y)
+'           hToolBar.Y = iInd
+'           WAIT 0.001
+'         NEXT
+'       ENDIF
+'     ENDIF
+' 
+'     IF $cToolBar.Key = $sToolBar THEN
+'       H = ME.ClientH - $cToolBar.Count * FToolBar.HEIGHT + FToolBar.HEIGHT
+'     ELSE
+'       H = FToolBar.HEIGHT
+'     ENDIF
+' 
+'     hToolBar.Move(0, Y, ME.ClientW, H)
+'     Y += H
+' 
+'   NEXT
+' 
+'   FOR EACH hToolBar IN $cToolBar
+' 
+'     bCurrent = $cToolBar.Key = $sToolBar
+'     hToolBar.ShowToolBar(bCurrent)
+' 
+'   NEXT
+' 
+' END
+
+
+PUBLIC SUB RefreshToolbar()
+
+  DIM hToolBar AS FToolBar
+  DIM sLib AS String
+  DIM sCtrl AS String
+  DIM sNewLib AS String
+  DIM aLib AS String[]
+  DIM hComp AS CComponent
+  DIM sGroup AS String
+  DIM aToolBar AS NEW String[]
+  DIM cToolBar AS NEW Collection
+  DIM iOrder AS Integer
+  DIM iLast AS Integer
+
+  IF Project.Libraries THEN
+
+    FOR EACH sLib IN Project.Libraries
+      sNewLib = sNewLib & sLib & " "
+    NEXT
+    sNewLib = Trim(sNewLib)
+
+  ENDIF
+
+  IF $sLastLib THEN
+    IF sNewLib = $sLastLib THEN RETURN
+  ENDIF
+
+  FOR EACH hToolBar IN $cToolBar
+    hToolBar.Hide
+    hToolBar.Reparent(ME)
+    hToolBar.Delete
+  NEXT
+  
+  tabTool.Count = 1
+
+  $cToolBar.Clear
+  $sToolBar = ""
+
+  'AddTool(SELECT_TOOL)
+  'SetTool()
+
+  IF Project.Libraries THEN
+
+    ' Get all toolbars
+
+    FOR EACH hComp IN CComponent.All
+
+      WITH hComp
+
+        IF .Key <> "gb" AND IF Project.Libraries.Find(.Key) < 0 THEN CONTINUE
+
+        sGroup = "?"
+        FOR EACH sCtrl IN .Controls
+          IF Left(sCtrl) = "@" THEN
+            sGroup = Mid$(sCtrl, 2)
+            CONTINUE
+          ENDIF
+          cToolBar[sGroup] = sGroup
+        NEXT
+
+      END WITH
+
+    NEXT
+    
+    iLast = $aOrder.Count
+    FOR EACH sGroup IN cToolBar
+      iOrder = $aOrder.Find(sGroup)
+      IF iOrder < 0 THEN
+        iOrder = iLast
+        INC iLast
+      ENDIF
+      aToolBar.Add(Format(iOrder, "00") & sGroup)
+    NEXT
+    
+    aToolBar.Sort
+    
+    FOR EACH sGroup IN aToolBar
+      AddToolBar(Mid$(sGroup, 3), "Not yet implemented")
+    NEXT
+    
+    FOR EACH hComp IN CComponent.All
+
+      WITH hComp
+
+        IF .Key <> "gb" AND IF Project.Libraries.Find(.Key) < 0 THEN CONTINUE
+
+        sGroup = "?"
+        FOR EACH sCtrl IN .Controls
+          IF Left(sCtrl) = "@" THEN
+            sGroup = Mid$(sCtrl, 2)
+            CONTINUE
+          ENDIF
+          $cToolBar[sGroup].Add(sCtrl)
+        NEXT
+
+      END WITH
+
+    NEXT
+
+    TRY SelectToolbar($sToolBar)
+    'IF ERROR THEN MoveToolbar
+
+  ENDIF
+
+  tabTool.Index = 0
+
+  $sLastLib = sNewLib
+
+END
+
+
+PRIVATE SUB ClearToolBar()
+
+  $sLastLib = ""
+  RefreshToolBar
+
+END
+
+
+
+PUBLIC SUB Form_Close()
+
+  'Config.SaveWindow(ME, "/FToolBox")
+  'DEBUG ME.x;; ME.y
+  Settings.Write(ME)
+
+END
+
+
+PRIVATE SUB SelectToolBar(sToolBar AS String)
+
+  IF NOT $cToolBar.Exist(sToolBar) THEN RETURN
+  $sLastToolBar = $sToolBar
+  $sToolBar = sToolBar
+  SetTool
+  'MoveToolBar(ME.Visible)
+
+END
+
+
+
+PUBLIC SUB Form_Resize()
+
+  'MoveToolbar
+
+END
+
+
+PUBLIC FUNCTION GetTool() AS String
+
+  IF NOT $sToolBar THEN RETURN
+  RETURN $cToolBar[$sToolBar].GetTool()
+
+END
+
+
+PUBLIC SUB SetTool()
+
+  IF NOT $sToolBar THEN RETURN
+  $cToolBar[$sToolBar].SetTool()
+
+END
+
+
+' PUBLIC SUB ToolBar_Change()
+'
+'   PRINT "ToolBar_Change: "; LAST.Name
+'
+' END
+
+
+PUBLIC SUB ReadConfig()
+
+  DIM iSize AS Integer
+
+  'tabTool.Font.Grade = If(Settings["/UseSmallFont", FALSE], -2, 0)
+
+  IF Settings["/ToolboxSize", FALSE] THEN
+    iSize = 24
+  ELSE 
+    iSize = 32
+  ENDIF
+  
+  IF iSize <> $iSize THEN
+    $iSize = iSize
+    ClearToolBar
+  ENDIF
+
+  '$bAnimate = Settings["/Toolbar/Animate", TRUE]
+
+END
+
+PUBLIC SUB tabTool_Click()
+
+  SelectToolbar(tabTool.Text)
+
+END

@@ -1,0 +1,39 @@
+# Gambas Form File 1.0
+
+{ Frfk Form
+  Move(152,135,657,473)
+  Background = &H000000&
+  Foreground = &HFFFFFF&
+  Mouse = Mouse.Default
+  Text = ("robotfindskitten")
+  Border = Window.Fixed
+  { Label1 Label
+    Move(8,8,600,80)
+    Background = &H000000&
+    Foreground = &HFFFFFF&
+    Text = ("In this game, you are robot (#). Your job is to find kitten. This task is complicated by the existence of various things which are not kitten. Robot must touch items to determine if they are kitten or not. The game ends when robotfindskitten. Alternatively, you may end the game by hitting the Esc key.\n")
+    Alignment = Align.TopLeft
+  }
+  { Esc Button
+    Move(616,8,40,32)
+    Visible = False
+    Background = &H000000&
+    Foreground = &HFFFFFF&
+    Text = ("Esc")
+    Border = False
+    Cancel = True
+  }
+  { Timer1 #Timer
+    #X = 600
+    #Y = 424
+    Enabled = True
+    Delay = 200
+  }
+  { Heart PictureBox
+    Move(240,120,176,144)
+    Visible = False
+    Background = &H000000&
+    Foreground = &HFFFFFF&
+    Picture = Picture["heart.png"]
+  }
+}

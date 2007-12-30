@@ -1,0 +1,322 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0.1429,2.4286,73,59)
+  Text = ("Project properties")
+  Icon = Picture["icon:/16/properties"]
+  Persistent = True
+  Border = Window.Fixed
+  { btnOK Button
+    MoveScaled(43,55,14,3)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(58,55,14,3)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { tabProject TabStrip
+    MoveScaled(1,1,71,53)
+    Count = 6
+    Index = 0
+    Text = ("General")
+    { Label3 Label
+      MoveScaled(1,20,55,3)
+      Font = Font["Bold"]
+      Text = ("Description")
+    }
+    { txtTitle TextBox
+      MoveScaled(1,16,68,3)
+      Text = ("")
+    }
+    { Label12 Label
+      MoveScaled(1,13,11,3)
+      Font = Font["Bold"]
+      Text = ("Title")
+    }
+    { txtDesc TextArea
+      MoveScaled(1,23,68,10)
+      Text = ("")
+      Wrap = True
+    }
+    { Label11 Label
+      MoveScaled(1,34,55,3)
+      Font = Font["Bold"]
+      Text = ("Author(s)")
+    }
+    { txtAuthor TextArea
+      MoveScaled(1,37,68,11)
+      Text = ("")
+      Wrap = True
+    }
+    { Panel1 Panel
+      MoveScaled(1,0,68,11)
+      { btnIcon ToolButton
+        MoveScaled(58,1,10,10)
+        Text = ("")
+        Border = True
+      }
+      { Label10 Label
+        MoveScaled(44,8,13,3)
+        Visible = False
+        Text = ("Version")
+      }
+      { txtMajor SpinBox
+        MoveScaled(0,8,8,3)
+        MaxValue = 9999
+      }
+      { txtMinor SpinBox
+        MoveScaled(9,8,8,3)
+        MaxValue = 9999
+      }
+      { txtRelease SpinBox
+        MoveScaled(18,8,11,3)
+        MaxValue = 999999
+      }
+      { Panel2 Panel
+        MoveScaled(0,1,57,6)
+        Arrangement = Arrange.Vertical
+        Padding = 4
+        Border = Border.Plain
+        { lblName Label
+          MoveScaled(0,0,57,3)
+          Font = Font["Bold,+2"]
+          AutoResize = True
+          Text = ("Gambas")
+        }
+        { lblPath Label
+          MoveScaled(0,3,57,2)
+          Text = ("")
+        }
+      }
+    }
+    Index = 1
+    Text = ("Options")
+    { Label7 Label
+      MoveScaled(1,1,55,3)
+      Font = Font["Bold"]
+      Text = ("Edition")
+    }
+    { Label8 Label
+      MoveScaled(1,9,55,3)
+      Font = Font["Bold"]
+      Text = ("Compilation")
+    }
+    { chkCtrlPublic CheckBox
+      MoveScaled(2,12,54,3)
+      Text = ("Form controls are public")
+    }
+    { Label1 Label
+      MoveScaled(2,4,21,3)
+      Text = ("Tab size")
+    }
+    { txtTabSize SpinBox
+      MoveScaled(24,4,7,3)
+      MinValue = 1
+      MaxValue = 16
+      Value = 2
+    }
+    { Label5 Label
+      MoveScaled(32,4,22,3)
+      Text = ("space(s)")
+    }
+    { chkLocalize CheckBox
+      MoveScaled(2,15,42,3)
+      Text = ("Project is translatable")
+    }
+    { Label2 Label
+      MoveScaled(2,30,19,3)
+      Text = ("Stack size")
+    }
+    { cmbStackSize ComboBox
+      MoveScaled(24,30,12,3)
+      Text = ("")
+      ReadOnly = True
+    }
+    { Label9 Label
+      MoveScaled(1,27,55,3)
+      Font = Font["Bold"]
+      Text = ("Execution")
+    }
+    { txtVersionProg TextBox
+      MoveScaled(5,22,64,3)
+      Enabled = False
+      Text = ("")
+    }
+    { chkVersion CheckBox
+      MoveScaled(2,18,54,3)
+      Text = ("Get version from an external program")
+    }
+    { chkComponent CheckBox
+      MoveScaled(2,39,64,3)
+      Text = ("This project is a component")
+    }
+    { Label16 Label
+      MoveScaled(1,36,55,3)
+      Font = Font["Bold"]
+      Text = ("Component")
+    }
+    Index = 2
+    Text = ("Components")
+    { chkShowBeta CheckBox
+      MoveScaled(1,5,56,3)
+      Visible = False
+      Text = ("Show components in beta version")
+    }
+    { chkShowUsed CheckBox
+      MoveScaled(1,1,56,3)
+      Text = ("Show only components used in project")
+    }
+    { cvwComponent ColumnView
+      MoveScaled(1,5,69,39)
+      Header = False
+      ScrollBar = Scroll.Vertical
+    }
+    { btnHelp Button
+      MoveScaled(1,45,31,3)
+      Text = ("About &component...")
+      Picture = Picture["icon:/16/help"]
+    }
+    { btnSwap Button
+      MoveScaled(51,45,19,3)
+      Text = ("Swap gb.qt / gb.gtk")
+    }
+    Index = 3
+    Text = ("Versioning")
+    { panVersioning Panel
+      MoveScaled(1,1,68,47)
+      { txtVerCtrlChange TextArea
+        MoveScaled(0,3,68,39)
+        Font = Font["Monospace,-1"]
+        Text = ("")
+        ReadOnly = True
+      }
+      { Label4 Label
+        MoveScaled(0,0,51,3)
+        Font = Font["Bold"]
+        Text = ("Changes since last commit")
+      }
+      { btnCommit Button
+        MoveScaled(38,43,18,3)
+        Text = ("&Commit...")
+        Picture = Picture["icon:/16/ok"]
+      }
+      { btnUpdate Button
+        MoveScaled(0,43,18,3)
+        Text = ("&Update")
+        Picture = Picture["icon:/16/refresh"]
+      }
+      { btnRevert Button
+        MoveScaled(19,43,18,3)
+        Text = ("&Revert...")
+        Picture = Picture["icon:/16/undo"]
+      }
+    }
+    Index = 4
+    Text = ("Provides")
+    { tvwControl GridView
+      MoveScaled(1,1,69,47)
+      Grid = False
+      Header = GridView.Horizontal
+      Scrollbar = Scroll.Vertical
+      Resizable = False
+    }
+    { cmbControl ComboBox
+      MoveScaled(23,26,19,3)
+      Visible = False
+      Text = ("")
+    }
+    { panImplement Panel
+      MoveScaled(14,32,34,12)
+      Visible = False
+      Arrangement = Arrange.Vertical
+      { CheckBox1 CheckBox
+        MoveScaled(0,0,27,3)
+        Tag = "Form"
+        Text = ("Graphical form management")
+      }
+      { CheckBox2 CheckBox
+        MoveScaled(0,3,27,3)
+        Tag = "EventLoop"
+        Text = ("Event loop management")
+      }
+      { CheckBox3 CheckBox
+        MoveScaled(0,6,27,3)
+        Tag = "ImageProvider"
+        Text = ("Image provider")
+      }
+      { CheckBox4 CheckBox
+        MoveScaled(0,9,27,3)
+        Tag = "OpenGLViewer"
+        Text = ("OpenGL display")
+      }
+    }
+    { Label6 Label
+      MoveScaled(7,9,47,3)
+      Visible = False
+      Font = Font["Bold"]
+      Text = ("Features")
+    }
+    { Label13 Label
+      MoveScaled(7,20,47,3)
+      Visible = False
+      Font = Font["Bold"]
+      Text = ("Exported classes")
+    }
+    Index = 5
+    Text = ("Requires")
+    { Label14 Label
+      MoveScaled(1,17,17,3)
+      Font = Font["Bold"]
+      Text = ("Components")
+    }
+    { lstRequire ListBox
+      MoveScaled(3,25,47,22)
+      Sorted = True
+    }
+    { Label15 Label
+      MoveScaled(1,1,17,3)
+      Font = Font["Bold"]
+      Text = ("Features")
+    }
+    { panNeed Panel
+      MoveScaled(3,4,63,13)
+      Arrangement = Arrange.Vertical
+      { CheckBox5 CheckBox
+        MoveScaled(0,0,43,3)
+        Tag = "Form"
+        Text = ("Graphical form management")
+      }
+      { CheckBox6 CheckBox
+        MoveScaled(0,3,44,3)
+        Tag = "EventLoop"
+        Text = ("Event loop management")
+      }
+      { CheckBox7 CheckBox
+        MoveScaled(0,6,37,3)
+        Tag = "ImageProvider"
+        Text = ("Image provider")
+      }
+      { CheckBox8 CheckBox
+        MoveScaled(0,9,27,3)
+        Tag = "OpenGLViewer"
+        Text = ("OpenGL display")
+      }
+    }
+    { btnRemove Button
+      MoveScaled(52,25,17,3)
+      Text = ("&Remove")
+    }
+    { btnRemoveAll Button
+      MoveScaled(52,21,17,3)
+      Text = ("Remove All")
+    }
+    { cmbRequire ComboBox
+      MoveScaled(3,21,47,3)
+      Text = ("")
+      ReadOnly = True
+    }
+    Index = 0
+  }
+}

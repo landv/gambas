@@ -1,0 +1,363 @@
+' Gambas class file
+
+PUBLIC CONST EVENT_NAME AS String = "(Group)"
+PUBLIC CONST SCALE_NAME AS String = "(Scaled)"
+
+STATIC PRIVATE $cRedirect AS NEW Collection
+STATIC PRIVATE $cTranslate AS NEW Collection
+
+
+PUBLIC Name AS String
+PUBLIC Type AS String
+PUBLIC DefaultValue AS Variant
+PUBLIC Coord AS Boolean
+PUBLIC Required AS Boolean
+PUBLIC Exclude AS Boolean
+PUBLIC Hidden AS Boolean
+PUBLIC DoNotApply AS Boolean
+PUBLIC AlwaysRead AS Boolean
+PUBLIC Virtual AS Boolean
+PUBLIC Translate AS Boolean
+PUBLIC Argument AS String
+'PUBLIC Control AS Boolean
+
+PUBLIC ConstantClass AS String
+PUBLIC ConstantList AS Collection
+
+
+STATIC PUBLIC SUB _init()
+
+  $cRedirect["*.Visible"] = TRUE
+  '$cRedirect["*.Enabled"] = TRUE
+  $cRedirect["*.Action"] = TRUE
+  $cRedirect["*.Tag"] = TRUE
+  $cRedirect["*.Password"] = TRUE
+  $cRedirect["*.Mouse"] = TRUE
+  $cRedirect["*.ToolTip"] = TRUE
+
+  $cRedirect["*.List"] = TRUE
+
+  $cRedirect["*.Arrangement"] = TRUE
+  $cRedirect["*.Padding"] = TRUE
+  $cRedirect["*.Spacing"] = TRUE
+  $cRedirect["*.Expand"] = TRUE
+
+  $cRedirect["Label.Padding"] = FALSE
+  $cRedirect["TextLabel.Padding"] = FALSE
+
+
+  $cRedirect["Form.X"] = TRUE
+  $cRedirect["Form.Y"] = TRUE
+  $cRedirect["Form.Persistent"] = TRUE
+  $cRedirect["Form.Border"] = TRUE
+  $cRedirect["Form.Text"] = TRUE
+  $cRedirect["Form.Icon"] = TRUE
+  $cRedirect["Form.Minimized"] = TRUE
+  $cRedirect["Form.Maximized"] = TRUE
+  $cRedirect["Form.FullScreen"] = TRUE
+  $cRedirect["Form.Picture"] = TRUE
+  $cRedirect["Form.Mask"] = TRUE
+  $cRedirect["Form.TopOnly"] = TRUE
+  $cRedirect["Form.SkipTaskbar"] = TRUE
+  $cRedirect["Form.ToolBox"] = TRUE
+  $cRedirect["Form.ToolBox"] = TRUE
+
+  'Nein!
+  '$cRedirect["Button.Default"] = TRUE
+  '$cRedirect["Button.Cancel"] = TRUE
+
+  $cRedirect["Menu.Visible"] = FALSE
+  $cRedirect["Menu.Enabled"] = TRUE
+  $cRedirect["Menu.Shortcut"] = TRUE
+
+  $cRedirect["DrawingArea.Cached"] = TRUE
+  
+  $cRedirect["Timer.Enabled"] = TRUE
+
+  '$cRedirect["*.Table"] = TRUE
+
+  $cTranslate["Text"] = TRUE
+  $cTranslate["Title"] = TRUE
+  $cTranslate["List"] = TRUE
+  $cTranslate["FileChooser.Filter"] = TRUE
+  $cTranslate["Caption"] = TRUE
+  $cTranslate["ToolTip"] = TRUE
+
+END
+
+
+PUBLIC SUB _new(sComponent AS String, sClass AS String, sName AS String, sKind AS String, hCtrl AS Object, OPTIONAL bVirtual AS Boolean, OPTIONAL bDoNotApply AS Boolean, OPTIONAL sDefVal AS String)
+
+  DIM iPos AS Integer
+  DIM sType AS String
+  DIM sList AS String
+  DIM cList AS String[]
+  DIM hSym AS CSymbolInfo
+  'DIM sDefVal AS String
+  DIM bError AS Boolean
+  DIM sSign AS String
+  DIM sFirst AS String
+  DIM sArg AS String
+
+  Name = sName
+
+  IF Name = EVENT_NAME THEN
+    Type = "s"
+    Virtual = TRUE
+    Exclude = TRUE
+    DoNotApply = TRUE
+    RETURN
+  ELSE IF Name = SCALE_NAME THEN 
+    Type = "b"
+    Virtual = TRUE
+    Exclude = FALSE
+    DoNotApply = TRUE
+    DefaultValue = TRUE
+    RETURN
+  ENDIF
+
+  IF sComponent THEN
+    TRY hSym = CComponent.Classes[sComponent &/ sClass].Symbols[sName]
+    Type = hSym.Type
+    sSign = hSym.Signature
+  ELSE
+    IF Name = "X" OR Name = "Y" THEN
+      Type = "Position"
+    ENDIF
+  ENDIF
+  'sClass = hSym.Class
+
+  IF Len(Type) = 1 THEN
+    'IF Name = "Visible" THEN
+    '  DefaultValue = TRUE
+    IF Name = "X" OR Name = "Y" OR Name = "Width" OR Name = "Height" OR Name = "Text" THEN
+      Required = TRUE
+    ELSE IF Name = "Tag" THEN
+      Type = "s"
+    'ELSE IF Name = "List" THEN
+    '  Type = "List"
+    'ELSE IF hCtrl THEN
+    '  TRY DefaultValue = Object.GetProperty(hCtrl, Name)
+    'ELSE IF NOT sDefVal THEN
+    '  PRINT sClass; "."; sName;; Type;; " DefaultValue ?"
+    ENDIF
+  'ELSE IF Type = "Font" THEN
+  '  DefaultValue = "" 'Object.GetProperty(hCtrl, Name).ToString()
+  ELSE
+    DefaultValue = NULL
+    'bDoNotApply = TRUE
+    'Control = TRUE
+  ENDIF
+
+  IF sDefVal THEN
+    SELECT CASE Type
+      CASE "i"
+        TRY DefaultValue = CInt(sDefVal)
+        IF ERROR THEN DefaultValue = sDefVal
+      CASE "f"
+        DefaultValue = CFloat(sDefVal)
+      CASE "b"
+        DefaultValue = LCase(sDefVal) <> "false"
+      CASE "s"
+        DefaultValue = sDefVal
+    END SELECT
+  ELSE IF IsNull(DefaultValue) THEN
+    SELECT CASE Type
+      CASE "b"
+        DefaultValue = FALSE
+      CASE "i", "f"
+        DefaultValue = 0
+    END SELECT
+  ENDIF
+
+  IF sKind THEN 
+
+    'DEBUG sName; "{"; sKind; "}"
+
+    iPos = InStr(sKind, ".")
+    IF iPos THEN
+    
+      Type = "Constant"
+  
+      ConstantList = NEW Collection
+      ConstantClass = Left(sKind, iPos - 1)      
+      sArg = Mid$(sKind, iPos + 1)
+      
+      IF sArg = "*" THEN 
+
+        FOR EACH hSym IN CComponent.Classes[ConstantClass].Symbols
+
+          IF hSym.Kind = "C" THEN
+            IF NOT hSym.IsHidden() THEN
+              ConstantList[CStr(hSym.Value)] = hSym.Name
+              IF NOT sFirst THEN sFirst = hSym.Name
+            ENDIF
+          ENDIF
+
+        NEXT
+
+      ELSE 
+        
+        cList = Split(sArg, ";")
+
+        FOR EACH sList IN cList
+
+          hSym = CComponent.Classes[ConstantClass].Symbols[sList]
+          ' Maybe the constant declared in the property don't really exist
+          TRY ConstantList[CStr(hSym.Value)] = sList
+
+        NEXT
+
+      ENDIF
+
+      ' if the default value is numeric, transform it into its symbol
+      sList = ConstantList[CStr(DefaultValue)]
+      IF sList THEN DefaultValue = sList
+
+    ELSE
+  
+      iPos = InStr(sKind, ":")
+      IF iPos THEN 
+        sArg = Mid$(sKind, iPos + 1)
+        sKind = Left$(sKind, iPos - 1)
+      ENDIF
+  
+      SELECT CASE sKind
+      
+        CASE ELSE ' Color,Path,Font,Range
+  
+          Type = sKind
+          Argument = sArg
+  
+      END SELECT
+      
+    ENDIF
+  
+  ELSE
+
+    IF Type = "i" THEN
+  
+      IF Name = "Background" OR Name = "Foreground" OR InStr(Name, "Color") > 0 THEN
+  
+        Type = "Color"
+  
+      ELSE IF sSign THEN
+  
+        Type = "Constant"
+  
+        ConstantList = NEW Collection
+  
+        cList = Split(hSym.Signature)
+        ConstantClass = cList[0]
+        cList.Remove(0)
+  
+        IF cList.Count THEN
+  
+          FOR EACH sList IN cList
+  
+            hSym = CComponent.Classes[ConstantClass].Symbols[sList]
+            ' Maybe the constant declared in the property don't really exist
+            TRY ConstantList[CStr(hSym.Value)] = sList
+  
+          NEXT
+  
+        ELSE
+  
+          FOR EACH hSym IN CComponent.Classes[ConstantClass].Symbols
+  
+            IF hSym.Kind = "C" THEN
+              IF NOT hSym.IsHidden() THEN
+                ConstantList[CStr(hSym.Value)] = hSym.Name
+                IF NOT sFirst THEN sFirst = hSym.Name
+              ENDIF
+            ENDIF
+  
+          NEXT
+  
+        ENDIF
+  
+        sList = ConstantList[CStr(DefaultValue)]
+        IF sList THEN DefaultValue = sList
+        'IF ERROR THEN 
+        '  sList = sFirst
+        'ENDIF
+        'DEBUG sClass & "." & sName; ": "; ConstantClass; "."; DefaultValue
+        'DefaultValue = sList
+  
+        'PRINT sClass; "."; sName; " is constant"
+  
+        'PRINT ConstantClass; " = ";
+        'FOR EACH sList IN ConstantList
+        '  PRINT sList; "("; CLASS[ConstantClass].Symbols[sList].Value; " ) ";
+        'NEXT
+        'PRINT
+  
+      ENDIF
+  
+    ELSE IF Type = "s" THEN
+  
+      IF InStr(Name, "Path") THEN
+  
+        Type = "Path"
+  
+      ENDIF
+  
+    ENDIF
+    
+  ENDIF
+
+  IF Type = "Color" THEN DefaultValue = Color.Default
+
+  Coord = Name = "X" OR Name = "Y" OR Name = "Width" OR Name = "Height"
+  IF Coord THEN DefaultValue = NULL
+  'AlwaysRead = Name = "Font"
+
+  IF bDoNotApply THEN
+    DoNotApply = TRUE
+  ELSE IF $cRedirect.Exist(sClass & "." & Name) THEN
+    DoNotApply = $cRedirect[sClass & "." & Name]
+  ELSE IF $cRedirect.Exist("*." & Name) THEN
+    DoNotApply = $cRedirect["*." & Name]
+  ELSE IF Name = "Enabled" AND IF CComponent.Classes[sClass].Container THEN 
+    DoNotApply = TRUE
+  ENDIF
+
+  'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
+
+  SELECT CASE sClass
+
+    CASE "RadioButton", "ToggleButton", "ToolButton"
+      AlwaysRead = Name = "Value"
+
+    CASE "Button"
+      AlwaysRead = Name = "Default" OR Name = "Cancel"
+
+    'CASE "TabStrip"
+    '  Exclude = Name = "Text" OR Name = "Index" OR Name = "Picture"
+    '  Hidden = Name = "Index"
+
+    CASE "ProgressBar"
+      AlwaysRead = Name = "Value" OR Name = "Max"
+
+  END SELECT
+
+  IF CComponent.Classes[sClass].MultiContainer THEN
+    Exclude = Name = "Text" OR Name = "Index" OR Name = "Picture"
+    'AlwaysRead = Name = "Text" OR Name = "Picture"
+    Hidden = Name = "Index"
+  ENDIF
+
+  Translate = $cTranslate.Exist(Name) OR $cTranslate.Exist(sClass & "." & Name)
+
+  Virtual = bVirtual
+
+CATCH
+
+  DEBUG sComponent; ": "; sClass; "."; sName; ": "; Error.Text
+  'hSym = CComponent.Classes["System"].Symbols["Language"]
+
+  Type = "s"
+  DoNotApply = TRUE
+  DefaultValue = NULL
+
+END

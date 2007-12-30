@@ -1,0 +1,1174 @@
+' Gambas class file
+
+STATIC PRIVATE $bShowUsed AS Boolean
+STATIC PRIVATE $bShowBeta AS Boolean
+
+PRIVATE $cCheckBox AS NEW Collection
+PRIVATE $bCheck AS Boolean
+
+PRIVATE $hCheck AS Picture
+PRIVATE $hUncheck AS Picture
+
+PRIVATE $sLibName AS String
+
+'PRIVATE $hProcess AS Process
+PRIVATE $sTemp AS String
+PRIVATE $sIcon AS String
+
+PRIVATE $bCanInitLibrary AS Boolean
+'PRIVATE $bLibModify AS Boolean
+
+' Component
+PRIVATE $aNeed AS NEW String[]
+PRIVATE $aRequire AS NEW String[]
+PRIVATE $aImplement AS NEW String[]
+PRIVATE $iRow AS Integer
+PRIVATE $iCol AS Integer
+
+PRIVATE CONST VERSION_TAB AS Integer = 3
+
+STATIC PUBLIC FUNCTION Run() AS Boolean
+
+  RETURN FPropertyProject.ShowModal()
+
+END
+
+PUBLIC SUB Form_Open()
+
+  DIM sClass AS String
+  DIM sLib AS String
+  DIM sLang AS String
+
+  ME.Title = ("Project properties") & " - " & Project.Name
+
+  'txtInfo.Background = txtInfo.Parent.Background
+  'txtInfo.Text = ("Please wait...")
+  'StartInfo
+  lblName.Text = Project.Name
+  lblPath.Text = File.Dir(Project.Dir)
+  lblPath.Tooltip = File.Dir(Project.Dir)
+
+  cmbStackSize.List = [("(Default)"), "4 K", "8 K", "16 K", "32 K", "64 K", "128 K", "256 K"]
+  
+  chkComponent_Click
+
+  WITH Project
+
+    txtTitle.Text = .Title
+    txtDesc.Text = .Description
+    txtAuthor.Text = .Authors
+    chkCtrlPublic.Value = .ControlPublic
+    txtMajor.Value = .MajorVersion
+    txtMinor.Value = .MinorVersion
+    txtRelease.Value = .ReleaseVersion
+    'chkSnap.Value = .SnapToGrid
+    'chkShowGrid.Value = .ShowGrid
+    'txtGrid.Value = Desktop.Scale '.Snap
+    'txtGridY.Text = CStr(.SnapY)
+    chkLocalize.Value = .Localize
+    chkComponent.Value = .CreateComponent
+    $sIcon = .Icon
+    btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, 56)
+    btnIcon.ToolTip = .Icon
+    txtTabSize.Value = .TabSize
+    cmbStackSize.Index = 0
+    IF .Stack THEN cmbStackSize.Text = .Stack & " K"
+    txtVersionProg.Text = .VersionProgram
+    chkVersion.Value = NOT IsNull(.VersionProgram)
+
+  END WITH
+
+  $hCheck = Picture["img/16/checked.png"]
+  $hUncheck = Picture["img/16/unchecked.png"]
+
+  WITH cvwComponent
+
+    .Columns.Count = 3
+    .Columns[0].Width = 24
+    .Columns[1].Text = ("Component")
+    .Columns[1].Width = 116
+    .Columns[2].Text = ("Description")
+
+  END WITH
+
+  'IF $bShowUsed THEN
+  chkShowUsed.Value = $bShowUsed
+  chkShowBeta.Value = $bShowBeta
+  $bCanInitLibrary = TRUE
+  InitLibrary
+
+  cvwComponent["gb"].Selected = TRUE
+
+  tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
+  tabProject.Index = 0
+
+  btnOK.Enabled = NOT Project.ReadOnly AND NOT Project.Running
+  tabProject[VERSION_TAB].Enabled = btnOK.Enabled
+
+END
+
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close(TRUE)
+
+END
+
+
+PRIVATE FUNCTION DoApply() AS Boolean
+
+  DIM bCheck AS Boolean
+  DIM vVal AS Variant
+  DIM bRefreshForm AS Boolean
+  DIM bRefreshEditor AS Boolean
+  DIM hFile AS Object
+
+'   IF chkSnap.Value THEN
+'
+'     vVal = Val(txtGrid.Text)
+'     IF NOT IsInteger(vVal) THEN vVal = 0
+'     IF vVal < 2 OR vVal > 64 THEN
+'       txtGrid.SetFocus
+'       GOTO BAD_GRID
+'     ENDIF
+'
+'   ENDIF
+
+  WITH Project
+
+    .Title = Trim(txtTitle.Text)
+    .Description = Trim(txtDesc.Text)
+    .Authors = Trim(txtAuthor.Text)
+    .Icon = $sIcon
+    IF cmbStackSize.Index = 0 THEN 
+      .Stack = 0
+    ELSE
+      .Stack = Val(cmbStackSize.Text)
+    ENDIF
+
+    IF .ControlPublic <> chkCtrlPublic.Value THEN
+      Project.ResetScan
+      Project.DeleteCompiledFiles
+    ENDIF
+
+    .ControlPublic = chkCtrlPublic.Value
+    .MajorVersion = txtMajor.Value
+    .MinorVersion = txtMinor.Value
+    .ReleaseVersion = txtRelease.Value
+    IF chkVersion.Value THEN
+      .VersionProgram = Trim(txtVersionProg.Text)
+    ELSE 
+      .VersionProgram = ""
+    ENDIF
+    '.SnapToGrid = chkSnap.Value
+
+    'IF chkShowGrid.Value <> .ShowGrid OR .Snap <> txtGrid.Value THEN
+    '  bRefreshForm = TRUE
+    'ENDIF
+
+    '.ShowGrid = chkShowGrid.Value
+    '.Snap = txtGrid.Value
+    IF chkLocalize.Value AND NOT .Localize THEN
+      Project.DeleteCompiledFiles()
+    ENDIF
+    .Localize = chkLocalize.Value
+    .CreateComponent = chkComponent.Value
+
+    IF .TabSize <> txtTabSize.Value THEN
+      bRefreshEditor = TRUE
+    ENDIF
+
+    .TabSize = txtTabSize.Value
+
+  END WITH
+
+  SaveLibrary
+
+  Project.WriteProject
+  Project.MakeDirectoryIcon
+
+  Project.RefreshRoot
+  IF bRefreshForm THEN Project.RefreshForm
+  IF bRefreshEditor THEN Project.RefreshEditor
+  
+  Project.SetMessage(("OK"))
+
+  RETURN
+
+BAD_GRID:
+
+  Message.Error(("Snapping value is incorrect."))
+  RETURN TRUE
+
+END
+
+
+PUBLIC SUB btnOK_Click()
+
+  IF DoApply() THEN RETURN
+  
+  IF chkComponent.Value THEN
+    IF WriteComponent() THEN RETURN 
+  ENDIF
+
+  ME.Close(TRUE)
+
+END
+
+
+PRIVATE SUB SaveLibrary()
+
+  DIM sLib AS String
+  DIM bCheck AS Boolean
+  DIM hComp AS CComponent
+
+  Project.Libraries.Clear
+
+  FOR EACH hComp IN CComponent.All
+
+    sLib = CComponent.All.Key
+    bCheck = FALSE
+
+    TRY bCheck = (cvwComponent[sLib].Picture = $hCheck)
+
+    IF bCheck THEN
+      IF sLib <> "gb" THEN Project.Libraries.Add(sLib)
+    ENDIF
+
+  NEXT
+
+  Project.Libraries.Sort
+
+  Project.RefreshLibrary
+
+END
+
+
+' PRIVATE FUNCTION CountChr(sStr AS String, sChr AS String) AS Integer
+'
+'   DIM iPos AS Integer
+'   DIM iCpt AS Integer
+'
+'   DO
+'
+'     iPos = Instr(sStr, sChr, iPos + 1)
+'     IF iPos = 0 THEN RETURN iCpt
+'
+'     iCpt = iCpt + 1
+'
+'   LOOP
+'
+' END
+
+
+PRIVATE SUB InitLibrary()
+
+  DIM sLib AS String
+  DIM hComp AS CComponent
+  DIM aRemove AS NEW String[]
+
+  IF NOT $bCanInitLibrary THEN RETURN
+
+  cvwComponent.Clear
+
+  FOR EACH hComp IN CComponent.All
+
+    sLib = CComponent.All.Key
+
+    'IF NOT $bShowBeta THEN
+    '  IF hComp.Alpha THEN CONTINUE
+    'ENDIF
+
+    cvwComponent.Add(sLib, "", $hUncheck)
+
+    cvwComponent[sLib][1] = sLib
+    cvwComponent[sLib][2] = hComp.Name
+
+  NEXT
+
+  FOR EACH sLib IN Project.Libraries
+    TRY cvwComponent[sLib].Picture = $hCheck
+  NEXT
+  cvwComponent["gb"].Picture = $hCheck
+
+  IF $bShowUsed THEN
+
+    WITH cvwComponent
+      .MoveFirst
+
+      WHILE .Available
+        sLib = .Item.Key
+
+        IF cvwComponent[sLib].Picture = $hUncheck THEN
+          aRemove.Add(sLib)
+        ENDIF
+
+        .MoveNext
+      WEND
+
+    END WITH
+
+  ENDIF
+
+  FOR EACH sLib IN aRemove
+    cvwComponent.Remove(sLib)
+  NEXT
+
+  'svwLibrary.ClientHeight = Max(svwLibrary.Height - 4, iY)
+
+  'clvLibrary.Resizable = FALSE
+  cvwComponent.Columns.Sort = 1
+
+  $bCheck = TRUE
+
+END
+
+
+PRIVATE FUNCTION IsChecked(sKey AS String) AS Boolean
+  
+  RETURN cvwComponent[sKey].Picture = $hCheck
+  
+END
+
+PRIVATE SUB CheckComponentConfig() AS Boolean
+  
+  DIM aComp AS NEW String[]
+  DIM hComp AS CComponent
+  DIM sComp AS String
+  DIM aExclude AS String[]
+  DIM aNeed AS String[]
+  DIM sImpl AS String
+  DIM sExcl AS String
+  DIM sNeed AS String
+  DIM bFound AS Boolean
+  
+  ' Makes the list of all checked components
+  
+  WITH cvwComponent
+    .MoveFirst
+    WHILE .Available
+      IF IsChecked(.Item.Key) THEN aComp.Add(.Item.Key)
+      .MoveNext
+    WEND
+  END WITH   
+  
+  FOR EACH sComp IN aComp
+  
+    aNeed = NEW String[]
+    aExclude = NEW String[]
+
+    FOR EACH sImpl IN CComponent.All[sComp].Implement
+    
+      FOR EACH hComp IN CComponent.All
+      
+        IF hComp.Key = sComp THEN CONTINUE
+        IF hComp.Implement.Find(sImpl) >= 0 THEN
+          IF NOT aComp.Exist(hComp.Key) THEN CONTINUE
+          IF aExclude.Find(hComp.Key) < 0 THEN aExclude.Add(hComp.Key)
+        ENDIF
+      
+      NEXT
+    
+    NEXT
+
+    FOR EACH sExcl IN CComponent.All[sComp].Exclude
+      IF NOT aComp.Find(sExcl) THEN CONTINUE
+      IF NOT aExclude.Exist(sExcl) THEN aExclude.Add(sExcl)
+    NEXT
+    
+    IF aExclude.Count = 1 THEN
+      Message.Warning(Subst(("The &2 component is incompatible with the &1 component."), "<b>" & sComp & "</b>", "<b>" & aExclude[0] & "</b>"))
+      RETURN TRUE
+    ELSE IF aExclude.Count > 1 THEN
+      Message.Warning(Subst(("These components are incompatible with the &1 component:\n&2"), "<b>" & sComp & "</b>", "<b>" & aExclude.Join("</b>, <b>") & "</b>"))
+      RETURN TRUE
+    ENDIF
+
+    FOR EACH sNeed IN CComponent.All[sComp].Need
+      bFound = FALSE
+      FOR EACH hComp IN CComponent.All
+        IF hComp.Implement.Exist(sNeed) THEN
+          aNeed.Add(hComp.Key)
+          IF aComp.Exist(hComp.Key) THEN bFound = TRUE
+        ENDIF
+      NEXT
+      IF NOT bFound THEN
+        Message.Warning(Subst(("The &1 component needs one of the following components:\n&2."), "<b>" & sComp & "</b>", "<b>" & aNeed.Join("</b>, <b>") & "</b>"))
+        RETURN TRUE
+      ENDIF 
+    NEXT
+      
+    FOR EACH sNeed IN CComponent.All[sComp].Require
+      IF NOT aComp.Exist(sNeed) THEN 
+        Message.Warning(Subst(("The &1 component needs the &2 component."), "<b>" & sComp & "</b>", "<b>" & sNeed & "</b>"))
+        RETURN TRUE
+      ENDIF
+    NEXT
+  
+  NEXT  
+  
+END
+
+
+PRIVATE FUNCTION CheckComponent(sKey AS String, bCheck AS Boolean) AS Boolean
+
+  DIM bBefore AS Boolean
+
+  bBefore = IsChecked(sKey)
+  IF bBefore = bCheck THEN RETURN 
+  
+  WITH cvwComponent
+    
+    .MoveTo(sKey)
+    .Item.Picture = If(bCheck, $hCheck, $hUncheck)
+  
+    IF CheckComponentConfig() THEN 
+      .MoveTo(sKey)
+      .Item.Picture = If(bBefore, $hCheck, $hUncheck)
+      RETURN TRUE
+    ENDIF
+    
+  END WITH
+
+END
+
+' PRIVATE FUNCTION CheckComponent(sKey AS String, bCheck AS Boolean) AS Boolean
+' 
+'   DIM hComp AS CComponent
+'   DIM sComp AS String
+'   DIM aExclude AS NEW String[]
+'   DIM aNeed AS NEW String[]
+'   DIM sImpl AS String
+'   DIM sNeed AS String
+'   DIM bFound AS Boolean
+' 
+'   WITH cvwComponent
+' 
+'     IF NOT .Available THEN RETURN
+' 
+'     IF bCheck THEN
+' 
+'       FOR EACH sImpl IN CComponent.All[sKey].Implement
+'       
+'         FOR EACH hComp IN CComponent.All
+'         
+'           IF hComp.Key = sKey THEN CONTINUE
+'           IF hComp.Implement.Find(sImpl) >= 0 THEN
+'             IF NOT IsChecked(hComp.Key) THEN CONTINUE
+'             IF aExclude.Find(hComp.Key) < 0 THEN aExclude.Add(hComp.Key)
+'           ENDIF
+'         
+'         NEXT
+'       
+'       NEXT
+' 
+'       FOR EACH sComp IN CComponent.All[sKey].Exclude
+'         IF NOT IsChecked(sComp) THEN CONTINUE
+'         IF aExclude.Find(sComp) < 0 THEN aExclude.Add(sComp)
+'       NEXT
+'       
+'       IF aExclude.Count = 1 THEN
+'         IF Message.Warning(Subst(("The &2 component is incompatible with &1 component.\nIt will be disabled."), sKey, aExclude[0]), ("Continue"), ("Cancel")) = 2 THEN RETURN TRUE
+'       ELSE IF aExclude.Count > 1 THEN
+'         IF Message.Warning(Subst(("These components are incompatible with &1 component:\n&2\n\nThey will be disabled."), sKey, aExclude.Join(", ")), ("Continue"), ("Cancel")) = 2 THEN RETURN TRUE
+'       ENDIF
+' 
+'       FOR EACH sNeed IN CComponent.All[sKey].Need
+'         bFound = FALSE
+'         FOR EACH hComp IN CComponent.All
+'           IF hComp.Implement.Find(sNeed) >= 0 THEN
+'             aNeed.Add(hComp.Key)
+'             IF IsChecked(hComp.Key) THEN bFound = TRUE
+'           ENDIF
+'         NEXT
+'         IF NOT bFound THEN
+'           Message.Warning(Subst(("The &1 component needs one of the following components:\n&2."), sKey, aNeed.Join(", ")))
+'           RETURN TRUE
+'         ENDIF 
+'       NEXT
+'       
+'       FOR EACH sComp IN aExclude
+'         IF CheckComponent(sComp, FALSE) THEN RETURN TRUE
+'       NEXT
+' 
+'       FOR EACH sComp IN CComponent.All[sKey].Require
+'         IF CheckComponent(sComp, TRUE) THEN RETURN TRUE
+'       NEXT
+' 
+'       .MoveTo(sKey)
+'       .Item.Picture = $hCheck
+' 
+'     ELSE
+' 
+'       .MoveTo(sKey)
+'       .Item.Picture = $hUncheck
+' 
+'       FOR EACH hComp IN CComponent.All
+'         IF hComp.Require.Find(sKey) < 0 THEN CONTINUE
+'         CheckComponent(hComp.Key, FALSE)
+'       NEXT
+' 
+'     ENDIF
+' 
+'   END WITH
+' 
+' END
+
+
+PUBLIC SUB cvwComponent_ColumnClick(Column AS Integer)
+
+  IF chkShowUsed.Value THEN RETURN
+  IF Column THEN RETURN
+
+  WITH cvwComponent
+
+    IF .Item.Key = "gb" THEN RETURN
+
+    IF .Item.Picture = $hCheck THEN
+
+      'IF CControl.IsRefLibrary(.Item.Key) THEN
+      '  Message.Warning(("This component is in use."))
+      '  RETURN
+      'ENDIF
+
+      CheckComponent(.Item.Key, FALSE)
+
+    ELSE
+
+      CheckComponent(.Item.Key, TRUE)
+
+    ENDIF
+
+  END WITH
+
+  '$bLibModify = TRUE
+
+END
+
+PUBLIC SUB chkShowUsed_Click()
+
+  $bShowUsed = chkShowUsed.Value
+  InitLibrary
+
+END
+
+PUBLIC SUB cvwComponent_Activate()
+
+  cvwComponent_ColumnClick(0)
+
+END
+
+
+
+' PRIVATE SUB FillLibrary(sLib AS String)
+' 
+'   DIM sText AS String
+' 
+'   WITH CComponent.All[sLib]
+' 
+'     sText = "<h2>" & sLib & "</h2>" & .Name & "<p>"
+' 
+'     IF .Alpha THEN
+'       sText = sText & "<table bgcolor=#43C7FF cellspacing=0 cellpadding=2><tr><td><img src=\"img/32/warning.png\"></td><td>" & ("WARNING! This component is in BETA version.") & " " &
+'         ("It is under development and may change without notice.") & "</td></tr></table><br>"
+'     ELSE
+'       'sText = sText & "<p>"
+'     ENDIF
+' 
+'     sText = sText & "<b>" & ("Authors:") & "</b> " & .Authors.Join(", ")
+' 
+'     IF .Controls THEN
+'       IF .Controls.Count THEN
+'         sText = sText & "<p><b>" & ("Controls:") & "</b> " & .Controls.Join(", ")
+'       ENDIF
+'     ENDIF
+' 
+'     txtComponent.Text = sText
+' 
+'   END WITH
+' 
+' END
+
+' PUBLIC SUB clvLibrary_Select()
+' 
+'   FillLibrary(clvLibrary.Key)
+'   'lblLibrary.Visible = TRUE
+'   'clvLibrary.Height = 200
+'   'clvLibrary.Current.EnsureVisible
+' 
+' END
+
+
+PUBLIC SUB btnIcon_Click()
+
+  DIM sIcon AS String
+  DIM hImage AS Image
+  DIM hBackground AS Image
+
+  sIcon = FSelectIcon.Run($sIcon, TRUE)
+  IF NOT sIcon THEN RETURN
+
+  $sIcon = sIcon
+  btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, 56)
+  
+END
+
+PUBLIC SUB chkShowBeta_Click()
+
+  $bShowBeta = chkShowBeta.Value
+  InitLibrary
+
+END
+
+
+PUBLIC SUB btnHelp_Click()
+
+  DIM sKey AS String = cvwComponent.Key
+  
+  IF NOT sKey THEN RETURN 
+  MHelp.GotoComponent(sKey)
+
+END
+
+
+PUBLIC SUB chkComponent_Click()
+
+  IF chkComponent.Value THEN 
+    InitComponent
+  ENDIF
+
+  tabProject[4].Visible = chkComponent.Value
+  tabProject[5].Visible = chkComponent.Value
+
+END
+
+
+PRIVATE SUB GetParent(sPath AS String) AS String
+  
+  DIM hFile AS File
+  DIM sLine AS String
+  DIM sParent AS String
+  
+  hFile = OPEN sPath
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE
+    IF Left(sLine) = "'" THEN CONTINUE
+    IF sLine LIKE "INHERITS *" THEN 
+      TRY sParent = Trim(Scan(sLine, "INHERITS *")[0])
+      RETURN sParent
+    ENDIF
+    IF sLine LIKE "EXPORT" THEN CONTINUE
+    IF sLine LIKE "CREATE" THEN CONTINUE
+    IF sLine LIKE "EXPORT *" THEN CONTINUE
+    IF sLine LIKE "CREATE *" THEN CONTINUE
+    BREAK
+  WEND 
+  
+END
+
+
+
+PRIVATE SUB IsExported(sPath AS String) AS Boolean
+  
+  DIM hFile AS File
+  DIM sLine AS String
+  
+  hFile = OPEN sPath
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE
+    IF Left(sLine) = "'" THEN CONTINUE
+    IF sLine LIKE "INHERITS *" THEN CONTINUE
+    IF sLine LIKE "CREATE" THEN CONTINUE
+    IF sLine LIKE "CREATE *" THEN CONTINUE
+    IF sLine LIKE "EXPORT" THEN RETURN TRUE
+    IF sLine LIKE "EXPORT OPTIONAL" THEN RETURN TRUE
+    BREAK
+  WEND 
+  
+END
+
+
+PRIVATE SUB ReadComponent()
+  
+  DIM sPath AS String = Project.Dir &/ ".component"
+  DIM hFile AS File
+  DIM sLine AS String
+  DIM sGroup AS String
+  DIM iPos AS Integer
+  DIM sKey AS String
+  
+  IF NOT Exist(sPath) THEN RETURN
+  
+  hFile = OPEN sPath
+  
+  LINE INPUT #hFile, sLine
+  IF Trim(sLine) <> "[Component]" THEN RETURN
+  
+  WHILE NOT Eof(hFile)
+    
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE 
+    IF Left(sLine) = ";" THEN CONTINUE
+    
+    IF Left(sLine) = "[" THEN 
+      IF sLine = "[Component]" THEN BREAK 
+      sGroup = Mid$(sLine, 2, -1)
+    ENDIF 
+    
+    iPos = InStr(sLine, "=")
+    IF iPos = 0 THEN CONTINUE
+    sKey = LCase(Left(sLine, iPos - 1))
+    sLine = Mid$(sLine, iPos + 1)
+    
+    SELECT CASE sKey
+      CASE "need", "needs"
+        $aNeed = Split(sLine, ",")
+      CASE "require", "requires"
+        $aRequire = Split(sLine, ",")
+      CASE "implement", "implements"
+        $aImplement = Split(sLine, ",")
+      CASE "control", "controls"
+        FOR EACH sKey IN Split(sLine, ",")
+          IF CExportInfo.All.Exist(sKey) THEN
+            CExportInfo.All[sKey].Control = TRUE
+            CExportInfo.All[sKey].Group = sGroup
+          ELSE 
+            DEBUG "Control="; sKey; "?"
+          ENDIF
+        NEXT
+      CASE "virtual"
+        FOR EACH sKey IN Split(sLine, ",")
+          IF CExportInfo.All.Exist(sKey) THEN
+            CExportInfo.All[sKey].Virtual = TRUE
+          ELSE 
+            DEBUG "Virtual="; sKey; "?"
+          ENDIF 
+        NEXT
+      CASE "container"
+        FOR EACH sKey IN Split(sLine, ",")
+          IF CExportInfo.All.Exist(sKey) THEN
+            CExportInfo.All[sKey].Container = TRUE
+          ELSE 
+            DEBUG "Container="; sKey; "?"
+          ENDIF
+        NEXT
+      CASE "multicontainer"
+        FOR EACH sKey IN Split(sLine, ",")
+          IF CExportInfo.All.Exist(sKey) THEN
+            CExportInfo.All[sKey].MultiContainer = TRUE
+          ELSE 
+            DEBUG "MultiContainer="; sKey; "?"
+          ENDIF
+        NEXT
+      CASE "type"
+        TRY CExportInfo.All[sLine].Form = TRUE
+        
+    END SELECT 
+    
+  WEND
+  
+CATCH 
+
+  DEBUG Error.Text;; Error.Where
+  
+END
+
+
+PRIVATE SUB WriteComponent() AS Boolean
+
+  DIM sPath AS String = Project.Dir &/ ".component"
+  DIM hFile AS File
+  DIM cGroup AS NEW Collection
+  DIM sGroup AS String
+  DIM hExportInfo AS CExportInfo
+  DIM sClass AS String
+  DIM aControl AS String[]
+  DIM aVirtual AS String[]
+  DIM aContainer AS String[]
+  DIM aMultiContainer AS String[]
+
+  HideEditor
+  WriteFeatures(panNeed, $aNeed)
+
+  hFile = OPEN Temp$("component") FOR CREATE 
+  
+  PRINT #hFile, "[Component]"
+  PRINT #hFile, "Key="; Project.Name
+  IF Project.Authors THEN PRINT #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
+  IF GetForm() THEN PRINT #hFile, "Type="; GetForm()
+  IF $aImplement.Count THEN PRINT #hFile, "Implements="; $aImplement.Join(",")
+  IF $aNeed.Count THEN PRINT #hFile, "Needs="; $aNeed.Join(",")
+  IF $aRequire.Count THEN PRINT #hFile, "Requires="; $aRequire.Join(",")
+  PRINT #hFile
+  
+  FOR EACH sGroup IN GetGroups()
+    cGroup[sGroup] = NEW String[]
+    
+    PRINT #hFile, "["; sGroup; "]"
+    
+    aControl = NEW String[]
+    aVirtual = NEW String[]
+    aContainer = NEW String[]
+    aMultiContainer = NEW String[]
+    
+    FOR EACH sClass IN CExportInfo.List
+      hExportInfo = CExportInfo.All[sClass]
+      IF hExportInfo.Group <> sGroup THEN CONTINUE
+      IF hExportInfo.Control THEN aControl.Add(sClass)
+      IF hExportInfo.Virtual THEN aVirtual.Add(sClass)
+      IF hExportInfo.Container THEN aContainer.Add(sClass)
+      IF hExportInfo.MultiContainer THEN aMultiContainer.Add(sClass)
+    NEXT
+    
+    IF aControl.Count THEN PRINT #hFile, "Control="; aControl.Join(",")
+    IF aContainer.Count THEN PRINT #hFile, "Container="; aContainer.Join(",")
+    IF aMultiContainer.Count THEN PRINT #hFile, "MultiContainer="; aMultiContainer.Join(",")
+    IF aVirtual.Count THEN PRINT #hFile, "Virtual="; aVirtual.Join(",")
+    PRINT #hFile
+    
+  NEXT
+  
+  CLOSE #hFile    
+  
+  TRY KILL sPath
+  COPY Temp$("component") TO sPath
+  
+CATCH 
+
+  Message.Error(("Cannot write component description file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  RETURN TRUE
+  
+END
+
+
+PUBLIC SUB InitComponent()
+
+  DIM sPath AS String
+  DIM sClass AS String
+  DIM hComp AS CComponent
+  DIM aComp AS NEW String[]
+  DIM sComp AS String
+  DIM hExportInfo AS CExportInfo
+
+  tvwControl.Columns.Count = 3
+  tvwControl.Columns[0].Text = ("Class")
+  tvwControl.Columns[0].Width = Desktop.Scale * 24
+  tvwControl.Columns[1].Text = ("Type")
+  tvwControl.Columns[1].Width = Desktop.Scale * 14
+  tvwControl.Columns[2].Text = ("Group")
+
+  CExportInfo.Reset
+
+  FOR EACH sPath IN Project.GetClasses(TRUE)
+    IF IsExported(sPath) THEN 
+      sClass = File.BaseName(sPath)
+      IF NOT IsLetter(Left(sClass)) THEN CONTINUE
+      CExportInfo.List.Add(sClass)
+      hExportInfo = NEW CExportInfo(sClass)
+      hExportInfo.Parent = GetParent(sPath)
+    ENDIF 
+  NEXT 
+  
+  CExportInfo.Sort
+  
+  tvwControl.Rows.Count = CExportInfo.List.Count
+  tvwControl.Rows.Height = 24
+
+  ReadComponent
+  
+  FOR EACH hComp IN CComponent.All
+    IF hComp.Key = Project.Name THEN CONTINUE 
+    aComp.Add(hComp.Key)
+  NEXT
+  aComp.Sort
+  cmbRequire.List = aComp
+ 
+  lstRequire.List = $aRequire
+  
+  ReadFeatures(panNeed, $aNeed)
+  ReadFeatures(panImplement, $aImplement)
+  
+  'txtImplement.Text = GetForm()
+
+END
+
+PUBLIC SUB tvwControl_Data(Row AS Integer, Column AS Integer)
+
+  DIM hExportInfo AS CExportInfo = CExportInfo.All[CExportInfo.List[Row]]
+
+  SELECT CASE Column
+    CASE 0
+      tvwControl.Data.Text = hExportInfo.Name
+      tvwControl.Data.Picture = hExportInfo.Icon
+    CASE 1
+      tvwControl.Data.Text = hExportInfo.Type
+    CASE 2
+      tvwControl.Data.Text = hExportInfo.Group
+  END SELECT 
+  
+  tvwControl.Data.Background = If(Row AND 1, Color.LightBackground, Color.TextBackground)
+
+END
+
+PRIVATE SUB MoveEditor()
+  
+  WITH tvwControl.Current
+    cmbControl.Move(tvwControl.X + .Left, tvwControl.Y + .Top, .W, .H)
+  END WITH
+  
+END
+
+PRIVATE SUB HideEditor()
+
+  IF NOT cmbControl.Visible THEN RETURN 
+  SaveEditor  
+  cmbControl.Hide
+  
+END
+
+PRIVATE SUB GetGroups() AS String[]
+  
+  DIM aGroup AS NEW String[]
+  DIM hOther AS CExportInfo
+
+  'aGroup.Add(("(None)"))
+
+  FOR EACH hOther IN CExportInfo.All
+    IF NOT hOther.Group THEN CONTINUE
+    IF aGroup.Find(hOther.Group) >= 0 THEN CONTINUE
+    aGroup.Add(hOther.Group)
+  NEXT
+  
+  RETURN aGroup
+  
+END
+
+PRIVATE SUB SaveEditor()
+  
+  DIM hExportInfo AS CExportInfo
+  
+  IF NOT cmbControl.Visible THEN RETURN
+  
+  hExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
+  
+  SELECT CASE $iCol
+  
+    CASE 1
+      hExportInfo.Type = cmbControl.Text
+    
+    CASE 2
+      hExportInfo.Group = cmbControl.Text
+  
+  END SELECT 
+  
+  tvwControl.Rows[$iRow].Refresh
+  
+END
+
+PRIVATE SUB GetForm() AS String
+  
+  DIM hExportInfo AS CExportInfo
+  
+  FOR EACH hExportInfo IN CExportInfo.All
+    IF hExportInfo.Form THEN RETURN hExportInfo.Name
+  NEXT
+  
+END
+
+
+
+PRIVATE SUB ShowEditor()
+  
+  DIM hExportInfo AS CExportInfo = CExportInfo.All[CExportInfo.List[tvwControl.Row]]  
+  DIM aList AS String[]
+  
+  HideEditor
+  
+  SELECT CASE tvwControl.Column
+  
+    CASE 0
+      RETURN 
+      
+    CASE 1
+      aList = ["Class", "Control", "Virtual", "Container", "MultiContainer"]
+      IF NOT GetForm() OR GetForm() = hExportInfo.Name THEN aList.Add("Form")
+      cmbControl.List = aList
+      cmbControl.ReadOnly = TRUE
+      cmbControl.Text = hExportInfo.Type
+      
+    CASE 2
+      IF NOT hExportInfo.Control THEN RETURN
+      cmbControl.ReadOnly = FALSE
+      cmbControl.List = GetGroups()
+      cmbControl.Text = hExportInfo.Group
+  
+  END SELECT
+  
+  $iRow = tvwControl.Row
+  $iCol = tvwControl.Column
+  
+  MoveEditor
+  cmbControl.Show
+  cmbControl.SetFocus
+  
+END
+
+
+PUBLIC SUB tvwControl_MouseUp()
+
+  ShowEditor
+
+END
+
+PUBLIC SUB tvwControl_Scroll()
+
+  HideEditor
+
+END
+
+PUBLIC SUB cmbControl_Click()
+
+  SaveEditor
+
+END
+
+PRIVATE SUB ReadFeatures(hCont AS Container, aFeature AS String[])
+  
+  DIM hCtrl AS CheckBox
+  
+  FOR EACH hCtrl IN hCont.Children
+    hCtrl.Value = aFeature.Find(hCtrl.Tag, gb.Text) >= 0
+  NEXT
+  
+END
+
+PRIVATE SUB WriteFeatures(hCont AS Container, aFeature AS String[])
+  
+  DIM hCtrl AS CheckBox
+  
+  aFeature.Clear
+  FOR EACH hCtrl IN hCont.Children
+    IF hCtrl.Value THEN aFeature.Add(hCtrl.Tag)
+  NEXT
+  
+END
+
+PRIVATE SUB AddRequire(sComp AS String)
+
+  IF sComp = Project.Name THEN RETURN  
+  IF $aRequire.Find(sComp) >= 0 THEN RETURN 
+  $aRequire.Add(sComp)
+  lstRequire.Add(sComp)
+  
+END
+
+
+PUBLIC SUB btnAdd_Click()
+
+  DIM sComp AS String
+  
+  sComp = Trim(LCase(cmbRequire.Text))
+  AddRequire(sComp)
+
+END
+
+PUBLIC SUB btnRemove_Click()
+
+  IF lstRequire.Index < 0 THEN RETURN 
+  $aRequire.Remove($aRequire.Find(lstRequire.Text))
+  lstRequire.Remove(lstRequire.Index)
+
+END
+
+PUBLIC SUB btnRemoveAll_Click()
+
+  lstRequire.Clear
+  $aRequire.Clear
+
+END
+
+PUBLIC SUB cmbRequire_Click()
+
+  btnAdd_Click
+
+END
+
+
+PUBLIC SUB Form_Close()
+
+  CExportInfo.Reset  
+
+END
+
+PUBLIC SUB chkVersion_Click()
+
+  txtVersionProg.Enabled = chkVersion.Value
+  TRY txtVersionProg.SetFocus  
+
+END
+
+PUBLIC SUB tabProject_Click()
+
+  IF tabProject.Index = VERSION_TAB THEN 
+    IF VersionControl.Enabled() THEN 
+      INC Application.Busy
+      panVersioning.Show
+      txtVerCtrlChange.Text = VersionControl.Status()
+      btnCommit.Enabled = txtVerCtrlChange.Length
+      btnRevert.Enabled = btnCommit.Enabled
+      DEC Application.Busy
+    ELSE 
+      panVersioning.Hide
+    ENDIF
+  ENDIF   
+
+END
+
+PUBLIC SUB btnCommit_Click()
+
+  IF FCommit.Run(txtVerCtrlChange.Text) THEN RETURN
+  tabProject_Click
+  
+END
+
+PUBLIC SUB btnUpdate_Click()
+
+  INC Application.Busy
+  VersionControl.Update  
+  Project.Refresh
+  DEC Application.Busy
+  tabProject_Click
+    
+END
+
+PUBLIC SUB btnRevert_Click()
+
+  IF Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 THEN RETURN
+
+  INC Application.Busy
+  
+  VersionControl.Revert
+  Project.Refresh
+  Project.CloseAll
+  
+  DEC Application.Busy
+  tabProject_Click  
+
+END
+
+PUBLIC SUB btnSwap_Click()
+
+  IF IsChecked("gb.qt") THEN 
+    cvwComponent["gb.qt"].Picture = $hUncheck
+    cvwComponent["gb.gtk"].Picture = $hCheck
+  ELSE IF IsChecked("gb.gtk") THEN 
+    cvwComponent["gb.gtk"].Picture = $hUncheck
+    cvwComponent["gb.qt"].Picture = $hCheck
+  ENDIF
+
+END

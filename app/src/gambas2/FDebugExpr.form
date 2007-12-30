@@ -1,0 +1,38 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,52,39)
+  'Move(0,0,416,312)
+  Background = &HFFFFDF&
+  Text = ("")
+  ToolBox = True
+  SkipTaskbar = True
+  Arrangement = Arrange.Fill
+  { mnuBase Menu
+    Text = ("")
+    Visible = False
+    { mnuSetSize Menu
+      Text = ("&Set as default size")
+      Picture = Picture["icon:/16/options"]
+    }
+    { mnuSep1 Menu
+      Text = ("")
+    }
+    { mnuClose Menu
+      Text = ("&Close this window")
+      Picture = Picture["icon:/16/delete"]
+    }
+    { mnuCloseAll Menu
+      Text = ("Close &all watch windows")
+      Picture = Picture["icon:/16/close"]
+    }
+  }
+  { gvwExpr GridView
+    MoveScaled(2,2,47,35)
+    'Move(16,16,376,280)
+    Background = &HFFFFDF&
+    Mode = Select.Single
+    Header = GridView.Horizontal
+    Scrollbar = Scroll.Vertical
+  }
+}

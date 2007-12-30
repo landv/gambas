@@ -1,0 +1,34 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(52.5,29.25,39,39)
+  Visible = True
+  Text = ("Analog clock")
+  Border = Window.Resizable
+  { MenuPopUp Menu
+    Text = ("File")
+    Visible = False
+    { MenuAbout Menu
+      Text = ("&About")
+      Shortcut = "F11"
+    }
+    { MenuSep Menu
+      Text = ("")
+    }
+    { MenuExit Menu
+      Text = ("E&xit")
+    }
+  }
+  { DwgArea DrawingArea
+    MoveScaled(0,0,11,8)
+    Visible = True
+    Background = Color.LightBackground
+    ToolTip = ("Resize Window and the clock will follow \nRight click for a menu")
+  }
+  { TimerClk #Timer
+    #X = 120
+    #Y = 16
+    Enabled = True
+    Delay = 250
+  }
+}

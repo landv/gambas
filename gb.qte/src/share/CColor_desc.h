@@ -1,0 +1,1 @@
+../../../gb.qt/src/share/CColor_desc.h
