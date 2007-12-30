@@ -1,0 +1,73 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+EVENT Change
+EVENT Activate
+
+PUBLIC CONST _Properties AS String = "*"
+PUBLIC CONST _DefaultEvent AS String = "Change"
+PUBLIC CONST _DefaultSize AS String = "36,36"
+'PUBLIC CONST _DrawWith AS String = "-"
+
+PROPERTY SelectedColor AS Integer
+PROPERTY Value AS Integer
+
+PRIVATE frmChooser AS FColorChooser
+
+PUBLIC SUB _new()
+
+  frmChooser = NEW FColorChooser(ME) AS "frmChooser"
+  Object.Attach(frmChooser, ME, "frmChooser")
+
+END
+
+PUBLIC SUB frmChooser_Change()
+
+  RAISE Change
+
+END
+
+PUBLIC SUB frmChooser_Resize()
+
+  LAST.Form_Resize
+
+END
+
+PUBLIC SUB frmChooser_Open()
+
+  LAST.Form_Open
+
+END
+
+
+PRIVATE FUNCTION SelectedColor_Read() AS Integer
+
+  RETURN frmChooser.GetColor()
+
+END
+
+PRIVATE SUB SelectedColor_Write(iColor AS Integer)
+
+  frmChooser.SetColor(iColor)
+
+END
+
+PUBLIC SUB frmChooser_Confirm()
+
+  RAISE Activate
+
+END
+
+PRIVATE FUNCTION Value_Read() AS Integer
+
+  RETURN frmChooser.GetColor()  
+
+END
+
+PRIVATE SUB Value_Write(Value AS Integer)
+
+  frmChooser.SetColor(Value)  
+
+END

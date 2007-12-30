@@ -1,0 +1,27 @@
+' Gambas class file
+
+PUBLIC SUB SetPath(sPath AS String)
+  
+  DIM hProjectInfo AS CProjectInfo
+  DIM sTitle AS String
+  DIM sInfo AS String
+  
+  hProjectInfo = NEW CProjectInfo(sPath)
+  WITH hProjectInfo
+    imgIcon.Picture = .Icon
+    IF .Title THEN 
+      sTitle = .Title 
+    ELSE 
+      stitle = .Name
+    ENDIF
+    sInfo = "<b>" & sTitle & " (" & .Version & ")</b>"
+    IF .Authors AND IF .Authors.Count THEN 
+      sInfo &= "<br><b>" & ("Author(s)") & " :</b> " & .Authors.Join(", ")
+    ENDIF 
+    sInfo &= "<br>" & sPath
+    txtInfo.Text = sInfo
+  END WITH
+  
+  ME.Tag = sPath
+  
+END

@@ -1,0 +1,240 @@
+' Gambas class file
+
+STATIC PRIVATE $hForm AS Object
+STATIC PRIVATE $cPict AS NEW Collection
+
+PRIVATE $bNoSelect AS Boolean
+
+PUBLIC SUB _new()
+  
+  Settings.Read(ME)
+  
+END
+
+PUBLIC SUB Form_Close()
+  
+  Settings.Write(ME)
+  
+END
+
+
+
+PUBLIC SUB Form_Show()
+
+  RefreshAll
+
+END
+
+
+PUBLIC SUB Form_Hide()
+
+  $hForm = NULL
+
+END
+
+
+PRIVATE SUB FillTree(hCtrl AS CControl, OPTIONAL sParent AS String)
+
+  DIM hChild AS Control
+  DIM hTab AS Object
+  DIM iTab AS Integer
+  DIM sImg AS String
+  DIM sKey AS String
+  DIM hPict AS Picture
+
+  IF NOT hCtrl THEN RETURN
+
+  IF sParent THEN
+    sImg = "img/control/" & LCase(hCtrl.Kind) & ".png"
+  ELSE
+    sImg = "img/32/form.png"
+  ENDIF
+
+  hPict = $cPict[sImg]
+  IF NOT hPict THEN
+    hPict = Picture[sImg]
+    IF NOT hPict THEN hPict = Picture["img/control/unknown.png"]
+    hPict = hPict.Image.Stretch(16, 16, TRUE).Picture  
+    $cPict[sImg] = hPict
+  ENDIF
+
+  tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
+
+  IF NOT hCtrl.IsContainer() THEN RETURN
+
+  'IF hCtrl.Kind = "TabStrip" THEN
+  IF hCtrl.IsMultiContainer() THEN
+
+    hTab = hCtrl.Control
+
+    FOR iTab = 0 TO hTab.Count - 1
+      sKey = hCtrl.Name & "." & iTab
+      tvwControl.Add(sKey, hTab[iTab].Text, $cPict["img/control/tabstrip.png"], hCtrl.Name)
+      tvwControl[sKey].Expanded = TRUE
+      FOR EACH hChild IN hTab[iTab].Children
+        IF NOT hChild.Tag THEN CONTINUE
+        FillTree($hForm.Control[hChild.Tag], sKey)
+      NEXT
+    NEXT
+
+  ELSE
+
+    FOR EACH hChild IN hCtrl.Control.Children
+      IF NOT hChild.Tag THEN CONTINUE
+      FillTree($hForm.Control[hChild.Tag], hCtrl.Name)
+    NEXT
+
+  ENDIF
+
+  tvwControl[hCtrl.Name].Expanded = TRUE
+
+END
+
+PUBLIC SUB RefreshReadOnly()
+  
+  $hForm = Project.ActiveForm
+  IF NOT $hForm THEN RETURN 'GOTO _HIDE
+
+  panControl.Visible = NOT $hForm.ReadOnly  
+  
+END
+
+
+PUBLIC SUB RefreshAll(OPTIONAL sKey AS String)
+
+  IF NOT ME.Visible THEN RETURN
+
+  $hForm = Project.ActiveForm
+  IF NOT $hForm THEN RETURN 'GOTO _HIDE
+
+  IF NOT Project.IsForm($hForm) THEN RETURN
+  tvwControl.Clear
+  FillTree($hForm.Control[$hForm.Name])
+  tvwControl.Show
+  lblMessage.Hide
+  RefreshReadOnly
+  
+  IF sKey THEN
+    TRY tvwControl[sKey].Selected = TRUE
+    TRY tvwControl[sKey].EnsureVisible
+  ENDIF
+  
+  $bNoSelect = FALSE
+  
+END
+
+PUBLIC SUB HideAll()
+
+  tvwControl.Hide
+  panControl.Hide
+  lblMessage.Show
+
+END
+
+
+'PUBLIC SUB tvwControl_Collapse()
+'
+'  TRY tvwControl.Item.Expanded = TRUE
+'
+'END
+
+' PUBLIC SUB tvwControl_Select()
+'
+'   DIM sParent AS String
+'   DIM sKey AS String
+'
+'   IF $bNoSelect THEN RETURN
+'   $bNoSelect = TRUE
+'
+'   IF NOT tvwControl.Item.MoveParent() THEN
+'     sParent = tvwControl.Item.Key
+'   ENDIF
+'
+'   tvwControl.MoveFirst
+'   WHILE tvwControl.Available
+'
+'     'PRINT tvwControl.Item.Key
+'
+'     IF NOT tvwControl.Item.Selected THEN GOTO SUIVANT
+'     sKey = tvwControl.Item.Key
+'     IF NOT tvwControl.MoveParent() THEN
+'       IF tvwControl.Item.Key = sParent THEN
+'         tvwControl.MoveTo(sKey)
+'         GOTO SUIVANT
+'       ENDIF
+'     ENDIF
+'     tvwControl.MoveTo(sKey)
+'     tvwControl.Item.Selected = FALSE
+'
+' SUIVANT:
+'     tvwControl.MoveBelow
+'   WEND
+'
+'   $bNoSelect = FALSE
+'
+' END
+
+
+PUBLIC SUB btnDown_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].MoveDown
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB btnBottom_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].Raise
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB btnTop_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].Lower
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB btnUp_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].MoveUp
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB settvwControl(sName AS String)
+  
+  IF tvwControl.Exist(sName) THEN 
+    TRY tvwControl[sName].EnsureVisible
+    $bNoSelect = TRUE
+    tvwControl[sName].Selected = TRUE
+    $bNoSelect = FALSE
+  ENDIF
+
+END
+
+
+PUBLIC SUB tvwControl_Select()
+  
+  IF NOT $bNoSelect THEN 
+    TRY $hForm.SelectControl(tvwControl.Current.Text)
+  ENDIF 
+
+END

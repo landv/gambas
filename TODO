@@ -1,0 +1,80 @@
+TODO list: always incomplete :-)
+--------------------------------
+
+VERSION 2.0
+-----------
+
+- A stack that can grow dynamically.
+- A special syntax to make variable writable once only (for controls variables).
+- Doing something like ByRef to help porting VB projects.
+
+- Refine the contents of *.component files.
+- Add global parameters for each component.
+- Compilation error must indicate the column, not only the line.
+- Make objects printable, with a "_print" hidden method or something else.
+- Make objects writable and readable to streams.
+- Perl regexp with the MATCH operator.
+- Temporary files should not be readable by everyone.
+- An expression can begin with NEW.
+
+Don't do it:
+
+- OPTIONAL arguments should takes any expression.
+- Class synonymous.
+- Array[x] when x < 0 should return Array[Array.Count - x]
+- NEW Collection OF String
+
+Do it asap:
+
+- Enhance archive format.
+- Trim$(sStr, "pattern", " ", "/")
+  -> RTrim(sStr, "WHERE") or RTrim(sStr, " ", "\n")
+- If project compilation version < compiler version then => compile all
+
+DEVELOPMENT ENVIRONMENT
+-----------------------
+
+- .startup file, a copy of .project with only startup info inside.
+- .project files should be marked as 2.0.
+- Renaming controls in the IDE renames the source code too.
+- www.linuxpackages.net -> Support Slackware packages in the IDE.
+- Loading a "form" component needs calling InitControl on classes that are not
+  member of the list of controls.
+- Bookmarks in editor.
+- Manage Object properties in IDE.
+- Put a language code in comments, and hide them as needed by the user.
+- Make a visual control clipboard.
+- Icon editor can be read-only.
+- CREATE class flag is inherited: the automatic completion must know that.
+
+
+GUI RELATED STUFF
+-----------------
+
+- Send key events to another GUI process.
+- ListBox should raise Click event even if the user clicks on an
+  already selected item.
+- Adds automatically the extension to the file in the save file dialog.
+- Deleting a currently expanding item in TreeView crashes.
+- A Settings property everywhere? Mmmfff... At leat for ColumnView, GridView.
+- Remake DateBox and TimeBox.
+
+DATABASE COMPONENT
+------------------
+
+- Add Views support in database component.
+- Changeable client Charset in database driver.
+- Returns the number of records affected by a query.
+- A new database driver model.
+- Copy a result line into another one.
+- Use SAVEPOINT in postgresql to simulate nested transactions.
+
+
+DOCUMENTATION WIKI
+------------------
+
+- Mass rename command.
+- Fix last changes: only those in one language.
+- Search function.
+
+

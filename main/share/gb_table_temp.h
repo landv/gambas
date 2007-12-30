@@ -1,0 +1,441 @@
+/***************************************************************************
+
+  table.c
+
+  Symbol tables management
+
+  (c) 2000-2006 Benoît Minisini <gambas@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+#define __TABLE_C
+
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+
+#include "gb_common.h"
+#include "gb_error.h"
+#include "gb_alloc.h"
+#include "gb_limit.h"
+
+#include "gb_table.h"
+
+
+#define SYM(table, ind) (TABLE_get_symbol(table, ind))
+
+
+static char _buffer[MAX_SYMBOL_LEN + 1];
+
+PUBLIC int TABLE_compare(const char *s1, long len1, const char *s2, long len2)
+{
+  long i;
+  long len = (len1 < len2) ? len1 : len2;
+  register char c1;
+  register char c2;
+
+  for (i = 0; i < len; i++)
+  {
+    c1 = s1[i];
+    c2 = s2[i];
+
+    if (c1 > c2) return 1;
+    if (c1 < c2) return -1;
+  }
+
+  if (len1 < len2)
+    return -1;
+  else if (len1 > len2)
+    return 1;
+  else
+    return 0;
+}
+
+PUBLIC int TABLE_compare_ignore_case(const char *s1, long len1, const char *s2, long len2)
+{
+  unsigned long len = (len1 < len2) ? len1 : len2;
+  unsigned int i;
+  int result;
+
+	for(i = 0;;i++)
+	{
+		result = toupper(s1[i]) - toupper(s2[i]);
+		if (result)
+			return result; // < 0 ? -1 : 1;
+		if (--len == 0)
+			break;
+	}
+
+  if (len1 < len2)
+    return -1;
+  else if (len1 > len2)
+    return 1;
+  else
+    return 0;
+}
+
+PUBLIC boolean SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
+                           const char *name, int len, const char *prefix, long *result)
+{
+  long pos, deb, fin;
+  int cmp;
+  int (*cmp_func)(const char *, long, const char *, long);
+  SYMBOL *sym;
+  long index;
+  int len_prefix;
+
+  cmp_func = ((flag == TF_IGNORE_CASE) ? TABLE_compare_ignore_case : TABLE_compare);
+
+  pos = 0;
+  deb = 0;
+  fin = n_symbol;
+
+  if (prefix)
+  {
+    len_prefix = strlen(prefix);
+
+    if ((len + len_prefix) > MAX_SYMBOL_LEN)
+      ERROR_panic("SYMBOL_find: prefixed symbol too long");
+
+    strcpy(_buffer, prefix);
+    strcpy(&_buffer[len_prefix], name);
+    len += len_prefix;
+    name = _buffer;
+  }
+
+  for(;;)
+  {
+    if (deb >= fin)
+    {
+      *result = NO_SYMBOL;
+      return FALSE;
+    }
+
+    pos = (deb + fin) >> 1;
+
+    index = ((SYMBOL *)((char *)symbol + s_symbol * pos))->sort;
+    sym = (SYMBOL *)((char *)symbol + s_symbol * index);
+
+    cmp = (*cmp_func)(name, len, sym->name, sym->len);
+
+    if (cmp == 0)
+    {
+      *result = index;
+      return TRUE;
+    }
+
+    if (cmp < 0)
+      fin = pos;
+    else
+      deb = pos + 1;
+  }
+}
+
+/* ATTENTION: ici index ne correspond pas �l'index dans la table, mais au num�o d'ordre ! */
+
+static boolean search(TABLE *table, const char *name, int len, long *index)
+{
+  long pos, deb, fin;
+  int cmp;
+  int (*cmp_func)(const char *, long, const char *, long);
+  SYMBOL *sym;
+
+  cmp_func = ((table->flag == TF_IGNORE_CASE) ? TABLE_compare_ignore_case : TABLE_compare);
+
+  pos = 0;
+  deb = 0;
+  fin = ARRAY_count(table->symbol);
+
+  for(;;)
+  {
+    if (deb >= fin)
+    {
+      *index = deb;
+      return FALSE;
+    }
+
+    pos = (deb + fin) >> 1;
+
+    sym = SYM(table, SYM(table, pos)->sort); /*&table->symbol[table->symbol[pos].sort];*/
+    cmp = (*cmp_func)(name, len, sym->name, sym->len);
+
+    if (cmp == 0)
+    {
+      *index = pos;
+      return TRUE;
+    }
+
+    if (cmp < 0)
+      fin = pos;
+    else
+      deb = pos + 1;
+  }
+}
+
+
+PUBLIC const char *TABLE_get_symbol_name(TABLE *table, long index)
+{
+  SYMBOL *sym;
+
+  if ((index < 0) || (index >= ARRAY_count(table->symbol)))
+    strcpy(_buffer, "?");
+  else
+  {
+    sym = SYM(table, index);
+    memcpy(_buffer, sym->name, Min(MAX_SYMBOL_LEN, sym->len));
+    _buffer[sym->len] = 0;
+  }
+
+  return _buffer;
+}
+
+
+PUBLIC const char *TABLE_get_symbol_name_suffix(TABLE *table, long index, const char* suffix)
+{
+  TABLE_get_symbol_name(table, index);
+  strcat(_buffer, suffix);
+  return _buffer;
+}
+
+
+PUBLIC void TABLE_create_static(TABLE *table, size_t size, TABLE_FLAG flag)
+{
+  ARRAY_create_with_size(&table->symbol, Max(size, sizeof(SYMBOL)), 16);
+  table->flag = flag;
+}
+
+
+PUBLIC void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag)
+{
+  TABLE *table;
+
+  ALLOC(&table, sizeof(TABLE), "TABLE_create");
+  TABLE_create_static(table, size, flag);
+
+  *result = table;
+}
+
+
+PUBLIC void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[], TABLE_FLAG flag)
+{
+  TABLE *table;
+
+  TABLE_create(&table, size, flag);
+
+  while (*sym_list)
+  {
+    TABLE_add_symbol(table, *sym_list, strlen(*sym_list), NULL, NULL);
+    sym_list++;
+  }
+
+  *result = table;
+}
+
+
+PUBLIC void TABLE_delete_static(TABLE *table)
+{
+  ARRAY_delete(&table->symbol);
+}
+
+
+PUBLIC void TABLE_delete(TABLE **p_table)
+{
+  if (*p_table)
+  {
+    TABLE_delete_static(*p_table);
+    FREE(p_table, "TABLE_delete");
+  }
+}
+
+
+PUBLIC long TABLE_count(TABLE *table)
+{
+  return ARRAY_count(table->symbol);
+}
+
+
+PUBLIC boolean TABLE_find_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, long *index)
+{
+  long ind;
+  boolean result;
+  SYMBOL *sym;
+
+  result = search(table, name, len, &ind);
+
+  if (result)
+  {
+    sym = SYM(table, ind);
+    ind = sym->sort;
+    sym = SYM(table, ind);
+    if (symbol) *symbol = sym;
+    if (index) *index = ind;
+  }
+
+  return result;
+}
+
+
+PUBLIC void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, long sort, SYMBOL **symbol, long *index)
+{
+  SYMBOL *sym;
+  long count;
+
+  len = Min(len, MAX_SYMBOL_LEN);
+
+  count = ARRAY_count(table->symbol);
+
+  sym = (SYMBOL *)ARRAY_add_void(&table->symbol);
+
+  sym->name = (char *)name;
+  sym->len = len;
+  sym->sort = sort;
+
+  if (symbol) *symbol = sym; /*&table->symbol[ind];*/
+  if (index) *index = count;
+}
+
+
+PUBLIC boolean TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, long *index)
+{
+  long ind;
+  long i;
+  boolean result;
+  SYMBOL *sym;
+  int count;
+
+  /*len = Min(len, MAX_SYMBOL_LEN);*/
+  len = Min(len, 65535);
+
+  result = search(table, name, len, &ind);
+
+  if (!result)
+  {
+    count = ARRAY_count(table->symbol);
+
+    sym = (SYMBOL *)ARRAY_add_void(&table->symbol);
+
+    sym->name = (char *)name;
+    sym->len = (ushort)len;
+
+    /*
+    printf("TABLE_add_symbol: %.*s %d %d\n", len, name, ((CLASS_SYMBOL *)sym)->global.type,
+      ((CLASS_SYMBOL *)sym)->local.type);
+    */
+
+    for (i = count; i > ind; i--)
+    {
+      SYM(table, i)->sort = SYM(table, i - 1)->sort;
+      /*table->symbol[i].sort = table->symbol[i - 1].sort;*/
+    }
+
+    /*table->symbol[ind].sort = count;*/
+    SYM(table, ind)->sort = (ushort)count;
+    ind = count;
+  }
+  else
+    ind = SYM(table, ind)->sort; /*table->symbol[ind].sort;*/
+
+  if (symbol) *symbol = SYM(table, ind); /*&table->symbol[ind];*/
+  if (index) *index = ind;
+
+  return result;
+}
+
+
+/*
+PUBLIC boolean TABLE_copy_symbol(TABLE *dst, TABLE *src, long index_src, SYMBOL **symbol, long *index)
+{
+  boolean result;
+  SYMBOL *sym = &src->symbol[index_src];
+
+  result = TABLE_add_symbol(dst, sym->name, sym->len, symbol, index);
+
+  (*symbol)->value = sym->value;
+
+  return result;
+}
+*/
+
+PUBLIC void TABLE_sort(TABLE *table)
+{
+}
+
+
+PUBLIC void TABLE_print(TABLE *table, boolean sort)
+{
+  int i;
+  SYMBOL *sym;
+
+  fprintf(stderr, "capacity %li\n", ARRAY_count(table->symbol));
+
+  /*
+  for (i = 0; i < ARRAY_count(table->symbol); i++)
+  {
+    sym = SYM(table, i);
+    printf("%*s (%li) ", (int)sym->len, sym->name, sym->sort);
+  }
+
+  printf("\n");
+  */
+
+  for (i = 0; i < ARRAY_count(table->symbol); i++)
+  {
+    if (sort)
+    {
+      sym = SYM(table, SYM(table, i)->sort);
+	    fprintf(stderr, "%.*s ", (int)sym->len, sym->name);
+		}
+    else
+    {
+      sym = SYM(table, i);
+	    fprintf(stderr, "%d %.*s ", (int)sym->sort, (int)sym->len, sym->name);
+		}
+
+    //if ((i > 0) && (!(i & 0xF)))
+    //  fprintf(stderr, "\n");
+  }
+
+  fprintf(stderr, "\n\n");
+}
+
+
+PUBLIC void TABLE_copy_symbol_with_prefix(TABLE *table, long ind_src, char prefix, SYMBOL **symbol, long *index)
+{
+  SYMBOL *sym;
+  char *ptr;
+
+  sym = TABLE_get_symbol(table, ind_src);
+
+  ptr = (char *)sym->name - 1;
+
+  if (!isspace(*ptr))
+    ERROR_panic("Cannot add prefix to symbol");
+
+  *ptr = prefix;
+
+  TABLE_add_symbol(table, ptr, sym->len + 1, symbol, index);
+}
+
+
+PUBLIC SYMBOL *TABLE_get_symbol_sort(TABLE *table, long index)
+{
+  SYMBOL *sym = TABLE_get_symbol(table, index);
+
+  return TABLE_get_symbol(table, sym->sort);
+}
+

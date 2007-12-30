@@ -1,0 +1,275 @@
+/***************************************************************************
+
+  subr_time.c
+
+  The Date management subroutines
+
+  (c) 2000-2005 Beno� Minisini <gambas@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+#include "gb_common.h"
+
+#include <unistd.h>
+#include <sys/time.h>
+
+#include "gb_error.h"
+#include "gbx_value.h"
+#include "gbx_subr.h"
+
+#include "gbx_date.h"
+
+
+PUBLIC void SUBR_timer(void)
+{
+  double result = 0.0;
+
+  DATE_timer(&result, TRUE);
+
+  SP->type = T_FLOAT;
+  SP->_float.value = result;
+  SP++;
+}
+
+
+PUBLIC void SUBR_now(void)
+{
+  DATE_now(SP);
+  SP++;
+}
+
+
+PUBLIC void SUBR_year(void)
+{
+  DATE_SERIAL *date;
+  int val;
+
+  SUBR_ENTER_PARAM(1);
+
+  VALUE_conv(PARAM, T_DATE);
+
+  date = DATE_split(PARAM);
+
+  switch(EXEC_code & 0xF)
+  {
+    case 1: val = date->year; break;
+    case 2: val = date->month; break;
+    case 3: val = date->day; break;
+    case 4: val = date->hour; break;
+    case 5: val = date->min; break;
+    case 6: val = date->sec; break;
+    case 7: val = date->weekday; break;
+    case 8: val = date->msec; break;
+    default: val = 0;
+  }
+
+  PARAM->type = T_INTEGER;
+  PARAM->_integer.value = val;
+  
+  #if 0
+  SUBR_LEAVE() /* Not necessary */
+  #endif
+}
+
+
+PUBLIC void SUBR_date(void)
+{
+  DATE_SERIAL date;
+
+  SUBR_ENTER();
+
+  if (NPARAM <= 1)
+  {
+    if (NPARAM == 0)
+      DATE_now(PARAM);
+		else
+			VALUE_conv(PARAM, T_DATE);
+
+    date = *DATE_split(PARAM);
+    date.hour = 0;
+    date.min = 0;
+    date.sec = 0;
+    date.msec = 0;
+  }
+  else
+  {
+    VALUE_conv(PARAM, T_INTEGER);
+    VALUE_conv(&PARAM[1], T_INTEGER);
+    VALUE_conv(&PARAM[2], T_INTEGER);
+
+    CLEAR(&date);
+    date.year = PARAM->_integer.value;
+    date.month = PARAM[1]._integer.value;
+    date.day = PARAM[2]._integer.value;
+
+    if (NPARAM >= 4)
+    {
+      VALUE_conv(&PARAM[3], T_INTEGER);
+      date.hour = PARAM[3]._integer.value;
+    }
+
+    if (NPARAM >= 5)
+    {
+      VALUE_conv(&PARAM[4], T_INTEGER);
+      date.min = PARAM[4]._integer.value;
+    }
+
+    if (NPARAM >= 6)
+    {
+      VALUE_conv(&PARAM[5], T_INTEGER);
+      date.sec = PARAM[5]._integer.value;
+    }
+  }
+
+  if (DATE_make(&date, RETURN))
+    THROW(E_DATE);
+  
+  SUBR_LEAVE();
+}
+
+
+PUBLIC void SUBR_time(void)
+{
+  DATE_SERIAL date;
+
+  SUBR_ENTER();
+
+  if (NPARAM <= 1)
+  {
+    if (NPARAM == 0)
+      DATE_now(PARAM);
+
+    date = *DATE_split(PARAM);
+    date.year = 0;
+  }
+  else if (NPARAM == 3)
+  {
+    VALUE_conv(PARAM, T_INTEGER);
+    VALUE_conv(&PARAM[1], T_INTEGER);
+    VALUE_conv(&PARAM[2], T_INTEGER);
+
+    CLEAR(&date);
+    date.hour = PARAM->_integer.value;
+    date.min = PARAM[1]._integer.value;
+    date.sec = PARAM[2]._integer.value;
+  }
+  else
+    THROW(E_NEPARAM);
+
+  if (DATE_make(&date, RETURN))
+    THROW(E_DATE);
+
+  SUBR_LEAVE();
+}
+
+
+PUBLIC void SUBR_date_op(void)
+{
+  SUBR_ENTER_PARAM(3);
+
+  switch (EXEC_code & 0xF)
+  {
+    case 0: /* DateAdd */
+    
+      VALUE_conv(PARAM, T_DATE);
+      *RETURN = *PARAM;
+      DATE_add(RETURN, SUBR_get_integer(&PARAM[1]), SUBR_get_integer(&PARAM[2]));
+      
+      break;
+    
+    case 1: /* DateDiff */
+    
+      VALUE_conv(PARAM, T_DATE);
+      VALUE_conv(&PARAM[1], T_DATE);
+      
+      /* Dates are inverted! */
+      RETURN->_integer.value = DATE_diff(&PARAM[1], PARAM, SUBR_get_integer(&PARAM[2]));
+      RETURN->type = T_INTEGER;
+      
+      break;
+  }
+
+  SUBR_LEAVE();
+}
+
+
+PUBLIC void SUBR_week(void)
+{
+  bool plain = FALSE;
+  int start = 1; /* Monday */
+  DATE_SERIAL ds;
+  VALUE date, first;
+  int day, n;
+  
+  SUBR_ENTER();
+  
+  if (NPARAM >= 1)
+  {
+    VALUE_conv(PARAM, T_DATE);
+    date = *PARAM;
+  
+    if (NPARAM >= 2)
+    {
+      start = SUBR_get_integer(&PARAM[1]);
+      if (start < 0 || start > 6)
+        THROW(E_ARG);
+        
+      if (NPARAM == 3)
+      {
+        VALUE_conv(&PARAM[2], T_BOOLEAN);
+        plain = PARAM[2]._boolean.value;
+      }
+    }
+  }
+  else
+    DATE_now(&date);
+  
+  /* Split it */
+  ds = *DATE_split(&date);
+  /* Set to 1 Jan of the current year */
+  ds.month = 1;
+  ds.day = 1;
+  ds.hour = 0;
+  ds.min = 0;
+  ds.sec = 0;
+  /* Convert to date & time */
+  DATE_make(&ds, &first);
+  /* Get the weekday of this 1 Jan */
+  day = DATE_split(&first)->weekday;
+  
+  /* number of beginning days to ignore */
+  
+  n = 0;
+  while (day != start)
+  {
+    day++;
+    if (day > 6)
+      day = 0;
+    n++;
+  }
+  
+  if (!plain)
+  {
+    if (n >= 4)
+      n -= 7;
+  }
+  
+  RETURN->type = T_INTEGER;
+  RETURN->_integer.value = (date._date.date - first._date.date - n + 7) / 7;
+  
+  SUBR_LEAVE();
+}

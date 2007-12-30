@@ -1,0 +1,204 @@
+' Gambas class file
+
+PRIVATE $sPath AS String
+
+PRIVATE $cVar AS NEW Collection(gb.Text)
+
+PUBLIC SUB Run() AS String
+  
+  IF ME.ShowModal() THEN RETURN $sPath
+
+END
+
+PUBLIC SUB Form_Open()
+
+  'dchProject.SelectedPath = Settings["/FCreateProject/Path", System.User.Home]
+  Settings.Read(ME)
+  Settings.Read(dchProject, "dchProject")
+  lstType.Select(panDefaultType)
+  txtName.SetFocus
+  wizProject.Index = 0
+
+END
+
+PRIVATE SUB GetTest(sTest AS String) AS Boolean
+  
+  RETURN Eval(sTest, $cVar)
+  
+END
+
+
+PRIVATE SUB JumpFile(hFile AS File, sBegin AS String, sEnd AS String, OPTIONAL sSearch AS String)
+  
+  DIM sLine AS String
+  DIM iLevel AS Integer
+
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    
+    IF sSearch AND IF sLine = sSearch THEN 
+      IF iLevel = 0 THEN RETURN 
+      CONTINUE
+    ENDIF
+    
+    IF sLine LIKE sBegin & " *" THEN 
+      INC iLevel
+    ELSE IF sLine = sEnd THEN 
+      IF iLevel = 0 THEN RETURN
+      DEC iLevel
+    ENDIF
+  
+  WEND
+  
+END
+
+
+PRIVATE SUB GetFile(sPath AS String) AS String
+  
+  DIM hFile AS File
+  DIM sLine AS String
+  DIM sTrim AS String
+  DIM sResult AS String
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+  
+  hFile = OPEN sPath
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sTrim = Trim(sLine)
+    
+    IF Left(sTrim, 4) = "@IF " THEN 
+      IF NOT GetTest(Mid$(sTrim, 5)) THEN 
+        JumpFile(hFile, "@IF", "@ENDIF", "@ELSE")
+      ENDIF 
+    ELSE IF sTrim = "@ELSE" THEN 
+      JumpFile(hFile, "@IF", "@ENDIF")
+    ELSE IF Left(sTrim) <> "@" THEN 
+    
+      iPos = 1
+      DO
+        iPos = InStr(sLine, "$(", iPos)
+        IF iPos = 0 THEN BREAK
+        iPos2 = InStr(sLine, ")", iPos)
+        sLine = Left(sLine, iPos - 1) & CStr($cVar[Mid$(sLine, iPos + 2, iPos2 - iPos - 2)]) & Mid(sLine, iPos2 + 1)
+      LOOP
+    
+      sResult &= sLine & "\n"
+      
+    ENDIF
+    
+  WEND 
+  
+  RETURN sResult
+  
+END
+
+
+PRIVATE SUB CreateProject() AS Boolean
+  
+  DIM sDir AS String
+  DIM sName AS String
+  DIM hCtrl AS Object
+  DIM sPath AS String 
+  DIM sDest AS String
+  DIM sErr AS String
+  'DIM hIcon AS Picture
+  
+  sName = Trim(txtName.Text)
+  sDir = dchProject.SelectedPath &/ sName
+  
+  $cVar["NAME"] = sName
+  
+  $cVar["TITLE"] = Trim(txtTitle.Text)
+  IF NOT $cVar["TITLE"] THEN $cVar["TITLE"] = sName
+  $cVar["LANGUAGE"] = System.Language
+
+  FOR EACH hCtrl IN lstType.Children
+    $cVar[hCtrl.Tag] = FALSE
+  NEXT
+  $cVar[lstType.Current.Tag] = TRUE
+  
+  FOR EACH hCtrl IN svwOption.Children
+    IF hCtrl.Tag THEN $cVar[hCtrl.Tag] = hCtrl.Value
+  NEXT
+  
+  $cVar["GRAPHIC"] = $cVar["QT"] OR $cVar["GTK"]
+  
+  TRY RMDIR sDir
+  
+  'IF Exist(sDir) THEN 
+  '  txtName.SetFocus
+  '  tabProject.Index = 0
+  '  Balloon.Warning(("This project already exists in the specified directory."), txtName)
+  '  RETURN TRUE
+  'ENDIF 
+  
+  MKDIR sDir
+  
+  FOR EACH sPath IN Split(GetFile("template/list"), "\n", "", TRUE)
+    
+    sDest = sPath
+    IF Left(sDest) = "_" THEN sDest = "." & Mid(sDest, 2)
+    
+    File.Save(sDir &/ sDest, GetFile("template" &/ sPath))
+    
+  NEXT
+  
+  Project.MakeDirectoryIcon(sDir)
+  
+  $sPath = sDir
+  RETURN FALSE
+
+CATCH
+
+  Message.Error(("Cannot create project!") & "\n\n" & Error.Text)
+  RETURN TRUE
+  
+END
+
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(dchProject, "dchProject")
+  Settings.Write(ME)
+
+END
+
+PUBLIC SUB dchProject_Icon(Path AS String)
+
+  IF Exist(Path &/ ".project") THEN 
+    dchProject.Icon = Project.GetIcon(Path, 16)
+  ENDIF  
+
+END
+
+PUBLIC SUB wizProject_Close()
+
+  DIM sMsg AS String
+
+  sMsg = Project.CheckProjectName(txtName.Text, dchProject.SelectedPath) 
+  IF sMsg
+    txtName.SetFocus
+    Balloon.Warning(sMsg, txtName)
+    RETURN
+  ENDIF  
+
+  ' IF NOT dchProject.SelectedPath THEN 
+  '   dchProject.SetFocus
+  '   'tabProject.Index = 1
+  '   Balloon.Warning(("Choose the project parent directory."), dchProject)
+  '   RETURN
+  ' ENDIF
+
+  IF CreateProject() THEN RETURN
+  
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB wizProject_Cancel()
+
+  ME.Close  
+
+END

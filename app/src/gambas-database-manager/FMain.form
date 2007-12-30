@@ -1,0 +1,230 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(9,24.375,72,63)
+  'Move(72,195,576,504)
+  Text = ("Gambas Database Manager")
+  Icon = Picture["img/logo/logo-32.png"]
+  Arrangement = Arrange.Fill
+  { mnuConnection Menu
+    Text = ("&Server")
+    { mnuNew Menu
+      Text = ("&New server...")
+      Picture = Picture["img/16/host-new.png"]
+      Shortcut = "Ctrl+N"
+    }
+    { mnuScan Menu
+      Text = ("&Scan database servers")
+      Picture = Picture["img/16/magic.png"]
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { mnuRefresh Menu
+      Text = ("&Close all")
+    }
+    { mnuKillAll Menu
+      Text = ("Re&move all servers")
+      Picture = Picture["icon:/16/trash"]
+    }
+    { Menu2 Menu
+      Text = ("")
+    }
+    { mnuDebug Menu
+      Text = ("&Database component debugging")
+    }
+    { Menu4 Menu
+      Text = ("")
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+      Picture = Picture["icon:/16/quit"]
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { mnuServer Menu
+    Text = ("")
+    Visible = False
+    { mnuOpenConnection Menu
+      Text = ("&Open")
+      Picture = Picture["img/16/host-open.png"]
+    }
+    { mnuCreateDatabase Menu
+      Text = ("&Create database...")
+      Picture = Picture["img/16/database-new.png"]
+    }
+    { mnuPasteDatabase2 Menu mnuPasteDatabase
+      Name = "mnuPasteDatabase2"
+      Text = ("&Paste database...")
+      Picture = Picture["icon:/16/paste"]
+    }
+    { mnuCreateUser Menu
+      Text = ("&Create user...")
+      Picture = Picture["img/16/user-new.png"]
+    }
+    { Menu3 Menu
+      Text = ("")
+    }
+    { mnuRefreshServer Menu
+      Text = ("&Close")
+      Picture = Picture["icon:/16/close"]
+    }
+    { mnuCloseServer Menu
+      Text = ("&Remove")
+      Picture = Picture["icon:/16/trash"]
+    }
+  }
+  { mnuDatabase Menu
+    Text = ("")
+    Visible = False
+    { mnuCreateDatabase2 Menu mnuCreateDatabase
+      Name = "mnuCreateDatabase2"
+      Text = ("&Create...")
+      Picture = Picture["img/16/database-new.png"]
+    }
+    { mnuPasteDatabase Menu
+      Text = ("&Paste...")
+      Picture = Picture["icon:/16/paste"]
+    }
+    { mnuOpenDatabase Menu
+      Text = ("&Open")
+      Picture = Picture["img/16/database-open.png"]
+    }
+    { Menu10 Menu
+      Text = ("")
+    }
+    { mnuCreateTable Menu
+      Text = ("&Create table...")
+      Picture = Picture["img/16/table-new.png"]
+    }
+    { mnuPasteTable2 Menu mnuPasteTable
+      Name = "mnuPasteTable2"
+      Text = ("&Paste table...")
+      Picture = Picture["icon:/16/paste"]
+    }
+    { mnuRequest Menu
+      Text = ("&SQL request...")
+      Picture = Picture["img/16/sql.png"]
+    }
+    { mnuImport Menu
+      Text = ("&Import CSV file...")
+      Picture = Picture["img/16/import.png"]
+    }
+    { mnuSepEncoding Menu
+      Text = ("")
+    }
+    { mnuMakeCode Menu
+      Text = ("&Make Gambas code...")
+      Picture = Picture["icon:/16/gambas"]
+    }
+    { mnuUseDatabaseEncoding Menu
+      Text = ("-")
+    }
+    { mnuShowSystemTables Menu
+      Text = ("Show system tables")
+    }
+    { mnuSepEncoding2 Menu
+      Text = ("")
+    }
+    { mnuCopyDatabase Menu
+      Text = ("&Copy")
+      Picture = Picture["icon:/16/copy"]
+    }
+    { mnuDeleteDatabase Menu
+      Text = ("&Delete")
+      Picture = Picture["icon:/16/trash"]
+    }
+    { Menu8 Menu
+      Text = ("")
+    }
+    { mnuRefreshDatabase Menu
+      Text = ("&Refresh")
+      Picture = Picture["icon:/16/refresh"]
+    }
+    { mnuCloseDatabase Menu
+      Text = ("&Close")
+      Picture = Picture["icon:/16/close"]
+    }
+  }
+  { mnuUser Menu
+    Text = ("")
+    Visible = False
+    { mnuCreateUser2 Menu mnuCreateUser
+      Name = "mnuCreateUser2"
+      Text = ("&Create...")
+      Picture = Picture["img/16/user-new.png"]
+    }
+    { mnuEditUser Menu
+      Text = ("&Edit...")
+      Picture = Picture["img/16/user.png"]
+    }
+    { Menu5 Menu
+      Text = ("")
+    }
+    { mnuDeleteUser Menu
+      Text = ("&Delete")
+      Picture = Picture["icon:/16/trash"]
+    }
+  }
+  { mnuTable Menu
+    Text = ("")
+    Visible = False
+    { mnuCreateTable2 Menu mnuCreateTable
+      Name = "mnuCreateTable2"
+      Text = ("&Create...")
+      Picture = Picture["img/16/table-new.png"]
+    }
+    { mnuPasteTable Menu
+      Text = ("&Paste...")
+      Picture = Picture["icon:/16/paste"]
+    }
+    { mnuOpenTable Menu
+      Text = ("&Edit...")
+      Picture = Picture["img/16/table.png"]
+    }
+    { mnuRenameTable Menu
+      Text = ("&Rename...")
+      Picture = Picture["img/16/rename.png"]
+    }
+    { Menu6 Menu
+      Text = ("")
+    }
+    { mnuRequest2 Menu mnuRequest
+      Name = "mnuRequest2"
+      Text = ("&SQL request...")
+      Picture = Picture["img/16/sql.png"]
+    }
+    { Menu9 Menu
+      Text = ("")
+    }
+    { mnuCopyTable Menu
+      Text = ("&Copy")
+      Picture = Picture["icon:/16/copy"]
+    }
+    { mnuDeleteTable Menu
+      Text = ("&Delete")
+      Picture = Picture["icon:/16/trash"]
+    }
+  }
+  { mnuHelp Menu
+    Text = ("&?")
+    { mnuAbout Menu
+      Text = ("About...")
+      Picture = Picture["img/16/database-manager.png"]
+    }
+  }
+  { splBase HSplit
+    MoveScaled(1,1,69,55)
+    'Move(8,8,552,440)
+    { tvwBase TreeView
+      MoveScaled(4,5,22,42)
+      'Move(32,40,176,336)
+      Sorted = True
+      ScrollBar = Scroll.Vertical
+    }
+    { wrkBase Workspace
+      MoveScaled(29,5,37,45)
+      'Move(232,40,296,360)
+    }
+  }
+}

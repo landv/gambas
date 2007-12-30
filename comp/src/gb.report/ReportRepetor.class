@@ -1,0 +1,96 @@
+' Gambas class file
+
+EXPORT
+INHERITS ReportVBox
+
+PRIVATE $iCount AS Integer
+PROPERTY Count AS Integer
+PRIVATE $aContent AS Object[]
+PRIVATE $bIsSet AS Boolean = FALSE
+
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  RETURN $iCount
+
+END
+
+PRIVATE SUB Count_Write(Value AS Integer)
+  
+  ReInit
+  $iCount = Value
+
+END
+
+PUBLIC SUB ReInit()
+  DIM hChild AS Object
+  IF $aContent = NULL THEN RETURN 
+  ME.Children.Clear
+  FOR EACH hChild IN $aContent
+    ME._add(hChild.Ctrl)
+  NEXT
+  $aContent = NULL
+  
+    
+END
+
+
+PRIVATE SUB GenerateChilds()
+  
+  DIM i AS Integer
+  DIM hChild AS Object
+  DIM nChild AS Object
+  DIM hClass AS Class
+  DIM s AS String
+  $aContent = ME.Children.Copy()
+  ME.Children.Clear
+  'ME._Free
+  'PRINT "me.children : " & ME.Children.Count
+  FOR i = 1 TO $iCount
+    FOR EACH hChild IN $aContent
+    
+      nChild = ME._add(hChild.ctrl)
+      nChild.VirtualId = i
+      'PRINT nChild.VirtualId
+      
+    NEXT
+  NEXT
+  'PRINT ME.Children.Count
+  $bIsSet = TRUE
+END
+
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+  
+  
+  IF NOT $bIsSet THEN GenerateChilds
+  RETURN SUPER._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+  
+  
+END
+
+PUBLIC FUNCTION _SetChildGeometry(X AS Float, Y AS Float, W AS Float, H AS Float, ContPage AS Integer) AS Float
+  DIM f AS Float
+  
+  SUPER._SetChildGeometry(X, Y, W, H, ContPage)
+  'SetChildPageRel(ME, -1)
+  
+  
+  RETURN f
+END
+
+
+PRIVATE SUB CopyObject(aroChild AS Object[], hParent AS Object, VirtualId AS Integer)
+  
+END
+
+
+
+PUBLIC SUB _free()
+  
+  SUPER._free
+  
+END
+
+
+

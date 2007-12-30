@@ -1,0 +1,25 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(27.875,38.25,41,38)
+  'Move(223,306,328,304)
+  Text = ("New translation")
+  Border = Window.Fixed
+  { btnOK Button
+    MoveScaled(13,34,13,3)
+    'Move(104,272,104,24)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(27,34,13,3)
+    'Move(216,272,104,24)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { lstLanguage ListBox
+    MoveScaled(1,1,39,31)
+    'Move(8,8,312,248)
+    Sorted = True
+  }
+}

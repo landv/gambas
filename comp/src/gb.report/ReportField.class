@@ -1,0 +1,120 @@
+' Gambas class file
+
+EXPORT
+INHERITS ReportControl
+
+PRIVATE $sText AS String = ""
+PRIVATE $iAlignment AS Integer '= Align.Center
+
+PROPERTY Data AS String
+PROPERTY Alignment AS Integer
+
+EVENT Data(VirtualId AS Integer)
+
+
+PUBLIC SUB _New()
+  
+  'ME.Height = "1 cm"
+  
+END
+
+
+PRIVATE FUNCTION Data_Read() AS String
+
+  RETURN $sText
+
+END
+
+PRIVATE SUB Data_Write(Value AS String)
+
+  $sText = Value
+
+END
+
+PRIVATE FUNCTION Alignment_Read() AS Integer
+
+  RETURN $iAlignment
+
+END
+
+PRIVATE SUB Alignment_Write(Value AS Integer)
+
+  $iAlignment = Value
+
+END
+
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+
+  DIM hMyHints AS NEW TSizeHint
+  DIM fTextHeight AS Float
+  DIM fTextWidth AS Float
+  
+  hMyHints.Height = ME._Height + (2 * ME._Padding)
+  
+  
+  
+  IF NOT IsNull(ME.Font) THEN draw.Font = ME.Font
+  draw.Font.size = draw.Font.Size '* MRTools.ResolutionAffichage
+
+  'if the size choosed by the user is less than the font height, set the object to the font height
+  fTextHeight = MRTools.PixelsToUnits(Draw.TextHeight($sText))
+  fTextWidth = MRTools.PixelsToUnits(Draw.TextWidth($sText))
+  
+  IF hMyHints.Height < fTextHeight THEN hMyHints.Height = fTextHeight + (2 * ME._Padding)
+  IF ME._Width > 0 THEN 
+    hMyHints.Width = ME._Width
+  ELSE 
+    
+    hMyHints.Width = fTextWidth + (2 * ME._Padding)
+  
+    IF hMyHints.Width < ME._Width THEN hMyHints.Width = ME._Width
+  ENDIF
+    IF hMyHints.Width > AvailableW THEN hMyHints.Width = AvailableW
+  
+  RETURN hMyHints
+  
+END
+
+PUBLIC SUB _DrawBefore(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  
+  'IF $sText = "" THEN 
+    RAISE Data(VirtualId)
+    
+  'ENDIF
+  SUPER._DrawBefore(Page, X, Y, hControl, VirtualId)
+  
+END
+
+PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  'Report._Data
+    'SUPER._Draw(Page, X, Y)
+    RAISE Data(VirtualId) 
+    
+  Draw.ForeColor = ME.ForeColor
+  
+  'Set the Font if it is initialized
+  IF NOT IsNull(ME.Font) THEN Draw.Font = ME.Font
+  draw.Font.size = draw.Font.Size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
+  
+  Draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    Draw.Text($sText, (x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
+  Draw.Clip.Enabled = FALSE
+END
+
+PUBLIC FUNCTION _SetGeometry(X AS Float, Y AS Float, W AS Float, H AS Float) AS Float
+  
+  DIM X1, Y1, X2, Y2 AS Float
+  
+  X1 = MRTools.UnitsToPixels(X)
+  Y1 = MRTools.UnitsToPixels(Y)
+  X2 = MRTools.UnitsToPixels(X + W)
+  Y2 = MRTools.UnitsToPixels(Y + H)
+  
+  
+  ME.RealLeft = X1
+  ME.RealTop = Y1
+  ME.RealWidth = X2 - X1
+  ME.RealHeight = Y2 - Y1
+  
+END

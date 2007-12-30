@@ -1,0 +1,245 @@
+[WELCOME]
+
+<p>Willkommen zu <b>Gambas</b>!<img src="img/gambas.png" align=right></p>
+
+<p><b>Gambas</b> ist eine graphische IDE, die auf einem modernen <i>Basic</i>-Interpreter basiert.</p>
+
+<p><b>Gambas</b> möchte Sie in die Lage versetzen, schnell und einfach komplexe Programme zu schreiben.
+Sauberes Programmieren bleibt natürlich <i>Ihr</i> Verantwortungsbereich...</p>
+
+<p>Viel Spaß damit!</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<p>Jedes Projekt braucht eine <i>Startklasse</i>. Diese muss eine 
+gemeinsame (static) Methode namens <i>Main</i> ohne Argumente definieren, die
+dann als Startpunkt für die Anwendung fungiert.</p>
+
+<p>Sie können die Startklasse definieren, indem Sie im Projektfenster mit der rechten Maustaste
+darauf klicken und <i>Startklasse</i> im Popupmenü auswählen.</p>
+
+<p>Wenn die Startklasse ein Formular ist, muss sie keine Methode <i>Main</i> besitzen,
+da ein Formular bereits eine vorgefertigte mitbringt.</p>
+
+<p>Diese vordefinierte Methode tut das selbe wie es in <i>Visual Basic&trade;</i> Standard ist:
+Das Formular wird instanziert und angezeigt.</p>
+
+
+[EXEC]
+
+<p>Sie können eine ausführbare Datei aus Ihrem gesamten Projekt machen.
+Wählen Sie <i>Ausführbare Datei erstellen</i> aus dem Menü <i>Projekt</i>.</p>
+
+<p>Wenn <b>Gambas</b> eine ausführbare Datei erstellt, legt es das Ergebnis
+direkt im Verzeichnis Ihres Projekts ab. Der Name der Datei ist der des Projekts.</p>
+
+
+[OPEN]
+
+<p>Die <b>OPEN</b>-Anweisung von <b>Gambas</b> funktioniert nicht
+wie die in <i>Visual Basic&trade;</i>. Sie liefert keine Dateinummer zurück,
+sondern ein <i>File</i>-Objekt.</p>
+
+<p>Also, anstatt</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>schreiben Sie:</p>
+
+<pre>DIM handle AS File
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+
+[CATDIR]
+
+<p>Wussten Sie, dass Sie Verzeichnis- und Dateinamen mit dem <b><tt>&/</tt></b>-Operator
+zusammenhängen können? Dieser Operator kümmert sich automatisch um die Schrägstriche, sodass
+im Ergebnis weder welche fehlen noch doppelt vorhanden sind.</p>
+
+<p>Zum Beispiel:</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>Ist das nicht praktisch?</p>
+
+
+[EMPTY]
+
+<p>Wenn Sie prüfen wollen, ob ein String leer ist, müssen Sie nicht die
+<b>Len()</b>-Funktion verwenden. Sie können den String direkt mit <b>IF</b>
+testen, da ein leerer String <b>FALSE</b> und ein nicht-leerer <b>TRUE</b>
+ergibt.</p>
+
+<p>Also, anstatt</p>
+
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+
+<p>sollten Sie schreiben:</p>
+
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+
+[EVENT]
+
+<p>Jedes Steuerelement und jedes Objekt kann Events auslösen. Es besitzt
+einen <i>Event-Observer</i> und einen <i>Event-Gruppennamen</i>.</p>
+
+<p>Der Event-Observer fängt jedes vom Objekt ausgelöste Event auf, und
+der Event-Gruppenname ist das Präfix des Methodennamens, der beim Auslösen
+des Events aufgerufen wird.</p>
+
+<p>Standardmäßig ist der Event-Observer das Objekt, in dem Sie das Steuerelement
+erstellt haben, und der Gruppenname ist der Name des Elements.</p>
+
+<p>Auf diese Art und Weise erhält ein Formular die Events aller seiner
+Steuerelemente.</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "Sie haben auf MyButton geklickt!"
+END
+</pre>
+
+
+[FORM]
+
+<p>In <b><i>Gambas</i></b> ist ein Formular sein eigener Event-Observer,
+sodass Sie seine Events (wie <i>Resize</i>, <i>Activate</i> etc.) im 
+Code der Klasse selbst managen können.</p>
+
+<p>Auf diese Weise werden auch Umsteiger von <i>Visual Basic&trade;</i> 
+nicht orientierungslos :-).</p>
+
+
+[EMBED]
+
+<p>Sie können jedes Formular in andere Formulare mit <b><i>Gambas</i></b>
+einbetten!</p>
+
+<p>Um so etwas mächtiges zu tun, erstellen Sie einfach eine Instanz des Formulars,
+wobei Sie als letztes Argument für den Konstruktor den Container für die Form angeben.</p>
+
+<p>Zum Beispiel:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Dialog erstellen<br>
+hForm = NEW MyDialog<br>
+' Formular in den Dialog einfügen<br>
+' Achtung: Diese Form hat zwei Konstruktorargumente vor dem Containerargument<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Die Form auf die richtige Größe bringen<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>Achtung: Eine eingebettete Form ist immer noch ihr eigener Event-Observer und
+erhält damit ihre Events selbst!</p>
+
+
+[GROUP]
+
+<p>Jedes Steuerelement hat eine <i>(Group)</i>-Eigenschaft. Wenn diese Eigenschaft
+gesetzt ist, ist das Präfix des Eventhandlers eben dieser Gruppenname und nicht
+der Namen des Elements.</p>
+
+<p>Nehmen wir an, Sie haben einen <i>Button</i> namens <b>btnAction</b> mit
+folgendem <i>Click</i>-Eventhandler:</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>Wenn Sie die <i>(Group)</i>-Eigenschaft auf <i>MyGroup</i> setzen, sieht der
+Eventhandler, der die Events des Buttons erhält, so aus:</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>Dadurch können Sie die Events von verschiedenen Steuerelementen in einer
+einzelnen Funktion behandeln. Die Steuerelemente einer Gruppe müssen nicht vom
+selben Typ sein!</p>
+
+<p><b>Bemerkung:</b> Der <i>Visual Basic&trade;</i>-Veteran mag das Konzept der
+<i>Control Arrays</i> wiedererkennen, aber in einer leistungsfähigeren Implementation. :-)</p>
+
+
+[TAG]
+
+<p>Jedes Steuerelement hat eine <i>Tag</i>-Eigenschaft, genau wie in
+<i>Visual Basic&trade;</i>. Sie erfüllt für das Objekt selbst keinen Zweck,
+sondern kann vom Programmierer benutzt werden, um irgendwelche <b>VARIANT</b>-Daten
+zu speichern, die er für nützlich empfindet.</p>
+
+<p>Das ist zum Beispiel praktisch, wenn Sie mehrere Steuerelemente derselben Gruppe
+in einem Eventhandler unterscheiden wollen.</p>
+
+
+
+[LAST]
+
+<p>Das <b>LAST</b>-Schlüsselwort gibt das letzte Steuerelement zurück,
+das ein Event ausgelöst hat. Dies ist sehr nützlich, wenn Sie einen Eventhandler
+schreiben wollen, der vom Namen eines Elements unabhängig ist.</p>
+
+<p>Zum Beispiel, wenn Sie einen Taschenrechner schreiben wollen, können Sie zehn
+Buttons erstellen, einen für jede Ziffer, und jeden in derselben <i>Gruppe</i> namens "Digit".
+Angenommen, Sie setzen die <i>Tag</i>-Eigenschaft von jedem Button auf die Ziffer, die er
+repräsentiert, dann können Sie folgenden Eventhandler schreiben:</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>Die gut bekannten <i>BASIC</i>-Routinen <b>Left$</b>, <b>Right$</b>
+und <b>Mid$</b> haben in <b><i>Gambas</i></b> ein nützliches Verhalten:</p>
+
+<p>Der zweite Parameter von <b>Left$</b> und <b>Right$</b> ist optional, und
+standardmäßig 1.</p>
+
+<p><tt>Left$("Gambas")</tt> ergibt <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> ergibt <tt>"s"</tt></p>
+
+<p>Er kann auch negativ sein und gibt so die Anzahl Zeichen an, die nicht
+zurückgegeben werden sollen.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> ergibt <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> ergibt <tt>"mbas"</tt></p>
+
+<b>Genauso kann das dritte Argument von <b>Mid$</b> negativ sein und gibt
+dann die Anzahl an Zeichen vom Ende des Strings an, die nicht zurückgegeben werden sollen.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> ergibt <tt>"amb"</tt>
+
+
+[END]
+
+<p>Jetzt haben Sie alle Tipps des Tages gelesen. Ich hoffe, Sie sind jetzt ein
+<b>Gambas</b>-Experte geworden! :-)</p>
+
+<p>Wenn Sie neue Tipps beisteuern wollen, senden Sie sie an folgende Adresse:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Danke im Voraus!</p>
+
+<p>Deutsche Übersetzung der Tipps: Georg Brandl, <i>g.brandl@gmx.net</i></p>
+

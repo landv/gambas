@@ -1,0 +1,154 @@
+' Gambas class file
+
+EXPORT
+CREATE PRIVATE 
+INHERITS ReportControl
+
+PRIVATE $aChild AS NEW Object[]
+PRIVATE $fSpacing AS Float
+PRIVATE $fPadding AS Float
+PRIVATE $sSpacingUnit AS String
+PRIVATE $sPaddingUnit AS String
+PROPERTY READ Children AS Object[]
+PROPERTY Spacing AS String
+PROPERTY Padding AS String
+PROPERTY READ _Spacing AS Float
+PROPERTY READ _Padding AS Float
+
+
+PUBLIC _RealSpacing AS Integer
+
+PUBLIC FUNCTION _Add(cControl AS ReportControl) AS TControl
+  DIM hTControl AS NEW TControl
+  
+  hTControl.Ctrl = cControl
+  $aChild.Add(hTControl)
+  ReportControl.ObjectFromId[cControl.Id] = cControl
+  RETURN hTControl
+END
+
+PUBLIC SUB _Remove(id AS Integer)
+  
+  $aChild.Remove($aChild.Find(ReportControl.ObjectFromId[id]))
+  
+END
+
+
+PUBLIC SUB _Free()
+  
+  DIM hCtrl AS Object
+  FOR EACH hCtrl IN $aChild
+    TRY ReportControl.ObjectFromId.Remove(hCtrl.Ctrl.Id)
+    'hctrl = NULL
+  NEXT 
+  $aChild.Clear
+    
+END
+
+
+PRIVATE FUNCTION Children_Read() AS Object[]
+
+  RETURN $aChild
+
+END
+
+
+PRIVATE FUNCTION Spacing_Read() AS String
+
+  RETURN Units.CmToUnit($fSpacing, $sSpacingUnit) & " " & $sSpacingUnit
+
+END
+
+PRIVATE SUB Spacing_Write(Value AS String)
+
+  DIM sp AS TSizeParse
+  sp = MRTools.ScanValue(value)
+  
+  $fSpacing = Units.UnitToCm(Value, sp.Unit)
+  $sSpacingUnit = sp.Unit
+
+END
+
+PRIVATE FUNCTION Padding_Read() AS String
+
+  RETURN Units.CmToUnit($fPadding, $sPaddingUnit) & " " & $sPaddingUnit
+
+END
+
+PRIVATE SUB Padding_Write(Value AS String)
+DIM sp AS TSizeParse
+  sp = MRTools.ScanValue(value)
+  
+  $fPadding = Units.UnitToCm(Value, sp.Unit)
+  $sPaddingUnit = sp.Unit
+
+END
+
+
+
+PUBLIC SUB _DrawBefore(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  DIM hChild AS Object
+  DIM vi AS Integer
+  
+  SUPER._DrawBefore(Page, X, Y, hControl, VirtualId)
+  FOR EACH hChild IN ME.Children
+    vi = VirtualId
+    IF hControl.VirtualId > -1 THEN vi = hControl.VirtualId
+    'Draw Before
+    IF hChild.RelPage = -1 THEN        
+     hChild.ctrl._DrawBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+    ELSE IF hChild.RelPage + hControl.RealPage = Page THEN 
+      hChild.ctrl._DrawBefore(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+    ENDIF 
+  
+  NEXT
+  
+END
+
+
+
+PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  DIM hChild AS Object
+  DIM vi AS Integer
+  'PRINT hControl.VirtualId
+  FOR EACH hChild IN ME.Children
+  vi = VirtualId
+  IF hControl.VirtualId > -1 THEN vi = hControl.VirtualId
+  
+    IF hChild.RelPage = -1 THEN        
+     hChild.ctrl._Draw(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+    ELSE IF hChild.RelPage + hControl.RealPage = Page THEN 
+      hChild.ctrl._Draw(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+    ENDIF 
+  NEXT 
+  
+END
+
+PUBLIC SUB _DrawAfter(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  DIM hChild AS TControl
+  DIM vi AS Integer
+  SUPER._DrawAfter(Page, X, Y, hControl, VirtualId)
+  FOR EACH hChild IN ME.Children
+    'Draw After
+    IF hChild.RelPage = -1 THEN        
+     hChild.ctrl._DrawAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+    ELSE IF hChild.RelPage + hControl.RealPage = Page THEN 
+      hChild.ctrl._DrawAfter(Page, X + hControl.RealLeft, Y + hControl.RealTop, hChild, vi)
+    ENDIF 
+  NEXT
+  
+END
+
+
+
+PRIVATE FUNCTION _Spacing_Read() AS Float
+
+  RETURN $fSpacing
+
+END
+
+PRIVATE FUNCTION _Padding_Read() AS Float
+
+  RETURN $fPadding
+
+END

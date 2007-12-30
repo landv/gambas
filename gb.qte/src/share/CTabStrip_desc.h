@@ -1,0 +1,1 @@
+../../../gb.qt/src/share/CTabStrip_desc.h

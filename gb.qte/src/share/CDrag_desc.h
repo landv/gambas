@@ -1,0 +1,1 @@
+../../../gb.qt/src/share/CDrag_desc.h

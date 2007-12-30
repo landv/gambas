@@ -1,0 +1,111 @@
+' Gambas class file
+
+EXPORT 
+
+INHERITS ReportContainer
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+
+  DIM hChild AS Object
+  DIM hMyHints AS NEW TSizeHint
+  DIM hChildHints AS TSizeHint
+  
+  FOR EACH hChild IN ME.Children
+    'Obtention des volontées des enfants
+    hChildHints = hChild.ctrl._GetSizeHints(AvailableW - hMyHints.Width, AvailableH, AvailableW, AvailableH)
+    hMyHints.Width += hChildHints.Width
+  NEXT 
+  
+  'je veut ma hauteur !
+  hMyHints.Height = ME._Height
+  'IF hMyHints.Height > AvailableH THEN hMyHints.Height = AvailableH
+  
+  RETURN hMyHints
+END
+
+
+PUBLIC FUNCTION _SetChildGeometry(X AS Float, Y AS Float, W AS Float, H AS Float, ContPage AS Integer) AS Float
+  
+  DIM hChildHints AS TSizeHint
+  DIM hChild AS Object
+  DIM fChildrenH AS Float
+  DIM PagePos AS NEW Integer[]
+  DIM iPage AS Integer
+  DIM aPage AS NEW Object[]
+  DIM aChild AS NEW Object[]
+  DIM iNExp AS Integer
+  DIM fSExp AS Float
+  DIM fSpc AS Float
+  DIM fPdg AS Float
+  DIM bFirst AS Boolean
+  DIM fH AS Float
+  DIM fW AS Float
+  DIM nbPage AS Integer
+  'PRINT "Set HBox Geometry = ", x, y, w, h
+    'PRINT Subst("_SetGeometry(&1,&2,&3,&4)", X, Y, W, H)
+  
+  'If there is no change then do nothing
+  'IF X = ME.RealLeft AND IF Y = ME.RealTop AND IF W = ME.RealWidth AND IF H = ME.RealHeight THEN RETURN
+  
+  
+  fSpc = ME._Spacing
+  fPdg = ME._Padding
+  
+  'SUPER._SetGeometry(X, Y, W, H)
+    
+  X = fPdg
+  Y = fPdg
+  W -= fPdg * 2
+  H -= fPdg * 2
+  
+  FOR EACH hChild IN ME.Children
+    
+    hChildHints = hChild.ctrl._GetSizeHints(W - fSExp, H, W, H)
+    
+    IF hChild.ctrl.Expand THEN 
+      INC iNExp
+    ELSE 
+      fSExp += hChildHints.Width
+    ENDIF
+    
+    fSExp += fSpc
+    
+  NEXT
+  
+  fSExp -= fSpc
+  fSExp = W - fSExp
+  
+  bFirst = TRUE
+  
+  
+  FOR EACH hChild IN ME.Children
+  
+    hChildHints = hChild.ctrl._GetSizeHints(W - X, H, W, H)
+    
+    IF NOT bFirst THEN 
+      X += fSpc
+    ENDIF
+    
+    bFirst = FALSE
+    
+    IF hChild.ctrl.Expand THEN 
+      fW = fSExp / iNExp 
+    ELSE 
+      fW = hChildHints.Width
+    ENDIF 
+    
+    nbPage = hChild._SetGeometry(X, Y, fW, h)
+
+    IF nbPage > iPage THEN iPage = nbPage
+    X += fW
+    
+  NEXT
+  
+  RETURN iPage
+END 
+
+PUBLIC SUB _Free()
+  
+  SUPER._Free
+  
+END

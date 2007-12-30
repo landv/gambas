@@ -1,0 +1,408 @@
+' Gambas class file
+
+PRIVATE $sDir AS String
+PRIVATE $bMouse AS Boolean
+PRIVATE $bDoNotSetName AS Boolean
+PRIVATE $bInit AS Boolean
+
+PUBLIC SUB Run(OPTIONAL sDir AS String)
+  
+  $sDir = sDir
+  IF NOT ME.ShowModal() THEN RETURN
+  
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close  
+
+END
+
+PUBLIC SUB lstType_Click()
+
+  DIM sPrefix AS String
+  DIM hChild AS control
+  DIM bOpt AS Boolean
+  DIM iFilter AS Integer
+  
+  sPrefix = lstType.Current.Tag
+  FOR EACH hChild IN panOption.Children
+    IF NOT hChild.Tag THEN CONTINUE
+    bOpt = bOpt OR sPrefix = hChild.Tag
+    hChild.Visible = sPrefix = hChild.Tag
+  NEXT
+  
+  lblOption.Visible = bOpt
+  
+  IF NOT $bDoNotSetName THEN   
+    sPrefix = UCase(Left(sPrefix)) & Mid(sPrefix, 2)
+    Object.Lock(txtName)
+    txtName.Text = Project.GetNewName(sPrefix)
+    txtName.SelectAll
+    Object.Unlock(txtName)
+  ENDIF 
+  
+  iFilter = ["module", "class", "form", "image", "html"].Find(LCase(sPrefix))
+  fchExisting.FilterIndex = iFilter
+  
+  txtName.SetFocus
+  
+END
+
+PUBLIC SUB Form_Open()
+
+  Settings.Read(ME)
+  Settings.Read(fchExisting, "fchExisting")
+  
+  panForm.Visible = Project.AllowForm()
+  lstType.Select(panModule)  
+  fchExisting.Filter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes"), "*.form", ("Gambas forms"), "*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files")]
+  cmbParent.List = Project.GetClassesOnly()
+  cmbParent.Add(("(No parent)"), 0)
+  
+END
+
+PUBLIC SUB txtWidth_Change()
+
+  IF $bMouse THEN 
+    txtWidth.Value = CInt(txtWidth.Value / txtWidth.Step + 0.5) * txtWidth.Step
+    $bMouse = FALSE
+  ENDIF 
+  IF btnLinked.Value THEN txtHeight.Value = txtWidth.Value  
+
+END
+
+PUBLIC SUB txtHeight_Change()
+
+  IF btnLinked.Value THEN txtWidth.Value = txtHeight.Value    
+
+END
+
+PUBLIC SUB txtWidth_MouseDown()
+
+  $bMouse = TRUE  
+
+END
+
+PUBLIC SUB txtHeight_MouseDown()
+
+  $bMouse = TRUE  
+
+END
+
+
+PUBLIC SUB txtWidth_MouseWheel()
+
+  $bMouse = TRUE  
+
+END
+
+PUBLIC SUB txtHeight_MouseWheel()
+
+  $bMouse = TRUE  
+
+END
+
+PUBLIC SUB txtName_GotFocus()
+
+  txtName.Select  
+
+END
+
+PUBLIC SUB txtName_Change()
+
+  $bDoNotSetName = txtName.Text  
+
+END
+
+PRIVATE SUB CreateFile() AS Boolean
+  
+  DIM sType AS String = lstType.Current.Tag
+  DIM sName AS String = Trim(txtName.Text)
+  DIM sMsg AS String
+  DIM sTemp AS String
+  DIM hImage AS Image
+
+  SELECT CASE sType
+  
+    CASE "text", "image", "html"
+    
+      IF sType = "image" THEN 
+        sName = File.SetExt(sName, LCase(cmbImageType.Text))
+      ELSE IF sType = "html" THEN
+        sName = File.SetExt(sName, "html")
+      ENDIF
+    
+      sMsg = Project.CheckFileName(sName, $sDir)
+      IF sMsg THEN 
+        txtName.SetFocus
+        Balloon.Warning(sMsg, txtName)
+        RETURN TRUE
+      ENDIF
+  
+    CASE ELSE
+
+      sMsg = Project.CheckClassName(sName, TRUE)
+      IF sMsg THEN 
+        txtName.SetFocus
+        Balloon.Warning(sMsg, txtName)
+        RETURN TRUE
+      ENDIF
+  
+  END SELECT 
+  
+  SELECT CASE sType
+  
+    CASE "module"
+    
+      sTemp = "' Gambas module file\n\n"
+      
+      Project.Insert(sName, sType, sTemp)
+  
+    CASE "class"
+    
+      sTemp = "' Gambas class file\n\n"
+      IF cmbParent.Index > 0 THEN sTemp &= "INHERITS " & cmbParent.Text & "\n\n"
+      
+      Project.Insert(sName, sType, sTemp)
+  
+    CASE "form"
+    
+      sTemp = "' Gambas class file\n\n"
+      
+      IF chkDialog.Value THEN 
+        sTemp &= "PUBLIC SUB Run() AS Boolean\n\n"
+                 "  RETURN NOT ME.ShowModal()\n\n"
+                 "END\n\n"
+                 "PUBLIC SUB btnOK_Click()\n\n"
+                 "  ME.Close(TRUE)\n\n"
+                 "END\n\n"
+                 "PUBLIC SUB btnCancel_Click()\n\n"
+                 "  ME.Close\n\n"
+                 "END\n\n" 
+      ENDIF
+      
+      Project.Insert(sName, "class", sTemp, TRUE, TRUE)
+      
+      sTemp = Project.FORM_MAGIC & "\n\n" & 
+              "{ " & sName & " Form\n" & 
+              "  MoveScaled(0, 0, 64, 64)\n"
+      
+      IF chkDialog.Value THEN
+        sTemp &= "  Border = Window.Fixed\n"
+        sTemp &= "{ HBox1 HBox\n"
+                 "  MoveScaled(1,60,62,3)\n"
+                 "  Spacing = 8\n"
+                 "  { Panel1 Panel\n"
+                 "    MoveScaled(3,0,3,3)\n"
+                 "    'Move(24,0,24,24)\n"
+                 "    Expand = True\n"
+                 "  }\n"
+                 "  { btnOK Button\n"
+                 "    MoveScaled(33,0,14,3)\n"
+                 "    Text = (\"OK\")\n"
+                 "    Default = True\n"
+                 "  }\n"
+                 "  { btnCancel Button\n"
+                 "    MoveScaled(48,0,14,3)\n"
+                 "    Text = (\"Cancel\")\n"
+                 "    Cancel = True\n"
+                 "  }\n"
+                 "}\n"
+      ELSE
+        sTemp &= "  Border = Window.Resizable\n"
+      ENDIF
+      
+      sTemp &= "}\n"
+      
+      Project.Insert(sName, "form", sTemp)
+      
+    CASE "text"
+    
+      File.Save($sDir &/ sName, "")
+      Project.InsertFile(sName, $sDir)
+  
+    CASE "html"
+    
+      File.Save($sDir &/ sName, "<html>\n\n</html>\n")
+      Project.InsertFile(sName, $sDir)
+  
+    CASE "image"
+    
+      hImage = NEW Image(txtWidth.Value, txtHeight.Value, TRUE)
+      hImage.Fill(Color.Transparent)
+      hImage.Save($sDir &/ sName)
+
+      Project.InsertFile(sName, $sDir)
+  
+  END SELECT  
+  
+END
+
+PRIVATE SUB ImportDependencies(sName AS String, sOrig AS String, bLink AS Boolean)
+  
+  DIM hIn AS File
+  DIM hOut AS File
+  DIM sLine AS String
+  DIM iPos, iPos2 AS Integer
+  DIM sImg AS String
+  DIM sImportDir AS String
+  DIM sDestImg AS String
+  DIM sForm AS String
+  DIM bSave AS Boolean
+
+  INC Application.Busy
+  
+  sForm = Project.Dir &/ sName & ".form"
+  sOrig = File.Dir(sOrig)
+  
+  hIn = OPEN sForm
+  hOut = OPEN Temp$("form") FOR CREATE 
+  
+  WHILE NOT Eof(hIn)
+  
+    LINE INPUT #hIn, sLine
+    
+    iPos = InStr(sLine, "Picture[")
+    IF iPos = 0 THEN GOTO NEXT_LINE
+    
+    sImg = Scan(sLine, "*Picture\\[\"*\"]")[1]
+    IF sImg LIKE "icon:/*" THEN GOTO NEXT_LINE
+    
+    sImportDir = Project.Dir &/ "import_" & sName
+    IF NOT Exist(sImportDir) THEN Project.InsertDirectory(sImportDir)
+    
+    sDestImg = sImportDir &/ File.Name(sImg)
+    
+    IF Exist(sOrig &/ sImg) THEN
+      IF NOT Exist(sDestImg) THEN
+        Project.InsertFile(File.Name(sDestImg), File.Dir(sDestImg), sOrig &/ sImg, TRUE, bLink)
+      ENDIF
+      sLine = Left(sLine, iPos + 7) & Chr$(34) & "import_" & sName &/ File.Name(sDestImg) & Chr$(34) & "]"    
+      bSave = TRUE
+    ELSE 
+      CONTINUE 
+    ENDIF 
+
+NEXT_LINE:
+    PRINT #hOut, sLine
+    
+  WEND
+  
+  CLOSE #hOut
+  CLOSE #hIn
+  
+  IF bSave THEN
+    KILL sForm
+    COPY Temp$("form") TO sForm
+    Project.RefreshKey(sForm)
+  ENDIF
+  
+FINALLY 
+  
+  DEC Application.Busy  
+  
+END
+
+
+
+PRIVATE SUB ImportFile() AS Boolean
+  
+  DIM sDir AS String
+  DIM sName AS String
+  DIM sTemp AS String
+  DIM sType AS String
+  
+  sTemp = fchExisting.Value
+  sDir = File.Dir(fchExisting.Value)
+  sName = File.Name(fchExisting.Value)
+  
+  SELECT CASE File.Ext(sTemp)
+  
+    CASE "module"
+      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
+      Project.Insert(sName, "module", sTemp,,, chkLink.Value)
+  
+    CASE "class"
+      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
+      Project.Insert(sName, "class", sTemp,,, chkLink.Value)
+  
+    CASE "form"
+      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
+      Project.Insert(sName, "class", File.SetExt(sTemp, "class"), TRUE, TRUE, chkLink.Value)
+      Project.Insert(sName, "form", sTemp,, TRUE, chkLink.Value)
+      ImportDependencies(sName, sTemp, chkLink.Value)
+      Project.OpenForm(sName)
+          
+    DEFAULT
+      sName = Project.GetUniqueName($sDir, sName)
+      Project.InsertFile(sName, $sDir, sTemp,, chkLink.Value)
+  
+  END SELECT
+  
+END
+
+
+
+PUBLIC SUB btnOK_Click()
+
+  IF tabFile.Index = 0 THEN   
+    IF CreateFile() THEN RETURN
+  ELSE 
+    IF ImportFile() THEN RETURN
+  ENDIF
+
+  ME.Close(TRUE)
+
+CATCH 
+
+  FGambas.Error(("Cannot add file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(ME)  
+  'DEBUG fchExisting.Settings.Join(" / ")
+  Settings.Write(fchExisting, "fchExisting")
+  
+  'IF tabFile.Index = 1 THEN Settings["/FCreateFile/sDir"] = fchExisting.Dir
+  
+END
+
+PUBLIC SUB tabFile_Click()
+
+  ' IF tabFile.Index = 1 THEN 
+  '   IF NOT $bInit THEN 
+  '     fchExisting.Dir = Settings["/FCreateFile/sDir"]
+  '     $bInit = TRUE
+  '   ENDIF
+  ' ENDIF
+
+  fchExisting_Change
+
+END
+
+PUBLIC SUB fchExisting_Change()
+
+  IF tabFile.Index = 1 THEN 
+    btnOK.Enabled = fchExisting.Value
+  ELSE 
+    btnOK.Enabled = TRUE
+  ENDIF  
+
+END
+
+PUBLIC SUB fchExisting_Activate()
+
+  btnOK.Value = TRUE  
+
+END
+
+PUBLIC SUB fchExisting_Icon(Path AS String)
+
+  IF Exist(Path &/ ".project") THEN 
+    fchExisting.Icon = Project.GetIcon(Path)    
+  ENDIF
+
+END

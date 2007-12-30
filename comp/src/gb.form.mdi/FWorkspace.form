@@ -1,0 +1,98 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,69,74)
+  'Move(0,0,552,592)
+  Text = ("Worskpace")
+  { tabWorkspace TabStrip
+    MoveScaled(2,6,56,51)
+    'Move(16,48,448,408)
+    Visible = False
+    Font = Font["-1"]
+    Expand = True
+    Arrangement = Arrange.Fill
+    Index = 0
+    Text = ("")
+    { panChild Panel
+      MoveScaled(2,18,24,24)
+      'Move(16,144,192,192)
+    }
+    Index = 0
+  }
+  { panTitle Panel
+    MoveScaled(0,0,68,3)
+    'Move(0,0,544,24)
+    Visible = False
+    Background = Color.SelectedBackground
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    Spacing = 2
+    Padding = 4
+    { imgIcon PictureBox
+      MoveScaled(0,0,2,2)
+      'Move(0,0,16,16)
+      Picture = Picture["img/gambas.png"]
+      Alignment = Align.Normal
+    }
+    { lblTitle Label
+      MoveScaled(4,0,34,2)
+      'Move(32,0,272,16)
+      Font = Font["Bold"]
+      Foreground = Color.SelectedForeground
+      Expand = True
+      Text = ("Title")
+    }
+    { btnClose Button
+      MoveScaled(65,0,2,2)
+      'Move(520,0,16,16)
+      Text = ("")
+      Picture = Picture["img/close.png"]
+    }
+  }
+  { svwWorkspace ScrollView
+    MoveScaled(8,11,35,23)
+    'Move(64,88,280,184)
+    Background = &H808080&
+    Border = Border.None
+    { panRight Panel Handle
+      MoveScaled(8,5,1,1)
+      'Move(64,40,8,8)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeE
+      Border = Border.Plain
+    }
+    { panDown Panel Handle
+      MoveScaled(6,7,1,1)
+      'Move(48,56,8,8)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeS
+      Border = Border.Plain
+    }
+    { panRightDown Panel Handle
+      MoveScaled(8,7,1,1)
+      'Move(64,56,8,8)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeNWSE
+      Border = Border.Plain
+    }
+    { dwgBorder DrawingArea
+      MoveScaled(13,1,15,11)
+      'Move(104,8,120,88)
+      Background = Color.Background
+      Border = Border.Raised
+    }
+  }
+  { panWorkspace Panel
+    MoveScaled(27,43,28,25)
+    'Move(216,344,224,200)
+    Background = Color.Background
+    Arrangement = Arrange.Fill
+    Padding = 1
+    Border = Border.Raised
+  }
+  { btnTabClose ToolButton btnClose
+    MoveScaled(11,59,13,11)
+    'Move(88,472,104,88)
+    Text = ("")
+  }
+}

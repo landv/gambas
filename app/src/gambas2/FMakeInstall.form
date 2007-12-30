@@ -1,0 +1,287 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(6.125,25.75,74,62)
+  'Move(49,206,592,496)
+  Text = ("Make an installation package")
+  Icon = Picture["img/16/package.png"]
+  Border = Window.Fixed
+  { panSystem Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Visible = False
+    Tag = "3"
+    Border = Border.Etched
+    { CheckBox3 CheckBox
+      MoveScaled(9,18,54,4)
+      'Move(72,144,432,32)
+      Tag = "redhat"
+      Text = ("Redhat / Fedora")
+    }
+    { chkDebian CheckBox
+      MoveScaled(9,12,54,4)
+      'Move(72,96,432,32)
+      Tag = "debian"
+      Text = ("Debian")
+    }
+    { TextLabel8 TextLabel
+      MoveScaled(2,1,64,4)
+      'Move(16,8,512,32)
+      Text = ("<h3>Create an installation package for...</h3>\n")
+    }
+    { CheckBox1 CheckBox
+      MoveScaled(9,6,54,4)
+      'Move(72,48,432,32)
+      Tag = "mandrake"
+      Text = ("MandrakeLinux")
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(3,6,4,4)
+      'Move(24,48,32,32)
+      Picture = Picture["img/logo/mandrake.png"]
+      Alignment = Align.Center
+    }
+    { PictureBox2 PictureBox
+      MoveScaled(3,12,4,4)
+      'Move(24,96,32,32)
+      Picture = Picture["img/logo/debian.png"]
+      Alignment = Align.Center
+    }
+    { PictureBox3 PictureBox
+      MoveScaled(3,18,4,4)
+      'Move(24,144,32,32)
+      Picture = Picture["img/logo/redhat.png"]
+      Alignment = Align.Center
+    }
+    { PictureBox4 PictureBox
+      MoveScaled(3,24,4,4)
+      'Move(24,192,32,32)
+      Picture = Picture["img/logo/suse.png"]
+      Alignment = Align.Center
+    }
+    { CheckBox4 CheckBox
+      MoveScaled(9,24,54,4)
+      'Move(72,192,432,32)
+      Tag = "suse"
+      Text = ("SuSE Linux")
+    }
+  }
+  { panType Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Tag = "1"
+    Border = Border.Etched
+    { TextLabel2 TextLabel
+      MoveScaled(2,7,64,4)
+      'Move(16,56,512,32)
+      Text = ("<h3>Maintainer information</h3>\n")
+    }
+    { txtName TextBox
+      MoveScaled(26,11,44,3)
+      'Move(208,88,352,24)
+      Text = ("")
+    }
+    { txtMail TextBox
+      MoveScaled(26,15,44,3)
+      'Move(208,120,352,24)
+      Text = ("")
+    }
+    { TextLabel3 TextLabel
+      MoveScaled(2,19,64,4)
+      'Move(16,152,512,32)
+      Text = ("<h3>Description</h3>\n")
+    }
+    { txtDescribe TextArea
+      MoveScaled(2,23,68,27)
+      'Move(16,184,544,216)
+      Text = ("")
+    }
+    { Label1 Label
+      MoveScaled(2,11,24,3)
+      'Move(16,88,192,24)
+      Text = ("Your name")
+    }
+    { Label2 Label
+      MoveScaled(2,15,24,3)
+      'Move(16,120,192,24)
+      Text = ("Your e-mail address")
+    }
+    { txtPackage Label
+      MoveScaled(2,2,68,4)
+      'Move(16,16,544,32)
+      Font = Font["16,Bold"]
+      Background = &H000000&
+      Foreground = &HFFFFFF&
+      Text = ("")
+    }
+    { chkPrefix CheckBox
+      MoveScaled(2,51,65,3)
+      'Move(16,408,520,24)
+      Text = ("Prefix package name and executable with the 'gambas-' string")
+    }
+  }
+  { Panel5 Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Tag = "2"
+    Border = Border.Etched
+    { txtChangeLog TextArea
+      MoveScaled(2,27,68,27)
+      'Move(16,216,544,216)
+      Text = ("")
+      ReadOnly = True
+      Wrap = True
+    }
+    { TextLabel10 TextLabel
+      MoveScaled(2,1,68,4)
+      'Move(16,8,544,32)
+      Text = ("<h3>Changelog</h3>\n")
+    }
+    { txtChange TextArea
+      MoveScaled(2,15,68,11)
+      'Move(16,120,544,88)
+      Text = ("")
+      Wrap = True
+    }
+    { TextLabel11 TextLabel
+      MoveScaled(2,5,68,6)
+      'Move(16,40,544,48)
+      Text = ("Please enter the changes of your project. Each change must be described by a line beginning with a dash.")
+    }
+    { lblChangeDate Label
+      MoveScaled(2,11,68,3)
+      'Move(16,88,544,24)
+      Font = Font["Bold"]
+      Text = ("")
+    }
+  }
+  { panDir Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Visible = False
+    Tag = "6"
+    Border = Border.Etched
+    { lblDir Label
+      MoveScaled(2,5,68,49)
+      'Move(16,40,544,392)
+      Visible = False
+      Text = ("")
+      Alignment = Align.TopLeft
+      Border = Border.Plain
+    }
+    { TextLabel7 TextLabel
+      MoveScaled(2,1,68,4)
+      'Move(16,8,544,32)
+      Text = ("<h3>Select the directory where the packages will be stored</h3>\n")
+    }
+  }
+  { Panel3 Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Visible = False
+    Tag = "5"
+    Border = Border.Etched
+    { TextLabel5 TextLabel
+      MoveScaled(2,1,69,4)
+      'Move(16,8,552,32)
+      Text = ("<h3>Select where the menu entry will be created</h3>\n")
+    }
+    { tvwMenu TreeView
+      MoveScaled(2,9,68,41)
+      'Move(16,72,544,328)
+      ScrollBar = Scroll.Vertical
+    }
+    { txtMenu TextBox
+      MoveScaled(2,51,68,3)
+      'Move(16,408,544,24)
+      Text = ("")
+      ReadOnly = True
+    }
+    { cmbMenu ComboBox
+      MoveScaled(2,5,68,3)
+      'Move(16,40,544,24)
+      Text = (" ")
+      ReadOnly = True
+    }
+  }
+  { Panel4 Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Visible = False
+    Tag = "4"
+    Border = Border.Etched
+    { TextLabel6 TextLabel
+      MoveScaled(2,1,68,4)
+      'Move(16,8,544,32)
+      Text = ("<h3>Select the package group</h3>\n")
+    }
+    { tvwGroup TreeView
+      MoveScaled(2,9,68,41)
+      'Move(16,72,544,328)
+      ScrollBar = Scroll.Vertical
+    }
+    { txtGroup TextBox
+      MoveScaled(2,51,68,3)
+      'Move(16,408,544,24)
+      Text = ("")
+      ReadOnly = True
+    }
+    { cmbGroup ComboBox
+      MoveScaled(2,5,68,3)
+      'Move(16,40,544,24)
+      Text = (" ")
+      ReadOnly = True
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Visible = False
+    Tag = "7"
+    Border = Border.Etched
+    { TextLabel9 TextLabel
+      MoveScaled(2,2,68,22)
+      'Move(16,16,544,176)
+      Text = ("<h2>Make installation packages\n<img src=\"img/64/kpackage.png\" align=\"right\"></h2>\n\n<p>All needed information have been collected. You can now create the installation packages for your application...</p>\n\n<p>Click on the <b>OK</b> button to create the packages.</p>\n<p>Click on the <b>Previous</b> button if you had made a mistake.</p>\n<p>Click on the <b>Cancel</b> button to cancel the operation.</p>\n\n")
+    }
+    { txtLog TextArea
+      MoveScaled(2,25,68,29)
+      'Move(16,200,544,232)
+      Text = ("")
+      ReadOnly = True
+      Wrap = True
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(1,1,72,56)
+    'Move(8,8,576,448)
+    Tag = "0"
+    Border = Border.Etched
+    { TextLabel1 TextLabel
+      MoveScaled(2,2,68,51)
+      'Move(16,16,544,408)
+      Text = ("<h2>Welcome to the Gambas installation package creation wizard!\n<img src=\"img/64/kpackage.png\" align=\"right\"></h2>\n\n<p>This wizard allows you to create an installation package\nof your <b>Gambas</b> project.</p>\n\n<p>You will be able to choose the Linux distribution the\ninstallation package will be dedicated to.</p>\n\n<p>Press the <b>Next</b> button to start creating the installation package.</p>\n\n<p>Press the <b>Cancel</b> button to cancel the wizard.</p>")
+    }
+  }
+  { btnPrevious Button
+    MoveScaled(1,58,15,3)
+    'Move(8,464,120,24)
+    Text = ("<< &Previous")
+  }
+  { btnClose Button
+    MoveScaled(61,58,12,3)
+    'Move(488,464,96,24)
+    Text = ("Close")
+    Cancel = True
+  }
+  { btnNext Button
+    MoveScaled(17,58,15,3)
+    'Move(136,464,120,24)
+    Text = ("&Next >>")
+  }
+  { btnOK Button
+    MoveScaled(38,58,22,3)
+    'Move(304,464,176,24)
+    Text = ("Make package")
+  }
+}

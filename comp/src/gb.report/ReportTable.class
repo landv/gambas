@@ -1,0 +1,196 @@
+' Gambas class file
+
+EXPORT
+INHERITS ReportControl
+PUBLIC CONST _Properties AS String = "*,Header{TableView.None;Horizontal;Vertical;Both}=Both"
+PUBLIC CONST _DrawWith AS String = "TableView"
+
+
+PRIVATE $iCol AS Integer
+PRIVATE $iRow AS Integer
+
+PRIVATE $hRows AS NEW TableRows
+PRIVATE $hColumns AS NEW TableColumns
+PRIVATE $hContainer AS ReportVBox
+PRIVATE $hData AS TableCell
+
+PROPERTY Column AS Integer
+PROPERTY READ Columns AS TableColumns
+PROPERTY READ Rows AS TableRows
+PROPERTY Row AS Integer
+PROPERTY Header AS Integer
+PRIVATE $iHeader AS Integer = 3
+
+PRIVATE $bModified AS Boolean
+PROPERTY READ Data AS TableCell
+
+EVENT Data(Row AS Integer, Column AS Integer)
+
+PUBLIC SUB _new()
+  
+  
+  
+END
+
+FUNCTION Rows_Read() AS TableRows
+  $bModified = TRUE
+  RETURN $hRows
+  
+END
+
+FUNCTION Columns_Read() AS TableColumns
+  $bModified = TRUE
+  RETURN $hColumns
+  
+END
+
+
+PRIVATE FUNCTION Column_Read() AS Integer
+
+  RETURN $iCol
+
+END
+
+PRIVATE SUB Column_Write(Value AS Integer)
+
+  $iCol = Value
+
+END
+
+PRIVATE FUNCTION Row_Read() AS Integer
+
+  RETURN $iRow
+
+END
+
+PRIVATE SUB Row_Write(Value AS Integer)
+
+  $iRow = Value
+
+END
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+
+    DIM hMyHints AS NEW TSizeHint
+    IF $bModified THEN SetVirtualObjects
+    
+      
+      hMyHints = $hContainer._GetSizeHints(AvailableW, AvailableH, AvailableW, AvailableH)
+      
+      
+      IF hMyHints.Height > AvailableH THEN hMyHints.Height = AvailableH
+      RETURN hMyHints
+END
+
+
+
+PRIVATE SUB SetVirtualObjects()
+  
+  DIM hcont AS ReportHBox
+  DIM hLabel AS ReportLabel
+  DIM i AS Integer
+  DIM j AS Integer
+  DIM vCont AS ReportVBox
+  DIM hCell AS ReportHBox
+  $hContainer = NEW ReportVBox
+  $hContainer.Expand = TRUE
+  'Si elle existe impose la ligne d'entête
+  IF $iHeader = 2 OR $iHeader = 3 THEN 
+    hCont = NEW ReportHBox($hContainer)
+    hCont.Height = $hRows.Height
+    hCont.FillColor = color.LightGray
+    hCont.FillStyle = Fill.Solid    
+    'Dessine la case D'angle ! si la colonne d'entête est affichée
+    IF $iHeader = 3 THEN 
+        hLabel = NEW ReportLabel(hCont)
+        
+        'hLabel.LineStyle = Line.Solid
+        hLabel.FillColor = Color.LightGray
+        hLabel.FillStyle = Fill.Solid
+        hLabel.Width = $hRows.Width
+        
+    ENDIF
+    'Dessine les case d'entête
+    FOR J = 0 TO $hColumns.Count - 1
+        
+        hLabel = NEW ReportLabel(hCont)
+        hLabel.Expand = TRUE
+        'hLabel.LineStyle = Line.Solid
+        hLabel.Text = $hColumns[j].Text
+        PRINT $hColumns[j].Text   
+        
+        
+    NEXT
+  
+  ENDIF
+  vCont = NEW ReportVBox($hContainer)
+  '$hContainer.Expand = TRUE
+  FOR i = 0 TO $hRows.Count - 1
+      
+      hCont = NEW ReportHBox(vCont)
+      'hCont.LineStyle = line.Solid
+      hCont.Height = $hRows.Height
+      IF $iHeader = 1 OR $iHeader = 3 THEN 
+        hLabel = NEW ReportLabel(hCont)
+        'hLabel.Expand = TRUE
+        hLabel.Width = $hRows.Width
+        'hLabel.LineStyle = Line.Solid
+        hLabel.Text = $hRows[i].Text
+        hLabel.FillColor = Color.LightGray
+        hLabel.FillStyle = Fill.Solid
+      ENDIF
+    FOR J = 0 TO $hColumns.Count - 1
+        
+        hcell = NEW TableCell(hCont)
+        hcell.Expand = TRUE
+        'hLabel.LineStyle = Line.Solid
+        'hLabel.Text = "Table" & (i * j)
+        $hData = hcell
+        RAISE Data(i, J)
+    NEXT
+  NEXT
+  
+  
+  $hData = NULL
+  
+  $bModified = FALSE
+  
+END
+
+PUBLIC SUB _DrawBefore(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  
+  
+  $hContainer._DrawBefore(Page, X, Y)
+  
+END
+
+
+PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  
+  $hContainer._Draw(Page, X, Y)
+  
+END
+
+PUBLIC SUB _DrawAfter(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+  
+  $hContainer._DrawAfter(Page, X, Y)
+  
+END
+
+PRIVATE FUNCTION Data_Read() AS TableCell
+
+  RETURN $hData
+
+END
+
+PRIVATE FUNCTION Header_Read() AS Integer
+
+  RETURN $iHeader
+
+END
+
+PRIVATE SUB Header_Write(Value AS Integer)
+
+  $iHeader = Value
+
+END

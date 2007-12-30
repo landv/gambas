@@ -1,0 +1,35 @@
+' Gambas class file
+
+'PRIVATE $hConn AS NEW Connection
+
+PUBLIC SUB Form_Open()
+
+  'WITH DataBrowser2.TableView
+  '  .Columns[0].Text = "Color"
+  'END WITH
+  
+  WITH DataBrowser1.GridView
+    .Columns[0].Text = "Id"
+    .Columns[0].Width = 48
+    .Columns[1].Text = "Active"
+    .Columns[2].Text = "Name"
+  END WITH
+  
+  DataCombo2_Click
+  
+END
+
+PUBLIC SUB DataControl6_Validate(Value AS Variant)
+
+  IF IsNull(Value) THEN RETURN
+  IF Value < 0 OR Value > 10000 THEN
+    STOP EVENT
+  ENDIF
+
+END
+
+PUBLIC SUB DataCombo2_Click()
+
+  DataSource1.Filter = DataCombo2.GetFilter()
+
+END

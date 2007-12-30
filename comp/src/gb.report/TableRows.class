@@ -1,0 +1,34 @@
+' Gambas class file
+
+PRIVATE $iCount AS Integer
+PUBLIC Height AS Float = 0.5
+PUBLIC Width AS Float = 2.0
+PRIVATE $aRows AS NEW Object[]
+PROPERTY Count AS Integer
+
+
+PUBLIC FUNCTION _Get(Index AS Integer) AS TableRow
+  
+  RETURN $aRows[Index]
+  
+END
+
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  RETURN $iCount
+
+END
+
+PRIVATE SUB Count_Write(Value AS Integer)
+  DIM i AS Integer
+  DIM hRow AS TableRow
+
+  $aRows.Clear
+  FOR i = 0 TO Value - 1
+    hRow = NEW TableRow
+    hRow.Text = (i)
+    $aRows.add(hRow)
+  NEXT
+  $iCount = $aRows.Count
+END

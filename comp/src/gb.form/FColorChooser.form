@@ -1,0 +1,118 @@
+# Gambas Form File 1.0
+
+{ FColorChooser Form
+  MoveScaled(9.5,8.375,68.75,70.25)
+  'Move(76,67,550,562)
+  Text = ("")
+  Arrangement = Arrange.Horizontal
+  Spacing = 8
+  { boxColor VBox
+    MoveScaled(1,2,53,66)
+    'Move(8,16,424,528)
+    Expand = True
+    Spacing = 8
+    { HBox1 HBox
+      MoveScaled(3,2,33,29)
+      'Move(24,16,264,232)
+      Expand = True
+      Spacing = 8
+      { dwgColorMap DrawingArea
+        MoveScaled(3,3,23,23)
+        'Move(24,24,184,184)
+        Expand = True
+        Border = Border.Sunken
+      }
+      { sldValue Slider
+        MoveScaled(29,4,2,22)
+        'Move(232,32,16,176)
+        MaxValue = 255
+        PageStep = 16
+      }
+    }
+    { dwgColor DrawingArea
+      MoveScaled(2,37,49,28)
+      'Move(16,296,392,224)
+    }
+  }
+  { VBox1 VBox
+    MoveScaled(56,1,10,45)
+    'Move(448,8,80,360)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(0,1,10,24)
+      'Move(0,8,80,192)
+      { txtR SpinBox txtRGB
+        MoveScaled(3,0,7,3)
+        'Move(24,0,56,24)
+        MaxValue = 255
+      }
+      { txtG SpinBox txtRGB
+        MoveScaled(3,4,7,3)
+        'Move(24,32,56,24)
+        MaxValue = 255
+      }
+      { txtB SpinBox txtRGB
+        MoveScaled(3,8,7,3)
+        'Move(24,64,56,24)
+        MaxValue = 255
+      }
+      { txtH SpinBox txtHSV
+        MoveScaled(3,13,7,3)
+        'Move(24,104,56,24)
+        MaxValue = 359
+      }
+      { txtS SpinBox txtHSV
+        MoveScaled(3,17,7,3)
+        'Move(24,136,56,24)
+        MaxValue = 255
+      }
+      { txtV SpinBox txtHSV
+        MoveScaled(3,21,7,3)
+        'Move(24,168,56,24)
+        MaxValue = 255
+      }
+      { Label1 Label
+        MoveScaled(0,0,2,3)
+        'Move(0,0,16,24)
+        Text = ("R")
+      }
+      { Label2 Label
+        MoveScaled(0,4,2,3)
+        'Move(0,32,16,24)
+        Text = ("G")
+      }
+      { Label3 Label
+        MoveScaled(0,8,2,3)
+        'Move(0,64,16,24)
+        Text = ("B")
+      }
+      { Label4 Label
+        MoveScaled(0,13,2,3)
+        'Move(0,104,16,24)
+        Text = ("H")
+      }
+      { Label5 Label
+        MoveScaled(0,17,2,3)
+        'Move(0,136,16,24)
+        Text = ("S")
+      }
+      { Label6 Label
+        MoveScaled(0,21,2,3)
+        'Move(0,168,16,24)
+        Text = ("V")
+      }
+    }
+    { txtHexa TextBox
+      MoveScaled(1,28,7,3)
+      'Move(8,224,56,24)
+      Text = ("")
+      ReadOnly = True
+    }
+    { panColor Panel
+      MoveScaled(1,33,8,10)
+      'Move(8,264,64,80)
+      Expand = True
+      Border = Border.Sunken
+    }
+  }
+}

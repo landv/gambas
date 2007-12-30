@@ -1,0 +1,88 @@
+' Gambas class file
+
+STATIC PUBLIC FUNCTION Run() AS Boolean
+
+  DIM hForm AS Form
+
+  hForm = NEW FAbout
+  hForm.ShowModal
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB timAuthor_Timer()
+
+  DIM Y AS Integer
+  
+  Y = svwAuthor.ScrollY
+  INC svwAuthor.ScrollY
+  IF Y = svwAuthor.ScrollY THEN
+    svwAuthor.ScrollY = 0
+  ENDIF
+
+END
+
+PRIVATE SUB GetAuthor()
+  
+  DIM hFic AS File
+  DIM sText AS String
+  DIM sLig AS String
+  DIM nLig AS Integer
+  
+  OPEN "about.txt" FOR READ AS #hFic
+  
+  WHILE NOT Eof(hFic)
+  
+    LINE INPUT #hFic, sLig
+    IF NOT sLig THEN CONTINUE
+    
+    sText = sText & "<p><font size=+1><b>" & sLig & "</b></font></p><blockquote>\n"
+    nLig = nLig + 2
+
+    LINE INPUT #hFic, sLig ' e-mail
+    sText = sText & "<u>" & sLig & "</u><br>"
+    INC nLig
+    
+    DO
+    
+      LINE INPUT #hFic, sLig
+      IF NOT sLig THEN BREAK
+      
+      sText = sText & sLig & "<br>"
+      INC nLig
+      
+    LOOP
+  
+    'IF Right$(sText, 4) = "<br>" THEN sText = Left$(sText, -4)
+    
+    sText = sText & "</blockquote>\n"
+    INC nLig
+  
+  WEND
+  
+  CLOSE #hFic
+  
+  txtAuthor.Text = sText
+  'nLig * txtAuthor.Font.Height("a") * 0.95 + 256
+
+FINALLY
+
+  txtAuthor.Height = txtAuthor.TextHeight '+ svwAuthor.Height
+  'PRINT txtAuthor.TextHeight
+
+CATCH
+
+  txtAuthor.Text = Error.Text
+  
+END
+
+PUBLIC SUB Form_Open()
+
+  GetAuthor
+
+END

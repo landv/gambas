@@ -1,0 +1,363 @@
+'***************************************************************************
+' 
+' RpcClient.class
+' 
+' (c)2005 - Daniel Campos Fernández
+' 
+' XML-RPC Component
+' 
+' Realizado para la Junta de Extremadura.
+' Consejería de Educación Ciencia y Tecnología.
+' Proyecto gnuLinEx
+'
+' This program Is free software; you can redistribute it And / Or modify
+' it under the terms OF the GNU General PUBLIC License AS published by
+' the Free Software Foundation; either version 1, Or (at your option)
+' any later version.
+' 
+' This program Is distributed IN the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; WITHOUT even the implied WARRANTY OF
+' MERCHANTABILITY Or FITNESS FOR A PARTICULAR PURPOSE.See the
+' GNU General PUBLIC License FOR more details.
+' 
+' You should have received a COPY OF the GNU General PUBLIC License
+' along WITH this program; IF Not, WRITE TO the Free Software
+' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+' 
+'***************************************************************************
+EXPORT
+
+PRIVATE Method AS RpcFunction
+PRIVATE hHttp AS hPost
+PRIVATE hMode AS Integer
+PRIVATE sUrl AS String
+PRIVATE isFault AS Boolean
+
+PUBLIC CONST offLine AS Integer = 0
+PUBLIC CONST httpSync AS Integer = 1
+PUBLIC CONST httpAsync AS Integer = 2
+
+PROPERTY Mode AS Integer
+PROPERTY URL AS String
+PROPERTY READ RpcMethod AS RpcFunction
+
+EVENT Reply(Data AS Variant)
+EVENT BadReply(Code AS String)
+
+
+SUB URL_Write(Vl AS String)
+
+  IF hHttp THEN
+    IF hHttp.Http.Status > 0 THEN
+      Error.Raise("Still active")
+      RETURN
+    END IF
+  END IF
+
+  IF hHttp THEN hHttp = NULL
+  sURL = Trim(Vl)
+
+END
+
+FUNCTION URL_Read() AS String
+
+  RETURN sURL
+
+END
+
+
+
+SUB Mode_Write(Vl AS Integer)
+
+  IF hHttp THEN
+    IF hHttp.Http.Status > 0 THEN
+      Error.Raise("Still active")
+      RETURN
+    END IF
+  END IF
+
+  IF vl >= 0 And vl < 3 THEN
+    hMode = vl
+  END IF
+
+  IF vl = 0 THEN hHttp = NULL
+
+END
+
+FUNCTION Mode_Read() AS Integer
+
+  RETURN hMode
+
+END
+
+FUNCTION RpcMethod_Read() AS RpcFunction
+
+  RETURN RpcFunction
+
+END
+
+
+PUBLIC SUB _New(remoteFunction AS RpcFunction)
+
+  hMode = RpcClient.httpSync
+  IF remoteFunction = NULL THEN Error.Raise("Invalid RpcFunction object")
+  Method = remoteFunction
+
+END
+
+PRIVATE FUNCTION testXML(sCad AS String) AS Integer
+
+  DIM Xml AS NEW XmlReader
+
+  TRY Xml.FromString(sCad)
+  IF ERROR THEN RETURN 1
+
+  DO WHILE Not Xml.Eof
+    TRY Xml.Read()
+
+    IF ERROR THEN RETURN 1
+
+
+    IF Not Xml.Eof THEN
+      IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+        SELECT CASE Xml.Node.Name
+          CASE "methodResponse"
+          CASE "fault"
+          CASE "params"
+          CASE "param"
+          CASE "i4"
+          CASE "int"
+          CASE "boolean"
+          CASE "string"
+          CASE "double"
+          CASE "dateTime.iso8601"
+          CASE "base64"
+          CASE "struct"
+          CASE "array"
+          CASE "data"
+          CASE "member"
+          CASE "value"
+          CASE "name"
+          DEFAULT
+            RETURN 2
+        END SELECT
+      END IF
+    END IF
+
+  LOOP
+
+  RETURN 0
+
+END
+
+PUBLIC FUNCTION EvalReply(sCad AS String) AS Variant
+
+  DIM hAtom AS RpcAtom
+
+  IF hHttp THEN
+    IF hHttp.Http.Status > 0 THEN
+      Error.Raise("Still active")
+      RETURN
+    END IF
+  END IF
+
+  TRY hAtom = extractReply(sCad)
+  IF ERROR THEN
+    Error.Raise(Error.Text)
+    RETURN NULL
+  END IF
+
+  IF isFault THEN
+    '//TODO ERROR
+    Error.Raise("server")
+    RETURN NULL
+  END IF
+
+  IF hAtom = NULL THEN
+    IF Method.ReturnType = NULL THEN RETURN NULL
+    Error.Raise("Invalid Return Type, wanted VOID, got " & XmlRpc.ToString(hAtom.Type))
+  END IF
+
+  IF Method.ReturnType <> hAtom.Type THEN
+    Error.Raise("Invalid Return Type, wanted " & XmlRpc.ToString(Method.ReturnType) & ", got " & XmlRpc.ToString(hAtom.Type))
+    RETURN
+  END IF
+
+  RETURN hAtom.Data
+
+END
+
+
+PRIVATE FUNCTION extractReply(sCad AS String) AS RpcAtom
+
+  DIM Xml AS NEW XmlReader
+  DIM hAtom AS RpcAtom
+
+  isFault = FALSE
+  SELECT CASE testXML(sCad)
+    CASE 1
+      Error.Raise("Invalid XML data")
+      RETURN NULL
+    CASE 2
+      Error.Raise("Invalid XML-RPC format")
+      RETURN NULL
+  END SELECT
+
+  Xml.FromString(sCad)
+  IF Tools.Find(Xml, "methodResponse") = FALSE THEN
+    Error.Raise("Invalid XML-RPC format")
+    RETURN NULL
+  END IF
+
+  DO WHILE TRUE
+    IF Not Xml.Eof THEN Xml.Read()
+    IF Xml.Eof THEN BREAK
+    IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+
+      SELECT CASE Xml.Node.Name
+        CASE "params"
+          DO WHILE TRUE
+            Xml.Read()
+            SELECT CASE Xml.Node.Type
+              CASE XmlReaderNodeType.EndElement
+                RETURN NULL
+              CASE XmlReaderNodeType.Element
+                IF Xml.Node.Name = "param" THEN
+                  Xml.Read()
+                  hAtom = Tools.GetParam(Xml)
+                  IF hAtom = NULL THEN
+                    Error.Raise("Invalid XML-RPC format")
+                    RETURN NULL
+                  END IF
+                  RETURN hAtom
+                ELSE
+                  Error.Raise("Invalid XML-RPC format")
+                  RETURN NULL
+                END IF
+            END SELECT
+
+          LOOP
+
+        CASE "fault"
+          isFault = TRUE
+        DEFAULT
+          BREAK
+      END SELECT
+
+    END IF
+  LOOP
+
+  Error.Raise("Invalid XML-RPC format")
+  RETURN NULL
+
+END
+
+PUBLIC SUB hHttp_GotData(Data AS String)
+
+  DIM Dt AS Variant
+
+  IF LAST = NULL THEN
+    Error.Raise("Invalid method call")
+    RETURN
+  END IF
+
+  IF ME.Mode = RpcClient.httpAsync THEN
+    TRY Dt = EvalReply(Data)
+    IF ERROR THEN
+      RAISE BadReply(Error.Text)
+      RETURN
+    END IF
+    RAISE Reply(Dt)
+
+  END IF
+
+END
+
+PUBLIC SUB hHttp_GotError()
+
+  IF LAST = NULL THEN
+    Error.Raise("Invalid method call")
+    RETURN
+  END IF
+
+  IF ME.Mode = RpcClient.httpAsync THEN RAISE BadReply("Unable to contact with server, or bad reply from server")
+
+END
+
+
+PUBLIC FUNCTION Call(Data AS Variant[]) AS Variant
+
+  DIM Xml AS NEW XmlWriter
+  DIM Bucle AS Integer
+  DIM sCad AS String
+
+  IF hHttp THEN
+    IF hHttp.Http.Status > 0 THEN
+      Error.Raise("Still active")
+      RETURN
+    END IF
+  END IF
+
+  IF Method = NULL THEN
+    Error.Raise("Invalid RpcFunction object")
+    RETURN
+  END IF
+
+  IF Data = NULL THEN
+    IF Method.Count <> 0 THEN
+      Error.Raise("Wrong parameters number")
+      RETURN
+    END IF
+  ELSE
+    IF Method.Count <> Data.Count THEN
+      Error.Raise("Wrong parameters number")
+      RETURN
+    END IF
+  END IF
+
+  Xml.Open("")
+  Xml.StartElement("methodCall")
+  Xml.Element("methodName", Method.MethodName)
+  Xml.StartElement("params")
+  FOR Bucle = 0 TO Method.Count - 1
+
+    Xml.StartElement("param")
+    IF Not Tools.AddValue(Xml, Data[Bucle], Method[Bucle]) THEN
+      Xml.EndDocument()
+      Error.Raise("Invalid parameter " & Bucle + 1 & " Type : " & XmlRpc.ToString(Method[Bucle]))
+      RETURN
+    END IF
+    Xml.EndElement()
+
+  NEXT
+  Xml.EndElement()
+
+  IF hMode = RpcClient.offline THEN RETURN Xml.EndDocument()
+
+  IF sURL = "" THEN
+    Error.Raise("Invalid URL")
+    RETURN
+  END IF
+
+  IF hHttp = NULL THEN hHttp = NEW hPost(sURL) AS "hHttp"
+
+  IF hMode = RpcClient.httpSync THEN
+    hHttp.Mode = FALSE
+  ELSE
+    hHttp.Mode = TRUE
+  END IF
+
+  sCad = hHttp.PostData(Xml.EndDocument())
+
+  IF hMode = RpcClient.httpSync THEN
+    IF sCad = "" THEN
+      Error.Raise("Unable to contact with server, or bad reply from server")
+      RETURN NULL
+    END IF
+    RETURN EvalReply(sCad)
+  END IF
+
+  RETURN NULL
+
+END
+

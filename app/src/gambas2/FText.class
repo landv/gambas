@@ -1,0 +1,70 @@
+' Gambas class file
+
+STATIC PUBLIC Value AS String
+
+
+STATIC PUBLIC FUNCTION Run(sText AS String) AS Boolean
+
+  DIM hForm AS Form
+
+  Value = sText
+  hForm = NEW FText
+
+  RETURN hForm.ShowModal()
+
+END
+
+
+PUBLIC SUB _new()
+
+  txtText.Text = Value
+  txtText.SetFocus
+
+  'Config.LoadWindow(ME, "/FText")
+  Settings.Read(ME)
+  chkFont.Value = Settings["/FText/UseFixedFont", FALSE]
+  
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  btnCancel.Move(ME.ClientW - 8 - btnCancel.Width, ME.ClientH - 8 - btnCancel.Height)
+  btnOK.Move(btnCancel.X - 8 - btnOK.Width, btnCancel.Y)
+  txtText.Move(8, 8, ME.ClientW - 16, ME.ClientH - btnCancel.H - 24)
+  chkFont.Move(8, btnOK.Y)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  Value = txtText.Text
+  ME.Close
+
+END
+
+PUBLIC SUB Form_Close()
+
+  'Config.SaveWindow(ME, "/FText")
+  Settings.Write(ME)
+  Settings["/FText/UseFixedFont"] = chkFont.Value
+
+END
+
+
+PUBLIC SUB chkFont_Click()
+
+  IF chkFont.Value THEN
+    txtText.Font = Font["Monospace"]
+  ELSE
+    txtText.Font = NULL
+  ENDIF
+
+END
+

@@ -1,0 +1,1 @@
+../../../gb.qt/src/share/CClipboard_desc.h

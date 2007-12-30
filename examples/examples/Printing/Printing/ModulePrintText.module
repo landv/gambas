@@ -1,0 +1,164 @@
+' Gambas module file
+
+'''
+' Name: ModulePrintText
+' Author: Timothy Marshal-Nichols
+' eMail: timothy@m-nichols.freeserve.co.uk
+' Version: 1.2
+' Version Date: June 2006
+' Version History:
+'   1.1 - 18 June 2006
+'     Update to work with version 1.9.32 of Gambas
+'     Added fit to page option to printing an image or drawing
+'   1.2 - 02 August 2006
+'     Split printing of text, images and drawings into seperate modules
+'     Added the word wrap option to printing
+'
+'''
+' Licence Information
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+'
+' http://www.gnu.org/licenses/gpl.html
+'
+'''
+' Description:
+'
+' This module provides simple printing of text, images or drawings.
+'
+'''
+' Developed using Gambas2 Version
+'
+'  Version: 1.9.35
+'
+' Gambas Components Used:
+'
+' gb - Gambas internal native classes
+' gb.qt - Graphical QT toolkit component
+'
+' Look in the Project menu then Properties... and select
+' the Components tab. Check that the listed components
+' are in the project.
+'
+'''
+' External Dependencies:
+'
+' None
+'
+'''
+' Class Usage:
+'
+' Add this module to your project to provide simple printing.
+' Then call the procedures.
+'
+' To print the content of a text area for example you would provide
+' the text, font and color:
+'
+'   ModulePrinting.PrintText(TextAreaText.Text, TextAreaText.Font, TextAreaText.ForeColor)
+'
+'''
+
+' Prints text using the selected font and color
+PUBLIC SUB PrintText(Text AS String, TextFont AS Font, TextColor AS Integer, OPTIONAL WrapText AS Boolean)
+  DIM textLine AS String
+  DIM fontHeight AS Integer
+  DIM pagePosition AS Integer
+  ' Display printer dialog
+  IF Printer.Setup() THEN RETURN
+  INC Application.Busy
+  Draw.Begin(Printer)
+  ' Set font and text color
+  IF Printer.ColorMode = Printer.Black THEN
+    Draw.ForeColor = Color.Black
+  ELSE
+    Draw.ForeColor = TextColor
+  END IF
+  Draw.Font = TextFont
+  ' Calc height of each line of text
+  fontHeight = Draw.TextHeight("My DEMO Font Height")
+  ' If the WrapText options is selected then resize each line
+  IF WrapText THEN 
+    Text = WordWrap(Text, Printer.Width - Printer.Resolution)
+  END IF
+  pagePosition = 0
+  FOR EACH textLine IN Split(Text, "\n")
+    ' Check if we are past the end of the current page
+    IF pagePosition > (Printer.Height - (3 * fontHeight)) THEN
+      ' Reset our page position to the top of the page and
+      ' tell the printer to start a new page
+      pagePosition = 0
+      Printer.NewPage()
+    END IF
+    ' Calc position for the next line of text
+    pagePosition += fontHeight
+    ' Draw the text a little in from the left
+    Draw.Text(textLine, Printer.Resolution / 2, pagePosition)
+  NEXT
+  Draw.End
+  DEC Application.Busy
+END
+
+' Note that for this function to work it must be called inside a 
+' Draw.Begin() and Draw.End pair. Also you should have set the Draw.Font
+' property to your required font.
+PRIVATE FUNCTION WordWrap(Text AS String, Width AS Integer) AS String
+  DIM wordWrapText AS NEW String[]
+  DIM ln AS String
+  DIM wd AS String
+  DIM ch AS Integer
+  DIM chrs AS String
+  DIM newLine AS String
+  ' We split the text and process each line.
+  ' This is to ensure we preserve any existing new lines.
+  FOR EACH ln IN Split(Text, "\n")
+      newLine = ""
+      FOR EACH wd IN Split(ln, " ")
+        IF newLine = "" THEN
+          ' Add the first word to the line
+          newLine = wd
+        ELSE IF Draw.TextWidth(newLine & " " & wd) >= Width THEN
+          ' If the next word does not fit on the line then add a new line
+          wordWrapText.Add(newLine)
+          newLine = wd
+        ELSE
+           ' Add words to the line if they fit
+          newLine = newLine & " " & wd
+        END IF
+        ' If the line is to long then break the line
+        ' This should only occure if there is one word on the line
+        ' and it does not fit.
+        IF Draw.TextWidth(newLine) >= Width THEN
+          chrs = ""
+          FOR ch = 1 TO Len(newLine)
+            IF Draw.TextWidth(chrs & Mid(newLine, ch, 1)) >= Width THEN
+              ' If the next word does not fit on the line then add a new line
+              wordWrapText.Add(chrs)
+              chrs = Mid(newLine, ch, 1)
+            ELSE
+              ' Add words to the line if they fit
+              chrs = chrs & Mid(newLine, ch, 1)
+            END IF
+          NEXT
+          newLine = chrs
+        END IF
+      NEXT
+      ' Add words to line
+      wordWrapText.Add(newLine)
+  NEXT
+  ' Retrun the text with any extra new lines
+  RETURN wordWrapText.Join("\n")
+END
+
+''' End of ModulePrinting '''

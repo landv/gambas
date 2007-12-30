@@ -1,0 +1,80 @@
+' Gambas module file
+
+PRIVATE $bSVN AS Boolean
+PRIVATE $bCVS AS Boolean
+
+PUBLIC SUB Update()
+
+  $bSVN = Exist(Project.Dir &/ ".svn")
+  $bCVS = Exist(Project.Dir &/ "CVS") OR Exist(Project.Dir &/ "CVSROOT")
+
+END
+
+PUBLIC SUB AddFile(sPath AS String)
+
+  IF $bSVN THEN
+    SHELL "svn add " & Quote.Shell(sPath) WAIT
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS file must already exist
+    SHELL "cvs add " & Quote.Shell(sPath) WAIT
+  ENDIF
+
+END
+
+PUBLIC SUB AddDir(sPath AS String)
+
+  IF $bSVN THEN
+    SHELL "svn add " & Quote.Shell(sPath) WAIT
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS, directory must already exist
+    SHELL "cvs add " & Quote.Shell(sPath) WAIT
+  ENDIF
+
+END
+
+' Must be called *after* the file has been deleted
+
+PUBLIC SUB RemoveFile(sPath AS String)
+
+  IF $bSVN THEN
+    SHELL "svn remove " & Quote.Shell(sPath) WAIT
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS do 'cvs remove file' first then delete file
+    SHELL "cvs remove " & Quote.Shell(sPath) WAIT
+  ENDIF
+
+END
+
+' Must be called *after* the directory has been deleted
+
+PUBLIC SUB RemoveDir(sPath AS String)
+
+  IF $bSVN THEN
+    SHELL "svn remove " & Quote.Shell(sPath) WAIT
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS do 'cvs remove dirname' first then delete dirname
+    SHELL "cvs remove " & Quote.Shell(sPath) WAIT
+  ENDIF
+
+END
+
+' Must be called *after* the file has been moved
+
+PUBLIC SUB MoveFile(sOld AS String, sNew AS String)
+
+  IF $bSVN THEN
+    AddFile(sNew)
+    RemoveFile(sOld)
+  ENDIF
+  IF $bCVS THEN
+    'NB: make sure the file is added BEFORE
+    AddFile(sNew)
+    'NB: make sure the file deleted AFTER
+    RemoveFile(sOld)
+  ENDIF
+
+END

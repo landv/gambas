@@ -1,0 +1,87 @@
+' Gambas class file
+
+EVENT Previous
+EVENT {Next}
+EVENT Cancel
+
+PUBLIC SUB btnPrevious_Click()
+
+  RAISE Previous
+
+END
+
+PUBLIC SUB btnNext_Click()
+
+  RAISE {Next}
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  RAISE Cancel
+
+END
+
+PUBLIC FUNCTION GetContainer() AS Container
+
+  RETURN panWizard
+
+END
+
+PUBLIC SUB SetTitle(sText AS String, hPict AS Picture)
+
+  DIM H AS Integer
+
+  lblTitle.Text = sText
+  picTitle.Picture = hPict
+  picTitle.Visible = hPict
+
+  H = lblTitle.Height
+
+  IF hPict THEN
+    H = Max(H, hPict.Height)
+    picTitle.Width = hPict.Width
+  ENDIF
+
+  H += panTitle.Padding * 2
+  panTitle.Height = H
+
+END
+
+PUBLIC SUB SetPosition(iPos AS Integer, iMax AS Integer)
+
+  btnPrevious.Enabled = iPos > 0
+  IF iPos < iMax THEN
+    btnNext.Text = ("Next")
+    btnNext.Picture = Picture["icon:/16/forward"]
+  ELSE
+    btnNext.Text = ("OK")
+    btnNext.Picture = NULL
+  ENDIF
+
+END
+
+PUBLIC SUB SetShowTitle(bShow AS Boolean)
+  
+  panTitle.Visible = bShow
+  
+END
+
+PUBLIC SUB GetShowTitle() AS Boolean
+  
+  RETURN panTitle.Visible
+  
+END
+
+PUBLIC SUB SetBorder(bOn AS Boolean)
+  
+  panWizard.Border = If(bOn, Border.Sunken, Border.None)
+  
+END
+
+PUBLIC SUB GetBorder() AS Boolean
+  
+  RETURN panWizard.Border <> Border.None
+  
+END
+

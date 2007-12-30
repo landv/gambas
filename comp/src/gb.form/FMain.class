@@ -1,0 +1,9 @@
+' Gambas class file
+
+
+PUBLIC SUB Button1_Click()
+
+  IF Dialog.OpenFile(TRUE) THEN RETURN 
+  DEBUG Dialog.Paths.Join(" ")
+
+END

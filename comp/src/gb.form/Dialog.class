@@ -1,0 +1,23 @@
+' Gambas class file
+
+EXPORT 
+
+STATIC PROPERTY READ Paths AS String[]
+
+STATIC PUBLIC FUNCTION OpenFile(OPTIONAL Multi AS Boolean) AS Boolean
+  
+  RETURN FFileDialog.OpenFile(Multi)
+  
+END
+
+STATIC PUBLIC FUNCTION SaveFile() AS Boolean
+  
+  RETURN FFileDialog.SaveFile()
+  
+END
+
+STATIC PRIVATE FUNCTION Paths_Read() AS String[]
+
+  RETURN FFileDialog.Paths
+
+END

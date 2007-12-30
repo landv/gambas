@@ -1,0 +1,186 @@
+' Gambas module file
+
+EXPORT
+
+PROPERTY Buffered AS Boolean
+PROPERTY ContentType AS String
+PROPERTY Status AS String
+
+PRIVATE $bBuffered AS Boolean
+PRIVATE $sHeader AS String
+PRIVATE $sRedirect AS String
+PRIVATE $hFile AS File
+PRIVATE $sContentType AS String = "text/html"
+PRIVATE $sStatus AS String
+PRIVATE $bBegin AS Boolean
+
+PRIVATE $aDay AS String[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+PRIVATE $aMonth AS String[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+PRIVATE SUB GetTime(dDate AS Date) AS String
+  
+  dDate -= Frac(Date(Now))
+  
+  RETURN $aDay[WeekDay(dDate)] & ", " & Format(Day(dDate), "00") & " " & $aMonth[Month(dDate) - 1] & " " & Year(dDate) & " " & Format(Time(dDate), "hh:nn:ss") & " GMT"
+  
+END
+
+
+PUBLIC SUB AddHeader(Name AS String, Value AS String)
+
+  IF NOT Value THEN RETURN  
+  $sHeader &= Name & ": " & Value & "\r\n"
+  
+END
+
+PUBLIC SUB Redirect(URL AS String)
+  
+  IF $bBegin THEN RETURN
+  
+  IF URL LIKE "http://*" THEN 
+    AddHeader("Location", URL)
+  ELSE 
+    AddHeader("Location", "http://" & CGI["HTTP_HOST"] &/ URL)
+  ENDIF
+  
+  Response.Begin
+  Response.End
+  
+END
+
+PUBLIC SUB SetCookie(Cookie AS String, Value AS String, OPTIONAL Domain AS String, OPTIONAL Path AS String, OPTIONAL Expires AS Date)
+  
+  DIM sVal AS String
+  
+  sVal = Cookie & "=" & Value
+  IF Domain THEN sVal &= ";domain=" & Domain
+  IF Expires THEN sVal &= ";expires=" & GetTime(Expires)
+  IF Path THEN sVal &= ";path=" & Path
+  
+  AddHeader("Set-Cookie", sVal)
+  
+END
+
+PUBLIC SUB RemoveCookie(Cookie AS String, Value AS String, OPTIONAL Domain AS String, OPTIONAL Path AS String)
+  
+  DIM sVal AS String
+  
+  sVal = Cookie & "=" & Value
+  IF Domain THEN sVal &= ";domain=" & Domain
+  sVal &= ";expires=" & GetTime(Now - 1)
+  IF Path THEN sVal &= ";path=" & Path
+  
+  AddHeader("Set-Cookie", sVal)
+  
+END
+
+PUBLIC SUB Begin()
+
+  IF $bBegin THEN RETURN 
+  
+  IF $sStatus THEN AddHeader("Status", $sStatus)
+  AddHeader("Content-type", $sContentType)
+  'AddHeader("Cache-control", "private")
+  
+  IF $bBuffered THEN
+  
+    $hFile = OPEN Temp$("response") FOR CREATE
+    OUTPUT TO #$hFile
+    
+  ELSE
+  
+    PRINT $sHeader
+    
+  ENDIF
+  
+  $bBegin = TRUE
+  
+END
+
+PUBLIC SUB End()
+  
+  DIM sBuffer AS String
+
+  IF $bBuffered THEN
+  
+    CLOSE #$hFile
+    OUTPUT TO DEFAULT 
+    
+    $hFile = OPEN Temp$("response") FOR READ 
+    AddHeader("Content-Length", Lof($hFile))
+    
+    PRINT $sHeader
+  
+    WHILE NOT Eof($hFile)
+      READ #$hFile, sBuffer, -4096
+      PRINT sBuffer;
+    WEND
+    CLOSE #$hFile
+    
+  ENDIF
+  
+END
+
+PUBLIC SUB SendFile(Path AS String, OPTIONAL ContentType AS String)
+  
+  DIM sBuffer AS String
+
+  IF NOT Exist(Path) THEN
+    PRINT "Status: 404 Not Found"
+    PRINT
+    RETURN
+  ENDIF
+
+  IF NOT ContentType THEN ContentType = $sContentType
+  PRINT "Content-type: "; ContentType
+  PRINT $sHeader;
+  'IF Name THEN PRINT "Content-location: "; "/" & CGI.Encode(Name)
+  
+  $hFile = OPEN Path FOR READ 
+
+  PRINT "Content-length: "; Lof($hFile)
+  PRINT
+  WHILE NOT Eof($hFile)
+    READ #$hFile, sBuffer, -4096
+    PRINT sBuffer;
+  WEND
+  CLOSE #$hFile
+  
+END
+
+
+PRIVATE FUNCTION Buffered_Read() AS Boolean
+
+  RETURN $bBuffered  
+
+END
+
+PRIVATE SUB Buffered_Write(Value AS Boolean)
+
+  $bBuffered = Value
+
+END
+
+PRIVATE FUNCTION ContentType_Read() AS String
+
+  RETURN $sContentType  
+
+END
+
+PRIVATE SUB ContentType_Write(Value AS String)
+
+  $sContentType = Value  
+
+END
+
+PRIVATE FUNCTION Status_Read() AS String
+
+  RETURN $sStatus
+
+END
+
+PRIVATE SUB Status_Write(Value AS String)
+
+  $sStatus = Value
+
+END

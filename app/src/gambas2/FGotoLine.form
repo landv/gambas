@@ -1,0 +1,33 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(7.625,8.25,29,9)
+  'Move(61,66,232,72)
+  Text = ("Go to line")
+  Icon = Picture["img/16/goto.png"]
+  Border = Window.Fixed
+  { btnOK Button
+    MoveScaled(16,1,12,3)
+    'Move(128,8,96,24)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(16,5,12,3)
+    'Move(128,40,96,24)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { Label1 Label
+    MoveScaled(1,1,14,3)
+    'Move(8,8,112,24)
+    Text = ("Go to line")
+  }
+  { txtLine TextBox
+    MoveScaled(1,4,13,4)
+    'Move(8,32,104,32)
+    Font = Font["+1"]
+    Text = ("")
+    Alignment = Align.Right
+  }
+}

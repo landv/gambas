@@ -1,0 +1,66 @@
+' Gambas class file
+
+
+STATIC PUBLIC FUNCTION GetFactorUnitToInch(Unit AS String) AS Float
+  SELECT CASE Unit
+    CASE "cm"
+      RETURN 0.3937
+    CASE "ft"
+      RETURN 12
+    CASE "in"
+      RETURN 1
+    CASE "m"
+      RETURN 39.37
+    CASE "mm"
+      RETURN 0.03937
+    CASE 6
+      RETURN 
+    CASE 7
+     RETURN
+    CASE 8
+      RETURN
+  END SELECT
+END
+
+STATIC PUBLIC FUNCTION UnitsConverter(Value AS Float, Unit1 AS String, Unit2 AS String) AS Float
+  
+  DIM fInch AS Float
+  DIM f AS Float
+  
+  f = GetFactorUnitToInch(Unit1)
+  finch = value * f
+  f = GetFactorUnitToInch(Unit2)
+  RETURN finch / f
+  
+  
+END
+
+STATIC PUBLIC FUNCTION CmToUnit(Value AS Float, Unit AS String) AS Float
+  
+  DIM fInch AS Float
+  DIM f AS Float
+  
+  f = GetFactorUnitToInch("cm")
+  finch = value * f
+  f = GetFactorUnitToInch(Unit)
+  RETURN finch / f
+  
+  
+END
+
+STATIC PUBLIC FUNCTION UnitToCm(Value AS Float, Unit AS String) AS Float
+  
+  DIM fInch AS Float
+  DIM f AS Float
+  
+  f = GetFactorUnitToInch(Unit)
+  finch = value * f
+  f = GetFactorUnitToInch("cm")
+  RETURN finch / f
+  
+  
+END
+
+
+
+

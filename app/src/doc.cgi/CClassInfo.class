@@ -1,0 +1,221 @@
+' Gambas class file
+
+PUBLIC Name AS String
+PUBLIC Parent AS String
+PUBLIC Symbols AS Collection
+PUBLIC Creatable AS Boolean
+PUBLIC AutoCreatable AS Boolean
+PUBLIC Component AS String
+PUBLIC ParentComponent AS String
+PUBLIC DefaultEvent AS String
+PUBLIC Events AS String[]
+PUBLIC PropertyList AS String[]
+PUBLIC Properties AS Collection
+PUBLIC VirtualControl AS Boolean
+PUBLIC DrawWith AS String
+
+PUBLIC SUB _new(sName AS String, OPTIONAL sParent AS String)
+
+  DIM hSym AS CSymbolInfo
+
+  Name = sName
+  {Parent} = sParent
+  Symbols = NEW Collection(gb.Text)
+
+  IF {Parent} THEN
+    TRY ParentComponent = CComponent.Classes[sParent].Component
+    IF ParentComponent THEN
+      FOR EACH hSym IN CComponent.Classes[sParent].Symbols
+        Symbols[hSym.Name] = hSym
+      NEXT
+    ELSE
+      Parent = ""
+    ENDIF
+  ENDIF
+
+END
+
+
+PUBLIC FUNCTION IsVirtual() AS Boolean
+
+  RETURN Left$(Name) = "."
+
+END
+
+
+
+' PUBLIC SUB InitControl(hWin AS Form)
+' 
+'   DIM aProp AS String[]
+'   DIM sProp AS String
+'   DIM sParent AS String
+'   DIM hProp AS CPropertyInfo
+'   DIM hSym AS CSymbolInfo
+'   DIM hCtrl AS Object
+'   DIM sDefVal AS String
+'   DIM iPos AS Integer
+'   DIM hClass AS CClassInfo
+'   DIM bRemove AS Boolean
+' 
+'   IF Not Symbols.Exist("_Properties") THEN RETURN
+' 
+'   IF CComponent.All[Component].Type = "Form" THEN
+'     IF Name = "Form" Or Name = "Control" THEN
+'       hCtrl = hWin
+'     ENDIF
+'   ENDIF
+' 
+'   IF Not hCtrl THEN
+' 
+'     IF Name = "Menu" THEN
+'       VirtualControl = FALSE
+'     ELSE
+'       VirtualControl = TRUE
+'       hClass = ME
+'       DO
+'         hSym = hClass.Symbols["_new"]
+'         IF hSym THEN
+'           IF InStr(hSym.Signature, "Container;") THEN
+'             VirtualControl = FALSE
+'             BREAK
+'           ENDIF
+'         ENDIF
+'         TRY hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
+'         IF ERROR THEN BREAK
+'       LOOP
+'     ENDIF
+' 
+'     hClass = ME
+'     DO
+'       'hSym = hClass.Symbols["_new"]
+'       'PRINT Name; " -> "; hSym.Signature
+'       'IF Len(hSym.Signature) And Left$(hSym.Signature) <> "[" THEN
+'       'IF hClass.Name = "Connection" THEN STOP
+'       IF VirtualControl THEN
+'         TRY hCtrl = NEW (hClass.Name)
+'       ELSE
+'         TRY hCtrl = NEW (hClass.Name, hWin)
+'       ENDIF
+' 
+'       IF hCtrl THEN BREAK
+' 
+'       TRY hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
+'       IF ERROR THEN BREAK
+'     LOOP
+' 
+'     IF Not hCtrl THEN hCtrl = NEW Frame(hWin)
+' 
+'   ENDIF
+' 
+'   hSym = Symbols["_Properties"]
+'   sProp = hSym.Value
+' 
+'   IF Left$(sProp) = "*" THEN
+'     sProp = Mid$(sProp, 3)
+'     sParent = CComponent.Classes[Parent].PropertyList.Join(",")
+'     IF Left(sParent, Len(CPropertyInfo.EVENT_NAME)) = CPropertyInfo.EVENT_NAME THEN
+'       sParent = Mid$(sParent, Len(CPropertyInfo.EVENT_NAME) + 2)
+'     ENDIF
+'     IF sParent THEN
+'       IF sProp THEN sProp = "," & sProp
+'       sProp = sParent & sProp
+'     ENDIF
+'   ENDIF
+' 
+'   Properties = NEW Collection
+'   FOR EACH sProp IN Split(sProp)
+' 
+'     ' Name can be "xxx=yyy" if the property has a default value
+'     iPos = InStr(sProp, "=")
+'     IF iPos THEN
+'       sDefVal = Mid$(sProp, iPos + 1)
+'       sProp = Left$(sProp, iPos - 1)
+'     ELSE
+'       sDefVal = ""
+'     ENDIF
+' 
+'     bRemove = Left(sProp) = "-"
+'     IF bRemove THEN sProp = Mid$(sProp, 2)
+' 
+'     IF Component THEN
+'       'PRINT "? "; Component; ": "; Name; "."; sProp
+'       IF Not CComponent.Classes[Component &/ Name].Symbols[sProp] THEN
+'         PRINT Component; ": "; Name; "."; sProp; " declared but not implemented"
+'         CONTINUE
+'       ENDIF
+'     ENDIF
+' 
+'     IF bRemove THEN
+'       Properties[sProp] = NULL
+'     ELSE
+'       hProp = NEW CPropertyInfo(Component, Name, sProp, hCtrl, FALSE, VirtualControl, sDefVal)
+'       Properties[sProp] = hProp
+'     ENDIF
+' 
+'   NEXT
+' 
+'   TRY DefaultEvent = Symbols["_DefaultEvent"].Value
+' 
+'   Events = NEW String[]
+'   FOR EACH hSym IN Symbols
+'     IF hSym.Kind = ":" THEN
+'       Events.Add(Mid$(hSym.Name, 2))
+'     ENDIF
+'   NEXT
+'   Events.Sort
+' 
+'   ' Modification des propriétés
+' 
+'   PropertyList = NEW String[]
+' 
+'   FOR EACH hProp IN Properties
+'     PropertyList.Add(hProp.Name)
+'   NEXT
+' 
+'   Properties[CPropertyInfo.EVENT_NAME] = NEW CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, NULL)
+'   PropertyList.Add(CPropertyInfo.EVENT_NAME, 0)
+' 
+'   'IF Name = "Timer" THEN
+'   IF VirtualControl THEN
+' 
+'     Properties["X"] = NEW CPropertyInfo("", "", "X", hWin, TRUE)
+'     PropertyList.Add("X", 1)
+'     Properties["Y"] = NEW CPropertyInfo("", "", "Y", hWin, TRUE)
+'     PropertyList.Add("Y", 2)
+' 
+'   ENDIF
+' 
+'   TRY DrawWith = Symbols["_DrawWith"].Value
+'   'IF DrawWith THEN ?Me. <= CRASH!
+'   '  PRINT ME.Name;; "->";; DrawWith
+'   'ENDIF
+' 
+'   IF hCtrl <> hWin THEN
+'     TRY hCtrl.Delete
+'   ENDIF
+' 
+' END
+
+
+PUBLIC FUNCTION GetProperties() AS Collection
+
+  IF Properties THEN
+    IF Properties.Count THEN
+      RETURN Properties
+    ENDIF
+  ENDIF
+
+  IF {Parent} THEN
+    RETURN CComponent.Classes[ParentComponent &/ {Parent}].GetProperties()
+  ENDIF
+
+END
+
+
+PUBLIC FUNCTION Inherits(sClass AS String) AS Boolean
+
+  IF {Parent} = sClass THEN RETURN TRUE
+  IF Not Parent THEN RETURN FALSE
+  RETURN CComponent.Classes[ParentComponent &/ Parent].Inherits(sClass)
+
+END

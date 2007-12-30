@@ -1,0 +1,55 @@
+' Gambas module file
+
+PUBLIC PageCount AS Integer = 0
+PUBLIC ResolutionAffichage AS Float '= 72
+PUBLIC ReportZoom AS Float '= 1
+PUBLIC ReportResolution AS Float '= 72
+'PUBLIC ReportUnits AS Integer
+
+
+PUBLIC FUNCTION UnitsToPixels(Value AS Float) AS Integer
+  
+  DIM f AS Float
+  
+  f = Units.GetFactorUnitToInch("cm") * ReportResolution
+  
+  RETURN Value * f '* ResolutionAffichage
+END
+
+PUBLIC FUNCTION PixelsToUnits(Value AS Integer) AS Float
+  DIM f AS Float
+  
+  f = Units.GetFactorUnitToInch("cm") * ReportResolution
+    
+  RETURN (Value) / f
+END
+PUBLIC FUNCTION ScanValue(sText AS String) AS TSizeParse
+  
+  DIM i AS Integer
+  DIM s AS String
+  DIM sVal AS String 
+  DIM sUnit AS String
+  DIM hTSP AS NEW TSizeParse
+  IF NOT sText THEN sText = "0 px"
+  'DIM ars AS String
+  'PRINT "Reçoit", sText
+  FOR i = 1 TO Len(sText)
+    s = Mid(sText, i, 1)
+    IF IsDigit(s) OR s = "." THEN 
+      sVal &= s
+      CONTINUE
+    ENDIF 
+    IF IsLetter(s) THEN 
+      sUnit &= s
+    ENDIF
+  NEXT 
+  ' PRINT "retourne ", sVal, sUnit
+  
+  hTSP.Value = CFloat(Trim(sVal))
+
+  hTsp.Unit = sUnit
+  RETURN hTSP
+  
+  END
+
+
