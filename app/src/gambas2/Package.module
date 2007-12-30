@@ -1,0 +1,951 @@
+' Gambas module file
+
+PUBLIC Path AS String
+PUBLIC ChangeLog AS String
+
+PRIVATE RPMBUILD_PROG AS String
+PRIVATE DKPG_PROG AS String
+PRIVATE TAR_1_13_PROG AS String
+
+PRIVATE $sOutput AS String
+PRIVATE $bEnd AS Boolean
+PRIVATE $bChecked AS Boolean
+
+PRIVATE $sName AS String            ' Project name 
+PRIVATE $sPrefix AS String          ' Prefix
+PRIVATE $sPackageName AS String     ' Package name, i.e project name with prefix
+PRIVATE $sCategories AS String      ' Categories list
+PRIVATE $sHome AS String            ' Home user directory
+
+PUBLIC SUB CheckProgram()
+  
+  IF $bChecked THEN RETURN
+
+  $bChecked = TRUE
+  
+  IF NOT Project.CheckProgram("dh_install") THEN DKPG_PROG = "dh_install"
+  IF NOT Project.CheckProgram("rpmbuild") THEN RPMBUILD_PROG = "rpmbuild"
+  IF NOT Project.CheckProgram("tar-1.13") THEN TAR_1_13_PROG = "tar-1.13"
+  
+END
+
+PUBLIC SUB CheckSystem(sSys AS String) AS String
+  
+  CheckProgram
+  
+  SELECT CASE sSys
+  
+    CASE "mandriva", "fedora", "suse"
+      IF NOT RPMBUILD_PROG THEN RETURN Subst(("'&1' is not installed on your system."), "rpmbuild")
+      
+    CASE "debian", "ubuntu"
+      IF NOT DKPG_PROG THEN RETURN Subst(("'&1' is not installed on your system."), "debhelper")
+
+    CASE "slackware"
+      IF NOT TAR_1_13_PROG THEN RETURN Subst(("'&1' is not installed on your system."), "tar-1.13")
+
+    CASE ELSE
+      RETURN
+      
+  END SELECT
+  
+END
+
+
+PRIVATE SUB AddLog(sText AS String)
+
+  FMakeInstall.AddLog(sText)
+
+END
+
+PRIVATE SUB InitMake(sSys AS String)
+  
+  IF Project.Prefix THEN 
+    IF Project.Vendor THEN 
+      $sPrefix = String.LCase(Project.Vendor) & "-"
+    ELSE 
+      $sPrefix = "gambas-"
+    ENDIF
+  ELSE 
+    $sPrefix = "" 
+  ENDIF
+
+  $sName = String.LCase(Project.Name)
+  $sPackageName = $sPrefix & $sName
+  $sHome = System.User.Home
+  
+  $sCategories = Project.Categories[sSys]
+  IF $sCategories THEN $sCategories &= ";"
+
+END
+
+PUBLIC FUNCTION Make() AS Boolean
+
+  DIM sSys AS String
+  DIM sMacro AS String
+  DIM bAdd AS Boolean
+  DIM sPath AS String
+  
+  ' Save old rpm macro file
+  sMacro = User.Home &/ ".rpmmacros"
+  TRY MOVE sMacro TO sMacro & ".save"
+  TRY KILL sMacro
+
+  FOR EACH sSys IN Project.Systems
+
+    IF MakePackage(sSys) THEN RETURN TRUE
+
+  NEXT
+
+  ' Restore old rpm macro file
+  TRY KILL sMacro
+  TRY MOVE sMacro & ".save" TO sMacro
+
+  AddLog(("Saving CHANGELOG file."))
+  sPath = Project.Dir &/ "CHANGELOG"
+  bAdd = NOT Exist(sPath)
+  File.Save(sPath, ChangeLog)
+  Project.RefreshKey(sPath)
+  IF bAdd THEN VersionControl.AddFile(sPath)
+  
+  AddLog(("The packages have been successfully created.") & "\n")
+
+END
+
+PUBLIC FUNCTION GetChangeDate() AS String
+
+  DIM sLang AS String
+  DIM sDate AS String
+
+  sLang = System.Language
+  System.Language = "C"
+  sDate = Format$(Now, "ddd mmm dd yyyy") & " " & Project.Maintainer & " "
+  IF Project.Address THEN sDate = sDate & "<" & Project.Address & "> "
+  sDate = sDate & Subst("&1.&2-&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
+  System.Language = sLang
+  RETURN sDate
+
+END
+
+
+PRIVATE FUNCTION IsConsoleProject() AS Boolean
+
+  DIM sLib AS String
+
+  FOR EACH sLib IN Project.Libraries
+    IF CComponent.All[sLib].Type = "Form" THEN RETURN FALSE
+  NEXT
+
+  RETURN TRUE
+
+END
+
+PRIVATE SUB PrintOnlyShowIn(hFile AS File, sCategories AS String)
+  
+  DIM aCat AS String[] = Split(sCategories, ";", "", TRUE)
+  DIM sCat AS String
+  DIM aOnly AS NEW String[]
+  
+  IF aCat.Exist("Screensaver") OR IF aCat.Exist("TrayIcon") OR IF aCat.Exist("Applet") OR IF aCat.Exist("Shell") THEN
+  
+    FOR EACH sCat IN aCat
+      IF sCat = "KDE" OR IF sCat = "GNOME" OR IF sCat = "ROX" OR IF sCat = "XFCE" THEN
+        aOnly.Add(sCat)
+      ENDIF
+    NEXT
+    
+    IF aOnly.Count THEN PRINT #hFile, "ShowOnlyIn="; aOnly.Join(";"); ";"
+    
+  ENDIF
+  
+END
+
+PRIVATE FUNCTION MakePackage(sSys AS String) AS Boolean
+
+  AddLog(Subst(("Creating package for &1."), FMakeInstall.GetSystemName(sSys)))
+
+  InitMake(sSys)
+  
+  SELECT CASE sSys
+  
+    CASE "mandriva", "fedora", "suse"
+      MakeRpmPackage(sSys)
+  
+    CASE "debian", "ubuntu"
+      MakeDebPackage(sSys)
+      
+    CASE "slackware"
+      MakeTgzPackage(sSys)
+    
+    DEFAULT
+      RETURN TRUE
+    
+  END SELECT
+  
+CATCH
+
+  AddLog(("The package build has failed.") & "\n" & Error.Where & ": " & Error.Text)
+  FGambas.Error(("The package build has failed."))
+  Application.Busy = 0
+  RETURN TRUE
+
+END
+
+PRIVATE FUNCTION MakeDebPackage(sSys AS String)
+
+  DIM sBuildDir AS String
+  DIM hFile AS File
+  DIM sPrefix AS String
+  DIM sCmd AS String
+  DIM sIcon AS String
+  DIM sData AS String
+  DIM sLib AS String
+  DIM sPackage AS String
+  DIM sArch AS String
+  DIM sPackagePath AS String
+  DIM aLine AS String[]
+  DIM n AS Integer
+      
+  INC Application.Busy
+  
+  sIcon = $sName & ".png"
+
+  ' Step 1. Create the build directory
+
+  AddLog(("Making build directory.")) 
+  sPackagePath = Path &/ $sPackageName
+  sArch = Path &/ Subst("&1_&2.&3.orig.tar.gz", $sPackageName, Project.MajorVersion, Project.MinorVersion)
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(Project.Dir &/ sIcon)
+  
+  Project.MakeSourcePackageTo(sArch)
+  
+  sCmd = "cd " & Quote.Shell(Path) & "; tar xzf " & Quote.Shell(sArch) & " > /dev/null"
+  SHELL sCmd WAIT 
+  
+  ' Rename the source archive project directory to the package name
+  TRY MOVE Path &/ (sPrefix & Subst("&1", Project.Name)) TO sPackagePath
+
+  TRY MKDIR sPackagePath &/ "debian"
+
+  ' Step 2. Make the desktop file
+
+  AddLog(("Creating desktop file..."))
+  hFile = OPEN sPackagePath &/ "debian/" & $sPackageName & ".desktop" FOR CREATE
+
+  PRINT #hFile, "[Desktop Entry]"
+  PRINT #hFile, "Version=1.0"
+  PRINT #hFile, "Encoding=UTF-8"
+  PRINT #hFile, "Name=";    
+  IF Project.Title THEN
+    PRINT #hFile, Project.Title
+  ELSE
+    PRINT #hFile, Project.Name
+  ENDIF
+  PRINT #hFile, "Comment=";    
+  IF Project.Description THEN
+    PRINT #hFile, Replace(Project.Description, "\n", " ")
+  ELSE
+    PRINT #hFile, Project.Name
+  ENDIF
+  PRINT #hFile, "Exec=/usr/bin/"; $sName & ".gambas"
+  PRINT #hFile, "Icon=/usr/share/pixmaps/" & sIcon
+  PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+  PRINT #hFile, "Type=Application"
+  PRINT #hFile, "StartupNotify=true"
+  PRINT #hFile, "Categories="; $sCategories
+  PrintOnlyShowIn(hFile, $sCategories)
+  CLOSE #hFile
+
+  'Step 3. Create debianization needed files: control, rules
+  'debian/copyright
+
+  AddLog(("Sources are being debianizated."))
+  hFile = OPEN sPackagePath &/ "debian/copyright" FOR CREATE 
+  PRINT #hFile, "This package was debianized by " & Project.Maintainer & " <" & Project.Address & "> on"
+  PRINT #hFile, Format$(Date, "ddd, dd mmm yyyy hh:nn:ss") & "+0000"
+  PRINT #hFile
+  PRINT #hFile, "Copyright Holder: " & Project.Maintainer & " <" & Project.Address & ">"
+  PRINT #hFile
+  PRINT #hFile, "License:"
+  PRINT #hFile
+  PRINT #hFile, If(Project.License, Project.License, "GNU General Public License") 
+  CLOSE #hFile
+  
+  'debian/changelog
+  hFile = OPEN sPackagePath &/ "debian/changelog" FOR CREATE 
+  PRINT #hFile, ChangelogToDebChangelog()
+  CLOSE #hFile
+  
+  'debian/menu
+  hFile = OPEN sPackagePath &/ "debian/menu" FOR CREATE 
+  PRINT #hFile, "?package(controlaula):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \"Apps/" & Project.Groups[sSys]; "\"\\"
+  PRINT #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
+  PRINT #hFile, "command=\"/usr/bin/"; $sName; ".gambas\"\\"
+  PRINT #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
+  CLOSE #hFile
+  
+  'debian/dirs
+  hFile = OPEN sPackagePath &/ "debian/dirs" FOR CREATE
+  PRINT #hFile, "usr/bin\nusr/share/applications\nusr/share/pixmaps"
+  CLOSE #hFile
+  
+  'debian/install
+  hFile = OPEN sPackagePath &/ "debian/install" FOR CREATE
+  PRINT #hFile, $sName; ".gambas usr/bin"
+  PRINT #hFile, sIcon; " usr/share/pixmaps"
+  PRINT #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
+  CLOSE #hFile  
+
+  'debian/control
+  hFile = OPEN sPackagePath &/ "debian/control" FOR CREATE
+  PRINT #hFile, "Source: "; $sName
+  PRINT #hFIle, "Section: "; Split(Project.Groups[sSys], "/")[0]
+  PRINT #hFile, "Priority: optional"
+  PRINT #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
+  PRINT #hFile, "Build-Depends: debhelper (>= 4.0.0), gambas2-dev (>= 1.9.48), gambas2-dev (<< 2.1)";
+  FOR EACH sLib IN Project.Libraries
+    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= 1.9.48), gambas2-"; Replace(sLib, ".", "-"); " (<< 2.1)";
+  NEXT 
+  PRINT #hFile
+  PRINT #hFile, "Standards-Version: 3.7.2"
+  PRINT #hFile
+  PRINT #hFile, "Package: "; $sPackageName
+  PRINT #hFile, "Architecture: any"
+  PRINT #hFile, "Depends: ${shlibs:Depends}, ${misc:Depends}, gambas2-runtime (>= 1.9.48), gambas2-runtime (<< 2.1)";
+    FOR EACH sLib IN Project.Libraries
+    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= 1.9.48), gambas2-"; Replace(sLib, ".", "-"); " (<< 2.1)";
+  NEXT 
+  PRINT #hFile
+  aLine = Split(Project.Description, "\n")
+  IF aline.Count = 0 THEN 
+    PRINT #hFile, "Description: This is ";
+    IF Project.Title THEN 
+      PRINT #hFile, Project.Title
+    ELSE 
+      PRINT #hFile, Project.Name
+    ENDIF 
+  ELSE 
+    PRINT #hFile, "Description:"; IIf(Len(aLine[0]) > 60, Left$(aLine[0], 60), aLine[0])
+    FOR n = 1 TO aLine.Count - 1  
+      PRINT #hFile, " "; Trim(aLine[n])
+    NEXT 
+  ENDIF
+  PRINT #hFile, " This program is written in Gambas"
+  CLOSE #hFile
+  
+  'debian/rules
+  hFile = OPEN sPackagePath &/ "debian/rules" FOR CREATE
+  PRINT #hFile, "#!/usr/bin/make -f"
+  PRINT #hFile, "build: build-stamp\nbuild-stamp:"
+  PRINT #hFile, "\tdh_testdir\n\ttouch build-stamp"
+  PRINT #hFile, "\t"; Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE)
+  PRINT #hFile, "\tgba"; System.Version
+  PRINT #hFile
+  PRINT #hFile, "clean:"
+  PRINT #hFile, "\tdh_testdir\n\tdh_testroot\n\trm -Rf `find . -name \".gambas\"`"  
+  PRINT #hFile, "\trm -Rf `find . -name \"*.gambas\"`\n"
+  PRINT #hFile, "\trm -f build-stamp install-stamp\n\tdh_clean"
+  PRINT #hFile 
+  PRINT #hFile, "install: build\n\tdh_testdir\n\tdh_testroot\n\tdh_clean -k\n"
+  PRINT #hFile, "\tdh_installdirs\n\ttouch install-stamp"
+  PRINT #hFile
+  PRINT #hFile, "binary-indep: build install\n\tdh_testdir"
+  PRINT #hFile
+  PRINT #hFile, "binary-arch: build install"
+  PRINT #hFile, "\tdh_testdir -a\n\tdh_testroot -a\n\tdh_installdocs -a"
+  PRINT #hFile, "\tdh_installchangelogs -a\n\tdh_install -a\n\tdh_installmenu"
+  PRINT #hFile, "\tdh_strip -a\n\tdh_compress -a\n\tdh_fixperms -a"
+  PRINT #hFile, "\tdh_installdeb -a\n\tdh_shlibdeps -a\n\tdh_gencontrol -a"
+  PRINT #hFile, "\tdh_md5sums -a\n\tdh_builddeb -a"
+  PRINT #hFile
+  PRINT #hFile, "binary: binary-indep binary-arch"
+  PRINT #hFile, ".PHONY: build clean binary-indep binary-arch binary install"
+  CLOSE #hFile
+  TRY SHELL "chmod +x " & sPackagePath &/ "debian/rules" 
+
+  ' Step 4. Build package
+
+  AddLog(("Creating package..."))
+  sCmd = "cd " & Quote.Shell(sPackagePath) & "; fakeroot dpkg-buildpackage > /dev/null"
+  SHELL sCmd WAIT FOR READ
+  
+  TRY SHELL "rm -Rf " & Quote.Shell(sPackagePath) WAIT
+  TRY SHELL "rm -f " & Quote.Shell(Path) &/ "*.dsc.asc" WAIT 
+
+  DEC Application.Busy
+
+END
+
+PRIVATE SUB ChangelogToDebChangelog() AS String
+ 
+  DIM aLine AS String[]
+  DIM sLine AS String
+  DIM debChangelog AS String
+  DIM sDate AS String
+  DIM sVersion AS String
+  DIM sBits AS String[]
+  DIM previousLine AS String
+  
+  aLine = Split(ChangeLog, "\n")  
+  FOR EACH sLine IN aLine
+    IF Left$(sLine, 1) = "*" THEN 
+      IF sDate <> "" THEN
+        'Debian packages don't accept an empty changelog line for the release:
+        IF previousLine = $sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n" THEN 
+          debChangelog = debChangelog & ("  * New release version\n") 
+        ENDIF   
+        debChangelog = debChangelog & "\n -- " & Project.Maintainer & " <" & Project.Address & ">  " & sDate & "\n\n"
+      ENDIF
+      sbits = Split(sLine, " ")
+      sDate = sbits[1] & ", " & sbits[3] & " " & sbits[2] & " " & sbits[4] & " 12:00:00 +0000"
+      sVersion = sbits[7]
+      previousLine = $sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n"
+      debChangelog = debChangelog & previousLine
+    ELSE 
+      IF Trim$(sLine) <> "" THEN
+        previousLine = "  * " & Right$(sLine, Len(sLine) - 2) & "\n" 
+        debChangelog = debChangelog & previousLine    
+      ENDIF
+    ENDIF   
+  NEXT 
+  
+  debChangelog = debChangelog & "\n -- " & Project.Maintainer & " <" & Project.Address & ">  " & sDate & "\n"
+   
+  RETURN debChangelog 
+
+END
+
+
+PRIVATE FUNCTION MakeRpmPackage(sSys AS String) 
+
+  DIM sSrc AS String
+  DIM sDir AS String
+  DIM sCmd AS String
+  DIM hFile AS File
+  DIM sArch AS String
+  DIM sOutput AS String
+  DIM sLang AS String
+  DIM sPackage AS String
+  DIM sVersionSuffix AS String
+  DIM sIcon AS String
+  DIM sDistribution AS String
+  DIM sVendor AS String
+  DIM sRelease AS String
+  DIM sLib AS String
+  DIM sMacro AS String
+
+  INC Application.Busy
+
+  SELECT CASE sSys
+
+    CASE "mandriva"
+      sDistribution = "Mandriva"
+      sVendor = "MandrivaSoft"
+      sVersionSuffix = "mdv"
+
+    CASE "fedora"
+      sDistribution = "Fedora"
+      sVendor = "Fedora"
+      sVersionSuffix = ""
+
+    CASE "suse"
+      sDistribution = "SuSE Linux"
+      sVendor = "SuSE Linux AG"
+      sVersionSuffix = "suse"
+
+  END SELECT
+  
+    ' step 1, set up RPM dirs and macros if they're not there already
+
+  AddLog(("Initializing ~/RPM directory."))
+
+  FOR EACH sCmd IN ["RPM/", "RPM/BUILD/", "RPM/RPMS/", "RPM/SOURCES/", "RPM/SPECS/", "RPM/SRPMS/", "RPM/tmp/"]
+    TRY MKDIR $sHome &/ sCmd
+  NEXT
+
+  hFile = OPEN $sHome &/ ".rpmmacros" FOR CREATE
+  PRINT #hFile, "%_topdir " & $sHome &/ "RPM"
+  PRINT #hFile, "%_tmppath " & $sHome &/ "RPM/tmp"
+    'PRINT #hFile, "%_signature gpg"
+    'PRINT #hFile, "%_gpg_name Mandrivalinux"
+    'PRINT #hFile, "%_gpg_path ~/.gnupg"
+  PRINT #hFile, "%packager "; Project.Maintainer & "<" & SConv(Project.Address) & ">"
+  PRINT #hFile, "%buildhost "; System.Host
+  PRINT #hFile, "%distribution "; sDistribution
+  PRINT #hFile, "%vendor "; If(Project.Vendor, Project.Vendor, sVendor)
+  CLOSE #hFile
+
+    ' step 2, write source tarball (with bzip) to SOURCES dir
+
+  AddLog(("Creating source package."))
+
+  sSrc = $sHome &/ "RPM/SOURCES"
+
+  sDir = Project.Dir &/ ".icon"
+  SHELL "rm -rf " & Quote.Shell(sDir) WAIT
+  TRY MKDIR sDir
+
+    ' IF Project.Icon THEN
+    '   hIcon = Image.Load(Project.Dir &/ Project.Icon)
+    ' ELSE
+    '   hIcon = Image.Load("img/32/gambas.png")
+    ' ENDIF
+
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 16).Save(sDir &/ "16.png")
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 32).Save(sDir &/ "32.png")
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sDir &/ "48.png")
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 64).Save(sDir &/ "64.png")
+
+  sArch = sSrc &/ Subst("&1-&2.&3.tar.bz2", $sPackageName, Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
+  Project.MakeSourcePackageTo(sArch)
+
+  SHELL "rm -rf " & Quote.Shell(sDir) WAIT
+
+  AddLog(("Creating .spec file."))
+
+  hFile = OPEN $sHome &/ "RPM/SPECS" &/ $sPackageName & ".spec" FOR CREATE
+
+  PRINT #hFile, "%define name " & $sPackageName
+  PRINT #hFile, "%define version " & Subst("&1.&2", Project.MajorVersion, Project.MinorVersion)
+  sRelease = Project.ReleaseVersion & sVersionSuffix
+  PRINT #hFile, "%define release "; sRelease
+  
+  PRINT #hFile
+  PRINT #hFile, "Summary: " & IIf(Project.Title, Project.Title, "Gambas project " & Project.Name)
+  PRINT #hFile, "Name: %{name}"
+  PRINT #hFile, "Version: %{version}"
+  PRINT #hFile, "Release: %{release}"
+  PRINT #hFile, "Source0: %{name}-%{version}.tar.bz2"
+  PRINT #hFile, "License: "; If(Project.License, Project.License, "GPL")
+  PRINT #hFile, "Group: " & Project.Groups[sSys]
+  PRINT #hFile, "BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot"
+  PRINT #hFile, "Prefix: %{_prefix}"
+    'PRINT #hFile, "BuildRequires: gambas2-ide"
+  PRINT #hFile, "BuildArch: noarch"
+
+  PRINT #hFile, "Requires: gambas2-runtime >= 1.9.48,gambas2-runtime < 2.1";
+
+  FOR EACH sLib IN Project.Libraries
+    PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " >= 1.9.48";
+    PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " < 2.1";
+  NEXT
+  PRINT #hFile
+
+  PRINT #hFile, "AutoReqProv: no"
+
+  PRINT #hFile, "\n%description\n" & Project.Description & "\nThis program is written in Gambas, so you will need Gambas to be installed."
+
+  PRINT #hFile, "\n%prep"
+  PRINT #hFile, "rm -rf %{buildroot}"
+
+  PRINT #hFile, "\n%setup -q -n " & Quote.Shell($sName)
+
+  PRINT #hFile, "\n%build"
+  PRINT #hFile, Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE) & "\ngba"; System.Version
+
+  PRINT #hFile, "\n%install"
+
+  PRINT #hFile, "install -d %{buildroot}/%{_bindir}"
+  PRINT #hFile, "install -p "; Quote.Shell($sName); ".gambas %{buildroot}/%{_bindir}" &/ Quote.Shell($sName)
+
+  sIcon = Quote.Shell($sName) & ".png"
+
+    ' NOTE: There are explicit references to /usr/share.
+    '       I must find a way to use the rpm macros instead.
+
+  SELECT CASE sSys
+
+    CASE "mandriva"
+
+      PRINT #hFile, "install -d %{buildroot}/%{_miconsdir}"
+      PRINT #hFile, "install -d %{buildroot}/%{_iconsdir}"
+      PRINT #hFile, "install -d %{buildroot}/%{_liconsdir}"
+      PRINT #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ sIcon
+      PRINT #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ sIcon
+      PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ sIcon
+
+      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+      PRINT #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
+      PRINT #hFile, "[Desktop Entry]"
+      PRINT #hFile, "Version=1.0"
+      PRINT #hFile, "Encoding=UTF-8"
+      PRINT #hFile, "Name=";    
+      IF Project.Title THEN
+        PRINT #hFile, Project.Title
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Comment=";    
+      IF Project.Description THEN
+        PRINT #hFile, Replace(Project.Description, "\n", " ")
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+      PRINT #hFile, "Icon="; sIcon
+      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+      PRINT #hFile, "Type=Application"
+      PRINT #hFile, "StartupNotify=true"
+      PRINT #hFile, "Categories=X-MandrivaLinux-"; Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-"); ";"; $sCategories
+      PrintOnlyShowIn(hFile, $sCategories)
+      PRINT #hFile, "EOF"
+
+      PRINT #hFile, "\n%post"
+      PRINT #hFile, "%{update_menus}"
+
+      PRINT #hFile, "\n%postun"
+      PRINT #hFile, "%{clean_menus}"
+
+    CASE "fedora"
+
+      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+      PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+
+      PRINT #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+      PRINT #hFile, "[Desktop Entry]"
+      PRINT #hFile, "Version=1.0"
+      PRINT #hFile, "Encoding=UTF-8"
+      PRINT #hFile, "Name=";    
+      IF Project.Title THEN
+        PRINT #hFile, Project.Title
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Comment=";    
+      IF Project.Description THEN
+        PRINT #hFile, Replace(Project.Description, "\n", " ")
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+      PRINT #hFile, "Icon="; sIcon
+      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+      PRINT #hFile, "Type=Application"
+      PRINT #hFile, "StartupNotify=true"
+      PRINT #hFile, "Categories=X-RedHat-Extra;"; $sCategories
+      PrintOnlyShowIn(hFile, $sCategories)
+      PRINT #hFile, "EOF"
+
+    CASE "suse"
+
+      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+      PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+
+      PRINT #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+      PRINT #hFile, "[Desktop Entry]"
+      PRINT #hFile, "Version=1.0"
+      PRINT #hFile, "Encoding=UTF-8"
+      PRINT #hFile, "Name=";    
+      IF Project.Title THEN
+        PRINT #hFile, Project.Title
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Comment=";    
+      IF Project.Description THEN
+        PRINT #hFile, Replace(Project.Description, "\n", " ")
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+      PRINT #hFile, "Icon="; sIcon
+      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+      PRINT #hFile, "Type=Application"
+      PRINT #hFile, "StartupNotify=true"
+      PRINT #hFile, "Categories="; $sCategories
+      PrintOnlyShowIn(hFile, $sCategories)
+      PRINT #hFile, "EOF"
+
+  END SELECT
+
+  PRINT #hFile, "\n%clean"
+  PRINT #hFile, "rm -rf %{buildroot}"
+
+  PRINT #hFile, "\n%files"
+  PRINT #hFile, "%defattr(-,root,root)"
+  PRINT #hFile, "%{_bindir}" &/ Quote.Shell($sName)
+
+  SELECT CASE sSys
+
+    CASE "mandriva"
+
+      PRINT #hFile, "/%{_miconsdir}" &/ sIcon
+      PRINT #hFile, "/%{_iconsdir}" &/ sIcon
+      PRINT #hFile, "/%{_liconsdir}" &/ sIcon
+            'PRINT #hFile, "/%{_menudir}" &/ sName
+      PRINT #hFile, "/%{_datadir}/applications/%{name}.desktop"
+    
+    CASE "fedora"
+
+      PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
+      PRINT #hFile, "%{_datadir}/applications/%{name}.desktop"
+
+    CASE "suse"
+
+      PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
+      PRINT #hFile, "%{_datadir}/applications/%{name}.desktop"
+
+  END SELECT
+
+  PRINT #hFile, "\n%changelog\n"
+  PRINT #hFile, ChangeLog
+
+  CLOSE #hFile
+
+    ' and step 4.... build that sucker.
+
+  AddLog(("Creating package...") & "\n")
+
+  sLang = System.Language
+  System.Language = "C"
+
+  sCmd = RPMBUILD_PROG & " -ba " & Quote.Shell($sHome &/ "RPM/SPECS" &/ $sPackageName & ".spec")
+  AddLog(sCmd)
+
+    'sTemp = Temp$
+  $sOutput = ""
+  $bEnd = FALSE
+  SHELL sCmd & " 2>&1" WAIT FOR READ 'TO sOutput
+    ' REPEAT
+    '   SLEEP 0.01
+    '   WAIT
+    ' UNTIL $bEnd
+  
+  AddLog("")
+  
+  sOutput = DConv(Replace($sOutput, "\r", ""))
+
+  TRY KILL $sHome &/ ".rpmmacros"
+
+  System.Language = sLang
+
+  DEC Application.Busy
+
+  IF Process.LastValue THEN Error.Raise(("'rpmbuild' has returned the following error code:") & " " & Process.LastValue)
+
+  FOR EACH sCmd IN Split(sOutput, "\n")
+    IF Left(sCmd, 6) = "Wrote:" AND Right$(sCmd, 10) = "noarch.rpm" THEN
+
+      sPackage = Subst("&1-&2.&3-&4.noarch.rpm", $sPackageName, Project.MajorVersion, Project.MinorVersion, sRelease)
+            ' IF sSys = "debian" THEN
+            '   SHELL "cd " & Quote.Shell(sHome &/ "RPM/RPMS/noarch") & "; fakeroot " & ALIEN_PROG & " --to-deb -k " & Quote.Shell(sPackage) WAIT
+            '   sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+            '   IF NOT Exist(sHome &/ "RPM/RPMS/noarch" &/ sPackage) THEN Error.Raise("alien command has failed")
+            ' ENDIF
+      MoveFile($sHome &/ "RPM/RPMS/noarch" &/ sPackage, Path &/ sPackage)
+      AddLog(sPackage)
+
+      sPackage = Subst("&1-&2.&3-&4.src.rpm", $sPackageName, Project.MajorVersion, Project.MinorVersion, sRelease)
+            ' IF sSys = "debian" THEN
+            '   SHELL "cd " & Quote.Shell(sHome &/ "RPM/SRPMS") & "; fakeroot alien --to-deb -k " & Quote.Shell(sPackage) WAIT
+            '   sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+            '   IF NOT Exist(sHome &/ "RPM/SRPMS" &/ sPackage) THEN Error.Raise("alien command has failed")
+            '   MoveFile(sHome &/ "RPM/SRPMS" &/ sPackage, Path &/ File.BaseName(sPackage) & ".src.deb")
+            ' ELSE
+      MoveFile($sHome &/ "RPM/SRPMS" &/ sPackage, Path &/ sPackage)
+      AddLog(sPackage)
+            ' ENDIF
+
+    END IF
+  NEXT
+
+END
+
+PRIVATE SUB PrintSlackDescRuler(hFile AS File)
+  
+  DIM sLine AS String
+  
+  sLine = Space(Len($sPackageName)) & "|-----handy-ruler" & String$(76, "-")
+  sLine = Left(sLine, 75) & "|"
+  PRINT #hFile, sLine
+  
+END
+
+PRIVATE SUB PrintSlackDesc(hFile AS File, sLine AS String)
+  
+  sLine = $sPackageName & ": " & sLine
+  sLine = Left(sLine, 76)
+  PRINT #hFile, sLine
+  
+END
+
+
+PRIVATE SUB PrintSlackDescContents(hFile AS File, sData AS String, nLine AS Integer)
+
+  DIM sLine AS String
+  DIM iPos AS Integer
+    
+  WHILE nLine
+    IF sData THEN
+      sLine = Left(sData, 76 - Len($sPackageName) - 2)
+      iPos = RInStr(sLine, " ")
+      IF iPos THEN sLine = RTrim(Left(sLine, iPos - 1))
+      sData = LTrim(Mid$(sData, Len(sLine) + 1))
+    ELSE
+      sLine = ""
+    ENDIF
+    PrintSlackDesc(hFile, sLine)
+    DEC nLine
+  WEND
+  
+END
+
+PRIVATE SUB MakeTgzPackage(sSys AS String)
+
+  DIM sDistribution AS String
+  DIM sVendor AS String
+  DIM sBuildDir AS String
+  DIM hFile AS File
+  DIM sPrefix AS String
+  DIM sCmd AS String
+  DIM sIcon AS String
+  DIM sData AS String
+  DIM sLib AS String
+  DIM sPackage AS String
+      
+  INC Application.Busy
+
+  sDistribution = "Slackware"
+  sVendor = "Slackware"
+  
+  ' 1. Create the temporary build directory
+
+  AddLog(("Making build directory."))
+
+  sBuildDir = File.SetExt(Temp$("slackware"), "")
+  SHELL "rm -rf " & sBuildDir WAIT
+  MKDIR sBuildDir
+
+  FOR EACH sCmd IN ["/usr", "/usr/bin", "/usr/share", "/usr/share/applications", "/usr/share/pixmaps", "/install"]
+    TRY MKDIR sBuildDir &/ sCmd
+  NEXT
+
+  ' 2. Copy the executable
+
+  COPY Project.Dir &/ Project.Name & ".gambas" TO sBuildDir &/ "/usr/bin" &/ Project.Name
+  SHELL "chmod a+x " & Quote.Shell(sBuildDir &/ "/usr/bin" &/ Project.Name) WAIT
+  
+  ' 3. Copy the icon
+
+  ' IF Project.Icon THEN
+  '   hIcon = Image.Load(Project.Dir &/ Project.Icon)
+  ' ELSE
+  '   hIcon = Image.Load("img/gambas.png")
+  ' ENDIF
+
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ "/usr/share/pixmaps" &/ Project.Name & ".png")
+
+  ' 4. Make the desktop file
+  
+  sIcon = Quote.Shell($sName) & ".png"
+
+  hFile = OPEN sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" FOR CREATE
+
+  PRINT #hFile, "[Desktop Entry]"
+  PRINT #hFile, "Version=1.0"
+  PRINT #hFile, "Encoding=UTF-8"
+  PRINT #hFile, "Name=";    
+  IF Project.Title THEN
+    PRINT #hFile, Project.Title
+  ELSE
+    PRINT #hFile, Project.Name
+  ENDIF
+  PRINT #hFile, "Comment=";    
+  IF Project.Description THEN
+    PRINT #hFile, Replace(Project.Description, "\n", " ")
+  ELSE
+    PRINT #hFile, Project.Name
+  ENDIF
+  PRINT #hFile, "Exec=/usr/bin/"; $sName
+  PRINT #hFile, "Icon=/usr/share/pixmaps/"; $sName & ".png"
+  PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+  PRINT #hFile, "Type=Application"
+  PRINT #hFile, "StartupNotify=true"
+  PRINT #hFile, "Categories="; $sCategories
+  PrintOnlyShowIn(hFile, $sCategories)
+
+  CLOSE #hFile
+
+  ' 5. Description file
+
+  hFile = OPEN sBuildDir &/ "/install/slack-desc" FOR CREATE
+  
+  PRINT #hFile, File.Load("install/slack-desc-header");    
+  PrintSlackDescRuler(hFile)
+  PrintSlackDesc(hFile, Subst("&1 &2.&3.&4 &5", $sPackageName, Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion, Project.Title))
+  PrintSlackDesc(hFile, "")
+  sData = Replace(Project.Description, "\n", " ")
+  PrintSlackDescContents(hFile, sData, 7)
+  PrintSlackDesc(hFile, "Package created by: " & Project.Maintainer)
+  PrintSlackDesc(hFile, "EMail address: " & Project.Address)
+
+  CLOSE #hFile
+  
+  ' 6. Dependencies
+  
+  hFile = OPEN sBuildDir &/ "/install/slack-required" FOR CREATE
+  
+  PRINT #hFile, "gambas2-runtime >= 1.9.48"
+  PRINT #hFile, "gambas2-runtime < 2.1"
+
+  FOR EACH sLib IN Project.Libraries
+    PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " >= 1.9.48"
+    PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " < 2.1"
+  NEXT
+  
+  CLOSE #hFile
+  
+  ' 7. Create package
+  
+  AddLog(("Creating package...") & "\n")
+
+  sCmd = TAR_1_13_PROG & " --exclude=slackware.tgz --owner=root --group=root -c -z -f slackware.tgz ."
+  AddLog(sCmd)
+  $sOutput = ""
+  $bEnd = FALSE
+  SHELL "(cd " & SConv(Quote.Shell(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ 'TO sOutput
+  REPEAT
+    SLEEP 0.01 
+    WAIT
+  UNTIL $bEnd
+  
+  DEC Application.Busy
+
+  IF Process.LastValue THEN Error.Raise(("'tar' has returned the following error code:") & " " & Process.LastValue)
+
+  AddLog("")
+  sPackage = sPrefix & Subst("&1-&2.&3.&4-noarch-1.tgz", $sPackageName, Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
+  MoveFile(sBuildDir &/ "slackware.tgz", Path &/ sPackage)
+  AddLog(sPackage)
+
+END
+
+
+PRIVATE SUB MoveFile(sSrc AS String, sDst AS String)
+
+  TRY KILL sDst
+  TRY MOVE sSrc TO sDst
+  IF ERROR THEN
+    COPY sSrc TO sDst
+    TRY KILL sSrc
+  ENDIF
+  
+END
+
+PUBLIC SUB Process_Kill()
+  
+  $bEnd = TRUE
+  
+END
+
+PUBLIC SUB Process_Read()
+  
+  DIM sData AS String
+  
+  READ #LAST, sData, -256
+  $sOutput &= sData
+  FMakeInstall.AddLog(sData, TRUE)
+  
+END

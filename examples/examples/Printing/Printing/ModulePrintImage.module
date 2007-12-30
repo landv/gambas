@@ -1,0 +1,112 @@
+' Gambas module file
+
+'''
+' Name: ModulePrintImage
+' Author: Timothy Marshal-Nichols
+' eMail: timothy@m-nichols.freeserve.co.uk
+' Version: 1.2
+' Version Date: August 2006
+' Version History:
+'   1.1 - 18 June 2006
+'     Update to work with version 1.9.32 of Gambas
+'     Added fit to page option to printing an image or drawing
+'   1.2 - 02 August 2006
+'     Split printing of text, images and drawings into seperate modules
+'
+'''
+' Licence Information
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+'
+' http://www.gnu.org/licenses/gpl.html
+'
+'''
+' Description:
+'
+' This module provides simple printing of images.
+'
+'''
+' Developed using Gambas2 Version
+'
+'  Version: 1.9.35
+'
+' Gambas Components Used:
+'
+' gb - Gambas internal native classes
+' gb.qt - Graphical QT toolkit component
+'
+' Look in the Project menu then Properties... and select
+' the Components tab. Check that the listed components
+' are in the project.
+'
+'''
+' External Dependencies:
+'
+' None
+'
+'''
+' Class Usage:
+'
+' Add this module to your project to provide simple printing.
+' Then call the procedure.
+'
+' To print an Image centred on the printer page supply the image:
+'
+'   ModulePrintImage.PrintImage(displayImage)
+'
+' If you want to print a drawing or image full size on the page then
+' set the FitToPage option to true:
+'
+'   ModulePrintImage.PrintDrawing(displayImage, TRUE)
+'
+'''
+
+' Prints an image centered on the page.
+' A image supports the following file formats:
+'   Portable Network Graphics (*.png)
+'   Joint Photographic Experts Group (*.jpeg *.jpg)
+'   Windows Bitmap (*.bmp)
+'   Graphics Interchange Format (*.gif)
+'   X PixMap (*.xpm)
+' Setting the FitToPage option to true will fill the page with the image
+PUBLIC SUB PrintImage(img AS Image, OPTIONAL FitToPage AS Boolean)
+  DIM imageToPrint AS Image
+  DIM imageWidth AS Integer
+  DIM imageHeight AS Integer
+  DIM scaleIsotropic AS Float
+  ' Display printer dialog
+  IF Printer.Setup() THEN RETURN
+  INC Application.Busy
+  ' Get image size for the printer resolution
+  imageWidth = (img.Width * Printer.Resolution) / Desktop.Resolution
+  imageHeight = (img.Height * Printer.Resolution) / Desktop.Resolution
+  ' Adjust image size if it does not fit on the printer page
+  ' Also if the fit to page option is set fill the page with the image
+  IF FitToPage OR imageWidth > Printer.Width OR imageHeight > Printer.Height THEN
+    ' Scale Isotropic, keep aspect ratio of the image
+    scaleIsotropic = Min(Printer.Width / imageWidth, Printer.Height / imageHeight)
+    imageWidth *= scaleIsotropic
+    imageHeight *= scaleIsotropic
+  END IF
+  ' Scale image
+  imageToPrint = img.Stretch(imageWidth, imageHeight, TRUE)
+  ' Draw image centred on printer page
+  Draw.Begin(Printer)
+  Draw.Image(imageToPrint, (Printer.Width - imageWidth) / 2, (Printer.Height - imageHeight) / 2)
+  Draw.End
+  DEC Application.Busy
+END
+
+''' End of ModulePrintImage '''

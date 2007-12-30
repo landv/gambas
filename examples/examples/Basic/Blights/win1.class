@@ -1,0 +1,33 @@
+' Gambas class file
+
+
+PUBLIC SUB Timer1_Timer()
+
+  DIM diode AS PictureBox
+  DIM l AS Integer
+
+  FOR EACH diode IN [l1, l2, l3, l4, l5, l6, l7, l8]
+    l = Rnd() * 2
+    IF l = 0 THEN
+        diode.Picture = Picture["bloff.xpm"]
+    ELSE
+        diode.Picture = Picture["blon.xpm"]
+    ENDIF
+  NEXT
+
+END
+
+
+
+PUBLIC SUB Form_Open()
+
+  DIM hPict AS Picture
+  DIM diode AS PictureBox
+
+  hPict = Picture["blon.xpm"]
+
+  FOR EACH diode IN [l1, l2, l3, l4, l5, l6, l7, l8]
+    diode.Resize(hPict.Width, hPict.Height)
+  NEXT
+
+END

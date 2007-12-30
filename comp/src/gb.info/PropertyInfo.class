@@ -1,0 +1,237 @@
+' Gambas class file
+
+PUBLIC CONST EVENT_NAME AS String = "(Group)"
+
+STATIC PRIVATE $cRedirect AS NEW Collection
+STATIC PRIVATE $cTranslate AS NEW Collection
+
+
+PUBLIC Name AS String
+PUBLIC Type AS String
+PUBLIC Kind AS String
+PUBLIC DefaultValue AS Variant
+
+PUBLIC Coord AS Boolean
+PUBLIC Required AS Boolean
+PUBLIC Exclude AS Boolean
+PUBLIC Hidden AS Boolean
+PUBLIC DoNotWrite AS Boolean
+PUBLIC AlwaysRead AS Boolean
+PUBLIC Virtual AS Boolean
+PUBLIC Translate AS Boolean
+
+PUBLIC ConstantClass AS String
+PUBLIC ConstantList AS Collection
+
+
+'--------------------------------------------------
+' Property syntax
+'
+' Name{Kind}=Default
+'
+' Kind values:
+' {:Border}
+' {:Align,Top,Center,Bottom}
+' {Range:Min,Max}
+' {Color}
+' {Font}
+' {Font:Fixed}
+' {Picture}
+' {Path}
+' {Text}
+'--------------------------------------------------
+'
+' Type = 'String[]' => Kind = 'List' ??
+'
+
+STATIC PRIVATE FUNCTION GetFrom(cCol AS collection, sClass AS String, sName AS String) AS Boolean
+
+  IF cCol.Exist(sClass & "." & sName) THEN
+    RETURN cCol[sClass & "." & sName]
+  ELSE IF cCol.Exist(sName) THEN
+    RETURN cCol[sName]
+  ENDIF
+
+END
+
+
+PUBLIC SUB _new(sComponent AS String, sClass AS String, sName AS String, OPTIONAL bVirtual AS Boolean, OPTIONAL bDoNotWrite AS Boolean, OPTIONAL sKind AS String, OPTIONAL sDefVal AS String)
+
+  DIM iPos AS Integer
+  DIM sType AS String
+  DIM sList AS String
+  DIM cList AS String[]
+  DIM hComp AS ComponentInfo
+  DIM hClass AS ClassInfo
+  DIM hSym AS SymbolInfo
+  'DIM sDefVal AS String
+  DIM bError AS Boolean
+  DIM sSign AS String
+
+  'iPos = Instr(sName, "=")
+  'IF iPos THEN
+  '  sDefVal = Trim(Mid$(sName, iPos + 1))
+  '  sName = Trim(Left$(sName, iPos - 1))
+  'ENDIF
+
+  'if (sClass & "." & sName) = "Menu.Text" then stop
+
+  Name = sName
+
+  IF Name = EVENT_NAME THEN
+    Type = "s"
+    Virtual = TRUE
+    Exclude = TRUE
+    DoNotWrite = TRUE
+    RETURN
+  ENDIF
+
+  IF sComponent THEN
+    hComp = Info[sComponent]
+    hClass = hComp[sClass]
+    hSym = hClass[sName] 'CComponent.Classes[sComponent &/ sClass].Symbols[sName]
+    Type = hSym.Type
+    sSign = hSym.Signature
+  ELSE
+    IF Name = "X" OR Name = "Y" THEN
+      Type = "i"
+    ENDIF
+  ENDIF
+  'sClass = hSym.Class
+
+  IF Len(Type) = 1 THEN
+    IF Name = "Visible" THEN
+      sDefVal = "FALSE"
+    ELSE IF Name = "X" OR Name = "Y" OR Name = "Width" OR Name = "Height" OR Name = "Text" THEN
+      Required = TRUE
+    ELSE IF Name = "Tag" THEN
+      Type = "s"
+
+
+    'ELSE IF Name = "List" THEN
+    '  Type = "List"
+    'ELSE IF hCtrl THEN
+    '  TRY DefaultValue = Object.GetProperty(hCtrl, Name)
+    ENDIF
+  'ELSE IF Type = "Font" THEN
+  '  DefaultValue = "" 'Object.GetProperty(hCtrl, Name).ToString()
+  ENDIF
+
+  SELECT CASE Type
+    CASE "i"
+      IF NOT sDefVal THEN
+        DefaultValue = 0
+      ELSE
+        TRY DefaultValue = CInt(sDefVal)
+        IF ERROR THEN DefaultValue = sDefVal
+      ENDIF
+    CASE "e"
+      IF NOT sDefVal THEN
+        DefaultValue = 0
+      ELSE
+        DefaultValue = CFloat(sDefVal)
+      ENDIF
+    CASE "b"
+      IF NOT sDefVal THEN
+        DefaultValue = FALSE
+      ELSE
+        DefaultValue = LCase(sDefVal) <> "false"
+      ENDIF
+    CASE "s"
+      DefaultValue = sDefVal
+  END SELECT
+
+  IF Type = "i" THEN
+
+    IF Name = "Background" OR Name = "Foreground" OR InStr(Name, "Color") > 0 THEN
+
+      Type = "Color"
+      'DefaultValue = NULL
+      'AlwaysRead = TRUE
+
+    ELSE IF sSign THEN
+
+      Type = "Constant"
+
+      ConstantList = NEW Collection
+
+      cList = Split(hSym.Signature)
+      ConstantClass = cList[0]
+      cList.Remove(0)
+
+      IF cList.Count THEN
+
+        FOR EACH sList IN cList
+
+          hSym = Info.Classes[ConstantClass][sList]
+          ' Maybe the constant declared in the property don't really exist
+          TRY ConstantList[CStr(hSym.Value)] = sList
+
+        NEXT
+
+      ELSE
+
+        FOR EACH hSym IN Info.Classes[ConstantClass].Symbols
+
+          IF hSym.Kind = "C" THEN
+            IF NOT hSym.IsHidden() THEN
+              ConstantList[CStr(hSym.Value)] = hSym.Name
+            ENDIF
+          ENDIF
+
+        NEXT
+
+      ENDIF
+
+      sList = ConstantList[CStr(DefaultValue)]
+      'PRINT sClass & "." & sName; " : "; ConstantClass & "." & sList; " = "; DefaultValue; TypeOf(DefaultValue)
+      DefaultValue = sList
+
+      'PRINT sClass; "."; sName; " is constant"
+
+      'PRINT ConstantClass; " = ";
+      'FOR EACH sList IN ConstantList
+      '  PRINT sList; "("; CLASS[ConstantClass].Symbols[sList].Value; " ) ";
+      'NEXT
+      'PRINT
+
+    ENDIF
+
+  ELSE IF Type = "s" THEN
+
+    IF InStr(Name, "Path") THEN
+
+      Type = "Path"
+
+    ENDIF
+
+  ENDIF
+
+  Coord = Name = "X" OR Name = "Y" OR Name = "Width" OR Name = "Height"
+  Kind = sKind
+  Virtual = bVirtual
+  DoNotWrite = bDoNotWrite
+
+  IF NOT hComp THEN RETURN
+
+  DoNotWrite = GetFrom(hComp.DoNotWrite, sClass, sName)
+  AlwaysRead = GetFrom(hComp.AlwaysRead, sClass, sName)
+  Translate = GetFrom(hComp.Translate, sClass, sName)
+
+  IF hClass.MultiContainer THEN
+
+    Exclude = Name = "Text" OR Name = "Index" OR Name = "Picture"
+    Hidden = Name = "Index"
+
+  ENDIF
+
+CATCH
+
+  DEBUG sComponent; ": "; sClass; "."; sName; ": "; Error.Where;; Error.Text
+  'hSym = CComponent.Classes["System"].Symbols["Language"]
+
+  Type = "s"
+  DoNotWrite = TRUE
+  DefaultValue = NULL
+
+END

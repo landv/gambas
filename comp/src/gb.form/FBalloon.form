@@ -1,0 +1,30 @@
+# Gambas Form File 1.0
+
+{ FBalloon Form
+  MoveScaled(0,0,35,23)
+  'Move(0,0,280,184)
+  Background = &HFFFFDF&
+  Text = ("")
+  Mask = True
+  Persistent = True
+  Border = Window.None
+  TopOnly = True
+  SkipTaskbar = True
+  { txtMessage TextLabel
+    MoveScaled(8,3,24,7)
+    'Move(64,24,192,56)
+    AutoResize = True
+    Text = ("")
+    Alignment = Align.Normal
+  }
+  { timCheck #Timer
+    #X = 136
+    #Y = 120
+    Delay = 250
+  }
+  { imgIcon PictureBox txtMessage
+    MoveScaled(2,4,5,5)
+    'Move(16,32,40,40)
+    Visible = False
+  }
+}

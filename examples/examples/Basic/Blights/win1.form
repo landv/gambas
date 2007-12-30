@@ -1,0 +1,64 @@
+# Gambas Form File 1.0
+
+{ win1 Form
+  MoveScaled(20.2222,29.7778,53.4444,5.2222)
+  'Move(182,268,481,47)
+  Text = ("Blinkenlights")
+  Icon = Picture["blon.xpm"]
+  Border = Window.Fixed
+  Arrangement = Arrange.Horizontal
+  { l1 PictureBox
+    MoveScaled(0,0,6,5)
+    'Move(0,0,54,45)
+    Picture = Picture["bloff.xpm"]
+    Alignment = Align.Center
+  }
+  { l2 PictureBox
+    MoveScaled(6,0,7.2222,6)
+    'Move(54,0,65,54)
+    Picture = Picture["bloff.xpm"]
+    Alignment = Align.Center
+  }
+  { l3 PictureBox
+    MoveScaled(13,0,7.2222,6)
+    'Move(117,0,65,54)
+    Picture = Picture["bloff.xpm"]
+    Alignment = Align.Center
+  }
+  { l4 PictureBox
+    MoveScaled(20,0,7.2222,6)
+    'Move(180,0,65,54)
+    Picture = Picture["bloff.xpm"]
+    Alignment = Align.Center
+  }
+  { l5 PictureBox
+    MoveScaled(27,0,7.2222,6)
+    'Move(243,0,65,54)
+    Picture = Picture["bloff.xpm"]
+    Alignment = Align.Center
+  }
+  { l6 PictureBox
+    MoveScaled(34,0,7.2222,6)
+    'Move(306,0,65,54)
+    Picture = Picture["bloff.xpm"]
+    Alignment = Align.Center
+  }
+  { Timer1 #Timer
+    #X = 312
+    #Y = 8
+    Enabled = True
+    Delay = 200
+  }
+  { l7 PictureBox
+    MoveScaled(41,0,7.2222,6)
+    'Move(369,0,65,54)
+    Picture = Picture["bloff.xpm"]
+    Alignment = Align.Center
+  }
+  { l8 PictureBox
+    MoveScaled(48,0,7.2222,6)
+    'Move(432,0,65,54)
+    Picture = Picture["blon.xpm"]
+    Alignment = Align.Center
+  }
+}

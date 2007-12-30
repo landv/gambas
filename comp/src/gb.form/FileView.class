@@ -1,0 +1,520 @@
+' Gambas class file
+
+INHERITS UserControl
+EXPORT
+
+PUBLIC CONST _Properties AS String = "*,Border=True,Mode{Select.*},Dir,ShowDetailed,ShowHidden,ShowDirectory"
+PUBLIC CONST _DefaultEvent AS String = "Click"
+
+EVENT {Select}
+EVENT Click
+EVENT Activate
+EVENT Menu
+EVENT Icon(Path AS String)
+
+PROPERTY {Dir} AS String
+PROPERTY ShowHidden AS Boolean
+PROPERTY ShowDirectory AS Boolean
+PROPERTY Current AS String
+PROPERTY Font AS Font
+PROPERTY Mode AS Integer
+PROPERTY ShowDetailed AS Boolean
+PROPERTY READ Selection AS String[]
+PROPERTY Filter AS String[]
+PROPERTY Icon AS Picture
+PROPERTY Border AS Boolean
+PROPERTY Settings AS String
+
+STATIC PRIVATE $aImgExt AS String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
+STATIC PRIVATE $cExt AS NEW Collection(gb.Text)
+
+PRIVATE $sDir AS String
+PRIVATE $bShowHidden AS Boolean
+PRIVATE $bShowDir AS Boolean
+PRIVATE $hIconView AS IconView
+PRIVATE $hColumnView AS ColumnView
+PRIVATE $iSort AS Integer
+PRIVATE $bAsc AS Boolean = TRUE
+PRIVATE $aFilter AS String[]
+PRIVATE $hPict AS Picture
+
+STATIC PUBLIC SUB _init()
+  
+  $cExt["html"] = "html"
+  $cExt["htm"] = "html"
+  $cExt["tar"] = "archive"
+  $cExt["gz"] = "archive"
+  $cExt["tgz"] = "archive"
+  $cExt["bz2"] = "archive"
+  $cExt["z"] = "archive"
+  $cExt["zip"] = "archive"
+  $cExt["txt"] = "text"
+  $cExt["mp3"] = "audio"
+  $cExt["ogg"] = "audio"
+  $cExt["wav"] = "audio"
+  $cExt["mpg"] = "video"
+  $cExt["mpeg"] = "video"
+  $cExt["avi"] = "video"
+  $cExt["wmv"] = "video"
+  $cExt["mov"] = "video"
+
+END
+
+
+PUBLIC SUB _new()
+
+  WITH $hIconView = NEW IconView(ME) AS "View"
+    .Arrangement = IconView.LeftRight
+    .WordWrap = TRUE
+    .Sorted = TRUE
+  END WITH
+
+  WITH $hColumnView = NEW ColumnView(ME) AS "View"
+    .Columns.Count = 3
+    .Columns[0].Text = ("Name")
+    .Columns[1].Text = ("Size")
+    .Columns[1].Alignment = Align.Right
+    .Columns[2].Text = ("Last modified")
+    .Columns[2].Alignment = Align.Right
+    .Columns[0].Width = 64
+    .Columns[1].Width = 64
+    .Columns[2].Width = 96
+    .Visible = FALSE
+    .Sorted = TRUE
+  END WITH
+
+  RefreshView
+  RefreshGrid
+
+END
+
+PRIVATE FUNCTION CheckFilter(sFile AS String) AS Boolean
+
+  DIM sFilter AS String
+
+  FOR EACH sFilter IN $aFilter
+    IF sFile LIKE sFilter THEN RETURN
+  NEXT
+
+  RETURN TRUE
+
+END
+
+PRIVATE SUB GetIcon(sPath AS String, iSize AS Integer) AS picture
+  
+  DIM hImage AS Image
+  DIM sIcon AS String
+  
+  $hPict = NULL
+  RAISE Icon(sPath)
+  IF $hPict THEN RETURN $hPict
+
+  TRY sIcon = $cExt[File.Ext(sPath)]
+  IF sIcon THEN RETURN Picture["icon:/" & CStr(iSize) &/ sIcon]
+
+  IF $aImgExt.Find(File.Ext(sPath)) < 0 THEN RETURN
+  IF Stat(sPath).Size > 8192 THEN RETURN Picture["icon:/" & iSize & "/image"]
+  
+  hImage = Image.Load(sPath)
+  IF NOT (hImage.Width = iSize AND hImage.Height = iSize) THEN 
+    IF hImage.Width > hImage.Height THEN 
+      hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width, FALSE)
+    ELSE
+      hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize, FALSE)
+    ENDIF
+  ENDIF
+  
+  RETURN hImage.Picture
+  
+CATCH
+  
+  RETURN Picture["icon:/" & iSize & "/image"]
+  
+END
+
+
+PRIVATE SUB RefreshView()
+
+  DIM sFile AS String
+  DIM sDir AS String
+  DIM hPictFile AS Picture
+  DIM hPictFolder AS Picture
+  DIM hPict AS Picture
+  DIM sPrefix AS String
+  DIM iSize AS Integer
+
+  INC Application.Busy
+
+  IF $hColumnView.Visible THEN
+    $hColumnView.Clear
+    hPictFile = Picture["icon:/16/file"]
+    hPictFolder = Picture["icon:/16/directory"]
+    iSize = 16
+  ELSE
+    $hIconView.Clear
+    hPictFile = Picture["icon:/32/file"]
+    hPictFolder = Picture["icon:/32/directory"]
+    iSize = 32
+  ENDIF
+
+  sDir = $sDir
+  IF NOT sDir THEN sDir = User.Home
+
+  FOR EACH sFile IN Dir(sDir, "*").Sort()
+    IF NOT $bShowHidden AND IF Left(sFile) = "." OR Right(sFile) = "~" THEN CONTINUE
+    WITH Stat(sDir &/ sFile)
+      IF .Type = gb.Directory THEN
+        IF NOT $bShowDir THEN CONTINUE
+        sPrefix = "0"
+      ELSE
+        IF $aFilter AND IF CheckFilter(sFile) THEN CONTINUE
+        sPrefix = "1"
+      ENDIF
+      hPict = GetIcon(sDir &/ sFile, iSize)
+      IF NOT hPict THEN 
+        IF .Type = gb.Directory THEN 
+          hPict = hPictFolder
+        ELSE 
+          hPict = hPictFile
+        ENDIF
+      ENDIF
+      IF $hColumnView.Visible THEN
+        $hColumnView.Add(sPrefix & sFile, sFile, hPict)
+        $hColumnView[sPrefix & sFile][1] = "  " & Subst(("&1 K"), (.Size + 1023) \ 1024)
+        $hColumnView[sPrefix & sFile][2] = "  " & Str(.Time)
+      ELSE
+        $hIconView.Add(sPrefix & sFile, sFile, hPict)
+      ENDIF
+    END WITH
+  NEXT
+
+FINALLY
+
+  IF ERROR THEN DEBUG Error.Where; ": "; Error.Text 
+  DEC Application.Busy
+
+END
+
+PUBLIC SUB Reload()
+  
+  RefreshView
+  
+END
+
+
+PRIVATE SUB RefreshGrid()
+
+  $hIconView.GridWidth = 16
+  $hIconView.GridHeight = 8
+
+END
+
+
+PRIVATE FUNCTION Dir_Read() AS String
+
+  RETURN $sDir
+
+END
+
+PRIVATE SUB Dir_Write(sDir AS String)
+
+  $sDir = sDir
+  RefreshView
+
+END
+
+PRIVATE FUNCTION ShowHidden_Read() AS Boolean
+
+  RETURN $bShowHidden
+
+END
+
+PRIVATE SUB ShowHidden_Write(bShowHidden AS Boolean)
+
+  $bShowHidden = bShowHidden
+  RefreshView
+
+END
+
+PRIVATE FUNCTION ShowDirectory_Read() AS Boolean
+
+  RETURN $bShowDir
+
+END
+
+PRIVATE SUB ShowDirectory_Write(bShow AS Boolean)
+
+  $bShowDir = bShow
+  RefreshView
+
+END
+
+PRIVATE FUNCTION GetView() AS Object
+
+  IF $hIconView.Visible THEN
+    RETURN $hIconView
+  ELSE
+    RETURN $hColumnView
+  ENDIF
+
+END
+
+
+PRIVATE FUNCTION Current_Read() AS String
+
+  TRY RETURN Mid$(GetView().Current.Key, 2)
+
+END
+
+
+PRIVATE SUB Current_Write(sFile AS String)
+
+  DIM sKey AS String
+
+  GetView().SelectAll(FALSE)
+  sKey = "0" & sFile
+  IF NOT GetView().Exist(sKey) THEN sKey = "1" & sFile
+  IF NOT GetView().Exist(sKey) THEN RETURN
+    
+  GetView()[sKey].Selected = TRUE
+  GetView()[sKey].EnsureVisible
+
+END
+
+PRIVATE FUNCTION Font_Read() AS Font
+
+  RETURN SUPER.Font
+
+END
+
+PRIVATE SUB Font_Write(hFont AS Font)
+
+  SUPER.Font = hFont
+  RefreshGrid
+
+END
+
+PRIVATE FUNCTION ShowDetailed_Read() AS Boolean
+
+  RETURN $hColumnView.Visible
+
+END
+
+PRIVATE SUB ShowDetailed_Write(bDetailed AS Boolean)
+
+  IF bDetailed = ShowDetailed_Read() THEN RETURN
+
+  IF bDetailed THEN
+
+    $hColumnView.Show
+    $hIconView.Hide
+
+  ELSE
+
+    $hIconView.Show
+    $hColumnView.Hide
+
+  ENDIF
+
+  RefreshView
+  TakeSelection
+
+END
+
+
+PUBLIC SUB View_Select()
+
+  RAISE {Select}
+
+END
+
+PUBLIC SUB View_Click()
+
+  RAISE Click
+
+END
+
+PUBLIC SUB View_Activate()
+
+  RAISE Activate
+
+END
+
+
+PUBLIC SUB View_Menu()
+
+  RAISE Menu
+
+END
+
+
+PUBLIC SUB View_Compare(Key AS String, OtherKey AS String)
+
+  DIM hStat AS Stat
+  DIM hStat2 AS Stat
+  DIM sDir AS String
+  DIM iComp AS Integer
+
+  sDir = $sDir
+  IF NOT sDir THEN sDir = User.Home
+
+  IF $hColumnView.Visible THEN
+    $iSort = $hColumnView.Columns.Sort
+    $bAsc = $hColumnView.Columns.Ascending
+  ENDIF
+
+  iComp = Comp(Asc(Key), Asc(OtherKey))
+
+  IF iComp = 0 THEN
+
+    IF $iSort THEN
+      hStat = Stat(sDir &/ Mid$(Key, 2))
+      hStat2 = Stat(sDir &/ Mid$(OtherKey, 2))
+    ENDIF
+
+    SELECT $iSort
+
+      CASE 1
+        iComp = Sgn(hStat.Size - hStat2.Size)
+
+      CASE 2
+        iComp = Sgn(hStat.Time - hStat2.Time)
+
+    END SELECT
+
+    IF iComp = 0 THEN iComp = Comp(Key, OtherKey, gb.Text + gb.Language)
+
+    IF NOT $bAsc THEN iComp = (- iComp)
+
+  ENDIF
+
+  LAST.Compare = iComp
+
+CATCH
+
+END
+
+PRIVATE SUB Mode_Write(iMode AS Integer)
+
+  $hIconView.Mode = iMode
+  $hColumnView.Mode = iMode
+
+END
+
+PRIVATE FUNCTION Mode_Read() AS Integer
+
+  RETURN $hIconView.Mode
+
+END
+
+PRIVATE FUNCTION Selection_Read() AS String[]
+
+  DIM hView AS Object
+  DIM aSel AS NEW String[]
+
+  IF $hIconView.Visible THEN
+    hView = $hIconView
+  ELSE
+    hView = $hColumnView
+  ENDIF
+
+  hView.MoveFirst
+  WHILE hView.Available
+    IF hView.Item.Selected THEN
+      aSel.Add(hView.Item.Text)
+    ENDIF
+    hView.MoveNext
+  WEND
+
+  RETURN aSel
+
+END
+
+PRIVATE SUB TakeSelection()
+
+  DIM hSrc AS Object
+  DIM hDst AS Object
+
+  IF $hIconView.Mode = Select.None THEN RETURN
+
+  hSrc = $hIconView
+  hDst = $hColumnView
+  IF $hIconView.Visible THEN SWAP hSrc, hDst
+
+  IF $hIconView.Mode = Select.Single THEN
+    IF hSrc.Current AND IF hSrc.Current.Selected THEN
+      TRY hDst[hSrc.Key].Selected = TRUE
+    ENDIF
+    RETURN
+  ENDIF
+
+  hDst.SelectAll(FALSE)
+  hSrc.MoveFirst
+  WHILE hSrc.Available
+    IF hSrc.Item.Selected THEN
+      Object.Lock(hDst)
+      hDst[hSrc.Item.Key].Selected = TRUE
+      Object.Unlock(hDst)
+    ENDIF
+    hSrc.MoveNext
+  WEND
+
+END
+
+PRIVATE FUNCTION Filter_Read() AS String[]
+
+  RETURN $aFilter
+
+END
+
+PRIVATE SUB Filter_Write(aFilter AS String[])
+
+  $aFilter = aFilter
+  RefreshView
+
+END
+
+PRIVATE FUNCTION Icon_Read() AS Picture
+
+  RETURN $hPict  
+
+END
+
+PRIVATE SUB Icon_Write(Value AS Picture)
+
+  $hPict = Value
+
+END
+
+PRIVATE FUNCTION Border_Read() AS Boolean
+
+  RETURN $hColumnView.Border
+
+END
+
+PRIVATE SUB Border_Write(Value AS Boolean)
+
+  $hColumnView.Border = Value
+  $hIconView.Border = Value
+
+END
+
+PRIVATE FUNCTION Settings_Read() AS String
+
+  RETURN IIf(ShowDetailed_Read(), "1", "0") & "," & IIf(ShowHidden_Read(), "1", "0") & "," & $hColumnView.Settings
+
+END
+
+PRIVATE SUB Settings_Write(Value AS String)
+
+  DIM aVal AS String[] = Scan(Value, "*,*,*")
+  
+  ShowDetailed_Write(aVal[0] = "1")
+  ShowHidden_Write(aVal[1] = "1")
+  $hColumnView.Settings = aVal[2]
+  
+CATCH
+
+  DEBUG Error.Where; ": "; Error.Text
+
+END

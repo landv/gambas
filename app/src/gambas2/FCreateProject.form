@@ -1,0 +1,290 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,84,66)
+  Text = ("New project")
+  Icon = Picture["icon:/16/new"]
+  Persistent = True
+  Arrangement = Arrange.Horizontal
+  Spacing = 8
+  Padding = 8
+  { wizProject Wizard
+    MoveScaled(1,0,81,62)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Spacing = 8
+    Count = 3
+    Border = False
+    Index = 0
+    Text = ("1. Project type")
+    { HBox5 HBox
+      MoveScaled(0,0,79,52)
+      Expand = True
+      Spacing = 8
+      { VBox3 VBox
+        MoveScaled(1,1,34,49)
+        Expand = True
+        Spacing = 8
+        { Label5 Label
+          MoveScaled(1,0,25,3)
+          Font = Font["Bold"]
+          AutoResize = True
+          Text = ("Type")
+          Alignment = Align.BottomNormal
+        }
+        { lstType ListContainer
+          MoveScaled(1,5,33,43)
+          Expand = True
+          { panDefaultType HBox
+            MoveScaled(0,0,32,8)
+            Tag = "QT"
+            Spacing = 8
+            Padding = 8
+            { PictureBox2 PictureBox
+              MoveScaled(1,1,6,6)
+              Picture = Picture["img/logo/qt.png"]
+              Stretch = True
+              Alignment = Align.Center
+            }
+            { Label6 Label
+              MoveScaled(8,1,22,6)
+              Expand = True
+              Text = ("QT graphical application")
+            }
+          }
+          { HBox2 HBox
+            MoveScaled(0,8,32,8)
+            Tag = "GTK"
+            Spacing = 8
+            Padding = 8
+            { PictureBox3 PictureBox
+              MoveScaled(1,1,6,6)
+              Picture = Picture["img/logo/gtk.png"]
+              Stretch = True
+              Alignment = Align.Center
+            }
+            { Label8 Label
+              MoveScaled(8,1,23,6)
+              Expand = True
+              Text = ("GTK+ graphical application")
+            }
+          }
+          { HBox3 HBox
+            MoveScaled(0,16,32,8)
+            Tag = "CONSOLE"
+            Spacing = 8
+            Padding = 8
+            { PictureBox4 PictureBox
+              MoveScaled(1,1,6,6)
+              Picture = Picture["icon:/48/terminal"]
+              Alignment = Align.Center
+            }
+            { Label9 Label
+              MoveScaled(8,1,22,6)
+              Expand = True
+              Text = ("Command-line application")
+            }
+          }
+          { HBox4 HBox
+            MoveScaled(0,24,32,8)
+            Tag = "GAME"
+            Spacing = 8
+            Padding = 8
+            { PictureBox5 PictureBox
+              MoveScaled(1,1,6,6)
+              Picture = Picture["icon:/48/game"]
+              Alignment = Align.Center
+            }
+            { Label13 Label
+              MoveScaled(8,1,22,6)
+              Expand = True
+              Text = ("SDL application")
+            }
+          }
+          { HBox1 HBox
+            MoveScaled(0,32,32,8)
+            Tag = "WEB"
+            Spacing = 8
+            Padding = 8
+            { PictureBox1 PictureBox
+              MoveScaled(1,1,6,6)
+              Picture = Picture["img/logo/browser.png"]
+              Stretch = True
+              Alignment = Align.Center
+            }
+            { Label1 Label
+              MoveScaled(8,1,22,6)
+              Expand = True
+              Text = ("CGI Web application")
+            }
+          }
+          { Separator2 Separator
+            MoveScaled(-3,40,37,2)
+            Enabled = False
+          }
+          { HBox8 HBox
+            MoveScaled(0,42,32,8)
+            Tag = "!SVN"
+            Spacing = 8
+            Padding = 8
+            { PictureBox6 PictureBox
+              MoveScaled(1,1,6,6)
+              Picture = Picture["img/logo/subversion.png"]
+              Stretch = True
+              Alignment = Align.Center
+            }
+            { Label4 Label
+              MoveScaled(8,1,22,6)
+              Expand = True
+              Text = ("Application stored in a\nSubversion repository")
+            }
+          }
+        }
+      }
+      { VBox1 VBox
+        MoveScaled(36,1,39,46)
+        Expand = True
+        Spacing = 8
+        { Label12 Label
+          MoveScaled(1,0,25,3)
+          Font = Font["Bold"]
+          AutoResize = True
+          Text = ("Options")
+          Alignment = Align.BottomNormal
+        }
+        { svwOption ScrollView
+          MoveScaled(0,4,39,42)
+          Background = Color.TextBackground
+          Expand = True
+          Arrangement = Arrange.Vertical
+          Padding = 4
+          ScrollBar = Scroll.Vertical
+          { chkLocalize CheckBox
+            MoveScaled(1,0,37,3)
+            Tag = "TRANSLATE"
+            Text = ("Internationalization")
+          }
+          { CheckBox2 CheckBox
+            MoveScaled(1,3,37,3)
+            Tag = "DATABASE"
+            Text = ("Database access")
+          }
+          { CheckBox3 CheckBox
+            MoveScaled(1,6,37,3)
+            Tag = "NETWORK"
+            Text = ("Network programming")
+          }
+          { CheckBox7 CheckBox
+            MoveScaled(1,9,37,3)
+            Tag = "SETTINGS"
+            Text = ("Settings files management")
+          }
+          { CheckBox1 CheckBox
+            MoveScaled(1,12,37,3)
+            Tag = "REGEXP"
+            Text = ("Regular expressions")
+          }
+          { CheckBox4 CheckBox
+            MoveScaled(1,15,37,3)
+            Tag = "XML"
+            Text = ("XML / XSLT programming")
+          }
+          { CheckBox6 CheckBox
+            MoveScaled(1,18,37,3)
+            Tag = "OPENGL"
+            Text = ("OpenGL programming")
+          }
+          { CheckBox5 CheckBox
+            MoveScaled(1,21,37,3)
+            Tag = "IMAGE"
+            Text = ("Image processing")
+          }
+          { chkCtrlPublic CheckBox
+            MoveScaled(1,24,37,3)
+            Tag = "VISUAL"
+            Text = ("Visual Basic™ conversion help")
+          }
+          { Separator1 Separator
+            MoveScaled(1,27,37,2)
+          }
+          { CheckBox8 CheckBox
+            MoveScaled(1,29,35,3)
+            Tag = "COMPONENT"
+            Text = ("Component programming")
+          }
+        }
+      }
+    }
+    Index = 1
+    Text = ("2. Project directory")
+    { dchProject DirChooser
+      MoveScaled(1,0,77,50)
+      Expand = True
+      Root = "/"
+      ShowBookmark = True
+    }
+    Index = 2
+    Text = ("3. Project information")
+    { panIdent VBox
+      MoveScaled(0,0,80,12)
+      Spacing = 8
+      { Label10 Label
+        MoveScaled(0,0,25,3)
+        Font = Font["Bold"]
+        Text = ("Identification")
+      }
+      { HBox6 HBox
+        MoveScaled(2,4,70,3)
+        { Label2 Label
+          MoveScaled(0,0,14,3)
+          Text = ("Name")
+        }
+        { txtName TextBox
+          MoveScaled(15,0,49,3)
+          Expand = True
+          Text = ("")
+        }
+      }
+      { HBox7 HBox
+        MoveScaled(2,8,71,3)
+        { Label3 Label
+          MoveScaled(0,0,14,3)
+          Text = ("Title")
+        }
+        { txtTitle TextBox
+          MoveScaled(15,0,51,3)
+          Expand = True
+          Text = ("")
+        }
+      }
+    }
+    { panRepository VBox
+      MoveScaled(0,10,81,23)
+      Expand = True
+      Spacing = 8
+      { Label7 Label
+        MoveScaled(0,0,25,3)
+        Font = Font["Bold"]
+        Text = ("Repository")
+      }
+      { txtRepository TextBox
+        MoveScaled(0,4,51,3)
+        Text = ("")
+      }
+      { edtOutput Editor
+        MoveScaled(0,8,79,13)
+        Font = Font["Monospace,-1"]
+        Expand = True
+        ReadOnly = True
+      }
+    }
+    { Panel1 Panel
+      MoveScaled(1,33,17,4)
+    }
+    { TextLabel9 TextLabel
+      MoveScaled(1,41,78,13)
+      Text = ("Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
+    }
+    Index = 0
+  }
+}

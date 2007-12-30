@@ -1,0 +1,69 @@
+' Gambas class file
+
+EXPORT 
+
+'STATIC PROPERTY READ Menus AS _DesktopMenus
+'STATIC PROPERTY READ Icons AS _DesktopIcons
+STATIC PROPERTY READ ScreenSaver AS _DesktopScreenSaver
+
+
+STATIC PUBLIC SUB SendMail({To} AS String[], OPTIONAL Cc AS String[], OPTIONAL Bcc AS String[], OPTIONAL Subject AS String, OPTIONAL Body AS String, OPTIONAL Attachment AS String)
+  
+  DIM aArg AS String[]
+  'xdg-email [--utf8] [--cc address] [--bcc address] [--subject text] [--body text
+  ' ] [--attach file] { mailto-uri | address(es) }
+  
+  aArg = ["--utf8"]
+  IF CC AND IF CC.Count THEN 
+    aArg.Add("--cc")
+    aArg.Insert(CC)
+  ENDIF
+  IF BCC AND IF BCC.Count THEN 
+    aArg.Add("--bcc")
+    aArg.Insert(BCC)
+  ENDIF
+  IF Subject THEN 
+    aArg.Add("--subject")
+    aArg.Add(Subject)
+  ENDIF 
+  IF Body THEN 
+    aArg.Add("--body")
+    aArg.Add(Body)
+  ENDIF
+  IF Attachment THEN 
+    aArg.Add("--attach")
+    aArg.Add(Attachment)
+  ENDIF 
+  
+  IF {To} AND IF To.Count THEN 
+    aArg.Insert({To})
+  ENDIF
+  
+  Main.RunXdgUtil("xdg-email", aArg)
+  
+END
+
+STATIC PUBLIC SUB {Open}(URL AS String)
+  
+  Main.RunXdgUtil("xdg-open", [URL])
+  
+END
+
+STATIC PRIVATE FUNCTION Menus_Read() AS _DesktopMenus
+
+  RETURN _DesktopMenus  
+
+END
+
+
+STATIC PRIVATE FUNCTION Icons_Read() AS _DesktopIcons
+
+  RETURN _DesktopIcons
+
+END
+
+STATIC PRIVATE FUNCTION ScreenSaver_Read() AS _DesktopScreenSaver
+
+  RETURN _DesktopScreenSaver
+
+END

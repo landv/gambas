@@ -1,0 +1,248 @@
+' Gambas class file
+
+CREATE STATIC
+EXPORT
+INHERITS ReportVBox
+
+'Public Constants
+PUBLIC CONST Portrait AS Integer = 0
+PUBLIC CONST Landscape AS Integer = 1
+PUBLIC {Debug} AS Boolean = FALSE
+
+PRIVATE iCurPage AS Integer = 0
+PRIVATE $iCount AS Integer = -1
+PRIVATE $iResolution AS Integer = 72
+PRIVATE $bLayoutIsDirty AS Boolean = TRUE
+PRIVATE $fZoom AS Float = 1.0
+PRIVATE $iOrientation AS Integer = Portrait
+PRIVATE $sSize AS String = "A4"
+PRIVATE $hReportTControl AS NEW TControl
+PRIVATE hData AS Object
+
+PROPERTY READ count AS Integer
+PROPERTY Height AS String
+PROPERTY Width AS String
+PROPERTY Resolution AS Integer
+PROPERTY Zoom AS Float
+PROPERTY Orientation AS Integer
+PROPERTY Size AS String
+
+
+
+
+
+
+'EVENT Data()
+
+PUBLIC SUB _New()
+  object.Attach(ME, ME, "Report")
+  
+  'ME.Width = 600
+  'ME.Height = 600
+  $hReportTControl.RelPage = 0
+  ReportControl._ObjectFromId[ME.id] = ME
+  
+END
+
+PUBLIC SUB Layout()
+  IF NOT $bLayoutIsDirty THEN RETURN 
+  MRTools.ReportResolution = $iResolution
+  MRTools.ResolutionAffichage = printer.Resolution / $iResolution
+  MRTools.ReportZoom = $fZoom
+  SetReportSize()
+  $hReportTControl.ctrl = ME
+  $iCount = $hReportTControl._SetGeometry(0, 0, ME.Width, ME.Height) + 1
+  MRTools.PageCount = $iCount
+  $bLayoutIsDirty = FALSE
+  
+END
+
+
+PUBLIC SUB Draw(Page AS Integer)
+   
+   IF $bLayoutIsDirty THEN Layout()
+   
+    IF page < 1 OR page > $iCount THEN 
+      Error.Raise("This page does not exist")
+    ENDIF
+    DEC page
+    ME._DrawBefore(Page, 0, 0, $hReportTControl, -1)
+    ME._Draw(Page, 0, 0, $hReportTControl, -1)
+    ME._DrawAfter(Page, 0, 0, $hReportTControl, -1)
+    
+END
+
+PRIVATE SUB FillPages(ctrl AS ReportContainer)
+
+  DIM hChild AS Object
+  DIM relHeight AS Integer
+  FOR EACH hChild IN ctrl.Children
+    hChild._Draw(ctrl._Left, ctrl._Top)
+    IF hChild IS ReportContainer THEN FillPages(hChild)
+  NEXT 
+
+END
+
+
+PRIVATE FUNCTION count_Read() AS Integer
+  
+  IF $bLayoutIsDirty THEN Layout() '$iCount = -1
+  
+  RETURN $iCount
+
+END
+
+PRIVATE FUNCTION Height_Read() AS String
+
+  RETURN SUPER.Height
+
+END
+
+PRIVATE SUB Height_Write(Value AS String)
+  IF SUPER.Height <> Value THEN 
+    SUPER.Height = Value
+    $bLayoutIsDirty = TRUE
+  ENDIF
+
+END
+
+PRIVATE FUNCTION Width_Read() AS String
+
+  RETURN SUPER.Width
+
+END
+
+PRIVATE SUB Width_Write(Value AS String)
+IF SUPER.Width <> Value THEN
+  SUPER.Width = Value
+  $bLayoutIsDirty = TRUE
+ENDIF
+
+END
+
+
+PRIVATE FUNCTION Resolution_Read() AS Integer
+
+  RETURN $iResolution
+
+END
+
+PRIVATE SUB Resolution_Write(Value AS Integer)
+  IF $iResolution <> Value THEN
+    $iResolution = Value
+    $bLayoutIsDirty = TRUE
+  ENDIF
+
+END
+
+PRIVATE FUNCTION Zoom_Read() AS Float
+
+  RETURN $fZoom
+
+END
+
+PRIVATE SUB Zoom_Write(Value AS Float)
+
+  $fZoom = Value
+  MRTools.ReportZoom = $fZoom
+END
+
+PUBLIC SUB Mosaic(Range AS String, Spacing AS String)
+
+  DIM $fTempZ AS Float
+  $fTempZ = $fZoom
+  
+  
+  
+END
+
+' PUBLIC SUB _Data()
+'   
+'   RAISE Data
+'   
+' END
+
+' PRIVATE FUNCTION Units_Read() AS Integer
+' 
+'   RETURN $iUnits
+' 
+' END
+' 
+' PRIVATE SUB Units_Write(Value AS Integer)
+' 
+'   $iUnits = Value
+' 
+' END
+
+PRIVATE FUNCTION Size_Read() AS String
+
+  RETURN $sSize
+
+END
+
+PRIVATE SUB Size_Write(Value AS String)
+
+  $sSize = Value
+
+END
+
+PRIVATE SUB SetReportSize()
+  DIM w AS Float
+  DIM h AS Float
+  IF $sSize = "Custom" THEN RETURN 
+  SELECT CASE $sSize
+    CASE "A4"
+      w = 21
+      h = 29.7
+    CASE "A3"
+      w = 29.7
+      h = 42
+      
+    CASE "A5"
+    
+    CASE "A6"
+    CASE "Letter"
+    CASE ELSE 
+  END SELECT
+  
+  IF ME.Orientation = Portrait THEN 
+    ME.Width = w & " cm"
+    ME.Height = h & " cm"
+  ELSE 
+    ME.Width = h & " cm"
+    ME.Height = w & " cm"
+  
+  ENDIF
+  
+END
+
+
+PRIVATE FUNCTION Orientation_Read() AS Integer
+
+  RETURN $iOrientation
+
+END
+
+PRIVATE SUB Orientation_Write(Value AS Integer)
+
+  $iOrientation = Value
+
+END
+
+PUBLIC SUB Clear()
+  
+  SUPER._Free
+  iCurPage = 0
+  $iCount = -1
+  $iResolution = 72
+  $bLayoutIsDirty = TRUE
+  $fZoom = 1.0
+  $iOrientation = Portrait
+  $sSize = "A4"
+END
+
+PUBLIC FUNCTION Preview()
+  
+  frmPreview.Run(ME)
+  
+END

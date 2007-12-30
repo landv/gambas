@@ -1,0 +1,136 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(43.625,25.25,63.125,65.125)
+  'Move(349,202,505,521)
+  Text = ("Database example")
+  Icon = Picture["database.png"]
+  Border = Window.Fixed
+  { Frame1 Frame
+    MoveScaled(1,1,61,28)
+    'Move(8,8,488,224)
+    Text = ("Connection")
+    { Label5 Label
+      MoveScaled(2,11,14,3)
+      'Move(16,88,112,24)
+      Text = ("Database")
+    }
+    { Label1 Label
+      MoveScaled(2,3,15,3)
+      'Move(16,24,120,24)
+      Text = ("Type")
+    }
+    { Label2 Label
+      MoveScaled(2,7,15,3)
+      'Move(16,56,120,24)
+      Text = ("Host")
+    }
+    { Label3 Label
+      MoveScaled(2,15,14,3)
+      'Move(16,120,112,24)
+      Text = ("User")
+    }
+    { Label4 Label
+      MoveScaled(2,19,14,3)
+      'Move(16,152,112,24)
+      Text = ("Password")
+    }
+    { btnConnect Button
+      MoveScaled(46,3,13,3)
+      'Move(368,24,104,24)
+      Text = ("Connect")
+    }
+    { cmbType ComboBox
+      MoveScaled(18,3,24,3)
+      'Move(144,24,192,24)
+      Text = (" ")
+      List = [("postgresql"), ("mysql"), ("sqlite3"), ("odbc"), ("firebird")]
+    }
+    { txtHost TextBox
+      MoveScaled(18,7,24,3)
+      'Move(144,56,192,24)
+      Text = ("")
+    }
+    { txtName TextBox
+      MoveScaled(18,11,24,3)
+      'Move(144,88,192,24)
+      Text = ("test")
+    }
+    { txtUser TextBox
+      MoveScaled(18,15,24,3)
+      'Move(144,120,192,24)
+      Text = ("")
+      MaxLength = 16
+    }
+    { txtPassword TextBox
+      MoveScaled(18,19,24,3)
+      'Move(144,152,192,24)
+      Text = ("")
+      Password = True
+    }
+    { chkCreate CheckBox
+      MoveScaled(2,24,39,2)
+      'Move(16,192,312,16)
+      Text = ("Create database if it does not exist")
+      Value = CheckBox.True
+    }
+    { chkDebug CheckBox
+      MoveScaled(46,7,13,3)
+      'Move(368,56,104,24)
+      Text = ("Debug")
+    }
+  }
+  { frmDatabase Frame
+    MoveScaled(1,30,61,13)
+    'Move(8,240,488,104)
+    Enabled = False
+    Text = ("Tables 'test' && 'color'")
+    { btnCreate Button
+      MoveScaled(2,4,12,3)
+      'Move(16,32,96,24)
+      Text = ("Create")
+    }
+    { btnDelete Button
+      MoveScaled(2,8,12,3)
+      'Move(16,64,96,24)
+      Text = ("Delete")
+    }
+    { btnFill Button
+      MoveScaled(18,4,16,3)
+      'Move(144,32,128,24)
+      Text = ("Fill with")
+    }
+    { txtCount SpinBox
+      MoveScaled(18,8,16,3)
+      'Move(144,64,128,24)
+      MinValue = 10
+      MaxValue = 100000
+      Step = 1000
+      Suffix = " records"
+      Value = 1000
+    }
+    { btnTest Button
+      MoveScaled(40,4,19,7)
+      'Move(320,32,152,56)
+      Text = ("Bound controls\nexample...")
+    }
+  }
+  { frmRequest Frame
+    MoveScaled(1,44,61,20)
+    'Move(8,352,488,160)
+    Enabled = False
+    Text = ("SQL request")
+    { btnRun Button
+      MoveScaled(50,3,9,3)
+      'Move(400,24,72,24)
+      Text = ("Run...")
+      Default = True
+    }
+    { txtRequest TextArea
+      MoveScaled(2,3,46,15)
+      'Move(16,24,368,120)
+      Text = ("")
+      Wrap = True
+    }
+  }
+}

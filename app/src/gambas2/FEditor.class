@@ -1,0 +1,2354 @@
+' Gambas class file
+
+PUBLIC Name AS String
+PUBLIC Path AS String
+PUBLIC Editor AS Editor
+PUBLIC Scan AS Collection
+PUBLIC ParentClass AS String
+PUBLIC AutoCreatable AS Boolean
+PUBLIC NotCreatable AS Boolean
+
+PROPERTY READ ReadOnly AS Boolean
+
+PRIVATE $bModify AS Boolean
+'PRIVATE $cLine AS NEW Collection
+PRIVATE $bToolbar AS Boolean
+PRIVATE $iLastLine AS Integer
+PRIVATE $hSymbol AS CSymbolInfo
+PRIVATE $bCheckSignature AS Boolean
+PRIVATE $iPosSignature AS Integer
+PRIVATE $bCompletion AS Boolean
+PRIVATE $bCleanOnSave AS Boolean
+
+STATIC PRIVATE $hVirtualSymbol AS NEW CSymbolInfo
+
+STATIC PRIVATE $bPublic AS Boolean
+STATIC PRIVATE $bStatic AS Boolean
+STATIC PRIVATE $sName AS String
+STATIC PRIVATE $cType AS NEW Collection
+
+PRIVATE $iStartLine AS Integer
+PRIVATE $iEndLine AS Integer
+
+PRIVATE $bDoNotSavePosition AS Boolean
+
+PUBLIC CONST NBR_COLOR AS Integer = 15
+
+PRIVATE CONST TYPE_SYMBOL AS Integer = 0
+PRIVATE CONST TYPE_FUNCTION AS Integer = 1
+PRIVATE CONST TYPE_ARRAY AS Integer = 2
+
+'PRIVATE $iSymbolType AS Integer
+PRIVATE $bLastStatic AS Boolean
+
+PUBLIC frmCompletion AS FCompletion
+PUBLIC frmSignature AS FSignature
+
+PRIVATE edtSplit AS Editor
+
+PRIVATE $cProc AS Collection
+PRIVATE $iFirstProcLine AS Integer
+
+PUBLIC CONST IDENT_CAR AS String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
+
+STATIC PUBLIC SUB _init()
+
+  $cType["Boolean"] = "b"
+  $cType["Byte"] = "c"
+  $cType["Short"] = "h"
+  $cType["Integer"] = "i"
+  $cType["Long"] = "l"
+  $cType["Single"] = "g"
+  $cType["Float"] = "f"
+  $cType["Date"] = "d"
+  $cType["String"] = "s"
+  $cType["Variant"] = "v"
+  $cType["Object"] = "o"
+
+END
+
+PUBLIC SUB _new(sPath AS String)
+
+  $iLastLine = -1
+
+  Path = sPath
+  Name = File.BaseName(Path)
+
+  Editor = edtEditor
+  edtEditor.Flags[Editor.HighlightBraces] = TRUE
+  edtEditor.Highlight = Highlight.Gambas
+
+  frmCompletion = NEW FCompletion(ME)
+  frmCompletion.Hide
+  frmSignature = NEW FSignature(ME)
+  frmSignature.Hide
+
+  ReadConfig
+  Refresh
+
+  'Editor = edtEditor
+  ME.Icon = Picture["img/16/" &/ File.ext(sPath) & ".png"]
+
+  SetReadOnly
+
+  Reload
+  edtEditor.SetFocus
+
+  DrawTitle
+  UpdateMenu
+
+  btnForm.Visible = Project.ExistForm(File.BaseName(Name))
+  $bDoNotSavePosition = TRUE
+  
+END
+
+
+PUBLIC SUB Refresh()
+
+  edtEditor.TabSize = Project.TabSize
+
+END
+
+
+PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
+
+  DIM iInd AS Integer
+  DIM iColor AS Integer
+  DIM hTheme AS Integer[]
+
+  hEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+
+  MColor.InitEditor(hEditor)
+
+  hEditor.Flags[edtEditor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
+  hEditor.Flags[edtEditor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
+  hEditor.Flags[edtEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
+  hEditor.Flags[edtEditor.DrawWithRelief] = Settings["/Editor/UseRelief", TRUE]
+  hEditor.Flags[edtEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
+  hEditor.Flags[edtEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
+
+END
+
+
+PUBLIC SUB ReadConfig()
+
+  DIM iInd AS Integer
+  DIM iColor AS Integer
+  DIM hTheme AS Integer[]
+
+  $bToolBar = Settings["/Editor/Toolbar", TRUE]
+  panToolbar.Visible = $bToolbar
+  Form_Resize
+
+  ReadConfigEditor(edtEditor)
+  IF edtSplit THEN ReadConfigEditor(edtSplit)
+
+  $bCompletion = Settings["/Editor/Completion", TRUE]
+  $bCleanOnSave = Settings["/Editor/CleanOnSave", FALSE]
+
+END
+
+
+
+PUBLIC FUNCTION Save(OPTIONAL bReset AS Boolean) AS Boolean
+
+  DIM sHeader AS String
+  DIM iLig AS Integer
+  DIM iProc AS Integer
+  DIM iFull AS Integer
+  DIM sLig AS String
+  DIM iPosProc AS Integer
+  DIM sData AS String
+  DIM iLine AS Integer
+  DIM iCol AS Integer
+  DIM bChange AS Boolean
+  DIM iCount AS Integer
+  DIM iVoidLine AS Integer
+
+  IF Project.ReadOnly THEN RETURN
+  IF NOT $bModify THEN
+    IF bReset THEN edtEditor.Reset
+    RETURN
+  ENDIF
+
+  Save.Begin(Path)
+
+'   IF $bCleanOnSave THEN
+' 
+'     iProc = -1
+'     iLine = edtEditor.Line
+'     iCol = edtEditor.Column
+' 
+'     iCount = edtEditor.Lines.Count
+'     FOR iLig = 0 TO iCount
+' 
+'       IF iLig < iCount THEN
+'         sLig = RTrim(edtEditor.Lines[iLig])
+'       ELSE
+'         sLig = "SUB gambas()"
+'       ENDIF
+' 
+'       IF NOT LTrim(sLig) THEN
+'         INC iVoidLine
+'         CONTINUE
+'       ENDIF
+' 
+'       IF IsProc(sLig) THEN
+'         IF iProc >= 0 THEN
+' '           IF iFull < 2 THEN
+' '             bChange = TRUE
+' '             sData = Left(sData, iPosProc)
+' '             IF iLine > iProc THEN
+' '               IF iLine < iLig THEN
+' '                 iLine = iProc - 1
+' '               ELSE
+' '                 iLine = iLine - (iLig - iProc + 1)
+' '               ENDIF
+' '             ENDIF
+' '           ENDIF
+'         ENDIF
+'         iProc = iLig
+'         iFull = 0
+'         iPosProc = Len(sData)
+'       ELSE
+'         INC iFull
+'       ENDIF
+' 
+'       IF iLig < iCount THEN
+'         sData = sData & String(iVoidLine, "\n") & sLig & "\n"
+'         iVoidLine = 0
+'       ENDIF
+' 
+'     NEXT
+  ' 
+  '   'IF Len(sData) <> Len(edtEditor.Text) THEN
+  '   File.Save(Path, sData)
+  ' 
+  '   IF bChange THEN
+  ' 
+  '     edtEditor.Text = sData
+  '     bReset = TRUE
+  '     'TRY edtEditor.Line = iLine
+  '     'IF NOT ERROR THEN
+  '     '  TRY edtEditor.Column = iCol
+  '     'ENDIF
+  '     edtEditor.Goto(iLine, iCol)
+  ' 
+  '   ENDIF
+  ' 
+  ' ELSE
+
+  sHeader = "' Gambas " & File.Ext(Path) & " file"
+
+  IF edtEditor.Lines[0] <> sHeader THEN
+    edtEditor.Insert(sHeader & "\n", 0, 0)
+  ENDIF
+
+  IF edtEditor.Lines.Count < 2 OR IF edtEditor.Lines[1] THEN 
+    edtEditor.Insert("\n", 1, 0)
+  ENDIF
+  
+  File.Save(Path, edtEditor.Text)
+
+  ' ENDIF
+
+  $bModify = FALSE
+  DrawTitle
+
+  IF bReset THEN edtEditor.Reset
+
+  Save.End()
+
+CATCH
+
+  RETURN Save.Error()
+
+END
+
+
+PRIVATE SUB DrawTitle()
+
+  DIM sTitle AS String
+
+  sTitle = File.Name(Path) 
+  IF $bModify THEN sTitle = sTitle & " [" & ("modified") & "]"
+  ME.Title = sTitle '& " - " & Project.Name
+
+END
+
+PRIVATE SUB DrawInfo()
+  
+  lblEditor.Text = CStr(edtEditor.Line + 1) & ":" & CStr(edtEditor.Column + 1)
+  
+END
+
+
+PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
+
+  IF Project.ReadOnly THEN RETURN
+  IF $bModify <> bReset THEN RETURN
+
+  $bModify = NOT bReset
+  DrawTitle
+  IF $bModify THEN 
+    INC Project.TimeStamp
+    $cProc = NULL
+  ENDIF 
+
+END
+
+
+PUBLIC FUNCTION IsModified() AS Boolean
+
+  RETURN $bModify
+
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  HideCompletion
+  HideSignature
+
+  'panToolbar.Visible = $bToolbar
+  'panToolBar.W = ME.ClientW
+
+  IF $bToolbar THEN
+    'btnForm.Visible = Project.ExistForm(File.BaseName(Name))
+    'panToolbar.Resize(ME.ClientW, btnGoto.Y + btnGoto.H)
+    'panToolbar.W = ME.ClientW
+    panToolBar.Move(0, 0, ME.CLientW)
+    edtEditor.Move(0, panToolBar.H, ME.ClientW, ME.ClientH - panToolBar.H)
+  ELSE
+    edtEditor.Move(0, 0, ME.ClientW, ME.ClientH)
+  ENDIF
+  'lblCursor.Move(0, ME.ClientH - lblCursor.Height)
+
+END
+
+
+PUBLIC SUB edtEditor_Change()
+
+  Modify
+
+END
+
+PRIVATE SUB RefreshLineInfo(OPTIONAL bForce AS Boolean)
+  
+  DIM eTime AS Float
+  
+  IF bForce THEN 
+    $iLastLine = -1
+  ENDIF
+  
+  IF edtEditor.Line <> $iLastLine THEN
+    'eTime = Timer
+    $iLastLine = edtEditor.Line
+    HideCompletion
+    HideSignature
+    'timProc.Enabled = TRUE
+    timProc_Timer
+    Action.Lock
+    Action["break"].Value = edtEditor.Lines.GetFlag(edtEditor.Line, edtEditor.Breakpoint)
+    Action.UnLock
+    Action["break"].Enabled = CanSetBreakpoint(edtEditor.Line)
+    IF IsModified() THEN {Scan} = NULL
+    'DEBUG Format((Timer - eTime) * 1000, "#.###")
+  ELSE IF $bCheckSignature OR frmSignature.Visible THEN
+    $bCheckSignature = FALSE
+    CheckSignature
+  ENDIF
+
+  HideMessage
+  DrawInfo
+  
+END
+
+
+PUBLIC SUB edtEditor_Cursor()
+
+  RefreshLineInfo
+
+END
+
+
+PUBLIC SUB Form_GotFocus()
+  
+  edtEditor.SetFocus
+
+END
+
+
+PUBLIC SUB Form_Deactivate()
+
+  HideCompletion
+  HideSignature
+  mnuEditor.Enabled = FALSE
+
+END
+
+
+PUBLIC SUB Goto(iLine AS Integer, OPTIONAL iColumn AS Integer = -1, OPTIONAL bCenter AS Boolean)
+
+  'DEC iLine
+  IF iColumn < 0 THEN iColumn = edtEditor.Column
+
+  edtEditor.Goto(iLine, iColumn, bCenter)
+
+END
+
+
+PUBLIC SUB GotoCenter(iLine AS Integer, OPTIONAL iColumn AS Integer = -1, OPTIONAL bSave AS Boolean)
+
+  IF bSave THEN Project.SavePosition
+  ME.Goto(iLine, iColumn, TRUE)
+
+END
+
+
+PUBLIC SUB edtEditor_Menu()
+
+  DIM hMenu AS Menu
+  DIM iInd AS Integer
+
+  mnuForm.Visible = Project.ExistForm(File.BaseName(Name))
+  CreateMenu
+  mnuEditor.Popup
+
+END
+
+
+PRIVATE SUB CreateMenu()
+
+  DIM iInd AS Integer
+  DIM sLine AS String
+  DIM sName AS String
+  DIM hMenu AS Menu
+  DIM cFunc AS NEW String[]
+  DIM sParent AS String
+  DIM sNewParent AS String
+  DIM hParent AS Menu
+  DIM sFullName AS String
+  DIM sDesc AS String
+  DIM iPos AS Integer
+  DIM hSymbol AS CSymbolInfo
+  DIM iLine AS Integer
+  DIM cSymbol AS Collection
+  'DIM hPoint AS Picture
+
+  'IF $hMenuGo THEN $hMenuGo.Delete
+
+  '$hMenuGo = NEW Menu(mnuEditor)
+  '$hMenuGo.Caption = "&Go to"
+
+  INC Application.Busy
+
+  mnuGoto.Children.Clear
+
+  cSymbol = CComponent.GetClassSymbols(Name)
+
+  FOR EACH hSymbol IN cSymbol
+
+    IF LCase(hSymbol.Kind) <> "m" THEN CONTINUE
+    IF hSymbol.LineNumber = 0 THEN CONTINUE
+    cFunc.Add(hSymbol.Name)
+
+  NEXT
+
+  cFunc.Sort(gb.Text)
+  hParent = mnuGoto
+
+  'hPoint = Picture["img/16/point.png"]
+
+  FOR EACH sName IN cFunc
+
+    hSymbol = cSymbol[sName]
+    sFullName = sName
+
+    iPos = InStr(sName, "_")
+    IF iPos THEN
+      sNewParent = Left$(sName, iPos - 1)
+      sName = Mid$(sName, iPos + 1)
+      IF Len(sNewParent) = 0 THEN
+        sNewParent = "(Special)"
+        sName = "_" & sName
+      ENDIF
+    ELSE
+      sNewParent = ""
+    ENDIF
+
+    IF UCase(sNewParent) <> UCase(sParent) THEN
+
+      IF sNewParent THEN
+
+        hParent = NEW Menu(mnuGoto)
+        hParent.Text = sNewParent
+
+      ELSE
+
+        hParent = mnuGoto
+
+      ENDIF
+
+      sParent = sNewParent
+
+    ENDIF
+
+    hMenu = NEW Menu(hParent) AS "mnuGoto"
+    hMenu.Text = sName
+    hMenu.Tag = hSymbol.LineNumber - 1
+    'IF NOT hSymbol.NotPublic THEN hMenu.Picture = hPoint
+
+  NEXT
+
+  mnuGoto.Visible = cFunc.count > 0
+  mnuSepGoto.Visible = cFunc.count > 0
+
+  UpdateMenu
+
+  DEC Application.Busy
+
+END
+
+PRIVATE SUB UpdateMenu()
+
+  DIM bVisible AS Boolean
+
+  Action["watch"].Enabled = Project.Running 'AND Len(Trim(edtEditor.Selection.Text)) > 0
+
+  'mnuWatch.Visible = 
+  'btnWatch.Visible = Project.Running
+  'mnuUntil.Visible = mnuWatch.Visible
+
+  bVisible = NOT edtEditor.ReadOnly
+
+  mnuUndo.Visible = bVisible
+  mnuRedo.Visible = bVisible
+  mnuSepUndo.Visible = bVisible
+  mnuCut.Visible = bVisible
+  mnuPaste.Visible = bVisible
+  mnuComment.Visible = bVisible
+  mnuUncomment.Visible = bVisible
+  mnuSepComment.Visible = bVisible
+  mnuReload.Visible = bVisible
+
+  btnUndo.Visible = bVisible
+  btnRedo.Visible = bVisible
+  btnCut.Visible = bVisible
+  btnPaste.Visible = bVisible
+  btnComment.Visible = bVisible
+  btnUncomment.Visible = bVisible
+  btnIndent.Visible = bVisible
+  btnUnIndent.Visible = bVisible
+  btnReload.Visible = bVisible
+  btnSave.Visible = bVisible
+
+END
+
+
+PUBLIC SUB mnuGoto_Click()
+
+  ME.GotoProc(CInt(LAST.Tag))
+
+END
+
+
+PRIVATE FUNCTION InsertFunction(sProc AS String, sType AS String, bPublic AS Boolean, sSign AS String, OPTIONAL bStatic AS Boolean) AS Integer
+  
+  DIM iLine AS Integer
+  DIM sPublic AS String
+  DIM sStatic AS String
+
+  FOR iLine = 0 TO edtEditor.Lines.Count - 1
+    IF IsProc(edtEditor.Lines[iLine]) THEN
+      IF Comp($sName, sProc, gb.Text) = 0 THEN
+        RETURN iLine
+      ENDIF
+    ENDIF
+  NEXT
+  
+  edtEditor.Goto(iLine - 1, Len(edtEditor.Lines[iLine - 1]))
+  IF edtEditor.Column THEN edtEditor.Insert("\n")
+
+  iLine = edtEditor.Line + 1
+
+  sPublic = If(bPublic, "PUBLIC", "PRIVATE")
+  sStatic = If(bStatic, "STATIC ", "")
+
+  IF sType THEN
+    edtEditor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n  \n\nEND\n")
+  ELSE
+    edtEditor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n  \n\nEND\n")
+  ENDIF
+  
+  RETURN iLine
+  
+END
+
+
+PUBLIC SUB GotoEvent(sName AS String, sEvent AS String, OPTIONAL sSign AS String)
+
+  DIM sProc AS String
+
+  sProc = sName & "_" & sEvent  
+  ME.GotoProc(InsertFunction(sProc, "", TRUE, sSign)) ' + 1, Len(edtEditor.Lines[iLine]))
+
+END
+
+
+' PUBLIC SUB GotoEvent(sName AS String, sEvent AS String, OPTIONAL sSign AS String)
+' 
+'   DIM iLine AS Integer
+'   DIM iPos AS Integer
+'   DIM iLast AS Integer
+'   DIM sProc AS String
+' 
+'   iLast = -1
+'   sProc = UCase(sName & "_" & sEvent)
+' 
+'   FOR iLine = 0 TO edtEditor.Lines.Count - 1
+'     IF IsProc(edtEditor.Lines[iLine]) THEN
+'       IF UCase($sName) = sProc THEN
+'         ME.GotoCenter(iLine + 2)
+'         RETURN
+'       ENDIF
+'       'IF iLast < 0 THEN
+'       '  iPos = Instr($sName, "_")
+'       '  IF iPos THEN
+'       '    IF UCase(Left$($sName, iPos - 1)) = UCase(sName) THEN
+'       '      iLast = iLine
+'       '    ENDIF
+'       '  ENDIF
+'       'ENDIF
+'     ENDIF
+'   NEXT
+' 
+'   IF iLast >= 0 THEN
+'     ME.GotoCenter(iLast + 2)
+'     RETURN
+'   ENDIF
+' 
+'   'edtEditor.Line = iLine - 1
+'   'edtEditor.Column = Len(edtEditor.Lines[edtEditor.Line])
+'   edtEditor.Goto(iLine - 1, Len(edtEditor.Lines[iLine - 1]))
+' 
+'   IF edtEditor.Column THEN edtEditor.Insert("\n")
+' 
+'   edtEditor.Insert("\nPUBLIC SUB " & sName & "_" & sEvent & "(" & sSign & ")\n\n  \n\nEND\n")
+' 
+'   ME.GotoCenter(iLine + 3, 3)
+' 
+' END
+
+
+PUBLIC SUB mnuSave_Click()
+
+  Save
+
+END
+
+PRIVATE SUB InsertProperty()
+  
+  DIM iPos AS Integer
+  DIM bStatic AS Boolean
+  DIM bRead AS Boolean
+  DIM sName AS String
+  DIM sType AS String
+  DIM iLine AS Integer
+  DIM iCol AS Integer
+  
+  IF Highlight.Symbols[0] = "STATIC" THEN
+    bStatic = TRUE
+    iPos = 2
+  ELSE
+    iPos = 1
+  ENDIF
+  
+  IF Highlight.Symbols[iPos] = "READ" THEN 
+    bRead = TRUE 
+    INC iPos
+  ENDIF
+
+  sName = Highlight.Symbols[iPos]
+  IF sName = "{" THEN 
+    INC iPos
+    IF Highlight.Types[iPos] <> Highlight.Symbol THEN RETURN 
+    sName = Highlight.Symbols[iPos]
+    INC iPos
+    IF Highlight.Symbols[iPos] <> "}" THEN RETURN
+  ELSE 
+    IF Highlight.Types[iPos] <> Highlight.Symbol THEN RETURN 
+  ENDIF
+    
+  INC iPos
+  IF Highlight.Symbols[iPos] <> "AS" THEN RETURN
+  INC iPos
+  sType = Highlight.Symbols[iPos]
+  IF Highlight.Types[iPos] <> Highlight.DataType THEN RETURN 
+  INC iPos
+  IF Highlight.Symbols.Max >= iPos THEN
+    IF Highlight.Symbols[iPos] = "[" THEN
+      sType &= "[]"
+    ENDIF
+  ENDIF
+  
+  iLine = edtEditor.Line
+  iCol = edtEditor.Column
+  
+  InsertFunction(sName & "_Read", sType, FALSE, "", bStatic)
+  IF NOT bRead THEN
+    InsertFunction(sName & "_Write", "", FALSE, "Value AS " & sType, bStatic)
+  ENDIF
+  'GotoCenter(iLine)
+  edtEditor.Goto(iLine, iCol)
+
+CATCH
+
+END
+
+
+PUBLIC SUB edtEditor_KeyPress()
+
+  DIM sLine AS String
+  DIM iLine AS Integer
+  DIM iCol AS Integer
+  DIM iInd AS Integer
+  DIM iPos AS Integer
+  DIM bStop AS Boolean
+
+  IF NOT edtEditor.ReadOnly THEN
+
+    iLine = edtEditor.Line
+
+    IF frmCompletion.Visible THEN
+      bStop = frmCompletion.ManageKey()
+    ENDIF
+
+    IF frmSignature.Visible THEN
+      bStop = bStop OR frmSignature.ManageKey()
+      'IF Key.Text THEN CheckSignature(Key.Text)
+    ENDIF
+
+    IF bStop THEN
+      STOP EVENT
+      RETURN
+    ENDIF
+
+  ENDIF
+
+  IF Key.Code = Key.Escape THEN 
+  
+    Action["find"].Value = FALSE
+    HideMessage
+  
+  ELSE IF Key.Code = Key.F8 THEN
+
+'     IF Key.Shift THEN
+'       Project.Forward
+'     ELSE IF Key.Alt THEN
+'       Project.ReturnFrom
+'     ELSE
+'       Project.Step
+'     ENDIF
+' 
+'     STOP EVENT
+'     RETURN
+
+  ELSE IF Key.Code = Key.F2 THEN
+
+    IF Key.Shift THEN
+      Project.LastPosition
+    ELSE IF Key.Normal THEN
+      FindDefinition
+    ENDIF
+
+    STOP EVENT
+
+  ELSE IF Key.Code = Key.Pause THEN
+
+'     IF Key.Alt THEN
+'       Design.Stop
+'       STOP EVENT
+'     ENDIF
+
+  ELSE IF Key.Control THEN
+
+    IF Key.Code = Key["A"] THEN
+
+      mnuSelectAll_Click
+      STOP EVENT
+
+    ELSE IF Key.Code = Key.Up THEN
+
+      GotoPreviousProc
+      STOP EVENT
+
+    ELSE IF Key.Code = Key.Down THEN
+
+      GotoNextProc
+      STOP EVENT
+
+    ELSE IF Key.Code = Key.Home OR Key.Code = Key.End THEN 
+      
+      Project.SavePosition()
+
+    ENDIF
+
+    RETURN
+
+  ENDIF
+
+  IF edtEditor.ReadOnly THEN RETURN
+
+  IF Asc(Key.Text) = 13 THEN
+
+    sLine = Trim(edtEditor.Lines[iLine])
+
+    IF edtEditor.Column < Len(sLine) THEN RETURN
+
+    IF IsProc(sLine) THEN
+
+      FOR iInd = iLine + 1 TO edtEditor.Lines.Count - 1
+        sLine = edtEditor.Lines[iInd]
+        IF IsEndProc(sLine) THEN RETURN
+        IF IsProc(sLine) THEN BREAK
+      NEXT
+
+      sLine = Trim(edtEditor.Lines[iLine])
+
+      IF InStr(sLine, "(") = 0 THEN edtEditor.Insert("()")
+      edtEditor.Insert("\n  \n  \n  \nEND\n")
+      'edtEditor.Line = iLine + 2
+      'edtEditor.Column = 2
+      edtEditor.Goto(iLine + 2, 2)
+
+      STOP EVENT
+
+    ELSE IF Highlight.Symbols.Count >= 4 THEN
+    
+      IF Highlight.Symbols[0] = "PROPERTY" OR IF Highlight.Symbols[0] = "STATIC" AND Highlight.Symbols[1] = "PROPERTY" THEN
+
+        InsertProperty      
+        
+      ENDIF
+      
+      'STOP EVENT
+      
+    ENDIF
+
+  ELSE IF Key.Code = Key.Space THEN
+
+    CheckCompletion(" ")
+    $bCheckSignature = TRUE
+
+  ELSE IF Key.Code = Key.Backspace THEN
+
+    CheckCompletion("<")
+    $bCheckSignature = TRUE
+
+  ELSE IF Key.Text = "." THEN
+
+    CheckCompletion(".")
+
+  ELSE IF Key.Text = "_" THEN
+
+    CheckCompletion("_")
+
+  ELSE IF InStr("(),[]", Key.Text) THEN
+  
+    $bCheckSignature = TRUE
+  
+  ELSE IF InStr(IDENT_CAR, Key.Text) THEN
+
+    CheckCompletion("A")
+
+  ENDIF
+
+END
+
+STATIC PRIVATE FUNCTION IsCurrentProc() AS Boolean
+
+  DIM aLine AS String[]
+  DIM bProc AS Boolean
+  DIM iPos AS Integer
+
+  aLine = Highlight.Symbols
+
+  $bPublic = FALSE
+  $bStatic = FALSE
+  $sName = ""
+
+  FOR iPos = 0 TO aLine.Count - 1
+
+    IF aLine[iPos] = "PUBLIC" THEN
+      $bPublic = TRUE
+      CONTINUE
+    ENDIF
+
+    IF aLine[iPos] = "PRIVATE" THEN
+      $bPublic = FALSE
+      CONTINUE
+    ENDIF
+
+    IF aLine[iPos] = "STATIC" THEN
+      $bStatic = TRUE
+      CONTINUE
+    ENDIF
+
+    IF aLine[iPos] = "SUB" THEN
+      bProc = TRUE
+      BREAK
+    ENDIF
+
+    IF aLine[iPos] = "PROCEDURE" THEN
+      bProc = TRUE
+      BREAK
+    ENDIF
+
+    IF aLine[iPos] = "FUNCTION" THEN
+      bProc = TRUE
+      BREAK
+    ENDIF
+
+    BREAK
+
+  NEXT
+
+  IF bProc THEN
+
+    INC iPos
+    IF iPos >= aLine.Count THEN RETURN
+
+    $sName = aLine[iPos]
+
+  ENDIF
+
+  RETURN bProc
+
+END
+
+
+
+STATIC PUBLIC FUNCTION IsProc(sLine AS String) AS Boolean
+
+  Highlight.Analyze(sLine)
+  RETURN IsCurrentProc()
+
+END
+
+
+STATIC PUBLIC FUNCTION IsEndProc(sLine AS String) AS Boolean
+
+  DIM aLine AS String[]
+
+  Highlight.Analyze(sLine)
+  aLine = Highlight.Symbols
+  
+  IF aLine.Count = 1 THEN RETURN aLine[0] = "END"
+  IF aLine.Count = 2 THEN RETURN aLine[0] = "END" AND (aLine[1] = "PROCEDURE" OR aLine[1] = "FUNCTION" OR aLine[1] = "SUB")
+
+END
+
+
+PUBLIC SUB mnuFind_Click()
+
+  FFind.Find
+
+END
+
+PUBLIC SUB mnuReplace_Click()
+
+  FFind.Find(TRUE)
+
+END
+
+
+' PUBLIC SUB mnuFindNext_Click()
+' 
+'   FFind.FindNext
+' 
+' END
+' 
+' 
+' PUBLIC SUB mnuFindPrevious_Click()
+' 
+'   FFind.FindPrevious
+' 
+' END
+
+
+PUBLIC FUNCTION CanSetBreakpoint(iLine AS Integer) AS Boolean
+
+  DIM sLine AS String
+  DIM iPos AS Integer
+
+  sLine = Trim(edtEditor.Lines[iLine])
+  iPos = InStr(sLine, "'")
+  IF iPos THEN sLine = Trim(Left$(sLine, iPos - 1))
+  IF Len(Trim(sLine)) = 0 THEN RETURN FALSE
+
+  IF $cProc THEN 
+    IF iLine < $iFirstProcLine THEN RETURN FALSE
+    IF iLine = $cProc[cmbProc.Text] THEN RETURN FALSE
+  ELSE 
+    IF GetCurrentProcLine(iLine) < 0 THEN RETURN FALSE
+    IF IsProc(edtEditor.Lines[iLine]) THEN RETURN FALSE
+  ENDIF
+
+  RETURN TRUE
+
+END
+
+
+PUBLIC SUB SetBreakpoint(iLine AS Integer, bVal AS Boolean)
+
+  IF CanSetBreakpoint(iLine) THEN
+    edtEditor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
+    IF iLine = edtEditor.Line THEN RefreshLineInfo(TRUE) 
+  ENDIF
+
+END
+
+
+PUBLIC SUB HasBreakpoint(iLine AS Integer) AS Boolean
+  
+  RETURN edtEditor.Lines.GetFlag(iLine, Editor.Breakpoint)
+  
+END
+
+
+PUBLIC FUNCTION GetBreakpoints() AS Integer[]
+
+  DIM cBreak AS NEW Integer[]
+  DIM iLine AS Integer
+
+  DO
+
+    iLine = edtEditor.FindNextBreakpoint(iLine)
+    IF iLine < 0 THEN BREAK
+
+    cBreak.Add(iLine)
+    INC iLine
+
+  LOOP
+
+  'PRINT Name; ":"; cBreak.Count; " Breakpoint(s)"
+
+  RETURN cBreak
+
+END
+
+
+PUBLIC SUB Rename(sNewName AS String, sNewPath AS String)
+
+  Name = sNewName
+  Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
+  DrawTitle
+
+END
+
+PRIVATE SUB StoreSelection()
+
+  WITH edtEditor
+
+    $iStartLine = .Selection.StartLine
+    $iEndLine = .Selection.EndLine
+    IF Editor.Column > 0 OR NOT .Selected THEN INC $iEndLine
+
+  END WITH
+
+END
+
+PRIVATE SUB RecallSelection()
+
+  Editor.Select($iStartLine, 0, $iEndLine, 0)
+
+END
+
+PRIVATE SUB GetIndentWidth(iStart AS Integer, iEnd AS Integer) AS Integer
+  
+  DIM iLine AS Integer
+  DIM sLine AS String
+  DIM iInd AS Integer
+  DIM iIndent AS Integer = 0
+  
+  FOR iLine = iStart TO iEnd - 1
+    sLine = edtEditor.Lines[iLine]
+    IF LTrim(sLine) THEN 
+      iInd = Len(sLine) - Len(LTrim(sLine))
+      IF iIndent = 0 THEN
+        iIndent = iInd
+      ELSE
+        iIndent = Min(iIndent, iInd)
+      ENDIF
+      IF iIndent = 0 THEN BREAK
+    ENDIF
+  NEXT
+  
+  RETURN iIndent
+  
+END
+
+
+PUBLIC SUB mnuComment_Click()
+
+  DIM iStart AS Integer
+  DIM iLength AS Integer
+  DIM iStartLine AS Integer
+  DIM iEndLine AS Integer
+  DIM iLine AS Integer
+  DIM sText AS String
+  DIM iIndent AS Integer
+
+  IF edtEditor.ReadOnly THEN RETURN
+  IF NOT edtEditor.Selected THEN RETURN
+
+  StoreSelection
+
+  iIndent = GetIndentWidth($iStartLine, $iEndLine)
+
+  edtEditor.Begin
+  FOR iLine = $iStartLine TO $iEndLine - 1
+    edtEditor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(edtEditor.Lines[iLine], iIndent + 1)
+  NEXT
+  edtEditor.End
+  'Modify
+
+  RecallSelection
+
+END
+
+
+PUBLIC SUB mnuUncomment_Click()
+
+  DIM iStart AS Integer
+  DIM iLength AS Integer
+  DIM iBack AS Integer
+  DIM iLine AS Integer
+  DIM sLine AS String
+  DIM iIndent AS Integer
+
+  IF edtEditor.ReadOnly THEN RETURN
+  IF NOT edtEditor.Selected THEN RETURN
+
+  StoreSelection
+
+  iIndent = GetIndentWidth($iStartLine, $iEndLine)
+
+  FOR iLine = $iStartLine TO $iEndLine - 1
+    sLine = edtEditor.Lines[iLine]
+    IF Len(sLine) < (iIndent + 1) THEN BREAK
+    IF Left(LTrim(sLine), 2) <> "' " THEN BREAK
+  NEXT
+
+  IF iLine = $iEndLine THEN
+    edtEditor.Begin
+    FOR iLine = $iStartLine TO $iEndLine - 1
+      edtEditor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(edtEditor.Lines[iLine]), 3)
+    NEXT
+    edtEditor.End
+    'Modify
+  ENDIF
+
+  RecallSelection
+
+END
+
+
+PUBLIC SUB mnuCut_Click()
+
+  Editor.Cut
+
+END
+
+PUBLIC SUB mnuCopy_Click()
+
+  Editor.Copy
+
+END
+
+PUBLIC SUB mnuPaste_Click()
+
+  Editor.Paste
+
+END
+
+PUBLIC SUB mnuUndo_Click()
+
+  HideCompletion
+  HideSignature
+  Editor.Undo
+
+END
+
+PUBLIC SUB mnuRedo_Click()
+
+  HideCompletion
+  HideSignature
+  Editor.Redo
+
+END
+
+PUBLIC SUB mnuForm_Click()
+
+  Project.OpenForm(Name)
+
+END
+
+
+
+PUBLIC SUB mnuGotoLine_Click()
+
+  DIM iLine AS Integer
+
+  iLine = FGotoLine.Run(Editor.Line + 1)
+  IF iLine <= 0 THEN RETURN
+  GotoCenter(iLine - 1, 0, TRUE)
+
+END
+
+PUBLIC SUB Form_Hide()
+
+  HideCompletion
+  'Project.Deactivate(ME)
+
+END
+
+
+PUBLIC SUB mnuSelectAll_Click()
+
+  edtEditor.SelectAll
+
+END
+
+PRIVATE SUB GotoPreviousProc()
+
+  DIM iInd AS Integer
+
+  Project.SavePosition
+
+  FOR iInd = edtEditor.Line - 2 TO 0 STEP -1
+    IF IsProc(edtEditor.Lines[iInd]) THEN
+      ME.Goto(iInd, edtEditor.Column, TRUE)
+      RETURN
+    ENDIF
+  NEXT
+
+  ME.Goto(0, edtEditor.Column)
+
+END
+
+PRIVATE SUB GotoNextProc()
+
+  DIM iInd AS Integer
+
+  Project.SavePosition
+
+  FOR iInd = edtEditor.Line + 1 TO edtEditor.Lines.Count - 1
+
+    IF IsProc(edtEditor.Lines[iInd]) THEN
+      ME.Goto(iInd, edtEditor.Column, TRUE)
+      RETURN
+    ENDIF
+
+  NEXT
+
+  ME.Goto(edtEditor.Lines.Count - 1, edtEditor.Column)
+
+END
+
+
+' PUBLIC SUB btnGoto_Click()
+' 
+'   CreateMenu
+'   mnuGoto.Popup(btnGoto.ScreenX, btnGoto.ScreenY + btnGoto.H)
+' 
+' END
+
+
+STATIC PUBLIC FUNCTION ReadSymbolType(aSym AS String[], iIndex AS Integer, OPTIONAL sSymbol AS String) AS String
+
+  DIM sType AS String
+
+  IF sSymbol THEN
+    IF UCase(aSym[iIndex]) <> UCase(sSymbol) THEN RETURN
+    INC iIndex
+  ENDIF
+
+  IF aSym[iIndex] <> "AS" THEN RETURN
+  INC iIndex
+  IF aSym[iIndex] = "NEW" THEN INC iIndex
+
+  sType = aSym[iIndex]
+  IF $cType.Exist(sType) THEN
+    IF (iIndex + 2) < aSym.Count THEN
+      IF aSym[iIndex + 1] = "[" THEN 'AND aSym[iIndex + 2] = "]" THEN
+        RETURN sType & "[]"
+      ENDIF
+    ENDIF
+    sType = $cType[sType]
+  ENDIF
+  RETURN sType
+
+CATCH
+
+END
+
+
+PRIVATE FUNCTION GetSymbolType(sSymbol AS String, OPTIONAL bPoint AS Boolean) AS String
+
+  DIM iLine AS Integer
+  DIM iInd AS Integer
+  DIM iPos AS Integer
+  DIM sParam AS String
+  DIM aSym AS String[]
+  DIM sType AS String
+  DIM sPath AS String
+  DIM hForm AS Object
+
+  'sSymbol = UCase(sSymbol)
+
+  $bLastStatic = FALSE
+
+  IF sSymbol = "ME" THEN RETURN Name
+
+  IF sSymbol = "SUPER" THEN
+    CComponent.GetClassSymbols(Name)
+    RETURN ParentClass
+  ENDIF
+
+  ' Look for local variables
+
+  iLine = edtEditor.Line
+
+  DO
+    DEC iLine
+    IF iLine < 0 THEN RETURN
+    aSym = Highlight.Analyze(edtEditor.Lines[iLine])
+    IF aSym.Count >= 1 THEN
+      IF asym.Count = 1 THEN
+        IF aSym[0] = "END" THEN BREAK
+      ENDIF
+      IF aSym.Count >= 4 THEN
+        IF aSym[0] = "DIM" THEN
+          sType = ReadSymbolType(aSym, 1, sSymbol)
+          IF sType THEN
+            WITH $hVirtualSymbol
+              .Name = aSym[1]
+              .Class = Name
+              .Kind = "v"
+              .LineNumber = iLine + 1
+              .NotPublic = TRUE
+              .Type = sType
+            END WITH
+            $hSymbol = $hVirtualSymbol
+            RETURN sType
+          ENDIF
+        ENDIF
+      ENDIF
+    ENDIF
+    IF IsCurrentProc() THEN BREAK
+  LOOP
+
+  ' Look for parameters
+
+  FOR iInd = 0 TO aSym.Count - 3
+
+    sType = ReadSymbolType(aSym, iInd, sSymbol)
+    IF sType THEN
+      WITH $hVirtualSymbol
+        .Name = aSym[0]
+        .Class = Name
+        .Kind = "v"
+        .LineNumber = iLine + 1
+        .NotPublic = TRUE
+        .Type = sType
+      END WITH
+      $hSymbol = $hVirtualSymbol
+      RETURN sType
+    ENDIF
+
+  NEXT
+
+  'IF UCase($sName) = UCase(sSymbol) THEN
+  '  GOTO RETURN_FUNCTION
+  'ENDIF
+
+  'PRINT "GetSymbolType: "; sSymbol
+
+  ' Look for private symbols
+
+  TRY $hSymbol = CComponent.GetClassSymbols(Name)[sSymbol]
+  IF NOT ERROR THEN
+    IF $hSymbol THEN
+      ' A private symbol that is a method cannot be followed by a point
+      ' So it must be a static class.
+      IF NOT ($hSymbol.Kind = "m" AND bPoint) THEN
+        ' This must be a private symbol, and so we must ignore inheritance
+        IF $hSymbol.Class = Name THEN
+        '$bLastStatic = $hSymbol.IsStatic()
+          RETURN $hSymbol.Type
+        ENDIF
+      ENDIF
+
+      $hSymbol = NULL
+
+    ENDIF
+  ENDIF
+
+  ' Look for subroutines
+
+  IF NOT bPoint THEN
+    $hSymbol = CComponent.GetClassSymbols(".")[sSymbol]
+    IF $hSymbol THEN
+      RETURN $hSymbol.Type
+    ENDIF
+  ENDIF
+
+  ' Look for static classes
+
+  $bLastStatic = TRUE
+
+  IF CComponent.Classes.Exist(sSymbol) THEN
+    'TRY $hSymbol = CComponent.GetClassSymbols(sSymbol)["_call"]
+    RETURN sSymbol
+  ENDIF
+
+  ' Look for project classes
+
+  IF Project.Exist(sSymbol) THEN
+    IF Project.ExistForm(sSymbol) THEN $bLastStatic = FALSE
+    RETURN sSymbol
+  ENDIF
+
+END
+
+
+PRIVATE SUB GetSymbolWith(aExpr AS String[], aType AS Integer[], OPTIONAL iInd AS Integer = -1)
+
+  DIM iLine AS Integer
+  DIM aWith AS String[]
+  DIM aWithType AS Integer[]
+  DIM iLevel AS Integer
+  DIM iAssign AS Integer
+
+  iLine = edtEditor.Line
+
+  DO
+    DEC iLine
+    IF iLine < 0 THEN BREAK
+    aWith = Highlight.Analyze(edtEditor.Lines[iLine])
+    IF aWith.Count >= 2 THEN
+      IF aWith[0] = "WITH" THEN
+        IF iLevel = 0 THEN
+          aWithType = Highlight.Types
+          aWith.Remove(0)
+          aWithType.Remove(0)
+
+          FOR iAssign = 0 TO aWith.Max
+            IF Right(aWith[iAssign]) = "=" THEN
+              aWith.Remove(iAssign, -1)
+              aWithType.Remove(iAssign, -1)
+              BREAK
+            ENDIF
+          NEXT
+
+          aExpr.Insert(aWith, iInd)
+          aType.Insert(aWithType, iInd)
+          RETURN
+        ELSE
+          DEC iLevel
+        ENDIF
+      ELSE IF aWith[0] = "END" THEN
+        IF aWith[1] = "WITH" THEN
+          INC iLevel
+        ENDIF
+      ENDIF
+    ENDIF
+    IF IsCurrentProc() THEN BREAK
+  LOOP
+
+END
+
+
+PRIVATE FUNCTION IsTypeSymbol(sPattern AS String, iType AS Integer) AS Boolean
+
+  IF iType = Highlight.Symbol THEN RETURN TRUE
+  IF iType = Highlight.DataType THEN RETURN TRUE
+  IF iType = Highlight.Function THEN RETURN TRUE
+  IF iType = Highlight.Keyword THEN
+    IF sPattern = "ME" THEN RETURN TRUE
+    IF sPattern = "SUPER" THEN RETURN TRUE
+    IF sPattern = "LAST" THEN RETURN TRUE
+  ENDIF
+
+END
+
+
+
+PRIVATE FUNCTION GetExpressionType(aExpr AS String[], aType AS Integer[], bPointAfter AS Boolean) AS String
+
+  DIM aWith AS String[]
+  DIM iInd AS Integer
+  DIM sWait AS NEW String[]
+  DIM sPattern AS String
+  DIM bLastSymbol AS Boolean
+  DIM sType AS String
+  DIM iType AS Integer
+  DIM cSymbol AS Collection
+  'DIM hSymbol AS CSymbolInfo
+  DIM bNeedMethod AS Boolean
+  DIM bNeedArray AS Boolean
+  DIM bFoundMethod AS Boolean
+
+  $hSymbol = NULL
+  '$bInMethod = 0
+
+  'IF aExpr.Count = 0 THEN RETURN
+
+  iInd = aExpr.Count - 1
+
+  FOR iInd = iInd TO 0 STEP -1
+
+    sPattern = aExpr[iInd]
+    IF sPattern = ")" THEN
+      sWait.Push("(")
+      bLastSymbol = FALSE
+      CONTINUE
+    ELSE IF sPattern = "]" THEN
+      sWait.Push("[")
+      bLastSymbol = FALSE
+      CONTINUE
+    ELSE IF sWait.Count THEN
+      IF sPattern = sWait[sWait.Count - 1] THEN
+        sWait.Pop
+      ENDIF
+      bLastSymbol = FALSE
+      CONTINUE
+    ELSE IF sPattern = "." THEN
+      bLastSymbol = FALSE
+      CONTINUE
+    ELSE IF IsTypeSymbol(sPattern, aType[iInd]) THEN
+      IF NOT bLastSymbol THEN
+        bLastSymbol = TRUE
+        CONTINUE
+      ENDIF
+    ENDIF
+
+    BREAK
+
+  NEXT
+
+  sWait.Clear
+  INC iInd
+
+  IF iInd >= aExpr.Count THEN
+
+    IF iInd > 0 THEN
+      IF NOT bPointAfter THEN RETURN
+      SELECT CASE aType[iInd - 1]
+        CASE Highlight.Operator, Highlight.Keyword
+        DEFAULT
+          RETURN
+      END SELECT
+    ENDIF
+
+    GetSymbolWith(aExpr, aType)
+    'PRINT "#1 WITH: "; aExpr.Join("/")
+
+  ELSE IF aExpr[iInd] = "." THEN
+    GetSymbolWith(aExpr, aType, iInd)
+    'PRINT "#2 WITH: "; aExpr.Join("/")
+  ENDIF
+
+  FOR iInd = iInd TO aExpr.Count - 1
+
+    sPattern = aExpr[iInd]
+    'PRINT sPattern
+
+    IF sPattern = "(" THEN
+      'INC $bInMethod
+      sWait.Push(")")
+      CONTINUE
+    ELSE IF sPattern = "[" THEN
+      sWait.Push("]")
+      CONTINUE
+    ELSE IF sWait.Count THEN
+      IF sPattern = sWait[sWait.Count - 1] THEN
+        sWait.Pop
+        IF sWait.Count THEN CONTINUE
+      ELSE
+        CONTINUE
+      ENDIF
+    ENDIF
+
+    'IF aType[iInd] = Editor.Symbol OR aType[iInd] = Editor.DataType OR aType[iInd] = Editor.Keyword THEN
+    IF IsTypeSymbol(sPattern, aType[iInd]) THEN
+      IF NOT sType THEN
+        IF iInd >= (aExpr.Count - 1) THEN
+          sType = GetSymbolType(sPattern, bPointAfter)
+        ELSE
+          sType = GetSymbolType(sPattern, aExpr[iInd + 1] = ".")
+        ENDIF
+        IF $hSymbol THEN
+          '$bLastStatic = FALSE
+          sType = $hSymbol.Type
+          bNeedMethod = LCase($hSymbol.Kind) = "m"
+        ENDIF
+      ENDIF
+      IF NOT sType THEN RETURN
+    ELSE IF sPattern = "." THEN
+      IF iInd <= (aExpr.Count - 2) THEN
+        IF sType THEN
+          IF aType[iInd + 1] = Highlight.Symbol THEN
+            'PRINT sType; " ";
+            cSymbol = CComponent.GetClassSymbols(sType)
+            $hSymbol = NULL
+            TRY $hSymbol = cSymbol[aExpr[iInd + 1]]
+            IF NOT $hSymbol THEN RETURN
+            sType = $hSymbol.Type
+            $bLastStatic = FALSE ' A property cannot return static classes
+            'PRINT sType
+            IF NOT sType THEN RETURN
+            IF LCase($hSymbol.Kind) = "m" THEN bNeedMethod = TRUE
+            INC iInd
+          ELSE
+            RETURN
+          ENDIF
+        ELSE
+          RETURN
+        ENDIF
+      ELSE
+        RETURN
+      ENDIF
+    ELSE IF sPattern = ")" THEN
+      IF bNeedMethod THEN
+        bNeedMethod = FALSE
+      ELSE
+        TRY $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+        IF NOT $hSymbol THEN RETURN
+        sType = $hSymbol.Type ' A method cannot return static classes
+        $bLastStatic = FALSE
+      ENDIF
+    ELSE IF sPattern = "]" THEN
+      TRY $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+      IF NOT $hSymbol THEN RETURN
+      sType = $hSymbol.Type
+      $bLastStatic = FALSE ' A method cannot return static classes
+    ENDIF
+
+  NEXT
+
+  IF bNeedMethod THEN RETURN
+  RETURN sType
+
+END
+
+PRIVATE SUB CheckCompletion(sMode AS String)
+
+  'DIM sMode AS String
+  DIM sLine AS String
+  DIM sType AS String
+  DIM aSymbols AS String[]
+  DIM aTypes AS Integer[]
+  DIM sWord AS String
+  DIM iPos AS Integer
+  DIM eTime AS Float
+
+  IF NOT $bCompletion THEN RETURN
+
+  'IF Key.Code = Key.Backspace THEN
+  '  IF FCompletion.IsMine(edtEditor) THEN
+  '    sMode = Mid$(sLig, edtEditor.Column - 1, 1)
+  '  ENDIF
+  'ELSE
+  '  sMode = Key.Text
+  'ENDIF
+
+  'IF NOT sMode THEN RETURN
+
+  sLine = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column)
+  IF Right$(RTrim(sLine)) = "'" THEN RETURN
+
+  IF sMode = " " THEN
+    IF UCase(Right$(sLine, 3)) = " AS" OR UCase(Right$(sLine, 4)) = " NEW" OR UCase(Right$(sLine, 3)) = " IS" THEN
+      HideCompletion
+      frmCompletion.Open(sMode)
+    ENDIF
+  ELSE IF sMode = "." THEN
+    Highlight.Analyze(sLine & ".")
+    aSymbols = Highlight.Symbols
+    aTypes = Highlight.Types
+    aSymbols.Remove(aSymbols.Count - 1)
+    aTypes.Remove(aTypes.Count - 1)
+    sType = GetExpressionType(aSymbols, aTypes, TRUE)
+    IF sType THEN
+      'PRINT "Type: "; sType
+      frmCompletion.Open(sMode, sType, $bLastStatic, FALSE) 'LCase(sType) = LCase(ME.Name))
+    ENDIF
+  ELSE IF sMode = "A" THEN
+    IF NOT frmCompletion.Visible THEN 
+      sWord = GetIdentifier(sLine & Key.Text, edtEditor.Column + 1)
+      IF Len(sWord) >= 3 THEN frmCompletion.Open(sMode, sWord)
+      'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
+    ENDIF
+  ELSE IF sMode = "_" THEN 
+    IF NOT frmCompletion.Visible THEN 
+      sWord = GetIdentifier(sLine, edtEditor.Column)
+      IF NOT sWord THEN 
+        frmCompletion.Open(sMode)
+      ELSE IF Len(sWord) >= 3 THEN 
+        frmCompletion.Open("A", sWord & "_")
+      ENDIF
+      'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
+    ENDIF
+  ELSE IF sMode = "<" THEN
+    IF NOT edtEditor.Selected AND IF edtEditor.Column >= 1 AND IF NOT frmCompletion.Visible THEN 
+      sLine = Left(sLine, -1)
+      sWord = GetIdentifier(sLine, edtEditor.Column - 1)
+      IF Right(sLine) <> "." AND IF Len(sLine) > Len(sWord) AND IF Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." THEN
+        iPos = edtEditor.Column
+        edtEditor.Goto(edtEditor.Line, edtEditor.Column - Len(sWord) - 2)
+        CheckCompletion(".")
+        frmCompletion.SetText(sWord)
+        edtEditor.Goto(edtEditor.Line, iPos)
+        RETURN 
+      ENDIF      
+      IF Len(sWord) >= 3 THEN frmCompletion.Open(sMode, sWord)
+      'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
+    ENDIF
+  ELSE
+    HideCompletion
+  ENDIF
+
+END
+
+
+PRIVATE SUB HideCompletion()
+
+  IF frmCompletion.Visible THEN
+    'PRINT "HideCompletion"
+    frmCompletion.Hide
+  ENDIF
+
+END
+
+
+PRIVATE FUNCTION GetExpressionSignature(aExpr AS String[], aType AS Integer[]) AS CSymbolInfo
+
+  DIM iInd AS Integer
+  DIM sWait AS NEW String[]
+  DIM sPattern AS String
+  DIM sType AS String
+  DIM bNew AS Boolean
+  DIM hClass AS CClassInfo
+
+  $hSymbol = NULL
+
+  FOR iInd = aExpr.Count - 1 TO 0 STEP -1
+
+    sPattern = aExpr[iInd]
+    IF sPattern = ")" THEN
+      sWait.Push("(")
+      'bLastSymbol = FALSE
+      CONTINUE
+    ELSE IF sPattern = "]" THEN
+      sWait.Push("[")
+      'bLastSymbol = FALSE
+      CONTINUE
+    ELSE IF sWait.Count THEN
+      IF sPattern = sWait[sWait.Count - 1] THEN
+        sWait.Pop
+      ENDIF
+      'bLastSymbol = FALSE
+      CONTINUE
+    ELSE IF sPattern = "(" OR sPattern = "[" THEN
+      BREAK
+    ENDIF
+
+  NEXT
+
+  IF iInd < 1 THEN RETURN
+
+  $iPosSignature = edtEditor.ToPosX(Highlight.Positions[iInd - 1])
+
+  IF iInd >= 2 THEN bNew = aExpr[iInd - 2] = "NEW"
+
+  aExpr.Remove(iInd, -1)
+  aType.Remove(iInd, -1)
+
+  sType = GetExpressionType(aExpr, aType, FALSE)
+  'IF NOT $hSymbol THEN
+  IF sPattern = "(" THEN
+    IF bNew THEN
+      TRY $hSymbol = CComponent.GetClassSymbols(sType)["_new"]
+    ELSE
+      TRY $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+    ENDIF
+  ELSE IF sPattern = "[" THEN
+    $hSymbol = NULL
+    TRY $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+  ENDIF
+
+'   IF $hSymbol THEN
+'     IF $hSymbol.IsStatic() XOR $bLastStatic THEN
+'       hClass = CComponent.Classes[$hSymbol.Component &/ $hSymbol.Class]
+'       IF hClass THEN
+'         IF NOT hClass.AutoCreatable THEN
+'           $hSymbol = NULL
+'         ENDIF
+'       ELSE
+'         $hSymbol = NULL
+'       ENDIF
+'     ENDIF
+'   ENDIF
+
+  'ENDIF
+
+  RETURN $hSymbol
+
+END
+
+
+PRIVATE FUNCTION GetExpressionSymbol(aExpr AS String[], aType AS Integer[]) AS CSymbolInfo
+
+  DIM iInd AS Integer
+  DIM sWait AS NEW String[]
+  DIM sPattern AS String
+  DIM sType AS String
+  DIM bNew AS Boolean
+  DIM hClass AS CClassInfo
+
+  $hSymbol = NULL
+  IF aExpr.Count = 0 THEN RETURN
+
+  sPattern = aExpr[aExpr.Count - 1]
+
+  IF InStr("[(", sPattern) THEN
+    aType.Remove(aExpr.Count - 1)
+    aExpr.Remove(aExpr.Count - 1)
+  ENDIF
+
+  IF aExpr.Count >= 2 THEN bNew = aExpr[aExpr.Count - 2] = "NEW"
+
+  sType = GetExpressionType(aExpr, aType, FALSE)
+  'IF NOT $hSymbol THEN
+  'IF sPattern = "(" THEN
+    IF bNew THEN
+      TRY $hSymbol = CComponent.GetClassSymbols(sType)["_new"]
+    'ELSE
+    '  TRY $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+    ENDIF
+  'ELSE IF sPattern = "[" THEN
+    'TRY $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+  'ENDIF
+
+'   IF $hSymbol THEN
+'     IF $hSymbol.IsStatic() XOR $bLastStatic THEN
+'       hClass = CComponent.Classes[$hSymbol.Component &/ $hSymbol.Class]
+'       IF hClass THEN
+'         IF NOT hClass.AutoCreatable THEN
+'           $hSymbol = NULL
+'         ENDIF
+'       ELSE
+'         $hSymbol = NULL
+'       ENDIF
+'     ENDIF
+'   ENDIF
+
+  'ENDIF
+
+  RETURN $hSymbol
+
+END
+
+
+PRIVATE SUB CheckSignature(OPTIONAL sText AS String)
+
+  DIM sLig AS String
+  DIM hSymbol AS CSymbolInfo
+
+  IF NOT $bCompletion THEN RETURN
+
+  sLig = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column) & sText
+  Highlight.Analyze(sLig)
+
+  IF NOT IsCurrentProc() THEN
+
+    hSymbol = GetExpressionSignature(Highlight.Symbols, Highlight.Types)
+
+    IF hSymbol THEN
+      IF LCase(hSymbol.Kind) = "m" THEN
+        frmSignature.Open($iPosSignature, hSymbol, NOT sText)
+        IF frmCompletion.Visible THEN frmCompletion.Raise
+      ENDIF
+      RETURN
+    ENDIF
+
+  ENDIF
+
+  HideSignature
+
+END
+
+
+PRIVATE SUB HideSignature()
+
+  frmSignature.Hide
+
+END
+
+
+PUBLIC SUB edtEditor_Scroll()
+
+  'PRINT "Scroll"
+  HideCompletion
+  HideSignature
+  HideMessage
+
+END
+
+
+PRIVATE SUB SetReadOnly()
+
+  edtEditor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+  UpdateMenu
+
+END
+
+PUBLIC SUB Reload()
+
+  DIM sText AS String
+
+  sText = File.Load(Path)
+  IF Right(sText) <> "\n" THEN sText = sText & "\n"
+  edtEditor.Text = sText
+  edtEditor.SetFocus
+  Modify(TRUE)
+
+END
+
+
+PUBLIC SUB mnuReload_Click()
+
+  IF NOT IsModified() THEN RETURN
+
+  IF Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 THEN RETURN
+
+  Reload
+
+END
+
+
+PRIVATE FUNCTION GetCurrentProcLine(iLine AS Integer) AS Integer
+
+  DIM iProc AS Integer
+  DIM iRes AS Integer
+
+  IF $cProc THEN 
+  
+    iRes = -1
+    FOR EACH iProc IN $cProc
+      IF iRes < iProc AND IF iProc <= iLine THEN 
+        iRes = iProc
+        $sName = $cProc.Key
+      ENDIF
+    NEXT
+    RETURN iRes
+  
+  ELSE
+
+    DO
+      IF IsProc(edtEditor.Lines[iLine]) THEN RETURN iLine
+      DEC iLine
+      IF iLine < 0 THEN RETURN -1
+    LOOP
+
+  ENDIF
+
+END
+
+PUBLIC SUB GetProcAt(iLine AS Integer) AS String
+
+  GetCurrentProcLine(iLine)
+  RETURN $sName
+
+END
+
+PUBLIC SUB btnIndent_Click()
+
+  edtEditor.Indent
+
+END
+
+PUBLIC SUB btnUnindent_Click()
+
+  edtEditor.Unindent
+
+END
+
+PRIVATE FUNCTION IsKeyword(iCpt AS Integer) AS Boolean
+  
+  IF Highlight.Types[iCpt] = Highlight.Keyword THEN RETURN TRUE
+  IF Highlight.Types[iCpt] = Highlight.Function THEN RETURN TRUE
+  IF Highlight.Types[iCpt] = Highlight.Operator AND IF IsLetter(Left$(Highlight.Symbols[iCpt])) THEN RETURN TRUE
+  
+END
+
+
+PRIVATE SUB FindDefinition()
+
+  DIM sLig AS String
+  DIM iCol AS Integer
+  DIM hSymbol AS CSymbolInfo
+  DIM iCpt AS Integer
+  DIM sKeyword AS String
+  DIM sKeyword2 AS String
+
+  sLig = edtEditor.GetPurgedLine(edtEditor.Line)
+  iCol = edtEditor.Column
+
+  REPEAT
+    INC iCol
+    IF iCol > Len(sLig) THEN BREAK
+  UNTIL InStr(IDENT_CAR, Mid$(sLig, iCol, 1)) = 0
+
+  IF iCol < Len(sLig) THEN
+    IF InStr("[(", Mid$(sLig, iCol, 1)) THEN
+      INC iCol
+    ENDIF
+  ENDIF
+
+  Highlight.Analyze(Left$(sLig, iCol - 1))
+  IF IsCurrentProc() THEN RETURN
+
+  iCpt = Highlight.Types.Count - 1
+
+  IF iCpt >= 0 THEN
+    IF IsKeyword(iCpt) THEN
+
+      sKeyword = Highlight.Symbols[iCpt]
+      IF iCpt > 0 THEN
+        DEC iCpt
+        IF IsKeyword(iCpt) THEN
+          sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
+        ENDIF
+      ENDIF
+
+      MHelp.GotoKeyword(sKeyword, sKeyword2)
+      RETURN
+
+    ENDIF
+  ENDIF
+
+  'Editor.Analyze(Left$(sLig, iCol - 1))
+  hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
+  IF NOT hSymbol THEN RETURN
+
+  'PRINT hSymbol.Class
+
+  IF hSymbol.LineNumber THEN
+    Project.SavePosition()
+    Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
+  ELSE
+    MHelp.GotoSymbol(hSymbol)
+  ENDIF
+
+END
+
+PUBLIC SUB OnProjectDebug()
+
+  SetReadOnly
+
+END
+
+'PUBLIC SUB btnSplit_Click()
+'
+'  IF NOT edtSplit THEN
+'    edtSplit = NEW Editor(vspSplit)
+'    edtSplit.Document = edtEditor.Document
+'     ReadConfigEditor(edtSplit)
+'   ELSE
+'     INC edtSplit.Visible
+'   ENDIF
+' 
+'END
+
+
+STATIC PUBLIC FUNCTION GetIdentifier(sLine AS String, iPos AS Integer) AS String
+  
+  DIM sCar AS String
+  DIM iPos2 AS Integer
+  
+  iPos2 = iPos
+
+  DO
+    IF iPos <= 0 THEN BREAK
+    sCar = Mid$(sLine, iPos, 1)
+    IF sCar = "?" THEN BREAK
+    IF InStr(IDENT_CAR, sCar) = 0 THEN BREAK
+    DEC iPos
+  LOOP
+  
+  INC iPos
+  
+  DO
+    IF iPos2 > Len(sLine) THEN BREAK
+    sCar = Mid$(sLine, iPos, 1)
+    IF InStr(IDENT_CAR, sCar) = 0 THEN BREAK
+    INC iPos2
+  LOOP
+  
+  RETURN Mid$(sLine, iPos, iPos2 - iPos)
+  
+CATCH
+  
+END
+
+PUBLIC SUB WatchExpression()
+
+  DIM sWatch AS String
+
+  IF NOT Project.Running THEN RETURN
+  sWatch = Trim(edtEditor.Selection.Text)
+  IF NOT sWatch THEN RETURN
+
+  FDebugInfo.AddWatch(Trim(edtEditor.Selection.Text))
+
+END
+
+PUBLIC SUB RunUntil()
+
+  IF NOT CanSetBreakpoint(edtEditor.Line) THEN RETURN
+  Project.RunUntil(ME, edtEditor.Line)
+
+END
+
+PUBLIC SUB Form_Activate()
+
+  mnuEditor.Enabled = TRUE
+  RefreshLineInfo(TRUE)
+
+END
+
+
+PUBLIC SUB edtEditor_MouseUp()
+
+  HideMessage
+
+  IF NOT Project.Running THEN RETURN 
+  IF NOT edtEditor.Selected THEN RETURN 
+  IF edtEditor.Selection.StartLine < edtEditor.Selection.EndLine THEN RETURN 
+  
+  FDebugInfo.InstantWatch(Trim(edtEditor.Selection.Text))
+
+END
+
+' PRIVATE SUB MoveMessage()
+'   
+'   DIM X, Y AS Integer
+'   
+'   X = Mouse.ScreenX - ME.ScreenX + 8
+'   IF (X + lblMessage.W) >= ME.W THEN 
+'     X = Max(0, Mouse.ScreenX - ME.ScreenX - 8 - lblMessage.W)
+'   ENDIF
+'   
+'   Y = Mouse.ScreenY - ME.ScreenY + 8
+'   IF (Y + lblMessage.H) >= ME.H THEN 
+'     Y = Max(0, Mouse.ScreenY - ME.ScreenY - 8 - lblMessage.H)
+'   ENDIF
+'   
+'   lblMessage.Move(X, Y)
+'   
+' END
+
+
+PUBLIC SUB lblMessage_MouseMove()
+
+  HideMessage
+
+END
+
+PUBLIC SUB ShowMessage(sMsg AS String)
+
+  DIM hIcon AS Picture
+
+  sMsg = Replace(sMsg, "\t", "\n")
+  sMsg = Replace(sMsg, "    ", "&nbsp;")
+  sMsg = Replace(sMsg, "&", "&amp;")
+  sMsg = Replace(sMsg, "<", "&lt;")
+  sMsg = Replace(sMsg, ">", "&gt;")
+  IF Left(sMsg, 2) = "**" THEN 
+    sMsg = Trim(Mid$(sMsg, 3))
+    hIcon = Picture["icon:/32/error"]
+  ENDIF 
+
+  Balloon(sMsg, edtEditor, hIcon, edtEditor.CursorX + edtEditor.CharWidth * ((edtEditor.Selection.StartColumn + edtEditor.Selection.EndColumn) / 2 - edtEditor.Column), Mouse.ScreenY - edtEditor.ScreenY)
+
+END
+
+PRIVATE SUB HideMessage()
+  
+  IF Balloon.Control = edtEditor THEN Balloon.Hide
+  
+END
+
+
+PUBLIC SUB lblMessage_MouseUp()
+
+  HideMessage
+
+END
+
+
+PUBLIC SUB timProc_Timer()
+
+  DIM iLine AS Integer = GetCurrentProcLine(edtEditor.Line)
+  DIM sProc AS String = $sName
+  DIM iIndex AS Integer
+  
+  IF NOT sProc THEN 
+    sProc = ("(Declarations)")
+    iLine = 0
+  ENDIF
+  
+  iIndex = cmbProc.Find(sProc)
+  IF iIndex < 0 THEN 
+    cmbProc.Add(sProc)
+    iIndex = cmbProc.Find(sProc)
+  ENDIF
+  Object.Lock(cmbProc)
+  cmbProc.Index = iIndex
+  Object.Unlock(cmbProc)
+  timProc.Enabled = FALSE
+
+END
+
+PRIVATE SUB FillProcCombo()
+
+  DIM hSymbol AS CSymbolInfo
+  DIM cSymbol AS Collection
+  DIM sText AS String
+  DIM aFunc AS NEW String[]
+  DIM sName AS String
+  'DIM fTime AS Float
+  'DIM iInd AS Integer
+
+  IF $cProc THEN RETURN
+
+  INC Application.Busy
+
+  'fTime = Timer
+  'FOR iInd = 1 TO 20
+  'aFunc.Clear
+  
+  sText = cmbProc.Text
+
+  cmbProc.Clear
+  cmbProc.Add(("(Declarations)"))
+  
+  $cProc = NEW Collection
+  $iFirstProcLine = 1000000
+
+  {Scan} = NULL
+  cSymbol = CComponent.GetClassSymbols(Name)
+
+  FOR EACH hSymbol IN cSymbol
+
+    IF LCase(hSymbol.Kind) <> "m" THEN CONTINUE
+    IF hSymbol.LineNumber = 0 THEN CONTINUE
+    IF hSymbol.Class <> Name THEN CONTINUE
+    aFunc.Add(hSymbol.Name)
+
+  NEXT
+
+  aFunc.Sort(gb.Text)
+
+  FOR EACH sName IN aFunc
+
+    hSymbol = cSymbol[sName]
+    cmbProc.Add(sName)
+    $cProc[hSymbol.Name] = hSymbol.LineNumber
+    $iFirstProcLine = Min($iFirstProcLine, hSymbol.LineNumber)
+
+  NEXT
+  
+  cmbProc.Text = sText
+  
+  'NEXT 
+  'DEBUG Timer - fTime
+
+  DEC Application.Busy
+
+END
+
+
+PUBLIC SUB cmbProc_KeyPress()
+
+  FillProcCombo
+
+END
+
+PUBLIC SUB cmbProc_MouseDown()
+
+  FillProcCombo
+
+END
+
+PUBLIC SUB GotoProc(iLine AS Integer)
+  
+  DIM sLine AS String
+  DIM iStart AS Integer = iLine
+  
+  DO
+    INC iLine
+    IF iLine >= edtEditor.Lines.Count THEN 
+      DEC iLine
+      BREAK
+    ENDIF
+    sLine = Trim(UCase(edtEditor.Lines[iLine]))
+    IF sLine THEN BREAK
+  LOOP
+  
+  IF UCase(sLine) = "END" THEN 
+    iLine = Min(iStart + 2, iLine - 1)
+  ENDIF
+  
+  ME.GotoCenter(iLine, 0, TRUE)
+  edtEditor.SetFocus
+
+END
+
+
+PUBLIC SUB cmbProc_Click()
+
+  DIM iLine AS Integer
+  
+  TRY iLine = $cProc[cmbProc.Text]
+  GotoProc(iLine)
+
+END
+
+PUBLIC SUB cmbProc_MouseWheel()
+
+  FillProcCombo
+
+END
+
+PUBLIC SUB cmbProc_GotFocus()
+
+  edtEditor.SetFocus
+
+END
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+
+  RETURN edtEditor.ReadOnly
+
+END
+
+PUBLIC SUB edtEditor_Margin({Line} AS Integer)
+
+  Design.SetBreakpoint(Name, {Line}, NOT HasBreakpoint({Line}))
+
+END

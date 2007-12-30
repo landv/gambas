@@ -1,0 +1,63 @@
+# Gambas Form File 1.0
+
+{ FDragNDrop Form
+  MoveScaled(56,27,33.75,43)
+  'Move(448,216,270,344)
+  Text = ("Drag & Drop")
+  Icon = Picture["drop.png"]
+  Border = Window.Fixed
+  { TreeView1 TreeView
+    MoveScaled(1,1,26,41)
+    'Move(8,8,208,328)
+    Drop = True
+  }
+  { PictureBox1 PictureBox imgIcon
+    MoveScaled(28,1,5,5)
+    'Move(224,8,40,40)
+    Picture = Picture["bicycle.png"]
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+  { PictureBox2 PictureBox imgIcon
+    MoveScaled(28,7,5,5)
+    'Move(224,56,40,40)
+    Picture = Picture["eye.png"]
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+  { PictureBox3 PictureBox imgIcon
+    MoveScaled(28,13,5,5)
+    'Move(224,104,40,40)
+    Picture = Picture["france.png"]
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+  { PictureBox4 PictureBox imgIcon
+    MoveScaled(28,19,5,5)
+    'Move(224,152,40,40)
+    Picture = Picture["happy.png"]
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+  { PictureBox5 PictureBox imgIcon
+    MoveScaled(28,25,5,5)
+    'Move(224,200,40,40)
+    Picture = Picture["loupe.png"]
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+  { PictureBox6 PictureBox imgIcon
+    MoveScaled(28,31,5,5)
+    'Move(224,248,40,40)
+    Picture = Picture["pen.png"]
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+  { imgHole PictureBox
+    MoveScaled(28,37,5,5)
+    'Move(224,296,40,40)
+    Drop = True
+    Picture = Picture["BulletHole.xpm"]
+    Stretch = True
+  }
+}

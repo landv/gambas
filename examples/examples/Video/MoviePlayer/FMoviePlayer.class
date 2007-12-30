@@ -1,0 +1,153 @@
+' Gambas class file
+
+PRIVATE $hProcess AS Process
+PRIVATE $bQuit AS Boolean
+PRIVATE $sPath AS String
+PRIVATE $bShow AS Boolean
+
+PUBLIC SUB Form_Resize()
+
+  lblMoviePlayer.Move(8, 8, ME.ClientW - 16, ME.ClientH - panButton.H - 8)
+  panButton.Move(0, ME.CLientH - panButton.H, ME.CLientW)
+  txtAbout.Move(16, 16, lblMoviePlayer.W - 16, lblMoviePlayer.H - 16)
+
+END
+
+PUBLIC SUB btnPlay_Click()
+
+  IF $hProcess THEN
+    PRINT #$hProcess, " ";
+    btnPlay.Enabled = FALSE
+    btnPause.Enabled = TRUE
+    'PRINT "CONTINUE"
+    RETURN
+  ENDIF
+
+  txtAbout.Visible = FALSE
+
+  WITH lblMoviePlayer
+    Form_Resize
+    .Show
+    .Enabled = FALSE
+  '  '.Mouse = Mouse.Default
+  '  Form_Resize
+  '  '.Enabled = FALSE
+  END WITH
+
+  $bShow = TRUE
+
+  $hProcess = EXEC ["mplayer", "-wid", lblMoviePlayer.Handle, Conv$($sPath, Desktop.Charset, System.Charset)] FOR READ WRITE
+
+  btnStop.Enabled = TRUE
+  btnPlay.Enabled = FALSE
+  btnPause.Enabled = TRUE
+
+  lblMoviePlayer.Hide
+  timShow.Enabled = TRUE
+
+END
+
+PUBLIC SUB btnPause_Click()
+
+  IF NOT $hProcess THEN RETURN
+  PRINT #$hProcess, " ";
+  '$hProcess.Send(" ") '("pause\n")
+  btnPlay.Enabled = TRUE
+  btnPause.Enabled = FALSE
+  'PRINT "PAUSE"
+
+END
+
+PUBLIC SUB btnStop_Click()
+
+  IF NOT $hProcess THEN RETURN
+  IF $bQuit THEN
+    $hProcess.Kill
+  ELSE
+    PRINT #$hProcess, "q";
+    $bQuit = TRUE
+  ENDIF
+
+END
+
+PUBLIC SUB Process_Read()
+  
+  DIM sData AS String
+  
+  READ #LAST, sData, -255
+  
+END
+
+
+PUBLIC SUB Process_Kill()
+
+  'PRINT "KILL"
+
+  $hProcess = NULL
+  timShow.Enabled = FALSE
+  $bQuit = FALSE
+  $bShow = FALSE
+  btnPause.Enabled = FALSE
+  btnPlay.Enabled = TRUE
+  btnStop.Enabled = FALSE
+  lblMoviePlayer.Hide
+  txtAbout.Show
+  'PRINT "STOP"
+
+END
+
+
+PRIVATE SUB StopMovie()
+
+  IF NOT $hProcess THEN RETURN
+
+  $hProcess.Kill
+  WHILE $hProcess
+    WAIT
+  WEND
+
+END
+
+PUBLIC SUB Form_Close()
+  
+  StopMovie
+  
+END
+
+
+PUBLIC SUB btnOpen_Click()
+
+  Dialog.Path = $sPath
+  IF Dialog.OpenFile() THEN RETURN
+  $sPath = Dialog.Path
+  
+  StopMovie
+  btnPlay.Enabled = TRUE
+  btnPlay_Click
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+  PRINT "Wid = "; Hex$(lblMoviePlayer.id)
+
+END
+
+PUBLIC SUB Button1_Click()
+
+  WITH lblMoviePlayer
+    PRINT .X; " "; .Y; " "; .W; " "; .H; " "; .Visible; " "; .Parent.Handle
+  END WITH
+
+END
+
+
+PUBLIC SUB timShow_Timer()
+
+  lblMoviePlayer.Resize(1, 1)
+  lblMoviePlayer.Show
+  FORM_Resize
+  timShow.Enabled = FALSE
+
+END

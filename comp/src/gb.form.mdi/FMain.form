@@ -1,0 +1,66 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,74,67)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  { HPanel1 HPanel
+    MoveScaled(1,1,72,13)
+    AutoResize = True
+    { ToolBar2 ToolBar
+      MoveScaled(26,0,24,5)
+      { Button4 Button
+        MoveScaled(1,0,3,3)
+        Action = "rr"
+        Text = ("R")
+      }
+      { Button5 Button
+        MoveScaled(6,0,3,3)
+        Action = "rr"
+        Text = ("S")
+      }
+      { Button6 Button
+        MoveScaled(12,0,3,3)
+        Action = "rr"
+        Text = ("T")
+      }
+    }
+    { ToolBar1 ToolBar
+      MoveScaled(1,1,24,5)
+      { Button1 Button
+        MoveScaled(1,0,3,3)
+        Text = ("1")
+      }
+      { Button2 Button
+        MoveScaled(6,0,3,3)
+        Text = ("2")
+      }
+      { Button3 Button
+        MoveScaled(12,0,3,3)
+        Text = ("3")
+      }
+    }
+    { ToolBar3 ToolBar
+      MoveScaled(0,8,24,5)
+      { Button7 Button
+        MoveScaled(1,0,3,3)
+        Text = ("1")
+      }
+      { Button8 Button
+        MoveScaled(6,0,3,3)
+        Text = ("2")
+      }
+      { Button9 Button
+        MoveScaled(12,0,3,3)
+        Text = ("3")
+      }
+    }
+  }
+  { ScrollBar1 ScrollBar
+    MoveScaled(3,16,46,2)
+  }
+  { Workspace21 Workspace
+    MoveScaled(20,27,40,37)
+    Expand = True
+  }
+}

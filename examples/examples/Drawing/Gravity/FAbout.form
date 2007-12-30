@@ -1,0 +1,47 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,45,17)
+  'Move(0,0,360,136)
+  Text = ("About gbGravity")
+  Border = Window.Fixed
+  { PictureBox1 PictureBox
+    MoveScaled(0,0,9,9)
+    'Move(0,0,72,72)
+    Picture = Picture["_usr_share_xdx_pixmaps_xdx.png"]
+    Stretch = True
+  }
+  { Label1 Label
+    MoveScaled(10,0,14,4)
+    'Move(80,0,112,32)
+    Font = Font["+2"]
+    Text = ("gbGravity")
+  }
+  { Label2 Label
+    MoveScaled(25,1,19,3)
+    'Move(200,8,152,24)
+    Text = ("Gravity like Simulator")
+  }
+  { Label3 Label
+    MoveScaled(21,4,23,3)
+    'Move(168,32,184,24)
+    Text = ("Written in Gambas 1.9.46")
+  }
+  { Label4 Label
+    MoveScaled(31,7,13,2)
+    'Move(248,56,104,16)
+    Text = ("by Iman Karim")
+  }
+  { Button1 Button
+    MoveScaled(1,10,42,4)
+    'Move(8,80,336,32)
+    Text = ("Ok - kool!")
+  }
+  { Label5 Label
+    MoveScaled(10,15,26,2)
+    'Move(80,120,208,16)
+    Font = Font["-1"]
+    Text = ("Thanks to the Gambas team!")
+    Alignment = Align.Center
+  }
+}

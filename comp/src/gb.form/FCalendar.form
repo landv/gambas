@@ -1,0 +1,76 @@
+# Gambas Form File 1.0
+
+{ FCalendar Form
+  MoveScaled(0,0,60,50)
+  'Move(0,0,480,400)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  { HBox1 HBox
+    MoveScaled(1,1,55,3)
+    'Move(8,8,440,24)
+    { btnReload ToolButton
+      MoveScaled(0,0,3,3)
+      'Move(0,0,24,24)
+      ToolTip = ("Today")
+      Text = ("")
+      Picture = Picture["icon:/16/refresh"]
+    }
+    { btnPrevYear ToolButton
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      ToolTip = ("Previous year")
+      Text = ("")
+      Picture = Picture["icon:/16/rewind"]
+    }
+    { HBox2 HBox
+      MoveScaled(6,0,39,3)
+      'Move(48,0,312,24)
+      Expand = True
+      Spacing = 8
+      { btnPrevMonth ToolButton
+        MoveScaled(1,0,3,3)
+        'Move(8,0,24,24)
+        ToolTip = ("Previous month")
+        Text = ("")
+        Picture = Picture["icon:/16/previous"]
+      }
+      { cmbMonth ComboBox
+        MoveScaled(4,0,19,3)
+        'Move(32,0,152,24)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+      }
+      { txtYear SpinBox
+        MoveScaled(26,0,8,3)
+        'Move(208,0,64,24)
+        MinValue = 1600
+        MaxValue = 9999
+      }
+      { btnNextMonth ToolButton
+        MoveScaled(36,0,3,3)
+        'Move(288,0,24,24)
+        ToolTip = ("Next month")
+        Text = ("")
+        Picture = Picture["icon:/16/next"]
+      }
+    }
+    { btnNextYear ToolButton
+      MoveScaled(48,0,3,3)
+      'Move(384,0,24,24)
+      ToolTip = ("Next year")
+      Text = ("")
+      Picture = Picture["icon:/16/forward"]
+    }
+  }
+  { dwgMonth DrawingArea
+    MoveScaled(1,5,56,29)
+    'Move(8,40,448,232)
+    Background = Color.TextBackground
+    Expand = True
+    Focus = True
+    Border = Border.Sunken
+  }
+}

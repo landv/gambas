@@ -1,0 +1,199 @@
+' Gambas class file
+
+arrtable[2] AS String
+
+hFile AS File
+flname AS String
+
+PUBLIC SUB show_data()
+  'create the header's view
+  WITH GridView1
+    .rows.count = 0
+    .columns.count = 2
+    .columns[0].text = "User's Id"
+    .columns[1].text = "User's Name"
+  END WITH
+  Mglobal.fill_view(GridView1, "select * from user order by id")
+END
+
+PUBLIC SUB clear()
+  textbox1.text = ""
+  textbox2.text = ""
+END
+
+PUBLIC SUB Form_Open()
+DIM i AS Float
+  flname = User.home & "/gbDataReportExample.htm"
+
+  ME.center
+  show_data()
+END
+
+PUBLIC SUB Form_Close()
+  'delete the report when the form closed
+  IF Exist(flname) THEN KILL flname
+END
+
+PUBLIC SUB ginput_KeyPress()
+DIM a AS Integer
+
+  WITH mglobal
+  SELECT CASE LAST.tag
+    CASE 1 'textbox ID
+      a = .chk(textbox1, Key.code, "num")
+      SELECT CASE a
+        CASE 1
+          ME.close
+        CASE 2
+          STOP EVENT
+      END SELECT
+
+      IF Key.code = Key.enter OR Key.code = Key.return THEN
+        .rs = .db.exec("select name from user where id='" & textbox1.text & "'")
+        IF .rs.count <> 0 THEN
+          textbox2.text = .rs!name
+        ELSE
+          textbox2.text = ""
+        END IF
+        textbox2.setfocus
+      END IF
+
+    CASE 2 'textbox Name
+      a = .chk(textbox2, Key.code)
+      SELECT CASE a
+        CASE 1
+          ME.close
+        CASE 2
+          STOP EVENT
+      END SELECT
+
+      IF Key.code = Key.enter OR Key.code = Key.return THEN
+        textbox1.setfocus
+        .rs = .db.exec("select * from user where id='" & textbox1.text & "'")
+        IF .rs.count = 0 THEN
+          'there's no record, then we'll do insert query here!
+          .rs = .db.exec("insert into user values('" & textbox1.text & "', '" & textbox2.text & "')")
+        ELSE
+          'there's a record, then asked the user if (s)he wants to update the record or not ?
+          IF Message.question("Record Already Exist!\n Wanna to Update it ?", .btnok, .btnno) = 1 THEN
+            .rs = .db.exec("update user set name='" & textbox2.text & "' where id='" & textbox1.text & "'")
+          ELSE
+            'if the user don't want to update, then asked if (s)he want to delete that record or not ?
+            IF Message.question("You want to Delete it ?", .btnok, .btnno) = 1 THEN
+              .rs = .db.exec("delete from user where id='" & textbox1.text & "'")
+            ENDIF
+          ENDIF
+        ENDIF
+        clear()
+        show_data()
+      END IF
+
+  END SELECT
+  END WITH
+
+CATCH
+  Message.Error(Error.Text)
+END
+
+PUBLIC SUB GridView1_Data(Row AS Integer, Column AS Integer)
+  'the array's field name's
+  arrtable[0] = "id"
+  arrtable[1] = "name"
+  WITH Mglobal
+    .rs1.MoveTo(Row)
+    GridView1.data.Text = Str(.rs1[arrtable[Column]])
+  END WITH
+END
+
+PUBLIC SUB GridView1_Click()
+  textbox1.text = GridView1[GridView1.row, 0].text
+  textbox2.text = GridView1[GridView1.row, 1].text
+  textbox1.setfocus
+CATCH
+END
+
+PUBLIC SUB GridView1_KeyRelease()
+  SELECT CASE Key.code
+    CASE Key.Enter, Key.Return
+      GridView1_click()
+
+    CASE Key.Escape
+      ME.close
+  END SELECT
+END
+
+PUBLIC SUB gbtn_Click()
+  SELECT CASE LAST.tag
+    CASE 1 'print to screen
+      printit(FALSE)
+
+    CASE 2 'print to printer
+      printit(TRUE)
+
+    CASE 3 'about
+      Fabout.ShowModal
+  END SELECT
+END
+
+PUBLIC SUB gbtn_KeyPress()
+  IF Key.code = Key.escape THEN ME.close
+END
+
+PUBLIC SUB header(prn AS Boolean)
+  PRINT #hFile, "<html>"
+  PRINT #hFile, "<head><title>gbDataReportExample - by Rizky Tahara Shita</title></head>"
+  PRINT #hFile, "<body topmargin='0' leftmargin='0'"
+    IF prn = TRUE THEN PRINT #hFile, " onload='window.print()'"
+  PRINT #hFile, ">"
+  PRINT #hFile, "<table border='1' width='500' cellpadding='4' cellspacing='0'>"
+  PRINT #hFile, "  <tr>"
+  PRINT #hFile, "    <td colspan='2' align='center'>"
+  PRINT #hFile, "      <h3>User's Lists</h3>"
+  PRINT #hFile, "    </td>"
+  PRINT #hFile, "  </tr>"
+  PRINT #hFile, "  <tr><td colspan='2'>&nbsp;</td></tr>"
+  PRINT #hFile, "  <tr>"
+  PRINT #hFile, "    <td width='15%' align='center'>User's Id</td>"
+  PRINT #hFile, "    <td align='center'>User's Name</td>"
+  PRINT #hFile, "  </tr>"
+END
+
+PUBLIC SUB content(p1 AS String, p2 AS String)
+  PRINT #hFile, "  <tr>"
+  PRINT #hFile, "    <td>" & p1 & "</td>"
+  PRINT #hFile, "    <td>" & p2 & "</td>"
+  PRINT #hFile, "  </tr>"
+END
+
+PUBLIC SUB footer()
+  PRINT #hFile, "</table>"
+  PRINT #hFile, "</body>"
+  PRINT #hFile, "</html>"
+END
+
+PUBLIC SUB printit(prn AS Boolean)
+DIM i AS Float
+
+  WITH mglobal
+    .rs = .db.exec("select * from user order by id")
+    IF .rs.count <> 0 THEN
+      IF Exist(flname) THEN KILL flname
+      OPEN flname FOR WRITE CREATE AS #hFile
+        'print headers here
+        header(prn)
+        i = 0
+        WHILE i < .rs.count
+          'print all data here
+          content(CStr(.rs!id), CStr(.rs!name))
+          i = i + 1
+          .rs.MoveNext
+        WEND
+        'print footer here
+        footer
+      CLOSE #hFile
+      'show the report !
+      Fpreview.SetPath(flname)
+      Fpreview.ShowModal
+    ENDIF
+  END WITH
+END

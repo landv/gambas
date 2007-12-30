@@ -1,0 +1,13 @@
+' Gambas class file
+
+STATIC PUBLIC SUB Main()
+  
+  ME.ShowDialog
+  
+END
+
+PUBLIC SUB FontChooser1_Change()
+
+  DEBUG FontChooser1.SelectedFont  
+
+END

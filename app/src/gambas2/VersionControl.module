@@ -1,0 +1,226 @@
+' Gambas module file
+
+PRIVATE $bSVN AS Boolean
+PRIVATE $bCVS AS Boolean
+PRIVATE $bEnd AS Boolean
+PRIVATE $hEditor AS Editor
+
+PUBLIC SUB Enabled() AS Boolean
+  
+  RETURN $bSVN OR $bCVS
+  
+END
+
+
+PUBLIC SUB Refresh()
+
+  $bSVN = Exist(Project.Dir &/ ".svn")
+  $bCVS = Exist(Project.Dir &/ "CVS") OR Exist(Project.Dir &/ "CVSROOT")
+
+END
+
+PRIVATE SUB Insert(sText AS String)
+  
+  IF $hEditor THEN 
+    $hEditor.Print(DConv(sText))
+  ELSE 
+    IF NOT Settings["/QuietExternalCommands", FALSE] THEN FOutput.Insert(sText)
+  ENDIF
+  
+END
+
+
+PRIVATE SUB Run(sCmd AS String, OPTIONAL sRemove AS String)
+
+  $bEnd = FALSE
+  SHELL sCmd & " 2>&1" FOR READ 'TO sOutput
+  
+  IF sRemove THEN sCmd = Replace(sCmd, sRemove, "")
+  
+  Insert(sCmd & "\n")  
+  
+  REPEAT
+    SLEEP 0.1 
+    WAIT
+  UNTIL $bEnd
+  
+END
+
+PUBLIC SUB Process_Read()
+  
+  DIM sData AS String
+  
+  READ #LAST, sData, -64
+  Insert(sData)
+  
+END
+
+
+PUBLIC SUB Process_Kill()
+  
+  $bEnd = TRUE
+  
+END
+
+
+PUBLIC SUB AddFile(sPath AS String)
+
+  IF $bSVN THEN
+    Run("svn add " & Quote.Shell(sPath))
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS file must already exist
+    Run("cvs add " & Quote.Shell(sPath))
+  ENDIF
+
+END
+
+PUBLIC SUB AddDir(sPath AS String)
+
+  IF $bSVN THEN
+    Run("svn add " & Quote.Shell(sPath))
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS, directory must already exist
+    Run("cvs add " & Quote.Shell(sPath))
+  ENDIF
+
+END
+
+' Must be called *after* the file has been deleted
+
+PUBLIC SUB RemoveFile(sPath AS String, OPTIONAL bForce AS Boolean)
+
+  IF $bSVN THEN
+    Run("svn remove " & IIf(bForce, "--force ", "") & Quote.Shell(sPath))
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS do 'cvs remove file' first then delete file
+    Run("cvs remove " & Quote.Shell(sPath))
+  ENDIF
+  
+END
+
+' Must be called *after* the directory has been deleted
+' The directory must be empty
+
+PUBLIC SUB RemoveDir(sPath AS String)
+
+  IF $bSVN THEN
+    RemoveFile(sPath, TRUE)
+  ENDIF
+  IF $bCVS THEN
+    'NB: For CVS do 'cvs remove dirname' first then delete dirname
+    Run("cvs remove " & Quote.Shell(sPath))
+  ENDIF
+
+END
+
+' Must be called *after* the file has been moved
+
+PUBLIC SUB MoveFile(sOld AS String, sNew AS String)
+
+  IF $bSVN THEN
+    'SHELL "svn move " & Quote.Shell(sOld) & " " & Quote.Shell(sNew) WAIT
+    AddFile(sNew)
+    RemoveFile(sOld, TRUE)
+    'RemoveFile(sOld)
+  ENDIF
+  IF $bCVS THEN
+    'NB: make sure the file is added BEFORE
+    AddFile(sNew)
+    'NB: make sure the file deleted AFTER
+    RemoveFile(sOld)
+  ENDIF
+
+END
+
+PUBLIC SUB MoveDir(sOld AS String, sNew AS String)
+
+  DIM sDir AS String
+
+  IF $bSVN THEN
+    'SHELL "svn move " & Quote.Shell(sOld) & " " & Quote.Shell(sNew) WAIT
+    'AddFile(sNew)
+    FOR EACH sDir IN RDir(sNew, "*", gb.Directory)
+      IF File.Name(sDir) <> ".svn" THEN CONTINUE
+      SHELL "rm -rf " & Quote.Shell(sNew &/ sDir) WAIT
+    NEXT
+    AddFile(sNew)
+    RemoveFile(sOld, TRUE)
+    'RemoveFile(sOld)
+  ENDIF
+  IF $bCVS THEN
+    'NB: make sure the file is added BEFORE
+    AddFile(sNew)
+    'NB: make sure the file deleted AFTER
+    RemoveFile(sOld)
+  ENDIF
+
+END
+
+PUBLIC SUB Status() AS String
+  
+  DIM sStatus AS String
+  
+  IF $bSvn THEN 
+    SHELL "cd " & Quote.Shell(Project.Dir) & "; svn status -q" TO sStatus
+    RETURN sStatus
+  ENDIF
+  
+  IF $bCVS THEN
+    RETURN "TODO!" 
+  ENDIF
+  
+END
+
+
+PUBLIC SUB Commit(sUser AS String, sPassword AS String, sChange AS String) AS Boolean
+  
+  DIM hFile AS File
+  DIM sCmd AS String
+  
+  IF $bSvn THEN 
+    hFile = OPEN Temp$("commit") FOR CREATE 
+    PRINT #hFile, sChange;
+    CLOSE #hFile
+    sCmd = "svn commit --username " & Quote.Shell(sUser) 
+    IF sPassword THEN 
+      sPassword = " --password " & Quote.Shell(sPassword)
+      sCmd &= sPassword
+    ENDIF
+    sCmd &= " --file " & Quote.Shell(Temp$("commit")) & " " & Quote.Shell(Project.Dir)
+    Run(sCmd, sPassword)
+    RETURN Process.LastValue
+  ENDIF    
+  
+END
+
+
+PUBLIC SUB Update() AS Boolean
+  
+  IF $bSvn THEN 
+    Run("svn update " & Quote.Shell(Project.Dir))
+    RETURN Process.LastValue
+  ENDIF
+  
+END
+
+
+PUBLIC SUB Revert() AS Boolean
+  
+  IF $bSvn THEN 
+    Run("svn -R revert " & Quote.Shell(Project.Dir))
+    RETURN Process.LastValue
+  ENDIF
+  
+END
+
+
+PUBLIC SUB CheckoutSVN(sPath AS String, sDir AS String, hEditor AS Editor) AS Boolean
+
+  $hEditor = hEditor
+  Run("cd " & Quote.Shell(sDir) & "; svn checkout " & Quote.Shell(sPath))
+  $hEditor = NULL
+  
+END

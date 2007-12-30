@@ -1,0 +1,126 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,91,54)
+  Text = ("Text Editor")
+  Icon = Picture["icon:/16/edit"]
+  Arrangement = Arrange.Vertical
+  Spacing = 5
+  Padding = 5
+  { HBox1 HBox
+    MoveScaled(1,1,90,4)
+    { btnBold ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Bold")
+      Text = ("")
+      Picture = Picture["icon:/24/text-bold"]
+      Toggle = True
+    }
+    { btnItalic ToolButton
+      MoveScaled(4,0,4,4)
+      ToolTip = ("Italic")
+      Text = ("")
+      Picture = Picture["icon:/24/text-italic"]
+      Toggle = True
+    }
+    { btnUnderline ToolButton
+      MoveScaled(8,0,4,4)
+      ToolTip = ("Underline")
+      Text = ("")
+      Picture = Picture["icon:/24/text-underline"]
+      Toggle = True
+    }
+    { btnStrikeOut ToolButton
+      MoveScaled(12,0,4,4)
+      ToolTip = ("StrikeOut")
+      Text = ("")
+      Picture = Picture["icon:/24/text-strike"]
+      Toggle = True
+    }
+    { Separator1 Separator
+      MoveScaled(16,0,2,4)
+    }
+    { HBox3 HBox
+      MoveScaled(19,0,16,4)
+      AutoResize = True
+      { btnAlignLeft ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Align Left")
+        Text = ("")
+        Picture = Picture["icon:/24/text-left"]
+        Radio = True
+        Toggle = True
+      }
+      { btnAlignCenter ToolButton
+        MoveScaled(4,0,4,4)
+        ToolTip = ("Align Center")
+        Text = ("")
+        Picture = Picture["icon:/24/text-center"]
+        Radio = True
+        Toggle = True
+      }
+      { btnAlignRight ToolButton
+        MoveScaled(8,0,4,4)
+        ToolTip = ("Align Right")
+        Text = ("")
+        Picture = Picture["icon:/24/text-right"]
+        Radio = True
+        Toggle = True
+      }
+      { btnAlignJustify ToolButton
+        MoveScaled(12,0,4,4)
+        ToolTip = ("Align Right")
+        Text = ("")
+        Picture = Picture["icon:/24/text-fill"]
+        Radio = True
+        Toggle = True
+      }
+    }
+    { Separator2 Separator
+      MoveScaled(35,0,2,4)
+    }
+    { ComboBox1 ComboBox
+      MoveScaled(39,0,19,4)
+      ToolTip = ("Set font face")
+      Text = ("ComboBox1")
+      ReadOnly = True
+    }
+    { Panel2 Panel
+      MoveScaled(60,0,1,4)
+    }
+    { SpinBox1 SpinBox
+      MoveScaled(62,0,7,4)
+      ToolTip = ("Set font size")
+    }
+    { Separator3 Separator
+      MoveScaled(69,0,2,4)
+    }
+    { ColorButton1 ColorButton
+      MoveScaled(71,0,4,4)
+      ToolTip = ("Set font color")
+    }
+    { Separator4 Separator
+      MoveScaled(79,0,2,4)
+    }
+    { Panel1 Panel
+      MoveScaled(80,0,2,4)
+      Expand = True
+    }
+    { ToolButton1 ToolButton
+      MoveScaled(82,0,4,4)
+      ToolTip = ("Show html source code")
+      Text = ("")
+      Picture = Picture["icon:/24/html"]
+    }
+    { btnabout ToolButton
+      MoveScaled(86,0,4,4)
+      ToolTip = ("About this example...")
+      Text = ("")
+      Picture = Picture["icon:/24/info"]
+    }
+  }
+  { TextEdit1 TextEdit
+    MoveScaled(1,8,80,42)
+    Expand = True
+  }
+}

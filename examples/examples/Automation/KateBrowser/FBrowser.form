@@ -1,0 +1,20 @@
+# Gambas Form File 1.0
+
+{ FBrowser Form
+  MoveScaled(111.3333,0,13,5.2222)
+  'Move(1002,0,117,47)
+  Text = ("Kate browser")
+  Icon = Picture["kate.png"]
+  Border = Window.Fixed
+  TopOnly = True
+  { mnuGo Menu
+    Text = ("Go")
+    Visible = False
+  }
+  { btnGo Button
+    MoveScaled(1,1,11,3)
+    'Move(9,9,99,27)
+    Text = ("Go to")
+    Picture = Picture["arrow.png"]
+  }
+}

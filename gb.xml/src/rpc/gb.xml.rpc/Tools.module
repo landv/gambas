@@ -1,0 +1,337 @@
+' Gambas module file
+
+PUBLIC SUB ExitNode(Xml AS XmlReader)
+
+  DO WHILE TRUE
+
+    IF Xml.Eof THEN RETURN
+    Xml.Read()
+    IF Xml.Node.Type = XmlReaderNodeType.Element THEN ExitNode(Xml)
+    IF Xml.Node.Type = XmlReaderNodetype.EndElement THEN RETURN
+
+
+  LOOP
+
+END
+
+
+PUBLIC FUNCTION Find(Xml AS XmlReader, Node AS String) AS Boolean
+
+  DO WHILE TRUE
+
+    IF Xml.Eof THEN RETURN FALSE
+
+    IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+
+      IF Xml.Node.Name = Node THEN RETURN TRUE
+      ExitNode(Xml)
+
+    END IF
+
+    IF Not Xml.Eof THEN Xml.Read()
+
+  LOOP
+
+END
+
+PUBLIC FUNCTION FindText(Xml AS XmlReader) AS Boolean
+
+  DO WHILE TRUE
+
+      Xml.Read()
+      IF Xml.Node.Type = XmlReaderNodeType.Text THEN RETURN TRUE
+      IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN RETURN FALSE
+      IF Xml.Node.Type = XmlReaderNodeType.Element THEN RETURN FALSE
+
+  LOOP
+
+END
+
+
+PUBLIC FUNCTION GetParam(Xml AS XmlReader) AS RpcAtom
+
+  DIM hAtom AS NEW RpcAtom
+  DIM Name AS String
+  DIM hDate AS Date
+  DIM sDate AS String
+  DIM bAtom AS RpcAtom
+
+  IF Not (Xml.Node.Type = XmlReaderNodetype.Element And Xml.Node.Name = "value") THEN
+    TRY Xml.Read()
+  END IF
+
+  IF Not Find(Xml, "value") THEN RETURN NULL
+
+  DO WHILE TRUE
+    TRY Xml.Read()
+    IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN
+      hAtom.Data = ""
+      hAtom.Type = XmlRpc.xString
+      RETURN hAtom
+    END IF
+    IF Xml.Node.Type = XmlReaderNodeType.Text THEN
+      hAtom.Data = Xml.Node.Value
+      hAtom.Type = XmlRpc.xString
+      ExitNode(Xml)
+      RETURN hAtom
+    END IF
+    IF Xml.Node.Type = XmlReaderNodeType.Element THEN BREAK
+  LOOP
+
+  SELECT CASE Xml.Node.Name
+
+    CASE "i4"
+      hAtom.Type = XmlRpc.xInteger
+      IF Not FindText(Xml) THEN RETURN NULL
+      TRY hAtom.Data = CInt(Xml.Node.Value)
+      IF ERROR THEN RETURN NULL
+
+    CASE "int"
+      hAtom.Type = XmlRpc.xInteger
+      IF Not FindText(Xml) THEN RETURN NULL
+      TRY hAtom.Data = CInt(Xml.Node.Value)
+      IF ERROR THEN RETURN NULL
+
+    CASE "double"
+      hAtom.Type = XmlRpc.xDouble
+      IF Not FindText(Xml) THEN RETURN NULL
+      TRY hAtom.Data = CFloat(Xml.Node.Value)
+      IF ERROR THEN RETURN NULL
+
+    CASE "boolean"
+      hAtom.Type = XmlRpc.xBoolean
+      IF Not FindText(Xml) THEN RETURN NULL
+      IF Trim(Xml.Node.Value) = "0" THEN
+        hAtom.Data = FALSE
+      ELSE IF Trim(Xml.Node.Value) = "1" THEN
+        hAtom.Data = TRUE
+      ELSE
+        RETURN NULL
+      END IF
+
+    CASE "string"
+      hAtom.Type = XmlRpc.xString
+      IF Not FindText(Xml) THEN
+        hAtom.Data = ""
+      ELSE
+        hAtom.Data = Xml.Node.Value
+      END IF
+
+    CASE "base64"
+      hAtom.Type = XmlRpc.xBase64
+      IF Not FindText(Xml) THEN RETURN NULL
+      TRY hAtom.Data = XmlReader.Decode(Xml.Node.Value, "base64")
+      IF ERROR THEN RETURN NULL
+
+    CASE "dateTime.iso8601"
+      hAtom.Type = XmlRpc.xDate
+      IF Not FindText(Xml) THEN RETURN NULL
+      sDate = Trim(Xml.Node.Value)
+      IF Len(sDate) = 8 THEN
+        TRY hDate = Date(Left(sDate, 4), Mid(sDate, 5, 2), Mid(sDate, 7, 2))
+        IF ERROR THEN RETURN NULL
+        hAtom.Data = hDate
+      ELSE IF Len(sDate) = 17 THEN
+        TRY hDate = Date(Left(sDate, 4), Mid(sDate, 5, 2), Mid(sDate, 7, 2), Mid(sDate, 10, 2), Mid(sDate, 13, 2), Mid(sDate, 16, 2))
+        IF ERROR THEN RETURN NULL
+        hAtom.Data = hDate
+      ELSE
+        RETURN NULL
+      END IF
+
+    CASE "array"
+      hAtom.Type = XmlRpc.xArray
+      hAtom.Data = NEW RpcArray
+      DO WHILE TRUE
+
+        Xml.Read()
+        IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+
+          IF Xml.Node.Name <> "data" THEN RETURN NULL
+          DO WHILE TRUE
+            Xml.Read()
+            IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+              IF Xml.Node.Name <> "value" THEN RETURN NULL
+              bAtom = Tools.GetParam(Xml)
+              IF bAtom = NULL THEN RETURN NULL
+              hAtom.Data.Add(bAtom.Data, bAtom.Type)
+            END IF
+
+            IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN
+
+              IF Xml.Node.Name = "data" THEN
+                ExitNode(Xml)
+                Xml.Read()
+                RETURN hAtom
+              END IF
+
+            END IF
+          LOOP
+        END IF
+
+        IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN
+          ExitNode(Xml)
+          Xml.Read()
+          RETURN hAtom
+        END IF
+
+      LOOP
+
+    CASE "struct"
+      hAtom.Type = XmlRpc.xStruct
+      hAtom.Data = NEW RpcStruct
+      DO WHILE TRUE
+        Xml.Read()
+        IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+
+          IF Xml.Node.Name <> "member" THEN RETURN NULL
+          bAtom = NULL
+          Name = ""
+          DO WHILE TRUE
+            Xml.Read()
+            IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN
+              IF bAtom = NULL Or Name = "" THEN RETURN NULL
+              hAtom.Data.Add(Name, hAtom.Data, hAtom.Type)
+              BREAK
+            END IF
+            IF Xml.Node.Type = XmlReaderNodeType.Element THEN
+              SELECT CASE Xml.Node.Name
+                CASE "name"
+                  IF Not FindText(Xml) THEN RETURN NULL
+                  Name = Xml.Node.Value
+                  ExitNode(Xml)
+                CASE "value"
+                  bAtom = GetParam(Xml)
+                  IF Not bAtom THEN RETURN NULL
+                DEFAULT
+                  RETURN NULL
+              END SELECT
+            END IF
+          LOOP
+
+        END IF
+
+        IF Xml.Node.Type = XmlReaderNodetype.EndElement THEN
+
+          IF Xml.Node.Name = "struct" THEN
+            ExitNode(Xml)
+            Xml.Read()
+            RETURN hAtom
+          END IF
+
+        END IF
+
+      LOOP
+
+    DEFAULT
+      RETURN NULL
+  END SELECT
+
+  ExitNode(Xml)
+  RETURN hAtom
+
+END
+
+PUBLIC FUNCTION AddValue(Xml AS XmlWriter, Data AS Variant, Type AS Integer) AS Boolean
+
+  DIM xBool AS Boolean
+  DIM xBase64 AS String
+  DIM xDate AS Date
+  DIM xArr AS RpcArray
+  DIM xStr AS RpcStruct
+  DIM Bucle AS Integer
+
+  Xml.StartElement("value")
+  SELECT CASE Type
+    CASE XmlRpc.xInteger
+      TRY Xml.Element("int", CInt(Data))
+      IF ERROR THEN RETURN FALSE
+
+    CASE XmlRpc.xBoolean
+      TRY xBool = CBool(Data)
+      IF ERROR THEN RETURN FALSE
+      IF xBool THEN
+        Xml.Element("boolean", "1")
+      ELSE
+        Xml.Element("boolean", "0")
+      END IF
+
+    CASE XmlRpc.xDouble
+      TRY Xml.Element("double", CFloat(Data))
+      IF ERROR THEN RETURN FALSE
+
+    CASE Xmlrpc.xString
+      TRY Xml.Element("string", CStr(Data))
+      IF ERROR THEN RETURN FALSE
+
+    CASE XmlRpc.xBase64
+      TRY xBase64 = CStr(Data)
+      IF ERROR THEN RETURN FALSE
+      Xml.StartElement("base64")
+      TRY Xml.Base64(xBase64)
+      IF ERROR THEN RETURN FALSE
+      Xml.EndElement()
+
+    CASE XmlRpc.xDate
+      TRY xDate = CDate(Data)
+      IF ERROR THEN RETURN FALSE
+      Xml.Element("dateTime.iso8601", Format(xDate, "yyyymmdd") & "T" & Format(xDate, "hh:nn:ss"))
+
+    CASE XmlRpc.xArray
+      TRY xArr = Data
+      IF ERROR THEN RETURN FALSE
+      Xml.StartElement("array")
+      Xml.StartElement("data")
+      FOR Bucle = 0 TO xArr.Count - 1
+        IF Not AddValue(Xml, xArr[Bucle], xArr.Datatype(Bucle)) THEN RETURN FALSE
+      NEXT
+      Xml.EndElement()
+      Xml.EndElement()
+
+    CASE XmlRpc.xStruct
+      TRY xStr = Data
+      IF ERROR THEN RETURN FALSE
+      Xml.StartElement("struct")
+      FOR Bucle = 0 TO xStr.Count - 1
+        Xml.StartElement("member")
+        Xml.Element("name", xStr.Key(Bucle))
+        IF Not AddValue(Xml, xStr.Value(Bucle), xStr.Datatype(Bucle)) THEN RETURN FALSE
+        Xml.EndElement()
+      NEXT
+      Xml.EndElement()
+
+  END SELECT
+  Xml.EndElement()
+  RETURN TRUE
+
+END
+
+
+
+PUBLIC FUNCTION FaultReply(Code AS Integer, Reason AS String) AS String
+
+  DIM Xml AS NEW XmlWriter
+
+  Xml.Open("", TRUE)
+  Xml.StartElement("methodResponse")
+  Xml.StartElement("fault")
+  Xml.StartElement("value")
+  Xml.StartElement("struct")
+
+  Xml.StartElement("member")
+  Xml.Element("name", "faultCode")
+  Xml.StartElement("value")
+  Xml.Element("int", Code)
+  Xml.EndElement()
+  Xml.EndElement()
+
+  Xml.StartElement("member")
+  Xml.Element("name", "faultString")
+  Xml.StartElement("value")
+  Xml.Element("string", Reason)
+
+  RETURN Xml.EndDocument()
+
+
+END
+

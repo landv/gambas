@@ -1,0 +1,41 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  Move(336,72,120,128)
+  #(Scaled) = False
+  Text = ("Sensor")
+  Mask = True
+  Border = Window.Fixed
+  SkipTaskbar = True
+  { mnuPopup Menu
+    Text = ("Popup")
+    Visible = False
+    { mnuTaskBar Menu
+      Text = ("&Show in task bar")
+    }
+    { mnuMask Menu
+      Text = ("Use mask")
+      Checked = True
+    }
+    { mnuPict Menu
+      Text = ("Show picture")
+      Checked = True
+    }
+    { mnuAbout Menu
+      Text = ("&About...")
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+      Shortcut = "Esc"
+    }
+  }
+  { Timer1 #Timer
+    #X = 40
+    #Y = 16
+    Enabled = True
+    Delay = 4000
+  }
+}

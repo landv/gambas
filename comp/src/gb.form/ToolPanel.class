@@ -1,0 +1,270 @@
+' Gambas class file
+
+' Gambas class file 
+
+EXPORT
+INHERITS UserContainer
+
+PUBLIC CONST _Properties AS String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Animated,Border"
+
+EVENT Click
+
+PROPERTY Count AS Integer
+PROPERTY Index AS Integer
+PROPERTY Text AS String
+PROPERTY Picture AS Picture
+PROPERTY Animated AS Boolean
+PROPERTY Font AS Font
+PROPERTY TextFont AS Font
+PROPERTY Border AS Boolean
+
+PRIVATE $hWatcher AS Watcher
+PRIVATE $aToolBar AS NEW Object[]
+PRIVATE $iCurrent AS Integer
+PRIVATE $bAnimate AS Boolean
+PRIVATE $hPanel AS Panel
+
+PUBLIC SUB _new()
+
+  $hPanel = NEW Panel(ME)
+  $hWatcher = NEW Watcher($hPanel) AS "ToolPanel"
+
+  ME._Container = $hPanel
+  ME.Count = 1
+  ME.Index = 0
+
+END
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  RETURN $aToolBar.Count
+
+END
+
+PRIVATE SUB Count_Write(iCount AS Integer)
+
+  DIM iInd AS Integer
+  DIM hToolbar AS ToolPanelContainer
+  DIM hCont AS Container
+  DIM hFont AS Font
+
+  IF iCount < 1 THEN Error.Raise("Bad argument")
+  IF iCount = $aToolbar.Count THEN RETURN
+
+  IF iCount < $aToolBar.Count THEN
+
+    FOR iInd = $aToolBar.Max TO iCount STEP -1
+      hToolbar = $aToolBar[iInd]
+      IF hToolbar._Container.Children.Count THEN Error.Raise("Toolbar is not empty")
+    NEXT
+
+    FOR iInd = $aToolBar.Max TO iCount STEP -1
+      $aToolBar[iInd].Delete
+    NEXT
+
+    $aToolBar.Remove(iCount, -1)
+
+  ELSE
+
+    'hCont = ME.Container
+    'ME.Container = $hPanel
+    TRY hFont = $aToolBar[0].TextFont
+    
+    FOR iInd = $aToolBar.Count TO iCount - 1
+      hToolbar = NEW ToolPanelContainer($hPanel) AS "ToolPanelContainer"
+      hToolbar.Width = ME.Width
+      hToolbar.Text = "Toolbar " & CInt(iInd)
+      hToolBar.Tag = iInd
+      hToolBar.TextFont = hFont
+      $aToolBar.Add(hToolbar)
+    NEXT
+    'ME.Container = hCont
+
+    'ME.Index = iCount - 1
+    Index_Write(iCount - 1)
+
+  ENDIF
+
+END
+
+PRIVATE FUNCTION Index_Read() AS Integer
+
+  RETURN $iCurrent
+
+END
+
+PRIVATE SUB Index_Write(iIndex AS Integer)
+
+  IF iIndex < 0 OR iIndex >= $aToolBar.Count THEN Error.Raise("Bad index")
+
+  ME._Container = $aToolBar[iIndex]
+  $iCurrent = iIndex
+
+  MoveToolbar(ME.Visible)
+
+END
+
+PRIVATE SUB MoveToolbar(OPTIONAL bAnim AS Boolean)
+
+  DIM hToolBar AS ToolPanelContainer
+  DIM Y AS Integer
+  DIM YY AS Integer
+  DIM iInd AS Integer
+  DIM iRest AS Integer
+  DIM bCurrent AS Boolean
+
+  Y = $hPanel.ClientY
+
+  FOR iInd = 0 TO $aToolBar.Max
+
+    hToolBar = $aToolBar[iInd]
+    IF NOT hToolbar.Visible THEN CONTINUE 
+    
+    bCurrent = iInd = $iCurrent
+    hToolBar._Container.Visible = TRUE
+
+    IF bAnim AND $bAnimate THEN
+      IF ((hToolBar.Y < Y) AND iInd = $aToolBar.Max) OR ((hToolBar.Y > Y) AND bCurrent) THEN
+        FOR YY = hToolBar.Y TO Y STEP 8 * Sgn(Y - hToolBar.Y)
+          hToolBar.Y = YY
+          WAIT
+        NEXT
+      ENDIF
+    ENDIF
+
+    'hToolBar.ShowToolBar(bCurrent)
+
+    IF iInd = $iCurrent THEN
+      YY = $hPanel.ClientY + $hPanel.ClientH
+      FOR iRest = iInd + 1 TO $aToolBar.Max
+        IF NOT $aToolBar[iRest].Visible THEN CONTINUE
+        YY -= $aToolBar[iRest].GetButtonHeight()
+      NEXT
+    ELSE
+      YY = Y + hToolbar.GetButtonHeight()
+    ENDIF
+
+    'hToolBar.Move($hPanel.ClientX, Y, $hPanel.ClientW, YY - Y)
+    hToolBar.Move($hPanel.ClientX, Y, $hPanel.ClientW, YY - Y)
+    Y = YY
+
+  NEXT
+
+  FOR iInd = 0 TO $aToolBar.Max
+
+    hToolBar = $aToolBar[iInd]
+    bCurrent = iInd = $iCurrent
+    hToolBar._Container.Visible = bCurrent
+
+  NEXT
+
+END
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN $aToolBar[$iCurrent].Text
+
+END
+
+PRIVATE SUB Text_Write(sText AS String)
+
+  $aToolBar[$iCurrent].Text = sText
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  RETURN $aToolBar[$iCurrent].Picture
+
+END
+
+PRIVATE SUB Picture_Write(hPict AS Picture)
+
+  $aToolBar[$iCurrent].Picture = hPict
+
+END
+
+PUBLIC SUB ToolPanelContainer_Change()
+
+  Index_Write(LAST.Tag)
+  RAISE Click
+
+END
+
+PUBLIC SUB ToolPanel_Resize()
+
+  MoveToolbar
+
+END
+
+PRIVATE FUNCTION Animated_Read() AS Boolean
+
+  RETURN $bAnimate
+
+END
+
+PRIVATE SUB Animated_Write(bAnim AS Boolean)
+
+  $bAnimate = bAnim
+
+END
+
+PUBLIC FUNCTION _get(Index AS Integer) AS ToolPanelContainer
+
+  IF Index < 0 OR Index >= $aToolBar.Count THEN Error.Raise("Bad index")
+  RETURN $aToolBar[Index]
+
+END
+
+PRIVATE FUNCTION Font_Read() AS Font
+
+  RETURN SUPER.Font
+
+END
+
+PRIVATE SUB Font_Write(hFont AS Font)
+
+  DIM hToolbar AS ToolPanelContainer
+
+  SUPER.Font = hFont
+
+  FOR EACH hToolbar IN $aToolbar
+    hToolBar.Text = hToolBar.Text
+  NEXT
+
+  MoveToolBar(FALSE)
+
+END
+
+PRIVATE FUNCTION Border_Read() AS Boolean
+
+  RETURN $hPanel.Border <> Border.None
+
+END
+
+PRIVATE SUB Border_Write(bBorder AS Boolean)
+
+  $hPanel.Border = If(bBorder, Border.Sunken, Border.None)
+  MoveToolbar(FALSE)
+
+END
+
+PRIVATE FUNCTION TextFont_Read() AS Font
+
+  DIM hToolbar AS ToolPanelContainer = $aToolBar[0]
+
+  RETURN hToolBar.GetTextFont()
+
+END
+
+PRIVATE SUB TextFont_Write(Value AS Font)
+
+  DIM hToolbar AS ToolPanelContainer
+
+  FOR EACH hToolbar IN $aToolbar
+    hToolBar.TextFont = Value
+  NEXT
+
+  MoveToolBar(FALSE)
+  
+END

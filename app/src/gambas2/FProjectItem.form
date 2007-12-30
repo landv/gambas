@@ -1,0 +1,43 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,55,8)
+  'Move(0,0,440,64)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(1,0,53,7)
+    'Move(8,0,424,56)
+    Expand = True
+    Spacing = 8
+    Padding = 4
+    { VBox2 VBox
+      MoveScaled(0,0,6,7)
+      'Move(0,0,48,56)
+      { imgIcon PictureBox
+        MoveScaled(0,0,6,6)
+        'Move(0,0,48,48)
+        Stretch = True
+      }
+    }
+    { VBox1 VBox
+      MoveScaled(7,0,45,7)
+      'Move(56,0,360,56)
+      Expand = True
+      { lblName Label
+        MoveScaled(0,0,42,3)
+        'Move(0,0,336,24)
+        Font = Font["Bold"]
+        Text = ("")
+      }
+      { txtInfo TextLabel
+        MoveScaled(0,3,44,4)
+        'Move(0,24,352,32)
+        Font = Font["-1"]
+        Expand = True
+        AutoResize = True
+        Text = ("")
+      }
+    }
+  }
+}

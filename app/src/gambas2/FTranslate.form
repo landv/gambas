@@ -1,0 +1,233 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(7.125,15.375,108,74)
+  'Move(57,123,864,592)
+  Text = ("Project translation")
+  Icon = Picture["icon:/16/language"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { Panel4 Panel
+    MoveScaled(1,1,93,6)
+    'Move(8,8,744,48)
+    Visible = False
+    Background = Color.SelectedBackground
+    Arrangement = Arrange.Horizontal
+    Spacing = 8
+    Padding = 8
+    { PictureBox1 PictureBox
+      MoveScaled(1,1,5,5)
+      'Move(8,8,40,40)
+      Picture = Picture["icon:/32/language"]
+    }
+    { Label2 Label
+      MoveScaled(7,1,31,4)
+      'Move(56,8,248,32)
+      Font = Font["Bold,+2"]
+      Foreground = Color.SelectedForeground
+      AutoResize = True
+      Text = ("Project translation")
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,8,106,60)
+    'Move(8,64,848,480)
+    Expand = True
+    { panLang SidePanel
+      MoveScaled(1,2,25,56)
+      'Move(8,16,200,448)
+      Arrangement = Arrange.Fill
+      Orientation = Align.Left
+      { cvwLang ColumnView
+        MoveScaled(2,3,19,25)
+        'Move(16,24,152,200)
+        Sorted = True
+        AutoResize = True
+        Header = False
+        ScrollBar = Scroll.Vertical
+      }
+    }
+    { VBox1 VBox
+      MoveScaled(27,2,78,57)
+      'Move(216,16,624,456)
+      Expand = True
+      Spacing = 8
+      { HBox3 HBox
+        MoveScaled(3,1,74,3)
+        'Move(24,8,592,24)
+        Spacing = 8
+        { cbxFileChoice ComboBox
+          MoveScaled(0,0,37,3)
+          'Move(0,0,296,24)
+          Text = ("")
+          ReadOnly = True
+        }
+        { lblInfo Label
+          MoveScaled(38,0,35,3)
+          'Move(304,0,280,24)
+          Expand = True
+          Text = ("")
+          Alignment = Align.Right
+        }
+      }
+      { HBox5 HBox
+        MoveScaled(3,5,65,3)
+        'Move(24,40,520,24)
+        { btnClear ToolButton
+          MoveScaled(0,0,3,3)
+          'Move(0,0,24,24)
+          ToolTip = ("Clear this translation")
+          Text = ("")
+          Picture = Picture["icon:/16/clear"]
+        }
+        { btnDoNotTranslate ToolButton
+          MoveScaled(3,0,3,3)
+          'Move(24,0,24,24)
+          ToolTip = ("This string must not be translated")
+          Text = ("")
+          Picture = Picture["icon:/16/warning"]
+        }
+        { btnCopy ToolButton
+          MoveScaled(6,0,3,3)
+          'Move(48,0,24,24)
+          ToolTip = ("Copy untranslated string")
+          Text = ("")
+          Picture = Picture["icon:/16/paste"]
+        }
+        { btnVerify ToolButton
+          MoveScaled(10,0,3,3)
+          'Move(80,0,24,24)
+          ToolTip = ("Verify the translation")
+          Text = ("")
+          Picture = Picture["icon:/16/watch"]
+        }
+        { btnNext ToolButton
+          MoveScaled(13,0,3,3)
+          'Move(104,0,24,24)
+          ToolTip = ("Find next untranslated string")
+          Text = ("")
+          Picture = Picture["icon:/16/down"]
+        }
+        { btnPrevious ToolButton
+          MoveScaled(16,0,3,3)
+          'Move(128,0,24,24)
+          ToolTip = ("Find previous untranslated string")
+          Text = ("")
+          Picture = Picture["icon:/16/up"]
+        }
+        { Panel2 Panel
+          MoveScaled(20,0,1,3)
+          'Move(160,0,8,24)
+        }
+        { txtFind TextBox
+          MoveScaled(24,0,31,3)
+          'Move(192,0,248,24)
+          Expand = True
+          Text = ("")
+        }
+        { btnFind ToolButton
+          MoveScaled(56,0,3,3)
+          'Move(448,0,24,24)
+          ToolTip = ("Find a string in translation")
+          Text = ("")
+          Picture = Picture["icon:/16/find"]
+        }
+      }
+      { cvwTranslate ColumnView
+        MoveScaled(3,10,70,25)
+        'Move(24,80,560,200)
+        Expand = True
+        Sorted = True
+        Resizable = False
+        ScrollBar = Scroll.Vertical
+      }
+      { VBox2 VBox
+        MoveScaled(2,36,71,20)
+        'Move(16,288,568,160)
+        Expand = True
+        Spacing = 8
+        { lblComment Label
+          MoveScaled(2,1,48,3)
+          'Move(16,8,384,24)
+          Text = ("")
+        }
+        { txtOrig TextArea
+          MoveScaled(2,4,67,5)
+          'Move(16,32,536,40)
+          Background = Color.Background
+          Expand = True
+          Text = ("")
+          ReadOnly = True
+          Wrap = True
+        }
+        { txtTranslate TextArea
+          MoveScaled(2,10,63,5)
+          'Move(16,80,504,40)
+          Expand = True
+          Text = ("")
+          Wrap = True
+        }
+      }
+    }
+  }
+  { VBox3 VBox
+    MoveScaled(0,69,106,4)
+    'Move(0,552,848,32)
+    { Panel3 Panel
+      MoveScaled(55,0,3,1)
+      'Move(440,0,24,8)
+    }
+    { HBox1 HBox
+      MoveScaled(0,1,101,3)
+      'Move(0,8,808,24)
+      Spacing = 8
+      { btnNew Button
+        MoveScaled(0,0,15,3)
+        'Move(0,0,120,24)
+        ToolTip = ("New translation")
+        Text = ("&New...")
+        Picture = Picture["icon:/16/new"]
+      }
+      { btnUndo Button
+        MoveScaled(16,0,15,3)
+        'Move(128,0,120,24)
+        ToolTip = ("Reload translation")
+        Text = ("&Reload")
+        Picture = Picture["icon:/16/undo"]
+      }
+      { btnDelete Button
+        MoveScaled(32,0,15,3)
+        'Move(256,0,120,24)
+        ToolTip = ("Delete translation")
+        Text = ("&Delete")
+        Picture = Picture["icon:/16/delete"]
+      }
+      { btnImport Button
+        MoveScaled(48,0,15,3)
+        'Move(384,0,120,24)
+        ToolTip = ("Import a translation file")
+        Text = ("&Import...")
+        Picture = Picture["icon:/16/open"]
+      }
+      { btnExport Button
+        MoveScaled(64,0,15,3)
+        'Move(512,0,120,24)
+        ToolTip = ("Export to a translation file")
+        Text = ("&Export...")
+        Picture = Picture["icon:/16/save"]
+      }
+      { Panel1 Panel
+        MoveScaled(81,0,3,3)
+        'Move(648,0,24,24)
+        Expand = True
+      }
+      { btnOK Button
+        MoveScaled(85,0,15,3)
+        'Move(680,0,120,24)
+        Text = ("&Close")
+      }
+    }
+  }
+}
