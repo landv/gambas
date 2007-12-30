@@ -1,0 +1,497 @@
+' Gambas class file
+
+STATIC PRIVATE $hHandleH AS Picture
+STATIC PRIVATE $hHandleV AS Picture
+
+PRIVATE $iOrientation AS Integer
+PRIVATE $bFixed AS Boolean
+PRIVATE $W AS Integer
+PRIVATE $H AS Integer
+PRIVATE $bVisible AS Boolean
+PRIVATE $MX AS Integer
+PRIVATE $MY AS Integer
+PRIVATE $iMax AS Integer
+PRIVATE $iColor AS Integer
+PRIVATE $bOpened AS Boolean
+
+PRIVATE BUTTON_H AS Integer = Desktop.Scale
+PRIVATE BUTTON_W AS Integer = 48
+
+
+STATIC PUBLIC SUB _init()
+  
+  $hHandleH = Picture["img/handle-h.png"]
+  $hHandleV = Picture["img/handle-v.png"]
+  
+END
+
+
+PUBLIC SUB _new()
+
+  $bVisible = TRUE
+  $iOrientation = Align.Top
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  $bOpened = TRUE
+  RefreshAll
+
+END
+
+PRIVATE SUB GetLangOrientation(iOrientation AS Integer) AS Integer
+  
+  IF System.RightToLeft THEN 
+    IF iOrientation = Align.Left THEN 
+      RETURN Align.Right
+    ELSE IF iOrientation = Align.Right THEN 
+      RETURN Align.Left
+    ENDIF 
+  ENDIF 
+  
+  RETURN iOrientation
+  
+END
+
+
+PUBLIC FUNCTION GetOrientation() AS Integer
+
+  RETURN GetLangOrientation($iOrientation)
+
+END
+
+PUBLIC SUB SetOrientation(iOrientation AS Integer)
+
+  SELECT CASE iOrientation
+    CASE Align.Top, Align.Bottom
+    CASE Align.Left, Align.Right
+    CASE ELSE
+      RETURN
+  END SELECT
+
+  $iOrientation = GetLangOrientation(iOrientation)
+  RefreshArrow
+  RefreshPanel
+
+END
+
+PRIVATE SUB RefreshPanel()
+
+  DIM W AS Integer
+  DIM W2 AS Integer
+  DIM Y AS Integer
+  DIM D AS Integer
+
+  'IF NOT $bVisible THEN panSide.Hide
+  IF NOT $bOpened THEN RETURN
+
+  SELECT CASE $iOrientation
+
+    CASE Align.Top, Align.Bottom
+      D = ME.ClientW
+
+    CASE ELSE
+      D = ME.ClientH
+
+  END SELECT
+
+  'D = Max(0, D - 8)
+
+  IF D < (BUTTON_W * 2 + 16) THEN
+    W = Min(BUTTON_W, D - 16)
+    W2 = 0
+  ELSE
+    W = Min(BUTTON_W, D / 2)
+    W2 = Min(BUTTON_W, D - W)
+  ENDIF
+
+  SELECT CASE $iOrientation
+
+    CASE Align.Bottom, Align.Right
+      Y = 0
+
+    CASE Align.Top
+      Y = ME.ClientH - BUTTON_H
+
+    CASE Align.Left
+      Y = ME.ClientW - BUTTON_H
+
+  END SELECT
+
+  SELECT CASE $iOrientation
+
+    CASE Align.Top, Align.Bottom
+
+      panMove.Move(0, Y, ME.ClientW, BUTTON_H)
+
+      IF W2 THEN
+        btnSide.Move(0, 0, W, BUTTON_H)
+        btnSide2.Move(ME.ClientW - W2, 0, W2, BUTTON_H)
+        btnSide2.Show
+      ELSE
+        btnSide.Move(0, 0, W, BUTTON_H)
+        'btnSide.Move((D - W) / 2, Y, W, BUTTON_H)
+        btnSide2.Hide
+      ENDIF
+
+      ' W2 = ME.ClientW - W - W2
+      ' IF W2 > 0 THEN
+      '   panMove.Move(W, Y, W2, BUTTON_H)
+      '   panMove.Show
+      ' ELSE
+      '   panMove.Hide
+      ' ENDIF
+
+    CASE ELSE
+
+      panMove.Move(Y, 0, BUTTON_H, ME.ClientH)
+
+      IF W2 THEN
+        btnSide.Move(0, 0, BUTTON_H, W)
+        btnSide2.Move(0, ME.ClientH - W2, BUTTON_H, W2)
+        btnSide2.Show
+      ELSE
+        btnSide.Move(0, 0, BUTTON_H, W)
+        'btnSide.Move(Y, (D - W) / 2, BUTTON_H, W)
+        btnSide2.Hide
+      ENDIF
+
+      ' W2 = ME.ClientH - W - W2
+      ' IF W2 > 0 THEN
+      '   panMove.Move(Y, W, BUTTON_H, W2)
+      '   panMove.Show
+      ' ELSE
+      '   panMove.Hide
+      ' ENDIF
+
+  END SELECT
+
+  SELECT CASE $iOrientation
+
+    CASE Align.Top
+      panSide.Move(0, 0, ME.ClientW, ME.ClientH - BUTTON_H)
+
+    CASE Align.Bottom
+      panSide.Move(0, BUTTON_H, ME.ClientW, ME.ClientH - BUTTON_H)
+
+    CASE Align.Left
+      panSide.Move(0, 0, ME.ClientW - BUTTON_H, ME.ClientH)
+
+    CASE Align.Right
+      panSide.Move(BUTTON_H, 0, ME.ClientW - BUTTON_H, ME.ClientH)
+
+  END SELECT
+
+  'IF $bVisible THEN panSide.Show
+  
+  'DEBUG $bVisible;; "(";; ME.X;; ME.Y;; ME.W;; ME.H;; ") (";; btnSide.X;; btnSide.Y;; btnSide.W;; btnSide.H;; btnSide.Visible;; ") (";; panSide.X;; panSide.Y;; panSide.W;; panSide.H;; panSide.Visible;; ")"
+  'STOP
+  
+END
+
+PUBLIC FUNCTION GetContainer() AS Container
+
+  RETURN panSide
+
+END
+
+PRIVATE SUB GetParent() AS SidePanel
+  
+  RETURN ME.Parent
+  
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  'DEBUG ME.X;; ME.Y;; ME.W;; ME.H
+  RefreshPanel
+  GetParent()._Resize
+
+END
+
+PRIVATE SUB RefreshArrow()
+
+  DIM hPict AS Picture
+  
+  IF NOT $bOpened THEN RETURN
+
+  SELECT CASE $iOrientation
+    CASE Align.Top, Align.Bottom
+      IF $bVisible XOR ($iOrientation = Align.Bottom) THEN
+        hPict = Picture["img/8/side-top.png"]
+      ELSE
+        hPict = Picture["img/8/side-bottom.png"]
+      ENDIF
+    CASE Align.Left, Align.Right
+      IF $bVisible XOR ($iOrientation = Align.Right) THEN
+        hPict = Picture["img/8/side-left.png"]
+      ELSE
+        hPict = Picture["img/8/side-right.png"]
+      ENDIF
+  END SELECT
+
+  btnSide.Picture = hPict
+  btnSide2.Picture = hPict
+
+  IF $bVisible AND NOT $bFixed AND NOT ME.Parent.Design THEN
+    panMove.Mouse = If(IsVertical(), Mouse.SplitV, Mouse.SplitH)
+  ELSE
+    panMove.Mouse = Mouse.Default
+  ENDIF
+
+END
+
+PRIVATE SUB RefreshAll()
+
+  IF NOT $bOpened THEN RETURN
+  
+  IF $bVisible THEN
+    panSide.Show 'Enabled = TRUE
+    IF $W AND IF $H THEN ME.Parent.Resize($W, $H)
+  ELSE
+    'DEBUG ME.Parent.W;; ME.CLientW
+    panSide.Hide 'Enabled = FALSE
+    SELECT CASE $iOrientation
+      CASE Align.Top, Align.Bottom
+        ME.Parent.H = BUTTON_H
+      CASE ELSE
+        ME.Parent.W = BUTTON_H
+    END SELECT
+  ENDIF
+  
+  RefreshArrow
+  RefreshPanel
+  
+END
+
+
+PUBLIC SUB btnSide_Click()
+
+  IF ME.Parent.Design THEN RETURN
+
+  IF $bVisible THEN
+
+    GetParent()._Hide
+
+    $W = ME.Parent.Width
+    $H = ME.Parent.Height
+    $bVisible = FALSE
+    RefreshAll
+    Action.Raise(ME.Parent)    
+
+  ELSE
+
+    $bVisible = TRUE
+    RefreshAll
+    Action.Raise(ME.Parent)    
+
+    GetParent()._Show
+
+  ENDIF
+
+END
+
+PRIVATE FUNCTION IsVertical() AS Boolean
+
+  RETURN $iOrientation = Align.Top OR $iOrientation = Align.Bottom
+
+END
+
+
+PUBLIC SUB panMove_MouseDown()
+
+  IF NOT $bVisible THEN RETURN
+  IF ME.Parent.Design THEN RETURN
+  IF $bFixed THEN RETURN
+
+  $MX = Mouse.ScreenX - ME.Parent.W
+
+  SELECT CASE $iOrientation
+    CASE Align.Top
+      $MY = Mouse.ScreenY - ME.Parent.H
+      $iMax = ME.Parent.Parent.ClientH - ME.Parent.Y
+    CASE Align.Bottom
+      $MY = Mouse.ScreenY + ME.H
+      $iMax = ME.Parent.Y + ME.Parent.H
+    CASE Align.Left
+      $MX = Mouse.ScreenX - ME.Parent.W
+      $iMax = ME.Parent.Parent.ClientW - ME.Parent.X
+    CASE Align.Right
+      $MX = Mouse.ScreenX + ME.W
+      $iMax = ME.Parent.X + ME.Parent.W
+  END SELECT
+
+END
+
+PRIVATE FUNCTION GetDim(H AS Integer) AS Integer
+  
+  DIM iMin AS Integer
+
+  iMin = Min($iMax, Max(BUTTON_H, 64))
+
+  IF H < BUTTON_H THEN
+    H = BUTTON_H
+  ELSE IF H < iMin THEN
+    H = iMin
+  ENDIF
+
+  RETURN H  
+  
+END
+
+
+PUBLIC SUB panMove_MouseMove()
+
+  DIM H AS Integer
+
+  IF NOT Mouse.Left THEN RETURN
+  IF NOT $bVisible THEN RETURN
+  IF ME.Parent.Design THEN RETURN
+  IF $bFixed THEN RETURN
+
+  SELECT CASE $iOrientation
+    CASE Align.Top
+      ME.Parent.H = GetDim(Min($iMax, Mouse.ScreenY - $MY))
+    CASE Align.Bottom
+      H = GetDim(Min($iMax, $MY - Mouse.ScreenY))
+      'H = Max(iMin, Min($iMax, $MY - Mouse.ScreenY))
+      ME.Parent.Move(ME.Parent.X, $iMax - H, ME.Parent.W, H)
+    CASE Align.Left
+      ME.Parent.W = GetDim(Min($iMax, Mouse.ScreenX - $MX))
+    CASE Align.Right
+      H = GetDim(Min($iMax, $MX - Mouse.ScreenX))
+      ME.Parent.Move($iMax - H, ME.Parent.Y, H, ME.Parent.H)
+  END SELECT
+
+  RefreshPanel
+  
+END
+
+PUBLIC FUNCTION IsHidden() AS Boolean
+
+  RETURN NOT $bVisible
+
+END
+
+PUBLIC SUB SetHidden(bHidden AS Boolean)
+
+  IF bHidden = $bVisible THEN btnSide_Click
+
+END
+
+PUBLIC FUNCTION GetDimension() AS Integer
+
+  IF IsVertical() THEN
+    IF NOT $bVisible THEN
+      RETURN $H
+    ELSE
+      RETURN ME.Parent.Height
+    ENDIF
+  ELSE
+    IF NOT $bVisible THEN
+      RETURN $W
+    ELSE
+      RETURN ME.Parent.Width
+    ENDIF
+  ENDIF
+
+END
+
+PUBLIC SUB SetDimension(iDim AS Integer)
+  
+  IF IsVertical() THEN
+    IF NOT $bVisible THEN
+      $H = iDim
+    ELSE
+      ME.Parent.Height = iDim
+    ENDIF
+  ELSE
+    IF NOT $bVisible THEN
+      $W = iDim
+    ELSE
+      ME.Parent.Width = iDim
+    ENDIF
+  ENDIF  
+  
+END
+
+
+PUBLIC FUNCTION IsFixed() AS Boolean
+
+  RETURN $bFixed
+
+END
+
+PUBLIC SUB SetFixed(bFixed AS Boolean)
+
+  $bFixed = bFixed
+  RefreshArrow
+
+END
+
+PUBLIC SUB panMove_DblClick()
+
+  IF $bVisible THEN btnSide_Click  
+
+END
+
+PUBLIC FUNCTION GetTooltip() AS String
+  
+  RETURN btnSide.ToolTip
+  
+END
+
+PUBLIC SUB SetTooltip(Value AS String)
+  
+  btnSide.ToolTip = Value
+  btnSide2.ToolTip = Value
+  panMove.ToolTip = Value
+  
+END
+
+PUBLIC SUB SetDesign()
+
+  RefreshArrow
+  RefreshPanel
+  
+END
+
+
+' PUBLIC SUB panMove_Draw()
+' 
+'   IF IsVertical() THEN
+'     Draw.FillX = 0
+'     Draw.FillY = panMove.H / 2 - 2
+'     Draw.Tile($hHandleH, panMove.W * 0.1, panMove.H / 2 - 3, panMove.W * 0.8, 4)
+'   ELSE
+'     Draw.FillX = panMove.W / 2 - 2
+'     Draw.FillY = 0
+'     Draw.Tile($hHandleV, panMove.W / 2 - 3, panMove.H * 0.1, 4, panMove.H * 0.8)
+'   ENDIF   
+' 
+' END
+
+PUBLIC SUB panMove_Enter()
+
+  $iColor = panMove.Background
+
+  IF NOT $bVisible THEN RETURN
+  IF $bFixed THEN RETURN
+  IF ME.Parent.Design THEN RETURN
+
+  panMove.Background = Color.TextBackground
+  'btnSide.Background = Color.ButtonBackground  
+  'btnSide2.Background = Color.ButtonBackground  
+
+END
+
+PUBLIC SUB panMove_Leave()
+
+  panMove.Background = $iColor
+  'btnSide.Background = $iColor
+  'btnSide2.Background = $iColor
+
+END

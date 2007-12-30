@@ -1,0 +1,1 @@
+../../../gb.qt/src/share/CControl_desc.h

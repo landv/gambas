@@ -1,0 +1,48 @@
+' Gambas class file
+
+
+PUBLIC CONST Custom AS Integer = 0
+PUBLIC CONST Auto AS Integer = 1
+
+PRIVATE $ariCustomColors AS Integer[]
+PRIVATE $ariColors AS Integer[] = [&hff6f00,
+&h800080, &h666666, &h6B4794, &h290099, &h7da647,
+&he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
+PRIVATE $iMode AS Integer = Auto
+
+PROPERTY Values AS Integer[]
+
+
+PRIVATE FUNCTION Values_Read() AS Integer[]
+
+  RETURN $ariCustomColors
+
+END
+
+PRIVATE SUB Values_Write(Value AS Integer[])
+
+  $ariCustomColors = Value
+
+END
+
+PUBLIC FUNCTION _Get(Index AS Integer) AS Integer
+  
+  DIM ariTmp AS Integer[]
+  DIM i AS Integer
+  IF $iMode = Auto THEN 
+    
+    ariTmp = $ariColors
+  ELSE 
+    IF IsNull($ariCustomColors) THEN Error.Raise(("You must to define the custom color array before"))
+    ariTmp = $ariCustomColors[Index]
+  ENDIF
+  
+  IF Index > ariTmp.Max THEN 
+    i = Index MOD ariTmp.Max
+    RETURN ariTmp[i]
+  ELSE 
+    RETURN ariTmp[Index]
+  ENDIF  
+  
+END
+

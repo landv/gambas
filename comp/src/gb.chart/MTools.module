@@ -1,0 +1,163 @@
+' Gambas module file
+
+PUBLIC ColorList AS Integer[] = [&hff6f00,
+&h800080, &h666666, &h6B4794, &h290099, &h7da647,
+&he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
+
+PUBLIC FUNCTION GetChartMaxValue(oChart AS Chart) AS Float
+  DIM hSeries AS _CSerie
+  DIM f AS Float
+  DIM fCurMax AS Float
+  fCurMax = 0
+  FOR EACH hSeries IN oChart
+    FOR EACH f IN hSeries
+      IF fCurMax < f THEN fCurMax = f
+    NEXT
+  NEXT
+  RETURN fCurMax
+  
+END
+
+PUBLIC FUNCTION GetChartMaxCumulateValue(oChart AS Chart) AS Float
+  DIM hSeries AS _CSerie
+  DIM f AS Float
+  DIM fCurMax AS Float
+  DIM i AS Integer
+  fCurMax = 0
+  FOR i = 0 TO oChart.Count - 1
+    f = 0
+    FOR EACH hSeries IN Chart
+      f += hSeries[i]
+    NEXT
+    IF fCurMax < f THEN fCurMax = f
+  NEXT
+  RETURN fCurMax
+END
+
+PUBLIC FUNCTION GetChartMaxCumulate(oChart AS Chart) AS Float
+  
+  DIM f, fMaxValue AS Float
+  DIM hSeries AS _CSerie
+  DIM i AS Integer
+  
+  FOR EACH hSeries IN Chart
+    f = 0
+    FOR i = 0 TO Chart.Count - 1
+      f += hSeries[i]
+    NEXT
+    IF fMaxValue < f THEN fMaxValue = f
+  NEXT
+  RETURN fMaxValue
+END
+
+
+
+PUBLIC FUNCTION DrawChartAxes(oChart AS Chart, hChartRect AS CRect, fMinValue AS Float, fMaxValue AS Float, OPTIONAL iAlign AS Integer) AS CPoint
+  DIM fTabPos AS Float
+  DIM i, iStaticSpace AS Integer
+  DIM fXUnit, fYUnit AS Float
+  DIM hPoint AS CPoint
+  DIM f AS Float
+  DIM fStep AS Float
+  DIM fMultiple AS Float
+  DIM oSerie AS _CSerie
+    'Draw the Y axe
+  iStaticSpace = 5 * oChart._fProportionnal
+  Draw.Line(hChartRect.Left, hChartRect.Top, hChartRect.Left, hChartRect.Bottom)
+  
+  fYUnit = (hChartRect.Bottom - hChartRect.Top) / (fMaxValue)
+  
+  fMultiple = Round(fMaxValue / 100)
+  IF fMultiple = 0 THEN fMultiple = 1
+  IF fMaxValue > 1 THEN 
+    
+    IF fMaxValue / fMultiple < 10 THEN 
+      fStep = 0.5 * fMultiple
+    ELSE IF fMaxValue / fMultiple < 25 THEN 
+      fStep = 1 * fMultiple
+    ELSE IF fMaxValue / fMultiple < 50 THEN 
+      fStep = 2 * fMultiple
+    ELSE IF fMaxValue / fMultiple < 75 THEN 
+      fStep = 3 * fMultiple
+    'ELSE IF fMaxValue / fMultiple < 90 THEN 
+      'fStep = 4 * fMultiple
+    ELSE IF fMaxValue / fMultiple <= 100 THEN 
+      fStep = 5 * fMultiple
+    ENDIF
+    
+ENDIF
+  
+  
+  FOR f = 0 TO fMaxValue STEP fStep 'Round(fMaxValue / 20)
+    'Position du taquet
+    fTabPos = hChartRect.Bottom - (fYUnit * f)
+    'Dessine le taquet
+    Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
+    'Dessine les intervalles Verticaux
+    IF Chart.YAxe.ShowIntervalLines THEN Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
+    'Dessine l'étiquette
+    Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
+  NEXT
+  
+  'IF $iType = ChartType.AreaPercent THEN fMaxVal = GetChartMaxCumulateValue(Chart)
+  
+  
+  'Draw the X axe
+  Draw.Line(hChartRect.Left, hChartRect.Bottom, hChartRect.Right, hChartRect.Bottom)
+  
+  IF iAlign = Align.Center THEN 
+    fXUnit = ((hChartRect.Right - hChartRect.Left) / (Chart.Count + 1)) / Chart.CountDataSets
+  ELSE 
+    fXUnit = ((hChartRect.Right - hChartRect.Left) / (oChart.Count - 1))
+  ENDIF
+  fTabPos = hChartRect.Left 
+  IF iAlign = Align.Center THEN 
+  FOR EACH oSerie IN Chart
+      fTabPos += fXUnit * (Chart.Count + 1)
+        Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + iStaticSpace)
+      Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+  NEXT
+  ELSE
+  FOR i = 0 TO Chart.Count - 1
+  
+     '* '(Chart.Count + 1)
+   
+    
+
+    Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
+    Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+    fTabPos += fXUnit
+
+  NEXT
+ENDIF
+  hPoint = NEW CPoint(fXUnit, fYUnit)
+  RETURN hPoint
+END
+
+
+PUBLIC SUB DrawSymbol(iType AS Integer, X AS Integer, Y AS Integer)
+  DIM ariSymbol AS Integer[]
+  DIM iStaticSpace AS Integer = 10 * Chart._fProportionnal
+  X -= iStaticSpace / 2
+  Y -= iStaticSpace / 2
+  SELECT CASE iType
+    CASE 0 'carré
+     ariSymbol = [X, Y, X + iStaticSpace, Y, X + iStaticSpace, Y + iStaticSpace, X, Y + iStaticSpace]
+     Draw.Polygon(ariSymbol)
+    CASE 1 'cercle
+      Draw.Circle(X + iStaticSpace / 2, Y + iStaticSpace / 2, iStaticSpace / 2)
+    CASE 2 'Triangle
+      ariSymbol = [X + CInt(iStaticSpace / 2), Y, X + iStaticSpace, Y + iStaticSpace, X, Y + iStaticSpace]
+      Draw.Polygon(ariSymbol)
+    CASE 3 'TriangleInverse
+      ariSymbol = [X + CInt(iStaticSpace / 2), Y + iStaticSpace, X + iStaticSpace, Y, X, Y]
+      Draw.Polygon(ariSymbol)
+    CASE 4 'sablier
+      ariSymbol = [X, Y, X + iStaticSpace, Y, X, Y + iStaticSpace, X + iStaticSpace, Y + iStaticSpace]
+      Draw.Polygon(ariSymbol)
+    CASE 5 'sablierH
+      
+  END SELECT
+  
+END
+

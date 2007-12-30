@@ -1,0 +1,27 @@
+' Gambas class file
+
+
+PUBLIC SUB Button1_Click()
+
+DIM hRTL AS ReportTextLabel
+
+'report.Orientation = report.Landscape
+Report.Resolution = Desktop.Resolution  'Resolution to show at screen
+Report.Padding = "2 cm"                 'Margins
+Report.Spacing = "2 cm"                 'Put some pace between the reportsheet components
+Report.Zoom = 1                         'Zoom
+
+hRTL = NEW ReportTextLabel(Report)
+hRtl.LineStyle = line.Solid
+'hRtl.Padding = "1 cm"
+hRTL.Text = ""
+hRTL.Text &= "<br><br>" & file.Load("Text1")
+hrtl.Text &= "<br><br>"
+
+hRTL.WordWrap = TRUE
+
+
+'hRTL.Expand = TRUE
+frmPreview.Run(report)   
+
+END

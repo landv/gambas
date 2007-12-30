@@ -1,0 +1,57 @@
+' Gambas class file
+
+PROPERTY MinValue AS Float
+PROPERTY MaxValue AS Float
+PROPERTY {Step} AS Float
+PROPERTY {Font} AS Font
+PRIVATE $oFont AS NEW Font
+
+
+
+PRIVATE FUNCTION MinValue_Read() AS Float
+
+  
+
+END
+
+PRIVATE SUB MinValue_Write(Value AS Float)
+
+  
+
+END
+
+PRIVATE FUNCTION MaxValue_Read() AS Float
+
+  
+
+END
+
+PRIVATE SUB MaxValue_Write(Value AS Float)
+
+  
+
+END
+
+PRIVATE FUNCTION Step_Read() AS Float
+
+  
+
+END
+
+PRIVATE SUB Step_Write(Value AS Float)
+
+  
+
+END
+
+PRIVATE FUNCTION Font_Read() AS Font
+
+  RETURN $oFont
+
+END
+
+PRIVATE SUB Font_Write(Value AS Font)
+
+  $oFont = Value
+
+END

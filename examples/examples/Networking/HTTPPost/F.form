@@ -1,0 +1,89 @@
+# Gambas Form File 1.0
+
+{ F Form
+  Move(229,76,577,545)
+  Text = ("Internet Calculator")
+  Border = Window.Fixed
+  { Button1 Button
+    Move(224,104,88,24)
+    Text = ("Post")
+  }
+  { TextArea1 TextArea
+    Move(8,392,560,144)
+    Text = ("")
+  }
+  { TextArea2 TextArea
+    Move(8,248,560,96)
+    Text = ("")
+  }
+  { Label1 Label
+    Move(16,216,536,24)
+    Text = ("HTTP Header :")
+  }
+  { Label2 Label
+    Move(16,360,544,24)
+    Text = ("HTTP Data :")
+  }
+  { Label3 Label
+    Move(24,48,192,24)
+    Text = ("Write Here a Number :")
+  }
+  { Label4 Label
+    Move(24,72,192,24)
+    Text = ("Write Here Another Number :")
+  }
+  { TextBox1 TextBox
+    Move(224,48,88,24)
+    Text = ("5")
+  }
+  { TextBox2 TextBox
+    Move(224,72,88,24)
+    Text = ("5")
+  }
+  { Label5 Label
+    Move(24,104,192,24)
+    Text = ("Finally Press Post button ->")
+  }
+  { TextLabel1 TextLabel
+    Move(0,0,576,40)
+    Font = Font["Bold"]
+    Background = &H101A9E&
+    Foreground = &HF7F02A&
+    Text = ("Using the power of internet to have a minimal calculator machine!")
+    Alignment = Align.Center
+  }
+  { Label6 Label
+    Move(360,40,200,40)
+    Font = Font["12,Bold"]
+    Background = &H092773&
+    Foreground = &HFFFFFF&
+    Text = ("")
+  }
+  { Label7 Label
+    Move(360,80,200,40)
+    Font = Font["12,Bold"]
+    Background = &H092773&
+    Foreground = &HFFFFFF&
+    Text = ("")
+  }
+  { LblInfo Label
+    Move(360,128,200,24)
+    Font = Font["Bold"]
+    Background = &H003DB6&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { Frame1 Frame
+    Move(16,160,536,48)
+    Text = ("")
+    { ChkProxy CheckBox
+      Move(16,8,112,24)
+      Text = ("Use Proxy")
+    }
+    { TxtProxy TextBox
+      Move(144,8,368,24)
+      Enabled = False
+      Text = ("127.0.0.1:3128")
+    }
+  }
+}

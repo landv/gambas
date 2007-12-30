@@ -1,0 +1,112 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(23,39.1429,87,60)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  { HBox3 HBox
+    MoveScaled(0,0,84,50)
+    Expand = True
+    { panBookmark SidePanel
+      MoveScaled(2,2,19,47)
+      Visible = False
+      Arrangement = Arrange.Vertical
+      Spacing = 8
+      Orientation = Align.Left
+      { lstBookmark ListContainer
+        MoveScaled(0,1,12,33)
+        Background = Color.ButtonBackground
+        Expand = True
+      }
+      { btnAdd Button
+        MoveScaled(0,35,12,3)
+        Text = ("&Add")
+      }
+      { btnRemove Button
+        MoveScaled(0,39,12,3)
+        Text = ("&Remove")
+      }
+    }
+    { VBox1 VBox
+      MoveScaled(22,2,60,46)
+      Expand = True
+      Spacing = 8
+      { HBox1 HBox
+        MoveScaled(1,2,58,3)
+        AutoResize = True
+        { cmbDir ComboBox
+          MoveScaled(0,0,37,3)
+          Expand = True
+          Text = ("")
+          Sorted = True
+        }
+        { Panel1 Panel
+          MoveScaled(37,0,1,3)
+        }
+        { btnParent ToolButton
+          MoveScaled(39,0,3,3)
+          ToolTip = ("Parent directory")
+          Text = ("")
+          Picture = Picture["icon:/16/up"]
+        }
+        { btnRefresh ToolButton
+          MoveScaled(42,0,3,3)
+          ToolTip = ("Refresh")
+          Text = ("")
+          Picture = Picture["icon:/16/refresh"]
+        }
+        { btnNewDir ToolButton
+          MoveScaled(45,0,3,3)
+          ToolTip = ("Create directory")
+          Text = ("")
+          Picture = Picture["icon:/16/new-dir"]
+        }
+        { btnShowHidden ToolButton
+          MoveScaled(48,0,3,3)
+          ToolTip = ("View hidden files")
+          Text = ("")
+          Picture = Picture["icon:/16/view-hidden"]
+          Toggle = True
+        }
+        { btnDetailed ToolButton
+          MoveScaled(51,0,3,3)
+          Visible = False
+          ToolTip = ("Toggle view")
+          Text = ("")
+          Picture = Picture["icon:/16/view-detail"]
+        }
+        { btnView ToolButton
+          MoveScaled(55,0,3,3)
+          ToolTip = ("Show files")
+          Text = ("")
+          Picture = Picture["icon:/16/view-split-h"]
+        }
+      }
+      { splChoose HSplit
+        MoveScaled(2,6,54,38)
+        Expand = True
+        { dvwChoose DirView
+          MoveScaled(2,3,25,33)
+          Picture = Picture["icon:/16/home"]
+        }
+        { fvwChoose FileView
+          MoveScaled(28,3,25,33)
+          Visible = False
+        }
+      }
+    }
+  }
+  { txtFile TextBox
+    MoveScaled(1,52,57,3)
+    Visible = False
+    Text = ("")
+  }
+  { cmbFilter ComboBox
+    MoveScaled(1,56,57,3)
+    Visible = False
+    Text = ("")
+    ReadOnly = True
+  }
+}

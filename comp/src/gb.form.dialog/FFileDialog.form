@@ -1,0 +1,38 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,80,60)
+  'Move(0,0,640,480)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { fchChoose FileChooser
+    MoveScaled(1,1,64,36)
+    'Move(8,8,512,288)
+    Expand = True
+    ShowBookmark = True
+  }
+  { HBox1 HBox
+    MoveScaled(2,39,63,3)
+    'Move(16,312,504,24)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(11,0,2,3)
+      'Move(88,0,16,24)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(32,0,13,3)
+      'Move(256,0,104,24)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(47,0,13,3)
+      'Move(376,0,104,24)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

@@ -1,0 +1,64 @@
+' Gambas class file
+
+PRIVATE $sChange AS String
+
+PRIVATE CONST DELIM_CHANGE AS String = ("This line and the following will be ignored")
+
+PUBLIC SUB Run(sChange AS String) AS Boolean
+
+  $sChange = sChange
+  RETURN NOT ME.ShowModal()
+
+END
+
+PUBLIC SUB Form_Open()
+  
+  txtName.Text = Project.VersionControlUser
+  IF NOT txtName.Text THEN 
+    txtName.SetFocus
+  ELSE 
+    txtPassword.SetFocus
+  ENDIF 
+  
+  edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
+  
+END
+
+
+PUBLIC SUB btnOK_Click()
+
+  DIM sChange AS String
+  DIM iPos AS Integer
+  DIM bRes AS Boolean
+
+  IF NOT Trim(txtName.Text) THEN 
+    Balloon.Warning(("Please enter the versioning user name"), txtName)
+    txtName.SetFocus
+    RETURN 
+  ENDIF
+  
+  Project.VersionControlUser = Trim(txtName.Text)
+  Project.WriteProject
+
+  sChange = Trim(edtChange.Text)
+  iPos = InStr(sChange, "---- " & DELIM_CHANGE)
+  IF iPos THEN sChange = Left(sChange, iPos - 1)
+
+  INC Application.Busy
+  bRes = VersionControl.Commit(Project.VersionControlUser, txtPassword.Text, sChange)
+  DEC Application.Busy
+  
+  IF bRes THEN
+    Message.Error(("The project could not be committed."))
+  ENDIF
+
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+

@@ -1,0 +1,62 @@
+' Gambas class file
+
+INHERITS ReportControl
+EXPORT
+
+PRIVATE $hDrw AS Drawing
+PRIVATE $sPath AS String
+
+PROPERTY Path AS String
+
+
+PRIVATE FUNCTION Path_Read() AS String
+
+  RETURN $sPath
+
+END
+
+PRIVATE SUB Path_Write(Value AS String)
+
+  IF Exist(Value) THEN
+    $sPath = Value
+    $hDrw = Drawing.Load($sPath)
+  ELSE 
+    Error.Raise("Cannot find this file !")
+  ENDIF
+  
+END
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+
+  DIM hMyHints AS NEW TSizeHint
+  DIM h AS Float = ME._Height
+  DIM w AS Float = ME._Width
+  DIM Scale AS Float
+  IF h > 0 OR w > 0 THEN
+    
+    IF h > w THEN 
+      Scale = $hDrw.Width / $hDrw.Height
+      hMyHints.Width = (h * Scale) + (2 * ME._Padding)
+      hMyHints.Height = h + (2 * ME._Padding)
+    ELSE 
+      Scale = $hDrw.Height / $hDrw.Width
+      hMyHints.Height = (w * Scale) + (2 * ME._Padding)
+      hMyHints.Width = w + (2 * ME._Padding)
+    ENDIF
+  ELSE 
+    hMyHints.Height = AvailableH + (2 * ME._Padding)
+    hMyHints.Width = AvailableW + (2 * ME._Padding)
+  ENDIF
+  
+  RETURN hMyHints
+  
+END
+
+PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+    
+    
+      Draw.Drawing($hDrw, (x + hControl.RealLeft + ME.Padding) * MRTools.ReportZoom, (y + hControl.RealTop + ME.Padding) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+      
+
+END
+

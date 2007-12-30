@@ -1,0 +1,93 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,69,74)
+  Text = ("")
+  { mnuWindow Menu
+    Text = ("")
+    Visible = False
+  }
+  { tabWorkspace TabStrip
+    MoveScaled(2,7,56,51)
+    Visible = False
+    Expand = True
+    Arrangement = Arrange.Fill
+    Index = 0
+    Text = ("")
+    Index = 0
+  }
+  { panTitle Panel
+    MoveScaled(0,0,68,3)
+    Visible = False
+    Background = Color.SelectedBackground
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    Spacing = 2
+    Padding = 4
+    { imgIcon PictureBox
+      MoveScaled(0,0,2,2)
+      Picture = Picture["img/gambas.png"]
+      Alignment = Align.Normal
+    }
+    { lblTitle Label
+      MoveScaled(4,0,34,2)
+      Font = Font["Bold"]
+      Foreground = Color.SelectedForeground
+      Expand = True
+      Text = ("")
+    }
+    { btnClose Button
+      MoveScaled(65,0,2,2)
+      Text = ("")
+      Picture = Picture["img/close.png"]
+    }
+  }
+  { svwWorkspace ScrollView
+    MoveScaled(10,17,35,23)
+    Visible = False
+    Background = Color.TextBackground
+    { panRight Panel Handle
+      Name = "panRight"
+      MoveScaled(8,5,1,1)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeE
+      Border = Border.Plain
+    }
+    { panDown Panel Handle
+      Name = "panDown"
+      MoveScaled(6,7,1,1)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeS
+      Border = Border.Plain
+    }
+    { panRightDown Panel Handle
+      Name = "panRightDown"
+      MoveScaled(8,7,1,1)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeNWSE
+      Border = Border.Plain
+    }
+    { dwgBorder DrawingArea
+      MoveScaled(16,6,15,11)
+      Background = Color.Background
+      Border = Border.Raised
+    }
+  }
+  { panWorkspace Panel
+    MoveScaled(27,43,28,25)
+    Background = &HBFEFFF&
+    Arrangement = Arrange.Fill
+    Padding = 1
+    Border = Border.Raised
+  }
+  { btnTabClose ToolButton btnClose
+    Name = "btnTabClose"
+    MoveScaled(10,59,9,8)
+    Text = ("")
+  }
+  { timCheck #Timer
+    #X = 427
+    #Y = 462
+    Delay = 0
+  }
+}

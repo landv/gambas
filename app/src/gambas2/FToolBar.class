@@ -1,0 +1,198 @@
+' Gambas class file
+
+PUBLIC CONST HEIGHT AS Integer = 20
+
+EVENT Change()
+
+PRIVATE CONST SELECT_TOOL AS String = "Select"
+
+PRIVATE $iSize AS Integer
+
+PUBLIC Name AS String
+PRIVATE Type AS String
+
+PRIVATE $cButton AS NEW Collection
+PRIVATE $sTool AS String
+PRIVATE $bNoEvent AS Boolean
+
+
+PUBLIC SUB _new(sName AS String, sType AS String)
+
+  IF Settings["/ToolboxSize", FALSE] THEN
+    $iSize = 24
+  ELSE 
+    $iSize = 32
+  ENDIF
+
+  Name = sName
+  Type = sType
+  btnTool.Text = sName
+  btnTool.Height = Height
+
+  Add(SELECT_TOOL)
+  SetTool
+
+END
+
+
+PUBLIC SUB Add(sControl AS String)
+
+  DIM hCtrl AS ToolButton
+  DIM hPict AS Picture
+
+  hCtrl = NEW ToolButton(panTool) AS "btnControl"
+  hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
+  hCtrl.Tag = sControl
+  hCtrl.Border = FALSE
+  hCtrl.Toggle = TRUE
+  hCtrl.ToolTip = sControl
+  hCtrl.Design = TRUE
+
+  TRY hPict = Picture["img/control" &/ LCase(sControl) & ".png"]
+  IF NOT hPict THEN TRY hPict = Picture["img/control/unknown.png"]
+  IF hPict THEN
+    IF hPict.Width <> $iSize THEN hPict = hPict.Image.Stretch($iSize, $iSize).Picture
+    hCtrl.Picture = hPict
+  ENDIF
+
+  $cButton[sControl] = hCtrl
+
+END
+
+PUBLIC SUB Exist(sControl AS String) AS Boolean
+  
+  RETURN $cButton.Exist(sControl)
+  
+END
+
+
+
+' PUBLIC SUB Form_Resize()
+' 
+'   DIM hCtrl AS ToolButton
+'   DIM X AS Integer
+'   DIM Y AS Integer
+'   DIM XM AS Integer
+'   DIM YM AS Integer
+' 
+'   btnTool.Width = ME.ClientW
+'   panTool.Resize(ME.ClientW, ME.ClientH - btnTool.H)
+' 
+' '   FOR EACH hCtrl IN panTool.Children
+' '
+' '     IF (X + WIDTH) > panTool.ClientW THEN
+' '       X = 0
+' '       Y = Y + WIDTH
+' '     ENDIF
+' '
+' '     hCtrl.Move(X, Y)
+' '
+' '     XM = Max(XM, X)
+' '     YM = Max(YM, Y)
+' '
+' '     X = X + WIDTH
+' '
+' '   NEXT
+' '
+' '   XM = XM + WIDTH
+' '   YM = YM + WIDTH
+' 
+'   'ME.Resize(XM, YM)
+' 
+' END
+
+
+PUBLIC FUNCTION GetTool() AS String
+
+  IF $sTool <> SELECT_TOOL THEN RETURN $sTool
+
+END
+
+
+PUBLIC SUB SetTool(OPTIONAL hButton AS ToolButton)
+
+  DIM hCtrl AS Object
+
+  $bNoEvent = TRUE
+
+  IF $sTool THEN
+    $cButton[$sTool].Value = FALSE
+  ENDIF
+
+  IF NOT hButton THEN
+    hButton = $cButton[SELECT_TOOL]
+  ENDIF
+
+  hButton.Value = TRUE
+  $sTool = hButton.Tag
+  
+  $bNoEvent = FALSE
+
+END
+
+PUBLIC PROCEDURE btnControl_Enter()
+  
+  LAST.Border = TRUE
+  
+END
+
+PUBLIC PROCEDURE btnControl_Leave()
+  
+  LAST.Border = FALSE
+  
+END
+
+
+PUBLIC PROCEDURE btnControl_MouseUp()
+
+  IF $bNoEvent THEN RETURN 
+
+  IF LAST.Tag = $sTool THEN
+    SetTool
+  ELSE
+    SetTool(LAST)
+  ENDIF
+
+END
+
+
+PUBLIC SUB btnControl_DblClick()
+
+  IF Project.IsForm(Project.ActiveForm) THEN
+    IF GetTool() THEN
+      Project.ActiveForm.AddControl(GetTool())
+    ENDIF
+  ENDIF
+
+END
+
+PUBLIC SUB btnControl_MouseDrag()
+  
+  DIM hTool AS Object = LAST
+  DIM sTool AS String = hTool.Tag
+  
+  IF sTool = SELECT_TOOL THEN RETURN 
+
+  Drag.Icon = hTool.Picture
+  Drag(hTool, sTool, MMime.CONTROL)
+  
+END
+
+
+
+PUBLIC SUB btnTool_Click()
+
+  'RAISE Change
+  'FToolBox.SelectToolBar(Name)
+
+END
+
+
+PUBLIC SUB ShowToolBar(bShow AS Boolean)
+
+  panTool.Visible = bShow
+  'IF bShow THEN $cButton["Select"].SetFocus
+
+END
+
+

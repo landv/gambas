@@ -1,0 +1,427 @@
+' Gambas class file
+
+EXPORT
+CREATE STATIC
+
+CLASS Window
+
+STATIC PROPERTY READ Path AS String
+
+PRIVATE $sPath AS String
+PRIVATE $sTitle AS String
+PRIVATE $cSlot AS Collection
+PRIVATE $bModify AS Boolean
+
+PRIVATE SUB Load()
+  
+  DIM hFile AS File
+  DIM iLine AS Integer
+  DIM sLine AS String
+  DIM sSlot AS String
+  DIM iPos AS Integer
+
+  $cSlot = NEW Collection
+  IF NOT Exist($sPath) THEN RETURN
+
+  hFile = OPEN $sPath
+
+  WHILE NOT Eof(hFile)
+
+    INC iLine
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE
+    IF InStr("#;'", Left$(sLine)) THEN CONTINUE
+
+    IF Left$(sLine) = "[" THEN
+      IF Right$(sLine) = "]" THEN
+        sSlot = Mid$(sLine, 2, -1)
+        $cSlot[sSlot] = NEW Collection
+        CONTINUE
+      ELSE
+        sSlot = FALSE
+      ENDIF
+    ENDIF
+
+    IF NOT sSlot THEN CONTINUE
+
+    iPos = InStr(sLine, "=")
+
+    $cSlot[sSlot][Trim(Left$(sLine, iPos - 1))] = Main.FromString(Trim(Mid$(sLine, iPos + 1)))
+
+  WEND
+
+  CLOSE #hFile
+
+CATCH
+
+  IF iLine THEN
+    Error.Raise("Syntax error in settings file at line #" & iLine & ": " & Error.Text)
+  ELSE
+    Error.Raise(Error.Text)
+  ENDIF
+  
+END
+
+
+PUBLIC SUB _new(OPTIONAL Path AS String, OPTIONAL Title AS String)
+
+  DIM sDir AS String
+  DIM sPath AS String
+  DIM sElt AS String
+
+  IF Left(Path) <> "/" THEN 
+    IF NOT Path THEN
+      Path = Settings.Path &/ Application.Name & ".conf"
+    ELSE 
+      Path = Settings.Path &/ Path & ".conf"
+    ENDIF
+    FOR EACH sElt IN Split(Settings.Path, "/")
+      sPath &/= sElt
+      TRY MKDIR "/" & sPath
+    NEXT
+  ENDIF
+
+'   IF Left$(Path) <> "/" THEN
+'     sDir = "~/.config"
+'     TRY MKDIR sDir
+'     sDir = sDir &/ "gambas"
+'     TRY MKDIR sDir
+'     Path = sDir &/ Path
+'   ENDIF
+
+  $sTitle = Title
+
+  $sPath = Path
+  
+  Load
+
+END
+
+
+PUBLIC SUB _free()
+
+  TRY ME.Save
+
+END
+
+
+PUBLIC SUB Save()
+
+  DIM aKey AS NEW String[]
+  DIM cSlot AS Collection
+  DIM sKey AS String
+  DIM hFile AS File
+  DIM vVal AS Variant
+
+  IF NOT $bModify THEN RETURN
+
+  FOR EACH cSlot IN $cSlot
+    aKey.Add($cSlot.Key)
+  NEXT
+
+  aKey.Sort
+
+  $bModify = FALSE
+
+  OPEN $sPath FOR CREATE AS #hFile
+
+  IF $sTitle THEN
+    PRINT #hFile, "# "; $sTitle
+  ENDIF
+
+  FOR EACH sKey IN aKey
+    cSlot = $cSlot[sKey]
+    IF cSlot.Count THEN
+      PRINT #hFile, "[" & sKey & "]"
+      FOR EACH vVal IN cSlot
+        PRINT #hFile, cSlot.Key; "="; Main.ToString(vVal)
+      NEXT
+      PRINT #hFile
+    ENDIF
+  NEXT
+
+  CLOSE #hFile
+
+'CATCH
+'
+'  PRINT #File.Err, "Cannot write "; $sPath
+'  PRINT #File.Err, Error.Text
+
+END
+
+
+PRIVATE FUNCTION GetSlot(sKey AS String) AS String
+
+  DIM sSlot AS String
+
+  sSlot = File.Dir(sKey)
+  IF NOT sSlot THEN sSlot = "/"
+  IF sSlot = "/" THEN
+    sSlot = "General"
+  ENDIF
+  IF Left(sSlot) = "/" THEN sSlot = Mid$(sSlot, 2)
+
+  RETURN sSlot
+
+END
+
+
+PUBLIC FUNCTION _get(Key AS String, OPTIONAL {Default} AS Variant) AS Variant
+
+  DIM sSlot AS String
+
+  sSlot = GetSlot(Key)
+  IF $cSlot.Exist(sSlot) THEN
+    Key = File.Name(Key)
+    IF $cSlot[sSlot].Exist(Key) THEN
+      RETURN $cSlot[sSlot][Key]
+    ENDIF
+  ENDIF
+
+  RETURN {Default}
+
+END
+
+
+PUBLIC SUB _put(Value AS Variant, Key AS String)
+
+  DIM sSlot AS String
+
+  sSlot = GetSlot(Key)
+  IF NOT $cSlot.Exist(sSlot) THEN $cSlot[sSlot] = NEW Collection
+
+  Key = File.Name(Key)
+  'IF $cSlot[sSlot].Exist(Key) THEN
+  '  IF $cSlot[sSlot][Key] = sVal THEN RETURN
+  'ENDIF
+
+  $cSlot[sSlot][Key] = Value
+  $bModify = TRUE
+
+END
+
+
+PUBLIC SUB Clear(ParentKey AS String)
+
+  DIM sSlot AS String
+
+  sSlot = GetSlot(ParentKey &/ "g")
+  $cSlot.Remove(sSlot)
+  $bModify = TRUE
+
+END
+
+
+' PUBLIC FUNCTION MakeWindowKey(sWin AS String, sKey AS String) AS String
+' 
+'   RETURN "Window" &/ sWin &/ sKey
+' 
+' END
+' 
+' 
+' PUBLIC SUB LoadWindowPos(hForm AS Form, sKey AS String)
+' 
+'   DIM sPos AS String
+'   DIM cPos AS String[]
+' 
+'   'Dump($cData)
+' 
+'   sPos = ReadString(MakeWindowKey(sKey, "Pos"))
+'   IF Not sPos THEN RETURN
+' 
+'   'PRINT "LoadWindowPos: "; sKey; ": "; sPos
+' 
+'   cPos = Split(sPos, ",")
+'   IF cPos.Count = 4 THEN
+'     hForm.Move(cPos[0], cPos[1], cPos[2], cPos[3])
+'   ELSE
+'     hForm.Move(cPos[0], cPos[1])
+'   ENDIF
+' 
+' END
+' 
+' 
+' PUBLIC SUB SaveWindowPos(hWindow AS Form, sKey AS String, OPTIONAL bSaveSize AS Boolean = TRUE)
+' 
+'   DIM sPos AS String
+' 
+'   sPos = CStr(hWindow.X) & "," & CStr(hWindow.Y)
+'   IF bSaveSize THEN
+'     sPos = sPos & "," & CStr(hWindow.Width) & "," & CStr(hWindow.Height)
+'   ENDIF
+' 
+'   WriteString(MakeWindowKey(sKey, "Pos"), sPos)
+'   'PRINT "SaveWindowPos: "; sKey; ": "; sPos
+' 
+' END
+' 
+' 
+' PUBLIC SUB LoadWindowSize(hForm AS Form, sKey AS String)
+' 
+'   DIM sPos AS String
+'   DIM cPos AS String[]
+' 
+'   'Dump($cData)
+' 
+'   sPos = ReadString(MakeWindowKey(sKey, "Pos"))
+'   IF Not sPos THEN RETURN
+' 
+'   'PRINT "LoadWindowPos: "; sKey; ": "; sPos
+' 
+'   cPos = Split(sPos, ",")
+'   hForm.Resize(cPos[0], cPos[1])
+' 
+' END
+' 
+' 
+' PUBLIC SUB SaveWindowSize(hWindow AS Form, sKey AS String)
+' 
+'   DIM sPos AS String
+' 
+'   sPos = CStr(hWindow.W) & "," & CStr(hWindow.H)
+'   WriteString(MakeWindowKey(sKey, "Pos"), sPos)
+'   'PRINT "SaveWindowPos: "; sKey; ": "; sPos
+' 
+' END
+' 
+' 
+' PUBLIC SUB SaveSplitterPos(hSplitter AS Object, sWindow AS String, sKey AS String)
+' 
+'   TRY WriteString(MakeWindowKey(sWindow, sKey), hSplitter.Layout)
+'   IF ERROR THEN PRINT Error.Text
+' 
+' END
+' 
+' PUBLIC SUB LoadSplitterPos(hSplitter AS Object, sWindow AS String, sKey AS String)
+' 
+'   TRY hSplitter.Layout = ReadString(MakeWindowKey(sWindow, sKey))
+'   IF ERROR THEN PRINT Error.Text
+' 
+' END
+
+PRIVATE SUB LoadWindow(hWindow AS Window, sKey AS String)
+
+  DIM sPos AS String
+  DIM aPos AS Integer[]
+
+  aPos = ME[sKey &/ "Geometry"]
+  IF NOT aPos THEN RETURN
+
+  'cPos = Split(sPos, ",")
+  IF aPos.Count = 4 AND hWindow.Border = Window.Resizable THEN
+    IF hWindow.Modal THEN
+      hWindow.Resize(aPos[2], aPos[3])
+      hWindow.Center
+    ELSE
+      hWindow.Move(Max(0, aPos[0]), Max(0, aPos[1]), aPos[2], aPos[3])
+    ENDIF
+  ELSE
+    IF NOT hWindow.Modal THEN hWindow.Move(aPos[0], aPos[1])
+  ENDIF
+
+END
+
+
+PRIVATE SUB SaveWindow(hWindow AS Window, sKey AS String)
+
+  ME[sKey &/ "Geometry"] = [hWindow.X, hWindow.Y, hWindow.Width, hWindow.Height]
+
+END
+
+
+PRIVATE SUB GetTopLevel(hCtrl AS Object) AS String
+  
+  DIM hTop AS Object
+  
+  DO
+    hTop = hCtrl.Window
+    IF IsNull(hTop.Parent) THEN RETURN Object.Class(hTop)
+    hCtrl = hTop.Parent
+  LOOP
+  
+CATCH
+  
+END
+
+
+
+PUBLIC SUB Read(hObject AS Object, OPTIONAL sKey AS String, OPTIONAL vDefault AS Variant)
+
+  DIM sVal AS String
+  DIM aVal AS String[]
+
+  IF Object.Is(hObject, "Window") THEN
+    sKey = Object.Class(hObject) &/ sKey
+    LoadWindow(hObject, sKey)
+  ELSE
+    IF NOT sKey THEN TRY sKey = hObject.Name
+    sKey = GetTopLevel(hObject) &/ sKey
+    TRY hObject.Settings = ME[sKey, vDefault]
+  ENDIF
+
+END
+
+PUBLIC SUB Write(hObject AS Object, OPTIONAL sKey AS String)
+
+  IF Object.Is(hObject, "Window") THEN
+    sKey = Object.Class(hObject) &/ sKey
+    SaveWindow(hObject, sKey)
+  ELSE 'IF Object.Is(hObject, "SidePanel") THEN
+    IF NOT sKey THEN TRY sKey = hObject.Name
+    sKey = GetTopLevel(hObject) &/ sKey
+    TRY ME[sKey] = hObject.Settings
+  ENDIF
+
+END
+
+
+STATIC PRIVATE FUNCTION Path_Read() AS String
+
+  DIM sPath AS String = Application.Env["XDG_CONFIG_HOME"]
+  IF NOT sPath THEN sPath = System.User.Home &/ ".config"
+  RETURN sPath &/ "gambas"
+
+END
+
+STATIC PUBLIC FUNCTION Array(...) AS String[]
+  
+  DIM aVal AS NEW String[]
+  DIM iInd AS Integer
+  DIM sVal AS String
+  DIM vVal AS Variant
+  
+  FOR iInd = 0 TO Param.Max
+    vVal = Param[iInd]
+    IF IsBoolean(vVal) THEN 
+      sVal = IIf(vVal, "1", "0")
+    ELSE
+      sVal = CStr(vVal)
+    ENDIF
+    aVal.Add(sVal)
+  NEXT
+  
+  RETURN aVal
+  
+END
+
+' STATIC PUBLIC FUNCTION FromString(Value AS String) AS String[]
+'   
+'   DIM aRet AS NEW String[]
+'   DIM iInd AS Integer
+'   
+'   aRet = Split(Value, ",", "\"")
+'   FOR iInd = 0 TO aRet.Max
+'     aRet[iInd] = Replace(aRet[iInd], "\"\"", "\"")
+'   NEXT
+'   
+'   RETURN aRet
+'   
+' END
+' 
+
+PUBLIC SUB Reload()
+  
+  Load
+  
+END

@@ -1,0 +1,104 @@
+' Gambas class file
+PUBLIC P AS HttpClient
+
+PUBLIC SUB P_Error()
+  
+  LblInfo.Text="Error " & P.Status
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+  TextArea1.Text=""
+  P=NEW HttpClient AS "P"
+
+END
+
+
+PUBLIC SUB P_Connect()
+  
+  LblInfo.Text="Waiting for reply..."
+  
+END
+
+
+
+PUBLIC SUB P_Finished()
+
+  DIM sBuf AS String   
+  DIM MyLoop AS Integer
+  LblInfo.Text="OK"
+  
+  FOR MyLoop=0 TO P.Headers.Count-1
+    TextArea2.Text=TextArea2.Text & P.Headers[MyLoop]
+  NEXT 
+  
+  IF Lof(P) THEN READ #P,sBuf,Lof(P)
+  TextArea1.Text=sBuf
+
+  IF (Instr(sBuf,"<value><int>")) THEN
+    sBuf=Mid(sBuf,Instr(sBuf,"<value><int>")+12)
+    MyLoop=1
+    Label6.Text = TextBox1.Text & " + " & TextBox2.Text & " = "
+    DO WHILE Mid(sBuf, MyLoop, 1) <> "<"
+      Label6.Text = Label6.Text & Mid(sBuf, MyLoop, 1)
+      MyLoop = MyLoop + 1
+    LOOP
+    IF (InStr(sBuf, "<value><int>")) THEN
+      sBuf = Mid(sBuf, InStr(sBuf, "<value><int>") + 12)
+      MyLoop = 1
+      Label7.Text = TextBox1.Text & " - " & TextBox2.Text & " = "
+      DO WHILE Mid(sBuf, MyLoop, 1) <> "<"
+        Label7.Text = Label7.Text & Mid(sBuf, MyLoop, 1)
+        MyLoop = MyLoop + 1
+      LOOP
+    ELSE
+      Message.Error("Error")
+    END IF
+  ELSE
+    Message.Error("Error")
+  END IF  
+  
+  
+END
+
+
+PUBLIC SUB Button1_Click()
+
+  DIM sCad AS String 
+  LblInfo.Text = "Connecting..."
+  TextBox1.Text = Val(Trim(TextBox1.Text))
+  TextBox2.Text = Val(Trim(TextBox2.Text))
+  WAIT
+  TextArea1.Text = ""
+  sCad = "<?xml version=" & Chr(34) & "1.0" & Chr(34) & "?>" & Chr(13) & Chr(10)
+  sCad = sCad & "<methodCall>" '& Chr(13) & Chr(10)
+  sCad = sCad & "<methodName>sample.sumAndDifference</methodName>" '& Chr(13) & Chr(10)
+  sCad = sCad & "<params>" 
+  sCad=sCad & "<PARAM>" 
+  sCad=sCad & "<value><i4>" & TextBox1.Text & "</i4></value>" 
+  sCad=sCad & "</PARAM>" 
+  sCad=sCad & "<PARAM>" 
+  sCad=sCad & "<value><i4>" & TextBox2.Text & "</i4></value>" 
+  sCad=sCad & "</PARAM>"
+  sCad=sCad & "</params>" 
+  sCad=sCad & "</methodCall>" 
+  IF ChkProxy.Value THEN
+    P.Proxy.Host=TxtProxy.Text
+  ELSE
+    P.Proxy.Host=""
+  END IF
+  P.URL="xmlrpc-c.sourceforge.net/api/sample.php"
+
+
+  P.Post("text/xml",sCad)
+
+END
+
+
+PUBLIC SUB ChkProxy_Click()
+
+  TxtProxy.Enabled=ChkProxy.Value
+
+END

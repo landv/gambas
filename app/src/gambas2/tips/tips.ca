@@ -1,0 +1,220 @@
+[WELCOME]
+
+<p>Benvingut a <b>Gambas</b> !</p>
+
+<p><b>Gambas</b> és un entorn gràfic de desenvolupament basat en un intèrpret <i>Basic</i> avançat.</p>
+
+<p>El propòsit de <b>Gambas</b> és permetre crear aplicacions potents de manera fàcil i ràpida. Però la netedat dels vostres programes resta sota la <i>vostra</i> responsabilitat...</p>
+
+<p>Gaudiu-lo  !</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<p>Cada projecte ha de tenir una <i>classe d'inici</i>. Aquesta classe d'inici ha de tenir definit un mètode públic i estàtic anomenat <i>Main</i> sense arguments, el qual actuarà com a mètode d'inici del vostre programa.</p>
+
+<p>Podeu definir la classe d'inici fent clic sobre ella amb el botó dret del ratolí a l'arbre de projecte, i seleccionant <i>Classe d'inici</i> al menú contextual.</p>
+
+<p>No és necessari definir un mètode <i>Main</i> en un formulari d'inici, per que ja en te un de predefinit.</p>
+
+<p>Aquest mètode d'inici predefinit instancia el formulari i el mostra, igual que a <i>Visual Basic&trade;</i>.</p>
+
+
+[OPEN]
+
+<p>La instrucció <b>OPEN</b> de <b>Gambas</b> no fa el mateix que la de <i>Visual Basic</i>. No retorna el fitxer com un integer, si no com un objecte <i>File</i>.</p>
+
+<p>Per tant, en comptes d'escriure :</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "elmeufitxer" FOR READ AS #handle</pre>
+
+<p>heu d'escriure :</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "elmeufitxer" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>Sabeu que podeu concatenar noms de directori i noms de fitxer amb l'operador <b><tt>&/</tt></b> ? Aquest operador afegeix si cal els separadors de directoris, així que el camí resultant és perfecte.</p>
+
+<p>Per exemple:</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>No és meravellós ?</p>
+
+
+[EXEC]
+
+<p>Podeu crear un fitxer executable de tot el vostre projecte. Seleccioneu <i>Crea executable</i> dins el menú <i>Projecte</i>.</p>
+
+<p>Quan <b>Gambas</b> crea un fitxer executable, el posa per defecte dins del directori del vostre projecte. El nom de l'executable és el mateix que el del vostre projecte.</p>
+
+
+[PATH]
+<p>
+Els camins relatius tenen un significat especial a <b><i>Gambas</i></b>.
+Sempre fan referència a fitxers dintre dels vostres projectes.
+<p>
+No existeix el concepte de <i>directori actual</i>, ni paraula clau com <tt>CHDIR</tt> per canviar-lo.
+<p>
+<b>Aneu amb compte:</b> només heu de fer servir camins relatius per accedir als fitxers del projecte, ja que els camins absoluts deixaran de funcionar quan creeu un executable.
+
+
+[GLOBAL]
+
+No hi han <u>variables globals</u> a <b><i>Gambas</i></b>!
+<p>
+Com a solució temporal, poseu-les dins del mòdul principal i declareu-les com a <tt>PUBLIC</tt>.
+<p>
+Si en comptes d'un mòdul principal teniu un formulari principal al vostre projecte, llavors declareu-les com a <tt>STATIC PUBLIC</tt>.
+<p>
+Per accedir a aquestes variables heu fer servir el nom de mòdul principal ò del formulari: <tt>ElMeuModulPrincipal.LaMevaVariableGlobal</tt> ò <tt>ElMeuFormulariPrincipal.LaMevaVariableGlobal</tt>.
+
+
+[EMPTY]
+
+<p>Per saber si una cadena és buida, no és necessari fer servir la funció <b>Len()</b>. Ho poseu comprovar directament ja que una cadena buida és <b>FALSE</b> i una cadena no buida és <b>TRUE</b>.</p>
+
+<p>Per exemple, en comptes de fer :</p>
+
+<pre>IF Len(LaMevaCadena) > 0 THEN ...
+IF Len(LaMevaCadena) = 0 THEN ...</pre>
+
+<p>Heu de fer :</p>
+
+<pre>IF LaMevaCadena THEN ...
+IF NOT LaMevaCadena THEN ...</pre>
+
+
+[EVENT]
+
+<p>Tots els controls i tots els objectes que poden rebre esdeveniments, tenen un <i>observador d'esdeveniments</i> i un <i>nom de grup</i> d'esdeveniment.</p>
+
+<p>L'observador d'esdeveniments captura tots els esdeveniments rebuts per l'objecte, i el nom de grup de l'esdeveniment és el prefixe del procediment encarregat de gestionar l'esdeveniment.</p>
+
+<p>Per defecte, l'observador d'esdeveniments és l'objecte a on heu creat el control, i el nom de grup és el nom del control.</p>
+
+<p>D'aquesta manera, un formulari rep tots els esdeveniments produïts sobre el control que heu creat dins d'ell.</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "You have clicked MyButton !"
+END
+</pre>
+
+
+[FORM]
+
+<p>A <b><i>Gambas</i></b>, un formulari és el seu propi observador d'esdeveniments, d'aquesta forma podeu gestionar directament els seus esdeveniments (com <i>Resize</i>, <i>Activate</i>, ...) dins del seu propi codi de classe.</p>
+
+<p>D'aquesta manera, els novells provinents de <i>Visual Basic</i> no es desorientaran :-).</p>
+
+
+[EMBED]
+
+<p>A <b><i>Gambas</i></b> podeu fer que qualsevol formulari estigui incrustat d'altres formularis&nbsp;!</p>
+
+<p>Per fer servir aquesta poderosa eina, només heu d'instanciar el formulari passant un contenidor pare com a últim argument del constructor.</p>
+
+<p>Per exemple&nbsp;:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Crea un quadre de diàleg<br>
+hForm = NEW MyDialog<br>
+' Insereix un formulari dins d'aquest quadre de diàleg<br>
+' Observeu que aquest formulari rep dos paràmetres abans del contenidor<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Mou i canvia la mida del formulari<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>Aneu amb compte: un formulari incrustat dins d'un altre formulari segueix sent un formulari, i per tant el seu propi observador d'esdeveniments.</p>
+
+
+[GROUP]
+
+<p>Tot control te la propietat <i>(Group)</i>. Quan aquesta propietat es fa servir, el prefix del nom del gestor d'esdeveniments és el nom del grup i no el nom del control.</p>
+
+<p>Suposem que teniu un <i>Botó</i> anomenat <b>btnAction</b> amb el gestor d'esdeveniments <i>Click</i> següent :</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>Si definiu la propietat <i>(Group)</i> de <b>btnAction</b> com a <i>ElMeuGrup</i>, llavors el gestor d'esdeveniments que rebrà els esdeveniments del botó serà el següent :</p>
+
+<pre>PUBLIC SUB ElMeuGrup_Click()</pre>
+
+<p>Aquesta propietat us permet gestionar els esdeveniments de diversos controls en una sola funció. I els controls del mateix grup no han de ser del mateix tipus !</p>
+
+<p><b>Nota :</b> Els veterans del vell <i>Visual Basic</i> reconeixeran el concepte de <i>control array</i>, però en una implementació més potent. :-)</p>
+
+
+[TAG]
+
+<p>Cada control te una propietat anomenada <i>Tag</i>. Aquesta propietat és per al programador, i pot contenir qualsevol dada <b>VARIANT</b> que trobeu pertinent.</p>
+
+<p>Això és molt útil quan voleu distingir controls del mateix grup dins d'un gestor d'esdeveniments comú.</p>
+
+
+
+[LAST]
+
+<p>La paraula clau <b>LAST</b> retorna l'últim control que ha rebut un esdeveniment. Això és molt útil quan vulgueu escriure un gestor d'esdeveniments que sigui independent de qualsevol nom de control.</p>
+
+<p>Per exemple, suposem que voleu escriure un programa calculadora.
+Heu definit deu botons, un per cada dígit, tots dins del mateix <i>group</i> "Digit". El valor <i>Tag</i> de cada control és el que es mostrarà en el botó. El vostre gestor d'esdeveniments tindria un aspecte com això :</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>Les ben conegudes rutines de <i>BASIC</i> <b>Left$</b>, <b>Right$</b> i <b>Mid$</b> tenen un comportament molt útil a <b><i>Gambas</i></b></p>
+
+<p>El segon paràmetre de <b>Left$</b> i <b>Right$</b> és opcional, i és 1 per defecte.</p>
+
+<p><tt>Left$("Gambas")</tt> retorna <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> retorna <tt>"s"</tt></p>
+
+<p>Aquest segon paràmetre pot ser negatiu, i llavors dona el nombre de caràcters que no s'extraurà.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> retorna <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> retorna <tt>"mbas"</tt></p>
+
+<p>Així mateix, el tercer argument de <b>Mid$</b> pot ser negatiu, i llavors representa el nombre de caràcters des del final de la cadena que no s'extrauran.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> retorna <tt>"amb"</tt>
+
+
+[END]
+
+<p>Ja heu llegit tots els consells del dia. Espero que us hàgiu convertit en un expert de <b>Gambas</b>! :-)</p>
+
+<p>Si voleu contribuir, envieu nous consells a l'adreça següent&nbsp;:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Gràcies per endavant !</p>
+
+
+

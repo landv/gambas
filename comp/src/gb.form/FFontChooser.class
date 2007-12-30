@@ -1,0 +1,340 @@
+' Gambas class file
+
+PUBLIC Family AS String
+PUBLIC Bold AS Boolean
+PUBLIC Italic AS Boolean
+PUBLIC Underline AS Boolean
+PUBLIC Strikeout AS Boolean
+PUBLIC Size AS Integer
+PUBLIC Grade AS Integer
+PUBLIC ShowFixed AS Boolean
+
+PUBLIC StylePanel AS Container
+
+PRIVATE $iHeight AS Integer
+PRIVATE CONST NBR_GRADE AS Integer = 21
+PRIVATE CONST FIRST_GRADE AS Integer = -4
+PRIVATE $hGrade AS Object[NBR_GRADE]
+PRIVATE $iWidthSize AS Integer
+PRIVATE $bNoChange AS Boolean
+PRIVATE $bNoRefresh AS Boolean
+PRIVATE $sLast AS String
+'PRIVATE lstGrade AS CustomListBox
+
+'EVENT Change()
+'EVENT Confirm()
+
+' PRIVATE SUB SelectGrade(iGrade AS Integer, bSelect AS Boolean)
+' 
+'   WITH $hGrade[iGrade]
+'     IF bSelect THEN
+'       .Background = Color.SelectedBackground
+'       .Foreground = Color.SelectedForeground
+'     ELSE
+'       .Background = Color.TextBackground
+'       .Foreground = Color.TextForeground
+'     ENDIF
+'   END WITH
+' 
+' END
+
+PUBLIC SUB _new()
+
+  DIM iInd AS Integer
+
+  $bNoChange = TRUE
+  $bNoRefresh = TRUE
+  
+  FOR iInd = 0 TO NBR_GRADE - 1
+    $hGrade[iInd] = NEW Label(lstGrade) 'AS "lblGrade"
+    'lstGrade.Add($hGrade[iInd])
+  NEXT
+  
+  StylePanel = panStyle
+  
+  $iWidthSize = panSize.W
+
+  SetFont("")
+
+  $bNoChange = FALSE
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  'DEBUG
+  $bNoRefresh = FALSE
+  RefreshGrade
+  RefreshFamily
+  chkGrade_Click
+  RefreshExample
+
+END
+
+PRIVATE SUB RefreshGrade()
+
+  DIM iInd AS Integer
+  DIM H AS Integer
+  DIM hFont AS Font
+  DIM sGrade AS String
+
+  IF $bNoRefresh THEN RETURN
+  IF NOT chkGrade.Value THEN RETURN
+
+  INC Application.Busy
+
+  FOR iInd = 0 TO NBR_GRADE - 1
+    sGrade = Trim(Format(FIRST_GRADE + iInd, "+#"))
+    hFont = Font[GetFont(sGrade)]
+    H = hFont.Height("X") + 4
+    WITH $hGrade[iInd]
+      .Font = hFont
+      .Height = H
+      .Text = sGrade & " " & Family
+      .Tag = FIRST_GRADE + iInd
+      IF .Tag = Grade THEN lstGrade.Select($hGrade[iInd])
+    END WITH
+  NEXT
+
+  DEC Application.Busy
+
+END
+
+PUBLIC SUB RefreshFamily()
+
+  DIM hFont AS Font
+  DIM sFamily AS String
+  DIM sKey AS String
+
+  IF $bNoRefresh THEN RETURN
+
+  sKey = Family 'lstFamily.Current.Key
+
+  $bNoChange = TRUE
+
+  lstFamily.Clear
+  
+  FOR EACH sFamily IN Fonts
+    hFont = Font[sFamily]
+    IF ShowFixed AND NOT hFont.Fixed THEN CONTINUE
+    'IF NOT hFont.Scalable THEN CONTINUE
+    lstFamily.Add(sFamily, sFamily) ', Picture[If(hFont.Fixed, "img/fixed.png", "img/scalable.png")])
+  NEXT
+
+  IF lstFamily.Exist(sKey) THEN
+    lstFamily[sKey].Selected = TRUE
+  ELSE
+    lstFamily.MoveFirst
+    lstFamily.Item.Selected = TRUE
+  ENDIF
+  Family = lstFamily.Current.Key
+  TRY lstFamily[Family].EnsureVisible
+
+  $bNoChange = FALSE
+
+  RefreshExample
+
+END
+
+
+PUBLIC SUB SetFont(sFont AS String)
+
+  DIM iStyle AS Integer
+  DIM hFont AS Font = Font[sFont]
+  DIM bRelative AS Boolean
+  DIM sElt AS String
+
+  bRelative = TRUE
+
+  FOR EACH sElt IN Split(sFont, ",")
+    sElt = Trim(sElt)
+    IF InStr("0+-", Left(sElt)) = 0 AND IF IsDigit(Left(sElt)) THEN
+      bRelative = FALSE
+      BREAK
+    ENDIF
+  NEXT
+
+  Family = hFont.Name
+  Bold = hFont.Bold
+  Italic = hFont.Italic
+  Underline = hFont.Underline
+  StrikeOut = hFont.StrikeOut
+  Size = hFont.Size
+  Grade = hFont.Grade
+
+  chkGrade.Value = bRelative
+
+  TRY lstFamily[Family].Selected = TRUE
+  TRY lstFamily[Family].EnsureVisible
+
+  IF Bold THEN iStyle += 1
+  IF Italic THEN iStyle += 2
+  lstStyle[iStyle].Selected = TRUE
+
+  chkUnderline.Value = UnderLine
+  chkStrikeout.Value = StrikeOut
+
+  txtSize.Value = Size
+  RefreshExample
+
+END
+
+PUBLIC FUNCTION GetFont(OPTIONAL sGrade AS String) AS String
+
+  DIM sFont AS String
+
+  sFont = Family
+  IF sGrade THEN
+    sFont &= "," & sGrade
+  ELSE
+    IF Bold THEN sFont &= ",Bold"
+    IF Italic THEN sFont &= ",Italic"
+    IF Underline THEN sFont &= ",Underline"
+    IF Strikeout THEN sFont &= ",Strikeout"
+    IF chkGrade.Value THEN
+      IF Grade THEN sFont &= "," & Trim(Format(Grade, "+#"))
+    ELSE
+      sFont &= "," & Size
+    ENDIF
+  ENDIF
+
+  RETURN sFont
+
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  txtExample.H = Min(ME.ClientH - 128, Max(64, $iHeight))
+
+END
+
+PRIVATE SUB GetParent() AS Object
+  
+  RETURN ME.Parent
+  
+END
+
+
+PRIVATE SUB RefreshExample()
+
+  DIM sFont AS String = GetFont()
+
+  IF $bNoRefresh THEN RETURN
+
+  IF sFont <> $sLast THEN 
+
+    txtExample.Font = Font[sFont]
+    Size = Font[sFont].Size
+    Grade = Font[sFont].Grade
+    'PRINT Size;; Grade
+    $iHeight = txtExample.Font.Height(txtExample.Text) + 16
+    Form_Resize
+
+    RefreshGrade
+    IF NOT $bNoChange THEN GetParent()._Change
+  ENDIF
+
+  $sLast = sFont
+
+END
+
+
+PUBLIC SUB lstFamily_Select()
+
+  Family = lstFamily.Current.Key
+  RefreshExample
+
+END
+
+PUBLIC SUB lstStyle_Click()
+
+  Bold = lstStyle.Index AND 1
+  Italic = lstStyle.Index AND 2
+  RefreshExample
+
+END
+
+PUBLIC SUB txtSize_Change()
+
+  Size = txtSize.Value
+  RefreshExample
+  lstSize.Index = lstSize.Find(Size)
+
+END
+
+PUBLIC SUB lstSize_Click()
+
+  txtSize.Value = lstSize.Text
+
+END
+
+
+PUBLIC SUB lstFamily_DblClick()
+
+  GetParent()._Activate
+
+END
+
+PUBLIC SUB lstStyle_DblClick()
+
+  GetParent()._Activate
+
+END
+
+PUBLIC SUB lstSize_DblClick()
+
+  GetParent()._Activate
+
+END
+
+PUBLIC SUB chkGrade_Click()
+
+  txtSize.Visible = NOT chkGrade.Value
+  lstSize.Visible = NOT chkGrade.Value
+  lstGrade.Visible = chkGrade.Value
+  panSize.Expand = chkGrade.Value
+  IF NOT chkGrade.Value THEN panSize.W = $iWidthSize
+
+  IF chkGrade.Value THEN
+    RefreshGrade
+    lstGrade_Click
+  ELSE
+    txtSize.Value = Size
+    txtSize_Change
+  ENDIF
+
+END
+
+
+PUBLIC SUB lstGrade_Click()
+
+  'DEBUG ME.Design;; ME.Parent.Design 
+
+  TRY Grade = lstGrade.Current.Tag
+  RefreshExample
+
+END
+
+PUBLIC SUB lstGrade_Activate()
+
+  GetParent()._Activate
+
+END
+
+
+PUBLIC SUB chkUnderline_Click()
+
+  Underline = chkUnderline.Value
+  RefreshExample
+
+END
+
+
+PUBLIC SUB chkStrikeout_Click()
+
+  Strikeout = chkStrikeout.Value
+  RefreshExample
+
+END

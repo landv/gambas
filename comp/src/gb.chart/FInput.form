@@ -1,0 +1,46 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,76,11)
+  Text = ("")
+  Border = Window.Fixed
+  SkipTaskbar = True
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = 10
+  Padding = 5
+  { HBox2 HBox
+    MoveScaled(9,2,62,3)
+    { Label1 Label
+      MoveScaled(1,1,20,3)
+      Text = ("DataSet Name")
+    }
+    { TextBox1 TextBox
+      MoveScaled(22,1,38,3)
+      Expand = True
+      Text = ("")
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(2,7,72,1)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(3,8,62,3)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(3,0,3,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(33,0,14,3)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,14,3)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

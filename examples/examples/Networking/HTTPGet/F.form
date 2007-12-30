@@ -1,0 +1,69 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(30.125,14.125,91,73)
+  Text = ("")
+  Border = Window.Fixed
+  { Button1 Button
+    MoveScaled(1,5,14,4)
+    Text = ("GET!")
+  }
+  { TextArea1 TextArea
+    MoveScaled(1,10,63,10)
+    Text = ("")
+  }
+  { Navigator TextEdit
+    MoveScaled(1,22,89,50)
+    ReadOnly = True
+  }
+  { Label1 Label
+    MoveScaled(1,1,7,3)
+    Text = ("URL :")
+  }
+  { TxtHost TextBox
+    MoveScaled(8,1,56,3)
+    Text = ("http://gambasdoc.org/help")
+  }
+  { TxtInfo TextLabel
+    MoveScaled(32,5,32,4)
+    Font = Font["Bold"]
+    Background = &H0055FF&
+    Foreground = &HFFFF00&
+    Padding = 4
+    Text = ("")
+  }
+  { BtnStop Button
+    MoveScaled(16,5,14,4)
+    Text = ("Stop")
+  }
+  { ChkPassword CheckBox
+    MoveScaled(66,5,24,3)
+    Text = ("Page needs authorization")
+  }
+  { TxtUser TextBox
+    MoveScaled(66,13,24,3)
+    Enabled = False
+    Text = ("User")
+  }
+  { TxtPassword TextBox
+    MoveScaled(66,17,24,3)
+    Enabled = False
+    Text = ("Password")
+    Password = True
+  }
+  { CmbAuth ComboBox
+    MoveScaled(66,9,24,3)
+    Enabled = False
+    Text = (" ")
+    ReadOnly = True
+    List = [("Basic"), ("NTLM"), ("DIGEST"), ("GSS")]
+  }
+  { MyHttp #HttpClient
+    #X = 376
+    #Y = 104
+  }
+  { mnuOptions Button
+    MoveScaled(66,1,24,3)
+    Text = ("&Configuration...")
+  }
+}

@@ -1,0 +1,80 @@
+' Gambas class file
+
+PRIVATE $iType AS Integer
+
+PUBLIC SUB _New(Value AS Integer)
+  
+  $iType = Value 
+END
+
+PUBLIC SUB Draw(CX AS Integer, CY AS Integer, CW AS Integer, CH AS Integer)
+  
+  DIM i, J AS Integer
+  DIM s AS String
+  DIM fCumul AS Float
+  DIM fRapport AS Float
+  DIM f AS Float
+  DIM iMaxTextWidth AS Integer
+  DIM fNewPos AS Float
+  DIM fTextPos AS Float
+  DIM fRayon AS Float
+  DIM fMaxRayon AS Float
+  DIM fRayonUnit AS Float
+  'Obtenir la valeur cumulée:
+  FOR EACH s IN Chart.Headers
+    IF draw.TextWidth(s) > iMaxTextWidth THEN iMaxTextWidth = draw.TextWidth(s)
+  NEXT
+  IF cw <= ch THEN 
+    fMaxRayon = cw / 2 - iMaxTextWidth
+  ELSE
+    fMaxRayon = CH / 2 - iMaxTextWidth
+  ENDIF
+  
+  
+  
+  
+  fRayonUnit = fMaxRayon / (Chart.CountDataSets + 1)
+  FOR j = 0 TO Chart.CountDataSets - 1
+    IF J = 1 AND $iType <> ChartType.PieRings THEN BREAK 
+    i = 0
+    fCumul = 0
+    FOR i = 0 TO Chart.Count - 1
+        fCumul += Chart[j][i]
+        
+    NEXT
+    fNewPos = 0
+    fRapport = 360 / fCumul
+    fCumul = Rad(90)
+    fRayon = fRayonUnit * ((Chart.CountDataSets + 1) - J)
+   
+    FOR i = 0 TO Chart.Count - 1
+    f = Chart[j][i]
+    Draw.Forecolor = color.DarkGray
+    draw.FillColor = Chart.Colors[i]
+    draw.FillStyle = fill.Solid
+    fNewPos = fCumul + Rad(f * frapport)
+    fTextPos = fCumul + Rad(f * frapport) / 2
+    
+
+    IF (i = 0 AND $iType = ChartType.PieOffSet1) OR $iType = ChartType.PieOffSet2 THEN
+       draw.Circle(CX + CW / 2 + (Cos(fTextPos) * 10), CY + Ch / 2 + (Sin(fTextPos - Rad(180)) * 10), fRayon, fCumul, fNewPos)
+     ELSE
+       draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon, fCumul, fNewPos)
+    ENDIF
+    'draw.Text(Chart[i].Label, Cos(fTextPos) * (fRayon) + CX + CW / 2, Sin((fTextPos) - Rad(180)) * (fRayon) + CY + fRayon - draw.Font.Height())
+   
+    fCumul += Rad(f * frapport)
+    
+    NEXT
+    IF $iType = ChartType.PieRings THEN 
+      Draw.FillColor = Draw.Device.BackColor
+      fRayon = fRayonUnit
+      draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon)
+    ENDIF
+    
+    
+  NEXT
+  
+  
+  'draw.Text("test", (Cos(Rad(180)) * (fRayon + iMaxTextWidth)) + CX + CW / 2, (Sin(Rad(180)) * (fRayon + iMaxTextWidth)) + CY + fRayon)
+END

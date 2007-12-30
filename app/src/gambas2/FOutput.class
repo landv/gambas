@@ -1,0 +1,237 @@
+' Gambas class file
+
+'PUBLIC Shown AS Boolean
+
+PRIVATE $iCol AS Integer
+PRIVATE $iLine AS Integer
+PRIVATE $bWelcome AS Boolean
+PRIVATE $bOpened AS Boolean
+
+PUBLIC SUB _new()
+
+  'Config.LoadWindow(ME, "/FOutput")
+  Settings.Read(ME)
+  ReadConfig
+  
+  chkCharset.Visible = System.Charset <> Desktop.Charset
+  sepCharset.Visible = chkCharset.Visible
+  btnUndock.Value = Settings["/FOutput/Undock"]
+  btnAbove.Value = Settings["/FOutput/KeepAbove"]
+  OnProjectDebug
+
+END
+
+
+PUBLIC SUB Clear()
+
+  edtOutput.Clear
+  $iLine = 0
+
+  IF NOT $bWelcome THEN
+
+    edtOutput.Insert(("Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"))
+    $iCol = edtOutput.Column
+    $iLine = edtOutput.Line
+
+    $bWelcome = TRUE
+
+  ENDIF
+
+END
+
+
+PUBLIC SUB Insert(sText AS String, OPTIONAL bCurrent AS Boolean)
+
+  IF chkCharset.Value THEN  
+    TRY sText = DConv$(sText)
+  ENDIF
+
+  IF NOT bCurrent THEN 
+    'edtOutput.Line = edtOutput.Lines.Count
+    'edtOutput.Goto(edtOutput.Lines.Count, 10000)
+  ENDIF
+  
+  edtOutput.Print(sText)
+  
+  $iLine = edtOutput.Line
+  $iCol = edtOutput.Column
+
+  IF NOT Action["console"].Value THEN Action["console"].Value = TRUE
+
+END
+
+PUBLIC SUB ReadConfig()
+
+  edtOutput.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+  MColor.InitEditor(edtOutput)
+
+END
+
+PUBLIC SUB edtOutput_KeyPress()
+
+  DIM sText AS String
+  DIM iPos AS Integer
+  DIM sVal AS String
+
+  IF Key.Code = Key.Enter OR Key.Code = Key.Return THEN
+
+    'TRY sText = SConv$(edtOutput.Text)
+
+    'iPos = RInStr(sText, "\n", edtOutput.Pos)
+    'sText = Mid$(sText, iPos + 1, edtOutput.Pos - iPos)
+    
+    sText = edtOutput.Lines[edtOutput.Line]
+    IF chkCharset.Value THEN
+      TRY sText = SConv$(sText)
+    ENDIF
+
+    IF Design.IsRunning() THEN
+
+      'IF $iPos > iPos THEN sText = Mid$(sText, $iPos - iPos + 1)
+      
+      IF $iLine = edtOutput.Line THEN
+        sText = Mid$(sText, $iCol + 1)
+      ENDIF
+
+      edtOutput.Insert("\n")
+      Design.Send(sText & "\n")
+      'Key.Cancel = TRUE
+      STOP EVENT
+
+    ELSE IF Left$(sText) = "?" THEN
+
+      sText = Mid$(sText, 2)
+      IF NOT sText THEN RETURN
+
+      IF Project.Running THEN
+
+        edtOutput.Insert("\n")
+        Design.Command("!\t" & sText)
+        STOP EVENT
+
+      ELSE
+
+        TRY sVal = Str(Eval(sText & "\n"))
+        IF ERROR THEN sVal = Error.Text
+        Insert("\n" & DConv$(sVal) & "\n")
+        'Key.Cancel = TRUE
+        STOP EVENT
+
+      ENDIF
+
+    ENDIF
+
+  ELSE IF Key.Code = Key.Escape THEN 
+  
+    Action["console"].Value = FALSE
+
+  ELSE IF Key.Control THEN
+
+    IF Key.Code = Key["L"] THEN
+      Clear
+    'ELSE IF Code = Key["C"] THEN
+    '  Project.DebugForm.Stop
+    '  RETURN FALSE
+    ENDIF
+
+  ENDIF
+
+END
+
+PUBLIC SUB Form_Close()
+
+  IF NOT ME.Parent THEN 
+    'DEBUG "Write: "; ME.X;; ME.Y
+    Settings.Write(ME)
+  ENDIF
+  'Action["console"].Value = FALSE
+  'Settings.Write(ME)
+
+END
+
+PUBLIC SUB Form_Show()
+
+  'Action["console"].Value = TRUE
+
+END
+
+PUBLIC SUB Form_GotFocus()
+
+  edtOutput.SetFocus
+
+END
+
+PUBLIC SUB btnClear_Click()
+
+  Clear
+  edtOutput.SetFocus
+
+END
+
+PUBLIC SUB btnCut_Click()
+
+  edtOutput.Cut
+
+END
+
+PUBLIC SUB btnCopy_Click()
+
+  edtOutput.Copy
+
+END
+
+PUBLIC SUB btnPaste_Click()
+
+  edtOutput.Paste
+
+END
+
+PUBLIC SUB Form_Activate()
+
+  edtOutput.SetFocus
+
+END
+
+PUBLIC SUB btnUndock_Click()
+
+  Settings["/FOutput/Undock"] = btnUndock.Value
+  OnProjectDebug
+  FDebugInfo.UpdateView
+
+END
+
+' PUBLIC SUB Toggle(bShow AS Boolean)
+'   
+'   IF NOT btnUndock.Value THEN
+'     'IF NOT Project.Running THEN 
+'       FMain.ShowDebug(bShow)
+'     'ENDIF 
+'   ELSE 
+'     ME.Visible = bShow
+'   ENDIF
+'   
+' END
+
+PUBLIC SUB OnProjectDebug()
+  
+  btnAbove.Visible = Project.Running AND btnUndock.Value
+  ME.Stacking = If(Project.Running AND btnAbove.Value, Window.Above, Window.Normal)
+  
+END
+
+
+PUBLIC SUB btnAbove_Click()
+
+  Settings["/FOutput/KeepAbove"] = btnAbove.Value
+  OnProjectDebug
+  
+END
+
+PUBLIC SUB Form_Open()
+
+  IF NOT ME.Parent THEN 
+    Settings.Read(ME)
+    'DEBUG "Read: "; ME.X;; ME.Y
+  ENDIF
+
+END

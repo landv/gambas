@@ -1,0 +1,108 @@
+' Gambas class file
+
+'EXPORT
+
+PRIVATE CONST TYPE_WHERE AS Integer = 0
+PRIVATE CONST TYPE_SELECT AS Integer = 1
+PRIVATE CONST TYPE_DELETE AS Integer = 2
+
+PRIVATE $iType AS Integer
+PRIVATE $sField AS String
+PRIVATE $sTable AS String
+PRIVATE $sWhere AS String
+PRIVATE $sOrderBy AS String
+
+STATIC PUBLIC FUNCTION _call() AS Request
+  
+  DIM hReq AS NEW Request
+  RETURN hReq
+  
+END
+
+
+STATIC PUBLIC FUNCTION Select(OPTIONAL Field AS Variant) AS Request
+  
+  DIM hReq AS NEW Request(Field, TYPE_SELECT)
+  RETURN hReq
+  
+END
+
+STATIC PUBLIC FUNCTION Delete() AS Request
+  
+  DIM hReq AS NEW Request("", TYPE_DELETE)
+  RETURN hReq
+  
+END
+
+PUBLIC SUB _new(OPTIONAL Field AS Variant, OPTIONAL Type AS Integer = TYPE_WHERE)
+  
+  $iType = Type
+
+  IF IsObject(Field) AND IF Field IS String[] THEN
+    Field = Field.Join(",")
+  ENDIF
+  
+  $sField = Field
+  
+END
+
+PUBLIC FUNCTION From(Table AS String) AS Request
+  
+  $sTable = Table
+  RETURN ME
+  
+END
+
+
+PUBLIC FUNCTION Where(Where AS String, OPTIONAL Op AS String = "AND") AS Request
+
+  IF NOT Where THEN RETURN ME
+  IF $sWhere THEN $sWhere &= " " & Op & " "
+  $sWhere &= "(" & Where & ")"
+  RETURN ME
+  
+END
+
+PUBLIC FUNCTION OrderBy(OrderBy AS Variant) AS Request
+  
+  IF IsNull(OrderBy) THEN RETURN ME
+  
+  IF IsObject(OrderBy) AND IF OrderBy IS String[] THEN
+    OrderBy = OrderBy.Join(",")
+  ENDIF
+
+  IF $sOrderBy THEN $sOrderBy &= ","  
+  $sOrderBy &= OrderBy
+  RETURN ME
+  
+END
+
+PUBLIC FUNCTION Get() AS String
+  
+  DIM sReq AS String
+  
+  IF $iType = TYPE_WHERE THEN
+  
+    sReq = Replace($sWhere, "&", "&&")
+  
+  ELSE
+  
+    IF NOT $sTable THEN RETURN
+
+    SELECT CASE $iType
+      CASE TYPE_SELECT
+        sReq = "SELECT "
+      CASE TYPE_DELETE
+        sReq = "DELETE "
+    END SELECT
+  
+    sReq &= $sField & " FROM " & $sTable
+    IF $sWhere THEN sReq &= " WHERE " & $sWhere
+    
+  ENDIF
+  
+  IF $sOrderBy THEN sReq &= " ORDER BY " & $sOrderBy
+  
+  RETURN sReq
+    
+END

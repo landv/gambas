@@ -1,0 +1,66 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(34.625,30.875,33,39)
+  Text = ("")
+  Border = Window.Fixed
+  { CmbProxyAuth ComboBox
+    MoveScaled(16,6,16,3)
+    Enabled = False
+    Text = ("")
+    ReadOnly = True
+    List = [("Plain"), ("NTLM")]
+  }
+  { LblAuth TextLabel
+    MoveScaled(1,6,13,3)
+    Enabled = False
+    Text = ("Authentication")
+  }
+  { LblProxyUser TextLabel
+    MoveScaled(1,10,13,3)
+    Enabled = False
+    Text = ("User")
+  }
+  { LblProxyPassword TextLabel
+    MoveScaled(1,14,13,3)
+    Enabled = False
+    Text = ("Password")
+  }
+  { TxtProxyPassword TextBox
+    MoveScaled(16,14,16,3)
+    Enabled = False
+    Text = ("")
+    Password = True
+  }
+  { TxtProxyUser TextBox
+    MoveScaled(16,10,16,3)
+    Enabled = False
+    Text = ("")
+  }
+  { ChkProxy CheckBox
+    MoveScaled(1,1,12,3)
+    Text = ("Use Proxy")
+  }
+  { TxtProxy TextBox
+    MoveScaled(16,1,16,3)
+    Text = ("127.0.0.1:3128")
+  }
+  { TxtCookies TextBox
+    MoveScaled(1,25,31,3)
+    Text = ("TextBox1")
+  }
+  { ChkUpdate CheckBox
+    MoveScaled(1,29,27,3)
+    Text = ("Update cookies file")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,19,31,5)
+    Text = ("Cookies file (if you leave it blank HttpClient will not manage cookies)")
+  }
+  { Button1 Button
+    MoveScaled(9,35,15,3)
+    Text = ("Close")
+    Default = True
+    Cancel = True
+  }
+}

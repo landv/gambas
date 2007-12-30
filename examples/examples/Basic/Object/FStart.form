@@ -1,0 +1,28 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(35.75,18.5,60,18)
+  Text = ("Object ")
+  Border = Window.Fixed
+  { btnCreateThing Button
+    MoveScaled(2,2,18,4)
+    Text = ("create the Thing !")
+  }
+  { btnCheckThing Button
+    MoveScaled(21,2,17.75,4)
+    Text = ("check the Thing !")
+  }
+  { txtCheckResult TextBox
+    MoveScaled(2,9,56,3)
+    Visible = False
+    Text = ("")
+  }
+  { btnDestroy Button
+    MoveScaled(40,2,17.75,4)
+    Text = ("destroy the Thing !")
+  }
+  { Label1 Label
+    MoveScaled(2,14,26,3)
+    Text = (" by juergen@zdero.com")
+  }
+}

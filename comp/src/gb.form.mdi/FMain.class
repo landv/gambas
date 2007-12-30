@@ -1,0 +1,18 @@
+' Gambas class file
+
+
+PUBLIC SUB Form_Open()
+
+  DIM hForm AS Form
+  DIM i AS Integer
+  
+  FOR i = 1 TO 3
+  
+    hForm = NEW Form1
+    hForm.Title = "Test " & i
+  
+    Workspace1.Add(hForm)
+
+  NEXT
+
+END

@@ -1,0 +1,624 @@
+' Gambas class file
+
+STATIC PRIVATE $hTile AS Picture
+
+PUBLIC TitleBar AS Control
+
+PRIVATE $aWindow AS NEW Object[]
+'PRIVATE $aWatcher AS NEW Object[]
+PRIVATE $hCurrent AS CWindow
+PRIVATE $bMove AS Boolean
+PRIVATE $X AS Integer
+PRIVATE $Y AS Integer
+PRIVATE $W AS Integer
+PRIVATE $H AS Integer
+PRIVATE $bShowTitle AS Boolean
+PRIVATE $iNoWait AS Integer
+PRIVATE $hWatcher AS Watcher
+PRIVATE $iBackground AS Integer = Color.Default
+PRIVATE $bNoClose AS Boolean
+PRIVATE $iLock AS Integer
+PRIVATE $bCheck AS Boolean
+
+PUBLIC SUB _new()
+  
+  IF NOT $hTile THEN $hTile = Picture["img/hash.png"]
+  '$hWatcher = NEW Watcher(panChild) AS "panChild"
+  TitleBar = tabWorkspace
+  
+END
+
+PUBLIC FUNCTION GetActiveWindow() AS Window
+
+  IF $hCurrent THEN RETURN $hCurrent.Window
+  
+END
+
+PRIVATE FUNCTION GetIndex(hWin AS Window) AS Integer
+  
+  DIM iInd AS Integer
+  
+  FOR iInd = 0 TO $aWindow.Max
+    IF $aWindow[iInd].Window = hWin THEN 
+      'DEBUG $aWindow[iInd];; "=>";; iInd
+      RETURN iInd
+    ENDIF
+  NEXT
+  
+  RETURN -1
+  
+END
+
+PUBLIC SUB Add(hWin AS Window, OPTIONAL bResize AS Boolean, OPTIONAL iGrid AS Integer)
+  
+  DIM iInd AS Integer
+  DIM hScrollview AS ScrollView
+  DIM hWatcher AS Watcher
+  DIM hWindow AS CWindow
+
+  IF GetIndex(hWin) >= 0 THEN RETURN
+
+  IF bResize THEN  
+    hWin.Reparent(dwgBorder)
+  ELSE
+    hWin.Reparent(panWorkspace)
+  ENDIF
+  
+  hWin.Hide
+  
+  hWindow = NEW CWindow
+  hWindow.Window = hWin
+  hWindow.Resizable = bResize
+  hWindow.Grid = iGrid
+  
+  $aWindow.Add(hWindow)
+  
+  IF $aWindow.Count > 1 THEN
+  
+    iInd = tabWorkspace.Count
+    Object.Lock(tabWorkspace)
+    INC tabWorkspace.Count
+    tabWorkspace.Index = iInd
+    Object.Unlock(tabWorkspace)
+    Form_Resize
+    
+  ELSE
+
+    IF $iLock <= 0 THEN ShowTabStrip
+
+  ENDIF
+  
+  'DEBUG "ADD "; hWin
+  
+  hWindow.Observer = NEW Observer(hWin) AS "Watcher"
+  UpdateTitle(hWin)
+  Activate
+    
+END
+
+PUBLIC SUB SetResizable(hWin AS Window, bResize AS Boolean, OPTIONAL iGrid AS Integer)
+  
+  DIM iInd AS Integer = GetIndex(hWin)
+  DIM hWindow AS CWindow
+  
+  IF iInd < 0 THEN RETURN
+  
+  hWindow = $aWindow[iInd]
+
+  hWindow.Resizable = bResize
+  hWindow.Grid = iGrid
+  
+  IF bResize THEN  
+    hWin.Reparent(dwgBorder)
+  ELSE
+    hWin.Reparent(panWorkspace)
+  ENDIF
+  
+  IF hWindow = $hCurrent THEN Activate
+  
+END
+
+PUBLIC SUB Remove(hWin AS Window)
+  
+  DIM iInd AS Integer = GetIndex(hWin)
+
+  IF iInd < 0 THEN RETURN
+
+  IF Object.IsValid(hWin) THEN
+    IF hWin.Close() THEN RETURN
+  ENDIF
+
+  INC $iNoWait
+
+  'DEBUG "REMOVE "; hWin;; hWin.Title;; "["; iInd; "]"
+  
+  IF $hCurrent = $aWindow[iInd] THEN $hCurrent = NULL
+  $aWindow.Remove(iInd)  
+  
+  IF $aWindow.Count THEN
+    IF iInd = 0 THEN 
+      Object.Lock(tabWorkspace)
+      tabWorkspace.Index = 1
+      'panChild.Reparent(tabWorkspace)
+      tabWorkspace.Index = 0
+      Object.Unlock(tabWorkspace)
+    ENDIF
+    tabWorkspace[iInd].Delete
+  ELSE
+    HideTabStrip
+  ENDIF
+  
+  Activate
+  
+  DEC $iNoWait
+  
+END
+
+PRIVATE SUB UpdateTitle(OPTIONAL hWin AS Window)
+  
+  DIM iInd AS Integer
+
+  IF NOT hWin THEN
+    IF NOT $hCurrent THEN RETURN
+    hWin = $hCurrent.Window
+  ENDIF
+  
+  iInd = GetIndex(hWin)
+  IF iInd < 0 THEN RETURN
+
+  WITH hWin
+
+    tabWorkspace[iInd].Text = .Text
+    tabWorkspace[iInd].Picture = .Icon
+    IF $hCurrent AND IF $hCurrent.Window = hWin THEN
+      lblTitle.Text = " " & .Text
+      imgIcon.Picture = .Icon
+    ENDIF
+  
+  END WITH
+  
+END
+
+
+PUBLIC SUB Watcher_Title()
+
+  'DEBUG LAST;; LAST.Control
+  'IF NOT $hCurrent THEN RETURN
+  'IF LAST.Control <> $hCurrent.Window THEN RETURN
+  UpdateTitle(LAST)
+    
+END
+
+PUBLIC SUB Watcher_Resize()
+  
+  'DEBUG LAST;; LAST.Control
+  IF NOT $hCurrent THEN RETURN
+  'IF LAST.Control <> $hCurrent.Window THEN RETURN
+  MoveHandle 
+  
+END
+
+PUBLIC SUB Watcher_Icon()
+
+  'DEBUG LAST;; LAST.Control
+  Watcher_Title  
+  
+END
+
+PUBLIC SUB Watcher_Close()
+  
+  'DEBUG "CLOSING "; LAST
+  'IF $bNoActivate THEN RETURN
+  'Activate(LAST)
+  IF $bCheck THEN RETURN
+  $bCheck = TRUE
+  timCheck.Trigger
+  
+END
+
+PRIVATE SUB CheckWindow()
+  
+  DIM hWindow AS CWindow
+  DIM iInd AS Integer
+  
+  WHILE iInd < $aWindow.Count
+    hWindow = $aWindow[iInd]
+    IF Object.IsValid(hWindow.Window) AND IF NOT hWindow.Window.Closed THEN 
+      INC iInd
+      CONTINUE
+    ENDIF
+    Remove(hWindow.Window)
+  WEND
+  $bCheck = FALSE
+  
+END
+
+
+PRIVATE SUB MoveHandle()
+
+  DIM hWin AS Window = $hCurrent.Window
+  
+  panRight.Move(hWin.Width, Max(0, (hWin.Height - panRight.Height) / 2))
+  panDown.Move(Max(0, (hWin.Width - panRight.Width) / 2), hWin.Height)
+  panRightDown.Move(hWin.Width, hWin.Height)
+  dwgBorder.Move(0, 0, hWin.Width + 4, hWin.Height + 4)
+  
+  dwgBorder.Lower
+  panRight.Raise
+  panDown.Raise
+  panRightDown.Raise
+  
+END
+
+PRIVATE SUB GetParent() AS Workspace
+  
+  RETURN ME.Parent
+  
+END
+
+
+
+PUBLIC SUB Activate(OPTIONAL hWindow AS Window)
+  
+  DIM hOld AS CWindow
+  DIM hWin AS CWindow
+
+  'IF $iLock > 0 THEN RETURN
+  
+  IF $aWindow.Count THEN 
+  
+    'DEBUG "ACTIVATE "; $hCurrent;; "->";;
+    ' IF hWindow THEN 
+    '   ERROR hWindow
+    ' ELSE 
+    '   ERROR $aWindow[tabWorkspace.Index].Window
+    ' ENDIF
+  
+    IF hWindow THEN
+      'DEBUG "Set tab index"
+      TRY tabWorkspace.Index = GetIndex(hWindow)
+      RETURN
+    ENDIF
+  
+    hWin = $aWindow[tabWorkspace.Index]
+    hOld = $hCurrent
+  
+    $hCurrent = hWin
+    
+    IF $hCurrent.Resizable THEN
+      $hCurrent.Window.Move(0, 0)
+      MoveHandle
+      svwWorkspace.Raise
+    ELSE
+      panWorkspace.Raise
+    ENDIF
+    'WITH tabWorkspace
+    '  $hCurrent.Move(.X + .ClientX, .Y + .ClientY, .ClientW, .ClientH)
+    'END WITH
+    
+    IF $iLock = 0 THEN
+
+      WITH $hCurrent.Window
+        .Show
+        .Raise
+        .SetFocus
+      END WITH
+      
+      IF hOld AND IF hOld <> hWin THEN 
+        IF $iNoWait = 0 THEN WAIT
+        $bNoClose = TRUE
+        'DEBUG $bNoClose
+        hOld.Window.Hide
+        $bNoClose = FALSE
+        'DEBUG $bNoClose
+        'WAIT 0.2
+      ENDIF
+      
+      UpdateTitle
+
+    ENDIF 
+        
+  ENDIF
+  
+  GetParent()._Activate
+  
+END
+
+PUBLIC SUB tabWorkspace_Click()
+  
+  'DEBUG tabWorkspace.Index
+  Activate()
+  
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  DIM H AS Integer
+
+  'DEBUG
+  IF tabWorkspace.Visible THEN
+    H = tabWorkspace.ClientY - 2
+    'H = panChild.ScreenY - tabWorkspace.ScreenY
+    IF btnTabClose.W <> H OR btnTabClose.H <> H THEN 
+      btnTabClose.Resize(H - 2, H - 2)
+      btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
+    ENDIF
+    btnTabClose.Move(ME.ClientW - H + 1, 1)
+    tabWorkspace.Move(0, 0, ME.ClientW - H, ME.ClientH)
+    WITH tabWorkspace
+      IF $bShowTitle THEN
+        panTitle.Move(.X, H, .W + btnTabClose.W, panTitle.H)
+        svwWorkspace.Move(.X, panTitle.H + H, .W + H, .H - panTitle.H - H)
+        panWorkspace.Move(.X, panTitle.H + H, .W + H, .H - panTitle.H - H)
+      ELSE 
+        svwWorkspace.Move(.X, H, .W + H, .H - H)
+        panWorkspace.Move(.X, H, .W + H, .H - H)
+      ENDIF 
+    END WITH 
+    panWorkspace.BackColor = Color.Background
+    panWorkspace.Border = Border.Raised
+  ELSE
+    svwWorkspace.Move(0, 0, ME.ClientW, ME.ClientH)
+    panWorkspace.Move(0, 0, ME.ClientW, ME.ClientH)
+    panWorkspace.BackColor = If($iBackground = Color.Default, Color.Gray, $iBackground)
+    panWorkspace.Border = Border.None
+    panWorkspace.Raise
+  ENDIF
+  
+  'DEBUG tabWorkspace.Visible;; "Index =";; tabWorkspace.Index;; "ClientY =";; tabWorkspace.ClientY
+
+  ' WITH tabWorkspace
+  '   DEBUG ME.W;; ME.H;; "/";; tabWorkspace.W;; tabWorkspace.H;; "/";; .ClientW;; .ClientH;; .ClientX;; .ClientY
+  ' END WITH 
+  
+END
+
+PUBLIC SUB btnClose_Click()
+
+  $aWindow[tabWorkspace.Index].Window.Close
+
+END
+
+PUBLIC SUB btnCloseOther_Click()
+  
+  DIM hWindow AS CWindow
+  DIM hCurrent AS CWindow
+  
+  hCurrent = $aWindow[tabWorkspace.Index]
+  
+  FOR EACH hWindow IN $aWindow
+    IF hWindow = hCurrent THEN CONTINUE
+    IF hWindow.Window.Close() THEN BREAK
+  NEXT 
+  
+  {Lock}
+  CheckWindow
+  {Unlock}
+  
+END
+
+
+PUBLIC SUB Handle_MouseDown()
+
+  $bMove = TRUE  
+  $X = Mouse.ScreenX
+  $Y = Mouse.ScreenY
+  $W = $hCurrent.Window.W
+  $H = $hCurrent.Window.H
+  
+  'DEBUG Mouse.ScreenX;; Mouse.ScreenY
+  'DEBUG $X;; $Y
+
+END
+
+PUBLIC SUB Handle_MouseMove()
+
+  DIM W, H, G AS Integer
+  DIM hPanel AS Panel
+
+  IF NOT $bMove THEN RETURN
+  
+  hPanel = LAST
+
+  WITH $hCurrent.Window
+
+    W = .W
+    H = .H
+
+    'DEBUG "(";; W;; H;; ") + (";; Mouse.ScreenX;; Mouse.ScreenY;; ") -> ";
+
+    IF hPanel <> panRight THEN H = $H + Mouse.ScreenY - $Y
+    IF hPanel <> panDown THEN W = $W + Mouse.ScreenX - $X
+    
+    W = Max(1, W)
+    H = Max(1, H)
+
+    IF NOT Mouse.Shift THEN    
+      G = $hCurrent.Grid 
+      IF G THEN
+        W = Max(1, Int(W / G + 0.5)) * G
+        H = Max(1, Int(H / G + 0.5)) * G
+      ENDIF
+    ENDIF 
+    
+    'PRINT #File.Err, "(";; W;; H;; ")"
+    
+    .Resize(W, H)
+  
+  END WITH
+  
+  $bMove = FALSE
+  MoveHandle  
+  $bMove = TRUE
+
+END
+
+PUBLIC SUB Handle_MouseUp()
+
+  $bMove = FALSE  
+
+END
+
+PUBLIC FUNCTION GetWindows() AS Object[]
+  
+  DIM aWin AS NEW Object[]
+  DIM hWindow AS CWindow
+  
+  FOR EACH hWindow IN $aWindow
+    aWin.Add(hWindow.Window)
+  NEXT  
+  
+  RETURN aWin
+  
+END
+
+PUBLIC SUB dwgBorder_Draw()
+
+  RETURN
+  Draw.LineStyle = Line.Solid
+  Draw.LineWidth = 4
+  Draw.ForeColor = Color.SelectedBackground
+  Draw.Line(dwgBorder.W - 2, 0, dwgBorder.W - 2, dwgBorder.H)
+  Draw.Line(0, dwgBorder.H - 2, dwgBorder.W, dwgBorder.H - 2)
+  'Draw.Tile($hTile, dwgBorder.W - 8, 0, 8, dwgBorder.H)
+  'Draw.Tile($hTile, 0, dwgBorder.H - 8, dwgBorder.W, 8)
+
+END
+
+PUBLIC SUB imgIcon_DblClick()
+
+  btnClose_Click
+
+END
+
+PUBLIC SUB lblTitle_MouseDown()
+
+  Activate  
+
+END
+
+PUBLIC SUB IsShowTitle() AS Boolean
+  
+  RETURN $bShowTitle
+  
+END
+
+PUBLIC SUB SetShowTitle(bVal AS Boolean)
+  
+  $bShowTitle = bVal
+  panTitle.Visible = bVal
+  
+END
+
+PUBLIC SUB tabWorkspace_MouseUp()
+
+  Activate
+
+END
+
+PUBLIC SUB tabWorkspace_Menu()
+
+  DIM iInd AS Integer
+  DIM hWin AS CWindow
+  DIM hMenu AS Menu
+  
+  'GetParent()._Menu
+
+  mnuWindow.Children.Clear
+  
+  FOR iInd = 0 TO tabWorkspace.Count - 1
+    WITH tabWorkspace[iInd]
+      hMenu = NEW Menu(mnuWindow) AS "mnuWindow"
+      hMenu.Text = .Text
+      hMenu.Picture = .Picture
+      hMenu.Checked = iInd = tabWorkspace.Index
+      hMenu.Tag = iInd
+    END WITH
+  NEXT 
+  
+  hMenu = NEW Menu(mnuWindow)
+
+  hMenu = NEW Menu(mnuWindow) AS "btnClose"
+  hMenu.Text = ("&Close current tab")
+  hMenu.Picture = Picture["icon:/16/close"]
+  
+  IF $aWindow.Count >= 2 THEN
+    hMenu = NEW Menu(mnuWindow) AS "btnCloseOther"
+    hMenu.Text = ("Close &all other tabs")
+    hMenu.Picture = Picture["icon:/16/trash"]
+  ENDIF
+  
+  mnuWindow.Popup
+  
+END
+
+PUBLIC SUB mnuWindow_Click()
+  
+  tabWorkspace.Index = LAST.Tag
+  
+END
+
+
+PUBLIC SUB SetBackground(iColor AS Integer)
+  
+  $iBackground = iColor
+  Form_Resize
+  
+END
+
+PUBLIC SUB GetBackground() AS Integer
+  
+  RETURN $iBackground
+  
+END
+
+PRIVATE SUB HideTabStrip()
+  
+  tabWorkspace.Hide
+  btnTabClose.Hide
+  panTitle.Visible = $bShowTitle
+  Form_Resize  
+  
+END
+
+
+PRIVATE SUB ShowTabStrip()
+  
+  IF $aWindow.Count THEN 
+    btnTabClose.Show
+    tabWorkspace.Show
+    Form_Resize
+  ENDIF
+  
+END
+
+PUBLIC SUB Lock()
+  
+  INC $iLock 
+  
+  IF $iLock = 1 THEN 
+    HideTabStrip
+  ENDIF
+  
+END
+
+PUBLIC SUB UnLock()
+  
+  IF $iLock <= 0 THEN RETURN
+  
+  DEC $iLock
+  
+  IF $iLock = 0 THEN 
+    CheckWindow
+    Activate
+    ShowTabStrip
+  ENDIF
+  
+END
+
+PUBLIC SUB timCheck_Timer()
+
+  CheckWindow
+
+END

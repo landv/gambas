@@ -1,0 +1,63 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(48.4286,29.1429,65.4286,50)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  { panTitle Panel
+    MoveScaled(1,1,61,5)
+    Background = Color.SelectedBackground
+    Arrangement = Arrange.Horizontal
+    Spacing = 4
+    Padding = 4
+    { picTitle PictureBox
+      MoveScaled(1,1,4,3)
+      Alignment = Align.Center
+    }
+    { lblTitle Label
+      MoveScaled(9,1,37,3)
+      Font = Font["Bold,+2"]
+      Foreground = Color.SelectedForeground
+      Expand = True
+      AutoResize = True
+      Text = ("")
+    }
+  }
+  { panWizard Panel
+    MoveScaled(1,7,61,31)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Padding = 2
+    Border = Border.Sunken
+  }
+  { HBox1 HBox
+    MoveScaled(1,40,59,3)
+    Spacing = 8
+    { Panel2 Panel
+      MoveScaled(2,1,2,2)
+      Expand = True
+    }
+    { btnPrevious Button
+      MoveScaled(5,0,15,3)
+      Text = ("&Previous")
+      Picture = Picture["icon:/16/rewind"]
+    }
+    { btnNext Button
+      MoveScaled(22,0,15,3)
+      Text = ("&Next")
+      Picture = Picture["icon:/16/forward"]
+    }
+    { btnCancel Button
+      MoveScaled(40,0,15,3)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+  { panBorder Panel
+    MoveScaled(25,45,28,14)
+    Visible = False
+    Background = Color.SelectedBackground
+  }
+}

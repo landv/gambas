@@ -1,0 +1,47 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0.125,2.375,27.125,55.5)
+  Text = ("Hierarchy")
+  Icon = Picture["img/16/stack-order.png"]
+  Persistent = True
+  ToolBox = True
+  Arrangement = Arrange.Vertical
+  { lblMessage TextLabel
+    MoveScaled(0,0,23,12)
+    Padding = 8
+    Text = ("Click on a form to display the hierarchy of its controls...")
+  }
+  { panControl ToolBar
+    MoveScaled(1,12,22,3)
+    { btnTop ToolButton
+      MoveScaled(0,0,3,3)
+      ToolTip = ("Move top")
+      Text = ("")
+      Picture = Picture["icon:/16/top"]
+    }
+    { btnUp ToolButton
+      MoveScaled(3,0,3,3)
+      ToolTip = ("Move up")
+      Text = ("")
+      Picture = Picture["icon:/16/up"]
+    }
+    { btnDown ToolButton
+      MoveScaled(6,0,3,3)
+      ToolTip = ("Move down")
+      Text = ("")
+      Picture = Picture["icon:/16/down"]
+    }
+    { btnBottom ToolButton
+      MoveScaled(9,0,3,3)
+      ToolTip = ("Move bottom")
+      Text = ("")
+      Picture = Picture["icon:/16/bottom"]
+    }
+  }
+  { tvwControl TreeView
+    MoveScaled(1,17,20,19)
+    Visible = False
+    Expand = True
+  }
+}

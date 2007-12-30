@@ -1,0 +1,156 @@
+' Gambas class file
+
+STATIC PUBLIC All AS NEW Collection
+STATIC PUBLIC List AS NEW String[]
+
+STATIC PRIVATE $iSortKey AS Integer
+
+
+PUBLIC Name AS String
+PROPERTY Group AS String
+PROPERTY Type AS String
+PROPERTY READ Icon AS Picture
+PUBLIC Parent AS String
+PUBLIC SortKey AS Integer
+
+PUBLIC Control AS Boolean
+PUBLIC Virtual AS Boolean
+PUBLIC Container AS Boolean
+PUBLIC MultiContainer AS Boolean 
+PUBLIC Form AS Boolean
+
+PRIVATE $sGroup AS String
+
+PUBLIC SUB _new(sName AS String)
+  
+  Name = sName
+  All[Name] = ME
+  
+END
+
+PRIVATE FUNCTION Type_Read() AS String
+
+  IF Form THEN 
+    RETURN "Form"
+  ELSE IF MultiContainer THEN 
+    RETURN "MultiContainer"
+  ELSE IF Container THEN 
+    RETURN "Container"
+  ELSE IF Virtual THEN 
+    RETURN "Virtual"
+  ELSE IF Control THEN 
+    RETURN "Control"
+  ELSE 
+    RETURN "Class"
+  ENDIF
+
+END
+
+PRIVATE SUB Type_Write(Value AS String)
+
+  Form = Value = "Form"
+  Virtual = Value = "Virtual"
+  MultiContainer = Value = "MultiContainer"
+  Container = Value = "Container" OR MultiContainer
+  Control = Value = "Control" OR Container OR Virtual
+  IF Control THEN 
+    IF $sGroup = "" THEN $sGroup = Type_Read()
+  ELSE 
+    $sGroup = ""
+  ENDIF
+
+END
+
+PRIVATE FUNCTION Icon_Read() AS Picture
+
+  DIM sIcon AS String
+  DIM hPict AS Picture
+
+  SELECT CASE ME.Type
+    CASE "Control"
+      sIcon = "img/control/button.png"
+    CASE "Virtual"
+      sIcon = "img/control/timer.png"
+    CASE "Container"
+      sIcon = "img/control/panel.png"
+    CASE "MultiContainer"
+      sIcon = "img/control/tabstrip.png"
+    CASE "Form"
+      sIcon = "img/16/form.png"
+    CASE ELSE
+      sIcon = "img/16/class.png"
+  END SELECT  
+
+  hPict = Picture[sIcon]
+  IF hPict.Width <> 16 THEN hPict = hPict.Image.Stretch(16, 16).Picture
+
+  RETURN hPict
+
+END
+
+PRIVATE FUNCTION Group_Read() AS String
+
+  RETURN $sGroup  
+
+END
+
+PRIVATE SUB Group_Write(Value AS String)
+
+  IF NOT Control THEN RETURN 
+  Value = Trim(Value)
+  IF NOT Value THEN RETURN
+  $sGroup = Value
+
+END
+
+STATIC PRIVATE SUB CalcSortKey(sClass AS String) AS Integer
+  
+  DIM hExportInfo AS CExportInfo = All[sClass]
+  DIM sParent AS String 
+  
+  IF NOT hExportInfo THEN RETURN
+  
+  WITH hExportInfo
+  
+    IF .SortKey = 0 THEN
+      IF .Parent THEN CalcSortKey(.Parent)
+      INC $iSortKey
+      .SortKey = $iSortKey
+    ENDIF
+  
+    RETURN .SortKey
+  
+  END WITH
+  
+END
+
+STATIC PUBLIC SUB Sort()
+  
+  DIM sClass AS String
+  DIM iMax AS Integer
+  DIM cSort AS NEW Collection
+  DIM iKey AS Integer
+
+  $iSortKey = 0
+  
+  FOR EACH sClass IN List
+    iKey = CalcSortKey(sClass)
+    cSort[iKey] = All[sClass]
+    iMax = Max(iMax, iKey)
+  NEXT
+  
+  List = NEW String[]
+  
+  FOR iKey = 1 TO iMax
+    List.Add(cSort[iKey].Name)
+  NEXT
+  
+END
+
+
+STATIC PUBLIC SUB Reset()
+  
+  All = NEW Collection
+  List = NEW String[]
+  
+END
