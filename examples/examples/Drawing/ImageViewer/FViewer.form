@@ -1,0 +1,47 @@
+# Gambas Form File 1.0
+
+{ FViewer Form
+  Move(277,205,400,400)
+  Text = ("Simple Image Viewer")
+  Icon = Picture["image.png"]
+  { mnuFile Menu
+    Text = ("&File")
+    { mnuOpen Menu
+      Text = ("&Open...")
+      Shortcut = "Ctrl+O"
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { Menu3 Menu
+    Text = ("&Draw")
+    { mnuStart Menu
+      Text = ("&Start")
+    }
+  }
+  { Menu2 Menu
+    Text = ("&?")
+    { mnuAbout Menu
+      Text = ("&About...")
+    }
+  }
+  { svwImage ScrollView
+    Move(16,8,312,304)
+    { dwgImage DrawingArea
+      Move(0,0,216,168)
+      Visible = False
+      Background = &H00AA7F&
+      Cached = True
+    }
+  }
+  { timDraw #Timer
+    #X = 344
+    #Y = 160
+    Delay = 40
+  }
+}

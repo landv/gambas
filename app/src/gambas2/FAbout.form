@@ -1,0 +1,128 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(3.625,6.125,65,59)
+  'Move(29,49,520,472)
+  Background = Color.TextBackground
+  Text = ("About Gambas...")
+  Icon = Picture["img/16/logo.png"]
+  Border = Window.Fixed
+  { TabStrip1 TabStrip
+    MoveScaled(1,23,63,31)
+    'Move(8,184,504,248)
+    Count = 2
+    Index = 0
+    Text = ("About")
+    { svwAuthor ScrollView
+      MoveScaled(0,1,62,25)
+      'Move(0,8,496,200)
+      Border = Border.None
+      ScrollBar = Scroll.None
+      { Image1 PictureBox
+        MoveScaled(24,31,14,14)
+        'Move(192,248,112,112)
+        Background = &HFFFFFF&
+        Picture = Picture["img/logo/new-logo.png"]
+        Stretch = True
+        Alignment = Align.Center
+      }
+      { TextLabel2 TextLabel
+        MoveScaled(1,45,60,29)
+        'Move(8,360,480,232)
+        Text = ("<h2 align=center>Licence</h1>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
+      }
+      { TextLabel3 TextLabel
+        MoveScaled(6,74,50,4)
+        'Move(48,592,400,32)
+        Text = ("<h2 align=center>Authors</h2>\n")
+        Alignment = Align.Center
+      }
+      { txtAuthor TextView
+        MoveScaled(1,78,60,16)
+        'Move(8,624,480,128)
+        Text = ("")
+        Border = False
+      }
+      { TextLabel4 TextLabel
+        MoveScaled(2,25,58,7)
+        'Move(16,200,464,56)
+        Font = Font["Bold,+2"]
+        Text = ("Gambas Almost Means Basic!")
+        Alignment = Align.Center
+      }
+    }
+    { timAuthor #Timer
+      #X = 344
+      #Y = 16
+      Enabled = True
+      Delay = 25
+    }
+    Index = 1
+    Text = ("Support")
+    { TextLabel1 TextLabel
+      MoveScaled(2,1,59,14)
+      'Move(16,8,472,112)
+      Text = ("You can support <b>Gambas</b> by writing components, documentation, examples, and so on...\n<p>\nYou can also make a gift to the project by using PayPal:")
+    }
+    { btnGift Button
+      MoveScaled(2,13,59,8)
+      'Move(16,104,472,64)
+      Font = Font["Bold,+1"]
+      Text = ("Make a gift!")
+      Picture = Picture["img/donate.png"]
+    }
+    { panGift Panel
+      MoveScaled(2,22,59,4)
+      'Move(16,176,472,32)
+      { txtGift TextView
+        MoveScaled(0,0,59,4)
+        'Move(0,0,472,32)
+        Font = Font["+1"]
+        Text = ("")
+        ScrollBar = Scroll.None
+        Border = False
+      }
+    }
+    Index = 0
+  }
+  { btnClose Button
+    MoveScaled(25,55,15,3)
+    'Move(200,440,120,24)
+    Text = ("OK")
+    Default = True
+  }
+  { panBackground Panel
+    MoveScaled(1,1,63,21)
+    'Move(8,8,504,168)
+    Background = Color.SelectedBackground
+    Foreground = Color.SelectedForeground
+    { lblGambas Label
+      MoveScaled(1,1,43,9)
+      'Move(8,8,344,72)
+      Font = Font["Bold,+6"]
+      Background = Color.SelectedBackground
+      Text = ("Gambas")
+    }
+    { lblVersion Label
+      MoveScaled(2,10,20,5)
+      'Move(16,80,160,40)
+      Font = Font["Bold,+4"]
+      Background = Color.SelectedBackground
+      Foreground = Color.SelectedForeground
+      AutoResize = True
+      Text = ("")
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(46,0,16,16)
+      'Move(368,0,128,128)
+      Picture = Picture["img/logo/new-logo.png"]
+      Stretch = True
+      Alignment = Align.Right
+    }
+    { TextLabel5 TextLabel
+      MoveScaled(2,15,40,5)
+      'Move(16,120,320,40)
+      Text = ("<b>© 2000-2006 Benoît Minisini<br></b>\n<u>http://gambas.sourceforge.net</u>")
+    }
+  }
+}

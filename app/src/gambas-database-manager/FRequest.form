@@ -1,0 +1,122 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(14.125,21,77.625,67)
+  'Move(113,168,621,536)
+  Text = ("")
+  Icon = Picture["img/16/sql.png"]
+  Arrangement = Arrange.Vertical
+  { splRequest VSplit
+    MoveScaled(1,5,74,59)
+    'Move(8,40,592,472)
+    Expand = True
+    { VBox1 VBox
+      MoveScaled(4,3,64,24)
+      'Move(32,24,512,192)
+      { HPanel1 HPanel
+        MoveScaled(6,2,19,3)
+        'Move(48,16,152,24)
+        { btnRun ToolButton
+          MoveScaled(0,0,3,3)
+          'Move(0,0,24,24)
+          ToolTip = ("Run")
+          Text = ("")
+          Picture = Picture["icon:/16/play"]
+        }
+        { btnNew ToolButton
+          MoveScaled(3,0,3,3)
+          'Move(24,0,24,24)
+          ToolTip = ("New request")
+          Text = ("")
+          Picture = Picture["icon:/16/clear"]
+        }
+        { btnLoad ToolButton
+          MoveScaled(6,0,3,3)
+          'Move(48,0,24,24)
+          ToolTip = ("Load request")
+          Text = ("")
+          Picture = Picture["icon:/16/open"]
+        }
+        { btnSave ToolButton
+          MoveScaled(9,0,3,3)
+          'Move(72,0,24,24)
+          ToolTip = ("Save request")
+          Text = ("")
+          Picture = Picture["icon:/16/save"]
+        }
+        { btnFind ToolButton
+          MoveScaled(12,0,3,3)
+          'Move(96,0,24,24)
+          Visible = False
+          ToolTip = ("Find")
+          Text = ("")
+          Picture = Picture["icon:/16/find"]
+        }
+      }
+      { txtRequest TextArea
+        MoveScaled(4,6,42,14)
+        'Move(32,48,336,112)
+        Expand = True
+        Text = ("")
+        Wrap = True
+      }
+    }
+    { panRequest Panel
+      MoveScaled(2,29,67,28)
+      'Move(16,232,536,224)
+      Arrangement = Arrange.Fill
+      { Panel3 Panel
+        MoveScaled(3,1,50,22)
+        'Move(24,8,400,176)
+        Arrangement = Arrange.Fill
+        Padding = 8
+        { lblRequest Label
+          MoveScaled(0,0,42,14)
+          'Move(0,0,336,112)
+          Text = ("")
+          Alignment = Align.TopNormal
+        }
+      }
+      { panData VBox
+        MoveScaled(2,5,60,21)
+        'Move(16,40,480,168)
+        Visible = False
+        { HBox1 HBox
+          MoveScaled(16,3,38,3)
+          'Move(128,24,304,24)
+          { btnSaveData ToolButton
+            MoveScaled(0,0,3,3)
+            'Move(0,0,24,24)
+            ToolTip = ("Export data")
+            Text = ("")
+            Picture = Picture["icon:/16/save"]
+          }
+          { btnCopyData ToolButton
+            MoveScaled(3,0,3,3)
+            'Move(24,0,24,24)
+            ToolTip = ("Copy data in clipboard")
+            Text = ("")
+            Picture = Picture["icon:/16/copy"]
+          }
+          { lblCount Label
+            MoveScaled(8,0,26,3)
+            'Move(64,0,208,24)
+            Expand = True
+            Text = ("")
+            Alignment = Align.Right
+          }
+          { Panel2 Panel
+            MoveScaled(35,0,1,3)
+            'Move(280,0,8,24)
+          }
+        }
+        { tbvData GridView
+          MoveScaled(12,7,27,12)
+          'Move(96,56,216,96)
+          Font = Font["8"]
+          Expand = True
+        }
+      }
+    }
+  }
+}

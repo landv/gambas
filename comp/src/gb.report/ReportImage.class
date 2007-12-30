@@ -1,0 +1,71 @@
+' Gambas class file
+
+INHERITS ReportControl
+
+PRIVATE $hPic AS picture
+PRIVATE $sPath AS String
+
+PROPERTY Path AS String
+'PROPERTY Stretch AS Boolean
+
+
+PRIVATE FUNCTION Path_Read() AS String
+
+  RETURN $sPath
+
+END
+
+PRIVATE SUB Path_Write(Value AS String)
+
+  IF Exist(Value) THEN
+    $sPath = Value
+    $hPic = Picture[Value]
+  ELSE 
+    Error.Raise("Cannot find this file !")
+  ENDIF
+  
+END
+
+PUBLIC FUNCTION _GetSizeHints(AvailableW AS Integer, AvailableH AS Integer, TotalWidth AS Integer, TotalHeight AS Integer) AS TSizeHint
+
+  DIM hMyHints AS NEW TSizeHint
+  DIM h AS Integer = MRTools.RealHeight(ME)
+  DIM w AS Integer = MRTools.RealWidth(ME)
+  DIM Scale AS Float
+  IF h > 0 OR w > 0 THEN
+    
+    IF h > w THEN 
+      Scale = $hpic.Width / $hpic.Height
+      hMyHints.Width = (h * Scale) + (2 * MRTools.RealPadding(ME))
+      hMyHints.Height = h + (2 * MRTools.RealPadding(ME))
+    ELSE 
+      Scale = $hpic.Height / $hpic.Width
+      hMyHints.Height = (w * Scale) + (2 * MRTools.RealPadding(ME))
+      hMyHints.Width = w + (2 * MRTools.RealPadding(ME))
+    ENDIF
+  ELSE 
+    hMyHints.Height = AvailableH + (2 * MRTools.RealPadding(ME))
+    hMyHints.Width = AvailableW + (2 * MRTools.RealPadding(ME))
+  ENDIF
+  
+  RETURN hMyHints
+  
+END
+
+PUBLIC SUB _Draw(Page AS Integer, x AS Integer, y AS Integer)
+    
+    'SUPER._Draw(Page, X, Y)
+    
+      $hPic = $hpic.Image.Stretch(ME._RealWidth * Report.Zoom, ME._RealHeight * Report.Zoom, TRUE).Picture
+      Draw.Picture($hPic, (x + ME._RealLeft + MRTools.RealPadding(ME)) * Report.Zoom, (y + ME._RealTop + MRTools.RealPadding(ME)) * Report.Zoom, ME._RealWidth * Report.Zoom, ME._RealHeight * Report.Zoom)
+
+END
+
+PUBLIC FUNCTION _SetGeometry(X AS Integer, Y AS Integer, W AS Integer, H AS Integer) AS Integer
+  
+  ME._RealLeft = X
+  ME._RealTop = Y
+  ME._RealWidth = W
+  ME._RealHeight = H
+  
+END

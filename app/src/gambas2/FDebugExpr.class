@@ -1,0 +1,405 @@
+' Gambas class file
+
+CONST YW_DUMMY_INFO AS String = "01?preLoad"
+CONST YW_NOT_AVAILABLE AS String = ("not available")
+STATIC PRIVATE $cAll AS NEW Collection
+STATIC PRIVATE $sYWindow AS String
+
+PRIVATE $sExpr AS String
+PRIVATE $aSym AS String[]
+PRIVATE $cVal AS NEW Collection
+PRIVATE $cOldVal AS NEW Collection
+PRIVATE $bArray AS Boolean
+PRIVATE $bCollection AS Boolean
+STATIC PUBLIC SUB Add(sExpr AS String, sInfo AS String)
+DIM hWin AS FDebugExpr
+
+  IF NOT sInfo THEN RETURN
+
+  IF NOT $cAll.Exist(sExpr) THEN
+    $cAll[sExpr] = NEW FDebugExpr(sExpr, sInfo)
+    $cAll[sExpr].Show
+  ELSE 
+    hWin = $cAll[sExpr]
+    hWin.RefreshTV(sInfo) 
+  ENDIF 
+  
+END
+
+STATIC PUBLIC SUB AddResult(sWindow AS String, sValue AS String)
+  
+  DIM iPos AS Integer
+  DIM hWin AS FDebugExpr
+  
+  iPos = RInStr(sWindow, "#")
+    
+  hWin = $cAll[Left(sWindow, iPos - 1)]
+  hWin.SetValue(CInt(Mid(sWindow, iPos + 1)), sValue)
+  
+END
+
+STATIC PUBLIC SUB Clear()
+  
+  DIM hWin AS FDebugExpr
+  
+  FOR EACH hWin IN $cAll
+    TRY hWin.Close
+  NEXT
+  
+  $cAll.Clear
+  
+END
+
+PUBLIC SUB _new(sExpr AS String, sInfo AS String)
+  
+  $sExpr = sExpr
+  IF sInfo = YW_DUMMY_INFO THEN
+    ME.Enabled = FALSE
+    ME.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
+    Project.Config.Read(ME, "YWindow" &/ sExpr)
+    'gvwExpr.Columns[0].Width = CLng(Design.$DebugConfig[ME.Name &/ "YWindow" &/ sExpr &/ "gvwExpr.Columns[0].Width", "160"])
+
+  ELSE 
+    SetForm(getInfos(sInfo), TRUE)
+    Project.Config.Read(ME, "YWindowDefaultSize")
+    'gvwExpr.Columns[0].Width = CLng(Design.$DebugConfig[ME.Name &/ "YWindowDefaultSize/gvwExpr.Columns[0].Width", "160"])
+
+  ENDIF 
+  
+END
+
+PUBLIC SUB gvwExpr_Data(Row AS Integer, Column AS Integer)
+
+  DIM sSym AS String
+  DIM sVal AS String
+
+  IF $bArray THEN 
+  
+    IF Column = 0 THEN 
+      gvwExpr.Data.Text = Row
+    ELSE 
+      sVal = $cVal[Row]
+      IF sVal THEN 
+        gvwExpr.Data.Text = sVal
+        '$cVal.Remove(Row)
+      ELSE  
+        Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & Row & "]")
+      ENDIF
+    ENDIF
+    
+  ELSE IF $bCollection THEN
+  
+    sSym = $aSym[Row]
+
+    IF Column = 0 THEN 
+      gvwExpr.Data.Text = sSym
+    ELSE 
+      sVal = $cVal[Row]
+      IF sVal THEN 
+        gvwExpr.Data.Text = sVal
+        '$cVal.Remove(Row)
+      ELSE  
+        Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & sSym & "]")
+      ENDIF
+    ENDIF
+    
+  ELSE
+
+    sSym = $aSym[Row]
+    
+    IF Right(sSym) = ":" THEN 
+      gvwExpr.Data.Background = Color.ButtonBackground
+      RETURN 
+    ENDIF
+    
+    IF Column = 0 THEN 
+      gvwExpr.Data.Text = sSym
+    ELSE
+      sVal = $cVal[Row]
+      IF sVal THEN 
+        gvwExpr.Data.Text = sVal
+      ELSE  
+        Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "." & sSym)
+      ENDIF
+        
+    ENDIF
+    
+  ENDIF
+
+  IF Column <> 0 THEN 
+    IF Left(Upper(gvwExpr.Data.Text), Len("Unknown")) <> Upper("Unknown") THEN
+
+      IF $cOldVal.Exist(Row) THEN 
+          IF gvwExpr.Data.Text <> $cOldVal[Row] THEN 
+            gvwExpr.Data.ForeColor = Color.Green
+    
+        ENDIF
+        
+      ENDIF
+    ELSE   
+      gvwExpr.Data.Background = Color.Red     
+       
+    ENDIF 
+
+  ELSE  
+    IF NOT $cOldVal.Exist(Row) AND $cOldVal.count > 0 THEN 
+      gvwExpr.Data.Background = Color.Yellow
+
+    ENDIF 
+
+  ENDIF 
+
+END
+
+PUBLIC SUB SetValue(iRow AS Integer, sVal AS String)
+  
+  $cVal[iRow] = sVal
+  gvwExpr[iRow, 1].Refresh
+  
+END
+
+PUBLIC SUB gvwExpr_DblClick()
+DIM sText AS String
+  $sYWindow = ""  
+  IF gvwExpr.Row >= 0 THEN
+  
+    sText = gvwExpr[gvwExpr.Row, 0].Text
+  
+    IF NOT sText OR Right(sText) = ":" THEN RETURN
+  
+    IF $bArray OR $bCollection
+      sText = $sExpr & "[" & sText & "]"
+  
+    ELSE 
+      sText = $sExpr & "." & sText
+  
+    ENDIF 
+    $sYWindow = $sExpr
+    Design.Command("#X" & sText & "\t" & sText)  
+    
+  ENDIF
+
+END
+
+PUBLIC FUNCTION getInfos(sInfo AS String) AS Variant[]
+DIM sInfoClass AS String
+DIM aInfoSym AS String[]  
+DIM bInfoArray AS Boolean
+DIM bInfoCollection AS Boolean
+DIM aInfogvwExpr AS NEW Variant[]
+DIM aInfoReturn AS NEW Variant[]
+
+  aInfoSym = Split(sInfo, " ")
+
+  sInfoClass = aInfoSym[0]
+
+  aInfoReturn.Add(sInfoClass)
+
+  aInfoSym.Remove(0) ' Remove the class name
+
+  bInfoArray = Right(sInfoClass, 2) = "[]"
+
+  aInfoReturn.Add(bInfoArray)
+
+  bInfoCollection = sInfoClass LIKE "Collection"
+
+  aInfoReturn.Add(bInfoCollection)
+
+  IF bInfoArray THEN 
+    aInfogvwExpr.Add(2)
+    aInfogvwExpr.Add(CInt(aInfoSym[0]))
+    aInfogvwExpr.Add(("Index"))
+    aInfogvwExpr.Add("80")
+    aInfogvwExpr.Add(("Value"))
+    aInfogvwExpr.Add(NULL)
+    aInfoSym = NULL
+
+  ELSE IF bInfoCollection THEN  
+    aInfogvwExpr.Add(2)
+    aInfogvwExpr.Add(CInt(aInfoSym[0]))
+    aInfogvwExpr.Add(("Key"))
+    aInfogvwExpr.Add("100")
+    aInfogvwExpr.Add(("Value"))
+    aInfogvwExpr.Add(NULL)
+    aInfoSym.Remove(0) ' Remove the count 
+
+  ELSE 
+    aInfogvwExpr.Add(2)
+    aInfogvwExpr.Add(aInfoSym.Count)
+    aInfogvwExpr.Add(("Symbol"))
+    aInfogvwExpr.Add("160")
+    aInfogvwExpr.Add(("Value"))
+    aInfogvwExpr.Add(NULL)
+
+  ENDIF
+
+  aInfoReturn.Add(aInfogvwExpr)
+
+  aInfoReturn.Add(aInfoSym)
+
+  RETURN aInfoReturn
+
+END
+
+PUBLIC SUB SetForm(aInfo AS Variant[], bIsNewYW AS Boolean)
+DIM nI AS Integer
+DIM iCol AS Integer
+
+  ME.Title = $sExpr & " (" & aInfo[0] & ")"
+
+  $bArray = aInfo[1]
+
+  $bCollection = aInfo[2]
+
+  $aSym = aInfo[4]
+
+  gvwExpr.Columns.Count = aInfo[3][0]
+
+  iCol = 0 
+  FOR nI = 2 TO aInfo.Count STEP 2
+    gvwExpr.Columns[iCol].Text = aInfo[3][nI]
+    IF bIsNewYW AND aInfo[3][nI + 1] <> NULL THEN 
+      gvwExpr.Columns[iCol].Width = aInfo[3][nI + 1]
+
+    ENDIF 
+
+    INC iCol
+
+  NEXT
+
+  gvwExpr.Rows.Count = aInfo[3][1]
+
+END
+
+PUBLIC SUB RefreshTV(sInfo AS String)
+DIM xStr AS String
+
+    ME.Enabled = TRUE
+
+    FOR EACH xStr IN $cVal
+      $cOldVal.Add(xStr, $cVal.Key)
+
+    NEXT 
+
+    $cVal.Clear
+    SetForm(getInfos(sInfo), FALSE) 
+
+END
+PUBLIC SUB Form_Close()
+
+  $cAll.Remove($sExpr)  
+  TRY Project.Config.Clear(ME.Name &/ "YWindow" &/ $sExpr)  
+
+END
+
+STATIC PUBLIC SUB RefreshAllYellowWindows()
+DIM xObj AS Object
+
+  FOR EACH xObj IN $cAll
+    Design.Command("#X" & $cAll.Key & "\t" & $cAll.Key)
+
+  NEXT 
+
+END
+
+STATIC PUBLIC FUNCTION IsSender() AS Form
+DIM sKey AS String
+  
+  IF $sYWindow THEN 
+    sKey = $sYWindow
+    $sYWindow = ""
+    
+    RETURN $cAll[sKey]
+    
+  ELSE 
+    RETURN NULL
+    
+  ENDIF 
+
+END
+
+STATIC PUBLIC FUNCTION Exists(sExpr AS String) AS Boolean
+  IF NOT sExpr THEN RETURN
+  
+  RETURN $cAll.Exist(sExpr)
+
+END
+
+STATIC PUBLIC SUB NotActiv(sExpr AS String, sError AS String)
+DIM hWin AS FDebugExpr
+  IF NOT sError THEN RETURN 
+  
+  hWin = $cAll[sExpr]
+  hWin.Enabled = FALSE
+  hWin.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
+
+END
+
+PUBLIC SUB mnuCloseAll_Click()
+
+  Clear()
+
+END
+
+PUBLIC SUB mnuClose_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB gvwExpr_MouseDown()
+
+  IF Mouse.Right THEN 
+    mnuBase.Popup
+    
+  ENDIF
+END
+
+PUBLIC SUB mnuSetSize_Click()
+
+  Project.Config.Write(ME, "YWindowDefaultSize")
+'  Design.$DebugConfig[ME.Name &/ "YWindowDefaultSize/gvwExpr.Columns[0].Width"] = gvwExpr.Columns[0].Width 
+
+END
+STATIC PUBLIC SUB WriteYWinSettings()
+DIM iInd AS Integer
+DIM sFlag AS String
+DIM xObj AS Object
+
+  sFlag = "/YWindows"
+  iInd = 0
+  Project.Config.Clear(sFlag)
+
+  Project.Config[sFlag &/ "Count"] = $cAll.Count
+  
+
+  FOR EACH xObj IN $cAll
+    INC iInd
+    Project.Config[sFlag &/ "YWindow[" & CStr(iInd) & "]"] = $cAll.Key
+    Project.Config.Write(xObj, "YWindow" &/ $cAll.Key)  
+    'Design.$DebugConfig[xObj.Name &/ "YWindow" &/ $cAll.Key &/ "gvwExpr.Columns[0].Width "] = xObj.gvwExpr.Columns[0].Width
+  
+  NEXT 
+  
+END
+
+STATIC PUBLIC SUB ReadYWinSettings()
+DIM iCount AS Integer
+DIM iInd AS Integer
+DIM sString AS String
+DIM sArg AS String[]
+DIM sFlag AS String
+  
+  sFlag = "/YWindows"
+  iInd = 0
+  iCount = Project.Config[sFlag &/ "Count", "0"]
+  FOR iInd = 1 TO iCount
+    sString = Project.Config[sFlag &/ "YWindow[" & CStr(iInd) & "]"]
+    IF sString THEN 
+      IF NOT $cAll.Exist(sString) THEN
+           Add(sString, YW_DUMMY_INFO) 
+      ENDIF 
+    ENDIF 
+  NEXT
+END
+

@@ -1,0 +1,317 @@
+' Gambas class file
+
+'Object Management
+
+STATIC PUBLIC ObjectFromId AS NEW Collection
+STATIC PUBLIC iCurPagePos AS Integer
+STATIC PRIVATE $iLastId AS Integer
+PUBLIC _RealPage AS Integer
+PUBLIC _RelPage AS Integer = -1
+PUBLIC _RealLeft AS Integer
+PUBLIC _RealTop AS Integer
+PUBLIC _RealWidth AS Integer
+PUBLIC _RealHeight AS Integer 
+
+
+
+
+PRIVATE $iMyId AS Integer
+PRIVATE $iParentId AS Integer
+PRIVATE $iRelPage AS Integer
+PRIVATE $vTag AS Variant
+PRIVATE $sPadding AS String
+PROPERTY READ Id AS Integer
+PROPERTY READ Parent AS ReportContainer
+PROPERTY Tag AS Variant
+PROPERTY Padding AS String
+
+'Object properties
+PRIVATE $iLeft AS String = "0 px"
+PRIVATE $iTop AS String = "0 px"
+PRIVATE $iWidth AS String = "0 px"
+PRIVATE $iHeight AS String = "0 px"
+PRIVATE $iForeColor AS Integer = Color.Black
+PRIVATE $iBackColor AS Integer = Color.White
+PRIVATE $iFillColor AS Integer = Color.Black
+PRIVATE $iFillStyle AS Integer = Fill.None
+PRIVATE $iLineWidth AS Integer = 1
+PRIVATE $iLineStyle AS Integer = Line.None
+PRIVATE $iVisible AS Boolean = TRUE
+PRIVATE iExpand AS Boolean
+PRIVATE $hFont AS NEW Font
+
+PROPERTY Left AS String
+PROPERTY Top AS String
+PROPERTY Width AS String
+PROPERTY Height AS String
+PROPERTY ForeColor AS Integer
+PROPERTY BackColor AS Integer
+PROPERTY FillColor AS Integer
+PROPERTY FillStyle AS Integer
+PROPERTY LineWidth AS Integer
+PROPERTY LineStyle AS Integer
+PROPERTY Visible AS Boolean
+PROPERTY {Font} AS Font
+
+'Arrangement
+PRIVATE $iExpand AS Integer
+PROPERTY Expand AS Integer
+
+
+
+PUBLIC SUB _New(OPTIONAL Parent AS ReportContainer = NULL)
+  
+  $iMyId = $iLastId
+  INC $iLastId
+  IF IsNull(Parent) THEN 
+    $iParentId = -1
+  ELSE
+    $iParentId = Parent.Id
+    Parent._Add(ME)
+  ENDIF
+  
+END
+
+
+PRIVATE FUNCTION Id_Read() AS Integer
+
+  RETURN $iMyId
+
+END
+
+PRIVATE FUNCTION Parent_Read() AS ReportContainer
+
+  RETURN ReportControl.ObjectFromId[$iParentId]
+
+END
+
+PRIVATE FUNCTION Left_Read() AS String
+
+  RETURN $iLeft
+
+END
+
+PRIVATE SUB Left_Write(Value AS String)
+
+  $iLeft = Value
+
+END
+
+PRIVATE FUNCTION Top_Read() AS String
+
+  RETURN $iTop
+
+END
+
+PRIVATE SUB Top_Write(Value AS String)
+
+  $iTop = Value
+
+END
+
+PRIVATE FUNCTION Width_Read() AS String
+
+  RETURN $iWidth
+
+END
+
+PRIVATE SUB Width_Write(Value AS String)
+
+  $iWidth = Value
+
+END
+
+PRIVATE FUNCTION Height_Read() AS String
+
+  RETURN $iHeight
+
+END
+
+PRIVATE SUB Height_Write(Value AS String)
+
+  $iHeight = Value
+
+END
+
+PRIVATE FUNCTION ForeColor_Read() AS Integer
+
+  RETURN $iForeColor
+
+END
+
+PRIVATE SUB ForeColor_Write(Value AS Integer)
+
+  $iForeColor = Value
+
+END
+
+PRIVATE FUNCTION BackColor_Read() AS Integer
+
+  RETURN $iBackColor
+
+END
+
+PRIVATE SUB BackColor_Write(Value AS Integer)
+
+  $iBackColor = Value
+
+END
+
+PRIVATE FUNCTION FillColor_Read() AS Integer
+
+  RETURN $iFillColor
+
+END
+
+PRIVATE SUB FillColor_Write(Value AS Integer)
+
+  $iFillColor = Value
+
+END
+
+PRIVATE FUNCTION FillStyle_Read() AS Integer
+
+  RETURN $iFillStyle
+
+END
+
+PRIVATE SUB FillStyle_Write(Value AS Integer)
+
+  $iFillStyle = Value
+
+END
+
+PRIVATE FUNCTION LineWidth_Read() AS Integer
+
+  RETURN $iLineWidth
+
+END
+
+PRIVATE SUB LineWidth_Write(Value AS Integer)
+
+  $iLineWidth = Value
+
+END
+
+PRIVATE FUNCTION LineStyle_Read() AS Integer
+
+  RETURN $iLineStyle
+
+END
+
+PRIVATE SUB LineStyle_Write(Value AS Integer)
+
+  $iLineStyle = Value
+
+END
+
+PRIVATE FUNCTION Expand_Read() AS Integer
+
+  RETURN $iExpand 
+
+END
+
+PRIVATE SUB Expand_Write(Value AS Integer)
+
+  $iExpand = Value
+
+END
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Integer, AvailableH AS Integer, TotalWidth AS Integer, TotalHeight AS Integer) AS Integer
+
+  Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
+
+END
+
+PUBLIC SUB _DrawBefore(Page AS Integer, x AS Integer, y AS Integer)
+  
+
+    'Draw.Font.Size *= (Printer.Resolution / Draw.Resolution)
+  'Draw the background
+  IF ME.FillStyle <> fill.none THEN 
+    Draw.FillStyle = $iFillStyle
+    Draw.BackColor = $iBackColor
+    draw.FillColor = $iFillColor
+    Draw.LineStyle = line.None
+    Draw.Rect((x + _RealLeft) * Report.Zoom, (y + _RealTop) * Report.Zoom, _RealWidth * Report.Zoom, _RealHeight * Report.Zoom)
+  ENDIF
+END
+
+PUBLIC SUB _Draw(Page AS Integer, x AS Integer, y AS Integer)
+  
+
+    
+  
+END
+
+PUBLIC SUB _DrawAfter(Page AS Integer, x AS Integer, y AS Integer)
+  
+  'Draw the foreground
+    'DRAW.ForeColor = COLOR.Red
+    'ME.LineStyle = line.Solid
+    IF ME.LineStyle <> Line.None THEN 
+      Draw.LineStyle = $iLineStyle
+      Draw.LineWidth = $iLineWidth
+      draw.FillStyle = Fill.None
+      Draw.Rect((x + _RealLeft) * Report.Zoom, (y + _RealTop) * Report.Zoom, _RealWidth * Report.Zoom, _RealHeight * Report.Zoom)
+    ENDIF
+  
+END
+
+PRIVATE FUNCTION Visible_Read() AS Boolean
+
+  RETURN $iVisible  
+
+END
+
+PRIVATE SUB Visible_Write(Value AS Boolean)
+
+  $iVisible = Value
+
+END
+
+PUBLIC SUB Move(X AS String, Y AS String, W AS String, H AS String)
+  
+  $iLeft = X
+  $iTop = Y
+  $iWidth = W
+  $iHeight = H
+  
+END
+
+PRIVATE FUNCTION Tag_Read() AS Variant
+
+  RETURN $vTag  
+
+END
+
+PRIVATE SUB Tag_Write(Value AS Variant)
+
+  $vTag = Value
+
+END
+
+
+PRIVATE FUNCTION Font_Read() AS Font
+
+  RETURN $hFont
+
+END
+
+PRIVATE SUB Font_Write(Value AS Font)
+
+  $hFont = Value
+
+END
+
+PRIVATE FUNCTION Padding_Read() AS String
+
+  RETURN $sPadding  
+
+END
+
+PRIVATE SUB Padding_Write(Value AS String)
+
+  $sPadding = Value
+
+END

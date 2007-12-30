@@ -1,0 +1,28 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(8.5,16.25,50,50)
+  'Move(68,130,400,400)
+  Text = ("")
+  Border = Window.Fixed
+  { panSide Panel
+    MoveScaled(5,10,33,32)
+    'Move(40,80,264,256)
+  }
+  { panMove DrawingArea
+    MoveScaled(2,1,46,3)
+    'Move(16,8,368,24)
+    { btnSide ToolButton
+      MoveScaled(0,0,12,3)
+      'Move(0,0,96,24)
+      Mouse = Mouse.Arrow
+      Text = ("")
+    }
+    { btnSide2 ToolButton btnSide
+      MoveScaled(15,0,12,3)
+      'Move(120,0,96,24)
+      Mouse = Mouse.Arrow
+      Text = ("")
+    }
+  }
+}

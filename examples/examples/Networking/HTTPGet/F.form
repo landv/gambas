@@ -1,0 +1,83 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(30.125,14.125,98.625,78.5)
+  'Move(241,113,789,628)
+  Text = ("")
+  Border = Window.Fixed
+  { mnuConfigure Menu mnuConfigure
+    Name = "mnuConfigure"
+    Text = ("&Options")
+    { mnuOptions Menu
+      Text = ("&Configuration")
+    }
+  }
+  { Button1 Button
+    MoveScaled(65,14,14,3)
+    'Move(520,112,112,24)
+    Text = ("GET!")
+  }
+  { TextArea1 TextArea
+    MoveScaled(2,1,31,15)
+    'Move(16,8,248,120)
+    Text = ("")
+  }
+  { Navigator TextView
+    MoveScaled(1,22,97,52)
+    'Move(8,176,776,416)
+    Text = ("")
+  }
+  { Label1 Label
+    MoveScaled(36,1,7,3)
+    'Move(288,8,56,24)
+    Text = ("URL :")
+  }
+  { TxtHost TextBox
+    MoveScaled(45,1,51,3)
+    'Move(360,8,408,24)
+    Text = ("http://www.binara.com/gambas-wiki/")
+  }
+  { TxtInfo TextLabel
+    MoveScaled(65,18,31,3)
+    'Move(520,144,248,24)
+    Font = Font["Bold"]
+    Background = &H0055FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { BtnStop Button
+    MoveScaled(82,14,14,3)
+    'Move(656,112,112,24)
+    Text = ("Stop")
+  }
+  { ChkPassword CheckBox
+    MoveScaled(50,5,23,3)
+    'Move(400,40,184,24)
+    Text = ("Page needs authorization :")
+  }
+  { TxtUser TextBox
+    MoveScaled(75,5,21,3)
+    'Move(600,40,168,24)
+    Enabled = False
+    Text = ("User")
+  }
+  { TxtPassword TextBox
+    MoveScaled(75,9,21,3)
+    'Move(600,72,168,24)
+    Enabled = False
+    Text = ("Password")
+    Password = True
+  }
+  { CmbAuth ComboBox
+    MoveScaled(50,9,23,1)
+    'Move(400,72,184,8)
+    Enabled = False
+    Text = (" ")
+    ReadOnly = True
+    List = [("Basic"), ("NTLM"), ("DIGEST"), ("GSS")]
+  }
+  { MyHttp #HttpClient
+    #X = 304
+    #Y = 80
+  }
+}

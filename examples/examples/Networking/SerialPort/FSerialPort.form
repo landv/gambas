@@ -1,0 +1,138 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(70.125,26.625,51.625,59.875)
+  'Move(561,213,413,479)
+  Text = ("Serial Port")
+  { TextLabel1 TextLabel
+    MoveScaled(1,2,21,3)
+    'Move(8,16,168,24)
+    Text = ("Port Name :")
+  }
+  { TxtPort TextBox
+    MoveScaled(23,2,15,3)
+    'Move(184,16,120,24)
+    Text = ("/dev/ttyS0")
+  }
+  { TextLabel2 TextLabel
+    MoveScaled(1,6,21,3)
+    'Move(8,48,168,24)
+    Text = ("Speed :")
+  }
+  { CmbSpeed ComboBox
+    MoveScaled(23,6,15,1)
+    'Move(184,48,120,8)
+    Text = ("")
+    ReadOnly = True
+    List = [("1200"), ("2400"), ("9600"), ("19200"), ("38400")]
+  }
+  { TextLabel3 TextLabel
+    MoveScaled(1,10,21,3)
+    'Move(8,80,168,24)
+    Text = ("Parity :")
+  }
+  { TextLabel4 TextLabel
+    MoveScaled(1,14,21,3)
+    'Move(8,112,168,24)
+    Text = ("Data Bits :")
+  }
+  { TextLabel5 TextLabel
+    MoveScaled(1,18,21,3)
+    'Move(8,144,168,24)
+    Text = ("Stop Bits :")
+  }
+  { CmbParity ComboBox
+    MoveScaled(23,10,15,1)
+    'Move(184,80,120,8)
+    Text = ("")
+    ReadOnly = True
+    List = [("None"), ("Even"), ("Odd")]
+  }
+  { CmbData ComboBox
+    MoveScaled(23,14,15,1)
+    'Move(184,112,120,8)
+    Text = ("")
+    ReadOnly = True
+    List = [("8"), ("7"), ("6"), ("5")]
+  }
+  { CmbStop ComboBox
+    MoveScaled(23,18,15,1)
+    'Move(184,144,120,8)
+    Text = ("")
+    ReadOnly = True
+    List = [("1"), ("2")]
+  }
+  { Button1 Button
+    MoveScaled(22,22,16,3)
+    'Move(176,176,128,24)
+    Text = ("Open")
+  }
+  { TxtSend TextBox
+    MoveScaled(1,38,43,3)
+    'Move(8,304,344,24)
+    Text = ("")
+  }
+  { TextLabel6 TextLabel
+    MoveScaled(1,34,50,3)
+    'Move(8,272,400,24)
+    Foreground = &H030303&
+    Text = ("Write data then press \"CR\"")
+    Alignment = Align.Center
+  }
+  { Button2 Button
+    MoveScaled(45,38,6,3)
+    'Move(360,304,48,24)
+    Text = ("CR")
+  }
+  { TextArea1 TextArea
+    MoveScaled(1,42,50,17)
+    'Move(8,336,400,136)
+    Text = ("")
+  }
+  { ChkDSR CheckBox
+    MoveScaled(39,14,11,3)
+    'Move(312,112,88,24)
+    Text = ("DSR")
+  }
+  { ChkDTR CheckBox
+    MoveScaled(39,2,11,3)
+    'Move(312,16,88,24)
+    Text = ("DTR")
+  }
+  { ChkRTS CheckBox
+    MoveScaled(39,5,11,3)
+    'Move(312,40,88,24)
+    Text = ("RTS")
+  }
+  { ChkCTS CheckBox
+    MoveScaled(39,8,11,3)
+    'Move(312,64,88,24)
+    Text = ("CTS")
+  }
+  { ChkDCD CheckBox
+    MoveScaled(39,11,11,3)
+    'Move(312,88,88,24)
+    Text = ("DCD")
+  }
+  { ChkRNG CheckBox
+    MoveScaled(39,17,11,3)
+    'Move(312,136,88,24)
+    Text = ("RNG")
+  }
+  { Label1 Label
+    MoveScaled(1,27,15,3)
+    'Move(8,216,120,24)
+    Text = ("Flow control :")
+  }
+  { ComboBox1 ComboBox
+    MoveScaled(18,27,20,2)
+    'Move(144,216,160,16)
+    Text = (" ")
+    ReadOnly = True
+    List = [("NONE"), ("CRTSCTS"), ("XON/XOFF"), ("CRTSCTS + XON/XOFF")]
+  }
+  { SPort #SerialPort
+    #X = 320
+    #Y = 176
+  }
+}

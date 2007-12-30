@@ -1,0 +1,92 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,92,75)
+  'Move(0,0,736,600)
+  Text = ("Select a project")
+  Icon = Picture["icon:/32/open"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { tabProject TabStrip
+    MoveScaled(1,1,90,67)
+    'Move(8,8,720,536)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Padding = 8
+    Count = 3
+    Index = 0
+    Text = ("Open")
+    { splProject HSplit
+      MoveScaled(1,1,87,61)
+      'Move(8,8,696,488)
+      Expand = True
+      { dchProject DirChooser
+        MoveScaled(0,0,39,60)
+        'Move(0,0,312,480)
+        Expand = True
+        ShowBookmark = True
+      }
+      { Panel2 Panel
+        MoveScaled(41,0,47,58)
+        'Move(328,0,376,464)
+        Arrangement = Arrange.Vertical
+        Spacing = 8
+        { panProject Panel
+          MoveScaled(0,1,47,12)
+          'Move(0,8,376,96)
+          Background = Color.TextBackground
+          Arrangement = Arrange.Fill
+          AutoResize = True
+          Padding = 2
+          Border = Border.Sunken
+        }
+        { fvwProject FileView
+          MoveScaled(1,25,45,32)
+          'Move(8,200,360,256)
+          Expand = True
+          ShowDetailed = True
+          ShowDirectory = True
+        }
+      }
+    }
+    Index = 1
+    Text = ("Recent")
+    { lstRecent ListContainer
+      MoveScaled(1,1,80,58)
+      'Move(8,8,640,464)
+      Visible = False
+    }
+    Index = 2
+    Text = ("Examples")
+    { lstExample ListContainer
+      MoveScaled(1,1,80,58)
+      'Move(8,8,640,464)
+      Visible = False
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(1,70,62,3)
+    'Move(8,560,496,24)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(33,0,14,3)
+      'Move(264,0,112,24)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,14,3)
+      'Move(384,0,112,24)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

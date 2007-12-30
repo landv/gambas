@@ -1,0 +1,25 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(20.125,13.375,102.5,72.125)
+  'Move(161,107,820,577)
+  Text = ("Browsing the web with Gambas!")
+  Arrangement = Arrange.Vertical
+  { txtLink TextBox
+    MoveScaled(4,0,25,3)
+    'Move(32,0,200,24)
+    Text = ("")
+  }
+  { webTest WebBrowser
+    MoveScaled(4,4,61,33)
+    'Move(32,32,488,264)
+    Expand = True
+    JavaScript = True
+    Plugins = True
+  }
+  { lblLink Label
+    MoveScaled(4,39,42,2)
+    'Move(32,312,336,16)
+    Text = ("")
+  }
+}

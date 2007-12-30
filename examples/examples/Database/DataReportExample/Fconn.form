@@ -1,0 +1,82 @@
+# Gambas Form File 1.0
+
+{ Fconn Form
+  MoveScaled(42.1111,29.6667,32.5556,25.4444)
+  'Move(379,267,293,229)
+  Text = ("New Connection")
+  Icon = Picture["pic/empty.png"]
+  Border = Window.Fixed
+  { Label1 Label
+    MoveScaled(0,0,32.4444,4)
+    'Move(0,0,292,36)
+    Font = Font["16,Bold,Underline"]
+    Background = &HD6D6D6&
+    Text = ("  New Connection ")
+    Alignment = Align.Right
+  }
+  { Label2 Label
+    MoveScaled(4,9,8,3)
+    'Move(36,81,72,27)
+    Text = ("Host")
+    Alignment = Align.Right
+  }
+  { TextBox1 TextBox ginput
+    MoveScaled(12.4444,9,17.4444,3)
+    'Move(112,81,157,27)
+    Tag = "1"
+    Text = ("localhost")
+  }
+  { Label3 Label
+    MoveScaled(4,12.4444,8,3)
+    'Move(36,112,72,27)
+    Text = ("User")
+    Alignment = Align.Right
+  }
+  { TextBox2 TextBox ginput
+    MoveScaled(12.4444,12.4444,17.4444,3)
+    'Move(112,112,157,27)
+    Tag = "2"
+    Text = ("root")
+  }
+  { Label4 Label
+    MoveScaled(4,16,8,3)
+    'Move(36,144,72,27)
+    Text = ("Password")
+    Alignment = Align.Right
+  }
+  { TextBox3 TextBox ginput
+    MoveScaled(12.4444,16,17.4444,3)
+    'Move(112,144,157,27)
+    Tag = "3"
+    Text = ("")
+    Password = True
+  }
+  { Button1 Button gbtn
+    MoveScaled(3.4444,20.4444,11,4)
+    'Move(31,184,99,36)
+    Tag = "1"
+    ToolTip = ("Connect!")
+    Text = ("C&onnect!")
+    Picture = Picture["pic/button_ok.png"]
+  }
+  { Button2 Button gbtn
+    MoveScaled(19.4444,20.4444,11,4)
+    'Move(175,184,99,36)
+    Tag = "2"
+    ToolTip = ("Cancel")
+    Text = ("&Cancel")
+    Picture = Picture["pic/button_cance.png"]
+    Cancel = True
+  }
+  { Label5 Label
+    MoveScaled(4,5.4444,8,3)
+    'Move(36,49,72,27)
+    Text = ("Server")
+    Alignment = Align.Right
+  }
+  { Label6 Label
+    MoveScaled(12.4444,5.4444,8,3)
+    'Move(112,49,72,27)
+    Text = ("MySQL")
+  }
+}

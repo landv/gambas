@@ -1,0 +1,159 @@
+' Gambas class file
+
+STATIC PRIVATE $aSupport AS String[]
+STATIC PRIVATE $iWait AS Integer
+STATIC PRIVATE $iSupport AS Integer
+
+STATIC PUBLIC SUB Run()
+
+  DIM hForm AS FAbout
+
+  hForm = NEW FAbout
+  hForm.ShowModal
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  DIM sText AS String
+
+  txtAuthor.BackColor = svwAuthor.BackColor
+
+  GetVersion
+  GetAuthor
+  GetSupport
+
+  txtGift.X = 0
+'   panGift.ClientW
+'   sText = Trim(File.Load("support.txt"))
+'   txtGift.Text = "<b>" & ("Thanks to") & "</b>..." & Replace("\n" & sText, "\n", String$(8, "&nbsp;"))
+'   txtGift.W = txtGift.Font.Width(Replace(sText, "\n", "        ")) + 128
+
+END
+
+
+PRIVATE SUB GetVersion()
+
+  lblVersion.Text = Subst(("version &1"), Project.Version)
+
+END
+
+
+PUBLIC SUB btnClose_Click()
+
+  ME.Close
+
+END
+
+
+PUBLIC SUB timAuthor_Timer()
+
+  DIM Y AS Integer
+
+  Y = svwAuthor.ScrollY
+  INC svwAuthor.ScrollY
+  IF Y = svwAuthor.ScrollY THEN
+    svwAuthor.ScrollY = 0
+  ENDIF
+
+  WITH txtGift
+
+    IF $iWait > 0 THEN
+      DEC $iWait
+    ELSE IF .X > 0 THEN
+      .X = Max(0, .X - 8)
+      IF .X = 0 THEN $iWait = 50
+    ELSE
+      .X = panGift.Width
+      txtGift.Text = $aSupport[$iSupport]
+      INC $iSupport
+      IF $iSupport >= $aSupport.Count THEN $iSupport = 0
+    ENDIF
+
+  END WITH
+
+END
+
+PRIVATE SUB GetAuthor()
+
+  DIM hFic AS File
+  DIM sText AS String
+  DIM sLig AS String
+  DIM nLig AS Integer
+
+  hFic = OPEN "about.txt" FOR READ
+
+  WHILE Not Eof(hFic)
+
+    LINE INPUT #hFic, sLig
+    IF Not sLig THEN CONTINUE
+
+    sText = sText & "<p><font size=+1><b>" & sLig & "</b></font></p><blockquote>\n"
+    nLig = nLig + 2
+
+    LINE INPUT #hFic, sLig ' e-mail
+    sText = sText & "<u>" & sLig & "</u><br>"
+    INC nLig
+
+    DO
+
+      LINE INPUT #hFic, sLig
+      IF Not sLig THEN BREAK
+
+      sText = sText & sLig & "<br>"
+      INC nLig
+
+    LOOP
+
+    'IF Right$(sText, 4) = "<br>" THEN sText = Left$(sText, -4)
+
+    sText = sText & "</blockquote>\n"
+    INC nLig
+
+  WEND
+
+  CLOSE #hFic
+
+  txtAuthor.Text = sText
+  'nLig * txtAuthor.Font.Height("a") * 0.95 + 256
+
+FINALLY
+
+  txtAuthor.Height = txtAuthor.TextHeight '+ 256
+  'PRINT txtAuthor.TextHeight
+
+CATCH
+
+  txtAuthor.Text = Error.Text
+
+END
+
+PRIVATE SUB GetSupport()
+
+  DIM iInd AS Integer
+
+  $aSupport = Split(Trim(File.Load("support.txt")), "\n")
+
+  FOR iInd = 0 TO $aSupport.Count - 1
+
+    $aSupport[iInd] = "<b>" & $aSupport[iInd] & "...</b>"
+
+  NEXT
+
+  $aSupport.Add("<b>" & ("Thanks to") & "...</b>", 0)
+
+END
+
+
+PUBLIC SUB Form_Show()
+
+  txtAuthor.Height = txtAuthor.TextHeight + 256
+
+END
+
+PUBLIC SUB btnGift_Click()
+
+  Project.OpenWebPage("https://www.paypal.com/xclick/business=gambas%40users.sourceforge.net&no_note=1&tax=0&currency_code=EUR")
+
+END

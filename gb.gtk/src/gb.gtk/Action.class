@@ -1,0 +1,458 @@
+' Gambas class file
+
+EXPORT 
+
+' CLASS SidePanel
+' CLASS ToolBar
+
+STATIC PRIVATE $aVoid AS NEW Object[]
+STATIC PRIVATE $cControls AS NEW Collection(gb.Text)
+STATIC PRIVATE $cLock AS NEW Collection
+STATIC PRIVATE $bGlobalLock AS Boolean
+
+PRIVATE $sKey AS String
+PRIVATE $aKey AS String[]
+PRIVATE $hParent AS Control
+
+PROPERTY Enabled AS Boolean
+PROPERTY Visible AS Boolean
+PROPERTY ToolTip AS String
+PROPERTY Text AS String
+PROPERTY Picture AS Picture
+PROPERTY Value AS Boolean
+
+STATIC PRIVATE SUB IsToggle(hCtrl AS Object) AS Boolean
+  
+  IF hCtrl IS Menu THEN RETURN TRUE
+  IF hCtrl IS ToggleButton THEN RETURN TRUE
+  IF hCtrl IS ToolButton AND IF hCtrl.Toggle THEN RETURN TRUE
+  IF hCtrl IS Window THEN RETURN TRUE
+  IF Object.Type(hCtrl) = "SidePanel" THEN RETURN TRUE
+  IF Object.Type(hCtrl) = "ToolBar" THEN RETURN TRUE
+  
+END
+
+STATIC PRIVATE SUB GetToggle(hCtrl AS Object) AS Boolean
+  
+  IF hCtrl IS Menu THEN RETURN hCtrl.Checked
+  IF hCtrl IS ToggleButton THEN RETURN hCtrl.Value
+  IF hCtrl IS ToolButton AND IF hCtrl.Toggle THEN RETURN hCtrl.Value
+  IF hCtrl IS Window THEN RETURN hCtrl.Visible
+  IF Object.Type(hCtrl) = "SidePanel" THEN RETURN NOT hCtrl.Hidden
+  IF Object.Type(hCtrl) = "ToolBar" THEN RETURN NOT hCtrl.Hidden
+  
+END
+
+STATIC PRIVATE SUB SetToggle(hCtrl AS Object, bVal AS Boolean)
+  
+  IF hCtrl IS Menu THEN hCtrl.Checked = bVal
+  IF hCtrl IS ToggleButton THEN hCtrl.Value = bVal
+  IF hCtrl IS ToolButton AND IF hCtrl.Toggle THEN hCtrl.Value = bVal
+  IF hCtrl IS Window THEN hCtrl.Visible = bVal
+  IF Object.Type(hCtrl) = "SidePanel" THEN hCtrl.Hidden = NOT bVal
+  IF Object.Type(hCtrl) = "ToolBar" THEN hCtrl.Hidden = NOT bVal
+  
+END
+
+
+
+STATIC PUBLIC SUB Get(Control AS Object) AS String
+  
+  DIM aCtrl AS Object[]
+  
+  FOR EACH aCtrl IN $cControls
+    IF aCtrl.Find(Control) >= 0 THEN RETURN $cControls.Key
+  NEXT
+  
+END
+ 
+
+STATIC PUBLIC SUB Register(Control AS Object, Key AS String)
+  
+  DIM iInd AS Integer
+  DIM aCtrl AS Object[]
+  DIM sOld AS String
+  
+  sOld = Get(Control)
+  IF sOld = Key THEN RETURN
+  
+  'DEBUG Control;; Key  
+  
+  IF sOld THEN
+    aCtrl = $cControls[sOld]
+    iInd = aCtrl.Find(Control)
+    aCtrl.Remove(iInd)
+  ENDIF
+  
+  IF Key THEN
+    IF NOT $cControls.Exist(Key) THEN
+      $cControls[Key] = NEW Object[]
+    ENDIF
+
+    aCtrl = $cControls[Key]
+    aCtrl.Add(Control)
+  ENDIF
+
+END
+
+STATIC PRIVATE SUB HasHandler(hForm AS Object) AS Boolean
+  
+  DIM iType AS Integer
+  
+  TRY iType = TypeOf(hForm.Action_Activate)
+  RETURN iType <> 0
+  
+END
+
+STATIC PRIVATE SUB GetActiveWindow(hCtrl AS Object) AS Window
+  
+  DIM hForm AS Window = Application.ActiveWindow
+  DIM hCtrlWin AS Window = hCtrl.Window
+  
+  'RETURN hForm
+  
+  DO
+    IF HasHandler(hCtrlWin) THEN BREAK
+    TRY hCtrlWin = hCtrlWin.Parent.Window
+    IF ERROR THEN BREAK
+  LOOP
+  
+  WHILE hForm
+    IF hForm = hCtrlWin THEN RETURN Application.ActiveWindow  
+    TRY hForm = hForm.Parent.Window
+    IF ERROR THEN BREAK
+  WEND 
+  
+  RETURN hCtrl.Window
+  
+END
+
+STATIC PUBLIC SUB Lock()
+  
+  INC $bGlobalLock
+  
+END
+
+STATIC PUBLIC SUB UnLock()
+  
+  $bGlobalLock = Max(0, $bGlobalLock - 1)
+  
+END
+
+
+
+STATIC PUBLIC SUB Raise(Control AS Object)
+  
+  DIM hForm AS Control
+  DIM hObject AS Object
+  DIM sKey AS String
+  DIM bCont AS Boolean
+  DIM hLock AS Integer[]
+
+  IF $bGlobalLock THEN RETURN
+
+  sKey = Get(Control)
+  'DEBUG Control;; sKey
+  IF NOT sKey THEN RETURN
+
+  IF $cLock.Exist(sKey) THEN 
+    IF Object.Count($cLock[sKey]) = 2 THEN 
+      'DEBUG sKey;; "is locked"
+      RETURN 
+    ENDIF
+    DEBUG sKey;; Object.Count($cLock[sKey])
+  ENDIF
+  
+  hLock = NEW Integer[]
+  $cLock[sKey] = hLock
+
+  IF IsToggle(Control) THEN
+    IF Left(sKey) = "." THEN
+      Action[sKey, Object.Parent(Control)].Value = GetToggle(Control)
+    ELSE
+      Action[sKey].Value = GetToggle(Control)
+    ENDIF
+  ENDIF
+
+  hForm = GetActiveWindow(Control)
+  'DEBUG "Active: ";; hForm;; Application.ActiveWindow
+
+  IF hForm THEN
+
+      WHILE hForm
+
+        IF NOT Object.IsValid(hForm) THEN BREAK
+        IF Object.IsLocked(hForm) THEN BREAK
+
+        IF hForm IS Window THEN
+          hObject = hForm
+          IF HasHandler(hObject) THEN
+            bCont = FALSE
+            bCont = hObject.Action_Activate(sKey)
+            IF NOT bCont THEN BREAK
+          ENDIF
+        ENDIF
+
+        hForm = hForm.Parent
+      WEND
+        
+  ENDIF
+  
+  $cLock[sKey] = NULL
+
+' FINALLY 
+' 
+'   $cLock[sKey] = NULL
+'   
+' CATCH
+'   
+'   DEBUG "******* "; Error.Where; ": "; Error.Text  
+'   Error.Propagate
+  
+END
+
+STATIC PUBLIC SUB _get(Key AS String, OPTIONAL Parent AS Control) AS Action ', OPTIONAL Window AS Window) AS Action
+
+  DIM hAction AS Action
+  
+  'IF Left(Key) = "." AND IF NOT Parent THEN Error.Raise("Parent must be specified for a local action")
+  
+  hAction = NEW Action(Key, Parent)
+  RETURN hAction  
+  
+END
+
+STATIC PRIVATE SUB IsChildOfWindow(hWindow AS Window, hMain AS Window) AS Boolean
+  
+  DO
+    IF hWindow = hMain THEN RETURN TRUE
+    TRY hWindow = hWindow.Parent.Window
+    IF ERROR THEN RETURN
+  LOOP
+  
+END
+
+STATIC PRIVATE SUB FindKey(sPattern AS String) AS String[]
+  
+  DIM aKey AS NEW String[]
+  DIM aCtrl AS Object[]
+  DIM sKey AS String
+  
+  FOR EACH aCtrl IN $cControls
+    sKey = $cControls.Key
+    IF sKey LIKE sPattern THEN aKey.Add(sKey)
+  NEXT
+  
+  RETURN aKey
+  
+END
+
+
+PRIVATE FUNCTION GetControls() AS Object[]
+
+  DIM aObj AS Object[]
+  DIM aObj2 AS Object[]
+  DIM hCtrl AS Object
+  DIM iInd AS Integer
+  DIM sKey AS String
+  
+  IF $aKey THEN
+    
+    aObj2 = NEW Object[]
+    
+    FOR EACH sKey IN $aKey
+    
+      TRY aObj = $cControls[sKey]
+      IF NOT aObj THEN CONTINUE
+      
+      IF NOT $hParent THEN
+        aObj2.Insert(aObj)
+      ELSE
+        FOR EACH hCtrl IN aObj
+          IF Object.Parent(hCtrl) = $hParent THEN
+            aObj2.Add(hCtrl)
+          ENDIF
+        NEXT
+      ENDIF
+
+    NEXT
+    
+    RETURN aObj2
+
+  ELSE IF $sKey THEN
+
+    TRY aObj = $cControls[$sKey]
+    IF NOT aObj THEN 
+      PRINT #File.Err, "Warning: Unknown action: '"; $sKey; "'"
+      RETURN $aVoid
+    ENDIF
+    
+    IF NOT $hParent THEN RETURN aObj
+  
+    aObj2 = NEW Object[]
+    FOR EACH hCtrl IN aObj
+      IF Object.Parent(hCtrl) = $hParent THEN
+        aObj2.Add(hCtrl)
+      ENDIF
+    NEXT
+
+    RETURN aObj2
+
+  ELSE 
+
+    RETURN $aVoid
+
+  ENDIF
+  
+END
+
+
+PUBLIC SUB _new(Key AS String, Parent AS Control)
+  
+  DIM sKey AS String
+  
+  IF InStr(Key, ",") = 0 AND InStr(Key, "*") = 0 THEN
+    $sKey = Key
+  ELSE
+    $aKey = NEW String[]
+    FOR EACH sKey IN Split(Key, ",")
+      IF Right(sKey) = "*" THEN
+        $aKey.Insert(FindKey(sKey))
+      ELSE
+        $aKey.Add(sKey)
+      ENDIF
+    NEXT
+  ENDIF
+  
+  $hParent = Parent
+  
+END
+
+
+PRIVATE FUNCTION Enabled_Read() AS Boolean
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    IF NOT hCtrl.Enabled THEN RETURN FALSE
+  NEXT
+  RETURN TRUE
+
+END
+
+PRIVATE SUB Enabled_Write(Value AS Boolean)
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    hCtrl.Enabled = Value
+  NEXT
+
+END
+
+PRIVATE FUNCTION Visible_Read() AS Boolean
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    IF NOT hCtrl.Visible THEN RETURN FALSE
+  NEXT
+  RETURN TRUE
+
+END
+
+PRIVATE SUB Visible_Write(Value AS Boolean)
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    'DEBUG hCtrl;; Value
+    hCtrl.Visible = Value
+  NEXT
+
+END
+
+PRIVATE FUNCTION ToolTip_Read() AS String
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    IF hCtrl.ToolTip THEN RETURN hCtrl.ToolTip
+  NEXT
+
+END
+
+PRIVATE SUB ToolTip_Write(Value AS String)
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    hCtrl.ToolTip = Value
+  NEXT
+
+END
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  DIM hCtrl AS Object
+  DIM sText AS String
+  
+  FOR EACH hCtrl IN GetControls()
+    TRY sText = hCtrl.Text
+    IF sText THEN RETURN sText
+  NEXT
+
+END
+
+PRIVATE SUB Text_Write(Value AS String)
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    TRY hCtrl.Text = Value
+  NEXT  
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  DIM hCtrl AS Object
+  DIM hPict AS Picture
+  
+  FOR EACH hCtrl IN GetControls()
+    TRY hPict = hCtrl.Picture
+    IF hPict THEN RETURN hPict
+  NEXT
+
+END
+
+PRIVATE SUB Picture_Write(Value AS Picture)
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    TRY hCtrl.Picture = Value
+  NEXT    
+
+END
+
+PRIVATE FUNCTION Value_Read() AS Boolean
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    IF IsToggle(hCtrl) THEN RETURN GetToggle(hCtrl)
+  NEXT    
+
+END
+
+PRIVATE SUB Value_Write(Value AS Boolean)
+
+  DIM hCtrl AS Object
+  
+  FOR EACH hCtrl IN GetControls()
+    'DEBUG hCtrl;; Value
+    IF IsToggle(hCtrl) THEN SetToggle(hCtrl, Value)
+  NEXT    
+
+END

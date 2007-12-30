@@ -1,0 +1,134 @@
+' Gambas class file
+
+EXPORT 
+INHERITS ReportContainer
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Integer, AvailableH AS Integer, TotalWidth AS Integer, TotalHeight AS Integer) AS TSizeHint
+  'DIM aChildHints AS Integer[]
+  DIM hChild AS Object
+  'DIM iChildrenH AS Integer
+  DIM iHeight AS Integer
+  DIM hChildHints AS TSizeHint
+  DIM hMyHints AS NEW TSizeHint
+    
+  FOR EACH hChild IN ME.Children
+    'Obtention des volontées des enfants
+    hChildHints = hChild._GetSizeHints(AvailableW, AvailableH - hMyHints.Height, AvailableW, AvailableH)
+    hMyHints.Height += hChildHints.Height
+  NEXT 
+  
+  'Je dit que moi je veux toute la largeur
+  iHeight = MRTools.RealHeight(ME)
+  
+  IF hMyHints.Height < iHeight THEN hMyHints.Height = iHeight
+  IF hMyHints.Height > AvailableH THEN hMyHints.Height = AvailableH
+  hMyHints.Width = MRTools.RealWidth(ME)
+  
+  RETURN hMyHints
+
+
+END
+
+
+PUBLIC FUNCTION _SetGeometry(X AS Integer, Y AS Integer, W AS Integer, H AS Integer) AS Integer
+  
+  DIM hChildHints AS TSizeHint
+  DIM hChild AS Object
+  DIM iChildrenH AS Integer
+  DIM PageSExp AS NEW Integer[]
+  DIM PageNExp AS NEW Integer[]
+  DIM iPage AS Integer
+  DIM aPage AS NEW Object[]
+  DIM aPageItems AS NEW CPageInfo
+  DIM iNExp, iSExp AS Integer
+  DIM iSpc AS Integer
+  DIM iPdg AS Integer
+  DIM bFirst AS Boolean
+  DIM iH, hW, i AS Integer
+  DIM tmpX AS Integer
+  
+  'If there is no change then do nothing
+  IF X = ME._RealLeft AND IF Y = ME._RealTop AND IF W = ME._RealWidth AND IF H = ME._RealHeight THEN RETURN
+  
+  'PRINT Subst("_SetGeometry(&1,&2,&3,&4)", X, Y, W, H)
+  iSpc = MRTools.RealSpacing(ME)
+  iPdg = MRTools.RealPadding(ME)
+  
+  SUPER._SetGeometry(X, Y, W, H)
+  
+  X = iPdg
+  Y = iPdg
+  W -= iPdg * 2
+  H -= iPdg * 2
+  tmpX = X
+ 
+  'Calcul des zone libres pour l'extention et 
+  'repartition des controles par pages
+   FOR EACH hChild IN ME.Children
+    hChildHints = hChild._GetSizeHints(W, H - iSExp, W, H)
+    IF hChild.Expand THEN INC iNExp
+  
+    IF iSExp + hChildHints.Height > H THEN 
+      iSExp -= iSpc
+      aPageItems.SExp = H - isExp
+      aPageItems.NExp = iNExp
+      aPage.Add(aPageItems)
+      aPageItems = NEW CPageInfo
+      isExp = 0
+      iNExp = 0
+      'h = draw.Height
+    ENDIF
+      
+      iSExp += hChildHints.Height
+
+      hChild._RelPage = aPage.Count
+      hChild._RealPage = ME._RealPage + aPage.Count
+      aPageItems.Children.Add(hChild)
+      iSExp += iSpc
+  NEXT
+  
+  iSExp -= iSpc
+  iSExp = H - iSExp
+  aPage.Add(aPageItems)
+  aPageItems.SExp = iSExp
+  aPageItems.NExp = iNExp
+  
+  IF aPage.Count = 1 THEN 
+    FOR EACH hChild IN aPage[0].Children
+      hChild._RelPage = -1
+    NEXT 
+  ENDIF
+  
+  FOR i = 0 TO aPage.Max
+  
+     X = iPdg
+     Y = iPdg
+     'W -= iPdg * 2
+     'H -= iPdg * 2
+     bFirst = TRUE
+    
+    FOR EACH hChild IN aPage[i].Children
+      hChildHints = hChild._GetSizeHints(W, H - Y, W, H)
+      
+      IF NOT bFirst THEN 
+        Y += iSpc
+      ENDIF
+      
+      bFirst = FALSE
+      
+      IF hChild.Expand THEN 
+        TRY iH = hChildHints.Height + (aPage[i].SExp / aPage[i].NExp)
+      ELSE 
+        iH = hChildHints.Height '- iSpc
+      ENDIF 
+      
+      iPage = iPage + hChild._SetGeometry(X, Y, W, iH)
+      Y += iH
+    NEXT
+    
+  NEXT 
+  
+  IF aPage.Count > 1 THEN ME._RelPage = -1
+  
+  RETURN aPage.Max + iPage
+END 

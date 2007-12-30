@@ -1,0 +1,95 @@
+' Gambas class file
+
+EXPORT
+INHERITS ReportControl
+
+PRIVATE $sText AS String
+PRIVATE $iAlignment AS Integer '= Align.Center
+
+PROPERTY Text AS String
+PROPERTY Alignment AS Integer
+
+
+PUBLIC SUB _New()
+  
+  ME.Height = "100 px"
+  
+END
+
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN $sText
+
+END
+
+PRIVATE SUB Text_Write(Value AS String)
+
+  $sText = Value
+
+END
+
+PRIVATE FUNCTION Alignment_Read() AS Integer
+
+  RETURN $iAlignment
+
+END
+
+PRIVATE SUB Alignment_Write(Value AS Integer)
+
+  $iAlignment = Value
+
+END
+
+
+PUBLIC FUNCTION _GetSizeHints(AvailableW AS Integer, AvailableH AS Integer, TotalWidth AS Integer, TotalHeight AS Integer) AS TSizeHint
+
+  DIM hMyHints AS NEW TSizeHint
+  
+  IF NOT $sText THEN Report._Data()
+  
+  hMyHints.Height = MRTools.RealHeight(ME) + (2 * MRTools.RealPadding(ME))
+  IF NOT IsNull(ME.Font) THEN draw.Font = ME.Font
+  draw.Font.size = draw.Font.Size * MRTools.ResolutionAffichage
+  'if the size choosed by the user is less than the font height, set the object to the font height
+  IF hMyHints.Height < Draw.TextHeight($sText) THEN hMyHints.Height = Draw.TextHeight($sText) + (2 * MRTools.RealPadding(ME))
+  
+  hMyHints.Width = Draw.TextWidth(DecodeText($sText,, TRUE)) + (2 * MRTools.RealPadding(ME))
+  
+  RETURN hMyHints
+  
+END
+
+PUBLIC SUB _Draw(Page AS Integer, x AS Integer, y AS Integer)
+
+    SUPER._Draw(Page, X, Y)
+    draw.Font.size = draw.Font.Size * Report.zoom * MRTools.ResolutionAffichage
+    Draw.Text(DecodeText($sText, Page + 1), (x + ME._RealLeft + MRTools.RealPadding(ME)) * Report.Zoom, (y + ME._RealTop + MRTools.RealPadding(ME)) * Report.Zoom, ME._RealWidth * Report.Zoom, ME._RealHeight * Report.Zoom, $iAlignment)
+    
+END
+
+PUBLIC FUNCTION _SetGeometry(X AS Integer, Y AS Integer, W AS Integer, H AS Integer) AS Integer
+  
+  ME._RealLeft = X
+  ME._RealTop = Y
+  ME._RealWidth = W
+  ME._RealHeight = H
+  
+END
+
+PRIVATE FUNCTION DecodeText(sText AS String, OPTIONAL Page AS Integer, OPTIONAL ForSize AS Boolean = FALSE) AS String
+  
+  IF ForSize THEN 
+    IF InStr(sText, "$PAGE") THEN sText = Replace(sText, "$PAGE", "999")
+    IF InStr(sText, "$NPAGE") THEN sText = Replace(sText, "$NPAGE", "999")
+  ELSE
+    IF InStr(sText, "$PAGE") THEN sText = Replace(sText, "$PAGE", Str(Page))
+    IF InStr(sText, "$NPAGE") THEN sText = Replace(sText, "$NPAGE", Str(MRTools.PageCount))
+  ENDIF
+  
+  RETURN sText
+  
+END
+
+
+

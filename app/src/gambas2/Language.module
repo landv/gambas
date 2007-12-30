@@ -1,0 +1,167 @@
+' Gambas module file
+
+PRIVATE Name AS NEW Collection
+
+SUB _init()
+
+  Name["ar"] = ("Arabic (Egypt)")
+  Name["ar_TN"] = ("Arabic (Tunisia)")
+
+  Name["az"] = ("Azerbaijani (Azerbaijan)")
+
+  Name["bg"] = ("Bulgarian (Bulgaria)")
+
+  Name["ca_ES"] = ("Catalan (Catalonia, Spain)")
+
+  Name["cy"] = ("Welsh (United Kingdom)")
+
+  Name["cs"] = ("Czech (Czech Republic)")
+
+  Name["da"] = ("Danish (Denmark)")
+
+  Name["de"] = ("German (Germany)")
+  Name["de_BE"] = ("German (Belgium)")
+
+  Name["el"] = ("Greek (Greece)")
+
+  Name["en"] = ("English (common)")
+  Name["en_GB"] = ("English (United Kingdom)")
+  Name["en_US"] = ("English (U.S.A.)")
+  Name["en_AU"] = ("English (Australia)")
+  Name["en_CA"] = ("English (Canada)")
+
+  Name["eo_XX"] = ("Esperanto (Anywhere!)")
+
+  Name["es"] = ("Spanish (Spain)")
+  Name["es_AR"] = ("Spanish (Argentina)")
+
+  Name["fa"] = ("Farsi (Iran)")
+
+  Name["fr"] = ("French (France)")
+  Name["fr_BE"] = ("French (Belgium)")
+  Name["fr_CA"] = ("French (Canada)")
+  Name["fr_CH"] = ("French (Switzerland)")
+
+  Name["gl_ES"] = ("Galician (Spain)")
+
+  Name["hu"] = ("Hungarian (Hungary)")
+
+  Name["hr"] = ("Croatian (Croatia)")
+
+  Name["id"] = ("Indonesian (Indonesia)")
+
+  Name["ir"] = ("Irish (Ireland)")
+
+  Name["it"] = ("Italian (Italy)")
+
+  Name["ja"] = ("Japanese (Japan)")
+
+  Name["ko"] = ("Korean (Korea)")
+
+  Name["nl"] = ("Dutch (Netherlands)")
+  Name["nl_BE"] = ("Dutch (Belgium)")
+
+  Name["no"] = ("Norwegian (Norway)")
+
+  Name["pa"] = ("Punjabi (India)")
+
+  Name["pl"] = ("Polish (Poland)")
+
+  Name["pt"] = ("Portuguese (Portugal)")
+  Name["pt_BR"] = ("Portuguese (Brazil)")
+
+  Name["ru"] = ("Russian (Russia)")
+
+  Name["sl"] = ("Slovenian (Slovenia)")
+
+  Name["sr"] = ("Serbian (Serbia & Montenegro)")
+
+  Name["sv"] = ("Swedish (Sweden)")
+
+  Name["tr"] = ("Turkish (Turkey)")
+
+  Name["vi"] = ("Vietnamese (Vietnam)")
+
+  Name["wa"] = ("Wallon (Belgium)")
+
+  Name["zh"] = ("Simplified chinese (China)")
+  Name["zh_TW"] = ("Traditional chinese (Taiwan)")
+
+END
+
+SUB Find(OPTIONAL sLang AS String) AS String
+  
+  DIM sName AS String
+  DIM iPos AS Integer
+  DIM sOrg AS String
+
+  IF NOT sLang THEN sLang = System.Language
+
+  sOrg = sLang
+
+  DO
+
+    IF Name.Exist(sLang) THEN RETURN sLang
+
+    iPos = InStr(sLang, ".")
+    IF iPos THEN
+      sLang = Left$(sLang, iPos - 1)
+      CONTINUE
+    ENDIF
+
+    iPos = InStr(sLang, "_")
+    IF iPos THEN
+      sLang = Left$(sLang, iPos - 1)
+      CONTINUE
+    ENDIF
+
+    RETURN sOrg
+
+  LOOP
+
+END
+
+
+FUNCTION ToName(OPTIONAL sLang AS String) AS String
+
+  DIM sName AS String
+  
+  sLang = Find(sLang)
+  sName = Name[sLang]
+
+  IF sName THEN 
+    RETURN sName
+  ELSE
+    RETURN ("Unknown") & " (" & sLang & ")"
+  ENDIF
+
+END
+
+
+FUNCTION FromName(sName AS String) AS String
+
+  DIM sStr AS String
+
+  'PRINT "sName = "; sName
+
+  FOR EACH sStr IN Name
+    IF sStr = sName THEN RETURN Name.Key
+  NEXT
+
+END
+
+
+FUNCTION GetAll() AS String[]
+
+  DIM aLang AS NEW String[]
+  DIM sStr AS String
+
+  FOR EACH sStr IN Name
+    aLang.Add(Name.Key)
+  NEXT
+
+  aLang.Sort
+
+  RETURN aLang
+
+END

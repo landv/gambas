@@ -1,0 +1,21 @@
+' Gambas class file
+
+
+PUBLIC SUB Form_Open()
+
+  TableView1.Rows.Count = 16
+  TableView1.Columns.Count = 4
+
+END
+
+PUBLIC SUB TableView1_Click()
+
+  TableView1.Edit  
+
+END
+
+PUBLIC SUB TableView1_Data(Row AS Integer, Column AS Integer)
+
+  TableView1.Data.Text = Row & "." & Column
+
+END

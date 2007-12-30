@@ -1,0 +1,34 @@
+# Gambas Form File 1.0
+
+{ FStart Form
+  MoveScaled(35.7778,18.5556,60,18.1111)
+  'Move(322,167,540,163)
+  Text = ("Object ")
+  Border = Window.Fixed
+  { btnCreateThing Button
+    MoveScaled(2,2,17.7778,4.4444)
+    'Move(18,18,160,40)
+    Text = ("create the Thing !")
+  }
+  { btnCheckThing Button
+    MoveScaled(21,2,17.7778,4)
+    'Move(189,18,160,36)
+    Text = ("check the Thing !")
+  }
+  { txtCheckResult TextBox
+    MoveScaled(2,9,56,3)
+    'Move(18,81,504,27)
+    Visible = False
+    Text = ("")
+  }
+  { btnDestroy Button
+    MoveScaled(40,2,17.7778,4)
+    'Move(360,18,160,36)
+    Text = ("destroy the Thing !")
+  }
+  { Label1 Label
+    MoveScaled(2,14,26,2)
+    'Move(18,126,234,18)
+    Text = (" by juergen@zdero.com")
+  }
+}

@@ -1,0 +1,15 @@
+# Gambas Form File 1.0
+
+{ FOnScreenDisplay Form
+  MoveScaled(27.25,61,49.5,12.5)
+  'Move(218,488,396,100)
+  Text = ("What time is it ?")
+  Border = Window.None
+  TopOnly = True
+  { Timer1 #Timer
+    #X = 96
+    #Y = 32
+    Enabled = True
+    Delay = 250
+  }
+}

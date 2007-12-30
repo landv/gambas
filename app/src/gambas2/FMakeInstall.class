@@ -1,0 +1,441 @@
+' Gambas class file
+
+PRIVATE $hSelectDir AS Object
+PRIVATE $hWizard AS Object 'CWizard
+PRIVATE $sMenuSystem AS String
+PRIVATE $sGroupSystem AS String
+
+PUBLIC SUB Form_Open()
+
+  '$hWizard = NEW CWizard(ME, btnPrevious, btnNext, btnOK) AS "Wizard"
+
+  txtName.Text = Settings["/FMakeInstall/Name", User.Name]
+  txtName.SelectAll
+  txtName.SetFocus
+  txtMail.Text = Settings["/FMakeInstall/Address", User.Name & "@" & System.Host]
+  txtDescribe.Text = Project.Description
+
+  TRY txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
+
+  chkPrefix.Value = Project.Prefix
+
+  InitSystems
+
+  chkPrefix_Click
+
+  ' Remove that, and something will not be freed!
+  'InitDirSelector
+
+  CheckAlienForDebian
+
+END
+
+PUBLIC SUB btnClose_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  Project.WriteProject
+
+  IF Package.Make() THEN RETURN
+
+  'ME.Close(TRUE)
+
+END
+
+PRIVATE FUNCTION CheckSys(cCol AS Collection) AS Boolean
+
+  DIM sSys AS String
+
+  FOR EACH sSys IN Project.Systems
+    IF NOT cCol.Exist(sSys) THEN RETURN TRUE
+  NEXT
+
+END
+
+
+PUBLIC SUB btnNext_Click()
+
+  DIM sName AS String
+  DIM sDir AS String
+  DIM iSize AS Integer
+
+  SELECT CASE $hWizard.Tag
+
+    CASE 1
+      Package.Name = Trim(txtName.Text)
+      Package.Address = Trim(txtMail.Text)
+
+      IF NOT Package.Name THEN
+        Message.Warning(("Please enter your name."))
+        RETURN
+      ENDIF
+      IF NOT Package.Address THEN
+        Message.Warning(("Please enter your e-mail address."))
+        RETURN
+      ENDIF
+
+      Project.Description = txtDescribe.Text
+      Project.Prefix = chkPrefix.Value
+
+    CASE 2
+      Package.Change = Trim(txtChange.Text)
+      IF NOT Package.Change THEN
+        TRY iSize = Stat(Project.Dir &/ "CHANGELOG").Size
+        IF iSize = 0 THEN
+          Message.Warning(("Please enter the first CHANGELOG entry."))
+          RETURN
+        ENDIF
+      ENDIF
+
+    CASE 3
+      Project.Systems = GetSystems()
+      IF Project.Systems.Count = 0 THEN
+        Message.Warning(("Please choose at least one target system."))
+        RETURN
+      ENDIF
+
+    CASE 4
+      IF CheckSys(Project.Groups) THEN
+        Message.Warning(("Please choose the package group for each target system."))
+        RETURN
+      ENDIF
+
+    CASE 5
+      IF CheckSys(Project.Menus) THEN
+        Message.Warning(("Please choose the menu location for each target system."))
+        RETURN
+      ENDIF
+
+    CASE 6
+      IF NOT $hSelectDir.Validate() THEN RETURN
+      Package.Path = $hSelectDir.Path
+
+  END SELECT
+
+  $hWizard.Next
+
+END
+
+PUBLIC SUB btnPrevious_Click()
+
+  $hWizard.Previous
+
+END
+
+PUBLIC SUB Wizard_Change()
+
+  DIM sTitle AS String
+  DIM iStep AS Integer
+  DIM iIndex AS Integer
+  DIM sText AS String
+  DIM hCtrl AS RadioButton
+  DIM sOption AS String
+
+  iStep = LAST.Tag
+  iIndex = LAST.Index
+
+  SELECT CASE iStep
+
+    CASE 0
+    CASE 1
+      txtDescribe.SetFocus
+    CASE 2
+      lblChangeDate.Text = " " & Package.GetChangeDate()
+      txtChange.SetFocus
+    CASE 3
+    CASE 4
+      InitGroupTree
+    CASE 5
+      InitMenuTree
+    CASE 6
+      InitDirSelector
+
+  END SELECT
+
+END
+
+PRIVATE SUB InitDirSelector()
+
+  IF $hSelectDir THEN RETURN
+
+  INC Application.Busy
+
+  $hSelectDir = NEW FSupSelector(panDir) 'AS "Explorer"
+  WITH $hSelectDir
+    .DialogType = FSupSelector.SHOW_DIRECTORY
+    'selCreate.Root = User.Home
+    'selCreate.bPChildSelect = FALSE
+    '.Path = Project.Config.Read("/NewProject", User.Home)
+    .Key = "/MakeInstall"
+    .NoProjectDir = TRUE
+    .ShowRootTab = TRUE
+    .ShowHomeTab = TRUE
+    '.TreeSequence = "1"
+    '.ButtonWidth = 0'btnOK.Width
+    .Init()
+  END WITH
+
+  $hSelectDir.Move(lblDir.X, lblDir.Y, lblDir.W, lblDir.H)
+  'Form_Resize
+
+  DEC Application.Busy
+
+END
+
+
+PRIVATE SUB InitSystems()
+
+  DIM hCtrl AS Control
+  DIM hCheck AS CheckBox
+
+  FOR EACH hCtrl IN panSystem.Children
+
+    IF Object.Type(hCtrl) = "CheckBox" THEN
+      hCheck = hCtrl
+      IF hCtrl.Tag THEN
+        hCheck.Value = Project.Systems.Find(hCtrl.Tag) >= 0
+      ENDIF
+    ENDIF
+
+  NEXT
+
+END
+
+PRIVATE FUNCTION GetSystems() AS String[]
+
+  DIM hCtrl AS Control
+  DIM hCheck AS CheckBox
+  DIM aSys AS NEW String[]
+
+  FOR EACH hCtrl IN panSystem.Children
+
+    IF Object.Type(hCtrl) = "CheckBox" THEN
+      hCheck = hCtrl
+      IF hCtrl.Tag THEN
+        IF hCheck.Value THEN aSys.Add(hCtrl.Tag)
+      ENDIF
+    ENDIF
+
+  NEXT
+
+  RETURN aSys
+
+END
+
+
+PRIVATE FUNCTION GetSystemNames() AS String[]
+
+  DIM hCtrl AS Control
+  DIM hCheck AS CheckBox
+  DIM aSys AS NEW String[]
+
+  FOR EACH hCtrl IN panSystem.Children
+
+    IF Object.Type(hCtrl) = "CheckBox" THEN
+      hCheck = hCtrl
+      IF hCtrl.Tag THEN
+        IF hCheck.Value THEN aSys.Add(hCheck.Text)
+      ENDIF
+    ENDIF
+
+  NEXT
+
+  RETURN aSys
+
+END
+
+
+PRIVATE FUNCTION GetSystemFromName(sName AS String) AS String
+
+  DIM hCtrl AS Control
+  DIM hCheck AS CheckBox
+
+  FOR EACH hCtrl IN panSystem.Children
+
+    IF Object.Type(hCtrl) = "CheckBox" THEN
+      hCheck = hCtrl
+      IF hCtrl.Tag THEN
+        IF hCheck.Text = sName THEN RETURN hCheck.Tag
+      ENDIF
+    ENDIF
+
+  NEXT
+
+END
+
+
+PUBLIC FUNCTION GetSystemName(sTag AS String) AS String
+
+  DIM hCtrl AS Control
+  DIM hCheck AS CheckBox
+
+  FOR EACH hCtrl IN panSystem.Children
+
+    IF Object.Type(hCtrl) = "CheckBox" THEN
+      hCheck = hCtrl
+      IF hCtrl.Tag THEN
+        IF hCheck.Tag = sTag THEN RETURN hCheck.Text
+      ENDIF
+    ENDIF
+
+  NEXT
+
+END
+
+
+
+PUBLIC SUB AddLog(sText AS String)
+
+  txtLog.Insert(sText & "\n")
+  WAIT
+
+END
+
+PRIVATE SUB FillComboWithSystems(hCombo AS ComboBox)
+
+  DIM sSys AS String
+
+  hCombo.Clear
+
+  FOR EACH sSys IN GetSystemNames()
+    hCombo.Add(sSys)
+  NEXT
+
+  hCombo.Index = 0
+
+END
+
+
+
+
+PRIVATE SUB InitMenuTree()
+
+  FillComboWithSystems(cmbMenu)
+
+END
+
+
+PRIVATE SUB InitGroupTree()
+
+  FillComboWithSystems(cmbGroup)
+
+END
+
+
+PRIVATE SUB FillTreeWith(hTree AS TreeView, sFile AS String, hTextBox AS TextBox, sSelect AS String)
+
+  DIM hFile AS File
+  DIM sLig AS String
+  DIM iLevel AS Integer
+  DIM iNewLevel AS Integer
+  DIM sParent AS String
+  DIM sKey AS String
+
+  hTree.Clear
+
+  OPEN sFile FOR READ AS #hFile
+
+  WHILE NOT Eof(hFile)
+
+    LINE INPUT #hFile, sLig
+
+    iNewLevel = Len(sLig) - Len(LTrim(sLig))
+
+    IF iNewLevel > iLevel THEN
+      sParent = sKey
+    ELSE IF iNewLevel < iLevel THEN
+      WHILE iLevel > iNewLevel
+        IF hTree[sParent].MoveParent() THEN
+          sParent = ""
+        ELSE
+          sParent = hTree.Item.Key
+        ENDIF
+        DEC iLevel
+      WEND
+    ENDIF
+
+    iLevel = iNewLevel
+
+    sKey = sParent &/ Trim(sLig)
+    hTree.Add(sKey, Trim(sLig),, sParent)
+
+  WEND
+
+  CLOSE #hFile
+
+  hTextBox.Text = sSelect 'Package.Menus[$sSystem]
+  IF hTextBox.Text THEN
+    TRY hTree[hTextBox.Text].Selected = TRUE
+    TRY hTree[hTextBox.Text].EnsureVisible
+  ENDIF
+
+END
+
+
+
+PUBLIC SUB cmbMenu_Click()
+
+  $sMenuSystem = GetSystemFromName(cmbMenu.Text)
+
+  FillTreeWith(tvwMenu, "menu" &/ $sMenuSystem, txtMenu, Project.Menus[$sMenuSystem])
+
+END
+
+PUBLIC SUB tvwMenu_Select()
+
+  DIM sMenu AS String
+
+  tvwMenu.MoveCurrent
+  WHILE tvwMenu.Available
+    sMenu = tvwMenu.Item.Text &/ sMenu
+    tvwMenu.MoveParent
+  WEND
+
+  txtMenu.Text = sMenu
+  Project.Menus[GetSystemFromName(cmbMenu.Text)] = sMenu
+
+END
+
+PUBLIC SUB cmbGroup_Click()
+
+  $sGroupSystem = GetSystemFromName(cmbGroup.Text)
+
+  FillTreeWith(tvwGroup, "group" &/ $sGroupSystem, txtMenu, Project.Groups[$sGroupSystem])
+
+END
+
+PUBLIC SUB tvwGroup_Select()
+
+  DIM sGroup AS String
+
+  tvwGroup.MoveCurrent
+  WHILE tvwGroup.Available
+    sGroup = tvwGroup.Item.Text &/ sGroup
+    tvwGroup.MoveParent
+  WEND
+
+  txtGroup.Text = sGroup
+  Project.Groups[GetSystemFromName(cmbGroup.Text)] = sGroup
+
+END
+
+PUBLIC SUB chkPrefix_Click()
+
+  IF chkPrefix.Value THEN
+    txtPackage.Text = " gambas-" & LCase(Project.Name)
+  ELSE
+    txtPackage.Text = " " & LCase(Project.Name)
+  ENDIF
+
+END
+
+
+PRIVATE SUB CheckAlienForDebian()
+
+  chkDebian.enabled = NOT Project.CheckProgram("alien")
+
+END

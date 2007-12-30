@@ -1,0 +1,42 @@
+# Gambas Form File 1.0
+
+{ FSensor Form
+  MoveScaled(42,9,17.25,16.75)
+  'Move(336,72,138,134)
+  Text = ("Sensor")
+  Icon = Picture["icon.png"]
+  Mask = True
+  Border = Window.Fixed
+  SkipTaskbar = True
+  { mnuPopup Menu
+    Text = ("Popup")
+    Visible = False
+    { mnuTaskBar Menu
+      Text = ("&Show in task bar")
+    }
+    { mnuMask Menu
+      Text = ("Use mask")
+      Checked = True
+    }
+    { mnuPict Menu
+      Text = ("Show picture")
+      Checked = True
+    }
+    { mnuAbout Menu
+      Text = ("&About...")
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+      Shortcut = "Esc"
+    }
+  }
+  { Timer1 #Timer
+    #X = 40
+    #Y = 16
+    Enabled = True
+    Delay = 5000
+  }
+}

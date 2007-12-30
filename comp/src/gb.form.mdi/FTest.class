@@ -1,0 +1,13 @@
+' Gambas class file
+
+PUBLIC SUB Form_GotFocus()
+
+  TextArea1.SetFocus  
+
+END
+
+PUBLIC SUB _new()
+
+  ME.Resize(Int(Rnd(200, 600)), Int(Rnd(200, 600)))
+
+END

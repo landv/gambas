@@ -1,0 +1,285 @@
+' Gambas module file
+
+EXPORT 
+'CREATE 
+
+PRIVATE $sId AS String
+PRIVATE $sPath AS String
+PRIVATE $cVal AS Collection
+PRIVATE $bModify AS Boolean
+
+PROPERTY READ Id AS String
+
+PRIVATE SUB WriteLength(iLen AS Integer)
+  
+  DIM iByte AS Byte
+  DIM iShort AS Short
+  
+  IF iLen < &H80 THEN 
+    iByte = iLen
+    WRITE iByte 
+  ELSE IF iLen < &H4000 THEN 
+    iShort = iLen OR &H8000
+    WRITE iShort
+  ELSE
+    iLen = iLen OR &HC0000000
+    WRITE iLen
+  ENDIF
+  
+END
+
+PRIVATE SUB ReadLength() AS Integer
+  
+  DIM iByte AS Byte
+  DIM iLen AS Integer
+  
+  READ iByte
+  
+  SELECT CASE Shr(iByte, 6)
+  
+    CASE 0, 1
+      RETURN iByte
+    
+    CASE 2
+      iByte = iByte AND &H3F
+      iLen = iByte
+      READ iByte
+      iLen += Shl(iByte, 8)
+  
+    CASE 3
+      iByte = iByte AND &H3F
+      iLen = iByte
+      READ iByte
+      iLen += Shl(iByte, 8)
+      READ iByte
+      iLen += Shl(iByte, 16)
+      READ iByte
+      iLen += Shl(iByte, 32)
+  
+  END SELECT
+  
+  RETURN iLen
+    
+END
+
+
+
+PRIVATE SUB WriteValue(vVal AS Variant)
+  
+  DIM vElt AS Variant
+  DIM iType AS Byte
+  
+  IF IsObject(vVal) THEN 
+    IF vVal IS Collection THEN 
+      PRINT "C";
+      WriteLength(vVal.Count)
+      FOR EACH vElt IN vVal
+        WRITE CStr(vVal.Key)
+        WriteValue(vElt)
+      NEXT 
+    ELSE IF vVal IS Array THEN 
+      PRINT "A";
+      iType = vVal.Type
+      WRITE iType
+      WriteLength(vVal.Count)
+      FOR EACH vElt IN vVal
+        WriteValue(vElt)
+      NEXT 
+    ELSE 
+      Error.Raise("Unserializable datatype")
+    ENDIF
+  ELSE 
+    iType = TypeOf(vVal)
+    'WRITE iType
+    WRITE vVal
+  ENDIF
+  
+END
+
+
+PRIVATE SUB SaveSession()
+  
+  DIM hFile AS File
+
+  'PRINT "<h2>Save session</h2>"
+  'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
+  
+  IF NOT $sId THEN RETURN 
+  IF NOT $bModify THEN RETURN
+  
+  hFile = OPEN $sPath FOR CREATE 
+  OUTPUT TO #hFile
+  
+  WriteValue($cVal)
+  
+  CLOSE #hFile
+  OUTPUT TO DEFAULT 
+  
+  'PRINT "<p>"; Stat($sPath).Size
+  
+END
+
+
+PRIVATE SUB ReadValue() AS Variant
+  
+  DIM bBoolean AS Boolean
+  DIM iByte AS Byte
+  DIM iShort AS Short
+  DIM iInt AS Integer
+  DIM sStr AS String
+  DIM dDate AS Date
+  DIM gSingle AS Single
+  DIM fFloat AS Float
+  DIM hCol AS Collection
+  DIM aArr AS Array
+  DIM iLen AS Integer
+  
+  READ iByte
+
+  SELECT CASE iByte
+    CASE gb.Boolean
+      READ bBoolean
+      RETURN bBoolean
+    CASE gb.Byte
+      READ iByte
+      RETURN iByte
+    CASE gb.Short
+      READ iShort
+      RETURN iShort
+    CASE gb.Integer
+      READ iInt
+      RETURN iInt
+    CASE gb.Single
+      READ gSingle
+      RETURN gSingle
+    CASE gb.Float
+      READ fFloat
+      RETURN fFloat
+    CASE gb.Date
+      READ dDate
+      RETURN dDate
+    CASE gb.String
+      READ sStr
+      RETURN sStr
+    CASE Asc("C")
+      hCol = NEW Collection
+      iLen = ReadLength()
+      FOR iInt = 1 TO iLen
+        READ sStr
+        hCol[sStr] = ReadValue()
+      NEXT
+      RETURN hCol
+    CASE Asc("A")
+      READ iByte
+      iLen = ReadLength()
+      sStr = ["Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date", "String", "String", "Variant", "", "", "", "", "Object"][iByte]
+      aArr = NEW (sStr & "[]", iLen)
+      FOR iInt = 0 TO iLen - 1
+        aArr[iInt] = ReadValue()
+      NEXT
+      RETURN aArr
+  END SELECT  
+  
+END
+
+
+
+PRIVATE SUB LoadSession()
+  
+  DIM hFile AS File
+
+  hFile = OPEN $sPath
+  INPUT FROM #hFile
+  
+  $cVal = ReadValue()
+  
+  CLOSE #hFile
+  INPUT FROM DEFAULT 
+  
+  $bModify = FALSE
+  
+END
+
+PRIVATE SUB CreateSession()
+  
+  DIM iInd AS Integer
+  DIM sPrefix AS String
+  
+  sPrefix = "/tmp/gambas." & System.User.Id
+  
+  REPEAT 
+    $sId = ""
+    FOR iInd = 1 TO 8
+      $sId &= Hex$(Int(Rnd(65536)), 4)
+    NEXT
+    '$sId = "TEST"
+    $sPath = sPrefix &/ "session" &/ $sId  
+  UNTIL NOT Exist($sPath)
+  
+  
+  'TRY MKDIR $sPrefix
+  TRY MKDIR sPrefix &/ "session"
+  
+  Response.SetCookie("SESSION", $sId, "", CGI["SCRIPT_NAME"])
+  
+  $cVal = NEW Collection
+  
+END
+
+PUBLIC SUB _init()
+  
+  $sId = Request.Cookies["SESSION"]
+  '$sId = "TEST"
+  IF NOT $sId THEN RETURN
+  
+  $sPath = "/tmp/gambas." & System.User.Id &/ "session" &/ $sId
+  
+  IF NOT Exist($sPath) OR IF (Stat($sPath).LastModified - Now) >= 1 THEN 
+    TRY KILL $sPath
+    $sId = ""
+    RETURN 
+  ENDIF
+
+  LoadSession
+
+'CATCH 
+'  CGI.Error(Error.Where & ": " & Error.Text)
+
+END
+
+PUBLIC SUB _exit()
+  
+  SaveSession
+  
+END
+
+
+PUBLIC SUB Abandon()
+  
+  IF NOT $sId THEN RETURN
+  TRY KILL $sPath
+  Response.RemoveCookie("SESSION", $sId, "", CGI["SCRIPT_NAME"])
+  $sId = ""
+  
+END
+
+PUBLIC SUB _get(Key AS String) AS Variant
+  
+  IF $cVal THEN RETURN $cVal[Key]
+  
+END
+
+PUBLIC SUB _put(Value AS Variant, Key AS String)
+
+  IF NOT $cVal THEN CreateSession
+  $cVal[Key] = Value
+  $bModify = TRUE
+    
+END
+
+PRIVATE FUNCTION Id_Read() AS String
+
+  RETURN $sId  
+
+END
+

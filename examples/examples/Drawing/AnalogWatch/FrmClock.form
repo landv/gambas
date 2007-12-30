@@ -1,0 +1,30 @@
+# Gambas Form File 1.0
+
+{ FrmClock Form
+  Move(420,234,318,307)
+  Text = ("Analog clock")
+  { MenuPopUp Menu
+    Text = ("File")
+    Visible = False
+    { MenuAbout Menu
+      Text = ("&About")
+    }
+    { MenuSep Menu
+      Text = ("")
+    }
+    { MenuExit Menu
+      Text = ("E&xit")
+    }
+  }
+  { DwgArea DrawingArea
+    Move(0,0,88,64)
+    Background = &HFFFFFF&
+    ToolTip = ("Resize Window and the clock will follow \nRight click for a menu")
+  }
+  { TimerClk #Timer
+    #X = 120
+    #Y = 16
+    Enabled = True
+    Delay = 250
+  }
+}

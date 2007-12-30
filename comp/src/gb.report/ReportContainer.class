@@ -1,0 +1,121 @@
+' Gambas class file
+
+INHERITS ReportControl
+
+PRIVATE $aChild AS NEW Object[]
+PRIVATE $sSpacing AS String
+PRIVATE $sPadding AS String
+PROPERTY READ Children AS Object[]
+PROPERTY Spacing AS String
+PROPERTY Padding AS String
+
+
+PUBLIC SUB _Add(cControl AS ReportControl) AS Integer
+  
+  $aChild.Add(cControl)
+  ReportControl.ObjectFromId[cControl.Id] = cControl
+  
+END
+
+
+PUBLIC SUB _free()
+  
+  DIM hCtrl AS ReportControl
+  FOR EACH hCtrl IN $aChild
+    ReportControl.ObjectFromId[hCtrl.Id] = NULL
+  NEXT 
+    
+END
+
+
+PRIVATE FUNCTION Children_Read() AS Object[]
+
+  RETURN $aChild
+
+END
+
+
+PRIVATE FUNCTION Spacing_Read() AS String
+
+  RETURN $sSpacing
+
+END
+
+PRIVATE SUB Spacing_Write(Value AS String)
+
+  $sSpacing = Value
+
+END
+
+PRIVATE FUNCTION Padding_Read() AS String
+
+  RETURN $sPadding
+
+END
+
+PRIVATE SUB Padding_Write(Value AS String)
+
+  $sPadding = Value
+
+END
+
+PUBLIC SUB _SetGeometry(X AS Integer, Y AS Integer, W AS Integer, H AS Integer)
+  
+  'Enregistrement des données de position relatives
+  ME._RealLeft = X
+  ME._RealTop = Y
+  ME._RealWidth = W
+  ME._RealHeight = H
+  
+END
+
+
+PUBLIC SUB _DrawBefore(Page AS Integer, X AS Integer, Y AS Integer)
+  DIM hChild AS Object
+  
+  SUPER._DrawBefore(Page, X, Y)
+  FOR EACH hChild IN ME.Children
+
+    'Draw Before
+    IF hChild._RelPage = -1 THEN        
+     hChild._DrawBefore(Page, X + ME._RealLeft, Y + ME._RealTop)
+    ELSE IF hChild._RelPage + ME._RealPage = Page THEN 
+      hChild._DrawBefore(Page, X + ME._RealLeft, Y + ME._RealTop)
+    ENDIF 
+  
+  NEXT
+  
+END
+
+
+
+PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer)
+  DIM hChild AS Object
+ 
+  FOR EACH hChild IN ME.Children
+    'Draw
+    IF hChild._RelPage = -1 THEN        
+     hChild._Draw(Page, X + ME._RealLeft, Y + ME._RealTop)
+    ELSE IF hChild._RelPage + ME._RealPage = Page THEN 
+      hChild._Draw(Page, X + ME._RealLeft, Y + ME._RealTop)
+    ENDIF 
+  NEXT 
+  
+END
+
+PUBLIC SUB _DrawAfter(Page AS Integer, X AS Integer, Y AS Integer)
+  DIM hChild AS Object
+  
+  SUPER._DrawAfter(Page, X, Y)
+  FOR EACH hChild IN ME.Children
+    'Draw After
+    IF hChild._RelPage = -1 THEN        
+     hChild._DrawAfter(Page, X + ME._RealLeft, Y + ME._RealTop)
+    ELSE IF hChild._RelPage + ME._RealPage = Page THEN 
+      hChild._DrawAfter(Page, X + ME._RealLeft, Y + ME._RealTop)
+    ENDIF 
+  NEXT
+  
+END
+
+

@@ -1,0 +1,150 @@
+' Gambas module file
+
+PUBLIC PageCount AS Integer
+PUBLIC ResolutionAffichage AS Float
+PUBLIC FUNCTION RealHeight(oCtrl AS ReportControl) AS Integer
+  
+  DIM W AS Float
+  DIM W2 AS Float
+  DIM f AS Float
+  DIM hTsp AS TSizeParse
+  hTsp = ScanValue(oCtrl.Left)
+  W = hTsp.Value
+  '<Bug a ligne suivante deuxième passe>
+  hTsp = ScanValue(oCtrl.Height)
+  f = GetFactor(hTsp.Unit)
+  W2 = W + hTsp.Value
+  W = W * f
+  W2 = w2 * f
+
+  RETURN (W2 - W) * MRTools.ResolutionAffichage
+  
+  CATCH
+    PRINT "Erreur: " & Error.Text
+    PRINT Error.Where
+END
+
+PUBLIC FUNCTION RealWidth(oCtrl AS ReportControl) AS Integer
+  
+  DIM W AS Float
+  DIM W2 AS Float
+  DIM f AS Float
+  DIM hTsp AS TSizeParse
+  hTsp = ScanValue(oCtrl.Left)
+  W = hTsp.Value
+
+  hTsp = ScanValue(oCtrl.Width)
+  f = GetFactor(hTsp.Unit)
+  W2 = W + hTsp.Value
+  W = W * f
+  W2 = w2 * f
+  RETURN (W2 - W) * MRTools.ResolutionAffichage
+  
+  CATCH
+    PRINT "Erreur: " & Error.Text
+    PRINT Error.Where
+END
+
+PUBLIC FUNCTION RealTop(oCtrl AS ReportControl) AS Integer
+  
+  DIM T AS Float
+  DIM f AS Float
+  DIM hTsp AS TSizeParse
+  hTsp = ScanValue(oCtrl.Top)
+  f = GetFactor(hTsp.Unit)
+  T = htsp.Value
+  RETURN T * f
+  
+  CATCH
+    PRINT "Erreur: " & Error.Text
+    PRINT Error.Where
+END
+
+PUBLIC FUNCTION RealLeft(oCtrl AS ReportControl) AS Integer
+  
+  DIM L AS Float
+  DIM f AS Float
+  DIM ars AS String[]
+  ars = ScanValue(oCtrl.Left)
+  f = GetFactor(ars[1])
+  L = CFloat(Trim(ars[0]))
+  RETURN (L * f) * MRTools.ResolutionAffichage
+  
+  CATCH
+    PRINT "Erreur: " & Error.Text
+    PRINT Error.Where
+END
+
+PUBLIC FUNCTION RealSpacing(oCtrl AS Object) AS Integer
+  
+  DIM S AS Float
+  DIM f AS Float
+  DIM hTsp AS TSizeParse
+  hTsp = ScanValue(oCtrl.Spacing)
+  f = GetFactor(hTsp.Unit)
+  S = htsp.Value
+  RETURN (S * f) * MRTools.ResolutionAffichage
+  
+  CATCH
+    PRINT "Erreur: " & Error.Text
+    PRINT Error.Where
+END
+
+PUBLIC FUNCTION RealPadding(oCtrl AS Object) AS Integer
+  
+  DIM P AS Float
+  DIM f AS Float
+  DIM hTsp AS TSizeParse
+  hTsp = ScanValue(oCtrl.Padding)
+  f = GetFactor(hTsp.Unit)
+  P = htsp.Value
+  RETURN (P * f) * MRTools.ResolutionAffichage
+  
+  CATCH
+  PRINT "Erreur: " & Error.Text
+  PRINT Error.Where
+END
+
+PRIVATE FUNCTION GetFactor(Units AS String) AS Float
+  
+  SELECT CASE Trim(Units)
+    CASE "cm"
+      RETURN 0.39 * Report.Resolution
+    CASE "mm"
+      RETURN 0.0039 * Report.Resolution
+    CASE ELSE 
+      RETURN 1
+  END SELECT
+  
+END
+
+PUBLIC FUNCTION ScanValue(sText AS String) AS TSizeParse
+  
+  DIM i AS Integer
+  DIM s AS String
+  DIM sVal AS String 
+  DIM sUnit AS String
+  DIM hTSP AS NEW TSizeParse
+  IF NOT sText THEN sText = "0 px"
+  'DIM ars AS String
+  'PRINT "Reçoit", sText
+  FOR i = 1 TO Len(sText)
+    s = Mid(sText, i, 1)
+    IF IsDigit(s) OR s = "." THEN 
+      sVal &= s
+      CONTINUE
+    ENDIF 
+    IF IsLetter(s) THEN 
+      sUnit &= s
+    ENDIF
+  NEXT 
+  'PRINT "retourne ", sVal, sUnit
+  
+  hTSP.Value = CFloat(Trim(sVal))
+
+  hTsp.Unit = sUnit
+  RETURN hTSP
+  
+  END
+
+

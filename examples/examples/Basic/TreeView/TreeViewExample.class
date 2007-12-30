@@ -1,0 +1,137 @@
+' Gambas class file
+
+PUBLIC intEventNumber AS Integer
+
+PUBLIC SUB Form_Open()
+  DIM picMale AS Picture
+  DIM picFemale AS Picture
+
+  picFemale = Picture["Female.png"]
+  picMale = Picture["Male.png"]
+
+  'This will populate our treeview with our starting entries
+  'Note: I'll just keep the entries text and its key the same to keep it simple
+  TreeView1.Add("Bill", "Bill", picMale)
+  TreeView1.Add("Ted", "Ted", picMale, "Bill")
+  TreeView1.Add("Sally", "Sally", picFemale, "Bill")
+  TreeView1.Add("Frank", "Frank", picMale, "Sally")
+  TreeView1.MoveCurrent
+  TreeView1.Item.Selected = TRUE
+  TreeView1.Item.Expanded = TRUE
+
+
+END
+
+PUBLIC SUB TreeView1_Click()
+
+  'This just updates our event stack
+  Stack_Event_Log("Click")
+
+  'This little check just updates our label so that we know how many
+  'children an entry has.
+  IF TreeView1.item.Children > 1 THEN
+    textlabel1.Text = (TreeView1.Item.Text & " has " & TreeView1.Item.Children & " children.")
+  ELSE IF TreeView1.item.Children = 0 THEN
+    textlabel1.Text = (TreeView1.Item.Text & " has no children.")
+  ELSE
+    textlabel1.Text = (TreeView1.Item.Text & " has 1 child.")
+  END IF
+
+END
+
+
+PUBLIC SUB Button1_Click()
+  
+  DIM sIcon AS String
+  DIM sParent AS String
+
+  IF Textbox1.Text <> NULL THEN
+    IF RadioButton1.Value THEN
+      sIcon = "Male.png"
+    ELSE
+      sIcon = "Female.png"
+    END IF
+    'Gets the parent item: the current item, or nothing is the treeview is void
+    IF NOT TreeView1.MoveCurrent() THEN
+      sParent = TreeView1.Key
+    ENDIF
+    'Now we will add a new entry with a key and a name of what was in the text box
+    'We will place it as a child of the currently selected entry
+    TreeView1.Add(Textbox1.Text, Textbox1.Text, Picture[sIcon], sParent)
+    TextBox1.Text = "" 'This empties out textbox
+    TreeView1_Click ' This will update our label and reflect the new number of kids
+    TreeView1.Item.EnsureVisible 'This will make sure that the item we just added to the list is in the visable area of the control. (Scrolling if necessary)
+  END IF
+END
+
+PUBLIC SUB Button2_Click()
+
+    'This gets out cursor lined up to our current selection (This makes sure that the current item isn't null!)
+    IF TreeView1.MoveCurrent() THEN RETURN
+    'Lets remove the current cursor item
+    TreeView1.Remove(TreeView1.Item.Text)
+    'Now move the cursor to the current item (since we are now pointing at a deleted item)
+    'But first we check the count to make sure we didn't delete the last item in the list
+    'if we did then we obviously don't run this part.
+    IF TreeView1.Count > 0 THEN
+      TreeView1.MoveCurrent
+      'This selects or 'highlights' our current item
+      TreeView1.Item.Selected = TRUE
+      'This will update our label and reflect the new number of kids
+      TreeView1_Click
+    END IF
+END
+
+
+PUBLIC SUB TreeView1_Collapse()
+  'This just updates our event stack
+  Stack_Event_Log("Collapse")
+END
+
+PUBLIC SUB TreeView1_DblClick()
+  'This just updates our event stack
+  Stack_Event_Log("DblClick")
+END
+
+PUBLIC SUB TreeView1_Select()
+  'This just updates our event stack
+  Stack_Event_Log("Select")
+END
+
+PUBLIC SUB TreeView1_Delete()
+  'This just updates our event stack
+  Stack_Event_Log("Delete")
+END
+
+PUBLIC SUB TreeView1_Expand()
+  'This just updates our event stack
+  Stack_Event_Log("Expand")
+END
+
+
+PUBLIC SUB Button3_Click()
+  TextArea1.Text = ""
+  'IntEventNumber = 0
+END
+
+PUBLIC SUB About_Click()
+  Message.Info("TreeView example written by C. Packard and Fabien Hutrel.")
+END
+
+PUBLIC SUB TreeView1_Activate()
+  'This just updates our event stack
+  Stack_Event_Log("Activate")
+END
+
+PUBLIC SUB TreeView1_Rename()
+  'This just updates our event stack
+  Stack_Event_Log("Rename")
+END
+
+PRIVATE SUB Stack_Event_Log(anevent AS String)
+  'This updates our event stack, this sub is used by all events... it display the current node key.
+  TextArea1.Text = "Event(" & intEventNumber & "): " & anevent & " <" & TreeView1.Item.Key & ">" & Chr(10) & TextArea1.Text
+  intEventNumber = intEventNumber + 1  
+END
+
+

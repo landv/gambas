@@ -1,0 +1,465 @@
+' Gambas class file
+
+'PRIVATE hc AS Report
+PRIVATE Pdf AS NEW PdfDocument 
+PRIVATE hPic AS Picture
+PRIVATE fZoom AS Integer
+PRIVATE hCon AS NEW connection
+PRIVATE hResult AS Result
+PUBLIC SUB _New()
+  hcon.user = "root"
+  hcon.host = "localhost"
+  hcon.Type = "mysql"
+  hcon.Name = "test"
+  
+  hcon.Open
+  
+  Test2()
+  
+END
+
+
+
+PUBLIC SUB Test1()
+  'DIM hReport 
+  
+  DIM hCont AS ReportHBox
+  DIM vCont AS ReportVBox
+  DIM txt AS ReportLabel
+  DIM spetxt AS ReportField
+  DIM img AS ReportImage
+  DIM i, j AS Integer
+  DIM hCont2 AS ReportContainer
+  DIM vRef AS ReportVBox
+  DIM vDes AS ReportVBox
+  DIM vPU AS ReportVBox
+  DIM vQt AS ReportVBox
+  DIM vTot AS ReportVBox
+  DIM fPrix AS Float
+  DIM qte AS Integer
+  
+  'hc = NEW Report(NULL)
+  'Marges
+  Report.Padding = "0 cm"
+  Object.Attach(report, ME, "Report")
+  Report.Spacing = "0.2 cm"
+  Report.LineStyle = line.Solid
+  Report.Tag = "Report"
+  'Entete
+    
+  hCont = NEW ReportHBox(Report)
+  hCont.Height = "3 cm"
+  img = NEW ReportImage(hCont)
+  img.Path = "new-logo.png"
+  img.Width = "3 cm"
+  'img.Height = "3 cm"
+  img.Tag = "Image"
+  
+  txt = NEW ReportLabel(hcont)
+  txt.Text = "Gambas Facture"
+  txt.Alignment = Align.Center
+  txt.Font = font["32"]
+  txt.Expand = TRUE
+  txt.Tag = "Titre"
+  
+  hCont = NEW ReportHBox(Report)
+  hCont.Height = "5 cm"
+  ' 
+  vCont = NEW ReportVBox(hCont)
+  vCont.Expand = TRUE
+  vCont = NEW ReportVBox(hCont)
+  vCont.Width = "10 cm"
+  vCont.Tag = "Container adresse"
+  
+  txt = NEW ReportLabel(vCont)
+  txt.Text = "Gambas & Co"
+  txt.Font.Size = 12
+  txt.Font.Bold = TRUE
+  
+  txt = NEW ReportLabel(vCont)
+  txt.Text = "This Street"
+  txt.Font.Size = 12
+  txt.Font.Bold = TRUE
+  
+  txt = NEW ReportLabel(vCont)
+  txt.Text = "A City in France"
+  txt.Font.Size = 12
+  txt.Font.Bold = TRUE
+  ' 
+  txt = NEW ReportLabel(vCont)
+  txt.Text = "Tel/Fax: 00 000 000 000"
+  txt.Font.Size = 12
+  txt.Font.Bold = TRUE
+  ' 
+  vCont = NEW ReportVBox(Report)
+  vcont.Height = "1 cm"
+  vCont.Tag = "Container n°fact/client"
+  
+  txt = NEW ReportLabel(vCont)
+  txt.Text = "Client N° 0001"
+  
+  txt = NEW ReportLabel(vCont)
+  txt.Text = "Facture N° 0001"
+  
+  ' vCont = NEW ReportVBox(Report)
+  ' vCont.Height = "2 cm"
+  ' vCont.Tag = "Container vide d'espacement"
+  
+  hCont = NEW ReportHBox(Report)
+  hCont.Expand = TRUE
+  hCont.Spacing = "0.05 cm"
+  hCont.Height = "10 cm"
+  
+  vCont = NEW ReportVBox(hCont)
+  vCont.Width = "2.5 cm"
+  vCont.Spacing = "0.05 cm"
+  vCont.Tag = "Container De colonne Ref"
+  
+    txt = NEW ReportLabel(vCont)
+    txt.Text = "Reference"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = TRUE
+    'txt.Width = "3,5 cm"
+    txt.LineStyle = line.Solid
+    txt.FillColor = Color.LightGray
+    txt.FillStyle = fill.Solid
+    
+    vRef = NEW ReportVBox(vCont)
+    vRef.Expand = TRUE
+    vRef.LineStyle = line.Solid
+    vRef.Padding = "0.1 cm"
+    vRef.Spacing = "0.1 cm"
+    vRef.Height = "5 cm"
+    vRef.Tag = "Reference"
+    VRef.Tag = "Container de donnée de ref"
+    
+  vCont = NEW ReportVBox(hCont)
+  VcONT.Expand = TRUE
+  vCont.Spacing = "0.05 cm"
+  
+    txt = NEW ReportLabel(vCont)
+    txt.Text = "Designation"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = TRUE
+    txt.LineStyle = line.Solid
+    txt.FillColor = Color.LightGray
+    txt.FillStyle = fill.Solid
+    
+    vDes = NEW ReportVBox(vCont)
+    vDes.Expand = TRUE
+    vDes.LineStyle = line.Solid
+    vDes.Padding = "0.1 cm"
+    vDes.Spacing = "0.1 cm"
+    
+  vCont = NEW ReportVBox(hCont)
+  vCont.Width = "2.5 cm"
+  vCont.Spacing = "0.05 cm"
+  
+    txt = NEW ReportLabel(vCont)
+    txt.Text = "Quantitée"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = TRUE
+    'txt.Width = "3,5 cm"
+    txt.LineStyle = line.Solid
+    txt.FillColor = Color.LightGray
+    txt.FillStyle = fill.Solid
+    
+    vQt = NEW ReportVBox(vCont)
+    vQt.Expand = TRUE
+    vQt.LineStyle = line.Solid
+    vQt.Padding = "0.1 cm"
+    vQt.Spacing = "0.1 cm"
+  
+  vCont = NEW ReportVBox(hCont)
+  vCont.Width = "2.5 cm"
+  vCont.Spacing = "0.05 cm"
+  
+    txt = NEW ReportLabel(vCont)
+    txt.Text = "Prix Unitaire"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = TRUE
+    'txt.Width = "3,5 cm"
+    txt.LineStyle = line.Solid
+    txt.FillColor = Color.LightGray
+    txt.FillStyle = fill.Solid
+    
+    vPU = NEW ReportVBox(vCont)
+    vPU.Expand = TRUE
+    vPU.LineStyle = line.Solid
+    vPu.Padding = "0.1 cm"
+    vPU.Spacing = "0.1 cm"
+  
+  vCont = NEW ReportVBox(hCont)
+  vCont.Width = "2.5 cm"
+  vCont.Spacing = "0.05 cm"
+  
+    txt = NEW ReportLabel(vCont)
+    txt.Text = "Prix HT"
+    txt.Alignment = Align.Center
+    txt.Font.Italic = TRUE
+    'txt.Width = "3,5 cm"
+    txt.LineStyle = line.Solid
+    txt.FillColor = Color.LightGray
+    txt.FillStyle = fill.Solid
+    
+    vTot = NEW ReportVBox(vCont)
+    vTot.Expand = TRUE
+    vTot.LineStyle = line.Solid
+    vTot.Padding = "0.1 cm"
+    vTot.Spacing = "0.1 cm"
+    vTot.Tag = "Total"
+    
+  ' hCont = NEW ReportHBox(Report)
+  ' hCont.Height = "1 cm"
+  ' hCont.FillColor = Color.LightGray
+  ' hCont.LineStyle = line.Solid
+  ' hCont.Tag = "Container de total"
+  
+  ' spetxt = NEW ReportField(hCont)
+  ' spetxt.Text = "Bas de facture $PAGE/$NPAGE"
+  ' spetxt.Expand = TRUE
+  ' spetxt.Alignment = Align.Center
+  
+  FOR i = 1 TO 50
+  
+    txt = NEW ReportLabel(vRef)
+    txt.Alignment = Align.Right
+    txt.Text = i
+    
+    txt = NEW ReportLabel(vDes)
+    txt.Text = "Ma designation"
+    txt.Alignment = Align.Left
+    txt = NEW ReportLabel(vQt)
+    qte = Rnd(1, 10)
+    txt.text = qte
+    txt.Alignment = Align.Right
+    
+    txt = NEW ReportLabel(vPU)
+    fPrix = Round(Rnd(1, 100), -2)
+    txt.text = fPrix
+    txt.Alignment = Align.Right
+    
+    txt = NEW ReportLabel(vTot)
+    txt.text = Str(qte * fPrix) & " €"
+    txt.Alignment = Align.Right
+    
+      
+  NEXT
+  
+END
+
+PUBLIC SUB Form_Open()
+
+END
+
+
+PUBLIC SUB SpinBox1_Change()
+  DIM zoomFactor AS Float
+  DrawingArea1.Clear
+  
+  Draw.Begin(DrawingArea1)
+  report.Layout
+  draw.End
+  zoomFactor = fZoom / 100
+  TRY DrawingArea1.Resize(report._realwidth, Printer.Height * zoomFactor)
+  Draw.Begin(DrawingArea1)
+  IF SpinBox1.Value > Report.count THEN RETURN 
+  
+  
+  
+    'Report.Calculate
+    'Message(Report.count) 'draw.Scale(0.1, 0.1)
+    report.zoom = zoomFactor
+    'Draw.Scale(zoomFactor, zoomFactor)
+    Report.Draw(SpinBox1.Value)
+    'Draw.Picture(hPic, 0, 0)
+  Draw.End
+  
+END
+
+PUBLIC SUB HBox1_MouseDown()
+
+  
+
+END
+
+PUBLIC SUB ComboBox1_Change()
+
+    SpinBox1_Change()
+
+END
+
+PUBLIC SUB ComboBox1_Click()
+  fZoom = Val(ComboBox1.Text) * Desktop.Resolution / Printer.Resolution
+  SpinBox1_Change()
+
+END
+
+PUBLIC SUB MakePdf()
+  DIM hTemp AS String
+  DIM i AS Integer
+  hTemp = Temp
+  
+  Printer.File = hTemp 
+  Printer.Size = "A4"
+  report.Height = Printer.height & " px"
+  report.width = printer.Width & " px"
+  report.Resolution = printer.Resolution
+  Draw.Begin(Printer)
+    'Draw.Scale(Val(ComboBox1.Text) / 100, Val(ComboBox1.Text) / 100)
+   'Report.Calculate
+   Report.Layout
+   Message(Report.count)
+   FOR i = 1 TO Report.count
+   
+    Report.Draw(i)
+    
+    IF i < Report.count THEN Printer.NewPage()
+    
+   NEXT
+
+  Draw.End  
+  EXEC ["ps2pdf", hTemp, user.Home &/ "Desktop/Test.pdf"] WAIT
+  KILL hTemp
+  pdf.Close
+  Pdf.Open(user.Home &/ "Desktop/Test.pdf")
+  
+  SpinBox1.MaxValue = pdf.Count
+  'SpinBox1_Change
+
+END
+
+PUBLIC SUB PictureBox1_MouseDown()
+
+  
+
+END
+
+PUBLIC SUB Button1_Click()
+
+  DrawingArea1.Resize(Printer.Width, Printer.Height)
+  Report.Width = "21 cm"
+  Report.Height = "29.7 cm"
+  Report.Resolution = Desktop.Resolution
+  'draw.Begin(DrawingArea1)
+  '  Report.Calculate()
+  'draw.end
+  'SpinBox1.MaxValue = Report.Count
+  Button1.Enabled = FALSE
+  Button2.Enabled = FALSE
+  SpinBox1.Enabled = TRUE
+  ComboBox1.Enabled = TRUE
+  ComboBox1_Click
+  SpinBox1_Change
+  
+END
+
+
+
+PUBLIC SUB Button2_Click()
+Button1.Enabled = FALSE
+MakePdf  
+
+END
+
+
+
+
+PUBLIC SUB Button3_Click()
+
+Report
+
+Test2  
+
+END
+
+
+PUBLIC SUB Test2()
+  
+  DIM tx AS ReportLabel
+  DIM tf AS ReportField
+  DIM table AS ReportTable 
+  DIM hTable AS Table
+  DIM hRF AS ResultField
+  
+  Report.Padding = "1 cm"
+  Object.Attach(report, ME, "Report")
+  Report.Spacing = "0.2 cm"
+  Report.LineStyle = line.Solid
+  Report.Tag = "Report"
+  
+  tx = NEW ReportLabel(report)
+  tx.Text = hcon.user & "@" & hcon.Host & "/" & hCon.Name & " (test)"
+  tx.Padding = "8 mm"
+  tx.Font.Size = 24
+  tx.Alignment = align.Center
+  'report.Resolution = 0
+  table = NEW ReportTable(report) AS "ReportTable"
+  table.Expand = TRUE
+  hResult = db.Exec("SELECT * FROM test")
+  'table.Columns.Count = hResult.Fields.Count
+  FOR EACH hRF IN hResult.Fields
+   INC table.Columns.Count 
+   table.Columns[table.Columns.Count - 1].Text = hRF.Name
+  NEXT
+  
+ 
+  Table.Rows.Count = hResult.Count
+  table.Header = 3
+
+  '    tf = NEW ReportField(report)
+  ' tf.Text = "Page $PAGE/$NPAGE"
+  ' tf.Alignment = align.center
+  
+  
+END
+
+
+PUBLIC SUB ReportTable_Data(Row AS Integer, Column AS Integer)
+  DIM hlbl AS ReportLabel
+  DIM hPic AS ReportImage
+  IF column = 1 THEN 
+  hPIc = NEW ReportImage(LAST.Data)
+  hPic.Path = "printer1.png"
+  hPic.Height = "1 cm"
+  ENDIF
+  hlbl = NEW ReportLabel(LAST.data)
+  
+  IF Row MOD 2 > 0 THEN 
+    
+    LAST.Data.FillColor = &hC0C0FF
+    LAST.dATA.FillStyle = fILL.Solid
+  ENDIF
+  hResult.MoveTo(Row)  
+  hlbl.Text = hResult[LAST.Columns[column].text]
+  
+END
+
+PUBLIC SUB Test3()
+  
+DIM hBox AS ReportHBox
+DIM hLabel AS ReportLabel
+DIM i AS Integer
+  Report.Padding = "1 cm"
+  Object.Attach(report, ME, "Report")
+  'Report.Spacing = "0.2 cm"
+  Report.LineStyle = line.Solid
+  Report.Tag = "Report"
+  
+  HBox = NEW ReportHBox(Report)
+  hBox.Height = "2 cm"
+  FOR i = 1 TO 4
+  hLabel = NEW ReportLabel(hBox)
+  
+  hLabel.Width = "4.5 cm"
+  hLabel.LineStyle = line.Solid
+  NEXT 
+  HBox = NEW ReportHBox(Report)
+  hBox.Height = "2 cm"
+  FOR i = 1 TO 6
+  
+    hLabel = NEW ReportLabel(hBox)
+    hLabel.Width = "3 cm"
+    hLabel.LineStyle = line.Solid
+  NEXT 
+END

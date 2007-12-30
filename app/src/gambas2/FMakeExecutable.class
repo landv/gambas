@@ -1,0 +1,56 @@
+' Gambas class file
+
+PRIVATE $sPath AS String
+
+PUBLIC SUB Run(sPath AS String) AS String
+  
+  $sPath = sPath
+  IF ME.ShowModal() THEN RETURN $sPath
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+  Settings.Read(ME)
+  Settings.Read(fchExec, "fchExec")
+
+  fchExec.Filter = ["*.gambas", ("Gambas applications")]
+  fchExec.SelectedPath = $sPath
+  
+  chkDebug.Value = Project.KeepDebugInfo
+  chkShortcut.Value = Project.CreateShortcut
+  IF Project.CreateComponent THEN 
+    chkShortcut.Text = ("Install in the user component directory")
+  ENDIF
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  $sPath = fchExec.SelectedPath
+  Project.KeepDebugInfo = chkDebug.Value
+  Project.CreateShortcut = chkShortcut.Value
+  Project.WriteProject(TRUE)
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(fchExec, "fchExec")
+  Settings.Write(ME)
+
+END
+
+PUBLIC SUB fchExec_Activate()
+
+  btnOK.Value = TRUE
+
+END

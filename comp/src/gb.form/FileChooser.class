@@ -1,0 +1,285 @@
+' Gambas class file
+
+INHERITS UserControl
+EXPORT
+
+PUBLIC CONST _Properties AS String = "*,Root,Picture,Multi,Filter,ShowHidden,ShowDirectory,ShowDetailed,ShowBookmark,ReadOnly"
+PUBLIC CONST _DefaultEvent AS String = "Change"
+PUBLIC CONST _DefaultSize AS String = "36,36"
+
+PROPERTY Root AS String
+PROPERTY Picture AS Picture
+PROPERTY {Dir} AS String
+PROPERTY SelectedPath AS String
+PROPERTY READ SelectedPaths AS String[]
+PROPERTY Value AS Variant
+PROPERTY Multi AS Boolean
+PROPERTY ShowDirectory AS Boolean
+PROPERTY ShowHidden AS Boolean
+PROPERTY ShowDetailed AS Boolean
+PROPERTY ShowBookmark AS Boolean
+PROPERTY Bookmarks AS Array
+PROPERTY Settings AS String[]
+
+PROPERTY ReadOnly AS Boolean
+PROPERTY Filter AS String[]
+PROPERTY FilterIndex AS Integer
+PROPERTY Icon AS Picture
+
+EVENT Change
+EVENT Activate
+EVENT Icon(Path AS String)
+
+PRIVATE frmChooser AS FDirChooser
+
+PUBLIC SUB _new()
+
+  frmChooser = NEW FDirChooser(TRUE, ME) 'AS "frmChooser"
+  Object.Attach(frmChooser, ME, "frmChooser")
+  'Object.Delegate(frmChooser, ME)
+
+END
+
+PUBLIC SUB frmChooser_Open()
+
+  LAST.Form_Open
+
+END
+
+PUBLIC SUB frmChooser_Change()
+
+  RAISE Change
+
+END
+
+
+PUBLIC SUB frmChooser_Select()
+
+  RAISE Activate
+
+END
+
+PUBLIC SUB frmChooser_Icon(Path AS String)
+  
+  RAISE Icon(Path)
+  
+END
+
+PRIVATE FUNCTION Dir_Read() AS String
+
+  RETURN frmChooser.GetDir()
+
+END
+
+PRIVATE SUB Dir_Write(sDir AS String)
+
+  frmChooser.SetDir(sDir)
+
+END
+
+PRIVATE FUNCTION ShowDirectory_Read() AS Boolean
+
+  RETURN frmChooser.GetShowDirectory()
+
+END
+
+PRIVATE SUB ShowDirectory_Write(bShowDir AS Boolean)
+
+  frmChooser.SetShowDirectory(bShowDir)
+
+END
+
+PRIVATE FUNCTION ShowHidden_Read() AS Boolean
+
+  RETURN frmChooser.GetShowHidden()
+
+END
+
+PRIVATE SUB ShowHidden_Write(bShowHidden AS Boolean)
+
+  frmChooser.SetShowHidden(bShowHidden)
+
+END
+
+PRIVATE FUNCTION ShowDetailed_Read() AS Boolean
+
+  RETURN frmChooser.GetShowDetailed()
+
+END
+
+PRIVATE SUB ShowDetailed_Write(bShowDetailed AS Boolean)
+
+  frmChooser.SetShowDetailed(bShowDetailed)
+
+END
+
+PRIVATE FUNCTION Multi_Read() AS Boolean
+
+  RETURN frmChooser.GetMulti()
+
+END
+
+PRIVATE SUB Multi_Write(bMulti AS Boolean)
+
+  frmChooser.SetMulti(bMulti)
+
+END
+
+PRIVATE FUNCTION SelectedPath_Read() AS String
+
+  TRY RETURN frmChooser.GetPath()
+
+END
+
+PRIVATE SUB SelectedPath_Write(Value AS String)
+
+  frmChooser.SetPath(Value)  
+
+END
+
+PRIVATE FUNCTION SelectedPaths_Read() AS String[]
+
+  RETURN frmChooser.GetPaths()
+
+END
+
+' PRIVATE FUNCTION Font_Read() AS Font
+' 
+'   RETURN SUPER.Font
+' 
+' END
+' 
+' PRIVATE SUB Font_Write(hFont AS Font)
+' 
+'   SUPER.Font = hFont
+'   frmChooser.SetFont(SUPER.Font)
+' 
+' END
+
+PRIVATE FUNCTION Filter_Read() AS String[]
+
+  RETURN frmChooser.GetFilter()
+
+END
+
+PRIVATE SUB Filter_Write(aFilter AS String[])
+
+  frmChooser.SetFilter(aFilter)
+
+END
+
+PRIVATE FUNCTION Root_Read() AS String
+
+  RETURN frmChooser.GetRoot()
+
+END
+
+PRIVATE SUB Root_Write(Value AS String)
+
+  frmChooser.SetRoot(Value)
+
+END
+
+PRIVATE FUNCTION Icon_Read() AS Picture
+
+  RETURN frmChooser.FileView.Icon
+
+END
+
+PRIVATE SUB Icon_Write(Value AS Picture)
+
+  frmChooser.FileView.Icon = Value
+  frmChooser.DirView.Icon = Value
+
+END
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+
+  RETURN frmChooser.GetReadOnly()  
+
+END
+
+PRIVATE SUB ReadOnly_Write(Value AS Boolean)
+
+  frmChooser.SetReadOnly(Value)
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  RETURN frmChooser.GetPicture()
+
+END
+
+PRIVATE SUB Picture_Write(Value AS Picture)
+
+  frmChooser.SetPicture(Value)
+
+END
+
+PRIVATE FUNCTION Value_Read() AS Variant
+
+  IF frmChooser.GetMulti() THEN 
+    RETURN SelectedPaths_Read()
+  ELSE 
+    RETURN SelectedPath_Read()
+  ENDIF
+
+END
+
+PRIVATE SUB Value_Write(Value AS Variant)
+
+  IF NOT frmChooser.GetMulti() THEN 
+    SelectedPath_Write(Value)
+  ENDIF  
+
+END
+
+PRIVATE FUNCTION FilterIndex_Read() AS Integer
+
+  RETURN frmChooser.GetFilterIndex()
+
+END
+
+PRIVATE SUB FilterIndex_Write(Value AS Integer)
+
+  frmChooser.SetFilterIndex(Value)
+
+END
+
+PRIVATE FUNCTION ShowBookmark_Read() AS Boolean
+
+  RETURN frmChooser.IsBookmarkVisible()  
+
+END
+
+PRIVATE SUB ShowBookmark_Write(Value AS Boolean)
+
+  frmChooser.ShowBookmark(Value)
+
+END
+
+PRIVATE FUNCTION Bookmarks_Read() AS Array
+
+  RETURN frmChooser.GetPrivateBookmarks()
+
+END
+
+PRIVATE SUB Bookmarks_Write(Value AS Array)
+
+  frmChooser.SetPrivateBookmarks(Value)
+
+END
+
+
+PRIVATE FUNCTION Settings_Read() AS String[]
+
+  RETURN frmChooser.GetSettings()  
+
+END
+
+PRIVATE SUB Settings_Write(Value AS String[])
+
+  frmChooser.SetSettings(Value)
+
+END

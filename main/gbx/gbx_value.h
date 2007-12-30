@@ -1,0 +1,240 @@
+/***************************************************************************
+
+  value.h
+
+  Datatype management routines. Conversions between each Gambas datatype,
+  and conversions between Gambas datatypes and native datatypes.
+
+  (c) 2000-2005 Beno� Minisini <gambas@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+
+#ifndef __GBX_VALUE_H
+#define __GBX_VALUE_H
+
+#include <time.h>
+
+#include "gbx_type.h"
+#include "gbx_class.h"
+
+typedef
+  struct {
+    TYPE type;
+    long value;
+    }
+  VALUE_BOOLEAN;
+
+typedef
+  struct {
+    TYPE type;
+    long value;
+    }
+  VALUE_BYTE;
+
+typedef
+  struct {
+    TYPE type;
+    long value;
+    }
+  VALUE_SHORT;
+
+typedef
+  struct {
+    TYPE type;
+    long value;
+    }
+  VALUE_INTEGER;
+
+typedef
+  struct {
+    TYPE type;
+    long long value;
+    }
+  PACKED
+  VALUE_LONG;
+
+typedef
+  struct {
+    TYPE type;
+    double value;
+    }
+  PACKED
+  VALUE_SINGLE;
+
+typedef
+  struct {
+    TYPE type;
+    double value;
+    }
+  PACKED
+  VALUE_FLOAT;
+
+typedef
+  struct {
+    TYPE type;
+    long date;  /* number of days */
+    long time;  /* number of milliseconds */
+    }
+  VALUE_DATE;
+
+typedef
+  struct {
+    TYPE type;
+    char *addr;
+    long start;
+    long len;
+    }
+  VALUE_STRING;
+
+typedef
+  struct {
+    TYPE type;
+    CLASS *class;
+    void *object;
+    char kind;
+    char defined;
+    short index;
+    /*long function;*/
+    }
+  PACKED
+  VALUE_FUNCTION;
+
+enum
+{
+  FUNCTION_NULL = 0,
+  FUNCTION_NATIVE = 1,
+  FUNCTION_PRIVATE = 2,
+  FUNCTION_PUBLIC = 3,
+  FUNCTION_EVENT = 4,
+  FUNCTION_EXTERN = 5,
+  FUNCTION_UNKNOWN = 6,
+  FUNCTION_CALL = 7,
+};
+
+typedef
+  struct {
+    TYPE type;
+    TYPE ptype;
+    long value[2];
+    }
+  VALUE_VOID;
+
+typedef
+  struct {
+    TYPE type;
+    TYPE vtype;
+    /*
+    union {
+      char _boolean;
+      char _byte;
+      short _short;
+      double _double;
+      int _int;
+      long long _int64;
+      long long _date;
+      char *_string;
+      void *_object;
+      }
+      */
+    char value[8];
+    }
+  VALUE_VARIANT;
+
+typedef
+  struct {
+    CLASS *class;
+    void *object;
+    void *super;
+    }
+  VALUE_OBJECT;
+
+typedef
+  struct {
+    TYPE type;
+    CLASS *class;
+    void *super;
+    }
+  VALUE_CLASS;
+
+typedef
+  struct {
+    TYPE type;
+    void *desc;
+    void *addr;
+    unsigned keep : 1;
+    }
+  VALUE_ARRAY;
+
+typedef
+  union value {
+    TYPE type;
+    VALUE_BOOLEAN _boolean;
+    VALUE_BYTE _byte;
+    VALUE_SHORT _short;
+    VALUE_INTEGER _integer;
+    VALUE_LONG _long;
+    VALUE_SINGLE _single;
+    VALUE_FLOAT _float;
+    VALUE_DATE _date;
+    VALUE_STRING _string;
+    VALUE_FUNCTION _function;
+    VALUE_VARIANT _variant;
+    VALUE_CLASS _class;
+    VALUE_OBJECT _object;
+    VALUE_ARRAY _array;
+    VALUE_VOID _void;
+    }
+  VALUE;
+
+#define VALUE_is_object(val) (TYPE_is_object((val)->type))
+#define VALUE_is_string(val) ((val)->type == T_STRING || (val)->type == T_CSTRING)
+#define VALUE_is_number(val) ((val)->type >= T_BYTE && (val)->type <= T_FLOAT)
+
+PUBLIC void VALUE_default(VALUE *value, TYPE type);
+PUBLIC void VALUE_convert(VALUE *value, TYPE type);
+PUBLIC void VALUE_read(VALUE *value, void *addr, TYPE type);
+PUBLIC void VALUE_write(VALUE *value, void *addr, TYPE type);
+
+PUBLIC void VALUE_put(VALUE *value, void *addr, TYPE type);
+/*
+PUBLIC void VALUE_put_free(void);
+PUBLIC void VALUE_put_forget(void);
+*/
+
+PUBLIC void VALUE_free(void *addr, TYPE type);
+PUBLIC void VALUE_to_string(VALUE *value, char **addr, long *len);
+PUBLIC void VALUE_from_string(VALUE *value, const char *addr, long len);
+
+PUBLIC void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
+PUBLIC void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
+PUBLIC void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype);
+PUBLIC void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
+
+PUBLIC bool VALUE_is_null(VALUE *val);
+
+PUBLIC void VALUE_get_string(VALUE *val, char **text, long *length);
+
+#define VALUE_conv(_value, _type) \
+{ \
+  if ((_value)->type != (_type)) \
+    VALUE_convert(_value, _type); \
+}
+
+#define VALUE_is_super(_value) (EXEC_super && EXEC_super == (_value)->_object.super)
+
+#endif /* */

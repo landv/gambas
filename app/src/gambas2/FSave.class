@@ -1,0 +1,86 @@
+' Gambas class file
+
+STATIC cFile AS NEW String[]
+
+STATIC PUBLIC FUNCTION Run(OPTIONAL bQuit AS Boolean) AS Boolean
+
+  DIM hForm AS Form
+  
+  hForm = NEW FSave(bQuit)
+  RETURN NOT hForm.ShowModal()
+
+END
+
+PUBLIC SUB _new(bQuit AS Boolean)
+
+  DIM hFile AS Object
+  DIM hPict AS Picture
+
+  FOR EACH hFile IN Project.Files
+    IF hFile.IsModified() THEN
+      hPict = Picture["img/16/" & File.Ext(hFile.Path) & ".png"]
+      lvwFile.Add(hFile.Path, File.Name(hFile.Path), hPict).Selected = TRUE
+    ENDIF
+  NEXT
+
+  'lvwFile.SelectAll
+  
+  IF bQuit THEN
+    btnQuit.Picture = Picture["icon:/24/quit"]
+    btnQuit.Text = ("Quit")
+  ENDIF
+
+  btnQuit.Enabled = FALSE
+
+END
+
+
+PUBLIC SUB btnSave_Click()
+
+  lvwFile.SelectAll
+  btnQuit.Enabled = TRUE
+
+END
+
+
+PUBLIC SUB btnQuit_Click()
+
+  DIM bSaved AS Boolean
+  DIM hFile AS Object
+  
+  FOR EACH hFile IN Project.Files
+    IF hFile.IsModified() THEN
+
+      IF lvwFile[hFile.Path].Selected THEN
+        IF hFile.Save() THEN RETURN
+      ENDIF
+      
+    ENDIF
+  NEXT
+
+  'IF bSaved THEN ME.Close(TRUE)
+
+  ME.Close(TRUE)
+
+END
+
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close()
+
+END
+
+
+PUBLIC SUB btnIgnore_Click()
+
+  lvwFile.SelectAll(FALSE)
+  btnQuit.Enabled = TRUE
+
+END
+
+PUBLIC SUB lvwFile_MouseUp()
+
+  btnQuit.Enabled = TRUE  
+
+END

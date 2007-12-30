@@ -1,0 +1,83 @@
+' Gambas class file
+
+EXPORT
+INHERITS ReportControl
+
+PRIVATE $sText AS String
+PRIVATE $iAlignment AS Integer '= Align.Center
+
+PROPERTY Text AS String
+PROPERTY Alignment AS Integer
+
+
+PUBLIC SUB _New()
+  
+  'ME.Height = "1 cm"
+  
+END
+
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN $sText
+
+END
+
+PRIVATE SUB Text_Write(Value AS String)
+
+  $sText = Value
+
+END
+
+PRIVATE FUNCTION Alignment_Read() AS Integer
+
+  RETURN $iAlignment
+
+END
+
+PRIVATE SUB Alignment_Write(Value AS Integer)
+
+  $iAlignment = Value
+
+END
+
+
+PUBLIC FUNCTION _GetSizeHints(AvailableW AS Integer, AvailableH AS Integer, TotalWidth AS Integer, TotalHeight AS Integer) AS TSizeHint
+
+  DIM hMyHints AS NEW TSizeHint
+  
+  hMyHints.Height = MRTools.RealHeight(ME) + (2 * MRTools.RealPadding(ME))
+  
+  IF NOT IsNull(ME.Font) THEN draw.Font = ME.Font
+  draw.Font.size = draw.Font.Size * MRTools.ResolutionAffichage
+
+  'if the size choosed by the user is less than the font height, set the object to the font height
+  IF hMyHints.Height < Draw.TextHeight($sText) THEN hMyHints.Height = Draw.TextHeight($sText) + (2 * MRTools.RealPadding(ME))
+  
+  hMyHints.Width = Draw.TextWidth($sText) + (2 * MRTools.RealPadding(ME))
+  IF hMyHints.Width < MRTools.RealWidth(ME) THEN hMyHints.Width = MRTools.RealWidth(ME)
+  'PRINT Draw.TextWidth
+  RETURN hMyHints
+  
+END
+
+PUBLIC SUB _Draw(Page AS Integer, x AS Integer, y AS Integer)
+  Report._Data
+    'SUPER._Draw(Page, X, Y) 
+  Draw.ForeColor = ME.ForeColor
+  
+  'Set the Font if it is initialized
+  IF NOT IsNull(ME.Font) THEN Draw.Font = ME.Font
+  draw.Font.size = draw.Font.Size * Report.zoom * MRTools.ResolutionAffichage
+    Draw.Text($sText, (x + ME._RealLeft + MRTools.RealPadding(ME)) * Report.zoom, (y + ME._RealTop + MRTools.RealPadding(ME)) * Report.zoom, ME._RealWidth * Report.zoom, ME._RealHeight * Report.zoom, $iAlignment)
+    
+END
+
+PUBLIC FUNCTION _SetGeometry(X AS Integer, Y AS Integer, W AS Integer, H AS Integer) AS Integer
+  
+  ME._RealLeft = X
+  ME._RealTop = Y
+  ME._RealWidth = W
+  ME._RealHeight = H
+  
+END

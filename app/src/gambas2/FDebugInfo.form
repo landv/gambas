@@ -1,0 +1,149 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0.25,2.5,84,47)
+  'Move(2,20,672,376)
+  Text = ("Debug")
+  Icon = Picture["img/16/info.png"]
+  Persistent = True
+  Arrangement = Arrange.Fill
+  { splDebug HSplit
+    MoveScaled(1,1,81,45)
+    'Move(8,8,648,360)
+    { Panel1 Panel
+      MoveScaled(1,1,14,39)
+      'Move(8,8,112,312)
+      Arrangement = Arrange.Fill
+      { lstStack ListBox
+        MoveScaled(0,0,13,33)
+        'Move(0,0,104,264)
+        Font = Font["-1"]
+        Expand = True
+      }
+    }
+    { tabDebug TabStrip
+      MoveScaled(16,3,63,38)
+      'Move(128,24,504,304)
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Spacing = 4
+      Padding = 4
+      Count = 4
+      Index = 0
+      Text = ("Local variables")
+      Picture = Picture["img/16/local.png"]
+      { cvwLocal ColumnView
+        MoveScaled(2,3,41,22)
+        'Move(16,24,328,176)
+        Font = Font["-1"]
+        Expand = True
+        Mode = Select.Multiple
+        AutoResize = True
+        ScrollBar = Scroll.Vertical
+      }
+      { chkSortLocal CheckBox
+        MoveScaled(1,27,28,3)
+        'Move(8,216,224,24)
+        Text = ("Sort local variables")
+      }
+      Index = 1
+      Text = ("Current object")
+      Picture = Picture["img/16/current.png"]
+      { cvwObject ColumnView
+        MoveScaled(1,1,41,22)
+        'Move(8,8,328,176)
+        Font = Font["-1"]
+        Expand = True
+        Mode = Select.Multiple
+        AutoResize = True
+        ScrollBar = Scroll.Vertical
+      }
+      { chkSortObject CheckBox
+        MoveScaled(0,25,28,3)
+        'Move(0,200,224,24)
+        Text = ("Sort object variables")
+      }
+      Index = 2
+      Text = ("Watch")
+      Picture = Picture["icon:/16/watch"]
+      { HBox1 HBox
+        MoveScaled(2,2,42,3)
+        'Move(16,16,336,24)
+        { btnKillAllWatch ToolButton
+          MoveScaled(1,0,3,3)
+          'Move(8,0,24,24)
+          ToolTip = ("Remove all expressions")
+          Text = ("")
+          Picture = Picture["icon:/16/trash"]
+        }
+        { btnKillWatch ToolButton
+          MoveScaled(4,0,3,3)
+          'Move(32,0,24,24)
+          ToolTip = ("Remove current expression")
+          Text = ("")
+          Picture = Picture["icon:/16/close"]
+        }
+        { btnWatch ToolButton
+          MoveScaled(7,0,3,3)
+          'Move(56,0,24,24)
+          ToolTip = ("Add expression")
+          Text = ("")
+          Picture = Picture["icon:/16/watch"]
+        }
+        { Panel2 Panel
+          MoveScaled(11,0,1,3)
+          'Move(88,0,8,24)
+        }
+        { cmbWatch ComboBox
+          MoveScaled(13,0,27,3)
+          'Move(104,0,216,24)
+          Expand = True
+          Text = ("")
+        }
+      }
+      { cvwWatch ColumnView
+        MoveScaled(2,8,40,22)
+        'Move(16,64,320,176)
+        Font = Font["-1"]
+        Expand = True
+        AutoResize = True
+        ScrollBar = Scroll.Vertical
+      }
+      Index = 3
+      Text = ("Breakpoints")
+      Picture = Picture["icon:/16/flag"]
+      { Panel3 Panel
+        MoveScaled(1,1,40,31)
+        'Move(8,8,320,248)
+        Expand = True
+        Arrangement = Arrange.Horizontal
+        Spacing = 4
+        { VBox1 VBox
+          MoveScaled(1,0,3,13)
+          'Move(8,0,24,104)
+          { btnRemoveBreak ToolButton
+            MoveScaled(0,0,3,3)
+            'Move(0,0,24,24)
+            ToolTip = ("Remove current breakpoint")
+            Text = ("")
+            Picture = Picture["icon:/16/close"]
+          }
+          { btnClearBreak ToolButton
+            MoveScaled(0,3,3,3)
+            'Move(0,24,24,24)
+            ToolTip = ("Remove all breakpoints")
+            Text = ("")
+            Picture = Picture["icon:/16/trash"]
+          }
+        }
+        { lstBreak ListBox
+          MoveScaled(12,5,27,21)
+          'Move(96,40,216,168)
+          Expand = True
+          Sorted = True
+        }
+      }
+      Index = 0
+    }
+  }
+}

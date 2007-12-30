@@ -1,0 +1,39 @@
+' Gambas module file
+
+EXPORT
+
+PRIVATE $cSubst AS NEW Collection
+
+PUBLIC SUB _init()
+
+  $cSubst["&"] = "&amp;"
+  $cSubst["<"] = "&lt;"
+  $cSubst[">"] = "&gt;"
+  $cSubst["\""] = "&quot;"
+  $cSubst["°"] = "&deg;"
+
+END
+
+
+
+PUBLIC FUNCTION _call(Text AS String) AS String
+
+  DIM iInd AS Integer
+  DIM sRes AS String
+  DIM sCar AS String
+  DIM sCar2 AS String
+
+  FOR iInd = 1 TO Len(Text)
+
+    sCar = Mid$(Text, iInd, 1)
+    sCar2 = $cSubst[sCar]
+    IF sCar2 THEN sCar = sCar2
+
+    sRes &= sCar
+
+  NEXT
+
+  RETURN sRes
+
+END
+

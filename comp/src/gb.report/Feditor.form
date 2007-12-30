@@ -1,0 +1,61 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,85,63)
+  'Move(0,0,595,441)
+  Text = ("")
+  Arrangement = Arrange.Horizontal
+  { ScrollView1 ScrollView
+    MoveScaled(0,0,60,61)
+    'Move(0,0,420,427)
+    Expand = True
+    { Panel1 Panel
+      MoveScaled(1,0,74,79)
+      'Move(7,0,518,553)
+      Background = &HFFFFFF&
+      Border = Border.Plain
+    }
+  }
+  { TableView1 TableView
+    MoveScaled(10,22,22,19)
+    'Move(70,154,154,133)
+  }
+  { Panel2 Panel
+    MoveScaled(59,0,26,61)
+    'Move(413,0,182,427)
+    Arrangement = Arrange.Row
+    Padding = 5
+    { ToolButton1 ToolButton
+      MoveScaled(-1,2,6,6)
+      'Move(-7,14,42,42)
+      Text = ("")
+      Picture = Picture["img/control/label.png"]
+      Radio = True
+      Toggle = True
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(6,2,6,6)
+      'Move(42,14,42,42)
+      Text = ("")
+      Picture = Picture["img/control/picturebox.png"]
+      Radio = True
+      Toggle = True
+    }
+    { ToolButton3 ToolButton
+      MoveScaled(11,2,6,6)
+      'Move(77,14,42,42)
+      Text = ("")
+      Picture = Picture["img/control/hbox.png"]
+      Radio = True
+      Toggle = True
+    }
+    { ToolButton4 ToolButton
+      MoveScaled(17,2,6,6)
+      'Move(119,14,42,42)
+      Text = ("")
+      Picture = Picture["img/control/vbox.png"]
+      Radio = True
+      Toggle = True
+    }
+  }
+}

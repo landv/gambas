@@ -1,0 +1,133 @@
+' Gambas module file
+
+PUBLIC Screen AS NEW Window AS "Screen"
+PUBLIC ciel AS Image
+PUBLIC montagnes AS image
+PUBLIC barriere AS image
+PUBLIC sol1 AS image
+PUBLIC sol2 AS image
+PUBLIC sol3 AS image
+PUBLIC nuage1 AS Image
+PUBLIC nuage2 AS image 
+PUBLIC nuage3 AS image
+PUBLIC nuage4 AS image
+PUBLIC arbre AS image
+PUBLIC fireworks AS image
+PUBLIC scrolltext AS image
+
+PUBLIC scroll AS Integer
+PUBLIC scrollb AS Integer
+PUBLIC scroll1 AS Integer
+PUBLIC scroll2 AS Integer
+PUBLIC scroll3 AS Integer
+PUBLIC scroll4 AS Integer
+PUBLIC scroll5 AS Integer
+PUBLIC scroll5b AS Integer
+PUBLIC scroll6 AS Integer
+PUBLIC speed AS Integer
+
+PUBLIC SUB Main()
+
+  WITH Screen
+    .Width = 640
+    .Height = 480
+    .Framerate = 300
+    .Show()
+  END WITH 
+
+  music.Load("b-title.mod")
+  
+  ciel = image.Load("bgd1_ciel.png")
+  nuage1 = image.Load("sprite_nuages1.png")
+  montagnes = image.Load("bgd2_montagnes.png")
+  sol1 = image.Load("bgd3_sol1.png")
+  sol2 = image.Load("bgd4_sol2.png")
+  sol3 = image.Load("bgd5_sol3.png")
+  nuage1 = image.Load("sprite_nuages1.png")
+  nuage2 = image.Load("sprite_nuages2.png")
+  nuage3 = image.Load("sprite_nuages3.png")
+  nuage4 = image.Load("sprite_nuages4.png")
+  barriere = image.Load("sprite_barriere.png")
+  arbre = image.Load("sprite_arbre.png")
+  fireworks = image.Load("fireworks.png")
+  scrolltext = image.Load("scrolltext.png")
+
+  speed = 2
+  scroll = 0
+  scrollb = 0
+  scroll1 = 0
+  scroll2 = 0
+  scroll3 = 0
+  scroll4 = 0
+  scroll5 = Rnd(0, 640)
+  scroll5b = Rnd(0, 640)
+  scroll6 = 0
+   
+  music.Play(-1, 1)
+
+END
+
+PUBLIC SUB Screen_Draw()
+  
+  Screen.Clear
+  
+  scroll = scroll + speed
+  DEC (scroll1)
+  scroll2 = scroll2 - 2
+  scroll3 = scroll3 - 3
+  scroll4 = scroll4 - 4
+  scroll5 = scroll5 - 5
+  scroll5b = scroll5b - 2
+  scroll6 = scroll6 - 5
+
+  IF (scroll = 320) THEN speed = -2
+  IF (scroll = -960) THEN speed = 2
+  scrollb = scroll
+  IF (scrollb < - 640) THEN scrollb = - 640
+  IF (scrollb > 0) THEN scrollb = 0
+  IF (scroll1 = - 640) THEN scroll1 = 0
+  IF (scroll2 = - 640) THEN scroll2 = 0
+  IF (scroll3 < - 640) THEN scroll3 = scroll3 + 640
+  IF (scroll4 < - 640) THEN scroll4 = scroll4 + 640
+  IF (scroll5 < - 640) THEN scroll5 = scroll5 + 1280
+  IF (scroll5b < - 640) THEN scroll5b = scroll5b + 1280
+  IF (scroll6 < - 640) THEN scroll6 = scroll6 + 640
+
+  Draw.Begin(Screen)
+    Draw.Image(ciel, 0, 0)
+    Draw.Image(montagnes, scroll1, 200)
+    Draw.Image(montagnes, scroll1 + 640, 200)
+    Draw.Image(sol1, scroll2, 420)
+    Draw.Image(sol1, scroll2 + 640, 420)
+    Draw.Image(sol2, scroll3, 430)
+    Draw.Image(sol2, scroll3 + 640, 430)
+    Draw.Image(sol3, scroll4, 450)
+    Draw.Image(sol3, scroll4 + 640, 450)
+    Draw.Image(nuage1, scroll6, 0)
+    Draw.Image(nuage1, scroll6 + 640, 0)
+    Draw.Image(nuage2, scroll4, 82)
+    Draw.Image(nuage2, scroll4 + 640, 82)
+    Draw.Image(nuage3, scroll3, 120)
+    Draw.Image(nuage3, scroll3 + 640, 120)
+    Draw.Image(nuage4, scroll2, 138)
+    Draw.Image(nuage4, scroll2 + 640, 138)
+    Draw.Image(barriere, scroll5, 440)
+    Draw.Image(arbre, scroll5b, 140)
+    Draw.Image(fireworks, scrollb, 0)
+    Draw.Image(scrolltext, scrollb + 640, 0)
+  Draw.End()
+    
+END
+
+PUBLIC SUB Screen_Close()
+
+  Music.Stop()
+
+END
+
+PUBLIC SUB Screen_KeyPressed()
+  
+  IF (key.Code = key.F1) THEN Screen.FullScreen = NOT Screen.FullScreen
+  IF (key.Code = Key.Esc) THEN Screen.Close()
+  
+END

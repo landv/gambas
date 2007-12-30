@@ -1,0 +1,41 @@
+' Gambas class file
+
+PRIVATE $iCount AS Integer
+PROPERTY Count AS Integer
+PRIVATE $aCols AS NEW Object[]
+PUBLIC Height AS String 
+PUBLIC Width AS String = "2 cm"
+
+
+PUBLIC FUNCTION _Get(Index AS Integer) AS TableColumn
+  
+  RETURN $aCols[index]
+  
+END
+
+PRIVATE FUNCTION Count_Read() AS Integer
+  
+  RETURN $iCount
+  
+END
+
+PRIVATE SUB Count_Write(Value AS Integer)
+
+  DIM i AS Integer
+  DIM hCol AS TableColumn
+  '$aCols.Clear
+
+  IF Value > $iCount THEN
+  
+  FOR i = 0 TO Value - $iCount - 1
+    hCol = NEW TableColumn
+    hCol.Text = (i)
+    $aCols.Add(hCol)
+  
+  NEXT
+  ENDIF
+  IF $iCount > Value THEN 
+    $aCols.Remove(Value, $iCount - Value)
+  ENDIF
+  $iCount = $aCols.Count
+END

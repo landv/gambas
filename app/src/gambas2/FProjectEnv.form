@@ -1,0 +1,102 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,68,51)
+  'Move(0,0,544,408)
+  Text = ("Project environment")
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { TabStrip1 TabStrip
+    MoveScaled(1,1,66,45)
+    'Move(8,8,528,360)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Spacing = 8
+    Padding = 8
+    Count = 2
+    Index = 0
+    Text = ("Arguments")
+    { tvwArg TableView
+      MoveScaled(1,1,63,35)
+      'Move(8,8,504,280)
+      Expand = True
+      Header = GridView.Vertical
+      AutoResize = True
+    }
+    { HBox2 HBox
+      MoveScaled(1,37,63,3)
+      'Move(8,296,504,24)
+      Spacing = 8
+      { btnInsertArg Button
+        MoveScaled(0,0,15,3)
+        'Move(0,0,120,24)
+        Text = ("&Insert")
+      }
+      { btnRemoveArg Button
+        MoveScaled(16,0,15,3)
+        'Move(128,0,120,24)
+        Text = ("&Remove")
+      }
+      { btnMoveUpArg Button
+        MoveScaled(32,0,3,3)
+        'Move(256,0,24,24)
+        Text = ("")
+        Picture = Picture["icon:/16/up"]
+      }
+      { btnMoveDownArg Button
+        MoveScaled(36,0,3,3)
+        'Move(288,0,24,24)
+        Text = ("")
+        Picture = Picture["icon:/16/down"]
+      }
+    }
+    Index = 1
+    Text = ("Environment variables")
+    { tvwEnv TableView
+      MoveScaled(1,1,63,35)
+      'Move(8,8,504,280)
+      Expand = True
+      Header = GridView.Horizontal
+      Scrollbar = Scroll.Vertical
+      AutoResize = True
+    }
+    { HBox3 HBox
+      MoveScaled(1,37,63,3)
+      'Move(8,296,504,24)
+      Spacing = 8
+      { btnInsertEnv Button
+        MoveScaled(0,0,15,3)
+        'Move(0,0,120,24)
+        Text = ("&Insert")
+      }
+      { btnRemoveEnv Button
+        MoveScaled(16,0,15,3)
+        'Move(128,0,120,24)
+        Text = ("&Remove")
+      }
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(1,47,66,3)
+    'Move(8,376,528,24)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(33,0,14,3)
+      'Move(264,0,112,24)
+      Text = ("OK")
+    }
+    { btnCancel Button
+      MoveScaled(48,0,14,3)
+      'Move(384,0,112,24)
+      Text = ("Cancel")
+    }
+  }
+}

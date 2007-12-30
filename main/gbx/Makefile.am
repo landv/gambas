@@ -1,0 +1,92 @@
+INCLUDES = -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @INCLTDL@
+
+bin_PROGRAMS = gbx2
+gblib_LTLIBRARIES = gb.la
+
+gbx2_LDADD = -lm @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@
+gbx2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+
+gb_la_LIBADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@
+gb_la_LDFLAGS = -module @LD_FLAGS@
+gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -O0
+
+gbx2_SOURCES = \
+ gb_common_swap.h gb_common_check.h gb_common.c \
+ gbx_debug.h gbx_debug.c \
+ gb_error.h gb_error.c \
+ gb_alloc.c gb_array.c \
+ gbx_stack.h gbx_stack.c \
+ gb_buffer.c gbx_replace.c \
+ gbx_list.h gbx_list.c \
+ gbx_hash.h gbx_hash.c \
+ gb_table.c \
+ gbx_type.h gbx_type.c \
+ gbx_value.h gbx_value.c \
+ gbx_subst.h gbx_subst.c \
+ gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_loop.c \
+ gbx_class_desc.h gbx_class.h gbx_class_init.c gbx_class.c gbx_class_native.c gbx_class_load.c \
+ gbx_event.h gbx_event.c \
+ gb_file.h gb_file.c \
+ gbx_stream.h gbx_stream.c gbx_stream_direct.c gbx_stream_buffer.c gbx_stream_memory.c \
+ gbx_stream_arch.c gbx_stream_process.c gbx_stream_pipe.c \
+ gbx_project.h gbx_project.c \
+ gbx_library.h gbx_library.c \
+ gbx_subr.h gbx_subr.c \
+ gbx_subr_file.c gbx_subr_string.c gbx_subr_conv.c gbx_subr_time.c gbx_subr_extern.c gbx_subr_misc.c \
+ gbx_math.h gbx_math.c \
+ gbx_subr_math_temp.h gbx_subr_math.c \
+ gbx_subr_test_temp.h gbx_subr_test.c \
+ gbx_api.h gbx_api.c \
+ gbx_local.h gbx_local.c \
+ gbx_regexp.h gbx_regexp.c \
+ gbx_archive.h gbx_archive.c \
+ gbx_watch.h gbx_watch.c \
+ gbx_expression.h gbx_eval.h gbx_eval.c \
+ gbx_compare.h gbx_compare.c \
+ gbx.c \
+ gbx_number.h gbx_number.c \
+ gbx_object.h gbx_object.c \
+ gbx_string.h gbx_string.c \
+ gbx_variant.h gbx_variant.c \
+ gbx_date.h gbx_date.c \
+ gbx_array.h gbx_array.c \
+ gbx_c_class.h gbx_c_class.c \
+ gbx_c_collection.h gbx_c_collection.c \
+ gbx_c_list.h gbx_c_list.c \
+ gbx_c_error.h gbx_c_error.c \
+ gbx_c_gambas.h gbx_c_gambas.c \
+ gbx_c_file.h gbx_c_file.c \
+ gbx_c_application.h gbx_c_application.c \
+ gbx_c_array.h gbx_c_array.c \
+ gbx_c_process.h gbx_c_process.c \
+ gbx_c_subcollection.h gbx_c_subcollection.c \
+ gbx_c_string.h gbx_c_string.c \
+ gbx_component.h gbx_component.c \
+ gbx_extern.h gbx_extern.c \
+ gbx_print.h gbx_print.c \
+ gbx_c_enum.h gbx_c_enum.c \
+ gbx_c_timer.h gbx_c_timer.c \
+ gbx_c_quote.h gbx_c_quote.c
+
+gb_la_SOURCES = \
+ gbx_info.h \
+ gbx_local.h gbx_compare.h gbx_date.h \
+ gbx_c_class.h gbx_c_class.c \
+ gbx_c_collection.h gbx_c_collection.c \
+ gbx_c_list.h gbx_c_list.c \
+ gbx_c_error.h gbx_c_error.c \
+ gbx_c_gambas.h gbx_c_gambas.c \
+ gbx_c_file.h gbx_c_file.c \
+ gbx_c_application.h gbx_c_application.c \
+ gbx_c_array.h gbx_c_array.c \
+ gbx_c_process.h gbx_c_process.c \
+ gbx_c_string.h gbx_c_string.c \
+ gbx_c_subcollection.h gbx_c_subcollection.c \
+ gbx_c_enum.h gbx_c_enum.c \
+ gbx_c_timer.h gbx_c_timer.c \
+ gbx_c_quote.h gbx_c_quote.c \
+ gbx_class_info.c
+
+gbx2-gbx_exec_loop.o: gbx_exec_loop.c
+	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbx2_CFLAGS) -O3 $(CFLAGS) -MT gbx2-gbx_exec_loop.o -MD -MP -MF "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo" -c -o gbx2-gbx_exec_loop.o `test -f 'gbx_exec_loop.c' || echo '$(srcdir)/'`gbx_exec_loop.c; then mv -f "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo" "$(DEPDIR)/gbx2-gbx_exec_loop.Po"; else rm -f "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo"; exit 1; fi
+

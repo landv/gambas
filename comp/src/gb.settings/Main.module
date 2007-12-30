@@ -1,0 +1,112 @@
+' Gambas module file
+
+SUB Main()
+
+  DIM hSettings AS Settings
+
+  hSettings = NEW Settings("/home/benoit/.config/gambas/gambas2.conf")
+
+  'PRINT hSettings["/test/Array"].Join(" ")
+ ' hSettings["PROJECTLANG"] = "toto"
+
+  'hConfig.WriteString("Name", "Benoit")
+  'hConfig.WriteInteger("Age", 31)
+  'hConfig.WriteBoolean("Man", TRUE)
+
+  'PRINT hSettings["External/Browser", "mozilla"]
+
+END
+
+
+FUNCTION QuoteString(sVal AS String) AS String
+
+  sVal = Replace(sVal, "\n", "\\n")
+  sVal = Replace(sVal, "\t", "\\t")
+  sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
+  sVal = Replace(sVal, "\\", "\\\\")
+  sVal = Chr$(34) & sVal & Chr$(34)
+
+  RETURN sVal
+
+END
+
+FUNCTION UnQuoteString(sVal AS String) AS String
+
+  IF Left$(sVal) = Chr$(34) THEN sVal = Mid$(sVal, 2, -1)
+  sVal = Replace(sVal, "\\n", "\n")
+  sVal = Replace(sVal, "\\t", "\t")
+  sVal = Replace(sVal, "\\" & Chr$(34), Chr$(34))
+  sVal = Replace(sVal, "\\\\", "\\")
+
+  RETURN sVal
+
+END
+
+FUNCTION ToString(vVal AS Variant) AS String
+
+  DIM sVal AS String
+  DIM iInd AS Integer
+
+  IF IsString(vVal) THEN
+    RETURN QuoteString(vVal)
+  ELSE IF IsBoolean(vVal) THEN
+    RETURN IIf(vVal, "1", "0")
+  ELSE IF IsObject(vVal) 
+    IF vVal IS String[] OR IF vVal IS Integer[] OR IF vVal IS Float[] THEN
+      sVal = "["
+      FOR iInd = 0 TO vVal.Max
+        IF iInd THEN sVal &= ","
+        sVal &= ToString(vVal[iInd])
+      NEXT
+      sVal &= "]"
+    ELSE 
+      Error.Raise("Unsupported datatype: " & Object.Class(vVal))
+    ENDIF
+  ELSE
+    sVal = CStr(vVal)
+    IF IsFloat(vVal) THEN
+      IF InStr(sVal, ".") = "0" THEN sVal = sVal & ".0"
+    ENDIF
+  ENDIF
+
+  RETURN sVal
+  
+END
+
+FUNCTION FromString(sVal AS String) AS Variant
+
+  DIM aVal AS String[]
+  DIM iInd AS Integer
+  DIM aVar AS Array
+
+  IF Left(sVal) = "\"" THEN
+    RETURN UnQuoteString(sVal)
+  ELSE IF Left(sVal) = "[" THEN 
+    aVal = Split(Mid$(sVal, 2, -1), ",", Chr$(34))
+    IF Mid$(sVal, 2, 1) = Chr$(34) THEN
+      RETURN aVal
+    ELSE
+      SELECT CASE TypeOf(FromString(aVal[0]))
+        CASE gb.Integer
+          aVar = NEW Integer[aVal.Count]
+        CASE gb.Float
+          aVar = NEW Float[aVal.Count]
+        CASE ELSE
+          RETURN NULL
+      END SELECT
+      FOR iInd = 0 TO aVal.Max
+        aVar[iInd] = FromString(aVal[iInd])
+      NEXT    
+      RETURN aVar
+    ENDIF
+  ELSE IF InStr(sVal, "/") THEN
+    RETURN CDate(sVal)
+  ELSE IF InStr(sVal, ".") THEN
+    RETURN CFloat(sVal)
+  ELSE
+    RETURN CInt(sVal)
+  ENDIF
+
+END
+
+

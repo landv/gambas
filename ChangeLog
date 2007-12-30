@@ -1,0 +1,3785 @@
+-------------------------------------------------------------------------------
+ gambas2-1.9.47 - 17 Jan 2007
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: The Gambas compiler is run with the new '-r' option, so that the
+  information files are always found, even if the 'prefix' variable is
+  changed at 'make install'.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: The browser detection has been fixed.
+* BUG: Fixed a potential crash while displaying project tree when some 
+  stock icons are not found.
+* BUG: Debug windows can display collections
+* BUG: The signature of functions with a variable number of arguments 
+  should be displayed correctly now.
+* BUG: Removing a breakpoint during a debugging session does not 
+  incorrectly set another breakpoint anymore.
+* BUG: Opening the color chooser does not display system colors twice 
+  anymore.
+* BUG: The mismatch between Firefox and Epiphany has been fixed in the 
+  option dialog.
+* BUG: Project environment variables are correctly saved. But they are not
+  used yet.
+* BUG: Breakpoint buttons are correctly refreshed when you switch between
+  editor windows now.
+* BUG: In FDebugInfo.class at cvwWatch_Activate() works with right object 
+  cvwWatch and no more with the wrong cvwObject.
+* BUG: Breakpoint management was redesigned.
+* BUG: If an object and the following '.' (dot) is choosen, no debug window 
+  is opened.
+* BUG: There is no IDE crash anymore after having canceled the opening of 
+  an already opened project
+* BUG: The project environment dialog does not crash anymore while closing.
+* BUG: Update forms control stack now, after drag/drop control
+* NEW: Support for CVS version control.
+* NEW: An experimental debugger information window.
+* NEW: Starting of project argument dialog redesign.
+* NEW: TableView were replaced by GridView.
+* NEW: Debug windows can be called now by dblclick on objects in the editor,
+  Local variables, Current object(s),watch window and the Debug windows.
+  A Ballon-message raise when an non object is dblclicked on the editor.
+  A right-mouse popup is available on each Debug window.
+* NEW: Saving debug settings: breakpoints, watches and debug windows,
+  which are used in the next debug session.
+* NEW: Added 'Clear all breakpoints' to Debug-Menu.
+* NEW: Double-click works in the project open dialog.
+* NEW: The first column of the property grid is written in bold now.
+* NEW: A useless picture was added in the project creation dialog.
+* NEW: The project environment dialog was made.
+* NEW: Now debugging information is stored in a setting file named 
+  '.settings', in the project directory.
+* NEW: Breakpoints are drawn with the flag icon now.
+* NEW: Some shortcuts were changed and added.
+* NEW: The file property window was replaced by a little side panel.
+* BUG: Some image files were missing in the SVN.
+* NEW: The editor cursor column and row are displayed in the editor
+  toolbar, not the window title anymore.
+* NEW: Syncronized forms, form control stack and property window.
+* NEW: You have access to the property window by choosing the control in 
+  the forms control stack now.
+
+[DATABASE MANAGER]
+* NEW: TableView was replaced by GridView.
+
+[EXAMPLES]
+* BUG: Randomize() was replaced by RANDOMIZE.
+* BUG: DataReportExample example was fixed.
+* NEW: Gravity simulation example made by Iman Karim.
+* NEW: TreeView example was modified by Fabien Hutrel.
+* NEW: TableView were replaced by GridView in Database example.
+* NEW: Update BeastScroll example: limit the framerate to 300 with 
+  Window.Framerate property.
+
+[HELP FILES]
+* BUG: Some fixes in the treeview links.
+* BUG: Files were renamed so that they can be read on Windows.
+
+[INTERPRETER]
+* BUG: The backslash character now really prevents special format 
+  characters from being interpreter in the Format() function.
+* BUG: The management of SUPER was fixed.
+* BUG: Translations are correctly reloaded when System.Language changes.
+* BUG: Scan() does not return spurious strings instead of void strings 
+  anymore.
+* BUG: Fixed a potential buffer overflow by using the right constant to 
+  define an internal string buffer used by all file functions.
+* BUG: String.Code() now works correctly, and has the same behaviour as
+  Asc(), i.e. it returns 0 if its argument position is outside of the 
+  string.
+* BUG: Date() correctly converts its argument to a date before using it.
+* NEW: The Pointer datatype can be used in a function signature.
+* NEW: GB.TempString() is a new API function for creating a temporary 
+  string, i.e. a string that is automatically freed by the interpreter 
+  later.
+* NEW: Quote and UnQuote are two new static classes with functions that
+  quote and unquote strings. There are three functions at the moment:
+  Quote(), Quote.Shell() and UnQuote().
+* NEW: A new event interception system based on the new class: Observer. 
+  This class allows to intercept any event raised by any object anywhere.
+* NEW: Stat() has now a new optional second argument to specify if
+  symbolic links must be followed. By default, they are not.
+  Projects using the Stat() function may have to be recompiled.
+
+[COMPILER]
+* BUG: The user component directory is taken into account now.
+* NEW: ENUM is now a keyword reserved for a future use.
+* NEW: String constants can be translatable.
+* NEW: The Randomize() function was replaced by the RANDOMIZE keyword.
+* NEW: A new option, '-r', that lets define the gambas installation 
+  directory. This option is used during 'make install'.
+
+[ARCHIVER]
+* BUG: A class having the same name as the project is not ignored anymore.
+
+[GB.DEBUG COMPONENT]
+* BUG: Using the '#' command on a null object does not crash anymore.
+
+[GB.DB COMPONENT]
+* NEW: The Exec(), Find() and Edit() methods do not use substitution 
+  anymore, if they receive no extra arguments.
+
+[GB.QT COMPONENT]
+* BUG: The Menu class got its Name property.
+* BUG: A forgot Draw.End() does not make the application crash anymore.
+* BUG: Window.Sticky does not crash anymore when the window X11 property
+  does not exist.
+* BUG: Showing an hidden minimized window works correctly now.
+* BUG: GridView.MoveTo() does not extend the selection anymore. It clears 
+  it now.
+* BUG: Setting any property of a GridView item now automatically refreshes 
+  it.
+* BUG: GridView item coordinates are correctly checked now.
+* BUG: ScrollView scrollbars are correctly displayed the first time the
+  control is shown now.
+* BUG: Modal windows minimum size of persistent windows is set only once 
+  now.
+* BUG: The Stock class looks for crystal KDE icons before the classic ones.
+* BUG: GridView does not raise spurious Data event anymore when it is 
+  not visible.
+* NEW: Image.Data is a new property that returns a pointer to the interlal
+  image pixels data.
+* NEW: GridView and TableView were merged.
+* NEW: Control.Ignore is a new property that tells the arrangement 
+  algorithm to ignore the control.
+* NEW: GridView cells can have a specific Font property now.
+* NEW: GridView got two new events: RowResize, and ColumnResize, that are
+  raised when a row or a column is resized.
+* NEW: GridView clears the selection and raises the Change event when the
+  number of rows or the number of columns change.
+
+[GB.QT.EXT COMPONENT]
+* BUG: The behaviour of the LCDNumber Digits & Mode properties was fixed.
+* NEW: TableView was removed.
+* NEW: Editor has a static property named BreakpointPicture to define the
+  picture used as breakpoint mark.
+* NEW: LCDNumber got a new Mode property that allows it to display 
+  hexadecimal or binary numbers. 
+
+[GB.QT.KDE.HTML COMPONENT]
+* BUG: WebBrowser now supports form submit.
+* BUG: WebBrowser does not crash anymore when using the wallet.
+
+[GB.QTE COMPONENT]
+* NEW: Initial import.
+
+[GB.QTE.EXT COMPONENT]
+* NEW: Initial import.
+
+[GB.GTK COMPONENT]
+* NEW: Added a stub for the Name property.
+* NEW: Control.Ignore is a new property that tells the arrangement 
+  algorithm to ignore the control.
+
+[GB.SDL]
+* BUG: Fix (i hope) convertion for GB_IMAGE_BGR
+* NEW: New window property, Framerate for controlling the framerate;
+  - Window.Framerate = 100, limit framerate to a maximum of 100 FPS.
+  - Window.Framerate = 0 (default), don't limit the framerate.
+  - PRINT Window.Framerate, show the current framerate. 
+
+[GB.NET.SMTP COMPONENT]
+* BUG: SmtpClient.Add() optional arguments are now correctly handled, and
+  not specifying them does not crash the interpreter anymore.
+
+[GB.PDF]
+* BUG: Fix Picture output with poppler 0.5.x
+
+[GB.FORM COMPONENT]
+* BUG: The Balloon class was fixed.
+* BUG: TableView editor is hidden with its parent TableView.
+* NEW: Balloon.Delay is a new property for defining the timeout before the 
+  balloon is hidden.
+* NEW: A new control, TableView, that is an editable GridView.
+
+[GB.DB.FORM COMPONENT]
+* NEW: TableView was replaced by GridView.
+
+[GB.SETTINGS]
+* BUG: Freeing a Settings object does not raise an error anymore if writing
+  the settings file is impossible.
+* NEW: If the second argument of Settings.Write() is not specified, then
+  the Control.Name property will be used.
+
+[GB.OPTION]
+* NEW: Initial import. This component is an interface to the getopt()
+  C library function for interpreting the program command-line.
+
+[GB.REPORT]
+* NEW: Initial import. This component will become the Gambas report designer.
+
+[GB.WEB COMPONENT]
+* BUG: Bug fixes in multipart/form-data handling.
+* BUG: Session cookies are correctly removed now.
+* BUG: Request URL decoding process is more robust against malformed URLs.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.46 - 12 Nov 2006
+-------------------------------------------------------------------------------
+
+WARNING! Byte code has changed, and all projects must be recompiled. And 
+the LINK syntax has changed too, which breaks old code!
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Welcome screen displays correctly with right to left written 
+  languages.
+* BUG: Farsi language code is now 'fa' and not 'fa_IR'.
+* BUG: Translation dialog can be opened twice.
+* BUG: The 'make executable' dialog saves its settings in the right place 
+  now.
+* BUG: The Find list window was fixed.
+* BUG: Release number is not incremented if the version is got from an
+  external program.
+* BUG: Fixed the saved path of highlighting theme import & export.
+* BUG: There is no duplicate display of object symbols anymore during 
+  debugging.
+* BUG: CVSROOT file or directory is now ignored by the project tree view.
+* NEW: Support for project managed by SubVersion.
+* NEW: Adds a Splitter in the open project dialog.
+* NEW: Save menu entry was removed from the project tree popup menu.
+* NEW: LINK arguments were inverted to follow the new syntax.
+* NEW: Debugger were redesigned, according to the new commands of the
+  internal debugger. It can display current object variables now.
+* NEW: The form editor allows to move tabs inside TabStrip and any other 
+  MultiContainer.
+* NEW: Some theme colors were changed.
+* NEW: Breakpoint button is now a toggle.
+* NEW: Find list uses the global font size now.
+* NEW: When creating a new image, it is now possible to choose the image 
+  file type between PNG, XPM and GIF.
+* NEW: Project titles are smaller in open project dialog.
+
+[WIKI CGI SCRIPT]
+* BUG: Better support of right to left written languages.
+* BUG: Fix indexes for words that do not begin with an ASCII letter.
+* NEW: Farsi translation.
+
+[OFFLINE DOCUMENTATION]
+* BUG: Links in component description page should work correctly now.
+* NEW: Synchronized with the wiki.
+
+[INTERPRETER]
+* BUG: IIf, Min and Max now behave correctly with Variant arguments.
+* BUG: LOCK really works now.
+* BUG: A stack leak was fixed.
+* BUG: Enumerating class symbols does not return duplicates anymore.
+* BUG: Some spurious warnings were removed.
+* NEW: The LINK parameters have been swapped to be consistent with COPY and
+  MOVE. This will break old code!
+* NEW: LOCK now takes a path as argument, and returns a File object that
+  must be used with UNLOCK to unlock the file.
+* NEW: IIf now takes three mandatory arguments.
+* NEW: Min and Max now takes only two arguments.
+* NEW: A new API for getting the event name used by the last object
+  instanciation.
+
+[COMPILER]
+* NEW: The LOCK syntax has changed.
+
+[GB.DEBUG COMPONENT]
+* BUG: Static arrays do not print an error in the debugger windows anymore.
+* NEW: The internal debugger was redesigned.
+* NEW: New command in the internal debugger to get the value of a symbol
+  without calling the evaluator.
+
+[GB.QT COMPONENT]
+* BUG: Do not reset style at component unloaded. It can crash the
+  interpreter in some cases.
+* BUG: Default column alignment has been fixed in ColumnView.
+* BUG: Visible container controls with an hidden effective internal 
+  container widget are now arranged.
+* BUG: Tray icons won't make the application loop indefinitely anymore.
+* BUG: Toolbar actions are now correctly unregistered. That fixes the 
+  'Invalid control' error message of the IDE when a form is opened after a
+  project was closed.
+* BUG: The Stock class does not fail anymore when if there is no current 
+  KDE theme.
+* OPT: Action class is not called anymore when destroying a control with no
+  action registered.
+* NEW: ColumnView.Settings is a new string property that allows to get and
+  set the ColumnView layout in one shot.
+* NEW: HSplit and VSplit Layout property has been renamed as Settings.
+* NEW: The Gnome stock icon map has been updated.
+* NEW: Action is now a property of the Control class.
+* NEW: Control.Name is a new property that sets or returns the name of an
+  object.
+* NEW: Window[] or Window.Controls[] will return a control from its name.
+
+[GB.QT.EXT COMPONENT]
+* BUG: Some fixes in the drawing of line background and in the margin
+  width.
+* NEW: Editor now displays breakpoints differently.
+
+[GB.FORM COMPONENT]
+* BUG: Support for right to left written languages in SidePanel control.
+* BUG: Hidden SidePanel now hides its container. It does not disable it
+  anymore.
+* BUG: FileChooser displays a message box if you try to select a file that
+  already exists for saving.
+* NEW: The ColumnView.Settings property is used for defining the FileView
+  and DirView Settings properties.
+
+[GB.FORM.MDI COMPONENT]
+* BUG: Support for right to left written languages in ToolBar control.
+
+[GB.SDL]
+* BUG: Fix X11 linking with recent SDL releases (Silvan Calarco)
+
+[GB.WEB COMPONENT]
+* BUG: CONTENT_LENGTH CGI variable is used for reading the standard input,
+  so that locks are avoided.
+* NEW: Response.SendFile() now sends the headers defined by 
+  Response.AddHeader().
+* NEW: Request is a writable array now.
+
+[GB.SETTINGS COMPONENT]
+* NEW: Support for Integer array values.
+* NEW: Window geometry is saved under a 'Geometry' key, and not a 'Coord' 
+  key anymore.
+* NEW: Settings.Read() can takes an optional default value argument.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.45 - 28 Oct 2006
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: A fix in detection of disabled components. Now just one failing 
+  GB_COMPONENT macro will disable the component, not all like before.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Translation files generated by the IDE don't store absolute paths
+  anymore, so that svn conflicts are avoided.
+* BUG: Fixed a bug that made the translation dialog fail when the project
+  description contains quote characters.
+* BUG: Importing a translation works again.
+* BUG: The find list now works correctly when the search string changes.
+* BUG: The color chooser works again.
+* BUG: Project tree items are correctly sorted now.
+* BUG: Some fixes in HTML highlighting.
+* BUG: HTML highlighting now uses UTF-8 string functions, so that 
+  highlighting non-ASCII characters works correctly.
+* BUG: When there is an error while compiling the form generated code, the 
+  message is more explicit.
+* BUG: List properties now can have more than 63 elements.
+* BUG: F2 and SHIFT+F2 now work correctly if there are spaces in the
+  project directory path.
+* BUG: The size of the mascot window has been stretched to fit with the
+  mascot pictures.
+* BUG: Making executable dialog now displays the bookmarks panel, so that
+  putting the executable anywhere is possible.
+* BUG: A case-sensitive test on control classes has been removed.
+* OPT: Many dialogs are now persistent, so that they display faster.
+* NEW: Added support for Seamonkey browser.
+* NEW: Image.Draw() is used for drawing a clean icon for startup classes.
+* NEW: The 'Use system charset' check-box is hidden now when the system
+  charset is the same as the desktop charset, i.e. UTF-8.
+* NEW: A new command in the Project menu to clean up the project, i.e.
+  removing all backup files, generated files, core dumps, thumbnails
+  directories...
+* NEW: The IDE can open images in an external application. At the moment,
+  you can choose between KolourPaint, Krita and the GIMP.
+* NEW: Farsi translation made by Nima Mohammadi.
+* NEW: The project creation dialog was reorganized.
+* NEW: A new project type: Web application based on CGI.
+* NEW: Underscores are allowed in control identifiers now.
+* NEW: Open project dialog now allows to open recent projects and examples.
+
+[DATABASE MANAGER]
+* BUG: The program closes correctly when you hit the cancel button in the 
+  startup password dialog.
+* NEW: Farsi translation made by Nima Mohammadi.
+
+[WIKI CGI SCRIPT]
+* BUG: Some fixes in autolink and history highlighting.
+* NEW: Support for Farsi.
+
+[INTERPRETER]
+* BUG: WRITE can read null strings.
+* NEW: String.Comp() is a new method for comparing UTF-8 strings.
+* NEW: Process.LastValue and Process.LastState are two new static
+  properties that return the state and the return value of the last
+  process run with SHELL or EXEC.
+* NEW: _exit() is now called for gambas classes, but before anything is 
+  freed.
+* NEW: System.ByteOrder is a new property than returns the endianness of
+  the operating system.
+* NEW: Split() now interprets escape characters inside splitted elements.
+  Split("a,b=',',c", ",", "'") now returns ["a", "b=','", "c"].
+* NEW: Array.Type returns the type of an array.
+* NEW: Process.Tag is a new property that allows to attach a user variant
+  value to any process.
+* NEW: READ and WRITE now manage Variant values, by reading/writing the
+  type of the value one byte just before writing the value data.
+
+[COMPILER]
+* BUG: An error is raised now when you try to use the [ ... ] array maker
+  with more than the maximum possible number of arguments.
+
+[GB.QT COMPONENT]
+* BUG: Multiple selection mode of TreeView, ListView and ColumnView now
+  behave as before.
+* BUG: Closing a window during the Open event works now.
+* BUG: The Border property of view controls is forced to TRUE, because of 
+  KDE styles that set it to FALSE at creation.
+* BUG: The order of CheckBox properties has been fixed. Tristate must come
+  before Value.
+* BUG: Dialog.Filter now does not automatically add the '*' filter if it is
+  already specified.
+* BUG: DrawingArea.Resize now raises an error when the DrawingArea is being
+  drawn. It does not crash the interpreter anymore.
+* BUG: Form Open event is raised again when opening a persistent modal 
+  window again.
+* BUG: Window.X and Window.Y now return the correct value when the window 
+  is embedded.
+* BUG: Disabled DrawingArea now raises their Draw event.
+* NEW: Message boxes are resizable again.
+* NEW: Image.Draw() is a new method for blending an image into another 
+  image.
+* NEW: Draw.Device returns the current device object being drawn.
+
+[GB.QT.EXT COMPONENT]
+* BUG: Editor width is correctly updated when a line is rewritten by the
+  syntax highlighter.
+
+[GB.QT.OPENGL]
+* NEW : GLarea got Open and Draw events instead of Initialize and Paint, 
+  like gb.sdl component.
+
+[GB.QT.KDE COMPONENT]
+* BUG: Dialog.Filter now does not automatically add the '*' filter if it is
+  already specified.
+
+[GB.DB COMPONENT]
+* BUG: DB.Create() does not crash anymore when failing.
+* NEW: A new flag to indicate if a database driver supports nested
+  transactions.
+* NEW: Support for database drivers that cannot nest transactions.
+
+[GB.DB.FIREBIRD COMPONENT]
+* BUG: The detection of firebird library was fixed.
+* NEW: A standalone version of ibpp 2.5.2.2 is used now.
+
+[GB.SDL]
+* BUG: Image.Fill() and Clear() methods fixed.
+* NEW: Draw.Image() now takes four clipping parameters.
+* NEW: Window class provide a mouse property to change the mouse cursor. 
+  Now Xcursor library is needed (provide by default with Xfree4.x/xorg)
+* NEW: Mouse class provide cursor shape constants.
+* NEW: Move sdl.sound component into it's own directory (gb.sdl.sound).
+* NEW: Add SDLcursor files for cursor managment.
+* NEW: Draw.Image now can take optional width and height parameters that 
+  scales the Image. This new syntax is incompatible with the old one!
+
+[GB.GTK]
+* BUG: copyright notice and e-mail address in comments.
+
+[GB.FORM COMPONENT]
+* BUG: DirView renaming now keeps the sort order.
+* BUG: Dialog.Filter now does not automatically add the '*' filter if it is
+  already specified.
+* BUG: Settings DirView.Current or FileView.Current changes the current
+  bookmark too.
+* BUG: FileView displays the entire directory contents even if getting an
+  icon fails.
+* BUG: ListContainer now behaves correctly when scrolling while the mouse
+  button is down.
+* NEW: DirView now supports in-place renaming of directories.
+* NEW: DirChooser and FileChooser got a button for creating directories.
+* NEW: FileView.Border is a new property for settings the control border.
+* NEW: Wizard.Border is a new property for setting the border of the wizard
+  contents.
+
+[GB.WEB COMPONENT]
+* NEW: New component for making CGI web applications, with an ASP-like 
+  interface.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.44 - 04 Oct 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Adds the 96 pixels size to the IDE select icon dialog box.
+* NEW: Swedish translation updated.
+* BUG: Popup balloon is hidden when a debugging session stops.
+* BUG: You can edit an image again.
+* BUG: The IDE translation dialog is not displayed if the 'msgmerge' tool
+  is not installed.
+* BUG: An hidden symbol, in the IDE, is a symbol begining with an 
+  underscore, or a symbol with an uderscore inside but that is not a 
+  constant.
+* BUG: Create project dialog saves the settings of its directory chooser.
+* BUG: Fix automatic completion with constants having underscore, without 
+  preventing automatic completion of events from working.
+* BUG: A void string selected during debugging is not sent to the debugger 
+  anymore.
+
+EXAMPLES
+
+* BUG: ServerSocket example works again.
+
+INTERPRETER
+
+* NEW: A little optimization in hash table routines.
+* NEW: The main interpreter loop is now always compiled with -03. This 
+  speeds up the interpreter by about 5%.
+* BUG: The '#' debugger command should work correctly now.
+
+GB.DEBUG COMPONENT
+
+* BUG: The '#' debugger command should work correctly now.
+
+GB.EVAL COMPONENT
+
+* BUG: Evaluating a void string does not crash anymore.
+* BUG: The evaluator does not crash or behave badly anymore when evaluating
+  an expression with a missing operand.
+
+GB.QT COMPONENT
+
+* NEW: The disabled icon creation routine has been optimized.
+* NEW: The UserControl and UserContainer now have a '_Container' hidden 
+  property that replaces the old 'Container' visible property.
+* NEW: Old ListBox mode constants were removed.
+* BUG: GTK+ stock icons were fixed.
+* BUG: TrayIcon.Width and TrayIcon.Height now return accurate values.
+* BUG: The IconView default arrangement is 'Row'.
+* BUG: Fixed a round error in ProgressBar value.
+* BUG: Control.Parent now always returns NULL when the control is a 
+  top-level window. Consequently, Settings.Read() and Settings.Write() now 
+  use the correct key.
+* BUG: Settings ComboBox.Text property when ComboBox is read-only does not 
+  raise useless events anymore.
+  
+GB.FORM COMPONENT
+
+* NEW: ColorButton control has returned. It now has a Value property that
+  is a synonymous of the Color property.
+* NEW: DateChooser has a new Activate event.
+
+GB.FORM.MDI COMPONENT
+
+* NEW: Workspace tab bar now has the correct height when it opens the first
+  time.
+
+GB.DB.FIREBIRD
+
+* NEW: A standalone version of ibpp 2.5.2.2 is used now.
+
+GB.SDL COMPONENT
+
+* Updated.
+
+GB.GTK.SVG COMPONENT
+
+* New component.
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.43 - 23 Sep 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Some little enhancements in automatic completion.
+* NEW: The file creation dialog is better now.
+* NEW: Importing a form now automatically copies form pictures.
+* NEW: Pressing F2 on a NEW expression now brings to the constructor 
+  function.
+* NEW: The project tree now arrange classes according to their inheritance
+  relationships.
+* NEW: The open project dialog has been redesigned.
+* NEW: Opening a project does not refresh the project tree twice anymore.
+* NEW: There is option to select the browser used by the IDE. The default
+  is using the BROWSER environment variable.
+* BUG: The editor function combo-box now only displays the function defined 
+  in the module or class, not the inherited ones.
+* BUG: Replace function does not modify read-only module or classes 
+  anymore.
+* BUG: You cannot drop controls from the toolbox in read-only editer form.
+* BUG: Renaming a form does not set the 'modified' flag anymore.
+* BUG: Icon editor and text editor now can be in read-only mode.
+* BUG: Symbolic links support has been fixed and enhanced.
+* BUG: You cannot modify a read-only form from the property sheet anymore.
+* BUG: The project property dialog now displays the stack size correctly.
+
+EXAMPLES
+
+* NEW: Printing example has been updated.
+
+INTERPRETER
+
+* NEW: Component[] now returns NULL if a component is not loaded. It does
+  not raise an error anymore.
+* BUG: The QUIT instruction works again.
+* BUG: The stack defined in the .project file is really used now.
+* BUG: Watching or stopping watching file descriptors during an event 
+  handler raised by a watched file descriptor does not crash the 
+  interpreter event loop anymore.
+* BUG: Exist() does not follow symbolic links anymore.
+
+COMPILER
+
+* BUG: Useless external class references are not inserted anymore in the
+  bytecode output.
+
+GB.QT COMPONENT
+
+* NEW: ComboBox.Popup() is a new method that popups the combo-box list.
+* NEW: Window.Stacking is a new property that defines the stacking group of
+  the window: Window.Normal, Window.Above or Window.Below. This property
+  replaces the TopOnly property that has been removed.
+* NEW: Window.Sticky is a new property that sticks a window on all virtual
+  desktops.
+* BUG: Dialog.Filter syntax has been fixed.
+* BUG: Draw.Picture and Draw.Image now behave correctly when drawing
+  on a masked Picture.
+* BUG: UserControl and UserContainer are not creatable anymore.
+* BUG: Setting ComboBox.Text now raises the Click event.
+
+GB.QT.EXT COMPONENT
+
+* BUG: TableView Select event is now deferred only in multiple selection 
+  mode.
+
+GB.QT.KDE COMPONENT
+
+* BUG: Dialog.Filter syntax has been fixed.
+
+GB.FORM COMPONENT
+
+* NEW: DirChooser and FileChooser got support for bookmarks. These 
+  bookmarks are displayed in a panel, are shared by all instances of
+  these controls, and are automatically saved in the 
+  '~/.config/gambas/gb.form.conf' configuration file.
+* NEW: DirChooser and FileChooser got two new properties for managing 
+  bookmarks: ShowBookmark, that let displaying the bookmark panel, and 
+  Bookmarks, that allows to add transient bookmarks. These transient 
+  bookmarks are not automatically saved.
+* NEW: FileChooser.Settings and DirChooser.Settings are new properties 
+  that return the state of the control in a string array.
+* NEW: ListContainer.Clear() is a new method to clear 
+* BUG: DirChooser got support for Icon event.
+* BUG: DateChooser.Value returns the correct date now.
+* BUG: ListContainer.Background has been fixed.
+
+GB.SETTINGS
+
+* NEW: Settings can save string arrays in a configuration file.
+
+GB.GTK COMPONENT
+
+* Updated.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.42 - 11 Sep 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Support for default control dimensions.
+* NEW: No control is created anymore to get default value of properties. 
+  This is experimental, as this implies that all controls defines these
+  default values in the '_Properties' constant.
+* NEW: When you save a source file, a comment telling that it is a Gambas
+  source file is automatically inserted at the beginning of the file.
+* NEW: Old file creation dialogs have been removed, and replaced by a 
+  unique one.
+* NEW: You can insert symbolic links inside your project. Their support is
+  experimental.
+* NEW: The find list now is displayed in its own tool window, and not 
+  inside the project tree anymore
+* NEW: Project tree refresh has been optimized.
+* NEW: The output console now handles the '\r' and '\t' control characters.
+* NEW: The control property sheet has more support of properties kinds.
+* NEW: The project version can be got from the output of an external 
+  program.
+* NEW: The quit dialog has been redesigned.
+* NEW: The control toolbox has been redesigned around a TabStrip.
+* NEW: The translation dialog has been enhanced, thanks to Charlie Reinl.
+* NEW: IDE workspace now uses the same icon as the project tree.
+* BUG: The IDE does not break anymore when the user component path does not
+  exist.
+* BUG: Search inside procedure has been fixed, and should not enter an
+  endless loop anymore.
+* BUG: The position of controls dropped on the form editor should be 
+  correct now.
+* BUG: You can specify that the stack size keeps its default value now.
+* BUG: Needed features of a component are correctly saved now.
+* BUG: Finding a Gambas subroutine in the help works now.
+
+DATABASE MANAGER
+
+* NEW: The interface now is based on the Workspace control.
+* BUG: The use of ComboBox and ListBox List properties has been fixed.
+
+INTERPRETER
+
+* NEW: A new API, GB.RaiseLater(), that posts an event to an object. The
+  event must not take any parameter.
+* NEW: Component.UserPath is now located in '~/.local'.
+* BUG: The _free() methods are now called again when the _new() methods 
+  fail. It finally crashes less than the fix in the previous version.
+  A real solution has to be found.
+
+COMPILER
+
+* BUG: Using expressions in optional parameters does not crash the compiler
+  anymore.
+
+GB.QT COMPONENT
+
+* NEW: ToolButton.Radio property has been implemented.
+* NEW: Color.LightBackground is lighter.
+* NEW: Container.Find is a new method that finds a child control from a
+  relative position.
+* NEW: The Dialog.Filter syntax is now the same as the gb.form FileChooser
+  control.
+* NEW: Draw.Resolution returns the resolution of the device being drawn in
+  digits per inches.
+* NEW: All Mode properties now uses the constants from the Select class. 
+  Other selection mode constants have been removed.
+* NEW: IconView GridX and GridY properties have been replaced by the 
+  GridWidth and GridHeight properties, those value is not in pixels 
+  anymore, but in units of Desktop.Scale.
+* NEW: HBox, VBox, HPanel and VPanel have an AutoResize property now, which
+  is not set by default, contrary to the old behaviour.
+* NEW: ScrollView.Width and ScrollView.Height are two new properties that
+  return the dimension of the internal area.
+* NEW: TreeView, ColumnView and ListView got a Cancel event, raised when
+  a item renaming has been canceled.
+* NEW: Watcher now raises an Insert event when a new child is inserted in a
+  watched container.
+* NEW: The default values of background and foreground colors are correctly
+  managed now.
+* BUG: Some fixes in the Design property management.
+* BUG: Setting the background or foreground color has been correctly
+  optimized.
+* BUG: Some fixes in the arrangement algorithms.
+* BUG: ScrollView arrangement is now correct when the ScrollView has a 
+  border.
+* BUG: TabStrip enables and disables tabs correctly now.
+
+GB.QT.EXT COMPONENT
+
+* NEW: Editor.Print is a new method that handles '\r' and '\t' control 
+  characters.
+* NEW: TableView now raises a Select event when the selection has changed.
+  This event is deferred.
+* BUG: Editor now undoes insertion in a more clever way.
+* BUG: Editor now refreshes without flickering when the entire edited text
+  is visible.
+
+GB.QT.KDE COMPONENT
+
+* NEW: The Dialog.Filter syntax is now the same as the gb.form FileChooser
+  control.
+* NEW: DatePicker has been removed.
+
+GB.FORM COMPONENT
+
+* NEW: The CustomListBox control has been replaced by the ListContainer 
+  container.
+* NEW: Chooser controls now have a Value property.
+* NEW: DateChooser, a calendar control for selecting a date.
+* NEW: FileView now hides backup files, unless the 'show hidden files'
+  button is toggled.
+* NEW: SidePanel.Settings is a new property that returns the SidePanel
+  state in a string. This property can be set too.
+* BUG: FileChooser raises the Change event when the user changes the 
+  current directory.
+  
+GB.FORM.MDI COMPONENT
+
+* NEW: The Workspace tabstrip follows the mouse wheel now.
+
+GB.SETTINGS
+
+* NEW: The Settings class now stores Window and SidePanel settings 
+  differently.
+
+GB.GTK COMPONENT
+
+* Updated.
+
+GB.PDF COMPONENT
+
+* BUG: The component should compile with poppler 0.5 now.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.41 - 30 Aug 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Support for developing component (experimental).
+* NEW: The project property dialog has been redesigned.
+* NEW: Component description is now part of the IDE source code to make 
+  their translation easier.
+* NEW: Support for components installed in ~/.gambas/lib.
+* NEW: The Enabled property is now applied to controls in the form editor.
+* NEW: New interface for defining project arguments.
+* NEW: Custom project directory icon.
+* NEW: The code editor is more clever when moving to a procedure.
+* BUG: Auto-completion list is now always on front of the signature 
+  tooltip.
+* NEW: Internal help browser was removed and replaced by a call to an
+  external web browser automatically detected.
+* NEW: The online help now uses a treeview written in JavaScript that was
+  adapted from http://phpXplorer.org.
+* NEW: Project treeview drag & drop now opens the parent nodes 
+  automatically when you keep the mouse cursor on them during a few time.
+* NEW: Some optimization in component information refresh during a project
+  load.
+* NEW: Stack size configuration is back.
+
+EXAMPLES
+
+* BUG: Console example was fixed. One should never use LINE INPUT to read
+  process output.
+
+INTERPRETER
+
+* NEW: Support for SDL event loop.
+* NEW: The Insert() method of arrays now returns a reference on the array,
+  like the Sort() method.
+* NEW: Component.UserPath returns the path where user components are 
+  stored. At the moment, it is ~/.gambas/lib/gambas2, but it will surely
+  be moved to ~/.local/lib/gambas2.
+* NEW: The Stream class got a Close() method.
+* BUG: The interpreter release process at exit was fixed. It could crash
+  sometimes, depending on the use of _free() methods in your project.
+* BUG: Regular expressions were fixed. The syntax '[A-Za-z]' is now
+  correctly supported.
+
+GB.QT COMPONENT
+
+* BUG: The arrangement routine now should work correctly with autoresize
+  containers. Toolbars should not disappear anymore in the IDE.
+* BUG: Some fixes in drag & drop management.
+* NEW: Drag.Pending is a new property that indicates that a drag is 
+  pending.
+* NEW: Draw.Width and Draw.Height return the dimension of the object being
+  painted.
+* NEW: TabStrip tabs can be shown or hidden individually.
+* BUG: The MoveLast() method was fixed in TreeView, ColumnView and 
+  ListView.
+* BUG: TreeView and ListView items got the same X, Y, Width and Height
+  properties than ColumnView items.
+
+GB.DB COMPONENT
+
+* BUG: ODBC driver fixes.
+
+GB.GTK COMPONENT
+
+* Updated.
+
+GB.SDL COMPONENT
+
+* Updated.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.40 - 26 Aug 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: The IDE now understands the new way of declaring properties.
+* NEW: You can drag images from the project tree and drop them on a form.
+* NEW: You can drag controls from the toolbox and drop them on a form.
+* NEW: The project tree now use drag & drop and in-place renaming.
+* NEW: Support for String array properties whose each string is 
+  translatable.
+* NEW: When the debugger is awaken, the IDE window is automatically raised.
+* NEW: The output console can use the System encoding or the Desktop 
+  encoding.
+* NEW: Auto-completion is more intelligent when you press Backspace.
+* NEW: Auto-completion now completes a control name with its event handlers
+  as soon as you insert an underscore character.
+* NEW: Auto-completion now completes special method names.
+* NEW: If the auto-completion have several entries beginning with the same
+  letters, then the Tab key only completes the common part.
+* NEW: The editor "goto" button was replaced by a combo-box.
+* NEW: Commenting and uncommenting selected text now respects the 
+  indentation.
+* BUG: The icon editor color picker now works correctly.
+* NEW: Some integer properties are now edited with a SpinBox control.
+* NEW: The translation dialog has been redesigned.
+* BUG: The executable shortcut is not created anymore when the project is 
+  just compiled.
+
+DATABASE MANAGER
+
+* NEW: The new server dialog now can open a file selector when creating a
+  connection to a sqlite database. This is a contribution of Charlie Reinl
+  slightly modified by your servant.
+
+GB.QT COMPONENT
+
+* NEW: A resizable modal dialog cannot be stretched to less than its 
+  initial size.
+* BUG: Containers having AutoResize set now honor correctly the Padding
+  property when arranging their contents.
+* BUG: The Mouse events are not delivered anymore when the mouse is on a
+  scrollbar inside the widget.
+* NEW: Drag.Show is a new method that allows to display a frame on a part
+  of the control that could receive a drop. This frame is hidden when the 
+  drag is terminated, or if you call the Drag.Hide method.
+* BUG: Drag.Action is accurate now.
+* NEW: Default drag & drop support of ListView, TreeView and ColumnView has
+  been disabled.
+* NEW: Extended selection mode was removed.
+* NEW: The Select class now holds the constants for selection modes.
+* NEW: A auto-resize Label whose text is vertically centered does not
+  automatically decrease its height anymore.
+* NEW: ListBox.List and ComboBox.List are now String[] properties.
+* BUG: Menus should now correctly hide useless separators.
+* NEW: Two new properties, Mouse.StartX and Mouse.StartY, that are the 
+  value of Mouse.X and Mouse.Y when the MouseDown event is raised.
+* NEW: Mouse properties that return key and button states now can be used
+  outside of a mouse event. They returned the last value set by a mouse 
+  event, and not the current value!
+* NEW: The TreeView.Root and ColumnView.Root properties have been removed.
+* BUG: TreeView.MoveLast and TreeView.MovePrevious now work even if the 
+  items are sorted.
+* NEW: Move methods of TreeView items have been removed. They have been
+  replaced by Move methods that *really* move the items inside the view.
+* NEW: MoveFirst, MoveLast, MoveAfter and MoveBefore are four new methods
+  that change the order of an item among its siblings. They cannot change
+  the parent of the item at the moment.
+* NEW: Control.MouseDrag is a new event that is raised when a mouse button
+  is pressed, and when the mouse cursor have moved a little since. It means
+  that a drag could be started.
+* BUG: The Embedder control seems to not working correctly anymore. This is
+  not fixed at the moment.
+
+GB.QT.EXT COMPONENT
+
+* BUG: TableView correctly refreshes its contents when its number of rows
+  or columns has changed.
+
+GB.FORM COMPONENT
+
+* NEW: DirView got an Icon event and an Icon property, like the FileView 
+  class. Contribution of Fabien Bodard.
+* BUG: FileChooser has a read-only mode that you set when you want to open
+  a file and not save it. This mode was fixed.
+
+GB.GTK COMPONENT
+
+* NEW: The CheckBox widget now implements the third state available in 
+  gb.qt.
+* NEW: The Stock class has been merged as a gambas part of gb.gtk, but
+  there are some issues yet.
+* NEW: The Application.Theme property.
+* NEW: Image.Stretch got the "Smooth" argument.
+* NEW: MouseMove events implemented in DrawingArea.
+* BUG: Draw.Rect now works correctly for negative width and height values.
+* NEW: Extended selection mode was removed.
+* NEW: The Select class now holds the constants for selection modes.
+* NEW: A GridView control.
+
+GB.SDL COMPONENT
+
+* Updated.
+
+GB.OPENGL COMPONENT
+
+* Updated.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.39 - 19 Aug 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Automatic insertion of property handlers should not crash anymore.
+* BUG: Selecting more than one line during a debugging session does not
+  send garbage to the debugger anymore.
+* NEW: HBox, VBox, HPanel and VPanel are drawn with a more visual 
+  representation.
+* NEW: The title bar inside the form editor is drawn differently.
+* NEW: Examples directories are now translated.
+* NEW: A new highlighting theme made by Ron Onstenk, "Obsidian".
+* BUG: Function signature tooltip is correctly displayed on one line only 
+  again.
+* NEW: The size of the toolbar control icons now follows the global font 
+  size option.
+* BUG: Clearing the recent files list now works correctly.
+
+GB.QT COMPONENT
+
+* BUG: The ScrollView now behaves correctly when its arrangement property 
+  is set.
+* BUG: The Drag & Drop should have been really fixed. :-p
+* BUG: The Window.Close method has been fixed.
+* BUG: The Show and Hide events are now raised again when a Window is shown
+  or hidden by the window manager, but no action is raised.
+
+GB.FORM COMPONENT
+
+* NEW: Balloon.Control is a new property that returns the control the 
+  balloon points at.
+* BUG: Many fixes in the Balloon behaviour.
+* NEW: DirChooser.Picture and FileChooser.Picture are a new properties to 
+  set the picture displayed for the root directory.
+* NEW: Expander is a new container that acts like the Expander GTK+ widget.
+
+GB.DB.FORM COMPONENT
+
+* BUG: The DataBrowser and DataSource were fixed, and should not raise 
+  any spurious error anymore when inserting new records.
+* NEW: DataBrowser.Orientation is a new property to set the position of the
+  buttons around the DataView.
+* NEW: True and False value are translated inside the DataView.
+
+GB.SDL COMPONENT
+
+* NEW: The component was redesigned. The CD-Rom part was removed (see 
+  below). gb.sdl.opengl and gb.sdl.image were merged with gb.sdl.
+* NEW: The SDL and OpenGL examples were updated.
+  
+GB.SDL.SOUND COMPONENT
+
+* NEW: The CD-Rom part of the old gb.sdl component was put there.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.38 - 08 Aug 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: The mascot, and some other IDE parts now use the new Balloon class.
+* NEW: The project creation dialog was redesigned a bit, and uses the
+  Balloon class too.
+* NEW: Showing grid is now a toggle button local to each form editor.
+* BUG: Now Multicontainers are arranged correctly when saved.
+* BUG: Project treeview menu now has recovered its shortcuts. They should
+  work without disturbing other parts of the interface.
+* NEW: The menu editor starts to use ballons too, but it is far from 
+  being perfect at the moment.
+* NEW: You can select the icon theme in the options dialog now.
+* BUG: Reloading the form hides correctly any property editor.
+* NEW: The "Make executable" dialog has been redesigned.
+* NEW: You can automatically create a shortcut of your application on your
+  desktop when making an executable.
+
+INTERPRETER
+
+* BUG: Calling Object.SetProperty() on a read-only property now raises
+  correctly an error, and does not crash the interpreter anymore.
+* BUG: Catching an error in a function call on the number or type of
+  arguments does not corrupt interpreter stack anymore.
+* BUG: The integer division operator '\' correctly converts its arguments 
+  to Long when one of them is Long and the other a shorter integer. 
+  Consequently, the result of the division is correct now.
+  
+ARCHIVER
+
+* BUG: The archiver does not forgot to deliver some files anymore.
+
+GB.QT COMPONENT
+
+* BUG: Drag & Drop event management has been fixed.
+* NEW: Container Insert and Remove events has been removed. They may come 
+  back in the future.
+* BUG: Draw.Picture() now works correctly when Pictures have a mask.
+* NEW: TextLabel.AutoResize is set by default now. Now the TextLabel is
+  resized only vertically so that all its text is visible.
+* NEW: TextLabel and Label autoresize is more aggressive.
+* BUG: Disabled shortcuts keep being disabled when the Menu is shown.
+* BUG: Message box icons return to their original 32x32 pixels size.
+* BUG: ScrollView does not display unneeded scrollbars anymore.
+* BUG: Management of current active window has been fixed, and should not
+  freeze the interpreter in some case anymore.
+* NEW: Now showing a window while another modal window is displayed makes
+  it modeless to the modal window, and not automatically modal.
+* NEW: Window.TopLevel is a new property that returns if a Window control
+  is a toplevel window, i.e. if it is not embedded.
+* NEW: Reparenting of Windows has been fixed.
+* NEW: The Stock class now uses the standard Gnome icon theme as defined
+  in the control center.
+* BUG: Enabling an already enabled Timer does not create spurious internal
+  timers anymore.
+* NEW: AutoResize of TextLabels is better now, but cannot be perfect
+  because of a bug in QT.
+* NEW: Label and TextLabel got a new method Adjust that resizes the control
+  according to its contents.
+
+GB.FORM COMPONENT
+
+* NEW: ToolPanel.TextFont is a new property to choose the font of the 
+  ToolPanel buttons independently from the ToolPanel font itself.
+* BUG: The ToolPanel contents resize correctly when its Font or TextFont
+  property changes
+* NEW: A new class, Balloon, that works like the Message class, but 
+  displays a yellow balloon instead! :-)
+* NEW: FileChooser.ReadOnly is a new property that makes the TextBox on the
+  bottom editable or not. This is useful when typing any file name is not
+  wanted.
+* NEW: FileView control displays icons from the Stock according to the
+  extension of files, and automatically display preview of image files, if
+  they are not too big.
+
+GB.FORM.MDI COMPONENT
+
+* NEW: ToolBar.Orientation now allows a ToolBar to be either horizontal or
+  vertical.
+* NEW: ToolBar has an internal padding of one pixel now.
+
+GB.DB.FORM COMPONENT
+
+* BUG: Creating a new record with the DataBrowser works again.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.37 - 06 Aug 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Almost all icons now come from the stock. The development 
+  environment now takes a GNOME look when running under GNOME.
+* BUG: Automatic insertion of property handlers now correctly deals with
+  static properties.
+* BUG: CTRL+Up and CTRL+Down work again.
+* BUG: Search backward does not freeze the IDE anymore.
+* BUG: Arranging buttons in the form editor do not crash the IDE anymore.
+* BUG: Some unneeded process was removed when inserting a new file in the
+  project.
+* NEW: Now project source files can only be put in the project root 
+  directory.
+* NEW: The project creation dialog has been redesigned.
+* NEW: The menu editor is now resizable.
+* NEW: The icon selector has been redesigned. But this is not the final
+  version!
+* NEW: A new highlight theme made by Fabien Bodard, 'amber'.
+* BUG: Color buttons in the option dialog now should be visible with any
+  widget theme.
+* BUG: Find previous and find next buttons are at the good place now.
+* BUG: Saving translation now waits for the completion of the 'msgfmt' 
+  command.
+* NEW: CVS directories are now automatically hidden.
+
+DATABASE MANAGER
+
+* NEW: The databaser manager starts using stock icons.
+
+INTERPRETER
+
+* BUG: The error message displayed when accessing an unknown object symbol
+  has been fixed.
+* BUG: Byte order and end of line character are now correctly initialized
+  when opening a file inside an archive.
+* BUG: Static arrays should not be freed twice and so crash the 
+  interpreter anymore.
+
+COMPILER
+
+* NEW: Now project source files are compiled only if they are located in
+  the project root directory.
+
+GB.QT COMPONENT
+
+* NEW: The Stock class has been redesigned and completed.
+* NEW: Stock.List returns the list of all stock icon names.
+* NEW: Application.Theme is a new property that stores the application
+  theme. This property is used, for example, by the Stock class to choose
+  which icon theme should be displayed.
+* NEW: ToggleButton.Radio is a new boolean property that makes it behave 
+  like a RadioButton when it is set.
+* NEW: When loading an image, the component looks before for an image with
+  the same basename, but with an underscore followed by the current
+  application theme added. For example, if Application.Theme is "gnome",
+  and if you load the "flower.png" image, then a "flower_gnome.png" will be
+  loaded instead if it exits.
+* BUG: Label autoresize was enabled again.
+* NEW: ListBox, ListView, TreeView and ColumnView events are now dispatched
+  immediately if the selection mode is "Single".
+* NEW: Message boxes now follow the application theme.
+* BUG: When the application is uniconified, the focus correctly returns to
+  the correct form, and not always to the main window.
+
+GB.QT.EXT COMPONENT
+
+* BUG: Editor.GetPurgedLine() now correctly deals with quoted string
+  characters.
+* NEW: A margin was added between line numbers and text in the editor.
+
+GB.FORM COMPONENT
+
+* NEW: DirChooser and FileChooser now raise an Icon event that allows to 
+  change the icon displayed for each file. The icon must be stored in the
+  new Icon property inside the Icon event handler.
+* BUG: A potential crash in DirChooser and FileChooser has been fixed.
+* NEW: FileChooser.SelectedPath property is now writable.
+* NEW: Wizard.ShowTitle is a property that allows to hide the wizard title.
+
+GB.DB COMPONENT
+
+* NEW: The gb.db.sqlite driver was renamed as gb.db.sqlite3.
+* NEW: A new gb.db.sqlite pseudo-driver had been created that automatically
+  switches between gb.db.sqlite2 and gb.db.sqlite3 as needed.
+* NEW: Field names are systematically quoted when using Find and Edit 
+  methods.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.36 - 01 Aug 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: You can change the case of a control name now without having a
+  message telling you that the name is already in use.
+* NEW: If you select an expression during a debugging session, its value
+  is automatically displayed in a tooltip.
+* BUG: Some fixes in the automatic insertion of functions when selecting
+  an event in the form editor.
+* NEW: The automatic position bookmarks (F2 & SHIFT+F2) saves positions
+  in more situations.
+* NEW: Some little changes in the search & replace panel.
+* BUG: The file list is now correctly sorted, and displayed the line where
+  the search string was found.
+* BUG: Form reload should work in all cases now.
+
+INTERPRETER
+
+* NEW: The debugger code is now stored in the gb.debug component.
+* BUG: Code inside _init() methods can be debugged now.
+* NEW: If you use the bracket syntax with the two first elements having
+  different types, then a Variant[] array is created instead of raising an
+  error.
+  
+GB.DEBUG COMPONENT
+
+* NEW: The debugger goes inside this component now.
+* NEW: The debugger can display the contents of Array and Collection 
+  objects.
+
+GB.EVAL COMPONENT
+
+* BUG: Evaluating expressions with a non-terminated string does not crash
+  the interpreter anymore.
+
+GB.QT COMPONENT
+
+* BUG: Management of Expand property was fixed for Row and Column 
+  arrangement mode.
+* BUG: The behaviour of UserContainer arrangement properties was fixed.
+* BUG: The Label control should not displayed its text twice anymore.
+* NEW: The Separator control now uses the underlying widget theme for 
+  displaying its contents.
+* NEW: Pictures name beginning with "icon:/" are sent to the Stock class.
+  For example, "icon:/64/close" is a reference to the stock icon that
+  represents the "close" action, with a width and height of 64 pixels.
+* BUG: Forms do not accept keyboard focus anymore.
+* NEW: Action.Lock and Action.Unlock are two new methods for locking and
+  unlocking the propagation of actions.
+* NEW: The Stock class uses the icons of the current KDE icon theme.
+
+GB.QT.EXT COMPONENT
+
+* BUG: Fix some redraw problem in the Editor.
+
+GB.QT.KDE COMPONENT
+
+* BUG: Fixed a fatal double initialization of the event loop.
+
+GB.FORM COMPONENT
+
+* BUG: The layout of the wizard title is correct now.
+* NEW: You can hide a toolpanel sub-panel.
+
+GB.FORM.MDI COMPONENT
+
+* NEW: Workspace tab bar is displayed on top now.
+* NEW: Workspace title is hidden now. The close button is now besides the
+  tab bar.
+
+GB.DB COMPONENT
+
+* NEW: Database connections are automatically opened at first use. This is
+  experimental and not well tested!
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.35 - 25 Jul 2006
+-------------------------------------------------------------------------------
+
+CONFIGURATION & INSTALLATION
+
+* The README.HOWTO-PACKAGE-GAMBAS file has been updated. Please read it
+  carefully if you make binary packages of the development version!
+* This version should compile without errors with the very last version
+  of gcc.
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Clicking on a menu inside the form editor now opens the editor
+  inside the event handler as before.
+* BUG: Changing the stacking order of controls keeps the selection handles
+  on top.
+* NEW: The new logo is used in more places.
+* BUG: You can select the default color in the color dialog again without
+  crashing the IDE.
+* NEW: The automatic completion ignores string contents and comments now.
+* BUG: The automatic completion is less aggressive.
+* NEW: The find dialog were replaced by a find panel with toolbars.
+* NEW: The result of a global project search is now displayed directly in
+  the project tree.
+* NEW: When debugging, selecting an expression in the editor displays its
+  value in the message bar.
+* NEW: You can reload a form now.
+* BUG: The mascot came back.
+* NEW: A new highlight theme, named 'Amethyst'.
+
+INTERPRETER
+
+* NEW: GB.Loop() is a new interpreter API that allows a component to call
+  the default event loop to implement its own one.
+* NEW: Object.Count is a static method that returns how many times an
+  object is referenced.
+* BUG: Comparing objects now work in all cases.
+* NEW: A component now can export a GB_SIGNAL() function that will be 
+  called by the interpreter in specific situations. At the moment, the 
+  following signals are implemented: GB_SIGNAL_DEBUG_BREAK (the program
+  is stopped in the debugger), GB_SIGNAL_DEBUG_CONTINUE (the program is
+  running), and GB_SIGNAL_DEBUG_FORWARD (the program will run step by
+  step).
+* NEW: String.InStr() and String.RInStr() are two new string search 
+  functions that deals with UTF-8.
+* BUG: Randomize() works now when the seed is specified
+* BUG: Reading and writing a string into a stream without specifying the
+  length now work correctly.
+* BUG: Temporary files are now correctly removed when the interpreter
+  terminates.
+
+GB.QT COMPONENT
+
+* NEW: Arrangement by row and column now take the Expand property into 
+  account.
+* BUG: ToolButton now raises its Click event according to its toggle 
+  status.
+* BUG: Select events of ListBox, ListView, TreeView and ColumnView are now
+  posted, so that its behaviour is more logical.
+* NEW: Action class is now called only when a control is effectively 
+  associated with an action.
+* BUG: A close embedded window automatically activates its parent window.
+* NEW: Forms now accept keyboard focus when clicked. This is experimental
+  and may be removed in the future.
+* NEW: Show and Hide events are not sent anymore if they come from the
+  window manager. This is experimental too!
+* BUG: Some fixes in the Action class.
+
+GB.FORM COMPONENT
+
+* NEW: Some cosmetic changes in the SidePanel control.
+
+GB.FORM.MDI COMPONENT
+
+* NEW: A ToolBar child having the Expand property set now makes the toolbar
+  as large as possible.
+* NEW: ToolBar can have an action now.
+
+GB.SETTINGS COMPONENT
+
+* BUG: The default settings file directory is now automatically created.
+
+GB.GTK COMPONENT
+
+* NEW: Arrangement by row and column now take the Expand property into 
+  account.
+* NEW: The GridView control was implemented.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.34 - 17 Jul 2006
+-------------------------------------------------------------------------------
+
+CONFIGURATION & INSTALLATION
+
+* BUG: A symbolic link named 'gambas2' pointing at 'gambas2.gambas' is now
+  created inside the 'bin' directory of the installation.
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: KDE Crystal icon theme is used now.
+* NEW: The main window was redesigned with toolbars and actions.
+* BUG: Some fixes in container support in the form editor.
+* NEW: The form editor now has a representation of the window borders and
+  title bar.
+* NEW: The welcome form was redesigned.
+* BUG: Somes fixes in the automatic completion.
+* NEW: A new tab which displays the list of current breakpoints while 
+  debugging.
+* NEW: The option form was redesigned.
+* BUG: Automatic creation of property handlers now support static
+  properties.
+* BUG: Opened forms become read-only when the project is running.
+* NEW: The icon editor was redesigned.
+* BUG: Old editor positions are cleared when a new project is opened.
+
+INTERPRETER
+
+* BUG: The GB.GetFunction API does not leak memory anymore when the 
+  searched function does not exist.
+* NEW: The '.Array' class lost its point, and is named 'Array' now.
+* NEW: Class.Component is a new property that returns the component a class
+  belongs to.
+* BUG: Object.SetProperty and Object.GetProperty now correctly propagate
+  errors.
+* NEW: Object.Call now takes its arguments as an unique array, and not as a
+  variable list.
+* BUG: An error raised inside a component written in Gambas does not crash 
+  the interpreter anymore during a debugging session.
+* BUG: An object variable with a defined class can only accept symbols of 
+  this class, and not a symbol of an inherited class.
+* NEW: Randomize now takes an optional parameter to initialize the seed.
+  
+COMPILER
+
+* NEW: A new instruction, SLEEP, to wait without calling the event loop.
+* NEW: EXEC and SHELL now support the AS syntax to specify the event name
+  of the returned Process objects.
+  
+INFORMER
+
+* BUG: The informer does not use a hardcoded path of itself anymore to 
+  implement library preloading.
+
+ARCHIVER
+
+* NEW: The archiver takes a new '-o' option to specify the path of the
+  generated executable.
+
+GB.QT COMPONENT
+
+* BUG: The implementatio of the Design property were reworked.
+* NEW: The Control.Window property now returns the window the control 
+  belongs to, even if this window is embedded. BE CAREFUL! THIS MAY
+  BREAK YOUR CODE.
+* NEW: Now a control can be associated with an action, thanks to the Action 
+  class. This class is implemented in the gambas part of the component.
+* NEW: Now the Application.ActiveWindow returns the window containing the
+  control having the focus, even if this window is embedded, provided this 
+  embedded window has an event handler for the Activate event. Is it clear?
+* NEW: Disabled icons are visually visible now.
+* NEW: Button, ToggleButton and ToolButton now support actions.
+* BUG: ToolButton now have a minimum height according to its font, like the
+  Button control had.
+* NEW: CheckBox supports action now.
+* NEW: Arrange.LeftRight was renamed as Arrange.Row, and Arrange.TopBottom
+  was renamed as Arrange.Column.
+* NEW: Container now raises the Arrange event, to indicate that its contents
+  has changed and should be arranged.
+* NEW: Draw.RoundRect is a new method to draw rounded rectangles.
+* NEW: Now DrawingArea controls ignore keyboard events by default.
+* NEW: DrawingArea.Focus is a new property to tell a DrawingArea to accept
+  keyboard events.
+* NEW: Menu now supports actions.
+* NEW: Now menus automatically hide unneeded separators just before opening.
+* NEW: Menu.Toggle is a new property to make the menu acts like a toggle 
+  button.
+* NEW: Menu.Show and Menu.Hide are two new methods to respectively show
+  and hide a menu entry.
+* NEW: Menu.Popup now takes two extra optional parameters to specify the
+  screen coordinates of where the menu will appear.
+* NEW: Menu.Window is a new property that returns the window the menu is
+  attached to.
+* BUG: Replacing a picture in the Picture cache with another one with the
+  same key does not crash the interpreter anymore.
+* BUG: Changing the background color of a window now works correctly.
+* NEW: Window now supports action, so that it can be automatically shown
+  or hidden.
+
+GB.QT.EXT COMPONENT
+
+* NEW: Editor.Goto now takes an optional argument that center the cursor
+  inside the Editor control.
+* NEW: Procedures can be separated with a gradient instead of just a line.
+* BUG: Some little fixes in the Editor control.
+
+GB.FORM COMPONENT
+
+* NEW: FontChooser.ShowFixed were replaced by FontChooser.FixedOnly.
+* NEW: FontChooser.ShowStyle is a new property that allows to hide the
+  style panel in the middle.
+* BUG: FontChooser does not refresh uselessly anymore.
+* NEW: Some cosmetic changes in the SidePanel container.
+* NEW: A new property, SidePanel.Action, for associating a SidePanel with 
+  an action. This way, the SidePanel can be automatically shown or hidden.
+* NEW: A ToolBar control, that acts as a container.
+
+GB.FORM.MDI COMPONENT
+
+* BUG: Some bug fixes in the Workspace control.
+* NEW: Clicking on the titlebar now gives the focus to the associated child
+  window.
+* NEW: Activating windows should not flicker anymore.
+
+GB.SETTINGS COMPONENT
+
+* NEW: Settings.Path is a new static property that returns the default
+  path of configuration files.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.33 - 01 Jul 2006
+-------------------------------------------------------------------------------
+
+CONFIGURATION & INSTALLATION
+
+* The symbolic links in /usr/bin are not needed anymore. Now the gambas
+  installation path is encoded in the executable at compilation time, 
+  unless a symbolic link /usr/bin/gbx2 exists. Otherwise, the only 
+  requirement is that gbr2 must be in the PATH.
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Move some code from Form constructors to Form_Open event handlers, 
+  as no event can be raised during instanciation.
+* BUG: Some fixes in the automatic completion.
+* BUG: Some fixes in the help explorer window.
+* BUG: Making an executable outside of the project directory now works 
+  correctly.
+
+INTERPRETER
+
+* BUG: The error management does not leak stack anymore. So functions doing
+  a lot of TRY do not crash the interpreter anymore.
+* NEW: File.SetName, File.SetExt, File.SetDir and File.SetBaseName replace
+  the File.Name, File.Ext, File.Dir and File.BaseName methods called with
+  two parameters.
+* BUG: The = and <> operator now work correctly in any case when comparing
+  two strings whose one is null.
+
+GB.QT COMPONENT
+
+* NEW: The Draw.Drawing method now takes four extra optional clipping 
+  parameters, like Draw.Image and Draw.Picture.
+* BUG: Windows automatic layout works again.
+
+GB.QT.EXT COMPONENT
+
+* BUG: The procedure line delimiter is correctly displayed in all cases now.
+
+GB.FORM COMPONENT
+
+* BUG: Some fixes because of the constructor not being able to raise events
+  anymore.
+
+GB.FORM.MDI COMPONENT
+
+* NEW: Pressing the Shift key allows to resize MDI child windows freely.
+
+GB.DB COMPONENT
+
+* BUG: Drivers functions that test the existence of a user, an index, a 
+  field, and so on, now correctly return FALSE if an error occurs.
+
+GB.V4L COMPONENT
+
+* BUG: The component now requires the "linux/videodev2.h" include to 
+  compile.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.32 - 11 Jun 2002
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: The old Workspace control has been replaced by the new one.
+* NEW: Automatic completion of identifiers and keywords.
+* NEW: The help window now uses a static version of the wiki.
+* BUG: The find dialog should not crash anymore in replace mode.
+* BUG: The project tree shortcuts now are disabled when not having
+  the focus, so that they do not conflict with the editor shortcuts.
+* NEW: The debug window is now docked on the bottom of the main window.
+* NEW: The project tree now displays modules first.
+* NEW: Making executable is faster now.
+
+DATABASE MANAGER
+
+* BUG: The CSV export was fixed.
+* NEW: The CSV export now uses TAB as separator character.
+
+EXAMPLES
+
+* BUG: The Notepad example was fixed.
+
+INTERPRETER
+
+* NEW: The Gambas API has a new GB.Post2() function to call a function
+  later with two parameters.
+* BUG: All components are now forced to use string comparison functions
+  that do not use localization settings. This is mainly for Turkish
+  people :-)
+* BUG: The GPL version was incorrect in the message displayed by
+  the --help option.
+* NEW: An object cannot raise or receive events inside its contructor.
+  This can break some code: for example, you may have to move code from
+  the _new() method of a Form to the Form_Open event handler.
+* NEW: A locked object cannot receive events anymore.
+* BUG: Locked objects do not crash the interpreter anymore when trying to
+  raise events.
+
+COMPILER
+
+* NEW: Events are not disabled anymore during the hidden method that
+  creates the controls of a form.
+
+GB.EVAL COMPONENT
+
+* NEW: System.Keywords is a new property that returns the list of Gambas
+  reserved keywords.
+
+GB.QT COMPONENT
+
+* NEW: Draw.Picture now can take optional width and height parameters that
+  scales the Picture. This new syntax is incompatible with the old one!
+* NEW: Draw.Image now can take optional width and height parameters that
+  scales the Image. This new syntax is incompatible with the old one!
+* NEW: Draw.Drawing now can take optional width and height parameters that
+  scales the Drawing. This new syntax is incompatible with the old one!
+* NEW: Drawing transformation has been implemented: Draw.Rotate rotates
+  what is drawn, Draw.Translate translates it, and Draw.Scale scales it.
+* NEW: Draw.Push saves the current transformation state.
+* NEW: Draw.Pop restores the current transformation state.
+* NEW: Draw.Reset resets the transformation state.
+* NEW: Menu raises the Hide event just after being hidden.
+* NEW: Setting Menu.Enabled to FALSE now disables all child menu shortcuts.
+* NEW: TabStrip[i].Delete now removes the i-th tab, if it is empty.
+* NEW: Watcher now raises the Title event when the watched control is a
+  Window and its title changes.
+* NEW: Watcher now raises the Icon event when the watched control is a
+  Window and its icon changes.
+* NEW: Watcher now raises the Close event when the watched control is a
+  Window and it has been closed.
+* NEW: Watcher.Control is a new property that returns the watched control.
+* NEW: The LostFocus event is now posted, as the GotFocus event. This may
+  break some code based on this event.
+
+GB.QT.EXT COMPONENT
+
+* NEW: The Workspace control, based on the QWorkspace widget, has been
+  removed.
+* BUG: The Editor.Undo and Editor.Redo methods now correctly move they
+  cursor.
+* BUG: The Editor automatic unindentation has been enhanced.
+
+GB.GTK COMPONENT
+
+* BUG: Some warning fixes sent by Stephan Binner from SuSE.
+
+GB.LDAP COMPONENT
+
+* BUG: Some warning fixes sent by Stephan Binner from SuSE.
+
+GB.FORM COMPONENT
+
+* NEW: DirChooser.Root is a new property to set the root of the directory
+  list.
+* NEW: FileChooser.Root is a new property to set the root of the directory
+  list.
+
+GB.FORM.MDI COMPONENT
+
+* This new component implements the new version of the Workspace control.
+
+GB.CRYPT COMPONENT
+
+* BUG: The crypt.h header is now searched only in /usr/include.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.31 - 28 May 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: The GambasEditor control has been replaced by the Editor control.
+* NEW: The hierarchy window and the icon editor toolbox were put in the
+  right side panel.
+* NEW: The arrow keys now move controls in the form editor.
+* NEW: A new menu entry to copy the path of a project data file into
+  the clipboard.
+* BUG: Constraints between components should be correctly managed now, in
+  the project properties dialog.
+* NEW: The text editor has HTML syntax highlighting now.
+* BUG: The translation dialog does not fail anymore when the project
+  directory includes non-ASCII characters.
+* NEW: Defining the project startup class is optimized now.
+
+DATABASE MANAGER
+
+* NEW: A new dialog for importing CSV files.
+* BUG: Image.Load() is static now. Some fixes of image loading.
+
+INTERPRETER
+
+* BUG: RDir() was fixed, and should work with very long file names now.
+
+COMPILER
+
+* BUG: A bug in the reading of *.list file was fixed. It prevented
+  the compilation of project using EXPORT OPTIONAL.
+
+GB.QT COMPONENT
+
+* BUG: The default and cancel buttons management was fixed.
+* BUG: Drawing.Width and Drawing.Height should always return an accurate
+  value now.
+* BUG: Stretching a null image now creates a void image of the specified
+  size.
+* BUG: Menu events generated by a menu opened with the Popup method are
+  now delivered before the method returns.
+
+GB.QT.EXT COMPONENT
+
+* BUG: Many fixes in the keyboard and focus handling of the Editor control.
+* NEW: All line numbers are displayed in the Editor control.
+* BUG: Gambas sytnax highlighting does not leak memory anymore.
+
+GB.QT.EDITOR COMPONENT
+
+* This component has been removed.
+
+GB.FORM COMPONENT
+
+* BUG: The DirChooser now raises its events correctly.
+* NEW: SidePanel buttons now can display a tooltip.
+
+GB.DB COMPONENT
+
+* BUG: Void table, index or field names are correctly handled now, and do
+  not crash the interpreter anymore.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.30 - 20 May 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Implemented and needed features can be declared in a *.component
+  file, and this is used by the IDE as additional constraints.
+* NEW: Some changes in the MDI interface.
+* NEW: The output window is now based on the Editor control.
+
+EXAMPLES
+
+* NEW: A printing example made by Timothy Marshal-Nichols and slightly
+  modified by me.
+
+INTERPRETER
+
+* BUG: Dir() and RDir() work correctly with archives (i.e. executables) now.
+* BUG: './' and '../' are correctly handled in relative paths now.
+* NEW: String.Chr is a new method that returns an UTF-8 character from its
+  Unicode value.
+* NEW: String.Code is a new method that returns the Unicode value of a
+  UTF-8 character.
+* BUG: Val() works correctly again with boolean values.
+
+ARCHIVER
+
+* NEW: Now directories are stored inside the archive file.
+
+GB.EVAL COMPONENT
+
+* BUG: Eval() does not modify its string expression anymore.
+* BUG: A missing brace error message was fixed.
+
+GB.SETTINGS COMPONENT
+
+* BUG: Settings.LoadWindow and Settings.SaveWindow now do not always use
+  the default Settings object anymore.
+
+GB.NET COMPONENT
+
+* NEW: UdpSocket.Broadcast is a new boolean property that specifies if
+  an UDP socket can send broadcast packets.
+
+GB.QT COMPONENT
+
+* NEW: GridView.Find is a method that searches a grid cell from its
+  coordinates.
+* NEW: GridView.Item is a property that returns the cell found by
+  GridView.Find.
+* NEW: The .GridViewItem virtual class got two new properties, Row and
+  Column, that return the row and column of the specified cell.
+* BUG: TextLabel paddign property now should work correctly.
+* BUG: TextLabel.AutoResize is FALSE by default now.
+* BUG: Some fixes in the MDI child window management.
+
+GB.QT.EXT COMPONENT
+
+* NEW: Two new properties to know the horizontal position of a column, and
+  the vertical position of a row.
+* NEW: Workspace.ScrollBar is a property that specifies if the Workspace
+  can have scrollbars.
+
+GB.FORM COMPONENT
+
+* BUG: The SidePanel control now raises the Show event after being shown,
+  and the Hide event just before being hidden.
+* NEW: SidePanel now raises an Resize event when it is resized.
+* BUG: SidePanel.Dimension now always returns an accurate value.
+
+GB.DB.FORM COMPONENT
+
+* NEW: DataSource.Sort is a new property that specifies the sort order
+  of the returned data.
+* NEW: The DataView can sort its columns. Note that this sort uses the new
+  DataSource.Sort property.
+* NEW: DataCombo.All is a new string property that allow it to display a
+  "All" entry, when you want to use it as a filter.
+* NEW: DataView.Grid is a boolean property that specifies if the grid is
+  displayed or not.
+* NEW: DataView.Highlight is a boolean property that specifies if one line
+  out of two is highlighted.
+* BUG: The Request class is not exported anymore.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.29 - 20 Apr 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Some fixes in MDI management.
+
+INTERPRETER
+
+* BUG: SUPER keyword now should work in any case.
+* BUG: Auto-creatable classes now can be enumerated safely.
+* BUG: To know how many bytes can be read on a file descriptor, lseek() is
+  used when ioctl() fails. This is for operating systems like FreeBSD that
+  do not implement it in all cases.
+* BUG: Subst() was fixed.
+* BUG: Val("") returns NULL now, and not a null date anymore.
+
+COMPILER
+
+* NEW: The THEN keyword is now optional.
+
+QT COMPONENT
+
+* BUG: Tooltips work correctly on view controls now.
+
+DATABASE COMPONENT
+
+* BUG: Blob management was fixed in mysql driver.
+* BUG: 'information_schema' is now a system database in mysql driver.
+* BUG: Now the mysql driver prevent the system databases from being deleted.
+
+GTK+ COMPONENT
+
+* BUG: Assigning TrayIcon.Tooltip does not crash anymore.
+
+SMTP COMPONENT
+
+* BUG: Newline are correctly sent now.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.28 - 28 Mar 2006
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* BUG: The visibility flag is now correctly detected and used even with
+  gcc 3.x.
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Many fixes in the MDI development environment.
+
+QT COMPONENT
+
+* BUG: Opening a window sometimes crashed because of MDI child window
+  QT bug workaround. This was fixed.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.27 - 24 Mar 2006
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* BUG: Some fixes for FreeBSD.
+* NEW: 'gbr2' is a new symbolic link to 'gbx2', that is used for running
+  executables.
+* BUG: The '-fvisibility=hidden' gcc flag is not used when gcc 3 is detected.
+  Thanks to Laurent for the patch!
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: The development environment is MDI. This is completely experimental!
+* NEW: You can change the control hierarchy (and so the tab order) directly
+  in the hierarchy window.
+* BUG: 'du -k' is used instead of 'du -b', to be compatible with FreeBSD.
+
+INTERPRETER
+
+* NEW: GB.GetFunction() has a new parameter to check the return type of
+  the searched function
+* NEW: GB.Stopped() is a new function that returns if STOP EVENT was used
+  during a function called with GB.Call().
+* BUG: Many fixes for FreeBSD.
+* BUG: getpt() has a replacement function now for FreeBSD.
+* BUG: The main hook is now called before looking for the startup class.
+  This helps components that have to initialize during this hook, like
+  the gb.qt component.
+* NEW: Stat.Path is a new property that returns the path used when calling
+  the Stat() function.
+* NEW: Stat.Link is a new property that returns the path referenced by a
+  symbolic link.
+* NEW: The '=' and '<>' comparison operators now use the _compare special
+  method when comparing object references.
+* BUG: STOP EVENT now should work correctly in all cases.
+* NEW: The pseudo-random number generator now uses a twisted generalized
+  feedback shift register, thanks to a french Linux Magazine article.
+  Trust me, the new algorithm is better and faster than the old one.
+* NEW: Relative paths, i.e. paths that reference files inside the project,
+  can use '.' and '..' now.
+
+COMPILER
+
+* NEW: You can declare functions with the SUB keyword now, instead of using
+  the FUNCTION keyword. This is for lazy guys ;-)
+
+ARCHIVER
+
+* NEW: The Gambas executable has changed from '#!/usr/bin/gbx2 -x' to
+  '#!/usr/bin/env gbr2', to be compatible with FreeBSD systems.
+  Consequently, ALL EXECUTABLES MUST BE REGENERATED!
+
+QT COMPONENT
+
+* NEW: TextLabel gets AutoResize and Padding properties.
+* BUG: Many fixes in MDI child windows support.
+* NEW: Control.Next and Control.Previous can be written, to change the
+  control Z-order and tab order.
+
+GTK+ COMPONENT
+
+* NEW: Compiling with DirectFB backend is supported.
+* BUG: A little fix to compile with gcc 4.1.
+
+KDE HTML COMPONENT
+
+* NEW: WebBrowser.Print is a new method for printing the browser contents.
+
+PCRE COMPONENT
+
+* BUG: The pcre library is searched in /lib too.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.26 - 02 Mar 2006
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* NEW: Now everything is compiled with the gcc flag '-fvisibility=hidden'
+  activated. So component exported symbols (GB, GB_INIT, GB_EXIT, GB_CLASSES
+  and optional interface library) must be explicitely declared with the new
+  EXPORT macro declared in 'gambas.h'.
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: When declaring a exported integer class property, you can define the
+  default value with constant names, instead of numeric values.
+* NEW: If you press the RETURN key after having defined a property, the
+  property read and write handlers are automatically defined.
+
+EXAMPLES
+
+* NEW: The presentation made by Laurent and I for the french meeting
+  'Solutions Linux 2006' becomes an OpenGL example.
+
+INTERPRETER
+
+* NEW: String[].Join() third parameter has now the same behaviour as the
+  third parameter of the Split() routine.
+* NEW: Component.Load() is now a synonymous for Components.Load().
+* BUG: Now every path beginning with a tilde character '~' is interpreted
+  the same way as a shell.
+
+DATABASE COMPONENT
+
+* BUG: Tables with more than about 30 fields do not crash the interpreter
+  anymore.
+* BUG: The sqlite 2 driver came back.
+
+QT COMPONENT
+
+* NEW: The CheckBox control got a new property, Tristate, that allows it to
+  display a third intermediate state.
+* NEW: CheckBox.Value is now an integer, and not a boolean anymore, because
+  of the Tristate new property. It can take three different values:
+  CheckBox.False (0), CheckBox.True (-1) and CheckBox.None (1).
+* NEW: Color.LightBackground returns a lighter background than
+  Color.SelectedBackground.
+* NEW: GotFocus events are now posted, you don't get them immediately, and
+  so after the control effectively got the focus.
+
+QT EXTENSION COMPONENT
+
+* BUG: TableView now correctly adjusts a column according to the column
+  contents.
+* NEW: TableView.AutoResize is a new property that makes the last column
+  stretch automatically to fit TableView width.
+* NEW: TableView.Resizable is a new property that allows the user to resize
+  TableView columns.
+
+GTK+ COMPONENT
+
+* BUG: The HSV methods now really uses the 0..255 range.
+
+KDE COMPONENT
+
+* BUG: The current locale is correctly defined now.
+
+DATABASE FORM COMPONENT
+
+* BUG: Many bug fixes in the data bound controls.
+* BUG: The database queries were optimized.
+
+SMTP COMPONENT
+
+* NEW: This is a new component that allows you to send mails via SMTP.
+  It contains one control, SmtpClient, that is used for defining the SMTP
+  server, the SMTP port, the recipients, the sender, the subject, the mail
+  contents, some attachments, and for finally sending the mail.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.25 - 18 Feb 2006
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Translation of component names are used now.
+* NEW: String[] properties are managed now.
+* BUG: Selecting all controls on a form updates the property window
+  correctly now.
+* BUG: Toolbox panels are intelligently sorted now.
+* BUG: Big images are now stretched in the project treeview.
+
+INTERPRETER
+
+* NEW: The image and picture hooks syntax has changed.
+* NEW: The image and picture API has been enhanced.
+* NEW: _compare is a new special method used for comparing an object
+  with another during a sort.
+* NEW: System.User now returns the same static object as the User class.
+* NEW: String[].Join() now can take an extra optional argument that
+  is an escape string added to the beginning and the end of each
+  joined element.
+* BUG: The event inheritance now works correctly with interpreted classes
+* BUG: Calling a method on an anonymous reference now works correctly
+  if the called method does not always have the same number of arguments.
+* NEW: Implementation of the new IS operator (see below).
+* BUG: The Subst() instruction now interprets the '&&' sequence as a
+  single '&'.
+* NEW: Path names now interprets the '~' character like the shell does.
+* BUG: INPUT now works correctly with more than one argument.
+* BUG: The debugger now prints string expressions without corrupting
+  memory anymore.
+
+COMPILER
+
+* NEW: The RENAME/AS instruction was replaced by the MOVE/TO instruction.
+* NEW: Class names are detected at compilation time now.
+* BUG: When declaring several local variables on the same line, each one
+  can have its own initialization expression now.
+* BUG: Internal subroutines, i.e. those that are associated with an
+  instruction, cannot be called directly anymore.
+* NEW: The syntax '[]' now returns NULL.
+* NEW: A new subroutine named Comp(), that compare two strings.
+* NEW: IS is a new operator that returns if an object is an instance of
+  a specified class, or one of its child classes.
+* NEW: The old deprecated syntax "OPEN xxx AS file" is not supported
+  anymore. You must use "file = OPEN xxx" instead.
+
+EVAL COMPONENT
+
+* BUG: Now class names are displayed with the same color as datatypes.
+
+DATABASE COMPONENT
+
+* NEW: The Firebird driver was merged into the source tree.
+* BUG: The current database is now correctly tracked, and cannot point
+  at an already freed object anymore.
+* BUG: Connection.Version now correctly checks that the database is opened.
+* NEW: Connection.Opened returns if a connection is opened.
+* NEW: Connection.Limit() is a new method that makes the next SQL request
+  only return a specified number of rows. This method returns the connection
+  object, so that you can use the following syntax: DB.Limit(X).Exec(...)
+  The limit is reset to infinity once used.
+* NEW: Information on how to limit the result of a SQL query is filled by
+  the open_database() driver function.
+* BUG: Connection.Delete() does not leak memory anymore.
+* NEW: Writing to a serial field is silently ignored now.
+* BUG: Result.Move*() methods now return TRUE if there is no record
+  available anymore. Like they did in the stable version.
+
+NETWORKING COMPONENT
+
+* BUG: Now ServerSocket can accept more than five connections without
+  crashing anymore.
+* NEW: ServerSocket is now enumerable, and returns each connected socket.
+* NEW: ServerSocket.Count returns the number of connected sockets.
+
+QT COMPONENT
+
+* NEW: Image.Load() is now a static method that returns a newly created
+  image from a file.
+* NEW: Picture.Load() is now a static method that returns a newly created
+  picture from a file.
+* NEW: Drawing.Load() is now a static method that returns a newly created
+  drawing from a file.
+* NEW: The Image constructor now takes an extra optional parameter that
+  indicates if the image has an alpha channel.
+* NEW: Image.Transparent is a new property that indicates if an image has
+  an alpha channel.
+* NEW: Image.Depth is read-only now.
+* NEW: Label.Padding is a new property that represents the pixel padding
+  between the label border and the label text.
+* BUG: The Label.AutoResize property was enabled again, but is now TRUE
+  by default.
+* BUG: Image conversion methods were fixed.
+
+GTK+ COMPONENT
+
+* NEW: Image.Load() is now a static method that returns a newly created
+  image from a file.
+* NEW: Picture.Load() is now a static method that returns a newly created
+  image from a file.
+* BUG: The HSV/RGB color conversion method now use the same value range
+  than the QT component.
+* BUG: Loaded images are automatically converted to a 32-bits per pixel
+  format.
+* BUG: Image conversion methods were fixed.
+
+PCRE COMPONENT
+
+* BUG: The PCRE component should now compile with older versions of
+  libpcre.
+
+IMAGE COMPONENT
+
+* NEW: This is a new component for applying many various effects on images.
+  The effects source code was ported from the KDE libkdefx library, which
+  includes itself some ImageMagick algorithms, and from the KolourPaint
+  program.
+
+DATABASE FORM COMPONENT
+
+* NEW: This component implements data bound controls. It provides the
+  following new controls: DataSource, DataBrowser, DataView, DataControl
+  and DataCombo. It is highly experimental at the moment.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.24 - 03 Feb 2006
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* WARNING! The bytecode has changed, so you will be warned to recompile
+  your projects.
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: The ESC key unselects all controls in the form editor.
+* BUG: The translation dialog does not crash anymore if there is no string
+  to translate.
+
+DATABASE MANAGER
+
+* BUG: Code generation now uses the correct datatype constants.
+
+INTERPRETER
+
+* NEW: Some fixes for FreeBSD 6.
+* BUG: Better support of big-endian CPU.
+* NEW: PIPE, an instruction for opening named PIPE. The syntax is:
+  hFile = PIPE <path> FOR ( READ | WRITE ) [ WATCH ]
+* BUG: Object.Attach() can take a NULL parent without crashing now. It is
+  a synonymous of Object.Detach() then.
+* BUG: Now an error raised inside a function is always catched if the
+  function is called with a TRY instruction.
+* NEW: Now the backslash '\' character is an escape character inside the
+  format string of the Format$() function.
+* BUG: 'u' is a new format character, that displays the millisecond part
+  of a date/time value.
+* BUG: Now the startup class is global, so that components that need it
+  correctly find it.
+* BUG: Now a class name inside a signature is always searched inside the
+  global table.
+* BUG: The bits manipulation instructions were fixed.
+* NEW: Lsl() and Lsr(), two new functions for doing a logical shift.
+* BUG: Using an auto-creatable static class now raises an error, and do not
+  crash the interpreter anymore.
+
+COMPILER
+
+* BUG: Better support of big-endian CPU.
+* NEW: PIPE instruction.
+* BUG: The line number of an error is always accurate now.
+
+ARCHIVER
+
+* NEW: Support of big-endian CPU.
+
+EVAL COMPONENT
+
+* BUG: White spaces are not removed from the end of line automatically
+  anymore.
+
+QT COMPONENT
+
+* BUG: Drag & Drop of TreeView, ListView, ColumnView, IconView and
+  ScrollView controls was fixed, and should work as expected.
+* NEW: Window.Controls returns a collection of all controls located
+  in the window.
+
+QT EXTENSION COMPONENT
+
+* BUG: Some fixes in the Editor control.
+
+DATABASE COMPONENT
+
+* NEW: Now a database driver can tell the database component to use another
+  driver than itself.
+* NEW: The sqlite driver now automatically switches between sqlite2 and sqlite3.
+* BUG: Some fixes in the sqlite driver.
+
+SDL COMPONENT
+
+* Updated.
+
+OPENGL COMPONENT
+
+* Updated.
+
+PDF COMPONENT
+
+* NEW: The PdfDocument class has now a global Scale and a Rotation property.
+* BUG: The GetImage() method returns by default a full page, scaled and rotated
+  according to the previous properties.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.23 - 02 Jan 2006
+-------------------------------------------------------------------------------
+
+EXAMPLES
+
+* BUG: The Database example was fixed.
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Now the ESC key unselect all selected controls in the form editor.
+
+DATABASE MANAGER
+
+* NEW: Support for serial and blob fields.
+* BUG: The data editing window now generates now read table field properties
+  once only.
+
+INTERPRETER
+
+* NEW: Two new functions in the interpreter API for inserting and removing
+  elements inside an array.
+* BUG: Object.GetProperty and Object.SetProperty were fixed.
+* BUG: Event inheritance does not crash anymore.
+* BUG: You can call SHELL and EXEC several times without freezing the
+  interpreter anymore.
+
+COMPILER
+
+* NEW: You can declare several local variables on the same line!
+  For example: DIM s AS String = "yes", i, j, k AS Integer
+* BUG: You cannot use the same local variable in several imbricated loops
+  anymore.
+
+QT COMPONENT
+
+* NEW: Now the Label control resizes automatically to fit its contents.
+  The AutoResize property is useless. Note that this is experimental!
+* NEW: A new method, Control.Reparent, to reparent any control.
+
+GAMBAS EDITOR COMPONENT
+
+* BUG: The drawing of highlighted lines when relief is not used was fixed.
+
+QT EXTENSION COMPONENT
+
+* NEW: A lot of work for removing as much QT dependency as possible in the
+  Editor control.
+
+DATABASE COMPONENT
+
+* NEW: The driver interface was redesigned.
+* NEW: Support for serial fields, i.e. integer fields that increment
+  automatically. MySQL, PostgreSQL and SQLite drivers support them, but not
+  the ODBC driver yet.
+* NEW: Connection.User is a synonymous for Connection.Login.
+* NEW: Datatypes constants are defined in the DB static class now:
+  db.Boolean, db.Integer, ..., db.Serial and db.Blob.
+* BUG: String quoting was fixed in PostgreSQL driver.
+
+OPENGL COMPONENT
+
+* Updated.
+
+XML COMPONENT
+
+* BUG: Some bugs fixes from Linex.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.22 - 26 Nov 2005
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: The IDE can load *.info files whose classes are sorted in any order
+  now.
+* BUG: The IDE now catches and displays early error messages from the
+  interpreter.
+
+EXAMPLES
+
+* NEW: Some new examples: Chart, and GambasGears.
+
+DATABASE MANAGER
+
+* NEW: Fields with a Long datatype are correctly managed.
+* BUG: ODBC and SQLite3 database driver were added.
+
+INTERPRETER
+
+* BUG: The Class class was fixed, and now returns the list and number of
+  symbols correctly.
+* BUG: Up to 4096 string constants in the same class are supported now.
+* BUG: The interpreter does not crash anymore if the LANG environment
+  variable is not set.
+* BUG: IsLetter() and IsDigit() functions were fixed.
+
+QT COMPONENT
+
+* NEW: Support for Image/Picture creation API.
+* NEW: DrawingArea now catches keyboard events.
+* BUG: The Clear method of GridView items does not crash the interpreter
+  anymore.
+* BUG: ListView items can be renamed now.
+* BUG: KeyPress events are now correctly raised when using composed keys.
+
+GAMBAS EDITOR COMPONENT
+
+* NEW: Mouse selection, copy and paste is supported now.
+
+EDITOR COMPONENT
+
+* NEW: Mouse selection, copy and paste is supported now.
+
+GTK+ COMPONENT
+
+* NEW: Support for Image/Picture creation API.
+
+FORM COMPONENT
+
+* NEW: DateBox and TimeBox got a ReadOnly property.
+* BUG: Clicking twice inside a DirView or a FileView now raises the Activate
+  event.
+* BUG: The Change event is correctly raised now in the FileView control.
+
+DATABASE COMPONENT
+
+* BUG: User class were renamed as DatabaseUser, preventing the conflict with
+  the native User class.
+* NEW: Long database fields are now correctly managed.
+* NEW: A database user can have '@' and '%' characters inside its name.
+* BUG: Database object names accept only ASCII characters now.
+* BUG: MySQL driver returns if an index is unique correctly now.
+* BUG: Creating users with full privileges now works correctly in the MySQL
+  driver.
+* BUG: Now ODBC driver without fetching capabilities are correctly managed.
+  But there is no support for them in the database manager yet.
+
+OPENGL COMPONENT
+
+* Updated.
+
+VIDEO FOR LINUX COMPONENT
+
+* NEW: Image/Picture creation API is used now.
+
+PDF COMPONENT
+
+* A new component made by Daniel Campos.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.21 - 29 Oct 2005
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* Now the search of libintl, libgettextlib and libiconv libraries display
+  a more accurate warning message.
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: The automatic completion does not crash anymore when a class inherits
+  an unknown parent class.
+
+DATABASE MANAGER
+
+* BUG: Deleting rows in a table works again.
+* BUG: Field names are case unsensitive now in the table edition window.
+
+COMPILER
+
+* WARNING: The SCAN instruction has been removed, and replaced by the
+  Scan() subroutine.
+
+INTERPRETER
+
+* NEW: a new API that allows components to define a function for creating
+  Image objects, and for using it.
+* NEW: Object.Is(), a new static method for checking if the class of an
+  object is or inherits a given class.
+* NEW: Stream.EndOfLine is a new property for setting the end of line pattern
+  of a stream. This pattern is used by the LINE INPUT and PRINT functions.
+  Possible values are gb.Unix, gb.Windows and gb.Mac. By default, the end
+  of line pattern is gb.Unix.
+* WARNING: The SCAN instruction has been removed, and replaced by the
+  Scan() subroutine.
+* NEW: A component is not loaded if it has the same name as the project.
+  This way, debugging component made in gambas are far easier.
+* BUG: Enumerating objects like Result works again.
+* BUG: Looping with a Byte or Short variable now works correctly.
+* BUG: Formatting a date with AM/PM now displays an hour value between
+  1 and 12, and not 0 and 11 as before.
+* BUG: Displaying numbers in decimal now is more accurate, and should not
+  display things like 123,00000000001 anymore.
+* BUG: The interpreter event loop was fixed.
+
+SETTINGS COMPONENT
+
+* NEW: Settings.Read() and Settings.Write() allow reading and writing
+  settings for Window objects: position, and size.
+
+QT COMPONENT
+
+* NEW: The Separator control, that displays an horizontal or vertical
+  separator line.
+* BUG: The DblClick event is now posted, and not raised immediately as
+  before.
+* NEW: Window.ToolBox, a new property to tell the window manager that a
+  window is a toolbar.
+
+QT EXTENSION COMPONENT
+
+* BUG: Some fixes in highlighting process of the Editor control.
+
+KDE HTML COMPONENT
+
+* NEW: Webrowser.Java, a new property for allowing java in the browser.
+
+GTK+ COMPONENT
+
+* Updated.
+
+DATABASE COMPONENT
+
+* NEW: Result.Delete now takes an optional boolean parameter to prevent the
+  deleted record for being removed for the Result object.
+
+XML COMPONENT
+
+* BUG: Patch from Dirk Mueller, that fixes an uninitialized variable access.
+
+OPENGL COMPONENT
+
+* Updated.
+
+CORBA COMPONENT
+
+* New component made by Carlo Sorda.
+
+LDAP COMPONENT
+
+* New component made by Carlo Sorda.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.20 - 03 Sep 2005
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: The IDE compiles correctly now.
+
+INTERPRETER
+
+* NEW: A space in a regular expression now matches any number of spaces
+  or characters whose ASCII code is lower than 32.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.19 - 01 Sep 2005
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* WARNING! Bytecode has changed, so you will be warned to recompile your
+  projects.
+* gb.clanlib was removed. There was actually nothing useful in it.
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: A insignificant and incomplete example of what could be the interface
+  of the next development environment. Look in ./src/app/next-gambas.
+
+INTERPRETER
+
+* NEW: SCAN is a new instruction to match a string against a pattern, and
+  gets the matching part associated with the '*' joker into string variables.
+  The syntax is:     SCAN "string" WITH "pattern" TO var1, var2...
+* WARNING: Arithmetic operators implementation was optimized for size.
+  Things seems to not have been broken.
+
+COMPILER
+
+* NEW: Support for the SCAN instruction.
+
+EVAL COMPONENT
+
+* BUG: Highlighting of the unary minus operator was fixed.
+* BUG: The question mark is now replaced by PRINT anywhere in the line
+  (except in strings and comments of course).
+
+QT COMPONENT
+
+* BUG: ToolButton controls now display their text label correctly.
+* BUG: Container dimension properties now take in account the frame border.
+* BUG: Window standard QT layout was replaced by a hand-made one, so that
+  there is no space anymore between the top of the window and the Y = 0
+  coordinate.
+* BUG: Adding a child window to a Workspace works again.
+* BUG: Setting Application.Font should update Desktop.Scale in all cases
+  now.
+* BUG: Control.Next and Control.Previous really work now.
+
+QT EXTENSION COMPONENT
+
+* BUG: Setting Editor.View should not crash anymore.
+* NEW: Some little optimizations in internal Editor painting routine.
+* NEW: Ctrl+Up and Ctrl+Down now move to the previous or next function.
+
+FORM COMPONENT
+
+* NEW: A new container, SidePanel. It is a panel with little arrow on the
+  side to resize or hide it.
+* NEW: ToolPanel got a Border property.
+* BUG: ToolPanel buttons now follow correctly the font size.
+
+KDE COMPONENT
+
+* BUG: ColorBox does not corrupt memory anymore, and so memory leaks
+  disappear.
+* BUG: Program arguments are now correctly handled, as language changes.
+
+INFORMATION COMPONENT
+
+* BUG: Many bug fixes and updates. This component will use a new component
+  file format and a new way to document properties that will be documented
+  soon...
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.18 - 24 Aug 2005
+-------------------------------------------------------------------------------
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Fix the use of TextBox and TextArea selection methods.
+* BUG: Swedish language is 'sv', not 'se'!
+* BUG: Font selector always use relative font sizes by default.
+
+DATABASE MANAGER
+
+* BUG: Fix the use of TextBox and TextArea selection methods.
+
+EXAMPLES
+
+* NEW: A new example for showing the new Editor control, with custom syntax
+  highlighting.
+* NEW: Another little timer example made by Maxim Lapis was added to the
+  Timer example.
+
+COMPILER
+
+* NEW: Support for the new 'EXPORT OPTIONAL' feature. See below...
+
+INTERPRETER
+
+* NEW: The Timer class is now part of the interpreter, and must be removed
+  from any component that implements it.
+* NEW: A new hook to handle timers in components managing the event loop.
+* NEW: A new API, GB.RaiseTimer(), to raise timer events from components
+  managing the event loop.
+* NEW: Classes can now be optionally exported. They are not exported from
+  a component, if a class with the same name has been already exported
+  from another component.
+* BUG: Some fixes in error management. Now error information is kept until
+  the end of a function.
+* NEW: Application.Return is a new property for storing the value that
+  will be returned by the program when it terminates.
+
+QT COMPONENT
+
+* NEW: Timer was removed.
+* BUG: Drawing on void Pictures is not allowed anymore.
+* BUG: Windows with a fix border work again.
+
+QT EXTENSION COMPONENT
+
+* NEW: The Editor control now supports custom highlighting routine, by
+  raising the 'Highlight' event.
+* NEW: Editor colors were replaced by styles, which are a combination of
+  color, italic, bold and underline.
+
+FORM COMPONENT
+
+* NEW: A ColorButton control.
+
+SDL COMPONENT
+
+* Updated.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.17 - 19 Aug 2005
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* BUG: The detection of QT libraries should work now on Arch Linux.
+
+COMPILER
+
+* BUG: Now component information are generated only when doing a complete
+  compilation.
+
+INTERPRETER
+
+* NEW: A new API, GB.MatchString(), to do pattern matching like the LIKE
+  instruction.
+* BUG: Some fixes in archive management.
+* NEW: The classes of the executed project marked with EXPORT are now really
+  exported, after the exported classes of all loaded components. This way, you
+  can override them easily. I used it for redefining TextBox so that its
+  background color is animated :-)
+* BUG: Some fixes in the debugger. Now error messages occurring before the
+  Main function start are catched by the IDE.
+* NEW: Error.Propagate(), that raises the current catched error again.
+* BUG: Converting a variant void string to date now gives a null date and not
+  an error anymore.
+* BUG: A component Gambas project can use itself as component. Then it will
+  not be loaded twice by the interpreter.
+* BUG: Now strings are implicitely converted to floats with arithmetic operators,
+  and not to booleans anymore.
+* BUG: Trim$(), LTrim$() and RTrim$() do not remove non-ASCII characters in some
+  cases anymore.
+
+QT COMPONENT
+
+* BUG: Modifying a control font now always call the Font property setter,
+  so that it is possible to reimplement the Font property in inherited class.
+* BUG: Automatic drag & drop was disabled in IconView.
+* NEW: IconView got a MoveBack() method, like the other view controls.
+* NEW: Application.ActiveControl returns the control having the focus.
+* NEW: Desktop.Find returns an array of identifiers of windows matching a
+  given title, role or class.
+* WARNING: TextBox and TextArea selection methods have changed. The Select
+  symbol is now a method only, and you must use the new method SelectAll() to
+  select all the text. The All and implicite methods in the Selection property
+  were removed.
+* NEW: TreeView, ListView, and ColumnView got a SelectAll() method.
+* WARNING: Now ColumnView columns are AutoResize by default if ColumnView
+  global AutoResize property is false.
+* NEW: If an event handler named Application_KeyPress is defined in themselves
+  startup class, then he will get all key events received by the application
+  before any other control.
+
+FORM COMPONENT
+
+* NEW: DateBox and TimeBox controls, for editing dates and times.
+* NEW: DirChooser has more properties.
+* NEW: FileChooser, a control for choosing a file.
+* NEW: ColorChooser were redesigned.
+
+NETWORKING COMPONENTS
+
+* BUG: The *.component files were fixed, so that you can insert the controls
+  in form without error as before.
+* NEW: Controls icons were redesigned.
+
+INFORMATION COMPONENT
+
+* NEW: This component aims at providing all needed information about installed
+  components: classes, symbols, events, controls, properties, and so on.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.16 - 11 Aug 2005
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* The installation does not abort anymore if symbolic link creation fails.
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Some changes to support "multi-containers". Multi-containers are just
+  containers having several tabs, like the TabStrip container.
+* BUG: Clicking on the component list in the project property dialog should
+  not abort the IDE anymore.
+* WARNING: The syntax of the *.component files has changed. And it will
+  continue changing in the future!
+
+COMPILER
+
+* NEW: Do not fail anymore if a *.list file does not exist when compiling a
+  project. This way, component projects like gb.form that reference themselves
+  can be compiled at package installation time.
+
+INTERPRETER
+
+* BUG: The classes declared in the main project are now referenced in their own
+  symbol table, like any other component written in Gambas. Only the classes
+  declared as exported remain global.
+* BUG: Enumeration and array operators can be used with anonymous object
+  references without crashing the interpreter anymore.
+
+QT COMPONENT
+
+* NEW: The arrangement algorithm was factorized so that gb.gtk and gb.qt use
+  the same in the future.
+* WARNING: The internal Container widgets control has changed.
+* BUG: UserControl and UserContainer were fixed so that containers written in
+  Gambas behave correctly in the development environment.
+* WARNING: You cannot drag IconView items automatically anymore.
+* BUG: Window.Mask and Window.Picture should work correctly for embedded
+  windows now.
+* NEW: A new property, DrawingArea.Merge, to tell the drawing area to merge
+  all painting events before raising the Draw event. Use it if you have to
+  draw something rather complex. Do not use it if you can easily draw
+  the exact rectangle area expected by each Draw event.
+
+QT EXTENSION COMPONENT
+
+* BUG: The CEditor.cpp file now should compile with gcc 3.x.
+
+FORM COMPONENT
+
+* WARNING: FileChooser was renamed as DirChooser.
+* NEW: ToolPanel, a new container for implementing toolbars with panels like
+  the Gambas tool-box.
+* NEW: Wizard, a container for implementing wizards.
+
+GTK+ COMPONENT
+
+* Updated.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.15 - 07 Aug 2005
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* BUG: The "fish jail" :-) patch was entirely applied.
+* BUG: Look in /opt/qt* when searching for QT libraries.
+
+DEVELOPMENT ENVIRONMENT
+
+* NEW: Support for containers written in Gambas.
+* BUG: Fixed startup position when you add a control inside a TabStrip in the
+  form editor.
+
+COMPILER
+
+* BUG: You can declare an event taking no parameters without having to
+  write void braces.
+* BUG: A symbol used as event, constant, or property can now be used as
+  a class name.
+* BUG: The name of events declared in classes written in Gambas are now
+  internally prefixed with a colon, like nativ classes ones.
+* NEW: You can now use affectation in a WITH statement, i.e. you can
+  write 'WITH Something = Expression ... END WITH'.
+
+INTERPRETER
+
+* NEW: GB.CurrentComponent() is a new API that returns the name of the
+  current component. This is used for implementing a picture cache
+  different for each component.
+* NEW: Object.SetProperty can now set the value of static properties.
+* BUG: Stream.ByteOrder is really an integer property.
+* NEW: Stat is not a virtual class anymore.
+* WARNING: Stat.LastUpdate was renamed to Stat.LastModified.
+* NEW: Dir() and RDir() now take an optional third argument, that indicates
+  if we want directories or files or both while browsing.
+* BUG: The List class was removed. Cry if you don't find it useless.
+* BUG: The _call special method management was fixed.
+* NEW: A new routine Comp(), that compares two strings and returns the result
+  as an integer: +1 if the first string is greater than the second, -1 if
+	the second string is greater than the first, and 0 if the two strings are
+	equal.
+* NEW: A new interpreter hook, named HOOK_LANG, that is called at startup
+  and each time System.Language is redefined.
+* NEW: A new property, System.RightToLeft, that returns if the current
+  system language is right-to-left written.
+* NEW: Now the interpreter looks in ~/.gambas/lib/gambas2 to load components,
+  if it cannot find them in the gambas system directory (/usr/lib/gambas2 by
+  default).
+
+QT COMPONENT
+
+* NEW: UserContainer control, to help implementing Container controls in
+  Gambas.
+* NEW: Support for containers written in Gambas.
+* NEW: ListView, IconView, TreeView and ColumnView have now a Compare event
+  that is raised for comparing elements. You can now sort ColumnView columns
+  as you need.
+* NEW: Label has now an AutoResize property. When this property is set, the
+  label automatically resized to fit its text height.
+* WARNING: Splitter has moved from extension component to standard component.
+* WARNING: Controls written in Gambas were moved to the new gb.form
+  component.
+* NEW: An experimental Stock class that returns standard icons.
+* BUG: Container arrangement now regards right-to-left written languages.
+* BUG: Dialog size grip now regards right-to-left written languages.
+
+QT EXTENSION COMPONENT
+
+* NEW: Editor control, that aims at replacing the GambasEditor control. It
+  can share its text with other editors, display number lines. It will
+  support custom highlighting routine in the future. There is an experimental
+  'gambas2-with-editor' project for those who want to see it in action.
+
+FORM COMPONENT
+
+* NEW: All controls written in Gambas were moved from the QT component to
+  this component.
+* NEW: FileChooser, a file selector control that is not finished yet.
+
+GAMBAS EDITOR COMPONENT
+
+* BUG: Some fixes in undo/redo management.
+* WARNING: This component is now deprecated, and will be replaced by the
+  new Editor control as soon as possible.
+
+DATABASE COMPONENT
+
+* NEW: New property Result.Max that returns Result.Count - 1.
+* BUG: Result.Fields.Exist() now returns FALSE if a field does not exist, and
+  do not raise an error anymore.
+
+GTK+ COMPONENT
+
+* Updated.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.14 - 29 Jul 2005
+-------------------------------------------------------------------------------
+
+CONFIGURATION
+
+* BUG: Finally applied the "fish jail" :-) patch of Dirk Mueller to the
+  symbolic link creation.
+* BUG: Components directory including a gambas part are now correctly
+  packaged.
+
+DEVELOPMENT ENVIRONMENT
+
+* New font and color dialogs in the property sheet.
+* The welcome, about and tips dialog now use the system colors.
+* Symbols including an underscore are not displayed anymore in the
+  completion list.
+
+COMPILER
+
+* BUG: events from gambas classes are now internally prefixed with a colon,
+  as the events from native classes.
+* The bytecode version is now written in each compiled class.
+
+INTERPRETER
+
+* BUG: Now a native class can have a static property that returns a usable
+  virtual class.
+* If the bytecode version of a compiled class is different from the bytecode
+  version of the interpreter, then an error is raised.
+* BUG: Many fixes in the gambas archive management. Now everything should
+  work as expected :-)
+* The Boolean[] array class was implemented.
+* Object.GetProperty() now can return the value of static properties.
+* BUG: Classes located in gambas archives are now freed with the global
+  classes when the interpreter ends.
+* BUG: Format$(0, "+#") now works correctly.
+* A new property, Application.Dir, that returns the application startup
+  working directory at startup. Note that the current working directory
+  is modified by the interpreter.
+* BUG: Hex$() and Bin$() now correctly display negative values.
+
+QT COMPONENT
+
+* Eight new properties in Color class that returns system colors.
+* A new array operator in Color class to split a color in its Red, Green,
+  Blue, Alpha or Hue, Saturation, Value parts.
+* BUG: Some fixes in the arrangement algorithm of containers.
+* BUG: The DrawingArea draws its border correctly again.
+* A new property, Font.Scalable, that returns if a font is freely scalable.
+* A new property, Font.Grade, that represents a predefined font size
+  proportional to the default application font. Range from -9 to +9.
+* A new control, UserControl, that acts as a parent class for implementing
+  user controls directly in Gambas.
+* A new method, ScrollView.EnsureVisible, that ensures that a specified
+  area of the ScrollView is visible.
+* A new property, TextArea.ScrollBar, to choose the display policy of the
+  scrollbars.
+* A new class, TrayIcons, for enumerating all TrayIcon controls.
+* New properties in the TrayIcon class: Tag, ScreenX, ScreenY, Width and
+  Height.
+* BUG: TrayIcon now catches Enter and Leave events.
+* BUG: The Design property now works with controls written in Gambas.
+* BUG: Some fixes in Open event trigerring of embedded forms.
+* Three new controls made with Gambas: FontChooser, ColorChooser and
+  CustomListBox.
+
+DATABASE COMPONENT
+
+* A new method, CConnection.Subst(), that converts gambas values into
+  the underlying database SQL syntax, and substitutes them in a query
+  string.
+* BUG: Result can manage tables whose primary keys are not the first fields
+  of the table.
+* BUG: Result enumeration are deletion-safe now.
+* BUG: You can use variant values with functions that use substitution.
+
+GTK+ COMPONENT
+
+* Updated.
+
+SDL COMPONENT
+
+* Updated.
+
+OPENGL COMPONENT
+
+* Updated.
+
+
+-------------------------------------------------------------------------------
+ gambas2-1.9.13 - 24 Jul 2005
+-------------------------------------------------------------------------------
+
+* $(ROOT) was replaced by $(DESTDIR) in the configuration script.
+* Components information files are now created by each component source
+  directory.
+* autoconf was duped so that source package archive use symbolic links.
+* Use more symbolic links, so that source package is reduced.
+* Components can have a gambas part. Just add a gambas project inside the
+  'src' sub-directory, having the same name as the component.
+
+DEVELOPMENT ENVIRONMENT
+
+* Now control coordinates are stored as a multiple of Desktop.Scale in the
+  form files. This way, the size of the dialogs is proportional to the system
+  font. THIS IS EXPERIMENTAL! BE CAREFUL WITH YOUR PROJECTS!
+* The grid size is always set to Desktop.Scale.
+
+DATABASE MANAGER
+
+* The project was synchronized with the stable version one.
+
+EXAMPLES
+
+* BUG: Some examples were fixed because of the recent changes in some
+  property names.
+
+COMPILER
+
+* BUG: Object[] can be used normally now.
+* Extern functions can be public now.
+* _next can be implemented.
+* A clearer error message when the parser gets an unexpected pattern.
+* You can now initialize *every* variable with *any* expression.
+* BUG: You cannot embed TRY statements anymore.
+* A new instruction, ERROR, that prints an error message on the
+  standard error ouput.
+* A new instruction, DEBUG. It is a PRINT that sends its data to the
+  standard error output, prints where the message comes from, and that
+  is not compiled when debugging information is disabled.
+
+INTERPRETER
+
+* New API GB.RealFileName(): It does the same thing as GB.FileName() except
+  that if the file is located inside the project executable, then a
+  temporary copy is made, and the path to this copy is returned. Use it when
+  you can't read data from memory with GB.LoadFile().
+* Now FOR EACH uses internal iterators. A container class can now fix its
+  currently used iterators when deleting its elements. This avoids crashing
+  the interpreter as before.
+* A new class, Enum, that represents internal iterators.
+* BUG: Collection now check all its iterators when deleting its elements.
+* Components written in gambas and executables are now read by using mmap().
+* GB.LoadFile() now uses mmap() if possible, so that loading resources from
+  the executable is faster.
+* BUG: All Array indexes are converted to integers now, not just the first
+  one.
+* Split() escape string parameter behavior has changed. Now it just one
+  escape character only. If the escape string has two characters, then the
+  first is the starting escape character and the second the ending one.
+* File.Dir(), File.Ext(), File.Name() and File.BaseName() all take a new
+  optional parameter. If it is used, then instead of returning their
+  corresponding path part, they replace it with the new parameter.
+  For example, File.Name("/home/benoit", "gambas") returns "/home/gambas".
+* If the interpreter stops just after a non catched error, it does not print
+  memory warning messages anymore.
+* A new function, Week, that returns the week number from a date.
+* A new function, DFree(), the returns the space available on a device.
+* A new property, List.Max, that returns List.Count - 1.
+* BUG: Milliseconds are not stripped anymore in dates, and is correctly
+  managed when converting from/to a string.
+* BUG: _call() method should work in any case now.
+* BUG: IsPunct() now returns FALSE for non-ascii characters.
+* BUG: Bits functions now correctly handle Long datatype.
+* BUG: Changing System.Language should not crashes the interpreter anymore.
+
+INFORMER
+
+* Now the informer can extract information from components made in gambas.
+
+QT COMPONENT
+
+* A new property, Desktop.Scale, that returns half the height of the default
+  system font.
+* Two new methods, Control.MoveScaled() and Control.ResizeScaled() that
+  multiply their arguments by Desktop.Scale and pass them to respectively
+  Control.Move() and Control.Resize().
+* Font does not have its own resolution anymore. It always keep the screen
+  resolution.
+* The TrayIcon control was implemented. Just put it on a form, and you
+  get a little cute icon in the system tray. Thanks Daniel! :-)
+* BUG: Draw.Image() now works on devices having a mask.
+* DrawingArea paint events were optimized.
+* BUG: Embedded windows now internally create an hidden menu bar to store
+  its menus.
+* BUG: Some fixes in the management of Mask and Picture properties.
+
+DATABASE COMPONENT
+
+* BUG: When you create a record with DB.Create(), the fields take their
+  default value now.
+* BUG: The milliseconds part of date fields is correctly handled now, and
+  the value of date fields is correctly returned!
+
+GTK+ COMPONENT
+
+* Updated.
+
+SDL COMPONENT
+
+* Updated.
+
+OPENGL COMPONENT
+
+* New component made by Laurent Carlier.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.12 - 14 Jul 2005
+--------------------------------------------------------------------------------------
+
+* BE CAREFUL: THE BYTE CODE HAS BEEN MODIFIED AGAIN, SO YOUR PROJECTS MUST BE
+  *ENTIRELY* RECOMPILED!
+* There is a new component, gb.crypt, that allows to use the crypt() glib function.
+
+DATABASE MANAGER
+
+* BUG: Errors during table creation or modification are now correctly handled.
+* BUG: Fields names are now case unsensitive in the table edition window.
+* BUG: Deleting fields that are used in an index is not allowed anymore.
+* BUG: Deleting fields in the index tableview now works as expected.
+
+EXAMPLES
+
+* BUG: In the Notepad example, the 'modified' flag now displays correctly in the
+  window title.
+
+COMPILER
+
+* BUG: Fixed some parsing errors.
+* BUG: You can use event, label and property names in a class context now.
+* Now the DIM keyword is mandatory when declaring local variables.
+* BUG: You can effectively instanciate objects with any expression at
+  local variable declaration.
+
+INTERPRETER
+
+* BUG: Format$() has been fixed, and re-fixed again.
+* Split() now gets a new optional boolean parameter to tell him to remove void
+  elements from the returned array.
+* New methods to test character type: IsAscii, IsLetter, IsLower, IsUpper, IsDigit,
+  IsHexa, IsSpace, IsBlank, IsPunct.
+* The stream argument of Eof() and Lof() is now optional. If it is not specified,
+  then the standard input is used.
+* BUG: You should be able to retry any code that just raised an error in the
+  debugger without crashing now.
+* BUG: Fixed a problem in the optimization of function calls.
+* BUG: Fixed the Round() function. Now Round(0.5) should returns 1 and not 0
+  anymore.
+* BUG: The comparison functions should work correctly now. 10 * (10 > 0) returns
+  -10 again :-)
+* BUG: Array contents can be written to any stream now, not just files.
+
+QT COMPONENT
+
+* A new property, Application.Embedder, that allows you to embed the next opened
+  window in an external window whose X11 handle is specified there.
+* The State property of the Window class has been replaced by three new properties:
+  Minimized, Maximized and FullScreen. These properties are completely independant.
+* A new property, Window.Picture, that stores the window mask.
+* The Mask property now is boolean, and just tells if the Picture property must be
+  used to mask the window.
+* A new control, Embedder, that allows to embed top-level windows of external
+  applications.
+* Each window now has X11 window manager class set to the project name, and X11
+  window manager role set to its class name.
+* BUG: Unminimizing windows now always give them the focus.
+* BUG: Fix a potential crash is menu management.
+* BUG: If a modal window is already displayed, calling Show() on another window calls
+  ShowModal() instead.
+
+SDL COMPONENT
+
+* SDL component has been updated.
+
+MYSQL DRIVER
+
+* BUG: Creating indexes on text fields with no size limit is not case sensitive
+  anymore.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.11 - 06 Jul 2005
+--------------------------------------------------------------------------------------
+
+* BE CAREFUL: THE BYTE CODE HAS BEEN MODIFIED, SO YOUR PROJECTS MUST BE *ENTIRELY*
+  RECOMPILED!
+* A new video capture component named 'gb.v4l' made by Daniel Campos. It is based
+  on Video4Linux.
+* The CGI Gambas program that manages the new documentation is distributed with the
+  source so that people can translate it.
+
+COMPILER
+
+* You can instanciate objects at variable declaration with any expression now.
+* Functions can take a variable number of arguments now.
+* You can use the '_unknown' special method now.
+* A new syntax 'IF ... AND IF ...'. The second test is not done if the first is false.
+* A new syntax 'IF ... OR IF ...'. The second test is not done if the first is true.
+* A new syntax 'CASE ... TO ...', to test the match to an interval of values.
+* New C-style assignment operators: +=, -=, *=, /=, \=, &=, &/=.
+* The DIRECT keyword has been removed. Now use 'OPEN ... FOR INPUT | OUTPUT' to open
+  a file in buffered mode and 'OPEN ... FOR READ | WRITE' to open a file in direct
+  mode.
+* The BIG and LITTLE keywords have been removed. Now use the new ByteOrder property
+  of the Stream class.
+* A new syntax for EXEC or SHELL: 'EXEC|SHELL ... TO aString' executes the command,
+  waits for its termination, and returns the process output to the specified string.
+  The syntax defined in 1.9.10 has been removed.
+* WAIT is not implicite anymore in the EXEC or SHELL command.
+* Now ambiguous expressions are detected, and raise an error.
+* A new operator '==', to compare strings by ignoring their case.
+
+INTERPRETER
+
+* System.Home was definitely replaced by User.Home.
+* System.User was definitely replaced by User.Name.
+* The class ".Stream" has been renamed as "Stream".
+* A new class, Param, to get extra arguments, and information about a call to
+  the _unknown method.
+* A new property, Stream.ByteOrder, to set the byte order of a stream.
+* A new property, User.Id, returns the user id of the current process.
+* Application.Args is now enumerable.
+* Formatting currency is possible now, by specifying gb.Currency (or gb.International
+  to use the international currency symbol) as second argument of Format$().
+* New mathematical functions: Exp2, Exp10, Log2, Cbr, Expm, Logm, Atan2, Ang, Hyp, Mag.
+* New conversion functions: DConv$(), for converting from system charset to desktop
+  charset, and SConv$() for doing the contrary.
+* New date functions: DateAdd() and DateDiff(). They were backported from the vb
+  component and the syntax was modified.
+* A new function, RDir(), to read the contents of a directory recursively.
+* A new storage class, List.
+* BUG: getting the resting output of a closed process stream does not crash anymore.
+* INPUT FROM DEFAULT and OUTPUT TO DEFAULT now automatically restore the last
+  redirected stream.
+* Adding or substracting little integers is now optimized: about 5 times faster.
+* Calling functions with a fixed number of arguments, without needing to convert the
+  arguments is optimized: about 4 times faster.
+* BUG: Sgn() now always returns an integer.
+* Temporary directories are now only readable to the process user.
+
+QT COMPONENT
+
+* BUG: Fix memory leak in string conversion to UTF-8.
+* A new drawing method, Draw.Zoom, for drawing a zoomed version of an image.
+* SpinBox control has been moved to the main component.
+
+EDITOR COMPONENT
+
+* BUG: Display strings whose length is greater than 255 characters correctly now.
+* BUG: Fix rewrite algorithm when dealing with UTF-8 character in some cases.
+* Parsing errors are underlined now.
+
+GTK+ COMPONENT
+
+* GTK+ component has been updated.
+
+SDL COMPONENT
+
+* SDL component has been updated.
+
+CURL COMPONENT
+
+* BUG: Some fixes to compile with gcc 4.x.
+
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.10 - 24 Jun 2005
+--------------------------------------------------------------------------------------
+
+* The component summary displayed by ./configure is now accurate.
+
+COMPILER
+
+* New instructions INPUT FROM and OUTPUT TO. These instructions redirect the default
+  input and output stream.
+* New syntax for OPEN: 'File = OPEN ...' instead of 'OPEN ... AS #File'
+
+INTERPRETER
+
+* Support for standard streams redirection.
+* Now EXEC and SHELL return the process output as a string if the FOR keyword is not
+  used. Otherwise, the process object is returned.
+* Now child processes termination is detected via an internal pipe filled by the
+  SIGCHLD signal handler.
+* Dates can be implicitely converted to booleans or null now.
+* Temp$() now can take the name of the temporary file as an optional argument.
+
+EDITOR COMPONENT
+
+* BUG: the editor width is updated when a line is highlighted.
+
+QT COMPONENT
+
+* The GUI layout is reversed when the current language is arabic or farsi.
+
+GTK+ COMPONENT
+
+* GTK+ component was updated.
+
+CLANLIB COMPONENT
+
+* Configuration files were fixed.
+
+SDL COMPONENT
+
+* SDL component was updated.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.9 - 02 Jun 2005
+--------------------------------------------------------------------------------------
+
+* Czech translation made by Peter Cernoch.
+* The *.info and *.list files are now generated one by one.
+
+COMPILER
+
+* BUG: You can use TRY after a one-line IF ... THEN construct.
+
+INTERPRETER
+
+* BUG: Raising events now works for class whose parent already has events.
+* BUG: Calling native functions cannot badly free the return value anymore.
+* BUG: The library specified in EXTERN now separate the version number from the
+  library name with a colon.
+* The API GB.Call() now returns a pointer to the value returned by the called
+  Gambas function.
+* Application.Env can be enumerated now.
+* A new static class, User, to return information about the user that runs the
+  process.
+* New functions for external shared libraries support: Alloc(), Free(), Realloc().
+* BUG: Reading from a non-buffered stream is now fixed.
+* Now streams that are not real files always use ioctl() to know how many
+  bytes can be read from them. So Lof() should always return a useful value now.
+* BUG: The debugger now can display class constants.
+
+DEVELOMENT ENVIRONMENT
+
+* BUG: Constants are now displayed in automatic completion.
+* BUG: IDE does not ignore files with executable bit set anymore.
+
+DATABASE COMPONENT
+
+* BUG: You can use string constants inside requests now.
+
+EVALUATOR COMPONENT
+
+* BUG: Syntax highlighting now works with lines including non-ASCII characters.
+
+QT COMPONENT
+
+* Dialog.OpenFile now takes an optional argument to let the user choose more than one
+  file.
+* Dialog.Paths is a new property that returns the files selected by the user.
+
+GTK+ COMPONENT
+
+* Updated.
+
+NETWORKING COMPONENT
+
+* Updated.
+
+CLANLIB COMPONENT
+
+* New component. Not usable yet.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.8 - 09 May 2005
+--------------------------------------------------------------------------------------
+
+* The source files are now uploaded to the SourceForge FTP servers.
+
+COMPILER
+
+* BUG: Numbers with signs are correctly compiled again.
+* A new keyword, LIBRARY, to tell the compiler the default library name that it
+  should use with EXTERN declarations.
+* Now The IN keyword is optional with EXTERN declarations, if LIBRARY was used
+  before.
+* You can add EXEC <real name> at the end of an EXTERN declaration, to specify
+  the name of the extern function in the shared library, when it is different
+  from the name used by Gambas.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.7 - 04 May 2005
+--------------------------------------------------------------------------------------
+
+* Symbolic link to gambas IDE does not have the '.gambas' extension anymore.
+* 'gbi' was rewritten so that it can take a component name as argument, and
+  create the information files only for this component.
+
+COMPILER
+
+* Support for declaring functions in extern shared libraries. The syntax is:
+  EXTERN <function name>(args...) IN <library name>
+* New datatype named 'Pointer' that is a synonymous for 'Integer'.
+
+INTERPRETER
+
+* BUG: OPEN ... DIRECT now correctly works.
+* BUG: Opening a file with CREATE flag now always implies READ flag.
+* BUG: SEEK and READ now always work on files opened in DIRECT mode.
+* Support for calling functions in extern shared libraries.
+* If the startup class declares a plublic method named 'Application_Read', then
+  the standard input is watched by the event loop.
+* New subroutines, Alloc(), Free() and Realloc() for allocating and freeing
+  memory fragments.
+* A new subroutine, StrPtr(), that returns the null-terminated string located
+  at the specified address.
+* You can use READ and WRITE to read from or write to memory, by using an integer
+  as stream. The interpreter should raise an error and not crash if you supply
+  an invalid memory address.
+* Now, if you use FOR INPUT/OUTPUT instead of FOR READ/WRITE with the EXEC or
+  SHELL instruction, the executed process is plugged to a pseudo-terminal. This
+  way, you can easily pilot a program that needs to be run in a terminal.
+* BUG: '_call' special method management has been fixed.
+
+DEVELOPMENT ENVIRONMENT
+
+* Support for the Pointer datatype.
+
+QT COMPONENT
+
+* BUG: I finally got rid of the spurious warning generated by the TableView control.
+
+DATABASE COMPONENT
+
+* BUG: Result methods now always return an error when the result is not available.
+* BUG: Now tables whose primary key fields are not necessarily the first ones work.
+* BUG: The PostgreSQL driver has been fixed. Now it works for any version greater
+  or equal than 7.3.
+* Now deleted records are removed from the Result object.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.6 - 21 Apr 2005
+--------------------------------------------------------------------------------------
+
+* WARNING! The bytecode has changed. You must entirely recompile your projects.
+* Now components disabled by libraries and includes detection are not compiled
+  anymore.
+* A new configure flag, '--disable-qt-translation', prevents the qt component for
+  using qt translation files, in the hope of helping to solve the 'freeze' problem
+  with distributions like SuSE.
+
+COMPILER
+
+* Support for Long and Single datatypes.
+* The syntax of EXEC, SHELL and RAISE has changed. They do not use the AS keyword
+  anymore, but the assignment syntax:
+    hProcess = EXEC ...
+    hProcess = SHELL ...
+    bCancel = RAISE ...
+  The OPEN instruction may follow the same way in the future.
+
+INTERPRETER
+
+* Two new datatypes: Long, a 64 bits integer, and Single, a 4 bytes floating point
+  number.
+* Two new array classes: Long[] and Single[].
+* Support for files larger than 2 GB. Now Lof() and Seek() return a 64-bits Long
+  value.
+* Two new keywords, LOCK and UNLOCK, to lock and unlock opened files.
+  Just type LOCK #hFile or UNLOCK #hFile.
+* The Stat() function now returns an object of the class 'Stat', not 'File' anymore.
+* BUG: Fixed a possible crash when freeing classes at program end.
+* BUG: Some fixes in the management of components written in Gambas.
+* BUG: The Seek() function should work now.
+* BUG: A file descriptor leak was fixed in an internal function used by the
+  Settings class.
+
+DEVELOPMENT ENVIRONMENT
+
+* Support for Long and Single datatypes.
+* BUG: Menu editor works again.
+
+DATABASE MANAGER
+
+* The ODBC driver is supported.
+
+DATABASE COMPONENT
+
+* The ODBC driver was updated.
+
+NETWORK COMPONENT
+
+* BUG: The DTR and RTS properties of the SerialPort class were fixed.
+* The CURL component was updated.
+
+EVALUATOR COMPONENT
+
+* BUG: Fixed a possible crash when analyzing lines with syntax errors.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.5 - 31 Mar 2005
+--------------------------------------------------------------------------------------
+
+* Components can be disabled from the top configure script now.
+* Examples and help files have their own package.
+* a new component, gb.form, that just included an example of component for testing
+  purpose.
+* A summary of disabled components is printed at end of configure.
+* DONT_USE_LTDL is disabled by default when compiling on cygwin.
+
+COMPILER
+
+* Some optimization in case unsensitive comparison.
+* BUG: '.info' files should be correctly generated now.
+* Support for multi-dimensional dynamic arrays.
+
+INTERPRETER
+
+* Arrays classes are now multi-dimensional. The dimensions are declared with
+  the following special syntax:  DIM aArray AS NEW Float[5, 6, ...]
+  The arrays can have up to eight dimensions. A multi-dimensional array cannot
+  be resized at run-time.
+* Array.Dim returns the number of dimensions.
+* Array.Bounds[...] returns the size of one dimension.
+* Array.Sort() now always returns the array itself, so that you can write:
+  FOR EACH sFile IN Dir(Path).Sort()
+* BUG: Some fixes in Collection class when dealing with null keys.
+
+ARCHIVER
+
+* Gambas executables have now the '.gambas' extension.
+
+DEVELOPMENT ENVIRONMENT
+
+* Some little fixes to allow using controls of components written in Gambas.
+* If a component requires another component, then it will be stored after in the
+  .project file.
+* Project names including a dot are allowed now.
+* BUG: Menus are correctly managed by the IDE with the GTK+ component now.
+
+DATABASE COMPONENT
+
+* ODBC driver was updated.
+* Connection now is a virtual control.
+
+QT COMPONENT
+
+* MovieBox has been moved to the main component, as it is in the GTK+ component.
+
+KDE COMPONENT
+
+* The following QT datatypes are managed as DCOP function return type:
+  QMap<QCString, QString>, QMap<QString, QString>, QMap<QCString, DCOPRef>,
+  QMap<QString, DCOPRef>. They are unmarshalled to a Gambas collection.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.4 - 23 Feb 2005
+--------------------------------------------------------------------------------------
+
+* Source package has been completely reorganized. Almost each component has its
+  own source sub-package independent from the others.
+* Components can be written in Gambas. But there is no support for that in the
+  development environment yet.
+* $(pkglib) and $(pkgdata) variables are replaced by $(gblib) and $(gbdata) in
+  all 'Makefile.am' files.
+* Components library files are not prefixed with 'lib.' anymore.
+
+INTERPRETER
+
+* Support for loading components written in Gambas.
+* Each component can have a translation file.
+* Classes written in Gambas can be exported (i.e global) and auto-creatable.
+* The native class Settings has been replaced by the gb.settings component, written
+  in Gambas.
+* The support for the old USE instruction has been definitely removed.
+* The FIFO opened by a debugged process are not closed at end anymore. I don't know
+  why but it was taking a very long time.
+* Temporary files (and translation files) are now stored in '/tmp/gambas.$UID/$PID/',
+  and are all deleted when the process terminates.
+* BUG: _put and _get special methods now work correctly for classes written in
+  Gambas.
+* BUG: The File.Perm.* properties now work correctly.
+* BUG: Subst() now works correctly when there is a single '&' character in the
+  pattern string.
+
+COMPILER
+
+* A new keyword, EXPORT, to tell that a class is exported, i.e. global. In a
+  component, only exported class are visible to the outside.
+* CREATE tells that a class is auto-creatable, i.e. that using the class like a
+  object automagically creates an hidden instance.
+* When a project has exported class, the compiler automatically generates a '.list'
+  file containing the list of exported classes, and a '.info' file that describes
+  these exported classes. The format of these file is the same as those generated
+  by the 'gbi' tool for native components.
+* Support for _put and _get methods.
+
+INFORMER
+
+* The 'gbi' does not take the '-a' option anymore. It always generates information
+  files for all native components.
+
+DATABASE COMPONENT
+
+* BUG: Some fixes in the postgresql driver for PostgreSQL version greater than 7.4.
+* ODBC driver was updated.
+
+DEBUG COMPONENT
+
+* The SIGPIPE signal is ignored now during a debugging session.
+
+EVALUATOR COMPONENT
+
+* BUG: many fixes in highlighting and rewriting process.
+
+QT COMPONENT
+
+* BUG: The Tabstrip.Tab property now really returns a tab virtual object, and
+  not an integer anymore.
+* BUG: The DrawingArea control does not crash anymore when it is cached and its
+  width and height are zero.
+* BUG: Setting the GridView.Item.Picture property now correctly refreshes the
+  GridView.
+
+GTK COMPONENT
+
+* Updated.
+
+SDL COMPONENT
+
+* Updated.
+
+SETTINGS COMPONENT
+
+* This component replaces the old native Settings class that was built-in in the
+  interpreter. Note that configuration files are now stored under ~/.config/gambas
+  and that their format has changed to the Windows INI file format.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.3 - 07 Feb 2005
+--------------------------------------------------------------------------------------
+
+* libxml and libxslt use pkg-config to detect their installation path.
+* Detection using 'pkg-config' can be overrided by --with-*-includes and
+  --with-*-libraries configure options.
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: newly created or deleted controls are correctly displayed in the
+  auto-completion list now.
+* Pressing ENTER when the autocompletion is displayed does not insert a new line
+  anymore.
+
+COMPILER
+
+* A new keyword, SUPER.
+
+INTERPRETER
+
+* BUG: Virtual dispatching now works correctly.
+* A new keyword, SUPER, to call a method or a property of the inherited class.
+* BUG: gb.Sunday constant is zero, not seven anymore.
+* BUG: Mathemathic functions now raise an error instead of returning a non-finite
+  number.
+
+EXPRESSION EVALUATOR COMPONENT
+
+* Syntax highlighting is done by this component now.
+
+DATABASE COMPONENT
+
+* ODBC driver updated.
+* SQLite driver updated.
+
+QT COMPONENT
+
+* BUG: Qt dialogs are now translated!
+* BUG: No memory leak anymore when using user-defined cursors.
+* BUG: Setting Dialog.Font to NULL does not crash the interpreter anymore.
+
+GAMBAS EDITOR COMPONENT
+
+* Syntax highlighting is done by the gb.eval component now.
+* Code lines are rewritten after being edited.
+
+GTK COMPONENT
+
+* Updated.
+
+PCRE COMPONENT
+
+* Updated.
+
+SDL COMPONENT
+
+* Updated.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.2 - 12 Jan 2005
+--------------------------------------------------------------------------------------
+
+* BUG: Fix forgotten version suffixes in configuration and source files.
+* Some fixes to help compile on non-Linux architectures.
+
+DEVELOPMENT ENVIRONMENT
+
+* BUG: Don't crash when INHERITS is used by mistake.
+* BUG: Don't display void folders opened in the project treeview.
+* BUG: Never open autocompletion inside a comment.
+
+COMPILER
+
+* BUG: Using INHERITS twice now raises an error message.
+
+SDL COMPONENT
+
+* Updated.
+
+GTK COMPONENT
+
+* Updated.
+
+PCRE COMPONENT
+
+* Updated.
+
+
+--------------------------------------------------------------------------------------
+ gambas2-1.9.1 - 09 Jan 2005
+--------------------------------------------------------------------------------------
+
+* New experimental detection of target operating system. This may break some
+  compilation on other systems than mine. Please report problems!
+* Detection of shared libraries extension on MacOS X.
+* Use of pkg-config to detect some libraries.
+* Executables and packages are suffixed with the major version number.
+
+INTERPRETER
+
+* A new API, GB.Application.Startup, that returns the name of the startup class
+  for components that need it.
+* A new property, System.Version, that returns the Gambas major version number.
+* BUG: The [] operator has been fixed for Byte and Short arrays.
+* Now virtual dispatching is used. If you call a method on a object, the method of
+  the true object class is called, and not the method of the class of the variable
+  owning the object reference.
+
+DATABASE COMPONENT
+
+* New VERY ;-) experimental driver for ODBC, made by Andrea Bortolan.
+
+QT COMPONENT
+
+* BUG: Changing the width of all rows or the height of all columns now works correctly.
+* BUG: TextBox.Pos does not crash anymore if the position is out of bounds.
+* BUG: TextBox.Select.All() now works.
+
+SDL COMPONENT
+
+* A new component, gb.sdl.image, made by Laurent Carlier.
+
+GTK COMPONENT
+
+* New component made by Daniel Campos.
+
+PCRE COMPONENT
+
+* New component made by Rob Kudla.
+
