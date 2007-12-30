@@ -1,0 +1,281 @@
+' Gambas class file
+
+EXPORT
+
+STATIC PROPERTY READ List AS String[]
+
+STATIC PRIVATE $bInit AS Boolean
+STATIC PRIVATE $aIconPath AS String[]
+STATIC PRIVATE $cIconMap AS Collection
+STATIC PRIVATE $aList AS String[]
+STATIC PRIVATE $aSizeDec AS Integer[] = [192, 128, 96, 72, 64, 48, 36, 32, 24, 22, 20, 16, 12]
+STATIC PRIVATE $aSizeInc AS Integer[] = [12, 16, 20, 22, 24, 32, 36, 48, 64, 72, 96, 128, 192]
+
+STATIC PRIVATE SUB SearchDesktop()
+
+  DIM sOutput AS String
+
+  IF Application.Theme THEN RETURN
+  
+  IF Application.Env["KDE_FULL_SESSION"] THEN 
+    Application.Theme = "kde"
+  ELSE IF Application.Env["GNOME_DESKTOP_SESSION_ID"] THEN 
+    Application.Theme = "gnome"
+  ELSE 
+    SHELL "xprop -root XFCE_DESKTOP_WINDOW" TO sOutput
+    IF sOutput THEN Application.Theme = "xfce"
+  ENDIF
+  
+END
+
+
+STATIC PRIVATE SUB LoadMap(sMap AS String)
+  
+  DIM hFile AS File
+  DIM sLig AS String
+  DIM aMap AS String[]
+  DIM cMap AS NEW Collection
+
+  IF $cIconMap.Exist(sMap) THEN RETURN
+
+  hFile = OPEN "map" &/ sMap & ".map"
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLig
+    sLig = Trim(sLig)
+    IF Left(sLig) = "'" OR Left(sLig) = "#" THEN CONTINUE
+    aMap = Scan(sLig, "* *")
+    IF aMap.Count >= 2 THEN
+      cMap[aMap[0]] = aMap[1]
+    ENDIF
+  WEND
+  CLOSE #hFile
+  
+  $cIconMap[sMap] = cMap
+    
+END
+
+
+STATIC PRIVATE SUB AddPath(sMap AS String, sPath AS String)
+  
+  IF NOT Exist(sPath) THEN RETURN 
+  
+  IF sMap THEN sPath = sMap & ":" & sPath
+  IF NOT $aIconPath.Exist(sPath) THEN $aIconPath.Add(sPath)
+  
+END
+
+
+STATIC PRIVATE SUB InitTheme()
+  
+  DIM hFile AS File
+  DIM sLig AS String
+  DIM aMap AS String[]
+  DIM sStyle AS String
+  DIM sIconPath AS String
+  DIM sPath AS String
+  DIM cMap AS Collection
+  DIM sTheme AS String
+
+  $aIconPath = NEW String[]
+  $cIconMap = NEW Collection
+  
+  SearchDesktop
+
+  SELECT CASE Application.Theme
+    
+    CASE "gnome"
+    
+      TRY EXEC ["gconftool", "-g", "/desktop/gnome/interface/icon_theme"] TO sTheme
+  
+      IF sTheme THEN 
+        sTheme = Trim(sTheme)
+        AddPath("gnome", "/usr/share/icons" &/ sTheme)
+        AddPath("gnome", "/usr/X11R6/share/icons" &/ sTheme)
+      ENDIF
+  
+      AddPath("gnome", "/usr/share/icons/hicolor")
+      AddPath("gnome", "/usr/X11R6/share/icons/hicolor")
+      AddPath("gnome", "/usr/share/icons/gnome")
+      'AddPath("gnome", "/opt/gnome")
+      AddPath("gnome", "stock/gtk")
+      'AddPath("", "stock/qt")     
+    
+    CASE "kde"
+  
+      TRY EXEC ["kde-config", "--path", "icon"] TO sIconPath
+      IF sIconPath THEN 
+    
+        sIconPath = Trim(sIconPath)
+    
+        'sStyle = "kdeclassic"
+        TRY hFile = OPEN "~/.kde/share/config/kdeglobals"
+        IF NOT ERROR THEN
+          WHILE NOT Eof(hFile)
+            LINE INPUT #hFile, sLig
+            IF sLig = "[Icons]" THEN 
+              WHILE NOT Eof(hFile)
+                LINE INPUT #hFile, sLig
+                IF Left(sLig) = "[" THEN BREAK
+                IF sLig LIKE "Theme=*" THEN 
+                  sStyle = Mid$(sLig, 7)
+                  BREAK
+                ENDIF 
+              WEND
+              BREAK
+            ENDIF 
+          WEND
+          CLOSE #hFile
+        
+          IF sStyle THEN
+            FOR EACH sPath IN Split(sIconPath, ":")
+              AddPath("kde", sPath &/ sStyle)
+            NEXT
+          ENDIF 
+          
+        ENDIF
+        
+        FOR EACH sPath IN Split(sIconPath, ":")
+          AddPath("kde", sPath &/ "crystalsvg") ' default theme hardcoded in KDE sources
+        NEXT
+        
+        ' FOR EACH sPath IN Split(sIconPath, ":")
+        '   AddPath("kde", sPath &/ "kdeclassic") ' default theme hardcoded in KDE sources
+        ' NEXT
+        
+        'AddPath("", "stock/qt")
+       
+      ENDIF
+    
+    CASE "xfce"
+    
+      TRY hFile = OPEN "~/.config/xfce4/mcs_settings/gtk.xml"
+      IF NOT ERROR THEN 
+        WHILE NOT Eof(hFile)
+          LINE INPUT #hFile, sLig
+          IF sLig LIKE "*<option*name=\"Net/IconThemeName\"*" THEN 
+            TRY sTheme = Trim(Scan(sLig, "*<option*value=\"*\"*")[2])
+            BREAK
+          ENDIF          
+        WEND
+        CLOSE #hFile
+      ENDIF
+    
+      IF sTheme THEN 
+        AddPath("gnome", "/usr/share/icons" &/ sTheme)
+        AddPath("gnome", "/usr/X11R6/share/icons" &/ sTheme)
+      ENDIF 
+      
+      AddPath("gnome", "/usr/share/icons/gnome")
+      AddPath("gnome", "stock/gtk")
+      
+  END SELECT 
+  
+  AddPath("", "stock/qt")
+  AddPath("", "stock/default")
+  
+  'DEBUG $aIconPath.Join("\n")
+  
+  $bInit = TRUE
+   
+END
+
+STATIC PUBLIC FUNCTION _get(Key AS String) AS Picture
+
+  DIM sPrefix AS String
+  DIM sPath AS String
+  DIM hPict AS Picture
+  DIM iPos AS Integer
+  DIM iSize AS Integer
+  DIM sSize AS String
+  DIM iTry AS Integer
+  DIM hImage AS Image
+  DIM sTemplate AS String
+  DIM sFile AS String
+  DIM sMap AS String
+
+  'IF Right(Key, 4) <> ".png" THEN Key &= ".png"
+
+  IF NOT $bInit THEN InitTheme
+
+  iSize = 16
+  iPos = InStr(Key, "/")
+  IF iPos THEN 
+    sSize = Left$(Key, iPos - 1)
+    Key = Mid$(Key, iPos + 1)
+
+    SELECT CASE sSize
+      CASE "small"
+        iSize = (Desktop.Scale DIV 3) * 8
+      CASE "medium"
+        iSize = (Desktop.Scale DIV 3) * 12
+      CASE "large"
+        iSize = (Desktop.Scale DIV 3) * 16
+      CASE "huge"
+        iSize = (Desktop.Scale DIV 3) * 24
+      CASE ELSE 
+        TRY iSize = CInt(sSize)
+    END SELECT
+  ENDIF
+
+  FOR EACH sPath IN $aIconPath
+  
+    iPos = InStr(sPath, ":")
+    IF iPos THEN 
+      sMap = Left$(sPath, iPos - 1)
+      LoadMap(sMap)  
+      sFile = $cIconMap[sMap][Key]
+      IF NOT sFile THEN sFile = Key & ".png"
+      sPath = Mid$(sPath, iPos + 1)
+    ELSE 
+      sFile = Key & ".png"
+    ENDIF
+  
+    IF Left(sPath) = "/" THEN   
+      sTemplate = sPath &/ "&1x&1" &/ sFile
+    ELSE 
+      sTemplate = sPath &/ "&1" &/ sFile
+    ENDIF 
+    
+    TRY hPict = Picture[Subst(sTemplate, iSize)]
+    IF hPict THEN RETURN hPict
+    
+    hImage = NULL
+    
+    FOR EACH iTry IN $aSizeInc
+      IF iTry <= iSize THEN CONTINUE
+      TRY hImage = Image.Load(Subst(sTemplate, iTry))
+      IF NOT ERROR THEN BREAK
+    NEXT
+    
+    IF NOT hImage THEN 
+    
+      FOR EACH iTry IN $aSizeDec
+        IF iTry >= iSize THEN CONTINUE
+        TRY hImage = Image.Load(Subst(sTemplate, iTry))
+        IF NOT ERROR THEN BREAK
+      NEXT
+    
+    ENDIF
+    
+    IF hImage THEN  
+      hPict = hImage.Stretch(iSize, iSize, TRUE).Picture
+      Picture[Subst(sTemplate, iSize)] = hPict
+      RETURN hPict
+    ENDIF
+
+  NEXT
+  
+  DEBUG "Cannot find: "; Key
+
+END
+
+
+STATIC PRIVATE FUNCTION List_Read() AS String[]
+
+  IF NOT $aList THEN 
+    $aList = Split(File.Load("map/map"), "\n", "", TRUE)
+  ENDIF 
+  
+  RETURN $aList  
+
+END

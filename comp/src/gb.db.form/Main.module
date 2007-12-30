@@ -1,0 +1,18 @@
+' Gambas module file
+
+PRIVATE $hConn AS NEW Connection
+
+PUBLIC SUB Main()
+
+  $hConn.Type = "mysql"
+  $hConn.User = "root"
+  $hConn.Name = "test"
+  '$hConn.Host = "/home/benoit"
+
+  'DB.Debug = TRUE
+
+  'Application.Theme = "gnome"
+
+  FMain.Show
+
+END

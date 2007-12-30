@@ -1,0 +1,67 @@
+' Gambas class file
+
+PRIVATE $sLast AS String
+PRIVATE $MX AS Integer
+PRIVATE $MY AS Integer
+
+PUBLIC SUB Form_Open()
+
+  ME.Font = Font["64"]
+  ME.Width = ME.Font.Width("00:00:00") + 32
+  ME.Height = ME.Font.Height() + 8
+  Redraw
+END
+
+PUBLIC SUB Timer1_Timer()
+
+  Redraw
+
+END
+
+PRIVATE SUB Redraw()
+
+  DIM hPict AS Picture
+  DIM sText AS String
+  DIM iInd AS Integer
+
+  sText = Str(Time)
+  IF sText = $sLast THEN RETURN
+
+  hPict = NEW Picture(ME.Width, ME.Height, TRUE)
+
+  Draw.Begin(hPict)
+  Draw.Font = Font["64"]
+  Draw.LineWidth = 4
+
+  FOR iInd = 8 TO 0 STEP -1
+    Draw.Foreground = Color.RGB(&h43 - iInd * &h43 / 8, &hC7 - iInd * &hC7 / 8, &hFF - iInd * &HFF / 8)
+    Draw.Text(sText, 16 + iInd, iInd)
+    Draw.Rect(iInd + 4, iInd + 4, hPict.Width - 14, hPict.Height - 14)
+  NEXT
+
+  Draw.End
+
+  ME.Picture = hPict
+  ME.Mask = TRUE
+  $sLast = sText
+
+END
+
+PUBLIC SUB Form_KeyPress()
+
+  IF Key.Code = Key["Esc"] THEN ME.Close
+
+END
+
+PUBLIC SUB Form_MouseDown()
+
+  $MX = Mouse.ScreenX - ME.X
+  $MY = Mouse.ScreenY - ME.Y
+
+END
+
+PUBLIC SUB Form_MouseMove()
+
+  ME.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+  
+END

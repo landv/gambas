@@ -1,0 +1,89 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,110,74)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = 5
+  Padding = 5
+  { HBox1 HBox
+    MoveScaled(2,2,105,67)
+    Expand = True
+    Spacing = 5
+    { DrawingArea1 DrawingArea
+      MoveScaled(1,2,61,61)
+      Background = &HFFFFFF&
+      Expand = True
+    }
+    { TabStrip1 TabStrip
+      MoveScaled(63,2,44,64)
+      Arrangement = Arrange.Vertical
+      Spacing = 5
+      Padding = 5
+      Count = 2
+      Index = 0
+      Text = ("Data")
+      { tvdata TableView
+        MoveScaled(2,3,38,28)
+      }
+      { Button1 Button
+        MoveScaled(2,32,18,4)
+        Text = ("Add a Row")
+      }
+      { Button2 Button
+        MoveScaled(3,37,18,4)
+        Text = ("Remove a Row")
+      }
+      { Separator1 Separator
+        MoveScaled(2,41,36,3)
+      }
+      { Button3 Button
+        MoveScaled(4,44,18,4)
+        Text = ("Add a Dataset")
+      }
+      { Button4 Button
+        MoveScaled(6,51,18,4)
+        Text = ("Remove a Dataset")
+      }
+      Index = 1
+      Text = ("Chart")
+      { Label2 Label
+        MoveScaled(1,2,11,2)
+        Text = ("Style")
+      }
+      { ScrollView1 ScrollView
+        MoveScaled(1,5,63,18)
+        Arrangement = Arrange.Row
+        Spacing = 10
+        Padding = 5
+        ScrollBar = Scroll.Horizontal
+      }
+      { Label3 Label
+        MoveScaled(1,25,11,2)
+        Text = ("SubStyle")
+      }
+      { ScrollView2 ScrollView
+        MoveScaled(1,28,63,18)
+        Arrangement = Arrange.Row
+        Spacing = 5
+        Padding = 5
+      }
+      { CheckBox2 CheckBox
+        MoveScaled(1,47,22,3)
+        Text = ("Show Title")
+        Value = CheckBox.True
+      }
+      { CheckBox1 CheckBox
+        MoveScaled(1,50,30,2)
+        Text = ("Show Legend")
+        Value = CheckBox.True
+      }
+      Index = 0
+    }
+  }
+  { Label1 Label
+    MoveScaled(4,70,96,3)
+    Text = ("")
+    Border = Border.Etched
+  }
+}

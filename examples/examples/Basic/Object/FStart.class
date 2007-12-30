@@ -1,0 +1,30 @@
+' Gambas class file
+
+PUBLIC myThing AS CThing
+
+STATIC PUBLIC SUB Main()
+  DIM myForm AS Form
+  myForm = NEW FStart
+  myForm.Show
+END
+
+PUBLIC SUB btnCreateThing_Click()
+  myThing = NEW CThing
+  myThing.Name = "Dummy-Thing"
+  mything.X = 11
+  mything.Y = 22
+  mything.ID = 33 
+  txtCheckResult.Visible=TRUE
+END
+
+PUBLIC SUB btnCheckThing_Click()
+  txtCheckResult.Text = myThing.Name & ", X= " & myThing.X & ", Y= " & myThing.Y & ", ID= " & myThing.ID
+CATCH
+  Message(Error.Text)
+END
+
+PUBLIC SUB btnDestroy_Click()
+  myThing = NULL
+  txtCheckResult.Visible=FALSE
+END
+

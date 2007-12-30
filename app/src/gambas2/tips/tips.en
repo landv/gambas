@@ -1,0 +1,396 @@
+[WELCOME]
+
+<p>Welcome to <b>Gambas</b> !</p>
+
+<p><b>Gambas</b> is a graphical development
+environment based on an advanced <i>Basic</i> interpreter.</p>
+
+<p><b>Gambas</b> aims at enabling you to make
+powerful programs easily and quickly. But clean programs
+remain on your <i>own</i> responsibility...</p>
+
+<p>Enjoy it !</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<p>Each project must have a <i>startup class</i>. This
+startup class must define a static public method named <i>Main</i>
+with no arguments, that will act as the startup method of
+your program.</p>
+
+<p>You can define the startup class by clicking on it with the
+right mouse button in the project tree, and by selecting 
+<i>Startup class</i> in the popup menu.</p>
+
+<p>It is not necessary to define a <i>Main</i> method in a startup
+form, because it already has a predefined one.</p>
+
+<p>This predefined startup method instanciates the form and shows it, like in
+<i>Visual Basic&trade;</i>.</p>
+
+
+[OPEN]
+
+<p>The <b>OPEN</b> instruction of <b>Gambas</b> does not
+work like the <i>Visual Basic</i> one. It does not return the file
+as an integer, but as a <i>File</i> object.</p>
+
+<p>So, instead of typing :</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>you must type :</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "myfile" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>Do you know that you can catenate directory names and
+file names with the <b><tt>&/</tt></b> operator ? This operator
+deals with the trailing slashes so that the resulting path is
+perfect.</p>
+
+<p>For example:</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>Isn't it marvellous ?</p>
+
+
+[EXEC]
+
+<p>You can make an executable file from your entire project. Select
+<i>Make executable</i> in the <i>Project</i> menu.</p>
+
+<p>When <b>Gambas</b> makes an executable file, it puts 
+the result in the directory of your project by default. 
+The executable name has the same name as your project.</p>
+
+
+[PATH]
+<p>
+Relative paths have a special meaning in <b><i>Gambas</i></b>.
+They always refer to files inside your projects.
+<p>
+There is no concept of <i>current directory</i>, and no keyword like
+<tt>CHDIR</tt> to change it.
+<p>
+<b>Be careful:</b> you must use relative paths only for accessing
+project files, because absolute paths won't work anymore when
+you make an executable.
+
+
+[GLOBAL]
+
+There is <u>no global variables</u> in <b><i>Gambas</i></b>!
+<p>
+As a workaround, put them in your main module and declare them
+as <tt>PUBLIC</tt>.
+<p>
+If you do not have a main module in your project, but a main
+form, then declare them as <tt>STATIC PUBLIC</tt>.
+<p>
+To access these variables, you must use the name of the main module
+or form: <tt>MyMainModule.MyGlobalVariable</tt> or
+<tt>MyMainForm.MyGlobalVariable</tt>.
+
+
+[EMPTY]
+
+<p>To know if a string is empty, it is not necessary to use the
+<b>Len()</b> function. You can directly test it, as an empty string
+is <b>FALSE</b> and a non-empty string is <b>TRUE</b>.</p>
+
+<p>For example, instead of doing :</p>
+
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+
+<p>You should do :</p>
+
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+
+[EVENT]
+
+<p>Every control, and every object that can raise events, has an
+<i>event observer</i> and an event <i>group name</i>.</p>
+
+<p>The event observer catches every event raised by the object, and
+the event group name is the prefix of the procedure called to manage
+the event.</p>
+
+<p>By default, this event observer is the object where you have
+created the control, and the group name is the name of the control.</p>
+
+<p>This way, a form receives all events raised by the controls you
+created inside.</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "You have clicked MyButton !"
+END
+</pre>
+
+
+[FORM]
+
+<p>In <b><i>Gambas</i></b>, a form is its own event observer, so that 
+you can directly manage its events (like <i>Resize</i>, 
+<i>Activate</i>, ...) into its own class code.</p>
+
+<p>This way, newbies coming from <i>Visual Basic</i> are not
+disorientated :-).</p>
+
+
+[EMBED]
+
+<p>You can embed any form into other forms with <b><i>Gambas</i></b>
+&nbsp;!</p>
+
+<p>To do such a powerful thing, just instanciate the form by passing
+a parent container as last argument of the contructor.</p>
+
+<p>For example&nbsp;:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Create a dialog<br>
+hForm = NEW MyDialog<br>
+' Insert a form into this dialog<br>
+' Note that this form takes two parameters before the container<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Moves and resizes the form<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>Be careful: a form embedded into another form is still a form, and
+so is its own event observer.</p>
+
+
+[GROUP]
+
+<p>Every control has a <i>(Group)</i> property. When this property
+is set, the prefix of the event handler name is the name of the group
+and not the name of the control.</p>
+
+<p>Let's suppose you have a <i>Button</i> named <b>btnAction</b>
+with the following <i>Click</i> event handler :</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>If you set the <i>(Group)</i> property of <b>btnAction</b> to
+<i>MyGroup</i>, then the event handler that will receive events from
+the button will be the following :</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>This property lets you handle events of different controls in
+a single function. And the controls of the same group do not need
+to have the same type !</p>
+
+<p><b>Note :</b> The old <i>Visual Basic</i> veteran may recognize
+the concept of <i>control array</i>, but in a more powerful
+implementation. :-)</p>
+
+
+[TAG]
+
+<p>Each control has a <i>Tag</i> property. This property is for the
+programmer, and can contain any <b>VARIANT</b> data that you find
+relevant.</p>
+
+<p>This is very useful, when you want to distinguish controls of the
+same group in a common event handler.</p>
+
+
+[LAST]
+
+<p>The <b>LAST</b> keyword returns the last control that has
+received an event. This is very useful when you want to write an
+event handler that is independent of any control name.</p>
+
+<p>For example, let's suppose you want to write a calculator program.
+You have defined ten buttons, one for each digit, each one in the
+same <i>group</i> "Digit". The <i>Tag</i> of each control is set to
+the digit drawn in the button. Your event handler may look like that :</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>The well known <i>BASIC</i> routines <b>Left$</b>, <b>Right$</b>
+and <b>Mid$</b> have useful behaviours in <b><i>Gambas</i></b></p>
+
+<p>The second parameter of <b>Left$</b> and <b>Right$</b> is
+optional, and is one by default.</p>
+
+<p><tt>Left$("Gambas")</tt> returns <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> returns <tt>"s"</tt></p>
+
+<p>This second parameter can be negative, and then gives the number
+of characters not to extract.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> returns <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> returns <tt>"mbas"</tt></p>
+
+<p>Likewise, the third argument of <b>Mid$</b> can be negative, and
+then gives the number of characters from the end of the string
+not to extract.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> returns <tt>"amb"</tt>
+
+
+[OBSERVER]
+
+<p>The <b>Observer</b> class allows you to intercept all events raised
+by an object before they are actually sent.</p>
+
+<pre>MyTextBox = NEW TextBox(ME) AS "MyTextBox"
+MyObserver = NEW Observer(MyTextBox) AS "MyObserver"
+...
+PUBLIC SUB MyObserver_KeyPress()
+  DEBUG "Got it first"
+END
+
+PUBLIC SUB MyTextBox_KeyPress()
+  DEBUG "Got it next"
+END</pre>
+
+The observer can cancel the event to prevent the object from effectively
+raising it.
+
+
+[STRING]
+
+<p>Gambas uses the <b>UTF-8</b> charset to represent strings in memory.</p>
+
+<p>But all standard Gambas string functions deal with <b>ASCII</b>: 
+<tt>Left</tt>, <tt>Mid</tt>, <tt>Right</tt>, <tt>UCase</tt>...
+
+<p>If you want to manipulate UTF-8 string, you must use the methods of the
+<b>String</b> static class, which have the same name as their standard counterparts.
+
+<pre>PRINT Len("bébé");; Left$("bébé", 3)
+6 bé
+PRINT String.Len("bébé");; String.Left("bébé", 3)
+4 béb</pre>
+
+
+[ASSIGNMENT]
+
+<p>Gambas implements the assignment shortcuts that the C/C++ programmers are used to.
+
+<p><tt>MyVariable += 2</tt> is an equivalent of <tt>MyVariable = MyVariable + 2</tt>
+
+<p><tt>MyVariable &= "Great"</tt> is an equivalent of <tt>MyVariable = MyVariable & "Great"</tt>
+
+<p>And so on...
+
+
+[DEBUG]
+
+<p>You can use the <b>DEBUG</b> instruction to print debugging messages to the
+console (namely the standard error output). It behaves exactly like the <tt>PRINT</tt>
+instruction.
+
+<p>These messages are prefixed with the class name, method name and line number of
+the <tt>DEBUG</tt> instruction.
+
+<p>The debugging messages are automatically removed when creating an executable
+without debugging information.
+
+
+[TRY]
+
+<p>Error management in Gambas is done with the following instructions: 
+<b><tt>TRY</tt></b>, <b><tt>ERROR</tt></b>, <tt>CATCH</tt>, and <tt>FINALLY</tt>.
+
+<p><tt>TRY</tt> tries to execute a statement without raising an error. The <tt>ERROR</tt>
+instruction is used just after to know if the statement was executed correctly.
+
+<pre>TRY MyFile = OPEN "/etc/password" FOR WRITE
+IF ERROR THEN PRINT "I cannot do what I want!"</pre>
+
+
+[CATCH]
+
+<p>Error management in Gambas is done with the following instructions: 
+<tt>TRY</tt>, <tt>ERROR</tt>, <b><tt>CATCH</tt></b>, and <tt>FINALLY</tt>.
+
+<p><tt>CATCH</tt> indicates the beginning of the error management part of a function or procedure. 
+It is put at the end of the function code.
+
+<p>The catch part is executed when an error is raised between the beginning of the function execution 
+and its end.
+
+<p>If an error is raised during the execution of the catch part, it is normally propagated. 
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+  CLOSE #hFile
+CATCH ' Executed only if there is an error
+  PRINT "Cannot process file "; FileName
+END</pre>
+
+
+[FINALLY]
+
+<p>Error management in Gambas is done with the following instructions: 
+<tt>TRY</tt>, <tt>ERROR</tt>, <tt>CATCH</tt>, and <b><tt>FINALLY</tt></b>.
+
+<p><tt>FINALLY</tt> introduces the code executed at the end of the function, even if an error was 
+raised during its execution. 
+
+<p>The finally part is not mandatory. If there is a catch part in the function, the finally part must precede it. 
+ 
+<p>If an error is raised during the execution of the finally part, it is normally propagated.
+
+<pre>SUB ProcessFile(FileName AS STRING)
+  ...
+  OPEN FileName FOR READ AS #hFile
+  ...
+FINALLY ' Always executed, even if a error is raised
+  CLOSE #hFile
+CATCH ' Executed only if there is an error
+  PRINT "Cannot print file "; FileName
+END</pre>
+
+
+[END]
+
+<p>You have read all the tips of the days. I hope you have became
+a <b>Gambas</b> expert now ! :-)</p>
+
+<p>If you want to contribute, send new tips to the following
+address&nbsp;:</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Thanks beforehand !</p>
+

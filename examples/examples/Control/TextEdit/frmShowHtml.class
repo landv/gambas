@@ -1,0 +1,27 @@
+' Gambas class file
+
+STATIC $sText AS String
+PUBLIC SUB Run(text AS String) AS Boolean
+  $sText = text
+  RETURN NOT ME.ShowModal()
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  TextArea1.Text = $sText
+
+END

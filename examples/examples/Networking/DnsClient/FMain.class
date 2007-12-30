@@ -1,0 +1,323 @@
+' Gambas class file
+'***********************************
+' We define 7 dns objects
+'***********************************
+PRIVATE A AS DnsClient
+PRIVATE B AS DnsClient
+PRIVATE C AS DnsClient
+PRIVATE D AS DnsClient
+PRIVATE E AS DnsClient
+PRIVATE F AS DnsClient
+PRIVATE G AS DnsClient
+
+PRIVATE Working AS Integer
+
+PUBLIC SUB Button1_Click()
+  Label2.Text=""
+  Label3.Text=""
+  Label4.Text=""
+  Label6.Text=""
+  Label7.Text=""
+  Label8.Text=""
+  Label9.Text=""
+  Working=7
+  Button1.Enabled=FALSE
+  Button1.Enabled=FALSE
+  ComboBox1.Enabled=FALSE
+  Button3.Enabled=FALSE
+  CheckBox1.Enabled=FALSE
+  Label5.Text="|"
+  Timer1.Delay=200
+  Timer1.Enabled=TRUE
+  SELECT CASE ComboBox1.Index
+    CASE 0
+      A.HostName=TextBox1.Text
+      B.HostName=TextBox2.Text
+      C.HostName=TextBox3.Text
+      D.HostName=TextBox4.Text
+      E.HostName=TextBox5.Text
+      F.HostName=TextBox6.Text
+      G.HostName=TextBox7.Text
+      A.GetHostIP()
+      B.GetHostIP()
+      C.GetHostIP()
+      D.GetHostIP()
+      E.GetHostIP()
+      F.GetHostIP()
+      G.GetHostIP()
+    CASE 1
+      A.HostIP=TextBox1.Text
+      B.HostIP=TextBox2.Text
+      C.HostIP=TextBox3.Text
+      D.HostIP=TextBox4.Text
+      E.HostIP=TextBox5.Text
+      F.HostIP=TextBox6.Text
+      G.HostIP=TextBox7.Text
+      A.GetHostName()
+      B.GetHostName()
+      C.GetHostName()
+      D.GetHostName()
+      E.GetHostName()
+      F.GetHostName()
+      G.GetHostName()
+  END SELECT
+
+END
+
+PUBLIC SUB A_Finished()
+
+  SELECT CASE ComboBox1.index
+    CASE 0
+      IF A.HostIP="" THEN
+        Label2.Text="(Not Found)"
+      ELSE
+        Label2.Text=A.HostIP
+     END IF
+    CASE 1
+      IF A.HostName="" THEN
+        Label2.Text="(Not Found)"
+      ELSE
+        Label2.Text=A.HostName
+     END IF
+  END SELECT
+  Working=working-1
+
+END
+
+PUBLIC SUB B_Finished()
+
+  SELECT CASE ComboBox1.index
+    CASE 0
+      IF B.HostIP="" THEN
+        Label3.Text="(Not Found)"
+      ELSE
+        Label3.Text=B.HostIP
+     END IF
+    CASE 1
+      IF B.HostName="" THEN
+        Label3.Text="(Not Found)"
+      ELSE
+        Label3.Text=B.HostName
+     END IF
+  END SELECT
+  Working=working-1
+
+END
+
+PUBLIC SUB C_Finished()
+
+  SELECT CASE ComboBox1.index
+    CASE 0
+      IF C.HostIP="" THEN
+        Label4.Text="(Not Found)"
+      ELSE
+        Label4.Text=C.HostIP
+     END IF
+    CASE 1
+      IF C.HostName="" THEN
+        Label4.Text="(Not Found)"
+      ELSE
+        Label4.Text=C.HostName
+     END IF
+  END SELECT
+  Working=working-1
+
+END
+
+PUBLIC SUB D_Finished()
+
+  SELECT CASE ComboBox1.index
+    CASE 0
+      IF D.HostIP="" THEN
+        Label6.Text="(Not Found)"
+      ELSE
+        Label6.Text=D.HostIP
+     END IF
+    CASE 1
+      IF D.HostName="" THEN
+        Label6.Text="(Not Found)"
+      ELSE
+        Label6.Text=D.HostName
+     END IF
+  END SELECT
+  Working=working-1
+
+END
+
+PUBLIC SUB E_Finished()
+
+  SELECT CASE ComboBox1.index
+    CASE 0
+      IF E.HostIP="" THEN
+        Label7.Text="(Not Found)"
+      ELSE
+        Label7.Text=E.HostIP
+     END IF
+    CASE 1
+      IF E.HostName="" THEN
+        Label7.Text="(Not Found)"
+      ELSE
+        Label7.Text=E.HostName
+     END IF
+  END SELECT
+  Working=working-1
+
+END
+
+PUBLIC SUB F_Finished()
+
+  SELECT CASE ComboBox1.index
+    CASE 0
+      IF F.HostIP="" THEN
+        Label8.Text="(Not Found)"
+      ELSE
+        Label8.Text=F.HostIP
+     END IF
+    CASE 1
+      IF F.HostName="" THEN
+        Label8.Text="(Not Found)"
+      ELSE
+        Label8.Text=F.HostName
+     END IF
+  END SELECT
+  Working=working-1
+
+END
+
+PUBLIC SUB G_Finished()
+
+  SELECT CASE ComboBox1.index
+    CASE 0
+      IF G.HostIP="" THEN
+        Label9.Text="(Not Found)"
+      ELSE
+        Label9.Text=G.HostIP
+     END IF
+    CASE 1
+      IF G.HostName="" THEN
+        Label9.Text="(Not Found)"
+      ELSE
+        Label9.Text=G.HostName
+     END IF
+  END SELECT
+  Working=working-1
+
+END
+
+
+
+
+
+
+PUBLIC SUB Timer1_Timer()
+
+  Timer1.Enabled=FALSE
+  IF Working=0 THEN
+    Label5.Text="Finished"
+    Button1.Enabled=TRUE
+    Button3.Enabled=TRUE
+    ComboBox1.Enabled=TRUE
+    CheckBox1.Enabled=TRUE
+  ELSE
+    SELECT CASE Label5.Text
+      CASE "|"
+        Label5.Text="/"
+      CASE "/"
+        Label5.Text="-"
+      CASE "-"
+        Label5.Text="\\"
+      CASE "\\"
+        Label5.Text="|"
+    END SELECT
+    Timer1.Delay=200
+    Timer1.Enabled=TRUE
+
+  END IF
+
+END
+
+PUBLIC SUB Button2_Click()
+
+  IF Timer1.Enabled=TRUE THEN
+    Timer1.Enabled=FALSE
+    A.Stop()
+    B.Stop()
+    C.Stop()
+    D.Stop()
+    E.Stop()
+    F.Stop()
+    G.Stop()
+    Label5.Text="Cancelled"
+    Working=0
+    Button1.Enabled=TRUE
+    ComboBox1.Enabled=TRUE
+    Button3.Enabled=TRUE
+    CheckBox1.Enabled=TRUE
+  END IF
+
+END
+
+PUBLIC SUB Form_Open()
+
+  A=NEW DnsClient AS "A"
+  B=NEW DnsClient AS "B"
+  C=NEW DnsClient AS "C"
+  D=NEW DnsClient AS "D"
+  E=NEW DnsClient AS "E"
+  F=NEW DnsClient AS "F"
+  G=NEW DnsClient AS "G"
+  CheckBox1_Click
+  ComboBox1_Click
+  Working=0
+END
+
+
+
+PUBLIC SUB Form_Close()
+
+  A._Free()
+  B._Free()
+  C._Free()
+  D._Free()
+  E._Free()
+  F._Free()
+  G._Free()
+
+
+
+END
+
+PUBLIC SUB ComboBox1_Click()
+
+  SELECT CASE ComboBox1.Index
+    CASE 0
+      Label1.Text="Write Here 7 host names then press GO!"
+    CASE 1
+      Label1.Text="Write Here 7 IP address then press GO!"
+  END SELECT
+END
+
+PUBLIC SUB Button3_Click()
+
+  TextBox1.Text=Label2.Text
+  TextBox2.Text=Label3.Text
+  TextBox3.Text=Label4.Text
+  TextBox4.Text=Label6.Text
+  TextBox5.Text=Label7.Text
+  TextBox6.Text=Label8.Text
+  TextBox7.Text=Label9.Text
+
+
+END
+
+PUBLIC SUB CheckBox1_Click()
+
+  A.ASync=CheckBox1.Value
+  B.ASync=CheckBox1.Value
+  C.ASync=CheckBox1.Value
+  D.ASync=CheckBox1.Value
+  E.ASync=CheckBox1.Value
+  F.ASync=CheckBox1.Value
+  G.ASync=CheckBox1.Value
+
+END

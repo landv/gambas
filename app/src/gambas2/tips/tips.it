@@ -1,0 +1,256 @@
+[WELCOME]
+
+<p>Benvenuto a <b>Gambas</b> !<img src="img/gambas.png" align=right></p>
+
+<p><b>Gambas</b> è un ambiente grafico di sviluppo basato su un interprete avanzato 
+<i>Basic</i>.</p>
+
+<p>L'obiettivo di <b>Gambas</b> è quello di permettere di creare programmi potenti 
+in maniera facile e veloce. Ma la responsabilità di creare programmi puliti è tutta <i>vostra</>...</p>
+
+<p>Spero vi piaccia!</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p><br><br><br>
+
+
+[STARTUP]
+
+<p>Ogni progetto deve avere una <i>classe di inizio</i>.
+ Questa classe di inizio deve definire un metodo pubblico <i> (public)</i> e statico <i>(static)</i>
+ denominato <i>Main</i> senza argomenti, che si comporterà come il metodo di inizio del tuo programma</p>
+
+<p>Puoi definire la classe di inizio cliccando su di essa con il tasto destro del mouse e selezionando <i>Classe di avvio</i>
+nel menù a cascata</p>
+
+<p>Non è neccessario definire un metodo <i>Main</i> in un Form di avvio perché ne esiste già uno predefinito.</p>
+
+<p>Questo metodo predefinito inizializza il form e lo mostra, come in <i>Visual Basic&trade;</i>.</p>
+
+
+[EXEC]
+
+<p>Puoi realizzare un file eseguibile di tutto il tuo progetto.
+ Seleziona <i>Crea eseguibile</i> nel menu  <i>Progetto</i>.</p>
+
+<p>Quando <b>Gambas</b> crea un file eseguibile, colloca il risultato direttamente
+nella directory del tuo progetto e il nome del file eseguibile sarà quello del 
+tuo progetto</p>
+
+
+[OPEN]
+
+<p>L'Intruzione <b>OPEN</b> di <b>Gambas</b> non si comporta nella stessa maniera
+ che in <i>Visual Basic</i>.
+ Non ritorna il file come un <i>Integer</i>, ma come un ogetto <i>File</i>.</p>
+
+<p>In pratica, invece di digitare:</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "ilmiofile" FOR READ AS #handle</pre>
+
+<p>Devi digitare :</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "ilmiofile" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>Lo sapevi che puoi concatenare nomi di directory e nomi di file
+con l'operatore <b><tt>&/</tt></b>?
+Questo operatore aggiunge se necessario la <i>slash</i> ("/") in maniera tale che 
+l'indirizzo risultante sia perfetto.</p>
+
+<p>Per esempio :</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>Non è stupendo ?</p>
+
+[PATH]
+<p>
+I percorsi relativi hanno un significato speciale in <b>Gambas</b>.
+Sono sempre riferite a files dentro al tuo progetto.
+<p>
+Non c'è il concetto di <i>directory corrente</i>, e nessuna parola chiave come
+<tt>CHDIR</tt> per cambiarla.
+<p>
+<b>Attenzione:</b> devi usare i percorsi relativi solo per accedere ai file di 
+progetto, perchè i percorsi assoluti non funzioneranno quando crei l'eseguibile.
+
+
+[GLOBAL]
+
+Non ci sono <u>variabili globali</u> in <b><i>Gambas</i></b>!
+<p>
+Come sostituto, dichiarale nel modulo principale come <tt>PUBLIC</tt>.
+<p>
+Se non hai un modulo principale nel tuo progetto, ma un form principale, 
+allora dichiarale come <tt>STATIC PUBLIC</tt>.
+<p>
+Per accedere a queste variabili, devi usare il nome del modulo principale
+o form: <tt>MyMainModule.MyGlobalVariable</tt> o
+<tt>MyMainForm.MyGlobalVariable</tt>.
+
+[EMPTY]
+
+<p>Per sapere se una stringa è vuota non è necessario usare la funzione <b>Len()</b> .
+ Puoi direttamente testare la stringa, visto che una stringa vuota è <b>FALSE</b> e una non vuota è <b>TRUE</b>.</p>
+
+<p>Per esempio, invece di :</p>
+
+<pre>IF Len(Lamiastringa) > 0 THEN ...
+IF Len(Lamiastringa) = 0 THEN ...</pre>
+
+<p>Puoi fare :</p>
+
+<pre>IF Lamiastringa THEN ...
+IF NOT Lamiastringa THEN ...</pre>
+
+
+[EVENT]
+
+<p>Tutti i controlli e tutti gli ogetti che possono avere eventi,
+ hanno un <i>Osservatore di eventi</i> e un <i>nome di gruppo</i> del evento.</p>
+
+<p>L'osservatore di eventi coglie tutti gli eventi prodotti dall'ogetto,
+ e il nome del gruppo del evento è il prefisso del procedimento incaricato di gestire l'evento.</p>
+
+<p>Di default, questo osservatore di eventi è l'ogetto dove si è creato il controllo,
+ e il nome di gruppo è il nome del controllo.</p>
+
+<p>In questo modo, un form riceve tutti gli eventi prodotti dai controlli che tu ci hai creato dentro.</p>
+
+<pre>' Gambas form
+
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;...
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "Ilmiopulsante"
+&nbsp;&nbsp;...
+END
+
+PUBLIC SUB Ilmiopulsante_Click()
+&nbsp;&nbsp;...
+END
+</pre>
+
+
+[FORM]
+
+<p>Un form è l'osservatore di eventi di se stesso, in questo modo puoi gestire direttamente i suoi eventi (<i>Resize</i>, <i>Activate</i>, ...)
+dentro il codice della sua stessa classe.</p>
+
+<p>In questo modo, i nuovi arrivati da <i>Visual Basic</i> non si sentiranno persi :-).</p>
+
+
+[EMBED]
+
+<p>Con <b><i>Gambas</i></b> puoi fare in modo che qualsiasi form venga
+racchiuso in un altro form!</p>
+
+<p>Per fare una cosa così utile devi soltanto inizializzare il form passando 
+un contenitore padre come ultimo argomento nel costruttore.</p>
+
+<p>Per esempio :</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Crea un dialogo<br>
+hForm = NEW MyDialog<br>
+' Inserisce un form in questo dialogo<br>
+' Nota che questo form riceve due parametri prima del contenitore<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Muove e ridimensiona il form<br>
+hSuperControl.Move(8, 8, 128, 64)</tt><br>
+
+<p>Ricorda che: un form racchiuso in un altro continua ad essere un form
+ e quindi osservatore di eventi di se stesso.</p>
+
+
+[GROUP]
+
+<p>Tutti i controlli hanno una proprietà <i>(Group)</i>.
+ Quando questa proprietà è utilizzata, il prefisso del gestore di eventi è il nome del
+ gruppo e non il nome  del controllo.</p>
+<p>Supponiamo di avere un <i>Button</i> chiamato <b>btnAzione</b> con il gestrore di eventi <i>Click</i>
+seguente :</p>
+
+<pre>PUBLIC SUB btnAzione_Click()</pre>
+
+<p>Se definisci la proprietà <i>(Group)</i> di <b>btnAzione</b> come <i>IlMioGruppo</i>,
+ Allora il gestore di eventi che riceverà gli eventi del pulsante sarà il seguente:</p>
+
+<pre>PUBLIC SUB IlMioGruppo_Click()</pre>
+
+<p>Questa proprietà permette di gestire vari eventi con una semplice funzione.
+ E i controlli dello stesso gruppo non devono per forza essere dello stesso tipo !!!</p>
+
+<p><b>Nota :</b> I veterani del vecchio <i>Visual Basic</i> riconosceranno il concetto di <i>control array</i>,
+ soltanto che qui viene implementato in un modo più potente. :-)</p>
+
+
+[TAG]
+
+<p>Tutti i controlli hanno una proprietà chiamata <i>Tag</i>
+ Questa proprietà è pensata per essere usata dai programmatori e può contenere qualsiasi dato 
+<b>VARIANT</b> che credi utile.</p>
+
+<p>Questo è molto utile quando vuoi differenziare controlli dello stesso gruppo nello stesso gestore di eventi.</p>
+
+
+[LAST]
+
+<p>La parola chiave <b>LAST</b> ritorna l'ultimo controllo che ha ricevuto un evento.
+ E' molto utile quando vuoi scrivere un gestore di eventi 
+che sia indipendente dal nome del controllo.</p>
+
+<p>Supponiamo di voler scrivere un programma calcolatrice.
+ Hai definito dieci pulsanti, uno per ogni numero e tutti con lo stesso <i>group</i> "Digit".
+ Il valore del <i>Tag</i> di ogni controllo sarà il numero visualizzato da ogni pulsante.
+ Il tuo gestore di eventi sarà più o meno così :</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>Le famose routines <b>Left$</b>, <b>Right$</b>, <b>Mid$</b> di <i>BASIC</i>
+ hanno un comportamento molto utile in <b><i>Gambas</i></b>.</p>
+
+<p>Il secondo parametro di <b>Left$</b> e <b>Right$</b> è facoltativo, e per default è pari a uno.</p>
+
+<p><tt>Left$("Gambas")</tt> ritorna <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> ritorna <tt>"s"</tt></p>
+
+<p>Il secondo parametro può essere negativo e in questo caso rappresenta il numero di caratteri da non ritornare.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> ritorna <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> ritorna <tt>"mbas"</tt></p>
+
+<p>Allo stesso modo, il terzo parametro di <b>Mid$</b> può essere negativo,
+ e quindi rapresentrare il numero di caratteri dalla fine della stringa da non ritornare.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> ritorna <tt>"amb"</tt>
+
+
+[END]
+
+<p>Hai letto tutti i suggerimenti del giorno. Spero che ora tu sia un esperto di <b>Gambas</b> ! :-)</p>
+
+<p>Se vuoi contribuire, invia i nuovi consigli al seguente indirizzo :</p>
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Grazie in anticipo !</p>
+

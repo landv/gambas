@@ -1,0 +1,236 @@
+' Gambas class file
+
+'PRIVATE Game AS Boolean[]
+PRIVATE Game AS NEW Image
+PRIVATE MaxX AS Integer
+PRIVATE MaxY AS Integer
+PRIVATE dW AS DrawingArea
+PRIVATE $iZoom AS Integer
+
+PUBLIC FUNCTION Init() AS Integer
+  
+  DIM tmp AS NEW Collection
+  DIM i, j AS Integer
+  
+  RANDOMIZE 
+  
+  MaxX = 110 - 1
+  MaxY = 110 - 1
+  $iZoom = 5
+  
+  'Game = NEW Boolean[MaxX + 1, MaxY + 1]
+  Game = NEW Image(MaxX + 1, MaxY + 1)
+  Game.Fill(Color.White)
+  
+  IF FMain.chkSmall.Value THEN 
+
+    FOR i = MaxX \ 2 - 5 TO MaxX \ 2 + 5
+      FOR j = MaxY \ 2 - 5 TO MaxY \ 2 + 5
+        IF Rnd(1, 100) >= FMain.Slider2.Value THEN Game[i, j] = Color.Red
+      NEXT 
+    NEXT
+
+  ELSE
+  
+    FOR i = 0 TO MaxX
+      FOR j = 0 TO MaxY
+        IF Rnd(1, 100) >= FMain.Slider2.Value THEN Game[i, j] = Color.Red
+      NEXT 
+    NEXT
+  
+  ENDIF 
+  
+  'PRINT MaxX + 1;; "x";; MaxY + 1; " game"
+  
+END
+
+PUBLIC SUB SetDrawArea(pdW AS DrawingArea)
+  
+  dW = pdW
+  
+END
+
+PUBLIC SUB drawGame()
+  DIM SquareSize AS Integer
+  DIM i, j, x, y AS Integer
+  DIM tmp AS Collection
+  
+  'IF GameRow.Count = 0 OR GameRow[1].Count = 0 THEN RETURN -1
+  
+  SquareSize = 4 'dw.Height / GameRow.Count
+  draw.Begin(dw) 
+
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.None
+  Draw.FillColor = Color.LightBackground
+  Draw.Rect(4, 4, Game.Width * $iZoom, Game.Height * $iZoom)
+  
+  Draw.LineStyle = If(FMain.chkBorder.Value, Line.Solid, Line.None)
+  Draw.FillColor = Color.red
+  Draw.Foreground = Color.LightBackground
+
+  Draw.Zoom(Game, $iZoom, 4, 4)
+
+  ' x = 4
+  ' FOR i = 0 TO MaxX
+  '   y = 4
+  '   FOR j = 0 TO MaxY
+  '     IF Game[i, j] THEN 
+  '         draw.Rect(x, y, 5, 5) ', i * SquareSize + SquareSize, j * SquareSize + SquareSize)
+  '       'draw.FillColor = color.LightGray
+  '       'draw.FillStyle = 0
+  '     ELSE 
+  '       'draw.Ellipse(i * SquareSize, j * SquareSize, 5, 5) ', i * SquareSize + SquareSize, j * SquareSize + SquareSize)
+  '     END IF
+  '     y += SquareSize
+  '   NEXT 
+  '   x += SquareSize
+  ' NEXT
+  draw.End
+  
+END
+
+PRIVATE FUNCTION CountNeighboursOnBorder(x AS Integer, y AS Integer) AS Integer
+  
+  DIM iTot AS Integer
+  DIM count AS Integer
+  DIM i, j, ti, tj AS Integer
+
+  FOR i = x - 1 TO x + 1
+    IF i < 0 THEN 
+      ti = MaxX
+    ELSE IF i > MaxX THEN 
+      ti = 0
+    ELSE 
+      ti = i
+    ENDIF
+    FOR j = y - 1 TO y + 1
+      IF j < 0 THEN 
+        tj = MaxY
+      ELSE IF j > MaxY THEN 
+        tj = 0
+      ELSE 
+        tj = j
+      ENDIF
+      iTot += Game[ti, tj]
+      'IF Game[ti, tj] = Color.Red THEN INC count
+    NEXT 
+  NEXT 
+
+  iTot = iTot - Game[x, y] - Color.White * 8
+
+  RETURN iTot / (Color.Red - Color.White)
+    
+END
+
+PRIVATE FUNCTION CountNeighbours(x AS Integer, y AS Integer) AS Integer
+  
+  DIM iTot AS Integer
+
+  iTot = Game[x - 1, y - 1] + Game[x, y - 1] + Game[x + 1, y - 1] +
+    Game[x - 1, y] + Game[x + 1, y] +
+    Game[x - 1, y + 1] + Game[x, y + 1] + Game[x + 1, y + 1]
+    
+  iTot -= Color.White * 8
+  'DEBUG iTot / (Color.Red - Color.Background)
+  RETURN iTot / (Color.Red - Color.White)
+
+END
+
+PUBLIC SUB SpawnNextGeneration()
+
+  DIM x AS Integer
+  DIM y AS Integer
+  DIM i, j AS Integer
+  DIM myCount AS Integer
+  DIM newGame AS Image
+  DIM live AS Boolean[9]
+  DIM keep[9] AS Boolean
+  
+  live[0] = FMain.chkZero.Value = CheckBox.False
+  live[1] = fmain.chkOne.Value = CheckBox.False
+  live[2] = fmain.chkTwo.Value = CheckBox.False
+  live[3] = fmain.chkThree.Value = CheckBox.False
+  live[4] = fmain.chkFour.Value = CheckBox.False
+  live[5] = fmain.chkFive.Value = CheckBox.False
+  live[6] = fmain.chkSix.Value = CheckBox.False
+  live[7] = fmain.chkSeven.Value = CheckBox.False
+  live[8] = fmain.chkEight.Value = CheckBox.False
+  
+  keep[0] = FMain.chkZero.Value = CheckBox.None
+  keep[1] = fmain.chkOne.Value = CheckBox.None
+  keep[2] = fmain.chkTwo.Value = CheckBox.None
+  keep[3] = fmain.chkThree.Value = CheckBox.None
+  keep[4] = fmain.chkFour.Value = CheckBox.None
+  keep[5] = fmain.chkFive.Value = CheckBox.None
+  keep[6] = fmain.chkSix.Value = CheckBox.None
+  keep[7] = fmain.chkSeven.Value = CheckBox.None
+  keep[8] = fmain.chkEight.Value = CheckBox.None
+  
+  newgame = Game.Copy()
+  
+  FOR x = 1 TO MaxX - 1
+    FOR y = 1 TO MaxY - 1
+      myCount = CountNeighbours(x, y)
+      IF keep[myCount] THEN CONTINUE
+      IF live[myCount]
+        newGame[x, y] = Color.Red
+      ELSE 
+        newGame[x, y] = Color.White
+      ENDIF
+    NEXT 
+  NEXT
+  
+  FOR x = 0 TO MaxX
+    y = 0
+    myCount = CountNeighboursOnBorder(x, y)
+    IF NOT keep[myCount] THEN
+      IF live[myCount]
+        newGame[x, y] = Color.Red
+      ELSE 
+        newGame[x, y] = Color.White
+      ENDIF
+    ENDIF
+    y = MaxY
+    myCount = CountNeighboursOnBorder(x, y)
+    IF keep[myCount] THEN CONTINUE
+    IF live[myCount]
+      newGame[x, y] = Color.Red
+    ELSE 
+      newGame[x, y] = Color.White
+    ENDIF
+  NEXT
+
+  FOR y = 1 TO MaxY - 1
+    x = 0
+    myCount = CountNeighboursOnBorder(x, y)
+    IF NOT keep[myCount] THEN
+      IF live[myCount]
+        newGame[x, y] = Color.Red
+      ELSE 
+        newGame[x, y] = Color.White
+      ENDIF
+    ENDIF
+    x = MaxX
+    myCount = CountNeighboursOnBorder(x, y)
+    IF keep[myCount] THEN CONTINUE
+    IF live[myCount]
+      newGame[x, y] = Color.Red
+    ELSE 
+      newGame[x, y] = Color.White
+    ENDIF
+  NEXT
+  ' IF Rnd < 0.1 THEN
+  '   x = Int(Rnd(0, MaxX - 30))
+  '   y = Int(Rnd(0, MaxY - 30))
+  '   FOR i = x TO x + 29
+  '     FOR j = y TO y + 29
+  '       newGame[i, j] = Rnd(1, 100) >= FMain.Slider2.Value
+  '     NEXT 
+  '   NEXT 
+  ' ENDIF 
+    
+  Game = newGame
+  
+END
+

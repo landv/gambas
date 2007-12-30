@@ -1,0 +1,50 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(19.4286,40.1429,62,39)
+  Text = ("Edit list property")
+  Border = Window.Fixed
+  { lstValue ListBox
+    MoveScaled(1,1,43,29)
+  }
+  { btnOK Button
+    MoveScaled(45,1,16,3)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(45,5,16,3)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnInsert Button
+    MoveScaled(1,35,14,3)
+    Text = ("&Insert")
+    Picture = Picture["icon:/small/add"]
+  }
+  { btnUp Button
+    MoveScaled(31,35,3,3)
+    Text = ("")
+    Picture = Picture["icon:/small/up"]
+  }
+  { btnDown Button
+    MoveScaled(35,35,3,3)
+    Text = ("")
+    Picture = Picture["icon:/small/down"]
+  }
+  { btnDelete Button
+    MoveScaled(16,35,14,3)
+    Text = ("&Delete")
+    Picture = Picture["icon:/small/delete"]
+  }
+  { txtValue TextBox
+    MoveScaled(1,31,43,3)
+    Enabled = False
+    Text = ("")
+  }
+  { btnClear Button
+    MoveScaled(41,35,3,3)
+    Text = ("")
+    Picture = Picture["icon:/small/trash"]
+  }
+}

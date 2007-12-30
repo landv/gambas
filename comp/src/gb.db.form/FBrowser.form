@@ -1,0 +1,67 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(7.5,20.75,30.25,19.625)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  Spacing = 2
+  { dvwBrowser DataView
+    MoveScaled(1,1,27,11)
+    Tag = "dvwBrowser"
+    Expand = True
+    Mode = Select.Single
+  }
+  { panBrowser Panel
+    MoveScaled(1,13,27,3)
+    Arrangement = Arrange.Horizontal
+    { btnNew ToolButton
+      MoveScaled(0,0,3,3)
+      ToolTip = ("New")
+      Text = ("")
+      Picture = Picture["icon:/small/new"]
+    }
+    { btnSave ToolButton
+      MoveScaled(3,0,3,3)
+      ToolTip = ("Save")
+      Text = ("")
+      Picture = Picture["icon:/small/save"]
+    }
+    { btnReload ToolButton
+      MoveScaled(6,0,3,3)
+      ToolTip = ("Refresh")
+      Text = ("")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnRemove ToolButton
+      MoveScaled(9,0,3,3)
+      ToolTip = ("Delete")
+      Text = ("")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { btnFirst ToolButton
+      MoveScaled(12,0,3,3)
+      ToolTip = ("Start")
+      Text = ("")
+      Picture = Picture["icon:/small/first"]
+    }
+    { btnPrev ToolButton
+      MoveScaled(15,0,3,3)
+      ToolTip = ("Previous")
+      Text = ("")
+      Picture = Picture["icon:/small/left"]
+    }
+    { btnNext ToolButton
+      MoveScaled(18,0,3,3)
+      ToolTip = ("Next")
+      Text = ("")
+      Picture = Picture["icon:/small/right"]
+    }
+    { btnLast ToolButton
+      MoveScaled(21,0,3,3)
+      ToolTip = ("End")
+      Text = ("")
+      Picture = Picture["icon:/small/last"]
+    }
+  }
+}

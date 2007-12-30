@@ -1,0 +1,84 @@
+dnl ****************************************************************************
+dnl   global configure.ac
+dnl   (c) Beno� Minisini 2000-2006
+dnl ****************************************************************************
+
+dnl ---- Initialization
+
+AC_INIT(configure.ac)
+
+AC_CONFIG_SUBDIRS(main)
+
+GB_CONFIG_SUBDIRS(bzlib2, gb.compress.bzlib2)
+GB_CONFIG_SUBDIRS(zlib, gb.compress.zlib)
+GB_CONFIG_SUBDIRS(mysql, gb.db.mysql)
+GB_CONFIG_SUBDIRS(odbc, gb.db.odbc)
+GB_CONFIG_SUBDIRS(postgresql, gb.db.postgresql)
+GB_CONFIG_SUBDIRS(sqlite2, gb.db.sqlite2)
+GB_CONFIG_SUBDIRS(sqlite3, gb.db.sqlite3)
+GB_CONFIG_SUBDIRS(firebird, gb.db.firebird)
+GB_CONFIG_SUBDIRS(gtk, gb.gtk)
+GB_CONFIG_SUBDIRS(gtksvg, gb.gtk.svg)
+GB_CONFIG_SUBDIRS(pdf, gb.pdf)
+GB_CONFIG_SUBDIRS(net, gb.net)
+GB_CONFIG_SUBDIRS(curl, gb.net.curl)
+GB_CONFIG_SUBDIRS(smtp, gb.net.smtp)
+GB_CONFIG_SUBDIRS(pcre, gb.pcre)
+GB_CONFIG_SUBDIRS(qt, gb.qt)
+GB_CONFIG_SUBDIRS(qte, gb.qte)
+GB_CONFIG_SUBDIRS(kde, gb.qt.kde)
+GB_CONFIG_SUBDIRS(sdl, gb.sdl)
+GB_CONFIG_SUBDIRS(sdlsound, gb.sdl.sound)
+GB_CONFIG_SUBDIRS(xml, gb.xml)
+GB_CONFIG_SUBDIRS(v4l, gb.v4l)
+GB_CONFIG_SUBDIRS(crypt, gb.crypt)
+GB_CONFIG_SUBDIRS(opengl, gb.opengl)
+GB_CONFIG_SUBDIRS(corba, gb.corba)
+GB_CONFIG_SUBDIRS(image, gb.image)
+GB_CONFIG_SUBDIRS(desktop, gb.desktop)
+
+AC_CONFIG_SUBDIRS(comp)
+AC_CONFIG_SUBDIRS(app)
+AC_CONFIG_SUBDIRS(examples)
+AC_CONFIG_SUBDIRS(help)
+
+AM_MAINTAINER_MODE
+
+GB_INIT_AUTOMAKE(gambas2)
+
+AC_PREFIX_DEFAULT(/usr/local)
+
+AC_CANONICAL_HOST
+  
+GAMBAS_VERSION=2
+AC_SUBST(GAMBAS_VERSION)
+  
+gbbindir=$bindir/gambas$GAMBAS_VERSION/
+AC_SUBST(gbbindir)
+gblibdir=$libdir/gambas$GAMBAS_VERSION/
+AC_SUBST(gblibdir)
+gbdatadir=$datadir/gambas$GAMBAS_VERSION/
+AC_SUBST(gbdatadir)
+
+AC_OUTPUT(Makefile)
+
+GB_SUMMARY=""
+for comp in gb.*; do
+  if test -e $comp/DISABLED; then
+    GB_SUMMARY="$GB_SUMMARY\n- $comp"   
+  fi
+done
+
+echo
+echo "************************************************************"
+echo
+if test x"$GB_SUMMARY" = x; then
+  echo "ALL COMPONENTS WILL BE COMPILED"
+else
+  echo "THESE COMPONENTS ARE DISABLED:"
+  echo -e $GB_SUMMARY
+fi
+echo
+echo "************************************************************"
+echo
+

@@ -1,0 +1,218 @@
+' Gambas class file
+
+'***************************************************************************
+'
+'  FMain.class
+'
+'  PdfViewer gb.pdf component example
+'
+'  (C) 2007 Daniel Campos Fernández <dcamposf@gmail.com>
+'
+'
+'  This program is free software; you can redistribute it and/or modify
+'  it under the terms of the GNU General Public License as published by
+'  the Free Software Foundation; either version 1, or (at your option)
+'  any later version.
+'
+'  This program is free software; you can redistribute it and/or modify
+'  it under the terms of the GNU General Public License as published by
+'  the Free Software Foundation; either version 1, or (at your option)
+'  any later version.
+'
+'  This program is distributed in the hope that it will be useful,
+'  but WITHOUT ANY WARRANTY; without even the implied warranty of
+'  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'  GNU General Public License for more details.
+'
+'  You should have received a copy of the GNU General Public License
+'  along with this program; if not, write to the Free Software
+'  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+'
+'***************************************************************************
+
+PUBLIC hPdf AS NEW PdfDocument
+PUBLIC cIndex AS Integer 
+PUBLIC CurrentPage AS Integer 
+PUBLIC CurrentZoom AS Float  
+
+PUBLIC SUB BtOpen_Click()
+
+  IF Dialog.OpenFile(FALSE) THEN RETURN 
+  
+  hPdf.Close()
+  TRY hPdf.Open(Dialog.Path)
+  IF ERROR THEN 
+    Message.Error(Error.Text)
+    RETURN 
+  END IF
+
+  CurrentZoom = 1
+  CurrentPage = 1
+  RenderPage()
+  BtPrev.Enabled = FALSE 
+  IF hPdf.Count > 1 THEN 
+    BtNext.Enabled = TRUE 
+  ELSE 
+    BtNext.Enabled = FALSE 
+  END IF
+  btZoomIn.Enabled = TRUE 
+  btZoomOut.Enabled = TRUE 
+  btRotate.Enabled = TRUE 
+  pBox.Visible = TRUE 
+  TxtFind.Enabled = TRUE 
+
+  tvIndex.Clear()
+  IF hPdf.HasIndex THEN 
+    tvIndex.Visible = TRUE 
+    AddIndex(0, "")
+  ELSE 
+    tvIndex.Visible = FALSE 
+  END IF
+  
+END
+
+PUBLIC FUNCTION AddIndex(nItem AS Integer, pItem AS String) AS Integer 
+  
+  DIM pR AS String  
+  
+  DO
+    tvIndex.Add(nItem & "-" & hPdf.Index.Data.Page, hPdf.Index.Title, "", pItem)
+    pR = nItem & "-" & hPdf.Index.Data.Page
+    INC nItem
+    IF hPdf.Index.HasChildren THEN 
+     hPdf.Index.MoveChild()
+     nItem = AddIndex(nItem + 1, pR)
+     hPdf.Index.MoveParent()
+    END IF
+  LOOP UNTIL hPdf.Index.MoveNext()
+  
+  RETURN nItem
+  
+END
+
+PUBLIC SUB tvIndex_Click()
+
+  CurrentPage = Mid(tvIndex.Current.Key, InStr(tvIndex.Current.Key, "-") + 1)
+  BtPrev.Enabled = TRUE 
+  BtNext.Enabled = TRUE 
+  IF CurrentPage = 1 THEN BtPrev.Enabled = FALSE 
+  IF CurrentPage = hPdf.Count THEN BtNext.Enabled = FALSE 
+  RenderPage() 
+
+END
+
+PUBLIC SUB RenderPage()
+  
+  DIM hPic AS Picture 
+  DIM Bc AS Integer 
+  
+  hPdf.Zoom = CurrentZoom
+  LblInfo.Text = CurrentPage & " " & ("From") & " " & hPdf.Count  
+  
+  ViewPort.Scroll(0, 0)
+  hPic = hPdf[CurrentPage].GetPicture()
+
+  IF TxtFind.Text <> "" THEN 
+  
+    hPdf[CurrentPage].Find(TxtFind.Text)
+    Draw.Begin(hPic)
+    Draw.FillColor = Color.Red 
+    Draw.FillStyle = Fill.Dense50
+    FOR Bc = 0 TO hPdf[CurrentPage].Result.Count - 1
+      Draw.Rect(hPdf[CurrentPage].Result[Bc].Left, hPdf[CurrentPage].Result[Bc].Top, hPdf[CurrentPage].Result[Bc].Width, hPdf[CurrentPage].Result[Bc].Height)
+    NEXT 
+    Draw.End()
+  
+  END IF
+
+  PBox.Picture = hPic 
+  PBox.Resize(hPdf[CurrentPage].Width, hPdf[CurrentPage].Height)
+  Form_Resize()
+  
+END
+
+PUBLIC SUB Form_Resize()
+
+  IF CurrentPage = 0 THEN RETURN 
+  pBox.Left = (ViewPort.Width - hPdf[CurrentPage].Width) / 2
+
+END
+
+
+PUBLIC SUB HSplit1_Resize()
+
+  Form_Resize()  
+
+END
+
+PUBLIC SUB BtNext_Click()
+
+  INC CurrentPage
+  IF CurrentPage = hPdf.Count THEN BtNext.Enabled = FALSE 
+  BtPrev.Enabled = TRUE 
+  RenderPage()
+
+END
+
+PUBLIC SUB BtPrev_Click()
+
+  DEC CurrentPage
+  IF CurrentPage = 1 THEN BtPrev.Enabled = FALSE 
+  BtNext.Enabled = TRUE 
+  RenderPage()
+
+END
+
+PUBLIC SUB btZoomIn_Click()
+
+  IF CurrentZoom < 3 THEN CurrentZoom += 0.1
+  IF CurrentZoom = 3 THEN btZoomIn.Enabled = FALSE 
+  btZoomOut.Enabled = TRUE 
+  RenderPage()
+
+END
+
+PUBLIC SUB btZoomOut_Click()
+
+  IF CurrentZoom > 0.5 THEN CurrentZoom -= 0.1
+  IF CurrentZoom = 0.5 THEN btZoomOut.Enabled = FALSE 
+  btZoomIn.Enabled = TRUE 
+  RenderPage()
+
+END
+
+PUBLIC SUB Form_Close()
+
+  hPdf.Close()
+
+END
+
+PUBLIC SUB Button1_Click()
+
+  Fabout.ShowDialog()
+
+END
+
+PUBLIC SUB btRotate_Click()
+
+  SELECT CASE hPdf.Orientation
+    CASE PdfDocument.Normal
+      hPdf.Orientation = PdfDocument.Sideways
+    CASE PdfDocument.Sideways
+      hPdf.Orientation = PdfDocument.Inverted 
+    CASE PdfDocument.Inverted
+      hPdf.Orientation = PdfDocument.SidewaysInverted
+    CASE PdfDocument.SidewaysInverted
+      hPdf.Orientation = PdfDocument.Normal 
+  END SELECT 
+  
+  RenderPage()
+  
+END
+
+PUBLIC SUB TxtFind_Change()
+
+  RenderPage()
+
+END
+

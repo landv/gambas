@@ -1,0 +1,131 @@
+' Simple CDplayer
+' Carlier Laurent - (c) 2005
+' Under GNU GPL V2 or Later
+'
+' Done for Testing the sdl component
+' CDROM part
+
+STATIC mycd AS CDRom
+STATIC HaveCD AS Boolean
+
+PUBLIC SUB Form_open()
+
+  mycd = NEW CDRom
+  Volume.Value = Abs(mycd.Volume - Volume.MaxValue)
+  TrackPos.Value = 0
+  ME.Center
+
+END
+
+
+PUBLIC SUB SButton_Click()
+
+  mycd.Stop()
+  PButton.Text = "&Play"
+  TrackPos.Value = 0
+
+END
+
+
+PUBLIC SUB PTButton_Click()
+
+  IF NOT HaveCD THEN
+    RETURN
+  ENDIF
+
+  mycd.Tracks[TrackInfo.Index + 1].Play()
+  
+END
+
+
+PUBLIC SUB Timer1_Timer()
+
+  DIM trckloop AS Integer
+  DIM string1 AS String
+  DIM string2 AS String
+  
+  IF NOT mycd.Ready THEN
+    TrackInfo.Clear()
+    TextBox1.Text = "No CD in Drive"
+    HaveCD = FALSE
+    RETURN
+  ENDIF
+
+  IF mycd.Stopped THEN
+    string1 = mycd.Tracks.Count & " Tracks"
+    string2 = "Total Length : " & ToTime(mycd.Length)
+    TextBox1.Text = string1 & Space$(41 - (Len(string1) + Len(string2))) & string2
+    TrackPos.Value = 0
+  ENDIF
+
+  IF mycd.Playing OR mycd.Paused THEN
+    TrackPos.Value = (mycd.Tracks[mycd.Tracks.Current].Position) / mycd.Tracks[mycd.Tracks.Current].length
+    TextBox1.Text = "Playing Track " & mycd.Tracks.Current
+  ENDIF
+
+  IF HaveCD THEN
+    RETURN
+  ENDIF
+  
+  TrackInfo.Clear()
+  FOR trckloop = 1 TO mycd.Tracks.Count
+    string1 = "Track " & trckloop
+    string2 = "<" & ToTime(mycd.Tracks[trckloop].Length) & ">"
+    TrackInfo.Add(string1 & Space$(49 - (Len(string1) + Len(string2))) & string2)
+  NEXT
+
+  Volume.Value = Abs(mycd.Volume - 255)
+  HaveCD = TRUE
+  
+END
+
+
+PUBLIC FUNCTION ToTime(length AS Integer) AS String
+  
+  DIM myString AS String
+  
+  mystring = Format$(length \ 60, "00") & ":" & Format$((length MOD 60), "00")
+  RETURN myString
+  
+END
+
+PUBLIC SUB Volume_Change()
+
+  mycd.Volume = Abs(Volume.Value - Volume.MaxValue)
+
+END
+
+PUBLIC SUB PButton_Click()
+
+  IF NOT HaveCD THEN
+    PButton.Text = "&Play"
+    RETURN
+  ENDIF
+
+  IF mycd.Stopped THEN
+    mycd.Play()
+    PButton.Text = "&Pause"
+    RETURN
+  ENDIF
+  
+  IF mycd.Playing THEN
+    mycd.Pause()
+    PButton.Text = "&Resume"
+    RETURN
+  ENDIF
+  
+  IF mycd.Paused THEN
+    mycd.Resume()
+    PButton.Text = "&Pause"
+  ENDIF
+  
+END
+
+PUBLIC SUB EButton_Click()
+
+  TRY mycd.Eject
+  HaveCD = FALSE
+  PButton.Text = "&Play"
+  TrackPos.Value = 0
+
+END

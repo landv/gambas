@@ -1,0 +1,96 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,49,50)
+  Text = ("Project environment")
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { VBox1 VBox
+    MoveScaled(1,3,47,6)
+    AutoResize = True
+    { Label1 Label
+      MoveScaled(0,0,24,3)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Arguments")
+    }
+    { HBox2 HBox
+      MoveScaled(0,3,46,3)
+      Spacing = 8
+      { btnInsertArg Button
+        MoveScaled(0,0,15,3)
+        Text = ("&Insert")
+      }
+      { btnRemoveArg Button
+        MoveScaled(16,0,15,3)
+        Text = ("&Remove")
+      }
+      { btnMoveUpArg Button
+        MoveScaled(32,0,3,3)
+        Text = ("")
+        Picture = Picture["icon:/small/up"]
+      }
+      { btnMoveDownArg Button
+        MoveScaled(36,0,3,3)
+        Text = ("")
+        Picture = Picture["icon:/small/down"]
+      }
+    }
+  }
+  { tvwArg TableView
+    MoveScaled(1,10,46,8)
+    Expand = True
+    Header = GridView.Vertical
+  }
+  { VBox2 VBox
+    MoveScaled(1,20,44,7)
+    AutoResize = True
+    { Label2 Label
+      MoveScaled(0,0,24,3)
+      Font = Font["Bold"]
+      AutoResize = True
+      Text = ("Environment variables")
+    }
+    { HBox3 HBox
+      MoveScaled(0,3,40,3)
+      Spacing = 8
+      { btnInsertEnv Button
+        MoveScaled(0,0,15,3)
+        Text = ("&Insert")
+      }
+      { btnRemoveEnv Button
+        MoveScaled(16,0,15,3)
+        Text = ("&Remove")
+      }
+    }
+  }
+  { tvwEnv TableView
+    MoveScaled(1,28,45,7)
+    Expand = True
+    Header = GridView.Horizontal
+    Scrollbar = Scroll.Vertical
+  }
+  { Panel2 Panel
+    MoveScaled(20,37,24,1)
+  }
+  { HBox1 HBox
+    MoveScaled(1,40,47,3)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(3,0,3,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(12,0,14,3)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(27,0,14,3)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

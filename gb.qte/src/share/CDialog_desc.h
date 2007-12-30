@@ -1,0 +1,1 @@
+../../../gb.qt/src/share/CDialog_desc.h

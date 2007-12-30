@@ -1,0 +1,153 @@
+' Gambas class file
+
+EXPORT 
+
+CLASS _Desktop
+
+'STATIC PROPERTY READ Menus AS _DesktopMenus
+'STATIC PROPERTY READ Icons AS _DesktopIcons
+STATIC PROPERTY READ ScreenSaver AS _DesktopScreenSaver
+
+'STATIC PRIVATE $cKeys AS Collection
+
+STATIC PUBLIC SUB SendMail({To} AS String[], OPTIONAL Cc AS String[], OPTIONAL Bcc AS String[], OPTIONAL Subject AS String, OPTIONAL Body AS String, OPTIONAL Attachment AS String)
+  
+  DIM aArg AS String[]
+  'xdg-email [--utf8] [--cc address] [--bcc address] [--subject text] [--body text
+  ' ] [--attach file] { mailto-uri | address(es) }
+  
+  aArg = ["--utf8"]
+  IF CC AND IF CC.Count THEN 
+    aArg.Add("--cc")
+    aArg.Insert(CC)
+  ENDIF
+  IF BCC AND IF BCC.Count THEN 
+    aArg.Add("--bcc")
+    aArg.Insert(BCC)
+  ENDIF
+  IF Subject THEN 
+    aArg.Add("--subject")
+    aArg.Add(Subject)
+  ENDIF 
+  IF Body THEN 
+    aArg.Add("--body")
+    aArg.Add(Body)
+  ENDIF
+  IF Attachment THEN 
+    aArg.Add("--attach")
+    aArg.Add(Attachment)
+  ENDIF 
+  
+  IF {To} AND IF To.Count THEN 
+    aArg.Insert({To})
+  ENDIF
+  
+  Main.RunXdgUtil("xdg-email", aArg)
+  
+END
+
+STATIC PUBLIC SUB {Open}(URL AS String)
+  
+  Main.RunXdgUtil("xdg-open", [URL])
+  
+END
+
+STATIC PRIVATE FUNCTION Menus_Read() AS _DesktopMenus
+
+  RETURN _DesktopMenus  
+
+END
+
+
+STATIC PRIVATE FUNCTION Icons_Read() AS _DesktopIcons
+
+  RETURN _DesktopIcons
+
+END
+
+STATIC PRIVATE FUNCTION ScreenSaver_Read() AS _DesktopScreenSaver
+
+  RETURN _DesktopScreenSaver
+
+END
+
+'  GB_STATIC_METHOD("Find", "Integer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
+
+STATIC PUBLIC SUB Find(OPTIONAL Title AS String, Application AS String, Role AS String) AS Integer[]
+  
+  RETURN _Desktop.Find(Title, Application, Role)
+  
+END
+
+' STATIC PRIVATE SUB InitKeys()
+'   
+'   $cKeys = NEW Collection
+'   $cKeys["é"] = "eacute"
+'   
+' END
+
+STATIC PUBLIC SUB SendKeys(Keys AS String)
+  
+  DIM iInd AS Integer
+  DIM sCar AS String
+  DIM iPos AS Integer
+  DIM aRelease AS NEW String[]
+  DIM bHold AS Boolean
+  DIM sErr AS String
+  DIM iLen AS Integer = String.Len(Keys)
+  
+  DO
+  
+    INC iInd
+    IF iInd > iLen THEN BREAK
+    
+    sCar = String.Mid$(Keys, iInd, 1)
+    
+    IF sCar = "[" THEN 
+      iPos = String.InStr(Keys, "]", iInd)
+      IF iPos = 0 THEN BREAK
+      sCar = String.Mid$(Keys, iInd + 1, iPos - iInd - 1)
+      iInd = iPos
+      IF NOT sCar THEN CONTINUE
+    ELSE IF sCar = "{" AND IF NOT bHold THEN
+      bHold = TRUE
+      CONTINUE
+    ELSE IF sCar = "}" AND IF bHold THEN 
+      bHold = FALSE
+      aRelease.Reverse
+      FOR EACH sCar IN aRelease
+        'DEBUG sCar;; FALSE
+        _Desktop.SendKey(sCar, FALSE)
+      NEXT
+      aRelease.Clear
+      CONTINUE
+    ENDIF
+    
+    IF Len(sCar) >= 2 THEN 
+      TRY sCar = Conv(sCar, "UTF-8", "LATIN1")
+    ENDIF
+    
+    IF bHold THEN
+      'DEBUG sCar;; TRUE
+      _Desktop.SendKey(sCar, TRUE)
+      aRelease.Add(sCar)
+    ELSE
+      'DEBUG sCar;; TRUE
+      _Desktop.SendKey(sCar, TRUE)
+      'DEBUG sCar;; FALSE
+      _Desktop.SendKey(sCar, FALSE)
+    ENDIF
+    
+  LOOP 
+  
+CATCH 
+
+  sErr = Error.Text & ": '" & sCar & "'"
+  
+  FOR EACH sCar IN aRelease
+    _Desktop.SendKey(sCar, FALSE)
+  NEXT
+
+  Error.Raise(sErr)
+  
+END

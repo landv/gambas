@@ -1,0 +1,77 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(33.625,24.125,49.25,29.125)
+  Text = ("Timer example")
+  Icon = Picture["timer.png"]
+  Border = Window.Fixed
+  { Button1 Button
+    MoveScaled(25,13,8.5,3)
+    ToolTip = ("Start")
+    Text = ("Trigger")
+  }
+  { Timer1 #Timer
+    #X = 328
+    #Y = 120
+  }
+  { Label1 Label
+    MoveScaled(20,13,2.5,3)
+    Text = ("")
+    Border = Border.Etched
+  }
+  { Button2 Button
+    MoveScaled(10,13,8,3)
+    ToolTip = ("Reset")
+    Text = ("Reset")
+  }
+  { TextBox1 TextBox
+    MoveScaled(2,13,6.125,3)
+    Text = ("1500")
+  }
+  { Label2 Label
+    MoveScaled(2,10,5.375,2)
+    Text = ("Delay")
+    Alignment = Align.Left
+  }
+  { Label3 Label
+    MoveScaled(2,21,9,2)
+    Foreground = &H00AA00&
+    Text = ("Low-Time")
+    Alignment = Align.Left
+  }
+  { Label4 Label
+    MoveScaled(12,21,9,2)
+    Foreground = &HFF0000&
+    Text = ("High-Time")
+    Alignment = Align.Left
+  }
+  { TextBox2 TextBox
+    MoveScaled(2,24,8,3)
+    Text = ("200")
+  }
+  { TextBox3 TextBox
+    MoveScaled(12,24,8,3)
+    Text = ("800")
+  }
+  { Label5 Label
+    MoveScaled(23,24,2.5,3)
+    Text = ("")
+    Border = Border.Etched
+  }
+  { ToggleButton1 ToggleButton
+    MoveScaled(28,24,14,3)
+    Text = ("Start/Stop")
+  }
+  { Timer2 #Timer
+    #X = 328
+    #Y = 72
+  }
+  { Timer3 #Timer
+    #X = 272
+    #Y = 120
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,1,46,6)
+    Text = ("Timer example by <b>Juergen Zdero</b> &lt;juergen@zdero.com&gt;")
+  }
+}

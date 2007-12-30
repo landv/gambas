@@ -1,0 +1,103 @@
+' Gambas class file
+
+EXPORT
+
+PROPERTY READ Components AS String[]
+PROPERTY READ Forms AS Collection
+PROPERTY READ Classes AS Collection
+
+PRIVATE $cTypeName AS NEW Collection
+
+PRIVATE $cComp AS NEW Collection
+PRIVATE $cClass AS NEW Collection
+PRIVATE $cForm AS NEW Collection
+
+PUBLIC SUB _init()
+
+  $cTypeName["b"] = "Boolean"
+  $cTypeName["c"] = "Byte"
+  $cTypeName["h"] = "Short"
+  $cTypeName["i"] = "Integer"
+  $cTypeName["p"] = "Pointer"
+  $cTypeName["l"] = "Long"
+  $cTypeName["d"] = "Date"
+  $cTypeName["g"] = "Single"
+  $cTypeName["f"] = "Float"
+  $cTypeName["v"] = "Variant"
+  $cTypeName["s"] = "String"
+  $cTypeName["o"] = "Object"
+
+  Reset
+
+END
+
+PUBLIC FUNCTION GetLongType(sType AS String) AS String
+
+  RETURN $cTypeName[sType]
+
+END
+
+PUBLIC SUB Reset()
+
+  DIM sComp AS String
+  DIM hTemp AS Object
+
+  $cComp.Clear
+
+  $cClass.Clear
+
+  $cForm.Clear
+  $cForm["*"] = NEW FormInfo("*")
+  
+  ComponentInfo._Reset
+  
+  FOR EACH sComp IN Components_Read()
+    hTemp = Info[sComp]
+  NEXT
+
+END
+
+
+PUBLIC SUB Load(Component AS String)
+
+  ME[Component].Load
+
+END
+
+
+PUBLIC FUNCTION _get(Component AS String) AS ComponentInfo
+
+  IF NOT $cComp.Exist(Component) THEN
+    $cComp[Component] = NEW ComponentInfo(Component)
+  ENDIF
+
+  RETURN $cComp[Component]
+
+END
+
+PRIVATE FUNCTION Components_Read() AS String[]
+
+  DIM aComp AS NEW String[]
+  DIM sFile AS String
+
+  FOR EACH sFile IN Dir(Component.Path, "*.component")
+    aComp.Add(File.BaseName(sFile))
+  NEXT
+
+  RETURN aComp.Sort()
+
+END
+
+PRIVATE FUNCTION Classes_Read() AS Collection
+
+  RETURN $cClass
+
+END
+
+PRIVATE FUNCTION Forms_Read() AS Collection
+
+  RETURN $cForm
+
+END
+
+

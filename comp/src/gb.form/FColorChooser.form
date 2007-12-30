@@ -1,0 +1,114 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(9.4286,8.1429,68.7143,70.1429)
+  Text = ("")
+  Arrangement = Arrange.Horizontal
+  Spacing = 8
+  { boxColor VBox
+    MoveScaled(1,1,53,66)
+    Expand = True
+    Spacing = 8
+    { HBox1 HBox
+      MoveScaled(3,2,33,29)
+      Expand = True
+      Spacing = 8
+      { dwgColorMap DrawingArea
+        MoveScaled(2,3,25,23)
+        Expand = True
+        Border = Border.Sunken
+      }
+      { sldValue Slider
+        MoveScaled(29,4,2,22)
+        MaxValue = 255
+        PageStep = 16
+      }
+    }
+    { dwgColor DrawingArea
+      MoveScaled(2,37,49,28)
+    }
+  }
+  { VBox1 VBox
+    MoveScaled(56,0,10,51)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(0,1,10,23)
+      { txtR SpinBox txtRGB
+        Name = "txtR"
+        MoveScaled(3,0,7,3)
+        MaxValue = 255
+      }
+      { txtG SpinBox txtRGB
+        Name = "txtG"
+        MoveScaled(3,4,7,3)
+        MaxValue = 255
+      }
+      { txtB SpinBox txtRGB
+        Name = "txtB"
+        MoveScaled(3,8,7,3)
+        MaxValue = 255
+      }
+      { txtH SpinBox txtHSV
+        Name = "txtH"
+        MoveScaled(3,12,7,3)
+        MaxValue = 359
+      }
+      { txtS SpinBox txtHSV
+        Name = "txtS"
+        MoveScaled(3,16,7,3)
+        MaxValue = 255
+      }
+      { txtV SpinBox txtHSV
+        Name = "txtV"
+        MoveScaled(3,20,7,3)
+        MaxValue = 255
+      }
+      { Label1 Label
+        MoveScaled(0,0,2,3)
+        Text = ("R")
+      }
+      { Label2 Label
+        MoveScaled(0,4,2,3)
+        Text = ("G")
+      }
+      { Label3 Label
+        MoveScaled(0,8,2,3)
+        Text = ("B")
+      }
+      { Label4 Label
+        MoveScaled(0,12,2,3)
+        Text = ("H")
+      }
+      { Label5 Label
+        MoveScaled(0,16,2,3)
+        Text = ("S")
+      }
+      { Label6 Label
+        MoveScaled(0,20,2,3)
+        Text = ("V")
+      }
+    }
+    { panAlpha Panel
+      MoveScaled(0,26,10,3)
+      Visible = False
+      { Label7 Label
+        MoveScaled(0,0,2,3)
+        Text = ("A")
+      }
+      { txtA SpinBox txtRGB
+        Name = "txtA"
+        MoveScaled(3,0,7,3)
+        MaxValue = 255
+      }
+    }
+    { txtHexa TextBox
+      MoveScaled(1,33,7,3)
+      Text = ("")
+      ReadOnly = True
+    }
+    { panColor DrawingArea
+      MoveScaled(1,38,8,12)
+      Border = Border.Sunken
+    }
+  }
+}

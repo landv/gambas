@@ -1,0 +1,19 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  Move(0,0,405,117)
+  #(Scaled) = False
+  Text = ("")
+  Border = Window.Fixed
+  { btOK Button
+    Move(126,72,153,36)
+    Text = ("OK")
+    Default = True
+    Cancel = True
+  }
+  { TextLabel1 TextLabel
+    Move(0,0,405,63)
+    Text = ("Simple PDF document viewer.<p>Gambas example by Daniel Campos Fern\xC3\xA1ndez ")
+    Alignment = Align.Center
+  }
+}

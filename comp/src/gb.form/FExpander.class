@@ -1,0 +1,163 @@
+' Gambas class file
+
+PRIVATE $bHidden AS Boolean
+PRIVATE $H AS Integer
+PRIVATE $hIcon AS Picture
+PRIVATE $hIconVoid AS Picture
+PRIVATE $bInside AS Boolean
+PRIVATE $bAnim AS Boolean
+
+PRIVATE CONST HIDE_TIME AS Float = 0.1
+
+PUBLIC SUB _new()
+  
+  UpdatePicture
+  
+END
+
+
+PRIVATE SUB GetParent() AS Expander
+  
+  RETURN ME.Parent
+  
+END
+
+
+PUBLIC SUB GetContainer() AS Container
+  
+  RETURN panContainer
+  
+END
+
+PUBLIC SUB GetHidden() AS Boolean
+  
+  RETURN NOT panContainer.Visible
+  
+END
+
+PRIVATE SUB UpdatePicture()
+  
+  IF $bHidden THEN 
+    $hIcon = Picture["img/8/side-right.png"]
+    $hIconVoid = Picture["img/8/side-right-void.png"]
+  ELSE 
+    $hIcon = Picture["img/8/side-bottom.png"]
+    $hIconVoid = Picture["img/8/side-bottom-void.png"]
+  ENDIF
+
+  IF $bInside THEN  
+    btnExpand.Picture = $hIcon
+  ELSE
+    btnExpand.Picture = $hIconVoid
+  ENDIF
+  
+END
+
+
+PUBLIC SUB SetHidden(bHidden AS Boolean)
+
+  DIM Y AS Integer
+  DIM DY AS Integer
+  DIM eTime AS Float
+
+  IF ME.Parent.Design THEN RETURN
+  IF bHidden = $bHidden THEN RETURN 
+  
+  $bHidden = bHidden
+  UpdatePicture
+  IF $bHidden THEN 
+
+    $H = ME.Parent.H
+
+    IF $bAnim THEN     
+      eTime = Timer
+      DY = $H - panTitle.H
+      WHILE Timer < (eTime + HIDE_TIME)
+        ME.Parent.H = $H - ((Timer - eTime) / HIDE_TIME) * DY
+        WAIT
+      WEND
+    ENDIF
+
+    ME.Parent.H = panTitle.H
+
+    panContainer.Hide
+    GetParent()._Hide()
+    
+  ELSE 
+  
+    GetParent()._Show()
+    panContainer.Show
+    
+    IF $bAnim THEN 
+      eTime = Timer
+      DY = $H - panTitle.H
+      WHILE Timer < (eTime + HIDE_TIME)
+        ME.Parent.H = panTitle.H + ((Timer - eTime) / HIDE_TIME) * DY
+        WAIT
+      WEND
+    ENDIF
+
+    ME.Parent.H = $H
+  ENDIF
+  
+END
+
+
+PUBLIC SUB GetText() AS String
+  
+  RETURN lblTitle.Text
+  
+END
+
+PUBLIC SUB SetText(sText AS String)
+  
+  lblTitle.Text = sText
+  
+END
+
+PUBLIC SUB GetFont() AS Font
+  
+  RETURN lblTitle.Font
+  
+END
+
+PUBLIC SUB SetFont(hFont AS Font)
+  
+  lblTitle.Font = hFont
+  
+END
+
+
+
+PUBLIC SUB btnExpand_Enter()
+
+  $bInside = TRUE
+  btnExpand.Picture = $hIcon
+
+END
+
+PUBLIC SUB btnExpand_Leave()
+
+  btnExpand.Picture = $hIconVoid
+  $bInside = FALSE
+
+END
+
+PUBLIC SUB btnExpand_MouseDown()
+
+  SetHidden(NOT $bHidden)
+
+END
+
+PUBLIC SUB GetAnimated() AS Boolean
+  
+  RETURN $bAnim
+  
+END
+
+PUBLIC SUB SetAnimated(bAnim AS Boolean)
+  
+  $bAnim = bAnim
+  
+END
+

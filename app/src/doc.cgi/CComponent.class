@@ -1,0 +1,450 @@
+' Gambas class file
+
+STATIC PUBLIC All AS NEW Collection
+STATIC PUBLIC Classes AS Collection
+
+PUBLIC Key AS String
+PUBLIC Name AS String
+PUBLIC Authors AS String[]
+PUBLIC Type AS String
+PUBLIC Group AS String
+PUBLIC Controls AS NEW String[]
+PUBLIC Require AS NEW String[]
+PUBLIC Exclude AS NEW String[]
+PUBLIC Loaded AS Boolean
+PUBLIC ClassList AS NEW String[]
+PUBLIC Alpha AS Boolean
+
+STATIC PUBLIC SUB Init()
+
+  DIM hComponent AS CComponent
+  DIM hFic AS File
+  DIM sInfo AS String
+  DIM sLig AS String
+  DIM sKey AS String
+  DIM iPos AS Integer
+  DIM sLang AS String
+  DIM sLangShort AS String
+  DIM sLib AS String
+  DIM sFile AS String
+  DIM aComp AS String[]
+  DIM sPath AS String
+
+  Classes = NEW Collection(gb.Text)
+
+  'sLang = System.Language
+  'iPos = Instr(sLang, "_")
+  'IF iPos THEN
+  '  sLangShort = Left$(sLang, iPos - 1)
+  'ELSE
+  '  sLang = sLangShort
+  'ENDIF
+  sLang = "en_US"
+
+  'OPEN Component.Path &/ "components" FOR READ AS #hFic
+
+  sPath = Main.InfoFilePath
+  IF NOT sPath THEN sPath = System.Path &/ "share/gambas" & System.Version & "/info"
+
+  aComp = Dir(sPath, "*.component")
+  FOR iPos = 0 TO aComp.Max
+    aComp[iPos] = File.BaseName(aComp[iPos])
+  NEXT
+  aComp.Sort
+
+  FOR EACH sFile IN aComp
+
+    sFile &= ".component"
+
+    IF Main.InfoFilePath THEN
+      OPEN Main.InfoFilePath &/ sFile FOR READ AS #hFic
+    ELSE
+      OPEN Component.Path &/ sFile FOR READ AS #hFic
+    ENDIF
+
+    LINE INPUT #hFic, sLig
+    sLig = Trim(sLig)
+
+    IF sLig = "[Component]" THEN
+
+      hComponent = NEW CComponent
+
+      WHILE NOT Eof(hFic)
+
+        LINE INPUT #hFic, sLig
+        sLig = Trim(sLig)
+
+        IF NOT sLig THEN CONTINUE
+
+        iPos = InStr(sLig, "=")
+        IF iPos = 0 THEN CONTINUE
+
+        sKey = Left$(sLig, iPos - 1)
+        sLig = Mid$(sLig, iPos + 1)
+
+        WITH hComponent
+
+          IF sKey = "Key" THEN
+            .Key = sLig
+          ELSE IF sKey = "Name" OR sKey = "Name[" & sLangShort & "]" OR sKey = "Name[" & sLang & "]" THEN
+            .Name = sLig
+          ELSE IF sKey = "Author" THEN
+            .Authors = Split(sLig)
+          ELSE IF sKey = "Type" THEN
+            .Type = sLig
+          ELSE IF sKey = "Group" THEN
+            .Group = sLig
+          ELSE IF sKey = "Controls" THEN
+            .Controls = Split(sLig)
+          ELSE IF sKey = "Require" THEN
+            .Require = Split(sLig)
+          ELSE IF sKey = "Alpha" THEN
+            .Alpha = sLig <> "0"
+          ENDIF
+
+        END WITH
+
+      WEND
+
+      IF hComponent.Key THEN
+        All[hComponent.Key] = hComponent
+      ENDIF
+
+    ENDIF
+
+    CLOSE #hFic
+
+  NEXT
+
+  All["gb"].Load()
+  'All["gb.qt"].Load()
+
+END
+
+
+PUBLIC SUB Load()
+
+  DIM hFic AS File
+  DIM sClass AS String
+  DIM sSymbol AS String
+  DIM sLig AS String
+  DIM iPos AS Integer
+  DIM hClass AS CClassInfo
+  DIM hSym AS CSymbolInfo
+  DIM hProp AS CPropertyInfo
+  DIM sParent AS String
+  'DIM hForm AS Form
+  DIM sPath AS String
+
+  IF Loaded THEN RETURN
+
+  FOR EACH sLig IN Require
+    All[sLig].Load
+  NEXT
+
+  sPath = Main.InfoFilePath
+  IF NOT sPath THEN
+    sPath = System.Path &/ "share/gambas" & System.Version & "/info"
+  ENDIF
+  sPath = sPath &/ Key & ".info"
+  IF NOT Exist(sPath) THEN
+    Error.Raise("Cannot find " & sPath)
+    RETURN
+  ENDIF
+
+  'INC Application.Busy
+
+  OPEN sPath FOR READ AS #hFic
+
+  WHILE NOT Eof(hFic)
+    LINE INPUT #hFic, sLig
+
+    IF Left$(sLig) = "#" THEN
+
+      sClass = Mid$(sLig, 2)
+
+      'IF sClass = "Dialog" THEN STOP
+
+      LINE INPUT #hFic, sParent
+      IF NOT sParent THEN
+        IF Classes.Exist(sClass) THEN
+          sParent = sClass
+        ENDIF
+      ENDIF
+
+      hClass = NEW CClassInfo(sClass, sParent)
+
+      Classes[Key &/ sClass] = hClass
+      Classes[sClass] = hClass
+      IF sClass <> "." THEN ClassList.Add(sClass)
+
+      LINE INPUT #hFic, sLig
+      hClass.Creatable = InStr(sLig, "C")
+      hClass.AutoCreatable = InStr(sLig, "A")
+      hClass.Component = Key
+
+      CONTINUE
+
+    ENDIF
+
+    sSymbol = sLig
+    hSym = NEW CSymbolInfo
+    Classes[sClass].Symbols[sSymbol] = hSym
+
+    hSym.Name = sSymbol
+    hSym.Class = sClass
+    hSym.Component = Key
+    LINE INPUT #hFic, hSym.Kind
+    LINE INPUT #hFic, hSym.Type
+    IF hSym.Kind = "C" THEN
+      LINE INPUT #hFic, hSym.Value
+    ELSE
+      LINE INPUT #hFic, hSym.Signature
+    ENDIF
+    IF Left$(hSym.Kind) = "p" THEN
+      IF Left$(hSym.Type, 2) = "i<" THEN
+        hSym.Signature = Mid$(hSym.Type, 3, -1)
+        hSym.Type = "i"
+      ENDIF
+    ENDIF
+
+  WEND
+
+'   hForm = NEW Form
+' 
+'   IF Key = "gb.qt" THEN
+'     FOR EACH sClass IN ["Control", "Form", "Menu"]
+'       Classes[sClass].InitControl(hForm)
+'     NEXT
+'   ENDIF
+' 
+'   FOR EACH sClass IN Controls
+'     Classes[sClass].InitControl(hForm)
+'   NEXT
+' 
+'   hForm.Close
+
+  'FOR EACH sClass IN Controls
+  '  FOR EACH hProp IN Classes[sClass].GetProperties()
+  '    hProp.Init(Classes[sClass].Symbols[hProp.Name])
+  '  NEXT
+  'NEXT
+
+  CLOSE #hFic
+
+  ClassList.Sort
+
+  Loaded = TRUE
+
+END
+
+STATIC PUBLIC SUB Exit()
+
+  All = NULL
+  Classes = NULL
+
+END
+
+' STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule AS Boolean)
+'
+'   DIM hEditor AS GambasEditor
+'   DIM iLine AS Integer
+'   DIM aSym AS String[]
+'   DIM bStatic AS Boolean
+'   DIM bPublic AS Boolean
+'   DIM sKind AS String
+'   DIM iInd AS Integer
+'   DIM hSymbol AS CSymbolInfo
+'   DIM iStart AS Integer
+'   DIM iEnd AS Integer
+'   DIM iSign AS Integer
+'
+'   'PRINT "ScanClass "; hModule.Name
+'
+'   hEditor = hModule.Editor
+'
+'   FOR iLine = 0 TO hEditor.Lines.Count
+'
+'     aSym = GambasEditor.Analyze(hEditor.Lines[iLine])
+'     IF aSym.Count = 0 THEN CONTINUE
+'     'aSym.Insert(["", "", ""])
+'
+'     bStatic = bModule
+'     bPublic = bModule
+'     sKind = ""
+'
+'     FOR iInd = 0 TO aSym.Count - 1
+'       SELECT CASE aSym[iInd]
+'         CASE "PUBLIC"
+'           sKind = "v"
+'           bPublic = TRUE
+'         CASE "PRIVATE"
+'           sKind = "v"
+'           bPublic = FALSE
+'         CASE "STATIC"
+'           sKind = "v"
+'           bStatic = TRUE
+'         CASE "PROPERTY"
+'           sKind = "p"
+'           bPublic = TRUE
+'         CASE "READ"
+'           IF sKind = "p" THEN sKind = "r"
+'           INC iInd
+'           BREAK
+'         CASE "EVENT"
+'           sKind = ":"
+'           bStatic = FALSE
+'           INC iInd
+'           BREAK
+'         CASE "SUB", "PROCEDURE", "FUNCTION"
+'           sKind = "m"
+'           INC iInd
+'           BREAK
+'         CASE "CONST"
+'           sKind = "c"
+'           bStatic = FALSE
+'           INC iInd
+'           BREAK
+'         CASE ELSE
+'           BREAK
+'       END SELECT
+'     NEXT
+'
+'     'IF NOT bPublic THEN CONTINUE
+'     IF NOT sKind THEN CONTINUE
+'
+'     hSymbol = NEW CSymbolInfo
+'     WITH hSymbol
+'       .Name = aSym[iInd]
+'       .Kind = sKind
+'       .NotPublic = NOT bPublic
+'       IF sKind = "m" THEN
+'
+'         FOR iStart = iInd + 1 TO aSym.Count - 1
+'           IF aSym[iStart] = "(" THEN BREAK
+'         NEXT
+'
+'         FOR iInd = aSym.Count - 1 TO 0 STEP -1
+'           IF aSym[iInd] = ")" THEN
+'             BREAK
+'           ELSE IF aSym[iInd] = "AS" THEN
+'             IF iInd < (aSym.Count - 1) THEN
+'               .Type = FEditor.ReadSymbolType(aSym, iInd)
+'             ENDIF
+'           ENDIF
+'         NEXT
+'
+'         'iEnd = iInd
+'         .Signature = "#" & Mid$(hEditor.Lines[iLine], GambasEditor.Positions[iStart] + 1)
+'         'FOR iInd = iStart TO iEnd
+'         '  .Signature = .Signature & aSym[iInd] & " "
+'         'NEXT
+'
+'       ELSE
+'         INC iInd
+'         .Type = FEditor.ReadSymbolType(aSym, iInd)
+'       ENDIF
+'
+'       IF bStatic THEN .Kind = UCase(.Kind)
+'
+'       cSymbol[.Name] = hSymbol
+'
+'     END WITH
+'
+'   NEXT
+'
+' END
+'
+'
+' STATIC PRIVATE SUB ScanForm(hForm AS FForm, cSymbol AS Collection)
+'
+'   DIM hControl AS CControl
+'   DIM hSymbol AS CSymbolInfo
+'
+'   'PRINT "ScanForm "; hForm.Name
+'
+'   FOR EACH hControl IN hForm.Control
+'     hSymbol = NEW CSymbolInfo
+'     WITH hSymbol
+'       .Name = hControl.Name
+'       .Type = hControl.Kind
+'       .Kind = "t"
+'       .NotPublic = NOT Project.ControlPublic
+'       cSymbol[.Name] = hSymbol
+'     END WITH
+'   NEXT
+'
+' END
+'
+'
+' STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String) AS Collection
+'
+'   DIM hClass AS CClassInfo
+'   DIM sName AS String
+'   DIM sPath AS String
+'   DIM hPForm AS Object
+'   DIM hPModule AS Object
+'   DIM hPClass AS Object
+'   DIM cSymbol AS Collection
+'   DIM hSymbol AS CSymbolInfo
+'   DIM iFind AS Integer
+'   DIM aClass AS String[]
+'
+'   'IF Len(sClass) <= 1 THEN
+'   '  IF sClass <> "." THEN RETURN
+'   'ENDIF
+'
+'   hClass = CComponent.Classes[sClass]
+'
+'   IF hClass THEN
+'
+'     RETURN hClass.Symbols
+'
+'   ELSE
+'
+'     aClass = Project.GetClasses()
+'     iFind = aClass.Find(sClass, gb.Text)
+'     IF iFind < 0 THEN
+'       'PRINT "GetClassSymbols: "; sClass; "?"
+'       RETURN
+'     ENDIF
+'     sClass = aClass[iFind]
+'
+'     sPath = Project.Dir &/ sClass & ".module"
+'     IF Exist(sPath) THEN hPModule = Project.LoadFile(sPath)
+'     sPath = Project.Dir &/ sClass & ".form"
+'     IF Exist(sPath) THEN hPForm = Project.LoadFile(sPath)
+'     sPath = Project.Dir &/ sClass & ".class"
+'     IF Exist(sPath) THEN hPClass = Project.LoadFile(sPath)
+'
+'     cSymbol = NEW Collection
+'
+'     IF hPModule THEN
+'       cSymbol = hPModule.Scan
+'       IF NOT cSymbol THEN
+'         cSymbol = NEW Collection(gb.Text)
+'         ScanClass(hPModule, cSymbol, TRUE)
+'         hPModule.Scan = cSymbol
+'       ENDIF
+'     ELSE IF hPClass THEN
+'       cSymbol = hPClass.Scan
+'       IF NOT cSymbol THEN
+'         cSymbol = NEW Collection(gb.Text)
+'         IF hPForm THEN
+'           FOR EACH hSymbol IN CComponent.Classes["Form"].Symbols
+'             cSymbol[hSymbol.Name] = hSymbol
+'           NEXT
+'           'IF Project.ControlPublic THEN
+'             ScanForm(hPForm, cSymbol)
+'           'ENDIF
+'         ENDIF
+'         ScanClass(hPClass, cSymbol, FALSE)
+'         hPClass.Scan = cSymbol
+'       ENDIF
+'     ENDIF
+'
+'     RETURN cSymbol
+'
+'   ENDIF
+'
+' END

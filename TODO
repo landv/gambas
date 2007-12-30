@@ -1,0 +1,91 @@
+TODO list: always incomplete :-)
+--------------------------------
+
+VERSION 2.0
+-----------
+
+- A stack that can grow dynamically.
+- A special syntax to make variable writable once only (for controls variables).
+- Doing something like ByRef to help porting VB projects.
+
+- Add global parameters for each component.
+- Compilation error must indicate the column, not only the line.
+- Make objects printable, with a "_print" hidden method or something else.
+- Make objects writable and readable to streams.
+- Perl regexp with the MATCH operator.
+- An expression can begin with NEW.
+- Type mismatch error: print the mismatched values.
+- Special runtime debugging commands for dumping all the variables for example.
+- A new debugging compilation option to only put line number information in the output files.
+
+- NInstr() -> Count the number of patterns.
+
+Don't do it:
+
+- OPTIONAL arguments should takes any expression.
+- Class synonymous.
+- Array[x] when x < 0 should return Array[Array.Count - x]
+- NEW Collection OF String
+
+Do it asap:
+
+- Trim$(sStr, "pattern", " ", "/")
+  -> RTrim(sStr, "WHERE") or RTrim(sStr, " ", "\n")
+- If project compilation version < compiler version then => compile all
+- Intercept all signals in Application_Signal.
+- Object.SetVariable, or SetSymbol, and that can act on static things.
+
+DEVELOPMENT ENVIRONMENT
+-----------------------
+
+- .startup file, a copy of .project with only startup info inside.
+- .project files should be marked as 2.0.
+- Renaming controls in the IDE renames the source code too.
+- Loading a "form" component needs calling InitControl on classes that are not
+  member of the list of controls.
+- Bookmarks in editor.
+- Manage Object properties in IDE.
+- Put a language code in comments, and hide them as needed by the user.
+- Make a visual control clipboard.
+- Packager should manage component projects.
+- A new folder for non-packaged data files ('Notes' ?).
+
+GUI RELATED STUFF
+-----------------
+
+- ListBox should raise Click event even if the user clicks on an
+  already selected item.
+- Adds automatically the extension to the file in the save file dialog.
+- Deleting a currently expanding item in TreeView crashes.
+- A Settings property everywhere? Mmmfff... At least for ColumnView, GridView.
+- Popup forms => Need to redesign some properties.
+
+DATABASE COMPONENT
+------------------
+
+- Add Views support in database component.
+- Changeable client Charset in database driver.
+- Returns the number of records affected by a query.
+- A new database driver model.
+- Copy a result line into another one.
+- Use SAVEPOINT in postgresql to simulate nested transactions.
+
+
+DOCUMENTATION WIKI
+------------------
+
+- Mass rename command.
+- Fix last changes: only those in one language.
+
+
+OTHER
+-----
+
+- gb.desktop kwalletmanager support. And gnome ?
+
+COMPONENTS
+----------
+
+- gb.corba ?
+- gb.v4l ?
+

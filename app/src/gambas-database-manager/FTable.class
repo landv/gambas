@@ -1,0 +1,1208 @@
+' Gambas class file
+
+PUBLIC Connection AS CConnection
+PUBLIC Table AS String
+
+PRIVATE $hConn AS CConnection
+PRIVATE $sTable AS String
+PRIVATE $bCreate AS Boolean
+PRIVATE $sName AS String
+PRIVATE $sType AS String
+
+PRIVATE $aField AS NEW Object[]
+PRIVATE $cFieldName AS Collection
+PRIVATE $aIndexField AS NEW Object[]
+
+PRIVATE $hFieldEditor AS CTableViewEditor
+PRIVATE $hIndexEditor AS CTableViewEditor
+
+PRIVATE $bModify AS Boolean
+PRIVATE $bReadOnly AS Boolean
+
+PRIVATE frmData AS FData
+
+STATIC PRIVATE $hNullValue AS Object ' Used for representing the NULL value in a Collection
+
+STATIC PUBLIC SUB _init()
+
+  $hNullValue = NEW Integer[]
+
+END
+
+
+PUBLIC SUB _new(hConn AS CConnection, sTable AS String, OPTIONAL bReadOnly AS Boolean)
+
+  $cFieldName = NEW Collection
+
+  $hConn = hConn
+  $sTable = sTable
+  $sName = sTable
+  $bCreate = hConn.Tables.Find($sTable) < 0
+  $bReadOnly = bReadOnly
+  $sType = hConn.Handle.Tables[$sTable].Type
+
+  Connection = hConn
+  Table = sTable
+
+  WITH tbvField
+
+    .Columns.Count = 5
+
+    WITH tbvField.Columns[0]
+      .Text = " "
+      .Width = 24
+    END WITH
+
+    WITH tbvField.Columns[1]
+      .Text = ("Name")
+      .Width = 160
+    END WITH
+
+    WITH tbvField.Columns[2]
+      .Text = ("Type")
+      .Width = 96
+    END WITH
+
+    WITH tbvField.Columns[3]
+      .Text = ("Length")
+      .Width = 80
+    END WITH
+
+    WITH tbvField.Columns[4]
+      .Text = ("Default value")
+      .Width = 160
+    END WITH
+
+  END WITH
+
+  WITH tbvIndex
+
+    .Columns.Count = 3
+
+    WITH tbvIndex.Columns[0]
+      .Text = ("Index")
+      .Width = 160
+    END WITH
+
+    WITH tbvIndex.Columns[1]
+      .Text = ("Unique")
+      .Width = 64
+    END WITH
+
+    WITH tbvIndex.Columns[2]
+      .Text = ("Field")
+      .Width = 160
+    END WITH
+
+  END WITH
+
+  IF NOT $bReadOnly THEN
+
+    tabTable.Index = 0
+    $hFieldEditor = NEW CTableViewEditor(tbvField) AS "tbvField"
+    tabTable.Index = 1
+    $hIndexEditor = NEW CTableViewEditor(tbvIndex) AS "tbvIndex"
+
+  ENDIF
+
+  tabTable.Index = 0
+
+  RefreshTitle
+
+  ReadTable
+
+  'FMain.MoveRandom(ME)
+
+END
+
+PRIVATE FUNCTION IsModified() AS Boolean
+
+  DIM bModify AS Boolean
+
+  bModify = $bModify
+  IF frmData THEN bModify = bModify OR frmData.IsModified()
+
+  RETURN bModify
+
+END
+
+
+PUBLIC SUB RefreshTitle()
+
+  DIM sTitle AS String
+
+  sTitle = $hConn.Server.Name & " - " & $hConn.Name & " - " & $sName
+  IF IsModified() THEN sTitle = sTitle & " [" & ("modified") & "]"
+
+  ME.Title = sTitle
+
+END
+
+PUBLIC SUB Modify(OPTIONAL bModify AS Boolean = TRUE)
+
+  $bModify = bModify
+  RefreshTitle
+
+END
+
+
+PRIVATE SUB ReadTable()
+
+  DIM hTable AS Table
+  DIM hField AS Field
+  DIM hIndex AS Index
+  DIM hCField AS CField
+  DIM hCIndexField AS CIndexField
+  DIM sField AS String
+  DIM bCreate AS Boolean
+
+  IF NOT $bReadOnly THEN
+    $hFieldEditor.Hide
+    $hIndexEditor.Hide
+  ENDIF
+
+  $aField.Clear
+  $cFieldName.Clear
+  $aIndexField.Clear
+
+  hTable = $hConn.Handle.Tables[$sTable]
+
+  FOR EACH hField IN hTable.Fields
+    hCField = NEW CField(hField)
+    $aField.Add(hCField)
+    $cFieldName[hField.Name] = TRUE
+  NEXT
+
+  FOR EACH hIndex IN hTable.Indexes
+
+    IF hIndex.Primary THEN CONTINUE
+
+    hCIndexField = NEW CIndexField(hIndex)
+    $aIndexField.Add(hCIndexField)
+    bCreate = FALSE
+
+    FOR EACH sField IN Split(hIndex.Fields)
+      IF bCreate THEN
+        hCIndexField = NEW CIndexField
+        $aIndexField.Add(hCIndexField)
+      ELSE
+        bCreate = TRUE
+      ENDIF
+      hCIndexField.Field = sField
+    NEXT
+
+  NEXT
+
+  tbvField.Rows.Count = $aField.Count
+  'tbvField.Columns.Width = -1
+  tbvField.MoveTo(0, 1)
+
+  tbvIndex.Rows.Count = $aIndexField.Count
+
+  $bModify = FALSE
+  RefreshTitle
+
+END
+
+
+PRIVATE SUB WriteTableDef(sName AS String, sType AS String, aPrimaryKey AS String[], OPTIONAL bKill AS Boolean)
+
+  DIM hTable AS Table
+  DIM hCField AS CField
+  DIM hCIndex AS CIndexField
+  DIM hLastCIndex AS CIndexField
+  DIM sError AS String
+
+  TRY $hConn.Handle.Tables.Remove(sName)
+  hTable = $hConn.Handle.Tables.Add(sName, sType)
+
+  WITH hTable
+
+    FOR EACH hCField IN $aField
+      .Fields.Add(hCField.Name, hCField.Type, hCField.Length, hCField.DefaultValue)
+    NEXT
+
+    .PrimaryKey = aPrimaryKey
+    .Update
+
+  END WITH
+
+  FOR EACH hCIndex IN $aIndexField
+    IF hCIndex.Index THEN
+      hCIndex.List = hCIndex.Field
+      hLastCIndex = hCIndex
+    ELSE
+      hLastCIndex.List = hLastCIndex.List & "," & hCIndex.Field
+    ENDIF
+  NEXT
+
+  FOR EACH hCIndex IN $aIndexField
+    IF NOT hCIndex.Index THEN CONTINUE
+    hTable.Indexes.Add(hCIndex.Index, hCIndex.List, hCIndex.Unique)
+  NEXT
+
+FINALLY
+
+  sError = Replace(Error.Text, sName, $sName)
+  IF bKill THEN
+    TRY $hConn.Handle.Tables.Remove(sName)
+  ENDIF
+
+CATCH
+
+  Error.Raise(sError)
+
+END
+
+
+
+PRIVATE FUNCTION WriteTable() AS Boolean
+
+  DIM aPrimaryKey AS NEW String[]
+  DIM hCField AS CField
+  DIM sTemp AS String
+  DIM rTemp AS Result
+  DIM rTable AS Result
+  DIM hForm AS Object
+  DIM sType AS String
+  DIM sError AS String
+
+  IF $hFieldEditor.Hide() THEN RETURN TRUE
+  IF $hIndexEditor.Hide() THEN RETURN TRUE
+
+  FOR EACH hCField IN $aField
+    IF hCField.Key THEN
+      aPrimaryKey.Add(hCField.Name)
+    ENDIF
+  NEXT
+
+  IF aPrimaryKey.Count = 0 THEN
+    Message.Warning(("You must define a primary key."))
+    RETURN TRUE
+  ENDIF
+
+  IF frmData THEN
+    IF frmData.IsModified() THEN frmData.btnSaveData_Click
+    frmData.Delete
+    frmData = NULL
+  ENDIF
+
+'   FOR EACH hForm IN FMain.Container.Children
+'     IF Object.Type(hForm) = "FData" THEN
+'       IF hForm.Table = Table THEN
+'         IF hForm.Close() THEN RETURN TRUE
+'         BREAK
+'       ENDIF
+'     ENDIF
+'   NEXT
+
+  INC Application.Busy
+
+  IF $hConn.CountTableData($sTable) THEN
+    sTemp = $hConn.CopyTableData($sTable)
+  ENDIF
+
+  sType = $hConn.Handle.Tables[$sTable].Type
+
+  WriteTableDef($hConn.GetTempTableName(), sType, aPrimaryKey, TRUE)
+  WriteTableDef($sName, sType, aPrimaryKey)
+
+  'hTable = $hConn.Handle.Tables.Add($sName, sType)
+
+  IF sTemp THEN
+
+    $hConn.Handle.Begin
+
+    rTemp = $hConn.Handle.Find(sTemp)
+    rTable = $hConn.Handle.Create($sName)
+
+    FOR EACH rTemp
+
+      FOR EACH hCField IN $aField
+        IF hCField.OldName THEN
+          TRY rTable[hCField.Name] = rTemp[hCField.OldName]
+          'IF Error THEN PRINT hField.OldName; "->"; hField.OldName; ": "; Error.Text
+        ENDIF
+      NEXT
+
+      TRY rTable.Update
+      'IF Error THEN PRINT "Update: "; Error.Text
+
+    NEXT
+
+    $hConn.Handle.Commit
+
+  ENDIF
+
+  'IF frmData THEN
+  '  frmData.btnRefresh_Click
+  'ENDIF
+  tabTable_Click
+
+  Modify(FALSE)
+
+FINALLY
+
+  sError = Error.Text
+
+  IF sTemp THEN
+    TRY $hConn.Handle.Tables.Remove(sTemp)
+    'IF Error THEN PRINT "Delete temporary table: "; Error.Text
+  ENDIF
+
+  IF $sTable <> $sName THEN
+    TRY Connection.RefreshTree
+    $sTable = $sName
+    Table = $sName
+  ENDIF
+
+  DEC Application.Busy
+
+CATCH
+
+  Message.Error(("Cannot write table.") & "\n\n" & sError)
+  RETURN TRUE
+
+END
+
+
+PRIVATE FUNCTION FindField(sField AS String) AS CField
+
+  DIM hCField AS CField
+
+  FOR EACH hCField IN $aField
+    IF hCField.Name = sField THEN RETURN hCField
+  NEXT
+
+END
+
+
+PUBLIC SUB Form_Delete()
+
+  IF NOT $bReadOnly THEN
+    $hFieldEditor.Close
+    $hIndexEditor.Close
+  ENDIF
+
+  'Connection = NULL
+  '$hConn = NULL
+
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  'DIM iIcon AS Integer
+
+  tbvField.Resize(tabTable.ClientW, tabTable.ClientH - tbvField.Y)
+  tbvIndex.Resize(tabTable.ClientW, tabTable.ClientH - tbvIndex.Y)
+  IF frmData THEN 
+    frmData.Move(0, 0, tabTable.ClientW, tabTable.ClientH)
+  ENDIF 
+
+  IF NOT $bReadOnly THEN
+    $hFieldEditor.Resize
+    $hIndexEditor.Resize
+  ENDIF
+
+END
+
+PUBLIC SUB tbvField_Data(Row AS Integer, Column AS Integer)
+
+  DIM hCField AS CField
+
+  TRY hCField = $aField[Row]
+  IF NOT hCField THEN RETURN
+
+  WITH tbvField.Data
+
+    SELECT CASE Column
+
+      CASE 0
+        IF hCField.Key THEN
+          .Picture = Picture["img/16/key.png"]
+          .Alignment = Align.Center
+        ENDIF
+
+      CASE 1
+        .Text = hCField.Name
+
+      CASE 2
+        .Text = TypeToString(hCField.Type)
+
+      CASE 3
+        IF hCField.Type = gb.String THEN
+          IF hCField.Length THEN
+            .Text = hCField.Length
+          ELSE
+            .Text = ("unlimited")
+          ENDIF
+        ENDIF
+
+      CASE 4
+        .Text = Str(hCField.DefaultValue)
+
+    END SELECT
+
+  END WITH
+
+END
+
+
+PRIVATE FUNCTION TypeToString(iType AS Integer) AS String
+
+  SELECT CASE iType
+    CASE db.Integer
+      RETURN ("Integer")
+    CASE db.Long
+      RETURN ("Long")
+    CASE db.Float
+      RETURN ("Float")
+    CASE db.Date
+      RETURN ("Date")
+    CASE db.Boolean
+      RETURN ("Boolean")
+    CASE db.String
+      RETURN ("String")
+    CASE db.Serial
+      RETURN ("Serial")
+    CASE db.Blob
+      RETURN ("Blob")
+    DEFAULT
+      RETURN "?"
+  END SELECT
+
+END
+
+PRIVATE FUNCTION TypeFromString(sType AS String) AS Integer
+
+  SELECT CASE sType
+    CASE ("Integer")
+      RETURN db.Integer
+    CASE ("Long")
+      RETURN db.Long
+    CASE ("Float")
+      RETURN db.Float
+    CASE ("Date")
+      RETURN db.Date
+    CASE ("Boolean")
+      RETURN db.Boolean
+    CASE ("String")
+      RETURN db.String
+    CASE ("Serial")
+      RETURN db.Serial
+    CASE ("Blob")
+      RETURN db.Blob
+    DEFAULT
+      RETURN db.Integer
+  END SELECT
+
+END
+
+PUBLIC SUB tbvField_Click()
+
+  DIM hField AS CField
+
+  IF $bReadOnly THEN RETURN
+
+  IF tbvField.Column = 0 THEN
+    hField = $aField[tbvField.Row]
+    hField.Key = NOT hField.Key
+    tbvField.Current.Refresh
+    Modify
+  ENDIF
+
+END
+
+PUBLIC SUB tbvField_Change()
+
+  DIM hField AS CField
+
+  IF $bReadOnly THEN RETURN
+
+  hField = $aField[tbvField.Row]
+
+  WITH $hFieldEditor
+
+    SELECT CASE tbvField.Column
+
+      CASE 0
+        .Hide
+
+      CASE 1
+        .ShowTextBox(TRUE, TRUE)
+
+      CASE 2
+        .ShowComboBox([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], TRUE, TRUE)
+
+      CASE 3
+        IF hField.Type = gb.String THEN
+          .ShowComboBox([("unlimited")])
+        ELSE
+          .Hide
+        ENDIF
+
+      CASE 4
+        IF hField.Type = gb.Boolean THEN
+          .ShowComboBox(["True", "False"]) ' Non traduisible !
+        ELSE
+          .ShowTextBox()
+        ENDIF
+
+    END SELECT
+
+  END WITH
+
+END
+
+
+PRIVATE SUB RenameField(hField AS CField, sNewName AS String)
+
+  DIM hCIndex AS CIndexField
+
+  FOR EACH hCIndex IN $aIndexField
+    IF UCase(hCIndex.Field) = UCase(hField.Name) THEN
+      hCIndex.Field = sNewName
+    ENDIF
+  NEXT
+
+  $cFieldName[hField.Name] = NULL
+  hField.Name = sNewName
+  $cFieldName[sNewName] = TRUE
+
+END
+
+
+
+PUBLIC SUB tbvField_Save(Row AS Integer, Column AS Integer, sData AS String) 
+
+  DIM hField AS CField
+  DIM iVal AS Integer
+  DIM vVal AS Variant
+
+  hField = $aField[Row]
+
+  SELECT Column
+
+    CASE 1
+      IF $cFieldName.Exist(sData) THEN
+        Message.Warning(("This name already exists."))
+        STOP EVENT
+        RETURN
+      ENDIF
+
+      IF hField.Name <> sData THEN
+        RenameField(hField, sData)
+      ENDIF
+
+    CASE 2
+
+      'PRINT sData; " -> "; TypeFromString(sData)
+      hField.Type = TypeFromString(sData)
+      hField.DefaultValue = NULL
+      hField.Length = 0
+
+      tbvField[Row, 3].Refresh
+      tbvField[Row, 4].Refresh
+
+    CASE 3
+      IF sData = ("unlimited") THEN
+        hField.Length = 0
+      ELSE
+        TRY iVal = CInt(sData)
+        IF ERROR THEN
+          Message.Warning(("Please enter a number."))
+          STOP EVENT
+          RETURN
+        ENDIF
+        IF iVal < 1 OR iVal > 255 THEN
+          Message.Warning(("The length must be greater than 1 and lower than 255."))
+          STOP EVENT
+          RETURN
+        ENDIF
+        hField.Length = iVal
+      ENDIF
+
+    CASE 4
+
+      IF hField.Type <> gb.String THEN
+        IF sData THEN
+
+          vVal = Val(sData)
+
+          IF hField.Type = gb.Float THEN
+            IF TypeOf(vVal) = gb.Integer OR IF TypeOf(vVal) = gb.Long THEN
+              vVal = CFloat(vVal)
+            ENDIF
+          ELSE IF hField.Type = gb.Long THEN
+            IF TypeOf(vVal) = gb.Integer THEN
+              vVal = CLong(vVal)
+            ENDIF
+          ENDIF
+
+          IF TypeOf(vVal) <> hField.Type THEN
+            Message.Warning(("Incorrect value."))
+            STOP EVENT
+            RETURN
+          ENDIF
+
+        ENDIF
+      ELSE
+        vVal = sData
+      ENDIF
+
+      hField.DefaultValue = vVal
+
+  END SELECT
+
+  Modify
+
+END
+
+PUBLIC SUB btnNewField_Click()
+
+  DIM hField AS CField
+  DIM iInd AS Integer
+
+  IF $bReadOnly THEN RETURN
+
+  IF $hFieldEditor.Hide() THEN RETURN
+
+  hField = NEW CField
+
+  WITH hField
+
+    FOR iInd = 1 TO 1000
+      .Name = ("Field") & CStr(iInd)
+      IF NOT $cFieldName.Exist(.Name) THEN BREAK
+    NEXT
+
+    .Type = gb.Integer
+
+    $cFieldName[.Name] = TRUE
+
+  END WITH
+
+  $aField.Add(hField, tbvField.Row + 1)
+  INC tbvField.Rows.Count
+
+  tbvField.MoveTo(tbvField.Row + 1, 1)
+
+  Modify
+
+END
+
+PUBLIC SUB btnKillField_Click()
+
+  DIM iRow AS Integer
+
+  IF $bReadOnly THEN RETURN
+
+  IF $aField.Count <= 1 THEN RETURN
+
+  IF $hFieldEditor.Hide() THEN RETURN
+
+  iRow = tbvField.Row
+
+  IF IsFieldUsedInIndex($aField[iRow].Name) THEN
+    Message.Warning(("This field is used in an index."))
+    RETURN
+  ENDIF
+
+  $cFieldName[$aField[iRow].Name] = NULL
+  $aField.Remove(iRow)
+  DEC tbvField.Rows.Count
+
+  Modify
+
+END
+
+
+PUBLIC SUB btnDownField_Click()
+
+  IF $bReadOnly THEN RETURN
+
+  IF tbvField.Row = (tbvField.Rows.Count - 1) THEN RETURN
+
+  SWAP $aField[tbvField.Row], $aField[tbvField.Row + 1]
+
+  tbvField.Rows[tbvField.Row].Refresh
+  tbvField.Rows[tbvField.Row + 1].Refresh
+
+  INC tbvField.Row
+
+  Modify
+
+END
+
+PUBLIC SUB btnUpField_Click()
+
+  IF $bReadOnly THEN RETURN
+
+  IF tbvField.Row = 0 THEN RETURN
+
+  SWAP $aField[tbvField.Row], $aField[tbvField.Row - 1]
+
+  tbvField.Rows[tbvField.Row].Refresh
+  tbvField.Rows[tbvField.Row - 1].Refresh
+
+  DEC tbvField.Row
+
+  Modify
+
+END
+
+PUBLIC SUB btnKey_Click()
+
+  IF $bReadOnly THEN RETURN
+
+  WITH $aField[tbvField.Row]
+    .Key = NOT .Key
+  END WITH
+
+  tbvField[tbvField.Row, 0].Refresh
+
+  Modify
+
+END
+
+PUBLIC SUB btnCancelField_Click()
+
+  IF tabTable.Index = 2 THEN
+
+    frmData.btnRefresh_Click
+
+  ELSE
+
+    IF $bReadOnly THEN RETURN
+
+    IF Message.Question(("Do you really want to reload the table definition ?"), ("Reload"), ("Cancel")) <> 1 THEN RETURN
+
+    ReadTable
+
+  ENDIF
+
+END
+
+
+PUBLIC SUB tbvIndex_Data(Row AS Integer, Column AS Integer)
+
+  DIM hIndexField AS CIndexField
+
+  TRY hIndexField = $aIndexField[Row]
+  IF NOT hIndexField THEN RETURN
+
+  WITH tbvIndex.Data
+
+    SELECT CASE Column
+
+      CASE 0
+        .Text = hIndexField.Index
+
+      CASE 1
+        IF hIndexField.Index THEN .Text = Str(hIndexField.Unique)
+
+      CASE 2
+        .Text = hIndexField.Field
+
+    END SELECT
+
+  END WITH
+
+END
+
+
+PRIVATE FUNCTION FindIndex(sName AS String) AS Boolean
+
+  DIM hIndexField AS CIndexField
+
+  FOR EACH hIndexField IN $aIndexField
+    IF sName = hIndexField.Index THEN RETURN TRUE
+  NEXT
+
+END
+
+
+PRIVATE FUNCTION FreeIndexFields(OPTIONAL bExcept AS Boolean) AS String[]
+
+  DIM iRow AS Integer
+  DIM hField AS CField
+  DIM cField AS NEW Collection
+  DIM bVal AS Boolean
+  DIM aField AS NEW String[]
+
+  FOR EACH hField IN $aField
+    cField[hField.Name] = TRUE
+  NEXT
+
+  iRow = tbvIndex.row
+  DO
+    IF $aIndexField[iRow].Index THEN BREAK
+    DEC iRow
+  LOOP
+
+  DO
+    IF NOT bExcept OR iRow <> tbvIndex.Row THEN
+      cField[$aIndexField[iRow].Field] = NULL
+    ENDIF
+    INC iRow
+    IF iRow >= $aIndexField.Count THEN BREAK
+    IF $aIndexField[iRow].Index THEN BREAK
+  LOOP
+
+  FOR EACH bVal IN cField
+    aField.Add(cField.Key)
+  NEXT
+
+  RETURN aField
+
+END
+
+
+PRIVATE FUNCTION IsFieldUsedInIndex(sField AS String) AS Boolean
+
+  DIM iRow AS Integer
+
+  FOR iRow = 0 TO $aIndexField.Max
+    IF sField = $aIndexField[iRow].Field THEN RETURN TRUE
+  NEXT
+
+END
+
+
+
+PUBLIC SUB btnNewIndex_Click()
+
+  DIM hIndexField AS CIndexField
+  DIM iInd AS Integer
+
+  IF $bReadOnly THEN RETURN
+
+  hIndexField = NEW CIndexField
+
+  WITH hIndexField
+
+    FOR iInd = 1 TO 1000
+      .Index = $sTable & "_" & ("Index") & CStr(iInd)
+      IF NOT FindIndex(.Index) THEN BREAK
+    NEXT
+
+    .Field = $aField[0].Name
+
+  END WITH
+
+  $aIndexField.Add(hIndexField)
+  INC tbvIndex.Rows.Count
+
+  tbvIndex.MoveTo(tbvIndex.Rows.Count - 1, 0)
+
+  Modify
+
+END
+
+PUBLIC SUB btnNewIndexField_Click()
+
+  DIM hIndexField AS CIndexField
+  DIM iRow AS Integer
+  DIM aField AS String[]
+
+  IF $bReadOnly THEN RETURN
+  IF $aIndexField.Count = 0 THEN RETURN
+
+  iRow = tbvIndex.Row
+  IF iRow < 0 THEN RETURN
+
+  aField = FreeIndexFields(FALSE)
+  IF aField.Count = 0 THEN RETURN
+
+  hIndexField = NEW CIndexField
+
+  WITH hIndexField
+
+    .Field = aField[0]
+
+  END WITH
+
+  DO
+    INC iRow
+    IF iRow >= tbvIndex.Rows.Count THEN BREAK
+    IF $aIndexField[iRow].Index THEN BREAK
+  LOOP
+
+  $aIndexField.Add(hIndexField, iRow)
+  INC tbvIndex.Rows.Count
+
+  tbvIndex.MoveTo(iRow, 1)
+
+  Modify
+
+END
+
+PUBLIC SUB btnKillIndex_Click()
+
+  DIM sIndex AS String
+  DIM bUnique AS Boolean
+  DIM iRow AS Integer
+  DIM hIndex AS CIndexField
+
+  IF $bReadOnly THEN RETURN
+  IF $aIndexField.Count = 0 THEN RETURN
+
+  iRow = tbvIndex.Row
+  IF iRow < 0 THEN RETURN
+
+  $hIndexEditor.Hide
+
+  WITH $aIndexField[iRow]
+    sIndex = .Index
+    bUnique = .Unique
+  END WITH
+
+  $aIndexField.Remove(iRow)
+
+  IF iRow < $aIndexField.Count THEN
+
+    WITH $aIndexField[iRow]
+      IF NOT .Index THEN
+        .Index = sIndex
+        .Unique = bUnique
+      ENDIF
+    END WITH
+
+  ENDIF
+
+  DEC tbvIndex.Rows.Count
+  tbvIndex.Refresh
+
+  Modify
+
+END
+
+PUBLIC SUB btnDownIndex_Click()
+
+  DIM iRow AS Integer
+
+  IF $bReadOnly THEN RETURN
+
+  iRow = tbvIndex.Row
+  IF iRow < 0 THEN RETURN
+
+  IF iRow = ($aIndexField.Count - 1) THEN RETURN
+  IF $aIndexField[iRow + 1].Index THEN RETURN
+
+  SWAP $aIndexField[iRow].Field, $aIndexField[iRow + 1].Field
+  INC tbvIndex.Row
+
+  tbvIndex.Refresh
+
+END
+
+PUBLIC SUB btnUpIndex_Click()
+
+  DIM iRow AS Integer
+
+  IF $bReadOnly THEN RETURN
+
+  iRow = tbvIndex.Row
+  IF iRow < 0 THEN RETURN
+
+  IF iRow = 0 THEN RETURN
+  IF $aIndexField[iRow].Index THEN RETURN
+
+  SWAP $aIndexField[iRow].Field, $aIndexField[iRow - 1].Field
+  DEC tbvIndex.Row
+
+  tbvIndex.Refresh
+
+END
+
+PUBLIC SUB tbvIndex_Change()
+
+  DIM hIndex AS CIndexField
+
+  IF $bReadOnly THEN RETURN
+
+  hIndex = $aIndexField[tbvIndex.Row]
+
+  WITH $hIndexEditor
+
+    SELECT CASE tbvIndex.Column
+
+      CASE 0
+        IF hIndex.Index THEN
+          .ShowTextBox(TRUE, TRUE)
+        ELSE
+          .Hide
+        ENDIF
+
+      CASE 1
+        IF hIndex.Index THEN
+          .ShowComboBox(["True", "False"], TRUE)
+        ELSE
+          .Hide
+        ENDIF
+
+      CASE 2
+
+        .ShowComboBox(FreeIndexFields(TRUE), TRUE, TRUE)
+
+    END SELECT
+
+  END WITH
+
+END
+
+
+PUBLIC SUB tbvIndex_Save(Row AS Integer, Column AS Integer, sData AS String)
+
+  DIM hIndex AS CIndexField
+
+  hIndex = $aIndexField[Row]
+
+  SELECT Column
+
+    CASE 0
+
+      IF FindIndex(sData) THEN
+        Message.Warning(("This name already exists."))
+        STOP EVENT
+        RETURN
+      ENDIF
+      hIndex.Index = sData
+
+    CASE 1
+
+      hIndex.Unique = sData = "True"
+
+    CASE 2
+
+      hIndex.Field = sData
+
+  END SELECT
+
+  Modify
+
+END
+
+PUBLIC SUB btnSaveField_Click()
+
+  SaveTable
+
+END
+
+
+PUBLIC SUB Form_Close()
+
+  DIM bCancel AS Boolean
+
+  IF IsModified() THEN
+    SELECT CASE Message.Question($hConn.Server.Name & " - " & $hConn.Name & "\n\n" & Subst(("The table '&1' has been modified.\nDo you want to save it ?"), $sTable), ("Save"), ("Do not save"), ("Cancel"))
+      CASE 1
+        IF frmData THEN
+          IF frmData.IsModified() THEN
+            bCancel = frmData.WriteData()
+          ENDIF
+        ENDIF
+        IF NOT bCancel THEN
+          IF $bModify THEN
+            bCancel = WriteTable()
+          ENDIF
+        ENDIF
+      CASE 3
+        bCancel = TRUE
+    END SELECT
+  ENDIF
+
+'   IF NOT bCancel THEN
+'     'Connection = NULL
+'     '$hConn = NULL
+'   ENDIF
+
+  IF bCancel THEN
+    STOP EVENT
+  ELSE IF frmData THEN
+    frmData.Close
+  ENDIF
+
+END
+
+
+
+PUBLIC SUB btnData_Click()
+
+  $hConn.OpenTable($sTable, TRUE)
+
+END
+
+PUBLIC SUB btnRename_Click()
+
+  DIM sNewName AS String
+  DIM sOldName AS String
+
+  IF $bReadOnly THEN RETURN
+
+  IF FNewTable.Run($sName, $sType) THEN RETURN
+
+  sNewName = FNewTable.Name
+  IF NOT sNewName THEN RETURN
+  IF sNewName = $sTable THEN RETURN
+
+  IF Connection.Handle.Tables.Exist(sNewName) THEN
+    Message.Warning(("This table name is already in use."))
+    RETURN
+  ENDIF
+
+  sOldName = $sName
+  $sName = sNewName
+  Modify
+
+  IF SaveTable() THEN
+    $sName = sOldName
+    RETURN
+  ENDIF
+
+  TRY $hConn.DeleteTable(sOldName)
+  $hConn.RefreshTree
+
+END
+
+PUBLIC SUB tabTable_Click()
+
+  IF tabTable.Index = 2 THEN
+    IF NOT frmData THEN
+      frmData = NEW FData(ME, $hConn, $sTable, $bReadOnly, tabTable)
+      Form_Resize
+    ENDIF
+  ENDIF
+
+END
+
+PUBLIC SUB btnClose_Click()
+
+  ME.Close
+
+END
+
+
+PUBLIC SUB btnRequest_Click()
+
+  Connection.OpenRequest
+
+END
+
+PRIVATE FUNCTION SaveTable() AS Boolean
+
+  IF $bReadOnly THEN RETURN
+
+  IF $hFieldEditor.Hide() THEN RETURN TRUE
+  IF $hIndexEditor.Hide() THEN RETURN TRUE
+
+  IF WriteTable() THEN RETURN TRUE
+
+END
+
+PUBLIC SUB tbvField_LostFocus()
+
+  'PRINT "tbvField_LostFocus"
+
+END

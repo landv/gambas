@@ -1,0 +1,151 @@
+' Gambas class file
+
+PRIVATE picHour AS Image
+PRIVATE picMinute AS Image
+PRIVATE picSecond AS Image
+PRIVATE Clock AS Picture
+PRIVATE Buffer AS Picture
+PRIVATE HE AS Integer
+PRIVATE WI AS Integer
+'PRIVATE BackPicture AS String
+PRIVATE $MX AS Integer
+PRIVATE $MY AS Integer
+PRIVATE $hMenu AS menu
+
+
+PUBLIC SUB DrawTime()
+
+  DIM tmpImg AS Image
+  DIM hPict AS Picture
+  DIM hTemp AS Picture
+
+  WI = Clock.Width
+  HE = Clock.Height
+
+  hPict = Clock.Copy()
+  Draw.Begin(hPict)
+    tmpImg = picHour.Rotate(Hour(Now) * 360 / 12)
+    Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+    tmpImg = picMinute.Rotate(Minute(Now) * 360 / 60)
+    Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+    hTemp = picSecond.Rotate(Second(Now) * 360 / 60).Picture
+    Draw.Picture(hTemp, WI / 2 - hTemp.Width / 2, HE / 2 - hTemp.Height / 2)
+  Draw.End
+
+  ME.Picture = hPict
+
+END
+
+PRIVATE SUB SetClock(iClock AS Integer)
+
+  DIM hImage AS Image
+  DIM hBuffer AS Image  
+  DIM hMenu AS Menu
+  DIM X, Y AS Integer
+  DIM iColor AS Integer
+  DIM iGray AS Integer
+
+  hImage = Image.Load("img/clock_bg_big" & iClock & ".png")
+  
+  ' hBuffer = NEW Image(hImage.Width + 2, hImage.Height + 2, TRUE)
+  ' hBuffer.Draw(hImage, 1, 0)
+  ' hBuffer.Draw(hImage, 1, 2)
+  ' hBuffer.Draw(hImage, 0, 1)
+  ' hBuffer.Draw(hImage, 2, 1)
+  ' 
+  ' FOR X = 0 TO hImage.Width - 1
+  '   FOR Y = 0 TO hImage.Height - 1
+  '     iColor = hBuffer[X, Y]
+  '     iGray = &H80 'Color[iColor].Value
+  '     iColor = Color.RGB(iGray, iGray, iGray, Color[iColor].Alpha)
+  '     hBuffer[X, Y] = iColor
+  '   NEXT 
+  ' NEXT
+  ' 
+  ' hBuffer.Draw(hImage, 1, 1)
+  ' hImage = hBuffer
+  
+  Clock = hImage.Picture
+  DrawTime
+  
+  FOR EACH hMenu IN mnuPopup.Children
+    IF hMenu.Tag THEN
+      hMenu.Checked = Val(hMenu.Tag) = iClock
+    ENDIF
+  NEXT
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  picMinute = Image.Load("img/arrow_min.png")
+  picHour = Image.Load("img/arrow_hour.png")
+  picSecond = Image.Load("img/arrow_sec.png")
+
+  SetClock(3)
+  Timer1.Enabled = TRUE
+
+END
+
+PUBLIC SUB Timer1_Timer()
+
+  DrawTime()
+
+END
+
+
+PUBLIC SUB Form_Menu()
+
+  mnuPopup.Popup
+
+END
+
+PUBLIC SUB mnuClock_Click()
+
+  SetClock(Val(LAST.Tag))
+
+END
+
+
+PUBLIC SUB mnuQuit_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB mnuAbout_Click()
+
+  Message("This exemple was made by Fabien BODARD\nand was optimized by Benoît MINISINI\n\nNote that the 3rd clock is Microsoft copyrighted.\nYou will find it on the future version of windows.")
+
+END
+
+' PUBLIC SUB daClock_MouseDown()
+' 
+'   $MX = Mouse.ScreenX - ME.X
+'   $MY = Mouse.ScreenY - ME.Y
+' 
+' END
+' 
+' PUBLIC SUB daClock_MouseMove()
+' 
+'   IF Mouse.Left THEN ME.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+' 
+' END
+
+PUBLIC SUB mnuOntop_Click()
+
+  INC mnuOnTop.Checked
+  INC ME.TopOnly
+
+END
+
+
+PUBLIC SUB mnuShowWindow_Click()
+
+  INC mnuShowWindow.Checked
+  'ME.Border = If(mnuShowWindow.Checked, Window.Fixed, Window.None)
+  INC ME.Mask
+  INC ME.SkipTaskbar
+
+END

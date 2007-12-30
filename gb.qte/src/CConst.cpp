@@ -1,0 +1,1 @@
+../../gb.qt/src/CConst.cpp

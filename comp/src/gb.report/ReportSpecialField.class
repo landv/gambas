@@ -1,0 +1,100 @@
+' Gambas class file
+
+EXPORT
+INHERITS ReportControl
+
+PRIVATE $sText AS String
+PRIVATE $iAlignment AS Integer '= Align.Center
+
+PROPERTY Text AS String
+PROPERTY Alignment AS Integer
+
+
+PUBLIC SUB _New()
+  
+  ME.Height = "100 px"
+  
+END
+
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN $sText
+
+END
+
+PRIVATE SUB Text_Write(Value AS String)
+
+  $sText = Value
+
+END
+
+PRIVATE FUNCTION Alignment_Read() AS Integer
+
+  RETURN $iAlignment
+
+END
+
+PRIVATE SUB Alignment_Write(Value AS Integer)
+
+  $iAlignment = Value
+
+END
+
+
+PUBLIC SUB _GetSizeHints(AvailableW AS Float, AvailableH AS Float, TotalWidth AS Float, TotalHeight AS Float) AS TSizeHint
+
+  DIM hMyHints AS NEW TSizeHint
+  DIM fTextHeight AS Float
+  DIM fTextWidth AS Float
+  hMyHints.Height = ME._Height + (2 * ME._Padding)
+  
+  IF NOT IsNull(ME.Font) THEN draw.Font = ME.Font
+  draw.Font.size = draw.Font.size '* MRTools.ResolutionAffichage
+
+  'if the size choosed by the user is less than the font height, set the object to the font height
+  fTextHeight = MRTools.PixelsToUnits(Draw.TextHeight($sText))
+  fTextWidth = MRTools.PixelsToUnits(Draw.TextWidth($sText))
+  
+  IF hMyHints.Height < fTextHeight THEN hMyHints.Height = fTextHeight + (2 * ME._Padding)
+  IF ME._RelativeHeight THEN hMyHints.Height = TotalHeight * ME._Height / 100
+  IF ME._Width > 0 AND NOT ME.Autoresize THEN 
+    hMyHints.Width = ME._Width
+  ELSE 
+    hMyHints.Width = Draw.TextWidth(DecodeText($sText,, TRUE)) + (2 * ME._Padding)
+    IF hMyHints.Width < ME._Width THEN hMyHints.Width = ME._Width
+  ENDIF 
+  IF ME._RelativeWidth THEN hMyHints.Width = AvailableW * ME._Width / 100
+  IF hMyHints.Width > AvailableW THEN hMyHints.Width = AvailableW
+  RETURN hMyHints
+  
+END
+
+PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+
+    Draw.ForeColor = ME.ForeColor
+    IF NOT IsNull(ME.Font) THEN Draw.Font = ME.Font
+    draw.Font.size = draw.Font.size * MRTools.ReportZoom '* MRTools.ResolutionAffichage
+    draw.Clip((x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom)
+    Draw.Text(DecodeText($sText, Page + 1), (x + hControl.RealLeft + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, (y + hControl.RealTop + MRTools.UnitsToPixels(ME.Padding)) * MRTools.ReportZoom, hControl.RealWidth * MRTools.ReportZoom, hControl.RealHeight * MRTools.ReportZoom, $iAlignment)
+    Draw.Clip.Enabled = FALSE
+END
+
+
+
+PRIVATE FUNCTION DecodeText(sText AS String, OPTIONAL Page AS Integer, OPTIONAL ForSize AS Boolean = FALSE) AS String
+  
+  IF ForSize THEN 
+    IF InStr(sText, "$PAGE") THEN sText = Replace(sText, "$PAGE", "999")
+    IF InStr(sText, "$NPAGE") THEN sText = Replace(sText, "$NPAGE", "999")
+  ELSE
+    IF InStr(sText, "$PAGE") THEN sText = Replace(sText, "$PAGE", Str(Page))
+    IF InStr(sText, "$NPAGE") THEN sText = Replace(sText, "$NPAGE", Str(MRTools.PageCount))
+  ENDIF
+  
+  RETURN sText
+  
+END
+
+
+

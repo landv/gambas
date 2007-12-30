@@ -1,0 +1,70 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,81,65)
+  Text = ("Project commit")
+  Icon = Picture["icon:/small/ok"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { Label3 Label
+    MoveScaled(1,1,24,3)
+    Font = Font["Bold"]
+    Text = ("Authentification")
+  }
+  { HBox2 HBox
+    MoveScaled(1,4,54,3)
+    Spacing = 8
+    { Label1 Label
+      MoveScaled(0,0,16,3)
+      Text = ("User")
+    }
+    { txtName TextBox
+      MoveScaled(17,0,34,3)
+      Expand = True
+      Text = ("")
+    }
+  }
+  { HBox3 HBox
+    MoveScaled(1,8,54,3)
+    Spacing = 8
+    { Label2 Label
+      MoveScaled(0,0,16,3)
+      Text = ("Password")
+    }
+    { txtPassword TextBox
+      MoveScaled(17,0,36,3)
+      Expand = True
+      Text = ("")
+      Password = True
+    }
+  }
+  { Label4 Label
+    MoveScaled(1,13,24,3)
+    Font = Font["Bold"]
+    Text = ("Changes description")
+  }
+  { edtChange Editor
+    MoveScaled(1,19,65,30)
+    Font = Font["Monospace"]
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(2,53,54,3)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(3,0,3,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(23,0,14,3)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(38,0,14,3)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

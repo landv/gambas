@@ -1,0 +1,96 @@
+' Gambas class file
+
+EXPORT 
+PRIVATE $arsValues AS NEW String[]
+PROPERTY Count AS Integer
+PROPERTY Values AS String[]
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  RETURN $arsValues.Count
+
+END
+
+PRIVATE SUB count_Write(Value AS Integer)
+  DIM cnt AS Integer
+  DIM i AS Integer
+  DIM hSeries AS _CSerie
+  IF Value < 1 THEN 
+    Message.Error(("The Values count must be up than 1"))
+    RETURN 
+  ENDIF 
+  
+  IF $arsValues.Count < Value THEN 
+    FOR i = 0 TO Value - $arsValues.Count
+      $arsValues.Add(0)
+    NEXT
+  ELSE IF $arsValues.Count > Value THEN 
+    cnt = $arsValues.Count - Value
+    $arsValues.Remove($arsValues - cnt, cnt)
+  ENDIF
+  
+  
+  'Resize all the Series to match with the Labels Count
+  FOR EACH hSeries IN Chart
+     
+     hSeries._SetCount(Value)
+   
+  NEXT 
+  
+END
+
+PUBLIC SUB Add(Value AS String)
+  'Ajoute la Valeur
+  $arsValues.Add(Value)
+  'Force L'adaptation des serie
+  ME.Count = $arsValues.Count
+  
+END
+
+PUBLIC SUB _Put(Index AS Integer, Value AS String[])
+  
+  $arsValues[Index] = Value
+  
+END
+
+PUBLIC SUB _Get(Index AS Integer) AS String
+  
+  RETURN $arsValues[Index]
+  
+END
+
+
+
+
+PUBLIC FUNCTION _Next() AS String
+  IF enum.Index = NULL THEN enum.Index = -1
+  
+  IF enum.Index = $arsValues.max THEN 
+    enum.Stop
+    RETURN 
+  ENDIF
+  INC enum.Index
+  RETURN $arsValues[enum.Index]
+  
+END
+
+PRIVATE FUNCTION Values_Read() AS String[]
+
+  RETURN $arsValues
+
+END
+
+PRIVATE SUB Values_Write(Value AS String[])
+
+  IF Value = NULL THEN 
+    Message.Error(("An array can't be NULL"))
+    RETURN 
+  ENDIF 
+  ' IF Value.Count < 1 THEN 
+  '   Message.Error((""))
+  '   RETURN 
+  ' ENDIF 
+  
+  $arsValues = Value
+  ME.Count = $arsValues.Count
+END

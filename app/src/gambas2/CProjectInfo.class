@@ -1,0 +1,75 @@
+' Gambas class file
+
+PUBLIC Name AS String
+PUBLIC Title AS String
+PUBLIC Version AS String
+PUBLIC Description AS String
+PUBLIC Authors AS String[]
+PUBLIC Icon AS Picture
+
+PRIVATE SUB GetProjectPath(sPath AS String) AS String
+  
+  DO
+    IF Exist(sPath &/ ".project") THEN RETURN sPath
+    sPath = File.Dir(sPath)
+    IF sPath = "/" THEN BREAK
+  LOOP
+  
+CATCH
+  
+END
+
+PUBLIC SUB _new(sPath AS String)
+  
+  DIM hFile AS File
+  DIM sIcon AS String
+  DIM sLine AS String
+  DIM iPos AS Integer
+  DIM sKey AS String
+  DIM sVal AS String
+  
+  sPath = GetProjectPath(sPath)
+  IF NOT sPath THEN RETURN
+  
+  Name = File.Name(sPath)
+    
+  hFile = OPEN sPath &/ ".project"
+  
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE 
+    IF Left(sLine) = "#" THEN CONTINUE
+
+    iPos = InStr(sLine, "=")
+    IF iPos = 0 THEN CONTINUE
+
+    sKey = Lower$(Trim(Left$(sLine, iPos - 1)))
+    sVal = Trim(Mid$(sLine, iPos + 1))
+
+    SELECT CASE sKey
+    
+      CASE "title"
+        Title = sVal
+
+      CASE "version"
+        Version = sVal
+        
+      CASE "description"
+        Description = Replace(sVal, "\\n", "\n")
+
+      CASE "authors"
+        Authors = Split(Replace(sVal, "\\n", "\n"), "\n")
+
+      CASE "icon"
+        sIcon = sVal
+
+    END SELECT
+  
+  WEND
+  
+  CLOSE #hFile
+
+  Icon = Project.StretchIcon(sPath &/ sIcon, 58).Picture
+
+END

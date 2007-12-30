@@ -1,0 +1,70 @@
+/***************************************************************************
+
+  main.c
+
+  The GUI component
+
+  (c) 2000-2007 Benoit Minisini <gambas@freesurf.fr>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+#define __MAIN_C
+
+#include "main.h"
+
+GB_INTERFACE GB EXPORT;
+
+// Prevents gbi2 from complaining
+
+GB_DESC *GB_CLASSES[] EXPORT =
+{
+  NULL
+};
+
+char *GB_INCLUDE EXPORT = "gb.qt";
+
+int EXPORT GB_INIT(void)
+{
+	char *comp;
+	char *env;
+	
+	env = getenv("GB_GUI");
+	if (env)
+	{
+		comp = env;
+		if (!GB.LoadComponent(env))
+			return FALSE;
+	}
+	
+	env = getenv("KDE_FULL_SESSION");
+	
+	if (env && !strcmp(env, "true"))
+		comp = "gb.qt";
+	else
+		comp = "gb.gtk";
+		
+	if (GB.LoadComponent(comp))
+		fprintf(stderr, "gb.gui: unable to load '%s' component\n", comp);
+  
+  return FALSE;
+}
+
+void EXPORT GB_EXIT()
+{
+}
+
+

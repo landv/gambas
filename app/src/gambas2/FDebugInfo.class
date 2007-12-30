@@ -1,0 +1,617 @@
+' Gambas class file
+
+PUBLIC Shown AS Boolean
+
+PUBLIC SUB Form_Open()
+
+  ReadConfig
+
+  WITH cvwLocal
+    .Columns.Count = 2
+    .Columns[0].Width = 192
+    .Columns[0].Text = ("Name")
+    .Columns[1].Text = ("Value")
+  END WITH
+
+  WITH cvwObject
+    .Columns.Count = 2
+    .Columns[0].Width = 192
+    .Columns[0].Text = ("Name")
+    .Columns[1].Text = ("Value")
+  END WITH
+
+  WITH cvwWatch
+    .Columns.Count = 2
+    .Columns[0].Width = 192
+    .Columns[0].Text = ("Expression")
+    .Columns[1].Text = ("Value")
+  END WITH
+
+  FOutput.Load
+
+END
+
+
+PUBLIC SUB Clear()
+
+  cvwLocal.Clear
+  cvwLocal.Tag = ""
+  cvwObject.Clear
+  cvwObject.Tag = ""
+  lstStack.Clear
+  cvwWatch.Clear
+
+END
+
+
+
+PUBLIC SUB EnableStack(bOn AS Boolean)
+
+  lstStack.Enabled = bOn
+
+END
+
+
+PUBLIC SUB FillStack(aPos AS String[])
+
+  DIM sPos AS String
+
+  lstStack.Clear
+
+  FOR EACH sPos IN aPos
+    IF sPos = "?" THEN
+      lstStack.Add("(" & ("native code") & ")")
+    ELSE
+      lstStack.Add(sPos)
+    ENDIF
+  NEXT
+
+END
+
+
+PUBLIC SUB lstStack_Activate()
+
+  DIM sLoc AS String
+  DIM iPos AS Integer
+  DIM sFile AS String
+  DIM iLine AS Integer
+
+  sLoc = lstStack.Current.Text
+  IF InStr(sLoc, "(") THEN RETURN
+
+  iPos = InStr(sLoc, ".")
+  IF iPos = 0 THEN RETURN
+  sFile = Left$(sLoc, iPos - 1)
+
+  iPos = RInStr(sLoc, ".")
+  IF iPos = 0 THEN RETURN
+  iLine = Val(Mid$(sLoc, iPos + 1))
+
+  Project.OpenFile(sFile, iLine)
+
+CATCH
+
+END
+
+
+PRIVATE SUB DefineVar(hView AS ColumnView, sList AS String, sCmd AS String, iIndex AS Integer)
+
+  DIM sVar AS String
+  DIM aVar AS String[]
+  DIM sParent AS String
+  DIM bFill AS Boolean
+
+  IF sList <> "*" THEN
+
+    aVar = Split(sList, " ")
+  
+    IF sList <> hView.Tag THEN 
+  
+      hView.Tag = sList
+      bFill = TRUE
+      
+    ENDIF
+  
+  ELSE 
+  
+    aVar = Split(hView.Tag, " ")
+    
+    bFill = TRUE
+    
+  ENDIF
+    
+  IF bFill THEN
+    
+    hView.Clear
+    FOR EACH sVar IN aVar
+      IF Right(sVar) = ":" THEN 
+        sVar = UCase(sVar)
+        sParent = sVar
+      ELSE
+        SELECT CASE sParent
+          CASE "S:"
+            TRY hView.Add(sParent, ("Static variables"))
+          CASE "D:"
+            TRY hView.Add(sParent, ("Dynamic variables"))
+        END SELECT
+        TRY hView.Add(sVar, sVar,, sParent)
+      ENDIF
+    NEXT
+    
+    TRY hView["S:"].Expanded = TRUE
+    TRY hView["D:"].Expanded = TRUE
+
+  ENDIF
+  
+  IF tabDebug.Index <> iIndex THEN RETURN
+  
+  FOR EACH sVar IN aVar
+    IF Right(sVar) = ":" THEN CONTINUE
+    Design.Command("&" & sCmd & sVar & "\t" & sVar)
+
+  NEXT
+    
+END
+
+PUBLIC SUB AddVar(hView AS ColumnView, sVar AS String, sValue AS String)
+
+  TRY hView.Add(sVar, sVar)
+  IF ERROR THEN 
+    IF hView[sVar][1] THEN hView[sVar].Selected = hView[sVar][1] <> sValue
+  ENDIF
+  
+  hView[sVar][1] = sValue
+
+END
+
+PUBLIC SUB DefineLocal(OPTIONAL sList AS String = "*")
+  
+  DefineVar(cvwLocal, sList, "L", 0)
+  
+END
+
+PUBLIC SUB AddLocal(sVar AS String, sValue AS String)
+  
+  AddVar(cvwLocal, sVar, sValue)
+  
+END
+
+PUBLIC FUNCTION LocalExists(sExpr AS String) AS Boolean
+  IF NOT sExpr THEN RETURN
+  
+  RETURN cvwLocal.Exist(sExpr)
+
+END
+
+PUBLIC SUB DefineObject(OPTIONAL sList AS String = "*")
+  
+  DefineVar(cvwObject, sList, "O", 1)
+  
+END
+
+PUBLIC SUB AddObject(sVar AS String, sValue AS String)
+  
+  AddVar(cvwObject, sVar, sValue)
+  
+END
+
+
+' PUBLIC SUB RefreshAllLocal()
+' 
+'   DIM sVar AS String
+' 
+'   FOR EACH sVar IN $aLocal
+'     Design.Command("l" & sVar, TRUE,, "L")
+'   NEXT
+' 
+' END
+
+
+
+PUBLIC SUB AddResultWatch(sCmd AS String, sRes AS String, OPTIONAL bInstant AS Boolean)
+
+  DIM sVal AS String
+  DIM hForm AS FEditor
+  
+  'IF Left$(sRes, 1) = "=" THEN
+  '  sVal = Mid$(sRes, 2)
+  'ELSE
+  '  sVal = "** " & sRes
+  'ENDIF
+  sVal = sRes
+
+  IF bInstant THEN 
+    IF Right(sCmd) = ":" THEN
+      IF FDebugExpr.Exist(Left(sCmd, Len(sCmd) - 1)) THEN RETURN 
+      
+      ' TRY hForm = FDebugExpr.IsSender()
+      ' IF hForm = NULL THEN 
+      '   TRY hForm = Project.ActiveForm
+      '   IF hForm THEN 
+      '     IF Mouse.ScreenY <= hForm.Editor.ScreenY + hForm.Editor.h THEN
+              ShowAsBalloon(sVal)
+      '     ENDIF 
+      '   ENDIF 
+      ' ENDIF 
+    
+    ELSE 
+      Design.Command("#X" & sCmd & "\t" & sCmd)  
+    
+    ENDIF 
+  ELSE  
+    TRY cvwWatch.Add(sCmd, sCmd)
+    IF Left(sVal) = "!" THEN sVal = Mid$(sVal, 2)
+    cvwWatch[sCmd][1] = sVal
+  
+  ENDIF
+
+END
+
+PRIVATE SUB ShowAsBalloon(sMsg AS String)
+
+  DIM hIcon AS Picture
+
+  sMsg = Replace(sMsg, "\t", "\n")
+  sMsg = Replace(sMsg, "    ", "&nbsp;")
+  sMsg = Replace(sMsg, "&", "&amp;")
+  sMsg = Replace(sMsg, "<", "&lt;")
+  sMsg = Replace(sMsg, ">", "&gt;")
+  
+  IF Left(sMsg) = "!" THEN
+    sMsg = Mid$(sMsg, 2) 
+    hIcon = Picture["icon:/32/error"]
+  ELSE
+    hIcon = Picture["icon:/32/info"]
+  ENDIF 
+
+  'Balloon(sMsg, objForm, hIcon, Mouse.ScreenX - objForm.ScreenX, Mouse.ScreenY - objForm.ScreenY)
+  Balloon(sMsg, Design.BalloonControl, hIcon, Design.BalloonX, Design.BalloonY)
+
+END
+
+PUBLIC SUB RefreshAllWatch()
+
+  IF NOT cvwWatch.MoveFirst() THEN
+
+    DO
+
+      Design.Command("?W" & cvwWatch.Item.Text & "\t" & cvwWatch.Item.Text)
+      IF cvwWatch.MoveNext() THEN RETURN
+
+    LOOP
+
+  ENDIF
+
+END
+
+
+PUBLIC SUB AddWatch(sExpr AS String)
+
+  IF cmbWatch.Find(sExpr) < 0 THEN
+    cmbWatch.Add(sExpr)
+  ENDIF
+
+  Design.Command("?W" & sExpr & "\t" & sExpr)
+  tabDebug.Index = 2
+
+END
+
+PUBLIC SUB InstantWatch(sExpr AS String, hCtrl AS Control, X AS Integer, Y AS Integer)
+  
+  IF NOT sExpr THEN RETURN
+  Design.SetBalloon(hCtrl, X, Y)
+  Design.Command("?I" & sExpr & "\t" & sExpr)
+  
+END
+
+
+
+PUBLIC SUB cmbWatch_Activate()
+
+  DIM sExpr AS String
+
+  sExpr = Trim(cmbWatch.Text)
+  IF NOT sExpr THEN RETURN
+
+  AddWatch(sExpr)
+
+END
+
+
+PUBLIC SUB btnWatch_Click()
+
+  cmbWatch_Activate
+
+END
+
+
+PUBLIC SUB btnKillWatch_Click()
+
+  TRY cvwWatch.Remove(cvwWatch.Key)
+
+END
+
+PUBLIC SUB btnKillAllWatch_Click()
+
+  IF Message.Question(("Do you want to clear the expression list ?"), ("Clear"), ("Cancel")) = 2 THEN RETURN
+
+  cvwWatch.Clear
+
+END
+
+PUBLIC SUB cmbWatch_Click()
+
+  btnWatch_Click
+
+END
+
+PUBLIC SUB cvwWatch_Activate()
+
+  DIM sText AS String = cvwWatch.Item.Text
+
+  IF Right(sText) = ":" THEN RETURN
+  IF Left(cvwWatch.Item[1]) = "(" THEN
+    Design.Command("#X" & sText & "\t" & sText)  
+  ENDIF
+
+  cmbWatch.Text = LAST.Item.Text
+
+END
+
+PUBLIC SUB ClearWatchpoint()
+  
+  cmbWatch.Clear
+  
+END
+
+
+PUBLIC SUB ReadConfig()
+
+  cvwLocal.Font.Grade = If(Settings["/UseSmallFont", FALSE], -1, 0)
+  cvwObject.Font.Grade = If(Settings["/UseSmallFont", FALSE], -1, 0)
+  lstStack.Font = cvwLocal.Font
+  cvwWatch.Font = cvwLocal.Font
+  lstBreak.Font = cvwLocal.Font
+
+END
+
+PUBLIC SUB ClearBreakpoint()
+  
+  lstBreak.Clear
+  
+END
+
+
+PUBLIC SUB AddBreakpoint(sName AS String, sProc AS String, iLine AS Integer, bOn AS Boolean)
+  
+  DIM sText AS String
+  DIM iInd AS Integer
+  
+  sText = sName & "." & sProc & "." & CStr(iLine)
+  iInd = lstBreak.Find(sText)
+  
+  IF bOn THEN
+    IF iInd < 0 THEN
+      lstBreak.Add(sText)
+    ENDIF
+  ELSE
+    IF iInd >= 0 THEN    
+      lstBreak.Remove(iInd)
+    ENDIF 
+  ENDIF
+  
+END
+
+PUBLIC SUB btnRemoveBreak_Click()
+
+  DIM aText AS String[]
+  DIM hEdit AS FEditor
+  
+  IF lstBreak.Index < 0 THEN RETURN
+  
+  aText = Scan(lstBreak.Text, "*.*.*")
+  Design.SetBreakpoint(aText[0], CInt(aText[2]) - 1, FALSE)
+
+END
+
+PUBLIC SUB btnClearBreak_Click()
+
+  WHILE lstBreak.Count
+    lstBreak.Index = 0
+    btnRemoveBreak_Click
+  WEND  
+
+END
+
+PUBLIC SUB lstBreak_Activate()
+
+  DIM aText AS String[]
+  
+  aText = Scan(lstBreak.Text, "*.*.*")
+  Project.OpenFile(aText[0], CInt(aText[2]))
+
+CATCH
+
+END
+
+PUBLIC SUB Message(sMsg AS String)
+  
+  'lstDebugMsg.Add(sMsg)
+  
+END
+
+PUBLIC SUB chkSortLocal_Click()
+
+  IF chkSortLocal.Value THEN 
+    cvwLocal.Sorted = TRUE
+  ELSE 
+    cvwLocal.Sorted = FALSE
+    DefineLocal
+  ENDIF    
+
+END
+
+PUBLIC SUB chkSortObject_Click()
+
+  IF chkSortObject.Value THEN 
+    cvwObject.Sorted = TRUE
+  ELSE 
+    cvwObject.Sorted = FALSE
+    DefineObject
+  ENDIF    
+
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(splDebug, "splDebug")
+
+END
+
+PUBLIC SUB tabDebug_Click()
+
+  IF Design.IsRunning() THEN RETURN
+
+  SELECT CASE tabDebug.Index
+    CASE 0
+      DefineLocal
+    CASE 1
+      DefineObject
+    CASE 4
+      FOutput.SetFocus
+  END SELECT   
+
+END
+
+PUBLIC SUB cvwObject_Collapse()
+
+  cvwObject.Item.Expanded = TRUE  
+
+END
+
+PUBLIC SUB cvwLocal_Activate()
+
+  DIM sText AS String = cvwLocal.Item.Text
+
+  IF Right(sText) = ":" THEN RETURN
+  IF Left(cvwLocal.Item[1]) <> "(" THEN RETURN
+  Design.Command("#X" & sText & "\t" & sText)
+
+END
+
+PUBLIC SUB cvwObject_Activate()
+
+  DIM sText AS String = cvwObject.Item.Text
+
+  IF Right(sText) = ":" THEN RETURN
+  IF Left(cvwObject.Item[1]) <> "(" THEN RETURN
+  Design.Command("#X" & sText & "\t" & sText)  
+
+END
+
+PUBLIC SUB WriteWatchSettings()
+
+  DIM iInd AS Integer
+  DIM sFlag AS String
+
+  sFlag = "/Watches"
+  iInd = 0
+  Project.Config.Clear(sFlag)
+
+  Project.Config[sFlag &/ "Count"] = cvwWatch.Count
+  IF NOT cvwWatch.MoveFirst() THEN
+
+    DO
+      INC iInd
+      Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"] = cvwWatch.item.Text
+      IF cvwWatch.MoveNext() THEN BREAK 
+
+    LOOP
+
+  ENDIF
+
+END
+
+PUBLIC SUB ReadWatchSettings()
+
+  DIM iCount AS Integer
+  DIM iInd AS Integer
+  DIM sString AS String
+  DIM sFlag AS String
+
+  sFlag = "/Watches"
+  iInd = 0
+  iCount = Project.Config[sFlag &/ "Count", "0"]
+  ClearWatchpoint()
+  FOR iInd = 1 TO iCount
+    sString = Project.Config[sFlag &/ "Watch[" & CStr(iInd) & "]"]
+    'IF sString THEN 
+      'IF cmbWatch.Find(sString) < 0 THEN
+        'cmbWatch.Add(sString)
+      TRY cvwWatch.Add(sString, sString)
+      'ENDIF
+    'ENDIF 
+  NEXT
+  
+END
+
+PUBLIC SUB UpdateView()
+  
+  DIM bUndock AS Boolean = Settings["/FOutput/Undock"]
+  DIM bVisible AS Boolean
+  
+  IF bUndock THEN  
+    IF FOutput.Parent THEN 
+      FOutput.Reparent(NULL)
+      'DEBUG "Read: "; Settings["/FOutput/Geometry"][0];; Settings["/FOutput/Geometry"][1]
+      Settings.Read(FOutput)
+      FOutput.OnProjectDebug
+      FOutput.Show
+      'DEBUG FOutput.X;; FOutput.Y
+      'Action["console"].Visible = TRUE
+      IF NOT Project.Running THEN FMain.ShowDebug(FALSE)
+    ENDIF
+    'FOutput.Stacking = If(Project.Running, Window.Above, Window.Normal)
+  ENDIF
+  
+  tabDebug[0].Visible = Project.Running
+  tabDebug[1].Visible = Project.Running
+  tabDebug[2].Visible = Project.Running
+  tabDebug[3].Visible = Project.Running
+  tabDebug[4].Visible = NOT bUndock
+
+  IF panStack.Visible <> Project.Running THEN
+    IF Project.Running THEN
+      panStack.Visible = TRUE
+      Settings.Read(splDebug,, "1,4")
+    ELSE 
+      Settings.Write(splDebug)
+      panStack.Visible = FALSE
+    ENDIF
+  ENDIF 
+        
+  IF NOT bUndock THEN 
+    IF NOT FOutput.Parent THEN 
+      bVisible = FOutput.Visible
+      'DEBUG "Write: "; FOutput.X;; FOutput.Y
+      Settings.Write(FOutput)
+      FOutput.Reparent(panConsole, 0, 0)
+      FOutput.Show
+      'Action["console"].Value = TRUE
+      'Action["console"].Visible = FALSE
+      IF bVisible THEN FMain.ShowDebug(TRUE)
+    ENDIF
+    tabDebug.Index = 4
+    FOutput.SetFocus
+  ENDIF 
+  
+  FMain.UpdateConsoleAction(NOT bUndock OR Project.Running)
+  
+END
+
+
+PUBLIC SUB btnShowME_Click()
+
+  Design.Command("#XME\tME")    
+
+END

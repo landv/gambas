@@ -1,0 +1,65 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,60,50)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  Spacing = 4
+  { panToolbar HBox
+    MoveScaled(1,1,55,3)
+    { btnReload ToolButton
+      MoveScaled(0,0,3,3)
+      ToolTip = ("Today")
+      Text = ("")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnPrevYear ToolButton
+      MoveScaled(3,0,3,3)
+      ToolTip = ("Previous year")
+      Text = ("")
+      Picture = Picture["icon:/small/rewind"]
+    }
+    { HBox2 HBox
+      MoveScaled(6,0,39,3)
+      Expand = True
+      Spacing = 8
+      { btnPrevMonth ToolButton
+        MoveScaled(1,0,3,3)
+        ToolTip = ("Previous month")
+        Text = ("")
+        Picture = Picture["icon:/small/previous"]
+      }
+      { cmbMonth ComboBox
+        MoveScaled(4,0,19,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+      }
+      { txtYear SpinBox
+        MoveScaled(26,0,8,3)
+        MinValue = 1600
+        MaxValue = 9999
+      }
+      { btnNextMonth ToolButton
+        MoveScaled(36,0,3,3)
+        ToolTip = ("Next month")
+        Text = ("")
+        Picture = Picture["icon:/small/next"]
+      }
+    }
+    { btnNextYear ToolButton
+      MoveScaled(48,0,3,3)
+      ToolTip = ("Next year")
+      Text = ("")
+      Picture = Picture["icon:/small/forward"]
+    }
+  }
+  { dwgMonth DrawingArea
+    MoveScaled(1,6,56,29)
+    Background = Color.TextBackground
+    Expand = True
+    Focus = True
+    Border = Border.Sunken
+  }
+}

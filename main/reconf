@@ -1,0 +1,18 @@
+#!/bin/sh
+
+rm -f config.cache
+rm -f acconfig.cache
+
+aclocal
+autoconf
+#acconfig
+autoheader
+automake -a
+
+cd libltdl
+
+aclocal
+autoconf
+#acconfig
+autoheader
+automake -a

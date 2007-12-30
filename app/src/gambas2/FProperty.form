@@ -1,0 +1,42 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0.125,2.375,35.375,60.375)
+  Text = ("Properties")
+  Icon = Picture["img/16/grid.png"]
+  Persistent = True
+  { lblMessage TextLabel
+    MoveScaled(1,1,30,12)
+    Padding = 8
+    AutoResize = True
+    Text = ("Click on a form or a control to modify its properties...")
+  }
+  { grdProperty GridView
+    MoveScaled(3,10,30,30)
+    Visible = False
+    Scrollbar = Scroll.Vertical
+    Border = False
+  }
+  { txtProperty TextBox
+    MoveScaled(5,28,16,3)
+    Visible = False
+    Text = ("")
+    Border = False
+  }
+  { cmbProperty ComboBox
+    MoveScaled(6,33,16,3)
+    Visible = False
+    Text = ("")
+    ReadOnly = True
+  }
+  { btnProperty Button
+    MoveScaled(21,28,2.375,2.375)
+    Visible = False
+    Text = ("")
+    Picture = Picture["img/16/points.png"]
+  }
+  { spnProperty SpinBox
+    MoveScaled(7,23,14,3)
+    Visible = False
+  }
+}
