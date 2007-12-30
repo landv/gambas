@@ -1,0 +1,58 @@
+# Gambas Form File 1.0
+
+{ FList Form
+  MoveScaled(19.5,40.25,57,34)
+  'Move(156,322,456,272)
+  Text = ("Edit list property")
+  Border = Window.Fixed
+  { lstValue ListBox
+    MoveScaled(1,1,39,24)
+    'Move(8,8,312,192)
+  }
+  { btnOK Button
+    MoveScaled(42,1,14,3)
+    'Move(336,8,112,24)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(42,5,14,3)
+    'Move(336,40,112,24)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { btnInsert Button
+    MoveScaled(1,30,12,3)
+    'Move(8,240,96,24)
+    Text = ("&Insert")
+  }
+  { btnUp Button
+    MoveScaled(27,30,3,3)
+    'Move(216,240,24,24)
+    Text = ("")
+    Picture = Picture["icon:/16/up"]
+  }
+  { btnDown Button
+    MoveScaled(31,30,3,3)
+    'Move(248,240,24,24)
+    Text = ("")
+    Picture = Picture["icon:/16/down"]
+  }
+  { btnDelete Button
+    MoveScaled(14,30,12,3)
+    'Move(112,240,96,24)
+    Text = ("&Delete")
+  }
+  { txtValue TextBox
+    MoveScaled(1,26,39,3)
+    'Move(8,208,312,24)
+    Enabled = False
+    Text = ("")
+  }
+  { btnClear Button
+    MoveScaled(37,30,3,3)
+    'Move(296,240,24,24)
+    Text = ("")
+    Picture = Picture["icon:/16/trash"]
+  }
+}

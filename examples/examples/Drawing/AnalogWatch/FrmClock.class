@@ -1,0 +1,181 @@
+'***********Analog Clock Example Program************************
+'***********By: Ahmad Kamal <eng_ak@Link.net>******************
+'***********Written for Gambas: gambas.sourceforge.net**********
+'***********V1.0: 22-July-2003***************************************
+'***********V1.1: 24-July-2003  Optimized by Benoit himself ;)*****
+
+STATIC $iLast AS Integer
+
+PUBLIC SUB TimerClk_Timer()
+
+  IF Second(Now) = $iLast THEN RETURN
+
+  dwgArea.Refresh
+
+END
+
+
+PUBLIC SUB ResizeDrawArea()
+
+  'One must use ME.ClientW and ME.CLientH, as Me.Width and ME.Height are
+  ' the size of the window WITH its borders !
+  DwgArea.Resize(ME.ClientW, ME.ClientH)
+  
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  ResizeDrawArea    'Resize the drawing area to match the form
+  DwgArea.Refresh
+  'TimerClk.Enabled = FALSE
+  'TimerClk.Enabled = TRUE
+
+END
+
+
+PUBLIC SUB DrawClock()
+
+  '***********Main Routine that updates the clock**************
+  DIM X1 AS Integer
+  DIM Y1 AS Integer
+  DIM X2 AS Integer
+  DIM Y2 AS Integer
+  DIM LengthSeconds AS Integer
+  DIM angle AS Float
+  DIM Hour12 AS Float
+  DIM Width AS Float
+  DIM dNow AS Date
+  DIM iNow AS Float
+
+  dNow = Now
+  $iLast = Second(dNow)
+
+  LengthSeconds = Min(ME.width / 2 , ME.height / 2)   'Length of seconds arm, also used to calculate other stuff.
+                                                                                      'As the whole clock is drawn inside (2*LengthSeconds X 2*LengthSeconds)
+  'Draw.Begin(DwgArea)
+  
+  'Draw Clock circle
+  Draw.FillStyle=0
+  Draw.Forecolor=&HDCDCDC&    'Light gray color
+  Width = CFloat(LengthSeconds) / 10  'Calculate width dynamically, so that we resize with form resizing
+  Draw.LineWidth= Width
+  Draw.ellipse(0.05*LengthSeconds+(ME.Width/2 - LengthSeconds), 0.05*LengthSeconds+(ME.height/2 - LengthSeconds), 0.95*LengthSeconds*2 , 0.95*LengthSeconds*2)
+    
+  'Draw Seconds  arm
+  Draw.Forecolor=Color.Red    'Duh
+  Width = CFloat(LengthSeconds) / 50  'Dynamic WIdth
+  Draw.LineWidth=Width 
+  angle = CFloat(Second(dNow)) / 60 * 2 * Pi   'The angle that the arm makes, with a line from clock center to 12O'clock
+  X2= ME.width/2 + LengthSeconds * Sin(angle) 'Calculate destination point from time data
+  Y2= ME.height/2 - LengthSeconds * Cos(angle)
+  Draw.Line(ME.width/2,ME.height/2,X2,Y2)   'Draw the arm
+  
+  'Draw Minutes
+  Draw.fillstyle = 1
+  Draw.Forecolor=Color.Black
+  Width = CFloat(LengthSeconds) / 10
+  Draw.LineWidth=1    'Fixed line width as this arm is drawn as a filled polygon, to get the triangluar shaped arm. The line width is irrelevant here.
+  angle = CFloat(Minute(dNow)) / 60* 2 * Pi
+  X1 = ME.width/2
+  Y1 = ME.height/2
+  X2= ME.width/2 + LengthSeconds *0.9* Sin(angle)
+  Y2= ME.height/2 - LengthSeconds *0.9* Cos(angle)
+  'Draw.Line(ME.width/2,ME.height/2,X2,Y2)    'If enabled (& lower line disabled) the minutes arm will be a rectangle, not a triangle (which looks better)
+  Draw.polygon( [X1 + CInt(Width * Cos(angle)) , Y1 + CInt(Width * Sin(angle)), X1 - CInt(Width * Cos(angle)) , Y1 - CInt(Width * Sin(angle)), X2, Y2] )  'Isn't this easy to imagine ;)
+  
+  'Draw Hours
+  Draw.fillstyle = 1
+  Draw.Forecolor=Color.Black
+  Width = CFloat(LengthSeconds) / 8
+  Draw.LineWidth = 1
+  Hour12 = CFloat(Hour(dNow))
+  IF hour12 > 12 THEN hour12  = hour12 - 12     'Adjust 24h format to 12h format
+  hour12 = hour12 + CFloat(Minute(dNow)) / 60  'Makes the hours arm move smoothly from hour to hour
+  angle = CFloat(hour12) / 12 * 2 * Pi
+  X1 = ME.width/2
+  Y1 = ME.height/2
+  X2= ME.width/2 + LengthSeconds *0.6* Sin(angle)
+  Y2= ME.height/2 - LengthSeconds *0.6* Cos(angle)
+  'Draw.Line(ME.width/2,ME.height/2,X2,Y2)
+  Draw.polygon( [X1 + CInt(Width * Cos(angle)) , Y1 + CInt(Width * Sin(angle)), X1 - CInt(Width * Cos(angle)) , Y1 - CInt(Width * Sin(angle)), X2, Y2] )
+  
+  'Draw Circle on the center of the clock to hide the arms intersection
+  Width = Width * 1.5
+  Draw.Ellipse(X1 - Width , Y1 - Width , Width*2 , Width*2)
+
+  DrawFrame         'Draw the clock frame (The circular tick marks)
+  
+  'Draw.End
+  
+END
+
+
+PUBLIC SUB DrawFrame()
+
+DIM X2 AS Float
+DIM Y2 AS Float
+DIM X1 AS Float
+DIM Y1 AS Float
+DIM i AS Integer
+DIM angle AS Float
+DIM length AS Integer
+
+  Length = Min(ME.width / 2 , ME.height / 2)
+
+  Draw.Forecolor=Color.Black
+  Draw.LineWidth=5
+  FOR i = 1 TO 12
+  'Draw Big 12 Ticks
+  'This would have really been very easy if everything had fixed dimensions.
+  angle = CFloat(i) / 12 * 2 * Pi
+  X1= ME.width/2   + 0.9*length * Sin(angle) 
+  Y1= ME.height/2  -  0.9*length * Cos(angle) 
+  X2= ME.width/2   + length * Sin(angle) 
+  Y2= ME.height/2  -  length * Cos(angle) 
+  Draw.Line(X1,Y1,X2,Y2)
+  NEXT
+
+  Draw.Forecolor=Color.Black
+  Draw.LineWidth=1
+  FOR i = 1 TO 60
+  'Draw small 60 Ticks
+  angle = CFloat(i) / 60 * 2 * Pi
+  X1= ME.width/2   + 0.9*length * Sin(angle) 
+  Y1= ME.height/2  -  0.9*length * Cos(angle) 
+  X2= ME.width/2   + length * Sin(angle) 
+  Y2= ME.height/2  -  length * Cos(angle) 
+  Draw.Line(X1,Y1,X2,Y2)
+  NEXT
+  
+END
+
+
+PUBLIC SUB MenuAbout_Click()
+
+  DIM AboutMessage AS String
+  AboutMessage = "Analog Clock Example Program for Gambas\nWritten by: Ahmad Kamal <eng_ak@Link.Net>"
+  
+  Message.info(AboutMessage)
+
+END
+
+
+PUBLIC SUB MenuExit_Click()
+
+  ME.Close  
+
+END
+
+
+PUBLIC SUB DwgArea_Menu()
+
+  MenuPopUp.popup
+
+END
+
+PUBLIC SUB DwgArea_Draw()
+
+  DrawClock  
+
+END

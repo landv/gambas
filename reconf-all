@@ -1,0 +1,7 @@
+#!/bin/sh
+
+for i in main app comp examples help gb.*; do echo $i; (cd $i; ./reconf); done
+./reconf
+
+#~/gambas/2.0/tool/MakeComponentLink/MakeComponentLink.gambas
+

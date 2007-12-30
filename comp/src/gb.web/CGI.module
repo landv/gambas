@@ -1,0 +1,95 @@
+' Gambas module file
+
+EXPORT 
+
+PRIVATE $cCache AS NEW Collection
+PRIVATE $cVal AS Collection
+
+PUBLIC FUNCTION _get(sVar AS String) AS String
+
+  DIM sVal AS String
+
+  sVal = $cCache[sVar]
+  IF NOT sVal THEN
+    sVal = Application.Env[sVar]
+    $cCache[sVar] = sVal
+  ENDIF
+  RETURN sVal
+
+END
+
+PUBLIC SUB _put(sVal AS String, sVar AS String)
+
+  $cCache[sVar] = sVal
+
+END
+
+
+
+PUBLIC SUB Encode(URL AS String) AS String
+  
+  DIM iInd AS Integer
+  DIM sRes AS String
+  DIM sCar AS String
+  
+  FOR iInd = 1 TO Len(URL)
+    sCar = Mid$(URL, iInd, 1)
+    IF sCar = " " THEN 
+      sCar = "+"
+    ELSE IF IsLetter(sCar) OR IF IsDigit(sCar) OR IF InStr("*-._", sCar) THEN 
+    ELSE 
+      sCar = "%" & Hex$(Asc(sCar), 2)
+    ENDIF
+    sRes &= sCar
+  NEXT
+
+  RETURN sRes
+  
+END
+
+PUBLIC SUB Decode(URL AS String) AS String
+  
+  DIM iInd AS Integer
+  DIM sRes AS String
+  DIM sCar AS String
+  
+  FOR iInd = 1 TO Len(URL)
+    sCar = Mid$(URL, iInd, 1)
+    IF sCar = "%" THEN 
+      sCar = Chr$(Val("&H" & Mid$(URL, iInd + 1, 2)))
+      iInd += 2
+    ELSE IF sCar = "+" THEN 
+      sCar = " "
+    ENDIF
+    sRes &= sCar
+  NEXT
+
+  RETURN sRes  
+  
+END
+
+
+
+PUBLIC SUB _init()
+  
+  'DIM sLang AS String
+  'sLang = Trim(Split(_get("HTTP_ACCEPT_LANGUAGE"), ",")[0])
+  'IF System.Charset = "UTF-8" THEN sLang &= ".UTF-8"
+  'System.Language = sLang
+  
+  File.In.EndOfLine = gb.Windows
+  File.Out.EndOfLine = gb.Windows
+  
+END
+
+PUBLIC SUB Error(Text AS String)
+  
+  OUTPUT TO DEFAULT
+
+  Response.Begin  
+  PRINT "<h1>"; ("Error in CGI script"); "</h1>"
+  PRINT "<pre>"; Text; "</pre>"
+  Response.End
+  QUIT 
+  
+END

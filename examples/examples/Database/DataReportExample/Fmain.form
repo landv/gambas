@@ -1,0 +1,78 @@
+# Gambas Form File 1.0
+
+{ Fmain Form
+  MoveScaled(47.7778,23.4444,35,41.4444)
+  'Move(430,211,315,373)
+  Text = ("Data Report Example")
+  Icon = Picture["pic/empty.png"]
+  Border = Window.Fixed
+  { TextBox1 TextBox ginput
+    MoveScaled(10,6,9,3)
+    'Move(90,54,81,27)
+    Tag = "1"
+    Text = ("")
+    MaxLength = 10
+  }
+  { TextBox2 TextBox ginput
+    MoveScaled(10,9.4444,22.4444,3)
+    'Move(90,85,202,27)
+    Tag = "2"
+    Text = ("")
+    MaxLength = 40
+  }
+  { TableView1 TableView
+    MoveScaled(1,13.4444,33,19)
+    'Move(9,121,297,171)
+    ToolTip = ("Click to Edit")
+    Mode = TableView.Single
+    Header = TableView.Horizontal
+  }
+  { Label1 Label
+    MoveScaled(1.4444,5.4444,8,4)
+    'Move(13,49,72,36)
+    Text = ("ID :")
+    Alignment = Align.Right
+  }
+  { Label2 Label
+    MoveScaled(1.4444,9,8,4)
+    'Move(13,81,72,36)
+    Text = ("Name :")
+    Alignment = Align.Right
+  }
+  { Button1 Button gbtn
+    MoveScaled(1.4444,36.4444,10.4444,4)
+    'Move(13,328,94,36)
+    Tag = "1"
+    Text = ("&Screen")
+    Picture = Picture["pic/looknfeel.png"]
+  }
+  { Button2 Button gbtn
+    MoveScaled(12.4444,36.4444,10.4444,4)
+    'Move(112,328,94,36)
+    Tag = "2"
+    Text = ("&Printer")
+    Picture = Picture["pic/kjobviewer.png"]
+  }
+  { Label3 Label
+    MoveScaled(1.4444,32.4444,32,4)
+    'Move(13,292,288,36)
+    Foreground = &H0000FF&
+    Text = ("Esc - Exit")
+    Alignment = Align.Right
+  }
+  { Button3 Button gbtn
+    MoveScaled(23.4444,36.4444,10.4444,4)
+    'Move(211,328,94,36)
+    Tag = "3"
+    Text = ("&About")
+    Picture = Picture["pic/ksmiletris.png"]
+  }
+  { Label4 Label
+    MoveScaled(0,0,35,4)
+    'Move(0,0,315,36)
+    Font = Font["16,Bold,Underline"]
+    Background = &HD6D6D6&
+    Text = ("  Data Report Example ")
+    Alignment = Align.Right
+  }
+}

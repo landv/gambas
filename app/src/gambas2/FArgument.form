@@ -1,0 +1,66 @@
+# Gambas Form File 1.0
+
+{ FArgument Form
+  MoveScaled(0,0,75,37)
+  'Move(0,0,600,296)
+  Text = ("Edit arguments")
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { lstArgument ListBox
+    MoveScaled(1,1,51,16)
+    'Move(8,8,408,128)
+    Expand = True
+  }
+  { VBox1 VBox
+    MoveScaled(1,18,67,13)
+    'Move(8,144,536,104)
+    { txtArgument TextArea
+      MoveScaled(0,0,51,11)
+      'Move(0,0,408,88)
+      Text = ("")
+      ScrollBar = Scroll.Vertical
+    }
+    { Panel2 Panel
+      MoveScaled(27,11,3,1)
+      'Move(216,88,24,8)
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,33,72,3)
+    'Move(8,264,576,24)
+    Spacing = 8
+    { btnAddArg Button
+      MoveScaled(0,0,13,3)
+      'Move(0,0,104,24)
+      Text = ("&Add")
+    }
+    { btnRemoveArg Button
+      MoveScaled(14,0,13,3)
+      'Move(112,0,104,24)
+      Text = ("&Remove")
+    }
+    { btnDeleteAllArg Button
+      MoveScaled(28,0,13,3)
+      'Move(224,0,104,24)
+      Text = ("&Clear")
+    }
+    { Panel1 Panel
+      MoveScaled(44,0,1,3)
+      'Move(352,0,8,24)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(45,0,13,3)
+      'Move(360,0,104,24)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(59,0,13,3)
+      'Move(472,0,104,24)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

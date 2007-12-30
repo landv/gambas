@@ -1,0 +1,75 @@
+' Gambas class file
+
+'EXPORT
+INHERITS TextBox
+
+PUBLIC CONST _Properties AS String = "*,Type{gb.Boolean;Integer;Float;Data;String}=gb.String,Null=True"
+PUBLIC CONST _DrawWith AS String = "TextBox"
+
+PROPERTY Value AS Variant
+PROPERTY Type AS Integer
+PROPERTY {Null} AS Boolean
+
+PRIVATE $iType AS Integer
+PRIVATE $bNull AS Boolean
+
+PUBLIC SUB _new()
+
+  $iType = gb.Integer
+  $bNull = TRUE
+
+END
+
+
+PRIVATE FUNCTION Value_Read() AS Variant
+
+  DIM vVal AS Variant
+  DIM sText AS String
+
+  sText = ME.Text
+
+  IF NOT sText THEN
+    IF NOT $bNull THEN Error.Raise("Null value")
+    RETURN NULL
+  ENDIF
+
+  vVal = Val(sText)
+  IF TypeOf(vVal) <> $iType THEN Error.Raise("Bad value")
+
+  RETURN vVal
+
+END
+
+PRIVATE SUB Value_Write(Value AS Variant)
+
+  ME.Text = Str(Value)
+
+END
+
+PRIVATE FUNCTION Type_Read() AS Integer
+
+  RETURN $iType
+
+END
+
+PRIVATE SUB Type_Write(Type AS Integer)
+
+  IF [gb.Integer, gb.Float, gb.String, gb.Date].Find(Type) >= 0 THEN
+    $iType = Type
+  ELSE
+    $iType = gb.Integer
+  ENDIF
+
+END
+
+PRIVATE SUB Null_Write(Allow AS Boolean)
+
+  $bNull = Allow
+
+END
+
+PRIVATE FUNCTION Null_Read() AS Boolean
+
+  RETURN $bNull
+
+END

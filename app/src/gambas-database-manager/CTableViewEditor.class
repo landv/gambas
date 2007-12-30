@@ -1,0 +1,505 @@
+' Gambas class file
+
+EVENT Save(Row AS Integer, Column AS Integer, Data AS String)
+EVENT Click()
+EVENT Change()
+EVENT Data(Row AS Integer, Column AS Integer)
+EVENT Create()
+
+PRIVATE $hTableView AS TableView
+PRIVATE $hComboBox AS ComboBox
+PRIVATE $hTextBox AS TextBox
+PRIVATE $hTextArea AS TextArea
+PRIVATE $hPanel AS Panel
+PRIVATE $sText AS String
+
+PRIVATE $iRow AS Integer
+PRIVATE $iColumn AS Integer
+PRIVATE $hCurrent AS Object
+
+PRIVATE $bIgnore AS Boolean
+PRIVATE $bIgnoreScroll AS Boolean
+PRIVATE $bMandatory AS Boolean
+PRIVATE $bTrim AS Boolean
+
+PRIVATE $iMaxHeight AS Integer
+
+PUBLIC SUB _new(hTableView AS TableView)
+
+  DIM hCont AS Container
+
+  $hTableView = hTableView
+
+  hCont = hTableView.Parent
+
+  $hPanel = NEW Panel(hCont)
+  $hPanel.Raise
+
+  $hTextBox = NEW TextBox($hPanel) AS "Editor"
+  $hTextBox.Border = FALSE
+  $hTextBox.Font = hTableView.Font
+
+  $iMaxHeight = $hTextBox.Font.Height("X") + 2
+
+  $hComboBox = NEW ComboBox($hPanel) AS "Editor"
+  $hComboBox.Font = hTableView.Font
+
+  $hTextArea = NEW TextArea($hPanel) AS "Editor"
+  $hTextArea.Border = FALSE
+  $hTextArea.Font = hTableView.Font
+  '$hTextArea.ScrollBar = Scroll.Vertical
+  $hTextArea.Wrap = TRUE
+
+  $hPanel.Background = $hTextBox.Background
+
+  Object.Attach($hTableView, ME, "TableView")
+
+  HideEditor
+
+END
+
+PUBLIC FUNCTION MoveTo(iRow AS Integer, iCol AS Integer) AS Boolean
+
+  'DIM bShift AS Boolean
+
+  IF iCol < 0 THEN
+    DEC iRow
+    iCol = $hTableView.Columns.Count - 1
+  ELSE IF iCol >= $hTableView.Columns.Count THEN
+    INC iRow
+    iCol = 0
+  ENDIF
+
+  IF iRow < 0 THEN RETURN TRUE
+  IF iRow >= $hTableView.Rows.Count THEN RETURN TRUE
+
+  IF HideEditor() THEN RETURN TRUE
+
+  'TRY bShift = Key.Shift
+  'IF NOT bShift THEN
+  '  IF iRow <> $hTableView.Row THEN $hTableView.Rows.SelectAll(FALSE)
+  'ENDIF
+
+  $bIgnore = TRUE
+  $hTableView[iRow, iCol].EnsureVisible
+  $hTableView.MoveTo(iRow, iCol)
+  RAISE Change
+  $bIgnore = FALSE
+  $bIgnoreScroll = TRUE
+
+END
+
+
+PUBLIC FUNCTION SaveEditor() AS Boolean
+
+  DIM sNewText AS String
+  DIM bCancel AS Boolean
+  DIM sText AS String
+
+  IF $hCurrent THEN
+
+    sNewText = $hCurrent.Text
+    IF $bTrim THEN sNewText = Trim(sNewText)
+
+    IF sNewText <> $sText THEN
+
+      IF NOT sNewText THEN
+        IF $bMandatory THEN
+          Message.Warning(("This field cannot be void."))
+          $hCurrent.Text = $sText
+          GOTO _ERROR
+        ENDIF
+      ENDIF
+
+      'PRINT "SaveEditor: "; $hCurrent.Text
+
+      bCancel = RAISE Save($iRow, $iColumn, $hCurrent.Text)
+      IF bCancel THEN GOTO _ERROR
+
+      LoadEditor
+      $hCurrent.Text = $sText
+
+    ENDIF
+
+  ENDIF
+
+  RETURN
+
+_ERROR:
+
+  $bIgnore = TRUE
+  $hTableView.MoveTo($iRow, $iColumn)
+  $hTableView.Current.EnsureVisible
+  $hCurrent.Text = $sText
+  SetFocus
+  $bIgnore = FALSE
+  RETURN TRUE
+
+END
+
+
+
+PRIVATE FUNCTION HideEditor() AS Boolean
+
+  IF $hCurrent THEN
+    IF NOT $hPanel.Visible THEN RETURN
+    IF SaveEditor() THEN RETURN TRUE
+  ENDIF
+
+  $hTextBox.Hide
+  $hComboBox.Hide
+  $hTextArea.Hide
+  $hPanel.Hide
+  $hCurrent = NULL
+
+  '$hTableView.MoveTo(-1, -1)
+
+  RETURN
+
+END
+
+
+PUBLIC FUNCTION Hide() AS Boolean
+
+  RETURN HideEditor()
+
+END
+
+
+
+PRIVATE FUNCTION MoveEditor() AS Boolean
+
+  IF NOT $hCurrent THEN RETURN
+
+  WITH $hTableView.Current
+
+    $hPanel.Move($hTableView.X + .X, $hTableView.Y + .Y, .W, .H)
+    IF $hCurrent = $hTextArea THEN
+      $hCurrent.Move(0, 0, .W, .H)
+    ELSE
+      $hCurrent.Move(0, 0, .W, Min(.H, $iMaxheight))
+    ENDIF
+
+  END WITH
+
+  WITH $hPanel
+
+    IF .X < ($hTableView.X + $hTableView.Rows.Width) THEN RETURN TRUE
+    IF .Y < ($hTableView.Y + $hTableView.Columns.Height) THEN RETURN TRUE
+    IF (.X + .W) >= ($hTableView.X + $hTableView.W) THEN RETURN TRUE
+    IF (.Y + .H) >= ($hTableView.Y + $hTableView.H) THEN RETURN TRUE
+
+  END WITH
+
+END
+
+
+PRIVATE SUB LoadEditor()
+
+  $hTableView.Current.Refresh
+  $sText = $hTableView.Current.Text
+  'PRINT "LoadEditor: "; $sText
+
+END
+
+
+PRIVATE FUNCTION ShowEditor() AS Boolean
+
+  IF NOT $hCurrent THEN RETURN
+
+  IF MoveEditor() THEN
+    $hPanel.Hide
+    $hCurrent.Hide
+    $hCurrent = NULL
+  ELSE
+    $hCurrent.Show
+    $hPanel.Show
+    $hPanel.Raise
+  ENDIF
+
+END
+
+
+PUBLIC SUB Resize()
+
+  'ShowEditor
+  HideEditor
+
+END
+
+
+PUBLIC FUNCTION ShowNotEditable() AS Boolean
+
+  IF HideEditor() THEN RETURN TRUE
+  LoadEditor
+
+  $hTextBox.Text = $sText
+  $hTextBox.ReadOnly = TRUE
+  '$hTextBox.Background = Color.SelectedBackground
+
+  $iRow = $hTableView.Row
+  $iColumn = $hTableView.Column
+  $hCurrent = $hTextBox
+
+  ShowEditor
+
+  SetFocus
+
+END
+
+
+
+PUBLIC FUNCTION ShowTextBox(OPTIONAL bMandatory AS Boolean, OPTIONAL bTrim AS Boolean, OPTIONAL iMaxLength AS Integer) AS Boolean
+
+  IF HideEditor() THEN RETURN TRUE
+  LoadEditor
+
+  $hTextBox.Text = $sText
+  $hTextBox.ReadOnly = FALSE
+  '$hTextBox.Background = Color.TextBackground
+  $hTextBox.MaxLength = iMaxLength
+
+  $iRow = $hTableView.Row
+  $iColumn = $hTableView.Column
+  $hCurrent = $hTextBox
+
+  ShowEditor
+
+  SetFocus
+
+  $bMandatory = bMandatory
+  $bTrim = bTrim
+
+END
+
+
+PUBLIC FUNCTION ShowTextArea(OPTIONAL bMandatory AS Boolean, OPTIONAL bTrim AS Boolean) AS Boolean
+
+  IF HideEditor() THEN RETURN TRUE
+  LoadEditor
+
+  $hTextArea.Text = $sText
+
+  $iRow = $hTableView.Row
+  $iColumn = $hTableView.Column
+  $hCurrent = $hTextArea
+
+  ShowEditor
+
+  SetFocus
+
+  $bMandatory = bMandatory
+  $bTrim = bTrim
+
+END
+
+
+PUBLIC FUNCTION ShowComboBox(aList AS String[], OPTIONAL bMandatory AS Boolean, OPTIONAL bTrim AS Boolean) AS Boolean
+
+  IF HideEditor() THEN RETURN TRUE
+  LoadEditor
+
+  $hComboBox.ReadOnly = FALSE
+  $hComboBox.MaxLength = 0
+  $hComboBox.ReadOnly = bMandatory
+  $hComboBox.List = aList
+  $hComboBox.Text = $sText
+
+  $iRow = $hTableView.Row
+  $iColumn = $hTableView.Column
+  $hCurrent = $hComboBox
+
+  MoveEditor
+  $hComboBox.Visible = TRUE
+  $hPanel.Show
+
+  SetFocus
+
+  $bMandatory = bMandatory
+  $bTrim = bTrim
+
+END
+
+
+PRIVATE FUNCTION CanMoveCursor() AS Boolean
+
+  IF NOT $hCurrent THEN RETURN
+  IF $hCurrent.ReadOnly THEN RETURN
+
+  IF $hCurrent.Selection.Length = $hCurrent.Length THEN RETURN
+
+  IF Key.Code = Key.Left THEN
+    IF $hCurrent.Pos > 0 THEN RETURN TRUE
+  ELSE IF Key.Code = Key.Right THEN
+    IF $hCurrent.Pos < $hCurrent.Length THEN RETURN TRUE
+  ENDIF
+
+END
+
+
+PUBLIC SUB Editor_KeyPress()
+
+  SELECT Key.Code
+
+    CASE Key.Esc
+      LAST.Text = $sText
+      TRY LAST.SelectAll()
+
+    CASE Key.Left
+      'IF Key.Control THEN RETURN
+      IF CanMoveCursor() THEN RETURN
+      MoveTo($hTableView.Row, $hTableView.Column - 1)
+      STOP EVENT
+
+    CASE Key.Right, Key.Return, Key.Enter
+      'IF Key.Control THEN RETURN
+      IF CanMoveCursor() THEN RETURN
+      IF MoveTo($hTableView.Row, $hTableView.Column + 1) THEN
+        RAISE Create()
+      ENDIF
+      STOP EVENT
+
+    CASE Key.Up
+      MoveTo($hTableView.Row - 1, $hTableView.Column)
+      STOP EVENT
+
+    CASE Key.Down
+      MoveTo($hTableView.Row + 1, $hTableView.Column)
+      'Key.Cancel = TRUE
+      STOP EVENT
+
+    CASE Key.PageUp
+      MoveTo($hTableView.Row - 10, $hTableView.Column)
+      STOP EVENT
+
+    CASE Key.PageDown
+      MoveTo($hTableView.Row + 10, $hTableView.Column)
+      STOP EVENT
+
+    CASE Key.Home
+      IF Key.Control THEN
+        MoveTo(0, 0)
+      ENDIF
+
+    CASE Key.End
+      IF Key.Control THEN
+        MoveTo($hTableView.Rows.Count - 1, $hTableView.Columns.Count - 1)
+      ENDIF
+
+  END SELECT
+
+END
+
+
+PRIVATE SUB SetFocus()
+
+  TRY $hCurrent.SetFocus
+
+END
+
+
+PUBLIC SUB TableView_Change()
+
+  IF $bIgnore THEN RETURN
+  IF NOT $hTableView.Visible THEN RETURN
+  IF $hTableView.Row < 0 THEN
+    PRINT "TableView_Change: Row < 0"
+    RETURN
+  ENDIF
+
+  IF HideEditor() THEN RETURN
+
+  $bIgnore = TRUE
+  RAISE Change
+  $bIgnore = FALSE
+
+END
+
+
+PUBLIC SUB TableView_Data(Row AS Integer, Column AS Integer)
+
+  RAISE Data(Row, Column)
+
+  'IF $sCharset THEN
+  '  $hTableView.Data.Text = Conv($hTableView.Data.Text, $sCharset, Desktop.Charset)
+  'ENDIF
+
+END
+
+PUBLIC SUB TableView_Scroll()
+
+  IF $bIgnoreScroll THEN
+    $bIgnoreScroll = FALSE
+    RETURN
+  ENDIF
+
+  ShowEditor
+  'HideEditor
+
+END
+
+PUBLIC SUB TableView_Resize()
+
+  HideEditor
+
+END
+
+
+
+PUBLIC SUB Editor_Click()
+
+  SaveEditor
+
+END
+
+PUBLIC SUB Editor_Activate()
+
+  SaveEditor
+
+END
+
+
+PUBLIC SUB Close()
+
+  Object.Detach($hTableView)
+  $hTableView = NULL
+
+END
+
+
+PUBLIC SUB TableView_MouseDown()
+
+  HideEditor
+
+END
+
+'PUBLIC SUB TableView_MouseUp(X AS Integer, Y AS Integer, Button AS Integer)
+PUBLIC SUB TableView_Click()
+
+  RAISE Click
+
+  IF NOT $hCurrent THEN
+    IF $hTableView.Row >= 0 THEN
+      TableView_Change
+    ENDIF
+  ENDIF
+
+END
+
+
+PUBLIC SUB Editor_GotFocus()
+
+  TRY LAST.SelectAll()
+
+END
+
+
+PUBLIC SUB TableView_Delete()
+
+  $hTableView = NULL
+  $hComboBox = NULL
+  $hTextBox = NULL
+  $hTextArea = NULL
+  $hPanel = NULL
+
+END

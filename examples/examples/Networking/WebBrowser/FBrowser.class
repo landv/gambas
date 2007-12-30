@@ -1,0 +1,47 @@
+' Gambas class file
+
+PUBLIC SUB Form_Resize()
+
+'   txtLink.Move(0, 0, ME.ClientW)
+'   webTest.Move(0, txtLink.H, ME.ClientW, ME.ClientH - txtLink.H - lblLink.H)
+'   lblLink.Move(0, webTest.Y + webTest.H, ME.CLientW)
+
+END
+
+PUBLIC SUB webTest_Change()
+
+  txtLink.Text = LAST.Path
+  'DEC Application.Busy
+
+END
+
+PUBLIC SUB webTest_Click()
+
+  txtLink.Text = " " & LAST.Link
+  'INC Application.Busy
+
+END
+
+PUBLIC SUB webTest_Link()
+
+  lblLink.Text = LAST.Link
+
+END
+
+PUBLIC SUB txtLink_Activate()
+
+  DIM sPath AS String
+  
+  sPath = txtLink.Text
+  IF NOT (sPath LIKE "http://*") THEN sPath = "http://" & sPath
+
+  webTest.Path = Trim(sPath)
+
+END
+
+PUBLIC SUB Form_Open()
+
+  txtLink.Text = "http://gambas.sourceforge.net"
+  txtLink_Activate
+
+END

@@ -1,0 +1,11 @@
+'
+'   Copyright (C) 2004, Michael Isaac.  All rights reserved. 
+'
+
+PUBLIC SUB cmdOK_Click()
+    ME.Delete()
+END
+
+PUBLIC SUB Form_Open()
+    lblInfo.Text = "<font style='font-family: ariel;' size='+3'><b>DeepSpace</b></font><font style='font-family: ariel;' size='+0'>&nbsp;&nbsp;<b>" & Application.Version & "</b></font><br><hr><font style='font-family: ariel;' size='+0'>A vector engine written in Gambas.<br><br>Contact <font color='#0000FF'>subjugator@gmail.com</font> with questions.<br>Copyright (C) 2004, Michael Isaac. All rights reserved.</font>"
+END

@@ -1,0 +1,25 @@
+# Gambas Form File 1.0
+
+{ FToolBar Form
+  MoveScaled(34.375,32.375,32.375,49.625)
+  'Move(275,259,259,397)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = 2
+  { btnTool Button
+    MoveScaled(0,0,32,2)
+    'Move(0,0,256,16)
+    Visible = False
+    Font = Font["8"]
+    Text = ("")
+    Border = False
+  }
+  { panTool ScrollView
+    MoveScaled(2,4,23,29)
+    'Move(16,32,184,232)
+    Expand = True
+    Arrangement = Arrange.Row
+    Border = Border.None
+    ScrollBar = Scroll.Vertical
+  }
+}

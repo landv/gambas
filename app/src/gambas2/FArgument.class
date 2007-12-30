@@ -1,0 +1,180 @@
+' Gambas class file
+
+PRIVATE $aArg AS NEW String[]
+PRIVATE $iArg AS Integer
+
+PUBLIC SUB Form_Open()
+
+  DIM sArg AS String
+
+  $iArg = Project.CurrentArgument
+  lstArgument.Clear  
+  FOR EACH sArg IN Project.Arguments
+    $aArg.Add(sArg)
+    lstArgument.Add(Replace(sArg, "\n", " "))
+  NEXT
+
+  UpdateArgument
+  TRY lstArgument.Index = $iArg - 1
+
+END
+
+PUBLIC SUB btnAddArg_Click()
+
+  DIM sArg AS String
+
+  IF lstArgument.Index >= 0 THEN
+    IF NOT txtArgument.Text THEN RETURN
+  ENDIF
+
+  'IF lstArgument.Index < 0 THEN
+    lstArgument.Add("")
+    $aArg.Add("")
+    lstArgument.Index = lstArgument.Count - 1
+  'ELSE
+  '  lstArgument.Add("", lstArgument.Index)
+  '  lstArgument.Index = lstArgument.Index - 1
+  'ENDIF
+
+  UpdateArgument
+
+END
+
+PRIVATE SUB RemoveArg(iInd AS Integer)
+  
+  IF iInd = ($iArg - 1) THEN
+    $iArg = 0
+  ELSE IF iInd < ($iArg - 1) THEN 
+    DEC iInd
+  ENDIF
+  $aArg.Remove(iInd)
+  
+END
+
+
+PUBLIC SUB btnRemoveArg_Click()
+
+  IF lstArgument.Index >= 0 THEN
+    txtArgument.Text = ""
+    RemoveArg(lstArgument.Index)
+    lstArgument.Remove(lstArgument.Index)
+  ENDIF
+
+  UpdateArgument
+
+END
+
+PUBLIC SUB txtArgument_Change()
+
+  DIM sArg AS String
+  
+  IF lstArgument.Index < 0 THEN RETURN
+  
+  sArg = txtArgument.Text
+  lstArgument[lstArgument.Index].Text = Replace(sArg, "\n", " ")
+  $aArg[lstArgument.Index] = sArg
+
+END
+
+PUBLIC SUB lstArgument_Select()
+
+  IF lstArgument.Index >= 0 THEN
+    Object.Lock(txtArgument)
+    txtArgument.Text = $aArg[lstArgument.Index]
+    Object.Unlock(txtArgument)
+  ENDIF
+  UpdateArgument
+
+  IF txtArgument.Enabled THEN
+    'txtArgument.SelectAll
+    txtArgument.SetFocus
+  ENDIF
+  
+  $iArg = lstArgument.Index + 1
+
+END
+
+PRIVATE SUB UpdateArgument()
+
+  txtArgument.Enabled = lstArgument.Index >= 0
+
+END
+
+' PUBLIC SUB btnUpArg_Click()
+' 
+'   DIM iInd AS Integer
+'   DIM sItem AS String
+' 
+'   Object.Lock(lstArgument)
+' 
+'   WITH lstArgument
+' 
+'     iInd = .Index
+'     IF iInd > 0 THEN
+'       sItem = lstArgument[iInd].Text
+'       .Add(sItem, iInd - 1)
+'       .Remove(iInd + 1)
+'       .Index = iInd - 1
+'     ENDIF
+' 
+'   END WITH
+' 
+'   Object.Unlock(lstArgument)
+' 
+' END
+' 
+' PUBLIC SUB btnDownArg_Click()
+' 
+'   DIM iInd AS Integer
+'   DIM sItem AS String
+' 
+'   Object.Lock(lstArgument)
+' 
+'   WITH lstArgument
+' 
+'     iInd = .Index
+'     IF iInd >= 0 AND iInd < (.Count - 1) THEN
+'       sItem = lstArgument[iInd].Text
+'       .Remove(iInd)
+'       .Add(sItem, iInd + 1)
+'       .Index = iInd + 1
+'     ENDIF
+' 
+'   END WITH
+' 
+'   Object.Unlock(lstArgument)
+' 
+' END
+
+PUBLIC SUB btnDeleteAllArg_Click()
+
+  lstArgument.Clear
+  txtArgument.Text = ""
+  $aArg.Clear
+  UpdateArgument
+
+END
+
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  DIM iInd AS Integer
+
+  DO
+    iInd = $aArg.Find("")
+    IF iInd < 0 THEN BREAK
+    RemoveArg(iInd)    
+  LOOP
+
+  Project.Arguments = $aArg
+  Project.CurrentArgument = $iArg
+  Project.WriteProject(TRUE)
+  ME.Close(TRUE)
+
+END

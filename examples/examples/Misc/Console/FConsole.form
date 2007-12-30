@@ -1,0 +1,22 @@
+# Gambas Form File 1.0
+
+{ FConsole Form
+  Move(308,131,400,400)
+  Text = ("Console")
+  Icon = Picture["konsole.png"]
+  { txtConsole TextArea
+    Move(8,8,376,296)
+    Font = Font["Monospace,10"]
+    Background = &H000000&
+    Foreground = &HFFFFFF&
+    Text = ("")
+    ReadOnly = True
+  }
+  { txtCommand TextBox
+    Move(8,320,184,24)
+    Font = Font["Monospace,10"]
+    Background = &H000000&
+    Foreground = &HFFFFFF&
+    Text = ("")
+  }
+}

@@ -1,0 +1,300 @@
+' Gambas class file
+
+PUBLIC Shown AS Boolean
+
+PRIVATE $aLocal AS String[]
+
+PUBLIC SUB Form_Open()
+
+  ReadConfig
+
+  WITH cvwLocal
+    .Columns.Count = 2
+    .Columns[0].Width = 128
+    .Columns[0].Text = ("Name")
+    .Columns[1].Text = ("Value")
+  END WITH
+
+  WITH cvwWatch
+    .Columns.Count = 2
+    .Columns[0].Width = 128
+    .Columns[0].Text = ("Expression")
+    .Columns[1].Text = ("Value")
+  END WITH
+
+END
+
+
+PUBLIC SUB Clear()
+
+  cvwLocal.Clear
+  lstStack.Clear
+  cvwWatch.Clear
+
+END
+
+
+
+PUBLIC SUB EnableStack(bOn AS Boolean)
+
+  lstStack.Enabled = bOn
+
+END
+
+
+PUBLIC SUB FillStack(aPos AS String[])
+
+  DIM sPos AS String
+
+  lstStack.Clear
+
+  FOR EACH sPos IN aPos
+    IF sPos = "?" THEN
+      lstStack.Add("(" & ("native code") & ")")
+    ELSE
+      lstStack.Add(sPos)
+    ENDIF
+  NEXT
+
+END
+
+
+PUBLIC SUB lstStack_Activate()
+
+  DIM sLoc AS String
+  DIM iPos AS Integer
+  DIM sFile AS String
+  DIM iLine AS Integer
+
+  sLoc = lstStack.Current.Text
+  IF InStr(sLoc, "(") THEN RETURN
+
+  iPos = InStr(sLoc, ".")
+  IF iPos = 0 THEN RETURN
+  sFile = Left$(sLoc, iPos - 1)
+
+  iPos = RInStr(sLoc, ".")
+  IF iPos = 0 THEN RETURN
+  iLine = Val(Mid$(sLoc, iPos + 1))
+
+  Project.OpenFile(sFile, iLine)
+
+CATCH
+
+END
+
+
+PUBLIC SUB DefineLocal(aLocal AS String[])
+
+  DIM sVar AS String
+
+  $aLocal = aLocal
+  cvwLocal.Clear
+  'cvLocal.Add("ME", "ME")
+  FOR EACH sVar IN aLocal
+    TRY cvwLocal.Add(sVar, sVar)
+  NEXT
+
+END
+
+PUBLIC SUB AddLocal(sCmd AS String, sRes AS String)
+
+  IF NOT sCmd THEN
+    PRINT "FLocal.Add: sCmd = '' ?"
+    RETURN
+  ENDIF
+
+  TRY cvwLocal.Add(sCmd, sCmd)
+
+  IF Left$(sRes, 1) = "=" THEN
+    cvwLocal[sCmd][1] = Mid$(sRes, 2)
+  ELSE
+    cvwLocal[sCmd][1] = ("ERROR:") & " " & sRes
+  ENDIF
+
+END
+
+PUBLIC SUB RefreshAllLocal()
+
+  DIM sVar AS String
+
+  FOR EACH sVar IN $aLocal
+    Design.Command("l" & sVar, TRUE,, "L")
+  NEXT
+
+END
+
+
+
+PUBLIC SUB AddResultWatch(sCmd AS String, sRes AS String, OPTIONAL bInstant AS Boolean)
+
+  DIM sVal AS String
+  DIM hEditor AS FEditor
+
+  IF Left$(sRes, 1) = "=" THEN
+    sVal = Mid$(sRes, 2)
+  ELSE
+    sVal = "** " & sRes
+  ENDIF
+
+  IF bInstant THEN 
+    TRY hEditor = Project.ActiveForm
+    IF hEditor THEN hEditor.ShowMessage(sval)
+  ELSE  
+    TRY cvwWatch.Add(sCmd, sCmd)
+    cvwWatch[sCmd][1] = sVal
+  ENDIF
+
+END
+
+
+PUBLIC SUB RefreshAllWatch()
+
+  IF NOT cvwWatch.MoveFirst() THEN
+
+    DO
+
+      Design.Command("?" & cvwWatch.Item.Text, TRUE)
+      IF cvwWatch.MoveNext() THEN RETURN
+
+    LOOP
+
+  ENDIF
+
+END
+
+
+PUBLIC SUB AddWatch(sExpr AS String)
+
+  IF cmbWatch.Find(sExpr) < 0 THEN
+    cmbWatch.Add(sExpr)
+  ENDIF
+
+  Design.Command("?" & sExpr, TRUE)
+
+END
+
+PUBLIC SUB InstantWatch(sExpr AS String)
+  
+  IF NOT sExpr THEN RETURN
+  Design.Command("?" & sExpr, TRUE,, "#")
+  
+END
+
+
+
+PUBLIC SUB cmbWatch_Activate()
+
+  DIM sExpr AS String
+
+  sExpr = Trim(cmbWatch.Text)
+  IF NOT sExpr THEN RETURN
+
+  AddWatch(sExpr)
+
+END
+
+
+PUBLIC SUB btnWatch_Click()
+
+  cmbWatch_Activate
+
+END
+
+
+PUBLIC SUB btnKillWatch_Click()
+
+  TRY cvwWatch.Remove(cvwWatch.Key)
+
+END
+
+PUBLIC SUB btnKillAllWatch_Click()
+
+  IF Message.Question(("Do you want to clear the expression list ?"), ("Clear"), ("Cancel")) = 2 THEN RETURN
+
+  cvwWatch.Clear
+
+END
+
+PUBLIC SUB cmbWatch_Click()
+
+  btnWatch_Click
+
+END
+
+PUBLIC SUB cvwWatch_Activate()
+
+  cmbWatch.Text = LAST.Item.Text
+
+END
+
+PUBLIC SUB ReadConfig()
+
+  cvwLocal.Font.Grade = If(Settings["/UseSmallFont", FALSE], -1, 0)
+  lstStack.Font = cvwLocal.Font
+  cvwWatch.Font = cvwLocal.Font
+  lstBreak.Font = cvwLocal.Font
+
+END
+
+PUBLIC SUB ClearBreakpoint()
+  
+  lstBreak.Clear
+  
+END
+
+
+PUBLIC SUB AddBreakpoint(sName AS String, sProc AS String, iLine AS Integer, bOn AS Boolean)
+  
+  DIM sText AS String
+  DIM iInd AS Integer
+  
+  sText = sName & "." & sProc & "." & CStr(iLine)
+  iInd = lstBreak.Find(sText)
+  
+  IF bOn THEN
+    IF iInd < 0 THEN
+      lstBreak.Add(sText)
+    ENDIF
+  ELSE
+    IF iInd >= 0 THEN    
+      lstBreak.Remove(iInd)
+    ENDIF 
+  ENDIF
+  
+END
+
+PUBLIC SUB btnRemoveBreak_Click()
+
+  DIM aText AS String[]
+  DIM hEdit AS FEditor
+  
+  IF lstBreak.Index < 0 THEN RETURN
+  
+  aText = Scan(lstBreak.Text, "*.*.*")
+  hEdit = Project.Files[Project.FindPath(aText[0])]
+  IF NOT hEdit THEN RETURN
+  
+  hEdit.ToggleBreakpoint(CInt(aText[2]) - 1)
+
+END
+
+PUBLIC SUB btnClearBreak_Click()
+
+  WHILE lstBreak.Count
+    lstBreak.Index = 0
+    btnRemoveBreak_Click
+  WEND  
+
+END
+
+PUBLIC SUB lstBreak_Activate()
+
+  DIM aText AS String[]
+  
+  aText = Scan(lstBreak.Text, "*.*.*")
+  Project.OpenFile(aText[0], CInt(aText[2]))
+
+CATCH
+
+END

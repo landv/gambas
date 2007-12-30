@@ -1,0 +1,32 @@
+' Gambas module file
+
+EXPORT
+
+PROPERTY READ Host AS String
+PROPERTY READ Root AS String
+PROPERTY READ Request AS String
+
+
+PRIVATE FUNCTION Host_Read() AS String
+
+  RETURN CGI["HTTP_HOST"]
+
+END
+
+
+
+PRIVATE FUNCTION Request_Read() AS String
+
+  DIM sReq AS String
+  
+  sReq = "http://" & CGI["HTTP_HOST"] &/ CGI["SCRIPT_NAME"] &/ CGI["PATH_INFO"]
+  IF CGI["QUERY_STRING"] THEN sReq &= "?" & CGI["QUERY_STRING"]
+  RETURN sReq
+  
+END
+
+PRIVATE FUNCTION Root_Read() AS String
+
+  RETURN CGI["SCRIPT_NAME"]
+
+END

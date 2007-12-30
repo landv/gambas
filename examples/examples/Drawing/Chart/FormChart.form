@@ -1,0 +1,37 @@
+# Gambas Form File 1.0
+
+{ FormChart Form
+  MoveScaled(37.75,13.875,72.25,50)
+  'Move(302,111,578,400)
+  Background = &HFFEFBF&
+  Text = ("Example to make a Bar Chart")
+  Border = Window.Fixed
+  { bg PictureBox
+    MoveScaled(1,1,70.25,43.375)
+    'Move(8,8,562,347)
+    Background = &HFFFFFF&
+    Border = Border.Plain
+  }
+  { drwChart DrawingArea
+    MoveScaled(2,3,69,41)
+    'Move(16,24,552,328)
+    Background = &HFFFFFF&
+    Cached = True
+  }
+  { btnClose Button
+    MoveScaled(56.25,45,15,4)
+    'Move(450,360,120,32)
+    Text = ("&Close")
+  }
+  { btnAbout Button
+    MoveScaled(39.875,45,15,4)
+    'Move(319,360,120,32)
+    Text = ("&About")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(2,2,4,2.625)
+    'Move(16,16,32,21)
+    Background = &HFFFFFF&
+    Text = ("(%)")
+  }
+}

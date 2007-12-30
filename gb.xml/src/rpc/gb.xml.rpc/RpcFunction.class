@@ -1,0 +1,123 @@
+'***************************************************************************
+' 
+' RpcFunction.class
+' 
+' (c)2005 - Daniel Campos Fernández
+' 
+' XML-RPC Component
+' 
+' Realizado para la Junta de Extremadura.
+' Consejería de Educación Ciencia y Tecnología.
+' Proyecto gnuLinEx
+'
+' This program Is free software; you can redistribute it And / Or modify
+' it under the terms OF the GNU General PUBLIC License AS published by
+' the Free Software Foundation; either version 1, Or (at your option)
+' any later version.
+' 
+' This program Is distributed IN the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; WITHOUT even the implied WARRANTY OF
+' MERCHANTABILITY Or FITNESS FOR A PARTICULAR PURPOSE.See the
+' GNU General PUBLIC License FOR more details.
+' 
+' You should have received a COPY OF the GNU General PUBLIC License
+' along WITH this program; IF Not, WRITE TO the Free Software
+' Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+' 
+'***************************************************************************
+EXPORT
+
+PRIVATE dTypes AS Integer[]
+PRIVATE rType AS Integer
+PRIVATE mName AS String
+PRIVATE Hlp AS String
+
+PROPERTY READ MethodName AS String
+PROPERTY READ Count AS Integer
+PROPERTY READ ReturnType AS Integer
+PROPERTY Help AS String
+
+FUNCTION Help_read() AS String
+
+  RETURN Hlp
+
+END
+
+SUB Help_Write(sCad AS String)
+
+  Hlp = sCad
+
+END
+
+
+
+FUNCTION MethodName_Read() AS String
+
+  RETURN mName
+
+END
+
+FUNCTION Count_Read() AS Integer
+
+  RETURN dTypes.Count
+
+END
+
+
+PUBLIC FUNCTION _get(Index AS Integer) AS Integer
+
+  RETURN dTypes[Index]
+
+END
+
+
+
+FUNCTION ReturnType_Read() AS Integer
+
+  RETURN rType
+
+END
+
+
+
+PUBLIC SUB _New(Name AS String, DataTypes AS Integer[], Ret AS Integer)
+
+  DIM Ok AS Boolean
+  DIM Bucle AS Integer
+
+  Ok = TRUE
+
+  IF DataTypes <> NULL THEN
+
+    FOR Bucle = 0 TO Datatypes.Count - 1
+
+      IF Datatypes[Bucle] < 0 Or Datatypes[Bucle] > 7 THEN
+        Ok = FALSE
+        BREAK
+      END IF
+
+    NEXT
+
+  END IF
+
+  IF Ret < 0 Or Ret > 8 THEN Ok = FALSE
+
+  IF Not Ok THEN
+
+    Error.Raise("Invalid data types")
+
+  ELSE
+
+      IF DataTypes <> NULL THEN
+        dTypes = DataTypes.Copy()
+      ELSE
+        dTypes = NEW Integer[]
+      END IF
+
+      rType = Ret
+      mName = Name
+
+  END IF
+
+
+END

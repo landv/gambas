@@ -1,0 +1,292 @@
+' Gambas class file
+
+PRIVATE $hWatcher AS Watcher
+PRIVATE $hWatcherParent AS Watcher
+PRIVATE $bLock AS Boolean
+PRIVATE $bHidden AS Boolean
+PRIVATE $bVertical AS Boolean
+
+PUBLIC SUB _new()
+  
+  'dwgHandle.Width = 6
+  $hWatcher = NEW Watcher(panToolBar) AS "panToolBar"
+  $hWatcherParent = NEW Watcher(ME.Parent.Parent) AS "Container"
+  
+END
+
+
+PUBLIC SUB IsVertical() AS Boolean
+  
+  RETURN $bVertical
+  
+END
+
+PUBLIC SUB SetVertical(bVertical AS Boolean)
+  
+  $bVertical = bVertical
+  Update
+  
+END
+
+
+
+PUBLIC FUNCTION GetContainer() AS Container
+  
+  RETURN panToolBar
+  
+END
+
+PRIVATE FUNCTION GetToolBarWidth() AS Integer
+  
+  DIM hCtrl AS Control
+  DIM W AS Integer
+  
+  IF $bVertical THEN 
+  
+    FOR EACH hCtrl IN panToolBar.Children
+      IF hCtrl.Visible THEN 
+        IF hCtrl.Expand THEN RETURN GetFreeWidth() - dwgHandle.Height
+        W += hCtrl.H
+      ENDIF
+    NEXT
+    
+  ELSE 
+  
+    FOR EACH hCtrl IN panToolBar.Children
+      IF hCtrl.Visible THEN 
+        IF hCtrl.Expand THEN RETURN GetFreeWidth() - dwgHandle.Width
+        W += hCtrl.W
+      ENDIF
+    NEXT
+    
+  ENDIF
+  
+  RETURN W + panToolBar.Padding * 2 
+  
+END
+
+PRIVATE SUB GetToolBarHeight() AS Integer
+  
+  DIM hCtrl AS Control
+  DIM H AS Integer
+
+  IF $bVertical THEN
+  
+    FOR EACH hCtrl IN panToolBar.Children
+      H = Max(H, hCtrl.W)
+    NEXT
+    
+  ELSE
+  
+    FOR EACH hCtrl IN panToolBar.Children
+      H = Max(H, hCtrl.H)
+    NEXT
+    
+  ENDIF
+  
+  RETURN H + panToolBar.Padding * 2   
+  
+END
+
+
+
+PRIVATE FUNCTION GetFreeWidth() AS Integer
+  
+  'DEBUG ME.Parent.Parent.ClientW;; ME.Parent.Parent.W
+  IF $bVertical THEN
+    RETURN ME.Parent.Parent.ClientH
+  ELSE 
+    RETURN ME.Parent.Parent.ClientW
+  ENDIF
+  
+END
+
+
+' PUBLIC SUB Form_Resize()
+' 
+'   'DEBUG ME.Width
+' 
+'   IF NOT ME.Parent.Design THEN
+'     Object.Lock(ME)
+'     panToolBar.Arrangement = Arrange.LeftRight
+'     panToolBar.Padding = 2
+'     panToolBar.AutoResize = TRUE
+'     panToolBar.Move(If(System.RightToLeft, 0, 6), 0, Min(ME.ClientW - 6, GetToolBarWidth()))
+'     'panToolBar.Width = GetToolBarWidth()
+'     ME.Parent.Resize(Max(8, panToolBar.Width) + 6, Max(8, panToolBar.Height))
+'     Object.Unlock(ME)
+'   ELSE
+'     panToolBar.Arrangement = Arrange.None
+'     panToolBar.Move(If(System.RightToLeft, 0, 6), 0, ME.ClientW, ME.ClientH)
+'   ENDIF
+'   
+'   dwgHandle.Move(If(System.RightToLeft, ME.ClientW - 5, 2), 2, 3, ME.ClientH - 4)
+' 
+' END
+
+PUBLIC SUB dwgHandle_Draw()
+
+  Draw.FillX = 0
+  Draw.FillY = 0
+  IF $bVertical THEN 
+    Draw.Tile(Picture["img/handle-v.png"], 2, 3, (dwgHandle.W - 4) AND NOT 3, 8)
+  ELSE
+    Draw.Tile(Picture["img/handle.png"], 3, 2, 8, (dwgHandle.H - 4) AND NOT 3)
+  ENDIF
+  
+END
+
+PRIVATE SUB SetArrangement()
+  
+  DIM hToolbar AS ToolBar = ME.Parent
+  
+  IF hToolbar.Design THEN RETURN
+  hToolbar.Arrangement = If($bVertical, Arrange.Column, Arrange.Row)
+  hToolBar.Padding = 1
+  
+END
+
+
+PRIVATE SUB Update()
+
+  DIM W AS Integer
+
+'   IF $bIgnoreNextUpdate THEN
+'     $bIgnoreNextUpdate = bSetIgnore
+'     RETURN
+'   ENDIF 
+' 
+'   $bIgnoreNextUpdate = bSetIgnore
+
+  IF $bLock THEN RETURN
+  $bLock = TRUE
+  
+  '$bVertical = ME.H > ME.W
+  SetArrangement
+
+  IF NOT $bVertical THEN
+  
+    IF ME.Parent.Design THEN
+    
+      'DEBUG
+      dwgHandle.Move(0, 0, 8, ME.H)
+      panToolBar.Move(dwgHandle.W, 0, ME.W - 8, ME.H)
+    
+    ELSE IF $bHidden THEN
+    
+      panToolBar.Hide
+      dwgHandle.Move(0, 0, 8, GetToolBarHeight())
+      ME.Parent.Resize(8, dwgHandle.H)
+    
+    ELSE
+    
+      panToolBar.Show
+      W = Max(8, Min(GetToolBarWidth() + dwgHandle.W, GetFreeWidth()))
+      panToolBar.Move(dwgHandle.W, 0, W - 8)
+      'DEBUG "ME.H = "; ME.H; " ME.Parent.H = "; ME.Parent.H; "  ME.Parent.Parent.H = "; ME.Parent.Parent.H; "  panToolBar.H = "; panToolBar.H
+      dwgHandle.Move(0, 0, 8, panToolBar.H)
+    
+      ME.Parent.Resize(W, Max(GetToolBarHeight(), panToolBar.H))
+      
+    ENDIF
+    
+  ELSE 
+  
+    IF ME.Parent.Design THEN
+    
+      'DEBUG
+      dwgHandle.Move(0, 0, ME.W, 8)
+      panToolBar.Move(0, dwgHandle.H, ME.W, ME.H - 8)
+    
+    ELSE IF $bHidden THEN
+    
+      panToolBar.Hide
+      dwgHandle.Move(0, 0, GetToolBarHeight(), 8)
+      ME.Parent.Resize(dwgHandle.W, 8)
+    
+    ELSE
+    
+      panToolBar.Show
+      W = Max(Min(GetToolBarWidth() + dwgHandle.H, GetFreeWidth()), 8)
+      panToolBar.Move(0, dwgHandle.H, panToolBar.W, W - 8)
+      'DEBUG "ME.H = "; ME.H; " ME.Parent.H = "; ME.Parent.H; "  ME.Parent.Parent.H = "; ME.Parent.Parent.H; "  panToolBar.H = "; panToolBar.H
+      dwgHandle.Move(0, 0, panToolBar.W, 8)
+    
+      ME.Parent.Resize(Max(GetToolBarHeight(), panToolBar.W), W)
+      
+    ENDIF
+    
+  ENDIF
+  
+  $bLock = FALSE
+
+END
+
+PUBLIC SUB Form_Resize()
+  
+  Update
+  
+END
+
+ 
+' PUBLIC SUB Container_Arrange()
+'   
+'   DEBUG
+'   Form_Resize
+'   
+' END
+
+PUBLIC SUB Container_Resize()
+  
+  'IF ME.Parent.Design THEN RETURN
+  Update
+  
+END
+
+
+PUBLIC SUB panToolBar_Arrange()
+
+  'IF ME.Parent.Design THEN RETURN
+  Update
+
+
+END
+
+PUBLIC FUNCTION IsHidden() AS Boolean
+  
+  RETURN $bHidden
+  
+END
+
+PUBLIC SUB SetHidden(bHidden AS Boolean)
+  
+  IF bHidden = $bHidden THEN RETURN
+  $bHidden = bHidden
+  Update
+  Action.Raise(ME.Parent)
+  
+END
+
+' PUBLIC SUB dwgHandle_DblClick()
+' <
+'   SetHidden(NOT $bHidden)
+' 
+' END
+
+PUBLIC SUB dwgHandle_Enter()
+
+  dwgHandle.Background = Color.TextBackground
+
+END
+
+PUBLIC SUB dwgHandle_Leave()
+
+  dwgHandle.Background = Color.Background
+
+END
+
+PUBLIC SUB dwgHandle_MouseUp()
+
+  SetHidden(NOT $bHidden)
+
+END

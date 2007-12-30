@@ -1,0 +1,192 @@
+' Gambas class file
+
+INHERITS UserControl
+EXPORT
+
+PUBLIC CONST _Properties AS String = "*,Root,Picture,ShowHidden,ShowFile,ShowDetailed,ShowBookmark"
+PUBLIC CONST _DefaultEvent AS String = "Change"
+PUBLIC CONST _DefaultSize AS String = "36,36"
+
+PROPERTY Root AS String
+PROPERTY Picture AS Picture
+PROPERTY SelectedPath AS String
+PROPERTY Value AS String
+PROPERTY ShowFile AS Boolean
+PROPERTY ShowHidden AS Boolean
+PROPERTY ShowDetailed AS Boolean
+PROPERTY ShowBookmark AS Boolean
+PROPERTY Bookmarks AS Array
+PROPERTY Icon AS Picture
+PROPERTY Settings AS String[]
+
+EVENT Change
+EVENT Activate
+EVENT Icon(Path AS String)
+
+PRIVATE frmChooser AS FDirChooser
+
+PUBLIC SUB _new()
+
+  frmChooser = NEW FDirChooser(FALSE, ME) AS "frmChooser"
+  Object.Attach(frmChooser, ME, "frmChooser")
+  'Object.Delegate(frmChooser, ME)
+
+END
+
+PUBLIC SUB frmChooser_Open()
+
+  LAST.Form_Open
+
+END
+
+PUBLIC SUB frmChooser_Change()
+
+  RAISE Change
+
+END
+
+PUBLIC SUB frmChooser_Select()
+
+  RAISE Activate
+
+END
+
+PUBLIC SUB frmChooser_Icon(Path AS String)
+  
+  RAISE Icon(Path)
+  
+END
+
+PRIVATE FUNCTION SelectedPath_Read() AS String
+
+  RETURN frmChooser.GetDir()
+
+END
+
+PRIVATE SUB SelectedPath_Write(sDir AS String)
+
+  frmChooser.SetDir(sDir)
+
+END
+
+PRIVATE FUNCTION ShowFile_Read() AS Boolean
+
+  RETURN frmChooser.GetFileVisible()
+
+END
+
+PRIVATE SUB ShowFile_Write(bShowFile AS Boolean)
+
+  frmChooser.SetFileVisible(bShowFile)
+
+END
+
+PRIVATE FUNCTION ShowHidden_Read() AS Boolean
+
+  RETURN frmChooser.GetShowHidden()
+
+END
+
+PRIVATE SUB ShowHidden_Write(bShowHidden AS Boolean)
+
+  frmChooser.SetShowHidden(bShowHidden)
+
+END
+
+PRIVATE FUNCTION ShowDetailed_Read() AS Boolean
+
+  RETURN frmChooser.GetShowDetailed()
+
+END
+
+PRIVATE SUB ShowDetailed_Write(bShowDetailed AS Boolean)
+
+  frmChooser.SetShowDetailed(bShowDetailed)
+
+END
+
+PRIVATE FUNCTION Root_Read() AS String
+
+  RETURN frmChooser.GetRoot()
+
+END
+
+PRIVATE SUB Root_Write(Value AS String)
+
+  frmChooser.SetRoot(Value)
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  RETURN frmChooser.GetPicture()
+
+END
+
+PRIVATE SUB Picture_Write(Value AS Picture)
+
+  frmChooser.SetPicture(Value)
+
+END
+
+PRIVATE FUNCTION Value_Read() AS String
+
+  RETURN frmChooser.GetDir()  
+
+END
+
+PRIVATE SUB Value_Write(Value AS String)
+
+  frmChooser.SetDir(Value)
+
+END
+
+PRIVATE FUNCTION ShowBookmark_Read() AS Boolean
+
+  RETURN frmChooser.IsBookmarkVisible()  
+
+END
+
+PRIVATE SUB ShowBookmark_Write(Value AS Boolean)
+
+  frmChooser.ShowBookmark(Value)
+
+END
+
+PRIVATE FUNCTION Bookmarks_Read() AS Array
+
+  RETURN frmChooser.GetPrivateBookmarks()
+
+END
+
+PRIVATE SUB Bookmarks_Write(Value AS Array)
+
+  frmChooser.SetPrivateBookmarks(Value)
+
+END
+
+PRIVATE FUNCTION Icon_Read() AS Picture
+
+  RETURN frmChooser.FileView.Icon
+
+END
+
+PRIVATE SUB Icon_Write(Value AS Picture)
+
+  frmChooser.FileView.Icon = Value
+  frmChooser.DirView.Icon = Value
+
+END
+
+
+PRIVATE FUNCTION Settings_Read() AS String[]
+
+  RETURN frmChooser.GetSettings()    
+
+END
+
+PRIVATE SUB Settings_Write(Value AS String[])
+
+  frmChooser.SetSettings(Value)
+
+END

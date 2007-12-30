@@ -1,0 +1,93 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+PROPERTY Value AS Date
+PROPERTY Year AS Integer
+PROPERTY Month AS Integer
+PROPERTY Day AS Integer
+
+EVENT Change
+EVENT Activate
+
+PUBLIC CONST _Properties AS String = "*"
+PUBLIC CONST _DefaultEvent AS String = "Change"
+PUBLIC CONST _DefaultSize AS String = "36,36"
+
+PRIVATE $hCal AS FCalendar
+
+PUBLIC SUB _new()
+  
+  $hCal = NEW FCalendar(ME)
+  
+END
+
+PRIVATE FUNCTION Value_Read() AS Date
+
+  RETURN $hCal.GetValue()
+
+END
+
+PRIVATE SUB Value_Write(Value AS Date)
+
+  $hCal.SetValue(Value)
+
+END
+
+PUBLIC SUB _Change()
+  
+  RAISE Change
+  
+END
+
+PUBLIC SUB _Activate()
+  
+  RAISE Activate
+  
+END
+
+PRIVATE FUNCTION Year_Read() AS Integer
+
+  RETURN Year(Value_Read())
+
+END
+
+PRIVATE SUB Year_Write(Value AS Integer)
+
+  DIM dDate AS Date = Value_Read()
+  
+  dDate = Date(Value, Month(dDate), Day(dDate))
+  Value_Write(dDate)
+
+END
+
+PRIVATE FUNCTION Month_Read() AS Integer
+
+  RETURN Month(Value_Read())  
+
+END
+
+PRIVATE SUB Month_Write(Value AS Integer)
+
+  DIM dDate AS Date = Value_Read()
+  
+  dDate = Date(Year(Value), Value, Day(dDate))
+  Value_Write(dDate)  
+
+END
+
+PRIVATE FUNCTION Day_Read() AS Integer
+
+  RETURN Day(Value_Read())
+
+END
+
+PRIVATE SUB Day_Write(Value AS Integer)
+
+  DIM dDate AS Date = Value_Read()
+  
+  dDate = Date(Year(dDate), Month(dDate), Value)
+  Value_Write(dDate)
+
+END

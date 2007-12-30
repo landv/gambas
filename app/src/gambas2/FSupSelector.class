@@ -1,0 +1,1515 @@
+' Gambas class file
+
+' 14 Jan 2005 - FB: Add a little line to get the tree sync with the explorer when we push the parent button
+' 14 Jan 2005 - FB: Allow the user to write the path of the project directly in the file tbox
+' 14 Jul 2004 - BM: Replace the old Splitter by the new HSplit
+' 17 Jun 2004 - BM: Initial refresh is done later so that initial Path is correctly set
+' 03 Apr 2004 - BM: Use TreeExplorer_Select instead of TreeExplorer_Click and display some messages in Validate
+' 14 Mar 2004 - BM: Fix loading/saving Splitter.Layout
+' 11 Feb 2004 - BM: Fix code indentation and upgrade Stat() usage
+' 27 Jan 2004 - BM: TestProtected() tests if a file is protected, i.e. inside the current project.
+' 09 Jan 2004 - BM: The initial path works
+' 20 Dec 2003 - BM: Fix bug in ChangeExplorer() that lead to a bad Splitter layout.
+' 20 Dec 2003 - BM: New TreeView/ListView syntax
+' 16 Dec 2003 - BM: Modified for the use of the New Dir() syntax
+
+
+PUBLIC CONST SHOW_PROJECT AS Integer = 1
+PUBLIC CONST SHOW_DIRECTORY AS Integer = 2
+PUBLIC CONST SHOW_FILE AS Integer = 3
+PUBLIC CONST SHOW_IMAGE AS Integer = 4
+
+PRIVATE CONST MAX_PIC_FILE_SIZE AS Integer = 65536
+
+'EVENT Select()
+
+PUBLIC PreviewImg AS Boolean
+PUBLIC ShowHidden AS Boolean
+'Define Root
+PUBLIC Root AS String
+'Define Parent button place
+PUBLIC ButtonWidth AS Integer
+'Define Default Path and return Selected Path
+PUBLIC Path AS String
+'Allow New FileName or not and return it by Path
+PUBLIC bAllowNewFile AS Boolean
+'Fix The key property to save bookmark and position
+PUBLIC key AS String
+'Select The Dialog version for project selecting, directory or picture
+PUBLIC DialogType AS Integer
+'Store the Filter string as : "Gambas files|*.form,*.class|All files|*"
+PUBLIC Filters AS String
+'Define the default filter selected in the Filters string
+PUBLIC FilterIndex AS Integer
+'Define the Default bookmark
+'Show home bookmark
+PUBLIC ShowHomeTab AS Boolean
+'Show Root bookmark
+PUBLIC ShowRootTab AS Boolean
+'Show Current Project bookmark
+PUBLIC ShowProjectTab AS Boolean
+'Allow or not to select a project child. For the new project for example.
+PUBLIC ChildSelect AS Boolean
+' OK button
+PUBLIC OKButton AS Button
+
+PUBLIC NoProjectDir AS Boolean
+
+PUBLIC DoNotShowCustomTabs AS Boolean
+
+PRIVATE Explorer AS Object
+PRIVATE $arFilters AS NEW Object[]
+PRIVATE imgProject AS Picture
+PRIVATE imgNothing AS Picture
+PRIVATE imgBackup AS Picture
+PRIVATE imgClass AS Picture
+PRIVATE imgForm AS Picture
+PRIVATE imgModule AS Picture
+PRIVATE imgPicture AS Picture
+PRIVATE imgDirectory AS Picture
+PRIVATE imgNoDir AS Picture
+PRIVATE imgTreeDir AS Picture
+PRIVATE imgTreeNoDir AS Picture
+PRIVATE imgTreeProject AS picture
+PRIVATE imgTreeRoot AS picture
+PRIVATE CurrentPath AS String
+PRIVATE arMenu AS NEW Object[]
+PRIVATE arTmpImg AS NEW String[]
+PRIVATE iImageSize AS Integer
+PRIVATE TExplorer AS Integer
+PRIVATE CoolTab AS CCoolTabs
+PRIVATE IsCutMode AS Boolean
+PRIVATE stkCurStr AS String
+'Tree Root disposition
+PUBLIC TreeSequence AS String
+PRIVATE bCutMode AS Boolean
+PRIVATE arFile AS NEW String[]
+PRIVATE iLevel AS Integer
+PRIVATE iMenuFrom AS Integer
+'Tree Root Index
+PRIVATE CurSeq AS String
+PRIVATE $sLastPath AS String
+PRIVATE $bDoNotConfirm AS Boolean
+
+PUBLIC SUB Init()
+
+  DIM TExplo AS Integer
+  DIM sElt AS String
+  DIM sDir AS String
+
+  WITH cvExplorer
+
+    .Columns.Count = 4
+
+    .Columns[0].Text = ("Name")
+    .Columns[0].Width = 150
+
+    .Columns[1].Text = ("Size")
+    .Columns[1].Width = 50
+    .Columns[1].Alignment = Align.Right
+
+    .Columns[2].Text = ("Type")
+    .Columns[2].Width = 80
+
+    .Columns[3].Text = ("Date")
+    .Columns[3].Width = 80
+
+  END WITH
+
+  imgTreeDir = Picture["icon:/16/directory"]
+  imgTreeNoDir = Picture["img/16/forbid.png"]
+  imgTreeProject = Picture["img/16/gambas.png"]
+  imgTreeRoot = Picture["icon:/16/directory"]
+
+  CoolTab = NEW CCoolTabs(ME, ShowRootTab, ShowHomeTab, ShowProjectTab) AS "CoolTab"
+  TExplorer = -1
+
+  GetTabs()
+  IF (NOT Exist(Root) OR NOT Root) AND NOT TreeSequence THEN
+    TreeSequence = "0"
+  ELSE
+    TreeSequence = "$"
+  ENDIF
+
+  IF NOT Key THEN Key = "/GenericExplorer"
+    'Project.Config.Read(Key &/ "Key")
+  TExplo = Settings[Key &/ "ExplorerType", 0]
+'   IF Project.Config.Read(Key &/ "ExplorerType") THEN
+'     TExplo = CInt(Project.Config.Read(Key &/ "ExplorerType"))
+'   ELSE
+'     Texplo = 0
+'   ENDIF
+  'CurrentPath = Project.Config.Read(Key &/ "Path")
+  'IF Project.Config.Read(Key &/ "ExplorerSplitPos") THEN
+  'ENDIF
+
+  'IF Project.Config.Read(key &/ "TreeSequence") THEN
+  TreeSequence = Settings[Key &/ "TreeSequence", TreeSequence]
+    'PRINT TreeSequence
+  'ENDIF
+'   IF Project.Config.Read(key &/ "PreviewImg") AND NOT PreviewImg THEN
+'     PreviewImg = CBool(Project.Config.Read(key &/ "PreviewImg"))
+'   ENDIF
+  PreviewImg = Settings[Key &/ "PreviewImg", FALSE]
+
+'   IF Project.Config.Read(key &/ "ShowHidden") AND NOT ShowHidden THEN
+'     ShowHidden = CBool(Project.Config.Read(key &/ "ShowHidden"))
+'   ENDIF
+
+  ShowHidden = Settings[Key &/ "ShowHidden", FALSE]
+
+  CurrentPath = Settings[Key &/ "Path", User.Home]
+
+  SELECT CASE DialogType
+    CASE SHOW_PROJECT
+      ChangeExplorer(TExplo)
+      lblFile.Text = ("Project")
+    CASE SHOW_DIRECTORY
+      ChangeExplorer(TExplo)
+       cboFilter.Visible = FALSE
+       lblFilter.Visible = FALSE
+       lblFile.Text = ("Directory")
+    CASE SHOW_IMAGE
+      ChangeExplorer(1)
+      lblFile.Text = ("File")
+    CASE SHOW_FILE
+      ChangeExplorer(TExplo)
+       lblFile.Text = ("File")
+  END SELECT
+
+  Splitter.Layout = Settings[Key &/ "Splitter", "10,10"]
+
+  IF NOT Filters THEN Filters = ("All files") & "|*"
+  Definefilters
+
+  IF Path AND Exist(Path) THEN
+    'PRINT Path
+    IF NOT IsDir(Path) THEN
+      CurrentPath = File.Dir(Path)
+    ELSE
+      CurrentPath = Path
+    ENDIF
+  ELSE
+    IF NOT CurrentPath THEN CurrentPath = Root
+  ENDIF
+
+  IF Left$(CurrentPath) <> "/" THEN CurrentPath = Root &/ CurrentPath
+  IF NOT (CurrentPath LIKE (Root &/ "*")) THEN CurrentPath = Root
+
+  btnRefresh_Click
+
+  MakeMenu()
+
+  IF DialogType = SHOW_DIRECTORY THEN txtFile.Text = File.Name(CurrentPath)
+
+  TreeExplorer.MoveFirst
+
+  IF SelectNode(Left$(TreeExplorer.Key) & CurrentPath) THEN
+    CurrentPath = Mid$(TreeExplorer.Key, 2)
+  ENDIF
+
+  'arProtectedFiles.Add(User.Home)
+  'arProtectedFiles.Add(Project.Path)
+  'arProtectedFiles.Add(User.Home &/ ".gambas")
+
+  Fill_Explorer(CurrentPath)
+  'PRINT Root & "          " & CurrentPath
+END
+
+
+PUBLIC SUB Fill_Explorer(sPath AS String)
+
+  DIM arFile AS NEW String[]
+  DIM arTemp AS NEW String[]
+  DIM sDir AS String
+  DIM scDir AS String
+  DIM rapport AS Float
+  DIM hPic AS NEW Picture
+  DIM sFilter AS String
+  DIM fTime AS Float
+
+  IF sPath = $sLastPath THEN RETURN
+
+  INC Application.Busy
+
+  Explorer.Clear
+  arTmpImg.Clear
+
+  'TRY sDir = Dir(sPath)
+  'IF Error THEN RETURN
+
+  FOR EACH sDir IN Dir(sPath)
+    IF NOT IsDir(sPath &/ sDir) THEN CONTINUE
+    IF NOT ShowHidden THEN
+      IF Stat(sPath &/ sDir).Hidden THEN CONTINUE
+    ENDIF
+    arFile.add(sDir)
+  NEXT
+
+  arFile.Sort
+
+  FOR EACH sFilter IN $arFilters[(cboFilter.Index + 1) * 2 - 1]
+
+    FOR EACH sDir IN Dir(sPath, sFilter)
+      WITH Stat(sPath &/ sDir)
+        IF .Type = gb.Directory THEN CONTINUE
+        IF NOT ShowHidden THEN
+          IF .Hidden THEN CONTINUE
+          IF Right(sDir) = "~" THEN CONTINUE
+        ENDIF
+      END WITH
+      arTemp.add(sDir)
+    NEXT
+
+  NEXT
+
+  arTemp.Sort
+
+  arFile.Insert(arTemp)
+
+  fTime = Timer
+  WAIT
+
+  FOR EACH sDir IN arFile
+    'scDir = Conv$(sDir, System.Charset, DeskTop.Charset)
+    scDir = sDir
+    'Stat(sPath &/ sDir)
+    IF IsDir(sPath &/ sDir) THEN
+      IF Exist(sPath &/ sDir &/ ".project") THEN
+        Explorer.Add(sPath &/ sDir, scDir, imgProject)
+        IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Gambas project")
+      ELSE
+
+        IF AccessTest(sPath &/ sDir) THEN
+          Explorer.Add(sPath &/ sDir, scDir, imgDirectory)
+          IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Directory")
+        ELSE
+          Explorer.Add(sPath &/ sDir, scDir, imgNoDir)
+        ENDIF
+      ENDIF
+
+    ELSE
+
+      SELECT CASE LCase(File.Ext(sDir))
+
+        CASE "class"
+          Explorer.Add(sPath &/ sDir, scDir, imgClass)
+          IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Gambas class")
+        CASE "form"
+          Explorer.Add(sPath &/ sDir, scDir, imgForm)
+          IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Gambas form")
+        CASE "module"
+          Explorer.Add(sPath &/ sDir, scDir, imgModule)
+          IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Gambas module")
+        CASE "xpm", "png", "jpg", "bmp", "gif", "jpeg", "svg"
+          'Explorer.Add(sPath &/ sDir, scDir, imgPicture)
+
+          WITH Stat(SPath &/ sDir)
+
+            IF NOT PreviewImg THEN 'Case not preview
+              Explorer.add(sPath &/ sDir, File.Name(scDir), imgPicture)
+              IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Picture file")
+              GOTO NoPic
+            ENDIF
+
+'             IF .Size < MAX_PIC_FILE_SIZE THEN
+'
+'               TRY hPic.Load(sPath &/ sDir)
+'               IF Error THEN hPic = Picture["img/16/image.png"]
+'
+'               IF hPic.Height > iImageSize OR hPic.Width > iImageSize THEN
+'                 IF hPic.height > hPic.Width THEN
+'                   rapport = iImageSize / hPic.Height
+'                   TRY hPic = hPic.Image.Stretch(hPic.Width * rapport,iImageSize).Picture
+'                 ELSE
+'                   rapport = iImageSize / hPic.Width
+'                   TRY hPic = hPic.Image.Stretch(iImageSize, hPic.Height * rapport).Picture
+'                 END IF
+'                 Explorer.Add(sPath &/ sDir, File.Name(scDir), hPic)
+'               ELSE
+'                 Explorer.Add(sPath &/ sDir, File.Name(scDir), hPic)
+'               ENDIF
+'               IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Picture file")
+'
+'             ELSE
+
+              IF .Size < MAX_PIC_FILE_SIZE THEN arTmpImg.Push(sPath &/ sDir)
+              Explorer.add(sPath &/ sDir, File.Name(scDir), imgPicture)
+              IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Picture file")
+
+'             END IF
+
+          END WITH
+
+        CASE ELSE
+          IF Right(sDir) = "~" THEN
+              Explorer.Add(sPath &/ sDir, scDir, imgBackup)
+              IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("Backup file")
+          ELSE
+              Explorer.Add(sPath &/ sDir, scDir, imgNothing)
+              IF TExplorer = 0 THEN Explorer[sPath &/ sDir][2] = ("File")
+          ENDIF
+
+      END SELECT
+
+    ENDIF
+  NoPic:
+    IF TExplorer = 0 THEN
+      WITH Stat(sPath &/ sDir)
+      Explorer[sPath &/ sDir][1] = Subst(("&1 K"), (.Size + 1023) \ 1024)
+      Explorer[sPath &/ sDir][3] = Format(.Time, gb.ShortDate)
+      END WITH
+    ENDIF
+
+    IF fTime < (Timer - 4) THEN
+      fTime = Timer
+      WAIT
+    ENDIF
+
+  NEXT
+
+  imgTimer.Enabled = TRUE
+  Fill_Look(sPath)
+
+FINALLY
+
+  DEC Application.Busy
+  $sLastPath = sPath
+
+CATCH
+
+  Explorer.Clear
+
+END
+
+
+PUBLIC SUB Explorer_Activate()
+
+  IF IsDir(Explorer.Key) THEN
+    IF AccessTest(Explorer.Key) THEN
+
+      CurrentPath = Explorer.Key
+      Fill_Explorer(CurrentPath)
+      'Message(Left(TreeExplorer.Current.Key,1) & CurrentPath)
+      SelectNode(Left(TreeExplorer.Key, 1) & CurrentPath)
+
+    ENDIF
+  ELSE IF Validate(Explorer.Key) THEN
+    txtFile.Text = Explorer.Current.Text
+    RaiseSelect
+  ENDIF
+
+CATCH
+
+END
+
+
+PRIVATE FUNCTION AccessTest(sPath AS String) AS Boolean
+
+  ' $BM Il y a un appel à cette fonction avec sPath = "". C'est bizarre !
+  ' $BM Mais ça m'a permis de trouver un bug dans l'interpréteur :-)
+  'Dir(sPath)
+  DIM aDir AS String[]
+
+  aDir = Dir(sPath)
+
+  IF aDir.Count THEN Stat(sPath &/ aDir[0])
+  RETURN TRUE
+
+  CATCH
+  RETURN FALSE
+
+END
+
+
+PRIVATE FUNCTION IsProjectChild(sPath AS String) AS Boolean
+
+  WHILE sPath <> "/"
+    IF Exist(sPath &/ ".project") THEN RETURN TRUE
+    sPath = File.Dir(sPath)
+  WEND
+
+  RETURN FALSE
+
+END
+
+
+PUBLIC SUB imgTimer_Timer()
+
+ DIM hPicPicture AS Picture
+ DIM sDir AS String
+ DIM rapport AS Float
+
+  IF arTmpImg.Count = 0 THEN
+    imgTimer.Enabled = FALSE
+    RETURN
+  ENDIF
+
+  sDir = arTmpImg[0]
+  arTmpImg.Remove(0)
+
+  TRY hPicPicture = Picture.Load(sDir)
+  IF ERROR THEN RETURN
+
+  'IF hPicPicture.height > iImageSize OR hPicPicture.width > iImageSize THEN
+
+    IF hPicPicture.height > hPicPicture.Width THEN
+      rapport = iImageSize / hPicPicture.Height
+      TRY hPicPicture = hPicPicture.Image.Stretch(hPicPicture.Width * rapport, iImageSize).Picture
+    ELSE
+      rapport = iImageSize / hPicPicture.Width
+      TRY hPicPicture = hPicPicture.Image.Stretch(iImageSize, hPicPicture.Height * rapport).Picture
+    END IF
+
+    Explorer[sDir].Picture = hPicPicture
+    ' $BM
+    ' Explorer.Arrangement = Explorer.TopBottom
+'   ELSE
+'
+'     Explorer[sDir].Picture =  hPicPicture
+'     Explorer.Refresh
+'
+'   ENDIF
+
+END
+
+
+PRIVATE SUB ChangeExplorer(iType AS Integer)
+
+  DIM arSpl AS String[]
+
+  IF iType = TExplorer THEN RETURN
+
+  Texplorer = iType
+
+  IF TExplorer = 0 THEN
+    imgNothing = Picture["icon:/16/file"]
+    imgBackup = Picture["img/16/backup.png"]
+    imgClass = Picture["img/16/class.png"]
+    imgForm = Picture["img/16/form.png"]
+    imgModule = Picture["img/16/module.png"]
+    imgPicture = Picture["icon:/16/image"]
+    imgProject = Picture["img/16/gambas.png"]
+    imgDirectory = Picture["icon:/16/directory"]
+    imgNoDir = Picture["img/16/forbid.png"]
+    Explorer = cvExplorer
+    iImageSize = 16
+    ivExplorer.Visible = FALSE
+    cvExplorer.Visible = TRUE
+    btnTypeList.Picture = Picture["icon:/16/view-icon"]
+    btnTypeList.ToolTip = ("Show by icon")
+  ELSE
+    imgNothing = Picture["icon:/32/file"]
+    imgBackup = Picture["img/32/backup.png"]
+    imgClass = Picture["img/32/class.png"]
+    imgForm = Picture["img/32/form.png"]
+    imgModule = Picture["img/32/module.png"]
+    imgPicture = Picture["icon:/32/image"]
+    imgProject = Picture["img/32/gambas.png"]
+    imgDirectory = Picture["icon:/32/directory"]
+    imgNoDir = Picture["img/32/forbid.png"]
+    Explorer = ivExplorer
+    iImageSize = 32
+    cvExplorer.Visible = FALSE
+    ivExplorer.Visible = TRUE
+    btnTypeList.Picture = Picture["icon:/16/view-detail"]
+    btnTypeList.ToolTip = ("Show by list")
+  ENDIF
+
+  Explorer.Raise
+
+END
+
+
+PRIVATE SUB Fill_Tree(sPath AS String)
+
+  DIM sDir AS String
+  DIM arFile AS NEW String[]
+  DIM scDir AS String
+  DIM sSeq AS String
+  'Message("tree " & sPath)
+  sSeq = Left(sPath)
+  sPath = Mid(sPath, 2)
+  IF NOT Exist(sPath) THEN RETURN
+  IF NOT TreeExplorer.Exist(sSeq & sPath &/ "child") THEN RETURN
+  TreeExplorer.Remove(sSeq & sPath &/ "child")
+
+  'TRY sDir = Dir(sPath)
+
+  INC Application.Busy
+
+  FOR EACH sDir IN Dir(sPath)
+
+    IF IsDir(sPath &/ sDir) THEN
+      IF Stat(sPath &/ sDir).Hidden AND NOT ShowHidden THEN CONTINUE
+      arFile.add(sDir)
+    ENDIF
+
+  NEXT
+
+  arFile.Sort
+  FOR EACH sDir IN arFile
+    'scDir = Conv$(sDir, System.Charset, Desktop.Charset)
+    scDir = sDir
+    IF AccessTest(sPath &/ sDir) THEN
+      IF Exist(sPath &/ sDir &/ ".project") THEN
+        TreeExplorer.add(sSeq & sPath &/ sDir, scDir, imgTreeProject, sSeq & sPath)
+        IF HaveDirChild(sPath &/ sDir) THEN TreeExplorer.add(sSeq & sPath &/ sDir &/ "child", "", imgTreeDir, sSeq & sPath &/ sDir)
+      ELSE
+         TreeExplorer.add(sSeq & sPath &/ sDir, scDir, imgTreeDir, sSeq & sPath)
+          IF HaveDirChild(sPath &/ sDir) THEN TreeExplorer.add(sSeq & sPath &/ sDir &/ "child", "", imgTreeDir, sSeq & sPath &/ sDir)
+      ENDIF
+    ELSE
+        TreeExplorer.add(sSeq & sPath &/ sDir, scDir, imgTreeNoDir, sSeq & sPath)
+
+    ENDIF
+  NEXT
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  TreeExplorer.Clear
+
+END
+
+
+
+PRIVATE FUNCTION HaveDirChild(sPath AS String) AS Boolean
+
+  DIM shDir AS String
+
+  FOR EACH shDir IN Dir(sPath)
+
+    WITH Stat(sPath &/ shDir)
+
+    IF .Type = gb.Directory THEN
+      IF .Hidden THEN
+        IF ShowHidden THEN RETURN TRUE
+      ELSE
+        RETURN TRUE
+      ENDIF
+    ENDIF
+
+    END WITH
+
+  NEXT
+
+  RETURN FALSE
+
+END
+
+PUBLIC SUB TreeExplorer_Expand()
+
+  Fill_Tree(LAST.Item.Key)
+
+END
+
+PUBLIC SUB InitTree(sPath AS String, OPTIONAL Seq AS String)
+
+  DIM arSeq AS NEW String[]
+  DIM sSeq AS String
+
+  TreeExplorer.Clear
+  IF NOT Seq THEN Seq = "$"
+
+  arSeq = Split(Seq, ",")
+
+  FOR EACH sSeq IN arSeq
+
+    IF MyVal(sSeq) > CoolTab.Count() - 1 THEN sSeq = "0"
+
+    IF sSeq = "$" THEN
+      sPath = sSeq & sPath
+      imgTreeRoot = CoolTab.current.Picture
+    ELSE
+      CoolTab.Button_Select(MyVal(sSeq))
+      sPath = sSeq & CoolTab.GetBookMark(MyVal(sSeq)).ToolTip
+      imgTreeRoot = CoolTab.GetBookMark(MyVal(sSeq)).Picture
+    ENDIF
+
+    TreeExplorer.Add(sPath, File.Name(Mid(sPath, 2)), imgTreeRoot)
+    TreeExplorer.Add(sPath &/ "child", "child",, sPath)
+    TreeExplorer[sPath].Expanded = TRUE 'Fill_Tree("/")
+
+  NEXT
+
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  DIM iBW AS Integer
+
+  IF DialogType = SHOW_DIRECTORY THEN
+    pnlFile.H = txtFile.Y + txtFile.H + 8
+  ENDIF
+
+  iBW = ButtonWidth
+  IF iBW THEN ibW = iBW + 8
+
+  lblLook.Move(0, 0)
+  pnlFile.Move(0, ME.ClientHeight - pnlFile.Height, ME.ClientWidth - iBW)
+  txtFile.Move(lblFile.Width + 10, lblFile.Top, pnlFile.ClientWidth - lblFile.Width - 10)
+  cboFilter.Move(lblFilter.Width + 10, pnlFile.ClientH - cboFilter.Height, pnlFile.ClientWidth - lblFilter.Width - 10)
+  pnlButton.Move(ME.ClientWidth - pnlButton.Width, 0)
+  cboLook.Move(lblLook.Width, 0, ME.ClientWidth - pnlButton.Width - lblLook.Width - 10, 24)
+
+  Splitter.Move(CoolTab.Width(), cboLook.Height + 5, ME.ClientWidth - CoolTab.Width(), ME.ClientHeight - cboLook.Height - pnlFile.Height - 16)
+  cvExplorer.ScrollBar = Scroll.Both
+  CoolTab.Move(0, Splitter.Top,, Splitter.Height)
+
+END
+
+
+PUBLIC SUB TreeExplorer_Select()
+
+  DIM sPath AS String
+  'Message(TreeExplorer.Current.Key)
+
+  sPath = Mid(TreeExplorer.Key, 2)
+
+  IF Left(TreeExplorer.Key, 1) <> CurSeq THEN
+
+    CurSeq = Left(TreeExplorer.Key, 1)
+    IF CurSeq <> "$" THEN
+      Root = CoolTab.GetTabUrl(MyVal(CurSeq))
+
+    ENDIF
+  ENDIF
+  IF AccessTest(sPath) THEN
+      CurrentPath = sPath
+
+    Fill_Explorer(CurrentPath)
+    IF Validate(sPath) THEN txtFile.Text = TreeExplorer.Current.Text
+  ENDIF
+
+END
+
+PUBLIC SUB Button3_Click()
+
+  PreviewImg = NOT PreviewImg
+  Fill_Explorer(CurrentPath)
+
+END
+
+PRIVATE SUB Fill_Look(sPath AS String)
+
+  cboLook.Clear
+  IF NOT sPath THEN RETURN
+
+  IF sPath = "/" THEN
+    cboLook.add(sPath)
+    RETURN
+  ENDIF
+
+  IF Right(sPath, 1) = "/" THEN sPath = Left(sPath, Len(sPath) - 1)
+
+  DO
+
+    cboLook.Add(sPath)
+    IF sPath = "/" THEN RETURN
+
+    IF sPath = Root THEN RETURN
+    sPath = File.Dir(sPath)
+
+  LOOP
+
+END
+
+
+
+PUBLIC SUB cboLook_Click()
+
+  IF TExplorer = -1 THEN RETURN
+
+  Fill_Explorer(cboLook.Current.Text)
+  SelectNode(Left(TreeExplorer.Key, 1) & cboLook.Current.Text)
+
+END
+
+
+
+PUBLIC FUNCTION SelectNode(sNode AS String) AS Boolean
+
+  DIM arParse AS NEW String[]
+  DIM sVar AS String
+  DIM sPath AS String
+  DIM TreeSeq AS String
+
+  TreeSeq = Left(sNode, 1)
+  sPath = Mid(sNode, 2)
+  IF NOT Exist(sPath) THEN RETURN
+  arParse = Split(sPath, "/")
+  sPath = "/"
+
+  FOR EACH sVar IN arParse
+    sPath = sPath &/ sVar
+    Fill_Tree(TreeSeq & sPath)
+    TRY TreeExplorer[TreeSeq & File.dir(sPath)].Expanded = TRUE
+  NEXT
+
+  'IF NOT TreeExplorer.Exist(sNode) THEN Message(sNode)
+  TreeExplorer[sNode].Selected = TRUE
+  TreeExplorer[sNode].EnsureVisible
+
+CATCH
+
+  RETURN TRUE
+
+END
+
+
+PUBLIC SUB btnTypeList_Click()
+
+  IF TExplorer = 0 THEN
+    ChangeExplorer(1)
+  ELSE
+    ChangeExplorer(0)
+  ENDIF
+
+  RefreshExplorer
+
+END
+
+
+PUBLIC FUNCTION Validate(OPTIONAL sPath AS String) AS Boolean
+
+  DIM sFile AS String
+  DIM sCurrentPath AS String
+  DIM bSel AS Boolean
+
+  'Validation
+  sCurrentPath = CurrentPath
+  IF sPath THEN
+    sCurrentPath = File.Dir(sPath)
+    txtFile.Text = ""
+    sFile = File.Name(sPath)
+    IF sPath = File.Dir(CurrentPath) THEN RETURN
+  ELSE
+    IF txtFile.Text = "" THEN
+      SELECT CASE DialogType
+        CASE SHOW_PROJECT
+          Message.Warning(("Please choose a project."))
+        CASE SHOW_DIRECTORY
+          Message.Warning(("Please choose a valid directory."))
+      END SELECT
+      RETURN
+    ENDIF
+    sFile = txtFile.Text
+  ENDIF
+
+  IF NOT sPath THEN
+    TRY bSel = Explorer.Current.Selected
+    IF NOT bSel THEN
+      IF Left(txtFile.Text) <> "/" OR IF NOT Exist(txtFile.Text) THEN sFile = ""
+    ENDIF
+    IF DialogType = SHOW_PROJECT THEN sFile = ""
+  ENDIF
+
+  SELECT CASE DialogType
+
+    CASE SHOW_PROJECT
+
+      IF Exist(sCurrentPath &/ sFile &/ ".project") THEN
+        Path = sCurrentPath &/ sFile
+        GOTO GOOD '$BM
+      ENDIF
+
+      'IF Exist(txtFile.Text &/ ".project") THEN
+      '  Path = txtFile.Text
+      '  GOTO GOOD
+      'ENDIF
+
+      'PRINT sPath
+      IF NOT sPath THEN Message.Error(("Cannot find this project."))
+
+    CASE SHOW_DIRECTORY
+
+      'IF File.Name(sCurrentPath) = sFile THEN sFile = ""
+
+      IF Exist(sCurrentPath &/ sFile) THEN
+        IF IsDir(sCurrentPath &/ sFile) THEN
+
+          IF NoProjectDir THEN
+            'Message (sPath)
+            IF Exist(sCurrentPath &/ sFile &/ ".project") OR IsProjectChild(sCurrentPath &/ sFile) THEN
+              RETURN FALSE
+            ENDIF
+          ENDIF
+
+          Path = sCurrentPath &/ sFile
+          GOTO GOOD '$BM
+        ENDIF
+      ENDIF
+
+      IF NOT sPath THEN Message.Error(("Cannot find this directory."))
+
+    CASE SHOW_FILE, SHOW_IMAGE
+
+      IF IsDir(sCurrentPath &/ sFile) THEN RETURN FALSE
+
+      IF bAllowNewFile THEN
+        Path = sCurrentPath &/ sFile
+        GOTO GOOD
+      ENDIF
+
+      IF Exist(sCurrentPath &/ sFile) THEN
+        Path = sCurrentPath &/ sFile
+        GOTO GOOD
+      ENDIF
+
+      IF NOT sPath THEN Message.Error(("Cannot find this file."))
+
+   '$BM
+  END SELECT
+
+  RETURN FALSE
+
+GOOD: '$BM
+
+  IF sPath THEN RETURN TRUE
+
+  IF Key THEN
+    IF DialogType = SHOW_FILE OR DialogType = SHOW_IMAGE THEN
+    'Message (key &/ "Path")
+      Settings[Key &/ "Path"] = File.Dir(Path)
+    ELSE
+      Settings[Key &/ "Path"] = Path
+    ENDIF
+    Settings[Key &/ "Key"] = CStr(CoolTab.Current.Tag)
+
+  ENDIF
+
+  RETURN TRUE
+
+END
+
+
+PUBLIC SUB Explorer_Click()
+
+  IF Validate(Explorer.Item.Key) THEN
+      txtFile.Text = Explorer.Current.Text
+  ENDIF
+
+CATCH
+
+END
+
+
+PRIVATE SUB DefineFilters()
+  'Definition for Filters (Multi Filters in Some Case)
+
+  DIM arpreFilter AS String[]
+  DIM arSubFilter AS String[]
+  DIM sSubFilter AS String
+  DIM Index AS Integer
+
+  arpreFilter = Split(Filters, "|")
+
+  FOR Index = 0 TO arpreFilter.Count - 1
+    arSubFilter = NEW String[]
+    arSubFilter = Split(arpreFilter[Index], ",")
+    $arFilters.add(arSubFilter)
+  NEXT
+
+  FOR Index = 0 TO $arFilters.Count - 1 STEP 2
+    cboFilter.add($arFilters[Index][0])
+  NEXT
+
+  TRY cbofilter.Index = FilterIndex
+
+END
+
+
+PUBLIC SUB cboFilter_Click()
+
+  RefreshExplorer
+
+END
+
+
+PUBLIC SUB btnParent_Click()
+
+  IF CurrentPath <> Root THEN
+    CurrentPath = File.Dir(CurrentPath)
+    RefreshExplorer
+  ENDIF
+
+END
+
+
+PRIVATE SUB RefreshExplorer()
+
+  $sLastPath = ""
+  Fill_Explorer(CurrentPath)
+  SelectNode(CurSeq & CurrentPath)
+  
+
+END
+
+
+PUBLIC SUB btnRefresh_Click()
+
+  DIM TreeSeq AS String
+  DIM sKey AS String
+  DIM bExpand AS Boolean
+
+  TreeSeq = "$"
+
+  sKey = TreeExplorer.Key
+  TRY bExpand = TreeExplorer[sKey].Expanded
+
+  InitTree(Root, TreeSequence)
+  TRY TreeSeq = Left(TreeExplorer.Key)
+
+  RefreshExplorer
+  SelectNode(TreeSeq & CurrentPath)
+
+  TRY TreeExplorer[sKey].Expanded = bExpand
+
+END
+
+
+PUBLIC SUB CoolTab_ButtonClick(Index AS Integer, Button AS Integer)
+
+  DIM arSeq AS NEW String[]
+  DIM Fi AS Integer
+
+  IF Button = 2 THEN
+
+    arSeq = Split(TreeSequence, ",")
+    Fi = arSeq.Find(Str(Index))
+
+    IF Fi <> -1 THEN
+
+      IF arSeq.Count = 1 THEN RETURN
+      'PRINT arSeq.Count
+      CoolTab.Button_UnSelect(arSeq[Fi])
+      arSeq.Remove(Fi)
+      TreeSequence = arSeq.Join(",")
+      btnRefresh_Click()
+
+    ELSE
+
+      IF NOT Exist(CoolTab.Current.Tooltip) THEN RETURN
+      TreeSequence = TreeSequence & "," & Str(Index)
+      'CoolTab.Button_Select(Index)
+      Root = Cooltab.Current.Tooltip
+      btnRefresh_Click()
+
+    ENDIF
+
+  ELSE
+
+    IF NOT Exist(CoolTab.Current.Tooltip) THEN RETURN
+    TreeSequence = Str(Index)
+     CurrentPath = CoolTab.Current.Tooltip
+     Root = Cooltab.Current.Tooltip
+     btnRefresh_Click()
+
+  ENDIF
+
+END
+
+
+PRIVATE SUB MakeMenu()
+
+  DIM hMenu AS Menu
+  DIM hMenuExplorer AS Menu
+
+  hMenuExplorer = NEW Menu(ME.Window, TRUE)
+  'hMenuExplorer.Visible = TRUE
+  'hMenuExplorer.Visible = FALSE
+  arMenu.add(hMenuExplorer)
+'
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("&Bookmark this directory")
+  hMenu.Picture = Picture["img/16/bookmark.png"]
+  hMenu.Shortcut = "CTRL+B"
+  hmenu.Visible = FALSE
+  hMenu.Tag = 1
+  arMenu.Add(hMenu)
+'
+    hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("&Remove current bookmark")
+  hMenu.Tag = 2
+  hmenu.Visible = FALSE
+  arMenu.Add(hMenu)
+'
+    hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ""
+  'hMenu.Tag = 3
+  hmenu.Visible = FALSE
+  arMenu.Add(hMenu)
+'
+    hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("&Cut")
+  hMenu.Picture = Picture["icon:/16/cut"]
+  hMenu.Shortcut = "CTRL+X"
+  hMenu.Tag = 3
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("&Copy")
+  hMenu.Picture = Picture["icon:/16/copy"]
+  hMenu.Shortcut = "CTRL+C"
+  hMenu.Tag = 4
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("&Paste")
+  hMenu.Picture = Picture["icon:/16/paste"]
+  hMenu.Shortcut = "CTRL+V"
+  hMenu.Tag = 5
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ""
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("Rename")
+  hMenu.Shortcut = "F2"
+  hMenu.Tag = 6
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ""
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("Delete")
+  hMenu.Picture = Picture["icon:/16/delete"]
+  hMenu.Shortcut = "CTRL+Del"
+  hMenu.Tag = 7
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ""
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("Show preview picture")
+  hMenu.Picture = Picture["icon:/16/image"]
+  'hMenu.Shortcut = "Del"
+  hMenu.Checked = PreviewImg
+  hMenu.Tag = 8
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("Show hidden files")
+  hMenu.Picture = Picture["img/16/hidden.png"]
+
+  hMenu.Checked = ShowHidden
+  hMenu.Tag = 9
+  arMenu.Add(hMenu)
+
+  hMenu = NEW Menu(hMenuExplorer) AS "MenuExp"
+  hMenu.Text = ("Refresh")
+  hMenu.Picture = Picture["icon:/16/refresh"]
+  hMenu.Shortcut = "F5"
+  hMenu.Tag = 10
+  arMenu.Add(hMenu)
+
+END
+
+PUBLIC SUB Explorer_Menu()
+
+  DIM i AS Integer
+
+  IF NOT Explorer.Available THEN RETURN
+
+  FOR i = 1 TO 3
+    arMenu[i].Visible = FALSE
+  NEXT
+
+  FOR i = 4 TO 11
+   arMenu[i].Visible = TRUE
+  NEXT
+
+  IF Exist(File.Dir(Explorer.Key) &/ ".project") OR Explorer.Current.Text = ".." THEN
+
+    arMenu[4].Visible = FALSE
+
+    FOR i = 4 TO 9
+      arMenu[i].Visible = FALSE
+    NEXT
+
+  ENDIF
+
+  iMenuFrom = 1
+  arMenu[0].Popup()
+
+END
+
+
+PUBLIC SUB TreeExplorer_Menu()
+
+  DIM i AS Integer
+
+  'IF IsDir(TreeExplorer.Current.Key) THEN
+    FOR i = 1 TO 4
+      arMenu[i].Visible = TRUE
+    NEXT
+  'ELSE
+  '
+  FOR i = 3 TO 10
+     arMenu[i].Visible = FALSE
+  NEXT
+  'ENDIF
+
+  IF CoolTab.Count() <= CoolTab.StaticButton OR CoolTab.Current.Tag < CoolTab.StaticButton OR Len(TreeSequence) > 1 THEN arMenu[2].Visible = FALSE
+  iMenuFrom = 0
+
+  arMenu[0].Popup()
+
+END
+
+PUBLIC SUB MenuExp_Click()
+
+  DIM sClipStore AS String
+  DIM sPath AS String
+  DIM Value AS Integer
+
+  IF iMenuFrom = 0 THEN
+    sPath = Mid(TreeExplorer.Key, 2)
+  ELSE
+    sPath = Explorer.Key
+  ENDIF
+
+  SELECT CASE LAST.Tag
+
+    CASE 1 'Add Bookmark
+      IF TreeExplorer.Key AND AccessTest(TreeExplorer.Key) THEN
+        CoolTab.Button_Unselect()
+        CoolTab.AddButton(sPath)
+        CoolTab.Button_Select(CoolTab.Current.Tag)
+      ENDIF
+
+    CASE 2 'remove Bookmark
+    Value = Message.Question(("Do you really want to remove this bookmark ?"), ("Remove"), ("Cancel"))
+
+      IF value = 1 THEN
+        CoolTab.Remove(CoolTab.Current.Tag)
+      ENDIF
+
+    CASE 3 'Cut
+      isCutMode = TRUE
+      IF Exist(sPath) THEN
+        Clipboard.Copy("file:" & sPath, MMime.URI)
+      ENDIF
+
+    CASE 4 'Copy
+      IF Exist(Explorer.Key) THEN
+        Clipboard.Copy("file:" & sPath, MMime.URI)
+      ENDIF
+
+    CASE 5 'Paste
+
+       IF NOT Exist(Mid(ClipBoard.Paste(), 6)) THEN RETURN
+
+          IF ClipBoard.Format = MMime.URI OR ClipBoard.Format = "text/plain" AND Left(Clipboard.Paste(), 5) = "file:" THEN
+              sClipStore = ClipBoard.Paste()
+
+              IF NOT IsDir(Mid(sClipStore, 6)) THEN
+                TRY COPY Mid(sClipStore, 6) TO CurrentPath &/ File.Name(Mid(sClipStore, 6))
+                IF ERROR THEN
+                  '$BM
+                  Message.Error(Subst(("Cannot copy file &1\n\n&2"), sClipStore, Error.Text))
+                  'Message.Warning((Error.Text & "\nI can't copy the file : \n" & ClipBoard.Paste()))
+                  RETURN
+                ENDIF
+                IF IsCutMode THEN DeleteFile(Mid(sClipStore, 6))
+                btnRefresh_Click()
+              ELSE
+                IF NOT CopyDir(Mid(sClipStore, 6)) THEN RETURN
+                IF IsCutMode THEN DeleteFile(Mid(sClipStore, 6))
+                btnRefresh_Click()
+              ENDIF
+
+          ENDIF
+
+    CASE 6 'Rename
+      Explorer.Current.Editable = TRUE
+      StkCurStr = File.Name(Explorer.Key)
+      Explorer.Current.Rename()
+
+    CASE 7 'Delete
+      DeleteFile(sPath)
+
+    CASE 8 'ShowPreview
+      PreviewImg = NOT PreviewImg
+      arMenu[12].Checked = PreviewImg
+      RefreshExplorer
+
+    CASE 9 'ShowHiddenFile
+      ShowHidden = NOT ShowHidden
+      arMenu[13].Checked = ShowHidden
+      'RefreshExplorer
+      btnRefresh_Click()
+
+    CASE 10 'Refresh
+      btnRefresh_Click()
+
+  END SELECT
+
+END
+
+
+PRIVATE FUNCTION DeleteFile(sPath AS String) AS Boolean
+
+  DIM Value AS Integer
+
+  IsCutMode = FALSE
+  'sPath = Conv$(sPath, Desktop.Charset, System.Charset)
+  'Message(sPath)
+
+  IF TestProtected(sPath) THEN RETURN
+
+  IF Message.Delete(("Do you really want to delete this file ?"), ("Delete"), ("Cancel")) <> 1 THEN RETURN
+
+  IF IsDir(sPath) THEN
+    RMDIR sPath
+  ELSE
+    KILL sPath
+  END IF
+
+  btnRefresh_Click()
+  RETURN TRUE
+
+CATCH
+
+  Message.Error(("Unable to delete this file.") & "\n\n" & Error.Text)
+
+END
+
+
+PRIVATE FUNCTION RenameFile(sPath AS String) AS Boolean
+
+  DIM bConf AS Boolean
+
+  bConf = NOT $bDoNotConfirm
+  $bDoNotConfirm = FALSE
+
+  IF stkCurStr = File.Name(sPath) THEN RETURN
+
+  IF TestProtected(sPath, TRUE) THEN RETURN
+
+  IF bConf THEN
+    IF Message.Question(("Do you really want to rename this file ?"), ("Rename"), ("Cancel")) <> 1 THEN RETURN
+  ENDIF
+
+  MOVE File.Dir(sPath) &/ stkCurStr TO sPath
+  btnRefresh_Click
+  RETURN TRUE
+
+CATCH
+
+  Message.Error(("Unable to rename this file.") & "\n\n" & Error.Text)
+
+END
+
+PUBLIC SUB Explorer_Rename()
+
+  IF File.Name(Explorer.Key) <> Explorer.Current.Text THEN
+    IF NOT RenameFile(File.Dir(Explorer.Key) &/ Explorer.Current.Text) THEN Explorer.Current.Text = stkCurStr
+  ELSE
+    Explorer.Current.Editable = FALSE
+  ENDIF
+
+END
+
+
+PRIVATE FUNCTION CopyDir(sPath AS String) AS Boolean
+
+  'DIM arFile AS String[]
+  DIM sDir AS String
+  DIM bOldHide AS Boolean
+  DIM DirRoot AS String
+
+  DirRoot = CurrentPath &/ File.Name(sPath)
+  'Message(DirRoot)
+  arFile.Add(sPath)
+  FileArray(sPath)
+  'arFile.Sort
+
+  FOR EACH sDir IN arFile
+    IF IsDir(sDir) THEN
+      MKDIR (DirRoot &/ Mid(sDir, Len(sPath) + 1))
+    ELSE
+      COPY sDir TO DirRoot &/ Mid(sDir, Len(sPath) + 1)
+      'IF ERROR THEN
+      '  'Message.Warning(Error.Text & "\nI can't copy the file : \n" & sDir)
+      '  Message.Error(Subst(("Cannot copy file &1\n\n&2"), sDir, Error.Text))
+      '  RETURN FALSE
+      'ENDIF
+    ENDIF
+  NEXT
+
+  RETURN TRUE
+
+CATCH
+
+  Message.Error(Subst(("Cannot copy file &1\n\n&2"), sDir, Error.Text))
+  'Message.Warning((Error.Text & "\nI can't copy the file : \n" & sDir))
+  RETURN FALSE
+
+END
+
+
+PRIVATE SUB FileArray(sPath AS String)
+
+  DIM sDir AS String
+  DIM prearFile AS NEW String[]
+
+  IF arFile.Count = 0 THEN RETURN
+
+  INC iLevel
+
+  'IF iLevel >= 6 THEN
+  '  Message.Warning(("You must choose a directory who have less than 6 level depth !"))
+  '  arFile.Clear
+  '  RETURN
+  'ENDIF
+
+  FOR EACH sDir IN Dir(sPath)
+    arFile.Add(sPath &/ sDir)
+    prearFile.Add(sPath &/ sDir)
+  NEXT
+
+  FOR EACH sDir IN prearFile
+  'Message (sDir)
+    IF IsDir(sDir) THEN
+      FileArray(sDir)
+    ENDIF
+  NEXT
+
+  DEC iLevel
+
+END
+
+
+PUBLIC SUB Form_Close()
+
+  ' $BM Ceci débloque les références circulaires
+  arMenu[0] = NULL
+  'mnuTab = NULL
+
+  ' $FB Voilà comme ceci les tabs sont sauvegardé dans tous les cas de figure !
+  SaveTabs()
+  'Message(TreeSequence)
+END
+
+PUBLIC SUB SaveTabs()
+
+  DIM i AS Integer
+
+  'PRINT "SaveTabs"
+
+  Settings["/SelectorTabs/Count"] = CoolTab.Count() - CoolTab.StaticButton
+
+  FOR i = CoolTab.StaticButton TO CoolTab.Count() - 1
+    Settings["/SelectorTabs/Tab[" & CStr(i - CoolTab.StaticButton) & "]"] = CoolTab.GetTabUrl(i)
+  NEXT
+
+  IF Key THEN
+    Settings[Key &/ "ExplorerType"] = TExplorer
+    Settings[Key &/ "Splitter"] = Splitter.Layout
+    Settings[Key &/ "TreeSequence"] = TreeSequence
+    Settings[Key &/ "PreviewImg"] = PreviewImg
+    Settings[Key &/ "ShowHidden"] = ShowHidden
+  ENDIF
+
+END
+
+
+PUBLIC SUB GetTabs()
+
+  DIM i AS Integer
+  DIM sDtab AS String
+
+  IF DoNotShowCustomTabs THEN RETURN
+
+  FOR i = 0 TO Settings["/SelectorTabs/Count", 0]
+    Cooltab.AddButton(Settings["/SelectorTabs/Tab[" & CStr(i) & "]"])
+  NEXT
+
+END
+
+PUBLIC SUB TreeExplorer_Activate()
+
+  DIM sPath AS String
+  'Message(TreeExplorer.Current.Key)
+  sPath = Mid(TreeExplorer.Key, 2)
+
+  IF AccessTest(sPath) THEN
+    CurrentPath = sPath
+    Fill_Explorer(CurrentPath)
+    IF Validate(sPath) THEN
+      txtFile.Text = TreeExplorer.Current.Text
+      RaiseSelect
+    ENDIF
+ ENDIF
+
+END
+
+
+PRIVATE FUNCTION MyVal(sVal AS String) AS Integer
+
+  TRY RETURN Val(sVal)
+
+END
+
+
+PRIVATE FUNCTION TestProtected(sPath AS String, OPTIONAL bWithMsg AS Boolean) AS Boolean
+
+  IF Project.Path THEN
+    IF sPath LIKE Project.Path &/ "*" THEN
+      IF bWithMsg THEN Message.Warning(("The current project files are protected.\nYou cannot rename nor delete them."))
+      RETURN TRUE
+    ENDIF
+  ENDIF
+
+END
+
+
+PRIVATE SUB RaiseSelect()
+
+  IF OKButton THEN OKButton.Value = TRUE
+
+END
+
+PUBLIC SUB btnNewDir_Click()
+
+  DIM iInd AS Integer
+  DIM sNewDir AS String
+
+  FOR iInd = 0 TO 99
+
+    sNewDir = ("New directory")
+    IF iInd THEN sNewDir = sNewDir & " " & CStr(iInd + 1)
+    sNewDir = CurrentPath &/ sNewDir
+    IF NOT Exist(sNewDir) THEN BREAK
+
+  NEXT
+
+  MKDIR sNewDir
+  btnRefresh_Click
+
+  WITH Explorer[sNewDir]
+    .Selected = TRUE
+    .EnsureVisible
+    .Editable = TRUE
+     StkCurStr = File.Name(sNewDir)
+     $bDoNotConfirm = TRUE
+    .Rename()
+  END WITH
+
+CATCH
+
+  Message.Error(("Cannot create directory.") & "\n\n" & Error.Text)
+
+END

@@ -1,0 +1,111 @@
+' Gambas class file
+
+STATIC PRIVATE $hApp AS Object
+
+PRIVATE $iDoc AS Integer
+
+STATIC PUBLIC SUB Main()
+
+  DIM hForm AS FBrowser
+  
+  $hApp = Application["kate"]
+  
+  hForm = NEW FBrowser
+  hForm.Show
+
+END
+
+PUBLIC SUB btnGo_Click()
+
+  CreateMenu
+  'PRINT "mnuGo.Children.Count = "; mnuGo.Children.Count
+  IF mnuGo.Children.Count THEN mnuGo.Popup
+
+END
+
+PRIVATE SUB CreateMenu()
+  
+  DIM sText AS String
+  DIM aLine AS String[]
+  DIM iLine AS Integer
+  DIM sLig AS String
+  DIM sLast AS String
+  DIM aFunc AS NEW String[]
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+  DIM hMenu AS Menu
+  DIM sFunc AS String
+  
+  mnuGo.Children.Clear
+  
+  
+  $iDoc = $hApp["KateApplication"].documentManager().activeDocumentNumber()
+  sText = $hApp["EditInterface#" & $iDoc].Text()
+  aLine = Split(sText, "\n")
+  
+  FOR iLine = 0 TO aLine.Count - 1
+  
+    sLast = sLig
+    sLig = aLine[iLine]
+    
+    IF sLig = "{" THEN
+      
+      iPos = Instr(sLast, "(")
+      IF iPos < 3 THEN CONTINUE
+      
+      IF RInstr(sLast, ")") < iPos THEN CONTINUE
+      
+      iPos2 = RInstr(RTrim(Left$(sLast, iPos - 1)), " ")
+      IF iPos2 = 0 THEN CONTINUE
+      
+      'PRINT sLast
+      
+      sFunc = Mid$(sLast, iPos2 + 1, iPos - iPos2 - 1)
+      IF Left$(sFunc) = "*" THEN sFunc = Mid$(sFunc, 2)
+      
+      aFunc.Add(sFunc & " " & iLine)
+      
+    ENDIF
+  
+  NEXT
+  
+  aFunc.Sort(gb.Text)
+  
+  FOR iLine = 0 TO aFunc.Count - 1
+  
+    hMenu = NEW Menu(mnuGo) AS "mnuFunc"
+    sFunc = aFunc[iLine]
+    iPos = Instr(sFunc, " ")
+    hMenu.Caption = Left$(sFunc, iPos - 1)
+    hMenu.Tag = CInt(Mid$(sFunc, iPos + 1))
+  
+  NEXT
+  
+END
+
+
+PUBLIC SUB mnuFunc_Click()
+
+  DIM iInd AS Integer
+  
+  DO
+  
+    INC iInd
+    IF iInd > 999 THEN BREAK
+    
+    TRY $hApp["ViewCursorInterface#" & $iDoc & "-" & iInd].cursorLine()
+    IF Error = 0 THEN BREAK
+    
+    'PRINT Error.Text
+    
+  LOOP
+  
+  '$hApp["kate-mainwindow#1"].Hide()
+
+  $hApp["ViewCursorInterface#" & $iDoc & "-" & iInd].SetCursorPosition(LAST.Tag + 10, 0)
+  $hApp["ViewCursorInterface#" & $iDoc & "-" & iInd].SetCursorPosition(LAST.Tag - 10, 0)
+  $hApp["ViewCursorInterface#" & $iDoc & "-" & iInd].SetCursorPosition(LAST.Tag + 1, 0)
+  
+  '$hApp["kate-mainwindow#1"].Show()
+  
+END

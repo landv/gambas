@@ -1,0 +1,387 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+PUBLIC CONST _Properties AS String = "*,Mode{TableView.None;Single;Multi}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
+PUBLIC CONST _DrawWith AS String = "TableView"
+
+EVENT Activate
+
+PROPERTY Mode AS Integer 
+PROPERTY Header AS Integer
+PROPERTY Grid AS Boolean
+PROPERTY Highlight AS Boolean
+
+'PROPERTY Connection AS Connection
+'PROPERTY Table AS String
+'PROPERTY Filter AS String
+PROPERTY Columns AS String[]
+PROPERTY READ Current AS Variant[]
+PROPERTY READ Count AS Integer
+PROPERTY READ Index AS Integer
+PROPERTY READ TableView AS TableView
+
+'PRIVATE $hConn AS Connection
+PRIVATE $hCtrl AS TableView
+'PRIVATE $sTable AS String
+'PRIVATE $sFilter AS String
+PRIVATE $hTable AS DataTable
+PRIVATE $aColumns AS String[]
+PRIVATE $bCreate AS Boolean
+PRIVATE $bRefreshColumn AS Boolean
+PRIVATE $bNoActivate AS Boolean
+PRIVATE $iHighlight AS Integer
+PRIVATE $bHighlight AS Boolean
+
+PUBLIC SUB _new()
+  
+  $hCtrl = NEW TableView(ME) AS "TableView"
+  $hCtrl.AutoResize = TRUE
+  $hCtrl.Resizable = FALSE
+  $hCtrl.Grid = FALSE
+  Create()
+  Refresh
+  
+  $bHighlight = TRUE
+  $iHighlight = Color.LightBackground
+  
+END
+
+PRIVATE SUB RefreshColumns()
+  
+  DIM iInd AS Integer
+  DIM sTable AS String
+  
+  IF Common.CheckDB() THEN RETURN
+  IF NOT $bRefreshColumn THEN RETURN
+  
+  $bRefreshColumn = FALSE
+  
+  sTable = $hTable.Name
+  
+  IF NOT $aColumns OR IF $aColumns.Count = 0 THEN
+    $aColumns = DataConnection.GetFields(sTable)
+  ENDIF
+  
+  'Object.Lock($hCtrl)
+  $bNoActivate = TRUE
+  $hCtrl.Columns.Count = $aColumns.Count
+  FOR iInd = 0 TO $aColumns.Max
+    WITH DataConnection[sTable, $aColumns[iInd]]
+      $hCtrl.Columns[iInd].Text = .Name
+      $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl)
+    END WITH
+  NEXT
+  $bNoActivate = FALSE
+  'Object.Unlock($hCtrl)
+  
+  IF $bCreate THEN Create()
+  
+END
+
+
+PRIVATE SUB Load()
+  
+  DIM hSrc AS DataSource
+  
+  IF Common.CheckDB() THEN RETURN
+  
+  'TRY DB.Open
+
+  'IF NOT $sTable THEN
+    hSrc = Common.GetSource(ME)
+    IF hSrc THEN
+      $hTable = hSrc._GetTable()
+    ENDIF
+  'ELSE
+  '  $hTable = NEW DataTable($sTable, $sFilter)
+  'ENDIF
+
+  IF NOT $hTable THEN
+    $hCtrl.Rows.Count = 0
+    RETURN
+  ENDIF
+    
+  RefreshColumns
+  'Object.Lock($hCtrl)
+  $bNoActivate = TRUE
+  $hCtrl.Rows.Count = $hTable.Count
+  $bNoActivate = FALSE
+  'Object.Unlock($hCtrl)
+  
+  $hCtrl.Refresh
+
+  IF hSrc.Index < 0 THEN 
+    $bCreate = TRUE
+    $hCtrl.Rows.UnSelect
+  ENDIF
+
+END
+
+
+PUBLIC SUB Refresh()
+  
+  Load
+  
+END
+
+
+
+' PRIVATE FUNCTION Table_Read() AS String
+'   
+'   RETURN $sTable
+'   
+' END
+' 
+' PRIVATE SUB Table_Write(sTable AS String)
+' 
+'   IF $sTable = sTable THEN RETURN  
+'   $sTable = sTable
+'   Load
+'   
+' END
+' 
+' PRIVATE FUNCTION Filter_Read() AS String
+'   
+'   RETURN $sFilter
+'   
+' END
+' 
+' PRIVATE SUB Filter_Write(sFilter AS String)
+'   
+'   IF $sFilter = sFilter THEN RETURN
+'   $sFilter = sFilter
+'   Load
+'   
+' END
+
+PRIVATE FUNCTION Columns_Read() AS String[]
+  
+  RETURN $aColumns.Copy()
+  
+END
+
+PRIVATE SUB Columns_Write(aCol AS String[])
+  
+  IF NOT aCol THEN
+    $aColumns = NULL
+  ELSE
+    $aColumns = aCol.Copy()
+  ENDIF
+
+  $bRefreshColumn = TRUE  
+  RefreshColumns
+  
+END
+
+PUBLIC SUB TableView_Data(Row AS Integer, Column AS Integer)
+  
+  DIM rData AS Result
+  DIM vVal AS Variant
+  
+  rData = $hTable[Row]
+  IF NOT rData THEN RETURN
+  IF NOT rData.Available THEN RETURN
+  
+  IF $aColumns THEN
+    vVal = rData[$aColumns[Column]]
+  ELSE
+    vVal = rData[Column]
+  ENDIF
+  
+  IF IsBoolean(vVal) THEN 
+    $hCtrl.Data.Text = If(vVal, ("True"), ("False"))
+  ELSE
+    $hCtrl.Data.Text = Str(vVal)
+  ENDIF
+  
+  IF $bHighlight AND IF Row AND 1 THEN $hCtrl.Data.Background = $iHighlight
+  
+END
+
+PUBLIC SUB TableView_Click()
+
+  TableView_Change
+    
+END
+
+
+PUBLIC SUB TableView_Change()
+
+  IF $bNoActivate THEN RETURN
+
+  $bCreate = FALSE
+  RAISE Activate
+  
+END
+
+
+PRIVATE FUNCTION Mode_Read() AS Integer
+  
+  RETURN $hCtrl.Mode
+  
+END
+
+PRIVATE SUB Mode_Write(iMode AS Integer)
+  
+  $hCtrl.Mode = iMode
+  
+END
+
+PRIVATE FUNCTION Header_Read() AS Integer
+  
+  RETURN $hCtrl.Header
+  
+END
+
+PRIVATE SUB Header_Write(iHeader AS Integer)
+  
+  $hCtrl.Header = iHeader
+  
+END
+
+' PRIVATE FUNCTION Connection_Read() AS Connection
+' 
+'   IF $hConn <> DB.Current THEN RETURN $hConn
+'   
+' END
+' 
+' PRIVATE SUB Connection_Write(hConn AS Connection)
+'   
+'   IF NOT hConn THEN hConn = DB.Current
+'   
+'   $hConn = hConn
+'   Load
+'   
+' END
+' 
+PRIVATE FUNCTION Current_Read() AS Variant[]
+  
+  RETURN $hTable.GetKeys($hCtrl.Row)
+  
+END
+
+PUBLIC SUB MoveFirst()
+  
+  TRY $hCtrl.Row = 0
+  $bCreate = FALSE
+  
+END
+
+PUBLIC SUB MoveLast()
+  
+  $hCtrl.Row = $hCtrl.Rows.Count - 1
+  $bCreate = FALSE
+  
+END
+
+PUBLIC SUB MoveNext()
+  
+  IF $bCreate THEN
+    MoveFirst
+    RETURN
+  ENDIF
+  IF $hCtrl.Row >= ($hCtrl.Rows.Count - 1) THEN RETURN
+  IF $hCtrl.Row < 0 THEN RETURN
+  INC $hCtrl.Row
+  
+END
+
+PUBLIC SUB MovePrevious()
+  
+  IF $bCreate THEN
+    MoveFirst
+    RETURN
+  ENDIF
+  IF $hCtrl.Row <= 0 THEN RETURN
+  DEC $hCtrl.Row
+  
+END
+
+PUBLIC SUB MoveTo(Index AS Integer)
+  
+  IF Index = $hCtrl.Row THEN RETURN
+  $hCtrl.Row = Index
+  
+END
+
+
+PUBLIC SUB Create()
+  
+  $bCreate = TRUE
+  $hCtrl.Rows.UnSelect
+  
+END
+
+
+PRIVATE FUNCTION Count_Read() AS Integer
+  
+  RETURN $hCtrl.Rows.Count
+  
+END
+
+PRIVATE FUNCTION Index_Read() AS Integer
+
+  IF $bCreate THEN
+    RETURN -1
+  ELSE  
+    RETURN $hCtrl.Row
+  ENDIF
+  
+END
+
+
+PUBLIC FUNCTION Remove() AS Boolean
+  
+  Create()  
+  
+END
+
+PRIVATE FUNCTION TableView_Read() AS TableView
+  
+  RETURN $hCtrl
+  
+END
+
+PUBLIC SUB TableView_ColumnClick(Column AS Integer)
+  
+  DIM hSrc AS DataSource
+  
+  hSrc = Common.GetSource(ME)
+  IF NOT hSrc THEN RETURN
+  
+  IF hSrc.Sort <> $aColumns[Column] THEN
+    hSrc.Sort = $aColumns[Column]
+  ELSE
+    hSrc.Sort = ""
+  ENDIF
+  
+  $hCtrl.Refresh
+
+END
+
+
+PRIVATE FUNCTION Grid_Read() AS Boolean
+
+  RETURN $hCtrl.Grid
+
+END
+
+PRIVATE SUB Grid_Write(Value AS Boolean)
+
+  $hCtrl.Grid = Value
+
+END
+
+PRIVATE FUNCTION Highlight_Read() AS Boolean
+
+  RETURN $bHighlight
+
+END
+
+PRIVATE SUB Highlight_Write(Value AS Boolean)
+
+  $bHighlight = Value
+
+END

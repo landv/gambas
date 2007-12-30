@@ -1,0 +1,335 @@
+'
+'   Copyright (C) 2004, Michael Isaac.  All rights reserved. 
+'
+
+PUBLIC Obj AS Object[]
+PUBLIC Bullet AS Object[]
+
+PUBLIC Canvas AS DrawingArea
+
+PUBLIC BULLET_SIZE AS Float
+PUBLIC BULLET_SPEED AS Float
+
+PUBLIC KEY_LEFT AS Boolean
+PUBLIC KEY_RIGHT AS Boolean
+PUBLIC KEY_UP AS Boolean
+PUBLIC KEY_DOWN AS Boolean
+
+PUBLIC KEY_FIRE AS Boolean
+PUBLIC KEY_FIRESTATE AS Boolean
+
+PUBLIC SCREEN_WIDTH AS Integer
+PUBLIC SCREEN_HEIGHT AS Integer
+
+PUBLIC BOT_SPACE AS Integer 'Which Obj[] is the bot
+
+PUBLIC FPS_TIME AS Float
+PUBLIC FPS_COUNTER AS Integer
+PUBLIC FPS_COUNT AS Integer
+
+PUBLIC ShowObjectLabel AS Boolean
+
+PUBLIC SUB Main()
+
+    MMath.InitializeSineTable()
+    ShowObjectLabel = TRUE
+
+    Obj = NEW Object[]
+    Bullet = NEW Object[]
+
+    FPS_TIME = Timer
+
+    BULLET_SIZE = 7
+    BULLET_SPEED = 15
+
+    SCREEN_WIDTH = FMain.ClientW
+    SCREEN_HEIGHT = FMain.ClientH
+
+    LoadObjectList()
+
+    FMain.Show()
+END
+
+PUBLIC SUB Exit()
+    Obj = NULL
+    Bullet = NULL
+    Canvas = NULL
+END
+
+SUB LoadObjectList()
+    DIM I AS Integer
+    DIM J AS Integer
+    DIM sData AS String
+    DIM tmpO AS CObject
+
+    'DIM F AS File
+
+    DIM V AS NEW String[]
+    DIM aLine AS NEW String[]
+
+    sData = File.Load(Application.Path &/ "object.data/main.lst")
+
+    'OPEN Application.Path &/ "object.data/main.lst" FOR READ AS #F
+    'READ #F, sData, Lof(F)
+
+    'Split this into an array and remove the CR character
+    aLine = Split(Replace(sData, Chr$(13), NULL), "\n")
+
+    FOR I = 0 TO aLine.Count - 1
+        IF (NOT (Left$(aLine[I], 1) = "'")) AND (NOT (aLine[I] = "")) THEN
+            V = Split(aLine[I], ",")
+            IF V.Count = 4 THEN
+                FOR j = 1 TO If(v[1] = "Object1", 100, 1)
+                tmpO = NEW CObject
+                tmpO.Load2DObject(V[0], V[1], CInt(V[2]), CInt(V[3]))
+                Obj.Add(tmpO)
+                NEXT
+            END IF
+        END IF
+    NEXT
+
+    'CLOSE #F
+END
+
+SUB ApplyPhysics()
+    DIM I AS Integer
+    DIM U AS Integer
+    DIM Ob AS CObject
+
+    IF Obj = NULL THEN RETURN
+
+    FOR EACH Ob IN Obj
+        WITH Ob
+            .Direction = .Direction + Rad(.Torque)
+
+            IF .TurnLeft = TRUE THEN .Direction = .Direction + Rad(.Agility)
+            IF .TurnRight = TRUE THEN .Direction = .Direction - Rad(.Agility)
+
+            IF .Direction > Rad(360) THEN .Direction = Rad(0)
+            IF .Direction < Rad(0) THEN .Direction = Rad(360)
+
+            IF .Thrust = TRUE THEN
+                .MX = .MX + ((Sin(.Direction)) * .Acceleration)
+                .MY = .MY + ((Cos(.Direction)) * .Acceleration)
+            END IF
+
+            IF (.MX <> 0) OR (.MY <> 0) THEN
+                .X = .X + (.MX / 20)
+                .Y = .Y + (.MY / 20)
+            END IF
+
+            IF .Attack THEN
+                AddBullet(CInt(.X), CInt(.Y), .Direction, .ID, 10)
+            END IF
+        END WITH
+    NEXT
+END
+
+FUNCTION IsObjectCollision(O1 AS CObject, O2 AS CObject) AS Boolean
+    IF GetDistance(O1.X, O1.Y, O2.X, O2.Y) <= O2.Size THEN
+        RETURN TRUE
+    END IF
+END FUNCTION
+
+FUNCTION IsBulletCollision(O AS CObject, B AS CBullet) AS Boolean
+    IF GetDistance(O.X, O.Y, B.X, B.Y) <= O.Size THEN
+        RETURN TRUE
+    END IF
+END FUNCTION
+
+SUB CollisionHandler()
+
+    DIM I AS Integer
+    DIM J AS Integer
+    DIM hBullet AS CBullet
+    DIM hObj AS CObject
+
+    IF Obj = NULL THEN RETURN
+    IF Bullet = NULL THEN RETURN
+
+    FOR I = 0 TO Obj.Count - 1
+        FOR J = 0 TO Bullet.Count - 1
+
+            IF J > Bullet.Count - 1 THEN BREAK
+            IF I > Obj.Count - 1 THEN BREAK
+
+            hObj = Obj[I]
+            hBullet = Bullet[J]
+
+            IF NOT (hBullet.Owner = hObj.ID) THEN
+                IF IsBulletCollision(hObj, hBullet) THEN
+
+                    hObj.Hull = hObj.Hull - hBullet.Damage
+                    Bullet.Remove(J)
+
+                    IF hObj.Hull <= 0 THEN
+                        IF I = 0 THEN
+                            'Message("Player was just killed.")
+                        ELSE
+                            Obj.Remove(I)
+                        END IF
+                    END IF
+                END IF
+            END IF
+        NEXT
+    NEXT
+
+'     FOR J = 0 TO (Obj.Count - 1)
+'         FOR I = 0 TO (Obj.Count - 1)
+'             IF I <> J THEN 
+'                 IF IsObjectCollision(Obj[J], Obj[I]) THEN 
+'                     'This is where Objects collide, and we need
+'                     'calculate forces here.
+'                 END IF 
+'             END IF 
+'         NEXT
+'     NEXT
+END
+
+PUBLIC SUB AddBullet(CX AS Integer, CY AS Integer, D AS Float, OwnMe AS String, Dmg AS Integer)
+    DIM B AS NEW CBullet
+
+    WITH B
+        .X = CX
+        .Y = CY
+        .Direction = D
+        .Owner = OwnMe
+        .Damage = Dmg
+    END WITH
+
+    Bullet.Add(B)
+END
+
+SUB MoveBullets()
+    DIM I AS Integer
+
+    IF Bullet = NULL THEN RETURN
+
+    FOR I = 0 TO Bullet.Count - 1
+        IF I > Bullet.Count - 1 THEN BREAK
+
+        WITH Bullet[I]
+            .X = .X + ((Sin(.Direction)) * BULLET_SPEED)
+            .Y = .Y + ((Cos(.Direction)) * BULLET_SPEED)
+        END WITH
+
+        IF ((Bullet[I].X > SCREEN_WIDTH) OR (Bullet[I].X < 0)) OR ((Bullet[I].Y > SCREEN_HEIGHT) OR (Bullet[I].Y < 0)) THEN
+            Bullet.Remove(I)
+        END IF
+    NEXT
+END
+
+SUB RenderBullets()
+    DIM B AS CBullet
+
+    Draw.ForeColor = Color.Cyan
+    Draw.FillColor = Color.Blue
+    Draw.FillStyle = 1
+
+    Randomize
+
+    FOR EACH B IN Bullet
+        Draw.Ellipse(B.X, B.Y, BULLET_SIZE, BULLET_SIZE)
+    NEXT
+END
+
+PUBLIC SUB RenderObjects()
+    DIM I AS Integer
+    DIM Ob AS CObject
+    DIM Size AS Integer
+
+    DIM Tag AS String
+
+    Draw.ForeColor = Color.Red
+    FOR EACH Ob IN Obj
+        WITH Ob
+            Size = .Degree.Count - 1
+
+            .Points.Clear()
+
+            FOR I = 0 TO Size
+                .Points.Add(CInt(.X + ((Sin(.Direction + Rad(.Degree[I]))) * .Distance[I])))
+                .Points.Add(CInt(.Y + ((Cos(.Direction + Rad(.Degree[I]))) * .Distance[I])))
+            NEXT
+
+            Draw.Polygon(.Points)
+        END WITH
+    NEXT
+
+    IF ShowObjectLabel THEN
+        Draw.ForeColor = Color.Green
+        FOR EACH Ob IN Obj
+            WITH Ob
+                Tag = .ID & " " & .Hull & "%"
+                Draw.Text(Tag, .X - (Draw.TextWidth(Tag) / 2), .Y - (35))
+            END WITH
+        NEXT
+    ENDIF
+END
+
+SUB CheckObjectWarp()
+    DIM Ob AS CObject
+
+    FOR EACH Ob IN Obj
+        WITH Ob
+            IF .Y > SCREEN_HEIGHT THEN .Y = 0
+            IF .Y < 0 THEN .Y = SCREEN_HEIGHT
+
+            IF .X > SCREEN_WIDTH THEN .X = 0
+            IF .X < 0 THEN .X = SCREEN_WIDTH
+        END WITH
+    NEXT
+END
+
+SUB MainLoop()
+
+    DIM eTime AS Float
+
+    ApplyPhysics()
+    CollisionHandler()
+
+    MoveBullets()
+
+    IF Canvas = NULL THEN RETURN
+
+    CheckObjectWarp()
+
+    Canvas.Clear()
+
+    Draw.Begin(Canvas)
+
+    Draw.ForeColor = Color.Magenta
+
+    Draw.Text("Object Count: " & Obj.Count, 1, Draw.TextHeight("A") * 0)
+    Draw.Text("Bullet Count: " & Bullet.Count, 1, Draw.TextHeight("A") * 1)
+    Draw.Text("FPS         : " & FPS_COUNT, 1, Draw.TextHeight("A") * 2)
+
+    eTime = Timer
+    IF (eTime - FPS_TIME) >= 1 THEN
+        FPS_TIME = eTime
+        FPS_COUNT = FPS_COUNTER
+        FPS_COUNTER = 0
+    ENDIF
+
+    INC FPS_COUNTER
+
+    RenderObjects()
+    RenderBullets()
+
+    Draw.End()
+END
+
+FUNCTION GetDistance(X1 AS Float, Y1 AS Float, X2 AS Float, Y2 AS Float) AS Float
+    'DIM A AS Integer
+    'DIM B AS Integer
+
+    'A = (X1 - X2)
+    'B = (Y1 - Y2)
+
+    'I'm not sure about gambas, but in VB the ^ operator
+    'makes calculations we dont really need.  This might speed up
+    'the process.  And we need as much speed as we can get.
+
+    'RETURN Sqr((A * A) + (B * B))
+    RETURN Hyp(X1 - X2, Y1 - Y2)
+END

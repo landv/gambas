@@ -1,0 +1,163 @@
+' Gambas module file
+
+EXPORT 
+
+PROPERTY READ Fields AS String[]
+PROPERTY READ Cookies AS Collection
+PROPERTY READ Method AS String
+PROPERTY READ Path AS String
+PROPERTY READ Query AS String
+
+PRIVATE $cCookies AS collection
+PRIVATE $cVal AS Collection
+PRIVATE $aField AS NEW String[]
+
+PRIVATE SUB DecodeURL(sUrl AS String, cVal AS Collection)
+  
+  DIM sElt AS String
+  DIM aElt AS String[]
+  DIM sKey AS String
+  DIM sVal AS String
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+  DIM sCar AS String
+  
+  FOR EACH sElt IN Split(sUrl, "&")
+  
+    aElt = Split(sElt, "=")
+    sKey = CGI.Decode(aElt[0])
+    sVal = CGI.Decode(aElt[1])
+    
+    cVal[sKey] = sVal
+    $aField.Add(sKey)
+  
+  NEXT  
+ 
+END
+
+
+PRIVATE SUB DecodeQueryForm()
+  
+  DIM sStr AS String
+  DIM sType AS String
+  DIM sLine AS String
+  DIM aElt AS String[]
+  DIM sElt AS String
+  DIM sName AS String
+  DIM sValue AS String
+  
+  $cVal = NEW Collection
+
+  IF CGI["REQUEST_METHOD"] = "GET" THEN
+    DecodeURL(CGI["QUERY_STRING"], $cVal)  
+    RETURN
+  ENDIF
+  
+  File.In.EndOfLine = gb.Windows
+  
+  sType = CGI["CONTENT_TYPE"]
+  'DEBUG sType
+  
+  IF sType = "application/x-www-form-urlencoded" THEN 
+    LINE INPUT sStr
+    DecodeURL(sStr, $cVal)
+    RETURN
+  ENDIF
+    
+  IF NOT (sType LIKE "multipart/form-data*") THEN RETURN
+  
+  'sType = Scan(sType, "*boundary=*")[1]
+  
+  LINE INPUT sType
+  'IF sLine <> sType THEN RETURN
+  
+  WHILE NOT Eof
+  
+    LINE INPUT sLine
+    
+    IF sLine LIKE "Content-Disposition:*" THEN 
+      aElt = Split(sLine, ";", Chr$(34))
+      FOR EACH sElt IN aElt
+        IF sElt LIKE "name=*" THEN 
+          sName = Split(sElt, "=", Chr$(34))[1]
+          BREAK
+        ENDIF
+      NEXT
+      CONTINUE
+    ENDIF
+    
+    IF sLine THEN CONTINUE
+    
+    sValue = ""
+    DO
+      LINE INPUT sLine
+      IF Left(sLine, Len(sType)) = sType THEN BREAK
+      IF sValue THEN sValue &= "\r\n"
+      sValue &= sLine
+    LOOP
+    
+    IF sName THEN 
+      $aField.Add(sName)
+      $cVal[sName] = sValue
+    ENDIF
+    
+    IF Right(sLine, 2) = "--" THEN BREAK
+  
+  WEND 
+    
+  
+END
+
+PUBLIC SUB _get(Key AS String) AS String
+  
+  IF NOT $cVal THEN DecodeQueryForm
+  RETURN $cVal[Key]
+  
+END
+
+PRIVATE FUNCTION Fields_Read() AS String[]
+
+  IF NOT $cVal THEN DecodeQueryForm
+  RETURN $aField
+
+END
+
+PRIVATE FUNCTION Cookies_Read() AS Collection
+
+  DIM sCookie AS String
+  DIM aCookie AS String[]
+
+  IF NOT $cCookies THEN
+    
+    $cCookies = NEW Collection
+    
+    FOR EACH sCookie IN Split(CGI["HTTP_COOKIE"], ";")
+      sCookie = Trim(sCookie)
+      aCookie = Split(sCookie, "=")
+      $cCookies[aCookie[0]] = aCookie[1]
+    NEXT
+ 
+  ENDIF
+
+  RETURN $cCookies
+
+END
+
+
+PRIVATE FUNCTION Method_Read() AS String
+
+  RETURN CGI["REQUEST_METHOD"]  
+
+END
+
+PRIVATE FUNCTION Path_Read() AS String
+
+  RETURN CGI["PATH_INFO"]  
+
+END
+
+PRIVATE FUNCTION Query_Read() AS String
+
+  RETURN CGI["QUERY_STRING"]  
+
+END

@@ -1,0 +1,304 @@
+' Gambas class file
+
+PRIVATE $iColor AS Integer
+PRIVATE $iOldColor AS Integer
+
+'PRIVATE $sSystem AS String
+
+PRIVATE $iHue AS Integer
+PRIVATE $iSat AS Integer
+PRIVATE $iVal AS Integer
+
+PRIVATE $bLock AS Boolean
+
+PRIVATE $hImage AS Image
+PRIVATE $hMap AS Picture
+PRIVATE $hCross AS Picture
+PRIVATE $bHide AS Boolean
+PRIVATE $X AS Integer
+PRIVATE $Y AS Integer
+
+PRIVATE $iSize AS Integer
+PRIVATE $I AS Integer
+PRIVATE $J AS Integer
+
+PRIVATE CONST NCOLH AS Integer = 11
+STATIC PRIVATE $aHue AS Integer[] = [360, 330, 300, 285, 270, 240, 210, 195, 180, 165, 150, 120, 90, 75, 60, 45, 30]
+
+EVENT Change()
+EVENT Confirm()
+
+PUBLIC SUB _new()
+
+  $hImage = Image.Load("img/colormap.png")
+  $hCross = Picture["img/cross.png"]
+
+END
+
+PRIVATE SUB MoveCross()
+
+  $bHide = TRUE
+  dwgColorMap.Refresh($X - 7, $Y - 7, 16, 16)
+  $bHide = FALSE
+  $X = (359 - $iHue) * dwgColorMap.ClientW / 360
+  $Y = (255 - $iSat) * dwgColorMap.ClientH / 256
+  dwgColorMap.Refresh($X - 7, $Y - 7, 16, 16)
+
+END
+
+
+PRIVATE SUB RefreshColor(OPTIONAL bRGB AS Boolean = TRUE, OPTIONAL bHSV AS Boolean = TRUE)
+
+  DIM X AS Integer
+  DIM Y AS Integer
+
+  $bLock = TRUE
+
+  IF bHSV THEN
+    $iHue = Color[$iColor].Hue
+    $iSat = Color[$iColor].Saturation
+    $iVal = Color[$iColor].Value
+    txtH.Value = $iHue
+    txtS.Value = $iSat
+    txtV.Value = $iVal
+  ELSE
+    $iHue = txtH.Value
+    $iSat = txtS.Value
+    $iVal = txtV.Value
+  ENDIF
+
+  IF bRGB THEN
+    txtR.Value = Color[$iColor].Red
+    txtG.Value = Color[$iColor].Green
+    txtB.Value = Color[$iColor].Blue
+  ENDIF
+
+  MoveCross
+
+  sldValue.Value = 255 - $iVal
+  panColor.Background = $iColor
+  txtHexa.Text = Hex$($iColor, 6)
+
+  $bLock = FALSE
+
+  IF $iColor <> $iOldColor THEN
+    $iOldColor = $iColor
+    RAISE Change
+  ENDIF
+
+END
+
+
+
+PUBLIC SUB SetColor(iColor AS Integer)
+
+  'IF IsNull(Val(sColor)) THEN
+  '  $sSystem = sColor
+  '  lstSystem.Index = lstSystem.Find($sSystem)
+  '  tabColor.Index = 1
+  'ELSE
+    $iColor = iColor
+  '  tabColor.Index = 0
+  'ENDIF
+  RefreshColor
+
+END
+
+
+PUBLIC FUNCTION GetColor() AS Integer
+
+  TRY sldValue.SetFocus
+  'IF tabColor.Index = 0 THEN
+    RETURN $iColor
+  'ELSE
+  '  RETURN $sSystem
+  'ENDIF
+
+END
+
+
+
+
+PUBLIC SUB Form_Resize()
+
+  DIM H AS Integer
+
+  $iSize = Max(12, Min(dwgColor.W / $aHue.Count, boxColor.H / 2 / NCOLH, 32))
+  H = $iSize * NCOLH + 7
+  dwgColor.H = H
+
+  'PRINT "Form_Resize"
+  $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height, TRUE).Picture
+  MoveCross
+
+END
+
+
+PUBLIC SUB txtRGB_Change()
+
+  IF $bLock THEN RETURN
+  $iColor = Color.RGB(txtR.Value, txtG.Value, txtB.Value)
+  RefreshColor(FALSE, TRUE)
+
+END
+
+PUBLIC SUB txtHSV_Change()
+
+  IF $bLock THEN RETURN
+  $iColor = Color.HSV(txtH.Value, txtS.Value, txtV.Value)
+  RefreshColor(TRUE, FALSE)
+
+END
+
+PUBLIC SUB dwgColorMap_Draw()
+
+  IF NOT $hMap THEN RETURN
+
+  Draw.Picture($hMap, 0, 0)
+  IF $bHide THEN RETURN
+  Draw.Picture($hCross, $X - 7, $Y - 7)
+
+END
+
+PUBLIC SUB dwgColorMap_MouseMove()
+
+  $bLock = TRUE
+  txtH.Value = 359 - (Mouse.ScreenX - LAST.ScreenX) * 360 / dwgColorMap.ClientW
+  txtS.Value = 255 - (Mouse.ScreenY - LAST.ScreenY) * 256 / dwgColorMap.ClientH
+  $bLock = FALSE
+  txtHSV_Change
+
+END
+
+PUBLIC SUB sldValue_Change()
+
+  txtV.Value = 255 - sldValue.Value
+
+END
+
+PUBLIC SUB dwgColorMap_DblClick()
+
+  RAISE Confirm
+
+END
+
+PUBLIC SUB dwgColorMap_MouseDown()
+
+  dwgColorMap_MouseMove
+
+END
+
+PUBLIC SUB Form_Open()
+
+  'PRINT "Form_Open"
+  RefreshColor
+  txtHexa.SetFocus
+
+END
+
+
+' PUBLIC SUB lstSystem_DblClick()
+' 
+'   RAISE Confirm
+' 
+' END
+' 
+' PUBLIC SUB lstSystem_Click()
+' 
+'   $sSystem = lstSystem.Text
+' 
+' END
+' 
+' PUBLIC SUB tabColor_Click()
+' 
+'   IF tabColor.Index = 0 THEN Form_Resize
+' 
+' END
+
+PUBLIC SUB panColor_DblClick()
+
+  RAISE Confirm
+
+END
+
+PRIVATE FUNCTION CalcColor(I AS Integer, J AS Integer) AS Integer
+
+  DIM iCol AS Integer
+
+  SELECT CASE J
+    CASE 0
+      iCol = Color.HSV(0, 0, Min(255, 256 - Int(256 * I / $aHue.Max)))
+    CASE 1 TO 4
+      iCol = Color.HSV($aHue[I], 255, Min(255, 64 * J))
+    CASE ELSE
+      iCol = Color.HSV($aHue[I], 192 - (J - 5) * 32, 255)
+  END SELECT
+
+  RETURN iCol
+
+END
+
+PUBLIC SUB dwgColor_Draw()
+
+  DIM W AS Integer
+  DIM H AS Integer
+  DIM I AS Integer
+  DIM J AS Integer
+  DIM Y AS Integer
+
+  W = $iSize
+  H = $iSize
+
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.Solid
+  Draw.Foreground = Color.DarkGray
+
+  FOR J = 0 TO NCOLH - 1
+    FOR I = 0 TO $aHue.Max
+      Draw.FillColor = CalcColor(I, J)
+      Draw.Rect(I * W, Y, W + 1, H + 1)
+    NEXT
+    Y += H
+    IF J = 0 OR J = 3 OR J = 4 THEN
+      Y += 2
+    ENDIF
+  NEXT
+
+END
+
+PUBLIC SUB dwgColor_MouseDown()
+
+  DIM Y AS Integer
+  DIM J AS Integer
+
+  $I = Mouse.X / $iSize
+
+  Y = Max(0, Mouse.Y - 1)
+  FOR EACH J IN [1, 4, 5]
+    IF Y >= (J * $iSize) THEN
+      Y -= 2
+    ENDIF
+  NEXT
+  $J = Y / $iSize
+
+  IF $I < 0 OR IF $I > $aHue.Max OR IF $J < 0 OR IF $J >= NCOLH THEN RETURN
+
+  $iColor = CalcColor($I, $J)
+  RefreshColor
+
+END
+
+PUBLIC SUB dwgColor_MouseMove()
+
+  dwgColor_MouseDown
+
+END
+
+
+PUBLIC SUB dwgColor_DblClick()
+
+  IF $I < 0 OR IF $I > $aHue.Max OR IF $J < 0 OR IF $J >= NCOLH THEN RETURN
+
+  RAISE Confirm
+
+END

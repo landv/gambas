@@ -1,0 +1,70 @@
+' Gambas module file
+
+PRIVATE SUB GetPath(sPath AS String) AS String
+  
+  RETURN System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
+  
+END
+
+
+PUBLIC SUB Open()
+
+  Project.OpenWebPage(GetPath("tree/index.html"))
+
+END
+
+
+PUBLIC SUB GotoSymbol(hSymbol AS CSymbolInfo)
+  
+  DIM sLink AS String
+  DIM sName AS String
+  
+  sName = LCase(hSymbol.Name)
+  sName = Replace(sName, ":", ".")
+  
+  IF hSymbol.Component = "gb" AND IF hSymbol.Class = "." THEN
+    sLink = "help/lang"
+  ELSE
+    sLink = "help/comp"
+    sLink &= "/" & hSymbol.Component
+    IF hSymbol.Class <> "." THEN sLink &= "/" & Replace(LCase(hSymbol.Class), ".", "_")
+  ENDIF
+
+  sLink &/= sName & "?en"
+  
+  Project.OpenWebPage(GetPath(sLink))
+  
+END
+
+PUBLIC SUB GotoComponent(sComp AS String)
+  
+  DIM sLink AS String
+  
+  sLink = "help/comp" &/ sComp & "?en"
+  Project.OpenWebPage(GetPath(sLink))
+  
+END
+
+PUBLIC FUNCTION GotoKeyword(sName AS String, OPTIONAL sName2 AS String) AS Boolean
+
+  DIM sKey AS String
+  DIM sText AS String
+  DIM sPath AS String
+
+  IF sName2 THEN
+    IF NOT GotoKeyword(sName2) THEN RETURN
+  ENDIF
+
+  IF Right(sName) = "$" THEN sName = Left$(sName, -1)
+
+  sPath = GetPath("help/lang" &/ LCase(sName))
+  IF NOT Exist(sPath & "?en") THEN RETURN TRUE
+  Project.OpenWebPage(sPath & "%3Fen")
+  
+CATCH
+
+  RETURN TRUE
+
+END
+
+

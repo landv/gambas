@@ -1,0 +1,26 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,55,9)
+  'Move(0,0,440,72)
+  Text = ("")
+  Arrangement = Arrange.Horizontal
+  Spacing = 8
+  Padding = 4
+  { VBox2 VBox
+    MoveScaled(1,0,6,8)
+    'Move(8,0,48,64)
+    { imgIcon PictureBox
+      MoveScaled(0,0,6,6)
+      'Move(0,0,48,48)
+      Stretch = True
+    }
+  }
+  { txtInfo TextLabel
+    MoveScaled(9,0,44,8)
+    'Move(72,0,352,64)
+    Expand = True
+    AutoResize = True
+    Text = ("")
+  }
+}

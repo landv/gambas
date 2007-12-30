@@ -1,0 +1,1369 @@
+' Gambas class file
+
+STATIC PRIVATE $bGrid AS Boolean
+STATIC PRIVATE PAN_H AS Integer
+STATIC PRIVATE PAN_W AS Integer
+
+PUBLIC Name AS String
+PUBLIC Parent AS CControl
+PUBLIC Control AS Object
+PUBLIC Selected AS Boolean
+PUBLIC Kind AS String
+PUBLIC Virtual AS Boolean
+PUBLIC Unknown AS Boolean
+PUBLIC Tag AS Variant
+
+'STATIC PUBLIC Properties AS NEW Collection
+'STATIC PUBLIC PropertiesInOrder AS NEW Collection
+'STATIC PUBLIC ControlLibrary AS NEW Collection
+
+STATIC PRIVATE $cSynonymous AS NEW Collection
+STATIC PRIVATE $cLibRef AS NEW Collection
+
+PRIVATE $cValue AS NEW Collection
+
+PRIVATE $hHandle[8] AS Panel
+
+'PRIVATE CONST PAN_H AS Integer = 6
+'PRIVATE CONST PAN_W AS Integer = 6
+
+PRIVATE $bMove AS Boolean
+PRIVATE $X AS Integer
+PRIVATE $Y AS Integer
+PRIVATE $MX AS Integer
+PRIVATE $MY AS Integer
+
+STATIC PRIVATE $bDoNotMoveHandle AS Boolean
+
+
+STATIC PUBLIC SUB _init()
+
+  $cSynonymous["Left"] = "X"
+  $cSynonymous["Top"] = "Y"
+  $cSynonymous["W"] = "Width"
+  $cSynonymous["H"] = "Height"
+  $cSynonymous["Caption"] = "Text"
+  $cSynonymous["Title"] = "Text"
+  $cSynonymous["BackColor"] = "Background"
+  $cSynonymous["ForeColor"] = "Foreground"
+
+  RefreshHandleSize
+
+  $bGrid = TRUE
+
+END
+
+
+PRIVATE FUNCTION CreateControl(sName AS String, sClass AS String, hParent AS Object) AS Object
+
+  DIM hCtrl AS Object
+  DIM hPict AS Picture
+  DIM bExist AS Boolean
+  DIM bVirtual AS Boolean
+  DIM sDrawWith AS String
+  'DIM iInd AS Integer
+
+  'PRINT "> CreateControl "; sClass
+
+  bExist = CComponent.Classes.Exist(sClass)
+  IF bExist THEN
+    sDrawWith = CComponent.Classes[sClass].DrawWith
+    IF sDrawWith THEN sClass = sDrawWith
+  ENDIF
+
+  SELECT CASE LCase(sClass)
+
+    CASE "frame"
+      hCtrl = NEW Frame(hParent)
+      hCtrl.Caption = sName
+
+    CASE "tabstrip"
+      hCtrl = NEW TabStrip(hParent)
+      'hCtrl.Caption = sName
+
+    CASE "panel"
+      hCtrl = NEW Panel(hParent)
+
+    CASE "button"
+      hCtrl = NEW Button(hParent)
+      hCtrl.Caption = sName
+
+    CASE "togglebutton"
+      hCtrl = NEW ToggleButton(hParent)
+      hCtrl.Caption = sName
+      
+    CASE "toolbutton"
+      hCtrl = NEW ToolButton(hParent)
+      hCtrl.Picture = Picture["img/logo/new-logo-16.png"]
+
+    CASE "textbox"
+      hCtrl = NEW TextBox(hParent)
+      hCtrl.Text = sName
+      hCtrl.Mouse = Mouse.Arrow
+
+    CASE "textarea"
+      hCtrl = NEW TextArea(hParent)
+      hCtrl.Text = sName
+      hCtrl.Mouse = Mouse.Arrow
+
+    CASE "combobox"
+      hCtrl = NEW ComboBox(hParent)
+      hCtrl.Text = sName
+      'hCtrl.Add(" ")
+      hCtrl.Mouse = Mouse.Arrow
+
+    CASE "checkbox"
+      hCtrl = NEW CheckBox(hParent)
+      hCtrl.Caption = sName
+
+    CASE "radiobutton"
+      hCtrl = NEW RadioButton(hParent)
+      hCtrl.Caption = sName
+
+    CASE "label"
+      hCtrl = NEW Label(hParent)
+      hCtrl.Caption = sName
+
+    CASE "textlabel"
+      hCtrl = NEW TextLabel(hParent)
+      hCtrl.Caption = sName
+
+    CASE "picturebox"
+      hCtrl = NEW PictureBox(hParent)
+      hCtrl.Picture = Picture["img/logo/new-logo.png"]
+
+    CASE "treeview"
+      hCtrl = NEW TreeView(hParent)
+      hPict = Picture["icon:/16/directory"]
+      hCtrl.Add("A", sName, hPict).Expanded = TRUE
+      hCtrl.Add("B", "Item", hPict, "A")
+      hCtrl.Add("C", "Item", hPict, "A")
+
+    CASE "iconview"
+      hCtrl = NEW IconView(hParent)
+      hPict = Picture["icon:/32/image"]
+      hCtrl.Add("A", sName, hPict)
+
+    CASE "listview"
+      hCtrl = NEW ListView(hParent)
+      hPict = Picture["icon:/16/file"]
+      hCtrl.Add("A", sName, hPict)
+
+    CASE "columnview"
+      hCtrl = NEW ColumnView(hParent)
+      hCtrl.Columns.Count = 2
+      hPict = Picture["icon:/16/file"]
+      hCtrl.Add("A", sName, hPict)
+      hCtrl.Columns[0].AutoResize = TRUE
+      hCtrl.Columns[1].Width = hCtrl.Columns[0].Width
+
+    CASE "listbox"
+      hCtrl = NEW ListBox(hParent)
+      hCtrl.Add(sName)
+
+    CASE "gridview"
+      hCtrl = NEW GridView(hParent)
+      hCtrl.Columns.Count = 2
+      hCtrl.Rows.Count = 4
+      hCtrl.Grid = TRUE
+      hCtrl[0, 0].Text = sName
+
+    CASE "menu"
+      hCtrl = NEW Menu(hParent)
+
+    CASE "scrollview"
+      hCtrl = NEW ScrollView(hParent)
+
+    CASE "progressbar"
+      hCtrl = NEW ProgressBar(hParent)
+      hCtrl.Value = 0.5
+
+    CASE "tableview"
+      hCtrl = NEW TableView(hParent)
+      hCtrl.Columns.Count = 3
+      hCtrl.Rows.Count = 12
+      hCtrl.Grid = TRUE
+      'hCtrl[0, 0].Text = sName
+
+    CASE "splitter"
+      IF sName THEN
+        hCtrl = NEW Panel(hParent)
+      ELSE
+        hCtrl = NEW Splitter(hParent)
+      ENDIF
+
+    CASE "-", "drawingarea", "vbox", "hbox", "vpanel", "hpanel", "vsplit", "hsplit", "embedder"
+      hCtrl = NEW DrawingArea(hParent)
+      hCtrl.Merge = TRUE
+
+    CASE ELSE
+
+      IF bExist THEN
+        bVirtual = CComponent.Classes[sClass].VirtualControl
+      ENDIF
+
+      IF bVirtual THEN
+
+        IF Len(sName) THEN
+          hCtrl = NEW Button(hParent)
+          hCtrl.Picture = Picture["img/control" &/ LCase(sClass) & ".png"]
+          hCtrl.Design = TRUE
+        ELSE
+          hCtrl = NEW (sClass) ' Timer(hParent)
+        ENDIF
+
+      ELSE
+
+        IF bExist THEN
+          TRY hCtrl = NEW (sClass, hParent)
+          'IF ERROR THEN DEBUG sClass; ": "; Error.Text
+          'ENDIF
+          'hCtrl = NEW (sClass, hParent)
+        ENDIF
+
+        IF NOT hCtrl THEN
+          'PRINT "DrawingArea: sClass"
+          hCtrl = NEW DrawingArea(hParent)
+          hCtrl.Merge = TRUE
+          'hCtrl.Text = sClass & " ?"
+          hCtrl.Design = TRUE
+        ELSE
+          hCtrl.Design = NOT IsContainer()
+          IF NOT IsMultiContainer() THEN
+            TRY hCtrl.Text = sName
+          ENDIF
+        ENDIF
+
+      ENDIF
+
+  END SELECT
+
+  'PRINT "< CreateControl "; sClass
+
+  'IF hCtrl IS UserControl OR NOT hCtrl IS Container THEN
+  TRY hCtrl.Design = TRUE
+  'ENDIF
+  RETURN hCtrl
+
+END
+
+
+PRIVATE SUB InitControl(hCtrl AS Object)
+
+  TRY SetProperty("X", hCtrl.X)
+  TRY SetProperty("Y", hCtrl.Y)
+  TRY SetProperty("Width", hCtrl.Width)
+  TRY SetProperty("Height", hCtrl.Height)
+  TRY SetProperty("Text", hCtrl.Text)
+  SetProperty("Visible", TRUE)
+  SetProperty("Tag", NULL)
+
+END
+
+
+PUBLIC SUB _new(sName AS String, sClass AS String, hParent AS CControl, hForm AS FForm)
+
+  DIM hCtrl AS Object
+
+  Name = sName
+  Kind = sClass
+  Parent = hParent
+
+  SELECT Kind
+
+    CASE "Form"
+
+      hCtrl = NEW Form(hForm.Container)
+      hCtrl.Drop = TRUE
+      'hCtrl.Reparent(hForm.Container, 0, 0) 'AS "Form"'Panel(hForm)
+      'hCtrl.BackColor = hForm.BackColor
+
+    CASE "Menu"
+
+      IF Parent.Kind <> "Menu" THEN
+        hCtrl = NEW Menu(hForm.Control[hForm.Name].Control)
+      ELSE
+        hCtrl = NEW Menu(Parent.Control)
+      ENDIF
+
+      'Object.Attach(hCtrl, hForm, "Menu")
+
+    CASE ELSE
+
+      TRY Virtual = CComponent.Classes[sClass].VirtualControl
+
+      IF Virtual THEN
+
+        'PRINT sName; " is virtual"
+        hCtrl = CreateControl(sName, sClass, Parent.Control)
+        'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
+        hCtrl.ResizeScaled(5.0, 5.0)
+
+      ELSE
+
+        hCtrl = CreateControl(sName, sClass, Parent.Control)
+        Unknown = Object.Type(hCtrl) <> sClass
+
+      ENDIF
+
+      hCtrl.Drop = TRUE
+
+  END SELECT
+
+  Control = hCtrl
+  Control.Tag = sName
+
+  IF Kind = "Menu" THEN
+    Object.Attach(hCtrl, hForm, "MenuControl")
+  ELSE
+    Object.Attach(hCtrl, hForm, "Control")
+  ENDIF
+
+  InitControl(hCtrl)
+
+  'IF Kind = "TabStrip" THEN
+  IF IsMultiContainer() THEN
+    Tag = NEW Collection
+  ENDIF
+
+  'RefLibrary(CComponent.Classes[Kind].Component)
+
+END
+
+
+' PUBLIC SUB _free()
+'
+'   TRY UnRefLibrary(CComponent.Classes[Kind].Component)
+'
+' END
+
+
+PUBLIC SUB HasProperty(sProp AS String) AS Boolean
+  
+  RETURN CComponent.Classes[Kind].Properties.Exist(sProp)
+  
+END
+
+
+PUBLIC FUNCTION SetProperty(sProp AS String, vVal AS Variant, OPTIONAL bDoNotApply AS Boolean) AS Boolean
+
+  DIM vDefault AS Variant
+  DIM hProp AS CPropertyInfo
+  DIM vRealVal AS Variant
+  DIM bDoNotRedirect AS Boolean
+  DIM hPict AS Picture
+
+  IF $cSynonymous.Exist(sProp) THEN sProp = $cSynonymous[sProp]
+
+  TRY hProp = CComponent.Classes[Kind].Properties[sProp]
+  'IF ERROR THEN STOP
+  IF IsNull(hProp) THEN RETURN ' La propriété n'existe pas, donc on PEUT changer sa valeur !!
+
+  vDefault = hProp.DefaultValue
+
+  'PRINT Name; "."; sProp; " = "; vVal
+
+  ' valeur par défaut ?
+
+  'IF sProp = "Background" THEN STOP
+
+  IF NOT IsNull(vDefault) THEN
+    IF NOT IsNull(vVal) THEN
+       IF vVal = vDefault THEN
+        vVal = NULL
+        'PRINT "Default !"
+      ENDIF
+    ENDIF
+  ENDIF
+
+  IF hProp.DoNotApply THEN GOTO _DO_NOT_APPLY
+  IF bDoNotApply THEN GOTO _DO_NOT_APPLY
+  IF Unknown THEN 
+    IF NOT hProp.Coord THEN 
+      IF sProp <> "Background" AND sProp <> "Foreground" THEN 
+        GOTO _DO_NOT_APPLY
+      ENDIF
+    ENDIF
+  ENDIF
+
+  IF IsNull(vVal) THEN
+    vRealVal = vDefault
+  ELSE
+    vRealVal = vVal
+  ENDIF
+
+  'IF Kind = "TabStrip" THEN
+  IF IsMultiContainer() THEN
+    IF sProp = "Picture" THEN
+      Tag[Control.Index] = vRealVal
+    ENDIF
+  ENDIF
+
+  IF NOT IsNull(vRealVal) THEN
+
+    SELECT hProp.Type
+
+      CASE "Font"
+
+        'IF NOT IsNull(vRealVal) THEN
+        vRealVal = Font[vRealVal]
+        'ENDIF
+
+      CASE "Color"
+
+        IF IsString(vRealVal) THEN
+          IF NOT IsNull(Val(vRealVal)) THEN
+            vRealVal = Val(vRealVal)
+          ELSE
+            vRealVal = Object.GetProperty(Color, vRealVal)
+          ENDIF
+        ENDIF
+
+      CASE "Picture"
+
+        IF vRealVal LIKE "icon:/*" THEN 
+          hPict = Picture[vRealVal]
+        ELSE
+          hPict = Picture.Load(File.Dir(Project.Path) &/ vRealVal)
+        ENDIF
+
+        vRealVal = hPict
+
+      CASE "Constant"
+
+        IF IsNumber(vRealVal) THEN
+          vRealVal = hProp.ConstantList[CStr(vRealVal)]
+        ENDIF
+
+        IF NOT IsNull(vRealVal) THEN
+          vRealVal = CInt(CComponent.Classes[hProp.ConstantClass].Symbols[vRealVal].Value)
+        ENDIF
+
+    END SELECT
+
+  ENDIF
+
+  'PRINT "SetProperty: "; Object.Type(Control); "."; sProp; " = "; Str(vRealVal)
+
+  Object.SetProperty(Control, sProp, vRealVal)
+  
+  ' propriété fictive
+
+_DO_NOT_APPLY:
+
+  'IF hProp.Control THEN
+  '  IF GetForm().FindControlFromType(hProp.Type).Find(vVal) < 0 THEN
+  '    vVal = NULL
+  '  ENDIF
+  'ENDIF
+
+  IF $cValue[sProp] <> vVal THEN
+    $cValue[sProp] = vVal
+    FProperty.RefreshOne(ME, sProp)
+    Modify
+  ENDIF
+
+  IF hProp.Coord THEN MoveAllHandle
+
+  IF IsNull(Parent) THEN
+    SELECT CASE sProp
+      CASE "Width", "W", "Height", "H"
+        GetForm().UpdateBorder
+      CASE "Background"
+        GetForm().UpdateSnap
+      CASE "Text", "Icon", "Border"
+        GetForm().UpdateTitle
+    END SELECT 
+  ENDIF
+
+  RETURN
+
+CATCH
+
+  PRINT "SetProperty: "; Kind; "."; sProp; ": "; Error.Where; ": "; Error.Text
+  RETURN TRUE
+
+END
+
+
+PUBLIC FUNCTION GetProperty(sProp AS String) AS Variant
+
+  DIM hProp AS CPropertyInfo
+  DIM vVal AS Variant
+
+  IF $cSynonymous.Exist(sProp) THEN sProp = $cSynonymous[sProp]
+
+  hProp = CComponent.Classes[Kind].Properties[sProp]
+  IF IsNull(hProp) THEN RETURN
+
+  IF hProp.AlwaysRead THEN
+
+    vVal = Object.GetProperty(Control, sProp)
+
+    IF NOT IsNull(vVal) THEN
+      IF hProp.Type = "Font" THEN vVal = vVal.ToString()
+    ENDIF
+
+    IF vVal = hProp.DefaultValue THEN
+      $cValue[sProp] = NULL
+    ELSE
+      $cValue[sProp] = vVal
+    ENDIF
+
+  ENDIF
+
+  RETURN $cValue[sProp]
+
+  'IF $cRedirect.Exist(Kind) THEN
+  '  IF $cRedirect[Kind][sProp] THEN
+  '    RETURN $cDefaultValue[Kind][sProp]
+  '  ENDIF
+  'ENDIF
+  '
+  'IF IsNull(Parent) THEN
+  '  RETURN OBJECT.GetProperty(Control.Parent, sProp)
+  'ELSE
+  '  RETURN OBJECT.GetProperty(Control, sProp)
+  'ENDIF
+
+END
+
+PUBLIC FUNCTION GetPropertyDefault(sProp AS String) AS Variant
+
+  DIM vVal AS Variant
+
+  IF $cSynonymous.Exist(sProp) THEN sProp = $cSynonymous[sProp]
+
+  vVal = $cValue[sProp]
+
+  IF NOT IsNull(vVal) THEN
+    RETURN vVal
+  ENDIF
+
+  RETURN CComponent.Classes[Kind].Properties[sProp].DefaultValue
+
+END
+
+PRIVATE FUNCTION ConvertToString(vVal AS Variant, hProp AS CPropertyInfo) AS String
+  
+  SELECT CASE hProp.Type
+
+    CASE "b"
+
+      IF vVal THEN
+        RETURN "True"
+      ELSE
+        RETURN "False"
+      ENDIF
+
+    CASE "i", "l", "f", "s", "d"
+
+      RETURN CStr(vVal)
+
+    CASE "List", "Path"
+
+      RETURN CStr(vVal)
+      
+    CASE "String[]"
+    
+      RETURN vVal.Join("\n")
+
+    CASE "Color"
+
+      vVal = CStr(vVal)
+      IF NOT IsNull(Val(vVal)) THEN
+        RETURN "&H" & Hex$(vVal, 6) & "&"
+      ELSE
+        RETURN vVal
+      ENDIF
+
+    CASE "Picture", "Font"
+
+      RETURN CStr(vVal)
+
+    CASE "Constant"
+
+      IF IsString(vVal) THEN
+        RETURN vVal
+      ELSE
+        RETURN hProp.ConstantList[CStr(vVal)]
+      ENDIF
+
+    CASE ELSE ' Object
+
+      RETURN vVal 'hProp.Type & " ?"
+
+  END SELECT
+  
+END
+
+
+PUBLIC FUNCTION GetPropertyString(sProp AS String) AS String
+
+  DIM vVal AS Variant
+  DIM hProp AS CPropertyInfo
+  DIM iInd AS Integer
+
+  hProp = CComponent.Classes[Kind].Properties[sProp]
+  IF IsNull(hProp) THEN RETURN
+    'PRINT Kind; "."; sProp; " ???"
+  'ENDIF
+
+  vVal = GetProperty(sProp)
+  
+  IF IsNull(vVal) THEN
+
+    IF hProp.Type <> "Color" THEN
+      vVal = hProp.DefaultValue
+    ENDIF
+
+    IF IsNull(vVal) THEN RETURN
+
+  ENDIF
+  
+  RETURN ConvertToString(vVal, hProp)
+
+END
+
+
+PUBLIC FUNCTION IsContainer() AS Boolean
+
+  RETURN CComponent.Classes[Kind].Container
+
+END
+
+PUBLIC FUNCTION IsMultiContainer() AS Boolean
+
+  RETURN CComponent.Classes[Kind].MultiContainer
+
+END
+
+
+PUBLIC SUB Delete()
+
+  DIM cChildren AS Object[]
+  DIM hChild AS CControl
+  DIM hForm AS FForm
+
+  hForm = Object.Parent(Control)
+  cChildren = hForm.GetChildren(Name)
+  IF cChildren THEN
+
+    FOR EACH hChild IN cChildren
+      hChild.Delete
+    NEXT
+
+  ENDIF
+
+  UnSelect(hForm)
+
+  Control.Delete
+  Control = NULL
+
+  hForm.Control[Name] = NULL
+
+END
+
+
+PUBLIC FUNCTION GetForm() AS FForm
+
+  'IF NOT Object.Parent(Control) IS FForm THEN STOP
+
+  RETURN Object.Parent(Control)
+
+END
+
+STATIC PUBLIC FUNCTION CheckName(sName AS String) AS Boolean
+
+  DIM iInd AS Integer
+
+  FOR iInd = 1 TO Len(sName)
+    IF InStr("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", UCase(Mid$(sName, iInd, 1))) = 0 THEN
+      RETURN TRUE
+    ENDIF
+  NEXT
+
+END
+
+
+PUBLIC FUNCTION Rename(sNewName AS String) AS Boolean
+
+  DIM hForm AS FForm
+
+  hForm = GetForm()
+
+  IF CheckName(sNewName) THEN RETURN TRUE
+
+  IF UCase(sNewName) <> UCase(Name) THEN
+    IF hForm.Control.Exist(sNewName) THEN RETURN TRUE
+  ENDIF
+
+  IF Name THEN hForm.Control[Name] = NULL
+
+  Name = sNewName
+  hForm.Control[Name] = ME
+  Control.Tag = Name
+
+  hForm.Modify
+
+  SELECT CASE Kind
+
+    CASE "TreeView", "ListView", "ColumnView", "IconView"
+      Control["A"].Text = Name
+
+    CASE "ListBox"
+      Control[0].Text = Name
+
+    CASE "GridView"
+      Control[0, 0].Text = Name
+
+    CASE "DrawingArea"
+      Control.Refresh
+      
+    CASE ELSE
+
+      IF Unknown THEN Control.Refresh
+
+  END SELECT
+
+END
+
+
+PUBLIC SUB Select(hForm AS FForm, OPTIONAL bMaster AS Boolean)
+
+  IF IsNull(Parent) THEN RETURN
+
+  IF Selected THEN
+    UnSelect(hForm)
+  ENDIF
+
+  CreatePanel(0, "NW", Mouse.SizeNW, bMaster)
+  CreatePanel(1, "N", Mouse.SizeN, bMaster)
+  CreatePanel(2, "NE", Mouse.SizeNE, bMaster)
+  CreatePanel(3, "E", Mouse.SizeE, bMaster)
+  CreatePanel(4, "SE", Mouse.SizeSE, bMaster)
+  CreatePanel(5, "S", Mouse.SizeS, bMaster)
+  CreatePanel(6, "SW", Mouse.SizeSW, bMaster)
+  CreatePanel(7, "W", Mouse.SizeW, bMaster)
+
+  TRY Control.ToolTip = Subst("&1 ( &2 x &3 )", Name, Control.Width, Control.Height)
+  Selected = TRUE
+
+  hForm.Selection[Name] = ME
+
+  IF bMaster THEN
+    IF hForm.Master THEN hForm.Master.Select(hForm)
+    hForm.Master = ME
+  ENDIF
+
+  '$hForm.Selection[Name] = ME
+
+END
+
+
+PUBLIC SUB UnSelect(hForm AS FForm, OPTIONAL bDoNotRemove AS Boolean)
+
+  DIM iInd AS Integer
+
+  IF IsNull(Parent) THEN RETURN
+
+  IF NOT Selected THEN RETURN
+
+  FOR iInd = 0 TO 7
+    $hHandle[iInd].Delete
+    $hHandle[iInd] = NULL
+  NEXT
+
+  TRY Control.ToolTip = ""
+
+  Selected = FALSE
+
+  IF NOT bDoNotRemove THEN
+    hForm.Selection.Remove(Name)
+    IF hForm.Master = ME THEN hForm.Master = NULL
+  ENDIF
+
+END
+
+
+PRIVATE SUB CreatePanel(iIndex AS Integer, sTag AS String, iMouse AS Integer, bMaster AS Boolean)
+
+  DIM hPanel AS Panel
+  DIM hCont AS Object
+
+  hCont = Control.Parent
+
+  hPanel = NEW Panel(hCont) AS "Panel"
+  hPanel.Resize(PAN_W, PAN_H)
+  hPanel.Mouse = iMouse
+  hPanel.Tag = "#" & sTag
+
+  hPanel.Border = Border.Plain
+  IF bMaster THEN
+    hPanel.Background = Color.White
+    hPanel.Foreground = Color.Black
+  ELSE
+    hPanel.Background = Color.Black
+    hPanel.Foreground = Color.White
+  ENDIF
+
+  $hHandle[iIndex] = hPanel
+
+  MovePanel(iIndex)
+
+END
+
+
+PRIVATE SUB MovePanel(iPanel AS Integer)
+
+  DIM hCtrl AS Control
+  DIM hPanel AS Panel
+
+  hCtrl = Control
+  hPanel = $hHandle[iPanel]
+  hPanel.Raise
+
+  SELECT CASE Mid$(hPanel.Tag, 2)
+
+    CASE "NW", "N", "NE"
+      hPanel.Y = hCtrl.Y - PAN_H \ 2
+      'hPanel.Y = hCtrl.Y
+
+    CASE "SW", "S", "SE"
+      hPanel.Y = hCtrl.Y + hCtrl.Height - PAN_H \ 2
+      'hPanel.Y = hCtrl.Y + hCtrl.Height - PAN_H
+
+    DEFAULT
+      hPanel.Y = hCtrl.Y + (hCtrl.Height - PAN_H) \ 2
+
+  END SELECT
+
+  SELECT CASE Mid$(hPanel.Tag, 2)
+
+    CASE "NW", "W", "SW"
+      hPanel.X = hCtrl.X - PAN_W \ 2
+      'hPanel.X = hCtrl.X
+
+    CASE "NE", "E", "SE"
+      hPanel.X = hCtrl.X + hCtrl.Width - PAN_W \ 2
+      'hPanel.X = hCtrl.X + hCtrl.Width - PAN_W
+
+    DEFAULT
+      hPanel.X = hCtrl.X + (hCtrl.Width - PAN_W) \ 2
+
+  END SELECT
+
+END
+
+
+PRIVATE SUB MoveAllHandle()
+
+  DIM iInd AS Integer
+
+  IF NOT Selected THEN RETURN
+  IF $bDoNotMoveHandle THEN RETURN
+
+  FOR iInd = 0 TO 7
+    MovePanel(iInd)
+  NEXT
+
+END
+
+
+PUBLIC SUB Move(X AS Integer, Y AS Integer, OPTIONAL bFree AS Boolean)
+
+  IF NOT bFree THEN
+    X = Grid(X, Project.Snap)
+    Y = Grid(Y, Project.Snap)
+    'X = Grid(X, Desktop.Scale)
+    'Y = Grid(Y, Desktop.Scale)
+  ENDIF
+
+  'IF Kind = "GridView" THEN
+  '  PRINT "Pos ="; Control.X; Control.Y
+  '  PRINT "Move("; X; ","; Y; ")"
+  'ENDIF
+
+  IF Parent THEN
+    Control.Move(X, Y)
+    'Arrange(Parent.Control, FALSE)
+  ENDIF
+
+  $bDoNotMoveHandle = TRUE
+
+  SetProperty("X", X)
+  SetProperty("Y", Y)
+
+  $bDoNotMoveHandle = FALSE
+
+  MoveAllHandle
+
+END
+
+
+PUBLIC SUB Resize(W AS Integer, H AS Integer, OPTIONAL bFree AS Boolean)
+
+  IF Virtual THEN RETURN
+
+  IF NOT bFree THEN
+    W = Grid(W, Project.Snap)
+    H = Grid(H, Project.Snap)
+    'W = Grid(W, Desktop.Scale)
+    'H = Grid(H, Desktop.Scale)
+  ENDIF
+
+  Control.Resize(W, H)
+  'IF Parent THEN Arrange(Parent.Control, FALSE)
+
+  $bDoNotMoveHandle = TRUE
+
+  SetProperty("Width", W)
+  SetProperty("Height", H)
+
+  $bDoNotMoveHandle = FALSE
+
+  MoveAllHandle
+
+END
+
+
+PUBLIC SUB MoveAndResize(X AS Integer, Y AS Integer, W AS Integer, H AS Integer, OPTIONAL bFree AS Boolean)
+
+  IF Virtual THEN
+    Move(X, Y, bFree)
+    RETURN
+  ENDIF
+
+  IF NOT bFree THEN
+    X = Grid(X, Project.Snap)
+    Y = Grid(Y, Project.Snap)
+    W = Grid(W, Project.Snap)
+    H = Grid(H, Project.Snap)
+  ENDIF
+
+  'IF Kind = "GridView" THEN
+  '  PRINT "Pos ="; Control.X; Control.Y
+  '  PRINT "Move("; X; ","; Y; ")"
+  'ENDIF
+
+  IF Parent THEN
+    Control.Move(X, Y, W, H)
+  ELSE
+    Control.Resize(W, H)
+  ENDIF
+
+  $bDoNotMoveHandle = TRUE
+
+  SetProperty("X", X)
+  SetProperty("Y", Y)
+  SetProperty("Width", W)
+  SetProperty("Height", H)
+
+  $bDoNotMoveHandle = FALSE
+
+  MoveAllHandle
+
+END
+
+
+PUBLIC PROCEDURE Panel_MouseDown()
+
+  'PRINT "Panel_MouseDown"
+
+  IF Project.Running THEN RETURN
+
+  $bMove = TRUE
+  $MX = Mouse.ScreenX
+  $MY = Mouse.ScreenY
+  $X = LAST.X
+  $Y = LAST.Y
+
+END
+
+
+PUBLIC PROCEDURE Panel_MouseMove()
+
+  DIM iX AS Integer
+  DIM iY AS Integer
+  DIM iW AS Integer
+  DIM iH AS Integer
+  DIM iPanX AS Integer
+  DIM iPanY AS Integer
+
+  DIM hPanel AS Panel
+  DIM hCtrl AS Control
+
+  DIM iXP AS Integer
+  DIM iYP AS Integer
+
+  IF NOT $bMove THEN RETURN
+
+  'PRINT "Panel_MouseMove"
+
+  CControl.SetGrid(NOT Mouse.Shift)
+
+  hPanel = LAST
+  hCtrl = Control
+
+  iPanX = $X + Mouse.ScreenX - $MX
+  iPanY = $Y + Mouse.ScreenY - $MY
+
+  SELECT CASE Mid$(hPanel.Tag, 2)
+
+    CASE "N", "S"
+      iPanX = hPanel.X
+
+    CASE "W", "E"
+      iPanY = hPanel.Y
+
+  END SELECT
+
+  iX = Control.X
+  iY = Control.Y
+  iW = Control.W
+  iH = Control.H
+
+  'iPanX = iPanX - GetAbsoluteX(hCtrl.Parent)
+  'iPanY = iPanY - GetAbsoluteY(hCtrl.Parent)
+
+  SELECT CASE Mid$(hPanel.Tag, 2)
+
+    CASE "N", "NW", "NE"
+
+      iY = Grid(iPanY + PAN_H, Project.Snap)
+      iH = Grid(hCtrl.H + hCtrl.Y - iY, Project.Snap)
+
+    CASE "S", "SW", "SE"
+
+      iH = Grid(iPanY - hCtrl.Y, Project.Snap)
+
+  END SELECT
+
+  SELECT CASE Mid$(hPanel.Tag, 2)
+
+    CASE "W", "NW", "SW"
+
+      iX = Grid(iPanX + PAN_W, Project.Snap)
+      iW = Grid(hCtrl.W + hCtrl.X - iX, Project.Snap)
+
+    CASE "E", "NE", "SE"
+
+      iW = Grid(iPanX - hCtrl.X, Project.Snap)
+
+  END SELECT
+
+  IF (iW > 0) AND (iH > 0) THEN
+
+    IF (iX <> hCtrl.X) OR (iY <> hCtrl.Y) THEN
+      IF (iW <> hCtrl.W) OR (iH <> hCtrl.H) THEN
+        MoveAndResize(iX, iY, iW, iH)
+      ELSE
+        Move(iX, iY)
+      ENDIF
+    ELSE IF (iW <> hCtrl.W) OR (iH <> hCtrl.H) THEN
+      Resize(iW, iH)
+    ENDIF
+
+  ENDIF
+
+  CControl.SetGrid(TRUE)
+
+END
+
+
+PUBLIC PROCEDURE Panel_MouseUp()
+
+  'PRINT "Panel_Up"
+
+  $bMove = FALSE
+
+END
+
+
+PUBLIC SUB Panel_Menu()
+
+  GetForm().Control_Menu
+
+END
+
+
+
+STATIC PUBLIC FUNCTION Grid(iVal AS Integer, iGrid AS Integer) AS Integer
+
+  DIM iMod AS Integer
+
+  'IF (iVal >= 0) THEN
+  '  RETURN Int((iVal + iGrid / 2) / iGrid) * iGrid
+  'ELSE
+  '  RETURN Int((iVal + iGrid / 2) / iGrid) * iGrid
+  'ENDIF
+
+  IF $bGrid THEN
+    iMod = iVal MOD iGrid
+    IF (iMod < 0) THEN iMod = iMod + iGrid
+
+    IF iMod < (iGrid \ 2) THEN
+      iVal = iVal - iMod
+    ELSE
+      iVal = iVal + iGrid - iMod
+    ENDIF
+  ENDIF
+
+  RETURN iVal
+
+END
+
+
+PRIVATE FUNCTION GetCoord(iCoord AS Integer) AS Float
+
+  RETURN Round(iCoord / Desktop.Scale, -4)
+
+END
+
+
+PRIVATE FUNCTION QuoteString(sVal AS String) AS String
+  
+  sVal = Replace(sVal, "\\", "\\\\")
+  sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
+  sVal = Replace(sVal, gb.NewLine, "\\n")
+  RETURN sVal
+  
+END
+
+
+PUBLIC FUNCTION GetEachProperty(DX AS Integer, DY AS Integer) AS String[]
+
+  DIM cLine AS NEW String[]
+  DIM sProp AS String
+  DIM vVal AS Variant
+  DIM cProp AS Collection
+  DIM hProp AS CPropertyInfo
+  DIM sLine AS String
+  DIM sVal AS String
+  DIM cCoord AS NEW Collection
+  DIM aVal AS String[]
+  DIM iInd AS Integer
+
+  cProp = CComponent.Classes[Kind].Properties
+
+  FOR EACH sProp IN CComponent.Classes[Kind].PropertyList
+
+    'PRINT Name; "."; sProp
+
+    IF NOT cProp.Exist(sProp) THEN CONTINUE
+
+    hProp = cProp[sProp]
+
+    IF hProp.Exclude THEN CONTINUE
+
+    'IF sProp = "X" THEN
+    '  IF IsNull(GetProperty(sProp)) THEN
+    '    STOP
+    '  ENDIF
+    'ENDIF
+
+    vVal = GetProperty(sProp)
+    'PRINT "-> "; vVal
+
+    'IF NOT IsNull(cDefault[sProp]) THEN
+    '  IF vVal = cDefault[sProp] THEN
+    '    GOTO _SUIVANT
+    '  ENDIF
+    'ELSE
+    IF NOT hProp.Required THEN
+      IF IsNull(vVal) THEN CONTINUE
+    ENDIF
+    'ENDIF
+
+    IF sProp = "X" THEN
+      IF IsNull(vVal) THEN STOP
+      vVal = vVal - DX
+    ELSE IF sProp = "Y" THEN
+      vVal = vVal - DY
+    ELSE IF hProp.Type <> "String[]" THEN
+      vVal = ConvertToString(vVal, hProp)
+    ENDIF
+
+    IF hProp.Coord AND NOT hProp.Virtual THEN
+
+      cCoord[sProp] = vVal
+
+    ELSE
+
+      sLine = sProp & " = "
+
+      SELECT CASE hProp.Type
+
+        CASE "s", "List", "Path"
+          vVal = QuoteString(vVal)
+
+          IF hProp.Translate THEN
+            sLine = sLine & "(" & Chr$(34) & vVal & Chr$(34) & ")"
+          ELSE
+            sLine = sLine & Chr$(34) & vVal & Chr$(34)
+          ENDIF
+          
+        CASE "String[]"
+        
+          aVal = vVal.Copy()
+          
+          IF NOT aVal THEN
+          
+            sLine &= "NULL"
+            
+          ELSE
+          
+            sLine &= "["
+          
+            FOR iInd = 0 TO aVal.Max
+              sVal = Chr$(34) & QuoteString(aVal[iInd]) & Chr$(34)
+              IF hProp.Translate THEN sVal = "(" & sVal & ")"
+              IF iInd MOD 32 = 0 THEN
+                IF iInd THEN 
+                  sLine &= "]"
+                  IF iInd > 32 THEN sLine &= ")"
+                  sLine &= ".Insert([" 
+                ENDIF
+              ELSE
+                sLine &= ", "
+              ENDIF
+              sLine &= sVal
+            NEXT
+          
+            sLine &= "]"
+            IF iInd >= 32 THEN sLine &= ")"
+          
+          ENDIF
+
+        CASE "Font"
+          sLine = sLine & "Font[" & Chr$(34) & vVal & Chr$(34) & "]"
+
+        CASE "Color"
+          IF NOT IsNull(Val(vVal)) THEN
+            sLine = sLine & vVal
+          ELSE
+            sLine = sLine & "Color." & vVal
+          ENDIF
+
+        CASE "Picture"
+          sLine = sLine & "Picture[" & Chr$(34) & vVal & Chr$(34) & "]"
+
+        CASE "Constant"
+          sLine = sLine & hProp.ConstantClass & "." & vVal
+
+        CASE "d"
+
+          sLine = sLine & "CDate(" & Chr$(34) & CStr(vVal) & Chr$(34) & ")"
+
+        CASE ELSE
+
+          sLine = sLine & CStr(vVal)
+
+      END SELECT
+
+      IF hProp.Virtual THEN sLine = "#" & sLine
+
+      cLine.Add(sLine)
+
+    ENDIF
+
+'_SUIVANT:
+  NEXT
+
+  IF cCoord.Count THEN
+
+    sLine = "'Move(" & cCoord["X"] & "," & cCoord["Y"]
+    IF cCoord.Count > 2 THEN sLine = sLine & "," & cCoord["Width"] & "," & cCoord["Height"]
+    sLine = sLine & ")"
+
+    cLine.Add(sLine, 0)
+
+    sLine = "MoveScaled(" & GetCoord(cCoord["X"]) & "," & GetCoord(cCoord["Y"])
+    IF cCoord.Count > 2 THEN sLine = sLine & "," & GetCoord(cCoord["Width"]) & "," & GetCoord(cCoord["Height"])
+    sLine = sLine & ")"
+
+    cLine.Add(sLine, 0)
+
+  ENDIF
+
+  RETURN cLine
+
+END
+
+
+PUBLIC SUB Raise()
+
+  Control.Raise
+  MoveAllHandle
+  Modify
+
+END
+
+
+PUBLIC SUB Lower()
+
+  Control.Lower
+  Modify
+
+END
+
+
+PUBLIC SUB MoveDown()
+
+  TRY Control.Next = Control.Next.Next
+  IF ERROR THEN RETURN
+  MoveAllHandle
+  Modify
+
+END
+
+
+PUBLIC SUB MoveUp()
+
+  TRY Control.Previous = Control.Previous.Previous
+  IF ERROR THEN RETURN
+  MoveAllHandle
+  Modify
+
+END
+
+
+PRIVATE SUB Modify()
+
+  TRY GetForm().Modify
+
+END
+
+
+STATIC PUBLIC SUB SetGrid(bGrid AS Boolean)
+
+  $bGrid = bGrid
+
+END
+
+STATIC PUBLIC SUB RefreshHandleSize()
+
+  DIM iSize AS Integer
+
+  iSize = Settings["/HandleSize", 8]
+  PAN_W = iSize
+  PAN_H = iSize
+
+END
+
+PUBLIC SUB RefreshHandle()
+  
+  MoveAllHandle
+  
+END
+
+
+PUBLIC FUNCTION GetGroup() AS String
+
+  DIM sGroup AS String
+
+  sGroup = GetProperty(CPropertyInfo.EVENT_NAME)
+  IF NOT sGroup THEN sGroup = Name
+  RETURN sGroup
+
+END

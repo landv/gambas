@@ -1,0 +1,48 @@
+# Gambas Form File 1.0
+
+{ FMoviePlayer Form
+  Move(268,121,400,359)
+  Text = ("Movie player")
+  Icon = Picture["eye.png"]
+  { txtAbout TextLabel
+    Move(16,8,344,160)
+    Text = ("<table>\n  <tr>\n    <td><img src=\"eye.png\"></td>\n    <td><h1>Gambas Movie Player</h1></td>      \n</tr>\n</table>\n\n<p>This example is based on the MPlayer movie player and was made by Beno&icirc;t Minisini</p>")
+  }
+  { panButton Panel
+    Move(0,200,368,48)
+    { btnPlay Button
+      Move(8,8,32,32)
+      Enabled = False
+      Text = ("")
+      Picture = Picture["play.png"]
+    }
+    { btnPause Button
+      Move(48,8,32,32)
+      Enabled = False
+      Text = ("")
+      Picture = Picture["pause.png"]
+    }
+    { btnStop Button
+      Move(88,8,32,32)
+      Enabled = False
+      Text = ("")
+      Picture = Picture["stop.png"]
+    }
+    { btnOpen Button
+      Move(128,8,32,32)
+      Text = ("")
+      Picture = Picture["open.png"]
+    }
+  }
+  { lblMoviePlayer DrawingArea
+    Move(24,72,72,40)
+    Visible = False
+    Enabled = False
+    Background = &H000000&
+  }
+  { timShow #Timer
+    #X = 208
+    #Y = 256
+    Delay = 500
+  }
+}

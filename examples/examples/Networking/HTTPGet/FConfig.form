@@ -1,0 +1,74 @@
+# Gambas Form File 1.0
+
+{ FConfig Form
+  MoveScaled(34.6667,30.8889,39.2222,34.1111)
+  'Move(312,278,353,307)
+  Text = ("")
+  Border = Window.Fixed
+  { CmbProxyAuth ComboBox
+    MoveScaled(19,7,16,2)
+    'Move(171,63,144,18)
+    Enabled = False
+    Text = ("")
+    ReadOnly = True
+    List = ("Plain\nNTLM")
+  }
+  { LblAuth TextLabel
+    MoveScaled(5,7,12,2)
+    'Move(45,63,108,18)
+    Enabled = False
+    Text = ("Autenticathion :")
+  }
+  { LblProxyUser TextLabel
+    MoveScaled(5,10,13,2)
+    'Move(45,90,117,18)
+    Enabled = False
+    Text = ("User")
+  }
+  { LblProxyPassword TextLabel
+    MoveScaled(5,13,13,2)
+    'Move(45,117,117,18)
+    Enabled = False
+    Text = ("Password")
+  }
+  { TxtProxyPassword TextBox
+    MoveScaled(19,13,15,3)
+    'Move(171,117,135,27)
+    Enabled = False
+    Drop = False
+    Text = ("")
+    Password = True
+  }
+  { TxtProxyUser TextBox
+    MoveScaled(19,10,15,3)
+    'Move(171,90,135,27)
+    Enabled = False
+    Drop = False
+    Text = ("")
+  }
+  { ChkProxy CheckBox
+    MoveScaled(5,3,12,3)
+    'Move(45,27,108,27)
+    Text = ("Use Proxy")
+  }
+  { TxtProxy TextBox
+    MoveScaled(18,3,16,3)
+    'Move(162,27,144,27)
+    Text = ("127.0.0.1:3128")
+  }
+  { TxtCookies TextBox
+    MoveScaled(5,25,27,3)
+    'Move(45,225,243,27)
+    Text = ("TextBox1")
+  }
+  { ChkUpdate CheckBox
+    MoveScaled(5,29,27,2)
+    'Move(45,261,243,18)
+    Text = ("Update cookies file")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(5,19,31,5)
+    'Move(45,171,279,45)
+    Text = ("Cookies file (if you leave it blank HttpClient will not manage cookies)")
+  }
+}

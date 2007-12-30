@@ -1,0 +1,95 @@
+' Gambas module file
+
+PUBLIC FUNCTION GetSource(hCtrl AS Control) AS DataSource
+  
+  DIM hCont AS Container
+  
+  hCont = hCtrl.Parent
+  DO
+    IF hCont IS DataSource THEN RETURN hCont
+    hCont = hCont.Parent
+    IF NOT hCont THEN RETURN
+  LOOP
+  
+END
+
+PUBLIC FUNCTION GetValue(hCtrl AS DataControl) AS Variant
+  
+  DIM hSource AS DataSource
+  
+  IF NOT hCtrl.Key THEN RETURN
+  
+  hSource = GetSource(hCtrl)
+  IF NOT hSource THEN RETURN
+  
+  RETURN hSource[hCtrl.Key]
+  
+END
+
+
+
+
+PUBLIC FUNCTION CheckDB() AS Boolean
+
+  IF NOT DB.Current THEN RETURN TRUE  
+  IF DB.Opened THEN RETURN
+  
+  DB.Open
+  RETURN NOT DB.Opened
+  
+END
+
+
+PUBLIC FUNCTION MakeWhere(aKey AS String[], aVal AS Variant[]) AS String
+  
+  DIM iInd AS Integer
+  DIM sReq AS String
+  
+  FOR iInd = 0 TO aKey.Max
+    IF iInd THEN sReq &= " AND "
+    sReq &= DB.Subst(aKey[iInd] & " = &1", aVal[iInd])
+  NEXT
+  
+  RETURN sReq
+  
+END
+
+PUBLIC FUNCTION MakeNextWhere(aKey AS String[], aVal AS Variant[]) AS String
+  
+  DIM iInd AS Integer
+  DIM sReq AS String
+  DIM sTest AS String
+  
+  FOR iInd = 0 TO aKey.Max
+    IF iInd THEN sReq &= " OR "
+    IF sTest THEN sReq &= "(" & sTest & " AND "
+    sReq &= DB.Subst(aKey[iInd] & " > &1 ", aVal[iInd])
+    IF sTest THEN sReq &= ") "
+    IF sTest THEN sTest &= " AND "
+    sTest &= DB.Subst(aKey[iInd] & " = &1", aVal[iInd])
+  NEXT
+  
+  RETURN sReq
+  
+END
+
+
+PUBLIC FUNCTION Compare(aVal AS Variant[], aVal2 AS Variant[]) AS Boolean
+  
+  DIM iInd AS Integer
+  
+  IF aVal.Count <> aVal2.Count THEN RETURN
+  
+  FOR iInd = 0 TO aVal.Max
+    IF aVal[iInd] <> aVal2[iInd] THEN RETURN
+  NEXT
+  
+  RETURN TRUE
+  
+END
+
+PUBLIC FUNCTION IsControl(hCtrl AS Control) AS Boolean
+  
+  RETURN hCtrl IS DataControl OR hCtrl IS DataCombo
+  
+END
