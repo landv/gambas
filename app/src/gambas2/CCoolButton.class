@@ -1,0 +1,180 @@
+' Gambas class file
+
+PROPERTY Enabled AS Boolean
+PROPERTY ToolTip AS String
+PROPERTY Foreground AS Integer
+
+PUBLIC Tag AS String
+
+PRIVATE $hPanel AS Panel
+PRIVATE $hImage AS PictureBox
+PRIVATE $hLabel AS Label
+PRIVATE $iColor AS Integer
+
+EVENT Click()
+
+
+PUBLIC SUB _new(hContainer AS Container, X AS Integer, Y AS Integer, W AS Integer, H AS Integer, sText AS String, vICon AS Variant, OPTIONAL sFont AS String)
+
+  DIM hPict AS Picture
+
+  $hPanel = NEW Panel(hContainer) AS "Panel"
+  $hPanel.Move(X, Y, W, H)
+  $hPanel.Mouse = Mouse.Pointing
+
+  IF TypeOf(vIcon) = gb.String THEN
+    hPict = Picture[vIcon]
+  ELSE
+    hPict = vIcon
+  ENDIF
+
+  $hImage = NEW PictureBox($hPanel) AS "Panel"
+  IF hPict THEN
+    $hImage.Move(8, 4, hPict.Width, H - 8)
+    $hImage.Alignment = Align.Center
+    $hImage.Picture = hPict
+  ELSE
+    $hImage.Move(8, 4, 32, H - 8)
+  ENDIF
+
+  $hLabel = NEW Label($hPanel) AS "Panel"
+  $hLabel.AutoResize = FALSE
+  $hLabel.Move($hImage.X + $hImage.W + 8, 4, W - ($hImage.X + $hImage.W + 8) - 8, H - 8)
+  $hLabel.Alignment = Align.Left
+  $hLabel.Text = sText
+  '$hLabel.Foreground = Color.White
+  IF sFont THEN $hLabel.Font = Font[sFont]
+
+  '$hPanel.BackColor = Color.TextBackground
+  '$hPanel.Foreground = Color.TextForeground '&88D5FF&
+
+END
+
+PUBLIC SUB Panel_Enter()
+
+  IF Object.Type(LAST) <> "Panel" THEN RETURN
+  $iColor = LAST.Foreground
+  LAST.BackColor = Color.SelectedBackground '&88D5FF&
+  LAST.Foreground = Color.SelectedForeground '&88D5FF&
+
+END
+
+PUBLIC SUB Panel_Leave()
+
+  IF Object.Type(LAST) <> "Panel" THEN RETURN
+  LAST.BackColor = LAST.Parent.Background
+  LAST.Foreground = $iColor
+
+END
+
+PRIVATE FUNCTION GetPanel() AS Panel
+
+  DIM hPanel AS Panel
+
+  TRY hPanel = LAST
+  IF ERROR THEN
+    hPanel = LAST.Parent
+  ENDIF
+
+  RETURN hPanel
+
+END
+
+
+PUBLIC SUB Panel_MouseDown()
+
+  GetPanel().Border = Border.Sunken
+
+  $hLabel.Move($hLabel.X + 1, $hLabel.Y + 1)
+  $hImage.Move($hImage.X + 1, $hImage.Y + 1)
+
+END
+
+
+PUBLIC SUB Panel_MouseUp()
+
+  DIM hPanel AS Panel
+  DIM X AS Integer
+  DIM Y AS Integer
+
+  hPanel = GetPanel()
+  hPanel.Border = Border.None
+
+  X = Mouse.X
+  Y = Mouse.Y
+
+  IF LAST <> hPanel THEN
+    X = X + LAST.X
+    Y = Y + LAST.Y
+  ENDIF
+
+  $hLabel.Move($hLabel.X - 1, $hLabel.Y - 1)
+  $hImage.Move($hImage.X - 1, $hImage.Y - 1)
+
+
+  IF (X >= 0 AND Y >= 0 AND X < hPanel.W AND Y < hPanel.H) THEN
+
+    RAISE Click()
+
+  ELSE
+
+    'PRINT "Pas Click !"; X; " "; Y; " "; hPanel.W; " "; hPanel.H
+
+  ENDIF
+
+END
+
+
+PRIVATE FUNCTION Enabled_Read() AS Boolean
+
+  RETURN $hPanel.Enabled
+
+END
+
+PRIVATE SUB Enabled_Write(bEnabled AS Boolean)
+
+  $hPanel.Enabled = bEnabled
+
+END
+
+
+PUBLIC SUB Move(X AS Integer, Y AS Integer)
+
+  $hPanel.Move(X, Y)
+
+END
+
+
+PUBLIC SUB Resize(W AS Integer, H AS Integer)
+
+  $hPanel.Resize(W, H)
+  $hLabel.Resize(W - ($hImage.X + $hImage.W + 8) - 8, H - 8)
+
+END
+
+PRIVATE FUNCTION ToolTip_Read() AS String
+
+  RETURN $hPanel.ToolTip
+
+END
+
+PRIVATE SUB ToolTip_Write(sToolTip AS String)
+
+  $hPanel.ToolTip = sToolTip
+  '$hImage.ToolTip = sToolTip
+  '$hLabel.ToolTip = sToolTip
+
+END
+
+
+PRIVATE FUNCTION Foreground_Read() AS Integer
+
+  RETURN $hPanel.Foreground
+
+END
+
+PRIVATE SUB Foreground_Write(Value AS Integer)
+
+  $hPanel.Foreground = Value
+
+END

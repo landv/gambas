@@ -1,0 +1,58 @@
+# Gambas Form File 1.0
+
+{ FOutput Form
+  MoveScaled(0.25,2.5,53,54)
+  'Move(2,20,424,432)
+  Action = "console"
+  Text = ("Console - Gambas")
+  Icon = Picture["icon:/16/terminal"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  { ToolBar1 ToolBar
+    MoveScaled(1,1,46,3)
+    'Move(8,8,368,24)
+    { btnClear ToolButton
+      MoveScaled(0,0,3,3)
+      'Move(0,0,24,24)
+      ToolTip = ("Clear console")
+      Text = ("Clear")
+      Picture = Picture["icon:/16/clear"]
+    }
+    { btnCut ToolButton
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      ToolTip = ("Cut")
+      Text = ("")
+      Picture = Picture["icon:/16/cut"]
+    }
+    { btnCopy ToolButton
+      MoveScaled(6,0,3,3)
+      'Move(48,0,24,24)
+      ToolTip = ("Copy")
+      Text = ("")
+      Picture = Picture["icon:/16/copy"]
+    }
+    { btnPaste ToolButton
+      MoveScaled(9,0,3,3)
+      'Move(72,0,24,24)
+      ToolTip = ("Paste")
+      Text = ("")
+      Picture = Picture["icon:/16/paste"]
+    }
+    { Separator1 Separator
+      MoveScaled(13,0,2,3)
+      'Move(104,0,16,24)
+    }
+    { chkCharset CheckBox
+      MoveScaled(15,0,29,3)
+      'Move(120,0,232,24)
+      Expand = True
+      Text = ("Use system charset")
+    }
+  }
+  { edtOutput Editor
+    MoveScaled(1,6,38,39)
+    'Move(8,48,304,312)
+    Expand = True
+  }
+}

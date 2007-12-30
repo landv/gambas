@@ -1,0 +1,249 @@
+' Gambas class file
+
+STATIC PRIVATE $aTheme AS String[] = ["amethyst", "amber", "emerald", "ruby", "sapphire", "visual", "obsidian"]
+STATIC PRIVATE $aThemeName AS String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian")]
+
+PRIVATE $cLast AS Collection
+PRIVATE $cCurrent AS Collection
+PRIVATE $bNoChange AS Boolean
+
+PUBLIC SUB _new()
+
+  cmbTheme.List = $aThemeName
+  cmbTheme.Add(("Select a theme"), 0)
+  
+  $cLast = MColor.ReadColor(Settings, "/Highlight")
+  $cCurrent = MColor.Copy($cLast)
+  
+  $bNoChange = TRUE
+  fntEditor.SelectedFont = Settings["/Editor/Font", Project.DEFAULT_FONT]
+  cmbGlobalFont.Index = If(Settings["/UseSmallFont", FALSE], 1, 0)
+  cmbToolbox.Index = If(Settings["/ToolboxSize", FALSE], 1, 0)
+  cmbTooltip.Index = If(Settings["/ShowTooltip", TRUE], 0, 1)
+  cmbMascot.Index = If(Settings["/ShowMascot", TRUE], 0, 1)
+  txtTabSize.Value = Settings["/DefaultTabSize", 2]
+  cmbProcLimit.Index = Settings["/Editor/ProcedureLimit", 2]
+  cmbLineNumber.Index = If(Settings["/Editor/ShowLineNumbers", FALSE], 0, 1)
+  cmbShowChange.Index = If(Settings["/Editor/ShowChange", TRUE], 0, 1)
+  cmbShowCurrent.Index = If(Settings["/Editor/ShowCurrent", TRUE], 0, 1)
+  cmbCompletion.Index = If(Settings["/Editor/Completion", TRUE], 0, 1)
+  cmbIconTheme.Index = ["gnome", "kde"].Find(Settings["/Theme"]) + 1
+  cmbBrowser.Index = ["konqueror", "firefox", "epiphany"].Find(Settings["/Browser"]) + 1
+  $bNoChange = FALSE
+  
+  ME.Center
+  
+END
+
+PUBLIC SUB Form_Open()
+
+  UpdateColor(TRUE)
+  
+END
+
+PRIVATE SUB UpdateColor(OPTIONAL bNoRefresh AS Boolean)
+  
+  DIM hCtrl AS Control
+  
+  FOR EACH hCtrl IN panColor1.Children
+    IF hCtrl.Tag THEN hCtrl.Background = $cCurrent[hCtrl.Tag]
+  NEXT
+
+  FOR EACH hCtrl IN panColor2.Children
+    IF hCtrl.Tag THEN hCtrl.Background = $cCurrent[hCtrl.Tag]
+  NEXT
+
+  IF NOT bNoRefresh THEN RefreshEditor
+
+END
+
+
+PUBLIC SUB btnColor_MouseDown()
+
+  LAST.Border = Border.Sunken
+
+END
+
+PUBLIC SUB btnColor_MouseUp()
+
+  DIM hColor AS Panel = LAST
+  hColor.Border = Border.Raised
+  IF FColorChooser.Run("&H" & Hex$(hColor.Background) & "&") THEN RETURN
+  $cCurrent[hColor.Tag] = FColorChooser.Value
+  cmbTheme.Index = 0
+  UpdateColor
+
+END
+
+PUBLIC SUB cmbTheme_Click()
+
+  DIM cColor AS Collection
+
+  IF cmbTheme.Index <= 0 THEN RETURN
+
+  $cCurrent = MColor.ReadTheme($aTheme[$aThemeName.Find(cmbTheme.Text)])
+  UpdateColor
+  
+END
+
+
+PUBLIC SUB btnExport_Click()
+
+  Dialog.Path = Settings["/Option/ThemePath", System.User.Home &/ System.User.Name & ".gambas.theme"]
+  Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
+  Dialog.Title = ("Export a theme file")
+  IF Dialog.SaveFile() THEN RETURN
+  Settings["/Option/ThemePath"] = File.Dir(Dialog.Path)
+  
+  MColor.WriteTheme(Dialog.Path, $cCurrent)
+  
+END
+
+PRIVATE SUB RefreshEditor()
+  
+  DIM hFile AS Object
+
+  IF $bNoChange THEN RETURN
+
+  MColor.WriteColor(Settings, "Highlight", $cCurrent) 
+  Settings["/Editor/Font"] = fntEditor.SelectedFont
+  
+  FOR EACH hFile IN Project.Files
+    IF hFile IS FEditor OR hFile IS FTextEditor THEN hFile.ReadConfig()
+  NEXT  
+  
+  FOutput.ReadConfig
+
+END
+
+PUBLIC SUB btnUndo_Click()
+
+  $cCurrent = MColor.Copy($cLast)
+  UpdateColor
+  cmbTheme.Index = 0
+
+END
+
+PUBLIC SUB fntEditor_Change()
+
+  RefreshEditor
+
+END
+
+PRIVATE SUB RefreshWindow()
+  
+  IF $bNoChange THEN RETURN
+
+  FProperty.ReadConfig
+  FMain.ReadConfig
+  FDebugInfo.ReadConfig
+
+END
+
+PUBLIC SUB cmbGlobalFont_Click()
+
+  Settings["/UseSmallFont"] = cmbGlobalFont.Index = 1
+  RefreshWindow
+
+END
+
+PUBLIC SUB cmbTooltip_Click()
+
+  Settings["/ShowTooltip"] = cmbTooltip.Index = 0
+  Application.Tooltip.Enabled = cmbTooltip.Index = 0
+  
+END
+
+PUBLIC SUB txtTabSize_Change()
+
+  Settings["/DefaultTabSize"] = txtTabSize.Value
+
+END
+
+PUBLIC SUB cmbProcLimit_Click()
+
+  Settings["/Editor/ProcedureLimit"] = cmbProcLimit.Index
+  RefreshEditor
+
+END
+
+PUBLIC SUB cmbLineNumber_Click()
+
+  Settings["/Editor/ShowLineNumbers"] = cmbLineNumber.Index = 0
+  RefreshEditor
+
+END
+
+PUBLIC SUB cmbShowChange_Click()
+
+  Settings["/Editor/ShowChange"] = cmbShowChange.Index = 0
+  RefreshEditor
+
+END
+
+PUBLIC SUB cmbShowCurrent_Click()
+
+  Settings["/Editor/ShowCurrent"] = cmbShowCurrent.Index = 0
+  RefreshEditor
+
+END
+
+PUBLIC SUB cmbCompletion_Click()
+
+  Settings["/Editor/Completion"] = cmbCompletion.Index = 0
+  RefreshEditor
+
+END
+
+PUBLIC SUB btnImport_Click()
+
+  Dialog.Path = Settings["/Option/ThemePath", System.User.Home]
+  Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
+  Dialog.Title = ("Select a theme file")
+  IF Dialog.OpenFile() THEN RETURN
+  Settings["/Option/ThemePath"] = File.Dir(Dialog.Path)
+  
+  $cCurrent = MColor.ReadTheme(Dialog.Path)
+  UpdateColor
+  cmbTheme.Index = 0
+
+END
+
+PUBLIC SUB cmbMascot_Click()
+
+  Settings["/ShowMascot"] = cmbMascot.Index = 0
+  FGambas.Visible = cmbMascot.Index = 0
+
+END
+
+
+PUBLIC SUB cmbIconTheme_Click()
+
+  IF cmbIconTheme.Index > 0
+    Settings["/Theme"] = LCase(cmbIconTheme.Text)
+  ELSE 
+    Settings["/Theme"] = ""
+  ENDIF
+  
+  Balloon.Warning(("You need to restart the application to see your changes."), cmbIcontheme)
+
+END
+
+PUBLIC SUB cmbBrowser_Click()
+
+  IF cmbBrowser.Index > 0 THEN 
+    Settings["/Browser"] = LCase(cmbBrowser.Text)
+  ELSE   
+    Settings["/Browser"] = ""
+  ENDIF
+  
+  Project.Browser = ""
+
+END
+
+PUBLIC SUB cmbToolbox_Click()
+
+  Settings["/ToolboxSize"] = cmbToolbox.Index = 1
+  FToolBox.ReadConfig
+
+END

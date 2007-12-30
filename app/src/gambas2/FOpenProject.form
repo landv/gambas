@@ -1,0 +1,154 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,98,70)
+  'Move(0,0,784,560)
+  Text = ("Select a project")
+  Icon = Picture["icon:/32/open"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { HBox2 HBox
+    MoveScaled(1,1,88,62)
+    'Move(8,8,704,496)
+    Expand = True
+    Spacing = 8
+    { dchProject DirChooser
+      MoveScaled(0,1,39,60)
+      'Move(0,8,312,480)
+      Expand = True
+      ShowBookmark = True
+    }
+    { Panel2 Panel
+      MoveScaled(40,2,47,58)
+      'Move(320,16,376,464)
+      Arrangement = Arrange.Vertical
+      Spacing = 8
+      { panProject Panel
+        MoveScaled(1,1,45,39)
+        'Move(8,8,360,312)
+        Background = Color.TextBackground
+        Arrangement = Arrange.Vertical
+        AutoResize = True
+        Spacing = 8
+        Padding = 4
+        Border = Border.Sunken
+        { Panel3 Panel
+          MoveScaled(0,0,45,9)
+          'Move(0,0,360,72)
+          { lblName Label
+            MoveScaled(0,0,45,4)
+            'Move(0,0,360,32)
+            Font = Font["Bold,+1"]
+            Text = ("Gambas")
+          }
+          { Label10 Label
+            MoveScaled(0,6,15,3)
+            'Move(0,48,120,24)
+            Font = Font["Bold"]
+            Padding = 2
+            Text = ("Version")
+          }
+          { txtVersion TextBox
+            MoveScaled(15,6,20,3)
+            'Move(120,48,160,24)
+            Text = ("")
+            ReadOnly = True
+          }
+          { imgIcon PictureBox
+            MoveScaled(36,0,9,9)
+            'Move(288,0,72,72)
+            Stretch = True
+          }
+        }
+        { HBox3 HBox
+          MoveScaled(0,10,45,3)
+          'Move(0,80,360,24)
+          { Label12 Label
+            MoveScaled(0,0,15,3)
+            'Move(0,0,120,24)
+            Font = Font["Bold"]
+            Padding = 2
+            Text = ("Title")
+          }
+          { txtTitle TextBox
+            MoveScaled(16,0,29,3)
+            'Move(128,0,232,24)
+            Expand = True
+            Text = ("")
+            ReadOnly = True
+          }
+        }
+        { HPanel1 HPanel
+          MoveScaled(0,14,45,11)
+          'Move(0,112,360,88)
+          { Label3 Label
+            MoveScaled(0,0,15,3)
+            'Move(0,0,120,24)
+            Font = Font["Bold"]
+            Padding = 2
+            Text = ("Description")
+          }
+          { txtDesc TextArea
+            MoveScaled(16,0,29,11)
+            'Move(128,0,232,88)
+            Expand = True
+            Text = ("")
+            ReadOnly = True
+            Wrap = True
+            ScrollBar = Scroll.Vertical
+          }
+        }
+        { HPanel2 HPanel
+          MoveScaled(0,26,45,11)
+          'Move(0,208,360,88)
+          { Label11 Label
+            MoveScaled(0,0,15,3)
+            'Move(0,0,120,24)
+            Font = Font["Bold"]
+            Padding = 2
+            Text = ("Author(s)")
+          }
+          { txtAuthor TextArea
+            MoveScaled(16,0,29,11)
+            'Move(128,0,232,88)
+            Expand = True
+            Text = ("")
+            ReadOnly = True
+            Wrap = True
+            ScrollBar = Scroll.Vertical
+          }
+        }
+      }
+      { fvwProject FileView
+        MoveScaled(1,41,45,16)
+        'Move(8,328,360,128)
+        Expand = True
+        ShowDetailed = True
+        ShowDirectory = True
+      }
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,64,62,3)
+    'Move(8,512,496,24)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(33,0,14,3)
+      'Move(264,0,112,24)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,14,3)
+      'Move(384,0,112,24)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

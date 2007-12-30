@@ -1,0 +1,134 @@
+' Gambas class file
+
+STATIC PRIVATE $sPath AS String
+
+PRIVATE $bCheck AS Boolean
+
+STATIC PUBLIC SUB Run(sPath AS String)
+
+  DIM hForm AS Form
+
+  $sPath = sPath
+
+  FPropertyFile.ShowModal
+
+END
+
+PUBLIC SUB Form_Open()
+
+  DIM sImg AS String
+  DIM sExt AS String
+  DIM hPict AS Picture
+  DIM sType AS String
+  'DIM bStartup AS Boolean
+  DIM iSize AS Integer
+  DIM sPath AS String
+  DIM sSize AS String
+
+  INC Application.Busy
+
+  lblName.Text = File.Name($sPath)
+  lblPath.Text = Mid$(File.Dir($sPath), Len(Project.Dir) + 1)
+
+  ME.Title = lblName.Text & " - " & ("Properties")
+
+  WITH Stat($sPath)
+
+  hPict = Project.GetFileIcon($sPath, 48)
+
+    IF .Type = gb.Directory THEN
+  
+      'hPict = Picture["icon:/32/directory"]
+      sType = ("Directory")
+  
+      SHELL "(cd " & Project.Quote($sPath) & "; du -k | tail -n1" & ")" TO sSize
+      iSize = Val(sSize)
+  
+    ELSE
+  
+      sExt = LCase(File.Ext($sPath))
+  
+      SELECT CASE sExt
+        CASE "module"
+          sType = ("Module")
+        CASE "class"
+          sType = ("Class")
+        CASE "form"
+          sType = ("Form")
+        CASE "png", "jpg", "gif", "jpeg", "svg"
+          sType = ("Picture")
+          sExt = "image"
+        CASE ELSE
+          sType = ("Text")
+          sExt = "text"
+      END SELECT
+  
+      'hPict = Picture["img/32/" & sExt & ".png"]
+      'IF NOT hPict THEN hPict = Picture["icon:/32/" & sExt]
+      iSize = CInt((.Size + 1023) \ 1024)
+  
+    ENDIF
+  
+    lblSize.Text = Subst(("&1 K"), iSize)
+    lblType.Text = sType
+    imgFile.Picture = hPict
+    lblDate.Text = Str(.Time)
+  
+    GetInfo
+
+  END WITH
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  Message.Error(Error.Text)
+
+END
+
+
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  ME.Close(TRUE)
+
+END
+
+
+PRIVATE SUB GetInfo()
+
+  DIM sTemp AS String
+  DIM sInfo AS String
+
+  SELECT CASE LCase(File.Ext($sPath))
+
+    CASE "form"
+      txtInfo.Text = ("Gambas form")
+
+    CASE "class"
+      txtInfo.Text = ("Gambas class")
+
+    CASE "module"
+      txtInfo.Text = ("Gambas module")
+
+    CASE ELSE
+
+      sTemp = Temp$
+
+      SHELL "file -b " & Project.Quote($sPath) & " > " & Project.Quote(sTemp) WAIT
+      IF Exist(sTemp) THEN
+        txtInfo.Text = File.Load(sTemp)
+      ENDIF
+      KILL sTemp
+
+  END SELECT
+
+END

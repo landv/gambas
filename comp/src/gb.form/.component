@@ -1,0 +1,17 @@
+[Component]
+Key=gb.form
+Authors=Benoît Minisini
+Needs=Form
+Requires=gb.qt
+
+[Form]
+Control=ColorButton,DateBox,DirView,FileView,TimeBox
+
+[Dialog]
+Control=ColorChooser,DateChooser,DirChooser,FileChooser,FontChooser
+
+[Container]
+Control=Expander,ListContainer,SidePanel,ToolPanel,Wizard
+Container=Expander,ListContainer,SidePanel,ToolPanel,Wizard
+MultiContainer=ToolPanel,Wizard
+

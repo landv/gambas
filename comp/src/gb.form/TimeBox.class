@@ -1,0 +1,206 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+EVENT Activate
+EVENT GotFocus
+EVENT LostFocus
+
+PROPERTY Value AS Date
+PROPERTY Border AS Boolean
+PROPERTY Font AS Font
+PROPERTY ReadOnly AS Boolean
+
+PRIVATE panTime AS Panel
+PRIVATE txtHour AS TextBox
+PRIVATE txtMinute AS TextBox
+PRIVATE txtSecond AS TextBox
+PRIVATE lblSep1 AS Label
+PRIVATE lblSep2 AS Label
+
+PRIVATE $aTextBox AS NEW Object[]
+PRIVATE $bLock AS Boolean
+PRIVATE $bFocus AS Boolean
+
+PUBLIC CONST _Properties AS String = "*,Border,Value,ReadOnly"
+
+PUBLIC SUB _new()
+
+  DIM sFormat AS String
+  DIM iInd AS Integer
+  DIM sCar AS String
+
+  panTime = NEW Panel(ME)
+  panTime.Border = Border.Sunken
+  panTime.Arrangement = Arrange.Horizontal
+  panTime.Background = Color.TextBackground
+
+  sFormat = Str(CDate("11:22:33"))
+
+  FOR iInd = 1 TO Len(sFormat)
+    sCar = Mid$(sFormat, iInd, 1)
+    IF sCar = "1" THEN
+      IF txtHour THEN CONTINUE
+      txtHour = NEW TextBox(panTime) AS "TextBox"
+      txtHour.Border = FALSE
+      txtHour.Alignment = Align.Right
+      txtHour.MaxLength = 2
+      ResizeControl(txtHour, "99", 6)
+      $aTextBox.Add(txtHour)
+    ELSE IF sCar = "2" THEN
+      IF txtMinute THEN CONTINUE
+      txtMinute = NEW TextBox(panTime) AS "TextBox"
+      txtMinute.Border = FALSE
+      txtMinute.Alignment = Align.Right
+      txtMinute.MaxLength = 2
+      ResizeControl(txtMinute, "99", 6)
+      $aTextBox.Add(txtMinute)
+    ELSE IF sCar = "3" THEN
+      IF txtSecond THEN CONTINUE
+      txtSecond = NEW TextBox(panTime) AS "TextBox"
+      txtSecond.Border = FALSE
+      txtSecond.Alignment = Align.Right
+      txtSecond.MaxLength = 2
+      ResizeControl(txtSecond, "99", 6)
+      $aTextBox.Add(txtSecond)
+    ELSE
+      IF NOT lblSep1 THEN
+        lblSep1 = NEW Label(panTime)
+        lblSep1.Text = sCar
+        ResizeControl(lblSep1, sCar)
+      ELSE IF NOT lblSep2 THEN
+        lblSep2 = NEW Label(panTime)
+        lblSep2.Text = sCar
+        ResizeControl(lblSep2, sCar)
+      ENDIF
+    ENDIF
+  NEXT
+
+END
+
+PRIVATE SUB ResizeControl(hCtrl AS Control, sText AS String, OPTIONAL iMargin AS Integer)
+
+  hCtrl.Resize(ME.Font.Width(sText) + iMargin, ME.Font.Height(sText))
+
+END
+
+PRIVATE FUNCTION Value_Read() AS Date
+
+  TRY RETURN Time(CInt(txtHour.Text), CInt(txtMinute.Text), CInt(txtSecond.Text))
+
+END
+
+PRIVATE SUB Value_Write(dDate AS Date)
+
+  $bLock = TRUE
+
+  IF IsNull(dDate) THEN
+    txtHour.Clear
+    txtMinute.Clear
+    txtSecond.Clear
+  ELSE
+    txtHour.Text = Hour(dDate)
+    txtMinute.Text = Minute(dDate)
+    txtSecond.Text = Second(dDate)
+  ENDIF
+
+  $bLock = FALSE
+  $aTextBox[0].Select
+  $aTextBox[0].SetFocus
+
+END
+
+
+PUBLIC SUB TextBox_KeyPress()
+
+  Help.ManageKeyPress(":" & lblSep1.Text & lblSep2.Text, $aTextBox)
+
+END
+
+PUBLIC SUB TextBox_Change()
+
+  IF $bLock THEN RETURN
+  IF LAST.Length = LAST.MaxLength THEN
+    Help.GotoNext(LAST)
+  ENDIF
+
+END
+
+PRIVATE SUB Border_Write(bBorder AS Boolean)
+
+  panTime.Border = If(bBorder, Border.Sunken, Border.None)
+
+END
+
+PRIVATE FUNCTION Border_Read() AS Boolean
+
+  RETURN panTime.Border <> Border.None
+
+END
+
+PRIVATE SUB RefreshSize()
+
+  ResizeControl(txtHour, "99", 6)
+  ResizeControl(txtMinute, "99", 6)
+  ResizeControl(txtSecond, "99", 6)
+  ResizeControl(lblSep1, lblSep1.Text)
+  ResizeControl(lblSep2, lblSep2.Text)
+
+END
+
+PRIVATE FUNCTION Font_Read() AS Font
+
+  RETURN SUPER.Font
+
+END
+
+PRIVATE SUB Font_Write(hFont AS Font)
+
+  SUPER.Font = hFont
+  RefreshSize
+
+END
+
+PUBLIC SUB TextBox_Activate()
+
+  RAISE Activate
+
+END
+
+PUBLIC SUB TextBox_GotFocus()
+
+  IF $bFocus THEN RETURN
+  $bFocus = TRUE
+  RAISE GotFocus
+
+END
+
+PUBLIC SUB TextBox_LostFocus()
+
+  DIM hCtrl AS Control
+
+  hCtrl = Application.ActiveControl
+  IF hCtrl AND IF hCtrl.Parent = panTime THEN
+    RETURN
+  ENDIF
+
+  RAISE LostFocus
+  $bFocus = FALSE
+
+END
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+
+  RETURN txtHour.ReadOnly
+
+END
+
+PRIVATE SUB ReadOnly_Write(bReadOnly AS Boolean)
+
+  txtHour.ReadOnly = bReadOnly
+  txtMinute.ReadOnly = bReadOnly
+  txtSecond.ReadOnly = bReadOnly
+
+END
+

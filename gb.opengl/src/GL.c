@@ -1,0 +1,603 @@
+/***************************************************************************
+
+  GL.c
+
+  openGL component
+
+  (c) 2005-2006 Laurent Carlier <lordheavym@gmail.com>
+                Benoît Minisini <gambas@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+#define __GL_C
+
+#include "gambas.h"
+#include "gb_common.h"
+#include "main.h"
+
+#include "GL.h"
+
+#include <GL/gl.h>
+
+#include "GLclipping.h"
+#include "GLcolorLighting.h"
+#include "GLcoordTransf.h"
+#include "GLdisplayList.h"
+#include "GLfog.h"
+#include "GLframeBufferOps.h"
+#include "GLmodesExec.h"
+#include "GLpixelOperations.h"
+#include "GLprimitives.h"
+#include "GLrasterization.h"
+#include "GLtextureMapping.h"
+#include "GLinfo.h"
+#include "GLselectPixmap.h"
+
+/**************************************************************************/
+
+
+BEGIN_METHOD_VOID(GLCHECKERROR)
+
+	GB.ReturnInteger(glGetError());
+
+END_METHOD
+
+/**************************************************************************/
+
+GB_DESC Cgl[] =
+{
+	GB_DECLARE("Gl",0), GB_NOT_CREATABLE(),
+	
+	/* Check errors */
+	GB_STATIC_METHOD("GetError", "i", GLCHECKERROR, NULL),
+
+	/* Primitives - see GLprimitives.h */
+	GB_STATIC_METHOD("Begin", NULL, GLBEGIN, "(Primitive)i"),
+	GB_STATIC_METHOD("EdgeFlag", NULL, GLEDGEFLAG, "(Flag)b"),
+	GB_STATIC_METHOD("End", NULL, GLEND, NULL),
+	GB_STATIC_METHOD("Rectf", NULL, GLRECTF, "(X1)f(Y1)f(X2)f(Y2)f"),
+	GB_STATIC_METHOD("Recti", NULL, GLRECTI, "(X1)i(Y1)i(X2)i(Y2)i"),
+	GB_STATIC_METHOD("Vertex2f", NULL, GLVERTEX2F, "(X)f(Y)f"),
+	GB_STATIC_METHOD("Vertex3f", NULL, GLVERTEX3F, "(X)f(Y)f[(Z)f(W)f]"),
+	GB_STATIC_METHOD("Vertex4f", NULL, GLVERTEX4F, "(X)f(Y)f[(Z)f(W)f]"),
+	GB_STATIC_METHOD("Vertex2i", NULL, GLVERTEX2I, "(X)i(Y)i"),
+	GB_STATIC_METHOD("Vertex3i", NULL, GLVERTEX3I, "(X)i(Y)i(Z)i"),
+	GB_STATIC_METHOD("Vertex4i", NULL, GLVERTEX4I, "(X)i(Y)i(Z)i(W)i"),
+	GB_STATIC_METHOD("Vertexfv", NULL, GLVERTEXFV, "(Coords)Float[]"),
+	GB_STATIC_METHOD("Vertexiv", NULL, GLVERTEXIV, "(Coords)Integer[]"),
+
+	/* Display lists - see GLdisplayList.h */
+	GB_STATIC_METHOD("CallList", NULL, GLCALLLIST, "(Index)i"),
+	GB_STATIC_METHOD("CallLists", NULL, GLCALLLISTS, "(Lists)Integer[]"),
+	GB_STATIC_METHOD("DeleteLists", NULL, GLDELETELISTS, "(Index)i(Range)i"),
+	GB_STATIC_METHOD("EndList", NULL, GLENDLIST, NULL),
+	GB_STATIC_METHOD("GenLists", "i", GLGENLISTS, "(Count)i"),
+	GB_STATIC_METHOD("IsList", "b", GLISLIST, "(Index)i"),
+	GB_STATIC_METHOD("ListBase", NULL, GLLISTBASE, "(Index)i"),
+	GB_STATIC_METHOD("NewList", NULL, GLNEWLIST, "(Index)i(Mode)i"),
+
+	/* Coordinate Transformation - see GLcoordTransf.h */
+	GB_STATIC_METHOD("DepthRange", NULL, GLDEPTHRANGE, "(Near)f(Far)f"),
+	GB_STATIC_METHOD("Frustum", NULL, GLFRUSTUM, "(Left)f(Right)f(Bottom)f(Top)f(Near)f(Far)f"),
+	GB_STATIC_METHOD("LoadIdentity", NULL, GLLOADIDENTITY, NULL),
+	GB_STATIC_METHOD("LoadMatrixf", NULL, GLLOADMATRIXF, "(Matrix)Float[]"),
+	GB_STATIC_METHOD("MatrixMode", NULL, GLMATRIXMODE, "(Mode)i"),
+	GB_STATIC_METHOD("MultMatrixf", NULL, GLMULTMATRIXF, "(Matrix)Float[]"),
+	GB_STATIC_METHOD("Ortho", NULL, GLORTHO, "(Left)f(Right)f(Bottom)f(Top)f(Near)f(Far)f"),
+	GB_STATIC_METHOD("PopMatrix", NULL, GLPOPMATRIX, NULL),
+	GB_STATIC_METHOD("PushMatrix", NULL, GLPUSHMATRIX, NULL),
+	GB_STATIC_METHOD("Rotatef", NULL, GLROTATEF, "(Angle)f(X)f(Y)f(Z)f"),
+	GB_STATIC_METHOD("Scalef", NULL, GLSCALEF, "(X)f(Y)f(Z)f"),
+	GB_STATIC_METHOD("Translatef", NULL, GLTRANSLATEF, "(X)f(Y)f(Z)f"),
+	GB_STATIC_METHOD("Viewport", NULL, GLVIEWPORT, "(X)i(Y)i(Width)i(Height)i"),
+
+	/* Coloring and Lighting - see GLcolorLighting.h */
+	GB_STATIC_METHOD("Color3f", NULL, GLCOLOR3F, "(Red)f(Green)f(Blue)f"),
+	GB_STATIC_METHOD("Color3i", NULL, GLCOLOR3I, "(Red)i(Green)i(Blue)i"),
+	GB_STATIC_METHOD("Color4f", NULL, GLCOLOR4F, "(Red)f(Green)f(Blue)f(Alpha)f"),
+	GB_STATIC_METHOD("Color4i", NULL, GLCOLOR4I, "(Red)i(Green)i(Blue)i(Alpha)i"),
+	GB_STATIC_METHOD("Colorfv", NULL, GLCOLORFV, "(Colors)Float[]"),
+	GB_STATIC_METHOD("Coloriv", NULL, GLCOLORIV, "(Colors)Integer[]"),
+	GB_STATIC_METHOD("ColorMaterial", NULL, GLCOLORMATERIAL, "(Face)i(Mode)i"),
+	GB_STATIC_METHOD("FrontFace", NULL, GLFRONTFACE, "(Mode)i"),
+	GB_STATIC_METHOD("GetLightfv", "Float[]", GLGETLIGHTFV, "(Light)i(Pname)i"),
+	GB_STATIC_METHOD("GetLightiv", "Integer[]", GLGETLIGHTIV, "(Light)i(Pname)i"),
+	GB_STATIC_METHOD("GetMaterialfv", "Float[]", GLGETMATERIALFV, "(Face)i(Pname)i"),
+	GB_STATIC_METHOD("GetMaterialiv", "Integer[]", GLGETMATERIALIV, "(Face)i(Pname)i"),
+	GB_STATIC_METHOD("Indexf", NULL, GLINDEXF, "(Index)f"),
+	GB_STATIC_METHOD("Indexi", NULL, GLINDEXI, "(Index)i"),
+	GB_STATIC_METHOD("Lightf", NULL, GLLIGHTF, "(Light)i(Pname)i(Param)f"),
+	GB_STATIC_METHOD("Lighti", NULL, GLLIGHTI, "(Light)i(Pname)i(Param)i"),
+	GB_STATIC_METHOD("Lightfv", NULL, GLLIGHTFV, "(Light)i(Pname)i(Params)Float[]"),
+	GB_STATIC_METHOD("Lightiv", NULL, GLLIGHTIV, "(Light)i(Pname)i(Params)Integer[]"),
+	GB_STATIC_METHOD("LightModelf", NULL, GLLIGHTMODELF, "(Pname)i(Param)f"),
+	GB_STATIC_METHOD("LightModeli", NULL, GLLIGHTMODELI, "(Pname)i(Param)i"),
+	GB_STATIC_METHOD("LightModelfv", NULL, GLLIGHTMODELFV, "(Pname)i(Params)Float[]"),
+	GB_STATIC_METHOD("LightModeliv", NULL, GLLIGHTMODELIV, "(Pname)i(Params)Integer[]"),
+	GB_STATIC_METHOD("Materialf", NULL, GLMATERIALF, "(Face)i(Pname)i(Param)f"),
+	GB_STATIC_METHOD("Materiali", NULL, GLMATERIALI, "(Face)i(Pname)i(Param)i"),
+	GB_STATIC_METHOD("Materialfv", NULL, GLMATERIALFV, "(Face)i(Pname)i(Params)Float[]"),
+	GB_STATIC_METHOD("Materialiv", NULL, GLMATERIALIV, "(Face)i(Pname)i(Params)Integer[]"),
+	GB_STATIC_METHOD("Normal3f", NULL, GLNORMAL3F, "(Nx)f(Ny)f(Nz)f"),
+	GB_STATIC_METHOD("Normal3i", NULL, GLNORMAL3I, "(Nx)i(Ny)i(Nz)i"),
+	GB_STATIC_METHOD("ShadeModel", NULL, GLSHADEMODEL, "(Model)i"),
+
+	/* Clipping - see GLclipping.h */
+	GB_STATIC_METHOD("ClipPlane", NULL, GLCLIPPLANE, "(Plane)i(Equation)Float[]"),
+	GB_STATIC_METHOD("GetClipPlane", "Float[]", GLGETCLIPPLANE, "(Plane)i"),
+
+	/* Rasterization - see GLrasterization.h  */
+	//GB_STATIC_METHOD("Bitmap", NULL, GLBITMAP, NULL), //TODO
+	GB_STATIC_METHOD("CullFace", NULL, GLCULLFACE, "(Mode)i"),
+	//GB_STATIC_METHOD("GetPolygonStipple", "i", GLPOLYGONSTIPPLE, NULL), //TODO
+	GB_STATIC_METHOD("LineStipple", NULL, GLLINEWIDTH, "(Factor)i(Pattern)i"),
+	GB_STATIC_METHOD("LineWidth", NULL, GLLINEWIDTH, "(Width)f"),
+	GB_STATIC_METHOD("PointSize", NULL, GLPOINTSIZE, "(Size)f"),
+	GB_STATIC_METHOD("PolygonMode", NULL, GLPOLYGONMODE, "(Face)i(Mode)i"),
+	//GB_STATIC_METHOD("PolygonStipple", NULL, GLPOLYGONSTIPPLE, "(Mask)i"), //TODO
+	GB_STATIC_METHOD("RasterPos2f", NULL, GLRASTERPOS2F, "(X)f(Y)f"),
+	GB_STATIC_METHOD("RasterPos3f", NULL, GLRASTERPOS3F, "(X)f(Y)f(Z)f"),
+	GB_STATIC_METHOD("RasterPos4f", NULL, GLRASTERPOS4F, "(X)f(Y)f(Z)f(W)f"),
+	GB_STATIC_METHOD("RasterPos2i", NULL, GLRASTERPOS2I, "(X)i(Y)i"),
+	GB_STATIC_METHOD("RasterPos3i", NULL, GLRASTERPOS3I, "(X)i(Y)i(Z)i"),
+	GB_STATIC_METHOD("RasterPos4i", NULL, GLRASTERPOS4I, "(X)i(Y)i(Z)i(W)i"),
+	GB_STATIC_METHOD("RasterPosfv", NULL, GLRASTERPOSFV, "(Coords)Float[]"),
+	GB_STATIC_METHOD("RasterPosiv", NULL, GLRASTERPOSIV, "(Coords)Integer[]"),
+	
+	/* PixelOperations - see GLpixelOperations.h  */
+	// TODO glReadPixels
+	GB_STATIC_METHOD("CopyPixels", NULL, GLCOPYPIXELS, "(X)i(Y)i(Width)i(Height)i(Buffer)i"),
+	GB_STATIC_METHOD("PixelStoref", NULL, GLPIXELSTOREF, "(Pname)i(Param)f"),
+	GB_STATIC_METHOD("PixelStorei", NULL, GLPIXELSTOREI, "(Pname)i(Param)i"),
+	GB_STATIC_METHOD("PixelTransferf", NULL, GLPIXELTRANSFERF, "(Pname)i(Param)f"),
+	GB_STATIC_METHOD("PixelTransferi", NULL, GLPIXELTRANSFERI, "(Pname)i(Param)i"),
+	GB_STATIC_METHOD("ReadBuffer", NULL, GLREADBUFFER, "(Mode)i"),
+	GB_STATIC_METHOD("DrawPixels", NULL, GLDRAWPIXELS, "(Image)Image;"),
+
+	/* Modes and Execution - see GLmodesExec.h */
+	GB_STATIC_METHOD("Disable", NULL, GLDISABLE, "(Capacity)i"),
+	GB_STATIC_METHOD("Enable", NULL, GLENABLE, "(Capacity)i"),
+	GB_STATIC_METHOD("Flush", NULL, GLFLUSH, NULL),
+	GB_STATIC_METHOD("Finish", NULL, GLFINISH, NULL),
+	GB_STATIC_METHOD("Hint", NULL, GLHINT, "(Target)i(Mode)i"),
+	GB_STATIC_METHOD("IsEnabled", "b", GLISENABLED, "(Capacity)i"),
+
+	/* Fog - see GLfog.h */
+	GB_STATIC_METHOD("Fogf", NULL, GLFOGF, "(Pname)i(Param)f"),
+	GB_STATIC_METHOD("Fogi", NULL, GLFOGI, "(Pname)i(Param)i"),
+	GB_STATIC_METHOD("Fogfv", NULL, GLFOGFV, "(Pname)i(Params)Float[]"),
+	GB_STATIC_METHOD("Fogiv", NULL, GLFOGIV, "(Pname)i(Params)Integer[]"),
+
+	/* Texture Mapping - see GLtextureMapping.h */
+	GB_STATIC_METHOD("BindTexture", NULL, GLBINDTEXTURE, "(Target)i(Texture)i"),
+	// TODO adapt to gambas
+	//GB_STATIC_METHOD("CopyTexImage1D", NULL, GLCOPYTEXIMAGE1D, "(Target)i(Level)i(Format)i(X)i(Y)i(Width)i(Border)i"),
+	//GB_STATIC_METHOD("CopyTexImage2D", NULL, GLCOPYTEXIMAGE2D, "(Target)i(Level)i(Format)i(X)i(Y)i(Width)i(Height)i(Border)i"),
+	GB_STATIC_METHOD("DeleteTextures", NULL, GLDELETETEXTURES, "(Textures)Integer[]"),
+	GB_STATIC_METHOD("GenTextures", "Integer[]", GLGENTEXTURES, "(Count)i"),
+	GB_STATIC_METHOD("IsTexture", "b", GLISTEXTURE, "(Texture)i"),
+	GB_STATIC_METHOD("TexCoord1f", NULL, GLTEXCOORD1F, "(S)f"),
+	GB_STATIC_METHOD("TexCoord1i", NULL, GLTEXCOORD1I, "(S)i"),
+	GB_STATIC_METHOD("TexCoord2f", NULL, GLTEXCOORD2F, "(S)f(T)f"),
+	GB_STATIC_METHOD("TexCoord2i", NULL, GLTEXCOORD2I, "(S)i(T)i"),
+	GB_STATIC_METHOD("TexCoord3f", NULL, GLTEXCOORD3F, "(S)f(T)f(R)f"),
+	GB_STATIC_METHOD("TexCoord3i", NULL, GLTEXCOORD3I, "(S)i(T)i(R)i"),
+	GB_STATIC_METHOD("TexCoord4f", NULL, GLTEXCOORD4F, "(S)f(T)f(R)f(Q)f"),
+	GB_STATIC_METHOD("TexCoord4i", NULL, GLTEXCOORD4I, "(S)i(T)i(R)i(Q)i"),
+	GB_STATIC_METHOD("TexEnvf", NULL, GLTEXENVF, "(Target)i(Pname)i(Param)f"),
+	GB_STATIC_METHOD("TexEnvfv", NULL, GLTEXENVFV, "(Target)i(Pname)i(Params)Float[]"),
+	GB_STATIC_METHOD("TexEnvi", NULL, GLTEXENVI, "(Target)i(Pname)i(Param)i"),
+	GB_STATIC_METHOD("TexEnviv", NULL, GLTEXENVIV, "(Target)i(Pname)i(Params)Integer[]"),
+	GB_STATIC_METHOD("TexImage1D", NULL, GLTEXIMAGE1D, "(Image)Image;[(Level)i(Border)i]"),
+	GB_STATIC_METHOD("TexImage2D", NULL, GLTEXIMAGE2D,"(Image)Image;[(Level)i(Border)i]"),
+	GB_STATIC_METHOD("TexParameterf", NULL, GLTEXPARAMETERF, "(Target)i(Pname)i(Param)f"),
+	GB_STATIC_METHOD("TexParameterfv", NULL, GLTEXPARAMETERFV, "(Target)i(Pname)i(Params)Float[]"),
+	GB_STATIC_METHOD("TexParameteri", NULL, GLTEXPARAMETERI, "(Target)i(Pname)i(Param)i"),
+	GB_STATIC_METHOD("TexParameteriv", NULL, GLTEXPARAMETERIV, "(Target)i(Pname)i(Params)Integer[]"),
+
+	/* FrameBuffer Operations - see GLframeBufferOps.h  */
+	GB_STATIC_METHOD("Accum", NULL, GLACCUM, "(Operation)i(Value)f"),
+	GB_STATIC_METHOD("AlphaFunc", NULL, GLALPHAFUNC, "(Function)i(Reference)f"),
+	GB_STATIC_METHOD("BlendFunc", NULL, GLBLENDFUNC, "(SrcFactor)i(DstFactor)i"),
+	GB_STATIC_METHOD("Clear", NULL, GLCLEAR, "(Mask)i"),
+	GB_STATIC_METHOD("ClearAccum", NULL, GLCLEARACCUM, "(Red)f(Green)f(Blue)f(Alpha)f"),
+	GB_STATIC_METHOD("ClearColor", NULL, GLCLEARCOLOR, "(Red)f(Green)f(Blue)f(Alpha)f"),
+	GB_STATIC_METHOD("ClearDepth", NULL, GLCLEARDEPTH, "(Depth)f"),
+	GB_STATIC_METHOD("ClearIndex", NULL, GLCLEARINDEX, "(Value)f"),
+	GB_STATIC_METHOD("ClearStencil", NULL, GLCLEARSTENCIL, "(Value)i"),
+	GB_STATIC_METHOD("ColorMask", NULL, GLCOLORMASK, "(Red)b(Green)b(Blue)b(Alpha)b"),
+	GB_STATIC_METHOD("DrawBuffer", NULL, GLDRAWBUFFER, "(Mode)i"),
+	GB_STATIC_METHOD("DepthFunc", NULL, GLDEPTHFUNC, "(Function)i"),
+	GB_STATIC_METHOD("DepthMask", NULL, GLDEPTHMASK, "(Flag)b"),
+	GB_STATIC_METHOD("IndexMask", NULL, GLINDEXMASK, "(Mask)i"),
+	GB_STATIC_METHOD("LogicOp", NULL, GLLOGICOP, "(Opcode)i"),
+	GB_STATIC_METHOD("Scissor", NULL, GLSCISSOR, "(X)i(Y)i(Width)i(Height)i"),
+	GB_STATIC_METHOD("StencilFunc", NULL, GLSTENCILFUNC, "(Function)i(Reference)i(Mask)i"),
+	GB_STATIC_METHOD("StencilMask", NULL, GLSTENCILMASK, "(Mask)i"),
+	GB_STATIC_METHOD("StencilOp", NULL, GLSTENCILOP, "(Fail)i(Zfail)i(Zpass)i"),
+
+	/* Selection and Feedback - see GLselectPixmap.h  */
+	GB_STATIC_METHOD("RenderMode", "i", GLRENDERMODE, "(Mode)i"),
+
+	/********************/
+	/* glGetxxxx calls  */
+	/* see GLinfo.h/c   */
+	/********************/
+
+	// TODO
+	// GL_ALPHA_BIAS GL_ALPHA_SCALE (glPixelTransfer)
+	GB_STATIC_METHOD("GetAccumAlphaBits", "i", GLGETACCUMALPHABITS, NULL),
+	GB_STATIC_METHOD("GetAccumClearValue", "Float[]", GLGETACCUMCLEARVALUE, NULL),
+	GB_STATIC_METHOD("GetAccumBlueBits", "i", GLGETACCUMBLUEBITS, NULL),
+	GB_STATIC_METHOD("GetAccumGreenBits", "i", GLGETACCUMGREENBITS, NULL),
+	GB_STATIC_METHOD("GetAccumRedBits", "i", GLGETACCUMREDBITS, NULL),
+	GB_STATIC_METHOD("GetAlphaBits", "i", GLGETALPHABITS, NULL),
+	GB_STATIC_METHOD("GetAlphaTestFunc", "i", GLGETALPHATESTFUNC, NULL),
+	GB_STATIC_METHOD("GetAlphaTestRef", "f", GLGETALPHATESTREF, NULL),
+	GB_STATIC_METHOD("GetBlendDst", "i", GLGETBLENDDST, NULL),
+	GB_STATIC_METHOD("GetBlendSrc", "i", GLGETBLENDSRC, NULL),
+	GB_STATIC_METHOD("GetColorMaterialFace", "i", GLGETCOLORMATERIALFACE, NULL),
+	GB_STATIC_METHOD("GetColorMaterialParameter", "i", GLGETCOLORMATERIALPARAMETER, NULL),
+	GB_STATIC_METHOD("GetCullFaceMode", "i", GLGETCULLFACEMODE, NULL),
+	GB_STATIC_METHOD("GetDepthBits", "i", GLGETDEPTHBITS, NULL),
+	GB_STATIC_METHOD("GetDepthClearValue", "f", GLGETDEPTHCLEARVALUE, NULL),
+	GB_STATIC_METHOD("GetDepthFunc", "i", GLGETDEPTHFUNC, NULL),
+	GB_STATIC_METHOD("GetDepthRange", "b", GLGETDEPTHRANGE, NULL),
+	GB_STATIC_METHOD("GetDepthWritemask", "Float[]", GLGETDEPTHWRITEMASK, NULL),
+	GB_STATIC_METHOD("GetEdgeFlag", "b", GLGETEDGEFLAG, NULL),
+	GB_STATIC_METHOD("GetFrontFace", "i", GLGETFRONTFACE, NULL),
+	GB_STATIC_METHOD("GetFogColor", "Float[]", GLGETFOGCOLOR, NULL),
+	GB_STATIC_METHOD("GetFogDensity", "f", GLGETFOGDENSITY, NULL),
+	GB_STATIC_METHOD("GetFogEnd", "f", GLGETFOGEND, NULL),
+	GB_STATIC_METHOD("GetFogHint", "i", GLGETFOGHINT, NULL),
+	GB_STATIC_METHOD("GetFogIndex", "f", GLGETFOGINDEX, NULL),
+	GB_STATIC_METHOD("GetFogMode", "i", GLGETFOGMODE, NULL),
+	GB_STATIC_METHOD("GetFogStart", "f", GLGETFOGSTART, NULL),
+	GB_STATIC_METHOD("GetLightModelAmbient", "Float[]", GLGETLIGHTMODELAMBIENT, NULL),
+	GB_STATIC_METHOD("GetLightModelLocalViewer", "b", GLGETLIGHTMODELLOCALVIEWER, NULL),
+	GB_STATIC_METHOD("GetLightModelTwoSide", "f", GLGETLIGHTMODELTWOSIDE, NULL),
+	GB_STATIC_METHOD("GetLineSmoothHint", "i", GLGETLINESMOOTHHINT, NULL),
+	GB_STATIC_METHOD("GetLineStipplePattern", "i", GLGETLINESTIPPLEPATTERN, NULL),
+	GB_STATIC_METHOD("GetLineStippleRepeat", "i", GLGETLINESTIPPLEREPEAT, NULL),
+	GB_STATIC_METHOD("GetLineWidth", "f", GLGETLINEWIDTH, NULL),
+	GB_STATIC_METHOD("GetLineWidthGranularity", "f", GLGETLINEWIDTHGRANULARITY, NULL),
+	GB_STATIC_METHOD("GetLineWidthRange", "Float[]", GLGETLINEWIDTHRANGE, NULL),
+	GB_STATIC_METHOD("GetListBase", "i", GLGETLISTBASE, NULL),
+	GB_STATIC_METHOD("GetListIndex", "i", GLGETLISTINDEX, NULL),
+	GB_STATIC_METHOD("GetListMode", "i", GLGETLISTMODE, NULL),
+	GB_STATIC_METHOD("GetMatrixMode", "i", GLGETMATRIXMODE, NULL),
+	GB_STATIC_METHOD("GetPerspectiveCorrectionHint", "i", GLGETPERSPECTIVECORRECTIONHINT, NULL),
+	GB_STATIC_METHOD("GetPointSmoothHint", "i", GLGETPOINTSMOOTHHINT, NULL),
+	GB_STATIC_METHOD("GetPointSize", "f", GLGETPOINTSIZE, NULL),
+	GB_STATIC_METHOD("GetPointSizeGranularity", "f", GLGETPOINTSIZEGRANULARITY, NULL),
+	GB_STATIC_METHOD("GetPointSizeRange", "Float[]", GLGETPOINTSIZERANGE, NULL),
+	GB_STATIC_METHOD("GetPolygonMode", "Integer[]", GLGETPOLYGONMODE, NULL),
+	GB_STATIC_METHOD("GetPolygonSmoothHint", "i", GLGETPOLYGONSMOOTHHINT, NULL),
+	GB_STATIC_METHOD("GetScissorBox", "Integer[]", GLGETSCISSORBOX, NULL),
+	GB_STATIC_METHOD("GetShadeModel", "i", GLSHADEMODEL, NULL),
+
+	/* Implementation limits */
+	GB_STATIC_METHOD("MaxListNesting", "i", GLMAXLISTNESTING, NULL),
+	GB_STATIC_METHOD("MaxAttribStackDepth", "i", GLMAXATTRIBSTACKDEPTH, NULL),
+	GB_STATIC_METHOD("MaxModelviewStackDepth", "i", GLMAXMODELVIEWSTACKDEPTH, NULL),
+	GB_STATIC_METHOD("MaxNameStackDepth", "i", GLMAXNAMESTACKDEPTH, NULL),
+	GB_STATIC_METHOD("MaxProjectionStackDepth", "i", GLMAXPROJECTIONSTACKDEPTH, NULL),
+	GB_STATIC_METHOD("MaxTextureStackDepth", "i", GLMAXTEXTURESTACKDEPTH, NULL),
+	GB_STATIC_METHOD("MaxEvalOrder", "i", GLMAXEVALORDER, NULL),
+	GB_STATIC_METHOD("MaxLights", "i", GLMAXLIGHTS, NULL),
+	GB_STATIC_METHOD("MaxClipPlanes", "i", GLMAXCLIPPLANES, NULL),
+	GB_STATIC_METHOD("MaxTextureSize", "i", GLMAXTEXTURESIZE, NULL),
+	//GB_STATIC_METHOD("MaxPixelMapTable", "i", GLMAXPIXELMAPTABLE, NULL), needed ? glPixelMap()
+	GB_STATIC_METHOD("MaxViewportDims", "i", GLMAXVIEWPORTDIMS, NULL),
+	GB_STATIC_METHOD("MaxClientAttribStackDepth", "i", GLMAXCLIENTATTRIBSTACKDEPTH, NULL),
+
+	/********************/
+	/* opengl constants */
+	/********************/
+
+	/* Primitives */
+	GB_CONSTANT("GL_POINTS", "i", GL_POINTS),
+	GB_CONSTANT("GL_LINES", "i", GL_LINES),
+	GB_CONSTANT("GL_LINE_LOOP", "i", GL_LINE_LOOP),
+	GB_CONSTANT("GL_LINE_STRIP", "i", GL_LINE_STRIP),
+	GB_CONSTANT("GL_TRIANGLES", "i", GL_TRIANGLES),
+	GB_CONSTANT("GL_TRIANGLE_STRIP", "i", GL_TRIANGLE_STRIP),
+	GB_CONSTANT("GL_TRIANGLE_FAN", "i", GL_TRIANGLE_FAN),
+	GB_CONSTANT("GL_QUADS", "i", GL_QUADS),
+	GB_CONSTANT("GL_QUAD_STRIP", "i", GL_QUAD_STRIP),
+	GB_CONSTANT("GL_POLYGON", "i", GL_POLYGON),
+
+	/* Matrix Mode */
+	GB_CONSTANT("GL_MODELVIEW", "i", GL_MODELVIEW),
+	GB_CONSTANT("GL_PROJECTION", "i", GL_PROJECTION),
+	GB_CONSTANT("GL_TEXTURE", "i", GL_TEXTURE),
+
+	/* Display Lists */
+	GB_CONSTANT("GL_COMPILE", "i", GL_COMPILE),
+	GB_CONSTANT("GL_COMPILE_AND_EXECUTE", "i", GL_COMPILE_AND_EXECUTE),
+
+	/* Accumulation buffer */
+	GB_CONSTANT("GL_ACCUM", "i", GL_ACCUM),
+	GB_CONSTANT("GL_ADD", "i", GL_ADD),
+	GB_CONSTANT("GL_LOAD", "i", GL_LOAD),
+	GB_CONSTANT("GL_MULT", "i", GL_MULT),
+	GB_CONSTANT("GL_RETURN", "i", GL_RETURN),
+
+	/* User clipping planes */
+	GB_CONSTANT("GL_CLIP_PLANE0", "i", GL_CLIP_PLANE0),
+	GB_CONSTANT("GL_CLIP_PLANE1", "i", GL_CLIP_PLANE1),
+	GB_CONSTANT("GL_CLIP_PLANE2", "i", GL_CLIP_PLANE2),
+	GB_CONSTANT("GL_CLIP_PLANE3", "i", GL_CLIP_PLANE3),
+	GB_CONSTANT("GL_CLIP_PLANE4", "i", GL_CLIP_PLANE4),
+	GB_CONSTANT("GL_CLIP_PLANE5", "i", GL_CLIP_PLANE5),
+
+	/* Alpha testing */
+	GB_CONSTANT("GL_ALPHA_TEST", "i", GL_ALPHA_TEST),
+
+	/* glPush/PopAttrib bits */
+	GB_CONSTANT("GL_ACCUM_BUFFER_BIT", "i", GL_ACCUM_BUFFER_BIT),
+	GB_CONSTANT("GL_ALL_ATTRIB_BITS", "i", GL_ALL_ATTRIB_BITS),
+	GB_CONSTANT("GL_CURRENT_BIT", "i", GL_CURRENT_BIT),
+	GB_CONSTANT("GL_COLOR_BUFFER_BIT", "i", GL_COLOR_BUFFER_BIT),
+	GB_CONSTANT("GL_DEPTH_BUFFER_BIT", "i", GL_DEPTH_BUFFER_BIT),
+	GB_CONSTANT("GL_ENABLE_BIT", "i", GL_ENABLE_BIT),
+	GB_CONSTANT("GL_EVAL_BIT", "i", GL_EVAL_BIT),
+	GB_CONSTANT("GL_FOG_BIT", "i", GL_FOG_BIT),
+	GB_CONSTANT("GL_HINT_BIT", "i", GL_HINT_BIT),
+	GB_CONSTANT("GL_LIGHTING_BIT", "i", GL_LIGHTING_BIT),
+	GB_CONSTANT("GL_LINE_BIT", "i", GL_LINE_BIT),
+	GB_CONSTANT("GL_LIST_BIT", "i", GL_LIST_BIT),
+	GB_CONSTANT("GL_PIXEL_MODE_BIT", "i", GL_PIXEL_MODE_BIT),
+	GB_CONSTANT("GL_POINT_BIT", "i", GL_POINT_BIT),
+	GB_CONSTANT("GL_POLYGON_BIT", "i", GL_POLYGON_BIT),
+	GB_CONSTANT("GL_POLYGON_STIPPLE_BIT", "i", GL_POLYGON_STIPPLE_BIT),
+	GB_CONSTANT("GL_SCISSOR_BIT", "i", GL_SCISSOR_BIT),
+	GB_CONSTANT("GL_STENCIL_BUFFER_BIT", "i", GL_STENCIL_BUFFER_BIT),
+	GB_CONSTANT("GL_TEXTURE_BIT", "i", GL_TEXTURE_BIT),
+	GB_CONSTANT("GL_TRANSFORM_BIT", "i", GL_TRANSFORM_BIT),
+	GB_CONSTANT("GL_VIEWPORT_BIT", "i", GL_VIEWPORT_BIT),
+
+	/* Polygons */
+	GB_CONSTANT("GL_POINT", "i", GL_POINT),
+	GB_CONSTANT("GL_LINE", "i", GL_LINE),
+	GB_CONSTANT("GL_FILL", "i", GL_FILL),
+	GB_CONSTANT("GL_CW", "i", GL_CW),
+	GB_CONSTANT("GL_CCW", "i", GL_CCW),
+	GB_CONSTANT("GL_FRONT", "i", GL_FRONT),
+	GB_CONSTANT("GL_BACK", "i", GL_BACK),
+	GB_CONSTANT("GL_POLYGON_SMOOTH", "i", GL_POLYGON_SMOOTH),
+	GB_CONSTANT("GL_POLYGON_STIPPLE", "i", GL_POLYGON_STIPPLE),
+	GB_CONSTANT("GL_CULL_FACE", "i", GL_CULL_FACE),
+	// ogl 1.1 : void glPolygonOffset( GLfloat factor,GLfloat units )
+	//GB_CONSTANT("PolygonOffsetFactor", "i", GL_POLYGON_OFFSET_FACTOR),
+	//GB_CONSTANT("PolygonOffsetUnits", "i", GL_POLYGON_OFFSET_UNITS),
+	//GB_CONSTANT("PolygonOffsetPoint", "i", GL_POLYGON_OFFSET_POINT), // TODO glGet
+	//GB_CONSTANT("PolygonOffsetLine", "i", GL_POLYGON_OFFSET_LINE), // TODO glGet
+	//GB_CONSTANT("PolygonOffsetFill", "i", GL_POLYGON_OFFSET_FILL), // TODO glGet
+
+	/* Depth buffer */
+	GB_CONSTANT("GL_NEVER", "i", GL_NEVER),
+	GB_CONSTANT("GL_LESS", "i", GL_LESS),
+	GB_CONSTANT("GL_EQUAL", "i", GL_EQUAL),
+	GB_CONSTANT("GL_LEQUAL", "i", GL_LEQUAL),
+	GB_CONSTANT("GL_GREATER", "i", GL_GREATER),
+	GB_CONSTANT("GL_NOTEQUAL", "i", GL_NOTEQUAL),
+	GB_CONSTANT("GL_GEQUAL", "i", GL_GEQUAL),
+	GB_CONSTANT("GL_ALWAYS", "i", GL_ALWAYS),
+	GB_CONSTANT("GL_DEPTH_TEST", "i", GL_DEPTH_TEST),
+
+	/* Lines */
+	GB_CONSTANT("GL_LINE_SMOOTH", "i", GL_LINE_SMOOTH),
+	GB_CONSTANT("GL_LINE_STIPPLE", "i", GL_LINE_STIPPLE),
+
+	/* Render Mode */
+	GB_CONSTANT("GL_FEEDBACK", "i", GL_FEEDBACK),
+	GB_CONSTANT("GL_RENDER", "i", GL_RENDER),
+	GB_CONSTANT("GL_SELECT", "i", GL_SELECT),
+
+	/* Points */
+	GB_CONSTANT("GL_POINT_SMOOTH", "i", GL_POINT_SMOOTH),
+
+	/* Fog */
+	GB_CONSTANT("GL_FOG", "i", GL_FOG),
+	GB_CONSTANT("GL_FOG_MODE", "i", GL_FOG_MODE),
+	GB_CONSTANT("GL_FOG_DENSITY", "i", GL_FOG_DENSITY),
+	GB_CONSTANT("GL_FOG_COLOR", "i", GL_FOG_COLOR),
+	GB_CONSTANT("GL_FOG_INDEX", "i", GL_FOG_INDEX),
+	GB_CONSTANT("GL_FOG_START", "i", GL_FOG_START),
+	GB_CONSTANT("GL_FOG_END", "i", GL_FOG_END),
+	GB_CONSTANT("GL_LINEAR", "i", GL_LINEAR),
+	GB_CONSTANT("GL_EXP", "i", GL_EXP),
+	GB_CONSTANT("GL_EXP2", "i", GL_EXP2),
+
+	/* Errors */
+	GB_CONSTANT("GL_NO_ERROR", "i", GL_NO_ERROR),
+	GB_CONSTANT("GL_INVALID_VALUE", "i", GL_INVALID_VALUE),
+	GB_CONSTANT("GL_INVALID_ENUM", "i", GL_INVALID_ENUM),
+	GB_CONSTANT("GL_INVALID_OPERATION", "i", GL_INVALID_OPERATION),
+	GB_CONSTANT("GL_STACK_OVERFLOW", "i", GL_STACK_OVERFLOW),
+	GB_CONSTANT("GL_STACK_UNDERFLOW", "i", GL_STACK_UNDERFLOW),
+	GB_CONSTANT("GL_OUT_OF_MEMORY", "i", GL_OUT_OF_MEMORY),
+
+	/* Lighting */
+	GB_CONSTANT("GL_LIGHTING", "i", GL_LIGHTING),
+	GB_CONSTANT("GL_LIGHT0", "i", GL_LIGHT0),
+	GB_CONSTANT("GL_LIGHT1", "i", GL_LIGHT1),
+	GB_CONSTANT("GL_LIGHT2", "i", GL_LIGHT2),
+	GB_CONSTANT("GL_LIGHT3", "i", GL_LIGHT3),
+	GB_CONSTANT("GL_LIGHT4", "i", GL_LIGHT4),
+	GB_CONSTANT("GL_LIGHT5", "i", GL_LIGHT5),
+	GB_CONSTANT("GL_LIGHT6", "i", GL_LIGHT6),
+	GB_CONSTANT("GL_LIGHT7", "i", GL_LIGHT7),
+	GB_CONSTANT("GL_SPOT_EXPONENT", "i", GL_SPOT_EXPONENT),
+	GB_CONSTANT("GL_SPOT_CUTTOFF", "i", GL_SPOT_CUTOFF),
+	GB_CONSTANT("GL_CONSTANT_ATTENUATION", "i", GL_CONSTANT_ATTENUATION),
+	GB_CONSTANT("GL_LINEAR_ATTENUATION", "i", GL_LINEAR_ATTENUATION),
+	GB_CONSTANT("GL_QUADRATIC_ATTENUATION", "i", GL_QUADRATIC_ATTENUATION),
+	GB_CONSTANT("GL_AMBIENT", "i", GL_AMBIENT),
+	GB_CONSTANT("GL_DIFFUSE", "i", GL_DIFFUSE),
+	GB_CONSTANT("GL_SPECULAR", "i", GL_SPECULAR),
+	GB_CONSTANT("GL_SHININESS", "i", GL_SHININESS),
+	GB_CONSTANT("GL_EMISSION", "i", GL_EMISSION),
+	GB_CONSTANT("GL_POSITION", "i", GL_POSITION),
+	GB_CONSTANT("GL_SPOT_DIRECTION", "i", GL_SPOT_DIRECTION),
+	GB_CONSTANT("GL_AMBIENT_AND_DIFFUSE", "i", GL_AMBIENT_AND_DIFFUSE),
+	GB_CONSTANT("GL_COLOR_INDEXES", "i", GL_COLOR_INDEXES),
+	GB_CONSTANT("GL_LIGHT_MODEL_TWO_SIDE", "i", GL_LIGHT_MODEL_TWO_SIDE),
+	GB_CONSTANT("GL_LIGHT_MODEL_LOCAL_VIEWER", "i", GL_LIGHT_MODEL_LOCAL_VIEWER),
+	GB_CONSTANT("GL_LIGHT_MODEL_AMBIENT", "i", GL_LIGHT_MODEL_AMBIENT),
+	GB_CONSTANT("GL_FRONT_AND_BACK", "i", GL_FRONT_AND_BACK),
+	GB_CONSTANT("GL_FLAT", "i", GL_FLAT),
+	GB_CONSTANT("GL_SMOOTH", "i", GL_SMOOTH),
+	GB_CONSTANT("GL_COLOR_MATERIAL", "i", GL_COLOR_MATERIAL),
+	GB_CONSTANT("GL_NORMALIZE", "i", GL_NORMALIZE),
+
+	/* Blending */
+	GB_CONSTANT("GL_BLEND", "i", GL_BLEND),
+	GB_CONSTANT("GL_ZERO", "i", GL_ZERO),
+	GB_CONSTANT("GL_ONE", "i", GL_ONE),
+	GB_CONSTANT("GL_SRC_COLOR", "i", GL_SRC_COLOR),
+	GB_CONSTANT("GL_ONE_MINUS_SRC_COLOR", "i", GL_ONE_MINUS_SRC_COLOR),
+	GB_CONSTANT("GL_SRC_ALPHA", "i", GL_SRC_ALPHA),
+	GB_CONSTANT("GL_ONE_MINUS_SRC_ALPHA", "i", GL_ONE_MINUS_SRC_ALPHA),
+	GB_CONSTANT("GL_DST_ALPHA", "i", GL_DST_ALPHA),
+	GB_CONSTANT("GL_ONE_MINUS_DST_ALPHA", "i", GL_ONE_MINUS_DST_ALPHA),
+	GB_CONSTANT("GL_DST_COLOR", "i", GL_DST_COLOR),
+	GB_CONSTANT("GL_ONE_MINUS_DST_COLOR", "i", GL_ONE_MINUS_DST_COLOR),
+	GB_CONSTANT("GL_SRC_ALPHA_SATURATE", "i", GL_SRC_ALPHA_SATURATE),
+
+	/* Hints */
+	GB_CONSTANT("GL_FOG_HINT", "i", GL_FOG_HINT),
+	GB_CONSTANT("GL_LINE_SMOOTH_HINT", "i", GL_LINE_SMOOTH_HINT),
+	GB_CONSTANT("GL_PERSPECTIVE_CORRECTION_HINT", "i", GL_PERSPECTIVE_CORRECTION_HINT),
+	GB_CONSTANT("GL_POINT_SMOOTH_HINT", "i", GL_POINT_SMOOTH_HINT),
+	GB_CONSTANT("GL_POLYGON_SMOOTH_HINT", "i", GL_POLYGON_SMOOTH_HINT),
+	GB_CONSTANT("GL_DONT_CARE", "i", GL_DONT_CARE),
+	GB_CONSTANT("GL_FASTEST", "i", GL_FASTEST),
+	GB_CONSTANT("GL_NICEST", "i", GL_NICEST),
+
+	/* Buffers, Pixel Drawing/Reading */
+	//GB_CONSTANT("None", "i", GL_NONE),
+	//GB_CONSTANT("Left", "i", GL_LEFT),
+	//GB_CONSTANT("Right", "i", GL_RIGHT),
+
+	/* Scissor box */
+	GB_CONSTANT("GL_SCISSOR_TEST", "i", GL_SCISSOR_TEST),
+
+	/* Texture mapping */
+	GB_CONSTANT("GL_TEXTURE_ENV", "i", GL_TEXTURE_ENV),
+	GB_CONSTANT("GL_TEXTURE_ENV_MODE", "i", GL_TEXTURE_ENV_MODE),
+	GB_CONSTANT("GL_TEXTURE_1D", "i", GL_TEXTURE_1D),
+	GB_CONSTANT("GL_TEXTURE_2D", "i", GL_TEXTURE_2D),
+	GB_CONSTANT("GL_TEXTURE_WRAP_S", "i", GL_TEXTURE_WRAP_S),
+	GB_CONSTANT("GL_TEXTURE_WRAP_T", "i", GL_TEXTURE_WRAP_T),
+	GB_CONSTANT("GL_TEXTURE_MAG_FILTER", "i", GL_TEXTURE_MAG_FILTER),
+	GB_CONSTANT("GL_TEXTURE_MIN_FILTER", "i", GL_TEXTURE_MIN_FILTER),
+	GB_CONSTANT("GL_TEXTURE_ENV_COLOR", "i", GL_TEXTURE_ENV_COLOR),
+	GB_CONSTANT("GL_TEXTURE_GEN_S", "i", GL_TEXTURE_GEN_S),
+	GB_CONSTANT("GL_TEXTURE_GEN_T", "i", GL_TEXTURE_GEN_T),
+	GB_CONSTANT("GL_TEXTURE_GEN_MODE", "i", GL_TEXTURE_GEN_MODE),
+	GB_CONSTANT("GL_TEXTURE_BORDER_COLOR", "i", GL_TEXTURE_BORDER_COLOR),
+	GB_CONSTANT("GL_TEXTURE_WIDTH", "i", GL_TEXTURE_WIDTH),
+	GB_CONSTANT("GL_TEXTURE_HEIGHT", "i", GL_TEXTURE_HEIGHT),
+	GB_CONSTANT("GL_TEXTURE_BORDER", "i", GL_TEXTURE_BORDER),
+	GB_CONSTANT("GL_TEXTURE_COMPONENTS", "i", GL_TEXTURE_COMPONENTS),
+#if 0	// needed ?
+	GB_CONSTANT("GL_TEXTURE_RED_SIZE", "i", GL_TEXTURE_RED_SIZE),
+	GB_CONSTANT("GL_TEXTURE_GREEN_SIZE", "i", GL_TEXTURE_GREEN_SIZE),
+	GB_CONSTANT("GL_TEXTURE_BLUE_SIZE", "i", GL_TEXTURE_BLUE_SIZE),
+	GB_CONSTANT("GL_TEXTURE_ALPHA_SIZE", "i", GL_TEXTURE_ALPHA_SIZE),
+	GB_CONSTANT("GL_TEXTURE_LUMINANCE_SIZE", "i", GL_TEXTURE_LUMINANCE_SIZE),
+	GB_CONSTANT("GL_TEXTURE_INTENSITY_SIZE", "i", GL_TEXTURE_INTENSITY_SIZE),
+#endif
+	GB_CONSTANT("GL_NEAREST_MIPMAP_NEAREST", "i", GL_NEAREST_MIPMAP_NEAREST),
+	GB_CONSTANT("GL_NEAREST_MIPMAP_LINEAR", "i", GL_NEAREST_MIPMAP_LINEAR),
+	GB_CONSTANT("GL_LINEAR_MIPMAP_NEAREST", "i", GL_LINEAR_MIPMAP_NEAREST),
+	GB_CONSTANT("GL_LINEAR_MIPMAP_LINEAR", "i", GL_LINEAR_MIPMAP_LINEAR),
+	GB_CONSTANT("GL_OBJECT_LINEAR", "i", GL_OBJECT_LINEAR),
+	GB_CONSTANT("GL_OBJECT_PLANE", "i", GL_OBJECT_PLANE),
+	GB_CONSTANT("GL_EYE_LINEAR", "i", GL_EYE_LINEAR),
+	GB_CONSTANT("GL_EYE_PLANE", "i", GL_EYE_PLANE),
+	GB_CONSTANT("GL_SPHERE_MAP", "i", GL_SPHERE_MAP),
+	GB_CONSTANT("GL_DECAL", "i", GL_DECAL),
+	GB_CONSTANT("GL_MODULATE", "i", GL_MODULATE),
+	GB_CONSTANT("GL_NEAREST", "i", GL_NEAREST),
+	GB_CONSTANT("GL_REPEAT", "i", GL_REPEAT),
+	GB_CONSTANT("GL_CLAMP", "i", GL_CLAMP),
+	GB_CONSTANT("GL_S", "i", GL_S),
+	GB_CONSTANT("GL_T", "i", GL_T),
+	GB_CONSTANT("GL_R", "i", GL_R),
+	GB_CONSTANT("GL_Q", "i", GL_Q),
+	GB_CONSTANT("GL_TEXTURE_GEN_R", "i", GL_TEXTURE_GEN_R),
+	GB_CONSTANT("GL_TEXTURE_GEN_Q", "i", GL_TEXTURE_GEN_Q),
+
+#if 0
+
+/* OpenGL 1.1 */
+
+  GB_CONSTANT("ProxyTexture1d", "i", GL_PROXY_TEXTURE_1D),
+  GB_CONSTANT("ProxyTexture2d", "i", GL_PROXY_TEXTURE_2D),
+  GB_CONSTANT("TexturePriority", "i", GL_TEXTURE_PRIORITY),
+  GB_CONSTANT("TextureResident", "i", GL_TEXTURE_RESIDENT),
+  GB_CONSTANT("TextureBinding1d", "i", GL_TEXTURE_BINDING_1D),
+  GB_CONSTANT("TextureBinding2d", "i", GL_TEXTURE_BINDING_2D),
+  GB_CONSTANT("TextureInternalFormat", "i", GL_TEXTURE_INTERNAL_FORMAT),
+  GB_CONSTANT("Alpha4", "i", GL_ALPHA4),
+  GB_CONSTANT("Alpha8", "i", GL_ALPHA8),
+  GB_CONSTANT("Alpha12", "i", GL_ALPHA12),
+  GB_CONSTANT("Alpha16", "i", GL_ALPHA16),
+  GB_CONSTANT("Luminance4", "i", GL_LUMINANCE4),
+  GB_CONSTANT("Luminance8", "i", GL_LUMINANCE8),
+  GB_CONSTANT("Luminance12", "i", GL_LUMINANCE12),
+  GB_CONSTANT("Luminance16", "i", GL_LUMINANCE16),
+  GB_CONSTANT("Luminance4Alpha4", "i", GL_LUMINANCE4_ALPHA4),
+  GB_CONSTANT("Luminance6Alpha2", "i", GL_LUMINANCE6_ALPHA2),
+  GB_CONSTANT("Luminance8Alpha8", "i", GL_LUMINANCE8_ALPHA8),
+  GB_CONSTANT("Luminance12Alpha4", "i", GL_LUMINANCE12_ALPHA4),
+  GB_CONSTANT("Luminance12Alpha12", "i", GL_LUMINANCE12_ALPHA12),
+  GB_CONSTANT("Luminance16Alpha16", "i", GL_LUMINANCE16_ALPHA16),
+  GB_CONSTANT("Intensity", "i", GL_INTENSITY),
+  GB_CONSTANT("Intensity4", "i", GL_INTENSITY4),
+  GB_CONSTANT("Intensity8", "i", GL_INTENSITY8),
+  GB_CONSTANT("Intensity12", "i", GL_INTENSITY12),
+  GB_CONSTANT("Intensity16", "i", GL_INTENSITY16),
+  GB_CONSTANT("R3G3B2", "i", GL_R3_G3_B2),
+  GB_CONSTANT("Rgb4", "i", GL_RGB4),
+  GB_CONSTANT("Rgb5", "i", GL_RGB5),
+  GB_CONSTANT("Rgb8", "i", GL_RGB8),
+  GB_CONSTANT("Rgb10", "i", GL_RGB10),
+  GB_CONSTANT("Rgb12", "i", GL_RGB12),
+  GB_CONSTANT("Rgb16", "i", GL_RGB16),
+  GB_CONSTANT("Rgba2", "i", GL_RGBA2),
+  GB_CONSTANT("Rgba4", "i", GL_RGBA4),
+  GB_CONSTANT("Rgb5A1", "i", GL_RGB5_A1),
+  GB_CONSTANT("Rgba8", "i", GL_RGBA8),
+  GB_CONSTANT("Rgb10A2", "i", GL_RGB10_A2),
+  GB_CONSTANT("Rgba12", "i", GL_RGBA12),
+  GB_CONSTANT("Rgba16", "i", GL_RGBA16),
+  GB_CONSTANT("ClientPixelStoreBit", "i", GL_CLIENT_PIXEL_STORE_BIT),
+  GB_CONSTANT("ClientVertexArrayBit", "i", GL_CLIENT_VERTEX_ARRAY_BIT),
+  GB_CONSTANT("AllClientAttribBits", "i", GL_ALL_CLIENT_ATTRIB_BITS),
+  GB_CONSTANT("ClientAllAttribBits", "i", GL_CLIENT_ALL_ATTRIB_BITS),
+
+/* texture_border_clamp */
+
+  GB_CONSTANT("ClampToBorder", "i", GL_CLAMP_TO_BORDER),
+#endif
+
+	GB_END_DECLARE
+};

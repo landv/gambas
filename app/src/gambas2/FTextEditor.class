@@ -1,0 +1,406 @@
+' Gambas class file
+
+PUBLIC Name AS String
+PUBLIC Path AS String
+PUBLIC Editor AS Editor
+
+PROPERTY READ ReadOnly AS Boolean
+
+STATIC PRIVATE $aExt AS String[] = ["htm", "html", "xml", "svg"]
+
+PRIVATE $bModify AS Boolean
+
+PUBLIC SUB _new(sPath AS String)
+
+  DIM sText AS String
+
+  Path = sPath
+  Name = File.Name(Path)
+  Editor = edtEditor
+
+  IF $aExt.Find(LCase(File.Ext(Name))) >= 0 THEN
+    edtEditor.Highlight = Highlight.Custom
+    edtEditor.Flags[Editor.HighlightCurrent] = TRUE
+  ENDIF
+
+  ReadConfig
+
+  Project.InitMove(ME)
+
+  sText = File.Load(sPath)
+  'IF Right(sText) <> "\n" THEN sText = sText & "\n"
+  edtEditor.Text = sText
+
+  SetReadOnly
+
+  $bModify = FALSE
+  edtEditor.SetFocus
+
+  DrawTitle
+
+END
+
+
+PUBLIC SUB ReadConfig()
+
+  DIM iInd AS Integer
+  DIM iColor AS Integer
+  DIM hTheme AS Integer[]
+
+  edtEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+
+  MColor.InitEditor(edtEditor)
+
+  edtEditor.Flags[Editor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
+  edtEditor.Flags[Editor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
+  edtEditor.Flags[Editor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
+
+END
+
+
+PUBLIC FUNCTION Save() AS Boolean
+
+  'Project.Config.WriteString("/Window" &/ Name &/ "Pos",
+  '  CStr(ME.X) & "," & CStr(ME.Y) & "," & CStr(ME.Width) & "," & CStr(ME.Height))
+
+  IF NOT $bModify THEN RETURN
+
+  Save.Begin(Path)
+
+  File.Save(Path, edtEditor.Text)
+  edtEditor.Reset
+  $bModify = FALSE
+  DrawTitle
+
+  Save.End()
+
+CATCH
+
+  RETURN Save.Error()
+
+END
+
+
+PRIVATE SUB DrawTitle()
+
+  DIM sTitle AS String
+
+  sTitle = File.Name(Path) & " " & CStr(edtEditor.Line + 1) & ":" & CStr(edtEditor.Column + 1)
+  IF $bModify THEN sTitle = sTitle & " [" & ("modified") & "]"
+  ME.Title = sTitle '& " - " & Project.Name
+
+END
+
+
+PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
+
+  IF $bModify <> bReset THEN RETURN
+
+  $bModify = NOT bReset
+  DrawTitle
+  IF $bModify THEN INC Project.TimeStamp
+
+END
+
+
+PUBLIC FUNCTION IsModified() AS Boolean
+
+  RETURN $bModify
+
+END
+
+
+
+PUBLIC SUB edtEditor_Change()
+
+  Modify
+
+END
+
+
+PUBLIC SUB edtEditor_Cursor()
+
+  'PRINT edtEditor.Line; edtEditor.Column
+  'lblCursor.Text = CStr(edtEditor.Line + 1) & " : " & CStr(edtEditor.Column + 1)
+  DrawTitle
+
+END
+
+PUBLIC SUB edtEditor_KeyPress()
+  
+  IF Key.Code = Key.Escape THEN 
+    Action["find"].Value = FALSE
+  ENDIF
+  
+END
+
+
+
+'PUBLIC SUB Form_KeyPress(Ascii AS String, Code AS Integer, State AS Integer)
+'
+'  IF Code = Asc("S") AND State = Mouse.Control THEN
+'    ME.Save
+'  ENDIF
+'
+'END
+
+
+
+PUBLIC SUB Form_GotFocus()
+  
+  edtEditor.SetFocus
+  
+END
+
+
+
+PUBLIC SUB Goto(iLine AS Integer, OPTIONAL iColumn AS Integer = -1)
+
+  'DEC iLine
+  IF iColumn < 0 THEN iColumn = edtEditor.Column
+  edtEditor.Goto(iLine, iColumn, TRUE)
+
+END
+
+
+PUBLIC SUB GotoCenter(iLine AS Integer, OPTIONAL iColumn AS Integer = -1)
+
+  Goto(iLine, iColumn)
+
+END
+
+
+PUBLIC SUB edtEditor_Menu()
+
+  mnuEditor.Popup
+
+END
+
+
+PUBLIC SUB mnuSave_Click()
+
+  Save
+
+END
+
+
+' PUBLIC SUB mnuFind_Click()
+'
+'   DIM sSel AS String
+'   DIM iPos AS Integer
+'
+'   sSel = Left$(Trim(edtEditor.Selection.Text), 64)
+'   iPos = Instr(sSel, gb.NewLine)
+'   IF iPos THEN sSel = Left$(sSel, iPos - 1)
+'
+'   Project.FindForm.Find(sSel)
+'
+' END
+'
+'
+' PUBLIC SUB mnuFindNext_Click()
+'
+'   Project.FindForm.FindNext
+'
+' END
+'
+'
+' PUBLIC SUB mnuFindPrevious_Click()
+'
+'   Project.FindForm.FindPrevious
+'
+' END
+
+
+PUBLIC SUB Rename(sNewName AS String, sNewPath AS String)
+
+  Name = sNewName
+  Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
+  DrawTitle
+
+END
+
+
+PUBLIC SUB mnuCut_Click()
+
+  edtEditor.Cut
+
+END
+
+PUBLIC SUB mnuCopy_Click()
+
+  edtEditor.Copy
+
+END
+
+PUBLIC SUB mnuPaste_Click()
+
+  edtEditor.Paste
+
+END
+
+PUBLIC SUB mnuUndo_Click()
+
+  edtEditor.Undo
+
+END
+
+PUBLIC SUB mnuRedo_Click()
+
+  edtEditor.Redo
+
+END
+
+
+PUBLIC SUB mnuGotoLine_Click()
+
+  DIM iLine AS Integer
+
+  iLine = FGotoLine.Run(edtEditor.Line + 1)
+  IF iLine <= 0 THEN RETURN
+  GotoCenter(iLine - 1)
+
+END
+
+
+' PUBLIC SUB mnuWordWrap_Click()
+'
+'   edtEditor.Wrap = NOT edtEditor.Wrap
+'   mnuWordWrap.Checked = edtEditor.Wrap
+'
+' END
+
+
+PUBLIC SUB mnuSelectAll_Click()
+
+  edtEditor.SelectAll()
+
+END
+
+
+PRIVATE SUB SetReadOnly()
+
+  edtEditor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+
+END
+
+PUBLIC SUB OnProjectDebug()
+
+  SetReadOnly
+
+END
+
+
+PUBLIC SUB mnuFind_Click()
+
+  FFind.Find
+
+END
+
+
+PUBLIC SUB edtEditor_Highlight()
+
+  DIM iState AS Integer
+  DIM iNextState AS Integer
+  DIM iInd AS Integer
+  DIM J AS Integer
+  DIM sText AS String
+  DIM sCar AS String
+  DIM iPos AS Integer
+  DIM bMarkup AS Boolean
+
+  iState = Highlight.State
+  sText = Highlight.Text
+
+  'PRINT "Highlight:";; iState;; sText
+
+  FOR iInd = 1 TO Len(sText)
+
+    iNextState = iState
+    sCar = Mid$(sText, iInd, 1)
+
+    IF bMarkup THEN
+
+      IF sCar = ">" THEN
+        bMarkup = FALSE
+        iState = Highlight.Keyword
+        iNextState = Highlight.Normal
+      ELSE IF sCar = " " THEN
+        iNextState = Highlight.Operator
+      ELSE IF sCar = "=" THEN
+        iNextState = Highlight.String
+      ENDIF
+
+    ELSE
+
+      SELECT CASE iState
+        CASE Highlight.Normal
+          IF sCar = "<" THEN
+            IF Mid$(sText, iInd, 4) = "<!--" THEN
+              iState = Highlight.Comment
+              iNextState = Highlight.Comment
+            ELSE
+              iState = Highlight.Keyword
+              iNextState = Highlight.Keyword
+              bMarkup = TRUE
+            ENDIF
+          ELSE IF sCar = "&" THEN
+            iPos = InStr(sText, ";", iInd)
+            IF iPos = 0 OR iPos = iInd + 1 THEN
+              iState = Highlight.Error
+            ELSE
+              FOR J = iInd + 1 TO iPos - 1
+                sCar = Mid$(sText, J, 1)
+                IF IsLetter(sCar) THEN CONTINUE
+                IF IsDigit(sCar) THEN CONTINUE
+                IF InStr("_#", sCar) THEN CONTINUE
+                BREAK
+              NEXT
+              IF J = iPos THEN
+                Highlight.Add(Highlight.Number, iPos - iInd + 1)
+                iInd = iPos
+                CONTINUE
+              ELSE
+                iState = Highlight.Error
+              ENDIF
+            ENDIF
+          ENDIF
+        CASE Highlight.Comment
+          IF sCar = ">" AND IF iInd > 2 AND IF Mid$(sText, iInd - 2, 2) = "--" THEN
+            iNextState = Highlight.Normal
+          ENDIF
+      END SELECT
+
+    ENDIF
+
+    Highlight.Add(iState)
+    iState = iNextState
+
+  NEXT
+
+  IF iNextState <> Highlight.Comment THEN
+    iNextState = Highlight.Normal
+  ENDIF
+
+  Highlight.State = iNextState
+  Highlight.ShowLimit = FALSE
+
+END
+
+PUBLIC SUB Form_Activate()
+
+  mnuEditor.Enabled = TRUE
+
+END
+
+PUBLIC SUB Form_Deactivate()
+
+  mnuEditor.Enabled = FALSE
+
+END
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+
+  RETURN edtEditor.ReadOnly  
+
+END

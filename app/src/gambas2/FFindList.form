@@ -1,0 +1,18 @@
+# Gambas Form File 1.0
+
+{ FFindList Form
+  MoveScaled(0,0,50,50)
+  'Move(0,0,400,400)
+  Text = ("Find list")
+  Icon = Picture["img/16/find-list.png"]
+  SkipTaskbar = True
+  ToolBox = True
+  Arrangement = Arrange.Fill
+  { tvwFind TableView
+    MoveScaled(1,1,47,47)
+    'Move(8,8,376,376)
+    Mode = TableView.Single
+    Header = TableView.Horizontal
+    AutoResize = True
+  }
+}

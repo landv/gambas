@@ -1,0 +1,281 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+PUBLIC CONST _Properties AS String = "*,Border,Root,Picture,ShowHidden"
+PUBLIC CONST _DefaultEvent AS String = "Click"
+
+EVENT {Select}
+EVENT Click
+EVENT Activate
+EVENT Menu
+EVENT Icon(Path AS String)
+
+PROPERTY Root AS String
+PROPERTY Current AS String
+PROPERTY ShowHidden AS Boolean
+PROPERTY Picture AS Picture
+PROPERTY Border AS Boolean
+PROPERTY Icon AS Picture
+
+PRIVATE $sRoot AS String
+PRIVATE $hTreeView AS TreeView
+PRIVATE $bShowHidden AS Boolean
+PRIVATE $hRootPict AS Picture
+PRIVATE $hPict AS Picture
+
+PUBLIC SUB _new()
+
+  $hTreeView = NEW TreeView(ME) AS "TreeView"
+  ClearView
+
+END
+
+
+PRIVATE FUNCTION GetRoot() AS String
+
+  IF Trim($sRoot) THEN RETURN $sRoot
+  RETURN User.Home
+
+END
+
+
+
+PRIVATE SUB ClearView()
+
+  DIM sRoot AS String = GetRoot()
+
+  $hTreeView.Clear
+  $hTreeView.Add(sRoot, sRoot, $hRootPict)
+  $hTreeView.Add(sRoot & "/", "",, sRoot)
+
+  IF NOT $hRootPict THEN Picture_Write(Picture["icon:/16/directory"]) 'open
+
+  $hTreeView.MoveFirst
+  $hTreeView.Item.Expanded = TRUE
+  TreeView_Expand
+
+END
+
+
+PRIVATE FUNCTION Root_Read() AS String
+
+  RETURN $sRoot
+
+END
+
+PRIVATE SUB Root_Write(sRoot AS String)
+
+  IF sRoot = $sRoot THEN RETURN
+  $sRoot = sRoot
+  ClearView
+
+END
+
+PUBLIC SUB TreeView_Expand()
+
+  DIM sFile AS String
+  DIM sDir AS String
+
+  $hTreeView.Item.Selected = TRUE
+  sDir = $hTreeView.Item.Key
+  IF sDir = GetRoot() THEN
+    $hTreeView.Item.Picture = $hRootPict
+  ELSE
+    $hTreeView.Item.Picture = GetIcon($hTreeView.Item.key) 'open
+  ENDIF
+
+  IF $hTreeView.MoveChild() THEN RETURN
+  IF $hTreeView.Item.Text THEN RETURN
+
+  INC Application.Busy
+
+  $hTreeView.Item.Delete
+
+  FOR EACH sFile IN Dir(sDir, "*", gb.Directory).Sort()
+    IF NOT $bShowHidden AND IF Left(sFile) = "." THEN CONTINUE
+    $hTreeView.Add(sDir &/ sFile, sFile, GetIcon(sDir &/ sFile), sDir)
+    $hTreeView.Add(sDir &/ sFile & "/", "",, sDir &/ sFile)
+  NEXT
+
+  IF $hTreeView[sDir].Children = 0 THEN
+    $hTreeView[sDir].Picture = GetIcon(sDir)
+  ENDIF
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+END
+
+PUBLIC SUB TreeView_Collapse()
+
+  IF $hTreeView.Item.Key = GetRoot() THEN RETURN
+ ' $hTreeView.Item.Picture = GetIcon(
+
+END
+
+PUBLIC SUB TreeView_Select()
+
+  LAST.Item.Expanded = TRUE
+  RAISE {Select}
+
+END
+
+PUBLIC SUB TreeView_Activate()
+
+  RAISE Activate
+
+END
+
+PUBLIC SUB TreeView_Click()
+
+  RAISE Click
+
+END
+
+
+PUBLIC SUB TreeView_Menu()
+
+  RAISE Menu
+
+END
+
+
+PRIVATE FUNCTION Current_Read() AS String
+
+  TRY RETURN $hTreeView.Current.Key
+
+END
+
+PRIVATE SUB MoveToLastChild()
+
+  $hTreeView.MoveChild
+  REPEAT
+  UNTIL $hTreeView.MoveNext()
+  $hTreeView.MoveBack
+  $hTreeView.Item.EnsureVisible
+
+CATCH
+
+END
+
+
+PRIVATE SUB Current_Write(sDir AS String)
+
+  DIM sElt AS String
+  DIM sSubDir AS String
+
+  sDir = Trim(sDir)
+  IF sDir = Current_Read() THEN RETURN
+  'IF Right(sDir) = "/" THEN sDir = Left(sDir, - 1)
+
+  'ClearView
+
+  sSubDir = "/"
+  FOR EACH sElt IN Split(File.Dir(sDir), "/", "", TRUE)
+    sSubDir &/= sElt
+    TRY $hTreeView[sSubDir].Expanded = TRUE
+  NEXT
+
+  TRY $hTreeView[sDir].Selected = TRUE
+  IF NOT ERROR THEN
+    $hTreeView.MoveTo(sDir)
+    $hTreeView.Item.Expanded = TRUE
+    MoveToLastChild
+    $hTreeView[sDir].EnsureVisible
+    'TRY $hTreeView.MoveNext
+    'TRY $hTreeView.Item.EnsureVisible
+    RAISE Click
+  ENDIF
+
+END
+
+
+PRIVATE SUB RefreshView()
+
+  DIM sDir AS String
+
+  sDir = Current_Read()
+  ClearView
+  Current_Write(sDir)
+
+END
+
+
+PRIVATE FUNCTION ShowHidden_Read() AS Boolean
+
+  RETURN $bShowHidden
+
+END
+
+PRIVATE SUB ShowHidden_Write(bShowHidden AS Boolean)
+
+  IF bShowHidden <> $bShowHidden THEN
+    $bShowHidden = bShowHidden
+    RefreshView
+  ENDIF
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  DIM hPict AS Picture
+
+  hPict = $hTreeView[GetRoot()].Picture
+  IF hPict <> Picture["icon:/16/directory"] THEN RETURN hPict 'open
+
+END
+
+PRIVATE SUB Picture_Write(hPict AS Picture)
+
+  IF hPict THEN
+    $hRootPict = hPict
+  ELSE
+    $hRootPict = Picture["icon:/16/directory"] 'open
+  ENDIF
+
+  $hTreeView[GetRoot()].Picture = $hRootPict
+
+END
+
+
+PRIVATE SUB Border_Write(bBorder AS Boolean)
+
+  $hTreeView.Border = bBorder
+
+END
+
+PRIVATE FUNCTION Border_Read() AS Boolean
+
+  RETURN $hTreeView.Border
+
+END
+
+PRIVATE FUNCTION GetIcon(sPath AS String) AS picture
+  
+   $hPict = NULL
+  RAISE Icon(sPath)
+  IF $hPict THEN RETURN $hPict
+  RETURN Picture["icon:/16/directory"]
+  
+END
+
+
+PRIVATE FUNCTION Icon_Read() AS Picture
+
+  RETURN $hPict
+
+END
+
+PRIVATE SUB Icon_Write(Value AS Picture)
+
+  IF Value.Height <> 16 THEN 
+    Value = Value.Image.Stretch(Value.Width * 16 / Value.Height, 16).Picture
+  ENDIF
+  $hPict = Value
+
+END

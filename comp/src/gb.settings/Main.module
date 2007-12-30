@@ -1,0 +1,95 @@
+' Gambas module file
+
+SUB Main()
+
+  DIM hSettings AS Settings
+
+  hSettings = NEW Settings("/home/benoit/myProject.conf")
+
+  PRINT hSettings["/test/Array"].Join(" ")
+ ' hSettings["PROJECTLANG"] = "toto"
+
+  'hConfig.WriteString("Name", "Benoit")
+  'hConfig.WriteInteger("Age", 31)
+  'hConfig.WriteBoolean("Man", TRUE)
+
+  'PRINT hSettings["External/Browser", "mozilla"]
+
+END
+
+
+FUNCTION QuoteString(sVal AS String) AS String
+
+  sVal = Replace(sVal, "\n", "\\n")
+  sVal = Replace(sVal, "\t", "\\t")
+  sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
+  sVal = Replace(sVal, "\\", "\\\\")
+  sVal = Chr$(34) & sVal & Chr$(34)
+
+  RETURN sVal
+
+END
+
+FUNCTION UnQuoteString(sVal AS String) AS String
+
+  IF Left$(sVal) = Chr$(34) THEN sVal = Mid$(sVal, 2, -1)
+  sVal = Replace(sVal, "\\n", "\n")
+  sVal = Replace(sVal, "\\t", "\t")
+  sVal = Replace(sVal, "\\" & Chr$(34), Chr$(34))
+  sVal = Replace(sVal, "\\\\", "\\")
+
+  RETURN sVal
+
+END
+
+FUNCTION ToString(vVal AS Variant) AS String
+
+  DIM sVal AS String
+  DIM iInd AS Integer
+
+  IF IsString(vVal) THEN
+    RETURN QuoteString(vVal)
+  ELSE IF IsBoolean(vVal) THEN
+    RETURN IIf(vVal, "1", "0")
+  ELSE IF IsObject(vVal) AND IF vVal IS String[] THEN 
+    sVal = "["
+    FOR iInd = 0 TO vVal.Max
+      IF iInd THEN sVal &= ","
+      sVal &= ToString(vVal[iInd])
+    NEXT
+    sVal &= "]"
+  ELSE
+    sVal = CStr(vVal)
+    IF IsFloat(vVal) THEN
+      IF InStr(sVal, ".") = "0" THEN sVal = sVal & ".0"
+    ENDIF
+  ENDIF
+
+  RETURN sVal
+  
+END
+
+FUNCTION FromString(sVal AS String) AS Variant
+
+  DIM aVal AS String[]
+  DIM iInd AS Integer
+
+  IF Left(sVal) = "\"" THEN
+    RETURN UnQuoteString(sVal)
+  ELSE IF Left(sVal) = "[" THEN 
+    aVal = Split(Mid$(sVal, 2, -1), ",", Chr$(34))
+    FOR iInd = 0 TO aVal.Max
+      aVal[iInd] = UnQuoteString(aVal[iInd])
+    NEXT    
+    RETURN aVal
+  ELSE IF InStr(sVal, "/") THEN
+    RETURN CDate(sVal)
+  ELSE IF InStr(sVal, ".") THEN
+    RETURN CFloat(sVal)
+  ELSE
+    RETURN CInt(sVal)
+  ENDIF
+
+END
+
+

@@ -1,0 +1,15 @@
+' Gambas class file
+
+EXPORT 
+
+STATIC PUBLIC FUNCTION OpenFile(OPTIONAL Multi AS Boolean) AS Boolean
+  
+  RETURN FFileDialog.OpenFile(Multi)
+  
+END
+
+STATIC PUBLIC FUNCTION SaveFile() AS Boolean
+  
+  RETURN FFileDialog.SaveFile()
+  
+END

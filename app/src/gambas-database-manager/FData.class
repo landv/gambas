@@ -1,0 +1,556 @@
+' Gambas class file
+
+PUBLIC Connection AS CConnection
+PUBLIC Table AS String
+
+PRIVATE $sTable AS String
+
+PRIVATE $rData AS Result
+PRIVATE $cData AS NEW Collection
+PRIVATE $cDelete AS NEW Collection
+
+PRIVATE $hDataEditor AS CTableViewEditor
+
+PRIVATE $bModify AS Boolean
+PRIVATE $bReadOnly AS Boolean
+PRIVATE $sCharset AS String
+PRIVATE $frmTable AS FTable
+
+PRIVATE $cFieldCache AS NEW Collection
+
+STATIC PRIVATE $hNullValue AS Object ' Used for representing the NULL value in a Collection
+
+
+STATIC PUBLIC SUB _init()
+
+  $hNullValue = NEW Integer[]
+
+END
+
+
+PUBLIC SUB _new(frmTable AS FTable, hConn AS CConnection, sTable AS String, OPTIONAL bReadOnly AS Boolean)
+
+  DIM hTable AS Table
+  DIM hField AS Field
+
+  $sTable = sTable
+  $bReadOnly = bReadOnly
+  $frmTable = frmTable
+
+  Connection = hConn
+  Table = sTable
+
+  IF NOT $bReadOnly THEN $hDataEditor = NEW CTableViewEditor(tbvData) AS "tbvData"
+
+  $sCharset = Connection.GetCharset()
+
+  'RefreshTitle
+  hTable = Connection.Handle.Tables[$sTable]
+  FOR EACH hField IN hTable.Fields
+    $cFieldCache[hField.Name] = hField
+  NEXT
+  
+END 
+
+PUBLIC SUB Form_Open()
+
+  ReadData
+
+END
+
+
+PUBLIC SUB EncodingChange()
+
+  $sCharset = Connection.GetCharset()
+  tbvData.Refresh
+
+END
+
+
+' PRIVATE SUB RefreshTitle()
+'
+'   DIM sTitle AS String
+'
+'   sTitle = $sTable & " - " & Connection.Name & " - " & Connection.Server.Name
+'   IF $bModify THEN sTitle = sTitle & " [" & ("modified") & "]"
+'
+'   ME.Title = sTitle
+'
+'   'btnSaveData.Enabled = $bModify
+'
+' END
+
+PRIVATE SUB Modify(OPTIONAL bModify AS Boolean = TRUE)
+
+  $bModify = bModify
+  $frmTable.RefreshTitle
+
+END
+
+PUBLIC FUNCTION IsModified() AS Boolean
+
+  RETURN $bModify
+
+END
+
+
+
+PRIVATE SUB ReadData()
+
+  DIM hTable AS Table
+  DIM sField AS String
+  DIM iInd AS Integer
+  DIM iLen AS Integer
+  DIM hField AS ResultField
+
+  INC Application.Busy
+
+  tbvData.Rows.Count = 0
+  $cData.Clear
+  $cDelete.Clear
+
+  IF $bReadOnly THEN
+    $rData = Connection.Handle.Find($sTable)
+  ELSE
+    IF $hDataEditor.Hide() THEN RETURN
+    $rData = Connection.Handle.Edit($sTable)
+  ENDIF
+
+  tbvData.Columns.Count = $rData.Fields.Count
+
+  hTable = Connection.Handle.Tables[$sTable]
+
+  FOR EACH hField IN $rData.Fields
+
+    'PRINT hField.Name;; hField.Type;; hField.Length
+
+    'hTable.Field.Find($rData.Field.Name)
+
+    WITH tbvData.Columns[iInd]
+
+      .Text = hField.Name
+      .Width = Connection.WidthFromType(tbvData, hField.Type, hField.Length, hField.Name)
+
+    END WITH
+
+    INC iInd
+  NEXT
+
+  'tbvData.Columns.Width = -1
+
+  tbvData.Rows.Count = $rData.Count '+ 1
+  Modify(FALSE)
+
+  'tbvData.Rows[$rData.Count].Text = "•"
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  Message.Error(("Cannot read table data.") & "\n\n" & Error.Text)
+
+END
+
+
+PUBLIC FUNCTION WriteData() AS Boolean
+
+  DIM iInd AS Integer
+  DIM vVal AS Variant
+  DIM sField AS String
+  DIM rCreate AS Result
+  DIM iCount AS Integer
+
+  IF $hDataEditor.Hide() THEN RETURN
+
+  INC Application.Busy
+
+  WITH tbvData
+
+    Connection.Handle.Begin
+
+    iCount = $rData.Count
+
+    $rData.MoveFirst
+
+    FOR iInd = 0 TO $rData.Count - 1
+
+      IF $cDelete.Exist(iInd) THEN
+        $rData.Delete(TRUE)
+      ELSE IF $cData.Exist(iInd) THEN
+        FOR EACH vVal IN $cData[iInd]
+          sField = $cData[iInd].Key
+          IF IsObject(Vval) THEN
+            $rData[sField] = NULL
+          ELSE
+            $rData[sField] = vVal
+          ENDIF
+        NEXT
+        $rData.Update
+      ENDIF
+
+      $rData.MoveNext
+
+    NEXT
+
+    rCreate = Connection.Handle.Create($sTable)
+
+    FOR iInd = iCount TO .Rows.Count - 1
+
+      IF $cDelete.Exist(iInd) THEN CONTINUE
+      IF NOT $cData.Exist(iInd) THEN CONTINUE
+
+      FOR EACH vVal IN $cData[iInd]
+        sField = $cData[iInd].Key
+        IF IsObject(vVal) THEN
+          rCreate[sField] = NULL
+        ELSE
+          rCreate[sField] = vVal
+        ENDIF
+      NEXT
+
+      rCreate.Update
+
+    NEXT
+
+  END WITH
+
+  Connection.Handle.Commit
+
+  ReadData
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  TRY Connection.Handle.RollBack
+
+  Message.Error(("Cannot write table data.") & "\n\n" & Error.Text)
+
+  TRY $hDataEditor.MoveTo(iInd, 0)
+  RETURN TRUE
+
+END
+
+
+' PRIVATE FUNCTION FindFieldIndexFromName(sName AS String) AS Integer
+'
+'   DIM iInd AS Integer
+'   DIM sField AS String
+'
+'
+'
+'   FOR EACH sField IN $rData.Fields
+'     IF sField = sName THEN RETURN iInd
+'     INC iInd
+'   NEXT
+'
+'   RETURN -1
+' END
+
+
+
+PUBLIC SUB btnRefresh_Click()
+
+  IF CheckModify() THEN RETURN
+  ReadData
+  'tbvData.Refresh
+
+END
+
+
+PUBLIC SUB tbvData_Data(Row AS Integer, Column AS Integer)
+
+  DIM vVal AS Variant
+  DIM sField AS String
+
+  $rData.MoveTo(Row)
+
+  WITH tbvData
+
+    IF $cDelete.Exist(Row) THEN .Data.Background = Color.LightGray
+
+    sField = .Columns[Column].Text
+
+    TRY vVal = $cData[Row][sField]
+
+    IF IsNull(vVal) THEN
+      IF $rData.Available THEN
+        vVal = $rData[sField]
+      ENDIF
+    ELSE
+      IF IsObject(vVal) THEN
+        vVal = NULL
+      ENDIF
+    ENDIF
+
+    IF TypeOf(vVal) = gb.String THEN
+      IF $sCharset THEN
+        TRY .Data.Text = Conv(vVal, $sCharset, Desktop.Charset)
+        IF ERROR THEN .Data.Text = vVal
+      ELSE
+        .Data.Text = vVal
+      ENDIF
+    ELSE IF TypeOf(vVal) = gb.Object THEN
+      .Data.Text = "<BLOB>"
+    ELSE
+      .Data.Text = Str(vVal)
+    ENDIF
+    .Data.Alignment = Align.TopNormal
+
+  END WITH
+
+END
+
+
+PUBLIC SUB tbvData_Change()
+
+  DIM hField AS Field
+  DIM sField AS String
+  DIM bMandatory AS Boolean
+
+  IF $bReadOnly THEN RETURN
+
+  WITH tbvData
+    IF $cDelete.Exist(.Row) THEN
+      $hDataEditor.Hide
+      tbvData.SetFocus
+      RETURN
+    ENDIF
+    sField = .Columns[.Column].Text
+  END WITH
+
+  hField = $cFieldCache[sField]
+
+  bMandatory = NOT IsNull(hField.Default)
+
+  WITH $hDataEditor
+
+    SELECT CASE hField.Type
+
+      CASE gb.Boolean
+        .ShowComboBox(["True", "False"], bMandatory, TRUE)
+
+      CASE gb.Integer, gb.Long, gb.Float, gb.Date
+        .ShowTextBox(bMandatory, TRUE)
+
+      CASE gb.String
+        IF hField.Length = 0 THEN
+          .ShowTextArea(bMandatory, FALSE)
+        ELSE
+          .ShowTextBox(bMandatory, FALSE, hField.Length)
+        ENDIF
+
+      CASE ELSE
+        .ShowNotEditable
+
+    END SELECT
+
+  END WITH
+
+END
+
+
+PRIVATE SUB SetData(iRow AS Integer, sField AS String, vData AS Variant)
+
+  DIM cVal AS Collection
+
+  cVal = $cData[iRow]
+  IF NOT cVal THEN
+    cVal = NEW Collection
+    $cData[iRow] = cVal
+    'tbvData.Rows[iRow].Text = tbvData.Rows[iRow].Text & "*"
+  ENDIF
+
+  IF IsNull(vData) THEN
+    cVal[sField] = $hNullValue
+  ELSE
+    cVal[sField] = vData
+  ENDIF
+
+  Modify
+
+END
+
+
+PUBLIC SUB tbvData_Save(Row AS Integer, Column AS Integer, sData AS String)
+
+  DIM hTable AS Table
+  DIM hField AS Field
+  DIM sField AS String
+  DIM iVal AS Integer
+  DIM vVal AS Variant
+  DIM iType AS Integer
+
+  IF $bReadOnly THEN RETURN
+
+  WITH tbvData
+    sField = .Columns[.Column].Text
+  END WITH
+
+  hTable = Connection.Handle.Tables[$sTable]
+  hField = hTable.Fields[sField]
+
+  iType = hField.Type
+
+  IF iType <> gb.String THEN
+    IF sData THEN
+
+      vVal = Val(sData)
+
+      IF iType = gb.Float THEN
+        IF TypeOf(vVal) = gb.Integer OR IF TypeOf(vVal) = gb.Long THEN
+          vVal = CFloat(vVal)
+        ENDIF
+      ELSE IF iType = gb.Long THEN
+        IF TypeOf(vVal) = gb.Integer THEN
+          vVal = CLong(vVal)
+        ENDIF
+      ENDIF
+
+      IF TypeOf(vVal) <> iType THEN
+        Message.Warning(("Incorrect value."))
+        STOP EVENT
+        RETURN
+      ENDIF
+
+    ENDIF
+  ELSE
+    IF $sCharset THEN
+      vVal = Conv$(sData, Desktop.Charset, $sCharset)
+    ELSE
+      vVal = sData
+    ENDIF
+  ENDIF
+
+  SetData(Row, sField, vVal)
+
+END
+
+
+PUBLIC SUB btnNewData_Click()
+
+  DIM cNew AS NEW Collection
+  DIM hTable AS Table
+  DIM hField AS Field
+  DIM vVal AS Variant
+
+  IF $bReadOnly THEN RETURN
+
+  hTable = Connection.Handle.Tables[$sTable]
+
+  FOR EACH hField IN hTable.Fields
+    vVal = hField.Default
+    IF NOT IsNull(vVal) THEN
+      cNew[hField.Name] = vVal
+    ENDIF
+  NEXT
+
+  IF cNew.Count THEN $cData[tbvData.Rows.Count] = cNew
+
+  INC tbvData.Rows.Count
+  tbvData.Rows[tbvData.Rows.Count - 1].Text = "•"
+  $hDataEditor.MoveTo(tbvData.Rows.Count - 1, 0)
+
+  Modify
+
+END
+
+PUBLIC SUB btnKillData_Click()
+
+  DIM iInd AS Integer
+
+  IF $bReadOnly THEN RETURN
+
+  $hDataEditor.Hide
+
+  WITH tbvData
+
+    FOR iInd = 0 TO .Rows.Count - 1
+
+      IF .Rows[iInd].Selected THEN
+        $cDelete[iInd] = TRUE
+        .Rows[iInd].Text = "" '"•"
+        .Rows[iInd].Refresh
+      ENDIF
+
+    NEXT
+
+  END WITH
+
+  Modify
+
+END
+
+
+PUBLIC SUB Form_Close()
+
+  'PRINT "FData.Form_Close"
+
+  $frmTable = NULL
+
+  IF $bReadOnly THEN RETURN
+
+   $hDataEditor.Close
+
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  tbvData.Move(0, 0, panData.ClientW, panData.ClientH)
+
+  IF NOT $bReadOnly THEN
+    $hDataEditor.Resize
+  ENDIF
+
+END
+
+
+PRIVATE FUNCTION CheckModify() AS Boolean
+
+  DIM bCancel AS Boolean
+
+  IF $bModify THEN
+    SELECT CASE Message.Question(Subst(("The data of table '&1' have been modified.\nDo you want to save it ?"), $sTable), ("Save"), ("Do not save"), ("Cancel"))
+      CASE 1
+        bCancel = WriteData()
+      CASE 3
+        bCancel = TRUE
+    END SELECT
+  ENDIF
+
+  RETURN bCancel
+
+END
+
+'
+' PUBLIC FUNCTION Form_Close() AS Boolean
+'
+'   RETURN CheckModify()
+'
+' END
+
+
+PUBLIC SUB btnSaveData_Click()
+
+  IF $bReadOnly THEN RETURN
+  WriteData
+
+END
+
+PUBLIC SUB btnTable_Click()
+
+  Connection.OpenTable($sTable, FALSE)
+
+END
+
+
+PUBLIC SUB tbvData_Create()
+
+  btnNewData_Click
+
+END

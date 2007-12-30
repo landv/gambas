@@ -1,0 +1,82 @@
+# Gambas Form File 1.0
+
+{ FMain Form
+  MoveScaled(0,0,74,67)
+  'Move(0,0,592,536)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  { HPanel1 HPanel
+    MoveScaled(1,1,72,13)
+    'Move(8,8,576,104)
+    AutoResize = True
+    { ToolBar2 ToolBar
+      MoveScaled(26,0,24,5)
+      'Move(208,0,192,40)
+      { Button4 Button
+        MoveScaled(1,0,3,3)
+        'Move(8,0,24,24)
+        Action = "rr"
+        Text = ("R")
+      }
+      { Button5 Button
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        Action = "rr"
+        Text = ("S")
+      }
+      { Button6 Button
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        Action = "rr"
+        Text = ("T")
+      }
+    }
+    { ToolBar1 ToolBar
+      MoveScaled(1,1,24,5)
+      'Move(8,8,192,40)
+      { Button1 Button
+        MoveScaled(1,0,3,3)
+        'Move(8,0,24,24)
+        Text = ("1")
+      }
+      { Button2 Button
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        Text = ("2")
+      }
+      { Button3 Button
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        Text = ("3")
+      }
+    }
+    { ToolBar3 ToolBar
+      MoveScaled(0,8,24,5)
+      'Move(0,64,192,40)
+      { Button7 Button
+        MoveScaled(1,0,3,3)
+        'Move(8,0,24,24)
+        Text = ("1")
+      }
+      { Button8 Button
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        Text = ("2")
+      }
+      { Button9 Button
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        Text = ("3")
+      }
+    }
+  }
+  { ScrollBar1 ScrollBar
+    MoveScaled(3,16,46,2)
+    'Move(24,128,368,16)
+  }
+  { Workspace21 Workspace
+    MoveScaled(20,27,40,37)
+    'Move(160,216,320,296)
+    Expand = True
+  }
+}

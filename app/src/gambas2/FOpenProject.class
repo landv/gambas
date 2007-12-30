@@ -1,0 +1,154 @@
+' Gambas class file
+
+STATIC PRIVATE $sPath AS String
+STATIC PRIVATE $sLast AS String
+
+PUBLIC SUB Run() AS String
+
+  IF ME.ShowModal() THEN RETURN $sPath
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  DIM sPath AS String = GetProjectPath(dchProject.Value)
+
+  IF NOT sPath THEN RETURN
+
+  $sPath = sPath
+  'Settings["/FOpenProject/Path"] = $sPath
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  Settings.Read(ME)
+  Settings.Read(dchProject, "dchProject")
+  'dchProject.Value = Settings["/FOpenProject/Path"]
+  dchProject_Change
+
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(ME)  
+  Settings.Write(dchProject, "dchProject")
+
+END
+
+PUBLIC SUB dchProject_Icon(Path AS String)
+
+  IF Exist(Path &/ ".project") THEN 
+    dchProject.Icon = Project.GetIcon(Path)    
+  ENDIF  
+
+END
+
+PRIVATE SUB GetProjectPath(sPath AS String) AS String
+  
+  DO
+    IF Exist(sPath &/ ".project") THEN RETURN sPath
+    sPath = File.Dir(sPath)
+    IF sPath = "/" THEN BREAK
+  LOOP
+  
+CATCH
+  
+END
+
+
+PUBLIC SUB dchProject_Change()
+
+  DIM sPath AS String
+  DIM hFile AS File
+  DIM sLine, sKey, sVal AS String
+  DIM iPos AS Integer
+  DIM aVer AS String[]
+  DIM sIcon AS String
+
+  fvwProject.Dir = dchProject.Value
+
+  sPath = GetProjectPath(dchProject.Value)
+  
+  IF NOT sPath THEN
+    $sLast = ""
+    panProject.Hide
+    RETURN 
+  ENDIF
+  
+  IF sPath = $sLast THEN RETURN
+  
+  $sLast = sPath
+  
+  lblName.Text = File.Name(sPath)
+  txtAuthor.Text = ""
+  txtDesc.Text = ""
+    
+  hFile = OPEN sPath &/ ".project"
+  
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE 
+    IF Left(sLine) = "#" THEN CONTINUE
+
+    iPos = InStr(sLine, "=")
+    IF iPos = 0 THEN CONTINUE
+
+    sKey = Lower$(Trim(Left$(sLine, iPos - 1)))
+    sVal = Trim(Mid$(sLine, iPos + 1))
+
+    SELECT CASE sKey
+    
+      CASE "title"
+        txtTitle.Text = sVal
+
+      CASE "version"
+        txtVersion.Text = sVal
+        
+      CASE "description"
+        txtDesc.Text = Replace(sVal, "\\n", "\n")
+
+      CASE "authors"
+        txtAuthor.Text = Replace(sVal, "\\n", "\n")
+
+      CASE "icon"
+        sIcon = sVal
+
+    END SELECT
+  
+  WEND
+  
+  CLOSE #hFile
+
+  IF sIcon AND Exist(sPath &/ sIcon) THEN
+    imgIcon.Picture = Picture[sPath &/ sIcon].Image.Stretch(58, 58).Picture
+  ELSE 
+    imgIcon.Picture = Picture["img/32/gambas.png"].Image.Stretch(58, 58).Picture
+  ENDIF
+  
+  panProject.Show
+
+END
+
+PUBLIC SUB fvwProject_Activate()
+
+  dchProject.Value = fvwProject.Dir &/ fvwProject.Current
+
+END
+
+PUBLIC SUB fvwProject_Icon(Path AS String)
+
+  IF Exist(Path &/ ".project") THEN 
+    fvwProject.Icon = Project.GetIcon(Path, 16)    
+  ENDIF    
+
+END

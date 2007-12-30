@@ -1,0 +1,81 @@
+Changelog
+---------
+
+xx/xx/xx - Laurent Carlier
+Image component
+* Now Screen.Close() raise a close event (screen.c event.c event.h)
+* Now a default font is available (sfont) if none defined (draw.c defaultfont.h)
+* Now Screen.Close() raise a close event (screen.c event.c event.h)
+* Remove returned value from Screen.Close as it's useless with Application.Return (screen.c screen.h main.c)
+* Switch to gambas native timer management (main.c timer.c timer.h)
+OpenGL Component
+* Integrated into SDL component tree ! (files in opengl dir)
+* Now Screen.Close() raise a close event (screen.c event.c event.h)
+* Remove returned value from Screen.Close as it's useless with Application.Return (screen.c screen.h main.c)
+* Switch to gambas native timer management (main.c timer.c timer.h)
+ 
+20/08/05 - Laurent Carlier
+Sound Component
+* Now music can be part of the binary (thanks benoit !) (sound.c)
+Image component
+* Now mouse position (not relative) works outside of mouse event (mouse.c)
+* Early joystick detection (joystick.c joystick.h)
+* First steps for sprite animation (gambas component part)
+* Surface.Blit is now called Surface.Draw (surface.c)
+* Now fonts can be part of the binary (thanks benoit !) (font.c)
+* New event for Screen : Screen_resize (screen.c screen.h event.c event.h)
+* New property for Screen : border can be fixed or resizable (screen.c screen.h))
+* Driver.BestPixelDepth is now Driver.DefaultDepth (driver.c)
+* DriverInfo is now called Driver (driver.c)
+* Fix a bug with convertion of alpha/non-alpha surfaces, now twices correctly
+  managed (surface.c)
+
+05/07/05 - Laurent Carlier :
+Sound component
+* Now fadeIn and FadeOut are available with music playing (sound.c)
+Image Component
+* All key constants are now in keyCode virtual class (key.c key.h)
+* New property key.Code will contain key pressed/released inside keyPressed/keyReleased
+  event (key.c key.h)
+* Some Events for screen are available :
+  Refresh, Close, GotFocus, LostFocus, Enter, Leave, MouseDown, MouseUp, MouseMove.
+  KeyPressed, KeyReleased.
+  Refresh and Close can be canceled (main.c main.h event.c event.h screen.c screen.h)
+* Now Fps are available from Screen.GetFramerate property, screen.Refresh doesn't
+  Return Fps anymore (screen.c)
+* Move driverinfo init from main to driver (main.c driver.c driver.h)
+* Move all screen inits/exits from main to screen (main.c main.h screen.c screen.h)
+
+22/06/05 - Laurent Carlier :
+Sound component
+* Fix an unfreed reference (with sound playing when channel isn't valid) (sound.c) 
+Image component
+* Fix a nasty bug when x or y are equals in Surface.Overlap (surface.c)
+* Removes Sprite.Overlap, now in Surface class : Surface.Overlap (game.c surface.c)
+* Removes Surface.Tile (who need that ?, can be done with gambas code) (surface.c)
+* Now setting Surface.Alpha enable alpha (surface.c)
+* Now setting Surface.Colorkey enable colorkey (surface.c)
+* Add missing HOOK_POST (sound component need it) (main.c)
+* New Method : Screen.Save, allow to save the screen as a bmp file (screen.c)
+* Fonts cannot be part of the executable anymore due to buggy SDL_ttf library/SDL_RWops ? (font.c font.h)
+* Screen.Id/Screen.Handle : return the id of the Screen - Daniel Campos - (screen.c)
+* Add SDL_INIT_EVENTHREAD flag, should solve some slowdown issues (main.c)
+* Add SDL_ASYNC_BLIT flag to surface creation, should improve perfs on SMP systems (surface.c)
+* New method : Key.Scan (non-bloquant!=Key.Wait), return the value of key pressed (key.c) 
+
+15/02/05 - Laurent Carlier :
+Image component
+* Fix a memory issue in draw.text, forgot to release the tempory surface (draw.c)
+* Screen.Gamma is now Screen.SetGamma (screen.c)
+* Screen.Refresh and Screen.Update are aliases, Screen.Flip removed (name conflicts with Surface.Flip) (screen.c)
+* Add an optional boolean flag to surface.load disabling auto-convertion to Screen caracteristics (screen.c)
+* Internal change : now colorkey is managed with RGB values (surface.c surface.h)
+* Fix typos in key constants (key.c)
+* Screen.Framerate removed, framerate limitation is enable when Screen.SetFramerate>0 (screen.c)
+* Fix the Fps calculation (SIGFPE exception) (screen.c)
+* Now a Rectangle is really drawn of wanted width/height, not widht+1/height+1 (draw.c)
+* New method : Screen.Grab, allow to grab a part of or the whole Screen as a Surface object (screen.c)
+* New class : Palette allow managing colors of 8 bpp Surfaces/Screen (palette.c palette.h)
+* Hook loop doesn't wait anymore if there isn't opened Screen (main.c)
+* New class : Poke allow read/change bytes of Surfaces/Screen (game.c game.h)
+* Fix a bug avoiding wrawing on a new surface, removing endian stuff (surface.c)

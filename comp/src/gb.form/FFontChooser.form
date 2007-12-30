@@ -1,0 +1,95 @@
+# Gambas Form File 1.0
+
+{ FFontChooser Form
+  MoveScaled(3.125,26,71.625,44.5)
+  'Move(25,208,573,356)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  { HBox1 HBox
+    MoveScaled(1,1,68,32)
+    'Move(8,8,544,256)
+    Expand = True
+    Spacing = 8
+    { VBox1 VBox
+      MoveScaled(2,2,24,27)
+      'Move(16,16,192,216)
+      Expand = True
+      Spacing = 8
+      { Label1 Label
+        MoveScaled(2,1,20,2)
+        'Move(16,8,160,16)
+        Text = ("Family")
+      }
+      { lstFamily ListView
+        MoveScaled(2,4,20,22)
+        'Move(16,32,160,176)
+        Expand = True
+      }
+    }
+    { panStyle VBox
+      MoveScaled(28,2,13,28)
+      'Move(224,16,104,224)
+      Spacing = 8
+      { Label2 Label
+        MoveScaled(2,1,9,2)
+        'Move(16,8,72,16)
+        Text = ("Style")
+      }
+      { lstStyle ListBox
+        MoveScaled(2,4,9,17)
+        'Move(16,32,72,136)
+        Expand = True
+        List = [("Normal"), ("Bold"), ("Italic"), ("Bold Italic")]
+      }
+      { chkUnderline CheckBox
+        MoveScaled(2,22,10,2)
+        'Move(16,176,80,16)
+        Text = ("Underline")
+      }
+      { chkStrikeOut CheckBox
+        MoveScaled(2,25,10,2)
+        'Move(16,200,80,16)
+        Text = ("Strikeout")
+      }
+    }
+    { panSize VBox
+      MoveScaled(45,2,17,28)
+      'Move(360,16,136,224)
+      Spacing = 8
+      { Label3 Label
+        MoveScaled(2,1,13,2)
+        'Move(16,8,104,16)
+        Text = ("Size")
+      }
+      { chkGrade CheckBox
+        MoveScaled(2,4,12,2)
+        'Move(16,32,96,16)
+        Text = ("Relative")
+      }
+      { txtSize SpinBox
+        MoveScaled(2,7,11,3)
+        'Move(16,56,88,24)
+        MinValue = 1
+        MaxValue = 360
+      }
+      { lstGrade ListContainer
+        MoveScaled(4,10,11,13)
+        'Move(32,80,88,104)
+        Expand = True
+      }
+      { lstSize ListBox
+        MoveScaled(2,12,12,15)
+        'Move(16,96,96,120)
+        Expand = True
+        List = [("6"), ("7"), ("8"), ("9"), ("10"), ("11"), ("12"), ("14"), ("16"), ("18"), ("20"), ("24"), ("28"), ("32"), ("36"), ("40"), ("48"), ("56"), ("64"), ("72"), ("80"), ("88"), ("96")]
+      }
+    }
+  }
+  { txtExample TextBox
+    MoveScaled(1,34,68,6)
+    'Move(8,272,544,48)
+    Text = ("How quickly daft jumping zebras vex")
+    Alignment = Align.Center
+  }
+}

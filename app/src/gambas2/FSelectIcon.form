@@ -1,0 +1,80 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,75,71)
+  'Move(0,0,600,568)
+  Text = ("Select a picture")
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { tabIcon TabStrip
+    MoveScaled(1,1,69,48)
+    'Move(8,8,552,384)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Padding = 8
+    Count = 2
+    Index = 0
+    Text = ("Project")
+    { fchIcon FileChooser
+      MoveScaled(1,1,66,40)
+      'Move(8,8,528,320)
+      Picture = Picture["img/16/gambas.png"]
+      ReadOnly = True
+    }
+    Index = 1
+    Text = ("Stock")
+    { VBox1 VBox
+      MoveScaled(1,1,63,42)
+      'Move(8,8,504,336)
+      Spacing = 8
+      { HBox2 HBox
+        MoveScaled(1,1,42,3)
+        'Move(8,8,336,24)
+        Spacing = 8
+        { Label1 Label
+          MoveScaled(0,0,4,3)
+          'Move(0,0,32,24)
+          AutoResize = True
+          Text = ("Size")
+        }
+        { cmbSize ComboBox
+          MoveScaled(6,0,10,3)
+          'Move(48,0,80,24)
+          Text = ("")
+          List = [("16"), ("24"), ("32"), ("48"), ("64"), ("96"), ("128")]
+        }
+      }
+      { icwStock IconView
+        MoveScaled(2,14,40,26)
+        'Move(16,112,320,208)
+        Expand = True
+        Sorted = True
+        Arrangement = IconView.LeftRight
+        GridWidth = 12
+      }
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(3,52,44,3)
+    'Move(24,416,352,24)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(7,1,4,2)
+      'Move(56,8,32,16)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(19,0,12,3)
+      'Move(152,0,96,24)
+      Text = ("OK")
+    }
+    { btnCancel Button
+      MoveScaled(32,0,12,3)
+      'Move(256,0,96,24)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

@@ -1,0 +1,249 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,82,61)
+  'Move(0,0,656,488)
+  Text = ("New project")
+  Icon = Picture["icon:/16/new"]
+  Border = Window.Fixed
+  { Panel1 Panel
+    MoveScaled(1,1,80,6)
+    'Move(8,8,640,48)
+    Visible = False
+    Background = Color.SelectedBackground
+    { PictureBox1 PictureBox
+      MoveScaled(1,1,4,4)
+      'Move(8,8,32,32)
+      Picture = Picture["icon:/32/new"]
+    }
+    { Label1 Label
+      MoveScaled(6,1,59,4)
+      'Move(48,8,472,32)
+      Font = Font["Bold,+2"]
+      Foreground = Color.SelectedForeground
+      Text = ("New project")
+    }
+  }
+  { tabProject TabStrip
+    MoveScaled(1,1,80,55)
+    'Move(8,8,640,440)
+    Arrangement = Arrange.Fill
+    Padding = 8
+    Count = 2
+    Index = 0
+    Text = ("Properties")
+    { Panel2 Panel
+      MoveScaled(1,0,78,49)
+      'Move(8,0,624,392)
+      Expand = True
+      { Label2 Label
+        MoveScaled(0,4,15,3)
+        'Move(0,32,120,24)
+        Text = ("Name")
+      }
+      { Label3 Label
+        MoveScaled(0,8,15,3)
+        'Move(0,64,120,24)
+        Text = ("Title")
+      }
+      { txtName TextBox
+        MoveScaled(15,4,62,3)
+        'Move(120,32,496,24)
+        Text = ("")
+      }
+      { txtTitle TextBox
+        MoveScaled(15,8,62,3)
+        'Move(120,64,496,24)
+        Text = ("")
+      }
+      { Label4 Label
+        MoveScaled(0,13,25,3)
+        'Move(0,104,200,24)
+        Font = Font["Bold"]
+        Text = ("Type")
+      }
+      { svwOption ScrollView
+        MoveScaled(38,17,39,31)
+        'Move(304,136,312,248)
+        Background = Color.TextBackground
+        Arrangement = Arrange.Vertical
+        Padding = 4
+        ScrollBar = Scroll.Vertical
+        { chkLocalize CheckBox
+          MoveScaled(1,0,37,3)
+          'Move(8,0,296,24)
+          Tag = "TRANSLATE"
+          Text = ("Internationalization")
+        }
+        { CheckBox2 CheckBox
+          MoveScaled(1,3,37,3)
+          'Move(8,24,296,24)
+          Tag = "DATABASE"
+          Text = ("Database access")
+        }
+        { CheckBox3 CheckBox
+          MoveScaled(1,6,37,3)
+          'Move(8,48,296,24)
+          Tag = "NETWORK"
+          Text = ("Network programming")
+        }
+        { CheckBox7 CheckBox
+          MoveScaled(1,9,37,3)
+          'Move(8,72,296,24)
+          Tag = "SETTINGS"
+          Text = ("Settings files management")
+        }
+        { CheckBox1 CheckBox
+          MoveScaled(1,12,37,3)
+          'Move(8,96,296,24)
+          Tag = "REGEXP"
+          Text = ("Regular expressions")
+        }
+        { CheckBox4 CheckBox
+          MoveScaled(1,15,37,3)
+          'Move(8,120,296,24)
+          Tag = "XML"
+          Text = ("XML / XSLT programming")
+        }
+        { CheckBox6 CheckBox
+          MoveScaled(1,18,37,3)
+          'Move(8,144,296,24)
+          Tag = "OPENGL"
+          Text = ("OpenGL programming")
+        }
+        { CheckBox5 CheckBox
+          MoveScaled(1,21,37,3)
+          'Move(8,168,296,24)
+          Tag = "IMAGE"
+          Text = ("Image processing")
+        }
+        { chkCtrlPublic CheckBox
+          MoveScaled(1,24,37,3)
+          'Move(8,192,296,24)
+          Tag = "VISUAL"
+          Text = ("Visual Basic™ conversion help")
+        }
+        { CheckBox8 CheckBox
+          MoveScaled(1,27,37,3)
+          'Move(8,216,296,24)
+          Tag = "COMPONENT"
+          Text = ("Component programming")
+        }
+      }
+      { Label10 Label
+        MoveScaled(0,0,25,3)
+        'Move(0,0,200,24)
+        Font = Font["Bold"]
+        Text = ("Identification")
+      }
+      { Label12 Label
+        MoveScaled(38,13,25,3)
+        'Move(304,104,200,24)
+        Font = Font["Bold"]
+        Text = ("Options")
+      }
+      { lstType ListContainer
+        MoveScaled(0,17,36,31)
+        'Move(0,136,288,248)
+        { panDefaultType HBox
+          MoveScaled(1,1,29,6)
+          'Move(8,8,232,48)
+          Tag = "QT"
+          Spacing = 8
+          Padding = 4
+          { PictureBox2 PictureBox
+            MoveScaled(1,1,4,4)
+            'Move(8,8,32,32)
+            Picture = Picture["img/32/form-qt.png"]
+            Alignment = Align.Center
+          }
+          { Label6 Label
+            MoveScaled(6,1,22,4)
+            'Move(48,8,176,32)
+            Expand = True
+            Text = ("QT graphical application")
+          }
+        }
+        { HBox2 HBox
+          MoveScaled(1,7,29,6)
+          'Move(8,56,232,48)
+          Tag = "GTK"
+          Spacing = 8
+          Padding = 4
+          { PictureBox3 PictureBox
+            MoveScaled(1,1,4,4)
+            'Move(8,8,32,32)
+            Picture = Picture["img/32/form-gtk.png"]
+            Alignment = Align.Center
+          }
+          { Label8 Label
+            MoveScaled(6,1,22,4)
+            'Move(48,8,176,32)
+            Expand = True
+            Text = ("GTK+ graphical application")
+          }
+        }
+        { HBox3 HBox
+          MoveScaled(1,13,29,6)
+          'Move(8,104,232,48)
+          Tag = "CONSOLE"
+          Spacing = 8
+          Padding = 4
+          { PictureBox4 PictureBox
+            MoveScaled(1,1,4,4)
+            'Move(8,8,32,32)
+            Picture = Picture["icon:/32/terminal"]
+            Alignment = Align.Center
+          }
+          { Label9 Label
+            MoveScaled(6,1,22,4)
+            'Move(48,8,176,32)
+            Expand = True
+            Text = ("Command-line application")
+          }
+        }
+        { HBox4 HBox
+          MoveScaled(1,19,29,6)
+          'Move(8,152,232,48)
+          Tag = "GAME"
+          Spacing = 8
+          Padding = 4
+          { PictureBox5 PictureBox
+            MoveScaled(1,1,4,4)
+            'Move(8,8,32,32)
+            Picture = Picture["icon:/32/game"]
+            Alignment = Align.Center
+          }
+          { Label13 Label
+            MoveScaled(6,1,22,4)
+            'Move(48,8,176,32)
+            Expand = True
+            Text = ("SDL application")
+          }
+        }
+      }
+    }
+    Index = 1
+    Text = ("Parent directory")
+    { dchProject DirChooser
+      MoveScaled(3,3,53,40)
+      'Move(24,24,424,320)
+      Expand = True
+      Root = "/"
+      ShowBookmark = True
+    }
+    Index = 0
+  }
+  { btnOK Button
+    MoveScaled(50,57,15,3)
+    'Move(400,456,120,24)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(66,57,15,3)
+    'Move(528,456,120,24)
+    Text = ("Cancel")
+    Cancel = True
+  }
+}

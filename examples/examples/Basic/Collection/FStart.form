@@ -1,0 +1,23 @@
+# Gambas Form File 1.0
+
+{ FStart Form
+  MoveScaled(33.2222,14.2222,58.7778,40.1111)
+  'Move(299,128,529,361)
+  Text = ("Collection")
+  Border = Window.Fixed
+  { btnCreate Button
+    MoveScaled(37,1,21,2)
+    'Move(333,9,189,18)
+    Text = ("Create Collection")
+  }
+  { tvThings TreeView
+    MoveScaled(1,1,35,38)
+    'Move(9,9,315,342)
+    Sorted = True
+  }
+  { Label1 Label
+    MoveScaled(38,36,20,3)
+    'Move(342,324,180,27)
+    Text = ("by juergen@zdero.com")
+  }
+}

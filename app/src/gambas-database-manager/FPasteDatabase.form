@@ -1,0 +1,99 @@
+# Gambas Form File 1.0
+
+{ FPasteDatabase Form
+  MoveScaled(45.375,27.5,54.75,46)
+  'Move(363,220,438,368)
+  Text = ("Duplicate database")
+  Border = Window.Fixed
+  { Label1 Label
+    MoveScaled(1,7,48,3)
+    'Move(8,56,384,24)
+    Font = Font["Bold"]
+    Text = ("Source")
+  }
+  { Label3 Label
+    MoveScaled(2,24,14,3)
+    'Move(16,192,112,24)
+    Text = ("Name")
+  }
+  { txtName TextBox
+    MoveScaled(17,24,37,3)
+    'Move(136,192,296,24)
+    Text = ("")
+  }
+  { optCopyData RadioButton
+    MoveScaled(2,32,47,3)
+    'Move(16,256,376,24)
+    Text = ("Copy structure &and data")
+  }
+  { optCopyDef RadioButton
+    MoveScaled(2,29,47,3)
+    'Move(16,232,376,24)
+    Text = ("Copy &structure only")
+    Value = True
+  }
+  { lblTitle Label
+    MoveScaled(1,1,46,5)
+    'Move(8,8,368,40)
+    Font = Font["16,Bold"]
+    Text = ("Duplicate database")
+  }
+  { imgIcon PictureBox
+    MoveScaled(48,1,6,6)
+    'Move(384,8,48,48)
+    Picture = Picture["img/32/database-copy.png"]
+    Stretch = True
+  }
+  { btnOK Button
+    MoveScaled(25,42,14,3)
+    'Move(200,336,112,24)
+    Text = ("Duplicate")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(40,42,14,3)
+    'Move(320,336,112,24)
+    Text = ("Close")
+    Cancel = True
+  }
+  { Label2 Label
+    MoveScaled(1,18,48,3)
+    'Move(8,144,384,24)
+    Font = Font["Bold"]
+    Text = ("Destination")
+  }
+  { pgbPaste ProgressBar
+    MoveScaled(1,37,53,3)
+    'Move(8,296,424,24)
+  }
+  { Label4 Label
+    MoveScaled(2,10,14,3)
+    'Move(16,80,112,24)
+    Text = ("Connection")
+  }
+  { Label5 Label
+    MoveScaled(2,13,14,3)
+    'Move(16,104,112,24)
+    Text = ("Database")
+  }
+  { lblSrcServer Label
+    MoveScaled(17,10,36,3)
+    'Move(136,80,288,24)
+    Text = ("")
+  }
+  { lblSrcDatabase Label
+    MoveScaled(17,13,36,3)
+    'Move(136,104,288,24)
+    Text = ("")
+  }
+  { Label6 Label
+    MoveScaled(2,21,14,3)
+    'Move(16,168,112,24)
+    Text = ("Connection")
+  }
+  { lblDstServer Label
+    MoveScaled(17,21,37,3)
+    'Move(136,168,296,24)
+    Text = ("")
+  }
+}

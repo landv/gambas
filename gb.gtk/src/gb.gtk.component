@@ -1,0 +1,22 @@
+[Component]
+Key=gb.gtk
+Name=Graphical GTK+ toolkit component
+Name[fr]=Composant graphique du toolkit GTK+
+Name[pl]=Kontrolki GTK+
+Name[es]=Componente gráfico basado en GTK+
+Name[tr]=GTK+ grafiksel bileşenleri
+Author=Daniel Campos Fernández
+Type=Form
+Implements=Form,EventLoop,ImageProvider
+
+[Form]
+Control=Separator,Label,TextLabel,PictureBox,MovieBox,ProgressBar,Slider,Button,CheckBox,RadioButton,ToggleButton,ToolButton,TextBox,ComboBox,SpinBox,TextArea,ListBox,ListView,TreeView,IconView,GridView,ColumnView,ScrollBar
+
+[Container]
+Control=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Frame,Panel,TabStrip,ScrollView,DrawingArea
+Container=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,TabStrip,ScrollView,DrawingArea
+MultiContainer=TabStrip
+
+[Special]
+Control=Embedder,Timer,TrayIcon
+Virtual=Timer,TrayIcon

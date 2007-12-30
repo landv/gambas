@@ -1,0 +1,136 @@
+' Gambas class file
+
+EVENT Change()
+
+PROPERTY READ Index AS Integer
+PROPERTY READ Tag AS Integer
+
+PRIVATE $hPanel AS NEW Collection
+PRIVATE $iStep AS Integer
+PRIVATE $nStep AS Integer
+PRIVATE $hPrev AS Button
+PRIVATE $hNext AS Button
+PRIVATE $hButton AS Button
+
+PUBLIC SUB _new(hForm AS Form, hPrev AS Button, hNext AS Button, hButton AS Button)
+
+  DIM hCtrl AS Control
+
+  $hPrev = hPrev
+  $hNext = hNext
+
+  $hButton = hButton
+  hButton.Enabled = FALSE
+
+  FOR EACH hCtrl IN hForm.Children
+  
+    IF Object.Type(hCtrl) = "Panel" THEN
+      IF hCtrl.Tag THEN
+        $hPanel[hCtrl.Tag] = hCtrl
+      ENDIF
+    ENDIF
+  
+  NEXT
+
+  ShowStep
+  
+END
+
+PRIVATE FUNCTION GetPanel(iStep AS Integer) AS Panel
+  
+  DIM hPanel AS Panel
+  DIM aStep AS NEW Integer[]
+  
+  FOR EACH hPanel IN $hPanel
+  
+    IF hPanel.Enabled THEN 
+      IF hPanel.Tag THEN
+        aStep.Add(Val(hPanel.Tag))
+      ENDIF
+      'PRINT hPanel.Tag; ",";
+    ENDIF
+  
+  NEXT
+  
+  'PRINT 
+  aStep.Sort
+  $nStep = aStep.Count
+  'PRINT "$nStep = "; $nStep
+  
+  TRY RETURN $hPanel[aStep[iStep]]
+  
+END
+
+
+PRIVATE SUB ShowStep()
+  
+  DIM hPanel AS Panel
+  DIM hCurrent AS Panel
+  
+  hCurrent = GetPanel($iStep)
+  
+  FOR EACH hPanel IN $hPanel
+    IF hPanel = hCurrent THEN
+      WITH $hPanel["0"]
+        hPanel.Move(.X, .Y, .W, .H)
+      END WITH
+      'hPanel.Border = Border.None
+    ELSE
+      hPanel.Visible = FALSE
+    ENDIF
+  NEXT
+  
+  $hButton.Enabled = $iStep = ($nStep - 1)
+  $hPrev.Enabled = $iStep > 0
+  $hNext.Enabled = $iStep < ($nStep - 1)
+  
+  RAISE Change
+  
+  hCurrent.Visible = TRUE
+  
+END
+
+PUBLIC SUB Next()
+
+  GetPanel($iStep) ' update $nStep
+  IF $iStep >= ($nStep - 1) THEN RETURN
+  INC $iStep
+  ShowStep
+  
+END
+
+PUBLIC SUB Previous()
+
+  IF $iStep <= 0 THEN RETURN
+  DEC $iStep
+  ShowStep
+  
+END
+
+
+PRIVATE FUNCTION Index_Read() AS Integer
+  
+  RETURN $iStep
+  
+END
+
+
+PUBLIC SUB Enable(iStep AS Integer, bOn AS Boolean)
+  
+  $hPanel[iStep].Enabled = bOn
+  GetPanel($iStep)
+  
+END
+
+PRIVATE FUNCTION Tag_Read() AS Integer
+  
+  RETURN Val(GetPanel($iStep).Tag)
+  
+END
+
+PUBLIC SUB Resize()
+  
+  ShowStep  
+  
+END
+

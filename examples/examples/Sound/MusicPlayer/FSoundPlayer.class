@@ -1,0 +1,100 @@
+' Gambas class file
+
+STATIC PRIVATE $bDoNotMove AS Boolean
+
+PUBLIC SUB btnOpen_Click()
+
+  IF Dialog.OpenFile() THEN RETURN
+
+  lblTitle.Text = File.Name(Dialog.Path)
+  ' Approximation...
+  sldPos.MaxValue = 600
+
+  Music.Load(Dialog.Path)
+  btnPlay_Click
+
+CATCH
+
+  Message.Error(Error.Text)
+
+END
+
+PUBLIC SUB btnPlay_Click()
+
+  timMusic.Enabled = TRUE
+  Music.Play
+
+END
+
+PUBLIC SUB btnPause_Click()
+
+  Music.Pause
+
+END
+
+PUBLIC SUB btnStop_Click()
+
+  Music.Stop
+  timMusic.Enabled = FALSE
+  lblPos.Text = ""
+  sldPos.Value = 0
+
+END
+
+PUBLIC SUB timMusic_Timer()
+
+  DIM iPos AS Integer
+  DIM iVal AS Integer
+  DIM sPos AS String
+  DIM iInd AS Integer
+
+  iPos = Music.Pos
+
+  IF NOT $bDoNotMove THEN
+    Object.Lock(sldPos)
+    IF iPos > sldPos.MaxValue THEN
+      sldPos.MaxValue = sldPos.MaxValue * 2
+    ENDIF
+    sldPos.Value = iPos
+    Object.Unlock(sldPos)
+  ENDIF
+
+  FOR iInd = 0 TO 2
+
+    iVal = iPos MOD 60
+    iPos = iPos \ 60
+    IF iInd THEN
+      sPos = Format(iVal, "00") & ":" & sPos
+    ELSE
+      sPos = Format(iVal, "00")
+    ENDIF
+
+  NEXT
+
+  lblPos.Text = sPos
+
+END
+
+PUBLIC SUB sldPos_Change()
+
+  Music.Pos = sldPos.Value
+
+END
+
+PUBLIC SUB sldPos_MouseDown()
+
+  $bDoNotMove = TRUE
+
+END
+
+PUBLIC SUB sldPos_MouseUp()
+
+  $bDoNotMove = FALSE
+
+END
+
+PUBLIC SUB sldVolume_Change()
+
+  Music.Volume = 1 - sldVolume.Value / sldVolume.MaxValue
+
+END

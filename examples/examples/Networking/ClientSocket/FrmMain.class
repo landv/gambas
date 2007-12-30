@@ -1,0 +1,216 @@
+'********************************************
+' THIS EXAMPLE SHOWS HOW TO USE THE 'Socket'
+' CLASS FROM 'gb.net' COMPONENT
+'
+' (C) 2003-2004 Daniel Campos Fernández
+' (danielcampos@netcourrier.com)
+'********************************************
+PRIVATE CurProtocol AS Integer
+
+PUBLIC SUB Form_Open()
+  
+  CurProtocol=0
+
+END
+
+PUBLIC SUB MySock_Ready()
+  '***********************************
+  ' When connection proccess has finished
+  ' successfully, "Connected" event will raise
+  '***********************************
+  Timer1.Enabled=FALSE
+  IF CurProtocol=1 THEN
+    Label3.Text="Connected to path " & MySock.Path
+  ELSE
+    Label3.Text="Connected to remote host " & MySock.Path
+    Label3.Text=Label3.Text & " - Using local address : " & MySock.LocalHost & ":" & MySock.LocalPort
+  END IF
+  ME.Enabled=TRUE
+  Set_Interface(TRUE)
+END
+
+PUBLIC SUB MySock_Closed()
+  '********************************************
+  ' this event will raise when foreing host
+  ' closes the socket by any reason
+  '********************************************
+  Label3.Caption="Connection Closed by foreing host."
+  ME.Enabled=TRUE
+  Set_Interface (FALSE)
+  
+END
+
+PUBLIC SUB MySock_Found()
+  '********************************************
+  ' this event will raise when foreing host
+  ' name has been translated to IP
+  '********************************************
+  Label3.Caption="Host Found. Connecting..."
+  
+END
+
+
+PUBLIC SUB MySock_Read()
+  '****************************************
+  ' When some data arrives from the remote
+  ' part of the socket, "DataAvailable" event
+  ' is raised
+  '****************************************
+  DIM S AS String
+  IF MySock.Status=Net.Connected THEN
+      READ #MySock,S,Lof(MySock)
+      TextArea1.Text=TextArea1.Text & S
+  END IF
+  
+  
+END
+
+PUBLIC SUB MySock_Error()
+  '**********************************
+  ' this is the function to
+  ' handle Errors when trying
+  ' to read or write to the socket
+  '**********************************
+  SELECT CASE MySock.Status
+    CASE Net.CannotCreateSocket
+      label3.Text="The system does not allow to create a socket"
+    CASE Net.HostNotFound
+      label3.Text="Host not Found"
+    CASE Net.ConnectionRefused
+      label3.Text="Unable to Connect. Connection Refused"
+    CASE Net.CannotRead
+      label3.Text="Error Reading Data"
+    CASE Net.CannotWrite
+      label3.Text="Error Writing Data"
+  END SELECT
+  Set_Interface (FALSE)
+END
+
+PRIVATE SUB Set_Interface(bState AS Boolean)
+  '****************************************
+  ' An auxiliar method to enable/disable
+  ' controls in the formulary , when
+  ' connection is stablished or closed
+  '****************************************
+  Button1.Enabled=NOT bState
+  TextBox1.Enabled=NOT bState
+  TextBox2.Enabled=NOT bState
+  CmbProtocol.Enabled=NOT bState
+  Label5.Enabled=NOT bState
+  Button2.Enabled=bState
+  Timer1.Enabled=bState
+  'TextArea1.Enabled=bState
+  Button3.Enabled=bState
+  TextArea2.Enabled=bState
+  IF bState=TRUE THEN TextArea1.Text=""
+  
+END
+
+
+PUBLIC SUB Button1_Click()
+ 
+  '******************************************
+  ' To connect to remote host we call to
+  ' connectsocket method, passing Host Name
+  ' and port as arguments
+  '******************************************
+  DIM RetVal AS Integer
+  Button1.Enabled=FALSE
+  SELECT CASE CurProtocol
+    CASE 0 
+      ' Stablishing a TCP connection.
+      ' Here we use Host and
+      ' Port properties, we could also
+      ' do directly MySock.Connect(TextBox1.Text,VAL(TextBox2.Text))
+      MySock.Host=TextBox1.Text
+      MySock.Port=Val(TextBox2.Text)
+      MySock.Connect()
+    CASE 1
+      ' Stablishing a Local connection.
+      ' Here we use Path and
+      ' Port properties, we could also
+      ' do directly MySock.Connect(TextBox1.Text,0)
+      MySock.Path=TextBox1.Text
+      MySock.Port=Net.Local
+      MySock.Connect()
+  END SELECT
+  IF MySock.Status>Net.Inactive THEN 
+    IF CurProtocol=0 THEN
+      '**************************
+      ' TCP : connection in progress...
+      '**************************
+      Button2.Enabled=TRUE
+      'ME.Enabled=FALSE
+      Label3.Text="Looking up host name..."
+      Timer1.Delay=10000' we'll wait a maximun time of  10 seconds
+      Timer1.Enabled=TRUE
+    END IF
+  END IF
+ 
+END
+
+PUBLIC SUB Timer1_Timer()
+
+  '***************************
+  ' timeout trying to connect
+  '***************************
+  ME.Enabled=TRUE
+  Timer1.Enabled=FALSE
+  IF MySock.Status<>Net.Connected THEN
+    CLOSE MySock
+    Set_Interface (FALSE)
+    Label3.Text="Timeout trying to stablish connection"
+  END IF
+END
+
+
+PUBLIC SUB Button2_Click()
+  
+  '**********************************
+  ' Here we close the connection
+  ' to remote host
+  '**********************************
+  CLOSE MySock
+  Set_Interface(FALSE)
+  Label3.Text="Connection closed by user"
+
+END
+
+PUBLIC SUB Button3_Click()
+  '****************************************************
+  ' Here we send data to the remote part of the socket.
+  ' We have to be sure that connection is active 
+  '****************************************************
+  IF MySock.Status=Net.Connected THEN 
+    WRITE #MySock,TextArea2.Text,Len(TextArea2.Text)
+    TextArea2.Text=""
+  END IF
+  
+END
+
+PUBLIC SUB Form_Close()
+
+  '*********************
+  ' Close possible Stablished connections
+  '*********************
+  IF MySock.Status>0 THEN CLOSE #MySock
+
+END
+
+PUBLIC SUB CmbProtocol_Click()
+  '**************************************************
+  ' Here we select protocol to use : TCP,UDP or UNIX
+  '**************************************************
+  CurProtocol=CmbProtocol.Index
+  IF CurProtocol=0  THEN
+      Label2.Visible=TRUE
+      TextBox2.Visible=TRUE
+      Label1.Text="Host :"
+  ELSE
+      Label2.Visible=FALSE
+      TextBox2.Visible=FALSE
+      Label1.Text="Path :"
+  END IF
+END
+
+

@@ -1,0 +1,87 @@
+' Gambas class file
+
+EXPORT 
+
+INHERITS UserContainer
+
+PUBLIC CONST _Properties AS String = "*,Text,TextFont,Animated,Hidden"
+PUBLIC CONST _DefaultEvent AS String = "Click"
+
+EVENT Show
+EVENT Hide
+
+PROPERTY Hidden AS Boolean
+PROPERTY Text AS String
+PROPERTY TextFont AS Font
+PROPERTY Animated AS Boolean
+
+PRIVATE frmExpander AS FExpander
+
+PUBLIC SUB _new()
+  
+  frmExpander = NEW FExpander(ME)
+  ME._Container = frmExpander.GetContainer()
+  
+END
+
+PUBLIC SUB _Show()
+  
+  RAISE Show
+  
+END
+
+PUBLIC SUB _Hide()
+  
+  RAISE Hide
+  
+END
+
+
+PRIVATE FUNCTION Hidden_Read() AS Boolean
+
+  RETURN frmExpander.GetHidden()
+
+END
+
+PRIVATE SUB Hidden_Write(Value AS Boolean)
+
+  frmExpander.SetHidden(Value)
+
+END
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN frmExpander.GetText()
+
+END
+
+PRIVATE SUB Text_Write(Value AS String)
+
+  frmExpander.SetText(Value)
+
+END
+
+PRIVATE FUNCTION TextFont_Read() AS Font
+
+  RETURN frmExpander.GetFont()
+
+END
+
+PRIVATE SUB TextFont_Write(Value AS Font)
+
+  frmExpander.SetFont(Value)
+
+END
+
+PRIVATE FUNCTION Animated_Read() AS Boolean
+
+  RETURN frmExpander.GetAnimated()
+  
+END
+
+PRIVATE SUB Animated_Write(Value AS Boolean)
+
+  frmExpander.SetAnimated(Value)
+
+
+END

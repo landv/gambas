@@ -1,0 +1,21 @@
+# Gambas Form File 1.0
+
+{ FAbout Form
+  Move(363,227,357,205)
+  Text = ("About DeepSpace")
+  Border = Window.Fixed
+  { lblInfo TextLabel
+    Move(12,8,328,136)
+    Font = Font["Trebuchet MS,10"]
+    Text = ("<font style=\"font-family: ariel;\" size=\"+3\"><b>DeepSpace</b></font><br><hr>\n<font style=\"font-family: ariel;\" size=\"+0\">Information is filled in here when the form loads.\n")
+  }
+  { cmdOK Button
+    Move(140,156,88,28)
+    Text = ("&OK")
+  }
+  { pbIcon PictureBox
+    Move(304,4,36,36)
+    Picture = Picture["images/DeepSpace.png"]
+    Border = Border.Etched
+  }
+}

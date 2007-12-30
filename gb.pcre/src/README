@@ -1,0 +1,62 @@
+gb.pcre
+
+Gambas PCRE Component
+
+version 0.04 - 4 October 2004
+
+Copyright 2004 Rob Kudla and Benoit Minisini
+
+This component is licensed under the same terms as Gambas itself,
+namely those of the GNU General Public License.
+
+This component implements perl-style regular expressions using the
+PCRE (Perl-Compatible Regular Expressions) library.  It contains one
+class, Regex, as described below.  Currently it's only useful for
+matching, and replacing will have to be done in Gambas code... I hope
+to provide example Match() and MatchReplace() functions soon.
+
+Synopsis:
+
+dim re as Regex
+re = new Regex("stringtosearch","regularexpression")
+
+Regex.Offset: The offset within the string where a match occurred.
+Regex.Match: The text that matched the pattern.
+
+If you put parentheses around part of your pattern, and the whole
+pattern matches, the parts in parens become submatches.
+
+Regex.SubMatchCount: The number of submatches found.
+Regex.SubMatch(i as integer): The text of submatch i.
+Regex.SubMatchOffset(i as integer): The offset of submatch i.
+
+Example:
+
+dim i as integer
+dim re as Regex
+re = new Regex("the quick brown fox","quick(.+)fox")
+if re.Offset >= 0 then
+   print re.Match
+   for i = 1 to re.SubMatchCount
+       print re.SubMatch(i)
+   next
+endif
+
+This should generate the following output:
+
+quick brown fox
+ brown 
+
+To compile this component, you must have a Gambas 0.99 source tree
+available and place this tarball's contents (the whole pcre directory)
+under src/lib in the gambas source tree.  Then you must modify a
+number of files in the gambas source tree and rebuild according to the
+instructions in:
+
+http://www.binara.com/gambas-wiki/bin/view/Gambas/HowToProgramComponentsQuick 
+
+I'll try to make a Mandrake package of this and announce it on the
+gambas-user@sourceforge.net list.
+
+Rob Kudla
+pcre-component@kudla.org

@@ -1,0 +1,47 @@
+# Gambas Form File 1.0
+
+{ FOtherTimer Form
+  MoveScaled(50.75,59.75,27.875,17.75)
+  'Move(406,478,223,142)
+  Background = &HB1C00E&
+  Text = ("Other Example")
+  Border = Window.Fixed
+  { Button1 Button
+    MoveScaled(18,11,8,5)
+    'Move(144,88,64,40)
+    Font = Font["14"]
+    Background = &H4BC021&
+    Text = ("Start")
+  }
+  { Textbox1 TextBox
+    MoveScaled(9,11.5,5,4)
+    'Move(72,92,40,32)
+    Font = Font["18"]
+    Background = &H93B8B0&
+    Mouse = Mouse.Wait
+    Text = ("3")
+  }
+  { Timer1 #Timer
+    #X = 16
+    #Y = -24
+  }
+  { TextLabel2 TextLabel
+    MoveScaled(7,11.5,2,4)
+    'Move(56,92,16,32)
+    Font = Font["Adobe Courier,18,Bold"]
+    Text = (":")
+    Alignment = Align.Center
+  }
+  { TextBox2 TextBox
+    MoveScaled(2,11.5,5,4)
+    'Move(16,92,40,32)
+    Font = Font["18"]
+    Background = &H93B8B0&
+    Text = ("0")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,1,26,9)
+    'Move(8,8,208,72)
+    Text = ("Another timer example by <b>Maxim Lapis</b> &lt;maxim_lapis@web.de&gt;")
+  }
+}

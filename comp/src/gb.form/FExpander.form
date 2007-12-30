@@ -1,0 +1,38 @@
+# Gambas Form File 1.0
+
+{ FExpander Form
+  MoveScaled(0,0,65,59)
+  'Move(0,0,520,472)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  { panTitle Panel
+    MoveScaled(1,2,46,3)
+    'Move(8,16,368,24)
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    { btnExpand PictureBox
+      MoveScaled(1,0,2,3)
+      'Move(8,0,16,24)
+      Picture = Picture["img/8/side-bottom-void.png"]
+      Alignment = Align.Left
+    }
+    { lblTitle Label btnExpand
+      MoveScaled(4,0,33,3)
+      'Move(32,0,264,24)
+      Expand = True
+      AutoResize = True
+      Text = ("")
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(4,10,49,40)
+    'Move(32,80,392,320)
+    Expand = True
+    { panContainer Panel
+      MoveScaled(10,9,34,26)
+      'Move(80,72,272,208)
+      Expand = True
+    }
+  }
+}

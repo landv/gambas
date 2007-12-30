@@ -1,0 +1,71 @@
+# Gambas Form File 1.0
+
+{ FEval Form
+  Move(256,224,393,274)
+  Text = ("Evaluator")
+  Icon = Picture["calculator.png"]
+  Border = Window.Fixed
+  { Label4 Label
+    Move(216,104,56,24)
+    Text = ("y =")
+  }
+  { Label3 Label
+    Move(216,64,56,24)
+    Text = ("x =")
+  }
+  { Label2 Label
+    Move(16,104,56,24)
+    Text = ("b =")
+  }
+  { Label1 Label
+    Move(16,64,56,24)
+    Text = ("a =")
+  }
+  { txtValueA TextBox txtValue
+    Move(48,64,136,24)
+    Text = ("0,5")
+  }
+  { txtValueB TextBox txtValue
+    Move(48,104,136,24)
+    Text = ("1")
+  }
+  { txtValueX TextBox txtValue
+    Move(248,64,136,24)
+    Text = ("45")
+  }
+  { txtValueY TextBox txtValue
+    Move(248,104,136,24)
+    Text = ("60")
+  }
+  { Label5 Label
+    Move(16,8,368,40)
+    Text = ("This is a sample of how to use the expression evaluator component.")
+  }
+  { Label6 Label
+    Move(16,152,104,16)
+    Text = ("Expression")
+  }
+  { txtExpr TextBox
+    Move(104,152,280,24)
+    Text = ("a * Cos(Rad(x)) + b * Sin(Rad(y))")
+  }
+  { Label7 Label
+    Move(16,184,72,16)
+    Text = ("Result")
+  }
+  { txtResult TextBox
+    Move(104,184,280,24)
+    Text = ("")
+    ReadOnly = True
+  }
+  { btnUpdate Button
+    Move(8,240,128,24)
+    Text = ("Update result")
+    Default = True
+  }
+  { btnClose Button
+    Move(304,240,80,24)
+    Text = ("Quit")
+    Cancel = True
+  }
+}

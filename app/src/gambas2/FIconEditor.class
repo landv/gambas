@@ -1,0 +1,1968 @@
+' Gambas class file
+
+PUBLIC Name AS String
+PUBLIC Path AS String
+
+PROPERTY READ ReadOnly AS Boolean
+
+PRIVATE $hImage AS Image
+PRIVATE $iScale AS Integer
+PRIVATE $iScale1 AS Integer
+
+PRIVATE $bModify AS Boolean
+PRIVATE $bReadOnly AS Boolean
+
+PRIVATE $X AS Integer
+PRIVATE $Y AS Integer
+PRIVATE $X2 AS Integer
+PRIVATE $Y2 AS Integer
+PRIVATE $iColor AS Integer
+
+PRIVATE $bGhost AS Boolean
+
+PRIVATE CONST MAX_UNDO AS Integer = 32
+PRIVATE $hUndo[32] AS Image
+PRIVATE $iUndo AS Integer
+
+PRIVATE CONST WIDTH_SEL AS Integer = 4
+
+PRIVATE $bSelect AS Boolean
+PRIVATE $bPrivate AS Boolean
+PRIVATE $XS AS Integer
+PRIVATE $YS AS Integer
+PRIVATE $WS AS Integer
+PRIVATE $HS AS Integer
+
+PRIVATE $hPaste AS Image
+
+PRIVATE CONST COORD_HIDE AS Integer = 1048576
+PRIVATE $XD AS Integer
+PRIVATE $YD AS Integer
+
+STATIC PRIVATE $aZoom AS Integer[]
+STATIC PRIVATE $iMaxW AS Integer
+STATIC PRIVATE $iMaxH AS Integer
+STATIC PRIVATE $hTile AS Picture
+
+STATIC PRIVATE $cColor AS NEW Integer[]
+
+'PRIVATE $hCurrent AS FIconEditor
+
+PRIVATE $sTool AS String
+
+PRIVATE $hTool AS ToolButton
+PRIVATE $hLast AS ToolButton
+PRIVATE $hMode AS ToolButton
+PRIVATE $hTrans AS ToolButton
+
+PRIVATE $iForeground AS Integer
+PRIVATE $iBackground AS Integer
+PRIVATE $iMode AS Integer
+PRIVATE $bTrans AS Boolean
+
+PRIVATE $iMouse AS Integer
+
+PRIVATE $iBeginUndo AS Integer
+
+STATIC PUBLIC SUB _init()
+
+  DIM sColor AS String
+
+  $aZoom = [1, 2, 3, 4, 6, 8, 12, 16, 24]
+  $hTile = Picture["img/16/tile.png"]
+
+  FOR EACH sColor IN Split("000000,FFFFFF,0000FF,00FF00,FF0000,00FFFF,FFFF00,FF00FF,7F7F7F,BFBFBF,00007F,007F00,7F0000,007F7F,7F7F00,7F007F,3F3F3F,FF8000,43C7FF")
+    $cColor.Add(Val("&H" & sColor & "&"))
+  NEXT
+
+END
+
+
+PUBLIC SUB _new(sPath AS String)
+
+  DIM sText AS String
+  DIM iScale AS Integer
+  DIM iColor AS Integer
+  DIM hColor AS DrawingArea
+  DIM hCtrl AS Control
+
+
+  Path = sPath
+  Name = Mid$(sPath, Len(File.Dir(Project.Path)) + 1)
+  
+  $hImage = Image.Load(sPath)
+
+  FOR EACH iScale IN $aZoom
+    cmbZoom.Add(iScale & " x")
+  NEXT
+
+  $iScale = 1  
+  FOR EACH iScale IN $aZoom
+    IF ($hImage.Width * iScale) > (Project.Workspace.ClientWidth * 0.75) OR ($hImage.Height * iScale) > (Project.Workspace.ClientHeight * 0.75) THEN BREAK
+    $iScale = iScale
+  NEXT
+
+  'ReadConfig
+
+  $iMaxW = ME.Width
+  $iMaxH = ME.Height
+
+  FOR iColor = 0 TO $cColor.Max + 1
+    hColor = NEW DrawingArea(tlbColor) AS "dwgColor"
+    hColor.Resize(24, 24)
+    hColor.Tag = iColor
+  NEXT
+
+  $bModify = FALSE
+
+  DrawTitle
+
+  $XD = COORD_HIDE
+  $YD = COORD_HIDE
+
+  $iBackground = Color.White
+  $iForeground = Color.Black
+
+  SetTransparent(TRUE)
+  SetMode(0)
+  SetTool(btnMove)
+  SetReadOnly
+
+END
+
+PRIVATE SUB SetReadOnly()
+
+  $bReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+
+END
+
+PUBLIC SUB Form_Open()
+
+  RefreshZoom
+
+END
+
+
+PUBLIC SUB dwgIcon_Draw()
+
+  DIM X AS Integer
+  DIM Y AS Integer
+  DIM XR AS Integer
+  DIM YR AS Integer
+  DIM SX AS Integer
+  DIM SY AS Integer
+  DIM DX AS Integer
+  DIM DY AS Integer
+  DIM C AS Integer
+  DIM W AS Integer
+
+  DIM hZoom AS Image
+
+  IF NOT $hImage THEN RETURN
+
+  Draw.LineStyle = Line.None
+  'Draw.FillStyle = Fill.CrossDiagonal
+  'Draw.FillColor = 0
+  'Draw.Rect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
+  Draw.FillStyle = Fill.Solid
+  Draw.Tile($hTile, Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
+
+  SX = Draw.Clip.X \ $iScale
+  SY = Draw.Clip.Y \ $iScale
+  DX = (Draw.Clip.X + Draw.Clip.W - 1) \ $iScale
+  DY = (Draw.Clip.Y + Draw.Clip.H - 1) \ $iScale
+
+  SX = Max(0, SX)
+  DX = Min($hImage.Width - 1, DX)
+
+  SY = Max(0, SY)
+  DY = Min($hImage.Height - 1, DY)
+
+  IF $iScale > 5 THEN
+    Draw.LineStyle = Line.Solid
+    Draw.ForeColor = Color.Gray
+  ELSE
+    Draw.LineStyle = Line.None
+  ENDIF
+
+  Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+
+  IF $bGhost THEN DrawGhost(TRUE)
+
+END
+
+
+PUBLIC SUB dwgPaste_Draw()
+
+  DIM X AS Integer
+  DIM Y AS Integer
+  DIM XR AS Integer
+  DIM YR AS Integer
+  DIM SX AS Integer
+  DIM SY AS Integer
+  DIM DX AS Integer
+  DIM DY AS Integer
+  DIM C AS Integer
+  DIM CP AS Integer
+  DIM W AS Integer
+
+  IF NOT $hPaste THEN RETURN
+
+  Draw.FillX = Draw.FillX - $XS * $iScale
+  Draw.FillY = Draw.FillY - $YS * $iScale
+
+  Draw.LineStyle = LINE.None
+  'Draw.FillStyle = Fill.CrossDiagonal
+  'Draw.FillColor = 0
+  'Draw.Rect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
+  Draw.FillStyle = Fill.Solid
+
+  Draw.Tile($hTile, Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
+
+  IF $iScale > 5 THEN
+    Draw.LineStyle = LINE.Solid
+    Draw.ForeColor = Color.Gray
+    W = $iScale1
+  ELSE
+    Draw.LineStyle = LINE.None
+    W = $iScale
+  ENDIF
+
+
+  SX = Draw.Clip.X \ $iScale
+  SY = Draw.Clip.Y \ $iScale
+  DX = (Draw.Clip.X + Draw.Clip.W - 1) \ $iScale
+  DY = (Draw.Clip.Y + Draw.Clip.H - 1) \ $iScale
+
+  SX = Max(0, SX)
+  DX = Min($hPaste.Width - 1, DX)
+
+  SY = Max(0, SY)
+  DY = Min($hPaste.Height - 1, DY)
+
+  IF $bTrans THEN
+
+'     YR = SY * $iScale
+'     FOR Y = SY TO DY
+'       XR = SX * $iScale
+'       FOR X = SX TO DX
+'         C = $hPaste[X, Y]
+'         IF C < 0 THEN
+'           C = $hImage[X + $XS, Y + $YS]
+'         ENDIF
+'         IF C >= 0 THEN
+'         '  IF LC <> C THEN
+'             Draw.FillColor = C
+'         '    LC = C
+'         '  ENDIF
+'           Draw.Rect(XR, YR, W, W)
+'         ENDIF
+'         XR = XR + $iScale
+'       NEXT
+'       YR = YR + $iScale
+'     NEXT
+
+    Draw.Zoom($hImage, $iScale, SX * $iScale, SY * $iScale, SX + $XS, SY + $YS, DX - SX + 1, DY - SY + 1)
+    Draw.Zoom($hPaste, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+
+  ELSE
+
+    Draw.Zoom($hPaste, $iScale, SX * $iScale, SY * $iScale, SX, SY, DX - SX + 1, DY - SY + 1)
+
+'     YR = SY * $iScale
+'     FOR Y = SY TO DY
+'       XR = SX * $iScale
+'       FOR X = SX TO DX
+'         C = $hPaste[X, Y]
+'         IF C >= 0 THEN
+'           Draw.FillColor = C
+'           Draw.Rect(XR, YR, W, W)
+'         ENDIF
+'         XR = XR + $iScale
+'       NEXT
+'       YR = YR + $iScale
+'     NEXT
+
+  ENDIF
+
+  Draw.FillStyle = Fill.None
+  Draw.LineStyle = Line.Dot
+  Draw.LineWidth = 3
+  Draw.Foreground = Color.Black
+  Draw.Background = Color.White
+  Draw.Transparent = FALSE
+  'Draw.Invert = TRUE
+  Draw.Rect(1, 1, dwgPaste.Width - 2, dwgPaste.Height - 2)
+
+END
+
+
+PRIVATE SUB DrawTitle()
+
+  DIM sTitle AS String
+
+  sTitle = File.Name(Path) & " " & $iScale & "x"
+
+  'IF $XD <> COORD_HIDE AND $YD <> COORD_HIDE THEN
+  '  sTitle &= Subst(" &1:&2", $XD, $YD)
+  'ENDIF
+  
+  IF $bModify THEN sTitle = sTitle & " [" & ("modified") & "]"
+
+  ME.Title = sTitle '& " - " & Project.Name
+
+END
+
+
+PRIVATE SUB RefreshCoord(X AS Integer, Y AS Integer)
+
+  IF X <> $XD OR Y <> $YD THEN
+    $XD = X
+    $YD = Y
+    'DrawTitle
+    IF $XD <> COORD_HIDE AND $YD <> COORD_HIDE THEN
+      lblCoord.Text = $XD & ":" & $YD
+    ELSE 
+      lblCoord.Text = ""
+    ENDIF 
+  ENDIF
+
+END
+
+PRIVATE SUB HideCoord()
+  
+  RefreshCoord(COORD_HIDE, COORD_HIDE)
+  
+END
+
+
+PUBLIC FUNCTION IsModified() AS Boolean
+
+  RETURN $bModify
+
+END
+
+
+PUBLIC SUB Rename(sNewName AS String, sNewPath AS String)
+
+  Name = sNewName
+  Path = sNewPath 'File.Dir(Path) &/ sNewName '& "." & File.Ext(Path)
+  DrawTitle
+
+END
+
+
+PUBLIC FUNCTION Save() AS Boolean
+
+  IF Project.ReadOnly THEN RETURN
+  IF $bReadOnly THEN RETURN
+  IF NOT $bModify THEN RETURN
+
+  'PRINT "Picture not saved"
+
+  HideSelection
+
+  Save.Begin(Path)
+
+  $hImage.Save(Path)
+
+  'Project.RefreshKey(Path)
+
+  $bModify = FALSE
+  DrawTitle
+  Save.End()
+
+CATCH
+
+  RETURN Save.Error()
+
+END
+
+PUBLIC SUB dwgIcon_MouseDown()
+
+  DIM X AS Integer
+  DIM Y AS Integer
+
+  X = Mouse.X
+  Y = Mouse.Y
+
+  'WITH FIconTool
+
+    SELECT $sTool
+
+      CASE "move"
+        $X = Mouse.ScreenX + svwIcon.ScrollX
+        $Y = Mouse.ScreenY + svwIcon.ScrollY
+
+      CASE "pen"
+        SetUndo
+        $X = -1
+        $Y = -1
+        $iColor = GetColor(Mouse.Button)
+        dwgIcon_MouseMove()
+
+      CASE "line", "rect", "circle", "fill", "fill-alt"
+        SetUndo
+        $X = X \ $iScale
+        $Y = Y \ $iScale
+        $X2 = $X
+        $Y2 = $Y
+        $iColor = GetColor(Mouse.Button)
+
+      CASE "select"
+
+        BeginUndo
+        $X = X \ $iScale
+        $Y = Y \ $iScale
+        $X2 = $X
+        $Y2 = $Y
+
+        '$bSelect = FALSE
+        'RefreshSelect
+
+      CASE "pipette"
+        X = X \ $iScale
+        Y = Y \ $iScale
+
+        IF Mouse.Left THEN SetForeground($hImage[X, Y])
+        IF Mouse.Right THEN SetBackground($hImage[X, Y])
+
+    END SELECT
+
+    DrawGhost
+
+    SELECT $sTool
+
+      CASE "line", "rect", "circle"
+        dwgIcon_MouseMove()
+
+    END SELECT
+
+  'END WITH
+
+END
+
+PUBLIC SUB dwgIcon_MouseMove()
+
+  DIM C AS Integer
+  DIM X AS Integer
+  DIM Y AS Integer
+  DIM NX AS Integer
+  DIM NY AS Integer
+
+  X = Mouse.X
+  Y = Mouse.Y
+
+  'WITH FIconTool
+
+    RefreshCoord(X \ $iScale, Y \ $iScale)
+
+    IF NOT (Mouse.Left OR Mouse.Right) THEN RETURN
+
+    DrawGhost
+
+    IF $sTool <> "move" THEN
+
+      UpdateScroll(X, Y)
+
+    ENDIF
+
+    X = X \ $iScale
+    Y = Y \ $iScale
+
+    SELECT $sTool
+
+      CASE "move"
+        svwIcon.Scroll($X - Mouse.ScreenX, $Y - Mouse.ScreenY)
+
+      CASE "pen"
+        IF X <> $X OR Y <> $Y THEN
+          IF $X < 0 AND $Y < 0 THEN
+            DrawPoint(X, Y, $iColor)
+          ELSE
+            DrawLine($X, $Y, X, Y, $iColor)
+          ENDIF
+          $X = X
+          $Y = Y
+        ENDIF
+
+      CASE "line", "rect", "circle", "select"
+        IF X <> $X2 OR Y <> $Y2 THEN
+          $X2 = X
+          $Y2 = Y
+          IF $sTool = "select" THEN
+            HideSelection
+            $bSelect = TRUE
+          ENDIF
+        ENDIF
+
+    END SELECT
+
+    DrawGhost
+
+  'END WITH
+
+END
+
+
+PUBLIC SUB dwgIcon_MouseUp()
+
+  'WITH FIconTool
+
+    DrawGhost
+
+    SELECT CASE $sTool
+
+      CASE "pipette"
+        RevertTool
+
+      CASE "line"
+        DrawLine($X, $Y, $X2, $Y2, $iColor)
+
+      CASE "rect"
+        DrawRect(Min($X, $X2), Min($Y, $Y2), Abs($X - $X2) + 1, Abs($Y - $Y2) + 1, $iColor)
+
+      CASE "circle"
+        DrawEllipse(Min($X, $X2), Min($Y, $Y2), Abs($X - $X2) + 1, Abs($Y - $Y2) + 1, $iColor)
+
+      CASE "select"
+        IF $X2 <> $X OR $Y2 <> $Y THEN
+          $X = Max(0, Min($hImage.Width - 1, $X))
+          $Y = Max(0, Min($hImage.Width - 1, $Y))
+          $X2 = Max(0, Min($hImage.Width - 1, $X2))
+          $Y2 = Max(0, Min($hImage.Width - 1, $Y2))
+
+          $XS = Min($X, $X2)
+          $YS = Min($Y, $Y2)
+          $WS = Abs($X - $X2) + 1
+          $HS = Abs($Y - $Y2) + 1
+          $bPrivate = TRUE
+          ShowSelection
+        ELSE
+          'IF NOT $bPrivate THEN DoPaste
+          DoPaste
+          HideSelection
+        ENDIF
+        EndUndo
+
+      CASE "fill"
+        FloodFill($X, $Y, $iColor, 0)
+
+      CASE "fill-alt"
+        FloodFill($X, $Y, $iColor, 1)
+
+    END SELECT
+
+  'END WITH
+
+END
+
+
+PRIVATE SUB RefreshZoom()
+
+  IF cmbZoom.Index <> $iScale THEN cmbZoom.Index = $aZoom.Find($iScale)
+
+  'ME.Resize(Min($iMaxW, $hImage.Width * $iScale + (ME.Width - ME.ClientW) + 8), Min($iMaxH, $hImage.Height * $iScale + (ME.Height - ME.ClientH) + 8))
+  $iScale1 = $iScale + 1
+
+  'dwgIcon.Hide
+  dwgIcon.Resize($hImage.Width * $iScale, $hImage.Height * $iScale)
+  'RefreshSelect
+  RefreshAllImage
+
+  IF dwgPaste.Visible THEN
+    dwgPaste.Move($XS * $iScale, $YS * $iScale, $hPaste.Width * $iScale, $hPaste.Height * $iScale)
+  ENDIF
+
+  DrawTitle
+
+END
+
+
+PRIVATE SUB RefreshImage(X AS Integer, Y AS Integer, W AS Integer, H AS Integer)
+
+  X = X * $iScale
+  Y = Y * $iScale
+  W = W * $iScale
+  H = H * $iScale
+
+  dwgIcon.Refresh(X - 1, Y - 1, W + 2, H + 2)
+
+END
+
+
+PRIVATE SUB RefreshAllImage()
+
+  dwgIcon.Refresh(svwIcon.ScrollX, svwIcon.ScrollY, svwIcon.ClientW, svwIcon.ClientH)
+
+END
+
+
+
+PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
+
+  IF Project.ReadOnly OR $bReadOnly THEN RETURN
+  IF $bModify <> bReset THEN RETURN
+
+  $bModify = NOT bReset
+  DrawTitle
+  IF $bModify THEN INC Project.TimeStamp
+
+END
+
+
+PUBLIC SUB dwgIcon_Leave()
+
+  HideCoord
+
+END
+
+
+PRIVATE SUB SetPixel(X AS Integer, Y AS Integer, C AS Integer)
+
+  IF C = -2 THEN
+    IF $hImage[X, Y] >= 0 THEN
+      $hImage[X, Y] = &HFFFFFF& - $hImage[X, Y]
+      Modify
+    ENDIF
+  ELSE
+    $hImage[X, Y] = C
+    Modify
+  ENDIF
+
+END
+
+
+PRIVATE SUB DrawPoint(X AS Integer, Y AS Integer, C AS Integer)
+
+  SetPixel(X, Y, C)
+  RefreshImage(X, Y, 1, 1)
+
+END
+
+
+PRIVATE SUB DrawLine(X1 AS Integer, Y1 AS Integer, X2 AS Integer, Y2 AS Integer, C AS Integer)
+
+  DIM X AS Integer
+  DIM Y AS Integer
+  DIM DX AS Float
+  DIM DY AS Float
+  DIM D AS Integer
+  DIM XX AS Float
+  DIM YY AS Float
+  DIM LX AS Integer
+  DIM LY AS Integer
+  DIM bCalc AS Boolean
+
+  D = Max(Abs(X2 - X1), Abs(Y2 - Y1), 1)
+
+  DX = (X2 - X1) / D
+  DY = (Y2 - Y1) / D
+
+  'PRINT "-------"
+  'PRINT "D ="; D; " DX ="; DX; " "; Sgn(DX); " DY ="; DY; " "; Sgn(DY)
+
+  X = X1
+  Y = Y1
+
+  DO
+    'PRINT "X ="; X; " Y ="; Y
+
+    DrawPoint(X, Y, C)
+
+    IF X = X2 AND Y = Y2 THEN BREAK
+
+    bCalc = FALSE
+
+    DO
+
+      XX = XX + DX
+      YY = YY + DY
+
+      IF Abs(XX) > 0.5 THEN
+        X = X + Sgn(DX)
+        XX = XX - Sgn(DX)
+        bCalc = TRUE
+      ENDIF
+
+      IF Abs(YY) > 0.5 THEN
+        Y = Y + Sgn(DY)
+        YY = YY - Sgn(DY)
+        bCalc = TRUE
+      ENDIF
+
+    LOOP UNTIL bCalc
+
+  LOOP
+
+END
+
+PRIVATE SUB DrawRect(X AS Integer, Y AS Integer, W AS Integer, H AS Integer, C AS Integer, OPTIONAL iMode AS Integer = -1)
+
+  DIM XX AS Integer
+  DIM YY AS Integer
+
+  'WITH FIconTool
+
+    IF iMode < 0 THEN iMode = $iMode
+
+    IF iMode > 0 THEN
+
+      IF iMode = 2 THEN C = OtherColor(C)
+
+      FOR XX = X TO X + W - 1
+        FOR YY = Y TO Y + H - 1
+          SetPixel(XX, YY, C)
+        NEXT
+      NEXT
+
+    ENDIF
+
+    IF iMode <> 1 THEN
+
+      IF iMode = 2 THEN C = OtherColor(C)
+
+      FOR XX = X TO X + W - 1
+        SetPixel(XX, Y, C)
+        SetPixel(XX, Y + H - 1, C)
+      NEXT
+
+      FOR YY = Y + 1 TO Y + H - 2
+        SetPixel(X, YY, C)
+        SetPixel(X + W - 1, YY, C)
+      NEXT
+
+    ENDIF
+
+    RefreshImage(X, Y, W, H)
+
+  'END WITH
+
+END
+
+
+PRIVATE SUB DrawEllipse(X AS Integer, Y AS Integer, W AS Integer, H AS Integer, C AS Integer)
+
+  DIM hTemp AS NEW Picture
+  DIM hImage AS Image
+  DIM XX AS Integer
+  DIM YY AS Integer
+  DIM C2 AS Integer
+
+  'WITH FIconTool
+
+    'hTemp.Type = Picture.Bitmap
+    hTemp.Resize(W, H)
+    hTemp.Fill(0)
+
+    Draw.Begin(hTemp)
+
+    SELECT CASE $iMode
+
+      CASE 0
+        Draw.LineStyle = LINE.Solid
+        Draw.ForeColor = 1
+        Draw.FillStyle = Fill.None
+
+      CASE 1
+        Draw.LineStyle = LINE.None
+        Draw.FillStyle = Fill.Solid
+        Draw.FillColor = 1
+
+      CASE 2
+        Draw.LineStyle = LINE.Solid
+        Draw.ForeColor = 1
+        Draw.FillStyle = Fill.Solid
+        Draw.FillColor = 2
+
+    END SELECT
+
+    Draw.Ellipse(0, 0, W, H)
+    Draw.End
+
+    hImage = hTemp.Image
+    C2 = OtherColor(C)
+
+    FOR XX = 0 TO W - 1
+      FOR YY = 0 TO H - 1
+        SELECT CASE hImage[XX, YY]
+          CASE 1
+            SetPixel(X + XX, Y + YY, C)
+          CASE 2
+            SetPixel(X + XX, Y + YY, C2)
+        END SELECT
+      NEXT
+    NEXT
+
+    Modify
+
+    RefreshImage(X, Y, W, H)
+
+  'END WITH
+
+END
+
+
+PRIVATE SUB DrawGhost(OPTIONAL bNoBegin AS Boolean)
+
+  DIM iS2 AS Integer
+  DIM iSH AS Integer
+  DIM iWH AS Integer
+
+  'WITH FIconTool
+
+    IF $sTool = "select" AND NOT $bSelect THEN RETURN
+
+    iS2 = $iScale \ 2
+    iSH = $iScale
+    iWH = iSH * 2 + 1
+
+    IF NOT bNoBegin THEN Draw.Begin(dwgIcon)
+
+    SELECT CASE $sTool
+
+      CASE "line"
+
+        Draw.Invert = TRUE
+        Draw.LineStyle = Line.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.ForeColor = Color.White
+        Draw.Line($X * $iScale + iS2, $Y * $iScale + iS2, $X2 * $iScale + iS2, $Y2 * $iScale + iS2)
+        Draw.Rect($X * $iScale, $Y * $iScale - 1, $iScale1, $iScale1)
+        Draw.Rect($X2 * $iScale, $Y2 * $iScale - 1, $iScale1, $iScale1)
+
+      CASE "select"
+
+        Draw.Invert = TRUE
+        Draw.LineStyle = Line.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.ForeColor = Color.White
+        Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
+
+      CASE "rect"
+
+        Draw.Invert = TRUE
+        Draw.LineStyle = Line.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.ForeColor = Color.White
+        Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
+        IF $iMode = 0 THEN
+          IF Abs($X - $X2) > 1 AND Abs($Y - $Y2) > 1 THEN
+            Draw.Rect((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
+          ENDIF
+        ENDIF
+
+      CASE "circle"
+
+        Draw.Invert = TRUE
+        Draw.LineStyle = LINE.Solid
+        Draw.LineWidth = 3
+        Draw.FillStyle = Fill.None
+        Draw.ForeColor = Color.White
+        Draw.Ellipse(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
+        IF $iMode = 0 THEN
+          IF Abs($X - $X2) > 1 AND Abs($Y - $Y2) > 1 THEN
+            Draw.Ellipse((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
+          ENDIF
+        ENDIF
+
+    END SELECT
+
+    IF NOT bNoBegin THEN
+      Draw.End
+      $bGhost = NOT $bGhost
+    ENDIF
+
+  'END WITH
+
+END
+
+
+PRIVATE SUB BeginUndo()
+
+  IF $iBeginUndo = 0 THEN
+    $hUndo[$iUndo] = $hImage.Copy()
+    $iUndo = ($iUndo + 1) MOD MAX_UNDO
+  ENDIF
+  INC $iBeginUndo
+
+END
+
+PRIVATE SUB EndUndo()
+  
+  DEC $iBeginUndo
+  
+END
+
+PRIVATE SUB SetUndo()
+  
+  BeginUndo
+  EndUndo
+  
+END
+
+
+
+PUBLIC SUB Undo()
+
+  IF HasSelection() THEN
+    HideSelection
+    RETURN
+  ENDIF
+
+  INC Application.Busy
+
+  DEC $iUndo
+  IF $iUndo < 0 THEN $iUndo = MAX_UNDO - 1
+  IF $hUndo[$iUndo] THEN
+    $hImage = $hUndo[$iUndo]
+    $hUndo[$iUndo] = NULL
+    'PRINT svwICon.ClientX; svwIcon.ClientY; svwIcon.ClientW, svwIcon.ClientH
+    'PRINT svwICon.ScrollX; svwIcon.ScrollY
+    'dwgIcon.Refresh(svwIcon.ScrollX, svwIcon.ScrollY, svwIcon.ClientW, svwIcon.ClientH)
+    'svwIcon.Refresh
+    RefreshZoom
+    IF dwgPaste.Visible THEN dwgPaste.Refresh
+    Modify
+  ENDIF
+
+  DEC Application.Busy
+
+END
+
+
+' PRIVATE SUB RefreshSelect()
+'
+'   DIM X AS Integer
+'   DIM Y AS Integer
+'   DIM X2 AS Integer
+'   DIM Y2 AS Integer
+'   DIM W AS Integer
+'   DIM H AS Integer
+'
+'   IF $bSelect THEN
+'
+'     panSelectN.Visible = FALSE
+'     panSelectS.Visible = FALSE
+'     panSelectW.Visible = FALSE
+'     panSelectE.Visible = FALSE
+'
+'     X = $XS * $iScale
+'     Y = $YS * $iScale
+'     X2 = ($XS + $WS) * $iScale
+'     Y2 = ($YS + $HS) * $iScale
+'     W = $WS * $iScale
+'     H = $HS * $iScale
+'
+'     panSelectN.Move(X - WIDTH_SEL, Y - WIDTH_SEL, W + WIDTH_SEL * 2, WIDTH_SEL)
+'     panSelectS.Move(X - WIDTH_SEL, Y2, W + WIDTH_SEL * 2, WIDTH_SEL)
+'
+'     panSelectW.Move(X - WIDTH_SEL, Y, WIDTH_SEL, H)
+'     panSelectE.Move(X2, Y, WIDTH_SEL, H)
+'
+'   ENDIF
+'
+'   panSelectN.Visible = $bSelect
+'   panSelectS.Visible = $bSelect
+'   panSelectW.Visible = $bSelect
+'   panSelectE.Visible = $bSelect
+'
+' END
+
+PUBLIC FUNCTION HasSelection() AS Boolean
+
+  RETURN dwgPaste.Visible
+
+END
+
+
+
+PUBLIC SUB HideSelection()
+
+  IF NOT dwgPaste.Visible THEN RETURN
+
+  IF $bPrivate THEN
+    DoPaste
+    $bPrivate = FALSE
+  ENDIF
+
+  $bSelect = FALSE
+  $XS = 0
+  $YS = 0
+  dwgPaste.Visible = FALSE
+
+END
+
+
+PRIVATE SUB ShowSelection()
+
+  $bSelect = TRUE
+  CopySelection
+  ShowPaste
+  WAIT
+  IF $bPrivate THEN DeleteSelection
+
+END
+
+
+PRIVATE SUB FloodFill(X AS Integer, Y AS Integer, C AS Integer, iMode AS Integer)
+
+  DIM aStack AS NEW Integer[]
+  DIM C2 AS Integer
+  DIM CS AS Integer
+  DIM X1 AS Integer
+  DIM Y1 AS Integer
+  DIM X2 AS Integer
+  DIM Y2 AS Integer
+
+  'WITH FIconTool
+
+    IF iMode = 1 THEN
+      C2 = OtherColor(C)
+    ELSE
+      C2 = C
+    ENDIF
+
+  'END WITH
+
+  CS = $hImage[X, Y]
+  IF CS = C OR CS = C2 THEN RETURN
+
+  INC Application.Busy
+
+  X1 = X
+  Y1 = Y
+  X2 = X
+  Y2 = Y
+
+  aStack.Push(X)
+  aStack.Push(Y)
+
+  WHILE aStack.Count
+
+    Y = aStack.Pop()
+    X = aStack.Pop()
+
+    X1 = Min(X1, X)
+    Y1 = Min(Y1, Y)
+    X2 = Max(X2, X)
+    Y2 = Max(Y2, Y)
+
+    IF (X + Y) AND 1 THEN
+      SetPixel(X, Y, C)
+    ELSE
+      SetPixel(X, Y, C2)
+    ENDIF
+
+    IF X > 0 THEN
+      IF $hImage[X - 1, Y] = CS THEN
+        aStack.Push(X - 1)
+        aStack.Push(Y)
+      ENDIF
+    ENDIF
+
+    IF Y > 0 THEN
+      IF $hImage[X, Y - 1] = CS THEN
+        aStack.Push(X)
+        aStack.Push(Y - 1)
+      ENDIF
+    ENDIF
+
+    IF X < ($hImage.Width - 1) THEN
+      IF $hImage[X + 1, Y] = CS THEN
+        aStack.Push(X + 1)
+        aStack.Push(Y)
+      ENDIF
+    ENDIF
+
+    IF Y < ($hImage.Height - 1) THEN
+      IF $hImage[X, Y + 1] = CS THEN
+        aStack.Push(X)
+        aStack.Push(Y + 1)
+      ENDIF
+    ENDIF
+
+  WEND
+
+  Modify
+  RefreshImage(X1, Y1, X2 - X1 + 1, Y2 - Y1 + 1)
+
+  DEC Application.Busy
+
+END
+
+
+PRIVATE SUB CopySelection()
+
+  'IF dwgPaste.Visible THEN RETURN
+
+  IF $bSelect THEN
+    Clipboard.Copy($hImage.Copy($XS, $YS, $WS, $HS))
+  ELSE
+    Clipboard.Copy($hImage)
+  ENDIF
+
+END
+
+
+PRIVATE SUB DeleteSelection()
+
+  SetUndo
+  IF HasSelection() THEN
+    DrawRect($XS, $YS, $WS, $HS, -1, 1)
+  ELSE
+    $hImage.Fill(-1)
+    RefreshAllImage()
+    Modify
+  ENDIF
+
+END
+
+
+
+PUBLIC SUB RefreshPaste()
+
+  IF NOT $hPaste THEN RETURN
+
+  dwgPaste.Move($XS * $iScale, $YS * $iScale, $hPaste.Width * $iScale, $hPaste.Height * $iScale)
+  IF NOT dwgPaste.Visible THEN
+    dwgPaste.Show
+  ELSE
+    dwgPaste.Refresh
+  ENDIF
+
+  ' IF dwgPaste.Visible THEN dwgPaste.Refresh
+
+END
+
+
+
+PUBLIC SUB ShowPaste(OPTIONAL bReset AS Boolean)
+
+  IF Clipboard.Type <> Clipboard.Image THEN RETURN
+
+  $hPaste = Clipboard.Paste()
+  $WS = $hPaste.Width
+  $HS = $hPaste.Height
+
+  IF bReset THEN
+    $XS = ($hImage.Width - $WS) \ 2
+    $YS = ($hImage.Height - $HS) \ 2
+    svwIcon.Scroll($XS * $iScale, $YS * $iScale)
+  ENDIF
+
+  RefreshPaste
+
+  $bSelect = TRUE
+
+END
+
+
+PRIVATE SUB HidePaste()
+
+  dwgPaste.Hide
+
+END
+
+
+PRIVATE SUB PasteSelection()
+
+  DIM X AS Integer
+  DIM Y AS Integer
+  DIM C AS Integer
+
+  IF $bTrans THEN
+
+    FOR X = 0 TO $hPaste.Width - 1
+      FOR Y = 0 TO $hPaste.Height - 1
+        C = $hPaste[X, Y]
+        IF C < 0 THEN CONTINUE
+        $hImage[X + $XS, Y + $YS] = C
+      NEXT
+    NEXT
+
+  ELSE
+
+    FOR X = 0 TO $hPaste.Width - 1
+      FOR Y = 0 TO $hPaste.Height - 1
+        $hImage[X + $XS, Y + $YS] = $hPaste[X, Y]
+      NEXT
+    NEXT
+
+  ENDIF
+
+  Modify
+
+END
+
+
+
+PUBLIC SUB DoPaste()
+
+  DIM bTrans AS Boolean
+
+  IF NOT dwgPaste.Visible THEN
+    ShowPaste(TRUE)
+    $bPrivate = FALSE
+    RETURN
+  ENDIF
+
+  INC Application.Busy
+
+  SetUndo
+  PasteSelection
+
+  DEC Application.Busy
+
+END
+
+
+PUBLIC SUB dwgPaste_MouseDown()
+
+  $X = Mouse.ScreenX - dwgPaste.ScreenX
+  $Y = Mouse.ScreenY - dwgPaste.ScreenY
+
+END
+
+PUBLIC SUB dwgPaste_MouseMove()
+
+  DIM XP AS Integer
+  DIM YP AS Integer
+
+  RefreshCoord(Mouse.X \ $iScale + $XS, Mouse.Y \ $iScale + $YS)
+  
+  IF NOT Mouse.Left THEN RETURN
+
+  XP = (Mouse.ScreenX - $X - dwgIcon.ScreenX) \ $iScale
+  YP = (Mouse.ScreenY - $Y - dwgIcon.ScreenY) \ $iScale
+
+  IF XP = $XS AND YP = $YS THEN RETURN
+
+  $XS = XP
+  $YS = YP
+
+  dwgPaste.Refresh
+  dwgPaste.Move($XS * $iScale, $YS * $iScale)
+  'dwgPaste.Show
+
+  UpdateScroll(Mouse.X + dwgPaste.X, Mouse.Y + dwgPaste.Y)
+
+END
+
+PRIVATE SUB UpdateScroll(X AS Integer, Y AS Integer)
+
+  DIM NX AS Integer
+  DIM NY AS Integer
+
+  IF X >= (svwIcon.ScrollX + svwIcon.ClientW) THEN
+    NX = X - svwIcon.ClientW + 1
+  ELSE IF X < svwIcon.ScrollX THEN
+    NX = Max(0, X)
+  ELSE
+    NX = svwIcon.ScrollX
+  ENDIF
+
+  IF Y >= (svwIcon.ScrollY + svwIcon.ClientH) THEN
+    NY = Y - svwIcon.ClientH + 1
+  ELSE IF Y < svwIcon.ScrollY THEN
+    NY = Max(0, Y)
+  ELSE
+    NY = svwIcon.ScrollY
+  ENDIF
+
+  svwIcon.Scroll(NX, NY)
+
+END
+
+
+PUBLIC SUB dwgPaste_MouseUp()
+
+  IF Mouse.Right THEN
+    DoPaste
+  ENDIF
+
+END
+
+PUBLIC SUB DoFlip(iMode AS Integer)
+
+  DIM iAngle AS Float
+
+  IF dwgPaste.Visible THEN
+
+    SELECT CASE iMode
+
+      CASE 0
+        $hPaste = $hPaste.Flip()
+
+      CASE 1
+        $hPaste = $hPaste.Mirror()
+
+      CASE 2
+        $hPaste = $hPaste.Rotate(90)
+
+      CASE 3
+        $hPaste = $hPaste.Rotate(-90)
+
+    END SELECT
+
+    RefreshPaste
+
+  ELSE
+
+    SetUndo
+
+    SELECT CASE iMode
+
+      CASE 0
+        $hImage = $hImage.Flip()
+
+      CASE 1
+        $hImage = $hImage.Mirror()
+
+      CASE 2
+        $hImage = $hImage.Rotate(90)
+        DrawTitle
+
+      CASE 3
+        $hImage = $hImage.Rotate(-90)
+        DrawTitle
+
+    END SELECT
+
+    RefreshZoom
+    Modify
+
+  ENDIF
+
+END
+
+PUBLIC SUB SelectAll()
+
+  HideSelection
+  $XS = 0
+  $YS = 0
+  $WS = $hImage.Width
+  $HS = $hImage.Height
+  ShowSelection
+
+END
+
+
+PUBLIC SUB Form_KeyPress()
+
+  IF Key.Control THEN
+    IF Key.Code = Key["Z"] THEN
+      Undo
+    ELSE IF Key.Code = Key["A"] THEN
+      IF $sTool = "select" THEN
+        SelectAll
+      ENDIF
+    ELSE IF Key.Code = Key["S"] THEN
+      Save
+    ENDIF
+  ELSE
+    IF Key.Code = Key["Esc"] THEN
+      HideSelection
+    ENDIF
+  ENDIF
+
+END
+
+
+PUBLIC SUB Clear()
+
+  IF Message.Delete(("Do you want to clear the image ?"), ("Clear"), ("Cancel")) <> 1 THEN RETURN
+
+  SetUndo
+  $hImage.Fill(-1)
+  RefreshAllImage()
+  Modify
+
+END
+
+PUBLIC SUB dwgIcon_DblClick()
+
+  DrawGhost
+
+END
+
+PUBLIC SUB Form_Close() 
+
+  IF $bModify THEN
+    IF NOT Project.AboutToQuit THEN
+      SELECT CASE Message.Question(("This image has been modified.\nDo you want to save it ?"), ("Save"), ("Close"), ("Cancel"))
+        CASE 1
+          Save
+        CASE 3
+          STOP EVENT
+          RETURN
+      END SELECT
+    ENDIF
+  ENDIF
+
+  Project.Files[Path] = NULL
+
+END
+
+PUBLIC SUB ZoomIn()
+
+  DIM iPos AS Integer
+
+  iPos = $aZoom.Find($iScale)
+  IF iPos < 0 OR iPos >= ($aZoom.Count - 1) THEN RETURN
+  $iScale = $aZoom[iPos + 1]
+  RefreshZoom
+
+END
+
+PUBLIC SUB ZoomOut()
+
+  DIM iPos AS Integer
+
+  iPos = $aZoom.Find($iScale)
+  IF iPos <= 0 THEN RETURN
+  $iScale = $aZoom[iPos - 1]
+  RefreshZoom
+
+END
+
+
+PRIVATE SUB Zoom()
+  
+  $iScale = $aZoom[cmbZoom.Index]
+  RefreshZoom
+  
+END
+
+
+
+PUBLIC SUB Form_Enter()
+
+  dwgIcon.Mouse = GetMouse()
+
+END
+
+
+PUBLIC SUB SwapColor(OPTIONAL bInv AS Boolean)
+
+  DIM C1 AS Integer
+  DIM C2 AS Integer
+
+  'WITH FIconTool
+
+    C1 = GetColor(1)
+    C2 = GetColor(2)
+    IF bInv THEN SWAP C1, C2
+
+  'END WITH
+
+  IF dwgPaste.Visible THEN
+
+    $hPaste.Replace(C1, C2)
+    RefreshPaste
+
+  ELSE
+
+    SetUndo
+    $hImage.Replace(C1, C2)
+    RefreshZoom
+    Modify
+
+  ENDIF
+
+END
+
+PUBLIC SUB dwgIcon_KeyPress()
+
+  Form_KeyPress  
+
+END
+
+PUBLIC SUB dwgPaste_KeyPress()
+
+  Form_KeyPress  
+
+END
+
+PRIVATE SUB RedrawColor(iColor AS Integer, X AS Integer, Y AS Integer, W AS Integer, H AS Integer)
+
+  Draw.LineStyle = Line.Solid
+  Draw.ForeColor = Color.Gray
+
+  IF iColor >= 0 THEN
+    Draw.FillStyle = Fill.Solid
+    Draw.FillColor = iColor
+    Draw.Rect(X, Y, W + 1, H + 1)
+  ELSE IF iColor = -1 THEN
+    Draw.FillX = 0
+    Draw.FillY = 0
+    Draw.Tile($hTile, X, Y, W + 1, H + 1)
+    Draw.FillStyle = Fill.None
+    Draw.FillColor = Color.Black
+    Draw.Rect(X, Y, W, H)
+  ELSE
+    Draw.FillStyle = Fill.Solid
+    Draw.FillColor = Color.Black
+    Draw.Rect(X, Y, W, H)
+    Draw.FillColor = Color.White
+    Draw.Rect(X + W \ 2, Y, W \ 2 + 1, H \ 2 + 1)
+    Draw.Rect(X, Y + H \ 2, W \ 2 + 1, H \ 2 + 1)
+  ENDIF
+
+END
+
+PUBLIC SUB dwgColor_Draw()
+
+  DIM iColor AS Integer
+  
+  iColor = LAST.Tag
+  IF iColor >= 0 AND iColor < $cColor.Count THEN  
+    iColor = $cColor[iColor]
+  ELSE
+    iColor = -1
+  ENDIF
+
+  RedrawColor(iColor, 3, 3, 18, 18)
+
+END
+
+PRIVATE SUB SetMode(iMode AS Integer)
+  
+  IF $hMode THEN $hMode.Value = FALSE
+  $iMode = iMode
+  $hMode = [btnBorder, btnFilled, btnBorderFilled][iMode]
+  $hMode.Value = TRUE
+  
+END
+
+PRIVATE SUB SetTransparent(bTrans AS Boolean)
+  
+  IF $hTrans THEN $hTrans.Value = FALSE
+  $bTrans = bTrans
+  $hTrans = If($bTrans, btnTransparent, btnOpaque)
+  $hTrans.Value = TRUE
+  
+  IF HasSelection() THEN RefreshPaste
+  
+END
+
+
+PUBLIC SUB btnTool_Click()
+
+  IF LAST.Toggle THEN
+    IF NOT LAST.Value THEN RETURN
+  ENDIF
+
+  SELECT CASE LAST.Tag
+  
+    CASE "move", "select", "pen", "line", "rect", "circle", "fill", "fill-alt", "pipette"
+      SetTool(LAST)
+  
+    CASE "opaque"
+      SetTransparent(FALSE)
+
+    CASE "transparent"
+      SetTransparent(TRUE)
+      
+    CASE "border"
+      SetMode(0)
+      
+    CASE "full"
+      SetMode(1)
+      
+    CASE "border-full"
+      SetMode(2)
+      
+    CASE "zoom-in"
+      ZoomIn
+      
+    CASE "zoom-out"
+      ZoomOut
+      
+    CASE "save"
+      ME.Save
+      
+    CASE "undo"
+      Undo
+      
+    CASE "clear"
+      Clear
+    
+    CASE "swap"
+      SwapColor
+      
+    CASE "flip-h"
+      DoFlip(0)
+            
+    CASE "flip-v"
+      DoFlip(1)
+            
+    CASE "rotate"
+      DoFlip(2)
+            
+    CASE "rotate-back"
+      DoFlip(3)
+      
+    CASE "exchange"
+      SWAP $iForeground, $iBackground
+      RefreshColor
+      
+    CASE "cut"
+      IF HasSelection() THEN
+        Clipboard.Copy($hPaste)
+        IF $bPrivate THEN PasteSelection
+        BeginUndo
+        $bPrivate = FALSE
+        DeleteSelection
+        HideSelection
+        EndUndo
+      ELSE
+        BeginUndo
+        CopySelection
+        DeleteSelection
+        EndUndo
+      ENDIF
+      
+    CASE "copy"
+      IF HasSelection() THEN
+        Clipboard.Copy($hPaste)
+        HideSelection
+      ELSE
+        CopySelection
+      ENDIF
+    
+    CASE "paste"
+      DoPaste 'PasteSelection
+      SetTool(btnSelect)
+
+  END SELECT
+  
+END
+
+
+'----------------------------------------------------------------------------------------
+
+' PRIVATE SUB ChangeMode(hImage AS ToolButton, sMode AS String, sLstPict AS String, sLstToolTip AS String)
+' 
+'   DIM iMode AS Integer
+'   DIM aLstPict AS String[]
+'   DIM aLstToolTip AS String[]
+' 
+'   aLstPict = Split(sLstPict)
+'   aLstToolTip = Split(sLstToolTip)
+' 
+'   iMode = ($cMode[sMode] + 1) MOD aLstPict.Count
+' 
+'   hImage.Picture = Picture["img/16" &/ aLstPict[iMode] & ".png"]
+'   hImage.ToolTip = aLstToolTip[iMode]
+' 
+'   $cMode[sMode] = iMode
+' 
+' END
+
+
+' PUBLIC SUB btnTool_MouseUp()
+' 
+'   DIM hLast AS ToolButton
+'   DIM bCommand AS Boolean
+'   DIM bUp AS Boolean
+' 
+'   hLast = LAST
+' 
+'   bCommand = TRUE
+' 
+'   SELECT CASE hLast.Tag
+' 
+'     CASE "zoom"
+' 
+'       IF Mouse.Left THEN
+'         $hCurrent.ZoomIn
+'       ELSE IF Mouse.Right THEN
+'         $hCurrent.ZoomOut
+'       ENDIF
+' 
+'     CASE "save"
+' 
+'       $hCurrent.Save
+' 
+'     CASE "undo"
+' 
+'       $hCurrent.Undo
+' 
+'     CASE "clear"
+' 
+'       $hCurrent.Clear
+' 
+'     CASE "swap"
+' 
+'       $hCurrent.SwapColor(Mouse.Left)
+' 
+'     CASE "paste"
+' 
+'       $hCurrent.DoPaste
+'       hLast.Value = FALSE
+'       IF $hTool <> btnSelect THEN
+'         $hLast = btnSelect
+'         RevertTool
+'       ENDIF
+'       RETURN
+' 
+'     CASE "flip"
+' 
+'       IF Mouse.Left THEN
+'         $hCurrent.DoFlip
+'       ELSE
+'         ChangeMode(btnFlip, "flip", "flip-h,flip-v,rotate,rotate-back", ("Horizontal flip,Vertical flip,Rotate clockwise,Rotate counter-clockwise"))
+'       ENDIF
+' 
+'     DEFAULT
+'       bCommand = FALSE
+' 
+'   END SELECT
+' 
+'   IF bCommand THEN
+'     'hLast.Border = Border.None
+'     hLast.Value = FALSE
+'     RETURN
+'   ENDIF
+' 
+'   'IF Button = 1 OR hLast <> $hTool THEN
+' 
+'   'ELSE
+' 
+'     SELECT CASE hLast.Tag
+' 
+'       CASE "rect"
+'         IF Mouse.Right THEN
+'           ChangeMode(btnRect, "rect", "square,square-f,square-fr", ("Rectangle,Filled rectangle,Filled delimited rectangle"))
+'         ENDIF
+
+' 
+'       CASE "circle"
+'         IF Mouse.Right THEN
+'           ChangeMode(btnCircle, "circle", "circle,circle-f,circle-fr", ("Ellipse,Filled ellipse,Filled delimited ellipse"))
+'         ENDIF
+' 
+'       CASE "fill"
+'         IF Mouse.Right THEN
+'           ChangeMode(btnFill, "fill", "fill,fill-alt", ("Flood fill,Patterned flood fill"))
+'         ENDIF
+' 
+'       CASE "select"
+'         IF Mouse.Left THEN
+'           IF hLast = $hTool THEN
+'             IF NOT $hCurrent.HasSelection() THEN
+'               $hCurrent.SelectAll
+'             ELSE
+'               $hCurrent.HideSelection
+'             ENDIF
+'           ELSE
+'             $hCurrent.HideSelection
+'           ENDIF
+'         ELSE IF Mouse.Right THEN
+'           ChangeMode(btnSelect, "select", "frame,frame-opaque", ("Select and transparent paste,Select and opaque paste"))
+'           $hCurrent.RefreshPaste
+'         ENDIF
+' 
+'       'CASE "move"
+'       '
+'       '  IF Button AND Mouse.Right THEN
+'       '    ChangeMode(imgMove, "move", "scroll,move",("Move,Translate"))
+'       '  ENDIF
+' 
+'     END SELECT
+' 
+'   'ENDIF
+' 
+'   $hLast = $hTool
+'   $hTool = hLast
+' 
+'   IF $hLast THEN
+'     IF $hLast <> $hTool THEN
+'       '$hLast.Border = Border.None
+'       $hLast.Value = FALSE
+'     ENDIF
+'   ENDIF
+' 
+'   ChangeTool
+' 
+' END
+
+
+PUBLIC SUB SetTool(hTool AS ToolButton)
+
+  IF NOT hTool THEN RETURN
+
+  IF hTool = $hTool THEN
+    $hTool.Value = TRUE
+    RETURN
+  ENDIF
+
+  IF hTool.Tag = "pipette" THEN $hLast = $hTool
+
+  IF $hTool THEN $hTool.Value = FALSE
+  $hTool = hTool
+  $hTool.Value = TRUE  
+
+  $sTool = $hTool.Tag
+
+  SELECT $sTool
+
+    CASE "move"
+      SetIcon(Mouse.SizeAll)
+
+    CASE "pen"
+      SetIcon(Mouse.Arrow)
+
+    CASE ELSE
+      SetIcon(Mouse.Cross)
+
+  END SELECT
+  
+END
+
+
+PUBLIC SUB RevertTool()
+
+  SetTool($hLast)
+
+END
+
+
+
+PUBLIC SUB dwgColor_MouseDown()
+
+  DIM C AS Integer
+
+  C = LAST.Tag
+
+  IF C < $cColor.Count THEN
+    C = $cColor[C]
+  ELSE
+    C = -1
+  ENDIF
+
+  IF Mouse.Left THEN
+    $iForeground = C
+  ELSE
+    $iBackground = C
+  ENDIF
+
+  RefreshColor
+
+END
+
+PRIVATE SUB RefreshColor()
+
+  dwgForeground.Refresh
+  dwgBackground.Refresh
+
+END
+
+PUBLIC SUB SetForeground(iColor AS Integer)
+
+  $iForeground = iColor
+  RefreshColor
+
+END
+
+PUBLIC SUB SetBackground(iColor AS Integer)
+
+  $iBackground = iColor
+  RefreshColor
+
+END
+
+
+
+PUBLIC SUB dwgForeground_Draw()
+
+  'Draw.LineStyle = Line.None 'LINE.Solid
+  RedrawColor($iForeground, 3, 3, dwgForeground.Width - 6, dwgForeground.Height - 6)
+
+END
+
+
+PUBLIC SUB dwgBackground_Draw()
+
+  'Draw.LineStyle = Line.None 'LINE.Solid
+  RedrawColor($iBackground, 3, 3, dwgBackground.Width - 6, dwgBackground.Height - 6)
+  
+END
+
+
+PUBLIC FUNCTION GetColor(iButton AS Integer) AS Integer
+
+  IF iButton = 1 THEN
+    RETURN $iForeground
+  ELSE
+    RETURN $iBackground
+  ENDIF
+
+END
+
+
+PUBLIC SUB dwgForeground_MouseUp()
+
+  IF FColorChooser.Run("&H" & Hex$($iForeground)) THEN RETURN
+  $iForeground = FColorChooser.Value
+  RefreshColor
+
+END
+
+PUBLIC SUB dwgBackground_MouseUp()
+
+  IF FColorChooser.Run("&H" & Hex$($iBackground)) THEN RETURN
+  $iBackground = FColorChooser.Value
+  RefreshColor
+
+END
+
+PUBLIC FUNCTION OtherColor(C AS Integer) AS Integer
+
+  IF C = $iBackground THEN
+    RETURN $iForeground
+  ELSE
+    RETURN $iBackground
+  ENDIF
+
+END
+
+
+PRIVATE SUB SetIcon(iMouse AS Integer)
+
+  $iMouse = iMouse
+  Form_Enter
+
+END
+
+PUBLIC FUNCTION GetMouse() AS Integer
+
+  RETURN $iMouse
+
+END
+
+PUBLIC SUB Form_Activate()
+
+  ' To be activated  
+
+END
+
+
+PUBLIC SUB cmbZoom_Click()
+
+  Object.Lock(cmbZoom)
+  Zoom
+  Object.UnLock(cmbZoom)
+
+END
+
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+
+  RETURN $bReadOnly  
+
+END

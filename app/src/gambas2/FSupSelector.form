@@ -1,0 +1,107 @@
+# Gambas Form File 1.0
+
+{ FSupSelector Form
+  MoveScaled(7.625,28.125,70,53)
+  'Move(61,225,560,424)
+  Text = ("")
+  { Splitter HSplit
+    MoveScaled(2,5,63,34)
+    'Move(16,40,504,272)
+    { TreeExplorer TreeView
+      MoveScaled(0,5,23,25)
+      'Move(0,40,184,200)
+      Sorted = True
+    }
+    { Panel1 Panel
+      MoveScaled(25,2,37,30)
+      'Move(200,16,296,240)
+      Arrangement = Arrange.Fill
+      { ivExplorer IconView Explorer
+        MoveScaled(4,0,23,26)
+        'Move(32,0,184,208)
+        Font = Font["8"]
+        Arrangement = IconView.LeftRight
+        GridWidth = 16
+        WordWrap = True
+      }
+      { cvExplorer ColumnView Explorer
+        MoveScaled(1,6,35,23)
+        'Move(8,48,280,184)
+        Font = Font["-1"]
+        Sorted = True
+      }
+    }
+  }
+  { cboLook ComboBox
+    MoveScaled(10,1,38,3)
+    'Move(80,8,304,24)
+    Text = (" ")
+  }
+  { lblLook Label
+    MoveScaled(1,1,8,3)
+    'Move(8,8,64,24)
+    Text = ("Look in")
+  }
+  { pnlButton Panel
+    MoveScaled(49,1,12,3)
+    'Move(392,8,96,24)
+    { btnParent ToolButton
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      ToolTip = ("Parent directory")
+      Text = ("")
+      Picture = Picture["icon:/16/up"]
+    }
+    { btnRefresh ToolButton
+      MoveScaled(9,0,3,3)
+      'Move(72,0,24,24)
+      ToolTip = ("Refresh")
+      Text = ("")
+      Picture = Picture["icon:/16/refresh"]
+    }
+    { btnTypeList ToolButton
+      MoveScaled(0,0,3,3)
+      'Move(0,0,24,24)
+      Text = ("")
+      Picture = Picture["icon:/16/view-detail"]
+    }
+    { btnNewDir ToolButton
+      MoveScaled(6,0,3,3)
+      'Move(48,0,24,24)
+      ToolTip = ("New directory")
+      Text = ("")
+      Picture = Picture["icon:/16/new-dir"]
+    }
+  }
+  { pnlFile Panel
+    MoveScaled(1,42,66,7)
+    'Move(8,336,528,56)
+    { txtFile TextBox
+      MoveScaled(16,0,41,3)
+      'Move(128,0,328,24)
+      Text = ("")
+    }
+    { cboFilter ComboBox
+      MoveScaled(16,4,41,3)
+      'Move(128,32,328,24)
+      ToolTip = ("Select a filter")
+      Text = (" ")
+      ReadOnly = True
+    }
+    { lblFile TextLabel
+      MoveScaled(0,0,16,3)
+      'Move(0,0,128,24)
+      Text = ("")
+    }
+    { lblFilter TextLabel
+      MoveScaled(0,4,16,3)
+      'Move(0,32,128,24)
+      Text = ("Filters")
+    }
+  }
+  { imgTimer #Timer
+    #X = 512
+    #Y = 360
+    Delay = 20
+  }
+}

@@ -1,0 +1,62 @@
+# Gambas Form File 1.0
+
+{ FSoundPlayer Form
+  MoveScaled(41.5,35.375,47.875,11.25)
+  'Move(332,283,383,90)
+  Text = ("Gambas Music Player")
+  Icon = Picture["sound.png"]
+  Border = Window.Fixed
+  { btnOpen ToolButton
+    MoveScaled(0,8,3,3)
+    'Move(0,64,24,24)
+    Text = ("")
+    Picture = Picture["icon:/16/open"]
+  }
+  { btnPlay ToolButton
+    MoveScaled(3,8,3,3)
+    'Move(24,64,24,24)
+    Text = ("")
+    Picture = Picture["icon:/16/play"]
+  }
+  { btnPause ToolButton
+    MoveScaled(6,8,3,3)
+    'Move(48,64,24,24)
+    Text = ("")
+    Picture = Picture["icon:/16/pause"]
+  }
+  { btnStop ToolButton
+    MoveScaled(9,8,3,3)
+    'Move(72,64,24,24)
+    Text = ("")
+    Picture = Picture["icon:/16/stop"]
+  }
+  { sldPos Slider
+    MoveScaled(0,5,45,3)
+    'Move(0,40,360,24)
+    MaxValue = 3600
+    Step = 2
+    Tracking = False
+  }
+  { lblPos Label
+    MoveScaled(30,8,15,3)
+    'Move(240,64,120,24)
+    Font = Font["14,Bold"]
+    Text = ("")
+    Alignment = Align.Right
+  }
+  { timMusic #Timer
+    #X = 120
+    #Y = 64
+  }
+  { sldVolume Slider
+    MoveScaled(45,0,3,11)
+    'Move(360,0,24,88)
+    MaxValue = 128
+    PageStep = 8
+  }
+  { lblTitle TextLabel
+    MoveScaled(0,0,45,5)
+    'Move(0,0,360,40)
+    Text = ("Choose a music file...")
+  }
+}

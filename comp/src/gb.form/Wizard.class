@@ -1,0 +1,203 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserContainer
+
+PUBLIC CONST _Properties AS String = "*,Count{Range:1;256}=1,Index,Text,Picture,ShowTitle=TRUE"
+PUBLIC CONST _DefaultEvent AS String = "Change"
+
+EVENT BeforeChange
+EVENT Change
+EVENT Cancel
+EVENT Click
+EVENT {Close}
+
+PROPERTY Count AS Integer
+PROPERTY Index AS Integer
+PROPERTY Text AS String
+PROPERTY Picture AS Picture
+PROPERTY ShowTitle AS Boolean
+
+PRIVATE $hWizard AS FWizard
+PRIVATE $aStep AS NEW Object[]
+PRIVATE $iCurrent AS Integer = -1
+PRIVATE $iLast AS Integer
+
+PUBLIC SUB _new()
+
+  $hWizard = NEW FWizard(ME)
+  Object.Attach($hWizard, ME, "Wizard")
+
+  ME.Count = 1
+  'ME.Index = 0
+
+END
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  RETURN $aStep.Count
+
+END
+
+PRIVATE SUB Count_Write(iCount AS Integer)
+
+  DIM iInd AS Integer
+  DIM hStep AS WizardContainer
+
+  IF iCount < 1 THEN Error.Raise("Bad argument")
+  IF iCount = $aStep.Count THEN RETURN
+
+  IF iCount < $aStep.Count THEN
+
+    FOR iInd = $aStep.Max TO iCount STEP -1
+      hStep = $aStep[iInd]
+      IF hStep.Children.Count THEN Error.Raise("Wizard step is not empty")
+    NEXT
+
+    FOR iInd = $aStep.Max TO iCount STEP -1
+      $aStep[iInd].Delete
+    NEXT
+
+    $aStep.Remove(iCount, -1)
+    Index_Write(Min($iCurrent, $aStep.Max))
+
+  ELSE
+
+    FOR iInd = $aStep.Count TO iCount - 1
+      hStep = NEW WizardContainer($hWizard.GetContainer()) AS "WizardContainer"
+      hStep.Tag = iInd
+      $aStep.Add(hStep)
+      hStep.Text = Subst(("Step #&1"), CInt(iInd + 1))
+    NEXT
+    'ME.Index = iCount - 1
+    Index_Write(0)
+
+  ENDIF
+
+END
+
+PRIVATE FUNCTION Index_Read() AS Integer
+
+  RETURN $iCurrent
+
+END
+
+PRIVATE SUB Index_Write(iIndex AS Integer)
+
+  DIM bCancel AS Boolean
+
+  IF iIndex < 0 OR iIndex >= $aStep.Count THEN Error.Raise("Bad index")
+
+  IF iIndex = $iCurrent THEN RETURN
+
+  IF iIndex > $iCurrent THEN
+    bCancel = RAISE BeforeChange
+    IF bCancel THEN RETURN
+  ENDIF
+
+  ME._Container = $aStep[iIndex]
+
+  $iLast = $iCurrent
+  $iCurrent = iIndex
+
+  RefreshWizard
+
+  RAISE Change
+  RAISE Click
+
+END
+
+PRIVATE SUB RefreshWizard()
+
+  DIM hCurrent AS WizardContainer
+
+  IF $iCurrent >= 0 THEN
+
+    hCurrent = $aStep[$iCurrent]
+    hCurrent.Show
+    hCurrent.Raise
+    $hWizard.SetTitle(hCurrent.Text, hCurrent.Picture)
+    $hWizard.SetPosition($iCurrent, $aStep.Max)
+   WAIT
+
+  ENDIF
+
+  IF $iLast >= 0 AND $iLast <= $aStep.Max THEN
+    $aStep[$iLast].Lower
+    $aStep[$iLast].Hide
+  ENDIF
+
+END
+
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN $aStep[$iCurrent].Text
+
+END
+
+PRIVATE SUB Text_Write(sText AS String)
+
+  $aStep[$iCurrent].Text = sText
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  RETURN $aStep[$iCurrent].Picture
+
+END
+
+PRIVATE SUB Picture_Write(hPict AS Picture)
+
+  $aStep[$iCurrent].Picture = hPict
+
+END
+
+PUBLIC SUB WizardContainer_Refresh()
+
+  RefreshWizard
+
+END
+
+PUBLIC FUNCTION _get(Index AS Integer) AS WizardContainer
+
+  IF Index < 0 OR Index >= $aStep.Count THEN Error.Raise("Bad index")
+  RETURN $aStep[Index]
+
+END
+
+PUBLIC SUB Wizard_Previous()
+
+  IF $iCurrent > 0 THEN Index_Write($iCurrent - 1)
+
+END
+
+PUBLIC SUB Wizard_Next()
+
+  IF $iCurrent < $aStep.Max THEN
+    Index_Write($iCurrent + 1)
+  ELSE
+    RAISE BeforeChange
+    RAISE {Close}
+  ENDIF
+
+END
+
+PUBLIC SUB Wizard_Cancel()
+
+  RAISE Cancel
+
+END
+
+PRIVATE FUNCTION ShowTitle_Read() AS Boolean
+
+  RETURN $hWizard.GetShowTitle()
+
+END
+
+PRIVATE SUB ShowTitle_Write(Value AS Boolean)
+
+  $hWizard.SetShowTitle(Value)
+
+END

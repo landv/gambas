@@ -1,0 +1,123 @@
+# Gambas Form File 1.0
+
+{ FMain Form
+  Move(209,160,504,339)
+  Text = ("DnsClient Example")
+  Border = Window.Fixed
+  { Button1 Button
+    Move(8,296,128,32)
+    Text = ("Go!")
+  }
+  { Label1 Label
+    Move(8,56,472,24)
+    Text = ("")
+  }
+  { TextBox1 TextBox
+    Move(8,88,224,24)
+    Text = ("gambas.sourceforge.net")
+  }
+  { TextBox2 TextBox
+    Move(8,112,224,24)
+    Text = ("www.kudla.org")
+  }
+  { TextBox3 TextBox
+    Move(8,136,224,24)
+    Text = ("www.freshmeat.net")
+  }
+  { Label2 Label
+    Move(240,88,256,24)
+    Font = Font["Bold"]
+    Background = &H5500FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { Label3 Label
+    Move(240,112,256,24)
+    Font = Font["Bold"]
+    Background = &H5500FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { Label4 Label
+    Move(240,136,256,24)
+    Font = Font["Bold"]
+    Background = &H5500FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { Timer1 #Timer
+    #X = 104
+    #Y = 256
+  }
+  { Label5 Label
+    Move(144,296,216,32)
+    Font = Font["12,Bold"]
+    Background = &HAA0000&
+    Foreground = &HFFFFFF&
+    Text = ("")
+    Alignment = Align.Center
+  }
+  { Button2 Button
+    Move(368,296,128,32)
+    Text = ("Cancel")
+  }
+  { TextBox4 TextBox
+    Move(8,160,224,24)
+    Text = ("www.slashdot.org")
+  }
+  { TextBox5 TextBox
+    Move(8,184,224,24)
+    Text = ("www.rpmfind.net")
+  }
+  { TextBox6 TextBox
+    Move(8,208,224,24)
+    Text = ("www.debian.org")
+  }
+  { TextBox7 TextBox
+    Move(8,232,224,24)
+    Text = ("www.mandrake.com")
+  }
+  { Label6 Label
+    Move(240,160,256,24)
+    Font = Font["Bold"]
+    Background = &H5500FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { Label7 Label
+    Move(240,184,256,24)
+    Font = Font["Bold"]
+    Background = &H5500FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { Label8 Label
+    Move(240,208,256,24)
+    Font = Font["Bold"]
+    Background = &H5500FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { Label9 Label
+    Move(240,232,256,24)
+    Font = Font["Bold"]
+    Background = &H5500FF&
+    Foreground = &HFFFF00&
+    Text = ("")
+  }
+  { ComboBox1 ComboBox
+    Move(8,8,296,24)
+    Text = (" ")
+    ReadOnly = True
+    List = ("Host Name to IP\nIP to Host Name")
+  }
+  { Button3 Button
+    Move(192,264,96,24)
+    Text = ("<< Copy")
+  }
+  { CheckBox1 CheckBox
+    Move(328,8,168,24)
+    Text = ("Asynchronous")
+    Value = True
+  }
+}

@@ -1,0 +1,71 @@
+# Gambas Form File 1.0
+
+{ TreeViewExample Form
+  MoveScaled(25.1111,11.4444,56,43.4444)
+  'Move(226,103,504,391)
+  Text = ("TreeView Example")
+  Icon = Picture["treeview.png"]
+  Border = Window.Fixed
+  { Help Menu
+    Text = ("Help")
+    { About Menu
+      Text = ("About")
+    }
+  }
+  { TreeView1 TreeView
+    MoveScaled(1,1,20,38)
+    'Move(9,9,180,342)
+  }
+  { Button1 Button
+    MoveScaled(41,1,14,3)
+    'Move(369,9,126,27)
+    Text = ("Insert Name")
+  }
+  { Button2 Button
+    MoveScaled(41,5,14,3)
+    'Move(369,45,126,27)
+    Text = ("Remove Name")
+  }
+  { TextBox1 TextBox
+    MoveScaled(22,1,18,3)
+    'Move(198,9,162,27)
+    Text = ("")
+  }
+  { Frame1 Frame
+    MoveScaled(22,9,33,6)
+    'Move(198,81,297,54)
+    Text = ("")
+    { TextLabel1 TextLabel
+      MoveScaled(1,1,31,4)
+      'Move(9,9,279,36)
+      Text = ("")
+    }
+  }
+  { Label2 Label
+    MoveScaled(22,17,33,3)
+    'Move(198,153,297,27)
+    Text = ("\"Event Stack\" For TreeView")
+    Alignment = Align.Center
+  }
+  { TextArea1 TextArea
+    MoveScaled(22,20,33,15)
+    'Move(198,180,297,135)
+    Text = ("")
+  }
+  { Button3 Button
+    MoveScaled(39,36,16,3)
+    'Move(351,324,144,27)
+    Text = ("Clear \"Stack\"")
+  }
+  { RadioButton1 RadioButton
+    MoveScaled(22,5,7,2)
+    'Move(198,45,63,18)
+    Text = ("Male")
+    Value = True
+  }
+  { RadioButton2 RadioButton
+    MoveScaled(30,5,9,2)
+    'Move(270,45,81,18)
+    Text = ("Female")
+  }
+}
