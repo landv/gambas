@@ -1,0 +1,121 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(23.125,39.25,87,60)
+  'Move(185,314,696,480)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  { HBox3 HBox
+    MoveScaled(1,0,84,50)
+    'Move(8,0,672,400)
+    Expand = True
+    { panBookmark SidePanel
+      MoveScaled(2,2,19,47)
+      'Move(16,16,152,376)
+      Visible = False
+      Arrangement = Arrange.Vertical
+      Spacing = 8
+      Orientation = Align.Left
+      { lstBookmark ListContainer
+        MoveScaled(0,1,12,33)
+        'Move(0,8,96,264)
+        Background = Color.ButtonBackground
+        Expand = True
+      }
+      { btnAdd Button
+        MoveScaled(0,35,12,3)
+        'Move(0,280,96,24)
+        Text = ("&Add")
+      }
+      { btnRemove Button
+        MoveScaled(0,39,12,3)
+        'Move(0,312,96,24)
+        Text = ("&Remove")
+      }
+    }
+    { VBox1 VBox
+      MoveScaled(22,2,60,46)
+      'Move(176,16,480,368)
+      Expand = True
+      Spacing = 8
+      { HBox1 HBox
+        MoveScaled(1,2,58,3)
+        'Move(8,16,464,24)
+        { cmbDir ComboBox
+          MoveScaled(0,0,37,3)
+          'Move(0,0,296,24)
+          Expand = True
+          Text = ("")
+          Sorted = True
+        }
+        { Panel1 Panel
+          MoveScaled(37,0,1,3)
+          'Move(296,0,8,24)
+        }
+        { btnParent ToolButton
+          MoveScaled(39,0,3,3)
+          'Move(312,0,24,24)
+          Text = ("")
+          Picture = Picture["icon:/16/up"]
+        }
+        { btnNewDir ToolButton
+          MoveScaled(43,0,3,3)
+          'Move(344,0,24,24)
+          Text = ("")
+          Picture = Picture["icon:/16/new-dir"]
+        }
+        { btnShowHidden ToolButton
+          MoveScaled(47,0,3,3)
+          'Move(376,0,24,24)
+          Text = ("")
+          Picture = Picture["icon:/16/view-hidden"]
+          Toggle = True
+        }
+        { btnDetailed ToolButton
+          MoveScaled(51,0,3,3)
+          'Move(408,0,24,24)
+          Visible = False
+          Text = ("")
+          Picture = Picture["icon:/16/view-detail"]
+        }
+        { btnView ToolButton
+          MoveScaled(55,0,3,3)
+          'Move(440,0,24,24)
+          Text = ("")
+          Picture = Picture["icon:/16/view-split-h"]
+        }
+      }
+      { splChoose HSplit
+        MoveScaled(2,6,54,38)
+        'Move(16,48,432,304)
+        Expand = True
+        { dvwChoose DirView
+          MoveScaled(2,3,25,33)
+          'Move(16,24,200,264)
+          Border = True
+          Picture = Picture["icon:/16/home"]
+        }
+        { fvwChoose FileView
+          MoveScaled(28,3,25,33)
+          'Move(224,24,200,264)
+          Visible = False
+        }
+      }
+    }
+  }
+  { txtFile TextBox
+    MoveScaled(2,52,57,3)
+    'Move(16,416,456,24)
+    Visible = False
+    Text = ("")
+  }
+  { cmbFilter ComboBox
+    MoveScaled(2,56,57,3)
+    'Move(16,448,456,24)
+    Visible = False
+    Text = ("")
+    ReadOnly = True
+  }
+}

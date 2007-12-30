@@ -1,0 +1,74 @@
+# Gambas Form File 1.0
+
+{ FWizard Form
+  MoveScaled(48.625,29.25,65.625,50)
+  'Move(389,234,525,400)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  { panTitle Panel
+    MoveScaled(1,1,61,5)
+    'Move(8,8,488,40)
+    Background = Color.SelectedBackground
+    Arrangement = Arrange.Horizontal
+    Spacing = 4
+    Padding = 4
+    { picTitle PictureBox
+      MoveScaled(1,1,4,3)
+      'Move(8,8,32,24)
+      Alignment = Align.Center
+    }
+    { lblTitle Label
+      MoveScaled(9,1,37,3)
+      'Move(72,8,296,24)
+      Font = Font["+2"]
+      Foreground = Color.SelectedForeground
+      Expand = True
+      AutoResize = True
+      Text = ("")
+    }
+  }
+  { panWizard Panel
+    MoveScaled(1,7,61,31)
+    'Move(8,56,488,248)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Padding = 2
+    Border = Border.Sunken
+  }
+  { HBox1 HBox
+    MoveScaled(1,40,59,3)
+    'Move(8,320,472,24)
+    Spacing = 8
+    { Panel2 Panel
+      MoveScaled(2,1,2,2)
+      'Move(16,8,16,16)
+      Expand = True
+    }
+    { btnPrevious Button
+      MoveScaled(5,0,15,3)
+      'Move(40,0,120,24)
+      Text = ("Previous")
+      Picture = Picture["icon:/16/rewind"]
+    }
+    { btnNext Button
+      MoveScaled(22,0,15,3)
+      'Move(176,0,120,24)
+      Text = ("Next")
+      Picture = Picture["icon:/16/forward"]
+    }
+    { btnCancel Button
+      MoveScaled(40,0,15,3)
+      'Move(320,0,120,24)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+  { panBorder Panel
+    MoveScaled(25,45,28,14)
+    'Move(200,360,224,112)
+    Visible = False
+    Background = Color.SelectedBackground
+  }
+}

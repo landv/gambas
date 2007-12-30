@@ -1,0 +1,130 @@
+# Gambas Form File 1.0
+
+{ FMain Form
+  MoveScaled(0,0,64.25,70.125)
+  'Move(0,0,514,561)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { DataCombo2 DataCombo
+    MoveScaled(1,1,62,3)
+    'Move(8,8,496,24)
+    ReadOnly = True
+    Table = "color"
+    All = "All colors"
+  }
+  { DataSource1 DataSource
+    MoveScaled(1,5,62,64)
+    'Move(8,40,496,512)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Spacing = 8
+    Table = "test"
+    { DataBrowser1 DataBrowser
+      MoveScaled(2,2,59,18)
+      'Move(16,16,472,144)
+      Expand = True
+      Columns = ["id", "active", "firstname", "salary"]
+      Orientation = Align.Top
+    }
+    { HBox1 HBox
+      MoveScaled(2,21,59,37)
+      'Move(16,168,472,296)
+      Spacing = 8
+      { VBox2 VBox
+        MoveScaled(1,1,12,35)
+        'Move(8,8,96,280)
+        Spacing = 8
+        { Label1 Label
+          MoveScaled(1,3,9,3)
+          'Move(8,24,72,24)
+          Text = ("Id")
+        }
+        { Label9 Label
+          MoveScaled(1,7,9,3)
+          'Move(8,56,72,24)
+          Text = ("Color")
+        }
+        { Label2 Label
+          MoveScaled(1,11,9,3)
+          'Move(8,88,72,24)
+          Text = ("First Name")
+        }
+        { Label3 Label
+          MoveScaled(1,15,9,3)
+          'Move(8,120,72,24)
+          Text = ("Name")
+        }
+        { Label4 Label
+          MoveScaled(1,19,9,3)
+          'Move(8,152,72,24)
+          Text = ("Birth")
+        }
+        { Label5 Label
+          MoveScaled(1,23,9,3)
+          'Move(8,184,72,24)
+          Text = ("Active")
+        }
+        { Label6 Label
+          MoveScaled(1,27,9,3)
+          'Move(8,216,72,24)
+          Text = ("Salary")
+        }
+        { Label8 Label
+          MoveScaled(1,31,9,3)
+          'Move(8,248,72,24)
+          Text = ("Comment")
+        }
+      }
+      { VBox1 VBox
+        MoveScaled(14,1,44,35)
+        'Move(112,8,352,280)
+        Expand = True
+        Spacing = 8
+        { DataControl1 DataControl
+          MoveScaled(1,3,30,3)
+          'Move(8,24,240,24)
+          Field = "id"
+        }
+        { DataCombo1 DataCombo
+          MoveScaled(1,7,30,3)
+          'Move(8,56,240,24)
+          Field = "color"
+          Table = "color"
+        }
+        { DataControl2 DataControl
+          MoveScaled(1,11,30,3)
+          'Move(8,88,240,24)
+          Field = "firstname"
+        }
+        { DataControl3 DataControl
+          MoveScaled(1,15,30,3)
+          'Move(8,120,240,24)
+          Field = "name"
+        }
+        { DataControl4 DataControl
+          MoveScaled(1,19,30,3)
+          'Move(8,152,240,24)
+          Field = "birth"
+        }
+        { DataControl5 DataControl
+          MoveScaled(1,23,30,3)
+          'Move(8,184,240,24)
+          Field = "active"
+        }
+        { DataControl6 DataControl
+          MoveScaled(1,27,30,3)
+          'Move(8,216,240,24)
+          Field = "salary"
+        }
+        { DataControl7 DataControl
+          MoveScaled(1,31,42,3)
+          'Move(8,248,336,24)
+          Expand = True
+          Field = "comment"
+        }
+      }
+    }
+  }
+}

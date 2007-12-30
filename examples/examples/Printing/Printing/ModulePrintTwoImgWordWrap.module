@@ -1,0 +1,156 @@
+' Gambas module file
+
+'''
+' Name: ModulePrintTwoImgWordWrap
+' Author: Timothy Marshal-Nichols
+' eMail: timothy@m-nichols.freeserve.co.uk
+' Version: 1.0
+' Version Date: August 2006
+' Version History:
+'
+'''
+' Licence Information
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+'
+' http://www.gnu.org/licenses/gpl.html
+'
+'''
+' Description:
+'
+' This module provides a demo of simple printing showing how
+' text and images can be laid out on a page.
+'
+'''
+' Developed using Gambas2 Version
+'
+'  Version: 1.9.35
+'
+' Gambas Components Used:
+'
+' gb - Gambas internal native classes
+' gb.qt - Graphical QT toolkit component
+'
+' Look in the Project menu then Properties... and select
+' the Components tab. Check that the listed components
+' are in the project.
+'
+'''
+' External Dependencies:
+'
+' None
+'
+'''
+' Class Usage:
+'
+' Add this module to your project and call the procedure:
+'
+'   ModulePrintTwoImgWordWrap.PrintTwoImages(imageTop, textTop, imageBottom, textBottom)
+'
+'''
+
+PUBLIC SUB PrintImage(imgTop AS Image, topText AS String, imageBottom AS Image, bottomText AS String)
+  DIM imageTopToPrint AS Image
+  DIM imageBottomToPrint AS Image
+  DIM imageWidth AS Integer
+  DIM imageHeight AS Integer
+  DIM border AS Float
+  ' Display printer dialog
+  IF Printer.Setup() THEN RETURN
+  INC Application.Busy
+  border = Printer.Resolution
+  '
+  ' Get top image size for the printer resolution
+  imageWidth = (imgTop.Width * Printer.Resolution) / Desktop.Resolution
+  imageHeight = (imgTop.Height * Printer.Resolution) / Desktop.Resolution
+  ' Scale top image
+  imageTopToPrint = imgTop.Stretch(imageWidth, imageHeight, TRUE)
+  '
+  ' Get bottom image size for the printer resolution
+  imageWidth = (imageBottom.Width * Printer.Resolution) / Desktop.Resolution
+  imageHeight = (imageBottom.Height * Printer.Resolution) / Desktop.Resolution
+  ' Scale bottom image
+  imageBottomToPrint = imageBottom.Stretch(imageWidth, imageHeight, TRUE)
+  '
+  ' Draw printer page
+  Draw.Begin(Printer)
+  ' Top left text
+  topText = WordWrap(topText, Printer.Width - (2.5 * border) - imageTopToPrint.Width)
+  Draw.Text(topText, border, border, Printer.Width - (2.5 * border) - imageTopToPrint.Width,
+    Draw.TextHeight(topText), Align.Left)
+  ' Print top right image
+  Draw.Image(imageTopToPrint, Printer.Width - imageTopToPrint.Width - border, border)
+  ' Bottom right text
+  bottomText = WordWrap(bottomText, Printer.Width - (2.5 * border) - imageBottomToPrint.Width)
+  Draw.Text(bottomText, imageBottomToPrint.Width + (1.5 * border), (Printer.Height / 2) + (0.5 * border),
+    Printer.Width - (imageBottomToPrint.Width + (2 * border)), Draw.TextHeight(bottomText), Align.Left)
+  ' Print bottom left image
+  Draw.Image(imageBottomToPrint, border, (Printer.Height / 2) + (0.5 * border))
+  Draw.End
+  DEC Application.Busy
+END
+
+' Note that for this function to work it must be called inside a 
+' Draw.Begin() and Draw.End pair. Also you should have set the Draw.Font
+' property to your required font.
+PRIVATE FUNCTION WordWrap(Text AS String, Width AS Integer) AS String
+  DIM wordWrapText AS NEW String[]
+  DIM ln AS String
+  DIM wd AS String
+  DIM ch AS Integer
+  DIM chrs AS String
+  DIM newLine AS String
+  ' We split the text and process each line.
+  ' This is to ensure we preserve any existing new lines.
+  FOR EACH ln IN Split(Text, "\n")
+      newLine = ""
+      FOR EACH wd IN Split(ln, " ")
+        IF newLine = "" THEN
+          ' Add the first word to the line
+          newLine = wd
+        ELSE IF Draw.TextWidth(newLine & " " & wd) >= Width THEN
+          ' If the next word does not fit on the line then add a new line
+          wordWrapText.Add(newLine)
+          newLine = wd
+        ELSE
+           ' Add words to the line if they fit
+          newLine = newLine & " " & wd
+        END IF
+        ' If the line is to long then break the line
+        ' This should only occure if there is one word on the line
+        ' and it does not fit.
+        IF Draw.TextWidth(newLine) >= Width THEN
+          chrs = ""
+          FOR ch = 1 TO Len(newLine)
+            IF Draw.TextWidth(chrs & Mid(newLine, ch, 1)) >= Width THEN
+              ' If the next word does not fit on the line then add a new line
+              wordWrapText.Add(chrs)
+              chrs = Mid(newLine, ch, 1)
+            ELSE
+              ' Add words to the line if they fit
+              chrs = chrs & Mid(newLine, ch, 1)
+            END IF
+          NEXT
+          newLine = chrs
+        END IF
+      NEXT
+      ' Add words to line
+      wordWrapText.Add(newLine)
+  NEXT
+  ' Retrun the text with any extra new lines
+  RETURN wordWrapText.Join("\n")
+END
+
+''' End of ModulePrintTwoImgWordWrap '''

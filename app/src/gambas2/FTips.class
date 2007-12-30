@@ -1,0 +1,152 @@
+' Gambas class file
+
+STATIC PRIVATE $aOrder AS NEW String[]
+
+STATIC PRIVATE $iTip AS Integer
+
+STATIC PUBLIC SUB Run()
+
+  DIM hForm AS Form
+
+  hForm = NEW FTips
+  hForm.ShowModal
+
+END
+
+STATIC PUBLIC SUB _init()
+
+  DIM hFic AS File
+  DIM sLig AS String
+
+  OPEN "tips/tips.en" FOR READ AS #hFic
+
+  WHILE NOT Eof(hFic)
+    LINE INPUT #hFic, sLig
+    IF Left$(sLig) = "[" THEN
+      $aOrder.Add(Mid$(Trim$(sLig), 2, -1))
+    ENDIF
+  WEND
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  txtTip.Background = ME.Background
+
+  $iTip = Settings["/LastTip", 0]
+  chkShowTip.Value = Settings["/ShowTipOnStartup", TRUE]
+
+  ShowNextTip
+
+END
+
+PRIVATE SUB ShowNextTip(OPTIONAL bPrev AS Boolean)
+
+  txtTip.Text = GetNextTip(bPrev)
+  lblTitle.Text = ("Tip of the day") & " #" & CStr($iTip)
+
+END
+
+
+PRIVATE FUNCTION GetNextTip(OPTIONAL bPrev AS Boolean) AS String
+
+  DIM iInd AS Integer
+  DIM hFile AS File
+  DIM sLig AS String
+  DIM sTip AS String
+  DIM sFile AS String
+  DIM sLang AS String
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+
+  IF bPrev THEN
+    DEC $iTip
+    IF $iTip < 1 THEN $iTip = 1
+  ELSE
+    IF $iTip >= $aOrder.Count THEN
+      $iTip = 1
+    ELSE
+      INC $iTip
+    ENDIF
+  ENDIF
+
+  sLang = System.Language
+
+  sFile = "tips/tips." & sLang
+  IF NOT Exist(sFile) THEN
+    iPos = InStr(sLang, "_")
+    IF iPos THEN
+      sLang = Left$(sLang, iPos - 1)
+      sFile = "tips/tips." & sLang
+    ENDIF
+  ENDIF
+  IF NOT Exist(sFile) THEN
+    sFile = "tips/tips.en"
+  ENDIF
+
+  sTip = File.Load(sFile)
+  iPos = InStr(sTip, "[" & $aOrder[$iTip - 1] & "]")
+  IF iPos = 0 THEN
+    sTip = File.Load("tips/tips.en")
+  ENDIF
+  iPos = InStr(sTip, "[" & $aOrder[$iTip - 1] & "]")
+  IF iPos = 0 THEN RETURN
+
+  iPos = InStr(sTip, "\n", iPos)
+  IF iPos = 0 THEN RETURN
+  INC iPos
+
+  iPos2 = InStr(sTip, "\n[", iPos)
+  IF iPos2 = 0 THEN iPos2 = Len(sTip) + 1
+
+  RETURN Mid$(sTip, iPos, iPos2 - iPos)
+
+CATCH
+
+  Message.Error(("Unable to read tip of the day !") & "\n\n" & Error.Text)
+
+END
+
+PUBLIC SUB chkShowTip_Click()
+
+  Settings["/ShowTipOnStartup"] = chkShowTip.Value
+
+END
+
+PUBLIC SUB btnNext_Click()
+
+  ShowNextTip
+
+END
+
+
+' PUBLIC SUB Form_Resize()
+' 
+'   lblTitle.Width = Max(ME.ClientWidth, 512)
+'   panBottom.Y = ME.ClientH - panBottom.Height - 8
+'   panBottom.W = Max(256, ME.ClientW - 16)
+'   btnClose.X = panBottom.W - btnClose.W
+'   btnNext.X = btnClose.X - btnNext.W - 8
+'   btnPrev.X = btnNext.X - btnPrev.W - 8
+'   chkShowTip.W = btnPrev.X - chkShowTip.X - 8
+' 
+'   txtTip.Resize(ME.ClientWidth - txtTip.X * 2, ME.ClientH - panBottom.H - txtTip.Y - 8)
+' 
+' 
+'   'imgCorner.Move(ME.ClientW - imgCorner.W,ME.ClientH - imgCorner.H)
+' 
+' END
+
+PUBLIC SUB btnClose_Click()
+
+  Settings["/LastTip"] = $iTip
+  ME.Close
+
+END
+
+PUBLIC SUB btnPrev_Click()
+
+  ShowNextTip(TRUE)
+
+END

@@ -1,0 +1,16 @@
+' Gambas module file
+
+PUBLIC SUB Main()
+  
+  ' Session["login"] = "cartable"
+  ' Session["password"] = "test"
+  ' Session["date"] = Date(1972, 9, 6)
+  ' Session["age"] = 34
+  ' Session["taille"] = 1.72
+  ' Session["liste"] = ["bleu", "blanc", "rouge"]
+
+  File.Out.EndOfLine = gb.Unix
+  PRINT Session.Id
+  PRINT Session["login"]
+
+END

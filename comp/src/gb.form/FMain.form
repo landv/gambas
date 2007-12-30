@@ -1,0 +1,20 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(12.5,12.5,82,49)
+  'Move(100,100,656,392)
+  Text = ("")
+  Icon = Picture["icon:/24/gambas"]
+  Spacing = 8
+  Padding = 8
+  { DirChooser1 DirChooser
+    MoveScaled(1,1,80,41)
+    'Move(8,8,640,328)
+    ShowBookmark = True
+  }
+  { Button1 Button
+    MoveScaled(40,45,15,3)
+    'Move(320,360,120,24)
+    Text = ("Button1")
+  }
+}

@@ -1,0 +1,60 @@
+# Gambas Form File 1.0
+
+{ FNewTable Form
+  MoveScaled(17,25.25,44,22)
+  'Move(136,202,352,176)
+  Text = ("")
+  Border = Window.Fixed
+  { lblType Label
+    MoveScaled(12,12,31,3)
+    'Move(96,96,248,24)
+    Text = ("")
+    Border = Border.Raised
+  }
+  { txtName TextBox
+    MoveScaled(12,8,31,3)
+    'Move(96,64,248,24)
+    Text = ("")
+  }
+  { btnOK Button
+    MoveScaled(16,18,13,3)
+    'Move(128,144,104,24)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(30,18,13,3)
+    'Move(240,144,104,24)
+    Text = ("Cancel")
+    Cancel = True
+  }
+  { Label1 Label
+    MoveScaled(1,8,10,3)
+    'Move(8,64,80,24)
+    Text = ("Name")
+  }
+  { Image1 PictureBox
+    MoveScaled(37,1,6,6)
+    'Move(296,8,48,48)
+    Picture = Picture["img/32/table.png"]
+    Stretch = True
+  }
+  { Label2 Label
+    MoveScaled(1,12,9,3)
+    'Move(8,96,72,24)
+    Text = ("Type")
+  }
+  { cmbType ComboBox
+    MoveScaled(12,12,31,3)
+    'Move(96,96,248,24)
+    Text = (" ")
+    ReadOnly = True
+    Sorted = True
+  }
+  { lblTitle Label
+    MoveScaled(1,1,36,5)
+    'Move(8,8,288,40)
+    Font = Font["16,Bold"]
+    Text = ("")
+  }
+}

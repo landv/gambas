@@ -1,0 +1,148 @@
+' Gambas class file
+
+PRIVATE $hConn AS Connection
+PRIVATE $rData AS Result
+fine AS Boolean
+cur AS Integer
+
+
+PUBLIC SUB _new(hConn AS Connection, rData AS Result)
+
+  $hConn = hConn
+  $rData = rData
+
+  RefreshTitle
+
+  ReadData
+
+  ME.Move(Int(Rnd(Desktop.W - ME.W)), Int(Rnd(Desktop.H - ME.H)))
+
+END
+
+
+PRIVATE SUB RefreshTitle()
+
+  DIM sTitle AS String
+
+  sTitle = ("SQL request") & " - " & $hConn.Name
+
+  ME.Title = sTitle
+
+END
+
+
+PRIVATE SUB ReadData()
+
+  DIM hTable AS Table
+  DIM hField AS ResultField
+  DIM sField AS String
+  DIM iInd AS Integer
+  DIM iLen AS Integer
+
+  INC Application.Busy
+
+  tbvData.Rows.Count = 0
+
+  tbvData.Columns.Count = $rData.Fields.Count
+
+  FOR EACH hField IN $rData.Fields
+
+    WITH hField
+
+      'PRINT .Name; ": "; .Type; " "; .Length
+
+      tbvData.Columns[iInd].Text = .Name
+      tbvData.Columns[iInd].Width = WidthFromType(tbvData, .Type, .Length, .Name)
+
+    END WITH
+
+    INC iInd
+  NEXT
+' ODBC Changes
+  IF $rData.Count = -1 THEN
+    tbvData.Rows.Count = rowcount()
+'      $rData.Count
+
+  ELSE
+  tbvData.Rows.Count = $rData.Count
+  ENDIF
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  Message.Error("Cannot exec request." & "\n\n" & DConv(Error.Text))
+
+END
+
+
+PUBLIC SUB tbvData_Data(Row AS Integer, Column AS Integer)
+
+  $rData.MoveTo(Row)
+
+  tbvData.Data.Text = Str($rData[tbvData.Columns[Column].Text])
+  tbvData.Data.Background = Color.RGB((Row MOD 31) * 8, (Row MOD 17) * 15, (Row MOD 13) * 21)
+  tbvData.Data.Foreground = Color.White
+
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  tbvData.Resize(ME.ClientW, ME.ClientH)
+
+END
+
+
+PRIVATE FUNCTION WidthFromType(hCtrl AS control, iType AS Integer, iLength AS Integer, sTitle AS String) AS Integer
+
+  DIM iWidth AS Integer
+
+  SELECT CASE iType
+
+    CASE gb.Boolean
+      iWidth = hCtrl.Font.Width(Str(FALSE)) + 32
+
+    CASE gb.Integer
+      iWidth = hCtrl.Font.Width("1234567890") + 16
+
+    CASE gb.Long
+      iWidth = hCtrl.Font.Width("12345678901234567890") + 16
+
+    CASE gb.Float
+      iWidth = hCtrl.Font.Width(CStr(Pi) & "E+999") + 16
+
+    CASE gb.Date
+      iWidth = hCtrl.Font.Width(Str(Now)) + 16
+
+    CASE gb.String
+      IF iLength = 0 THEN iLength = 255
+      iLength = Min(32, iLength)
+      iWidth = hCtrl.Font.Width("X") * iLength + 16
+
+  END SELECT
+
+  iWidth = Max(iWidth, hCtrl.Font.Width(sTitle) + 8)
+
+  RETURN iWidth
+
+END
+
+PRIVATE FUNCTION rowcount() AS Integer
+
+  DIM rows AS Integer
+
+  rows = 0
+  DO
+    $rData.MoveTo(rows)
+   INC rows
+  LOOP
+
+CATCH
+
+  RETURN rows
+
+END
+

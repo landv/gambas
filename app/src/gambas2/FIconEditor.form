@@ -1,0 +1,324 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(2,14,85,81)
+  'Move(16,112,680,648)
+  Text = ("")
+  Icon = Picture["icon:/16/image"]
+  Arrangement = Arrange.Vertical
+  { Panel1 Panel
+    MoveScaled(0,1,77,12)
+    'Move(0,8,616,96)
+    Arrangement = Arrange.Row
+    AutoResize = True
+    { tlbIcon ToolBar
+      MoveScaled(0,1,40,4)
+      'Move(0,8,320,32)
+      { btnSave ToolButton btnTool
+        MoveScaled(0,0,3,3)
+        'Move(0,0,24,24)
+        Tag = "save"
+        ToolTip = ("Save")
+        Text = ("")
+        Picture = Picture["icon:/16/save"]
+      }
+      { ToolButton1 ToolButton btnTool
+        MoveScaled(3,0,3,3)
+        'Move(24,0,24,24)
+        Tag = "undo"
+        ToolTip = ("Undo")
+        Text = ("")
+        Picture = Picture["icon:/16/undo"]
+      }
+      { btnClear ToolButton btnTool
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        Tag = "clear"
+        ToolTip = ("Clear all")
+        Text = ("")
+        Picture = Picture["icon:/16/trash"]
+      }
+      { ToolButton16 ToolButton btnTool
+        MoveScaled(9,0,3,3)
+        'Move(72,0,24,24)
+        Tag = "cut"
+        ToolTip = ("Cut")
+        Text = ("")
+        Picture = Picture["icon:/16/cut"]
+      }
+      { ToolButton15 ToolButton btnTool
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        Tag = "copy"
+        ToolTip = ("Copy")
+        Text = ("")
+        Picture = Picture["icon:/16/copy"]
+      }
+      { btnPaste ToolButton btnTool
+        MoveScaled(15,0,3,3)
+        'Move(120,0,24,24)
+        Tag = "paste"
+        ToolTip = ("Paste")
+        Text = ("")
+        Picture = Picture["icon:/16/paste"]
+      }
+      { cmbZoom ComboBox
+        MoveScaled(21,0,7,3)
+        'Move(168,0,56,24)
+        Font = Font["-1"]
+        Text = ("")
+        ReadOnly = True
+      }
+      { ToolButton3 ToolButton btnTool
+        MoveScaled(28,0,3,3)
+        'Move(224,0,24,24)
+        Tag = "zoom-in"
+        ToolTip = ("Zoom in")
+        Text = ("")
+        Picture = Picture["icon:/16/zoom-in"]
+      }
+      { ToolButton17 ToolButton btnTool
+        MoveScaled(31,0,3,3)
+        'Move(248,0,24,24)
+        Tag = "zoom-out"
+        ToolTip = ("Zoom out")
+        Text = ("")
+        Picture = Picture["icon:/16/zoom-out"]
+      }
+    }
+    { tlbTool ToolBar
+      MoveScaled(41,1,30,4)
+      'Move(328,8,240,32)
+      { btnMove ToolButton btnTool
+        MoveScaled(0,0,3,3)
+        'Move(0,0,24,24)
+        Tag = "move"
+        ToolTip = ("Scroll")
+        Text = ("")
+        Picture = Picture["img/16/scroll.png"]
+        Toggle = True
+      }
+      { btnSelect ToolButton btnTool
+        MoveScaled(3,0,3,3)
+        'Move(24,0,24,24)
+        Tag = "select"
+        ToolTip = ("Select")
+        Text = ("")
+        Picture = Picture["icon:/16/select"]
+        Toggle = True
+      }
+      { ToolButton5 ToolButton btnTool
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        Tag = "pen"
+        ToolTip = ("Draw")
+        Text = ("")
+        Picture = Picture["icon:/16/pen"]
+        Toggle = True
+      }
+      { ToolButton6 ToolButton btnTool
+        MoveScaled(9,0,3,3)
+        'Move(72,0,24,24)
+        Tag = "line"
+        ToolTip = ("Line")
+        Text = ("")
+        Picture = Picture["img/16/line.png"]
+        Toggle = True
+      }
+      { ToolButton7 ToolButton btnTool
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        Tag = "rect"
+        ToolTip = ("Rectangle")
+        Text = ("")
+        Picture = Picture["img/16/rectangle.png"]
+        Toggle = True
+      }
+      { ToolButton10 ToolButton btnTool
+        MoveScaled(15,0,3,3)
+        'Move(120,0,24,24)
+        Tag = "circle"
+        ToolTip = ("Ellipse")
+        Text = ("")
+        Picture = Picture["img/16/ellipse.png"]
+        Toggle = True
+      }
+      { btnFill ToolButton btnTool
+        MoveScaled(18,0,3,3)
+        'Move(144,0,24,24)
+        Tag = "fill"
+        ToolTip = ("Flood fill")
+        Text = ("")
+        Picture = Picture["icon:/16/fill"]
+        Toggle = True
+      }
+      { ToolButton11 ToolButton btnTool
+        MoveScaled(21,0,3,3)
+        'Move(168,0,24,24)
+        Tag = "fill-alt"
+        ToolTip = ("Hatched flood fill")
+        Text = ("")
+        Picture = Picture["img/16/fill-alt.png"]
+        Toggle = True
+      }
+    }
+    { ToolBar2 ToolBar
+      MoveScaled(1,7,18,5)
+      'Move(8,56,144,40)
+      { btnBorder ToolButton btnTool
+        MoveScaled(0,0,3,3)
+        'Move(0,0,24,24)
+        Tag = "border"
+        ToolTip = ("Border only")
+        Text = ("")
+        Picture = Picture["img/16/polyline-void.png"]
+        Toggle = True
+      }
+      { btnFilled ToolButton btnTool
+        MoveScaled(3,0,3,3)
+        'Move(24,0,24,24)
+        Tag = "full"
+        ToolTip = ("Filled")
+        Text = ("")
+        Picture = Picture["img/16/polyline-fill.png"]
+        Toggle = True
+      }
+      { btnBorderFilled ToolButton btnTool
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        Tag = "border-full"
+        ToolTip = ("Filled with border")
+        Text = ("")
+        Picture = Picture["img/16/polyline.png"]
+        Toggle = True
+      }
+      { btnTransparent ToolButton btnTool
+        MoveScaled(9,0,3,3)
+        'Move(72,0,24,24)
+        Tag = "transparent"
+        ToolTip = ("Transparent")
+        Text = ("")
+        Picture = Picture["img/16/transparent.png"]
+        Toggle = True
+      }
+      { btnOpaque ToolButton btnTool
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        Tag = "opaque"
+        ToolTip = ("Opaque")
+        Text = ("")
+        Picture = Picture["img/16/opaque.png"]
+        Toggle = True
+      }
+    }
+    { ToolBar1 ToolBar
+      MoveScaled(19,7,17,4)
+      'Move(152,56,136,32)
+      { btnSwap ToolButton btnTool
+        MoveScaled(0,0,3,3)
+        'Move(0,0,24,24)
+        Tag = "swap"
+        ToolTip = ("Replace color")
+        Text = ("")
+        Picture = Picture["icon:/16/color"]
+      }
+      { btnFlip ToolButton btnTool
+        MoveScaled(3,0,3,3)
+        'Move(24,0,24,24)
+        Tag = "flip-h"
+        ToolTip = ("Horizontal flip")
+        Text = ("")
+        Picture = Picture["icon:/16/flip-h"]
+      }
+      { ToolButton12 ToolButton btnTool
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        Tag = "flip-v"
+        ToolTip = ("Vertical flip")
+        Text = ("")
+        Picture = Picture["icon:/16/flip-v"]
+      }
+      { ToolButton13 ToolButton btnTool
+        MoveScaled(9,0,3,3)
+        'Move(72,0,24,24)
+        Tag = "rotate"
+        ToolTip = ("Rotate clockwise")
+        Text = ("")
+        Picture = Picture["icon:/16/rotate-right"]
+      }
+      { ToolButton2 ToolButton btnTool
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        Tag = "rotate-back"
+        ToolTip = ("Rotate counter-clockwise")
+        Text = ("")
+        Picture = Picture["icon:/16/rotate-left"]
+      }
+    }
+    { tlbColor ToolBar
+      MoveScaled(37,7,32,4)
+      'Move(296,56,256,32)
+      { Panel2 Panel
+        MoveScaled(0,0,8,3)
+        'Move(0,0,64,24)
+        Arrangement = Arrange.Fill
+        Padding = 2
+        { lblCoord Label
+          MoveScaled(1,1,4,2)
+          'Move(8,8,32,16)
+          Font = Font["-1"]
+          Text = ("")
+          Alignment = Align.Center
+          Border = Border.Plain
+        }
+      }
+      { dwgForeground DrawingArea
+        MoveScaled(8,0,3,3)
+        'Move(64,0,24,24)
+      }
+      { dwgBackground DrawingArea
+        MoveScaled(11,0,3,3)
+        'Move(88,0,24,24)
+      }
+      { ToolButton4 ToolButton btnTool
+        MoveScaled(14,0,3,3)
+        'Move(112,0,24,24)
+        Tag = "exchange"
+        ToolTip = ("Swap colors")
+        Text = ("")
+        Picture = Picture["img/16/exchange.png"]
+      }
+      { ToolButton19 ToolButton btnTool
+        MoveScaled(17,0,3,3)
+        'Move(136,0,24,24)
+        Tag = "pipette"
+        ToolTip = ("Pick a color")
+        Text = ("")
+        Picture = Picture["icon:/16/color-picker"]
+        Toggle = True
+      }
+    }
+  }
+  { svwIcon ScrollView
+    MoveScaled(1,22,34,24)
+    'Move(8,176,272,192)
+    Background = &H808080&
+    Expand = True
+    { dwgIcon DrawingArea
+      MoveScaled(0,0,24,20)
+      'Move(0,0,192,160)
+      Background = &HFFFFFF&
+      Mouse = Mouse.Cross
+      Tracking = True
+      Border = Border.Plain
+      { dwgPaste DrawingArea
+        MoveScaled(10,12,8,4)
+        'Move(80,96,64,32)
+        Visible = False
+        Background = &HFFFFFF&
+        Mouse = Mouse.SizeAll
+        Tracking = True
+      }
+    }
+  }
+}

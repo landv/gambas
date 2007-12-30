@@ -1,0 +1,456 @@
+' Gambas module file
+
+PUBLIC Name AS String
+PUBLIC Address AS String
+PUBLIC Path AS String
+PUBLIC Change AS String
+
+PRIVATE SUB AddLog(sText AS String)
+
+  FMakeInstall.AddLog(sText)
+
+END
+
+
+PUBLIC FUNCTION Make() AS Boolean
+
+  DIM sSys AS String
+  DIM sMacro AS String
+
+  FormatChange
+
+  ' Save old rpm macro file
+  sMacro = User.Home &/ ".rpmmacros"
+  TRY MOVE sMacro TO sMacro & ".save"
+  TRY KILL sMacro
+
+  FOR EACH sSys IN Project.Systems
+
+    IF MakePackage(sSys) THEN RETURN TRUE
+
+  NEXT
+
+  ' Restore old rpm macro file
+  TRY KILL sMacro
+  TRY MOVE sMacro & ".save" TO sMacro
+
+  AddLog(("Saving CHANGELOG file."))
+  File.Save(Project.Dir &/ "CHANGELOG", Change)
+  AddLog(("The packages have been successfully created."))
+  Message(("The packages have been successfully created."))
+
+END
+
+PUBLIC FUNCTION GetChangeDate() AS String
+
+  DIM sLang AS String
+  DIM sDate AS String
+
+  sLang = System.Language
+  System.Language = "C"
+  sDate = Format$(Now, "ddd mmm dd yyyy") & " " & Name & " "
+  IF Address THEN sDate = sDate & "<" & Address & "> "
+  sDate = sDate & Subst("&1.&2-&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
+  System.Language = sLang
+  RETURN sDate
+
+END
+
+PRIVATE SUB FormatChange()
+
+  DIM aLine AS String[]
+  DIM sLine AS String
+
+  IF Change THEN
+
+    aLine = Split(Change, "\n")
+    Change = ""
+    FOR EACH sLine IN aLine
+      sLine = Trim(sLine)
+      IF NOT sLine THEN CONTINUE
+      IF Left(sLine) <> "-" THEN sLine = "- " & sLine
+      Change = Change & sLine & "\n"
+    NEXT
+
+    Change = "* " & GetChangeDate() & "\n" & Change & "\n"
+
+  ENDIF
+
+  TRY Change = Change & File.Load(Project.Dir &/ "CHANGELOG")
+
+END
+
+
+PRIVATE FUNCTION IsConsoleProject() AS Boolean
+
+  DIM sLib AS String
+
+  FOR EACH sLib IN Project.Libraries
+    IF CComponent.All[sLib].Type = "Form" THEN RETURN FALSE
+  NEXT
+
+  RETURN TRUE
+
+END
+
+
+PRIVATE FUNCTION MakePackage(sSys AS String) AS Boolean
+
+  DIM sName AS String
+  DIM sProjectName AS String
+  DIM sHome AS String
+  DIM sSrc AS String
+  DIM sDir AS String
+  DIM sCmd AS String
+  DIM hFile AS File
+  DIM sArch AS String
+  DIM sTemp AS String
+  DIM sOutput AS String
+  DIM sLang AS String
+  DIM sPackage AS String
+  DIM sVersionSuffix AS String
+  DIM hIcon AS Image
+  DIM sIcon AS String
+  DIM sPrefix AS String
+  'DIM bKillRpm AS Boolean
+  DIM sDistribution AS String
+  DIM sVendor AS String
+  'DIM bDebianMenu AS Boolean
+  'DIM bRedhatMenu AS Boolean
+  DIM sRelease AS String
+  DIM sLib AS String
+  'DIM bNoMacro AS Boolean
+  DIM sMacro AS String
+
+  INC Application.Busy
+
+  SELECT CASE sSys
+
+    CASE "mandrake"
+      sDistribution = "MandrakeLinux"
+      sVendor = "MandrakeSoft"
+      'bDebianMenu = TRUE
+      sVersionSuffix = "mdk"
+
+    CASE "debian"
+      sDistribution = "Debian"
+      sVendor = "Debian"
+      'bDebianMenu = TRUE
+      'bNoMacro = TRUE
+
+    CASE "redhat"
+      sDistribution = "RedHat"
+      sVendor = "RedHat"
+      'bRedhatMenu = TRUE
+
+    CASE "suse"
+      sDistribution = "SuSE Linux"
+      sVendor = "SuSE Linux AG"
+      'bRedhatMenu = TRUE
+      sVersionSuffix = "suse"
+
+  END SELECT
+
+  sProjectName = SConv(Project.Name)
+
+  IF Project.Prefix THEN sPrefix = "gambas-"
+  sName = sPrefix & LCase(sProjectName)
+  sHome = User.Home
+
+  ' step 1, set up RPM dirs and macros if they're not there already
+
+  AddLog(Subst(("Creating package for &1."), FMakeInstall.GetSystemName(sSys)))
+
+  AddLog(("Initializing ~/RPM directory."))
+
+  FOR EACH sCmd IN ["RPM/", "RPM/BUILD/", "RPM/RPMS/", "RPM/SOURCES/", "RPM/SPECS/", "RPM/SRPMS/", "RPM/tmp/"]
+    TRY MKDIR sHome &/ sCmd
+  NEXT
+
+  hFile = OPEN sHome &/ ".rpmmacros" FOR CREATE
+  PRINT #hFile, "%_topdir " & sHome &/ "RPM"
+  PRINT #hFile, "%_tmppath " & sHome &/ "RPM/tmp"
+  PRINT #hFile, "%distribution "; sDistribution
+  PRINT #hFile, "%vendor "; sVendor
+  PRINT #hFile, "%packager "; Name & "<" & SConv(Address) & ">"
+  PRINT #hFile, "%buildhost "; System.Host
+  CLOSE #hFile
+
+  ' step 2, write source tarball (with bzip) to SOURCES dir
+
+  AddLog(("Creating source package."))
+
+  sSrc = sHome &/ "RPM/SOURCES"
+
+  sDir = Project.Dir &/ ".icon"
+  SHELL "rm -rf " & Project.Quote(sDir) WAIT
+  TRY MKDIR sDir
+
+  IF Project.Icon THEN
+    hIcon = Image.Load(Project.Dir &/ Project.Icon)
+  ELSE
+    hIcon = Image.Load("img/gambas.png")
+  ENDIF
+
+  hIcon.Stretch(16, 16, TRUE).Save(sDir &/ "16.png")
+  hIcon.Stretch(32, 32, TRUE).Save(sDir &/ "32.png")
+  hIcon.Stretch(48, 48, TRUE).Save(sDir &/ "48.png")
+
+  sArch = sSrc &/ (sPrefix & Subst("&1-&2.&3.tar.bz2", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion))
+  Project.MakeSourcePackageTo(sArch)
+
+  AddLog(("Creating .spec file."))
+
+  hFile = OPEN sHome &/ "RPM/SPECS" &/ sName & ".spec" FOR CREATE
+
+  PRINT #hFile, "%define name " & sName
+  PRINT #hFile, "%define version " & Subst("&1.&2", Project.MajorVersion, Project.MinorVersion)
+  sRelease = Project.ReleaseVersion & sVersionSuffix
+  PRINT #hFile, "%define release "; sRelease
+  PRINT #hFile
+  PRINT #hFile, "Summary: " & IIf(Project.Title, Project.Title, "Gambas project " & Project.Name)
+  PRINT #hFile, "Name: %{name}"
+  PRINT #hFile, "Version: %{version}"
+  PRINT #hFile, "Release: %{release}"
+  PRINT #hFile, "Source0: %{name}-%{version}.tar.bz2"
+  PRINT #hFile, "License: GPL"
+  PRINT #hFile, "Group: " & Project.Groups[sSys]
+  PRINT #hFile, "BuildRoot: %{_tmppath}/%{name}-buildroot"
+  PRINT #hFile, "Prefix: %{_prefix}"
+  'PRINT #hFile, "BuildRequires: gambas-gui"
+  PRINT #hFile, "BuildArch: noarch"
+
+  PRINT #hFile, "Requires: gambas-runtime >= 0.95,gambas-runtime <= 1.0";
+
+  FOR EACH sLib IN Project.Libraries
+    PRINT #hFile, ",gambas-"; Replace(sLib, ".", "-"); " >= 0.95";
+    PRINT #hFile, ",gambas-"; Replace(sLib, ".", "-"); " <= 1.0";
+  NEXT
+  PRINT #hFile
+
+  PRINT #hFile, "AutoReqProv: no"
+
+  PRINT #hFile, "\n%description\n" & Project.Description & "\nThis program is written in Gambas, so you will need Gambas to be installed."
+
+  PRINT #hFile, "\n%prep"
+  PRINT #hFile, "rm -rf $RPM_BUILD_ROOT"
+
+  PRINT #hFile, "\n%setup -q -n " & Project.Quote(sProjectName)
+
+  PRINT #hFile, "\n%build"
+  PRINT #hFile, Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE) & "\ngba"
+
+  PRINT #hFile, "\n%install"
+
+  PRINT #hFile, "install -d $RPM_BUILD_ROOT/usr/bin"
+  PRINT #hFile, "install -p "; Project.Quote(sProjectName); " $RPM_BUILD_ROOT/usr/bin/"; sName
+
+  sIcon = Project.Quote(sName) & ".png"
+
+  ' NOTE: There are explicit references to /usr/share.
+  '       I must find a way to use the rpm macros instead.
+
+  SELECT CASE sSys
+
+    CASE "mandrake"
+
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_miconsdir}"
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_iconsdir}"
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_liconsdir}"
+      PRINT #hFile, "install -p .icon/16.png $RPM_BUILD_ROOT/%{_miconsdir}" &/ sIcon
+      PRINT #hFile, "install -p .icon/32.png $RPM_BUILD_ROOT/%{_iconsdir}" &/ sIcon
+      PRINT #hFile, "install -p .icon/48.png $RPM_BUILD_ROOT/%{_liconsdir}" &/ sIcon
+
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_menudir}"
+      PRINT #hFile, "cat << EOF > $RPM_BUILD_ROOT/%{_menudir}/"; Project.Quote(sName)
+      PRINT #hFile, Subst("?package(&1):command=\"/usr/bin/&1\" icon=\"&1.png\" ", sName);
+      IF IsConsoleProject() THEN
+        PRINT #hFile, "needs=\"text\"";
+      ELSE
+        PRINT #hFile, "needs=\"X11\"";
+      ENDIF
+      PRINT #hFile, " section=\""; Project.Menus[sSys]; "\" title=\"";
+      IF Project.Title THEN
+        PRINT #hFile, Project.Title;
+      ELSE
+        PRINT #hFile, Project.Name;
+      ENDIF
+      PRINT #hFile, "\" ";
+      PRINT #hFile, "longtitle=\"";
+      IF Project.Description THEN
+        PRINT #hFile, Replace(Project.Description, "\n", " ");
+      ELSE
+        PRINT #hFile, Project.Name;
+      ENDIF
+      PRINT #hFile, "\" ";
+      PRINT #hFile, "startup_notify=\"true\""
+      PRINT #hFile, "EOF"
+
+      PRINT #hFile, "\n%post"
+      PRINT #hFile, "%{update_menus}"
+
+      PRINT #hFile, "\n%postun"
+      PRINT #hFile, "%{clean_menus}"
+
+    CASE "debian"
+
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_datadir}/pixmaps"
+      PRINT #hFile, "install -p .icon/32.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps" &/ sIcon
+
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_datadir}/menu"
+      PRINT #hFile, "cat << EOF > $RPM_BUILD_ROOT/%{_datadir}/menu/"; Project.Quote(sName)
+      PRINT #hFile, Subst("?package(&1):command=\"/usr/bin/&1\" icon=\"/usr/share/pixmaps/&1.png\" ", sName);
+      IF IsConsoleProject() THEN
+        PRINT #hFile, "needs=\"text\"";
+      ELSE
+        PRINT #hFile, "needs=\"X11\"";
+      ENDIF
+      PRINT #hFile, " section=\""; Project.Menus[sSys]; "\" title=\"";
+      IF Project.Title THEN
+        PRINT #hFile, Project.Title;
+      ELSE
+        PRINT #hFile, Project.Name;
+      ENDIF
+      PRINT #hFile, "\" ";
+      PRINT #hFile, "longtitle=\"";
+      IF Project.Description THEN
+        PRINT #hFile, Replace(Project.Description, "\n", " ");
+      ELSE
+        PRINT #hFile, Project.Name;
+      ENDIF
+      PRINT #hFile, "\" ";
+      PRINT #hFile, "startup_notify=\"true\""
+      PRINT #hFile, "EOF"
+
+      'PRINT #hFile, "\n%post"
+      'PRINT #hFile, "%{update_menus}"
+
+      'PRINT #hFile, "\n%postun"
+      'PRINT #hFile, "%{clean_menus}"
+
+    CASE "redhat", "suse"
+
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_datadir}/pixmaps"
+      PRINT #hFile, "install -d $RPM_BUILD_ROOT/%{_datadir}/applications"
+      PRINT #hFile, "install -p .icon/32.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps" &/ sIcon
+
+      PRINT #hFile, "cat << EOF > $RPM_BUILD_ROOT/%{_datadir}/applications" &/ Project.Quote(sName) & ".desktop"
+
+      PRINT #hFile, "[Desktop Entry]"
+      PRINT #hFile, "Name="; Project.Title
+      PRINT #hFile, "Comment="; Replace(Project.Description, "\n", " ")
+
+      PRINT #hFile, "Categories="; Replace(Replace(Project.Menus[sSys], " ", ""), "/", ";");
+      IF sSys = "redhat" THEN
+        PRINT #hFile, ";X-Red-Hat-Extra"
+      ENDIF
+      PRINT #hFile
+
+      PRINT #hFile, "Icon=/usr/share/pixmaps" &/ sIcon
+      PRINT #hFile, "Exec=/usr/bin" &/ sName
+      PRINT #hFile, "Type=Application"
+      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "True", "False")
+      PRINT #hfile, "Encoding=UTF-8"
+      PRINT #hFile, "EOF"
+
+  END SELECT
+
+  PRINT #hFile, "\n%clean"
+  PRINT #hFile, "rm -rf $RPM_BUILD_ROOT"
+
+  PRINT #hFile, "\n%files"
+  PRINT #hFile, "%defattr(-,root,root)"
+  PRINT #hFile, "/usr/bin/" & sName
+
+  SELECT CASE sSys
+
+    CASE "mandrake"
+
+      PRINT #hFile, "/%{_miconsdir}" &/ sIcon
+      PRINT #hFile, "/%{_iconsdir}" &/ sIcon
+      PRINT #hFile, "/%{_liconsdir}" &/ sIcon
+      PRINT #hFile, "/%{_menudir}" &/ sName
+
+    CASE "debian"
+
+      PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
+      PRINT #hFile, "%{_datadir}/menu" &/ sName
+
+    CASE "redhat", "suse"
+
+      PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
+      PRINT #hFile, "%{_datadir}/applications" &/ Project.Quote(sName) & ".desktop"
+
+  END SELECT
+
+  PRINT #hFile, "\n%changelog\n"
+  PRINT #hFile, Change
+
+  CLOSE #hFile
+
+  ' and step 4.... build that sucker.
+
+  AddLog(("Creating RPM packages."))
+
+  sLang = System.Language
+  System.Language = "C"
+
+  sTemp = Temp$
+  SHELL Project.RPMBUILD_PROG & " -ba " & Project.Quote(sHome &/ "RPM/SPECS" &/ sName & ".spec") & " > " & Project.Quote(sTemp) & " 2>&1" WAIT
+
+  sOutput = DConv(Replace(File.Load(sTemp), "\r", ""))
+
+  TRY KILL sHome &/ ".rpmmacros"
+
+  System.Language = sLang
+
+  DEC Application.Busy
+
+  AddLog("\n")
+
+  FOR EACH sCmd IN Split(sOutput, "\n")
+    IF Left(sCmd, 6) = "Wrote:" AND Right$(sCmd, 10) = "noarch.rpm" THEN
+
+      sPackage = sPrefix & Subst("&1-&2.&3-&4.noarch.rpm", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+      IF sSys = "debian" THEN
+        SHELL "cd " & Project.Quote(sHome &/ "RPM/RPMS/noarch") & "; fakeroot alien --to-deb -k " & Project.Quote(sPackage) WAIT
+        sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+        IF NOT Exist(sHome &/ "RPM/RPMS/noarch" &/ sPackage) THEN Error.Raise("alien command has failed")
+      ENDIF
+      MoveFile(sHome &/ "RPM/RPMS/noarch" &/ sPackage, Path &/ sPackage)
+
+      sPackage = sPrefix & Subst("&1-&2.&3-&4.src.rpm", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+      IF sSys = "debian" THEN
+        SHELL "cd " & Project.Quote(sHome &/ "RPM/SRPMS") & "; fakeroot alien --to-deb -k " & Project.Quote(sPackage) WAIT
+        sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
+        IF NOT Exist(sHome &/ "RPM/SRPMS" &/ sPackage) THEN Error.Raise("alien command has failed")
+        MoveFile(sHome &/ "RPM/SRPMS" &/ sPackage, Path &/ File.BaseName(sPackage) & ".src.deb")
+      ELSE
+        MoveFile(sHome &/ "RPM/SRPMS" &/ sPackage, Path &/ sPackage)
+      ENDIF
+
+      AddLog(sOutput)
+
+      RETURN
+    END IF
+  NEXT
+
+  Error.Raise(sOutput)
+
+CATCH
+
+  PRINT sOutput
+  AddLog(("The package build has failed.") & "\n")
+  AddLog(Error.Text)
+  FGambas.Error(("The package build has failed."))
+  RETURN TRUE
+
+END
+
+
+PRIVATE SUB MoveFile(sSrc AS String, sDst AS String)
+
+  TRY KILL sDst
+  MOVE sSrc TO sDst
+
+END

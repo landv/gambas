@@ -1,0 +1,203 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+EVENT Activate
+EVENT GotFocus
+EVENT LostFocus
+
+PROPERTY Value AS Date
+PROPERTY Border AS Boolean
+PROPERTY Font AS Font
+PROPERTY ReadOnly AS Boolean
+
+PRIVATE panDate AS Panel
+PRIVATE txtDay AS TextBox
+PRIVATE txtMonth AS TextBox
+PRIVATE txtYear AS TextBox
+PRIVATE lblSep1 AS Label
+PRIVATE lblSep2 AS Label
+
+PRIVATE $aTextBox AS NEW Object[]
+PRIVATE $bLock AS Boolean
+PRIVATE $bFocus AS Boolean
+
+PUBLIC CONST _Properties AS String = "*,Border,Value,ReadOnly"
+
+PUBLIC SUB _new()
+
+  DIM sFormat AS String
+  DIM iInd AS Integer
+  DIM sCar AS String
+
+  panDate = NEW Panel(ME)
+  panDate.Border = Border.Sunken
+  panDate.Arrangement = Arrange.Horizontal
+  panDate.Background = Color.TextBackground
+
+  sFormat = Str(CDate("11/22/3333"))
+
+  FOR iInd = 1 TO Len(sFormat)
+    sCar = Mid$(sFormat, iInd, 1)
+    IF sCar = "2" THEN
+      IF txtDay THEN CONTINUE
+      txtDay = NEW TextBox(panDate) AS "TextBox"
+      txtDay.Border = FALSE
+      txtDay.Alignment = Align.Right
+      txtDay.MaxLength = 2
+      $aTextBox.Add(txtDay)
+    ELSE IF sCar = "1" THEN
+      IF txtMonth THEN CONTINUE
+      txtMonth = NEW TextBox(panDate) AS "TextBox"
+      txtMonth.Border = FALSE
+      txtMonth.Alignment = Align.Right
+      txtMonth.MaxLength = 2
+      $aTextBox.Add(txtMonth)
+    ELSE IF sCar = "3" THEN
+      IF txtYear THEN CONTINUE
+      txtYear = NEW TextBox(panDate) AS "TextBox"
+      txtYear.Border = FALSE
+      txtYear.Alignment = Align.Right
+      txtYear.MaxLength = 4
+      $aTextBox.Add(txtYear)
+    ELSE
+      IF NOT lblSep1 THEN
+        lblSep1 = NEW Label(panDate)
+        lblSep1.Text = sCar
+      ELSE IF NOT lblSep2 THEN
+        lblSep2 = NEW Label(panDate)
+        lblSep2.Text = sCar
+      ENDIF
+    ENDIF
+  NEXT
+
+  RefreshSize
+
+END
+
+PRIVATE SUB ResizeControl(hCtrl AS Control, sText AS String, OPTIONAL iMargin AS Integer)
+
+  hCtrl.Resize(ME.Font.Width(sText) + iMargin, ME.Font.Height(sText))
+
+END
+
+PRIVATE FUNCTION Value_Read() AS Date
+
+  TRY RETURN Date(CInt(txtYear.Text), CInt(txtMonth.Text), CInt(txtDay.Text))
+
+END
+
+PRIVATE SUB Value_Write(dDate AS Date)
+
+  $bLock = TRUE
+
+  IF IsNull(dDate) THEN
+    txtYear.Clear
+    txtMonth.Clear
+    txtDay.Clear
+  ELSE
+    txtYear.Text = Year(dDate)
+    txtMonth.Text = Month(dDate)
+    txtDay.Text = Day(dDate)
+  ENDIF
+
+  $bLock = FALSE
+  $aTextBox[0].Select
+  $aTextBox[0].SetFocus
+
+END
+
+PUBLIC SUB TextBox_KeyPress()
+
+  Help.ManageKeyPress("/" & lblSep1.Text & lblSep2.Text, $aTextBox)
+
+END
+
+PUBLIC SUB TextBox_Change()
+
+  IF $bLock THEN RETURN
+  IF LAST.Length = LAST.MaxLength THEN
+    Help.GotoNext(LAST, TRUE)
+  ENDIF
+
+END
+
+PRIVATE SUB Border_Write(bBorder AS Boolean)
+
+  panDate.Border = If(bBorder, Border.Sunken, Border.None)
+
+END
+
+PRIVATE FUNCTION Border_Read() AS Boolean
+
+  RETURN panDate.Border <> Border.None
+
+END
+
+PRIVATE SUB RefreshSize()
+
+  ResizeControl(txtDay, "99", 6)
+  ResizeControl(txtMonth, "99", 6)
+  ResizeControl(txtYear, "9999", 6)
+  ResizeControl(lblSep1, lblSep1.Text)
+  ResizeControl(lblSep2, lblSep2.Text)
+
+END
+
+PRIVATE FUNCTION Font_Read() AS Font
+
+  RETURN SUPER.Font
+
+END
+
+PRIVATE SUB Font_Write(hFont AS Font)
+
+  SUPER.Font = hFont
+  RefreshSize
+
+END
+
+PUBLIC SUB TextBox_Activate()
+
+  RAISE Activate
+
+END
+
+PUBLIC SUB TextBox_GotFocus()
+
+  IF $bFocus THEN RETURN
+  $bFocus = TRUE
+  RAISE GotFocus
+
+END
+
+PUBLIC SUB TextBox_LostFocus()
+
+  DIM hCtrl AS Control
+
+  hCtrl = Application.ActiveControl
+  IF hCtrl AND IF hCtrl.Parent = panDate THEN
+    RETURN
+  ENDIF
+
+  RAISE LostFocus
+  $bFocus = FALSE
+
+END
+
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+
+  RETURN txtDay.ReadOnly
+
+END
+
+PRIVATE SUB ReadOnly_Write(bReadOnly AS Boolean)
+
+  txtDay.ReadOnly = bReadOnly
+  txtMonth.ReadOnly = bReadOnly
+  txtYear.ReadOnly = bReadOnly
+
+END
+

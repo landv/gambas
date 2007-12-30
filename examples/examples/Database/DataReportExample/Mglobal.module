@@ -1,0 +1,83 @@
+' Gambas module file
+PUBLIC db AS NEW Connection
+PUBLIC rs AS Result
+PUBLIC rs1 AS Result
+
+PUBLIC btnok AS String
+PUBLIC btnno AS String
+
+''''''''''''''''''''''''''''''''''
+''sub to connect to mysql server''
+''''''''''''''''''''''''''''''''''
+PUBLIC FUNCTION conn(host AS String, lgn AS String, pass AS String) AS Boolean
+  db.close
+  db.Type = "mysql"
+  
+  db.Host = host
+  db.Login = lgn
+  db.Password = pass
+  db.Open
+  RETURN TRUE
+
+CATCH
+  Message.error(Error.text)
+  RETURN FALSE
+END
+
+''''''''''''''''''''''''''''''''''''''''
+''sub to fill the tableview w/ records''
+''''''''''''''''''''''''''''''''''''''''
+PUBLIC SUB fill_view(tbv AS tableview, qry AS String)
+DIM i AS Float
+  rs1 = db.exec(qry)
+  WITH rs1
+    tbv.rows.count=0
+    IF .count<>0 THEN
+      tbv.columns.count=.fields.count
+      tbv.rows.count=.count
+    END IF
+  END WITH
+END
+
+''''''''''''''''''''''''''''''''''''
+''sub to check the keypress events''
+''''''''''''''''''''''''''''''''''''
+PUBLIC FUNCTION chk(txt AS textbox, code AS Integer, OPTIONAL tipe AS String) AS Integer
+  SELECT CASE code
+    CASE Key.Escape
+      IF txt.text<>"" THEN
+        txt.text=""
+      ELSE
+        RETURN 1
+      ENDIF
+    
+    CASE ELSE
+      SELECT CASE tipe
+        CASE "num"
+          IF NOT (code >= Asc("0") AND code <= Asc("9") OR 
+            code=key.up OR code=key.down OR code=key.left OR code=key.right OR 
+            code=key.backspace OR code=key.tab OR code=key.enter OR code=key.return OR 
+            code=key.home OR code=key.end OR code=key.delete OR code=key.up) THEN
+            RETURN 2
+          END IF
+        
+        CASE "date"
+          IF NOT (code >= Asc("0") AND code <= Asc("9") OR code=Asc("/") OR 
+            code=key.up OR code=key.down OR code=key.left OR code=key.right OR 
+            code=key.backspace OR code=key.tab OR code=key.enter OR code=key.return OR 
+            code=key.home OR code=key.end OR code=key.delete OR code=key.up) THEN
+            RETURN 2
+          END IF
+
+      END SELECT
+  END SELECT
+END
+
+SUB dump()
+'             code=4099 OR code=4096 OR code=4100 OR code=4112 OR 
+'             code=4113 OR code=4103 OR code=4102 OR code=4118 OR 
+'             code=4119 OR code=4128 OR code=4133 OR code=4132 OR 
+'             code=4134 OR code=4097 OR code=4131 OR code=4129 OR 
+'             code=4181 OR code=4116 OR code=4114 OR code=4115 OR 
+'             code=4117) THEN RETURN 2
+END

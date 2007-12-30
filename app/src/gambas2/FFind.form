@@ -1,0 +1,154 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,90,17)
+  'Move(0,0,720,136)
+  Action = "find"
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  { Panel1 Panel
+    MoveScaled(0,1,32,0.5)
+    'Move(0,8,256,4)
+  }
+  { panFind Panel
+    MoveScaled(1,2,86,5)
+    'Move(8,16,688,40)
+    Arrangement = Arrange.Vertical
+    AutoResize = True
+    Padding = 2
+    { HBox1 HBox
+      MoveScaled(0,0,84,3.25)
+      'Move(0,0,672,26)
+      { PictureBox1 PictureBox
+        MoveScaled(1,0,4,3)
+        'Move(8,0,32,24)
+        Picture = Picture["icon:/24/find"]
+      }
+      { cmbFind ComboBox
+        MoveScaled(6,0,11,3)
+        'Move(48,0,88,24)
+        ToolTip = ("Find")
+        Expand = True
+        Text = ("")
+      }
+      { ToolButton15 ToolButton
+        MoveScaled(17,0,3,3)
+        'Move(136,0,24,24)
+        ToolTip = ("Find next")
+        Action = "find-next"
+        Text = ("")
+        Picture = Picture["icon:/16/down"]
+      }
+      { ToolButton14 ToolButton
+        MoveScaled(20,0,3,3)
+        'Move(160,0,24,24)
+        ToolTip = ("Find previous")
+        Action = "find-previous"
+        Text = ("")
+        Picture = Picture["icon:/16/up"]
+      }
+      { ToolButton1 ToolButton
+        MoveScaled(23,0,3,3)
+        'Move(184,0,24,24)
+        ToolTip = ("Search list")
+        Action = "find-all"
+        Text = ("")
+        Picture = Picture["img/16/find-list.png"]
+      }
+      { cmbReplace ComboBox
+        MoveScaled(26,0,13,3)
+        'Move(208,0,104,24)
+        ToolTip = ("Replace")
+        Expand = True
+        Text = ("")
+      }
+      { ToolButton16 ToolButton
+        MoveScaled(39,0,3,3)
+        'Move(312,0,24,24)
+        ToolTip = ("Replace")
+        Action = "replace"
+        Text = ("")
+        Picture = Picture["icon:/16/replace"]
+      }
+      { ToolButton17 ToolButton
+        MoveScaled(42,0,3,3)
+        'Move(336,0,24,24)
+        ToolTip = ("Replace all")
+        Action = "replace-all"
+        Text = ("")
+        Picture = Picture["img/16/wizard.png"]
+      }
+      { ToolBar5 ToolBar
+        MoveScaled(55,0,12,4)
+        'Move(440,0,96,32)
+        Visible = False
+        Action = "find-in"
+        { ToolButton18 ToolButton
+          MoveScaled(0,0,3,3)
+          'Move(0,0,24,24)
+          ToolTip = ("Search in procedure")
+          Action = "find-in-sub"
+          Text = ("")
+          Picture = Picture["img/16/procedure.png"]
+          Radio = True
+          Toggle = True
+        }
+        { ToolButton19 ToolButton
+          MoveScaled(3,0,3,3)
+          'Move(24,0,24,24)
+          ToolTip = ("Search in file")
+          Action = "find-in-module"
+          Text = ("")
+          Picture = Picture["img/16/module.png"]
+          Radio = True
+          Toggle = True
+          Value = True
+        }
+        { btnFindInProject ToolButton
+          MoveScaled(6,0,3,3)
+          'Move(48,0,24,24)
+          ToolTip = ("Search in project")
+          Action = "find-in-project"
+          Text = ("")
+          Picture = Picture["img/16/gambas.png"]
+          Radio = True
+          Toggle = True
+        }
+      }
+      { ToolBar6 ToolBar
+        MoveScaled(71,0,12,3)
+        'Move(568,0,96,24)
+        Visible = False
+        Action = "find-option"
+        { ToolButton21 ToolButton
+          MoveScaled(0,0,3,3)
+          'Move(0,0,24,24)
+          ToolTip = ("Case sensitive")
+          Action = "find-case"
+          Text = ("")
+          Picture = Picture["img/16/case.png"]
+          Toggle = True
+        }
+        { ToolButton22 ToolButton
+          MoveScaled(3,0,3,3)
+          'Move(24,0,24,24)
+          ToolTip = ("Word only")
+          Action = "find-word"
+          Text = ("")
+          Picture = Picture["icon:/16/book"]
+          Toggle = True
+        }
+        { ToolButton23 ToolButton
+          MoveScaled(6,0,3,3)
+          'Move(48,0,24,24)
+          ToolTip = ("Search in comments")
+          Action = "find-comment"
+          Text = ("")
+          Picture = Picture["img/16/comment.png"]
+          Toggle = True
+        }
+      }
+    }
+  }
+}

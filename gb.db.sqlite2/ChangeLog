@@ -1,0 +1,38 @@
+02/03/04 - Added sqlite system tables sqlite_master and sqlite_temp_master to
+the table list etc.
+02/03/04 - Changed default string size to 0, which is unlimited.
+22/03/04 - Cleared up some deallocations.
+22/03/04 - Allowed for accessing same field name within multiple table
+           query. e.g. select fred.id, sid.id from fred, sid
+01/04/04 - Enabled Field aliasing for exec.
+03/04/04 - The host variable within the database class can be used as the
+           database home, that is, set it to the path where the database files
+           are located.
+03/04/04 - The location of the database files is order by:
+           a) If fullpath given then use this.
+           b) If Host variable set, then look at the path set in the variable.
+           c) If environment variable GAMBAS_SQLITE_DBHOME is set then use.
+           d) Current working directory.
+04/06/04 - Allow memory only database. e.g. :memory: as the database name.
+
+* 17 Jul 2004 - BM
+
+- By default, an in-memory database is opened if no database name is specified.
+- An in_memory database returns as user-list only the current user, with admin rights.
+- The databases are not searched by default in the current working directory anymore. 
+  Instead, they are searched in the /tmp/gambas.%pid%/sqlite/ directory.
+  
+* 29 Aug 2004 - BM
+
+- Many clean-ups in database_create(). The function FullPath() is not necessary
+  anymore, and has been removed.
+- Fix table_index() so that it returns error if no true primary key is found
+  in the table.
+  
+* 01 Sep 2004 - NG
+  
+- Checks that a full path points at a real SQLite database in FindDatabase().
+
+* 20 Nov 2004 - DC
+
+- I've replaced all float values for double values in the sqlite driver.

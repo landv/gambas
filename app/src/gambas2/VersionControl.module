@@ -1,0 +1,54 @@
+' Gambas module file
+
+PRIVATE $bSVN AS Boolean
+PRIVATE $bCVS AS Boolean
+
+
+PUBLIC SUB Update()
+  
+  $bSVN = Exist(Project.Dir &/ ".svn")
+  $bCVS = Exist(Project.Dir &/ "CVS")
+  
+END
+
+PUBLIC SUB AddFile(sPath AS String)
+  
+  IF $bSVN THEN 
+    SHELL "svn add " & Project.Quote(sPath) WAIT
+  ENDIF
+  
+END
+
+PUBLIC SUB AddDir(sPath AS String)
+  
+  IF $bSVN THEN 
+    SHELL "svn add " & Project.Quote(sPath) WAIT
+  ENDIF
+  
+END
+
+PUBLIC SUB RemoveFile(sPath AS String)
+  
+  IF $bSVN THEN 
+    SHELL "svn remove " & Project.Quote(sPath) WAIT
+  ENDIF  
+  
+END
+
+PUBLIC SUB RemoveDir(sPath AS String)
+  
+  IF $bSVN THEN 
+    SHELL "svn remove " & Project.Quote(sPath) WAIT
+  ENDIF  
+  
+END
+
+
+PUBLIC SUB MoveFile(sOld AS String, sNew AS String)
+  
+  IF $bSVN THEN 
+    AddFile(sNew)
+    RemoveFile(sOld)
+  ENDIF
+  
+END

@@ -1,0 +1,138 @@
+' Gambas class file
+
+STATIC PUBLIC Value AS String[]
+
+STATIC PUBLIC FUNCTION Run(aValue AS String[]) AS Boolean
+  
+  DIM hForm AS Form
+  
+  Value = aValue
+  
+  hForm = NEW FList
+  RETURN NOT hForm.ShowModal()
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  lstValue.List = Value
+  IF lstValue.Count THEN lstValue.Index = 0
+  Refresh
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  Value = lstValue.List
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB lstValue_Click()
+
+  'PRINT "lstValue_Click"
+
+  IF NOT lstValue.Current THEN RETURN
+
+  txtValue.Text = lstValue.Current.Text
+  txtValue.SetFocus
+  txtValue.SelectAll
+
+END
+
+
+PUBLIC SUB txtValue_Change()
+
+  IF lstValue.Current THEN
+    lstValue.Current.Text = txtValue.Text
+  ENDIF
+
+END
+
+
+PUBLIC SUB btnInsert_Click()
+
+  lstValue.Add("Item " & CStr(lstValue.Count + 1))
+  'PRINT "Count ="; lstValue.Count
+  Refresh
+  lstValue.Index = lstValue.Count - 1
+  'PRINT "Index ="; lstValue.Index; " /"; lstValue.Count
+
+END
+
+
+PRIVATE SUB Refresh()
+  
+  DIM bEnabled AS Boolean
+  
+  bEnabled = lstValue.Count
+  
+  txtValue.Enabled = bEnabled
+  btnDelete.Enabled = bEnabled
+  btnUp.Enabled = bEnabled
+  btnDown.Enabled = bEnabled
+  btnClear.Enabled = bEnabled
+  
+  IF NOT bEnabled THEN txtValue.Clear
+  
+END
+
+PUBLIC SUB btnDelete_Click()
+
+  DIM iIndex AS Integer
+  
+  iIndex = lstValue.Index
+
+  IF iIndex < 0 THEN RETURN
+  
+  lstValue.Remove(iIndex)
+
+  IF iIndex >= lstValue.Count THEN DEC iIndex
+
+  lstValue.Index = iIndex
+
+  Refresh
+
+END
+
+PUBLIC SUB btnClear_Click()
+
+  IF Message.Question(("Do you want to clear the value list ?"), ("Clear"), ("Cancel")) <> 1 THEN RETURN
+
+  lstValue.Clear
+  Refresh
+
+END
+
+PUBLIC SUB btnDown_Click()
+
+  DIM iInd AS Integer
+
+  iInd = lstValue.Index
+
+  IF iInd < (lstValue.Count - 1) THEN
+    SWAP lstValue[iInd].Text, lstValue[iInd + 1].Text
+    lstValue.Index = iInd + 1
+  ENDIF
+
+END
+
+PUBLIC SUB btnUp_Click()
+
+  DIM iInd AS Integer
+
+  iInd = lstValue.Index
+
+  IF iInd > 0 THEN
+    SWAP lstValue[iInd].Text, lstValue[iInd - 1].Text
+    lstValue.Index = iInd - 1
+  ENDIF
+
+END

@@ -1,0 +1,54 @@
+' Gambas class file
+
+EXPORT 
+
+STATIC PROPERTY READ Control AS Control
+
+STATIC PUBLIC SUB _call(Message AS String, Control AS Control, OPTIONAL Icon AS Picture, OPTIONAL X AS Integer = -1, OPTIONAL Y AS Integer = -1)
+
+  FBalloon.Run(Message, Control, Icon, X, Y)
+  
+END
+
+STATIC PUBLIC SUB Info(Message AS String, Control AS Control, OPTIONAL X AS Integer = -1, OPTIONAL Y AS Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/info"], X, Y)
+  
+END
+
+STATIC PUBLIC SUB Warning(Message AS String, Control AS Control, OPTIONAL X AS Integer = -1, OPTIONAL Y AS Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/warning"], X, Y)
+  
+END
+
+STATIC PUBLIC SUB Error(Message AS String, Control AS Control, OPTIONAL X AS Integer = -1, OPTIONAL Y AS Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/error"], X, Y)
+  
+END
+
+STATIC PUBLIC SUB Question(Message AS String, Control AS Control, OPTIONAL X AS Integer = -1, OPTIONAL Y AS Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/question"], X, Y)
+  
+END
+
+STATIC PUBLIC SUB Delete(Message AS String, Control AS Control, OPTIONAL X AS Integer = -1, OPTIONAL Y AS Integer = -1)
+
+  FBalloon.Run(Message, Control, Picture["icon:/32/delete"], X, Y)
+  
+END
+
+STATIC PUBLIC SUB Hide(OPTIONAL Control AS Control)
+
+  IF Control AND IF FBalloon.GetControl() <> Control THEN RETURN  
+  FBalloon.Hide
+  
+END
+
+STATIC PRIVATE FUNCTION Control_Read() AS Control
+
+  RETURN FBalloon.GetControl()  
+
+END

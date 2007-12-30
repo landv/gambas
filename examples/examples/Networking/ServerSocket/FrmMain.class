@@ -1,0 +1,137 @@
+' Gambas class file
+PRIVATE Client AS Object[]
+PRIVATE Waiting AS Boolean
+
+PUBLIC SUB Button1_Click()
+
+  IF combobox2.Index=0 THEN
+    'TCP
+    Server.Type=Net.Internet
+    ' The port to listen to
+    Server.Port=Val(TextBox1.Text)
+    ' we start listening
+    Server.Listen(ComboBox1.Index)
+  ELSE
+    ' UNIX
+    Server.Type=Net.Local ' You could also use Net.Unix
+    Server.Path=TxtPath.Text
+    Server.Listen(ComboBox1.Index)
+  END IF
+  IF Server.Status=Net.Active THEN 
+    ' listening
+    Button1.Enabled=FALSE
+    button2.Enabled=TRUE
+    ComboBox1.Enabled=FALSE
+    ComboBox2.Enabled=FALSE
+    TxtPath.Enabled=FALSE
+  END IF
+   
+END
+
+PUBLIC SUB Server_Error()
+  
+  Message.Error("Unable to bind socket")
+  
+END
+
+
+PUBLIC SUB Server_Connection(sHost AS String)
+  '*******************************
+  ' A client has arrived!
+  ' let's accept it
+  DIM Obj AS Object
+  IF Server.Status<=Net.Inactive THEN RETURN
+  IF ComboBox2.Index=0 THEN
+    TextArea1.Text=TextArea1.Text & "Connection request from : " & sHost & Chr(13) & Chr(10)
+  ELSE
+    TextArea1.Text=TextArea1.Text & "Connection request accepted" & Chr(13) & Chr(10)
+  END IF
+  
+  Obj=Server.Accept()
+  Client.Add(Obj)
+  IF Obj.Status=Net.Connected AND ComboBox2.Index=0 THEN
+    TextArea1.Text=TextArea1.Text & "Connection from " & Obj.RemoteHost & ":" & Obj.RemotePort & " accepted (local port " & Obj.LocalPort & ")" & Chr(13) & Chr(10) 
+  
+  END IF
+  
+END
+
+PUBLIC SUB Socket_Read()
+    DIM sBuf AS String
+    '******************************
+    ' When some data arrives to
+    ' our server, we respond with
+    ' an echo
+    '*****************************
+     
+    IF LAST.Status <> Net.Connected THEN RETURN
+    READ #LAST,sBuf,Lof(LAST)
+    TextArea1.Text=TextArea1.Text & "Socket number " & Client.Find(LAST) & " --> " & sBuf 
+    WRITE #LAST,sBuf,Len(sBuf)
+    
+END
+
+PUBLIC SUB Socket_Ready()
+  
+  TextArea1.Text=TextArea1.Text & "-- Client working --" & Chr(13) & Chr(10)
+  
+END
+
+PUBLIC SUB Socket_Closed()
+
+    TextArea1.Text=TextArea1.Text & "Client  " & Client.Find(LAST) & " Closed"
+    Client.Remove (Client.Find(LAST)) 
+END
+
+
+PUBLIC SUB Form_Open()
+
+  Client=NEW Object[] 
+  TxtPath.Text=Application.Path & "/" & "gambas"
+  TxtPath.Enabled=FALSE
+  TextLabel3.Text="Path (Max." & ServerSocket.MaxPathLength & ")"
+
+END
+
+PUBLIC SUB Button2_Click()
+
+  Server.Close()
+  Button2.Enabled=FALSE
+  button1.Enabled=TRUE
+  ComboBox1.Enabled=TRUE
+  ComboBox2.Enabled=TRUE
+  ComboBox2_Click()
+
+END
+
+PUBLIC SUB Form_Close()
+
+  ' We have to be sure of closing the server before exiting
+  Server.Close()
+
+END
+
+PUBLIC SUB CmdWait_Click()
+
+  IF Waiting THEN
+    Server.Resume()
+    CmdWait.Text="Pause"
+  ELSE
+    Server.Pause()
+    CmdWait.Text="Resume"
+  END IF
+  Waiting=NOT Waiting
+
+END
+
+PUBLIC SUB ComboBox2_Click()
+
+  IF ComboBox2.Index=0 THEN
+    TextBox1.Enabled=TRUE
+    TxtPath.Enabled=FALSE
+  ELSE
+    TextBox1.Enabled=FALSE
+    TxtPath.Enabled=TRUE
+  END IF
+
+END

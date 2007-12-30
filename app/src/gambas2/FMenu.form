@@ -1,0 +1,272 @@
+# Gambas Form File 1.0
+
+{ FMenu Form
+  MoveScaled(17.375,15.375,65,70)
+  'Move(139,123,520,560)
+  Text = ("Menu editor")
+  Icon = Picture["img/16/menu.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { lstMenu ListBox
+    MoveScaled(1,1,60,30)
+    'Move(8,8,480,240)
+    Expand = True
+    Mode = Select.Multiple
+  }
+  { HBox1 HBox
+    MoveScaled(1,32,60,3)
+    'Move(8,256,480,24)
+    Spacing = 8
+    { btnNext Button
+      MoveScaled(0,0,12,3)
+      'Move(0,0,96,24)
+      Text = ("&Next")
+    }
+    { btnInsert Button
+      MoveScaled(13,0,12,3)
+      'Move(104,0,96,24)
+      Text = ("&Insert")
+    }
+    { btnDelete Button
+      MoveScaled(26,0,12,3)
+      'Move(208,0,96,24)
+      Text = ("&Delete")
+    }
+    { btnUp Button
+      MoveScaled(39,0,3,3)
+      'Move(312,0,24,24)
+      Text = ("")
+      Picture = Picture["icon:/16/up"]
+    }
+    { btnDown Button
+      MoveScaled(43,0,3,3)
+      'Move(344,0,24,24)
+      Text = ("")
+      Picture = Picture["icon:/16/down"]
+    }
+    { btnLeft Button
+      MoveScaled(47,0,3,3)
+      'Move(376,0,24,24)
+      Text = ("")
+      Picture = Picture["icon:/16/left"]
+    }
+    { btnRight Button
+      MoveScaled(51,0,3,3)
+      'Move(408,0,24,24)
+      Text = ("")
+      Picture = Picture["icon:/16/right"]
+    }
+    { btnSave Button
+      MoveScaled(55,0,3,3)
+      'Move(440,0,24,24)
+      Text = ("")
+      Picture = Picture["icon:/16/save"]
+    }
+  }
+  { Panel3 Panel
+    MoveScaled(0,36,64,29)
+    'Move(0,288,512,232)
+    Arrangement = Arrange.Vertical
+    { Panel4 Panel
+      MoveScaled(24,0,3,1)
+      'Move(192,0,24,8)
+    }
+    { lblCreate Label
+      MoveScaled(2,1,50,3)
+      'Move(16,8,400,24)
+      Text = ("Click on Insert to add a new menu.")
+      Alignment = Align.TopNormal
+    }
+    { frmMenu Panel
+      MoveScaled(0,1,63,27)
+      'Move(0,8,504,216)
+      Arrangement = Arrange.Horizontal
+      Spacing = 16
+      { HPanel1 HPanel
+        MoveScaled(1,0,49,27)
+        'Move(8,0,392,216)
+        Expand = True
+        Spacing = 8
+        { Label1 Label
+          MoveScaled(0,0,11,3)
+          'Move(0,0,88,24)
+          Text = ("Name")
+        }
+        { txtName TextBox
+          MoveScaled(11,0,37,3)
+          'Move(88,0,296,24)
+          Expand = True
+          Text = ("")
+        }
+        { Label6 Label
+          MoveScaled(0,4,11,3)
+          'Move(0,32,88,24)
+          Text = ("Group")
+        }
+        { txtGroup TextBox
+          MoveScaled(11,4,37,3)
+          'Move(88,32,296,24)
+          Expand = True
+          Text = ("")
+        }
+        { Label2 Label
+          MoveScaled(0,8,11,3)
+          'Move(0,64,88,24)
+          Text = ("Caption")
+        }
+        { txtCaption TextBox
+          MoveScaled(11,8,37,3)
+          'Move(88,64,296,24)
+          Expand = True
+          Text = ("")
+        }
+        { Label8 Label
+          MoveScaled(0,12,11,3)
+          'Move(0,96,88,24)
+          Text = ("Action")
+        }
+        { txtAction TextBox
+          MoveScaled(11,12,37,3)
+          'Move(88,96,296,24)
+          Expand = True
+          Text = ("")
+        }
+        { Label7 Label
+          MoveScaled(0,16,11,3)
+          'Move(0,128,88,24)
+          Text = ("Tag")
+        }
+        { txtTag TextBox
+          MoveScaled(11,16,37,3)
+          'Move(88,128,296,24)
+          Expand = True
+          Text = ("")
+        }
+        { Label3 Label
+          MoveScaled(0,20,11,3)
+          'Move(0,160,88,24)
+          Text = ("Shortcut")
+        }
+        { HBox3 HBox
+          MoveScaled(11,20,38,3)
+          'Move(88,160,304,24)
+          Expand = True
+          Spacing = 8
+          { chkCtrl CheckBox
+            MoveScaled(0,0,7,3)
+            'Move(0,0,56,24)
+            Text = ("CTRL")
+          }
+          { chkShift CheckBox
+            MoveScaled(8,0,8,3)
+            'Move(64,0,64,24)
+            Text = ("SHIFT")
+          }
+          { chkAlt CheckBox
+            MoveScaled(17,0,6,3)
+            'Move(136,0,48,24)
+            Text = ("ALT")
+          }
+          { cmbShortcut ComboBox
+            MoveScaled(24,0,13,3)
+            'Move(192,0,104,24)
+            Text = ("")
+            ReadOnly = True
+          }
+        }
+        { Label5 Label
+          MoveScaled(0,24,11,3)
+          'Move(0,192,88,24)
+          Text = ("Picture")
+        }
+        { HBox4 HBox
+          MoveScaled(11,24,37,3)
+          'Move(88,192,296,24)
+          Expand = True
+          Spacing = 8
+          { txtPicture TextBox
+            MoveScaled(0,0,29,3)
+            'Move(0,0,232,24)
+            Expand = True
+            Text = ("")
+            ReadOnly = True
+          }
+          { btnKillPicture Button
+            MoveScaled(30,0,3,3)
+            'Move(240,0,24,24)
+            Text = ("")
+            Picture = Picture["icon:/16/delete"]
+          }
+          { btnPicture Button
+            MoveScaled(34,0,3,3)
+            'Move(272,0,24,24)
+            Text = ("")
+            Picture = Picture["icon:/16/open"]
+          }
+        }
+      }
+      { VBox1 VBox
+        MoveScaled(51,0,12,27)
+        'Move(408,0,96,216)
+        { chkVisible CheckBox
+          MoveScaled(0,0,11,3)
+          'Move(0,0,88,24)
+          Text = ("Visible")
+        }
+        { chkEnabled CheckBox
+          MoveScaled(0,3,10,3)
+          'Move(0,24,80,24)
+          Text = ("Enabled")
+        }
+        { chkToggle CheckBox
+          MoveScaled(0,6,10,3)
+          'Move(0,48,80,24)
+          Text = ("Toggle")
+        }
+        { chkChecked CheckBox
+          MoveScaled(0,9,10,3)
+          'Move(0,72,80,24)
+          Text = ("Checked")
+        }
+        { Panel1 Panel
+          MoveScaled(3,15,5,3)
+          'Move(24,120,40,24)
+          Expand = True
+        }
+        { HBox5 HBox
+          MoveScaled(0,21,9,5)
+          'Move(0,168,72,40)
+          { imgPicture PictureBox
+            MoveScaled(0,0,5,5)
+            'Move(0,0,40,40)
+            Alignment = Align.Center
+            Border = Border.Sunken
+          }
+        }
+      }
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,66,55,3)
+    'Move(8,528,440,24)
+    Spacing = 8
+    { Panel2 Panel
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(27,0,13,3)
+      'Move(216,0,104,24)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(41,0,13,3)
+      'Move(328,0,104,24)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

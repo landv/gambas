@@ -1,0 +1,77 @@
+/***************************************************************************
+
+  CFile.h
+
+  The File class
+
+  (c) 2000-2005 Beno� Minisini <gambas@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+#ifndef __GBX_C_FILE_H
+#define __GBX_C_FILE_H
+
+#include "gambas.h"
+
+#include "gbx_value.h"
+#include "gbx_stream.h"
+#include "gbx_object.h"
+#include "gb_file.h"
+
+typedef
+  struct {
+    OBJECT ob;
+    STREAM stream;
+    }
+  CSTREAM;
+
+typedef
+  struct {
+    CSTREAM ob;
+    int watch_fd;
+    }
+  CFILE;
+
+typedef
+  struct {
+    OBJECT ob;
+    FILE_STAT info;
+    char *path;
+    }
+  CSTAT;
+
+#ifndef __GBX_C_FILE_C
+extern GB_DESC NATIVE_Stream[];
+extern GB_DESC NATIVE_File[];
+extern GB_DESC NATIVE_Stat[];
+extern GB_DESC NATIVE_FilePerm[];
+extern CFILE *CFILE_in;
+extern CFILE *CFILE_out;
+extern CFILE *CFILE_err;
+#else
+#define THIS ((CFILE *)_object)
+#define THIS_STREAM ((CSTREAM *)_object)
+#define THIS_STAT ((CSTAT *)_object)
+#endif
+
+#define CSTREAM_stream(_cstream) (&((CSTREAM *)_cstream)->stream)
+
+PUBLIC CFILE *CFILE_create(STREAM *stream, int mode);
+PUBLIC void CFILE_init(void);
+PUBLIC void CFILE_init_watch(void);
+
+#endif

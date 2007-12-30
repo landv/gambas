@@ -1,0 +1,72 @@
+# Gambas Form File 1.0
+
+{ FTips Form
+  MoveScaled(31.875,17.125,79,56)
+  'Move(255,137,632,448)
+  Background = Color.TextBackground
+  Text = ("Tips of the day")
+  Icon = Picture["img/16/tip.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { Panel1 Panel
+    MoveScaled(1,1,75,6)
+    'Move(8,8,600,48)
+    Background = Color.SelectedBackground
+    Arrangement = Arrange.Horizontal
+    Spacing = 8
+    Padding = 8
+    { PictureBox1 PictureBox
+      MoveScaled(1,1,4,4)
+      'Move(8,8,32,32)
+      Picture = Picture["img/32/tip.png"]
+      Stretch = True
+    }
+    { lblTitle Label
+      MoveScaled(6,1,54,4)
+      'Move(48,8,432,32)
+      Font = Font["Bold,+2"]
+      Foreground = Color.SelectedForeground
+      Text = ("Tips of the day")
+    }
+  }
+  { txtTip TextView
+    MoveScaled(1,8,25,15)
+    'Move(8,64,200,120)
+    Expand = True
+    Text = ("")
+    Border = False
+  }
+  { panBottom Panel
+    MoveScaled(1,47,76,3)
+    'Move(8,376,608,24)
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    Spacing = 8
+    { chkShowTip CheckBox
+      MoveScaled(0,0,31,3)
+      'Move(0,0,248,24)
+      Expand = True
+      Text = ("Show tips on startup")
+    }
+    { btnPrev Button
+      MoveScaled(32,0,14,3)
+      'Move(256,0,112,24)
+      Text = ("&Previous")
+      Picture = Picture["icon:/16/rewind"]
+    }
+    { btnNext Button
+      MoveScaled(47,0,14,3)
+      'Move(376,0,112,24)
+      Text = ("&Next")
+      Picture = Picture["icon:/16/forward"]
+    }
+    { btnClose Button
+      MoveScaled(62,0,14,3)
+      'Move(496,0,112,24)
+      Text = ("Close")
+      Default = True
+      Cancel = True
+    }
+  }
+}

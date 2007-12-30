@@ -1,0 +1,15 @@
+' Gambas class file
+
+
+PUBLIC SUB Button1_Click()
+
+  PRINT DirChooser1.Settings.Join("|")
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  DirChooser1.Settings = Split("/home/benoit|/home/benoit|1|155,311|0|1,0,3,15.375,+,11.125,>,18.25,>|1", "|")
+
+END

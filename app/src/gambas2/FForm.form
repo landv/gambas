@@ -1,0 +1,524 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,70.5,61)
+  'Move(0,0,564,488)
+  Text = ("")
+  Icon = Picture["img/16/form.png"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  { mnuForm Menu
+    Text = ("Form")
+    Visible = False
+    { mnuSelect Menu
+      Text = ("Select")
+      Picture = Picture["img/16/select.png"]
+    }
+    { mnuEvent Menu
+      Text = ("Event")
+      Picture = Picture["img/16/event.png"]
+      Visible = False
+    }
+    { mnuShowCode Menu
+      Action = ".code"
+      Text = ("Code")
+      Picture = Picture["img/16/class.png"]
+      Shortcut = "Ctrl+W"
+    }
+    { Menu3 Menu
+      Text = ("")
+    }
+    { mnuTab Menu
+      Action = ".move-tab"
+      Text = ("Move tab")
+      Picture = Picture["img/16/tabstrip.png"]
+      { mnuTabFirst Menu
+        Action = ".move-tab-first"
+        Text = ("&First")
+        Picture = Picture["icon:/16/first"]
+        Shortcut = "Ctrl+Alt+Home"
+      }
+      { mnuTabPrevious Menu
+        Action = ".move-tab-previous"
+        Text = ("&Previous")
+        Picture = Picture["icon:/16/left"]
+        Shortcut = "Ctrl+Alt+Left"
+      }
+      { mnuTabNext Menu
+        Action = ".move-tab-next"
+        Text = ("&Next")
+        Picture = Picture["icon:/16/right"]
+        Shortcut = "Ctrl+Alt+Right"
+      }
+      { mnuTabLast Menu
+        Action = ".move-tab-last"
+        Text = ("&Last")
+        Picture = Picture["icon:/16/last"]
+        Shortcut = "Ctrl+Alt+End"
+      }
+    }
+    { mnuSep1 Menu
+      Text = ("")
+    }
+    { mnuSelectAll Menu
+      Text = ("Select all")
+      Shortcut = "Ctrl+A"
+    }
+    { mnuUnselectAll Menu
+      Text = ("Unselect all")
+      Shortcut = "Esc"
+    }
+    { Menu2 Menu
+      Text = ("")
+    }
+    { mnuCut Menu
+      Action = ".cut"
+      Text = ("Cut")
+      Picture = Picture["icon:/16/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu
+      Action = ".copy"
+      Text = ("Copy")
+      Picture = Picture["icon:/16/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Action = "paste-form"
+      Text = ("Paste")
+      Picture = Picture["icon:/16/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuDelete Menu
+      Action = ".delete"
+      Text = ("Delete")
+      Picture = Picture["icon:/16/delete"]
+      Shortcut = "Del"
+    }
+    { mnuSep2 Menu
+      Text = ("")
+    }
+    { mnuArrange Menu
+      Text = ("Arrangement")
+      { mnuRaise Menu
+        Action = ".raise"
+        Text = ("Bring to foreground")
+        Picture = Picture["img/16/raise.png"]
+        Shortcut = "Home"
+      }
+      { mnuLower Menu
+        Action = ".lower"
+        Text = ("Send to background")
+        Picture = Picture["img/16/lower.png"]
+        Shortcut = "End"
+      }
+      { mnuArrangeSep Menu
+        Text = ("")
+      }
+      { mnuArrangeHor Menu
+        Action = ".arrange-horizontal"
+        Text = ("Horizontal")
+        Picture = Picture["img/16/arrange-h.png"]
+        Shortcut = "Ctrl+Right"
+      }
+      { mnuArrangeLeftRight Menu
+        Action = ".arrange-row"
+        Text = ("Rows")
+        Picture = Picture["img/16/arrange-lr.png"]
+        Shortcut = "Ctrl+Shift+Right"
+      }
+      { mnuArrangeVer Menu
+        Action = ".arrange-vertical"
+        Text = ("Vertical")
+        Picture = Picture["img/16/arrange-v.png"]
+        Shortcut = "Ctrl+Down"
+      }
+      { mnuArrangeTopBottom Menu
+        Action = ".arrange-column"
+        Text = ("Columns")
+        Picture = Picture["img/16/arrange-tb.png"]
+        Shortcut = "Ctrl+Shift+Down"
+      }
+    }
+    { mnuAlign Menu
+      Text = ("Alignment")
+      { mnuAlignLeft Menu
+        Action = ".align-left"
+        Text = ("Align to &left")
+        Picture = Picture["img/16/align-left.png"]
+      }
+      { mnuAlignRight Menu
+        Action = ".align-right"
+        Text = ("Align to &right")
+        Picture = Picture["img/16/align-right.png"]
+      }
+      { mnuAlignTop Menu
+        Action = ".align-top"
+        Text = ("Align to &top")
+        Picture = Picture["img/16/align-top.png"]
+      }
+      { mnuAlignBottom Menu
+        Action = ".align-bottom"
+        Text = ("Align to &bottom")
+        Picture = Picture["img/16/align-bottom.png"]
+      }
+      { Menu5 Menu
+        Text = ("")
+      }
+      { mnuAlignWidth Menu
+        Action = ".same-width"
+        Text = ("Same &width")
+        Picture = Picture["img/16/same-width.png"]
+      }
+      { mnuAlignHeight Menu
+        Action = ".same-height"
+        Text = ("Same &height")
+        Picture = Picture["img/16/same-height.png"]
+      }
+    }
+    { mnuSep3 Menu
+      Text = ("")
+    }
+    { mnuMenu Menu
+      Action = ".menu"
+      Text = ("Menu editor...")
+      Picture = Picture["img/16/menu.png"]
+      Shortcut = "Ctrl+E"
+    }
+    { mnuSep4 Menu
+      Text = ("")
+    }
+    { mnuReload Menu
+      Text = ("Reload")
+      Picture = Picture["icon:/16/refresh"]
+    }
+    { mnuSave Menu
+      Action = ".save"
+      Text = ("Save")
+      Picture = Picture["icon:/16/save"]
+      Shortcut = "Ctrl+S"
+    }
+  }
+  { Panel1 Panel
+    MoveScaled(1,1,62,14)
+    'Move(8,8,496,112)
+    Arrangement = Arrange.LeftRight
+    AutoResize = True
+    { tlbForm ToolBar
+      MoveScaled(0,1,39,4)
+      'Move(0,8,312,32)
+      { ToolButton9 ToolButton mnuSave
+        MoveScaled(0,0,3,3)
+        'Move(0,0,24,24)
+        ToolTip = ("Save")
+        Action = ".save"
+        Text = ("")
+        Picture = Picture["icon:/16/save"]
+      }
+      { ToolButton11 ToolButton mnuReload
+        MoveScaled(3,0,3,3)
+        'Move(24,0,24,24)
+        ToolTip = ("Reload")
+        Action = ".refresh"
+        Text = ("")
+        Picture = Picture["icon:/16/refresh"]
+      }
+      { ToolButton12 ToolButton mnuShowCode
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        ToolTip = ("Code")
+        Action = ".code"
+        Text = ("")
+        Picture = Picture["img/16/class.png"]
+      }
+      { ToolButton14 ToolButton mnuCut
+        MoveScaled(9,0,3,3)
+        'Move(72,0,24,24)
+        ToolTip = ("Cut")
+        Action = ".cut"
+        Text = ("")
+        Picture = Picture["icon:/16/cut"]
+      }
+      { ToolButton15 ToolButton mnuCopy
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        ToolTip = ("Copy")
+        Action = ".copy"
+        Text = ("")
+        Picture = Picture["icon:/16/copy"]
+      }
+      { ToolButton16 ToolButton mnuPaste
+        MoveScaled(15,0,3,3)
+        'Move(120,0,24,24)
+        ToolTip = ("Paste")
+        Action = "paste-form"
+        Text = ("")
+        Picture = Picture["icon:/16/paste"]
+      }
+      { ToolButton1 ToolButton mnuPaste
+        MoveScaled(18,0,3,3)
+        'Move(144,0,24,24)
+        ToolTip = ("Delete")
+        Action = ".delete"
+        Text = ("")
+        Picture = Picture["icon:/16/delete"]
+      }
+      { ToolButton17 ToolButton mnuUndo
+        MoveScaled(21,0,3,3)
+        'Move(168,0,24,24)
+        Enabled = False
+        ToolTip = ("Undo")
+        Text = ("")
+        Picture = Picture["icon:/16/undo"]
+      }
+      { ToolButton18 ToolButton mnuRedo
+        MoveScaled(24,0,3,3)
+        'Move(192,0,24,24)
+        Enabled = False
+        ToolTip = ("Redo")
+        Text = ("")
+        Picture = Picture["icon:/16/redo"]
+      }
+      { ToolButton31 ToolButton
+        MoveScaled(27,0,3,3)
+        'Move(216,0,24,24)
+        ToolTip = ("Menu editor")
+        Action = ".menu"
+        Text = ("")
+        Picture = Picture["img/16/menu.png"]
+      }
+      { ToolButton2 ToolButton
+        MoveScaled(30,0,3,3)
+        'Move(240,0,24,24)
+        ToolTip = ("Toggle grid")
+        Action = ".grid"
+        Text = ("")
+        Picture = Picture["img/16/grid.png"]
+        Toggle = True
+        Value = True
+      }
+    }
+    { tlbArrange ToolBar
+      MoveScaled(1,5,38,3)
+      'Move(8,40,304,24)
+      { ToolButton19 ToolButton
+        MoveScaled(0,0,3,3)
+        'Move(0,0,24,24)
+        ToolTip = ("Bring to foreground")
+        Action = ".raise"
+        Text = ("")
+        Picture = Picture["img/16/raise.png"]
+      }
+      { ToolButton20 ToolButton
+        MoveScaled(3,0,3,3)
+        'Move(24,0,24,24)
+        ToolTip = ("Send to background")
+        Action = ".lower"
+        Text = ("")
+        Picture = Picture["img/16/lower.png"]
+      }
+      { ToolButton21 ToolButton
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        ToolTip = ("Align to top")
+        Action = ".align-top"
+        Text = ("")
+        Picture = Picture["img/16/align-top.png"]
+      }
+      { ToolButton22 ToolButton
+        MoveScaled(9,0,3,3)
+        'Move(72,0,24,24)
+        ToolTip = ("Align to bottom")
+        Action = ".align-bottom"
+        Text = ("")
+        Picture = Picture["img/16/align-bottom.png"]
+      }
+      { ToolButton23 ToolButton
+        MoveScaled(12,0,3,3)
+        'Move(96,0,24,24)
+        ToolTip = ("Align to left")
+        Action = ".align-left"
+        Text = ("")
+        Picture = Picture["img/16/align-left.png"]
+      }
+      { ToolButton24 ToolButton
+        MoveScaled(15,0,3,3)
+        'Move(120,0,24,24)
+        ToolTip = ("Align to right")
+        Action = ".align-right"
+        Text = ("")
+        Picture = Picture["img/16/align-right.png"]
+      }
+      { ToolButton29 ToolButton
+        MoveScaled(18,0,3,3)
+        'Move(144,0,24,24)
+        ToolTip = ("Same width")
+        Action = ".same-width"
+        Text = ("")
+        Picture = Picture["img/16/same-width.png"]
+      }
+      { ToolButton30 ToolButton
+        MoveScaled(21,0,3,3)
+        'Move(168,0,24,24)
+        ToolTip = ("Same height")
+        Action = ".same-height"
+        Text = ("")
+        Picture = Picture["img/16/same-height.png"]
+      }
+      { ToolButton25 ToolButton
+        MoveScaled(24,0,3,3)
+        'Move(192,0,24,24)
+        ToolTip = ("Vertical")
+        Action = ".arrange-vertical"
+        Text = ("")
+        Picture = Picture["img/16/arrange-v.png"]
+      }
+      { ToolButton26 ToolButton
+        MoveScaled(27,0,3,3)
+        'Move(216,0,24,24)
+        ToolTip = ("Horizontal")
+        Action = ".arrange-horizontal"
+        Text = ("")
+        Picture = Picture["img/16/arrange-h.png"]
+      }
+      { ToolButton27 ToolButton
+        MoveScaled(30,0,3,3)
+        'Move(240,0,24,24)
+        ToolTip = ("Columns")
+        Action = ".arrange-column"
+        Text = ("")
+        Picture = Picture["img/16/arrange-tb.png"]
+      }
+      { ToolButton28 ToolButton
+        MoveScaled(33,0,3,3)
+        'Move(264,0,24,24)
+        ToolTip = ("Rows")
+        Action = ".arrange-row"
+        Text = ("")
+        Picture = Picture["img/16/arrange-lr.png"]
+      }
+    }
+    { tlbTab ToolBar
+      MoveScaled(5,9,15,3)
+      'Move(40,72,120,24)
+      Action = ".move-tab"
+      { ToolButton3 ToolButton
+        MoveScaled(0,0,3,3)
+        'Move(0,0,24,24)
+        ToolTip = ("Move tab first")
+        Action = ".move-tab-first"
+        Text = ("")
+        Picture = Picture["icon:/16/first"]
+      }
+      { ToolButton4 ToolButton
+        MoveScaled(3,0,3,3)
+        'Move(24,0,24,24)
+        ToolTip = ("Move tab left")
+        Action = ".move-tab-previous"
+        Text = ("")
+        Picture = Picture["icon:/16/left"]
+      }
+      { ToolButton5 ToolButton
+        MoveScaled(6,0,3,3)
+        'Move(48,0,24,24)
+        ToolTip = ("Move tab right")
+        Action = ".move-tab-next"
+        Text = ("")
+        Picture = Picture["icon:/16/right"]
+      }
+      { ToolButton6 ToolButton
+        MoveScaled(9,0,3,3)
+        'Move(72,0,24,24)
+        ToolTip = ("Move tab last")
+        Action = ".move-tab-last"
+        Text = ("")
+        Picture = Picture["icon:/16/last"]
+      }
+    }
+  }
+  { svwWorkspace ScrollView
+    MoveScaled(2,17,67,39)
+    'Move(16,136,536,312)
+    Background = &H808080&
+    Expand = True
+    { panRight Panel Handle
+      MoveScaled(8,16,1,1)
+      'Move(64,128,8,8)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeE
+      Border = Border.Plain
+    }
+    { panDown Panel Handle
+      MoveScaled(6,18,1,1)
+      'Move(48,144,8,8)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeS
+      Border = Border.Plain
+    }
+    { panRightDown Panel Handle
+      MoveScaled(8,18,1,1)
+      'Move(64,144,8,8)
+      Background = Color.TextBackground
+      Mouse = Mouse.SizeNWSE
+      Border = Border.Plain
+    }
+    { panBorder Panel
+      MoveScaled(20,11,31,24)
+      'Move(160,88,248,192)
+      Background = Color.Background
+      Padding = 2
+      Border = Border.Raised
+    }
+    { panTitle Panel
+      MoveScaled(0,0,48,4)
+      'Move(0,0,384,32)
+      Background = Color.Background
+      Drop = True
+      AutoResize = True
+      { panInside Panel
+        MoveScaled(1,0,46,6)
+        'Move(8,0,368,48)
+        Arrangement = Arrange.Vertical
+        Padding = 2
+        Border = Border.Raised
+        { HBox1 HBox
+          MoveScaled(1,1,43,2)
+          'Move(8,8,344,16)
+          Expand = True
+          Spacing = 2
+          { imgIcon PictureBox
+            MoveScaled(0,0,3,3)
+            'Move(0,0,24,24)
+            Alignment = Align.Center
+          }
+          { lblTitle Label
+            MoveScaled(5,0,24,3)
+            'Move(40,0,192,24)
+            Font = Font["Bold"]
+            Background = Color.SelectedBackground
+            Foreground = Color.SelectedForeground
+            Expand = True
+            Padding = 2
+            Text = ("")
+          }
+          { btnMaxWindow PictureBox
+            MoveScaled(36,0,2.5,2)
+            'Move(288,0,20,16)
+            Picture = Picture["img/16/max-window.png"]
+            Alignment = Align.Center
+          }
+          { btnCloseWindow PictureBox
+            MoveScaled(39,0,2.5,2)
+            'Move(312,0,20,16)
+            Picture = Picture["img/16/close-window.png"]
+            Alignment = Align.Center
+          }
+        }
+        { Panel2 Panel
+          MoveScaled(19,4,3,1)
+          'Move(152,32,24,8)
+        }
+      }
+    }
+  }
+}

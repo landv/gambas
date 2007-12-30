@@ -1,0 +1,38 @@
+dist_gblib_DATA = $(COMPONENT).component
+gblib_DATA = $(COMPONENT).component
+
+install-data-hook:
+	@$(INSTALL) -d $(DESTDIR)$(gbdatadir)/info
+	@if test -d $(COMPONENT); then \
+		echo "Compiling the $(COMPONENT) project..."; \
+		( \
+			$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) $(COMPONENT); \
+			cd $(COMPONENT); \
+			$(DESTDIR)$(bindir)/gbc$(GAMBAS_VERSION) -ag; \
+			$(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
+			rm -rf .gambas; \
+			$(INSTALL) $(COMPONENT).gambas $(DESTDIR)$(gblibdir); \
+		) \
+	fi
+	@echo
+	@echo "Creating the information files for $(COMPONENT) component..."
+	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) $(COMPONENT)
+	@echo
+
+uninstall-hook:
+	@if test -d $(COMPONENT); then \
+		rm -f $(DESTDIR)$(gblibdir)/$(COMPONENT).gambas; \
+	fi
+	@rm -rf $(DESTDIR)$(gblibdir)$(COMPONENT).component
+	@rm -rf $(DESTDIR)$(gbdatadir)/info/$(COMPONENT).info
+	@rm -rf $(DESTDIR)$(gbdatadir)/info/$(COMPONENT).list
+
+dist-hook:
+	@if test -d $(COMPONENT); then \
+		( \
+			cp -pR $(COMPONENT) $(distdir)/$(COMPONENT); \
+			cd $(distdir)/$(COMPONENT); \
+			rm -rf .gambas .xvpics */.xvpics */*/.xvpics *~ */*~ */*/*~ *.out .*.out .lang/*.pot *.gambas core.* .svn */.svn */*/.svn */*/*/.svn; \
+		) \
+	fi
+	@rm -f $(distdir)/moc_*.cpp

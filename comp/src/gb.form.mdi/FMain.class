@@ -1,0 +1,54 @@
+' Gambas class file
+
+PRIVATE hToolBar AS ToolBar
+
+PUBLIC SUB Form_Open()
+
+  DIM hForm AS FTest
+  DIM iInd AS Integer
+  DIM hFirst AS FTest
+
+  DEBUG
+
+  FOR iInd = 1 TO 3
+    hForm = NEW FTest
+    Workspace21.Add(hForm, Int(Rnd + 0.5))
+    IF NOT hFirst THEN hFirst = hForm
+    hForm.Title = "Window #" & iInd
+  NEXT
+  
+  Workspace21.ActiveWindow = hFirst
+  'Workspace21.SetResizable(hFirst, TRUE, 8)
+  
+  DEBUG
+
+END
+
+PUBLIC SUB Action_Activate(Key AS String) AS Boolean
+    
+END
+
+
+PUBLIC SUB Button1_Click()
+
+  DIM hForm AS FTest
+  DIM iInd AS Integer
+  DIM hFirst AS FTest
+
+  hForm = NEW FTest
+  Workspace21.Add(hForm, Int(Rnd + 0.5))
+  hForm.Title = "Window #" & Workspace21.Children.Count
+
+END
+
+PUBLIC SUB Button2_Click()
+
+  Action["rr"].Visible = NOT Action["rr"].Visible
+
+END
+
+PUBLIC SUB Button4_Click()
+
+  DEBUG "R"  
+
+END

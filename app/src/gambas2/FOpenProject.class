@@ -1,0 +1,220 @@
+' Gambas class file
+
+STATIC PRIVATE $sPath AS String
+STATIC PRIVATE $sLast AS String
+
+PRIVATE frmProjectItem AS FProjectItem
+
+PUBLIC SUB Run() AS String
+
+  IF ME.ShowModal() THEN RETURN $sPath
+
+END
+
+PUBLIC SUB _new()
+  
+  frmProjectItem = NEW FProjectItem(panProject)
+  
+END
+
+
+PUBLIC SUB btnOK_Click()
+
+  DIM sPath AS String
+  
+  IF tabProject.Index = 0 THEN
+    sPath = GetProjectPath(dchProject.Value)
+  ELSE IF tabProject.Index = 1 THEN
+    TRY sPath = lstRecent.Current.Tag
+  ELSE IF tabProject.Index = 2 THEN
+    TRY sPath = lstExample.Current.Tag
+  ENDIF
+
+  IF NOT sPath THEN RETURN
+
+  $sPath = sPath
+  'Settings["/FOpenProject/Path"] = $sPath
+  'tabProject.Index = 0
+  lstRecent.Clear
+  
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  $sLast = ""
+  Settings.Read(ME)
+  Settings.Read(dchProject, "dchProject")
+  Settings.Read(splProject, "splProject")
+  'dchProject.Value = Settings["/FOpenProject/Path"]
+  dchProject_Change
+  tabProject_Click
+
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(ME)  
+  Settings.Write(splProject, "splProject")
+  Settings.Write(dchProject, "dchProject")
+
+END
+
+PUBLIC SUB dchProject_Icon(Path AS String)
+
+  IF Exist(Path &/ ".project") THEN 
+    dchProject.Icon = Project.GetIcon(Path)    
+  ENDIF  
+
+END
+
+PRIVATE SUB GetProjectPath(sPath AS String) AS String
+  
+  DO
+    IF Exist(sPath &/ ".project") THEN RETURN sPath
+    sPath = File.Dir(sPath)
+    IF sPath = "/" THEN BREAK
+  LOOP
+  
+CATCH
+  
+END
+
+
+PUBLIC SUB dchProject_Change()
+
+  DIM sPath AS String
+
+  fvwProject.Dir = dchProject.Value
+
+  sPath = GetProjectPath(dchProject.Value)
+  
+  IF NOT sPath THEN
+    $sLast = ""
+    panProject.Hide
+    RETURN 
+  ENDIF
+  
+  IF sPath = $sLast THEN RETURN
+  
+  $sLast = sPath
+  
+  frmProjectItem.SetPath(sPath)
+  
+  panProject.Show
+
+END
+
+PUBLIC SUB fvwProject_Activate()
+
+  dchProject.Value = fvwProject.Dir &/ fvwProject.Current
+
+END
+
+PUBLIC SUB fvwProject_Icon(Path AS String)
+
+  IF Exist(Path &/ ".project") THEN 
+    fvwProject.Icon = Project.GetIcon(Path, 16)    
+  ENDIF    
+
+END
+
+PRIVATE SUB FillRecent()
+  
+  DIM sRecent AS String
+  DIM hProjectItem AS FProjectItem
+  DIM hFirst AS FProjectItem
+
+  IF lstRecent.Children.Count THEN RETURN
+
+  INC Application.Busy
+
+  FOR EACH sRecent IN Project.Recent
+    hProjectItem = NEW FProjectItem(lstRecent)
+    IF NOT hFirst THEN hFirst = hProjectItem
+    hProjectItem.SetPath(sRecent)
+  NEXT
+  
+  IF hFirst THEN lstRecent.Select(hFirst)
+  
+  DEC Application.Busy
+  
+  lstRecent.Show ' Workaround a scrollview bug that does not show the scrollbars.
+  
+END
+
+PUBLIC SUB tabProject_Click()
+
+  IF tabProject.Index = 1 THEN 
+    FillRecent
+  ELSE IF tabProject.Index = 2 THEN 
+    FillExample
+  ENDIF  
+
+END
+
+PUBLIC SUB lstRecent_Activate()
+  
+  btnOK.Value = TRUE
+  
+END
+
+PRIVATE SUB FillExample()
+
+  DIM sExample AS String
+  DIM sDir AS String
+  DIM sLastDir AS String
+  DIM hDrawingArea AS DrawingArea
+  DIM hProjectItem AS FProjectItem
+  
+  IF lstExample.Children.Count THEN RETURN
+
+  INC Application.Busy
+
+  FOR EACH sExample IN Project.GetExamples()
+  
+    sDir = File.Dir(sExample)
+    IF sDir <> sLastDir THEN
+      sLastDir = sDir
+      hDrawingArea = NEW DrawingArea(lstExample) AS "dwgExample"
+      WITH hDrawingArea
+        .Enabled = FALSE
+        .Tag = Project.ExampleTitle[sDir]
+        .Font = Font["Bold"]
+        .H = 24
+        .Foreground = Color.SelectedBackground
+      END WITH
+    ENDIF
+    
+    hProjectItem = NEW FProjectItem(lstExample)
+    hProjectItem.SetPath(Project.EXAMPLES_DIR &/ sExample)
+  
+  NEXT
+
+  lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
+
+  DEC Application.Busy
+
+END
+
+PUBLIC SUB dwgExample_Draw()
+  
+  DIM hDrawingArea AS DrawingArea = LAST
+  
+  WITH hDrawingArea
+    Draw.Font = .Font
+    Draw.Foreground = .Foreground
+    Draw.Line(0, .H / 2 - 2, .W - 1, .H / 2 - 2)
+    Draw.Transparent = FALSE
+    Draw.Text(" " & .Tag & " ", 8, 0, .W - 16, .H, Align.Normal)
+  END WITH
+  
+END

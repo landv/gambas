@@ -1,0 +1,94 @@
+' Gambas class file
+
+
+PRIVATE FUNCTION GetEditor() AS Editor
+  
+  DIM hForm AS FEditor
+  
+  hForm = ME.Parent.Window
+  RETURN hForm.Editor
+  
+END
+
+
+' PUBLIC SUB OnMove()
+' 
+'   DIM iX AS Integer
+'   DIM iY AS Integer
+'   
+'   iX = $iDX + $hEditor.Window.X  
+'   iY = $iDY + $hEditor.Window.Y  
+'   
+'   iX = Max(0, Min(Desktop.Width - ME.Width, iX))
+'    
+'   IF (iY + ME.Height) > Desktop.Height THEN
+'     iY = iY - $hEditor.LineHeight - ME.Height
+'   ENDIF
+'   
+'   ME.Move(iX, iY)
+'   
+' END
+
+
+PUBLIC SUB Open(iX AS Integer, hSymbol AS CSymbolInfo, OPTIONAL bDoNotUseKey AS Boolean)
+  
+  DIM sSign AS String
+  DIM hEditor AS Editor
+  DIM iY AS Integer
+  
+  hEditor = GetEditor()
+  
+  sSign = hSymbol.Name
+  IF Left$(sSign) = "_" THEN sSign = hSymbol.Class
+  sSign = "<b>" & sSign & "</b> " & hSymbol.GetSignature(FALSE)
+  'sSignBal = hSymbol.GetSignature(TRUE)
+  
+  'lblSignature.AutoResize = FALSE
+  lblSignature.W = hEditor.W
+  'DEBUG lblSignature.W;; hEditor.W
+  lblSignature.Text = sSign
+  'lblSignature.AutoResize = TRUE
+  'DEBUG "->";; lblSignature.W
+  'lblSignature.Adjust
+  
+  ME.Resize(lblSignature.W, lblSignature.H)
+
+  iY = hEditor.Y + hEditor.CursorY + hEditor.LineHeight
+  
+  IF (iY + ME.Height) > (hEditor.Y + hEditor.H) THEN
+    iY = hEditor.Y + hEditor.CursorY - ME.Height
+  ENDIF
+
+  IF iX = ME.X AND iY = ME.Y AND ME.Visible THEN RETURN
+
+  ME.Move(iX, iY)
+  ME.Show
+  ME.Raise
+  hEditor.SetFocus
+  
+END
+
+
+PUBLIC FUNCTION ManageKey() AS Boolean
+  
+  DIM iInd AS Integer
+  
+  SELECT CASE Key.Code
+  
+    CASE Key.Esc
+      ME.Hide
+      RETURN TRUE
+    
+    'CASE Key.Backspace
+      'ME.Hide
+      
+  END SELECT
+  
+END
+
+
+PUBLIC SUB lblSignature_MouseDown()
+
+  ME.Hide
+
+END
