@@ -1,0 +1,242 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(4.1429,12,97,80)
+  Background = Color.Background
+  Text = ("")
+  Persistent = True
+  { mnuEditor Menu
+    Text = ("")
+    Visible = False
+    { mnuGoto Menu
+      Text = ("Go to")
+    }
+    { mnuGotoLine Menu
+      Text = ("Go to line...")
+      Shortcut = "Ctrl+G"
+    }
+    { mnuForm Menu
+      Text = ("Open form")
+      Picture = Picture["img/16/form.png"]
+      Shortcut = "Ctrl+W"
+    }
+    { mnuSepGoto Menu
+      Text = ("")
+    }
+    { mnuUntil Menu
+      Action = "until"
+      Text = ("Run &until current line")
+      Picture = Picture["icon:/16/last"]
+      Shortcut = "Shift+F5"
+    }
+    { mnuBreakpoint Menu
+      Action = "break"
+      Text = ("Toggle &breakpoint")
+      Picture = Picture["icon:/16/flag"]
+      Toggle = True
+      Shortcut = "F9"
+    }
+    { mnuWatch Menu
+      Action = "watch"
+      Text = ("&Watch expression...")
+      Picture = Picture["icon:/16/watch"]
+    }
+    { mnuSepWatch Menu
+      Text = ("")
+    }
+    { mnuUndo Menu
+      Text = ("Undo")
+      Picture = Picture["icon:/16/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu
+      Text = ("Redo")
+      Picture = Picture["icon:/16/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { mnuSepUndo Menu
+      Text = ("")
+    }
+    { mnuCut Menu
+      Text = ("Cut")
+      Picture = Picture["icon:/16/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu
+      Text = ("Copy")
+      Picture = Picture["icon:/16/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Text = ("Paste")
+      Picture = Picture["icon:/16/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { Menu3 Menu
+      Text = ("")
+    }
+    { mnuSelectAll Menu
+      Text = ("Select &All")
+      Shortcut = "Ctrl+A"
+    }
+    { mnuSep2 Menu
+      Text = ("")
+    }
+    { mnuComment Menu
+      Text = ("Comment")
+      Picture = Picture["img/16/comment.png"]
+      Shortcut = "Ctrl+K"
+    }
+    { mnuUncomment Menu
+      Text = ("Uncomment")
+      Picture = Picture["img/16/uncomment.png"]
+      Shortcut = "Ctrl+U"
+    }
+    { mnuSepComment Menu
+      Text = ("")
+    }
+    { mnuFind Menu
+      Text = ("Find...")
+      Picture = Picture["icon:/16/find"]
+      Shortcut = "Ctrl+F"
+    }
+    { mnuReplace Menu
+      Text = ("Replace...")
+      Picture = Picture["icon:/16/replace"]
+      Shortcut = "Ctrl+R"
+    }
+    { mnuFindNext Menu
+      Action = "find-next"
+      Text = ("Find Next")
+      Picture = Picture["icon:/16/down"]
+      Shortcut = "F3"
+    }
+    { mnuFindPrevious Menu
+      Action = "find-previous"
+      Text = ("Find Previous")
+      Picture = Picture["icon:/16/up"]
+      Shortcut = "Shift+F3"
+    }
+    { mnuSep4 Menu
+      Text = ("")
+    }
+    { mnuReload Menu
+      Text = ("Reload")
+      Picture = Picture["icon:/16/refresh"]
+    }
+    { mnuSave Menu
+      Text = ("Save")
+      Picture = Picture["icon:/16/save"]
+      Shortcut = "Ctrl+S"
+    }
+  }
+  { timProc #Timer
+    #X = 420
+    #Y = 273
+    Delay = 50
+  }
+  { panToolBar ToolBar
+    MoveScaled(0,0,90,4)
+    { btnSave ToolButton mnuSave
+      Name = "btnSave"
+      MoveScaled(0,0,3,3)
+      ToolTip = ("Save")
+      Text = ("")
+      Picture = Picture["icon:/16/save"]
+    }
+    { btnReload ToolButton mnuReload
+      Name = "btnReload"
+      MoveScaled(3,0,3,3)
+      ToolTip = ("Reload")
+      Text = ("")
+      Picture = Picture["icon:/16/refresh"]
+    }
+    { btnForm ToolButton mnuForm
+      Name = "btnForm"
+      MoveScaled(6,0,3,3)
+      ToolTip = ("Form")
+      Text = ("")
+      Picture = Picture["img/16/form.png"]
+    }
+    { btnCut ToolButton mnuCut
+      Name = "btnCut"
+      MoveScaled(9,0,3,3)
+      ToolTip = ("Cut")
+      Text = ("")
+      Picture = Picture["icon:/16/cut"]
+    }
+    { btnCopy ToolButton mnuCopy
+      Name = "btnCopy"
+      MoveScaled(12,0,3,3)
+      ToolTip = ("Copy")
+      Text = ("")
+      Picture = Picture["icon:/16/copy"]
+    }
+    { btnPaste ToolButton mnuPaste
+      Name = "btnPaste"
+      MoveScaled(15,0,3,3)
+      ToolTip = ("Paste")
+      Text = ("")
+      Picture = Picture["icon:/16/paste"]
+    }
+    { btnUndo ToolButton mnuUndo
+      Name = "btnUndo"
+      MoveScaled(18,0,3,3)
+      ToolTip = ("Undo")
+      Text = ("")
+      Picture = Picture["icon:/16/undo"]
+    }
+    { btnRedo ToolButton mnuRedo
+      Name = "btnRedo"
+      MoveScaled(21,0,3,3)
+      ToolTip = ("Redo")
+      Text = ("")
+      Picture = Picture["icon:/16/redo"]
+    }
+    { btnIndent ToolButton
+      MoveScaled(24,0,3,3)
+      ToolTip = ("Indent")
+      Text = ("")
+      Picture = Picture["icon:/16/indent"]
+    }
+    { btnUnindent ToolButton
+      MoveScaled(27,0,3,3)
+      ToolTip = ("Unindent")
+      Text = ("")
+      Picture = Picture["icon:/16/unindent"]
+    }
+    { btnComment ToolButton mnuComment
+      Name = "btnComment"
+      MoveScaled(30,0,3,3)
+      ToolTip = ("Comment")
+      Text = ("")
+      Picture = Picture["img/16/comment.png"]
+    }
+    { btnUncomment ToolButton mnuUncomment
+      Name = "btnUncomment"
+      MoveScaled(33,0,3,3)
+      ToolTip = ("Uncomment")
+      Text = ("")
+      Picture = Picture["img/16/uncomment.png"]
+    }
+    { Panel1 Panel
+      MoveScaled(36,0,1,3)
+    }
+    { cmbProc ComboBox
+      MoveScaled(38,0,36,3)
+      Text = ("")
+      ReadOnly = True
+    }
+    { lblEditor Label
+      MoveScaled(75,0,10,3)
+      Font = Font["Bold"]
+      Expand = True
+      Text = ("")
+      Alignment = Align.Right
+    }
+  }
+  { edtEditor Editor
+    MoveScaled(8,11,40,35)
+    Expand = True
+  }
+}

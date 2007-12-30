@@ -1,0 +1,20 @@
+_project
+@IF CONSOLE OR GAME OR WEB
+  @IF COMPONENT
+CClass.class
+MTest.module
+  @ELSE
+MMain.module
+  @ENDIF
+@ENDIF
+@IF GRAPHIC
+  @IF COMPONENT
+CControl.class
+CContainer.class
+FTest.class
+FTest.form
+  @ELSE
+FMain.class
+FMain.form
+  @ENDIF
+@ENDIF

@@ -1,0 +1,49 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(18.1429,23,54,40)
+  Text = ("Save modified files")
+  Icon = Picture["img/16/quit.png"]
+  Border = Window.Fixed
+  { btnSave Button
+    MoveScaled(38,10,15,3)
+    Text = ("&All")
+    Picture = Picture["icon:/16/save"]
+  }
+  { btnQuit Button
+    MoveScaled(38,28,15,5)
+    Enabled = False
+    Text = ("Continue")
+    Picture = Picture["icon:/24/play"]
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(38,34,15,5)
+    Text = ("Cancel")
+    Picture = Picture["icon:/24/close"]
+    Cancel = True
+  }
+  { Panel1 Panel
+    MoveScaled(1,1,52,9)
+    { TextLabel1 TextLabel
+      MoveScaled(6,0,45,6)
+      Font = Font["Bold,+1"]
+      Text = ("These files have been modified.\nDo&nbsp;you want to save them?")
+      Alignment = Align.Normal
+    }
+    { Image1 PictureBox
+      MoveScaled(0,1,5,5)
+      Picture = Picture["icon:/32/warning"]
+      Alignment = Align.TopNormal
+    }
+  }
+  { lvwFile ListView
+    MoveScaled(1,10,36,29)
+    Mode = Select.Multiple
+  }
+  { btnIgnore Button
+    MoveScaled(38,14,15,3)
+    Text = ("&None")
+    Picture = Picture["icon:/16/cancel"]
+  }
+}

@@ -1,0 +1,716 @@
+' Gambas class file
+
+STATIC PRIVATE $hForm AS FForm
+STATIC PRIVATE $cMenu AS NEW Object[]
+
+PRIVATE $iLevel AS Integer
+PRIVATE $cName AS NEW Collection
+PRIVATE $iCurrent AS Integer
+PRIVATE $bFreeze AS Boolean
+
+STATIC PUBLIC SUB Run(hForm AS FForm)
+
+  DIM hMenu AS FMenu
+
+  $hForm = hForm
+
+  hMenu = NEW FMenu
+  IF hMenu.ShowModal() THEN SaveAllMenu
+
+END
+
+PUBLIC SUB Form_Open()
+
+  Settings.Read(ME)
+  'PRINT "_new"
+  ME.Title = $hForm.Name & " - " & ("Menu editor")
+  $iCurrent = -1
+  LoadShortcut
+  LoadAllMenu
+
+END
+
+PUBLIC SUB Form_Close()
+  
+  Settings.Write(ME)
+  
+END
+
+
+
+PUBLIC SUB btnCancel_Click()
+
+  'WriteMenu
+  ME.Close
+
+END
+
+
+PUBLIC SUB btnOK_Click()
+
+  IF WriteMenu() THEN RETURN
+  IF CheckMenu() THEN RETURN
+  ME.Close(TRUE)
+
+END
+
+
+PRIVATE SUB CreateMenu(hCCtrl AS CControl)
+
+  DIM hCMenu AS CMenu
+  DIM hMenu AS Menu
+  
+  hCMenu = NEW CMenu
+  
+  WITH hCMenu
+  
+    .Name = hCCtrl.Name
+    .Caption = hCCtrl.GetPropertyDefault("Text")
+    .Action = hCCtrl.GetPropertyDefault("Action")
+    .Level = $iLevel
+    .Enabled = hCCtrl.GetPropertyDefault("Enabled")
+    .Visible = hCCtrl.GetPropertyDefault("Visible")
+    .Checked = hCCtrl.GetPropertyDefault("Checked")
+    .Toggle = hCCtrl.GetPropertyDefault("Toggle")
+    .SetShortcut(hCCtrl.GetPropertyDefault("Shortcut"))
+    .Picture = hCCtrl.GetPropertyDefault("Picture")
+    .Tag = hCCtrl.GetPropertyDefault("Tag")
+    .Group = hCCtrl.GetPropertyDefault(CPropertyInfo.EVENT_NAME)
+    
+  END WITH
+
+  $cMenu.Add(hCMenu)
+  $cName[hCMenu.Name] = TRUE
+
+  $iLevel = $iLevel + 1
+  
+  FOR EACH hMenu IN hCCtrl.Control.Children
+    CreateMenu($hForm.Control[hMenu.Tag])
+  NEXT
+
+  $iLevel = $iLevel - 1
+
+END
+
+
+PRIVATE SUB DrawMenu(iInd AS Integer)
+
+  DIM sElt AS String
+  
+  $bFreeze = TRUE
+
+  WITH $cMenu[iInd]
+
+    sElt = String$(.Level, "···") & .Caption
+    IF .Shortcut THEN
+      sElt = sElt & " (" & .GetShortcut() & ")"
+    ENDIF
+    lstMenu[iInd].Text = sElt
+
+  END WITH
+  
+  $bFreeze = FALSE
+
+END
+
+
+PRIVATE SUB LoadAllMenu()
+
+  DIM hCtrl AS CControl
+  DIM hCMenu AS CMenu
+  DIM iInd AS Integer
+
+  $bFreeze = TRUE
+
+  $cMenu.Clear
+  $cName.Clear
+
+  FOR EACH hCtrl IN $hForm.Menus
+    'IF hCtrl.Parent.Kind = "Form" THEN
+    CreateMenu(hCtrl)
+    'ENDIF
+  NEXT
+
+  lstMenu.Clear
+
+  FOR iInd = 0 TO $cMenu.Count - 1
+    lstMenu.Add("")
+    DrawMenu(iInd)
+  NEXT  
+  
+  lstMenu.Add("")
+  
+  lstMenu.Index = 0
+  
+  $bFreeze = FALSE
+
+  SetCurrent(0)
+  ReadMenu
+
+END
+
+
+STATIC PRIVATE SUB SaveAllMenu()
+
+  'DIM cDelete AS NEW Array
+  DIM hCtrl AS CControl
+  DIM hCMenu AS CMenu
+  DIM hParent AS CControl
+  DIM iLevel AS Integer
+
+  FOR EACH hCtrl IN $hForm.Menus
+    'cDelete.Add(hCtrl)
+    hCtrl.Delete
+  NEXT
+  
+  IF $hForm.Menus.Count THEN $hForm.Modify
+  $hForm.Menus.Clear
+
+  hCtrl = $hForm.Control[$hForm.Name]
+  iLevel = -1
+
+  FOR EACH hCMenu IN $cMenu
+  
+    WITH hCMenu
+  
+      IF .Level > iLevel THEN
+      
+        hParent = hCtrl
+        iLevel = .Level
+        
+      ELSE
+      
+        WHILE .Level < iLevel
+          hParent = hParent.Parent
+          iLevel = iLevel - 1
+        WEND
+      
+      ENDIF
+      
+      hCtrl = $hForm.CreateControl("Menu", hParent, .Name)
+      
+      hCtrl.SetProperty("Text", .Caption)
+      hCtrl.SetProperty("Action", .Action)
+      hCtrl.SetProperty("Visible", .Visible)
+      hCtrl.SetProperty("Enabled", .Enabled)
+      hCtrl.SetProperty("Checked", .Checked)
+      hCtrl.SetProperty("Toggle", .Toggle)
+      hCtrl.SetProperty("Shortcut", .GetShortcut())
+      hCtrl.SetProperty("Picture", .Picture)
+      hCtrl.SetProperty("Tag", .Tag)
+      hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, .Group)
+    
+    END WITH
+  
+  NEXT
+
+END
+
+
+
+PUBLIC SUB lstMenu_Click()
+
+  IF $bFreeze THEN RETURN
+  ChangeCurrent(lstMenu.Index)
+
+END
+
+
+PRIVATE SUB ChangeCurrent(iNew AS Integer)
+
+  IF iNew = $iCurrent THEN RETURN
+
+  WriteMenu()
+  $iCurrent = iNew
+  ReadMenu()
+
+END
+
+
+PRIVATE SUB WriteMenu() AS Boolean
+
+  DIM iInd AS Integer
+  DIM sName AS String
+
+  'IF NOT ME.Visible THEN
+  '  PRINT "WriteMenu ??"
+  '  RETURN
+  'ENDIF
+
+  IF $bFreeze THEN RETURN
+
+  iInd = $iCurrent
+
+  IF iInd < 0 OR iInd >= $cMenu.Count THEN RETURN 
+
+  WITH $cMenu[iInd]
+
+    sName = Trim(txtName.Text)
+
+    IF NOT sName THEN
+      Balloon.Warning(("Please enter a menu name."), txtName)
+      txtName.SetFocus
+      RETURN TRUE
+    ENDIF
+
+    IF CControl.CheckName(sName) THEN
+      Balloon.Warning(("Bad menu name !"), txtName)
+      txtName.SetFocus
+      RETURN TRUE
+    ENDIF
+
+    IF CControl.CheckName(txtGroup.Text) THEN
+      Balloon.Warning(("Bad group name !"), txtGroup)
+      txtGroup.SetFocus
+      RETURN TRUE
+    ENDIF
+
+    IF sName <> .Name THEN
+      IF NOT $cName.Exist(sName) THEN
+        $cName[.Name] = NULL
+        $cName[sName] = TRUE
+        .Name = sName
+      ENDIF
+    ENDIF
+
+    .Caption = Trim(txtCaption.Text)
+    .Action = Trim(txtAction.Text)
+    .Group = Trim(txtGroup.Text)
+    .Visible = chkVisible.Value
+    .Enabled = chkEnabled.Value
+    .Checked = chkChecked.Value
+    .Toggle = chkToggle.Value
+    .Ctrl = chkCtrl.Value
+    .Shift = chkShift.Value
+    .Alt = chkAlt.Value
+    IF cmbShortcut.Index = 0 THEN
+      .Shortcut = ""
+    ELSE
+      .Shortcut = cmbShortcut.Text
+    ENDIF
+    .Picture = txtPicture.Text
+    .Tag = txtTag.Text
+  
+  END WITH
+  
+  DrawMenu($iCurrent)
+  
+END
+
+
+PRIVATE SUB ReadMenu()
+
+  DIM iInd AS Integer
+  
+  $bFreeze = TRUE
+  
+  iInd = $iCurrent
+
+  IF iInd >= 0 AND iInd < $cMenu.Count THEN
+  
+    WITH $cMenu[iInd]
+    
+      txtName.Text = .Name
+      txtCaption.Text = .Caption
+      txtAction.Text = .Action
+      txtGroup.Text = .Group
+      chkVisible.Value = .Visible
+      chkEnabled.Value = .Enabled
+      chkChecked.Value = .Checked
+      chkToggle.Value = .Toggle
+      chkCtrl.Value = .Ctrl
+      chkShift.Value = .Shift
+      chkAlt.Value = .Alt
+      IF Len(.ShortCut) THEN
+        cmbShortcut.Text = .Shortcut
+      ELSE
+        cmbShortCut.Index = 0
+      ENDIF
+      txtPicture.Text = .Picture
+      txtTag.Text = .Tag
+      SetPicture(.Picture)
+    
+    END WITH
+
+    frmMenu.Show
+    lblCreate.Hide
+
+  ELSE
+
+    frmMenu.Hide
+    lblCreate.Show
+
+  ENDIF
+
+  $bFreeze = FALSE
+
+END
+
+
+PRIVATE SUB DeleteMenu(iInd AS Integer)
+
+  lstMenu.Remove(iInd)
+  $cName.Remove($cMenu[iInd].Name)
+  $cMenu.Remove(iInd)
+
+END
+
+
+PUBLIC SUB btnDelete_Click()
+
+  DIM iInd AS Integer
+
+  'IF WriteMenu() THEN RETURN
+
+  $bFreeze = TRUE
+
+  WHILE iInd < (lstMenu.Count - 1)
+
+    IF lstMenu[iInd].Selected THEN
+      DeleteMenu(iInd)
+    ELSE
+      iInd = iInd + 1
+    ENDIF
+  
+  WEND
+  
+  SetCurrent($iCurrent)
+  $bFreeze = FALSE
+  
+  ReadMenu
+
+END
+
+
+PUBLIC SUB btnInsert_Click()
+
+  DIM hCMenu AS CMenu
+  'DIM iIndex AS INTEGER
+
+  IF WriteMenu() THEN RETURN
+
+  $bFreeze = TRUE
+
+  hCMenu = NEW CMenu
+  hCMenu.Name = GetName()
+  hCMenu.Caption = hCMenu.Name
+  'hCMenu.Caption = hCMenu.Name
+  IF lstMenu.Index > 0 THEN
+    hCMenu.Level = $cMenu[$iCurrent - 1].Level
+  ENDIF
+
+  $cName[hCMenu.Name] = TRUE
+  'hCMenu.Caption = hCMenu.Name
+
+  $cMenu.Add(hCMenu, $iCurrent)
+  lstMenu.Add("", $iCurrent)
+
+  ReadMenu
+
+  $bFreeze = FALSE
+
+  DrawMenu($iCurrent)
+  lstMenu.Index = -1
+  SetCurrent($iCurrent)
+
+  txtName.SelectAll
+  txtName.SetFocus
+
+END
+
+
+PRIVATE FUNCTION GetName() AS String
+
+  DIM iCpt AS Integer
+  DIM sName AS String
+
+  DO
+
+    iCpt = iCpt + 1
+    sName = "Menu" & CStr(iCpt)
+    IF NOT $cName.Exist(sName) THEN RETURN sName
+
+  LOOP
+
+END
+
+
+PUBLIC SUB btnRight_Click()
+
+  DIM iInd AS Integer
+
+  IF WriteMenu() THEN RETURN
+
+  FOR iInd = 0 TO lstMenu.Count - 2
+
+    IF lstMenu[iInd].Selected THEN
+      WITH $cMenu[iInd]
+        .Level = .Level + 1
+      END WITH
+      DrawMenu(iInd)
+      lstMenu[iInd].Selected = TRUE
+    ENDIF
+
+  NEXT
+
+  ReadMenu
+
+END
+
+
+PUBLIC SUB btnLeft_Click()
+
+  DIM iInd AS Integer
+
+  IF WriteMenu() THEN RETURN
+
+  FOR iInd = 0 TO lstMenu.Count - 2
+
+    IF lstMenu[iInd].Selected THEN
+      WITH $cMenu[iInd]
+        .Level = Max(.Level - 1, 0)
+      END WITH
+      DrawMenu(iInd)
+      lstMenu[iInd].Selected = TRUE
+    ENDIF
+  
+  NEXT
+  
+  ReadMenu
+
+END
+
+
+PRIVATE SUB LoadShortcut()
+
+  DIM iInd AS Integer
+
+  cmbShortcut.Add("(None)")
+  
+  FOR iInd = Asc("A") TO Asc("Z")
+    cmbShortcut.Add(Chr$(iInd))
+  NEXT
+
+  FOR iInd = 1 TO 12
+    cmbShortcut.Add("F" & CStr(iInd))
+  NEXT
+  
+  cmbShortcut.Add("Backspace")
+  cmbShortcut.Add("Del")
+  cmbShortcut.Add("Down")
+  cmbShortcut.Add("End")
+  cmbShortcut.Add("Enter")
+  cmbShortcut.Add("Esc")
+  cmbShortcut.Add("Home")
+  cmbShortcut.Add("Ins")
+  cmbShortcut.Add("Left")
+  cmbShortCut.Add("Pause")
+  cmbShortcut.Add("PgDown")
+  cmbShortcut.Add("PgUp")
+  cmbShortcut.Add("Return")
+  cmbShortcut.Add("Space")
+  cmbShortcut.Add("Right")
+  cmbShortcut.Add("Up")
+
+END
+
+
+
+PRIVATE FUNCTION CheckMenu() AS Boolean
+
+  DIM iInd AS Integer
+  DIM iLastLevel AS Integer
+
+  iLastLevel = -1
+
+  FOR iInd = 0 TO $cMenu.Count - 1
+
+    IF $cMenu[iInd].Level - iLastLevel > 1 THEN
+      lstMenu.Index = -1
+      lstMenu.Index = iInd
+      lstMenu[lstMenu.Index].Selected = TRUE
+      Message.Warning(("This menu is too deep !"))
+      RETURN TRUE
+    ENDIF
+    
+    iLastLevel = $cMenu[iInd].Level
+  
+  NEXT
+
+END
+
+
+PUBLIC SUB cmbShortcut_Click()
+  WriteMenu
+END
+
+PUBLIC SUB chkCtrl_Click()
+  WriteMenu
+END
+
+PUBLIC SUB chkAlt_Click()
+  WriteMenu
+END
+
+PUBLIC SUB chkShift_Click()
+  WriteMenu
+END
+
+PUBLIC SUB txtCaption_Change()
+  WriteMenu
+END
+
+
+PUBLIC SUB btnNext_Click()
+
+  DIM iIndex AS Integer
+
+  IF $iCurrent < $cMenu.Count THEN
+    iIndex = lstMenu.Index
+    lstMenu.Index = -1
+    lstMenu.Index = iIndex + 1
+    lstMenu[lstMenu.Index].Selected = TRUE
+  ENDIF
+
+END
+
+
+PUBLIC SUB btnUp_Click()
+
+  DIM iInd AS Integer
+  DIM sItem AS String
+  DIM hCMenu AS CMenu
+  DIM iCount AS Integer
+
+  iCount = lstMenu.Count
+  IF iCount <= 1 THEN RETURN
+
+  IF $iCurrent = (lstMenu.Count - 1) THEN RETURN
+
+  IF lstMenu[0].Selected THEN RETURN
+
+  FOR iInd = 0 TO lstMenu.Count - 2
+
+    IF lstMenu[iInd].Selected THEN
+
+      $bFreeze = TRUE
+
+      sItem = lstMenu[iInd].Text
+      lstMenu.Add(sItem, iInd - 1)
+      lstMenu.Remove(iInd + 1)
+      lstMenu[iInd - 1].Selected = TRUE
+
+      hCMenu = $cMenu[iInd - 1]
+      $cMenu[iInd - 1] = $cMenu[iInd]
+      $cMenu[iInd] = hCMenu
+
+    END IF
+
+  NEXT
+
+  SetCurrent($iCurrent - 1)
+  $bFreeze = FALSE
+
+  ReadMenu
+
+END
+
+
+PUBLIC SUB btnDown_Click()
+
+  DIM iInd AS Integer
+  DIM sItem AS String
+  DIM hCMenu AS CMenu
+  DIM iCount AS Integer
+
+  iCount = lstMenu.Count
+  IF iCount <= 1 THEN RETURN
+
+  IF $iCurrent = (lstMenu.Count - 1) THEN RETURN
+
+  IF lstMenu[iCount - 2].Selected OR lstMenu[iCount - 1].Selected THEN RETURN
+
+  FOR iInd = lstMenu.Count - 2 TO 0 STEP -1
+
+    IF lstMenu[iInd].Selected THEN
+
+      $bFreeze = TRUE
+
+      sItem = lstMenu[iInd].Text
+      lstMenu.Remove(iInd)
+      lstMenu.Add(sItem, iInd + 1)
+      lstMenu[iInd + 1].Selected = TRUE
+
+      hCMenu = $cMenu[iInd]
+      $cMenu[iInd] = $cMenu[iInd + 1]
+      $cMenu[iInd + 1] = hCMenu
+
+    END IF
+
+  NEXT
+
+  SetCurrent($iCurrent + 1)
+  $bFreeze = FALSE
+
+  ReadMenu
+
+END
+
+
+PRIVATE SUB SetCurrent(iCurrent AS Integer)
+
+  $iCurrent = iCurrent
+  lstMenu.Index = $iCurrent
+  lstMenu[iCurrent].Selected = TRUE
+
+END
+
+PUBLIC SUB btnPicture_Click()
+
+  DIM sPict AS String
+
+  sPict = FSelectIcon.Run(txtPicture.Text)
+  IF sPict THEN SetPicture(sPict)
+  
+END
+
+
+PRIVATE SUB SetPicture(sPict AS String)
+  
+  DIM hPict AS Picture
+
+  txtPicture.Text = sPict
+  hPict = Project.GetPicture(sPict)
+  IF hPict THEN hPict = hPict.Image.Stretch(btnIcon.W - 16, btnIcon.H - 16, TRUE).Picture
+  btnIcon.Picture = hPict
+  
+CATCH
+
+  Message.Error(Error.Text)
+  
+END
+
+PUBLIC SUB btnKillPicture_Click()
+
+  SetPicture("")
+
+END
+
+
+PUBLIC SUB btnSave_Click()
+
+  WriteMenu
+
+END
+
+PUBLIC SUB lstMenu_MouseDown()
+
+  DIM iInd AS Integer
+  
+  IF NOT (Mouse.Control OR Mouse.Shift) THEN
+    FOR iInd = 0 TO lstMenu.Count - 1
+      lstMenu[iInd].Selected = FALSE
+    NEXT
+  ENDIF
+
+END

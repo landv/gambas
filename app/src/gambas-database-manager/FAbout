@@ -1,0 +1,70 @@
+# Gambas Form File 1.0
+
+{ FAbout Form
+  MoveScaled(30,26.125,61,37)
+  'Move(240,209,488,296)
+  Background = Color.TextBackground
+  Text = ("About...")
+  Border = Window.Fixed
+  { btnOK Button
+    MoveScaled(23,33,15,3)
+    'Move(184,264,120,24)
+    Text = ("OK")
+    Default = True
+  }
+  { svwAuthor ScrollView
+    MoveScaled(1,1,58,31)
+    'Move(8,8,464,248)
+    Background = Color.TextBackground
+    Foreground = Color.TextForeground
+    Border = Border.None
+    ScrollBar = Scroll.None
+    { Image1 PictureBox
+      MoveScaled(1,32,6,6)
+      'Move(8,256,48,48)
+      Picture = Picture["img/32/database-manager.png"]
+      Stretch = True
+    }
+    { TextLabel2 TextLabel
+      MoveScaled(1,45,56,27)
+      'Move(8,360,448,216)
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
+      Text = ("<h2 align=center>Licence</h1>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 1, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
+    }
+    { TextLabel3 TextLabel
+      MoveScaled(1,72,56,4)
+      'Move(8,576,448,32)
+      Text = ("<h2 align=center>Authors</h2>\n")
+      Alignment = Align.Center
+    }
+    { txtAuthor TextView
+      MoveScaled(1,78,56,8)
+      'Move(8,624,448,64)
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
+      Text = ("")
+      ScrollBar = Scroll.None
+      Border = False
+    }
+    { Label2 Label
+      MoveScaled(9,40,38,2)
+      'Move(72,320,304,16)
+      Font = Font["Bold"]
+      Text = ("(c) Benoît Minisini")
+    }
+    { TextLabel1 TextLabel
+      MoveScaled(9,31,46,8)
+      'Move(72,248,368,64)
+      Font = Font["18,Bold"]
+      Text = ("Gambas Database Manager")
+      Alignment = Align.Normal
+    }
+  }
+  { timAuthor #Timer
+    #X = 408
+    #Y = 208
+    Enabled = True
+    Delay = 40
+  }
+}

@@ -1,0 +1,2709 @@
+' Gambas class file
+
+PUBLIC Name AS String
+PUBLIC Path AS String
+PUBLIC Type AS String
+
+PUBLIC Master AS CControl
+PUBLIC Selection AS NEW Collection
+PUBLIC Control AS NEW Collection(gb.Text)
+PUBLIC Menus AS NEW Object[]
+
+PUBLIC Container AS Container
+
+PROPERTY READ ReadOnly AS Boolean
+
+PRIVATE $bDoNotModify AS Boolean
+PRIVATE $bModify AS Boolean
+PRIVATE $bSelChange AS Boolean
+PRIVATE $bReadOnly AS Boolean
+PRIVATE $bActivate AS Boolean
+PRIVATE $bLocked AS Boolean
+PRIVATE $bScaled AS Boolean
+'PRIVATE $sType AS String
+
+' Gestion de la souris
+
+PRIVATE $iMode AS Integer
+
+PRIVATE CONST MODE_NOTHING AS Integer = 0
+PRIVATE CONST MODE_CREATE AS Integer = 1
+PRIVATE CONST MODE_MOVE AS Integer = 2
+PRIVATE CONST MODE_SELECT AS Integer = 3
+
+PRIVATE $sTool AS String
+PRIVATE $hCurrent AS CControl
+PRIVATE $X AS Integer
+PRIVATE $Y AS Integer
+PRIVATE $MX AS Integer
+PRIVATE $MY AS Integer
+PRIVATE $W AS Integer
+PRIVATE $H AS Integer
+PRIVATE $bMove AS Boolean
+
+PRIVATE $XS AS Integer
+PRIVATE $YS AS Integer
+PRIVATE $WS AS Integer
+PRIVATE $HS AS Integer
+
+PRIVATE CONST MIN_WIDTH AS Integer = 4
+PRIVATE CONST MIN_HEIGHT AS Integer = 4
+
+' Gestion de la sauvegarde
+
+PRIVATE $sSave AS String
+PRIVATE $iSaveX AS Integer
+PRIVATE $iSaveY AS Integer
+'PRIVATE $iIndent AS INTEGER
+PRIVATE $iSaveLevel AS Integer
+PRIVATE $bSelectNew AS Boolean
+PRIVATE $bDoNotArrange AS Boolean
+
+PRIVATE $hContainer AS CControl
+PRIVATE $iContX AS Integer
+PRIVATE $iContY AS Integer
+
+'PRIVATE CONST FORM_NAME AS String = "$"
+
+'PRIVATE CONST COORD_CONTROL AS Integer = 0
+PRIVATE CONST COORD_CONTROL_TO_INSIDE AS Integer = 1
+PRIVATE CONST COORD_INSIDE_TO_CONTROL AS Integer = 2
+
+PRIVATE CONST MOVE_FIRST AS Integer = 0
+PRIVATE CONST MOVE_LAST AS Integer = 1
+PRIVATE CONST MOVE_NEXT AS Integer = 2
+PRIVATE CONST MOVE_PREVIOUS AS Integer = 3
+
+PRIVATE $bAfterLock AS Boolean
+
+PUBLIC SUB _new(sPath AS String)
+
+  btnCloseWindow.Design = TRUE
+  btnMaxWindow.Design = TRUE
+
+  Path = sPath
+  Name = File.BaseName(sPath)
+
+  Type = "Form" 'File.Ext(sPath)
+  
+  Container = panBorder
+
+  Reload
+  
+  SetReadOnly
+
+END
+
+
+PUBLIC SUB Reload()
+
+  DIM sData AS String
+  DIM hCtrl AS CControl
+
+  sData = File.Load(Path)
+
+  IF Left$(sData, Len(Project.FORM_MAGIC_1)) = Project.FORM_MAGIC_1 THEN
+  ELSE IF Left$(sData, Len(Project.FORM_MAGIC)) <> Project.FORM_MAGIC THEN
+    FGambas.Warning(("Bad form file"))
+    RETURN
+  ENDIF
+
+  UnSelectAll
+  RefreshProperty
+  
+  IF Control.Exist(Name) THEN 
+    Control[Name].Delete
+    Menus.Clear
+  ENDIF
+  
+  $bLocked = FALSE
+  
+  $bDoNotModify = TRUE
+  $bAfterLock = FALSE
+
+  sData = Mid$(sData, Len(Project.FORM_MAGIC) + 1)
+  FromString(sData)
+
+  $bModify = FALSE
+
+  UpdateSnap
+
+  'SetLock($bAfterLock)
+  Action[".lock", ME].Value = $bAfterLock
+
+  DrawTitle
+  
+  $bDoNotModify = FALSE
+
+END
+
+
+PUBLIC SUB UpdateSnap()
+  
+  DIM hPict AS Picture
+  DIM hCtrl AS CControl = Control[Name]
+  DIM iColor AS Integer
+
+  IF Action[".grid", ME].Value THEN
+
+    hPict = NEW Picture(Project.Snap, Project.Snap)
+    iColor = hCtrl.Control.Background
+    IF iColor = Color.Default THEN iColor = Color.Background
+    hPict.Fill(iColor)
+    Draw.Begin(hPict)
+    Draw.Invert = TRUE
+    Draw.ForeColor = Color.White
+    Draw.Point(0, 0)
+    Draw.End
+    hCtrl.Control.Picture = hPict
+    
+  ELSE
+  
+    hCtrl.Control.Picture = NULL
+    
+  ENDIF
+  
+END
+
+
+PRIVATE SUB FromString(sData AS String, OPTIONAL hParent AS CControl)
+
+  DIM hCtrl AS CControl
+  'DIM hParent AS OBJECT
+
+  DIM sName AS String
+  DIM sClass AS String
+  DIM sOldClass AS String
+  DIM iPos, iPos2, iPos3 AS Integer
+  DIM sLine AS String
+  DIM hData AS CControl
+
+  DIM sProperty AS String
+  DIM sValue AS String
+  DIM vValue AS Variant
+  DIM aVal AS String[]
+  DIM iInd AS Integer
+
+  DIM iLevel AS Integer
+  DIM bFirst AS Boolean
+  DIM sEventName AS String
+  DIM bBackport AS Boolean
+
+  DIM cCoord AS String[]
+
+  hCtrl = hParent
+  bFirst = TRUE
+
+  WHILE sData
+
+    iPos = InStr(sData, gb.newLine)
+    IF iPos = 0 THEN
+      sLine = Trim(sData)
+      sData = ""
+    ELSE
+      sLine = Trim(Left$(sData, iPos - 1))
+      sData = Mid$(sData, iPos + 1)
+    ENDIF
+
+    'PRINT "> "; sLine
+
+    IF Len(sLine) = 0 THEN CONTINUE
+    IF Left$(sLine, 1) = "#" THEN 
+      sLine = Mid$(sLine, 2)
+      IF sLine = "LOCKED" THEN 
+        $bAfterLock = TRUE
+        CONTINUE
+      ENDIF
+    ENDIF
+
+    IF Left$(sLine, 1) = "{" THEN
+
+      sLine = Trim(Mid$(sLine, 2))
+      iPos = InStr(sLine, " ")
+      sName = Left$(sLine, iPos - 1)
+      sClass = Trim(Mid$(sLine, iPos + 1))
+      iPos = InStr(sClass, " ")
+      IF iPos THEN
+        sEventName = Trim(Mid$(sClass, iPos + 1))
+        sClass = Trim(Left$(sClass, iPos - 1))
+      ELSE
+        sEventName = ""
+      ENDIF
+
+
+      IF Left$(sClass) = "#" THEN sClass = Mid$(sClass, 2)
+
+      IF IsNull(hCtrl) THEN sName = Name
+
+      IF sClass = "Image" THEN
+        sOldClass = sClass
+        sClass = "PictureBox"
+      ELSE IF sClass = "TextView" THEN 
+        sOldClass = sClass
+        sClass = "TextEdit"
+      ELSE IF sClass = "DateBox" OR sClass = "TimeBox" THEN 
+        sOldClass = sClass
+        sClass = "ValueBox"
+      ELSE
+        sOldClass = "" 
+      ENDIF
+
+      hCtrl = CreateControl(sClass, hCtrl, sName)
+      
+      IF sEventName THEN hCtrl.SetProperty(CPropertyInfo.EVENT_NAME, sEventName)
+      
+      IF sOldClass THEN
+        PRINT sOldClass; " -> "; sClass 
+        IF sOldClass = "TextView" THEN 
+          hCtrl.SetProperty("ReadOnly", TRUE)
+        ELSE IF sOldClass = "DateBox" THEN 
+          hCtrl.SetProperty("Type", ValueBox.Date)
+        ELSE IF sOldClass = "TimeBox" THEN           
+          hCtrl.SetProperty("Type", ValueBox.Time)
+        ENDIF
+      ENDIF 
+      
+      INC iLevel
+
+    ELSE IF Left$(sLine, 1) = "}" THEN
+
+      'IF hCtrl = hParent THEN RETURN
+      DEC iLevel
+
+      IF iLevel = 0 THEN
+        IF $bSelectNew THEN
+          hCtrl.Select(ME, bFirst)
+          bFirst = FALSE
+        ENDIF
+      ENDIF
+
+      IF hCtrl.IsMultiContainer() THEN UpdateMultiContainer(hCtrl)
+      
+      hCtrl = hCtrl.Parent
+
+    ELSE
+
+      iPos = InStr(sLine, "=")
+
+      IF iPos THEN
+
+        sProperty = Trim(Left$(sLine, iPos - 1))
+        sValue = Trim(Mid$(sLine, iPos + 1))
+
+        vValue = Val(sValue)
+        IF IsNull(vValue) THEN
+
+          IF Left$(sValue, 2) = "(" & Chr$(34) THEN
+            sValue = Mid$(sValue, 2, -1)
+          ENDIF
+
+          IF Left$(sValue, 1) = Chr$(34) THEN
+            IF sProperty = "Name" THEN CONTINUE
+            vValue = UnQuote(Mid$(sValue, 2, -1))
+            IF sClass = "ComboBox" OR sClass = "ListBox" THEN 
+              IF sProperty = "List" THEN 
+                vValue = Split(vValue, "\n")
+              ENDIF
+            ENDIF
+          ELSE IF Left$(sValue) = "[" THEN
+            aVal = NEW String[]
+            iPos = 0
+            DO
+              iPos = InStr(sValue, Chr$(34), iPos + 1)
+              IF iPos = 0 THEN BREAK
+              iPos2 = iPos
+              DO
+                iPos3 = InStr(sValue, "\\", iPos2 + 1)
+                iPos2 = InStr(sValue, Chr$(34), iPos2 + 1)
+                IF iPos2 = 0 THEN 
+                  iPos2 = Len(sValue) + 1
+                  BREAK 
+                ENDIF
+                IF iPos3 = 0 OR IF iPos3 > iPos2 THEN BREAK
+                iPos2 = iPos3 + 1
+              LOOP
+              aVal.Add(UnQuote(Mid$(sValue, iPos + 1, iPos2 - iPos - 1)))
+              iPos = iPos2 + 1
+            LOOP
+            vValue = aVal '.Join("\n")
+          ELSE IF Left$(sValue, 5) = "Font[" THEN
+            vValue = Mid$(sValue, 7, -2)
+          ELSE IF Left$(sValue, 8) = "Picture[" THEN
+            vValue = Mid$(sValue, 10, -2)
+            'PRINT File.Dir(Project.Path) &/ Mid$(sValue, 9, -1)
+            'vValue = Picture[File.Dir(Project.Path) &/ Mid$(sValue, 9, -1)]
+          ELSE IF UCase(sValue) = "TRUE" THEN
+            vValue = TRUE
+          ELSE IF UCase(sValue) = "FALSE" THEN
+            vValue = FALSE
+          ELSE IF Left$(sValue, 6) = "CDate(" THEN
+            vValue = CDate(Mid$(sValue, 8, -2))
+          ELSE
+
+            iPos = InStr(sValue, ".")
+            IF iPos THEN
+              vValue = Mid$(sValue, iPos + 1)
+            ELSE
+              PRINT "Bad property value "; sValue
+              ' This is an object !
+            ENDIF
+
+          ENDIF
+
+        ENDIF
+
+        IF hCtrl.SetProperty(sProperty, vValue) THEN
+          PRINT "Error: "; hCtrl.Kind; "."; sProperty; " = "; sValue
+        ENDIF
+
+      ELSE IF Left$(sLine, 5) = "Move(" THEN
+
+        cCoord = Split(Mid$(sLine, 6, -1))
+        'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
+        TRY hCtrl.Move(CInt(cCoord[0]) / Project.Snap * Desktop.Scale, CInt(cCoord[1]) / Project.Snap * Desktop.Scale, TRUE)
+        'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
+        'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
+        IF cCoord.Count >= 2 THEN
+          TRY hCtrl.Resize(CInt(cCoord[2]) / Project.Snap * Desktop.Scale, CInt(cCoord[3]) / Project.Snap * Desktop.Scale, TRUE)
+        ENDIF
+
+        IF ERROR THEN PRINT "Error: Syntax error: "; sLine
+
+      ELSE IF Left$(sLine, 11) = "MoveScaled(" THEN
+
+        cCoord = Split(Mid$(sLine, 12, -1))
+        'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
+        TRY hCtrl.Move(CFloat(cCoord[0]) * Desktop.Scale, CFloat(cCoord[1]) * Desktop.Scale, TRUE)
+        'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
+        'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
+        IF cCoord.Count >= 2 THEN
+          TRY hCtrl.Resize(CFloat(cCoord[2]) * Desktop.Scale, CFloat(cCoord[3]) * Desktop.Scale, TRUE)
+        ENDIF
+
+        IF ERROR THEN PRINT "Error: Syntax error: "; sLine
+
+      ELSE 
+      
+        IF Left$(sLine) <> "'" THEN PRINT "Error: Syntax error: "; sLine
+
+      ENDIF
+
+    ENDIF
+
+  WEND
+
+END
+
+
+PUBLIC FUNCTION Save(OPTIONAL bForce AS Boolean) AS Boolean
+
+  DIM hFic AS File
+
+  IF Project.ReadOnly THEN RETURN
+  
+  IF NOT bForce THEN 
+    IF NOT $bModify THEN RETURN
+    IF $bReadOnly THEN RETURN
+  ENDIF
+
+  UnselectAll
+
+  Save.Begin(Path)
+
+  ResetSave
+
+  AddLine(Project.FORM_MAGIC)
+  IF $bLocked THEN AddLine("#LOCKED")
+  AddLine()
+
+  SaveOne(Control[Name])
+
+  File.Save(Path, $sSave)
+
+  Project.SetFormIcon(ME)
+
+  'OPEN Path & ".test" FOR CREATE AS #hFic ' y a un truc bizarre avec CREATE !
+  'PRINT #hFic, $sSave
+  'CLOSE #hFic
+
+  $sSave = ""
+  $bModify = FALSE
+  DrawTitle
+
+  Save.End()
+
+CATCH
+
+  RETURN Save.Error()
+
+END
+
+
+PUBLIC SUB AddLine(OPTIONAL sLig AS String)
+
+  DIM sAdd AS String
+
+  'IF Left$(sLig, 1) = "}" THEN $iIndent = $iIndent - 1
+
+  sAdd = Space$($iSaveLevel * 2) & sLig
+  'PRINT sAdd
+  $sSave = $sSave & sAdd & gb.NewLine
+
+  'IF Left$(sLig, 1) = "{" THEN $iIndent = $iIndent + 1
+
+END
+
+
+PUBLIC FUNCTION GetChildren(sName AS String) AS Object[]
+
+  DIM cList AS NEW Object[]
+  DIM hCtrl AS CControl
+  DIM hCChild AS CControl
+  DIM hChild AS Control
+  DIM iTab AS Integer
+  DIM hMenu AS Menu
+  DIM hTab AS Object 'TabStrip
+
+  hCtrl = Control[sName]
+  IF IsNull(hCtrl) THEN RETURN
+  IF NOT hCtrl.IsContainer() THEN RETURN
+
+  IF hCtrl.Kind = "Form" THEN
+
+    FOR EACH hCChild IN ME.Menus
+      cList.Add(hCChild)
+    NEXT
+    'cList.Insert(Menus)
+
+    FOR EACH hChild IN hCtrl.Control.Children
+      IF NOT hChild.Tag THEN CONTINUE
+      IF Control.Exist(hChild.Tag) THEN cList.Add(Control[hChild.Tag])
+    NEXT
+
+  'ELSE IF hCtrl.Kind = "TabStrip" THEN
+  ELSE IF hCtrl.IsMultiContainer() THEN
+
+    hTab = hCtrl.Control
+
+    FOR iTab = 0 TO hTab.Count - 1
+
+      FOR EACH hChild IN hTab[iTab].Children
+        IF NOT hChild.Tag THEN CONTINUE
+        IF Control.Exist(hChild.Tag) THEN cList.Add(Control[hChild.Tag])
+      NEXT
+
+    NEXT
+
+  ELSE IF hCtrl.Kind = "Menu" THEN
+
+    FOR EACH hMenu IN hCtrl.Control.Children
+      cList.Add(Control[hMenu.Tag])
+    NEXT
+
+  ELSE
+
+    FOR EACH hChild IN hCtrl.Control.Children
+      IF NOT hChild.Tag THEN CONTINUE
+      IF Control.Exist(hChild.Tag) THEN cList.Add(Control[hChild.Tag])
+    NEXT
+
+  ENDIF
+
+  RETURN cList
+
+END
+
+
+
+PRIVATE SUB SaveOne(hCtrl AS CControl)
+
+  DIM hChild AS Control
+  DIM sLine AS String
+  DIM hMenu AS Menu
+  DIM hMenuCtrl AS CControl
+  DIM cProp AS String[]
+
+  DIM hTab AS Object
+  DIM hSubTab AS Object
+  DIM iTab AS Integer
+  DIM sVal AS String
+  DIM vVal AS Variant
+  DIM iArr AS Integer
+  DIM sText AS String
+  DIM sName AS String
+  DIM sGroup AS String
+
+  'hCtrl = Control[sName]
+  'PRINT "SaveOne: hCtrl = "; hCtrl
+  IF IsNull(hCtrl) THEN RETURN
+
+  sName = hCtrl.Name
+  IF sName = Name THEN sName = Type
+
+  sGroup = hCtrl.GetProperty(CPropertyInfo.EVENT_NAME)
+
+  IF hCtrl.Virtual THEN
+    AddLine(Trim("{ " & sName & " #" & hCtrl.Kind & " " & sGroup))
+  ELSE
+    AddLine(Trim("{ " & sName & " " & hCtrl.Kind & " " & sGroup))
+  ENDIF
+
+  IF $iSaveLevel = 0 THEN
+    cProp = hCtrl.GetEachProperty($iSaveX, $iSaveY, NOT $bScaled)
+  ELSE
+    cProp = hCtrl.GetEachProperty(0, 0, NOT $bScaled)
+  ENDIF
+
+  INC $iSaveLevel
+
+  IF sGroup THEN 
+    AddLine("Name = \"" & sName & "\"")
+  ENDIF
+
+  FOR EACH sLine IN cProp
+    AddLine(sLine)
+  NEXT
+
+  IF hCtrl.IsContainer() THEN
+
+    IF NOT $bDoNotArrange THEN
+    
+      TRY iArr = CComponent.Classes[hCtrl.Kind].Symbols["_Arrangement"].Value
+  
+      IF NOT ERROR THEN
+  
+        IF iArr = Arrange.Fill THEN
+          iArr = 0
+          TRY iArr = CComponent.Classes["Arrange"].Symbols[hCtrl.GetProperty("Arrangement")].Value
+        ENDIF
+  
+        IF iArr THEN
+  
+          'IF hCtrl.Kind = "TabStrip" THEN
+          IF hCtrl.IsMultiContainer() THEN
+  
+            hTab = hCtrl.Control
+        
+            FOR iTab = 0 TO hTab.Count - 1
+              ArrangeContainer(hCtrl.Control, iArr, FALSE, iTab)
+            NEXT
+ 
+          ELSE
+  
+            ArrangeContainer(hCtrl.Control, iArr, FALSE)
+  
+          ENDIF
+  
+        ENDIF
+  
+      ENDIF
+      
+    ENDIF
+
+    IF hCtrl.Kind = "Form" THEN
+
+      FOR EACH hMenuCtrl IN ME.Menus
+        SaveOne(hMenuCtrl)
+      NEXT
+
+      FOR EACH hChild IN hCtrl.Control.Children
+        'PRINT "SaveOne? "; Object.Type(hChild);; hChild.Tag; " "; Control[hChild.Tag]
+        SaveOne(Control[hChild.Tag])
+      NEXT
+
+    'ELSE IF hCtrl.Kind = "TabStrip" THEN
+    ELSE IF hCtrl.IsMultiContainer() THEN
+
+      hTab = hCtrl.Control
+
+      FOR iTab = 0 TO hTab.Count - 1
+
+        AddLine("Index = " & CStr(iTab))
+        sVal = Replace(hTab[iTab].Text, "\\", "\\\\")
+        sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
+        sVal = Replace(sVal, gb.NewLine, "\\n")
+        AddLine("Text = (" & Chr$(34) & sVal & Chr$(34) & ")")
+
+        IF hCtrl.Tag THEN
+          sVal = hCtrl.Tag[iTab]
+          IF sVal THEN
+            AddLine("Picture = Picture[" & Chr$(34) & sVal & Chr$(34) & "]")
+          ENDIF
+        ENDIF
+
+        FOR EACH hChild IN hTab[iTab].Children
+          SaveOne(Control[hChild.Tag])
+        NEXT
+
+      NEXT
+
+      'AddLine("Index = " & CStr(hTab.Index))
+      AddLine("Index = 0")
+
+    ELSE IF hCtrl.Kind = "Menu" THEN
+
+      FOR EACH hMenu IN hCtrl.Control.Children
+        SaveOne(Control[hMenu.Tag])
+      NEXT
+
+    ELSE
+
+      FOR EACH hChild IN hCtrl.Control.Children
+        SaveOne(Control[hChild.Tag])
+      NEXT
+
+    ENDIF
+
+  ENDIF
+
+  DEC $iSaveLevel
+
+  AddLine("}")
+
+END
+
+
+
+PUBLIC SUB Control_Resize()
+
+  DIM hCtrl AS Control = LAST
+
+  WITH Control[Name]
+    IF hCtrl <> .Control THEN RETURN
+    IF hCtrl.Width <> .GetProperty("Width") THEN .SetProperty("Width", hCtrl.Width)
+    IF hCtrl.Height <> .GetProperty("Height") THEN .SetProperty("Height", hCtrl.Height)
+  END WITH
+
+END
+
+
+'PUBLIC SUB Form_KeyPress(Ascii AS String, Code AS Integer, State AS Integer)
+'
+'  Project.Shortcut(Code, Ascii, State)
+'
+'END
+
+
+PRIVATE $bInFormMove AS Boolean
+
+' PUBLIC SUB Form_Move()
+' 
+'   DIM X, Y AS Integer
+' 
+'   IF NOT LAST.Visible THEN RETURN
+'   IF $bInFormMove THEN RETURN
+' 
+'   $bInFormMove = TRUE
+' 
+'   'DEBUG ME.Name;; ME.X;; ME.Y
+' 
+'   WITH Control[Name]
+' 
+'     X = .GetProperty("X") 
+'     Y = .GetProperty("Y") 
+'     
+'     'DEBUG X;; Y;; "->";; ME.X;; ME.Y;; X <> ME.X;; Y <> ME.Y
+'     
+'     IF X <> ME.X THEN .SetProperty("X", ME.X, TRUE)
+'     IF Y <> ME.Y THEN .SetProperty("Y", ME.Y, TRUE)
+' 
+'   END WITH
+' 
+'   $bInFormMove = FALSE
+' 
+' END
+
+
+PUBLIC SUB Control_MouseDown()
+
+  'PRINT "> Control_MouseDown"
+
+  DIM X AS Integer
+  DIM Y AS Integer
+
+  ME.SetFocus
+
+  X = Mouse.X
+  Y = Mouse.Y
+
+  $hCurrent = Control[LAST.Tag]
+  $sTool = FToolBox.GetTool()
+
+  $X = LAST.X
+  $Y = LAST.Y
+  $MX = LAST.ScreenX + X
+  $MY = LAST.ScreenY + Y
+
+  'IF $hCurrent.Kind = "GridView" THEN
+  '  PRINT "MouseDown: $X ="; $X; " $Y ="; $Y; " $MX ="; $MX; " $MY ="; $MY
+  '  PRINT "X ="; X; " Y ="; Y
+  'ENDIF
+
+  IF $sTool = "" THEN
+
+    IF Mouse.Control OR $hCurrent.Name = Name THEN
+
+      $XS = X
+      $YS = Y
+
+      $iMode = MODE_SELECT
+
+      $W = 0
+      $H = 0
+
+      GOTO FIN
+
+    ELSE
+
+      IF Master <> $hCurrent THEN
+
+        IF NOT $hCurrent.Selected THEN
+          UnSelectAll
+        ENDIF
+
+        SelectCurrent(TRUE)
+
+      ENDIF
+
+      IF $bReadOnly THEN RETURN
+
+      $iMode = MODE_MOVE
+
+    ENDIF
+
+  ELSE
+
+    IF $bReadOnly THEN RETURN
+
+    FindContainer($hCurrent, X, Y, COORD_CONTROL_TO_INSIDE)
+    $hCurrent = $hContainer
+    X = $iContX
+    Y = $iContY
+
+    ' IF NOT $hCurrent.IsContainer() THEN
+    '   X = X + $hCurrent.Control.X + $hCurrent.Control.Parent.ClientX
+    '   Y = Y + $hCurrent.Control.Y + $hCurrent.Control.Parent.ClientY
+    '   $hCurrent = $hCurrent.Parent
+    '   IF $hCurrent.Kind = "ScrollView" THEN
+    '     X = X - $hCurrent.Control.ScrollX
+    '     Y = Y - $hCurrent.Control.ScrollY
+    '   ENDIF
+    ' ENDIF
+
+    $iMode = MODE_CREATE
+
+    $X = X
+    $Y = Y
+
+    '$hCurrent = CreateControl(, $sTool, $hCurrent)
+  ENDIF
+
+  RefreshProperty
+
+FIN:
+  'PRINT "< Control_MouseDown"
+
+END
+
+PUBLIC SUB Control_MouseMove()
+
+  DIM X AS Integer
+  DIM Y AS Integer
+  DIM iDepX AS Integer
+  DIM iDepY AS Integer
+  DIM hCtrl AS CControl
+  DIM W AS Integer
+  DIM H AS Integer
+  DIM bMoveX AS Boolean
+  DIM bMoveY AS Boolean
+  DIM hParent AS CControl
+
+  IF NOT Mouse.Left THEN RETURN
+
+  'PRINT "Control_MouseMove  Mode ="; $iMode
+
+  IF Mouse.Shift THEN CControl.SetGrid(FALSE)
+
+  X = Mouse.X
+  Y = Mouse.Y
+
+  IF $iMode = MODE_CREATE THEN
+
+    IF LAST.Mouse <> Mouse.Cross THEN
+
+      LAST.Mouse = Mouse.Cross
+
+      hParent = $hCurrent
+      $hCurrent = CreateControl($sTool, hParent)
+      FFormStack.RefreshAll
+
+      FindContainer(hParent, $X, $Y, COORD_INSIDE_TO_CONTROL)
+      $X = $iContX
+      $Y = $iContY
+
+      ' $X = $X - hParent.Control.ClientX
+      ' $Y = $Y - hParent.Control.ClientY
+      ' 
+      ' IF hParent.Kind = "ScrollView" THEN
+      '   $X = $X + hParent.Control.ScrollX
+      '   $Y = $Y + hParent.Control.ScrollY
+      ' ENDIF
+
+      $hCurrent.Move($X, $Y)
+      $hCurrent.Resize(MIN_WIDTH, MIN_HEIGHT)
+      $hCurrent.Control.Mouse = Mouse.Cross
+
+    ENDIF
+
+    W = Mouse.ScreenX - $MX
+    IF (W < 0) THEN
+      W = Abs(W)
+      X = $X - W
+      bMoveX = TRUE
+    ELSE
+      X = $X
+    ENDIF
+
+    H = Mouse.ScreenY - $MY
+    IF (H < 0) THEN
+      H = Abs(H)
+      Y = $Y - H
+      bMoveY = TRUE
+    ELSE
+      Y = $Y
+    ENDIF
+
+    IF bMoveX OR bMoveY THEN
+      $hCurrent.Move(X, Y)
+      IF bMoveX THEN W = W + X - $hCurrent.Control.X
+      IF bMoveY THEN H = H + Y - $hCurrent.Control.Y
+    ENDIF
+
+    $hCurrent.Resize(Max(MIN_WIDTH, W), Max(MIN_HEIGHT, H))
+
+  ELSE IF $iMode = MODE_MOVE THEN
+
+    IF LAST = $hCurrent.Control THEN
+
+      LAST.Mouse = Mouse.SizeAll
+
+      WITH $hCurrent
+
+        iDepX = Master.Control.X
+        iDepY = Master.Control.Y
+
+        Master.Move($X + Mouse.ScreenX - $MX, $Y + Mouse.ScreenY - $MY)
+
+        iDepX = Master.Control.X - iDepX
+        iDepY = Master.Control.Y - iDepY
+
+        IF iDepX <> 0 OR iDepY <> 0 THEN
+          FOR EACH hCtrl IN Selection
+            IF hCtrl <> Master THEN
+              hCtrl.Move(hCtrl.Control.X + iDepX, hCtrl.Control.Y + iDepY, TRUE)
+            ENDIF
+          NEXT
+        ENDIF
+
+      END WITH
+
+    ENDIF
+
+  ELSE IF $iMode = MODE_SELECT THEN
+
+    DrawRectSelect(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+
+  ENDIF
+
+  CControl.SetGrid(TRUE)
+
+END
+
+
+PUBLIC SUB Control_MouseUp()
+
+  DIM hCont AS Container
+  DIM hCtrl AS CControl
+
+  'PRINT "Control_MouseUp  Mode ="; $iMode
+
+  IF $iMode = MODE_CREATE THEN
+
+    'LAST.Mouse = Mouse.Arrow
+
+    UnSelectAll
+
+    IF LAST.Mouse = Mouse.Cross THEN
+      $hCurrent.Control.Mouse = Mouse.Arrow
+      SelectCurrent(TRUE)
+    ENDIF
+
+    FToolBox.SetTool()
+
+  ELSE IF $iMode = MODE_SELECT THEN
+
+    $WS = $W
+    $HS = $H
+
+    DrawRectSelect(0, 0)
+
+    IF Abs($WS) > 1 AND Abs($HS) > 1 THEN
+
+      IF NOT $hCurrent.IsContainer() THEN
+        $XS = $XS + $hCurrent.Control.X
+        $YS = $YS + $hCurrent.Control.Y
+        $hCurrent = $hCurrent.Parent
+      ENDIF
+
+      IF Selection.Count THEN
+        IF Master.Parent <> $hCurrent THEN
+          UnselectAll
+        ELSE IF (Mouse.Control) = 0 THEN
+          UnselectAll
+        ENDIF
+      ENDIF
+
+      SelectIn($hCurrent, $XS, $YS, $WS, $HS)
+
+    ELSE
+
+      IF $hCurrent.Name = Name THEN
+
+        UnselectAll
+
+      ELSE IF $hCurrent.Selected THEN
+
+        IF Master <> $hCurrent OR Selection.Count = 1 THEN
+          UnselectCurrent
+        ENDIF
+
+      ELSE
+
+        IF Master = NULL THEN
+          SelectCurrent(TRUE)
+        ELSE IF $hCurrent.Parent = Master.Parent THEN
+          SelectCurrent
+        ELSE
+          UnSelectAll
+          SelectCurrent(TRUE)
+        ENDIF
+
+      ENDIF
+
+    ENDIF
+
+  ENDIF
+
+  LAST.Mouse = Mouse.Arrow
+  $hCurrent = NULL
+  $iMode = MODE_NOTHING
+
+  RefreshProperty
+
+END
+
+
+PUBLIC SUB Control_Menu()
+
+  CreateMenu
+  mnuForm.Popup
+
+END
+
+
+' TabStrip
+
+PRIVATE SUB UpdateMultiContainer(hCtrl AS CControl)
+
+  WITH hCtrl
+    $bDoNotModify = TRUE
+    .SetProperty("Picture", .Tag[hCtrl.Control.Index])
+    .SetProperty("Text", hCtrl.Control.Text)
+    $bDoNotModify = FALSE
+  END WITH
+
+END
+
+PUBLIC SUB Control_Click()
+
+  DIM hCtrl AS Control = LAST
+  DIM hCCtrl AS CControl = Control[hCtrl.Tag]
+  
+  IF hCCtrl.IsMultiContainer() THEN 
+    UpdateMultiContainer(hCCtrl)
+  ENDIF
+  
+END
+
+
+' PUBLIC SUB Control_KeyPress()
+'   
+'   Form_KeyPress
+'   
+' END
+
+
+PUBLIC FUNCTION CreateControl(sClass AS String, hParent AS CControl, OPTIONAL sName AS String) AS CControl
+
+  DIM hCtrl AS CControl
+
+  IF Len(sName) = 0 THEN sName = GetName(sClass)
+  IF Control.Exist(sName) THEN sName = GetName(sClass)
+
+  ' If the component is not loaded, then return null
+  IF NOT CComponent.Classes.Exist(sClass) THEN
+    Error.Raise("Component missing")
+  ENDIF
+
+  hCtrl = NEW CControl(sName, sClass, hParent, ME)
+
+  Control[sName] = hCtrl
+
+  IF sClass = "Menu" THEN
+    IF hParent.Name = Name THEN
+      Menus.Add(hCtrl)
+    ENDIF
+  ENDIF
+
+  ResetClassScan
+
+  RETURN hCtrl
+
+  'PRINT "< CreateControl "; sName
+
+END
+
+PRIVATE SUB ResetClassScan()
+
+  TRY Project.Files[File.Dir(Path) &/ Name & ".class"].Scan = NULL
+
+END
+
+
+
+PUBLIC SUB AddControl(sClass AS String, OPTIONAL hParent AS CControl, OPTIONAL X AS Integer, OPTIONAL Y AS Integer) AS CControl
+
+  DIM W, H AS Integer
+  DIM hCtrl AS CControl
+
+  IF $bReadOnly THEN RETURN
+
+  IF NOT hParent THEN
+  
+    IF Master THEN
+      IF Master.IsContainer() THEN
+        hParent = Master
+      ELSE
+        hParent = Master.Parent
+      ENDIF
+    ELSE
+      hParent = Control[Name]
+    ENDIF
+    
+  ENDIF
+
+  hCtrl = CreateControl(sClass, hParent)
+
+  IF X <> 0 OR Y <> 0 THEN hCtrl.Move(X, Y)
+
+  WITH CComponent.Classes[sClass]
+    W = .DefaultWidth
+    H = .DefaultHeight
+    IF W = 0 OR H = 0 THEN 
+      W = 8 * Desktop.Scale
+      H = 8 * Desktop.Scale
+    ENDIF
+    hCtrl.Resize(W, H)
+  END WITH
+
+  RETURN hCtrl
+
+END
+
+
+
+PRIVATE SUB RemoveControl(sName AS String)
+
+  'PRINT "> RemoveControl "; sName; " "; Control[sName]
+  Control[sName].Control.Delete
+  Control.Remove(sName)
+  Modify
+  'PRINT "< RemoveControl "; sName; " "; Control[sName]
+
+END
+
+
+PRIVATE FUNCTION GetName(sClass AS String) AS String
+
+  DIM iNum AS Integer
+  DIM sName AS String
+  DIM hCtrl AS CControl
+
+  DO
+
+    iNum = iNum + 1
+    sName = sClass & Trim(CStr(iNum))
+
+    IF NOT Control.Exist(sName) THEN EXIT
+
+  LOOP
+
+  RETURN sName
+
+END
+
+
+PUBLIC PROCEDURE UnSelectAll()
+
+  DIM hCtrl AS CControl
+
+  FOR EACH hCtrl IN Selection
+    hCtrl.UnSelect(ME, TRUE)
+  NEXT
+
+  Selection.Clear
+  Master = NULL
+  SelectionChange
+
+END
+
+PRIVATE PROCEDURE SelectCurrent(OPTIONAL bMaster AS Boolean)
+
+  $hCurrent.Select(ME, bMaster)
+  SelectionChange
+
+END
+
+
+PRIVATE SUB UnSelectCurrent()
+
+  $hCurrent.UnSelect(ME)
+  SelectionChange
+  'RefreshProperty
+
+END
+
+
+PRIVATE SUB SelectIn(hParent AS CControl, X AS Integer, Y AS Integer, W AS Integer, H AS Integer)
+
+  DIM hChild AS Control
+  DIM hCtrl AS CControl
+  DIM bFirst AS Boolean
+
+  IF W < 0 THEN
+    X = X + W
+    W = - W
+  ENDIF
+
+  IF H < 0 THEN
+    Y = Y + H
+    H = - H
+  ENDIF
+
+  'PRINT hParent.Name; X; Y; W; H
+
+  IF W < 2 OR H < 2 THEN RETURN
+
+  X = X - hParent.Control.ClientX
+  Y = Y - hParent.Control.ClientY
+
+  IF hParent.Kind = "ScrollView" THEN
+
+    X = X + hParent.Control.ScrollX
+    Y = Y + hParent.Control.ScrollY
+
+  ENDIF
+
+  bFirst = TRUE
+
+  FOR EACH hChild IN hParent.Control.Children
+
+    hCtrl = Control[hChild.Tag]
+
+    IF IsNull(hCtrl) THEN CONTINUE 'panel
+
+    IF hChild.X >= (X + W) THEN CONTINUE
+    IF hChild.Y >= (Y + H) THEN CONTINUE
+    IF (hChild.X + hChild.W) < X THEN CONTINUE
+    IF (hChild.Y + hChild.H) < Y THEN CONTINUE
+
+    hCtrl.Select(ME, bFirst)
+    $bSelChange = TRUE
+    bFirst = FALSE
+
+  NEXT
+
+  IF $bSelChange THEN
+    SelectionChange
+  ENDIF
+
+END
+
+
+PRIVATE SUB DrawRectSelect(W AS Integer, H AS Integer)
+
+  DIM X AS Integer
+  DIM Y AS Integer
+
+  IF W = $W AND H = $H THEN RETURN
+
+  Draw.Begin(ME)
+  Draw.Invert = TRUE
+  Draw.ForeColor = Color.White
+  Draw.LineWidth = 1
+  Draw.LineStyle = Line.Dot
+
+  X = $MX - ME.ScreenX
+  Y = $MY - ME.ScreenY
+
+  IF $W <> 0 AND $H <> 0 THEN Draw.Rect(X, Y, $W, $H)
+  IF W <> 0 AND H <> 0 THEN Draw.Rect(X, Y, W, H)
+
+  Draw.End
+
+  $W = W
+  $H = H
+
+END
+
+
+PUBLIC SUB DeleteSelection()
+
+  DIM hCtrl AS CControl
+  DIM cCopy AS NEW Object[]
+  DIM hParent AS CControl
+
+  IF Selection.Count THEN
+
+    hParent = Master.Parent
+
+    FOR EACH hCtrl IN Selection
+      cCopy.Add(hCtrl)
+    NEXT
+
+    UnSelectAll
+
+    FOR EACH hCtrl IN cCopy
+      hCtrl.Delete
+    NEXT
+
+    Modify
+
+    hParent.Select(ME, TRUE)
+
+    ResetClassScan
+
+    SelectionChange
+    RefreshProperty
+    FFormStack.RefreshAll
+
+  ENDIF
+
+  'STOP
+
+END
+
+
+PUBLIC SUB CopySelection()
+
+  DIM hCtrl AS CControl
+
+  IF Selection.Count = 0 THEN RETURN
+
+  ResetSave
+
+  $iSaveX = Master.GetProperty("X")
+  $iSaveY = Master.GetProperty("Y")
+
+  FOR EACH hCtrl IN Selection
+
+    $iSaveX = Min($iSaveX, hCtrl.GetProperty("X"))
+    $iSaveY = Min($iSaveY, hCtrl.GetProperty("Y"))
+
+  NEXT
+
+  $bDoNotArrange = TRUE
+  FOR EACH hCtrl IN Selection
+    SaveOne(hCtrl)
+  NEXT
+  $bDoNotArrange = FALSE
+
+  Clipboard.Copy($sSave, MMime.FORM)
+
+  $iSaveX = 0
+  $iSaveY = 0
+
+END
+
+
+FUNCTION CanPaste() AS Boolean
+
+  RETURN Clipboard.Format = MMime.FORM
+
+END
+
+
+PUBLIC SUB PasteSelection()
+
+  DIM hParent AS CControl
+  DIM sData AS String
+
+  sData = Clipboard.Paste(MMime.FORM)
+  IF NOT sData THEN RETURN
+
+  IF Selection.Count = 1 THEN
+    hParent = Master
+  ELSE IF Selection.Count > 1 THEN
+    hParent = Master.Parent
+  ELSE
+    hParent = Control[Name]
+  ENDIF
+
+  IF NOT hParent.IsContainer() THEN
+    hParent = hParent.Parent
+  ENDIF
+
+  UnSelectAll
+
+  'PRINT Clipboard.Text
+  $bSelectNew = TRUE
+  FromString(sData, hParent)
+  $bSelectNew = FALSE
+
+  RefreshProperty
+  FFormStack.RefreshAll
+
+END
+
+
+
+PRIVATE SUB RefreshProperty(OPTIONAL bForce AS Boolean)
+
+  IF $bSelChange OR bForce THEN
+    RefreshMenu
+    FProperty.RefreshAll
+    $bSelChange = FALSE
+  ENDIF
+
+END
+
+
+PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
+
+  DIM hEditor AS FEditor
+
+  IF Project.ReadOnly THEN RETURN
+  IF $bDoNotModify THEN RETURN
+
+  IF $bModify <> bReset THEN RETURN
+
+  $bModify = NOT bReset
+  DrawTitle
+
+  IF $bModify THEN
+    hEditor = GetEditor()
+    IF hEditor THEN hEditor.Scan = NULL
+    INC Project.TimeStamp
+  ENDIF
+
+END
+
+
+PUBLIC FUNCTION IsModified() AS Boolean
+
+  RETURN $bModify
+
+END
+
+
+PRIVATE SUB DrawTitle()
+
+  DIM sTitle AS String
+
+  sTitle = File.Name(Path)
+  IF $bModify THEN sTitle = sTitle & " [" & ("modified") & "]"
+  ME.Title = sTitle '& " - " & Project.Name
+
+END
+
+
+
+PRIVATE SUB DoRaise()
+
+  DIM hCtrl AS CControl
+
+  FOR EACH hCtrl IN Selection
+    hCtrl.Raise
+  NEXT
+
+  FFormStack.RefreshAll
+
+END
+
+
+PUBLIC SUB DoLower()
+
+  DIM hCtrl AS CControl
+
+  FOR EACH hCtrl IN Selection
+    hCtrl.Lower
+  NEXT
+
+  FFormStack.RefreshAll
+
+END
+
+
+PRIVATE FUNCTION GetSortKey(hCtrl AS Control, iArr AS Integer) AS String
+
+  DIM sKey AS String
+
+  SELECT CASE iArr
+
+    CASE Arrange.Horizontal
+      sKey = Format(hCtrl.X, "000000") & Format(hCtrl.W, "000000")
+    CASE Arrange.Vertical
+      sKey = Format(hCtrl.Y, "000000") & Format(hCtrl.H, "000000")
+    CASE Arrange.TopBottom
+      sKey = Format(hCtrl.X, "000000") & Format(hCtrl.Y, "000000") & Format(hCtrl.W, "000000") & Format(hCtrl.H, "000000")
+    CASE Arrange.LeftRight
+      sKey = Format(hCtrl.Y, "000000") & Format(hCtrl.X, "000000") & Format(hCtrl.H, "000000") & Format(hCtrl.W, "000000")
+
+  END SELECT
+
+  RETURN sKey
+
+END
+
+
+PRIVATE SUB ArrangeContainer(hParent AS Container, iArr AS Integer, OPTIONAL bRec AS Boolean = TRUE, OPTIONAL iIndex AS Integer = -1)
+
+  DIM X AS Integer
+  DIM Y AS Integer
+  DIM aPos AS NEW String[]
+  DIM sPos AS String
+  DIM hCtrl AS Control
+  DIM hCCtrl AS CControl
+  DIM hCont AS Container
+  DIM aCtrl AS NEW Object[]
+  DIM hTab AS Object
+
+  IF hParent THEN
+    IF iIndex < 0 THEN
+      FOR EACH hCtrl IN hParent.Children
+        IF NOT hCtrl.Tag THEN CONTINUE
+        IF Control.Exist(hCtrl.Tag) THEN aCtrl.Add(hCtrl)
+      NEXT
+    ELSE ' Multicontainer
+      hTab = hParent
+      FOR EACH hCtrl IN hTab[iIndex].Children
+        IF NOT hCtrl.Tag THEN CONTINUE
+        IF Control.Exist(hCtrl.Tag) THEN aCtrl.Add(hCtrl)
+      NEXT
+    ENDIF
+  ELSE IF Selection.Count >= 2 THEN
+    FOR EACH hCCtrl IN Selection
+      aCtrl.Add(hCCtrl.Control)
+    NEXT
+  ELSE
+    ArrangeContainer(Control[Name].Control, iArr)
+    RETURN
+  ENDIF
+
+  IF aCtrl.Count = 0 THEN RETURN
+
+  FOR EACH hCtrl IN aCtrl
+    IF bRec THEN
+      TRY hCont = hCtrl
+      IF NOT ERROR THEN
+        ArrangeContainer(hCtrl, iArr)
+      ENDIF
+    ENDIF
+    aPos.Add(GetSortKey(hCtrl, iArr))
+  NEXT
+
+  IF aPos.Count = 0 THEN RETURN
+
+  aPos.Sort(gb.Descent)
+
+  FOR EACH sPos IN aPos
+    FOR EACH hCtrl IN aCtrl
+      IF GetSortKey(hCtrl, iArr) = sPos THEN
+        hCtrl.Lower
+        BREAK
+      ENDIF
+    NEXT
+  NEXT
+
+  FFormStack.RefreshAll
+  
+  Modify
+
+END
+
+
+
+PUBLIC SUB mnuSave_Click()
+
+  Save
+
+END
+
+
+
+PRIVATE SUB ResetSave()
+
+  $sSave = ""
+  $iSaveX = 0
+  $iSaveY = 0
+  '$iIndent  = 0
+  $iSaveLevel = 0
+  $bScaled = Control[Name].GetPropertyDefault(CPropertyInfo.SCALE_NAME)
+
+END
+
+
+PRIVATE FUNCTION GetEditor() AS FEditor
+
+  DIM sPath AS String
+
+  sPath = File.Dir(Path) &/ File.BaseName(Path) & ".class"
+  RETURN Project.Files[sPath]
+
+END
+
+
+PRIVATE SUB GotoEventMethod(hCtrl AS CControl, sEvent AS String)
+
+  DIM sPath AS String
+  DIM sGroup AS String
+
+  IF NOT hCtrl THEN hCtrl = Control[Name]
+
+  sPath = File.Dir(Path) &/ File.BaseName(Path) & ".class"
+
+  IF hCtrl.Kind = "Form" THEN
+    sGroup = "Form"
+  ELSE
+    sGroup = hCtrl.GetGroup()
+  ENDIF
+
+  Project.OpenFile(sPath)
+
+  Project.Files[sPath].GotoEvent(sGroup, sEvent,
+    CSymbolInfo.TransformSignature(CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent].Signature, FALSE))
+
+END
+
+
+PUBLIC SUB Control_DblClick()
+
+  DIM sEvent AS String
+  DIM hCurrent AS CControl
+  DIM sGroup AS String
+
+  hCurrent = Control[LAST.Tag]
+
+  sEvent = CComponent.Classes[hCurrent.Kind].DefaultEvent
+  IF NOT sEvent THEN RETURN
+
+  GotoEventMethod(hCurrent, sEvent)
+
+END
+
+
+PUBLIC SUB MenuControl_Click()
+
+  'IF NOT LAST THEN STOP
+  Control_DblClick
+
+END
+
+
+PRIVATE SUB CreateMenu()
+
+  DIM hCtrl AS CControl
+  DIM hMenu AS Menu
+  DIM cCtrl AS NEW String[]
+  DIM sName AS String
+  DIM cSymbol AS Collection
+  DIM hSymbol AS CSymbolInfo
+  DIM sGroup AS String
+
+  mnuSelect.Children.Clear
+
+  FOR EACH hCtrl IN Control
+    sName = hCtrl.Name
+    IF sName <> Name THEN
+      IF hCtrl.Kind <> "Menu" THEN
+        cCtrl.Add(sName)
+      ENDIF
+    ENDIF
+  NEXT
+
+  mnuSelect.Enabled = cCtrl.Count
+
+  cCtrl.Sort(gb.Text)
+
+  FOR EACH sName IN cCtrl
+
+    hMenu = NEW Menu(mnuSelect) AS "mnuControl"
+    hMenu.Text = sName
+
+  NEXT
+
+  mnuEvent.Visible = FALSE
+
+  IF NOT $bReadOnly THEN
+
+    IF Master THEN
+      cCtrl = CComponent.Classes[Master.Kind].Events
+      sGroup = Master.GetGroup()
+    ELSE
+      cCtrl = CComponent.Classes[Type].Events
+      sGroup = Type
+    ENDIF
+
+    IF cCtrl THEN
+
+      mnuEvent.Children.Clear
+      cSymbol = CComponent.GetClassSymbols(Name)
+
+      FOR EACH sName IN cCtrl
+
+        hMenu = NEW Menu(mnuEvent) AS "mnuEvent"
+        hMenu.Text = sName
+
+        hSymbol = cSymbol[sGroup & "_" & sName]
+        IF hSymbol THEN
+          IF hSymbol.Kind = "m" THEN hMenu.Checked = TRUE
+        ENDIF
+
+      NEXT
+
+      mnuEvent.Visible = TRUE
+
+    ENDIF
+
+  ENDIF
+
+  RefreshMenu
+
+END
+
+
+SUB RefreshMenu()
+
+  DIM bOn AS Boolean
+
+  bOn = NOT IsNull(Master)
+
+  Action[".cut", ME].Enabled = bOn
+  Action[".copy", ME].Enabled = bOn
+  Action[".delete", ME].Enabled = bOn
+  Action[".lower", ME].Enabled = bOn
+  Action[".raise", ME].Enabled = bOn
+
+  bOn = Selection.Count >= 2
+
+  Action["paste-form"].Enabled = CanPaste()
+  
+  mnuArrange.Visible = NOT $bReadOnly
+  Action[".save,.refresh,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", ME].Visible = NOT $bReadOnly
+
+  bOn = bOn AND NOT $bReadOnly
+
+  mnuAlign.Enabled = bOn
+  mnuAlign.Visible = bOn  
+  Action[".align-*", ME].Visible = bOn
+  Action[".same-*", ME].Visible = bOn
+
+  IF Selection.Count = 1 AND IF Master.IsMultiContainer() THEN
+    mnuTab.Visible = TRUE
+    Action[".move-tab", ME].Visible = TRUE
+  ELSE 
+    mnuTab.Visible = FALSE
+    Action[".move-tab", ME].Visible = FALSE
+  ENDIF
+
+END
+
+
+SUB SelectionChange()
+
+  $bSelChange = TRUE
+  RefreshMenu
+
+END
+
+
+
+PUBLIC SUB mnuControl_Click()
+
+  UnselectAll
+  Control[LAST.Text].Select(ME, TRUE)
+  RefreshProperty
+
+END
+
+
+PUBLIC SUB mnuEvent_Click()
+
+  GotoEventMethod(Master, LAST.Text)
+
+END
+
+
+PUBLIC SUB Rename(sNewName AS String, sNewPath AS String)
+
+  DIM hCtrl AS CControl
+
+  hCtrl = Control[Name]
+
+  Name = sNewName
+  Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
+
+  $bDoNotModify = TRUE
+  hCtrl.Rename(sNewName)
+  DrawTitle
+  FProperty.RefreshAll
+  $bDoNotModify = FALSE
+
+END
+
+PUBLIC SUB mnuShowProperty_Click()
+
+  FProperty.Show
+
+END
+
+
+PUBLIC SUB mnuShowCode_Click()
+
+  Project.OpenFile(Name)
+
+END
+
+
+PUBLIC SUB Control_Draw(OPTIONAL iIndex AS Integer)
+
+  'DIM hForm AS Form
+'   DIM X AS Integer
+'   DIM Y AS Integer
+'   DIM SX AS Integer
+'   DIM SY AS Integer
+'   DIM SXF AS Integer
+'   DIM SYF AS Integer
+'   DIM iMod AS Integer
+'   DIM DX AS Integer
+'   DIM DY AS Integer
+  'DIM hGrid AS Picture
+
+  DIM hCtrl AS Control = LAST  
+  DIM hCCtrl AS CControl = Control[hCtrl.Tag]
+  DIM hPict AS Picture
+  DIM W AS Integer = 1
+  
+  IF NOT hCCtrl THEN RETURN
+
+  SELECT hCCtrl.Kind
+  
+    CASE "HBox"
+    
+      Draw.FillX = 0
+      Draw.FillY = 0
+      IF hCtrl.H >= 28 THEN
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, 4, hCtrl.W - 8, 8)
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
+      ELSE 
+        Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
+      ENDIF
+      Draw.Foreground = Color.Red
+    
+    CASE "VBox"
+
+      Draw.FillX = 0
+      Draw.FillY = 0
+      IF hCtrl.W >= 28 THEN
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], 4, 4, 8, hCtrl.H - 8)
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
+      ELSE 
+        Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
+      ENDIF
+      Draw.Foreground = Color.Red
+    
+    CASE "HPanel"
+    
+      Draw.FillX = 0
+      Draw.FillY = 0
+      IF hCtrl.H >= 28 THEN
+        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, 4, hCtrl.W - 8, 8)
+        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H - 12, hCtrl.W - 8, 8)
+      ELSE 
+        Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
+      ENDIF
+      Draw.Foreground = Color.Red
+    
+    CASE "VPanel"
+
+      Draw.FillX = 0
+      Draw.FillY = 0
+      IF hCtrl.W >= 28 THEN
+        Draw.Tile(Picture["img/16/red-arrow-c.png"], 4, 4, 8, hCtrl.H - 8)
+        Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W - 12, 4, 8, hCtrl.H - 8)
+      ELSE 
+        Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
+      ENDIF
+      Draw.Foreground = Color.Red
+    
+    CASE ELSE 
+
+      hPict = Picture["img/control" &/ "draw-" & LCase(hCCtrl.Kind) & ".png"]
+      IF NOT hPict THEN hPict = Picture["img/control" &/ LCase(hCCtrl.Kind) & ".png"]
+      'Draw.ForeColor = Control[Name].Control.Foreground
+      IF hPict THEN
+        Draw.Picture(hPict, 4, 4)
+        Draw.Text(hCtrl.Tag, 8 + hPict.Width, 4)
+      ELSE
+        Draw.Text(hCtrl.Tag, 4, 4)
+      ENDIF
+      Draw.Foreground = Color.Black
+      
+    END SELECT
+
+  Draw.LineStyle = Line.None
+
+  Draw.FillStyle = Fill.Solid
+  Draw.FillColor = Draw.Foreground 'Color.White
+  Draw.Rect(0, 0, hCtrl.W, W)
+  Draw.Rect(hCtrl.W - W, 0, W, hCtrl.H)
+  Draw.Rect(0, W, W, hCtrl.H - W)
+  Draw.Rect(W, hCtrl.H - W, hCtrl.W - W * 2, W)
+
+  ' Draw.FillStyle = Fill.Dense50
+  ' Draw.FillColor = Draw.Foreground
+  ' Draw.Rect(0, 0, hCtrl.W, W)
+  ' Draw.Rect(hCtrl.W - W, 0, W, hCtrl.H)
+  ' Draw.Rect(0, W, W, hCtrl.H - W)
+  ' Draw.Rect(W, hCtrl.H - W, hCtrl.W - W * 2, W)
+
+  'Draw.Rect(0, 0, LAST.W, LAST.H)
+
+'   IF NOT Project.ShowGrid THEN RETURN
+' 
+'   'hForm = LAST.Parent
+' 
+'   'IF hForm.Picture THEN
+'   '  Draw.Picture(hForm.Picture, 0, 0)
+'   'ENDIF
+' 
+'   'PRINT Draw.Clip.X; Draw.Clip.Y; Draw.Clip.Width; Draw.Clip.Height
+' 
+'   'Project.Snap = Desktop.Scale
+' 
+'   DX = Desktop.Scale
+'   WHILE (DX < 4)
+'     DX = DX + Desktop.Scale
+'   WEND
+' 
+'   DY = Desktop.Scale
+'   WHILE (DY < 4)
+'     DY = DY + Desktop.Scale
+'   WEND
+' 
+' '   hGrid = NEW Picture(DX, DY, TRUE)
+' '   Draw.Begin(hGrid)
+' '   Draw.ForeColor = Color.White
+' '   Draw.Point(0, 0)
+' '   Draw.End
+' 
+'   SX = Draw.Clip.X
+'   iMod = SX MOD DX
+'   IF iMod THEN SX = SX + DX - iMod
+' 
+'   SY = Draw.Clip.Y
+'   iMod = SY MOD DY
+'   IF iMod THEN SY = SY + DY - iMod
+' 
+'   SXF = Draw.Clip.X + Draw.Clip.Width - 1
+'   SYF = Draw.Clip.Y + Draw.Clip.Height - 1
+' 
+'   Draw.Invert = TRUE
+' '   Draw.Tile(hGrid, Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
+' 
+'   Draw.ForeColor = Color.White
+'   FOR X = SX TO SXF STEP DX
+'     FOR Y = SY TO SYF STEP DY
+'       Draw.Point(X, Y)
+'     NEXT
+'   NEXT
+
+END
+
+
+PUBLIC SUB Refresh()
+
+  UpdateSnap
+  'Control[Name].Control.Refresh
+
+END
+
+' PUBLIC SUB Form_Hide()
+' 
+'   'DEBUG Name
+'   Project.Deactivate(ME)
+' 
+' END
+
+
+PUBLIC SUB Control_Data(Row AS Integer, Column AS Integer)
+
+  IF Row = 0 AND Column = 0 THEN
+    LAST.Data.Text = Control[LAST.Tag].Name
+    'LAST.Data.Picture = Picture["img/16/image.png"]
+  ENDIF
+
+END
+
+
+PUBLIC SUB mnuSelectAll_Click()
+
+  DIM hChild AS Control
+  DIM hCtrl AS CControl
+  DIM bFirst AS Boolean
+
+  UnselectAll
+  bFirst = TRUE
+
+  FOR EACH hChild IN Control[Name].Control.Children
+
+    hCtrl = Control[hChild.Tag]
+
+    IF IsNull(hCtrl) THEN CONTINUE 'panel
+
+    hCtrl.Select(ME, bFirst)
+    $bSelChange = TRUE
+    bFirst = FALSE
+
+  NEXT
+
+  IF $bSelChange THEN
+    SelectionChange
+    RefreshProperty
+  ENDIF
+
+END
+
+
+PUBLIC SUB mnuUnselectAll_Click()
+
+  IF Master THEN
+    UnselectAll
+    RefreshProperty
+  ELSE 
+    FMain.HidePanels
+  ENDIF
+
+END
+
+
+
+PRIVATE SUB DoAlign(sKey AS String)
+
+  DIM iPos AS Integer
+  DIM hCtrl AS CControl
+
+  SELECT sKey
+  
+    CASE ".align-top"
+
+      iPos = Master.Control.Y
+    
+      FOR EACH hCtrl IN Selection
+        hCtrl.Move(hCtrl.Control.X, iPos)
+      NEXT
+  
+    CASE ".align-bottom"
+      
+      iPos = Master.Control.Y + Master.Control.H
+    
+      FOR EACH hCtrl IN Selection
+        hCtrl.Move(hCtrl.Control.X, iPos - hCtrl.Control.H)
+      NEXT
+      
+    CASE ".align-left"      
+  
+      iPos = Master.Control.X
+    
+      FOR EACH hCtrl IN Selection
+        hCtrl.Move(iPos, hCtrl.Control.Y)
+      NEXT
+      
+    CASE ".align-right"
+    
+      iPos = Master.Control.X + Master.Control.W
+    
+      FOR EACH hCtrl IN Selection
+        hCtrl.Move(iPos - hCtrl.Control.W, hCtrl.Control.Y)
+      NEXT
+      
+    CASE ".same-width"
+
+      iPos = Master.Control.W
+    
+      FOR EACH hCtrl IN Selection
+        hCtrl.Resize(iPos, hCtrl.Control.H)
+      NEXT
+      
+    CASE ".same-height"
+    
+      iPos = Master.Control.H
+    
+      FOR EACH hCtrl IN Selection
+        hCtrl.Resize(hCtrl.Control.W, iPos)
+      NEXT
+
+  END SELECT 
+
+END
+
+
+PRIVATE SUB SetReadOnly()
+
+  $bReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link OR $bLocked
+  FFormStack.RefreshReadOnly
+  RefreshProperty(TRUE)
+
+END
+
+PRIVATE SUB SetLock(bLock AS Boolean)
+
+  IF bLock = $bLocked THEN RETURN 
+  
+  $bLocked = bLock
+  
+  IF NOT $bDoNotModify THEN
+    IF ME.Save(TRUE) THEN
+      $bLocked = NOT bLock
+      RETURN 
+    ENDIF
+  ENDIF
+  
+  SetReadOnly
+  
+END
+
+
+
+PUBLIC SUB OnProjectChange()
+
+  SetReadOnly
+
+END
+
+PUBLIC SUB OnProjectDebug()
+
+  SetReadOnly
+
+END
+
+
+
+PUBLIC SUB Form_Open()
+
+  'IF $bActivate THEN RETURN
+  Project.SetFormIcon(ME)
+  '$bActivate = TRUE
+
+END
+
+PUBLIC FUNCTION FindControlFromType(sType AS String) AS String[]
+  
+  DIM hCtrl AS CControl
+  DIM aCtrl AS NEW String[]
+  
+  FOR EACH hCtrl IN Control
+    IF hCtrl.Kind = sType THEN
+      aCtrl.Add(hCtrl.Name)
+    ENDIF
+  NEXT  
+  
+  RETURN aCtrl
+  
+END
+
+PRIVATE SUB MoveSelection(DX AS Integer, DY AS Integer, OPTIONAL bFree AS Boolean)
+
+  DIM hCtrl AS CControl
+
+  IF $bReadOnly THEN RETURN
+  
+  FOR EACH hCtrl IN Selection
+    hCtrl.Move(hCtrl.Control.X + DX, hCtrl.Control.Y + DY, bFree)
+  NEXT
+  
+END
+
+
+PUBLIC SUB Form_KeyPress()
+
+  DIM D AS Integer
+  DIM bFree AS Boolean
+  
+  IF Key.Normal THEN
+    D = Desktop.Scale
+    bFree = FALSE
+  ELSE IF Key.Shift AND NOT Key.Control THEN
+    D = 1
+    bFree = TRUE
+  ELSE
+    RETURN
+  ENDIF 
+
+  SELECT Key.Code
+    CASE Key.Up
+      MoveSelection(0, - D, bFree)
+    CASE Key.Down
+      MoveSelection(0, D, bFree)
+    CASE Key.Left
+      MoveSelection(- D, 0, bFree)
+    CASE Key.Right
+      MoveSelection(D, 0, bFree)        
+  END SELECT
+
+END
+
+PUBLIC SUB UpdateBorder()
+
+  DIM hCtrl AS CControl
+  DIM H AS Integer
+  
+  hCtrl = Control[Name]
+  IF NOT hCtrl THEN RETURN
+
+  WITH hCtrl.Control
+
+    IF hCtrl.GetPropertyDefault("Border") = "None" THEN
+    
+      panTitle.Hide
+      H = 0
+      panBorder.Move(0, 0, .Width + 2, .Height + 2)
+      panBorder.Border = Border.Plain
+      hCtrl.Control.Move(1, 1)
+    
+    ELSE
+
+      H = lblTitle.Font.Height("X") + 8 '+ 4
+      btnCloseWindow.W = H - 4
+      btnMaxWindow.W = H - 4
+      imgIcon.W = H - 4
+      panBorder.Move(0, H, .Width + 4, .Height + 2)
+      panBorder.Border = Border.Raised
+      panTitle.Resize(panBorder.W, H)
+      panInside.Move(0, 0, panTitle.W, panTitle.H + 8)
+      panTitle.Show
+  
+      hCtrl.Control.Move(2, 0)
+      
+    ENDIF 
+      
+    panRight.Move(panBorder.W - 4, Max(0, ((.Height + H) - panRight.Height) / 2))
+    panDown.Move(Max(0, (.Width - panDown.Width + 4) / 2), panBorder.H + H - 4)
+    panRightDown.Move(panRight.X, panDown.Y)
+    
+    'panBorder.Lower
+    panRight.Raise
+    panDown.Raise
+    panRightDown.Raise      
+    
+  END WITH
+  
+END
+
+PUBLIC SUB UpdateTitle()
+  
+  DIM hCtrl AS CControl
+  DIM sPict AS String
+  DIM hPict AS Picture
+  
+  hCtrl = Control[Name]
+  IF NOT hCtrl THEN RETURN
+
+  sPict = hCtrl.GetProperty("Icon")
+  IF sPict THEN
+
+    lblTitle.Text = hCtrl.GetProperty("Text")
+
+    TRY hPict = Project.GetPicture(sPict)
+    IF hPict THEN
+      IF hPict.Width <> 16 OR hPict.Height <> 16 THEN hPict = hPict.Image.Stretch(16, 16, TRUE).Picture
+    ELSE  
+      hPict = Picture["img/16/gambas.png"]
+    ENDIF 
+
+    imgIcon.Picture = hPict
+    imgIcon.Show
+
+  ELSE
+
+    lblTitle.Text = hCtrl.GetProperty("Text")
+    imgIcon.Hide
+
+  ENDIF
+
+  SELECT CASE hCtrl.GetPropertyDefault("Border")
+    CASE "Fixed"
+      btnMaxWindow.Visible = FALSE
+    CASE "Resizable"
+      btnMaxWindow.Visible = TRUE
+  END SELECT 
+  
+  UpdateBorder 
+  
+END
+
+
+
+' 
+' 
+' PUBLIC SUB Activate(OPTIONAL hWindow AS Window)
+'   
+'   DIM hOld AS CWindow
+'   DIM hWin AS CWindow
+'   
+'   IF $aWindow.Count THEN 
+'   
+'     IF hWindow THEN
+'       TRY tabWorkspace.Index = GetIndex(hWindow)
+'       RETURN
+'     ENDIF
+'   
+'     hWin = $aWindow[tabWorkspace.Index]
+'     hOld = $hCurrent
+'   
+'     $hCurrent = hWin
+'     
+'     IF $hCurrent.Resizable THEN
+'       $hCurrent.Window.Move(0, 0)
+'       MoveHandle
+'       svwWorkspace.Raise
+'     ELSE
+'       panWorkspace.Raise
+'     ENDIF
+'     'WITH tabWorkspace
+'     '  $hCurrent.Move(.X + .ClientX, .Y + .ClientY, .ClientW, .ClientH)
+'     'END WITH
+'     
+'     WITH $hCurrent.Window
+'       .Show
+'       .Raise
+'       .SetFocus
+'     END WITH
+'     
+'     IF hOld AND IF hOld <> hWin THEN 
+'       hOld.Window.Hide
+'       'WAIT 0.2
+'     ENDIF
+'     
+'     UpdateTitle
+'     
+'   ENDIF
+'   
+'   ME.Parent._Activate
+'   
+' END
+
+' PUBLIC SUB Form_Resize()
+' 
+'   IF tabWorkspace.Visible THEN
+'     tabWorkspace.Move(0, 0, ME.ClientW, ME.ClientH)
+'     WITH tabWorkspace
+'       panTitle.Move(.ClientX, .ClientY, .ClientW, panTitle.H)
+'       svwWorkspace.Move(.ClientX, panTitle.H + .ClientY, .ClientW, .ClientH - panTitle.H)
+'       panWorkspace.Move(.ClientX, panTitle.H + .ClientY, .ClientW, .ClientH - panTitle.H)
+'     END WITH 
+'     panWorkspace.BackColor = Color.Background
+'   ELSE
+'     svwWorkspace.Move(0, 0, ME.ClientW, ME.ClientH)
+'     panWorkspace.Move(0, 0, ME.ClientW, ME.ClientH)
+'     panWorkspace.BackColor = Color.Gray
+'     panWorkspace.Raise
+'   ENDIF
+' 
+' END
+' 
+' 
+PUBLIC SUB Handle_MouseDown()
+  $bMove = TRUE  
+  $X = Mouse.ScreenX
+  $Y = Mouse.ScreenY
+  $W = Control[Name].Control.W
+  $H = Control[Name].Control.H
+  
+  'DEBUG Mouse.ScreenX;; Mouse.ScreenY
+  'DEBUG $X;; $Y
+
+END
+
+PUBLIC SUB Handle_MouseMove()
+
+  DIM W, H, G AS Integer
+  DIM hPanel AS Panel
+
+  IF NOT $bMove THEN RETURN
+  
+  hPanel = LAST
+
+  WITH Control[Name].Control
+
+    W = .W
+    H = .H
+
+    'DEBUG "(";; W;; H;; ") + (";; Mouse.ScreenX;; Mouse.ScreenY;; ") -> ";
+
+    IF hPanel <> panRight THEN H = $H + Mouse.ScreenY - $Y
+    IF hPanel <> panDown THEN W = $W + Mouse.ScreenX - $X
+    
+    W = Max(1, W)
+    H = Max(1, H)
+
+    IF NOT Mouse.Shift THEN    
+      G = Project.Snap
+      IF G THEN
+        W = Max(1, Int(W / G + 0.5)) * G
+        H = Max(1, Int(H / G + 0.5)) * G
+      ENDIF
+    ENDIF 
+    
+    'PRINT #File.Err, "(";; W;; H;; ")"
+    
+    .Resize(W, H)
+  
+  END WITH
+  
+  '$bMove = FALSE
+  'UpdateBorder
+  '$bMove = TRUE
+
+END
+
+PUBLIC SUB Handle_MouseUp()
+
+  $bMove = FALSE  
+
+END
+
+
+PUBLIC SUB Action_Activate(Key AS String) AS Boolean
+  
+  SELECT CASE Key
+  
+    CASE ".menu"
+      FMenu.Run(ME)
+  
+    CASE ".delete"
+      DeleteSelection
+    
+    CASE ".copy"
+      CopySelection
+      UnSelectAll
+    
+    CASE "paste-form"
+      PasteSelection
+
+    CASE ".cut"
+      CopySelection
+      DeleteSelection
+      
+    CASE ".align-left", ".align-right", ".align-top", ".align-bottom", ".same-width", ".same-height"
+      DoAlign(Key)
+      
+    CASE ".arrange-horizontal"
+      ArrangeContainer(NULL, Arrange.Horizontal)
+
+    CASE ".arrange-vertical"
+      ArrangeContainer(NULL, Arrange.Vertical)
+
+    CASE ".arrange-row"
+      ArrangeContainer(NULL, Arrange.Row)
+
+    CASE ".arrange-column"
+      ArrangeContainer(NULL, Arrange.Column)
+      
+    CASE ".raise"
+      DoRaise
+      
+    CASE ".lower"
+      DoLower
+      
+    CASE ".grid"
+      UpdateSnap
+
+    CASE ".move-tab-first"
+      MoveTab(Master, MOVE_FIRST)
+
+    CASE ".move-tab-last"
+      MoveTab(Master, MOVE_LAST)
+
+    CASE ".move-tab-previous"
+      MoveTab(Master, MOVE_PREVIOUS)
+
+    CASE ".move-tab-next"
+      MoveTab(Master, MOVE_NEXT)
+      
+    CASE ".lock"
+      SetLock(Action[".lock", ME].Value)
+      
+    DEFAULT 
+      RETURN TRUE
+      
+  END SELECT 
+  
+END
+
+PUBLIC SUB Form_Activate()
+
+  mnuForm.Enabled = TRUE
+
+END
+
+PUBLIC SUB Form_Deactivate()
+
+  mnuForm.Enabled = FALSE
+
+END
+
+PUBLIC SUB mnuReload_Click()
+
+  IF NOT IsModified() THEN RETURN
+
+  IF Message.Warning(("The form has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 THEN RETURN
+
+  Reload
+
+END
+
+PUBLIC SUB Control_Drag()
+
+  DIM hCtrl AS CControl
+
+  IF $bReadOnly THEN  
+    STOP EVENT 
+    RETURN 
+  ENDIF
+
+  IF Drag.Format = MMime.DATA THEN
+    Drag.Show(LAST)
+    RETURN
+  ELSE IF Drag.Format = MMime.CONTROL THEN 
+    hCtrl = Control[LAST.Tag]
+    IF NOT hCtrl.IsContainer() THEN 
+      hCtrl = hCtrl.Parent
+    ENDIF
+    Drag.Show(hCtrl.Control)
+    RETURN 
+  ENDIF
+
+CATCH
+
+  STOP EVENT
+
+END
+
+PUBLIC SUB Control_Drop()
+  
+  DIM sPath AS String
+  DIM hCtrl AS CControl
+  DIM hParent AS CControl
+  DIM hImage AS Image
+  DIM X, Y, W, H AS Integer
+  DIM sClass AS String
+  
+  hParent = Control[LAST.Tag]
+  X = Drag.X
+  Y = Drag.Y
+  
+  IF Drag.Format = MMime.DATA THEN
+  
+    sPath = Drag.Data
+    TRY hImage = Image.Load(sPath)
+    IF NOT hImage THEN RETURN
+    
+    IF LAST.Tag <> Name AND IF hParent.HasProperty("Picture") THEN
+      hParent.SetProperty("Picture", Mid$(sPath, Len(Project.Dir) + 2)) 
+      RETURN
+    ENDIF
+  
+    FindContainer(hParent, X, Y, COORD_INSIDE_TO_CONTROL)
+    hParent = $hContainer
+    X = $iContX
+    Y = $iContY
+  
+    ' IF NOT hParent.IsContainer() THEN
+    '   X += hParent.Control.X
+    '   Y += hParent.Control.Y
+    '   hParent = hParent.Parent
+    ' ENDIF
+    ' X -= hParent.Control.ClientX
+    ' Y -= hParent.Control.ClientY
+  
+    hCtrl = CreateControl("PictureBox", hParent)
+    hCtrl.Move(Max(0, X - hImage.Width / 2), Max(0, Y - hImage.Height / 2))
+    hCtrl.Resize(hImage.Width, hImage.Height)
+    hCtrl.SetProperty("Picture", Mid$(sPath, Len(Project.Dir) + 2))
+    
+    $hCurrent = hCtrl
+    UnSelectAll
+    SelectCurrent(TRUE)
+    RefreshProperty
+    
+  ELSE IF Drag.Format = MMime.CONTROL THEN
+
+    ' IF NOT hParent.IsContainer() THEN
+    '   X += hParent.Control.X
+    '   Y += hParent.Control.Y
+    '   hParent = hParent.Parent
+    ' ENDIF
+    
+    FindContainer(hParent, X, Y, COORD_INSIDE_TO_CONTROL)
+    hParent = $hContainer
+    X = $iContX
+    Y = $iContY
+
+    $hCurrent = AddControl(Drag.Data, hParent, X, Y)
+    UnSelectAll
+    SelectCurrent(TRUE)
+    RefreshProperty
+    FToolBox.SetTool()
+
+  ENDIF
+  
+  FFormStack.RefreshAll
+  
+END
+
+PUBLIC SUB panTitle_Drag()
+
+  Control_Drag  
+
+END
+
+PUBLIC SUB panTitle_Drop()
+  
+  DIM sPath AS String = Drag.Data
+  DIM hImage AS Image
+  DIM hCtrl AS CControl = Control[Name]
+  
+  TRY hImage = Image.Load(sPath)
+  IF NOT hImage THEN RETURN
+  
+  hCtrl.SetProperty("Icon", Mid$(sPath, Len(Project.Dir) + 2))
+  
+END
+
+
+PRIVATE SUB FindContainer(hCtrl AS CControl, X AS Integer, Y AS Integer, OPTIONAL iMode AS Integer)
+  
+  IF NOT hCtrl.IsContainer() THEN
+    X += hCtrl.Control.X
+    Y += hCtrl.Control.Y
+    hCtrl = hCtrl.Parent
+    IF iMode = COORD_CONTROL_TO_INSIDE THEN
+      X += hCtrl.Control.ClientX
+      Y += hCtrl.Control.ClientY
+    ENDIF
+    IF iMode = COORD_CONTROL_TO_INSIDE THEN
+      IF hCtrl.Kind = "ScrollView" THEN
+        X = X - hCtrl.Control.ScrollX
+        Y = Y - hCtrl.Control.ScrollY
+      ENDIF
+    ENDIF
+  ENDIF   
+
+  IF iMode = COORD_INSIDE_TO_CONTROL THEN 
+    X -= hCtrl.Control.ClientX
+    Y -= hCtrl.Control.ClientY
+    IF hCtrl.Kind = "ScrollView" THEN
+      X = X + hCtrl.Control.ScrollX
+      Y = Y + hCtrl.Control.ScrollY
+    ENDIF    
+  ENDIF
+
+  $hContainer = hCtrl
+  $iContX = X
+  $iContY = Y
+  
+END
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+
+  RETURN $bReadOnly  
+
+END
+
+PRIVATE SUB MoveTab(hCtrl AS CControl, iWhere AS Integer)
+  
+  DIM hTabStrip AS Object = hCtrl.Control
+  DIM iIndex AS Integer
+  DIM hChild AS Control
+  DIM aChildSrc AS NEW Object[]
+  DIM aChildDest AS NEW Object[]
+  
+  SELECT CASE iWhere
+    CASE MOVE_FIRST
+      'Object.Lock(hTabStrip)
+      WHILE hTabStrip.Index > 0
+        MoveTab(hCtrl, MOVE_PREVIOUS)
+      WEND
+      'Object.UnLock(hTabStrip)
+      'Control_Click
+      RETURN
+    CASE MOVE_LAST
+      'Object.Lock(hTabStrip)
+      WHILE hTabStrip.Index < (hTabStrip.Count - 1)
+        MoveTab(hCtrl, MOVE_NEXT)
+      WEND
+      'Object.UnLock(hTabStrip)
+      'Control_Click
+      RETURN
+    CASE MOVE_NEXT
+      iIndex = hTabStrip.Index + 1
+    CASE MOVE_PREVIOUS
+      iIndex = hTabStrip.Index - 1
+  END SELECT  
+  
+  IF iIndex < 0 OR IF iIndex >= hTabStrip.Count OR IF iIndex = hTabStrip.Index THEN RETURN 
+  
+  SWAP hCtrl.Tag[iIndex], hCtrl.Tag[hTabStrip.Index]
+  SWAP hTabStrip.Text, hTabStrip[iIndex].Text
+  SWAP hTabStrip.Picture, hTabStrip[iIndex].Picture
+
+  FOR EACH hChild IN hTabStrip[iIndex].Children
+    aChildDest.Add(hChild)
+  NEXT
+  
+  FOR EACH hChild IN hTabStrip.Children
+    aChildSrc.Add(hChild)
+  NEXT
+  
+  FOR EACH hChild IN aChildDest
+    hChild.Reparent(hTabStrip)
+  NEXT
+  
+  hTabStrip.Index = iIndex
+  FOR EACH hChild IN aChildSrc
+    hChild.Reparent(hTabStrip)
+  NEXT
+  
+  Modify
+  
+END
+
+PUBLIC SUB SelectControl(sControl AS String)
+
+  UnselectAll
+  Control[sControl].Select(ME, TRUE)
+  RefreshProperty
+
+END
+

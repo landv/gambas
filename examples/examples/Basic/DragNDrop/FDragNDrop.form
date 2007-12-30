@@ -1,0 +1,107 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(56,27,44,48)
+  Text = ("Drag & Drop")
+  Icon = Picture["drop.png"]
+  Arrangement = Arrange.Horizontal
+  Spacing = 8
+  Padding = 8
+  { VBox2 VBox Test
+    Name = "VBox2"
+    MoveScaled(1,3,10,42)
+    Visible = False
+    Drop = True
+    Spacing = 8
+    { Button1 Button Test
+      Name = "Button1"
+      MoveScaled(1,2,7,3)
+      Drop = True
+      Text = ("Button1")
+    }
+    { Panel2 Panel Test
+      Name = "Panel2"
+      MoveScaled(2,9,6,8)
+      Drop = True
+      Border = Border.Etched
+    }
+    { ScrollView1 ScrollView Test
+      Name = "ScrollView1"
+      MoveScaled(2,20,7,19)
+      Drop = True
+      { ScrollView2 ScrollView Test
+        Name = "ScrollView2"
+        MoveScaled(1,5,4,7)
+        Background = &HF7FFDF&
+        Drop = True
+      }
+    }
+  }
+  { TreeView1 TreeView
+    MoveScaled(14,2,20,41)
+    Drop = True
+    Expand = True
+  }
+  { VBox1 VBox
+    MoveScaled(36,2,5,43)
+    Spacing = 8
+    { PictureBox1 PictureBox imgIcon
+      Name = "PictureBox1"
+      MoveScaled(0,0,5,5)
+      Tag = "Bicycle"
+      Picture = Picture["bicycle.png"]
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { PictureBox2 PictureBox imgIcon
+      Name = "PictureBox2"
+      MoveScaled(0,6,5,5)
+      Tag = "Eye"
+      Picture = Picture["eye.png"]
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { PictureBox3 PictureBox imgIcon
+      Name = "PictureBox3"
+      MoveScaled(0,12,5,5)
+      Tag = "Map"
+      Picture = Picture["france.png"]
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { PictureBox4 PictureBox imgIcon
+      Name = "PictureBox4"
+      MoveScaled(0,18,5,5)
+      Tag = "Happy"
+      Picture = Picture["happy.png"]
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { PictureBox5 PictureBox imgIcon
+      Name = "PictureBox5"
+      MoveScaled(0,24,5,5)
+      Tag = "Magnify"
+      Picture = Picture["loupe.png"]
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { PictureBox6 PictureBox imgIcon
+      Name = "PictureBox6"
+      MoveScaled(0,30,5,5)
+      Tag = "Highlight"
+      Picture = Picture["pen.png"]
+      Alignment = Align.Center
+      Border = Border.Raised
+    }
+    { Panel1 Panel
+      MoveScaled(1,36,3,2)
+      Expand = True
+    }
+    { imgHole PictureBox
+      MoveScaled(0,38,5,5)
+      Drop = True
+      Picture = Picture["BulletHole.xpm"]
+      Stretch = True
+    }
+  }
+}

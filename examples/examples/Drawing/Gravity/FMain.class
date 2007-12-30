@@ -1,0 +1,118 @@
+' Gambas class file
+
+' Written by Iman Karim
+' http://home.inf.fh-rhein-sieg.de/~ikarim2s/
+' 14.11.2006
+
+PUBLIC SUB Form_Open()
+  cb.Add("ALL")
+END
+
+PUBLIC SUB Button1_Click()
+   modGravity.AddBall  
+END
+
+PUBLIC SUB Timer1_Timer()
+
+  modGravity.Render  
+
+END
+
+PUBLIC SUB Form_Resize()
+  Timer1.Enabled = FALSE
+  
+  'DO
+  '  WAIT 1
+  'LOOP WHILE modGravity.isDrawing
+  
+  dw.Width = FMain.Width - dw.Left - 10  
+  dw.Height = FMain.Height - dw.top - 10
+  Timer1.Enabled = TRUE  
+  
+
+END
+
+
+PUBLIC SUB Slider1_Change()
+
+   lblGrav.Caption = "Gravity: " & Str(Slider1.Value / 100)
+   modGravity.world_Gravity = Slider1.Value / 100
+
+END
+
+
+PUBLIC SUB togGrav_Click()
+
+  IF NOT togGrav.Value THEN 
+    lblGrav.Caption = "Gravity: off"
+    lblSlide.Caption = "Floor Slide: off"
+    Slider1.Enabled = FALSE
+    Slider2.Enabled = FALSE
+    modGravity.world_SlideFloor = 1
+  ELSE 
+    Slider1.Enabled = TRUE
+    Slider2.Enabled = TRUE
+    lblGrav.Caption = "Gravity: " & Str(Slider1.Value / 100)
+    lblSlide.Caption = "Floor Slide: " & Str(Slider2.Value / 100)
+    modGravity.world_SlideFloor = Slider2.Value / 100
+  END IF
+
+END
+
+PUBLIC SUB cmdRandomize_Click()
+  DIM myBall AS cBall  
+  DIM index AS Integer
+  cmdRandomize.Enabled = FALSE
+  Draw.begin(FMain.dW)
+  Draw.FillStyle = 1
+  FOR EACH myBall IN modGravity.Objects
+    index = index + 1
+    Draw.Foreground = myBall.col
+    Draw.Ellipse(myBall.x, myBall.y, 5, 5) 
+    IF Str(index) = cB.Text OR cB.Text = "ALL" THEN 
+      myBall.ax = Rnd(1, 100)
+      myBall.ay = Rnd(1, 100)
+    END IF
+  NEXT
+  Draw.End
+  cmdRandomize.Enabled = TRUE
+END
+
+
+
+PUBLIC SUB dW_MouseMove()
+  IF togAddMore.Value THEN 
+    modGravity.AddBall(Mouse.x, Mouse.Y)  
+  END IF
+END
+
+PUBLIC SUB Slider2_Change()
+
+   lblSlide.Caption = "Floor Slide: " & Str(Slider2.Value / 100)
+   modGravity.world_SlideFloor = Slider2.Value / 100
+
+END
+
+
+PUBLIC SUB togAddMore_Click()
+
+  IF togAddMore.Value THEN 
+    lbladdmore.visible = TRUE  
+  ELSE 
+    lblAddMore.visible = FALSE
+  END IF
+
+END
+
+PUBLIC SUB dW_MouseUp()
+
+  togAddMore.Value = FALSE
+  lblAddMore.visible = FALSE  
+
+END
+
+PUBLIC SUB lblAbout_MouseDown()
+
+  FAbout.ShowModal  
+
+END

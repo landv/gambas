@@ -1,0 +1,266 @@
+' Gambas class file
+
+PUBLIC SUB _new()
+' 'Set the number of DataSets (the default is already 1)
+' Chart.CountDataSets = 5
+' 'Set the Data headers
+' Chart.Headers.Values = ["tic", "tac", "Toes", "tata"]
+' 'Put Datas in the set
+' Chart[0].Text = "Set 1"
+' Chart[0].Values = [1.0, 2.0, 3., 4.0]
+' Chart[1].Text = "Set 2"
+' Chart[1].Values = [1.0, 6.0, 8.0, 8.0]
+' Chart[2].Text = "Set 3"
+' Chart[2].Values = [1.0, 5.0, 3.0, 9]
+' Chart[3].Text = "Set 4"
+' Chart[3].Values = [1.0, 6.0, 8.0, 2.0]
+' Chart[4].Text = "Set 5"
+' Chart[4].Values = [1.0, 8.0, 3.0, 5]
+
+Chart.Legend.Title = "Legend"
+Chart.Legend.Visible = TRUE
+Chart.Title.Visible = TRUE
+Chart.Title.Text = "A Gambas Chart"
+
+tvdata.Columns.Count = 2
+tvData.Rows.Count = 4
+tvData.Header = tvData.Both
+tvdata.Columns[0].Text = "Headers"
+tvdata.Columns[1].Text = "Set 1"
+tvData[0, 0].Text = "Tic"
+tvData[1, 0].Text = "Tac"
+tvData[2, 0].Text = "Toe"
+tvData[3, 0].Text = "Tata"
+
+tvData[0, 1].Text = "1"
+tvData[1, 1].Text = "2"
+tvData[2, 1].Text = "3"
+tvData[3, 1].Text = "4"
+SetChartValues
+END
+
+PUBLIC SUB Form_Open()
+
+  DIM hClass AS Class
+  DIM s AS String
+  DIM hPicBox AS ToggleButton
+  DIM hPic AS Picture
+  hClass = class.Load("ChartType")
+FOR EACH s IN hClass.Symbols
+
+  IF hClass[s].Kind <> Class.Constant THEN CONTINUE
+  
+  SELECT CASE hClass[s].Value 
+    CASE 0, 10, 20, 30
+      hPicBox = NEW ToggleButton(ScrollView1) AS "MyPicBox"
+      hPic = Picture["img" &/ LCase(s) & ".png"]
+      TRY hPicBox.Picture = hPic
+      hPicBox.Visible = TRUE
+      hPicBox.BackColor = Color.Black
+      hPicBox.Resize(hPic.Width, hPic.Height)
+      hPicBox.Tag = hClass[s].Value
+      hPicBox.Radio = TRUE
+      
+  END SELECT 
+  
+NEXT
+'LAST = ScrollView1.Children[1]
+'MyPicBox_MouseUp
+END
+
+PUBLIC SUB MyPicBox_Click()
+  
+  DIM hClass AS Class
+  DIM s AS String
+  DIM hPicBox AS ToggleButton
+  DIM hPic AS Picture
+  DIM i AS Integer
+  DIM o AS Control
+  hClass = class.Load("ChartType")
+  FOR EACH o IN ScrollView2.Children
+    o.Delete
+  NEXT
+FOR EACH s IN hClass.Symbols
+
+  IF hClass[s].Kind <> Class.Constant THEN CONTINUE
+  i = hClass[s].Value - LAST.Tag 
+  'PRINT hClass[s].Value, "-", LAST.tag, i
+  IF i >= 0 AND i < 5 THEN
+      hPicBox = NEW ToggleButton(ScrollView2) AS "MyPicBox2"
+      IF i = 0 THEN 
+        TRY hPic = Picture["img" &/ LCase(s) & "normal.png"]
+      ELSE 
+        TRY hPic = Picture["img" &/ LCase(s) & ".png"]
+      ENDIF
+        IF IsNull(hpic) THEN hpic = NEW Picture(58, 51, TRUE)
+      hPicBox.Picture = hPic
+      hPicBox.Visible = TRUE
+      hPicBox.BackColor = Color.Black
+      hPicBox.Resize(hPic.Width, hPic.Height)
+      hPicBox.Tag = hClass[s].Value
+      hPicBox.Radio = TRUE
+  ENDIF
+  
+  
+NEXT
+  
+END
+
+PRIVATE FUNCTION GetConstNameByValue(Value AS Integer) AS String
+  
+  DIM hClass AS Class
+  DIM s AS String
+  hClass = Class.Load("ChartType")
+  
+  FOR EACH s IN hClass.Symbols
+    IF hClass[s].Kind <> Class.Constant THEN CONTINUE 
+    IF hClass[s].Value = Value THEN RETURN s
+  NEXT
+  
+END
+
+PUBLIC SUB MyPicBox_Enter()
+  Label1.Text = GetConstNameByValue(LAST.tag)
+END
+  
+PUBLIC SUB MyPicBox_Leave()
+  Label1.Text = ""
+END
+
+PUBLIC SUB MyPicBox2_Enter()
+  Label1.Text = GetConstNameByValue(LAST.tag)
+END
+  
+PUBLIC SUB MyPicBox2_Leave()
+  Label1.Text = ""
+END
+
+PUBLIC SUB MyPicBox2_Click()
+  
+  Chart.Type = LAST.Tag
+  Chart.Title.Text = "Type: " & GetConstNameByValue(LAST.tag)
+  DrawingArea1.Refresh
+  
+END
+
+PUBLIC SUB DrawingArea1_Draw()
+  Chart.Width = DrawingArea1.Width
+  Chart.Height = DrawingArea1.Height
+  Chart.Draw()
+  
+END
+
+
+PUBLIC SUB CheckBox2_Click()
+
+  Chart.Title.Visible = LAST.Value
+  DrawingArea1.Refresh
+END
+
+PUBLIC SUB CheckBox1_Click()
+
+  Chart.Legend.Visible = LAST.Value
+  DrawingArea1.Refresh
+END
+
+PRIVATE SUB SetChartValues()
+  
+  DIM ars AS NEW String[]
+  DIM arf AS NEW Float[]
+  DIM i AS Integer
+  DIM j AS Integer
+  Chart.CountDataSets = tvData.Columns.Count - 1
+  
+  FOR i = 0 TO tvdata.Rows.Count - 1
+    ars.Add(tvdata[i, 0].Text)
+  NEXT
+  FOR j = 0 TO tvData.Columns.Count - 2
+    arf = NEW Float[]
+    FOR i = 0 TO tvdata.Rows.Count - 1
+      TRY arf.Add(CFloat(tvdata[i, J + 1].Text))
+      IF ERROR THEN arf.Add(0)
+    NEXT
+    Chart.Headers.Values = ars
+    Chart[J].Values = arf
+    Chart[J].Text = tvdata.Columns[J + 1].Text
+  NEXT
+  
+ 
+  
+  
+  
+  
+  
+END
+
+
+
+PUBLIC SUB tvdata_Click()
+
+  tvdata.Edit
+
+END
+
+
+PUBLIC SUB tvdata_Change()
+
+  
+
+END
+
+PUBLIC SUB tvdata_Save(Row AS Integer, Column AS Integer, Value AS String)
+
+  tvData[Row, Column].Text = Value
+  SetChartValues
+  DrawingArea1.Refresh
+  
+
+END
+
+PUBLIC SUB Button4_Click()
+
+  IF tvdata.Columns.Count > 2 THEN DEC Chart.CountDataSets
+  SetChartValues
+  DrawingArea1.Refresh
+
+END
+
+PUBLIC SUB Button3_Click()
+  DIM s AS String
+  FInput.Value = ""
+  s = InputBox("Dataset Name", "New DataSet")
+  IF NOT IsNull(s) THEN 
+    INC tvData.Columns.Count
+    tvData.Columns[tvData.Columns.Count - 1].Text = s
+  ENDIF
+    SetChartValues
+  DrawingArea1.Refresh
+END
+
+PUBLIC SUB Button1_Click()
+
+  INC tvdata.Rows.Count
+    SetChartValues
+  DrawingArea1.Refresh
+END
+
+PUBLIC SUB Button2_Click()
+
+  IF tvData.Rows.Count > 1 THEN DEC tvData.Rows.Count
+    SetChartValues
+  DrawingArea1.Refresh
+END
+
+PUBLIC SUB tvdata_ColumnClick(Column AS Integer)
+
+    DIM s AS String
+    IF Column = 0 THEN RETURN 
+  FInput.Value = ""
+  s = InputBox("Dataset Name", "Set DataSet Name")
+  IF NOT IsNull(s) THEN 
+    tvData.Columns[Column].Text = s
+  ENDIF
+  SetChartValues
+  DrawingArea1.Refresh
+  
+END

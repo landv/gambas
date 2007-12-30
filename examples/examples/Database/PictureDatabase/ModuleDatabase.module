@@ -1,0 +1,212 @@
+' Gambas module file
+
+'''
+' Name: ModuleDatabase
+' Author: Timothy Marshal-Nichols
+' eMail: timothy.marshal-nichols@ntlworld.com
+' Version: 1.0
+' Version Date: April 2007
+' Version History:
+'
+'''
+' Licence Information
+'
+' This program is free software; you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation; either version 2 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program; if not, write to the Free Software
+' Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+'
+' http://www.gnu.org/licenses/gpl.html
+'
+'''
+' Description:
+'
+' Provides the interface to the pictures database.
+'
+'''
+' Developed using Gambas2 Version
+'
+'  Version: 1.9.48
+'
+' Gambas Components Used:
+'
+' gb - Gambas internal native classes
+' gb.db - Database access
+'
+' Look in the Project menu then Properties... and select
+' the Components tab. Check that the listed components
+' are in the project.
+'
+'''
+' External Dependencies:
+'
+' The required type of database must exist.
+'
+'''
+' Class Usage:
+'
+'   Open the pictures database. If the database or table does not
+'   exist then they are created.
+'
+'   Use somthing like this for a SQLite3 database
+'
+'     ModuleDatabase.OpenDatabase("sqlite3", User.Home, Application.Name, "", "")
+'
+'   Use somthing like this for a MySQL database
+'
+'     ModuleDatabase.OpenDatabase("mysql", "localhost", Application.Name, "mysql", "password")
+'
+'   Use somthing like this for a PostgreSQL database
+'
+'     ModuleDatabase.OpenDatabase("postgresql", "localhost", Application.Name, "timothy", "password")
+'
+'   Call the Select() method to update items and then use ResultPictures to access the data.
+'
+'     ModuleDatabase.Select()
+'     ModuleDatabase.ResultPictures.MoveTo(Row)
+'
+'   You can then use the Add(), Update() and Delete() methods to change the database.
+'
+'     ModuleDatabase.Add(Path) 
+'     ModuleDatabase.Update(Row, NewDescription)
+'     ModuleDatabase.Delete(Row)
+'
+'   Call the CloseDatabase method before you quit your application
+'
+'      ModuleDatabase.CloseDatabase()
+'
+'''
+
+PUBLIC CONST ThumbSize AS Integer = 36
+PUBLIC ResultPictures AS Result
+
+PRIVATE databaseConnection AS NEW Connection
+PRIVATE tempFile AS String
+
+PUBLIC SUB _init()
+  tempFile = Temp() & ".png"
+END
+
+' Opens the pictures database. If the database or table does not
+' exist then they are created.
+PUBLIC SUB OpenDatabase(DBType AS String, DBHost AS String, DBName AS String, UserName AS String, UserPassword AS String)
+  DIM pictureTable AS Table
+  DIM errorMessageHeader AS String
+  ' If you wnat to see the commands sent to the
+  ' database then uncommant this line
+  ' DB.Debug = TRUE
+  DBName = Lower(DBName)
+  ' Open a connection (to the database server only)
+  databaseConnection.Type = Lower(DBType)
+  databaseConnection.Host = DBHost
+  databaseConnection.Name = ""
+  databaseConnection.Login = UserName
+  databaseConnection.Password = UserPassword
+  databaseConnection.Port = ""
+  ' Open the connection
+  TRY databaseConnection.Open()
+  IF ERROR THEN
+    errorMessageHeader = "Could not open database connection " & DBHost
+    Error.Raise(Error.Text)
+  END IF
+  ' Check if the server connection has a database with the
+  ' required database name.
+  IF NOT databaseConnection.Databases.Exist(DBName) THEN
+    PRINT "Database not found. Creating new database"
+    ' Create a new database
+    databaseConnection.Databases.Add(DBName)
+    ' I found I needed this with a SQLite database
+    ' (but not with a MySQL database)
+    WAIT 0.5
+  END IF
+  ' Close the server connection
+  databaseConnection.Close()
+  ' Open a connection to the database
+  databaseConnection.Host = DBHost
+  databaseConnection.Name = DBName
+  TRY databaseConnection.Open()
+  IF ERROR THEN
+    errorMessageHeader = "Could not open database " & DBName & " on " & DBHost
+    Error.Raise(Error.Text)
+  END IF
+  ' Check if the database has a pictures table
+  IF NOT databaseConnection.Tables.Exist("pictures") THEN
+    PRINT "Database tables not found. Creating new pictures table"
+    ' Add a picture table to the database
+    pictureTable = databaseConnection.Tables.Add("pictures")
+    pictureTable.Fields.Add("id", db.Serial) '             id          field as autoinc integer
+    pictureTable.Fields.Add("thumb", db.Blob) '            thumb       field as blob
+    pictureTable.Fields.Add("image", db.Blob) '          ' image       field as blob
+    pictureTable.Fields.Add("description", db.String, 0) ' description field as unlimited string
+    pictureTable.PrimaryKey = ["id"]
+    pictureTable.Update()
+  END IF
+CATCH
+  IF errorMessageHeader = "" THEN
+    errorMessageHeader = "Database connection error: " & DBName & " on " & DBHost
+  END IF
+  Error.Raise("<b>" & errorMessageHeader & "</b><hr>Error:<br>" & DConv(Error.Text))
+END
+
+PUBLIC SUB Add(ImagePath AS String)
+  DIM img AS Image
+  DIM newPicture AS Result
+  DIM pictureData AS String
+  DIM scale AS Float
+  newPicture = databaseConnection.Create("pictures")
+  ' Save temp image as png file
+  img = Image.Load(ImagePath)
+  img.Save(tempFile)
+  newPicture["image"] = File.Load(tempFile)
+  ' Create image thumb
+  IF img.Width > thumbSize OR img.Height > thumbSize THEN 
+    ' Calc factor to scale isotropic
+    scale = Min(ThumbSize / img.Width, ThumbSize / img.Height)
+    img = img.Stretch(img.Width * scale, img.Height * scale, TRUE)
+    img.Save(tempFile)
+  END IF
+  newPicture["thumb"] = File.Load(tempFile)
+  ' Add description and update
+  newPicture["description"] = "Image " & File.BaseName(ImagePath) & "  added: " & Format(Now, "dddd, dd mmmm yyyy hh:nn:ss")
+  newPicture.Update()
+  IF Exist(tempFile) THEN KILL tempFile
+CATCH
+  Error.Raise("<b>Add database record error</b><hr>Error:<br>" & DConv(Error.Text))
+END
+
+PUBLIC SUB Select()
+  ResultPictures = databaseConnection.Edit("pictures")
+CATCH
+  Error.Raise("<b>Select database records error</b><hr>Error:<br>" & DConv(Error.Text))
+END
+
+PUBLIC SUB Update(Row AS Integer, Description AS String)
+  ResultPictures.MoveTo(Row)
+  ResultPictures["description"] = Conv(Description, Desktop.Charset, databaseConnection.Charset)
+  ResultPictures.Update()
+CATCH
+  Error.Raise("<b>Update database record error</b><hr>Error:<br>" & DConv(Error.Text))
+END
+
+PUBLIC SUB Delete(Row AS Integer)
+  ResultPictures.MoveTo(Row)
+  ResultPictures.Delete()
+CATCH
+  Error.Raise("<b>Delete database record error</b><hr>Error:<br>" & DConv(Error.Text))
+END
+
+PUBLIC SUB CloseDatabase()
+  TRY databaseConnection.Close()
+  IF ERROR THEN PRINT "Error closing database"
+END
+
+''' End of ModuleDatabase '''

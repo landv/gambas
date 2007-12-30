@@ -1,0 +1,92 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,110,88)
+  'Move(0,0,770,616)
+  Text = ("ReportViewer")
+  Arrangement = Arrange.Vertical
+  { HBox3 HBox
+    MoveScaled(1,2,105,63)
+    'Move(7,14,735,441)
+    Expand = True
+    { ScrollView1 ScrollView
+      MoveScaled(0,0,63,55)
+      'Move(0,0,441,385)
+      Expand = True
+      Padding = 10
+      { DrawingArea1 DrawingArea
+        MoveScaled(2,1,52,53)
+        'Move(14,7,364,371)
+        Background = &HFFFFFF&
+        Cached = True
+      }
+    }
+    { VBox1 VBox
+      MoveScaled(76,2,29,59)
+      'Move(532,14,203,413)
+      Padding = 5
+      { RadioButton1 RadioButton
+        MoveScaled(3,1,24,3)
+        'Move(21,7,168,21)
+        Text = ("French Order")
+      }
+      { RadioButton2 RadioButton
+        MoveScaled(3,5,24,3)
+        'Move(21,35,168,21)
+        Enabled = False
+        Text = ("Grid Test")
+      }
+      { RadioButton3 RadioButton
+        MoveScaled(3,9,24,3)
+        'Move(21,63,168,21)
+        Text = ("Align performing")
+      }
+      { RadioButton4 RadioButton
+        MoveScaled(3,13,24,3)
+        'Move(21,91,168,21)
+        Text = ("Report cloner")
+      }
+      { VBox2 VBox
+        MoveScaled(5,18,16,21)
+        'Move(35,126,112,147)
+        Expand = True
+      }
+      { CheckBox1 CheckBox
+        MoveScaled(5,44,21,7)
+        'Move(35,308,147,49)
+        Text = ("Debug Mode")
+      }
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(2,67,96,5)
+    'Move(14,469,672,35)
+    { HBox2 HBox
+      MoveScaled(1,2,4,5)
+      'Move(7,14,28,35)
+      Expand = True
+    }
+    { Button2 Button
+      MoveScaled(58,1,9,3)
+      'Move(406,7,63,21)
+      Text = ("Make Pdf")
+    }
+    { SpinBox1 SpinBox
+      MoveScaled(69,1,9,4)
+      'Move(483,7,63,28)
+      MinValue = 1
+    }
+    { ComboBox1 ComboBox
+      MoveScaled(81,1,14,4)
+      'Move(567,7,98,28)
+      Text = ("ComboBox1")
+      ReadOnly = True
+      List = [("100"), ("75"), ("50"), ("25"), ("10"), ("5"), ("150"), ("200"), ("400"), ("800")]
+    }
+  }
+  { Button1 Button
+    MoveScaled(101,69,7,3)
+    'Move(707,483,49,21)
+    Text = ("Button1")
+  }
+}

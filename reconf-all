@@ -1,0 +1,19 @@
+#!/bin/sh
+
+for i in main app comp examples help gb.*; do echo $i; (cd $i; ./reconf); done
+./reconf
+
+#~/gambas/2.0/tool/MakeComponentLink/MakeComponentLink.gambas
+
+#DASH=`which dash`
+#SED=`which sed`
+
+#if test -f configure && test -n "$DASH" && test -n "$SED"; then
+#  for i in configure */configure */*/configure; do
+#    if test -f $i; then
+#      echo "Setting shell to $DASH in $i"
+#      $SED "s:#! /bin/sh:#!$DASH:g" $i > $i.tmp && mv -f $i.tmp $i;
+#      chmod a+x $i;
+#    fi
+#  done
+#fi

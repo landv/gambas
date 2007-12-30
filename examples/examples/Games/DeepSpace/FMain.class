@@ -1,0 +1,81 @@
+' Gambas class file
+
+'
+'   Copyright (C) 2004, Michael Isaac.  All rights reserved.
+'
+
+PRIVATE Attacking AS Boolean
+
+PUBLIC SUB _new()
+    mMain.Canvas = daCanvas
+END
+
+PUBLIC SUB tmrMainLoop_Timer()
+    mMain.MainLoop()
+END
+
+PUBLIC SUB Form_KeyPress()
+
+    SELECT CASE Key.Code
+        CASE Key.Left
+            MMain.Obj[0].TurnLeft = TRUE
+        CASE Key.Right
+            MMain.Obj[0].TurnRight = TRUE
+        CASE Key.Up
+            MMain.Obj[0].Thrust = TRUE
+        CASE Key["F"]
+            MMain.Obj[0].Attack = TRUE
+        CASE Key["D"]
+            MMain.Obj[0].MX = 0
+            MMain.Obj[0].MY = 0
+    END SELECT
+END
+
+PUBLIC SUB Form_KeyRelease()
+
+    SELECT CASE Key.Code
+        CASE Key.Left
+            MMain.Obj[0].TurnLeft = FALSE
+        CASE Key.Right
+            MMain.Obj[0].TurnRight = FALSE
+        CASE Key.Up
+            MMain.Obj[0].Thrust = FALSE
+        CASE Key["F"]
+            MMain.Obj[0].Attack = FALSE
+    END SELECT
+END
+
+PUBLIC SUB Form_Close()
+    mMain.Exit()
+END
+
+PUBLIC SUB Form_Resize()
+    mMain.SCREEN_WIDTH = ME.ClientW
+    mMain.SCREEN_HEIGHT = ME.ClientH
+
+    daCanvas.H = ME.ClientH
+    daCanvas.W = ME.ClientW
+END
+
+PUBLIC SUB daCanvas_KeyPress()
+    Form_KeyPress()
+END
+
+PUBLIC SUB daCanvas_KeyRelease()
+    Form_KeyRelease()
+END
+
+PUBLIC SUB mnuMainExit_Click()
+    ME.Delete
+END
+
+PUBLIC SUB mnuMainAbout_Click()
+    FAbout.Show()
+END
+
+PUBLIC SUB mnuShowText_Click()
+
+    INC mnuShowText.Checked
+    MMain.ShowObjectLabel = mnuShowText.Checked
+
+END

@@ -1,0 +1,87 @@
+Net changes
+-----------
+
+* Now net are two components:
+
+	- 'net' : basic stuff
+	- 'advanced net' : classes that needs libcurl to work (HttpClient at this moment)
+
+* Now there's a new class 'NetCode' in which you'll find all constants that were placed
+in all the rest of classes in previous versions (status, error codes, etc)
+
+* 'Network advanced' has also a class to do the same as 'NetCode', called 'AdvancedCode'
+which will include all constants needed for HTTP,FTP, etc
+
+The new HttpClient
+------------------
+
+* Host, Document and Port properties do not exist anymore, now, there's a
+property called "URL" in which you can put all data in url format, some
+examples:
+
+127.0.0.1
+
+http://localhost/index.html
+
+yntp://localhost/index.html <-- the 'wrong' part "yntp" will be ignored
+
+http://stratoria.dynu.net:85/Actualites.html  <-- port 85 instead of default 80
+
+* Cookies:
+
+	- CookiesFile : if you place here a zero string (""), HttpClient will not manage
+	cookies (default), but if you place here the path to a file containing cookies
+	in plain, netscape or mozilla format, it will use use them and it will also manage cookies
+	from current session in memory. If you place the path to a non existing or not readable
+	file, it will also manage cookies from current session in memory. By default, cookies from
+	current session are deleted once you free the object or call Stop() method
+
+	- UpdateCookies : by default, cookie file (if any) is not updated with the new cookies
+	arrived from current session, so they're lost when you free the object or call 'Stop'
+	method. If you set this value to TRUE, cookies file will be updated with the new cookies
+	once you free the object or call to 'Stop' method
+
+* Stop method : previous versions of 'HttpClient' were working with 'connection : close' header,
+so once a document was received from server, connection with server was broken. Now it uses
+'connection : keep-alive', that means that (if server accepts it), connection will be alive to
+reuse it to receive new documents from that server, with less waste of resources. Now, if you
+use 'Stop' method when status is 0 (Inactive), connection with server will be closed if it
+was alive, and cookies will be also stored in a file if UpdateCookies=TRUE and CookiesFile is
+set to a valid path
+
+* 'Receive' method exists no more, as now, HttpClient inherits from '.Stream', so you can use
+ 'READ' standard method instead ('READ' is the only stream method that owrks, at this moment)
+
+* 'DataHeader' property has been replaced, now it exists as:
+
+	Property Headers As String[]
+
+	Each string in the returned array contains one line of that header
+
+* 'Get' and 'Put' methods have changed : Now they are:
+
+	Get (Optional TargetFile As String)
+
+	- if you do not use 'TargetFile' as parameter, you will receive the URL requested as usual: when
+	data is coming from server, HttpClient saves it in memory until you use 'READ' stream method,
+	and each time new data arrives, 'HttpClient.Read' event raises.
+
+	- if you use 'TargetFile' as parameter, requested URL will be saved in the local file you have
+	specified as parameter, instead of saving it in memory, and you will not receive 'HttpClient.Read' events.
+
+	Put(ContentType As String,Data As String, Optional TargetFile As String)
+
+* User and authentication :
+
+	- User : the name and password of the user to access to HTTP server, you must set it
+	in user:password format, for example User="myself:mypass"
+	- Auth : authentication type supported by HTTP server : basic, NTLM, Digest, GSS
+
+* Proxy support : now HttpClient can manage authentication :
+
+	- Proxy : URL from Proxy, for instance : 192.168.0.1:8080
+	- ProxyType : can be a HTTP proxy, or a Socks-5 proxy
+	- ProxyAuth : authentication supported by Proxy : Basic or NTLM
+
+
+

@@ -1,0 +1,42 @@
+' Gambas class file
+
+PUBLIC SUB Form_Open()
+  FOtherTimer.Show
+END
+
+PUBLIC SUB Button1_Click()
+  Timer1.Delay = CInt(TextBox1.Text)
+  Timer1.Enabled = TRUE
+END
+
+PUBLIC SUB Timer1_Timer()
+  Label1.Background = &HFF0000&
+END
+
+PUBLIC SUB Button2_Click()
+  Timer1.Enabled = FALSE 'try without this line
+  Label1.Background = &HDCDCDC&
+END
+
+PUBLIC SUB ToggleButton1_Click()
+  IF ToggleButton1.Value = TRUE THEN
+  Timer2.Delay = CInt(TextBox2.Text) 'low
+  Timer3.Delay = CInt(TextBox3.Text) 'high
+  Timer2.Enabled = TRUE
+  ELSE
+  Timer2.Enabled = FALSE
+  Timer3.Enabled = FALSE
+  ENDIF
+END
+
+PUBLIC SUB Timer2_Timer()
+  Label5.Background = &HFF0000&
+  Timer3.Enabled=TRUE
+  Timer2.Enabled=FALSE
+END
+
+PUBLIC SUB Timer3_Timer()
+  Label5.Background=&H00FF00&
+  Timer2.Enabled=TRUE
+  Timer3.Enabled=FALSE  
+END

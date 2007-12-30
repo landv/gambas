@@ -1,0 +1,86 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0,0,57,47)
+  'Move(0,0,456,376)
+  Text = ("Picture Database")
+  Icon = Picture["Images/image-x-generic.png"]
+  Arrangement = Arrange.Vertical
+  { HSplit1 HSplit
+    MoveScaled(0,0,56,46)
+    'Move(0,0,448,368)
+    Expand = True
+    { PanelButtons Panel
+      MoveScaled(0,0,21,42)
+      'Move(0,0,168,336)
+      Arrangement = Arrange.Vertical
+      { HPanel1 HPanel
+        MoveScaled(0,0,20,4)
+        'Move(0,0,160,32)
+        AutoResize = True
+        { ToolButtonAdd ToolButton
+          MoveScaled(0,0,4,4)
+          'Move(0,0,32,32)
+          ToolTip = ("Add image to database")
+          Text = ("")
+          Picture = Picture["Images/list-add.png"]
+        }
+        { ToolButtonRemove ToolButton
+          MoveScaled(4,0,4,4)
+          'Move(32,0,32,32)
+          ToolTip = ("Remove Image from database")
+          Text = ("")
+          Picture = Picture["Images/list-remove.png"]
+        }
+        { Separator1 Separator
+          MoveScaled(8,0,1,4)
+          'Move(64,0,8,32)
+        }
+        { ToolButtonExport ToolButton
+          MoveScaled(9,0,4,4)
+          'Move(72,0,32,32)
+          ToolTip = ("Export image from database")
+          Text = ("")
+          Picture = Picture["Images/document-save-as.png"]
+        }
+        { Separator2 Separator
+          MoveScaled(14,0,1,4)
+          'Move(112,0,8,32)
+        }
+        { ToolButtonUpdate ToolButton
+          MoveScaled(15,0,4,4)
+          'Move(120,0,32,32)
+          ToolTip = ("Update image description")
+          Text = ("")
+          Picture = Picture["Images/document-save.png"]
+        }
+      }
+      { GridViewImages GridView
+        MoveScaled(0,4,19,28)
+        'Move(0,32,152,224)
+        Expand = True
+        Header = GridView.Both
+        Border = False
+      }
+    }
+    { VSplit1 VSplit
+      MoveScaled(21,0,34,44)
+      'Move(168,0,272,352)
+      { TextAreaDescription TextArea
+        MoveScaled(0,0,23,7)
+        'Move(0,0,184,56)
+        Text = ("")
+        Wrap = True
+        Border = False
+      }
+      { ScrollView1 ScrollView
+        MoveScaled(0,7,24,35)
+        'Move(0,56,192,280)
+        { PictureBoxImage PictureBox
+          MoveScaled(0,0,18,25)
+          'Move(0,0,144,200)
+        }
+      }
+    }
+  }
+}

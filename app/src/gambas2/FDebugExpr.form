@@ -1,0 +1,23 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,43,43)
+  Foreground = &H000000&
+  Text = ("")
+  ToolBox = True
+  SkipTaskbar = True
+  Arrangement = Arrange.Vertical
+  { txtExpr TextBox
+    MoveScaled(1,1,36,3)
+    Font = Font["Bold"]
+    Text = ("")
+    Border = False
+  }
+  { gvwExpr GridView
+    MoveScaled(2,9,31,25)
+    Expand = True
+    Mode = Select.Single
+    Header = GridView.Horizontal
+    Scrollbar = Scroll.Vertical
+  }
+}

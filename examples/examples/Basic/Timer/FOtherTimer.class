@@ -1,0 +1,77 @@
+' Gambas class file
+
+'&HC00F47& = red
+'&H4BC021& = green
+
+PUBLIC a AS Integer
+PUBLIC b AS Integer
+PUBLIC c AS Integer
+PUBLIC d AS Integer
+
+PUBLIC SUB Button1_Click()
+
+  'for checking valid values
+   a = CInt(textbox1.text)
+   b = CInt(textbox2.text) * 60
+   
+  ' on or off 
+  IF Button1.Text = "Start" THEN
+
+    ' are the values valid?
+    IF a >= 0 AND b >= 0 AND 0 <> a + b THEN
+   
+     'switching on timer1
+     timer1.enabled = TRUE
+     
+     'for countdown
+     c = (a + b) / 60
+     d = (a + b) MOD 60
+     textbox1.Text = d
+     textbox2.text = c
+     
+     'for the right look
+     button1.Text = "Stop"
+     button1.Background = &HC00F47&
+     
+   'if the values are not valid
+   ELSE 
+     message.error("Please fill in valid values!")
+   ENDIF
+   
+  'if it is already on
+  ELSE
+    'switching off timer1 and timer2 and changes in the look
+    button1.Text = "Start"
+    button1.Background = &H4BC021&
+    timer1.enabled = FALSE
+  ENDIF
+   
+'thank you Benoit, that is just a great thing
+CATCH
+ message.Error("Please fill in valid values!") 
+
+END
+
+PUBLIC SUB Timer1_Timer()
+
+  'how the countdown works
+  IF c = 0 AND d = 0 THEN
+  'timer1 switchs off himself and writes a message 
+    timer1.Enabled = FALSE
+    button1.Text = "Start"
+    button1.Background = &H4BC021&
+    message.info("Time is over!")
+  ELSE 
+    IF d = 0 THEN
+      c = c - 1 
+      d = d + 59
+    ELSE 
+      d = d - 1
+    ENDIF
+  ENDIF
+
+  'show the countdown
+  textbox1.Text = d
+  textbox2.text = c
+
+END

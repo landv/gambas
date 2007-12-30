@@ -1,0 +1,185 @@
+/***************************************************************************
+
+  type.c
+
+  Datatypes definitions and management
+
+  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+#define __GBC_TYPE_C
+
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "gb_common.h"
+#include "gb_error.h"
+#include "gbc_type.h"
+
+#include "gbc_class.h"
+#include "gbc_compile.h"
+
+
+PUBLIC const char *TYPE_name[] = 
+{
+  "Void", "Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date",
+  "String", "CString", "Variant", "Array", "Function", "Class", "Null",
+  "Object"
+};
+
+
+/*
+PUBLIC TYPE_ID TYPE_get_id(TYPE type)
+{
+  if (TYPE_is_object(type))
+    return T_OBJECT;
+  else
+    return (TYPE_get_value(type) & 0xFF);
+}
+
+
+PUBLIC long TYPE_get_class(TYPE type)
+{
+  if (TYPE_is_object(type))
+    return TYPE_get_value(type);
+  else
+    return -1;
+}
+*/
+
+PUBLIC TYPE TYPE_make(TYPE_ID id, short value, int flag)
+{
+  TYPE type;
+
+  TYPE_clear(&type);
+  TYPE_set_id(&type, id);
+
+  if (id == T_OBJECT || id == T_ARRAY) // || id == T_STRUCT)
+    TYPE_set_value(&type, value);
+
+  TYPE_set_flag(&type, flag);
+
+  return type;
+}
+
+
+PUBLIC long TYPE_sizeof(TYPE type)
+{
+  TYPE_ID id = TYPE_get_id(type);
+
+  switch(id)
+  {
+    case T_BOOLEAN:
+      return 1;
+
+    case T_BYTE:
+      return 1;
+
+    case T_SHORT:
+      return 2;
+
+    case T_INTEGER:
+      return 4;
+
+    case T_LONG:
+      return 8;
+
+    case T_SINGLE:
+      return 4;
+
+    case T_FLOAT:
+      return 8;
+
+    case T_DATE:
+      return 8;
+
+    case T_STRING:
+      return 4;
+
+    case T_VARIANT:
+      return 12;
+
+    case T_OBJECT:
+      return 4;
+
+    case T_ARRAY:
+      {
+        int i;
+        long size;
+        CLASS_ARRAY *array = &JOB->class->array[TYPE_get_value(type)];
+
+        size = 1;
+        for (i = 0; i < array->ndim; i++)
+          size *= array->dim[i];
+
+        size *= TYPE_sizeof(array->type);
+
+        return (size + 3) & ~3;
+      }
+
+    default:
+      ERROR_panic("TYPE_sizeof: bad type id");
+  }
+}
+
+
+
+PUBLIC char *TYPE_get_desc(TYPE type)
+{
+  static char buf[256];
+
+  TYPE_ID id;
+  long value;
+
+  id = TYPE_get_id(type);
+  value = TYPE_get_value(type);
+
+  if (id == T_ARRAY)
+  {
+    strcpy(buf, TYPE_name[JOB->class->array[value].type.t.id]);
+    strcat(buf, "[]");
+  }
+  else
+  {
+    strcpy(buf, TYPE_name[id]);
+  }
+
+  return buf;
+}
+
+
+PUBLIC const char *TYPE_get_short_desc(TYPE type)
+{
+  static const char *name[] = {
+    "", "b", "i", "i", "i", "l", "g", "f", "d",
+    "s", "s", "v", "?", "?", "?", "?",
+    "o"
+    };
+
+  TYPE_ID id;
+  long value;
+
+  id = TYPE_get_id(type);
+  value = TYPE_get_value(type);
+
+  if (id == T_ARRAY)
+    return "?";
+  else
+    return name[id];
+}

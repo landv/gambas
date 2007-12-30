@@ -1,0 +1,28 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,35,23)
+  Background = &HFFFFDF&
+  Foreground = &H000000&
+  Text = ("")
+  Mask = True
+  Persistent = True
+  Border = Window.None
+  SkipTaskbar = True
+  { txtMessage TextLabel
+    MoveScaled(8,3,24,7)
+    AutoResize = True
+    Text = ("")
+    Alignment = Align.Normal
+  }
+  { timCheck #Timer
+    #X = 136
+    #Y = 120
+    Delay = 250
+  }
+  { imgIcon PictureBox txtMessage
+    Name = "imgIcon"
+    MoveScaled(2,4,5,5)
+    Visible = False
+  }
+}

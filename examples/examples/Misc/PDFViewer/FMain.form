@@ -1,0 +1,47 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(42.1429,20.1429,64.5714,65.4286)
+  Text = ("Select a PDF to view")
+  Icon = Picture["pdf.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = 2
+  { HBox1 HBox
+    MoveScaled(1,1,48,3)
+    { btnOpen ToolButton
+      MoveScaled(0,0,3,3)
+      Text = ("")
+      Picture = Picture["icon:/16/open"]
+    }
+    { btnZoomIn ToolButton
+      MoveScaled(3,0,3,3)
+      Text = ("")
+      Picture = Picture["icon:/16/zoom-in"]
+    }
+    { btnZoomOut ToolButton
+      MoveScaled(6,0,3,3)
+      Text = ("")
+      Picture = Picture["icon:/16/zoom-out"]
+    }
+    { Separator1 Separator
+      MoveScaled(10,0,1,3)
+    }
+    { Label1 Label
+      MoveScaled(11,0,5,3)
+      Text = ("Page")
+    }
+    { SpinBox1 SpinBox
+      MoveScaled(17,0,8,3)
+      MinValue = 1
+      MaxValue = 1
+    }
+  }
+  { ScrollView1 ScrollView
+    MoveScaled(1,6,58,54)
+    Expand = True
+    { DrawingArea1 DrawingArea
+      MoveScaled(1,1,35,32)
+      Cached = True
+    }
+  }
+}

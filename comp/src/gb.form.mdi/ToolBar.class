@@ -1,0 +1,103 @@
+' Gambas class file
+
+EXPORT
+
+INHERITS UserContainer
+
+PUBLIC CONST _Properties AS String = "*,-Arrangement,-Padding,-Spacing,Action,Hidden,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True"
+PUBLIC CONST _Arrangement AS Integer = 3
+PUBLIC CONST _DefaultSize AS String = "36,3"
+
+PUBLIC CONST Horizontal AS Integer = 0
+PUBLIC CONST Vertical AS Integer = 1
+
+'PROPERTY READ Arrangement AS Integer
+'PROPERTY READ AutoResize AS Boolean
+'PROPERTY Design AS Boolean
+PROPERTY Hidden AS Boolean
+'PROPERTY Action AS String
+PROPERTY Orientation AS Integer
+PROPERTY AutoResize AS Boolean
+
+PRIVATE $hForm AS FToolBar
+
+PUBLIC SUB _new()
+  
+  $hForm = NEW FToolBar(ME)
+  ME._Container = $hForm.GetContainer()
+  SUPER.AutoResize = TRUE
+  
+END
+
+' PRIVATE FUNCTION Arrangement_Read() AS Integer
+' 
+'   RETURN Arrange.LeftRight
+' 
+' END
+' 
+' PRIVATE FUNCTION AutoResize_Read() AS Boolean
+' 
+'   RETURN TRUE
+' 
+' END
+
+' PRIVATE FUNCTION Design_Read() AS Boolean
+' 
+'   RETURN SUPER.Design
+' 
+' END
+' 
+' PRIVATE SUB Design_Write(Value AS Boolean)
+' 
+'   SUPER.Design = Value
+'   IF Value THEN ME.Arrangement = Arrange.None
+'   
+' END
+
+PRIVATE FUNCTION Hidden_Read() AS Boolean
+
+  RETURN $hForm.IsHidden()  
+
+END
+
+PRIVATE SUB Hidden_Write(Value AS Boolean)
+
+    $hForm.SetHidden(Value)
+
+END
+
+PRIVATE FUNCTION Action_Read() AS String
+
+  RETURN Action.Get(ME)  
+
+END
+
+PRIVATE SUB Action_Write(Value AS String)
+
+  Action.Register(ME, Value)
+
+END
+
+PRIVATE FUNCTION Orientation_Read() AS Integer
+
+  RETURN If($hForm.IsVertical(), 1, 0)
+
+END
+
+PRIVATE SUB Orientation_Write(Value AS Integer)
+
+  $hForm.SetVertical(Value)
+
+END
+
+PRIVATE FUNCTION AutoResize_Read() AS Boolean
+
+  RETURN $hForm.IsAutoResize()
+
+END
+
+PRIVATE SUB AutoResize_Write(Value AS Boolean)
+
+  $hForm.SetAutoResize(Value)
+
+END

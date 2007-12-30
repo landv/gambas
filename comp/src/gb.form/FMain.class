@@ -1,0 +1,29 @@
+' Gambas class file
+
+STATIC PUBLIC SUB Main()
+  
+  ' Application.Font = Font["Sans,10"]
+  ' System.Language = "C"
+  ' DEBUG InputBox("Please enter your age.<br><b>Don't lie!</b>", "This is an InputBox dialog", "35")
+  ME.Show 'Dialog
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+END
+
+
+
+PUBLIC SUB Button1_Click()
+
+  DEBUG InputBox("Entrez votre âge<br>Soyez franc, ne trichez pas!<br>Il était une bergère, et <b>rond et rond</b> petit patapon<br><br><i>Il était une bergère</i><br>qui avait des moutons.")
+
+END
+
+PUBLIC SUB FileChooser1_Change()
+
+  DEBUG FileChooser1.Dir
+
+END

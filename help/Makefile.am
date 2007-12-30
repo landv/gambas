@@ -1,0 +1,13 @@
+SUBDIRS = help
+EXTRA_DIST = reconf spec
+
+install-exec-local:
+	@echo
+	@echo "Installing the gambas help files..."
+	@$(INSTALL) -d $(DESTDIR)$(gbdatadir)/help
+	@rm -rf $(DESTDIR)$(gbdatadir)/help
+	@cp -R $(srcdir)/help $(DESTDIR)$(gbdatadir)
+	@(cd $(DESTDIR)$(gbdatadir)/help; tar xfz $(DESTDIR)$(gbdatadir)/help/help.tar.gz; $(LN_S) help/img img; $(LN_S) help/image image)
+
+uninstall-local:
+	@rm -rf $(DESTDIR)$(gbdatadir)/help

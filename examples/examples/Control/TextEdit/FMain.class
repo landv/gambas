@@ -1,0 +1,168 @@
+' Gambas class file
+
+PUBLIC SUB _new()
+  
+  ME.Center  'Center the form on the screen
+  
+END
+
+PUBLIC SUB Form_Open()
+
+  DIM s AS String
+  
+  TextEdit1.Text = File.Load("text.html")
+
+  FOR EACH s IN Fonts
+    ComboBox1.add(s)
+  NEXT
+
+  'ComboBox1.Index = ComboBox1.Find(TextEdit1.Format.Font.Name)
+  'SpinBox1.Value = TextEdit1.Format.Font.Size
+
+  TextEdit1.SetFocus
+  TextEdit1_Cursor
+    
+END
+
+PUBLIC SUB TextEdit1_Cursor()
+
+  Object.Lock(btnBold)
+  Object.Lock(btnItalic)
+  Object.Lock(btnUnderline)
+  Object.Lock(btnStrikeOut)
+  Object.Lock(btnAlignLeft)
+  Object.Lock(btnAlignCenter)
+  Object.Lock(btnAlignRight)
+  Object.Lock(btnAlignJustify)
+  Object.Lock(ComboBox1)
+  Object.Lock(SpinBox1)
+  Object.Lock(ColorButton1)
+  
+  btnBold.Value = TextEdit1.Format.Font.Bold
+  btnItalic.Value = TextEdit1.Format.Font.Italic
+  btnUnderline.Value = TextEdit1.Format.Font.Underline
+  btnStrikeOut.Value = TextEdit1.Format.Font.StrikeOut
+  
+  SELECT CASE TextEdit1.Format.Alignment
+    CASE Align.Left
+      btnAlignLeft.Value = TRUE
+    CASE Align.Right
+      btnAlignRight.Value = TRUE
+    CASE Align.Center
+      btnAlignCenter.Value = TRUE
+    CASE Align.Justify
+      btnAlignJustify.Value = TRUE
+    CASE Align.Normal
+      btnAlignLeft.Value = TRUE ' If the displayed langage is left to right written, that's OK. Elsewhere...
+  END SELECT
+  
+  ColorButton1.Color = TextEdit1.Format.Color
+  ComboBox1.Text = TextEdit1.Format.Font.Name
+  SpinBox1.Value = TextEdit1.Format.Font.Size
+  
+  Object.UnLock(btnBold)
+  Object.UnLock(btnItalic)
+  Object.UnLock(btnUnderline)
+  Object.UnLock(btnStrikeOut)
+  Object.UnLock(btnAlignLeft)
+  Object.UnLock(btnAlignCenter)
+  Object.UnLock(btnAlignRight)
+  Object.UnLock(btnAlignJustify)
+  Object.UnLock(ComboBox1)
+  Object.UnLock(SpinBox1)
+  Object.UnLock(ColorButton1)
+
+END
+
+PUBLIC SUB btnBold_Click()
+
+  TextEdit1.Format.Font.Bold = LAST.Value
+
+END
+
+PUBLIC SUB btnItalic_Click()
+
+  TextEdit1.Format.Font.Italic = LAST.Value
+
+END
+
+PUBLIC SUB btnUnderline_Click()
+
+  TextEdit1.Format.Font.Underline = LAST.Value
+
+END
+
+PUBLIC SUB btnStrikeOut_Click()
+
+  TextEdit1.Format.Font.StrikeOut = LAST.Value
+
+END
+
+
+PUBLIC SUB btnAlignLeft_Click()
+
+  TextEdit1.Format.Alignment = Align.Left
+
+END
+
+
+PUBLIC SUB btnAlignCenter_Click()
+
+  TextEdit1.Format.Alignment = Align.Center
+
+END
+
+PUBLIC SUB btnAlignRight_Click()
+
+  TextEdit1.Format.Alignment = Align.Right
+
+END
+
+PUBLIC SUB ColorButton1_Change()
+
+  TextEdit1.Format.Color = ColorButton1.Color
+
+END
+
+PUBLIC SUB SpinBox1_Change()
+
+  TextEdit1.Format.Font.Size = LAST.Value
+  TextEdit1.SetFocus
+
+END
+
+PUBLIC SUB ToolButton1_Click()
+
+  frmShowHtml.Run(TextEdit1.Text)  
+
+END
+
+PUBLIC SUB ComboBox1_Click()
+
+  TextEdit1.Format.Font.Name = LAST.text  
+
+END
+
+PUBLIC SUB btnabout_Click()
+  
+  Balloon.Info("A simple TextEdit example by\nFabien Bodard (gambix@users.sourceforge.net)\nand Benoît Minisini", LAST)
+
+END
+
+PUBLIC SUB btnAlignJustify_Click()
+
+  TextEdit1.Format.Alignment = Align.Justify  
+
+END
+
+PUBLIC SUB TextEdit1_Link(Path AS String)
+
+  Message("You have clicked on:\n\n" & Path)  
+
+END
+
+PUBLIC SUB btnLock_Click()
+
+  TextEdit1.ReadOnly = btnLock.Value  
+
+END

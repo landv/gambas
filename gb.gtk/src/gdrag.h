@@ -1,0 +1,76 @@
+#ifndef __GDRAG_H
+#define __GDRAG_H
+
+class gPicture;
+class gControl;
+
+class gDrag
+{
+public:
+	enum
+	{
+		Nothing = 0,
+		Text = 1,
+		Image = 2
+	};
+	enum {
+		Copy = 0,
+		Move = 1,
+		Link = 2
+	};
+	
+	static void exit();
+	
+	static bool isActive() { return _active; }
+	static bool isEnabled() { return _enabled; }
+	
+	static void setIcon(gPicture *vl);
+	static gPicture *getIcon() { return _icon; }
+	static void getIconPos(int *x, int *y) { *x = _icon_x; *y = _icon_y; }
+	static void setIconPos(int x, int y) { _icon_x = x; _icon_y = y; }
+	
+	static void dragText(gControl *source, char *text, char *format = 0);
+	static void dragImage(gControl *source, gPicture *image);
+	static void cancel();
+	
+	static gControl *getSource() { return _source; }
+	static int getAction() { return _action; }
+	static int getType() { return _type; }
+	static char *getFormat() { return _format; }
+	
+	static char *getDropText() { return _text; }
+	static gPicture *getDropImage() { return _picture; }
+	static int getDropX() { return _x; }
+	static int getDropY() { return _y; }
+	
+	static void show(gControl *control, int x = 0, int y = 0, int w = -1, int h = -1);
+	static void hide(gControl *control = NULL);
+	
+	static bool checkThreshold(gControl *control, int x, int y, int sx, int sy);
+	
+	// "Private"
+	static void setDropInfo(int type, char *format);
+	static void setDropData(int action, int x, int y, gControl *source);
+	static void setDropText(char *text, int len = -1);
+	static void setDropImage(gPicture *image);
+	static void setDropImage(char *buf, int len);
+	static void enable() { _enabled++; }
+	static void disable() { _enabled--; }
+
+private:	
+	static bool _active;
+	static gPicture *_icon;
+	static int _icon_x;
+	static int _icon_y;
+	static gControl *_source;
+	static int _action;
+	static int _type;
+	static gPicture *_picture;
+	static char *_text;
+	static char *_format;
+	static int _enabled;
+	static int _x;
+	static int _y;
+};
+
+#endif

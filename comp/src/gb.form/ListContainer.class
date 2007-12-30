@@ -1,0 +1,308 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserContainer
+
+PUBLIC CONST _Properties AS String = "*,-Padding,-Spacing,-Arrangement,-AutoResize"
+PUBLIC CONST _Arrangement AS Integer = 2
+PUBLIC CONST _DefaultEvent AS String = "Click"
+
+EVENT Click
+EVENT Activate
+
+PROPERTY READ Count AS Integer
+PROPERTY Index AS Integer
+PROPERTY Current AS Control
+PROPERTY Background AS Integer
+
+PRIVATE $hScrollView AS ScrollView
+'PRIVATE $hWatcher AS Watcher
+PRIVATE $hLast AS Control
+PRIVATE $hSelected AS Control
+PRIVATE $bNoMouse AS Boolean
+PRIVATE $hTimer AS Timer
+PRIVATE $iSaveBackground AS Integer
+PRIVATE $iSaveForeground AS Integer
+PRIVATE $iLastX AS Integer
+PRIVATE $iLastY AS Integer
+PRIVATE $iLock AS Integer
+
+PUBLIC SUB _new()
+  
+  $hScrollView = NEW ScrollView(ME) AS "ScrollView"
+  $hTimer = NEW Timer AS "Child"
+  $hTimer.Delay = 80
+  WITH $hScrollView
+    .Border = Border.Sunken
+    .ScrollBar = Scroll.Vertical
+    .Background = Color.TextBackground
+    .Arrangement = Arrange.Vertical
+  END WITH 
+  
+  '$hWatcher = NEW Watcher($hScrollView) AS "ScrollView"
+  
+  ME._Container = $hScrollView
+  ME.Arrangement = Arrange.Vertical
+  
+END
+
+PRIVATE SUB AttachRec(hItem AS Control)
+
+  DIM hCont AS Container
+  DIM hObs AS Observer
+  
+  IF NOT hItem.Enabled THEN RETURN
+  'Object.Attach(hItem, ME, "Child")
+  hObs = NEW Observer(hItem) AS "Child"
+  TRY hCont = hItem
+  IF NOT hCont THEN RETURN
+  IF hCont IS UserControl THEN RETURN
+
+  'FOR EACH hItem IN hCont.Children
+  '  AttachRec(hItem)
+  'NEXT
+
+END
+
+PRIVATE FUNCTION GetReal(hCtrl AS Control) AS Control
+
+  IF NOT hCtrl THEN RETURN
+  WHILE hCtrl.Parent <> $hScrollView
+    hCtrl = hCtrl.Parent
+  WEND
+  RETURN hCtrl
+
+END
+
+PUBLIC SUB ScrollView_Insert(Child AS Control)
+
+  IF ME.Design THEN RETURN 
+  AttachRec(Child)
+  
+END
+
+PUBLIC SUB Child_Insert(Child AS Control)
+
+  IF ME.Design THEN RETURN 
+  AttachRec(Child)
+  
+END
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  RETURN $hScrollView.Children.Count
+
+END
+
+PRIVATE SUB ChildFromIndex(Index AS Integer) AS Control
+  
+  DIM hChild AS Control
+  DIM iInd AS Integer
+
+  FOR EACH hChild IN $hScrollView.Children
+    IF Index = iInd THEN RETURN hChild
+    INC iInd
+  NEXT
+  
+END
+
+PRIVATE SUB IndexFromChild(Child AS Control) AS Integer
+  
+  DIM hChild AS Control
+  DIM iInd AS Integer
+
+  FOR EACH hChild IN $hScrollView.Children
+    IF hChild = Child THEN RETURN iInd
+    INC iInd
+  NEXT
+  
+  RETURN -1
+  
+END
+
+
+PRIVATE SUB GetSelected() AS Control
+
+  RETURN $hSelected
+  
+  ' DIM hChild AS Control
+  ' 
+  ' FOR EACH hChild IN $hScrollView.Children
+  '   'IF NOT hChild.Visible THEN CONTINUE
+  '   IF hChild.Background = Color.SelectedBackground THEN RETURN hChild
+  ' NEXT
+  
+END
+
+
+PRIVATE FUNCTION Index_Read() AS Integer
+
+  RETURN IndexFromChild(GetSelected())
+
+END
+
+PRIVATE SUB SetSelected(Child AS Control)
+  
+  DIM hChild AS Control
+  DIM hOld AS Control
+  DIM iSaveBackground AS Integer
+  DIM iSaveForeground AS Integer
+  'DIM bNoEvent AS Boolean
+  
+  IF Child.Parent <> $hScrollView THEN RETURN
+  IF NOT Child.Enabled THEN RETURN
+  
+  hOld = GetSelected()
+  IF hOld = Child THEN RETURN 
+  
+  FOR EACH hChild IN $hScrollView.Children
+    IF NOT hChild.Enabled THEN CONTINUE
+    IF hChild = Child THEN 
+      iSaveBackground = hChild.Background
+      iSaveForeground = hChild.Foreground
+      hChild.Background = Color.SelectedBackground
+      hChild.Foreground = Color.SelectedForeground
+      $hSelected = hChild
+    ELSE IF hChild = hOld THEN
+      hChild.Background = $iSaveBackground
+      hChild.Foreground = $iSaveForeground
+    ENDIF
+  NEXT  
+  
+  $iSaveBackground = iSaveBackground
+  $iSaveForeground = iSaveForeground
+
+  RAISE Click
+  
+END
+
+
+PRIVATE SUB Index_Write(Value AS Integer)
+
+  SetSelected(ChildFromIndex(Value))
+
+END
+
+PRIVATE FUNCTION Current_Read() AS Control
+
+  RETURN GetSelected()
+
+END
+
+PRIVATE SUB Current_Write(Value AS Control)
+
+  SetSelected(Value)  
+
+END
+
+PRIVATE SUB DoMouse()
+  
+  DIM hChild AS Control
+  DIM Y AS Integer
+  
+  IF $bNoMouse THEN RETURN
+  
+  Y = Mouse.ScreenY - $hScrollView.ScreenY + $hScrollView.ScrollY
+  Y = Max(0, Min($hScrollView.ScrollH, Y))
+  
+  hChild = $hScrollView.Find(Mouse.ScreenX - $hScrollView.ScreenX + $hScrollView.ScrollX, Y)
+  hChild = GetReal(hChild)
+  IF hChild THEN 
+    $bNoMouse = TRUE
+    IF hChild.Enabled AND IF hChild <> $hLast THEN 
+      SetSelected(hChild)  
+      $hLast = hChild
+    ENDIF
+    $hScrollView.EnsureVisible(hChild.X, hChild.Y, hChild.W, hChild.H)
+    $bNoMouse = FALSE
+  ENDIF 
+    
+END
+
+
+PUBLIC SUB Child_MouseDown()
+  
+  $hLast = NULL
+  DoMouse
+  $iLastX = Mouse.ScreenX
+  $iLastY = Mouse.ScreenY
+  
+END
+
+
+PUBLIC SUB Child_MouseMove()
+  
+  'IF LAST.Parent <> $hScrollView THEN RETURN
+  IF $iLastX = Mouse.ScreenX AND IF $iLastY = Mouse.ScreenY THEN RETURN
+  IF NOT $hTimer.Enabled THEN $hTimer.Enabled = TRUE 
+  'DoMouse
+  $iLastX = Mouse.ScreenX
+  $iLastY = Mouse.ScreenY
+  
+END
+
+PUBLIC SUB Child_MouseUp()
+  
+  $hTimer.Enabled = FALSE
+  
+END
+
+PUBLIC SUB Child_Timer()
+  
+  DoMouse
+  
+END
+
+PUBLIC SUB Child_DblClick()
+  
+  RAISE Activate
+  
+END
+
+PUBLIC SUB Select(hChild AS control)
+  
+  SetSelected(hChild)
+  
+END
+
+PUBLIC SUB Clear()
+  
+  DIM hChild AS Control
+  
+  FOR EACH hChild IN $hScrollView.Children
+    hChild.Delete
+  NEXT
+  $hSelected = NULL
+  WAIT
+  
+END
+
+
+PRIVATE FUNCTION Background_Read() AS Integer
+
+  RETURN $hScrollView.Background  
+
+END
+
+PRIVATE SUB Background_Write(Value AS Integer)
+
+  IF Value = Color.Default THEN Value = Color.TextBackground
+  $hScrollView.Background = Value
+
+END
+
+PUBLIC SUB {Lock}()
+  
+  INC $iLock
+  ME.Arrangement = Arrange.None
+  
+END
+
+
+PUBLIC SUB Unlock()
+  
+  IF $iLock <= 0 THEN RETURN
+  DEC $iLock
+  IF $iLock = 0 THEN ME.Arrangement = Arrange.Vertical
+  
+END

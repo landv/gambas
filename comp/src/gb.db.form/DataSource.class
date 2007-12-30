@@ -1,0 +1,531 @@
+' Gambas class file
+
+EXPORT
+
+INHERITS Panel
+
+PROPERTY Table AS String
+PROPERTY Filter AS String
+PROPERTY READ Modified AS Boolean
+PROPERTY READ Current AS Variant[]
+PROPERTY READ Index AS Integer
+PROPERTY ReadOnly AS Boolean
+PROPERTY Sort AS String
+
+' Pb si on fait de Connection une propriété de l'IDE: le controle
+' Connection doit être créé AVANT l'affectation à la propriété,
+' et l'IDE ne sait pas géré ça!
+
+PUBLIC CONST _Properties AS String = "*,Table,Filter,ReadOnly"
+'PUBLIC CONST _DrawWith AS String = "DrawingArea"
+
+PRIVATE $sTable AS String
+PRIVATE $sFilter AS String
+PRIVATE $bReadOnly AS Boolean
+
+PRIVATE $bCreate AS Boolean
+
+PRIVATE $hTable AS DataTable
+PRIVATE $iIndex AS Integer
+
+PRIVATE CONST ACTION_SAVE AS Integer = 0
+PRIVATE CONST ACTION_CONTINUE AS Integer = 1
+PRIVATE CONST ACTION_CANCEL AS Integer = 2
+
+PUBLIC SUB _new()
+  
+  ME.Arrangement = Arrange.None
+  $iIndex = -1
+  $bCreate = TRUE
+  
+END
+
+PRIVATE FUNCTION GetChildren(OPTIONAL hParent AS Container = ME) AS Object[]
+
+  DIM hChild AS Control
+  DIM aChild AS NEW Object[]
+  
+  FOR EACH hChild IN hParent.Children
+    IF Common.IsControl(hChild) OR IF hChild IS DataSource OR IF hChild IS DataBrowser OR IF hChild IS DataView THEN
+      aChild.Add(hChild)
+    ELSE IF hChild IS Container THEN
+      aChild.Insert(GetChildren(hChild))
+    ENDIF
+  NEXT
+  
+  RETURN aChild
+  
+END
+
+
+PRIVATE SUB SetFocus(sKey AS String)
+  
+  DIM hChild AS Object
+  
+  FOR EACH hChild IN GetChildren()
+  
+    IF Common.IsControl(hChild) THEN
+      IF hChild.Field = sKey THEN
+        hChild.SetFocus
+        RETURN
+      ENDIF
+    ENDIF
+  
+  NEXT
+  
+END
+
+
+PRIVATE FUNCTION GetFilter() AS String
+
+  DIM hSrc AS DataSource  
+  DIM sReq AS String
+  DIM vVal AS Variant
+  DIM sField AS String
+  DIM iPos AS Integer
+  
+  hSrc = Common.GetSource(ME)
+  IF hSrc THEN 
+    FOR EACH sField IN hSrc.GetKeys()
+      'iPos = $hTable.Keys.Find(sField) 
+      'IF iPos < 0 THEN CONTINUE
+      vVal = hSrc[sField]
+      IF IsNull(vVal) THEN CONTINUE
+      IF sReq THEN sReq &= " AND "
+      sReq &= DB.Subst(sField & " = &1", vVal)
+    NEXT
+  ENDIF
+  
+  IF $sFilter THEN
+    IF sReq THEN sReq &= " AND "
+    sReq &= $sFilter
+  ENDIF
+
+  RETURN sReq
+
+END
+
+PRIVATE FUNCTION CheckModified(OPTIONAL bSave AS Boolean = TRUE) AS Boolean
+
+  DIM hChild AS Object
+  DIM bModified AS Boolean
+  DIM iAction AS Integer
+  
+  FOR EACH hChild IN GetChildren()
+    IF Common.IsControl(hChild) OR IF hChild IS DataSource THEN
+      IF hChild.Modified THEN
+        bModified = TRUE
+        BREAK
+      ENDIF
+    ENDIF
+  NEXT
+  
+  IF bModified AND bSave THEN
+    ME.Save()
+    RETURN FALSE
+  ELSE
+    RETURN bModified
+  ENDIF
+  
+END
+
+
+PUBLIC FUNCTION MoveFirst() AS Boolean
+
+  IF CheckModified() THEN RETURN TRUE
+  IF $hTable.Count = 0 THEN RETURN TRUE
+
+  $iIndex = 0
+  Redraw
+  
+END
+
+PUBLIC FUNCTION MovePrevious() AS Boolean
+
+  IF $bCreate THEN RETURN MoveFirst()
+  IF $iIndex = 0 THEN RETURN
+  IF CheckModified() THEN RETURN TRUE
+
+  DEC $iIndex  
+  Redraw
+  
+END
+
+PUBLIC FUNCTION MoveNext() AS Boolean
+
+  IF $bCreate THEN RETURN MoveFirst()
+  IF $iIndex >= $hTable.Count - 1 THEN RETURN  
+  IF CheckModified() THEN RETURN TRUE
+
+  INC $iIndex
+  Redraw
+  
+END
+
+PUBLIC FUNCTION MoveLast() AS Boolean
+  
+  IF CheckModified() THEN RETURN TRUE
+  IF $hTable.Count = 0 THEN RETURN TRUE
+
+  $iIndex = $hTable.Count - 1
+  Redraw
+  
+END
+
+PUBLIC FUNCTION MoveTo(iIndex AS Integer) AS Boolean
+  
+  IF CheckModified() THEN RETURN TRUE
+  IF iIndex = $iIndex THEN RETURN
+
+  $iIndex = iIndex
+  Redraw
+  
+END
+
+
+PRIVATE SUB Redraw(OPTIONAL bRefresh AS Boolean)
+
+  DIM hChild AS Object
+
+  SetCreateMode($iIndex < 0)
+
+  FOR EACH hChild IN GetChildren()
+    IF Common.IsControl(hChild) OR IF hChild IS DataSource THEN
+      hChild.Refresh
+    ELSE IF hChild IS DataBrowser OR IF hChild IS DataView THEN
+      IF bRefresh THEN 
+        hChild.Refresh
+      ENDIF
+    ENDIF
+  NEXT
+
+END
+
+PUBLIC SUB Refresh()
+  
+  Load
+  
+END
+
+PUBLIC SUB Cancel()
+  
+  Redraw  
+  
+END
+
+PRIVATE FUNCTION Load() AS Boolean
+  
+  DIM sReq AS String
+  DIM hSrc AS DataSource
+  DIM sField AS String
+  DIM iPos AS Integer
+  
+  IF NOT $sTable THEN RETURN TRUE
+  IF Common.CheckDB() THEN RETURN TRUE
+  
+  $hTable = NEW DataTable($sTable, GetFilter())
+  '$cInfo.Clear
+
+  'IF $iIndex >= $hTable.Count THEN
+    $iIndex = -1
+  'ENDIF
+  
+  Redraw(TRUE)
+  'SetFocus($hTable.Keys[0])
+  
+'CATCH
+
+  'DEBUG Error.Text
+  'RETURN TRUE
+  
+END
+
+PUBLIC SUB Create(OPTIONAL bRefresh AS Boolean)
+  
+  IF CheckModified() THEN RETURN
+
+  IF bRefresh THEN $hTable.Refresh
+  $iIndex = -1
+  Redraw(bRefresh)
+  SetFocus($hTable.Keys[0])
+  
+END
+
+
+PUBLIC FUNCTION Save(OPTIONAL bMessage AS Boolean = TRUE) AS Boolean
+  
+  DIM aKey AS String[]
+  
+  DIM hChild AS Object
+  DIM bModified AS Boolean
+  DIM rData AS Result
+  DIM sReq AS String
+  DIM hSrc AS DataSource
+  DIM sKey AS String
+  DIM iInd AS Integer
+  DIM aVal AS Variant[]
+  DIM iPos AS Integer
+
+  INC Application.Busy
+  
+  FOR EACH hChild IN GetChildren()
+    IF Common.IsControl(hChild) THEN
+      IF NOT hChild.Valid THEN
+        DEC Application.Busy
+        Message.Warning(("Invalid value."))
+        hChild.SetFocus
+        RETURN TRUE
+      ENDIF
+    ENDIF
+  NEXT
+    
+  aKey = $hTable.Keys
+  
+  IF $bCreate THEN
+
+    rData = DB.Create($sTable)
+
+    hSrc = Common.GetSource(ME)
+    IF hSrc THEN
+      FOR EACH sKey IN hSrc.GetKeys()
+        TRY rData[sKey] = hSrc[sKey]
+      NEXT
+    ENDIF
+
+    FOR EACH hChild IN GetChildren()
+      IF Common.IsControl(hChild) THEN
+        rData[hChild.Field] = hChild.Value
+      ENDIF
+    NEXT
+    
+    FOR EACH sKey IN aKey
+      IF _GetInfo(sKey).ReadOnly THEN CONTINUE
+      IF IsNull(rData[sKey]) THEN
+        DEC Application.Busy
+        Message.Warning(("You must fill all mandatory fields."))
+        SetFocus(sKey)
+        RETURN TRUE
+      ENDIF
+    NEXT
+    
+    aVal = NEW Variant[aKey.Count]
+    FOR iInd = 0 TO aKey.Max
+      aVal[iInd] = rData[aKey[iInd]]
+    NEXT
+    
+    rData.Update
+  
+    Redraw(TRUE)
+    Create(TRUE)
+
+  ELSE
+
+    aVal = ME.Current
+    
+    hSrc = Common.GetSource(ME)
+    IF hSrc THEN
+      FOR EACH sKey IN hSrc.GetKeys()
+        iPos = aKey.Find(sKey)
+        IF iPos >= 0 THEN aVal[iPos] = hSrc[sKey]
+      NEXT
+    ENDIF
+
+    rData = DB.Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
+    'rData = $hTable[$iIndex]
+    IF NOT rData.Available THEN RETURN TRUE
+
+    FOR EACH hChild IN GetChildren()
+      IF Common.IsControl(hChild) THEN
+        rData[hChild.Field] = hChild.Value
+      ENDIF
+    NEXT
+    
+    rData.Update
+    $hTable.Refresh
+
+    Redraw(TRUE)
+    
+    IF $iIndex >= $hTable.Count THEN
+      Create(TRUE)
+    ENDIF
+    '$iIndex = -1
+    'MoveTo($iIndex)
+  
+  ENDIF
+  
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  IF bMessage THEN Message.Error(Error.Text)
+  RETURN TRUE
+  
+END
+
+PUBLIC FUNCTION Remove() AS Boolean
+
+  DIM aVal AS Variant[]
+  DIM aKey AS String[]
+  DIM hSrc AS DataSource
+  DIM sKey AS String
+  DIM iPos AS Integer
+  DIM sReq AS String
+
+  IF $bCreate THEN
+    Create()
+    RETURN
+  ENDIF
+  
+  aKey = $hTable.Keys
+  aVal = ME.Current
+  
+  hSrc = Common.GetSource(ME)
+  IF hSrc THEN
+    FOR EACH sKey IN hSrc.GetKeys()
+      iPos = aKey.Find(sKey)
+      IF iPos >= 0 THEN aVal[iPos] = hSrc[sKey]
+    NEXT
+  ENDIF
+
+  DB.Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get())
+  
+  Create(TRUE)
+  
+END
+
+
+PUBLIC FUNCTION _get(Key AS String) AS Variant
+  
+  IF $iIndex < 0 THEN
+    RETURN DataConnection.GetDefaultValue($sTable, Key)
+  ELSE 
+    TRY RETURN $hTable[$iIndex][Key]
+  ENDIF
+  
+END
+
+PUBLIC FUNCTION _GetInfo(Key AS String) AS DataField
+  
+  IF NOT $sTable THEN RETURN
+  IF Common.CheckDB() THEN RETURN
+  
+  RETURN DataConnection[$sTable, Key, $bCreate]
+  
+END
+
+PUBLIC FUNCTION GetKeys() AS String[]
+  
+  RETURN $hTable.Keys
+  
+END
+
+' PRIVATE FUNCTION Connection_Read() AS Connection
+' 
+'   IF $hConn <> DB.Current THEN RETURN $hConn
+'   
+' END
+' 
+' PRIVATE SUB Connection_Write(hConn AS Connection)
+'   
+'   IF NOT hConn THEN hConn = DB.Current
+'   
+'   $hConn = hConn
+'   Load
+'   
+' END
+
+
+PRIVATE FUNCTION Table_Read() AS String
+  
+  RETURN $sTable
+  
+END
+
+PRIVATE SUB Table_Write(sTable AS String)
+  
+  $sTable = sTable
+  Load
+  
+END
+
+PRIVATE FUNCTION Filter_Read() AS String
+  
+  RETURN $sFilter
+  
+END
+
+PRIVATE SUB Filter_Write(sFilter AS String)
+  
+  $sFilter = sFilter
+  Load
+  
+END
+
+PRIVATE FUNCTION Modified_Read() AS Boolean
+  
+  RETURN CheckModified()  
+  
+END
+
+PRIVATE FUNCTION Current_Read() AS Variant[]
+
+  IF $iIndex >= 0 THEN
+    RETURN $hTable.GetKeys($iIndex).Copy()
+  ENDIF
+  
+END
+
+PRIVATE SUB SetCreateMode(bCreate AS Boolean)
+
+  IF bCreate = $bCreate THEN RETURN
+  $bCreate = bCreate
+  '$cInfo.Clear
+  
+END
+
+PRIVATE FUNCTION Index_Read() AS Integer
+  
+  RETURN $iIndex
+  
+END
+
+
+PUBLIC FUNCTION _GetTable() AS DataTable
+  
+  RETURN $hTable
+  
+END
+
+
+PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+  
+  RETURN $bReadOnly
+  
+END
+
+PRIVATE SUB ReadOnly_Write(bReadOnly AS Boolean)
+  
+  IF $bReadOnly = bReadOnly THEN RETURN
+  $bReadOnly = bReadOnly
+  Load
+  
+END
+
+
+PRIVATE FUNCTION Sort_Read() AS String
+
+  RETURN $hTable.Sort  
+
+END
+
+PRIVATE SUB Sort_Write(Value AS String)
+
+  IF CheckModified() THEN
+    IF Save() THEN RETURN
+  ENDIF
+  $hTable.Sort = Value
+  Redraw
+
+END

@@ -1,0 +1,45 @@
+# Gambas Form File 1.0
+
+{ FrmServer Form
+  MoveScaled(9.125,10.875,37.25,41.25)
+  'Move(73,87,298,330)
+  Text = ("UDP Test")
+  Border = Window.Fixed
+  { Button1 Button
+    MoveScaled(4,1,30,3)
+    'Move(32,8,240,24)
+    Text = ("New UDP Client window")
+  }
+  { Label1 Label
+    MoveScaled(2,8,33,3)
+    'Move(16,64,264,24)
+    Text = ("Super String Reverse Server")
+    Alignment = Align.Center
+  }
+  { Label2 Label
+    MoveScaled(1,12,11,3)
+    'Move(8,96,88,24)
+    Text = ("Port :")
+    Alignment = Align.Center
+  }
+  { TextArea1 TextArea
+    MoveScaled(1,16,35,24)
+    'Move(8,128,280,192)
+    Text = ("")
+    ReadOnly = True
+  }
+  { TextBox1 TextBox
+    MoveScaled(14,12,7,3)
+    'Move(112,96,56,24)
+    Text = ("32340")
+  }
+  { Button2 Button
+    MoveScaled(22,12,13,3)
+    'Move(176,96,104,24)
+    Text = ("Start !")
+  }
+  { UDPServer #UdpSocket
+    #X = 232
+    #Y = 264
+  }
+}

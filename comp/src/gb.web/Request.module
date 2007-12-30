@@ -1,0 +1,333 @@
+' Gambas module file
+
+EXPORT 
+
+PROPERTY READ Fields AS String[]
+PROPERTY READ Cookies AS Collection
+PROPERTY READ Method AS String
+PROPERTY READ Path AS String
+PROPERTY READ Query AS String
+PROPERTY READ Files AS Collection
+PROPERTY Delimiter AS String
+PROPERTY READ InternetExplorer AS Integer
+
+PRIVATE $cCookies AS Collection
+PRIVATE $cVal AS Collection
+PRIVATE $cFiles AS Collection
+PRIVATE $aField AS NEW String[]
+PRIVATE $iMaxLength AS Integer
+PRIVATE $sBuffer AS String
+PRIVATE $bEOF AS Boolean
+PRIVATE $sDelimiter AS String = "&"
+PRIVATE $iIE AS Integer
+
+PRIVATE SUB ReadLine() AS String
+  
+  DIM iPos AS Integer
+  DIM sLine AS String
+  DIM sData AS String
+
+  DO
+
+    iPos = InStr($sBuffer, "\r\n")
+    IF iPos THEN 
+      sLine = Left($sBuffer, iPos - 1)
+      $sBuffer = Mid$($sBuffer, iPos + 2)
+      BREAK
+    ENDIF
+    
+    IF $iMaxLength = 0 THEN
+      $bEOF = TRUE
+      sLine = $sBuffer
+      $sBuffer = ""
+      BREAK
+    ENDIF
+    
+    READ sData, Min(4096, $iMaxLength)
+    $iMaxLength -= Len(sData)
+    $sBuffer &= sData
+    
+  LOOP
+
+  RETURN sLine
+  
+END
+
+
+PRIVATE SUB DecodeURL(sUrl AS String, cVal AS Collection)
+  
+  DIM sElt AS String
+  DIM aElt AS String[]
+  DIM sKey AS String
+  DIM sVal AS String
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+  DIM sCar AS String
+
+  sUrl = Trim(sUrl)
+  
+  FOR EACH sElt IN Split(sUrl, $sDelimiter)
+  
+    IF NOT sElt THEN CONTINUE
+  
+    aElt = Split(sElt, "=")
+    IF aElt.Count = 2 THEN
+      sKey = CGI.Decode(aElt[0])
+      IF NOT sKey THEN CONTINUE
+      sVal = CGI.Decode(aElt[1])
+    ELSE 
+      sKey = CGI.Decode(aElt[0])
+      IF NOT sKey THEN CONTINUE
+      sVal = ""
+    ENDIF
+    
+    IF NOT $aField.Exist(sKey) THEN
+      $aField.Add(sKey)
+      cVal[sKey] = sVal
+    ELSE IF sVal THEN 
+      'IF TypeOf(cVal[sKey]) = gb.String THEN 
+      '  cVal[sKey] = [CStr(cVal[sKey]), sVal]
+      'ELSE  
+      '  cVal[sKey].Add(sVal)
+      'ENDIF
+      cVal[sKey] &= "\n" & sVal
+    ENDIF
+  
+  NEXT  
+ 
+END
+
+
+PRIVATE SUB DecodeQueryForm()
+  
+  DIM sStr AS String
+  DIM sType AS String
+  DIM sLine AS String
+  DIM aElt AS String[]
+  DIM sElt AS String
+  DIM sName AS String
+  DIM sFileName AS String
+  DIM sValue AS String
+  DIM iLength AS Integer
+  DIM bFile AS Boolean
+  DIM bFirst AS Boolean
+  DIM hFile AS File
+  
+  $cVal = NEW Collection
+  $cFiles = NEW Collection
+
+  IF CGI["REQUEST_METHOD"] = "GET" THEN
+    DecodeURL(CGI["QUERY_STRING"], $cVal)  
+    RETURN
+  ENDIF
+
+  IF CGI["REQUEST_METHOD"] <> "POST" THEN RETURN
+  
+  File.In.EndOfLine = gb.Windows
+  
+  sType = CGI["CONTENT_TYPE"]
+  $iMaxLength = CGI["CONTENT_LENGTH"]
+  'DEBUG sType
+  
+  IF sType = "application/x-www-form-urlencoded" THEN 
+    READ sStr, $iMaxLength
+    'LINE INPUT sStr
+    DecodeURL(sStr, $cVal)
+    RETURN
+  ENDIF
+    
+  IF NOT (sType LIKE "multipart/form-data*") THEN RETURN
+  
+  'SHELL "echo MaxLength = " & CStr($iMaxLength) & " >> /var/log/thttpd/debug.log" WAIT
+  'sType = Scan(sType, "*boundary=*")[1]
+  
+  sType = ReadLine()
+  'IF sLine <> sType THEN RETURN
+  
+  WHILE NOT $bEOF
+  
+    sLine = ReadLine()
+    
+    IF sLine LIKE "Content-Disposition:*" THEN 
+      bFile = FALSE
+      sFileName = ""
+      aElt = Split(sLine, ";", Chr$(34))
+      FOR EACH sElt IN aElt
+        sElt = Trim(sElt)
+        'SHELL "echo " & Quote.Shell(sElt) & " >> /var/log/thttpd/debug.log" WAIT
+        IF sElt LIKE "name=*" THEN 
+          sName = Split(sElt, "=", Chr$(34))[1]
+        ELSE IF sElt LIKE "filename=*" THEN
+          bFile = TRUE
+          sFileName = Split(sElt, "=", Chr$(34))[1]
+        ENDIF
+      NEXT
+      CONTINUE
+    ENDIF
+    
+    IF sLine THEN CONTINUE
+
+    IF bFile THEN 
+    
+      sValue = sFileName
+      IF sValue THEN
+        sFileName = Temp$()
+        $cFiles[sName] = sFileName
+        
+        hFile = OPEN sFileName FOR CREATE
+  
+        bFirst = TRUE    
+        DO
+          sLine = ReadLine()
+          IF Left(sLine, Len(sType)) = sType THEN BREAK
+          IF NOT bFirst THEN PRINT #hFile, "\r\n";
+          PRINT #hFile, sLine;
+          bFirst = FALSE
+        LOOP
+        
+        CLOSE #hFile
+      ELSE
+        DO
+          sLine = ReadLine()
+          IF Left(sLine, Len(sType)) = sType THEN BREAK
+        LOOP
+      ENDIF
+
+      'SHELL "echo filename = " & Quote.Shell(sFileName) & " >> /var/log/thttpd/debug.log" WAIT
+
+    ELSE
+    
+      sValue = ""
+      DO
+        sLine = ReadLine()
+        IF Left(sLine, Len(sType)) = sType THEN BREAK
+        IF sValue THEN sValue &= "\r\n"
+        sValue &= sLine
+      LOOP
+      
+      'SHELL "echo value = " & Quote.Shell(sValue) & " >> /var/log/thttpd/debug.log" WAIT
+
+    ENDIF
+    
+    IF sName THEN 
+      IF NOT $aField.Exist(sName) THEN 
+        $aField.Add(sName)
+        $cVal[sName] = sValue
+      ELSE 
+        ' IF TypeOf($cVal[sName]) = gb.String THEN 
+        '   $cVal[sName] = [CStr($cVal[sName]), sValue]
+        ' ELSE  
+        '   $cVal[sName].Add(sValue)
+        ' ENDIF
+        $cVal[sName] &= "\n" & sValue
+      ENDIF
+    ENDIF
+      
+    IF Right(sLine, 2) = "--" THEN BREAK
+
+  WEND 
+    
+  'SHELL "echo =DONE= >> /var/log/thttpd/debug.log" WAIT
+
+END
+
+PUBLIC SUB _init()
+  
+  DIM sAgent AS String = CGI["HTTP_USER_AGENT"]
+  DIM aScan AS String[] = Scan(sAgent, "*; MSIE *;*")
+  TRY $iIE = Val(aScan[1])
+  
+END
+
+
+PUBLIC SUB _get(Key AS String) AS String
+  
+  IF NOT $cVal THEN DecodeQueryForm
+  RETURN $cVal[Key]
+  
+END
+
+PUBLIC SUB _put(Value AS Variant, Key AS String)
+  
+  IF NOT $cVal THEN $cVal = NEW Collection
+  $cVal[Key] = Value
+  
+END
+
+PRIVATE FUNCTION Fields_Read() AS String[]
+
+  IF NOT $cVal THEN DecodeQueryForm
+  RETURN $aField
+
+END
+
+PRIVATE FUNCTION Cookies_Read() AS Collection
+
+  DIM sCookie AS String
+  DIM aCookie AS String[]
+
+  IF NOT $cCookies THEN
+    
+    $cCookies = NEW Collection
+    
+    FOR EACH sCookie IN Split(CGI["HTTP_COOKIE"], ";")
+      sCookie = Trim(sCookie)
+      aCookie = Split(sCookie, "=")
+      $cCookies[aCookie[0]] = aCookie[1]
+    NEXT
+ 
+  ENDIF
+
+  RETURN $cCookies
+
+END
+
+
+PRIVATE FUNCTION Method_Read() AS String
+
+  RETURN CGI["REQUEST_METHOD"]  
+
+END
+
+PRIVATE FUNCTION Path_Read() AS String
+
+  RETURN CGI["PATH_INFO"]  
+
+END
+
+PRIVATE FUNCTION Query_Read() AS String
+
+  RETURN CGI["QUERY_STRING"]  
+
+END
+
+PRIVATE FUNCTION Files_Read() AS Collection
+
+  RETURN $cFiles  
+
+END
+
+PUBLIC SUB Exist(Field AS String) AS Boolean
+  
+  RETURN $aField.Find(Field) >= 0
+  
+END
+
+
+PRIVATE FUNCTION Delimiter_Read() AS String
+
+  RETURN $sDelimiter  
+
+END
+
+PRIVATE SUB Delimiter_Write(Value AS String)
+
+  $sDelimiter = Value
+
+END
+
+PRIVATE FUNCTION InternetExplorer_Read() AS Integer
+
+  RETURN $iIE  
+
+END

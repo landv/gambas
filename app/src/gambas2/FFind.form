@@ -1,0 +1,148 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,90,9)
+  Action = "find"
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  { Panel1 Panel
+    MoveScaled(0,1,32,0.4286)
+  }
+  { panFind HBox
+    MoveScaled(1,3,86,3)
+    AutoResize = True
+    Spacing = 1
+    { btnClose ToolButton
+      MoveScaled(0,0,3,3)
+      Text = ("")
+      Picture = Picture["icon:/16/close"]
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(3,0,4,3)
+      Visible = False
+      Picture = Picture["icon:/24/find"]
+    }
+    { cmbFind ComboBox
+      MoveScaled(6,0,11,3)
+      ToolTip = ("Find")
+      Expand = True
+      Text = ("")
+    }
+    { ToolButton15 ToolButton
+      MoveScaled(17,0,3,3)
+      ToolTip = ("Find next")
+      Action = "find-next"
+      Text = ("")
+      Picture = Picture["icon:/16/down"]
+    }
+    { ToolButton14 ToolButton
+      MoveScaled(20,0,3,3)
+      ToolTip = ("Find previous")
+      Action = "find-previous"
+      Text = ("")
+      Picture = Picture["icon:/16/up"]
+    }
+    { ToolButton1 ToolButton
+      MoveScaled(23,0,3,3)
+      ToolTip = ("Search list")
+      Action = "find-all"
+      Text = ("")
+      Picture = Picture["img/16/find-list.png"]
+    }
+    { cmbReplace ComboBox
+      MoveScaled(26,0,13,3)
+      ToolTip = ("Replace")
+      Expand = True
+      Text = ("")
+    }
+    { ToolButton16 ToolButton
+      MoveScaled(39,0,3,3)
+      ToolTip = ("Replace")
+      Action = "replace"
+      Text = ("")
+      Picture = Picture["icon:/16/replace"]
+    }
+    { ToolButton17 ToolButton
+      MoveScaled(42,0,3,3)
+      ToolTip = ("Replace all")
+      Action = "replace-all"
+      Text = ("")
+      Picture = Picture["img/16/wizard.png"]
+    }
+    { ToolBar5 ToolBar
+      MoveScaled(55,0,12,3)
+      Visible = False
+      AutoResize = False
+      Action = "find-in"
+      { ToolButton18 ToolButton
+        MoveScaled(0,0,3,3)
+        ToolTip = ("Search in procedure")
+        Action = "find-in-sub"
+        Text = ("")
+        Picture = Picture["img/16/procedure.png"]
+        Radio = True
+        Toggle = True
+      }
+      { ToolButton19 ToolButton
+        MoveScaled(3,0,3,3)
+        ToolTip = ("Search in file")
+        Action = "find-in-module"
+        Text = ("")
+        Picture = Picture["img/16/module.png"]
+        Radio = True
+        Toggle = True
+        Value = True
+      }
+      { btnFindInProject ToolButton
+        MoveScaled(6,0,3,3)
+        ToolTip = ("Search in project")
+        Action = "find-in-project"
+        Text = ("")
+        Picture = Picture["img/16/gambas.png"]
+        Radio = True
+        Toggle = True
+      }
+    }
+    { ToolBar6 ToolBar
+      MoveScaled(71,0,14,3)
+      Visible = False
+      AutoResize = False
+      Action = "find-option"
+      { ToolButton21 ToolButton
+        MoveScaled(0,0,3,3)
+        Font = Font["-1"]
+        ToolTip = ("Case sensitive")
+        Action = "find-case"
+        Text = ("")
+        Picture = Picture["img/16/case.png"]
+        Toggle = True
+      }
+      { ToolButton22 ToolButton
+        MoveScaled(3,0,3,3)
+        Font = Font["-1"]
+        ToolTip = ("Word only")
+        Action = "find-word"
+        Text = ("")
+        Picture = Picture["img/16/word.png"]
+        Toggle = True
+      }
+      { ToolButton23 ToolButton
+        MoveScaled(6,0,3,3)
+        ToolTip = ("Search in comments")
+        Action = "find-comment"
+        Text = ("")
+        Picture = Picture["img/16/comment.png"]
+        Toggle = True
+      }
+      { ToolButton2 ToolButton
+        MoveScaled(9,0,3,3)
+        ToolTip = ("Search in strings")
+        Action = "find-string"
+        Text = ("")
+        Picture = Picture["img/16/string.png"]
+        Toggle = True
+      }
+    }
+  }
+}

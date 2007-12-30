@@ -1,0 +1,21 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(87.4286,62.4286,22,14)
+  Text = ("")
+  Icon = Picture["img/16/gambas.png"]
+  Mask = True
+  Persistent = True
+  Border = Window.None
+  Stacking = Window.Above
+  SkipTaskbar = True
+  { timAnim #Timer
+    #X = 98
+    #Y = 49
+    Delay = 200
+  }
+  { panThere Panel
+    MoveScaled(11,5,2,2)
+    Visible = False
+  }
+}

@@ -1,0 +1,30 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(20.25,12.25,65.75,51)
+  'Move(162,98,526,408)
+  Text = ("Edit text property")
+  { chkFont CheckBox
+    MoveScaled(1,28,37,3)
+    'Move(8,224,296,24)
+    Text = ("Use a fixed font")
+  }
+  { txtText TextArea
+    MoveScaled(1,1,36,17)
+    'Move(8,8,288,136)
+    Text = ("")
+    Wrap = True
+  }
+  { btnOK Button
+    MoveScaled(22,28,13,3)
+    'Move(176,224,104,24)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(36,28,13,3)
+    'Move(288,224,104,24)
+    Text = ("Cancel")
+    Cancel = True
+  }
+}

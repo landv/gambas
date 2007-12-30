@@ -1,0 +1,154 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0.1429,2.4286,84,47)
+  Text = ("Debug")
+  Icon = Picture["img/16/info.png"]
+  Persistent = True
+  Arrangement = Arrange.Fill
+  { splDebug HSplit
+    MoveScaled(1,1,81,45)
+    { panStack VBox
+      MoveScaled(1,3,22,41)
+      Visible = False
+      Expand = True
+      { HBox3 HBox
+        MoveScaled(1,1,19,3)
+        { PictureBox1 PictureBox
+          MoveScaled(0,0,3,3)
+          Picture = Picture["img/16/stack.png"]
+          Alignment = Align.Center
+        }
+        { Label1 Label
+          MoveScaled(4,0,14,3)
+          Expand = True
+          Text = ("Stack backtrace")
+        }
+      }
+      { lstStack ListBox
+        MoveScaled(3,15,13,23)
+        Font = Font["-1"]
+        Expand = True
+      }
+    }
+    { tabDebug TabStrip
+      MoveScaled(24,3,56,38)
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Spacing = 4
+      Padding = 4
+      Count = 5
+      Index = 0
+      Text = ("Local variables")
+      Picture = Picture["img/16/local.png"]
+      { cvwLocal ColumnView
+        MoveScaled(2,3,41,22)
+        Expand = True
+        Mode = Select.Multiple
+        ScrollBar = Scroll.Vertical
+      }
+      { chkSortLocal CheckBox
+        MoveScaled(2,30,28,3)
+        Text = ("Sort local variables")
+      }
+      Index = 1
+      Text = ("Current object")
+      Picture = Picture["img/16/current.png"]
+      { cvwObject ColumnView
+        MoveScaled(1,1,41,22)
+        Expand = True
+        Mode = Select.Multiple
+        ScrollBar = Scroll.Vertical
+      }
+      { HBox2 HBox
+        MoveScaled(0,27,58,3)
+        Spacing = 8
+        { chkSortObject CheckBox
+          MoveScaled(0,0,28,3)
+          Expand = True
+          Text = ("Sort object variables")
+        }
+        { btnShowME Button
+          MoveScaled(55,0,3,3)
+          Text = ("")
+          Picture = Picture["icon:/16/fullscreen"]
+        }
+      }
+      Index = 2
+      Text = ("Watch")
+      Picture = Picture["icon:/16/watch"]
+      { HBox1 HBox
+        MoveScaled(2,2,42,3)
+        { btnKillAllWatch ToolButton
+          MoveScaled(1,0,3,3)
+          ToolTip = ("Remove all expressions")
+          Text = ("")
+          Picture = Picture["icon:/16/trash"]
+        }
+        { btnKillWatch ToolButton
+          MoveScaled(4,0,3,3)
+          ToolTip = ("Remove current expression")
+          Text = ("")
+          Picture = Picture["icon:/16/close"]
+        }
+        { btnWatch ToolButton
+          MoveScaled(7,0,3,3)
+          ToolTip = ("Add expression")
+          Text = ("")
+          Picture = Picture["icon:/16/watch"]
+        }
+        { Panel2 Panel
+          MoveScaled(11,0,1,3)
+        }
+        { cmbWatch ComboBox
+          MoveScaled(13,0,27,3)
+          Expand = True
+          Text = ("")
+        }
+      }
+      { cvwWatch ColumnView
+        MoveScaled(2,8,40,22)
+        Expand = True
+        ScrollBar = Scroll.Vertical
+      }
+      Index = 3
+      Text = ("Breakpoints")
+      Picture = Picture["icon:/16/flag"]
+      { Panel3 Panel
+        MoveScaled(1,1,40,31)
+        Expand = True
+        Arrangement = Arrange.Horizontal
+        Spacing = 4
+        { VBox1 VBox
+          MoveScaled(1,0,3,13)
+          { btnRemoveBreak ToolButton
+            MoveScaled(0,0,3,3)
+            ToolTip = ("Remove current breakpoint")
+            Text = ("")
+            Picture = Picture["icon:/16/close"]
+          }
+          { btnClearBreak ToolButton
+            MoveScaled(0,3,3,3)
+            ToolTip = ("Remove all breakpoints")
+            Text = ("")
+            Picture = Picture["icon:/16/trash"]
+          }
+        }
+        { lstBreak ListBox
+          MoveScaled(12,5,27,21)
+          Expand = True
+          Sorted = True
+        }
+      }
+      Index = 4
+      Text = ("Console")
+      Picture = Picture["icon:/16/terminal"]
+      { panConsole Panel
+        MoveScaled(4,4,24,24)
+        Expand = True
+        Arrangement = Arrange.Fill
+      }
+      Index = 0
+    }
+  }
+}
