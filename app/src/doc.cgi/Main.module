@@ -546,7 +546,7 @@ PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
     CASE "seealso"
       '$sRes &= "<p><table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\">\n"
       '$sRes &= "<tr><th>" & ("See also") & "</th></tr><tr><td valign=\"top\">\n"
-      $sRes &= "<hr><b>" & ("See also") & "</b><br>\n"
+      $sRes &= "<h2>" & ("See also") & "</h2>\n"
       $iPos = Len($sRes)
 
     CASE "error"
