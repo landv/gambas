@@ -1,0 +1,248 @@
+' Gambas class file
+
+STATIC PRIVATE $hForm AS FForm 'FForm
+STATIC PRIVATE $cPict AS NEW Collection
+
+PRIVATE $bNoSelect AS Boolean
+
+PRIVATE SUB GetForm() AS Boolean
+  
+  $hForm = NULL
+  TRY $hForm = Project.ActiveForm
+  IF NOT $hForm THEN 
+    HideAll
+    RETURN TRUE
+  ENDIF
+  
+END
+
+
+PUBLIC SUB Form_Open()
+  
+  ReadConfig
+  
+END
+
+
+PUBLIC SUB Form_Show()
+
+  RefreshAll
+
+END
+
+
+PUBLIC SUB Form_Hide()
+
+  $hForm = NULL
+
+END
+
+
+PRIVATE SUB FillTree(hCtrl AS CControl, OPTIONAL sParent AS String)
+
+  DIM hChild AS Control
+  DIM hTab AS Object
+  DIM iTab AS Integer
+  DIM sImg AS String
+  DIM sKey AS String
+  DIM hPict AS Picture
+
+  IF NOT hCtrl THEN RETURN
+
+  IF sParent THEN
+    sImg = "img/control/" & LCase(hCtrl.Kind) & ".png"
+  ELSE
+    sImg = "img/32/form.png"
+  ENDIF
+
+  hPict = $cPict[sImg]
+  IF NOT hPict THEN
+    hPict = Picture[sImg]
+    IF NOT hPict THEN hPict = Picture["img/control/unknown.png"]
+    hPict = hPict.Image.Stretch(16, 16, TRUE).Picture  
+    $cPict[sImg] = hPict
+  ENDIF
+
+  tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
+
+  IF NOT hCtrl.IsContainer() THEN RETURN
+
+  'IF hCtrl.Kind = "TabStrip" THEN
+  IF hCtrl.IsMultiContainer() THEN
+
+    hTab = hCtrl.Control
+
+    FOR iTab = 0 TO hTab.Count - 1
+      sKey = hCtrl.Name & "." & iTab
+      tvwControl.Add(sKey, hTab[iTab].Text, $cPict["img/control/tabstrip.png"], hCtrl.Name)
+      FOR EACH hChild IN hTab[iTab].Children
+        IF NOT hChild.Tag THEN CONTINUE
+        FillTree($hForm.Control[hChild.Tag], sKey)
+      NEXT
+      tvwControl[sKey].Expanded = TRUE
+    NEXT
+
+  ELSE
+
+    FOR EACH hChild IN hCtrl.Control.Children
+      IF NOT hChild.Tag THEN CONTINUE
+      FillTree($hForm.Control[hChild.Tag], hCtrl.Name)
+    NEXT
+
+  ENDIF
+
+  tvwControl[hCtrl.Name].Expanded = TRUE
+
+END
+
+PUBLIC SUB RefreshReadOnly()
+  
+  IF GetForm() THEN RETURN
+
+  panControl.Visible = NOT $hForm.ReadOnly  
+  
+END
+
+
+
+
+PUBLIC SUB RefreshAll(OPTIONAL sKey AS String)
+
+  IF NOT ME.Visible THEN RETURN
+
+  IF GetForm() THEN RETURN
+  
+  'IF NOT Project.IsForm($hForm) THEN RETURN
+
+  IF NOT sKey THEN
+    TRY sKey = $hForm.Master.Name
+  ENDIF 
+
+  tvwControl.Clear
+  FillTree($hForm.Control[$hForm.Name])
+  tvwControl.Show
+  lblMessage.Hide
+  RefreshReadOnly
+  
+  IF sKey THEN
+    TRY tvwControl[sKey].Selected = TRUE
+    TRY tvwControl[sKey].EnsureVisible
+  ENDIF
+  
+  $bNoSelect = FALSE
+  
+END
+
+PUBLIC SUB RefreshOne(sKey AS String)
+  
+  IF NOT ME.Visible THEN RETURN
+  IF GetForm() THEN RETURN
+  
+  tvwControl[sKey].Delete
+  FillTree($hForm.Control[sKey])
+  
+  'TRY tvwControl[sKey].Selected = TRUE
+  'TRY tvwControl[sKey].EnsureVisible
+
+END
+
+
+PUBLIC SUB HideAll()
+
+  tvwControl.Hide
+  panControl.Hide
+  lblMessage.Show
+
+END
+
+
+
+
+PUBLIC SUB btnDown_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].MoveDown
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB btnBottom_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].Raise
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB btnTop_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].Lower
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB btnUp_Click()
+
+  DIM sKey AS String
+
+  sKey = tvwControl.Key
+  TRY $hForm.Control[tvwControl.Current.Text].MoveUp
+  IF ERROR THEN RETURN
+  RefreshAll(sKey)
+
+END
+
+PUBLIC SUB Select(sName AS String)
+  
+  IF tvwControl.Exist(sName) THEN 
+    TRY tvwControl[sName].EnsureVisible
+    $bNoSelect = TRUE
+    tvwControl[sName].Selected = TRUE
+    $bNoSelect = FALSE
+  ENDIF
+
+END
+
+
+PUBLIC SUB tvwControl_Select()
+  
+  IF NOT $bNoSelect THEN 
+    IF InStr(tvwControl.Current.Key, ".") THEN 
+      tvwControl.MoveParent
+      TRY $hForm.SelectControl(tvwControl.Item.Text)
+    ELSE
+      TRY $hForm.SelectControl(tvwControl.Current.Text)
+    ENDIF
+  ENDIF 
+
+END
+
+PUBLIC SUB tvwControl_Collapse()
+
+  tvwControl.Item.Expanded = TRUE  
+
+END
+
+
+PUBLIC SUB ReadConfig()
+
+  tvwControl.Font.Grade = If(Settings["/UseSmallFont", FALSE], -2, 0)
+  RefreshAll
+
+END
+
+PUBLIC SUB tvwControl_Activate()
+
+  FMain.ActivatePropertyTab
+
+END

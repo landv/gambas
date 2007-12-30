@@ -1,0 +1,95 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+'PROPERTY Border AS Integer "<Border>"
+PROPERTY Columns AS String[]
+PROPERTY Control AS Boolean
+PROPERTY READ GridView AS GridView
+PROPERTY Header AS Boolean
+PROPERTY Orientation AS Integer
+
+PUBLIC CONST _Properties AS String = "*,Control=True,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
+
+PRIVATE $hForm AS FBrowser
+
+PUBLIC SUB _new()
+  
+  $hForm = NEW FBrowser(ME)
+  
+END
+
+PUBLIC SUB Refresh()
+  
+  $hForm.Update
+  
+END
+
+
+' PRIVATE FUNCTION Border_Read() AS Integer
+'   
+'   RETURN $hForm.Panel.Border
+'   
+' END
+' 
+' PRIVATE SUB Border_Write(iBorder AS Integer)
+'   
+'   $hForm.Panel.Border = iBorder
+'   
+' END
+
+PRIVATE FUNCTION Columns_Read() AS String[]
+  
+  RETURN $hForm.DataView.Columns
+  
+END
+
+PRIVATE SUB Columns_Write(aCol AS String[])
+
+  $hForm.DataView.Columns = aCol  
+  
+END
+
+PRIVATE FUNCTION Control_Read() AS Boolean
+  
+  RETURN $hForm.Panel.Visible
+  
+END
+
+PRIVATE SUB Control_Write(bVisible AS Boolean)
+  
+  $hForm.Panel.Visible = bVisible
+  
+END
+
+PRIVATE FUNCTION GridView_Read() AS GridView
+  
+  RETURN $hForm.DataView.GridView
+  
+END
+
+
+PRIVATE FUNCTION Header_Read() AS Boolean
+  
+  RETURN $hForm.DataView.Header <> GridView.None
+  
+END
+
+PRIVATE SUB Header_Write(bHeader AS Boolean)
+  
+  $hForm.DataView.Header = If(bHeader, GridView.Horizontal, GridView.None)
+  
+END
+
+PRIVATE FUNCTION Orientation_Read() AS Integer
+
+  RETURN $hForm.GetOrientation()  
+
+END
+
+PRIVATE SUB Orientation_Write(Value AS Integer)
+
+  $hForm.SetOrientation(Value)
+
+END

@@ -1,0 +1,67 @@
+' Gambas module file
+
+
+SUB GotoNext(hCtrl AS Control, OPTIONAL bSelect AS Boolean)
+
+  DIM hTextBox AS TextBox
+
+  hCtrl = hCtrl.Next
+  IF hCtrl AND IF Object.Type(hCtrl) <> "TextBox" THEN
+    hCtrl = hCtrl.Next
+  ENDIF
+
+  IF hCtrl THEN
+    hTextBox = hCtrl
+    hCtrl.SetFocus
+    hCtrl.Pos = 0
+    IF bSelect THEN hCtrl.SelectAll
+  ENDIF
+
+END
+
+
+SUB GotoPrevious(hCtrl AS Control, OPTIONAL bSelect AS Boolean)
+
+  DIM hTextBox AS TextBox
+
+  hCtrl = hCtrl.Previous
+  IF hCtrl AND IF Object.Type(hCtrl) <> "TextBox" THEN
+    hCtrl = hCtrl.Previous
+  ENDIF
+
+  IF hCtrl THEN
+    hTextBox = hCtrl
+    hCtrl.SetFocus
+    hCtrl.Pos = hCtrl.Length
+    IF bSelect THEN hCtrl.SelectAll
+  ENDIF
+
+END
+
+SUB ManageKeyPress(sCar AS String, aTextBox AS Object[])
+
+  DIM hLast AS TextBox = LAST
+
+  IF Asc(Key.Text) >= 32 AND Asc(Key.Text) < 127 THEN
+    IF NOT IsDigit(Key.Text) THEN
+      IF InStr(sCar, Key.Text) THEN
+        Help.GotoNext(LAST)
+      ENDIF
+      STOP EVENT
+      RETURN
+    ENDIF
+  ELSE IF Key.Code = Key.Home THEN
+    aTextBox[0].SelectAll
+    aTextBox[0].SetFocus
+    STOP EVENT
+  ELSE IF Key.Code = Key.End THEN
+    aTextBox[2].SelectAll
+    aTextBox[2].SetFocus
+    STOP EVENT
+  ELSE IF Key.Code = Key.Left THEN
+    IF hLast.Pos = 0 THEN GotoPrevious(LAST)
+  ELSE IF Key.Code = Key.Right THEN
+    IF hLast.Pos = hLast.Length THEN GotoNext(LAST)
+  ENDIF
+
+END

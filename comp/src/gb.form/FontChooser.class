@@ -1,0 +1,114 @@
+' Gambas class file
+
+EXPORT
+INHERITS UserControl
+
+EVENT Change
+EVENT Activate
+
+PUBLIC CONST _Properties AS String = "*,FixedOnly,ShowStyle=True,ShowPreview=True"
+PUBLIC CONST _DefaultEvent AS String = "Change"
+PUBLIC CONST _DefaultSize AS String = "36,36"
+'PUBLIC CONST _DrawWith AS String = "-"
+
+PROPERTY SelectedFont AS String
+PROPERTY Value AS String
+PROPERTY FixedOnly AS Boolean
+PROPERTY ShowStyle AS Boolean
+PROPERTY ShowPreview AS Boolean
+
+PRIVATE frmChooser AS FFontChooser
+
+PUBLIC SUB _new()
+
+  frmChooser = NEW FFontChooser(ME)
+  'Object.Attach(frmChooser, ME, "frmChooser")
+
+END
+
+PUBLIC SUB _Change()
+
+  RAISE Change
+
+END
+
+' PUBLIC SUB frmChooser_Open()
+' 
+'   frmChooser.Form_Open
+' 
+' END
+' 
+' PUBLIC SUB frmChooser_Resize()
+' 
+'   frmChooser.Form_Resize
+' 
+' END
+
+
+PRIVATE FUNCTION SelectedFont_Read() AS String
+
+  RETURN frmChooser.GetFont()
+
+END
+
+PRIVATE SUB SelectedFont_Write(sFont AS String)
+
+  frmChooser.SetFont(sFont)
+
+END
+
+PUBLIC SUB _Activate()
+
+  RAISE Activate
+
+END
+
+
+PRIVATE FUNCTION FixedOnly_Read() AS Boolean
+
+  RETURN frmChooser.ShowFixed
+
+END
+
+PRIVATE SUB FixedOnly_Write(bFixedOnly AS Boolean)
+
+  frmChooser.ShowFixed = bFixedOnly
+  frmChooser.RefreshFamily
+
+END
+
+PRIVATE FUNCTION ShowStyle_Read() AS Boolean
+
+  RETURN frmChooser.StylePanel.Visible
+
+END
+
+PRIVATE SUB ShowStyle_Write(Value AS Boolean)
+
+  frmChooser.StylePanel.Visible = Value
+
+END
+
+PRIVATE FUNCTION Value_Read() AS String
+
+  RETURN frmChooser.GetFont()  
+
+END
+
+PRIVATE SUB Value_Write(Value AS String)
+
+  frmChooser.SetFont(Value)
+
+END
+
+PRIVATE FUNCTION ShowPreview_Read() AS Boolean
+
+  RETURN frmChooser.Preview.Visible
+
+END
+
+PRIVATE SUB ShowPreview_Write(Value AS Boolean)
+
+  frmChooser.Preview.Visible = Value
+
+END

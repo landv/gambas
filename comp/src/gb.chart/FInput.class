@@ -1,0 +1,34 @@
+' Gambas class file
+
+STATIC PUBLIC Value AS String
+
+PUBLIC SUB Run() AS Boolean
+
+  RETURN NOT ME.ShowModal()
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  TextBox1.Text = Value
+
+END
+
+PUBLIC SUB TextBox1_Change()
+
+  Value = LAST.Text
+
+END

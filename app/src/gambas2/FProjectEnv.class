@@ -1,0 +1,195 @@
+' Gambas class file
+
+PRIVATE $aArg AS String[]
+PRIVATE $aEnv AS String[]
+
+PUBLIC SUB Run() AS Boolean
+
+  RETURN NOT ME.ShowModal()
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  DIM iInd AS Integer
+  
+  tvwArg.Save
+  tvwEnv.Save
+  
+  WHILE iInd < $aEnv.Count
+    IF NOT Trim(Scan($aEnv[iInd], "*=*")[0]) THEN 
+      $aEnv.Remove(iInd)
+    ELSE 
+      INC iInd
+    ENDIF
+  WEND
+
+  Project.Arguments = $aArg
+  Project.Environment = $aEnv
+  Project.WriteProject(TRUE)
+  
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+
+PUBLIC SUB Form_Open()
+
+  Settings.Read(ME)
+
+  $aArg = Project.Arguments.Copy()
+  $aEnv = Project.Environment.Copy()
+
+  tvwArg.Rows.Count = $aArg.Count
+  tvwArg.Rows.Resizable = FALSE
+  tvwArg.Columns.Count = 1
+  tvwArg.Columns.Resizable = TRUE
+  'tvwArg.Columns[0].Text = ("Argument")
+    
+  tvwEnv.Rows.Count = $aEnv.Count
+  tvwEnv.Rows.Resizable = FALSE
+  tvwEnv.Columns.Count = 2
+  tvwEnv.Columns[0].Text = ("Variable")
+  tvwEnv.Columns[1].Text = ("Value")
+  
+  'tabEnv.Index = 0
+
+END
+
+PUBLIC SUB tvwArg_Data(Row AS Integer, Column AS Integer)
+
+  tvwArg.Data.Text = $aArg[Row]  
+
+END
+
+PUBLIC SUB btnInsertArg_Click()
+
+  IF $aArg.Count >= 255 THEN RETURN
+  $aArg.Add("")
+  INC tvwArg.Rows.Count
+  tvwArg.MoveTo($aArg.Max, 0)
+  tvwArg.Edit  
+
+END
+
+PUBLIC SUB btnRemoveArg_Click()
+  
+  IF $aArg.Count = 0 THEN RETURN
+  IF tvwArg.Row < 0 THEN RETURN
+  tvwArg.Save
+  $aArg.Remove(tvwArg.Row)
+  DEC tvwArg.Rows.Count
+  tvwArg.Refresh
+  tvwArg.Edit
+  
+END
+
+
+PUBLIC SUB tvwArg_Save(Row AS Integer, Column AS Integer, Value AS String)
+
+  $aArg[Row] = Value  
+
+END
+
+PUBLIC SUB tvwArg_Insert()
+  
+  btnInsertArg_Click
+  
+END
+
+
+PUBLIC SUB tvwArg_Click()
+
+  tvwArg.Edit  
+
+END
+
+PUBLIC SUB btnMoveUpArg_Click()
+
+  IF tvwArg.Row <= 0 THEN RETURN 
+  tvwArg.Save
+  SWAP $aArg[tvwArg.Row], $aArg[tvwArg.Row - 1]
+  tvwArg.Refresh
+  DEC tvwArg.Row
+  tvwArg.Edit  
+
+END
+
+PUBLIC SUB btnMoveDownArg_Click()
+
+  IF tvwArg.Row >= (tvwArg.Rows.Count - 1) THEN RETURN 
+  tvwArg.Save
+  SWAP $aArg[tvwArg.Row], $aArg[tvwArg.Row + 1]
+  tvwArg.Refresh
+  INC tvwArg.Row
+  tvwArg.Edit
+
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(ME)  
+
+END
+
+PUBLIC SUB tvwEnv_Click()
+
+  tvwEnv.Edit
+
+END
+
+PUBLIC SUB tvwEnv_Data(Row AS Integer, Column AS Integer)
+
+  DIM aEnv AS String[] = Scan($aEnv[Row], "*=*")
+  
+  TRY tvwEnv.Data.Text = aEnv[Column]
+  
+CATCH
+
+END
+
+PUBLIC SUB tvwEnv_Save(Row AS Integer, Column AS Integer, Value AS String)
+
+  DIM aEnv AS String[] = Scan($aEnv[Row], "*=*")
+  
+  IF Column = 0 THEN 
+    $aEnv[Row] = Trim(Value) & "=" & aEnv[1]
+  ELSE 
+    $aEnv[Row] = aEnv[0] & "=" & Value
+  ENDIF
+  
+END
+
+PUBLIC SUB tvwEnv_Insert()
+  
+  btnInsertEnv_Click
+  
+END
+
+PUBLIC SUB btnInsertEnv_Click()
+
+  IF $aEnv.Count >= 255 THEN RETURN
+  $aEnv.Add("=")
+  INC tvwEnv.Rows.Count
+  tvwEnv.MoveTo($aEnv.Max, 0)
+  tvwEnv.Edit      
+
+END
+
+PUBLIC SUB btnRemoveEnv_Click()
+  
+  IF $aEnv.Count = 0 THEN RETURN
+  IF tvwEnv.Row < 0 THEN RETURN
+  tvwEnv.Save
+  $aEnv.Remove(tvwEnv.Row)
+  DEC tvwEnv.Rows.Count
+  tvwEnv.Refresh
+  
+END
+

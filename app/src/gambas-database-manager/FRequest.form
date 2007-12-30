@@ -1,0 +1,103 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(14,21,77.5714,67)
+  Text = ("")
+  Icon = Picture["img/16/sql.png"]
+  Arrangement = Arrange.Vertical
+  { splRequest VSplit
+    MoveScaled(1,5,74,59)
+    Expand = True
+    { VBox1 VBox
+      MoveScaled(4,5,64,24)
+      { HPanel1 HPanel
+        MoveScaled(6,2,19,3)
+        { btnRun ToolButton
+          MoveScaled(0,0,3,3)
+          ToolTip = ("Run")
+          Text = ("")
+          Picture = Picture["icon:/16/play"]
+        }
+        { btnNew ToolButton
+          MoveScaled(3,0,3,3)
+          ToolTip = ("New request")
+          Text = ("")
+          Picture = Picture["icon:/16/clear"]
+        }
+        { btnLoad ToolButton
+          MoveScaled(6,0,3,3)
+          ToolTip = ("Load request")
+          Text = ("")
+          Picture = Picture["icon:/16/open"]
+        }
+        { btnSave ToolButton
+          MoveScaled(9,0,3,3)
+          ToolTip = ("Save request")
+          Text = ("")
+          Picture = Picture["icon:/16/save"]
+        }
+        { btnFind ToolButton
+          MoveScaled(12,0,3,3)
+          Visible = False
+          ToolTip = ("Find")
+          Text = ("")
+          Picture = Picture["icon:/16/find"]
+        }
+      }
+      { txtRequest TextArea
+        MoveScaled(4,6,42,14)
+        Expand = True
+        Text = ("")
+        Wrap = True
+      }
+    }
+    { panRequest Panel
+      MoveScaled(2,29,67,28)
+      Arrangement = Arrange.Fill
+      { Panel3 Panel
+        MoveScaled(3,1,50,22)
+        Arrangement = Arrange.Fill
+        Padding = 8
+        { lblRequest Label
+          MoveScaled(0,0,42,14)
+          Text = ("")
+          Alignment = Align.TopNormal
+        }
+      }
+      { panData VBox
+        MoveScaled(2,5,60,21)
+        Visible = False
+        { HBox1 HBox
+          MoveScaled(16,3,38,3)
+          { btnSaveData ToolButton
+            MoveScaled(0,0,3,3)
+            ToolTip = ("Export data")
+            Text = ("")
+            Picture = Picture["icon:/16/save"]
+          }
+          { btnCopyData ToolButton
+            MoveScaled(3,0,3,3)
+            ToolTip = ("Copy data in clipboard")
+            Text = ("")
+            Picture = Picture["icon:/16/copy"]
+          }
+          { lblCount Label
+            MoveScaled(8,0,26,3)
+            Expand = True
+            Text = ("")
+            Alignment = Align.Right
+          }
+          { Panel2 Panel
+            MoveScaled(35,0,1,3)
+          }
+        }
+        { tbvData GridView
+          MoveScaled(13,7,37,12)
+          Font = Font["8"]
+          Expand = True
+          Header = GridView.Both
+        }
+      }
+    }
+  }
+}

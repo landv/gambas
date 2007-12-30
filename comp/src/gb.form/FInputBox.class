@@ -1,0 +1,55 @@
+' Gambas class file
+
+PRIVATE $sPrompt AS String
+PRIVATE $sTitle AS String
+PRIVATE $sValue AS String
+
+PUBLIC SUB Run(sPrompt AS String, OPTIONAL sTitle AS String, sDefault AS String) AS String
+
+  IF NOT sTitle THEN 
+    TRY sTitle = Application.ActiveWindow.Title
+    IF ERROR THEN sTitle = Application.Name
+  ENDIF 
+  
+  $sPrompt = sPrompt
+  $sTitle = sTitle
+  $sValue = sDefault
+  
+  IF ME.ShowModal() THEN RETURN $sValue
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+  ME.Center
+  
+  lblMessage.Text = $sPrompt
+  txtValue.Text = $sValue
+  
+  ME.Title = $sTitle
+  
+  panBox.W = lblMessage.W
+  panBox.Arrangement = Arrange.Vertical
+  
+  ME.Border = Window.Resizable
+  ME.Resize(btnOK.Parent.X + btnOK.W + ME.Padding, txtValue.Parent.Y + txtValue.Y + txtValue.H + ME.Padding)
+  ME.Border = Window.Fixed
+
+  txtValue.SelectAll
+  txtValue.SetFocus
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  $sValue = txtValue.Text
+  ME.Close(TRUE)
+
+END

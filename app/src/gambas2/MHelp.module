@@ -1,0 +1,103 @@
+' Gambas module file
+
+PRIVATE SUB GetPath(sPath AS String) AS String
+  
+  sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
+  sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
+  RETURN System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
+  
+END
+
+
+PUBLIC SUB Open()
+
+  Project.OpenWebPage(GetPath("tree/index.html"))
+
+END
+
+PRIVATE SUB FormatName(sName AS String) AS String
+  
+  sName = LCase(sName)
+  sName = Replace(sName, ".", "+")
+  sName = Replace(sName, "_", "+")
+  sName = Replace(sName, ":", "+")
+  RETURN sName
+  
+END
+
+
+PUBLIC SUB GotoSymbol(hSymbol AS CSymbolInfo)
+  
+  DIM sLink AS String
+  DIM sName AS String
+  
+  sName = LCase(hSymbol.Name)
+  
+  IF hSymbol.Component = "gb" AND IF hSymbol.Class = "." THEN
+    sLink = "help/lang"
+  ELSE
+    sLink = "help/comp"
+    sLink &= "/" & hSymbol.Component
+    IF hSymbol.Class <> "." THEN sLink &= "/" & LCase(hSymbol.Class)
+  ENDIF
+
+  sLink &/= sName '& ".html"
+  sLink = FormatName(sLink)
+  
+  Project.OpenWebPage(GetPath(sLink) & ".html")
+  
+END
+
+PUBLIC SUB GotoComponent(sComp AS String)
+  
+  DIM sLink AS String
+  
+  sLink = "help/comp" &/ FormatName(sComp)
+  Project.OpenWebPage(GetPath(sLink) & ".html")
+  
+END
+
+PUBLIC SUB GotoClass(sComp AS String, sClass AS String)
+  
+  DIM sLink AS String
+  
+  sLink = "help/comp" &/ FormatName(sComp) &/ FormatName(sClass)
+  Project.OpenWebPage(GetPath(sLink) & ".html")
+  
+END
+
+PUBLIC FUNCTION GotoKeyword(sName AS String, OPTIONAL sName2 AS String) AS Boolean
+
+  DIM sPath AS String
+
+  IF sName2 THEN
+    IF NOT GotoKeyword(sName2) THEN RETURN
+  ENDIF
+
+  IF Right(sName) = "$" THEN sName = Left$(sName, -1)
+
+  sPath = GetPath("help/lang" &/ LCase(sName)) & ".html"
+  IF NOT Exist(sPath) THEN RETURN TRUE
+  Project.OpenWebPage(sPath)
+  
+CATCH
+
+  RETURN TRUE
+
+END
+
+PUBLIC FUNCTION GotoDatatype(sName AS String) AS Boolean
+
+  DIM sPath AS String
+
+  sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
+  IF NOT Exist(sPath) THEN RETURN TRUE
+  Project.OpenWebPage(sPath)
+  
+CATCH
+
+  RETURN TRUE
+
+END
+
+

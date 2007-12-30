@@ -1,0 +1,412 @@
+' Gambas class file
+
+STATIC PRIVATE $sPath AS String 
+STATIC PRIVATE $hConn AS CConnection
+
+STATIC PRIVATE $sDelim AS String
+STATIC PRIVATE $sEscape AS String
+STATIC PRIVATE $sCharset AS String
+STATIC PRIVATE $iEndOfLine AS Integer
+STATIC PRIVATE $bStrip AS Boolean
+
+STATIC PRIVATE $iLine AS Integer
+STATIC PRIVATE $bImport AS Boolean
+STATIC PRIVATE $bCancel AS Boolean
+
+STATIC PRIVATE $cCar AS NEW Collection
+
+PRIVATE CONST REMOVE_ACC AS String = "ÀÁÂÃÄÅàáâãäå[a]Ææ[ae]Çç[c]ÈÉÊËèéêë[e]ÌÍÎÏìíîï[i]Ññ[n]ÒÓÔÕÖòóôõö[o]ÙÚÛÜùúûü[u]Ýýÿ[y]ß[ss]°[]"
+
+STATIC PUBLIC FUNCTION Run(hConn AS CConnection, sPath AS String) AS Boolean
+  
+  $sPath = sPath
+  $hConn = hConn
+  
+  RETURN NOT FImport.ShowModal()
+  
+END
+
+PUBLIC SUB btnOK_Click()
+
+  IF $bImport THEN
+    $bCancel = TRUE
+  ELSE
+    btnOK.Text = ("Cancel")
+    WAIT
+    DoImport
+    btnOK.Text = ("Import")
+  ENDIF
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB Form_Open()
+
+  DIM hFile AS File
+  DIM sLine AS String
+  DIM sData AS String
+  DIM I AS Integer
+
+  txtPath.Text = $sPath
+  txtPath.Pos = txtPath.Length
+  
+  cmbTable.List = $hConn.Tables
+  cmbTable.Text = File.BaseName($sPath)
+
+  hFile = OPEN $sPath
+  READ #hFile, sData, -65536
+  IF NOT Eof(hFile) THEN sData &= "..."
+  CLOSE #hFile
+  
+  txtPreview.Text = sData
+  
+END
+
+PUBLIC SUB chkFirstLine_Click()
+
+  cmbKey.Enabled = chkFirstLine.Value
+  UpdateKey
+
+END
+
+PRIVATE SUB UpdateDelim()
+  
+  IF cmbDelim.Text = cmbDelim[0].Text THEN
+    $sDelim = Chr$(9)
+  ELSE IF cmbDelim.Text = cmbDelim[1].Text THEN
+    $sDelim = " "
+  ELSE
+    $sDelim = cmbDelim.Text    
+  ENDIF
+  
+  $sEscape = cmbEscape.Text
+  
+  $sCharset = cmbCharset.Text
+  
+  $iEndOfLine = Choose(cmbEndOfLine.Index + 1, gb.Unix, gb.Windows, gb.Mac)
+  
+  $bStrip = chkStrip.Value
+  
+END
+
+PRIVATE FUNCTION Analyze(sLig AS String, OPTIONAL sCharset AS String = Desktop.Charset) AS String[]
+  
+  TRY sLig = Conv(sLig, $sCharset, sCharset)
+  RETURN Split(sLig, $sDelim, $sEscape)
+  
+END
+
+
+PRIVATE SUB UpdateKey()
+
+  DIM hFile AS File
+  DIM sLig AS String
+  DIM aData AS String[]
+
+  IF NOT cmbKey.Enabled THEN RETURN
+  
+  UpdateDelim
+  
+  hFile = OPEN $sPath FOR INPUT
+  hFile.EndOfLine = $iEndOfLine
+  
+  'WHILE NOT Eof(hFile)
+  IF NOT Eof(hFile) THEN
+    sLig = ReadLine(hFile)
+    aData = [("(Automatic key)")]
+    aData.Insert(MakeFields(Analyze(sLig)))
+    cmbKey.List = aData
+  ENDIF
+  'WEND
+
+FINALLY
+
+  CLOSE hFile
+
+CATCH
+
+  DEBUG Error.Where; ":";; Error.Text
+
+END
+
+PUBLIC SUB cmbDelim_Click()
+
+  UpdateKey
+
+END
+
+PUBLIC SUB cmbCharset_Click()
+
+  UpdateKey
+
+END
+
+PUBLIC SUB cmbCharset_Activate()
+
+  UpdateKey
+
+END
+
+PUBLIC SUB cmbEndOfLine_Click()
+
+  UpdateKey
+
+END
+
+PRIVATE SUB DoMessage(sMsg AS String)
+  
+  lstMessage.Add($iLine & ": " & sMsg)
+  WAIT
+  
+END
+
+
+PRIVATE FUNCTION TransformField(sName AS String) AS String
+
+  DIM iInd AS Integer
+  DIM sCar AS String
+  DIM iPos AS Integer
+  DIM iPosL AS Integer
+  DIM iPosR AS Integer
+  DIM sNewName AS String
+  
+  sName = Trim(sName) 
+   
+  FOR iInd = 1 TO Len(sName)
+    IF Asc(Mid(sName, iInd, 1)) <= 32 OR IF InStr("-.", Mid(sName, iInd, 1)) THEN 
+      sName = Left(sName, iInd - 1) & "_" & Mid(sName, iInd + 1)
+    ENDIF
+  NEXT
+  
+  FOR iInd = 1 TO String.Len(sName)
+    sCar = String.Mid$(sName, iInd, 1)
+    iPos = InStr(REMOVE_ACC, sCar)
+    IF iPos THEN
+      iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
+      iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
+      IF iPosL <> 0 AND IF iPosR <> 0 AND IF iPosL < iPosR THEN 
+        sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
+      ENDIF 
+    ENDIF
+    sNewName &= sCar
+  NEXT
+
+  RETURN sNewName
+  
+END
+
+PRIVATE SUB CountChar(sLig AS String, sChar AS String) AS Integer
+  
+  DIM iCount AS Integer
+  DIM iPos AS Integer
+  
+  DO
+    iPos = InStr(sLig, sChar, iPos + 1)
+    IF iPos = 0 THEN RETURN iCount
+    INC iCount
+  LOOP  
+  
+END
+
+PRIVATE SUB ReadLine(hFile AS File) AS String
+
+  DIM sLine AS String
+  DIM nEsc AS Integer
+  DIM sPart AS String
+  
+  IF $sEscape THEN
+    DO
+      LINE INPUT #hFile, sPart
+      sLine &= sPart
+      nEsc += CountChar(sPart, $sEscape)
+      IF (nEsc AND 1) = 0 THEN BREAK
+      sLine &= "\n"
+    LOOP
+  ELSE 
+    LINE INPUT #hFile, sLine
+  ENDIF
+  
+  RETURN sLine
+  
+END
+
+PRIVATE SUB MakeFields(aField AS String[]) AS String[]
+
+  DIM I AS Integer
+  DIM iPos AS Integer
+  DIM iCount AS Integer
+  DIM sField AS String
+  
+  IF aField.Count > 1024 THEN 
+    aField.Remove(1024, -1)
+  ENDIF
+  
+  FOR I = 0 TO aField.Max
+    sField = TransformField(aField[I])
+    IF NOT sField THEN 
+      sField = Subst(("Field_&1"), i + 1)
+    ELSE
+      iCount = 1
+      DO 
+        iPos = aField.Find(sField, gb.Text)
+        IF iPos < 0 OR IF iPos >= I THEN BREAK
+        INC iCount
+        IF iCount > 2 THEN
+          sField = Left(sField, RInStr(sField, "_")) & CStr(iCount)
+        ELSE
+          sField &= "_" & CStr(iCount)
+        ENDIF
+      LOOP
+    ENDIF
+    aField[I] = sField
+  NEXT
+
+  RETURN aField
+  
+END
+
+
+PRIVATE SUB DoImport()
+  
+  DIM hFile AS File
+  DIM sLig, sPart AS String
+  DIM nEsc AS Integer
+  DIM aField AS String[]
+  DIM aLine AS String[]
+  DIM rData AS Result
+  DIM hConn AS Connection
+  DIM sTable AS String
+  DIM bCreateTable AS Boolean
+  DIM hTable AS Table
+  DIM I AS Integer
+  DIM sName AS String
+  DIM sKey AS String
+  DIM nImport AS Integer
+  DIM cField AS NEW Collection
+
+  $bImport = TRUE 
+  tabImport.Index = 2 
+  lstMessage.Clear
+  hConn = $hConn.Handle
+  sTable = Trim(cmbTable.Text)
+  bCreateTable = NOT hConn.Tables.Exist(sTable)
+  UpdateDelim
+  pgbImport.Value = 0
+  pgbImport.Show
+  
+  hConn.Begin
+  
+  hFile = OPEN $sPath FOR INPUT
+  $iLine = 0
+  $bCancel = FALSE
+  
+  IF chkFirstLine.Value THEN
+    INC $iLine
+    sLig = ReadLine(hFile)
+    aField = MakeFields(Analyze(sLig))
+  ENDIF
+  
+  WHILE NOT Eof(hFile)
+    INC $iLine
+    sLig = ReadLine(hFile)
+    aLine = Analyze(sLig, $hConn.Charset)
+    
+    IF bCreateTable THEN
+      hTable = hConn.Tables.Add(sTable)
+      WITH hTable
+        IF aField THEN
+          IF cmbKey.Index = 0 THEN          
+            .Fields.Add("id", db.Serial)
+            sKey = "id"
+          ENDIF
+          FOR I = 0 TO aField.Max
+            sName = aField[I]
+            TRY .Fields.Add(sName, db.String)
+            IF ERROR THEN 
+              sName = ("Field") & CStr(I + 1)
+              .Fields.Add(sName, db.String)
+            ENDIF
+            aField[I] = sName
+            IF cmbKey.Index = (I + 1) THEN sKey = sName
+          NEXT
+        ELSE
+          .Fields.Add("id", db.Serial)
+          FOR I = 1 TO aLine.Count
+            .Fields.Add(("Field") & CStr(I), db.String)
+          NEXT
+          sKey = "id"
+        ENDIF
+        .PrimaryKey = [sKey]
+        .Update
+      END WITH
+      bCreateTable = FALSE
+    ENDIF
+
+    IF $bStrip THEN 
+      FOR I = 0 TO aLine.Max
+        aLine[I] = Trim(aLine[I])
+      NEXT 
+    ENDIF
+  
+    rData = hConn.Create(sTable)
+    IF aField THEN
+      IF aLine.Max < aField.Max THEN
+        DoMessage(("Not enough values"))
+      ELSE IF aLine.Max > aField.Max THEN
+        DoMessage(("Too many values"))
+      ENDIF
+      FOR I = 0 TO Min(aField.Max, aLine.Max)
+        sName = aField[I]
+        'PRINT sName; " := "; aLine[I]
+        TRY rData[sName] = aLine[I]
+        IF ERROR THEN DoMessage(Conv(sName, $sCharset, Desktop.Charset) & ": " & Error.Text)
+      NEXT
+    ELSE
+      FOR I = 0 TO aLine.Max
+        TRY rData[I + 1] = aLine[I]
+        IF ERROR THEN DoMessage(("Field") & CStr(I) & ": " & Error.Text)
+      NEXT
+    ENDIF
+    rData.Update
+    
+    INC nImport
+    pgbImport.Value = Seek(hFile) / Lof(hFile)
+    WAIT 0.01
+    IF $bCancel THEN Error.Raise(("Cancelled by user"))
+    
+  WEND
+  
+  pgbImport.Value = 1
+  WAIT
+  hConn.Commit
+
+  IF nImport = 0 THEN
+    DoMessage(("No record imported."))
+  ELSE IF nImport = 1 THEN
+    DoMessage(("One record imported."))
+  ELSE
+    DoMessage(Subst(("&1 records imported."), nImport))
+  ENDIF
+  
+FINALLY
+  
+  CLOSE #hFile
+  $bImport = FALSE
+  
+CATCH
+
+  hConn.Rollback
+  DoMessage("** " & Error.Text)
+  
+END
+
+PUBLIC SUB cmbEscape_Click()
+
+  UpdateKey  
+
+END

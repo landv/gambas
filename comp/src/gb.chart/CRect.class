@@ -1,0 +1,16 @@
+' Gambas class file
+
+PUBLIC Top AS Integer
+PUBLIC Bottom AS Integer
+PUBLIC {Left} AS Integer
+PUBLIC {Right} AS Integer
+
+
+PUBLIC SUB _New(OPTIONAL iLeft AS Integer, OPTIONAL iRight AS Integer, OPTIONAL iTop AS Integer, OPTIONAL iBottom AS Integer)
+  
+  {Left} = iLeft 
+  {Right} = iRight
+  Top = iTop
+  Bottom = iBottom
+  
+END

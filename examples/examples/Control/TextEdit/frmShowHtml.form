@@ -1,0 +1,29 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,64,64)
+  Text = ("HtmlSource")
+  Arrangement = Arrange.Vertical
+  Spacing = 5
+  Padding = 5
+  { TextArea1 TextArea
+    MoveScaled(1,2,61,53)
+    Expand = True
+    Text = ("TextArea1")
+    Wrap = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,60,62,3)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(3,0,3,3)
+      Expand = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,14,3)
+      Text = ("Close")
+      Default = True
+      Cancel = True
+    }
+  }
+}

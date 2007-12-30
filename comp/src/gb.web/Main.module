@@ -1,0 +1,22 @@
+' Gambas module file
+
+PUBLIC SUB Main()
+  
+  ' Session["login"] = "cartable"
+  ' Session["password"] = "test"
+  ' Session["date"] = Date(1972, 9, 6)
+  ' Session["age"] = 34
+  ' Session["taille"] = 1.72
+  ' Session["liste"] = ["bleu", "blanc", "rouge"]
+  
+END
+
+PUBLIC SUB Log(sMsg AS String)
+  
+  DIM hFile AS File
+  
+  hFile = OPEN "/tmp/session.log" FOR APPEND 
+  PRINT #hFile, sMsg
+  CLOSE #hFile
+  
+END

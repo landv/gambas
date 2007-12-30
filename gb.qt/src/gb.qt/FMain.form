@@ -1,0 +1,31 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(50.875,35.5,38,38)
+  'Move(407,284,304,304)
+  Text = ("")
+  { Menu2 Menu
+    Text = ("Menu2")
+    { Menu1 Menu
+      Action = "test"
+      Text = ("Menu1")
+      Shortcut = "Alt+W"
+    }
+  }
+  { Button1 Button
+    MoveScaled(6,3,15,3)
+    'Move(48,24,120,24)
+    Action = "test"
+    Text = ("Button1")
+  }
+  { Button2 Button
+    MoveScaled(19,8,15,3)
+    'Move(152,64,120,24)
+    Text = ("Button2")
+  }
+  { TextArea1 TextArea
+    MoveScaled(9,12,16,16)
+    'Move(72,96,128,128)
+    Text = ("")
+  }
+}

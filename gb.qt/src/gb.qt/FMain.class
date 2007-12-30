@@ -1,0 +1,27 @@
+' Gambas class file
+
+PUBLIC SUB Form_Open()
+
+  'ColumnView1.Settings = "3,\"Alpha\",2,\"Beta\",3,>,-,\"Gamma\",2"
+
+  'DEBUG ColumnView1.Settings
+
+END
+
+PUBLIC SUB Button1_Click()
+
+  DEBUG
+
+END
+
+PUBLIC SUB Button2_Click()
+
+  Action["test"].Value = TRUE  
+
+END
+
+PUBLIC SUB Action_Activate(Key AS String) AS Boolean
+  
+  DEBUG Key
+  
+END

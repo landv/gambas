@@ -1,0 +1,48 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0.1429,2.4286,42,51)
+  Text = ("Select a color")
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { tabColor TabStrip
+    MoveScaled(1,1,40,45)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Padding = 8
+    Count = 2
+    Index = 0
+    Text = ("System")
+    { lstSystem ListContainer
+      MoveScaled(1,2,37,37)
+    }
+    Index = 1
+    Text = ("Free")
+    { dlgColor ColorChooser
+      MoveScaled(1,1,37,38)
+      Expand = True
+    }
+    Index = 0
+  }
+  { Panel2 Panel
+    MoveScaled(1,47,40,3)
+    Arrangement = Arrange.Horizontal
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(0,0,8,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(13,0,13,3)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(27,0,13,3)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

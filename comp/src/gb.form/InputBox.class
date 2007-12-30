@@ -1,0 +1,9 @@
+' Gambas class file
+
+EXPORT
+
+STATIC PUBLIC SUB _call(Prompt AS String, OPTIONAL Title AS String, OPTIONAL {Default} AS String) AS String
+  
+  RETURN FInputBox.Run(Prompt, Title, {Default})
+  
+END

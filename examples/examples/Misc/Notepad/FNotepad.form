@@ -1,0 +1,89 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(12.5,12.5,50,50)
+  Text = ("Little notepad")
+  Icon = Picture["notepad.png"]
+  Border = Window.Resizable
+  Arrangement = Arrange.Fill
+  { mnuFile Menu
+    Text = ("&File")
+    { mnuOpen Menu
+      Text = ("&Open...")
+      Picture = Picture["icon:/16/new"]
+      Shortcut = "Ctrl+O"
+    }
+    { mnuClose Menu
+      Text = ("Close")
+      Shortcut = "Ctrl+W"
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { mnuSave Menu
+      Text = ("&Save")
+      Shortcut = "Ctrl+S"
+    }
+    { mnuSaveAs Menu
+      Text = ("S&ave As...")
+      Shortcut = "Ctrl+Shift+S"
+    }
+    { Menu2 Menu
+      Text = ("")
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { mnuEdit Menu
+    Text = ("&Edit")
+    { mnuCopy Menu
+      Text = ("&Copy")
+      Shortcut = "Ctrl+C"
+    }
+    { mnuCut Menu
+      Text = ("C&ut")
+      Shortcut = "Ctrl+X"
+    }
+    { mnuPaste Menu
+      Text = ("&Paste")
+      Shortcut = "Ctrl+V"
+    }
+    { Menu3 Menu
+      Text = ("")
+    }
+    { mnuUndo Menu
+      Text = ("&Undo")
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu
+      Text = ("&Redo")
+      Shortcut = "Ctrl+Y"
+    }
+    { Menu4 Menu
+      Text = ("")
+    }
+    { mnuFont Menu
+      Text = ("Choose &Font...")
+    }
+    { mnuWrap Menu
+      Text = ("&Wrap text")
+      Checked = True
+    }
+  }
+  { mnuHelp Menu
+    Text = ("&?")
+    { mnuAbout Menu
+      Text = ("&About...")
+    }
+  }
+  { txtNotepad TextArea
+    MoveScaled(1,1,35,26)
+    Font = Font["Monospace,10"]
+    Expand = True
+    Text = ("txtNotepad")
+    Wrap = True
+    Border = False
+  }
+}

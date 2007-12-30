@@ -1,0 +1,283 @@
+[WELCOME]
+
+<p>Bienvenue dans <b>Gambas</b> !</p>
+
+<p><b>Gambas</b> est un environnement graphique de développement
+basé sur un interpréteur <i>Basic</i> avancé.</p>
+
+<p>Le but de <b>Gambas</b> est de vous permettre de concevoir de
+puissants programmes, et ce facilement et rapidement. Mais la propreté de ces
+programmes reste sous <i>votre</i> entière responsabilité...</p>
+
+<p>En espérant que vous l'apprécierez !</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+<u>gambas@users.sourceforge.net</u></p>
+
+
+[STARTUP]
+
+<p>Tout projet doit avoir une <i>classe de démarrage</i>. Cette classe 
+de démarrage doit posséder une méthode publique statique appelée 
+<i>Main</i> ne possédant aucun paramètre. Celle-ci agira alors comme 
+méthode de démarrage de votre programme.</p>
+
+<p>Pour définir la classe de démarrage, cliquez dessus avec le bouton 
+droit dans l'arbre du projet, et cochez l'entrée <i>Classe de 
+démarrage</i> dans le menu contextuel.</p>
+
+<p>Il n'est pas nécessaire de définir la méthode <i>Main</i> dans un 
+formulaire de démarrage, car celui-ci en possède une par défaut.</p>
+
+<p>Cette méthode de démarrage par défaut se charge d'instancier puis 
+d'afficher le formulaire, à la manière de <i>Visual Basic&trade;</i>.
+</p>
+
+
+[EXEC]
+
+Vous pouvez créer un fichier exécutable à partir de votre projet.
+Pour cela, sélectionnez <i>Générer l'exécutable...</i> dans le menu
+<i>Projet</i>.
+<p>
+L'exécutable est placé par défaut dans le répertoire du projet.
+Il porte le même nom que le projet.
+
+
+[OPEN]
+
+L'instruction <b><tt>OPEN</tt></b> de <b>Gambas</b> ne fonctionne
+pas comme celle de <i>Visual Basic&trade;</i>. Elle ne retourne
+pas le fichier ouvert sous forme d'un entier, mais d'un objet de
+la classe <i>File</i>.
+<p>
+Ainsi, au lieu de taper:
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+<p>
+Vous devez taper:
+<pre>DIM handle AS File
+...
+handle = OPEN "myfile" FOR READ</pre>
+
+
+[CATDIR]
+
+Savez-vous que vous pouvez concaténer des noms de répertoires et
+de fichiers avec l'opérateur <b><tt>&/</tt></b> ? 
+<p>
+Cet opérateur s'occupe d'ajouter le caractère de délimitation
+de répertoire <tt>'/'</tt> lorsque c'est nécessaire.
+<p>
+Par exemple :
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+<p>N'est-ce pas merveilleux ? :-)
+
+
+[PATH]
+
+Les chemins relatifs ont une signification particulière dans <i><b>Gambas</b></i>.
+Ils font référence aux fichiers situés à l'intérieur de votre projet.
+<p>
+Il n'y a pas de concept de <i>répertoire courant</i>, et aucune instruction
+telle que <tt>CHDIR</tt> qui serait susceptible de le modifier.
+<p>
+<b>Attention :</b> vous devez toujours utiliser des chemins relatifs pour
+accéder aux fichiers de votre projet, car les chemins absolus vers ces
+fichiers n'ont plus de signification lorsque le projet est transformé
+en exécutable.
+
+
+
+[GLOBAL]
+
+Il n'y a <u>pas</u> de variables globales en <b><i>Gambas</i></b>&nbsp;!
+<p>
+Par contre, vous pouvez placer les variables auquel vous désirez de tout
+votre projet dans votre module principal en les déclarant <tt>PUBLIC</tt>.
+<p>
+Si vous n'avez pas de module principal, mais un formulaire principal,
+déclarez-les comme <tt>STATIC PUBLIC</tt>.
+<p>
+Pour accéder à ces variables, vous devez utiliser le nom du module ou du
+formulaire principal ainsi&nbsp;:
+
+<p><tt>MonModulePrincipal.MaVariableGlobale</tt>
+<p>ou bien
+<p><tt>MonFormulairePrincipal.MaVariableGlobale</tt>
+
+
+[EMPTY]
+
+Pour savoir si une chaîne est vide, il n'est pas nécessaire d'effectuer
+une comparaison avec <tt>""</tt> ou bien d'utiliser la fonction
+<tt><b>Len()</b></tt>. Il est possible de la tester directement, car une
+chaîne vide est équivalente à <tt><b>FALSE</b></tt> et une chaîne non-vide
+est équivalente à <tt><b>TRUE</b></tt>.
+<p>
+Par exemple, plutôt que de faire :
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+<p>
+Vous devriez plutôt faire :
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+
+[EVENT]
+
+Chaque contrôle, et chaque objet pouvant générer des évènements, possède
+un <i>observateur d'évènement</i> et un <i>nom de groupe</i> d'évènement.
+<p>
+L'observateur d'évènement reçoit chaque évènement généré par un object, et
+le nom de groupe d'évènenement est le préfixe de la fonction qui sera
+appelée pour gérer l'évènement.
+<p>
+Par défaut, l'observateur d'évènement est l'objet à l'intérieur duquel
+vous avez créé le contrôle, et le nom de groupe est le nom du contrôle.
+<p>
+De cette manière, un formulaire recevra tous les évènements des contrôles
+lui appartenant.
+<p>
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "You have clicked MyButton !"
+END
+</pre>
+
+
+[FORM]
+
+En <b><i>Gambas</i></b>, un formulaire est son propre observateur, afin
+que vous puissez directement gérer ses évènements (comme <i>Resize</i>,
+<i>Activate</i>, ...) dans le code même de la classe associée.
+<p>
+De cette manière, les débutants venant de <i>Visual Basic</i> ne sont
+pas désorientés :-).
+
+
+[EMBED]
+
+<p>You can embed any form into other forms with <b><i>Gambas</i></b>
+&nbsp;!</p>
+
+<p>To do such a powerful thing, just instanciate the form by passing
+a parent container as last argument of the contructor.</p>
+
+<p>For example&nbsp;:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' Create a dialog<br>
+hForm = NEW MyDialog<br>
+' Insert a form into this dialog<br>
+' Note that this form takes two parameters before the container<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' Moves and resizes the form<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>Be careful: a form embedded into another form is still a form, and
+so is its own event observer.</p>
+
+
+[GROUP]
+
+<p>Every control has a <i>(Group)</i> property. When this property
+is set, the prefix of the event handler name is the name of the group
+and not the name of the control.</p>
+
+<p>Let's suppose you have a <i>Button</i> named <b>btnAction</b>
+with the following <i>Click</i> event handler :</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>If you set the <i>(Group)</i> property of <b>btnAction</b> to
+<i>MyGroup</i>, then the event handler that will receive events from
+the button will be the following :</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>This property lets you handle events of different controls in
+a single function. And the controls of the same group do not need
+to have the same type !</p>
+
+<p><b>Note :</b> The old <i>Visual Basic</i> veteran may recognize
+the concept of <i>control array</i>, but in a more powerful
+implementation. :-)</p>
+
+
+[TAG]
+
+<p>Each control has a <i>Tag</i> property. This property is for the
+programmer, and can contain any <b>VARIANT</b> data that you find
+relevant.</p>
+
+<p>This is very useful, when you want to distinguish controls of the
+same group in a common event handler.</p>
+
+
+
+[LAST]
+
+<p>The <b>LAST</b> keyword returns the last control that has
+received an event. This is very useful when you want to write an
+event handler that is independent of any control name.</p>
+
+<p>For example, let's suppose you want to write a calculator program.
+You have defined ten buttons, one for each digit, each one in the
+same <i>group</i> "Digit". The <i>Tag</i> of each control is set to
+the digit drawn in the button. Your event handler may look like that :</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>The well known <i>BASIC</i> routines <b>Left$</b>, <b>Right$</b>
+and <b>Mid$</b> have useful behaviours in <b><i>Gambas</i></b></p>
+
+<p>The second parameter of <b>Left$</b> and <b>Right$</b> is
+optional, and is one by default.</p>
+
+<p><tt>Left$("Gambas")</tt> returns <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> returns <tt>"s"</tt></p>
+
+<p>This second parameter can be negative, and then gives the number
+of characters not to extract.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> returns <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> returns <tt>"mbas"</tt></p>
+
+<p>Likewise, the third argument of <b>Mid$</b> can be negative, and
+then gives the number of characters from the end of the string
+not to extract.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> returns <tt>"amb"</tt>
+
+
+[END]
+
+<p>Vous avez lu toutes les astuces du jour. J'espère que vous êtes
+devenu un expert <b>Gambas</b> maintenant ! :-)</p>
+
+<p>Si vous désirez ajouter de nouvelles astuces de votre cru,
+n'hésitez-pas à les envoyer à l'adresse suivante&nbsp;:</p>
+
+<p><u>gambas@users.sourceforge.net</u></p>
+
+<p>Merci d'avance !</p>

@@ -1,0 +1,175 @@
+' Gambas class file
+
+PRIVATE $hConn AS Connection
+
+PUBLIC SUB btnConnect_Click()
+
+  DIM sName AS String
+
+  TRY $hConn.Close
+  '$hConn = NEW Connection
+
+  sName = txtName.Text
+
+  WITH $hConn
+    .Type = cmbType.Text
+    .Host = txtHost.Text
+    .Login = txtUser.Text
+    .Password = txtPassword.Text
+    .Name = ""
+  END WITH
+
+  IF chkCreate.Value THEN
+
+    $hConn.Open
+    IF NOT $hConn.Databases.Exist(sName) THEN
+      $hConn.Databases.Add(sName)
+    ENDIF
+    $hConn.Close
+
+  ENDIF
+
+  $hConn.Name = sName
+  $hConn.Open
+
+  frmDatabase.Enabled = TRUE
+  frmRequest.Enabled = TRUE
+
+CATCH
+
+  Message.Error(DConv(Error.Text))
+
+END
+
+PUBLIC SUB btnCreate_Click()
+
+  DIM hTable AS Table
+
+  hTable = $hConn.Tables.Add("test")
+
+  hTable.Fields.Add("id", db.Long)
+  hTable.Fields.Add("color", db.Integer,, 1)
+  hTable.Fields.Add("firstname", gb.String, 16)
+  hTable.Fields.Add("name", gb.String, 32)
+  hTable.Fields.Add("birth", gb.Date)
+  hTable.Fields.Add("active", gb.Boolean)
+  hTable.Fields.Add("salary", gb.Float)
+  hTable.Fields.Add("comment", gb.String)
+
+  hTable.PrimaryKey = ["id"]
+
+  hTable.Update
+
+  hTable = $hConn.Tables.Add("color")
+
+  hTable.Fields.Add("color", db.Serial)
+  hTable.Fields.Add("name", gb.String, 32)
+  hTable.Fields.Add("french", gb.String, 32)
+
+  hTable.PrimaryKey = ["color"]
+
+  hTable.Update
+
+CATCH
+
+  Message.Error(DConv(Error.Text))
+
+END
+
+PUBLIC SUB btnDelete_Click()
+
+  TRY $hConn.Tables.Remove("test")
+  TRY $hConn.Tables.Remove("color")
+
+END
+
+PUBLIC SUB btnFill_Click()
+
+  DIM iInd AS Integer
+  DIM rTest AS Result
+  DIM rColor AS Result
+  DIM sColor AS String
+  DIM aName AS String[] = ["Paul", "Pierre", "Jacques", "Antoine", "Mathieu", "Robert", "Stéphane", "Yannick", "Frédéric"]
+  DIM aFrench AS String[] = ["Noir", "Blanc", "Rouge", "Vert", "Bleu", "Jaune", "Transparent"]
+  INC Application.Busy
+
+  $hConn.Begin
+
+  rColor = $hConn.Create("color")
+
+  FOR EACH sColor IN ["Black", "White", "Red", "Green", "Blue", "Yellow", "Transparent"]
+
+    rColor!name = sColor
+    rColor!french = aFrench[iInd]
+    INC iInd
+    rColor.Update
+  
+  NEXT
+
+  rTest = $hConn.Create("test")
+
+  FOR iInd = 1 TO txtCount.Value
+
+    rTest!id = iInd
+    rTest!color = Int(Rnd(6)) + 1
+    rTest!firstname = aName[Int(Rnd(aName.Count))]
+    rTest!name = "Name #" & iInd
+    rTest!birth = CDate("01/01/1970") + Int(Rnd(10000))
+    rTest!active = Int(Rnd(2))
+    rTest!salary = Round(Rnd(1000, 10000), -2)
+
+    rTest.Update
+
+  NEXT
+
+  $hConn.Commit
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  $hConn.Rollback
+  Message.Error(DConv(Error.Text))
+
+END
+
+PUBLIC SUB btnRun_Click()
+
+  DIM rData AS Result
+  DIM hForm AS FRequest
+
+  rData = $hConn.Exec(txtRequest.Text)
+  hForm = NEW FRequest($hConn, rData)
+  hForm.Show
+
+CATCH
+
+  Message.Error(DConv(Error.Text))
+
+END
+
+PUBLIC SUB Form_Open()
+
+  $hConn = NEW Connection
+
+END
+
+PUBLIC SUB Form_Close()
+
+  $hConn.Close
+
+END
+
+PUBLIC SUB chkDebug_Click()
+
+  DB.Debug = chkDebug.Value
+
+END
+
+PUBLIC SUB btnTest_Click()
+
+  FTest.Show
+
+END

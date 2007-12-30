@@ -1,0 +1,165 @@
+' Gambas class file
+
+EXPORT ' Gambas class file
+
+
+PRIVATE $aroValues AS NEW Float[]
+PRIVATE $iCount AS Integer
+PRIVATE $sText AS String
+PRIVATE $iLineStyle AS Integer
+PRIVATE $iLineWidth AS Integer
+PRIVATE $iColor AS Integer
+PRIVATE $iBackColor AS Integer
+PRIVATE $iTile AS Picture
+
+PROPERTY Count AS Integer
+PROPERTY Text AS String
+PROPERTY Values AS Float[]
+PROPERTY LineStyle AS Integer
+PROPERTY LineWidth AS Integer
+PROPERTY Color AS Integer
+PROPERTY BackColor AS Integer
+
+
+PUBLIC SUB _new()
+    
+  '$aroValues.Add(0)
+  'ME.Count = 1
+END
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  RETURN $aroValues.Count
+
+END
+
+PRIVATE SUB count_Write(Value AS Integer)
+
+ Chart.Labels.Count = Value
+ 
+END
+
+PUBLIC SUB _SetCount(Value AS Integer)
+  DIM cnt AS Integer
+  DIM i AS Integer
+
+  IF Value < 1 THEN 
+    Message.Error(("The values count must be up than 1"))
+    RETURN 
+  ENDIF 
+  
+  IF $aroValues.Count < Value THEN 
+    FOR i = 0 TO Value - $aroValues.Count
+      $aroValues.Add(0)
+    NEXT
+  ELSE IF $aroValues.Count > Value THEN 
+    cnt = $aroValues.Count - Value
+    $aroValues.Remove($aroValues.Count - cnt, cnt)
+  ENDIF
+  'PRINT aroRows.Count
+END
+
+PUBLIC FUNCTION _get(Index AS Integer) AS Float
+  
+  RETURN $aroValues[index]
+  
+END
+
+ PUBLIC SUB _Put(Value AS Integer, Index AS Variant)
+  'PRINT aroRows.Count
+  IF $aroValues.Max < Index THEN ME.Count += Index - $aroValues.Max
+  $aroValues[Index] = Value
+ END
+
+
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN $sText
+
+END
+
+
+PRIVATE SUB Text_Write(Value AS String)
+
+  $sText = Value
+
+END
+
+
+PUBLIC FUNCTION _Next() AS Float
+  IF enum.Index = NULL THEN enum.Index = -1
+  
+  IF enum.Index = $aroValues.max THEN 
+    enum.Stop
+    RETURN 
+  ENDIF
+  INC enum.Index
+  RETURN $aroValues[enum.Index]
+  
+END
+
+PRIVATE FUNCTION Values_Read() AS Float[]
+
+  RETURN $aroValues
+
+END
+
+PRIVATE SUB Values_Write(Value AS Float[])
+
+  IF Value = NULL THEN 
+    Message.Error(("An array can't be NULL"))
+    RETURN 
+  ENDIF 
+  $aroValues = Value
+  Chart.Headers.Count = Chart.Headers.Count
+
+END
+
+PRIVATE FUNCTION LineStyle_Read() AS Integer
+
+  
+
+END
+
+PRIVATE SUB LineStyle_Write(Value AS Integer)
+
+  
+
+END
+
+PRIVATE FUNCTION LineWidth_Read() AS Integer
+
+  
+
+END
+
+PRIVATE SUB LineWidth_Write(Value AS Integer)
+
+  
+
+END
+
+PRIVATE FUNCTION Color_Read() AS Integer
+
+  
+
+END
+
+PRIVATE SUB Color_Write(Value AS Integer)
+
+  
+
+END
+
+PRIVATE FUNCTION BackColor_Read() AS Integer
+
+  
+
+END
+
+PRIVATE SUB BackColor_Write(Value AS Integer)
+
+  
+
+END

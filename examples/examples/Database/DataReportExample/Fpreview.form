@@ -1,0 +1,28 @@
+# Gambas Form File 1.0
+
+{ Fpreview Form
+  MoveScaled(38.4444,35.5556,51.6667,35.1111)
+  'Move(346,320,465,316)
+  Text = ("Report Preview")
+  { Label4 Label
+    MoveScaled(0,0,51.4444,4)
+    'Move(0,0,463,36)
+    Font = Font["16,Bold,Underline"]
+    Background = &HD6D6D6&
+    Text = ("  Report Preview ")
+    Alignment = Align.Right
+  }
+  { WebBrowser1 WebBrowser
+    MoveScaled(0,4.4444,51.4444,26)
+    'Move(0,40,463,234)
+    JavaScript = True
+  }
+  { Button2 Button
+    MoveScaled(40,30.4444,11,4)
+    'Move(360,274,99,36)
+    ToolTip = ("Cancel")
+    Text = ("&Cancel")
+    Picture = Picture["pic/button_cance.png"]
+    Cancel = True
+  }
+}

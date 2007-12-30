@@ -1,0 +1,9 @@
+' Gambas class file
+
+PUBLIC SUB Form_Open()
+
+  ColumnView1.Settings = "3,\"Alpha\",2,\"Beta\",3,>,-,\"Gamma\",2"
+
+  DEBUG ColumnView1.Settings
+
+END

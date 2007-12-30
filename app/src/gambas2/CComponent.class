@@ -1,0 +1,825 @@
+' Gambas class file
+
+STATIC PUBLIC All AS NEW Collection
+STATIC PUBLIC Classes AS Collection
+STATIC PRIVATE $iKey AS Integer
+
+PUBLIC CONST STABLE AS Integer = 0
+PUBLIC CONST STABLE_NOT_FINISHED AS Integer = 1
+PUBLIC CONST UNSTABLE AS Integer = 2
+
+PUBLIC Key AS String
+PUBLIC Name AS String
+PUBLIC Authors AS NEW String[]
+PUBLIC Type AS String
+PUBLIC Controls AS NEW String[]
+PUBLIC Containers AS NEW String[]
+PUBLIC MultiContainers AS NEW String[]
+PUBLIC Virtuals AS NEW String[]
+PUBLIC Require AS NEW String[]
+PUBLIC Exclude AS NEW String[]
+PUBLIC Implement AS NEW String[]
+PUBLIC Need AS NEW String[]
+PUBLIC Loaded AS Boolean
+PUBLIC ClassList AS NEW String[]
+PUBLIC State AS Integer
+PUBLIC SortKey AS Integer
+PUBLIC User AS Boolean
+
+STATIC PRIVATE $cName AS Collection
+STATIC PUBLIC Features AS NEW Collection
+
+STATIC PRIVATE SUB SortComponents()
+
+  DIM iMax AS Integer
+  DIM hComponent AS CComponent
+  DIM cNewAll AS NEW Collection
+  DIM iInd AS Integer
+
+  FOR EACH hComponent IN All
+    hComponent.CalcSortKey
+    iMax = Max(iMax, hComponent.SortKey)
+    'PRINT hComponent.Key;; hComponent.SortKey
+  NEXT
+
+  FOR iInd = 1 TO iMax
+    FOR EACH hComponent IN All
+      IF hComponent.SortKey = iInd THEN
+        cNewAll.Add(hComponent, hComponent.Key)
+        'DEBUG hComponent.Key;; hComponent.SortKey
+      ENDIF
+    NEXT
+  NEXT
+
+  All = cNewAll
+
+END
+
+
+STATIC PRIVATE SUB InitComponentNames()
+  
+  $cName["gb"] = ("Internal native classes")
+  $cName["gb.chart"] = ("Chart drawing")
+  $cName["gb.compress"] = ("Compression & decompression")
+  $cName["gb.corba"] = ("CORBA Client")
+  $cName["gb.crypt"] = ("MD5/DES crypting")
+  $cName["gb.db"] = ("Database access")
+  $cName["gb.db.form"] = ("Data bound controls")
+  $cName["gb.debug"] = ("Application debugger helper")
+  $cName["gb.desktop"] = ("Desktop-neutral routines from Portland project")
+  $cName["gb.eval"] = ("Expression evaluator")
+  $cName["gb.form"] = ("More controls for graphical components")
+  $cName["gb.form.dialog"] = ("Enhanced standard dialogs")
+  $cName["gb.form.mdi"] = ("Multi Document Interface")
+  $cName["gb.gtk"] = ("GTK+ toolkit")
+  $cName["gb.gtk.ext"] = ("GTK+ toolkit extension")
+  $cName["gb.gtk.svg"] = ("GTK+ SVG renderer")
+  $cName["gb.gui"] = ("QT/GTK+ switcher component")
+  $cName["gb.image"] = ("Image processing")
+  $cName["gb.info"] = ("Information about components")
+  $cName["gb.ldap"] = ("OpenLDAP client")
+  $cName["gb.net"] = ("Networking")
+  $cName["gb.net.curl"] = ("Network high-level protocols management")
+  $cName["gb.net.smtp"] = ("STMP client")
+  $cName["gb.opengl"] = ("3D programming with OpenGL")
+  $cName["gb.option"] = ("GNU command option parser")
+  $cName["gb.pcre"] = ("Perl-compatible Regular Expression Matching")
+  $cName["gb.pdf"] = ("PDF renderer based on Poppler library")
+  $cName["gb.qt"] = ("QT toolkit")
+  $cName["gb.qt.ext"] = ("QT toolkit extension")
+  $cName["gb.qte"] = ("QT/Embedded toolkit")
+  $cName["gb.qte.ext"] = ("QT/Embedded toolkit extension")
+  $cName["gb.qt.kde"] = ("KDE integration and scripting")
+  $cName["gb.qt.kde.html"] = ("KDE web browser")
+  $cName["gb.qt.opengl"] = ("OpenGL with QT toolkit")
+  $cName["gb.report"] = ("Report designer")
+  $cName["gb.sdl"] = ("SDL library")
+  $cName["gb.sdl.sound"] = ("SDL sound & CD-ROM management")
+  $cName["gb.settings"] = ("Application settings management")
+  $cName["gb.v4l"] = ("Video capture")
+  $cName["gb.vb"] = ("Visual Basic compatibility")
+  $cName["gb.xml"] = ("XML tools based on libxml")
+  $cName["gb.xml.rpc"] = ("XML-RPC protocol")
+  $cName["gb.xml.xslt"] = ("XSLT tools based on libxslt")
+  $cName["gb.web"] = ("Web applications tools")
+
+  Features["form"] = ("Graphical form management")
+  Features["eventloop"] = ("Event loop management")
+  Features["imageprovider"] = ("Image provider")
+  Features["openglviewer"] = ("OpenGL display")
+
+END
+
+STATIC PRIVATE SUB InitComponent(sFile AS String, bUser AS Boolean)
+  
+  DIM hComponent AS CComponent
+  DIM hFic AS File
+  DIM sInfo AS String
+  DIM sLig AS String
+  DIM sKey AS String
+
+  DIM iPos AS Integer
+  
+  DIM sLib AS String
+  DIM iKey AS Integer
+  DIM sGroup AS String
+
+  IF bUser THEN
+    OPEN Component.UserPath &/ sFile AS #hFic
+  ELSE
+    OPEN Component.Path &/ sFile AS #hFic
+  ENDIF
+
+  LINE INPUT #hFic, sLig
+  sLig = Trim(sLig)
+
+  IF sLig = "[Component]" THEN
+
+    hComponent = NEW CComponent
+    hComponent.Key = File.BaseName(sFile)
+    hComponent.Name = $cName[hComponent.Key]
+
+    WHILE NOT Eof(hFic)
+
+      LINE INPUT #hFic, sLig
+      sLig = Trim(sLig)
+
+      IF NOT sLig THEN CONTINUE
+      IF Left(sLig) = ";" OR Left(sLig) = "'" THEN CONTINUE
+
+      IF sLig = "[Component]" THEN BREAK
+
+      IF Left(sLig) = "[" AND IF Right(sLig) = "]" THEN
+        sGroup = Mid$(sLig, 2, -1)
+        CONTINUE
+      ENDIF
+
+      iPos = InStr(sLig, "=")
+      IF iPos = 0 THEN CONTINUE
+
+      sKey = Left$(sLig, iPos - 1)
+      sLig = Mid$(sLig, iPos + 1)
+
+      WITH hComponent
+
+        ' IF sKey = "Key" THEN
+        '   .Key = sLig
+        ' ELSE IF sKey = "Name" THEN 'OR sKey = "Name[" & sLangShort & "]" OR sKey = "Name[" & sLang & "]" THEN
+        '   PRINT "cName[\""; .Key; "\"] = (\""; sLig; "\")"
+        '   .Name = sLig
+        IF sKey = "Author" OR sKey = "Authors" THEN
+          .Authors = Split(sLig)
+        ELSE IF sKey = "Type" THEN
+          .Type = sLig
+        ELSE IF sKey = "Group" THEN
+          sGroup = sLig
+        ELSE IF sKey = "Control" OR IF sKey = "Controls" THEN
+          .Controls.Add("@" & sGroup)
+          .Controls.Insert(Split(sLig))
+        ELSE IF sKey = "Container" THEN
+          .Containers.Insert(Split(sLig))
+        ELSE IF sKey = "MultiContainer" THEN
+          .MultiContainers.Insert(Split(sLig))
+        ELSE IF sKey = "Virtual" THEN
+          .Virtuals.Insert(Split(sLig))
+        ELSE IF sKey = "Require" OR sKey = "Requires" THEN
+          .Require = Split(LCase(sLig))
+        ELSE IF sKey = "Exclude" OR sKey = "Excludes" THEN
+          .Exclude = Split(LCase(sLig))
+        ELSE IF sKey = "Implement" OR sKey = "Implements" THEN
+          .Implement = Split(LCase(sLig))
+        ELSE IF sKey = "Need" OR sKey = "Needs" THEN
+          .Need = Split(LCase(sLig))
+        ELSE IF sKey = "Alpha" THEN
+          .State = UNSTABLE
+        ELSE IF sKey = "State" THEN 
+          .State = CInt(sLig)
+        ENDIF
+
+      END WITH
+
+    WEND
+
+    hComponent.User = bUser
+  
+    IF hComponent.Key THEN
+      All[hComponent.Key] = hComponent
+    ENDIF
+
+  ENDIF
+
+  CLOSE #hFic
+  
+CATCH 
+
+  DEBUG "Unable to read component file:";; sFile
+  
+END
+
+
+STATIC PUBLIC SUB _init()
+
+  DIM aComp AS String[]
+  DIM sFile AS String
+
+  $cName = NEW Collection
+  InitComponentNames
+
+  ' sLang = System.Language
+  ' iPos = InStr(sLang, "_")
+  ' IF iPos THEN
+  '   sLangShort = Left$(sLang, iPos - 1)
+  ' ELSE
+  '   sLangShort = sLang
+  ' ENDIF
+
+  'OPEN Component.Path &/ "components" FOR READ AS #hFic
+
+  aComp = Dir(Component.Path, "*.component").Sort()
+  FOR EACH sFile IN aComp
+    InitComponent(sFile, FALSE)
+  NEXT
+
+  IF Exist(Component.UserPath) THEN
+    aComp = Dir(Component.UserPath, "*.component").Sort()
+    FOR EACH sFile IN aComp
+      InitComponent(sFile, TRUE)
+    NEXT
+  ENDIF
+
+  SortComponents
+  
+  $cName = NULL
+
+  Reset
+
+END
+
+
+PUBLIC SUB CalcSortKey()
+
+  DIM sComp AS String
+  DIM sNeed AS String
+  DIM hComp AS CComponent
+
+  'DEBUG ">>>";; Key
+
+  IF SortKey = 0 THEN 
+
+    IF Require.Count OR IF Need.Count THEN
+
+      FOR EACH sComp IN Require
+        hComp = All[sComp]
+        IF hComp <> ME THEN hComp.CalcSortKey
+      NEXT
+  
+      FOR EACH sNeed IN Need
+        FOR EACH hComp IN All
+          IF hComp.Implement.Find(sNeed) >= 0 THEN
+            hComp.CalcSortKey
+          ENDIF
+        NEXT
+      NEXT
+
+    ENDIF
+    
+    INC $iKey
+    SortKey = $iKey
+
+  ENDIF
+  
+  'DEBUG "<<<";; Key;; "=";; SortKey
+
+END
+
+PUBLIC SUB Load()
+
+  DIM hFic AS File
+  DIM sClass AS String
+  DIM sSymbol AS String
+  DIM sLig AS String
+  DIM iPos AS Integer
+  DIM hClass AS CClassInfo
+  DIM hSym AS CSymbolInfo
+  DIM hProp AS CPropertyInfo
+  DIM sParent AS String
+  DIM hForm AS Form
+  DIM sPath AS String
+  DIM bAgain AS Boolean
+  DIM bNextClass AS Boolean
+  DIM cClass AS NEW Collection
+
+  IF Loaded THEN RETURN
+
+  'DEBUG "Loading: "; Key
+  Project.SetMessage(Subst(("Loading information on component &1..."), Key))
+
+  ClassList = NEW String[]
+
+  FOR EACH sLig IN Require
+    All[sLig].Load
+  NEXT
+  
+  IF User THEN 
+    sPath = File.Dir(File.Dir(Component.UserPath))
+  ELSE  
+    sPath = System.Path
+  ENDIF 
+  
+  sPath &/= "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
+  
+  IF NOT Exist(sPath) THEN
+    PRINT "Warning: cannot find "; sPath
+    RETURN
+  ENDIF
+
+  ' List of exported classes
+
+  FOR EACH sClass IN Split(File.Load(File.SetExt(sPath, "list")), "\n")
+    IF sClass THEN cClass[sClass] = TRUE
+  NEXT
+
+  INC Application.Busy
+
+  REPEAT
+
+    bAgain = FALSE
+
+    OPEN sPath AS #hFic
+
+    WHILE NOT Eof(hFic)
+      LINE INPUT #hFic, sLig
+
+      IF Left$(sLig) = "#" THEN
+
+        bNextClass = FALSE
+
+        sClass = Mid$(sLig, 2)
+        
+        'DEBUG sClass
+
+        IF Classes.Exist(Key &/ sClass) THEN
+          'DEBUG "Class exists"
+          bNextClass = TRUE
+          CONTINUE
+        ENDIF
+
+        'IF sClass = "Dialog" THEN STOP
+
+        LINE INPUT #hFic, sParent
+        IF NOT sParent THEN
+          IF Classes.Exist(sClass) THEN
+            sParent = sClass
+          ENDIF
+        ENDIF
+
+        ' Ce test peut foirer si une classe veut hériter d'une autre classe
+        ' du même composant, qui existe déjà dans un composant déjà déclaré.
+
+        IF sParent AND IF NOT Classes.Exist(sParent) THEN
+          IF NOT cClass.Exist(sParent) THEN 
+            Error.Raise("'" & sParent & "' class is missing in " & Key & " component exported classes")
+          ENDIF
+          bAgain = TRUE
+          bNextClass = TRUE
+          'DEBUG "Parent does not exist:";; sParent
+          CONTINUE
+        ENDIF
+
+        hClass = NEW CClassInfo(sClass, sParent)
+
+        Classes[Key &/ sClass] = hClass
+        IF Type THEN Classes[Type &/ sClass] = hClass
+        Classes[sClass] = hClass
+        IF sClass <> "." THEN ClassList.Add(sClass)
+
+        LINE INPUT #hFic, sLig
+        hClass.Creatable = InStr(sLig, "C")
+        hClass.AutoCreatable = InStr(sLig, "A")
+        hClass.Component = Key
+
+        CONTINUE
+
+      ENDIF
+
+      IF bNextClass THEN CONTINUE
+
+      sSymbol = sLig
+      hSym = NEW CSymbolInfo
+      Classes[sClass].Symbols[sSymbol] = hSym
+
+      hSym.Name = sSymbol
+      hSym.Class = sClass
+      hSym.Component = Key
+      LINE INPUT #hFic, hSym.Kind
+      LINE INPUT #hFic, hSym.Type
+      IF hSym.Kind = "C" THEN
+        LINE INPUT #hFic, hSym.Value
+      ELSE
+        LINE INPUT #hFic, hSym.Signature
+      ENDIF
+      IF Left$(hSym.Kind) = "p" THEN
+        IF Left$(hSym.Type, 2) = "i<" THEN
+          hSym.Signature = Mid$(hSym.Type, 3, -1)
+          hSym.Type = "i"
+        ENDIF
+      ENDIF
+
+    WEND
+
+    CLOSE #hFic
+
+  UNTIL NOT bAgain
+
+  'PRINT "Initializing controls..."
+
+  hForm = NEW Form
+
+  'IF Key = "gb.qt" THEN
+  IF Type = "Form" THEN
+    'IF Key = "gb.gtk" THEN
+    '  FOR EACH sClass IN ["Control", "Form"]
+    '    Classes[sClass].InitControl(hForm)
+    '  NEXT
+    'ELSE
+      FOR EACH sClass IN ["Control", "Form", "Menu"]
+        IF Classes.Exist(sClass) THEN
+          Classes[sClass].InitControl(hForm)
+        ENDIF
+      NEXT
+    'ENDIF
+  ENDIF
+
+  FOR EACH sClass IN Controls
+    IF Left(sClass) = "@" THEN CONTINUE
+    IF Classes.Exist(sClass) THEN
+      Classes[sClass].InitControl(hForm)
+    ELSE
+      DEBUG "Control "; sClass; " not found"
+    ENDIF
+  NEXT
+
+  hForm.Close
+
+  ClassList.Sort
+
+  'PRINT "OK"
+
+  Loaded = TRUE
+
+FINALLY
+
+  DEC Application.Busy
+
+CATCH
+
+  FGambas.Error(Error.Where & "\n\n" & Error.Text)
+
+END
+
+STATIC PUBLIC SUB Exit()
+
+  All = NULL
+  Classes = NULL
+
+END
+
+STATIC PRIVATE SUB MakeInheritance(hModule AS Object, cSymbol AS Collection, sParent AS String, OPTIONAL sComponent AS String)
+  
+  DIM cClassSymbol AS Collection  
+  DIM hSymbol AS CSymbolInfo
+    
+  hModule.ParentClass = sParent
+  IF NOT hModule.AutoCreatable THEN hModule.AutoCreatable = IsAutoCreatable(hModule.ParentClass)
+  cClassSymbol = CComponent.GetClassSymbols(sComponent &/ sParent)
+  IF cClassSymbol THEN
+    FOR EACH hSymbol IN cClassSymbol
+      cSymbol[hSymbol.Name] = hSymbol
+    NEXT
+  ENDIF
+  
+END
+
+
+STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule AS Boolean, OPTIONAL bCanInherit AS Boolean = TRUE)
+
+  DIM hEditor AS Editor
+  DIM iLine AS Integer
+  DIM aSym AS String[]
+  DIM bStatic AS Boolean
+  DIM bPublic AS Boolean
+  DIM sKind AS String
+  DIM iInd AS Integer
+  DIM hSymbol AS CSymbolInfo
+  DIM iStart AS Integer
+  DIM iEnd AS Integer
+  DIM iSign AS Integer
+  DIM cClassSymbol AS Collection
+  DIM sParent AS String
+  DIM hClass AS CClassInfo
+  DIM sName AS String
+
+  'PRINT "ScanClass "; hModule.Name
+  'DEBUG "> "; hModule.Name
+
+  hEditor = hModule.Editor
+  hModule.AutoCreatable = FALSE
+  hModule.NotCreatable = FALSE
+  'DEBUG hModule.Name; " := "; hModule.AutoCreatable
+
+  'IF hModule.Name = "Desktop" THEN STOP
+
+  hClass = Classes[hModule.Name]
+  
+  IF hClass AND IF hClass.Component = Project.Name AND IF hClass.Parent THEN 
+    hClass = Classes[hClass.Parent]
+  ENDIF
+  
+  IF hClass THEN 
+    sParent = hModule.Name
+    MakeInheritance(hModule, cSymbol, sParent, hClass.ParentComponent)
+    bCanInherit = FALSE
+  ENDIF 
+  
+  FOR iLine = 0 TO hEditor.Lines.Count
+
+    aSym = Highlight.Analyze(hEditor.Lines[iLine])
+    IF aSym.Count = 0 THEN CONTINUE
+    'aSym.Insert(["", "", ""])
+
+    IF aSym.Count = 2 THEN
+      IF bCanInherit THEN
+        IF aSym[0] = "INHERITS" THEN
+          IF Highlight.Types[1] = Highlight.Datatype THEN
+            sParent = aSym[iInd + 1]
+            MakeInheritance(hModule, cSymbol, sParent)
+          ENDIF
+          bCanInherit = FALSE
+        ENDIF
+      ENDIF
+    ENDIF
+
+    IF aSym[0] = "CREATE" THEN 
+      IF aSym.Count = 1 OR IF aSym[1] = "STATIC" THEN 
+        hModule.AutoCreatable = TRUE
+        'DEBUG hModule.Name; " := "; hModule.AutoCreatable
+      ELSE IF aSym[1] = "PRIVATE" THEN 
+        hModule.NotCreatable = TRUE
+      ENDIF
+    ENDIF
+
+    bStatic = bModule
+    bPublic = bModule
+    sKind = ""
+
+    FOR iInd = 0 TO aSym.Count - 1
+      SELECT CASE aSym[iInd]
+        CASE "INHERITS"
+        CASE "PUBLIC"
+          sKind = "v"
+          bPublic = TRUE
+        CASE "PRIVATE"
+          sKind = "v"
+          bPublic = FALSE
+        CASE "STATIC"
+          sKind = "v"
+          bStatic = TRUE
+        CASE "PROPERTY"
+          sKind = "p"
+          bPublic = TRUE
+        CASE "READ"
+          IF sKind = "p" THEN sKind = "r"
+          INC iInd
+          BREAK
+        CASE "EVENT"
+          sKind = ":"
+          bStatic = FALSE
+          INC iInd
+          BREAK
+        CASE "SUB", "PROCEDURE", "FUNCTION"
+          sKind = "m"
+          INC iInd
+          BREAK
+        CASE "CONST"
+          sKind = "C"
+          bStatic = TRUE
+          INC iInd
+          BREAK
+        CASE ELSE
+          BREAK
+      END SELECT
+    NEXT
+
+    'IF NOT bPublic THEN CONTINUE
+    IF NOT sKind THEN CONTINUE
+    IF iInd >= aSym.Count THEN CONTINUE
+
+    sName = aSym[iInd]
+    IF Left(sName) = "{" THEN
+      IF iInd + 2 > aSym.Max THEN CONTINUE
+      INC iInd
+      sName = aSym[iInd]
+      IF aSym[iInd + 1] = "}" THEN INC iInd
+    ENDIF
+
+    hSymbol = NEW CSymbolInfo
+    WITH hSymbol
+      .Name = sName
+      .Class = hModule.Name
+      .Kind = sKind
+      .NotPublic = NOT bPublic
+      .LineNumber = iLine + 1
+      
+      IF sKind = "m" THEN
+
+        FOR iStart = iInd + 1 TO aSym.Count - 1
+          IF aSym[iStart] = "(" THEN BREAK
+        NEXT
+
+        FOR iInd = aSym.Count - 1 TO 0 STEP -1
+          IF aSym[iInd] = ")" THEN
+            BREAK
+          ELSE IF aSym[iInd] = "AS" THEN
+            IF iInd < (aSym.Count - 1) THEN
+              .Type = FEditor.ReadSymbolType(aSym, iInd)
+            ENDIF
+          ENDIF
+        NEXT
+
+        'iEnd = iInd
+        TRY .Signature = "#" & Mid$(hEditor.Lines[iLine], Highlight.Positions[iStart] + 1)
+        
+        
+        'FOR iInd = iStart TO iEnd
+        '  .Signature = .Signature & aSym[iInd] & " "
+        'NEXT
+
+      ELSE
+        INC iInd
+        .Type = FEditor.ReadSymbolType(aSym, iInd)
+      ENDIF
+
+      IF bStatic THEN .Kind = UCase(.Kind)
+
+      cSymbol[.Name] = hSymbol
+      bCanInherit = FALSE
+      
+    END WITH
+
+    IF sKind = "m" THEN 
+      DO
+        INC iLine
+        IF iLine >= hEditor.Lines.Count THEN BREAK
+        aSym = Highlight.Analyze(hEditor.Lines[iLine])
+        IF aSym.Count = 1 AND IF aSym[0] = "END" THEN BREAK
+      LOOP
+    ENDIF
+
+  NEXT
+
+  'DEBUG "< "; hModule.Name
+
+END
+
+
+STATIC PRIVATE SUB ScanForm(hForm AS FForm, cSymbol AS Collection)
+
+  DIM hControl AS CControl
+  DIM hSymbol AS CSymbolInfo
+
+  'PRINT "ScanForm "; hForm.Name
+
+  FOR EACH hControl IN hForm.Control
+    IF hControl.Name = hForm.Name THEN CONTINUE
+    hSymbol = NEW CSymbolInfo
+    WITH hSymbol
+      .Name = hControl.Name
+      .Type = hControl.Kind
+      .Class = hForm.Name
+      .Kind = "t"
+      .NotPublic = NOT Project.ControlPublic
+      cSymbol[.Name] = hSymbol
+    END WITH
+  NEXT
+
+END
+
+STATIC PRIVATE SUB GetModule(sClass AS String) AS Object
+
+  DIM sPath AS String
+  
+  sPath = Project.Dir &/ sClass & ".module"
+  IF Exist(sPath) THEN RETURN Project.LoadFile(sPath)
+  sPath = Project.Dir &/ sClass & ".form"
+  IF Exist(sPath) THEN RETURN Project.LoadFile(sPath)
+  sPath = Project.Dir &/ sClass & ".class"
+  IF Exist(sPath) THEN RETURN Project.LoadFile(sPath)
+  
+END
+
+STATIC PUBLIC SUB IsAutoCreatable(sClass AS String) AS Boolean
+
+  DIM hClass AS CClassInfo
+  DIM hModule AS Object
+  
+  GetClassSymbols(sClass)
+
+  hClass = CComponent.Classes[sClass]
+  IF hClass THEN RETURN hClass.AutoCreatable
+
+  hModule = GetModule(sClass)
+  IF hModule IS FEditor THEN 
+    'DEBUG sClass; " -> "; hModule.AutoCreatable
+    RETURN hModule.AutoCreatable
+  ENDIF
+  
+END
+
+
+STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String, OPTIONAL bInProject AS Boolean) AS Collection
+
+  DIM hClass AS CClassInfo
+  DIM sName AS String
+  DIM sPath AS String
+  DIM hPForm AS Object
+  DIM hPModule AS Object
+  DIM hPClass AS Object
+  DIM hModule AS Object
+  DIM cSymbol AS Collection
+  DIM hSymbol AS CSymbolInfo
+  DIM iFind AS Integer
+  DIM aClass AS String[]
+
+  'IF Len(sClass) <= 1 THEN
+  '  IF sClass <> "." THEN RETURN
+  'ENDIF
+
+  hClass = CComponent.Classes[sClass]
+  IF hClass THEN
+    IF hClass.Component <> Project.Name THEN
+      RETURN hClass.Symbols
+    ENDIF
+  ENDIF
+
+  aClass = Project.GetClasses()
+  iFind = aClass.Find(sClass, gb.Text)
+
+  IF iFind < 0 THEN
+    IF hClass THEN
+      RETURN hClass.Symbols
+    ELSE
+      RETURN
+    ENDIF
+  ENDIF
+
+  sClass = aClass[iFind]
+
+  sPath = Project.Dir &/ sClass & ".module"
+  IF Exist(sPath) THEN hPModule = Project.LoadFile(sPath)
+  sPath = Project.Dir &/ sClass & ".form"
+  IF Exist(sPath) THEN hPForm = Project.LoadFile(sPath)
+  sPath = Project.Dir &/ sClass & ".class"
+  IF Exist(sPath) THEN hPClass = Project.LoadFile(sPath)
+
+  cSymbol = NEW Collection
+
+  IF hPModule THEN
+    cSymbol = hPModule.Scan
+    IF NOT cSymbol THEN
+      cSymbol = NEW Collection(gb.Text)
+      hPModule.Scan = cSymbol
+      ScanClass(hPModule, cSymbol, TRUE)
+    ENDIF
+  ELSE IF hPClass THEN
+    cSymbol = hPClass.Scan
+    IF NOT cSymbol THEN
+      cSymbol = NEW Collection(gb.Text)
+      hPClass.Scan = cSymbol
+      IF hPForm THEN
+        FOR EACH hSymbol IN CComponent.Classes["Form"].Symbols
+          cSymbol[hSymbol.Name] = hSymbol
+        NEXT
+        ScanForm(hPForm, cSymbol)
+      ENDIF
+      ScanClass(hPClass, cSymbol, FALSE, IsNull(hPForm))
+    ENDIF
+  ENDIF
+
+  RETURN cSymbol
+
+END
+
+
+STATIC PUBLIC SUB Reset()
+
+  DIM hComponent AS CComponent
+
+  FOR EACH hComponent IN All
+    hComponent.Loaded = FALSE
+  NEXT
+
+  Classes = NEW Collection(gb.Text)
+
+  All["gb"].Load
+
+END

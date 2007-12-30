@@ -1,0 +1,86 @@
+' Gambas class file
+
+PUBLIC SUB btnEmbed_Click()
+
+  DIM sTitle AS String
+  DIM aHandle AS Integer[]
+  DIM iHandle AS Integer
+  
+  sTitle = txtTitle.Text
+  IF Left(sTitle, 2) = "0x" THEN 
+    iHandle = Val("&" & Mid$(sTitle, 3))
+  ELSE IF Left(sTitle) = "&" THEN 
+    iHandle = Val(sTitle)
+  ELSE
+    aHandle = Desktop.Find(Trim(txtTitle.Text))
+    IF aHandle.Count = 0 THEN 
+      Message.Warning("Window not found!")
+      RETURN
+    ELSE IF aHandle.Count >= 2 THEN 
+      Message("Several windows found. I take the first one!")
+    ENDIF
+    iHandle = aHandle[0]
+  ENDIF
+  
+  TRY embEmbedder.Embed(iHandle)
+  IF ERROR THEN Message.Warning(Error.Text)
+
+END
+
+PUBLIC SUB embEmbedder_Embed()
+
+  btnEmbed.Enabled = FALSE
+  btnDiscard.Enabled = TRUE
+
+END
+
+PUBLIC SUB btnDiscard_Click()
+
+  embEmbedder.Discard
+  embEmbedder_Close
+
+END
+
+PUBLIC SUB embEmbedder_Close()
+
+  btnEmbed.Enabled = TRUE
+  btnDiscard.Enabled = FALSE
+
+END
+
+PUBLIC SUB Form_Open()
+
+  lblID.Text = "&" & Hex$(embEmbedder.Id)
+
+END
+
+PUBLIC SUB embEmbedder_Error()
+
+  Message.Error("Embed error")
+
+END
+
+
+PUBLIC SUB Process_Read()
+
+  DIM sStr AS String
+
+  'READ #LAST, sStr, Lof(LAST)
+  LINE INPUT #LAST, sStr
+  PRINT "\t"; sStr
+
+END
+
+PUBLIC SUB Process_Error(sStr AS String)
+
+  PRINT "\t"; sStr; 
+  IF Right(sStr) <> "\n" THEN PRINT
+
+END
+
+PUBLIC SUB Process_Kill()
+
+  PRINT "Process_Kill"
+  PRINT LAST.State;; LAST.Value
+
+END

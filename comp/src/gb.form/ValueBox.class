@@ -1,0 +1,430 @@
+' Gambas class file
+
+EXPORT
+INHERITS TextBox
+
+PUBLIC CONST _Properties AS String = "*,-Password,-Text,-Alignment,Type{ValueBox.Date;Identifier;Number;Time}=Number,Allowed"
+PUBLIC CONST _DrawWith AS String = "TextBox"
+
+PUBLIC CONST {Number} AS Integer = 0
+PUBLIC CONST {Date} AS Integer = 1
+PUBLIC CONST {Time} AS Integer = 2
+PUBLIC CONST {Identifier} AS Integer = 3
+'PUBLIC CONST {Currency} AS Integer = 2
+'PUBLIC CONST {MailAddress} AS Integer = 5
+'PUBLIC CONST {IPAddress} AS Integer = 6
+
+PROPERTY Value AS Variant
+PROPERTY Type AS Integer
+PROPERTY READ Text AS String
+PROPERTY Allowed AS String
+
+PRIVATE $iType AS Integer
+'PRIVATE $bNull AS Boolean
+PRIVATE $sAllowed AS String
+
+PRIVATE $sLast AS String
+PRIVATE $sLastGood AS String
+
+STATIC PRIVATE $sDateSep AS String
+STATIC PRIVATE $sTimeSep AS String
+STATIC PRIVATE $sDateFormat AS String
+STATIC PRIVATE $sTimeFormat AS String
+STATIC PRIVATE $sPointSep AS String
+
+PRIVATE $hTimer AS Timer
+PRIVATE $iWarnBackground AS Integer
+PRIVATE $iWarnForeground AS Integer
+PRIVATE $bWarnReadOnly AS Boolean
+PRIVATE $bDelete AS Boolean
+
+STATIC PRIVATE SUB GetSeparators()
+  
+  IF $sDateSep THEN RETURN
+  
+  $sDateSep = Format$(Now, "/")
+  $sTimeSep = Format$(Now, ":")
+  $sPointSep = Left$(Format$(0.1, ".0"))
+  
+  $sDateFormat = Format(Date(3333, 11, 22), gb.ShortDate)
+  $sDateFormat = Replace($sDateFormat, "3333", "yyyy")
+  $sDateFormat = Replace($sDateFormat, "22", "dd")
+  $sDateFormat = Replace($sDateFormat, "11", "mm")
+  
+  $sTimeFormat = Format(Time(11, 22, 33), gb.LongTime)
+  $sTimeFormat = Replace($sTimeFormat, "11", "hh")
+  $sTimeFormat = Replace($sTimeFormat, "22", "nn")
+  $sTimeFormat = Replace($sTimeFormat, "33", "ss")
+
+END
+
+PUBLIC SUB _new()
+
+  DIM hObs AS Observer
+
+  GetSeparators  
+  hObs = NEW Observer(ME) AS "TextBox"
+
+  Type_Write(Number)
+
+END
+
+
+PRIVATE FUNCTION Value_Read() AS Variant
+
+  SELECT CASE $iType
+
+    CASE Identifier
+      RETURN ME.Text
+      
+    CASE ELSE 
+      RETURN Val(ME.Text)
+  
+  END SELECT
+  
+CATCH
+
+END
+
+PRIVATE SUB Value_Write(Value AS Variant)
+
+  SUPER.Text = Str(Value)
+
+END
+
+PRIVATE FUNCTION Type_Read() AS Integer
+
+  RETURN $iType
+
+END
+
+
+PRIVATE SUB Type_Write(Type AS Integer)
+
+  DIM sVal AS String
+
+  Object.Lock(ME)
+
+  SUPER.Text = ""
+  ME.Alignment = Align.Right
+  'ME.Alignment = Align.Left
+  
+  SELECT CASE Type
+
+    CASE {Number}
+      SUPER.Text = "0"
+    
+    CASE {Date}, {Time}
+      SUPER.Text = ""
+    
+    CASE Identifier
+      SUPER.Text = ""
+      ME.Alignment = Align.Normal
+    
+    CASE ELSE
+      Type = $iType 
+        
+  END SELECT
+  
+  Object.Unlock(ME)
+  $sLast = ME.Text
+  $sLastGood = $sLast
+  $iType = Type
+  
+END
+
+PRIVATE SUB RemoveLeadingZeros()
+  
+  DIM iPos AS Integer
+  DIM bNeg AS Boolean
+  
+  iPos = ME.Pos
+  bNeg = Left(ME.Text) = "-"
+  
+  IF bNeg THEN SUPER.Text = Mid$(ME.Text, 2)
+  WHILE Left(ME.Text) = "0"
+    SUPER.Text = Mid$(ME.Text, 2)
+    DEC iPos
+  WEND
+
+  IF ME.Length = 0 THEN SUPER.Text = "0"
+  IF bNeg THEN SUPER.Text = "-" & ME.Text
+
+  ME.Pos = iPos
+  
+END
+
+PRIVATE SUB FormatDateTime(sSep AS String)
+  
+  DIM iPos AS Integer
+  DIM sVal AS String
+  DIM sElt AS String
+  DIM aFormat AS String[]
+  DIM aValue AS String[]
+  DIM iInd AS Integer
+  DIM sRes AS String
+  DIM iSep AS Integer
+  DIM sRest AS String
+  
+  'IF ME.Text = "31/12/2007/" THEN STOP
+  
+  iPos = ME.Pos
+
+  aValue = Split(ME.Text, sSep)
+  IF sSep = $sDateSep THEN
+    aFormat = Split($sDateFormat, sSep)
+  ELSE 
+    aFormat = Split($sTimeFormat, sSep)
+  ENDIF 
+    
+  FOR iInd = 0 TO aValue.Max
+  
+    IF iInd > aFormat.Max THEN BREAK
+    sElt = aValue[iInd]
+  
+    IF iInd < aValue.Max THEN 
+      sElt = Right(sElt, Len(aFormat[iInd]))
+      WHILE Len(sElt) < Len(aFormat[iInd])
+        IF iPos >= (Len(sVal) + Len(sElt)) THEN INC iPos
+        sElt = "0" & sElt
+      WEND
+    ELSE
+      sRest = Mid(sElt, Len(aFormat[iInd]) + 1)
+      sElt = Left(sElt, Len(aFormat[iInd]))
+    ENDIF
+    
+    IF Len(sElt) = Len(aFormat[iInd]) THEN
+      IF sSep = $sDateSep THEN
+        IF CInt(sElt) = 0 THEN sElt = Left(sElt, -1) & "1"  
+      ENDIF
+      IF iInd < aFormat.Max THEN 
+        IF iPos >= (Len(sVal) + Len(sElt)) THEN INC iPos
+        sElt &= sSep
+      ENDIF
+    ENDIF
+    
+    sVal &= sElt
+  
+  NEXT
+  
+  IF aValue.Count < aFormat.Count AND IF sRest THEN 
+    IF iPos >= (Len(sVal) + 1) THEN INC iPos
+    sVal &= sSep & sRest
+  ENDIF
+  
+  SUPER.Text = sVal
+  
+  ME.Pos = iPos
+    
+END
+
+PRIVATE SUB CheckIdentifierChar(iPos AS Integer, sChar AS String) AS Boolean
+
+  IF IsLetter(sChar) THEN RETURN
+  IF iPos > 0 THEN 
+    IF IsLetter(sChar) THEN RETURN
+    IF IsDigit(sChar) THEN RETURN
+    IF $sAllowed THEN
+      IF String.InStr($sAllowed, sChar) THEN RETURN
+    ELSE 
+      IF sChar = "_" THEN RETURN
+    ENDIF
+  ENDIF  
+  
+  RETURN TRUE
+  
+END
+
+
+
+PUBLIC SUB TextBox_KeyPress()
+  
+  DIM iPos AS Integer
+  
+  IF Key.Code = Key.Escape THEN 
+    SUPER.Text = $sLastGood
+    STOP EVENT 
+    RETURN 
+  ENDIF
+  
+  IF Key.Code = Key.Delete OR IF Key.Code = Key.BackSpace THEN 
+    $bDelete = TRUE
+    RETURN 
+  ENDIF
+  
+  IF Asc(Key.Text) < 32 THEN RETURN 
+  
+  $bDelete = FALSE
+  
+  SELECT CASE $iType
+  
+    CASE {Number} 
+          
+      IF IsDigit(Key.Text) THEN 
+        ME.Insert(Key.Text)
+      ELSE IF Key.Text = $sPointSep OR Key.Text = "." THEN 
+        IF InStr(ME.Text, $sPointSep) = 0 THEN ME.Insert($sPointSep)
+      ELSE IF Key.Text = "-" THEN 
+        IF Left(ME.Text) <> "-" THEN 
+          iPos = ME.Pos
+          SUPER.Text = "-" & ME.Text
+          ME.Pos = iPos + 1
+        ELSE 
+          iPos = ME.Pos
+          SUPER.Text = Mid$(ME.Text, 2)
+          ME.Pos = iPos - 1
+        ENDIF
+      ENDIF
+      
+    CASE {Date}
+    
+      IF IsDigit(Key.Text) THEN RETURN
+      IF Key.Text = $sDateSep AND IF ME.Pos = ME.Length THEN RETURN
+    
+    CASE {Time}
+    
+      IF IsDigit(Key.Text) THEN RETURN
+      IF Key.Text = $sTimeSep AND IF ME.Pos = ME.Length THEN RETURN
+
+    CASE {Identifier}
+    
+      IF NOT CheckIdentifierChar(ME.Pos, Key.Text) THEN RETURN
+      
+    ', {Time}, {DateTime}
+        
+  END SELECT
+  
+  STOP EVENT
+  
+END
+
+PUBLIC SUB TextBox_Change()
+
+  IF $sLast = ME.Text THEN RETURN
+  IF $bDelete THEN RETURN
+  
+  Object.Lock(ME)
+  
+  SELECT CASE $iType
+  
+    CASE Number
+      RemoveLeadingZeros
+      
+    CASE {Date}
+      FormatDateTime($sDateSep)
+  
+    CASE {Time}
+      FormatDateTime($sTimeSep)
+      
+  END SELECT
+  
+  $sLast = ME.Text  
+  
+  Object.Unlock(ME)
+  
+END
+
+PRIVATE SUB CheckIdentifier() 
+  
+  DIM iInd AS Integer
+  DIM sCar AS String
+  
+  FOR iInd = 1 TO String.Len(ME.Text)
+    sCar = String.Mid(ME.Text, iInd, 1)
+    IF CheckIdentifierChar(iInd - 1, sCar) THEN Error.Raise("Bad character")
+  NEXT 
+  
+END
+
+
+PUBLIC SUB TextBox_LostFocus()
+
+  SELECT CASE $iType
+  
+    CASE Number
+      SUPER.Text = Str(Val(ME.Text))
+      
+    CASE {Date}
+      IF ME.Text THEN SUPER.Text = Format(Val(ME.Text), $sDateFormat)
+  
+    CASE {Time}
+      IF ME.Text THEN SUPER.Text = Format(Val(Format(Date(1972, 09, 06), gb.ShortDate) & " " & ME.Text), $sTimeFormat)
+      
+    CASE {Identifier}
+      CheckIdentifier  
+  
+  END SELECT
+  
+  $sLastGood = ME.Text
+  
+CATCH 
+
+  WarningTimer
+  
+END
+
+PRIVATE FUNCTION Text_Read() AS String
+
+  RETURN SUPER.Text  
+
+END
+
+
+PRIVATE FUNCTION Allowed_Read() AS String
+
+  RETURN $sAllowed  
+
+END
+
+PRIVATE SUB Allowed_Write(Value AS String)
+
+  $sAllowed = Value
+
+END
+
+PRIVATE SUB WarningTimer()
+
+  ' DIM sMsg AS String
+
+  IF $hTimer THEN 
+    Timer_Timer
+  ENDIF
+  
+  $hTimer = NEW Timer AS "Timer"
+  $hTimer.Delay = 100
+  $hTimer.Enabled = TRUE
+  
+  $iWarnBackground = ME.Background
+  $iWarnForeground = ME.Foreground
+  $bWarnReadOnly = ME.ReadOnly
+
+  ME.Background = Color.SelectedBackground
+  ME.Foreground = Color.SelectedForeground
+  ME.ReadOnly = TRUE
+  
+  ' SELECT $iType
+  '   CASE Number
+  '     sMsg = ("Incorrect number")
+  '   CASE Date
+  '     sMsg = ("Incorrect date")
+  '   CASE Time
+  '     sMsg = ("Incorrect time")
+  '   CASE Identifier
+  '     sMsg = ("Incorrect identifier")
+  ' END SELECT
+  ' 
+  ' DEBUG ME
+  ' Balloon.Warning(sMsg, ME, 0, 0)
+  
+END
+
+PUBLIC SUB Timer_Timer()
+  
+  ME.Background = $iWarnBackground
+  ME.Foreground = $iWarnForeground
+  ME.ReadOnly = $bWarnReadOnly
+  
+  $hTimer = NULL
+  SUPER.Text = $sLastGood
+  
+END

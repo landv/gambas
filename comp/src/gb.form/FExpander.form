@@ -1,0 +1,33 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,65,59)
+  Text = ("")
+  Border = Window.Fixed
+  Arrangement = Arrange.Vertical
+  { panTitle Panel
+    MoveScaled(1,2,46,3)
+    Arrangement = Arrange.Horizontal
+    AutoResize = True
+    { btnExpand PictureBox
+      MoveScaled(1,0,2,3)
+      Picture = Picture["img/8/side-bottom-void.png"]
+      Alignment = Align.Left
+    }
+    { lblTitle Label btnExpand
+      Name = "lblTitle"
+      MoveScaled(4,0,33,3)
+      Expand = True
+      AutoResize = True
+      Text = ("")
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(4,10,49,40)
+    Expand = True
+    { panContainer Panel
+      MoveScaled(10,9,34,26)
+      Expand = True
+    }
+  }
+}

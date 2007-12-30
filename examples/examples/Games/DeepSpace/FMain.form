@@ -1,0 +1,37 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(19,0,75.4286,70.7143)
+  Text = ("DeepSpace Vector Engine")
+  Icon = Picture["images/deepspace.png"]
+  Border = Window.Fixed
+  { mnuMain Menu
+    Text = ("&DeepSpace")
+    { mnuShowText Menu
+      Text = ("&Show object labels")
+    }
+    { mnuMainAbout Menu
+      Text = ("&About DeepSpace ...")
+    }
+    { mnuMainSep1 Menu
+      Text = ("")
+    }
+    { mnuMainExit Menu
+      Text = ("&Exit")
+      Shortcut = "Ctrl+Q"
+    }
+  }
+  { daCanvas DrawingArea
+    MoveScaled(0,0,54,50)
+    Font = Font["Monospace,8"]
+    Background = &H000000&
+    Cached = True
+    Focus = True
+  }
+  { tmrMainLoop #Timer
+    #X = 455
+    #Y = 301
+    Enabled = True
+    Delay = 20
+  }
+}

@@ -1,0 +1,146 @@
+# Gambas Form File 1.0
+
+{ Form1 Form
+  Move(228,16,449,622)
+  Text = ("")
+  Border = Window.Fixed
+  { PictureBox1 PictureBox
+    Move(0,0,448,304)
+    Background = &H000000&
+    Alignment = Align.Center
+    Border = Border.Raised
+  }
+  { Tmr #Timer
+    #X = 8
+    #Y = 144
+    Delay = 10
+  }
+  { Panel2 Panel
+    Move(0,312,448,312)
+    { Panel7 Panel
+      Move(0,-8,448,192)
+      Border = Border.Raised
+      { Label1 Label
+        Move(32,0,88,24)
+        Text = ("Bright")
+      }
+      { Bright Slider
+        Move(32,24,152,16)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Label2 Label
+        Move(32,48,80,24)
+        Text = ("Contrast")
+      }
+      { Contrast Slider
+        Move(32,80,152,16)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Whiteness Slider
+        Move(32,136,152,16)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Label3 Label
+        Move(32,104,88,24)
+        Text = ("Whiteness")
+      }
+      { Label5 Label
+        Move(264,0,80,24)
+        Text = ("Hue")
+      }
+      { Hue Slider
+        Move(264,24,152,16)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Label4 Label
+        Move(264,48,80,24)
+        Text = ("Color")
+      }
+      { Colour Slider
+        Move(264,80,152,16)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { V2 RadioButton
+        Move(264,136,88,24)
+        Enabled = False
+        Text = ("160x120")
+      }
+      { V4 RadioButton
+        Move(352,112,88,24)
+        Enabled = False
+        Text = ("320x240")
+        Value = True
+      }
+      { V3 RadioButton
+        Move(264,160,88,24)
+        Enabled = False
+        Text = ("176x144")
+      }
+      { V5 RadioButton
+        Move(352,136,88,24)
+        Enabled = False
+        Text = ("352x288")
+      }
+      { V1 RadioButton
+        Move(264,112,88,24)
+        Enabled = False
+        Text = ("128x96")
+      }
+      { V6 RadioButton
+        Move(352,160,88,24)
+        Enabled = False
+        Text = ("640x480")
+      }
+    }
+    { Panel3 Panel
+      Move(0,184,448,80)
+      Border = Border.Raised
+      { LblFreq Label
+        Move(8,8,216,24)
+        Text = ("Tuner frequency:")
+      }
+      { FreqUP Button
+        Move(8,32,40,32)
+        Enabled = False
+        Text = ("+")
+      }
+      { FreqDown Button
+        Move(56,32,40,32)
+        Enabled = False
+        Text = ("-")
+      }
+      { Button2 Button
+        Move(256,40,176,32)
+        Enabled = False
+        Text = ("Device Information")
+      }
+      { BtnTakeShot Button
+        Move(256,8,176,32)
+        Enabled = False
+        Text = ("Take a shot")
+      }
+    }
+    { Panel1 Panel
+      Move(0,264,448,40)
+      Border = Border.Raised
+      { Label6 Label
+        Move(8,8,64,24)
+        Text = ("Device:")
+      }
+      { TxtDevice TextBox
+        Move(80,0,184,32)
+        Expand = True
+        Text = ("/dev/video")
+      }
+      { Button1 Button
+        Move(272,0,160,40)
+        Text = ("Capture")
+      }
+    }
+  }
+}

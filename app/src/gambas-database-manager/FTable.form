@@ -1,0 +1,120 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(6.1429,25,71,53)
+  Text = ("")
+  Icon = Picture["img/16/table.png"]
+  Arrangement = Arrange.Vertical
+  { HPanel1 HPanel
+    MoveScaled(1,1,19,3)
+    { btnSaveField ToolButton
+      MoveScaled(0,0,3,3)
+      ToolTip = ("Save table")
+      Text = ("")
+      Picture = Picture["icon:/16/save"]
+    }
+    { btnCancelField ToolButton
+      MoveScaled(3,0,3,3)
+      ToolTip = ("Reload table")
+      Text = ("")
+      Picture = Picture["icon:/16/undo"]
+    }
+    { btnRename ToolButton
+      MoveScaled(6,0,3,3)
+      ToolTip = ("Rename table")
+      Text = ("")
+      Picture = Picture["img/16/rename.png"]
+    }
+    { btnRequest ToolButton
+      MoveScaled(9,0,3,3)
+      ToolTip = ("SQL request")
+      Text = ("")
+      Picture = Picture["img/16/sql.png"]
+    }
+  }
+  { tabTable TabStrip
+    MoveScaled(1,5,56,42)
+    Expand = True
+    Count = 3
+    Index = 0
+    Text = ("Fields")
+    Picture = Picture["img/16/table.png"]
+    { btnUpField ToolButton
+      MoveScaled(9,0,3,3)
+      ToolTip = ("Move field up")
+      Text = ("")
+      Picture = Picture["icon:/16/up"]
+    }
+    { btnDownField ToolButton
+      MoveScaled(6,0,3,3)
+      ToolTip = ("Move field down")
+      Text = ("")
+      Picture = Picture["icon:/16/down"]
+    }
+    { btnKey ToolButton
+      MoveScaled(12,0,3,3)
+      ToolTip = ("Toggle primary key")
+      Text = ("")
+      Picture = Picture["img/16/key.png"]
+    }
+    { btnKillField ToolButton
+      MoveScaled(3,0,3,3)
+      ToolTip = ("Delete field")
+      Text = ("")
+      Picture = Picture["icon:/16/delete"]
+    }
+    { btnNewField ToolButton
+      MoveScaled(0,0,3,3)
+      ToolTip = ("New field")
+      Text = ("")
+      Picture = Picture["icon:/16/new"]
+    }
+    { tbvField GridView
+      MoveScaled(0,3,52,31)
+      Mode = Select.Single
+      Header = GridView.Horizontal
+    }
+    Index = 1
+    Text = ("Indexes")
+    Picture = Picture["img/16/index.png"]
+    { btnNewIndex ToolButton
+      MoveScaled(0,0,3,3)
+      ToolTip = ("New index")
+      Text = ("")
+      Picture = Picture["img/16/index.png"]
+    }
+    { btnNewIndexField ToolButton
+      MoveScaled(3,0,3,3)
+      ToolTip = ("New index field")
+      Text = ("")
+      Picture = Picture["icon:/16/new"]
+    }
+    { btnKillIndex ToolButton
+      MoveScaled(6,0,3,3)
+      ToolTip = ("Delete index field")
+      Text = ("")
+      Picture = Picture["icon:/16/delete"]
+    }
+    { btnDownIndex ToolButton
+      MoveScaled(9,0,3,3)
+      ToolTip = ("Move field down")
+      Text = ("")
+      Picture = Picture["icon:/16/down"]
+    }
+    { btnUpIndex ToolButton
+      MoveScaled(12,0,3,3)
+      ToolTip = ("Move field up")
+      Text = ("")
+      Picture = Picture["icon:/16/up"]
+    }
+    { tbvIndex GridView
+      MoveScaled(0,3,51,35)
+      Mode = Select.Single
+      Header = GridView.Horizontal
+    }
+    Index = 2
+    Text = ("Data")
+    Picture = Picture["img/16/data.png"]
+    Index = 0
+  }
+}
