@@ -1,0 +1,40 @@
+' Gambas class file
+
+STATIC PUBLIC SUB Main()
+  DIM myForm AS Form
+  myForm = NEW FStart
+  myForm.Show
+END
+
+PUBLIC myThings AS Collection
+PUBLIC myThing AS CThing
+
+PUBLIC SUB btnCreate_Click()
+'creating objects and add to collection
+  DIM i AS Integer
+  myThings = NEW Collection
+  FOR i = 1 TO 7
+    myThing = NEW CThing
+    myThing.Name = "ThingName-" & CStr(i)
+    myThing.X = i
+    myThing.Y = i
+    myThing.ID = i 
+    myThings.Add(myThing, CStr(myThing.ID))
+  NEXT
+  
+'show the collectionmembers in treeview
+  
+  tvThings.Add("root", "myThings")
+    
+  FOR EACH myThing IN myThings
+    tvThings.Add(myThing.ID, myThing.Name,, "root")
+    tvThings.Add(myThing.ID & "Name", "Name= " & myThing.Name,, CStr(myThing.ID))
+    tvThings.Add(myThing.ID & "X", "X= " & myThing.X,, CStr(myThing.ID))
+    tvThings.Add(myThing.ID & "Y", "Y= " & myThing.Y,, CStr(myThing.ID))
+    tvThings.Add(myThing.ID & "ID", "ID= " & myThing.ID,, CStr(myThing.ID))
+  NEXT
+  
+  tvThings["root"].Expanded = TRUE
+
+END 
+ 

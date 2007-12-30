@@ -1,0 +1,29 @@
+' Gambas class file
+
+PUBLIC SUB btnClose_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB btnDraw_Click()
+  DIM total AS Integer
+  total = 10
+  WITH FormChart
+    .value = NEW Float[]
+    .total = total
+    .value.Resize(total + 1)
+    TRY .value[1] = Val(textbox1.Text)
+    TRY .value[2] = Val(textbox2.Text)
+    TRY .value[3] = Val(textbox3.Text)
+    TRY .value[4] = Val(textbox4.Text)
+    TRY .value[5] = Val(textbox5.Text)
+    TRY .value[6] = Val(textbox6.Text)
+    TRY .value[7] = Val(textbox7.Text)
+    TRY .value[8] = Val(textbox8.Text)
+    TRY .value[9] = Val(textbox9.Text)
+    TRY .value[10] = Val(textbox10.Text)
+    .Show
+  END WITH
+
+END

@@ -1,0 +1,62 @@
+' Gambas class file
+
+STATIC PUBLIC Name AS String
+STATIC PUBLIC Type AS String
+
+STATIC PRIVATE $aType AS String[]
+
+STATIC PUBLIC FUNCTION Run(OPTIONAL sTable AS String, OPTIONAL sType AS String, OPTIONAL aType AS String[]) AS Boolean
+
+  Name = sTable
+  Type = sType
+  $aType = aType
+  RETURN NOT FNewTable.ShowModal()
+
+END
+
+PUBLIC SUB _new()
+
+  IF $aType AND IF $aType.Count THEN
+    cmbType.List = $aType
+    cmbType.Enabled = TRUE
+    IF Type THEN cmbType.Text = Type
+  ENDIF
+
+  lblType.Text = Type
+
+  IF Name THEN
+    ME.Title = ("Rename table")
+    cmbType.Visible = FALSE
+  ELSE
+    ME.Title = ("Create table")
+  ENDIF
+
+  lblTitle.Text = ME.Title
+
+  txtName.Text = Name
+  txtName.SelectAll
+
+END
+
+
+PUBLIC SUB btnOK_Click()
+
+  Name = Trim(txtName.Text)
+
+  IF NOT Name THEN
+    Message.Warning(("Please enter a table name."))
+    txtName.SetFocus
+    RETURN
+  ENDIF
+
+  Type = cmbType.Text
+
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close()
+
+END

@@ -1,0 +1,286 @@
+' Gambas class file
+
+PRIVATE $hThermo AS Image
+PRIVATE $hRed AS Image
+PRIVATE $hOrange AS Image
+PRIVATE $eTime AS Float
+PRIVATE $iLoad AS Long
+PRIVATE $iTotal AS Long
+PRIVATE $hPicture AS Picture
+
+PRIVATE FUNCTION GetLoad() AS Float
+
+  DIM sRes AS String
+  DIM iPos AS Integer
+  DIM aRes AS String[]
+  DIM iTotal AS Long
+  DIM iLoad AS Long
+  DIM eLoad AS Float
+
+  'Do not work!
+  'sRes = File.Load("/proc/stat")
+
+  EXEC ["cat", "/proc/stat"] TO sRes
+  iPos = InStr(sRes, "\n")
+  IF iPos THEN sRes = Left$(sRes, iPos - 1)
+  aRes = Split(sRes, " ", "", TRUE)
+
+  'PRINT aRes.Join(" ")
+
+  iTotal = CLong(aRes[1]) + CLong(aRes[2]) + CLong(aRes[3]) + CLong(aRes[4])
+  iLoad = CLong(aRes[4])
+
+  IF $iLoad THEN
+    TRY eLoad = 1 - (iLoad - $iLoad) / (iTotal - $iTotal)
+    'PRINT iLoad - $iLoad;; iTotal - $iTotal;; Format(eLoad, "#.##");; Format(eLoad * 100, "###")
+  ENDIF
+
+  $iLoad = iLoad
+  $iTotal = iTotal
+
+  RETURN eLoad
+
+END
+
+PRIVATE FUNCTION GetUsedValue(sRes AS String) AS Integer
+
+  RETURN Val(Split(sRes, " ", "", TRUE)[1])
+
+END
+
+
+PRIVATE FUNCTION GetUsed() AS Integer
+
+  DIM sRes AS String
+  DIM aRes AS String[]
+  DIM cVal AS NEW Collection
+  DIM sVal AS String
+
+  EXEC ["cat", "/proc/meminfo"] TO sRes
+  FOR EACH sVal IN Split(sRes, "\n", "", TRUE)
+    aRes = Split(sVal, " ", "", TRUE)
+    'PRINT aRes.Join(" ")
+    cVal[Left$(aRes[0], -1)] = CInt(aRes[1])
+  NEXT
+
+  RETURN cVal!MemTotal - cVal!MemFree - cVal!Buffers - cVal!Cached + cVal!SwapTotal - cVal!SwapFree - cVal!SwapCached
+
+END
+
+
+PRIVATE FUNCTION GetValue(sRes AS String, sPat AS String, OPTIONAL sStop AS String = " ") AS String
+
+  DIM iPos AS Integer
+
+  iPos = InStr(sRes, sPat)
+  IF iPos = 0 THEN RETURN
+
+  sRes = LTrim(Mid$(sRes, iPos + Len(sPat)))
+  iPos = InStr(sRes, sStop)
+  IF iPos THEN sRes = Left$(sRes, iPos - 1)
+  'IF Left$(sRes) = "+" THEN sRes = Mid$(sRes, 2)
+  sRes = DConv(sRes)
+
+  RETURN sRes
+
+END
+
+
+PRIVATE SUB DrawRelief(sVal AS String, X AS Integer, Y AS Integer)
+
+  DIM hPict AS Picture
+  DIM hImage AS Image
+  DIM hFont AS Font = Draw.Font
+  DIM I, J AS Integer
+
+  ' Creates a gray picture with a transparent mask
+
+  'DEBUG "START"
+  
+  hPict = NEW Picture(Draw.TextWidth(sVal) + 2, Draw.TextHeight(sVal) + 2, TRUE)
+  hPict.Fill(Color.Gray)
+
+  ' Draws the gray shadow in the picture. The transparent mask follows the drawn text.
+  
+  ' The gray background is needed, as the X11 anti-aliasing uses it (it ignores the
+  ' picture mask that is managed by the library)
+
+  Draw.Begin(hPict)
+  ' Draw.FillStyle = Fill.Solid
+  ' Draw.FillColor = Color.Green
+  ' Draw.Rect(4, 4, 16, 16)
+  Draw.Transparent = TRUE
+  Draw.ForeColor = Color.Gray
+  Draw.Font = hFont
+  FOR I = 0 TO 2
+    FOR J = 0 TO 2
+      Draw.Text(sVal, I, J)
+    NEXT 
+  NEXT 
+  Draw.End
+
+  ' Draws the shadow in the initial picture
+  'Draw.Image(hPict.Image, X - 1, Y - 1)
+  Draw.Picture(hPict, X - 1, Y - 1)
+  
+  ' Draws the normal text
+  
+  Draw.ForeColor = Color.White
+  'Draw.Transparent = FALSE
+  Draw.Text(sVal, X, Y)
+
+  'DEBUG "END"
+
+END
+
+
+PUBLIC SUB Timer1_Timer()
+
+  DIM sRes AS String
+  DIM sVal AS String
+  DIM iTempCPU AS Integer
+  DIM iTempMB AS Integer
+  DIM H, HR, HO AS Integer
+  DIM iPos AS Integer
+  DIM hImage AS Image
+
+  EXEC ["sensors"] TO sRes
+  IF NOT sRes THEN RETURN
+
+  'Draw.Font.Bold = TRUE
+
+  iTempCPU = Val(GetValue(sRes, "CPU Temp:", SConv("°")))
+  iTempMB = Val(GetValue(sRes, "M/B Temp:", SConv("°")))
+  sVal = "CPU: +" & iTempCPU & "°\n"
+  sVal &= "M/B: +" & iTempMB & "°\n"
+  sVal &= GetValue(sRes, "fan1:") & " RPM"
+
+
+  '$hPicture = $hThermo.Copy()
+  hImage = NEW Image(128, 128, TRUE)
+  hImage.Fill(Color.Transparent)
+  
+  hImage.Draw($hThermo, 0, 0)
+  
+  HO = Min(99, ((56 - iTempCPU) * 3))
+  HR = Min(99, ((56 - iTempMB) * 3))
+
+  FOR H = 99 TO 0 STEP -1
+    IF H < HO THEN BREAK 
+    IF H >= HR THEN
+      hImage.Draw($hRed, 6, 6 + H)
+    ELSE 
+      hImage.Draw($hOrange, 6, 6 + H)
+    ENDIF   
+  NEXT
+  
+  $hPicture = hImage.Picture
+  
+  Draw.Begin($hPicture)
+  
+  DrawRelief(sVal, 24, 1)
+  
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.None
+  
+  'Draw.FillColor = Color.Orange
+  'Draw.Rect(8, 11 + H, 9, 88 - H)
+  
+  'Draw.FillColor = Color.RGB(255, 51, 102)
+  'Draw.Rect(8, 11 + H, 9, 88 - H)
+  
+  DrawRelief(Int(GetUsed() / 1024) & " M", 32, 96)
+  
+  Draw.Font.Size *= 2
+  DrawRelief(Min(100, Int(GetLoad() * 100 + 0.5)) & "%", 32, 64)
+  
+  Draw.End
+
+  IF mnuPict.Checked THEN 
+    ME.Picture = $hPicture
+  ENDIF
+  IF Application.Embedder = 0 THEN ME.Lower
+
+  'PRINT ME.X;; ME.Y;; ME.W;; ME.H
+
+END
+
+PUBLIC SUB Form_Open()
+
+  $hThermo = Image.Load("thermo-void.png")
+  $hRed = Image.Load("red.png")
+  $hOrange = Image.Load("orange.png")
+
+  IF Application.Embedder = 0 THEN
+    ME.Move(Desktop.Width - ME.Width, 16)
+    Settings.Read(ME)
+  ENDIF
+  Timer1_Timer
+
+END
+
+' PUBLIC SUB Form_KeyPress()
+' 
+'   IF Key.Code = Key.Esc THEN
+'     ME.Close
+'   ENDIF
+' 
+' END
+
+PUBLIC SUB Form_DblClick()
+
+  mnuTaskBar_Click
+
+END
+
+PUBLIC SUB Form_Menu()
+
+  mnuPopup.Popup
+
+END
+
+PUBLIC SUB mnuAbout_Click()
+
+  Message("Get useful information about your CPU\nand your system!\n\n(c) Benoît Minisini 2005-2007")
+
+END
+
+
+PUBLIC SUB mnuTaskBar_Click()
+
+  mnuTaskBar.Checked = ME.SkipTaskbar
+  ME.SkipTaskbar = NOT ME.SkipTaskbar
+
+END
+
+PUBLIC SUB mnuMask_Click()
+
+  ME.Mask = NOT ME.Mask
+  mnuMask.Checked = ME.Mask
+
+END
+
+PUBLIC SUB mnuPict_Click()
+
+  mnuPict.Checked = NOT mnuPict.Checked
+  IF mnuPict.Checked THEN
+    ME.Picture = $hPicture
+  ELSE
+    ME.Picture = NULL
+  ENDIF
+
+END
+
+
+PUBLIC SUB mnuQuit_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB Form_Close()
+
+  'DEBUG ME.X
+  Settings.Write(ME)
+
+END

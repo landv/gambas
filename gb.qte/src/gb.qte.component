@@ -1,0 +1,20 @@
+[Component]
+Key=gb.qte
+Author=Silvan Calarco,Benoît Minisini
+Implements=Form,EventLoop,ImageProvider
+Type=Form
+
+[Form]
+Control=Label,TextLabel,Separator,PictureBox,MovieBox,ProgressBar
+Control=Button,CheckBox,RadioButton,ToggleButton,ToolButton,Slider,ScrollBar
+Control=ListBox,ComboBox,TextBox,SpinBox,TextArea
+Control=ListView,TreeView,IconView,GridView,ColumnView
+
+[Container]
+Control=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,TabStrip,ScrollView,DrawingArea
+Container=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,TabStrip,ScrollView,DrawingArea
+MultiContainer=TabStrip
+
+[Special]
+Control=Embedder,TrayIcon
+Virtual=TrayIcon

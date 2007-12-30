@@ -1,0 +1,108 @@
+' Gambas class file
+
+PRIVATE currentDoc AS CpdfPresentation
+'PUBLIC Screen AS NEW Window(TRUE) AS "Screen"
+PRIVATE currentLogo AS Clogo
+
+PUBLIC SUB glaPresentation_Draw()
+
+  IF NOT currentDoc THEN RETURN
+
+  IF NOT MMain.ShowLogo THEN
+    currentDoc.Draw()
+  ELSE
+    currentLogo.Draw()
+    IF currentLogo.Finished = TRUE THEN MMain.ShowLogo = FALSE
+  ENDIF
+
+END
+
+PUBLIC SUB glaPresentation_KeyPress()
+
+  IF key.code = key.Esc THEN ME.Close()
+  
+  IF key.Code = key["f"] THEN 
+    ME.FullScreen = NOT ME.Fullscreen
+    panSelect.Visible = NOT ME.FullScreen
+    IF ME.FullScreen THEN 
+      ME.Padding = 0
+    ELSE 
+      ME.Padding = 8
+    ENDIF
+  ENDIF
+
+  IF NOT MMain.ShowLogo THEN
+    ' right arrow
+    IF key.Code = key.Right THEN currentDoc.MoveNext()
+    ' left arrow
+    IF key.code = key.Left THEN currentDoc.MovePrev()
+  ELSE
+    IF key.Code = key.Space THEN currentLogo.Quit()
+  ENDIF
+
+END
+
+PUBLIC SUB glaPresentation_Resize()
+
+  IF NOT currentDoc THEN RETURN
+
+  IF MMain.ShowLogo THEN
+    currentLogo.Resize(glaPresentation.Width, glaPresentation.Height)
+  ELSE
+    currentDoc.Resize(glaPresentation.Width, glaPresentation.Height)
+  ENDIF  
+
+END
+
+PUBLIC SUB Form_Open()
+
+  glaPresentation.SetFocus
+
+END
+
+PUBLIC SUB timUpdate_Timer()
+
+  glaPresentation.Update
+
+END
+
+PUBLIC SUB btnPath_Click()
+
+  DIM sPath AS String
+
+  Dialog.Title = ("Select a PDF file")
+  Dialog.Filter = ["*.pdf", ("PDF files")]
+  IF Dialog.OpenFile() THEN RETURN
+  sPath = Dialog.Path
+  txtPath.Text = sPath
+
+  timUpdate.Stop
+
+  CurrentDoc = NEW CpdfPresentation(sPath, MMain.FrameRate)
+  currentDoc.Effect = currentDoc.Rotate
+  
+  currentLogo = NEW Clogo(MMain.FrameRate)
+  
+  glaPresentation_Resize
+  
+  timUpdate.Delay = 1000 / MMain.FrameRate
+  PRINT "Frame rate is "; Format(1000 / timUpdate.Delay, "#.##"); " images by second"
+  timUpdate.Start
+  
+  glaPresentation.SetFocus
+
+END
+
+PUBLIC SUB glaPresentation_MouseWheel()
+
+  IF NOT currentDoc THEN RETURN
+  IF MMain.ShowLogo THEN RETURN
+
+  IF Mouse.Delta < 0 THEN 
+    currentDoc.ZoomIn
+  ELSE
+    currentDoc.ZoomOut
+  ENDIF
+    
+
+END

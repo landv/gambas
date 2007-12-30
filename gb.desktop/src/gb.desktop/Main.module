@@ -1,0 +1,51 @@
+' Gambas module file
+
+PUBLIC Result AS String
+
+PRIVATE $cTool AS NEW Collection
+
+PUBLIC SUB RunXdgUtil(sProg AS String, aArg AS String[]) 
+  
+  DIM sCmd AS String
+  DIM sPath AS String
+  DIM sDir AS String
+  DIM aCmd AS String[]
+  
+  sCmd = $cTool[sProg]
+  
+  IF NOT sCmd THEN 
+    SHELL "which " & sProg & " 2>&1" TO sCmd
+    IF Process.LastValue THEN 
+      sDir = Temp$("xdg-utils")
+      sDir = File.Dir(sDir) &/ File.BaseName(sDir)
+      TRY MKDIR sDir
+      sCmd = sDir &/ sProg
+      COPY "xdg-utils-1.0.2/scripts" &/ sProg TO sCmd
+      SHELL "chmod a+x " & Quote.Shell(sCmd)
+    ENDIF
+    sCmd = Trim(sCmd)
+    $cTool[sProg] = sCmd
+  ENDIF
+  
+  aCmd = [sCmd]
+  aCmd.Insert(aArg)
+  EXEC aCmd TO Result 
+  
+  SELECT CASE Process.LastValue  
+    CASE 1
+      Error.Raise("Syntax error")
+    CASE 2
+      Error.Raise("File does not exist")
+    CASE 3
+      Error.Raise("A required tool could not be found")
+    CASE 4
+      Error.Raise("The action has failed")
+    CASE 5
+      Error.Raise("File access forbidden")
+  END SELECT 
+  
+END
+
+PUBLIC SUB Main()
+  
+END

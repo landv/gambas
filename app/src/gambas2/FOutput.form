@@ -1,0 +1,73 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(0.25,2.5,53,54)
+  'Move(2,20,424,432)
+  Text = ("Console - Gambas")
+  Icon = Picture["icon:/small/terminal"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  { ToolBar1 ToolBar
+    MoveScaled(1,1,51,3)
+    'Move(8,8,408,24)
+    { btnUndock ToolButton
+      MoveScaled(0,0,3,3)
+      'Move(0,0,24,24)
+      ToolTip = ("Undock console")
+      Text = ("")
+      Picture = Picture["icon:/small/fullscreen"]
+      Toggle = True
+    }
+    { btnAbove ToolButton
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      ToolTip = ("Keep above")
+      Text = ("")
+      Picture = Picture["img/16/raise.png"]
+      Toggle = True
+    }
+    { btnClear ToolButton
+      MoveScaled(6,0,3,3)
+      'Move(48,0,24,24)
+      ToolTip = ("Clear console")
+      Text = ("")
+      Picture = Picture["icon:/small/clear"]
+    }
+    { btnCut ToolButton
+      MoveScaled(9,0,3,3)
+      'Move(72,0,24,24)
+      ToolTip = ("Cut")
+      Text = ("")
+      Picture = Picture["icon:/small/cut"]
+    }
+    { btnCopy ToolButton
+      MoveScaled(12,0,3,3)
+      'Move(96,0,24,24)
+      ToolTip = ("Copy")
+      Text = ("")
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnPaste ToolButton
+      MoveScaled(15,0,3,3)
+      'Move(120,0,24,24)
+      ToolTip = ("Paste")
+      Text = ("")
+      Picture = Picture["icon:/small/paste"]
+    }
+    { sepCharset Separator
+      MoveScaled(19,0,2,3)
+      'Move(152,0,16,24)
+    }
+    { chkCharset CheckBox
+      MoveScaled(21,0,29,3)
+      'Move(168,0,232,24)
+      Expand = True
+      Text = ("Use system charset")
+    }
+  }
+  { edtOutput Editor
+    MoveScaled(1,6,38,39)
+    'Move(8,48,304,312)
+    Expand = True
+  }
+}

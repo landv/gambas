@@ -1,0 +1,96 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,92,71)
+  Text = ("Select a project")
+  Icon = Picture["icon:/32/open"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { tabProject TabStrip
+    MoveScaled(1,1,90,65)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Padding = 8
+    Count = 3
+    Index = 0
+    Text = ("Open")
+    { splProject HSplit
+      MoveScaled(1,1,87,61)
+      Expand = True
+      { dchProject DirChooser
+        MoveScaled(1,0,38,58)
+        Expand = True
+        ShowBookmark = True
+        ShowSplitter = False
+      }
+      { Panel2 Panel
+        MoveScaled(40,1,46,56)
+        Arrangement = Arrange.Vertical
+        { sdpProject SidePanel
+          MoveScaled(1,1,43,12)
+          Arrangement = Arrange.Fill
+          { panProject Panel
+            MoveScaled(5,3,34,7)
+            Background = Color.TextBackground
+            Arrangement = Arrange.Fill
+            Padding = 2
+            Border = Border.Sunken
+          }
+        }
+        { fvwProject FileView
+          MoveScaled(1,23,45,32)
+          Expand = True
+          ShowDetailed = True
+          ShowDirectory = True
+        }
+      }
+    }
+    Index = 1
+    Text = ("Recent")
+    { panRecent Panel
+      MoveScaled(1,1,83,60)
+      Arrangement = Arrange.Vertical
+      Spacing = 8
+      { chkSortRecent CheckBox
+        MoveScaled(0,0,24,3)
+        Text = ("Sort by path")
+      }
+      { lstRecent ListContainer
+        MoveScaled(0,4,79,54)
+        Expand = True
+      }
+    }
+    Index = 2
+    Text = ("Examples")
+    { lstExample ListContainer
+      MoveScaled(1,1,80,58)
+      Visible = False
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(1,67,62,3)
+    Spacing = 8
+    { chkOther CheckBox
+      MoveScaled(1,0,24,3)
+      Expand = True
+      Text = ("Open in another window")
+    }
+    { Panel1 Panel
+      MoveScaled(28,0,2,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(33,0,14,3)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,14,3)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

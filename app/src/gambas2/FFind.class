@@ -1,0 +1,577 @@
+' Gambas class file
+
+PRIVATE $bReplace AS Boolean
+
+PRIVATE $bProc AS Boolean
+PRIVATE $bCase AS Boolean
+PRIVATE $bWord AS Boolean
+PRIVATE $bComment AS Boolean
+PRIVATE $bString AS Boolean
+PRIVATE $sFind AS String
+PRIVATE $bProject AS Boolean
+PRIVATE $bList AS Boolean
+
+PRIVATE $sReplace AS String
+PRIVATE $iNbrReplace AS Integer
+PRIVATE $bReplaceAll AS Boolean
+
+PRIVATE $iLastTimeStamp AS Integer
+PRIVATE $sLastSearch AS String
+PRIVATE $bStop AS Boolean
+PRIVATE $bCanceled AS Boolean
+PRIVATE $iWait AS Integer
+
+PUBLIC SUB Find(OPTIONAL bReplace AS Boolean)
+
+  cmbFind.Text = ""
+  cmbReplace.Text = ""
+  $bReplace = bReplace
+  
+  IF ME.Visible THEN 
+    Form_Show
+  ELSE 
+    ME.Show
+  ENDIF 
+
+END
+
+
+PRIVATE SUB Store(hCombo AS ComboBox)
+  
+  DIM sText AS String = hCombo.Text
+  DIM iInd AS Integer
+
+  IF NOT sText THEN RETURN 
+  
+  iInd = hCombo.Find(sText)
+  IF iInd >= 0 THEN hCombo.Remove(iInd)
+  hCombo.Add(sText)
+  hCombo.Text = sText
+  
+END
+
+
+
+PUBLIC SUB FindNext()
+
+  IF NOT cmbFind.Text THEN RETURN
+  Store(cmbFind)
+
+  Search(FALSE, FALSE)
+
+END
+
+
+PUBLIC SUB FindPrevious()
+
+  IF NOT cmbFind.Text THEN RETURN
+  Store(cmbFind)
+
+  Search(TRUE, FALSE)
+
+END
+
+PUBLIC SUB FindAll()
+
+  IF NOT cmbFind.Text THEN RETURN
+  Store(cmbFind)
+
+  $bList = TRUE
+  
+  IF NOT FFindList.Visible AND IF $iLastTimeStamp = Project.TimeStamp AND IF $sLastSearch = cmbFind.Text THEN
+    FFindList.Show
+  ELSE
+    FFindList.Show
+    FFindList.Start
+    Search(FALSE, FALSE)
+    FFindList.Stop
+    IF NOT $bCanceled THEN
+      $iLastTimeStamp = Project.TimeStamp
+      $sLastSearch = cmbFind.Text
+    ENDIF
+  ENDIF
+  
+  $bList = FALSE
+  
+  'Action["find-in-project"].Value = TRUE
+
+END
+
+PUBLIC SUB Replace()
+  
+  IF NOT cmbFind.Text THEN RETURN
+  Store(cmbReplace)
+
+  $bReplaceAll = FALSE
+  Search(FALSE, TRUE)
+  
+END
+
+
+PUBLIC SUB ReplaceAll()
+
+  IF NOT cmbFind.Text THEN RETURN
+
+  IF Message.Warning(("Are you sure to want to replace all?"), ("Replace"), ("Cancel")) = 2 THEN RETURN
+  
+  Store(cmbReplace)
+
+  $bReplaceAll = TRUE
+  Search(FALSE, TRUE)
+  
+END
+
+
+PUBLIC SUB Form_Arrange()
+
+  ME.Height = panFind.Y + panFind.H
+
+END
+
+PUBLIC SUB ReadConfig()
+  
+  TRY Action["find-in-" & LCase(Project.Config["/FFind/SearchIn", "Module"])].Value = TRUE
+  Action["find-case"].Value = Project.Config["/FFind/CaseSensitive", FALSE]
+  Action["find-word"].Value = Project.Config["/FFind/SearchWord", FALSE]
+  Action["find-comment"].Value = Project.Config["/FFind/SearchComment", FALSE]
+  Action["find-string"].Value = Project.Config["/FFind/SearchString", TRUE]  
+  
+END
+
+
+PUBLIC SUB WriteConfig()
+  
+  IF Action["find-in-sub"].Value THEN
+    Project.Config["/FFind/SearchIn"] = "Sub"
+  ELSE IF Action["find-in-module"].Value THEN 
+    Project.Config["/FFind/SearchIn"] = "Module"
+  ELSE IF Action["find-in-project"].Value THEN 
+    Project.Config["/FFind/SearchIn"] = "Project"
+  ENDIF
+  Project.Config["/FFind/CaseSensitive"] = Action["find-case"].Value
+  Project.Config["/FFind/SearchWord"] = Action["find-word"].Value
+  Project.Config["/FFind/SearchComment"] = Action["find-comment"].Value
+  Project.Config["/FFind/SearchString"] = Action["find-string"].Value    
+  
+END
+
+
+PUBLIC SUB Form_Show()
+
+  DIM bVisible AS Boolean
+  DIM hEdit AS Editor
+  DIM sSel AS String
+
+  Action["find-action,find-option"].Visible = TRUE
+  
+  IF Project.ActiveForm THEN bVisible = Object.Type(Project.ActiveForm) = "FEditor"
+  Action["find-in"].Visible = bVisible
+  
+  TRY hEdit = Project.ActiveForm.Editor
+  IF hEdit THEN 
+    IF hEdit.Selected THEN  
+      IF hEdit.Selection.StartLine = hEdit.Selection.EndLine THEN 
+        cmbFind.Text = hEdit.Selection.Text
+      ENDIF 
+    ENDIF
+  ENDIF
+
+  IF $bReplace AND IF cmbFind.Text THEN 
+    cmbReplace.SetFocus
+  ELSE
+    cmbFind.SetFocus
+  ENDIF
+
+END
+
+PUBLIC SUB Form_Hide()
+
+  Action["find-action,find-in,find-option"].Visible = FALSE
+  'FFindList.ClearFound
+
+  FFindList.Hide
+  FMain.ActivateCurrentWindow  
+
+END
+
+PUBLIC SUB cmbFind_Activate()
+
+  IF Action["find-next"].Visible THEN 
+    FindNext
+  ELSE  
+    FindAll
+  ENDIF 
+
+END
+
+PUBLIC SUB cmbReplace_Activate()
+
+  IF Action["replace"].Visible THEN 
+    {Replace}
+  ELSE 
+    ReplaceAll
+  ENDIF
+
+END
+
+PUBLIC SUB cmbFind_KeyPress()
+
+  IF Key.Code = Key.Escape THEN ME.Hide
+  IF Key.Code = Key["F"] AND Key.Control THEN ME.Hide
+
+END
+
+PUBLIC SUB cmbReplace_KeyPress()
+
+  cmbFind_KeyPress
+
+END
+
+PRIVATE SUB GetOptions(hForm AS Object)
+
+  $sFind = Trim(cmbFind.Text)
+  $bProc = Action["find-in-sub"].Value 
+  $bProject = Action["find-in-project"].Value 
+  $bCase = Action["find-case"].Value
+  $bWord = Action["find-word"].Value
+  $bComment = Action["find-comment"].Value
+  $bString = Action["find-string"].Value
+  
+  IF NOT Action["find-in"].Visible THEN 
+    $bProject = TRUE
+    $bProc = FALSE
+  ENDIF
+  
+  IF NOT $bCase THEN $sFind = String.Upper($sFind)
+  
+  IF Object.Type(hForm) <> "FEditor" THEN 
+    $bComment = TRUE
+    $bString = TRUE
+    $bProc = FALSE
+    $bProject = FALSE
+  ENDIF 
+  
+  $sReplace = cmbReplace.Text
+  $iNbrReplace = 0
+  
+  'IF $bList THEN 
+  '  $bProc = FALSE
+  '  $bProject = TRUE
+  'ENDIF
+  
+  'IF $bProject THEN Project.ClearFound
+
+END
+
+PRIVATE SUB Search(bBack AS Boolean, bReplace AS Boolean) AS Boolean
+  
+  DIM bRes AS Boolean
+  
+  INC Application.Busy
+  bRes = DoSearch(bBack, bReplace)
+  DEC Application.Busy
+  RETURN bRes
+  
+END
+
+PRIVATE SUB ShowMessage(sMsg AS String, hCtrl AS control)
+  
+  IF ME.Visible THEN
+    Balloon.Info(sMsg, hCtrl)
+  ELSE 
+    Project.SetMessage(sMsg)
+  ENDIF
+  
+END
+
+
+PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
+  
+  DIM hForm AS Object
+  DIM hEdit AS Editor
+  DIM iLine, iCol AS Integer
+  DIM hFormStop AS Object
+  DIM iLineStop, iColStop AS Integer
+  DIM sLine AS String
+  DIM iPos AS Integer
+  DIM sNext AS String
+
+  $bStop = FALSE
+  $bCanceled = FALSE
+  
+  hForm = Project.ActiveForm
+  TRY hEdit = hForm.Editor
+  IF NOT hEdit OR IF $bList AND NOT hForm IS FEditor THEN 
+    sNext = Project.GetNextEditor("")
+    hForm = Project.LoadFile(sNext)
+    TRY hEdit = hForm.Editor
+    IF NOT hEdit THEN RETURN  
+    hEdit.Goto(0, 0)
+  ENDIF
+  
+  GetOptions(hForm)
+
+  IF $bList AND IF NOT $bProc THEN hEdit.Goto(0, 0)
+  
+  TRY hForm.SavePosition()
+  
+  WITH hEdit
+    IF .Selected THEN
+    
+      IF bReplace AND NOT hEdit.ReadOnly THEN
+        IF $bCase THEN
+          IF .Selection.Text = $sFind THEN
+            .Insert($sReplace)
+            INC $iNbrReplace
+          ENDIF
+        ELSE
+          IF String.UCase(.Selection.Text) = $sFind THEN
+            .Insert($sReplace)
+            INC $iNbrReplace
+          ENDIF
+        ENDIF
+      ENDIF
+
+      IF .Selected THEN
+        IF bBack THEN
+          .Goto(.Selection.StartLine, .Selection.StartColumn)
+        ELSE 
+          .Goto(.Selection.EndLine, .Selection.EndColumn)
+        ENDIF 
+      ENDIF
+      
+    ENDIF
+  END WITH 
+  
+  iLine = hEdit.Line
+  iCol = hEdit.Column
+  
+  hFormStop = hForm
+  iLineStop = iLine
+  iColStop = iCol
+  
+  DO
+
+    'sLine = hEdit.Lines[iLine]
+    sLine = Highlight.Purge(hEdit.Lines[iLine], $bComment, $bString)
+    iPos = SearchString(sLine, iCol, bBack)
+    
+    IF iPos THEN
+
+      IF NOT $bList THEN hEdit.Select(iLine, iPos - 1, iLine, iPos + String.Len($sFind) - 1)
+
+      IF bReplace AND $bReplaceAll AND NOT hEdit.ReadOnly THEN
+ 
+        hEdit.Insert($sReplace)
+        iCol = iPos + String.Len($sReplace) - 1
+        INC $iNbrReplace
+        CONTINUE
+        
+      ELSE IF $bList THEN 
+        
+        FFindList.AddFound(hForm.Name, iLine, iPos, String.Len($sFind), hEdit.Lines[iLine])
+        iCol = iPos + String.Len($sFind) - 1
+        'WAIT
+        CONTINUE
+        
+      ENDIF
+
+      Project.ShowFile(hForm)
+      'Project.SelectFound(hForm.Name, iLine, iPos, String.Len($sFind))
+      Balloon.Hide
+      RETURN
+
+    ENDIF
+    
+    IF $bStop THEN 
+      IF $bReplaceAll THEN 
+        IF $iNbrReplace = 0 THEN
+          ShowMessage(("Search string cannot be found."), cmbReplace)
+        ELSE IF $iNbrReplace = 1 THEN
+          ShowMessage(("Search string replaced once."), cmbReplace)
+        ELSE
+          ShowMessage(Subst(("Search string replaced &1 times."), $iNbrReplace), cmbReplace)
+        ENDIF
+      ELSE IF NOT $bList THEN
+        ShowMessage(("Search string cannot be found."), cmbFind)
+      ENDIF
+      RETURN TRUE
+    ENDIF
+
+    IF bBack THEN 
+
+      DEC iLine
+      iCol = -1
+
+      IF $bProc THEN
+      
+        IF iLine < 0 OR IF FEditor.IsProc(hEdit.Lines[iLine]) THEN
+  
+          WHILE iLine < (hEdit.Lines.Count - 1)
+  
+            sLine = hEdit.Lines[iLine + 1]
+            IF FEditor.IsProc(sLine) THEN BREAK
+            INC iLine
+  
+          WEND
+  
+        ENDIF
+      
+      ELSE 
+
+        IF iLine < 0 THEN
+  
+          IF $bProject THEN
+  
+            sNext = Project.GetPreviousEditor(hForm.Path)
+  
+            Project.LoadFile(sNext)
+  
+            hForm = Project.Files[sNext]
+            hEdit = hForm.Editor
+  
+          ENDIF
+  
+          iLine = hEdit.Lines.Count - 1
+  
+        ENDIF
+        
+      ENDIF 
+
+    ELSE 
+
+      INC iLine
+      iCol = 0
+
+      IF $bProc THEN
+        
+        IF iLine >= hEdit.Lines.Count OR IF FEditor.IsProc(hEdit.Lines[iLine]) THEN
+  
+          WHILE iLine > 0
+  
+            DEC iLine
+            sLine = hEdit.Lines[iLine]
+            IF FEditor.IsProc(sLine) THEN BREAK
+  
+          WEND
+  
+        ENDIF
+          
+      ELSE
+  
+        IF iLine >= hEdit.Lines.Count THEN
+  
+          IF $bProject THEN
+  
+            sNext = Project.GetNextEditor(hForm.Path)
+  
+            Project.LoadFile(sNext)
+  
+            hForm = Project.Files[sNext]
+            hEdit = hForm.Editor
+            
+            IF $bList THEN WAIT
+  
+          ENDIF
+  
+          iLine = 0
+  
+        ENDIF
+  
+      ENDIF
+  
+    ENDIF 
+
+    IF hForm = hFormStop THEN
+      IF iLine = iLineStop THEN
+        $bStop = TRUE
+      ENDIF
+    ENDIF
+    
+    IF $bList THEN 
+      INC $iWait
+      IF ($iWait AND 15) = 0 THEN WAIT 0.01
+    ENDIF
+
+  LOOP
+    
+END
+
+PRIVATE FUNCTION GetCharType(sChar AS String) AS Integer
+
+  IF Asc(sChar) <= 32 THEN RETURN 0
+  IF InStr("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$", UCase(sChar)) THEN RETURN 1
+  IF Asc(sChar) >= 128 THEN RETURN 1
+  RETURN 2
+
+END
+
+
+
+PRIVATE FUNCTION SearchString(sLine AS String, iPos AS Integer, OPTIONAL bBack AS Boolean) AS Integer
+
+  DIM iPosC AS Integer
+
+  IF bBack AND iPos = 0 THEN RETURN
+
+  ' IF NOT $bComment THEN
+  '   iPosC = InStr(sLine, "'")
+  '   IF iPosC THEN sLine = Left$(sLine, iPosC - 1)
+  ' ENDIF
+
+  IF NOT $bCase THEN sLine = String.UCase(sLine)
+
+  'iPos = String.Pos(sLine, iPos)
+
+  DO
+
+    IF bBack THEN
+      iPos = String.RInStr(sLine, $sFind, iPos - 1)
+    ELSE
+      iPos = String.InStr(sLine, $sFind, iPos + 1)
+    ENDIF
+
+    IF iPos = 0 THEN BREAK
+
+    IF $bWord THEN
+
+      IF iPos > 1 THEN
+        IF GetCharType(String.Mid$(sLine, iPos, 1)) = GetCharType(String.Mid$(sLine, iPos - 1, 1)) THEN CONTINUE
+      ENDIF
+
+      IF (iPos + String.Len($sFind)) <= String.Len(sLine) THEN
+        IF GetCharType(String.Mid$(sLine, iPos + String.Len($sFind) - 1, 1)) = GetCharType(String.Mid$(sLine, iPos + String.Len($sFind), 1)) THEN CONTINUE
+      ENDIF
+
+    ENDIF
+
+    BREAK
+
+  LOOP
+
+  'IF iPos THEN iPos = String.Index(sLine, iPos)
+
+  RETURN iPos
+
+END
+
+PUBLIC SUB Action_Activate(Key AS String) AS Boolean
+  
+  IF Key = "find-comment" OR IF Key = "find-case" OR IF Key = "find-word" OR IF Key = "find-string" OR IF Key LIKE "find-in*" THEN $iLastTimeStamp = 0
+  
+  RETURN TRUE
+  
+END
+
+PUBLIC SUB btnClose_Click()
+
+  ME.Hide  
+
+END
+
+PUBLIC SUB Cancel()
+  
+  $bStop = TRUE
+  $bCanceled = TRUE
+  
+END

@@ -1,0 +1,570 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,61,63)
+  Action = "option"
+  Text = ("Preferences")
+  Icon = Picture["icon:/small/options"]
+  Persistent = True
+  Border = Window.Fixed
+  ToolBox = True
+  SkipTaskbar = True
+  { TabStrip1 TabStrip
+    MoveScaled(1,1,59,57)
+    Padding = 8
+    Count = 3
+    Index = 0
+    Text = ("General")
+    { Label25 Label
+      MoveScaled(1,38,56,3)
+      Font = Font["Bold"]
+      Text = ("Desktop")
+    }
+    { Label29 Label
+      MoveScaled(1,1,56,3)
+      Font = Font["Bold"]
+      Text = ("Interface")
+    }
+    { HBox3 HBox
+      MoveScaled(2,5,54,3)
+      Spacing = 8
+      { Label10 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Show tooltips")
+      }
+      { cmbTooltip ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox4 HBox
+      MoveScaled(2,9,54,3)
+      Spacing = 8
+      { Label17 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Show project information balloons")
+      }
+      { cmbBalloonTooltip ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox5 HBox
+      MoveScaled(2,13,54,3)
+      Spacing = 8
+      { Label30 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Show message bar")
+      }
+      { cmbMessage ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox6 HBox
+      MoveScaled(2,17,54,3)
+      Spacing = 8
+      { Label11 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Font size")
+      }
+      { cmbGlobalFont ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("Normal size"), ("Small size")]
+      }
+    }
+    { HBox7 HBox
+      MoveScaled(2,21,54,3)
+      Spacing = 8
+      { Label1 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Toolbox size")
+      }
+      { cmbToolbox ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("Normal size"), ("Small size")]
+      }
+    }
+    { HBox8 HBox
+      MoveScaled(2,25,54,3)
+      Spacing = 8
+      { Label2 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Sort properties")
+      }
+      { cmbSortProperty ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox9 HBox
+      MoveScaled(2,29,54,3)
+      Spacing = 8
+      { Label14 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Recent projects")
+      }
+      { txtRecent SpinBox
+        MoveScaled(37,0,7,3)
+        MinValue = 4
+        MaxValue = 64
+        Step = 4
+      }
+      { Label15 Label
+        MoveScaled(45,0,9,3)
+        Expand = True
+        Text = ("Max.")
+      }
+    }
+    { HBox10 HBox
+      MoveScaled(2,33,54,3)
+      Spacing = 8
+      { Label16 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Quiet external commands")
+      }
+      { cmbOutput ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox11 HBox
+      MoveScaled(2,42,54,3)
+      Spacing = 8
+      { Label12 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Icon theme")
+      }
+      { cmbIconTheme ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("Desktop"), ("Gnome"), ("KDE")]
+      }
+    }
+    { HBox12 HBox
+      MoveScaled(2,46,54,3)
+      Spacing = 8
+      { Label13 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Browser")
+      }
+      { cmbBrowser ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("(Default)"), ("Konqueror"), ("Firefox"), ("Epiphany"), ("SeaMonkey"), ("Opera")]
+      }
+    }
+    Index = 1
+    Text = ("Editor")
+    { Label9 Label
+      MoveScaled(1,1,56,3)
+      Font = Font["Bold"]
+      Text = ("Font")
+    }
+    { fntEditor FontChooser
+      MoveScaled(2,5,54,17)
+      FixedOnly = True
+      ShowStyle = False
+      ShowPreview = False
+      ShowLabel = False
+    }
+    { Label18 Label
+      MoveScaled(1,24,56,3)
+      Font = Font["Bold"]
+      Text = ("Options")
+    }
+    { HBox2 HBox
+      MoveScaled(2,28,54,3)
+      Spacing = 8
+      { Label4 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Automatic completion")
+      }
+      { cmbCompletion ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox14 HBox
+      MoveScaled(2,48,54,3)
+      Spacing = 8
+      { Label40 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Default tab size")
+      }
+      { txtTabSize SpinBox
+        MoveScaled(37,0,7,3)
+        MinValue = 1
+        MaxValue = 16
+        Value = 2
+      }
+      { Label3 Label
+        MoveScaled(45,0,9,3)
+        Expand = True
+        Text = ("spaces")
+      }
+    }
+    { HBox15 HBox
+      MoveScaled(2,44,54,3)
+      Spacing = 8
+      { Label8 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Show line numbers")
+      }
+      { cmbLineNumber ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox16 HBox
+      MoveScaled(2,40,54,3)
+      Spacing = 8
+      { Label7 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Highlight modified lines")
+      }
+      { cmbShowChange ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox17 HBox
+      MoveScaled(2,36,54,3)
+      Spacing = 8
+      { Label6 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Highlight current line")
+      }
+      { cmbShowCurrent ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox18 HBox
+      MoveScaled(2,32,54,3)
+      Spacing = 8
+      { Label5 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Procedure separation")
+      }
+      { cmbProcLimit ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("None"), ("Line"), ("Blend")]
+      }
+    }
+    Index = 2
+    Text = ("Colors")
+    { VBox1 VBox
+      MoveScaled(1,1,56,50)
+      Spacing = 8
+      { HBox1 HBox
+        MoveScaled(0,0,48,3)
+        { cmbTheme ComboBox
+          MoveScaled(0,0,29,3)
+          Expand = True
+          Text = ("")
+          ReadOnly = True
+        }
+        { Panel1 Panel
+          MoveScaled(32,0,1,3)
+        }
+        { btnImport ToolButton
+          MoveScaled(37,0,3,3)
+          ToolTip = ("Import theme")
+          Text = ("")
+          Picture = Picture["icon:/small/open"]
+        }
+        { btnExport ToolButton
+          MoveScaled(40,0,3,3)
+          ToolTip = ("Export theme")
+          Text = ("")
+          Picture = Picture["icon:/small/save"]
+        }
+        { btnUndo ToolButton
+          MoveScaled(43,0,3,3)
+          ToolTip = ("Undo")
+          Text = ("")
+          Picture = Picture["icon:/small/undo"]
+        }
+      }
+      { Panel4 Panel
+        MoveScaled(1,3,46,33)
+        Background = Color.TextBackground
+        Expand = True
+        Arrangement = Arrange.Horizontal
+        Padding = 8
+        Border = Border.Sunken
+        { Panel3 Panel
+          MoveScaled(1,1,17,31)
+          Expand = True
+          Arrangement = Arrange.Vertical
+          Spacing = 8
+          { Label26 Label
+            MoveScaled(0,0,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Background")
+          }
+          { Label31 Label
+            MoveScaled(0,4,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Normal text")
+          }
+          { Label33 Label
+            MoveScaled(0,8,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Selection")
+          }
+          { Label58 Label
+            MoveScaled(0,12,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Highlighting")
+          }
+          { Label35 Label
+            MoveScaled(0,16,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Keywords")
+          }
+          { Label37 Label
+            MoveScaled(0,20,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Data types")
+          }
+          { Label39 Label
+            MoveScaled(0,24,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Subroutines")
+          }
+          { Label41 Label
+            MoveScaled(0,28,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Operators")
+          }
+        }
+        { panColor1 Panel
+          MoveScaled(16,1,5,31)
+          Arrangement = Arrange.Vertical
+          Spacing = 8
+          { Panel2 Panel btnColor
+            Name = "Panel2"
+            MoveScaled(0,0,5,3)
+            Tag = "Background"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel5 Panel btnColor
+            Name = "Panel5"
+            MoveScaled(0,4,5,3)
+            Tag = "Normal"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel6 Panel btnColor
+            Name = "Panel6"
+            MoveScaled(0,8,5,3)
+            Tag = "Selection"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel7 Panel btnColor
+            Name = "Panel7"
+            MoveScaled(0,12,5,3)
+            Tag = "Highlight"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel8 Panel btnColor
+            Name = "Panel8"
+            MoveScaled(0,16,5,3)
+            Tag = "Keyword"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel9 Panel btnColor
+            Name = "Panel9"
+            MoveScaled(0,20,5,3)
+            Tag = "Datatype"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel10 Panel btnColor
+            Name = "Panel10"
+            MoveScaled(0,24,5,3)
+            Tag = "Subr"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel11 Panel btnColor
+            Name = "Panel11"
+            MoveScaled(0,28,5,3)
+            Tag = "Operator"
+            Expand = True
+            Border = Border.Raised
+          }
+        }
+        { Panel12 Panel
+          MoveScaled(21,12,3,2)
+        }
+        { Panel13 Panel
+          MoveScaled(24,1,16,31)
+          Expand = True
+          Arrangement = Arrange.Vertical
+          Spacing = 8
+          { Label19 Label
+            MoveScaled(0,0,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Symbols")
+          }
+          { Label20 Label
+            MoveScaled(0,4,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Numbers")
+          }
+          { Label21 Label
+            MoveScaled(0,8,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Strings")
+          }
+          { Label22 Label
+            MoveScaled(0,12,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Comments")
+          }
+          { Label23 Label
+            MoveScaled(0,16,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Breakpoints")
+          }
+          { Label24 Label
+            MoveScaled(0,20,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Current line")
+          }
+          { Label27 Label
+            MoveScaled(0,24,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Editing line")
+          }
+          { Label28 Label
+            MoveScaled(0,28,17,3)
+            Expand = True
+            Padding = 2
+            Text = ("Error")
+          }
+        }
+        { panColor2 Panel
+          MoveScaled(40,1,5,31)
+          Arrangement = Arrange.Vertical
+          Spacing = 8
+          { Panel25 Panel btnColor
+            Name = "Panel25"
+            MoveScaled(0,0,5,3)
+            Tag = "Symbol"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel26 Panel btnColor
+            Name = "Panel26"
+            MoveScaled(0,4,5,3)
+            Tag = "Number"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel27 Panel btnColor
+            Name = "Panel27"
+            MoveScaled(0,8,5,3)
+            Tag = "String"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel28 Panel btnColor
+            Name = "Panel28"
+            MoveScaled(0,12,5,3)
+            Tag = "Comment"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel29 Panel btnColor
+            Name = "Panel29"
+            MoveScaled(0,16,5,3)
+            Tag = "Breakpoint"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel30 Panel btnColor
+            Name = "Panel30"
+            MoveScaled(0,20,5,3)
+            Tag = "Current"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel31 Panel btnColor
+            Name = "Panel31"
+            MoveScaled(0,24,5,3)
+            Tag = "Line"
+            Expand = True
+            Border = Border.Raised
+          }
+          { Panel32 Panel btnColor
+            Name = "Panel32"
+            MoveScaled(0,28,5,3)
+            Tag = "Error"
+            Expand = True
+            Border = Border.Raised
+          }
+        }
+      }
+    }
+    Index = 0
+  }
+  { btnClose Button
+    MoveScaled(45,59,15,3)
+    Text = ("Close")
+    Cancel = True
+  }
+}

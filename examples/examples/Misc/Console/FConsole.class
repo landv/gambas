@@ -1,0 +1,139 @@
+' Gambas class file
+
+
+PRIVATE $hProcess AS Process
+PRIVATE $sText AS String
+
+STATIC PUBLIC SUB Main()
+
+  DIM hForm AS Form
+
+  hForm = NEW FConsole
+  hForm.Show
+
+END
+
+
+PUBLIC SUB _new()
+
+  $hProcess = EXEC ["bash", "--noediting"] FOR READ WRITE
+  txtCommand.SetFocus
+
+END
+
+
+PUBLIC SUB Form_Close()
+
+  $hProcess.Kill
+
+END
+
+
+PUBLIC SUB Form_Resize()
+
+  txtCommand.Move(0, ME.ClientH - txtCommand.H, ME.ClientW, txtCommand.H)
+  txtConsole.Move(0, 0, ME.ClientW, txtCommand.Y)
+  
+END
+
+
+PUBLIC SUB Process_Read()
+
+  DIM sStr AS String
+
+  'WHILE NOT Eof(LAST)
+  
+    READ #LAST, sStr, -256
+  
+    $sText = $sText & sStr
+  'WEND
+  
+  UpdateConsole
+
+END
+
+
+PUBLIC SUB Process_Error(sStr AS String)
+  
+  $sText = $sText & sStr
+  UpdateConsole
+  
+END
+
+PRIVATE SUB UpdateConsole()
+
+  DIM iPos AS Integer
+  DIM sStr AS String
+  
+  DO
+  
+    iPos = InStr($sText, "\n")
+    IF iPos = 0 THEN RETURN
+    
+    sStr = Normalize(Left$($sText, iPos))
+    $sText = Mid$($sText, iPos + 1)
+    
+    txtConsole.Pos = txtConsole.Length
+    txtConsole.Insert(sStr)
+  
+  LOOP
+  
+END
+
+
+
+PUBLIC SUB Process_Kill()
+  
+  'hProcess = NULL
+  TRY ME.Close
+  
+END
+
+
+
+PUBLIC SUB txtCommand_Activate()
+  
+  DIM sLig AS String
+  
+  sLig = txtCommand.Text & gb.NewLine
+  
+  txtConsole.Insert("# " & sLig)
+  txtCommand.Clear
+
+  sLig = Conv$(sLig, Desktop.Charset, System.Charset)
+  
+  PRINT #$hProcess, sLig;
+  
+END
+
+
+STATIC PRIVATE FUNCTION Normalize(sStr AS String) AS String
+
+  DIM sNorm AS String
+  DIM iInd AS Integer
+  DIM iCar AS Integer
+  DIM bEsc AS Boolean
+
+  FOR iInd = 1 TO Len(sStr)
+
+    iCar = Asc(sStr, iInd)
+
+    IF iCar = 27 THEN
+      bEsc = TRUE
+      CONTINUE
+    ENDIF
+
+    IF bEsc THEN
+      IF iCar < 32 THEN bEsc = FALSE
+      CONTINUE
+    ENDIF
+
+    IF iCar < 32 AND iCar <> 10 THEN iCar = 32
+
+    sNorm = sNorm & Chr$(iCar)
+
+  NEXT
+  
+  RETURN Conv$(sNorm, System.Charset, Desktop.Charset) 
+  
+END

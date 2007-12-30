@@ -1,0 +1,221 @@
+' Gambas class file
+
+STATIC PUBLIC All AS NEW Collection
+STATIC PRIVATE $iKey AS Integer
+STATIC PUBLIC WhoImplement AS NEW Collection
+
+
+PUBLIC Key AS String
+PUBLIC Name AS String
+
+PUBLIC Require AS NEW String[]
+PUBLIC Exclude AS NEW String[]
+PUBLIC Implement AS NEW String[]
+PUBLIC Need AS NEW String[]
+PUBLIC SortKey AS Integer
+
+STATIC PRIVATE SUB InitComponent(sFile AS String, bUser AS Boolean)
+  
+  DIM hComponent AS CComponent
+  DIM hFic AS File
+  DIM sInfo AS String
+  DIM sLig AS String
+  DIM sKey AS String
+
+  DIM iPos AS Integer
+  
+  DIM sLib AS String
+  DIM iKey AS Integer
+  DIM sGroup AS String
+
+  IF bUser THEN
+    OPEN Component.UserPath &/ sFile AS #hFic
+  ELSE
+    OPEN Component.Path &/ sFile AS #hFic
+  ENDIF
+
+  LINE INPUT #hFic, sLig
+  sLig = Trim(sLig)
+
+  IF sLig = "[Component]" THEN
+
+    hComponent = NEW CComponent
+    hComponent.Key = File.BaseName(sFile)
+    hComponent.Name = hComponent.Key '$cName[hComponent.Key]
+
+    WHILE NOT Eof(hFic)
+
+      LINE INPUT #hFic, sLig
+      sLig = Trim(sLig)
+
+      IF NOT sLig THEN CONTINUE
+      IF Left(sLig) = ";" OR Left(sLig) = "'" THEN CONTINUE
+
+      IF sLig = "[Component]" THEN BREAK
+
+      IF Left(sLig) = "[" AND IF Right(sLig) = "]" THEN
+        sGroup = Mid$(sLig, 2, -1)
+        CONTINUE
+      ENDIF
+
+      iPos = InStr(sLig, "=")
+      IF iPos = 0 THEN CONTINUE
+
+      sKey = Left$(sLig, iPos - 1)
+      sLig = Mid$(sLig, iPos + 1)
+
+      WITH hComponent
+
+        IF sKey = "Key" THEN
+          .Key = sLig
+        ELSE IF sKey = "Name" THEN 
+        ELSE IF sKey = "Require" OR sKey = "Requires" THEN
+          .Require = Split(LCase(sLig))
+        ELSE IF sKey = "Exclude" OR sKey = "Excludes" THEN
+          .Exclude = Split(LCase(sLig))
+        ELSE IF sKey = "Implement" OR sKey = "Implements" THEN
+          .Implement = Split(LCase(sLig))
+        ELSE IF sKey = "Need" OR sKey = "Needs" THEN
+          .Need = Split(LCase(sLig))
+        ' ELSE IF sKey = "Alpha" THEN
+        '   .State = UNSTABLE
+        ' ELSE IF sKey = "State" THEN 
+        '   .State = CInt(sLig)
+        ENDIF
+
+      END WITH
+
+    WEND
+
+    'hComponent.User = bUser
+  
+    IF hComponent.Key THEN
+      All[hComponent.Key] = hComponent
+    ENDIF
+
+  ENDIF
+
+  CLOSE #hFic
+  
+CATCH 
+
+  DEBUG "Unable to read component file:";; sFile
+  
+END
+
+
+STATIC PUBLIC SUB _init()
+
+  DIM aComp AS String[]
+  DIM sFile AS String
+
+  aComp = Dir(Component.Path, "*.component").Sort()
+  FOR EACH sFile IN aComp
+    InitComponent(sFile, FALSE)
+  NEXT
+
+  IF Exist(Component.UserPath) THEN
+    aComp = Dir(Component.UserPath, "*.component").Sort()
+    FOR EACH sFile IN aComp
+      InitComponent(sFile, TRUE)
+    NEXT
+  ENDIF
+  
+  SortComponents
+  
+  'Force gb.gui en premier lieu
+  WhoImplement["form"] = ["gb.gui"]
+  GetWhoImplement
+'PRINT "ok"
+END
+
+STATIC PRIVATE SUB GetWhoImplement()
+
+  DIM sComp AS String
+  DIM s AS String
+  DIM hComp AS CComponent
+
+
+
+  FOR EACH hComp IN CComponent.All
+  
+    FOR EACH s IN hComp.Implement
+    
+      IF WhoImplement[s] = NULL THEN WhoImplement[s] = NEW String[]
+      IF NOT WhoImplement[s].Exist(hComp.Name) THEN WhoImplement[s].Add(hComp.Name)
+      
+    NEXT 
+    
+  NEXT
+
+END
+
+STATIC PUBLIC SUB Exit()
+
+  All = NULL
+
+END
+
+
+
+PUBLIC SUB CalcSortKey()
+
+  DIM sComp AS String
+  DIM sNeed AS String
+  DIM hComp AS CComponent
+
+  'DEBUG ">>>";; Key
+
+  IF SortKey = 0 THEN 
+
+    IF Require.Count OR IF Need.Count THEN
+
+      FOR EACH sComp IN Require
+        hComp = All[sComp]
+        IF hComp <> ME THEN hComp.CalcSortKey
+      NEXT
+  
+      FOR EACH sNeed IN Need
+        FOR EACH hComp IN All
+          IF hComp.Implement.Find(sNeed) >= 0 THEN
+            hComp.CalcSortKey
+          ENDIF
+        NEXT
+      NEXT
+
+    ENDIF
+    
+    INC $iKey
+    SortKey = $iKey
+
+  ENDIF
+  
+  'DEBUG "<<<";; Key;; "=";; SortKey
+
+END
+
+STATIC PRIVATE SUB SortComponents()
+
+  DIM iMax AS Integer
+  DIM hComponent AS CComponent
+  DIM cNewAll AS NEW Collection
+  DIM iInd AS Integer
+
+  FOR EACH hComponent IN All
+    hComponent.CalcSortKey
+    iMax = Max(iMax, hComponent.SortKey)
+    'PRINT hComponent.Key;; hComponent.SortKey
+  NEXT
+
+  FOR iInd = 1 TO iMax
+    FOR EACH hComponent IN All
+      IF hComponent.SortKey = iInd THEN
+        cNewAll.Add(hComponent, hComponent.Key)
+        'DEBUG hComponent.Key;; hComponent.SortKey
+      ENDIF
+    NEXT
+  NEXT
+
+  All = cNewAll
+
+END

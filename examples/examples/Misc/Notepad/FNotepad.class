@@ -1,0 +1,224 @@
+' Gambas class file
+
+PRIVATE $sPath AS String
+PRIVATE $bModify AS Boolean
+
+STATIC PUBLIC SUB Main()
+
+  DIM hForm AS Form
+
+  hForm = NEW FNotepad
+  hForm.Show
+
+END
+
+
+PUBLIC SUB _new()
+
+  txtNotepad.Text = ""
+  $bModify = FALSE
+  RefreshTitle
+  txtNotePad.SetFocus
+
+END
+
+
+PRIVATE FUNCTION GetName() AS String
+
+  IF $sPath THEN RETURN $sPath
+
+  RETURN "(New document)"
+
+END
+
+
+PRIVATE SUB RefreshTitle()
+
+  DIM sTitle AS String
+
+  IF $bModify THEN sTitle = "*"
+  sTitle = sTitle & GetName()
+
+  ME.Title = sTitle
+
+END
+
+
+PRIVATE SUB SetPath(sPath AS String)
+
+  $sPath = sPath
+  RefreshTitle
+
+END
+
+PRIVATE SUB SetModify(bModify AS Boolean)
+
+  IF $bModify = bModify THEN RETURN
+  $bModify = bModify
+  RefreshTitle
+
+END
+
+
+PRIVATE FUNCTION CloseDoc() AS Boolean
+
+  IF $bModify THEN
+    SELECT CASE Message.Question(GetName() & "\n\nFile has been modified. Do you want to save it ?", "Yes", "No", "Cancel")
+      CASE 1
+        Save
+      CASE 3
+        RETURN TRUE
+    END SELECT
+  ENDIF
+
+  $sPath = ""
+  txtNotepad.Text = ""
+  $bModify = FALSE
+  RefreshTitle
+
+END
+
+
+
+PUBLIC SUB Load(sPath AS String)
+
+  DIM sData AS String
+
+  IF CloseDoc() THEN RETURN
+
+  sData = File.Load(sPath)
+  txtNotepad.Text = Conv(sData, System.Charset, Desktop.Charset)
+  $bModify = FALSE
+  SetPath(sPath)
+
+CATCH
+
+  Message.Error(sPath & "\nUnable to load file.\n" & Error.Text)
+
+END
+
+
+PUBLIC SUB Save(OPTIONAL bSaveAs AS Boolean)
+  
+  IF bSaveAs OR NOT $sPath THEN
+    IF Dialog.SaveFile() THEN RETURN
+    SetPath(Dialog.Path)
+  ENDIF
+  
+  File.Save($sPath, txtNotepad.Text)
+  
+END
+
+
+PUBLIC SUB mnuOpen_Click()
+  
+  DIM sPath AS String
+
+  Dialog.Filter = ["*", "All files", "*.{c;cpp;h}", "C/C++ files", "*.txt", "Text files", "*.desktop", "Desktop files"]
+
+  IF Dialog.OpenFile() THEN RETURN
+  Load(Dialog.Path)
+  
+END
+
+
+PUBLIC SUB mnuSave_Click()
+  
+  Save
+  
+END
+
+
+PUBLIC SUB mnuSaveAs_Click()
+  
+  Save(TRUE)
+  
+END
+
+
+PUBLIC SUB mnuQuit_Click()
+  
+  ME.Close
+  
+END
+
+
+PUBLIC SUB txtNotepad_Change()
+  
+  SetModify(TRUE)
+  
+END
+
+
+PUBLIC SUB mnuClose_Click()
+  
+  CloseDoc
+  
+END
+
+
+PUBLIC SUB Form_Close() 
+  
+  IF CloseDoc() THEN STOP EVENT 
+  
+END
+
+
+PUBLIC SUB mnuAbout_Click()
+
+  INC Application.Busy
+  FAbout.Run
+  DEC Application.Busy
+  
+END
+
+
+PUBLIC SUB mnuCopy_Click()
+  
+  txtNotepad.Copy
+  
+END
+
+
+PUBLIC SUB mnuPaste_Click()
+  
+  txtNotepad.Paste
+  
+END
+
+
+PUBLIC SUB mnuCut_Click()
+  
+  txtNotepad.Cut
+  
+END
+
+
+PUBLIC SUB mnuUndo_Click()
+  
+  txtNotepad.Undo
+  
+END
+
+
+PUBLIC SUB mnuRedo_Click()
+  
+  txtNotepad.Redo
+  
+END
+
+
+PUBLIC SUB mnuFont_Click()
+  
+  Dialog.Font = txtNotepad.Font
+  IF Dialog.SelectFont() THEN RETURN
+  txtNotepad.Font = Dialog.Font
+  
+END
+
+PUBLIC SUB mnuWrap_Click()
+
+  mnuWrap.Checked = NOT mnuWrap.Checked
+  txtNotePad.Wrap = mnuWrap.Checked
+
+END

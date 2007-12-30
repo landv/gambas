@@ -1,0 +1,96 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,77,49)
+  Text = ("Simple PDF document viewer")
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(0,1,76,6)
+    Spacing = 4
+    Padding = 4
+    { BtOpen Button
+      MoveScaled(1,1,5,3)
+      ToolTip = ("Open file...")
+      Text = ("")
+      Picture = Picture["icon:/24/open"]
+    }
+    { Button1 Button
+      MoveScaled(7,1,5,3)
+      ToolTip = ("Open file...")
+      Text = ("")
+      Picture = Picture["icon:/24/question"]
+    }
+    { Label1 Label
+      MoveScaled(13,2,5,2)
+      Expand = True
+      Text = ("")
+    }
+    { TxtFind TextBox
+      MoveScaled(19,2,12,3)
+      Enabled = False
+      ToolTip = ("Find text")
+      Text = ("")
+    }
+    { btRotate Button
+      MoveScaled(32,1,5,3)
+      Enabled = False
+      ToolTip = ("Rotate")
+      Text = ("")
+      Picture = Picture["icon:/24/rotate-right"]
+    }
+    { btZoomOut Button
+      MoveScaled(38,1,5,3)
+      Enabled = False
+      ToolTip = ("Zoom out")
+      Text = ("")
+      Picture = Picture["icon:/24/zoom-out"]
+    }
+    { btZoomIn Button
+      MoveScaled(44,1,5,3)
+      Enabled = False
+      ToolTip = ("Zoom in")
+      Text = ("")
+      Picture = Picture["icon:/24/zoom-in"]
+    }
+    { LblInfo Label
+      MoveScaled(51,1,11,3)
+      Text = ("")
+      Alignment = Align.Center
+    }
+    { BtPrev Button
+      MoveScaled(64,1,5,3)
+      Enabled = False
+      ToolTip = ("Previous page")
+      Text = ("")
+      Picture = Picture["icon:/24/left"]
+    }
+    { BtNext Button
+      MoveScaled(70,1,5,3)
+      Enabled = False
+      ToolTip = ("Next page")
+      Text = ("")
+      Picture = Picture["icon:/24/right"]
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,7,75,41)
+    Expand = True
+    { HSplit1 HSplit
+      MoveScaled(4,3,66,35)
+      Expand = True
+      { tvIndex TreeView
+        MoveScaled(0,0,19,25)
+        Visible = False
+      }
+      { ViewPort ScrollView
+        MoveScaled(21,1,30,32)
+        Expand = True
+        { PBox PictureBox
+          MoveScaled(3,2,24,21)
+          Visible = False
+          Border = Border.Etched
+        }
+      }
+    }
+  }
+}

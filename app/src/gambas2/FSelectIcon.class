@@ -1,0 +1,179 @@
+' Gambas class file
+
+'STATIC PRIVATE $aImgExt AS String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
+
+PRIVATE $sIcon AS String
+PRIVATE $sSize AS String
+PRIVATE $bNoStock AS Boolean
+
+PUBLIC SUB Run(sIcon AS String, OPTIONAL bNoStock AS Boolean) AS String
+  
+  $sIcon = sIcon
+  $bNoStock = bNoStock OR NOT Project.IsStockAllowed()
+  IF NOT ME.ShowModal() THEN RETURN
+  RETURN $sIcon
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+  DIM iPos AS Integer
+
+  INC Application.Busy
+  
+  Settings.Read(ME)
+
+  fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Picture files")]
+  fchIcon.Root = Project.Dir
+  
+  cmbSize.List = ["small", "medium", "large", "huge", "16", "24", "32", "48", "64", "96", "128"]
+  
+  tabIcon[1].Visible = NOT $bNoStock
+  
+  IF $sIcon LIKE "icon:/*" THEN 
+    $sIcon = Mid$($sIcon, 7)
+    iPos = InStr($sIcon, "/")
+    icwStock.Clear
+    IF iPos THEN 
+      SetSize(Left$($sIcon, iPos - 1))
+    ELSE 
+      SetSize(Settings["FSelectIcon/Size", "32"])
+    ENDIF
+    $sIcon = Mid$($sIcon, iPos + 1)
+    IF icwStock.Exist($sIcon) THEN
+      icwStock[$sIcon].Selected = TRUE
+      icwStock[$sIcon].EnsureVisible
+    ENDIF
+    tabIcon.Index = 1 
+  ELSE IF $sIcon THEN
+    fchIcon.SelectedPath = Project.Dir &/ $sIcon
+    tabIcon.Index = 0
+  ENDIF
+
+  IF NOT $sSize THEN SetSize(Settings["FSelectIcon/Size", "32"])
+  
+  DEC Application.Busy
+  
+END
+
+' PUBLIC SUB fchIcon_Icon(Path AS String)
+' 
+'   IF $aImgExt.Find(File.Ext(Path)) < 0 THEN RETURN
+'   IF Stat(Path).Size > 8192 THEN RETURN 
+'   fchIcon.Icon = Picture.Load(Path)
+' 
+' END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END
+
+PUBLIC SUB cmbSize_Activate()
+
+  SetSize(cmbSize.Text)
+
+END
+
+PUBLIC SUB cmbSize_Click()
+
+  SetSize(cmbSize.Text)
+
+END
+
+PRIVATE SUB RefreshStock()
+  
+  DIM sIcon AS String
+  DIM sKey AS String
+  
+  INC Application.Busy
+
+  sKey = icwStock.Key
+  icwStock.Clear
+
+  FOR EACH sIcon IN Stock.List
+    icwStock.Add(sIcon, sIcon, Stock[$sSize &/ sIcon])
+  NEXT
+  
+  IF sKey THEN 
+    icwStock[sKey].Selected = TRUE
+    icwStock[sKey].EnsureVisible
+  ENDIF
+  
+  DEC Application.Busy
+  
+END
+
+PRIVATE SUB SetSize(sSize AS String) AS Boolean
+
+  DIM iSize AS Integer
+  
+  sSize = LCase(sSize)
+  TRY iSize = CInt(sSize)
+  IF ERROR THEN 
+    IF NOT ["small", "medium", "large", "huge"].Exist(sSize) THEN 
+      cmbSize.Text = $sSize
+      RETURN TRUE
+    ENDIF
+  ELSE 
+    IF iSize < 8 OR iSize > 256 THEN 
+      cmbSize.Text = $sSize
+      RETURN TRUE
+    ENDIF
+    sSize = CStr(iSize)
+  ENDIF
+  
+  $sSize = sSize
+  cmbSize.Text = sSize
+  RefreshStock
+  
+END
+
+
+PUBLIC SUB btnOK_Click()
+
+  SELECT CASE tabIcon.Index
+  
+    CASE 0
+      $sIcon = Mid$(fchIcon.SelectedPath, Len(fchIcon.Root) + 1)
+      IF Left($sIcon) = "/" THEN $sIcon = Mid$($sIcon, 2)
+  
+    CASE 1
+      $sIcon = "icon:/" &/ $sSize &/ icwStock.Key
+      Settings["FSelectIcon/Size"] = $sSize
+      
+  END SELECT 
+  
+  IF NOT $sIcon THEN RETURN
+
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB icwStock_Activate()
+
+  btnOK.Value = TRUE
+
+END
+
+PUBLIC SUB fchIcon_Activate()
+
+  btnOK.Value = TRUE
+
+END
+
+PUBLIC SUB Form_Close()
+
+  Settings.Write(ME)  
+
+END
+
+PUBLIC SUB tabIcon_Click()
+
+  IF tabIcon.Index = 1 THEN 
+    icwStock.SetFocus
+  ENDIF 
+
+END

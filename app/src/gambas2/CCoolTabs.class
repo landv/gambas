@@ -1,0 +1,224 @@
+' Gambas class file
+
+PUBLIC Pan AS panel
+PRIVATE arButton AS NEW String[]
+PRIVATE arPanel AS NEW Object[]
+PUBLIC Current AS PictureBox
+PRIVATE iDTab AS Integer
+PRIVATE btnTop AS Integer
+PUBLIC StaticButton AS Integer
+EVENT ButtonClick(Index AS Integer, Button AS Integer)
+
+
+PUBLIC SUB _new(hContainer AS Container, bRoot AS Boolean, bHome AS Boolean, bProject AS Boolean)
+  DIM But AS PictureBox
+  Pan = NEW Panel(hContainer) AS "Panel"
+  Pan.Width = 24
+
+  Pan.Border = Border.None
+  
+  'arButton.Add("/mnt/windows/Mes documents")
+  'arButton.Add("/home/Gambas")
+  'Current = iDefaultTab
+  'iDTab = iDefaultTab
+  btnTop = 0
+  
+  IF bHome THEN  
+    But = NEW PictureBox(Pan) AS "Button"
+    But.ForeColor = Color.LightGray
+    But.Border = Border.Plain
+    But.Alignment = Align.Center
+    but.Picture = Picture["icon:/small/home"]
+    But.MOVE(2, 5 + btnTop, 25, 24)
+    But.ToolTip = User.Home
+    arPanel.add(But)
+    But.Tag = arPanel.Count - 1
+    But.Mouse = Mouse.Pointing
+    btnTop = btnTop + 24
+    StaticButton = StaticButton + 1
+  ENDIF
+  
+  IF bRoot THEN
+    But = NEW PictureBox(Pan) AS "Button"
+    But.ForeColor = Color.LightGray
+    But.Border = Border.Plain
+    But.Alignment = Align.Center
+    but.Picture = Picture["icon:/small/system"]
+    But.MOVE(2, 5 + btnTop, 25, 24)
+    But.ToolTip = "/"
+    arPanel.add(But)
+    But.Tag = arPanel.Count - 1
+    But.Mouse = Mouse.Pointing
+    btnTop = btnTop + 24
+    StaticButton = StaticButton + 1
+  ENDIF
+
+  IF bProject THEN
+    IF Project.Path THEN
+      But = NEW PictureBox(Pan) AS "Button"
+      But.ForeColor = Color.LightGray
+      But.Border = Border.Plain
+      But.Alignment = Align.Center
+      but.Picture = Picture["img/16/gambas.png"]
+      But.MOVE(2, 5 + btnTop, 25, 24)
+      But.ToolTip = File.Dir(Project.Path)
+      arPanel.add(But)
+      But.Tag = arPanel.Count - 1
+      But.Mouse = Mouse.Pointing
+      btnTop = btnTop + 24
+      StaticButton = StaticButton + 1
+    ENDIF
+  ENDIF
+  
+  'AddButton("/mnt/windows/Mes documents")
+  
+  Current = arPanel[0]
+  
+END
+
+
+PUBLIC SUB AddButton(sPath AS String)
+
+DIM SDir AS String
+DIM But AS PictureBox
+
+
+DIM i AS Integer
+
+IF NOT Exist(sPath) THEN RETURN
+
+'FOR i = 0 TO arButton.count - 1
+'FOR EACH sDir IN ArButton
+
+But = NEW PictureBox(Pan) AS "Button"
+
+'But.BackGround = Color.Green
+But.ForeColor = Color.LightGray
+But.Border = Border.Plain
+But.Alignment = Align.Center
+but.Picture = Picture["img/16/bookmark.png"]
+But.MOVE(2, 5 + btnTop, 25, 24)
+But.ToolTip = sPath
+arPanel.add(But)
+But.Tag = arPanel.Count - 1
+But.Mouse = Mouse.Pointing
+btnTop = arPanel.Count * 24 - 1
+
+'NEXT
+Current = arPanel[0]
+
+
+
+END
+
+PUBLIC FUNCTION Width() AS Integer
+  
+  RETURN Pan.Width
+  
+END
+
+
+PUBLIC SUB Move(iLeft AS Integer, OPTIONAL iTop AS Integer, OPTIONAL iWidth AS Integer, OPTIONAL iHeight AS Integer)
+  
+Pan.Move(iLeft, iTop, 24, iHeight)
+  
+END
+
+
+PUBLIC SUB Button_MouseUp()
+  DIM img AS PictureBox
+
+
+   img = LAST
+   IF Current.BackColor <> &HE9E9E9 AND NOT Mouse.Right THEN Button_UnSelect(-1)
+   Button_Select(LAST.Tag)
+
+   RAISE ButtonClick(img.Tag, Mouse.Button)
+
+END
+
+
+PUBLIC SUB Button_Select(Button AS Integer)
+  'DIM Img AS Image
+  'Img = LAST
+  IF arPanel.Count - 1 < Button THEN Button = arPanel.Count - 1
+  IF arPanel[Button].Border = Border.Raised THEN RETURN
+  
+  arPanel[Button].Border = Border.Raised
+  arPanel[Button].BackColor = &HFFFFFF&
+  arPanel[Button].Move(arPanel[Button].Left - 1, arPanel[Button].Top + 1)
+  Current = arPanel[Button]
+  'Message (Current.ToolTip)
+  
+  
+END
+
+
+PUBLIC SUB Button_Enter()
+  
+  LAST.BackColor = &HFFFFFF&
+  
+END
+
+
+PUBLIC SUB Button_Leave()
+  
+  IF LAST.border = Border.Raised THEN RETURN
+  LAST.BackColor = &HE9E9E9&
+  
+END
+
+PUBLIC SUB Button_UnSelect(OPTIONAL Index AS Integer)
+  DIM Cur AS PictureBox
+  
+  IF Index <> -1 THEN
+  
+      
+      arPanel[Index].Border = Border.Plain
+      arPanel[Index].BackColor = Pan.BackColor
+      IF arPanel[Index].Left <> 2 THEN arPanel[Index].Move(arPanel[Index].Left + 1, arPanel[Index].Top - 1)
+  
+   ELSE
+    
+      FOR EACH cur IN arPanel
+        'IF Cur.Border = Border.Plain THEN RETURN
+        Cur.Border = Border.Plain
+        Cur.BackColor = Pan.BackColor
+        IF Cur.Left <> 2 THEN Cur.Move(Cur.Left + 1, Cur.Top - 1)
+      NEXT
+  END IF
+END
+
+PUBLIC SUB Remove(Index AS Integer)
+  'DIM iTop AS Integer
+  DIM i AS Integer
+  arPanel[index].Visible = FALSE
+  btnTop = arPanel[Index].Top
+  FOR i = index + 1 TO arPanel.Count - 1
+    arPanel[i].Top = btnTop 
+    arPanel[i].Tag = arPanel[i].Tag - 1
+    btnTop = btnTop + 24
+  NEXT
+  arPanel.Remove(index)
+  Button_Select(index - 1)
+  RAISE ButtonClick(Current.Tag, 1)
+END
+
+PUBLIC FUNCTION GetTabUrl(Index AS Integer) AS String
+  
+  RETURN arPanel[Index].ToolTip
+  
+END
+
+PUBLIC FUNCTION Count() AS Integer
+  
+  'Message(arPanel.Count)
+  RETURN arPanel.Count
+  
+END
+
+PUBLIC FUNCTION GetBookMark(Index AS Integer) AS PictureBox
+  
+  RETURN arPanel[Index]
+  
+END

@@ -1,0 +1,179 @@
+' Gambas class file
+
+PUBLIC Panel AS Panel
+PUBLIC DataView AS DataView
+
+PRIVATE $hSrc AS DataSource
+'PRIVATE $iIndex AS Integer
+PRIVATE $bLock AS Boolean
+PRIVATE $iOrientation AS Integer
+PRIVATE $W AS Integer
+
+PUBLIC SUB _new()
+  
+  Panel = panBrowser
+  DataView = dvwBrowser
+  dvwBrowser.Header = GridView.Horizontal
+  $W = btnNew.W
+  SetOrientation(Align.Bottom)
+  Update
+  
+END
+
+
+PUBLIC SUB btnPrev_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)
+  'IF NOT hSrc THEN RETURN
+  IF $hSrc.MovePrevious() THEN RETURN
+  dvwBrowser.MovePrevious
+  'DEC $iIndex
+
+END
+
+PUBLIC SUB btnFirst_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)
+  'IF NOT hSrc THEN RETURN
+  IF $hSrc.MoveFirst() THEN RETURN
+  dvwBrowser.MoveFirst
+  '$iIndex = 0
+
+END
+
+PUBLIC SUB btnNext_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)  
+  'IF NOT hSrc THEN RETURN
+  IF $hSrc.MoveNext() THEN RETURN
+  dvwBrowser.MoveNext
+  'INC $iIndex
+
+END
+
+PUBLIC SUB btnLast_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)
+  'IF NOT hSrc THEN RETURN
+  IF $hSrc.MoveLast() THEN RETURN
+  dvwBrowser.MoveLast
+  '$iIndex = dvwBrowser.Count - 1
+
+END
+
+PUBLIC SUB btnSave_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)  
+  'IF NOT hSrc THEN RETURN
+  $hSrc.Save
+
+END
+
+PUBLIC SUB Update()
+
+  DIM bEnabled AS Boolean  
+  DIM bVisible AS Boolean
+  
+  $hSrc = Common.GetSource(ME)
+  IF $hSrc THEN
+    bEnabled = TRUE '$hSrc.Index >= 0
+    bVisible = NOT $hSrc.ReadOnly
+  ENDIF
+
+  btnFirst.Enabled = bEnabled
+  btnNext.Enabled = bEnabled
+  btnPrev.Enabled = bEnabled
+  btnLast.Enabled = bEnabled
+  btnSave.Enabled = bEnabled
+  btnRemove.Enabled = bEnabled
+  btnReload.Enabled = bEnabled
+  btnNew.Enabled = $hSrc
+  
+  btnSave.Visible = bVisible
+  btnNew.Visible = bVisible
+  btnRemove.Visible = bVisible
+  
+  dvwBrowser.Refresh
+  
+  IF $hSrc AND IF NOT bVisible THEN btnFirst_Click
+  
+END
+
+PUBLIC SUB btnReload_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)  
+  'IF NOT hSrc THEN RETURN
+  $hSrc.Cancel
+
+END
+
+PUBLIC SUB btnNew_Click()
+
+  'DIM hSrc AS DataSource = Common.GetSource(ME)  
+  'IF NOT hSrc THEN RETURN
+  $hSrc.Create
+  dvwBrowser.Create
+  '$iIndex = -1
+
+END
+
+PUBLIC SUB Form_Resize()
+
+  dvwBrowser.Visible = ME.Height > 48
+  panBrowser.Expand = NOT dvwBrowser.Visible
+
+END
+
+PUBLIC SUB dvwBrowser_Activate()
+
+  IF $hSrc.MoveTo(dvwBrowser.Index) THEN
+    dvwBrowser.MoveTo($hSrc.Index)
+  ENDIF
+
+END
+
+PUBLIC SUB btnRemove_Click()
+
+  $hSrc.Remove
+  dvwBrowser.Remove
+
+END
+
+PUBLIC SUB GetOrientation() AS Integer
+  
+  RETURN $iOrientation
+  
+END
+
+PUBLIC SUB SetOrientation(iOrientation AS Integer)
+  
+  IF $iOrientation = iOrientation THEN RETURN 
+  
+  SELECT CASE iOrientation
+    CASE Align.Top
+      ME.Arrangement = Arrange.Vertical
+      panBrowser.Next = dvwBrowser
+      panBrowser.Arrangement = Arrange.Horizontal
+      panBrowser.H = $W
+    CASE Align.Bottom
+      ME.Arrangement = Arrange.Vertical
+      panBrowser.Previous = dvwBrowser
+      panBrowser.Arrangement = Arrange.Horizontal
+      panBrowser.H = $W
+    CASE Align.Left
+      ME.Arrangement = Arrange.Horizontal
+      panBrowser.Next = dvwBrowser
+      panBrowser.Arrangement = Arrange.Vertical
+      panBrowser.W = $W
+    CASE Align.Right
+      ME.Arrangement = Arrange.Horizontal
+      panBrowser.Previous = dvwBrowser
+      panBrowser.Arrangement = Arrange.Vertical
+      panBrowser.W = $W
+    DEFAULT 
+      RETURN
+  END SELECT
+  
+  $iOrientation = iOrientation
+  
+END

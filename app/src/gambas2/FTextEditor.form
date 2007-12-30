@@ -1,0 +1,176 @@
+# Gambas Form File 1.0
+
+{ Form Form
+  MoveScaled(9.75,14.25,80.375,70.75)
+  'Move(78,114,643,566)
+  Text = ("")
+  Icon = Picture["icon:/small/text"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  { mnuEditor Menu
+    Text = ("")
+    Visible = False
+    { mnuGotoLine Menu
+      Text = ("Go to line...")
+      Shortcut = "Ctrl+G"
+    }
+    { Menu3 Menu
+      Text = ("")
+    }
+    { mnuUndo Menu
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { mnuSep2 Menu
+      Text = ("")
+    }
+    { mnuCut Menu
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuSep3 Menu
+      Text = ("")
+    }
+    { mnuSelectAll Menu
+      Text = ("Select &All")
+      Shortcut = "Ctrl+A"
+    }
+    { Menu2 Menu
+      Text = ("")
+    }
+    { mnuFind Menu
+      Text = ("Find...")
+      Picture = Picture["icon:/small/find"]
+      Shortcut = "Ctrl+F"
+    }
+    { mnuReplace Menu
+      Text = ("Replace...")
+      Picture = Picture["icon:/small/replace"]
+      Shortcut = "Ctrl+R"
+    }
+    { mnuFindNext Menu
+      Action = "find-next"
+      Text = ("Find Next")
+      Picture = Picture["img/16/find-next.png"]
+      Shortcut = "F3"
+    }
+    { mnuFindPrevious Menu
+      Action = "find-previous"
+      Text = ("Find Previous")
+      Picture = Picture["img/16/find-previous.png"]
+      Shortcut = "Shift+F3"
+    }
+    { mnuSep4 Menu
+      Text = ("")
+    }
+    { mnuSave Menu
+      Text = ("Save")
+      Picture = Picture["icon:/small/save"]
+      Shortcut = "Ctrl+S"
+    }
+  }
+  { panToolBar ToolBar
+    MoveScaled(0,0,70,4)
+    'Move(0,0,560,32)
+    { btnSave ToolButton mnuSave
+      Name = "btnSave"
+      MoveScaled(0,0,3,3)
+      'Move(0,0,24,24)
+      ToolTip = ("Save")
+      Text = ("")
+      Picture = Picture["icon:/small/save"]
+    }
+    { btnReload ToolButton mnuReload
+      Name = "btnReload"
+      MoveScaled(3,0,3,3)
+      'Move(24,0,24,24)
+      ToolTip = ("Reload")
+      Text = ("")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnCut ToolButton mnuCut
+      Name = "btnCut"
+      MoveScaled(6,0,3,3)
+      'Move(48,0,24,24)
+      ToolTip = ("Cut")
+      Text = ("")
+      Picture = Picture["icon:/small/cut"]
+    }
+    { btnCopy ToolButton mnuCopy
+      Name = "btnCopy"
+      MoveScaled(9,0,3,3)
+      'Move(72,0,24,24)
+      ToolTip = ("Copy")
+      Text = ("")
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnPaste ToolButton mnuPaste
+      Name = "btnPaste"
+      MoveScaled(12,0,3,3)
+      'Move(96,0,24,24)
+      ToolTip = ("Paste")
+      Text = ("")
+      Picture = Picture["icon:/small/paste"]
+    }
+    { btnUndo ToolButton mnuUndo
+      Name = "btnUndo"
+      MoveScaled(15,0,3,3)
+      'Move(120,0,24,24)
+      ToolTip = ("Undo")
+      Text = ("")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnRedo ToolButton mnuRedo
+      Name = "btnRedo"
+      MoveScaled(18,0,3,3)
+      'Move(144,0,24,24)
+      ToolTip = ("Redo")
+      Text = ("")
+      Picture = Picture["icon:/small/redo"]
+    }
+    { btnIndent ToolButton
+      MoveScaled(21,0,3,3)
+      'Move(168,0,24,24)
+      ToolTip = ("Indent")
+      Text = ("")
+      Picture = Picture["icon:/small/indent"]
+    }
+    { btnUnindent ToolButton
+      MoveScaled(24,0,3,3)
+      'Move(192,0,24,24)
+      ToolTip = ("Unindent")
+      Text = ("")
+      Picture = Picture["icon:/small/unindent"]
+    }
+    { lblEditor Label
+      MoveScaled(33,0,10,3)
+      'Move(264,0,80,24)
+      Font = Font["Bold"]
+      Expand = True
+      Text = ("")
+      Alignment = Align.Right
+    }
+  }
+  { edtEditor Editor
+    MoveScaled(2,6,25,15)
+    'Move(16,48,200,120)
+    Expand = True
+  }
+}

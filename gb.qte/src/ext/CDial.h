@@ -1,0 +1,1 @@
+../../../gb.qt/src/ext/CDial.h

@@ -1,0 +1,160 @@
+' Gambas class file
+
+EXPORT
+
+PUBLIC CONST Application AS Integer = 1
+PUBLIC CONST {Link} AS Integer = 2
+PUBLIC CONST Directory AS Integer = 3
+
+PROPERTY READ Version AS String
+PROPERTY Type AS Integer
+PROPERTY Name AS String
+PROPERTY GenericName AS String
+PROPERTY Comment AS String
+PROPERTY Icon AS String
+PROPERTY {Exec} AS String
+PROPERTY Path AS String
+PROPERTY Terminal AS Boolean 
+PROPERTY StartupNotify AS Boolean
+PROPERTY READ MimeType AS String[]
+PROPERTY READ Categories AS String[]
+
+PUBLIC SUB _new(Path AS String)
+  
+  
+  
+END
+
+PUBLIC SUB Save()
+  
+  
+  
+END
+
+
+PRIVATE FUNCTION Version_Read() AS String
+
+  
+
+END
+
+
+PRIVATE FUNCTION Name_Read() AS String
+
+  
+
+END
+
+PRIVATE SUB Name_Write(Value AS String)
+
+  
+
+END
+
+PRIVATE FUNCTION GenericName_Read() AS String
+
+  
+
+END
+
+PRIVATE SUB GenericName_Write(Value AS String)
+
+  
+
+END
+
+PRIVATE FUNCTION Comment_Read() AS String
+
+  
+
+END
+
+PRIVATE SUB Comment_Write(Value AS String)
+
+  
+
+END
+
+PRIVATE FUNCTION Icon_Read() AS String
+
+  
+
+END
+
+PRIVATE SUB Icon_Write(Value AS String)
+
+  
+
+END
+
+PRIVATE FUNCTION Type_Read() AS Integer
+
+  
+
+END
+
+PRIVATE SUB Type_Write(Value AS Integer)
+
+  
+
+END
+
+PRIVATE FUNCTION Exec_Read() AS String
+
+  
+
+END
+
+PRIVATE SUB Exec_Write(Value AS String)
+
+  
+
+END
+
+PRIVATE FUNCTION Path_Read() AS String
+
+  
+
+END
+
+PRIVATE SUB Path_Write(Value AS String)
+
+  
+
+END
+
+PRIVATE FUNCTION Terminal_Read() AS Boolean
+
+  
+
+END
+
+PRIVATE SUB Terminal_Write(Value AS Boolean)
+
+  
+
+END
+
+PRIVATE FUNCTION StartupNotify_Read() AS Boolean
+
+  
+
+END
+
+PRIVATE SUB StartupNotify_Write(Value AS Boolean)
+
+  
+
+END
+
+PRIVATE FUNCTION MimeType_Read() AS String[]
+
+  
+
+END
+
+PRIVATE FUNCTION Categories_Read() AS String[]
+
+  
+
+END

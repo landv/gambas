@@ -1,0 +1,71 @@
+' Gambas class file
+PUBLIC UDPClient AS UdpSocket
+PUBLIC SUB Form_Open()
+  UDPClient=NEW UdpSocket AS "UDPClient"
+END
+'///////////////////////////////////////////////////
+' Client stuff
+'///////////////////////////////////////////////////
+PUBLIC SUB Button2_Click()
+
+  IF UDPClient.Status <= Net.Inactive THEN
+    UDPClient.Bind(0)
+    IF UDPClient.Status=Net.Active THEN
+      Button2.Text=("Stop")
+      TxtData.Enabled=TRUE
+      Button3.Enabled=TRUE
+    END IF
+  ELSE
+    CLOSE #UDPClient
+    Button2.Text=("Start !")
+    TxtData.Enabled=FALSE
+    Button3.Enabled=FALSE
+  END IF
+
+
+END
+
+PUBLIC SUB Button3_Click()
+
+  UDPCLient.TargetPort=TxtPort.Text
+  UDPCLient.TargetHost=TxtIP.Text
+  WRITE #UDPCLient,TxtData.Text,Len(TxtData.Text)
+END
+
+PUBLIC SUB UDPClient_Error()
+  
+  Button2.Text=("Start !")
+  TxtData.Enabled=FALSE
+  Button3.Enabled=FALSE
+  SELECT CASE UDPClient.Status
+    CASE Net.CannotBindSocket
+      Message.Error(("Unable to Bind to that port"))
+    CASE Net.CannotCreateSocket
+      Message.Error(("System does not allow to create a socket"))
+    CASE Net.CannotRead
+      Message.Error(("Error Sending Data"))
+    CASE Net.CannotWrite
+      Message.Error(("Error Receiving Data"))
+  END SELECT
+  
+END
+
+PUBLIC SUB UDPClient_Read()
+  
+  DIM sCad AS String
+  READ #UDPClient,sCad,Lof(UDPClient)
+  TxtRecClient.Text=TxtRecClient.Text &  ("Received data from : ") & UDPClient.SourceHost & ":" & UdpClient.SourcePort & Chr(13) & Chr(10)
+  TxtRecClient.Text=TxtRecClient.Text & ("Data --> ") & sCad & Chr(13) & Chr(10)
+  
+END
+
+
+PUBLIC SUB Form_Close()
+
+  IF UDPClient.Status>0 THEN  CLOSE #UDPClient
+
+
+END
+
+
+

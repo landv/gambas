@@ -1,0 +1,134 @@
+' Gambas class file
+
+PRIVATE $iKey AS Integer
+PRIVATE CONST MIME_TYPE AS String = "text/x-gambas-dragndrop-example"
+
+PUBLIC SUB imgIcon_MouseDrag()
+
+  IF Mouse.Left THEN
+    Drag.Icon = LAST.Picture
+    LAST.Drag(LAST.Picture.Image)
+    'LAST.Drag(LAST.Tag)
+  ENDIF
+
+END
+
+PUBLIC SUB TreeView1_Drag()
+
+  IF Drag.Type <> Drag.Image THEN STOP EVENT
+
+END
+
+PUBLIC SUB TreeView1_DragMove()
+
+  'IF Drag.Type <> Drag.Image THEN STOP EVENT
+
+  WITH TreeView1
+    IF NOT .Find(Drag.X, Drag.Y) THEN
+      Drag.Show(TreeView1, .Item.X, .Item.Y, .Item.W, .Item.H)
+    ELSE 
+      Drag.Show(TreeView1)
+    ENDIF
+  END WITH
+
+END
+
+PUBLIC SUB TreeView1_Drop()
+
+  DIM sKey AS String
+
+  WITH TreeView1
+
+    IF NOT .Find(Drag.X, Drag.Y) THEN
+      sKey = .Item.Key
+    ENDIF
+    
+    INC $iKey
+  
+    IF Drag.Type = Drag.Image THEN
+      .Add($iKey, "#" & $iKey, Drag.Data.Picture, sKey).EnsureVisible
+    ' ELSE IF Drag.Type = Drag.Text THEN 
+    '   .Add($iKey, Drag.Data,, sKey).EnsureVisible    
+    ENDIF
+
+  END WITH
+
+END
+
+PUBLIC SUB TreeView1_MouseDrag()
+
+  DIM hPict AS Picture
+
+  IF NOT Mouse.Left THEN RETURN
+
+  WITH TreeView1
+    IF .Find(Mouse.X, Mouse.Y) THEN RETURN
+    IF NOT .Key THEN RETURN
+
+    hPict = NEW Picture(32 + 8 + .Font.Width(.Current.Text), 32, TRUE)
+    Draw.Begin(hPict)
+      TRY Draw.Picture(.Current.Picture, 0, 0)
+      Draw.Font = .Font
+      Draw.Text(.Current.Text, 34, 0, hPict.Width, 32, Align.Left)
+    Draw.End
+
+    Drag.Icon = hPict
+    .Drag(.Key, MIME_TYPE)
+  END WITH
+
+END
+
+PUBLIC SUB imgHole_Drag()
+
+  'DEBUG Drag.Type;; Drag.Format
+  IF Drag.Type = Drag.Text THEN
+    IF Drag.Format = MIME_TYPE THEN
+      RETURN
+    ENDIF
+  ENDIF
+
+  STOP EVENT
+
+END
+
+PUBLIC SUB imgHole_Drop()
+
+  TreeView1.Remove(Drag.Data)
+
+END
+
+PUBLIC SUB Form_Open()
+
+  ME.Center
+  TreeView1.Add("Test", "Test", Picture["drop.png"])
+
+END
+
+
+PUBLIC SUB imgHole_DragMove()
+
+  'DEBUG Drag.Type;; Drag.Format
+  IF Drag.Type = Drag.Text THEN
+    IF Drag.Format = MIME_TYPE THEN
+      Drag.Show(imgHole)
+      RETURN
+    ENDIF
+  ENDIF
+
+  STOP EVENT  
+
+END
+
+
+PUBLIC SUB Test_DragMove()
+
+  Drag.Show(LAST)
+  'PRINT LAST.ScreenX;; LAST.ScreenY;; LAST.Window.ScreenX;; LAST.Window.ScreenY
+  
+END
+
+PUBLIC SUB Form_DragMove()
+
+  Test_DragMove
+
+END

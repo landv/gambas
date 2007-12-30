@@ -1,0 +1,224 @@
+' Gambas class file
+
+' texture
+PRIVATE textures AS NEW Integer[]
+
+' Rotations & translations
+PRIVATE xrot AS Float
+PRIVATE yrot AS Float
+PRIVATE zrot AS Float
+PRIVATE ztrans AS Float = -4.5
+
+PRIVATE initialized AS Boolean = FALSE
+PRIVATE aColor AS Float = 1.0
+PRIVATE aFinished AS Boolean = FALSE
+PRIVATE wantFading AS Boolean = FALSE
+
+PRIVATE $eSpeed AS Float
+
+PROPERTY READ finished AS Boolean
+
+PUBLIC SUB _new(FrameRate AS Integer)
+  
+  $eSpeed = 300 / FrameRate
+  
+END
+
+
+PUBLIC SUB _free()
+
+  Gl.DeleteTextures(textures)
+
+END
+
+PUBLIC SUB Resize(W AS Integer, H AS Integer)
+
+  ' Width/Height Ratio
+  DIM ratio AS Float
+  DIM Height AS Integer
+
+  Height = H
+  ' Protect against a divide by zero
+  IF Height = 0 THEN Height = 1
+
+  ratio = W / Height
+
+  ' Setup our viewport
+  Gl.Viewport(0, 0, W, H)
+  ' change to the projection matrix AND set our viewing volume.
+  Gl.MatrixMode(Gl.GL_PROJECTION)
+  Gl.LoadIdentity()
+
+  ' Set our perspective
+  Glu.Perspective(45.0, ratio, 0.1, 10.0)
+
+  ' Make sure we're changing the model view and not the projection
+  Gl.MatrixMode(Gl.GL_MODELVIEW)
+  GL.LoadIdentity()
+
+END
+
+PUBLIC SUB Draw()
+
+  IF initialized = FALSE THEN initialize()
+  IF wantFading = TRUE THEN ME.Quit()
+
+  Gl.Clear(Gl.GL_COLOR_BUFFER_BIT OR Gl.GL_DEPTH_BUFFER_BIT)
+
+  Gl.LoadIdentity()
+  Gl.Translatef(0.0, 0.0, ztrans)
+
+  Gl.Rotatef(xrot, 1.0, 0.0, 0.0) ' Rotate On The X Axis
+  Gl.Rotatef(yrot, 0.0, 1.0, 0.0) ' Rotate On The Y Axis
+  Gl.Rotatef(zrot, 0.0, 0.0, 1.0) ' Rotate On The Z Axis
+
+  ' Select our texture
+  Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[0])
+
+  Gl.Begin(Gl.GL_QUADS)
+    Gl.Colorf(aColor, aColor, aColor, 0.5)
+    ' front face
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 1.0)
+    Gl.Vertexf(-1.0, -1.0, 1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 1.0)
+    Gl.Vertexf(1.0, -1.0, 1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 0.0)
+    Gl.Vertexf(1.0, 1.0, 1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 0.0)
+    Gl.Vertexf(-1.0, 1.0, 1.0)
+
+    ' Back face
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 1.0)
+    Gl.Vertexf(-1.0, -1.0, -1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 0.0)
+    Gl.Vertexf(-1.0, 1.0, -1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 0.0)
+    Gl.Vertexf(1.0, 1.0, -1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 1.0)
+    Gl.Vertexf(1.0, -1.0, -1.0)
+
+    ' Top face
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 0.0)
+    Gl.Vertexf(-1.0, 1.0, -1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 1.0)
+    Gl.Vertexf(-1.0, 1.0, 1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 1.0)
+    Gl.Vertexf(1.0, 1.0, 1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 0.0)
+    Gl.Vertexf(1.0, 1.0, -1.0)
+
+    ' Bottom Face
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 1.0)
+    Gl.Vertexf(-1.0, -1.0, -1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 1.0)
+    Gl.Vertexf(1.0, -1.0, -1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 0.0)
+    Gl.Vertexf(1.0, -1.0, 1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 0.0)
+    Gl.Vertexf(-1.0, -1.0, 1.0)
+
+    ' Right face
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 1.0)
+    Gl.Vertexf(1.0, -1.0, -1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 0.0)
+    Gl.Vertexf(1.0, 1.0, -1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 0.0)
+    Gl.Vertexf(1.0, 1.0, 1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 1.0)
+    Gl.Vertexf(1.0, -1.0, 1.0)
+
+    ' Left face
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 1.0)
+    Gl.Vertexf(-1.0, -1.0, -1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 1.0)
+    Gl.Vertexf(-1.0, -1.0, 1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoordf(1.0, 0.0)
+    Gl.Vertexf(-1.0, 1.0, 1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoordf(0.0, 0.0)
+    Gl.Vertexf(-1.0, 1.0, -1.0)
+
+  Gl.End()
+
+  xrot = xrot + 0.1 * $eSpeed
+  zrot = zrot + 0.1 * $eSpeed
+
+END
+
+FUNCTION Finished_Read() AS Boolean
+
+  RETURN aFinished
+
+END
+
+PUBLIC SUB Quit()
+
+  aColor -= 0.01 * $eSpeed
+
+  IF wantFading = FALSE THEN wantFading = TRUE
+  IF aColor < 0 THEN aFinished = TRUE
+
+END
+
+PRIVATE SUB Initialize()
+
+  ' Enable texturing
+  Gl.Enable(Gl.GL_TEXTURE_2D)
+  loadTextures()
+  ' Enable smooth shading
+  Gl.ShadeModel(Gl.GL_SMOOTH)
+  ' Set the background black
+  Gl.ClearColor(0.0, 0.0, 0.0, 0.0)
+  ' Depth buffer setup
+  Gl.ClearDepth(1.0)
+  ' Enables Depth Testing
+  Gl.Enable(Gl.GL_DEPTH_TEST)
+  ' The Type OF Depth Test TO DO
+  Gl.DepthFunc(Gl.GL_LEQUAL)
+  ' Really Nice Perspective Calculations
+  Gl.Hint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST)
+  Gl.BlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE)
+  Gl.Enable(Gl.GL_BLEND)
+  Gl.Disable(Gl.GL_DEPTH_TEST)
+  initialized = TRUE
+
+END
+
+PRIVATE SUB LoadTextures()
+
+  DIM logo AS Image
+
+  logo = Image.Load("logo.png")
+
+  textures = Gl.GenTextures(1)
+
+  Gl.BindTexture(Gl.GL_TEXTURE_2D, textures[0])
+  Gl.TexImage2D(logo)
+  Glu.Build2DMipmaps(logo)
+  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_NEAREST)
+  Gl.TexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR)
+
+END

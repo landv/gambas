@@ -1,0 +1,291 @@
+' Gambas class file
+
+EXPORT 
+CREATE STATIC
+PRIVATE $iStyle AS Integer = ChartStyle.Default
+
+PRIVATE bFirstColumnAsLabel AS Boolean = FALSE
+PUBLIC _fProportionnal AS Float = 1.0
+PRIVATE $bProportionnal AS Boolean = TRUE
+PROPERTY FirstColumnAsLabel AS Boolean 
+PROPERTY DataOrientation AS Integer
+PRIVATE $oGraphStyle AS Object
+PRIVATE $iDataOrientation AS Integer
+PRIVATE $bLegendSeries AS Boolean = FALSE
+'PRIVATE $aroColumns AS NEW Object[]
+PRIVATE $aroSeries AS NEW Object[]
+PRIVATE $oTitle AS NEW _CTitle
+'PRIVATE $oColumns AS NEW _Column
+PRIVATE $oYAxe AS NEW _CYAxe
+PRIVATE $oLegend AS NEW _CLegend
+PRIVATE $oColors AS NEW _Colors
+PRIVATE $iType AS Integer
+'PRIVATE $iStyle AS Integer
+PRIVATE $iWidth AS Integer
+PRIVATE $iHeight AS Integer
+PRIVATE $oHeaders AS NEW _CHeaders
+PROPERTY Height AS Integer
+PROPERTY Width AS Integer
+PROPERTY Type AS Integer
+PROPERTY {Picture} AS Picture
+PROPERTY READ Legend AS _CLegend
+PROPERTY READ YAxe AS _CYAxe
+PROPERTY READ Colors AS _Colors
+
+PROPERTY READ Title AS _CTitle
+'PROPERTY Style AS Integer
+PROPERTY CountDataSets AS Integer
+PROPERTY Count AS Integer
+
+PROPERTY Proportionnal AS Boolean
+PROPERTY READ Headers AS _CHeaders
+PROPERTY Style AS Integer
+
+
+PUBLIC SUB _New()
+  
+  ME.CountDataSets = 1
+  ME.Type = ChartType.Columns 'Stacked
+  'MTools.ColorList = [color.Blue, color.Yellow, color.Red, color.Green, color.Orange, color.DarkBlue]
+END
+
+
+
+PRIVATE FUNCTION Height_Read() AS Integer
+
+  RETURN $iHeight
+
+END
+
+PRIVATE SUB Height_Write(Value AS Integer)
+
+  $iHeight = Value  
+
+END
+
+PRIVATE FUNCTION Width_Read() AS Integer
+
+  RETURN $iWidth
+
+END
+
+PRIVATE SUB Width_Write(Value AS Integer)
+
+  $iWidth = Value
+
+END
+
+PRIVATE FUNCTION Type_Read() AS Integer
+
+  RETURN $iType
+
+END
+
+PRIVATE SUB Type_Write(Value AS Integer)
+ $iType = Value
+ WITH ChartType
+ SELECT CASE $iType
+  
+    CASE .Columns, .ColumnsStacked, .ColumnsPercent, .ColumnsLineCombination
+      $oGraphStyle = NEW _CStyleColumns(Value)
+      $bLegendSeries = FALSE
+    CASE .Pie, .PieRings, .PieOffSet1, .PieOffSet2
+      $oGraphStyle = NEW _CStylePie(Value)
+      $bLegendSeries = FALSE
+    CASE .Lines, .LinesStacked, .LinesPercent, .LinesSymbols
+      $oGraphStyle = NEW _CStyleLine(Value)
+      $bLegendSeries = TRUE
+    CASE .Areas, .AreasStacked, .AreasPercent, .AreasSymbols
+      $oGraphStyle = NEW _CStyleAreas(Value)
+      $bLegendSeries = TRUE
+  
+  END SELECT
+ END WITH 
+END
+
+PRIVATE FUNCTION Legend_Read() AS _CLegend
+
+  RETURN $oLegend
+
+END
+
+PRIVATE FUNCTION Picture_Read() AS Picture
+
+  
+
+END
+
+PRIVATE SUB Picture_Write(Value AS Picture)
+
+  
+
+END
+
+PRIVATE FUNCTION Title_Read() AS _CTitle
+
+  RETURN $oTitle
+
+END
+
+
+PUBLIC SUB Draw()
+  DIM iClientHeight, iClientWidth AS Integer
+  
+  DIM iTitleHeight AS Integer
+  DIM iStaticSpace AS Integer 
+  'Draw.Font.Size = 12 * (Chart.Width / 640)
+  
+  _fProportionnal = IIf(ME.Width <= ME.Height, ME.Width / (Desktop.Height * 2 / 3), ME.Height / (Desktop.Height * 2 / 3))
+  IF NOT $bProportionnal THEN _fProportionnal = 1.0
+  iStaticSpace = 5 * Chart._fProportionnal
+  'Draw the Legend and get the graph caneva size
+  $oLegend.Draw($bLegendSeries)
+  'Draw The Title
+  
+  IF NOT IsNull(ME.Title.Text) AND ME.Title.Visible THEN 
+  
+    'Draw.Font.Grade = 4
+    Draw.Font.Size = $oTitle.Font.Size * _fProportionnal
+    iTitleHeight = Draw.Font.Height() * 1.5
+  ENDIF
+
+  iClientWidth = ME.Width - $oLegend._Width - 2 * iStaticSpace
+  iClientHeight = ME.Height - 2 * iStaticSpace - $oLegend._Height
+  
+  
+  Draw.FillColor = color.White
+  Draw.Rect(iStaticSpace, iStaticSpace, iClientWidth, iClientHeight)
+  'Draw.Font.Grade = 4
+  
+  $oGraphStyle.Draw(iStaticSpace, iStaticSpace + iTitleHeight, iClientWidth, iClientHeight - iTitleHeight)
+  
+  
+  IF NOT IsNull(ME.Title.Text) AND ME.Title.Visible THEN 
+    Draw.ForeColor = Color.Black
+    Draw.Font.Size = ME.Title.Font.Size * _fProportionnal
+    Draw.Text(ME.Title.Text, iStaticSpace, iTitleHeight / 2, iClientWidth, iTitleHeight, Align.Center)
+  ENDIF
+END
+
+
+PRIVATE FUNCTION CountDataSets_Read() AS Integer
+
+  RETURN $aroSeries.Count
+
+END
+
+PRIVATE SUB CountDataSets_Write(Value AS Integer)
+  DIM oSeries AS _CSerie
+  DIM cnt AS Integer
+  DIM i AS Integer
+  IF $aroSeries.Count < Value THEN 
+    FOR i = 0 TO (Value - $aroSeries.Count) - 1
+      oSeries = NEW _CSerie
+      $aroSeries.Add(oSeries)
+    NEXT
+  ELSE IF $aroSeries.Count > Value THEN 
+    cnt = $aroSeries.Count - Value
+    $aroSeries.Remove($aroSeries - cnt, cnt)
+  ENDIF
+END
+
+PUBLIC SUB _Get(Index AS Integer) AS _CSerie
+  
+  RETURN $aroSeries[Index]
+  
+END
+
+
+PRIVATE FUNCTION FirstColumnAsLabel_Read() AS Boolean
+
+  RETURN bFirstColumnAsLabel
+
+END
+
+PRIVATE SUB FirstColumnAsLabel_Write(Value AS Boolean)
+
+  bFirstColumnAsLabel = Value
+
+END
+
+PRIVATE FUNCTION DataOrientation_Read() AS Integer
+
+  RETURN $iDataOrientation
+
+END
+
+PRIVATE SUB DataOrientation_Write(Value AS Integer)
+
+  $iDataOrientation = Value
+
+END
+
+
+PUBLIC FUNCTION _Next() AS Variant
+  IF enum.Index = NULL THEN enum.Index = -1
+  
+  IF enum.Index = $aroSeries.max THEN 
+    enum.Stop
+    RETURN 
+  ENDIF
+  INC enum.Index
+  RETURN $aroSeries[enum.Index]
+  
+END
+
+PRIVATE FUNCTION Proportionnal_Read() AS Boolean
+
+  RETURN $bProportionnal  
+
+END
+
+PRIVATE SUB Proportionnal_Write(Value AS Boolean)
+
+  $bProportionnal = Value
+
+END
+
+PRIVATE FUNCTION YAxe_Read() AS _CYAxe
+
+  RETURN $oYAxe  
+
+END
+
+PRIVATE FUNCTION Headers_Read() AS _CHeaders
+
+  RETURN $oHeaders
+
+END
+
+
+PRIVATE FUNCTION Count_Read() AS Integer
+
+  'Alias vers Labels.count
+  RETURN $oHeaders.Count
+
+END
+
+PRIVATE SUB Count_Write(Value AS Integer)
+
+  'Alias vers Labels.count
+  $oHeaders.Count = Value
+
+END
+
+PRIVATE FUNCTION Colors_Read() AS _Colors
+
+  RETURN $oColors
+
+END
+
+PRIVATE FUNCTION Style_Read() AS Integer
+
+  RETURN $iStyle
+
+END
+
+PRIVATE SUB Style_Write(Value AS Integer)
+
+  $iStyle = Value
+
+END

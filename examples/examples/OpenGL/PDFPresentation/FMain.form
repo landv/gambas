@@ -1,0 +1,33 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,94,64)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { panSelect HBox
+    MoveScaled(0,0,75,3)
+    AutoResize = True
+    Spacing = 8
+    { txtPath TextBox
+      MoveScaled(0,0,54,3)
+      Background = Color.ButtonBackground
+      Expand = True
+      Text = ("")
+      ReadOnly = True
+    }
+    { btnPath Button
+      MoveScaled(55,0,13,3)
+      Text = ("Select...")
+    }
+  }
+  { glaPresentation GlArea
+    MoveScaled(6,9,62,43)
+    Expand = True
+  }
+  { timUpdate #Timer
+    #X = 518
+    #Y = 224
+  }
+}

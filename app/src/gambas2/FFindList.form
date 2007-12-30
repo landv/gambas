@@ -1,0 +1,38 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,71,50)
+  Background = Color.TextBackground
+  Text = ("Find list")
+  Icon = Picture["img/16/find-list.png"]
+  Persistent = True
+  ToolBox = True
+  SkipTaskbar = True
+  Arrangement = Arrange.Horizontal
+  Spacing = 4
+  Padding = 4
+  { panSearch Panel
+    MoveScaled(2,1,14,41)
+    { picSearch PictureBox
+      MoveScaled(1,5,8,8)
+      Picture = Picture["img/search.png"]
+      Stretch = True
+    }
+    { btnCancel Button
+      MoveScaled(0,0,14,3)
+      Text = ("Close")
+      Cancel = True
+    }
+    { timSearch #Timer
+      #X = 21
+      #Y = 140
+      Delay = 100
+    }
+  }
+  { tvwFind GridView
+    MoveScaled(32,11,36,32)
+    Expand = True
+    Mode = Select.Single
+    Header = GridView.Horizontal
+  }
+}

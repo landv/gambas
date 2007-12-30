@@ -1,0 +1,208 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(7,15.1429,110,74)
+  Text = ("Project translation")
+  Icon = Picture["icon:/small/language"]
+  Persistent = True
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { Panel4 Panel
+    MoveScaled(1,1,93,6)
+    Visible = False
+    Background = Color.SelectedBackground
+    Arrangement = Arrange.Horizontal
+    Spacing = 8
+    Padding = 8
+    { PictureBox1 PictureBox
+      MoveScaled(1,1,5,5)
+      Picture = Picture["icon:/32/language"]
+    }
+    { Label2 Label
+      MoveScaled(7,1,31,4)
+      Font = Font["Bold,+2"]
+      Foreground = Color.SelectedForeground
+      AutoResize = True
+      Text = ("Project translation")
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,8,106,60)
+    Expand = True
+    { panLang SidePanel
+      MoveScaled(1,2,25,56)
+      Arrangement = Arrange.Vertical
+      Orientation = Align.Left
+      { cvwLang ColumnView
+        MoveScaled(1,19,19,25)
+        Mouse = Mouse.Arrow
+        Expand = True
+        Sorted = True
+        Header = False
+        ScrollBar = Scroll.Vertical
+      }
+      { chkStat CheckBox
+        MoveScaled(3,49,22,3)
+        Text = ("Show statistics")
+      }
+    }
+    { VBox1 VBox
+      MoveScaled(27,2,78,57)
+      Expand = True
+      Spacing = 8
+      { HBox3 HBox
+        MoveScaled(3,1,74,3)
+        Spacing = 8
+        { cbxFileChoice ComboBox
+          MoveScaled(0,0,37,3)
+          Text = ("")
+          ReadOnly = True
+        }
+        { lblInfo Label
+          MoveScaled(38,0,35,3)
+          Expand = True
+          Text = ("")
+          Alignment = Align.Right
+        }
+      }
+      { HBox5 HBox
+        MoveScaled(3,5,65,3)
+        { btnSave ToolButton
+          MoveScaled(0,0,3,3)
+          ToolTip = ("Save translation")
+          Text = ("")
+          Picture = Picture["icon:/small/save"]
+        }
+        { btnClear ToolButton
+          MoveScaled(3,0,3,3)
+          ToolTip = ("Clear this translation")
+          Text = ("")
+          Picture = Picture["icon:/small/clear"]
+        }
+        { btnDoNotTranslate ToolButton
+          MoveScaled(6,0,3,3)
+          ToolTip = ("This string must not be translated")
+          Text = ("")
+          Picture = Picture["icon:/small/warning"]
+        }
+        { btnCopy ToolButton
+          MoveScaled(9,0,3,3)
+          ToolTip = ("Copy untranslated string")
+          Text = ("")
+          Picture = Picture["icon:/small/paste"]
+        }
+        { btnVerify ToolButton
+          MoveScaled(13,0,3,3)
+          ToolTip = ("Verify the translation")
+          Text = ("")
+          Picture = Picture["icon:/small/watch"]
+        }
+        { btnNext ToolButton
+          MoveScaled(16,0,3,3)
+          ToolTip = ("Find next untranslated string")
+          Text = ("")
+          Picture = Picture["icon:/small/down"]
+        }
+        { btnPrevious ToolButton
+          MoveScaled(19,0,3,3)
+          ToolTip = ("Find previous untranslated string")
+          Text = ("")
+          Picture = Picture["icon:/small/up"]
+        }
+        { Panel2 Panel
+          MoveScaled(23,0,1,3)
+        }
+        { txtFind TextBox
+          MoveScaled(27,0,31,3)
+          Expand = True
+          Text = ("")
+        }
+        { btnFind ToolButton
+          MoveScaled(59,0,3,3)
+          ToolTip = ("Find a string in translation")
+          Text = ("")
+          Picture = Picture["icon:/small/find"]
+        }
+      }
+      { cvwTranslate ColumnView
+        MoveScaled(3,10,70,25)
+        Expand = True
+        Sorted = True
+        ScrollBar = Scroll.Vertical
+      }
+      { VBox2 VBox
+        MoveScaled(2,36,71,20)
+        Expand = True
+        Spacing = 8
+        { lblComment Label
+          MoveScaled(2,1,48,3)
+          Text = ("")
+        }
+        { txtOrig TextArea
+          MoveScaled(2,4,67,5)
+          Background = Color.Background
+          Expand = True
+          Text = ("")
+          ReadOnly = True
+          Wrap = True
+        }
+        { txtTranslate TextArea
+          MoveScaled(2,10,63,5)
+          Expand = True
+          Text = ("")
+          Wrap = True
+        }
+      }
+    }
+  }
+  { VBox3 VBox
+    MoveScaled(0,69,106,4)
+    { Panel3 Panel
+      MoveScaled(55,0,3,1)
+    }
+    { HBox1 HBox
+      MoveScaled(0,1,101,3)
+      Spacing = 8
+      { btnNew Button
+        MoveScaled(0,0,15,3)
+        ToolTip = ("New translation")
+        Text = ("&New...")
+        Picture = Picture["icon:/small/new"]
+      }
+      { btnUndo Button
+        MoveScaled(16,0,15,3)
+        ToolTip = ("Reload translation")
+        Text = ("&Reload")
+        Picture = Picture["icon:/small/undo"]
+      }
+      { btnDelete Button
+        MoveScaled(32,0,15,3)
+        ToolTip = ("Delete translation")
+        Text = ("&Delete")
+        Picture = Picture["icon:/small/delete"]
+      }
+      { btnImport Button
+        MoveScaled(48,0,15,3)
+        ToolTip = ("Import a translation file")
+        Text = ("&Import...")
+        Picture = Picture["icon:/small/open"]
+      }
+      { btnExport Button
+        MoveScaled(64,0,15,3)
+        ToolTip = ("Export to a translation file")
+        Text = ("&Export...")
+        Picture = Picture["icon:/small/save"]
+      }
+      { Panel1 Panel
+        MoveScaled(81,0,3,3)
+        Expand = True
+      }
+      { btnOK Button
+        MoveScaled(85,0,15,3)
+        Text = ("&Close")
+        Cancel = True
+      }
+    }
+  }
+}

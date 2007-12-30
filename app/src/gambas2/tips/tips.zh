@@ -1,0 +1,229 @@
+[WELCOME]
+
+<p>欢迎使用 <b>Gambas</b> !</p>
+
+<p><b>Gambas</b> 是一个基于高级 <i>Basic</i> 解释器的图形界面的开发环境.</p>
+
+<p><b>Gambas</b> 的目标是使你能轻易而快速地开发出功能强大的程序. 但是高效而简洁的程序还得靠你 <i>自己</i> 的努力...</p>
+
+<p>希望你能喜欢!</p>
+
+<p align=right>Beno&icirc;t Minisini<br>
+English:<u>gambas@users.sourceforge.net</u><br>
+中文:<u>yizhou.he@gmail.com</u></p>
+
+[STARTUP]
+
+<p>每一个工程都要有一个<i>启动类</i>.  这个启动类必须定义一个名为<i>Main</i>的无参数的 static public method(静态全局函数)  
+, 它将成为你的程序的启动类.</p>
+
+<p>要定义启动类只要鼠标右键在工程目录数中点击要设为启动类的类并在弹出的右键菜单中选<i>启动类</i>.</p>
+
+<p>你不用在启动窗体中定义一个<i>Main</i> 类因为Gambas己经预定义好了.</p>
+
+<p>这个预定义的启动类创建并显示窗体就像<i>Visual Basic&trade;</i>一样.</p>
+
+
+[OPEN]
+
+<p><b>Gambas</b>的<b>OPEN</b> 函数和<i>Visual Basic</i>的不太一样. 它并不返回一个整型变量,而是返回一个 <i>文件</i> 对象.</p>
+
+<p>所以, 不要使用 :</p>
+
+<pre>DIM handle AS Integer
+...
+OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>而应该使用 :</p>
+
+<pre>DIM handle AS File
+...
+handle = OPEN "myfile" FOR READ</pre>
+
+
+[CATDIR]
+
+<p>你知道吗?你可以使用<b><tt>&/</tt></b> 操作符连接文件路径中的目录和文件?此操作符处理路径尾的斜杠以免重复.</p>
+
+<p>例如:</p>
+
+<pre>PRINT "/home/gambas" &/ ".bashrc"
+/home/gambas/.bashrc
+
+PRINT "/home/gambas/" &/ "/tmp" &/ "foo.bar"
+/home/gambas/tmp/foo.bar
+</pre>
+
+<p>怎么样? 爽吧!</p>
+
+
+[EXEC]
+
+<p>你可以将你的整个工程制作成一个可执行文件. 在<i>工程</i>菜单中选择
+<i>制作可执行文件</i></p>
+
+<p>当 <b>Gambas</b> 制作可执行文件,它默认将产生的可执行文件放到你的工程目录下.
+可执行文件名和你的工程名相同.</p>
+
+
+[PATH]
+<p>
+相对径在<b>Gambas</i>中有特殊意义.它们总是指向你工程内的文件.
+<p>
+这里没有<i>当前目录</i>的概念, 没有<tt>CHDIR</tt>之类的关键字来改变它.
+<p>
+<b>注意:</b> 你只能使用相对路径访问你的工程文件,因为绝对路径在你制作可执行文件后就不再可靠了.
+
+
+[GLOBAL]
+
+<b><i>Gambas</i></b>里不再有 <u>全局变量</u>了!
+<p>
+相应的,在你的 main module(主模块)中声明它们为 <tt>PUBLIC</tt>(公共类型).
+<p>
+如果你的工程中没有主模块,只有主窗体,那么声明它们为 <tt>STATIC PUBLIC</tt>(静态公共类型).
+<p>
+要访问这些变量,你必须使用主模块名或主窗体名 <tt>MyMainModule.MyGlobalVariable</tt> 或
+<tt>MyMainForm.MyGlobalVariable</tt>.
+
+
+[EMPTY]
+
+<p>要知道一个字符串是否为空,没必要使用<b>Len()</b> 函数. 你可以直接测试它,因为空字符串为<b>FALSE</b> 非空字符串为 <b>TRUE</b>.</p>
+
+<p>例如,你不用写:</p>
+
+<pre>IF Len(MyString) > 0 THEN ...
+IF Len(MyString) = 0 THEN ...</pre>
+
+<p>你只需写 :</p>
+
+<pre>IF MyString THEN ...
+IF NOT MyString THEN ...</pre>
+
+
+[EVENT]
+
+<p>每个控件和每个对象都可以产生事件, 都有一个<i>event observer</i>(事件观察器) 和一个事件 <i>group name</i>(组名).</p>
+
+<p>事件观察器捕捉对象产生的每一个事件, 事件组名将是你用来处理事件的类名的前缀.</p>
+
+<p>默认的事件观察器是你创建的控件的容器对象,事件组名是控件名.</p>
+
+<p>这梓,一个窗体接收你在它里面创建的所有的控件发生的事件.</p>
+
+<pre>' Gambas form
+DIM hButton AS Button
+
+PUBLIC SUB _new()
+&nbsp;&nbsp;hButton = NEW Button(ME) AS "MyButton"
+END
+
+PUBLIC SUB MyButton_Click()
+&nbsp;&nbsp;PRINT "You have clicked MyButton !"
+END
+</pre>
+
+
+[FORM]
+
+<p>在<b><i>Gambas</i></b>中, 一个窗体是它自己的事件观察器,所以你可以直接在它自己的类代码中管理它的事件<i>Resize</i>, 
+<i>Activate</i>, ...) </p>
+
+<p> 这样, 从<i>Visual Basic</i> 转来的菜鸟们不会迷失方向 :-).</p>
+
+
+[EMBED]
+
+<p>在<b><i>Gambas</i>中,你可以在窗体中嵌入窗体.</b>
+&nbsp;!</p>
+
+<p>要实现如此强大的功能,只要在初始化窗体对象时将父容器做为最后一个参数传给窗体构建函数.</p>
+
+<p>例如&nbsp;:</p>
+<p><tt>DIM hForm AS MyDialog<br>
+DIM hSuperControl AS MyForm<br><br>
+' 创建一个对话框<br>
+hForm = NEW MyDialog<br>
+' 在此对话框中插入一个窗体<br>
+' 注意此窗体要三个参数,最后一个参数是容器对象r<br>
+hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
+' 移动并改变窗体的大小<br>
+hSuperControl.Move(8, 8, 128, 64)<br>
+</tt></p>
+
+<p>小心: 嵌入后的窗体还是个窗体,它还是它自己的事件观察器.</p>
+
+
+[GROUP]
+
+<p>每个控件都有一个<i>(组)</i> 属性. 当此属性被设置,事件处理类的名的前缀就将是组名而不是控件名.</p>
+
+<p>假定你有一个<i>按钮</i> 名叫 <b>btnAction</b>
+有一个 <i>Click</i> 事件处理类 :</p>
+
+<pre>PUBLIC SUB btnAction_Click()</pre>
+
+<p>如果你将<b>btnAction</b>的<i>(Group)</i> 属性设为<i>MyGroup</i>, 那么事件处理类从按钮收到的事件将是:</p>
+
+<pre>PUBLIC SUB MyGroup_Click()</pre>
+
+<p>此属性让你在一个函数中处理不同的控件的事件,同组中的控件不需要有相同的类型!</p>
+
+<p><b>注释 :</b> <i>Visual Basic</i>老手可以认为是<i>控件数组</i>, 但有更为强大的用法. :-)</p>
+
+
+[TAG]
+
+<p>每一个控件都有<i>Tag</i> 属性. 此属性是为编程者设计的,可以为任何你想要的<b>VARIANT</b> (可变类型)数据.</p>
+
+<p>这在你想在通用事件处理函数中区别同一个组中的控件时非常用用.</p>
+
+
+
+[LAST]
+
+<p><b>LAST</b> 关键字返回收到事件的最后一个控件,当你要写一个独立于控件名的事件处理类就非常有用.</p>
+
+<p>例如, 假设你要写一个计算器程序.
+你定义了十个按钮, 每个数字一个, 它们都在一个 <i>组</i>名叫 "Digit". 每个控件的 <i>Tag</i> 属性都被设为相应的数字.
+你的处理程序将会是 :</p>
+
+<p><tt>PUBLIC SUB Digit_Click()<br><br>
+&nbsp;&nbsp;Display = Display & LAST.Tag<br>
+&nbsp;&nbsp;RefreshDisplay<br><br>
+END</tt></p>
+
+
+[LEFT]
+
+<p>大名鼎鼎的 <i>BASIC</i> 函数 <b>Left$</b>, <b>Right$</b>
+和<b>Mid$</b> 在 <b><i>Gambas</i></b>中有了新功能</p>
+
+<p><b>Left$</b> and <b>Right$</b>的第二个参数是可选的,默认值为1.</p>
+
+<p><tt>Left$("Gambas")</tt> 返回 <tt>"G"</tt><br>
+<tt>Right$("Gambas")</tt> 返回 <tt>"s"</tt></p>
+
+<p>第二个参数可以是负数,它将指定反方向上将被切掉的字符个数.</p>
+
+<p><tt>Left$("Gambas", -2)</tt> 返回 <tt>"Gamb"</tt><br>
+<tt>Right$("Gambas", -2)</tt> 返回 <tt>"mbas"</tt></p>
+
+<p>相同的,<b>Mid$</b> 的第三个参数也可以是负数,指定字符串末端将被切掉的字符的个数.</p>
+
+<p><tt>Mid$("Gambas", 2, -2)</tt> 返回 <tt>"amb"</tt>
+
+
+[END]
+
+<p>你己读完所有今日知识. 我希望你己经是一个<b>Gambas</b> 的专家了! :-)</p>
+
+<p>如果你想为Gambas贡献一份力量, 用电子邮件发送新的小知识到&nbsp;:</p>
+英文:<p><u>gambas@users.sourceforge.net</u></p>
+中文:<p><u>yizhou.he@gmail.com</u></p>
+
+<p>谢了先!</p>
+
+
+

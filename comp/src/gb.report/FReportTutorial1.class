@@ -1,0 +1,135 @@
+' Gambas class file
+
+PRIVATE $aFirstNames AS String[] = ["Leo", "Mario", "Nathan", "Thomas", "Fabien", "Laurent", "Benoit", "Charles", "Rob", "Ron"]
+PRIVATE $aBornDates AS String[] = ["1/12/1978", "24/10/1983", "18/04/1969", "15/05/1953", "12/12/1974", "16/11/1968", "30/06/1976", "3/11/1986", "05/08/1982", "23/10/1953"]
+
+PUBLIC SUB _new()
+
+  DIM iInd AS Integer
+  
+  FOR iInd = 1 TO 4
+    $aFirstNames.Insert($aFirstNames)
+    $aBornDates.Insert($aBornDates)
+  NEXT 
+  
+END
+
+PUBLIC SUB Form_Open()
+
+END
+
+PUBLIC SUB Button1_Click()
+  
+  Report.Clear                          'Don't take care of that.It's just to prevent in case of new click
+  BuildReport                           'Build The report (load the content)
+  
+END
+
+PUBLIC SUB BuildReport()
+
+DIM hLab AS ReportLabel                 'A variable for ReportLabel
+DIM hHBox AS ReportHBox                 'A variable for ReportHBox
+DIM hVBox AS ReportVBox                 'A variable for ReportVBox
+DIM hCloner AS ReportCloner             'A variable for ReportCloner
+DIM hField AS NEW ReportField           'A variable for ReportField
+DIM hSField AS NEW ReportSpecialField   'A variable for ReportSpecialField
+
+'report.Orientation = report.Landscape
+Report.Resolution = Desktop.Resolution  'Resolution to show at screen
+Report.Padding = "2 cm"                 'Margins
+Report.Spacing = "2 cm"                 'Put some pace between the reportsheet components
+Report.Zoom = 1                         'Zoom
+'report.DEBUG = TRUE
+
+'* Add a Label to Make the title
+hLab = NEW ReportLabel(Report)
+hLab.Text = "MY FRIENDS FIRST NAME"     'Set the text
+hLab.Font = Font["Arial,+8,"]           'Set The Font
+hLab.Alignment = Align.Center           'Set The aligment
+hLab.LineStyle = Line.Solid
+hLab.FillColor = Color.LightGray
+hLab.FillStyle = Fill.Solid
+
+'* Add a Cloner to list what i want
+hCloner = NEW ReportCloner(Report)
+hCloner.Padding = "3 mm"                'Set the space arround the component
+hCloner.Spacing = "3 mm"                'Set the space between the children
+hCloner.Expand = TRUE                   'Allow the Cloner to take all it's needed space
+
+'* Put some components in the cloner
+
+'* A VBox to contain the whole element information
+hVBox = NEW ReportVBox(hCloner)
+hVBox.Spacing = "2 mm"
+hVBox.Padding = "1 mm"
+hVBox.LineStyle = line.Dot
+hVBox.Autoresize = TRUE
+
+'* An HBox to arrange the components horizontaly (for firstnames)
+hHBox = NEW ReportHBox(hVBox)
+hHBox.Spacing = "2 mm"
+hHBox.Autoresize = TRUE
+
+'* A Label in the HBox
+hLab = NEW ReportLabel(hHBox)
+hlab.Text = "FirstName:"                'Set the Label Text
+hLab.Font.Bold = TRUE                   'Set the font bold
+
+'* A Field in the HBox
+hField = NEW ReportField(hHBox) AS "MyFieldFirstName" 'An handle is needed to get the datas
+hField.Font.Italic = TRUE               'Set the Field font italic
+hField.Expand = TRUE                    'Allow the Field to take all the space 
+
+'* An HBox to arrange the components horizontaly (for BornDates)
+hHBox = NEW ReportHBox(hVBox)
+hHBox.Height = "0.5 cm"                   'Force the height of the hBox
+hHBox.Spacing = "2 mm"
+hHBox.Autoresize = TRUE
+'* A Label in the HBox
+hLab = NEW ReportLabel(hHBox)
+hlab.Text = "BornDate: "                'Set the Label Text
+hLab.Font.Bold = TRUE                   'Set the font bold
+
+
+'* A Field in the HBox
+hField = NEW ReportField(hHBox) AS "MyFieldBornDate"         'An handle is needed to get the datas
+hField.Font.Italic = TRUE               'Set the Field font italic
+hField.Expand = TRUE                    'Allow the Field to take all the space 
+
+
+'* Add a SpecialField to show the page number
+hSField = NEW ReportSpecialField(Report)
+hSField.ForeColor = color.Gray          'Set the TextColor
+hSField.Alignment = Align.Right         'Set the text alignment to the right
+hSField.Text = "Page $PAGE/$NPAGE"      'Set the text containing macro keywords
+
+
+hCloner.Count = $aFirstNames.Count      'Set the number of clone to make
+
+frmPreview.Run(report)                  'Run a form that calculate and render the report
+
+END
+
+
+PUBLIC SUB MyFieldFirstName_Data()
+  
+  'hey, hey ! 
+  'Dynamic style management !
+  'Set the firstname in red if it begin by an 'R'
+  'Set it in black in other case
+  IF Left($aFirstNames[LAST.Index - 1], 1) = "R" THEN 
+    LAST.ForeColor = Color.Red
+  ELSE
+    LAST.forecolor = Color.Black
+  ENDIF
+  LAST.Data = $aFirstNames[LAST.Index - 1]
+  
+END
+
+PUBLIC SUB MyFieldBornDate_Data()
+  
+  LAST.Data = $aBornDates[LAST.Index - 1]
+  
+END
+
+

@@ -1,0 +1,259 @@
+' Gambas class file
+
+INHERITS GridView
+EXPORT 
+
+EVENT Save(Row AS Integer, Column AS Integer, Value AS String)
+EVENT Insert
+
+PRIVATE $hTextBox AS TextBox
+PRIVATE $hComboBox AS ComboBox
+PRIVATE $hEditor AS Object
+PRIVATE $bTextBox AS Boolean
+
+PRIVATE $iCol AS Integer
+PRIVATE $iRow AS Integer
+PRIVATE $hWatcher AS Watcher
+
+PUBLIC SUB _new()
+  
+  DIM hObs AS Observer
+  
+  hObs = NEW Observer(ME) AS "GridView"
+  $hWatcher = NEW Watcher(ME) AS "GridView"
+  
+  $hComboBox = NEW ComboBox(ME.Window) AS "Editor"
+  $hComboBox.Ignore = TRUE
+  $hComboBox.Hide
+
+  $hTextBox = NEW TextBox(ME.Window) AS "Editor"
+  $hTextBox.Ignore = TRUE
+  $hTextBox.Border = FALSE
+  $hTextBox.Hide
+
+END
+
+PRIVATE SUB SaveEditor()
+  
+  DIM sText AS String = $hEditor.Text
+  
+  IF sText = ME[$iRow, $iCol].Text THEN RETURN
+  RAISE Save($iRow, $iCol, sText)
+  ME[$iRow, $iCol].Refresh
+  
+END
+
+PUBLIC SUB Save()
+  
+  HideEditor
+  
+END
+
+PUBLIC SUB Cancel()
+  
+  HideEditor(TRUE)
+  
+END
+
+PRIVATE SUB HideEditor(OPTIONAL bNoSave AS Boolean)
+  
+  IF $hEditor THEN
+    IF NOT bNoSave THEN SaveEditor 
+    $hEditor.Hide
+    $hEditor = NULL
+  ENDIF
+  
+END
+
+PRIVATE SUB MoveEditor()
+  
+  DIM X, Y AS Integer
+  
+  IF NOT $hEditor THEN RETURN 
+  
+  X = ME.ScreenX - ME.Window.ScreenX
+  Y = ME.ScreenY - ME.Window.ScreenY
+  'DEBUG $iRow;; $iCol
+  WITH ME[$iRow, $iCol]
+    X += .X
+    Y += .Y
+    $hEditor.Move(X, Y, .Width, .Height)
+  END WITH
+  'DEBUG
+  $hEditor.Show
+  'DEBUG 
+  
+END
+
+
+PUBLIC SUB GridView_MouseDown()
+  
+  HideEditor
+  
+END
+
+
+PUBLIC SUB GridView_RowResize(Row AS Integer)
+  
+  HideEditor
+  
+END
+
+
+PUBLIC SUB GridView_ColumnResize(Column AS Integer)
+  
+  HideEditor
+  
+END
+
+
+PUBLIC SUB GridView_Scroll()
+  
+  HideEditor
+  
+END
+
+
+PUBLIC SUB GridView_Resize()
+  
+  HideEditor
+  
+END
+
+
+PUBLIC SUB GridView_Hide()
+  
+  HideEditor
+  
+END
+
+
+PUBLIC SUB GridView_Change()
+  
+  HideEditor
+  
+END
+
+
+PUBLIC SUB Edit(OPTIONAL List AS String[], OPTIONAL ReadOnly AS Boolean)
+
+  'DEBUG  
+  HideEditor
+  
+  $iCol = ME.Column
+  $iRow = ME.Row
+  
+  IF $iCol < 0 OR $iRow < 0 THEN RETURN
+  
+  IF List THEN 
+    $hComboBox.List = List
+    $hComboBox.ReadOnly = ReadOnly
+    $hEditor = $hComboBox
+    $bTextBox = NOT ReadOnly
+  ELSE 
+    $hEditor = $hTextBox
+    $bTextBox = TRUE
+  ENDIF
+  
+  'DEBUG 
+  $hEditor.Text = ME[$iRow, $iCol].Text
+  'DEBUG 
+  $hEditor.SelectAll
+  'DEBUG 
+  MoveEditor
+  'DEBUG 
+  $hEditor.SetFocus  
+  'DEBUG 
+
+END
+
+PUBLIC SUB Editor_Activate()
+  
+  SaveEditor
+  
+END
+
+PUBLIC SUB Editor_Click()
+
+  SaveEditor
+
+END
+
+PUBLIC SUB Editor_KeyPress()
+  
+  SELECT CASE Key.Code
+
+    CASE Key.Escape
+      $hEditor.Text = ME[$iRow, $iCol].Text
+      STOP EVENT
+
+    CASE Key.Up
+      IF ME.Row > 0 THEN 
+        DEC ME.Row
+        Edit
+        STOP EVENT
+      ENDIF
+
+    CASE Key.Down
+      IF ME.Row < (ME.Rows.Count - 1) THEN 
+        INC ME.Row
+        Edit
+        STOP EVENT
+      ENDIF
+
+    CASE Key.Left
+      IF $bTextBox THEN 
+        IF $hEditor.Pos = 0 THEN
+          IF ME.Column > 0 THEN 
+            DEC ME.Column
+            Edit
+            $hEditor.Pos = $hEditor.Length
+            STOP EVENT
+          ELSE IF ME.Row > 0 THEN
+            ME.MoveTo(ME.Row - 1, ME.Columns.Count - 1) 
+            Edit
+            $hEditor.Pos = $hEditor.Length
+            STOP EVENT
+          ENDIF
+        ENDIF 
+      ENDIF
+
+    CASE Key.Right
+      IF $bTextBox THEN 
+        IF $hEditor.Pos = $hEditor.Length THEN
+          IF ME.Column < (ME.Columns.Count - 1) THEN 
+            INC ME.Column
+            Edit
+            $hEditor.Pos = 0
+            STOP EVENT
+          ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
+            ME.MoveTo(ME.Row + 1, 0)
+            Edit 
+            $hEditor.Pos = 0
+            STOP EVENT
+          ENDIF
+        ENDIF 
+      ENDIF
+      
+    CASE Key.Enter, Key.Return
+      IF $bTextBox THEN 
+        IF ME.Column < (ME.Columns.Count - 1) THEN 
+          INC ME.Column
+          Edit
+          $hEditor.Pos = 0
+          STOP EVENT
+        ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
+          ME.MoveTo(ME.Row + 1, 0)
+          Edit 
+          $hEditor.Pos = 0
+          STOP EVENT
+        ELSE 
+          RAISE Insert
+          STOP EVENT
+        ENDIF
+      ENDIF
+
+  END SELECT 
+  
+END
+

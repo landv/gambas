@@ -1,0 +1,54 @@
+# Gambas Form File 1.0
+
+{ FScript Form
+  MoveScaled(28.5556,32.8889,55.1111,18.4444)
+  'Move(257,296,496,166)
+  Text = ("Change Wallpaper")
+  Border = Window.Fixed
+  { Label1 Label
+    MoveScaled(1,6,27,3)
+    'Move(9,54,243,27)
+    Text = ("Choose path")
+  }
+  { txtPath TextBox
+    MoveScaled(1,9,48,3)
+    'Move(9,81,432,27)
+    Text = ("")
+    ReadOnly = True
+  }
+  { btnPath Button
+    MoveScaled(50,9,4,3)
+    'Move(450,81,36,27)
+    Font = Font["14 Bold"]
+    Text = ("...")
+  }
+  { Label2 Label
+    MoveScaled(1,14,21,3)
+    'Move(9,126,189,27)
+    Text = ("Change wallpaper every :")
+  }
+  { txtInterval SpinBox
+    MoveScaled(23,14,8,3)
+    'Move(207,126,72,27)
+    Value = 5
+    MinValue = 1
+    MaxValue = 360
+    Suffix = " s"
+  }
+  { btnQuit Button
+    MoveScaled(42,14,12,3)
+    'Move(378,126,108,27)
+    Text = ("Quit")
+    Cancel = True
+  }
+  { Label3 Label
+    MoveScaled(1,1,49,3)
+    'Move(9,9,441,27)
+    Text = ("Let's use KDE scripting to change wallpaper !")
+  }
+  { timChange #Timer
+    #X = 376
+    #Y = 8
+    Delay = 5000
+  }
+}

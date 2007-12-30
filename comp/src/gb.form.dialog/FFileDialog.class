@@ -1,0 +1,58 @@
+' Gambas class file
+
+STATIC PUBLIC Paths AS String[]
+
+PRIVATE $bMulti AS Boolean
+PRIVATE $bReadOnly AS Boolean
+
+PUBLIC SUB OpenFile(bMulti AS Boolean) AS Boolean
+  
+  $bMulti = bMulti
+  $bReadOnly = TRUE
+  RETURN NOT ME.ShowModal()
+  
+END
+
+PUBLIC SUB SaveFile() AS Boolean
+  
+  $bMulti = FALSE
+  $bReadOnly = FALSE
+  RETURN NOT ME.ShowModal()
+  
+END
+
+
+PUBLIC SUB Form_Open()
+
+  ' DEBUG "Dialog.Title:";; Dialog.Title
+  ' DEBUG "Dialog.Path:";; Dialog.Path
+
+  ME.Title = Dialog.Title
+  fchChoose.ReadOnly = $bReadOnly
+  fchChoose.Multi = $bMulti
+  'fchChoose.Root = "/"
+  fchChoose.Filter = Dialog.Filter
+  IF Dialog.Path THEN 
+    fchChoose.SelectedPath = Dialog.Path
+  ENDIF
+
+END
+
+PUBLIC SUB btnOK_Click()
+
+  Dialog.Path = fchChoose.SelectedPath
+  IF fchChoose.Multi THEN Paths = fchChoose.SelectedPaths
+  IF NOT fchChoose.ReadOnly THEN 
+    IF Exist(fchChoose.SelectedPath) THEN 
+      IF Message.Warning(("This file already exists.\n\nDo you want to overwrite it?"), ("&Overwrite"), ("Cancel")) = 2 THEN RETURN
+    ENDIF 
+  ENDIF
+  ME.Close(TRUE)
+
+END
+
+PUBLIC SUB btnCancel_Click()
+
+  ME.Close
+
+END

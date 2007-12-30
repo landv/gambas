@@ -1,0 +1,59 @@
+' Gambas class file
+
+PRIVATE Game AS NEW CGameField
+
+
+PUBLIC SUB Form_Open()
+    Game.Init
+    Game.SetDrawArea(dW)
+    Game.drawGame
+END
+
+PUBLIC SUB Button1_Click()
+
+    Game.Init
+    Game.SetDrawArea(dW)
+    Game.drawGame
+
+END
+
+PUBLIC SUB Button2_Click()
+
+  Game.SpawnNextGeneration
+  Game.drawGame
+
+END
+
+PUBLIC SUB tmrEvolution_Timer()
+
+  IF togEvolution.Value THEN 
+    game.SpawnNextGeneration
+    game.drawGame
+  END IF
+
+END
+
+PUBLIC SUB Slider1_Change()
+
+  lblDelay.Caption = "Evolution Delay: " & Str(slider1.Value) & "ms"
+  tmrEvolution.Delay = slider1.Value    
+
+END
+
+PUBLIC SUB chkBorder_Click()
+
+  IF NOT togEvolution.Value THEN Game.drawGame
+
+END
+
+PUBLIC SUB togEvolution_Click()
+
+  tmrEvolution.Enabled = togEvolution.Value
+
+END
+
+PUBLIC SUB dW_Draw()
+
+  Game.drawGame
+
+END

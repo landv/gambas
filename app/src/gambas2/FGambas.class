@@ -1,0 +1,175 @@
+' Gambas class file
+
+STATIC PRIVATE $cAnim AS NEW Collection
+STATIC PRIVATE $hPict[8] AS Picture
+
+PRIVATE $sAnim AS String
+PRIVATE $iWait AS Integer
+PRIVATE $MX AS Integer
+PRIVATE $MY AS Integer
+PRIVATE $bHide AS Boolean
+'PRIVATE $sMessage AS String
+
+' STATIC PUBLIC SUB _init()
+' 
+'   DIM iInd AS Integer
+'   DIM maxW AS Integer
+'   DIM maxH AS Integer
+' 
+'   $cAnim["Blink"] = "1,0,1,0"
+'   $cAnim["Blink2"] = "3,4,3,0"
+'   $cAnim["Depressive"] = "2,6,7,-8,6,2,0,-8"
+'   $cAnim["Happy"] = "5,0,5,0"
+' 
+'   'Shrinks the form to match
+'   'the largest animation image
+'   maxW = 0
+'   maxH = 0
+'   FOR iInd = 0 TO 7
+'     $hPict[iInd] = Picture["img/anim/gambas" & CStr(iInd + 1) & ".png"]
+'     maxH = Max(maxH, $hPict[iInd].Height)
+'     maxW = Max(maxW, $hPict[iInd].Width)
+'   NEXT
+'   
+'   'The +11,+3 is a kludge to even the padding
+'   'of the Form versus the background image,
+'   'tested by dragging to the four corners of
+'   'the screen and adjusting the numbers to
+'   'even the spacing to the edges on all
+'   'screen corners.
+'   ME.Resize(maxW + 11, maxH + 3)
+' 
+' END
+
+
+' PUBLIC SUB _new()
+' 
+'   'Config.LoadWindow(ME, "/FGambas")
+'   Settings.Read(ME)
+'   ME.Picture = $hPict[0]
+' 
+' END
+' 
+' 
+' PUBLIC SUB Form_Close()
+' 
+'   'Config.SaveWindow(ME, "/FGambas")
+'   Settings.Write(ME)
+' 
+' END
+
+
+PUBLIC SUB Animate(sAnim AS String, OPTIONAL sMsg AS String)
+
+  IF NOT ME.Visible THEN RETURN
+
+  IF sMsg THEN  
+    $sAnim = $cAnim[sAnim]
+    $bHide = TRUE
+    Warning(sMsg)
+  ELSE
+    $sAnim &= $cAnim[sAnim]
+  ENDIF
+  $iWait = 0
+
+  'ME.Raise
+
+END
+
+
+PUBLIC SUB timAnim_Timer()
+
+  DIM iPos AS Integer
+  DIM iCmd AS Integer
+  DIM eRnd AS Float
+
+  IF $iWait > 0 THEN
+    DEC $iWait
+    RETURN
+  ENDIF
+
+  IF NOT $sAnim THEN
+    IF $bHide THEN 
+      'Balloon.Hide
+      $bHide = FALSE
+    ENDIF
+    eRnd = Rnd
+    IF eRnd < 0.02 THEN
+      $sAnim = $cAnim["Blink"]
+    ELSE IF eRnd < 0.04 THEN
+      $sAnim = $cAnim["Blink2"]
+    ELSE
+      RETURN
+    ENDIF
+  ENDIF
+
+  iPos = InStr($sAnim, ",")
+  IF iPos = 0 THEN iPos = Len($sAnim) + 1
+  iCmd = Val(Left$($sAnim, iPos - 1))
+  $sAnim = Mid$($sAnim, iPos + 1)
+
+  IF iCmd < 0 THEN
+    $iWait = Abs(iCmd) - 1
+    RETURN
+  ENDIF
+
+  ME.Picture = $hPict[iCmd]
+
+END
+
+PUBLIC SUB Form_MouseDown()
+
+  $MX = Mouse.ScreenX - ME.X
+  $MY = Mouse.ScreenY - ME.Y
+
+END
+
+PUBLIC SUB Form_MouseMove()
+
+  'Balloon.Hide
+  ME.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+  
+END
+
+PUBLIC SUB Form_Hide()
+
+  timAnim.Enabled = FALSE
+
+END
+
+PUBLIC SUB Form_Show()
+
+  timAnim.Enabled = TRUE
+
+END
+
+PUBLIC SUB Warning(sMsg AS String)
+  
+  IF ME.Visible THEN
+    Balloon.Warning(sMsg, ME, panThere.X, panThere.Y)
+  ELSE 
+    Message.Warning(sMsg)
+  ENDIF
+  
+END
+
+PUBLIC SUB Error(sMsg AS String)
+
+  IF ME.Visible THEN  
+    Animate("Depressive")
+    Balloon.Error(sMsg, ME, panThere.X, panThere.Y)
+  ELSE
+    Message.Error(sMsg)
+  ENDIF
+  
+END
+
+PUBLIC SUB Info(sMsg AS String)
+  
+  IF ME.Visible THEN  
+    Balloon.Info(sMsg, ME, panThere.X, panThere.Y)
+  ELSE 
+    Message.Info(sMsg)
+  ENDIF
+  
+END

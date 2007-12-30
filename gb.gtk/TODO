@@ -1,0 +1,95 @@
+TODO:
+
+* HTML support in the TextEdit control.
+
+* The Settings properties of some controls.
+
+* The MovieBox source code was not reviewed.
+
+* The Control.Design property.
+
+* Solve underline and strikethrough problem.
+
+* Review the Stock class.
+
+* Review the Slider class.
+
+* TextEdit text size does not work.
+
+* TextArea undo and redo are not implemented.
+
+* GridView.Rows[].Height = -1 / GridView.Columns[].Width = -1
+
+* Printing support with Cairo.
+
+* Events ignored during a WAIT.
+
+DONE:
+
+* gMainWindow must not lose its X11 properties.
+
+* Drag.Formats
+
+* Sorting in TreeView, ListView and ColumnView.
+
+* The "_DefaultSize" hidden properties used by the IDE when you drag a control 
+from the toolbox and drop it on a form.
+
+* The MouseDrag event.
+
+* The Image.Data and Image.Transparent properties.
+
+* The Menu.Hide() and Menu.Show() methods.
+
+* Mouse.Horizontal and Mouse.Vertical.
+
+* Mouse.StartX and Mouse.StartY.
+
+* The ProgressBar, Separator, and Slider control source code was not reviewed.
+
+* The Image.Draw() method.
+
+* Manage a bitmap mask with GdkPixmap
+
+* The Align constant must be the same as in gb.qt, otherwise the IDE cannot use them correctly.
+
+* The old Drag & Drop code was not reviewed and may not work.
+
+* Drag.Icon does not work.
+
+* Drag.Show() and Drag.Hide().
+ 
+* Menu crash in database manager.
+
+* Some GridView properties.
+
+* Timers are not yet accurate. See Snake example.
+
+* Bug in arrangement with the AutoResize property of Containers.
+
+* The specific DrawingArea.Enabled behaviour.
+
+* The transformation matrix (except rotation).
+
+* Creates gb.gtk.ext
+
+* Label.Adjust & TextLabel.Adjust
+
+* GridView last column auto stretching.
+
+* GridView scrolling timer.
+
+* TrayIcon missing events.
+
+* Input methods are now managed by the KeyPress event.
+
+DONE LATER:
+
+* The Drawing class. This feature does not exist in GTK+, so it may be removed 
+from gb.qt, and/or will be replaced by some SVG support in a future release.
+
+* The Printer class. This feature does not exist in GTK+, so it may be removed 
+from gb.qt and put in a specific component. It is actually a PS generator.
+
+
+

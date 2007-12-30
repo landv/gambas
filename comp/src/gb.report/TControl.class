@@ -1,0 +1,51 @@
+' Gambas class file
+
+'PUBLIC Ctrl AS Object
+PRIVATE $iCtrl AS Integer
+PUBLIC RealPage AS Integer
+PUBLIC RelPage AS Integer = -1
+PUBLIC RealLeft AS Integer
+PUBLIC RealTop AS Integer
+PUBLIC RealWidth AS Integer
+PUBLIC RealHeight AS Integer 
+PUBLIC _RealPadding AS Integer
+PUBLIC VirtualId AS Integer = -1
+PROPERTY Ctrl AS ReportControl
+
+
+PUBLIC FUNCTION _SetGeometry(X AS Float, Y AS Float, W AS Float, H AS Float) AS Float
+  
+  DIM X1, Y1, X2, Y2 AS Float
+  
+  X1 = MRTools.UnitsToPixels(X)
+  Y1 = MRTools.UnitsToPixels(Y)
+  X2 = MRTools.UnitsToPixels(X + W)
+  Y2 = MRTools.UnitsToPixels(Y + H)
+  
+  
+  ME.RealLeft = X1
+  ME.RealTop = Y1
+  ME.RealWidth = X2 - X1
+  ME.RealHeight = Y2 - Y1
+  
+  RETURN ME.ctrl._SetChildGeometry(X, Y, W, H, RealPage)
+  
+END
+
+PUBLIC SUB _free()
+ 
+  
+  
+END
+
+PRIVATE FUNCTION Ctrl_Read() AS ReportControl
+
+  RETURN ReportControl._ObjectFromId[$iCtrl]
+
+END
+
+PRIVATE SUB Ctrl_Write(Value AS ReportControl)
+
+ $iCtrl = Value.id
+
+END
