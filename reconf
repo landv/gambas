@@ -3,9 +3,10 @@
 rm -f config.cache
 rm -f acconfig.cache
 
-aclocal
-autoconf
+autoreconf --no-recursive $@
+#aclocal
+#autoconf
 #acconfig
-autoheader
-automake -a
+#autoheader
+#automake -a
 
