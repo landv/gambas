@@ -319,6 +319,10 @@ AC_DEFUN([GB_SYSTEM],
       SYSTEM=NETBSD
       AC_DEFINE(OS_NETBSD, 1, [Target system is NetBSD])
       ;;
+    *-*-openbsd* )
+      SYSTEM=OPENBSD
+      AC_DEFINE(OS_OPENBSD, 1, [Target system is OpenBSD])
+      ;;
     *-*-cygwin* )
       SYSTEM=CYGWIN
       AC_DEFINE(OS_CYGWIN, 1, [Target system is Cygwin/Windows])
