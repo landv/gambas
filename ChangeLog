@@ -1,4 +1,92 @@
 -------------------------------------------------------------------------------
+ gambas2-2.0.0 - 31 Dec 2007
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* NEW: Removed the out-of-date README.HOW-TO-PACKAGE-GAMBAS.html
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: In the translation dialog, translations are sorted by completion
+  correctly now.
+* BUG: Help pages should always be found correctly now.
+* NEW: In the form editor, "Select all" selects all children of the
+  selected container now.
+* NEW: Japanese translation updated.
+* NEW: The breakpoint tab is now always visible.
+* NEW: The find list window uses the editor font to display matching text
+  now.
+* NEW: The find list window was redesigned.
+* NEW: The find list now takes the find range into account.
+* NEW: The find list search can be cancelled now.
+* NEW: The find list cancel button becomes a close button when the search
+  is not active.
+
+[WIKI CGI SCRIPT]
+* BUG: Search should work again.
+* NEW: Display "See Also" sections with just a title.
+
+[EXAMPLES]
+* BUG: The HighlightEditor example highlighting routine now uses UTF-8
+  string methods.
+* NEW: PdfPresentation is a new OpenGL example based on the 3D OpenGL
+  PDF presentation made by Laurent Carlier.
+* NEW: The Sensor example now remembers the position of its window.
+* NEW: Adds the Fabien's 3DWebCam project as new example.
+
+[INTERPRETER]
+* BUG: Currency thousand separator is now taken into account.
+* BUG: When a locale does not have a thousand separator, a space is used,
+  and the value is splitted each three digits. Maybe this is a bad idea
+  that will be removed in the future.
+* NEW: Object.Class() now returns the true object class, not the class
+  name. To get the class name, use Object.Type().
+
+[GB.DB]
+* BUG: The spurious alone "WHERE" in generated SQL requests should be gone
+  now.
+
+[GB.EVAL]
+* NEW: The Gambas analyze functions were put in the gb.eval component, in
+  the Highlight class. The rest of the class stays in gb.qt.ext.
+
+[GB.GTK]
+* BUG: The Persistent property behaviour was inversed for modal windows.
+  This has been fixed.
+
+[GB.INFO]
+* BUG: Correctly parse the inheritance tree of classes being in different
+  components.
+
+[GB.PDF]
+* BUG: PdfDocument.Count and PdfDocument[] do not crash anymore when the
+  PDF is not loaded.
+
+[GB.QT]
+* BUG: The position of window having a mask is correctly returned now.
+* BUG: Clicking on an item now always raises the Click event, as in gb.gtk.
+
+[GB.QT.EXT]
+* NEW: The Gambas analyze functions were removed and put in gb.eval.
+* NEW: In the Editor class, selecting a word and moving the cursor word by
+  word are now more clever. More precisely, it works now like in Kate.
+
+[GB.QT.OPENGL]
+* BUG: GlArea control does not crash anymore at exit.
+* NEW: GlArea control can have focus and raise keyboard events now.
+
+[GB.SDL]
+* BUG: KeyPressed and KeyReleased Window events were rename to KeyPress
+  and KeyRelease for coherency with GUI components.
+
+[GB.WEB]
+* BUG: Session now can deal with Long values correctly.
+
+[HELP]
+* NEW: Help update.
+* NEW: Updates javascript tree view images.
+
+
+-------------------------------------------------------------------------------
  gambas2-1.9.92 - 18 Dec 2007
 -------------------------------------------------------------------------------
 
