@@ -5,7 +5,7 @@ GB_INIT(gb.sdl.sound)
 AC_PROG_LIBTOOL
 
 dnl TODO: add a version test in GB_COMPONENT!
-AM_PATH_SDL(1.2.8, [] , [touch DISABLED])
+GB_PATH_SDL(1.2.8, [] , [touch DISABLED])
 
 dnl check for SDL libs
 GB_COMPONENT(
