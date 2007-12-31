@@ -38,6 +38,12 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+/* granpt(), unlockpt() and ptsname() unavailable under OpenBSD
+   and are replaced with openpty() implementation because of security
+   issues */
+#ifdef OS_OPENBSD
+#include <util.h>
+#endif
 
 #include "gb_replace.h"
 #include "gbx_api.h"
@@ -329,6 +335,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
 
   if (mode & PM_TERM)
   {
+    #ifdef OS_OPENBSD
+    if (openpty(&fd_master, &fd_slave, slave, NULL, NULL)<0)
+      THROW_SYSTEM(errno, NULL);
+   #else
     fd_master = getpt();
     if (fd_master < 0)
       THROW_SYSTEM(errno, NULL);
@@ -337,6 +347,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
     unlockpt(fd_master);
 
     slave = ptsname(fd_master);
+    #endif
+
     tcgetattr(STDIN_FILENO, &termios_stdin);
   }
   else

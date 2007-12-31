@@ -43,7 +43,7 @@
 
 #ifdef PROJECT_EXEC
 
-#ifdef OS_FREEBSD
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 #include <sys/mount.h>
 #else
 #include <sys/statfs.h>

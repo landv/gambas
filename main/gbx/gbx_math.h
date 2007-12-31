@@ -44,9 +44,16 @@ PUBLIC double ang(double x, double y);
 PUBLIC void randomize(bool set, uint seed);
 PUBLIC double rnd(void);
 
-#ifdef OS_FREEBSD
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 PUBLIC double exp10(double x);
 PUBLIC double log2(double x);
+#endif
+
+#ifdef OS_OPENBSD
+PUBLIC double exp2(double x);
+PUBLIC long double log10l(long double x);
+PUBLIC long double fabsl(long double x);
+PUBLIC long double powl(long double x, long double y);
 #endif
 
 #endif

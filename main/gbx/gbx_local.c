@@ -456,15 +456,16 @@ static void fill_local_info(void)
 
   #define _add_flag(_flag) (LOCAL_local.currency_flag <<= 1, LOCAL_local.currency_flag |= (_flag))
 
-  _add_flag(info->int_n_sep_by_space);
-  _add_flag(info->int_p_sep_by_space);
   _add_flag(info->n_sep_by_space);
   _add_flag(info->p_sep_by_space);
-  _add_flag(info->int_n_cs_precedes);
-  _add_flag(info->int_p_cs_precedes);
   _add_flag(info->n_cs_precedes);
   _add_flag(info->p_cs_precedes);
-
+#ifndef OS_OPENBSD
+  _add_flag(info->int_n_sep_by_space);
+  _add_flag(info->int_p_sep_by_space);
+  _add_flag(info->int_n_cs_precedes);
+  _add_flag(info->int_p_cs_precedes);
+#endif
 	/* Right to left languages */
 
 

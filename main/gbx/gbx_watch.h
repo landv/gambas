@@ -29,6 +29,10 @@
 #include <sys/select.h>
 #include <sys/time.h>
 
+#ifdef OS_OPENBSD
+#include <signal.h>
+#endif
+
 enum {
   WATCH_NONE = 0,
   WATCH_READ = 1,

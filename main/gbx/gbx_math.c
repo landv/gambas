@@ -195,7 +195,7 @@ PUBLIC double ang(double x, double y)
   return atan2(y, x);
 }
 
-#ifdef OS_FREEBSD
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
 PUBLIC double exp10(double x)
 {
@@ -205,6 +205,30 @@ PUBLIC double exp10(double x)
 PUBLIC double log2(double x)
 {
 	return log(x) / M_LN2;
+}
+
+#endif
+
+#ifdef OS_OPENBSD
+
+PUBLIC double exp2(double x)
+{
+	return pow(2, x);
+}
+
+PUBLIC long double log10l(long double x)
+{
+	return log10((double) x);
+}
+
+PUBLIC long double fabsl(long double x)
+{
+	return fabs((double) x);
+}
+
+PUBLIC long double powl(long double x, long double y)
+{
+	return pow((double) x, (double) y);
 }
 
 #endif

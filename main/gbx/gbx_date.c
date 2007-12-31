@@ -122,7 +122,7 @@ PUBLIC void DATE_init(void)
 
   tm = localtime(&t);
 
-  #if defined(OS_FREEBSD) || defined(OS_MACOSX)
+  #if defined(OS_FREEBSD) || defined(OS_MACOSX) || defined(OS_OPENBSD)
   date_timezone = tm->tm_gmtoff;
   date_daylight = tm->tm_isdst;
   #else

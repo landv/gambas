@@ -47,18 +47,23 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifdef OS_FREEBSD
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
-/* Get definition for PATH_MAX */
-#include <limits.h>
-/* sighandler_t is replaced by sig_t */
-#define sighandler_t sig_t
-/* finite is replaced by isfinite */
-#define finite isfinite
-/* modfl is not yet implemented */
-# define modfl(a,b)	modf(a,b)
+  /* Get definition for PATH_MAX */
+  #include <limits.h>
+  /* sighandler_t is replaced by sig_t */
+  #define sighandler_t sig_t
+
+  /* modfl is not yet implemented */
+  # define modfl(a,b)	modf(a,b)
 
 #endif
+
+#ifdef OS_FREEBSD
+  /* finite is replaced by isfinite */
+  #define finite isfinite
+#endif
+
 
 #ifdef OS_SOLARIS
 
@@ -104,7 +109,7 @@
 typedef
   unsigned char uchar;
 
-#ifndef OS_LINUX
+#if !defined(OS_LINUX) && !defined(OS_OPENBSD)
   typedef
     unsigned long ulong;
 #endif
