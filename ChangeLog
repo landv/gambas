@@ -1,9 +1,11 @@
 -------------------------------------------------------------------------------
- gambas2-2.0.0 - 31 Dec 2007
+ gambas2-2.0.0 - 2 Jan 2008
 -------------------------------------------------------------------------------
 
 [CONFIGURATION]
 * NEW: Removed the out-of-date README.HOW-TO-PACKAGE-GAMBAS.html
+* NEW: The ./reconf script now uses autoreconf, so that the m4 directory is
+  automatically taken into account.
 
 [DEVELOPMENT ENVIRONMENT]
 * BUG: In the translation dialog, translations are sorted by completion
@@ -20,10 +22,15 @@
 * NEW: The find list search can be cancelled now.
 * NEW: The find list cancel button becomes a close button when the search
   is not active.
+* NEW: Catalan translation updated.
+
+[DATABASE MANAGER]
+* NEW: Catalan translation updated.
 
 [WIKI CGI SCRIPT]
 * BUG: Search should work again.
 * NEW: Display "See Also" sections with just a title.
+* NEW: Catalan translation updated.
 
 [EXAMPLES]
 * BUG: The HighlightEditor example highlighting routine now uses UTF-8
@@ -45,9 +52,21 @@
 * BUG: The spurious alone "WHERE" in generated SQL requests should be gone
   now.
 
+[GB.DB.FORM]
+* NEW: Catalan translation updated.
+
 [GB.EVAL]
 * NEW: The Gambas analyze functions were put in the gb.eval component, in
   the Highlight class. The rest of the class stays in gb.qt.ext.
+
+[GB.FORM]
+* NEW: Catalan translation updated.
+
+[GB.FORM.MDI]
+* NEW: Catalan translation updated.
+
+[GB.FORM.DIALOG]
+* NEW: Catalan translation updated.
 
 [GB.GTK]
 * BUG: The Persistent property behaviour was inversed for modal windows.
@@ -77,6 +96,12 @@
 [GB.SDL]
 * BUG: KeyPressed and KeyReleased Window events were rename to KeyPress
   and KeyRelease for coherency with GUI components.
+* BUG: Add local macro for libsdl check. Should fix problems when sdl 
+  development files are not installed.
+
+[GB.SDL.SOUND]
+* BUG: Add local macro for libsdl check. Should fix problems when sdl 
+  development files are not installed.
 
 [GB.WEB]
 * BUG: Session now can deal with Long values correctly.

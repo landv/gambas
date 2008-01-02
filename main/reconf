@@ -3,16 +3,8 @@
 rm -f config.cache
 rm -f acconfig.cache
 
-aclocal
-autoconf
-#acconfig
-autoheader
-automake -a
+autoreconf --no-recursive $@
 
 cd libltdl
 
-aclocal
-autoconf
-#acconfig
-autoheader
-automake -a
+autoreconf --no-recursive $@
