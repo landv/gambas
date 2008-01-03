@@ -421,7 +421,9 @@ PUBLIC void LIBRARY_load(LIBRARY *lib)
 	  sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
 
   #ifndef DONT_USE_LTDL
+    /* no more available in libltld ?
     lt_dlopen_flag = RTLD_LAZY;
+    */
     lib->handle = lt_dlopenext(path);
   #else
     lib->handle = dlopen(path, RTLD_LAZY);

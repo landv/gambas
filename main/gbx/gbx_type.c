@@ -295,7 +295,11 @@ PUBLIC TYPE TYPE_from_string(const char **ptype)
 
 			if (*start == '*')
 			{
+			#ifdef OS_OPENBSD
+				strlcpy(COMMON_buffer, TYPE_joker, COMMON_BUF_MAX);
+			#else
 				strcpy(COMMON_buffer, TYPE_joker);
+			#endif
 				start++;
 				if (type > start)
 					strncat(COMMON_buffer, start, type - start);

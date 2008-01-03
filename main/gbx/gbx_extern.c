@@ -76,7 +76,9 @@ static lt_dlhandle get_library(char *name)
     name = COMMON_buffer;
     
     #ifndef DONT_USE_LTDL
+      /* no more available in libltld ?
       lt_dlopen_flag = RTLD_LAZY;
+      */
       esym->handle = lt_dlopenext(name);
     #else
       esym->handle = dlopen(name, RTLD_LAZY);

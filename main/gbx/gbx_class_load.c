@@ -330,7 +330,11 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
     char name[len + 9];
     char *p;
 
+    #ifdef OS_OPENBSD
+    strlcpy(name, ".gambas/", len+9);
+    #else
     strcpy(name, ".gambas/");
+    #endif
     p = &name[8];
 
     for (i = 0; i < len; i++)

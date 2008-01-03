@@ -280,7 +280,11 @@ PUBLIC const char *FILE_get_dir(const char *path)
     return "/";
 
   if (file_buffer != path)
+#ifdef OS_OPENBSD
+    strlcpy(file_buffer, path, PATH_MAX+16);
+#else
     strcpy(file_buffer, path);
+#endif
 
   p = rindex(file_buffer, '/');
 
@@ -291,7 +295,11 @@ PUBLIC const char *FILE_get_dir(const char *path)
     *p = 0;
 
     if (file_buffer[0] == 0 && path[0] == '/')
+#ifdef OS_OPENBSD
+      strlcpy(file_buffer, "/", PATH_MAX+16);
+#else
       strcpy(file_buffer, "/");
+#endif
   }
 
   file_buffer_length = -1;
@@ -333,7 +341,11 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
 
   if (path != file_buffer)
   {
+#ifdef OS_OPENBSD
+    strlcpy(file_buffer, path, PATH_MAX+16);
+#else
     strcpy(file_buffer, path);
+#endif
     path = file_buffer;
   }
 
@@ -357,7 +369,11 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
   if (*ext == '.')
     ext++;
 
+#ifdef OS_OPENBSD
+  strlcpy(p, ext, strlen(p));
+#else
   strcpy(p, ext);
+#endif
 
   file_buffer_length = -1;
   return path;
@@ -371,7 +387,11 @@ PUBLIC const char *FILE_get_basename(const char *path)
   path = FILE_get_name(path);
 
   if (file_buffer != path)
+#ifdef OS_OPENBSD
+    strlcpy(file_buffer, path, PATH_MAX+16);
+#else
     strcpy(file_buffer, path);
+#endif
 
   p = rindex(file_buffer, '.');
   if (p)
@@ -534,7 +554,11 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
   if (file_attr)
   {
+#ifdef OS_OPENBSD
+    strlcpy(p, file_path, strlen(p));
+#else
     strcpy(p, file_path);
+#endif
     p += strlen(file_path);
     if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
       *p++ = '/';
@@ -554,7 +578,11 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
     if (file_attr)
     {
+#ifdef OS_OPENBSD
+      strlcpy(p, entry->d_name, strlen(p));
+#else
       strcpy(p, entry->d_name);
+#endif
       stat(file_buffer, &info);
       if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
         continue;
@@ -668,7 +696,11 @@ PUBLIC void FILE_make_path_dir(const char *path)
     return;
 
   if (path != file_buffer)
+#ifdef OS_OPENBSD
+    strlcpy(file_buffer, path, MAX_PATH+16);
+#else
     strcpy(file_buffer, path);
+#endif
 
   for (i = 1;; i++)
   {

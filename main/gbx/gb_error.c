@@ -27,6 +27,10 @@
 #include "gb_common.h"
 #include <stdarg.h>
 #include <ctype.h>
+/* In OpenBSD, strcpy is replaced with strlcpy, which is defined in string.h header */
+#ifdef OS_OPENBSD
+#include <string.h>
+#endif
 
 #include "gb_buffer.h"
 #include "gb_error.h"
@@ -464,7 +468,11 @@ PUBLIC void ERROR_save(ERROR_INFO *save)
   save->pc = ERROR_info.pc;
   save->backtrace = ERROR_info.backtrace;
   ERROR_info.backtrace = NULL;
+#ifdef OS_OPENBSD
+  strlcpy(save->msg, ERROR_info.msg, MAX_ERROR_MSG+1);
+#else
   strcpy(save->msg, ERROR_info.msg);
+#endif
 }
 
 PUBLIC void ERROR_restore(ERROR_INFO *save)
@@ -477,7 +485,11 @@ PUBLIC void ERROR_restore(ERROR_INFO *save)
   ERROR_info.pc = save->pc;
   ERROR_info.backtrace = save->backtrace;
   save->backtrace = NULL;
+#ifdef OS_OPENBSD
+  strlcpy(ERROR_info.msg, save->msg, MAX_ERROR_MSG+1);
+#else
   strcpy(ERROR_info.msg, save->msg);
+#endif
 }
 
 
