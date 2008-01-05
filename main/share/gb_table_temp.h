@@ -241,8 +241,8 @@ PUBLIC boolean SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag
       ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
 #ifdef OS_OPENBSD
-    strlcpy(_buffer, prefix, MAX_SYMBOL_LEN+1);
-    strlcpy(&_buffer[len_prefix], name, MAX_SYMBOL_LEN+1);
+    strlcpy(_buffer, prefix, sizeof(_buffer));
+    strlcpy(&_buffer[len_prefix], name, sizeof(_buffer)-len_prefix);
 #else
     strcpy(_buffer, prefix);
     strcpy(&_buffer[len_prefix], name);
@@ -288,8 +288,8 @@ PUBLIC boolean SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int 
       ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
 #ifdef OS_OPENBSD
-    strlcpy(_buffer, prefix, MAX_SYMBOL_LEN+1);
-    strlcpy(&_buffer[len_prefix], name, MAX_SYMBOL_LEN+1);
+    strlcpy(_buffer, prefix, sizeof(_buffer));
+    strlcpy(&_buffer[len_prefix], name, sizeof(_buffer)-len_prefix);
 #else
     strcpy(_buffer, prefix);
     strcpy(&_buffer[len_prefix], name);
@@ -332,7 +332,7 @@ PUBLIC const char *TABLE_get_symbol_name(TABLE *table, int index)
 
   if ((index < 0) || (index >= ARRAY_count(table->symbol)))
 #ifdef OS_OPENBSD
-    strlcpy(_buffer, "?", MAX_SYMBOL_LEN+1);
+    strlcpy(_buffer, "?", sizeof(_buffer));
 #else
     strcpy(_buffer, "?");
 #endif

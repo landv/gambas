@@ -88,7 +88,11 @@ PUBLIC const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 
   return buffer;
 #else
+#ifdef OS_OPENBSD
+  snprintf(COMMON_buffer, COMMON_BUF_MAX, "%.64s.%.64s.%d",
+#else
   sprintf(COMMON_buffer, "%.64s.%.64s.%d",
+#endif
     cp ? cp->name : "?",
     (fp && fp->debug) ? fp->debug->name : "?",
     line);

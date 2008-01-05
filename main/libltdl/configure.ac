@@ -71,6 +71,19 @@ AC_SUBST([LIBTOOL_DEPS])
 
 AC_LIB_LTDL
 
+## ----------------- ##
+## Check for OpenBSD ##
+## ----------------- ##
+AC_MSG_CHECKING(if target system is OpenBSD)
+  case "${host}" in
+    *-*-openbsd* )
+      AC_DEFINE(OS_OPENBSD, 1, [Target system is OpenBSD])
+      AC_MSG_RESULT(Yes)
+      ;;
+    *)
+      AC_MSG_RESULT(No)
+      ;;
+  esac
 
 ## -------- ##
 ## Outputs. ##

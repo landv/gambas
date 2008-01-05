@@ -131,15 +131,27 @@ PUBLIC char *FILE_make_temp(int *len, char *pattern)
   if (len)
   {
     if (pattern)
+#ifdef OS_OPENBSD
+      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PATTERN, getuid(), getpid(), pattern);
+#else
       *len = sprintf(file_buffer, FILE_TEMP_PATTERN, getuid(), getpid(), pattern);
-    else
+#endif
+     else
     {
       count++;
+#ifdef OS_OPENBSD
+      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_FILE, getuid(), getpid(), count);
+#else
       *len = sprintf(file_buffer, FILE_TEMP_FILE, getuid(), getpid(), count);
+#endif
     }
   }
   else
+#ifdef OS_OPENBSD
+    snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
+#else
     sprintf(file_buffer, FILE_TEMP_DIR, getuid(), getpid());
+#endif
 
   return file_buffer;
 }
@@ -168,9 +180,17 @@ PUBLIC void FILE_init(void)
 {
 	FILE_remove_temp_file();
   
+#ifdef OS_OPENBSD
+  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, getuid());
+#else
   sprintf(file_buffer, FILE_TEMP_PREFIX, getuid());
+#endif
   mkdir(file_buffer, S_IRWXU);
+#ifdef OS_OPENBSD
+  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
+#else
   sprintf(file_buffer, FILE_TEMP_DIR, getuid(), getpid());
+#endif
   mkdir(file_buffer, S_IRWXU);
 }
 
@@ -281,7 +301,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
 
   if (file_buffer != path)
 #ifdef OS_OPENBSD
-    strlcpy(file_buffer, path, PATH_MAX+16);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
 #else
     strcpy(file_buffer, path);
 #endif
@@ -296,7 +316,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
 
     if (file_buffer[0] == 0 && path[0] == '/')
 #ifdef OS_OPENBSD
-      strlcpy(file_buffer, "/", PATH_MAX+16);
+      strlcpy(file_buffer, "/", sizeof(file_buffer));
 #else
       strcpy(file_buffer, "/");
 #endif
@@ -342,7 +362,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
   if (path != file_buffer)
   {
 #ifdef OS_OPENBSD
-    strlcpy(file_buffer, path, PATH_MAX+16);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
 #else
     strcpy(file_buffer, path);
 #endif
@@ -370,7 +390,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
     ext++;
 
 #ifdef OS_OPENBSD
-  strlcpy(p, ext, strlen(p));
+  strlcpy(p, ext, (&file_buffer[MAX_PATH] - p));
 #else
   strcpy(p, ext);
 #endif
@@ -388,7 +408,7 @@ PUBLIC const char *FILE_get_basename(const char *path)
 
   if (file_buffer != path)
 #ifdef OS_OPENBSD
-    strlcpy(file_buffer, path, PATH_MAX+16);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
 #else
     strcpy(file_buffer, path);
 #endif
@@ -555,7 +575,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
   if (file_attr)
   {
 #ifdef OS_OPENBSD
-    strlcpy(p, file_path, strlen(p));
+    strlcpy(p, file_path, &file_buffer[MAX_PATH] - p);
 #else
     strcpy(p, file_path);
 #endif
@@ -579,7 +599,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
     if (file_attr)
     {
 #ifdef OS_OPENBSD
-      strlcpy(p, entry->d_name, strlen(p));
+      strlcpy(p, entry->d_name, &file_buffer[MAX_PATH] - p);
 #else
       strcpy(p, entry->d_name);
 #endif
@@ -697,7 +717,7 @@ PUBLIC void FILE_make_path_dir(const char *path)
 
   if (path != file_buffer)
 #ifdef OS_OPENBSD
-    strlcpy(file_buffer, path, MAX_PATH+16);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
 #else
     strcpy(file_buffer, path);
 #endif

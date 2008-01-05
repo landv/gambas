@@ -47,7 +47,11 @@ int setenv(const char *name, const char *value, int overwrite)
   if (!env)
     return (-1);
 
+#ifdef OS_OPENBSD
+  strlcpy(env, name, strlen(name) + strlen(value) + 2);
+#else
   strcpy(env, name);
+#endif
   strcat(env, "=");
   strcat(env, value);
   putenv(env);
