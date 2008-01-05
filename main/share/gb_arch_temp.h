@@ -90,7 +90,7 @@ static void load_arch(ARCH *arch, const char *path)
   if (_swap)
   {
   	fprintf(stderr, "gbx: Swapping archive\n");
-  	SWAP_longs((int *)&arch->header, 6);
+  	SWAP_ints((int *)&arch->header, 6);
 	}
 
   //if (arch->header.version != ARCH_VERSION)
@@ -123,8 +123,8 @@ static void load_arch(ARCH *arch, const char *path)
     {
     	SWAP_short((short *)&arch->symbol[i].sym.sort);
     	SWAP_short((short *)&arch->symbol[i].sym.len);
-			SWAP_long(&arch->symbol[i].pos);
-			SWAP_long(&arch->symbol[i].len);
+			SWAP_int(&arch->symbol[i].pos);
+			SWAP_int(&arch->symbol[i].len);
     }
     arch->symbol[i].sym.name = &arch->string[pos];
     pos += arch->symbol[i].sym.len;

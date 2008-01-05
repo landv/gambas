@@ -477,7 +477,7 @@ PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
       STREAM_read(stream, &value->_integer.value, sizeof(int));
       if (stream->common.swap)
-        SWAP_long(&value->_integer.value);
+        SWAP_int(&value->_integer.value);
       break;
 
     case T_LONG:
@@ -491,7 +491,7 @@ PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
       STREAM_read(stream, data, sizeof(float));
       if (stream->common.swap)
-        SWAP_long((int *)data);
+        SWAP_int((int *)data);
       value->_float.value = (double)*((float *)data);
       break;
 
@@ -508,8 +508,8 @@ PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
       STREAM_read(stream, &value->_date.time, sizeof(int));
       if (stream->common.swap)
       {
-        SWAP_long(&value->_date.date);
-        SWAP_long(&value->_date.time);
+        SWAP_int(&value->_date.date);
+        SWAP_int(&value->_date.time);
       }
       break;
 
@@ -552,7 +552,7 @@ PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
               *data &= 0x3F;
 
               if (!EXEC_big_endian)
-                SWAP_long((int *)data);
+                SWAP_int((int *)data);
 
               len = *((int *)data);
               break;
@@ -629,7 +629,7 @@ PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
       *((int *)data) = value->_integer.value;
       if (stream->common.swap)
-        SWAP_long((int *)data);
+        SWAP_int((int *)data);
       STREAM_write(stream, data, sizeof(int));
       break;
 
@@ -645,7 +645,7 @@ PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
       *((float *)data) = (float)value->_float.value;
       if (stream->common.swap)
-        SWAP_long((int *)data);
+        SWAP_int((int *)data);
       STREAM_write(stream, data, sizeof(float));
       break;
 
@@ -661,12 +661,12 @@ PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
       *((int *)data) = value->_date.date;
       if (stream->common.swap)
-        SWAP_long((int *)data);
+        SWAP_int((int *)data);
       STREAM_write(stream, data, sizeof(int));
 
       *((int *)data) = value->_date.time;
       if (stream->common.swap)
-        SWAP_long((int *)data);
+        SWAP_int((int *)data);
       STREAM_write(stream, data, sizeof(int));
 
       break;
@@ -698,7 +698,7 @@ PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
           {
             *((int *)data) = len | 0xC0000000;
             if (!EXEC_big_endian)
-              SWAP_long((int *)data);
+              SWAP_int((int *)data);
             STREAM_write(stream, data, 4);
           }
         }

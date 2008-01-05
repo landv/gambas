@@ -18,9 +18,9 @@
 
 AC_DEFUN([GB_INIT_AUTOMAKE],
 [
-  AM_INIT_AUTOMAKE($1, 2.0.0)
+  AM_INIT_AUTOMAKE($1, 2.99.0)
   AM_CONFIG_HEADER(config.h)
-  AC_DEFINE(GAMBAS_FULL_VERSION, 0x02000000, [Full Gambas version])
+  AC_DEFINE(GAMBAS_FULL_VERSION, 0x02990000, [Full Gambas version])
   AC_DEFINE(GAMBAS_PCODE_VERSION, 0x02000000, [Gambas bytecode version])
 ])
 
@@ -62,13 +62,13 @@ AC_DEFUN([GB_INIT_SHORT],
 
   COMPONENT=$1
   
-  GB_INIT_AUTOMAKE(gambas2-`echo $COMPONENT | sed s/"\."/"-"/g`)
+  GB_INIT_AUTOMAKE(gambas3-`echo $COMPONENT | sed s/"\."/"-"/g`)
 
   AC_PREFIX_DEFAULT(/usr/local)
 
   AC_CANONICAL_HOST
   
-  GAMBAS_VERSION=2
+  GAMBAS_VERSION=3
   AC_SUBST(GAMBAS_VERSION)
   
   gbbindir=$bindir/gambas$GAMBAS_VERSION
@@ -100,8 +100,8 @@ AC_DEFUN([GB_INIT],
   GB_INIT_SHORT($1)
   GB_LIBTOOL
   
-  AC_DEFINE(GAMBAS_VERSION, 2, Gambas version)
-  AC_DEFINE(GAMBAS_VERSION_STRING, "2", Gambas version string)
+  AC_DEFINE(GAMBAS_VERSION, 3, Gambas version)
+  AC_DEFINE(GAMBAS_VERSION_STRING, "3", Gambas version string)
 
   dnl ---- Checks for programs
 
@@ -812,7 +812,10 @@ AC_DEFUN([GB_CHECK_XWINDOW],
   AC_PATH_XTRA
 
   if test x"$have_x" = xyes; then
-    X_LIBS="-lX11 -lXext"
+    if test x"$X_LIBS" = x; then
+      X_LIBS="-lX11 -lXext"
+    fi
+    X_LIBS="$X_PRE_LIBS $X_LIBS"
   else
     touch DISABLED
   fi

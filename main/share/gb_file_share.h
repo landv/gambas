@@ -37,7 +37,7 @@ typedef
   struct {
     short type;
     short mode;
-    long long size;
+    int64_t size;
     int atime;
     int mtime;
     int ctime;
@@ -124,7 +124,7 @@ PUBLIC void FILE_recursive_dir(const char *dir, void (*found)(const char *), voi
 
 PUBLIC void FILE_make_path_dir(const char *path);
 
-PUBLIC long long FILE_free(const char *path);
+PUBLIC int64_t FILE_free(const char *path);
 
 #else
 

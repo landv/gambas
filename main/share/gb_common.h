@@ -64,6 +64,12 @@
   #define finite isfinite
 #endif
 
+/* In OpenBSD, strcpy is replaced with strlcpy */
+#ifdef OS_OPENBSD
+#else
+#define strlcpy(_a, _b, _c) strcpy(_a, _b)
+#define strlcat(_a, _b, _c) strcat(_a, _b)
+#endif
 
 #ifdef OS_SOLARIS
 
@@ -108,12 +114,10 @@
 
 typedef
   unsigned char uchar;
-
-#if !defined(OS_LINUX) && !defined(OS_OPENBSD)
-  typedef
-    unsigned long ulong;
-#endif
-
+  
+typedef
+	size_t offset_t;
+  
 #define PUBLIC
 #define INLINE __inline__
 #define EXTERN extern

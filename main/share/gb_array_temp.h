@@ -32,7 +32,7 @@
 
 
 
-PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, long inc)
+PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, int inc)
 {
   ARRAY *array;
 
@@ -61,16 +61,6 @@ PUBLIC void ARRAY_delete(void *p_data)
 
   *data = NULL;
 }
-
-#if 0
-PUBLIC long ARRAY_count(void *data)
-{
-  if (data == NULL)
-    return 0;
-  else
-    return DATA_TO_ARRAY(data)->count;
-}
-#endif
 
 PUBLIC void *ARRAY_add_data(void *p_data, int num, boolean zero)
 {
@@ -144,12 +134,12 @@ PUBLIC void *ARRAY_get(void *data, int pos)
 }
 #endif
 
-PUBLIC void *ARRAY_insert_many(void *p_data, long pos, long count)
+PUBLIC void *ARRAY_insert_many(void *p_data, int pos, int count)
 {
   void **data;
   ARRAY *array;
   char *addr;
-  long len;
+  int len;
 
   data = (void **)p_data;
   array = DATA_TO_ARRAY(*data);
@@ -172,12 +162,12 @@ PUBLIC void *ARRAY_insert_many(void *p_data, long pos, long count)
 }
 
 
-PUBLIC void ARRAY_remove_many(void *p_data, long pos, long count)
+PUBLIC void ARRAY_remove_many(void *p_data, int pos, int count)
 {
   void **data = (void **)p_data;
   ARRAY *array = DATA_TO_ARRAY(*data);
   char *addr;
-  long len;
+  int len;
 
   if ((pos < 0) || (pos >= array->count))
     return;

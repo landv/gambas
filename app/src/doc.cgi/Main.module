@@ -274,7 +274,7 @@ PRIVATE SUB OpenDatabase()
       $hComp = CComponent.All[$aPath[2]]
       IF $hComp THEN
         $hComp.Load
-        IF $aPath.Count > 3 THEN $hClass = CComponent.Classes[$aPath[2] &/ $aPath[3]]
+        IF $aPath.Count > 3 THEN $hClass = CComponent.All[$aPath[2]][$aPath[3]]
         IF $hClass THEN
           IF $aPath.Count > 4 THEN
             $hSym = $hClass.Symbols[Replace($aPath[4], ".", ":")]
@@ -546,7 +546,8 @@ PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
     CASE "seealso"
       '$sRes &= "<p><table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\">\n"
       '$sRes &= "<tr><th>" & ("See also") & "</th></tr><tr><td valign=\"top\">\n"
-      $sRes &= "<h2>" & ("See also") & "</h2>\n"
+      $sRes &= "<div class=\"seealso\">\n"
+      $sRes &= "<h3>" & ("See also") & "</h3>\n"
       $iPos = Len($sRes)
 
     CASE "error"
@@ -599,6 +600,7 @@ PRIVATE SUB LeaveSection()
       $sRes = Left$($sRes, $iPos) & Replace(Mid$($sRes, $iPos + 1), "</a>", "</a>&nbsp;")
       '$sRes &= "</td></tr>\n"
       '$sRes &= "</table>\n"
+      $sRes &= "</div>\n"
 
     CASE "warning", "info", "vb", "critical", "tip"
       $sRes &= "</td></tr></table></div>\n"

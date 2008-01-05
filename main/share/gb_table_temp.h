@@ -33,10 +33,6 @@
 #include "gb_error.h"
 #include "gb_alloc.h"
 #include "gb_limit.h"
-/* In OpenBSD, strcpy is replaced with strlcpy, which is defined in string.h header */
-#ifdef OS_OPENBSD
-#include <string.h>
-#endif
 
 #include "gb_table.h"
 
@@ -240,13 +236,8 @@ PUBLIC boolean SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag
     if ((len + len_prefix) > MAX_SYMBOL_LEN)
       ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
-#ifdef OS_OPENBSD
     strlcpy(_buffer, prefix, sizeof(_buffer));
     strlcpy(&_buffer[len_prefix], name, sizeof(_buffer)-len_prefix);
-#else
-    strcpy(_buffer, prefix);
-    strcpy(&_buffer[len_prefix], name);
-#endif
     len += len_prefix;
     name = _buffer;
   }
@@ -287,13 +278,8 @@ PUBLIC boolean SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int 
     if ((len + len_prefix) > MAX_SYMBOL_LEN)
       ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
-#ifdef OS_OPENBSD
     strlcpy(_buffer, prefix, sizeof(_buffer));
     strlcpy(&_buffer[len_prefix], name, sizeof(_buffer)-len_prefix);
-#else
-    strcpy(_buffer, prefix);
-    strcpy(&_buffer[len_prefix], name);
-#endif
     len += len_prefix;
     name = _buffer;
   }
@@ -331,11 +317,7 @@ PUBLIC const char *TABLE_get_symbol_name(TABLE *table, int index)
   SYMBOL *sym;
 
   if ((index < 0) || (index >= ARRAY_count(table->symbol)))
-#ifdef OS_OPENBSD
     strlcpy(_buffer, "?", sizeof(_buffer));
-#else
-    strcpy(_buffer, "?");
-#endif
   else
   {
     sym = SYM(table, index);
@@ -525,7 +507,7 @@ PUBLIC void TABLE_print(TABLE *table, boolean sort)
   int i;
   SYMBOL *sym;
 
-  fprintf(stderr, "capacity %li\n", ARRAY_count(table->symbol));
+  fprintf(stderr, "capacity %i\n", ARRAY_count(table->symbol));
 
   /*
   for (i = 0; i < ARRAY_count(table->symbol); i++)

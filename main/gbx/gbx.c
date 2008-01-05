@@ -381,7 +381,7 @@ int main(int argc, char **argv)
   main_exit();
 
   if (MEMORY_count)
-    fprintf(stderr, "WARNING: %ld allocation(s) non freed.\n", MEMORY_count);
+    fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
 
   MEMORY_exit();
 

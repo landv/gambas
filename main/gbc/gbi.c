@@ -397,7 +397,7 @@ static void analyze_symbol(GB_DESC *desc)
 
 static void dump_symbol(GB_DESC *desc)
 {
-  char *name;
+  const char *name;
 
   name = &desc->name[1];
 
@@ -425,7 +425,7 @@ static int sort_symbol(const int *a, const int *b)
 
 static void analyze_class(GB_DESC *desc)
 {
-  char *name = desc->name;
+  const char *name = desc->name;
   char *parent = NULL;
   bool autocreate = FALSE;
   bool nocreate = FALSE;

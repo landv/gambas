@@ -41,7 +41,7 @@ typedef
   struct {
     int type;
     int ival;
-    long long lval;
+    int64_t lval;
     double dval;
     }
   TRANS_NUMBER;
@@ -61,7 +61,7 @@ typedef
     int value;               		/* value */
     TRANS_ARRAY array;        		/* array dimensions */
     PATTERN *init;            		/* initialization code */
-    long long lvalue;         		/* The value of a LONG constant */
+    int64_t lvalue;         		/* The value of a LONG constant */
     unsigned is_new : 1;      		/* if something must be instanciated */
     unsigned is_integer : 1;  		/* if the constant is an integer */
     }

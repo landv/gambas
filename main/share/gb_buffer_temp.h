@@ -7,16 +7,16 @@
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
+  it under the terms of the GNU General License as published by
   the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  GNU General License for more details.
 
-  You should have received a copy of the GNU General Public License
+  You should have received a copy of the GNU General License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
@@ -38,7 +38,7 @@
 #include "gb_buffer.h"
 
 
-PUBLIC void BUFFER_create(void *p_data)
+void BUFFER_create(void *p_data)
 {
   BUFFER *buf;
 
@@ -50,7 +50,7 @@ PUBLIC void BUFFER_create(void *p_data)
 }
 
 
-PUBLIC void BUFFER_delete(void *p_data)
+void BUFFER_delete(void *p_data)
 {
   void **data = (void **)p_data;
   BUFFER *buf = DATA_TO_BUFFER(*data);
@@ -60,7 +60,7 @@ PUBLIC void BUFFER_delete(void *p_data)
 }
 
 
-PUBLIC boolean BUFFER_need(void *p_data, long size)
+bool BUFFER_need(void *p_data, size_t size)
 {
   void **data = (void **)p_data;
   BUFFER *buffer = DATA_TO_BUFFER(*data);
@@ -79,7 +79,7 @@ PUBLIC boolean BUFFER_need(void *p_data, long size)
 }
 
 
-PUBLIC long BUFFER_add(void *p_data, const void *string, size_t len)
+offset_t BUFFER_add(void *p_data, const void *string, size_t len)
 {
   void **data = (void **)p_data;
   BUFFER *buffer = DATA_TO_BUFFER(*data);
@@ -94,7 +94,7 @@ PUBLIC long BUFFER_add(void *p_data, const void *string, size_t len)
 
 
 /*
-PUBLIC long BUFFER_add_string(void *p_data, char *string, short len)
+long BUFFER_add_string(void *p_data, char *string, short len)
 {
   long pos;
   
@@ -105,7 +105,7 @@ PUBLIC long BUFFER_add_string(void *p_data, char *string, short len)
 }
 */
 
-PUBLIC boolean BUFFER_load_file(void *p_data, const char *name)
+bool BUFFER_load_file(void *p_data, const char *name)
 {
   void **data = (void **)p_data;
   BUFFER *buffer = DATA_TO_BUFFER(*data);

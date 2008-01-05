@@ -64,7 +64,7 @@ static int pos_start;
 static void write_long(uint val)
 {
  	if (ARCH_swap)
- 		SWAP_long((int *)&val);
+ 		SWAP_int((int *)&val);
   if (fwrite(&val, sizeof(uint), 1, arch_file) < 1)
     THROW("Write error");
 }

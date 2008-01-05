@@ -1,16 +1,16 @@
 INCLUDES = -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @INCLTDL@
 
-bin_PROGRAMS = gbx2
+bin_PROGRAMS = gbx3
 gblib_LTLIBRARIES = gb.la
 
-gbx2_LDADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@
-gbx2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+gbx3_LDADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@
+gbx3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
 gb_la_LIBADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@
 gb_la_LDFLAGS = -module @LD_FLAGS@
 gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -O0
 
-gbx2_SOURCES = \
+gbx3_SOURCES = \
  gb_common_swap.h gb_common_check.h gb_common.c \
  gbx_debug.h gbx_debug.c \
  gb_error.h gb_error.c \
@@ -85,6 +85,6 @@ gb_la_SOURCES = \
  gbx_c_quote.h gbx_c_quote.c \
  gbx_class_info.c
 
-gbx2-gbx_exec_loop.o: gbx_exec_loop.c
-	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbx2_CFLAGS) -O3 $(CFLAGS) -MT gbx2-gbx_exec_loop.o -MD -MP -MF "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo" -c -o gbx2-gbx_exec_loop.o `test -f 'gbx_exec_loop.c' || echo '$(srcdir)/'`gbx_exec_loop.c; then mv -f "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo" "$(DEPDIR)/gbx2-gbx_exec_loop.Po"; else rm -f "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo"; exit 1; fi
+gbx3-gbx_exec_loop.o: gbx_exec_loop.c
+	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbx3_CFLAGS) -O3 $(CFLAGS) -MT gbx3-gbx_exec_loop.o -MD -MP -MF "$(DEPDIR)/gbx3-gbx_exec_loop.Tpo" -c -o gbx3-gbx_exec_loop.o `test -f 'gbx_exec_loop.c' || echo '$(srcdir)/'`gbx_exec_loop.c; then mv -f "$(DEPDIR)/gbx3-gbx_exec_loop.Tpo" "$(DEPDIR)/gbx3-gbx_exec_loop.Po"; else rm -f "$(DEPDIR)/gbx3-gbx_exec_loop.Tpo"; exit 1; fi
 

@@ -103,7 +103,7 @@ static char *get_section(char *sec_name, char **section, int one, short *psize, 
   short size;
 
   if (_swap)
-    SWAP_long(&section_size);
+    SWAP_int(&section_size);
 
   #ifdef DEBUG
   NSection++;
@@ -140,7 +140,7 @@ static char *get_section(char *sec_name, char **section, int one, short *psize, 
     {
       for (i = 0; i < size; i++)
       {
-        SWAP_long((long *)p);
+        SWAP_int((long *)p);
         p += sizeof(long);
       }
     }
@@ -160,7 +160,7 @@ static char *get_section(char *sec_name, char **section, int one, short *psize, 
           }
           else if (*ps == 'l')
           {
-            func = SWAP_long;
+            func = SWAP_int;
             ss = sizeof(int);
           }
           else if (*ps == 't')
@@ -216,7 +216,7 @@ static void conv_type(CLASS *class, void *ptype)
 
 	if (_swap)
 	{
-		SWAP_long((int *)&ctype);
+		SWAP_int((int *)&ctype);
 		SWAP_type(&ctype);
 	}
 
@@ -383,9 +383,9 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 
   if (_swap)
   {
-    SWAP_long((int *)&header->magic);
-    SWAP_long((int *)&header->version);
-    SWAP_long((int *)&header->flag);
+    SWAP_int((int *)&header->magic);
+    SWAP_int((int *)&header->version);
+    SWAP_int((int *)&header->flag);
   }
 
   if (header->magic != OUTPUT_MAGIC)
@@ -513,7 +513,7 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 			{
 	      for (j = 0; j < func->n_local; j++)
 	      {
-	      	SWAP_long((int *)&func->local[j].type);
+	      	SWAP_int((int *)&func->local[j].type);
 	      	SWAP_type(&func->local[j].type);
 				}
       }

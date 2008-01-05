@@ -24,6 +24,7 @@
 #define __GAMBAS_H
 
 #include "config.h"
+#include <stdint.h>
 
 /* Gambas API Version */
 
@@ -76,7 +77,7 @@
 /* This type represents a Gambas datatype identifier */
 
 typedef
-  int GB_TYPE;
+  intptr_t GB_TYPE;
 
 
 /* This opaque type represents a Gambas class identifier */
@@ -107,7 +108,7 @@ typedef
     struct { GB_TYPE type; int value; } _byte;
     struct { GB_TYPE type; int value; } _short;
     struct { GB_TYPE type; int value; } _integer;
-    struct { GB_TYPE type; long long value; } _long;
+    struct { GB_TYPE type; int64_t value; } _long;
     struct { GB_TYPE type; double value; } _single;
     struct { GB_TYPE type; double value; } _float;
     struct { GB_TYPE type; int date; int time; } _date;
@@ -155,7 +156,7 @@ typedef
 typedef
   struct {
     GB_TYPE type;
-    long long value;
+    int64_t value;
     int _reserved;
     }
   GB_LONG;
@@ -239,7 +240,7 @@ typedef
 /* Gambas description start macro */
 
 #define GB_DECLARE(name, size) \
-  { name, (int)GB_VERSION, (int)size }
+  { name, (intptr_t)GB_VERSION, (intptr_t)size }
 
 
 /* Gambas description end macro */
@@ -260,7 +261,7 @@ typedef
 
 //#define GB_HOOK_NEW(hook)    { GB_HOOK_NEW_ID, (int)hook }
 //#define GB_HOOK_FREE(hook)   { GB_HOOK_FREE_ID, (int)hook }
-#define GB_HOOK_CHECK(hook)  { GB_HOOK_CHECK_ID, (int)hook }
+#define GB_HOOK_CHECK(hook)  { GB_HOOK_CHECK_ID, (intptr_t)hook }
 
 
 /* Virtual class description macro */
@@ -292,40 +293,40 @@ typedef
 /* Symbol description macros */
 
 #define GB_CONSTANT(symbol, type, value) \
-  { "C" symbol, (int)type, (int)value }
+  { "C" symbol, (intptr_t)type, (intptr_t)value }
 
 #define GB_PROPERTY(symbol, type, proc) \
-  { "p" symbol, (int)type, (int)proc }
+  { "p" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_PROPERTY_READ(symbol, type, proc) \
-  { "r" symbol, (int)type, (int)proc }
+  { "r" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_PROPERTY_SELF(symbol, type) \
-  { "r" symbol, (int)type, (int)-1 }
+  { "r" symbol, (intptr_t)type, (intptr_t)(-1) }
 
 #define GB_METHOD(symbol, type, exec, signature) \
-  { "m" symbol, (int)(void *)type, (int)exec, (int)(void *)signature }
+  { "m" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
 
 #define GB_EVENT(symbol, type, signature, id) \
-  { "::" symbol, (int)(void *)type, (int)id, (int)(void *)signature }
+  { "::" symbol, (intptr_t)type, (intptr_t)id, (intptr_t)signature }
 
 #define GB_STATIC_PROPERTY(symbol, type, proc) \
-  { "P" symbol, (int)type, (int)proc }
+  { "P" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_STATIC_PROPERTY_READ(symbol, type, proc) \
-  { "R" symbol, (int)type, (int)proc }
+  { "R" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_STATIC_PROPERTY_SELF(symbol, type) \
-  { "R" symbol, (int)type, (-1) }
+  { "R" symbol, (intptr_t)type, (-1) }
 
 #define GB_STATIC_METHOD(symbol, type, exec, signature) \
-  { "M" symbol, (int)(void *)type, (int)exec, (int)(void *)signature }
+  { "M" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
 
 #define GB_INHERITS(symbol) \
-  { GB_INHERITS_ID, (int)symbol }
+  { GB_INHERITS_ID, (intptr_t)symbol }
   
 #define GB_INTERFACE(symbol, pointer) \
-  { "C_@" symbol, (int)"p", (int)pointer } 
+  { "C_@" symbol, (intptr_t)"p", (intptr_t)pointer } 
 
 
 /* Method implementation begin macro */
@@ -438,11 +439,11 @@ void _name(void *_object, void *_param) {
 typedef
   struct {
     const char *name;
-    int val1;
-    int val2;
-    int val3;
-    int val4;
-    int val5;
+    intptr_t val1;
+    intptr_t val2;
+    intptr_t val3;
+    intptr_t val4;
+    intptr_t val5;
     }
   GB_DESC;
 
@@ -502,7 +503,7 @@ typedef
 /* Type of a watch callback function */
 
 typedef
-  void (*GB_WATCH_CALLBACK)(int, int, int);
+  void (*GB_WATCH_CALLBACK)(int, int, void *);
 
 
 /* Type of the GB.SubstString() callback */
@@ -624,11 +625,11 @@ typedef
     int (*read)(struct GB_STREAM *stream, char *buffer, int len);
     int (*getchar)(struct GB_STREAM *stream, char *buffer);
     int (*write)(struct GB_STREAM *stream, char *buffer, int len);
-    int (*seek)(struct GB_STREAM *stream, long long pos, int whence);
-    int (*tell)(struct GB_STREAM *stream, long long *pos);
+    int (*seek)(struct GB_STREAM *stream, int64_t pos, int whence);
+    int (*tell)(struct GB_STREAM *stream, int64_t *pos);
     int (*flush)(struct GB_STREAM *stream);
     int (*eof)(struct GB_STREAM *stream);
-    int (*lof)(struct GB_STREAM *stream, long long *len);
+    int (*lof)(struct GB_STREAM *stream, int64_t *len);
     int (*handle)(struct GB_STREAM *stream);
     }
   GB_STREAM_DESC;
@@ -761,7 +762,7 @@ typedef
 
     void (*Return)(GB_TYPE, ...);
     void (*ReturnInteger)(int);
-    void (*ReturnLong)(long long);
+    void (*ReturnLong)(int64_t);
     void (*ReturnBoolean)(int);
     void (*ReturnDate)(GB_DATE *);
     void (*ReturnObject)(void *);

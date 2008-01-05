@@ -754,8 +754,8 @@ PUBLIC void FILE_copy(const char *src, const char *dst)
 {
   STREAM stream_src;
   STREAM stream_dst;
-  long long len;
-  long long n;
+  int64_t len;
+  int64_t n;
   char *buf = NULL;
 
   CLEAR(&stream_src);
@@ -854,7 +854,7 @@ PUBLIC void FILE_link(const char *src, const char *dst)
     THROW_SYSTEM(errno, dst);
 }
 
-PUBLIC long long FILE_free(const char *path)
+PUBLIC int64_t FILE_free(const char *path)
 {
   struct statfs info;
 
@@ -862,7 +862,7 @@ PUBLIC long long FILE_free(const char *path)
     return 0;
 
   statfs(path, &info);
-  return (long long)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
+  return (int64_t)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
 }
 
 #else

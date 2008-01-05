@@ -4,7 +4,7 @@
   
   common useful routines
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ PUBLIC void COMMON_case_init(void)
 
 PUBLIC int COMMON_strcasecmp(const char *s1, const char *s2)
 {
-  register unsigned int i;
+  register offset_t i;
   register int d;
   register char c;
   
@@ -64,7 +64,7 @@ PUBLIC int COMMON_strcasecmp(const char *s1, const char *s2)
 
 PUBLIC int COMMON_strncasecmp(const char *s1, const char *s2, size_t n)
 {
-  register unsigned int i;
+  register offset_t i;
   register int d;
   register char c;
   

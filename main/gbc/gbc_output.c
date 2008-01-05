@@ -166,7 +166,7 @@ static void write_long(uint val)
   #endif
 
   if (_swap)
-  	SWAP_long((int *)&val);
+  	SWAP_int((int *)&val);
 
   if (_pbuffer >= _mbuffer)
     flush_buffer();
@@ -184,7 +184,7 @@ static void write_long_long(unsigned long long val)
   #endif
 
   if (_swap)
-  	SWAP_long_long((long long *)&val);
+  	SWAP_int64((long long *)&val);
 
   if (_pbuffer >= _mbuffer)
     flush_buffer();

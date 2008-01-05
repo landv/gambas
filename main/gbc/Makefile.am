@@ -1,16 +1,16 @@
 INCLUDES = -I$(top_srcdir)/share @INCLTDL@
 
-bin_PROGRAMS = gbc2 gba2 gbi2
+bin_PROGRAMS = gbc3 gba3 gbi3
 
-gbc2_LDADD = @MATH_LIB@
-gbc2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+gbc3_LDADD = @MATH_LIB@
+gbc3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
-gbi2_LDADD = @LIBLTDL@
-gbi2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+gbi3_LDADD = @LIBLTDL@
+gbi3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
-gba2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+gba3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
-gbc2_SOURCES = \
+gbc3_SOURCES = \
  gb_error.h gb_error.c \
  gb_alloc.c gb_array.c \
  gbc_class.h \
@@ -29,7 +29,7 @@ gbc2_SOURCES = \
  gb_common.c \
  gbc.c 
 
-gba2_SOURCES = \
+gba3_SOURCES = \
  gb_error.h gb_error.c \
  gb_alloc.c gb_array.c \
  gb_table.c \
@@ -39,7 +39,7 @@ gba2_SOURCES = \
  gb_common.c \
  gba.c
 
-gbi2_SOURCES= \
+gbi3_SOURCES= \
  gb_error.h gb_error.c \
  gb_alloc.c gb_array.c \
  gb_str.h gb_str.c \
@@ -48,6 +48,6 @@ gbi2_SOURCES= \
  gb_common.c \
  gbi.c
 
-gbc2-gb_table.o: gb_table.c
-	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbc2_CFLAGS) -O3 $(CFLAGS) -MT gbc2-gb_table.o -MD -MP -MF "$(DEPDIR)/gbc2-gb_table.Tpo" -c -o gbc2-gb_table.o `test -f 'gb_table.c' || echo '$(srcdir)/'`gb_table.c; then mv -f "$(DEPDIR)/gbc2-gb_table.Tpo" "$(DEPDIR)/gbc2-gb_table.Po"; else rm -f "$(DEPDIR)/gbc2-gb_table.Tpo"; exit 1; fi
+gbc3-gb_table.o: gb_table.c
+	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbc3_CFLAGS) -O3 $(CFLAGS) -MT gbc3-gb_table.o -MD -MP -MF "$(DEPDIR)/gbc3-gb_table.Tpo" -c -o gbc3-gb_table.o `test -f 'gb_table.c' || echo '$(srcdir)/'`gb_table.c; then mv -f "$(DEPDIR)/gbc3-gb_table.Tpo" "$(DEPDIR)/gbc3-gb_table.Po"; else rm -f "$(DEPDIR)/gbc3-gb_table.Tpo"; exit 1; fi
 
