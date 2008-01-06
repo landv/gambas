@@ -60,7 +60,8 @@ static void COMPRESS_Register(COMPRESS_DRIVER *driver)
 COMPRESS_DRIVER *COMPRESS_GetDriver(char *type)
 {
   int i;
-  char comp[strlen(type) + 14];
+  int comp_size = strlen(type) + 14;
+  char comp[comp_size];
 
   if (!type)
   {
@@ -68,8 +69,8 @@ COMPRESS_DRIVER *COMPRESS_GetDriver(char *type)
     return NULL;
   }
 
-  strcpy(comp, "gb.compress.");
-  strcat(comp, type);
+  strlcpy(comp, "gb.compress.", comp_size);
+  strlcat(comp, type, comp_size);
 
   if (GB.LoadComponent(comp))
   {

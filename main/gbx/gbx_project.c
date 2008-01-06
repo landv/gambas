@@ -71,11 +71,7 @@ static void raise_error(const char *msg)
 {
   char line[16];
 
-#ifdef OS_OPENBSD
   snprintf(line, sizeof(line), "%d", project_line);
-#else
-  sprintf(line, "%d", project_line);
-#endif
   THROW(E_PROJECT, line, msg);
 }
 

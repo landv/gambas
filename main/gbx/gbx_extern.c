@@ -69,9 +69,9 @@ static lt_dlhandle get_library(char *name)
   
     p = strrchr(name, ':');
     if (!p)
-      sprintf(COMMON_buffer, "%s." SHARED_LIBRARY_EXT, name);
+      snprintf(COMMON_buffer, COMMON_BUF_MAX, "%s." SHARED_LIBRARY_EXT, name);
     else
-      sprintf(COMMON_buffer, "%.*s." SHARED_LIBRARY_EXT ".%s", p - name, name, p + 1);
+      snprintf(COMMON_buffer, COMMON_BUF_MAX, "%.*s." SHARED_LIBRARY_EXT ".%s", p - name, name, p + 1);
       
     name = COMMON_buffer;
     

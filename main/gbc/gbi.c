@@ -160,13 +160,8 @@ static void init(void)
     strncpy(_root, FILE_get_dir(FILE_get_dir(path)), MAX_PATH);
   }
 
-#ifdef OS_OPENBSD
   strlcpy(_lib_path, FILE_cat(_root, "lib/gambas" GAMBAS_VERSION_STRING, NULL), sizeof(_lib_path));
   strlcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL), sizeof(_info_path));
-#else
-  strcpy(_lib_path, FILE_cat(_root, "lib/gambas" GAMBAS_VERSION_STRING, NULL));
-  strcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
-#endif
 
   if (lt_dlinit())
     error(TRUE, "Cannot initialize plug-in management: %s", lt_dlerror());
@@ -615,7 +610,7 @@ static void preload(char **argv, char *lib)
   if (_nopreload || getenv("GB_PRELOAD") || !lib || !*lib)
     return;
 
-  sprintf(buf, "LD_PRELOAD=%s", lib);
+  snprintf(buf, sizeof(buf), "LD_PRELOAD=%s", lib);
   putenv(buf);
   putenv("GB_PRELOAD=1");
 
@@ -634,9 +629,9 @@ static void analyze(const char *comp, bool include)
 
   name = STR_copy(comp);
 
-  sprintf(_buffer, LIB_PATTERN, _lib_path, name);
+  snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
   native = (access(_buffer, F_OK) == 0);
-  sprintf(_buffer, ARCH_PATTERN, _lib_path, name);
+  snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
   gambas = (access(_buffer, F_OK) == 0);
 
   if (!native && !gambas)
@@ -665,7 +660,7 @@ static void analyze(const char *comp, bool include)
 
   if (native)
   {
-    sprintf(_buffer, LIB_PATTERN, _lib_path, name);
+    snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
 
     if (analyze_native_component(_buffer))
       ok = FALSE;
@@ -673,7 +668,7 @@ static void analyze(const char *comp, bool include)
 
   if (gambas)
   {
-    sprintf(_buffer, ARCH_PATTERN, _lib_path, name);
+    snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
 
     if (analyze_gambas_component(_buffer))
     	if (!native)

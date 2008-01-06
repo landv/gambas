@@ -468,11 +468,7 @@ PUBLIC void ERROR_save(ERROR_INFO *save)
   save->pc = ERROR_info.pc;
   save->backtrace = ERROR_info.backtrace;
   ERROR_info.backtrace = NULL;
-#ifdef OS_OPENBSD
   strlcpy(save->msg, ERROR_info.msg, sizeof(ERROR_info.msg));
-#else
-  strcpy(save->msg, ERROR_info.msg);
-#endif
 }
 
 PUBLIC void ERROR_restore(ERROR_INFO *save)
@@ -485,11 +481,7 @@ PUBLIC void ERROR_restore(ERROR_INFO *save)
   ERROR_info.pc = save->pc;
   ERROR_info.backtrace = save->backtrace;
   save->backtrace = NULL;
-#ifdef OS_OPENBSD
   strlcpy(ERROR_info.msg, save->msg, sizeof(ERROR_info.msg));
-#else
-  strcpy(ERROR_info.msg, save->msg);
-#endif
 }
 
 

@@ -155,9 +155,9 @@ PUBLIC void ARCHIVE_load(ARCHIVE *arch)
 {
   char *path = FILE_buffer();
 
-  sprintf(path, ARCH_PATTERN, COMPONENT_path, arch->name);
+  snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_path, arch->name);
   if (!FILE_exist(path))
-	  sprintf(path, ARCH_PATTERN, COMPONENT_user_path, arch->name);
+	  snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_user_path, arch->name);
 
 	load_archive(arch, path);
 }

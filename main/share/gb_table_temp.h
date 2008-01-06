@@ -332,7 +332,7 @@ PUBLIC const char *TABLE_get_symbol_name(TABLE *table, int index)
 PUBLIC const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* suffix)
 {
   TABLE_get_symbol_name(table, index);
-  strcat(_buffer, suffix);
+  strlcat(_buffer, suffix, sizeof(_buffer));
   return _buffer;
 }
 

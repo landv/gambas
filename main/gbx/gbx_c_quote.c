@@ -59,7 +59,7 @@ BEGIN_METHOD(CQUOTE_call, GB_STRING str)
 			STRING_add(&result, "\\\\", 2);
 		else if (c < ' ' || c > 126)
 		{
-			sprintf(buf, "\\x%02X", c);
+			snprintf(buf, sizeof(buf), "\\x%02X", c);
 			STRING_add(&result, buf, 4);
 		}
 		else
@@ -102,7 +102,7 @@ BEGIN_METHOD(CQUOTE_shell, GB_STRING str)
 			STRING_add(&result, "$'\\t'", 5);
 		else if (c < ' ') //|| (c > 126 && !LOCAL_is_UTF8))
 		{
-			sprintf(buf, "$'\\x%02X'", c);
+			snprintf(buf, sizeof(buf), "$'\\x%02X'", c);
 			STRING_add(&result, buf, 7);
 		}
 		else if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || index(".-/_~", c) || c > 126)

@@ -363,11 +363,7 @@ CLASS *CLASS_find(const char *name)
   _classes = csym->class;
 
   ALLOC(&csym->class->name, len + 1, "CLASS_find");
-  #ifdef OS_OPENBSD
   strlcpy((char *)csym->class->name, name, len + 1);
-  #else
-  strcpy((char *)csym->class->name, name);
-  #endif
 
   csym->sym.name = csym->class->name;
 
@@ -722,11 +718,7 @@ CLASS *CLASS_replace_global(const char *name)
     len = strlen(name);
 
     ALLOC(&new_name, len + 2, "CLASS_replace_global");
-#ifdef OS_OPENBSD
     snprintf(new_name, len+2, ">%s", name);
-#else
-    sprintf(new_name, ">%s", name);
-#endif
     new_class = CLASS_replace_global(new_name);
     FREE(&new_name, "CLASS_replace_global");
 

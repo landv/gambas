@@ -147,7 +147,7 @@ static void stradd_sep(char *dst, const char *src, const char *sep)
 {
   if (*dst)
     strcat(dst, sep);
-  strcat(dst, src);
+    strcat(dst, src);
 }
 
 
@@ -884,7 +884,7 @@ _FORMAT:
   if (exposant)
     number_exp = number != 0.0;
 
-  ndigit = sprintf(buf, "%.*f", MinMax(after + number_exp, 0, DBL_DIG), number_mant);
+  ndigit = snprintf(buf, sizeof(buf), "%.*f", MinMax(after + number_exp, 0, DBL_DIG), number_mant);
 
   // should return "0[.]...", or "1[.]..." if the number is rounded up.
 
@@ -999,7 +999,7 @@ _EXPOSANT:
   if (exposant != 0) // && number != 0.0)
   {
     put_char(exposant);
-    n = sprintf(buf, "%+.*d", exp_zero, number_real_exp - 1);
+    n = snprintf(buf, sizeof(buf), "%+.*d", exp_zero, number_real_exp - 1);
     add_string(buf, n, NULL);
   }
 
@@ -1066,7 +1066,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
       if (count <= 2)
       {
-        n = sprintf(buf, (count == 1 ? "%d" : "%02d"), date->day);
+        n = snprintf(buf, sizeof(buf), (count == 1 ? "%d" : "%02d"), date->day);
         add_string(buf, n, NULL);
       }
       else if (count >= 3)
@@ -1081,7 +1081,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
       if (count <= 2)
       {
-        n = sprintf(buf, (count == 1 ? "%d" : "%02d"), date->month);
+        n = snprintf(buf, sizeof(buf), (count == 1 ? "%d" : "%02d"), date->month);
         add_string(buf, n, NULL);
       }
       else if (count >= 3)
@@ -1095,9 +1095,9 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
     case 'y':
 
       if (count <= 2 && date->year >= 1939 && date->year <= 2038)
-        n = sprintf(buf, "%02d", date->year - (date->year >= 2000 ? 2000 : 1900));
+        n = snprintf(buf, sizeof(buf), "%02d", date->year - (date->year >= 2000 ? 2000 : 1900));
       else
-        n = sprintf(buf, "%d", date->year);
+        n = snprintf(buf, sizeof(buf), "%d", date->year);
 
       add_string(buf, n, NULL);
 
@@ -1107,7 +1107,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
     case 'n':
     case 's':
 
-      n = sprintf(buf, (count == 1) ? "%d" : "%02d",
+      n = snprintf(buf, sizeof(buf), (count == 1) ? "%d" : "%02d",
         (*token == 'h') ? date->hour : ((*token == 'n') ? date->min : date->sec));
 
       add_string(buf, n, NULL);
@@ -1118,7 +1118,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
       if (date->msec || count == 2)
       {
-        n = sprintf(buf, ".%03d", date->msec);
+        n = snprintf(buf, sizeof(buf), ".%03d", date->msec);
         if (count == 1)
         {
 					while (buf[n - 1] == '0')
@@ -1396,7 +1396,7 @@ PUBLIC void LOCAL_load_translation(ARCHIVE *arch)
   mkdir(dst, S_IRWXU);
 
   dst = FILE_cat(dst, domain, NULL);
-  strcat((char *)dst, ".mo");
+  strlcat((char *)dst, ".mo", sizeof(file_buffer));
 
   unlink(dst);
 

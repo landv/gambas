@@ -1079,11 +1079,8 @@ static void output_debug_filename(void)
 
   if (JOB->name[0] == '/')
   {
-#ifdef OS_OPENBSD
+
     strlcpy(path, JOB->name, sizeof(path));
-#else
-    strcpy(path, JOB->name);
-#endif
   }
   else
   {
@@ -1091,12 +1088,9 @@ static void output_debug_filename(void)
     n = strlen(path);
 
     if (path[n - 1] != '/')
-#ifdef OS_OPENBSD
       strlcpy(&path[n], "/", sizeof(path)-n);
-#else
-      strcpy(&path[n], "/");
-#endif
-    strcat(&path[n], JOB->name);
+
+    strlcat(&path[n], JOB->name, sizeof(path)-n);
   }
 
   n = strlen(path);

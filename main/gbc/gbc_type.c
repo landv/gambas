@@ -152,12 +152,12 @@ char *TYPE_get_desc(TYPE type)
 
   if (id == T_ARRAY)
   {
-    strcpy(buf, TYPE_name[JOB->class->array[value].type.t.id]);
-    strcat(buf, "[]");
+    strlcpy(buf, TYPE_name[JOB->class->array[value].type.t.id], sizeof(buf));
+    strlcat(buf, "[]", sizeof(buf));
   }
   else
   {
-    strcpy(buf, TYPE_name[id]);
+    strlcpy(buf, TYPE_name[id], sizeof(buf));
   }
 
   return buf;

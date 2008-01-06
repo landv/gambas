@@ -87,11 +87,7 @@ static void *get_symbol(LIBRARY *lib, const char *symbol, bool err)
   sym = lt_dlsym(lib->handle, symbol);
   if (sym == NULL && err)
   {
-#ifdef OS_OPENBSD
     strlcpy(COMMON_buffer, lt_dlerror(), COMMON_BUF_MAX);
-#else
-    strcpy(COMMON_buffer, lt_dlerror());
-#endif
     lt_dlclose(lib->handle);
     lib->handle = NULL;
     THROW(E_LIBRARY, lib->name, COMMON_buffer);
@@ -153,18 +149,10 @@ static void add_preload(char **env, const char *lib)
   {
     org = getenv("LD_PRELOAD");
     if (org && *org)
-#ifdef OS_OPENBSD
       *env += snprintf(*env, COMMON_BUF_MAX, "%s ", org);
-#else
-       *env += sprintf(*env, "%s ", org);
-#endif
-  }
+ }
 
-#ifdef OS_OPENBSD
-  *env += snprintf(*env, &COMMON_buffer[COMMON_BUF_MAX] - *env, "%s ", lib);
-#else
-  *env += sprintf(*env, "%s ", lib);
-#endif
+  *env += snprintf(*env, (&COMMON_buffer[COMMON_BUF_MAX] - *env), "%s ", lib);
 }
 
 
@@ -208,11 +196,7 @@ PUBLIC void LIBRARY_preload(const char *file, char **argv)
 
     if (*file == '/')
     {
-#ifdef OS_OPENBSD
       strlcpy(dir, file, sizeof(dir));
-#else
-      strcpy(dir, file);
-#endif
     }
     else
     {
@@ -229,11 +213,7 @@ PUBLIC void LIBRARY_preload(const char *file, char **argv)
       if (path == NULL)
         goto _PANIC;
 
-#ifdef OS_OPENBSD
       strlcpy(dir, path, sizeof(dir));
-#else
-      strcpy(dir, path);
-#endif
     }
 
     file = FILE_cat(dir, ".project", NULL);
@@ -369,11 +349,7 @@ PUBLIC void LIBRARY_get_interface(LIBRARY *lib, long version, void *iface)
     symbol[i] = c;
   }
 
-#ifdef OS_OPENBSD
   snprintf(&symbol[len], sizeof(symbol)-len, "_%ld", version);
-#else
-  sprintf(&symbol[len], "_%ld", version);
-#endif
   copy_interface((long *)get_symbol(lib, symbol, TRUE), (long *)iface);
 }
 
@@ -439,17 +415,9 @@ PUBLIC void LIBRARY_load(LIBRARY *lib)
     return;
 
   path = FILE_buffer();
-#ifdef OS_OPENBSD
-  snprintf(path, PATH_MAX, LIB_PATTERN, COMPONENT_path, lib->name);
-#else
-  sprintf(path, LIB_PATTERN, COMPONENT_path, lib->name);
-#endif
+  snprintf(path, FILE_buffer_maxsize(), LIB_PATTERN, COMPONENT_path, lib->name);
   if (!FILE_exist(path))
-#ifdef OS_OPENBSD
-	  snprintf(path, PATH_MAX, LIB_PATTERN, COMPONENT_user_path, lib->name);
-#else
-	  sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
-#endif
+	  snprintf(path, FILE_buffer_maxsize(), LIB_PATTERN, COMPONENT_user_path, lib->name);
 
   #ifndef DONT_USE_LTDL
     /* no more available in libltld ?

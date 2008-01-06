@@ -172,7 +172,7 @@ CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global)
       || (!global && !TYPE_is_null(sym->local.type)))
   {
     char name[MAX_SYMBOL_LEN + 1];
-    sprintf(name, "%.*s", sym->symbol.len, sym->symbol.name);
+    snprintf(name, sizeof(name), "%.*s", sym->symbol.len, sym->symbol.name);
     THROW("'&1' already declared", name);
   }
 
@@ -606,7 +606,7 @@ char *FUNCTION_get_fake_name(int func)
 {
   static char buf[6];
 
-  sprintf(buf, "$%d", func);
+  snprintf(buf, sizeof(buf), "$%d", func);
   return buf;
 }
 

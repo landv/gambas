@@ -259,7 +259,7 @@ static char *get_file_user(CFILE *_object)
     pwd = getpwuid(uid);
     if (!pwd)
     {
-      sprintf(_buffer, "%d", uid);
+      snprintf(_buffer, sizeof(_buffer), "%d", uid);
       return _buffer;
     }
     else
@@ -286,7 +286,7 @@ static char *get_file_group(CFILE *_object)
     grp = getgrgid(gid);
     if (!grp)
     {
-      sprintf(_buffer, "%d", gid);
+      snprintf(_buffer, sizeof(_buffer), "%d", gid);
       return _buffer;
     }
     else

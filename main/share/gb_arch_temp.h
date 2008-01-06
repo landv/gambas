@@ -252,19 +252,14 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
 			p = index(tpath + 1, '/');
 			if (!p)
 				break;
-				
-		  SYMBOL_find(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, p - tpath, 0, &ind);
+	
+			SYMBOL_find(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, p - tpath, 0, &ind);
 			if (ind == NO_SYMBOL)
 				break;
-		
-		  sym = &arch->symbol[ind];
-#ifdef OS_OPENBSD
+
+			sym = &arch->symbol[ind];
 			len_tpath = snprintf(tpath2, sizeof(tpath2),"/%d:%s", ind, p + 1);
 			strlcpy(tpath, tpath2, sizeof(tpath));
-#else
-			len_tpath = sprintf(tpath2, "/%d:%s", ind, p + 1);
-			strcpy(tpath, tpath2);
-#endif
 		}
 		
   	SYMBOL_find(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);

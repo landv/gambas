@@ -4,7 +4,7 @@
 
   Common string management routines
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ PUBLIC char *STR_copy(const char *str)
   char *cpy;
 
   ALLOC(&cpy, strlen(str) + 1, "STR_copy");
-  strcpy(cpy, str);
+  strlcpy(cpy, str, strlen(str)+1);
   return cpy;
 }
 

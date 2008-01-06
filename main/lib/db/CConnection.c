@@ -415,7 +415,7 @@ static char *make_query(CCONNECTION *_object, char *pattern, int len, int narg, 
 		if (!keyword)
 			keyword = "LIMIT";
 
-		sprintf(buffer, "%s %d", keyword, THIS->limit);
+		snprintf(buffer, sizeof(buffer), "%s %d", keyword, THIS->limit);
 
 		_make_query_buffer = buffer;
 		_make_query_original = &query[7];

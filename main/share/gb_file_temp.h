@@ -131,27 +131,15 @@ PUBLIC char *FILE_make_temp(int *len, char *pattern)
   if (len)
   {
     if (pattern)
-#ifdef OS_OPENBSD
       *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PATTERN, getuid(), getpid(), pattern);
-#else
-      *len = sprintf(file_buffer, FILE_TEMP_PATTERN, getuid(), getpid(), pattern);
-#endif
      else
     {
       count++;
-#ifdef OS_OPENBSD
       *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_FILE, getuid(), getpid(), count);
-#else
-      *len = sprintf(file_buffer, FILE_TEMP_FILE, getuid(), getpid(), count);
-#endif
     }
   }
   else
-#ifdef OS_OPENBSD
     snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
-#else
-    sprintf(file_buffer, FILE_TEMP_DIR, getuid(), getpid());
-#endif
 
   return file_buffer;
 }
@@ -180,17 +168,9 @@ PUBLIC void FILE_init(void)
 {
 	FILE_remove_temp_file();
   
-#ifdef OS_OPENBSD
   snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, getuid());
-#else
-  sprintf(file_buffer, FILE_TEMP_PREFIX, getuid());
-#endif
   mkdir(file_buffer, S_IRWXU);
-#ifdef OS_OPENBSD
   snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
-#else
-  sprintf(file_buffer, FILE_TEMP_DIR, getuid(), getpid());
-#endif
   mkdir(file_buffer, S_IRWXU);
 }
 
@@ -288,6 +268,10 @@ PUBLIC int FILE_buffer_length(void)
   return file_buffer_length;
 }
 
+PUBLIC int FILE_buffer_maxsize(void)
+{
+  return sizeof(file_buffer);
+}
 
 PUBLIC const char *FILE_get_dir(const char *path)
 {
@@ -300,11 +284,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
     return "/";
 
   if (file_buffer != path)
-#ifdef OS_OPENBSD
     strlcpy(file_buffer, path, sizeof(file_buffer));
-#else
-    strcpy(file_buffer, path);
-#endif
 
   p = rindex(file_buffer, '/');
 
@@ -315,11 +295,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
     *p = 0;
 
     if (file_buffer[0] == 0 && path[0] == '/')
-#ifdef OS_OPENBSD
       strlcpy(file_buffer, "/", sizeof(file_buffer));
-#else
-      strcpy(file_buffer, "/");
-#endif
   }
 
   file_buffer_length = -1;
@@ -361,11 +337,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
 
   if (path != file_buffer)
   {
-#ifdef OS_OPENBSD
     strlcpy(file_buffer, path, sizeof(file_buffer));
-#else
-    strcpy(file_buffer, path);
-#endif
     path = file_buffer;
   }
 
@@ -389,11 +361,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
   if (*ext == '.')
     ext++;
 
-#ifdef OS_OPENBSD
   strlcpy(p, ext, (&file_buffer[MAX_PATH] - p));
-#else
-  strcpy(p, ext);
-#endif
 
   file_buffer_length = -1;
   return path;
@@ -407,11 +375,7 @@ PUBLIC const char *FILE_get_basename(const char *path)
   path = FILE_get_name(path);
 
   if (file_buffer != path)
-#ifdef OS_OPENBSD
     strlcpy(file_buffer, path, sizeof(file_buffer));
-#else
-    strcpy(file_buffer, path);
-#endif
 
   p = rindex(file_buffer, '.');
   if (p)
@@ -574,11 +538,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
   if (file_attr)
   {
-#ifdef OS_OPENBSD
-    strlcpy(p, file_path, &file_buffer[MAX_PATH] - p);
-#else
-    strcpy(p, file_path);
-#endif
+    strlcpy(p, file_path, (&file_buffer[MAX_PATH] - p));
     p += strlen(file_path);
     if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
       *p++ = '/';
@@ -598,11 +558,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
     if (file_attr)
     {
-#ifdef OS_OPENBSD
-      strlcpy(p, entry->d_name, &file_buffer[MAX_PATH] - p);
-#else
-      strcpy(p, entry->d_name);
-#endif
+      strlcpy(p, entry->d_name, (&file_buffer[MAX_PATH] - p));
       stat(file_buffer, &info);
       if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
         continue;
@@ -716,11 +672,7 @@ PUBLIC void FILE_make_path_dir(const char *path)
     return;
 
   if (path != file_buffer)
-#ifdef OS_OPENBSD
     strlcpy(file_buffer, path, sizeof(file_buffer));
-#else
-    strcpy(file_buffer, path);
-#endif
 
   for (i = 1;; i++)
   {

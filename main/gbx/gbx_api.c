@@ -717,13 +717,8 @@ PUBLIC void *GB_GetClassInterface(void *_class, const char *_name)
 	
 	CLASS_load(class);
 	
-#ifdef OS_OPENBSD
 	strlcpy(name, "_@", len+4);
 	strlcat(name, _name, len+4);
-#else
-	strcpy(name, "_@");
-	strcat(name, _name);
-#endif
 
   index = CLASS_find_symbol(class, name);
   if (index == NO_SYMBOL)
@@ -1591,11 +1586,7 @@ PUBLIC char *GB_RealFileName(const char *name, int len)
 
   temp = FILE_make_temp(NULL, NULL);
   STRING_new_temp(&real, NULL, strlen(temp) + strlen(path) + strlen("/data/"));
-#ifdef OS_OPENBSD
   snprintf(real, strlen(temp) + strlen(path) + strlen("/data/"), "%s/data/%s", temp, path);
-#else
-  sprintf(real, "%s/data/%s", temp, path);
-#endif
 
   if (!FILE_exist(real))
   {

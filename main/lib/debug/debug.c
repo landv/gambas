@@ -171,10 +171,10 @@ PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo)
 
   if (_fifo)
   {
-    sprintf(path, "/tmp/gambas.%d/%d.out", getuid(), getppid());
+    snprintf(path, sizeof(path), "/tmp/gambas.%d/%d.out", getuid(), getppid());
     _fdr = open(path, O_RDONLY);
 		fcntl(_fdr, F_SETFD, FD_CLOEXEC);
-    sprintf(path, "/tmp/gambas.%d/%d.in", getuid(), getppid());
+    snprintf(path, sizeof(path), "/tmp/gambas.%d/%d.in", getuid(), getppid());
     _fdw = open(path, O_WRONLY);
 		fcntl(_fdw, F_SETFD, FD_CLOEXEC);
 
@@ -885,7 +885,7 @@ PUBLIC const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
   if (fp != NULL && fp->debug)
     calc_line_from_position(cp, fp, pc, &line);
 
-  sprintf(DEBUG_buffer, "%.64s.%.64s.%d",
+  snprintf(DEBUG_buffer, sizeof(DEBUG_buffer), "%.64s.%.64s.%d",
     cp ? cp->name : "?",
     (fp && fp->debug) ? fp->debug->name : "?",
     line);

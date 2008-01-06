@@ -79,6 +79,7 @@ typedef
 PUBLIC const char *FILE_cat(const char *path, ...);
 PUBLIC char *FILE_buffer(void);
 PUBLIC int FILE_buffer_length(void);
+PUBLIC int FILE_buffer_maxsize(void);
 PUBLIC const char *FILE_get_dir(const char *path);
 PUBLIC const char *FILE_get_name(const char *path);
 PUBLIC const char *FILE_get_ext(const char *path);

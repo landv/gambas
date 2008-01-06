@@ -83,22 +83,14 @@ __BYTE:
 __SHORT:
 __INTEGER:
 
-#ifdef OS_OPENBSD
   *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
-#else
-  *len = sprintf(COMMON_buffer, "%d", value->_integer.value);
-#endif
   *addr = COMMON_buffer;
 
   return;
 
 __LONG:
 
-#ifdef OS_OPENBSD
   *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%lld", value->_long.value);
-#else
-  *len = sprintf(COMMON_buffer, "%lld", value->_long.value);
-#endif
   *addr = COMMON_buffer;
 
   return;
@@ -131,7 +123,7 @@ __STRING:
     {
       if (i > 128)
       {
-        strcat(d, "...");
+        strlcat(d, "...", (COMMON_BUF_MAX - *len));
         *len += 3;
         break;
       }
@@ -149,11 +141,7 @@ __STRING:
         else if (c == 9)
           *d++ = 't';
         else
-#ifdef OS_OPENBSD
-          d += snprintf(d, &COMMON_buffer[COMMON_BUF_MAX]-d, "x%02X", c);
-#else
-          d += sprintf(d, "x%02X", c);
-#endif
+          d += snprintf(d, (&COMMON_buffer[COMMON_BUF_MAX] - d), "x%02X", c);
       }
       else if (c == '\"')
       {
@@ -181,7 +169,7 @@ __OBJECT:
 
   //*more = !CLASS_is_native(OBJECT_class(value->_object.object));
 
-  *len = sprintf(COMMON_buffer, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
   *addr = COMMON_buffer;
   return;
 
@@ -204,14 +192,14 @@ __CLASS:
     CLASS *class = value->_class.class;
     //*more = (!CLASS_is_native(class) && class->load->n_stat > 0);
 
-    *len = sprintf(COMMON_buffer, "%s %p", class->name, class);
+    *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%s %p", class->name, class);
     *addr = COMMON_buffer;
     return;
   }
 
 __ARRAY:
 
-  *len = sprintf(COMMON_buffer, "(ARRAY %p)", value->_array.addr);
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(ARRAY %p)", value->_array.addr);
   *addr = COMMON_buffer;
   return;
 

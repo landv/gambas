@@ -141,7 +141,7 @@ PUBLIC void ARCH_define_project(const char *project)
   ARCH_project_name = STR_copy(name);
 
 	if (!ARCH_output)
-  	ARCH_define_output(strcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas"));
+  	ARCH_define_output(strlcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas", sizeof(file_buffer)));
 
   STR_free(name);
   STR_free(dir);
@@ -209,8 +209,8 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 	  	THROW("&1: not in archive!\n", tpath);
 		}
 	
-		len = sprintf(tpath2, "/%d:%s", ind, p + 1);
-		strcpy(tpath, tpath2);
+		len = snprintf(tpath2, sizeof(tpath2), "/%d:%s", ind, p + 1);
+		strlcpy(tpath, tpath2, sizeof(tpath));
 	}
 
 	if (ARCH_verbose)
