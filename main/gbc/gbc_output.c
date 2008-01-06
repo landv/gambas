@@ -159,7 +159,7 @@ static void write_short(ushort val)
 }
 
 
-static void write_long(uint val)
+static void write_int(uint val)
 {
   #ifdef DEBUG_MORE
   printf("%ld : l %lu 0x%lX\n", get_pos(), val, val);
@@ -177,25 +177,25 @@ static void write_long(uint val)
 }
 
 
-static void write_long_long(unsigned long long val)
+static void write_int64(uint64_t val)
 {
   #ifdef DEBUG_MORE
   printf("%ld : l %llu 0x%llX\n", get_pos(), val, val);
   #endif
 
   if (_swap)
-  	SWAP_int64((long long *)&val);
+  	SWAP_int64((int64_t *)&val);
 
   if (_pbuffer >= _mbuffer)
     flush_buffer();
     
-  *((unsigned long long *)_pbuffer) = val;
+  *((uint64_t *)_pbuffer) = val;
   _pbuffer += sizeof(val);
   _pos += sizeof(val);
 }
 
 #if 0
-static void write_long_at(long pos, ulong val)
+static void write_int_at(long pos, ulong val)
 {
   long prev = get_pos();
   char *ppos;
@@ -214,7 +214,7 @@ static void write_long_at(long pos, ulong val)
   #endif
 
   fseek(_file, pos, SEEK_SET);
-  write_long(val);
+  write_int(val);
   flush_buffer();
   
   fseek(_file, prev, SEEK_SET);
@@ -321,7 +321,7 @@ static void begin_section(const char *name, int size)
   if (size)
   {
     PosStartSection = get_pos();
-    write_long(0);
+    write_int(0);
   }
   else
     PosStartSection = 0;
@@ -354,16 +354,16 @@ static void output_header(void)
   begin_section("Header", 0);
 
   /* magic */
-  write_long(OUTPUT_MAGIC);
+  write_int(OUTPUT_MAGIC);
   /* version */
-  write_long(GAMBAS_PCODE_VERSION);
+  write_int(GAMBAS_PCODE_VERSION);
   /* endianness */
-  write_long(OUTPUT_ENDIAN);
+  write_int(OUTPUT_ENDIAN);
   /* flag */
   if (JOB->debug)
-    write_long(1);
+    write_int(1);
   else
-    write_long(0);
+    write_int(0);
 
   end_section();
 }
@@ -384,9 +384,9 @@ static void output_class(void)
   if (Class->nocreate) flag |= 8;
   write_short(flag);
   /* size_static */
-  write_long(Class->size_stat);
+  write_int(Class->size_stat);
   /* size_dynamic */
-  write_long(Class->size_dyn);
+  write_int(Class->size_dyn);
 
   end_section();
 }
@@ -414,7 +414,7 @@ static void output_desc(void)
     {
       nn++;
       /* name */
-      write_long(get_string(csym->symbol.name, csym->symbol.len));
+      write_int(get_string(csym->symbol.name, csym->symbol.len));
 			/* datatype */
 			write_type(csym->global.type);
 
@@ -423,11 +423,11 @@ static void output_desc(void)
         case TK_VARIABLE:
 
           /* offset */
-          write_long(csym->global.value);
+          write_int(csym->global.value);
           /* read */
-          write_long(0);
+          write_int(0);
           /* write */
-          write_long(0);
+          write_int(0);
 
           if (TYPE_is_static(type))
             out_type = CD_STATIC_VARIABLE_ID;
@@ -439,11 +439,11 @@ static void output_desc(void)
         case TK_PROPERTY:
 
           /* read */
-          write_long(Class->prop[csym->global.value].read);
+          write_int(Class->prop[csym->global.value].read);
           /* write */
-          write_long(Class->prop[csym->global.value].write);
+          write_int(Class->prop[csym->global.value].write);
           /* flag */
-          write_long(0);
+          write_int(0);
 
           if (TYPE_is_static(type))
             out_type = CD_STATIC_PROPERTY_ID;
@@ -455,11 +455,11 @@ static void output_desc(void)
         case TK_CONST:
 
           /* param */
-          write_long(csym->global.value);
+          write_int(csym->global.value);
           /* read */
-          write_long(0);
+          write_int(0);
           /* write */
-          write_long(0);
+          write_int(0);
 
           out_type = CD_CONSTANT_ID;
 
@@ -468,11 +468,11 @@ static void output_desc(void)
         case TK_FUNCTION:
 
           /* exec */
-          write_long(csym->global.value);
+          write_int(csym->global.value);
           /* signature */
-          write_long(0);
+          write_int(0);
           /* nparam */
-          write_long(0);
+          write_int(0);
 
           if (TYPE_is_static(type))
             out_type = CD_STATIC_METHOD_ID;
@@ -484,11 +484,11 @@ static void output_desc(void)
         case TK_EVENT:
 
           /* exec */
-          write_long(csym->global.value);
+          write_int(csym->global.value);
           /* signature */
-          write_long(0);
+          write_int(0);
           /* nparam */
-          write_long(0);
+          write_int(0);
 
           out_type = CD_EVENT_ID;
 
@@ -497,11 +497,11 @@ static void output_desc(void)
         case TK_EXTERN:
 
           /* exec */
-          write_long(csym->global.value);
+          write_int(csym->global.value);
           /* signature */
-          write_long(0);
+          write_int(0);
           /* nparam */
-          write_long(0);
+          write_int(0);
 
           out_type = CD_EXTERN_ID;
 
@@ -514,7 +514,7 @@ static void output_desc(void)
        }
 
       /* type de symbole */
-      write_long(out_type);
+      write_int(out_type);
     }
   }
 
@@ -545,27 +545,27 @@ static void output_constant(void)
     {
       case T_BOOLEAN: case T_BYTE: case T_SHORT: case T_INTEGER:
 
-        write_long(constant->value);
-        write_long(0);
+        write_int(constant->value);
+        write_int(0);
         break;
 
       case T_LONG:
 
-        write_long_long(constant->lvalue);
+        write_int64(constant->lvalue);
         break;
 
       case T_SINGLE: case T_FLOAT:
 
         sym = TABLE_get_symbol(Class->table, constant->value);
-        write_long(get_string(sym->name, sym->len));
-        write_long(sym->len);
+        write_int(get_string(sym->name, sym->len));
+        write_int(sym->len);
         break;
 
       case T_STRING: case T_CSTRING:
 
         sym = TABLE_get_symbol(Class->string, constant->value);
-        write_long(get_string(sym->name, sym->len));
-        write_long(sym->len);
+        write_int(get_string(sym->name, sym->len));
+        write_int(sym->len);
         break;
     }
   }
@@ -590,13 +590,13 @@ static void output_class_ref(void)
    	sym = TABLE_get_symbol(Class->table, ref->index);
   	if (ref->used)
   	{
-	    write_long(get_string(sym->name, sym->len));
+	    write_int(get_string(sym->name, sym->len));
 		}
 		else
 		{
 			if (JOB->verbose)
 				printf("Ignoring class %.*s\n", sym->len, sym->name);
-    	write_long(-get_string(sym->name, sym->len));
+    	write_int(-get_string(sym->name, sym->len));
 		}
   }
 
@@ -616,7 +616,7 @@ static void output_unknown_ref(void)
   for (i = 0; i < n; i++)
   {
     sym = TABLE_get_symbol(Class->table, Class->unknown[i]);
-    write_long(get_string(sym->name, sym->len));
+    write_int(get_string(sym->name, sym->len));
   }
 
   end_section();
@@ -639,7 +639,7 @@ static void output_static(void)
     /* type */
     write_type(var->type);
     /* addr */
-    write_long(var->pos);
+    write_int(var->pos);
   }
 
   end_section();
@@ -662,7 +662,7 @@ static void output_dynamic(void)
     /* type */
     write_type(var->type);
     /* addr */
-    write_long(var->pos);
+    write_int(var->pos);
   }
 
   end_section();
@@ -690,10 +690,10 @@ static void output_event(void)
     /* reserved */
     write_short(0);
     /* desc_param */
-    write_long(0);
+    write_int(0);
     /* name */
     sym = TABLE_get_symbol(Class->table, event->name);
-    write_long(get_string(sym->name, sym->len));
+    write_int(get_string(sym->name, sym->len));
   }
 
   end_section();
@@ -721,19 +721,19 @@ static void output_extern(void)
     /* reserved */
     write_short(0);
     /* desc_param */
-    write_long(0);
+    write_int(0);
     /* name */
     /*sym = TABLE_get_symbol(Class->table, ext->name);
-    write_long(get_string(sym->name, sym->len));*/
+    write_int(get_string(sym->name, sym->len));*/
     /* alias name */
     if (ext->alias == NO_SYMBOL)
       sym = TABLE_get_symbol(Class->table, ext->name);
     else
       sym = TABLE_get_symbol(Class->string, ext->alias);
-    write_long(get_string(sym->name, sym->len));
+    write_int(get_string(sym->name, sym->len));
     /* library name */
     sym = TABLE_get_symbol(Class->string, ext->library);
-    write_long(get_string(sym->name, sym->len));
+    write_int(get_string(sym->name, sym->len));
   }
 
   end_section();
@@ -772,13 +772,13 @@ static void output_method(void)
       write_short(func->finally);
 
     /* addr_code */
-    write_long(func->ncode);
+    write_int(func->ncode);
     /* desc_param */
-    write_long(0);
+    write_int(0);
     /* desc_local */
-    write_long(0);
+    write_int(0);
     /* debug_info */
-    write_long(0);
+    write_int(0);
 
   }
 
@@ -806,7 +806,7 @@ static void output_param_local(void)
       for (j = 0; j < func->nparam; j++)
       {
         param = &func->param[j];
-        write_long(param->type);
+        write_int(param->type);
       }
       */
 
@@ -862,7 +862,7 @@ static void output_array(void)
   for (i = 0; i < ARRAY_count(Class->array); i++)
   {
     array = &Class->array[i];
-    write_long(p);
+    write_int(p);
     p += sizeof(int) + array->ndim * sizeof(int);
   }
 
@@ -878,7 +878,7 @@ static void output_array(void)
       if (j == (array->ndim - 1))
         p = (-p);
 
-      write_long(p);
+      write_int(p);
     }
   }
 
@@ -939,11 +939,11 @@ static void output_debug_global()
         /* len */
         write_short(csym->symbol.len);
         /* name */
-        write_long(get_string(csym->symbol.name, csym->symbol.len));
+        write_int(get_string(csym->symbol.name, csym->symbol.len));
         /* type */
         write_type(csym->global.type);
         /* value */
-        write_long(csym->global.value);
+        write_int(csym->global.value);
 
         break;
 
@@ -979,12 +979,12 @@ static void output_debug_method()
       write_short(func->line);
       write_short(ARRAY_count(func->pos_line));
       /* pos_line */
-      write_long(0);
+      write_int(0);
       /* nom */
       sym = TABLE_get_symbol(Class->table, func->name);
-      write_long(get_string(sym->name, sym->len));
+      write_int(get_string(sym->name, sym->len));
       /* local symbols */
-      write_long(0);
+      write_int(0);
       /* n_local */
       write_short(0);
       /* reserved */
@@ -994,9 +994,9 @@ static void output_debug_method()
     {
       write_short(0);
       write_short(0);
-      write_long(0);
-      write_long(0);
-      write_long(0);
+      write_int(0);
+      write_int(0);
+      write_int(0);
       write_short(0);
       write_short(0);
     }
@@ -1055,9 +1055,9 @@ static void output_debug_method()
         /* len */
         write_short(osym->sym.len);
         /* name */
-        write_long(get_string(osym->sym.name, osym->sym.len));
+        write_int(get_string(osym->sym.name, osym->sym.len));
         /* value */
-        write_long(osym->value);
+        write_int(osym->value);
 
         /*printf("%.*s %ld\n", osym->sym.len, osym->sym.name, osym->value);*/
       }

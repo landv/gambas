@@ -28,7 +28,7 @@
 typedef
   struct {
     char *name;
-    long len;
+    int len;
     }
   FORM_PARENT;
 

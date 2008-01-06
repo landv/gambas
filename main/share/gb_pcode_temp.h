@@ -256,7 +256,7 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
 
         case C_PUSH_LONG:
           value = *((int *)&code[1]);
-          fprintf(out, "PUSH INTEGER %ld", value);
+          fprintf(out, "PUSH INTEGER %d", value);
           break;
 
         case C_PUSH_ME:

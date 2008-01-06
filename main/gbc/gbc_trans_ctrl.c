@@ -51,7 +51,7 @@ static TRANS_LABEL *label_info;
 static short *ctrl_parent;
 
 
-static void control_set_value(long value)
+static void control_set_value(int value)
 {
   if (ctrl_level <= 0)
     return;
@@ -60,7 +60,7 @@ static void control_set_value(long value)
 }
 
 
-static long control_get_value()
+static int control_get_value()
 {
   if (ctrl_level <= 0)
     return 0;
@@ -144,7 +144,7 @@ static TRANS_CTRL *control_get_inner_with(void)
 }
 
 
-static void add_goto(long index)
+static void add_goto(int index)
 {
   TRANS_GOTO *info;
 
@@ -165,7 +165,7 @@ static void add_goto(long index)
 }
 
 
-static void control_enter(long type)
+static void control_enter(int type)
 {
   short *parent;
 
@@ -229,7 +229,7 @@ static void control_leave()
 }
 
 
-static void control_check(long type, const char *msg1, const char *msg2)
+static void control_check(int type, const char *msg1, const char *msg2)
 {
   if (ctrl_level <= 0)
     THROW(msg1);
@@ -238,7 +238,7 @@ static void control_check(long type, const char *msg1, const char *msg2)
     THROW(msg2);
 }
 
-static void control_check_two(long type1, long type2, const char *msg1, const char *msg2)
+static void control_check_two(int type1, int type2, const char *msg1, const char *msg2)
 {
   if (ctrl_level <= 0)
     THROW(msg1);
@@ -261,7 +261,7 @@ static void control_check_loop_var(short var)
 }
 
 
-PUBLIC void TRANS_control_init()
+void TRANS_control_init()
 {
   ctrl_level = 0;
   ctrl_id = 0;
@@ -278,11 +278,11 @@ PUBLIC void TRANS_control_init()
 }
 
 
-PUBLIC void TRANS_control_exit()
+void TRANS_control_exit()
 {
   int i;
   CLASS_SYMBOL *sym;
-  long line;
+  int line;
   TRANS_LABEL *label;
   short id;
 
@@ -477,7 +477,7 @@ static void trans_else_if(void)
 }
 
 
-PUBLIC void TRANS_if()
+void TRANS_if()
 {
   control_enter(RS_IF);
 
@@ -491,7 +491,7 @@ PUBLIC void TRANS_if()
 }
 
 
-PUBLIC void TRANS_else()
+void TRANS_else()
 {
   control_check(RS_IF, "ELSE without IF", "Unexpected ELSE");
 
@@ -505,7 +505,7 @@ PUBLIC void TRANS_else()
 }
 
 
-PUBLIC void TRANS_endif()
+void TRANS_endif()
 {
   control_check(RS_IF, "ENDIF without IF", "Unexpected ENDIF");
   trans_endif();
@@ -513,9 +513,9 @@ PUBLIC void TRANS_endif()
 }
 
 
-PUBLIC void TRANS_goto()
+void TRANS_goto()
 {
-  long index;
+  int index;
 
   if (!PATTERN_is_identifier(*JOB->current))
     THROW(E_SYNTAX);
@@ -527,7 +527,7 @@ PUBLIC void TRANS_goto()
 }
 
 
-PUBLIC void TRANS_do(PATTERN type)
+void TRANS_do(PATTERN type)
 {
   boolean is_until;
 
@@ -557,7 +557,7 @@ PUBLIC void TRANS_do(PATTERN type)
 }
 
 
-PUBLIC void TRANS_loop(PATTERN type)
+void TRANS_loop(PATTERN type)
 {
   short pos;
 
@@ -616,7 +616,7 @@ static void trans_select_break(boolean do_not_add_pos)
 }
 
 
-PUBLIC void TRANS_select(void)
+void TRANS_select(void)
 {
   control_enter(RS_SELECT);
 
@@ -628,7 +628,7 @@ PUBLIC void TRANS_select(void)
 }
 
 
-PUBLIC void TRANS_case(void)
+void TRANS_case(void)
 {
   int i;
   short pos;
@@ -688,7 +688,7 @@ PUBLIC void TRANS_case(void)
 }
 
 
-PUBLIC void TRANS_default(void)
+void TRANS_default(void)
 {
   control_check(RS_SELECT, "DEFAULT without SELECT", "Unexpected DEFAULT");
 
@@ -698,7 +698,7 @@ PUBLIC void TRANS_default(void)
 }
 
 
-PUBLIC void TRANS_end_select(void)
+void TRANS_end_select(void)
 {
   control_check(RS_SELECT, "END SELECT without SELECT", "Unexpected END SELECT");
 
@@ -715,7 +715,7 @@ PUBLIC void TRANS_end_select(void)
 }
 
 
-PUBLIC void TRANS_break(void)
+void TRANS_break(void)
 {
   TRANS_CTRL *ctrl_inner = control_get_inner();
 
@@ -727,7 +727,7 @@ PUBLIC void TRANS_break(void)
 }
 
 
-PUBLIC void TRANS_continue(void)
+void TRANS_continue(void)
 {
   TRANS_CTRL *ctrl_inner = control_get_inner();
 
@@ -739,7 +739,7 @@ PUBLIC void TRANS_continue(void)
 }
 
 
-PUBLIC void TRANS_return(void)
+void TRANS_return(void)
 {
   if (FUNCTION_is_procedure(JOB->func))
   {
@@ -757,7 +757,7 @@ PUBLIC void TRANS_return(void)
 }
 
 
-PUBLIC void TRANS_for(void)
+void TRANS_for(void)
 {
   PATTERN *loop_var;
   short local;
@@ -821,7 +821,7 @@ PUBLIC void TRANS_for(void)
 }
 
 
-PUBLIC void TRANS_for_each(void)
+void TRANS_for_each(void)
 {
   PATTERN *iterator = JOB->current;
   PATTERN *save;
@@ -873,7 +873,7 @@ PUBLIC void TRANS_for_each(void)
 }
 
 
-PUBLIC void TRANS_next(void)
+void TRANS_next(void)
 {
   ushort pos;
 
@@ -905,7 +905,7 @@ PUBLIC void TRANS_next(void)
 }
 
 
-PUBLIC void TRANS_try(void)
+void TRANS_try(void)
 {
   static int no_try = 0;
   ushort pos;
@@ -928,7 +928,7 @@ PUBLIC void TRANS_try(void)
 }
 
 
-PUBLIC void TRANS_finally(void)
+void TRANS_finally(void)
 {
   ushort pos = CODE_get_current_pos();
 
@@ -941,7 +941,7 @@ PUBLIC void TRANS_finally(void)
 }
 
 
-PUBLIC void TRANS_catch(void)
+void TRANS_catch(void)
 {
   ushort pos = CODE_get_current_pos();
 
@@ -955,10 +955,10 @@ PUBLIC void TRANS_catch(void)
 }
 
 
-PUBLIC void TRANS_label(void)
+void TRANS_label(void)
 {
   CLASS_SYMBOL *sym;
-  long sym_index;
+  int sym_index;
   TRANS_LABEL *label;
 
   sym_index = PATTERN_index(*JOB->current);
@@ -987,7 +987,7 @@ PUBLIC void TRANS_label(void)
 }
 
 
-PUBLIC void TRANS_with(void)
+void TRANS_with(void)
 {
   control_enter(RS_WITH);
 
@@ -998,7 +998,7 @@ PUBLIC void TRANS_with(void)
 }
 
 
-PUBLIC void TRANS_use_with(void)
+void TRANS_use_with(void)
 {
   TRANS_CTRL *ctrl_inner = control_get_inner_with();
 
@@ -1009,7 +1009,7 @@ PUBLIC void TRANS_use_with(void)
 }
 
 
-PUBLIC void TRANS_end_with(void)
+void TRANS_end_with(void)
 {
   control_check(RS_WITH, "END WITH without WITH", "Unexpected END WITH");
 
@@ -1017,7 +1017,7 @@ PUBLIC void TRANS_end_with(void)
 }
 
 
-PUBLIC void TRANS_raise(void)
+void TRANS_raise(void)
 {
   CLASS_SYMBOL *sym;
   int np;

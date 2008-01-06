@@ -31,14 +31,14 @@
 typedef
   struct {
     SYMBOL sym;
-    long value;
+    int value;
     }
   OUTPUT_SYMBOL;
 
 typedef
   struct {
     off_t pos;
-    ulong val;
+    uint val;
   }
   OUTPUT_CHANGE;
 

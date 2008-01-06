@@ -183,7 +183,7 @@ static void path_exit(void)
 }
 
 
-static long path_count(void)
+static int path_count(void)
 {
   return ARRAY_count(path_list);
 }

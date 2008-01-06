@@ -39,7 +39,7 @@
 
 typedef
   struct {
-    long code;
+    int code;
     char msg[MAX_ERROR_MSG + 1];
     }
   ERROR_INFO;

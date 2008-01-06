@@ -211,7 +211,7 @@ void CWIDGET_init_name(CWIDGET *_object)
 	set_name(THIS, name);
 }
 
-void CWIDGET_new(QWidget *w, void *_object, char *klass /* = NULL */, bool no_filter /* = false */, bool no_init /* = false */)
+void CWIDGET_new(QWidget *w, void *_object, const char *klass /* = NULL */, bool no_filter /* = false */, bool no_init /* = false */)
 {
   CWidget::add(w, _object, no_filter);
 

@@ -49,7 +49,7 @@ static const char *_source;
 static const char *_current;
 
 static FORM_PARENT form_parent[MAX_FORM_PARENT];
-static long form_parent_level;
+static int form_parent_level;
 
 #if 0
 static void print_fmt(const char *fmt, ...)
@@ -74,10 +74,10 @@ static void print_fmt(const char *fmt, ...)
 }
 #endif
 
-static void print_len(const char *buffer, long len)
+static void print_len(const char *buffer, int len)
 {
   if (JOB->verbose)
-  	printf("%.*s", (int)len, buffer);
+  	printf("%.*s", len, buffer);
 
   BUFFER_add(&JOB->source, buffer, len);
 }
@@ -98,7 +98,7 @@ static void print_fmt(const char *before, const char *word, int len, const char 
   print(after);
 }
 
-static boolean read_line(const char **str, long *len)
+static boolean read_line(const char **str, int *len)
 {
   const char *start;
   const char *nospace;
@@ -120,19 +120,19 @@ static boolean read_line(const char **str, long *len)
   for(;;)
   {
     car = *_current++;
-    if (car <= '\n')
+    if (car == '\n' || car =='\r' || !car)
       break;
     if (car > ' ')
       nospace = _current;
   }
 
   *str = start;
-  *len = nospace - start;
+  *len = (int)(nospace - start);
   return FALSE;
 }
 
 
-static char *get_word(const char **str, long *len)
+static char *get_word(const char **str, int *len)
 {
   char car;
   const char *pos;
@@ -164,7 +164,7 @@ static char *get_word(const char **str, long *len)
 }
 
 
-static void parent_enter(const char *str, long len)
+static void parent_enter(const char *str, int len)
 {
   if (form_parent_level >= MAX_FORM_PARENT)
     THROW("&1: too many nested containers", JOB->form);
@@ -184,7 +184,7 @@ static void parent_leave(void)
 }
 
 
-static void parent_get(char **str, long *len, int add)
+static void parent_get(char **str, int *len, int add)
 {
   if (form_parent_level < add)
   {
@@ -199,12 +199,12 @@ static void parent_get(char **str, long *len, int add)
 }
 
 
-static void get_container(char **str, long *len)
+static void get_container(char **str, int *len)
 {
   parent_get(str, len, 2);
 }
 
-static void get_current(char **str, long *len)
+static void get_current(char **str, int *len)
 {
   parent_get(str, len, 1);
 }
@@ -253,7 +253,7 @@ PUBLIC void FORM_do(bool ctrl_public)
   char *win = NULL;
   char *twin = NULL;
 
-  long len, len_win, len_twin;
+  int len, len_win, len_twin;
   const char *pos_rewind;
   bool virtual;
 

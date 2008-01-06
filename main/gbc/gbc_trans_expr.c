@@ -63,7 +63,7 @@ static short get_nparam(PATTERN *tree, int *index)
 }
 
 
-static void push_number(long index)
+static void push_number(int index)
 {
   TRANS_NUMBER number;
   TRANS_DECL decl;
@@ -85,11 +85,11 @@ static void push_number(long index)
 }
 
 
-static void push_string(long index, bool trans)
+static void push_string(int index, bool trans)
 {
   TRANS_DECL decl;
   SYMBOL *sym;
-  long len;
+  int len;
 
   sym = TABLE_get_symbol(JOB->class->string, index);
   len = sym->len;
@@ -131,7 +131,7 @@ static void push_class(long index)
 */
 
 
-static void trans_class(long index)
+static void trans_class(int index)
 {
   const char *name;
 
@@ -145,7 +145,7 @@ static void trans_class(long index)
 }
 
 
-static void trans_identifier(long index, boolean first, boolean point, PATTERN next)
+static void trans_identifier(int index, boolean first, boolean point, PATTERN next)
 {
   CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
   bool is_static;
@@ -232,7 +232,7 @@ __CLASS:
 }
 
 
-static void trans_subr(long subr, short nparam, boolean output)
+static void trans_subr(int subr, short nparam, boolean output)
 {
   SUBR_INFO *info = &COMP_subr_info[subr];
 
@@ -295,7 +295,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
 {
   int i;
   short nparam;
-  long count;
+  int count;
   PATTERN pattern, next_pattern, prev_pattern;
 
   count = ARRAY_count(tree) - 1;
@@ -394,7 +394,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
 
 PUBLIC void TRANS_new(void)
 {
-  long index;
+  int index;
   int i, nparam;
   boolean array = FALSE;
   boolean event = FALSE;

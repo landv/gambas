@@ -211,7 +211,7 @@ static bool print_type(const char *type)
 }
 #endif
 
-static void dump_value(const char *type, long value)
+static void dump_value(const char *type, int value)
 {
   char *p;
 
@@ -429,7 +429,7 @@ static void analyze_class(GB_DESC *desc)
   char *parent = NULL;
   bool autocreate = FALSE;
   bool nocreate = FALSE;
-  ulong hook;
+  intptr_t hook;
   int nsymbol;
   int *sort;
   GB_DESC *p;
@@ -442,13 +442,13 @@ static void analyze_class(GB_DESC *desc)
 
   while (desc->name)
   {
-    hook = (ulong)desc->name;
+    hook = (intptr_t)desc->name;
 
-    if (hook == (ulong)GB_INHERITS_ID)
+    if (hook == (intptr_t)GB_INHERITS_ID)
       parent = (char *)desc->val1;
-    else if ((hook == (ulong)GB_NOT_CREATABLE_ID))
+    else if ((hook == (intptr_t)GB_NOT_CREATABLE_ID))
       nocreate = TRUE;
-    else if (hook == (ulong)GB_AUTO_CREATABLE_ID)
+    else if (hook == (intptr_t)GB_AUTO_CREATABLE_ID)
       autocreate = TRUE;
     else if (hook > 16)
       break;

@@ -503,7 +503,7 @@ typedef
 /* Type of a watch callback function */
 
 typedef
-  void (*GB_WATCH_CALLBACK)(int, int, void *);
+  void (*GB_WATCH_CALLBACK)(int, int, intptr_t);
 
 
 /* Type of the GB.SubstString() callback */

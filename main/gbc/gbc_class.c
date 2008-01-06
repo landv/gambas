@@ -39,7 +39,7 @@
 
 static int _array_class[17];
 
-PUBLIC void CLASS_create(CLASS **result)
+void CLASS_create(CLASS **result)
 {
   CLASS *class;
   TRANS_FUNC func;
@@ -123,7 +123,7 @@ static void delete_structure(CLASS_STRUCT *structure)
 }
 
 
-PUBLIC void CLASS_delete(CLASS **class)
+void CLASS_delete(CLASS **class)
 {
   int i;
 
@@ -164,7 +164,7 @@ PUBLIC void CLASS_delete(CLASS **class)
 }
 
 
-PUBLIC CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global)
+CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global)
 {
   CLASS_SYMBOL *sym = CLASS_get_symbol(class, index);
 
@@ -181,7 +181,7 @@ PUBLIC CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global)
 
 
 
-PUBLIC void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
+void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 {
   FUNCTION *func;
   int i;
@@ -253,7 +253,7 @@ PUBLIC void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 }
 
 
-PUBLIC void CLASS_add_event(CLASS *class, TRANS_EVENT *decl)
+void CLASS_add_event(CLASS *class, TRANS_EVENT *decl)
 {
   EVENT *event;
   int i;
@@ -290,7 +290,7 @@ PUBLIC void CLASS_add_event(CLASS *class, TRANS_EVENT *decl)
 }
 
 
-PUBLIC void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
+void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 {
   PROPERTY *prop;
   CLASS_SYMBOL *sym;
@@ -314,7 +314,7 @@ PUBLIC void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 }
 
 
-PUBLIC void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
+void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
 {
   EXTFUNC *extfunc;
   int i;
@@ -353,7 +353,7 @@ PUBLIC void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
 }
 
 
-PUBLIC int CLASS_add_constant(CLASS *class, TRANS_DECL *decl)
+int CLASS_add_constant(CLASS *class, TRANS_DECL *decl)
 {
   CONSTANT *desc;
   int num;
@@ -374,7 +374,7 @@ PUBLIC int CLASS_add_constant(CLASS *class, TRANS_DECL *decl)
 }
 
 
-PUBLIC int CLASS_add_class(CLASS *class, int index)
+int CLASS_add_class(CLASS *class, int index)
 {
   int num;
   CLASS_REF *desc;
@@ -398,7 +398,7 @@ PUBLIC int CLASS_add_class(CLASS *class, int index)
   return num;
 }
 
-PUBLIC int CLASS_add_class_unused(CLASS *class, int index)
+int CLASS_add_class_unused(CLASS *class, int index)
 {
 	int num = CLASS_add_class(class, index);
 	JOB->class->class[num].used = FALSE;
@@ -406,13 +406,13 @@ PUBLIC int CLASS_add_class_unused(CLASS *class, int index)
 }
 
 
-PUBLIC boolean CLASS_exist_class(CLASS *class, int index)
+boolean CLASS_exist_class(CLASS *class, int index)
 {
   return CLASS_get_symbol(class, index)->class > 0;
 }
 
 
-PUBLIC int CLASS_get_array_class(CLASS *class, int type)
+int CLASS_get_array_class(CLASS *class, int type)
 {
   static char *name[] = {
     NULL, "Boolean[]", "Byte[]", "Short[]", "Integer[]", "Long[]", "Single[]", "Float[]",
@@ -439,7 +439,7 @@ PUBLIC int CLASS_get_array_class(CLASS *class, int type)
 }
 
 
-PUBLIC int CLASS_add_unknown(CLASS *class, int index)
+int CLASS_add_unknown(CLASS *class, int index)
 {
   int num;
   int *desc;
@@ -461,7 +461,7 @@ PUBLIC int CLASS_add_unknown(CLASS *class, int index)
 
 
 
-PUBLIC int CLASS_add_array(CLASS *class, TRANS_ARRAY *array)
+int CLASS_add_array(CLASS *class, TRANS_ARRAY *array)
 {
   CLASS_ARRAY *desc;
   int num;
@@ -480,7 +480,7 @@ PUBLIC int CLASS_add_array(CLASS *class, TRANS_ARRAY *array)
 
 
 
-PUBLIC void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
+void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 {
   CLASS_SYMBOL *sym = CLASS_declare(class, decl->index, TRUE);
   VARIABLE *var;
@@ -573,14 +573,14 @@ static void reorder_decl(CLASS *class, VARIABLE *tvar, const char *desc)
 }
 
 
-PUBLIC void CLASS_sort_declaration(CLASS *class)
+void CLASS_sort_declaration(CLASS *class)
 {
   reorder_decl(class, class->stat, "static");
   reorder_decl(class, class->dyn, "dynamic");
 }
 
 
-PUBLIC int CLASS_add_symbol(CLASS *class, const char *name)
+int CLASS_add_symbol(CLASS *class, const char *name)
 {
   int index;
 
@@ -589,7 +589,7 @@ PUBLIC int CLASS_add_symbol(CLASS *class, const char *name)
 }
 
 
-PUBLIC void FUNCTION_add_pos_line(void)
+void FUNCTION_add_pos_line(void)
 {
   short *pos;
 
@@ -602,7 +602,7 @@ PUBLIC void FUNCTION_add_pos_line(void)
 }
 
 
-PUBLIC char *FUNCTION_get_fake_name(int func)
+char *FUNCTION_get_fake_name(int func)
 {
   static char buf[6];
 
@@ -675,7 +675,7 @@ _BAD_SIGNATURE:
 }
 
 
-PUBLIC void CLASS_check_properties(CLASS *class)
+void CLASS_check_properties(CLASS *class)
 {
   int i;
   PROPERTY *prop;

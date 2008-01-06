@@ -4,7 +4,7 @@
 
   Datatypes definitions and management
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -55,13 +55,13 @@ typedef
       TYPE_ID id;
       short value;
       } t;
-    long l;
+    int l;
     }
   TYPE;
 
 typedef
   struct {
-    long value;
+    int value;
     TYPE type;
     }
   VALUE;
@@ -91,8 +91,6 @@ EXTERN char *TYPE_name[];
 #define TYPE_set_flag(type, _flag)       ((type)->t.flag |= (_flag))
 #define TYPE_clear(type)                 ((type)->l = 0)
 
-#define TYPE_long(type)         ((type).l)
-
 #define TYPE_can_be_long(type)  (TYPE_get_id(type) <= T_LONG)
 
 #define TYPE_compare(_t1, _t2) ((_t1)->t.id == (_t2)->t.id && (_t1)->t.value == (_t2)->t.value)
@@ -101,7 +99,7 @@ EXTERN char *TYPE_name[];
 PUBLIC TYPE TYPE_make(TYPE_ID id, short value, int flag);
 PUBLIC char *TYPE_get_desc(TYPE type);
 PUBLIC const char *TYPE_get_short_desc(TYPE type);
-PUBLIC long TYPE_sizeof(TYPE type);
+PUBLIC size_t TYPE_sizeof(TYPE type);
 
 #endif
 

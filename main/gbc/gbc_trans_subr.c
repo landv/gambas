@@ -142,14 +142,14 @@ static void trans_print_debug(void)
 
 
 
-PUBLIC void TRANS_print(void)
+void TRANS_print(void)
 {
   trans_stream(TS_STDOUT);
   trans_print_debug();
 }
 
 
-PUBLIC void TRANS_debug(void)
+void TRANS_debug(void)
 {
 	if (!JOB->debug)
 	{
@@ -165,7 +165,7 @@ PUBLIC void TRANS_debug(void)
 }
 
 
-PUBLIC void TRANS_error(void)
+void TRANS_error(void)
 {
 	if (TRANS_is(RS_TO))
 	{
@@ -187,7 +187,7 @@ PUBLIC void TRANS_error(void)
 }
 
 
-PUBLIC void TRANS_write(void)
+void TRANS_write(void)
 {
   int nparam = 1;
 
@@ -207,7 +207,7 @@ PUBLIC void TRANS_write(void)
 }
 
 
-PUBLIC void TRANS_output_to()
+void TRANS_output_to()
 {
   TRANS_want(RS_TO, NULL);
 
@@ -222,7 +222,7 @@ PUBLIC void TRANS_output_to()
     CODE_drop();
 }
 
-PUBLIC void TRANS_input_from()
+void TRANS_input_from()
 {
   if (TRANS_is(RS_DEFAULT))
     CODE_push_null();
@@ -236,7 +236,7 @@ PUBLIC void TRANS_input_from()
 }
 
 
-PUBLIC void TRANS_input(void)
+void TRANS_input(void)
 {
   boolean stream = TRUE;
 
@@ -267,7 +267,7 @@ PUBLIC void TRANS_input(void)
 }
 
 
-PUBLIC void TRANS_read(void)
+void TRANS_read(void)
 {
   int nparam = 2;
   PATTERN *save_return;
@@ -296,7 +296,7 @@ PUBLIC void TRANS_read(void)
 }
 
 
-PUBLIC void TRANS_open(void)
+void TRANS_open(void)
 {
   int mode = TS_MODE_READ;
 
@@ -358,7 +358,7 @@ PUBLIC void TRANS_open(void)
 }
 
 
-PUBLIC void TRANS_pipe(void)
+void TRANS_pipe(void)
 {
   int mode = TS_MODE_READ;
 
@@ -420,7 +420,7 @@ PUBLIC void TRANS_pipe(void)
 }
 
 
-PUBLIC void TRANS_close(void)
+void TRANS_close(void)
 {
   if (PATTERN_is_newline(*JOB->current))
     THROW(E_SYNTAX);
@@ -433,7 +433,7 @@ PUBLIC void TRANS_close(void)
 }
 
 
-PUBLIC void TRANS_lock(void)
+void TRANS_lock(void)
 {
   if (PATTERN_is_newline(*JOB->current))
     THROW(E_SYNTAX);
@@ -447,7 +447,7 @@ PUBLIC void TRANS_lock(void)
 }
 
 
-PUBLIC void TRANS_unlock(void)
+void TRANS_unlock(void)
 {
   if (PATTERN_is_newline(*JOB->current))
     THROW(E_SYNTAX);
@@ -460,7 +460,7 @@ PUBLIC void TRANS_unlock(void)
 }
 
 
-PUBLIC void TRANS_seek(void)
+void TRANS_seek(void)
 {
   int nparam;
 
@@ -482,7 +482,7 @@ PUBLIC void TRANS_seek(void)
 }
 
 
-PUBLIC void TRANS_line_input(void)
+void TRANS_line_input(void)
 {
   if (TRANS_is(RS_INPUT))
   {
@@ -495,7 +495,7 @@ PUBLIC void TRANS_line_input(void)
 }
 
 
-PUBLIC void TRANS_flush(void)
+void TRANS_flush(void)
 {
   trans_stream(TS_STDOUT);
   trans_subr(TS_SUBR_FLUSH, 1);
@@ -503,7 +503,7 @@ PUBLIC void TRANS_flush(void)
 }
 
 
-PUBLIC void TRANS_stop(void)
+void TRANS_stop(void)
 {
   if (TRANS_is(RS_EVENT))
     CODE_stop_event();
@@ -512,12 +512,12 @@ PUBLIC void TRANS_stop(void)
 }
 
 
-PUBLIC void TRANS_quit(void)
+void TRANS_quit(void)
 {
   CODE_quit();
 }
 
-PUBLIC void TRANS_randomize(void)
+void TRANS_randomize(void)
 {
 	if (PATTERN_is_newline(*JOB->current))
 	{
@@ -586,18 +586,18 @@ static void trans_exec_shell(bool shell)
 }
 
 
-PUBLIC void TRANS_exec(void)
+void TRANS_exec(void)
 {
   trans_exec_shell(FALSE);
 }
 
-PUBLIC void TRANS_shell(void)
+void TRANS_shell(void)
 {
   trans_exec_shell(TRUE);
 }
 
 
-PUBLIC void TRANS_wait(void)
+void TRANS_wait(void)
 {
   int nparam = 0;
 
@@ -612,7 +612,7 @@ PUBLIC void TRANS_wait(void)
 }
 
 
-PUBLIC void TRANS_sleep(void)
+void TRANS_sleep(void)
 {
   TRANS_expression(FALSE);
   trans_subr(TS_SUBR_SLEEP, 1);
@@ -620,14 +620,14 @@ PUBLIC void TRANS_sleep(void)
 }
 
 
-PUBLIC void TRANS_kill(void)
+void TRANS_kill(void)
 {
   TRANS_expression(FALSE);
   trans_subr(TS_SUBR_KILL, 1);
   CODE_drop();
 }
 
-PUBLIC void TRANS_move(void)
+void TRANS_move(void)
 {
   TRANS_expression(FALSE);
   TRANS_want(RS_TO, NULL);
@@ -636,7 +636,7 @@ PUBLIC void TRANS_move(void)
   CODE_drop();
 }
 
-PUBLIC void TRANS_copy(void)
+void TRANS_copy(void)
 {
   TRANS_expression(FALSE);
   TRANS_want(RS_TO, NULL);
@@ -645,7 +645,7 @@ PUBLIC void TRANS_copy(void)
   CODE_drop();
 }
 
-PUBLIC void TRANS_link(void)
+void TRANS_link(void)
 {
   TRANS_expression(FALSE);
   TRANS_want(RS_TO, NULL);
@@ -654,7 +654,7 @@ PUBLIC void TRANS_link(void)
   CODE_drop();
 }
 
-PUBLIC void TRANS_inc(void)
+void TRANS_inc(void)
 {
   PATTERN *save = JOB->current;
 
@@ -666,7 +666,7 @@ PUBLIC void TRANS_inc(void)
   TRANS_reference();
 }
 
-PUBLIC void TRANS_dec(void)
+void TRANS_dec(void)
 {
   PATTERN *save = JOB->current;
 
@@ -679,7 +679,7 @@ PUBLIC void TRANS_dec(void)
 }
 
 
-PUBLIC void TRANS_swap(void)
+void TRANS_swap(void)
 {
   PATTERN *sa;
   PATTERN *sb;
@@ -704,14 +704,14 @@ PUBLIC void TRANS_swap(void)
   JOB->current = current;
 }
 
-PUBLIC void TRANS_mkdir(void)
+void TRANS_mkdir(void)
 {
   TRANS_expression(FALSE);
   trans_subr(TS_SUBR_MKDIR, 1);
   CODE_drop();
 }
 
-PUBLIC void TRANS_rmdir(void)
+void TRANS_rmdir(void)
 {
   TRANS_expression(FALSE);
   trans_subr(TS_SUBR_RMDIR, 1);
@@ -719,7 +719,7 @@ PUBLIC void TRANS_rmdir(void)
 }
 
 #if 0
-PUBLIC void TRANS_scan(void)
+void TRANS_scan(void)
 {
   PATTERN *save;
   int noutput = 0;
@@ -751,7 +751,7 @@ PUBLIC void TRANS_scan(void)
 }
 #endif
 
-PUBLIC void TRANS_subr(int subr, int nparam)
+void TRANS_subr(int subr, int nparam)
 {
   trans_subr(subr, nparam);
 }
