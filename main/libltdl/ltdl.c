@@ -272,11 +272,7 @@ strdup(str)
       tmp = LT_DLMALLOC (char, 1+ strlen (str));
       if (tmp)
 	{
-#ifdef OS_OPENBSD
-	  strlcpy(tmp, str, strlen(str)+1);
-#else
 	  strcpy(tmp, str);
-#endif
 	}
     }
 
@@ -898,7 +894,7 @@ static	const char	sys_search_path[]	= LTDL_SYSSEARCHPATH;
 		(*lt_dlmutex_seterror_func) (errormsg);		\
 	else 	lt_dllast_error = (errormsg);	} LT_STMT_END
 #define LT_DLMUTEX_GETERROR(errormsg)		LT_STMT_START {	\
-	if (lt_dlmutex_geterror_func)				\
+	if (lt_dlmutex_seterror_func)				\
 		(errormsg) = (*lt_dlmutex_geterror_func) ();	\
 	else	(errormsg) = lt_dllast_error;	} LT_STMT_END
 
@@ -2710,21 +2706,13 @@ foreach_dirinpath (search_path, base_name, func, data1, data2)
 	}
 
 	assert (filenamesize > lendir);
-#ifdef OS_OPENBSD
-	strlcpy (filename, dir_name, filenamesize);
-#else
 	strcpy (filename, dir_name);
-#endif
 
 	if (base_name && *base_name)
 	  {
 	    if (filename[lendir -1] != '/')
 	      filename[lendir++] = '/';
-#ifdef OS_OPENBSD
-	    strlcpy (filename, base_name, filenamesize-lendir);
-#else
 	    strcpy (filename +lendir, base_name);
-#endif
 	  }
 
 	if ((result = (*func) (filename, data1, data2)))
@@ -3505,11 +3493,7 @@ lt_dlopenext (filename)
   if (!tmp)
     return 0;
 
-#ifdef OS_OPENBSD
-  strlcpy (tmp, filename, len+LT_STRLEN(archive_ext)+1);
-#else
   strcpy (tmp, filename);
-#endif
   strcat (tmp, archive_ext);
   errors = try_dlopen (&handle, tmp);
 
@@ -3533,11 +3517,7 @@ lt_dlopenext (filename)
       if (!tmp)
 	return 0;
 
-#ifdef OS_OPENBSD
-      strlcpy (tmp, filename, len+LT_STRLEN(shlib_ext)+1);
-#else
       strcpy (tmp, filename);
-#endif
     }
   else
     {
@@ -3673,11 +3653,7 @@ lt_argz_insertdir (pargz, pargz_len, dirnam, dp)
 
   assert (buf);
 
-#ifdef OS_OPENBSD
-  strlcpy (buf, dirnam, buf_len+1);
-#else
   strcpy  (buf, dirnam);
-#endif
   strcat  (buf, "/");
   strncat (buf, dp->d_name, end_offset);
   buf[buf_len] = LT_EOS_CHAR;
@@ -3930,20 +3906,12 @@ lt_dlsym (handle, symbol)
       /* this is a libtool module */
       if (handle->loader->sym_prefix)
 	{
-#ifdef OS_OPENBSD
-          strlcpy(sym, handle->loader->sym_prefix, lensym + LT_SYMBOL_OVERHEAD + 1);
-#else
 	  strcpy(sym, handle->loader->sym_prefix);
-#endif
 	  strcat(sym, handle->info.name);
 	}
       else
 	{
-#ifdef OS_OPENBSD
-          strlcpy(sym, handle->info.name, lensym + LT_SYMBOL_OVERHEAD + 1);
-#else
 	  strcpy(sym, handle->info.name);
-#endif
 	}
 
       strcat(sym, "_LTX_");
@@ -3965,20 +3933,12 @@ lt_dlsym (handle, symbol)
   /* otherwise try "symbol" */
   if (handle->loader->sym_prefix)
     {
-#ifdef OS_OPENBSD
-      strlcpy(sym, handle->loader->sym_prefix, lensym + LT_SYMBOL_OVERHEAD + 1);
-#else
       strcpy(sym, handle->loader->sym_prefix);
-#endif
       strcat(sym, symbol);
     }
   else
     {
-#ifdef OS_OPENBSD
-      strlcpy(sym, symbol, lensym + LT_SYMBOL_OVERHEAD + 1);
-#else
       strcpy(sym, symbol);
-#endif
     }
 
   address = handle->loader->find_sym (data, handle->module, sym);
