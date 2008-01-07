@@ -6,7 +6,7 @@ AC_PROG_LIBTOOL
 
 GB_CHECK_XWINDOW
 
-AC_CHECK_LIB(Xtst, XTestQueryExtension, [X_LIBS="$X_LIBS -lXtst"], [touch DISABLED], [-lX11])
+AC_CHECK_LIB(Xtst, XTestQueryExtension, [X_LIBS="$X_LIBS -lXtst"], [touch DISABLED], [$X_LIBS])
 
 GB_COMPONENT(
   desktop,
