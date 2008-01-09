@@ -702,8 +702,8 @@ GB_DESC CTextEditDesc[] =
   GB_PROPERTY("ScrollX", "i", CTEXTEDIT_scroll_x),
   GB_PROPERTY("ScrollY", "i", CTEXTEDIT_scroll_y),
   
-  GB_PROPERTY("TextWidth", "i", CTEXTEDIT_text_width),
-  GB_PROPERTY("TextHeight", "i", CTEXTEDIT_text_height),
+  GB_PROPERTY_READ("TextWidth", "i", CTEXTEDIT_text_width),
+  GB_PROPERTY_READ("TextHeight", "i", CTEXTEDIT_text_height),
 
   GB_PROPERTY_SELF("Format", ".TextEditFormat"),
   

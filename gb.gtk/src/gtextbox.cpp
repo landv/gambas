@@ -33,7 +33,8 @@
 static void cb_change_insert(GtkEditable *editable, gchar *new_text, gint new_text_length, gint *position, gTextBox *data)
 {
 	gtk_editable_set_position(editable, *position);
-	data->emit(SIGNAL(data->onChange));	
+	data->emit(SIGNAL(data->onChange));
+	*position = gtk_editable_get_position(editable);
 }
 
 static void cb_change_delete(GtkEditable *editable, gint start_pos, gint end_pos, gTextBox *data)
@@ -131,10 +132,18 @@ int gTextBox::position()
 
 void gTextBox::setPosition(int pos)
 {
+	int len;
+	
 	if (!entry)
 		return;
+		
+	len = length();
+		
 	if (pos < 0) 
-		pos=0;
+		pos = 0;
+	else if (pos >= len)
+		pos = -1;
+		
 	gtk_editable_set_position(GTK_EDITABLE(entry), pos);
 }
 
@@ -159,7 +168,6 @@ void gTextBox::insert(char *txt, int len)
 	
 	int pos = position();
 	gtk_editable_insert_text(GTK_EDITABLE(entry), txt, len, &pos);
-	
 }
 
 int gTextBox::length()

@@ -167,7 +167,8 @@ PRIVATE SUB FormatDateTime(sSep AS String)
   DIM sRest AS String
   
   'IF ME.Text = "31/12/2007/" THEN STOP
-  
+
+  'DEBUG "ME.Pos = "; ME.Pos  
   iPos = ME.Pos
 
   aValue = Split(ME.Text, sSep)
@@ -215,6 +216,8 @@ PRIVATE SUB FormatDateTime(sSep AS String)
   SUPER.Text = sVal
   
   ME.Pos = iPos
+  'DEBUG "ME.Pos = "; iPos
+  'DEBUG System.Backtrace.Join("/")
     
 END
 
@@ -240,6 +243,8 @@ END
 PUBLIC SUB TextBox_KeyPress()
   
   DIM iPos AS Integer
+  
+  'DEBUG
   
   IF Key.Code = Key.Escape THEN 
     SUPER.Text = $sLastGood
@@ -278,6 +283,9 @@ PUBLIC SUB TextBox_KeyPress()
       
     CASE {Date}
     
+      'DEBUG "IsDigit: "; IsDigit(Key.Text)
+      'DEBUG "Key.Text = $sDateSep: "; Key.Text = $sDateSep
+      'DEBUG "ME.Pos: "; ME.Pos; " ME.Length: "; ME.Length
       IF IsDigit(Key.Text) THEN RETURN
       IF Key.Text = $sDateSep AND IF ME.Pos = ME.Length THEN RETURN
     
@@ -304,6 +312,8 @@ PUBLIC SUB TextBox_Change()
   IF $bDelete THEN RETURN
   
   Object.Lock(ME)
+  
+  'DEBUG
   
   SELECT CASE $iType
   
