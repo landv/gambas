@@ -217,7 +217,7 @@ extern "C"
 	int EXPORT GB_INIT(void)
 	{
 		//setGeneralMemoryHandler();
-		gMessage::setTitle(GB.Application.Name());
+		gMessage::setTitle(GB.Application.Title());
 		
 		GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
 		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
