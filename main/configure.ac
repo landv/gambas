@@ -40,7 +40,7 @@ GB_COMPONENT(
   [external gettext library],
   [],
   [],
-  [GB_FIND(gettextlib.$SHLIBEXT, /usr/local /usr, lib)],
+  [GB_FIND(libgettextlib.$SHLIBEXT, /usr/local /usr, lib)],
   [-lgettextlib],
   [],
   [This library must be located inside the C library])
@@ -51,7 +51,7 @@ rm -f DISABLED
 
 dnl ---- Should I use libtool to load shared libraries in gbi and gbx ?
 
-if test "$SYSTEM" != "CYGWIN"; then
+if test "$SYSTEM" != "CYGWIN" && test "$SYSTEM" != "OPENBSD"; then
   AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
   DL_LIB="-ldl"
 else
@@ -59,6 +59,16 @@ else
 fi
 
 AC_SUBST(DL_LIB)
+
+dnl ---- Add libutil linkage for OpenBSD, needed for opentty() function
+
+if test "$SYSTEM" = "OPENBSD"; then
+  TTY_LIB="-lutil"
+else
+  TTY_LIB=""
+fi
+
+AC_SUBST(OBSD_LIB)
 
 dnl ---- Check for Portland scripts
 

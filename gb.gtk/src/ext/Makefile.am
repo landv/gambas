@@ -6,7 +6,7 @@ INCLUDES = @GTK_INC@ -I$(top_srcdir)/share
 gblib_LTLIBRARIES = gb.gtk.ext.la
 
 gb_gtk_ext_la_LIBADD = @GTK_LIB@
-gb_gtk_ext_la_LDFLAGS = -module @LD_FLAGS@
+gb_gtk_ext_la_LDFLAGS = -module @LD_FLAGS@ @GTK_LDFLAGS@
 
 gb_gtk_ext_la_SOURCES = \
  main.h main.cpp \
