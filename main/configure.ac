@@ -68,7 +68,7 @@ else
   TTY_LIB=""
 fi
 
-AC_SUBST(OBSD_LIB)
+AC_SUBST(TTY_LIB)
 
 dnl ---- Check for Portland scripts
 
