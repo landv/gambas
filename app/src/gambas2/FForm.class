@@ -230,7 +230,6 @@ PRIVATE SUB FromString(sData AS String, OPTIONAL hParent AS CControl)
         sEventName = ""
       ENDIF
 
-
       IF Left$(sClass) = "#" THEN sClass = Mid$(sClass, 2)
 
       IF IsNull(hCtrl) THEN sName = Name

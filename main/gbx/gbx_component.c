@@ -135,6 +135,7 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
   COMPONENT *comp;
   char *path;
   bool can_archive;
+  bool error = FALSE;
 
   comp = COMPONENT_find(name);
   if (comp)
@@ -196,14 +197,18 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
   if (comp->library || comp->archive || !can_archive)
   	goto __OK;
 
-	COMPONENT_delete(comp);
-	THROW(E_LIBRARY, name, "cannot find library file");
-//	THROW(E_LIBRARY, comp->name, "cannot find library file");
+	error = TRUE;
 
 __OK:
 
   LIST_insert(&_component_list, comp, &comp->list);
   COMPONENT_count++;
+
+	if (error)
+	{
+		COMPONENT_delete(comp);
+		THROW(E_LIBRARY, name, "cannot find library file");
+	}
 
   return comp;
 }

@@ -78,10 +78,12 @@ static void push_number(long index)
   }
 
   CLEAR(&decl);
-  decl.type = TYPE_make(T_FLOAT, 0, 0);
+  decl.type = TYPE_make(number.type, 0, 0);
   decl.index = NO_SYMBOL;
   decl.value = index;
-  CODE_push_const(CLASS_add_constant(JOB->class, &decl));
+  if (number.type == T_LONG)
+  	decl.lvalue = number.lval;
+  CODE_push_const(CLASS_add_constant(JOB->class, &decl));  
 }
 
 

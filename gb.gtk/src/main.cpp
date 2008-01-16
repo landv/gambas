@@ -216,8 +216,6 @@ extern "C"
 
 	int EXPORT GB_INIT(void)
 	{
-		//setGeneralMemoryHandler();
-		
 		GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
 		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_WAIT, (void *)my_wait);

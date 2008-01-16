@@ -1265,8 +1265,17 @@ static int table_index(DB_DATABASE * db, char *table, DB_INFO * info)
 			}
 		}
 
-		res->close();
-		return FALSE;
+		if (i >= r->records.size())
+		{
+			GB.Free(POINTER(&info->index));
+			res->close();	
+			return TRUE;
+		}
+		else
+		{
+			res->close();
+			return FALSE;
+		}
 	}
 
 	for (int i = 0; i < n; i++)

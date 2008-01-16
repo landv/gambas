@@ -45,6 +45,7 @@ static bool _title_set = false;
   GB.ReturnInteger(_code); \
   _global_lock--; \
 
+
 BEGIN_METHOD(CMESSAGE_info, GB_STRING msg; GB_STRING btn)
 
 	char *b=NULL;
@@ -102,7 +103,6 @@ END_METHOD
 GB_DESC CMessageDesc[] =
 {
   GB_DECLARE("Message", 0), GB_VIRTUAL_CLASS(),
-
 
   GB_STATIC_METHOD("_call", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
   GB_STATIC_METHOD("Info", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
