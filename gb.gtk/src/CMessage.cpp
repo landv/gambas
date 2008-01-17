@@ -32,6 +32,7 @@
 #define MSG_FIELDS "(Message)s[(Button1)s(Button2)s(Button3)s]"
 
 static int _global_lock = 0;
+static bool _title_set = false;
 
 #define LOCK_MSG_BOX(_code) \
   if (_global_lock) \
@@ -40,6 +41,7 @@ static int _global_lock = 0;
   	return; \
   } \
   _global_lock++; \
+  if (!_title_set) gMessage::setTitle(GB.Application.Title()); \
   GB.ReturnInteger(_code); \
   _global_lock--; \
 

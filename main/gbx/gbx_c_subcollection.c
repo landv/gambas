@@ -202,7 +202,7 @@ END_METHOD
 
 #endif
 
-PUBLIC GB_DESC NATIVE_SubCollection[] =
+GB_DESC NATIVE_SubCollection[] =
 {
   GB_DECLARE(".SubCollection", sizeof(CSUBCOLLECTION)),
 
@@ -222,7 +222,7 @@ PUBLIC GB_DESC NATIVE_SubCollection[] =
 
 #ifndef GBX_INFO
 
-PUBLIC void GB_SubCollectionNew(GB_SUBCOLLECTION *subcollection, GB_SUBCOLLECTION_DESC *desc, void *container)
+void GB_SubCollectionNew(GB_SUBCOLLECTION *subcollection, GB_SUBCOLLECTION_DESC *desc, void *container)
 {
   CSUBCOLLECTION *ob;
   CLASS *class;
@@ -248,13 +248,13 @@ PUBLIC void GB_SubCollectionNew(GB_SUBCOLLECTION *subcollection, GB_SUBCOLLECTIO
 }
 
 
-PUBLIC void *GB_SubCollectionContainer(void *_object)
+void *GB_SubCollectionContainer(void *_object)
 {
   return THIS->container;
 }
 
 
-PUBLIC void GB_SubCollectionAdd(void *_object, const char *key, int len, void *value)
+void GB_SubCollectionAdd(void *_object, const char *key, int len, void *value)
 {
   void **data;
 
@@ -268,7 +268,7 @@ PUBLIC void GB_SubCollectionAdd(void *_object, const char *key, int len, void *v
   *data = value;
 }
 
-PUBLIC void GB_SubCollectionRemove(void *_object, const char *key, int len)
+void GB_SubCollectionRemove(void *_object, const char *key, int len)
 {
   void *data;
 
@@ -288,7 +288,7 @@ PUBLIC void GB_SubCollectionRemove(void *_object, const char *key, int len)
 }
 
 
-PUBLIC void *GB_SubCollectionGet(void *_object, const char *key, int len)
+void *GB_SubCollectionGet(void *_object, const char *key, int len)
 {
   return get_from_key(THIS, key, len);
 }

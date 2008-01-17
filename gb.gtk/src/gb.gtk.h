@@ -37,7 +37,7 @@
 typedef
 	struct 
 	{
-		int version;
+		intptr_t version;
 		void *(*GetPicture)(GdkPixbuf *buf);
 		void *(*GetImage)(GdkPixbuf *buf);
 		struct {

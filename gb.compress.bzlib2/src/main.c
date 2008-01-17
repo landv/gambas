@@ -28,6 +28,7 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <stdio.h>
+#include <stdint.h>
 #include <errno.h>
 #include <bzlib.h>
 
@@ -36,11 +37,31 @@
 #define GB_Z_BUFFER 8192
 #define MODE_READ 0
 #define MODE_WRITE 1
-#define P_MODE stream->_free[0]
-#define P_BZ   stream->_free[1]
-#define P_FILE stream->_free[2]
-#define P_EOF  stream->_free[3]
-#define P_POS  *((long long *)&stream->_free[4])
+#define P_MODE ((BZ2_STREAM*)stream)->info->mode
+#define P_BZ   ((BZ2_STREAM*)stream)->info->bz
+#define P_FILE ((BZ2_STREAM*)stream)->info->file
+#define P_EOF  ((BZ2_STREAM*)stream)->info->eof
+#define P_POS  ((BZ2_STREAM*)stream)->info->pos
+
+
+typedef struct
+{
+	uint8_t mode;
+	uint8_t eof;
+	BZFILE  *bz;
+	FILE    *file;
+	int64_t pos;
+	
+	
+} handleInfo; 
+
+typedef struct
+{
+    GB_STREAM_DESC *desc;
+    int _reserved;
+    handleInfo *info;
+
+} BZ2_STREAM;
 
 GB_INTERFACE GB EXPORT;
 COMPRESS_INTERFACE COMPRESSION EXPORT;
@@ -51,6 +72,7 @@ GB_STREAM_DESC BZStream = {
 	open: BZ_stream_open,
 	close: BZ_stream_close,
 	read: BZ_stream_read,
+	getchar: BZ_stream_getchar,
 	write: BZ_stream_write,
 	seek: BZ_stream_seek,
 	tell: BZ_stream_tell,
@@ -361,20 +383,24 @@ static void BZ2_c_Open(char *path,int level,GB_STREAM *stream)
 {
 	int bzerror;
 
-	P_FILE=(long)fopen(path,"wb");
+	GB.Alloc( POINTER(&((BZ2_STREAM*)stream)->info),sizeof(handleInfo) );
+
+	P_FILE=fopen(path,"wb");
 	if (!P_FILE)
 	{
+		GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
 		GB.Error("Unable to open file");
 		return;
 	}
 
 	P_MODE=MODE_WRITE;
-	P_BZ=(long)BZ2_bzWriteOpen(&bzerror,(FILE*)P_FILE,level,0,30);
+	P_BZ=BZ2_bzWriteOpen(&bzerror,P_FILE,level,0,30);
 
 
 	if (bzerror)
 	{
-		fclose((FILE*)P_FILE);
+		fclose(P_FILE);
+		GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
 		GB.Error("Unable to open file");
 		return;
 	}
@@ -382,28 +408,30 @@ static void BZ2_c_Open(char *path,int level,GB_STREAM *stream)
 	P_EOF=0;
 	P_POS=0;
 	stream->desc=&BZStream;
-	return;
-
-
+	
 }
 
 static void BZ2_u_Open(char *path,GB_STREAM *stream)
 {
 	int bzerror;
 
-	P_FILE=(long)fopen(path,"rb");
+	GB.Alloc( POINTER(&((BZ2_STREAM*)stream)->info),sizeof(handleInfo) );
+
+	P_FILE=fopen(path,"rb");
 	if (!P_FILE)
 	{
+		GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
 		GB.Error("Unable to open file");
 		return;
 	}
 
 	P_MODE=MODE_WRITE;
-	P_BZ=(long)BZ2_bzReadOpen (&bzerror,(FILE*)P_FILE,0,0,NULL,0);
+	P_BZ=BZ2_bzReadOpen (&bzerror,P_FILE,0,0,NULL,0);
 
 	if (bzerror)
 	{
-		fclose((FILE*)P_FILE);
+		GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
+		fclose(P_FILE);
 		GB.Error("Unable to open file");
 		return;
 	}
@@ -411,18 +439,17 @@ static void BZ2_u_Open(char *path,GB_STREAM *stream)
 	P_EOF=0;
 	P_POS=0;
 	stream->desc=&BZStream;
-	return;
 }
 
 /*************************************************************************
  Stream related stuff
 **************************************************************************/
 /* not allowed stream methods */
-static int BZ_stream_lof(GB_STREAM *stream, long long *len){return -1;}
-static int BZ_stream_seek(GB_STREAM *stream, long long offset, int whence){	return -1;}
+static int BZ_stream_lof(GB_STREAM *stream, int64_t *len){return -1;}
+static int BZ_stream_seek(GB_STREAM *stream, int64_t offset, int whence){	return -1;}
 static int BZ_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
 /* allowed stream methods */
-static int BZ_stream_tell(GB_STREAM *stream, long long *npos)
+static int BZ_stream_tell(GB_STREAM *stream, int64_t *npos)
 {
 	*npos=P_POS;
 	return 0;
@@ -438,25 +465,29 @@ static int BZ_stream_close(GB_STREAM *stream)
 	int bzerror;
 
 	if (P_MODE==MODE_WRITE)
-		BZ2_bzWriteClose(&bzerror,(BZFILE*)P_BZ,0,NULL,NULL);
+		BZ2_bzWriteClose(&bzerror,P_BZ,0,NULL,NULL);
 	else
-		BZ2_bzReadClose(&bzerror,(BZFILE*)P_BZ);
+		BZ2_bzReadClose(&bzerror,P_BZ);
 
-	fclose((FILE*)P_FILE);
+	fclose(P_FILE);
+
+	GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
 	stream->desc=NULL;
 	return 0;
 }
 
-static int BZ_stream_write(GB_STREAM *stream, char *buffer, long len)
+static int BZ_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	int bzerror;
 
 	if (P_MODE==MODE_READ) return -1;
-	BZ2_bzWrite ( &bzerror,(BZFILE*)P_BZ, (void*)buffer, len);
+	BZ2_bzWrite ( &bzerror,P_BZ, (void*)buffer, len);
 	if (!bzerror) { P_POS+=len; return 0; }
 
-	BZ2_bzWriteClose (&bzerror,(BZFILE*)P_BZ,0,NULL,NULL);
-	fclose((BZFILE*)P_FILE);
+	BZ2_bzWriteClose (&bzerror,P_BZ,0,NULL,NULL);
+	fclose(P_FILE);
+
+	GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
 	stream->desc=NULL;
 	return -1;
 }
@@ -466,14 +497,14 @@ static int BZ_stream_eof(GB_STREAM *stream)
 	return P_EOF;
 }
 
-static int BZ_stream_read(GB_STREAM *stream, char *buffer, long len)
+static int BZ_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	int bzerror;
 	int len2;
 
-	if (stream->_free[0]==MODE_WRITE) return -1;
+	if (P_MODE==MODE_WRITE) return -1;
 
-	len2=BZ2_bzRead ( &bzerror,(BZFILE*)P_BZ,(void*)buffer,len);
+	len2=BZ2_bzRead ( &bzerror,P_BZ,(void*)buffer,len);
 	if (!bzerror)
 	{
 		P_POS+=len2;
@@ -489,14 +520,18 @@ static int BZ_stream_read(GB_STREAM *stream, char *buffer, long len)
 		}
 	}
 
-	BZ2_bzReadClose (&bzerror,(BZFILE*)P_BZ);
-	fclose((FILE*)P_FILE);
+	BZ2_bzReadClose (&bzerror,P_BZ);
+	fclose(P_FILE);
 
+	GB.Free( POINTER(&((BZ2_STREAM*)stream)->info) );
 	stream->desc=NULL;
 	return -1;
 }
 
-
+static int BZ_stream_getchar(GB_STREAM *stream, char *buffer)
+{
+	return BZ_stream_read(stream,buffer,1);
+}
 
 
 /****************************************************************************
@@ -547,3 +582,4 @@ int EXPORT GB_INIT(void)
 void EXPORT GB_EXIT()
 {
 }
+

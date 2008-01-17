@@ -349,33 +349,41 @@ void X11_window_startup(Window window, int x, int y, int w, int h)
 void X11_find_windows(Window **window_list, int *count)
 {
 	static Atom _net_client_list = 0;
+	unsigned long n;
 
 	if (!_net_client_list)
 		_net_client_list = XInternAtom(_display, "_NET_CLIENT_LIST", True);
 
-	get_property(_root, _net_client_list, 1024 * sizeof(Window), (unsigned char **)window_list, (unsigned long *)count);
+	get_property(_root, _net_client_list, 1024 * sizeof(Window), (unsigned char **)window_list, &n);
+	*count = (int)n;
 }
 
 // ### Do not forget to call XFree() on result once finished with it
 
-void X11_get_window_title(Window window, char **result, long *length)
+void X11_get_window_title(Window window, char **result, int *length)
 {
-	get_property(window, XA_WM_NAME, 256, (unsigned char **)result, (unsigned long *)length);
+	unsigned long n;
+	get_property(window, XA_WM_NAME, 256, (unsigned char **)result, &n);
+	*length = (int)n;
 }
 
-void X11_get_window_class(Window window, char **result, long *length)
+void X11_get_window_class(Window window, char **result, int *length)
 {
-	get_property(window, XA_WM_CLASS, 256, (unsigned char **)result, (unsigned long *)length);
+	unsigned long n;
+	get_property(window, XA_WM_CLASS, 256, (unsigned char **)result, &n);
+	*length = (int)n;
 }
 
-void X11_get_window_role(Window window, char **result, long *length)
+void X11_get_window_role(Window window, char **result, int *length)
 {
 	static Atom wm_window_role = (Atom)0;
+	unsigned long n;
 
 	if (!wm_window_role)
 		wm_window_role = XInternAtom(_display, "WM_WINDOW_ROLE", True);
 
-	get_property(window, wm_window_role, 256, (unsigned char **)result, (unsigned long *)length);
+	get_property(window, wm_window_role, 256, (unsigned char **)result, &n);
+	*length = (int)n;
 }
 
 
@@ -438,24 +446,24 @@ void X11_window_set_desktop(Window window, bool visible, int desktop)
 }
 
 
-long X11_window_get_desktop(Window window)
+int X11_window_get_desktop(Window window)
 {
 	unsigned long length = 0;
 	unsigned char *data = NULL;
-	long desktop = 0;
+	int desktop = 0;
 
 	get_property(window, X11_atom_net_wm_desktop, sizeof(int), &data, &length);
 
 	if (data)
 	{
-		desktop = *((long *)data);
+		desktop = *((int *)data);
 		XFree(data);
 	}
 	
 	return desktop;
 }
 
-long X11_get_current_desktop()
+int X11_get_current_desktop()
 {
 	unsigned long length = 0;
 	unsigned char *data = NULL;
@@ -463,7 +471,7 @@ long X11_get_current_desktop()
 
 	get_property(_root, X11_atom_net_current_desktop, sizeof(int), &data, &length);
 
-	desktop = *((long *)data);
+	desktop = *((int *)data);
 
 	XFree(data);
 	

@@ -71,7 +71,7 @@ static CLASS *Class;
 void CLASS_init(void)
 {
   if (sizeof(CLASS) > 128)
-    fprintf(stderr, "sizeof(CLASS) = %d! Did you compile gambas on a 64 bits CPU?\n", sizeof(CLASS));
+    fprintf(stderr, "Warning: Use the 64 bits version of Gambas at your own risk!\n");
 
   TABLE_create_static(&_global_table, sizeof(CLASS_SYMBOL), TF_IGNORE_CASE);
 
@@ -129,7 +129,36 @@ static void unload_class(CLASS *class)
 
   if (!CLASS_is_native(class))
   {
-    /*OBJECT_release(class, NULL);*/
+    #ifdef OS_64BITS
+    	
+    	FREE(&class->load->desc, "unload_class");
+    	FREE(&class->load->cst, "unload_class");
+    	FREE(&class->load->class_ref, "unload_class");
+    	FREE(&class->load->unknown, "unload_class");
+    	FREE(&class->load->event, "unload_class");
+    	FREE(&class->load->ext, "unload_class");
+    	FREE(&class->load->local, "unload_class");
+    	FREE(&class->load->array, "unload_class");
+    	
+    	if (class->debug)
+    	{
+    		int i;
+    		FUNCTION *func;
+    		
+				for (i = 0; i < class->load->n_func; i++)
+				{
+					func = &class->load->func[i];
+					FREE(&func->debug->local, "unload_class");
+				}
+				
+				FREE(&class->load->global, "unload_class");
+				FREE(&class->load->debug, "unload_class");
+    	}
+    	
+    	FREE(&class->load->func, "unload_class");
+
+    #endif
+    
     FREE(&class->load, "unload_class");
     if (!class->mmapped)
       FREE(&class->data, "unload_class");

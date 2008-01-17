@@ -40,15 +40,15 @@ typedef
     LIST list;
     void (*func)();
     int nparam;
-    long param;
-    long param2;
+    intptr_t param;
+    intptr_t param2;
     }
   EVENT_POST;
 
 
 PUBLIC void EVENT_search(CLASS *class, ushort *event, const char *name, OBJECT *parent);
-PUBLIC void EVENT_post(void (*func)(), long param);
-PUBLIC void EVENT_post2(void (*func)(), long param, long param2);
+PUBLIC void EVENT_post(void (*func)(), intptr_t param);
+PUBLIC void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2);
 PUBLIC bool EVENT_check_post(void);
 PUBLIC void EVENT_init(void);
 PUBLIC void EVENT_exit(void);

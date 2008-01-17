@@ -33,7 +33,6 @@ extern char COMMON_toupper[];
 
 int COMMON_strcasecmp(const char *s1, const char *s2);
 int COMMON_strncasecmp(const char *s1, const char *s2, size_t n);
-void COMMON_case_init(void);
 
 #ifdef tolower
 #undef tolower

@@ -52,30 +52,9 @@
 
 #include "gbx_stream.h"
 
-#if 0
-static long do_nothing(void)
-{
-  return 0;
-}
+int STREAM_eff_read;
 
-PUBLIC STREAM_CLASS STREAM_null =
-{
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing,
-  (void *)do_nothing
-};
-#endif
-
-PUBLIC int STREAM_eff_read;
-
-PUBLIC bool STREAM_in_archive(const char *path)
+bool STREAM_in_archive(const char *path)
 {
 	ARCHIVE *arch;
 
@@ -122,7 +101,7 @@ static int STREAM_get_readable(int fd, int *len)
 }
 
 
-PUBLIC void STREAM_open(STREAM *stream, const char *path, int mode)
+void STREAM_open(STREAM *stream, const char *path, int mode)
 {
   if (FILE_is_relative(path))
   {
@@ -171,7 +150,7 @@ _OPEN:
 }
 
 
-PUBLIC void STREAM_close(STREAM *stream)
+void STREAM_close(STREAM *stream)
 {
   int fd;
 
@@ -187,7 +166,7 @@ PUBLIC void STREAM_close(STREAM *stream)
 }
 
 
-PUBLIC void STREAM_flush(STREAM *stream)
+void STREAM_flush(STREAM *stream)
 {
   if (!stream->type)
     THROW(E_CLOSED);
@@ -196,7 +175,7 @@ PUBLIC void STREAM_flush(STREAM *stream)
 }
 
 
-PUBLIC void STREAM_read(STREAM *stream, void *addr, int len)
+void STREAM_read(STREAM *stream, void *addr, int len)
 {
   STREAM_eff_read = 0;
 
@@ -218,7 +197,7 @@ PUBLIC void STREAM_read(STREAM *stream, void *addr, int len)
   }
 }
 
-PUBLIC char STREAM_getchar(STREAM *stream)
+char STREAM_getchar(STREAM *stream)
 {
   char c = 0;
   bool ret;
@@ -249,7 +228,7 @@ PUBLIC char STREAM_getchar(STREAM *stream)
 }
 
 
-PUBLIC void STREAM_read_max(STREAM *stream, void *addr, int len)
+void STREAM_read_max(STREAM *stream, void *addr, int len)
 {
   STREAM_eff_read = 0;
 
@@ -272,7 +251,7 @@ PUBLIC void STREAM_read_max(STREAM *stream, void *addr, int len)
 }
 
 
-PUBLIC void STREAM_write(STREAM *stream, void *addr, int len)
+void STREAM_write(STREAM *stream, void *addr, int len)
 {
   if (!stream->type)
     THROW(E_CLOSED);
@@ -289,7 +268,7 @@ PUBLIC void STREAM_write(STREAM *stream, void *addr, int len)
   }
 }
 
-PUBLIC void STREAM_write_eol(STREAM *stream)
+void STREAM_write_eol(STREAM *stream)
 {
   if (!stream->type)
     THROW(E_CLOSED);
@@ -303,9 +282,9 @@ PUBLIC void STREAM_write_eol(STREAM *stream)
 }
 
 
-PUBLIC long long STREAM_tell(STREAM *stream)
+int64_t STREAM_tell(STREAM *stream)
 {
-  long long pos;
+  int64_t pos;
 
   if (!stream->type)
     THROW(E_CLOSED);
@@ -318,7 +297,7 @@ PUBLIC long long STREAM_tell(STREAM *stream)
 }
 
 
-PUBLIC void STREAM_seek(STREAM *stream, long long pos, int whence)
+void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 {
   if (!stream->type)
     THROW(E_CLOSED);
@@ -427,19 +406,19 @@ static void input(STREAM *stream, char **addr, boolean line)
 }
 
 
-PUBLIC void STREAM_line_input(STREAM *stream, char **addr)
+void STREAM_line_input(STREAM *stream, char **addr)
 {
   input(stream, addr, TRUE);
 }
 
 
-PUBLIC void STREAM_input(STREAM *stream, char **addr)
+void STREAM_input(STREAM *stream, char **addr)
 {
   input(stream, addr, FALSE);
 }
 
 
-PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
+void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 {
   unsigned char data[4];
 
@@ -482,7 +461,7 @@ PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
     case T_LONG:
 
-      STREAM_read(stream, &value->_long.value, sizeof(long long));
+      STREAM_read(stream, &value->_long.value, sizeof(int64_t));
       if (stream->common.swap)
         SWAP_double((double *)(void *)&value->_long.value);
       break;
@@ -523,8 +502,10 @@ PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
       {
         if (stream->type == &STREAM_memory)
         {
-        	if (CHECK_strlen(stream->memory.addr + stream->memory.pos, &len))
+        	size_t slen;
+        	if (CHECK_strlen(stream->memory.addr + stream->memory.pos, &slen))
             THROW(E_READ);
+          len = (int)slen;
         }
         else
         {
@@ -588,7 +569,7 @@ PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
 }
 
 
-PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
+void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 {
   unsigned char data[8];
   bool write_zero;
@@ -635,10 +616,10 @@ PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 
     case T_LONG:
 
-      *((long long *)data) = value->_long.value;
+      *((int64_t *)data) = value->_long.value;
       if (stream->common.swap)
         SWAP_double((double *)data);
-      STREAM_write(stream, data, sizeof(long long));
+      STREAM_write(stream, data, sizeof(int64_t));
       break;
 
     case T_SINGLE:
@@ -746,10 +727,10 @@ PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len)
 }
 
 
-PUBLIC void STREAM_load(const char *path, char **buffer, int *rlen)
+void STREAM_load(const char *path, char **buffer, int *rlen)
 {
   STREAM stream;
-  long long len;
+  int64_t len;
 
   STREAM_open(&stream, path, ST_READ);
   STREAM_lof(&stream, &len);
@@ -766,7 +747,7 @@ PUBLIC void STREAM_load(const char *path, char **buffer, int *rlen)
 }
 
 
-PUBLIC bool STREAM_map(const char *path, char **buffer, int *rlen)
+bool STREAM_map(const char *path, char **buffer, int *rlen)
 {
   STREAM stream;
 
@@ -786,7 +767,7 @@ PUBLIC bool STREAM_map(const char *path, char **buffer, int *rlen)
 }
 
 
-PUBLIC int STREAM_handle(STREAM *stream)
+int STREAM_handle(STREAM *stream)
 {
   if (!stream->type)
     THROW(E_CLOSED);
@@ -798,9 +779,9 @@ PUBLIC int STREAM_handle(STREAM *stream)
 }
 
 
-PUBLIC void STREAM_lock(STREAM *stream)
+void STREAM_lock(STREAM *stream)
 {
-  long long pos;
+  int64_t pos;
   int fd;
 
   if (!stream->type)
@@ -836,7 +817,7 @@ __ERROR:
 
 
 
-PUBLIC void STREAM_lof(STREAM *stream, long long *len)
+void STREAM_lof(STREAM *stream, int64_t *len)
 {
   int fd;
   int ilen;
@@ -855,7 +836,7 @@ PUBLIC void STREAM_lof(STREAM *stream, long long *len)
 		*len = ilen;
 }
 
-PUBLIC bool STREAM_eof(STREAM *stream)
+bool STREAM_eof(STREAM *stream)
 {
   int fd;
   int ilen;
@@ -874,7 +855,7 @@ PUBLIC bool STREAM_eof(STREAM *stream)
 }
 
 
-PUBLIC int STREAM_read_direct(int fd, char *buffer, int len)
+int STREAM_read_direct(int fd, char *buffer, int len)
 {
   ssize_t eff_read;
   ssize_t len_read;
@@ -904,7 +885,7 @@ PUBLIC int STREAM_read_direct(int fd, char *buffer, int len)
   return FALSE;
 }
 
-PUBLIC int STREAM_write_direct(int fd, char *buffer, int len)
+int STREAM_write_direct(int fd, char *buffer, int len)
 {
   ssize_t eff_write;
   ssize_t len_write;

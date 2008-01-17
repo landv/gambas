@@ -33,13 +33,13 @@
 
 #include "gbx_stack.h"
 
-PUBLIC int STACK_size = 1024 * sizeof(VALUE);
-PUBLIC char *STACK_base = NULL;
-PUBLIC char *STACK_limit = NULL;
-PUBLIC STACK_CONTEXT *STACK_frame;
-PUBLIC int STACK_frame_count;
+size_t STACK_size = 1024 * sizeof(VALUE);
+char *STACK_base = NULL;
+char *STACK_limit = NULL;
+STACK_CONTEXT *STACK_frame;
+int STACK_frame_count;
 
-PUBLIC void STACK_init(void)
+void STACK_init(void)
 {
 	//fprintf(stderr, "STACK_size = %ld\n", STACK_size);
   ALLOC_ZERO(&STACK_base, STACK_size, "STACK_init");
@@ -52,13 +52,13 @@ PUBLIC void STACK_init(void)
 }
 
 
-PUBLIC void STACK_exit(void)
+void STACK_exit(void)
 {
   if (STACK_base)
     FREE(&STACK_base, "STACK_exit");
 }
 
-PUBLIC void STACK_check(int need)
+void STACK_check(int need)
 {
 #if DEBUG_STACK
   static VALUE *old = NULL;
@@ -75,7 +75,7 @@ PUBLIC void STACK_check(int need)
 }
 
 
-PUBLIC void STACK_push_frame(STACK_CONTEXT *context)
+void STACK_push_frame(STACK_CONTEXT *context)
 {
   if (((char *)SP + sizeof(STACK_CONTEXT) * 2) >= (char *)STACK_frame)
     THROW(E_STACK);
@@ -90,7 +90,7 @@ PUBLIC void STACK_push_frame(STACK_CONTEXT *context)
 }
 
 
-PUBLIC void STACK_pop_frame(STACK_CONTEXT *context)
+void STACK_pop_frame(STACK_CONTEXT *context)
 {
   if (STACK_frame_count <= 0)
     ERROR_panic("STACK_pop_frame: Stack frame is void");
@@ -104,7 +104,7 @@ PUBLIC void STACK_pop_frame(STACK_CONTEXT *context)
   //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
 }
 
-PUBLIC boolean STACK_has_error_handler(void)
+boolean STACK_has_error_handler(void)
 {
   int i;
 
@@ -115,7 +115,7 @@ PUBLIC boolean STACK_has_error_handler(void)
   return FALSE;
 }
 
-PUBLIC STACK_CONTEXT *STACK_get_frame(int frame)
+STACK_CONTEXT *STACK_get_frame(int frame)
 {
 	if (frame >= 0 && frame < STACK_frame_count)
 		return &STACK_frame[frame];

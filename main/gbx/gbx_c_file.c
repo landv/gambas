@@ -49,7 +49,7 @@
 #include "gbx_c_file.h"
 
 
-PUBLIC CFILE CFILE_in, CFILE_out, CFILE_err;
+CFILE CFILE_in, CFILE_out, CFILE_err;
 
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Write);
@@ -82,25 +82,25 @@ static void callback_write(int fd, int type, CFILE *file)
 }
 
 
-PUBLIC void CFILE_init(void)
+void CFILE_init(void)
 {
   init(&CFILE_in, stdin);
   init(&CFILE_out, stdout);
   init(&CFILE_err, stderr);
 }
 
-PUBLIC void CFILE_init_watch(void)
+void CFILE_init_watch(void)
 {
   if (GB_GetFunction(&read_func, PROJECT_class, "Application_Read", "", "") == 0)
   {
     //fprintf(stderr, "watch stdin\n");
     GB_Attach(&CFILE_in, PROJECT_class, "Application");
-    GB_Watch(STDIN_FILENO, GB_WATCH_READ, (void *)callback_read, (long)&CFILE_in);
+    GB_Watch(STDIN_FILENO, GB_WATCH_READ, (void *)callback_read, (intptr_t)&CFILE_in);
   }
 }
 
 
-PUBLIC CFILE *CFILE_create(STREAM *stream, int mode)
+CFILE *CFILE_create(STREAM *stream, int mode)
 {
   int fd;
   CFILE *file;
@@ -119,10 +119,10 @@ PUBLIC CFILE *CFILE_create(STREAM *stream, int mode)
       file->watch_fd = fd;
 
       if (mode & ST_READ)
-        GB_Watch(fd, GB_WATCH_READ, (void *)callback_read, (long)file);
+        GB_Watch(fd, GB_WATCH_READ, (void *)callback_read, (intptr_t)file);
 
       if (mode & ST_WRITE)
-        GB_Watch(fd, GB_WATCH_WRITE, (void *)callback_write, (long)file);
+        GB_Watch(fd, GB_WATCH_WRITE, (void *)callback_write, (intptr_t)file);
 
       OBJECT_attach((OBJECT *)file, OP ? (OBJECT *)OP : (OBJECT *)CP, "File");
     }
@@ -565,8 +565,8 @@ END_METHOD
 BEGIN_METHOD(CFILE_load, GB_STRING path)
 
   STREAM stream;
-  long long len;
-  long rlen;
+  int64_t len;
+  int rlen;
   char *str;
   boolean opened = FALSE;
   //ERROR_INFO save; We suppose it is useless
@@ -678,7 +678,7 @@ END_PROPERTY
 		
 #endif
 
-PUBLIC GB_DESC NATIVE_Stream[] =
+GB_DESC NATIVE_Stream[] =
 {
   GB_DECLARE("Stream", sizeof(CSTREAM)),
   GB_NOT_CREATABLE(),
@@ -694,7 +694,7 @@ PUBLIC GB_DESC NATIVE_Stream[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_FilePerm[] =
+GB_DESC NATIVE_FilePerm[] =
 {
   GB_DECLARE(".FilePerm", 0),
   GB_VIRTUAL_CLASS(),
@@ -708,7 +708,7 @@ PUBLIC GB_DESC NATIVE_FilePerm[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_Stat[] =
+GB_DESC NATIVE_Stat[] =
 {
   GB_DECLARE("Stat", sizeof(CSTAT)),
   GB_NOT_CREATABLE(),
@@ -736,7 +736,7 @@ PUBLIC GB_DESC NATIVE_Stat[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_File[] =
+GB_DESC NATIVE_File[] =
 {
   GB_DECLARE("File", sizeof(CFILE)),
   GB_INHERITS("Stream"),

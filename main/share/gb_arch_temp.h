@@ -65,6 +65,9 @@ static void load_arch(ARCH *arch, const char *path)
   int i;
   int pos;
   struct stat info;
+  #ifdef OS_64BITS
+  ARCH_SYMBOL_32 *sym;
+  #endif
 
 	_path = path;
 
@@ -107,12 +110,26 @@ static void load_arch(ARCH *arch, const char *path)
 
   /* File names table */
 
-  len = arch->header.n_symbol * sizeof(ARCH_SYMBOL);
-  if (len <= 0)
-    arch_error("corrupted header");
+	len = arch->header.n_symbol * sizeof(ARCH_SYMBOL);
+	if (len <= 0)
+		arch_error("corrupted header");
 
-  ALLOC(&arch->symbol, len, "ARCHIVE_load");
-  read_at(arch, arch->header.pos_table, arch->symbol, len);
+	ALLOC(&arch->symbol, len, "ARCHIVE_load");
+	
+	#ifdef OS_64BITS
+	sym = (ARCH_SYMBOL_32 *)&arch->addr[arch->header.pos_table];
+  for (i = 0; i < arch->header.n_symbol; i++, sym++)
+	{
+		arch->symbol[i].sym.sort = sym->sym.sort;
+		arch->symbol[i].sym.len = sym->sym.len;
+		arch->symbol[i].sym.name = (char *)(intptr_t)sym->sym.name;
+		arch->symbol[i].pos = sym->pos;
+		arch->symbol[i].len = sym->len;
+	}	
+	#else
+	read_at(arch, arch->header.pos_table, arch->symbol, len);
+	#endif
+	
 
   /* String relocation */
 

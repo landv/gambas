@@ -63,10 +63,18 @@ typedef
 typedef
   struct {
     TYPE type;
-    long long value;
+    int64_t value;
     }
   PACKED
   VALUE_LONG;
+
+typedef
+  struct {
+    TYPE type;
+    intptr_t value;
+    }
+  PACKED
+  VALUE_POINTER;
 
 typedef
   struct {
@@ -130,7 +138,7 @@ typedef
   struct {
     TYPE type;
     TYPE ptype;
-    int value[2];
+    intptr_t value[2];
     }
   VALUE_VOID;
 
@@ -198,6 +206,7 @@ typedef
     VALUE_OBJECT _object;
     VALUE_ARRAY _array;
     VALUE_VOID _void;
+    VALUE_POINTER _pointer;
     }
   VALUE;
 
@@ -205,29 +214,25 @@ typedef
 #define VALUE_is_string(val) ((val)->type == T_STRING || (val)->type == T_CSTRING)
 #define VALUE_is_number(val) ((val)->type >= T_BYTE && (val)->type <= T_FLOAT)
 
-PUBLIC void VALUE_default(VALUE *value, TYPE type);
-PUBLIC void VALUE_convert(VALUE *value, TYPE type);
-PUBLIC void VALUE_read(VALUE *value, void *addr, TYPE type);
-PUBLIC void VALUE_write(VALUE *value, void *addr, TYPE type);
+void VALUE_default(VALUE *value, TYPE type);
+void VALUE_convert(VALUE *value, TYPE type);
+void VALUE_read(VALUE *value, void *addr, TYPE type);
+void VALUE_write(VALUE *value, void *addr, TYPE type);
 
-PUBLIC void VALUE_put(VALUE *value, void *addr, TYPE type);
-/*
-PUBLIC void VALUE_put_free(void);
-PUBLIC void VALUE_put_forget(void);
-*/
+//void VALUE_put(VALUE *value, void *addr, TYPE type);
 
-PUBLIC void VALUE_free(void *addr, TYPE type);
-PUBLIC void VALUE_to_string(VALUE *value, char **addr, int *len);
-PUBLIC void VALUE_from_string(VALUE *value, const char *addr, int len);
+void VALUE_free(void *addr, TYPE type);
+void VALUE_to_string(VALUE *value, char **addr, int *len);
+void VALUE_from_string(VALUE *value, const char *addr, int len);
 
-PUBLIC void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
-PUBLIC void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
-PUBLIC void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype);
-PUBLIC void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
+void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
+void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
+void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype);
+void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 
-PUBLIC bool VALUE_is_null(VALUE *val);
+bool VALUE_is_null(VALUE *val);
 
-PUBLIC void VALUE_get_string(VALUE *val, char **text, int *length);
+void VALUE_get_string(VALUE *val, char **text, int *length);
 
 #define VALUE_conv(_value, _type) \
 { \

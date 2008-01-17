@@ -96,7 +96,7 @@ extern CWINDOW *CWINDOW_Main;
 extern CWINDOW *CWINDOW_Current;
 extern CWINDOW *CWINDOW_Active;
 extern CWINDOW *CWINDOW_LastActive;
-extern long CWINDOW_Embedder;
+extern int CWINDOW_Embedder;
 extern bool CWINDOW_Embedded;
 
 #else

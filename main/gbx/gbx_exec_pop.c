@@ -30,7 +30,7 @@
 #include "gbx_c_collection.h"
 
 
-PUBLIC void EXEC_pop_unknown(void)
+void EXEC_pop_unknown(void)
 {
   static void *jump[6] = {
     /* 0 */ &&_POP_GENERIC,
@@ -42,7 +42,7 @@ PUBLIC void EXEC_pop_unknown(void)
     };
 
   const char *name;
-  long index;
+  int index;
   CLASS_DESC *desc;
   CLASS *class;
   OBJECT *object;
@@ -217,7 +217,7 @@ _POP_PROPERTY_2:
     EXEC.drop = FALSE;
     EXEC.nparam = 1;
     EXEC.native = FALSE;
-    EXEC.index = (long)desc->property.write;
+    EXEC.index = (int)(intptr_t)desc->property.write;
 
     EXEC_function();
   }
@@ -231,12 +231,12 @@ _FIN:
 }
 
 
-PUBLIC void EXEC_pop_array(void)
+void EXEC_pop_array(void)
 {
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
-  long dim[MAX_ARRAY_DIM];
+  int dim[MAX_ARRAY_DIM];
   int i;
   void *data;
   boolean defined;
@@ -259,7 +259,7 @@ PUBLIC void EXEC_pop_array(void)
 
     data = ARRAY_get_address((ARRAY_DESC *)SP->_array.desc, SP->_array.addr, np, dim);
 
-    VALUE_write(SP - 1, data, ((ARRAY_DESC *)SP->_array.desc)->type);
+    VALUE_write(SP - 1, data, CLASS_ctype_to_type(CP, ((ARRAY_DESC *)SP->_array.desc)->type));
 
     POP();
   }

@@ -4,7 +4,7 @@
 
   Webcam capture component
 
-  (C) 2005-2007 Daniel Campos Fernández <dcamposf@gmail.com>
+  (C) 2005-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   Based on the GPL code from "video-capture":
 
@@ -104,7 +104,7 @@ void vd_close(video_device_t *vd)
 	if (vd->frame_buffer)
 	{
 		if (vd->use_mmap) munmap(vd->frame_buffer, vd->vmbuf.size);
-		else GB.Free((void**)&vd->frame_buffer);
+		else GB.Free(POINTER(&vd->frame_buffer));
 	}
 	close(vd->dev);
 }
@@ -113,7 +113,7 @@ video_device_t	*vd_setup(int width, int height, int depth, int dev)
 {
 	video_device_t *vd;
 
-	GB.Alloc((void**)&vd,sizeof(video_device_t));
+	GB.Alloc(POINTER(&vd),sizeof(video_device_t));
 
 	vd->width = width;
 	vd->height = height;
@@ -173,15 +173,15 @@ int	vd_setup_capture_mode(video_device_t *vd)
 			vd->buffer_size = vd->height * vd->width;
 		}
 
-		if (vd->frame_buffer) GB.Free((void**)&vd->frame_buffer);
-		GB.Alloc ((void**)&vd->frame_buffer,vd->buffer_size);
+		if (vd->frame_buffer) GB.Free(POINTER(&vd->frame_buffer));
+		GB.Alloc (POINTER(&vd->frame_buffer),vd->buffer_size);
 		return 1;
 	}
 
 	// mmap is okay!
 	if (!vd->use_mmap)
 	{
-		if (vd->frame_buffer) GB.Free((void**)&vd->frame_buffer);
+		if (vd->frame_buffer) GB.Free(POINTER(&vd->frame_buffer));
 		vd->use_mmap = 1;
 	}
 
@@ -300,7 +300,7 @@ void put_image_ppm_buffer (char *image, int width, int height, int frame,long *l
 	unsigned char	*bp;
 
 	*len=(3 * htot)+15;
-	if (!THIS->membuf)	GB.Alloc((void**)&THIS->membuf,((*len)*sizeof(unsigned char*)));
+	if (!THIS->membuf)	GB.Alloc(POINTER(&THIS->membuf),((*len)*sizeof(unsigned char*)));
 	sprintf((char*)THIS->membuf, "P6\n%d %d\n%d\n", width, height, 255);
 	bp=THIS->membuf+strlen((const char*)THIS->membuf);
 	for (x = 0; x < htot; x++) {
@@ -436,9 +436,9 @@ int fill_buffer(void *_object)
 	return 0;
 }
 
-int Video_stream_read(GB_STREAM *stream, char *buffer, long len)
+int Video_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object=(void*)stream->_free[0];
+	void *_object=(void*)((VIDEO_STREAM*)stream)->handle;
 
 	if (!_object) return -1;
 	if (!DEVICE) return -1;
@@ -454,7 +454,7 @@ int Video_stream_read(GB_STREAM *stream, char *buffer, long len)
 
 int Video_stream_eof(GB_STREAM *stream)
 {
-	void *_object=(void*)stream->_free[0];
+	void *_object=(void*)((VIDEO_STREAM*)stream)->handle;
 
 	if (!_object) return -1;
 	if (!DEVICE) return -1;
@@ -465,9 +465,9 @@ int Video_stream_eof(GB_STREAM *stream)
 	return 0;
 }
 
-int Video_stream_lof(GB_STREAM *stream, long long *len)
+int Video_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	void *_object=(void*)stream->_free[0];
+	void *_object=(void*)((VIDEO_STREAM*)stream)->handle;
 
 	if (!_object) return -1;
 	if (!DEVICE) return -1;
@@ -479,9 +479,9 @@ int Video_stream_lof(GB_STREAM *stream, long long *len)
 	return 0;
 }
 
-int Video_stream_seek(GB_STREAM *stream, long long pos, int whence)
+int Video_stream_seek(GB_STREAM *stream, int64_t pos, int whence)
 {
-	void *_object=(void*)stream->_free[0];
+	void *_object=(void*)((VIDEO_STREAM*)stream)->handle;
 
 	if (!_object) return -1;
 	if (!DEVICE) return -1;
@@ -494,9 +494,9 @@ int Video_stream_seek(GB_STREAM *stream, long long pos, int whence)
 	return 0;
 }
 
-int Video_stream_tell(GB_STREAM *stream, long long *pos)
+int Video_stream_tell(GB_STREAM *stream, int64_t *pos)
 {
-	void *_object=(void*)stream->_free[0];
+	void *_object=(void*)((VIDEO_STREAM*)stream)->handle;
 
 	if (!_object) return -1;
 	if (!DEVICE) return -1;
@@ -508,7 +508,7 @@ int Video_stream_tell(GB_STREAM *stream, long long *pos)
 
 int Video_stream_flush(GB_STREAM *stream)
 {
-	void *_object=(void*)stream->_free[0];
+	void *_object=(void*)((VIDEO_STREAM*)stream)->handle;
 
 	if (!_object) return -1;
 	if (!DEVICE) return -1;
@@ -528,7 +528,7 @@ int Video_stream_close(GB_STREAM *stream)
 	return -1;
 }
 
-int Video_stream_write(GB_STREAM *stream, char *buffer, long len)
+int Video_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	return -1;
 }
@@ -636,6 +636,7 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device;)
 
 	int mydev;
 	struct video_tuner vtuner;
+	VIDEO_STREAM *str;
 
 	mydev=open (GB.FileName(STRING(Device),LENGTH(Device)),O_RDWR);
 	if (mydev==-1)
@@ -648,31 +649,32 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device;)
 	if (!vd_setup_capture_mode(DEVICE))
 	{
 		close(mydev);
-		GB.Free((void**)&DEVICE);
+		GB.Free(POINTER(&DEVICE));
 		GB.Error("Unable to setup capture mode");
 		return;
 	}
 
 	vd_setup_video_source(DEVICE,IN_DEFAULT,NORM_DEFAULT);
-	GB.Alloc((void**)&THIS->device,sizeof(char)*(LENGTH(Device)+1));
+	GB.Alloc(POINTER(&THIS->device),sizeof(char)*(LENGTH(Device)+1));
 	strcpy(THIS->device,STRING(Device));
 
 	if (vd_ioctl (DEVICE, VIDIOCGTUNER, &vtuner)) DEVICE->Freq2=1;
 
 	THIS->stream.desc=&VideoStream;
-	THIS->stream._free[0]=(long)THIS;
+	str=(VIDEO_STREAM*)POINTER(&THIS->stream);
+	str->handle=(void*)THIS;
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CWEBCAM_free)
 
-	if (THIS->device) GB.Free((void**)&THIS->device);
-	if (THIS->membuf) GB.Free((void**)&THIS->membuf);
+	if (THIS->device) GB.Free(POINTER(&THIS->device));
+	if (THIS->membuf) GB.Free(POINTER(&THIS->membuf));
 
 	if (DEVICE)
 	{
 		vd_close(DEVICE);
-		GB.Free((void**)&DEVICE);
+		GB.Free(POINTER(&DEVICE));
 	}
 
 END_METHOD
@@ -704,9 +706,9 @@ BEGIN_METHOD(CWEBCAM_size,GB_INTEGER Width; GB_INTEGER Height;)
 	colour=DEVICE->videopict.colour;
 	whiteness=DEVICE->videopict.whiteness;
 
-	if (THIS->membuf) GB.Free((void**)&THIS->membuf);
+	if (THIS->membuf) GB.Free(POINTER(&THIS->membuf));
 	vd_close(DEVICE);
-	GB.Free((void**)&DEVICE);
+	GB.Free(POINTER(&DEVICE));
 
 	mydev=open(THIS->device,O_RDWR);
 	if (mydev==-1)
@@ -719,7 +721,7 @@ BEGIN_METHOD(CWEBCAM_size,GB_INTEGER Width; GB_INTEGER Height;)
 	if (!vd_setup_capture_mode(DEVICE))
 	{
 		close(mydev);
-		GB.Free((void**)&DEVICE);
+		GB.Free(POINTER(&DEVICE));
 		GB.Error("Unable to setup capture mode");
 		return;
 	}
@@ -792,7 +794,6 @@ BEGIN_PROPERTY(CWEBCAM_image)
 	GB_IMAGE ret=NULL;
 	char *buf;
 	int w,h;
-	long bucle;
 
 	buf=(char*)vd_get_image(DEVICE);
 	if (!buf)
@@ -817,7 +818,6 @@ BEGIN_PROPERTY(CWEBCAM_picture)
 	GB_PICTURE ret=NULL;
 	char *buf;
 	int w,h;
-	long bucle;
 
 	buf=(char*)vd_get_image(DEVICE);
 	if (!buf)

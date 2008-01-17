@@ -31,9 +31,9 @@
 typedef
   void (*PRINT_FUNCTION)(char *, int);
 
-PUBLIC void PRINT_init(PRINT_FUNCTION func, bool trace);
-PUBLIC void PRINT_value(VALUE *value);
-PUBLIC void PRINT_string(char *addr, int len);
+void PRINT_init(PRINT_FUNCTION func, bool trace);
+void PRINT_value(VALUE *value);
+void PRINT_string(char *addr, int len);
 
 
 #endif

@@ -406,9 +406,9 @@ int gPicture::save(char *path, int quality)
 	}
 
 	if (quality >= 0)
-		b = gdk_pixbuf_save(image, path, type, NULL, "quality", quality, NULL);
+		b = gdk_pixbuf_save(image, path, type, NULL, "quality", quality, (void *)NULL);
 	else
-		b = gdk_pixbuf_save(image, path, type, NULL, NULL);
+		b = gdk_pixbuf_save(image, path, type, NULL, (void *)NULL);
 
 
 	if (ok) {

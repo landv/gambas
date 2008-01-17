@@ -160,9 +160,9 @@ static EXEC_FUNC SubrTable[] =
 };
 
 
-PUBLIC void EXEC_loop(void)
+void EXEC_loop(void)
 {
-  static void *jump_table[256] =
+  static const void *jump_table[256] =
   {
     /* 00 NOP             */  &&_NEXT,
     /* 01 PUSH LOCAL      */  &&_PUSH_LOCAL,
@@ -457,7 +457,7 @@ _MAIN:
 
 #if DEBUG_PCODE
     DEBUG_where();
-    fprintf(stderr, "[%4d] ", SP - (VALUE *)STACK_base);
+    fprintf(stderr, "[%4d] ", (int)(SP - (VALUE *)STACK_base));
     if (*PC >> 8)
       PCODE_dump(stderr, PC - FP->code, PC);
 #endif
@@ -728,7 +728,7 @@ _PUSH_INTEGER:
 
   SP->type = T_INTEGER;
   PC++;
-  SP->_integer.value = PC[0] | ((unsigned long)PC[1] << 16);
+  SP->_integer.value = PC[0] | ((uint)PC[1] << 16);
   SP++;
   goto _NEXT2;
 
@@ -1027,7 +1027,7 @@ _CALL:
 
     EXEC.native = FALSE;
     EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
-    EXEC.index = (int)(EXEC.desc->exec);
+    EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
     EXEC.class = EXEC.desc->class;
 
     goto __EXEC_ENTER;
@@ -1119,7 +1119,7 @@ _CALL:
     }
     else
     {
-      EXEC.index = (int)(EXEC.desc->exec);
+      EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
       EXEC.class = EXEC.desc->class;
       EXEC_enter();
       goto _MAIN;
@@ -1169,7 +1169,7 @@ _CALL_QUICK:
 
     EXEC.native = FALSE;
     EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
-    EXEC.index = (int)(EXEC.desc->exec);
+    EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
     EXEC.class = EXEC.desc->class;
 
   __EXEC_ENTER_Q:
@@ -1213,7 +1213,7 @@ _CALL_NORM:
 
     EXEC.native = FALSE;
     EXEC.desc = &EXEC.class->table[val->_function.index].desc->method;
-    EXEC.index = (int)(EXEC.desc->exec);
+    EXEC.index = (int)(intptr_t)(EXEC.desc->exec);
     EXEC.class = EXEC.desc->class;
 
   __EXEC_ENTER_N:

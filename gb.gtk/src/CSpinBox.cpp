@@ -120,7 +120,7 @@ GB_DESC CSpinBoxDesc[] =
 {
   GB_DECLARE("SpinBox", sizeof(CSPINBOX)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CSPINBOX_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CSPINBOX_new, "(Parent)Container;"),
 
   GB_PROPERTY("Value", "i", CSPINBOX_value),
   GB_PROPERTY_READ("Text", "s", CSPINBOX_text),
@@ -131,9 +131,9 @@ GB_DESC CSpinBoxDesc[] =
 
   GB_PROPERTY("Wrap", "b", CSPINBOX_wrapping),
 
-  GB_METHOD("SelectAll", NULL, CSPINBOX_select_all, NULL),
+  GB_METHOD("SelectAll", 0, CSPINBOX_select_all, 0),
 
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
+  GB_EVENT("Change", 0, 0, &EVENT_Change),
 
 	SPINBOX_DESCRIPTION,
 

@@ -83,9 +83,9 @@ GB_DESC CHSplitDesc[] =
   GB_PROPERTY("Layout", "s", CSPLITTER_layout),
   GB_PROPERTY("Settings", "s", CSPLITTER_layout),
 
-  GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
+  GB_EVENT("Resize", 0, 0, &EVENT_Resize),
 
-	HSPLIT_DESCRIPTION,
+  HSPLIT_DESCRIPTION,
 
   GB_END_DECLARE
 };
@@ -95,14 +95,14 @@ GB_DESC CVSplitDesc[] =
 {
   GB_DECLARE("VSplit", sizeof(CSPLITTER)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", NULL, CVSPLIT_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CVSPLIT_new, "(Parent)Container;"),
 
   GB_PROPERTY("Layout", "s", CSPLITTER_layout),
   GB_PROPERTY("Settings", "s", CSPLITTER_layout),
 
-  GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
+  GB_EVENT("Resize", 0, 0, &EVENT_Resize),
 
-	VSPLIT_DESCRIPTION,
+  VSPLIT_DESCRIPTION,
 
   GB_END_DECLARE
 };

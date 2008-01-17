@@ -40,7 +40,6 @@ gboolean watch_adaptor (GIOChannel *source, GIOCondition condition, gpointer par
 {
 	void (*cb)(int,int,long);
 	watchData *data=(watchData*)param;
-	
 
 	if (!data) return true;
 	

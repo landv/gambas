@@ -115,7 +115,7 @@ static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
   {
     HASH_ENUM *iter = (HASH_ENUM *)GB_GetEnum();
     /*char *ekey;
-    long elen;
+    int elen;
 
     HASH_TABLE_get_key(col->hash_table, iter->node, &ekey, &elen);
     fprintf(stderr, "iter->node: %.*s\n", elen, ekey);
@@ -304,7 +304,7 @@ END_METHOD
 #endif
 
 
-PUBLIC GB_DESC NATIVE_Collection[] =
+GB_DESC NATIVE_Collection[] =
 {
   GB_DECLARE("Collection", sizeof(CCOLLECTION)),
 
@@ -329,7 +329,7 @@ PUBLIC GB_DESC NATIVE_Collection[] =
 
 #ifndef GBX_INFO
 
-PUBLIC void GB_CollectionNew(GB_COLLECTION *col, int mode)
+void GB_CollectionNew(GB_COLLECTION *col, int mode)
 {
   GB_INTEGER param;
 
@@ -339,12 +339,12 @@ PUBLIC void GB_CollectionNew(GB_COLLECTION *col, int mode)
   OBJECT_create_native((void **)col, CLASS_Collection, (VALUE *)&param);
 }
 
-PUBLIC int GB_CollectionCount(GB_COLLECTION col)
+int GB_CollectionCount(GB_COLLECTION col)
 {
   return HASH_TABLE_size(((CCOLLECTION *)col)->hash_table);
 }
 
-PUBLIC void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
+void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
   VARIANT *data;
 
@@ -358,7 +358,7 @@ PUBLIC void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VAR
   }
 }
 
-PUBLIC int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
+int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
   void *val;
 
@@ -376,7 +376,7 @@ PUBLIC int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARI
   }
 }
 
-PUBLIC int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len)
+int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len)
 {
 	static HASH_ENUM iter;
   void *val;

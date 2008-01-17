@@ -4,7 +4,7 @@
 
   Array management routines
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,23 +22,22 @@
 
 ***************************************************************************/
 
-#ifndef __AARRAY_H
-#define __AARRAY_H
+#ifndef __GBX_ARRAY_H
+#define __GBX_ARRAY_H
 
 #include "gbx_type.h"
 
 typedef
   struct {
-    TYPE type;
-    long dim[0];
+    CTYPE type;
+    int dim[0];
     }
   ARRAY_DESC;
 
-
-PUBLIC void ARRAY_new(void **data, ARRAY_DESC *desc);
-PUBLIC void ARRAY_free_data(void *data, ARRAY_DESC *desc);
-PUBLIC void ARRAY_free(void **data, ARRAY_DESC *desc);
-PUBLIC void *ARRAY_get_address(ARRAY_DESC *desc, void *addr, int nparam, long *param);
-
+size_t ARRAY_get_size(ARRAY_DESC *desc);
+void ARRAY_new(void **data, ARRAY_DESC *desc);
+void ARRAY_free_data(void *data, ARRAY_DESC *desc);
+void ARRAY_free(void **data, ARRAY_DESC *desc);
+void *ARRAY_get_address(ARRAY_DESC *desc, void *addr, int nparam, int *param);
 
 #endif

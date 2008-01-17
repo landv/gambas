@@ -43,6 +43,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -124,6 +125,10 @@ typedef
 #define PACKED __attribute__((packed))
 #define NORETURN __attribute__((noreturn))
 #define CONST __attribute__((const))
+
+#if __WORDSIZE == 64
+#define OS_64BITS
+#endif
 
 #define CLEAR(s) (memset(s, 0, sizeof(*s)))
 

@@ -194,35 +194,6 @@ static void write_int64(uint64_t val)
   _pos += sizeof(val);
 }
 
-#if 0
-static void write_int_at(long pos, ulong val)
-{
-  long prev = get_pos();
-  char *ppos;
-  
-  ppos = &_buffer[pos - (prev - (_pbuffer - _buffer))];
-  if (ppos >= _buffer && ppos < (_pbuffer - sizeof(ulong)))
-  {
-    *((ulong *)ppos) = val;
-    return;
-  }
-
-  flush_buffer();
-
-  #ifdef DEBUG_MORE
-  printf("@ ");
-  #endif
-
-  fseek(_file, pos, SEEK_SET);
-  write_int(val);
-  flush_buffer();
-  
-  fseek(_file, prev, SEEK_SET);
-  
-  _pos = prev;
-}
-#endif
-
 static void write_string(const char *str, int len)
 {
   #ifdef DEBUG_MORE

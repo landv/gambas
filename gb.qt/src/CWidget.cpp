@@ -402,7 +402,7 @@ BEGIN_PROPERTY(CCONTROL_x)
   {
     move_widget(_object, VPROP(GB_INTEGER), COORD(y));
     /*if (WIDGET->isTopLevel())
-      qDebug("X: %d ==> X = %d", PROPERTY(long), WIDGET->x());*/
+      qDebug("X: %d ==> X = %d", PROPERTY(int), WIDGET->x());*/
   }
 
 END_PROPERTY
@@ -887,9 +887,9 @@ BEGIN_PROPERTY(CWIDGET_background)
 
 #if 0
   if (READ_PROPERTY)
-    GB.ReturnInteger((long)(WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF));
+    GB.ReturnInteger((int)(WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF));
   else
-    WIDGET->setPaletteBackgroundColor(QColor((QRgb)PROPERTY(long)));
+    WIDGET->setPaletteBackgroundColor(QColor((QRgb)PROPERTY(int)));
 #endif
 
 END_PROPERTY
@@ -906,7 +906,7 @@ BEGIN_PROPERTY(CWIDGET_foreground)
 
   if (READ_PROPERTY)
   {
-    GB.ReturnInteger((long)(wid->paletteForegroundColor().rgb() & 0xFFFFFF));
+    GB.ReturnInteger((int)(wid->paletteForegroundColor().rgb() & 0xFFFFFF));
     return;
   }
   else
@@ -1014,7 +1014,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_id)
 
-  GB.ReturnInteger((long)WIDGET->winId());
+  GB.ReturnInteger((int)WIDGET->winId());
 
 END_PROPERTY
 
@@ -1203,7 +1203,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CWIDGET_scrollbar)
 
   QScrollView *wid = (QScrollView *)QWIDGET(_object);
-  long scroll;
+  int scroll;
 
   if (READ_PROPERTY)
   {
@@ -1624,7 +1624,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   	if (GB.CanRaise(control, EVENT_GotFocus))
   	{
 			GB.Ref(control);
-			GB.Post((void (*)())post_gotfocus_event, (long)control);
+			GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
 		}
 
 		CWINDOW_activate(control);
@@ -1635,7 +1635,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   	if (GB.CanRaise(control, EVENT_LostFocus))
   	{
 			GB.Ref(control);
-			GB.Post((void (*)())post_lostfocus_event, (long)control);
+			GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
 		}
     //GB.Raise(control, EVENT_LostFocus, 0);
   }
@@ -1774,7 +1774,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (GB.CanRaise(control, EVENT_DblClick))
 		{
 			GB.Ref(control);
-			GB.Post((void (*)())post_dblclick_event, (long)control);
+			GB.Post((void (*)())post_dblclick_event, (intptr_t)control);
 		}
   }
   else if ((type == QEvent::KeyPress)

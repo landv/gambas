@@ -163,15 +163,15 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
       break;
 
     case 0xD:
-      fprintf(out, "POP %s %ld", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
+      fprintf(out, "POP %s %d", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
       break;
 
     case 0xC:
-      fprintf(out, "PUSH %s %ld", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
+      fprintf(out, "PUSH %s %d", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
       break;
 
     case 0xB:
-      fprintf(out, "PUSH %s %ld", (value & 0x800) ? "FUNCTION" : "CLASS", value & 0x7FF);
+      fprintf(out, "PUSH %s %d", (value & 0x800) ? "FUNCTION" : "CLASS", value & 0x7FF);
       break;
 
     case 0xA:

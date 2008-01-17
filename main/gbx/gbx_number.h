@@ -7,7 +7,7 @@
   Datatype management routines. Conversions between each Gambas datatype,
   and conversions between Gambas datatypes and native datatypes.
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ enum {
   };
 
 
-PUBLIC bool NUMBER_from_string(int option, const char *str, long len, VALUE *value);
-PUBLIC void NUMBER_int_to_string(unsigned long long nbr, int prec, int base, VALUE *value);
+bool NUMBER_from_string(int option, const char *str, int len, VALUE *value);
+void NUMBER_int_to_string(uint64_t nbr, int prec, int base, VALUE *value);
 
 #endif /* */

@@ -42,7 +42,7 @@ PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, int inc)
   array->max = 0;
   array->size = size;
   if (size > 2 && (size & 3))
-    fprintf(stderr, "WARNING: ARRAY_create_with_size: size = %d\n", size);
+    fprintf(stderr, "WARNING: ARRAY_create_with_size: size = %zi\n", size);
   array->inc = inc;
 
   *((void **)p_data) = ARRAY_TO_DATA(array);

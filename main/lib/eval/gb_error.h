@@ -35,7 +35,7 @@
 
 typedef
   struct {
-    long code;
+    int code;
     char msg[MAX_ERROR_MSG + 1];
     }
   ERROR_INFO;
@@ -83,7 +83,6 @@ PUBLIC void ERROR_enter(ERROR_CONTEXT *err);
 PUBLIC void ERROR_leave(ERROR_CONTEXT *err);
 
 PUBLIC void PROPAGATE() NORETURN;
-/*PUBLIC void ERROR(long code, ...);*/
 PUBLIC void THROW(const char *msg) NORETURN;
 PUBLIC void THROW2(const char *pattern, const char *msg) NORETURN;
 

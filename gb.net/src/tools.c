@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -87,10 +87,10 @@ void correct_url(char **buf,char *protocol)
 	if (pos==-1)
 	{
 
-		GB.Alloc((void**)&buftmp,len+1);
+		GB.Alloc(POINTER(&buftmp),len+1);
 		strcpy(buftmp,*buf);
-		GB.Free((void**)buf);
-		GB.Alloc((void**)buf,len+strlen(protocol)+1);
+		GB.Free(POINTER(buf));
+		GB.Alloc(POINTER(buf),len+strlen(protocol)+1);
 		strcpy(*buf,protocol);
 		if (strlen(buftmp)>=2)
 		{
@@ -98,14 +98,14 @@ void correct_url(char **buf,char *protocol)
 			if ( buftmp[1]=='/') myok++;
 		}
 		strcat(*buf,buftmp+myok);
-		GB.Free((void**)&buftmp);
+		GB.Free(POINTER(&buftmp));
 	}
 	else
 	{
-		GB.Alloc((void**)&buftmp,(len-pos)+1);
+		GB.Alloc(POINTER(&buftmp),(len-pos)+1);
 		strcpy(buftmp,*buf+pos+1);
-		GB.Free((void**)buf);
-		GB.Alloc((void**)buf,strlen(buftmp)+strlen(protocol)+1);
+		GB.Free(POINTER(buf));
+		GB.Alloc(POINTER(buf),strlen(buftmp)+strlen(protocol)+1);
 		strcpy(*buf,protocol);
 		if (strlen(buftmp)>=2)
 		{
@@ -113,7 +113,7 @@ void correct_url(char **buf,char *protocol)
 			if ( buftmp[1]=='/') myok++;
 		}
 		strcat(*buf,buftmp+myok);
-		GB.Free((void**)&buftmp);
+		GB.Free(POINTER(&buftmp));
 	}
 }
 

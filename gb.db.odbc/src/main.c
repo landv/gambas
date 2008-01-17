@@ -117,7 +117,7 @@ GB.Free((void **)&_ptr);
 #define free(_ptr) my_free(_ptr)
 
 
-static void quote(char *data, long len, DB_FORMAT_CALLBACK add)
+static void quote(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -145,7 +145,7 @@ fflush(stderr);
 
 /* internal function to quote a value stored as a blob */
 
-static void quote_blob(char *data, long len, DB_FORMAT_CALLBACK add)
+static void quote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -180,7 +180,7 @@ fflush(stderr);
 
 /* internal function to unquote a value stored as a string */
 
-static int unquote(char *data, long len, DB_FORMAT_CALLBACK add)
+static int unquote(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -209,7 +209,7 @@ fflush(stderr);
 
 /* internal function to unquote a value stored as a blob */
 
-static int unquote_blob(char *data, long len, DB_FORMAT_CALLBACK add)
+static int unquote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -311,7 +311,7 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 	GB_VALUE conv;
 	GB_DATE_SERIAL date;
 	double sec;
-	long len;
+	int len;
 	int bc = 0;
 
 	switch (type)
@@ -489,7 +489,7 @@ fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\topen_database\n");
 fflush(stderr);
 #endif
-	//long V_OD_erg;
+	//int V_OD_erg;
 	SQLRETURN retcode;
 	ODBC_CONN *odbc;
 
@@ -914,7 +914,7 @@ fflush(stderr);
 	ODBC_FIELDS *field, *current;
 	SQLINTEGER collen;
 	int nresultcols;
-	//long V_OD_erg=0;
+	//int V_OD_erg=0;
 	SQLRETURN retcode;
 
 
@@ -1013,7 +1013,7 @@ fflush(stderr);
 static void query_init(DB_RESULT result, DB_INFO * info, int *count)
 {
 
-	//long V_OD_erg=0;
+	//int V_OD_erg=0;
 	SQLRETURN retcode;
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
 	SQLINTEGER rowsNum=0;
@@ -1116,8 +1116,8 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	ODBC_FIELDS *current;
 	SQLRETURN retcode;
 	int nresultcols;
-	long displaysize;
-	//long V_OD_erg=0;
+	int displaysize;
+	//int V_OD_erg=0;
 	
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1273,10 +1273,10 @@ static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)
 
 
 int i;
-//long outlen;
-//long precision;
-//long scale;
-//long displaysize;
+//int outlen;
+//int precision;
+//int scale;
+//int displaysize;
 //char * pointer;
 ODBC_RESULT * res= (ODBC_RESULT *) result;
 ODBC_FIELDS * cfield ;
@@ -1320,7 +1320,7 @@ fflush(stderr);
 		
 
 	char *data;
-	long len;
+	int len;
 
   	if (!unquote_blob(blob->data, blob->length, DB.Query.AddLength))
   	{
@@ -1943,7 +1943,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static long table_list(DB_DATABASE *db, char ***tables)
+static int table_list(DB_DATABASE *db, char ***tables)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2269,7 +2269,7 @@ fflush(stderr);
 					type = "TEXT";
 				else
 				{
-					sprintf(_buffer, "VARCHAR(%ld)", fp->length);
+					sprintf(_buffer, "VARCHAR(%d)", fp->length);
 					type = _buffer;
 				}
 
@@ -2417,7 +2417,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static long field_list(DB_DATABASE *db, char *table, char ***fields)
+static int field_list(DB_DATABASE *db, char *table, char ***fields)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2662,7 +2662,7 @@ static int index_exist(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static long index_list(DB_DATABASE *db, char *table, char ***indexes)
+static int index_list(DB_DATABASE *db, char *table, char ***indexes)
 {
 	//GB.Error("ODBC does not implement this function - index_list");
 	return (-1);
@@ -2782,7 +2782,7 @@ static int database_exist(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static long database_list(DB_DATABASE *db, char ***databases)
+static int database_list(DB_DATABASE *db, char ***databases)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 
@@ -2917,7 +2917,7 @@ static int user_exist(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static long user_list(DB_DATABASE *db, char ***users)
+static int user_list(DB_DATABASE *db, char ***users)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 	GB.NewArray(users, sizeof(char *), 1);

@@ -99,7 +99,7 @@ enum {
 
 typedef
   struct {
-    long code;
+    int code;
     void *cp;
     void *fp;
     void *pc;
@@ -157,7 +157,7 @@ PUBLIC void ERROR_leave(ERROR_CONTEXT *err);
 PUBLIC void ERROR_define(const char *pattern, char *arg[]);
 
 PUBLIC void PROPAGATE() NORETURN;
-PUBLIC void THROW(long code, ...) NORETURN;
+PUBLIC void THROW(int code, ...) NORETURN;
 PUBLIC void THROW_SYSTEM(int err, const char *path);
 
 PUBLIC void ERROR_panic(const char *error, ...) NORETURN;

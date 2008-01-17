@@ -77,7 +77,7 @@ BEGIN_METHOD_VOID(CSCREEN_grab)
 	CPICTURE *pic=NULL;
 	gPicture *buf=gDesktop::grab();
   
-	GB.New((void **)&pic, GB.FindClass("Picture"), 0, 0);
+	GB.New(POINTER(&pic), GB.FindClass("Picture"), 0, 0);
 	if (pic->picture) pic->picture->unref();
 	pic->picture=buf;
 	GB.ReturnObject(pic);
@@ -229,7 +229,7 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_PROPERTY_READ("Resolution", "i", CSCREEN_resolution),
   GB_STATIC_PROPERTY_READ("Scale","i",CSCREEN_scale),
 
-  GB_STATIC_METHOD("Grab", "Picture", CSCREEN_grab, NULL),
+  GB_STATIC_METHOD("Grab", "Picture", CSCREEN_grab, 0),
 
   GB_END_DECLARE
 };
@@ -265,7 +265,7 @@ GB_DESC CApplicationDesc[] =
 {
   GB_DECLARE("Application", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("_exit", NULL, CAPP_exit, NULL),
+  GB_STATIC_METHOD("_exit", NULL, CAPP_exit, 0),
 
   GB_STATIC_PROPERTY("Font", "Font", CAPP_font),
   GB_STATIC_PROPERTY_READ("ActiveControl","Control",CSCREEN_active_control),

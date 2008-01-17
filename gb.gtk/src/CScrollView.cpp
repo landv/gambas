@@ -139,7 +139,7 @@ GB_DESC CScrollViewDesc[] =
 {
   GB_DECLARE("ScrollView", sizeof(CSCROLLVIEW)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", NULL, CSCROLLVIEW_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CSCROLLVIEW_new, "(Parent)Container;"),
 
   GB_PROPERTY("ScrollBar", "i", CSCROLLVIEW_scrollbar),
   GB_PROPERTY("Border", "b", CSCROLLVIEW_border),
@@ -153,12 +153,12 @@ GB_DESC CScrollViewDesc[] =
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   
-  GB_METHOD("Scroll", NULL, CSCROLLVIEW_scroll, "(X)i(Y)i"),
-  GB_METHOD("EnsureVisible", NULL, CSCROLLVIEW_ensure_visible, "(X)i(Y)i(Width)i(Height)i"),
+  GB_METHOD("Scroll", 0, CSCROLLVIEW_scroll, "(X)i(Y)i"),
+  GB_METHOD("EnsureVisible", 0, CSCROLLVIEW_ensure_visible, "(X)i(Y)i(Width)i(Height)i"),
   
-  GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),
+  GB_EVENT("Scroll", 0, 0, &EVENT_Scroll),
 
-	SCROLLVIEW_DESCRIPTION,
+  SCROLLVIEW_DESCRIPTION,
 	
   GB_END_DECLARE
 };

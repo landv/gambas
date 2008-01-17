@@ -29,9 +29,9 @@
 #include "gambas.h"
 #include "gbx_api.h"
 
-/*PUBLIC int NPARAM;*/
+/*int NPARAM;*/
 
-PUBLIC void SUBR_leave_void(int nparam)
+void SUBR_leave_void(int nparam)
 {
   RELEASE_MANY(SP, nparam);
   
@@ -39,7 +39,7 @@ PUBLIC void SUBR_leave_void(int nparam)
   SP++;
 }
 
-PUBLIC void SUBR_leave(int nparam)
+void SUBR_leave(int nparam)
 {
   BORROW(RP);
 
@@ -52,7 +52,7 @@ PUBLIC void SUBR_leave(int nparam)
 }
 
 
-PUBLIC boolean SUBR_check_string(VALUE *param)
+bool SUBR_check_string(VALUE *param)
 {
   if (param->type == T_VARIANT)
     VARIANT_undo(param);
@@ -72,7 +72,7 @@ PUBLIC boolean SUBR_check_string(VALUE *param)
 }
 
 
-PUBLIC void SUBR_check_integer(VALUE *param)
+void SUBR_check_integer(VALUE *param)
 {
   if (param->type == T_VARIANT)
     VARIANT_undo(param);
@@ -84,7 +84,7 @@ PUBLIC void SUBR_check_integer(VALUE *param)
 }
 
 
-PUBLIC void SUBR_check_float(VALUE *param)
+void SUBR_check_float(VALUE *param)
 {
   if (param->type == T_VARIANT)
     VARIANT_undo(param);
@@ -99,21 +99,33 @@ PUBLIC void SUBR_check_float(VALUE *param)
 }
 
 
-PUBLIC int SUBR_get_integer(VALUE *param)
+int SUBR_get_integer(VALUE *param)
 {
   SUBR_check_integer(param);
   return param->_integer.value;
 }
 
 
-PUBLIC double SUBR_get_float(VALUE *param)
+void *SUBR_get_pointer(VALUE *param)
+{
+  if (param->type == T_VARIANT)
+    VARIANT_undo(param);
+
+  if (param->type != T_POINTER)
+	  THROW(E_TYPE, "Pointer", TYPE_get_name((param)->type));
+	
+	return (void *)param->_pointer.value;
+}
+
+
+double SUBR_get_float(VALUE *param)
 {
   SUBR_check_float(param);
   return param->_float.value;
 }
 
 
-PUBLIC char *SUBR_get_string(VALUE *param)
+char *SUBR_get_string(VALUE *param)
 {
   char *str;
 
@@ -125,7 +137,7 @@ PUBLIC char *SUBR_get_string(VALUE *param)
 }
 
 
-PUBLIC char *SUBR_copy_string(VALUE *param)
+char *SUBR_copy_string(VALUE *param)
 {
   char *ret;
 
@@ -136,7 +148,7 @@ PUBLIC char *SUBR_copy_string(VALUE *param)
 }
 
 
-PUBLIC void SUBR_get_string_len(VALUE *param, char **str, int *len)
+void SUBR_get_string_len(VALUE *param, char **str, int *len)
 {
   if (SUBR_check_string(param))
   {

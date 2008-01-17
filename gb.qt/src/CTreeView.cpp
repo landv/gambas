@@ -234,7 +234,7 @@ void MyListViewItem::cancelRename(int col)
 	if (GB.CanRaise(container, EVENT_Cancel))
 	{
 		GB.Ref(container);
-		GB.Post((GB_POST_FUNC)post_cancel_event, (long)container);
+		GB.Post((GB_POST_FUNC)post_cancel_event, (intptr_t)container);
 	}
 }
 
@@ -1236,7 +1236,7 @@ END_PROPERTY*/
 
 BEGIN_PROPERTY(CLISTVIEW_columns_count)
 
-  long col;
+  int col;
   QListView::ResizeMode mode;
   //bool *numeric;
   //int i, n;
@@ -1280,7 +1280,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CLISTVIEW_columns_get, GB_INTEGER col)
 
-  long col = VARG(col);
+  int col = VARG(col);
 
   if (col < 0 || col >= WIDGET->columns())
   {
@@ -1443,9 +1443,9 @@ END_METHOD
 
 BEGIN_PROPERTY(CTREEVIEW_client_width)
 
-  //long w = WIDGET->width() - WIDGET->frameWidth() * 2;
-  //long sw = WIDGET->verticalScrollBar()->width();
-  //long width = w;
+  //int w = WIDGET->width() - WIDGET->frameWidth() * 2;
+  //int sw = WIDGET->verticalScrollBar()->width();
+  //int width = w;
 
   //if (WIDGET->verticalScrollBar()->isHidden())
   //  width -= sw;
@@ -1974,7 +1974,7 @@ void CTreeView::selected(void)
 	else
 	{
   	GB.Ref(_object);
-  	GB.Post((GB_POST_FUNC)post_select_event, (long)THIS);
+  	GB.Post((GB_POST_FUNC)post_select_event, (intptr_t)THIS);
 	}
 }
 
@@ -2007,7 +2007,7 @@ void CTreeView::renamed(QListViewItem *it, int col)
 
   THIS->item = (MyListViewItem *)it;
   GB.Ref(THIS);
-  GB.Post((void (*)())post_rename_event, (long)THIS);
+  GB.Post((void (*)())post_rename_event, (intptr_t)THIS);
 }
 
 // void CTreeView::columnClicked(QListViewItem *it, const QPoint &p, int c)

@@ -517,8 +517,7 @@ static gboolean tbheader_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *data
 				"xalign", 0.5,
 				"yalign", 0.5,
 				"font-desc", data->font()->desc(),
-				NULL
-				);
+				(void *)NULL);
 			rect.x=bpos;
 			rect.y=0;
 			rect.width=pw-1;
@@ -588,7 +587,7 @@ static gboolean tblateral_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *dat
 			"xalign", 0.5,
 			"yalign", 0.5,
 			"font-desc", data->font()->desc(),
-			NULL);
+			(void *)NULL);
 		
 		rect.x = 0;
 		rect.y = bpos;
@@ -618,7 +617,7 @@ static gboolean tbheader_release(GtkWidget *wid,GdkEventButton *e,gGridView *dat
 	bcurrent = data->findColumn((int)e->x + data->scrollX());
 	if (bcurrent<0) return false;
 
-	g_object_get(G_OBJECT(wid),"name",&buf,NULL);
+	g_object_get(G_OBJECT(wid),"name",&buf,(void *)NULL);
 	if (buf)
 	{
 		if (!strcmp(buf,"gambas-grid-footer")) bfooter=true;
@@ -663,7 +662,7 @@ static gboolean cb_scroll(GtkWidget *wid, GdkEventScroll *e, gGridView *data)
 	else
 		adj = gtk_range_get_adjustment(GTK_RANGE(data->hbar));
 	
-	g_object_get(G_OBJECT(adj), "step-increment", &step, NULL);
+	g_object_get(G_OBJECT(adj), "step-increment", &step, (void *)NULL);
 	
 	switch (e->direction)
 	{
@@ -781,8 +780,8 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	gtk_widget_add_events(footer,GDK_BUTTON_RELEASE_MASK);
 	gtk_widget_add_events(lateral,GDK_BUTTON_RELEASE_MASK);
 	
-	g_object_set(G_OBJECT(header),"name","gambas-grid-header",NULL);
-	g_object_set(G_OBJECT(footer),"name","gambas-grid-footer",NULL);
+	g_object_set(G_OBJECT(header),"name","gambas-grid-header",(void *)NULL);
+	g_object_set(G_OBJECT(footer),"name","gambas-grid-footer",(void *)NULL);
 
 	g_signal_connect_after(G_OBJECT(border),"size-allocate",G_CALLBACK(gGridView_configure),(void*)this);
 	g_signal_connect(G_OBJECT(border), "key-press-event", G_CALLBACK(cb_keypress), this);
@@ -810,10 +809,10 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	
 	//g_signal_connect(G_OBJECT(contents),"event",G_CALLBACK(gridview_release),this);
 
-	g_object_set(G_OBJECT(vbar),"visible",FALSE,NULL);
-	g_object_set(G_OBJECT(hbar),"visible",FALSE,NULL);
-	g_object_set(G_OBJECT(footer),"visible",FALSE,NULL);
-	g_object_set(G_OBJECT(widget),"can-focus",TRUE,NULL);
+	g_object_set(G_OBJECT(vbar),"visible",FALSE,(void *)NULL);
+	g_object_set(G_OBJECT(hbar),"visible",FALSE,(void *)NULL);
+	g_object_set(G_OBJECT(footer),"visible",FALSE,(void *)NULL);
+	g_object_set(G_OBJECT(widget),"can-focus",TRUE,(void *)NULL);
 
 	gtk_widget_realize(footer);
 	gtk_widget_realize(contents);
@@ -937,13 +936,13 @@ void gGridView::calculateBars()
 	
 	if (bh != GTK_WIDGET_VISIBLE(hbar))
 	{
-		g_object_set(G_OBJECT(hbar),"visible",bh,NULL);
+		g_object_set(G_OBJECT(hbar),"visible",bh,(void *)NULL);
 		if (!bh)
 			setScrollX(0);
 	}
 	if (bv != GTK_WIDGET_VISIBLE(vbar))
 	{
-		g_object_set(G_OBJECT(vbar),"visible",bv,NULL);
+		g_object_set(G_OBJECT(vbar),"visible",bv,(void *)NULL);
 		if (!bv)
 			setScrollY(0);
 	}
@@ -953,7 +952,7 @@ void gGridView::calculateBars()
 		gtk_range_set_range(GTK_RANGE(hbar),0,render->width());
 		gtk_range_set_increments(GTK_RANGE(hbar),render->getColumnSize(0),vw);
 		adj=gtk_range_get_adjustment(GTK_RANGE(hbar));
-		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vw,NULL);
+		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vw,(void *)NULL);
 	}
 
 	if (bv)
@@ -961,7 +960,7 @@ void gGridView::calculateBars()
 		gtk_range_set_range(GTK_RANGE(vbar),0,render->height());
 		gtk_range_set_increments(GTK_RANGE(vbar),render->getRowSize(0),vh);
 		adj=gtk_range_get_adjustment(GTK_RANGE(vbar));
-		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vh,NULL);
+		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vh,(void *)NULL);
 	}
 }
 
@@ -992,8 +991,8 @@ void gGridView::setScrollBar(int vl)
 	if (vl==scroll) return;
 
 	scroll=vl;
-	if ( !(scroll & 1) ) g_object_set(G_OBJECT(hbar),"visible",FALSE,NULL);
-	if ( !(scroll & 2) ) g_object_set(G_OBJECT(vbar),"visible",FALSE,NULL);
+	if ( !(scroll & 1) ) g_object_set(G_OBJECT(hbar),"visible",FALSE,(void *)NULL);
+	if ( !(scroll & 2) ) g_object_set(G_OBJECT(vbar),"visible",FALSE,(void *)NULL);
 	calculateBars();
 }
 
@@ -1074,7 +1073,7 @@ int gGridView::visibleLeft()
 	gboolean vl;
 	int w;
 
-	g_object_get(G_OBJECT(lateral),"visible",&vl,NULL);
+	g_object_get(G_OBJECT(lateral),"visible",&vl,(void *)NULL);
 	if (!vl) return 0;
 	gtk_widget_get_size_request(lateral,&w,NULL);
 	return w;
@@ -1085,7 +1084,7 @@ int gGridView::visibleTop()
 	gboolean vl;
 	int h;
 
-	g_object_get(G_OBJECT(header),"visible",&vl,NULL);
+	g_object_get(G_OBJECT(header),"visible",&vl,(void *)NULL);
 	if (!vl) return 0;
 	gtk_widget_get_size_request(header,NULL,&h);
 	return h;

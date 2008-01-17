@@ -33,7 +33,7 @@
 #include "gbx_number.h"
 
 
-PUBLIC void SUBR_is_type(void)
+void SUBR_is_type(void)
 {
   static void *jump[] = {
     &&__BAD, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -99,13 +99,13 @@ __END:
 }
 
 
-PUBLIC void SUBR_conv(void)
+void SUBR_conv(void)
 {
   VALUE_conv(SP - 1, EXEC_code & 0x3F);
 }
 
 
-PUBLIC void SUBR_type(void)
+void SUBR_type(void)
 {
   TYPE type;
 
@@ -143,7 +143,7 @@ PUBLIC void SUBR_type(void)
 }
 
 
-PUBLIC void SUBR_str(void)
+void SUBR_str(void)
 {
   char *addr;
   int len;
@@ -157,7 +157,7 @@ PUBLIC void SUBR_str(void)
 }
 
 
-PUBLIC void SUBR_val(void)
+void SUBR_val(void)
 {
   char *addr;
   int len;
@@ -179,7 +179,7 @@ PUBLIC void SUBR_val(void)
 }
 
 
-PUBLIC void SUBR_format(void)
+void SUBR_format(void)
 {
   int fmt_type;
   char *format = NULL;
@@ -235,7 +235,7 @@ PUBLIC void SUBR_format(void)
 }
 
 
-PUBLIC void SUBR_hex(void)
+void SUBR_hex(void)
 {
   int prec = 0;
 
@@ -259,7 +259,7 @@ PUBLIC void SUBR_hex(void)
 }
 
 
-PUBLIC void SUBR_bin(void)
+void SUBR_bin(void)
 {
   int prec = 0;
 

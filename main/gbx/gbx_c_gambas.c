@@ -77,7 +77,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CPARAM_next)
 
-  long *index = (long *)GB_GetEnum();
+  int *index = (int *)GB_GetEnum();
 
   if (*index >= nvararg())
     GB_StopEnum();
@@ -144,7 +144,7 @@ END_METHOD
 
 #endif
 
-PUBLIC GB_DESC NATIVE_Param[] =
+GB_DESC NATIVE_Param[] =
 {
   GB_DECLARE("Param", 0), GB_VIRTUAL_CLASS(),
 
@@ -163,7 +163,7 @@ PUBLIC GB_DESC NATIVE_Param[] =
   GB_END_DECLARE
 };
 
-PUBLIC GB_DESC NATIVE_Observer[] =
+GB_DESC NATIVE_Observer[] =
 {
   GB_DECLARE("Observer", sizeof(COBSERVER)), 
 
@@ -174,7 +174,7 @@ PUBLIC GB_DESC NATIVE_Observer[] =
 };
 
 /*
-PUBLIC GB_DESC NATIVE_Unknown[] =
+GB_DESC NATIVE_Unknown[] =
 {
   GB_DECLARE("Unknown", 0), GB_VIRTUAL_CLASS(),
 
@@ -185,7 +185,7 @@ PUBLIC GB_DESC NATIVE_Unknown[] =
 };
 */
 
-PUBLIC GB_DESC NATIVE_Gambas[] =
+GB_DESC NATIVE_Gambas[] =
 {
   GB_DECLARE("gb", 0), GB_VIRTUAL_CLASS(),
 

@@ -64,7 +64,7 @@ typedef
     void *_reserved4;
     void *_reserved5;
     void *_reserved6;
-    long _reserved7;
+    int _reserved7;
     }
   QT_WIDGET;
 
@@ -72,7 +72,7 @@ typedef
   struct {
     QT_WIDGET widget;
     QWidget *container;
-    long arrangement;
+    int arrangement;
     }
   QT_CONTAINER;
 
@@ -101,7 +101,7 @@ typedef
 
 typedef
   struct {
-    long version;
+    intptr_t version;
     void (*InitEventLoop)(void);
     void (*Init)(void);
     void (*InitWidget)(QWidget *, void *);

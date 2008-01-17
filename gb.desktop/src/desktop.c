@@ -32,19 +32,22 @@ BEGIN_METHOD(CDESKTOP_find, GB_STRING title; GB_STRING klass; GB_STRING role)
 	int count;
 	int i;
 	char *title = MISSING(title) ? NULL : STRING(title);
-	long ltitle = MISSING(title) ? 0 : LENGTH(title);
+	int ltitle = MISSING(title) ? 0 : LENGTH(title);
 	char *klass = MISSING(klass) ? NULL : STRING(klass);
-	long lklass = MISSING(klass) ? 0 : LENGTH(klass);
+	int lklass = MISSING(klass) ? 0 : LENGTH(klass);
 	char *role = MISSING(role) ? NULL : STRING(role);
-	long lrole = MISSING(role) ? 0 : LENGTH(role);
+	int lrole = MISSING(role) ? 0 : LENGTH(role);
 	char *prop;
-	long lprop;
+	int lprop;
 	GB_ARRAY result;
 
 	if (X11_init())
 		return;
-
-	GB.Array.New(&result, GB_T_INTEGER, 0);
+	
+	if (sizeof(Window) <= sizeof(int))
+		GB.Array.New(&result, GB_T_INTEGER, 0);
+	else
+		GB.Array.New(&result, GB_T_LONG, 0);
 
 	X11_find_windows(&windows, &count);
 
@@ -76,7 +79,7 @@ BEGIN_METHOD(CDESKTOP_find, GB_STRING title; GB_STRING klass; GB_STRING role)
 				continue;
 		}
 
-		*((long *)GB.Array.Add(result)) = win;
+		*((Window *)GB.Array.Add(result)) = win;
 	}
 
 	XFree(windows);

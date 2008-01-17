@@ -57,7 +57,7 @@ typedef
     void *cursor;
     CWIDGET *next;
     CWIDGET *prev;
-    long level;
+    int level;
     }
   CWIDGET;
 
@@ -68,7 +68,7 @@ typedef
   struct {
     CWIDGET widget;
     QWidget *container;
-    long arrangement;
+    int arrangement;
     }
   CCONTAINER;
 
@@ -196,7 +196,7 @@ void CACTION_get(void *control);
 #ifndef __CWIDGET_CPP
 extern
 #endif
-long
+int
 //EVENT_Move,
 //EVENT_Resize,
 EVENT_MouseDown,

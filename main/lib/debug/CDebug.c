@@ -48,7 +48,7 @@ static CDEBUG *_debug_object = NULL;
 static char *_buffer = NULL;
 static int _buffer_left;
 
-static void callback_read(int fd, int type, long param)
+static void callback_read(int fd, int type, intptr_t param)
 {
   int n, i, p;
 
@@ -98,7 +98,7 @@ static void callback_read(int fd, int type, long param)
   }  
 }
 
-// static void callback_read(int fd, int type, long param)
+// static void callback_read(int fd, int type, intptr_t param)
 // {
 // 	char *buffer = NULL;
 // 	char tmp[256];

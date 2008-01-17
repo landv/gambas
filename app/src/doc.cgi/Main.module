@@ -3333,7 +3333,7 @@ PRIVATE FUNCTION GetSymbols() AS String
       sRes = sRes & " " & ("in") & " " & GetLink("/comp" &/ $hClass.ParentComponent,,, "arrow")
     ENDIF
 
-    sRes = sRes & ".<hr>\n"
+    sRes = sRes & ".\n<hr class=\"border\">\n"
     'PRINT #$hFile, "</div>"
   ENDIF
 
@@ -3376,7 +3376,7 @@ PRIVATE FUNCTION GetSymbols() AS String
 
     IF bStatic THEN
 
-      sRes = sRes & "<hr>"
+      sRes &= "<hr class=\"border\">"
       sRes = sRes & "<table class=\"none\" cellspacing=\"0\" cellpadding=\"0\">\n"
       sRes = sRes & "<tr>\n"
       IF cSymbol["P"].Count THEN sRes = sRes & "<td><b>" & ("Static&nbsp;properties") & "</b></td>" & sSpace & "\n"
@@ -3396,7 +3396,7 @@ PRIVATE FUNCTION GetSymbols() AS String
 
     IF bDynamic THEN
 
-      sRes = sRes & "<hr>"
+      sRes &= "<hr class=\"border\">"
       sRes = sRes & "<table class=\"none\" cellspacing=\"0\" cellpadding=\"0\">\n"
       sRes = sRes & "<tr>\n"
       IF cSymbol["p"].Count THEN sRes = sRes & "<td><b>" & ("Properties") & "</b></td>" & sSpace & "\n"
@@ -3458,7 +3458,7 @@ PRIVATE FUNCTION GetSymbolSyntax(hSym AS CSymbolInfo) AS String
 
     CASE "_put"
 
-      hSym = CComponent.Classes[hSym.Component &/ hSym.Class].Symbols["_get"]
+      hSym = CComponent.All[hSym.Component][hSym.Class].Symbols["_get"]
 
       IF hSym.IsStatic() THEN
         sName = hSym.Class
@@ -3632,7 +3632,7 @@ PRIVATE FUNCTION GetClassPageFromName(sClass AS String) AS String
 
   sComp = $hComp.Key
 
-  IF NOT CComponent.Classes.Exist(sComp &/ sClass) THEN
+  IF IsNull(CComponent.All[sComp][sClass]) THEN
     sComp = CComponent.Classes[sClass].Component
   ENDIF
 

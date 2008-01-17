@@ -36,7 +36,7 @@
 DECLARE_EVENT(EVENT_Timer);
 
 
-PUBLIC void CTIMER_raise(void *_object)
+void CTIMER_raise(void *_object)
 {
 	GB_Raise(THIS, EVENT_Timer, 0);
 }
@@ -115,7 +115,7 @@ END_METHOD
 
 #endif
 
-PUBLIC GB_DESC NATIVE_Timer[] =
+GB_DESC NATIVE_Timer[] =
 {
   GB_DECLARE("Timer", sizeof(CTIMER)),
 

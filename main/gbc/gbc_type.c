@@ -44,25 +44,6 @@ const char *TYPE_name[] =
 };
 
 
-/*
-TYPE_ID TYPE_get_id(TYPE type)
-{
-  if (TYPE_is_object(type))
-    return T_OBJECT;
-  else
-    return (TYPE_get_value(type) & 0xFF);
-}
-
-
-long TYPE_get_class(TYPE type)
-{
-  if (TYPE_is_object(type))
-    return TYPE_get_value(type);
-  else
-    return -1;
-}
-*/
-
 TYPE TYPE_make(TYPE_ID id, short value, int flag)
 {
   TYPE type;

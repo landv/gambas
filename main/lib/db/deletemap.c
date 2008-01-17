@@ -34,15 +34,15 @@ typedef
   struct _DELETE_SLOT {
     struct _DELETE_SLOT *prev;
     struct _DELETE_SLOT *next;
-    long start;
-    long length;
+    int start;
+    int length;
     }
   DELETE_SLOT;
 
-long DELETE_MAP_virtual_to_real(DELETE_MAP *dmap, long vpos)
+int DELETE_MAP_virtual_to_real(DELETE_MAP *dmap, int vpos)
 {
   DELETE_SLOT *slot = (DELETE_SLOT *)dmap;
-  long rpos = vpos;
+  int rpos = vpos;
   
   while (slot)
   {
@@ -59,10 +59,10 @@ long DELETE_MAP_virtual_to_real(DELETE_MAP *dmap, long vpos)
   return rpos;
 }
 
-long DELETE_MAP_real_to_virtual(DELETE_MAP *dmap, long rpos)
+int DELETE_MAP_real_to_virtual(DELETE_MAP *dmap, int rpos)
 {
   DELETE_SLOT *slot = (DELETE_SLOT *)dmap;
-  long vpos = rpos;
+  int vpos = rpos;
   
   while (slot)
   {
@@ -96,7 +96,7 @@ static void dump(DELETE_MAP *dmap)
 }
 #endif
 
-static void create_slot(DELETE_SLOT **pslot, long pos, DELETE_SLOT *before, DELETE_SLOT *after)
+static void create_slot(DELETE_SLOT **pslot, int pos, DELETE_SLOT *before, DELETE_SLOT *after)
 {
   GB.Alloc(POINTER(pslot), sizeof(DELETE_SLOT));
   (*pslot)->prev = before;
@@ -126,12 +126,12 @@ static DELETE_SLOT *delete_slot(DELETE_SLOT *slot)
   return nslot;
 }
 
-void DELETE_MAP_add(DELETE_MAP **dmap, long vpos)
+void DELETE_MAP_add(DELETE_MAP **dmap, int vpos)
 {
   DELETE_SLOT *slot;
   DELETE_SLOT *nslot;
   DELETE_SLOT *bslot = NULL;
-  long rpos;
+  int rpos;
   
   if (vpos < 0)
     return;

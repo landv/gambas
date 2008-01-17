@@ -102,10 +102,10 @@ PUBLIC void ERROR_define(char *pattern, char *arg[])
     }
   }
 
-  if ((long)pattern > 0 && (long)pattern < NBR_ERR_MSG)
+  if ((int)pattern > 0 && (int)pattern < NBR_ERR_MSG)
   {
-    ERROR_info.code = (long)pattern;
-    pattern = _message[(long)pattern];
+    ERROR_info.code = (int)pattern;
+    pattern = _message[(int)pattern];
   }
   else
     ERROR_info.code = -1;
@@ -173,36 +173,6 @@ PUBLIC void PROPAGATE()
   longjmp(err->env, 1);
 }
 
-/*
-PUBLIC void ERROR(long code, ...)
-{
-  va_list args;
-  int i;
-  char *arg[4];
-
-  va_start(args, code);
-
-  for (i = 0; i < 4; i++)
-    arg[i] = va_arg(args, char *);
-
-  ERROR_define((char *)code, arg);
-}
-*/
-
-/*
-static void throw(long code, va_list args)
-{
-  int i;
-  char *arg[4];
-
-  for (i = 0; i < 4; i++)
-    arg[i] = va_arg(args, char *);
-
-  ERROR_define((char *)code, arg);
-  PROPAGATE();
-}
-*/
-
 PUBLIC void THROW(const char *msg)
 {
   GB.Error("&1", (char *)msg);
@@ -214,33 +184,6 @@ PUBLIC void THROW2(const char *pattern, const char *msg)
   GB.Error((char *)pattern, (char *)msg);
   PROPAGATE();
 }
-
-
-/*
-PUBLIC void THROW_LIBRARY()
-{
-  int n;
-  char buf[512];
-  char *msg = GAMBAS_Error;
-
-  if (FP != NULL)
-  {
-    sprintf(buf, "[%s] ", TRACE_get_current_position());
-    add_error_message(buf, FALSE);
-  }
-
-  sprintf(buf, "#%d: ", E_FROMLIB);
-  add_error_message(buf, FALSE);
-
-  if ((long)msg > 0 && (long)msg < 255)
-    n = snprintf(buf, sizeof(buf), ERROR_Message[(long)msg]);
-  else
-    n = snprintf(buf, sizeof(buf), msg);
-
-  ERROR_code = E_FROMLIB;
-  throw_error(msg);
-}
-*/
 
 PUBLIC void ERROR_panic(char *error, ...)
 {

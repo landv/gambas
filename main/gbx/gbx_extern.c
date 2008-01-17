@@ -26,6 +26,9 @@
 
 #include "config.h"
 #include "gb_common.h"
+
+#include <ffi.h>
+
 #include "gb_common_buffer.h"
 #include "gb_table.h"
 #include "gbx_type.h"
@@ -36,6 +39,7 @@
 
 #include "gbx_extern.h"
 
+#if 0
 /* Daniel Campos trick :-) */
 
 typedef
@@ -43,6 +47,7 @@ typedef
     int args[32];
   }
   ARGS;
+#endif
 
 typedef
   struct {
@@ -52,6 +57,14 @@ typedef
   EXTERN_SYMBOL;  
 
 static TABLE *_table = NULL;
+
+static ffi_type *_to_ffi_type[17] = {
+	&ffi_type_void, &ffi_type_sint32, &ffi_type_sint32, &ffi_type_sint32, 
+	&ffi_type_sint32, &ffi_type_sint64, &ffi_type_float, &ffi_type_double, 
+	&ffi_type_void,	&ffi_type_pointer, &ffi_type_pointer, &ffi_type_void, 
+	&ffi_type_void, &ffi_type_void, &ffi_type_void, &ffi_type_pointer,
+	&ffi_type_pointer
+	};
 
 
 static lt_dlhandle get_library(char *name)
@@ -69,9 +82,9 @@ static lt_dlhandle get_library(char *name)
   
     p = strrchr(name, ':');
     if (!p)
-      snprintf(COMMON_buffer, COMMON_BUF_MAX, "%s." SHARED_LIBRARY_EXT, name);
+      sprintf(COMMON_buffer, "%s." SHARED_LIBRARY_EXT, name);
     else
-      snprintf(COMMON_buffer, COMMON_BUF_MAX, "%.*s." SHARED_LIBRARY_EXT ".%s", p - name, name, p + 1);
+      sprintf(COMMON_buffer, "%.*s." SHARED_LIBRARY_EXT ".%s", (int)(p - name), name, p + 1);
       
     name = COMMON_buffer;
     
@@ -93,7 +106,7 @@ static lt_dlhandle get_library(char *name)
   return esym->handle;
 }  
   
-
+#if 0
 static int put_arg(void *addr, VALUE *value)
 {
   static void *jump[16] = {
@@ -128,7 +141,7 @@ __INTEGER:
 
 __LONG:
 
-  *((long long *)addr) = value->_long.value;
+  *((int64_t *)addr) = value->_long.value;
   return 2;
 
 __SINGLE:
@@ -180,7 +193,7 @@ __FUNCTION:
 
   ERROR_panic("Bad type (%d) for EXTERN_call", value->type);
 }
-
+#endif
 
 
 
@@ -207,7 +220,8 @@ static void *get_function(CLASS_EXTERN *ext)
   
   return func;
 }
-  
+
+
 /*
   EXEC.class : the class
   EXEC.index : the extern function index
@@ -215,9 +229,173 @@ static void *get_function(CLASS_EXTERN *ext)
   EXEC.drop : if the return value should be dropped.
 */
 
+void EXTERN_call(void)
+{
+  static const void *jump[17] = {
+    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
+    };
+  static const int use_temp[17] = { 0, 0, 0, 0, 0, 0, sizeof(float), 0, 0, sizeof(char *), sizeof(char *), 0, 0, 0, 0, 0, sizeof(void *) };
+  static char temp[4 * sizeof(void *)];
+  static void *null = 0;
+    
+  CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];
+  int nparam = EXEC.nparam;
+  ffi_cif cif;
+  ffi_type *types[nparam];
+  ffi_type *rtype;
+  void *args[nparam];
+  int rvalue[4];
+  TYPE *sign;
+  VALUE *value;
+  char *tmp = NULL;
+  char *next_tmp;
+  void *func;
+  int i, t;
+
+  if (nparam < ext->n_param)
+    THROW(E_NEPARAM);
+  if (nparam > ext->n_param)
+    THROW(E_TMPARAM);
+  
+  sign = (TYPE *)ext->param;
+  value = &SP[-nparam];
+  next_tmp = temp;
+  
+  for (i = 0; i < nparam; i++, value++, sign++)
+  {
+  	VALUE_conv(value, *sign);
+  	
+		if (TYPE_is_object(value->type))
+			t = T_OBJECT;
+		else
+			t = (int)value->type;
+			
+		if (use_temp[t])
+		{
+			tmp = next_tmp;
+			if ((tmp + use_temp[t]) > &temp[sizeof(temp)])
+				THROW(E_TMPARAM);
+			args[i] = tmp;
+			next_tmp = tmp + use_temp[t];
+		}
+  	types[i] = _to_ffi_type[t];
+		goto *jump[t];
+
+	__BOOLEAN:
+	__BYTE:
+	__SHORT:
+	__INTEGER:
+		args[i] = &value->_integer.value;
+		continue;
+	
+	__LONG:
+		args[i] = &value->_long.value;
+		continue;
+	
+	__SINGLE:
+		*((float *)tmp) = (float)value->_float.value;
+		continue;
+	
+	__FLOAT:
+		args[i] = &value->_float.value;
+		continue;
+	
+	__STRING:
+		*((char **)tmp) = (char *)(value->_string.addr + value->_string.start);
+		continue;
+	
+	__OBJECT:	
+		{
+			void *ob = value->_object.object;
+			CLASS *class = OBJECT_class(ob);
+			
+			if (!CLASS_is_native(class) && class == CLASS_Class)
+				*((void **)tmp) = class->stat;
+			else
+				*((void **)tmp) = (char *)ob + sizeof(OBJECT);
+		}
+		continue;
+	
+	__NULL:
+		args[i] = &null;
+		continue;
+	
+	__DATE:
+	__VARIANT:
+	__VOID:
+	__ARRAY:
+	__CLASS:
+	__FUNCTION:
+	
+		ERROR_panic("Bad type (%d) for EXTERN_call", value->type);
+  }
+  
+  rtype = _to_ffi_type[ext->type];
+  
+  func = get_function(ext);
+  
+	if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, nparam,	rtype, types) != FFI_OK)
+		ERROR_panic("ffi_prep_cif has failed");
+  
+	ffi_call(&cif, func, rvalue, args);
+
+  switch (ext->type)
+  {
+    case T_BOOLEAN:
+    case T_BYTE:
+    case T_SHORT:
+    case T_INTEGER:
+      GB_ReturnInteger(*(int *)POINTER(rvalue));
+      break;
+    
+    case T_LONG:
+      GB_ReturnLong(*(int64_t *)POINTER(rvalue));
+      break;
+    
+    case T_SINGLE:
+      GB_ReturnFloat(*(float *)POINTER(rvalue));
+      break;
+      
+    case T_FLOAT:
+      GB_ReturnFloat(*(double *)POINTER(rvalue));
+      break;
+      
+    case T_STRING:
+      GB_ReturnConstString(*(char **)POINTER(rvalue), 0);
+      break;
+    
+    default:
+      //GB_ReturnNull();
+      break;
+  }	
+
+  while (nparam > 0)
+  {
+    nparam--;
+    POP();
+  }
+
+  POP(); /* extern function */
+  
+  /* from EXEC_native() */
+    
+  BORROW(&TEMP);
+
+  if (EXEC.drop)
+    RELEASE(&TEMP);
+  else
+  {
+    VALUE_conv(&TEMP, ext->type);
+    *SP = TEMP;
+    SP++;
+  }
+}
+
+#if 0
 #define CAST(_type, _func) (*((_type (*)())_func))
 
-PUBLIC void EXTERN_call(void)
+void old_EXTERN_call(void)
 {
   CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];
   int nparam = EXEC.nparam;
@@ -261,7 +439,7 @@ PUBLIC void EXTERN_call(void)
       break;
     
     case T_LONG:
-      GB_ReturnLong(CAST(long long, func)(args));
+      GB_ReturnLong(CAST(int64_t, func)(args));
       break;
     
     case T_SINGLE:
@@ -303,9 +481,9 @@ PUBLIC void EXTERN_call(void)
     SP++;
   }
 }
+#endif
 
-
-PUBLIC void EXTERN_exit(void)
+void EXTERN_exit(void)
 {
   int i;
   EXTERN_SYMBOL *esym;

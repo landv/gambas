@@ -31,7 +31,7 @@
 /* EXEC_object() ne doit pas faire d'auto-create, car sinon
    il renvoie un objet référencé */
 
-PUBLIC void EXEC_enum_first(PCODE code)
+void EXEC_enum_first(PCODE code)
 {
   OBJECT *object;
   CLASS *class;
@@ -57,7 +57,7 @@ PUBLIC void EXEC_enum_first(PCODE code)
 }
 
 
-PUBLIC bool EXEC_enum_next(PCODE code)
+bool EXEC_enum_next(PCODE code)
 {
   OBJECT *object;
   CLASS *class;

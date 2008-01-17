@@ -22,7 +22,6 @@
 
 ***************************************************************************/
 
-
 #include "gb_common.h"
 #include <math.h>
 
@@ -40,15 +39,15 @@
 #include "gbx_subr_test_temp.h"
 
 
-PUBLIC void SUBR_bit(void)
+void SUBR_bit(void)
 {
   static void *jump[16] = {
     &&__ERROR, &&__BCLR, &&__BSET, &&__BTST, &&__BCHG, &&__ASL, &&__ASR, &&__ROL,
     &&__ROR, &&__LSL, &&__LSR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR
     };
 
-  long long val;
-  unsigned long long uval;
+  int64_t val;
+  uint64_t uval;
   int bit;
   TYPE type;
   int n;
@@ -129,9 +128,9 @@ __LSL:
 
 	if (type == T_LONG)
 	{
-		uval = (unsigned long long)val;
+		uval = (uint64_t)val;
 		uval <<= bit;
-		val = (long long)uval;
+		val = (int64_t)uval;
 	}
 	else
 	{
@@ -145,9 +144,9 @@ __LSR:
 
 	if (type == T_LONG)
 	{
-		uval = (unsigned long long)val;
+		uval = (uint64_t)val;
 		uval >>= bit;
-		val = (long long)uval;
+		val = (int64_t)uval;
 	}
 	else
 	{
@@ -337,7 +336,7 @@ void SUBR_near(void)
 }
 
 
-PUBLIC void SUBR_comp(void)
+void SUBR_comp(void)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -514,7 +513,7 @@ __LE:
 
 
 
-PUBLIC void SUBR_strcomp(void)
+void SUBR_strcomp(void)
 {
   int mode = GB_COMP_BINARY;
   char *s1, *s2;
@@ -550,7 +549,7 @@ PUBLIC void SUBR_strcomp(void)
 }
 
 
-PUBLIC void SUBR_is(void)
+void SUBR_is(void)
 {
 	VALUE *P1 = SP - 2;
 	VALUE *P2 = SP - 1;
@@ -575,7 +574,7 @@ PUBLIC void SUBR_is(void)
 }
 
 
-PUBLIC void SUBR_min_max(void)
+void SUBR_min_max(void)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE

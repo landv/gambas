@@ -37,6 +37,7 @@
 #include "gbx_math.h"
 
 
+#define ABS(x) ((x) < 0 ? (-x) : (x))
 
 static MATH_FUNC MathFunc[] = {
   NULL, frac, log, exp, sqrt, sin, cos, tan, atan, asin, acos,
@@ -146,7 +147,7 @@ void SUBR_round(void)
 }
 
 
-PUBLIC void SUBR_math(void)
+void SUBR_math(void)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -165,7 +166,7 @@ PUBLIC void SUBR_math(void)
 }
 
 
-PUBLIC void SUBR_math2(void)
+void SUBR_math2(void)
 {
   SUBR_ENTER_PARAM(2);
 
@@ -181,7 +182,7 @@ PUBLIC void SUBR_math2(void)
 }
 
 
-PUBLIC void SUBR_pow(void)
+void SUBR_pow(void)
 {
   SUBR_ENTER_PARAM(2);
 
@@ -197,7 +198,7 @@ PUBLIC void SUBR_pow(void)
 }
 
 
-PUBLIC void SUBR_not(void)
+void SUBR_not(void)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -281,7 +282,7 @@ __END:
 
 
 
-PUBLIC void SUBR_add_quick(int value)
+void SUBR_add_quick(int value)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
@@ -318,7 +319,7 @@ __INTEGER:
 
 __LONG:
 
-  P1->_long.value += (long long)value;
+  P1->_long.value += (int64_t)value;
   goto *jump_end;
 
 __DATE:
@@ -339,7 +340,7 @@ __END:
 }
 
 
-PUBLIC void SUBR_and_(void)
+void SUBR_and_(void)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__ERROR, &&__ERROR, &&__ERROR
@@ -440,7 +441,7 @@ __END:
 
 
 
-PUBLIC void SUBR_sgn(void)
+void SUBR_sgn(void)
 {
   static void *jump[] = {
     &&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
@@ -491,7 +492,7 @@ __END:
 }
 
 
-PUBLIC void SUBR_neg_(void)
+void SUBR_neg_(void)
 {
   static void *jump[] = {
     &&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
@@ -519,7 +520,7 @@ __INTEGER:
     goto *exec[op];
 
     __NEG_I: P1->_integer.value = (-P1->_integer.value); goto *jump_end;
-    __ABS_I: P1->_integer.value = labs(P1->_integer.value); goto *jump_end;
+    __ABS_I: P1->_integer.value = ABS(P1->_integer.value); goto *jump_end;
     __INT_I: goto *jump_end;
     __FIX_I: goto *jump_end;
     //__SGN_I: P1->_integer.value = lsgn(P1->_integer.value); goto __END_SGN;
@@ -534,7 +535,7 @@ __LONG:
     goto *exec[op];
 
     __NEG_L: P1->_long.value = (-P1->_long.value); goto *jump_end;
-    __ABS_L: P1->_long.value = llabs(P1->_long.value); goto *jump_end;
+    __ABS_L: P1->_long.value = ABS(P1->_long.value); goto *jump_end;
     __INT_L: goto *jump_end;
     __FIX_L: goto *jump_end;
     //__SGN_L: P1->_integer.value = llsgn(P1->_integer.value); P1->type = T_INTEGER; goto __END_SGN;
@@ -593,7 +594,7 @@ __END:
 
 
 
-PUBLIC void SUBR_add_(void)
+void SUBR_add_(void)
 {
   static void *jump[] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE

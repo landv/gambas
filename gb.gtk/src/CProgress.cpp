@@ -73,11 +73,11 @@ GB_DESC CProgressDesc[] =
 {
   GB_DECLARE("ProgressBar", sizeof(CPROGRESS)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CPROGRESS_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CPROGRESS_new, "(Parent)Container;"),
 
   GB_PROPERTY("Value", "f", CPROGRESS_value),
   GB_PROPERTY("Label", "b", CPROGRESS_label),
-  GB_METHOD("Reset", NULL, CPROGRESS_reset, NULL),
+  GB_METHOD("Reset", 0, CPROGRESS_reset, 0),
 
   PROGRESSBAR_DESCRIPTION,
 

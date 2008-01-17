@@ -186,7 +186,7 @@ END_METHOD
 #endif
 
 
-PUBLIC GB_DESC NATIVE_Quote[] =
+GB_DESC NATIVE_Quote[] =
 {
   GB_DECLARE("Quote", 0), GB_VIRTUAL_CLASS(),
 
@@ -196,7 +196,7 @@ PUBLIC GB_DESC NATIVE_Quote[] =
   GB_END_DECLARE
 };
 
-PUBLIC GB_DESC NATIVE_Unquote[] =
+GB_DESC NATIVE_Unquote[] =
 {
   GB_DECLARE("UnQuote", 0), GB_VIRTUAL_CLASS(),
 

@@ -39,7 +39,7 @@
 #include "gbx_local.h"
 #include "gbx_compare.h"
 
-PUBLIC void SUBR_cat(void)
+void SUBR_cat(void)
 {
   int i;
   int len, len_cat;
@@ -82,7 +82,7 @@ PUBLIC void SUBR_cat(void)
 }
 
 
-PUBLIC void SUBR_file(void)
+void SUBR_file(void)
 {
   int i;
   int length;
@@ -141,7 +141,7 @@ PUBLIC void SUBR_file(void)
 
 
 
-PUBLIC void SUBR_left(void)
+void SUBR_left(void)
 {
   int val;
 
@@ -171,7 +171,7 @@ _FIN:
 
 
 
-PUBLIC void SUBR_right(void)
+void SUBR_right(void)
 {
   int val;
   int new_len;
@@ -206,7 +206,7 @@ _FIN:
 
 
 
-PUBLIC void SUBR_mid(void)
+void SUBR_mid(void)
 {
   int start;
   int len;
@@ -261,7 +261,7 @@ FIN:
 
 
 
-PUBLIC void SUBR_len(void)
+void SUBR_len(void)
 {
   int len;
 
@@ -279,7 +279,7 @@ PUBLIC void SUBR_len(void)
 }
 
 
-PUBLIC void SUBR_space(void)
+void SUBR_space(void)
 {
   int len;
 
@@ -306,7 +306,7 @@ PUBLIC void SUBR_space(void)
 
 
 
-PUBLIC void SUBR_string(void)
+void SUBR_string(void)
 {
   int i;
   char *d;
@@ -344,7 +344,7 @@ PUBLIC void SUBR_string(void)
 }
 
 
-PUBLIC void SUBR_trim(void)
+void SUBR_trim(void)
 {
   unsigned char *str;
   bool left, right;
@@ -417,18 +417,18 @@ PUBLIC void SUBR_trim(void)
   SUBR_LEAVE();
 
 
-PUBLIC void SUBR_upper(void)
+void SUBR_upper(void)
 {
   STRING_APPLY(toupper);
 }
 
-PUBLIC void SUBR_lower(void)
+void SUBR_lower(void)
 {
   STRING_APPLY(tolower);
 }
 
 
-PUBLIC void SUBR_chr(void)
+void SUBR_chr(void)
 {
   int car;
 
@@ -446,7 +446,7 @@ PUBLIC void SUBR_chr(void)
 
 
 
-PUBLIC void SUBR_asc(void)
+void SUBR_asc(void)
 {
   int pos = 0;
 
@@ -475,7 +475,7 @@ PUBLIC void SUBR_asc(void)
 
 
 
-PUBLIC void SUBR_instr(void)
+void SUBR_instr(void)
 {
   boolean right, nocase = FALSE;
   int is, pos;
@@ -523,7 +523,7 @@ __FOUND:
 }
 
 
-PUBLIC void SUBR_like(void)
+void SUBR_like(void)
 {
   char *pattern;
   char *string;
@@ -559,7 +559,7 @@ static void get_subst(int np, char **str, int *len)
 }
 
 
-PUBLIC void SUBR_subst(void)
+void SUBR_subst(void)
 {
   char *string;
   int len;
@@ -590,7 +590,7 @@ PUBLIC void SUBR_subst(void)
 
 
 
-PUBLIC void SUBR_replace(void)
+void SUBR_replace(void)
 {
   char *ps;
   char *pp;
@@ -653,7 +653,7 @@ PUBLIC void SUBR_replace(void)
 }
 
 
-PUBLIC void SUBR_split(void)
+void SUBR_split(void)
 {
   CARRAY *array;
   char *str;
@@ -700,7 +700,7 @@ PUBLIC void SUBR_split(void)
 }
 
 
-PUBLIC void SUBR_scan(void)
+void SUBR_scan(void)
 {
   CARRAY *array;
   char *str;
@@ -725,7 +725,7 @@ PUBLIC void SUBR_scan(void)
 }
 
 
-PUBLIC void SUBR_iconv(void)
+void SUBR_iconv(void)
 {
   char *str;
   const char *src;
@@ -757,7 +757,7 @@ PUBLIC void SUBR_iconv(void)
 }
 
 
-PUBLIC void SUBR_sconv(void)
+void SUBR_sconv(void)
 {
   char *str;
   const char *src;
@@ -845,7 +845,7 @@ static int _is_punct(int c)
 }
 
 
-PUBLIC void SUBR_is_chr(void)
+void SUBR_is_chr(void)
 {
   static void *jump[] =
   {

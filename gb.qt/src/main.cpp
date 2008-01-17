@@ -555,11 +555,11 @@ static void hook_timer(GB_TIMER *timer, bool on)
 	}
 	
 	if (on)
-		timer->id = (int)(new MyTimer(timer));
+		timer->id = (intptr_t)(new MyTimer(timer));
 }
 
 
-static void hook_watch(int fd, int type, void *callback, int param)
+static void hook_watch(int fd, int type, void *callback, intptr_t param)
 {
   CWatch::watch(fd, type, (GB_WATCH_CALLBACK)callback, param);
 }

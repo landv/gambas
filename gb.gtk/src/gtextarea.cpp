@@ -127,7 +127,7 @@ char* gTextArea::text()
 	return gtk_text_buffer_get_text(buf,&start,&end,true);
 }
 
-void gTextArea::setText(char *txt)
+void gTextArea::setText(const char *txt)
 {
 	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
 	if (!txt) txt="";
@@ -309,7 +309,7 @@ void gTextArea::paste()
 	
 }
 
-void gTextArea::insert(char *txt)
+void gTextArea::insert(const char *txt)
 {
 	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
 	if (!txt) txt="";
@@ -400,7 +400,7 @@ char* gTextArea::selText()
 	return gtk_text_buffer_get_text(buf,&start,&end,true);
 }
 
-void gTextArea::setSelText(char *vl)
+void gTextArea::setSelText(const char *vl)
 {
 	GtkTextBuffer *buf=gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
 	GtkTextIter start,end;

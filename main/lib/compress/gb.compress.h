@@ -4,7 +4,7 @@
 
   Compression Library - Interface for compression drivers
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernï¿½ndez <danielcampos@netcourrier.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,14 +43,14 @@ typedef
     int (*default_compression)(void);
     
     struct {
-    	int  (*String) (char **target,unsigned long *lent,char *source,unsigned int len,int level);
+    	int  (*String) (char **target,unsigned int *lent,char *source,unsigned int len,int level);
 	int  (*File)   (char *source,char *target,int level);
 	void (*Open)   (char *path,int level,GB_STREAM *stream);
 	int  (*Close)  (GB_STREAM *stream);
     } Compress;
     
     struct {
-    	int  (*String) (char **target,unsigned long *lent,char *source,unsigned long len);
+    	int  (*String) (char **target,unsigned int *lent,char *source,unsigned int len);
 	int  (*File)   (char *source,char *target);
 	void (*Open)   (char *path,GB_STREAM *stream);
 	int  (*Close)  (GB_STREAM *stream);
@@ -62,7 +62,7 @@ typedef
 
 typedef
   struct {
-    long version;
+    intptr_t version;
     void (*Register)(COMPRESS_DRIVER *);
     }
   COMPRESS_INTERFACE;

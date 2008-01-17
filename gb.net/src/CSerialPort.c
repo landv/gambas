@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -62,6 +62,13 @@ GB_STREAM_DESC SerialStream = {
 	handle: CSerialPort_stream_handle
 };
 
+typedef struct 
+{
+	GB_STREAM_DESC *desc;
+    	int _reserved;
+    	void *handle;
+} SERIAL_STREAM;
+
 DECLARE_EVENT (Serial_Read);
 DECLARE_EVENT (Serial_DTR);
 DECLARE_EVENT (Serial_DSR);
@@ -111,7 +118,7 @@ void CSerialPort_CallBack(long lParam)
 	struct pollfd mypoll;
 	int numpoll;
 	CSERIALPORT *mythis;
-	/*	Just sleeping a little to reduce CPU waste	*/
+	/*	Just sleeping a bit to reduce CPU waste	*/
 	struct timespec mywait;
 	mywait.tv_sec=0;
 	mywait.tv_nsec=1000000;
@@ -224,11 +231,11 @@ int CSerialPort_stream_open(GB_STREAM *stream, const char *path, int mode, void 
 {
 	return -1; /* not allowed */
 }
-int CSerialPort_stream_seek(GB_STREAM *stream, long long pos, int whence)
+int CSerialPort_stream_seek(GB_STREAM *stream, int64_t pos, int whence)
 {
 	return -1; /* not allowed */
 }
-int CSerialPort_stream_tell(GB_STREAM *stream, long long *pos)
+int CSerialPort_stream_tell(GB_STREAM *stream, int64_t *pos)
 {
 	return -1; /* not allowed */
 }
@@ -244,7 +251,7 @@ int CSerialPort_stream_close(GB_STREAM *stream)
 {
 	CSERIALPORT *mythis;
 
-	if (!(mythis=(CSERIALPORT*)stream->_free[0])) return -1;	
+	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;	
 	
 	if (mythis->iStatus)
 	{
@@ -255,13 +262,13 @@ int CSerialPort_stream_close(GB_STREAM *stream)
 	}
 	return 0;
 }
-int CSerialPort_stream_lof(GB_STREAM *stream, long long *len)
+int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	CSERIALPORT *mythis;
 	int bytes;
 
 	*len=0;
-	if (!(mythis=(CSERIALPORT*)stream->_free[0])) return -1;
+	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
 	
 	if (ioctl(mythis->Port,FIONREAD,&bytes)) return -1;
 	*len=bytes;
@@ -272,21 +279,21 @@ int CSerialPort_stream_eof(GB_STREAM *stream)
 	CSERIALPORT *mythis;
 	int bytes;
 
-	if (!(mythis=(CSERIALPORT*)stream->_free[0])) return -1;
+	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
 	
 	if (ioctl(mythis->Port,FIONREAD,&bytes)) return -1;
 	if (!bytes) return -1;
 	return 0;
 }
 
-int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, long len)
+int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	CSERIALPORT *mythis;
   	int npos=-1;
   	int NoBlock=0;
 	int bytes;
 
-  	if (!(mythis=(CSERIALPORT*)stream->_free[0])) return -1;
+  	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
 	
 	if (ioctl(mythis->Port,FIONREAD,&bytes)) return -1;
 	if (bytes < len) return -1;
@@ -298,13 +305,13 @@ int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, long len)
   	return -1;
 }
 
-int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, long len)
+int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	CSERIALPORT *mythis;
 	int npos=-1;
 	int NoBlock=0;
 
-	if (!(mythis=(CSERIALPORT*)stream->_free[0])) return -1;
+	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
 	
 	ioctl(mythis->Port,FIONBIO,&NoBlock);
 	npos=write(mythis->Port,(void*)buffer,len);

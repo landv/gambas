@@ -22,7 +22,7 @@ public:
 	void setLine(int vl);
 	void setPosition(int vl);
 	void setReadOnly(bool vl);
-	void setText(char *txt);
+	void setText(const char *txt);
 	void setWrap(bool vl);
 	
 	int textWidth();
@@ -33,7 +33,7 @@ public:
 	void cut();
 	void ensureVisible();
 	void paste();
-	void insert(char *txt);
+	void insert(const char *txt);
 	int toLine(int pos);
 	int toColumn(int pos);
 	int toPosition(int line,int col);
@@ -43,7 +43,7 @@ public:
 	int selEnd();
 	char* selText();
 
-	void setSelText(char *vl);
+	void setSelText(const char *vl);
 
 //"Selection methods"
 	void selDelete();

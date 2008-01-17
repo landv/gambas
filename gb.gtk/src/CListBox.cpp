@@ -253,11 +253,11 @@ GB_DESC CListBoxDesc[] =
 {
   GB_DECLARE("ListBox", sizeof(CLISTBOX)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CLISTBOX_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CLISTBOX_new, "(Parent)Container;"),
   GB_METHOD("_get", ".ListBoxItem", CLISTBOX_get, "(Index)i"),
-  GB_METHOD("Clear", NULL, CLISTBOX_clear, NULL),
-  GB_METHOD("Add", NULL, CLISTBOX_add, "(Text)s[(Index)i]"),
-  GB_METHOD("Remove", NULL, CLISTBOX_remove, "(Index)i"),
+  GB_METHOD("Clear", 0, CLISTBOX_clear, 0),
+  GB_METHOD("Add", 0, CLISTBOX_add, "(Text)s[(Index)i]"),
+  GB_METHOD("Remove", 0, CLISTBOX_remove, "(Index)i"),
   GB_METHOD("Find", "i", CLISTBOX_find, "(Item)s"),
 
   GB_PROPERTY("Sorted", "b", CLISTBOX_sorted),
@@ -268,11 +268,11 @@ GB_DESC CListBoxDesc[] =
   GB_PROPERTY("Index", "i", CLISTBOX_index),
   GB_PROPERTY("Mode", "i", CLISTBOX_mode),
 
-  GB_EVENT("Select", NULL, NULL, &EVENT_Select),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Select", 0, 0, &EVENT_Select),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
 
-	LISTBOX_DESCRIPTION,
+  LISTBOX_DESCRIPTION,
 
   GB_END_DECLARE
 };

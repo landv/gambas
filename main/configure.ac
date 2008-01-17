@@ -41,13 +41,24 @@ GB_COMPONENT(
   [],
   [],
   [GB_FIND(gettextlib.$SHLIBEXT, /usr/local /usr, lib)],
-  [-lgettextlib],
+  [-lgettextlib]
   [],
   [This library must be located inside the C library])
 
 dnl ---- Remove DISABLED file that could have been generated before
 
 rm -f DISABLED
+
+dnl ---- Check for ffi library
+
+GB_COMPONENT(
+  ffi,
+  FFI,
+  [foreign function interface],
+  [],
+  [GB_FIND(ffi.h, /usr /usr/local /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
+  [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
+  [-lffi])
 
 dnl ---- Should I use libtool to load shared libraries in gbi and gbx ?
 

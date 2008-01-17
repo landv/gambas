@@ -34,15 +34,15 @@
 #include "CWidget.h"
 #include "CColor.h"
 
-static long _color;
+static int _color;
 
 static int _h = 0;
 static int _s = 0;
 static int _v = 0;
 
-static void get_hsv(long col)
+static void get_hsv(int col)
 {
-  static long last = 0;
+  static int last = 0;
 
   if (last == col)
     return;

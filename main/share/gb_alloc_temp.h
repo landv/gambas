@@ -246,8 +246,9 @@ PUBLIC void MEMORY_free(void *p_ptr)
 {
   void *alloc = *((void **)p_ptr);
 
-  *((char *)alloc) = 0x23;
-
+	if (!alloc)
+		return;
+		
   free(alloc);
 
   *((void **)p_ptr) = NULL;

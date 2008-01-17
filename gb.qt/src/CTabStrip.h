@@ -49,8 +49,8 @@ extern GB_DESC CTabChildrenDesc[];
 
 typedef
   struct {
-    long index;
-    long child;
+    int index;
+    int child;
     bool init;
     }
   CTABSTRIP_ENUM;
@@ -63,8 +63,8 @@ typedef
     QWidget *container;
     CARRANGEMENT arrangement;
     QPtrList<CTab> *stack;
-    long index;
-    long id;
+    int index;
+    int id;
     unsigned geom : 1;
     unsigned lock : 1;
     }

@@ -203,11 +203,11 @@ static bool remove_page(void *_object, int i)
 	return false;
 }
 
-static bool set_tab_count(void *_object, long new_count)
+static bool set_tab_count(void *_object, int new_count)
 {
-  long count = THIS->stack->count();
-  long i;
-  long index;
+  int count = THIS->stack->count();
+  int i;
+  int index;
   QString label;
   CTab *tab;
 
@@ -226,7 +226,7 @@ static bool set_tab_count(void *_object, long new_count)
     {
     	tab = new CTab(THIS, new MyContainer(WIDGET));
 
-      label.sprintf("Tab %ld", i);
+      label.sprintf("Tab %d", i);
       WIDGET->insertTab(tab->widget, label);
       
       THIS->stack->append(tab);
@@ -308,9 +308,9 @@ BEGIN_PROPERTY(CTABSTRIP_count)
 END_PROPERTY
 
 
-static bool check_index(CTABSTRIP *_object, long index)
+static bool check_index(CTABSTRIP *_object, int index)
 {
-  if (index < 0 || index >= (long)THIS->stack->count())
+  if (index < 0 || index >= (int)THIS->stack->count())
   {
     GB.Error("Bad index");
     return true;
@@ -341,7 +341,7 @@ BEGIN_PROPERTY(CTABSTRIP_index)
 	}
   else
   {
-    long index = VPROP(GB_INTEGER);
+    int index = VPROP(GB_INTEGER);
 
     if (check_index(THIS, index))
       return;
@@ -368,7 +368,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CTABSTRIP_get, GB_INTEGER index)
 
-  long index = VARG(index);
+  int index = VARG(index);
 
   if (check_index(THIS, index))
     return;

@@ -931,8 +931,8 @@ GB_DESC CListViewItemDesc[] =
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
   GB_PROPERTY("Selected", "b", CTREEVIEWITEM_selected),
   GB_PROPERTY("Text", "s", CTREEVIEWITEM_text),
-  GB_METHOD("EnsureVisible", NULL, CTREEVIEWITEM_ensure_visible, NULL),
-  GB_METHOD("Delete", NULL, CTREEVIEWITEM_delete, NULL),
+  GB_METHOD("EnsureVisible", 0, CTREEVIEWITEM_ensure_visible, 0),
+  GB_METHOD("Delete", 0, CTREEVIEWITEM_delete, 0),
 
   GB_PROPERTY_READ("X", "i", CTREEVIEWITEM_x),
   GB_PROPERTY_READ("Y", "i", CTREEVIEWITEM_y),
@@ -941,13 +941,13 @@ GB_DESC CListViewItemDesc[] =
   GB_PROPERTY_READ("H", "i", CTREEVIEWITEM_h),
   GB_PROPERTY_READ("Height", "i", CTREEVIEWITEM_h),
   
-  GB_METHOD("MoveAfter", NULL, CTREEVIEWITEM_move_after, "[(Key)s]"),
-  GB_METHOD("MoveBefore", NULL, CTREEVIEWITEM_move_before, "[(Key)s]"),
-  GB_METHOD("MoveFirst", NULL, CTREEVIEWITEM_move_first, NULL),
-  GB_METHOD("MoveLast", NULL, CTREEVIEWITEM_move_last, NULL),
+  GB_METHOD("MoveAfter", 0, CTREEVIEWITEM_move_after, "[(Key)s]"),
+  GB_METHOD("MoveBefore", 0, CTREEVIEWITEM_move_before, "[(Key)s]"),
+  GB_METHOD("MoveFirst", 0, CTREEVIEWITEM_move_first, 0),
+  GB_METHOD("MoveLast", 0, CTREEVIEWITEM_move_last, 0),
   
   GB_PROPERTY("Editable", "b", CTREEVIEWITEM_editable),
-  GB_METHOD("Rename", NULL, CTREEVIEWITEM_rename, NULL),
+  GB_METHOD("Rename", 0, CTREEVIEWITEM_rename, 0),
 
   GB_END_DECLARE
 };
@@ -967,9 +967,9 @@ GB_DESC CTreeViewItemDesc[] =
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
   GB_PROPERTY("Selected", "b", CTREEVIEWITEM_selected),
   GB_PROPERTY("Text", "s", CTREEVIEWITEM_text),
-  GB_METHOD("EnsureVisible", NULL, CTREEVIEWITEM_ensure_visible, NULL),
-  GB_METHOD("Delete", NULL, CTREEVIEWITEM_delete, NULL),
-  GB_METHOD("Clear", NULL, CTREEVIEWITEM_clear, NULL),
+  GB_METHOD("EnsureVisible", 0, CTREEVIEWITEM_ensure_visible, 0),
+  GB_METHOD("Delete", 0, CTREEVIEWITEM_delete, 0),
+  GB_METHOD("Clear", 0, CTREEVIEWITEM_clear, 0),
 
   GB_PROPERTY("Expanded", "b", CTREEVIEWITEM_expanded),
   GB_PROPERTY_READ("Children", "i", CTREEVIEWITEM_count),
@@ -982,20 +982,20 @@ GB_DESC CTreeViewItemDesc[] =
   GB_PROPERTY_READ("H", "i", CTREEVIEWITEM_h),
   GB_PROPERTY_READ("Height", "i", CTREEVIEWITEM_h),
   
-  /*GB_METHOD("MoveNext", "b", CTREEVIEW_next, NULL),
-  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, NULL),
-  GB_METHOD("MoveChild", "b", CTREEVIEW_child, NULL),
-  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, NULL),
-  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, NULL),
-  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, NULL),*/
+  /*GB_METHOD("MoveNext", "b", CTREEVIEW_next, 0),
+  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, 0),
+  GB_METHOD("MoveChild", "b", CTREEVIEW_child, 0),
+  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, 0),
+  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, 0),
+  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, 0),*/
 
-  GB_METHOD("MoveAfter", NULL, CTREEVIEWITEM_move_after, "[(Key)s]"),
-  GB_METHOD("MoveBefore", NULL, CTREEVIEWITEM_move_before, "[(Key)s]"),
-  GB_METHOD("MoveFirst", NULL, CTREEVIEWITEM_move_first, NULL),
-  GB_METHOD("MoveLast", NULL, CTREEVIEWITEM_move_last, NULL),
+  GB_METHOD("MoveAfter", 0, CTREEVIEWITEM_move_after, "[(Key)s]"),
+  GB_METHOD("MoveBefore", 0, CTREEVIEWITEM_move_before, "[(Key)s]"),
+  GB_METHOD("MoveFirst", 0, CTREEVIEWITEM_move_first, 0),
+  GB_METHOD("MoveLast", 0, CTREEVIEWITEM_move_last, 0),
   
   GB_PROPERTY("Editable", "b", CTREEVIEWITEM_editable),
-  GB_METHOD("Rename", NULL, CTREEVIEWITEM_rename, NULL),
+  GB_METHOD("Rename", 0, CTREEVIEWITEM_rename, 0),
 
   GB_END_DECLARE
 };
@@ -1015,9 +1015,9 @@ GB_DESC CColumnViewItemDesc[] =
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
   GB_PROPERTY("Selected", "b", CTREEVIEWITEM_selected),
   GB_PROPERTY("Text", "s", CTREEVIEWITEM_text),
-  GB_METHOD("EnsureVisible", NULL, CTREEVIEWITEM_ensure_visible, NULL),
-  GB_METHOD("Delete", NULL, CTREEVIEWITEM_delete, NULL),
-  GB_METHOD("Clear", NULL, CTREEVIEWITEM_clear, NULL),
+  GB_METHOD("EnsureVisible", 0, CTREEVIEWITEM_ensure_visible, 0),
+  GB_METHOD("Delete", 0, CTREEVIEWITEM_delete, 0),
+  GB_METHOD("Clear", 0, CTREEVIEWITEM_clear, 0),
 
   GB_PROPERTY("Expanded", "b", CTREEVIEWITEM_expanded),
   GB_PROPERTY_READ("Children", "i", CTREEVIEWITEM_count),
@@ -1029,23 +1029,23 @@ GB_DESC CColumnViewItemDesc[] =
   GB_PROPERTY_READ("Width", "i", CTREEVIEWITEM_w),
   GB_PROPERTY_READ("H", "i", CTREEVIEWITEM_h),
   GB_PROPERTY_READ("Height", "i", CTREEVIEWITEM_h),
-  /*GB_METHOD("MoveNext", "b", CTREEVIEW_next, NULL),
-  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, NULL),
-  GB_METHOD("MoveChild", "b", CTREEVIEW_child, NULL),
-  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, NULL),
-  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, NULL),
-  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, NULL),*/
+  /*GB_METHOD("MoveNext", "b", CTREEVIEW_next, 0),
+  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, 0),
+  GB_METHOD("MoveChild", "b", CTREEVIEW_child, 0),
+  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, 0),
+  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, 0),
+  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, 0),*/
 
-  GB_METHOD("MoveAfter", NULL, CTREEVIEWITEM_move_after, "[(Key)s]"),
-  GB_METHOD("MoveBefore", NULL, CTREEVIEWITEM_move_before, "[(Key)s]"),
-  GB_METHOD("MoveFirst", NULL, CTREEVIEWITEM_move_first, NULL),
-  GB_METHOD("MoveLast", NULL, CTREEVIEWITEM_move_last, NULL),
+  GB_METHOD("MoveAfter", 0, CTREEVIEWITEM_move_after, "[(Key)s]"),
+  GB_METHOD("MoveBefore", 0, CTREEVIEWITEM_move_before, "[(Key)s]"),
+  GB_METHOD("MoveFirst", 0, CTREEVIEWITEM_move_first, 0),
+  GB_METHOD("MoveLast", 0, CTREEVIEWITEM_move_last, 0),
   
   GB_METHOD("_get", "s", CTREEVIEWITEM_get, "(Column)i"),
-  GB_METHOD("_put", NULL, CTREEVIEWITEM_put, "(Text)s(Column)i"),
+  GB_METHOD("_put", 0, CTREEVIEWITEM_put, "(Text)s(Column)i"),
 
   GB_PROPERTY("Editable", "b", CTREEVIEWITEM_editable),
-  GB_METHOD("Rename", NULL, CTREEVIEWITEM_rename, NULL),
+  GB_METHOD("Rename", 0, CTREEVIEWITEM_rename, 0),
 
   //GB_PROPERTY("SortKey", "f", CTREEVIEWITEM_sort_key),
 
@@ -1063,8 +1063,8 @@ GB_DESC CListViewDesc[] =
 {
   GB_DECLARE("ListView", sizeof(CTREEVIEW)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CLISTVIEW_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, CTREEVIEW_free, NULL),
+  GB_METHOD("_new", 0, CLISTVIEW_new, "(Parent)Container;"),
+  GB_METHOD("_free", 0, CTREEVIEW_free, 0),
 
   //GB_PROPERTY("Drop", "b", CTREEVIEW_drop),
   GB_PROPERTY("Mode", "i", CTREEVIEW_mode),
@@ -1078,24 +1078,24 @@ GB_DESC CListViewDesc[] =
 
   GB_PROPERTY_READ("Available", "b", CTREEVIEW_available),
   GB_METHOD("MoveTo", "b", CTREEVIEW_move_to, "(Key)s"),
-  GB_METHOD("MoveCurrent", "b", CTREEVIEW_move_current, NULL),
-  GB_METHOD("MoveFirst", "b", CTREEVIEW_first, NULL),
-  GB_METHOD("MoveLast", "b", CTREEVIEW_last, NULL),
-  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, NULL),
-  GB_METHOD("MoveNext", "b", CTREEVIEW_next, NULL),
-  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, NULL),
-  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, NULL),
-  GB_METHOD("MoveBack", "b", CTREEVIEW_back, NULL),
+  GB_METHOD("MoveCurrent", "b", CTREEVIEW_move_current, 0),
+  GB_METHOD("MoveFirst", "b", CTREEVIEW_first, 0),
+  GB_METHOD("MoveLast", "b", CTREEVIEW_last, 0),
+  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, 0),
+  GB_METHOD("MoveNext", "b", CTREEVIEW_next, 0),
+  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, 0),
+  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, 0),
+  GB_METHOD("MoveBack", "b", CTREEVIEW_back, 0),
 
   GB_METHOD("_get", ".ListViewItem", CTREEVIEW_get, "(Key)s"),
 
-  GB_METHOD("Clear", NULL, CTREEVIEW_clear, NULL),
+  GB_METHOD("Clear", 0, CTREEVIEW_clear, 0),
   GB_METHOD("Add", ".ListViewItem", CLISTVIEW_add, "(Key)s(Text)s[(Picture)Picture;(After)s]"),
-  GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
+  GB_METHOD("Remove", 0, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
   //GB_METHOD("FindText", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, CTREEVIEW_select_all, "[(Selected)b]"),
+  GB_METHOD("SelectAll", 0, CTREEVIEW_select_all, "[(Selected)b]"),
 
   GB_PROPERTY_READ("Current", ".ListViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
@@ -1106,12 +1106,12 @@ GB_DESC CListViewDesc[] =
   GB_PROPERTY_READ("ClientHeight", "i", CTREEVIEW_client_height),
   GB_PROPERTY_READ("ClientH", "i", CTREEVIEW_client_height),
 
-  GB_EVENT("Select", NULL, NULL, &EVENT_Select),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Rename", NULL, NULL, &EVENT_Rename),
-  GB_EVENT("Cancel", NULL, NULL, &EVENT_Cancel),
-  GB_EVENT("Compare", NULL, "(Key)s(OtherKey)s", &EVENT_Compare),
+  GB_EVENT("Select", 0, 0, &EVENT_Select),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
+  GB_EVENT("Rename", 0, 0, &EVENT_Rename),
+  GB_EVENT("Cancel", 0, 0, &EVENT_Cancel),
+  GB_EVENT("Compare", 0, "(Key)s(OtherKey)s", &EVENT_Compare),
 
 	LISTVIEW_DESCRIPTION,
 
@@ -1130,8 +1130,8 @@ GB_DESC CTreeViewDesc[] =
 {
   GB_DECLARE("TreeView", sizeof(CTREEVIEW)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTREEVIEW_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, CTREEVIEW_free, NULL),
+  GB_METHOD("_new", 0, CTREEVIEW_new, "(Parent)Container;"),
+  GB_METHOD("_free", 0, CTREEVIEW_free, 0),
 
   //GB_PROPERTY("Drop", "b", CTREEVIEW_drop),
   GB_PROPERTY("Mode", "i", CTREEVIEW_mode),
@@ -1146,26 +1146,26 @@ GB_DESC CTreeViewDesc[] =
 
   GB_PROPERTY_READ("Available", "b", CTREEVIEW_available),
   
-  GB_METHOD("MoveCurrent", "b", CTREEVIEW_move_current, NULL),
+  GB_METHOD("MoveCurrent", "b", CTREEVIEW_move_current, 0),
   GB_METHOD("MoveTo", "b", CTREEVIEW_move_to, "(Key)s"),
-  GB_METHOD("MoveFirst", "b", CTREEVIEW_first, NULL),
-  GB_METHOD("MoveLast", "b", CTREEVIEW_last, NULL),
-  GB_METHOD("MoveNext", "b", CTREEVIEW_next, NULL),
-  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, NULL),
-  GB_METHOD("MoveChild", "b", CTREEVIEW_child, NULL),
-  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, NULL),
-  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, NULL),
-  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, NULL),
-  GB_METHOD("MoveBack", "b", CTREEVIEW_back, NULL),
+  GB_METHOD("MoveFirst", "b", CTREEVIEW_first, 0),
+  GB_METHOD("MoveLast", "b", CTREEVIEW_last, 0),
+  GB_METHOD("MoveNext", "b", CTREEVIEW_next, 0),
+  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, 0),
+  GB_METHOD("MoveChild", "b", CTREEVIEW_child, 0),
+  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, 0),
+  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, 0),
+  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, 0),
+  GB_METHOD("MoveBack", "b", CTREEVIEW_back, 0),
 
   GB_METHOD("_get", ".TreeViewItem", CTREEVIEW_get, "(Key)s"),
 
-  GB_METHOD("Clear", NULL, CTREEVIEW_clear, NULL),
+  GB_METHOD("Clear", 0, CTREEVIEW_clear, 0),
   GB_METHOD("Add", ".TreeViewItem", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
-  GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
+  GB_METHOD("Remove", 0, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, CTREEVIEW_select_all, "[(Selected)b]"),
+  GB_METHOD("SelectAll", 0, CTREEVIEW_select_all, "[(Selected)b]"),
 
   GB_PROPERTY_READ("Current", ".TreeViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
@@ -1176,14 +1176,14 @@ GB_DESC CTreeViewDesc[] =
   GB_PROPERTY_READ("ClientHeight", "i", CTREEVIEW_client_height),
   GB_PROPERTY_READ("ClientH", "i", CTREEVIEW_client_height),
 
-  GB_EVENT("Select", NULL, NULL, &EVENT_Select),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Rename", NULL, NULL, &EVENT_Rename),
-  GB_EVENT("Cancel", NULL, NULL, &EVENT_Cancel),
-  GB_EVENT("Compare", NULL, "(Key)s(OtherKey)s", &EVENT_Compare),
-  GB_EVENT("Expand", NULL, NULL, &EVENT_Expand),
-  GB_EVENT("Collapse", NULL, NULL, &EVENT_Collapse),
+  GB_EVENT("Select", 0, 0, &EVENT_Select),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
+  GB_EVENT("Rename", 0, 0, &EVENT_Rename),
+  GB_EVENT("Cancel", 0, 0, &EVENT_Cancel),
+  GB_EVENT("Compare", 0, "(Key)s(OtherKey)s", &EVENT_Compare),
+  GB_EVENT("Expand", 0, 0, &EVENT_Expand),
+  GB_EVENT("Collapse", 0, 0, &EVENT_Collapse),
 
 	TREEVIEW_DESCRIPTION,
 
@@ -1227,8 +1227,8 @@ GB_DESC CColumnViewDesc[] =
 {
   GB_DECLARE("ColumnView", sizeof(CTREEVIEW)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CCOLUMNVIEW_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, CTREEVIEW_free, NULL),
+  GB_METHOD("_new", 0, CCOLUMNVIEW_new, "(Parent)Container;"),
+  GB_METHOD("_free", 0, CTREEVIEW_free, 0),
 
   GB_PROPERTY("Mode", "i", CTREEVIEW_mode),
   GB_PROPERTY("Sorted", "b", CTREEVIEW_sorted),
@@ -1240,40 +1240,40 @@ GB_DESC CColumnViewDesc[] =
   GB_PROPERTY_READ("Count", "i", CTREEVIEW_count),
 
   GB_PROPERTY_READ("Available", "b", CTREEVIEW_available),
-  GB_METHOD("MoveCurrent", "b", CTREEVIEW_move_current, NULL),
+  GB_METHOD("MoveCurrent", "b", CTREEVIEW_move_current, 0),
   GB_METHOD("MoveTo", "b", CTREEVIEW_move_to, "(Key)s"),
-  GB_METHOD("MoveFirst", "b", CTREEVIEW_first, NULL),
-  GB_METHOD("MoveLast", "b", CTREEVIEW_last, NULL),
-  GB_METHOD("MoveNext", "b", CTREEVIEW_next, NULL),
-  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, NULL),
-  GB_METHOD("MoveChild", "b", CTREEVIEW_child, NULL),
-  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, NULL),
-  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, NULL),
-  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, NULL),
-  GB_METHOD("MoveBack", "b", CTREEVIEW_back, NULL),
+  GB_METHOD("MoveFirst", "b", CTREEVIEW_first, 0),
+  GB_METHOD("MoveLast", "b", CTREEVIEW_last, 0),
+  GB_METHOD("MoveNext", "b", CTREEVIEW_next, 0),
+  GB_METHOD("MovePrevious", "b", CTREEVIEW_previous, 0),
+  GB_METHOD("MoveChild", "b", CTREEVIEW_child, 0),
+  GB_METHOD("MoveParent", "b", CTREEVIEW_parent, 0),
+  GB_METHOD("MoveAbove", "b", CTREEVIEW_above, 0),
+  GB_METHOD("MoveBelow", "b", CTREEVIEW_below, 0),
+  GB_METHOD("MoveBack", "b", CTREEVIEW_back, 0),
 
   GB_METHOD("_get", ".ColumnViewItem", CTREEVIEW_get, "(Key)s"),
 
-  GB_METHOD("Clear", NULL, CTREEVIEW_clear, NULL),
+  GB_METHOD("Clear", 0, CTREEVIEW_clear, 0),
   GB_METHOD("Add", ".ColumnViewItem", CTREEVIEW_add, "(Key)s(Text)s[(Picture)Picture;(Parent)s(After)s]"),
-  GB_METHOD("Remove", NULL, CTREEVIEW_remove, "(Key)s"),
+  GB_METHOD("Remove", 0, CTREEVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CTREEVIEW_exist, "(Key)s"),
   GB_METHOD("Find", "b", CTREEVIEW_find, "(X)i(Y)i"),
-  GB_METHOD("SelectAll", NULL, CTREEVIEW_select_all, "[(Selected)b]"),
+  GB_METHOD("SelectAll", 0, CTREEVIEW_select_all, "[(Selected)b]"),
 
   GB_PROPERTY_READ("Current", ".ColumnViewItem", CTREEVIEW_current),
   GB_PROPERTY_READ("Key", "s", CTREEVIEW_key),
   GB_PROPERTY_READ("Item", ".ColumnViewItem", CTREEVIEW_item),
 
-  GB_EVENT("Select", NULL, NULL, &EVENT_Select),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Rename", NULL, NULL, &EVENT_Rename),
-  GB_EVENT("Cancel", NULL, NULL, &EVENT_Cancel),
-  GB_EVENT("Compare", NULL, "(Key)s(OtherKey)s", &EVENT_Compare),
-  GB_EVENT("Expand", NULL, NULL, &EVENT_Expand),
-  GB_EVENT("Collapse", NULL, NULL, &EVENT_Collapse),
-  GB_EVENT("ColumnClick", NULL, "(Column)i", &EVENT_ColumnClick),
+  GB_EVENT("Select", 0, 0, &EVENT_Select),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
+  GB_EVENT("Rename", 0, 0, &EVENT_Rename),
+  GB_EVENT("Cancel", 0, 0, &EVENT_Cancel),
+  GB_EVENT("Compare", 0, "(Key)s(OtherKey)s", &EVENT_Compare),
+  GB_EVENT("Expand", 0, 0, &EVENT_Expand),
+  GB_EVENT("Collapse", 0, 0, &EVENT_Collapse),
+  GB_EVENT("ColumnClick", 0, "(Column)i", &EVENT_ColumnClick),
 
   GB_PROPERTY_SELF("Columns", ".ColumnViewColumns"),
 

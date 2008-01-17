@@ -55,7 +55,7 @@ PUBLIC boolean TRANS_is(int reserved);
 PUBLIC void TRANS_ignore(int reserved);
 */
 
-PUBLIC boolean TRANS_get_number(long index, TRANS_NUMBER *result);
+PUBLIC boolean TRANS_get_number(int index, TRANS_NUMBER *result);
 
 /* eval_trans_expr.c */
 

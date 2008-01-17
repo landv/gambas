@@ -54,7 +54,6 @@ void gProgressBar::setLabel(bool vl)
 
 void gProgressBar::setValue(double vl)
 {
-	int myvl;
 	char buf[5];
 	
 	if (vl<0) vl=0;

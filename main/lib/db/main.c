@@ -160,8 +160,7 @@ void DB_TryAnother(char *driver)
 static DB_DRIVER *DB_GetDriver(char *type)
 {
   int i;
-  int comp_size = (type ? strlen(type) + 8 : 1);
-  char comp[comp_size];
+  char comp[type ? strlen(type) + 8 : 1];
 
   if (!type)
   {
@@ -169,8 +168,8 @@ static DB_DRIVER *DB_GetDriver(char *type)
     return NULL;
   }
 
-  strlcpy(comp, "gb.db.", comp_size);
-  strlcat(comp, type, comp_size);
+  strcpy(comp, "gb.db.");
+  strcat(comp, type);
 
   GB.LoadComponent(comp);
   GB.Error(NULL); // reset the error flag;
@@ -248,13 +247,13 @@ void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
       case GB_T_SHORT:
       case GB_T_INTEGER:
 
-        l = snprintf(buffer, sizeof(buffer), "%d", VALUE((GB_INTEGER *)arg));
+        l = sprintf(buffer, "%d", VALUE((GB_INTEGER *)arg));
         add(buffer, l);
         return;
 
       case GB_T_LONG:
 
-        l = snprintf(buffer, sizeof(buffer), "%lld", VALUE((GB_LONG *)arg));
+        l = sprintf(buffer, "%" PRId64, VALUE((GB_LONG *)arg));
         add(buffer, l);
         return;
 
@@ -289,7 +288,7 @@ void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
         return;
 
       default:
-      	fprintf(stderr, "gb.db: DB_Format: unsupported datatype: %d\n", arg->type);
+      	fprintf(stderr, "gb.db: DB_Format: unsupported datatype: %d\n", (int)arg->type);
         return;
     }
   }

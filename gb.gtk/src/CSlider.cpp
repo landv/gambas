@@ -125,7 +125,7 @@ GB_DESC CSliderDesc[] =
 {
   GB_DECLARE("Slider", sizeof(CSLIDER)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CSLIDER_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CSLIDER_new, "(Parent)Container;"),
 
   GB_PROPERTY("Tracking", "b", CSLIDER_tracking),
   GB_PROPERTY("Value", "i", CSLIDER_value),
@@ -135,9 +135,9 @@ GB_DESC CSliderDesc[] =
   GB_PROPERTY("Step", "i", CSLIDER_linestep),
   GB_PROPERTY("PageStep", "i", CSLIDER_pagestep),
 
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
+  GB_EVENT("Change", 0, 0, &EVENT_Change),
 
-	SLIDER_DESCRIPTION,
+  SLIDER_DESCRIPTION,
 
   GB_END_DECLARE
 };
@@ -146,7 +146,7 @@ GB_DESC CScrollBarDesc[] =
 {
   GB_DECLARE("ScrollBar", sizeof(CSCROLLBAR)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CSCROLLBAR_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CSCROLLBAR_new, "(Parent)Container;"),
 
   GB_PROPERTY("Tracking", "b", CSLIDER_tracking),
   GB_PROPERTY("Value", "i", CSLIDER_value),
@@ -155,9 +155,9 @@ GB_DESC CScrollBarDesc[] =
   GB_PROPERTY("Step", "i", CSLIDER_linestep),
   GB_PROPERTY("PageStep", "i", CSLIDER_pagestep),
 
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
+  GB_EVENT("Change", 0, 0, &EVENT_Change),
 
-	SCROLLBAR_DESCRIPTION,
+  SCROLLBAR_DESCRIPTION,
 
   GB_END_DECLARE
 };

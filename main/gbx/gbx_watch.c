@@ -45,7 +45,7 @@ static fd_set read_fd;
 static fd_set write_fd;
 
 static WATCH_CALLBACK *watch_callback = NULL;
-static long max_fd = 0;
+static int max_fd = 0;
 
 static WATCH_TIMER *_timers = NULL;
 
@@ -85,7 +85,7 @@ static void time_sub(struct timeval *t1, const struct timeval *t2)
 #define time_comp(t1, t2, op) ((t1)->tv_sec op (t2)->tv_sec || ((t1)->tv_sec == (t2)->tv_sec && (t1)->tv_usec op (t2)->tv_usec))
 #define time_lower_than(t1, t2) time_comp(t1, t2, <)
 
-static void time_from_ms(struct timeval *t, long ms)
+static void time_from_ms(struct timeval *t, int ms)
 {
 	t->tv_sec = ms / 1000;
 	t->tv_usec = (ms % 1000) * 1000;
@@ -238,7 +238,7 @@ static bool get_timeout(const struct timeval *wait, struct timeval *tv)
 }
 
 
-PUBLIC void WATCH_init(void)
+void WATCH_init(void)
 {
   FD_ZERO(&read_fd);
   FD_ZERO(&write_fd);
@@ -252,7 +252,7 @@ PUBLIC void WATCH_init(void)
 }
 
 
-PUBLIC void WATCH_exit(void)
+void WATCH_exit(void)
 {
   ARRAY_delete(&watch_callback);
   ARRAY_delete(&_timers);
@@ -275,7 +275,7 @@ static void watch_fd(int fd, int flag)
 }
 
 
-static long watch_find_callback(long fd)
+static int watch_find_callback(int fd)
 {
   int i;
 
@@ -289,7 +289,7 @@ static long watch_find_callback(long fd)
 }
 
 
-static long find_max_fd(void)
+static int find_max_fd(void)
 {
   int i;
   int max = -1;
@@ -306,7 +306,7 @@ static long find_max_fd(void)
 
 static WATCH_CALLBACK *watch_create_callback(int fd)
 {
-  long pos;
+  int pos;
   WATCH_CALLBACK *wcb;
 
 	//fprintf(stderr, "watch_create_callback: %d\n", fd);
@@ -348,7 +348,7 @@ static void watch_delete_callback(int fd)
 }
 
 
-PUBLIC void WATCH_watch(int fd, int type, void *callback, long param)
+void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 {
   WATCH_CALLBACK *wcb;
 
@@ -478,7 +478,7 @@ static bool do_loop(struct timeval *wait)
 }
 
 
-PUBLIC bool WATCH_one_loop(long wait)
+bool WATCH_one_loop(int wait)
 {
 	struct timeval timeout;
 	
@@ -491,13 +491,13 @@ PUBLIC bool WATCH_one_loop(long wait)
 	}
 }
 
-PUBLIC void WATCH_loop(void)
+void WATCH_loop(void)
 {
   while (do_loop(NULL));
 }
 
 
-PUBLIC void WATCH_wait(long wait)
+void WATCH_wait(int wait)
 {
 	struct timeval *now;
 	struct timeval timeout;
@@ -524,7 +524,7 @@ PUBLIC void WATCH_wait(long wait)
 	}
 }
 
-PUBLIC int WATCH_process(int fd_end, int fd_output)
+int WATCH_process(int fd_end, int fd_output)
 {
   fd_set rfd;
   int ret, fd_max;
@@ -555,7 +555,7 @@ PUBLIC int WATCH_process(int fd_end, int fd_output)
 }
 
 
-PUBLIC void WATCH_timer(void *t, int on)
+void WATCH_timer(void *t, int on)
 {
 	GB_TIMER *timer = (GB_TIMER *)t;
 	struct timeval timeout;
@@ -565,7 +565,7 @@ PUBLIC void WATCH_timer(void *t, int on)
 		time_from_ms(&timeout, timer->delay);
 		time_add(&timeout, time_now());
 		add_timer(timer, &timeout);
-		timer->id = (long)timer;
+		timer->id = (intptr_t)timer;
 	}
 	else
 	{

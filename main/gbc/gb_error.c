@@ -105,8 +105,8 @@ void ERROR_define(const char *pattern, const char *arg[])
 
   if ((intptr_t)pattern > 0 && (intptr_t)pattern < 256)
   {
-    ERROR_info.code = (int)pattern;
-    pattern = _message[(int)pattern];
+    ERROR_info.code = (int)(intptr_t)pattern;
+    pattern = _message[(int)(intptr_t)pattern];
   }
   else
     ERROR_info.code = -1;

@@ -338,7 +338,7 @@ void MyTable::paintFocus( QPainter *p, const QRect &r )
 }*/
 
 
-void MyTable::setRowHeight(int row, long height)
+void MyTable::setRowHeight(int row, int height)
 {
   //qDebug("MyTable::setRowHeight(%d, %ld)", row, height);
   if (height < 0)
@@ -348,7 +348,7 @@ void MyTable::setRowHeight(int row, long height)
 }
 
 
-void MyTable::setColumnWidth(int col, long width)
+void MyTable::setColumnWidth(int col, int width)
 {
   //qDebug("MyTable::setColumnWidth(%d, %ld)", col, width);
   if (width < 0)
@@ -1083,7 +1083,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDROWS_height)
 
-  long row = THIS->row;
+  int row = THIS->row;
 
   if (READ_PROPERTY)
   {
@@ -1303,7 +1303,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDCOLS_width)
 
-  long col = THIS->col;
+  int col = THIS->col;
 
   if (READ_PROPERTY)
   {
@@ -1463,8 +1463,8 @@ END_PROPERTY
 
 BEGIN_METHOD(CGRIDVIEW_move_to, GB_INTEGER row; GB_INTEGER col)
 
-  long row = VARG(row);
-  long col = VARG(col);
+  int row = VARG(row);
+  int col = VARG(col);
 
   //if (CGridView::check(WIDGET, row, col))
   //  return;
@@ -1478,7 +1478,7 @@ END_METHOD
 #if 0
 BEGIN_METHOD_VOID(CGRIDVIEW_clear)
 
-  long rows = WIDGET->numRows();
+  int rows = WIDGET->numRows();
   WIDGET->setNumRows(0);
   WIDGET->setNumRows(rows);
 
@@ -1488,8 +1488,8 @@ END_METHOD
 
 BEGIN_METHOD(CGRIDVIEW_get, GB_INTEGER row; GB_INTEGER col)
 
-  long row = VARG(row);
-  long col = VARG(col);
+  int row = VARG(row);
+  int col = VARG(col);
 
   if (CGridView::check(WIDGET, row, col))
     return;
@@ -1536,7 +1536,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_scrollbars)
 
-  long scroll;
+  int scroll;
 
   if (READ_PROPERTY)
   {
@@ -1962,7 +1962,7 @@ GB_DESC CGridViewDesc[] =
 
 CGridView CGridView::manager;
 
-bool CGridView::checkRow(QTable *table, long row)
+bool CGridView::checkRow(QTable *table, int row)
 {
   if (row < 0 || row >= table->numRows())
   {
@@ -1973,7 +1973,7 @@ bool CGridView::checkRow(QTable *table, long row)
     return false;
 }
 
-bool CGridView::checkCol(QTable *table, long col)
+bool CGridView::checkCol(QTable *table, int col)
 {
   if (col < 0 || col >= table->numCols())
   {
@@ -1984,7 +1984,7 @@ bool CGridView::checkCol(QTable *table, long col)
     return false;
 }
 
-bool CGridView::check(QTable *table, long row, long col)
+bool CGridView::check(QTable *table, int row, int col)
 {
   if (checkRow(table, row))
     return true;
@@ -2042,7 +2042,7 @@ void CGridView::scrolled(void)
 	GET_SENDER(_object);
 
   GB.Ref(THIS);
-  GB.Post((void (*)())send_scroll, (long)THIS);
+  GB.Post((void (*)())send_scroll, (intptr_t)THIS);
 }
 
 void CGridView::columnClicked(int col)

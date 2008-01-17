@@ -48,7 +48,7 @@ GB_DESC CSeparatorDesc[] =
 {
   GB_DECLARE("Separator", sizeof(CSEPARATOR)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CSEPARATOR_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CSEPARATOR_new, "(Parent)Container;"),
 
   SEPARATOR_DESCRIPTION,
 

@@ -36,6 +36,7 @@
 #include <SplashOutputDev.h>
 #include <Page.h>
 #include <goo/GooList.h>
+#include <stdint.h>
 
 #ifndef __CPDFDOCUMENT_C
 
@@ -62,28 +63,28 @@ typedef	struct
 	GB_BASE ob;
 
 	char *buf;
-	long len;
+	int32_t len;
 
 	PDFDoc *doc;
 	SplashOutputDev *dev;
 	Page *page;
-	unsigned long currpage;
+	uint32_t currpage;
 		
 	void **pindex;           // Parent of current index entries
 	GooList *index;          // Current entries
-	unsigned long currindex; // Current entry
- 	unsigned long *oldindex; // Parent entry
+	uint32_t currindex; // Current entry
+ 	uint32_t *oldindex; // Parent entry
 
 	Links *links;            // Page bookmarks
-	unsigned long lcurrent;  // Current bookmark
+	uint32_t lcurrent;  // Current bookmark
 
 	void *Found;             // Found text elements
-	unsigned long fcurrent;  // Current found text
+	uint32_t fcurrent;  // Current found text
 
 	LinkAction *action;      // Current link action 
 
 	double scale;
-	int rotation;
+	int32_t rotation;
 
 } CPDFDOCUMENT;
 

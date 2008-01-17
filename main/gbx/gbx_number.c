@@ -25,6 +25,7 @@
 
 ***************************************************************************/
 
+#define __GBX_NUMBER_C
 
 #include "gb_common.h"
 #include "gb_error.h"
@@ -53,9 +54,9 @@
 static bool _can_be_integer;
 
 
-static bool read_integer(int base, long long *result, bool read_long)
+static bool read_integer(int base, int64_t *result, bool read_long)
 {
-  unsigned long long nbr2, nbr;
+  uint64_t nbr2, nbr;
   int d, n, c;
 
   n = 0;
@@ -108,7 +109,7 @@ static bool read_integer(int base, long long *result, bool read_long)
   /*if (c >= 0 && !isspace(c))
     return TRUE;*/
 
-  *((long long *)result) = nbr;  
+  *((int64_t *)result) = nbr;  
   return FALSE;
 }
 
@@ -218,10 +219,10 @@ __FIN:
 }
 
 
-PUBLIC bool NUMBER_from_string(int option, const char *str, long len, VALUE *value)
+bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
 {
   int c;
-  long long val;
+  int64_t val;
   double dval = 0;
   TYPE type;
 
@@ -284,7 +285,7 @@ PUBLIC bool NUMBER_from_string(int option, const char *str, long len, VALUE *val
       if ((option & NB_READ_INTEGER) && _can_be_integer)
       {
         type = T_INTEGER;
-        val = (long)dval;
+        val = (int)dval;
         if ((double)val == dval)
           goto __END;
       }
@@ -292,7 +293,7 @@ PUBLIC bool NUMBER_from_string(int option, const char *str, long len, VALUE *val
       if ((option & NB_READ_LONG) && _can_be_integer)
       {
         type = T_LONG;
-        val = (long long)dval;
+        val = (int64_t)dval;
         if ((double)val == dval)
           goto __END;
       }
@@ -361,7 +362,7 @@ __END:
 }
 
 
-PUBLIC void NUMBER_int_to_string(unsigned long long nbr, int prec, int base, VALUE *value)
+void NUMBER_int_to_string(uint64_t nbr, int prec, int base, VALUE *value)
 {
   char *ptr;
   char *src;

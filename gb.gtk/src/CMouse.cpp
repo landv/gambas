@@ -215,8 +215,8 @@ GB_DESC CCursorDesc[] =
 {
   GB_DECLARE("Cursor", sizeof(CCURSOR)),
 
-  GB_METHOD("_new", NULL, CCURSOR_new, "(Picture)Picture;[(X)i(Y)i]"),
-  GB_METHOD("_free", NULL, CCURSOR_delete, NULL),
+  GB_METHOD("_new", 0, CCURSOR_new, "(Picture)Picture;[(X)i(Y)i]"),
+  GB_METHOD("_free", 0, CCURSOR_delete, NULL),
 
   GB_PROPERTY_READ("X", "i", CCURSOR_x),
   GB_PROPERTY_READ("Y", "i", CCURSOR_y),
@@ -231,7 +231,7 @@ GB_DESC CMouseDesc[] =
 
   GB_STATIC_PROPERTY_READ("ScreenX", "i", CMOUSE_screen_x),
   GB_STATIC_PROPERTY_READ("ScreenY", "i", CMOUSE_screen_y),
-  GB_STATIC_METHOD("Move", NULL, CMOUSE_move, "(X)i(Y)i"),
+  GB_STATIC_METHOD("Move", 0, CMOUSE_move, "(X)i(Y)i"),
 
   GB_CONSTANT("Default", "i", -1),
   GB_CONSTANT("Custom", "i", -2),
@@ -284,3 +284,4 @@ GB_DESC CMouseDesc[] =
 
   GB_END_DECLARE
 };
+

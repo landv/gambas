@@ -185,7 +185,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTBOX_max_length)
 
-  long max;
+  int max;
 
   GET_TEXT_BOX();
 
@@ -452,7 +452,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CCOMBOBOX_get, GB_INTEGER index)
 
-  long index = VARG(index);
+  int index = VARG(index);
 
   if (index < 0 || index >= (int)COMBOBOX->count())
   {
@@ -556,9 +556,9 @@ BEGIN_PROPERTY(CCOMBOBOX_mouse)
   else
   {
     if (COMBOBOX->editable())
-      COMBOBOX->lineEdit()->setCursor(PROPERTY(long));
+      COMBOBOX->lineEdit()->setCursor(PROPERTY(int));
 
-    COMBOBOX->setCursor(PROPERTY(long));
+    COMBOBOX->setCursor(PROPERTY(int));
   }
 
 END_METHOD

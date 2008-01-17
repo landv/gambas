@@ -58,10 +58,10 @@ PUBLIC boolean TRANS_newline(void)
 */
 
 #if 0
-PUBLIC boolean TRANS_get_number(long index, TRANS_NUMBER *result)
+PUBLIC boolean TRANS_get_number(int index, TRANS_NUMBER *result)
 {
   char car;
-  long val;
+  int val;
   double dval;
   char *end;
   int pos;
@@ -161,7 +161,7 @@ PUBLIC boolean TRANS_get_number(long index, TRANS_NUMBER *result)
 }
 #endif
 
-PUBLIC boolean TRANS_get_number(long index, TRANS_NUMBER *result)
+PUBLIC boolean TRANS_get_number(int index, TRANS_NUMBER *result)
 {
   GB_VALUE value;
   SYMBOL *sym = TABLE_get_symbol(EVAL->table, index);
@@ -259,8 +259,8 @@ PUBLIC boolean TRANS_type(int mode, TRANS_DECL *result)
 {
   PATTERN *look = JOB->current;
   short id = 0;
-  long value = -1L;
-  long flag = 0;
+  int value = -1L;
+  int flag = 0;
 
   /* Ne pas remplir la structure de z�os */
 
@@ -365,7 +365,7 @@ PUBLIC boolean TRANS_check_declaration(void)
 #if 0
 PUBLIC void TRANS_get_constant_value(TRANS_DECL *decl, PATTERN value)
 {
-  long index;
+  int index;
   TRANS_NUMBER number;
   int type;
 

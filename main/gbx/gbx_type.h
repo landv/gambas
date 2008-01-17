@@ -62,7 +62,7 @@ enum {
 /* Si type >= T_OBJECT, il s'agit de l'identificateur de classe */
 
 typedef
-  ulong TYPE;
+  intptr_t TYPE;
 
 typedef
   void (*TYPE_FUNC)();
@@ -89,16 +89,16 @@ EXTERN char *TYPE_joker;
 #define TYPE_is_null(type)         ((type) == T_NULL)
 #define TYPE_is_object_null(type)  ((type) >= T_OBJECT || (type) == T_NULL)
 
-PUBLIC size_t TYPE_sizeof(TYPE type);
-PUBLIC size_t TYPE_sizeof_native(TYPE type);
-PUBLIC size_t TYPE_sizeof_memory(TYPE type);
+size_t TYPE_sizeof(TYPE type);
+//size_t TYPE_sizeof_native(TYPE type);
+size_t TYPE_sizeof_memory(TYPE type);
 
-PUBLIC const char *TYPE_get_name(TYPE type);
+const char *TYPE_get_name(TYPE type);
 
-PUBLIC TYPE TYPE_from_string(const char **ptype);
-PUBLIC const char *TYPE_to_string(TYPE type);
-PUBLIC TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int nparam);
-PUBLIC boolean TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2);
-PUBLIC void TYPE_signature_length(const char *sign, char *len_min, char *len_max, char *var);
+TYPE TYPE_from_string(const char **ptype);
+const char *TYPE_to_string(TYPE type);
+TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int nparam);
+boolean TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2);
+void TYPE_signature_length(const char *sign, char *len_min, char *len_max, char *var);
 
 #endif

@@ -48,7 +48,7 @@ typedef
   struct {
     CLASS *class;
     OBJECT *object;
-    long index;
+    int index;
     //FUNCTION *func;
     CLASS_DESC_METHOD *desc;
     int nparam;
@@ -138,51 +138,51 @@ EXTERN int EXEC_return_value;
 #define PUSH() (BORROW(SP), SP++)
 #define POP()  (SP--, RELEASE(SP))
 
-PUBLIC void EXEC_init(void);
+void EXEC_init(void);
 
-PUBLIC void EXEC_enter_check(bool defined);
-PUBLIC void EXEC_enter(void);
-PUBLIC void EXEC_enter_quick(void);
-PUBLIC void EXEC_leave(bool drop);
-PUBLIC void EXEC_loop(void);
+void EXEC_enter_check(bool defined);
+void EXEC_enter(void);
+void EXEC_enter_quick(void);
+void EXEC_leave(bool drop);
+void EXEC_loop(void);
 
-PUBLIC void EXEC_object(VALUE *SP, CLASS **pclass, OBJECT **pobject, bool *pdefined);
-PUBLIC void *EXEC_auto_create(CLASS *class, bool ref);
+void EXEC_object(VALUE *SP, CLASS **pclass, OBJECT **pobject, bool *pdefined);
+void *EXEC_auto_create(CLASS *class, bool ref);
 
-PUBLIC bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param);
-PUBLIC void EXEC_native();
-PUBLIC void EXEC_function_real(bool keep_ret_value);
+bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param);
+void EXEC_native();
+void EXEC_function_real(bool keep_ret_value);
 
 #define EXEC_function() EXEC_function_real(FALSE)
 #define EXEC_function_keep() EXEC_function_real(TRUE)
 
-PUBLIC void EXEC_public(CLASS *class, void *object, const char *name, int nparam);
+void EXEC_public(CLASS *class, void *object, const char *name, int nparam);
 
-PUBLIC boolean EXEC_spec(int spec, CLASS *class, void *object, int nparam, boolean drop);
+boolean EXEC_spec(int spec, CLASS *class, void *object, int nparam, boolean drop);
 #define EXEC_special EXEC_spec
 
-PUBLIC void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, boolean drop);
+void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, boolean drop);
 
-PUBLIC void EXEC_nop(void);
-PUBLIC void EXEC_ILLEGAL(void);
+void EXEC_nop(void);
+void EXEC_ILLEGAL(void);
 
-PUBLIC void EXEC_push_unknown(ushort code);
-PUBLIC void EXEC_push_array(void);
-//PUBLIC void EXEC_push_special(void);
+void EXEC_push_unknown(ushort code);
+void EXEC_push_array(void);
+//void EXEC_push_special(void);
 
-PUBLIC void EXEC_pop_unknown(void);
-PUBLIC void EXEC_pop_array(void);
+void EXEC_pop_unknown(void);
+void EXEC_pop_array(void);
 
-PUBLIC void EXEC_enum_first(PCODE code);
-PUBLIC bool EXEC_enum_next(PCODE code);
+void EXEC_enum_first(PCODE code);
+bool EXEC_enum_next(PCODE code);
 
-PUBLIC void *EXEC_create_object(CLASS *class, int np, char *event);
-PUBLIC void EXEC_new(void);
+void *EXEC_create_object(CLASS *class, int np, char *event);
+void EXEC_new(void);
 
-PUBLIC void BORROW(VALUE *val);
-PUBLIC void UNBORROW(VALUE *val);
-PUBLIC void RELEASE(VALUE *val);
-PUBLIC void RELEASE_many(VALUE *val, int n);
+void BORROW(VALUE *val);
+void UNBORROW(VALUE *val);
+void RELEASE(VALUE *val);
+void RELEASE_many(VALUE *val, int n);
 
 #define RELEASE_MANY(_val, _n) \
 { \
@@ -201,15 +201,15 @@ PUBLIC void RELEASE_many(VALUE *val, int n);
  } \
 }
 
-PUBLIC void EXEC_release_return_value(void);
-PUBLIC void EXEC_quit(void);
+void EXEC_release_return_value(void);
+void EXEC_quit(void);
 
-PUBLIC void EXEC_dup(int n);
+void EXEC_dup(int n);
 
 #define COPY_VALUE(_dst, _src) \
 { \
-  long *d = (long *)(_dst); \
-  long *s = (long *)(_src); \
+  register intptr_t *d = (intptr_t *)(_dst); \
+  register intptr_t *s = (intptr_t *)(_src); \
   d[0] = s[0]; \
   d[1] = s[1]; \
   d[2] = s[2]; \

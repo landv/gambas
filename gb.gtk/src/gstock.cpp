@@ -471,8 +471,8 @@ static gPicture *gStock_missing(char *vl)
 {
 	gPicture *img = NULL;
 	const char **tmp = NULL;
-	bool do_flip = false;
-	GdkPixbuf *buf, *buf2;
+	//bool do_flip = false;
+	GdkPixbuf *buf;
 	
 	if       (!strcasecmp(vl,"gambas"))        tmp=stock_gambas_xpm;          
 	else if  (!strcasecmp(vl,"linux"))         tmp=stock_linux_xpm;   

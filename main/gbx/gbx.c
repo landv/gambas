@@ -347,8 +347,7 @@ int main(int argc, char **argv)
     else
     {
       EXEC.native = FALSE;
-      EXEC.index = (int)startup->exec;
-      //EXEC.func = &class->load->func[(long)startup->exec]
+      EXEC.index = (int)(intptr_t)startup->exec;
 
       EXEC_function();
     }

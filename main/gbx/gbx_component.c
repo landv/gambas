@@ -59,23 +59,23 @@
 /*#define DEBUG*/
 /*#define DEBUG_PRELOAD*/
 
-PUBLIC COMPONENT *COMPONENT_current = NULL;
-PUBLIC COMPONENT *COMPONENT_main;
-PUBLIC int COMPONENT_count = 0;
-PUBLIC char *COMPONENT_path;
-PUBLIC char *COMPONENT_user_path;
+COMPONENT *COMPONENT_current = NULL;
+COMPONENT *COMPONENT_main;
+int COMPONENT_count = 0;
+char *COMPONENT_path;
+char *COMPONENT_user_path;
 
 static COMPONENT *_component_list = NULL;
 
 
-PUBLIC void COMPONENT_init(void)
+void COMPONENT_init(void)
 {
   LIBRARY_init();
   ARCHIVE_init();
 }
 
 
-PUBLIC void COMPONENT_exit(void)
+void COMPONENT_exit(void)
 {
   COMPONENT *comp;
 
@@ -94,7 +94,7 @@ PUBLIC void COMPONENT_exit(void)
 
 
 
-PUBLIC void COMPONENT_load_all(void)
+void COMPONENT_load_all(void)
 {
   COMPONENT *comp;
 
@@ -112,7 +112,7 @@ PUBLIC void COMPONENT_load_all(void)
 }
 
 
-PUBLIC COMPONENT *COMPONENT_find(const char *name)
+COMPONENT *COMPONENT_find(const char *name)
 {
   COMPONENT *comp;
 
@@ -130,11 +130,12 @@ PUBLIC COMPONENT *COMPONENT_find(const char *name)
 }
 
 
-PUBLIC COMPONENT *COMPONENT_create(const char *name)
+COMPONENT *COMPONENT_create(const char *name)
 {
   COMPONENT *comp;
   char *path;
   bool can_archive;
+  bool error = FALSE;
 
   comp = COMPONENT_find(name);
   if (comp)
@@ -195,21 +196,25 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
 
   if (comp->library || comp->archive || !can_archive)
   	goto __OK;
-
-	COMPONENT_delete(comp);
-	THROW(E_LIBRARY, name, "cannot find library file");
-//	THROW(E_LIBRARY, comp->name, "cannot find library file");
+	
+	error = TRUE;
 
 __OK:
 
   LIST_insert(&_component_list, comp, &comp->list);
   COMPONENT_count++;
 
+	if (error)
+	{
+		COMPONENT_delete(comp);
+		THROW(E_LIBRARY, name, "cannot find library file");
+	}
+
   return comp;
 }
 
 
-PUBLIC void COMPONENT_delete(COMPONENT *comp)
+void COMPONENT_delete(COMPONENT *comp)
 {
   COMPONENT_unload(comp);
   LIST_remove(&_component_list, comp, &comp->list);
@@ -227,7 +232,7 @@ PUBLIC void COMPONENT_delete(COMPONENT *comp)
 }
 
 
-PUBLIC void COMPONENT_load(COMPONENT *comp)
+void COMPONENT_load(COMPONENT *comp)
 {
   COMPONENT *current;
 
@@ -251,7 +256,7 @@ PUBLIC void COMPONENT_load(COMPONENT *comp)
 }
 
 
-PUBLIC void COMPONENT_unload(COMPONENT *comp)
+void COMPONENT_unload(COMPONENT *comp)
 {
   if (comp->library)
     LIBRARY_unload(comp->library);
@@ -262,7 +267,7 @@ PUBLIC void COMPONENT_unload(COMPONENT *comp)
 }
 
 
-PUBLIC COMPONENT *COMPONENT_next(COMPONENT *comp)
+COMPONENT *COMPONENT_next(COMPONENT *comp)
 {
   if (comp)
     return (COMPONENT *)(comp->list.next);
@@ -271,7 +276,7 @@ PUBLIC COMPONENT *COMPONENT_next(COMPONENT *comp)
 }
 
 
-PUBLIC void COMPONENT_translation_must_be_reloaded(void)
+void COMPONENT_translation_must_be_reloaded(void)
 {
   COMPONENT *comp;
 
@@ -286,7 +291,7 @@ PUBLIC void COMPONENT_translation_must_be_reloaded(void)
 }
 
 
-PUBLIC void COMPONENT_signal(int signal, void *param)
+void COMPONENT_signal(int signal, void *param)
 {
   COMPONENT *comp;
 
@@ -297,7 +302,7 @@ PUBLIC void COMPONENT_signal(int signal, void *param)
   }
 }
 
-PUBLIC bool COMPONENT_get_info(const char *key, void **value)
+bool COMPONENT_get_info(const char *key, void **value)
 {
   COMPONENT *comp;
   

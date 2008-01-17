@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -49,6 +49,12 @@ void CSocket_CallBack(int t_sock,int type,long lParam);
 void CSocket_CallBackConnecting(int t_sock,int type,long lParam);
 
 
+typedef struct SOCKET_STREAM  {
+	GB_STREAM_DESC *desc;
+    	int _reserved;
+    	void *handle;
+} SOCKET_STREAM;
+
 typedef  struct
 {
    GB_BASE ob;
@@ -89,13 +95,13 @@ int CSocket_peek_data(CSOCKET *mythis,char **buf,int MaxLen);
 //
 void CSocket_stream_internal_error(CSOCKET *mythis,int ncode);
 //
-int CSocket_stream_read(GB_STREAM *stream, char *buffer, long len);
-int CSocket_stream_write(GB_STREAM *stream, char *buffer, long len);
+int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len);
+int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len);
 int CSocket_stream_eof(GB_STREAM *stream);
-int CSocket_stream_lof(GB_STREAM *stream, long long *len);
+int CSocket_stream_lof(GB_STREAM *stream, int64_t *len);
 int CSocket_stream_open(GB_STREAM *stream, const char *path, int mode, void *data);
-int CSocket_stream_seek(GB_STREAM *stream, long long pos, int whence);
-int CSocket_stream_tell(GB_STREAM *stream, long long *pos);
+int CSocket_stream_seek(GB_STREAM *stream, int64_t pos, int whence);
+int CSocket_stream_tell(GB_STREAM *stream, int64_t *pos);
 int CSocket_stream_flush(GB_STREAM *stream);
 int CSocket_stream_close(GB_STREAM *stream);
 int CSocket_stream_handle(GB_STREAM *stream);

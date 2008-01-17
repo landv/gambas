@@ -181,7 +181,6 @@ END_METHOD
 BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 
 	CIMAGE *img;
-	char *data;
 	char *format;
 	
 	if (!MISSING(format))
@@ -221,13 +220,13 @@ GB_DESC CClipboardDesc[] =
   GB_CONSTANT("Text", "i", 1),
   GB_CONSTANT("Image", "i", 2),
 
-  GB_STATIC_METHOD("Clear", NULL, CCLIPBOARD_clear, NULL),
+  GB_STATIC_METHOD("Clear", 0, CCLIPBOARD_clear, 0),
 
   GB_STATIC_PROPERTY_READ("Format", "s", CCLIPBOARD_format),
   GB_STATIC_PROPERTY_READ("Formats", "String[]", CCLIPBOARD_formats),
   GB_STATIC_PROPERTY_READ("Type", "i", CCLIPBOARD_type),
 
-  GB_STATIC_METHOD("Copy", NULL, CCLIPBOARD_copy, "(Data)v[(Format)s]"),
+  GB_STATIC_METHOD("Copy", 0, CCLIPBOARD_copy, "(Data)v[(Format)s]"),
   GB_STATIC_METHOD("Paste", "v", CCLIPBOARD_paste, "[(Format)s]"),
 
   GB_END_DECLARE
@@ -351,8 +350,6 @@ END_PROPERTY
 
 
 BEGIN_PROPERTY(CDRAG_format)
-
-	char *buf;
 	
 	CHECK_VALID();
 	
@@ -537,10 +534,10 @@ GB_DESC CDragDesc[] =
   GB_STATIC_PROPERTY_READ("Y", "i", CDRAG_y),
   GB_STATIC_PROPERTY_READ("Pending", "b", CDRAG_pending),
 
-  GB_STATIC_METHOD("_call", NULL, CDRAG_call, "(Source)Control;(Data)v[(Format)s]"),
-  GB_STATIC_METHOD("_exit", NULL, CDRAG_exit, NULL),
-  GB_STATIC_METHOD("Show", NULL, CDRAG_show, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
-  GB_STATIC_METHOD("Hide", NULL, CDRAG_hide, NULL),
+  GB_STATIC_METHOD("_call", 0, CDRAG_call, "(Source)Control;(Data)v[(Format)s]"),
+  GB_STATIC_METHOD("_exit", 0, CDRAG_exit, 0),
+  GB_STATIC_METHOD("Show", 0, CDRAG_show, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
+  GB_STATIC_METHOD("Hide", 0, CDRAG_hide, 0),
   GB_STATIC_METHOD("Paste", "v", CDRAG_paste, "[(Format)s]"),
 
   GB_END_DECLARE

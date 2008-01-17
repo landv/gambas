@@ -29,19 +29,19 @@
 #include "gb_common.h"
 #include "gb_common_buffer.h"
 #include "gb_limit.h"
-
+#include "gbx_variant.h"
 #include "gbx_class.h"
 #include "gambas.h"
 
 #include "gbx_type.h"
 
 
-PUBLIC char *TYPE_joker;
+char *TYPE_joker;
 
 /* Permet de simplifier les tables de sauts associ�s aux types de donn�s */
 
 #if 0
-PUBLIC short TYPE_Index[] =
+short TYPE_Index[] =
 {
   0, /* T_NULL */
   1, /* T_BOOLEAN */
@@ -62,9 +62,9 @@ PUBLIC short TYPE_Index[] =
 
 /* taille n�essaire au stockage des variables globales d'une classe */
 
-PUBLIC size_t TYPE_sizeof(TYPE type)
+size_t TYPE_sizeof(TYPE type)
 {
-  static size_t size[16] = { 0, 4, 4, 4, 4, 8, 8, 8, 8, 4, 4, 12, 0, 0, 0, 0 };
+  static size_t size[16] = { 0, 4, 4, 4, 4, 8, 8, 8, 8, sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0, 0 };
 
   if (TYPE_is_object(type))
     return sizeof(void *);
@@ -72,8 +72,8 @@ PUBLIC size_t TYPE_sizeof(TYPE type)
     return size[type];
 }
 
-
-PUBLIC size_t TYPE_sizeof_native(TYPE type)
+#if 0
+size_t TYPE_sizeof_native(TYPE type)
 {
   static size_t size[16] =
   {
@@ -86,11 +86,11 @@ PUBLIC size_t TYPE_sizeof_native(TYPE type)
   else
     return size[type];
 }
+#endif
 
-
-PUBLIC size_t TYPE_sizeof_memory(TYPE type)
+size_t TYPE_sizeof_memory(TYPE type)
 {
-  static size_t size[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, 4, 4, 12, 0, 0, 0, 0 };
+  static size_t size[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0, 0 };
 
   if (TYPE_is_object(type))
     return sizeof(void *);
@@ -99,7 +99,7 @@ PUBLIC size_t TYPE_sizeof_memory(TYPE type)
 }
 
 
-PUBLIC const char *TYPE_get_name(TYPE type)
+const char *TYPE_get_name(TYPE type)
 {
   static const char *name[17] =
   {
@@ -130,7 +130,7 @@ PUBLIC const char *TYPE_get_name(TYPE type)
 }
 
 
-PUBLIC const char *TYPE_to_string(TYPE type)
+const char *TYPE_to_string(TYPE type)
 {
   switch (type)
   {
@@ -156,7 +156,7 @@ PUBLIC const char *TYPE_to_string(TYPE type)
 }
 
 
-PUBLIC void TYPE_signature_length(const char *sign, char *len_min, char *len_max, char *var)
+void TYPE_signature_length(const char *sign, char *len_min, char *len_max, char *var)
 {
   char c;
   int len = 0;
@@ -231,7 +231,7 @@ PUBLIC void TYPE_signature_length(const char *sign, char *len_min, char *len_max
 }
 
 
-PUBLIC TYPE TYPE_from_string(const char **ptype)
+TYPE TYPE_from_string(const char **ptype)
 {
   const char *start;
   const char *type;
@@ -284,7 +284,11 @@ PUBLIC TYPE TYPE_from_string(const char **ptype)
     case 's': return T_STRING;
     case 'v': return T_VARIANT;
     case 'o': return T_OBJECT;
+#ifdef OS_64BITS
+    case 'p': return T_LONG;
+#else
     case 'p': return T_INTEGER;
+#endif
 
     default:
 
@@ -312,7 +316,7 @@ PUBLIC TYPE TYPE_from_string(const char **ptype)
 }
 
 
-PUBLIC TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int npmax)
+TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int npmax)
 {
   TYPE *tsign;
   int i;
@@ -328,7 +332,7 @@ PUBLIC TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int np
 }
 
 
-PUBLIC boolean TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2)
+bool TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2)
 {
   int i;
 

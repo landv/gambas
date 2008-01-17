@@ -31,7 +31,7 @@
 #ifdef GBX_INFO
 
 #undef GB_DECLARE
-#define GB_DECLARE(name, size) { name, (long)GB_VERSION, 0 }
+#define GB_DECLARE(name, size) { name, (intptr_t)GB_VERSION, 0 }
 
 #undef GB_HOOK_NEW
 #define GB_HOOK_NEW(hook)    { GB_HOOK_NEW_ID, 0 }
@@ -43,25 +43,25 @@
 #define GB_HOOK_CHECK(hook)  { GB_HOOK_CHECK_ID, 0 }
 
 #undef GB_PROPERTY
-#define GB_PROPERTY(symbol, type, proc) { "p" symbol, (long)type, 0 }
+#define GB_PROPERTY(symbol, type, proc) { "p" symbol, (intptr_t)type, 0 }
 
 #undef GB_PROPERTY_READ
-#define GB_PROPERTY_READ(symbol, type, proc) { "r" symbol, (long)type, 0 }
+#define GB_PROPERTY_READ(symbol, type, proc) { "r" symbol, (intptr_t)type, 0 }
 
 #undef GB_METHOD
-#define GB_METHOD(symbol, type, exec, signature) { "m" symbol, (long)type, 0, (long)signature }
+#define GB_METHOD(symbol, type, exec, signature) { "m" symbol, (intptr_t)type, 0, (intptr_t)signature }
 
 #undef GB_EVENT
-#define GB_EVENT(symbol, type, signature, id) { "::" symbol, (long)type, 0, (long)signature }
+#define GB_EVENT(symbol, type, signature, id) { "::" symbol, (intptr_t)type, 0, (intptr_t)signature }
 
 #undef GB_STATIC_PROPERTY
-#define GB_STATIC_PROPERTY(symbol, type, proc) { "P" symbol, (long)type, 0 }
+#define GB_STATIC_PROPERTY(symbol, type, proc) { "P" symbol, (intptr_t)type, 0 }
 
 #undef GB_STATIC_PROPERTY_READ
-#define GB_STATIC_PROPERTY_READ(symbol, type, proc) { "R" symbol, (long)type, 0 }
+#define GB_STATIC_PROPERTY_READ(symbol, type, proc) { "R" symbol, (intptr_t)type, 0 }
 
 #undef GB_STATIC_METHOD
-#define GB_STATIC_METHOD(symbol, type, exec, signature) { "M" symbol, (long)type, 0, (long)signature }
+#define GB_STATIC_METHOD(symbol, type, exec, signature) { "M" symbol, (intptr_t)type, 0, (intptr_t)signature }
 
 #endif
 

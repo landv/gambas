@@ -28,10 +28,10 @@
 #include "gbx_c_array.h"
 
 typedef
-	void (*REGEXP_SCAN_FUNC)(const char *, long);
+	void (*REGEXP_SCAN_FUNC)(const char *, int);
 
-PUBLIC bool REGEXP_match(const char *pattern, long len_pattern, const char *string, long len_string);
-PUBLIC bool REGEXP_scan(CARRAY *array, const char *pattern, long len_pattern, const char *string, long len_string);
+bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string);
+bool REGEXP_scan(CARRAY *array, const char *pattern, int len_pattern, const char *string, int len_string);
 
 #endif
 

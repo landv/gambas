@@ -78,15 +78,15 @@ PUBLIC void X11_window_dock(Window window);
 PUBLIC void X11_window_startup(Window window, int x, int y, int w, int h);
 /* Functions to search for a specific top-level window */
 PUBLIC void X11_find_windows(Window **window_list, int *count);
-PUBLIC void X11_get_window_title(Window window, char **result, long *length);
-PUBLIC void X11_get_window_class(Window window, char **result, long *length);
-PUBLIC void X11_get_window_role(Window window, char **result, long *length);
+PUBLIC void X11_get_window_title(Window window, char **result, int *length);
+PUBLIC void X11_get_window_class(Window window, char **result, int *length);
+PUBLIC void X11_get_window_role(Window window, char **result, int *length);
 /* Function to make a tool window */
 PUBLIC void X11_set_window_tool(Window window, int tool, Window parent);
 PUBLIC int X11_get_window_tool(Window window);
 PUBLIC void X11_window_set_desktop(Window window, bool visible, int desktop);
-PUBLIC long X11_window_get_desktop(Window window);
-PUBLIC long X11_get_current_desktop();
+PUBLIC int X11_window_get_desktop(Window window);
+PUBLIC int X11_get_current_desktop();
 
 #ifdef __cplusplus
 }

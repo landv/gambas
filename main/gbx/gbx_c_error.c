@@ -116,7 +116,7 @@ END_PROPERTY
 
 #endif
 
-PUBLIC GB_DESC NATIVE_Error[] =
+GB_DESC NATIVE_Error[] =
 {
   GB_DECLARE("Error", 0), GB_VIRTUAL_CLASS(),
 

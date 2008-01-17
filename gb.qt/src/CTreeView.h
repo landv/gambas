@@ -130,7 +130,7 @@ public:
 
   void setPixmap(const QPixmap & pixmap) { QListViewItem::setPixmap(0, pixmap); }
   void setPicture(GB_OBJECT *pict);
-  //void setSortKey(int col, long k);
+  //void setSortKey(int col, int k);
 
   virtual int compare(QListViewItem *i, int col, bool ascending) const;
   virtual void startRename(int col);

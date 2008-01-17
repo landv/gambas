@@ -109,7 +109,7 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
       if (ispunct(*str))
         snprintf(_buffer, BUF_MAX, "%s%s%s", before, str, after);
       else
-        strlcpy(_buffer, str, sizeof(_buffer));
+        strcpy(_buffer, str);
       break;
 
     case RT_NUMBER:
@@ -125,16 +125,16 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
 
     case RT_NEWLINE:
     case RT_END:
-      strlcpy(_buffer, "end of expression", sizeof(_buffer));
+      strcpy(_buffer, "end of expression");
       break;
 
     case RT_SUBR:
       //snprintf(COMMON_buffer, COMMON_BUF_MAX, "%s%s%s", bafore, COMP_subr_info[index].name, after);
-      strlcpy(_buffer, COMP_subr_info[index].name, sizeof(_buffer));
+      strcpy(_buffer, COMP_subr_info[index].name);
       break;
 
     default:
-      snprintf(_buffer, sizeof(_buffer), "%s?%p?%s", before, (void *)*pattern, after);
+      sprintf(_buffer, "%s?%08X?%s", before, *pattern, after);
   }
 
   return _buffer;

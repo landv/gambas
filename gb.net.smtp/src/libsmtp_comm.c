@@ -159,7 +159,7 @@ int libsmtp_int_send (GString *libsmtp_send_gstring, struct libsmtp_session_stru
   return LIBSMTP_NOERR;
 }
 
-int libsmtp_int_send_body (char *libsmtp_send_string, unsigned long int libsmtp_int_length, \
+int libsmtp_int_send_body (char *libsmtp_send_string, unsigned int libsmtp_int_length, \
          struct libsmtp_session_struct *libsmtp_session)
 {
   int libsmtp_int_bytes;
@@ -619,7 +619,7 @@ int libsmtp_header_send (char *libsmtp_header_string, \
    stage. The data to be sent has to be formatted according to RFC822 and
    the MIME standards. */
 
-int libsmtp_body_send_raw (char *libsmtp_body_data, unsigned long int libsmtp_int_length, \
+int libsmtp_body_send_raw (char *libsmtp_body_data, unsigned int libsmtp_int_length, \
             struct libsmtp_session_struct *libsmtp_session)
 {
 

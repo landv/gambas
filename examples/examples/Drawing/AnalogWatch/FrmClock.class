@@ -88,7 +88,7 @@ PUBLIC SUB DrawClock()
   Draw.LineStyle = Line.None
   Draw.FillColor = &HDCDCDC&    'Light gray color
   Draw.Ellipse(0, 0, W, H)
-  Draw.FillColor = Color.Default
+  Draw.FillColor = Draw.Background
   Draw.Ellipse(W * 0.05, H * 0.05, W * 0.9, H * 0.9)
   
   Draw.LineStyle = Line.Solid

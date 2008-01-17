@@ -32,7 +32,7 @@ typedef
     GB_BASE object;
     LIST list;
     void *enum_object;
-    char data[16];
+    void *data[4];
     unsigned stop : 1;
     unsigned variant : 1;
     }

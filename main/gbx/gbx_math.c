@@ -86,43 +86,43 @@ static uint GFSR_random(void)
 
 //static long seed = 1;
 
-PUBLIC double frac(double x)
+double frac(double x)
 {
   x = fabs(x);
   return x - floor(x);
 }
 
-PUBLIC int lsgn(long x)
+int lsgn(int x)
 {
   return ((x > 0) ? 1 : ((x < 0) ? (-1) : 0));
 }
 
-PUBLIC int llsgn(long long x)
+int llsgn(int64_t x)
 {
   return ((x > 0) ? 1 : ((x < 0) ? (-1) : 0));
 }
 
-PUBLIC long long llabs(long long x)
+/*int64_t llabs(int64_t x)
 {
   return ((x < 0) ? (-x) : x);
-}
+}*/
 
-PUBLIC int fsgn(double x)
+int fsgn(double x)
 {
   return ((x > 0) ? 1 : ((x < 0) ? (-1) : 0));
 }
 
-PUBLIC double deg(double x)
+double deg(double x)
 {
   return x * 180 / M_PI;
 }
 
-PUBLIC double rad(double x)
+double rad(double x)
 {
   return x * M_PI / 180;
 }
 
-PUBLIC double fix(double x)
+double fix(double x)
 {
   if (x >= 0)
     return floor(x);
@@ -131,7 +131,7 @@ PUBLIC double fix(double x)
 }
 
 
-PUBLIC double frexp10(double x, int *exp)
+double frexp10(double x, int *exp)
 {
   long double l, f;
 
@@ -161,7 +161,7 @@ PUBLIC double frexp10(double x, int *exp)
 }
 
 
-PUBLIC void randomize(bool set, uint seed)
+void randomize(bool set, uint seed)
 {
   struct timeval tv;
 
@@ -173,14 +173,14 @@ PUBLIC void randomize(bool set, uint seed)
 }
 
 
-PUBLIC double rnd(void)
+double rnd(void)
 {
   /*seed = 16807L * (seed % 127773L) - 2836L * (seed / 127773L);
   if (seed <= 0) seed += 2147483647;
 
   return (double)seed / 2147483648.0;*/
 
-  unsigned long long val;
+  uint64_t val;
 
 	val = GFSR_random();
 	val <<= 32;
@@ -190,19 +190,19 @@ PUBLIC double rnd(void)
 }
 
 
-PUBLIC double ang(double x, double y)
+double ang(double x, double y)
 {
   return atan2(y, x);
 }
 
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
-PUBLIC double exp10(double x)
+double exp10(double x)
 {
 	return pow(10, x);
 }
 
-PUBLIC double log2(double x)
+double log2(double x)
 {
 	return log(x) / M_LN2;
 }
@@ -211,29 +211,29 @@ PUBLIC double log2(double x)
 
 #ifdef OS_OPENBSD
 
-PUBLIC double exp2(double x)
+double exp2(double x)
 {
 	return pow(2, x);
 }
 
-PUBLIC long double log10l(long double x)
+long double log10l(long double x)
 {
 	return log10((double) x);
 }
 
-PUBLIC long double fabsl(long double x)
+long double fabsl(long double x)
 {
 	return fabs((double) x);
 }
 
-PUBLIC long double powl(long double x, long double y)
+long double powl(long double x, long double y)
 {
 	return pow((double) x, (double) y);
 }
 
 #endif
 
-PUBLIC void MATH_init(void)
+void MATH_init(void)
 {
 	randomize(FALSE, 0);
 }

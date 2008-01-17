@@ -55,6 +55,9 @@
 #define EXPORT
 #endif
 
+#if defined(__cplusplus)
+#define __null ((intptr_t)0)
+#endif
 
 /* Gambas datatypes identifiers */
 
@@ -104,6 +107,7 @@ typedef
 typedef
   union {
     GB_TYPE type;
+		intptr_t _reserved[3];
     struct { GB_TYPE type; int value; } _boolean;
     struct { GB_TYPE type; int value; } _byte;
     struct { GB_TYPE type; int value; } _short;
@@ -136,6 +140,9 @@ typedef
       int start;
       int len;
       } value;
+    #if __WORDSIZE == 64
+		intptr_t _reserved;
+		#endif
     }
   GB_STRING;
 
@@ -146,7 +153,10 @@ typedef
   struct {
     GB_TYPE type;
     int value;
-    int _reserved[2];
+    #if __WORDSIZE == 64
+    int _pad;
+    #endif
+		intptr_t _reserved[2];
     }
   GB_INTEGER;
 
@@ -157,7 +167,11 @@ typedef
   struct {
     GB_TYPE type;
     int64_t value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #else
     int _reserved;
+    #endif
     }
   GB_LONG;
 
@@ -168,7 +182,10 @@ typedef
   struct {
     GB_TYPE type;
     int value;
-    int _reserved[2];
+    #if __WORDSIZE == 64
+    int _pad;
+    #endif
+		intptr_t _reserved[2];
     }
   GB_BOOLEAN;
 
@@ -179,7 +196,11 @@ typedef
   struct {
     GB_TYPE type;
     double value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #else
     int _reserved;
+    #endif
     }
   GB_FLOAT;
 
@@ -197,7 +218,11 @@ typedef
   struct {
     GB_TYPE type;
     GB_DATE_VALUE value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #else
     int _reserved;
+    #endif
     }
   GB_DATE;
 
@@ -208,7 +233,7 @@ typedef
   struct {
     GB_TYPE type;
     void *value;
-    int _reserved[2];
+    intptr_t _reserved[2];
     }
   GB_OBJECT;
 
@@ -684,9 +709,9 @@ typedef
 typedef
   struct {
     GB_BASE object;
+    intptr_t id;
+    intptr_t tag;
     int delay;
-    int id;
-    int tag;
     }
   GB_TIMER;
 
@@ -701,7 +726,7 @@ typedef
 
 typedef
   struct {
-    int version;
+    intptr_t version;
 
     int (*GetInterface)(const char *, int, void *);
 
@@ -718,8 +743,8 @@ typedef
     void *(*GetClassInterface)(GB_CLASS, const char *);
 
 		int (*Loop)(int);
-    void (*Post)(void (*)(), int);
-    void (*Post2)(void (*)(), int, int);
+    void (*Post)(void (*)(), intptr_t);
+    void (*Post2)(void (*)(), intptr_t, intptr_t);
     int (*Raise)(void *, int, int, ...);
     void (*RaiseLater)(void *, int);
     void (*CheckPost)(void);
@@ -763,6 +788,7 @@ typedef
     void (*Return)(GB_TYPE, ...);
     void (*ReturnInteger)(int);
     void (*ReturnLong)(int64_t);
+    void (*ReturnPointer)(void *);
     void (*ReturnBoolean)(int);
     void (*ReturnDate)(GB_DATE *);
     void (*ReturnObject)(void *);

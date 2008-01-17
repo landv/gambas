@@ -206,14 +206,14 @@ static bool print_type(const char *type)
 }
 #endif
 
-static void dump_value(const char *type, int value)
+static void dump_value(const char *type, intptr_t value)
 {
   char *p;
 
   switch(*type)
   {
     case 'i':
-      print("%ld", value, value);
+      print("%d", value);
       break;
 
     case 'f':
@@ -239,156 +239,6 @@ static void dump_value(const char *type, int value)
       break;
   }
 }
-
-#if 0
-static void print_value(const char *type, long value)
-{
-  char *p;
-
-  switch(*type)
-  {
-    case 'i':
-      print("%ld ( &H%lX )", value, value);
-      break;
-
-    case 'f':
-      print("\"%s\"", (char *)value);
-      break;
-
-    case 's':
-      p = (char *)value;
-      print("\"");
-      while (*p)
-      {
-        if (*p == '\n')
-          print("\\n");
-        else if (*p == '\t')
-          print("\\t");
-        else
-          print("%c", *p);
-        p++;
-      }
-      print("\"");
-      break;
-
-    default:
-      print("?");
-      break;
-  }
-}
-
-static void print_signature(const char *sign)
-{
-  char mode = 0;
-  char c;
-  bool comma = FALSE;
-
-  if (!sign)
-    return;
-
-  while ((c = *sign))
-  {
-    if (!mode)
-    {
-      if (c == '(')
-      {
-        if (comma)
-          print(" ,");
-        print(_format ? " <i>" : " ");
-
-        mode = ')';
-      }
-      else if (c == '<')
-        mode = '>';
-      else if (c == '[')
-        print(_format ? " <b>[</b>" : " [");
-      else if (c == ']')
-        print(_format ? " <b>]</b>" : " ]");
-      else if (c == '.')
-        print(" ...");
-      else
-      {
-        print(" AS ");
-        if (print_type(sign))
-          mode = ';';
-        comma = TRUE;
-      }
-    }
-    else if (c == mode)
-    {
-      if (mode == ')' && _format)
-        print("</i>");
-      mode = 0;
-    }
-    else if (mode == ')')
-    {
-      print("%c", c);
-    }
-
-    sign++;
-  }
-}
-
-static void analyze_symbol(GB_DESC *desc)
-{
-  char type;
-  char *name;
-
-  type = *desc->name;
-
-  name = &desc->name[1];
-
-  print("%s\n", name);
-
-  if (isupper(type))
-  {
-    if (type != 'C') print("STATIC ");
-    type = tolower(type);
-  }
-
-  if (type == ':')
-    name++;
-
-  switch (type)
-  {
-    case 'c':
-      print(_format ? "CONST <b>%s</b> AS " : "CONST %s AS ", name);
-      print_type((char *)desc->val1);
-      print(" = ");
-      print_value((char *)desc->val1, desc->val2);
-      newline();
-      break;
-
-    case 'p':
-      print(_format ? "PROPERTY <b>%s</b> AS " : "PROPERTY %s AS ", name);
-      print_type((char *)desc->val1);
-      newline();
-      break;
-
-    case 'r':
-      print(_format ? "PROPERTY READ <b>%s</b> AS " : "PROPERTY READ %s AS ", name);
-      print_type((char *)desc->val1);
-      newline();
-      break;
-
-    case 'm': case ':':
-      if (type == ':')
-        print(_format ? "EVENT <b>%s</b> (" : "EVENT %s (", name);
-      else
-        print(_format ? "%s <b>%s</b> (" : "%s %s (", desc->val1 ? "FUNCTION" : "SUB", name);
-      print_signature((char *)desc->val3);
-      print(" )");
-      if (desc->val1)
-      {
-        print(" AS ");
-        print_type((char *)desc->val1);
-      }
-      newline();
-      break;
-  }
-}
-#endif
-
 
 static void dump_symbol(GB_DESC *desc)
 {

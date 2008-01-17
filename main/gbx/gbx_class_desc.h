@@ -60,8 +60,8 @@ typedef
   struct {
     char *name;
     TYPE type;                  /* variable type */
-    long offset;                /* variable offset */
-    long _reserved;
+    int offset;                /* variable offset */
+    int _reserved;
     }
   PACKED
   CLASS_DESC_VARIABLE;
@@ -85,7 +85,7 @@ typedef
   struct {
     char *name;
     TYPE type;                  /* type de la valeur de retour */
-    long *index;                /* num�o de l'��ement */
+    int *index;                /* num�o de l'��ement */
     TYPE *signature;            /* signature */
     char npmin;                 /* nombre de param�res minimum */
     char npmax;                 /* nombre de param�res maximum dans la signature */
@@ -100,7 +100,7 @@ typedef
   struct {
     char *name;
     TYPE type;                  /* type de la valeur de retour */
-    long exec;                  /* Index a ex�uter */
+    int exec;                  /* Index a ex�uter */
     TYPE *signature;            /* signature */
     char npmin;                 /* nombre de param�res minimum */
     char npmax;                 /* nombre de param�res maximum dans la signature */
@@ -119,7 +119,7 @@ typedef
       int _integer;
       double _float;
       char *_string;
-      long long _long;
+      int64_t _long;
       void *_pointer;
       }
       value;
@@ -138,11 +138,11 @@ typedef
 typedef
   struct {
     char *name;
-    long type;
-    long val1;
-    long val2;
-    long val3;
-    long val4;
+    intptr_t type;
+    intptr_t val1;
+    intptr_t val2;
+    intptr_t val3;
+    intptr_t val4;
     }
   CLASS_DESC_GAMBAS;
 

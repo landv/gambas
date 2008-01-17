@@ -67,13 +67,13 @@
 #define get_size_left COMMON_get_size_left
 
 /* System encoding*/
-PUBLIC char *LOCAL_encoding = NULL;
+char *LOCAL_encoding = NULL;
 
 /* If system encoding is UTF-8 */
-PUBLIC bool LOCAL_is_UTF8;
+bool LOCAL_is_UTF8;
 
 /* Default 'C' localization */
-PUBLIC LOCAL_INFO LOCAL_default = {
+LOCAL_INFO LOCAL_default = {
   '.', '.',
   0, 0,
   3, 3,
@@ -95,7 +95,7 @@ PUBLIC LOCAL_INFO LOCAL_default = {
   };
 
 /* User language localization */
-PUBLIC LOCAL_INFO LOCAL_local;
+LOCAL_INFO LOCAL_local;
 
 static char *_rtl_lang[] = { "ar", "fa", NULL };
 
@@ -469,11 +469,10 @@ static void fill_local_info(void)
 	/* Right to left languages */
 
 
-
 #if 0
   {
     char *str;
-    long len;
+    int len;
     VALUE value;
 
     DATE_now(&value);
@@ -486,12 +485,12 @@ static void fill_local_info(void)
 }
 
 
-PUBLIC void LOCAL_init(void)
+void LOCAL_init(void)
 {
   LOCAL_set_lang(NULL);
 }
 
-PUBLIC void LOCAL_exit(void)
+void LOCAL_exit(void)
 {
   STRING_free(&env_LANG);
   STRING_free(&env_LC_ALL);
@@ -501,7 +500,7 @@ PUBLIC void LOCAL_exit(void)
 }
 
 
-PUBLIC const char *LOCAL_get_lang(void)
+const char *LOCAL_get_lang(void)
 {
   char *lang;
 
@@ -514,7 +513,7 @@ PUBLIC const char *LOCAL_get_lang(void)
   return lang;
 }
 
-PUBLIC void LOCAL_set_lang(const char *lang)
+void LOCAL_set_lang(const char *lang)
 {
 	char **l;
 	int rtl;
@@ -564,7 +563,7 @@ PUBLIC void LOCAL_set_lang(const char *lang)
   LOCAL_local.rtl = rtl;
 }
 
-PUBLIC bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local)
+bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local)
 {
   char c;
   int n;
@@ -1136,7 +1135,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 }
 
 
-PUBLIC boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
+boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
 {
   char c;
   bool esc;
@@ -1295,7 +1294,7 @@ PUBLIC boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fm
 }
 
 
-PUBLIC void LOCAL_load_translation(ARCHIVE *arch)
+void LOCAL_load_translation(ARCHIVE *arch)
 {
   char *domain = NULL;
   char *lang_list;
@@ -1452,7 +1451,7 @@ __NOTRANS:
 }
 
 
-PUBLIC const char *LOCAL_gettext(const char *msgid)
+const char *LOCAL_gettext(const char *msgid)
 {
   const char *tr;
   ARCHIVE *arch = NULL;

@@ -40,7 +40,7 @@ void slider_Change(GtkRange *range,gSlider *data)
 gboolean slider_Expose(GtkWidget *widget,GdkEventExpose *event,gSlider *data)
 {
 	GtkAdjustment* adj=gtk_range_get_adjustment(GTK_RANGE(data->widget));
-	int max=adj->upper-adj->lower;
+	int max=(int)(adj->upper-adj->lower);
 	int b;
 	int fact=1;
 	int myh;
@@ -220,8 +220,8 @@ void gSlider::setMax(int vl)
 {
 	GtkAdjustment* adj=gtk_range_get_adjustment(GTK_RANGE(widget));
 	
-	if (adj->lower>vl) g_object_set((gpointer)adj,"lower",(double)vl,NULL);
-	g_object_set((gpointer)adj,"upper",(double)vl,NULL);
+	if (adj->lower>vl) g_object_set((gpointer)adj,"lower",(double)vl,(void *)NULL);
+	g_object_set((gpointer)adj,"upper",(double)vl,(void *)NULL);
 	setValue(value());
 }
 
@@ -229,8 +229,8 @@ void gSlider::setMin(int vl)
 {
 	GtkAdjustment* adj=gtk_range_get_adjustment(GTK_RANGE(widget));
 	
-	if (adj->upper<vl) g_object_set((gpointer)adj,"upper",(double)vl,NULL);
-	g_object_set((gpointer)adj,"lower",(double)vl,NULL);
+	if (adj->upper<vl) g_object_set((gpointer)adj,"upper",(double)vl,(void *)NULL);
+	g_object_set((gpointer)adj,"lower",(double)vl,(void *)NULL);
 	setValue(value());
 }
 
@@ -250,8 +250,8 @@ void gSlider::setValue(int vl)
 {
 	GtkAdjustment* adj=gtk_range_get_adjustment(GTK_RANGE(widget));
 	
-	if (vl < adj->lower) vl=adj->lower;
-	if (vl > adj->upper) vl=adj->upper;
+	if (vl < adj->lower) vl=(int)adj->lower;
+	if (vl > adj->upper) vl=(int)adj->upper;
 	
 	gtk_adjustment_set_value(adj,(gdouble)vl);
 }

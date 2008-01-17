@@ -42,9 +42,9 @@
 typedef
   int (*COMPARE_FUNC)();
 
-PUBLIC COMPARE_FUNC COMPARE_get(TYPE type, int mode);
-PUBLIC int COMPARE_object(void **a, void **b);
-PUBLIC int COMPARE_string_lang(char *s1, long l1, char *s2, long l2, bool nocase, bool throw);
+COMPARE_FUNC COMPARE_get(TYPE type, int mode);
+int COMPARE_object(void **a, void **b);
+int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool throw);
 #endif
 
 #endif

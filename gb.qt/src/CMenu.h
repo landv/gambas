@@ -59,7 +59,7 @@ typedef
     GB_BASE ob;
     struct _CMENU *menu;
     CPICTURE *picture;
-    long id;
+    int id;
     //char *key;
     }
   CMENUITEM;

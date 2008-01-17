@@ -22,8 +22,6 @@
 
 #define __CPROGRESS_CPP
 
-
-
 #include <qprogressbar.h>
 
 #include "gambas.h"
@@ -52,7 +50,7 @@ BEGIN_PROPERTY(CPROGRESS_max)
     GB.ReturnInteger(WIDGET->totalSteps());
   else
   {
-    long max = PROPERTY(long);
+    int max = PROPERTY(int);
 
     if (max < 1 || max < WIDGET->progress())
     {

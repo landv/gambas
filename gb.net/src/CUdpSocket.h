@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,31 +38,39 @@ extern GB_STREAM_DESC UdpSocketStream;
 #endif
 
 
-typedef
-	struct
-	{
-    GB_BASE ob;
-		GB_STREAM stream;
-    int Socket;
-    int iStatus;
-    int iPort;
-		char *shost;
-		int   sport;
-		char *thost;
-		int   tport;
-		int broadcast;
-	}
-	CUDPSOCKET;
+typedef struct 
+{
+	GB_STREAM_DESC *desc;
+    	int _reserved;
+    	void *handle;
+} UDP_SOCKET_STREAM;
 
-int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, long len);
-int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, long len);
+typedef	struct
+{
+	GB_BASE ob;
+	GB_STREAM stream;
+	int Socket;
+	int iStatus;
+	int iPort;
+	char *shost;
+	int   sport;
+	char *thost;
+	int   tport;
+	int broadcast;
+
+} CUDPSOCKET;
+
+int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len);
+int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len);
 int CUdpSocket_stream_eof(GB_STREAM *stream);
-int CUdpSocket_stream_lof(GB_STREAM *stream, long long *len);
+int CUdpSocket_stream_lof(GB_STREAM *stream, int64_t *len);
 int CUdpSocket_stream_open(GB_STREAM *stream, const char *path, int mode, void *data);
-int CUdpSocket_stream_seek(GB_STREAM *stream, long long pos, int whence);
-int CUdpSocket_stream_tell(GB_STREAM *stream, long long *pos);
+int CUdpSocket_stream_seek(GB_STREAM *stream, int64_t pos, int whence);
+int CUdpSocket_stream_tell(GB_STREAM *stream, int64_t *pos);
 int CUdpSocket_stream_flush(GB_STREAM *stream);
 int CUdpSocket_stream_close(GB_STREAM *stream);
 int CUdpSocket_stream_handle(GB_STREAM *stream);
 
+       
+    
 #endif

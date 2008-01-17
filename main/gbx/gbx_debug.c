@@ -40,8 +40,8 @@
 #include "gbx_debug.h"
 
 
-PUBLIC DEBUG_INTERFACE DEBUG;
-PUBLIC DEBUG_INFO *DEBUG_info = NULL;
+DEBUG_INTERFACE DEBUG;
+DEBUG_INFO *DEBUG_info = NULL;
 
 static boolean calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
@@ -67,7 +67,7 @@ static boolean calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr
   return TRUE;
 }
 
-PUBLIC const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
+const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 {
 #if DEBUG_MEMORY
   static char buffer[256];
@@ -98,13 +98,13 @@ PUBLIC const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 }
 
 
-PUBLIC const char *DEBUG_get_current_position(void)
+const char *DEBUG_get_current_position(void)
 {
   return DEBUG_get_position(CP, FP, PC);
 }
 
 
-PUBLIC void DEBUG_init(void)
+void DEBUG_init(void)
 {
   if (!EXEC_debug)
   	return;
@@ -119,7 +119,7 @@ PUBLIC void DEBUG_init(void)
 }
 
 
-PUBLIC void DEBUG_exit(void)
+void DEBUG_exit(void)
 {
 	if (!EXEC_debug)
 		return;
@@ -128,13 +128,13 @@ PUBLIC void DEBUG_exit(void)
 }
 
 
-PUBLIC void DEBUG_where(void)
+void DEBUG_where(void)
 {
   fprintf(stderr, "%s: ", DEBUG_get_current_position());
 }
 
 
-PUBLIC bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
+bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
 {
   int i;
   VALUE value;
@@ -287,7 +287,7 @@ int DEBUG_can_be_used_like_an_array(void *object, CLASS *class)
     EXEC.drop = FALSE;
     EXEC.nparam = 0;
     EXEC.native = FALSE;
-    EXEC.index = (int)desc->property.read;
+    EXEC.index = (int)(intptr_t)desc->property.read;
     //EXEC.func = &class->load->func[(int)desc->property.read];
 
     EXEC_function_keep();
@@ -303,7 +303,7 @@ int DEBUG_can_be_used_like_an_array(void *object, CLASS *class)
 
 
 
-PUBLIC DEBUG_BACKTRACE *DEBUG_backtrace()
+DEBUG_BACKTRACE *DEBUG_backtrace()
 {
 	DEBUG_BACKTRACE *result;
   int i, n;
@@ -341,7 +341,7 @@ PUBLIC DEBUG_BACKTRACE *DEBUG_backtrace()
 }
 
 
-PUBLIC GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt)
+GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt)
 {
 	GB_ARRAY array;
 	int i, n;

@@ -48,7 +48,7 @@ static void dump_temp(void)
 	}
 }
 
-PUBLIC void SUBST_init(void)
+void SUBST_init(void)
 {
   subst_buffer = NULL;
   _ntemp = 0;
@@ -56,7 +56,7 @@ PUBLIC void SUBST_init(void)
 
 // len == 0 est possible ! On peut vouloir ajouter une chaîne vide.
 
-PUBLIC void SUBST_add(const char *src, int len)
+void SUBST_add(const char *src, int len)
 {
   int old_len;
 
@@ -77,7 +77,7 @@ PUBLIC void SUBST_add(const char *src, int len)
   memcpy(&subst_buffer[old_len], src, len);
 }
 
-PUBLIC void SUBST_add_char(unsigned char c)
+void SUBST_add_char(unsigned char c)
 {
 	if (_ntemp == sizeof(_temp))
 		dump_temp();
@@ -85,13 +85,13 @@ PUBLIC void SUBST_add_char(unsigned char c)
 }
 
 
-PUBLIC void SUBST_exit(void)
+void SUBST_exit(void)
 {
 	dump_temp();
   STRING_extend_end(&subst_buffer);
 }
 
-PUBLIC char *SUBST_buffer(void)
+char *SUBST_buffer(void)
 {
   return subst_buffer;
 }

@@ -75,15 +75,15 @@ void X11_window_dock(Window window);
 void X11_window_startup(Window window, int x, int y, int w, int h);
 /* Functions to search for a specific top-level window */
 void X11_find_windows(Window **window_list, int *count);
-void X11_get_window_title(Window window, char **result, long *length);
-void X11_get_window_class(Window window, char **result, long *length);
-void X11_get_window_role(Window window, char **result, long *length);
+void X11_get_window_title(Window window, char **result, int *length);
+void X11_get_window_class(Window window, char **result, int *length);
+void X11_get_window_role(Window window, char **result, int *length);
 /* Function to make a tool window */
 void X11_set_window_tool(Window window, int tool, Window parent);
 int X11_get_window_tool(Window window);
 void X11_window_set_desktop(Window window, bool visible, int desktop);
-long X11_window_get_desktop(Window window);
-long X11_get_current_desktop();
+int X11_window_get_desktop(Window window);
+int X11_get_current_desktop();
 char *X11_send_key(char *key, bool press);
 
 #ifdef __cplusplus

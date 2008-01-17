@@ -181,7 +181,7 @@ GB_DESC CChildrenDesc[] =
 {
   GB_DECLARE(".ContainerChildren", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CCONTAINER_next, NULL),
+  GB_METHOD("_next", "Control", CCONTAINER_next, 0),
   GB_METHOD("_get", "Control", CCONTAINER_get, "(Index)i"),
   GB_PROPERTY_READ("Count", "i", CCONTAINER_count),
 
@@ -206,8 +206,8 @@ GB_DESC CContainerDesc[] =
 
   GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
 
-  GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),
-  GB_EVENT("Insert", NULL, "(Control)Control", &EVENT_Insert),
+  GB_EVENT("Arrange", 0, 0, &EVENT_Arrange),
+  GB_EVENT("Insert", 0, "(Control)Control", &EVENT_Insert),
   
   GB_END_DECLARE
 };
@@ -357,11 +357,11 @@ GB_DESC CUserControlDesc[] =
   GB_DECLARE("UserControl", sizeof(CUSERCONTROL)), GB_INHERITS("Container"),
   GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CUSERCONTROL_new, "(Parent)Container;"),
   GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
   GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
   
-	USERCONTROL_DESCRIPTION,
+   USERCONTROL_DESCRIPTION,
 
   GB_END_DECLARE
 };
@@ -371,7 +371,7 @@ GB_DESC CUserContainerDesc[] =
   GB_DECLARE("UserContainer", sizeof(CUSERCONTROL)), GB_INHERITS("Container"),
   GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CUSERCONTROL_new, "(Parent)Container;"),
 
   GB_PROPERTY("_Container", "Container", CUSERCONTAINER_container),
 

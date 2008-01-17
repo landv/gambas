@@ -511,7 +511,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CIMAGE_data)
 
-  GB.ReturnInteger((int)THIS->image->bits());
+  GB.ReturnPointer((void *)THIS->image->bits());
 
 END_PROPERTY
 

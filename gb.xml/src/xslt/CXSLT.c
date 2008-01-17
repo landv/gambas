@@ -108,7 +108,7 @@ END_METHOD
 
 GB_DESC CXsltDesc[] =
 {
-  GB_DECLARE("Xslt", 0),
+  GB_DECLARE("Xslt", 0), GB_NOT_CREATABLE(),
 
   GB_STATIC_METHOD ("Transform","XmlDocument",CXSLT_Transform,"(Document)XmlDocument;(StyleSheet)XmlDocument;"),
 

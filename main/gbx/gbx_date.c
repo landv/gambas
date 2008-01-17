@@ -109,7 +109,7 @@ static short date_from_julian_year(short year)
     return year + DATE_YEAR_MIN + 1;
 }
 
-PUBLIC void DATE_init(void)
+void DATE_init(void)
 {
   time_t t = (time_t)0L;
   struct tm *tm;
@@ -138,7 +138,7 @@ PUBLIC void DATE_init(void)
   #endif
 }
 
-PUBLIC DATE_SERIAL *DATE_split(VALUE *value)
+DATE_SERIAL *DATE_split(VALUE *value)
 {
   static int last_nday, last_nmsec;
   static DATE_SERIAL last_date = { 0 };
@@ -213,7 +213,7 @@ PUBLIC DATE_SERIAL *DATE_split(VALUE *value)
 }
 
 
-PUBLIC bool DATE_make(DATE_SERIAL *date, VALUE *val)
+bool DATE_make(DATE_SERIAL *date, VALUE *val)
 {
   short year;
   int nday;
@@ -280,7 +280,7 @@ static int get_current_year(void)
 }
 
 
-PUBLIC void DATE_from_time(time_t time, int usec, VALUE *val)
+void DATE_from_time(time_t time, int usec, VALUE *val)
 {
   struct tm *tm;
   DATE_SERIAL date;
@@ -300,7 +300,7 @@ PUBLIC void DATE_from_time(time_t time, int usec, VALUE *val)
 }
 
 
-PUBLIC void DATE_now(VALUE *val)
+void DATE_now(VALUE *val)
 {
   struct timeval tv;
 
@@ -314,7 +314,7 @@ PUBLIC void DATE_now(VALUE *val)
 }
 
 
-PUBLIC int DATE_to_string(char *buffer, VALUE *value)
+int DATE_to_string(char *buffer, VALUE *value)
 {
   DATE_SERIAL *date;
   int len;
@@ -451,7 +451,7 @@ static void set_time(DATE_SERIAL *date, int which, int value)
 }
 
 
-PUBLIC boolean DATE_from_string(const char *str, int len, VALUE *val, boolean local)
+boolean DATE_from_string(const char *str, int len, VALUE *val, boolean local)
 {
   DATE_SERIAL date;
   LOCAL_INFO *info = LOCAL_get(local);
@@ -577,7 +577,7 @@ _OK:
 }
 
 
-PUBLIC int DATE_comp(DATE *date1, DATE *date2)
+int DATE_comp(DATE *date1, DATE *date2)
 {
   if (date1->date < date2->date)
     return (-1);
@@ -595,13 +595,13 @@ PUBLIC int DATE_comp(DATE *date1, DATE *date2)
 }
 
 
-PUBLIC int DATE_comp_value(VALUE *date1, VALUE *date2)
+int DATE_comp_value(VALUE *date1, VALUE *date2)
 {
   return DATE_comp((DATE *)&date1->_date.date, (DATE *)&date2->_date.date);
 }
 
 
-PUBLIC bool DATE_timer(double *result, int from_start)
+bool DATE_timer(double *result, int from_start)
 {
   struct timeval tv;
 
@@ -619,7 +619,7 @@ PUBLIC bool DATE_timer(double *result, int from_start)
 }
 
 
-PUBLIC void DATE_void_value(VALUE *value)
+void DATE_void_value(VALUE *value)
 {
   value->type = T_DATE;
   value->_date.time = 0;
@@ -627,13 +627,13 @@ PUBLIC void DATE_void_value(VALUE *value)
 }
 
 
-PUBLIC void DATE_add(VALUE *date, int period, int val)
+void DATE_add(VALUE *date, int period, int val)
 {
-  long long add_time = 0;
-  long long add_date;
-  long long fix_date;
-  long long new_time;
-  long long new_date;
+  int64_t add_time = 0;
+  int64_t add_date;
+  int64_t fix_date;
+  int64_t new_time;
+  int64_t new_date;
   DATE_SERIAL *ds;
   int y, m, d;
 
@@ -736,9 +736,9 @@ __MAKE_DATE:
 }
 
 
-PUBLIC int DATE_diff(VALUE *date1, VALUE *date2, int period)
+int DATE_diff(VALUE *date1, VALUE *date2, int period)
 {
-  long long diff = 0;
+  int64_t diff = 0;
   DATE_SERIAL ds1 = {0};
   DATE_SERIAL ds2 = {0};
   bool neg;

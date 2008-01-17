@@ -163,7 +163,7 @@
 
   int libsmtp_mime_headers (struct libsmtp_session_struct *);
 
-  int libsmtp_part_send (char *, unsigned long int, struct libsmtp_session_struct *);
+  int libsmtp_part_send (char *, unsigned int, struct libsmtp_session_struct *);
 
   int libsmtp_part_next (struct libsmtp_session_struct *);
 

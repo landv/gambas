@@ -24,7 +24,7 @@
 
 #ifndef STT_INEQUALITY
 
-PUBLIC void STT_NAME(void)
+void STT_NAME(void)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -192,7 +192,7 @@ __END:
 
 #else /* inequality tests */
 
-PUBLIC void STT_NAME(void)
+void STT_NAME(void)
 {
   static void *jump[17] = {
     &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,

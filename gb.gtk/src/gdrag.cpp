@@ -178,7 +178,7 @@ int gDrag::_x = -1;
 int gDrag::_y = -1;
 GdkDragContext *gDrag::_context = NULL;
 guint32 gDrag::_time = 0;
-volatile bool gDrag::_got_data = NULL;
+volatile bool gDrag::_got_data = false;
 bool gDrag::_local = false;
 
 void gDrag::setIcon(gPicture *vl)

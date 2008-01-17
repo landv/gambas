@@ -83,14 +83,22 @@ __BYTE:
 __SHORT:
 __INTEGER:
 
+#ifdef OS_OPENBSD
   *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
+#else
+  *len = sprintf(COMMON_buffer, "%d", value->_integer.value);
+#endif
   *addr = COMMON_buffer;
 
   return;
 
 __LONG:
 
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%lld", value->_long.value);
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%" PRId64, value->_long.value);
+#else
+  *len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
+#endif
   *addr = COMMON_buffer;
 
   return;
@@ -123,7 +131,7 @@ __STRING:
     {
       if (i > 128)
       {
-        strlcat(d, "...", (COMMON_BUF_MAX - *len));
+        strcat(d, "...");
         *len += 3;
         break;
       }
@@ -141,7 +149,11 @@ __STRING:
         else if (c == 9)
           *d++ = 't';
         else
-          d += snprintf(d, (&COMMON_buffer[COMMON_BUF_MAX] - d), "x%02X", c);
+#ifdef OS_OPENBSD
+          d += snprintf(d, &COMMON_buffer[COMMON_BUF_MAX]-d, "x%02X", c);
+#else
+          d += sprintf(d, "x%02X", c);
+#endif
       }
       else if (c == '\"')
       {
@@ -169,7 +181,7 @@ __OBJECT:
 
   //*more = !CLASS_is_native(OBJECT_class(value->_object.object));
 
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
+  *len = sprintf(COMMON_buffer, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
   *addr = COMMON_buffer;
   return;
 
@@ -192,14 +204,14 @@ __CLASS:
     CLASS *class = value->_class.class;
     //*more = (!CLASS_is_native(class) && class->load->n_stat > 0);
 
-    *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%s %p", class->name, class);
+    *len = sprintf(COMMON_buffer, "%s %p", class->name, class);
     *addr = COMMON_buffer;
     return;
   }
 
 __ARRAY:
 
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(ARRAY %p)", value->_array.addr);
+  *len = sprintf(COMMON_buffer, "(ARRAY %p)", value->_array.addr);
   *addr = COMMON_buffer;
   return;
 
@@ -209,14 +221,14 @@ __FUNCTION:
 }
 
 
-PUBLIC void PRINT_init(PRINT_FUNCTION func, bool trace)
+void PRINT_init(PRINT_FUNCTION func, bool trace)
 {
   _print = func;
   _trace = trace;
 }
 
 
-PUBLIC void PRINT_value(VALUE *value)
+void PRINT_value(VALUE *value)
 {
   char *addr;
   int len;
@@ -239,7 +251,7 @@ PUBLIC void PRINT_value(VALUE *value)
 }
 
 
-PUBLIC void PRINT_string(char *addr, int len)
+void PRINT_string(char *addr, int len)
 {
   (*_print)(addr, len);
 }

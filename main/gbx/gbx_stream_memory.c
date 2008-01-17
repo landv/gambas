@@ -95,7 +95,7 @@ static int stream_close(STREAM *stream)
 }
 
 
-static int stream_read(STREAM *stream, char *buffer, long len)
+static int stream_read(STREAM *stream, char *buffer, int len)
 {
   CHECK_enter();
   
@@ -119,7 +119,7 @@ static int stream_read(STREAM *stream, char *buffer, long len)
 
 #define stream_getchar NULL
 
-static int stream_write(STREAM *stream, char *buffer, long len)
+static int stream_write(STREAM *stream, char *buffer, int len)
 {
   CHECK_enter();
   
@@ -141,18 +141,18 @@ static int stream_write(STREAM *stream, char *buffer, long len)
 }
 
 
-static int stream_seek(STREAM *stream, long long pos, int whence)
+static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
-  long new_pos;
+  int64_t new_pos;
 
   switch(whence)
   {
     case SEEK_SET:
-      new_pos = (long)pos;
+      new_pos = pos;
       break;
 
     case SEEK_CUR:
-      new_pos = stream->memory.pos + (long)pos;
+      new_pos = stream->memory.pos + pos;
       break;
 
     case SEEK_END:
@@ -170,7 +170,7 @@ static int stream_seek(STREAM *stream, long long pos, int whence)
 }
 
 
-static int stream_tell(STREAM *stream, long *pos)
+static int stream_tell(STREAM *stream, int64_t *pos)
 {
   *pos = stream->memory.pos;
   return FALSE;
@@ -190,7 +190,7 @@ static int stream_eof(STREAM *stream)
 }
 
 
-static int stream_lof(STREAM *stream, long long *len)
+static int stream_lof(STREAM *stream, int64_t *len)
 {
   //*len = stream->memory.size;
   //return FALSE;

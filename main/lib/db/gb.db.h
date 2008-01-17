@@ -213,7 +213,7 @@ typedef
 
 typedef
   struct {
-    int version;
+    intptr_t version;
     void (*Register)(DB_DRIVER *);
     void (*Format)(DB_DRIVER *, GB_VALUE *, DB_FORMAT_CALLBACK);
     void (*FormatVariant)(DB_DRIVER *, GB_VARIANT_VALUE *, DB_FORMAT_CALLBACK);

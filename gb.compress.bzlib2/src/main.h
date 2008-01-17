@@ -28,6 +28,7 @@
 #include "gambas.h"
 #include "gb_common.h"
 #include "../gb.compress.h"
+#include <stdint.h>
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
@@ -35,14 +36,16 @@ extern COMPRESS_INTERFACE COMPRESSION;
 extern GB_STREAM_DESC BZStream;
 #endif
 
-static int BZ_stream_lof(GB_STREAM *stream, long long *len);
-static int BZ_stream_seek(GB_STREAM *stream, long long offset, int whence);
+static int BZ_stream_lof(GB_STREAM *stream, int64_t *len);
+static int BZ_stream_seek(GB_STREAM *stream, int64_t offset, int whence);
 static int BZ_stream_open(GB_STREAM *stream, const char *path, int mode, void *data);
-static int BZ_stream_tell(GB_STREAM *stream, long long *npos);
+static int BZ_stream_tell(GB_STREAM *stream, int64_t *npos);
 static int BZ_stream_flush(GB_STREAM *stream);
 static int BZ_stream_close(GB_STREAM *stream);
-static int BZ_stream_write(GB_STREAM *stream, char *buffer, long len);
+static int BZ_stream_write(GB_STREAM *stream, char *buffer, int len);
 static int BZ_stream_eof(GB_STREAM *stream);
-static int BZ_stream_read(GB_STREAM *stream, char *buffer, long len);
+static int BZ_stream_read(GB_STREAM *stream, char *buffer, int len);
+static int BZ_stream_getchar(GB_STREAM *stream, char *buffer);
 
 #endif /* __MAIN_H */
+

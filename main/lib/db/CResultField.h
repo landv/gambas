@@ -50,7 +50,7 @@ int CRESULTFIELD_exist(CRESULT *result, const char *name);
 int CRESULTFIELD_find(CRESULT *result, const char *name, bool error);
 void CRESULTFIELD_release(CRESULT *result, void *_object);
 
-char *CRESULTFIELD_key(CRESULT *result, long index);
+char *CRESULTFIELD_key(CRESULT *result, int index);
 
 #endif
 

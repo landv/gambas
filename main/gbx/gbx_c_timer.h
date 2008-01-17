@@ -38,6 +38,6 @@ extern GB_DESC NATIVE_Timer[];
 
 #endif
 
-PUBLIC void CTIMER_raise(void *_object);
+void CTIMER_raise(void *_object);
 
 #endif

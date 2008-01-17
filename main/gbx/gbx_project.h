@@ -48,8 +48,8 @@ EXTERN char *PROJECT_oldcwd;
 EXTERN char *PROJECT_user_home;
 #endif
 
-PUBLIC void PROJECT_init(const char *file);
-PUBLIC void PROJECT_load(void);
-PUBLIC void PROJECT_exit(void);
+void PROJECT_init(const char *file);
+void PROJECT_load(void);
+void PROJECT_exit(void);
 
 #endif

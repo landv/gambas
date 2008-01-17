@@ -120,7 +120,7 @@ static void push_string(int index, bool trans)
 
 
 /*
-static void push_class(long index)
+static void push_class(int index)
 {
   TRANS_DECL decl;
 
@@ -335,7 +335,7 @@ static void trans_expr_from_tree(PATTERN *tree)
 #if 0
 static void trans_new(void)
 {
-  long index;
+  int index;
   int i, nparam;
   boolean array = FALSE;
   boolean event = FALSE;

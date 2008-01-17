@@ -35,9 +35,6 @@ typedef
 typedef
   void *EVAL_EXPRESSION;
 
-//typedef
-//  long EVAL_PATTERN;
-
 typedef
   struct {
     unsigned state : 4;
@@ -104,11 +101,7 @@ typedef
 typedef
   struct {
     int version;
-    //EVAL_PATTERN *(*Read)(const char *src, long len);
     void (*Analyze)(const char *src, int len, EVAL_ANALYZE *result);
-    //const char *(*GetSymbol)(EVAL_PATTERN pattern);
-    //int (*GetType)(EVAL_PATTERN pattern);
-    //long (*IsMeLast)(EVAL_PATTERN pattern);
     void (*New)(EVAL_EXPRESSION *expr, const char *src, int len);
     bool (*Compile)(EVAL_EXPRESSION expr);
     GB_VALUE *(*Run)(EVAL_EXPRESSION expr, EVAL_FUNCTION func);

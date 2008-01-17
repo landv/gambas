@@ -70,8 +70,8 @@ extern CFILE *CFILE_err;
 
 #define CSTREAM_stream(_cstream) (&((CSTREAM *)(void *)_cstream)->stream)
 
-PUBLIC CFILE *CFILE_create(STREAM *stream, int mode);
-PUBLIC void CFILE_init(void);
-PUBLIC void CFILE_init_watch(void);
+CFILE *CFILE_create(STREAM *stream, int mode);
+void CFILE_init(void);
+void CFILE_init_watch(void);
 
 #endif

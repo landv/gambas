@@ -486,8 +486,8 @@ bool gDialog::openFile(bool multi)
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_OPEN,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-		GTK_STOCK_OPEN, GTK_RESPONSE_OK,NULL
-		);
+		GTK_STOCK_OPEN, GTK_RESPONSE_OK,
+		(void *)NULL);
 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg,true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,multi);
@@ -512,8 +512,8 @@ bool gDialog::saveFile()
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_SAVE,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-		GTK_STOCK_SAVE, GTK_RESPONSE_OK,NULL
-		);
+		GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+		(void *)NULL);
 	 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg,true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,false);
@@ -537,8 +537,8 @@ bool gDialog::selectFolder()
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-		GTK_STOCK_OPEN, GTK_RESPONSE_OK, NULL
-		);
+		GTK_STOCK_OPEN, GTK_RESPONSE_OK, 
+		(void *)NULL);
 	 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg,true);
 	gtk_file_chooser_set_select_multiple((GtkFileChooser*)msg,false);

@@ -85,7 +85,7 @@ static CSTREAM *pop_stream(void **list)
   return stream;
 }
 
-static STREAM *get_default(int val)
+static STREAM *get_default(intptr_t val)
 {
   static STREAM_MEMORY memory_stream;
   STREAM *stream;
@@ -126,7 +126,11 @@ static STREAM *get_stream(VALUE *value, boolean can_default)
   STREAM *stream;
 
   if (TYPE_is_integer(value->type) && can_default)
-    stream = get_default(value->_integer.value);
+    stream = get_default((intptr_t)value->_integer.value);
+  #ifdef OS_64BITS
+  else if (TYPE_is_long(value->type) && can_default)
+    stream = get_default((intptr_t)value->_long.value);
+  #endif
   else
   {
     if (VALUE_is_null(value))
@@ -155,7 +159,7 @@ static char *get_path(VALUE *param)
   return STRING_conv_file_name(name, len);
 }
 
-PUBLIC void SUBR_open(void)
+void SUBR_open(void)
 {
   CFILE *file;
   STREAM stream;
@@ -176,7 +180,7 @@ PUBLIC void SUBR_open(void)
 }
 
 
-PUBLIC void SUBR_close(void)
+void SUBR_close(void)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -186,7 +190,7 @@ PUBLIC void SUBR_close(void)
 }
 
 
-PUBLIC void SUBR_flush(void)
+void SUBR_flush(void)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -201,7 +205,7 @@ PUBLIC void SUBR_flush(void)
   STREAM_write(_stream, addr, len);
 }*/
 
-PUBLIC void SUBR_print(void)
+void SUBR_print(void)
 {
   int i;
   char *addr;
@@ -231,7 +235,7 @@ PUBLIC void SUBR_print(void)
 }
 
 
-PUBLIC void SUBR_linput(void)
+void SUBR_linput(void)
 {
   STREAM *stream;
   char *addr;
@@ -251,7 +255,7 @@ PUBLIC void SUBR_linput(void)
 }
 
 
-PUBLIC void SUBR_input(void)
+void SUBR_input(void)
 {
   static STREAM *stream = NULL;
   char *addr;
@@ -282,7 +286,7 @@ PUBLIC void SUBR_input(void)
 }
 
 
-PUBLIC void SUBR_eof(void)
+void SUBR_eof(void)
 {
   STREAM *stream;
 
@@ -302,7 +306,7 @@ PUBLIC void SUBR_eof(void)
 }
 
 
-PUBLIC void SUBR_lof(void)
+void SUBR_lof(void)
 {
   STREAM *stream;
 
@@ -320,11 +324,11 @@ PUBLIC void SUBR_lof(void)
 }
 
 
-PUBLIC void SUBR_seek(void)
+void SUBR_seek(void)
 {
   STREAM *stream;
-  long long pos;
-  long long len;
+  int64_t pos;
+  int64_t len;
   int whence = SEEK_SET;
 
   SUBR_ENTER();
@@ -365,7 +369,7 @@ PUBLIC void SUBR_seek(void)
 }
 
 
-PUBLIC void SUBR_read(void)
+void SUBR_read(void)
 {
   STREAM *stream;
   int len;
@@ -394,7 +398,7 @@ PUBLIC void SUBR_read(void)
 }
 
 
-PUBLIC void SUBR_write(void)
+void SUBR_write(void)
 {
   STREAM *stream;
   int len;
@@ -417,7 +421,7 @@ PUBLIC void SUBR_write(void)
 }
 
 
-PUBLIC void SUBR_stat(void)
+void SUBR_stat(void)
 {
   const char *path;
   CSTAT *cstat;
@@ -447,7 +451,7 @@ PUBLIC void SUBR_stat(void)
 }
 
 
-PUBLIC void SUBR_exist(void)
+void SUBR_exist(void)
 {
   bool exist;
   const char *path;
@@ -465,7 +469,7 @@ PUBLIC void SUBR_exist(void)
 }
 
 
-PUBLIC void SUBR_dir()
+void SUBR_dir()
 {
   GB_ARRAY array;
   const char *path;
@@ -534,7 +538,7 @@ static void found_file(const char *path)
   *((char **)GB_ArrayAdd(_result)) = str;
 }
 
-PUBLIC void SUBR_rdir()
+void SUBR_rdir()
 {
   const char *path;
   int attr = 0;
@@ -569,7 +573,7 @@ PUBLIC void SUBR_rdir()
 }
 
 
-PUBLIC void SUBR_kill(void)
+void SUBR_kill(void)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -579,7 +583,7 @@ PUBLIC void SUBR_kill(void)
 }
 
 
-PUBLIC void SUBR_mkdir(void)
+void SUBR_mkdir(void)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -589,7 +593,7 @@ PUBLIC void SUBR_mkdir(void)
 }
 
 
-PUBLIC void SUBR_rmdir(void)
+void SUBR_rmdir(void)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -599,7 +603,7 @@ PUBLIC void SUBR_rmdir(void)
 }
 
 
-PUBLIC void SUBR_rename(void)
+void SUBR_rename(void)
 {
   SUBR_ENTER_PARAM(2);
 
@@ -609,7 +613,7 @@ PUBLIC void SUBR_rename(void)
 }
 
 
-PUBLIC void SUBR_temp(void)
+void SUBR_temp(void)
 {
   char *temp;
   int len;
@@ -627,7 +631,7 @@ PUBLIC void SUBR_temp(void)
 }
 
 
-PUBLIC void SUBR_isdir(void)
+void SUBR_isdir(void)
 {
   bool isdir;
   const char *path;
@@ -645,7 +649,7 @@ PUBLIC void SUBR_isdir(void)
 }
 
 
-PUBLIC void SUBR_copy(void)
+void SUBR_copy(void)
 {
   SUBR_ENTER_PARAM(2);
 
@@ -655,7 +659,7 @@ PUBLIC void SUBR_copy(void)
 }
 
 
-PUBLIC void SUBR_access(void)
+void SUBR_access(void)
 {
   int access;
 
@@ -677,7 +681,7 @@ PUBLIC void SUBR_access(void)
 
 
 
-PUBLIC void SUBR_link(void)
+void SUBR_link(void)
 {
   SUBR_ENTER_PARAM(2);
 
@@ -688,7 +692,7 @@ PUBLIC void SUBR_link(void)
 }
 
 
-PUBLIC void SUBR_lock(void)
+void SUBR_lock(void)
 {
   SUBR_ENTER_PARAM(1);
 
@@ -716,7 +720,7 @@ PUBLIC void SUBR_lock(void)
 }
 
 
-PUBLIC void SUBR_inp_out(void)
+void SUBR_inp_out(void)
 {
   CSTREAM *stream;
   void **where;
@@ -761,7 +765,7 @@ static void free_list(void **list)
   }
 }
 
-PUBLIC void SUBR_exit_inp_out(void)
+void SUBR_exit_inp_out(void)
 {
   free_list((void **)&_default_in);
   free_list((void **)&_default_out);
@@ -769,7 +773,7 @@ PUBLIC void SUBR_exit_inp_out(void)
 }
 
 
-PUBLIC void SUBR_dfree(void)
+void SUBR_dfree(void)
 {
   SUBR_ENTER_PARAM(1);;
 
@@ -779,7 +783,7 @@ PUBLIC void SUBR_dfree(void)
   SUBR_LEAVE();
 }
 
-PUBLIC void SUBR_debug(void)
+void SUBR_debug(void)
 {
   const int NPARAM = 0;
   STREAM *stream = get_default(2);

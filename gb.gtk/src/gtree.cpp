@@ -492,7 +492,7 @@ void gTreeRow::rect(int *x, int *y, int *w, int *h)
   gtk_widget_style_get (tree->widget,
 			"expander-size", &size,
 			"vertical-separator", &margin,
-			NULL);
+			(void *)NULL);
 			
 	size += 4; // Constant that is hard-coded into GTK+ source code
 
@@ -994,7 +994,7 @@ void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *m
 		"text", buf,
 		"editable", index == 0 && row->isEditable(),
 		"xalign", align,
-		NULL);
+		(void *)NULL);
 }
 
 void tree_cell_graph(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *md,GtkTreeIter *iter,gTree *Tr)
@@ -1017,7 +1017,7 @@ void tree_cell_graph(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *
 		}
 	}
 	
-	g_object_set(G_OBJECT(cell),"pixbuf",buf,NULL);
+	g_object_set(G_OBJECT(cell),"pixbuf",buf,(void *)NULL);
 
 }
 
@@ -1536,14 +1536,14 @@ static void icon_cell_text(GtkIconView *view, GtkCellRenderer *cell, GtkTreeMode
 		g_object_set(G_OBJECT(cell),
 			"text", "",
 			"editable", false,
-			NULL);
+			(void *)NULL);
 	}
 	else
 	{
 		g_object_set(G_OBJECT(cell),
 			"text", row->data->text(),
 			"editable", row->isEditable(),
-			NULL);
+			(void *)NULL);
 	}
 }
 
@@ -1561,7 +1561,7 @@ static void icon_cell_graph(GtkIconView *view, GtkCellRenderer *cell,GtkTreeMode
 	if (row)
 		buf = row->data->picture() ? row->data->picture()->getPixbuf() : NULL;
 	
-	g_object_set(G_OBJECT(cell),"pixbuf",buf,NULL);
+	g_object_set(G_OBJECT(cell),"pixbuf",buf, (void *)NULL);
 }
 
 gIcon::gIcon(gIconView *v)
@@ -1599,7 +1599,7 @@ gIcon::gIcon(gIconView *v)
 			"follow_state", TRUE, 
 			"xalign", 0.5,
 			"yalign", 1.0,
-			NULL);
+			(void *)NULL);
 	
 	g_signal_connect(G_OBJECT(rtext), "edited", G_CALLBACK(cb_icon_edited), (gpointer)this);
 	g_signal_connect(G_OBJECT(rtext), "editing-started", G_CALLBACK(cb_icon_started), (gpointer)this);
@@ -1832,7 +1832,7 @@ void gIcon::updateTextCell()
 		"wrap_mode", PANGO_WRAP_CHAR,
 		"editable", false,
 		//"ellipsize", _word_wrap ? PANGO_ELLIPSIZE_NONE : PANGO_ELLIPSIZE_END,
-		NULL);
+		(void *)NULL);
 }
 
 void gIcon::setWordWrap(bool vl)

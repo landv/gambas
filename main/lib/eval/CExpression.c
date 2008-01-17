@@ -90,7 +90,7 @@ BEGIN_METHOD_VOID(CEXPRESSION_prepare)
 END_METHOD
 
 
-static bool get_variable(const char *sym, long len, GB_VARIANT *value)
+static bool get_variable(const char *sym, int len, GB_VARIANT *value)
 {
   if (_current->env)
     if (!GB.Collection.Get(_current->env, sym, len, value))

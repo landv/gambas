@@ -112,7 +112,7 @@ struct libsmtp_session_struct {
   unsigned int DialogueBytes;	/* Bytes of SMTP dialogue data sent */
   unsigned int HeadersSent;  	/* Number of header lines sent */
   unsigned int HeaderBytes;	/* Bytes of header data sent */
-  unsigned long int BodyBytes;	/* Bytes of body data sent */
+  unsigned int BodyBytes;	/* Bytes of body data sent */
 
   #ifdef WITH_MIME
     GNode *Parts;		/* N-Tree of body parts (MIME stuff) */
@@ -142,7 +142,7 @@ int libsmtp_header_send (char *, struct libsmtp_session_struct *);
 
 int libsmtp_headers (struct libsmtp_session_struct *);
 
-int libsmtp_body_send_raw (char *, unsigned long int, struct libsmtp_session_struct *);
+int libsmtp_body_send_raw (char *, unsigned int, struct libsmtp_session_struct *);
 
 int libsmtp_body_end (struct libsmtp_session_struct *);
 
@@ -158,12 +158,12 @@ int libsmtp_int_send (GString *, struct libsmtp_session_struct *, int);
 
 int libsmtp_int_read (GString *, struct libsmtp_session_struct *, int);
 
-int libsmtp_int_send_body (char *, unsigned long int, struct libsmtp_session_struct *);
+int libsmtp_int_send_body (char *, unsigned int, struct libsmtp_session_struct *);
 
-int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned long int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
+int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
 
-int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, unsigned long int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
+int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
 
-int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned long int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
+int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, struct libsmtp_session_struct *libsmtp_session);
 
 #endif  /* LIB_SMTP_H */

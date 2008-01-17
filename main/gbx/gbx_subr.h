@@ -71,152 +71,153 @@ EXTERN int NPARAM;
 
 /* Common routines */
 
-PUBLIC void SUBR_leave(int nparam);
-PUBLIC void SUBR_leave_void(int nparam);
+void SUBR_leave(int nparam);
+void SUBR_leave_void(int nparam);
 
-PUBLIC boolean SUBR_check_string(VALUE *param);
-PUBLIC void SUBR_check_integer(VALUE *param);
-PUBLIC void SUBR_check_float(VALUE *param);
+boolean SUBR_check_string(VALUE *param);
+void SUBR_check_integer(VALUE *param);
+void SUBR_check_float(VALUE *param);
 
-PUBLIC int SUBR_get_integer(VALUE *param);
-PUBLIC double SUBR_get_float(VALUE *param);
+int SUBR_get_integer(VALUE *param);
+double SUBR_get_float(VALUE *param);
+void *SUBR_get_pointer(VALUE *param);
 
-PUBLIC char *SUBR_get_string(VALUE *param);
-PUBLIC char *SUBR_copy_string(VALUE *param);
-PUBLIC void SUBR_get_string_len(VALUE *param, char **str, int *len);
+char *SUBR_get_string(VALUE *param);
+char *SUBR_copy_string(VALUE *param);
+void SUBR_get_string_len(VALUE *param, char **str, int *len);
 
 /* subr_math.c */
 
-PUBLIC void SUBR_add_(void);
-PUBLIC void SUBR_quo(void);
-PUBLIC void SUBR_rem(void);
-PUBLIC void SUBR_pow(void);
+void SUBR_add_(void);
+void SUBR_quo(void);
+void SUBR_rem(void);
+void SUBR_pow(void);
 
-PUBLIC void SUBR_and_(void);
-PUBLIC void SUBR_not(void);
+void SUBR_and_(void);
+void SUBR_not(void);
 
-PUBLIC void SUBR_neg_(void);
-PUBLIC void SUBR_sgn(void);
-PUBLIC void SUBR_pi(void);
-PUBLIC void SUBR_math(void);
-PUBLIC void SUBR_math2(void);
+void SUBR_neg_(void);
+void SUBR_sgn(void);
+void SUBR_pi(void);
+void SUBR_math(void);
+void SUBR_math2(void);
 
-PUBLIC void SUBR_randomize(void);
-PUBLIC void SUBR_rnd(void);
-PUBLIC void SUBR_round(void);
+void SUBR_randomize(void);
+void SUBR_rnd(void);
+void SUBR_round(void);
 
-PUBLIC void SUBR_add_quick(int value);
+void SUBR_add_quick(int value);
 
 /* subr_string.c */
 
-PUBLIC void SUBR_cat(void);
-PUBLIC void SUBR_file(void);
-PUBLIC void SUBR_left(void);
-PUBLIC void SUBR_right(void);
-PUBLIC void SUBR_mid(void);
-PUBLIC void SUBR_len(void);
-PUBLIC void SUBR_trim(void);
-PUBLIC void SUBR_space(void);
-PUBLIC void SUBR_string(void);
-PUBLIC void SUBR_upper(void);
-PUBLIC void SUBR_lower(void);
-PUBLIC void SUBR_chr(void);
-PUBLIC void SUBR_asc(void);
-PUBLIC void SUBR_instr(void);
-PUBLIC void SUBR_like(void);
-PUBLIC void SUBR_scan(void);
-PUBLIC void SUBR_subst(void);
-PUBLIC void SUBR_replace(void);
-PUBLIC void SUBR_split(void);
-PUBLIC void SUBR_iconv(void);
-PUBLIC void SUBR_sconv(void);
-PUBLIC void SUBR_is_chr(void);
+void SUBR_cat(void);
+void SUBR_file(void);
+void SUBR_left(void);
+void SUBR_right(void);
+void SUBR_mid(void);
+void SUBR_len(void);
+void SUBR_trim(void);
+void SUBR_space(void);
+void SUBR_string(void);
+void SUBR_upper(void);
+void SUBR_lower(void);
+void SUBR_chr(void);
+void SUBR_asc(void);
+void SUBR_instr(void);
+void SUBR_like(void);
+void SUBR_scan(void);
+void SUBR_subst(void);
+void SUBR_replace(void);
+void SUBR_split(void);
+void SUBR_iconv(void);
+void SUBR_sconv(void);
+void SUBR_is_chr(void);
 
 /* subr_test.c */
 
-PUBLIC void SUBR_comp(void);
-PUBLIC void SUBR_case(void);
-PUBLIC void SUBR_bit(void);
-PUBLIC void SUBR_min_max(void);
-PUBLIC void SUBR_if(void);
-PUBLIC void SUBR_choose(void);
-PUBLIC void SUBR_near(void);
-PUBLIC void SUBR_strcomp(void);
-PUBLIC void SUBR_is(void);
+void SUBR_comp(void);
+void SUBR_case(void);
+void SUBR_bit(void);
+void SUBR_min_max(void);
+void SUBR_if(void);
+void SUBR_choose(void);
+void SUBR_near(void);
+void SUBR_strcomp(void);
+void SUBR_is(void);
 
 /* subr_conv.c */
 
-PUBLIC void SUBR_is_type(void);
-PUBLIC void SUBR_conv(void);
-PUBLIC void SUBR_type(void);
-PUBLIC void SUBR_str(void);
-PUBLIC void SUBR_val(void);
-PUBLIC void SUBR_format(void);
-PUBLIC void SUBR_hex(void);
-PUBLIC void SUBR_bin(void);
+void SUBR_is_type(void);
+void SUBR_conv(void);
+void SUBR_type(void);
+void SUBR_str(void);
+void SUBR_val(void);
+void SUBR_format(void);
+void SUBR_hex(void);
+void SUBR_bin(void);
 
 /* subr_time.c */
 
-PUBLIC void SUBR_timer(void);
-PUBLIC void SUBR_now(void);
-PUBLIC void SUBR_year(void);
-PUBLIC void SUBR_time(void);
-PUBLIC void SUBR_date(void);
-PUBLIC void SUBR_date_op(void);
-PUBLIC void SUBR_week(void);
+void SUBR_timer(void);
+void SUBR_now(void);
+void SUBR_year(void);
+void SUBR_time(void);
+void SUBR_date(void);
+void SUBR_date_op(void);
+void SUBR_week(void);
 
 /* subr_file.c */
 
-PUBLIC void SUBR_open(void);
-PUBLIC void SUBR_close(void);
-PUBLIC void SUBR_print(void);
-PUBLIC void SUBR_linput(void);
-PUBLIC void SUBR_eof(void);
-PUBLIC void SUBR_lof(void);
-PUBLIC void SUBR_seek(void);
-PUBLIC void SUBR_input(void);
-PUBLIC void SUBR_read(void);
-PUBLIC void SUBR_write(void);
-PUBLIC void SUBR_flush(void);
-PUBLIC void SUBR_lock(void);
-PUBLIC void SUBR_inp_out(void);
+void SUBR_open(void);
+void SUBR_close(void);
+void SUBR_print(void);
+void SUBR_linput(void);
+void SUBR_eof(void);
+void SUBR_lof(void);
+void SUBR_seek(void);
+void SUBR_input(void);
+void SUBR_read(void);
+void SUBR_write(void);
+void SUBR_flush(void);
+void SUBR_lock(void);
+void SUBR_inp_out(void);
 
-PUBLIC void SUBR_stat(void);
-PUBLIC void SUBR_exist(void);
-PUBLIC void SUBR_dir(void);
-PUBLIC void SUBR_kill(void);
-PUBLIC void SUBR_mkdir(void);
-PUBLIC void SUBR_rmdir(void);
-PUBLIC void SUBR_rename(void);
-PUBLIC void SUBR_copy(void);
-PUBLIC void SUBR_temp(void);
-PUBLIC void SUBR_isdir(void);
-PUBLIC void SUBR_access(void);
-PUBLIC void SUBR_link(void);
-PUBLIC void SUBR_rdir(void);
-PUBLIC void SUBR_dfree();
+void SUBR_stat(void);
+void SUBR_exist(void);
+void SUBR_dir(void);
+void SUBR_kill(void);
+void SUBR_mkdir(void);
+void SUBR_rmdir(void);
+void SUBR_rename(void);
+void SUBR_copy(void);
+void SUBR_temp(void);
+void SUBR_isdir(void);
+void SUBR_access(void);
+void SUBR_link(void);
+void SUBR_rdir(void);
+void SUBR_dfree();
 
-PUBLIC void SUBR_exit_inp_out(void);
+void SUBR_exit_inp_out(void);
 #define SUBR_exit SUBR_exit_inp_out
 
 /* subr_extern.c */
 
-PUBLIC void SUBR_alloc(void);
-PUBLIC void SUBR_free(void);
-PUBLIC void SUBR_realloc(void);
-PUBLIC void SUBR_strptr(void);
+void SUBR_alloc(void);
+void SUBR_free(void);
+void SUBR_realloc(void);
+void SUBR_strptr(void);
 
 /* subr_misc.c */
 
-PUBLIC void SUBR_error(void);
-PUBLIC void SUBR_shell(void);
-PUBLIC void SUBR_wait(void);
-PUBLIC void SUBR_sleep(void);
-PUBLIC void SUBR_exec(void);
-PUBLIC void SUBR_eval(void);
-PUBLIC void SUBR_array(void);
-PUBLIC void SUBR_debug(void);
+void SUBR_error(void);
+void SUBR_shell(void);
+void SUBR_wait(void);
+void SUBR_sleep(void);
+void SUBR_exec(void);
+void SUBR_eval(void);
+void SUBR_array(void);
+void SUBR_debug(void);
 
-PUBLIC void EVAL_string(char *expr);
+void EVAL_string(char *expr);
 
 #endif

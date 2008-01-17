@@ -282,7 +282,7 @@ void gMenu::update()
 			
 			if (_shortcut)
 			{
-				buf = g_strconcat("    ", _shortcut ,"  ",NULL);
+				buf = g_strconcat("    ", _shortcut ,"  ",(void *)NULL);
 				gtk_label_set_text(GTK_LABEL(aclbl), buf);
 				g_free(buf);
 			}
@@ -506,14 +506,14 @@ void gMenu::setVisible(bool vl)
 	GList *chd,*iter;
 
 	if (!menu) return;
-	g_object_set(G_OBJECT(menu),"visible",vl,NULL);
+	g_object_set(G_OBJECT(menu),"visible",vl,(void *)NULL);
 	
 	if (top_level && pr)
 	{
 		par=GTK_CONTAINER(((gMainWindow*)pr)->menuBar);
 		if (vl==true)
 		{
-			g_object_set(G_OBJECT(par),"visible",vl,NULL);
+			g_object_set(G_OBJECT(par),"visible",vl,(void *)NULL);
 			return;
 		}
 		chd=gtk_container_get_children(par);
@@ -528,7 +528,7 @@ void gMenu::setVisible(bool vl)
 			iter=g_list_next(iter);
 		}
 		g_list_free(chd);
-		g_object_set(G_OBJECT(par),"visible",vl,NULL);
+		g_object_set(G_OBJECT(par),"visible",vl,(void *)NULL);
 	}
 }
 

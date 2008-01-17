@@ -121,8 +121,8 @@ public:
 	bool locked() { return _locked; }
 	
 	void emit(void *signal);
-	void emit(void *signal, int arg);
-	void emit(void *signal, char *arg) { emit(signal, (int)arg); }
+	void emit(void *signal, intptr_t arg);
+	void emit(void *signal, char *arg) { emit(signal, (intptr_t)arg); }
 
 // "Signals"
 	void (*onFinish)(gControl *sender); // Special

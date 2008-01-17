@@ -37,7 +37,7 @@ static int valid_result_field(CRESULTFIELD *_object)
 
 int CRESULTFIELD_find(CRESULT *result, const char *name, bool error)
 {
-  long index;
+  int index;
   char *p;
 
 	if (!name || !*name)
@@ -78,7 +78,7 @@ int CRESULTFIELD_find(CRESULT *result, const char *name, bool error)
 }
 
 
-static CRESULTFIELD *make_result_field(CRESULT *result, long index)
+static CRESULTFIELD *make_result_field(CRESULT *result, int index)
 {
   CRESULTFIELD *_object;
 
@@ -93,12 +93,12 @@ static CRESULTFIELD *make_result_field(CRESULT *result, long index)
 
 void *CRESULTFIELD_get(CRESULT *result, const char *name)
 {
-  long index;
+  int index;
 
-  if ((long)name & 0xFFFF0000)
+  if ((intptr_t)name >> 16)
     index = CRESULTFIELD_find(result, name, TRUE);
   else
-    index = (long)name;
+    index = (int)(intptr_t)name;
 
   if (index < 0)
     return NULL;
@@ -112,7 +112,7 @@ int CRESULTFIELD_exist(CRESULT *result, const char *name)
   return CRESULTFIELD_find(result, name, FALSE) >= 0;
 }
 
-char *CRESULTFIELD_key(CRESULT *result, long index)
+char *CRESULTFIELD_key(CRESULT *result, int index)
 {
   if (result->handle)
     return result->driver->Result.Field.Name(result->handle, index);
@@ -228,7 +228,7 @@ END_PROPERTY
 BEGIN_METHOD_VOID(CRESULTFIELD_next)
 
   CRESULT *result = GB.SubCollection.Container(THIS);
-  long *index = (long *)GB.GetEnum();
+  int *index = (int *)GB.GetEnum();
   CRESULTFIELD *rf;
 
   if (*index >= result->info.nfield)

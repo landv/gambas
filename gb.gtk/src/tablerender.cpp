@@ -288,7 +288,7 @@ void gTable::moveCell(int srow, int scol, int drow, int dcol)
 	
 	pair.row = srow;
 	pair.col = scol;
-	if (!g_hash_table_lookup_extended(data, (gconstpointer)&pair, (gpointer *)&key, (gpointer *)&d))
+	if (!g_hash_table_lookup_extended(data, (gconstpointer)&pair, POINTER(&key), POINTER(&d)))
 		return;
 	
 	g_hash_table_steal(data, &pair);
@@ -799,40 +799,40 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 		"font-desc", sf->style->font_desc,
 		"xalign", xa,
 		"yalign", ya,
-		NULL);
+		(void *)NULL);
 		
 	if (sel)
 	{
 		st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
 		g_object_set(G_OBJECT(txt),"foreground-gdk",
-																					&st->text[GTK_STATE_SELECTED],NULL);
+																					&st->text[GTK_STATE_SELECTED],(void *)NULL);
 		g_object_set(G_OBJECT(txt),"background-gdk",
-																					&st->base[GTK_STATE_SELECTED],NULL);
+																					&st->base[GTK_STATE_SELECTED],(void *)NULL);
 	}
 	else
 	{
 		g_object_set(G_OBJECT(txt),
 			"foreground-set", data->fg != COLOR_DEFAULT,
 			"background-set", data->bg != COLOR_DEFAULT,
-			NULL);
+			(void *)NULL);
 			
 		if (data->fg != COLOR_DEFAULT)
 		{
 			fill_gdk_color(&color, data->fg);
-			g_object_set(G_OBJECT(txt),"foreground-gdk", &color, NULL);
+			g_object_set(G_OBJECT(txt),"foreground-gdk", &color, (void *)NULL);
 		}
 		
 		if (data->bg != COLOR_DEFAULT)
 		{
 			fill_gdk_color(&color, data->bg);
-			g_object_set(G_OBJECT(txt),"background-gdk", &color, NULL);
+			g_object_set(G_OBJECT(txt),"background-gdk", &color, (void *)NULL);
 		}
 	}
 	
 	if (markup)
-		g_object_set(G_OBJECT(txt), "text", NULL, "markup", markup, NULL);
+		g_object_set(G_OBJECT(txt), "text", NULL, "markup", markup, (void *)NULL);
 	else
-		g_object_set(G_OBJECT(txt), "markup", NULL, "text", buf, NULL);
+		g_object_set(G_OBJECT(txt), "markup", NULL, "text", buf, (void *)NULL);
 	
 	gtk_cell_renderer_render(GTK_CELL_RENDERER(txt),sf->window,sf,rect,rect,rect,(GtkCellRendererState)0);
 	
@@ -847,7 +847,7 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 			"pixbuf", data->picture->getPixbuf(),
 			"xalign", xa,
 			"yalign", ya,
-			NULL);
+			(void *)NULL);
 		gtk_cell_renderer_render(GTK_CELL_RENDERER(pix),sf->window,sf,rect,rect,rect,(GtkCellRendererState)0);
 	}
 }

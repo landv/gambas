@@ -158,7 +158,7 @@ PUBLIC void EVENT_exit()
 }
 
 
-static void post(void (*func)(), int nparam, long param, long param2)
+static void post(void (*func)(), int nparam, intptr_t param, intptr_t param2)
 {
   EVENT_POST *ep;
 
@@ -178,12 +178,12 @@ static void post(void (*func)(), int nparam, long param, long param2)
 }
 
 
-PUBLIC void EVENT_post(void (*func)(), long param)
+PUBLIC void EVENT_post(void (*func)(), intptr_t param)
 {
 	post(func, 1, param, 0);
 }
 
-PUBLIC void EVENT_post2(void (*func)(), long param, long param2)
+PUBLIC void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2)
 {
 	post(func, 2, param, param2);
 }
@@ -200,7 +200,7 @@ PUBLIC void EVENT_post_event(void *object, int event)
 		return;
 	
 	GB_Ref(object);
-	post((void (*)())post_event, 2, (long)object, (long)event);
+	post((void (*)())post_event, 2, (intptr_t)object, (intptr_t)event);
 }
 
 

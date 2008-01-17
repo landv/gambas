@@ -77,10 +77,10 @@ static int stream_close(STREAM *stream)
 }
 
 
-static int stream_read(STREAM *stream, char *buffer, long len)
+static int stream_read(STREAM *stream, char *buffer, int len)
 {
   boolean strip = FALSE;
-  long max;
+  int max;
 
   max = stream->arch.size - stream->arch.pos;
 
@@ -100,15 +100,15 @@ static int stream_read(STREAM *stream, char *buffer, long len)
 }
 
 
-static int stream_write(STREAM *stream, char *buffer, long len)
+static int stream_write(STREAM *stream, char *buffer, int len)
 {
   return TRUE;
 }
 
 
-static int stream_seek(STREAM *stream, long long pos, int whence)
+static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
-  long long new_pos;
+  int64_t new_pos;
 
   switch(whence)
   {
@@ -131,14 +131,14 @@ static int stream_seek(STREAM *stream, long long pos, int whence)
   if (new_pos < 0 || new_pos > stream->arch.size)
     return TRUE;
 
-  stream->arch.pos = (long)new_pos;
+  stream->arch.pos = (int)new_pos;
   return FALSE;
 }
 
 #define stream_getchar NULL
 
 
-static int stream_tell(STREAM *stream, long long *pos)
+static int stream_tell(STREAM *stream, int64_t *pos)
 {
   *pos = stream->arch.pos;
   return FALSE;
@@ -157,7 +157,7 @@ static int stream_eof(STREAM *stream)
 }
 
 
-static int stream_lof(STREAM *stream, long long *len)
+static int stream_lof(STREAM *stream, int64_t *len)
 {
   *len = stream->arch.size;
   return FALSE;
