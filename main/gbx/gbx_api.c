@@ -57,8 +57,6 @@
 #include "gambas.h"
 #include "gbx_api.h"
 
-
-
 typedef
   struct {
     OBJECT *object;
@@ -66,8 +64,7 @@ typedef
     }
   GB_API_FUNCTION;
 
-
-PUBLIC void *GAMBAS_Api[] =
+void *GAMBAS_Api[] =
 {
   (void *)GB_VERSION,
 
@@ -131,6 +128,7 @@ PUBLIC void *GAMBAS_Api[] =
   (void *)GB_Return,
   (void *)GB_ReturnInteger,
   (void *)GB_ReturnLong,
+  (void *)GB_ReturnPointer,
   (void *)GB_ReturnBoolean,
   (void *)GB_ReturnDate,
   (void *)GB_ReturnObject,
@@ -244,7 +242,7 @@ PUBLIC void *GAMBAS_Api[] =
   NULL
 };
 
-PUBLIC void *GAMBAS_DebugApi[] =
+void *GAMBAS_DebugApi[] =
 {
 	(void *)GB_DebugGetExec,
 	(void *)STACK_get_frame,
@@ -263,14 +261,14 @@ PUBLIC void *GAMBAS_DebugApi[] =
 };
 
 
-PUBLIC TYPE GAMBAS_ReturnType;
-PUBLIC bool GAMBAS_Error = FALSE;
-PUBLIC bool GAMBAS_DoNotRaiseEvent = FALSE;
-PUBLIC bool GAMBAS_StopEvent = FALSE;
+TYPE GAMBAS_ReturnType;
+bool GAMBAS_Error = FALSE;
+bool GAMBAS_DoNotRaiseEvent = FALSE;
+bool GAMBAS_StopEvent = FALSE;
 
 static bool _event_stopped = FALSE;
 
-PUBLIC int GB_GetInterface(const char *name, int version, void *iface)
+int GB_GetInterface(const char *name, int version, void *iface)
 {
   if (LIBRARY_get_interface_by_name(name, version, iface))
     ERROR_panic("Cannot find interface of library '%s'", name);
@@ -279,7 +277,7 @@ PUBLIC int GB_GetInterface(const char *name, int version, void *iface)
 }
 
 
-PUBLIC void *GB_Hook(int type, void *hook)
+void *GB_Hook(int type, void *hook)
 {
   void *old_hook;
   void **phook = (void **)(void *)&EXEC_Hook;
@@ -295,7 +293,7 @@ PUBLIC void *GB_Hook(int type, void *hook)
 }
 
 
-PUBLIC int GB_LoadComponent(const char *name)
+int GB_LoadComponent(const char *name)
 {
   int ret = 0;
 
@@ -323,7 +321,7 @@ static void push(int nval, va_list args)
 
   while (nval)
   {
-    type = va_arg(args, TYPE);
+    type = va_arg(args, int);
     SP->type = type;
 
     switch(type)
@@ -334,7 +332,7 @@ static void push(int nval, va_list args)
         break;
 
       case T_LONG:
-        SP->_long.value = va_arg(args, long long);
+        SP->_long.value = va_arg(args, int64_t);
         break;
 
       case T_STRING:
@@ -366,7 +364,7 @@ static void push(int nval, va_list args)
 }
 
 
-PUBLIC void GB_Push(int nval, ...)
+void GB_Push(int nval, ...)
 {
   va_list args;
 
@@ -406,8 +404,7 @@ static void call_method(void *object, CLASS_DESC_METHOD *desc, int nparam)
   else
   {
     EXEC.native = FALSE;
-    EXEC.index = (int)desc->exec;
-    //EXEC.func = &class->load->func[(long)desc->exec];
+    EXEC.index = (int)(intptr_t)desc->exec;
     EXEC_function_keep();
   }
 
@@ -415,7 +412,7 @@ static void call_method(void *object, CLASS_DESC_METHOD *desc, int nparam)
 
 
 
-PUBLIC int GB_CanRaise(void *object, int event_id)
+int GB_CanRaise(void *object, int event_id)
 {
   ushort *event_tab;
   int func_id;
@@ -507,7 +504,7 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 // If nparam < 0, the args are already on the stack
 
-PUBLIC int GB_Raise(void *object, int event_id, int nparam, ...)
+int GB_Raise(void *object, int event_id, int nparam, ...)
 {
   OBJECT *parent;
   int func_id;
@@ -620,7 +617,7 @@ __RETURN:
 }
 
 
-PUBLIC int GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const char *sign, const char *type)
+int GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const char *sign, const char *type)
 {
   GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
   char len_min, nparam, npvar;
@@ -707,7 +704,7 @@ _NOT_FOUND:
   return 1;
 }
 
-PUBLIC void *GB_GetClassInterface(void *_class, const char *_name)
+void *GB_GetClassInterface(void *_class, const char *_name)
 {
   CLASS_DESC *desc;
 	int index;
@@ -717,9 +714,9 @@ PUBLIC void *GB_GetClassInterface(void *_class, const char *_name)
 	
 	CLASS_load(class);
 	
-	strcpy(name, "_@");
-	strcat(name, _name);
-	
+	strlcpy(name, "_@", len+4);
+	strlcat(name, _name, len+4);
+
   index = CLASS_find_symbol(class, name);
   if (index == NO_SYMBOL)
     goto __NOT_FOUND;
@@ -737,7 +734,7 @@ __NOT_FOUND:
 	return NULL;
 }
 
-PUBLIC GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
+GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 {
   GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
   bool stop_event;
@@ -765,7 +762,7 @@ PUBLIC GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 }
 
 
-PUBLIC int GB_GetEvent(void *class, char *name)
+int GB_GetEvent(void *class, char *name)
 {
   CLASS_DESC_EVENT *cd;
 
@@ -777,37 +774,37 @@ PUBLIC int GB_GetEvent(void *class, char *name)
 }
 
 
-PUBLIC char *GB_GetLastEventName()
+char *GB_GetLastEventName()
 {
 	return EVENT_Name;
 }
 
 
-PUBLIC int GB_Stopped(void)
+int GB_Stopped(void)
 {
 	return _event_stopped;
 }
 
 
-PUBLIC int GB_NParam(void)
+int GB_NParam(void)
 {
   return EXEC.nparvar;
 }
 
 
-PUBLIC int GB_IsProperty(void)
+int GB_IsProperty(void)
 {
   return EXEC.property;
 }
 
 
-PUBLIC const char *GB_GetUnknown(void)
+const char *GB_GetUnknown(void)
 {
   return EXEC.unknown;
 }
 
 
-PUBLIC void GB_Error(const char *error, ...)
+void GB_Error(const char *error, ...)
 {
   va_list args;
   char *arg[8];
@@ -831,7 +828,7 @@ PUBLIC void GB_Error(const char *error, ...)
 
 
 
-PUBLIC void GB_Ref(void *object)
+void GB_Ref(void *object)
 {
   #if TRACE_MEMORY
   CLASS *save = CP;
@@ -847,7 +844,7 @@ PUBLIC void GB_Ref(void *object)
 }
 
 
-PUBLIC void GB_Unref(void **object)
+void GB_Unref(void **object)
 {
   #if TRACE_MEMORY
   CLASS *save = CP;
@@ -863,7 +860,7 @@ PUBLIC void GB_Unref(void **object)
 }
 
 
-PUBLIC void GB_UnrefKeep(void **object, int delete)
+void GB_UnrefKeep(void **object, int delete)
 {
   #if TRACE_MEMORY
   CLASS *save = CP;
@@ -888,21 +885,21 @@ PUBLIC void GB_UnrefKeep(void **object, int delete)
 }
 
 
-PUBLIC void GB_Detach(void *object)
+void GB_Detach(void *object)
 {
   if (object)
     OBJECT_detach(object);
 }
 
 
-PUBLIC void GB_Attach(void *object, void *parent, const char *name)
+void GB_Attach(void *object, void *parent, const char *name)
 {
   if (object)
     OBJECT_attach(object, parent, name);
 }
 
 
-PUBLIC void GB_StopEnum(void)
+void GB_StopEnum(void)
 {
   /* Do not forget than event if we stop the enumeration, the return value
      of _next will be converted
@@ -912,7 +909,7 @@ PUBLIC void GB_StopEnum(void)
 }
 
 
-PUBLIC void *GB_GetEnum(void)
+void *GB_GetEnum(void)
 {
   return (void *)&EXEC_enum->data;
 }
@@ -920,14 +917,14 @@ PUBLIC void *GB_GetEnum(void)
 
 static void *_enum_object;
 
-PUBLIC void GB_ListEnum(void *enum_object)
+void GB_ListEnum(void *enum_object)
 {
   EXEC_enum = NULL;
   _enum_object = enum_object;
 }
 
 
-PUBLIC int GB_NextEnum(void)
+int GB_NextEnum(void)
 {
   for(;;)
   {
@@ -939,7 +936,7 @@ PUBLIC int GB_NextEnum(void)
   }
 }
 
-PUBLIC void GB_StopAllEnum(void *enum_object)
+void GB_StopAllEnum(void *enum_object)
 {
   GB_ListEnum(enum_object);
   while (!GB_NextEnum())
@@ -947,7 +944,7 @@ PUBLIC void GB_StopAllEnum(void *enum_object)
 }
 
 
-PUBLIC void GB_Return(unsigned int type, ...)
+void GB_Return(unsigned int type, ...)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -987,7 +984,7 @@ __INTEGER:
 
 __LONG:
 
-  ret->_long.value = va_arg(args, long long);
+  ret->_long.value = va_arg(args, int64_t);
   goto __CONV;
 
 __SINGLE:
@@ -1030,38 +1027,44 @@ __NULL:
 }
 
 
-PUBLIC void GB_ReturnInteger(int val)
+void GB_ReturnInteger(int val)
 {
   GB_Return(T_INTEGER, val);
 }
 
 
-PUBLIC void GB_ReturnLong(long long val)
+void GB_ReturnLong(int64_t val)
 {
   GB_Return(T_LONG, val);
 }
 
 
-PUBLIC void GB_ReturnFloat(double val)
+void GB_ReturnPointer(void *val)
+{
+	GB_Return(T_POINTER, (intptr_t)val);
+}
+
+
+void GB_ReturnFloat(double val)
 {
   GB_Return(T_FLOAT, val);
 }
 
 
-PUBLIC void GB_ReturnDate(GB_DATE *date)
+void GB_ReturnDate(GB_DATE *date)
 {
   TEMP = *((VALUE *)date);
   TEMP.type = T_DATE;
 }
 
 
-PUBLIC void GB_ReturnBoolean(int val)
+void GB_ReturnBoolean(int val)
 {
   GB_Return(T_BOOLEAN, val);
 }
 
 
-PUBLIC void GB_ReturnObject(void *val)
+void GB_ReturnObject(void *val)
 {
   if (val == NULL)
     GB_ReturnNull();
@@ -1072,7 +1075,7 @@ PUBLIC void GB_ReturnObject(void *val)
 }
 
 
-PUBLIC void GB_ReturnPtr(unsigned int type, void *value)
+void GB_ReturnPtr(unsigned int type, void *value)
 {
   if (type == T_VOID)
     return;
@@ -1082,7 +1085,7 @@ PUBLIC void GB_ReturnPtr(unsigned int type, void *value)
 }
 
 
-PUBLIC char *GB_ToZeroString(GB_STRING *src)
+char *GB_ToZeroString(GB_STRING *src)
 {
   char *str;
 
@@ -1095,7 +1098,7 @@ PUBLIC char *GB_ToZeroString(GB_STRING *src)
 }
 
 
-PUBLIC void GB_ReturnString(char *str)
+void GB_ReturnString(char *str)
 {
   TEMP.type = T_STRING;
   TEMP._string.addr = str;
@@ -1107,7 +1110,7 @@ PUBLIC void GB_ReturnString(char *str)
 }
 
 
-PUBLIC void GB_ReturnConstString(const char *str, int len)
+void GB_ReturnConstString(const char *str, int len)
 {
   TEMP.type = T_CSTRING;
   TEMP._string.addr = (char *)str;
@@ -1119,7 +1122,7 @@ PUBLIC void GB_ReturnConstString(const char *str, int len)
 }
 
 
-PUBLIC void GB_ReturnConstZeroString(const char *str)
+void GB_ReturnConstZeroString(const char *str)
 {
   int len;
 
@@ -1132,7 +1135,7 @@ PUBLIC void GB_ReturnConstZeroString(const char *str)
 }
 
 
-PUBLIC void GB_ReturnNewString(const char *src, int len)
+void GB_ReturnNewString(const char *src, int len)
 {
   char *str;
 
@@ -1141,19 +1144,19 @@ PUBLIC void GB_ReturnNewString(const char *src, int len)
 }
 
 
-PUBLIC void GB_ReturnNewZeroString(const char *src)
+void GB_ReturnNewZeroString(const char *src)
 {
   GB_ReturnNewString(src, 0);
 }
 
 
-PUBLIC void GB_ReturnNull(void)
+void GB_ReturnNull(void)
 {
   TEMP.type = T_NULL;
 }
 
 
-PUBLIC void *GB_GetClass(void *object)
+void *GB_GetClass(void *object)
 {
   if (object)
     return OBJECT_class(object);
@@ -1162,14 +1165,14 @@ PUBLIC void *GB_GetClass(void *object)
 }
 
 
-PUBLIC char *GB_GetClassName(void *object)
+char *GB_GetClassName(void *object)
 {
   CLASS *class = GB_GetClass(object);
   return class->name;
 }
 
 
-PUBLIC int GB_Is(void *object, void *class)
+int GB_Is(void *object, void *class)
 {
   CLASS *ob_class;
 
@@ -1182,7 +1185,7 @@ PUBLIC int GB_Is(void *object, void *class)
 }
 
 
-PUBLIC int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
+int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
 {
   int ret = 0;
 
@@ -1207,7 +1210,7 @@ PUBLIC int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
   return ret;
 }
 
-PUBLIC void GB_ReleaseFile(char **addr, int len)
+void GB_ReleaseFile(char **addr, int len)
 {
   //fprintf(stderr, "GB_ReleaseFile: ");
   if (ARCHIVE_check_addr(*addr))
@@ -1221,7 +1224,7 @@ PUBLIC void GB_ReleaseFile(char **addr, int len)
 }
 
 
-PUBLIC void GB_Store(GB_TYPE type, GB_VALUE *src, void *dst)
+void GB_Store(GB_TYPE type, GB_VALUE *src, void *dst)
 {
   if (src != NULL)
   {
@@ -1240,7 +1243,7 @@ PUBLIC void GB_Store(GB_TYPE type, GB_VALUE *src, void *dst)
 }
 
 
-PUBLIC void GB_StoreString(GB_STRING *src, char **dst)
+void GB_StoreString(GB_STRING *src, char **dst)
 {
   char *str;
 
@@ -1254,7 +1257,7 @@ PUBLIC void GB_StoreString(GB_STRING *src, char **dst)
     *dst = NULL;
 }
 
-PUBLIC void GB_StoreObject(GB_OBJECT *src, void **dst)
+void GB_StoreObject(GB_OBJECT *src, void **dst)
 {
   void *object;
 
@@ -1270,7 +1273,7 @@ PUBLIC void GB_StoreObject(GB_OBJECT *src, void **dst)
   *dst = object;
 }
 
-PUBLIC void GB_StoreVariant(GB_VARIANT *src, void *dst)
+void GB_StoreVariant(GB_VARIANT *src, void *dst)
 {
   /*GB_Store(GB_T_VARIANT, (GB_VALUE *)src, dst);*/
   if (src)
@@ -1290,13 +1293,13 @@ PUBLIC void GB_StoreVariant(GB_VARIANT *src, void *dst)
 
 
 
-PUBLIC void GB_Watch(int fd, int flag, void *callback, int param)
+void GB_Watch(int fd, int flag, void *callback, int param)
 {
   HOOK_DEFAULT(watch, WATCH_watch)(fd, flag, callback, param);
 }
 
 
-PUBLIC int GB_New(void **object, void *class, const char *name, void *parent)
+int GB_New(void **object, void *class, const char *name, void *parent)
 {
   if (name && !parent)
   {
@@ -1317,7 +1320,7 @@ PUBLIC int GB_New(void **object, void *class, const char *name, void *parent)
 }
 
 
-PUBLIC int GB_CheckObject(void *object)
+int GB_CheckObject(void *object)
 {
   CLASS *class;
   
@@ -1339,33 +1342,33 @@ PUBLIC int GB_CheckObject(void *object)
 }
 
 
-PUBLIC const char *GB_AppName(void)
+const char *GB_AppName(void)
 {
   return PROJECT_name;
 }
 
-PUBLIC const char *GB_AppPath(void)
+const char *GB_AppPath(void)
 {
   return PROJECT_path;
 }
 
-PUBLIC const char *GB_AppTitle(void)
+const char *GB_AppTitle(void)
 {
   return LOCAL_gettext(PROJECT_title);
 }
 
-PUBLIC const char *GB_AppVersion(void)
+const char *GB_AppVersion(void)
 {
   return PROJECT_version;
 }
 
-PUBLIC const char *GB_AppStartup(void)
+const char *GB_AppStartup(void)
 {
   return PROJECT_startup;
 }
 
 
-PUBLIC void *GB_Eval(void *expr, void *func)
+void *GB_Eval(void *expr, void *func)
 {
   GAMBAS_Error = EVAL_expression((EXPRESSION *)expr, (EVAL_FUNCTION)func);
   if (GAMBAS_Error)
@@ -1375,39 +1378,23 @@ PUBLIC void *GB_Eval(void *expr, void *func)
 }
 
 
-PUBLIC void GB_Alloc(void **addr, int len)
+void GB_Alloc(void **addr, int len)
 {
   ALLOC(addr, len, "GB_Alloc");
 }
 
-PUBLIC void GB_Free(void **addr)
+void GB_Free(void **addr)
 {
   FREE(addr, "GB_Free");
 }
 
-PUBLIC void GB_Realloc(void **addr, int len)
+void GB_Realloc(void **addr, int len)
 {
   REALLOC(addr, len, "GB_Realloc");
 }
 
 
-/*PUBLIC void GB_AddString(char **buf, const char *str, long len)
-{
-  long lb = STRING_length(*buf);
-
-  if (len <= 0)
-    len = strlen(str);
-
-  if (len <= 0)
-    return;
-
-  STRING_extend(buf, lb + len);
-  memcpy(*buf + lb, str, len);
-  (*buf)[lb + len] = 0;
-}*/
-
-
-PUBLIC int GB_Conv(GB_VALUE *arg, GB_TYPE type)
+int GB_Conv(GB_VALUE *arg, GB_TYPE type)
 {
   int ret = 0;
 
@@ -1426,13 +1413,13 @@ PUBLIC int GB_Conv(GB_VALUE *arg, GB_TYPE type)
 }
 
 
-PUBLIC int GB_StringLength(const char *str)
+int GB_StringLength(const char *str)
 {
   return STRING_length(str);
 }
 
 
-PUBLIC int GB_NumberToString(int local, double value, const char *format, char **str, int *len)
+int GB_NumberToString(int local, double value, const char *format, char **str, int *len)
 {
   return
     LOCAL_format_number
@@ -1446,12 +1433,12 @@ PUBLIC int GB_NumberToString(int local, double value, const char *format, char *
 }
 
 
-PUBLIC void GB_HashTableNew(GB_HASHTABLE *hash, int mode)
+void GB_HashTableNew(GB_HASHTABLE *hash, int mode)
 {
   HASH_TABLE_create((HASH_TABLE **)hash, sizeof(void *), mode);
 }
 
-PUBLIC void GB_HashTableAdd(GB_HASHTABLE hash, const char *key, int len, void *data)
+void GB_HashTableAdd(GB_HASHTABLE hash, const char *key, int len, void *data)
 {
   if (len <= 0)
     len = strlen(key);
@@ -1459,7 +1446,7 @@ PUBLIC void GB_HashTableAdd(GB_HASHTABLE hash, const char *key, int len, void *d
   *((void **)HASH_TABLE_insert((HASH_TABLE *)hash, key, len)) = data;
 }
 
-PUBLIC void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len)
+void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len)
 {
   if (len <= 0)
     len = strlen(key);
@@ -1467,7 +1454,7 @@ PUBLIC void GB_HashTableRemove(GB_HASHTABLE hash, const char *key, int len)
   HASH_TABLE_remove((HASH_TABLE *)hash, key, len);
 }
 
-PUBLIC int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
+int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
 {
   void **pdata;
 
@@ -1485,7 +1472,7 @@ PUBLIC int GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **d
 }
 
 
-PUBLIC void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
+void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
 {
   HASH_ENUM iter;
   void **data;
@@ -1502,32 +1489,32 @@ PUBLIC void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
   }
 }
 
-PUBLIC void GB_NewArray(void *pdata, int size, int count)
+void GB_NewArray(void *pdata, int size, int count)
 {
   ARRAY_create_with_size(pdata, size, 16);
   ARRAY_add_data(pdata, count, TRUE);
 }
 
 
-PUBLIC int GB_CountArray(void *data)
+int GB_CountArray(void *data)
 {
   return ARRAY_count(data);
 }
 
 
-PUBLIC void *GB_Add(void *pdata)
+void *GB_Add(void *pdata)
 {
   return ARRAY_add_void(pdata);
 }
 
 
-PUBLIC void GB_FreeString(char **str)
+void GB_FreeString(char **str)
 {
   STRING_unref(str);
   *str = NULL;
 }
 
-PUBLIC bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
+bool GB_ConvString(char **result, const char *str, int len, const char *src, const char *dst)
 {
   bool err = FALSE;
 
@@ -1546,13 +1533,13 @@ PUBLIC bool GB_ConvString(char **result, const char *str, int len, const char *s
 }
 
 
-PUBLIC char *GB_SystemCharset(void)
+char *GB_SystemCharset(void)
 {
   return LOCAL_encoding;
 }
 
 
-PUBLIC void GB_StreamInit(GB_STREAM *stream, int fd)
+void GB_StreamInit(GB_STREAM *stream, int fd)
 {
   STREAM *s = (STREAM *)stream;
 
@@ -1560,22 +1547,22 @@ PUBLIC void GB_StreamInit(GB_STREAM *stream, int fd)
   s->direct.fd = fd;
 }
 
-PUBLIC int GB_tolower(int c)
+int GB_tolower(int c)
 {
   return tolower(c);
 }
 
-PUBLIC int GB_toupper(int c)
+int GB_toupper(int c)
 {
   return toupper(c);
 }
 
-PUBLIC char *GB_GetTempDir(void)
+char *GB_GetTempDir(void)
 {
   return FILE_make_temp(NULL, NULL);
 }
 
-PUBLIC char *GB_RealFileName(const char *name, int len)
+char *GB_RealFileName(const char *name, int len)
 {
   char *path = STRING_conv_file_name(name, len);
   char *real;
@@ -1586,7 +1573,7 @@ PUBLIC char *GB_RealFileName(const char *name, int len)
 
   temp = FILE_make_temp(NULL, NULL);
   STRING_new_temp(&real, NULL, strlen(temp) + strlen(path) + strlen("/data/"));
-  sprintf(real, "%s/data/%s", temp, path);
+  snprintf(real, strlen(temp) + strlen(path) + strlen("/data/"), "%s/data/%s", temp, path);
 
   if (!FILE_exist(real))
   {
@@ -1607,7 +1594,7 @@ PUBLIC char *GB_RealFileName(const char *name, int len)
   return real;
 }
 
-PUBLIC void GB_PrintData(GB_TYPE type, void *addr)
+void GB_PrintData(GB_TYPE type, void *addr)
 {
   VALUE value;
 
@@ -1616,7 +1603,7 @@ PUBLIC void GB_PrintData(GB_TYPE type, void *addr)
 }
 
 
-PUBLIC const char *GB_CurrentComponent()
+const char *GB_CurrentComponent()
 {
   ARCHIVE *arch;
 
@@ -1624,7 +1611,7 @@ PUBLIC const char *GB_CurrentComponent()
   return arch->name ? arch->name : "";
 }
 
-PUBLIC int GB_ImageCreate(GB_IMAGE *image, void *data, int width, int height, int format)
+int GB_ImageCreate(GB_IMAGE *image, void *data, int width, int height, int format)
 {
 	GB_IMAGE_INFO info;
 
@@ -1645,7 +1632,7 @@ PUBLIC int GB_ImageCreate(GB_IMAGE *image, void *data, int width, int height, in
 	return (*EXEC_Hook.image)(image, &info);
 }
 
-PUBLIC void GB_ImageInfo(GB_IMAGE image, GB_IMAGE_INFO *info)
+void GB_ImageInfo(GB_IMAGE image, GB_IMAGE_INFO *info)
 {
 	if (!EXEC_Hook.image)
 	{
@@ -1657,7 +1644,7 @@ PUBLIC void GB_ImageInfo(GB_IMAGE image, GB_IMAGE_INFO *info)
 		(*EXEC_Hook.image)(&image, info);
 }
 
-PUBLIC int GB_PictureCreate(GB_PICTURE *picture, void *data, int width, int height, int format)
+int GB_PictureCreate(GB_PICTURE *picture, void *data, int width, int height, int format)
 {
 	GB_PICTURE_INFO info;
 
@@ -1675,7 +1662,7 @@ PUBLIC int GB_PictureCreate(GB_PICTURE *picture, void *data, int width, int heig
 	return (*EXEC_Hook.picture)(picture, &info);
 }
 
-PUBLIC void GB_PictureInfo(GB_PICTURE picture, GB_PICTURE_INFO *info)
+void GB_PictureInfo(GB_PICTURE picture, GB_PICTURE_INFO *info)
 {
 	if (!EXEC_Hook.image)
 	{
@@ -1687,25 +1674,25 @@ PUBLIC void GB_PictureInfo(GB_PICTURE picture, GB_PICTURE_INFO *info)
 		(*EXEC_Hook.picture)(&picture, info);
 }
 
-PUBLIC void *GB_DebugGetExec(void)
+void *GB_DebugGetExec(void)
 {
 	return &EXEC_current;
 }
 
 
-PUBLIC int GB_ExistClass(const char *name)
+int GB_ExistClass(const char *name)
 {
 	return CLASS_look_global(name, strlen(name)) != NULL;
 }
 
 
-PUBLIC int GB_ExistClassLocal(const char *name)
+int GB_ExistClassLocal(const char *name)
 {
 	return CLASS_look(name, strlen(name)) != NULL;
 }
 
 
-PUBLIC void GB_ImageConvert(void *dst, int dst_format, void *src, int src_format, int w, int h)
+void GB_ImageConvert(void *dst, int dst_format, void *src, int src_format, int w, int h)
 {
 	register char *s = (char *)src;
 	register char *d = (char *)dst;

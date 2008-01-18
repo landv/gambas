@@ -49,7 +49,7 @@ DECLARE_EVENT(EVENT_Hide);
 DECLARE_METHOD(CCONTROL_window);
 DECLARE_METHOD(CCONTROL_name);
 
-static long menu_id = 0;
+static int menu_id = 0;
 
 
 static int check_menu(void *object)
@@ -944,7 +944,7 @@ static void send_click_event(CMENU *_object)
   GB.Unref(POINTER(&_object));
 }
 
-static void send_menu_event(CMENU *_object, long event)
+static void send_menu_event(CMENU *_object, intptr_t event)
 {
   GB.Raise(THIS, event, 0);
   GB.Unref(POINTER(&_object));
@@ -955,7 +955,7 @@ void CMenu::activated(int id)
   CMENU *menu = CMenu::dict[id];
 
 	GB.Ref(menu);
-	GB.Post((GB_POST_FUNC)send_click_event, (long)menu);
+	GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)menu);
 }
 
 
@@ -975,7 +975,7 @@ void CMenu::hidden(void)
 	if (GB.CanRaise(menu, EVENT_Hide))
 	{
 	  GB.Ref(menu);
-  	GB.Post2((GB_POST_FUNC)send_menu_event, (long)menu, EVENT_Hide);
+  	GB.Post2((GB_POST_FUNC)send_menu_event, (intptr_t)menu, EVENT_Hide);
 	}
 }
 

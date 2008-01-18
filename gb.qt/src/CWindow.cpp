@@ -77,7 +77,7 @@ CWINDOW *CWINDOW_Current = 0;
 CWINDOW *CWINDOW_LastActive = 0;
 CWINDOW *CWINDOW_Active = 0;
 
-long CWINDOW_Embedder = 0;
+int CWINDOW_Embedder = 0;
 bool CWINDOW_Embedded = false;
 static int CWINDOW_EmbedState = 0;
 
@@ -355,7 +355,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
     /* ### This can call post_show_event() directly, whereas the function is not terminated */
     //frame->show();
     GB.Ref(THIS);
-    GB.Post((void (*)())show_later, (long)THIS);
+    GB.Post((void (*)())show_later, (intptr_t)THIS);
     //WIDGET->show();
   }
 
@@ -471,7 +471,7 @@ BEGIN_METHOD(CWINDOW_get_from_id, GB_INTEGER id)
 END_METHOD
 
 
-static bool do_close(CWINDOW *_object, long ret, bool destroyed = false)
+static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 {
   bool closed;
 
@@ -548,7 +548,7 @@ static bool do_close(CWINDOW *_object, long ret, bool destroyed = false)
 
 BEGIN_METHOD(CWINDOW_close, GB_INTEGER ret)
 
-  long ret = VARGOPT(ret, 0);
+  int ret = VARGOPT(ret, 0);
 
   GB.ReturnBoolean(do_close(THIS, ret));
 
@@ -1812,7 +1812,7 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
     /*if (w != THIS->w || h != THIS->h)
     {
       GB.Ref(THIS);
-      GB.Post((void (*)())post_resize_event, (long)THIS);
+      GB.Post((void (*)())post_resize_event, (intptr_t)THIS);
     }*/
   }
 }
@@ -2265,7 +2265,7 @@ void CWINDOW_activate(CWIDGET *ob)
 		/*if (GB.CanRaise(CWINDOW_Active, EVENT_Deactivate))
 		{
 			GB.Ref(CWINDOW_Active);
-			GB.Post((void (*)())post_deactivate_event, (long)CWINDOW_Active);
+			GB.Post((void (*)())post_deactivate_event, (intptr_t)CWINDOW_Active);
 		}*/
 		CWINDOW_Active = 0;
 	}
@@ -2276,7 +2276,7 @@ void CWINDOW_activate(CWIDGET *ob)
 		/*if (GB.CanRaise(active, EVENT_Activate))
 		{
 			GB.Ref(active);
-			GB.Post((void (*)())post_activate_event, (long)active);
+			GB.Post((void (*)())post_activate_event, (intptr_t)active);
 		}*/
 	}
 

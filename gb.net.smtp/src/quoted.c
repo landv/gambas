@@ -44,7 +44,7 @@ Thu Aug 16 2001 */
 /* This function will send data in a part, encoded in quoted printable format.
    It will not perform any checks whatsoever. */
 
-int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned long int libsmtp_int_length,
+int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_length,
          struct libsmtp_session_struct *libsmtp_session)
 {
   /* These are the input buffer and the output buffer */
@@ -54,7 +54,7 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned long int libsmtp_i
   int libsmtp_int_finished=0, libsmtp_int_outbytes=0, libsmtp_int_width=0;
   int libsmtp_int_newline=0;
   /* This points into the data stream to the byte we are reading ATM */
-  unsigned long int libsmtp_int_data_ptr=0;
+  unsigned int libsmtp_int_data_ptr=0;
 
   /* Lets clear the buffers */
   bzero (libsmtp_int_obuffer, 4);
@@ -221,7 +221,7 @@ static const char _utf8_char_length[256] =
 /* This function will send data in an header, encoded in utf-8 quoted printable format.
    It will not perform any checks whatsoever. */
 
-int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, unsigned long int libsmtp_int_length,
+int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, unsigned int libsmtp_int_length,
          struct libsmtp_session_struct *libsmtp_session)
 {
   /* These are the input buffer and the output buffer */
@@ -230,7 +230,7 @@ int libsmtp_int_send_quoted_header (const char *header, char *libsmtp_int_data, 
   unsigned char libsmtp_int_last_char;
   int libsmtp_int_finished=0, libsmtp_int_outbytes=0, libsmtp_int_width=0;
   /* This points into the data stream to the byte we are reading ATM */
-  unsigned long int libsmtp_int_data_ptr=0;
+  unsigned int libsmtp_int_data_ptr=0;
   int len;
 
   /* Lets clear the buffers */

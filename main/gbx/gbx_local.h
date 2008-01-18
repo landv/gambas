@@ -99,14 +99,14 @@ EXTERN bool LOCAL_is_UTF8;
 #endif
 
 
-PUBLIC void LOCAL_init(void);
-PUBLIC void LOCAL_exit(void);
-PUBLIC boolean LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, boolean local);
-PUBLIC boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
-PUBLIC const char *LOCAL_get_lang(void);
-PUBLIC void LOCAL_set_lang(const char *lang);
-PUBLIC const char *LOCAL_gettext(const char *msgid);
-PUBLIC void LOCAL_load_translation(ARCHIVE *arch);
+void LOCAL_init(void);
+void LOCAL_exit(void);
+boolean LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, boolean local);
+boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str);
+const char *LOCAL_get_lang(void);
+void LOCAL_set_lang(const char *lang);
+const char *LOCAL_gettext(const char *msgid);
+void LOCAL_load_translation(ARCHIVE *arch);
 
 #define LOCAL_get(_local) ((_local) ? &LOCAL_local : &LOCAL_default)
 

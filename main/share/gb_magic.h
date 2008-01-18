@@ -25,10 +25,10 @@
 #ifndef __GB_MAGIC_H
 #define __GB_MAGIC_H
 
-#define OUTPUT_MAGIC      0x9A177BA5L
-#define OUTPUT_ENDIAN     0x12345678L
+#define OUTPUT_MAGIC      0x9A177BA5
+#define OUTPUT_ENDIAN     0x12345678
 
-#define ARCH_MAGIC        0xA7C4117EL
+#define ARCH_MAGIC        0xA7C4117E
 #define ARCH_VERSION      2
 
 #define PROJECT_MAGIC     "# Gambas Project File"

@@ -57,7 +57,7 @@ typedef
     void *cursor;
     CWIDGET *next;
     CWIDGET *prev;
-    long level;
+    int level;
     }
   CWIDGET;
 
@@ -68,7 +68,7 @@ typedef
   struct {
     CWIDGET widget;
     QWidget *container;
-    long arrangement;
+    int arrangement;
     }
   CCONTAINER;
 
@@ -176,7 +176,7 @@ DECLARE_PROPERTY(CCONTROL_action);
 #define EMBED_OK     1
 #define EMBED_ERROR  2
 
-void CWIDGET_new(QWidget *w, void *_object, char *klass = NULL,
+void CWIDGET_new(QWidget *w, void *_object, const char *klass = NULL,
                  bool no_filter = false, bool no_tag = false);
 void CWIDGET_init_name(CWIDGET *_object);
 int CWIDGET_check(void *object);
@@ -196,7 +196,7 @@ void CACTION_get(void *control);
 #ifndef __CWIDGET_CPP
 extern
 #endif
-long
+int
 //EVENT_Move,
 //EVENT_Resize,
 EVENT_MouseDown,

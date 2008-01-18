@@ -42,6 +42,7 @@ typedef
     short weekday;
     short msec;
     }
+  PACKED
   DATE_SERIAL;
 
 typedef

@@ -4,7 +4,7 @@
 
   Extern calls in dynamic libraries
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@
   #define lt_dlhandle void *
 #endif
 
-PUBLIC void EXTERN_call(void);
-PUBLIC void EXTERN_exit(void);
+void EXTERN_call(void);
+void EXTERN_exit(void);
 
 #endif

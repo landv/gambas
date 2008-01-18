@@ -236,8 +236,8 @@ PUBLIC boolean SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag
     if ((len + len_prefix) > MAX_SYMBOL_LEN)
       ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
-    strcpy(_buffer, prefix);
-    strcpy(&_buffer[len_prefix], name);
+    strlcpy(_buffer, prefix, sizeof(_buffer));
+    strlcpy(&_buffer[len_prefix], name, sizeof(_buffer)-len_prefix);
     len += len_prefix;
     name = _buffer;
   }
@@ -278,8 +278,8 @@ PUBLIC boolean SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int 
     if ((len + len_prefix) > MAX_SYMBOL_LEN)
       ERROR_panic("SYMBOL_find: prefixed symbol too long");
 
-    strcpy(_buffer, prefix);
-    strcpy(&_buffer[len_prefix], name);
+    strlcpy(_buffer, prefix, sizeof(_buffer));
+    strlcpy(&_buffer[len_prefix], name, sizeof(_buffer)-len_prefix);
     len += len_prefix;
     name = _buffer;
   }
@@ -317,7 +317,7 @@ PUBLIC const char *TABLE_get_symbol_name(TABLE *table, int index)
   SYMBOL *sym;
 
   if ((index < 0) || (index >= ARRAY_count(table->symbol)))
-    strcpy(_buffer, "?");
+    strlcpy(_buffer, "?", sizeof(_buffer));
   else
   {
     sym = SYM(table, index);
@@ -332,7 +332,7 @@ PUBLIC const char *TABLE_get_symbol_name(TABLE *table, int index)
 PUBLIC const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* suffix)
 {
   TABLE_get_symbol_name(table, index);
-  strcat(_buffer, suffix);
+  strlcat(_buffer, suffix, sizeof(_buffer));
   return _buffer;
 }
 
@@ -507,7 +507,7 @@ PUBLIC void TABLE_print(TABLE *table, boolean sort)
   int i;
   SYMBOL *sym;
 
-  fprintf(stderr, "capacity %li\n", ARRAY_count(table->symbol));
+  fprintf(stderr, "capacity %i\n", ARRAY_count(table->symbol));
 
   /*
   for (i = 0; i < ARRAY_count(table->symbol); i++)

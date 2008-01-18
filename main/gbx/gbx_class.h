@@ -1,8 +1,6 @@
 /***************************************************************************
 
-  class.h
-
-  Class loader
+  gbx_class.h
 
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
@@ -56,16 +54,19 @@ typedef
   CLASS_VAR;
 
 typedef
-  unsigned short CLASS_REF;
+  struct _CLASS *CLASS_REF;
+
+typedef
+	char *CLASS_UNKNOWN;
 
 typedef
   union {
-    TYPE type;
-    struct { TYPE type; double value; } PACKED _float;
-    struct { TYPE type; int value; } PACKED _integer;
-    struct { TYPE type; long long value; } PACKED _long;
-    struct { TYPE type; char *addr; int len; } PACKED _string;
-    struct { TYPE type; int val[2]; } PACKED _swap;
+    int type;
+    struct { int type; double value; } PACKED _float;
+    struct { int type; int value; } PACKED _integer;
+    struct { int type; int64_t value; } PACKED _long;
+    struct { int type; char *addr; int len; } PACKED _string;
+    struct { int type; int val[2]; } PACKED _swap;
     }
   PACKED
   CLASS_CONST;
@@ -169,10 +170,13 @@ typedef
 
 typedef
   struct {
-    TYPE type;
+    CTYPE type;
     int dim[0];
     }
   CLASS_ARRAY;
+  
+typedef
+	CLASS_ARRAY *CLASS_ARRAY_P;
 
 struct _CLASS;
 
@@ -199,12 +203,17 @@ typedef
     CLASS_EXTERN *ext;
     CLASS_ARRAY **array;
 
-    struct _CLASS **class_ref;
+    CLASS_REF *class_ref;
     char **unknown;
 
     GLOBAL_SYMBOL *global;    /* symboles globaux */
     short n_global;
     short n_ext;
+    #ifdef OS_64BITS
+		CLASS_DESC *desc;
+		CLASS_PARAM *local;
+		FUNC_DEBUG *debug;
+    #endif
     }
   PACKED
   CLASS_LOAD;
@@ -348,7 +357,7 @@ EXTERN CLASS *CLASS_SubCollection;
 #define CLASS_is_extern(class) ((class)->load == NULL)
 #define CLASS_is_native CLASS_is_extern
 
-#define FUNCTION_is_native(_desc) (((uint)(_desc)->exec >> 16) != 0)
+#define FUNCTION_is_native(_desc) (((uintptr_t)(_desc)->exec >> 16) != 0)
 
 #define FUNC_INIT_STATIC   0
 #define FUNC_INIT_DYNAMIC  1
@@ -356,73 +365,74 @@ EXTERN CLASS *CLASS_SubCollection;
 
 /* class.c */
 
-PUBLIC void CLASS_init(void);
-PUBLIC void CLASS_exit(void);
+void CLASS_init(void);
+void CLASS_exit(void);
 
-PUBLIC CLASS *CLASS_get(const char *name);
-PUBLIC int CLASS_count(void);
+CLASS *CLASS_get(const char *name);
+int CLASS_count(void);
 
-PUBLIC CLASS_DESC_SYMBOL *CLASS_get_symbol(CLASS *class, const char *name);
-PUBLIC CLASS_DESC *CLASS_get_symbol_desc(CLASS *class, const char *name);
+CLASS_DESC_SYMBOL *CLASS_get_symbol(CLASS *class, const char *name);
+CLASS_DESC *CLASS_get_symbol_desc(CLASS *class, const char *name);
 
-PUBLIC short CLASS_get_symbol_index_kind(CLASS *class, const char *name, int kind, int kind2);
-PUBLIC CLASS_DESC *CLASS_get_symbol_desc_kind(CLASS *class, const char *name, int kind, int kind2);
-PUBLIC CLASS_DESC_METHOD *CLASS_get_special_desc(CLASS *class, int spec);
+short CLASS_get_symbol_index_kind(CLASS *class, const char *name, int kind, int kind2);
+CLASS_DESC *CLASS_get_symbol_desc_kind(CLASS *class, const char *name, int kind, int kind2);
+CLASS_DESC_METHOD *CLASS_get_special_desc(CLASS *class, int spec);
 
 #define CLASS_get_desc(_class, _index) (((_class)->table[_index].desc))
 
-PUBLIC CLASS_DESC_EVENT *CLASS_get_event_desc(CLASS *class, const char *name);
+CLASS_DESC_EVENT *CLASS_get_event_desc(CLASS *class, const char *name);
 
-PUBLIC int CLASS_find_symbol(CLASS *class, const char *name);
-PUBLIC int CLASS_find_symbol_with_prefix(CLASS *class, const char *name, const char *prefix);
+int CLASS_find_symbol(CLASS *class, const char *name);
+int CLASS_find_symbol_with_prefix(CLASS *class, const char *name, const char *prefix);
 
-PUBLIC CLASS *CLASS_look(const char *name, int len);
-PUBLIC CLASS *CLASS_find(const char *name);
+CLASS *CLASS_look(const char *name, int len);
+CLASS *CLASS_find(const char *name);
 
-PUBLIC TABLE *CLASS_get_table(void);
+TABLE *CLASS_get_table(void);
 
-PUBLIC boolean CLASS_inherits(CLASS *class, CLASS *parent);
+boolean CLASS_inherits(CLASS *class, CLASS *parent);
 
-PUBLIC CLASS *CLASS_replace_global(const char *name);
-PUBLIC CLASS *CLASS_look_global(const char *name, int len);
-PUBLIC CLASS *CLASS_find_global(const char *name);
-PUBLIC CLASS *CLASS_check_global(char *name);
+CLASS *CLASS_replace_global(const char *name);
+CLASS *CLASS_look_global(const char *name, int len);
+CLASS *CLASS_find_global(const char *name);
+CLASS *CLASS_check_global(char *name);
 
-PUBLIC void CLASS_ref(void *object);
-PUBLIC void CLASS_unref(void **pobject, boolean can_free);
-PUBLIC void CLASS_free(void **pobject);
-PUBLIC void CLASS_release(CLASS *class, char *data);
+void CLASS_ref(void *object);
+void CLASS_unref(void **pobject, boolean can_free);
+void CLASS_free(void **pobject);
+void CLASS_release(CLASS *class, char *data);
 
-PUBLIC int CLASS_get_inheritance(CLASS *class, CLASS **her);
+int CLASS_get_inheritance(CLASS *class, CLASS **her);
 
-PUBLIC void CLASS_do_nothing();
-PUBLIC int CLASS_return_zero();
+void CLASS_do_nothing();
+int CLASS_return_zero();
 
-PUBLIC void CLASS_sort(CLASS *class);
+void CLASS_sort(CLASS *class);
 
-PUBLIC void CLASS_inheritance(CLASS *class, CLASS *parent);
-PUBLIC void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *first);
-PUBLIC void CLASS_make_event(CLASS *class, int *first);
-PUBLIC void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static);
+void CLASS_inheritance(CLASS *class, CLASS *parent);
+void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *first);
+void CLASS_make_event(CLASS *class, int *first);
+void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static);
 
-PUBLIC void *CLASS_auto_create(CLASS *class, int nparam);
+void *CLASS_auto_create(CLASS *class, int nparam);
 
-PUBLIC void CLASS_search_special(CLASS *class);
+void CLASS_search_special(CLASS *class);
 
-PUBLIC CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index);
+CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index);
 
 int CLASS_can_be_used_like_an_array(CLASS *class);
 
-//PUBLIC void CLASS_create_array_class(CLASS *class);
+//void CLASS_create_array_class(CLASS *class);
 
 /* class_init.c */
 
-PUBLIC void CLASS_init_native(void);
+void CLASS_init_native(void);
 
 /* class_load.c */
 
-PUBLIC void CLASS_load_without_init(CLASS *class);
-PUBLIC void CLASS_load_real(CLASS *class);
+TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype);
+void CLASS_load_without_init(CLASS *class);
+void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \
 { \
   if ((_class)->state != CS_READY) \
@@ -431,8 +441,8 @@ PUBLIC void CLASS_load_real(CLASS *class);
 
 /* class_native.c */
 
-PUBLIC CLASS *CLASS_register_class(GB_DESC *desc, CLASS *class);
-PUBLIC CLASS *CLASS_register(GB_DESC *desc);
+CLASS *CLASS_register_class(GB_DESC *desc, CLASS *class);
+CLASS *CLASS_register(GB_DESC *desc);
 
 #define SET_IF_NULL(ptr, val)  if ((ptr) == NULL) (ptr) = (val)
 /*

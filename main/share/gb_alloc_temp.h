@@ -42,8 +42,8 @@
 #define GRANULARITY 8
 
 static void *_keep[MAX_KEEP] = { 0 };
-static long _keep_malloc = 0;
-static long _keep_free = 0;
+static int _keep_malloc = 0;
+static int _keep_free = 0;
 
 
 static size_t round_size(size_t size)
@@ -56,22 +56,22 @@ static size_t round_size(size_t size)
 
 #endif
 
-PUBLIC long MEMORY_count = 0;
+PUBLIC int MEMORY_count = 0;
 #if DEBUG_MEMORY
 typedef
   struct ALLOC {
-    long _void;
+    int _void;
     struct ALLOC *next;
     struct ALLOC *prev;
-    long id;
+    int id;
     size_t size;
     }
   PACKED
   ALLOC;
 
-PUBLIC long MEMORY_size = 0;
+PUBLIC int MEMORY_size = 0;
 
-static long _id = 0;
+static int _id = 0;
 ALLOC *_alloc = NULL;
 extern void DEBUG_where(void);
 //static char buffer[512];
@@ -246,8 +246,9 @@ PUBLIC void MEMORY_free(void *p_ptr)
 {
   void *alloc = *((void **)p_ptr);
 
-  *((char *)alloc) = 0x23;
-
+	if (!alloc)
+		return;
+		
   free(alloc);
 
   *((void **)p_ptr) = NULL;

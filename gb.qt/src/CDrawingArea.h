@@ -44,7 +44,7 @@ typedef
   struct {
     CWIDGET widget;
     QWidget *container;
-    long arrangement;
+    int arrangement;
     }
   CDRAWINGAREA;
 
@@ -95,7 +95,7 @@ private:
   bool _frozen;
   bool _merge;
   bool _focus;
-  long _event_mask;
+  int _event_mask;
 
   bool doResize(int w, int h);
 };

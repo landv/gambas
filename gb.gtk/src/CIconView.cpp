@@ -598,13 +598,13 @@ GB_DESC CIconViewItemDesc[] =
   GB_PROPERTY("Picture", "Picture", CICONVIEWITEM_picture),
   GB_PROPERTY("Selected", "b", CICONVIEWITEM_selected),
   GB_PROPERTY("Text", "s", CICONVIEWITEM_text),
-  GB_METHOD("EnsureVisible", NULL, CICONVIEWITEM_ensure_visible, NULL),
-  GB_METHOD("Delete", NULL, CICONVIEWITEM_delete, NULL),
+  GB_METHOD("EnsureVisible", 0, CICONVIEWITEM_ensure_visible, 0),
+  GB_METHOD("Delete", 0, CICONVIEWITEM_delete, 0),
 
   GB_PROPERTY("Editable", "b", CICONVIEWITEM_editable),
-  GB_METHOD("Rename", NULL, CICONVIEWITEM_rename, NULL),
+  GB_METHOD("Rename", 0, CICONVIEWITEM_rename, 0),
 
-  GB_METHOD("MoveNext", "b", CICONVIEW_next, NULL),
+  GB_METHOD("MoveNext", "b", CICONVIEW_next, 0),
 
   GB_PROPERTY("X", "i", CICONVIEWITEM_x),
   GB_PROPERTY("Left", "i", CICONVIEWITEM_x),
@@ -615,7 +615,7 @@ GB_DESC CIconViewItemDesc[] =
   GB_PROPERTY_READ("H", "i", CICONVIEWITEM_h),
   GB_PROPERTY_READ("Height", "i", CICONVIEWITEM_h),
 
-  GB_METHOD("Move", NULL, CICONVIEWITEM_move, "(X)i(Y)i"),
+  GB_METHOD("Move", 0, CICONVIEWITEM_move, "(X)i(Y)i"),
 
   GB_END_DECLARE
 };
@@ -637,8 +637,8 @@ GB_DESC CIconViewDesc[] =
   GB_CONSTANT("LeftRight", "i", 0),
   GB_CONSTANT("TopBottom", "i", 1),
 
-  GB_METHOD("_new", NULL, CICONVIEW_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, CICONVIEW_free, NULL),
+  GB_METHOD("_new", 0, CICONVIEW_new, "(Parent)Container;"),
+  GB_METHOD("_free", 0, CICONVIEW_free, 0),
 
   GB_PROPERTY("Mode", "i", CICONVIEW_mode),
   GB_PROPERTY("Sorted", "b", CICONVIEW_sorted),
@@ -656,15 +656,15 @@ GB_DESC CIconViewDesc[] =
 
   GB_PROPERTY_READ("Available", "b", CICONVIEW_available),
   GB_METHOD("MoveTo", "b", CICONVIEW_move_to, "(Key)s"),
-  GB_METHOD("MoveFirst", "b", CICONVIEW_first, NULL),
-  GB_METHOD("MoveNext", "b", CICONVIEW_next, NULL),
-  GB_METHOD("MoveBack", "b", CICONVIEW_back, NULL),
+  GB_METHOD("MoveFirst", "b", CICONVIEW_first, 0),
+  GB_METHOD("MoveNext", "b", CICONVIEW_next, 0),
+  GB_METHOD("MoveBack", "b", CICONVIEW_back, 0),
 
   GB_METHOD("_get", ".IconViewItem", CICONVIEW_get, "(Key)s"),
 
-  GB_METHOD("Clear", NULL, CICONVIEW_clear, NULL),
+  GB_METHOD("Clear", 0, CICONVIEW_clear, 0),
   GB_METHOD("Add", ".IconViewItem", CICONVIEW_add, "(Key)s(Text)s[(Picture)Picture;(After)s]"),
-  GB_METHOD("Remove", NULL, CICONVIEW_remove, "(Key)s"),
+  GB_METHOD("Remove", 0, CICONVIEW_remove, "(Key)s"),
   GB_METHOD("Exist", "b", CICONVIEW_exist, "(Key)s"),
   GB_METHOD("Find", "b", CICONVIEW_find, "(X)i(Y)i"),
 
@@ -672,21 +672,21 @@ GB_DESC CIconViewDesc[] =
   GB_PROPERTY_READ("Key", "s", CICONVIEW_key),
   GB_PROPERTY_READ("Item", ".IconViewItem", CICONVIEW_item),
 
-  GB_METHOD("SelectAll", NULL, CICONVIEW_select_all, "[(Select)b]"),
+  GB_METHOD("SelectAll", 0, CICONVIEW_select_all, "[(Select)b]"),
 
   GB_PROPERTY_READ("ClientWidth", "i", CICONVIEW_client_width),
   GB_PROPERTY_READ("ClientW", "i",  CICONVIEW_client_width),
   GB_PROPERTY_READ("ClientHeight", "i", CICONVIEW_client_height),
   GB_PROPERTY_READ("ClientH", "i", CICONVIEW_client_height),
 
-  GB_EVENT("Select", NULL, NULL, &EVENT_Select),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Rename", NULL, NULL, &EVENT_Rename),
-  GB_EVENT("Cancel", NULL, NULL, &EVENT_Cancel),
-  GB_EVENT("Compare", NULL, "(Key)s(OtherKey)s", &EVENT_Compare),
+  GB_EVENT("Select", 0, 0, &EVENT_Select),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
+  GB_EVENT("Rename", 0, 0, &EVENT_Rename),
+  GB_EVENT("Cancel", 0, 0, &EVENT_Cancel),
+  GB_EVENT("Compare", 0, "(Key)s(OtherKey)s", &EVENT_Compare),
 
-	ICONVIEW_DESCRIPTION,
+  ICONVIEW_DESCRIPTION,
 
   GB_END_DECLARE
 };

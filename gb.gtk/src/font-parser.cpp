@@ -152,7 +152,6 @@ void gb_fontparser_parse(char *str)
 	long max,bc;
 	long ptr=0;
 	long curr=0;
-	int rel;
 
 	for (bc=0;bc<8;bc++) gb_font_pointers[bc]=NULL;
 	gb_font_name=NULL;

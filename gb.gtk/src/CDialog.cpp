@@ -74,7 +74,7 @@ BEGIN_PROPERTY(CDIALOG_filter)
 			}
 		}
     
-    *((char **)GB.Add(&filters)) = "*";
+    *((char **)GB.Add(&filters)) = (char *)"*";
     *((char **)GB.Add(&filters)) = GB.Translate("All Files");
       
     gDialog::setFilter(filters, GB.Count(filters));
@@ -262,13 +262,13 @@ GB_DESC CDialogDesc[] =
 {
   GB_DECLARE("Dialog", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("_exit", NULL, CDIALOG_exit, NULL),
+  GB_STATIC_METHOD("_exit", 0, CDIALOG_exit, 0),
 
   GB_STATIC_METHOD("OpenFile", "b", CDIALOG_open_file, "[(Multi)b]"),
-  GB_STATIC_METHOD("SaveFile", "b", CDIALOG_save_file, NULL),
-  GB_STATIC_METHOD("SelectDirectory", "b", CDIALOG_get_directory, NULL),
-  GB_STATIC_METHOD("SelectColor", "b", CDIALOG_get_color, NULL),
-  GB_STATIC_METHOD("SelectFont", "b", CDIALOG_select_font, NULL),
+  GB_STATIC_METHOD("SaveFile", "b", CDIALOG_save_file, 0),
+  GB_STATIC_METHOD("SelectDirectory", "b", CDIALOG_get_directory, 0),
+  GB_STATIC_METHOD("SelectColor", "b", CDIALOG_get_color, 0),
+  GB_STATIC_METHOD("SelectFont", "b", CDIALOG_select_font, 0),
 
   GB_STATIC_PROPERTY_READ("Paths", "String[]", CDIALOG_paths),
   

@@ -134,7 +134,7 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
       break;
 
     default:
-      sprintf(_buffer, "%s?%p?%s", before, (void *)*pattern, after);
+      sprintf(_buffer, "%s?%08X?%s", before, *pattern, after);
   }
 
   return _buffer;

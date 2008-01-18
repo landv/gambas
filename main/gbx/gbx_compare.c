@@ -99,7 +99,7 @@ int compare_byte(unsigned char *a, unsigned char *b)
 }
 
 
-int compare_long(long long *a, long long *b)
+int compare_long(int64_t *a, int64_t *b)
 {
   bool comp;
 
@@ -190,7 +190,7 @@ IMPLEMENT_COMPARE_STRING(binary, strcmp)
 IMPLEMENT_COMPARE_STRING(text, strcasecmp)
 //IMPLEMENT_COMPARE_STRING(lang, strcoll)
 
-PUBLIC int COMPARE_string_lang(char *s1, long l1, char *s2, long l2, bool nocase, bool throw)
+int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool throw)
 {
   char *charset;
   wchar_t *t1 = NULL;
@@ -304,7 +304,7 @@ int COMPARE_object(void **a, void **b)
 	return _descent ? (-comp) : comp;
 }
 
-PUBLIC COMPARE_FUNC COMPARE_get(TYPE type, int mode)
+COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 {
   _descent = (mode & GB_COMP_DESCENT) != 0;
   mode &= GB_COMP_TYPE_MASK;

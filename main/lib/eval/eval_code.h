@@ -4,7 +4,7 @@
 
   P-code assembler
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,10 +39,10 @@ PUBLIC boolean CODE_popify_last(void);
 PUBLIC boolean CODE_check_statement_last(void);
 PUBLIC boolean CODE_check_pop_local_last(short *local);
 
-PUBLIC long CODE_get_current_pos();
+PUBLIC int CODE_get_current_pos();
 PUBLIC void CODE_dump(PCODE *code);
 
-PUBLIC void CODE_push_number(long value);
+PUBLIC void CODE_push_number(int value);
 PUBLIC void CODE_push_const(short value);
 
 PUBLIC void CODE_push_local(short num);

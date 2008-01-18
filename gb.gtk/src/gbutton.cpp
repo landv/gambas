@@ -79,7 +79,7 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 	  gtk_widget_style_get (wid,
 				"child-displacement-x", &dx,
 				"child-displacement-y", &dy,
-				NULL);
+				(void *)NULL);
 		rect.x += dx;
 		rect.y += dy;
 	}
@@ -130,8 +130,8 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		rect.x += rpix.width;
 	}
 		
-	g_object_set(data->rendtxt, "font-desc", data->font()->desc(), NULL);
-	g_object_set(G_OBJECT(data->rendtxt),"sensitive",true, NULL);
+	g_object_set(data->rendtxt, "font-desc", data->font()->desc(), (void *)NULL);
+	g_object_set(G_OBJECT(data->rendtxt),"sensitive",true, (void *)NULL);
 	
 	switch(GTK_WIDGET_STATE(data->widget))
 	{
@@ -144,7 +144,7 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		
 		case GTK_STATE_INSENSITIVE: 
 			state=GTK_CELL_RENDERER_INSENSITIVE; 
-			g_object_set(G_OBJECT(data->rendtxt),"sensitive",false,NULL); 
+			g_object_set(G_OBJECT(data->rendtxt),"sensitive",false, (void *)NULL); 
 			break;
 			
 		default:
@@ -245,8 +245,8 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 
 	if (rendtxt) 
 	{
-		g_object_set(G_OBJECT(rendtxt),"xalign",0.5,NULL);
-		g_object_set(G_OBJECT(rendtxt),"yalign",0.5,NULL);
+		g_object_set(G_OBJECT(rendtxt),"xalign",0.5,(void *)NULL);
+		g_object_set(G_OBJECT(rendtxt),"yalign",0.5,(void *)NULL);
 		g_signal_connect_after(G_OBJECT(widget),"expose-event",G_CALLBACK(button_expose),(gpointer)this);
 	}
 	else
@@ -293,7 +293,7 @@ bool gButton::inconsistent()
 	gboolean vl=false;
 
 	if (type != Check) return false;
-	g_object_get (G_OBJECT(widget),"inconsistent",&vl,NULL);
+	g_object_get (G_OBJECT(widget),"inconsistent",&vl,(void *)NULL);
 	return vl;	
 }
 
@@ -422,12 +422,12 @@ void gButton::setText(const char *st)
 		if (!strlen(st))
 		{ 
 			gtk_label_set_text(lbl,"");
-			g_object_set(G_OBJECT(lbl),"visible",false,NULL);
+			g_object_set(G_OBJECT(lbl),"visible",false,(void *)NULL);
 			return;
 		}
 		gMnemonic_correctText((char*)st,&buf);
 		gtk_label_set_text_with_mnemonic(lbl,buf);
-		g_object_set(G_OBJECT(lbl),"visible",true,NULL);
+		g_object_set(G_OBJECT(lbl),"visible",true,(void *)NULL);
 		g_free(buf);
 		return;
 		
@@ -438,7 +438,7 @@ void gButton::setText(const char *st)
 	if (shortcut) 
 		gtk_widget_add_accelerator(widget, "clicked", accel, (guint)shortcut, GDK_MOD1_MASK, (GtkAccelFlags)0);
 	
-	g_object_set(G_OBJECT(rendtxt),"markup",buf,NULL);
+	g_object_set(G_OBJECT(rendtxt),"markup",buf,(void *)NULL);
 	
 	g_free(buf);
 	

@@ -34,6 +34,4 @@ extern GB_DESC CColorInfoDesc[];
 
 #define COLOR_DEFAULT (-1)
 
-//long COLOR_from_rgb(long r, long g, long b);
-
 #endif

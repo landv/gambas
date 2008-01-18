@@ -86,7 +86,7 @@ BEGIN_METHOD (CCOMPRESS_String,GB_STRING Source;GB_INTEGER Level;GB_BOOLEAN Allo
 
 	int level;
 	char *target=NULL;
-	unsigned long lent;
+	unsigned int lent;
 	int allow=0;
 	
 	Check_Driver();

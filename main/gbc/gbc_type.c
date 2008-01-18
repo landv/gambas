@@ -4,7 +4,7 @@
 
   Datatypes definitions and management
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 #include "gbc_compile.h"
 
 
-PUBLIC const char *TYPE_name[] = 
+const char *TYPE_name[] = 
 {
   "Void", "Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date",
   "String", "CString", "Variant", "Array", "Function", "Class", "Null",
@@ -44,26 +44,7 @@ PUBLIC const char *TYPE_name[] =
 };
 
 
-/*
-PUBLIC TYPE_ID TYPE_get_id(TYPE type)
-{
-  if (TYPE_is_object(type))
-    return T_OBJECT;
-  else
-    return (TYPE_get_value(type) & 0xFF);
-}
-
-
-PUBLIC long TYPE_get_class(TYPE type)
-{
-  if (TYPE_is_object(type))
-    return TYPE_get_value(type);
-  else
-    return -1;
-}
-*/
-
-PUBLIC TYPE TYPE_make(TYPE_ID id, short value, int flag)
+TYPE TYPE_make(TYPE_ID id, short value, int flag)
 {
   TYPE type;
 
@@ -79,7 +60,7 @@ PUBLIC TYPE TYPE_make(TYPE_ID id, short value, int flag)
 }
 
 
-PUBLIC long TYPE_sizeof(TYPE type)
+size_t TYPE_sizeof(TYPE type)
 {
   TYPE_ID id = TYPE_get_id(type);
 
@@ -121,7 +102,7 @@ PUBLIC long TYPE_sizeof(TYPE type)
     case T_ARRAY:
       {
         int i;
-        long size;
+        size_t size;
         CLASS_ARRAY *array = &JOB->class->array[TYPE_get_value(type)];
 
         size = 1;
@@ -140,31 +121,31 @@ PUBLIC long TYPE_sizeof(TYPE type)
 
 
 
-PUBLIC char *TYPE_get_desc(TYPE type)
+char *TYPE_get_desc(TYPE type)
 {
   static char buf[256];
 
   TYPE_ID id;
-  long value;
+  int value;
 
   id = TYPE_get_id(type);
   value = TYPE_get_value(type);
 
   if (id == T_ARRAY)
   {
-    strcpy(buf, TYPE_name[JOB->class->array[value].type.t.id]);
-    strcat(buf, "[]");
+    strlcpy(buf, TYPE_name[JOB->class->array[value].type.t.id], sizeof(buf));
+    strlcat(buf, "[]", sizeof(buf));
   }
   else
   {
-    strcpy(buf, TYPE_name[id]);
+    strlcpy(buf, TYPE_name[id], sizeof(buf));
   }
 
   return buf;
 }
 
 
-PUBLIC const char *TYPE_get_short_desc(TYPE type)
+const char *TYPE_get_short_desc(TYPE type)
 {
   static const char *name[] = {
     "", "b", "i", "i", "i", "l", "g", "f", "d",
@@ -173,7 +154,7 @@ PUBLIC const char *TYPE_get_short_desc(TYPE type)
     };
 
   TYPE_ID id;
-  long value;
+  int value;
 
   id = TYPE_get_id(type);
   value = TYPE_get_value(type);

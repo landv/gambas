@@ -33,6 +33,7 @@
 int setenv(const char *name, const char *value, int overwrite)
 {
   char *env;
+  int env_size; 
 
   if (!name || *name == 0)
     return (-1);
@@ -43,13 +44,14 @@ int setenv(const char *name, const char *value, int overwrite)
       return 0;
   }
 
-  env = malloc(strlen(name) + strlen(value) + 2);
+  env_size = strlen(name) + strlen(value) + 2;
+  env = malloc(env_size);
   if (!env)
     return (-1);
 
-  strcpy(env, name);
-  strcat(env, "=");
-  strcat(env, value);
+  strlcpy(env, name, env_size);
+  strlcat(env, "=", env_size);
+  strlcat(env, value, env_size);
   putenv(env);
 
   return 0;

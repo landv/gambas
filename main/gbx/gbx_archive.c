@@ -46,7 +46,7 @@
 #include "gb_arch_temp.h"
 
 /* main archive project (used only if gbx is run with -x flag) */
-PUBLIC ARCHIVE *ARCHIVE_main = NULL;
+ARCHIVE *ARCHIVE_main = NULL;
 
 static ARCHIVE *_archive_list = NULL;
 
@@ -57,7 +57,7 @@ static int arch_index = 0;
 static ARCH *arch_dir = NULL;
 
 
-PUBLIC ARCHIVE *ARCHIVE_create(const char *name)
+ARCHIVE *ARCHIVE_create(const char *name)
 {
   ARCHIVE *arch;
 
@@ -151,19 +151,19 @@ static void load_archive(ARCHIVE *arch, const char *path)
 }
 
 
-PUBLIC void ARCHIVE_load(ARCHIVE *arch)
+void ARCHIVE_load(ARCHIVE *arch)
 {
   char *path = FILE_buffer();
 
-  sprintf(path, ARCH_PATTERN, COMPONENT_path, arch->name);
+  snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_path, arch->name);
   if (!FILE_exist(path))
-	  sprintf(path, ARCH_PATTERN, COMPONENT_user_path, arch->name);
+	  snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_user_path, arch->name);
 
 	load_archive(arch, path);
 }
 
 
-PUBLIC void ARCHIVE_create_main(const char *path)
+void ARCHIVE_create_main(const char *path)
 {
   ARCHIVE_main = ARCHIVE_create(NULL);
 
@@ -174,13 +174,13 @@ PUBLIC void ARCHIVE_create_main(const char *path)
 }
 
 
-PUBLIC void ARCHIVE_load_main()
+void ARCHIVE_load_main()
 {
 	load_exported_class(ARCHIVE_main);
 }
 
 
-PUBLIC void ARCHIVE_delete(ARCHIVE *arch)
+void ARCHIVE_delete(ARCHIVE *arch)
 {
   LIST_remove(&_archive_list, arch, &arch->list);
 
@@ -194,14 +194,14 @@ PUBLIC void ARCHIVE_delete(ARCHIVE *arch)
 }
 
 
-PUBLIC void ARCHIVE_init(void)
+void ARCHIVE_init(void)
 {
   //ARCH_create(path);
   //ARCHIVE_main = _arch_list;
 }
 
 
-PUBLIC void ARCHIVE_exit(void)
+void ARCHIVE_exit(void)
 {
   if (ARCHIVE_main)
     ARCHIVE_delete(ARCHIVE_main);
@@ -229,7 +229,7 @@ static bool get_current(ARCHIVE **parch)
 }
 
 /* Can return the main archive even if we are not running an executable */
-PUBLIC bool ARCHIVE_get_current(ARCHIVE **parch)
+bool ARCHIVE_get_current(ARCHIVE **parch)
 {
   if (COMPONENT_current && COMPONENT_current->archive)
     *parch = COMPONENT_current->archive;
@@ -242,7 +242,7 @@ PUBLIC bool ARCHIVE_get_current(ARCHIVE **parch)
 }
 
 
-PUBLIC bool ARCHIVE_get(ARCHIVE *arch, const char *path, int len_path, ARCHIVE_FIND *find)
+bool ARCHIVE_get(ARCHIVE *arch, const char *path, int len_path, ARCHIVE_FIND *find)
 {
   ARCH_FIND f;
 
@@ -261,7 +261,7 @@ PUBLIC bool ARCHIVE_get(ARCHIVE *arch, const char *path, int len_path, ARCHIVE_F
 }
 
 
-PUBLIC bool ARCHIVE_exist(ARCHIVE *arch, const char *path)
+bool ARCHIVE_exist(ARCHIVE *arch, const char *path)
 {
   ARCHIVE_FIND find;
 
@@ -272,7 +272,7 @@ PUBLIC bool ARCHIVE_exist(ARCHIVE *arch, const char *path)
 }
 
 
-PUBLIC bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path)
+bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path)
 {
   ARCHIVE_FIND find;
 
@@ -283,7 +283,7 @@ PUBLIC bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path)
 }
 
 
-PUBLIC void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
+void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
 {
   ARCHIVE_FIND find;
   struct stat buf;
@@ -309,13 +309,13 @@ PUBLIC void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
 }
 
 
-PUBLIC bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
+bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
 {
   return ARCH_read(arch->arch, pos, buffer, len);
 }
 
 
-PUBLIC void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern)
+void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern)
 {
 	char abs_path[MAX_PATH];
 
@@ -348,7 +348,7 @@ PUBLIC void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *patte
 }
 
 
-PUBLIC bool ARCHIVE_dir_next(char **name, int *len, int attr)
+bool ARCHIVE_dir_next(char **name, int *len, int attr)
 {
   SYMBOL *sym;
   char *s = NULL;
@@ -403,7 +403,7 @@ PUBLIC bool ARCHIVE_dir_next(char **name, int *len, int attr)
 }
 
 
-PUBLIC bool ARCHIVE_check_addr(char *addr)
+bool ARCHIVE_check_addr(char *addr)
 {
   ARCHIVE *arch;
   ARCH *a;

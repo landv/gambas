@@ -52,7 +52,7 @@ char *CAPPLICATION_Theme = 0;
 	    == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
 		nitems_ret == (unsigned) (p->number_of_desktops * 4)) {
-		long *d = (long *) data_ret;
+		int *d = (int *) data_ret;
 		int i, j;
 		for (i = 0, j = 0; i < p->number_of_desktops; i++) {
 		    p->workarea[i].pos.x       = d[j++];
@@ -128,7 +128,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CAPP_busy)
 
-  long busy;
+  int busy;
 
   if (READ_PROPERTY)
     GB.ReturnInteger(screen_busy);

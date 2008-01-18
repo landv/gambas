@@ -44,9 +44,9 @@
 
 
 static const char *_str;
-static long _len;
-static long _pos;
-static long _clen;
+static int _len;
+static int _pos;
+static int _clen;
 
 static const char _char_length[256] =
 {
@@ -82,7 +82,7 @@ static int get_char_length(const char *s)
 }
 #endif
 
-static void init_conv(const char *str, long len)
+static void init_conv(const char *str, int len)
 {
   _str = str;
   _len = len;
@@ -90,7 +90,7 @@ static void init_conv(const char *str, long len)
   _clen = -1;
 }
 
-static long get_next_pos(void)
+static int get_next_pos(void)
 {
   if (_pos >= _len)
     return 0;
@@ -101,7 +101,7 @@ static long get_next_pos(void)
 }
 
 
-static long get_pos(long index)
+static int get_pos(int index)
 {
 	int i;
 
@@ -111,10 +111,10 @@ static long get_pos(long index)
 	return _pos;
 }
 
-static long get_length(void)
+static int get_length(void)
 {
-  long len;
-  long i;
+  int len;
+  int i;
 
   if (_clen >= 0)
     return _clen;
@@ -132,7 +132,7 @@ static long get_length(void)
   return len;
 }
 
-static long byte_to_index(const char *str, long len, long byte)
+static int byte_to_index(const char *str, int len, int byte)
 {
   if (byte < 1)
   	return 0;
@@ -145,7 +145,7 @@ static long byte_to_index(const char *str, long len, long byte)
   return get_length();
 }
 
-static long index_to_byte(const char *str, long len, long index)
+static int index_to_byte(const char *str, int len, int index)
 {
 	if (index <= 0)
 		return 0;
@@ -178,10 +178,10 @@ BEGIN_METHOD(string_index, GB_STRING str; GB_INTEGER pos)
 END_METHOD
 
 
-static void get_substring(long start, long len)
+static void get_substring(int start, int len)
 {
-  long i;
-  long pos;
+  int i;
+  int pos;
 
   if (len < 0)
     len += get_length();
@@ -215,8 +215,8 @@ static void get_substring(long start, long len)
 
 BEGIN_METHOD(string_mid, GB_STRING str; GB_INTEGER start; GB_INTEGER len)
 
-  long start = VARG(start);
-  long len = VARGOPT(len, LENGTH(str));
+  int start = VARG(start);
+  int len = VARGOPT(len, LENGTH(str));
 
   if (start < 1)
   {
@@ -232,7 +232,7 @@ END_METHOD
 
 BEGIN_METHOD(string_left, GB_STRING str; GB_INTEGER len)
 
-  long len = VARGOPT(len, 1);
+  int len = VARGOPT(len, 1);
 
   init_conv(STRING(str), LENGTH(str));
 
@@ -243,7 +243,7 @@ END_METHOD
 
 BEGIN_METHOD(string_right, GB_STRING str; GB_INTEGER len)
 
-  long len = VARGOPT(len, 1);
+  int len = VARGOPT(len, 1);
 
   init_conv(STRING(str), LENGTH(str));
 
@@ -255,7 +255,7 @@ BEGIN_METHOD(string_right, GB_STRING str; GB_INTEGER len)
 END_METHOD
 
 
-static void convert_string(char *str, long len, bool upper)
+static void convert_string(char *str, int len, bool upper)
 {
   char *charset;
   char *temp = NULL;
@@ -288,63 +288,6 @@ static void convert_string(char *str, long len, bool upper)
   GB_ReturnString(temp);
 }
 
-#if 0
-static int compare_string(char *s1, long l1, char *s2, long l2, bool nocase)
-{
-  char *charset;
-  wchar_t *t1 = NULL;
-  wchar_t *t2 = NULL;
-  int i, len , diff;
-  wchar_t wc1, wc2;
-  
-	if (l1 == 0)
-	{
-		if (l2 == 0)
-			return 0;
-		else
-			return (-1);
-	}
-	else if (l2 == 0)
-		return 1;
-
-	charset = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
-
-	if (STRING_conv((char **)&t1, s1, l1, "UTF-8", charset, FALSE)
-		  || STRING_conv((char **)&t2, s2, l2, "UTF-8", charset, FALSE))
-	{
-		return nocase ? TABLE_compare_ignore_case(s1, l1, s2, l2) : TABLE_compare(s1, l1, s2, l2);
-	}
-	
-	l1 = STRING_length((char *)t1) / sizeof(wchar_t);
-	l2 = STRING_length((char *)t2) / sizeof(wchar_t);
-	
-	len = Min(l1, l2);
-	
-	if (nocase)
-	{
-		for (i = 0; i < len; i++)
-		{
-			wc1 = towlower(t1[i]);
-			wc2 = towlower(t2[i]);
-			if (wc1 > wc2) return 1;
-			if (wc1 < wc2) return -1;
-		}
-	}
-	else
-	{
-		for (i = 0; i < len; i++)
-		{
-			wc1 = t1[i];
-			wc2 = t2[i];
-			if (wc1 > wc2) return 1;
-			if (wc1 < wc2) return -1;
-		}
-	}
-
-  diff =  l1 - l2;
-  return (diff < 0) ? (-1) : (diff > 0) ? 1 : 0;
-}
-#endif
 
 BEGIN_METHOD(string_lower, GB_STRING str)
 
@@ -372,7 +315,7 @@ END_METHOD
 
 BEGIN_METHOD(string_code, GB_STRING str; GB_INTEGER index)
 
-	long index, pos, npos;
+	int index, pos, npos;
 	const char *charset = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
 	char *temp;
 
@@ -397,13 +340,13 @@ BEGIN_METHOD(string_code, GB_STRING str; GB_INTEGER index)
 	}
 	
 	STRING_conv(&temp, STRING(str) + pos, npos - pos, "UTF-8", charset, TRUE);
-	GB_ReturnInteger(*((long *)temp));
+	GB_ReturnInteger(*((int *)temp));
 
 END_METHOD
 
-static void string_search(const char *str, long len, const char *pattern, long lenp, long start, bool right)
+static void string_search(const char *str, int len, const char *pattern, int lenp, int start, bool right)
 {
-	long pos;
+	int pos;
 
 	if (start)
 		start = index_to_byte(str, len, start);
@@ -434,7 +377,7 @@ END_METHOD
 
 #endif
 
-PUBLIC GB_DESC NATIVE_String[] =
+GB_DESC NATIVE_String[] =
 {
   GB_DECLARE("String", 0),  GB_VIRTUAL_CLASS(),
 

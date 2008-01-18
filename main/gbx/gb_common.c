@@ -43,7 +43,6 @@ static volatile int _got_error;
 
 PUBLIC void COMMON_init(void)
 {
-  COMMON_case_init();
 }
 
 
@@ -71,9 +70,9 @@ PUBLIC bool CHECK_got_error(void)
   return _got_error;
 }
 
-PUBLIC bool CHECK_address(void *ptr, int len)
+PUBLIC bool CHECK_address(void *ptr, size_t len)
 {
-  long i;
+  offset_t i;
 
   CHECK_enter();
   if (sigsetjmp(CHECK_jump, TRUE) == 0)
@@ -85,19 +84,19 @@ PUBLIC bool CHECK_address(void *ptr, int len)
   return _got_error;
 }
 
-PUBLIC bool CHECK_strlen(char *ptr, int *len)
+PUBLIC bool CHECK_strlen(char *ptr, size_t *len)
 {
-  long l;
+  size_t l = 0;
 
   CHECK_enter();
   if (sigsetjmp(CHECK_jump, TRUE) == 0)
   {
     l = strlen(ptr);
-    //while (!*ptr++)
-    // l++;
     *len = l;
   }
   CHECK_leave();
+  if (l != (size_t)(int)l)
+  	_got_error = TRUE;
   return _got_error;
 }
 

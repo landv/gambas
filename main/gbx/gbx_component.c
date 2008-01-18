@@ -59,23 +59,23 @@
 /*#define DEBUG*/
 /*#define DEBUG_PRELOAD*/
 
-PUBLIC COMPONENT *COMPONENT_current = NULL;
-PUBLIC COMPONENT *COMPONENT_main;
-PUBLIC int COMPONENT_count = 0;
-PUBLIC char *COMPONENT_path;
-PUBLIC char *COMPONENT_user_path;
+COMPONENT *COMPONENT_current = NULL;
+COMPONENT *COMPONENT_main;
+int COMPONENT_count = 0;
+char *COMPONENT_path;
+char *COMPONENT_user_path;
 
 static COMPONENT *_component_list = NULL;
 
 
-PUBLIC void COMPONENT_init(void)
+void COMPONENT_init(void)
 {
   LIBRARY_init();
   ARCHIVE_init();
 }
 
 
-PUBLIC void COMPONENT_exit(void)
+void COMPONENT_exit(void)
 {
   COMPONENT *comp;
 
@@ -94,7 +94,7 @@ PUBLIC void COMPONENT_exit(void)
 
 
 
-PUBLIC void COMPONENT_load_all(void)
+void COMPONENT_load_all(void)
 {
   COMPONENT *comp;
 
@@ -112,7 +112,7 @@ PUBLIC void COMPONENT_load_all(void)
 }
 
 
-PUBLIC COMPONENT *COMPONENT_find(const char *name)
+COMPONENT *COMPONENT_find(const char *name)
 {
   COMPONENT *comp;
 
@@ -130,7 +130,7 @@ PUBLIC COMPONENT *COMPONENT_find(const char *name)
 }
 
 
-PUBLIC COMPONENT *COMPONENT_create(const char *name)
+COMPONENT *COMPONENT_create(const char *name)
 {
   COMPONENT *comp;
   char *path;
@@ -158,7 +158,7 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
 	// System wide component, located in /usr/local/lib/gambas2 (by default)
 
   path = FILE_buffer();
-  sprintf(path, LIB_PATTERN, COMPONENT_path, name);
+  snprintf(path, FILE_buffer_maxsize(), LIB_PATTERN, COMPONENT_path, name);
 
   if (FILE_exist(path))
     comp->library = LIBRARY_create(name);
@@ -166,7 +166,7 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
 	if (can_archive)
 	{
 		path = FILE_buffer();
-		sprintf(path, ARCH_PATTERN, COMPONENT_path, name);
+		snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_path, name);
 
 		if (FILE_exist(path))
 			comp->archive = ARCHIVE_create(name);
@@ -178,7 +178,7 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
 	// User specific component, located in ~/.local/lib/gambas2
 
   path = FILE_buffer();
-  sprintf(path, LIB_PATTERN, COMPONENT_user_path, name);
+  snprintf(path, FILE_buffer_maxsize(), LIB_PATTERN, COMPONENT_user_path, name);
 
   if (FILE_exist(path))
     comp->library = LIBRARY_create(name);
@@ -186,7 +186,7 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
 	if (can_archive)
 	{
 		path = FILE_buffer();
-		sprintf(path, ARCH_PATTERN, COMPONENT_user_path, name);
+		snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_user_path, name);
 
 		if (FILE_exist(path))
 			comp->archive = ARCHIVE_create(name);
@@ -196,7 +196,7 @@ PUBLIC COMPONENT *COMPONENT_create(const char *name)
 
   if (comp->library || comp->archive || !can_archive)
   	goto __OK;
-
+	
 	error = TRUE;
 
 __OK:
@@ -214,7 +214,7 @@ __OK:
 }
 
 
-PUBLIC void COMPONENT_delete(COMPONENT *comp)
+void COMPONENT_delete(COMPONENT *comp)
 {
   COMPONENT_unload(comp);
   LIST_remove(&_component_list, comp, &comp->list);
@@ -232,7 +232,7 @@ PUBLIC void COMPONENT_delete(COMPONENT *comp)
 }
 
 
-PUBLIC void COMPONENT_load(COMPONENT *comp)
+void COMPONENT_load(COMPONENT *comp)
 {
   COMPONENT *current;
 
@@ -256,7 +256,7 @@ PUBLIC void COMPONENT_load(COMPONENT *comp)
 }
 
 
-PUBLIC void COMPONENT_unload(COMPONENT *comp)
+void COMPONENT_unload(COMPONENT *comp)
 {
   if (comp->library)
     LIBRARY_unload(comp->library);
@@ -267,7 +267,7 @@ PUBLIC void COMPONENT_unload(COMPONENT *comp)
 }
 
 
-PUBLIC COMPONENT *COMPONENT_next(COMPONENT *comp)
+COMPONENT *COMPONENT_next(COMPONENT *comp)
 {
   if (comp)
     return (COMPONENT *)(comp->list.next);
@@ -276,7 +276,7 @@ PUBLIC COMPONENT *COMPONENT_next(COMPONENT *comp)
 }
 
 
-PUBLIC void COMPONENT_translation_must_be_reloaded(void)
+void COMPONENT_translation_must_be_reloaded(void)
 {
   COMPONENT *comp;
 
@@ -291,7 +291,7 @@ PUBLIC void COMPONENT_translation_must_be_reloaded(void)
 }
 
 
-PUBLIC void COMPONENT_signal(int signal, void *param)
+void COMPONENT_signal(int signal, void *param)
 {
   COMPONENT *comp;
 
@@ -302,7 +302,7 @@ PUBLIC void COMPONENT_signal(int signal, void *param)
   }
 }
 
-PUBLIC bool COMPONENT_get_info(const char *key, void **value)
+bool COMPONENT_get_info(const char *key, void **value)
 {
   COMPONENT *comp;
   

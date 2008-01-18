@@ -510,7 +510,7 @@ END_METHOD
 BEGIN_PROPERTY(CICONVIEW_scrollbar)
 
   //QScrollView *wid = (QScrollView *)QWIDGET(_object);
-  long scroll;
+  int scroll;
 
   if (READ_PROPERTY)
   {

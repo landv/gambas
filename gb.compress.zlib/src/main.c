@@ -54,6 +54,16 @@ GB_STREAM_DESC ZStream = {
 	lof: CZ_stream_lof
 };
 
+typedef
+	struct {
+    GB_STREAM_DESC *desc;
+    int _reserved;
+    int mode;
+    gzFile handle;
+    }
+  STREAM_COMPRESS;
+
+
 /*****************************************************************************
 
   The driver interface
@@ -106,7 +116,7 @@ static int default_compression(void)
 /*********************************************************************************
  The Driver must provide this function:
 
- void c_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+ void c_String(char **target,unsigned int *lent,char *source,unsigned int len,int level)
 
  It is called to compress a String and return it compressed. The object will
  pass the following values:
@@ -123,8 +133,9 @@ static int default_compression(void)
  or NULL and zero if it fails by any reason
 
  *********************************************************************************/
-static void c_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+static void c_String(char **target,unsigned int *lent,char *source,unsigned int len,int level)
 {
+	unsigned long l;
 	*lent=0;
 	*target=NULL;
 
@@ -134,7 +145,8 @@ static void c_String(char **target,unsigned long *lent,char *source,unsigned lon
 
 	GB.Alloc ((void**)target,sizeof(char)*(*lent));
 
-	if (Z_OK != compress2 ((Bytef*)(*target),lent,source,len,level))
+	l = *lent;
+	if (Z_OK != compress2 ((Bytef*)(*target),&l,(Bytef *)source,len,level))
 	{
 		GB.Free((void**)target);
 		*lent=0;
@@ -142,12 +154,13 @@ static void c_String(char **target,unsigned long *lent,char *source,unsigned lon
 		GB.Error("Unable to compress string");
 		return;
 	}
-
+	
+	*lent = (uint)l;
 }
 /*********************************************************************************
  The Driver must provide this function:
 
- void u_String(char **target,unsigned long *lent,char *source,unsigned long len,int level)
+ void u_String(char **target,unsigned int *lent,char *source,unsigned int len,int level)
 
  It is called to decompress a String and return it decompressed. The object will
  pass the following values:
@@ -163,9 +176,10 @@ static void c_String(char **target,unsigned long *lent,char *source,unsigned lon
  The function must store the decompressed string in 'target', and its length in 'lent',
  or NULL and zero if it fails by any reason
  *********************************************************************************/
-static void u_String(char **target,unsigned long *lent,char *source,unsigned long len)
+static void u_String(char **target,unsigned int *lent,char *source,unsigned int len)
 {
 	int myok=Z_BUF_ERROR;
+	unsigned long l;
 
 	/* we assume src len * 1.8 as target len */
 	*lent=1.8*len;
@@ -173,7 +187,9 @@ static void u_String(char **target,unsigned long *lent,char *source,unsigned lon
 
 	while (myok==Z_BUF_ERROR)
 	{
-		myok=uncompress ((Bytef*)(*target),lent,source,len);
+		l = *lent;
+		myok=uncompress ((Bytef*)(*target),&l,(Bytef *)source,len);
+		*lent = (uint)l;
 		switch (myok)
 		{
 			case Z_OK: break;
@@ -221,7 +237,7 @@ static void c_File(char *source,char *target,int level)
 {
 	FILE *src;
 	gzFile dst;
-	unsigned long len;
+	unsigned int len;
 	char buf[GB_Z_BUFFER];
 	char bufmode[4]={'w','b',0,0};
 
@@ -285,7 +301,7 @@ static void u_File(char *source,char *target)
 	gzFile src;
 	FILE *dst;
 	char buf[GB_Z_BUFFER];
-	unsigned long len;
+	unsigned int len;
 
 	if ( (src=gzopen(source,"rb"))==NULL)
 	{
@@ -334,7 +350,7 @@ static void c_Open(char *path,int level,GB_STREAM *stream)
 	stream->desc=&ZStream;
 	if (level != Z_DEFAULT_COMPRESSION ) mode[2]=(char)(level+48);
 	stream->_free[0]=MODE_WRITE;
-	stream->_free[1]=(long)gzopen(path,mode);
+	stream->_free[1]=(intptr_t)gzopen(path,mode);
 
 	if (stream->_free[1]) return;
 
@@ -350,15 +366,15 @@ static void c_Open(char *path,int level,GB_STREAM *stream)
 
 }
 
-static void u_Open(char *path,GB_STREAM *stream)
+static void u_Open(char *path, STREAM_COMPRESS *stream)
 {
 	char mode[3]={'r','b',0};
 
-	stream->desc=&ZStream;
-	stream->_free[0]=MODE_READ;
-	stream->_free[1]=(long)gzopen(path,mode);
+	stream->desc = &ZStream;
+	stream->mode = MODE_READ;
+	stream->handle = gzopen(path, mode);
 
-	if (stream->_free[1]) return;
+	if (stream->handle) return;
 
 	stream->desc=NULL;
 	if ( errno == Z_MEM_ERROR )
@@ -374,51 +390,54 @@ static void u_Open(char *path,GB_STREAM *stream)
  Stream related stuff
 **************************************************************************/
 /* not allowed stream methods */
-static int CZ_stream_lof(GB_STREAM *stream, long long *len){return -1;}
-static int CZ_stream_seek(GB_STREAM *stream, long long offset, int whence){	return -1;}
+static int CZ_stream_lof(GB_STREAM *stream, int64_t *len){return -1;}
+static int CZ_stream_seek(GB_STREAM *stream, int64_t offset, int whence){	return -1;}
 static int CZ_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
 /* allowed stream methods */
-static int CZ_stream_tell(GB_STREAM *stream, long long *npos)
+static int CZ_stream_tell(GB_STREAM *stream, int64_t *npos)
 {
-	*npos=gztell ((gzFile)stream->_free[1]);
+	STREAM_COMPRESS *s = (STREAM_COMPRESS *)stream;
+	*npos=gztell (s->handle);
 	if ((*npos)!=-1) return 0;
-	gzclose ((gzFile)stream->_free[1]);
+	gzclose (s->handle);
 	stream->desc=NULL;
 	return -1;
 }
 
 static int CZ_stream_flush(GB_STREAM *stream)
 {
-	gzflush((gzFile)stream->_free[1],Z_SYNC_FLUSH);
+	gzflush(((STREAM_COMPRESS *)stream)->handle,Z_SYNC_FLUSH);
 	return 0;
 }
 
 int CZ_stream_close(GB_STREAM *stream)
 {
-	gzclose ((gzFile)stream->_free[1]);
+	gzclose (((STREAM_COMPRESS *)stream)->handle);
 	stream->desc=NULL;
 	return 0;
 }
 
-static int CZ_stream_write(GB_STREAM *stream, char *buffer, long len)
+static int CZ_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	if (stream->_free[0]==MODE_READ) return -1;
-	if ( gzwrite ((gzFile)stream->_free[1], (voidp)buffer, (unsigned)len) == len) return 0;
-	gzclose ((gzFile)stream->_free[1]);
+	STREAM_COMPRESS *s = (STREAM_COMPRESS *)stream;
+	if (s->mode==MODE_READ) return -1;
+	if ( gzwrite (s->handle, (voidp)buffer, (unsigned)len) == len) return 0;
+	gzclose (s->handle);
 	stream->desc=NULL;
 	return -1;
 }
 
 static int CZ_stream_eof(GB_STREAM *stream)
 {
-	return gzeof ((gzFile)stream->_free[1]);
+	return gzeof (((STREAM_COMPRESS *)stream)->handle);
 }
 
-static int CZ_stream_read(GB_STREAM *stream, char *buffer, long len)
+static int CZ_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	if (stream->_free[0]==MODE_WRITE) return -1;
-	if ( gzread ((gzFile)stream->_free[1], (voidp)buffer, (unsigned)len) == len) return 0;
-	gzclose ((gzFile)stream->_free[1]);
+	STREAM_COMPRESS *s = (STREAM_COMPRESS *)stream;
+	if (s->mode==MODE_WRITE) return -1;
+	if ( gzread (s->handle, (voidp)buffer, (unsigned)len) == len) return 0;
+	gzclose (s->handle);
 	stream->desc=NULL;
 	return -1;
 }

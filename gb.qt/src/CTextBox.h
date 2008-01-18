@@ -56,7 +56,7 @@ typedef
 typedef
   struct {
     CWIDGET widget;
-    long index;
+    int index;
     bool sorted;
     }
   CCOMBOBOX;

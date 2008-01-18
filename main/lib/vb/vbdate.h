@@ -28,6 +28,6 @@
 #include "main.h"
 
 void DATE_adjust( GB_DATE *vdate, int period, int interval); /* Adjust the date by the interval period */
-long int DATE_diff( GB_DATE *vdate1, GB_DATE *vdate2, int period);
+int DATE_diff( GB_DATE *vdate1, GB_DATE *vdate2, int period);
 
 #endif

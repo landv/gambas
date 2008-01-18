@@ -78,7 +78,7 @@ typedef
 typedef
 	struct {
 		CCONTAINER parent;
-		long save;
+		int32_t save;
 		}
 	CUSERCONTAINER;
 

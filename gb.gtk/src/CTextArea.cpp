@@ -42,7 +42,7 @@
 
 DECLARE_EVENT(EVENT_Change);
 DECLARE_EVENT(EVENT_Cursor);
-DECLARE_EVENT(EVENT_Link); //TODO
+//DECLARE_EVENT(EVENT_Link); //TODO
 
 static void cb_change(gTextArea *sender)
 {
@@ -306,7 +306,7 @@ GB_DESC CTextAreaSelectionDesc[] =
   GB_PROPERTY_READ("Start", "i", CTEXTAREA_sel_start),
   GB_PROPERTY_READ("Pos", "i", CTEXTAREA_sel_start),
 
-  GB_METHOD("Hide", NULL, CTEXTAREA_sel_clear, NULL),
+  GB_METHOD("Hide", 0, CTEXTAREA_sel_clear, 0),
 
   GB_END_DECLARE
 };
@@ -315,7 +315,7 @@ GB_DESC CTextAreaDesc[] =
 {
   GB_DECLARE("TextArea", sizeof(CTEXTAREA)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTEXTAREA_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CTEXTAREA_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CTEXTAREA_text),
   GB_PROPERTY_READ("Length", "i", CTEXTAREA_length),
@@ -330,28 +330,28 @@ GB_DESC CTextAreaDesc[] =
   GB_PROPERTY("ScrollBar", "i", CTEXTAREA_scrollbar),
 
   GB_PROPERTY_SELF("Selection", ".TextAreaSelection"),
-  GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
-  GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),
+  GB_METHOD("Select", 0, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
+  GB_METHOD("SelectAll", 0, CTEXTAREA_sel_all, 0),
+  GB_METHOD("Unselect", 0, CTEXTAREA_sel_clear, 0),
 	GB_PROPERTY_READ("Selected", "b", CTEXTAREA_selected),
 
-  GB_METHOD("Clear", NULL, CTEXTAREA_clear, NULL),
-  GB_METHOD("Insert", NULL, CTEXTAREA_insert, "(Text)s"),
+  GB_METHOD("Clear", 0, CTEXTAREA_clear, 0),
+  GB_METHOD("Insert", 0, CTEXTAREA_insert, "(Text)s"),
 
-  GB_METHOD("Copy", NULL, CTEXTAREA_copy, NULL),
-  GB_METHOD("Cut", NULL, CTEXTAREA_cut, NULL),
-  GB_METHOD("Paste", NULL, CTEXTAREA_paste, NULL),
-  GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
-  GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),
+  GB_METHOD("Copy", 0, CTEXTAREA_copy, 0),
+  GB_METHOD("Cut", 0, CTEXTAREA_cut, 0),
+  GB_METHOD("Paste", 0, CTEXTAREA_paste, 0),
+  GB_METHOD("Undo", 0, CTEXTAREA_undo, 0),
+  GB_METHOD("Redo", 0, CTEXTAREA_redo, 0),
 
   GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
   GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
   GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
 
-  GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
+  GB_METHOD("EnsureVisible", 0, CTEXTAREA_ensure_visible, 0),
   
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
-  GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
+  GB_EVENT("Change", 0, 0, &EVENT_Change),
+  GB_EVENT("Cursor", 0, 0, &EVENT_Cursor),
   
   TEXTAREA_DESCRIPTION,
 

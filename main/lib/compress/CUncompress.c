@@ -78,7 +78,7 @@ END_METHOD
 BEGIN_METHOD (CUNCOMPRESS_String,GB_STRING Source;)
 
 	char *target=NULL;
-	unsigned long lent=0;
+	unsigned int lent=0;
 
 	Check_Driver();
 	if (!LENGTH(Source)) { GB.ReturnNewString(NULL,0); return; }

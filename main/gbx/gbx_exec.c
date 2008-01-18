@@ -39,7 +39,7 @@
 
 #include "gbx_string.h"
 #include "gbx_date.h"
-// #include "gbx_array.h"
+#include "gbx_array.h"
 
 #include "gbx_c_collection.h"
 
@@ -47,31 +47,31 @@
 #include "gbx_exec.h"
 
 /* Current virtual machine state */
-PUBLIC STACK_CONTEXT EXEC_current = { 0 };
+STACK_CONTEXT EXEC_current = { 0 };
 /* Stack pointer */
-PUBLIC VALUE *SP = NULL;
+VALUE *SP = NULL;
 /* Current instruction opcode */
-PUBLIC PCODE EXEC_code;
+PCODE EXEC_code;
 /* Temporary storage or return value of a native function */
-PUBLIC VALUE TEMP;
+VALUE TEMP;
 /* Return value of a gambas function */
-PUBLIC VALUE RET;
+VALUE RET;
 /* SUPER was used for this stack pointer */
-PUBLIC VALUE *EXEC_super = NULL;
+VALUE *EXEC_super = NULL;
 /* CPU endianness */
-PUBLIC bool EXEC_big_endian;
+bool EXEC_big_endian;
 /* Current iterator */
-PUBLIC CENUM *EXEC_enum;
+CENUM *EXEC_enum;
 
-PUBLIC bool EXEC_debug = FALSE; /* Mode d�ogage */
-PUBLIC bool EXEC_arch = FALSE; /* Ex�ution d'une archive */
-PUBLIC bool EXEC_fifo = FALSE; /* D�ogage par fifo */
-PUBLIC EXEC_HOOK EXEC_Hook = { NULL };
-PUBLIC EXEC_FUNCTION EXEC;
-PUBLIC bool EXEC_main_hook_done = FALSE;
-PUBLIC int EXEC_return_value = 0;
+bool EXEC_debug = FALSE; /* Mode d�ogage */
+bool EXEC_arch = FALSE; /* Ex�ution d'une archive */
+bool EXEC_fifo = FALSE; /* D�ogage par fifo */
+EXEC_HOOK EXEC_Hook = { NULL };
+EXEC_FUNCTION EXEC;
+bool EXEC_main_hook_done = FALSE;
+int EXEC_return_value = 0;
 
-PUBLIC void EXEC_init(void)
+void EXEC_init(void)
 {
 	char test[4];
 
@@ -86,7 +86,7 @@ PUBLIC void EXEC_init(void)
 	test[2] = 0xCC;
 	test[3] = 0xDD;
 
-	EXEC_big_endian = *((ulong *)test) == 0xAABBCCDDL;
+	EXEC_big_endian = *((uint *)test) == 0xAABBCCDDL;
 	if (EXEC_big_endian)
 		fprintf(stderr, "** WARNING: CPU is big endian\n");
 	/*printf("%s endian\n", EXEC_big_endian ? "big" : "little");*/
@@ -95,7 +95,7 @@ PUBLIC void EXEC_init(void)
 }
 
 
-PUBLIC void BORROW(VALUE *value)
+void BORROW(VALUE *value)
 {
 	static void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
@@ -131,7 +131,7 @@ __NONE:
 }
 
 
-PUBLIC void UNBORROW(VALUE *value)
+void UNBORROW(VALUE *value)
 {
 	static void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
@@ -167,7 +167,7 @@ __NONE:
 }
 
 
-PUBLIC void RELEASE(VALUE *value)
+void RELEASE(VALUE *value)
 {
 	static void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
@@ -207,7 +207,7 @@ __NONE:
 	return;
 }
 
-PUBLIC void RELEASE_many(VALUE *value, int n)
+void RELEASE_many(VALUE *value, int n)
 {
 	static void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
@@ -256,7 +256,7 @@ PUBLIC void RELEASE_many(VALUE *value, int n)
 }
 
 #if 0
-PUBLIC void DUMP(VALUE *value)
+void DUMP(VALUE *value)
 {
 	static void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
@@ -307,7 +307,7 @@ __NONE:
 }
 #endif
 
-PUBLIC void EXEC_release_return_value(void)
+void EXEC_release_return_value(void)
 {
 	RELEASE(RP);
 	RP->type = T_VOID;
@@ -341,7 +341,7 @@ static bool exec_enter_can_quick(void)
 	return TRUE;
 }
 
-PUBLIC void EXEC_enter(void)
+void EXEC_enter(void)
 {
 	int i;
 	FUNCTION *func; // = EXEC.func;
@@ -483,7 +483,7 @@ PUBLIC void EXEC_enter(void)
 }
 
 
-PUBLIC void EXEC_enter_check(bool defined)
+void EXEC_enter_check(bool defined)
 {
 	if (defined && exec_enter_can_quick())
 		*PC = (*PC & 0xFF) | C_CALL_QUICK;
@@ -494,7 +494,7 @@ PUBLIC void EXEC_enter_check(bool defined)
 }
 
 
-PUBLIC void EXEC_enter_quick(void)
+void EXEC_enter_quick(void)
 {
 	int i;
 	FUNCTION *func;;
@@ -569,7 +569,7 @@ PUBLIC void EXEC_enter_quick(void)
 }
 
 
-PUBLIC void EXEC_leave(bool drop) //bool keep_ret_value)
+void EXEC_leave(bool drop) //bool keep_ret_value)
 {
 	int n;
 	bool keep_ret_value = FALSE;
@@ -666,9 +666,9 @@ PUBLIC void EXEC_leave(bool drop) //bool keep_ret_value)
 }
 
 
-PUBLIC void EXEC_function_real(bool keep_ret_value)
+void EXEC_function_real(bool keep_ret_value)
 {
-	boolean retry;
+	bool retry = FALSE;
 
 	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
 	STACK_push_frame(&EXEC_current);
@@ -825,7 +825,7 @@ PUBLIC void EXEC_function_real(bool keep_ret_value)
 }
 
 
-PUBLIC bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
+bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 {
 	TYPE save = GAMBAS_ReturnType;
 	GAMBAS_Error = FALSE;
@@ -848,7 +848,7 @@ PUBLIC bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *par
 }
 
 
-PUBLIC void EXEC_native(void)
+void EXEC_native(void)
 {
 	CLASS_DESC_METHOD *desc = EXEC.desc;
 	bool drop = EXEC.drop;
@@ -1020,7 +1020,7 @@ PUBLIC void EXEC_native(void)
 }
 
 
-PUBLIC void EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject, bool *pdefined)
+void EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject, bool *pdefined)
 {
 	static void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
@@ -1147,7 +1147,7 @@ __RETURN:
 }
 
 
-PUBLIC void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
+void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
 {
 	CLASS_DESC *desc;
 
@@ -1169,7 +1169,7 @@ PUBLIC void EXEC_public(CLASS *class, void *object, const char *name, int nparam
 	}
 	else
 	{
-		EXEC.index = (long)desc->method.exec;
+		EXEC.index = (int)(intptr_t)desc->method.exec;
 		//EXEC.func = &class->load->func[(long)desc->method.exec]
 		EXEC_function();
 	}
@@ -1177,7 +1177,7 @@ PUBLIC void EXEC_public(CLASS *class, void *object, const char *name, int nparam
 
 
 
-PUBLIC bool EXEC_spec(int special, CLASS *class, void *object, int nparam, bool drop)
+bool EXEC_spec(int special, CLASS *class, void *object, int nparam, bool drop)
 {
 	CLASS_DESC *desc;
 	short index = class->special[special];
@@ -1222,7 +1222,7 @@ PUBLIC bool EXEC_spec(int special, CLASS *class, void *object, int nparam, bool 
 	else
 	{
 		//EXEC.func = &class->load->func[(long)desc->method.exec]
-		EXEC.index = (long)desc->method.exec;
+		EXEC.index = (int)(intptr_t)desc->method.exec;
 		EXEC.native = FALSE;
 		EXEC_function_real(!drop);
 		if (!drop)
@@ -1258,7 +1258,7 @@ PUBLIC bool EXEC_spec(int special, CLASS *class, void *object, int nparam, bool 
 	not consumed by the child methods.
 */
 
-PUBLIC void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, boolean drop)
+void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, boolean drop)
 {
 	CLASS *her[MAX_INHERITANCE];
 	int npher[MAX_INHERITANCE];
@@ -1322,7 +1322,7 @@ PUBLIC void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, 
 	}
 }
 
-PUBLIC void *EXEC_create_object(CLASS *class, int np, char *event)
+void *EXEC_create_object(CLASS *class, int np, char *event)
 {
 	void *object;
 
@@ -1361,7 +1361,7 @@ PUBLIC void *EXEC_create_object(CLASS *class, int np, char *event)
 }
 
 
-PUBLIC void EXEC_new(void)
+void EXEC_new(void)
 {
 	CLASS *class;
 	int np;
@@ -1462,7 +1462,7 @@ PUBLIC void EXEC_new(void)
 }
 
 #if 0
-PUBLIC void EXEC_class(void)
+void EXEC_class(void)
 {
 	//fprintf(stderr, ">> EXEC_class: SP = %d  drop = %d\n", SP - (VALUE *)STACK_base, EXEC.drop);
 
@@ -1503,13 +1503,13 @@ PUBLIC void EXEC_class(void)
 #endif
 
 
-PUBLIC void EXEC_ILLEGAL(void)
+void EXEC_ILLEGAL(void)
 {
 	THROW(E_ILLEGAL);
 }
 
 
-PUBLIC void EXEC_quit(void)
+void EXEC_quit(void)
 {
 	GAMBAS_DoNotRaiseEvent = TRUE;
 
@@ -1518,7 +1518,7 @@ PUBLIC void EXEC_quit(void)
 	THROW(E_ABORT);
 }
 
-PUBLIC void *EXEC_auto_create(CLASS *class, bool ref)
+void *EXEC_auto_create(CLASS *class, bool ref)
 {
 	void *object;
 
@@ -1528,7 +1528,7 @@ PUBLIC void *EXEC_auto_create(CLASS *class, bool ref)
 	return object;
 }
 
-PUBLIC void EXEC_dup(int n)
+void EXEC_dup(int n)
 {
 	VALUE *src;
 	

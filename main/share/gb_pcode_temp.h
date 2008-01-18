@@ -47,9 +47,9 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
   int j;
   unsigned short op;
   unsigned short digit;
-  long value;
+  int value;
   #ifdef PROJECT_COMP
-  long index;
+  int index;
   TABLE *table;
   bool trans;
   #endif
@@ -163,15 +163,15 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
       break;
 
     case 0xD:
-      fprintf(out, "POP %s %ld", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
+      fprintf(out, "POP %s %d", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
       break;
 
     case 0xC:
-      fprintf(out, "PUSH %s %ld", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
+      fprintf(out, "PUSH %s %d", (value & 0x800) ? "STATIC" : "DYNAMIC", value & 0x7FF);
       break;
 
     case 0xB:
-      fprintf(out, "PUSH %s %ld", (value & 0x800) ? "FUNCTION" : "CLASS", value & 0x7FF);
+      fprintf(out, "PUSH %s %d", (value & 0x800) ? "FUNCTION" : "CLASS", value & 0x7FF);
       break;
 
     case 0xA:
@@ -255,8 +255,8 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
           break;
 
         case C_PUSH_LONG:
-          value = *((long *)&code[1]);
-          fprintf(out, "PUSH INTEGER %ld", value);
+          value = *((int *)&code[1]);
+          fprintf(out, "PUSH INTEGER %d", value);
           break;
 
         case C_PUSH_ME:

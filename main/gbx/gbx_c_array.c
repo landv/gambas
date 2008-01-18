@@ -265,7 +265,7 @@ static void *insert(CARRAY *_object, int index)
 
 
 
-PUBLIC void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
+void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
 {
 	VALUE_read(value, get_data(THIS, index), THIS->type);
 }
@@ -389,7 +389,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CARRAY_data)
 
-  GB_ReturnInt((int)THIS->data);
+  GB_ReturnPointer(THIS->data);
 
 END_PROPERTY
 
@@ -966,7 +966,7 @@ END_METHOD
 #endif /* #ifndef GBX_INFO */
 
 
-PUBLIC GB_DESC NATIVE_ArrayBounds[] =
+GB_DESC NATIVE_ArrayBounds[] =
 {
   GB_DECLARE(".Array.Bounds", sizeof(CARRAY)), GB_NOT_CREATABLE(),
 
@@ -976,7 +976,7 @@ PUBLIC GB_DESC NATIVE_ArrayBounds[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_Array[] =
+GB_DESC NATIVE_Array[] =
 {
   GB_DECLARE("Array", sizeof(CARRAY)), GB_NOT_CREATABLE(),
 
@@ -987,7 +987,7 @@ PUBLIC GB_DESC NATIVE_Array[] =
   GB_PROPERTY_READ("Max", "i", CARRAY_max),
   GB_PROPERTY_READ("Length", "i", CARRAY_count),
   GB_PROPERTY_READ("Dim", "i", CARRAY_dim),
-  GB_PROPERTY_READ("Data", "i", CARRAY_data),
+  GB_PROPERTY_READ("Data", "p", CARRAY_data),
   GB_PROPERTY_SELF("Bounds", ".Array.Bounds"),
 
   GB_METHOD("Remove", NULL, CARRAY_remove, "(Index)i[(Length)i]"),
@@ -1004,7 +1004,7 @@ PUBLIC GB_DESC NATIVE_Array[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_BooleanArray[] =
+GB_DESC NATIVE_BooleanArray[] =
 {
   GB_DECLARE("Boolean[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1034,7 +1034,7 @@ PUBLIC GB_DESC NATIVE_BooleanArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_ByteArray[] =
+GB_DESC NATIVE_ByteArray[] =
 {
   GB_DECLARE("Byte[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1064,7 +1064,7 @@ PUBLIC GB_DESC NATIVE_ByteArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_ShortArray[] =
+GB_DESC NATIVE_ShortArray[] =
 {
   GB_DECLARE("Short[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1094,7 +1094,7 @@ PUBLIC GB_DESC NATIVE_ShortArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_IntegerArray[] =
+GB_DESC NATIVE_IntegerArray[] =
 {
   GB_DECLARE("Integer[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1124,7 +1124,7 @@ PUBLIC GB_DESC NATIVE_IntegerArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_LongArray[] =
+GB_DESC NATIVE_LongArray[] =
 {
   GB_DECLARE("Long[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1155,7 +1155,7 @@ PUBLIC GB_DESC NATIVE_LongArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_StringArray[] =
+GB_DESC NATIVE_StringArray[] =
 {
   GB_DECLARE("String[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1185,7 +1185,7 @@ PUBLIC GB_DESC NATIVE_StringArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_FloatArray[] =
+GB_DESC NATIVE_FloatArray[] =
 {
   GB_DECLARE("Float[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1216,7 +1216,7 @@ PUBLIC GB_DESC NATIVE_FloatArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_SingleArray[] =
+GB_DESC NATIVE_SingleArray[] =
 {
   GB_DECLARE("Single[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1247,7 +1247,7 @@ PUBLIC GB_DESC NATIVE_SingleArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_DateArray[] =
+GB_DESC NATIVE_DateArray[] =
 {
   GB_DECLARE("Date[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1278,7 +1278,7 @@ PUBLIC GB_DESC NATIVE_DateArray[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_ObjectArray[] =
+GB_DESC NATIVE_ObjectArray[] =
 {
   GB_DECLARE("Object[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1307,7 +1307,7 @@ PUBLIC GB_DESC NATIVE_ObjectArray[] =
 
 #if 0
 #ifndef GBX_INFO
-PUBLIC GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
+GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 {
   GB_DECLARE("*[]", sizeof(CARRAY)), GB_INHERITS("Object[]"),
 
@@ -1335,7 +1335,7 @@ PUBLIC GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 #endif
 #endif
 
-PUBLIC GB_DESC NATIVE_VariantArray[] =
+GB_DESC NATIVE_VariantArray[] =
 {
   GB_DECLARE("Variant[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
@@ -1408,7 +1408,7 @@ static void add_entry()
 }
 
 
-PUBLIC void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool no_void)
+void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool no_void)
 {
 	int i;
 	char c;
@@ -1477,7 +1477,7 @@ PUBLIC void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char 
 
 /* Gambas API */
 
-PUBLIC void GB_ArrayNew(GB_ARRAY *array, uint type, int size)
+void GB_ArrayNew(GB_ARRAY *array, uint type, int size)
 {
   CLASS *class;
   int np;
@@ -1510,17 +1510,17 @@ PUBLIC void GB_ArrayNew(GB_ARRAY *array, uint type, int size)
   OBJECT_create((void **)array, class, NULL, NULL, np);
 }
 
-PUBLIC int GB_ArrayCount(GB_ARRAY array)
+int GB_ArrayCount(GB_ARRAY array)
 {
   return ARRAY_count(((CARRAY *)array)->data);
 }
 
-PUBLIC void *GB_ArrayAdd(GB_ARRAY array)
+void *GB_ArrayAdd(GB_ARRAY array)
 {
   return insert((CARRAY *)array, -1);
 }
 
-PUBLIC void *GB_ArrayGet(GB_ARRAY array, int index)
+void *GB_ArrayGet(GB_ARRAY array, int index)
 {
   return get_data((CARRAY *)array, index);
 }

@@ -113,17 +113,18 @@ GB_DESC CWatcherDesc[] =
 {
   GB_DECLARE("Watcher", sizeof(CWATCHER)),
 
-  GB_METHOD("_new", NULL, CWATCHER_new, "(Control)Control;"),
-  GB_METHOD("_free", NULL, CWATCHER_free, NULL),
+  GB_METHOD("_new", 0, CWATCHER_new, "(Control)Control;"),
+  GB_METHOD("_free", 0, CWATCHER_free, 0),
 
   GB_PROPERTY("Control", "Control", CWATCHER_control),
 
-  GB_EVENT("Move", NULL, NULL, &EVENT_Move),
-  GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
-  GB_EVENT("Show", NULL, NULL, &EVENT_Show),
-  GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
+  GB_EVENT("Move", 0, 0, &EVENT_Move),
+  GB_EVENT("Resize", 0, 0, &EVENT_Resize),
+  GB_EVENT("Show", 0, 0, &EVENT_Show),
+  GB_EVENT("Hide", 0, 0, &EVENT_Hide),
 
   GB_CONSTANT("_DefaultEvent", "s", "Resize"),
 
   GB_END_DECLARE
 };
+

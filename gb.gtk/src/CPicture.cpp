@@ -287,7 +287,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CIMAGE_data)
 
-	GB.ReturnInteger((int)IMAGE->data());
+	GB.ReturnPointer((void *)IMAGE->data());
 
 END_PROPERTY
 
@@ -326,11 +326,11 @@ GB_DESC CImageDesc[] =
 
   //GB_STATIC_METHOD("FromString","Image",CIMAGE_fromMemory,"(Data)s"),
 
-  GB_METHOD("_new", NULL, CIMAGE_new, "[(Width)i(Height)i(Transparent)b]"),
-  GB_METHOD("_free", NULL, CIMAGE_free, NULL),
+  GB_METHOD("_new", 0, CIMAGE_new, "[(Width)i(Height)i(Transparent)b]"),
+  GB_METHOD("_free", 0, CIMAGE_free, 0),
 
   GB_METHOD("_get", "i", CIMAGE_pixels_get, "(X)i(Y)i"),
-  GB_METHOD("_put", NULL, CIMAGE_pixels_put, "(Color)i(X)i(Y)i"),
+  GB_METHOD("_put", 0, CIMAGE_pixels_put, "(Color)i(X)i(Y)i"),
 
   GB_PROPERTY_READ("Width", "i", CIMAGE_width),
   GB_PROPERTY_READ("Height", "i", CIMAGE_height),
@@ -341,20 +341,20 @@ GB_DESC CImageDesc[] =
   GB_PROPERTY_READ("Data", "p", CIMAGE_data),
 
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
-  GB_METHOD("Save", NULL, CIMAGE_save, "(Path)s[(Quality)i]"),
-  GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
+  GB_METHOD("Save", 0, CIMAGE_save, "(Path)s[(Quality)i]"),
+  GB_METHOD("Resize", 0, CIMAGE_resize, "(Width)i(Height)i"),
 
-  GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
-  GB_METHOD("Fill", NULL, CIMAGE_fill, "(Color)i"),
-  GB_METHOD("Replace", NULL, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
+  GB_METHOD("Clear", 0, CIMAGE_clear, 0),
+  GB_METHOD("Fill", 0, CIMAGE_fill, "(Color)i"),
+  GB_METHOD("Replace", 0, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
 
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i[(Smooth)b]"),
-  GB_METHOD("Flip", "Image", CIMAGE_flip, NULL),
-  GB_METHOD("Mirror", "Image", CIMAGE_mirror, NULL),
+  GB_METHOD("Flip", "Image", CIMAGE_flip, 0),
+  GB_METHOD("Mirror", "Image", CIMAGE_mirror, 0),
   GB_METHOD("Rotate", "Image", CIMAGE_rotate, "(Angle)f"),
 
-  GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
+  GB_METHOD("Draw", 0, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
   GB_PROPERTY_READ("Picture", "Picture", CIMAGE_picture),
 
@@ -691,13 +691,13 @@ GB_DESC CPictureDesc[] =
 
   //GB_STATIC_METHOD("_exit", NULL, CPICTURE_flush, NULL),
 
-  GB_METHOD("_new", NULL, CPICTURE_new, "[(Width)i(Height)i(Transparent)b]"),
-  GB_METHOD("_free", NULL, CPICTURE_free, NULL),
-  GB_STATIC_METHOD("_exit",NULL,CPICTURE_flush,NULL),
+  GB_METHOD("_new", 0, CPICTURE_new, "[(Width)i(Height)i(Transparent)b]"),
+  GB_METHOD("_free", 0, CPICTURE_free, 0),
+  GB_STATIC_METHOD("_exit",0,CPICTURE_flush,0),
 
   GB_STATIC_METHOD("_get", "Picture", CPICTURE_get, "(Path)s"),
-  GB_STATIC_METHOD("_put", NULL, CPICTURE_put, "(Picture)Picture;(Path)s"),
-  GB_STATIC_METHOD("Flush", NULL, CPICTURE_flush, NULL),
+  GB_STATIC_METHOD("_put", 0, CPICTURE_put, "(Picture)Picture;(Path)s"),
+  GB_STATIC_METHOD("Flush", 0, CPICTURE_flush, 0),
 
   GB_PROPERTY_READ("Width", "i", CPICTURE_width),
   GB_PROPERTY_READ("Height", "i", CPICTURE_height),
@@ -707,11 +707,11 @@ GB_DESC CPictureDesc[] =
   GB_PROPERTY("Transparent", "b", CPICTURE_transparent),
 
   GB_STATIC_METHOD("Load", "Picture", CPICTURE_load, "(Path)s"),
-  GB_METHOD("Save", NULL, CPICTURE_save, "(Path)s[(Quality)i]"),
-  GB_METHOD("Resize", NULL, CPICTURE_resize, "(Width)i(Height)i"),
+  GB_METHOD("Save", 0, CPICTURE_save, "(Path)s[(Quality)i]"),
+  GB_METHOD("Resize", 0, CPICTURE_resize, "(Width)i(Height)i"),
 
-  GB_METHOD("Clear", NULL, CPICTURE_clear, NULL),
-  GB_METHOD("Fill", NULL, CPICTURE_fill, "(Color)i"),
+  GB_METHOD("Clear", 0, CPICTURE_clear, 0),
+  GB_METHOD("Fill", 0, CPICTURE_fill, "(Color)i"),
 
   GB_METHOD("Copy", "Picture", CPICTURE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   GB_PROPERTY_READ("Image", "Image", CPICTURE_image),

@@ -29,8 +29,8 @@
 
 typedef
   struct {
-    long version;
-    long func[0];
+    int version;
+    void *func[0];
     }
   INTERFACE;
 

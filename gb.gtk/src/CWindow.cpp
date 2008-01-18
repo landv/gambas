@@ -658,7 +658,7 @@ GB_DESC CWindowMenusDesc[] =
 {
   GB_DECLARE(".WindowMenus", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Menu", CWINDOW_menu_next, NULL),
+  GB_METHOD("_next", "Menu", CWINDOW_menu_next, 0),
   GB_METHOD("_get", "Menu", CWINDOW_menu_get, "(Index)i"),
   GB_PROPERTY_READ("Count", "i", CWINDOW_menu_count),
 
@@ -669,7 +669,7 @@ GB_DESC CWindowControlsDesc[] =
 {
   GB_DECLARE(".WindowControls", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CWINDOW_control_next, NULL),
+  GB_METHOD("_next", "Control", CWINDOW_control_next, 0),
   GB_METHOD("_get", "Control", CWINDOW_get, "(Name)s"),
   GB_PROPERTY_READ("Count", "i", CWINDOW_control_count),
 
@@ -688,18 +688,18 @@ GB_DESC CWindowDesc[] =
   GB_CONSTANT("Above", "i", 1),
   GB_CONSTANT("Below", "i", 2),
 
-  GB_METHOD("_new", NULL, CWINDOW_new, "[(Parent)Control;]"),
-  GB_METHOD("_free",NULL,CWINDOW_free,NULL),
+  GB_METHOD("_new", 0, CWINDOW_new, "[(Parent)Control;]"),
+  GB_METHOD("_free",0,CWINDOW_free,0),
   GB_METHOD("_get", "Control", CWINDOW_get, "(Name)s"),
 
   GB_METHOD("Close", "b", CWINDOW_close, "[(Return)i]"),
-  GB_METHOD("Raise", NULL, CWINDOW_raise, NULL),
-  GB_METHOD("Show", NULL, CWINDOW_show, NULL),
-  //GB_METHOD("Hide", NULL, CWINDOW_hide, NULL),
+  GB_METHOD("Raise", 0, CWINDOW_raise, 0),
+  GB_METHOD("Show", 0, CWINDOW_show, 0),
+  //GB_METHOD("Hide", 0, CWINDOW_hide, 0),
   //GB_PROPERTY("Visible", "b", CWINDOW_visible),
-  GB_METHOD("ShowModal", "i", CWINDOW_show_modal, NULL),
-  GB_METHOD("ShowDialog", "i", CWINDOW_show_modal, NULL),
-  GB_METHOD("Center", NULL, CWINDOW_center, NULL),
+  GB_METHOD("ShowModal", "i", CWINDOW_show_modal, 0),
+  GB_METHOD("ShowDialog", "i", CWINDOW_show_modal, 0),
+  GB_METHOD("Center", 0, CWINDOW_center, 0),
   GB_PROPERTY_READ("Modal", "b", CWINDOW_modal),
   GB_PROPERTY_READ("TopLevel", "b", CWINDOW_top_level),
   GB_PROPERTY_READ("Closed", "b", CWINDOW_closed),
@@ -736,16 +736,16 @@ GB_DESC CWindowDesc[] =
   GB_CONSTANT("_DefaultEvent", "s", "Open"),
   GB_CONSTANT("_Arrangement", "i", ARRANGE_FILL),
 
-  GB_EVENT("Close", "b", NULL, &EVENT_Close),
-  GB_EVENT("Open", NULL, NULL, &EVENT_Open),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Deactivate", NULL, NULL, &EVENT_Deactivate),
-  GB_EVENT("Move", NULL, NULL, &EVENT_Move),
-  GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
-  GB_EVENT("Show", NULL, NULL, &EVENT_Show),
-  GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
-  GB_EVENT("Title", NULL, NULL, &EVENT_Title),
-  GB_EVENT("Icon", NULL, NULL, &EVENT_Icon),
+  GB_EVENT("Close", "b", 0, &EVENT_Close),
+  GB_EVENT("Open", 0, 0, &EVENT_Open),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Deactivate", 0, 0, &EVENT_Deactivate),
+  GB_EVENT("Move", 0, 0, &EVENT_Move),
+  GB_EVENT("Resize", 0, 0, &EVENT_Resize),
+  GB_EVENT("Show", 0, 0, &EVENT_Show),
+  GB_EVENT("Hide", 0, 0, &EVENT_Hide),
+  GB_EVENT("Title", 0, 0, &EVENT_Title),
+  GB_EVENT("Icon", 0, 0, &EVENT_Icon),
 
   GB_INTERFACE("Draw", &DRAW_Interface),
 
@@ -757,7 +757,7 @@ GB_DESC CWindowsDesc[] =
 {
   GB_DECLARE("Windows", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("_next", "Window", CWINDOW_next, NULL),
+  GB_STATIC_METHOD("_next", "Window", CWINDOW_next, 0),
   GB_STATIC_METHOD("_get", "Window", CWINDOW_get_from_id, "(Id)i"),
   GB_STATIC_PROPERTY_READ("Count", "i", CWINDOW_count),
 
@@ -770,9 +770,9 @@ GB_DESC CFormDesc[] =
   GB_DECLARE("Form", sizeof(CFORM)), GB_INHERITS("Window"),
   GB_AUTO_CREATABLE(),
 
-  GB_STATIC_METHOD("Main", NULL, CFORM_main, NULL),
-  GB_STATIC_METHOD("Load", NULL, CFORM_load, "[(Parent)Control;]"),
-  GB_METHOD("_new", NULL, CFORM_new, NULL),
+  GB_STATIC_METHOD("Main", 0, CFORM_main, 0),
+  GB_STATIC_METHOD("Load", 0, CFORM_load, "[(Parent)Control;]"),
+  GB_METHOD("_new", 0, CFORM_new, 0),
 
   GB_END_DECLARE
 };

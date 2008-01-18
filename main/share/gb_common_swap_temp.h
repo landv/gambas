@@ -25,7 +25,7 @@
 
 ***************************************************************************/
 
-PUBLIC void SWAP_long(int *val)
+PUBLIC void SWAP_int(int *val)
 {
   char *p = (char *)val;
   char t1, t2;
@@ -38,11 +38,11 @@ PUBLIC void SWAP_long(int *val)
   p[2] = t2;
 }
 
-PUBLIC void SWAP_longs(int *val, int n)
+PUBLIC void SWAP_ints(int *val, int n)
 {
 	while (n > 0)
 	{
-		SWAP_long(val);
+		SWAP_int(val);
 		val++;
 		n--;
 	}

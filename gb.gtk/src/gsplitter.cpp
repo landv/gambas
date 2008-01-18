@@ -312,8 +312,6 @@ void gSplitter::performArrange()
 
 void gSplitter::resize(int w, int h)
 {
-	char *l;
-	
 	if (w == width() && h == height())
 		return;
 	

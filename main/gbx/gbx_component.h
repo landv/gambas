@@ -35,7 +35,7 @@
 typedef
   struct _COMPONENT {
     void *class;
-    long ref;
+    int ref;
     LIST list;
     char *name;
     LIBRARY *library;
@@ -57,26 +57,26 @@ EXTERN int COMPONENT_count;
 EXTERN COMPONENT *COMPONENT_main;
 #endif
 
-PUBLIC void COMPONENT_init(void);
-PUBLIC void COMPONENT_exit(void);
+void COMPONENT_init(void);
+void COMPONENT_exit(void);
 
-PUBLIC COMPONENT *COMPONENT_create(const char *name);
-PUBLIC void COMPONENT_delete(COMPONENT *comp);
+COMPONENT *COMPONENT_create(const char *name);
+void COMPONENT_delete(COMPONENT *comp);
 
-PUBLIC COMPONENT *COMPONENT_find(const char *name);
+COMPONENT *COMPONENT_find(const char *name);
 
-PUBLIC void COMPONENT_load(COMPONENT *comp);
-PUBLIC void COMPONENT_load_all(void);
-PUBLIC void COMPONENT_unload(COMPONENT *comp);
+void COMPONENT_load(COMPONENT *comp);
+void COMPONENT_load_all(void);
+void COMPONENT_unload(COMPONENT *comp);
 
-PUBLIC COMPONENT *COMPONENT_next(COMPONENT *comp);
+COMPONENT *COMPONENT_next(COMPONENT *comp);
 
-PUBLIC void COMPONENT_translation_must_be_reloaded(void);
+void COMPONENT_translation_must_be_reloaded(void);
 
-PUBLIC void COMPONENT_signal(int signal, void *param);
+void COMPONENT_signal(int signal, void *param);
 
 #define COMPONENT_is_library(comp) ((comp)->library != NULL)
 
-PUBLIC bool COMPONENT_get_info(const char *key, void **value);
+bool COMPONENT_get_info(const char *key, void **value);
 
 #endif

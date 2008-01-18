@@ -78,7 +78,7 @@ typedef
     int index;
     int value;
     int line;
-    long long lvalue;
+    int64_t lvalue;
     }
   CONSTANT;
 
@@ -200,7 +200,6 @@ typedef
 
 #define CLASS_get_symbol(class, ind) ((CLASS_SYMBOL *)TABLE_get_symbol((class)->table, ind))
 
-
 #define FUNCTION_is_procedure(func)  (TYPE_get_id((func)->type) == T_VOID)
 #define FUNCTION_is_static(func)     (TYPE_is_static((func)->type))
 
@@ -236,9 +235,5 @@ PUBLIC void CLASS_check_properties(CLASS *class);
 PUBLIC void CLASS_dump(void);
 PUBLIC void CLASS_export(void);
 PUBLIC void CLASS_exit_export(void);
-
-/*
-PUBLIC long CLASS_add_symbol_string(CLASS *class, char *str);
-*/
 
 #endif

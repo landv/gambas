@@ -204,7 +204,7 @@ __INTEGER:
 
 __LONG:
 
-  fprintf(_where, "%lld", value->_long.value);
+  fprintf(_where, "%" PRId64, value->_long.value);
   goto __RETURN;
 
 __DATE:

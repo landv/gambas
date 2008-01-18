@@ -74,7 +74,7 @@ static void cb_click(gMenu *sender)
 {
 	void *_object = sender->hFree;
 	GB.Ref(THIS);
-	GB.Post((GB_POST_FUNC)send_click_event, (int)THIS);
+	GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)THIS);
 }
 
 static void cb_show(gMenu *sender)
@@ -360,9 +360,9 @@ GB_DESC CMenuChildrenDesc[] =
 {
   GB_DECLARE(".MenuChildren", sizeof(CMENU)), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Menu", CMENU_next, NULL),
+  GB_METHOD("_next", "Menu", CMENU_next, 0),
   GB_METHOD("_get", "Menu", CMENU_get, "(Index)i"),
-  GB_METHOD("Clear", NULL, CMENU_clear, NULL),
+  GB_METHOD("Clear", 0, CMENU_clear, 0),
   GB_PROPERTY_READ("Count", "i", CMENU_count),
 
   GB_END_DECLARE
@@ -374,9 +374,9 @@ GB_DESC CMenuDesc[] =
   GB_DECLARE("Menu", sizeof(CMENU)), 
   GB_HOOK_CHECK(CMENU_check),
 
-  GB_STATIC_METHOD("_init", NULL, CMENU_init, NULL),
-  GB_METHOD("_new", NULL, CMENU_new, "(Parent)o[(Hidden)b]"),
-  GB_METHOD("_free", NULL, CMENU_free, NULL),
+  GB_STATIC_METHOD("_init", 0, CMENU_init, 0),
+  GB_METHOD("_new", 0, CMENU_new, "(Parent)o[(Hidden)b]"),
+  GB_METHOD("_free", 0, CMENU_free, 0),
 
 
   GB_PROPERTY("Name", "s", CMENU_name),
@@ -398,14 +398,14 @@ GB_DESC CMenuDesc[] =
   GB_CONSTANT("_Properties", "s", "Action,Text,Picture,Enabled=True,Toggle,Checked,Visible=True,Tag,Shortcut"),
   GB_CONSTANT("_DefaultEvent", "s", "Click"),
 
-  GB_METHOD("Popup", NULL, CMENU_popup, "[(X)i(Y)i]"),
-  GB_METHOD("Delete", NULL, CMENU_delete, NULL),
-  GB_METHOD("Show", NULL, CMENU_show, NULL),
-  GB_METHOD("Hide", NULL, CMENU_hide, NULL),
+  GB_METHOD("Popup", 0, CMENU_popup, "[(X)i(Y)i]"),
+  GB_METHOD("Delete", 0, CMENU_delete, 0),
+  GB_METHOD("Show", 0, CMENU_show, 0),
+  GB_METHOD("Hide", 0, CMENU_hide, 0),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Show", NULL, NULL, &EVENT_Show),
-  GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
+  GB_EVENT("Show", 0, 0, &EVENT_Show),
+  GB_EVENT("Hide", 0, 0, &EVENT_Hide),
 
   GB_END_DECLARE
 };

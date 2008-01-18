@@ -122,8 +122,8 @@ public:
 
   void paintFocus( QPainter *p, const QRect &r );
 
-  virtual void setRowHeight(int row, long height);
-  virtual void setColumnWidth(int col, long width);
+  virtual void setRowHeight(int row, int height);
+  virtual void setColumnWidth(int col, int width);
   //virtual void adjustColumn( int col );
 
   void setHeaders(int);
@@ -194,9 +194,9 @@ class CGridView : public QObject
 public:
 
   static CGridView manager;
-  static bool check(QTable *, long, long);
-  static bool checkRow(QTable *, long);
-  static bool checkCol(QTable *, long);
+  static bool check(QTable *, int, int);
+  static bool checkRow(QTable *, int);
+  static bool checkCol(QTable *, int);
 
 public slots:
 

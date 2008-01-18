@@ -39,7 +39,7 @@
 
 static FUNCTION *func;
 
-static void add_local(long sym_index, TYPE type, long value)
+static void add_local(int sym_index, TYPE type, int value)
 {
   CLASS_SYMBOL *sym;
   PARAM *loc;
@@ -85,7 +85,7 @@ static void remove_local()
 static bool TRANS_local(void)
 {
   //PATTERN *save = JOB->current;
-  long sym_index;
+  int sym_index;
   TRANS_DECL decl;
   PATTERN *sym;
   bool many;
@@ -152,7 +152,7 @@ static bool TRANS_local(void)
 }
 
 
-PUBLIC void TRANS_statement(void)
+void TRANS_statement(void)
 {
   static TRANS_STATEMENT statement[] = {
     { RS_EXIT, TRANS_break },
@@ -237,7 +237,7 @@ static void translate_body()
   PATTERN *look;
   bool is_proc = (TYPE_get_id(func->type) == T_VOID);
   bool test_newline;
-  long line = JOB->line - 1;
+  int line = JOB->line - 1;
   bool just_got_select = FALSE;
 
   for(;;)
@@ -465,7 +465,7 @@ static void trans_call(const char *name, int nparam)
 }
 
 
-PUBLIC void TRANS_code(void)
+void TRANS_code(void)
 {
   int i;
   bool debug;
@@ -536,7 +536,7 @@ PUBLIC void TRANS_code(void)
 
 
 
-PUBLIC bool TRANS_init_var(TRANS_DECL *decl)
+bool TRANS_init_var(TRANS_DECL *decl)
 {
   int i;
   TRANS_ARRAY *array;
@@ -578,12 +578,12 @@ PUBLIC bool TRANS_init_var(TRANS_DECL *decl)
 
 
 /*
-PUBLIC void TRANS_init_object()
+void TRANS_init_object()
 {
 }
 */
 
-PUBLIC void TRANS_init_optional(TRANS_PARAM *param)
+void TRANS_init_optional(TRANS_PARAM *param)
 {
   PATTERN *look = param->optional;
   PATTERN *save;

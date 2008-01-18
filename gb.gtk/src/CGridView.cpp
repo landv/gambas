@@ -908,9 +908,9 @@ GB_DESC CGridViewItemDesc[] =
   GB_PROPERTY("Font", "Font", CGRIDVIEWITEM_font),
   //GB_PROPERTY("Selected","b",CGRIDVIEWITEM_selected),
 
-  GB_METHOD("Clear", NULL, CGRIDVIEWITEM_clear, NULL),
-  GB_METHOD("Refresh",NULL,CGRIDVIEWITEM_refresh,NULL),
-  GB_METHOD("EnsureVisible", NULL, CGRIDVIEWITEM_ensure_visible, NULL),
+  GB_METHOD("Clear", 0, CGRIDVIEWITEM_clear, 0),
+  GB_METHOD("Refresh",0,CGRIDVIEWITEM_refresh,0),
+  GB_METHOD("EnsureVisible", 0, CGRIDVIEWITEM_ensure_visible, 0),
   GB_END_DECLARE
 };
 
@@ -944,7 +944,7 @@ GB_DESC CGridViewColumnDesc[] =
   GB_PROPERTY("Title","s",CGRIDVIEW_column_headertext),
   //GB_PROPERTY("HeaderText","s",CGRIDVIEW_column_headertext),
   //GB_PROPERTY("FooterText","s",CGRIDVIEW_column_footertext),
-  GB_METHOD("Refresh", NULL, CGRIDCOL_refresh, NULL),
+  GB_METHOD("Refresh", 0, CGRIDCOL_refresh, 0),
   GB_END_DECLARE
 };
 
@@ -972,7 +972,7 @@ GB_DESC CGridViewRowDesc[] =
   GB_PROPERTY("Text","s",CGRIDVIEW_row_text),
   GB_PROPERTY("Title","s",CGRIDVIEW_row_text),
   GB_PROPERTY("Selected","b",CGRIDVIEW_row_selected),
-  GB_METHOD("Refresh", NULL, CGRIDROW_refresh, NULL),
+  GB_METHOD("Refresh", 0, CGRIDROW_refresh, 0),
   GB_END_DECLARE
 };
 
@@ -986,11 +986,11 @@ GB_DESC CGridViewRowsDesc[] =
   GB_PROPERTY("H", "i", CGRIDROWS_height),
   GB_PROPERTY_READ("Width", "i", CGRIDROWS_width),
   GB_PROPERTY_READ("W", "i", CGRIDROWS_width),
-  GB_METHOD("Select", NULL, CGRIDROWS_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", NULL, CGRIDROWS_select_all, "[(Selected)b]"),
-  GB_METHOD("Unselect", NULL, CGRIDROWS_unselect, NULL),
-  GB_METHOD("Remove", NULL, CGRIDROWS_remove, "(Start)i[(Length)i]"),
-  GB_METHOD("Insert", NULL, CGRIDROWS_insert, "(Start)i[(Length)i]"),
+  GB_METHOD("Select", 0, CGRIDROWS_select, "[(Start)i(Length)i]"),
+  GB_METHOD("SelectAll", 0, CGRIDROWS_select_all, "[(Selected)b]"),
+  GB_METHOD("Unselect", 0, CGRIDROWS_unselect, 0),
+  GB_METHOD("Remove", 0, CGRIDROWS_remove, "(Start)i[(Length)i]"),
+  GB_METHOD("Insert", 0, CGRIDROWS_insert, "(Start)i[(Length)i]"),
   GB_END_DECLARE
 };
 
@@ -1003,9 +1003,9 @@ GB_DESC CGridViewDesc[] =
   GB_CONSTANT("Vertical", "i", 2),
   GB_CONSTANT("Both", "i", 3),
 
-  GB_METHOD("_new", NULL, CGRIDVIEW_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CGRIDVIEW_new, "(Parent)Container;"),
   GB_METHOD("_get", ".GridViewCell", CGRIDVIEW_get, "(Row)i(Column)i"),
-  GB_METHOD("Clear", NULL, CGRIDVIEW_clear, NULL),
+  GB_METHOD("Clear", 0, CGRIDVIEW_clear, 0),
   GB_METHOD("Find", "b", CGRIDVIEW_find, "(X)i(Y)i"),
   GB_METHOD("RowAt","i",CGRIDVIEW_rowat,"(Y)i"),
   GB_METHOD("ColumnAt","i",CGRIDVIEW_colat,"(X)i"),
@@ -1023,7 +1023,7 @@ GB_DESC CGridViewDesc[] =
   
   GB_PROPERTY("Row", "i", CGRIDVIEW_row),
   GB_PROPERTY("Column", "i", CGRIDVIEW_column),
-  GB_METHOD("MoveTo", NULL, CGRIDVIEW_move_to, "(Row)i(Column)i"),
+  GB_METHOD("MoveTo", 0, CGRIDVIEW_move_to, "(Row)i(Column)i"),
   
   GB_PROPERTY_READ("Data", ".GridViewData",CGRIDVIEW_data),
   
@@ -1037,16 +1037,16 @@ GB_DESC CGridViewDesc[] =
   GB_PROPERTY_READ("ClientHeight", "i", CGRIDVIEW_client_height),
   GB_PROPERTY_READ("ClientH", "i", CGRIDVIEW_client_height),
 
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
-  GB_EVENT("Select", NULL, NULL, &EVENT_Select),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-  GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),
-  GB_EVENT("Data", NULL, "(Row)i(Column)i", &EVENT_Data),
-  GB_EVENT("ColumnClick", NULL, "(Column)i", &EVENT_ColumnClick),
-  GB_EVENT("RowClick", NULL, "(Row)i", &EVENT_RowClick),
-  GB_EVENT("ColumnResize", NULL, "(Column)i", &EVENT_ColumnResize),
-  GB_EVENT("RowResize", NULL, "(Row)i", &EVENT_RowResize),
+  GB_EVENT("Change", 0, 0, &EVENT_Change),
+  GB_EVENT("Select", 0, 0, &EVENT_Select),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
+  GB_EVENT("Scroll", 0, 0, &EVENT_Scroll),
+  GB_EVENT("Data", 0, "(Row)i(Column)i", &EVENT_Data),
+  GB_EVENT("ColumnClick", 0, "(Column)i", &EVENT_ColumnClick),
+  GB_EVENT("RowClick", 0, "(Row)i", &EVENT_RowClick),
+  GB_EVENT("ColumnResize", 0, "(Column)i", &EVENT_ColumnResize),
+  GB_EVENT("RowResize", 0, "(Row)i", &EVENT_RowResize),
 
 	GRIDVIEW_DESCRIPTION,
 	

@@ -33,7 +33,6 @@
 #include "CDrawingArea.h"
 
 DECLARE_EVENT(EVENT_draw);
-//static long EVENT_resize;
 
 
 /***************************************************************************
@@ -276,7 +275,7 @@ void MyDrawingArea::clearBackground()
 
 bool MyDrawingArea::doResize(int w, int h)
 {
-  long wb, hb;
+  int wb, hb;
 
 	if (drawn)
 	{

@@ -36,7 +36,7 @@
 #include "gbx_c_collection.h"
 #include "gbx_api.h"
 
-PUBLIC bool EVAL_debug = FALSE;
+bool EVAL_debug = FALSE;
 
 static EXPRESSION *EVAL;
 
@@ -97,7 +97,7 @@ static bool EVAL_exec()
 }
 
 
-PUBLIC bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
+bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 {
   int i;
   EVAL_SYMBOL *sym;

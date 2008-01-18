@@ -107,9 +107,9 @@ CWatcher::~CWatcher()
 	delete e;
 }*/
 
-void send_event(void *watcher, long event)
+void send_event(void *watcher, intptr_t event)
 {
-	GB.Raise(watcher, event, 0);
+	GB.Raise(watcher, (int)event, 0);
 	GB.Unref(&watcher);
 }
 
@@ -122,7 +122,7 @@ bool CWatcher::eventFilter(QObject* o, QEvent *e)
 		else if (e->type() == QEvent::Resize)
 		{
 			//GB.Ref(watcher);
-			//GB.Post2((void (*)())send_event, (long)watcher, (long)EVENT_Resize);
+			//GB.Post2((void (*)())send_event, (intptr_t)watcher, (intptr_t)EVENT_Resize);
 			GB.Raise(watcher, EVENT_Resize, 0);
 		}
 		else if (e->type() == QEvent::Show)
@@ -147,13 +147,13 @@ bool CWatcher::eventFilter(QObject* o, QEvent *e)
 	{
 		void *child = CWidget::get((QWidget *)(((QChildEvent *)e)->child()));
 		if (child && child != control && GB.CanRaise(watcher, EVENT_Insert))
-			GB.Post((GB_POST_FUNC)post_child_event, (long)new ChildEvent(EVENT_Insert, watcher, child));
+			GB.Post((GB_POST_FUNC)post_child_event, (intptr_t)new ChildEvent(EVENT_Insert, watcher, child));
 		//GB.Raise(watcher, EVENT_Insert, 1, GB_T_OBJECT, );
 	}*/
 	
-		//GB.Post((void (*)())post_child_event, (long)new ChildEvent(EVENT_Insert, watcher, ((QChildEvent *)e)->child()));
+		//GB.Post((void (*)())post_child_event, (intptr_t)new ChildEvent(EVENT_Insert, watcher, ((QChildEvent *)e)->child()));
 	/*else if (e->type() == QEvent::ChildRemoved)
-		//GB.Post((void (*)())post_child_event, (long)new ChildEvent(EVENT_Remove, watcher, ((QChildEvent *)e)->child()));
+		//GB.Post((void (*)())post_child_event, (intptr_t)new ChildEvent(EVENT_Remove, watcher, ((QChildEvent *)e)->child()));
 		post_child_event(new ChildEvent(EVENT_Remove, watcher, ((QChildEvent *)e)->child()));*/
 
 	return false; //return QObject::eventFilter(o, e);

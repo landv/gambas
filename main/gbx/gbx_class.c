@@ -7,16 +7,16 @@
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General License as published by
+  it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General License for more details.
+  GNU General Public License for more details.
 
-  You should have received a copy of the GNU General License
+  You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
@@ -71,7 +71,7 @@ static CLASS *Class;
 void CLASS_init(void)
 {
   if (sizeof(CLASS) > 128)
-    fprintf(stderr, "sizeof(CLASS) = %d! Did you compile gambas on a 64 bits CPU?\n", sizeof(CLASS));
+    fprintf(stderr, "Warning: Use the 64 bits version of Gambas at your own risk!\n");
 
   TABLE_create_static(&_global_table, sizeof(CLASS_SYMBOL), TF_IGNORE_CASE);
 
@@ -129,7 +129,36 @@ static void unload_class(CLASS *class)
 
   if (!CLASS_is_native(class))
   {
-    /*OBJECT_release(class, NULL);*/
+    #ifdef OS_64BITS
+    	
+    	FREE(&class->load->desc, "unload_class");
+    	FREE(&class->load->cst, "unload_class");
+    	FREE(&class->load->class_ref, "unload_class");
+    	FREE(&class->load->unknown, "unload_class");
+    	FREE(&class->load->event, "unload_class");
+    	FREE(&class->load->ext, "unload_class");
+    	FREE(&class->load->local, "unload_class");
+    	FREE(&class->load->array, "unload_class");
+    	
+    	if (class->debug)
+    	{
+    		int i;
+    		FUNCTION *func;
+    		
+				for (i = 0; i < class->load->n_func; i++)
+				{
+					func = &class->load->func[i];
+					FREE(&func->debug->local, "unload_class");
+				}
+				
+				FREE(&class->load->global, "unload_class");
+				FREE(&class->load->debug, "unload_class");
+    	}
+    	
+    	FREE(&class->load->func, "unload_class");
+
+    #endif
+    
     FREE(&class->load, "unload_class");
     if (!class->mmapped)
       FREE(&class->data, "unload_class");
@@ -363,7 +392,7 @@ CLASS *CLASS_find(const char *name)
   _classes = csym->class;
 
   ALLOC(&csym->class->name, len + 1, "CLASS_find");
-  strcpy((char *)csym->class->name, name);
+  strlcpy((char *)csym->class->name, name, len + 1);
 
   csym->sym.name = csym->class->name;
 
@@ -718,8 +747,7 @@ CLASS *CLASS_replace_global(const char *name)
     len = strlen(name);
 
     ALLOC(&new_name, len + 2, "CLASS_replace_global");
-    sprintf(new_name, ">%s", name);
-
+    snprintf(new_name, len+2, ">%s", name);
     new_class = CLASS_replace_global(new_name);
     FREE(&new_name, "CLASS_replace_global");
 

@@ -25,6 +25,7 @@
 #ifndef __GBX_ARCH_H
 #define __GBX_ARCH_H
 
+#include "gb_common.h"
 #include "gb_table.h"
 #include "gb_magic.h"
 
@@ -46,6 +47,24 @@ typedef
     int len;
     }
   ARCH_SYMBOL;
+
+#ifdef OS_64BITS
+
+typedef
+  struct {
+	  struct {
+    	unsigned short sort;
+    	unsigned short len;
+    	uint name;
+    	}
+  	PACKED
+		sym;
+    int pos;
+    int len;
+    }
+  ARCH_SYMBOL_32;
+
+#endif
 
 typedef
   struct {

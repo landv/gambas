@@ -68,10 +68,10 @@ static void write_short(short value)
 }
 
 
-static void write_long(long value)
+static void write_int(int value)
 {
   write_short(value & 0xFFFF);
-  write_short((unsigned long)value >> 16);
+  write_short((unsigned int)value >> 16);
 }
 
 
@@ -97,7 +97,7 @@ static void use_stack(int use)
   #endif
 }
 
-PUBLIC long CODE_get_current_pos(void)
+PUBLIC int CODE_get_current_pos(void)
 {
   return cur_func->ncode;
 }
@@ -246,7 +246,7 @@ PUBLIC boolean CODE_check_pop_local_last(short *local)
 
 #endif
 
-PUBLIC void CODE_push_number(long value)
+PUBLIC void CODE_push_number(int value)
 {
   LAST_CODE;
 
@@ -273,7 +273,7 @@ PUBLIC void CODE_push_number(long value)
     printf("PUSH LONG %ld\n", value);
     #endif
     write_short(C_PUSH_LONG);
-    write_long(value);
+    write_int(value);
   }
 
 }

@@ -112,7 +112,7 @@ gPlugin::gPlugin(gContainer *parent) : gControl(parent)
 	g_signal_connect(G_OBJECT(widget),"plug-removed",G_CALLBACK(gPlugin_OnUnplug),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"plug-added",G_CALLBACK(gPlugin_OnPlug),(gpointer)this);
 
-	g_object_set(G_OBJECT(widget),"can-focus",TRUE, NULL);
+	g_object_set(G_OBJECT(widget),"can-focus",TRUE, (void *)NULL);
 }
 
 int gPlugin::client()
@@ -1377,11 +1377,11 @@ void gControl::emit(void *signal)
 	(*((void (*)(gControl *))signal))(this);
 }
 
-void gControl::emit(void *signal, int arg)
+void gControl::emit(void *signal, intptr_t arg)
 {
 	if (!signal || locked())
 		return;
-	(*((void (*)(gControl *, int))signal))(this, arg);
+	(*((void (*)(gControl *, intptr_t))signal))(this, arg);
 }
 
 void gControl::reparent(gContainer *newpr, int x, int y)

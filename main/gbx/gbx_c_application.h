@@ -4,7 +4,7 @@
 
   The native class App
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ extern GB_DESC NATIVE_System[];
 extern GB_DESC NATIVE_User[];
 #endif
 
-PUBLIC void CAPP_init(void);
-PUBLIC void CAPP_got_signal(void);
+void CAPP_init(void);
+void CAPP_got_signal(void);
 
 #endif

@@ -40,7 +40,6 @@ gboolean watch_adaptor (GIOChannel *source, GIOCondition condition, gpointer par
 {
 	void (*cb)(int,int,long);
 	watchData *data=(watchData*)param;
-	
 
 	if (!data) return true;
 	
@@ -127,15 +126,15 @@ void CWatcher::Add(int fd,int type,void *callback,long param)
 	switch (type)
 	{
 		case GB_WATCH_READ:
-			data->id = g_io_add_watch(channel,G_PRIORITY_LOW,G_IO_IN,watch_adaptor,(void*)data,NULL);
+			data->id = g_io_add_watch_full(channel,G_PRIORITY_LOW,G_IO_IN,watch_adaptor,(void*)data,NULL);
 			//fprintf(stderr, "g_io_add_watch: %p G_IO_IN\n", channel);
 			break;
 		case GB_WATCH_WRITE:
-			data->id = g_io_add_watch(channel,G_PRIORITY_LOW,G_IO_OUT,watch_adaptor,(void*)data,NULL);
+			data->id = g_io_add_watch_full(channel,G_PRIORITY_LOW,G_IO_OUT,watch_adaptor,(void*)data,NULL);
 			//fprintf(stderr, "g_io_add_watch: %p G_IO_OUT\n", channel);
 			break;
 		case GB_WATCH_READ_WRITE:
-			data->id = g_io_add_watch(channel,G_PRIORITY_LOW,(GIOCondition)(G_IO_IN | G_IO_OUT),watch_adaptor,(void*)data,NULL); 
+			data->id = g_io_add_watch_full(channel,G_PRIORITY_LOW,(GIOCondition)(G_IO_IN | G_IO_OUT),watch_adaptor,(void*)data,NULL); 
 			//fprintf(stderr, "g_io_add_watch: %p G_IO_IN | G_IO_OUT\n", channel);			
 			break;
 		default:

@@ -92,7 +92,7 @@ static int stream_close(STREAM *stream)
 }
 
 
-static int stream_read(STREAM *stream, char *buffer, long len)
+static int stream_read(STREAM *stream, char *buffer, int len)
 {
   size_t eff_read;
   size_t len_read;
@@ -143,7 +143,7 @@ static int stream_flush(STREAM *stream)
 }
 
 
-static int stream_write(STREAM *stream, char *buffer, long len)
+static int stream_write(STREAM *stream, char *buffer, int len)
 {
   size_t eff_write;
   size_t len_write;
@@ -170,15 +170,15 @@ static int stream_write(STREAM *stream, char *buffer, long len)
 }
 
 
-static int stream_seek(STREAM *stream, long long pos, int whence)
+static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
   return (fseek(FD, (off_t)pos, whence) != 0);
 }
 
 
-static int stream_tell(STREAM *stream, long long *pos)
+static int stream_tell(STREAM *stream, int64_t *pos)
 {
-  *pos = (long long)ftell(FD);
+  *pos = (int64_t)ftell(FD);
   return (*pos < 0);
 }
 
@@ -203,7 +203,7 @@ static int stream_eof(STREAM *stream)
 }
 
 
-static int stream_lof(STREAM *stream, long long *len)
+static int stream_lof(STREAM *stream, int64_t *len)
 {
   *len = stream->buffer.size;
   return FALSE;

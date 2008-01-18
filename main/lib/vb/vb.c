@@ -194,7 +194,7 @@ BEGIN_METHOD(CVB_DateDiff, GB_STRING period;GB_DATE Date1; GB_DATE Date2)
 
   GB_DATE Date1, Date2;
   char *Period=NULL;
-  long Interval = 0;
+  int Interval = 0;
 
   Period=GB.ToZeroString(ARG(period));
   Date1.type = ARG(Date1)->type;

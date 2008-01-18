@@ -91,12 +91,12 @@ PUBLIC void CODE_pop_ctrl(short num);
 
 #endif /* PROJECT_COMP */
 
-PUBLIC long CODE_get_current_pos(void);
+PUBLIC int CODE_get_current_pos(void);
 PUBLIC void CODE_ignore_next_stack_usage(void);
 
 PUBLIC void CODE_dump(PCODE *code, int count);
 
-PUBLIC void CODE_push_number(long value);
+PUBLIC void CODE_push_number(int value);
 PUBLIC void CODE_push_const(short value);
 
 PUBLIC void CODE_push_local(short num);

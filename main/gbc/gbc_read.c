@@ -146,7 +146,7 @@ static void READ_exit(void)
 
 static bool _no_quote = FALSE;
 
-PUBLIC char *READ_get_pattern(PATTERN *pattern)
+char *READ_get_pattern(PATTERN *pattern)
 {
   int type = PATTERN_type(*pattern);
   int index = PATTERN_index(*pattern);
@@ -189,7 +189,7 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
       break;
 
     default:
-      sprintf(COMMON_buffer, "%s?%p?%s", before, (void *)*pattern, after);
+      sprintf(COMMON_buffer, "%s?%08X?%s", before, *pattern, after);
   }
 
   return COMMON_buffer;
@@ -197,7 +197,7 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
 
 
 
-PUBLIC void READ_dump_pattern(PATTERN *pattern)
+void READ_dump_pattern(PATTERN *pattern)
 {
   int type = PATTERN_type(*pattern);
   int index = PATTERN_index(*pattern);
@@ -794,7 +794,7 @@ static void add_string()
 }
 
 
-PUBLIC void READ_do(void)
+void READ_do(void)
 {
   static void *jump_char[8] =
   {
@@ -896,7 +896,7 @@ __BREAK:
 }
 
 #if 0
-PUBLIC void READ_do(void)
+void READ_do(void)
 {
   unsigned char car;
 

@@ -82,7 +82,7 @@ END_METHOD
 
 BEGIN_METHOD(CLISTBOX_get, GB_INTEGER index)
 
-  long index = VARG(index);
+  int index = VARG(index);
 
   if (index < 0 || index >= (int)WIDGET->count())
   {
@@ -98,13 +98,13 @@ BEGIN_METHOD(CLISTBOX_get, GB_INTEGER index)
 END_METHOD
 
 /*
-BEGIN_METHOD(CLISTBOX_set, GB_STRING item; long index)
+BEGIN_METHOD(CLISTBOX_set, GB_STRING item; int index)
 
-  long index = PARAM(index);
-  long current;
+  int index = PARAM(index);
+  int current;
   bool selected;
 
-  if (index < 0 || index >= (long)WIDGET->count())
+  if (index < 0 || index >= (int)WIDGET->count())
     return;
 
   selected = WIDGET->isSelected(PARAM(index));
@@ -120,7 +120,7 @@ END_METHOD
 
 BEGIN_METHOD(CLISTBOX_add, GB_STRING item; GB_INTEGER pos)
 
-  long pos = VARGOPT(pos, -1);
+  int pos = VARGOPT(pos, -1);
 
   //if (GB.IsMissing(2))
   //WIDGET->blockSignals(true);
@@ -142,7 +142,7 @@ END_METHOD
 /*
 BEGIN_METHOD(CLISTBOX_add_custom, GB_INTEGER width; GB_INTEGER height; GB_STRING text; GB_INTEGER pos)
 
-  long pos = VARGOPT(pos, -1);
+  int pos = VARGOPT(pos, -1);
   QString text(GB.ToZeroString(ARG(text)));
 
   WIDGET->insertItem(new MyListBoxItem(WIDGET, text, VARG(width), VARG(height)), pos);
@@ -184,14 +184,14 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CLISTBOX_index)
 
-  long index;
+  int index;
 
   if (READ_PROPERTY)
     GB.ReturnInteger(CListBox::currentItem(WIDGET));
   else
   {
     index = VPROP(GB_INTEGER);
-    if (index < 0 || index >= (long)WIDGET->count())
+    if (index < 0 || index >= (int)WIDGET->count())
     {
       WIDGET->clearSelection();
       return;
@@ -481,7 +481,7 @@ void CListBox::selected(void)
 	else
 	{
 		GB.Ref(THIS);
-		GB.Post((GB_POST_FUNC)post_select_event, (long)THIS);
+		GB.Post((GB_POST_FUNC)post_select_event, (intptr_t)THIS);
 	}
   //RAISE_EVENT(EVENT_Select);
 }

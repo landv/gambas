@@ -364,7 +364,7 @@ void CDRAG_clear(bool valid)
     CLEAR(&CDRAG_info);
 }
 
-static void post_exit_drag(long param)
+static void post_exit_drag(intptr_t param)
 {
 	CDRAG_dragging = false;
 }

@@ -40,7 +40,7 @@ static QString dialog_path;
 static GB_ARRAY dialog_paths = NULL;
 static QFont dialog_font;
 
-static unsigned long dialog_color = 0;
+static unsigned int dialog_color = 0;
 
 
 static QString get_filter(void)
@@ -134,7 +134,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CDIALOG_color)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger((long)dialog_color);
+    GB.ReturnInteger(dialog_color);
   else
     dialog_color = VPROP(GB_INTEGER);
 

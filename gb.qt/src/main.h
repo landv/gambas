@@ -85,7 +85,7 @@ protected:
 private:
 
 	GB_TIMER *timer;
-	long id;
+	intptr_t id;
 };
 
 

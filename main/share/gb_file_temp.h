@@ -131,15 +131,15 @@ PUBLIC char *FILE_make_temp(int *len, char *pattern)
   if (len)
   {
     if (pattern)
-      *len = sprintf(file_buffer, FILE_TEMP_PATTERN, getuid(), getpid(), pattern);
-    else
+      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PATTERN, getuid(), getpid(), pattern);
+     else
     {
       count++;
-      *len = sprintf(file_buffer, FILE_TEMP_FILE, getuid(), getpid(), count);
+      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_FILE, getuid(), getpid(), count);
     }
   }
   else
-    sprintf(file_buffer, FILE_TEMP_DIR, getuid(), getpid());
+    snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
 
   return file_buffer;
 }
@@ -168,9 +168,9 @@ PUBLIC void FILE_init(void)
 {
 	FILE_remove_temp_file();
   
-  sprintf(file_buffer, FILE_TEMP_PREFIX, getuid());
+  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, getuid());
   mkdir(file_buffer, S_IRWXU);
-  sprintf(file_buffer, FILE_TEMP_DIR, getuid(), getpid());
+  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
   mkdir(file_buffer, S_IRWXU);
 }
 
@@ -268,6 +268,10 @@ PUBLIC int FILE_buffer_length(void)
   return file_buffer_length;
 }
 
+PUBLIC int FILE_buffer_maxsize(void)
+{
+  return sizeof(file_buffer);
+}
 
 PUBLIC const char *FILE_get_dir(const char *path)
 {
@@ -280,7 +284,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
     return "/";
 
   if (file_buffer != path)
-    strcpy(file_buffer, path);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
 
   p = rindex(file_buffer, '/');
 
@@ -291,7 +295,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
     *p = 0;
 
     if (file_buffer[0] == 0 && path[0] == '/')
-      strcpy(file_buffer, "/");
+      strlcpy(file_buffer, "/", sizeof(file_buffer));
   }
 
   file_buffer_length = -1;
@@ -333,7 +337,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
 
   if (path != file_buffer)
   {
-    strcpy(file_buffer, path);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
     path = file_buffer;
   }
 
@@ -357,7 +361,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
   if (*ext == '.')
     ext++;
 
-  strcpy(p, ext);
+  strlcpy(p, ext, (&file_buffer[MAX_PATH] - p));
 
   file_buffer_length = -1;
   return path;
@@ -371,7 +375,7 @@ PUBLIC const char *FILE_get_basename(const char *path)
   path = FILE_get_name(path);
 
   if (file_buffer != path)
-    strcpy(file_buffer, path);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
 
   p = rindex(file_buffer, '.');
   if (p)
@@ -534,7 +538,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
   if (file_attr)
   {
-    strcpy(p, file_path);
+    strlcpy(p, file_path, (&file_buffer[MAX_PATH] - p));
     p += strlen(file_path);
     if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
       *p++ = '/';
@@ -554,7 +558,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
     if (file_attr)
     {
-      strcpy(p, entry->d_name);
+      strlcpy(p, entry->d_name, (&file_buffer[MAX_PATH] - p));
       stat(file_buffer, &info);
       if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
         continue;
@@ -668,7 +672,7 @@ PUBLIC void FILE_make_path_dir(const char *path)
     return;
 
   if (path != file_buffer)
-    strcpy(file_buffer, path);
+    strlcpy(file_buffer, path, sizeof(file_buffer));
 
   for (i = 1;; i++)
   {
@@ -702,8 +706,8 @@ PUBLIC void FILE_copy(const char *src, const char *dst)
 {
   STREAM stream_src;
   STREAM stream_dst;
-  long long len;
-  long long n;
+  int64_t len;
+  int64_t n;
   char *buf = NULL;
 
   CLEAR(&stream_src);
@@ -802,7 +806,7 @@ PUBLIC void FILE_link(const char *src, const char *dst)
     THROW_SYSTEM(errno, dst);
 }
 
-PUBLIC long long FILE_free(const char *path)
+PUBLIC int64_t FILE_free(const char *path)
 {
   struct statfs info;
 
@@ -810,7 +814,7 @@ PUBLIC long long FILE_free(const char *path)
     return 0;
 
   statfs(path, &info);
-  return (long long)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
+  return (int64_t)(getuid() == 0 ? info.f_bfree : info.f_bavail) * info.f_bsize;
 }
 
 #else

@@ -4,7 +4,7 @@
 
   Webcam capture component
 
-  (C) 2005-2007 Daniel Campos Fernández <dcamposf@gmail.com>
+  (C) 2005-2008 Daniel Campos Fernández <dcamposf@gmail.com>
   
   Based on the GPL code from "video-capture":
   

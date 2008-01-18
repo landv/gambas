@@ -41,7 +41,7 @@
 static REGEXP_SCAN_FUNC _scan_cb = NULL;
 static CARRAY *_scan_array;
 
-PUBLIC bool REGEXP_match(const char *pattern, long len_pattern, const char *string, long len_string)
+bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int len_string)
 {
   unsigned char cp;
   unsigned char cs;
@@ -194,7 +194,7 @@ PUBLIC bool REGEXP_match(const char *pattern, long len_pattern, const char *stri
 }
 
 
-static void add_string(const char *str, long len)
+static void add_string(const char *str, int len)
 {
 	char **p = (char **)GB_ArrayAdd((GB_ARRAY)_scan_array);
 	if (len)
@@ -202,7 +202,7 @@ static void add_string(const char *str, long len)
 }
 
 
-PUBLIC bool REGEXP_scan(CARRAY *array, const char *pattern, long len_pattern, const char *string, long len_string)
+bool REGEXP_scan(CARRAY *array, const char *pattern, int len_pattern, const char *string, int len_string)
 {
 	bool match;
 

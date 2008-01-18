@@ -27,10 +27,10 @@
 
 typedef
   struct {
-    long count;
-    long max;
+    int count;
+    int max;
     size_t size;
-    long inc;
+    int inc;
     }
   ARRAY;
 
@@ -43,11 +43,10 @@ typedef
 #define ARRAY_create(data) ARRAY_create_with_size((data), sizeof(**(data)), 32)
 #define ARRAY_create_inc(data, inc) ARRAY_create_with_size((data), sizeof(**(data)), (inc))
 
-PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, long inc);
+PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, int inc);
 PUBLIC void ARRAY_delete(void *p_data);
 
 #define ARRAY_size(_data) (DATA_TO_ARRAY(_data)->size)
-//PUBLIC long ARRAY_count(void *data);
 #define ARRAY_count(_data) ((_data) ? DATA_TO_ARRAY(_data)->count : 0)
 
 PUBLIC void *ARRAY_add_data(void *p_data, int num, bool zero);
@@ -61,9 +60,9 @@ PUBLIC void *ARRAY_add_data_one(void *p_data, bool zero);
 //PUBLIC void *ARRAY_get(void *data, int pos);
 #define ARRAY_get(_data, _pos) ((char *)(_data) + DATA_TO_ARRAY(_data)->size * (_pos))
 
-PUBLIC void *ARRAY_insert_many(void *p_data, long pos, long count);
+PUBLIC void *ARRAY_insert_many(void *p_data, int pos, int count);
 #define ARRAY_insert(_pdata, _pos) ARRAY_insert_many(_pdata, _pos, 1);
-PUBLIC void ARRAY_remove_many(void *p_data, long pos, long count);
+PUBLIC void ARRAY_remove_many(void *p_data, int pos, int count);
 #define ARRAY_remove(_pdata, _pos) ARRAY_remove_many(_pdata, _pos, 1);
 
 PUBLIC void ARRAY_remove_last(void *p_data);

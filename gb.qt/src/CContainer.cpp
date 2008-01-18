@@ -334,7 +334,7 @@ BEGIN_METHOD(CCONTAINER_children_get, GB_INTEGER index)
 	if (index >= 0)
 	{
 		i = 0;
-		for(i = 0; i < list->count(); i++)
+		for(i = 0; i < (int)list->count(); i++)
 		{
 			widget = CWidget::getReal(list->at(i));
 			if (!widget)

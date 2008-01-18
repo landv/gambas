@@ -4,7 +4,7 @@
 
   Variant management routines
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,12 +31,12 @@
 
 typedef
   struct {
-    long type;
+    intptr_t type;
     char value[8];
     }
   VARIANT;
 
-#define VARIANT_copy(src, dst)  (*((long long *)dst) = *((long long *)src))
+#define VARIANT_copy(src, dst)  (*((int64_t *)dst) = *((int64_t *)src))
 
 static INLINE void VARIANT_undo(VALUE *val)
 {
@@ -82,18 +82,12 @@ static INLINE boolean VARIANT_is_null(VARIANT *var)
   return FALSE;
 }
 
-
 static INLINE void VARIANT_clear(VARIANT *var)
 {
-  long *p = (long *)var;
-
   VARIANT_free(var);
 
-  p[0] = 0;
-  p[1] = 0;
-  p[2] = 0;
+	var->type = 0;
+	*((int64_t *)var->value) = 0;
 }
-
-
 
 #endif

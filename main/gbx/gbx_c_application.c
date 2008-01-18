@@ -57,13 +57,13 @@ static bool _daemon = FALSE;
 
 extern char **environ;
 
-static void got_signal_after(long param)
+static void got_signal_after(intptr_t param)
 {
   GB_Call(&signal_func, 0, FALSE);
 }
 
 
-PUBLIC void CAPP_got_signal(void)
+void CAPP_got_signal(void)
 {
   if (!has_signal_func)
     return;
@@ -72,7 +72,7 @@ PUBLIC void CAPP_got_signal(void)
 }
 
 
-PUBLIC void CAPP_init()
+void CAPP_init()
 {
   CLASS *class = PROJECT_class; //CLASS_find(PROJECT_startup);
 
@@ -200,7 +200,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CAPPLICATION_args_get, GB_INTEGER index)
 
-  long index = VARG(index);
+  int index = VARG(index);
 
   if (index < 0)
   {
@@ -292,8 +292,8 @@ static void init_again(int old_pid)
 	char old[MAX_PATH];
 	
 	FILE_remove_temp_file();
-  sprintf(old, FILE_TEMP_DIR, getuid(), old_pid);
-  rename(old, FILE_make_temp(NULL, NULL));
+	snprintf(old, sizeof(old),FILE_TEMP_DIR, getuid(), old_pid);
+	rename(old, FILE_make_temp(NULL, NULL));
 }
 
 BEGIN_PROPERTY(CAPPLICATION_daemon)
@@ -368,7 +368,7 @@ END_PROPERTY
 
 #endif
 
-PUBLIC GB_DESC NATIVE_AppArgs[] =
+GB_DESC NATIVE_AppArgs[] =
 {
   GB_DECLARE(".ApplicationArgs", 0), GB_VIRTUAL_CLASS(),
 
@@ -380,7 +380,7 @@ PUBLIC GB_DESC NATIVE_AppArgs[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_AppEnv[] =
+GB_DESC NATIVE_AppEnv[] =
 {
   GB_DECLARE(".ApplicationEnv", 0), GB_VIRTUAL_CLASS(),
 
@@ -393,7 +393,7 @@ PUBLIC GB_DESC NATIVE_AppEnv[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_App[] =
+GB_DESC NATIVE_App[] =
 {
   GB_DECLARE("Application", 0), GB_VIRTUAL_CLASS(),
 
@@ -414,7 +414,7 @@ PUBLIC GB_DESC NATIVE_App[] =
   GB_END_DECLARE
 };
 
-PUBLIC GB_DESC NATIVE_System[] =
+GB_DESC NATIVE_System[] =
 {
   GB_DECLARE("System", 0), GB_VIRTUAL_CLASS(),
 
@@ -432,7 +432,7 @@ PUBLIC GB_DESC NATIVE_System[] =
   GB_END_DECLARE
 };
 
-PUBLIC GB_DESC NATIVE_User[] =
+GB_DESC NATIVE_User[] =
 {
   GB_DECLARE("User", 0), GB_VIRTUAL_CLASS(),
 

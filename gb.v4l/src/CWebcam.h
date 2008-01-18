@@ -4,7 +4,7 @@
 
   Webcam capture component
 
-  (C) 2005-2007 Daniel Campos Fernández <dcamposf@gmail.com>
+  (C) 2005-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   Based on the GPL code from "video-capture":
 
@@ -76,13 +76,20 @@ typedef struct	video_device {
 } video_device_t;
 
 
+typedef struct  
+{
+    GB_STREAM_DESC *desc;
+    int _reserved;
+    void *handle;
+}  VIDEO_STREAM;
+
 typedef  struct
 {
-    GB_BASE ob;
+	GB_BASE ob;
 	GB_STREAM stream;
 
 	char *device;
-    video_device_t *dev;
+	video_device_t *dev;
 	unsigned char *membuf;
 	long gotframe;
 	long posframe;
@@ -90,13 +97,13 @@ typedef  struct
 }  CWEBCAM;
 
 
-int Video_stream_read(GB_STREAM *stream, char *buffer, long len);
-int Video_stream_write(GB_STREAM *stream, char *buffer, long len);
+int Video_stream_read(GB_STREAM *stream, char *buffer, int len);
+int Video_stream_write(GB_STREAM *stream, char *buffer, int len);
 int Video_stream_eof(GB_STREAM *stream);
-int Video_stream_lof(GB_STREAM *stream, long long *len);
+int Video_stream_lof(GB_STREAM *stream, int64_t *len);
 int Video_stream_open(GB_STREAM *stream, const char *path, int mode, void *data);
-int Video_stream_seek(GB_STREAM *stream, long long pos, int whence);
-int Video_stream_tell(GB_STREAM *stream, long long *pos);
+int Video_stream_seek(GB_STREAM *stream, int64_t pos, int whence);
+int Video_stream_tell(GB_STREAM *stream, int64_t *pos);
 int Video_stream_flush(GB_STREAM *stream);
 int Video_stream_close(GB_STREAM *stream);
 int Video_stream_handle(GB_STREAM *stream);

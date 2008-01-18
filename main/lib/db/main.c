@@ -253,7 +253,7 @@ void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 
       case GB_T_LONG:
 
-        l = sprintf(buffer, "%lld", VALUE((GB_LONG *)arg));
+        l = sprintf(buffer, "%" PRId64, VALUE((GB_LONG *)arg));
         add(buffer, l);
         return;
 
@@ -288,7 +288,7 @@ void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
         return;
 
       default:
-      	fprintf(stderr, "gb.db: DB_Format: unsupported datatype: %d\n", arg->type);
+      	fprintf(stderr, "gb.db: DB_Format: unsupported datatype: %d\n", (int)arg->type);
         return;
     }
   }

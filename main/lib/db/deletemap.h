@@ -4,7 +4,7 @@
 
   Tracking deletion in an array
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@
 typedef
   void *DELETE_MAP;
   
-long DELETE_MAP_virtual_to_real(DELETE_MAP *dmap, long vpos);
-long DELETE_MAP_real_to_virtual(DELETE_MAP *dmap, long rpos);
-void DELETE_MAP_add(DELETE_MAP **dmap, long vpos);
+int DELETE_MAP_virtual_to_real(DELETE_MAP *dmap, int vpos);
+int DELETE_MAP_real_to_virtual(DELETE_MAP *dmap, int rpos);
+void DELETE_MAP_add(DELETE_MAP **dmap, int vpos);
 void DELETE_MAP_free(DELETE_MAP **dmap);
 
 #endif

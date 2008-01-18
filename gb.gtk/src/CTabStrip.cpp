@@ -243,7 +243,7 @@ GB_DESC CTabChildrenDesc[] =
 {
   GB_DECLARE(".TabChildren", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CTAB_next, NULL),
+  GB_METHOD("_next", "Control", CTAB_next, 0),
   GB_PROPERTY_READ("Count", "i", CTAB_count),
 
   GB_END_DECLARE
@@ -260,7 +260,7 @@ GB_DESC CTabDesc[] =
   GB_PROPERTY("Enabled", "b", CTAB_enabled),
   GB_PROPERTY("Visible", "b", CTAB_visible),
   GB_PROPERTY_SELF("Children", ".TabChildren"),
-  GB_METHOD("Delete", NULL, CTAB_delete, NULL),
+  GB_METHOD("Delete", 0, CTAB_delete, 0),
 
   GB_END_DECLARE
 };
@@ -273,7 +273,7 @@ GB_DESC CTabStripDesc[] =
   GB_CONSTANT("Top", "i", 0),
   GB_CONSTANT("Bottom", "i", 1),
 
-  GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CTABSTRIP_new, "(Parent)Container;"),
 
   GB_PROPERTY("Count", "i", CTABSTRIP_tabs),
   GB_PROPERTY("Text", "s", CTABSTRIP_text),
@@ -290,7 +290,7 @@ GB_DESC CTabStripDesc[] =
 
   GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
   
   TABSTRIP_DESCRIPTION,
 

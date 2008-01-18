@@ -70,7 +70,7 @@ int libsmtp_int_init_base64 (void)
 /* This function will send data in a part, encoded in base64. It will not
    perform any checks whatsoever. */
 
-int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned long int libsmtp_int_length, \
+int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, \
          struct libsmtp_session_struct *libsmtp_session)
 {
   int libsmtp_int_temp, libsmtp_int_counter;
@@ -80,7 +80,7 @@ int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned long int libsmtp_i
   unsigned char libsmtp_int_char;
   int libsmtp_int_finished=0, libsmtp_int_outbytes=0, libsmtp_int_width=0;
   /* This points into the data stream to the byte we are reading ATM */
-  unsigned long int libsmtp_int_data_ptr=0;
+  unsigned int libsmtp_int_data_ptr=0;
   GString *libsmtp_int_gstring=g_string_new (NULL);
 
   if (!libsmtp_int_dtable_init)
@@ -144,7 +144,7 @@ int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned long int libsmtp_i
       if (libsmtp_int_outbytes >=2048)
       {
         libsmtp_int_ogroup[libsmtp_int_outbytes]='\0';
-        if (libsmtp_int_send_body (libsmtp_int_ogroup, libsmtp_int_outbytes, libsmtp_session))
+        if (libsmtp_int_send_body ((char *)libsmtp_int_ogroup, libsmtp_int_outbytes, libsmtp_session))
           return LIBSMTP_ERRORSENDFATAL;
 
         #ifdef LIBSMTP_DEBUG
@@ -162,7 +162,7 @@ int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned long int libsmtp_i
   libsmtp_int_ogroup[libsmtp_int_outbytes++]='\r';
   libsmtp_int_ogroup[libsmtp_int_outbytes++]='\n';
   libsmtp_int_ogroup[libsmtp_int_outbytes]='\0';
-  if (libsmtp_int_send_body (libsmtp_int_ogroup, libsmtp_int_outbytes, libsmtp_session))
+  if (libsmtp_int_send_body ((char *)libsmtp_int_ogroup, libsmtp_int_outbytes, libsmtp_session))
     return LIBSMTP_ERRORSENDFATAL;
 
   #ifdef LIBSMTP_DEBUG

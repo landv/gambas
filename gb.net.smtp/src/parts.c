@@ -222,7 +222,7 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
   struct libsmtp_part_struct *libsmtp_temp_part;
   GString *libsmtp_temp_gstring=0;
   char *libsmtp_temp_string;
-  int libsmtp_temp_int, libsmtp_loop_running=0, libsmtp_int_travel=0;
+  int libsmtp_temp_int, libsmtp_int_travel=0;
 
   libsmtp_temp_gstring = g_string_new (NULL);
 
@@ -254,10 +254,8 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
     libsmtp_int_travel=1;
   }
 
-  libsmtp_loop_running=1;
-
   /* This is the scanning loop. It scans for the next non-Multipart part */
-  while (libsmtp_loop_running)
+  for(;;)
   {
     libsmtp_temp_part = (struct libsmtp_part_struct *)libsmtp_session->PartNow;
 

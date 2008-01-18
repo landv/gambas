@@ -31,7 +31,7 @@
 #include "gbx_subr.h"
 
 
-PUBLIC void SUBR_alloc(void)
+void SUBR_alloc(void)
 {
   int size;
   int count;
@@ -73,20 +73,20 @@ PUBLIC void SUBR_alloc(void)
     ((char *)ptr)[size] = 0;
   }
   
-  RETURN->type = T_INTEGER;
-  RETURN->_integer.value = (int)ptr;
+  RETURN->type = T_POINTER;
+  RETURN->_pointer.value = (intptr_t)ptr;
   
   SUBR_LEAVE();
 }
 
 
-PUBLIC void SUBR_free(void)
+void SUBR_free(void)
 {
   void *ptr;
 
   SUBR_ENTER_PARAM(1);
 
-  ptr = (void *)SUBR_get_integer(PARAM);
+  ptr = SUBR_get_pointer(PARAM);
   
   FREE(&ptr, "SUBR_free");
   
@@ -94,7 +94,7 @@ PUBLIC void SUBR_free(void)
 }
 
 
-PUBLIC void SUBR_realloc(void)
+void SUBR_realloc(void)
 {
   int size;
   int count;
@@ -112,25 +112,25 @@ PUBLIC void SUBR_realloc(void)
   if (size <= 0 || count <= 0)
     THROW(E_ARG);
   
-  ptr = (void *)SUBR_get_integer(&PARAM[0]);
+  ptr = SUBR_get_pointer(&PARAM[0]);
   
   REALLOC(&ptr, size * count, "SUBR_realloc");
   
-  RETURN->type = T_INTEGER;
-  RETURN->_integer.value = (int)ptr;
+  RETURN->type = T_POINTER;
+  RETURN->_pointer.value = (intptr_t)ptr;
   
   SUBR_LEAVE();
 }
 
 
-PUBLIC void SUBR_strptr(void)
+void SUBR_strptr(void)
 {
   char *ptr;
-  int len = 0;
+  size_t len = 0;
   
   SUBR_ENTER_PARAM(1);
   
-  ptr = (char *)SUBR_get_integer(PARAM);
+  ptr = (char *)SUBR_get_pointer(PARAM);
   
   if (CHECK_strlen(ptr, &len))
   {
@@ -141,7 +141,7 @@ PUBLIC void SUBR_strptr(void)
     RETURN->type = T_CSTRING;
     RETURN->_string.addr = ptr;
     RETURN->_string.start = 0;
-    RETURN->_string.len = len;
+    RETURN->_string.len = (int)len;
   }
     
   SUBR_LEAVE();

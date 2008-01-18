@@ -87,7 +87,11 @@ static void *get_symbol(LIBRARY *lib, const char *symbol, bool err)
   sym = lt_dlsym(lib->handle, symbol);
   if (sym == NULL && err)
   {
+#ifdef OS_OPENBSD
+    strlcpy(COMMON_buffer, lt_dlerror(), COMMON_BUF_MAX);
+#else
     strcpy(COMMON_buffer, lt_dlerror());
+#endif
     lt_dlclose(lib->handle);
     lib->handle = NULL;
     THROW(E_LIBRARY, lib->name, COMMON_buffer);
@@ -97,11 +101,11 @@ static void *get_symbol(LIBRARY *lib, const char *symbol, bool err)
 }
 
 
-static void copy_interface(long *src, long *dst)
+static void copy_interface(intptr_t *src, intptr_t *dst)
 {
   for(;;)
   {
-    if (*src == 0)
+    if (*src == (intptr_t)0)
       return;
 
     *dst++ = *src++;
@@ -149,14 +153,22 @@ static void add_preload(char **env, const char *lib)
   {
     org = getenv("LD_PRELOAD");
     if (org && *org)
-      *env += sprintf(*env, "%s ", org);
+#ifdef OS_OPENBSD
+      *env += snprintf(*env, COMMON_BUF_MAX, "%s ", org);
+#else
+       *env += sprintf(*env, "%s ", org);
+#endif
   }
 
+#ifdef OS_OPENBSD
+  *env += snprintf(*env, &COMMON_buffer[COMMON_BUF_MAX] - *env, "%s ", lib);
+#else
   *env += sprintf(*env, "%s ", lib);
+#endif
 }
 
 
-PUBLIC void LIBRARY_preload(const char *file, char **argv)
+void LIBRARY_preload(const char *file, char **argv)
 {
 #if DO_PRELOADING
   const char *path;
@@ -196,7 +208,11 @@ PUBLIC void LIBRARY_preload(const char *file, char **argv)
 
     if (*file == '/')
     {
+#ifdef OS_OPENBSD
+      strlcpy(dir, file, sizeof(dir));
+#else
       strcpy(dir, file);
+#endif
     }
     else
     {
@@ -213,7 +229,11 @@ PUBLIC void LIBRARY_preload(const char *file, char **argv)
       if (path == NULL)
         goto _PANIC;
 
+#ifdef OS_OPENBSD
+      strlcpy(dir, path, sizeof(dir));
+#else
       strcpy(dir, path);
+#endif
     }
 
     file = FILE_cat(dir, ".project", NULL);
@@ -307,7 +327,7 @@ _PANIC:
 }
 
 
-PUBLIC void LIBRARY_init(void)
+void LIBRARY_init(void)
 {
   /*if (putenv("LD_BIND_NOW=true"))
     ERROR_panic("Cannot set LD_BIND_NOW: &1", strerror(errno));
@@ -325,7 +345,7 @@ PUBLIC void LIBRARY_init(void)
 }
 
 
-PUBLIC void LIBRARY_exit(void)
+void LIBRARY_exit(void)
 {
   #ifndef DONT_USE_LTDL
   lt_dlexit();
@@ -333,7 +353,7 @@ PUBLIC void LIBRARY_exit(void)
 }
 
 
-PUBLIC void LIBRARY_get_interface(LIBRARY *lib, long version, void *iface)
+void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface)
 {
   char symbol[32];
   int i, len;
@@ -349,13 +369,16 @@ PUBLIC void LIBRARY_get_interface(LIBRARY *lib, long version, void *iface)
     symbol[i] = c;
   }
 
-  sprintf(&symbol[len], "_%ld", version);
-
-  copy_interface((long *)get_symbol(lib, symbol, TRUE), (long *)iface);
+#ifdef OS_OPENBSD
+  snprintf(&symbol[len], sizeof(symbol)-len, "_%d", version);
+#else
+  sprintf(&symbol[len], "_%d", version);
+#endif
+  copy_interface((intptr_t *)get_symbol(lib, symbol, TRUE), (intptr_t *)iface);
 }
 
 
-PUBLIC boolean LIBRARY_get_interface_by_name(const char *name, long version, void *iface)
+boolean LIBRARY_get_interface_by_name(const char *name, int version, void *iface)
 {
   COMPONENT *comp;
 
@@ -369,7 +392,7 @@ PUBLIC boolean LIBRARY_get_interface_by_name(const char *name, long version, voi
 
 
 
-PUBLIC LIBRARY *LIBRARY_create(const char *name)
+LIBRARY *LIBRARY_create(const char *name)
 {
   LIBRARY *lib;
 
@@ -393,14 +416,14 @@ PUBLIC LIBRARY *LIBRARY_create(const char *name)
 }
 
 
-PUBLIC void LIBRARY_delete(LIBRARY *lib)
+void LIBRARY_delete(LIBRARY *lib)
 {
   LIBRARY_unload(lib);
   FREE(&lib, "LIBRARY_delete");
 }
 
 
-PUBLIC void LIBRARY_load(LIBRARY *lib)
+void LIBRARY_load(LIBRARY *lib)
 {
   int (*func)();
   GB_INTERFACE *iface;
@@ -416,12 +439,22 @@ PUBLIC void LIBRARY_load(LIBRARY *lib)
     return;
 
   path = FILE_buffer();
+#ifdef OS_OPENBSD
+  snprintf(path, PATH_MAX, LIB_PATTERN, COMPONENT_path, lib->name);
+#else
   sprintf(path, LIB_PATTERN, COMPONENT_path, lib->name);
+#endif
   if (!FILE_exist(path))
+#ifdef OS_OPENBSD
+	  snprintf(path, PATH_MAX, LIB_PATTERN, COMPONENT_user_path, lib->name);
+#else
 	  sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
+#endif
 
   #ifndef DONT_USE_LTDL
+    /* no more available in libltld ?
     lt_dlopen_flag = RTLD_LAZY;
+    */
     lib->handle = lt_dlopenext(path);
   #else
     lib->handle = dlopen(path, RTLD_LAZY);
@@ -435,7 +468,7 @@ PUBLIC void LIBRARY_load(LIBRARY *lib)
   /* Interface de Gambas */
 
   iface = get_symbol(lib, LIB_GAMBAS, TRUE);
-  copy_interface((long *)(void *)GAMBAS_Api, (long *)iface);
+  copy_interface((intptr_t *)(void *)GAMBAS_Api, (intptr_t *)(void *)iface);
 
 	/* Signal function */
 	lib->signal = (void(*)())get_symbol(lib, LIB_SIGNAL, FALSE);
@@ -456,7 +489,7 @@ PUBLIC void LIBRARY_load(LIBRARY *lib)
 }
 
 
-PUBLIC void LIBRARY_declare(GB_DESC **desc)
+void LIBRARY_declare(GB_DESC **desc)
 {
   GB_DESC **p;
 
@@ -478,7 +511,7 @@ PUBLIC void LIBRARY_declare(GB_DESC **desc)
 }
 
 
-PUBLIC void LIBRARY_unload(LIBRARY *lib)
+void LIBRARY_unload(LIBRARY *lib)
 {
   void (*gambas_exit)();
 

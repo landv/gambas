@@ -53,14 +53,14 @@
 
 /*#define DEBUG*/
 
-PUBLIC char *COMP_root = NULL;
+char *COMP_root = NULL;
 
-PUBLIC char *COMP_project;
-PUBLIC char *COMP_info_path;
-PUBLIC char *COMP_info_user_path;
-PUBLIC char *COMP_classes = NULL;
+char *COMP_project;
+char *COMP_info_path;
+char *COMP_info_user_path;
+char *COMP_classes = NULL;
 
-PUBLIC COMPILE COMP_current;
+COMPILE COMP_current;
 
 static bool read_line(FILE *f, char *dir, int max)
 {
@@ -96,7 +96,7 @@ static void add_list_file(char *library)
   int len;
 
   path = (char *)FILE_cat(COMP_info_path, library, NULL);
-  strcat(path, ".list");
+  strlcat(path, ".list", sizeof(file_buffer));
 
   /*printf("Reading component list file %s\n", path);*/
 
@@ -105,8 +105,8 @@ static void add_list_file(char *library)
 	if (!fi)
 	{
 		// Try the user component directory
-  	path = (char *)FILE_cat(COMP_info_user_path, library, NULL);
-	  strcat(path, ".list");
+	  path = (char *)FILE_cat(COMP_info_user_path, library, NULL);
+	  strlcat(path, ".list", sizeof(file_buffer));
 	  fi = fopen(path, "r");
 	}
 
@@ -135,7 +135,7 @@ static void add_list_file(char *library)
 }
 
 
-PUBLIC void COMPILE_init(void)
+void COMPILE_init(void)
 {
   const char *root;
   FILE *fp;
@@ -214,7 +214,7 @@ PUBLIC void COMPILE_init(void)
 }
 
 
-PUBLIC void COMPILE_begin(const char *file, bool trans)
+void COMPILE_begin(const char *file, bool trans)
 {
   struct stat info;
   off_t size;
@@ -255,7 +255,7 @@ PUBLIC void COMPILE_begin(const char *file, bool trans)
   JOB->pattern_count = 0;
 }
 
-PUBLIC void COMPILE_load(void)
+void COMPILE_load(void)
 {
   BUFFER_load_file(&JOB->source, JOB->name);
   /*if (JOB->source[BUFFER_length(JOB->source) - 1] != '\n')
@@ -264,7 +264,7 @@ PUBLIC void COMPILE_load(void)
 }
 
 
-PUBLIC void COMPILE_end(void)
+void COMPILE_end(void)
 {
   if (JOB->all && JOB->class->exported)
     CLASS_export();
@@ -280,7 +280,7 @@ PUBLIC void COMPILE_end(void)
     STR_free(JOB->tname);
 }
 
-PUBLIC void COMPILE_exit(void)
+void COMPILE_exit(void)
 {
 	if (JOB->all)
   	CLASS_exit_export();

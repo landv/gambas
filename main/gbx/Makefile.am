@@ -1,12 +1,12 @@
-INCLUDES = -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @INCLTDL@
+INCLUDES = -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @INCLTDL@ @FFI_INC@
 
 bin_PROGRAMS = gbx2
 gblib_LTLIBRARIES = gb.la
 
-gbx2_LDADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @TTY_LIB@
+gbx2_LDADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @TTY_LIB@ @FFI_LIB@
 gbx2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
-gb_la_LIBADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @TTY_LIB@
+gb_la_LIBADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @TTY_LIB@ @FFI_LIB@
 gb_la_LDFLAGS = -module @LD_FLAGS@
 gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -O0
 
@@ -24,7 +24,8 @@ gbx2_SOURCES = \
  gbx_value.h gbx_value.c \
  gbx_subst.h gbx_subst.c \
  gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_loop.c \
- gbx_class_desc.h gbx_class.h gbx_class_init.c gbx_class.c gbx_class_native.c gbx_class_load.c \
+ gbx_class_desc.h gbx_class.h gbx_class_init.c gbx_class.c gbx_class_native.c \
+ gbx_class_load.c gbx_class_load.h \
  gbx_event.h gbx_event.c \
  gb_file.h gb_file.c \
  gbx_stream.h gbx_stream.c gbx_stream_direct.c gbx_stream_buffer.c gbx_stream_memory.c \
@@ -47,7 +48,7 @@ gbx2_SOURCES = \
  gbx_number.h gbx_number.c \
  gbx_object.h gbx_object.c \
  gbx_string.h gbx_string.c \
- gbx_variant.h gbx_variant.c \
+ gbx_variant.h \
  gbx_date.h gbx_date.c \
  gbx_array.h gbx_array.c \
  gbx_c_class.h gbx_c_class.c \

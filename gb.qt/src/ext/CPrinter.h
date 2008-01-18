@@ -38,7 +38,7 @@ extern QPrinter *CPRINTER_printer;
 
 typedef
   struct {
-    char *paper;
+    const char *paper;
     QPrinter::PageSize value;
     }
   PRINTER_SIZE;

@@ -33,7 +33,7 @@
 GB_CLASS CLASS_Blob;
 
 static CBLOB *make_blob(CRESULT *result, int field);
-static void set_blob(CBLOB *_object, char *data, long length);
+static void set_blob(CBLOB *_object, char *data, int length);
 
 
 static GB_SUBCOLLECTION_DESC _fields_desc =
@@ -108,7 +108,7 @@ static void release_buffer(CRESULT *_object)
 static bool load_buffer(CRESULT *_object, int vpos)
 {
   int i, ind;
-  long pos;
+  int pos;
 
 	//fprintf(stderr, "load_buffer: %ld -> %d\n", THIS->pos, vpos);
 
@@ -190,7 +190,7 @@ static bool load_buffer(CRESULT *_object, int vpos)
 
 static void reload_buffer(CRESULT *_object)
 {
-  long pos = THIS->pos;
+  int pos = THIS->pos;
   THIS->pos = -1;
   load_buffer(THIS, pos);
 }
@@ -701,7 +701,7 @@ END_METHOD
 BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 
   DB_INFO *info = &THIS->info;
-  long *pos;
+  int *pos;
 
   if (check_available(THIS))
     return;
@@ -735,7 +735,7 @@ BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 				GB.ListEnum(THIS);
 				while (!GB.NextEnum())
 				{
-					pos = (long *)GB.GetEnum();
+					pos = (int *)GB.GetEnum();
 					if (*pos > THIS->pos)
 						(*pos)--;
 				}
@@ -832,7 +832,7 @@ static CBLOB *make_blob(CRESULT *result, int field)
 	return BLOB;
 }
 
-static void set_blob(CBLOB *_object, char *data, long length)
+static void set_blob(CBLOB *_object, char *data, int length)
 {
 	//fprintf(stderr, "set_blob: %p %ld\n", BLOB, length);
 

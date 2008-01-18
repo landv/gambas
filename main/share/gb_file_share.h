@@ -37,7 +37,7 @@ typedef
   struct {
     short type;
     short mode;
-    long long size;
+    int64_t size;
     int atime;
     int mtime;
     int ctime;
@@ -79,6 +79,7 @@ typedef
 PUBLIC const char *FILE_cat(const char *path, ...);
 PUBLIC char *FILE_buffer(void);
 PUBLIC int FILE_buffer_length(void);
+PUBLIC int FILE_buffer_maxsize(void);
 PUBLIC const char *FILE_get_dir(const char *path);
 PUBLIC const char *FILE_get_name(const char *path);
 PUBLIC const char *FILE_get_ext(const char *path);
@@ -124,7 +125,7 @@ PUBLIC void FILE_recursive_dir(const char *dir, void (*found)(const char *), voi
 
 PUBLIC void FILE_make_path_dir(const char *path);
 
-PUBLIC long long FILE_free(const char *path);
+PUBLIC int64_t FILE_free(const char *path);
 
 #else
 

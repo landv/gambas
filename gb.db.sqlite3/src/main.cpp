@@ -1265,7 +1265,7 @@ static int table_index(DB_DATABASE * db, char *table, DB_INFO * info)
 			}
 		}
 
-		if (i >= r->records.size())
+		if (i >= (int)r->records.size())
 		{
 			GB.Free(POINTER(&info->index));
 			res->close();	

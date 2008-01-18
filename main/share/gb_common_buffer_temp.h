@@ -4,7 +4,7 @@
 
   common buffer useful routines
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,13 +27,13 @@
 #include "gb_common.h"
 
 PUBLIC char COMMON_buffer[256];
-PUBLIC long COMMON_pos;
+PUBLIC int COMMON_pos;
 
 static char *common_buffer;
-static long common_len;
+static int common_len;
 static int common_last;
 
-PUBLIC void COMMON_buffer_init(char *str, long len)
+PUBLIC void COMMON_buffer_init(char *str, int len)
 {
   common_buffer = str;
   common_len = len;
@@ -98,7 +98,7 @@ PUBLIC char *COMMON_get_current(void)
 }
 
 
-PUBLIC long COMMON_get_size_left(void)
+PUBLIC int COMMON_get_size_left(void)
 {
   return common_len - COMMON_pos;
 }

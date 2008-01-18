@@ -386,7 +386,7 @@ int main(int argc, char **argv)
   {
     fflush(NULL);
     if (JOB->line)
-      fprintf(stderr, "%s:%ld: ", JOB->name, JOB->line); /*, (long)(JOB->current - JOB->pattern));*/
+      fprintf(stderr, "%s:%d: ", JOB->name, JOB->line);
     else
       fprintf(stderr, "gbc: ERROR: ");
     ERROR_print();

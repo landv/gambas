@@ -46,7 +46,7 @@ static CLASS_DESC_SYMBOL *_current_symbol = NULL;
 
 static CLASS_DESC *get_desc(CLASS *class, const char *name)
 {
-  long index;
+  int index;
 
   index = CLASS_find_symbol(class, name);
 
@@ -187,7 +187,7 @@ END_PROPERTY
 BEGIN_METHOD_VOID(class_next)
 
   TABLE *table = CLASS_get_table();
-  long *index = (long *)GB_GetEnum();
+  int *index = (int *)GB_GetEnum();
   CLASS *class;
 
   for(;;)
@@ -534,7 +534,7 @@ BEGIN_METHOD(object_get_property, GB_OBJECT object; GB_STRING property)
     EXEC.drop = FALSE;
     EXEC.nparam = 0;
     EXEC.native = FALSE;
-    EXEC.index = (long)desc->property.read;
+    EXEC.index = (int)(intptr_t)desc->property.read;
     //EXEC.func = &class->load->func[(long)desc->property.read];
 
     EXEC_function_keep();
@@ -625,7 +625,7 @@ BEGIN_METHOD(object_set_property, GB_OBJECT object; GB_STRING property; GB_VARIA
     EXEC.drop = FALSE;
     EXEC.nparam = 1;
     EXEC.native = FALSE;
-    EXEC.index = (long)desc->property.write;
+    EXEC.index = (int)(intptr_t)desc->property.write;
     //EXEC.func = &class->load->func[(long)desc->property.write];
 
     EXEC_function();
@@ -859,7 +859,7 @@ END_METHOD
 #endif
 
 
-PUBLIC GB_DESC NATIVE_Symbol[] =
+GB_DESC NATIVE_Symbol[] =
 {
   GB_DECLARE(".Symbol", 0), GB_VIRTUAL_CLASS(),
 
@@ -876,7 +876,7 @@ PUBLIC GB_DESC NATIVE_Symbol[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_ClassSymbols[] =
+GB_DESC NATIVE_ClassSymbols[] =
 {
   GB_DECLARE(".ClassSymbols", 0), GB_VIRTUAL_CLASS(),
 
@@ -887,7 +887,7 @@ PUBLIC GB_DESC NATIVE_ClassSymbols[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_Components[] =
+GB_DESC NATIVE_Components[] =
 {
   GB_DECLARE("Components", 0),  GB_VIRTUAL_CLASS(),
 
@@ -900,7 +900,7 @@ PUBLIC GB_DESC NATIVE_Components[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_Component[] =
+GB_DESC NATIVE_Component[] =
 {
   GB_DECLARE("Component", 0),  GB_VIRTUAL_CLASS(),
 
@@ -915,7 +915,7 @@ PUBLIC GB_DESC NATIVE_Component[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_Classes[] =
+GB_DESC NATIVE_Classes[] =
 {
   GB_DECLARE("Classes", 0),  GB_VIRTUAL_CLASS(),
 
@@ -927,7 +927,7 @@ PUBLIC GB_DESC NATIVE_Classes[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_Class[] =
+GB_DESC NATIVE_Class[] =
 {
   GB_DECLARE("Class", 0),  GB_VIRTUAL_CLASS(),
 
@@ -956,7 +956,7 @@ PUBLIC GB_DESC NATIVE_Class[] =
 };
 
 
-PUBLIC GB_DESC NATIVE_Object[] =
+GB_DESC NATIVE_Object[] =
 {
   GB_DECLARE("Object", 0),  GB_VIRTUAL_CLASS(),
 

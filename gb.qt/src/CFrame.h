@@ -43,7 +43,7 @@ typedef
   struct {
     CWIDGET widget;
     QWidget *container;
-    long arrangement;
+    int arrangement;
     }
   CFRAME;
 

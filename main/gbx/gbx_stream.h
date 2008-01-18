@@ -37,11 +37,11 @@ typedef
     int (*read)(union STREAM *stream, char *buffer, int len);
     int (*getchar)(union STREAM *stream, char *buffer);
     int (*write)(union STREAM *stream, char *buffer, int len);
-    int (*seek)(union STREAM *stream, long long pos, int whence);
-    int (*tell)(union STREAM *stream, long long *pos);
+    int (*seek)(union STREAM *stream, int64_t pos, int whence);
+    int (*tell)(union STREAM *stream, int64_t *pos);
     int (*flush)(union STREAM *stream);
     int (*eof)(union STREAM *stream);
-    int (*lof)(union STREAM *stream, long long *len);
+    int (*lof)(union STREAM *stream, int64_t *len);
     int (*handle)(union STREAM *stream);
     }
   STREAM_CLASS;
@@ -70,7 +70,7 @@ typedef
 typedef
   struct {
     STREAM_COMMON common;
-    long long size;
+    int64_t size;
     int fd;
     unsigned is_term : 1;
     unsigned _reserved : 31;
@@ -81,7 +81,7 @@ typedef
 typedef
   struct {
     STREAM_COMMON common;
-    long long size;
+    int64_t size;
     FILE *file;
     unsigned is_term : 1;
     unsigned _reserved : 31;
@@ -93,8 +93,7 @@ typedef
   struct {
     STREAM_COMMON common;
     void *addr;
-    //long size;
-    int pos;
+    int64_t pos;
     }
   PACKED
   STREAM_MEMORY;
@@ -171,7 +170,7 @@ EXTERN STREAM_CLASS STREAM_process;
 #else
 
 #define DECLARE_STREAM(stream) \
-PUBLIC STREAM_CLASS stream = \
+STREAM_CLASS stream = \
 { \
   (void *)stream_open, \
   (void *)stream_close, \
@@ -189,39 +188,39 @@ PUBLIC STREAM_CLASS stream = \
 #endif
 
 
-PUBLIC void STREAM_exit(void);
+void STREAM_exit(void);
 
-PUBLIC bool STREAM_in_archive(const char *path);
-//PUBLIC int STREAM_get_readable(int fd, long *len);
+bool STREAM_in_archive(const char *path);
+//int STREAM_get_readable(int fd, long *len);
 
-PUBLIC void STREAM_open(STREAM *stream, const char *path, int mode);
+void STREAM_open(STREAM *stream, const char *path, int mode);
 
-PUBLIC void STREAM_close(STREAM *stream);
-PUBLIC void STREAM_write(STREAM *stream, void *addr, int len);
-PUBLIC void STREAM_line_input(STREAM *stream, char **addr);
-PUBLIC void STREAM_input(STREAM *stream, char **addr);
-PUBLIC long long STREAM_tell(STREAM *stream);
-PUBLIC void STREAM_seek(STREAM *stream, long long pos, int whence);
-PUBLIC void STREAM_read(STREAM *stream, void *addr, int len);
-PUBLIC char STREAM_getchar(STREAM *stream);
-PUBLIC void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len);
-PUBLIC void STREAM_write(STREAM *stream, void *addr, int len);
-PUBLIC void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len);
-PUBLIC void STREAM_write_eol(STREAM *stream);
-PUBLIC void STREAM_flush(STREAM *stream);
-PUBLIC int STREAM_handle(STREAM *stream);
-PUBLIC void STREAM_lof(STREAM *stream, long long *len);
-PUBLIC bool STREAM_eof(STREAM *stream);
+void STREAM_close(STREAM *stream);
+void STREAM_write(STREAM *stream, void *addr, int len);
+void STREAM_line_input(STREAM *stream, char **addr);
+void STREAM_input(STREAM *stream, char **addr);
+int64_t STREAM_tell(STREAM *stream);
+void STREAM_seek(STREAM *stream, int64_t pos, int whence);
+void STREAM_read(STREAM *stream, void *addr, int len);
+char STREAM_getchar(STREAM *stream);
+void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len);
+void STREAM_write(STREAM *stream, void *addr, int len);
+void STREAM_write_type(STREAM *stream, TYPE type, VALUE *value, int len);
+void STREAM_write_eol(STREAM *stream);
+void STREAM_flush(STREAM *stream);
+int STREAM_handle(STREAM *stream);
+void STREAM_lof(STREAM *stream, int64_t *len);
+bool STREAM_eof(STREAM *stream);
 
-PUBLIC void STREAM_load(const char *path, char **buffer, int *len);
-PUBLIC bool STREAM_map(const char *path, char **buffer, int *len);
+void STREAM_load(const char *path, char **buffer, int *len);
+bool STREAM_map(const char *path, char **buffer, int *len);
 
-PUBLIC int STREAM_read_direct(int fd, char *buffer, int len);
-PUBLIC int STREAM_write_direct(int fd, char *buffer, int len);
-//PUBLIC int STREAM_read_buffered(FILE *file, char *buffer, long len);
-//PUBLIC int STREAM_write_buffered(FILE *file, char *buffer, long len);
+int STREAM_read_direct(int fd, char *buffer, int len);
+int STREAM_write_direct(int fd, char *buffer, int len);
+//int STREAM_read_buffered(FILE *file, char *buffer, long len);
+//int STREAM_write_buffered(FILE *file, char *buffer, long len);
 
-PUBLIC void STREAM_lock(STREAM *stream);
+void STREAM_lock(STREAM *stream);
 
 #define STREAM_is_closed(_stream) ((_stream)->type == NULL)
 

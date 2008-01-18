@@ -365,8 +365,8 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	
 	cell = gtk_cell_renderer_text_new ();
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), cell, true);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, NULL);
-	g_object_set(cell, "ypad", 0, NULL);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
+	g_object_set(cell, "ypad", 0, (void *)NULL);
 
 	realize(false);
 	
@@ -612,7 +612,7 @@ void gComboBox::resize(int w, int h)
 void gComboBox::setFont(gFont *f)
 {
 	gControl::setFont(f);
-	g_object_set(G_OBJECT(cell), "font-desc", font() ? font()->desc() : NULL, NULL);
+	g_object_set(G_OBJECT(cell), "font-desc", font() ? font()->desc() : NULL, (void *)NULL);
 	if (entry)
 		gtk_widget_modify_font(entry, font() ? font()->desc() : NULL);
 }

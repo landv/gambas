@@ -128,7 +128,7 @@ GB_DESC CDrawingAreaDesc[] =
 {
   GB_DECLARE("DrawingArea", sizeof(CDRAWINGAREA)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", NULL, CDRAWINGAREA_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CDRAWINGAREA_new, "(Parent)Container;"),
 
   GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
   GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
@@ -136,9 +136,9 @@ GB_DESC CDrawingAreaDesc[] =
   GB_PROPERTY("Merge","b",CDRAWINGAREA_merge),
   GB_PROPERTY("Focus","b",CDRAWINGAREA_focus),
 
-  GB_METHOD("Clear", NULL, CDRAWINGAREA_clear, NULL),
+  GB_METHOD("Clear", 0, CDRAWINGAREA_clear, 0),
 
-  GB_EVENT("Draw", NULL, NULL, &EVENT_draw),
+  GB_EVENT("Draw", 0, 0, &EVENT_draw),
   
   GB_INTERFACE("Draw", &DRAW_Interface),
   

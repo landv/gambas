@@ -41,7 +41,7 @@
 typedef
   struct {
     const char *name;                  /* source file name */
-    long line;                         /* current line number */
+    int line;                          /* current line number */
     char *source;                      /* source file contents */
     unsigned verbose : 1;              /* verbose compilation */
     unsigned debug : 1;                /* if debugging information must be generated */
@@ -57,15 +57,14 @@ typedef
     unsigned _reserved : 22;           /* reserved*/
     const char *output;                /* output file */
     PATTERN *pattern;                  /* analyse lexicale du source */
-    long pattern_count;                /* number of patterns */
-    //long max_pattern;                  /* maximum number of pattern (half of file size in bytes) */
+    int pattern_count;                 /* number of patterns */
     PATTERN *current;                  /* position de traduction courante */
     PATTERN *end;                      /* fin de traduction */
     FUNCTION *func;                    /* fonction en cours de compilation */
     CLASS *class;                      /* classe en cours de compilation */
     const char *form;                  /* nom du fichier formulaire */
     const char *tname;                 /* nom du fichier *.pot */
-    long default_library;              /* default library name for extern declarations */
+    int default_library;               /* default library name for extern declarations */
     }
   PACKED
   COMPILE;

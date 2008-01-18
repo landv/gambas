@@ -28,10 +28,10 @@
 typedef
   void (*SUBST_FUNC)(int, char **, int *);
 
-PUBLIC void SUBST_init(void);
-PUBLIC void SUBST_add(const char *src, int len);
-PUBLIC void SUBST_add_char(unsigned char c);
-PUBLIC void SUBST_exit(void);
-PUBLIC char *SUBST_buffer(void);
+void SUBST_init(void);
+void SUBST_add(const char *src, int len);
+void SUBST_add_char(unsigned char c);
+void SUBST_exit(void);
+char *SUBST_buffer(void);
 
 #endif

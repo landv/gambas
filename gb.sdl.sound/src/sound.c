@@ -87,7 +87,7 @@ static void channel_finished(int channel)
   fflush(NULL);
 
 //  free_channel_sound(ch->sound);
-  GB.Post(free_channel_sound, (long)ch->sound);
+  GB.Post(free_channel_sound, (intptr_t)ch->sound);
   ch->sound = NULL;
 }
 
@@ -197,7 +197,7 @@ static int volume_to_sdl(double vol)
 BEGIN_METHOD(CSOUND_new, GB_STRING file)
 
   char *addr;
-  long len;
+  int len;
 
   if (GB.LoadFile(STRING(file), LENGTH(file), &addr, &len))
     return;

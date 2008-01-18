@@ -42,9 +42,9 @@
 #include "gb_code.h"
 
 
-PUBLIC int TRANS_in_affectation = 0;
+int TRANS_in_affectation = 0;
 
-PUBLIC void TRANS_reset(void)
+void TRANS_reset(void)
 {
   JOB->line = 1;
   JOB->current = JOB->pattern;
@@ -52,7 +52,7 @@ PUBLIC void TRANS_reset(void)
 }
 
 
-PUBLIC boolean TRANS_newline(void)
+boolean TRANS_newline(void)
 {
   if (PATTERN_is_newline(*JOB->current))
   {
@@ -64,11 +64,54 @@ PUBLIC boolean TRANS_newline(void)
   return FALSE;
 }
 
+static bool read_integer(char **number, int base, int64_t *result)
+{
+  uint64_t nbr2, nbr;
+  int d, n;
+  unsigned char c;
 
-PUBLIC bool TRANS_get_number(int index, TRANS_NUMBER *result)
+  n = 0;
+  nbr = 0;
+
+  for(;;)
+  {
+	  c = (unsigned char)**number;
+
+    if (c >= '0' && c <= '9')
+      d = c - '0';
+    else if (c >= 'A' && c <='Z')
+      d = c - 'A' + 10;
+    else if (c >= 'a' && c <='z')
+      d = c - 'a' + 10;
+    else
+      break;
+
+    if (d >= base)
+      break;
+
+	  (*number)++;
+    n++;
+    
+    nbr2 = nbr * base + d;
+    
+		if (nbr2 < nbr || nbr2 > INT64_MAX)
+			return TRUE;
+    
+    nbr = nbr2;
+  }
+
+  if (n == 0)
+    return TRUE;
+
+  *result = nbr;
+  return FALSE;
+}
+
+
+bool TRANS_get_number(int index, TRANS_NUMBER *result)
 {
   char car;
-  long long val;
+  int64_t val = 0;
   double dval = 0;
   char *end;
   int pos;
@@ -133,61 +176,38 @@ PUBLIC bool TRANS_get_number(int index, TRANS_NUMBER *result)
 
   if (base)
   {
-    if (is_unsigned)
-      val = (long long)strtoull(number, &end, base);
-    else
-    {
-      val = (int)strtoul(number, &end, base);
-      if (errno || *end)
-        val = strtoll(number, &end, base);
-    }
-
-    long_int = val != (int)val;
-
-    /*if (is_unsigned)*/
-    //  val = (int)strtoul(number, &end, base);
-    /*else
-      val = strtol(number, &end, base);*/
+    if (read_integer(&number, base, &val) || *number)
+    	return TRUE;
+    
+    long_int = (uint64_t)val != (uint)val;
 
     if (!is_unsigned)
     {
-      /*if (long_int)
-      {
-        if (val >= 0x80000000L && val <= 0xFFFFFFFFL)
-          val |= 0xFFFFFFFF00000000LL;
-      }
-      else*/
-      {
-        if (val >= 0x8000L && val <= 0xFFFFL)
-          val |= 0xFFFFFFFFFFFF0000LL;
-      }
+			if (val >= 0x8000L && val <= 0xFFFFL)
+				val |= INT64_C(0xFFFFFFFFFFFF0000);
     }
   }
   else
   {
-    base = 10;
-    val = strtol(number, &end, base);
-
-    if (errno || *end || val < 0)
+		if (is_unsigned)
+			return TRUE;
+    
+    end = number;
+    if (read_integer(&end, 10, &val) || *end)
     {
-      errno = 0;
-      val = strtoll(number, &end, base);
-      long_int = TRUE;
-    }
-
-    if (errno || *end || val < 0)
-    {
-      if (is_unsigned)
-        return TRUE;
-
       errno = 0;
       base = 0;
       dval = strtod(number, &end);
-    }
+      
+      if (*end || errno)
+      	return TRUE;
+		}
+		else
+		{
+			base = 10;
+			long_int = (uint64_t)val != (uint)val;
+		}
   }
-
-  if (*end || errno)
-    return TRUE;
 
   if (!base)
   {
@@ -279,7 +299,7 @@ static PATTERN *trans_square(PATTERN *look, int mode, TRANS_DECL *result)
 }
 
 
-PUBLIC int TRANS_get_class(PATTERN pattern)
+int TRANS_get_class(PATTERN pattern)
 {
   int index = PATTERN_index(pattern);
 
@@ -290,7 +310,7 @@ PUBLIC int TRANS_get_class(PATTERN pattern)
 }
 
 
-PUBLIC bool TRANS_type(int mode, TRANS_DECL *result)
+bool TRANS_type(int mode, TRANS_DECL *result)
 {
   PATTERN *look = JOB->current;
   short id = 0;
@@ -406,7 +426,7 @@ PUBLIC bool TRANS_type(int mode, TRANS_DECL *result)
 }
 
 
-PUBLIC bool TRANS_check_declaration(void)
+bool TRANS_check_declaration(void)
 {
   PATTERN *look = JOB->current;
 
@@ -435,7 +455,7 @@ PUBLIC bool TRANS_check_declaration(void)
 
 
 
-PUBLIC PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
+PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 {
   int index;
   TRANS_NUMBER number;
@@ -548,7 +568,7 @@ PUBLIC PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 
 
 
-PUBLIC void TRANS_want(int reserved, char *msg)
+void TRANS_want(int reserved, char *msg)
 {
   if (!PATTERN_is(*JOB->current, reserved))
     THROW("Syntax error. &1 expected", msg ? msg : COMP_res_info[reserved].name);
@@ -556,7 +576,7 @@ PUBLIC void TRANS_want(int reserved, char *msg)
 }
 
 
-PUBLIC boolean TRANS_is(int reserved)
+boolean TRANS_is(int reserved)
 {
   if (PATTERN_is(*JOB->current, reserved))
   {
@@ -567,14 +587,14 @@ PUBLIC boolean TRANS_is(int reserved)
     return FALSE;
 }
 
-PUBLIC void TRANS_ignore(int reserved)
+void TRANS_ignore(int reserved)
 {
   if (PATTERN_is(*JOB->current, reserved))
     JOB->current++;
 }
 
 
-PUBLIC bool TRANS_is_end_function(bool is_proc, PATTERN *look)
+bool TRANS_is_end_function(bool is_proc, PATTERN *look)
 {
   if (PATTERN_is_newline(*look))
     return TRUE;

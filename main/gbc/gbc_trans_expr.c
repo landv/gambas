@@ -55,7 +55,7 @@ static short get_nparam(PATTERN *tree, int *index)
   }
 
   /*
-     G�e le cas o on a cod�un subr sans mettre de parenth�es
+     Gère le cas où on a codé un subr sans mettre de parenthèses
      => nparam = 0
   */
 
@@ -63,7 +63,7 @@ static short get_nparam(PATTERN *tree, int *index)
 }
 
 
-static void push_number(long index)
+static void push_number(int index)
 {
   TRANS_NUMBER number;
   TRANS_DECL decl;
@@ -83,15 +83,15 @@ static void push_number(long index)
   decl.value = index;
   if (number.type == T_LONG)
   	decl.lvalue = number.lval;
-  CODE_push_const(CLASS_add_constant(JOB->class, &decl));  
+  CODE_push_const(CLASS_add_constant(JOB->class, &decl));
 }
 
 
-static void push_string(long index, bool trans)
+static void push_string(int index, bool trans)
 {
   TRANS_DECL decl;
   SYMBOL *sym;
-  long len;
+  int len;
 
   sym = TABLE_get_symbol(JOB->class->string, index);
   len = sym->len;
@@ -120,20 +120,7 @@ static void push_string(long index, bool trans)
 }
 
 
-/*
-static void push_class(long index)
-{
-  TRANS_DECL decl;
-
-  decl.type = TYPE_make(T_STRING, 0, 0);
-  decl.index = NO_SYMBOL;
-  decl.value = index;
-  CODE_push_class(CLASS_add_constant(JOB->class, &decl));
-}
-*/
-
-
-static void trans_class(long index)
+static void trans_class(int index)
 {
   const char *name;
 
@@ -147,7 +134,7 @@ static void trans_class(long index)
 }
 
 
-static void trans_identifier(long index, boolean first, boolean point, PATTERN next)
+static void trans_identifier(int index, boolean first, boolean point, PATTERN next)
 {
   CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
   bool is_static;
@@ -234,7 +221,7 @@ __CLASS:
 }
 
 
-static void trans_subr(long subr, short nparam, boolean output)
+static void trans_subr(int subr, short nparam, boolean output)
 {
   SUBR_INFO *info = &COMP_subr_info[subr];
 
@@ -297,7 +284,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
 {
   int i;
   short nparam;
-  long count;
+  int count;
   PATTERN pattern, next_pattern, prev_pattern;
 
   count = ARRAY_count(tree) - 1;
@@ -396,7 +383,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
 
 PUBLIC void TRANS_new(void)
 {
-  long index;
+  int index;
   int i, nparam;
   boolean array = FALSE;
   boolean event = FALSE;

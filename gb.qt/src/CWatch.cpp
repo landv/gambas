@@ -4,7 +4,7 @@
 
   Watching for file descriptors
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ QIntDict<CWatch> CWatch::readDict;
 QIntDict<CWatch> CWatch::writeDict;
 int CWatch::count = 0;
 
-void CWatch::watch(int fd, int type, GB_WATCH_CALLBACK callback, long param)
+void CWatch::watch(int fd, int type, GB_WATCH_CALLBACK callback, intptr_t param)
 {
   CWatch *watch;
 
@@ -69,7 +69,7 @@ void CWatch::stop()
     watch(fd, GB_WATCH_NONE, 0, 0);
 }
 
-CWatch::CWatch(int fd, QSocketNotifier::Type type, GB_WATCH_CALLBACK callback, long param)
+CWatch::CWatch(int fd, QSocketNotifier::Type type, GB_WATCH_CALLBACK callback, intptr_t param)
 {
   count++;
    

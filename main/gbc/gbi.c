@@ -160,8 +160,8 @@ static void init(void)
     strncpy(_root, FILE_get_dir(FILE_get_dir(path)), MAX_PATH);
   }
 
-  strcpy(_lib_path, FILE_cat(_root, "lib/gambas" GAMBAS_VERSION_STRING, NULL));
-  strcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
+  strlcpy(_lib_path, FILE_cat(_root, "lib/gambas" GAMBAS_VERSION_STRING, NULL), sizeof(_lib_path));
+  strlcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL), sizeof(_info_path));
 
   if (lt_dlinit())
     error(TRUE, "Cannot initialize plug-in management: %s", lt_dlerror());
@@ -206,14 +206,14 @@ static bool print_type(const char *type)
 }
 #endif
 
-static void dump_value(const char *type, long value)
+static void dump_value(const char *type, intptr_t value)
 {
   char *p;
 
   switch(*type)
   {
     case 'i':
-      print("%ld", value, value);
+      print("%d", value);
       break;
 
     case 'f':
@@ -240,159 +240,9 @@ static void dump_value(const char *type, long value)
   }
 }
 
-#if 0
-static void print_value(const char *type, long value)
-{
-  char *p;
-
-  switch(*type)
-  {
-    case 'i':
-      print("%ld ( &H%lX )", value, value);
-      break;
-
-    case 'f':
-      print("\"%s\"", (char *)value);
-      break;
-
-    case 's':
-      p = (char *)value;
-      print("\"");
-      while (*p)
-      {
-        if (*p == '\n')
-          print("\\n");
-        else if (*p == '\t')
-          print("\\t");
-        else
-          print("%c", *p);
-        p++;
-      }
-      print("\"");
-      break;
-
-    default:
-      print("?");
-      break;
-  }
-}
-
-static void print_signature(const char *sign)
-{
-  char mode = 0;
-  char c;
-  bool comma = FALSE;
-
-  if (!sign)
-    return;
-
-  while ((c = *sign))
-  {
-    if (!mode)
-    {
-      if (c == '(')
-      {
-        if (comma)
-          print(" ,");
-        print(_format ? " <i>" : " ");
-
-        mode = ')';
-      }
-      else if (c == '<')
-        mode = '>';
-      else if (c == '[')
-        print(_format ? " <b>[</b>" : " [");
-      else if (c == ']')
-        print(_format ? " <b>]</b>" : " ]");
-      else if (c == '.')
-        print(" ...");
-      else
-      {
-        print(" AS ");
-        if (print_type(sign))
-          mode = ';';
-        comma = TRUE;
-      }
-    }
-    else if (c == mode)
-    {
-      if (mode == ')' && _format)
-        print("</i>");
-      mode = 0;
-    }
-    else if (mode == ')')
-    {
-      print("%c", c);
-    }
-
-    sign++;
-  }
-}
-
-static void analyze_symbol(GB_DESC *desc)
-{
-  char type;
-  char *name;
-
-  type = *desc->name;
-
-  name = &desc->name[1];
-
-  print("%s\n", name);
-
-  if (isupper(type))
-  {
-    if (type != 'C') print("STATIC ");
-    type = tolower(type);
-  }
-
-  if (type == ':')
-    name++;
-
-  switch (type)
-  {
-    case 'c':
-      print(_format ? "CONST <b>%s</b> AS " : "CONST %s AS ", name);
-      print_type((char *)desc->val1);
-      print(" = ");
-      print_value((char *)desc->val1, desc->val2);
-      newline();
-      break;
-
-    case 'p':
-      print(_format ? "PROPERTY <b>%s</b> AS " : "PROPERTY %s AS ", name);
-      print_type((char *)desc->val1);
-      newline();
-      break;
-
-    case 'r':
-      print(_format ? "PROPERTY READ <b>%s</b> AS " : "PROPERTY READ %s AS ", name);
-      print_type((char *)desc->val1);
-      newline();
-      break;
-
-    case 'm': case ':':
-      if (type == ':')
-        print(_format ? "EVENT <b>%s</b> (" : "EVENT %s (", name);
-      else
-        print(_format ? "%s <b>%s</b> (" : "%s %s (", desc->val1 ? "FUNCTION" : "SUB", name);
-      print_signature((char *)desc->val3);
-      print(" )");
-      if (desc->val1)
-      {
-        print(" AS ");
-        print_type((char *)desc->val1);
-      }
-      newline();
-      break;
-  }
-}
-#endif
-
-
 static void dump_symbol(GB_DESC *desc)
 {
-  char *name;
+  const char *name;
 
   name = &desc->name[1];
 
@@ -420,11 +270,11 @@ static int sort_symbol(const int *a, const int *b)
 
 static void analyze_class(GB_DESC *desc)
 {
-  char *name = desc->name;
+  const char *name = desc->name;
   char *parent = NULL;
   bool autocreate = FALSE;
   bool nocreate = FALSE;
-  ulong hook;
+  intptr_t hook;
   int nsymbol;
   int *sort;
   GB_DESC *p;
@@ -437,13 +287,13 @@ static void analyze_class(GB_DESC *desc)
 
   while (desc->name)
   {
-    hook = (ulong)desc->name;
+    hook = (intptr_t)desc->name;
 
-    if (hook == (ulong)GB_INHERITS_ID)
+    if (hook == (intptr_t)GB_INHERITS_ID)
       parent = (char *)desc->val1;
-    else if ((hook == (ulong)GB_NOT_CREATABLE_ID))
+    else if ((hook == (intptr_t)GB_NOT_CREATABLE_ID))
       nocreate = TRUE;
-    else if (hook == (ulong)GB_AUTO_CREATABLE_ID)
+    else if (hook == (intptr_t)GB_AUTO_CREATABLE_ID)
       autocreate = TRUE;
     else if (hook > 16)
       break;
@@ -610,7 +460,7 @@ static void preload(char **argv, char *lib)
   if (_nopreload || getenv("GB_PRELOAD") || !lib || !*lib)
     return;
 
-  sprintf(buf, "LD_PRELOAD=%s", lib);
+  snprintf(buf, sizeof(buf), "LD_PRELOAD=%s", lib);
   putenv(buf);
   putenv("GB_PRELOAD=1");
 
@@ -629,9 +479,9 @@ static void analyze(const char *comp, bool include)
 
   name = STR_copy(comp);
 
-  sprintf(_buffer, LIB_PATTERN, _lib_path, name);
+  snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
   native = (access(_buffer, F_OK) == 0);
-  sprintf(_buffer, ARCH_PATTERN, _lib_path, name);
+  snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
   gambas = (access(_buffer, F_OK) == 0);
 
   if (!native && !gambas)
@@ -660,7 +510,7 @@ static void analyze(const char *comp, bool include)
 
   if (native)
   {
-    sprintf(_buffer, LIB_PATTERN, _lib_path, name);
+    snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
 
     if (analyze_native_component(_buffer))
       ok = FALSE;
@@ -668,7 +518,7 @@ static void analyze(const char *comp, bool include)
 
   if (gambas)
   {
-    sprintf(_buffer, ARCH_PATTERN, _lib_path, name);
+    snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
 
     if (analyze_gambas_component(_buffer))
     	if (!native)

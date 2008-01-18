@@ -56,7 +56,7 @@ static void init_eval()
 	init = TRUE;
 }
 
-PUBLIC void SUBR_error(void)
+void SUBR_error(void)
 {
   SP->type = T_BOOLEAN;
   SP->_boolean.value = ERROR_info.code != 0 ? -1 : 0;
@@ -64,7 +64,7 @@ PUBLIC void SUBR_error(void)
 }
 
 
-PUBLIC void SUBR_wait(void)
+void SUBR_wait(void)
 {
   double wait;
   double stop, time;
@@ -98,7 +98,7 @@ PUBLIC void SUBR_wait(void)
 }
 
 
-PUBLIC void SUBR_sleep(void)
+void SUBR_sleep(void)
 {
 	double wait;
 	struct timespec rem;
@@ -116,7 +116,7 @@ PUBLIC void SUBR_sleep(void)
 }
 
 
-PUBLIC void SUBR_exec(void)
+void SUBR_exec(void)
 {
   void *cmd;
   bool wait;
@@ -214,7 +214,7 @@ static bool get_value(const char *sym, int len, GB_VARIANT *value)
   return TRUE;
 }
 
-PUBLIC void EVAL_string(char *expr)
+void EVAL_string(char *expr)
 {
 	int len;
   EXPRESSION *eval;
@@ -246,7 +246,7 @@ _FREE:
 	STREAM_flush(CSTREAM_stream(&CFILE_out));
 }
 
-PUBLIC void SUBR_eval(void)
+void SUBR_eval(void)
 {
   char *expr;
   int len;
@@ -300,7 +300,7 @@ static TYPE conv_type(TYPE type)
 	return type;
 }
 
-PUBLIC void SUBR_array(void)
+void SUBR_array(void)
 {
   TYPE type;
   int i;

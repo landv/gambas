@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This is the implementation of the SocketServer class
 
@@ -51,7 +51,7 @@ DECLARE_EVENT (CSERVERSOCKET_Error);
 void srvsock_post_error(CSERVERSOCKET* mythis)
 {
 	GB.Raise((void*)mythis,CSERVERSOCKET_Error,0);
-	GB.Unref((void**)&mythis);
+	GB.Unref(POINTER(&mythis));
 }
 
 // BM: Fix bug in allocations
@@ -59,9 +59,9 @@ void srvsock_post_error(CSERVERSOCKET* mythis)
 void CServerSocket_NewChild(CSERVERSOCKET *mythis,void *cli_obj)
 {
 	if (mythis->nchildren++)
-		GB.Realloc ( (void**)&mythis->children,mythis->nchildren * sizeof(*mythis->children));
+		GB.Realloc ( POINTER(&mythis->children),mythis->nchildren * sizeof(*mythis->children));
 	else
-		GB.Alloc   ( (void**)&mythis->children,mythis->nchildren * sizeof(*mythis->children));
+		GB.Alloc   ( POINTER(&mythis->children),mythis->nchildren * sizeof(*mythis->children));
 
 	mythis->children[mythis->nchildren-1]=cli_obj;
 }
@@ -81,11 +81,11 @@ void CServerSocket_DeleteChild(CSERVERSOCKET *mythis,void *cli_obj)
 				mythis->children[myloop2]=mythis->children[myloop2+1];
 			if ( --mythis->nchildren)
 			{
-				GB.Realloc ( (void**)&mythis->children,mythis->nchildren * sizeof(*mythis->children));
+				GB.Realloc ( POINTER(&mythis->children),mythis->nchildren * sizeof(*mythis->children));
 			}
 			else
 			{
-				GB.Free ((void**)&mythis->children);
+				GB.Free (POINTER(&mythis->children));
 				mythis->children=NULL;
 			}
 			return;
@@ -110,7 +110,7 @@ void CServerSocket_CallBack(int fd,int type,long lParam)
 {
 	int okval=0;
 	char *rem_ip_buf;
-	int ClientLen;
+	unsigned int ClientLen;
 	CSERVERSOCKET *mythis;
 
 	mythis=(CSERVERSOCKET*)lParam;
@@ -137,7 +137,7 @@ void CServerSocket_CallBackUnix(int fd,int type,long lParam)
 {
 	//int position=0;
 	int okval=0;
-	int ClientLen;
+	unsigned int ClientLen;
 	CSERVERSOCKET *mythis;
 
 	mythis=(CSERVERSOCKET*)lParam;
@@ -302,7 +302,7 @@ BEGIN_METHOD(CSERVERSOCKET_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
 	{
 		if (buf)
 		{
-			GB.Free((void**)&buf);
+			GB.Free(POINTER(&buf));
 			GB.Error("Invalid Host String");
 			return;
 		}
@@ -511,11 +511,11 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 
  CSOCKET *cli_obj;
  struct sockaddr_in myhost;
- int mylen;
+ unsigned int mylen;
 
  if ( THIS->iStatus != 2){ GB.Error("No connection to accept");return; }
 
- GB.New((void**)&cli_obj,GB.FindClass("Socket"),"Socket",NULL);
+ GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
  cli_obj->Socket=THIS->Client;
  cli_obj->iStatus=7;
  cli_obj->c_parent=(void*)THIS;

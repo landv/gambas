@@ -78,7 +78,7 @@ static bool check_field(CTABLE *table, char *name, bool must_exist)
 }
 
 
-static bool check_type(long type)
+static bool check_type(int type)
 {
   if (type == GB_T_BOOLEAN
       || type == GB_T_INTEGER

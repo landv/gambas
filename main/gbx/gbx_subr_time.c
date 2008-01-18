@@ -34,7 +34,7 @@
 #include "gbx_date.h"
 
 
-PUBLIC void SUBR_timer(void)
+void SUBR_timer(void)
 {
   double result = 0.0;
 
@@ -46,14 +46,14 @@ PUBLIC void SUBR_timer(void)
 }
 
 
-PUBLIC void SUBR_now(void)
+void SUBR_now(void)
 {
   DATE_now(SP);
   SP++;
 }
 
 
-PUBLIC void SUBR_year(void)
+void SUBR_year(void)
 {
   DATE_SERIAL *date;
   int val;
@@ -86,7 +86,7 @@ PUBLIC void SUBR_year(void)
 }
 
 
-PUBLIC void SUBR_date(void)
+void SUBR_date(void)
 {
   DATE_SERIAL date;
 
@@ -142,7 +142,7 @@ PUBLIC void SUBR_date(void)
 }
 
 
-PUBLIC void SUBR_time(void)
+void SUBR_time(void)
 {
   DATE_SERIAL date;
 
@@ -177,7 +177,7 @@ PUBLIC void SUBR_time(void)
 }
 
 
-PUBLIC void SUBR_date_op(void)
+void SUBR_date_op(void)
 {
   SUBR_ENTER_PARAM(3);
 
@@ -207,7 +207,7 @@ PUBLIC void SUBR_date_op(void)
 }
 
 
-PUBLIC void SUBR_week(void)
+void SUBR_week(void)
 {
   bool plain = FALSE;
   int start = 1; /* Monday */

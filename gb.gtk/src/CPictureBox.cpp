@@ -137,7 +137,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CMOVIEBOX_free)
 
-	if (MTHIS->path) GB.Free((void**)&MTHIS->path);
+	if (MTHIS->path) GB.Free(POINTER(&MTHIS->path));
 
 END_METHOD
 
@@ -169,8 +169,8 @@ BEGIN_PROPERTY(CMOVIEBOX_path)
 		return;
 	}
 	
-	if (MTHIS->path) { GB.Free((void**)&MTHIS->path); MTHIS->path=NULL; }
-	GB.Alloc((void**)&MTHIS->path,strlen(name)+1);
+	if (MTHIS->path) { GB.Free(POINTER(&MTHIS->path)); MTHIS->path=NULL; }
+	GB.Alloc(POINTER(&MTHIS->path),strlen(name)+1);
 	strcpy(MTHIS->path,name);
 	MBOX->loadMovie(addr,len);
 	GB.ReleaseFile (&addr,len);
@@ -202,9 +202,9 @@ GB_DESC CPictureBoxDesc[] =
 {
   GB_DECLARE("PictureBox", sizeof(CPICTUREBOX)), GB_INHERITS("Control"),
 
-  GB_STATIC_METHOD("_init",NULL,CPICTUREBOX_init,NULL),
-  GB_METHOD("_new", NULL, CPICTUREBOX_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, CPICTUREBOX_free,NULL),
+  GB_STATIC_METHOD("_init",0,CPICTUREBOX_init,0),
+  GB_METHOD("_new", 0, CPICTUREBOX_new, "(Parent)Container;"),
+  GB_METHOD("_free", 0, CPICTUREBOX_free,0),
   
   GB_PROPERTY("Picture", "Picture", CPICTUREBOX_picture),
   GB_PROPERTY("Stretch", "b", CPICTUREBOX_stretch),
@@ -221,9 +221,9 @@ GB_DESC CMovieBoxDesc[] =
 {
   GB_DECLARE("MovieBox", sizeof(CMOVIEBOX)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CMOVIEBOX_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, CMOVIEBOX_free,NULL),
-  GB_METHOD("Rewind", NULL, CMOVIEBOX_rewind, NULL),
+  GB_METHOD("_new", 0, CMOVIEBOX_new, "(Parent)Container;"),
+  GB_METHOD("_free", 0, CMOVIEBOX_free,0),
+  GB_METHOD("Rewind", 0, CMOVIEBOX_rewind, 0),
 
   GB_PROPERTY("Path", "s", CMOVIEBOX_path),
   GB_PROPERTY("Playing", "b", CMOVIEBOX_playing),

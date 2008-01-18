@@ -83,14 +83,22 @@ __BYTE:
 __SHORT:
 __INTEGER:
 
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
+#else
   *len = sprintf(COMMON_buffer, "%d", value->_integer.value);
+#endif
   *addr = COMMON_buffer;
 
   return;
 
 __LONG:
 
-  *len = sprintf(COMMON_buffer, "%lld", value->_long.value);
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%" PRId64, value->_long.value);
+#else
+  *len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
+#endif
   *addr = COMMON_buffer;
 
   return;
@@ -141,7 +149,11 @@ __STRING:
         else if (c == 9)
           *d++ = 't';
         else
+#ifdef OS_OPENBSD
+          d += snprintf(d, &COMMON_buffer[COMMON_BUF_MAX]-d, "x%02X", c);
+#else
           d += sprintf(d, "x%02X", c);
+#endif
       }
       else if (c == '\"')
       {
@@ -209,14 +221,14 @@ __FUNCTION:
 }
 
 
-PUBLIC void PRINT_init(PRINT_FUNCTION func, bool trace)
+void PRINT_init(PRINT_FUNCTION func, bool trace)
 {
   _print = func;
   _trace = trace;
 }
 
 
-PUBLIC void PRINT_value(VALUE *value)
+void PRINT_value(VALUE *value)
 {
   char *addr;
   int len;
@@ -239,7 +251,7 @@ PUBLIC void PRINT_value(VALUE *value)
 }
 
 
-PUBLIC void PRINT_string(char *addr, int len)
+void PRINT_string(char *addr, int len)
 {
   (*_print)(addr, len);
 }

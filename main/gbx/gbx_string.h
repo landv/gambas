@@ -39,33 +39,33 @@ typedef
   PACKED
   STRING;
 
-PUBLIC void STRING_init(void);
-PUBLIC void STRING_exit(void);
+void STRING_init(void);
+void STRING_exit(void);
 
-PUBLIC void STRING_new(char **ptr, const char *src, int len);
-PUBLIC void STRING_new_temp(char **ptr, const char *src, int len);
-PUBLIC void STRING_free(char **ptr);
-PUBLIC int STRING_get_free_index(void);
+void STRING_new(char **ptr, const char *src, int len);
+void STRING_new_temp(char **ptr, const char *src, int len);
+void STRING_free(char **ptr);
+int STRING_get_free_index(void);
 
-PUBLIC void STRING_extend(char **ptr, int new_len);
-PUBLIC void STRING_extend_end(char **ptr);
-PUBLIC void STRING_add(char **ptr, const char *src, int len);
+void STRING_extend(char **ptr, int new_len);
+void STRING_extend_end(char **ptr);
+void STRING_add(char **ptr, const char *src, int len);
 
-PUBLIC void STRING_copy_from_value_temp(char **ptr, VALUE *value);
+void STRING_copy_from_value_temp(char **ptr, VALUE *value);
 
-PUBLIC void STRING_new_temp_value(VALUE *value, const char *src, int len);
-PUBLIC void STRING_new_constant_value(VALUE *value, const char *src, int len);
+void STRING_new_temp_value(VALUE *value, const char *src, int len);
+void STRING_new_constant_value(VALUE *value, const char *src, int len);
 
-PUBLIC void STRING_char_value(VALUE *value, uchar car);
-PUBLIC void STRING_void_value(VALUE *value);
+void STRING_char_value(VALUE *value, uchar car);
+void STRING_void_value(VALUE *value);
 
-PUBLIC int STRING_comp_value(VALUE *str1, VALUE *str2);
-PUBLIC int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2);
+int STRING_comp_value(VALUE *str1, VALUE *str2);
+int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2);
 
-PUBLIC char *STRING_subst(const char *string, int len, SUBST_FUNC get_param);
-PUBLIC int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw);
-PUBLIC char *STRING_conv_file_name(const char *name, int len);
-PUBLIC char *STRING_conv_to_UTF8(const char *name, int len);
+char *STRING_subst(const char *string, int len, SUBST_FUNC get_param);
+int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw);
+char *STRING_conv_file_name(const char *name, int len);
+char *STRING_conv_to_UTF8(const char *name, int len);
 
 
 #define STRING_from_ptr(_ptr) ((STRING *)((_ptr) - offsetof(STRING, data)))
@@ -73,8 +73,8 @@ PUBLIC char *STRING_conv_to_UTF8(const char *name, int len);
 
 #if DEBUG_STRING
 
-PUBLIC void STRING_ref(char *ptr);
-PUBLIC void STRING_unref(char **ptr);
+void STRING_ref(char *ptr);
+void STRING_unref(char **ptr);
 
 #else
 
@@ -100,8 +100,8 @@ PUBLIC void STRING_unref(char **ptr);
 
 #endif
 
-PUBLIC void STRING_unref_keep(char **ptr);
+void STRING_unref_keep(char **ptr);
 
-PUBLIC int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase);
+int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase);
 
-#endif /* */
+#endif

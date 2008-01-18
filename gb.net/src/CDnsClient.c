@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ void dns_callback(long lParam)
 		read (dns_r_pipe,&v_obj,sizeof(void*));
 		read (dns_r_pipe,&test_id,sizeof(int));
 		read (dns_r_pipe,Action,sizeof(char));
-		GB.Alloc((void**)&Buf,sizeof(char));
+		GB.Alloc(POINTER(&Buf),sizeof(char));
 
 		while (BufRead[0] != '\x10')
 		{
@@ -99,7 +99,7 @@ void dns_callback(long lParam)
 			{
 				Buf[Position]=BufRead[0];
 				Position++;
-				GB.Realloc((void**)&Buf,(Position+1)*sizeof(char));
+				GB.Realloc(POINTER(&Buf),(Position+1)*sizeof(char));
 			}
 			else
 				Buf[Position]='\0';
@@ -141,7 +141,7 @@ void dns_callback(long lParam)
 				}
 			}
 		}
-		GB.Free((void**)&Buf);
+		GB.Free(POINTER(&Buf));
 	}
 
 	sem_post(&dns_th_pipe);
@@ -153,7 +153,7 @@ void dns_callback(long lParam)
 void dns_event(CDNSCLIENT *mythis)
 {
     GB.Raise(mythis,Finished,0);
-    GB.Unref((void**)&mythis);
+    GB.Unref(POINTER(&mythis));
 }
 
 void* dns_get_name(void* v_obj)
@@ -382,9 +382,9 @@ BEGIN_METHOD_VOID(CDNSCLIENT_new)
   sem_init(&THIS->sem_id,0,1);
   dns_count++;
   if (dns_object==NULL)
-  	GB.Alloc((void**)&dns_object,sizeof(void*));
+  	GB.Alloc(POINTER(&dns_object),sizeof(void*));
   else
-  	GB.Realloc((void**)&dns_object,dns_count*sizeof(void*));
+  	GB.Realloc(POINTER(&dns_object),dns_count*sizeof(void*));
 
   dns_object[dns_count-1]=(void*)THIS;
 
@@ -417,7 +417,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_free)
 	dns_count--;
 	if (!dns_count)
 	{
-		GB.Free((void**)&dns_object);
+		GB.Free(POINTER(&dns_object));
 		if (dns_r_pipe != -1)
 		{
 			GB.Watch(dns_r_pipe , GB_WATCH_NONE , (void *)dns_callback,0);

@@ -30,5 +30,4 @@
 
 PUBLIC void COMMON_init(void)
 {
-  COMMON_case_init();
 }

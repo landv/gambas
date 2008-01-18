@@ -42,6 +42,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 #include "gb.form.properties.h"
 #include "gb.form.const.h"

@@ -47,34 +47,34 @@
 
 #include "gbx_class.h"
 
-PUBLIC CLASS *CLASS_Class = NULL;
-PUBLIC CLASS *CLASS_Collection = NULL;
-PUBLIC CLASS *CLASS_Symbol = NULL;
-PUBLIC CLASS *CLASS_File = NULL;
-PUBLIC CLASS *CLASS_Stat = NULL;
-PUBLIC CLASS *CLASS_Stream = NULL;
-PUBLIC CLASS *CLASS_Application = NULL;
-PUBLIC CLASS *CLASS_AppArgs = NULL;
-PUBLIC CLASS *CLASS_AppEnv = NULL;
-PUBLIC CLASS *CLASS_Process = NULL;
-PUBLIC CLASS *CLASS_Component = NULL;
+CLASS *CLASS_Class = NULL;
+CLASS *CLASS_Collection = NULL;
+CLASS *CLASS_Symbol = NULL;
+CLASS *CLASS_File = NULL;
+CLASS *CLASS_Stat = NULL;
+CLASS *CLASS_Stream = NULL;
+CLASS *CLASS_Application = NULL;
+CLASS *CLASS_AppArgs = NULL;
+CLASS *CLASS_AppEnv = NULL;
+CLASS *CLASS_Process = NULL;
+CLASS *CLASS_Component = NULL;
 
-PUBLIC CLASS *CLASS_Array = NULL;
-PUBLIC CLASS *CLASS_BooleanArray = NULL;
-PUBLIC CLASS *CLASS_ByteArray = NULL;
-PUBLIC CLASS *CLASS_ShortArray = NULL;
-PUBLIC CLASS *CLASS_IntegerArray = NULL;
-PUBLIC CLASS *CLASS_SingleArray = NULL;
-PUBLIC CLASS *CLASS_FloatArray = NULL;
-PUBLIC CLASS *CLASS_DateArray = NULL;
-PUBLIC CLASS *CLASS_StringArray = NULL;
-PUBLIC CLASS *CLASS_ObjectArray = NULL;
-PUBLIC CLASS *CLASS_VariantArray = NULL;
-PUBLIC CLASS *CLASS_LongArray = NULL;
+CLASS *CLASS_Array = NULL;
+CLASS *CLASS_BooleanArray = NULL;
+CLASS *CLASS_ByteArray = NULL;
+CLASS *CLASS_ShortArray = NULL;
+CLASS *CLASS_IntegerArray = NULL;
+CLASS *CLASS_SingleArray = NULL;
+CLASS *CLASS_FloatArray = NULL;
+CLASS *CLASS_DateArray = NULL;
+CLASS *CLASS_StringArray = NULL;
+CLASS *CLASS_ObjectArray = NULL;
+CLASS *CLASS_VariantArray = NULL;
+CLASS *CLASS_LongArray = NULL;
 
-PUBLIC CLASS *CLASS_SubCollection = NULL;
-PUBLIC CLASS *CLASS_String = NULL;
-PUBLIC CLASS *CLASS_Enum = NULL;
+CLASS *CLASS_SubCollection = NULL;
+CLASS *CLASS_String = NULL;
+CLASS *CLASS_Enum = NULL;
 
 typedef
   struct {
@@ -134,7 +134,7 @@ static CLASS_INIT init_list[] =
 };
 
 
-PUBLIC void CLASS_init_native(void)
+void CLASS_init_native(void)
 {
   CLASS_INIT *init;
   CLASS *class;

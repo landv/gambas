@@ -24,7 +24,7 @@
 #define __GBC_READ_COMMON_H
 
 typedef
-  int PATTERN;
+  uint PATTERN;
 
 enum {
   RT_END = 0,

@@ -146,10 +146,10 @@ void DATE_adjust( GB_DATE *vdate, int period, int interval) /* Adjust the date b
 
 }
 
-long int DATE_diff( GB_DATE *vdate1, GB_DATE *vdate2, int period)
+int DATE_diff( GB_DATE *vdate1, GB_DATE *vdate2, int period)
 {
   GB_DATE_SERIAL *date1, *date2;
-  long int diff = 0;
+  int diff = 0;
   int year1, year2, month1, month2, weekday1, weekday2;
 
   date1 = GB.SplitDate(vdate1);

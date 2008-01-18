@@ -27,33 +27,33 @@
 
 #include "config.h"
 
-PUBLIC void MATH_init(void);
+void MATH_init(void);
 
-PUBLIC int lsgn(long x);
-PUBLIC int llsgn(long long x);
-PUBLIC long long llabs(long long x);
+int lsgn(int x);
+int llsgn(int64_t x);
+//int64_t llabs(int64_t x);
 
-PUBLIC double frac(double x);
-PUBLIC int fsgn(double x);
-PUBLIC double deg(double x);
-PUBLIC double rad(double x);
-PUBLIC double fix(double x);
-PUBLIC double frexp10(double x, int *exp);
-PUBLIC double ang(double x, double y);
+double frac(double x);
+int fsgn(double x);
+double deg(double x);
+double rad(double x);
+double fix(double x);
+double frexp10(double x, int *exp);
+double ang(double x, double y);
 
-PUBLIC void randomize(bool set, uint seed);
-PUBLIC double rnd(void);
+void randomize(bool set, uint seed);
+double rnd(void);
 
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
-PUBLIC double exp10(double x);
-PUBLIC double log2(double x);
+double exp10(double x);
+double log2(double x);
 #endif
 
 #ifdef OS_OPENBSD
-PUBLIC double exp2(double x);
-PUBLIC long double log10l(long double x);
-PUBLIC long double fabsl(long double x);
-PUBLIC long double powl(long double x, long double y);
+double exp2(double x);
+long double log10l(long double x);
+long double fabsl(long double x);
+long double powl(long double x, long double y);
 #endif
 
 #endif

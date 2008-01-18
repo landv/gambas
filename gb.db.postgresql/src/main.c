@@ -84,7 +84,7 @@ static int check_result(PGresult *res, const char *err)
 
 /* internal function to quote a value stored as a string */
 
-static void quote_string(char *data, long len, DB_FORMAT_CALLBACK add)
+static void quote_string(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 	int i;
 	unsigned char c;
@@ -151,7 +151,7 @@ static char *get_quote_string(char *str, int len, char quote)
 
 /* internal function to quote a value stored as a blob */
 
-static void quote_blob(char *data, long len, DB_FORMAT_CALLBACK add)
+static void quote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 	int i;
 	unsigned char c;
@@ -181,7 +181,7 @@ static void quote_blob(char *data, long len, DB_FORMAT_CALLBACK add)
 
 /* internal function to unquote a value stored as a string */
 
-static int unquote_string(char *data, long len, DB_FORMAT_CALLBACK add)
+static int unquote_string(char *data, int len, DB_FORMAT_CALLBACK add)
 {
   int i;
   char c;
@@ -204,7 +204,7 @@ static int unquote_string(char *data, long len, DB_FORMAT_CALLBACK add)
 
 /* internal function to unquote a value stored as a blob */
 
-static int unquote_blob(char *data, long len, DB_FORMAT_CALLBACK add)
+static int unquote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
 {
   int i;
   char c;
@@ -292,7 +292,7 @@ static int conv_boolean(const char *data)
 
 /* Internal function to convert a database value into a Gambas variant value */
 
-static void conv_data(char *data, long len, GB_VARIANT_VALUE *val, Oid type)
+static void conv_data(char *data, int len, GB_VARIANT_VALUE *val, Oid type)
 {
   GB_VALUE conv;
   GB_DATE_SERIAL date;
@@ -493,7 +493,7 @@ static int db_version(DB_DATABASE *db)
   //Check db version
   const char *vquery =
     "select substring(version(),12,5)";
-  long dbversion =0;
+  int dbversion =0;
   PGresult *res;
 
   if (!do_query(db, NULL, &res, vquery, 0))
@@ -836,7 +836,7 @@ static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)
 {
   PGresult *res = (PGresult *)result;
   char *data;
-  long len;
+  int len;
 
 	data = PQgetvalue(res, pos, field);
 	len = PQgetlength(res, pos, field);
@@ -1319,7 +1319,7 @@ static int table_list_73(DB_DATABASE *db, char ***tables)
 
   PGresult *res;
   int i;
-  long count;
+  int count;
 
   if (do_query(db, "Unable to get tables: &1", &res, query, 0))
     return -1;
@@ -1351,7 +1351,7 @@ static int table_list_74(DB_DATABASE handle, char ***tables)
   PGconn *conn = (PGconn *)handle;
   PGresult *res1, *res2;
   int i, j;
-  long count;
+  int count;
 
   if (do_query(conn, "Unable to get tables: &1", &res1, query1, 0))
     return -1;
@@ -1690,7 +1690,7 @@ static int field_list(DB_DATABASE *db, char *table, char ***fields)
 
   PGresult *res;
   int i;
-  long count;
+  int count;
 
   if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
     return -1;
@@ -1881,7 +1881,7 @@ static int index_list(DB_DATABASE *db, char *table, char ***indexes)
 
   PGresult *res;
   int i;
-  long count;
+  int count;
 
   if (do_query(db, "Unable to get indexes: &1", &res, query, 1, table))
     return TRUE;
@@ -2092,7 +2092,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
   PGresult *res;
   int i;
-  long count;
+  int count;
 
   if (do_query(db, "Unable to get databases: &1", &res, query, 0))
     return -1;
@@ -2269,7 +2269,7 @@ static int user_list(DB_DATABASE *db, char ***users)
 
   PGresult *res;
   int i;
-  long count;
+  int count;
 
   if (do_query(db, "Unable to get users: &1", &res, query, 0))
     return -1;

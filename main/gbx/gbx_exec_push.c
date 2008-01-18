@@ -35,7 +35,7 @@
 #include "gbx_c_collection.h"
 
 
-PUBLIC void EXEC_push_unknown(ushort code)
+void EXEC_push_unknown(ushort code)
 {
   static void *jump[] = {
     /* 0 */ &&_PUSH_GENERIC,
@@ -52,7 +52,7 @@ PUBLIC void EXEC_push_unknown(ushort code)
     };
 
   const char *name;
-  long index;
+  int index;
   CLASS_DESC *desc;
   CLASS *class;
   OBJECT *object;
@@ -109,7 +109,7 @@ _PUSH_GENERIC:
             && ((PC[-1] & 0xF800) == C_PUSH_CLASS))
         {
           PC[-1] = C_PUSH_LONG;
-          *((long *)PC) = desc->constant.value._integer;
+          *((int *)PC) = desc->constant.value._integer;
         }
         else
         {
@@ -304,7 +304,7 @@ _PUSH_PROPERTY_2:
     EXEC.drop = FALSE;
     EXEC.nparam = 0;
     EXEC.native = FALSE;
-    EXEC.index = (long)desc->property.read;
+    EXEC.index = (int)(intptr_t)desc->property.read;
 
     EXEC_function_keep();
 
@@ -341,7 +341,7 @@ _PUSH_METHOD_2:
   SP->type = T_FUNCTION;
   SP->_function.class = class;
   SP->_function.object = object;
-  /*SP->_function.function = (long)&desc->method;*/
+  /*SP->_function.function = (int)&desc->method;*/
 
   if (FUNCTION_is_native(&desc->method))
     SP->_function.kind = FUNCTION_NATIVE;
@@ -377,7 +377,7 @@ _PUSH_EXTERN_2:
   SP->_function.class = class;
   SP->_function.object = object;
   SP->_function.kind = FUNCTION_EXTERN;
-  SP->_function.index = (long)desc->ext.exec;
+  SP->_function.index = (int)desc->ext.exec;
   SP->_function.defined = defined;
   SP++;
 
@@ -418,12 +418,12 @@ _FIN:
   PC++;
 }
 
-PUBLIC void EXEC_push_array(void)
+void EXEC_push_array(void)
 {
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
-  long dim[MAX_ARRAY_DIM];
+  int dim[MAX_ARRAY_DIM];
   int i;
   void *data;
   boolean defined;
@@ -445,7 +445,7 @@ PUBLIC void EXEC_push_array(void)
 
     data = ARRAY_get_address((ARRAY_DESC *)SP->_array.desc, SP->_array.addr, np, dim);
 
-    VALUE_read(SP, data, ((ARRAY_DESC *)SP->_array.desc)->type);
+    VALUE_read(SP, data, CLASS_ctype_to_type(CP, ((ARRAY_DESC *)SP->_array.desc)->type));
 
     PUSH();
 

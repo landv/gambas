@@ -4,7 +4,7 @@
 
   Watching for file descriptors
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,11 +37,11 @@ class CWatch: public QObject
 
 public:
 
-  static void watch(int fd, int type, GB_WATCH_CALLBACK callback, long param);
+  static void watch(int fd, int type, GB_WATCH_CALLBACK callback, intptr_t param);
   static void stop();
   static int count;
 
-  CWatch(int fd, QSocketNotifier::Type type, GB_WATCH_CALLBACK callback, long param);
+  CWatch(int fd, QSocketNotifier::Type type, GB_WATCH_CALLBACK callback, intptr_t param);
   ~CWatch();
 
 private:
@@ -51,7 +51,7 @@ private:
 
   QSocketNotifier *notifier;
   GB_WATCH_CALLBACK callback;
-  long param;
+  intptr_t param;
 
 public slots:
 

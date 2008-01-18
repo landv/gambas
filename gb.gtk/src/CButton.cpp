@@ -193,7 +193,7 @@ GB_DESC CButtonDesc[] =
 {
   GB_DECLARE("Button", sizeof(CBUTTON)), GB_INHERITS("Control"),
   
-  GB_METHOD("_new", NULL, CBUTTON_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CBUTTON_new, "(Parent)Container;"),
   
   GB_PROPERTY("Text", "s", CBUTTON_text),
   GB_PROPERTY("Caption", "s", CBUTTON_text),
@@ -204,7 +204,7 @@ GB_DESC CButtonDesc[] =
   GB_PROPERTY("Cancel", "b", CBUTTON_cancel),
   GB_PROPERTY("Value", "b", CBUTTON_value),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
 
 	BUTTON_DESCRIPTION,
 
@@ -215,7 +215,7 @@ GB_DESC CToggleButtonDesc[] =
 {
   GB_DECLARE("ToggleButton", sizeof(CBUTTON)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTOGGLEBUTTON_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CTOGGLEBUTTON_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CBUTTON_text),
   GB_PROPERTY("Caption", "s", CBUTTON_text),
@@ -224,7 +224,7 @@ GB_DESC CToggleButtonDesc[] =
   GB_PROPERTY("Border", "b", CBUTTON_border),
   GB_PROPERTY("Radio", "b", CBUTTON_radio),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
 
 	TOGGLEBUTTON_DESCRIPTION,
 
@@ -235,14 +235,14 @@ GB_DESC CRadioButtonDesc[] =
 {
   GB_DECLARE("RadioButton", sizeof(CBUTTON)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CRADIOBUTTON_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CRADIOBUTTON_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CBUTTON_text),
   GB_PROPERTY("Caption", "s", CBUTTON_text),
 
   GB_PROPERTY("Value", "b", CBUTTON_value),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
 
 	RADIOBUTTON_DESCRIPTION,
 
@@ -257,7 +257,7 @@ GB_DESC CCheckBoxDesc[] =
   GB_CONSTANT("True", "i", -1),
   GB_CONSTANT("None", "i", 1),
 
-  GB_METHOD("_new", NULL, CCHECKBOX_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CCHECKBOX_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CBUTTON_text),
   GB_PROPERTY("Caption", "s", CBUTTON_text),
@@ -265,7 +265,7 @@ GB_DESC CCheckBoxDesc[] =
 
   GB_PROPERTY("Value", "i", CCHECKBOX_value),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
 
 	CHECKBOX_DESCRIPTION,
 
@@ -277,7 +277,7 @@ GB_DESC CToolButtonDesc[] =
 {
   GB_DECLARE("ToolButton", sizeof(CBUTTON)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTOOLBUTTON_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CTOOLBUTTON_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CBUTTON_text),
   GB_PROPERTY("Caption", "s", CBUTTON_text),
@@ -287,7 +287,7 @@ GB_DESC CToolButtonDesc[] =
   GB_PROPERTY("Border", "b", CBUTTON_border),
   GB_PROPERTY("Radio", "b", CBUTTON_radio),
 
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
 
 	TOOLBUTTON_DESCRIPTION,
 

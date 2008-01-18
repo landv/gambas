@@ -46,20 +46,20 @@
 
 #include "gbx_project.h"
 
-PUBLIC char *PROJECT_path = NULL;
-PUBLIC char *PROJECT_exec_path = NULL;
-PUBLIC char *PROJECT_user_home = NULL;
+char *PROJECT_path = NULL;
+char *PROJECT_exec_path = NULL;
+char *PROJECT_user_home = NULL;
 
-PUBLIC char *PROJECT_name = NULL;
-PUBLIC char *PROJECT_title = NULL;
-PUBLIC char *PROJECT_startup = NULL;
-PUBLIC char *PROJECT_version = NULL;
-PUBLIC CLASS *PROJECT_class = NULL;
+char *PROJECT_name = NULL;
+char *PROJECT_title = NULL;
+char *PROJECT_startup = NULL;
+char *PROJECT_version = NULL;
+CLASS *PROJECT_class = NULL;
 
-PUBLIC int PROJECT_argc = 0;
-PUBLIC char **PROJECT_argv = NULL;
+int PROJECT_argc = 0;
+char **PROJECT_argv = NULL;
 
-PUBLIC char *PROJECT_oldcwd = NULL;
+char *PROJECT_oldcwd = NULL;
 
 static char *project_buffer;
 
@@ -71,7 +71,7 @@ static void raise_error(const char *msg)
 {
   char line[16];
 
-  sprintf(line, "%d", project_line);
+  snprintf(line, sizeof(line), "%d", project_line);
   THROW(E_PROJECT, line, msg);
 }
 
@@ -129,7 +129,7 @@ static void project_stack(char *name, int len)
 }
 
 
-static void project_command(char *line, long len)
+static void project_command(char *line, int len)
 {
   static PROJECT_COMMAND command[] = {
     { "PROJECT", NULL },
@@ -174,7 +174,7 @@ static void project_command(char *line, long len)
 }
 
 
-static void project_analyze(char *addr, long len)
+static void project_analyze(char *addr, int len)
 {
   char *end = &addr[len];
   char c;
@@ -233,7 +233,7 @@ static void project_analyze(char *addr, long len)
 
 void PROJECT_init(const char *file)
 {
-  long len;
+  int len;
   const char *path;
   struct passwd *info;
 
@@ -336,7 +336,7 @@ _PANIC:
 }
 
 
-PUBLIC void PROJECT_load()
+void PROJECT_load()
 {
 	const char *file;
 	int len;

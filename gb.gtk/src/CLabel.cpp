@@ -118,7 +118,7 @@ GB_DESC CLabelDesc[] =
 {
   GB_DECLARE("Label", sizeof(CLABEL)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CLABEL_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CLABEL_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CLABEL_text),
   GB_PROPERTY("Caption", "s", CLABEL_text),
@@ -127,7 +127,7 @@ GB_DESC CLabelDesc[] =
   GB_PROPERTY("AutoResize", "b", CLABEL_auto_resize),
   GB_PROPERTY("Transparent","b",CLABEL_transparent),
   GB_PROPERTY("Padding", "i", CLABEL_padding),
-  GB_METHOD("Adjust", NULL, CLABEL_adjust, NULL),
+  GB_METHOD("Adjust", 0, CLABEL_adjust, 0),
   
   LABEL_DESCRIPTION,
 
@@ -139,7 +139,7 @@ GB_DESC CTextLabelDesc[] =
 {
   GB_DECLARE("TextLabel", sizeof(CLABEL)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTEXTLABEL_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CTEXTLABEL_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CLABEL_text),
   GB_PROPERTY("Caption", "s", CLABEL_text),
@@ -148,9 +148,9 @@ GB_DESC CTextLabelDesc[] =
   GB_PROPERTY("AutoResize", "b", CLABEL_auto_resize),
   GB_PROPERTY("Transparent","b",CLABEL_transparent),
   GB_PROPERTY("Padding", "i", CLABEL_padding),
-  GB_METHOD("Adjust", NULL, CLABEL_adjust, NULL),
+  GB_METHOD("Adjust", 0, CLABEL_adjust, 0),
 
-	TEXTLABEL_DESCRIPTION,
+  TEXTLABEL_DESCRIPTION,
 
   GB_END_DECLARE
 };

@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fern�dez <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -83,10 +83,10 @@ void ToIPv4(char *src,char *dst,int leadzero)
 	}
 
 	if (!leadzero)
-		sprintf(dst,"%d.%d.%d.%d\0",nc[0],nc[1],nc[2],nc[3]);
+		sprintf(dst,"%d.%d.%d.%d",nc[0],nc[1],nc[2],nc[3]);
  	else
 	{
-		sprintf(dst,"%3d.%3d.%3d.%3d\0",nc[0],nc[1],nc[2],nc[3]);
+		sprintf(dst,"%3d.%3d.%3d.%3d",nc[0],nc[1],nc[2],nc[3]);
 		for (bucle=0;bucle<15;bucle++)
 			if (dst[bucle]==' ') dst[bucle]='0';
 	}

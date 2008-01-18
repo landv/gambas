@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This is the implementation of Socket Gambas Class
 
@@ -71,6 +71,9 @@ GB_STREAM_DESC SocketStream = {
 	lof: CSocket_stream_lof,
 	handle: CSocket_stream_handle
 };
+
+
+
 /**********************************
  Routines to call events
  **********************************/
@@ -179,6 +182,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,long lParam)
 	int mylen;
 	struct timespec mywait;
 	CSOCKET *mythis;
+	SOCKET_STREAM *str;
 
 	/*	Just sleeping a little to reduce CPU waste	*/
 	mywait.tv_sec=0;
@@ -216,7 +220,8 @@ void CSocket_CallBackConnecting(int t_sock,int type,long lParam)
 	GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)mythis);
 
 	mythis->stream.desc=&SocketStream;
-	mythis->stream._free[0]=(long)mythis;
+	str=(SOCKET_STREAM*)POINTER(&mythis->stream);
+	str->handle=POINTER(mythis);
 	GB.Ref(mythis);
 	GB.Post(CSocket_post_connected,(long)mythis);
 
@@ -292,8 +297,8 @@ void CSocket_stream_internal_error(CSOCKET *mythis,int ncode)
 
 /* not allowed methods */
 int CSocket_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
-int CSocket_stream_seek(GB_STREAM *stream, long long pos, int whence){return -1;}
-int CSocket_stream_tell(GB_STREAM *stream, long long *pos){return -1;}
+int CSocket_stream_seek(GB_STREAM *stream, int64_t pos, int whence){return -1;}
+int CSocket_stream_tell(GB_STREAM *stream, int64_t *pos){return -1;}
 int CSocket_stream_flush(GB_STREAM *stream)
 {
 	return 0; /* OK */
@@ -306,7 +311,7 @@ int CSocket_stream_close(GB_STREAM *stream)
 {
   CSOCKET *mythis;
 
-  if (!(mythis=(CSOCKET*)stream->_free[0]) ) return -1;
+  if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
 
   if (mythis->DnsTool)
   {
@@ -324,13 +329,13 @@ int CSocket_stream_close(GB_STREAM *stream)
   if (mythis->OnClose) mythis->OnClose((void*)mythis);
   return 0;
 }
-int CSocket_stream_lof(GB_STREAM *stream, long long *len)
+int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	CSOCKET *mythis;
 	int bytes;
 
 	*len=0;
-	if (!(mythis=(CSOCKET*)stream->_free[0]) ) return -1;
+	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
 
 	if (ioctl(mythis->Socket,FIONREAD,&bytes))
 	{
@@ -346,7 +351,7 @@ int CSocket_stream_eof(GB_STREAM *stream)
 	CSOCKET *mythis;
 	int bytes;
 
-	if (!(mythis=(CSOCKET*)stream->_free[0]) ) return -1;
+	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
 
 	if (ioctl(mythis->Socket,FIONREAD,&bytes))
 	{
@@ -358,14 +363,14 @@ int CSocket_stream_eof(GB_STREAM *stream)
 	return 0;
 }
 
-int CSocket_stream_read(GB_STREAM *stream, char *buffer, long len)
+int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	CSOCKET *mythis;
   	int npos=-1;
   	int NoBlock=0;
 	int bytes;
 
-	if (!(mythis=(CSOCKET*)stream->_free[0]) ) return -1;
+	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
 
 	if (ioctl(mythis->Socket,FIONREAD,&bytes))
 	{
@@ -390,13 +395,13 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, long len)
 	return -1;
 }
 
-int CSocket_stream_write(GB_STREAM *stream, char *buffer, long len)
+int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	CSOCKET *mythis;
 	int npos=-1;
 	int NoBlock=0;
 
-	if (!(mythis=(CSOCKET*)stream->_free[0]) ) return -1;
+	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
 
 	ioctl(mythis->Socket,FIONBIO,&NoBlock);
 	USE_MSG_NOSIGNAL(npos=send(mythis->Socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
@@ -415,6 +420,7 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, long len)
  **************************************************************************/
 int CSocket_connect_unix(CSOCKET *mythis,char *sPath,int lenpath)
 {
+	SOCKET_STREAM *str;
 	int NoBlock=1;
 
 	if ( mythis->iStatus > 0 ) return 1;
@@ -443,8 +449,9 @@ int CSocket_connect_unix(CSOCKET *mythis,char *sPath,int lenpath)
 		mythis->iStatus=7;
 		ioctl(mythis->Socket,FIONBIO,&NoBlock);
 		GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)mythis);
-		mythis->stream.desc=&SocketStream;
-		mythis->stream._free[0]=(long)mythis;
+		str=(SOCKET_STREAM*)POINTER(&mythis->stream);
+		str->desc=&SocketStream;
+		str->handle=mythis;
                 // $BM
                 if (mythis->Host) GB.FreeString(&mythis->Host);
                 if (mythis->Path) GB.FreeString(&mythis->Path);
@@ -472,6 +479,8 @@ int CSocket_connect_unix(CSOCKET *mythis,char *sPath,int lenpath)
  **************************************************************************/
 int CSocket_connect_socket(CSOCKET *mythis,char *sHost,int lenhost,int myport)
 {
+	SOCKET_STREAM *str;
+
 
 	if ( mythis->iStatus > 0 ) return 1;
 	if (!lenhost) return 9;
@@ -514,8 +523,9 @@ int CSocket_connect_socket(CSOCKET *mythis,char *sHost,int lenhost,int myport)
 	********************************************/
 	mythis->iStatus=5; /* looking for IP */
 	dns_thread_getip(mythis->DnsTool);
-	mythis->stream.desc=&SocketStream;
-	mythis->stream._free[0]=(long)mythis;
+	str=(SOCKET_STREAM*)POINTER(&mythis->stream);
+	str->desc=&SocketStream;
+	str->handle=mythis;
   	mythis->iUsePort=mythis->iPort;
 
         // $BM

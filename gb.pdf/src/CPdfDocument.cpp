@@ -59,10 +59,10 @@
 ******************************************************************************/
 typedef struct
 {
-	long x0;
-	long y0;
-	long x1;
-	long y1;
+	int32_t x0;
+	int32_t y0;
+	int32_t x1;
+	int32_t y1;
 } FoundRect;
 
 static void aux_return_string_info(void *_object, const char *key)
@@ -145,9 +145,9 @@ static void aux_return_date_info(void *_object, const char *key)
 	obj.free();
 }
 
-static void aux_return_unicode_string(Unicode *uni, int  len)
+static void aux_return_unicode_string(Unicode *uni, int32_t  len)
 {
-	int bc;
+	int32_t bc;
 	char *ret=NULL;
 
 	for (bc=0; bc<len; bc++)
@@ -157,7 +157,7 @@ static void aux_return_unicode_string(Unicode *uni, int  len)
 	GB.FreeString(&ret);
 }
 
-static unsigned long aux_get_page_from_action(void *_object, LinkAction *act)
+static uint32_t aux_get_page_from_action(void *_object, LinkAction *act)
 {
 	// TODO: NamedDest
 
@@ -186,22 +186,22 @@ static unsigned long aux_get_page_from_action(void *_object, LinkAction *act)
 	}
 }
 
-static void aux_get_dimensions_from_action(LinkAction *act,int *left, int *right, int *top, int *bottom)
+static void aux_get_dimensions_from_action(LinkAction *act,int *left, int32_t *right, int32_t *top, int32_t *bottom)
 {
 	switch (act->getKind())
 	{
 		case actionGoTo:
-			if (left)   *left=(int)((LinkGoTo*)act)->getDest()->getLeft();
-			if (right)  *right=(int)((LinkGoTo*)act)->getDest()->getRight();
-			if (top)    *top=(int)((LinkGoTo*)act)->getDest()->getTop();
-			if (bottom) *bottom=(int)((LinkGoTo*)act)->getDest()->getBottom();
+			if (left)   *left=(int32_t)((LinkGoTo*)act)->getDest()->getLeft();
+			if (right)  *right=(int32_t)((LinkGoTo*)act)->getDest()->getRight();
+			if (top)    *top=(int32_t)((LinkGoTo*)act)->getDest()->getTop();
+			if (bottom) *bottom=(int32_t)((LinkGoTo*)act)->getDest()->getBottom();
 			return;
 		
 		case actionGoToR:
-			if (left)   *left=(int)((LinkGoToR*)act)->getDest()->getLeft();
-			if (right)  *right=(int)((LinkGoToR*)act)->getDest()->getRight();
-			if (top)    *top=(int)((LinkGoToR*)act)->getDest()->getTop();
-			if (bottom) *bottom=(int)((LinkGoToR*)act)->getDest()->getBottom();
+			if (left)   *left=(int32_t)((LinkGoToR*)act)->getDest()->getLeft();
+			if (right)  *right=(int32_t)((LinkGoToR*)act)->getDest()->getRight();
+			if (top)    *top=(int32_t)((LinkGoToR*)act)->getDest()->getTop();
+			if (bottom) *bottom=(int32_t)((LinkGoToR*)act)->getDest()->getBottom();
 			return;			
 
 		default:
@@ -345,7 +345,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(PDFDOCUMENT_rotation)
 
-	int rot;
+	int32_t rot;
 
 	if (READ_PROPERTY)
 	{
@@ -371,7 +371,7 @@ BEGIN_PROPERTY(PDFDOCUMENT_rotation)
 END_PROPERTY
 
 
-int open_document (void *_object, char *sfile, int lfile)
+int32_t open_document (void *_object, char *sfile, int32_t lfile)
 {
 	SplashColor white;
 	PDFDoc *test;
@@ -379,8 +379,8 @@ int open_document (void *_object, char *sfile, int lfile)
 	Object obj;
 	Outline *outline;
 	char *buf=NULL;
-	int len=0;
-	int ret;
+	int32_t len=0;
+	int32_t ret;
 
 
 	if ( GB.LoadFile(sfile,lfile,&buf,&len) ) return -1;
@@ -467,7 +467,7 @@ BEGIN_METHOD(PDFDOCUMENT_get,GB_INTEGER index;)
 		return;
 	}
 
-	if (THIS->currpage != (unsigned long)VARG(index) )
+	if (THIS->currpage != (uint32_t)VARG(index) )
 	{
 		if (THIS->Found)
 		{		
@@ -497,7 +497,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(PDFDOCUMENT_count)
 
-	GB.ReturnInteger( THIS->doc ? THIS->doc->getNumPages() : 0);
+	GB.ReturnInteger( (int32_t) (THIS->doc ? THIS->doc->getNumPages() : 0));
 
 END_PROPERTY
 
@@ -713,7 +713,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(PDFINDEX_next)
 
-	if ( (THIS->currindex+1) >= (unsigned long)THIS->index->getLength() )
+	if ( (THIS->currindex+1) >= (uint32_t)THIS->index->getLength() )
 		 { GB.ReturnBoolean(true); return; }
 
 	THIS->currindex++;
@@ -737,7 +737,7 @@ BEGIN_METHOD_VOID(PDFINDEX_child)
 	else
 	{
 		GB.NewArray(POINTER(&THIS->pindex),sizeof(void*),1);
-		GB.NewArray(POINTER(&THIS->oldindex),sizeof(unsigned long),1);
+		GB.NewArray(POINTER(&THIS->oldindex),sizeof(uint32_t),1);
 	}	
 
 	if (!item->isOpen()) item->open(); 
@@ -782,38 +782,38 @@ END_METHOD
 BEGIN_PROPERTY (PDFPAGE_width)
 
 	if ( (THIS->rotation==90) || (THIS->rotation==270) ) 
-		GB.ReturnInteger((int)(THIS->page->getMediaHeight()*THIS->scale));
+		GB.ReturnInteger((int32_t)(THIS->page->getMediaHeight()*THIS->scale));
 	else
-		GB.ReturnInteger((int)(THIS->page->getMediaWidth()*THIS->scale));
+		GB.ReturnInteger((int32_t)(THIS->page->getMediaWidth()*THIS->scale));
 
 END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGE_height)
 
 	if ( (THIS->rotation==90) || (THIS->rotation==270) )
-		GB.ReturnInteger((int)(THIS->page->getMediaWidth()*THIS->scale));
+		GB.ReturnInteger((int32_t)(THIS->page->getMediaWidth()*THIS->scale));
 	else	
-		GB.ReturnInteger((int)(THIS->page->getMediaHeight()*THIS->scale));
+		GB.ReturnInteger((int32_t)(THIS->page->getMediaHeight()*THIS->scale));
 
 END_PROPERTY
 
-static uint32_t *get_page_data(CPDFDOCUMENT *_object, int x, int y, int *width, int *height, double scale, int rotation)
+static uint32_t *get_page_data(CPDFDOCUMENT *_object, int32_t x, int32_t y, int32_t *width, int32_t *height, double scale, int32_t rotation)
 {
 	SplashBitmap *map;
 	uint32_t *data;
-	int w, h;
-	int rw;
-	int rh;
+	int32_t w, h;
+	int32_t rw;
+	int32_t rh;
 
 	if ( (THIS->rotation==90) || (THIS->rotation==270) )
 	{
-		rh=(int)(THIS->page->getMediaWidth()*THIS->scale);
-		rw=(int)(THIS->page->getMediaHeight()*THIS->scale);
+		rh=(int32_t)(THIS->page->getMediaWidth()*THIS->scale);
+		rw=(int32_t)(THIS->page->getMediaHeight()*THIS->scale);
 	}
 	else
 	{
-		rw=(int)(THIS->page->getMediaWidth()*THIS->scale);
-		rh=(int)(THIS->page->getMediaHeight()*THIS->scale);
+		rw=(int32_t)(THIS->page->getMediaWidth()*THIS->scale);
+		rh=(int32_t)(THIS->page->getMediaHeight()*THIS->scale);
 	}
 
 	w = *width;
@@ -856,7 +856,7 @@ BEGIN_METHOD(PDFPAGE_image, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
 
 	GB_IMAGE img = NULL;
 	uint32_t *data;
-	int x,y, w, h;
+	int32_t x,y, w, h;
 
 	x = VARGOPT(x, 0);
 	y = VARGOPT(y, 0);
@@ -872,8 +872,8 @@ END_METHOD
 
 BEGIN_PROPERTY (PDFPAGE_property_image)
 
-	int w=-1;
-	int h=-1;
+	int32_t w=-1;
+	int32_t h=-1;
 	GB_IMAGE img = NULL;
 	uint32_t *data;
 
@@ -889,7 +889,7 @@ BEGIN_METHOD(PDFPAGE_picture, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEG
 
 	GB_IMAGE img = NULL;
 	uint32_t *data;
-	int x,y, w, h;
+	int32_t x,y, w, h;
 
 	x = VARGOPT(x, 0);
 	y = VARGOPT(y, 0);
@@ -905,8 +905,8 @@ END_METHOD
 
 BEGIN_PROPERTY (PDFPAGE_property_picture)
 
-	int w=-1;
-	int h=-1;
+	int32_t w=-1;
+	int32_t h=-1;
 	GB_IMAGE img = NULL;
 	uint32_t *data;
 
@@ -922,12 +922,12 @@ BEGIN_METHOD(PDFPAGE_select, GB_INTEGER X; GB_INTEGER Y; GB_INTEGER W; GB_INTEGE
 	TextOutputDev *dev;
 	GooString *str;
 	Gfx *gfx;
-	int x,y,w,h;
+	int32_t x,y,w,h;
 
 	x = VARGOPT(X, 0);
 	y = VARGOPT(Y, 0);
-	w = VARGOPT(W, (int)THIS->page->getMediaWidth());
-	h = VARGOPT(H, (int)THIS->page->getMediaHeight());
+	w = VARGOPT(W, (int32_t)THIS->page->getMediaWidth());
+	h = VARGOPT(H, (int32_t)THIS->page->getMediaHeight());
 
 	dev = new TextOutputDev (NULL, gTrue, gFalse, gFalse);
 	gfx = THIS->page->createGfx(dev,72.0,72.0,0,gFalse,gTrue,-1, -1, -1, -1, \
@@ -1023,7 +1023,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(PDFPAGELINKDATA_left)
 
-	int vl;
+	int32_t vl;
 
 	aux_get_dimensions_from_action(THIS->action,&vl, NULL, NULL, NULL);
 	GB.ReturnInteger(vl);
@@ -1032,7 +1032,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(PDFPAGELINKDATA_right)
 
-	int vl;
+	int32_t vl;
 
 	aux_get_dimensions_from_action(THIS->action,NULL,&vl, NULL, NULL);
 	GB.ReturnInteger(vl);
@@ -1041,7 +1041,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(PDFPAGELINKDATA_top)
 
-	int vl;
+	int32_t vl;
 
 	aux_get_dimensions_from_action(THIS->action,NULL,NULL,&vl, NULL);
 	GB.ReturnInteger(vl);
@@ -1050,7 +1050,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(PDFPAGELINKDATA_bottom)
 
-	int vl;
+	int32_t vl;
 
 	aux_get_dimensions_from_action(THIS->action,NULL, NULL, NULL,&vl);
 
@@ -1072,11 +1072,11 @@ END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGELINKDATA_type)
 
-	GB.ReturnInteger ( THIS->action->getKind() );
+	GB.ReturnInteger ( (int32_t)THIS->action->getKind() );
 
 END_PROPERTY
 
-void aux_get_link_dimensions(void *_object,int *left, int *top, int *width, int *height)
+void aux_get_link_dimensions(void *_object,int32_t *left, int32_t *top, int32_t *width, int32_t *height)
 {
 	double l,t,w,h;
 	double pw,ph;
@@ -1091,31 +1091,31 @@ void aux_get_link_dimensions(void *_object,int *left, int *top, int *width, int 
 	switch (THIS->rotation)
 	{
 		case 0:
-			if (left) *left=(int)(l*THIS->scale);
-			if (top) *top=(int)((ph-t-h)*THIS->scale);
-			if (width) *width=(int)(w*THIS->scale);
-			if (height) *height=(int)(h*THIS->scale);
+			if (left) *left=(int32_t)(l*THIS->scale);
+			if (top) *top=(int32_t)((ph-t-h)*THIS->scale);
+			if (width) *width=(int32_t)(w*THIS->scale);
+			if (height) *height=(int32_t)(h*THIS->scale);
 			break;
 	
 		case 90:
-			if (top) *top=(int)(l*THIS->scale);
-			if (left) *left=(int)(t*THIS->scale);
-			if (height) *height=(int)(w*THIS->scale);
-			if (width) *width=(int)(h*THIS->scale);
+			if (top) *top=(int32_t)(l*THIS->scale);
+			if (left) *left=(int32_t)(t*THIS->scale);
+			if (height) *height=(int32_t)(w*THIS->scale);
+			if (width) *width=(int32_t)(h*THIS->scale);
 			break;
 
 		case 180:
-			if (left) *left=(int)((l-w)*THIS->scale);
-			if (top) *top=(int)(t*THIS->scale);
-			if (width) *width=(int)(w*THIS->scale);
-			if (height) *height=(int)(h*THIS->scale);
+			if (left) *left=(int32_t)((l-w)*THIS->scale);
+			if (top) *top=(int32_t)(t*THIS->scale);
+			if (width) *width=(int32_t)(w*THIS->scale);
+			if (height) *height=(int32_t)(h*THIS->scale);
 			break;
 
 		case 270:
-			if (top) *top=(int)((pw-l-w)*THIS->scale);
-			if (left) *left=(int)((ph-t-h)*THIS->scale);
-			if (height) *height=(int)(w*THIS->scale);
-			if (width) *width=(int)(h*THIS->scale);
+			if (top) *top=(int32_t)((pw-l-w)*THIS->scale);
+			if (left) *left=(int32_t)((ph-t-h)*THIS->scale);
+			if (height) *height=(int32_t)(w*THIS->scale);
+			if (width) *width=(int32_t)(h*THIS->scale);
 			break;
 	}
 
@@ -1123,7 +1123,7 @@ void aux_get_link_dimensions(void *_object,int *left, int *top, int *width, int 
 
 BEGIN_PROPERTY (PDFPAGELINK_width)
 
-	int vl;
+	int32_t vl;
 	
 	aux_get_link_dimensions(_object,NULL,NULL,&vl,NULL);
 	GB.ReturnInteger(vl);
@@ -1132,7 +1132,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGELINK_height)
 
-	int vl;
+	int32_t vl;
 	
 	aux_get_link_dimensions(_object,NULL,NULL,NULL,&vl);
 	GB.ReturnInteger(vl);
@@ -1142,7 +1142,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGELINK_left)
 
-	int vl;
+	int32_t vl;
 	
 	aux_get_link_dimensions(_object,&vl,NULL,NULL,NULL);
 	GB.ReturnInteger(vl);
@@ -1152,7 +1152,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGELINK_top)
 
-	int vl;
+	int32_t vl;
 	
 	aux_get_link_dimensions(_object,NULL,&vl,NULL,NULL);
 	GB.ReturnInteger(vl);
@@ -1172,7 +1172,7 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 	double x1, y1;
 	FoundRect *el;	
 	Unicode *block=NULL;
-	int nlen=0;
+	int32_t nlen=0;
 	bool sensitive=false;
 
 	if (GB.ConvString ((char**)&block,STRING(Text),LENGTH(Text),"UTF-8","UCS-4LE"))
@@ -1204,35 +1204,35 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 		switch (THIS->rotation)
 		{
 			case 0:
-				el->x0=(int)(x0*THIS->scale);
-				el->y0=(int)(y0*THIS->scale);
-				el->x1=(int)((x1-x0)*THIS->scale);
-				el->y1=(int)((y1-y0)*THIS->scale);
+				el->x0=(int32_t)(x0*THIS->scale);
+				el->y0=(int32_t)(y0*THIS->scale);
+				el->x1=(int32_t)((x1-x0)*THIS->scale);
+				el->y1=(int32_t)((y1-y0)*THIS->scale);
 				break;
 
 			case 90:
-				el->y1=(int)((x1-x0)*THIS->scale);
-				el->x1=(int)(y1-y0);
-				el->y0=(int)(x0*THIS->scale);
-				el->x0=(int)((THIS->page->getMediaHeight()-y0-el->x1)*THIS->scale);
-				el->x1=(int)(el->x1*THIS->scale);
+				el->y1=(int32_t)((x1-x0)*THIS->scale);
+				el->x1=(int32_t)(y1-y0);
+				el->y0=(int32_t)(x0*THIS->scale);
+				el->x0=(int32_t)((THIS->page->getMediaHeight()-y0-el->x1)*THIS->scale);
+				el->x1=(int32_t)(el->x1*THIS->scale);
 				break;
 
 			case 180:
-				el->x1=(int)(x1-x0);
-				el->y1=(int)(y1-y0);
-				el->x0=(int)((THIS->page->getMediaWidth()-x0-el->x1)*THIS->scale);
-				el->y0=(int)((THIS->page->getMediaHeight()-y0-el->y1)*THIS->scale);
-				el->x1=(int)(el->x1*THIS->scale);
-				el->y1=(int)(el->y1*THIS->scale);
+				el->x1=(int32_t)(x1-x0);
+				el->y1=(int32_t)(y1-y0);
+				el->x0=(int32_t)((THIS->page->getMediaWidth()-x0-el->x1)*THIS->scale);
+				el->y0=(int32_t)((THIS->page->getMediaHeight()-y0-el->y1)*THIS->scale);
+				el->x1=(int32_t)(el->x1*THIS->scale);
+				el->y1=(int32_t)(el->y1*THIS->scale);
 				break;
 
 			case 270:
-				el->x1=(int)((y1-y0)*THIS->scale);
-				el->y1=(int)(x1-x0);
-				el->x0=(int)(y0*THIS->scale);
-				el->y0=(int)((THIS->page->getMediaWidth()-x0-el->y1)*THIS->scale);
-				el->y1=(int)(el->y1*THIS->scale);
+				el->x1=(int32_t)((y1-y0)*THIS->scale);
+				el->y1=(int32_t)(x1-x0);
+				el->x0=(int32_t)(y0*THIS->scale);
+				el->y0=(int32_t)((THIS->page->getMediaWidth()-x0-el->y1)*THIS->scale);
+				el->y1=(int32_t)(el->y1*THIS->scale);
 				break;
 
 		}
@@ -1271,28 +1271,28 @@ END_PROPERTY
 BEGIN_PROPERTY (PDFPAGERESULT_width)
 
 	FoundRect *el=(FoundRect*)&((FoundRect*)THIS->Found)[THIS->fcurrent];
-	GB.ReturnInteger(el->x1);
+	GB.ReturnInteger((int32_t)el->x1);
 
 END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGERESULT_height)
 
 	FoundRect *el=(FoundRect*)&((FoundRect*)THIS->Found)[THIS->fcurrent];
-	GB.ReturnInteger(el->y1);
+	GB.ReturnInteger((int32_t)el->y1);
 
 END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGERESULT_left)
 
 	FoundRect *el=(FoundRect*)&((FoundRect*)THIS->Found)[THIS->fcurrent];
-	GB.ReturnInteger(el->x0);
+	GB.ReturnInteger((int32_t)el->x0);
 
 END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGERESULT_top)
 
 	FoundRect *el=(FoundRect*)&((FoundRect*)THIS->Found)[THIS->fcurrent];
-	GB.ReturnInteger(el->y0);
+	GB.ReturnInteger((int32_t)el->y0);
 
 END_PROPERTY
 
@@ -1366,11 +1366,11 @@ GB_DESC PdfIndexDesc[]=
 	GB_PROPERTY_READ("Title","s",PDFINDEX_title),
 
 	GB_PROPERTY_SELF("Data",".PdfLinkData"),
-	GB_METHOD("MovePrevious","b",PDFINDEX_prev,NULL),
-	GB_METHOD("MoveNext","b",PDFINDEX_next,NULL),
-	GB_METHOD("MoveChild","b",PDFINDEX_child,NULL),
-	GB_METHOD("MoveParent","b",PDFINDEX_parent,NULL),
-	GB_METHOD("MoveRoot",NULL,PDFINDEX_root,NULL),
+	GB_METHOD("MovePrevious","b",PDFINDEX_prev,0),
+	GB_METHOD("MoveNext","b",PDFINDEX_next,0),
+	GB_METHOD("MoveChild","b",PDFINDEX_child,0),
+	GB_METHOD("MoveParent","b",PDFINDEX_parent,0),
+	GB_METHOD("MoveRoot",0,PDFINDEX_root,0),
 
 	GB_END_DECLARE
 };
@@ -1472,11 +1472,11 @@ GB_DESC PdfDocumentDesc[] =
   GB_CONSTANT("Inverted","i",180),
   GB_CONSTANT("SidewaysInverted","i",270),
 
-  GB_METHOD("_new", NULL, PDFDOCUMENT_new, "[(File)s]"),
-  GB_METHOD("_free", NULL, PDFDOCUMENT_free, NULL),
+  GB_METHOD("_new", 0, PDFDOCUMENT_new, "[(File)s]"),
+  GB_METHOD("_free", 0, PDFDOCUMENT_free, 0),
 
-  GB_METHOD("Open",NULL,PDFDOCUMENT_open,"(File)s"),
-  GB_METHOD("Close",NULL,PDFDOCUMENT_close,NULL),
+  GB_METHOD("Open",0,PDFDOCUMENT_open,"(File)s"),
+  GB_METHOD("Close",0,PDFDOCUMENT_close,0),
   GB_METHOD("_get",".PdfPage",PDFDOCUMENT_get,"(Index)i"),
 
   GB_PROPERTY("Zoom", "f", PDFDOCUMENT_scale),

@@ -4,7 +4,7 @@
 
   The Mouse and Cursor classes
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,8 +23,6 @@
 ***************************************************************************/
 
 #define __CMOUSE_CPP
-
-
 
 #include <qapplication.h>
 #include <qpixmap.h>
@@ -56,7 +54,7 @@ void CMOUSE_clear(int valid)
 //int CMOUSE_last_state = 0;
 
 //static CCURSOR PredefinedCursor[LastCursor + 1] = { { { 0, 0 }, NULL, NULL } };
-//static long MouseClassID;
+//static int MouseClassID;
 
 #if 0
 static int translate_state(int s)
@@ -151,9 +149,9 @@ BEGIN_PROPERTY(CCURSOR_y)
 END_PROPERTY
 
 
-// BEGIN_METHOD(CCURSOR_get, long shape)
+// BEGIN_METHOD(CCURSOR_get, int shape)
 //
-//   long shape = PARAM(shape);
+//   int shape = PARAM(shape);
 //   CCURSOR *p;
 //
 //   if (shape < 0 || shape > LastCursor)

@@ -427,9 +427,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
 
       fcntl(process->err, F_SETFL, fcntl(process->err, F_GETFL) | O_NONBLOCK);
 
-      GB_Watch(process->out, GB_WATCH_READ, (void *)callback_write, (long)process);
+      GB_Watch(process->out, GB_WATCH_READ, (void *)callback_write, (intptr_t)process);
       if (process->err >= 0)
-        GB_Watch(process->err, GB_WATCH_READ, (void *)callback_error, (long)process);
+        GB_Watch(process->err, GB_WATCH_READ, (void *)callback_error, (intptr_t)process);
     }
 
     if ((mode & PM_SHELL) == 0)
@@ -511,7 +511,7 @@ static void callback_child(int fd, int type, void *data)
 {
   int status;
   CPROCESS *process, *next;
-  long buffer;
+  int buffer;
 
   /*old = signal(SIGCHLD, signal_child);*/
 
@@ -607,7 +607,7 @@ static void exit_child(void)
 }
 
 
-PUBLIC CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
+CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
 {
   CPROCESS *process;
 
@@ -631,7 +631,7 @@ PUBLIC CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
 
 /* Attention, l'objet Process est d���enc� une fois la fonction termin� ! */
 
-PUBLIC void CPROCESS_wait_for(CPROCESS *process)
+void CPROCESS_wait_for(CPROCESS *process)
 {
   //sigset_t sig, old;
   //bool have_sigchld;
@@ -849,7 +849,7 @@ END_METHOD
 
 #endif
 
-PUBLIC GB_DESC NATIVE_Process[] =
+GB_DESC NATIVE_Process[] =
 {
   GB_DECLARE("Process", sizeof(CPROCESS)), GB_NOT_CREATABLE(),
   GB_INHERITS("Stream"),

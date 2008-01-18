@@ -32,7 +32,7 @@
 typedef
   struct {
     CLASS *class;
-    long ref;
+    int ref;
     }
   OBJECT;
 
@@ -47,34 +47,32 @@ typedef
   OBJECT_EVENT;
 
 #define OBJECT_event(_object) ((OBJECT_EVENT *)((char *)_object + ((OBJECT *)(_object))->class->off_event))
-//#define OBJECT_is_locked(_object) (((long)_object) & 1) != 0)
-//#define OBJECT_is_locked(_object) (((long)OBJECT_event(_object)->parent & 1) != 0)
 
 #define OBJECT_is_class(_object) (OBJECT_class(_object) == CLASS_Class)
 #define OBJECT_class(_object) ((_object) ? ((OBJECT *)_object)->class : NULL)
 #define OBJECT_count(_object) ((_object) ? ((OBJECT *)_object)->ref : 0)
 
-PUBLIC void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent);
-PUBLIC void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name);
-PUBLIC void OBJECT_detach(OBJECT *ob);
-PUBLIC void OBJECT_release(CLASS *class, OBJECT *ob);
-PUBLIC void OBJECT_free(CLASS *class, OBJECT *ob);
-PUBLIC void OBJECT_lock(OBJECT *ob, bool block);
-PUBLIC bool OBJECT_is_locked(OBJECT *ob);
+void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent);
+void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name);
+void OBJECT_detach(OBJECT *ob);
+void OBJECT_release(CLASS *class, OBJECT *ob);
+void OBJECT_free(CLASS *class, OBJECT *ob);
+void OBJECT_lock(OBJECT *ob, bool block);
+bool OBJECT_is_locked(OBJECT *ob);
 
-PUBLIC void OBJECT_alloc(void **ptr, CLASS *class, size_t size);
-PUBLIC bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2);
+void OBJECT_alloc(void **ptr, CLASS *class, size_t size);
+bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2);
 
-PUBLIC void OBJECT_exit(void);
-PUBLIC void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, int nparam);
-PUBLIC void OBJECT_create_native(void **object, CLASS *class, VALUE *param);
+void OBJECT_exit(void);
+void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, int nparam);
+void OBJECT_create_native(void **object, CLASS *class, VALUE *param);
 
-PUBLIC bool OBJECT_is_valid(void *object);
+bool OBJECT_is_valid(void *object);
 
 #define OBJECT_has_events(_object) ((_object) && (((OBJECT *)_object)->class->n_event != 0))
 
-PUBLIC OBJECT *OBJECT_parent(void *object);
-PUBLIC OBJECT *OBJECT_active_parent(void *object);
+OBJECT *OBJECT_parent(void *object);
+OBJECT *OBJECT_active_parent(void *object);
 
 /*
 static INLINE CLASS *OBJECT_class(void *object)

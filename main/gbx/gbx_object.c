@@ -36,16 +36,9 @@
 
 static OBJECT *EventObject = NULL;
 
-PUBLIC void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent)
+void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent)
 {
   OBJECT_alloc(ptr, class, class->size);
-
-  /* L'objet d�arre avec un compteur de r��ence �1
-     Ce compteur devra �re remis �z�o par un OBJECT_unref_keep()
-     lorsque l'initialisation de l'objet sera termin�
-  */
-
-  /*OBJECT_REF(*ptr, "OBJECT_new");*/
 
   //#if DEBUG_EVENT
   //printf("OBJECT_new: %s %p %d\n", class->name, *ptr, class->off_event);
@@ -55,19 +48,17 @@ PUBLIC void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *paren
 }
 
 
-PUBLIC void OBJECT_alloc(void **ptr, CLASS *class, size_t size)
+void OBJECT_alloc(void **ptr, CLASS *class, size_t size)
 {
   OBJECT *object;
 
   if (size < sizeof(OBJECT))
-    ERROR_panic("OBJECT_alloc: size < %d", sizeof(OBJECT));
+    size = sizeof(OBJECT);
 
   ALLOC_ZERO(&object, size, "OBJECT_alloc");
 
   object->class = class;
   object->ref = 1;
-  /* Lorsque les initialisations sont termin�s, remettre
-     le compteur de r��ences �z�o */
 
   class->count++;
 
@@ -87,7 +78,7 @@ static void dump_attach(char *title)
 }
 #endif
 
-PUBLIC void OBJECT_detach(OBJECT *ob)
+void OBJECT_detach(OBJECT *ob)
 {
   CLASS *class = OBJECT_class(ob);
   OBJECT *parent;
@@ -146,7 +137,7 @@ PUBLIC void OBJECT_detach(OBJECT *ob)
 }
 
 
-PUBLIC void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
+void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 {
   CLASS *class = OBJECT_class(ob);
   OBJECT_EVENT *ev;
@@ -192,7 +183,7 @@ PUBLIC void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 }
 
 
-PUBLIC void OBJECT_free(CLASS *class, OBJECT *ob)
+void OBJECT_free(CLASS *class, OBJECT *ob)
 {
   /* Il faut emp�her EXEC_leave() de relib�er l'objet */
   /*((OBJECT *)free_ptr)->ref = 1;*/
@@ -217,7 +208,7 @@ PUBLIC void OBJECT_free(CLASS *class, OBJECT *ob)
 }
 
 
-PUBLIC bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2)
+bool OBJECT_comp_value(VALUE *ob1, VALUE *ob2)
 {
   if (ob1->type == T_NULL && ob2->type == T_NULL)
     return FALSE;
@@ -283,7 +274,7 @@ static void release(CLASS *class, OBJECT *ob)
 }
 
 
-PUBLIC void OBJECT_release(CLASS *class, OBJECT *ob)
+void OBJECT_release(CLASS *class, OBJECT *ob)
 {
 #if TRACE_MEMORY
   printf("> OBJECT_release %s %p\n", class->name, ob);
@@ -300,7 +291,7 @@ PUBLIC void OBJECT_release(CLASS *class, OBJECT *ob)
 }
 
 
-PUBLIC void OBJECT_exit(void)
+void OBJECT_exit(void)
 {
 	#if DEBUG_LOAD
 	fprintf(stderr, "------------ OBJECT_exit - BEGIN---------\n");
@@ -314,7 +305,7 @@ PUBLIC void OBJECT_exit(void)
 
 
 
-PUBLIC void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, int nparam)
+void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, int nparam)
 {
   void *ob;
 
@@ -342,7 +333,7 @@ PUBLIC void OBJECT_create(void **object, CLASS *class, const char *name, void *p
 
 /* FIXME: The _new are methods called differently from EXEC_special_inheritance */
 
-PUBLIC void OBJECT_create_native(void **object, CLASS *class, VALUE *param)
+void OBJECT_create_native(void **object, CLASS *class, VALUE *param)
 {
   CLASS_DESC *desc;
   short index;
@@ -365,7 +356,7 @@ PUBLIC void OBJECT_create_native(void **object, CLASS *class, VALUE *param)
   OBJECT_UNREF_KEEP(object, "OBJECT_create");
 }
 
-PUBLIC void OBJECT_lock(OBJECT *object, bool block)
+void OBJECT_lock(OBJECT *object, bool block)
 {
   CLASS *class;
 
@@ -379,22 +370,22 @@ PUBLIC void OBJECT_lock(OBJECT *object, bool block)
 	// fprintf(stderr, "OBJECT_lock: (%s %p) %s\n", class->name, object, block ? "lock" : "unlock");
 
   if (block)
-    OBJECT_event(object)->parent = (OBJECT *)((long)OBJECT_event(object)->parent | 1);
+    OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent | 1);
   else
-    OBJECT_event(object)->parent = (OBJECT *)((long)OBJECT_event(object)->parent & ~1);
+    OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1);
 }
 
 
-PUBLIC bool OBJECT_is_locked(OBJECT *object)
+bool OBJECT_is_locked(OBJECT *object)
 {
 	if (!OBJECT_has_events(object))
 		return FALSE;
 
-	return (((long)OBJECT_event(object)->parent & 1) != 0);
+	return (((intptr_t)OBJECT_event(object)->parent & 1) != 0);
 }
 
 
-PUBLIC bool OBJECT_is_valid(void *object)
+bool OBJECT_is_valid(void *object)
 {
   if (object == NULL)
     return FALSE;
@@ -403,16 +394,16 @@ PUBLIC bool OBJECT_is_valid(void *object)
 }
 
 
-PUBLIC OBJECT *OBJECT_parent(void *object)
+OBJECT *OBJECT_parent(void *object)
 {
 	//if (!OBJECT_has_events(object))
 	//	return NULL;
 	
-  return ((OBJECT *)((long)OBJECT_event(object)->parent & ~1));
+  return ((OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1));
 }
 
 
-PUBLIC OBJECT *OBJECT_active_parent(void *object)
+OBJECT *OBJECT_active_parent(void *object)
 {
 	OBJECT *parent = OBJECT_parent(object);
 	

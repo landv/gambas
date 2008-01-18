@@ -22,8 +22,6 @@
 
 #define __CSCROLLVIEW_CPP
 
-
-
 #include <qframe.h>
 #if QT_VERSION >= 0x030200
 #include <qobjectlist.h>
@@ -435,7 +433,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CSCROLLVIEW_scrollbar)
 
-  long scroll;
+  int scroll;
 
   if (READ_PROPERTY)
   {
@@ -548,7 +546,7 @@ void CScrollView::scrolled(void)
 	GET_SENDER(_object);
 
   GB.Ref(THIS);
-  GB.Post((void (*)())send_scroll, (long)THIS);
+  GB.Post((void (*)())send_scroll, (intptr_t)THIS);
 }
 
 

@@ -45,7 +45,7 @@ PUBLIC COMP_INFO COMP_res_info[] =
   { "String",       RSF_TYPE,     T_STRING          },
   { "Variant",      RSF_TYPE,     T_VARIANT         },
   { "Object",       RSF_TYPE,     T_OBJECT          },
-  { "Pointer",      RSF_TYPE,     T_INTEGER         },
+  { "Pointer",      RSF_TYPE,     T_POINTER         },
   { "CLASS"                                         },
   { "FUNCTION",     RSF_ILF                         },
   { "STRUCT"                                        },

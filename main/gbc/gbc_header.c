@@ -52,7 +52,7 @@ static char *get_num_desc(int num)
   if (num < 4)
     return num_desc[num - 1];
 
-  sprintf(desc, "%dth", num);
+  snprintf(desc, sizeof(desc), "%dth", num);
   return desc;
 }
 

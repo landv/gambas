@@ -272,7 +272,7 @@ GB_DESC CTrayIconsDesc[] =
 	
 	GB_STATIC_PROPERTY_READ("Count","i",CTRAYICONS_Count),
 	GB_STATIC_METHOD("_get","TrayIcon",CTRAYICONS_get,"(Index)i"),
-	GB_STATIC_METHOD("_next", "TrayIcon", CTRAYICONS_next, NULL),
+	GB_STATIC_METHOD("_next", "TrayIcon", CTRAYICONS_next, 0),
 	
 	GB_END_DECLARE
 };
@@ -282,12 +282,12 @@ GB_DESC CTrayIconDesc[] =
 	GB_DECLARE("TrayIcon", sizeof(CTRAYICON)), 
 	GB_HOOK_CHECK(CTRAYICON_check),
 	
-	GB_METHOD("_new",NULL,CTRAYICON_new,NULL),
-	GB_METHOD("_free",NULL,CTRAYICON_free,NULL),
+	GB_METHOD("_new",0,CTRAYICON_new,0),
+	GB_METHOD("_free",0,CTRAYICON_free,0),
 	
-	GB_METHOD("Show", NULL, CTRAYICON_show, NULL),
-	GB_METHOD("Hide", NULL, CTRAYICON_hide, NULL),
-	GB_METHOD("Delete",NULL,CTRAYICON_destroy,NULL),
+	GB_METHOD("Show", 0, CTRAYICON_show, 0),
+	GB_METHOD("Hide", 0, CTRAYICON_hide, 0),
+	GB_METHOD("Delete",0,CTRAYICON_destroy,0),
 	
 	GB_PROPERTY("Visible","b",CTRAYICON_visible),
 	GB_PROPERTY("Picture","Picture",CTRAYICON_picture),
@@ -303,16 +303,16 @@ GB_DESC CTrayIconDesc[] =
 	GB_PROPERTY_READ("W","i",CTRAYICON_width),
 	GB_PROPERTY_READ("H","i",CTRAYICON_height),
 		
-	GB_EVENT("MouseDown", NULL, NULL, &EVENT_MouseDown),
-	GB_EVENT("MouseUp", NULL, NULL, &EVENT_MouseUp),
-	GB_EVENT("Menu", NULL, NULL, &EVENT_Menu),
-	GB_EVENT("DblClick", NULL, NULL, &EVENT_DblClick),
-	GB_EVENT("Enter", NULL, NULL, &EVENT_Enter), 
-	GB_EVENT("Leave", NULL, NULL, &EVENT_Leave), 
-	GB_EVENT("GotFocus", NULL, NULL, &EVENT_GotFocus),
-	GB_EVENT("LostFocus", NULL, NULL, &EVENT_LostFocus),
-  GB_EVENT("MouseMove", NULL, NULL, &EVENT_MouseMove), //TODO
-	GB_EVENT("MouseWheel", NULL, NULL, &EVENT_MouseWheel), //TODO
+	GB_EVENT("MouseDown", 0, 0, &EVENT_MouseDown),
+	GB_EVENT("MouseUp", 0, 0, &EVENT_MouseUp),
+	GB_EVENT("Menu", 0, 0, &EVENT_Menu),
+	GB_EVENT("DblClick", 0, 0, &EVENT_DblClick),
+	GB_EVENT("Enter", 0, 0, &EVENT_Enter), 
+	GB_EVENT("Leave", 0, 0, &EVENT_Leave), 
+	GB_EVENT("GotFocus", 0, 0, &EVENT_GotFocus),
+	GB_EVENT("LostFocus", 0, 0, &EVENT_LostFocus),
+	GB_EVENT("MouseMove", 0, 0, &EVENT_MouseMove), //TODO
+	GB_EVENT("MouseWheel", 0, 0, &EVENT_MouseWheel), //TODO
 	
 	//GB_CONSTANT("_Properties", "s", "Visible=False,Tag,Tooltip,Picture"),
 	TRAYICON_DESCRIPTION,

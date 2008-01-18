@@ -4,7 +4,7 @@
 
   Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ GB_STREAM_DESC UdpSocketStream = {
 	handle: CUdpSocket_stream_handle
 };
 
+
 DECLARE_EVENT (CUDPSOCKET_Read);
 DECLARE_EVENT (CUDPSOCKET_SocketError);
 
@@ -61,14 +62,14 @@ void CUdpSocket_post_data(long Param)
 	CUDPSOCKET *t_obj;
 	t_obj=(CUDPSOCKET*)Param;
 	GB.Raise(t_obj,CUDPSOCKET_Read,0);
-	GB.Unref((void**)&t_obj);
+	GB.Unref(POINTER(&t_obj));
 }
 void CUdpSocket_post_error(long Param)
 {
 	CUDPSOCKET *t_obj;
 	t_obj=(CUDPSOCKET*)Param;
 	GB.Raise(t_obj,CUDPSOCKET_SocketError,0);
-	GB.Unref((void**)&t_obj);
+	GB.Unref(POINTER(&t_obj));
 }
 
 void CUdpSocket_CallBack(int t_sock,int type,long param)
@@ -76,7 +77,7 @@ void CUdpSocket_CallBack(int t_sock,int type,long param)
 	char buf[1];
 	int numpoll;
 	struct sockaddr_in t_test;
-	int t_test_len;
+	unsigned int t_test_len;
 	struct timespec mywait;
 	CUDPSOCKET *t_obj;
 
@@ -91,7 +92,7 @@ void CUdpSocket_CallBack(int t_sock,int type,long param)
 	t_test.sin_port=0;
 	t_test_len=sizeof(struct sockaddr);
 
-	USE_MSG_NOSIGNAL(numpoll=recvfrom(t_sock,(void*)buf, sizeof(char), MSG_PEEK | MSG_NOSIGNAL \
+	USE_MSG_NOSIGNAL(numpoll=recvfrom(t_sock,POINTER(buf), sizeof(char), MSG_PEEK | MSG_NOSIGNAL \
 		              , (struct sockaddr*)&t_test, &t_test_len));
 	if (t_test.sin_port)
 	{
@@ -101,8 +102,8 @@ void CUdpSocket_CallBack(int t_sock,int type,long param)
 }
 /* not allowed methods */
 int CUdpSocket_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
-int CUdpSocket_stream_seek(GB_STREAM *stream, long long pos, int whence){return -1;}
-int CUdpSocket_stream_tell(GB_STREAM *stream, long long *pos)
+int CUdpSocket_stream_seek(GB_STREAM *stream, int64_t pos, int whence){return -1;}
+int CUdpSocket_stream_tell(GB_STREAM *stream, int64_t *pos)
 {
 	*pos=0;
 	return -1; /* not allowed */
@@ -119,7 +120,7 @@ int CUdpSocket_stream_close(GB_STREAM *stream)
 {
 	CUDPSOCKET *mythis;
 
-	if ( !(mythis=(CUDPSOCKET*)stream->_free[0]) ) return -1;
+	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
 	stream->desc=NULL;
 	if (mythis->iStatus > 0)
 	{
@@ -136,12 +137,12 @@ int CUdpSocket_stream_close(GB_STREAM *stream)
 	mythis->iStatus=0;
 	return 0;
 }
-int CUdpSocket_stream_lof(GB_STREAM *stream, long long *len)
+int CUdpSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	CUDPSOCKET *mythis;
 	int bytes;
 
-	if ( !(mythis=(CUDPSOCKET*)stream->_free[0]) ) return -1;
+	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
 	if (ioctl(mythis->Socket,FIONREAD,&bytes))
 	{
 		CUdpSocket_stream_close(stream);
@@ -156,7 +157,7 @@ int CUdpSocket_stream_eof(GB_STREAM *stream)
 	CUDPSOCKET *mythis;
 	int bytes;
 
-	if ( !(mythis=(CUDPSOCKET*)stream->_free[0]) ) return -1;
+	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
 	if (ioctl(mythis->Socket,FIONREAD,&bytes))
 	{
 		CUdpSocket_stream_close(stream);
@@ -168,17 +169,17 @@ int CUdpSocket_stream_eof(GB_STREAM *stream)
 
 }
 
-int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, long len)
+int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	CUDPSOCKET *mythis;
     	int retval;
 	int bytes=0;
 	int NoBlock=0;
-	int rem_host_len;
+	unsigned int rem_host_len;
 	struct sockaddr_in remhost;
 
 
-	if ( !(mythis=(CUDPSOCKET*)stream->_free[0]) ) return -1;
+	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
 	if (ioctl(mythis->Socket,FIONREAD,&bytes))
 	{
 		CUdpSocket_stream_close(stream);
@@ -204,7 +205,7 @@ int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, long len)
 	return 0;
 }
 
-int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, long len)
+int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
 	CUDPSOCKET *mythis;
     	int retval;
@@ -212,7 +213,7 @@ int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, long len)
 	struct sockaddr_in remhost;
 	struct in_addr rem_ip;
 
-	if ( !(mythis=(CUDPSOCKET*)stream->_free[0]) ) return -1;
+	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
 
 	if (!mythis->thost) return -1;
 	if ( (mythis->tport<1) || (mythis->tport>65535) ) return -1;
@@ -254,6 +255,7 @@ static bool update_broadcast(CUDPSOCKET *_object)
 
 static int dgram_start(CUDPSOCKET *mythis,int myport)
 {
+	UDP_SOCKET_STREAM *str;
 	int NoBlock=1;
 	struct sockaddr_in Srv;
 
@@ -294,7 +296,8 @@ static int dgram_start(CUDPSOCKET *mythis,int myport)
 	ioctl(mythis->Socket,FIONBIO,&NoBlock);
 	GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CUdpSocket_CallBack,(long)mythis);
 	mythis->stream.desc=&UdpSocketStream;
-	mythis->stream._free[0]=(long)mythis;
+	str=(UDP_SOCKET_STREAM*)POINTER(&mythis->stream);
+	str->handle=mythis;
 	return 0;
 }
 
@@ -389,7 +392,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 
 	char *sData=NULL;
 	struct sockaddr_in remhost;
-	int rem_host_len;
+	unsigned int rem_host_len;
 	int retval=0;
 	int NoBlock=0;
 	int peeking;
@@ -406,14 +409,14 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 	ioctl(THIS->Socket,FIONREAD,&bytes);
 	if (bytes)
 	{
-		GB.Alloc( (void**)&sData,bytes*sizeof(char) );
+		GB.Alloc( POINTER(&sData),bytes*sizeof(char) );
 		rem_host_len=sizeof(struct sockaddr);
 		ioctl(THIS->Socket,FIONBIO,&NoBlock);
 		USE_MSG_NOSIGNAL(retval=recvfrom(THIS->Socket,(void*)sData,1024*sizeof(char) \
 		       ,peeking,(struct sockaddr*)&remhost,&rem_host_len));
 		if (retval<0)
 		{
-			GB.Free((void**)&sData);
+			GB.Free(POINTER(&sData));
 			CUdpSocket_stream_close(&THIS->stream);
 			THIS->iStatus=-4;
 			GB.Raise(THIS,CUDPSOCKET_SocketError,0);
@@ -429,7 +432,7 @@ BEGIN_METHOD_VOID (CUDPSOCKET_Peek)
 			GB.ReturnNewString(sData,retval);
 		else
 			GB.ReturnNewString(NULL,0);
-		GB.Free((void**)&sData);
+		GB.Free(POINTER(&sData));
 	}
 	else
 	{

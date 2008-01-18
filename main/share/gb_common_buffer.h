@@ -4,7 +4,7 @@
 
   Common useful routines for managing buffers
 
-  Copyright (C) 2000 Benoît Minisini <gambas@freesurf.fr>
+  Copyright (C) 2000 Benoï¿½t Minisini <gambas@freesurf.fr>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,19 +28,19 @@
 #define COMMON_BUF_MAX 256
 
 #ifndef __COMMON_BUFFER_C
-EXTERN long COMMON_pos;
+EXTERN int COMMON_pos;
 EXTERN char COMMON_buffer[];
 #endif
 
 PUBLIC void COMMON_init(void);
 
-PUBLIC void COMMON_buffer_init(const char *str, long len);
+PUBLIC void COMMON_buffer_init(const char *str, int len);
 PUBLIC int COMMON_get_char(void);
 PUBLIC int COMMON_last_char(void);
 PUBLIC int COMMON_look_char(void);
 PUBLIC int COMMON_put_char(char c);
 PUBLIC void COMMON_jump_space(void);
 PUBLIC char *COMMON_get_current(void);
-PUBLIC long COMMON_get_size_left(void);
+PUBLIC int COMMON_get_size_left(void);
 
 #endif

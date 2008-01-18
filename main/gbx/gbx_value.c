@@ -23,6 +23,7 @@
 
 ***************************************************************************/
 
+#define __GBX_VALUE_C
 
 #include <float.h>
 #include <math.h>
@@ -48,9 +49,97 @@
 #include "gbx_value.h"
 
 
+static void VALUE_put(VALUE *value, void *addr, TYPE type)
+{
+  static void *jump[16] = {
+    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL
+    };
+
+  VALUE_conv(value, type);
+
+  if (TYPE_is_object(type))
+    goto __OBJECT;
+  else
+    goto *jump[type];
+
+__BOOLEAN:
+
+  *((unsigned char *)addr) = (value->_boolean.value != 0 ? 255 : 0);
+  return;
+
+__BYTE:
+
+  *((unsigned char *)addr) = (unsigned char)(value->_byte.value);
+  return;
+
+__SHORT:
+
+  *((short *)addr) = (short)(value->_short.value);
+  return;
+
+__INTEGER:
+
+  *((int *)addr) = value->_integer.value;
+  return;
+
+__LONG:
+
+  *((int64_t *)addr) = value->_long.value;
+  return;
+
+__SINGLE:
+
+  *((float *)addr) = (float)value->_float.value;
+  return;
+
+__FLOAT:
+
+  *((double *)addr) = value->_float.value;
+  return;
+
+__DATE:
+
+  /* Inverted, if value ~= addr */
+
+  ((int *)addr)[1] = value->_date.time;
+  ((int *)addr)[0] = value->_date.date;
+  return;
+
+/*__STRING:
+
+  ((int *)addr)[0] = (int)(value->_string.addr + value->_string.start);
+  ((int *)addr)[1] = value->_string.len;
+  return;*/
+
+__OBJECT:
+
+  *((void **)addr) = value->_object.object;
+  return;
+
+__VARIANT:
+
+  *((VARIANT *)addr) = *((VARIANT *)&value->_variant.vtype);
+  return;
+
+__CLASS:
+
+  *((void **)addr) = value->_class.class;
+  return;
+
+__VOID:
+__ARRAY:
+__FUNCTION:
+__NULL:
+__STRING:
+
+  ERROR_panic("Bad type (%d) for VALUE_put", type);
+}
+
+
 /* This function must keep the datatype, as it is used for initializing local variables */
 
-PUBLIC void VALUE_default(VALUE *value, TYPE type)
+void VALUE_default(VALUE *value, TYPE type)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -113,7 +202,7 @@ __NULL:
 }
 
 
-PUBLIC void VALUE_convert(VALUE *value, TYPE type)
+void VALUE_convert(VALUE *value, TYPE type)
 {
   static void *jump[16][16] =
   {
@@ -219,12 +308,12 @@ __c2l:
 __h2l:
 __i2l:
 
-  value->_long.value = (long long)value->_integer.value;
+  value->_long.value = (int64_t)value->_integer.value;
   goto __TYPE;
 
 __f2l:
 
-  value->_long.value = (long long)value->_float.value;
+  value->_long.value = (int64_t)value->_float.value;
   goto __TYPE;
 
 __l2g:
@@ -266,8 +355,8 @@ __l2d:
 
   if (value->_long.value < 0)
     value->_date.date = 0;
-  else if (value->_long.value > LONG_MAX)
-    value->_date.date = LONG_MAX;
+  else if (value->_long.value > INT_MAX)
+    value->_date.date = INT_MAX;
   else
     value->_date.date = (int)value->_long.value;
 
@@ -311,14 +400,22 @@ __c2s:
 __h2s:
 __i2s:
 
+#ifdef OS_OPENBSD
+  len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
+#else
   len = sprintf(COMMON_buffer, "%d", value->_integer.value);
+#endif
   STRING_new_temp_value(value, COMMON_buffer, len);
   BORROW(value);
   return;
 
 __l2s:
 
-  len = sprintf(COMMON_buffer, "%lld", value->_long.value);
+#ifdef OS_OPENBSD
+  len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%" PRId64, value->_long.value);
+#else
+  len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
+#endif
   STRING_new_temp_value(value, COMMON_buffer, len);
   BORROW(value);
   return;
@@ -550,7 +647,7 @@ __NR:
 
 
 
-PUBLIC void VALUE_write(VALUE *value, void *addr, TYPE type)
+void VALUE_write(VALUE *value, void *addr, TYPE type)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -593,7 +690,7 @@ __INTEGER:
 __LONG:
 
   VALUE_conv(value, type);
-  *((long long *)addr) = value->_long.value;
+  *((int64_t *)addr) = value->_long.value;
   return;
 
 __SINGLE:
@@ -655,7 +752,6 @@ __VARIANT:
     type = T_STRING;
 
   VARIANT_clear((VARIANT *)addr);
-
   ((VARIANT *)addr)->type = type;
 
   /* Et si type ne fait pas partie des types valides pour cette fonction ?? */
@@ -692,7 +788,7 @@ __NULL:
 
 
 
-PUBLIC void VALUE_read(VALUE *value, void *addr, TYPE type)
+void VALUE_read(VALUE *value, void *addr, TYPE type)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -730,7 +826,7 @@ __INTEGER:
 
 __LONG:
 
-  value->_long.value = *((long long *)addr);
+  value->_long.value = *((int64_t *)addr);
   return;
 
 __SINGLE:
@@ -807,137 +903,7 @@ __NULL:
 }
 
 
-/* Retourne TRUE s'il y a eu besoin d'allouer qqch */
-
-/*
-#define MAX_FREE_PTR 64
-
-static int free_count = 0;
-static void *free_ptr[MAX_FREE_PTR];
-
-
-static void add_free_ptr(void *ptr)
-{
-  if (free_count >= MAX_FREE_PTR)
-    ERROR_panic("VALUE_put: too many pointers to free");
-
-  free_ptr[free_count] = ptr;
-  free_count++;
-}
-
-PUBLIC void VALUE_put_free(void)
-{
-  int i;
-
-  for (i = 0; i < free_count; i++)
-    STRING_free((char **)&free_ptr[i]);
-
-  free_count = 0;
-}
-
-PUBLIC void VALUE_put_forget(void)
-{
-  free_count = 0;
-}
-*/
-
-PUBLIC void VALUE_put(VALUE *value, void *addr, TYPE type)
-{
-  static void *jump[16] = {
-    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL
-    };
-
-  VALUE_conv(value, type);
-
-  if (TYPE_is_object(type))
-    goto __OBJECT;
-  else
-    goto *jump[type];
-
-__BOOLEAN:
-
-  *((unsigned char *)addr) = (value->_boolean.value != 0 ? 255 : 0);
-  return;
-
-__BYTE:
-
-  *((unsigned char *)addr) = (unsigned char)(value->_byte.value);
-  return;
-
-__SHORT:
-
-  *((short *)addr) = (short)(value->_short.value);
-  return;
-
-__INTEGER:
-
-  *((int *)addr) = value->_integer.value;
-  return;
-
-__LONG:
-
-  *((long long *)addr) = value->_long.value;
-  return;
-
-__SINGLE:
-
-  *((float *)addr) = (float)value->_float.value;
-  return;
-
-__FLOAT:
-
-  *((double *)addr) = value->_float.value;
-  return;
-
-__DATE:
-
-  /* Inverser au cas o value ~= addr */
-
-  ((int *)addr)[1] = value->_date.time;
-  ((int *)addr)[0] = value->_date.date;
-  return;
-
-__STRING:
-
-  ((int *)addr)[0] = (int)(value->_string.addr + value->_string.start);
-  ((int *)addr)[1] = value->_string.len;
-  return;
-
-__OBJECT:
-
-  *((void **)addr) = value->_object.object;
-  return;
-
-__VARIANT:
-
-  *((VARIANT *)addr) = *((VARIANT *)&value->_variant.vtype);
-  return;
-
-  /*
-  if
-  type = value->type;
-
-  ((VARIANT *)addr)->type = type;
-  addr = ((VARIANT *)addr)->value;
-  goto __CONV;
-  */
-
-__CLASS:
-
-  *((void **)addr) = value->_class.class;
-  return;
-
-__VOID:
-__ARRAY:
-__FUNCTION:
-__NULL:
-
-  ERROR_panic("Bad type (%d) for VALUE_put", type);
-}
-
-
-PUBLIC void VALUE_free(void *addr, TYPE type)
+void VALUE_free(void *addr, TYPE type)
 {
   if (type == T_STRING)
   {
@@ -958,7 +924,7 @@ PUBLIC void VALUE_free(void *addr, TYPE type)
 
 
 
-PUBLIC void VALUE_to_string(VALUE *value, char **addr, int *len)
+void VALUE_to_string(VALUE *value, char **addr, int *len)
 {
   static void *jump[16] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
@@ -996,14 +962,22 @@ __BYTE:
 __SHORT:
 __INTEGER:
 
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
+#else
   *len = sprintf(COMMON_buffer, "%d", value->_integer.value);
+#endif
   *addr = COMMON_buffer;
 
   return;
 
 __LONG:
 
-  *len = sprintf(COMMON_buffer, "%lld", value->_long.value);
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%" PRId64, value->_long.value);
+#else
+  *len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
+#endif
   *addr = COMMON_buffer;
 
   return;
@@ -1030,7 +1004,11 @@ __OBJECT:
   if (VALUE_is_null(value))
     goto __NULL;
 
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
+#else
   *len = sprintf(COMMON_buffer, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
+#endif
   *addr = COMMON_buffer;
   return;
 
@@ -1045,21 +1023,29 @@ __VOID:
 
 __CLASS:
 
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(Class %s)", value->_class.class->name);
+#else
   *len = sprintf(COMMON_buffer, "(Class %s)", value->_class.class->name);
+#endif
   *addr = COMMON_buffer;
   return;
 
 __ARRAY:
 __FUNCTION:
 
+#ifdef OS_OPENBSD
+  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(%s ?)", TYPE_get_name(value->type));
+#else
   *len = sprintf(COMMON_buffer, "(%s ?)", TYPE_get_name(value->type));
+#endif
   *addr = COMMON_buffer;
 
   /*THROW(E_TYPE, TYPE_get_name(T_STRING), TYPE_get_name(value->type));*/
 }
 
 
-PUBLIC void VALUE_from_string(VALUE *value, const char *addr, int len)
+void VALUE_from_string(VALUE *value, const char *addr, int len)
 {
 	value->type = T_NULL;
 
@@ -1088,7 +1074,7 @@ PUBLIC void VALUE_from_string(VALUE *value, const char *addr, int len)
 }
 
 
-PUBLIC void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
+void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 {
   if (ctype.id == T_OBJECT)
   {
@@ -1106,7 +1092,7 @@ PUBLIC void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype
 }
 
 
-PUBLIC void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
+void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 {
   if (ctype.id == T_OBJECT)
   {
@@ -1121,7 +1107,7 @@ PUBLIC void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctyp
 }
 
 
-PUBLIC void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype)
+void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype)
 {
   if (ctype.id == T_OBJECT)
   {
@@ -1139,7 +1125,7 @@ PUBLIC void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype)
 }
 
 
-PUBLIC void VALUE_class_constant(CLASS *class, VALUE *value, int ind)
+void VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 {
   static void *jump[] =
   {
@@ -1194,7 +1180,7 @@ __ILLEGAL:
 }
 
 
-PUBLIC bool VALUE_is_null(VALUE *val)
+bool VALUE_is_null(VALUE *val)
 {
   if (val->type == T_NULL)
     return TRUE;
@@ -1229,7 +1215,7 @@ PUBLIC bool VALUE_is_null(VALUE *val)
 }
 
 
-PUBLIC void VALUE_get_string(VALUE *val, char **text, int *length)
+void VALUE_get_string(VALUE *val, char **text, int *length)
 {
   if (VALUE_is_null(val))
   {

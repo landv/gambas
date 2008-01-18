@@ -60,7 +60,11 @@ enum {
   T_CLASS        = 14,
   T_NULL         = 15,
   T_OBJECT       = 16,
+  #if __WORDSIZE == 64
+  T_POINTER      = T_LONG
+  #else
   T_POINTER      = T_INTEGER
+  #endif
   };
   
 #define T_SIZEOF_BOOLEAN   1

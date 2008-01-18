@@ -324,7 +324,7 @@ GB_DESC CFontsDesc[] =
   GB_DECLARE("Fonts", 0), 
   GB_NOT_CREATABLE(),
 
-  GB_STATIC_METHOD("_next", "s", CFONTS_next, NULL),
+  GB_STATIC_METHOD("_next", "s", CFONTS_next, 0),
   GB_STATIC_PROPERTY_READ("Count", "i", CFONTS_count),
   
   GB_END_DECLARE
@@ -335,8 +335,8 @@ GB_DESC CFontDesc[] =
 {
   GB_DECLARE("Font", sizeof(CFONT)), 
 
-  GB_METHOD("_new", NULL, CFONT_new, "[(Font)s]"),
-  GB_METHOD("_free", NULL, CFONT_free, NULL),
+  GB_METHOD("_new", 0, CFONT_new, "[(Font)s]"),
+  GB_METHOD("_free", 0, CFONT_free, 0),
   
   GB_PROPERTY("Name", "s", CFONT_name),
   GB_PROPERTY("Size", "f", CFONT_size),
@@ -346,7 +346,7 @@ GB_DESC CFontDesc[] =
   GB_PROPERTY("StrikeOut", "b", CFONT_strikeout),
   GB_PROPERTY("Grade", "i", CFONT_grade),
 
-  GB_METHOD("ToString", "s", CFONT_to_string, NULL),
+  GB_METHOD("ToString", "s", CFONT_to_string, 0),
 
   GB_METHOD("Width", "i", CFONT_width, "(Text)s"),
   GB_METHOD("Height", "i", CFONT_height, "[(Text)s]"),

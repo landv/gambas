@@ -61,10 +61,10 @@ static char *arch_buffer;
 
 static int pos_start;
 
-static void write_long(uint val)
+static void write_int(uint val)
 {
  	if (ARCH_swap)
- 		SWAP_long((int *)&val);
+ 		SWAP_int((int *)&val);
   if (fwrite(&val, sizeof(uint), 1, arch_file) < 1)
     THROW("Write error");
 }
@@ -85,12 +85,12 @@ static int get_pos(void)
 }
 
 
-static void write_long_at(int pos, uint val)
+static void write_int_at(int pos, uint val)
 {
   int old_pos = get_pos();
 
   fseek(arch_file, pos, SEEK_SET);
-  write_long(val);
+  write_int(val);
   fseek(arch_file, old_pos, SEEK_SET);
 }
 
@@ -141,7 +141,7 @@ PUBLIC void ARCH_define_project(const char *project)
   ARCH_project_name = STR_copy(name);
 
 	if (!ARCH_output)
-  	ARCH_define_output(strcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas"));
+  	ARCH_define_output(strlcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas", sizeof(file_buffer)));
 
   STR_free(name);
   STR_free(dir);
@@ -164,19 +164,19 @@ PUBLIC void ARCH_init(void)
     fprintf(arch_file, " ");
   fprintf(arch_file, "\n");
 
-  write_long(ARCH_MAGIC);
-  write_long(ARCH_VERSION);
+  write_int(ARCH_MAGIC);
+  write_int(ARCH_VERSION);
   
   if (ARCH_verbose)
   	printf("Format version: %d\n", ARCH_VERSION);
 
   pos_start = get_pos();
-  write_long(0);
-  write_long(0);
-  write_long(0);
-  write_long(0);
+  write_int(0);
+  write_int(0);
+  write_int(0);
+  write_int(0);
 
-  write_long_at(pos_start, get_pos());
+  write_int_at(pos_start, get_pos());
 }
 
 
@@ -209,8 +209,8 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 	  	THROW("&1: not in archive!\n", tpath);
 		}
 	
-		len = sprintf(tpath2, "/%d:%s", ind, p + 1);
-		strcpy(tpath, tpath2);
+		len = snprintf(tpath2, sizeof(tpath2), "/%d:%s", ind, p + 1);
+		strlcpy(tpath, tpath2, sizeof(tpath));
 	}
 
 	if (ARCH_verbose)
@@ -229,7 +229,7 @@ PUBLIC void ARCH_exit(void)
 
   /* Write strings */
 
-  write_long_at(pos_start + sizeof(int), get_pos());
+  write_int_at(pos_start + sizeof(int), get_pos());
 
   pos_str = 0;
 
@@ -241,9 +241,9 @@ PUBLIC void ARCH_exit(void)
 
   /* Write file names */
 
-  write_long_at(pos_start + sizeof(int) * 2, get_pos());
+  write_int_at(pos_start + sizeof(int) * 2, get_pos());
 
-  write_long_at(pos_start + sizeof(int) * 3, TABLE_count(arch_table));
+  write_int_at(pos_start + sizeof(int) * 3, TABLE_count(arch_table));
 
   for (i = 0; i < TABLE_count(arch_table); i++)
   {
@@ -251,9 +251,9 @@ PUBLIC void ARCH_exit(void)
     //write_short((ushort)i);
     write_short(sym->symbol.sort);
     write_short(sym->symbol.len);
-    write_long(pos_str);
-    write_long(sym->pos);
-    write_long(sym->len);
+    write_int(pos_str);
+    write_int(sym->pos);
+    write_int(sym->len);
 
     pos_str += sym->symbol.len;
   }

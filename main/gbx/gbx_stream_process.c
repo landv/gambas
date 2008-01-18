@@ -70,7 +70,7 @@ static int stream_close(STREAM *stream)
 }
 
 
-static int stream_read(STREAM *stream, char *buffer, long len)
+static int stream_read(STREAM *stream, char *buffer, int len)
 {
 	bool ret = STREAM_read_direct(FDR, buffer, len);
 
@@ -90,13 +90,13 @@ static int stream_getchar(STREAM *stream, char *buffer)
   return ret;
 }
 
-static int stream_write(STREAM *stream, char *buffer, long len)
+static int stream_write(STREAM *stream, char *buffer, int len)
 {
 	return STREAM_write_direct(FDW, buffer, len);
 }
 
 
-static int stream_seek(STREAM *stream, long long pos, int whence)
+static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
   if (FDR < 0)
     return TRUE;
@@ -105,7 +105,7 @@ static int stream_seek(STREAM *stream, long long pos, int whence)
 }
 
 
-static int stream_tell(STREAM *stream, long long *pos)
+static int stream_tell(STREAM *stream, int64_t *pos)
 {
   if (FDR < 0)
     return TRUE;
@@ -133,7 +133,7 @@ static int stream_flush(STREAM *stream)
 #define stream_eof NULL
 
 
-/*static int stream_lof(STREAM *stream, long long *len)
+/*static int stream_lof(STREAM *stream, int64_t *len)
 {
   *len = 0; //stream->direct.size;
   return FALSE;

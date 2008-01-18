@@ -70,7 +70,7 @@ enum
   //PM_IGNORE = 256
 };
 
-PUBLIC CPROCESS *CPROCESS_create(int mode, void *cmd, char *name);
-PUBLIC void CPROCESS_wait_for(CPROCESS *process);
+CPROCESS *CPROCESS_create(int mode, void *cmd, char *name);
+void CPROCESS_wait_for(CPROCESS *process);
 
 #endif

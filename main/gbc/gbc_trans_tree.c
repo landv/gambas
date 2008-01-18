@@ -708,7 +708,7 @@ _ADD_BRACE:
   return TRUE;
 }
 
-PUBLIC TRANS_TREE *TRANS_tree(bool check_statement)
+TRANS_TREE *TRANS_tree(bool check_statement)
 {
   TRANS_TREE *copy;
   #ifdef DEBUG

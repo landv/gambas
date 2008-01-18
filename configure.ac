@@ -1,6 +1,6 @@
 dnl ****************************************************************************
 dnl   global configure.ac
-dnl   (c) Beno� Minisini 2000-2006
+dnl   (c) Benoît Minisini 2000-2006
 dnl ****************************************************************************
 
 dnl ---- Initialization
@@ -44,7 +44,7 @@ AC_CONFIG_SUBDIRS(help)
 
 AM_MAINTAINER_MODE
 
-GB_INIT_AUTOMAKE(gambas2)
+GB_INIT_AUTOMAKE(gambas3)
 
 AC_PREFIX_DEFAULT(/usr/local)
 

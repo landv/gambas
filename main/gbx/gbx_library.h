@@ -58,20 +58,20 @@ typedef
 #ifndef __GBX_LIBRARY_C
 #endif
 
-PUBLIC void LIBRARY_preload(const char *file, char **argv);
+void LIBRARY_preload(const char *file, char **argv);
 
-PUBLIC void LIBRARY_init(void);
-PUBLIC void LIBRARY_exit(void);
+void LIBRARY_init(void);
+void LIBRARY_exit(void);
 
-PUBLIC LIBRARY *LIBRARY_create(const char *path);
-PUBLIC void LIBRARY_delete(LIBRARY *lib);
+LIBRARY *LIBRARY_create(const char *path);
+void LIBRARY_delete(LIBRARY *lib);
 
-PUBLIC void LIBRARY_load(LIBRARY *lib);
-PUBLIC void LIBRARY_unload(LIBRARY *lib);
+void LIBRARY_load(LIBRARY *lib);
+void LIBRARY_unload(LIBRARY *lib);
 
-PUBLIC void LIBRARY_declare(GB_DESC **desc);
+void LIBRARY_declare(GB_DESC **desc);
 
-PUBLIC boolean LIBRARY_get_interface_by_name(const char *name, long version, void *iface);
-PUBLIC void LIBRARY_get_interface(LIBRARY *lib, long version, void *iface);
+boolean LIBRARY_get_interface_by_name(const char *name, int version, void *iface);
+void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface);
 
 #endif

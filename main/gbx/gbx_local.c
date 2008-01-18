@@ -67,13 +67,13 @@
 #define get_size_left COMMON_get_size_left
 
 /* System encoding*/
-PUBLIC char *LOCAL_encoding = NULL;
+char *LOCAL_encoding = NULL;
 
 /* If system encoding is UTF-8 */
-PUBLIC bool LOCAL_is_UTF8;
+bool LOCAL_is_UTF8;
 
 /* Default 'C' localization */
-PUBLIC LOCAL_INFO LOCAL_default = {
+LOCAL_INFO LOCAL_default = {
   '.', '.',
   0, 0,
   3, 3,
@@ -95,7 +95,7 @@ PUBLIC LOCAL_INFO LOCAL_default = {
   };
 
 /* User language localization */
-PUBLIC LOCAL_INFO LOCAL_local;
+LOCAL_INFO LOCAL_local;
 
 static char *_rtl_lang[] = { "ar", "fa", NULL };
 
@@ -147,7 +147,7 @@ static void stradd_sep(char *dst, const char *src, const char *sep)
 {
   if (*dst)
     strcat(dst, sep);
-  strcat(dst, src);
+    strcat(dst, src);
 }
 
 
@@ -469,11 +469,10 @@ static void fill_local_info(void)
 	/* Right to left languages */
 
 
-
 #if 0
   {
     char *str;
-    long len;
+    int len;
     VALUE value;
 
     DATE_now(&value);
@@ -486,12 +485,12 @@ static void fill_local_info(void)
 }
 
 
-PUBLIC void LOCAL_init(void)
+void LOCAL_init(void)
 {
   LOCAL_set_lang(NULL);
 }
 
-PUBLIC void LOCAL_exit(void)
+void LOCAL_exit(void)
 {
   STRING_free(&env_LANG);
   STRING_free(&env_LC_ALL);
@@ -501,7 +500,7 @@ PUBLIC void LOCAL_exit(void)
 }
 
 
-PUBLIC const char *LOCAL_get_lang(void)
+const char *LOCAL_get_lang(void)
 {
   char *lang;
 
@@ -514,7 +513,7 @@ PUBLIC const char *LOCAL_get_lang(void)
   return lang;
 }
 
-PUBLIC void LOCAL_set_lang(const char *lang)
+void LOCAL_set_lang(const char *lang)
 {
 	char **l;
 	int rtl;
@@ -564,7 +563,7 @@ PUBLIC void LOCAL_set_lang(const char *lang)
   LOCAL_local.rtl = rtl;
 }
 
-PUBLIC bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local)
+bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str, bool local)
 {
   char c;
   int n;
@@ -884,7 +883,7 @@ _FORMAT:
   if (exposant)
     number_exp = number != 0.0;
 
-  ndigit = sprintf(buf, "%.*f", MinMax(after + number_exp, 0, DBL_DIG), number_mant);
+  ndigit = snprintf(buf, sizeof(buf), "%.*f", MinMax(after + number_exp, 0, DBL_DIG), number_mant);
 
   // should return "0[.]...", or "1[.]..." if the number is rounded up.
 
@@ -999,7 +998,7 @@ _EXPOSANT:
   if (exposant != 0) // && number != 0.0)
   {
     put_char(exposant);
-    n = sprintf(buf, "%+.*d", exp_zero, number_real_exp - 1);
+    n = snprintf(buf, sizeof(buf), "%+.*d", exp_zero, number_real_exp - 1);
     add_string(buf, n, NULL);
   }
 
@@ -1066,7 +1065,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
       if (count <= 2)
       {
-        n = sprintf(buf, (count == 1 ? "%d" : "%02d"), date->day);
+        n = snprintf(buf, sizeof(buf), (count == 1 ? "%d" : "%02d"), date->day);
         add_string(buf, n, NULL);
       }
       else if (count >= 3)
@@ -1081,7 +1080,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
       if (count <= 2)
       {
-        n = sprintf(buf, (count == 1 ? "%d" : "%02d"), date->month);
+        n = snprintf(buf, sizeof(buf), (count == 1 ? "%d" : "%02d"), date->month);
         add_string(buf, n, NULL);
       }
       else if (count >= 3)
@@ -1095,9 +1094,9 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
     case 'y':
 
       if (count <= 2 && date->year >= 1939 && date->year <= 2038)
-        n = sprintf(buf, "%02d", date->year - (date->year >= 2000 ? 2000 : 1900));
+        n = snprintf(buf, sizeof(buf), "%02d", date->year - (date->year >= 2000 ? 2000 : 1900));
       else
-        n = sprintf(buf, "%d", date->year);
+        n = snprintf(buf, sizeof(buf), "%d", date->year);
 
       add_string(buf, n, NULL);
 
@@ -1107,7 +1106,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
     case 'n':
     case 's':
 
-      n = sprintf(buf, (count == 1) ? "%d" : "%02d",
+      n = snprintf(buf, sizeof(buf), (count == 1) ? "%d" : "%02d",
         (*token == 'h') ? date->hour : ((*token == 'n') ? date->min : date->sec));
 
       add_string(buf, n, NULL);
@@ -1118,7 +1117,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 
       if (date->msec || count == 2)
       {
-        n = sprintf(buf, ".%03d", date->msec);
+        n = snprintf(buf, sizeof(buf), ".%03d", date->msec);
         if (count == 1)
         {
 					while (buf[n - 1] == '0')
@@ -1136,7 +1135,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 }
 
 
-PUBLIC boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
+boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
 {
   char c;
   bool esc;
@@ -1295,7 +1294,7 @@ PUBLIC boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fm
 }
 
 
-PUBLIC void LOCAL_load_translation(ARCHIVE *arch)
+void LOCAL_load_translation(ARCHIVE *arch)
 {
   char *domain = NULL;
   char *lang_list;
@@ -1396,7 +1395,7 @@ PUBLIC void LOCAL_load_translation(ARCHIVE *arch)
   mkdir(dst, S_IRWXU);
 
   dst = FILE_cat(dst, domain, NULL);
-  strcat((char *)dst, ".mo");
+  strlcat((char *)dst, ".mo", sizeof(file_buffer));
 
   unlink(dst);
 
@@ -1452,7 +1451,7 @@ __NOTRANS:
 }
 
 
-PUBLIC const char *LOCAL_gettext(const char *msgid)
+const char *LOCAL_gettext(const char *msgid)
 {
   const char *tr;
   ARCHIVE *arch = NULL;

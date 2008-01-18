@@ -401,7 +401,7 @@ GB_DESC CTextBoxSelectionDesc[] =
   GB_PROPERTY_READ("Start", "i", CTEXTBOX_sel_start),
   GB_PROPERTY_READ("Pos", "i", CTEXTBOX_sel_start),
 
-  GB_METHOD("Hide", NULL, CTEXTBOX_sel_clear, NULL),
+  GB_METHOD("Hide", 0, CTEXTBOX_sel_clear, 0),
 
   GB_END_DECLARE
 };
@@ -410,7 +410,7 @@ GB_DESC CTextBoxDesc[] =
 {
   GB_DECLARE("TextBox", sizeof(CTEXTBOX)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTEXTBOX_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CTEXTBOX_new, "(Parent)Container;"),
 
   GB_PROPERTY("Text", "s", CTEXTBOX_text),
   GB_PROPERTY("Alignment", "i", CTEXTBOX_alignment),
@@ -422,16 +422,16 @@ GB_DESC CTextBoxDesc[] =
   GB_PROPERTY("MaxLength", "i", CTEXTBOX_max_length),
 
   GB_PROPERTY_SELF("Selection", ".TextBoxSelection"),
-  GB_METHOD("Select", NULL, CTEXTBOX_sel_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", NULL, CTEXTBOX_sel_all, NULL),
-  GB_METHOD("Unselect", NULL, CTEXTBOX_sel_clear, NULL),
+  GB_METHOD("Select", 0, CTEXTBOX_sel_select, "[(Start)i(Length)i]"),
+  GB_METHOD("SelectAll", 0, CTEXTBOX_sel_all, 0),
+  GB_METHOD("Unselect", 0, CTEXTBOX_sel_clear, 0),
   GB_PROPERTY_READ("Selected", "b", CTEXTBOX_selected),
 
-  GB_METHOD("Clear", NULL, CTEXTBOX_clear, NULL),
-  GB_METHOD("Insert", NULL, CTEXTBOX_insert, "(Text)s"),
+  GB_METHOD("Clear", 0, CTEXTBOX_clear, 0),
+  GB_METHOD("Insert", 0, CTEXTBOX_insert, "(Text)s"),
 
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
+  GB_EVENT("Change", 0, 0, &EVENT_Change),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
   
   TEXTBOX_DESCRIPTION,
 
@@ -454,13 +454,13 @@ GB_DESC CComboBoxDesc[] =
 {
   GB_DECLARE("ComboBox", sizeof(CCOMBOBOX)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CCOMBOBOX_new, "(Parent)Container;"),
+  GB_METHOD("_new", 0, CCOMBOBOX_new, "(Parent)Container;"),
   GB_METHOD("_get", ".ComboBoxItem", CCOMBOBOX_get, "(Index)i"),
-  GB_METHOD("Popup", NULL, CCOMBOBOX_popup, NULL),
-  GB_METHOD("Clear", NULL, CTEXTBOX_clear, NULL),
-  GB_METHOD("Insert", NULL, CTEXTBOX_insert, "(Text)s"),
-  GB_METHOD("Add", NULL, CCOMBOBOX_add, "(Item)s[(Index)i]"),
-  GB_METHOD("Remove", NULL, CCOMBOBOX_remove, "(Index)i"),
+  GB_METHOD("Popup", 0, CCOMBOBOX_popup, 0),
+  GB_METHOD("Clear", 0, CTEXTBOX_clear, 0),
+  GB_METHOD("Insert", 0, CTEXTBOX_insert, "(Text)s"),
+  GB_METHOD("Add", 0, CCOMBOBOX_add, "(Item)s[(Index)i]"),
+  GB_METHOD("Remove", 0, CCOMBOBOX_remove, "(Index)i"),
   GB_METHOD("Find", "i", CCOMBOBOX_find, "(Item)s"),
 
   GB_PROPERTY("Text", "s", CCOMBOBOX_text),
@@ -471,9 +471,9 @@ GB_DESC CComboBoxDesc[] =
   GB_PROPERTY("MaxLength", "i", CTEXTBOX_max_length),
   
   GB_PROPERTY_SELF("Selection", ".TextBoxSelection"),
-  GB_METHOD("Select", NULL, CTEXTBOX_sel_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", NULL, CTEXTBOX_sel_all, NULL),
-  GB_METHOD("Unselect", NULL, CTEXTBOX_sel_clear, NULL),
+  GB_METHOD("Select", 0, CTEXTBOX_sel_select, "[(Start)i(Length)i]"),
+  GB_METHOD("SelectAll", 0, CTEXTBOX_sel_all, 0),
+  GB_METHOD("Unselect", 0, CTEXTBOX_sel_clear, 0),
   GB_PROPERTY_READ("Selected", "b", CTEXTBOX_selected),
 
   GB_PROPERTY("Sorted", "b", CCOMBOBOX_sorted),
@@ -482,11 +482,11 @@ GB_DESC CComboBoxDesc[] =
   GB_PROPERTY_READ("Current", ".ComboBoxItem", CCOMBOBOX_current),
   GB_PROPERTY("Index", "i", CCOMBOBOX_index),
 
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+  GB_EVENT("Change", 0, 0, &EVENT_Change),
+  GB_EVENT("Activate", 0, 0, &EVENT_Activate),
+  GB_EVENT("Click", 0, 0, &EVENT_Click),
 
-	COMBOBOX_DESCRIPTION,
+  COMBOBOX_DESCRIPTION,
 
   GB_END_DECLARE
 };

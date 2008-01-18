@@ -347,8 +347,7 @@ int main(int argc, char **argv)
     else
     {
       EXEC.native = FALSE;
-      EXEC.index = (int)startup->exec;
-      //EXEC.func = &class->load->func[(long)startup->exec]
+      EXEC.index = (int)(intptr_t)startup->exec;
 
       EXEC_function();
     }
@@ -381,7 +380,7 @@ int main(int argc, char **argv)
   main_exit();
 
   if (MEMORY_count)
-    fprintf(stderr, "WARNING: %ld allocation(s) non freed.\n", MEMORY_count);
+    fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
 
   MEMORY_exit();
 

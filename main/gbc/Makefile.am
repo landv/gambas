@@ -49,5 +49,5 @@ gbi2_SOURCES= \
  gbi.c
 
 gbc2-gb_table.o: gb_table.c
-	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbc2_CFLAGS) -O3 $(CFLAGS) -MT gbc2-gb_table.o -MD -MP -MF "$(DEPDIR)/gbc2-gb_table.Tpo" -c -o gbc2-gb_table.o `test -f 'gb_table.c' || echo '$(srcdir)/'`gb_table.c; then mv -f "$(DEPDIR)/gbc2-gb_table.Tpo" "$(DEPDIR)/gbc2-gb_table.Po"; else rm -f "$(DEPDIR)/gbc2-gb_table.Tpo"; exit 1; fi
+	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbc2_CFLAGS) -O2 $(CFLAGS) -MT gbc2-gb_table.o -MD -MP -MF "$(DEPDIR)/gbc2-gb_table.Tpo" -c -o gbc2-gb_table.o `test -f 'gb_table.c' || echo '$(srcdir)/'`gb_table.c; then mv -f "$(DEPDIR)/gbc2-gb_table.Tpo" "$(DEPDIR)/gbc2-gb_table.Po"; else rm -f "$(DEPDIR)/gbc2-gb_table.Tpo"; exit 1; fi
 

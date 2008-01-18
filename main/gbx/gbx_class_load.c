@@ -59,155 +59,240 @@
 static const char *ClassName;
 static bool _swap;
 
-
-/*
-static void CLASS_new(void **ptr, CLASS *class, char *name, OBJECT *parent)
-{
-  VALUE_FUNCTION exec;
-
-  OBJECT_new(ptr, class, name, parent);
-
-  exec.class = class;
-  exec.object = *ptr;
-  exec.function = FUNC_INIT_DYNAMIC;
-
-  #if DEBUG_EVENT
-  printf("CLASS_new (%s %p) parent (%s %p)\n", ((OBJECT *)*ptr)->class->name, *ptr, parent->class->name, parent);
-  #endif
-
-  EXEC_function(&exec, 0);
-}
-*/
+#define _b "\x1"
+#define _s "\x2"
+#define _i "\x3"
+#define _p "\x4"
+#define _c "\x5"
+#define _t "\x6"
 
 #ifdef DEBUG
 static CLASS *Class;
 static int NSection;
 #endif
 
-#define RELOCATE(_ptr) (_ptr = (char *)&class->string[(int)(_ptr)])
-
 static void SWAP_type(CTYPE *p)
 {
 	SWAP_short(&p->value);
 }
 
-static char *get_section(char *sec_name, char **section, int one, short *psize, char *swapcode)
+static char *get_section(char *sec_name, char **section, short *pcount, const char *desc)
 {
+	static void *jump_swap[] = { &&__SWAP_END, &&__SWAP_BYTE, &&__SWAP_SHORT, &&__SWAP_INT, &&__SWAP_POINTER, &&__SWAP_CTYPE, &&__SWAP_TYPE };
+	static size_t sizeof_32[] = { 0, 1, 2, 4, 4, 4, 4 };
+	#ifdef OS_64BITS
+	static void *jump_trans[] = { &&__TRANS_END, &&__TRANS_BYTE, &&__TRANS_SHORT, &&__TRANS_INT, &&__TRANS_POINTER, &&__TRANS_CTYPE, &&__TRANS_TYPE };
+	static size_t sizeof_64[] = { 0, 1, 2, 4, 8, 4, 8 };
+	#endif
+
   char *current = *section + sizeof(int);
   int section_size = *((int *)(*section));
-  int i, n;
+  int i;
   char *p;
-  char *ps;
-  size_t ss;
-  void (*func)();
+  const char *pdesc;
   short size;
+  size_t size_one = 0;
+  #ifdef OS_64BITS
+  size_t size_one_64 = 0;
+  char *alloc = NULL;
+  char *pa = NULL;
+  #endif
 
   if (_swap)
-    SWAP_long(&section_size);
+    SWAP_int(&section_size);
 
   #ifdef DEBUG
   NSection++;
   printf("Section #%d %s %08lX %d %d\n", NSection + 1, sec_name, (int)(current - (char *)Class->data), one, section_size);
   #endif
 
-  /*
-  if (section_size == 0)
-    THROW(E_FORMAT);
-  */
-
   *section += section_size + sizeof(int);
 
-  if (section_size % one)
-    THROW(E_CLASS, ClassName, "Bad format in ", sec_name);
+	if (desc)
+	{
+		pdesc = desc;
+		while (*pdesc)
+		{
+			size_one += sizeof_32[(int)*pdesc];
+			#ifdef OS_64BITS
+			size_one_64 += sizeof_64[(int)*pdesc];
+			#endif
+			pdesc++;
+		}
+  
+		if (section_size % size_one)
+			THROW(E_CLASS, ClassName, "Bad format in section: ", sec_name);
+	
+		size = section_size / size_one;
+		if (pcount) *pcount = size;
+		if (!size)
+			return NULL;
 
-  size = section_size / one;
-  if (psize)
-    *psize = size;
+		if (_swap)
+		{
+			for (i = 0; i < size; i++)
+			{
+				p = current + i * size_one;
+				pdesc = desc;
+				
+			__SWAP_NEXT:
+				goto *jump_swap[(int)(*pdesc++)];
+			
+			__SWAP_BYTE:
+				p++;
+				goto __SWAP_NEXT;
+			
+			__SWAP_SHORT:
+				SWAP_short((short *)p);
+				p += sizeof(short);
+				goto __SWAP_NEXT;
+				
+			__SWAP_INT:
+			__SWAP_POINTER:
+				SWAP_int((int *)p);
+				p += sizeof(int);
+				goto __SWAP_NEXT;
+				
+			__SWAP_CTYPE:
+			__SWAP_TYPE:
+				SWAP_type((CTYPE *)p);
+				p += sizeof(CTYPE);
+				goto __SWAP_NEXT;
+				
+			__SWAP_END:
+				continue;
+			}
+		}
+	
+		#ifdef OS_64BITS
+		
+		if (size_one_64 != size_one)
+		{
+			ALLOC(POINTER(&alloc), size_one_64 * size, "get_section");
+				
+			for (i = 0; i < size; i++)
+			{
+				p = current + i * size_one;
+				pa = alloc + i * size_one_64;
+				pdesc = desc;
+				
+			__TRANS_NEXT:
+				goto *jump_trans[(int)(*pdesc++)];
+			
+			__TRANS_BYTE:
+				*pa++ = *p++;
+				goto __TRANS_NEXT;
+			
+			__TRANS_SHORT:
+				*((short *)pa) = *((short *)p);
+				pa += sizeof(short);
+				p += sizeof(short);
+				goto __TRANS_NEXT;
+				
+			__TRANS_INT:
+			__TRANS_CTYPE:
+				*((int *)pa) = *((int *)p);
+				pa += sizeof(int);
+				p += sizeof(int);
+				goto __TRANS_NEXT;			
+			
+			__TRANS_TYPE:
+				*((int *)pa) = *((int *)p);
+				pa += sizeof(int);
+				p += sizeof(int);
+				*((int *)pa) = 0;
+				pa += sizeof(int);
+				goto __TRANS_NEXT;			
+			
+			__TRANS_POINTER:
+				*((uint64_t *)pa) = *((uint *)p);
+				pa += sizeof(int64_t);
+				p += sizeof(int);
+				goto __TRANS_NEXT;			
+				
+			__TRANS_END:
+				continue;
+			}
+			
+			return alloc;
+		}
+	
+		#endif
+	
+	}
+	
+	return current;
+	
+		#if 0
+		for (i = 0; i < size; i++)
+		{
+			p = current + i * one;
 
-  if (_swap && swapcode)
-  {
-    p = current;
+			ps = swapcode;
+			while (*ps)
+			{
+				if (*ps == 's')
+				{
+					func = SWAP_short;
+					ss = sizeof(short);
+				}
+				else if (*ps == 'i')
+				{
+					func = SWAP_int;
+					ss = sizeof(int);
+				}
+				else if (*ps == 't')
+				{
+					func = SWAP_type;
+					ss = sizeof(int);
+				}
+				else
+				{
+					func = NULL;
+					ss = 1;
+				}
 
-    /*if (one == sizeof(short))
-    {
-      for (i = 0; i < size; i++)
-      {
-        SWAP_short((short *)p);
-        p += sizeof(short);
-      }
-    }
-    else if (one == sizeof(long))
-    {
-      for (i = 0; i < size; i++)
-      {
-        SWAP_long((long *)p);
-        p += sizeof(long);
-      }
-    }
-    else*/
-    {
-      for (i = 0; i < size; i++)
-      {
-        p = current + i * one;
+				ps++;
 
-        ps = swapcode;
-        while (*ps)
-        {
-          if (*ps == 's')
-          {
-            func = SWAP_short;
-            ss = sizeof(short);
-          }
-          else if (*ps == 'l')
-          {
-            func = SWAP_long;
-            ss = sizeof(int);
-          }
-          else if (*ps == 't')
-          {
-            func = SWAP_type;
-            ss = sizeof(int);
-          }
-          else
-          {
-						func = NULL;
-						ss = 1;
-          }
+				if (isdigit(*ps))
+				{
+					n = *ps - '0';
+					ps++;
+				}
+				else if (*ps == '*')
+				{
+					n = one / ss;
+					ps++;
+				}
+				else
+					n = 1;
 
-          ps++;
-
-          if (isdigit(*ps))
-          {
-            n = *ps - '0';
-            ps++;
-          }
-          else if (*ps == '*')
-          {
-            n = one / ss;
-            ps++;
-          }
-          else
-            n = 1;
-
-					if (func)
+				if (func)
+				{
+					while (n)
 					{
-          	while (n)
-          	{
-	            (*func)(p);
-            	p += ss;
-            	n--;
-          	}
+						(*func)(p);
+						p += ss;
+						n--;
 					}
-					else
-						p += n;
-        }
-      }
+				}
+				else
+					p += n;
+			}
     }
-  }
+    #endif
 
-  return current;
 }
 
+TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
+{
+  if (ctype.id == T_OBJECT && ctype.value >= 0)
+    return (TYPE)(class->load->class_ref[ctype.value]);
+  else if (ctype.id == T_ARRAY)
+    ERROR_panic("conv_type: bad type");
+  else
+    return (TYPE)(ctype.id);	
+}
 
 static void conv_type(CLASS *class, void *ptype)
 {
@@ -216,7 +301,7 @@ static void conv_type(CLASS *class, void *ptype)
 
 	if (_swap)
 	{
-		SWAP_long((int *)&ctype);
+		SWAP_int((int *)&ctype);
 		SWAP_type(&ctype);
 	}
 
@@ -228,6 +313,16 @@ static void conv_type(CLASS *class, void *ptype)
     type = (TYPE)(ctype.id);
 
   *((TYPE *)ptype) = type;
+}
+
+static void conv_type_simple(CLASS *class, int *ptype)
+{
+  CTYPE ctype = *(CTYPE *)ptype;
+
+	if (_swap)
+		SWAP_int((int *)&ctype);
+
+  *ptype = ctype.id;
 }
 
 
@@ -267,102 +362,226 @@ static void check_version(int loaded)
     THROW(E_CLASS, ClassName, "Version too old. Please recompile the project.", "");
 }
 
+#define RELOCATE(_ptr) (_ptr = (char *)&class->string[(int)(intptr_t)(_ptr)])
 
-PUBLIC void CLASS_load_without_init(CLASS *class)
+#if 0
+#ifdef OS_64BITS
+	#define GET_SECTION(_store, _type, _name, _section, _swap) \
+  	_store = (_type_32 *)get_section(_name, _section, sizeof(_type_32), _swap)
+#else
+	#define GET_SECTION(_store, _type, _name, _section, _swap) \
+  	_store = (_type *)get_section(_name, _section, sizeof(_type), _swap)
+#endif
+
+#define _GET_SECTION_DESC(_store) GET_SECTION(_store, CLASS_DESC, "description", &section, "l*")
+#define _GET_SECTION_CONST(_store) GET_SECTION(_store, CLASS_CONST, "constant", &section, "l*")
+#define _GET_SECTION_REF(_store) GET_SECTION(_store, CLASS_REF, "reference", &section, "l")
+#define _GET_SECTION_UNKNOWN(_store) GET_SECTION(_store, CLASS_UNKNOWN, "unknown", &section, "l")
+#define _GET_SECTION_STATIC(_store) GET_SECTION(_store, CLASS_VAR, "static", &section, "tl")
+#define _GET_SECTION_DYNAMIC(_store) GET_SECTION(_store, CLASS_VAR, "dynamic", &section, "tl")
+#define _GET_SECTION_EVENT(_store) GET_SECTION(_store, CLASS_EVENT, "events", &section, "ls2l2")
+#define _GET_SECTION_EXTERN(_store) GET_SECTION(_store, CLASS_EXTERN, "extern", &section, "ls2l3")
+#define _GET_SECTION_FUNCTION(_store) GET_SECTION(_store, FUNCTION, "function", &section, "lb4s4l4")
+#define _GET_SECTION_LOCAL(_store) GET_SECTION(_store, CLASS_LOCAL, "local", &section, "l")
+#define _GET_SECTION_ARRAY(_store) GET_SECTION(_store, CLASS_ARRAY_P, "array", &section, "l")
+#define _GET_SECTION_GLOBAL(_store) GET_SECTION(_store, GLOBAL_SYMBOL, "global", &section, "s2ltl")
+
+#define _GET_SECTION_INFO(_store) _store = (CLASS_INFO *)get_section("info", &section, sizeof(CLASS_INFO), "s2l2")
+#define _GET_SECTION_CODE(_store) _store = (ushort *)get_section("code", &section, sizeof(ushort), "s")
+
+#ifdef OS_64BITS
+
+#define _MOVE(_dst, _src, _field, _type) _dst->_field = (_type)_src->_field
+
+#define _BEGIN(_type, _section, _field) \
+  short i; \
+  _type##_32 *src; \
+  _type *store, *dst; \
+  _GET_SECTION_##_section(&src); \
+  ALLOC(POINTER(&dst), sizeof(_type) * _count); \
+  store = dst; \
+  for (i = 0; i < _count; i++) \
+  {
+  
+#define _END \
+  src++; dst++; \
+  } \
+  return store;
+
+static CLASS_DESC *_get_section_desc(void)
+{
+	_BEGIN(CLASS_DESC, DESC)
+	{
+    _MOVE(&dst->gambas, &src->gambas, name, void *);
+    _MOVE(&dst->gambas, &src->gambas, type, intptr_t);
+    _MOVE(&dst->gambas, &src->gambas, val1, intptr_t);
+    _MOVE(&dst->gambas, &src->gambas, val2, intptr_t);
+    _MOVE(&dst->gambas, &src->gambas, val3, intptr_t);
+    _MOVE(&dst->gambas, &src->gambas, val4, intptr_t);
+  }
+  _END
+}
+
+static CLASS_CONST *_get_section_const(void)
+{
+	_BEGIN(CLASS_CONST, CONST)
+	{
+		dst->type = src->type;
+		if (src->type == T_STRING || src->type == T_CSTRING)
+		{
+			_MOVE(&dst->_string, &src->_string, addr, char *);
+			_MOVE(&dst->_string, &src->_string, len, int);
+		}
+		else
+			dst->_long.value = src->_long.value;
+	}
+  _END
+}
+
+static CLASS_REF *_get_section_ref(void)
+{
+	_BEGIN(CLASS_REF, REF)
+	{
+		*dst = *src;
+	}
+  _END
+}
+
+static CLASS_UNKNOWN *_get_section_unknown(void)
+{
+	_BEGIN(CLASS_UNKNOWN, UNKNOWN)
+	{
+		*dst = *src;
+	}
+  _END
+}
+
+static CLASS_EVENT *_get_section_event(void)
+{
+	_BEGIN(CLASS_EVENT, EVENT)
+	{
+    _MOVE(dst, src, type, TYPE);
+    _MOVE(dst, src, n_param, short);
+    _MOVE(dst, src, param, CLASS_PARAM *);
+    _MOVE(dst, src, name, char *);
+	}
+	_END
+}
+
+static CLASS_EVENT *_get_section_extern(void)
+{
+	_BEGIN(CLASS_EXTERN, EXTERN)
+	{
+    _MOVE(dst, src, type, TYPE);
+    _MOVE(dst, src, n_param, short);
+    dst->loaded = FALSE;
+    dst->_reserver = 0;
+    _MOVE(dst, src, param, CLASS_PARAM *);
+    _MOVE(dst, src, alias, char *);
+    _MOVE(dst, src, library, char *);
+	}
+	_END
+}
+
+static FUNCTION *_get_section_function(void)
+{
+	_BEGIN(FUNCTION, FUNCTION)
+	{
+  	_MOVE(dst, src, type, TYPE);
+  	_MOVE(dst, src, n_param, char);
+    _MOVE(dst, src, npmin, char);
+    _MOVE(dst, src, vararg, char);
+    _MOVE(dst, src, _reserved, char);
+    _MOVE(dst, src, n_local, short);
+    _MOVE(dst, src, n_ctrl, short);
+    _MOVE(dst, src, stack_usage, short);
+    _MOVE(dst, src, error, short);
+    _MOVE(dst, src, code, ushort *);
+    _MOVE(dst, src, param, CLASS_PARAM *);
+    _MOVE(dst, src, local, CLASS_LOCAL *);
+    _MOVE(dst, src, debug, FUNC_DEBUG *);
+	}
+	_END
+}
+
+static CLASS_LOCAL *_get_section_local(void)
+{
+	_BEGIN(CLASS_LOCAL, LOCAL)
+	{
+		*dst = *src;
+	}
+	_END
+}
+
+static CLASS_ARRAY_P *_get_section_array(void)
+{
+	_BEGIN(CLASS_ARRAY_P, ARRAY)
+	{
+		*dst = *src;
+	}
+	_END
+}
+
+#define GET_SECTION_INFO _GET_SECTION_INFO
+#define GET_SECTION_DESC(_store) _store = _get_section_desc()
+#define GET_SECTION_CONST(_store) _store = _get_section_const()
+#define GET_SECTION_REF(_store) _store = _get_section_ref()
+#define GET_SECTION_UNKNOWN(_store) _store = _get_section_unknown()
+#define GET_SECTION_STATIC(_store) _store = (CLASS_VAR *)_GET_SECTION_STATIC(_store)
+#define GET_SECTION_DYNAMIC(_store) _store = (CLASS_VAR *)_GET_SECTION_DYNAMIC(_store)
+#define GET_SECTION_EVENT(_store) _store = _get_section_event()
+#define GET_SECTION_EXTERN(_store) _store = _get_section_extern()
+#define GET_SECTION_FUNCTION(_store) _store = _get_section_function()
+#define GET_SECTION_LOCAL(_store) _store = get_section_local()
+#define GET_SECTION_ARRAY(_store) _store = get_section_array()
+#define GET_SECTION_CODE _GET_SECTION_CODE
+
+#else
+
+#define GET_SECTION_INFO _GET_SECTION_INFO
+#define GET_SECTION_DESC _GET_SECTION_DESC
+#define GET_SECTION_CONST _GET_SECTION_CONST
+#define GET_SECTION_REF _GET_SECTION_REF
+#define GET_SECTION_UNKNOWN _GET_SECTION_UNKNOWN
+#define GET_SECTION_STATIC _GET_SECTION_STATIC
+#define GET_SECTION_DYNAMIC _GET_SECTION_DYNAMIC
+#define GET_SECTION_EVENT _GET_SECTION_EVENT
+#define GET_SECTION_EXTERN _GET_SECTION_EXTERN
+#define GET_SECTION_FUNCTION _GET_SECTION_FUNCTION
+#define GET_SECTION_LOCAL _GET_SECTION_LOCAL
+#define GET_SECTION_ARRAY _GET_SECTION_ARRAY
+#define GET_SECTION_CODE _GET_SECTION_CODE
+
+#endif
+#endif
+
+static int sizeof_ctype(CLASS *class, CTYPE ctype)
+{
+	size_t size;
+	
+	if (ctype.id != T_ARRAY)
+		return TYPE_sizeof_memory(ctype.id);
+		
+	size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
+  return (size + 3) & ~3;
+}
+
+
+static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfirst)
 {
   char *section;
-  CLASS_HEADER *header;
-  CLASS_INFO *info;
-  int i, j;
-  CLASS_LOCAL *local;
-  FUNCTION *func;
-  CLASS_DESC *desc;
-  CLASS_DESC *start;
-  short n_class_ref;
-  short n_unknown;
-  CLASS_CONST *cc;
-  CLASS_VAR *var;
-  int len;
+	CLASS_INFO *info;
+	CLASS_HEADER *header;
+	CLASS_DESC *start;
+  CLASS_PARAM *local;
   CLASS_EVENT *event;
   CLASS_EXTERN *ext;
-  short n_array;
-  VALUE value;
-  int len_data;
-  int first;
-  short n_desc;
-  int offset;
-  int first_event;
+  FUNCTION *func;
   FUNC_DEBUG *debug;
-  COMPONENT *save;
-
-  //size_t alloc = MEMORY_size;
-
-  if (class->state >= CS_LOADED)
-    return;
-
-  #if DEBUG_LOAD
-    printf("Loading class %s (%p)...\n", class->name, class);
-  #endif
-
-  #ifdef DEBUG
-    Class = class;
-    NSection = 0;
-  #endif
-
-  ClassName = class->name;
-
-  if (class->in_load)
-    THROW(E_CLASS, ClassName, "Circular reference", "");
-
-  if (COMPONENT_current)
-    class->component = COMPONENT_current;
-  else if (CP)
-    class->component = CP->component;
-  else
-    class->component = NULL;
-
-  save = COMPONENT_current;
-  COMPONENT_current = class->component;
-
-  len = strlen(class->name);
-
-  {
-    char name[len + 9];
-    char *p;
-
-    strcpy(name, ".gambas/");
-    p = &name[8];
-
-    for (i = 0; i < len; i++)
-      *p++ = toupper(class->name[i]);
-    *p = 0;
-
-    TRY
-    {
-      //class->mmapped = !STREAM_map(name, &class->data, &len_data);
-      STREAM_load(name, &class->data, &len_data);
-    }
-    CATCH
-    {
-      THROW(E_CLASS, class->name, "Unable to load class file", "");
-    }
-    END_TRY
-
-    /*if (BUFFER_load_file(&class->data, FILE_get(name)))
-      THROW(E_CLASS, ClassName, "Unable to load class file", "");*/
-  }
-
-  COMPONENT_current = save;
-
-  class->in_load = TRUE;
-
-  #if DEBUG_COMP
-  if (class->component)
-    fprintf(stderr, "class %s -> component %s\n", class->name, class->component->name);
-  else
-    fprintf(stderr, "class %s -> no component\n", class->name);
-  #endif
-
+  int i, j;
+  int offset;
+  short n_desc, n_class_ref, n_unknown, n_array;
+	
   ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD), "CLASS_load");
 
   /* header */
@@ -379,9 +598,9 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 
   if (_swap)
   {
-    SWAP_long((int *)&header->magic);
-    SWAP_long((int *)&header->version);
-    SWAP_long((int *)&header->flag);
+    SWAP_int((int *)&header->magic);
+    SWAP_int((int *)&header->version);
+    SWAP_int((int *)&header->flag);
   }
 
   if (header->magic != OUTPUT_MAGIC)
@@ -398,32 +617,32 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
   check_version(header->version);
 
   class->debug = header->flag & CF_DEBUG;
-
-  /* Loading sections */
-
-  #ifdef DEBUG
-  Class = class;
+  
+  info = (CLASS_INFO *)get_section("info", &section, NULL, _s _s _i _i );
+  #ifdef OS_64BITS
+  class->load->desc =
   #endif
-
-  info = (CLASS_INFO *)get_section("info section", &section, sizeof(CLASS_INFO), NULL, "s2l2");
-  start = (CLASS_DESC *)get_section("description section", &section, sizeof(CLASS_DESC), &n_desc, "l*");
-  class->load->cst = (CLASS_CONST *)get_section("constant section", &section, sizeof(CLASS_CONST), &class->load->n_cst, "l*");
-  class->load->class_ref = (CLASS **)get_section("reference section", &section, sizeof(int), &n_class_ref, "l");
-  class->load->unknown = (char **)get_section("unknown section", &section, sizeof(int), &n_unknown, "l");
-  class->load->stat = (CLASS_VAR *)get_section("static section", &section, sizeof(CLASS_VAR), &class->load->n_stat, "tl");
-  class->load->dyn = (CLASS_VAR *)get_section("dynamic section", &section, sizeof(CLASS_VAR), &class->load->n_dyn, "tl");
-  class->load->event = (CLASS_EVENT *)get_section("event section", &section, sizeof(CLASS_EVENT), &class->n_event, "ls2l2");
-  class->load->ext = (CLASS_EXTERN *)get_section("extern section", &section, sizeof(CLASS_EXTERN), &class->load->n_ext, "ls2l3");
-  class->load->func = (FUNCTION *)get_section("function section", &section, sizeof(FUNCTION), &class->load->n_func, "lb4s4l4");
-  local = (CLASS_LOCAL *)get_section("local section", &section, sizeof(CLASS_LOCAL), NULL, "l");
-  class->load->array = (CLASS_ARRAY **)get_section("array section", &section, sizeof(int), &n_array, "l");
+  start = (CLASS_DESC *)get_section("description", &section, &n_desc, _p _t _p _p _p _p );
+  class->load->cst = (CLASS_CONST *)get_section("constant", &section, &class->load->n_cst, _i _p _i ); // A special process is needed later
+  class->load->class_ref = (CLASS **)get_section("reference", &section, &n_class_ref, _p );
+  class->load->unknown = (char **)get_section("unknown", &section, &n_unknown, _p );
+  class->load->stat = (CLASS_VAR *)get_section("static", &section, &class->load->n_stat, _c _i );
+  class->load->dyn = (CLASS_VAR *)get_section("dynamic", &section, &class->load->n_dyn, _c _i );
+  class->load->event = (CLASS_EVENT *)get_section("event", &section, &class->n_event, _t _s _s _p _p );
+  class->load->ext = (CLASS_EXTERN *)get_section("extern", &section, &class->load->n_ext, _t _s _s _p _p _p );
+  class->load->func = (FUNCTION *)get_section("function", &section, &class->load->n_func, _t _b _b _b _b _s _s _s _s _p _p _p _p );
+  #ifdef OS_64BITS
+  class->load->local =
+  #endif
+  local = (CLASS_PARAM *)get_section("local", &section, NULL, _t);
+  class->load->array = (CLASS_ARRAY **)get_section("array", &section, &n_array, _i);  // A special process is needed later
 
   /* Loading code */
 
   for (i = 0; i < class->load->n_func; i++)
   {
     func = &class->load->func[i];
-    func->code = (ushort *)get_section("code section", &section, sizeof(ushort), NULL, "s");
+    func->code = (ushort *)get_section("code", &section, NULL, _s);
   }
 
   /* Creation flags */
@@ -436,11 +655,11 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 
   if (class->debug)
   {
-    class->load->global = (GLOBAL_SYMBOL *)
-      get_section("global symbol section", &section, sizeof(GLOBAL_SYMBOL),
-                  &class->load->n_global, "s2ltl");
-
-    debug = (FUNC_DEBUG *)get_section("debug method section", &section, sizeof(FUNC_DEBUG), NULL, "s2l3s2");
+    class->load->global = (GLOBAL_SYMBOL *)get_section("debug global", &section, &class->load->n_global, _s _s _p _c _i );
+    #ifdef OS_64BITS
+    class->load->debug =
+    #endif
+    debug = (FUNC_DEBUG *)get_section("debug method", &section, NULL, _s _s _p _p _p _s _s );
 
     for (i = 0; i < class->load->n_func; i++)
     {
@@ -451,30 +670,30 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
     for (i = 0; i < class->load->n_func; i++)
     {
       func = &class->load->func[i];
-      func->debug->pos = (ushort *)get_section("line method section", &section, sizeof(ushort), NULL, "s");
+      func->debug->pos = (ushort *)get_section("debug line", &section, NULL, _s );
     }
 
     for (i = 0; i < class->load->n_func; i++)
     {
       func = &class->load->func[i];
-      func->debug->local = (LOCAL_SYMBOL *)get_section("local symbol section", &section, sizeof(LOCAL_SYMBOL), &func->debug->n_local, "s2l2");
+      func->debug->local = (LOCAL_SYMBOL *)get_section("debug local", &section, &func->debug->n_local, _s _s _p _i );
     }
   }
 
   /* Source file path */
 
   if (class->debug)
-    class->path = (char *)get_section("source file name section", &section, sizeof(char), NULL, NULL);
+    class->path = (char *)get_section("debug file name", &section, NULL, NULL);
 
   /* Strings */
 
-  class->string = (char *)get_section("string section", &section, sizeof(char), NULL, NULL);
+  class->string = (char *)get_section("string", &section, NULL, NULL);
 
   /* Referenced classes */
 
   for (i = 0; i < n_class_ref; i++)
   {
-  	offset = (int)class->load->class_ref[i];
+  	offset = (int)(intptr_t)class->load->class_ref[i];
   	if (offset >= 0)
     	class->load->class_ref[i] = CLASS_find(&class->string[offset]);
 		else
@@ -501,6 +720,15 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
     if (func->n_local > 0)
     {
       func->local = (CLASS_LOCAL *)local;
+      
+      #ifdef OS_64BITS
+      // The local variable descriptions are CTYPE that are 32 bits only.
+      // We must transform a 64 bits integer array into a 32 bits integer array.
+      for (j = 0; j < func->n_local; j++)
+      {
+      	func->local[j] = func->local[j * 2];
+      }
+      #endif
 
 			// As the 'local' section is a mix of CLASS_PARAM and CLASS_LOCAL,
 			// we swap endianness there and not during get_section()
@@ -509,7 +737,7 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 			{
 	      for (j = 0; j < func->n_local; j++)
 	      {
-	      	SWAP_long((int *)&func->local[j].type);
+	      	SWAP_int((int *)&func->local[j].type);
 	      	SWAP_type(&func->local[j].type);
 				}
       }
@@ -569,14 +797,51 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 
   if (n_array > 0)
   {
+  	#ifdef OS_64BITS
+  	CLASS_ARRAY **array = class->load->array;
+    n_array = *((int *)array) / sizeof(int);
+  	ALLOC(&class->load->array, sizeof(void *) * n_array, "CLASS_load");
+  	#else
     n_array = *((int *)class->load->array) / sizeof(int);
+  	#endif
 
     for (i = 0; i < n_array; i++)
     {
+    	#ifdef OS_64BITS
+      class->load->array[i] = (CLASS_ARRAY *)((char *)array + ((int *)array)[i]);
+    	#else
       class->load->array[i] = (CLASS_ARRAY *)((char *)class->load->array + ((int *)class->load->array)[i]);
-      conv_type(class, &(class->load->array[i]->type));
+      #endif
     }
   }
+
+  #ifdef OS_64BITS
+  
+  /* Computes variable position again */
+  
+	{
+		int pos;
+		CLASS_VAR *var;
+		
+		pos = 0;
+		for (i = 0; i < class->load->n_stat; i++)
+		{
+			var = &class->load->stat[i];
+			var->pos = pos;
+			pos += sizeof_ctype(class, var->type);
+		}
+		info->s_static = pos;
+  
+		pos = 0;
+		for (i = 0; i < class->load->n_dyn; i++)
+		{
+			var = &class->load->dyn[i];
+			var->pos = pos;
+			pos += sizeof_ctype(class, var->type);
+		}
+		info->s_dynamic = pos;
+	}
+  #endif
 
   /* String relocation */
 
@@ -612,7 +877,7 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
         RELOCATE(func->debug->local[j].sym.name);
     }
   }
-
+  
   /* Inheritance */
 
   if (info->parent >= 0)
@@ -625,17 +890,108 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
   //if (info->s_dynamic == 0)
   //  class->no_create = TRUE;
   
-  /* Checking callback, do nothing on classes written in Gambas */
-  
-  //SET_IF_NULL(class->check, (int (*)())CLASS_return_zero);
-
   /* Descriptions */
 
-  CLASS_make_description(class, start, n_desc, &first);
+  CLASS_make_description(class, start, n_desc, pfirst);
 
   /* Class size and offsets */
 
   CLASS_calc_info(class, class->n_event, info->s_dynamic, FALSE, info->s_static);
+
+  *pndesc = n_desc;
+}
+
+void CLASS_load_without_init(CLASS *class)
+{
+  int i;
+  FUNCTION *func;
+  CLASS_DESC *desc;
+  CLASS_CONST *cc;
+  CLASS_VAR *var;
+  int len;
+  CLASS_EVENT *event;
+  CLASS_EXTERN *ext;
+  VALUE value;
+  int len_data;
+  int n_desc;
+  int offset;
+  int first;
+  int first_event;
+  COMPONENT *save;
+
+  //size_t alloc = MEMORY_size;
+
+  if (class->state >= CS_LOADED)
+    return;
+
+  #if DEBUG_LOAD
+    printf("Loading class %s (%p)...\n", class->name, class);
+  #endif
+
+  #ifdef DEBUG
+    Class = class;
+    NSection = 0;
+  #endif
+
+  ClassName = class->name;
+
+  if (class->in_load)
+    THROW(E_CLASS, ClassName, "Circular reference", "");
+
+  if (COMPONENT_current)
+    class->component = COMPONENT_current;
+  else if (CP)
+    class->component = CP->component;
+  else
+    class->component = NULL;
+
+  save = COMPONENT_current;
+  COMPONENT_current = class->component;
+
+  len = strlen(class->name);
+
+  {
+    char name[len + 9];
+    char *p;
+
+    #ifdef OS_OPENBSD
+    strlcpy(name, ".gambas/", len+9);
+    #else
+    strcpy(name, ".gambas/");
+    #endif
+    p = &name[8];
+
+    for (i = 0; i < len; i++)
+      *p++ = toupper(class->name[i]);
+    *p = 0;
+
+    TRY
+    {
+      //class->mmapped = !STREAM_map(name, &class->data, &len_data);
+      STREAM_load(name, &class->data, &len_data);
+    }
+    CATCH
+    {
+      THROW(E_CLASS, class->name, "Unable to load class file", "");
+    }
+    END_TRY
+
+    /*if (BUFFER_load_file(&class->data, FILE_get(name)))
+      THROW(E_CLASS, ClassName, "Unable to load class file", "");*/
+  }
+
+  COMPONENT_current = save;
+
+  class->in_load = TRUE;
+
+  #if DEBUG_COMP
+  if (class->component)
+    fprintf(stderr, "class %s -> component %s\n", class->name, class->component->name);
+  else
+    fprintf(stderr, "class %s -> no component\n", class->name);
+  #endif
+
+	load_and_relocate(class, len_data, &n_desc, &first);
 
   /* Information on static and dynamic variables */
 
@@ -655,7 +1011,51 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
   for (i = 0; i < class->load->n_cst; i++)
   {
     cc = &class->load->cst[i];
-    conv_type(class, &(cc->type));
+    conv_type_simple(class, &(cc->type));
+    
+    switch (cc->type)
+    {
+    	case T_BOOLEAN: case T_BYTE: case T_SHORT: case T_INTEGER:
+				#ifdef OS_64BITS
+				// Special process for integer constants
+				cc->_integer.value = (int)(intptr_t)cc->_string.addr;
+				#endif
+    		break;
+    	
+    	case T_LONG:
+				#ifdef OS_64BITS
+				// Special process for long constants: the first 32 bits part of the LONG constant
+				// has been extended to 64 bits
+				cc->_swap.val[0] = (int)(*((int64_t *)(void *)&cc->_string.addr));
+				cc->_swap.val[1] = cc->_string.len;
+				#endif
+				/*
+				The two 32 bits parts of the LONG value have been already swapped independently.
+				So we just have to swap the two parts again.
+				*/
+				if (_swap)
+				{
+					int val;
+	
+					val = cc->_swap.val[0];
+					cc->_swap.val[0] = cc->_swap.val[1];
+					cc->_swap.val[1] = val;
+				}
+				break;
+				
+			case T_STRING: case T_CSTRING:
+	      cc->_string.addr += (intptr_t)class->string;
+	      break;
+	      
+	    case T_FLOAT: case T_SINGLE:
+	      cc->_string.addr += (intptr_t)class->string;
+				if (NUMBER_from_string(NB_READ_FLOAT, cc->_string.addr, strlen(cc->_string.addr), &value))
+					THROW(E_CLASS, ClassName, "Bad constant", "");
+	      cc->_float.value = value._float.value;
+				break;
+    }
+    
+    #if 0
     if (!TYPE_is_integer_long(cc->type))
       cc->_string.addr += (int)class->string;
 
@@ -682,6 +1082,14 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
         cc->_swap.val[1] = val;
       }
     }
+    #ifdef OS_64BITS
+    // Special process for integer constants
+    else if (cc->type <= T_INTEGER)
+    {
+    	cc->_integer.value = (int)cc->_string.addr;
+    }
+    #endif
+    #endif
   }
 
   /* Class public description */
@@ -725,7 +1133,7 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 
         desc->property.read = (void (*)())desc->gambas.val1;
         desc->property.write = (void (*)())desc->gambas.val2;
-        if ((int)desc->property.write == -1)
+        if ((intptr_t)desc->property.write == -1L)
           desc->gambas.name = *desc->gambas.name == 'p' ? "r" : "R";
         desc->property.native = FALSE;
 
@@ -832,7 +1240,7 @@ PUBLIC void CLASS_load_without_init(CLASS *class)
 }
 
 
-PUBLIC void CLASS_load_real(CLASS *class)
+void CLASS_load_real(CLASS *class)
 {
 #if 0
 	char *name = class->name;

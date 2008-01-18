@@ -31,7 +31,7 @@
 #include "gb_error.h"
 
 
-PUBLIC ERROR_INFO ERROR_info;
+ERROR_INFO ERROR_info;
 
 
 static const char *_message[] =
@@ -48,7 +48,7 @@ static const char *_message[] =
 static ERROR_CONTEXT *_current = NULL;
 
 
-PUBLIC void ERROR_enter(ERROR_CONTEXT *err)
+void ERROR_enter(ERROR_CONTEXT *err)
 {
   CLEAR(err);
   err->prev = _current;
@@ -56,7 +56,7 @@ PUBLIC void ERROR_enter(ERROR_CONTEXT *err)
 }
 
 
-PUBLIC void ERROR_leave(ERROR_CONTEXT *err)
+void ERROR_leave(ERROR_CONTEXT *err)
 {
   if (err->prev != ERROR_LEAVE_DONE)
   {
@@ -68,7 +68,7 @@ PUBLIC void ERROR_leave(ERROR_CONTEXT *err)
 }
 
 
-PUBLIC char *ERROR_get(void)
+char *ERROR_get(void)
 {
   /*
   if (code > 0 && code < 256)
@@ -80,7 +80,7 @@ PUBLIC char *ERROR_get(void)
 }
 
 
-PUBLIC void ERROR_define(const char *pattern, const char *arg[])
+void ERROR_define(const char *pattern, const char *arg[])
 {
   int n;
   uchar c;
@@ -103,10 +103,10 @@ PUBLIC void ERROR_define(const char *pattern, const char *arg[])
     }
   }
 
-  if ((long)pattern > 0 && (long)pattern < 256)
+  if ((intptr_t)pattern > 0 && (intptr_t)pattern < 256)
   {
-    ERROR_info.code = (long)pattern;
-    pattern = _message[(long)pattern];
+    ERROR_info.code = (int)(intptr_t)pattern;
+    pattern = _message[(int)(intptr_t)pattern];
   }
   else
     ERROR_info.code = -1;
@@ -151,7 +151,7 @@ PUBLIC void ERROR_define(const char *pattern, const char *arg[])
   _add_char(0);
 }
 
-PUBLIC void PROPAGATE()
+void PROPAGATE()
 {
   ERROR_CONTEXT *err;
 
@@ -173,37 +173,7 @@ PUBLIC void PROPAGATE()
   longjmp(err->env, 1);
 }
 
-/*
-PUBLIC void ERROR(long code, ...)
-{
-  va_list args;
-  int i;
-  char *arg[4];
-
-  va_start(args, code);
-
-  for (i = 0; i < 4; i++)
-    arg[i] = va_arg(args, char *);
-
-  ERROR_define((char *)code, arg);
-}
-*/
-
-/*
-static void throw(long code, va_list args)
-{
-  int i;
-  char *arg[4];
-
-  for (i = 0; i < 4; i++)
-    arg[i] = va_arg(args, char *);
-
-  ERROR_define((char *)code, arg);
-  PROPAGATE();
-}
-*/
-
-PUBLIC void THROW(const char *code, ...)
+void THROW(const char *code, ...)
 {
   va_list args;
   int i;
@@ -218,34 +188,7 @@ PUBLIC void THROW(const char *code, ...)
   PROPAGATE();
 }
 
-
-/*
-PUBLIC void THROW_LIBRARY()
-{
-  int n;
-  char buf[512];
-  char *msg = GAMBAS_Error;
-
-  if (FP != NULL)
-  {
-    sprintf(buf, "[%s] ", TRACE_get_current_position());
-    add_error_message(buf, FALSE);
-  }
-
-  sprintf(buf, "#%d: ", E_FROMLIB);
-  add_error_message(buf, FALSE);
-
-  if ((long)msg > 0 && (long)msg < 255)
-    n = snprintf(buf, sizeof(buf), ERROR_Message[(long)msg]);
-  else
-    n = snprintf(buf, sizeof(buf), msg);
-
-  ERROR_code = E_FROMLIB;
-  throw_error(msg);
-}
-*/
-
-PUBLIC void ERROR_panic(const char *error, ...)
+void ERROR_panic(const char *error, ...)
 {
   va_list args;
 
@@ -269,16 +212,16 @@ PUBLIC void ERROR_panic(const char *error, ...)
 }
 
 
-PUBLIC void ERROR_print_at(FILE *where)
+void ERROR_print_at(FILE *where)
 {
   fprintf(where, "%s\n", ERROR_info.msg);
 }
 
-PUBLIC void ERROR_print(void)
+void ERROR_print(void)
 {
   ERROR_print_at(stderr);
 }
 
-PUBLIC void TRACE_where(void)
+void TRACE_where(void)
 {
 }

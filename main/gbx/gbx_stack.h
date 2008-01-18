@@ -49,7 +49,7 @@ typedef
 #ifndef __GBX_STACK_C
 
 EXTERN char *STACK_base;
-EXTERN long STACK_size;
+EXTERN size_t STACK_size;
 EXTERN char *STACK_limit;
 
 EXTERN int STACK_frame_count;
@@ -57,14 +57,14 @@ EXTERN STACK_CONTEXT *STACK_frame;
 
 #endif
 
-PUBLIC void STACK_init(void);
-PUBLIC void STACK_exit(void);
-PUBLIC void STACK_check(int need);
+void STACK_init(void);
+void STACK_exit(void);
+void STACK_check(int need);
 
-PUBLIC void STACK_push_frame(STACK_CONTEXT *context);
-PUBLIC void STACK_pop_frame(STACK_CONTEXT *context);
-PUBLIC bool STACK_has_error_handler(void);
-PUBLIC STACK_CONTEXT *STACK_get_frame(int frame);
+void STACK_push_frame(STACK_CONTEXT *context);
+void STACK_pop_frame(STACK_CONTEXT *context);
+bool STACK_has_error_handler(void);
+STACK_CONTEXT *STACK_get_frame(int frame);
 
 #define STACK_get_current() ((STACK_frame_count > 0) ? STACK_frame : NULL)
 

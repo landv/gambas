@@ -61,7 +61,7 @@ BEGIN_PROPERTY(class_self_property)
 
 END_PROPERTY
 
-PUBLIC CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
+CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 {
   int i, n_desc;
 
@@ -119,18 +119,18 @@ PUBLIC CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
       break;
     }
 
-    switch ((int)desc->gambas.name)
+    switch ((intptr_t)desc->gambas.name)
     {
-      case (int)GB_INHERITS_ID:
+      case (intptr_t)GB_INHERITS_ID:
         CLASS_inheritance(class, CLASS_find((const char *)desc->gambas.type));
         break;
 
-      case (int)GB_AUTO_CREATABLE_ID:
+      case (intptr_t)GB_AUTO_CREATABLE_ID:
         class->auto_create = TRUE;
         break;
 
-      case (int)GB_NOT_CREATABLE_ID:
-      case (int)GB_VIRTUAL_CLASS_ID:
+      case (intptr_t)GB_NOT_CREATABLE_ID:
+      case (intptr_t)GB_VIRTUAL_CLASS_ID:
         class->no_create = TRUE;
         break;
 
@@ -144,7 +144,7 @@ PUBLIC CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
         SET_IF_NULL(class->new, DO_ERROR);
         break;*/
 
-      case (int)GB_HOOK_CHECK_ID:
+      case (intptr_t)GB_HOOK_CHECK_ID:
         class->check = (int (*)())(desc->hook.func);
         //SET_IF_NULL(class->check, CLASS_return_zero);
         break;
@@ -205,7 +205,7 @@ PUBLIC CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
       case CD_PROPERTY_READ:
       case CD_STATIC_PROPERTY_READ:
 
-        if ((int)desc->property.read == CLASS_DESC_SELF)
+        if ((intptr_t)desc->property.read == CLASS_DESC_SELF)
           desc->property.read = (void (*)())class_self_property;
 
         desc->property.write = desc->property.read;
@@ -323,7 +323,7 @@ PUBLIC CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 }
 
 
-PUBLIC CLASS *CLASS_register(GB_DESC *ptr)
+CLASS *CLASS_register(GB_DESC *ptr)
 {
   return CLASS_register_class(ptr, CLASS_check_global(((CLASS_DESC_GAMBAS *)ptr)->name));
 }

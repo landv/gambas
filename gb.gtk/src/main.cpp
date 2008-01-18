@@ -226,7 +226,7 @@ extern "C"
 		GB.Hook(GB_HOOK_ERROR,(void*)my_error);
 		GB.Hook(GB_HOOK_LANG,(void*)my_lang);
 		GB.Hook(GB_HOOK_IMAGE, (void *)hook_image);
-  	        GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
+    GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
 
 		GB.LoadComponent("gb.draw");
 
@@ -330,7 +330,7 @@ gboolean my_timer_function(GB_TIMER *timer)
 				next = 10;
 			tag->timeout = next;
 			g_timer_start(t);
-			timer->id = (int)g_timeout_add(next, (GSourceFunc)my_timer_function,(gpointer)timer);
+			timer->id = (intptr_t)g_timeout_add(next, (GSourceFunc)my_timer_function,(gpointer)timer);
 			//fprintf(stderr, "elapsed = %d  delay = %d  next = %d\n", elapsed, timer->delay, next);
 		}
 	}
@@ -354,8 +354,8 @@ static void my_timer(GB_TIMER *timer,bool on)
 		MyTimerTag *tag = g_new(MyTimerTag, 1);
 		tag->timer = g_timer_new();
 		tag->timeout = timer->delay;
-		timer->tag = (int)tag;
-		timer->id = (int)g_timeout_add(timer->delay,(GSourceFunc)my_timer_function,(gpointer)timer);
+		timer->tag = (intptr_t)tag;
+		timer->id = (intptr_t)g_timeout_add(timer->delay,(GSourceFunc)my_timer_function,(gpointer)timer);
 		return;
 	}
 }
@@ -376,8 +376,7 @@ static int my_loop()
 	while (!must_quit())
 		do_iteration(false);
 
-	while (gtk_events_pending ()) 
-		gtk_main_iteration();
+	while (gtk_events_pending ()) 	gtk_main_iteration();
   
 	CWatcher::Clear();
 	gApplication::exit();
@@ -402,7 +401,7 @@ static void my_error(int code,char *error,char *where)
 
 	sprintf(scode,"%d",code);
 
-	showstr=g_strconcat("<b>This application has raised an unexpected<br>error and must abort.</b><p>[", scode, "] ", error, ".\n", where, NULL);
+	showstr=g_strconcat("<b>This application has raised an unexpected<br>error and must abort.</b><p>[", scode, "] ", error, ".\n", where, (void *)NULL);
 
 	gMessage::setTitle(GB.Application.Name());
 	gMessage::showError(showstr,NULL,NULL,NULL);
@@ -429,10 +428,12 @@ static void my_lang(char *lang,int rtl)
 	}
 }
 
+int cande=0;
+
 void do_iteration(bool do_not_block)
 {
 	struct timespec mywait;
-	
+
 	if (do_not_block)
 	{
 		if (gtk_events_pending ())

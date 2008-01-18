@@ -608,7 +608,7 @@ void g_stradd(gchar **res, const gchar *s)
   else
   {
     gchar *old = *res;
-    *res = g_strconcat(*res, s, NULL);
+    *res = g_strconcat(*res, s, (void *)NULL);
     g_free(old);
   }
 }

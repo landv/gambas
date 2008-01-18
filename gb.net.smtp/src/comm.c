@@ -197,7 +197,7 @@ int libsmtp_mime_headers (struct libsmtp_session_struct *libsmtp_session)
    stage. The data to be sent will to be formatted according to RFC822 and
    the MIME standards. */
 
-int libsmtp_part_send (char *libsmtp_body_data, unsigned long int libsmtp_body_length, \
+int libsmtp_part_send (char *libsmtp_body_data, unsigned int libsmtp_body_length, \
             struct libsmtp_session_struct *libsmtp_session)
 {
 

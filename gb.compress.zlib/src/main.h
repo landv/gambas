@@ -4,7 +4,7 @@
 
   ZLIB Compression driver
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2004 Daniel Campos Fernï¿½ndez <danielcampos@netcourrier.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,14 +35,14 @@ extern COMPRESS_INTERFACE COMPRESSION;
 extern GB_STREAM_DESC ZStream;
 #endif
 
-static int CZ_stream_lof(GB_STREAM *stream, long long *len);
-static int CZ_stream_seek(GB_STREAM *stream, long long offset, int whence);
+static int CZ_stream_lof(GB_STREAM *stream, int64_t *len);
+static int CZ_stream_seek(GB_STREAM *stream, int64_t offset, int whence);
 static int CZ_stream_open(GB_STREAM *stream, const char *path, int mode, void *data);
-static int CZ_stream_tell(GB_STREAM *stream, long long *npos);
+static int CZ_stream_tell(GB_STREAM *stream, int64_t *npos);
 static int CZ_stream_flush(GB_STREAM *stream);
 static int CZ_stream_close(GB_STREAM *stream);
-static int CZ_stream_write(GB_STREAM *stream, char *buffer, long len);
+static int CZ_stream_write(GB_STREAM *stream, char *buffer, int len);
 static int CZ_stream_eof(GB_STREAM *stream);
-static int CZ_stream_read(GB_STREAM *stream, char *buffer, long len);
+static int CZ_stream_read(GB_STREAM *stream, char *buffer, int len);
 
 #endif /* __MAIN_H */

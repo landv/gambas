@@ -42,9 +42,9 @@ enum {
 
 typedef
   struct {
-    long fd;
+    int fd;
     void (*callback)();
-    long param;
+    intptr_t param;
     }
   WATCH_CALLBACK;
 
@@ -56,15 +56,15 @@ typedef
 	WATCH_TIMER;
 
 
-PUBLIC void WATCH_init(void);
-PUBLIC void WATCH_exit(void);
+void WATCH_init(void);
+void WATCH_exit(void);
 
-PUBLIC void WATCH_watch(int fd, int flag, void *callback, long param);
-PUBLIC bool WATCH_one_loop(long);
-PUBLIC void WATCH_loop(void);
-PUBLIC void WATCH_wait(long);
-PUBLIC int WATCH_loop_signal(const sigset_t *sig);
-PUBLIC int WATCH_process(int fd_end, int fd_output);
-PUBLIC void WATCH_timer(void *t, int on);
+void WATCH_watch(int fd, int flag, void *callback, intptr_t param);
+bool WATCH_one_loop(int);
+void WATCH_loop(void);
+void WATCH_wait(int);
+int WATCH_loop_signal(const sigset_t *sig);
+int WATCH_process(int fd_end, int fd_output);
+void WATCH_timer(void *t, int on);
 
 #endif /* */
