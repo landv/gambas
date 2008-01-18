@@ -274,7 +274,7 @@ static void analyze_class(GB_DESC *desc)
   char *parent = NULL;
   bool autocreate = FALSE;
   bool nocreate = FALSE;
-  intptr_t hook;
+  uintptr_t hook;
   int nsymbol;
   int *sort;
   GB_DESC *p;
@@ -287,7 +287,7 @@ static void analyze_class(GB_DESC *desc)
 
   while (desc->name)
   {
-    hook = (intptr_t)desc->name;
+    hook = (uintptr_t)desc->name;
 
     if (hook == (intptr_t)GB_INHERITS_ID)
       parent = (char *)desc->val1;
@@ -308,6 +308,9 @@ static void analyze_class(GB_DESC *desc)
     nsymbol++;
     p++;
   }
+  
+  //if (_verbose)
+  //	fprintf(stderr, "%s: %d symbols\n", name, nsymbol);
 
   if (_format)
   {

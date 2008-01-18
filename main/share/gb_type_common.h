@@ -41,6 +41,8 @@ enum {
   TF_PUBLIC      = 64,
   };
 
+#ifdef PROJECT_COMP
+
 enum {
   T_VOID         = 0,
   T_BOOLEAN      = 1,
@@ -55,22 +57,40 @@ enum {
   T_CSTRING      = 10,
   T_VARIANT      = 11,
   T_ARRAY        = 12,
-  #ifndef PROJECT_COMP
+  T_POINTER      = 13,
+  T_CLASS        = 14,
+  T_NULL         = 15,
+  T_OBJECT       = 16
+  };
+
+#else
+
+enum {
+  T_VOID         = 0,
+  T_BOOLEAN      = 1,
+  T_BYTE         = 2,
+  T_SHORT        = 3,
+  T_INTEGER      = 4,
+  T_LONG         = 5,
+  T_SINGLE       = 6,
+  T_FLOAT        = 7,
+  T_DATE         = 8,
+  T_STRING       = 9,
+  T_CSTRING      = 10,
+  T_VARIANT      = 11,
+  T_ARRAY        = 12,
   T_FUNCTION     = 13,
-  #endif
   T_CLASS        = 14,
   T_NULL         = 15,
   T_OBJECT       = 16,
-  #ifdef PROJECT_COMP
-	  T_POINTER			 = 13
-  #else
-    TC_POINTER     = 13,
-  	#if __WORDSIZE == 64
-  		T_POINTER      = T_LONG
-  	#else
-  		T_POINTER      = T_INTEGER
-  	#endif
-  #endif
+  TC_POINTER     = 13,
+	#if __WORDSIZE == 64
+		T_POINTER      = T_LONG
+	#else
+		T_POINTER      = T_INTEGER
+	#endif
   };
+
+#endif
 
 #endif

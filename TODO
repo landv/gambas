@@ -29,11 +29,13 @@ Don't do it:
 
 Do it asap:
 
-- Trim$(sStr, "pattern", " ", "/")
-  -> RTrim(sStr, "WHERE") or RTrim(sStr, " ", "\n")
 - If project compilation version < compiler version then => compile all
 - Intercept all signals in Application_Signal.
 - Object.SetVariable, or SetSymbol, and that can act on static things.
+
+- VarPtr()
+- Structure support
+- Callback support
 
 DEVELOPMENT ENVIRONMENT
 -----------------------

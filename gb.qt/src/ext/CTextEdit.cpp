@@ -135,6 +135,19 @@ void MyTextEdit::emitLinkClicked(const QString &s)
 
 BEGIN_PROPERTY(CTEXTAREA_text)
 
+	WIDGET->setTextFormat(Qt::PlainText);
+
+  if (READ_PROPERTY)
+    GB.ReturnNewZeroString(TO_UTF8(WIDGET->text()));
+  else
+    WIDGET->setText(QSTRING_PROP());
+
+	WIDGET->setTextFormat(Qt::RichText);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CTEXTAREA_rich_text)
+
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(WIDGET->text()));
   else
@@ -335,6 +348,20 @@ END_PROPERTY
 
 
 BEGIN_PROPERTY(CTEXTAREA_sel_text)
+
+  WIDGET->setTextFormat(Qt::PlainText);
+  
+  if (READ_PROPERTY)
+    GB.ReturnNewZeroString(TO_UTF8(WIDGET->selectedText()));
+  else
+    WIDGET->insert(QSTRING_PROP());
+
+  WIDGET->setTextFormat(Qt::RichText);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CTEXTAREA_sel_rich_text)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(WIDGET->selectedText()));
@@ -648,6 +675,7 @@ GB_DESC CTextEditSelectionDesc[] =
   GB_DECLARE(".TextEditSelection", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Text", "s", CTEXTAREA_sel_text),
+  GB_PROPERTY("RichText", "s", CTEXTAREA_sel_rich_text),
   GB_PROPERTY_READ("Length", "i", CTEXTAREA_sel_length),
   GB_PROPERTY_READ("Start", "i", CTEXTAREA_sel_start),
   GB_METHOD("Hide", NULL, CTEXTAREA_sel_clear, NULL),
@@ -671,6 +699,7 @@ GB_DESC CTextEditDesc[] =
   GB_METHOD("Clear", NULL, CTEXTAREA_clear, NULL),
 
   GB_PROPERTY("Text", "s", CTEXTAREA_text),
+  GB_PROPERTY("RichText", "s", CTEXTAREA_rich_text),
   GB_METHOD("Insert", NULL, CTEXTAREA_insert, "(Text)s"),
 
   GB_PROPERTY("Paragraph", "i", CTEXTAREA_line),
