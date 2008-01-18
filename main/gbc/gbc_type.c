@@ -4,7 +4,7 @@
 
   Datatypes definitions and management
 
-  (c) 2000-2005 Beno�t Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2007 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
 const char *TYPE_name[] = 
 {
   "Void", "Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date",
-  "String", "CString", "Variant", "Array", "Function", "Class", "Null",
+  "String", "CString", "Variant", "Array", "Pointer", "Class", "Null",
   "Object"
 };
 
@@ -98,6 +98,9 @@ size_t TYPE_sizeof(TYPE type)
 
     case T_OBJECT:
       return 4;
+      
+    case T_POINTER:
+    	return 4;
 
     case T_ARRAY:
       {
@@ -149,7 +152,7 @@ const char *TYPE_get_short_desc(TYPE type)
 {
   static const char *name[] = {
     "", "b", "i", "i", "i", "l", "g", "f", "d",
-    "s", "s", "v", "?", "?", "?", "?",
+    "s", "s", "v", "?", "p", "?", "?",
     "o"
     };
 

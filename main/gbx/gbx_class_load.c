@@ -54,8 +54,6 @@
 //#define DEBUG
 //#define DEBUG_LOAD 1
 
-//long total = 0;
-
 static const char *ClassName;
 static bool _swap;
 
@@ -75,6 +73,102 @@ static void SWAP_type(CTYPE *p)
 {
 	SWAP_short(&p->value);
 }
+
+
+#ifdef OS_64BITS
+static int sizeof_ctype(CLASS *class, CTYPE ctype)
+{
+	size_t size;
+	
+	if (ctype.id != T_ARRAY)
+		return TYPE_sizeof_memory(ctype.id);
+		
+	size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
+  return (size + 3) & ~3;
+}
+#endif
+
+TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
+{
+  if (ctype.id == T_OBJECT && ctype.value >= 0)
+    return (TYPE)(class->load->class_ref[ctype.value]);
+  else if (ctype.id == TC_POINTER)
+    return (TYPE)T_POINTER;
+  else if (ctype.id == T_ARRAY)
+    ERROR_panic("conv_type: bad type");
+  else
+    return (TYPE)(ctype.id);	
+}
+
+
+static void conv_ctype(CTYPE *ctype)
+{
+	if (ctype->id == TC_POINTER)
+		ctype->id = T_POINTER;
+}
+
+
+static void conv_type(CLASS *class, void *ptype)
+{
+  CTYPE ctype = *(CTYPE *)ptype;
+
+	if (_swap)
+	{
+		SWAP_int((int *)&ctype);
+		SWAP_type(&ctype);
+	}
+
+  *((TYPE *)ptype) = CLASS_ctype_to_type(class, ctype);
+}
+
+
+static void conv_type_simple(CLASS *class, int *ptype)
+{
+  CTYPE ctype = *(CTYPE *)ptype;
+
+	if (_swap)
+		SWAP_int((int *)&ctype);
+
+  *ptype = ctype.id;
+}
+
+
+static void check_version(int loaded)
+{
+	static bool warning = FALSE;
+	
+  int current = GAMBAS_PCODE_VERSION;
+
+  if (GAMBAS_FULL_VERSION > 0x01090000 && GAMBAS_FULL_VERSION <= 0x0200FFFF)
+  {
+    if (loaded == current)
+      return;
+    
+    if ((COMPONENT_current && COMPONENT_current->warning) || warning)
+    	return;
+    
+    fprintf(stderr, "WARNING: ");
+    if (COMPONENT_current)
+    	fprintf(stderr, "%s: ", COMPONENT_current->name);
+    fprintf(stderr, "current bytecode version is ");
+    fprintf(stderr, "%X.%X.%X ", current >> 24, (current >> 16) & 0xFF, current & 0xFFFF);
+    fprintf(stderr, "and project bytecode version is ");
+    fprintf(stderr, "%X.%X.%X. You should recompile your project.\n", loaded >> 24, (loaded >> 16) & 0xFF, loaded & 0xFFFF);
+    
+    if (COMPONENT_current)
+    	COMPONENT_current->warning = TRUE;
+    else
+    	warning = TRUE;
+    	
+    return;
+  }
+  
+  if (loaded > current)
+    THROW(E_CLASS, ClassName, "Version too recent. Please upgrade Gambas.", "");
+  if (loaded < current)
+    THROW(E_CLASS, ClassName, "Version too old. Please recompile the project.", "");
+}
+
 
 static char *get_section(char *sec_name, char **section, short *pcount, const char *desc)
 {
@@ -222,350 +316,10 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 	}
 	
 	return current;
-	
-		#if 0
-		for (i = 0; i < size; i++)
-		{
-			p = current + i * one;
-
-			ps = swapcode;
-			while (*ps)
-			{
-				if (*ps == 's')
-				{
-					func = SWAP_short;
-					ss = sizeof(short);
-				}
-				else if (*ps == 'i')
-				{
-					func = SWAP_int;
-					ss = sizeof(int);
-				}
-				else if (*ps == 't')
-				{
-					func = SWAP_type;
-					ss = sizeof(int);
-				}
-				else
-				{
-					func = NULL;
-					ss = 1;
-				}
-
-				ps++;
-
-				if (isdigit(*ps))
-				{
-					n = *ps - '0';
-					ps++;
-				}
-				else if (*ps == '*')
-				{
-					n = one / ss;
-					ps++;
-				}
-				else
-					n = 1;
-
-				if (func)
-				{
-					while (n)
-					{
-						(*func)(p);
-						p += ss;
-						n--;
-					}
-				}
-				else
-					p += n;
-			}
-    }
-    #endif
-
 }
 
-TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
-{
-  if (ctype.id == T_OBJECT && ctype.value >= 0)
-    return (TYPE)(class->load->class_ref[ctype.value]);
-  else if (ctype.id == T_ARRAY)
-    ERROR_panic("conv_type: bad type");
-  else
-    return (TYPE)(ctype.id);	
-}
-
-static void conv_type(CLASS *class, void *ptype)
-{
-  CTYPE ctype = *(CTYPE *)ptype;
-  TYPE type;
-
-	if (_swap)
-	{
-		SWAP_int((int *)&ctype);
-		SWAP_type(&ctype);
-	}
-
-  if (ctype.id == T_OBJECT && ctype.value >= 0)
-    type = (TYPE)(class->load->class_ref[ctype.value]);
-  else if (ctype.id == T_ARRAY)
-    ERROR_panic("conv_type: bad type");
-  else
-    type = (TYPE)(ctype.id);
-
-  *((TYPE *)ptype) = type;
-}
-
-static void conv_type_simple(CLASS *class, int *ptype)
-{
-  CTYPE ctype = *(CTYPE *)ptype;
-
-	if (_swap)
-		SWAP_int((int *)&ctype);
-
-  *ptype = ctype.id;
-}
-
-
-static void check_version(int loaded)
-{
-	static bool warning = FALSE;
-	
-  int current = GAMBAS_PCODE_VERSION;
-
-  if (GAMBAS_FULL_VERSION > 0x01090000 && GAMBAS_FULL_VERSION <= 0x0200FFFF)
-  {
-    if (loaded == current)
-      return;
-    
-    if ((COMPONENT_current && COMPONENT_current->warning) || warning)
-    	return;
-    
-    fprintf(stderr, "WARNING: ");
-    if (COMPONENT_current)
-    	fprintf(stderr, "%s: ", COMPONENT_current->name);
-    fprintf(stderr, "current bytecode version is ");
-    fprintf(stderr, "%X.%X.%X ", current >> 24, (current >> 16) & 0xFF, current & 0xFFFF);
-    fprintf(stderr, "and project bytecode version is ");
-    fprintf(stderr, "%X.%X.%X. You should recompile your project.\n", loaded >> 24, (loaded >> 16) & 0xFF, loaded & 0xFFFF);
-    
-    if (COMPONENT_current)
-    	COMPONENT_current->warning = TRUE;
-    else
-    	warning = TRUE;
-    	
-    return;
-  }
-  
-  if (loaded > current)
-    THROW(E_CLASS, ClassName, "Version too recent. Please upgrade Gambas.", "");
-  if (loaded < current)
-    THROW(E_CLASS, ClassName, "Version too old. Please recompile the project.", "");
-}
 
 #define RELOCATE(_ptr) (_ptr = (char *)&class->string[(int)(intptr_t)(_ptr)])
-
-#if 0
-#ifdef OS_64BITS
-	#define GET_SECTION(_store, _type, _name, _section, _swap) \
-  	_store = (_type_32 *)get_section(_name, _section, sizeof(_type_32), _swap)
-#else
-	#define GET_SECTION(_store, _type, _name, _section, _swap) \
-  	_store = (_type *)get_section(_name, _section, sizeof(_type), _swap)
-#endif
-
-#define _GET_SECTION_DESC(_store) GET_SECTION(_store, CLASS_DESC, "description", &section, "l*")
-#define _GET_SECTION_CONST(_store) GET_SECTION(_store, CLASS_CONST, "constant", &section, "l*")
-#define _GET_SECTION_REF(_store) GET_SECTION(_store, CLASS_REF, "reference", &section, "l")
-#define _GET_SECTION_UNKNOWN(_store) GET_SECTION(_store, CLASS_UNKNOWN, "unknown", &section, "l")
-#define _GET_SECTION_STATIC(_store) GET_SECTION(_store, CLASS_VAR, "static", &section, "tl")
-#define _GET_SECTION_DYNAMIC(_store) GET_SECTION(_store, CLASS_VAR, "dynamic", &section, "tl")
-#define _GET_SECTION_EVENT(_store) GET_SECTION(_store, CLASS_EVENT, "events", &section, "ls2l2")
-#define _GET_SECTION_EXTERN(_store) GET_SECTION(_store, CLASS_EXTERN, "extern", &section, "ls2l3")
-#define _GET_SECTION_FUNCTION(_store) GET_SECTION(_store, FUNCTION, "function", &section, "lb4s4l4")
-#define _GET_SECTION_LOCAL(_store) GET_SECTION(_store, CLASS_LOCAL, "local", &section, "l")
-#define _GET_SECTION_ARRAY(_store) GET_SECTION(_store, CLASS_ARRAY_P, "array", &section, "l")
-#define _GET_SECTION_GLOBAL(_store) GET_SECTION(_store, GLOBAL_SYMBOL, "global", &section, "s2ltl")
-
-#define _GET_SECTION_INFO(_store) _store = (CLASS_INFO *)get_section("info", &section, sizeof(CLASS_INFO), "s2l2")
-#define _GET_SECTION_CODE(_store) _store = (ushort *)get_section("code", &section, sizeof(ushort), "s")
-
-#ifdef OS_64BITS
-
-#define _MOVE(_dst, _src, _field, _type) _dst->_field = (_type)_src->_field
-
-#define _BEGIN(_type, _section, _field) \
-  short i; \
-  _type##_32 *src; \
-  _type *store, *dst; \
-  _GET_SECTION_##_section(&src); \
-  ALLOC(POINTER(&dst), sizeof(_type) * _count); \
-  store = dst; \
-  for (i = 0; i < _count; i++) \
-  {
-  
-#define _END \
-  src++; dst++; \
-  } \
-  return store;
-
-static CLASS_DESC *_get_section_desc(void)
-{
-	_BEGIN(CLASS_DESC, DESC)
-	{
-    _MOVE(&dst->gambas, &src->gambas, name, void *);
-    _MOVE(&dst->gambas, &src->gambas, type, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val1, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val2, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val3, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val4, intptr_t);
-  }
-  _END
-}
-
-static CLASS_CONST *_get_section_const(void)
-{
-	_BEGIN(CLASS_CONST, CONST)
-	{
-		dst->type = src->type;
-		if (src->type == T_STRING || src->type == T_CSTRING)
-		{
-			_MOVE(&dst->_string, &src->_string, addr, char *);
-			_MOVE(&dst->_string, &src->_string, len, int);
-		}
-		else
-			dst->_long.value = src->_long.value;
-	}
-  _END
-}
-
-static CLASS_REF *_get_section_ref(void)
-{
-	_BEGIN(CLASS_REF, REF)
-	{
-		*dst = *src;
-	}
-  _END
-}
-
-static CLASS_UNKNOWN *_get_section_unknown(void)
-{
-	_BEGIN(CLASS_UNKNOWN, UNKNOWN)
-	{
-		*dst = *src;
-	}
-  _END
-}
-
-static CLASS_EVENT *_get_section_event(void)
-{
-	_BEGIN(CLASS_EVENT, EVENT)
-	{
-    _MOVE(dst, src, type, TYPE);
-    _MOVE(dst, src, n_param, short);
-    _MOVE(dst, src, param, CLASS_PARAM *);
-    _MOVE(dst, src, name, char *);
-	}
-	_END
-}
-
-static CLASS_EVENT *_get_section_extern(void)
-{
-	_BEGIN(CLASS_EXTERN, EXTERN)
-	{
-    _MOVE(dst, src, type, TYPE);
-    _MOVE(dst, src, n_param, short);
-    dst->loaded = FALSE;
-    dst->_reserver = 0;
-    _MOVE(dst, src, param, CLASS_PARAM *);
-    _MOVE(dst, src, alias, char *);
-    _MOVE(dst, src, library, char *);
-	}
-	_END
-}
-
-static FUNCTION *_get_section_function(void)
-{
-	_BEGIN(FUNCTION, FUNCTION)
-	{
-  	_MOVE(dst, src, type, TYPE);
-  	_MOVE(dst, src, n_param, char);
-    _MOVE(dst, src, npmin, char);
-    _MOVE(dst, src, vararg, char);
-    _MOVE(dst, src, _reserved, char);
-    _MOVE(dst, src, n_local, short);
-    _MOVE(dst, src, n_ctrl, short);
-    _MOVE(dst, src, stack_usage, short);
-    _MOVE(dst, src, error, short);
-    _MOVE(dst, src, code, ushort *);
-    _MOVE(dst, src, param, CLASS_PARAM *);
-    _MOVE(dst, src, local, CLASS_LOCAL *);
-    _MOVE(dst, src, debug, FUNC_DEBUG *);
-	}
-	_END
-}
-
-static CLASS_LOCAL *_get_section_local(void)
-{
-	_BEGIN(CLASS_LOCAL, LOCAL)
-	{
-		*dst = *src;
-	}
-	_END
-}
-
-static CLASS_ARRAY_P *_get_section_array(void)
-{
-	_BEGIN(CLASS_ARRAY_P, ARRAY)
-	{
-		*dst = *src;
-	}
-	_END
-}
-
-#define GET_SECTION_INFO _GET_SECTION_INFO
-#define GET_SECTION_DESC(_store) _store = _get_section_desc()
-#define GET_SECTION_CONST(_store) _store = _get_section_const()
-#define GET_SECTION_REF(_store) _store = _get_section_ref()
-#define GET_SECTION_UNKNOWN(_store) _store = _get_section_unknown()
-#define GET_SECTION_STATIC(_store) _store = (CLASS_VAR *)_GET_SECTION_STATIC(_store)
-#define GET_SECTION_DYNAMIC(_store) _store = (CLASS_VAR *)_GET_SECTION_DYNAMIC(_store)
-#define GET_SECTION_EVENT(_store) _store = _get_section_event()
-#define GET_SECTION_EXTERN(_store) _store = _get_section_extern()
-#define GET_SECTION_FUNCTION(_store) _store = _get_section_function()
-#define GET_SECTION_LOCAL(_store) _store = get_section_local()
-#define GET_SECTION_ARRAY(_store) _store = get_section_array()
-#define GET_SECTION_CODE _GET_SECTION_CODE
-
-#else
-
-#define GET_SECTION_INFO _GET_SECTION_INFO
-#define GET_SECTION_DESC _GET_SECTION_DESC
-#define GET_SECTION_CONST _GET_SECTION_CONST
-#define GET_SECTION_REF _GET_SECTION_REF
-#define GET_SECTION_UNKNOWN _GET_SECTION_UNKNOWN
-#define GET_SECTION_STATIC _GET_SECTION_STATIC
-#define GET_SECTION_DYNAMIC _GET_SECTION_DYNAMIC
-#define GET_SECTION_EVENT _GET_SECTION_EVENT
-#define GET_SECTION_EXTERN _GET_SECTION_EXTERN
-#define GET_SECTION_FUNCTION _GET_SECTION_FUNCTION
-#define GET_SECTION_LOCAL _GET_SECTION_LOCAL
-#define GET_SECTION_ARRAY _GET_SECTION_ARRAY
-#define GET_SECTION_CODE _GET_SECTION_CODE
-
-#endif
-#endif
-
-static int sizeof_ctype(CLASS *class, CTYPE ctype)
-{
-	size_t size;
-	
-	if (ctype.id != T_ARRAY)
-		return TYPE_sizeof_memory(ctype.id);
-		
-	size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
-  return (size + 3) & ~3;
-}
-
 
 static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfirst)
 {
@@ -742,6 +496,9 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 				}
       }
 
+      for (j = 0; j < func->n_local; j++)
+      	conv_ctype(&func->local[j].type);
+
       local += func->n_local;
     }
   }
@@ -901,6 +658,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   *pndesc = n_desc;
 }
 
+
 void CLASS_load_without_init(CLASS *class)
 {
   int i;
@@ -1054,42 +812,6 @@ void CLASS_load_without_init(CLASS *class)
 	      cc->_float.value = value._float.value;
 				break;
     }
-    
-    #if 0
-    if (!TYPE_is_integer_long(cc->type))
-      cc->_string.addr += (int)class->string;
-
-    if (cc->type == T_FLOAT || cc->type == T_SINGLE)
-    {
-      if (NUMBER_from_string(NB_READ_FLOAT, cc->_string.addr, strlen(cc->_string.addr), &value))
-        THROW(E_CLASS, ClassName, "Bad constant", "");
-
-      cc->_float.value = value._float.value;
-    }
-    else if (cc->type == T_LONG)
-    {
-      /*
-      Each long value has been already swapped independently.
-      In the case of a LONG constant, we just have to swap the two 32 bits parts of the
-      constant value.
-      */
-      if (_swap)
-      {
-        int val;
-
-        val = cc->_swap.val[0];
-        cc->_swap.val[0] = cc->_swap.val[1];
-        cc->_swap.val[1] = val;
-      }
-    }
-    #ifdef OS_64BITS
-    // Special process for integer constants
-    else if (cc->type <= T_INTEGER)
-    {
-    	cc->_integer.value = (int)cc->_string.addr;
-    }
-    #endif
-    #endif
   }
 
   /* Class public description */

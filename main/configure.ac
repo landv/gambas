@@ -40,8 +40,8 @@ GB_COMPONENT(
   [external gettext library],
   [],
   [],
-  [GB_FIND(gettextlib.$SHLIBEXT, /usr/local /usr, lib)],
-  [-lgettextlib]
+  [GB_FIND(libgettextlib.$SHLIBEXT, /usr/local /usr, lib)],
+  [-lgettextlib],
   [],
   [This library must be located inside the C library])
 

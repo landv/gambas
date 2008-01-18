@@ -25,6 +25,7 @@
 #ifndef __GBC_TYPE_H
 #define __GBC_TYPE_H
 
+#define PROJECT_COMP
 #include "gb_type_common.h"
 
 /***************************************************
