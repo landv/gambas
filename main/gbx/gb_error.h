@@ -95,6 +95,7 @@ enum {
   E_PARENT,
   E_EXTLIB,
   E_EXTSYM,
+  E_BYREF,
   };
 
 typedef

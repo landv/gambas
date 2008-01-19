@@ -215,7 +215,7 @@ PUBLIC void TRANS_operation(short op, short nparam, boolean output, PATTERN prev
       break;
 
     case OP_LBRA:
-      CODE_call(nparam, output);
+      CODE_call(nparam);
       break;
 
     case OP_MINUS:

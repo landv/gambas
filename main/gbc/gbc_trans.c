@@ -604,3 +604,20 @@ bool TRANS_is_end_function(bool is_proc, PATTERN *look)
   else
     return PATTERN_is(*look, RS_FUNCTION);
 }
+
+char *TRANS_get_num_desc(int num)
+{
+  static const char *num_desc[3] = { "first", "second", "third" };
+  static char desc[6];
+
+  if (num < 1)
+    return NULL;
+
+  if (num < 4)
+    return num_desc[num - 1];
+
+  snprintf(desc, sizeof(desc), "%dth", num);
+  return desc;
+}
+
+

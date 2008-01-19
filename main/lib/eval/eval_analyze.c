@@ -289,7 +289,7 @@ static void analyze(EVAL_ANALYZE *result)
 
       case EVAL_TYPE_OPERATOR:
 
-        if (index("([)]", *symbol))
+        if (index("([)]@", *symbol))
         {
           space_after = FALSE;
         }

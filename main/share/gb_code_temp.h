@@ -31,8 +31,8 @@
 #define LAST_CODE start_code()
 
 
-PUBLIC short CODE_stack_usage;
-PUBLIC short CODE_stack;
+short CODE_stack_usage;
+short CODE_stack;
 
 static bool _ignore_next_stack_usage = FALSE;
 
@@ -97,26 +97,26 @@ static void use_stack(int use)
   #endif
 }
 
-PUBLIC int CODE_get_current_pos(void)
+int CODE_get_current_pos(void)
 {
   return cur_func->ncode;
 }
 
 
-PUBLIC void CODE_ignore_next_stack_usage(void)
+void CODE_ignore_next_stack_usage(void)
 {
   _ignore_next_stack_usage = TRUE;
 }
 
 #ifdef PROJECT_EXEC
 
-PUBLIC void CODE_begin_function()
+void CODE_begin_function()
 {
   CODE_stack = 0;
   CODE_stack_usage = 0;
 }
 
-PUBLIC void CODE_end_function()
+void CODE_end_function()
 {
   if (CODE_stack)
     THROW("Internal compiler error: Bad stack usage computed!");
@@ -124,7 +124,7 @@ PUBLIC void CODE_end_function()
 
 #else
 
-PUBLIC void CODE_begin_function(FUNCTION *func)
+void CODE_begin_function(FUNCTION *func)
 {
   cur_func = func;
   CODE_stack = 0;
@@ -135,7 +135,7 @@ PUBLIC void CODE_begin_function(FUNCTION *func)
     last_line = 0;
 }
 
-PUBLIC void CODE_end_function(FUNCTION *func)
+void CODE_end_function(FUNCTION *func)
 {
   if (CODE_stack)
     THROW("Internal compiler error: Bad stack usage computed!");
@@ -154,7 +154,7 @@ static ushort *get_last_code()
 
 #ifdef PROJECT_COMP
 
-PUBLIC boolean CODE_popify_last(void)
+boolean CODE_popify_last(void)
 {
   /*
   #ifdef DEBUG
@@ -204,7 +204,7 @@ PUBLIC boolean CODE_popify_last(void)
 }
 
 
-PUBLIC boolean CODE_check_statement_last(void)
+boolean CODE_check_statement_last(void)
 {
   unsigned short op;
   PCODE *last_code;
@@ -227,7 +227,7 @@ PUBLIC boolean CODE_check_statement_last(void)
 }
 
 
-PUBLIC boolean CODE_check_pop_local_last(short *local)
+boolean CODE_check_pop_local_last(short *local)
 {
   PCODE *last_code;
 
@@ -264,7 +264,7 @@ bool CODE_check_varptr(void)
   return FALSE;
 }
 
-PUBLIC void CODE_push_number(int value)
+void CODE_push_number(int value)
 {
   LAST_CODE;
 
@@ -297,7 +297,7 @@ PUBLIC void CODE_push_number(int value)
 }
 
 
-PUBLIC void CODE_push_const(short value)
+void CODE_push_const(short value)
 {
   LAST_CODE;
 
@@ -310,7 +310,7 @@ PUBLIC void CODE_push_const(short value)
 }
 
 
-PUBLIC void CODE_push_local(short num)
+void CODE_push_local(short num)
 {
   LAST_CODE;
 
@@ -331,7 +331,7 @@ PUBLIC void CODE_push_local(short num)
 
 #ifdef PROJECT_COMP
 
-PUBLIC void CODE_pop_local(short num)
+void CODE_pop_local(short num)
 {
   LAST_CODE;
 
@@ -350,7 +350,7 @@ PUBLIC void CODE_pop_local(short num)
 }
 
 
-PUBLIC void CODE_pop_ctrl(short num)
+void CODE_pop_ctrl(short num)
 {
   LAST_CODE;
 
@@ -364,7 +364,7 @@ PUBLIC void CODE_pop_ctrl(short num)
 }
 
 
-PUBLIC void CODE_pop_optional(short num)
+void CODE_pop_optional(short num)
 {
   LAST_CODE;
 
@@ -379,7 +379,7 @@ PUBLIC void CODE_pop_optional(short num)
 #endif /* PROJECT_COMP */
 
 
-PUBLIC void CODE_push_array(short nparam)
+void CODE_push_array(short nparam)
 {
   LAST_CODE;
 
@@ -389,7 +389,7 @@ PUBLIC void CODE_push_array(short nparam)
 }
 
 
-PUBLIC void CODE_push_global(short global, boolean is_static, boolean is_function)
+void CODE_push_global(short global, boolean is_static, boolean is_function)
 {
   LAST_CODE;
 
@@ -410,7 +410,7 @@ PUBLIC void CODE_push_global(short global, boolean is_static, boolean is_functio
 
 #ifdef PROJECT_COMP
 
-PUBLIC void CODE_pop_global(short global, boolean is_static)
+void CODE_pop_global(short global, boolean is_static)
 {
   LAST_CODE;
 
@@ -429,7 +429,7 @@ PUBLIC void CODE_pop_global(short global, boolean is_static)
 #endif
 
 /*
-PUBLIC void CODE_push_symbol(short symbol)
+void CODE_push_symbol(short symbol)
 {
   LAST_CODE;
 
@@ -444,7 +444,7 @@ PUBLIC void CODE_push_symbol(short symbol)
 }
 
 
-PUBLIC void CODE_pop_symbol(short symbol)
+void CODE_pop_symbol(short symbol)
 {
   LAST_CODE;
 
@@ -460,7 +460,7 @@ PUBLIC void CODE_pop_symbol(short symbol)
 */
 
 
-PUBLIC void CODE_push_unknown(short symbol)
+void CODE_push_unknown(short symbol)
 {
   LAST_CODE;
 
@@ -477,7 +477,7 @@ PUBLIC void CODE_push_unknown(short symbol)
 
 #ifdef PROJECT_COMP
 
-PUBLIC void CODE_pop_unknown(short symbol)
+void CODE_pop_unknown(short symbol)
 {
   LAST_CODE;
 
@@ -494,7 +494,7 @@ PUBLIC void CODE_pop_unknown(short symbol)
 #endif
 
 
-PUBLIC void CODE_push_class(short class)
+void CODE_push_class(short class)
 {
   LAST_CODE;
 
@@ -513,7 +513,7 @@ PUBLIC void CODE_push_class(short class)
 
 #ifdef PROJECT_COMP
 
-PUBLIC void CODE_jump()
+void CODE_jump()
 {
   LAST_CODE;
 
@@ -526,7 +526,7 @@ PUBLIC void CODE_jump()
 }
 
 
-PUBLIC void CODE_jump_if_true()
+void CODE_jump_if_true()
 {
   /*
   ushort *last_code = get_last_code();
@@ -555,7 +555,7 @@ PUBLIC void CODE_jump_if_true()
 }
 
 
-PUBLIC void CODE_jump_if_false()
+void CODE_jump_if_false()
 {
   /*
   ushort *last_code = get_last_code();
@@ -584,7 +584,7 @@ PUBLIC void CODE_jump_if_false()
 }
 
 
-PUBLIC void CODE_jump_first(short local)
+void CODE_jump_first(short local)
 {
   LAST_CODE;
 
@@ -598,7 +598,7 @@ PUBLIC void CODE_jump_first(short local)
 }
 
 
-PUBLIC void CODE_jump_next(void)
+void CODE_jump_next(void)
 {
   LAST_CODE;
 
@@ -613,7 +613,7 @@ PUBLIC void CODE_jump_next(void)
 }
 
 
-PUBLIC void CODE_jump_length(short src, short dst)
+void CODE_jump_length(short src, short dst)
 {
   if (src < 0 || src >= (cur_func->ncode - 1))
     return;
@@ -630,7 +630,7 @@ PUBLIC void CODE_jump_length(short src, short dst)
 }
 
 
-PUBLIC void CODE_first(short local)
+void CODE_first(short local)
 {
   LAST_CODE;
 
@@ -644,7 +644,7 @@ PUBLIC void CODE_first(short local)
 }
 
 
-PUBLIC void CODE_next(bool drop)
+void CODE_next(bool drop)
 {
   LAST_CODE;
 
@@ -660,7 +660,7 @@ PUBLIC void CODE_next(bool drop)
 
 #endif /* PROJECT_COMP */
 
-PUBLIC void CODE_op(short op, short nparam, boolean fixed)
+void CODE_op(short op, short nparam, boolean fixed)
 {
   if (op == C_ADD || op == C_SUB)
   {
@@ -697,7 +697,7 @@ PUBLIC void CODE_op(short op, short nparam, boolean fixed)
 }
 
 
-PUBLIC void CODE_push_me(bool debug)
+void CODE_push_me(bool debug)
 {
   LAST_CODE;
 
@@ -711,7 +711,7 @@ PUBLIC void CODE_push_me(bool debug)
 }
 
 
-PUBLIC void CODE_push_super(bool debug)
+void CODE_push_super(bool debug)
 {
   LAST_CODE;
 
@@ -725,7 +725,7 @@ PUBLIC void CODE_push_super(bool debug)
 }
 
 
-PUBLIC void CODE_push_last()
+void CODE_push_last()
 {
   LAST_CODE;
 
@@ -739,7 +739,7 @@ PUBLIC void CODE_push_last()
 }
 
 
-PUBLIC void CODE_push_null()
+void CODE_push_null()
 {
   LAST_CODE;
 
@@ -777,7 +777,7 @@ static boolean change_last_call(ushort flag)
 }
 */
 
-PUBLIC void CODE_dup(void)
+void CODE_dup(void)
 {
   LAST_CODE;
 
@@ -791,7 +791,7 @@ PUBLIC void CODE_dup(void)
 }
 
 
-PUBLIC void CODE_return(int return_value)
+void CODE_return(int return_value)
 {
   LAST_CODE;
 
@@ -813,12 +813,12 @@ PUBLIC void CODE_return(int return_value)
 
 static bool _allow_break = FALSE;
 
-PUBLIC void CODE_allow_break(void)
+void CODE_allow_break(void)
 {
 	_allow_break = TRUE;
 }
 
-PUBLIC void CODE_break(void)
+void CODE_break(void)
 {
 	if (!_allow_break)
 		return;
@@ -845,7 +845,7 @@ PUBLIC void CODE_break(void)
 }
 
 
-PUBLIC void CODE_quit(void)
+void CODE_quit(void)
 {
   LAST_CODE;
 
@@ -857,7 +857,7 @@ PUBLIC void CODE_quit(void)
 }
 
 
-PUBLIC void CODE_stop(void)
+void CODE_stop(void)
 {
   LAST_CODE;
 
@@ -871,7 +871,7 @@ PUBLIC void CODE_stop(void)
 #endif /* PROJECT_COMP */
 
 
-PUBLIC void CODE_push_char(char car)
+void CODE_push_char(char car)
 {
   LAST_CODE;
 
@@ -885,7 +885,7 @@ PUBLIC void CODE_push_char(char car)
 
 
 /*
-PUBLIC void CODE_push_zero(void)
+void CODE_push_zero(void)
 {
   LAST_CODE;
 
@@ -899,7 +899,7 @@ PUBLIC void CODE_push_zero(void)
 */
 
 
-PUBLIC void CODE_push_void(void)
+void CODE_push_void(void)
 {
   LAST_CODE;
 
@@ -914,7 +914,7 @@ PUBLIC void CODE_push_void(void)
 
 #ifdef PROJECT_COMP
 
-/*PUBLIC void CODE_event(bool on)
+/*void CODE_event(bool on)
 {
   LAST_CODE;
 
@@ -925,7 +925,7 @@ PUBLIC void CODE_push_void(void)
   #endif
 }*/
 
-PUBLIC void CODE_stop_event(void)
+void CODE_stop_event(void)
 {
   LAST_CODE;
 
@@ -939,7 +939,7 @@ PUBLIC void CODE_stop_event(void)
 #endif
 
 
-PUBLIC void CODE_subr(short subr, short nparam, short optype, boolean output, boolean fixed)
+void CODE_subr(short subr, short nparam, short optype, boolean output, boolean fixed)
 {
   LAST_CODE;
 
@@ -970,7 +970,7 @@ PUBLIC void CODE_subr(short subr, short nparam, short optype, boolean output, bo
 }
 
 
-PUBLIC void CODE_subr_output(short subr, short nparam, int output)
+void CODE_subr_output(short subr, short nparam, int output)
 {
   LAST_CODE;
 
@@ -985,31 +985,65 @@ PUBLIC void CODE_subr_output(short subr, short nparam, int output)
 }
 
 
-PUBLIC void CODE_call(short nparam, boolean output)
+void CODE_call(short nparam)
 {
   LAST_CODE;
 
   /* Une case de pile de moins, car la valeur de retour
      est stock� �la place de la fonction �appeler */
 
-  if (output)
-    use_stack(0);
-  else
-    use_stack(-nparam);
+  use_stack(-nparam);
 
   #ifdef DEBUG
   printf("CALL %s ( %d )\n", output ? "OUTPUT" : "", nparam);
   #endif
 
-  /*if (output)
-    nparam |= CODE_CALL_OUTPUT;*/
-
   write_ZZxx(C_CALL, nparam);
-
 }
 
 
-/*PUBLIC void CODE_push_return(void)
+void CODE_call_byref(short nparam, uint64_t byref)
+{
+  LAST_CODE;
+  int i, n;
+
+  use_stack(-nparam);
+
+	n = 0;
+	for (i = 0; i < nparam; i++)
+	{
+		if (byref & (1 << i))
+			n++;
+	}
+	use_stack(n);
+
+  #ifdef DEBUG
+  printf("CALL ( %d )\n"nparam);
+  printf("BYREF\n");
+  #endif
+
+  write_ZZxx(C_CALL, nparam);
+  
+  if (byref >> 48)
+  	n = 3;
+  else if (byref >> 32)
+  	n = 2;
+  else if (byref >> 16)
+  	n = 1;
+  else
+  	n = 0;
+  	
+  write_ZZxx(C_BYREF, n);
+  while (n >= 0)
+  {
+  	write_short(byref & 0xFFFF);
+  	byref >>= 16;
+  	n--;
+  }  
+}
+
+
+/*void CODE_push_return(void)
 {
   LAST_CODE;
 
@@ -1024,7 +1058,7 @@ PUBLIC void CODE_call(short nparam, boolean output)
 
 #ifdef PROJECT_COMP
 
-PUBLIC void CODE_try(void)
+void CODE_try(void)
 {
   LAST_CODE;
 
@@ -1037,7 +1071,7 @@ PUBLIC void CODE_try(void)
 }
 
 
-PUBLIC void CODE_end_try(void)
+void CODE_end_try(void)
 {
   LAST_CODE;
 
@@ -1049,7 +1083,7 @@ PUBLIC void CODE_end_try(void)
 }
 
 
-PUBLIC void CODE_catch(void)
+void CODE_catch(void)
 {
   LAST_CODE;
 
@@ -1063,7 +1097,7 @@ PUBLIC void CODE_catch(void)
 #endif
 
 
-PUBLIC void CODE_drop(void)
+void CODE_drop(void)
 {
   ushort *last_code = get_last_code();
   ushort subr;
@@ -1102,7 +1136,7 @@ PUBLIC void CODE_drop(void)
 }
 
 
-/*PUBLIC void CODE_push_special(short spec)
+/*void CODE_push_special(short spec)
 {
   LAST_CODE;
 
@@ -1118,7 +1152,7 @@ PUBLIC void CODE_drop(void)
 
 #ifdef PROJECT_COMP
 
-PUBLIC void CODE_push_event(short event)
+void CODE_push_event(short event)
 {
   LAST_CODE;
 
@@ -1131,7 +1165,7 @@ PUBLIC void CODE_push_event(short event)
   write_ZZxx(C_PUSH_EVENT, event);
 }
 
-PUBLIC void CODE_push_extern(short index)
+void CODE_push_extern(short index)
 {
   LAST_CODE;
 
@@ -1144,7 +1178,7 @@ PUBLIC void CODE_push_extern(short index)
   write_ZZxx(C_PUSH_EXTERN, index);
 }
 
-PUBLIC void CODE_new(ushort nparam, boolean array, boolean event)
+void CODE_new(ushort nparam, boolean array, boolean event)
 {
   LAST_CODE;
 
@@ -1167,7 +1201,7 @@ PUBLIC void CODE_new(ushort nparam, boolean array, boolean event)
 
 
 
-PUBLIC void CODE_push_boolean(bool value)
+void CODE_push_boolean(bool value)
 {
   LAST_CODE;
 
@@ -1182,7 +1216,7 @@ PUBLIC void CODE_push_boolean(bool value)
 
 #ifdef CODE_DUMP
 
-PUBLIC void CODE_dump(PCODE *code, int count)
+void CODE_dump(PCODE *code, int count)
 {
   int i;
 
@@ -1197,7 +1231,7 @@ PUBLIC void CODE_dump(PCODE *code, int count)
 
 #endif
 
-/* PUBLIC void CODE_case(short local) */
+/* void CODE_case(short local) */
 /* { */
 /*   LAST_CODE; */
 /*  */

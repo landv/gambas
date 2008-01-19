@@ -32,7 +32,10 @@
 #include "gb_code.h"
 #include "gbc_read.h"
 
-/*#define DEBUG*/
+//#define DEBUG
+
+#define BYREF_TEST(_byref, _n) (_byref & ((uintptr_t)1 << _n))
+#define BYREF_SET(_byref, _n) _byref |= ((uintptr_t)1 << _n)
 
 static short level;
 static PATTERN *current;
@@ -124,7 +127,7 @@ static void add_reserved_pattern(int reserved)
 }
 
 
-static void add_operator_output(short op, short nparam, boolean has_output)
+static void add_operator_output(short op, short nparam, uint64_t byref)
 {
   PATTERN pattern;
 
@@ -148,29 +151,37 @@ static void add_operator_output(short op, short nparam, boolean has_output)
 
   pattern = PATTERN_make(RT_RESERVED, op);
 
-  if (op == RS_LBRA && has_output)
-    pattern = PATTERN_set_flag(pattern, RT_OUTPUT);
+  //if (op == RS_LBRA && byref)
+  //  pattern = PATTERN_set_flag(pattern, RT_OUTPUT);
 
   add_pattern(pattern);
 
-  pattern = PATTERN_make(RT_PARAM, nparam);
-  add_pattern(pattern);
+  add_pattern(PATTERN_make(RT_PARAM, nparam));
+
+  if (op == RS_LBRA && byref)
+  {
+  	while (byref)
+  	{
+	  	add_pattern(PATTERN_make(RT_PARAM, byref & 0xFFFF));
+  		byref >>= 16;
+  	}
+  }
 }
 
 
 static void add_operator(short op, short nparam)
 {
-  add_operator_output(op, nparam, FALSE);
+  add_operator_output(op, nparam, 0);
 }
 
 
 
-static void add_subr(PATTERN subr_pattern, short nparam, boolean has_output)
+static void add_subr(PATTERN subr_pattern, short nparam)
 {
   PATTERN pattern;
 
-  if (has_output)
-    subr_pattern = PATTERN_set_flag(subr_pattern, RT_OUTPUT);
+  //if (has_output)
+  //  subr_pattern = PATTERN_set_flag(subr_pattern, RT_OUTPUT);
 
   add_pattern(subr_pattern);
 
@@ -178,6 +189,64 @@ static void add_subr(PATTERN subr_pattern, short nparam, boolean has_output)
   add_pattern(pattern);
 }
 
+static bool is_statement(void)
+{
+  PATTERN last;
+  int count;
+
+  count = tree_length;
+
+  if (count == 0)
+    return FALSE;
+
+  count--;
+  last = tree[count];
+
+  while (PATTERN_is_param(last) && (count > 0))
+  {
+    count--;
+    last = tree[count];
+  }
+
+  if (PATTERN_is(last, RS_PT))
+    goto _ADD_BRACE;
+
+  if (PATTERN_is_identifier(last))
+  {
+    if (count == 0)
+      goto _ADD_BRACE;
+
+    if (count >= 2)
+    {
+      last = tree[count - 1];
+      if (PATTERN_is_param(last) && (PATTERN_index(last) == 0)
+          && PATTERN_is(tree[count - 2], RS_PT))
+        goto _ADD_BRACE;
+    }
+  }
+  else if (PATTERN_is_subr(last)
+           || PATTERN_is(last, RS_LBRA)
+           || PATTERN_is(last, RS_RBRA)
+           || PATTERN_is(last, RS_AT)
+           || PATTERN_is(last, RS_COMMA))
+    return TRUE;
+
+  #ifdef DEBUG
+    printf("Last = ");
+    READ_dump_pattern(&last);
+    printf("%08X %08X %d\n", last, PATTERN_make(RT_RESERVED, RS_LBRA), PATTERN_is(last, RS_LBRA));
+  #endif
+
+  return FALSE;
+
+_ADD_BRACE:
+
+  add_operator(RS_LBRA, 0);
+  #ifdef DEBUG
+  printf("Add ()\n");
+  #endif
+  return TRUE;
+}
 
 static void analyze_make_array()
 {
@@ -330,16 +399,15 @@ static void analyze_single(int op)
 
 static void analyze_call()
 {
-  /*static PATTERN *output[MAX_PARAM_OP];*/
+  static PATTERN *byref_pattern[MAX_PARAM_OP];
 
-  int nparam_post = 0;
+  int i, nparam_post = 0;
   PATTERN subr_pattern = NULL_PATTERN;
   PATTERN last_pattern = get_last_pattern(1);
-  boolean has_output = FALSE;
-  /*int i;
-  PATTERN *save_current;*/
   SUBR_INFO *info;
   boolean optional = TRUE;
+  uint64_t byref = 0;
+  PATTERN *save;
 
   /*
   get_pattern_subr(last_pattern, &subr);
@@ -362,16 +430,16 @@ static void analyze_call()
 	if (subr_pattern && subr_pattern == PATTERN_make(RT_SUBR, SUBR_VarPtr))
 	{
 		if (!PATTERN_is_identifier(*current))
-			THROW("VarPtr() takes an identifier");
+			THROW("Syntax error. VarPtr() takes only one identifier");
 		
 		add_pattern(*current);
 		current++;
 		
 		if (!PATTERN_is(*current, RS_RBRA))
-			THROW("Syntax error. Right brace missing");
+			THROW("Syntax error. VarPtr() takes only one identifier");
 		current++;
 	
-		add_subr(subr_pattern, 1, FALSE);
+		add_subr(subr_pattern, 1);
 	}
 	else
 	{
@@ -386,7 +454,7 @@ static void analyze_call()
 			if (nparam_post > 0)
 			{
 				if (!PATTERN_is(*current, RS_COMMA))
-					THROW("Missing ')'");
+					THROW("Missing ',' or ')'");
 				current++;
 			}
 	
@@ -402,13 +470,20 @@ static void analyze_call()
 				output[nparam_post] = NULL;
 			}
 			#endif
-	
+			
 			if (optional && (PATTERN_is(*current, RS_COMMA) || PATTERN_is(*current, RS_RBRA)))
 			{
 				add_reserved_pattern(RS_OPTIONAL);
 			}
 			else
 			{
+				if (PATTERN_is(*current, RS_AT))
+				{
+					current++;
+					BYREF_SET(byref, nparam_post);
+					byref_pattern[nparam_post] = current;
+				}
+	
 				analyze_expr(0, RS_NONE);
 			}
 	
@@ -433,7 +508,25 @@ static void analyze_call()
 		*/
 	
 		if (subr_pattern == NULL_PATTERN)
-			add_operator_output(RS_LBRA, nparam_post, has_output);
+		{
+			add_operator_output(RS_LBRA, nparam_post, byref);
+			
+			save = current;
+			
+			for (i = nparam_post - 1; i >= 0; i--)
+			{
+				if (BYREF_TEST(byref, i))
+				{
+					current = byref_pattern[i];
+					analyze_expr(0, RS_NONE);
+					//if (!is_statement())
+					//	THROW("The &1 argument cannot be passed by reference", TRANS_get_num_desc(i + 1));
+					add_pattern(PATTERN_make(RT_RESERVED, RS_AT));
+				}
+			}
+			
+			current = save;
+		}
 		else
 		{
 			info = &COMP_subr_info[PATTERN_index(subr_pattern)];
@@ -442,34 +535,13 @@ static void analyze_call()
 				THROW("Not enough arguments to &1()", info->name);
 			else if (nparam_post > info->max_param)
 				THROW("Too many arguments to &1()", info->name);
+			else if (byref)
+				THROW("Subroutine arguments cannot be passed by reference");
 	
-			add_subr(subr_pattern, nparam_post, has_output);
+			add_subr(subr_pattern, nparam_post);
 		}
 	}
 
-  #if 0
-  if (has_output)
-  {
-    save_current = current;
-
-    for (i = nparam_post - 1; i >= 0; i--)
-    {
-      if (output[i] != NULL)
-      {
-        current = output[i];
-        analyze_expr(0, RS_NONE);
-        add_reserved_pattern(RS_AT);
-      }
-      else
-        add_reserved_pattern(RS_COMMA); /* Provoque un drop */
-    }
-
-    if (subr_pattern != NULL_PATTERN)
-      add_reserved_pattern(RS_RBRA); /* Provoque le PUSH RETURN dans le cas d'un call*/
-
-    current = save_current;
-  }
-  #endif
 }
 
 
@@ -667,64 +739,6 @@ END:
 }
 
 
-static bool TRANS_is_statement(void)
-{
-  PATTERN last;
-  int count;
-
-  count = tree_length;
-
-  if (count == 0)
-    return FALSE;
-
-  count--;
-  last = tree[count];
-
-  if (PATTERN_is_param(last) && (count > 0))
-  {
-    count--;
-    last = tree[count];
-  }
-
-  if (PATTERN_is(last, RS_PT))
-    goto _ADD_BRACE;
-
-  if (PATTERN_is_identifier(last))
-  {
-    if (count == 0)
-      goto _ADD_BRACE;
-
-    if (count >= 2)
-    {
-      last = tree[count - 1];
-      if (PATTERN_is_param(last) && (PATTERN_index(last) == 0)
-          && PATTERN_is(tree[count - 2], RS_PT))
-        goto _ADD_BRACE;
-    }
-  }
-  else if (PATTERN_is_subr(last)
-           || PATTERN_is(last, RS_LBRA)
-           || PATTERN_is(last, RS_RBRA)
-           || PATTERN_is(last, RS_AT)
-           || PATTERN_is(last, RS_COMMA))
-    return TRUE;
-
-  #ifdef DEBUG
-    printf("Last = ");
-    READ_dump_pattern(&last);
-  #endif
-
-  return FALSE;
-
-_ADD_BRACE:
-
-  add_operator(RS_LBRA, 0);
-  #ifdef DEBUG
-  printf("Add ()\n");
-  #endif
-  return TRUE;
-}
-
 TRANS_TREE *TRANS_tree(bool check_statement)
 {
   TRANS_TREE *copy;
@@ -760,7 +774,7 @@ TRANS_TREE *TRANS_tree(bool check_statement)
     }
   #endif
 
-  if (check_statement && (!TRANS_is_statement()))
+  if (check_statement && (!is_statement()))
     THROW("This expression cannot be a statement");
 
   ARRAY_create(&copy);

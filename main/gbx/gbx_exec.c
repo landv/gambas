@@ -46,6 +46,8 @@
 #include "gbx_api.h"
 #include "gbx_exec.h"
 
+//#define DEBUG_STACK 1
+
 /* Current virtual machine state */
 STACK_CONTEXT EXEC_current = { 0 };
 /* Stack pointer */
@@ -569,82 +571,89 @@ void EXEC_enter_quick(void)
 }
 
 
-void EXEC_leave(bool drop) //bool keep_ret_value)
+void EXEC_leave(bool drop)
 {
-	int n;
+	int n, nb, i, nparam;
 	bool keep_ret_value = FALSE;
 	VALUE ret;
+	ushort *pc;
 
 #if DEBUG_STACK
 	printf("| >> EXEC_leave\n");
 	print_register();
 #endif
 
-	/* Sauvegarde de la valeur de retour.
-
-		Car elle peut �re �ras� par un _free() g���par un
-		OBJECT_UNREF
-	*/
+	/* Save the return value. It can be erased by OBJECT_UNREF() */
 
 	ret = *RP;
+  pc = STACK_get_previous_pc();
+  nb = 0;
+  nparam = FP->n_param;
+  
+	/* ByRef arguments management */
 
-	/* Lib�ation des variables locales et de controle et des arguments */
-
-	n = FP->n_param + (SP - PP);
-
-	//for (i = 0; i < n; i++)
-	//  POP();
-	
-	RELEASE_MANY(SP, n);
-
-	/* On lib�e l'objet reserv�dans EXEC_enter() */
-	OBJECT_UNREF(&OP, "EXEC_leave");
-
-	/* restitution du contexte */
-
-	STACK_pop_frame(&EXEC_current);
-	//AP = ARCH_from_class(CP);
-
-	//printf("EXEC_leave: PC = %p\n", PC);
-
-	if (PC && !drop)
+	if (pc && PCODE_is(pc[1], C_BYREF))
 	{
-		drop = PCODE_is_void(*PC);
-		/*if (SP[-1].type != T_FUNCTION)
+		VALUE *xp, *pp;
+		int nn;
+		
+		xp = PP - nparam;
+		pp = xp;
+		n = pc[1] & 0xF;
+		pc += 2;
+		
+		for (nn = 0; nn < nparam; nn += 16)
 		{
-			printf("EXEC_leave: type != T_FUNCTION\n");
-			POP();
+			for (i = 0; i < 16; i++)
+			{
+				if (n >= 0 && *pc & (1 << i))
+				{
+					xp[nb] = *pp;
+					nb++;
+				}
+				else
+					RELEASE(pp);
+				pp++;
+			}
+			n--;
+			pc++;
 		}
-		else*/
+		
+		n = SP - PP;
+		#if DEBUG_STACK
+		printf("release = %d, nparam = %d, byref = %d\n", n, FP->n_param, nb);
+		#endif
+		RELEASE_MANY(SP, n);
+		SP -= nparam;
+		SP += nb;
+		OBJECT_UNREF(&OP, "EXEC_leave");
+		SP -= nb;
+		STACK_pop_frame(&EXEC_current);
+		PC += (pc[1] & 0xF) + 2;
+	}
+	else
+	{
+		n = nparam + (SP - PP);
+		RELEASE_MANY(SP, n);
+	
+		OBJECT_UNREF(&OP, "EXEC_leave");
+		STACK_pop_frame(&EXEC_current);
+	}
+			
+	if (pc && !drop)
+	{
+		drop = PCODE_is_void(*pc);
 		if (SP[-1].type == T_FUNCTION)
 		{
 			SP--;
 			OBJECT_UNREF(&SP->_function.object, "EXEC_leave");
 		}
-		/*output = PCODE_is_output(*PC);*/
 	}
 	else
 	{
 		drop = TRUE;
 		keep_ret_value = TRUE;
 	}
-
-	/* lib�ation de la pile utilis� */
-
-	/*
-		Attention ! le RELEASE(RP) conjugu�au UNBORROW(RP)
-		peut faire descendre le compteur de r��ence d'un objet �-1 !
-	*/
-
-	/*
-		NOTE: les param�res input-output ont le m�e probl�e que la
-		valeur de retour. Ils peuvent contenir des r��ences d�allou�s !
-		A CORRIGER ! En attendant, ils sont d�activ�.
-	*/
-
-#if DEBUG_REF
-	printf("EXEC_leave: return\n");
-#endif
 
 	if (!drop)
 	{
@@ -658,6 +667,8 @@ void EXEC_leave(bool drop) //bool keep_ret_value)
 	else if (!keep_ret_value)
 		EXEC_release_return_value();
 
+	SP += nb;
+	
 #if DEBUG_STACK
 	printf("| << EXEC_leave()\n");
 	print_register();

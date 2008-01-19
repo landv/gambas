@@ -72,6 +72,10 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
 
       ncode = 3;
       break;
+      
+    case C_BYREF:
+    	ncode = 2 + (op & 0xFF);
+    	break;
 
     default:
 
@@ -186,7 +190,7 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
       value = op & 0xFF;
       if (value >= 0x80) value |= 0xFFFFFF00;
 
-      if (digit >= C_PUSH_LOCAL && digit < C_QUIT)
+      if (digit >= C_PUSH_LOCAL && digit < C_QUIT && digit != C_BYREF)
         fprintf(out, "PUSH ");
       else if (digit >= C_POP_LOCAL && digit < C_BREAK)
         fprintf(out, "POP ");
@@ -248,6 +252,12 @@ PUBLIC short PCODE_dump(FILE *out, short addr, PCODE *code)
 
           fprintf(out, "(%d)", (short)value & 0x3F);
           break;
+          
+        case C_BYREF:
+        	fprintf(out, "BYREF (%d) ", (short)value & 0x3F);
+        	for (j = 1; j < ncode; j++)
+        		fprintf(out, "%04X", code[j]);
+        	break;
 
         case C_PUSH_INTEGER:
           value = code[1];

@@ -1057,7 +1057,7 @@ void TRANS_raise(void)
     }
   }
 
-  CODE_call(np, FALSE);
+  CODE_call(np);
 
   if (TRANS_in_affectation == 0)
     CODE_drop();

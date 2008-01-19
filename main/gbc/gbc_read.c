@@ -203,11 +203,11 @@ void READ_dump_pattern(PATTERN *pattern)
   int index = PATTERN_index(*pattern);
   int pos;
 
-  pos = (int)(pattern - JOB->pattern);
+  /*pos = (int)(pattern - JOB->pattern);
   if (pos < 0 || pos >= JOB->pattern_count)
     return;
     
-  printf("%d ", pos);
+  printf("%d ", pos);*/
 
   if (PATTERN_flag(*pattern) & RT_FIRST)
     printf("!");

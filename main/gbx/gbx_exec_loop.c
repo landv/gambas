@@ -42,7 +42,7 @@
 
 #include "gbx_exec.h"
 
-#define DEBUG_PCODE 0
+//#define DEBUG_PCODE 1
 
 #if DEBUG_PCODE
 #define PROJECT_EXEC
@@ -172,7 +172,7 @@ void EXEC_loop(void)
     /* 03 PUSH ARRAY      */  &&_PUSH_ARRAY,
     /* 04 PUSH UNKNOWN    */  &&_PUSH_UNKNOWN,
     /* 05 PUSH EXTERN     */  &&_PUSH_EXTERN,
-    /* 06 PUSH SPECIAL    */  &&_ILLEGAL,
+    /* 06 BYREF           */  &&_BYREF,
     /* 07 PUSH EVENT      */  &&_PUSH_EVENT,
     /* 08 QUIT            */  &&_QUIT,
     /* 09 POP LOCAL       */  &&_POP_LOCAL,
@@ -459,7 +459,7 @@ _MAIN:
 
 #if DEBUG_PCODE
     DEBUG_where();
-    fprintf(stderr, "[%4d] ", (int)(SP - (VALUE *)STACK_base));
+    fprintf(stderr, "[%4d] ", (int)(intptr_t)(SP - (VALUE *)STACK_base));
     if (*PC >> 8)
       PCODE_dump(stderr, PC - FP->code, PC);
 #endif
@@ -1639,6 +1639,12 @@ _QUIT:
 	//	TRACE_backtrace(stderr);
 
   goto _NEXT;
+
+/*-----------------------------------------------*/
+
+_BYREF:
+
+	THROW(E_BYREF);
 
 /*-----------------------------------------------*/
 

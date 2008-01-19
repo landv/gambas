@@ -460,7 +460,7 @@ static void trans_call(const char *name, int nparam)
     return;
 
   CODE_push_global(sym->global.value, FALSE, TRUE);
-  CODE_call(nparam, FALSE);
+  CODE_call(nparam);
   CODE_drop();
 }
 

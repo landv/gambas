@@ -40,9 +40,11 @@
 
 //static bool _accept_statement = FALSE;
 
-static short get_nparam(PATTERN *tree, int *index)
+static short get_nparam(PATTERN *tree, int *index, uint64_t *byref)
 {
   PATTERN pattern;
+  short nparam = 0;
+  int shift = 0;
 
   if (*index < (ARRAY_count(tree) - 1))
   {
@@ -50,16 +52,31 @@ static short get_nparam(PATTERN *tree, int *index)
     if (PATTERN_is_param(pattern))
     {
       (*index)++;
-      return (short)PATTERN_index(pattern);
+      nparam = (short)PATTERN_index(pattern);
     }
-  }
+
+		if (byref)
+			*byref = 0;
+		while (*index < (ARRAY_count(tree) - 1))
+		{
+			pattern = tree[*index + 1];
+			if (!PATTERN_is_param(pattern))
+				break;
+			(*index)++;
+			if (byref)
+			{
+				*byref |= (uint64_t)PATTERN_index(pattern) << shift;
+				shift += 16;
+			}
+		}
+	}
 
   /*
      Gère le cas où on a codé un subr sans mettre de parenthèses
      => nparam = 0
   */
 
-  return 0;
+  return nparam;
 }
 
 
@@ -221,7 +238,7 @@ __CLASS:
 }
 
 
-static void trans_subr(int subr, short nparam, boolean output)
+static void trans_subr(int subr, short nparam)
 {
   SUBR_INFO *info = &COMP_subr_info[subr];
 
@@ -236,11 +253,11 @@ static void trans_subr(int subr, short nparam, boolean output)
 	else if (nparam > info->max_param)
 		THROW("Too many arguments to &1()", info->name);
 
-  CODE_subr(info->opcode, nparam, info->optype, output, (info->max_param == info->min_param));
+  CODE_subr(info->opcode, nparam, info->optype, FALSE /* output */, (info->max_param == info->min_param));
 }
 
 
-PUBLIC void TRANS_operation(short op, short nparam, boolean output, PATTERN previous)
+static void trans_operation(short op, short nparam, PATTERN previous)
 {
   COMP_INFO *info = &COMP_res_info[op];
 
@@ -268,17 +285,13 @@ PUBLIC void TRANS_operation(short op, short nparam, boolean output, PATTERN prev
       TRANS_subr(TS_SUBR_ARRAY, nparam);
       break;
 
-    case OP_LBRA:
-      CODE_call(nparam, output);
-      break;
-
     case OP_MINUS:
       if (nparam == 1)
         CODE_op(C_NEG, nparam, TRUE);
       else
         CODE_op(info->code, nparam, TRUE);
       break;
-
+      
     default:
 
       CODE_op(info->code, nparam, (info->flag != RSF_OPN));
@@ -286,12 +299,24 @@ PUBLIC void TRANS_operation(short op, short nparam, boolean output, PATTERN prev
 }
 
 
+static void trans_call(short nparam, uint64_t byref)
+{
+	if (!byref)
+	{
+		CODE_call(nparam);
+		return;
+	}
+		
+	CODE_call_byref(nparam, byref);
+}
+
 static void trans_expr_from_tree(TRANS_TREE *tree)
 {
-  int i;
+  int i, op;
   short nparam;
   int count;
   PATTERN pattern, next_pattern, prev_pattern;
+  uint64_t byref;
 
   count = ARRAY_count(tree) - 1;
   pattern = NULL_PATTERN;
@@ -322,8 +347,8 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
 
     else if (PATTERN_is_subr(pattern))
     {
-      nparam = get_nparam(tree, &i);
-      trans_subr(PATTERN_index(pattern), nparam, PATTERN_is_output(pattern));
+      nparam = get_nparam(tree, &i, NULL);
+      trans_subr(PATTERN_index(pattern), nparam);
     }
 
     else if (PATTERN_is_reserved(pattern))
@@ -379,8 +404,22 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
       }
       else
       {
-        nparam = get_nparam(tree, &i);
-        TRANS_operation((short)PATTERN_index(pattern), nparam, PATTERN_is_output(pattern), prev_pattern);
+      	op = PATTERN_index(pattern);
+      	if (op == RS_LBRA)
+      	{
+        	nparam = get_nparam(tree, &i, &byref);
+        	trans_call(nparam, byref);
+        }
+      	else if (op == RS_AT)
+      	{
+					if (!CODE_popify_last())
+						THROW("Invalid assignment");
+      	}
+      	else
+      	{
+        	nparam = get_nparam(tree, &i, NULL);
+        	trans_operation((short)op, nparam, prev_pattern);
+        }
       }
 		}
   }
@@ -641,7 +680,7 @@ PUBLIC boolean TRANS_affectation(bool dup)
     after = JOB->current;
 
     if (op != RS_NONE)
-      TRANS_operation(op, 2, FALSE, NULL_PATTERN);
+      trans_operation(op, 2, NULL_PATTERN);
   }
 
   after = JOB->current;

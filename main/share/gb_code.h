@@ -127,7 +127,8 @@ void CODE_push_void(void);
 void CODE_subr(short subr, short nparam, short optype, bool output, bool fixed);
 void CODE_subr_output(short subr, short nparam, int output);
 
-void CODE_call(short nparam, bool output);
+void CODE_call(short nparam);
+void CODE_call_byref(short nparam, uint64_t byref);
 void CODE_drop(void);
 void CODE_push_return(void);
 

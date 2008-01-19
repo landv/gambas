@@ -65,6 +65,7 @@ void STACK_push_frame(STACK_CONTEXT *context);
 void STACK_pop_frame(STACK_CONTEXT *context);
 bool STACK_has_error_handler(void);
 STACK_CONTEXT *STACK_get_frame(int frame);
+ushort *STACK_get_previous_pc();
 
 #define STACK_get_current() ((STACK_frame_count > 0) ? STACK_frame : NULL)
 

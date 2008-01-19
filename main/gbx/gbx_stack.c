@@ -89,6 +89,13 @@ void STACK_push_frame(STACK_CONTEXT *context)
   //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
 }
 
+ushort *STACK_get_previous_pc()
+{
+  if (STACK_frame_count <= 0)
+    ERROR_panic("STACK_get_previous_pc: Stack frame is void");
+	
+	return STACK_frame->pc;
+}
 
 void STACK_pop_frame(STACK_CONTEXT *context)
 {

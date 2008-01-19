@@ -47,7 +47,7 @@
 #define C_PUSH_UNKNOWN          0x0400
 
 #define C_PUSH_EXTERN           0x0500
-//#define C_PUSH_SPECIAL          0x0600
+#define C_BYREF                 0x0600
 #define C_PUSH_EVENT            0x0700
 #define C_QUIT                  0x0800
 

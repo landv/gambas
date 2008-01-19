@@ -121,6 +121,7 @@ PUBLIC boolean TRANS_is(int reserved);
 PUBLIC void TRANS_ignore(int reserved);
 PUBLIC int TRANS_get_class(PATTERN pattern);
 PUBLIC bool TRANS_is_end_function(bool is_proc, PATTERN *look);
+char *TRANS_get_num_desc(int num);
 
 /* trans_code.c */
 

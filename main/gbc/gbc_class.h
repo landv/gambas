@@ -85,28 +85,28 @@ typedef
 typedef
   struct {
     TYPE type;            // Return value datatype
-    int name;            /* index du nom de la fonction dans la table des symboles de la classe */
+    int name;             // Function name index in class symbol table
 
-    char nparam;         /* nombre de param�res */
-    char npmin;          /* nombre de param�res obligatoires */
-    char vararg;          /* if this function accepts extra arguments */
-    char _reserved;
-    short nlocal;         /* nombre de variables locales */
-    short nctrl;          /* nombre de variables locales pour les structures de contr�e */
-    PARAM *local;          /* Liste des variables locales */
-    PARAM *param;          /* Liste des param�res */
+    char nparam;          // Maximum number of arguments
+    char npmin;           // Minimum number of arguments
+    char vararg;          // If this function accepts extra arguments
+    char byref;           // Binary map of byref arguments
+    short nlocal;         // Local variable count
+    short nctrl;          // Control structure variable count
+    PARAM *local;         // Datatypes of local variables
+    PARAM *param;         // Datatypes of arguments
 
-    PATTERN *start;        /* Position d'o d�arrer la compilation de la fonction */
-    int line;	            /* A quelle ligne cette position correspond ? */
-    ushort *code;          /* Code compil�*/
-    ushort ncode;          // Number of instruction
+    PATTERN *start;       // Starts compilation from there
+    int line;	            // ...which is this line
+    ushort *code;         // Compile bytecode
+    ushort ncode;         // Number of instructions
 
-    short last_code;      /* position de la derni�e instruction compil� */
-    short stack;          /* consommation de pile */
-    short finally;        /* position de l'instruction finally */
-    short catch;         /* position de l'instruction catch */
+    short last_code;      // Last compiled bytecode position
+    short stack;          // Needed stack
+    short finally;        // FINALLY position
+    short catch;          // CATCH position
 
-    short *pos_line;      /* position de chaque ligne de code de la fonction */
+    short *pos_line;      // Bytecode position of each code line
     short _reserved2[3];
     }
   PACKED

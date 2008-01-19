@@ -106,6 +106,7 @@ static const char *_message[64] =
   /* 59 E_PARENT */ "No parent class",
   /* 60 E_EXTLIB */ "Cannot find dynamic library '&1': &2",
   /* 61 E_EXTSYM */ "Cannot find symbol '&2' in dynamic library '&1'",
+  /* 62 E_BYREF */ "Arguments cannot be passed by reference in this context",
   NULL
 };
 

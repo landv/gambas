@@ -41,22 +41,6 @@
 /*#define DEBUG*/
 
 
-static char *get_num_desc(int num)
-{
-  static char *num_desc[3] = { "first", "second", "third" };
-  static char desc[6];
-
-  if (num < 1)
-    return NULL;
-
-  if (num < 4)
-    return num_desc[num - 1];
-
-  snprintf(desc, sizeof(desc), "%dth", num);
-  return desc;
-}
-
-
 static void analyze_function_desc(TRANS_FUNC *func, int flag)
 {
   PATTERN *look = JOB->current;
@@ -64,6 +48,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
   bool is_output;
   bool is_optional = FALSE;
   TRANS_DECL ttyp;
+  uint byref_mask = 1;
 
   if (!PATTERN_is_identifier(*look))
     THROW("Syntax error. Invalid identifier in function name");
@@ -75,6 +60,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
     TABLE_copy_symbol_with_prefix(JOB->class->table, func->index, ':', NULL, &func->index);
 
   func->nparam = 0;
+  func->byref = 0;
   func->vararg = FALSE;
 
   if ((flag & HF_VOID) && PATTERN_is_newline(*look))
@@ -108,21 +94,13 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
     {
       look++;
       if (!PATTERN_is(*look, RS_RBRA))
-        THROW("Syntax error. '...' must be the last parameter"); //, get_num_desc(func->nparam + 1));
+        THROW("Syntax error. '...' must be the last argument"); //, get_num_desc(func->nparam + 1));
       look++;
       func->vararg = TRUE;
       break;
     }
 
     is_output = FALSE;
-
-    /* Pas de param�re en sortie pour l'instant !
-    if (PATTERN_is(*look, RS_AT))
-    {
-      is_output = TRUE;
-      look++;
-    }
-    */
 
     if (!(flag & HF_NO_OPT))
     {
@@ -133,15 +111,21 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
       }
     }
 
+    if (PATTERN_is(*look, RS_AT))
+    {
+      func->byref |= byref_mask;
+      look++;
+    }
+
     if (!PATTERN_is_identifier(*look))
-      THROW("Syntax error. The &1 parameter is not a valid identifier", get_num_desc(func->nparam + 1));
+      THROW("Syntax error. The &1 argument is not a valid identifier", TRANS_get_num_desc(func->nparam + 1));
 
     param->index = PATTERN_index(*look);
     look++;
     JOB->current = look;
 
     if (!TRANS_type(TT_NOTHING, &ttyp))
-      THROW("Syntax error. Invalid type description of &1 parameter", get_num_desc(func->nparam + 1));
+      THROW("Syntax error. Invalid type description of &1 argument", TRANS_get_num_desc(func->nparam + 1));
 
     param->type = ttyp.type;
 
@@ -165,6 +149,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
     }
 
     func->nparam++;
+    byref_mask <<= 1;
   }
 
   JOB->current = look;
