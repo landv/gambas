@@ -383,13 +383,11 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
       {
         CODE_push_last();
       }
-      /*
       else if (PATTERN_is(pattern, RS_AT))
       {
-        if (!CODE_popify_last())
-          THROW("Invalid output parameter");
+				if (!CODE_popify_last())
+					THROW("This expression cannot be passed by reference");
       }
-      */
       else if (PATTERN_is(pattern, RS_COMMA))
       {
         CODE_drop();
@@ -410,11 +408,6 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
         	nparam = get_nparam(tree, &i, &byref);
         	trans_call(nparam, byref);
         }
-      	else if (op == RS_AT)
-      	{
-					if (!CODE_popify_last())
-						THROW("Invalid assignment");
-      	}
       	else
       	{
         	nparam = get_nparam(tree, &i, NULL);

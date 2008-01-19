@@ -6,8 +6,6 @@ VERSION 2.0
 
 - A stack that can grow dynamically.
 - A special syntax to make variable writable once only (for controls variables).
-- Doing something like ByRef to help porting VB projects.
-
 - Add global parameters for each component.
 - Compilation error must indicate the column, not only the line.
 - Make objects printable, with a "_print" hidden method or something else.
@@ -17,7 +15,6 @@ VERSION 2.0
 - Type mismatch error: print the mismatched values.
 - Special runtime debugging commands for dumping all the variables for example.
 - A new debugging compilation option to only put line number information in the output files.
-
 - NInstr() -> Count the number of patterns.
 
 Don't do it:
@@ -32,12 +29,9 @@ Do it asap:
 - If project compilation version < compiler version then => compile all
 - Intercept all signals in Application_Signal.
 - Object.SetVariable, or SetSymbol, and that can act on static things.
-
 - Structure support
 - Callback support
-
 - Sorting two or more arrays at the same time.
-
 - Creates error objects for each error and not one for all.
 
 DEVELOPMENT ENVIRONMENT
@@ -84,7 +78,7 @@ DOCUMENTATION WIKI
 64 BITS
 -------
 
-X11 Window datatype is a long => Control.Id should return a pointer
+- X11 Window datatype is a long => Control.Id should return a pointer
 
 OTHER
 -----

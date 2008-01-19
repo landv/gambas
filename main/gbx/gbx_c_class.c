@@ -497,7 +497,7 @@ BEGIN_METHOD(object_get_property, GB_OBJECT object; GB_STRING property)
 
   type = CLASS_DESC_get_type(desc);
 
-  if (type == CD_PROPERTY || type == CD_PROPERTY_READ)
+  if (type == CD_PROPERTY || type == CD_PROPERTY_READ || type == CD_VARIABLE)
   {
     if (!object)
     {
@@ -505,7 +505,7 @@ BEGIN_METHOD(object_get_property, GB_OBJECT object; GB_STRING property)
       return;
     }
   }
-  else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_PROPERTY_READ)
+  else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_PROPERTY_READ || type == CD_STATIC_VARIABLE)
   {
     if (object)
     {
@@ -519,30 +519,37 @@ BEGIN_METHOD(object_get_property, GB_OBJECT object; GB_STRING property)
     return;
   }
 
-  if (desc->property.native)
-  {
-    if (EXEC_call_native(desc->property.read, object, desc->property.type, 0))
-    {
-    	GAMBAS_Error = TRUE;
-      return;
+	if (type == CD_VARIABLE)
+    VALUE_read(&TEMP, (char *)object + desc->variable.offset, desc->property.type);
+	else if (type == CD_STATIC_VARIABLE)
+    VALUE_read(&TEMP, (char *)class->stat + desc->variable.offset, desc->property.type);
+	else
+	{
+		if (desc->property.native)
+		{
+			if (EXEC_call_native(desc->property.read, object, desc->property.type, 0))
+			{
+				GAMBAS_Error = TRUE;
+				return;
+			}
 		}
-  }
-  else
-  {
-    EXEC.class = desc->property.class;
-    EXEC.object = object;
-    EXEC.drop = FALSE;
-    EXEC.nparam = 0;
-    EXEC.native = FALSE;
-    EXEC.index = (int)(intptr_t)desc->property.read;
-    //EXEC.func = &class->load->func[(long)desc->property.read];
-
-    EXEC_function_keep();
-
-    TEMP = *RP;
-    UNBORROW(RP);
-    RP->type = T_VOID;
-  }
+		else
+		{
+			EXEC.class = desc->property.class;
+			EXEC.object = object;
+			EXEC.drop = FALSE;
+			EXEC.nparam = 0;
+			EXEC.native = FALSE;
+			EXEC.index = (int)(intptr_t)desc->property.read;
+			//EXEC.func = &class->load->func[(long)desc->property.read];
+	
+			EXEC_function_keep();
+	
+			TEMP = *RP;
+			UNBORROW(RP);
+			RP->type = T_VOID;
+		}
+	}
 
 END_METHOD
 
@@ -577,15 +584,20 @@ BEGIN_METHOD(object_set_property, GB_OBJECT object; GB_STRING property; GB_VARIA
 
   type = CLASS_DESC_get_type(desc);
 
-  if (type == CD_PROPERTY)
+  if (type == CD_PROPERTY || type == CD_VARIABLE)
   {
     if (!object)
     {
-      GB_Error((char *)E_DYNAMIC, class->name, name);
-      return;
+	    if (!class->auto_create)
+	    {
+	      GB_Error((char *)E_DYNAMIC, class->name, name);
+  	    return;
+  	  }
+      
+      object = EXEC_auto_create(class, TRUE);
     }
   }
-  else if (type == CD_STATIC_PROPERTY)
+  else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_VARIABLE)
   {
     if (object)
     {
@@ -604,34 +616,41 @@ BEGIN_METHOD(object_set_property, GB_OBJECT object; GB_STRING property; GB_VARIA
     return;
   }
 
-  if (desc->property.native)
-  {
-    VALUE_conv(value, desc->property.type);
-
-    if (EXEC_call_native(desc->property.write, object, 0, value))
-    {
-    	GAMBAS_Error = TRUE;
-      return;
+	if (type == CD_VARIABLE)
+  	VALUE_write(value, (char *)object + desc->variable.offset, desc->variable.type);
+	else if (type == CD_STATIC_VARIABLE)
+  	VALUE_write(value, (char *)class->stat + desc->variable.offset, desc->variable.type);
+	else
+	{
+		if (desc->property.native)
+		{
+			VALUE_conv(value, desc->property.type);
+	
+			if (EXEC_call_native(desc->property.write, object, 0, value))
+			{
+				GAMBAS_Error = TRUE;
+				return;
+			}
 		}
-  }
-  else
-  {
-    *SP = *value;
-    BORROW(SP);
-    SP++;
-
-    EXEC.class = desc->property.class;
-    EXEC.object = object;
-    EXEC.drop = FALSE;
-    EXEC.nparam = 1;
-    EXEC.native = FALSE;
-    EXEC.index = (int)(intptr_t)desc->property.write;
-    //EXEC.func = &class->load->func[(long)desc->property.write];
-
-    EXEC_function();
-
-    /*VALUE_write(value, OBJECT_get_prop_addr(object, desc), desc->property.type);*/
-  }
+		else
+		{
+			*SP = *value;
+			BORROW(SP);
+			SP++;
+	
+			EXEC.class = desc->property.class;
+			EXEC.object = object;
+			EXEC.drop = FALSE;
+			EXEC.nparam = 1;
+			EXEC.native = FALSE;
+			EXEC.index = (int)(intptr_t)desc->property.write;
+			//EXEC.func = &class->load->func[(long)desc->property.write];
+	
+			EXEC_function();
+	
+			/*VALUE_write(value, OBJECT_get_prop_addr(object, desc), desc->property.type);*/
+		}
+	}
 
 END_METHOD
 
