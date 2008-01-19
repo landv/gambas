@@ -75,7 +75,6 @@ static void SWAP_type(CTYPE *p)
 }
 
 
-#ifdef OS_64BITS
 static int sizeof_ctype(CLASS *class, CTYPE ctype)
 {
 	size_t size;
@@ -86,7 +85,6 @@ static int sizeof_ctype(CLASS *class, CTYPE ctype)
 	size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
   return (size + 3) & ~3;
 }
-#endif
 
 TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
 {
@@ -330,9 +328,10 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   CLASS_PARAM *local;
   CLASS_EVENT *event;
   CLASS_EXTERN *ext;
+  CLASS_VAR *var;
   FUNCTION *func;
   FUNC_DEBUG *debug;
-  int i, j;
+  int i, j, pos;
   int offset;
   short n_desc, n_class_ref, n_unknown, n_array;
 	
@@ -572,33 +571,27 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     }
   }
 
-  #ifdef OS_64BITS
+  /* Computes variable position. Really needed for 64 bits, but ctype must be converted anyway... */
   
-  /* Computes variable position again */
-  
+	pos = 0;
+	for (i = 0; i < class->load->n_stat; i++)
 	{
-		int pos;
-		CLASS_VAR *var;
-		
-		pos = 0;
-		for (i = 0; i < class->load->n_stat; i++)
-		{
-			var = &class->load->stat[i];
-			var->pos = pos;
-			pos += sizeof_ctype(class, var->type);
-		}
-		info->s_static = pos;
-  
-		pos = 0;
-		for (i = 0; i < class->load->n_dyn; i++)
-		{
-			var = &class->load->dyn[i];
-			var->pos = pos;
-			pos += sizeof_ctype(class, var->type);
-		}
-		info->s_dynamic = pos;
+		var = &class->load->stat[i];
+		conv_ctype(&var->type);
+		var->pos = pos;
+		pos += sizeof_ctype(class, var->type);
 	}
-  #endif
+	info->s_static = pos;
+
+	pos = 0;
+	for (i = 0; i < class->load->n_dyn; i++)
+	{
+		var = &class->load->dyn[i];
+		conv_ctype(&var->type);
+		var->pos = pos;
+		pos += sizeof_ctype(class, var->type);
+	}
+	info->s_dynamic = pos;
 
   /* String relocation */
 

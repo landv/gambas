@@ -61,7 +61,11 @@ static void trans_subr(int subr, int nparam)
   TRANS_SUBR_INFO *tsi = &subr_info[subr];
 
   if (tsi->info == NULL)
+  {
     tsi->info = SUBR_get(tsi->name);
+    if (!tsi->info)
+    	ERROR_panic("Unknown intern subroutine: %s", tsi->name);
+  }
 
   CODE_subr(tsi->info->opcode, nparam, tsi->info->optype, FALSE, tsi->info->min_param == tsi->info->max_param);
 }

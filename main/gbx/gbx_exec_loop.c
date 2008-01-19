@@ -156,7 +156,9 @@ static EXEC_FUNC SubrTable[] =
   SUBR_free,       /* 85 */
   SUBR_realloc,    /* 86 */
   SUBR_strptr,     /* 87 */
-  SUBR_sleep       /* 88 */
+  SUBR_sleep,      /* 88 */
+  SUBR_varptr,     /* 89 */
+  /* -> 95 */
 };
 
 

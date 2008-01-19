@@ -225,10 +225,16 @@ static void trans_subr(int subr, short nparam, boolean output)
 {
   SUBR_INFO *info = &COMP_subr_info[subr];
 
-  if (nparam < info->min_param)
-    THROW("Not enough arguments to &1()", info->name);
-  else if (nparam > info->max_param)
-    THROW("Too many arguments to &1()", info->name);
+	if (subr == SUBR_VarPtr)
+	{
+		if (CODE_check_varptr())
+			THROW("VarPtr() argument must be a dynamic, a static or a local variable");
+	}
+	
+	if (nparam < info->min_param)
+		THROW("Not enough arguments to &1()", info->name);
+	else if (nparam > info->max_param)
+		THROW("Too many arguments to &1()", info->name);
 
   CODE_subr(info->opcode, nparam, info->optype, output, (info->max_param == info->min_param));
 }

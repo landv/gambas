@@ -27,6 +27,7 @@
 #include "gb_common.h"
 #include "gb_alloc.h"
 #include "gb_common_check.h"
+#include "gb_pcode.h"
 
 #include "gbx_subr.h"
 
@@ -145,4 +146,65 @@ void SUBR_strptr(void)
   }
     
   SUBR_LEAVE();
+}
+
+
+void SUBR_varptr(void)
+{
+	ushort op;
+	void *ptr;
+	VALUE *val;
+  CLASS_VAR *var;
+	
+	SUBR_ENTER_PARAM(1);
+	
+	op = (ushort)SUBR_get_integer(PARAM);
+	
+	if ((op & 0xFF00) == C_PUSH_LOCAL)
+	{
+		val = &BP[op & 0xFF];
+			
+		switch(val->type)
+		{
+			case T_BOOLEAN:
+			case T_BYTE:
+			case T_SHORT:
+			case T_INTEGER:
+				ptr = &val->_integer.value;
+				break;
+				
+			case T_LONG:
+				ptr = &val->_long.value;
+				break;
+				
+			case T_SINGLE:
+			case T_FLOAT:
+				ptr = &val->_float.value;
+				break;
+				
+			default:
+			  THROW(E_TYPE, "Number", TYPE_get_name(val->type));
+		}
+	}
+	else if ((op & 0xF800) == C_PUSH_DYNAMIC)
+	{
+    var = &CP->load->dyn[op & 0x7FF];
+
+    if (OP == NULL)
+      THROW(E_ILLEGAL);
+
+    ptr = &OP[var->pos];
+  }
+	else if ((op & 0xF800) == C_PUSH_STATIC)
+	{
+    var = &CP->load->stat[op & 0x7FF];
+    ptr = (char *)CP->stat + var->pos;
+	}
+	else
+		THROW(E_ILLEGAL);
+
+  RETURN->type = T_POINTER;
+  RETURN->_pointer.value = (intptr_t)ptr;
+	
+	SUBR_LEAVE();
 }

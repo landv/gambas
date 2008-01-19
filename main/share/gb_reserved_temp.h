@@ -30,7 +30,7 @@
 
 /* If this file is modified, don't forget to update GAMBAS_PCODE_VERSION in acinclude.m4 */
 
-PUBLIC COMP_INFO COMP_res_info[] =
+COMP_INFO COMP_res_info[] =
 {
   { "" },
 
@@ -193,7 +193,7 @@ PUBLIC COMP_INFO COMP_res_info[] =
 };
 
 
-PUBLIC SUBR_INFO COMP_subr_info[] =
+SUBR_INFO COMP_subr_info[] =
 {
   { "Left$",              0,  0,  1,  2 },
   { "Left",               0,  0,  1,  2 },
@@ -492,6 +492,8 @@ PUBLIC SUBR_INFO COMP_subr_info[] =
   { ".Sleep",            88,  0,  1     },
 #endif
 
+  { "VarPtr",            89,  0,  1     },
+
   /*
   { "_EventOff",         94,  0,  0     },
   { "_EventOn",          95,  0,  0     },
@@ -500,12 +502,24 @@ PUBLIC SUBR_INFO COMP_subr_info[] =
   { NULL }
 };
 
-PUBLIC TABLE *COMP_res_table;
-PUBLIC TABLE *COMP_subr_table;
+TABLE *COMP_res_table;
+TABLE *COMP_subr_table;
+
+int SUBR_VarPtr;
 
 static uchar _operator_table[256] = { 0 };
 
-PUBLIC void RESERVED_init(void)
+static int get_index(const char *subr_name)
+{
+  int index;
+
+  if (TABLE_find_symbol(COMP_subr_table, subr_name, strlen(subr_name), NULL, &index))
+    return index;
+  else
+    return NO_SYMBOL;
+}
+
+void RESERVED_init(void)
 {
   COMP_INFO *info;
   SUBR_INFO *subr;
@@ -525,7 +539,7 @@ PUBLIC void RESERVED_init(void)
   }
   
   #ifdef DEBUG
-  printf("Table des mots r�erv�:\n");
+  printf("Reserved symbols table:\n");
   TABLE_print(COMP_res_table, TRUE);
   #endif
 
@@ -556,9 +570,11 @@ PUBLIC void RESERVED_init(void)
   }
 
   #ifdef DEBUG
-  printf("Table des routines int�r�s:\n");
+  printf("Subroutines table:\n");
   TABLE_print(COMP_subr_table, TRUE);
   #endif
+
+	SUBR_VarPtr = get_index("VarPtr");
 
   /* Table des constantes */
 
@@ -570,25 +586,25 @@ PUBLIC void RESERVED_init(void)
 }
 
 
-PUBLIC void RESERVED_exit(void)
+void RESERVED_exit(void)
 {
   TABLE_delete(&COMP_res_table);
   TABLE_delete(&COMP_subr_table);
 }
 
 
-PUBLIC SUBR_INFO *SUBR_get(const char *subr_name)
+SUBR_INFO *SUBR_get(const char *subr_name)
 {
-  int index;
+  int index = get_index(subr_name);
 
-  if (!TABLE_find_symbol(COMP_subr_table, subr_name, strlen(subr_name), NULL, &index))
+	if (index == NO_SYMBOL)
     return NULL;
   else
     return &COMP_subr_info[index];
 }
 
 
-PUBLIC SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype)
+SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype)
 {
   SUBR_INFO *si;
 
@@ -607,7 +623,7 @@ PUBLIC SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype)
   return NULL;
 }
 
-PUBLIC int RESERVED_find_word(const char *word, int len)
+int RESERVED_find_word(const char *word, int len)
 {
   //const char *res1 = ":;, #@?{}= ().!+-*/^&><   []    \\";
   //const char *p;

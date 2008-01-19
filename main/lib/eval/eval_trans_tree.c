@@ -332,8 +332,11 @@ static void analyze_call()
   else if (PATTERN_is_string(last_pattern) || PATTERN_is_number(last_pattern))
     THROW(E_SYNTAX);
 
-  /* N.B. Le cas o last_pattern = "." n'a pas de test sp�ifique */
+  /* N.B. Le cas où last_pattern = "." n'a pas de test spécifique */
 
+	if (subr_pattern && subr_pattern == PATTERN_make(RT_SUBR, SUBR_VarPtr))
+		THROW("VarPtr() cannot be used with Eval()");
+		
   for (;;)
   {
     if (PATTERN_is(*current, RS_RBRA))

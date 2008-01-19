@@ -357,78 +357,95 @@ static void analyze_call()
   else if (PATTERN_is_string(last_pattern) || PATTERN_is_number(last_pattern))
     THROW(E_SYNTAX);
 
-  /* N.B. Le cas o last_pattern = "." n'a pas de test sp�ifique */
+  /* N.B. Le cas où last_pattern = "." n'a pas de test spécifique */
 
-  for (;;)
-  {
-    if (PATTERN_is(*current, RS_RBRA))
-    {
-      current++;
-      break;
-    }
+	if (subr_pattern && subr_pattern == PATTERN_make(RT_SUBR, SUBR_VarPtr))
+	{
+		if (!PATTERN_is_identifier(*current))
+			THROW("VarPtr() takes an identifier");
+		
+		add_pattern(*current);
+		current++;
+		
+		if (!PATTERN_is(*current, RS_RBRA))
+			THROW("Syntax error. Right brace missing");
+		current++;
+	
+		add_subr(subr_pattern, 1, FALSE);
+	}
+	else
+	{
+		for (;;)
+		{
+			if (PATTERN_is(*current, RS_RBRA))
+			{
+				current++;
+				break;
+			}
+	
+			if (nparam_post > 0)
+			{
+				if (!PATTERN_is(*current, RS_COMMA))
+					THROW("Missing ')'");
+				current++;
+			}
+	
+			#if 0
+			if (FALSE) /*(PATTERN_is(*current, RS_AMP))*/
+			{
+				current++;
+				output[nparam_post] = current;
+				has_output = TRUE;
+			}
+			else
+			{
+				output[nparam_post] = NULL;
+			}
+			#endif
+	
+			if (optional && (PATTERN_is(*current, RS_COMMA) || PATTERN_is(*current, RS_RBRA)))
+			{
+				add_reserved_pattern(RS_OPTIONAL);
+			}
+			else
+			{
+				analyze_expr(0, RS_NONE);
+			}
+	
+			nparam_post++;
+	
+			if (nparam_post > MAX_PARAM_FUNC)
+				THROW("Too many arguments");
+		}
 
-    if (nparam_post > 0)
-    {
-      if (!PATTERN_is(*current, RS_COMMA))
-        THROW("Missing ')'");
-      current++;
-    }
-
-    #if 0
-    if (FALSE) /*(PATTERN_is(*current, RS_AMP))*/
-    {
-      current++;
-      output[nparam_post] = current;
-      has_output = TRUE;
-    }
-    else
-    {
-      output[nparam_post] = NULL;
-    }
-    #endif
-
-    if (optional && (PATTERN_is(*current, RS_COMMA) || PATTERN_is(*current, RS_RBRA)))
-    {
-      add_reserved_pattern(RS_OPTIONAL);
-    }
-    else
-    {
-      analyze_expr(0, RS_NONE);
-    }
-
-    nparam_post++;
-
-    if (nparam_post > MAX_PARAM_FUNC)
-      THROW("Too many arguments");
-  }
-
-  if (get_last_pattern(1) == PATTERN_make(RT_RESERVED, RS_OPTIONAL))
-    THROW("Syntax error. Needless arguments");
-
-  /*
-  while (nparam_post > 0)
-  {
-    if (get_last_pattern(1) != PATTERN_make(RT_RESERVED, RS_OPTIONAL))
-      break;
-
-    remove_last_pattern();
-    nparam_post--;
-  }
-  */
-
-  if (subr_pattern == NULL_PATTERN)
-    add_operator_output(RS_LBRA, nparam_post, has_output);
-  else
-  {
-    info = &COMP_subr_info[PATTERN_index(subr_pattern)];
-
-    if (nparam_post < info->min_param)
-      THROW("Not enough arguments to &1()", info->name);
-    else if (nparam_post > info->max_param)
-      THROW("Too many arguments to &1()", info->name);
-
-    add_subr(subr_pattern, nparam_post, has_output);
-  }
+		if (get_last_pattern(1) == PATTERN_make(RT_RESERVED, RS_OPTIONAL))
+			THROW("Syntax error. Needless arguments");
+		
+		/*
+		while (nparam_post > 0)
+		{
+			if (get_last_pattern(1) != PATTERN_make(RT_RESERVED, RS_OPTIONAL))
+				break;
+	
+			remove_last_pattern();
+			nparam_post--;
+		}
+		*/
+	
+		if (subr_pattern == NULL_PATTERN)
+			add_operator_output(RS_LBRA, nparam_post, has_output);
+		else
+		{
+			info = &COMP_subr_info[PATTERN_index(subr_pattern)];
+	
+			if (nparam_post < info->min_param)
+				THROW("Not enough arguments to &1()", info->name);
+			else if (nparam_post > info->max_param)
+				THROW("Too many arguments to &1()", info->name);
+	
+			add_subr(subr_pattern, nparam_post, has_output);
+		}
+	}
 
   #if 0
   if (has_output)

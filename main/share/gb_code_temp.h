@@ -246,6 +246,24 @@ PUBLIC boolean CODE_check_pop_local_last(short *local)
 
 #endif
 
+bool CODE_check_varptr(void)
+{
+  unsigned short op;
+  PCODE *last_code;
+
+  last_code = get_last_code();
+  if (!last_code)
+    return TRUE;
+
+  op = *last_code;
+  if (!((op & 0xFF00) == C_PUSH_LOCAL || (op & 0xFF00) == C_PUSH_PARAM || (op & 0xF800) == C_PUSH_STATIC || (op & 0xF800) == C_PUSH_DYNAMIC))
+  	return TRUE;
+  
+  *last_code = C_PUSH_INTEGER;
+  write_short((short)op);
+  return FALSE;
+}
+
 PUBLIC void CODE_push_number(int value)
 {
   LAST_CODE;

@@ -304,16 +304,19 @@ EXTERN SUBR_INFO COMP_subr_info[];
 EXTERN TABLE *COMP_res_table;
 EXTERN TABLE *COMP_subr_table;
 
+EXTERN int SUBR_VarPtr;
+
 #endif
 
-PUBLIC void RESERVED_init(void);
-PUBLIC void RESERVED_exit(void);
+void RESERVED_init(void);
+void RESERVED_exit(void);
 
-PUBLIC int RESERVED_find_word(const char *word, int len);
+int RESERVED_find_word(const char *word, int len);
 
-PUBLIC SUBR_INFO *SUBR_get(const char *subr_name);
-PUBLIC SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype);
-/*PUBLIC CONST_INFO *CONST_get(char *cst_name);
-PUBLIC CONST_INFO *CONST_get_from_index(short index);*/
+SUBR_INFO *SUBR_get(const char *subr_name);
+SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype);
+int SUBR_get_index(const char *subr_name);
+/*CONST_INFO *CONST_get(char *cst_name);
+CONST_INFO *CONST_get_from_index(short index);*/
 
 #endif

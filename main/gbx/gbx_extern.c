@@ -500,3 +500,4 @@ void EXTERN_exit(void)
   
   TABLE_delete(&_table);
 }
+

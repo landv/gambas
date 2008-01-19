@@ -10,7 +10,7 @@ PUBLIC SUB Form_Open()
 
   DIM s AS String
   
-  TextEdit1.Text = File.Load("text.html")
+  TextEdit1.RichText = File.Load("text.html")
 
   FOR EACH s IN Fonts
     ComboBox1.add(s)
@@ -133,7 +133,7 @@ END
 
 PUBLIC SUB ToolButton1_Click()
 
-  frmShowHtml.Run(TextEdit1.Text)  
+  frmShowHtml.Run(TextEdit1.RichText)  
 
 END
 

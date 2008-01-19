@@ -206,6 +206,7 @@ void SUBR_alloc(void);
 void SUBR_free(void);
 void SUBR_realloc(void);
 void SUBR_strptr(void);
+void SUBR_varptr(void);
 
 /* subr_misc.c */
 
