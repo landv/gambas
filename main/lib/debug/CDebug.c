@@ -40,8 +40,8 @@
 DECLARE_EVENT(EVENT_Read);
 
 static int _started = FALSE;
-static int _fdr;
-static int _fdw;
+static int _fdr = -1;
+static int _fdw = -1;
 static CDEBUG *_debug_object = NULL;
 
 #define BUFFER_SIZE 16384
@@ -188,6 +188,7 @@ BEGIN_METHOD_VOID(CDEBUG_stop)
   close(_fdw);
   close(_fdr);
   
+  _fdw = _fdr = -1;
   _started = FALSE;
 
 END_METHOD
