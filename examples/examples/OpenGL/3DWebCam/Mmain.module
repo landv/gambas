@@ -239,7 +239,7 @@ PUBLIC SUB Screen_Draw()
   WAIT 0.05
 END
 
-PUBLIC SUB Screen_keyPressed()
+PUBLIC SUB Screen_keyPress()
 
   IF key.Code = key.F1 THEN Screen.Fullscreen = NOT Screen.Fullscreen
   IF key.Code = key.Esc THEN Screen.Close()
