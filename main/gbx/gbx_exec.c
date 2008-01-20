@@ -595,30 +595,32 @@ void EXEC_leave(bool drop)
 	if (pc && PCODE_is(pc[1], C_BYREF))
 	{
 		VALUE *xp, *pp;
-		int nn;
+		int bit, nbyref;
 		
 		xp = PP - nparam;
+		nbyref = 1 + pc[1] & 0xF;
 		pp = xp;
-		n = pc[1] & 0xF;
-		pc += 2;
 		
-		for (nn = 0; nn < nparam; nn += 16)
+		for (i = 0, n = 0; i < nparam; i++)
 		{
-			for (i = 0; i < 16; i++)
+			bit = i & 15;
+			if (bit == 0)
+				n++;
+			
+			if (n <= nbyref && (pc[1 + n] & (1 << bit)))
 			{
-				if (n >= 0 && *pc & (1 << i))
-				{
-					xp[nb] = *pp;
-					nb++;
-				}
-				else
-					RELEASE(pp);
-				pp++;
+				//printf("pp[%d] -> pp[%d]\n", i, nb);
+				xp[nb] = *pp;
+				nb++;
 			}
-			n--;
-			pc++;
-		}
-		
+			else
+			{
+				//printf("pp[%d] release (%d)\n", i, pp->type);
+				RELEASE(pp);
+			}
+			pp++;
+		}		
+  
 		n = SP - PP;
 		#if DEBUG_STACK
 		printf("release = %d, nparam = %d, byref = %d\n", n, FP->n_param, nb);
@@ -629,7 +631,7 @@ void EXEC_leave(bool drop)
 		OBJECT_UNREF(&OP, "EXEC_leave");
 		SP -= nb;
 		STACK_pop_frame(&EXEC_current);
-		PC += (pc[1] & 0xF) + 2;
+		PC += nbyref + 1;
 	}
 	else
 	{
