@@ -423,12 +423,6 @@
         Text = ("OpenGL display")
       }
     }
-    { Label6 Label
-      MoveScaled(7,9,47,3)
-      Visible = False
-      Font = Font["Bold"]
-      Text = ("Features")
-    }
     { Label13 Label
       MoveScaled(7,20,47,3)
       Visible = False
@@ -475,21 +469,22 @@
       MoveScaled(1,21,79,37)
       Spacing = 8
       { VBox4 VBox
-        MoveScaled(0,0,61,35)
+        MoveScaled(1,1,59,35)
+        Expand = True
         Spacing = 8
         { cmbRequire ComboBox
-          MoveScaled(0,0,61,3)
+          MoveScaled(0,0,58,3)
           Text = ("")
           ReadOnly = True
         }
         { lstRequire ListBox
-          MoveScaled(0,4,61,29)
+          MoveScaled(0,4,58,29)
           Expand = True
           Sorted = True
         }
       }
       { VBox5 VBox
-        MoveScaled(62,0,17,35)
+        MoveScaled(61,1,17,35)
         Spacing = 8
         { btnAdd Button
           MoveScaled(0,0,17,3)

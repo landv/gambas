@@ -8,7 +8,7 @@ PUBLIC SUB Form_Open()
   '  .Columns[0].Text = "Color"
   'END WITH
   
-  PRINT ComboBox(DataCombo2.Children[0]).Index
+  'PRINT ComboBox(DataCombo2.Children[0]).Index
   
   WITH DataBrowser1.GridView
     .Columns[0].Text = "Id"

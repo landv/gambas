@@ -1861,8 +1861,9 @@ PUBLIC SUB Control_Draw(OPTIONAL iIndex AS Integer)
     
     CASE ELSE 
 
-      hPict = Picture["img/control" &/ "draw-" & LCase(hCCtrl.Kind) & ".png"]
-      IF NOT hPict THEN hPict = Picture["img/control" &/ LCase(hCCtrl.Kind) & ".png"]
+      'hPict = Picture["img/control" &/ "draw-" & LCase(hCCtrl.Kind) & ".png"]
+      'IF NOT hPict THEN hPict = Picture["img/control" &/ LCase(hCCtrl.Kind) & ".png"]
+      hPict = Picture[".control" &/ LCase(hCCtrl.Kind)]
       'Draw.ForeColor = Control[Name].Control.Foreground
       IF hPict THEN
         Draw.Picture(hPict, 4, 4)
@@ -1950,6 +1951,24 @@ PUBLIC SUB Refresh()
   'Control[Name].Control.Refresh
 
 END
+
+PUBLIC SUB RefreshForComponent()
+
+  DIM hCtrl AS CControl
+  
+  FOR EACH hCtrl IN Control
+    IF hCtrl.Control IS DrawingArea THEN
+      IF NOT CComponent.Classes.Exist(hCtrl.Kind) THEN
+        ME.Delete
+        Project.Files[Path] = NULL
+        RETURN
+      ENDIF
+      hCtrl.Control.Refresh
+    ENDIF
+  NEXT
+
+END
+
 
 ' PUBLIC SUB Form_Hide()
 ' 

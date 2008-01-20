@@ -392,7 +392,7 @@ PUBLIC SUB AddBreakpoint(sName AS String, sProc AS String, iLine AS Integer, bOn
   
   DIM sText AS String
   DIM iInd AS Integer
-  
+
   sText = sName & "." & sProc & "." & CStr(iLine)
   iInd = lstBreak.Find(sText)
   
