@@ -29,75 +29,85 @@
 
 #include "CMessage.h"
 
-#define MSG_FIELDS "(Message)s[(Button1)s(Button2)s(Button3)s]"
-
 static int _global_lock = 0;
 static bool _title_set = false;
 
-#define LOCK_MSG_BOX(_code) \
-  if (_global_lock) \
-  { \
-  	GB.Error("Message box already displayed"); \
-  	return; \
-  } \
-  _global_lock++; \
-  if (!_title_set) gMessage::setTitle(GB.Application.Title()); \
-  GB.ReturnInteger(_code); \
-  _global_lock--; \
+typedef
+	struct { 
+		GB_STRING msg; 
+		GB_STRING btn1; 
+		GB_STRING btn2; 
+		GB_STRING btn3;
+	}
+	MSG_PARAM;
 
+static void show_message_box(int type, MSG_PARAM *_p)
+{
+	char *msg = GB.ToZeroString(ARG(msg));
+	char *btn1, *btn2, *btn3;
+	int ret;
+	
+	btn1 = MISSING(btn1) ? NULL : GB.ToZeroString(ARG(btn1));
+	btn2 = (type == 0 || MISSING(btn2)) ? NULL : GB.ToZeroString(ARG(btn1));
+	btn3 = (type == 0 || MISSING(btn3)) ? NULL : GB.ToZeroString(ARG(btn1));
+	
+  if (_global_lock)
+  {
+  	GB.Error("Message box already displayed");
+  	return;
+  }
+	
+  _global_lock++;
+  if (!_title_set) 
+  	gMessage::setTitle(GB.Application.Title());
+	
+	switch (type)
+	{
+		case 0: ret = gMessage::showInfo(msg, btn1); break;
+		case 1: ret = gMessage::showWarning(msg, btn1, btn2, btn3); break;
+		case 2: ret = gMessage::showQuestion(msg, btn1, btn2, btn3); break;
+		case 3: ret = gMessage::showError(msg, btn1, btn2, btn3); break;
+		case 4: ret = gMessage::showDelete(msg, btn1, btn2, btn3); break;
+		default: ret = 0;
+	}
+  	
+  GB.ReturnInteger(ret);
+  
+  _global_lock--;
+}
 
 BEGIN_METHOD(CMESSAGE_info, GB_STRING msg; GB_STRING btn)
 
-	char *b=NULL;
-	if (!MISSING(btn)) b=STRING(btn);
-	
-	LOCK_MSG_BOX(gMessage::showInfo(STRING(msg),b));
+	show_message_box(0, (MSG_PARAM *)_p);
 	
 END_METHOD
 
 
 BEGIN_METHOD(CMESSAGE_warning, GB_STRING msg; GB_STRING btn1; GB_STRING btn2; GB_STRING btn3)
 
-	char *b1=NULL,*b2=NULL,*b3=NULL;
-	if (!MISSING(btn1)) b1=STRING(btn1);
-	if (!MISSING(btn2)) b2=STRING(btn2);
-	if (!MISSING(btn3)) b3=STRING(btn3);
-	LOCK_MSG_BOX(gMessage::showWarning(STRING(msg),b1,b2,b3));
+	show_message_box(1, (MSG_PARAM *)_p);
 
 END_METHOD
 
 
 BEGIN_METHOD(CMESSAGE_question, GB_STRING msg; GB_STRING btn1; GB_STRING btn2; GB_STRING btn3)
 
-	char *b1=NULL,*b2=NULL,*b3=NULL;
-	if (!MISSING(btn1)) b1=STRING(btn1);
-	if (!MISSING(btn2)) b2=STRING(btn2);
-	if (!MISSING(btn3)) b3=STRING(btn3);
-	LOCK_MSG_BOX(gMessage::showQuestion(STRING(msg),b1,b2,b3));
+	show_message_box(2, (MSG_PARAM *)_p);
 
 END_METHOD
 
 
 BEGIN_METHOD(CMESSAGE_error, GB_STRING msg; GB_STRING btn1; GB_STRING btn2; GB_STRING btn3)
 	
-	char *b1=NULL,*b2=NULL,*b3=NULL;
-	if (!MISSING(btn1)) b1=STRING(btn1);
-	if (!MISSING(btn2)) b2=STRING(btn2);
-	if (!MISSING(btn3)) b3=STRING(btn3);
-	LOCK_MSG_BOX(gMessage::showError(STRING(msg),b1,b2,b3));
+	show_message_box(3, (MSG_PARAM *)_p);
 	 
 END_METHOD
 
 BEGIN_METHOD(CMESSAGE_delete, GB_STRING msg; GB_STRING btn1; GB_STRING btn2; GB_STRING btn3)
 	
-	char *b1=NULL,*b2=NULL,*b3=NULL;
-	if (!MISSING(btn1)) b1=STRING(btn1);
-	if (!MISSING(btn2)) b2=STRING(btn2);
-	if (!MISSING(btn3)) b3=STRING(btn3);
-	LOCK_MSG_BOX(gMessage::showDelete(STRING(msg),b1,b2,b3));
+	show_message_box(4, (MSG_PARAM *)_p);
 
 END_METHOD
-
 
 
 GB_DESC CMessageDesc[] =
@@ -106,10 +116,10 @@ GB_DESC CMessageDesc[] =
 
   GB_STATIC_METHOD("_call", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
   GB_STATIC_METHOD("Info", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
-  GB_STATIC_METHOD("Warning", "i", CMESSAGE_warning, MSG_FIELDS),
-  GB_STATIC_METHOD("Question", "i", CMESSAGE_question,MSG_FIELDS),
-  GB_STATIC_METHOD("Error", "i", CMESSAGE_error,MSG_FIELDS ),
-  GB_STATIC_METHOD("Delete", "i", CMESSAGE_delete,MSG_FIELDS),
+  GB_STATIC_METHOD("Warning", "i", CMESSAGE_warning,  "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+  GB_STATIC_METHOD("Question", "i", CMESSAGE_question, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+  GB_STATIC_METHOD("Error", "i", CMESSAGE_error, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+  GB_STATIC_METHOD("Delete", "i", CMESSAGE_delete, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
 
   GB_END_DECLARE
 };
