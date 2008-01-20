@@ -123,7 +123,7 @@ PUBLIC SUB Screen_Close()
 
 END
 
-PUBLIC SUB Screen_KeyPressed()
+PUBLIC SUB Screen_KeyPress()
   
   IF (key.Code = key.F1) THEN Screen.FullScreen = NOT Screen.FullScreen
   IF (key.Code = key.Esc) THEN Screen.Close()

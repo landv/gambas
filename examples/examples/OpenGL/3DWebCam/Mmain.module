@@ -237,9 +237,10 @@ PUBLIC SUB Screen_Draw()
   yrot += 0.2 ' Y Axis Rotation
   zrot += 0.4 ' Z Axis Rotation
   WAIT 0.05
+
 END
 
-PUBLIC SUB Screen_keyPressed()
+PUBLIC SUB Screen_keyPress()
 
   IF key.Code = key.F1 THEN Screen.Fullscreen = NOT Screen.Fullscreen
   IF key.Code = key.Esc THEN Screen.Close()
@@ -251,4 +252,5 @@ PUBLIC SUB Timer1_Timer()
  logo = hWebCam.Image
  
   UpdateLogo = TRUE
+
 END
