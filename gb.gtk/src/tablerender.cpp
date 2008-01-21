@@ -442,7 +442,6 @@ void gTable::setRowSelected(int row,bool value)
 	}
 	
 	if (!value) g_hash_table_foreach_remove(seldata,(GHRFunc)gTable_ecol,(gpointer)row);
-
 }
 
 bool gTable::getFieldSelected (int col,int row)
@@ -1100,9 +1099,12 @@ void gTableRender::setRowSelected(int row,bool value)
 {
 	if (row<0) return;
 	if (row>=rowCount()) return;
-
+	if (value == getRowSelected(row))
+		return;
+		
 	gTable::setRowSelected(row,value);
 	queryUpdate(row,-1);
+	//view->emit(SIGNAL(view->onSelect));
 }
 
 void gTableRender::clearSelection()
@@ -1111,6 +1113,7 @@ void gTableRender::clearSelection()
 	seldata=g_hash_table_new_full((GHashFunc)g_int_hash,(GEqualFunc)gTable_equal,
                          (GDestroyNotify)gTable_ekey,NULL);
 	gtk_widget_queue_draw(sf);
+	//view->emit(SIGNAL(view->onSelect));
 }
 
 void gTableRender::selectRows(int start, int length, bool value)
@@ -1131,8 +1134,10 @@ void gTableRender::selectRows(int start, int length, bool value)
 	if (end >= rowCount())
 		end = rowCount() - 1;
 		
+	view->lock();
 	for (i = start; i <= end; i++)
-		setRowSelected(i, -1);
+		setRowSelected(i, value);
+	view->unlock();
 }
 
 int gTableRender::findVisibleRow(int y)

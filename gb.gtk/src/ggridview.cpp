@@ -196,6 +196,7 @@ static gboolean tbheader_move(GtkWidget *wid, GdkEventMotion *e, gGridView *data
 static void tblateral_select(gGridView *data, int bcurrent, bool move)
 {
 	int bc, col;
+	bool sel_changed;
 	
 	data->getCursor(NULL, &col);
 	
@@ -208,6 +209,7 @@ static void tblateral_select(gGridView *data, int bcurrent, bool move)
 			if (!data->rowSelected(bcurrent))
 			{
 				data->setCursor(bcurrent, col);
+				data->emit(SIGNAL(data->onSelect));
 			}
 			break;
 			
@@ -215,10 +217,14 @@ static void tblateral_select(gGridView *data, int bcurrent, bool move)
 			if (!move)
 			{
 				data->sel_row = bcurrent;
-				data->sel_current = bcurrent;
-				data->clearSelection();
-				data->setRowSelected(bcurrent, true);
 				data->setCursor(bcurrent, col);
+				if (data->sel_current != bcurrent)
+				{
+					data->sel_current = bcurrent;
+					data->clearSelection();
+					data->setRowSelected(bcurrent, true);
+					data->emit(SIGNAL(data->onSelect));
+				}
 			}
 			else
 			{
@@ -235,14 +241,14 @@ static void tblateral_select(gGridView *data, int bcurrent, bool move)
 					{
 						for (bc = bcurrent; bc <= data->sel_current; bc++)
 							data->setRowSelected(bc, true);
+						sel_changed = true;
 					}
 					else
 					{
 						for (bc = data->sel_current; bc < bcurrent; bc++)
 							data->setRowSelected(bc, false);
+						sel_changed = true;
 					}
-					
-					data->sel_current = bcurrent;
 				}
 				else
 				{
@@ -262,8 +268,12 @@ static void tblateral_select(gGridView *data, int bcurrent, bool move)
 						for (bc = bcurrent + 1; bc <= data->sel_current; bc++)
 							data->setRowSelected(bc, false);
 					}
-					
+				}
+				
+				if (data->sel_current != bcurrent)
+				{
 					data->sel_current = bcurrent;
+					data->emit(SIGNAL(data->onSelect));
 				}
 				
 				data->setCursor(bcurrent, col);
@@ -719,6 +729,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 
 	onChange = NULL;
 	onActivate = NULL;
+	onSelect = NULL;
 	onScroll = NULL;
 	onClick = NULL;
 	onColumnClick = NULL;
