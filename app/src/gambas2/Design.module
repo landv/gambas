@@ -484,9 +484,8 @@ END
 '
 ' END
 
-PRIVATE SUB Write(sCmd AS String)
+PRIVATE SUB WriteCommand(sCmd AS String)
   
-  'DEBUG sCmd
   Debug.Write(sCmd)
   
 END
@@ -513,7 +512,7 @@ PUBLIC SUB RunUntil(hForm AS FEditor, iLine AS Integer)
     IF $iState <> STATE_DEBUG THEN
       $sAddBreakpoint = "+" & sBreak
     ELSE
-      Write("+" & sBreak)
+      WriteCommand("+" & sBreak)
     ENDIF
     $sRemoveBreakpoint = "-" & sBreak
   ENDIF
@@ -735,7 +734,7 @@ PUBLIC SUB Command(sCmd AS String, OPTIONAL iNewState AS Integer = STATE_LAST, O
   '  $cCommand.Add(sPrefix & sCmd)
   'ENDIF
 
-  Write(sCmd)
+  WriteCommand(sCmd)
   
   IF iNewState <> STATE_LAST THEN
     IF iNewState <> $iState THEN
@@ -753,7 +752,7 @@ PRIVATE SUB Signal()
 
   IF $bStart THEN
     'PRINT "START Debug.Write: "; $sCmdStart
-    Write($sCmdStart)
+    WriteCommand($sCmdStart)
     $bStart = FALSE
     'Command("w", TRUE)
     'Command($sCmdStartRun, FALSE, STATE_RUNNING)
@@ -767,7 +766,7 @@ PRIVATE SUB Signal()
   ' Entering debug
 
   IF $sRemoveBreakpoint THEN
-    Write($sRemoveBreakpoint)
+    WriteCommand($sRemoveBreakpoint)
     $sRemoveBreakpoint = ""
   ENDIF
 
@@ -911,10 +910,10 @@ PUBLIC SUB SetBreakpoint(sClass AS String, iLine AS Integer, bOn AS Boolean)
 
   IF bOn THEN
     'DEBUG "+" & sClass & "." & CStr(iLine)
-    Write("+" & sClass & "." & CStr(iLine))
+    WriteCommand("+" & sClass & "." & CStr(iLine))
   ELSE
     'DEBUG "-" & sClass & "." & CStr(iLine)
-    Write("-" & sClass & "." & CStr(iLine))
+    WriteCommand("-" & sClass & "." & CStr(iLine))
   ENDIF
 
 END

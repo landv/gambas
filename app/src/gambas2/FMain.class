@@ -612,7 +612,7 @@ END
 
 PUBLIC SUB mnuDatabaseManager_Click()
 
-  Project.RunTool("gambas-database-manager")
+  Project.RunTool("gambas" & System.Version & "-database-manager")
 
 END
 

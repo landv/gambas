@@ -210,10 +210,9 @@ END_METHOD
 
 BEGIN_METHOD(CDEBUG_write, GB_STRING data)
 
-  /*fprintf(stderr, "CDEBUG_write: %.*s\n", LENGTH(data), STRING(data));
-  if (STRING(data) && *STRING(data) == 'T')
-    fprintf(stderr, "T ?\n");*/
-  
+  if (_fdw < 0)
+  	return;
+
   if (STRING(data))
     write(_fdw, STRING(data), LENGTH(data));
   write(_fdw, "\n", 1);
