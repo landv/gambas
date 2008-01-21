@@ -714,15 +714,45 @@ gPicture* gPicture::flip(bool mirror)
 {
 	gPicture *ret;
 	GdkPixbuf *old;
+	guint32 *src, *dst;
+	int w, h;
+	register guint32 *s, *d;
+	register int x, y;
+	int rowstride;
 
+	getPixbuf();
 	ret = copy();
 	
 	if (!isVoid())
 	{
-    ret->getPixbuf();
-    old = ret->img;
-    ret->img = gdk_pixbuf_flip(old, !mirror);
-    g_object_unref(G_OBJECT(old));
+		src = (guint32 *)data();
+		dst = (guint32 *)ret->data();
+		w = width();
+		h = height();
+		
+		rowstride = gdk_pixbuf_get_rowstride(getPixbuf()) / sizeof(guint32);
+	
+		if (!mirror)
+		{
+			for (y = 0; y < h; y++)
+			{
+				s = src + y * rowstride;
+				d = dst + y * rowstride + w;
+				for (x = 0; x < w; x++)
+					*--d = *s++;
+			}
+		}
+		else
+		{
+			s = src;
+			d = dst + h * rowstride;
+			for (y = 0; y < h; y++)
+			{
+				d -= rowstride;
+				memcpy(d, s, w * sizeof(guint32));
+				s += rowstride;
+			}
+		}
   }
   
 	return ret;

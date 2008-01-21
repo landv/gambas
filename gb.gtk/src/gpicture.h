@@ -28,11 +28,11 @@ public:
   
   static void assign(gPicture **dst, gPicture *src = 0) { gShare::assign((gShare **)dst, src); }
 
-  gPictureType type() { return _type; }
-	int width() { return _width; }
-	int height() { return _height; }
+  gPictureType type() const { return _type; }
+	int width() const { return _width; }
+	int height() const { return _height; }
 	int depth();
-	bool isTransparent() { return _transparent; }
+	bool isTransparent() const { return _transparent; }
 	unsigned char *data();
 
 	void setTransparent(bool vl);
