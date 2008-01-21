@@ -104,8 +104,11 @@ PUBLIC SUB RefreshAll()
   IF NOT cSelection THEN GOTO _HIDE
 
   IF cSelection.Count = 0 THEN
+    lblName.Text = $hForm.Name
     cSelection = NEW Collection
     cSelection.Add($hForm.Control[$hForm.Name], $hForm.Name)
+  ELSE 
+    lblName.Text = $hForm.Master.Name
   ENDIF
 
   $bMany = cSelection.Count > 1
@@ -262,6 +265,7 @@ PUBLIC SUB RefreshOne(hCtrl AS CControl, sProp AS String)
 
     IF $bMany THEN RETURN
     grdProperty[1, 1].Text = $hObject.Name
+    lblName.Text = $hObject.Name
 
   ELSE
 
