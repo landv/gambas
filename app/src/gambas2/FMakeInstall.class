@@ -66,6 +66,11 @@ PUBLIC SUB Form_Open()
   cmbCategories.List = Split(File.Load("install/categories"), "\n", "", TRUE)
 
   txtLicense.List = ["General Public Licence", "Freeware", "Public Domain", "Lesser General Public Licence", "Other Licence(s)", "Non-Free Licence"]
+  
+  IF Project.CreateComponent THEN 
+    chkPrefix.Value = TRUE
+    chkPrefix.Enabled = FALSE
+  ENDIF 
 
 END
 
@@ -80,12 +85,27 @@ PRIVATE SUB UpdatePackageName()
   DIM sVendor AS String
   DIM sText AS String
 
-  IF chkPrefix.Value THEN
+  IF Project.CreateComponent THEN
+
     sVendor = String.LCase(Trim(txtVendor.Text))
-    IF NOT sVendor THEN sVendor = "gambas"
-    sText = sVendor & "-" & LCase(Project.Name)
+    IF NOT sVendor THEN sVendor = "gb"
+    IF LCase(Project.Name) LIKE sVendor & ".*" THEN 
+      sVendor = ""
+    ELSE 
+      sVendor &= "-"
+    ENDIF
+    sText = "gambas" & System.Version & "-" & sVendor & Replace(LCase(Project.Name), ".", "-")
+  
   ELSE
-    sText = LCase(Project.Name)
+
+    IF chkPrefix.Value THEN
+      sVendor = String.LCase(Trim(txtVendor.Text))
+      IF NOT sVendor THEN sVendor = "gambas"
+      sText = sVendor & "-" & LCase(Project.Name)
+    ELSE
+      sText = LCase(Project.Name)
+    ENDIF
+    
   ENDIF
   
   sText &= Subst("-&1.&2", Project.MajorVersion, Project.MinorVersion)
@@ -262,6 +282,9 @@ PUBLIC SUB wizInstall_BeforeChange()
       ELSE
         wizInstall[3].Enabled = TRUE
         wizInstall[4].Enabled = TRUE
+      ENDIF
+      IF Project.CreateComponent
+        wizInstall[4].Enabled = FALSE
       ENDIF
 
     CASE 3

@@ -49,19 +49,18 @@ END
 PUBLIC SUB Form_Resize()
 
   DIM iWidth AS Integer
-
-  lblMessage.Move(0, 0, ME.ClientW)
-
-  grdProperty.Move(0, 0, ME.ClientWidth, ME.ClientHeight)
-
-  IF grdProperty.Columns.Count < 2 THEN RETURN
-
+  ' 
+  ' lblMessage.Move(0, 0, ME.ClientW)
+  ' 
+  ' grdProperty.Move(0, 0, ME.ClientWidth, ME.ClientHeight)
+  ' 
+  ' IF grdProperty.Columns.Count < 2 THEN RETURN
+  ' 
   iWidth = Min(128, grdProperty.ClientWidth \ 2)
-
   grdProperty.Columns[0].Width = iWidth
-  grdProperty.Columns[1].Width = grdProperty.ClientWidth - iWidth
-  'grdProperty.Columns.Width = 100 'ME.ClientWidth / 4
-
+  ' grdProperty.Columns[1].Width = grdProperty.ClientWidth - iWidth
+  ' 'grdProperty.Columns.Width = 100 'ME.ClientWidth / 4
+  ' 
   MoveProperty
 
   'CATCH $$ Non déréférencement en cas d'erreur
@@ -104,11 +103,8 @@ PUBLIC SUB RefreshAll()
   IF NOT cSelection THEN GOTO _HIDE
 
   IF cSelection.Count = 0 THEN
-    lblName.Text = $hForm.Name
     cSelection = NEW Collection
     cSelection.Add($hForm.Control[$hForm.Name], $hForm.Name)
-  ELSE 
-    lblName.Text = $hForm.Master.Name
   ENDIF
 
   $bMany = cSelection.Count > 1
@@ -123,6 +119,8 @@ PUBLIC SUB RefreshAll()
     ENDIF
 
   NEXT
+  
+  UpdateLabel
 
   IF bDiff THEN sClass = "Control"
 
@@ -228,7 +226,9 @@ PUBLIC SUB RefreshAll()
   ' NEXT
 
   Form_Resize
-  grdProperty.Visible = TRUE
+  lblMessage.Hide
+  grdProperty.Show
+  lblName.Show
   
   IF NOT $bMany THEN
     FFormStack.Select($hObject.Name)
@@ -246,7 +246,9 @@ END
 PUBLIC SUB HideAll()
 
   HideProperty
-  grdProperty.Visible = FALSE
+  grdProperty.Hide
+  lblName.Hide
+  lblMessage.Show
   $hForm = NULL
 
 END
@@ -265,7 +267,7 @@ PUBLIC SUB RefreshOne(hCtrl AS CControl, sProp AS String)
 
     IF $bMany THEN RETURN
     grdProperty[1, 1].Text = $hObject.Name
-    lblName.Text = $hObject.Name
+    UpdateLabel
 
   ELSE
 
@@ -871,5 +873,14 @@ END
 PUBLIC SUB RefreshReadOnly()
   
   HideProperty
+  
+END
+
+PRIVATE SUB UpdateLabel()
+
+  DIM hObject AS CControl = $hForm.Master
+  
+  IF NOT hObject THEN hObject = $hForm.Control[$hForm.Name]
+  lblName.Text = "<b>" & hObject.Name & "</b> " & hObject.Kind
   
 END

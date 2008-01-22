@@ -20,6 +20,9 @@ PRIVATE $sCategories AS String      ' Categories list
 PRIVATE $sHome AS String            ' Home user directory
 PRIVATE $sVersion AS String
 
+PRIVATE CONST MIN_VERSION AS String = "1.9.48"
+PRIVATE CONST MAX_VERSION AS String = "2.90"
+
 PUBLIC SUB CheckProgram()
   
   IF $bChecked THEN RETURN
@@ -99,6 +102,10 @@ PUBLIC FUNCTION Make() AS Boolean
   DIM sMacro AS String
   DIM bAdd AS Boolean
   DIM sPath AS String
+
+  IF Project.Systems.Exist("slackware") THEN 
+    IF Project.MakeExecutable(TRUE, TRUE) THEN RETURN TRUE
+  ENDIF  
   
   ' Save old rpm macro file
   sMacro = User.Home &/ ".rpmmacros"
@@ -106,9 +113,7 @@ PUBLIC FUNCTION Make() AS Boolean
   TRY KILL sMacro
 
   FOR EACH sSys IN Project.Systems
-
     IF MakePackage(sSys) THEN RETURN TRUE
-
   NEXT
 
   ' Restore old rpm macro file
@@ -355,18 +360,18 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFIle, "Section: "; Split(Project.Groups[sSys], "/")[0]
   PRINT #hFile, "Priority: optional"
   PRINT #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
-  PRINT #hFile, "Build-Depends: debhelper (>= 4.0.0), gambas2-dev (>= 1.9.48), gambas2-dev (<< 2.1)";
+  PRINT #hFile, "Build-Depends: debhelper (>= 4.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
   FOR EACH sLib IN Project.Libraries
-    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= 1.9.48), gambas2-"; Replace(sLib, ".", "-"); " (<< 2.1)";
+    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= "; MIN_VERSION; "), gambas2-"; Replace(sLib, ".", "-"); " (<< "; MAX_VERSION; ")";
   NEXT 
   PRINT #hFile
   PRINT #hFile, "Standards-Version: 3.7.2"
   PRINT #hFile
   PRINT #hFile, "Package: "; $sPackageName
   PRINT #hFile, "Architecture: any"
-  PRINT #hFile, "Depends: ${shlibs:Depends}, ${misc:Depends}, gambas2-runtime (>= 1.9.48), gambas2-runtime (<< 2.1)";
+  PRINT #hFile, "Depends: ${shlibs:Depends}, ${misc:Depends}, gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
     FOR EACH sLib IN Project.Libraries
-    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= 1.9.48), gambas2-"; Replace(sLib, ".", "-"); " (<< 2.1)";
+    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= "; MIN_VERSION; "), gambas2-"; Replace(sLib, ".", "-"); " (<< "; MAX_VERSION; ")";
   NEXT 
   PRINT #hFile
   aLine = Split(Project.Description, "\n")
@@ -578,12 +583,17 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
     'PRINT #hFile, "BuildRequires: gambas2-ide"
   PRINT #hFile, "BuildArch: noarch"
 
-  PRINT #hFile, "Requires: gambas2-runtime >= 1.9.48,gambas2-runtime < 2.1";
+  PRINT #hFile, "Requires: gambas2-runtime >= "; MIN_VERSION; ",gambas2-runtime < "; MAX_VERSION;
 
-  FOR EACH sLib IN Project.Libraries
-    PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " >= 1.9.48";
-    PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " < 2.1";
-  NEXT
+  IF NOT Project.CreateComponent THEN 
+  
+    FOR EACH sLib IN Project.Libraries
+      PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " >= "; MIN_VERSION;
+      PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " < "; MAX_VERSION;
+    NEXT
+  
+  ENDIF
+
   PRINT #hFile
 
   PRINT #hFile, "AutoReqProv: no"
@@ -595,154 +605,198 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
 
   PRINT #hFile, "\n%setup -q -n " & Quote.Shell($sName)
 
-  PRINT #hFile, "\n%build"
-  PRINT #hFile, Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE) & "\ngba"; System.Version
+  IF Project.CreateComponent THEN
 
-  PRINT #hFile, "\n%install"
+    ' Components must be installed in Gambas prefix, which is not known at package creation time.
+    ' How can we do that? Hardcode installation path according to the distribution?
 
-  PRINT #hFile, "install -d %{buildroot}/%{_bindir}"
-  PRINT #hFile, "install -p "; Quote.Shell($sName); ".gambas %{buildroot}/%{_bindir}" &/ Quote.Shell($sName)
+    PRINT #hFile, "\n%build"
+    PRINT #hFile, Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE) & "\ngba"; System.Version
+     
+    PRINT #hFile, "\n%install"
+     
+    PRINT #hFile, "install -d %{buildroot}/%{_libdir}/gambas"; System.Version
+    PRINT #hFile, "install -p "; Quote.Shell($sName); ".gambas %{buildroot}/%{_libdir}/gambas" & System.Version; "/"; Quote.Shell($sName); ".gambas"
+    PRINT #hFile, "install -p .component %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; Quote.Shell($sName); ".component"
 
-  sIcon = Quote.Shell($sName) & ".png"
+    PRINT #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/info"
+    PRINT #hFile, "install -p .info %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".info"
+    PRINT #hFile, "install -p .list %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".list"
 
+    IF Exist(Project.Dir &/ "control") THEN 
+      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/control/"; Quote.Shell($sName)
+      PRINT #hFile, "install -p "; "control/*.png %{buildroot}/%{_datadir}/gambas" & System.Version &/ "control" &/ Quote.Shell($sName)
+    ENDIF
+
+  ELSE 
+  
+    PRINT #hFile, "\n%build"
+    PRINT #hFile, Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE) & "\ngba"; System.Version
+  
+    PRINT #hFile, "\n%install"
+  
+    PRINT #hFile, "install -d %{buildroot}/%{_bindir}"
+    PRINT #hFile, "install -p "; Quote.Shell($sName); ".gambas %{buildroot}/%{_bindir}" &/ Quote.Shell($sName)
+
+    sIcon = Quote.Shell($sName) & ".png"
+  
     ' NOTE: There are explicit references to /usr/share.
     '       I must find a way to use the rpm macros instead.
-
-  SELECT CASE sSys
-
-    CASE "mandriva"
-
-      PRINT #hFile, "install -d %{buildroot}/%{_miconsdir}"
-      PRINT #hFile, "install -d %{buildroot}/%{_iconsdir}"
-      PRINT #hFile, "install -d %{buildroot}/%{_liconsdir}"
-      PRINT #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ sIcon
-      PRINT #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ sIcon
-      PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ sIcon
-
-      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-      PRINT #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
-      PRINT #hFile, "[Desktop Entry]"
-      PRINT #hFile, "Version=1.0"
-      PRINT #hFile, "Encoding=UTF-8"
-      PRINT #hFile, "Name=";    
-      IF Project.Title THEN
-        PRINT #hFile, Project.Title
-      ELSE
-        PRINT #hFile, Project.Name
-      ENDIF
-      PRINT #hFile, "Comment=";    
-      IF Project.Description THEN
-        PRINT #hFile, Replace(Project.Description, "\n", " ")
-      ELSE
-        PRINT #hFile, Project.Name
-      ENDIF
-      PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
-      PRINT #hFile, "Icon="; sIcon
-      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-      PRINT #hFile, "Type=Application"
-      PRINT #hFile, "StartupNotify=true"
-      PRINT #hFile, "Categories=X-MandrivaLinux-"; Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-"); ";"; $sCategories
-      PrintOnlyShowIn(hFile, $sCategories)
-      PRINT #hFile, "EOF"
-
-      PRINT #hFile, "\n%post"
-      PRINT #hFile, "%{update_menus}"
-
-      PRINT #hFile, "\n%postun"
-      PRINT #hFile, "%{clean_menus}"
-
-    CASE "fedora"
-
-      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
-      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-      PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
-
-      PRINT #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
-      PRINT #hFile, "[Desktop Entry]"
-      PRINT #hFile, "Version=1.0"
-      PRINT #hFile, "Encoding=UTF-8"
-      PRINT #hFile, "Name=";    
-      IF Project.Title THEN
-        PRINT #hFile, Project.Title
-      ELSE
-        PRINT #hFile, Project.Name
-      ENDIF
-      PRINT #hFile, "Comment=";    
-      IF Project.Description THEN
-        PRINT #hFile, Replace(Project.Description, "\n", " ")
-      ELSE
-        PRINT #hFile, Project.Name
-      ENDIF
-      PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
-      PRINT #hFile, "Icon="; sIcon
-      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-      PRINT #hFile, "Type=Application"
-      PRINT #hFile, "StartupNotify=true"
-      PRINT #hFile, "Categories=X-RedHat-Extra;"; $sCategories
-      PrintOnlyShowIn(hFile, $sCategories)
-      PRINT #hFile, "EOF"
-
-    CASE "suse"
-
-      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
-      PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
-      PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
-
-      PRINT #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
-      PRINT #hFile, "[Desktop Entry]"
-      PRINT #hFile, "Version=1.0"
-      PRINT #hFile, "Encoding=UTF-8"
-      PRINT #hFile, "Name=";    
-      IF Project.Title THEN
-        PRINT #hFile, Project.Title
-      ELSE
-        PRINT #hFile, Project.Name
-      ENDIF
-      PRINT #hFile, "Comment=";    
-      IF Project.Description THEN
-        PRINT #hFile, Replace(Project.Description, "\n", " ")
-      ELSE
-        PRINT #hFile, Project.Name
-      ENDIF
-      PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
-      PRINT #hFile, "Icon="; sIcon
-      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-      PRINT #hFile, "Type=Application"
-      PRINT #hFile, "StartupNotify=true"
-      PRINT #hFile, "Categories="; $sCategories
-      PrintOnlyShowIn(hFile, $sCategories)
-      PRINT #hFile, "EOF"
-
-  END SELECT
+  
+    SELECT CASE sSys
+  
+      CASE "mandriva"
+  
+        PRINT #hFile, "install -d %{buildroot}/%{_miconsdir}"
+        PRINT #hFile, "install -d %{buildroot}/%{_iconsdir}"
+        PRINT #hFile, "install -d %{buildroot}/%{_liconsdir}"
+        PRINT #hFile, "install -p .icon/16.png %{buildroot}/%{_miconsdir}" &/ sIcon
+        PRINT #hFile, "install -p .icon/32.png %{buildroot}/%{_iconsdir}" &/ sIcon
+        PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_liconsdir}" &/ sIcon
+  
+        PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+        PRINT #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
+        PRINT #hFile, "[Desktop Entry]"
+        PRINT #hFile, "Version=1.0"
+        PRINT #hFile, "Encoding=UTF-8"
+        PRINT #hFile, "Name=";    
+        IF Project.Title THEN
+          PRINT #hFile, Project.Title
+        ELSE
+          PRINT #hFile, Project.Name
+        ENDIF
+        PRINT #hFile, "Comment=";    
+        IF Project.Description THEN
+          PRINT #hFile, Replace(Project.Description, "\n", " ")
+        ELSE
+          PRINT #hFile, Project.Name
+        ENDIF
+        PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+        PRINT #hFile, "Icon="; sIcon
+        PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+        PRINT #hFile, "Type=Application"
+        PRINT #hFile, "StartupNotify=true"
+        PRINT #hFile, "Categories=X-MandrivaLinux-"; Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-"); ";"; $sCategories
+        PrintOnlyShowIn(hFile, $sCategories)
+        PRINT #hFile, "EOF"
+  
+        PRINT #hFile, "\n%post"
+        PRINT #hFile, "%{update_menus}"
+  
+        PRINT #hFile, "\n%postun"
+        PRINT #hFile, "%{clean_menus}"
+  
+      CASE "fedora"
+  
+        PRINT #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+        PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+        PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+  
+        PRINT #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+        PRINT #hFile, "[Desktop Entry]"
+        PRINT #hFile, "Version=1.0"
+        PRINT #hFile, "Encoding=UTF-8"
+        PRINT #hFile, "Name=";    
+        IF Project.Title THEN
+          PRINT #hFile, Project.Title
+        ELSE
+          PRINT #hFile, Project.Name
+        ENDIF
+        PRINT #hFile, "Comment=";    
+        IF Project.Description THEN
+          PRINT #hFile, Replace(Project.Description, "\n", " ")
+        ELSE
+          PRINT #hFile, Project.Name
+        ENDIF
+        PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+        PRINT #hFile, "Icon="; sIcon
+        PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+        PRINT #hFile, "Type=Application"
+        PRINT #hFile, "StartupNotify=true"
+        PRINT #hFile, "Categories=X-RedHat-Extra;"; $sCategories
+        PrintOnlyShowIn(hFile, $sCategories)
+        PRINT #hFile, "EOF"
+  
+      CASE "suse"
+  
+        PRINT #hFile, "install -d %{buildroot}/%{_datadir}/pixmaps"
+        PRINT #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+        PRINT #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/pixmaps" &/ sIcon
+  
+        PRINT #hFile, "cat << EOF > %{buildroot}%{_datadir}/applications/%{name}.desktop"
+        PRINT #hFile, "[Desktop Entry]"
+        PRINT #hFile, "Version=1.0"
+        PRINT #hFile, "Encoding=UTF-8"
+        PRINT #hFile, "Name=";    
+        IF Project.Title THEN
+          PRINT #hFile, Project.Title
+        ELSE
+          PRINT #hFile, Project.Name
+        ENDIF
+        PRINT #hFile, "Comment=";    
+        IF Project.Description THEN
+          PRINT #hFile, Replace(Project.Description, "\n", " ")
+        ELSE
+          PRINT #hFile, Project.Name
+        ENDIF
+        PRINT #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+        PRINT #hFile, "Icon="; sIcon
+        PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+        PRINT #hFile, "Type=Application"
+        PRINT #hFile, "StartupNotify=true"
+        PRINT #hFile, "Categories="; $sCategories
+        PrintOnlyShowIn(hFile, $sCategories)
+        PRINT #hFile, "EOF"
+  
+    END SELECT
+    
+  ENDIF
 
   PRINT #hFile, "\n%clean"
   PRINT #hFile, "rm -rf %{buildroot}"
 
   PRINT #hFile, "\n%files"
   PRINT #hFile, "%defattr(-,root,root)"
-  PRINT #hFile, "%{_bindir}" &/ Quote.Shell($sName)
-
-  SELECT CASE sSys
-
-    CASE "mandriva"
-
-      PRINT #hFile, "/%{_miconsdir}" &/ sIcon
-      PRINT #hFile, "/%{_iconsdir}" &/ sIcon
-      PRINT #hFile, "/%{_liconsdir}" &/ sIcon
-            'PRINT #hFile, "/%{_menudir}" &/ sName
-      PRINT #hFile, "/%{_datadir}/applications/%{name}.desktop"
+  
+  IF Project.CreateComponent THEN
+  
+    PRINT #hFile, "%{_libdir}/gambas"; System.Version; "/"; Quote.Shell($sName); ".gambas"
+    PRINT #hfile, "%{_libdir}/gambas"; System.Version; "/"; Quote.Shell($sName); ".component"  
     
-    CASE "fedora"
+    PRINT #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".info"
+    PRINT #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".list"
 
-      PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
-      PRINT #hFile, "%{_datadir}/applications/%{name}.desktop"
+    IF Exist(Project.Dir &/ "control") THEN 
+      PRINT #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Quote.Shell($sName); "/*.png"
+    ENDIF
 
-    CASE "suse"
-
-      PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
-      PRINT #hFile, "%{_datadir}/applications/%{name}.desktop"
-
-  END SELECT
+  ELSE
+  
+    PRINT #hFile, "%{_bindir}" &/ Quote.Shell($sName)
+  
+    SELECT CASE sSys
+  
+      CASE "mandriva"
+  
+        PRINT #hFile, "/%{_miconsdir}" &/ sIcon
+        PRINT #hFile, "/%{_iconsdir}" &/ sIcon
+        PRINT #hFile, "/%{_liconsdir}" &/ sIcon
+              'PRINT #hFile, "/%{_menudir}" &/ sName
+        PRINT #hFile, "/%{_datadir}/applications/%{name}.desktop"
+      
+      CASE "fedora"
+  
+        PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
+        PRINT #hFile, "%{_datadir}/applications/%{name}.desktop"
+  
+      CASE "suse"
+  
+        PRINT #hFile, "%{_datadir}/pixmaps" &/ sIcon
+        PRINT #hFile, "%{_datadir}/applications/%{name}.desktop"
+  
+    END SELECT
+    
+  ENDIF
 
   PRINT #hFile, "\n%changelog\n"
   PRINT #hFile, ChangeLog
@@ -859,6 +913,7 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
   DIM sData AS String
   DIM sLib AS String
   DIM sPackage AS String
+  DIM sFile AS String 
       
   INC Application.Busy
 
@@ -873,57 +928,88 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
   SHELL "rm -rf " & sBuildDir WAIT
   MKDIR sBuildDir
 
-  FOR EACH sCmd IN ["/usr", "/usr/bin", "/usr/share", "/usr/share/applications", "/usr/share/pixmaps", "/install"]
-    TRY MKDIR sBuildDir &/ sCmd
-  NEXT
-
-  ' 2. Copy the executable
-
-  'COPY Project.Dir &/ Project.Name & ".gambas" TO sBuildDir &/ "/usr/bin" &/ Project.Name
-  COPY Project.ExecPath TO sBuildDir &/ "/usr/bin" &/ Project.Name
-  SHELL "chmod a+x " & Quote.Shell(sBuildDir &/ "/usr/bin" &/ Project.Name) WAIT
+  IF Project.CreateComponent THEN 
   
-  ' 3. Copy the icon
+    FOR EACH sCmd IN ["/usr", "/usr/lib", "/usr/lib/gambas" & System.Version, "/usr/share", "/usr/share/gambas" & System.Version, "/usr/share/gambas" & System.Version & "/info", "/install"]
+      TRY MKDIR sBuildDir &/ sCmd
+    NEXT
 
-  ' IF Project.Icon THEN
-  '   hIcon = Image.Load(Project.Dir &/ Project.Icon)
-  ' ELSE
-  '   hIcon = Image.Load("img/gambas.png")
-  ' ENDIF
+  ELSE
 
-  Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ "/usr/share/pixmaps" &/ Project.Name & ".png")
-
-  ' 4. Make the desktop file
+    FOR EACH sCmd IN ["/usr", "/usr/bin", "/usr/share", "/usr/share/applications", "/usr/share/pixmaps", "/install"]
+      TRY MKDIR sBuildDir &/ sCmd
+    NEXT
   
-  sIcon = Quote.Shell($sName) & ".png"
-
-  hFile = OPEN sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" FOR CREATE
-
-  PRINT #hFile, "[Desktop Entry]"
-  PRINT #hFile, "Version=1.0"
-  PRINT #hFile, "Encoding=UTF-8"
-  PRINT #hFile, "Name=";    
-  IF Project.Title THEN
-    PRINT #hFile, Project.Title
-  ELSE
-    PRINT #hFile, Project.Name
   ENDIF
-  PRINT #hFile, "Comment=";    
-  IF Project.Description THEN
-    PRINT #hFile, Replace(Project.Description, "\n", " ")
+
+  IF Project.CreateComponent THEN 
+  
+    ' 2. Copy the library, the information files and the controls
+  
+    COPY Project.ExecPath TO sBuildDir &/ "/usr/lib/gambas" & System.Version &/ $sName & ".gambas"
+    COPY Project.Dir &/ ".component" TO sBuildDir &/ "/usr/lib/gambas" & System.Version &/ $sName & ".component"
+    COPY Project.Dir &/ ".info" TO sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".info"
+    COPY Project.Dir &/ ".list" TO sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".list"
+  
+    IF Exist(Project.Dir &/ "control") THEN 
+      TRY MKDIR sBuildDir &/ "/usr/share/gambas" & System.Version & "/control"
+      TRY MKDIR sBuildDir &/ "/usr/share/gambas" & System.Version & "/control/" & $sName
+      FOR EACH sFile IN Dir(Project.Dir &/ "control", "*.png") 
+        COPY Project.Dir &/ "control" &/ sFile TO sBuildDir &/ "/usr/share/gambas" & System.Version & "/control/" & $sName &/ sFile
+      NEXT
+    ENDIF
+  
   ELSE
-    PRINT #hFile, Project.Name
+
+    ' 2. Copy the executable
+  
+      'COPY Project.Dir &/ Project.Name & ".gambas" TO sBuildDir &/ "/usr/bin" &/ Project.Name
+      COPY Project.ExecPath TO sBuildDir &/ "/usr/bin" &/ $sName
+      SHELL "chmod a+x " & Quote.Shell(sBuildDir &/ "/usr/bin" &/ $sName) WAIT
+      
+    ' 3. Copy the icon
+  
+    ' IF Project.Icon THEN
+    '   hIcon = Image.Load(Project.Dir &/ Project.Icon)
+    ' ELSE
+    '   hIcon = Image.Load("img/gambas.png")
+    ' ENDIF
+  
+    Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(sBuildDir &/ "/usr/share/pixmaps" &/ Project.Name & ".png")
+  
+    ' 4. Make the desktop file
+    
+    sIcon = Quote.Shell($sName) & ".png"
+  
+    hFile = OPEN sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" FOR CREATE
+  
+    PRINT #hFile, "[Desktop Entry]"
+    PRINT #hFile, "Version=1.0"
+    PRINT #hFile, "Encoding=UTF-8"
+    PRINT #hFile, "Name=";    
+    IF Project.Title THEN
+      PRINT #hFile, Project.Title
+    ELSE
+      PRINT #hFile, Project.Name
+    ENDIF
+    PRINT #hFile, "Comment=";    
+    IF Project.Description THEN
+      PRINT #hFile, Replace(Project.Description, "\n", " ")
+    ELSE
+      PRINT #hFile, Project.Name
+    ENDIF
+    PRINT #hFile, "Exec=/usr/bin/"; $sName
+    PRINT #hFile, "Icon=/usr/share/pixmaps/"; $sName & ".png"
+    PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+    PRINT #hFile, "Type=Application"
+    PRINT #hFile, "StartupNotify=true"
+    PRINT #hFile, "Categories="; $sCategories
+    PrintOnlyShowIn(hFile, $sCategories)
+  
+    CLOSE #hFile
+  
   ENDIF
-  PRINT #hFile, "Exec=/usr/bin/"; $sName
-  PRINT #hFile, "Icon=/usr/share/pixmaps/"; $sName & ".png"
-  PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-  PRINT #hFile, "Type=Application"
-  PRINT #hFile, "StartupNotify=true"
-  PRINT #hFile, "Categories="; $sCategories
-  PrintOnlyShowIn(hFile, $sCategories)
-
-  CLOSE #hFile
-
+  
   ' 5. Description file
 
   hFile = OPEN sBuildDir &/ "/install/slack-desc" FOR CREATE
@@ -943,13 +1029,17 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
   
   hFile = OPEN sBuildDir &/ "/install/slack-required" FOR CREATE
   
-  PRINT #hFile, "gambas2-runtime >= 1.9.48"
-  PRINT #hFile, "gambas2-runtime < 2.1"
+  PRINT #hFile, "gambas2-runtime >= "; MIN_VERSION
+  PRINT #hFile, "gambas2-runtime < "; MAX_VERSION
 
-  FOR EACH sLib IN Project.Libraries
-    PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " >= 1.9.48"
-    PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " < 2.1"
-  NEXT
+  IF NOT Project.CreateComponent THEN
+
+    FOR EACH sLib IN Project.Libraries
+      PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " >= "; MIN_VERSION
+      PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " < "; MAX_VERSION
+    NEXT
+    
+  ENDIF
   
   CLOSE #hFile
   
@@ -998,11 +1088,15 @@ PRIVATE SUB MakeAutotoolsPackage(sSys AS String)
   
   ' 2. Copy needed files 
 
+  TRY sCmd = Scan(Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE), "*/bin/gbc" & System.Version & " *")[1]
+
   SHELL "cp -r " & Project.Dir & " " & sBuildDir &/ Project.Name WAIT 
-  sFile = file.Load("install/acinclude.m4")
-  file.Save(sBuildDir &/ "acinclude.m4", sFile)
-  sFile = file.Load("install/Makefile.am")
-  file.Save(sBuildDir &/ "Makefile.am", sFile)
+  sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))
+  sFile = Replace(sFile, "$(PACKAGE_VERSION)", $sVersion)
+  File.Save(sBuildDir &/ "acinclude.m4", sFile)
+  sFile = Replace(File.Load("install/Makefile.am"), "$(VERSION)", CStr(System.Version))  
+  sFile = Replace(sFile, "$(COMPILE_FLAGS)", sCmd)
+  File.Save(sBuildDir &/ "Makefile.am", sFile)
   
   ' 3. Create needed files (AUTHORS, README, COPYING, NEWS, ChangeLog, configure.ac)
   

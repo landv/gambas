@@ -298,7 +298,7 @@ bool MySplitter::eventFilter(QObject *o, QEvent *e)
   else if (e->type() == QEvent::Resize && !_event)
   {
     _event = true;
-    GB.Post((void (*)())send_event, (long)CWidget::get(this));
+    GB.Post((void (*)())send_event, (intptr_t)CWidget::get(this));
   }
 
   return QObject::eventFilter(o, e);

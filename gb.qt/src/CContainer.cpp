@@ -188,7 +188,7 @@ static void arrange_later(QWidget *cont)
   GB.Ref(_object);
   //qDebug("later: %p: dirty = TRUE", THIS);
   THIS_ARRANGEMENT->dirty = TRUE;
-  GB.Post((void (*)())post_arrange_later, (long)THIS);
+  GB.Post((void (*)())post_arrange_later, (intptr_t)THIS);
 }
 #endif
 
