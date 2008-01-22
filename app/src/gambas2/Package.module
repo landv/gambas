@@ -266,12 +266,18 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   $sName = Replace$($sName, "_", "-")
   $sPackageName = Replace$($sPackageName, "_", "-")
 
-  sIcon = $sName & ".png"
+  sIcon = $sPackageName & ".png"
 
   ' Step 1. Create the build directory
 
   AddLog(("Making build directory.")) 
   sPackagePath = Path &/ $sPackageName
+  IF LCase$(Project.Dir) = sPackagePath THEN
+    Error.Raise(("The package can not be created in the project directory"))
+    DEC Application.Busy
+    RETURN
+  ENDIF
+
   sArch = Path &/ Subst("&1.orig.tar.gz", GetDebVersion())
   Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(Project.Dir &/ sIcon)
   
@@ -305,7 +311,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   ELSE
     PRINT #hFile, Project.Name
   ENDIF
-  PRINT #hFile, "Exec=/usr/bin/"; $sName & ".gambas"
+  PRINT #hFile, "Exec=/usr/bin/"; $sPackageName & ".gambas"
   PRINT #hFile, "Icon=/usr/share/pixmaps/" & sIcon
   PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
   PRINT #hFile, "Type=Application"
@@ -338,7 +344,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   hFile = OPEN sPackagePath &/ "debian/menu" FOR CREATE 
   PRINT #hFile, "?package(controlaula):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \"Apps/" & Project.Groups[sSys]; "\"\\"
   PRINT #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
-  PRINT #hFile, "command=\"/usr/bin/"; $sName; ".gambas\"\\"
+  PRINT #hFile, "command=\"/usr/bin/"; $sPackageName; ".gambas\"\\"
   PRINT #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
   CLOSE #hFile
   
@@ -349,14 +355,14 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   
   'debian/install
   hFile = OPEN sPackagePath &/ "debian/install" FOR CREATE
-  PRINT #hFile, $sName; ".gambas usr/bin"
+  PRINT #hFile, $sPackageName; ".gambas usr/bin"
   PRINT #hFile, sIcon; " usr/share/pixmaps"
   PRINT #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
   CLOSE #hFile  
 
   'debian/control
   hFile = OPEN sPackagePath &/ "debian/control" FOR CREATE
-  PRINT #hFile, "Source: "; $sName
+  PRINT #hFile, "Source: "; $sPackageName
   PRINT #hFIle, "Section: "; Split(Project.Groups[sSys], "/")[0]
   PRINT #hFile, "Priority: optional"
   PRINT #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
