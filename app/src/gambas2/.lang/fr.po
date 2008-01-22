@@ -577,7 +577,7 @@ msgstr "Libre"
 #: FDebugInfo.class:342 FEditor.class:1929 FFindList.class:159 FFind.class:115
 #: FFontChooser.class:84 FForm.class:2509 FGotoLine.class:61
 #: FIconEditor.class:1376 FList.class:107 FMain.class:197
-#: FMakeExecutable.class:150 FMakeInstall.class:240 FMenu.class:1072
+#: FMakeExecutable.class:150 FMakeInstall.class:260 FMenu.class:1072
 #: FNewTranslation.class:68 FOpenProject.class:406 FProjectEnv.class:329
 #: FPropertyProject.class:1151 FSave.class:123 FSelectIcon.class:269
 #: FTextEditor.class:527 FText.class:104 FTranslate.class:548
@@ -1087,7 +1087,7 @@ msgstr "Ligne"
 msgid "Column"
 msgstr "Colonne"
 
-#: FFindList.class:167 FIconEditor.class:1395 FMakeInstall.class:191
+#: FFindList.class:167 FIconEditor.class:1395 FMakeInstall.class:211
 #: FOption.class:1160 FTips.class:230
 msgid "Close"
 msgstr "Fermer"
@@ -1867,7 +1867,7 @@ msgstr "Générer une archive des sources"
 msgid "Make executable"
 msgstr "Générer l'exécutable"
 
-#: FMain.class:2303 FMakeInstall.class:746
+#: FMain.class:2303 FMakeInstall.class:774
 msgid "Make installation package"
 msgstr "Créer un paquetage d'installation"
 
@@ -1935,7 +1935,7 @@ msgstr "Basculer un point d'arrêt"
 msgid "Watch expression"
 msgstr "Surveiller des expressions"
 
-#: FMain.class:2516 FProperty.class:891
+#: FMain.class:2516 FProperty.class:902
 msgid "Properties"
 msgstr "Propriétés"
 
@@ -1963,194 +1963,198 @@ msgstr "Conserver les informations de débogage dans l'exécutable"
 msgid "Create a shortcut on the desktop"
 msgstr "Créer un raccourci sur le bureau"
 
-#: FMakeInstall.class:191 Package.module:125
+#: FMakeInstall.class:211 Package.module:130
 msgid "The packages have been successfully created."
 msgstr "Les paquetages ont été créés avec succès."
 
-#: FMakeInstall.class:191
+#: FMakeInstall.class:211
 msgid "Retry"
 msgstr "Recommencer"
 
-#: FMakeInstall.class:224
+#: FMakeInstall.class:244
 msgid "Please enter your name."
 msgstr "Veuillez saisir votre nom."
 
-#: FMakeInstall.class:229
+#: FMakeInstall.class:249
 msgid "Please enter your e-mail address."
 msgstr "Veuillez saisir votre adresse e-mail."
 
-#: FMakeInstall.class:240
+#: FMakeInstall.class:260
 msgid "There is no CHANGELOG entry for this release."
 msgstr "Il n'y aucune information de changement pour cette version."
 
-#: FMakeInstall.class:240 FPropertyProject.class:1151 FSave.class:116
+#: FMakeInstall.class:260 FPropertyProject.class:1151 FSave.class:116
 #: FTranslate.class:680 Project.module:2088
 msgid "Continue"
 msgstr "Continuer"
 
-#: FMakeInstall.class:247
+#: FMakeInstall.class:267
 msgid "Please enter the first CHANGELOG entry."
 msgstr "Veuillez saisir la première entrée du CHANGELOG."
 
-#: FMakeInstall.class:255
+#: FMakeInstall.class:275
 msgid "Please choose at least one target distribution."
 msgstr "Veuillez sélectionner au moins une distribution cible."
 
-#: FMakeInstall.class:270
+#: FMakeInstall.class:293
 msgid "Please choose the package group for each target distribution."
 msgstr ""
 "Veuillez sélectionner un groupe de paquetage pour chaque distribution cible."
 
-#: FMakeInstall.class:272
+#: FMakeInstall.class:295
 msgid "Please choose a package group."
 msgstr "Veuillez sélectionner un groupe de paquetage."
 
-#: FMakeInstall.class:281
+#: FMakeInstall.class:304
 msgid "Please choose the menu location for each target distribution."
 msgstr ""
 "Veuillez sélectionner un emplacement de menu pour chaque distribution cible."
 
-#: FMakeInstall.class:283
+#: FMakeInstall.class:306
 msgid "Please choose a menu location."
 msgstr "Veuillez sélectionner un emplacement de menu."
 
-#: FMakeInstall.class:312
+#: FMakeInstall.class:325
+msgid "The package cannot be stored inside the project directory."
+msgstr "Le paquetage ne peut être créé à l'intérieur du répertoire du projet."
+
+#: FMakeInstall.class:340
 msgid "Initial release"
 msgstr "Version initiale"
 
-#: FMakeInstall.class:545
+#: FMakeInstall.class:573
 msgid "Menus"
 msgstr "Menus"
 
-#: FMakeInstall.class:613
+#: FMakeInstall.class:641
 msgid "Groups"
 msgstr "Groupes"
 
-#: FMakeInstall.class:758
+#: FMakeInstall.class:786
 msgid "1. Package information"
 msgstr "1. Informations sur le paquetage"
 
-#: FMakeInstall.class:764
+#: FMakeInstall.class:792
 msgid "Package name"
 msgstr "Nom du paquetage"
 
-#: FMakeInstall.class:781
+#: FMakeInstall.class:809
 msgid "Prefix package name with the vendor name"
 msgstr "Prefixer le nom du paquetage avec le nom du vendeur"
 
-#: FMakeInstall.class:786
+#: FMakeInstall.class:814
 msgid "Insert release number in package version"
 msgstr "Insérer le numéro de révision dans la version du paquetage"
 
-#: FMakeInstall.class:794
+#: FMakeInstall.class:822
 msgid "Maintainer information"
 msgstr "Informations sur le mainteneur"
 
-#: FMakeInstall.class:804
+#: FMakeInstall.class:832
 msgid "Your name"
 msgstr "Votre nom"
 
-#: FMakeInstall.class:820
+#: FMakeInstall.class:848
 msgid "Your e-mail address"
 msgstr "Votre adresse e-mail"
 
-#: FMakeInstall.class:836
+#: FMakeInstall.class:864
 msgid "Vendor name"
 msgstr "Nom du vendeur"
 
-#: FMakeInstall.class:849 FPropertyProject.class:1477
+#: FMakeInstall.class:877 FPropertyProject.class:1477
 msgid "Description"
 msgstr "Description"
 
-#: FMakeInstall.class:863
+#: FMakeInstall.class:891
 msgid "Licence"
 msgstr "License"
 
-#: FMakeInstall.class:870
+#: FMakeInstall.class:898
 msgid "General Public Licence"
 msgstr "-"
 
-#: FMakeInstall.class:870
+#: FMakeInstall.class:898
 msgid "Freeware"
 msgstr "-"
 
-#: FMakeInstall.class:870
+#: FMakeInstall.class:898
 msgid "Public Domain"
 msgstr "-"
 
-#: FMakeInstall.class:870
+#: FMakeInstall.class:898
 msgid "Lesser General Public Licence"
 msgstr "-"
 
-#: FMakeInstall.class:870
+#: FMakeInstall.class:898
 msgid "Other Licence(s)"
 msgstr "-"
 
-#: FMakeInstall.class:870
+#: FMakeInstall.class:898
 msgid "Non-free Licence"
 msgstr "-"
 
-#: FMakeInstall.class:874
+#: FMakeInstall.class:902
 msgid "2. Changelog"
 msgstr "2. Suivi des modifications"
 
-#: FMakeInstall.class:879
+#: FMakeInstall.class:907
 msgid "Please enter the changes of your project."
 msgstr "Veuillez décrire les modifications apportées à votre projet."
 
-#: FMakeInstall.class:903
+#: FMakeInstall.class:931
 msgid "3. Target distribution"
 msgstr "3. Distribution cible"
 
-#: FMakeInstall.class:927
+#: FMakeInstall.class:955
 msgid "Debian"
 msgstr "-"
 
-#: FMakeInstall.class:948
+#: FMakeInstall.class:976
 msgid "Fedora"
 msgstr "-"
 
-#: FMakeInstall.class:969
+#: FMakeInstall.class:997
 msgid "Mandriva Linux"
 msgstr "-"
 
-#: FMakeInstall.class:990
+#: FMakeInstall.class:1018
 msgid "OpenSUSE"
 msgstr "-"
 
-#: FMakeInstall.class:1011
+#: FMakeInstall.class:1039
 msgid "Slackware"
 msgstr "-"
 
-#: FMakeInstall.class:1032
+#: FMakeInstall.class:1060
 msgid "Ubuntu"
 msgstr "-"
 
-#: FMakeInstall.class:1053
+#: FMakeInstall.class:1081
 msgid "Autotools"
 msgstr "-"
 
-#: FMakeInstall.class:1058
+#: FMakeInstall.class:1086
 msgid "4. Package group"
 msgstr "4. Groupe de paquetage"
 
-#: FMakeInstall.class:1079
+#: FMakeInstall.class:1107
 msgid "5. Menu entry"
 msgstr "5. Emplacement de menu"
 
-#: FMakeInstall.class:1102
+#: FMakeInstall.class:1130
 msgid "Categories"
 msgstr "Catégories"
 
-#: FMakeInstall.class:1112
+#: FMakeInstall.class:1140
 msgid "6. Destination directory"
 msgstr "6. Répertoire destination"
 
-#: FMakeInstall.class:1120
+#: FMakeInstall.class:1148
 msgid "7. Create package"
 msgstr "7. Création du paquetage"
 
-#: FMakeInstall.class:1125
+#: FMakeInstall.class:1153
 msgid ""
 "All needed information have been collected. You can now create the "
 "installation packages for your application...\n"
@@ -2451,7 +2455,7 @@ msgstr "Surligner la ligne courante"
 msgid "Procedure separation"
 msgstr "Séparation des procédures"
 
-#: FOption.class:830 FProperty.class:598
+#: FOption.class:830 FProperty.class:600
 msgid "None"
 msgstr "Aucun"
 
@@ -2587,23 +2591,23 @@ msgstr "Variables d'environnement"
 msgid "Author(s)"
 msgstr "Auteur(s)"
 
-#: FProperty.class:316
+#: FProperty.class:318
 msgid "Forbidden characters in control name."
 msgstr "Le nom du contrôle contient des caractères interdits."
 
-#: FProperty.class:321
+#: FProperty.class:323
 msgid "This name is already in use."
 msgstr "Ce nom de contrôle est déjà utilisé."
 
-#: FProperty.class:331
+#: FProperty.class:333
 msgid "Forbidden characters in control group."
 msgstr "Le nom du groupe contient des caractères interdits."
 
-#: FProperty.class:389
+#: FProperty.class:391
 msgid "Incorrect property value."
 msgstr "Valeur de propriété incorrecte."
 
-#: FProperty.class:901
+#: FProperty.class:913
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 "Cliquez sur un formulaire ou un contrôle pour modifier ses propriétés..."
@@ -3192,63 +3196,63 @@ msgstr "Chinois traditionnel (Taiwan)"
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: Package.module:46
+#: Package.module:49
 msgid "'&1' is not installed on your system."
 msgstr "'&1' n'est pas installé sur votre système."
 
-#: Package.module:55
+#: Package.module:58
 msgid "'&1' and '&2' are not installed on your system."
 msgstr "'&1' et '&2' ne sont pas installés sur votre système."
 
-#: Package.module:118
+#: Package.module:123
 msgid "Saving CHANGELOG file."
 msgstr "Sauvegarde du fichier CHANGELOG."
 
-#: Package.module:197
+#: Package.module:202
 msgid "Creating package for &1."
 msgstr "Création du paquetage pour &1."
 
-#: Package.module:222
+#: Package.module:227
 msgid "The package build has failed."
 msgstr "La construction des paquetages a échoué."
 
-#: Package.module:268
+#: Package.module:273
 msgid "Making build directory."
 msgstr "Fabrication du répertoire de construction."
 
-#: Package.module:285
+#: Package.module:291
 msgid "Creating desktop file..."
 msgstr "Création du fichier *.desktop..."
 
-#: Package.module:315
+#: Package.module:321
 msgid "Sources are being debianizated."
 msgstr "\"Debianisation\" des sources..."
 
-#: Package.module:421
+#: Package.module:427
 msgid "Creating package..."
 msgstr "Création du paquetage..."
 
-#: Package.module:424
+#: Package.module:430
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' a échoué."
 
-#: Package.module:515
+#: Package.module:521
 msgid "Initializing ~/RPM directory."
 msgstr "Initialisation du répertoire ~/RPM."
 
-#: Package.module:535
+#: Package.module:541
 msgid "Creating source package."
 msgstr "Création du paquetage des sources."
 
-#: Package.module:559
+#: Package.module:565
 msgid "Creating .spec file."
 msgstr "Creation du fichier .spec."
 
-#: Package.module:781
+#: Package.module:836
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' a retourné le code d'erreur suivant :"
 
-#: Package.module:973
+#: Package.module:1064
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' a retourné le code d'erreur suivant:"
 

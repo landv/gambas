@@ -242,6 +242,7 @@ void EXEC_pop_array(void)
   boolean defined;
   VALUE *val;
   VALUE swap;
+  ARRAY_DESC *desc;
 
   val = &SP[-np];
 
@@ -257,22 +258,16 @@ void EXEC_pop_array(void)
 
     SP -= np + 1;
 
-    data = ARRAY_get_address((ARRAY_DESC *)SP->_array.desc, SP->_array.addr, np, dim);
+		desc = (ARRAY_DESC *)SP->_array.class->load->array[SP->_array.index];
+    data = ARRAY_get_address(desc, SP->_array.addr, np, dim);
 
-    VALUE_write(SP - 1, data, CLASS_ctype_to_type(CP, ((ARRAY_DESC *)SP->_array.desc)->type));
+    VALUE_write(SP - 1, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
 
     POP();
   }
   else
   {
     EXEC_object(val, &class, &object, &defined);
-
-    /* Ex�ution de la m�hode sp�iale _put */
-
-    /*SP += np;
-
-    if (EXEC_special(SPEC_PUT, class, object, np + 1, FALSE))
-      THROW(E_NARRAY, class->name);*/
 
     /* remplace l'objet par la valeur �ins�er */
 

@@ -272,11 +272,6 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
 
   AddLog(("Making build directory.")) 
   sPackagePath = Path &/ $sPackageName
-  IF LCase$(Project.Dir) = sPackagePath THEN
-    Error.Raise(("The package can not be created in the project directory"))
-    DEC Application.Busy
-    RETURN
-  ENDIF
 
   sArch = Path &/ Subst("&1.orig.tar.gz", GetDebVersion())
   Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(Project.Dir &/ sIcon)

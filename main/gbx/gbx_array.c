@@ -147,6 +147,9 @@ void *ARRAY_get_address(ARRAY_DESC *desc, void *addr, int nparam, int *param)
     if (stop)
       break;
   }
+  
+  if (i < (nparam - 1))
+  	THROW(E_NDIM);
 
   return (char *)addr + pos * TYPE_sizeof_memory(desc->type.id);
 }

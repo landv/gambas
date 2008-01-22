@@ -197,7 +197,7 @@ __FUNCTION:
 
 __ARRAY:
 	if (!value->_array.keep)
-		ARRAY_free(&value->_array.addr, value->_array.desc);
+		ARRAY_free(&value->_array.addr, (ARRAY_DESC *)value->_array.class->load->array[value->_array.index]);
 	return;
 
 __STRING:
@@ -243,8 +243,8 @@ void RELEASE_many(VALUE *value, int n)
 		continue;
 	
 	__ARRAY:
-		if (!value->_array.keep)
-			ARRAY_free(&value->_array.addr, value->_array.desc);
+	if (!value->_array.keep)
+		ARRAY_free(&value->_array.addr, (ARRAY_DESC *)value->_array.class->load->array[value->_array.index]);
 		continue;
 	
 	__STRING:

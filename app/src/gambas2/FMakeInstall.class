@@ -321,6 +321,11 @@ PUBLIC SUB wizInstall_BeforeChange()
       
     CASE 5
       Package.Path = dchInstall.SelectedPath
+      IF Package.Path = Project.Dir OR IF Package.Path LIKE Project.Dir &/ "/*" THEN 
+        Message.Warning(("The package cannot be stored inside the project directory."))
+        STOP EVENT 
+        RETURN 
+      ENDIF
 
   END SELECT
   
