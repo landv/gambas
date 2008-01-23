@@ -1083,8 +1083,10 @@ void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
   else if (ctype.id == T_ARRAY)
   {
     value->type = T_ARRAY;
-    value->_array.desc = class->load->array[ctype.value];
+    //value->_array.desc = class->load->array[ctype.value];
+    value->_array.class = class;
     value->_array.addr = addr;
+    value->_array.index = ctype.value;
     value->_array.keep = TRUE; // We suppose that the array goes to the stack
   }
   else
@@ -1116,9 +1118,11 @@ void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype)
   else if (ctype.id == T_ARRAY)
   {
     value->type = T_ARRAY;
-    value->_array.desc = class->load->array[ctype.value];
+    //value->_array.desc = class->load->array[ctype.value];
+    value->_array.class = class;
     value->_array.keep = FALSE;
-    ARRAY_new(&value->_array.addr, (ARRAY_DESC *)value->_array.desc);
+    value->_array.index = ctype.value;
+    ARRAY_new(&value->_array.addr, (ARRAY_DESC *)class->load->array[ctype.value]);
   }
   else
     VALUE_default(value, (TYPE)ctype.id);

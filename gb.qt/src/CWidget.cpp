@@ -1014,7 +1014,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_id)
 
-  GB.ReturnInteger((int)WIDGET->winId());
+  GB.ReturnPointer((void *)WIDGET->winId());
 
 END_PROPERTY
 

@@ -47,6 +47,7 @@ extern GB_DESC NATIVE_ByteArray[];
 extern GB_DESC NATIVE_ShortArray[];
 extern GB_DESC NATIVE_IntegerArray[];
 extern GB_DESC NATIVE_LongArray[];
+extern GB_DESC NATIVE_PointerArray[];
 extern GB_DESC NATIVE_SingleArray[];
 extern GB_DESC NATIVE_FloatArray[];
 extern GB_DESC NATIVE_StringArray[];

@@ -428,6 +428,7 @@ void EXEC_push_array(void)
   void *data;
   boolean defined;
   VALUE *val;
+  ARRAY_DESC *desc;
 
   val = &SP[-np];
   np--;
@@ -443,12 +444,12 @@ void EXEC_push_array(void)
 
     SP -= np + 1;
 
-    data = ARRAY_get_address((ARRAY_DESC *)SP->_array.desc, SP->_array.addr, np, dim);
+		desc = (ARRAY_DESC *)SP->_array.class->load->array[SP->_array.index];
+    data = ARRAY_get_address(desc, SP->_array.addr, np, dim);
 
-    VALUE_read(SP, data, CLASS_ctype_to_type(CP, ((ARRAY_DESC *)SP->_array.desc)->type));
+    VALUE_read(SP, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
 
     PUSH();
-
   }
   else
   {

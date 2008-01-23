@@ -323,11 +323,11 @@ END_METHOD
 
 BEGIN_PROPERTY(CPLUGIN_client)
 
-	GB.ReturnInteger( ((gPlugin*)((CPLUGIN*)_object)->widget)->client() );
+	GB.ReturnPointer((void *)((gPlugin*)((CPLUGIN*)_object)->widget)->client() );
 
 END_PROPERTY
 
-BEGIN_METHOD(CPLUGIN_embed, GB_INTEGER id; GB_BOOLEAN prepared)
+BEGIN_METHOD(CPLUGIN_embed, GB_POINTER id; GB_BOOLEAN prepared)
 
 	((gPlugin*)((CPLUGIN*)_object)->widget)->plug(VARG(id), VARGOPT(prepared, TRUE));
 
@@ -824,8 +824,8 @@ GB_DESC CWidgetDesc[] =
 
   GB_PROPERTY_READ("Parent", "Container", CWIDGET_parent),
   GB_PROPERTY_READ("Window", "Window", CWIDGET_window),
-  GB_PROPERTY_READ("Id", "i", CWIDGET_id),
-  GB_PROPERTY_READ("Handle", "i", CWIDGET_id),
+  GB_PROPERTY_READ("Id", "p", CWIDGET_id),
+  GB_PROPERTY_READ("Handle", "p", CWIDGET_id),
 
   GB_EVENT("Enter", 0, 0, &EVENT_Enter),
   GB_EVENT("GotFocus", 0, 0, &EVENT_GotFocus),
@@ -854,10 +854,10 @@ GB_DESC CPluginDesc[] =
   GB_DECLARE("Embedder", sizeof(CPLUGIN)), GB_INHERITS("Control"),
 
   GB_METHOD("_new", 0, CPLUGIN_new, "(Parent)Container;"),
-  GB_METHOD("Embed", 0, CPLUGIN_embed, "(Client)i[(Prepared)b]"),
+  GB_METHOD("Embed", 0, CPLUGIN_embed, "(Client)p[(Prepared)b]"),
   GB_METHOD("Discard", 0, CPLUGIN_discard, 0),
   
-  GB_PROPERTY_READ("Client", "i", CPLUGIN_client),
+  GB_PROPERTY_READ("Client", "p", CPLUGIN_client),
   //GB_PROPERTY("Border", "i<Border>", CPLUGIN_border),
   
   GB_EVENT("Embed", 0, 0, &EVENT_Plugged),

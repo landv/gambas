@@ -106,15 +106,16 @@ public:
   void insertRows(int start, int length = 1) { render->insertRows(start, length); }
 
 //"Events"
-	void      (*onChange)(gGridView *sender);
-	void      (*onScroll)(gGridView *sender);
-	void      (*onActivate)(gGridView *sender,int row,int col);
-	void      (*onClick)(gGridView *sender,int row,int col);
-	void      (*onColumnClick)(gGridView *send,int col);
-	void      (*onFooterClick)(gGridView *send,int col);
-	void      (*onRowClick)(gGridView *sender,int row);
-	void      (*onColumnResize)(gGridView *send,int col);
-	void      (*onRowResize)(gGridView *sender,int row);
+	void (*onChange)(gGridView *sender);
+	void (*onSelect)(gGridView *sender);
+	void (*onScroll)(gGridView *sender);
+	void (*onActivate)(gGridView *sender,int row,int col);
+	void (*onClick)(gGridView *sender,int row,int col);
+	void (*onColumnClick)(gGridView *send,int col);
+	void (*onFooterClick)(gGridView *send,int col);
+	void (*onRowClick)(gGridView *sender,int row);
+	void (*onColumnResize)(gGridView *send,int col);
+	void (*onRowResize)(gGridView *sender,int row);
 
 //"Private"
 	int sel_mode;

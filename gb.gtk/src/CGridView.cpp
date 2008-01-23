@@ -99,6 +99,11 @@ static void raise_change(gGridView *sender)
 	raise_event(sender, EVENT_Change);
 }
 
+static void raise_select(gGridView *sender)
+{
+	raise_event(sender, EVENT_Select);
+}
+
 static void raise_scroll(gGridView *sender)
 {
 	raise_event(sender, EVENT_Scroll);
@@ -700,6 +705,7 @@ BEGIN_METHOD(CGRIDVIEW_new, GB_OBJECT parent)
 	GRIDVIEW->onActivate = raise_activate;
 	GRIDVIEW->onClick = raise_click;
 	GRIDVIEW->onChange = raise_change;
+	GRIDVIEW->onSelect = raise_select;
 	GRIDVIEW->onRowClick = raise_row_click;
 	GRIDVIEW->onColumnClick = raise_col_click;
 	GRIDVIEW->onFooterClick = raise_foot_click;

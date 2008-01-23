@@ -40,8 +40,8 @@
 DECLARE_EVENT(EVENT_Read);
 
 static int _started = FALSE;
-static int _fdr;
-static int _fdw;
+static int _fdr = -1;
+static int _fdw = -1;
 static CDEBUG *_debug_object = NULL;
 
 #define BUFFER_SIZE 16384
@@ -188,6 +188,7 @@ BEGIN_METHOD_VOID(CDEBUG_stop)
   close(_fdw);
   close(_fdr);
   
+  _fdw = _fdr = -1;
   _started = FALSE;
 
 END_METHOD
@@ -209,10 +210,9 @@ END_METHOD
 
 BEGIN_METHOD(CDEBUG_write, GB_STRING data)
 
-  /*fprintf(stderr, "CDEBUG_write: %.*s\n", LENGTH(data), STRING(data));
-  if (STRING(data) && *STRING(data) == 'T')
-    fprintf(stderr, "T ?\n");*/
-  
+  if (_fdw < 0)
+  	return;
+  	
   if (STRING(data))
     write(_fdw, STRING(data), LENGTH(data));
   write(_fdw, "\n", 1);

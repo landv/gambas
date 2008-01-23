@@ -18,12 +18,18 @@ PRIVATE $hWatcher AS Watcher
 PRIVATE $iBackground AS Integer = Color.Default
 PRIVATE $bNoClose AS Boolean
 PRIVATE $iLock AS Integer
+PRIVATE $bLogo AS Boolean
 
 PUBLIC SUB _new()
   
   IF NOT $hTile THEN $hTile = Picture["img/hash.png"]
   '$hWatcher = NEW Watcher(panChild) AS "panChild"
   TitleBar = tabWorkspace
+  $bLogo = Application.Name = "gambas" & System.Version
+  IF $bLogo THEN 
+    picLogo.Picture = Picture.Load("img/logo.png")
+    picLogo.Resize(picLogo.Picture.W, picLogo.Picture.H)
+  ENDIF
   
 END
 
@@ -340,6 +346,7 @@ PUBLIC SUB Form_Resize()
 
   'DEBUG
   IF tabWorkspace.Visible THEN
+    IF $bLogo THEN picLogo.Hide
     H = tabWorkspace.ClientY - 2
     'H = panChild.ScreenY - tabWorkspace.ScreenY
     IF btnTabClose.W <> H OR btnTabClose.H <> H THEN 
@@ -365,6 +372,12 @@ PUBLIC SUB Form_Resize()
     panWorkspace.Move(0, 0, ME.ClientW, ME.ClientH)
     panWorkspace.BackColor = If($iBackground = Color.Default, Color.Medium(Color.Background, Color.Foreground), $iBackground)
     panWorkspace.Border = Border.None
+
+    IF $bLogo THEN
+      picLogo.Move(picLogo.Parent.W - picLogo.W - Desktop.Scale, picLogo.Parent.H - picLogo.H - Desktop.Scale)
+      picLogo.Show
+    ENDIF
+
     panWorkspace.Raise
   ENDIF
   

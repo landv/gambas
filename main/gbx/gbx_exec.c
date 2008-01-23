@@ -199,7 +199,7 @@ __FUNCTION:
 
 __ARRAY:
 	if (!value->_array.keep)
-		ARRAY_free(&value->_array.addr, value->_array.desc);
+		ARRAY_free(&value->_array.addr, (ARRAY_DESC *)value->_array.class->load->array[value->_array.index]);
 	return;
 
 __STRING:
@@ -246,7 +246,7 @@ void RELEASE_many(VALUE *value, int n)
 	
 	__ARRAY:
 		if (!value->_array.keep)
-			ARRAY_free(&value->_array.addr, value->_array.desc);
+			ARRAY_free(&value->_array.addr, (ARRAY_DESC *)value->_array.class->load->array[value->_array.index]);
 		continue;
 	
 	__STRING:
@@ -598,7 +598,7 @@ void EXEC_leave(bool drop)
 		int bit, nbyref;
 		
 		xp = PP - nparam;
-		nbyref = 1 + pc[1] & 0xF;
+		nbyref = 1 + (pc[1] & 0xF);
 		pp = xp;
 		
 		for (i = 0, n = 0; i < nparam; i++)

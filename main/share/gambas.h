@@ -73,6 +73,7 @@
 #define GB_T_STRING       9
 #define GB_T_CSTRING      10
 #define GB_T_VARIANT      11
+#define GB_T_POINTER      13
 #define GB_T_NULL         15
 #define GB_T_OBJECT       16
 
@@ -174,6 +175,17 @@ typedef
     #endif
     }
   GB_LONG;
+
+
+/* Gambas POINTER datatype definition */
+
+typedef
+  struct {
+    GB_TYPE type;
+    intptr_t value;
+    intptr_t _reserved[2];
+    }
+  GB_POINTER;
 
 
 /* Gambas BOOLEAN datatype definition */

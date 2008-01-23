@@ -50,6 +50,8 @@ static void raise_hide(GtkWidget *widget, CWATCHER *_object)
 
 static void raise_configure(GtkWidget *widget, GdkEventConfigure *e, CWATCHER *_object)
 {
+	GB.Ref(_object);
+	
 	if (THIS->x != e->x || THIS->y != e->y)
 	{
 		THIS->x = e->x;
@@ -63,6 +65,8 @@ static void raise_configure(GtkWidget *widget, GdkEventConfigure *e, CWATCHER *_
 		THIS->h = e->height;
 		GB.Raise(THIS, EVENT_Resize, 0);
 	}
+	
+	GB.Unref(POINTER(&_object));
 }
 
 
@@ -73,17 +77,15 @@ BEGIN_METHOD(CWATCHER_new, GB_OBJECT control)
 	GtkWidget *wid;
 	gControl *control;
 
-	THIS->wid=(CWIDGET*)VARG(control);
-	if (!THIS->wid) return;
-	control = THIS->wid->widget;
-	if (!control || !control->border)
-	{ 
-		THIS->wid=NULL; 
-		return; 
-	}
+	THIS->wid = (CWIDGET*)VARG(control);
+	
+	if (GB.CheckObject(THIS->wid))
+		return;
 
 	GB.Ref((void*)THIS->wid);
 
+	control = THIS->wid->widget;
+	
 	THIS->x = control->left() - 1;
 	THIS->y = control->top() - 1;
 	THIS->w = control->width() - 1;
@@ -98,8 +100,11 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWATCHER_free)
 
-	if (THIS->wid) 
+	if (THIS->wid)
+	{
+		g_signal_handlers_disconnect_matched(G_OBJECT(THIS->wid->widget->border), G_SIGNAL_MATCH_DATA, 0, (GQuark)0, NULL, NULL, _object);
 		GB.Unref(POINTER(&THIS->wid));
+	}
 
 END_METHOD
 

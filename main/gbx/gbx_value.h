@@ -182,8 +182,9 @@ typedef
 typedef
   struct {
     TYPE type;
-    void *desc;
+    CLASS *class;
     void *addr;
+    short index;
     unsigned keep : 1;
     }
   VALUE_ARRAY;

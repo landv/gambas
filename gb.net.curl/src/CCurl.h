@@ -75,13 +75,13 @@ typedef  struct
 void CCURL_stop(void *_object);
 
 void CCURL_stream_init  (GB_STREAM *stream,int fd);
-int  CCURL_stream_read  (GB_STREAM *stream, char *buffer, long len);
-int  CCURL_stream_write (GB_STREAM *stream, char *buffer, long len);
+int  CCURL_stream_read  (GB_STREAM *stream, char *buffer, int len);
+int  CCURL_stream_write (GB_STREAM *stream, char *buffer, int len);
 int  CCURL_stream_eof   (GB_STREAM *stream);
-int  CCURL_stream_lof   (GB_STREAM *stream, long long *len);
+int  CCURL_stream_lof   (GB_STREAM *stream, int64_t *len);
 int  CCURL_stream_open  (GB_STREAM *stream, const char *path, int mode, void *data);
-int  CCURL_stream_seek  (GB_STREAM *stream, long long pos, int whence);
-int  CCURL_stream_tell  (GB_STREAM *stream, long long *pos);
+int  CCURL_stream_seek  (GB_STREAM *stream, int64_t pos, int whence);
+int  CCURL_stream_tell  (GB_STREAM *stream, int64_t *pos);
 int  CCURL_stream_flush (GB_STREAM *stream);
 int  CCURL_stream_close (GB_STREAM *stream);
 int  CCURL_stream_handle(GB_STREAM *stream);

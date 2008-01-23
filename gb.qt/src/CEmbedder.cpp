@@ -48,12 +48,12 @@ END_METHOD
 
 BEGIN_PROPERTY(CEMBEDDER_client)
 
-  GB.ReturnInteger(WIDGET->clientWinId());
+  GB.ReturnPointer((void *)WIDGET->clientWinId());
 
 END_PROPERTY
 
 
-BEGIN_METHOD(CEMBEDDER_embed, GB_INTEGER client; GB_BOOLEAN prepared)
+BEGIN_METHOD(CEMBEDDER_embed, GB_POINTER client; GB_BOOLEAN prepared)
 
   WIDGET->embed(VARG(client), VARGOPT(prepared, false));
 
@@ -74,8 +74,8 @@ GB_DESC CEmbedderDesc[] =
 
   GB_METHOD("_new", NULL, CEMBEDDER_new, "(Parent)Container;"),
 
-  GB_PROPERTY_READ("Client", "i", CEMBEDDER_client),
-  GB_METHOD("Embed", NULL, CEMBEDDER_embed, "(Client)i[(Prepared)b]"),
+  GB_PROPERTY_READ("Client", "p", CEMBEDDER_client),
+  GB_METHOD("Embed", NULL, CEMBEDDER_embed, "(Client)p[(Prepared)b]"),
   GB_METHOD("Discard", NULL, CEMBEDDER_discard, NULL),
 
 	EMBEDDER_DESCRIPTION,

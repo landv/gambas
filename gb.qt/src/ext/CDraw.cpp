@@ -113,8 +113,8 @@ BEGIN_METHOD(CDRAW_drawing, GB_OBJECT drawing; GB_INTEGER x; GB_INTEGER y; GB_IN
 
   static bool warn = false;
   GB_DRAW *d;
-  long x, y, w, h;
-  long sx, sy, sw, sh;
+  int x, y, w, h;
+  int sx, sy, sw, sh;
   CDRAWING *drawing = (CDRAWING *)VARG(drawing);
   QPicture *pic;
 

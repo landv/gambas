@@ -292,13 +292,13 @@ END_METHOD
 
 BEGIN_PROPERTY(CEDITORDOC_line_count)
 
-  GB.ReturnInteger((long)DOC->numLines());
+  GB.ReturnInteger((int)DOC->numLines());
 
 END_PROPERTY
 
 BEGIN_METHOD(CEDITORDOC_line_get, GB_INTEGER line)
 
-  long line = VARG(line);
+  int line = VARG(line);
 
   if (line < 0 || line >= DOC->numLines())
     GB.ReturnNull();
@@ -309,7 +309,7 @@ END_METHOD
 
 BEGIN_METHOD(CEDITORDOC_line_put, GB_STRING text; GB_INTEGER line)
 
-  long line = VARG(line);
+  int line = VARG(line);
   GString s;
 
   if (line >= 0 && line < DOC->numLines())
@@ -986,14 +986,14 @@ void CEditor::moved(void)
 {
   void *_object = QT.GetObject((QWidget *)sender());
   GB.Ref(THIS);
-  GB.Post2((GB_POST_FUNC)post_event, (long)THIS, EVENT_Cursor);
+  GB.Post2((GB_POST_FUNC)post_event, (intptr_t)THIS, EVENT_Cursor);
 }
 
 void CEditor::scrolled(int, int)
 {
   void *_object = QT.GetObject((QWidget *)sender());
   GB.Ref(THIS);
-  GB.Post2((GB_POST_FUNC)post_event, (long)THIS, EVENT_Scroll);
+  GB.Post2((GB_POST_FUNC)post_event, (intptr_t)THIS, EVENT_Scroll);
 }
 
 void CEditor::marginDoubleClicked(int line)

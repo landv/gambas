@@ -247,6 +247,7 @@ typedef
     unsigned mmapped : 1;     /*      mmap() was used to load the class */
     unsigned swap : 1;				/*      class endianness was swapped */
     unsigned enum_static : 1; /*      if class enumeration is static */
+    //unsigned quick_array : 1; /*      array accessor optimizations can apply */
     unsigned _flag : 3;       /*  30  */
 
     short n_desc;             /*  32  number of descriptions */
@@ -346,6 +347,7 @@ EXTERN CLASS *CLASS_StringArray;
 EXTERN CLASS *CLASS_ObjectArray;
 EXTERN CLASS *CLASS_VariantArray;
 EXTERN CLASS *CLASS_LongArray;
+EXTERN CLASS *CLASS_PointerArray;
 
 EXTERN CLASS *CLASS_SubCollection;
 #endif

@@ -38,10 +38,10 @@ DECLARE_EVENT(EVENT_Change);
 DECLARE_EVENT(EVENT_Cursor);
 DECLARE_EVENT(EVENT_Link);
 
-static void to_pos(QTextEdit *wid, int par, int car, long *pos)
+static void to_pos(QTextEdit *wid, int par, int car, int *pos)
 {
   int i, l;
-  long p = 0;
+  int p = 0;
 
   for (i = 0; i < par; i++)
   {
@@ -55,7 +55,7 @@ static void to_pos(QTextEdit *wid, int par, int car, long *pos)
 }
 
 
-static void from_pos(QTextEdit *wid, long pos, int *par, int *car)
+static void from_pos(QTextEdit *wid, int pos, int *par, int *car)
 {
   int i;
   int l;
@@ -89,10 +89,10 @@ static void look_pos(QTextEdit *wid, int *line, int *col)
 }
 
 
-static void get_selection(QTextEdit *wid, long *start, long *length)
+static void get_selection(QTextEdit *wid, int *start, int *length)
 {
   int pStart, iStart, pEnd, iEnd;
-  long posEnd;
+  int posEnd;
 
   wid->getSelection(&pStart, &iStart, &pEnd, &iEnd);
 
@@ -161,7 +161,7 @@ BEGIN_PROPERTY(CTEXTAREA_alignment)
   if (READ_PROPERTY)
     GB.ReturnInteger(WIDGET->alignment());
   else
-    WIDGET->setAlignment(PROPERTY(long));
+    WIDGET->setAlignment(PROPERTY(int));
 
 END_PROPERTY
 */
@@ -211,7 +211,7 @@ END_PROPERTY
 /*
 BEGIN_PROPERTY(CTEXTAREA_max_length)
 
-  long max;
+  int max;
 
   if (READ_PROPERTY)
   {
@@ -220,7 +220,7 @@ BEGIN_PROPERTY(CTEXTAREA_max_length)
   }
   else
   {
-    max = PROPERTY(long);
+    max = PROPERTY(int);
     if (max <= 0)
       max = -1;
     WIDGET->setMaxLength(max);
@@ -270,7 +270,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTEXTAREA_pos)
 
   int par, car;
-  long pos;
+  int pos;
 
   if (READ_PROPERTY)
   {
@@ -288,7 +288,7 @@ END_PROPERTY
 
 
 /*
-BEGIN_METHOD(CTEXTAREA_select, long line; long col; long selline; long selcol)
+BEGIN_METHOD(CTEXTAREA_select, int line; int col; int selline; int selcol)
 
   MyMultiLineEdit *wid = QMULTILINEEDIT(_object);
 
@@ -321,9 +321,9 @@ BEGIN_METHOD(CTEXTAREA_insert, GB_STRING text)
 END_METHOD
 
 /*
-BEGIN_METHOD(CTEXTAREA_line_get, long line)
+BEGIN_METHOD(CTEXTAREA_line_get, int line)
 
-  long line = PARAM(line);
+  int line = PARAM(line);
 
   if (line < 0 || line >= WIDGET->numLines())
     GB.ReturnNull();
@@ -373,7 +373,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTAREA_sel_length)
 
-  long start, length;
+  int start, length;
 
   get_selection(WIDGET, &start, &length);
   GB.ReturnInteger(length);
@@ -383,7 +383,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTAREA_sel_start)
 
-  long start, length;
+  int start, length;
 
   get_selection(WIDGET, &start, &length);
   GB.ReturnInteger(start);
@@ -432,7 +432,7 @@ END_METHOD
 
 BEGIN_METHOD(CTEXTAREA_to_pos, GB_INTEGER line; GB_INTEGER col)
 
-  long pos;
+  int pos;
 
   to_pos(WIDGET, VARG(line), VARG(col), &pos);
 

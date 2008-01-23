@@ -5,11 +5,10 @@ class gPlugin : public gControl
 {
 public:
 	gPlugin(gContainer *parent);
-	void plug(int id,bool prepared=true);
+	void plug(long id,bool prepared=true);
 	void discard();
 //"Properties"
-	int client();
-	int handle();
+	long client();
 
 	int getBorder() { return getFrameBorder(); }
 	void setBorder(int vl) { setFrameBorder(vl); }

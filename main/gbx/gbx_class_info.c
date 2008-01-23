@@ -30,18 +30,6 @@
 #include "gb_limit.h"
 #include "gambas.h"
 
-/*#include "gbx_c_gambas.h"
-#include "gbx_c_class.h"
-#include "gbx_c_error.h"
-#include "gbx_c_collection.h"
-#include "gbx_c_list.h"
-#include "gbx_c_file.h"
-#include "gbx_c_application.h"
-#include "gbx_c_array.h"
-#include "gbx_c_process.h"
-#include "gbx_c_subcollection.h"
-#include "gbx_c_string.h"*/
-
 static GB_DESC NATIVE_GambasLanguage[] =
 {
   GB_DECLARE(".", 0),
@@ -280,18 +268,18 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("IsDir", "b", NULL, "(Path)s"),
   GB_METHOD("Dir?", "b", NULL, "(Path)s"),
 
-  GB_METHOD("Dir", "String[]", NULL, "(Path)s[(Pattern)s(Filter)i]"),
-
   GB_METHOD("Access", "b", NULL, "(Path)s[(Mode)i]"),
+
+  GB_METHOD("Dir", "String[]", NULL, "(Path)s[(Pattern)s(Filter)i]"),
+  GB_METHOD("RDir", "String[]", NULL, "(Path)s[(Pattern)s(Filter)i]"),
+  
+  GB_METHOD("DFree", "l", NULL, "(Path)s"),
 
   GB_METHOD("Alloc", "p", NULL, "(SizeOrString)v[(Count)i]"),
   GB_METHOD("Free", NULL, NULL, "(Pointer)p"),
   GB_METHOD("Realloc", "i", NULL, "(Pointer)p(Size)i[(Count)i]"),
   GB_METHOD("StrPtr", "s", NULL, "(Pointer)p"),
-
-  GB_METHOD("RDir", "String[]", NULL, "(Path)s[(Pattern)s(Filter)i]"),
-
-  GB_METHOD("DFree", "l", NULL, "(Path)s"),
+  GB_METHOD("VarPtr", "p", NULL, "(Variable)v"),
 
   GB_END_DECLARE
 };
@@ -334,6 +322,7 @@ EXTERN GB_DESC NATIVE_StringArray[];
 EXTERN GB_DESC NATIVE_ObjectArray[];
 EXTERN GB_DESC NATIVE_VariantArray[];
 EXTERN GB_DESC NATIVE_LongArray[];
+EXTERN GB_DESC NATIVE_PointerArray[];
 EXTERN GB_DESC NATIVE_SubCollection[];
 EXTERN GB_DESC NATIVE_String[];
 EXTERN GB_DESC NATIVE_Timer[];
@@ -379,6 +368,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NATIVE_ObjectArray,
   NATIVE_VariantArray,
   NATIVE_LongArray,
+  NATIVE_PointerArray,
   NATIVE_SubCollection,
   NATIVE_String,
   NATIVE_Timer,

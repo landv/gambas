@@ -319,13 +319,12 @@ gboolean my_timer_function(GB_TIMER *timer)
 {
 	if (timer->id)  
 	{
-		MyTimerTag *tag = (MyTimerTag *)timer->tag;
-		GTimer *t = tag->timer;
-		
 		GB.RaiseTimer(timer);
 		
 		if (timer->id)
 		{
+			MyTimerTag *tag = (MyTimerTag *)timer->tag;
+			GTimer *t = tag->timer;		
 			int elapsed = (int)(g_timer_elapsed(t, NULL) * 1000) - tag->timeout;
 			int next = timer->delay - elapsed;
 			if (next < 10)

@@ -247,7 +247,7 @@ GB_DESC CApplicationTooltipDesc[] =
 BEGIN_PROPERTY(CAPP_embedder)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(CWINDOW_Embedder);
+    GB.ReturnPointer((void *)CWINDOW_Embedder);
   else
   {
     if (CWINDOW_Embedded)
@@ -256,7 +256,7 @@ BEGIN_PROPERTY(CAPP_embedder)
       return;
     }
   
-    CWINDOW_Embedder = VPROP(GB_INTEGER);
+    CWINDOW_Embedder = VPROP(GB_POINTER);
   }
 
 END_PROPERTY
@@ -274,7 +274,7 @@ GB_DESC CApplicationDesc[] =
   GB_STATIC_PROPERTY("Busy", "i", CSCREEN_busy),
   GB_STATIC_PROPERTY_SELF("ToolTip", ".ApplicationTooltip"),
   
-  GB_STATIC_PROPERTY("Embedder", "i", CAPP_embedder),
+  GB_STATIC_PROPERTY("Embedder", "p", CAPP_embedder),
   GB_STATIC_PROPERTY("Theme", "s", CAPP_theme),
 
   GB_END_DECLARE

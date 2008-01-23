@@ -44,10 +44,7 @@ BEGIN_METHOD(CDESKTOP_find, GB_STRING title; GB_STRING klass; GB_STRING role)
 	if (X11_init())
 		return;
 	
-	if (sizeof(Window) <= sizeof(int))
-		GB.Array.New(&result, GB_T_INTEGER, 0);
-	else
-		GB.Array.New(&result, GB_T_LONG, 0);
+	GB.Array.New(&result, GB_T_POINTER, 0);
 
 	X11_find_windows(&windows, &count);
 
@@ -105,7 +102,7 @@ GB_DESC CDesktopDesc[] =
 {
   GB_DECLARE("_Desktop", 0), GB_VIRTUAL_CLASS(),
   
-  GB_STATIC_METHOD("Find", "Integer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
+  GB_STATIC_METHOD("Find", "Pointer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
   GB_STATIC_METHOD("SendKey", NULL, CDESKTOP_sendkey, "(Key)s(Press)b"),
   
   GB_END_DECLARE

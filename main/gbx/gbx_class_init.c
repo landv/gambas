@@ -71,6 +71,7 @@ CLASS *CLASS_StringArray = NULL;
 CLASS *CLASS_ObjectArray = NULL;
 CLASS *CLASS_VariantArray = NULL;
 CLASS *CLASS_LongArray = NULL;
+CLASS *CLASS_PointerArray = NULL;
 
 CLASS *CLASS_SubCollection = NULL;
 CLASS *CLASS_String = NULL;
@@ -127,6 +128,7 @@ static CLASS_INIT init_list[] =
   { NATIVE_ObjectArray, &CLASS_ObjectArray },
   { NATIVE_VariantArray, &CLASS_VariantArray },
   { NATIVE_LongArray, &CLASS_LongArray },
+  { NATIVE_PointerArray, &CLASS_PointerArray },
 
   { NATIVE_SubCollection, &CLASS_SubCollection },
 
