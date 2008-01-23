@@ -73,7 +73,7 @@ END
 
 '  GB_STATIC_METHOD("Find", "Integer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
 
-STATIC PUBLIC SUB Find(OPTIONAL Title AS String, Application AS String, Role AS String) AS Integer[]
+STATIC PUBLIC SUB Find(OPTIONAL Title AS String, Application AS String, Role AS String) AS Pointer[]
   
   RETURN _Desktop.Find(Title, Application, Role)
   

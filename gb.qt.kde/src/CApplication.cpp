@@ -52,7 +52,7 @@
 
 typedef
   struct {
-    char *dcop;
+    const char *dcop;
     GB_TYPE type;
     }
   TYPE_CONV;

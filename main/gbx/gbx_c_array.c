@@ -306,6 +306,8 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
     type = T_VARIANT;
 	else if (klass == CLASS_ObjectArray)
 		type = T_OBJECT;
+	else if (klass == CLASS_PointerArray)
+		type = T_POINTER;
 	else
 	{
 		GB_Error("Bad array type");
@@ -1154,6 +1156,50 @@ GB_DESC NATIVE_LongArray[] =
   GB_END_DECLARE
 };
 
+#ifdef OS_64BITS
+#define CARRAY_pointer_add CARRAY_long_add
+#define CARRAY_pointer_push CARRAY_long_push
+#define CARRAY_pointer_put CARRAY_long_put
+#define CARRAY_pointer_find CARRAY_long_find
+#define CARRAY_pointer_exist CARRAY_long_exist
+#else
+#define CARRAY_pointer_add CARRAY_integer_add
+#define CARRAY_pointer_push CARRAY_integer_push
+#define CARRAY_pointer_put CARRAY_integer_put
+#define CARRAY_pointer_find CARRAY_integer_find
+#define CARRAY_pointer_exist CARRAY_integer_exist
+#endif
+
+GB_DESC NATIVE_PointerArray[] =
+{
+  GB_DECLARE("Pointer[]", sizeof(CARRAY)), GB_INHERITS("Array"),
+
+  GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
+
+  GB_METHOD("Add", NULL, CARRAY_long_add, "(Value)p[(Index)i]"),
+  GB_METHOD("Push", NULL, CARRAY_long_push, "(Value)p"),
+  GB_METHOD("_put", NULL, CARRAY_long_put, "(Value)p(Index)i."),
+  GB_METHOD("Find", "i", CARRAY_long_find, "(Value)p"),
+  GB_METHOD("Exist", "b", CARRAY_long_exist, "(Value)p"),
+
+  GB_METHOD("Pop", "p", CARRAY_pop, NULL),
+  GB_METHOD("_get", "p", CARRAY_get, "(Index)i."),
+  GB_METHOD("_next", "p", CARRAY_next, NULL),
+
+  GB_METHOD("Read", NULL, CARRAY_read, "(Stream)Stream;[(Start)i(Length)i]"),
+  GB_METHOD("Write", NULL, CARRAY_write, "(Stream)Stream;[(Start)i(Length)i]"),
+
+  GB_METHOD("Insert", "Pointer[]", CARRAY_insert, "(Array)Pointer[];[(Pos)i]"),
+
+  GB_METHOD("Copy", "Pointer[]", CARRAY_copy, "[(Start)i(Length)i]"),
+  GB_METHOD("Extract", "Pointer[]", CARRAY_extract, "(Start)i[(Length)i]"),
+  GB_METHOD("Delete", "Pointer[]", CARRAY_extract, "(Start)i[(Length)i]"),
+  GB_METHOD("Sort", "Pointer[]", CARRAY_sort, "[(Mode)i]"),
+  GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)p[(Start)i(Length)i]"),
+
+  GB_END_DECLARE
+};
+
 
 GB_DESC NATIVE_StringArray[] =
 {
@@ -1504,6 +1550,7 @@ void GB_ArrayNew(GB_ARRAY *array, uint type, int size)
     case GB_T_STRING: class = CLASS_StringArray; break;
     case GB_T_DATE: class = CLASS_DateArray; break;
     case GB_T_OBJECT: class = CLASS_ObjectArray; break;
+    case GB_T_POINTER: class = CLASS_PointerArray; break;
     default: class = CLASS_VariantArray; break;
   }
 

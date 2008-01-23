@@ -346,6 +346,7 @@ EXTERN CLASS *CLASS_StringArray;
 EXTERN CLASS *CLASS_ObjectArray;
 EXTERN CLASS *CLASS_VariantArray;
 EXTERN CLASS *CLASS_LongArray;
+EXTERN CLASS *CLASS_PointerArray;
 
 EXTERN CLASS *CLASS_SubCollection;
 #endif

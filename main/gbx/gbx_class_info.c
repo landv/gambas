@@ -334,6 +334,7 @@ EXTERN GB_DESC NATIVE_StringArray[];
 EXTERN GB_DESC NATIVE_ObjectArray[];
 EXTERN GB_DESC NATIVE_VariantArray[];
 EXTERN GB_DESC NATIVE_LongArray[];
+EXTERN GB_DESC NATIVE_PointerArray[];
 EXTERN GB_DESC NATIVE_SubCollection[];
 EXTERN GB_DESC NATIVE_String[];
 EXTERN GB_DESC NATIVE_Timer[];
@@ -379,6 +380,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NATIVE_ObjectArray,
   NATIVE_VariantArray,
   NATIVE_LongArray,
+  NATIVE_PointerArray,
   NATIVE_SubCollection,
   NATIVE_String,
   NATIVE_Timer,

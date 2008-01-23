@@ -75,13 +75,13 @@ GB_STREAM_DESC CurlStream = {
 
 int CCURL_stream_handle(GB_STREAM *stream) { return 0;}
 int CCURL_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
-int CCURL_stream_seek(GB_STREAM *stream, long long pos, int whence){	return -1;}
-int CCURL_stream_tell(GB_STREAM *stream, long long *pos){return -1; }
+int CCURL_stream_seek(GB_STREAM *stream, int64_t pos, int whence){	return -1;}
+int CCURL_stream_tell(GB_STREAM *stream, int64_t *pos){return -1; }
 int CCURL_stream_flush(GB_STREAM *stream) {	return 0;}
 int CCURL_stream_close(GB_STREAM *stream) { return -1;}
-int CCURL_stream_write(GB_STREAM *stream, char *buffer, long len){return -1;}
+int CCURL_stream_write(GB_STREAM *stream, char *buffer, int len){return -1;}
 
-int CCURL_stream_lof(GB_STREAM *stream, long long *len)
+int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	void *_object;
 	
@@ -103,7 +103,7 @@ int CCURL_stream_eof(GB_STREAM *stream)
 	return 0;
 }
 
-int CCURL_stream_read(GB_STREAM *stream, char *buffer, long len)
+int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object;
 	

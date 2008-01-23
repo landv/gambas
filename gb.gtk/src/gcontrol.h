@@ -32,7 +32,7 @@ public:
 	virtual bool enabled();
 	bool expand();
 	bool ignore();
-	virtual int handle();
+	virtual long handle();
 	virtual int height();
 	virtual int left();
 	int x() { return left(); }

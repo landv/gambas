@@ -115,19 +115,13 @@ gPlugin::gPlugin(gContainer *parent) : gControl(parent)
 	g_object_set(G_OBJECT(widget),"can-focus",TRUE, (void *)NULL);
 }
 
-int gPlugin::client()
+long gPlugin::client()
 {
 	GdkNativeWindow win=gtk_socket_get_id(GTK_SOCKET(widget));
-	return (int)win;
+	return (long)win;
 }
 
-int gPlugin::handle()
-{
-	GdkNativeWindow win=gtk_socket_get_id(GTK_SOCKET(widget));
-	return (int)win;
-}
-
-void gPlugin::plug(int id,bool prepared)
+void gPlugin::plug(long id,bool prepared)
 {
 	int bc;
 
@@ -136,8 +130,6 @@ void gPlugin::plug(int id,bool prepared)
 		if (!prepared) gtk_socket_steal(GTK_SOCKET(widget),(GdkNativeWindow)id);
 		else gtk_socket_add_id(GTK_SOCKET(widget),(GdkNativeWindow)id);
 	}
-
-	
 }
 
 void gPlugin::discard()
@@ -762,11 +754,11 @@ gMainWindow* gControl::topLevel()
 	return (gMainWindow *)child;
 }
 
-int gControl::handle()
+long gControl::handle()
 {
 	#ifndef GAMBAS_DIRECTFB
 	#ifdef GDK_WINDOWING_X11
-	return (int)GDK_WINDOW_XID(border->window);
+	return (long)GDK_WINDOW_XID(border->window);
 	#else
 	stub("no-X11/gControl::handle()");
 	return 0;
