@@ -100,8 +100,9 @@ static void *get_data(CARRAY *_object, int index)
   return (void *)((char *)(THIS->data) + index * TYPE_sizeof_memory(THIS->type));
 }
 
+#define get_data_multi CARRAY_get_data_multi
 
-static void *get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
+void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 {
   int index;
 

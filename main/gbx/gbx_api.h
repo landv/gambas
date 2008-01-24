@@ -124,7 +124,7 @@ void *GB_ArrayGet(GB_ARRAY array, int index);
 
 void GB_CollectionNew(GB_COLLECTION *col, int mode);
 int GB_CollectionCount(GB_COLLECTION col);
-void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
+int GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
 int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value);
 int GB_CollectionEnum(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
 

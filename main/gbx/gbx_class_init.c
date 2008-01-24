@@ -81,7 +81,7 @@ typedef
   struct {
     GB_DESC *desc;
     CLASS **class;
-    bool array;
+    int array;
     }
   CLASS_INIT;
 
@@ -97,7 +97,7 @@ static CLASS_INIT init_list[] =
   { NATIVE_Component, NULL },
   { NATIVE_Components, NULL },
   { NATIVE_Object, NULL },
-  { NATIVE_Collection, &CLASS_Collection },
+  { NATIVE_Collection, &CLASS_Collection, CQA_COLLECTION },
 //  { NATIVE_List, NULL },
   { NATIVE_Error, NULL },
   { NATIVE_Stream, &CLASS_Stream },
@@ -118,18 +118,18 @@ static CLASS_INIT init_list[] =
 
   { NATIVE_ArrayBounds, NULL },
   { NATIVE_Array, &CLASS_Array },
-  { NATIVE_BooleanArray, &CLASS_BooleanArray, TRUE },
-  { NATIVE_ByteArray, &CLASS_ByteArray, TRUE },
-  { NATIVE_ShortArray, &CLASS_ShortArray, TRUE },
-  { NATIVE_IntegerArray, &CLASS_IntegerArray, TRUE },
-  { NATIVE_FloatArray, &CLASS_FloatArray, TRUE },
-  { NATIVE_SingleArray, &CLASS_SingleArray, TRUE },
-  { NATIVE_DateArray, &CLASS_DateArray, TRUE },
-  { NATIVE_StringArray, &CLASS_StringArray, TRUE },
-  { NATIVE_ObjectArray, &CLASS_ObjectArray, TRUE },
-  { NATIVE_VariantArray, &CLASS_VariantArray, TRUE },
-  { NATIVE_LongArray, &CLASS_LongArray, TRUE },
-  { NATIVE_PointerArray, &CLASS_PointerArray, TRUE },
+  { NATIVE_BooleanArray, &CLASS_BooleanArray, CQA_ARRAY },
+  { NATIVE_ByteArray, &CLASS_ByteArray, CQA_ARRAY },
+  { NATIVE_ShortArray, &CLASS_ShortArray, CQA_ARRAY },
+  { NATIVE_IntegerArray, &CLASS_IntegerArray, CQA_ARRAY },
+  { NATIVE_FloatArray, &CLASS_FloatArray, CQA_ARRAY },
+  { NATIVE_SingleArray, &CLASS_SingleArray, CQA_ARRAY },
+  { NATIVE_DateArray, &CLASS_DateArray, CQA_ARRAY },
+  { NATIVE_StringArray, &CLASS_StringArray, CQA_ARRAY },
+  { NATIVE_ObjectArray, &CLASS_ObjectArray, CQA_ARRAY },
+  { NATIVE_VariantArray, &CLASS_VariantArray, CQA_ARRAY },
+  { NATIVE_LongArray, &CLASS_LongArray, CQA_ARRAY },
+  { NATIVE_PointerArray, &CLASS_PointerArray, CQA_ARRAY },
 
   { NATIVE_SubCollection, &CLASS_SubCollection },
 
@@ -141,7 +141,6 @@ void CLASS_init_native(void)
 {
   CLASS_INIT *init;
   CLASS *class;
-  CLASS_DESC_METHOD *cdm;
 
   /* NOTE: The 'Class' class must be first in the global class table */
   CLASS_Class = CLASS_find("Class");
@@ -155,11 +154,7 @@ void CLASS_init_native(void)
     class = CLASS_register(init->desc);
     if (init->class != NULL)
       *init->class = class;
-    if (init->array)
-    {
-    	class->array_get = (CLASS_DESC_METHOD *)CLASS_get_desc(class, class->special[SPEC_GET]);
-    	class->array_put = (CLASS_DESC_METHOD *)CLASS_get_desc(class, class->special[SPEC_PUT]);
-    }
+  	class->quick_array = init->array;
   }
 }
 

@@ -59,7 +59,6 @@ static void collection_free(CCOLLECTION *col)
   HASH_TABLE_delete(&col->hash_table);
 }
 
-
 static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
 {
   if (!key || !*key)
@@ -344,7 +343,7 @@ int GB_CollectionCount(GB_COLLECTION col)
   return HASH_TABLE_size(((CCOLLECTION *)col)->hash_table);
 }
 
-void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
+int GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
   VARIANT *data;
 
@@ -353,9 +352,11 @@ void GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
   else
   {
     data = (VARIANT *)collection_add_key((CCOLLECTION *)col, key, len);
-    if (data)
-      GB_StoreVariant(value, data);
+    if (!data)
+    	return TRUE;
+    GB_StoreVariant(value, data);
   }
+  return FALSE;
 }
 
 int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)

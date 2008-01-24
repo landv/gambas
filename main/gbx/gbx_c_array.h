@@ -68,5 +68,6 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 void CARRAY_reverse(void *_object, void *_param);
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value);
 #define CARRAY_invert(_array) CARRAY_reverse(_array, NULL)
+void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam);
 
 #endif

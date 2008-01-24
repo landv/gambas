@@ -32,8 +32,9 @@
 
 #include "gbx_string.h"
 #include "gbx_array.h"
+#include "gbx_c_array.h"
 #include "gbx_c_collection.h"
-
+#include "gbx_api.h"
 
 void EXEC_push_unknown(ushort code)
 {
@@ -435,7 +436,7 @@ void EXEC_push_array(ushort code)
   val = &SP[-np];
   np--;
 
-	goto *jump[(code & 0xC0) >> 6];
+	goto *jump[(code >> 6) & 3];
 	
 __PUSH_GENERIC:
 
@@ -447,10 +448,10 @@ __PUSH_GENERIC:
 	
 	EXEC_object(val, &class, &object, &defined);
 	
-	if (defined && class->array_get)
+	if (defined && class->quick_array)
 	{
 		*PC |= 2 << 6;
-		goto __PUSH_ARRAY_2;
+		goto __PUSH_ARRAY_2; // Check number of arguments by not going to __PUSH_QUICK_ARRAY immediately
 	}
 	
 	*PC |= 3 << 6;
@@ -477,19 +478,36 @@ __PUSH_STATIC_ARRAY:
 __PUSH_QUICK_ARRAY:
 	
 	EXEC_object(val, &class, &object, &defined);
-
-__PUSH_QUICK_ARRAY_2:
-
-	for (i = 1; i <= np; i++)
-		VALUE_conv(&val[i], T_INTEGER);
 	
-	EXEC.nparvar = np - 1;
-	if (EXEC_call_native(class->array_get->exec, object, class->array_get->type, &val[1]))
-		PROPAGATE();
+	if (class->quick_array == CQA_ARRAY)
+	{
+		for (i = 1; i <= np; i++)
+			VALUE_conv(&val[i], T_INTEGER);
+		
+		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
+		if (!data)
+			PROPAGATE();
+		VALUE_read(val, data, ((CARRAY *)object)->type);
+		SP = val;
+		PUSH();
+	}
+	else /* CQA_COLLECTION */
+	{
+		VALUE_conv(&val[1], T_STRING);
+		GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
+		
+		RELEASE(&val[1]);
+		SP = val;
+		PUSH();
+	}
 	
-	SP = val;
-	COPY_VALUE(SP, &TEMP);
-	PUSH();
+	//EXEC.nparvar = np - 1;
+	//if (EXEC_call_native(class->array_get->exec, object, class->array_get->type, &val[1]))
+	//	PROPAGATE();
+	//SP = val;
+	//COPY_VALUE(SP, &TEMP);
+	//PUSH();
+	
 	OBJECT_UNREF(&object, "EXEC_push_array");
 	return;
 

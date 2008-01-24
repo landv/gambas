@@ -29,6 +29,7 @@
 #include "gbx_array.h"
 #include "gbx_c_array.h"
 #include "gbx_c_collection.h"
+#include "gbx_api.h"
 
 
 void EXEC_pop_unknown(void)
@@ -248,7 +249,7 @@ void EXEC_pop_array(ushort code)
   ARRAY_DESC *desc;
 
   val = &SP[-np];
-	goto *jump[(code & 0xC0) >> 6];
+	goto *jump[(code >> 6) & 3];
 
 __POP_GENERIC:
 
@@ -260,10 +261,10 @@ __POP_GENERIC:
 	
 	EXEC_object(val, &class, &object, &defined);
 	
-	if (defined && class->array_put)
+	if (defined && class->quick_array)
 	{
 		*PC |= 2 << 6;
-		goto __POP_QUICK_ARRAY_2;
+		goto __POP_ARRAY_2; // Check number of arguments by not going to __POP_QUICK_ARRAY immediately
 	}
 	
 	*PC |= 3 << 6;
@@ -293,24 +294,38 @@ __POP_QUICK_ARRAY:
 
   EXEC_object(val, &class, &object, &defined);
 
-__POP_QUICK_ARRAY_2:
+	if (class->quick_array == CQA_ARRAY)
+	{
+		TYPE type = ((CARRAY *)object)->type;
+		
+		swap = val[0];
+		val[0] = val[-1];
+		val[-1] = swap;
+		
+		VALUE_conv(&val[0], type);
+		for (i = 1; i < np; i++)
+			VALUE_conv(&val[i], T_INTEGER);
+		
+		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
+		if (!data)
+			PROPAGATE();
+		VALUE_write(val, data, type);
+		
+		SP = val + 1;
+		RELEASE_MANY(SP, 2);
+		//OBJECT_UNREF(&object, "EXEC_push_array");
+	}
+	else // CQA_COLLECTION
+	{
+		VALUE_conv(&val[-1], T_VARIANT);
+		VALUE_conv(&val[1], T_STRING);
+		
+		if (GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1]))
+			PROPAGATE();
+		
+		RELEASE_MANY(SP, 3);
+	}
 	
-	swap = val[0];
-	val[0] = val[-1];
-	val[-1] = swap;
-	
-	VALUE_conv(&val[0], ((CARRAY *)object)->type);
-	for (i = 1; i < np; i++)
-		VALUE_conv(&val[i], T_INTEGER);
-	
-	EXEC.nparvar = np - 2;
-	if (EXEC_call_native(class->array_put->exec, object, class->array_put->type, val))
-		PROPAGATE();
-	
-	SP = val + 1;
-	POP();
-	POP();
-	//OBJECT_UNREF(&object, "EXEC_push_array");
 	return;
 	
 __POP_ARRAY:
@@ -319,21 +334,14 @@ __POP_ARRAY:
 
 __POP_ARRAY_2:
 
-	/* remplace l'objet par la valeur �ins�er */
+	/* swap object and value to be inserted */
 
 	swap = val[0];
 	val[0] = val[-1];
 	val[-1] = swap;
 
-	/*printf("<< EXEC_pop_array: np = %d  SP = %d\n", np, SP - (VALUE *)STACK_base);
-	save_SP = SP - np;*/
-
 	if (EXEC_special(SPEC_PUT, class, object, np, TRUE))
 		THROW(E_NARRAY, class->name);
 
-	/*printf(">> EXEC_pop_array: SP = %d\n", SP - (VALUE *)STACK_base);
-	if (SP != save_SP)
-		printf("**** SP should be %d\n", save_SP - (VALUE *)STACK_base);*/
-
-	POP(); /* on lib�e l'objet */
+	POP(); /* free the object */
 }

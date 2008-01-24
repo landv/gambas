@@ -247,8 +247,8 @@ typedef
     unsigned mmapped : 1;     /*      mmap() was used to load the class */
     unsigned swap : 1;				/*      class endianness was swapped */
     unsigned enum_static : 1; /*      if class enumeration is static */
-    //unsigned quick_array : 1; /*      array accessor optimizations can apply */
-    unsigned _flag : 3;       /*  30  */
+    unsigned quick_array : 2; /*      array accessor optimization type */
+    unsigned _flag : 1;       /*  30  */
 
     short n_desc;             /*  32  number of descriptions */
     CLASS_DESC_SYMBOL *table; /*  36  class description */
@@ -258,8 +258,8 @@ typedef
 
     CLASS_EVENT *event;       /*  44  event description */
 
-    CLASS_DESC_METHOD *array_get;      /*  48  quick array get method */
-    CLASS_DESC_METHOD *array_put;      /*  52  quick array put method */
+    int _reserved2;     		  /*  48  quick array get method */
+    int _reserved3;           /*  52  quick array put method */
     
     int (*check)();           /*  56  method for checking that an object is valid */
 
@@ -303,6 +303,14 @@ typedef
     SPEC_PRINT
     }
   CLASS_SPECIAL;
+
+typedef
+	enum {
+		CQA_NONE = 0,
+		CQA_ARRAY = 1,
+		CQA_COLLECTION = 2
+		}
+	CLASS_QUICK_ARRAY;
 
 typedef
   enum
