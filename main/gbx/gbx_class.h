@@ -258,8 +258,9 @@ typedef
 
     CLASS_EVENT *event;       /*  44  event description */
 
-    int _reserved1;           /*  48  class instanctiation method (NOT USED ANYMORE) */
-    int _reserved2;           /*  52  class freeing method (NOT USED ANYMORE) */
+    CLASS_DESC_METHOD *array_get;      /*  48  quick array get method */
+    CLASS_DESC_METHOD *array_put;      /*  52  quick array put method */
+    
     int (*check)();           /*  56  method for checking that an object is valid */
 
     short special[16];        /*  88  special functions index (_new, _free, ...) */

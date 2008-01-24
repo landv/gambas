@@ -167,11 +167,11 @@ void EXEC_nop(void);
 void EXEC_ILLEGAL(void);
 
 void EXEC_push_unknown(ushort code);
-void EXEC_push_array(void);
+void EXEC_push_array(ushort code);
 //void EXEC_push_special(void);
 
 void EXEC_pop_unknown(void);
-void EXEC_pop_array(void);
+void EXEC_pop_array(ushort code);
 
 void EXEC_enum_first(PCODE code);
 bool EXEC_enum_next(PCODE code);

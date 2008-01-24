@@ -27,6 +27,7 @@
 #include "gbx_string.h"
 #include "gbx_object.h"
 #include "gbx_array.h"
+#include "gbx_c_array.h"
 #include "gbx_c_collection.h"
 
 
@@ -231,8 +232,10 @@ _FIN:
 }
 
 
-void EXEC_pop_array(void)
+void EXEC_pop_array(ushort code)
 {
+	static const void *jump[] = { &&__POP_GENERIC, &&__POP_STATIC_ARRAY, &&__POP_QUICK_ARRAY, &&__POP_ARRAY };
+	
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
@@ -245,46 +248,92 @@ void EXEC_pop_array(void)
   ARRAY_DESC *desc;
 
   val = &SP[-np];
+	goto *jump[(code & 0xC0) >> 6];
 
-  if (val->type == T_ARRAY)
-  {
-    np--;
+__POP_GENERIC:
 
-    for (i = 1; i <= np; i++)
-    {
-      VALUE_conv(&val[i], T_INTEGER);
-      dim[i - 1] = val[i]._integer.value;
-    }
+	if (val->type == T_ARRAY)
+	{
+		*PC |= 1 << 6;
+		goto __POP_STATIC_ARRAY;
+	}
+	
+	EXEC_object(val, &class, &object, &defined);
+	
+	if (defined && class->array_put)
+	{
+		*PC |= 2 << 6;
+		goto __POP_QUICK_ARRAY_2;
+	}
+	
+	*PC |= 3 << 6;
+	goto __POP_ARRAY_2;
 
-    SP -= np + 1;
+__POP_STATIC_ARRAY:
 
-		desc = (ARRAY_DESC *)SP->_array.class->load->array[SP->_array.index];
-    data = ARRAY_get_address(desc, SP->_array.addr, np, dim);
+	np--;
 
-    VALUE_write(SP - 1, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
+	for (i = 1; i <= np; i++)
+	{
+		VALUE_conv(&val[i], T_INTEGER);
+		dim[i - 1] = val[i]._integer.value;
+	}
 
-    POP();
-  }
-  else
-  {
-    EXEC_object(val, &class, &object, &defined);
+	SP -= np + 1;
 
-    /* remplace l'objet par la valeur �ins�er */
+	desc = (ARRAY_DESC *)SP->_array.class->load->array[SP->_array.index];
+	data = ARRAY_get_address(desc, SP->_array.addr, np, dim);
 
-    swap = val[0];
-    val[0] = val[-1];
-    val[-1] = swap;
+	VALUE_write(SP - 1, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
 
-    /*printf("<< EXEC_pop_array: np = %d  SP = %d\n", np, SP - (VALUE *)STACK_base);
-    save_SP = SP - np;*/
+	POP();
+	return;
+	
+__POP_QUICK_ARRAY:
 
-    if (EXEC_special(SPEC_PUT, class, object, np, TRUE))
-      THROW(E_NARRAY, class->name);
+  EXEC_object(val, &class, &object, &defined);
 
-    /*printf(">> EXEC_pop_array: SP = %d\n", SP - (VALUE *)STACK_base);
-    if (SP != save_SP)
-      printf("**** SP should be %d\n", save_SP - (VALUE *)STACK_base);*/
+__POP_QUICK_ARRAY_2:
+	
+	swap = val[0];
+	val[0] = val[-1];
+	val[-1] = swap;
+	
+	VALUE_conv(&val[0], ((CARRAY *)object)->type);
+	for (i = 1; i < np; i++)
+		VALUE_conv(&val[i], T_INTEGER);
+	
+	EXEC.nparvar = np - 2;
+	if (EXEC_call_native(class->array_put->exec, object, class->array_put->type, val))
+		PROPAGATE();
+	
+	SP = val + 1;
+	POP();
+	POP();
+	//OBJECT_UNREF(&object, "EXEC_push_array");
+	return;
+	
+__POP_ARRAY:
+    
+  EXEC_object(val, &class, &object, &defined);
 
-    POP(); /* on lib�e l'objet */
-  }
+__POP_ARRAY_2:
+
+	/* remplace l'objet par la valeur �ins�er */
+
+	swap = val[0];
+	val[0] = val[-1];
+	val[-1] = swap;
+
+	/*printf("<< EXEC_pop_array: np = %d  SP = %d\n", np, SP - (VALUE *)STACK_base);
+	save_SP = SP - np;*/
+
+	if (EXEC_special(SPEC_PUT, class, object, np, TRUE))
+		THROW(E_NARRAY, class->name);
+
+	/*printf(">> EXEC_pop_array: SP = %d\n", SP - (VALUE *)STACK_base);
+	if (SP != save_SP)
+		printf("**** SP should be %d\n", save_SP - (VALUE *)STACK_base);*/
+
+	POP(); /* on lib�e l'objet */
 }

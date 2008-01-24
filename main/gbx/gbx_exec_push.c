@@ -418,54 +418,97 @@ _FIN:
   PC++;
 }
 
-void EXEC_push_array(void)
+void EXEC_push_array(ushort code)
 {
+	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_STATIC_ARRAY, &&__PUSH_QUICK_ARRAY, &&__PUSH_ARRAY };
+	
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
   int dim[MAX_ARRAY_DIM];
   int i;
   void *data;
-  boolean defined;
+  bool defined;
   VALUE *val;
   ARRAY_DESC *desc;
 
   val = &SP[-np];
   np--;
 
+	goto *jump[(code & 0xC0) >> 6];
+	
+__PUSH_GENERIC:
 
-  if (val->type == T_ARRAY)
-  {
-    for (i = 1; i <= np; i++)
-    {
-      VALUE_conv(&val[i], T_INTEGER);
-      dim[i - 1] = val[i]._integer.value;
-    }
+	if (val->type == T_ARRAY)
+	{
+		*PC |= 1 << 6;
+		goto __PUSH_STATIC_ARRAY;
+	}
+	
+	EXEC_object(val, &class, &object, &defined);
+	
+	if (defined && class->array_get)
+	{
+		*PC |= 2 << 6;
+		goto __PUSH_ARRAY_2;
+	}
+	
+	*PC |= 3 << 6;
+	goto __PUSH_ARRAY_2;
 
-    SP -= np + 1;
+__PUSH_STATIC_ARRAY:
 
-		desc = (ARRAY_DESC *)SP->_array.class->load->array[SP->_array.index];
-    data = ARRAY_get_address(desc, SP->_array.addr, np, dim);
+	for (i = 1; i <= np; i++)
+	{
+		VALUE_conv(&val[i], T_INTEGER);
+		dim[i - 1] = val[i]._integer.value;
+	}
 
-    VALUE_read(SP, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
+	SP = val;
 
-    PUSH();
-  }
-  else
-  {
-    EXEC_object(val, &class, &object, &defined);
-    /*RELEASE(SP);*/
+	desc = (ARRAY_DESC *)SP->_array.class->load->array[SP->_array.index];
+	data = ARRAY_get_address(desc, SP->_array.addr, np, dim);
 
-    /* Ex�ution de la m�hode sp�iale _get */
+	VALUE_read(SP, data, CLASS_ctype_to_type(SP->_array.class, desc->type));
 
-    if (EXEC_special(SPEC_GET, class, object, np, FALSE))
-      THROW(E_NARRAY, class->name);
+	PUSH();
+	return;
 
-    OBJECT_UNREF(&object, "EXEC_push_array");
-    SP--;
-    SP[-1] = SP[0];
+__PUSH_QUICK_ARRAY:
+	
+	EXEC_object(val, &class, &object, &defined);
 
-    if (!defined)
-    	VALUE_conv(&SP[-1], T_VARIANT);
-  }
+__PUSH_QUICK_ARRAY_2:
+
+	for (i = 1; i <= np; i++)
+		VALUE_conv(&val[i], T_INTEGER);
+	
+	EXEC.nparvar = np - 1;
+	if (EXEC_call_native(class->array_get->exec, object, class->array_get->type, &val[1]))
+		PROPAGATE();
+	
+	SP = val;
+	COPY_VALUE(SP, &TEMP);
+	PUSH();
+	OBJECT_UNREF(&object, "EXEC_push_array");
+	return;
+
+__PUSH_ARRAY:
+
+	EXEC_object(val, &class, &object, &defined);
+	
+__PUSH_ARRAY_2:
+	/*RELEASE(SP);*/
+
+	/* Ex�ution de la m�hode sp�iale _get */
+
+	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
+		THROW(E_NARRAY, class->name);
+
+	OBJECT_UNREF(&object, "EXEC_push_array");
+	SP--;
+	SP[-1] = SP[0];
+
+	if (!defined)
+		VALUE_conv(&SP[-1], T_VARIANT);
 }

@@ -472,7 +472,6 @@ _MAIN:
 _SUBR:
 _SUBR_1:
 
-
   EXEC_code = code;
 
   (*SubrTable[(code >> 8) - 0x28])();
@@ -481,33 +480,6 @@ _SUBR_1:
     POP();
 
   goto _NEXT;
-
-#if 0
-/*-----------------------------------------------*/
-
-_SUBR_1:
-
-  EXEC_code = code;
-
-  (*SubrTable[(code >> 8) - 0x28])();
-
-  if (PCODE_is_void(EXEC_code))
-  {
-    BORROW(RP);
-    RELEASE(RP);
-    POP();
-  }
-  else
-  {
-    BORROW(RP);
-    POP();
-
-    *SP++ = *RP;
-    RP->type = T_VOID;
-  }
-
-  goto _NEXT;
-#endif
 
 /*-----------------------------------------------*/
 
@@ -531,7 +503,7 @@ _PUSH_PARAM:
 
 _PUSH_ARRAY:
 
-  EXEC_push_array();
+  EXEC_push_array(code);
   goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -674,7 +646,7 @@ _POP_CTRL:
 
 _POP_ARRAY:
 
-  EXEC_pop_array();
+  EXEC_pop_array(code);
   goto _NEXT;
 
 /*-----------------------------------------------*/

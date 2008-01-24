@@ -70,7 +70,7 @@ typedef
   struct {
     char *name;
     TYPE type;                  /* type de la valeur de retour */
-    void (*exec)();             /* m�hode */
+    void (*exec)();             /* method */
     TYPE *signature;            /* signature */
     char npmin;                 /* nombre de param�res minimum */
     char npmax;                 /* nombre de param�res maximum dans la signature */
