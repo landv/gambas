@@ -153,6 +153,12 @@ static void *get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
   }
   else
   {
+    if (nparam != 1)
+    {
+      GB_Error((char *)E_NDIM);
+      return NULL;
+    }
+    
     index = arg->value;
 
     if ((index < 0) || (index >= ARRAY_count(THIS->data)))

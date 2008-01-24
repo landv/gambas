@@ -57,7 +57,7 @@ size_t ARRAY_get_size(ARRAY_DESC *desc)
 
 void ARRAY_new(void **data, ARRAY_DESC *desc)
 {
-  ALLOC_ZERO(data, ARRAY_size(desc), "ARRAY_new");
+  ALLOC_ZERO(data, ARRAY_get_size(desc), "ARRAY_new");
 }
 
 
