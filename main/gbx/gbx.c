@@ -113,7 +113,6 @@ static void main_exit()
   EVENT_exit();
   FILE_exit();
   STRING_exit();
-	ERROR_clear();
   STACK_exit();
 }
 
@@ -222,7 +221,7 @@ int main(int argc, char **argv)
   		}
   		CATCH
   		{
-				if (ERROR_info.code && ERROR_info.code != E_ABORT)
+				if (ERROR_current->info.code && ERROR_current->info.code != E_ABORT)
 					ERROR_print_at(stderr, TRUE, TRUE);
 				main_exit();
 				_exit(1);
@@ -321,7 +320,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-	    if (ERROR_info.code && ERROR_info.code != E_ABORT)
+	    if (ERROR->info.code && ERROR->info.code != E_ABORT)
     		ERROR_print();
     	main_exit();
     	_exit(1);
@@ -358,7 +357,7 @@ int main(int argc, char **argv)
   }
   CATCH
   {
-    if (ERROR_info.code && ERROR_info.code != E_ABORT)
+    if (ERROR->info.code && ERROR->info.code != E_ABORT)
     {
 			if (EXEC_debug)
 			{
@@ -376,7 +375,6 @@ int main(int argc, char **argv)
   }
   END_TRY
 
-  ERROR_info.code = 0;
   main_exit();
 
   if (MEMORY_count)

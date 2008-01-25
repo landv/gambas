@@ -72,6 +72,7 @@ EXEC_HOOK EXEC_Hook = { NULL };
 EXEC_FUNCTION EXEC;
 bool EXEC_main_hook_done = FALSE;
 int EXEC_return_value = 0;
+bool EXEC_got_error = FALSE;
 
 void EXEC_init(void)
 {
@@ -711,7 +712,7 @@ void EXEC_function_real(bool keep_ret_value)
 			CATCH
 			{
 				// QUIT was called
-				if (ERROR_info.code == E_ABORT)
+				if (ERROR->info.code == E_ABORT)
 				{
 					#if DEBUG_ERROR
 					printf("#0 QUIT\n");

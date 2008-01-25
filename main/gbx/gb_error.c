@@ -38,8 +38,11 @@
 #include "gbx_exec.h"
 #include "gbx_api.h"
 
+//#define DEBUG_ERROR
 
-ERROR_INFO ERROR_info = { 0 };
+ERROR_CONTEXT *ERROR_current = NULL;
+
+//ERROR_current->info ERROR_current->info = { 0 };
 static int _lock = 0;
 
 static const char *_message[64] =
@@ -110,7 +113,6 @@ static const char *_message[64] =
   NULL
 };
 
-static ERROR_CONTEXT *_current = NULL;
 
 
 void ERROR_lock()
@@ -124,36 +126,88 @@ void ERROR_unlock()
 	_lock--;
 }
 
-static void ERROR_reset()
+static void ERROR_reset(ERROR_CONTEXT *err)
 {
-	ERROR_info.code = 0;
-	DEBUG_free_backtrace(&ERROR_info.backtrace);
+	err->info.code = 0;
+	if (err->info.free)
+	{
+		STRING_free(&err->info.msg);
+		err->info.free = FALSE;
+	}
+	else
+		err->info.msg = NULL;
+	DEBUG_free_backtrace(&err->info.backtrace);
 }
 
 void ERROR_clear()
 {
 	if (_lock)
 		return;
-	ERROR_reset();
+	ERROR_reset(ERROR_current);
 }
 
 
 void ERROR_enter(ERROR_CONTEXT *err)
 {
   CLEAR(err);
-  err->prev = _current;
-  _current = err;
+  err->prev = ERROR_current;
+  ERROR_current = err;
+
+	#if DEBUG_ERROR
+	fprintf(stderr, ">> ERROR_enter");
+	{
+		ERROR_CONTEXT *e = err;
+		while (e)
+		{
+			fprintf(stderr, " -> %p", e);
+			e = e->prev;
+		}
+		fprintf(stderr, "\n");
+	}
+  #endif
 }
 
 
 void ERROR_leave(ERROR_CONTEXT *err)
 {
-  if (err->prev != ERROR_LEAVE_DONE)
-  {
-    _current = err->prev;
-    err->prev = ERROR_LEAVE_DONE;
-  }
+  if (err->prev == ERROR_LEAVE_DONE)
+  	return;
+  	
+	#if DEBUG_ERROR
+	fprintf(stderr, "<< ERROR_leave");
+	{
+		ERROR_CONTEXT *e = err;
+		while (e)
+		{
+			fprintf(stderr, " -> %p", e);
+			e = e->prev;
+		}
+		fprintf(stderr, "\n");
+	}
+	#endif
+	
+	//if (!err->prev)
+	//	BREAKPOINT();
+  
+	ERROR_current = err->prev;
+	
+	if (ERROR_current)
+	{
+		ERROR_reset(ERROR_current);
+		ERROR_current->info = err->info;
+	}
+
+	err->prev = ERROR_LEAVE_DONE;
+  //ERROR_reset(err);
 }
+
+void ERROR_propagate()
+{
+	if (ERROR_current->ret)
+		ERROR_leave(ERROR_current);
+  longjmp(ERROR_current->env, 1);
+}
+
 
 
 const char *ERROR_get(void)
@@ -170,54 +224,43 @@ const char *ERROR_get(void)
 
 void ERROR_define(const char *pattern, char *arg[])
 {
-  int n;
   uchar c;
   boolean subst;
 
   void _add_char(uchar c)
   {
-    if (n >= MAX_ERROR_MSG)
-      return;
-
     if (c && c < ' ' && c != '\n')
       c = ' ';
 
-    ERROR_info.msg[n++] = c;
+		STRING_add(&ERROR_current->info.msg, (char *)&c, 1);
   }
 
   void _add_string(const char *s)
   {
-    if (!s)
-      s = "";
-
-    while (*s)
-    {
-      _add_char(*s);
-      s++;
-    }
+		STRING_add(&ERROR_current->info.msg, s, 0);
   }
 
 	ERROR_clear();
 
   if ((intptr_t)pattern >= 0 && (intptr_t)pattern < 256)
   {
-    ERROR_info.code = (int)(intptr_t)pattern;
+    ERROR_current->info.code = (int)(intptr_t)pattern;
     pattern = _message[(int)(intptr_t)pattern];
   }
   else if ((intptr_t)pattern == E_ABORT)
   {
-    ERROR_info.code = E_ABORT;
+    ERROR_current->info.code = E_ABORT;
   	pattern = "";
 	}
 	else
-    ERROR_info.code = E_CUSTOM;
-
-  n = 0;
+    ERROR_current->info.code = E_CUSTOM;
 
   if (arg)
   {
     subst = FALSE;
 
+    ERROR_current->info.free = TRUE;
+    
     for (;;)
     {
       c = *pattern++;
@@ -246,44 +289,22 @@ void ERROR_define(const char *pattern, char *arg[])
   }
   else
   {
-    _add_string(pattern);
+    ERROR_current->info.msg = (char *)pattern;
+    ERROR_current->info.free = FALSE;
   }
 
   _add_char(0);
 
-  ERROR_info.cp = CP;
-  ERROR_info.fp = FP;
-  ERROR_info.pc = PC;
+  ERROR_current->info.cp = CP;
+  ERROR_current->info.fp = FP;
+  ERROR_current->info.pc = PC;
   
   if (EXEC_debug || (CP && CP->debug))
   {
-  	DEBUG_free_backtrace(&ERROR_info.backtrace);
-  	ERROR_info.backtrace = DEBUG_backtrace();
+  	//DEBUG_free_backtrace(&ERROR_current->info.backtrace);
+  	ERROR_current->info.backtrace = DEBUG_backtrace();
   }
 }
-
-void PROPAGATE()
-{
-  ERROR_CONTEXT *err;
-
-  /*
-  if (_must_free_index)
-  {
-    for (i = 0; i < _must_free_index; i++)
-      OBJECT_UNREF(&_must_free[i], "PROPAGATE");
-
-    _must_free_index = 0;
-  }
-  */
-
-  if (_current == NULL)
-    ERROR_panic("Cannot propagate error. No error handler.");
-
-  err = _current;
-  ERROR_leave(_current);
-  longjmp(err->env, 1);
-}
-
 
 void THROW(int code, ...)
 {
@@ -347,7 +368,7 @@ void ERROR_panic(const char *error, ...)
                   );
   vfprintf(stderr, error, args);
   fprintf(stderr, "\n");
-  if (ERROR_info.code)
+  if (ERROR_current->info.code)
   {
     fprintf(stderr, "\n");
     ERROR_print();
@@ -361,22 +382,22 @@ void ERROR_panic(const char *error, ...)
 
 void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 {
-  if (!ERROR_info.code)
+  if (!ERROR_current->info.code)
     return;
 
 	if (!msgonly)
 	{
-		if (ERROR_info.cp && ERROR_info.fp && ERROR_info.pc)
-			fprintf(where, "%s: ", DEBUG_get_position(ERROR_info.cp, ERROR_info.fp, ERROR_info.pc));
+		if (ERROR_current->info.cp && ERROR_current->info.fp && ERROR_current->info.pc)
+			fprintf(where, "%s: ", DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc));
 		else
 			fprintf(where, "ERROR: ");
-		/*if (ERROR_info.code > 0 && ERROR_info.code < 256)
-			fprintf(where, "%ld:", ERROR_info.code);*/
-		if (ERROR_info.code > 0)
-			fprintf(where, "#%d: ", ERROR_info.code);
+		/*if (ERROR_current->info.code > 0 && ERROR_current->info.code < 256)
+			fprintf(where, "%ld:", ERROR_current->info.code);*/
+		if (ERROR_current->info.code > 0)
+			fprintf(where, "#%d: ", ERROR_current->info.code);
 	}
 
-  fprintf(where, "%s", ERROR_info.msg);
+  fprintf(where, "%s", ERROR_current->info.msg);
   if (newline)
   	fputc('\n', where);
 }
@@ -385,7 +406,7 @@ void ERROR_print(void)
 {
   static bool lock = FALSE;
   
-  DEBUG_BACKTRACE *bt = ERROR_info.backtrace;
+  DEBUG_BACKTRACE *bt = ERROR_current->info.backtrace;
 
   ERROR_print_at(stderr, FALSE, TRUE);
   
@@ -401,33 +422,35 @@ void ERROR_print(void)
   {
     lock = TRUE;
     GAMBAS_DoNotRaiseEvent = TRUE;
-    HOOK(error)(ERROR_info.code, ERROR_info.msg, DEBUG_get_position(ERROR_info.cp, ERROR_info.fp, ERROR_info.pc));
+    HOOK(error)(ERROR_current->info.code, ERROR_current->info.msg, DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc));
     lock = FALSE;
   }
 }
 
 void ERROR_save(ERROR_INFO *save)
 {
-  save->code = ERROR_info.code;
-  save->cp = ERROR_info.cp;
-  save->fp = ERROR_info.fp;
-  save->pc = ERROR_info.pc;
-  save->backtrace = ERROR_info.backtrace;
-  ERROR_info.backtrace = NULL;
-  strlcpy(save->msg, ERROR_info.msg, sizeof(ERROR_info.msg));
+	*save = ERROR_current->info;
+	ERROR_reset(ERROR_current);
+//   save->code = ERROR_current->info.code;
+//   save->cp = ERROR_current->info.cp;
+//   save->fp = ERROR_current->info.fp;
+//   save->pc = ERROR_current->info.pc;
+//   save->backtrace = ERROR_current->info.backtrace;
+//   ERROR_current->info.backtrace = NULL;
+//   strlcpy(save->msg, ERROR_current->info.msg, sizeof(ERROR_current->info.msg));
 }
 
 void ERROR_restore(ERROR_INFO *save)
 {
-	ERROR_reset();
-	
-  ERROR_info.code = save->code;
-  ERROR_info.cp = save->cp;
-  ERROR_info.cp = save->fp;
-  ERROR_info.pc = save->pc;
-  ERROR_info.backtrace = save->backtrace;
-  save->backtrace = NULL;
-  strlcpy(ERROR_info.msg, save->msg, sizeof(ERROR_info.msg));
+	ERROR_reset(ERROR_current);
+	ERROR_current->info = *save;
+//   ERROR_current->info.code = save->code;
+//   ERROR_current->info.cp = save->cp;
+//   ERROR_current->info.cp = save->fp;
+//   ERROR_current->info.pc = save->pc;
+//   ERROR_current->info.backtrace = save->backtrace;
+//   save->backtrace = NULL;
+//   strlcpy(ERROR_current->info.msg, save->msg, sizeof(ERROR_current->info.msg));
 }
 
 

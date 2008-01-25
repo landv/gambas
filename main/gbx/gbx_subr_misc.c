@@ -59,7 +59,7 @@ static void init_eval()
 void SUBR_error(void)
 {
   SP->type = T_BOOLEAN;
-  SP->_boolean.value = ERROR_info.code != 0 ? -1 : 0;
+  SP->_boolean.value = EXEC_got_error ? -1 : 0;
   SP++;
 }
 

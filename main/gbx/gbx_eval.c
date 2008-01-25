@@ -93,7 +93,7 @@ static bool EVAL_exec()
 
   //AP = ARCH_from_class(CP);
 	EXEC_debug = debug;  
-  return (ERROR_info.code != 0);
+  return (ERROR_current->info.code != 0);
 }
 
 

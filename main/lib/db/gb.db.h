@@ -69,6 +69,7 @@ typedef
 			int pos;											/* position of 'limit' keyword */
 			}
 			limit;
+		char *db_name_char;             /* These characters are allowed in a database name */
 		}
   DB_DATABASE;
 

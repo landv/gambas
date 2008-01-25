@@ -100,11 +100,13 @@ enum {
 
 typedef
   struct {
-    int code;
+  	short code;
+    bool free;
     void *cp;
     void *fp;
     void *pc;
-    char msg[MAX_ERROR_MSG + 1];
+    //char msg[MAX_ERROR_MSG + 1];
+    char *msg;
     void *backtrace;
     }
   ERROR_INFO;
@@ -112,15 +114,15 @@ typedef
 typedef
   struct _ERROR {
     struct _ERROR *prev;
-    int code;
     jmp_buf env;
+    int ret;
+    ERROR_INFO info;
     }
   ERROR_CONTEXT;
 
 #ifndef __GB_ERROR_C
-EXTERN ERROR_INFO ERROR_info;
+EXTERN ERROR_CONTEXT *ERROR_current;
 #endif
-
 
 #define ERROR_LEAVE_DONE ((ERROR_CONTEXT *)-1)
 
@@ -129,27 +131,30 @@ EXTERN ERROR_INFO ERROR_info;
 		ERROR_CONTEXT __err_context; \
     { \
      	ERROR_CONTEXT *__err = &__err_context; \
+     	/*fprintf(stderr, "TRY %s\n", __FUNCTION__);*/ \
      	ERROR_enter(__err); \
-     	__err->code = setjmp(__err->env); \
-     	if (__err->code == 0)
+     	__err->ret = setjmp(__err->env); \
+     	if (__err->ret == 0)
 
-#define FINALLY
-
+/*#define CATCH \
+	  	fprintf(stderr, "%p == %p ? %d\n", ERROR_current, __err, __err->ret); \
+			if (__err->ret != 0 && (__err->ret = 2))*/
 #define CATCH \
-			if (__err->code != 0 && !(__err->code = 0))
-
-#define CATCH_GET(get_it) \
-     	if (__err->code != 0 && (get_it = __err->code) && !(__err->code = 0))
+			/*if (__err->ret) fprintf(stderr, "CATCH %p\n", __err); \
+			if (__err->ret)*/ \
+			else
 
 #define END_TRY \
-			if (__err->code == 0) \
-				ERROR_leave(__err); \
-    	else \
-      	PROPAGATE(); \
+			ERROR_leave(__err); \
+     	/*fprintf(stderr, "END TRY %s\n", __FUNCTION__);*/ \
   	} \
 	}
 
-//PUBLIC void ERROR_clear(void);
+#define ERROR __err
+
+#define PROPAGATE() ERROR_propagate()
+//#define PROPAGATE() fprintf(stderr, "PROPAGATE %s\n", __FUNCTION__), ERROR_propagate()
+
 PUBLIC const char *ERROR_get(void);
 
 PUBLIC void ERROR_enter(ERROR_CONTEXT *err);
@@ -157,7 +162,7 @@ PUBLIC void ERROR_leave(ERROR_CONTEXT *err);
 
 PUBLIC void ERROR_define(const char *pattern, char *arg[]);
 
-PUBLIC void PROPAGATE() NORETURN;
+PUBLIC void ERROR_propagate() NORETURN;
 PUBLIC void THROW(int code, ...) NORETURN;
 PUBLIC void THROW_SYSTEM(int err, const char *path);
 

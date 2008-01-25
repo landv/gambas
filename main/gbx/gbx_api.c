@@ -101,7 +101,7 @@ void *GAMBAS_Api[] =
   (void *)GB_IsProperty,
 
   (void *)GB_Error,
-  (void *)PROPAGATE,
+  (void *)ERROR_propagate,
 
   (void *)GB_GetClass,
   (void *)GB_GetClassName,

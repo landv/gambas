@@ -45,15 +45,15 @@
 
 BEGIN_PROPERTY(CERROR_code)
 
-  GB_ReturnInt(ERROR_info.code);
+  GB_ReturnInt(ERROR_current->info.code);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CERROR_text)
 
-	if (ERROR_info.code)
-  	GB_ReturnNewZeroString(ERROR_info.msg);
+	if (ERROR_current->info.code)
+  	GB_ReturnNewZeroString(ERROR_current->info.msg);
 	else
 		GB_ReturnNull();
 
@@ -62,8 +62,8 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CERROR_class)
 
-	if (ERROR_info.code)
-  	GB_ReturnObject(ERROR_info.cp);
+	if (ERROR_current->info.code)
+  	GB_ReturnObject(ERROR_current->info.cp);
 	else
 		GB_ReturnNull();
 
@@ -72,8 +72,8 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CERROR_where)
 
-	if (ERROR_info.code)
-  	GB_ReturnNewZeroString(DEBUG_get_position(ERROR_info.cp, ERROR_info.fp, ERROR_info.pc));
+	if (ERROR_current->info.code)
+  	GB_ReturnNewZeroString(DEBUG_get_position(ERROR_current->info.cp, ERROR_current->info.fp, ERROR_current->info.pc));
 	else
 		GB_ReturnNull();
 
@@ -97,7 +97,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CERROR_propagate)
 
-	if (ERROR_info.code)
+	if (ERROR_current->info.code)
 		GAMBAS_Error = TRUE;
 
 END_METHOD
@@ -105,7 +105,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CERROR_backtrace)
 
-	DEBUG_BACKTRACE *bt = (DEBUG_BACKTRACE *)ERROR_info.backtrace;
+	DEBUG_BACKTRACE *bt = (DEBUG_BACKTRACE *)ERROR_current->info.backtrace;
 	
 	if (!bt)
 		GB_ReturnNull();

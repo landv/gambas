@@ -1535,11 +1535,8 @@ _END_TRY:
   #endif
 
   /* If EP was reset to null, then there was an error */
-  if (EP)
-  {
-    ERROR_clear();
-    EP = NULL;
-  }
+ 	EXEC_got_error = (EP == NULL);
+  EP = NULL;
   EC = ET;
   ET = NULL;
   goto _NEXT;

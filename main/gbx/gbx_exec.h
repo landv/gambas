@@ -98,7 +98,7 @@ EXTERN CENUM *EXEC_enum;
 EXTERN bool EXEC_big_endian;
 EXTERN bool EXEC_main_hook_done;
 EXTERN int EXEC_return_value;
-
+EXTERN bool EXEC_got_error;
 /*EXTERN long EXEC_const[];*/
 
 #endif

@@ -195,7 +195,7 @@ void CLASS_exit(void)
   fprintf(stderr, "\n------------------- CLASS_exit -------------------\n\n");
   #endif
 
-	in_error = ERROR_info.code > 0;
+	in_error = ERROR_current != NULL;
 
   #if DEBUG_LOAD
   fprintf(stderr, "Freeing auto-creatable objects...\n");
@@ -258,7 +258,7 @@ void CLASS_exit(void)
   #endif
 
   /* On force la lib�ation de ce qui reste, tant pis */
-  /* ERROR_info.code != 0 if we are exiting just after an error */
+  /* ERROR_current->info.code != 0 if we are exiting just after an error */
 
   if (n < nc)
   {
