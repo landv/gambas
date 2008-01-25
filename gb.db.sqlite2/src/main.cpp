@@ -612,6 +612,8 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	db->flags.no_blob = TRUE;
 	db->flags.no_nest = TRUE;
 
+	db->db_name_char = ".";
+	
 	db->handle = conn;
   return FALSE;
 }

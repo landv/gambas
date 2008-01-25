@@ -165,7 +165,7 @@ BEGIN_METHOD(CDATABASE_add, GB_STRING name)
   CCONNECTION *conn = GB.SubCollection.Container(THIS);
   char *name = GB.ToZeroString(ARG(name));
 
-  if (DB_CheckName(name, "database"))
+  if (DB_CheckNameWith(name, "database", conn->db.db_name_char))
     return;
 
   if (check_database(conn, name, FALSE))
