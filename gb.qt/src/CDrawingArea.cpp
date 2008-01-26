@@ -141,13 +141,14 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
       DRAW_begin(object);
 
 			p = DRAW_get_current();
-			if (frame)
-				p->save();
+      
       p->translate(-r.x(), -r.y());
       p->setClipRect(r, QPainter::CoordPainter);
       //p->setClipRegion(event->region().intersect(contentsRect()));
       p->setBrushOrigin(-r.x(), -r.y());
       
+			if (frame)
+				p->save();
       //qDebug("MyDrawingArea::paintEvent %p", CWidget::get(this));
       GB.Raise(object, EVENT_draw, 0);
 			
