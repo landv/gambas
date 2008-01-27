@@ -7,16 +7,16 @@
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
+  it under the terms of the GNU General License as published by
   the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  GNU General License for more details.
 
-  You should have received a copy of the GNU General Public License
+  You should have received a copy of the GNU General License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
@@ -122,6 +122,7 @@ typedef
 
 #ifndef __GB_ERROR_C
 EXTERN ERROR_CONTEXT *ERROR_current;
+EXTERN ERROR_INFO ERROR_last;
 #endif
 
 #define ERROR_LEAVE_DONE ((ERROR_CONTEXT *)-1)
@@ -155,27 +156,31 @@ EXTERN ERROR_CONTEXT *ERROR_current;
 #define PROPAGATE() ERROR_propagate()
 //#define PROPAGATE() fprintf(stderr, "PROPAGATE %s\n", __FUNCTION__), ERROR_propagate()
 
-PUBLIC const char *ERROR_get(void);
+const char *ERROR_get(void);
 
-PUBLIC void ERROR_enter(ERROR_CONTEXT *err);
-PUBLIC void ERROR_leave(ERROR_CONTEXT *err);
+void ERROR_enter(ERROR_CONTEXT *err);
+void ERROR_leave(ERROR_CONTEXT *err);
 
-PUBLIC void ERROR_define(const char *pattern, char *arg[]);
+void ERROR_define(const char *pattern, char *arg[]);
 
-PUBLIC void ERROR_propagate() NORETURN;
-PUBLIC void THROW(int code, ...) NORETURN;
-PUBLIC void THROW_SYSTEM(int err, const char *path);
+void ERROR_propagate() NORETURN;
+void THROW(int code, ...) NORETURN;
+void THROW_SYSTEM(int err, const char *path);
 
-PUBLIC void ERROR_panic(const char *error, ...) NORETURN;
+void ERROR_panic(const char *error, ...) NORETURN;
 
-PUBLIC void ERROR_print(void);
-PUBLIC void ERROR_print_at(FILE *where, bool msgonly, bool newline);
+void ERROR_print(void);
+void ERROR_print_at(FILE *where, bool msgonly, bool newline);
 
-PUBLIC void ERROR_save(ERROR_INFO *save);
-PUBLIC void ERROR_restore(ERROR_INFO *save);
+void ERROR_save(ERROR_INFO *save);
+void ERROR_restore(ERROR_INFO *save);
 
-PUBLIC void ERROR_clear();
-PUBLIC void ERROR_lock();
-PUBLIC void ERROR_unlock();
+void ERROR_clear();
+void ERROR_reset(ERROR_INFO *info);
+void ERROR_lock();
+void ERROR_unlock();
+
+#define ERROR_set_last() ERROR_save(&ERROR_last)
+#define ERROR_exit() ERROR_reset(&ERROR_last)
 
 #endif

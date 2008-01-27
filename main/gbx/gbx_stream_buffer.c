@@ -127,7 +127,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 
 static int stream_getchar(STREAM *stream, char *buffer)
 {
-  int c = fgetc(FD);
+  int c = getc(FD);
   
   if (c == EOF)
     return TRUE;
@@ -185,18 +185,11 @@ static int stream_tell(STREAM *stream, int64_t *pos)
 
 static int stream_eof(STREAM *stream)
 {
-  unsigned char c;
-  //int block;
-
-	//block = fcntl(fileno(FD), F_GETFL);
-	//fcntl(fileno(FD), F_SETFL, block | O_NONBLOCK);
+  int c;
   
-  fread(&c, 1, 1, FD);
-  
-	//fcntl(fileno(FD), F_SETFL, block);
-  
-  if (feof(FD))
-    return TRUE;
+  c = fgetc(FD);
+  if (c == EOF)
+  	return TRUE;
 
   ungetc(c, FD);
   return FALSE;

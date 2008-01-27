@@ -112,10 +112,10 @@ void SUBR_add_quick(int value);
 
 void SUBR_cat(void);
 void SUBR_file(void);
-void SUBR_left(void);
-void SUBR_right(void);
-void SUBR_mid(void);
-void SUBR_len(void);
+//void SUBR_left(void);
+//void SUBR_right(void);
+//void SUBR_mid(void);
+//void SUBR_len(void);
 void SUBR_trim(void);
 void SUBR_space(void);
 void SUBR_string(void);

@@ -110,10 +110,13 @@ __STRING:
   VALUE_conv(P1, T_STRING);
   VALUE_conv(P2, T_STRING);
 
+  if (P1->_string.len != P2->_string.len)
+  	result = 0 STT_TEST 1;
+  else
   #ifdef STT_NEAR
-  result = (STRING_comp_value_ignore_case(P1, P2) STT_TEST 0);
+	  result = (STRING_equal_ignore_case(P1->_string.addr + P1->_string.start, P1->_string.len, P2->_string.addr + P2->_string.start, P2->_string.len) STT_TEST 1);
   #else
-  result = (STRING_comp_value(P1, P2) STT_TEST 0);
+  	result = (STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len) STT_TEST 1);
   #endif
 
   goto __END_RELEASE;
@@ -272,7 +275,7 @@ __NULL:
 
 __STRING:
 
-  result = (STRING_comp_value(P1, P2) STT_TEST 0);
+  result = (STRING_compare(P1->_string.addr + P1->_string.start, P1->_string.len, P2->_string.addr + P2->_string.start, P2->_string.len) STT_TEST 0);
 
   goto __END_RELEASE;
 

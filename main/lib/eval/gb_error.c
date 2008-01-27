@@ -29,42 +29,58 @@
 #include <stdarg.h>
 #include "gb_error.h"
 
-
-/*PUBLIC ERROR_INFO ERROR_info;*/
-
-#define NBR_ERR_MSG 3
-
-static ERROR_CONTEXT *_current = NULL;
-
-/*
-static void *_must_free[MAX_MUST_FREE] = { 0 };
-static int _must_free_index = 0;
-*/
+ERROR_CONTEXT *ERROR_current = NULL;
 
 PUBLIC void ERROR_clear(void)
 {
   errno = 0;
 }
 
+void ERROR_reset(ERROR_INFO *info)
+{
+	info->code = 0;
+	if (info->free)
+	{
+		GB.FreeString(&info->msg);
+		info->free = FALSE;
+	}
+	else
+		info->msg = NULL;
+	//DEBUG_free_backtrace(&info->backtrace);
+}
 
-PUBLIC void ERROR_enter(ERROR_CONTEXT *err)
+
+void ERROR_enter(ERROR_CONTEXT *err)
 {
   CLEAR(err);
-  err->prev = _current;
-  _current = err;
+  err->prev = ERROR_current;
+  ERROR_current = err;
 }
 
 
-PUBLIC void ERROR_leave(ERROR_CONTEXT *err)
+void ERROR_leave(ERROR_CONTEXT *err)
 {
-  if (err->prev != ERROR_LEAVE_DONE)
-  {
-    /*ERROR_panic("ERROR_leave already done");*/
+  if (err->prev == ERROR_LEAVE_DONE)
+  	return;
+  	
+	ERROR_current = err->prev;
+	
+	if (ERROR_current)
+	{
+		ERROR_reset(&ERROR_current->info);
+		ERROR_current->info = err->info;
+	}
 
-    _current = err->prev;
-    err->prev = ERROR_LEAVE_DONE;
-  }
+	err->prev = ERROR_LEAVE_DONE;
 }
+
+void ERROR_propagate()
+{
+	if (ERROR_current->ret)
+		ERROR_leave(ERROR_current);
+  longjmp(ERROR_current->env, 1);
+}
+
 
 
 PUBLIC char *ERROR_get(void)
@@ -78,114 +94,19 @@ PUBLIC char *ERROR_get(void)
   return strerror(errno);
 }
 
-#if 0
-PUBLIC void ERROR_define(char *pattern, char *arg[])
-{
-  int n;
-  uchar c;
-  boolean subst;
-
-  void _add_char(uchar c)
-  {
-    if (n >= MAX_ERROR_MSG)
-      return;
-
-    ERROR_info.msg[n++] = c;
-  }
-
-  void _add_string(char *s)
-  {
-    while (*s)
-    {
-      _add_char(*s);
-      s++;
-    }
-  }
-
-  if ((int)pattern > 0 && (int)pattern < NBR_ERR_MSG)
-  {
-    ERROR_info.code = (int)pattern;
-    pattern = _message[(int)pattern];
-  }
-  else
-    ERROR_info.code = -1;
-
-  n = 0;
-
-  if (arg)
-  {
-    subst = FALSE;
-
-    for (;;)
-    {
-      c = *pattern++;
-      if (c == 0)
-        break;
-
-      if (subst)
-      {
-        if (c >= '1' && c <= '4')
-          _add_string(arg[c - '1']);
-        else
-        {
-          _add_char('&');
-          _add_char(c);
-        }
-        subst = FALSE;
-      }
-      else
-      {
-        if (c == '&')
-          subst = TRUE;
-        else
-          _add_char(c);
-      }
-    }
-  }
-  else
-  {
-    _add_string(pattern);
-  }
-
-  _add_char(0);
-}
-#endif
-
-PUBLIC void PROPAGATE()
-{
-  ERROR_CONTEXT *err;
-
-  /*
-  if (_must_free_index)
-  {
-    for (i = 0; i < _must_free_index; i++)
-      OBJECT_UNREF(&_must_free[i], "PROPAGATE");
-
-    _must_free_index = 0;
-  }
-  */
-
-  if (_current == NULL)
-    ERROR_panic("Cannot propagate error. No error handler.");
-
-  err = _current;
-  ERROR_leave(_current);
-  longjmp(err->env, 1);
-}
-
 PUBLIC void THROW(const char *msg)
 {
   GB.Error("&1", (char *)msg);
-  PROPAGATE();
+  ERROR_propagate();
 }
 
 PUBLIC void THROW2(const char *pattern, const char *msg)
 {
   GB.Error((char *)pattern, (char *)msg);
-  PROPAGATE();
+  ERROR_propagate();
 }
 
-PUBLIC void ERROR_panic(char *error, ...)
+void ERROR_panic(const char *error, ...)
 {
   va_list args;
 
@@ -193,52 +114,14 @@ PUBLIC void ERROR_panic(char *error, ...)
 
   fflush(NULL);
 
-  fprintf(stderr, "\n"
-                  "** INTERNAL ERROR **\n"
-                  );
+  fprintf(stderr, "\n** INTERNAL ERROR **\n**");
   vfprintf(stderr, error, args);
-  fprintf(stderr, "\n");
-  /*
-  if (ERROR_info.code)
+  putc('\n', stderr);
+  if (ERROR_current->info.code)
   {
-    fprintf(stderr, "\n");
     ERROR_print();
-    fprintf(stderr, "\n");
   }
-  */
-  fprintf(stderr, "** Program aborting... Sorry... :-(\n\n");
-  abort();
+  fprintf(stderr, "** Program aborting. Sorry! :-(\n");
+  /*abort();*/
+  _exit(1);
 }
-
-/*
-PUBLIC void ERROR_print_at(FILE *where)
-{
-  fprintf(where, "%s\n", ERROR_info.msg);
-}
-
-PUBLIC void ERROR_print(void)
-{
-  ERROR_print_at(stderr);
-}
-*/
-
-/*
-PUBLIC void ERROR_must_free(void *object)
-{
-  if (object)
-  {
-    if (_must_free_index >= MAX_MUST_FREE)
-      ERROR_panic("ERROR_must_free: Too many calls");
-
-    _must_free[_must_free_index++] = object;
-  }
-  else
-  {
-    if (_must_free_index <= 0)
-      ERROR_panic("ERROR_must_free: Nothing to free");
-
-    _must_free_index--;
-    OBJECT_UNREF(&_must_free[_must_free_index], "ERROR_must_free");
-  }
-}
-*/

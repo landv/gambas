@@ -28,6 +28,7 @@
 
 #include "gb_common.h"
 #include "gb_common_case.h"
+#include "gb_common_string.h"
 #include "gb_alloc.h"
 #include "gb_hash.h"
 
@@ -66,16 +67,36 @@ static int spaced_primes_closest(int num)
 
 static uint key_hash_binary(const char *key, int len)
 {
+	static const void *jump[4] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3 };
   uint hash = 0;
 
   //for (i = 0; i < len; i++)
   //  hash = (hash << 4) + (hash ^ key[i]);
 
-  while (len)
+	while (len >= 4)
+	{
+		len -= 4;
+		hash = (hash << 4) + (hash ^ key[len]);
+		hash = (hash << 4) + (hash ^ key[len + 1]);
+		hash = (hash << 4) + (hash ^ key[len + 2]);
+		hash = (hash << 4) + (hash ^ key[len + 3]);
+	}
+
+	goto *jump[len];
+
+__LEN_3:
+	hash = (hash << 4) + (hash ^ key[2]);
+__LEN_2:
+	hash = (hash << 4) + (hash ^ key[1]);
+__LEN_1:
+	hash = (hash << 4) + (hash ^ key[0]);
+__LEN_0:
+  
+  /*while (len)
   {
     len--;
     hash = (hash << 4) + (hash ^ key[len]);
-  }
+  }*/
   
   return hash;
 }
@@ -83,26 +104,37 @@ static uint key_hash_binary(const char *key, int len)
 
 static uint key_hash_text(const char *key, int len)
 {
+	static const void *jump[4] = { &&__LEN_0, &&__LEN_1, &&__LEN_2, &&__LEN_3 };
   uint hash = 0;
 
-  while (len)
+	while (len >= 4)
+	{
+		len--;
+		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
+		len--;
+		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
+		len--;
+		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
+		len--;
+		hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
+	}
+
+	goto *jump[len];
+
+__LEN_3:
+	hash = (hash << 4) + (hash ^ (key[2] & ~0x20));
+__LEN_2:
+	hash = (hash << 4) + (hash ^ (key[1] & ~0x20));
+__LEN_1:
+	hash = (hash << 4) + (hash ^ (key[0] & ~0x20));
+__LEN_0:
+  
+  /*while (len)
   {
     len--;
     hash = (hash << 4) + (hash ^ (key[len] & ~0x20));
-  }
+  }*/
 
-  #if 0
-  while (len)
-  {
-    len -= 4;
-    p = &key[len];
-    hash = (hash << 4) + (hash ^ (p[0] & ~0x20));
-    hash = (hash << 4) + (hash ^ (p[1] & ~0x20));
-    hash = (hash << 4) + (hash ^ (p[2] & ~0x20));
-    hash = (hash << 4) + (hash ^ (p[3] & ~0x20));
-  }
-  #endif
-  
   return hash;
 }
 
@@ -158,7 +190,7 @@ PUBLIC int HASH_TABLE_size(HASH_TABLE *hash_table)
   return hash_table->nnodes;
 }
 
-
+#if 0
 static bool compare_key_ignore_case(const char *key_comp, int len_comp, const char *key, int len)
 {
   if (len != len_comp)
@@ -188,6 +220,7 @@ static bool compare_key(const char *key_comp, int len_comp, const char *key, int
   
   return TRUE;
 }
+#endif
 
 static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *key, int len)
 {
@@ -201,7 +234,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
     while (*node)
     {
       node_key = NODE_key(hash_table, *node);
-      if (compare_key_ignore_case(node_key->key, node_key->len, key, len))
+      if (node_key->len == len && STRING_equal_ignore_case(node_key->key, node_key->len, key, len))
         break;
     	node = &(*node)->next;
     }
@@ -213,7 +246,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
     while (*node)
     {
       node_key = NODE_key(hash_table, *node);
-      if (compare_key(node_key->key, node_key->len, key, len))
+      if (node_key->len == len && STRING_equal_same(node_key->key, key, len))
         break;
     	node = &(*node)->next;
     }

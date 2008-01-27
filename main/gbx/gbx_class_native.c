@@ -57,7 +57,7 @@ BEGIN_PROPERTY(class_self_property)
   if (_object)
     GB_ReturnObject(_object);
   else
-    GB_Return(T_CLASS, GAMBAS_ReturnType);
+    GB_Return(T_CLASS, NULL);
 
 END_PROPERTY
 

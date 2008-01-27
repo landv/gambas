@@ -27,6 +27,8 @@
 #include "gb_common.h"
 #include "gb_common_buffer.h"
 #include "gb_common_case.h"
+#include "gb_common_string.h"
+
 #include "gb_error.h"
 #include "gbx_value.h"
 #include "gbx_debug.h"
@@ -45,6 +47,9 @@
 
 #define STRING_last_count 32
 static char *STRING_last[STRING_last_count] = { 0 };
+
+#define SIZE_INC 16
+#define REAL_SIZE(_len) (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1))
 
 static const char _char_string[512] = 
 "\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F\x00"
@@ -81,7 +86,7 @@ void STRING_new(char **ptr, const char *src, int len)
     return;
   }
 
-  ALLOC(&str, len + 1 + sizeof(STRING), "STRING_new");
+  ALLOC(&str, REAL_SIZE(len + 1 + sizeof(STRING)), "STRING_new");
 
   str->len = len;
   str->ref = 1;
@@ -168,6 +173,8 @@ void STRING_extend(char **ptr, int new_len)
 {
   STRING *str;
   int len = STRING_length(*ptr);
+  int old_real_size;
+  int new_real_size;
 
   if (new_len == len)
     return;
@@ -178,20 +185,27 @@ void STRING_extend(char **ptr, int new_len)
     return;
   }
 
-  if (len == 0)
-  {
-    ALLOC(&str, new_len + 1 + sizeof(STRING), "STRING_extend");
-    str->ref = 1;
-  }
-  else
-  {
-    str = STRING_from_ptr(*ptr);
-    REALLOC(&str, new_len + 1 + sizeof(STRING), "STRING_extend");
-  }
+	old_real_size = (len == 0) ? 0 : REAL_SIZE(len + 1 + sizeof(STRING));
+	new_real_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
+
+	if (new_real_size != old_real_size)
+	{
+		if (len == 0)
+		{
+			ALLOC(&str, new_real_size, "STRING_extend");
+			str->ref = 1;
+		}
+		else
+		{
+			str = STRING_from_ptr(*ptr);
+			REALLOC(&str, new_real_size, "STRING_extend");
+		}
+	  *ptr = str->data;
+	}
+	else
+		str = STRING_from_ptr(*ptr);
 
   str->len = new_len;
-
-  *ptr = str->data;
 }
 
 
@@ -283,7 +297,7 @@ void STRING_free(char **ptr)
 }
 
 
-
+#if 0
 int STRING_comp_value(VALUE *str1, VALUE *str2)
 {
   uint i;
@@ -332,7 +346,7 @@ int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2)
   diff =  str1->_string.len - str2->_string.len;
   return (diff < 0) ? (-1) : (diff > 0) ? 1 : 0;
 }
-
+#endif
 
 #if DEBUG_STRING
 
@@ -468,6 +482,22 @@ void STRING_add(char **ptr, const char *src, int len)
   STRING_extend(ptr, old_len + len);
   memcpy(&((*ptr)[old_len]), src, len);
   (*ptr)[old_len + len] = 0;
+}
+
+
+void STRING_add_char(char **ptr, char c)
+{
+  int len = STRING_length(*ptr);
+  char *p;
+
+	//if (!(len & (SIZE_INC - 1)))
+  STRING_extend(ptr, len + 1);
+  //else
+  //STRING_from_ptr(*ptr)->len++;
+  	
+  p = *ptr + len;
+	p[0] = c;
+	p[1] = 0;
 }
 
 
@@ -734,7 +764,4 @@ __FOUND:
 }
 
 
-/*void *STRING_intern(const char *str, int len)
-{
-	return HASH_TABLE_insert(_intern, str, len);
-}*/
+#include "gb_common_string_temp.h"

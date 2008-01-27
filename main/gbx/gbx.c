@@ -105,6 +105,7 @@ static void main_exit()
   OBJECT_exit();
   DEBUG_exit();
   WATCH_exit();
+  CFILE_exit();
   CLASS_exit();
   COMPONENT_exit();
   EXTERN_exit();
@@ -114,6 +115,7 @@ static void main_exit()
   FILE_exit();
   STRING_exit();
   STACK_exit();
+  ERROR_exit();
 }
 
 

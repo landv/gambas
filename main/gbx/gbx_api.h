@@ -26,6 +26,7 @@
 #define __GBX_API_H
 
 #include "gambas.h"
+#include "gbx_type.h"
 
 int GB_GetInterface(const char *library, int version, void *iface);
 void *GB_Hook(int type, void *hook);
@@ -177,7 +178,6 @@ void *GB_DebugGetExec(void);
 #ifndef __GBX_API_C
 EXTERN void *GAMBAS_Api[];
 EXTERN void *GAMBAS_DebugApi[];
-EXTERN unsigned int GAMBAS_ReturnType;
 EXTERN unsigned int GAMBAS_MissingParam;
 EXTERN bool GAMBAS_Error;
 EXTERN bool GAMBAS_DoNotRaiseEvent;

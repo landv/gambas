@@ -49,6 +49,9 @@ typedef
 typedef
   struct {
     STREAM_CLASS *type;
+    char *buffer;
+    short buffer_pos;
+    short buffer_len;
     short mode;
     unsigned swap:1;
     unsigned eol:2;
@@ -187,6 +190,7 @@ STREAM_CLASS stream = \
 
 #endif
 
+#define STREAM_BUFFER_SIZE 256
 
 void STREAM_exit(void);
 
@@ -195,6 +199,7 @@ bool STREAM_in_archive(const char *path);
 
 void STREAM_open(STREAM *stream, const char *path, int mode);
 
+void STREAM_release(STREAM *stream);
 void STREAM_close(STREAM *stream);
 void STREAM_write(STREAM *stream, void *addr, int len);
 void STREAM_line_input(STREAM *stream, char **addr);

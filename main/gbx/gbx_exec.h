@@ -150,6 +150,8 @@ void EXEC_object(VALUE *SP, CLASS **pclass, OBJECT **pobject, bool *pdefined);
 void *EXEC_auto_create(CLASS *class, bool ref);
 
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param);
+void EXEC_native_check(bool defined);
+void EXEC_native_quick(void);
 void EXEC_native();
 void EXEC_function_real(bool keep_ret_value);
 

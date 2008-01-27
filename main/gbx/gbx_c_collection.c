@@ -272,14 +272,7 @@ END_METHOD
 
 BEGIN_METHOD(collection_get, GB_STRING key)
 
-  void *data;
-
-  data = collection_get_key(THIS, STRING(key), LENGTH(key));
-
-  if (data == NULL)
-    GB_ReturnNull();
-  else
-    GB_ReturnPtr(T_VARIANT, data);
+  GB_ReturnPtr(T_VARIANT, collection_get_key(THIS, STRING(key), LENGTH(key)));
 
 END_METHOD
 

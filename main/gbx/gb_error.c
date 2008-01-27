@@ -41,30 +41,30 @@
 //#define DEBUG_ERROR
 
 ERROR_CONTEXT *ERROR_current = NULL;
+ERROR_INFO ERROR_last = { 0 };
 
-//ERROR_current->info ERROR_current->info = { 0 };
 static int _lock = 0;
 
 static const char *_message[64] =
 {
   /*  0 E_UNKNOWN */ "Unknown error",
   /*  1 E_MEMORY */ "Out of memory",
-  /*  2 E_CLASS */ "Cannot load class '&1': &2&3",
+  /*  2 E_CLASS */ ".Cannot load class '&1': &2&3",
   /*  3 E_STACK */ "Stack overflow",
   /*  4 E_NEPARAM */ "Not enough arguments",
   /*  5 E_TMPARAM */ "Too many arguments",
-  /*  6 E_TYPE */ "Type mismatch: wanted &1, got &2 instead",
+  /*  6 E_TYPE */ ".Type mismatch: wanted &1, got &2 instead",
   /*  7 E_OVERFLOW */ "Overflow",
   /*  8 E_ILLEGAL */ "Illegal instruction",
   /*  9 E_NFUNC */ "Not a function",
-  /* 10 E_CSTATIC */ "Class '&1' is not creatable",
-  /* 11 E_NSYMBOL */ "Unknown symbol '&1' in class '&2'",
+  /* 10 E_CSTATIC */ ".Class '&1' is not creatable",
+  /* 11 E_NSYMBOL */ ".Unknown symbol '&1' in class '&2'",
   /* 12 E_NOBJECT */ "Not an object",
   /* 13 E_NULL */ "Null object",
-  /* 14 E_STATIC */ "'&1.&2' is static",
-  /* 15 E_NREAD */ "'&1.&2' is write only",
-  /* 16 E_NWRITE */ "'&1.&2' is read only",
-  /* 17 E_NPROPERTY */ "'&1.&2' is not a property",
+  /* 14 E_STATIC */ ".'&1.&2' is static",
+  /* 15 E_NREAD */ ".'&1.&2' is write only",
+  /* 16 E_NWRITE */ ".'&1.&2' is read only",
+  /* 17 E_NPROPERTY */ ".'&1.&2' is not a property",
   /* 18 E_NRETURN */ "No return value",
   /* 19 E_MATH*/ "Mathematic error",
   /* 20 E_ARG */ "Bad argument",
@@ -74,41 +74,41 @@ static const char *_message[64] =
   /* 24 E_MAIN */ "No startup method",
   /* 25 E_NNEW */ "No instanciation method",
   /* 26 E_ZERO */ "Division by zero",
-  /* 27 E_LIBRARY */ "Cannot load component '&1': &2",
-  /* 28 E_EVENT */ "Bad event handler in &1.&2(): &3",
+  /* 27 E_LIBRARY */ ".Cannot load component '&1': &2",
+  /* 28 E_EVENT */ ".Bad event handler in &1.&2(): &3",
   /* 29 E_IOBJECT */ "Invalid object",
   /* 30 E_ENUM */ "Not an enumeration",
   /* 31 E_UCONV */ "Unsupported string conversion",
   /* 32 E_CONV */ "Bad string conversion",
   /* 33 E_DATE */ "Invalid date",
   /* 34 E_BADPATH */ "Invalid path",
-  /* 35 E_OPEN */ "Cannot open file '&1': &2",
-  /* 36 E_PROJECT */ "Bad project file: line &1: &2",
+  /* 35 E_OPEN */ ".Cannot open file '&1': &2",
+  /* 36 E_PROJECT */ ".Bad project file: line &1: &2",
   /* 37 E_FULL */ "Device is full",
   /* 38 E_EXIST */ "File already exists",  /* &1 */
   /* 39 E_EOF */ "End of file",
   /* 40 E_FORMAT */ "Bad format string",
-  /* 41 E_DYNAMIC */ "'&1.&2' is not static",
-  /* 42 E_SYSTEM */ "System error. &1",
+  /* 41 E_DYNAMIC */ ".'&1.&2' is not static",
+  /* 42 E_SYSTEM */ ".System error. &1",
   /* 43 E_ACCESS */ "Access forbidden",
   /* 44 E_TOOLONG */ "File name is too long",
   /* 45 E_NEXIST */ "File or directory does not exist", /* &1 */
   /* 46 E_DIR */ "File is a directory", /* &1 */
   /* 47 E_READ */ "Read error",
   /* 48 E_WRITE */ "Write error",
-  /* 49 E_NDIR */ "Not a directory: &1",
-  /* 50 E_REGEXP */ "Bad regular expression: &1",
-  /* 51 E_ARCH */ "Bad archive: &1: &2",
-  /* 52 E_REGISTER */ "Cannot register class '&1'",
+  /* 49 E_NDIR */ ".Not a directory: &1",
+  /* 50 E_REGEXP */ ".Bad regular expression: &1",
+  /* 51 E_ARCH */ ".Bad archive: &1: &2",
+  /* 52 E_REGISTER */ ".Cannot register class '&1'",
   /* 53 E_CLOSED */ "Stream is closed",
   /* 54 E_VIRTUAL */ "Bad use of virtual class",
   /* 55 E_STOP */ "STOP instruction encountered",
   /* 56 E_STRING */ "Too many simultaneous new strings",
-  /* 57 E_EVAL */ "Bad expression: &1",
+  /* 57 E_EVAL */ ".Bad expression: &1",
   /* 58 E_LOCK */ "File is locked",
   /* 59 E_PARENT */ "No parent class",
-  /* 60 E_EXTLIB */ "Cannot find dynamic library '&1': &2",
-  /* 61 E_EXTSYM */ "Cannot find symbol '&2' in dynamic library '&1'",
+  /* 60 E_EXTLIB */ ".Cannot find dynamic library '&1': &2",
+  /* 61 E_EXTSYM */ ".Cannot find symbol '&2' in dynamic library '&1'",
   /* 62 E_BYREF */ "Arguments cannot be passed by reference in this context",
   NULL
 };
@@ -126,24 +126,24 @@ void ERROR_unlock()
 	_lock--;
 }
 
-static void ERROR_reset(ERROR_CONTEXT *err)
+void ERROR_reset(ERROR_INFO *info)
 {
-	err->info.code = 0;
-	if (err->info.free)
+	info->code = 0;
+	if (info->free)
 	{
-		STRING_free(&err->info.msg);
-		err->info.free = FALSE;
+		STRING_free(&info->msg);
+		info->free = FALSE;
 	}
 	else
-		err->info.msg = NULL;
-	DEBUG_free_backtrace(&err->info.backtrace);
+		info->msg = NULL;
+	DEBUG_free_backtrace(&info->backtrace);
 }
 
 void ERROR_clear()
 {
 	if (_lock)
 		return;
-	ERROR_reset(ERROR_current);
+	ERROR_reset(&ERROR_current->info);
 }
 
 
@@ -182,7 +182,7 @@ void ERROR_leave(ERROR_CONTEXT *err)
 			fprintf(stderr, " -> %p", e);
 			e = e->prev;
 		}
-		fprintf(stderr, "\n");
+		fprintf(stderr, " : %s\n", err->info.msg);
 	}
 	#endif
 	
@@ -193,7 +193,7 @@ void ERROR_leave(ERROR_CONTEXT *err)
 	
 	if (ERROR_current)
 	{
-		ERROR_reset(ERROR_current);
+		ERROR_reset(&ERROR_current->info);
 		ERROR_current->info = err->info;
 	}
 
@@ -227,19 +227,6 @@ void ERROR_define(const char *pattern, char *arg[])
   uchar c;
   boolean subst;
 
-  void _add_char(uchar c)
-  {
-    if (c && c < ' ' && c != '\n')
-      c = ' ';
-
-		STRING_add(&ERROR_current->info.msg, (char *)&c, 1);
-  }
-
-  void _add_string(const char *s)
-  {
-		STRING_add(&ERROR_current->info.msg, s, 0);
-  }
-
 	ERROR_clear();
 
   if ((intptr_t)pattern >= 0 && (intptr_t)pattern < 256)
@@ -255,8 +242,10 @@ void ERROR_define(const char *pattern, char *arg[])
 	else
     ERROR_current->info.code = E_CUSTOM;
 
-  if (arg)
+  if (*pattern == '.' || ERROR_current->info.code == E_CUSTOM) //(arg) //(index(pattern, '&'))
   {
+  	if (*pattern == '.')
+    	pattern++;
     subst = FALSE;
 
     ERROR_current->info.free = TRUE;
@@ -270,12 +259,7 @@ void ERROR_define(const char *pattern, char *arg[])
       if (subst)
       {
         if (c >= '1' && c <= '4')
-          _add_string(arg[c - '1']);
-        else
-        {
-          _add_char('&');
-          _add_char(c);
-        }
+					STRING_add(&ERROR_current->info.msg, arg[c - '1'], 0);
         subst = FALSE;
       }
       else
@@ -283,7 +267,12 @@ void ERROR_define(const char *pattern, char *arg[])
         if (c == '&')
           subst = TRUE;
         else
-          _add_char(c);
+        {
+			    if (c < ' ' && c != '\n')
+      			c = ' ';
+
+					STRING_add_char(&ERROR_current->info.msg, (char)c);
+				}
       }
     }
   }
@@ -293,7 +282,9 @@ void ERROR_define(const char *pattern, char *arg[])
     ERROR_current->info.free = FALSE;
   }
 
-  _add_char(0);
+	//fprintf(stderr, "ERROR_define: %p %d %p '%s'\n", ERROR_current, ERROR_current->info.code, ERROR_current->info.msg, ERROR_current->info.msg);
+
+	//STRING_add_char(&ERROR_current->info.msg, 0);
 
   ERROR_current->info.cp = CP;
   ERROR_current->info.fp = FP;
@@ -363,18 +354,14 @@ void ERROR_panic(const char *error, ...)
 
   fflush(NULL);
 
-  fprintf(stderr, "\n"
-                  "** INTERNAL ERROR **\n"
-                  );
+  fprintf(stderr, "\n** INTERNAL ERROR **\n**");
   vfprintf(stderr, error, args);
-  fprintf(stderr, "\n");
+  putc('\n', stderr);
   if (ERROR_current->info.code)
   {
-    fprintf(stderr, "\n");
     ERROR_print();
-    fprintf(stderr, "\n");
   }
-  fprintf(stderr, "** Program aborting... Sorry... :-(\n\n");
+  fprintf(stderr, "** Program aborting. Sorry! :-(\n");
   /*abort();*/
   _exit(1);
 }
@@ -429,28 +416,16 @@ void ERROR_print(void)
 
 void ERROR_save(ERROR_INFO *save)
 {
+	ERROR_reset(save);
 	*save = ERROR_current->info;
-	ERROR_reset(ERROR_current);
-//   save->code = ERROR_current->info.code;
-//   save->cp = ERROR_current->info.cp;
-//   save->fp = ERROR_current->info.fp;
-//   save->pc = ERROR_current->info.pc;
-//   save->backtrace = ERROR_current->info.backtrace;
-//   ERROR_current->info.backtrace = NULL;
-//   strlcpy(save->msg, ERROR_current->info.msg, sizeof(ERROR_current->info.msg));
+	CLEAR(&ERROR_current->info);
+	//ERROR_reset(&ERROR_current->info);
 }
 
 void ERROR_restore(ERROR_INFO *save)
 {
-	ERROR_reset(ERROR_current);
+	ERROR_reset(&ERROR_current->info);
 	ERROR_current->info = *save;
-//   ERROR_current->info.code = save->code;
-//   ERROR_current->info.cp = save->cp;
-//   ERROR_current->info.cp = save->fp;
-//   ERROR_current->info.pc = save->pc;
-//   ERROR_current->info.backtrace = save->backtrace;
-//   save->backtrace = NULL;
-//   strlcpy(ERROR_current->info.msg, save->msg, sizeof(ERROR_current->info.msg));
+	CLEAR(save);
+	//ERROR_reset(save);
 }
-
-

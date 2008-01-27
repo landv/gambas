@@ -74,7 +74,7 @@ bool EXEC_enum_next(PCODE code)
   {
     if (EXEC_special(SPEC_NEXT, class, object, 0, FALSE))
       THROW(E_ENUM);
-    if (!defined && !drop)
+    if (!defined && !drop && !EXEC_enum->stop)
     	VALUE_conv(&SP[-1], T_VARIANT);
   }
 

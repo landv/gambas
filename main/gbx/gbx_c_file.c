@@ -68,6 +68,7 @@ static void init(CFILE *_object, FILE *file)
   THIS->ob.stream.type = &STREAM_buffer;
   THIS->ob.stream.buffer.file = file;
   THIS->ob.stream.buffer.size = 0;
+  THIS->ob.stream.common.buffer = NULL;
 }
 
 static void callback_read(int fd, int type, CFILE *file)
@@ -87,6 +88,13 @@ void CFILE_init(void)
   init(&CFILE_in, stdin);
   init(&CFILE_out, stdout);
   init(&CFILE_err, stderr);
+}
+
+void CFILE_exit(void)
+{
+	STREAM_release(&CFILE_in.ob.stream);
+	STREAM_release(&CFILE_out.ob.stream);
+	STREAM_release(&CFILE_err.ob.stream);
 }
 
 void CFILE_init_watch(void)

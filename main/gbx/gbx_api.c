@@ -261,7 +261,6 @@ void *GAMBAS_DebugApi[] =
 };
 
 
-TYPE GAMBAS_ReturnType;
 bool GAMBAS_Error = FALSE;
 bool GAMBAS_DoNotRaiseEvent = FALSE;
 bool GAMBAS_StopEvent = FALSE;
@@ -904,7 +903,8 @@ void GB_StopEnum(void)
   /* Do not forget than event if we stop the enumeration, the return value
      of _next will be converted
   */
-  VALUE_default(&TEMP, GAMBAS_ReturnType);
+  //VALUE_default(&TEMP, *GAMBAS_ReturnType);
+  TEMP.type = T_VOID;
   EXEC_enum->stop = TRUE;
 }
 
@@ -1013,10 +1013,6 @@ __CLASS:
   goto __CONV;
 
 __CONV:
-
-  /*VALUE_conv(ret, GAMBAS_ReturnType);
-   Laisser l'appelant faire la conversion */
-
 __STRING:
 __VOID:
 __VARIANT:
@@ -1068,10 +1064,8 @@ void GB_ReturnObject(void *val)
 {
   if (val == NULL)
     GB_ReturnNull();
-  else if (GAMBAS_ReturnType == T_VARIANT)
-    GB_Return(T_OBJECT, val);
   else
-    GB_Return(GAMBAS_ReturnType, val);
+    GB_Return(T_OBJECT, val);
 }
 
 
@@ -1080,8 +1074,10 @@ void GB_ReturnPtr(unsigned int type, void *value)
   if (type == T_VOID)
     return;
 
-  VALUE_read(&TEMP, value, type);
-  /*VALUE_conv(&TEMP, GAMBAS_ReturnType);*/
+	if (!value)
+		VALUE_default(&TEMP, type);
+	else
+  	VALUE_read(&TEMP, value, type);
 }
 
 

@@ -35,46 +35,52 @@
 
 typedef
   struct {
-    int code;
-    char msg[MAX_ERROR_MSG + 1];
+  	short code;
+    bool free;
+    void *cp;
+    void *fp;
+    void *pc;
+    //char msg[MAX_ERROR_MSG + 1];
+    char *msg;
+    void *backtrace;
     }
   ERROR_INFO;
 
 typedef
   struct _ERROR {
     struct _ERROR *prev;
-    int code;
     jmp_buf env;
+    int ret;
+    ERROR_INFO info;
     }
   ERROR_CONTEXT;
 
+#ifndef __GB_ERROR_C
+EXTERN ERROR_CONTEXT *ERROR_current;
+#endif
 
 #define ERROR_LEAVE_DONE ((ERROR_CONTEXT *)-1)
 
-#define TRY                                 \
-  {                                         \
-     ERROR_CONTEXT *_err = alloca(sizeof(ERROR_CONTEXT));    \
-     ERROR_enter(_err);                      \
-     _err->code = setjmp(_err->env);          \
-     if (_err->code == 0)
-
-#define FINALLY
+#define TRY \
+  { \
+		ERROR_CONTEXT __err_context; \
+    { \
+     	ERROR_CONTEXT *__err = &__err_context; \
+     	ERROR_enter(__err); \
+     	__err->ret = setjmp(__err->env); \
+     	if (__err->ret == 0)
 
 #define CATCH \
-     if (_err->code != 0 && !(_err->code = 0))
+			else
 
-#define CATCH_GET(get_it) \
-     if (_err->code != 0 && (get_it = _err->code) && !(_err->code = 0))
+#define END_TRY \
+			ERROR_leave(__err); \
+  	} \
+	}
 
-#define END_TRY          \
-    if (_err->code == 0)  \
-      ERROR_leave(_err);  \
-    else                 \
-      PROPAGATE();  \
-  }
+#define ERROR __err
 
-#define MAX_MUST_FREE 8
-
+#define PROPAGATE() ERROR_propagate()
 
 PUBLIC void ERROR_clear(void);
 PUBLIC char *ERROR_get(void);
@@ -86,7 +92,7 @@ PUBLIC void PROPAGATE() NORETURN;
 PUBLIC void THROW(const char *msg) NORETURN;
 PUBLIC void THROW2(const char *pattern, const char *msg) NORETURN;
 
-PUBLIC void ERROR_panic(char *error, ...) NORETURN;
+PUBLIC void ERROR_panic(const char *error, ...) NORETURN;
 
 PUBLIC void ERROR_print(void);
 PUBLIC void ERROR_print_at(FILE *where);

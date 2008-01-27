@@ -674,6 +674,7 @@ typedef
 typedef
   struct GB_STREAM {
     GB_STREAM_DESC *desc;
+    void *_reserved2;
     int _reserved;
     int _free[6];
     }

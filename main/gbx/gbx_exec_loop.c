@@ -39,8 +39,9 @@
 #include "gbx_api.h"
 #include "gbx_archive.h"
 #include "gbx_extern.h"
-
 #include "gbx_exec.h"
+#include "gbx_subr.h"
+#include "gbx_math.h"
 
 //#define DEBUG_PCODE 1
 
@@ -68,10 +69,10 @@ static EXEC_FUNC SubrTable[] =
   /* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
   /* 3C */  SUBR_cat,             SUBR_like,            SUBR_file,            SUBR_is,
 
-  SUBR_left,       /* 00 */
-  SUBR_mid,        /* 01 */
-  SUBR_right,      /* 02 */
-  SUBR_len,        /* 03 */
+  NULL,            /* 00 */
+  NULL,            /* 01 */
+  NULL,            /* 02 */
+  NULL,            /* 03 */
   SUBR_space,      /* 04 */
   SUBR_string,     /* 05 */
   SUBR_trim,       /* 06 */
@@ -230,10 +231,10 @@ void EXEC_loop(void)
     /* 3D LIKE            */  &&_SUBR,
     /* 3E &/              */  &&_SUBR,
     /* 3F                 */  &&_SUBR,
-    /* 40 Left$           */  &&_SUBR,
-    /* 41 Mid$            */  &&_SUBR,
-    /* 42 Right$          */  &&_SUBR,
-    /* 43 Len             */  &&_SUBR,
+    /* 40 Left$           */  &&_SUBR_LEFT,
+    /* 41 Mid$            */  &&_SUBR_MID,
+    /* 42 Right$          */  &&_SUBR_RIGHT,
+    /* 43 Len             */  &&_SUBR_LEN,
     /* 44 Space$          */  &&_SUBR_1,
     /* 45 String$         */  &&_SUBR,
     /* 46 Trim$           */  &&_SUBR_1,
@@ -476,6 +477,8 @@ _SUBR_1:
 
   (*SubrTable[(code >> 8) - 0x28])();
 
+_SUBR_END:
+
   if (PCODE_is_void(code))
     POP();
 
@@ -533,59 +536,6 @@ _PUSH_EVENT:
     that does nothing, because there is no handler for this event.
     Then CALL QUICK must know how to handle these functions.
   */
-
-	#if 0
-  {
-    OBJECT_EVENT *ev;
-    OBJECT *parent;
-
-    ind = GET_XX();
-    ev = OBJECT_event(OP);
-
-    if (CP->parent)
-      ind += CP->parent->n_event;
-
-    ind = ev->event[ind];
-    parent = OBJECT_parent(OP);
-
-    //printf("_PUSH_EVENT: OP = %p  parent = %p  ind = %d\n", OP, parent, ind);
-
-    if (parent == NULL || ind == 0 || OBJECT_is_locked((OBJECT *)OP) || OBJECT_is_locked(parent))
-    {
-      /* Function that does nothing but returning a default value */
-      SP->_function.object = NULL;
-      SP->_function.class = NULL;
-      SP->_function.kind = FUNCTION_NULL;
-      /*SP->_function.function = (long)(CP->load->event[GET_XX()].type);*/
-      /* ??? Pourquoi n'utilise-t-on pas desc ? */
-    }
-    else
-    {
-      ind--;
-
-      SP->_function.kind = FUNCTION_EVENT;
-      /*SP->_function.function = (long)parent->class->table[ind].desc;*/
-      /*SP->_function.function = (long)((CLASS *)parent)->table[ind].desc;*/
-      SP->_function.index = ind;
-      SP->_function.defined = FALSE;
-
-      if (parent->class == CLASS_Class)
-      {
-        SP->_function.object = NULL;
-        SP->_function.class = (CLASS *)parent;
-      }
-      else
-      {
-        SP->_function.object = parent;
-        SP->_function.class = parent->class;
-      }
-    }
-
-    SP->type = T_FUNCTION;
-    OBJECT_REF(SP->_function.object, "exec_loop._PUSH_EVENT (FUNCTION)");
-    SP++;
-  }
-  #endif
 
 	ind = GET_XX();
 
@@ -1013,7 +963,7 @@ _CALL:
 
   __EXEC_NATIVE:
 
-    EXEC_native();
+    EXEC_native_check(val->_function.defined);
     goto _NEXT;
 
   __CALL_EVENT:
@@ -1074,10 +1024,7 @@ _CALL:
 			goto _NEXT;
     }
     
-    
     goto __CALL_SPEC;
-    	
-    
 
   __CALL_SPEC:
 
@@ -1112,7 +1059,7 @@ _CALL_QUICK:
 
   {
     static void *call_jump[] =
-      { &&__CALL_NULL, NULL /*&&__CALL_NATIVE*/, &&__CALL_PRIVATE_Q, &&__CALL_PUBLIC_Q };
+      { &&__CALL_NULL, &&__CALL_NATIVE_Q, &&__CALL_PRIVATE_Q, &&__CALL_PUBLIC_Q };
 
     register VALUE * NO_WARNING(val);
 
@@ -1150,6 +1097,15 @@ _CALL_QUICK:
 
     EXEC_enter_quick();
     goto _MAIN;
+    
+  __CALL_NATIVE_Q:
+  
+    EXEC.native = TRUE;
+    EXEC.index = val->_function.index;
+    EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
+    
+    EXEC_native_quick();
+    goto _NEXT;
   }
 
 /*-----------------------------------------------*/
@@ -1158,7 +1114,7 @@ _CALL_NORM:
 
   {
     static void *call_jump[] =
-      { &&__CALL_NULL, NULL /*&&__CALL_NATIVE*/, &&__CALL_PRIVATE_N, &&__CALL_PUBLIC_N };
+      { &&__CALL_NULL, &&__CALL_NATIVE_N, &&__CALL_PRIVATE_N, &&__CALL_PUBLIC_N };
 
     register VALUE * NO_WARNING(val);
 
@@ -1194,6 +1150,15 @@ _CALL_NORM:
 
     EXEC_enter();
     goto _MAIN;
+    
+  __CALL_NATIVE_N:
+    
+    EXEC.native = TRUE;
+    EXEC.index = val->_function.index;
+    EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
+    
+    EXEC_native();
+    goto _NEXT;
   }
 
 /*-----------------------------------------------*/
@@ -1620,5 +1585,150 @@ _BYREF:
 _ILLEGAL:
 
   THROW(E_ILLEGAL);
+
+/*-----------------------------------------------*/
+
+#define EXEC_code code
+
+_SUBR_LEFT:
+
+	{
+		int val;
+	
+		SUBR_ENTER();
+	
+		if (!SUBR_check_string(PARAM))
+		{
+			if (NPARAM == 1)
+				val = 1;
+			else
+			{
+				VALUE_conv(&PARAM[1], T_INTEGER);
+				val = PARAM[1]._integer.value;
+			}
+		
+			if (val < 0)
+				val += PARAM->_string.len;
+		
+			PARAM->_string.len = MinMax(val, 0, PARAM->_string.len);
+		}
+	
+		SP -= NPARAM;
+		SP++;
+	}
+	goto _SUBR_END;
+
+/*-----------------------------------------------*/
+
+_SUBR_RIGHT:
+	
+	{
+		int val;
+		int new_len;
+	
+		SUBR_ENTER();
+	
+		if (!SUBR_check_string(PARAM))
+		{
+			if (NPARAM == 1)
+				val = 1;
+			else
+			{
+				VALUE_conv(&PARAM[1], T_INTEGER);
+				val = PARAM[1]._integer.value;
+			}
+		
+			if (val < 0)
+				val += PARAM->_string.len;
+		
+			new_len = MinMax(val, 0, PARAM->_string.len);
+		
+			PARAM->_string.start += PARAM->_string.len - new_len;
+			PARAM->_string.len = new_len;
+		}
+	
+		SP -= NPARAM;
+		SP++;
+	}
+	goto _SUBR_END;
+
+/*-----------------------------------------------*/
+
+_SUBR_MID:
+	{
+		int start;
+		int len;
+	
+		SUBR_ENTER();
+	
+		if (SUBR_check_string(PARAM))
+			goto _SUBR_MID_FIN;
+	
+		VALUE_conv(&PARAM[1], T_INTEGER);
+		start = PARAM[1]._integer.value - 1;
+	
+		if (start < 0)
+			THROW(E_ARG);
+	
+		if (start >= PARAM->_string.len)
+		{
+			RELEASE(PARAM);
+			STRING_void_value(PARAM);
+			goto _SUBR_MID_FIN;
+		}
+	
+		if (NPARAM == 2)
+			len = PARAM->_string.len;
+		else
+		{
+			VALUE_conv(&PARAM[2], T_INTEGER);
+			len = PARAM[2]._integer.value;
+		}
+	
+		if (len < 0)
+			len = Max(0, PARAM->_string.len - start + len);
+	
+		len = MinMax(len, 0, PARAM->_string.len - start);
+	
+		if (len == 0)
+		{
+			RELEASE(PARAM);
+			PARAM->_string.addr = NULL;
+			PARAM->_string.start = 0;
+		}
+		else
+			PARAM->_string.start += start;
+	
+		PARAM->_string.len = len;
+	
+	_SUBR_MID_FIN:
+	
+		SP -= NPARAM;
+		SP++;
+	}
+	goto _SUBR_END;
+
+/*-----------------------------------------------*/
+
+_SUBR_LEN:
+	{
+		int len;
+	
+		SUBR_GET_PARAM(1);
+	
+		if (SUBR_check_string(PARAM))
+			len = 0;
+		else
+			len = PARAM->_string.len;
+	
+		RELEASE(PARAM);
+	
+		PARAM->type = T_INTEGER;
+		PARAM->_integer.value = len;
+	}
+	goto _SUBR_END;
+	
+/*-----------------------------------------------*/
+
 }
 

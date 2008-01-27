@@ -28,12 +28,13 @@
 #include "gbx_value.h"
 #include "gbx_subst.h"
 #include "gbx_debug.h"
+#include "gb_common_string.h"
 
 typedef
   struct
   {
-    int len;
     int ref;
+    int len;
     char data[0];
   }
   PACKED
@@ -50,6 +51,7 @@ int STRING_get_free_index(void);
 void STRING_extend(char **ptr, int new_len);
 void STRING_extend_end(char **ptr);
 void STRING_add(char **ptr, const char *src, int len);
+void STRING_add_char(char **ptr, char c);
 
 void STRING_copy_from_value_temp(char **ptr, VALUE *value);
 
@@ -59,8 +61,9 @@ void STRING_new_constant_value(VALUE *value, const char *src, int len);
 void STRING_char_value(VALUE *value, uchar car);
 void STRING_void_value(VALUE *value);
 
-int STRING_comp_value(VALUE *str1, VALUE *str2);
-int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2);
+/*int STRING_comp_value(VALUE *str1, VALUE *str2);
+int STRING_comp_value_equality(VALUE *str1, VALUE *str2);
+int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2);*/
 
 char *STRING_subst(const char *string, int len, SUBST_FUNC get_param);
 int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw);

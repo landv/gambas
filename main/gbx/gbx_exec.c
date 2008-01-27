@@ -489,11 +489,15 @@ void EXEC_enter(void)
 void EXEC_enter_check(bool defined)
 {
 	if (defined && exec_enter_can_quick())
+	{
 		*PC = (*PC & 0xFF) | C_CALL_QUICK;
+		EXEC_enter_quick();
+	}
 	else
+	{
 		*PC = (*PC & 0xFF) | C_CALL_NORM;
-
-	EXEC_enter();
+		EXEC_enter();
+	}
 }
 
 
@@ -747,6 +751,7 @@ void EXEC_function_real(bool keep_ret_value)
 					printf("#2 EC = %p\n", EC);
 					#endif
 
+					ERROR_set_last();
 					PC = EC;
 					EC = NULL;
 					retry = TRUE;
@@ -758,6 +763,7 @@ void EXEC_function_real(bool keep_ret_value)
 					printf("#3\n");
 					#endif
 
+					ERROR_set_last();
 					if (EXEC_debug && !STACK_has_error_handler())
 					{
 						if (TP && TC)
@@ -839,19 +845,60 @@ void EXEC_function_real(bool keep_ret_value)
 }
 
 
+static bool exec_native_can_quick(void)
+{
+	CLASS_DESC_METHOD *desc = EXEC.desc;
+	int i;
+	int nparam = EXEC.nparam;
+	
+	/* check number of arguments */
+
+	//fprintf(stderr, "exec_native_can_quick: %s.%s(%d) npmin:%d npmax:%d npvar:%d\n", desc->class->name, desc->name, nparam, desc->npmin, desc->npmax, desc->npvar);
+
+	if (desc->npmin < desc->npmax || nparam != desc->npmin || desc->npvar)
+		return FALSE;
+		
+	/* check arguments type */
+
+	for (i = 0; i < nparam; i++)
+	{
+		if (SP[i - nparam].type != desc->signature[i])
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+void EXEC_native_check(bool defined)
+{
+	if (defined && exec_native_can_quick())
+	{
+		*PC = (*PC & 0xFF) | C_CALL_QUICK;
+		EXEC_native_quick();
+	}
+	else
+	{
+		*PC = (*PC & 0xFF) | C_CALL_NORM;
+		EXEC_native();
+	}
+
+}
+
+
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 {
-	TYPE save = GAMBAS_ReturnType;
 	GAMBAS_Error = FALSE;
 
-	GAMBAS_ReturnType = type;
-	//TEMP.type = T_NULL;
-
-	/*OBJECT_REF(object, "EXEC_call_native"); N'est plus n�essaire ! */
 	(*exec)(object, (void *)param);
-	/*OBJECT_UNREF(&object, "EXEC_call_native");*/
 
-	GAMBAS_ReturnType = save;
+	if (TYPE_is_pure_object(type) && TEMP.type != T_NULL && TEMP.type != T_VOID)
+	{
+		if (TEMP.type == T_CLASS)
+			TEMP._class.class = (CLASS *)type;
+		else
+			TEMP.type = type;
+	}
+		
 	if (GAMBAS_Error)
 	{
 		GAMBAS_Error = FALSE;
@@ -859,6 +906,66 @@ bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 	}
 	else
 		return FALSE;
+}
+
+void EXEC_native_quick(void)
+{
+	CLASS_DESC_METHOD *desc = EXEC.desc;
+	bool drop = EXEC.drop;
+	int nparam = EXEC.nparam;
+	//bool use_stack = EXEC.use_stack; // Always TRUE
+	void *object = EXEC.object;
+
+	bool error;
+	void *free;
+	VALUE ret;
+
+	error = EXEC_call_native(desc->exec, object, desc->type, &SP[-nparam]);
+	COPY_VALUE(&ret, &TEMP);
+
+	RELEASE_MANY(SP, nparam);
+	
+	if (error)
+	{
+		POP();
+		PROPAGATE();
+	}
+	
+	/* Si la description de la fonction se trouve sur la pile */
+
+	SP--;
+	free = SP->_function.object;
+	SP->type = T_NULL;
+
+	if (desc->type == T_VOID)
+	{
+		if (!drop)
+		{
+			SP->type = T_VOID;
+			SP->_void.ptype = T_NULL;
+			SP++;
+		}
+	}
+	else
+	{
+		BORROW(&ret);
+
+		if (drop)
+			RELEASE(&ret);
+		else
+		{
+				
+			//*SP = ret;
+			COPY_VALUE(SP, &ret);
+			SP++;
+		}
+	}
+
+	OBJECT_UNREF(&free, "EXEC_native (FUNCTION)");
+
+	#if DEBUG_STACK
+	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
+	#endif
 }
 
 
@@ -877,8 +984,6 @@ void EXEC_native(void)
 	void *free;
 	int n;
 	VALUE ret;
-
-	/* v�ification des param�res */
 
 	#if DEBUG_STACK
 	printf("| >> EXEC_native: %s.%s (%p)\n", EXEC.class->name, desc->name, &desc);
@@ -1014,7 +1119,7 @@ void EXEC_native(void)
 				RELEASE(&ret);
 			else
 			{
-				VALUE_conv(&ret, desc->type);
+				//VALUE_conv(&ret, desc->type);
 				//*SP = ret;
 				COPY_VALUE(SP, &ret);
 				SP++;

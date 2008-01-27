@@ -324,7 +324,8 @@ void SUBR_near(void)
   VALUE_conv(&PARAM[0], T_STRING);
   VALUE_conv(&PARAM[1], T_STRING);
 
-  result = STRING_comp_value_ignore_case(&PARAM[0], &PARAM[1]) ? -1 : 0;
+  //result = STRING_comp_value_ignore_case(&PARAM[0], &PARAM[1]) ? -1 : 0;
+  result = STRING_equal_ignore_case(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len) ? -1 : 0;
 
   RELEASE(&PARAM[0]);
   RELEASE(&PARAM[1]);
@@ -408,10 +409,19 @@ __STRING:
   VALUE_conv(P1, T_STRING);
   VALUE_conv(P2, T_STRING);
 
-  if (op < 2 && P1->_string.len != P2->_string.len)
-    result = 1;
-  else
-    result = STRING_comp_value(P1, P2);
+//   if (op < 2 && P1->_string.len != P2->_string.len)
+//     result = 1;
+//   else
+//     result = STRING_comp_value(P1, P2);
+	if (op < 2)
+	{
+		if (P1->_string.len != P2->_string.len)
+			result = 1;
+		else
+			result = !STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len);
+	}
+	else
+		result = STRING_compare(P1->_string.addr + P1->_string.start, P1->_string.len, P2->_string.addr + P2->_string.start, P2->_string.len);
   goto __END_RELEASE;
 
 __SINGLE:
@@ -531,9 +541,9 @@ void SUBR_strcomp(void)
 	mode &= GB_COMP_TYPE_MASK;
 	
 	if (mode == GB_COMP_BINARY)
-		ret = STRING_comp_value(&PARAM[0], &PARAM[1]);
+		ret = STRING_compare(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len);
 	else if (mode == GB_COMP_TEXT)
-		ret = STRING_comp_value_ignore_case(&PARAM[0], &PARAM[1]);
+		ret = STRING_compare_ignore_case(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len);
 	else
 	{
 		SUBR_get_string_len(&PARAM[0], &s1, &l1);

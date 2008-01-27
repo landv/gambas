@@ -204,7 +204,7 @@ __NULL:
 
 void VALUE_convert(VALUE *value, TYPE type)
 {
-  static void *jump[16][16] =
+  static const void *jump[16][16] =
   {
    /*             void       b          c          h          i          l          g          f          d          cs         s          v          array      func       class      n         */
    /* void   */ { &&__OK,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    &&__NR,    },
@@ -233,7 +233,7 @@ void VALUE_convert(VALUE *value, TYPE type)
 
 __CONV:
 
-  if (type >> 4 || value->type >> 4)
+  if ((type | value->type) >> 4)
     goto __OBJECT;
   else
     goto *jump[value->type][type];
@@ -400,23 +400,25 @@ __c2s:
 __h2s:
 __i2s:
 
-#ifdef OS_OPENBSD
+/*#ifdef OS_OPENBSD
   len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
 #else
   len = sprintf(COMMON_buffer, "%d", value->_integer.value);
 #endif
-  STRING_new_temp_value(value, COMMON_buffer, len);
+  STRING_new_temp_value(value, COMMON_buffer, len);*/
+  NUMBER_int_to_string(value->_integer.value, 0, 10, value);
   BORROW(value);
   return;
 
 __l2s:
 
-#ifdef OS_OPENBSD
+/*#ifdef OS_OPENBSD
   len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%" PRId64, value->_long.value);
 #else
   len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
 #endif
-  STRING_new_temp_value(value, COMMON_buffer, len);
+  STRING_new_temp_value(value, COMMON_buffer, len);*/
+  NUMBER_int_to_string(value->_long.value, 0, 10, value);
   BORROW(value);
   return;
 
@@ -1186,35 +1188,39 @@ __ILLEGAL:
 
 bool VALUE_is_null(VALUE *val)
 {
-  if (val->type == T_NULL)
-    return TRUE;
+  static void *jump[16] = {
+    &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__DATE,
+    &&__STRING, &&__STRING, &&__VARIANT, &&__FALSE, &&__FALSE, &&__FALSE, &&__NULL
+    };
+  
+  TYPE type = val->type;
+  
+  if (TYPE_is_object(type))
+  	return val->_object.object == NULL;
+  else
+  	goto *jump[type];
+  
+__NULL:
+	return TRUE;
+	
+__STRING:
+	return val->_string.addr == 0 || val->_string.len == 0;
+	
+__DATE:
+	return val->_date.date == 0 && val->_date.time == 0;
+	
+__VARIANT:
+  
+	if (val->_variant.vtype == T_NULL)
+		return TRUE;
+	else if (val->_variant.vtype == T_STRING)
+		return *((char **)val->_variant.value) == NULL;
+	else if (val->_variant.vtype == T_DATE)
+		return ((DATE *)val->_variant.value)->date == 0 && ((DATE *)val->_variant.value)->time == 0;
+	else if (TYPE_is_object(val->_variant.vtype))
+		return *((void **)val->_variant.value) == NULL;
 
-  if (VALUE_is_string(val) && (val->_string.addr == 0 || val->_string.len == 0))
-    return TRUE;
-
-  if (VALUE_is_object(val) && (val->_object.object == NULL))
-    return TRUE;
-
-  if (val->type == T_DATE && val->_date.date == 0 && val->_date.time == 0)
-    return TRUE;
-
-  if (val->type == T_VARIANT)
-  {
-    if (val->_variant.vtype == T_NULL)
-      return TRUE;
-
-    if (val->_variant.vtype == T_STRING && *((char **)val->_variant.value) == NULL)
-      return TRUE;
-
-    if (val->_variant.vtype == T_DATE
-        && ((DATE *)val->_variant.value)->date == 0
-        && ((DATE *)val->_variant.value)->time == 0)
-      return TRUE;
-
-    if (TYPE_is_object(val->_variant.vtype) && *((void **)val->_variant.value) == NULL)
-      return TRUE;
-  }
-
+__FALSE:
   return FALSE;
 }
 

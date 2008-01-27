@@ -88,6 +88,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
   {
     strip = TRUE;
     len = max;
+    errno = 0;
   }
 
   if (ARCHIVE_read(stream->arch.arch, stream->arch.start + stream->arch.pos, buffer, len))

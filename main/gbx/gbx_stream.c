@@ -100,6 +100,17 @@ static int STREAM_get_readable(int fd, int *len)
 	return 0;
 }
 
+static int default_eof(STREAM *stream)
+{
+  int fd;
+  int ilen;
+
+	fd = STREAM_handle(stream);
+  if (fd < 0 || STREAM_get_readable(fd, &ilen))
+    return TRUE;
+
+  return (ilen == 0);
+}
 
 void STREAM_open(STREAM *stream, const char *path, int mode)
 {
@@ -135,6 +146,9 @@ _OPEN:
   stream->common.mode = mode;
   stream->common.swap = FALSE;
   stream->common.eol = 0;
+  stream->common.buffer = NULL;
+  stream->common.buffer_pos = 0;
+  stream->common.buffer_len = 0;
 
   /*if (((mode & ST_BIG) && !EXEC_big_endian)
       || ((mode & ST_LITTLE) && EXEC_big_endian))
@@ -150,6 +164,16 @@ _OPEN:
 }
 
 
+void STREAM_release(STREAM *stream)
+{
+  if (stream->common.buffer)
+  {
+  	FREE(&stream->common.buffer, "STREAM_close");
+  	stream->common.buffer_pos = 0;
+  	stream->common.buffer_len = 0;
+  }
+}
+
 void STREAM_close(STREAM *stream)
 {
   int fd;
@@ -163,6 +187,8 @@ void STREAM_close(STREAM *stream)
 
   if (!(*(stream->type->close))(stream))
     stream->type = NULL;
+    
+  STREAM_release(stream);
 }
 
 
@@ -174,6 +200,19 @@ void STREAM_flush(STREAM *stream)
   (*(stream->type->flush))(stream);
 }
 
+static void read_buffer(STREAM *stream, void **addr, int *len)
+{
+	int l = stream->common.buffer_len - stream->common.buffer_pos;
+	if (l > *len)
+		l = *len;
+	if (l > 0)
+	{
+		memcpy(*addr, stream->common.buffer + stream->common.buffer_pos, l);
+		*addr = (char *)*addr + l;
+		*len -= l;
+		stream->common.buffer_pos += l;
+	}
+}
 
 void STREAM_read(STREAM *stream, void *addr, int len)
 {
@@ -181,7 +220,10 @@ void STREAM_read(STREAM *stream, void *addr, int len)
 
   if (!stream->type)
     THROW(E_CLOSED);
-    
+  
+  if (stream->common.buffer)
+  	read_buffer(stream, &addr, &len);
+  
   if ((*(stream->type->read))(stream, addr, len))
   {
     switch(errno)
@@ -204,7 +246,10 @@ char STREAM_getchar(STREAM *stream)
   
   if (!stream->type)
     THROW(E_CLOSED);
-    
+  
+  if (stream->common.buffer && stream->common.buffer_pos < stream->common.buffer_len)
+  	return stream->common.buffer[stream->common.buffer_pos++];
+  
   if (stream->type->getchar)
     ret = (*(stream->type->getchar))(stream, &c);
   else
@@ -235,6 +280,9 @@ void STREAM_read_max(STREAM *stream, void *addr, int len)
   if (!stream->type)
     THROW(E_CLOSED);
     
+  if (stream->common.buffer)
+  	read_buffer(stream, &addr, &len);
+  
   if ((*(stream->type->read))(stream, addr, len))
   {
     switch(errno)
@@ -315,23 +363,14 @@ void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 }
 
 
-static void add_string(char **addr, int *len_str, const char *src, int len)
-{
-  STRING_extend(addr, *len_str + len);
-  memcpy(&((*addr)[*len_str]), src, len);
-
-  *len_str += len;
-}
-
-
 static void input(STREAM *stream, char **addr, boolean line)
 {
   int len = 0;
-  int len_str = 0;
+  int start;
   unsigned char c, lc = 0;
   void *test;
   bool eol;
-
+	
   *addr = NULL;
 
   stream->common.eof = FALSE;
@@ -348,9 +387,46 @@ static void input(STREAM *stream, char **addr, boolean line)
 		}
 	}
 
+	if (STREAM_eof(stream))
+		THROW(E_EOF);
+		
+	if (!stream->common.buffer)
+	{
+		ALLOC(&stream->common.buffer, STREAM_BUFFER_SIZE, "input");
+		stream->common.buffer_pos = 0;
+		stream->common.buffer_len = 0;
+	}
+
+	/*eof_func = stream->type->eof;
+	if (!eof_func)
+		eof_func = default_eof;*/
+
+	start = stream->common.buffer_pos;
+	
   for(;;)
   {
-    c = STREAM_getchar(stream);
+  	if (stream->common.buffer_pos == stream->common.buffer_len)
+  	{
+			if (len)
+			{
+				//add_string(addr, &len_str, stream->common.buffer + start, len);
+				STRING_add(addr, stream->common.buffer + start, len);
+				len = 0;
+			}
+			
+  		STREAM_read_max(stream, stream->common.buffer, STREAM_BUFFER_SIZE);
+  		stream->common.buffer_pos = 0;
+  		stream->common.buffer_len = STREAM_eff_read;
+  		if (!stream->common.buffer_len)
+  		{
+	    	stream->common.eof = TRUE;
+  			break;
+  		}
+  		
+  		start = 0;
+  	}
+    
+    c = stream->common.buffer[stream->common.buffer_pos++]; //STREAM_getchar(stream);
 
 		goto *test;
 
@@ -385,22 +461,28 @@ static void input(STREAM *stream, char **addr, boolean line)
 		if (eol)
 			break;
 
-    COMMON_buffer[len++] = c;
-    if (len >= COMMON_BUF_MAX)
-    {
-      add_string(addr, &len_str, COMMON_buffer, len);
-      len = 0;
-    }
+    len++;
+    //COMMON_buffer[len++] = c;
 
+		// Optimized eof
+		
+		/*
     if (STREAM_eof(stream))
     {
       stream->common.eof = TRUE;
       break;
     }
+    */
+    /*if ((*eof_func)(stream))
+    {
+    	stream->common.eof = TRUE;
+    	break;
+    }*/
   }
 
   if (len > 0)
-    add_string(addr, &len_str, COMMON_buffer, len);
+    //add_string(addr, &len_str, stream->common.buffer + start, len);
+    STRING_add(addr, stream->common.buffer + start, len);
 
   STRING_extend_end(addr);
 }
@@ -834,24 +916,23 @@ void STREAM_lof(STREAM *stream, int64_t *len)
 	fd = STREAM_handle(stream);
 	if ((fd >= 0) && (STREAM_get_readable(fd, &ilen) == 0))
 		*len = ilen;
+		
+	if (stream->common.buffer)
+		*len += stream->common.buffer_len - stream->common.buffer_pos;
 }
 
 bool STREAM_eof(STREAM *stream)
 {
-  int fd;
-  int ilen;
-
   if (!stream->type)
     THROW(E_CLOSED);
     
+	if (stream->common.buffer && stream->common.buffer_pos < stream->common.buffer_len)
+		return FALSE;
+
 	if (stream->type->eof)
   	return ((*(stream->type->eof))(stream));
-
-	fd = STREAM_handle(stream);
-  if (fd < 0 || STREAM_get_readable(fd, &ilen))
-    return TRUE;
-
-  return (ilen == 0);
+  else
+  	return default_eof(stream);
 }
 
 

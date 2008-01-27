@@ -129,6 +129,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
     {
     	QPainter *p;
       void *object = CWidget::get(this);
+			bool frame = !contentsRect().contains(event->rect());
 			
 			cache = new QPixmap(r.width(), r.height());
       cache->fill(this, r.x(), r.y());
@@ -140,20 +141,21 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
       DRAW_begin(object);
 
 			p = DRAW_get_current();
+      
       p->translate(-r.x(), -r.y());
       p->setClipRect(r, QPainter::CoordPainter);
       //p->setClipRegion(event->region().intersect(contentsRect()));
       p->setBrushOrigin(-r.x(), -r.y());
       
+			if (frame)
+				p->save();
       //qDebug("MyDrawingArea::paintEvent %p", CWidget::get(this));
       GB.Raise(object, EVENT_draw, 0);
 			
 			if (!contentsRect().contains(event->rect()))
 			{
-				//p->save();
-				//paint.setClipRegion( event->region().intersect(frameRect()) );
+				p->restore();
 				drawFrame(p);
-				//p->restore();
 			}
       
       //DRAW_restore(status);

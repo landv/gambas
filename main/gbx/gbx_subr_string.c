@@ -140,7 +140,7 @@ void SUBR_file(void)
 }
 
 
-
+#if 0
 void SUBR_left(void)
 {
   int val;
@@ -277,7 +277,7 @@ void SUBR_len(void)
   PARAM->type = T_INTEGER;
   PARAM->_integer.value = len;
 }
-
+#endif
 
 void SUBR_space(void)
 {
