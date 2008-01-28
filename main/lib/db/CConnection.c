@@ -404,7 +404,7 @@ static void make_query_get_param(int index, char **str, int *len)
 static char *make_query(CCONNECTION *_object, char *pattern, int len, int narg, GB_VALUE *arg)
 {
 	char *query;
-	char *keyword;
+	const char *keyword;
 	char buffer[32];
 
 	query = DB_MakeQuery(THIS->driver, pattern, len, narg, arg);

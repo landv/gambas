@@ -99,7 +99,7 @@ static GB_TYPE conv_type(int type)
 
 /* Internal function to convert a database value into a Gambas variant value */
 
-static void conv_data(char *data, GB_VARIANT_VALUE *val, fType type)
+static void conv_data(const char *data, GB_VARIANT_VALUE *val, fType type)
 {
   GB_VALUE conv;
   GB_DATE_SERIAL date;
@@ -230,7 +230,7 @@ static void conv_data(char *data, GB_VARIANT_VALUE *val, fType type)
     case ft_WChar:
     default:
       val->_string.type = GB_T_CSTRING;
-      val->_string.value = data;
+      val->_string.value = (char *)data;
       /*GB.NewString(&val->_string.value, data, strlen(data));*/
 
       break;
@@ -329,7 +329,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres,
 }
 
 /* Internal function to check whether a file is a sqlite database file */
-bool IsDatabaseFile ( char *filename )
+static bool IsDatabaseFile (const char *filename)
 {
   /*                   SQLite databases start with the string:
    *                  ** This file contains an SQLite 2.1 database **
@@ -358,13 +358,13 @@ bool IsDatabaseFile ( char *filename )
 
 /* Internal function to locate database and return full qualified */
 /* path. */
-char *FindDatabase ( char *name, char *hostName)
+static char *FindDatabase (const char *name, const char *hostName)
 {
   char *dbhome = NULL;
   char *fullpath = NULL;
 
   /* Does Name includes fullpath */
-  if (strcmp(basename(name), name))
+  if (*name == '/')
   {
     if (IsDatabaseFile(name))
       GB.NewString(&fullpath, name, 0);
@@ -374,24 +374,23 @@ char *FindDatabase ( char *name, char *hostName)
 
   /* Hostname contains home area */
   GB.NewString(&fullpath, hostName, 0);
-      GB.AddString(&fullpath, "/", 0);
+  GB.AddString(&fullpath, "/", 0);
   GB.AddString(&fullpath, name, 0);
-  if (IsDatabaseFile(fullpath)){
+  if (IsDatabaseFile(fullpath))
      return fullpath;
-  }
+  
   GB.FreeString(&fullpath);
 
   /* Check the GAMBAS_SQLITE_DBHOME setting */
   dbhome = getenv("GAMBAS_SQLITE_DBHOME");
+  if (dbhome)
+  {
+		GB.NewString(&fullpath, dbhome, 0);
+		GB.AddString(&fullpath, "/", 0);
+		GB.AddString(&fullpath, name, 0);
 
-  if (dbhome != NULL ){
-      GB.NewString(&fullpath, dbhome, 0);
-      GB.AddString(&fullpath, "/", 0);
-      GB.AddString(&fullpath, name, 0);
-
-      if (IsDatabaseFile(fullpath)){
-         return fullpath;
-      }
+		if (IsDatabaseFile(fullpath))
+				return fullpath;
   }
 
   #if 0
@@ -406,17 +405,18 @@ char *FindDatabase ( char *name, char *hostName)
   GB.AddString(&fullpath, "/sqlite/", 0);
   GB.AddString(&fullpath, name, 0);
 
-  if (IsDatabaseFile(fullpath)){
+  if (IsDatabaseFile(fullpath))
      return fullpath;
-  }
 
   GB.FreeString(&fullpath);
   return NULL;
 }
+
+
 /* Internal function to return database home directory */
 /* - GAMBAS_SQLITE_HOMEDB if set or temporary directory /tmp/gambas.%pid%/ */
 
-char *GetDatabaseHome()
+static char *GetDatabaseHome()
 {
   char *env = NULL;
   char *dbhome = NULL;
@@ -479,7 +479,7 @@ char *FullPath( char *name )
 
 /* Internal function to walk a dirctory and list files */
 /* Used by database_list                               */
-int WalkDirectory( char *dir, char ***databases ){
+static int WalkDirectory(const char *dir, char ***databases ){
 
   DIR *dp;
   struct dirent *entry;
@@ -529,7 +529,7 @@ int db_version()
 
 *****************************************************************************/
 
-static char *get_quote(void)
+static const char *get_quote(void)
 {
   return QUOTE_STRING;
 }
@@ -577,7 +577,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
   {
     conn->setDatabase(name);
   }
-  else if ((db_fullpath = FindDatabase(name, (char *)conn->getHostName())) != NULL)
+  else if ((db_fullpath = FindDatabase(name, conn->getHostName())) != NULL)
   {
     conn->setDatabase(db_fullpath);
   }
@@ -736,7 +736,7 @@ static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add)
 
 *****************************************************************************/
 
-static int exec_query(DB_DATABASE *db, char *query, DB_RESULT *result, char *err)
+static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, const char *err)
 {
   return do_query(db, err, (Dataset **)result, query, 0);
 }
@@ -845,7 +845,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 {
 	Dataset *res = (Dataset *) result;
 	int i;
-	char *data;
+	const char *data;
 	GB_VARIANT value;
 
 	if (!next)
@@ -859,7 +859,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 		if (res->fv(i).get_isNull())
 			data = NULL;
 		else
-			data = (char *) res->fv(i).get_asString().data();
+			data = res->fv(i).get_asString().data();
 			
 		//fprintf(stderr, "query_fill: %d.%d %s\n", pos, i, data);
 
@@ -928,7 +928,7 @@ static char *field_name(DB_RESULT result, int field)
 
 *****************************************************************************/
 
-static int field_index(DB_RESULT result, char *name, DB_DATABASE *db)
+static int field_index(DB_RESULT result, const char *name, DB_DATABASE *db)
 {
   char *fld;
 
@@ -1062,16 +1062,16 @@ static int rollback_transaction(DB_DATABASE *db)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info);
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info);
 
-static int table_init(DB_DATABASE *db, char *table, DB_INFO *info)
+static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
-  char *qfield = "PRAGMA table_info('&1')";
+  const char *qfield = "PRAGMA table_info('&1')";
 
   Dataset *res;
   int i, n;
   DB_FIELD *f;
-  char *field;
+  const char *field;
 
   /* Nom de la table */
 
@@ -1096,7 +1096,7 @@ static int table_init(DB_DATABASE *db, char *table, DB_INFO *info)
   for (i = 0; i < n; i++)
   {
     f = &info->field[i];
-    field = (char *)r->records[i][1].get_asString().data();
+    field = r->records[i][1].get_asString().data();
 
 		if (field_info(db, table, field, f))
 		{
@@ -1136,10 +1136,10 @@ static int table_init(DB_DATABASE *db, char *table, DB_INFO *info)
 
 *****************************************************************************/
 
-static int table_index(DB_DATABASE *db, char *table, DB_INFO *info)
+static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
-  char *qindex1 = "PRAGMA index_list('&1')";
-  char *qindex2 = "PRAGMA index_info('&1')";
+  const char *qindex1 = "PRAGMA index_list('&1')";
+  const char *qindex2 = "PRAGMA index_info('&1')";
 
   Dataset *res;
   char *sql = NULL;
@@ -1219,7 +1219,7 @@ static void table_release(DB_DATABASE *db, DB_INFO *info)
 
 *****************************************************************************/
 
-static int table_exist(DB_DATABASE *db, char *table)
+static int table_exist(DB_DATABASE *db, const char *table)
 {
 
   const char *query = "select tbl_name from "
@@ -1305,10 +1305,10 @@ static int table_list(DB_DATABASE *db, char ***tables)
 
 *****************************************************************************/
 
-static int table_primary_key(DB_DATABASE *db, char *table, char ***primary)
+static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary)
 {
-  char *qindex1 = "PRAGMA index_list('&1')";
-  char *qindex2 = "PRAGMA index_info('&1')";
+  const char *qindex1 = "PRAGMA index_list('&1')";
+  const char *qindex2 = "PRAGMA index_info('&1')";
 
   Dataset *res;
   int i, n;
@@ -1381,7 +1381,7 @@ static int table_primary_key(DB_DATABASE *db, char *table, char ***primary)
 
 *****************************************************************************/
 
-static int table_is_system(DB_DATABASE *db, char *table)
+static int table_is_system(DB_DATABASE *db, const char *table)
 {
     if (strcmp(table,"sqlite_master") == 0 ||
        strcmp(table, "sqlite_temp_master") == 0)
@@ -1398,7 +1398,7 @@ static int table_is_system(DB_DATABASE *db, char *table)
   <handle> is the database handle.
   <table> is the table name.
 *****************************************************************************/
-static char *table_type(DB_DATABASE *db, char *table, char *type)
+static char *table_type(DB_DATABASE *db, const char *table, const char *type)
 {
   if (type)
     GB.Error("SQLite does not have any table types");
@@ -1419,7 +1419,7 @@ static char *table_type(DB_DATABASE *db, char *table, char *type)
 
 *****************************************************************************/
 
-static int table_delete(DB_DATABASE *db, char *table)
+static int table_delete(DB_DATABASE *db, const char *table)
 {
   return
     do_query(db, "Unable to delete table: &1", NULL,
@@ -1442,11 +1442,11 @@ static int table_delete(DB_DATABASE *db, char *table)
 
 *****************************************************************************/
 
-static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **primary, char *not_used)
+static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, char **primary, const char *not_used)
 {
   DB_FIELD *fp;
   int comma;
-  char *type;
+  const char *type;
   int i;
 
   DB.Query.Init();
@@ -1539,7 +1539,7 @@ static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **p
 
 *****************************************************************************/
 
-static int field_exist(DB_DATABASE *db, char *table, char *field)
+static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 {
   const char *query = "PRAGMA table_info('&1')";
 
@@ -1581,7 +1581,7 @@ static int field_exist(DB_DATABASE *db, char *table, char *field)
 
 *****************************************************************************/
 
-static int field_list(DB_DATABASE *db, char *table, char ***fields)
+static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 {
   const char *query = "PRAGMA table_info('&1')";
 
@@ -1626,7 +1626,7 @@ static int field_list(DB_DATABASE *db, char *table, char ***fields)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info)
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
   const char *query = "PRAGMA table_info('&1')";
 
@@ -1706,7 +1706,7 @@ static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info)
 
 *****************************************************************************/
 
-static int index_exist(DB_DATABASE *db, char *table, char *index)
+static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 {
   const char *query = "select tbl_name from "
 	  "( select tbl_name from sqlite_master where type = 'index' and "
@@ -1743,7 +1743,7 @@ static int index_exist(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_list(DB_DATABASE *db, char *table, char ***indexes)
+static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 {
 
   const char *query =
@@ -1789,12 +1789,12 @@ static int index_list(DB_DATABASE *db, char *table, char ***indexes)
 
 *****************************************************************************/
 
-static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
+static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
   /* sqlite indexes are unique to the database, and not to the table */
 
-  char *qindex1 = "PRAGMA index_list('&1')";
-  char *qindex2 = "PRAGMA index_info('&1')";
+  const char *qindex1 = "PRAGMA index_list('&1')";
+  const char *qindex2 = "PRAGMA index_info('&1')";
 
   Dataset *res;
   int i, j, n;
@@ -1846,7 +1846,7 @@ static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
       DB.Query.Add(",");
 
     /* Get fields in key */
-    DB.Query.Add((char *)r->records[i][2].get_asString().data());
+    DB.Query.Add(r->records[i][2].get_asString().data());
     i++;
   }
 
@@ -1871,7 +1871,7 @@ static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
 
 *****************************************************************************/
 
-static int index_delete(DB_DATABASE *db, char *table, char *index)
+static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
   return
     do_query(db, "Unable to delete index: &1", NULL,
@@ -1894,7 +1894,7 @@ static int index_delete(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
+static int index_create(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
   DB.Query.Init();
 
@@ -1925,7 +1925,7 @@ static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *inf
  *   SQLite: Databases are just files, so we need to ceck to see whether
  *   the file exists and is a sqlite file.
  ******************************************************************************/
-static int database_exist(DB_DATABASE *db, char *name)
+static int database_exist(DB_DATABASE *db, const char *name)
 {
   SqliteDatabase *conn = (SqliteDatabase *)db->handle;
   char *fullpath = NULL;
@@ -1933,7 +1933,7 @@ static int database_exist(DB_DATABASE *db, char *name)
   if (strcmp(name,":memory:") == 0)
      return TRUE; //Database is loaded in memory only
 
-  if((fullpath = FindDatabase(name, (char *)conn->getHostName())) != NULL){
+  if((fullpath = FindDatabase(name, conn->getHostName())) != NULL){
     GB.FreeString(&fullpath);
     return TRUE;
   }
@@ -2006,7 +2006,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
  *
  ******************************************************************************/
 
-static int database_is_system(DB_DATABASE *db, char *name)
+static int database_is_system(DB_DATABASE *db, const char *name)
 {
       return FALSE;
 }
@@ -2025,12 +2025,12 @@ static int database_is_system(DB_DATABASE *db, char *name)
  *
  ******************************************************************************/
 
-static int database_delete(DB_DATABASE *db, char *name)
+static int database_delete(DB_DATABASE *db, const char *name)
 {
   char *fullpath = NULL;
   SqliteDatabase *conn = (SqliteDatabase *)db->handle;
 
-  if((fullpath = FindDatabase(name, (char *)conn->getHostName())) == NULL){
+  if((fullpath = FindDatabase(name, conn->getHostName())) == NULL){
     GB.FreeString(&fullpath);
     GB.Error("Cannot Find  database: &1", name);
     return TRUE;
@@ -2062,7 +2062,7 @@ static int database_delete(DB_DATABASE *db, char *name)
  *   does not exist.
  ******************************************************************************/
 
-static int database_create(DB_DATABASE *db, char *name)
+static int database_create(DB_DATABASE *db, const char *name)
 {
   SqliteDatabase *conn = (SqliteDatabase *)db->handle;
   SqliteDatabase conn2;
@@ -2143,18 +2143,18 @@ _CREATE_DATABASE:
  *
  ******************************************************************************/
 
-static int user_exist(DB_DATABASE *db, char *name)
+static int user_exist(DB_DATABASE *db, const char *name)
 {
   struct stat dbbuf;
   struct passwd *fileowner, *user; // /etc/passwd structure
   struct group *Group;   // /etc/group structure
   char **Member;
-  char *Databasefile;
+  const char *Databasefile;
   bool in_memory;
 
   SqliteDatabase *conn = (SqliteDatabase *)db->handle;
 
-  if (( Databasefile = (char *)conn->getDatabase()) == NULL){
+  if (( Databasefile = conn->getDatabase()) == NULL){
 	  GB.Error("User_exist:&1", "Unable to get databasename");
 	  return FALSE;
   }
@@ -2363,7 +2363,7 @@ static int user_list(DB_DATABASE *db, char ***users)
  *
  ******************************************************************************/
 
-static int user_info(DB_DATABASE *db, char *name, DB_USER *info )
+static int user_info(DB_DATABASE *db, const char *name, DB_USER *info )
 {
   char *Databasefile;
   //struct stat buf;
@@ -2418,7 +2418,7 @@ static int user_info(DB_DATABASE *db, char *name, DB_USER *info )
   Sqlite users are operated by the O/S
 *****************************************************************************/
 
-static int user_delete(DB_DATABASE *db, char *name)
+static int user_delete(DB_DATABASE *db, const char *name)
 {
   GB.Error("SQLite users do not exist.");
   return TRUE;
@@ -2441,7 +2441,7 @@ static int user_delete(DB_DATABASE *db, char *name)
  *   Sqlite: No user create
  ******************************************************************************/
 
-static int user_create(DB_DATABASE *db, char *name, DB_USER *info)
+static int user_create(DB_DATABASE *db, const char *name, DB_USER *info)
 {
   GB.Error("SQLite users do not exist.");
   return TRUE;
@@ -2463,7 +2463,7 @@ static int user_create(DB_DATABASE *db, char *name, DB_USER *info)
  *   Sqlite : No user passwords.
  ******************************************************************************/
 
-static int user_set_password(DB_DATABASE *db, char *name, char *password)
+static int user_set_password(DB_DATABASE *db, const char *name, const char *password)
 {
   GB.Error("SQLite users do not exist.");
   return TRUE;

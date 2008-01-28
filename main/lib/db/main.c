@@ -52,7 +52,7 @@ static DB_DRIVER *_drivers[MAX_DRIVER];
 static int _drivers_count = 0;
 static char *_query = NULL;
 static bool _debug = FALSE;
-static char *_try_another = NULL;
+static const char *_try_another = NULL;
 
 
 int DB_CheckNameWith(const char *name, const char *msg, const char *more)
@@ -128,7 +128,7 @@ GB_ARRAY DB_StringArrayToGambasArray(char **array)
   return garray;
 }
 
-int DB_FindStringArray(char **array, char *elt)
+int DB_FindStringArray(char **array, const char *elt)
 {
   int i;
 
@@ -152,12 +152,12 @@ static void DB_Register(DB_DRIVER *driver)
 }
 
 
-void DB_TryAnother(char *driver)
+void DB_TryAnother(const char *driver)
 {
 	_try_another = driver;
 }
 
-static DB_DRIVER *DB_GetDriver(char *type)
+static DB_DRIVER *DB_GetDriver(const char *type)
 {
   int i;
   char comp[type ? strlen(type) + 8 : 1];
@@ -189,7 +189,7 @@ bool DB_Open(DB_DESC *desc, DB_DRIVER **driver, DB_DATABASE *db)
 {
   DB_DRIVER *d;
   int res;
-  char *type = desc->type;
+  const char *type = desc->type;
 
 	CLEAR(db);
 
@@ -340,7 +340,7 @@ static void mq_get_param(int index, char **str, int *len)
   DB_Format(query_driver, &query_arg[index - 1], (DB_FORMAT_CALLBACK)GB.SubstAdd);
 }
 
-char *DB_MakeQuery(DB_DRIVER *driver, char *pattern, int len, int narg, GB_VALUE *arg)
+char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB_VALUE *arg)
 {
   char *query;
 
@@ -369,13 +369,13 @@ void q_init(void)
   _query = NULL;
 }
 
-void q_add(char *str)
+void q_add(const char *str)
 {
   if (str)
     GB.AddString(&_query, str, 0);
 }
 
-void q_add_length(char *str, int len)
+void q_add_length(const char *str, int len)
 {
   if (str)
     GB.AddString(&_query, str, len);

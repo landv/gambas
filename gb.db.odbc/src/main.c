@@ -107,13 +107,10 @@ static void *my_malloc(size_t size)
 
 static void my_free(_ptr)
 {
-
-GB.Free((void **)&_ptr);
+	GB.Free(POINTER(&_ptr));
 }
 
 #define malloc(_size) my_malloc(_size)
-
-//#define free(_ptr) GB.Free((void **)&_ptr)
 #define free(_ptr) my_free(_ptr)
 
 

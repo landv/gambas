@@ -37,7 +37,7 @@
 
 typedef
   struct {
-    char *pattern;
+    const char *pattern;
     int type;
     }
   CONV_STRING_TYPE;
@@ -54,7 +54,7 @@ static DB_DRIVER _driver;
 
 /* internal function to quote a value stored as a string */
 
-static void quote_string(char *data, long len, DB_FORMAT_CALLBACK add)
+static void quote_string(const char *data, long len, DB_FORMAT_CALLBACK add)
 {
 	int i;
 	unsigned char c;
@@ -82,7 +82,7 @@ static void quote_string(char *data, long len, DB_FORMAT_CALLBACK add)
 
 /* Quote a string and returns the result as a temporary string */
 
-static char *get_quote_string(char *str, int len, char quote)
+static char *get_quote_string(const char *str, int len, char quote)
 {
 	char *res, *p, c;
 	int len_res;
@@ -245,7 +245,7 @@ static int conv_string_type(const char *type, long *len)
 
 /* Internal function to convert a database value into a Gambas variant value */
 
-static void conv_data(int version, char *data, long data_length, GB_VARIANT_VALUE *val, int type, int len)
+static void conv_data(int version, const char *data, long data_length, GB_VARIANT_VALUE *val, int type, int len)
 {
   GB_VALUE conv;
   GB_DATE_SERIAL date;
@@ -401,7 +401,7 @@ static void conv_data(int version, char *data, long data_length, GB_VARIANT_VALU
     case FIELD_TYPE_ENUM:
     default:
       val->_string.type = GB_T_CSTRING;
-      val->_string.value = data;
+      val->_string.value = (char *)data;
       //val->_string.start = 0;
       //if (data && data_length == 0)
       //	data_length = strlen(data);
@@ -503,7 +503,7 @@ static int db_version(DB_DATABASE *db)
 
 /* Search in the first column a result for a specific name */
  
-static bool search_result(MYSQL_RES *res, char *name, MYSQL_ROW *row)
+static bool search_result(MYSQL_RES *res, const char *name, MYSQL_ROW *row)
 {
 	int i;
 	MYSQL_ROW r;
@@ -531,7 +531,7 @@ static bool search_result(MYSQL_RES *res, char *name, MYSQL_ROW *row)
 
 *****************************************************************************/
 
-static char *get_quote(void)
+static const char *get_quote(void)
 {
   return QUOTE_STRING;
 }
@@ -746,7 +746,7 @@ static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add)
 
 *****************************************************************************/
 
-static int exec_query(DB_DATABASE *db, char *query, DB_RESULT *result, char *err)
+static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, const char *err)
 {
 	return do_query(db, err, (MYSQL_RES **)result, query, 0);
 }
@@ -935,13 +935,14 @@ static char *field_name(DB_RESULT result, int field)
 
 *****************************************************************************/
 
-static int field_index(DB_RESULT Result, char *name, DB_DATABASE *db)
+static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 {
   unsigned int num_fields;
   unsigned int i;
   MYSQL_FIELD *field;
   //char *table = NULL, *fld = NULL;
-  char *table, *fld;
+  char *table;
+  const char *fld;
   MYSQL_RES *result = (MYSQL_RES *)Result;
 
   fld = strchr(name, (int)FLD_SEP);
@@ -1129,9 +1130,9 @@ static int rollback_transaction(DB_DATABASE *db)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info);
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info);
 
-static int table_init(DB_DATABASE *db, char *table, DB_INFO *info)
+static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
   MYSQL_FIELD *field;
 
@@ -1204,7 +1205,7 @@ static int table_init(DB_DATABASE *db, char *table, DB_INFO *info)
 
 *****************************************************************************/
 
-static int table_index(DB_DATABASE *db, char *table, DB_INFO *info)
+static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
   char *qindex =
     "show index from `&1`";
@@ -1288,7 +1289,7 @@ static void table_release(DB_DATABASE *db, DB_INFO *info)
 
 *****************************************************************************/
 
-static int table_exist(DB_DATABASE *db, char *table)
+static int table_exist(DB_DATABASE *db, const char *table)
 {
   MYSQL_RES *res;
   int exist;
@@ -1362,7 +1363,7 @@ static int table_list(DB_DATABASE *db, char ***tables)
 
 *****************************************************************************/
 
-static int table_primary_key(DB_DATABASE *db, char *table, char ***primary)
+static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary)
 {
   const char *query =
     "show index from `&1`";
@@ -1406,9 +1407,9 @@ static int table_primary_key(DB_DATABASE *db, char *table, char ***primary)
 
 *****************************************************************************/
 
-static int database_is_system(DB_DATABASE *db, char *name);
+static int database_is_system(DB_DATABASE *db, const char *name);
 
-static int table_is_system(DB_DATABASE *db, char *table)
+static int table_is_system(DB_DATABASE *db, const char *table)
 {
   MYSQL_RES *res;
   MYSQL_ROW row;
@@ -1448,7 +1449,7 @@ static int table_is_system(DB_DATABASE *db, char *table)
 
 *****************************************************************************/
 
-static char *table_type(DB_DATABASE *db, char *table, char *settype)
+static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 {
   static char buffer[16];
 
@@ -1496,7 +1497,7 @@ static char *table_type(DB_DATABASE *db, char *table, char *settype)
 
 *****************************************************************************/
 
-static int table_delete(DB_DATABASE *db, char *table)
+static int table_delete(DB_DATABASE *db, const char *table)
 {
   return do_query(db, "Unable to delete table: &1", NULL, "drop table `&1`", 1, table);
 }
@@ -1522,7 +1523,7 @@ static int table_delete(DB_DATABASE *db, char *table)
 
 *****************************************************************************/
 
-static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **primary, char *tabletype)
+static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, char **primary, const char *tabletype)
 {
   DB_FIELD *fp;
   char *type = NULL;
@@ -1644,7 +1645,7 @@ static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **p
 
 *****************************************************************************/
 
-static int field_exist(DB_DATABASE *db, char *table, char *field)
+static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 {
   const char *query =
       "show columns from `&1` like '&2'";
@@ -1680,7 +1681,7 @@ static int field_exist(DB_DATABASE *db, char *table, char *field)
 
 *****************************************************************************/
 
-static int field_list(DB_DATABASE *db, char *table, char ***fields)
+static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 {
   const char *query =
     "show columns from `&1`";
@@ -1725,7 +1726,7 @@ static int field_list(DB_DATABASE *db, char *table, char ***fields)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info)
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
   const char *query =
       "show columns from `&1` like '&2'";
@@ -1803,7 +1804,7 @@ static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info)
 
 *****************************************************************************/
 
-static int index_exist(DB_DATABASE *db, char *table, char *index)
+static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 {
   const char *query =
       "show index from `&1`";
@@ -1847,7 +1848,7 @@ static int index_exist(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_list(DB_DATABASE *db, char *table, char ***indexes)
+static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 {
   const char *query = "show index from `&1`";
 
@@ -1898,7 +1899,7 @@ static int index_list(DB_DATABASE *db, char *table, char ***indexes)
 
 *****************************************************************************/
 
-static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
+static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
   const char *query =
     "show index from `&1`";
@@ -1966,7 +1967,7 @@ static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
 
 *****************************************************************************/
 
-static int index_delete(DB_DATABASE *db, char *table, char *index)
+static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
   return
     do_query(db, "Unable to delete index: &1", NULL,
@@ -1989,7 +1990,7 @@ static int index_delete(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
+static int index_create(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
   DB.Query.Init();
 
@@ -2020,7 +2021,7 @@ static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *inf
  *
  ******************************************************************************/
 
-static int database_exist(DB_DATABASE *db, char *name)
+static int database_exist(DB_DATABASE *db, const char *name)
 {
   MYSQL *conn = (MYSQL *)db->handle;
   MYSQL_RES *res;
@@ -2098,7 +2099,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
  *
  ******************************************************************************/
 
-static int database_is_system(DB_DATABASE *db, char *name)
+static int database_is_system(DB_DATABASE *db, const char *name)
 {
   return (strcmp("mysql", name) == 0 || strcmp("information_schema", name) == 0);
 }
@@ -2117,7 +2118,7 @@ static int database_is_system(DB_DATABASE *db, char *name)
  *
  ******************************************************************************/
 
-static int database_delete(DB_DATABASE *db, char *name)
+static int database_delete(DB_DATABASE *db, const char *name)
 {
 	if (database_is_system(db, name))
 	{
@@ -2144,7 +2145,7 @@ static int database_delete(DB_DATABASE *db, char *name)
  *
  ******************************************************************************/
 
-static int database_create(DB_DATABASE *db, char *name)
+static int database_create(DB_DATABASE *db, const char *name)
 {
   return
      do_query(db, "Unable to create database: &1", NULL,
@@ -2165,7 +2166,7 @@ static int database_create(DB_DATABASE *db, char *name)
  *
  ******************************************************************************/
 
-static int user_exist(DB_DATABASE *db, char *name)
+static int user_exist(DB_DATABASE *db, const char *name)
 {
   const char *query = "select user from mysql.user "
       "where user = '&1' and host = '&2' ";
@@ -2291,7 +2292,7 @@ static int user_list(DB_DATABASE *db, char ***users)
  *                                     tables etc.
  ******************************************************************************/
 
-static int user_info(DB_DATABASE *db, char *name, DB_USER *info )
+static int user_info(DB_DATABASE *db, const char *name, DB_USER *info )
 {
   const char *query =
 	  "select create_priv, drop_priv, grant_priv, password from mysql.user "
@@ -2360,7 +2361,7 @@ static int user_info(DB_DATABASE *db, char *name, DB_USER *info )
 
 *****************************************************************************/
 
-static int user_delete(DB_DATABASE *db, char *name)
+static int user_delete(DB_DATABASE *db, const char *name)
 {
   const char *_delete =
     "delete from mysql.user where user = '&1' and host = '&2'";
@@ -2408,7 +2409,7 @@ static int user_delete(DB_DATABASE *db, char *name)
  *
  ******************************************************************************/
 
-static int user_create(DB_DATABASE *db, char *name, DB_USER *info)
+static int user_create(DB_DATABASE *db, const char *name, DB_USER *info)
 {
   char *_name;
 
@@ -2462,7 +2463,7 @@ static int user_create(DB_DATABASE *db, char *name, DB_USER *info)
  *
  ******************************************************************************/
 
-static int user_set_password(DB_DATABASE *db, char *name, char *password)
+static int user_set_password(DB_DATABASE *db, const char *name, const char *password)
 {
   char *_name;
   DB.Query.Init();

@@ -804,6 +804,7 @@ DECLARE_DRIVER(_driver, "firebird");
 
 /* internal function to quote a value stored as a string */
 
+#if 0
 static void quote(char *data, long len, DB_FORMAT_CALLBACK add)
 {
 	int i;
@@ -827,6 +828,7 @@ static void quote(char *data, long len, DB_FORMAT_CALLBACK add)
 	}
 	(*add)("'", 1);
 }
+#endif
 
 /* internal function to quote a value stored as a blob */
 
@@ -859,6 +861,7 @@ static void quote_blob(char *data, long len, DB_FORMAT_CALLBACK add){
 
 /* internal function to unquote a value stored as a string */
 
+#if 0
 static int unquote(char *data, long len, DB_FORMAT_CALLBACK add)
 {
   int i;
@@ -879,10 +882,11 @@ static int unquote(char *data, long len, DB_FORMAT_CALLBACK add)
 
 	return FALSE;
 }
+#endif
 
 /* internal function to unquote a value stored as a blob */
 
-static int unquote_blob(char *data, long len, DB_FORMAT_CALLBACK add){
+static int unquote_blob(char *data, int len, DB_FORMAT_CALLBACK add){
     //std::cout<<"unquote blob"<<std::endl;
   int i;
   char c;
@@ -941,8 +945,8 @@ static GB_TYPE conv_type(int type){
 
 /* Internal function to check database version number */
 
-long db_version(std::string str1){
-  long dbversion=0;
+static int db_version(std::string str1){
+  int dbversion=0;
   std::string mag(str1,4,1),med(str1,6,1),min(str1,8,1),s(str1,10,4);
   dbversion=atoi(mag.c_str())*1000000+atoi(med.c_str())*100000+atoi(min.c_str())*10000+atoi(s.c_str());
   return dbversion;
@@ -956,7 +960,7 @@ long db_version(std::string str1){
 
 *****************************************************************************/
 
-static char *get_quote(void){
+static const char *get_quote(void){
   return QUOTE_STRING;
 };
 
@@ -1126,15 +1130,17 @@ static int format_value(GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 
 *****************************************************************************/
 
-static int exec_query(DB_DATABASE *db, char *query, DB_RESULT *result, char *err)
+static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, const char *err)
 {
   int retour=FALSE;
   FBConnect *con=(FBConnect *)db->handle;
-  retour=con->Execute((char*)query,result,err);
+  retour=con->Execute((char*)query,result,(char *)err);
   if (retour)
   	db->error = _last_error;
   return retour;
 }
+
+#define do_query(_db, _query, _result, _err) exec_query(_db, (char *)_query, (DB_RESULT *)(void *)_result, (char *)_err)
 
 
 /*****************************************************************************
@@ -1245,7 +1251,7 @@ static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)
     //std::cout<<"read blob"<<std::endl;
   FBResult *res = (FBResult *)result;
   char *data;
-  long len;
+  int len;
 
 	data = res->GetData(pos,field).value._string.value;	//PQgetvalue(res, pos, field);
 	len = strlen(data);
@@ -1294,7 +1300,7 @@ static char *field_name(DB_RESULT result, int field)
 
 *****************************************************************************/
 
-static int field_index(DB_RESULT Result, char *name, DB_DATABASE *db)
+static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 {
   FBResult *res=(FBResult *)Result;
   // Attention position des Champs dans IBPP a partir de 1 et pas 0
@@ -1427,22 +1433,25 @@ static int rollback_transaction(DB_DATABASE *db){
 
 *****************************************************************************/
 
-static int table_init(DB_DATABASE *db, char *table, DB_INFO *info){
+static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info){
   char qfield[SQLMAXLEN];
   FBResult *res;
   int i, n;
   DB_FIELD *f;
   snprintf(qfield,SQLMAXLEN-1,"select b.RDB$field_name,a.RDB$field_type,a.RDB$field_length from RDB$fields a,RDB$relation_fields b where a.RDB$field_name=b.RDB$field_source and b.RDB$relation_name=upper('%s') order by rdb$field_position",table);
   GB.NewString(&info->table, table, 0);
-  if(exec_query((DB_DATABASE *)db,qfield,(DB_RESULT*)POINTER(&res),"Unable to get the table")){
+  if(do_query(db,qfield,&res,"Unable to get the table")){
     delete res;
     return TRUE;
   }
   info->nfield = n = res->GetnRecord();
-  if (n == 0){
+  
+  if (n == 0)
+  {
     delete res;
     return TRUE;
   }
+  
   GB.Alloc(POINTER(&info->field), sizeof(DB_FIELD) * n);
   for (i = 0; i < n; i++){
     f = &info->field[i];
@@ -1484,12 +1493,12 @@ static int table_init(DB_DATABASE *db, char *table, DB_INFO *info){
 
 *****************************************************************************/
 
-static int table_index(DB_DATABASE *db, char *table, DB_INFO *info){
+static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info){
   char qindex[SQLMAXLEN];
   FBResult *res;
   int i, j, n;
   snprintf(qindex,SQLMAXLEN-1,"select * from rdb$index_segments where rdb$index_name in (SELECT rdb$index_name FROM RDB$RELATION_CONSTRAINTS WHERE rdb$relation_name=upper('%s') and RDB$CONSTRAINT_TYPE='PRIMARY KEY') order by rdb$field_position",table);
-  if (exec_query((DB_DATABASE *)db,(char*)qindex,(DB_RESULT*)&res,"Unable to get primary index: &1")){
+  if (do_query(db,qindex,&res,"Unable to get primary index: &1")){
     delete res;
     return TRUE;
   }
@@ -1499,7 +1508,7 @@ static int table_index(DB_DATABASE *db, char *table, DB_INFO *info){
     delete res;
     return TRUE;
   }
-  GB.Alloc((void **)&info->index, sizeof(int) * n);
+  GB.Alloc(POINTER(&info->index), sizeof(int) * n);
   for (i = 0; i < n; i++){
     for (j = 0; j < info->nfield; j++){
       if(strcmp(info->field[j].name, res->GetData(j,1).value._string.value) == 0){
@@ -1542,12 +1551,12 @@ static void table_release(DB_DATABASE *db, DB_INFO *info){
 
 *****************************************************************************/
 
-static int table_exist(DB_DATABASE *db, char *table){
+static int table_exist(DB_DATABASE *db, const char *table){
   static char query[SQLMAXLEN];
   int retour=FALSE;
   FBResult *res;
   snprintf(query,SQLMAXLEN-1,"select rdb$relation_name from rdb$relations where rdb$relation_name=upper('%s')",table);
-  if (exec_query((DB_DATABASE *)db,(char *)query,(DB_RESULT*)&res,"Unable to get the table")){
+  if (do_query(db,query,&res,"Unable to get the table")){
     delete res;
     return retour;
   }
@@ -1579,9 +1588,9 @@ static int table_list(DB_DATABASE *db, char ***tables){
   static char query[SQLMAXLEN];
   FBResult *res;
   unsigned i;
-  long count;
+  int count;
   snprintf(query,SQLMAXLEN-1,"select rdb$relation_name from rdb$relations");
-  if (exec_query((DB_DATABASE *)db,(char *)query,(DB_RESULT*)&res,"Unable to get the table")){
+  if (do_query(db, query, &res, "Unable to get the table")){
     delete res;
     return -1;
   }
@@ -1612,12 +1621,12 @@ static int table_list(DB_DATABASE *db, char ***tables){
 
 *****************************************************************************/
 
-static int table_primary_key(DB_DATABASE *db, char *table, char ***primary){
+static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary){
   static char query[SQLMAXLEN];
   FBResult *res;
   unsigned i;
   snprintf(query,SQLMAXLEN-1,"select * from rdb$index_segments where rdb$index_name in (SELECT rdb$index_name FROM RDB$RELATION_CONSTRAINTS WHERE rdb$relation_name=upper('%s') and RDB$CONSTRAINT_TYPE='PRIMARY KEY') order by rdb$field_position",table);
-  if (exec_query((DB_DATABASE *)db,(char *)query,(DB_RESULT*)&res,"Unable to get the table")){
+  if (do_query(db, query, &res, "Unable to get the table")){
     delete res;
     return TRUE;
   }
@@ -1643,12 +1652,12 @@ static int table_primary_key(DB_DATABASE *db, char *table, char ***primary){
 
 *****************************************************************************/
 
-static int table_is_system(DB_DATABASE *db, char *table){
+static int table_is_system(DB_DATABASE *db, const char *table){
   static char query[SQLMAXLEN];
   int retour=FALSE;
   FBResult *res;
   snprintf(query,SQLMAXLEN-1,"select rdb$system_flag from rdb$relations where rdb$relation_name=upper('%s')",table);
-  if (exec_query((DB_DATABASE *)db,(char *)query,(DB_RESULT*)&res,"Unable to get the table")){
+  if (do_query(db, query, &res, "Unable to get the table")){
     delete res;
     return FALSE;
   }
@@ -1673,7 +1682,7 @@ static int table_is_system(DB_DATABASE *db, char *table){
 
 *****************************************************************************/
 
-static int table_delete(DB_DATABASE *db, char *table){
+static int table_delete(DB_DATABASE *db, const char *table){
   static char query[SQLMAXLEN];
   snprintf(query,SQLMAXLEN-1,"drop table %s",table);
   if (exec_query((DB_DATABASE *)db,(char *)query,NULL,"Unable to delete the table"))
@@ -1698,11 +1707,11 @@ static int table_delete(DB_DATABASE *db, char *table){
 
 *****************************************************************************/
 
-static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **primary, char *not_used){
+static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, char **primary, const char *not_used){
   DB_FIELD *fp;
   static char query[SQLMAXLEN];
   int comma,retour=FALSE;
-  char *type;
+  const char *type;
   int i;
   DB.Query.Init();
   DB.Query.Add("CREATE TABLE ");
@@ -1799,12 +1808,12 @@ static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **p
 
 *****************************************************************************/
 
-static int field_exist(DB_DATABASE *db, char *table, char *field){
+static int field_exist(DB_DATABASE *db, const char *table, const char *field){
   static char query[SQLMAXLEN];
   int retour=FALSE;
   FBResult *res;
   snprintf(query,SQLMAXLEN-1,"select rdb$field_name from rdb$relation_fields where rdb$relation_name=upper('%s') and rdb$field_name=upper('%s')",table,field);
-  if (exec_query((DB_DATABASE *)db,(char*)query,(DB_RESULT*)&res,"Unable to get the field")){
+  if (do_query(db, query, &res, "Unable to get the field")){
     delete res;
     return FALSE;
   }
@@ -1831,13 +1840,13 @@ static int field_exist(DB_DATABASE *db, char *table, char *field){
 
 *****************************************************************************/
 
-static int field_list(DB_DATABASE *db, char *table, char ***fields){
+static int field_list(DB_DATABASE *db, const char *table, char ***fields){
   static char query[SQLMAXLEN];
   FBResult *res;
   unsigned i;
-  long count;
+  int count;
   snprintf(query,SQLMAXLEN-1,"select rdb$field_name from rdb$relation_fields where rdb$relation_name=upper('%s')",table);
-  if (exec_query((DB_DATABASE *)db,(char*)query,(DB_RESULT*)&res,"Unable to get the field from the table")){
+  if (do_query(db, query, &res, "Unable to get the field from the table")){
     delete res;
     return -1;
   }
@@ -1867,13 +1876,13 @@ static int field_list(DB_DATABASE *db, char *table, char ***fields){
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info){
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info){
   FBResult *res;
   static char query[SQLMAXLEN];
   int type;
   std::string str1,str2;
   snprintf(query,SQLMAXLEN-1,"select b.RDB$field_name,a.RDB$field_type,b.rdb$null_flag,b.rdb$default_source,a.RDB$field_length from RDB$fields a,RDB$relation_fields b where a.RDB$field_name=b.RDB$field_source and b.RDB$relation_name=upper('%s') and b.rdb$field_name=upper('%s')",table,field);
-  if (exec_query((DB_DATABASE *)db,(char*)query,(DB_RESULT*)&res,"Unable to get the field from the table")){
+  if (do_query(db, query, &res, "Unable to get the field from the table")){
     delete res;
     return TRUE;
   }
@@ -1921,12 +1930,12 @@ static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info)
 
 *****************************************************************************/
 
-static int index_exist(DB_DATABASE *db, char *table, char *index){
+static int index_exist(DB_DATABASE *db, const char *table, const char *index){
   FBResult *res;
   static char query[SQLMAXLEN];
   int exist=FALSE;
   snprintf(query,SQLMAXLEN-1,"select rdb$index_name from rdb$indices where rdb$indices.rdb$relation_name=upper('%s') and rdb$indices.rdb$index_name=upper('%s')",table,index);
-  if (exec_query((DB_DATABASE *)db,(char*)query,(DB_RESULT*)&res,"Unable to get the field from the table")){
+  if (do_query(db, query, &res, "Unable to get the field from the table")){
     delete res;
     return FALSE;
   }
@@ -1954,13 +1963,13 @@ static int index_exist(DB_DATABASE *db, char *table, char *index){
 
 *****************************************************************************/
 
-static int index_list(DB_DATABASE *db, char *table, char ***indexes){
+static int index_list(DB_DATABASE *db, const char *table, char ***indexes){
   FBResult *res;
   static char query[SQLMAXLEN];
   snprintf(query,SQLMAXLEN-1,"select rdb$index_name from rdb$indices where rdb$indices.rdb$relation_name=upper('%s')",table);
   unsigned i;
-  long count=0;
-  if (exec_query((DB_DATABASE *)db,(char*)query,(DB_RESULT*)&res,"Unable to get the field from the table")){
+  int count=0;
+  if (do_query(db, query, &res, "Unable to get the field from the table")){
     delete res;
     return TRUE;
   }
@@ -1991,13 +2000,13 @@ static int index_list(DB_DATABASE *db, char *table, char ***indexes){
 
 *****************************************************************************/
 
-static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info){
+static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info){
   FBResult *res;
   static char query[SQLMAXLEN],query_field[SQLMAXLEN];
   unsigned i;
   snprintf(query,SQLMAXLEN-1,"select rdb$index_name,rdb$relation_name,rdb$unique_flag from rdb$indices where rdb$indices.rdb$relation_name=upper('%s') and rdb$indices.rdb$index_name=upper('%s')",table,index);
   snprintf(query_field,SQLMAXLEN-1,"select RDB$FIELD_NAME from rdb$index_segments where rdb$index_name=upper('%s')  order by rdb$field_position",index);
-  if (exec_query((DB_DATABASE *)db,(char*)query,(DB_RESULT*)&res,"Unable to get the field from the table")){
+  if (do_query(db, query, &res, "Unable to get the field from the table")){
     delete res;
     return TRUE;
   }
@@ -2013,7 +2022,7 @@ static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
   else
     info->primary = TRUE;
   delete res;
-  if (exec_query((DB_DATABASE *)db,(char*)query_field,(DB_RESULT*)&res,"Unable to get the field from the table")){
+  if (do_query(db, query_field, &res, "Unable to get the field from the table")){
     delete res;
     return TRUE;
   }
@@ -2044,7 +2053,7 @@ static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
 
 *****************************************************************************/
 
-static int index_delete(DB_DATABASE *db, char *table, char *index){
+static int index_delete(DB_DATABASE *db, const char *table, const char *index){
   static char query[SQLMAXLEN];
   snprintf(query,SQLMAXLEN-1,"drop index %s",index);
   return exec_query((DB_DATABASE *)db,(char *)query,NULL,"Unable to delete index");
@@ -2067,7 +2076,7 @@ static int index_delete(DB_DATABASE *db, char *table, char *index){
 
 *****************************************************************************/
 
-static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *info){
+static int index_create(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info){
   DB.Query.Init();
   DB.Query.Add("CREATE ");
   if (info->unique)
@@ -2098,7 +2107,7 @@ static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *inf
 
 *****************************************************************************/
 
-static int database_exist(DB_DATABASE *db, char *name){
+static int database_exist(DB_DATABASE *db, const char *name){
   FBConnect *con = (FBConnect *)db->handle;
   std::string nametmp=name;
   //std::transform(nametmp.begin(), nametmp.end(), nametmp.begin(), toupper);
@@ -2143,7 +2152,7 @@ static int database_list(DB_DATABASE *db, char ***databases){
 
 *****************************************************************************/
 
-static int database_is_system(DB_DATABASE *db, char *name){
+static int database_is_system(DB_DATABASE *db, const char *name){
   //GB.Error("database is system not implemented in FBDatabase Driver");
   return FALSE;
 }
@@ -2156,7 +2165,7 @@ static int database_is_system(DB_DATABASE *db, char *name){
   <handle> is the database handle.
   <table> is the table name.
 *****************************************************************************/
-static char *table_type(DB_DATABASE *db, char *table, char *type){
+static char *table_type(DB_DATABASE *db, const char *table, const char *type){
   /*if (type)
   GB.Error("table type ist not implemented in FBDatabase Driver");*/
   return NULL;
@@ -2176,7 +2185,7 @@ static char *table_type(DB_DATABASE *db, char *table, char *type){
 
 *****************************************************************************/
 
-static int database_delete(DB_DATABASE *db, char *name){
+static int database_delete(DB_DATABASE *db, const char *name){
   FBConnect *con = (FBConnect *)db->handle;
   std::string nametmp=name;
   //std::transform(nametmp.begin(), nametmp.end(), nametmp.begin(), toupper);
@@ -2202,7 +2211,7 @@ static int database_delete(DB_DATABASE *db, char *name){
 
 *****************************************************************************/
 
-static int database_create(DB_DATABASE *db, char *name){
+static int database_create(DB_DATABASE *db, const char *name){
   /*FBConnect *con = (FBConnect *)handle;
   std::string nametmp=name;
   if(con->DataBase()!=nametmp)
@@ -2228,7 +2237,7 @@ static int database_create(DB_DATABASE *db, char *name){
 
 *****************************************************************************/
 
-static int user_exist(DB_DATABASE *db, char *name){
+static int user_exist(DB_DATABASE *db, const char *name){
   FBConnect *con = (FBConnect *)db->handle;
   UsersL ul=con->UserList();
   std::string nametmp=name;
@@ -2261,7 +2270,7 @@ static int user_list(DB_DATABASE *db, char ***users){
   FBConnect *con = (FBConnect *)db->handle;
   UsersL ul=con->UserList();
   unsigned i;
-  long count=0;
+  int count=0;
   if (users){
     GB.NewArray(users, sizeof(char *), ul.size());
     for (i = 0; i < ul.size(); i++)
@@ -2287,7 +2296,7 @@ static int user_list(DB_DATABASE *db, char ***users){
 
 *****************************************************************************/
 
-static int user_info(DB_DATABASE *db, char *name, DB_USER *info){
+static int user_info(DB_DATABASE *db, const char *name, DB_USER *info){
   /*FBConnect *con = (FBConnect *)handle;
   std::string nametmp=name;
   std::transform(nametmp.begin(), nametmp.end(), nametmp.begin(), toupper);
@@ -2311,7 +2320,7 @@ static int user_info(DB_DATABASE *db, char *name, DB_USER *info){
 
 *****************************************************************************/
 
-static int user_delete(DB_DATABASE *db, char *name){
+static int user_delete(DB_DATABASE *db, const char *name){
   FBConnect *con = (FBConnect *)db->handle;
   std::string nametmp=name;
   std::transform(nametmp.begin(), nametmp.end(), nametmp.begin(), toupper);
@@ -2338,7 +2347,7 @@ static int user_delete(DB_DATABASE *db, char *name){
 
 *****************************************************************************/
 
-static int user_create(DB_DATABASE *db, char *name, DB_USER *info){
+static int user_create(DB_DATABASE *db, const char *name, DB_USER *info){
   FBConnect *con = (FBConnect *)db->handle;
   std::string nametmp=name;
   std::transform(nametmp.begin(), nametmp.end(), nametmp.begin(), toupper);
@@ -2365,7 +2374,7 @@ static int user_create(DB_DATABASE *db, char *name, DB_USER *info){
 
 *****************************************************************************/
 
-static int user_set_password(DB_DATABASE *db, char *name, char *password){
+static int user_set_password(DB_DATABASE *db, const char *name, const char *password){
   FBConnect *con = (FBConnect *)db->handle;
   std::string nametmp=name,passwordtmp=password;
   std::transform(nametmp.begin(), nametmp.end(), nametmp.begin(), toupper);
