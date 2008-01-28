@@ -650,15 +650,16 @@ PRIVATE SUB Start(sCmd AS String)
 
   ReadDebugSettings()
 
+  FDebugInfo.ResetBreakpoints
+
   FOR EACH hForm IN Project.Files
     IF Project.IsEditor(hForm) THEN
       hEdit = hForm
 
       FOR EACH iLine IN hEdit.GetBreakpoints()
 
-        INC iLine
-        $sCmdStart = $sCmdStart & "+" & hEdit.Name & "." & CStr(iLine) & "\n"
         FDebugInfo.AddBreakpoint(hEdit.Name, hEdit.GetProcAt(iLine), iLine, TRUE)
+        $sCmdStart = $sCmdStart & "+" & hEdit.Name & "." & CStr(iLine + 1) & "\n"
         '$hProcess.Send(sCmd & "\n")
 
       NEXT
@@ -887,7 +888,7 @@ PUBLIC SUB WriteDebugSettings()
 END
 
 
-PUBLIC SUB SetBreakpoint(sClass AS String, iLine AS Integer, bOn AS Boolean)
+PUBLIC SUB SetBreakpoint(sClass AS String, iLine AS Integer, bOn AS Boolean) 
   
   DIM hEditor AS FEditor
   
@@ -895,17 +896,13 @@ PUBLIC SUB SetBreakpoint(sClass AS String, iLine AS Integer, bOn AS Boolean)
 
   ' Update editor
   hEditor = Project.LoadFile(Project.FindPath(sClass))
-  IF NOT hEditor THEN RETURN
-  IF hEditor.SetBreakpoint(iLine, bOn) THEN RETURN
+  IF NOT hEditor THEN RETURN 
+  IF hEditor.SetBreakpoint(iLine, bOn) THEN RETURN 
   
   'IF $iState = STATE_STOP THEN RETURN
 
   INC iLine
 
-  ' Update debug window
-
-  FDebugInfo.AddBreakpoint(hEditor.Name, hEditor.GetProcAt(iLine), iLine, bOn)
-  
   ' Update debugger
 
   IF bOn THEN

@@ -490,7 +490,7 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
     
     IF $bList THEN 
       INC $iWait
-      IF ($iWait AND 15) = 0 THEN WAIT 0.01
+      IF ($iWait AND 63) = 0 THEN WAIT 0.01
     ENDIF
 
   LOOP
