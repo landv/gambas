@@ -781,7 +781,7 @@ int FBConnect::Execute(char *query, DB_RESULT *result, char *err){
       };
       res->SetnRecord(res->GetnRecord() + 1);
     }
-    *result=(DB_RESULT *)res;
+    *result=(DB_RESULT)res;
   }
   else {
     retour=TRUE;
@@ -1130,11 +1130,8 @@ static int exec_query(DB_DATABASE *db, char *query, DB_RESULT *result, char *err
 {
   int retour=FALSE;
   FBConnect *con=(FBConnect *)db->handle;
-  FBResult *res=NULL;
-  retour=con->Execute((char*)query,(DB_RESULT *) &res,err);
-  if(res)
-    *result=(DB_RESULT *)res;
-  else
+  retour=con->Execute((char*)query,result,err);
+  if (retour)
   	db->error = _last_error;
   return retour;
 }
@@ -1437,7 +1434,7 @@ static int table_init(DB_DATABASE *db, char *table, DB_INFO *info){
   DB_FIELD *f;
   snprintf(qfield,SQLMAXLEN-1,"select b.RDB$field_name,a.RDB$field_type,a.RDB$field_length from RDB$fields a,RDB$relation_fields b where a.RDB$field_name=b.RDB$field_source and b.RDB$relation_name=upper('%s') order by rdb$field_position",table);
   GB.NewString(&info->table, table, 0);
-  if(exec_query((DB_DATABASE *)db,qfield,(DB_RESULT*)&res,"Unable to get the table")){
+  if(exec_query((DB_DATABASE *)db,qfield,(DB_RESULT*)POINTER(&res),"Unable to get the table")){
     delete res;
     return TRUE;
   }
@@ -1446,7 +1443,7 @@ static int table_init(DB_DATABASE *db, char *table, DB_INFO *info){
     delete res;
     return TRUE;
   }
-  GB.Alloc((void **)&info->field, sizeof(DB_FIELD) * n);
+  GB.Alloc(POINTER(&info->field), sizeof(DB_FIELD) * n);
   for (i = 0; i < n; i++){
     f = &info->field[i];
     GB.NewString(&f->name, res->GetData(i,0).value._string.value, 0);

@@ -10,7 +10,7 @@
     Arrangement = Arrange.Row
     AutoResize = True
     { tlbIcon ToolBar
-      MoveScaled(0,1,22,4)
+      MoveScaled(0,1,26,4)
       { btnSave ToolButton btnTool
         Name = "btnSave"
         MoveScaled(0,0,3,3)
@@ -66,9 +66,16 @@
         Text = ("")
         Picture = Picture["icon:/small/paste"]
       }
+      { btnPreview ToolButton
+        MoveScaled(21,0,3,3)
+        Visible = False
+        Text = ("")
+        Picture = Picture["icon:/small/camera"]
+        Toggle = True
+      }
     }
     { tlbMove ToolBar
-      MoveScaled(22,1,31,4)
+      MoveScaled(26,1,31,4)
       { lblCoord Label
         MoveScaled(0,0,9,3)
         Text = ("")
@@ -110,7 +117,7 @@
       }
     }
     { tlbTool ToolBar
-      MoveScaled(53,1,25,4)
+      MoveScaled(55,1,25,4)
       { btnSelect ToolButton btnTool
         Name = "btnSelect"
         MoveScaled(0,0,3,3)
@@ -293,23 +300,42 @@
       }
     }
   }
-  { svwIcon ScrollView
-    MoveScaled(1,22,34,24)
-    Background = &H808080&
+  { HBox1 HBox
+    MoveScaled(2,14,79,65)
     Expand = True
-    Border = False
-    { dwgIcon DrawingArea
-      MoveScaled(0,0,24,20)
-      Background = &HFFFFFF&
-      Mouse = Mouse.Cross
-      Tracking = True
-      Border = Border.Plain
-      { dwgPaste DrawingArea
-        MoveScaled(10,12,8,4)
-        Visible = False
+    { panPreview SidePanel
+      MoveScaled(1,3,18,47)
+      Arrangement = Arrange.Fill
+      Orientation = Align.Left
+      Hidden = True
+      { svwPreview ScrollView
+        MoveScaled(0,0,15,18)
+        Border = False
+        { dwgPreview DrawingArea
+          MoveScaled(0,0,13,11)
+          Background = &HFFFFFF&
+          Border = Border.Plain
+        }
+      }
+    }
+    { svwIcon ScrollView
+      MoveScaled(28,2,48,34)
+      Background = &H808080&
+      Expand = True
+      Border = False
+      { dwgIcon DrawingArea
+        MoveScaled(0,0,24,20)
         Background = &HFFFFFF&
-        Mouse = Mouse.SizeAll
+        Mouse = Mouse.Cross
         Tracking = True
+        Border = Border.Plain
+        { dwgPaste DrawingArea
+          MoveScaled(10,12,8,4)
+          Visible = False
+          Background = &HFFFFFF&
+          Mouse = Mouse.SizeAll
+          Tracking = True
+        }
       }
     }
   }

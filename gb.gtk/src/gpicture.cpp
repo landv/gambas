@@ -713,7 +713,6 @@ void gPicture::replace(gColor src, gColor dst, bool noteq)
 gPicture* gPicture::flip(bool mirror)
 {
 	gPicture *ret;
-	GdkPixbuf *old;
 	guint32 *src, *dst;
 	int w, h;
 	register guint32 *s, *d;
