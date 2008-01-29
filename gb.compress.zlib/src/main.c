@@ -24,16 +24,12 @@
 
 #define __MAIN_C
 
-/* Use 64 bits I/O */
+// Use 64 bits I/O
 #define _FILE_OFFSET_BITS 64
+#define _LARGEFILE64_SOURCE
 
 #include <errno.h>
 #include <stdio.h>
-
-#if __WORDSIZE == 64
-#define _LARGEFILE64_SOURCE
-#endif
-
 #include <zlib.h>
 
 #include "main.h"
