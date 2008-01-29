@@ -209,8 +209,8 @@ PRIVATE SUB OpenDatabase()
 
   IF NOT $sUri THEN
 
-    $sUri = "/help/comp"
-    $sPath = "/comp"
+    $sUri = "/edit/comp/gb/pointer[]/_put"
+    $sPath = "/comp/gb/pointer[]/_put"
     $sLang = DEFAULT_LANG
     'DB.Debug = TRUE
     '$sRoot = "/var/www/html"

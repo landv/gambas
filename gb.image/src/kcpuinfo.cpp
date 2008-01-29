@@ -1,6 +1,6 @@
 /*
  * This file is part of the KDE libraries
- * Copyright (C) 2003 Fredrik Höglund <fredrik@kde.org>
+ * Copyright (C) 2003 Fredrik Hï¿½glund <fredrik@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,15 +36,19 @@
 #endif
 
 
+/*
 // Copied from kdecore/kglobal.h
 #if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
 #  define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
 #else
 #  define KDE_NO_EXPORT
 #endif
+*/
+#define KDE_NO_EXPORT
 
 typedef void (*kde_sighandler_t) (int);
 
+/*
 #ifdef __i386__
 static jmp_buf KDE_NO_EXPORT env;
 
@@ -69,6 +73,7 @@ static void KDE_NO_EXPORT sigill_handler( int sig )
     siglongjmp( jmpbuf, 1 );
 }
 #endif
+*/
 
 static int KDE_NO_EXPORT getCpuFeatures()
 {

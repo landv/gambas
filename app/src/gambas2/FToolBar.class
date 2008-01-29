@@ -43,7 +43,7 @@ PUBLIC SUB Add(sControl AS String, OPTIONAL sComp AS String)
 
   hCtrl = NEW ToolButton(panTool) AS "btnControl"
   hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
-  hCtrl.Tag = sControl
+  hCtrl.Tag = sComp &/ sControl
   hCtrl.Border = FALSE
   hCtrl.Toggle = TRUE
   hCtrl.ToolTip = sControl
@@ -63,7 +63,7 @@ PUBLIC SUB Add(sControl AS String, OPTIONAL sComp AS String)
     hCtrl.Picture = hPict
   ENDIF
 
-  $cButton[sControl] = hCtrl
+  $cButton[hCtrl.Tag] = hCtrl
 
 END
 
@@ -112,7 +112,7 @@ END
 
 PUBLIC FUNCTION GetTool() AS String
 
-  IF $sTool <> SELECT_TOOL THEN RETURN $sTool
+  IF $sTool <> SELECT_TOOL THEN RETURN File.Name($sTool)
 
 END
 
@@ -155,10 +155,18 @@ PUBLIC PROCEDURE btnControl_MouseUp()
 
   IF $bNoEvent THEN RETURN 
 
-  IF LAST.Tag = $sTool THEN
-    SetTool
+  IF Mouse.Right THEN
+  
+    MHelp.GotoClass(File.Dir(LAST.Tag), File.Name(LAST.Tag))
+
   ELSE
-    SetTool(LAST)
+
+    IF LAST.Tag = $sTool THEN
+      SetTool
+    ELSE
+      SetTool(LAST)
+    ENDIF
+    
   ENDIF
 
 END
@@ -182,18 +190,10 @@ PUBLIC SUB btnControl_MouseDrag()
   IF sTool = SELECT_TOOL THEN RETURN 
 
   Drag.Icon = hTool.Picture
-  Drag(hTool, sTool, MMime.CONTROL)
+  Drag(hTool, File.Name(sTool), MMime.CONTROL)
   
 END
 
-
-
-PUBLIC SUB btnTool_Click()
-
-  'RAISE Change
-  'FToolBox.SelectToolBar(Name)
-
-END
 
 
 PUBLIC SUB ShowToolBar(bShow AS Boolean)

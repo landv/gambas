@@ -73,7 +73,7 @@ static void free_channel_sound(CSOUND *sound)
 /*  count_sound--;
   printf("Unref channel [%d] sound : %p\n", count_sound,sound);*/
   fflush(NULL);
-  GB.Unref((void **)&sound);
+  GB.Unref(POINTER(&sound));
 }
 
 static void channel_finished(int channel)
@@ -153,7 +153,7 @@ static void return_channel(int channel, CSOUND *sound)
   if (channel < 0 || channel >= channel_count)
   {
 		if (sound)
-			GB.Unref((void **)&sound);
+			GB.Unref(POINTER(&sound));
 
 		GB.ReturnNull();
     return;
@@ -162,7 +162,7 @@ static void return_channel(int channel, CSOUND *sound)
   ob = channel_cache[channel];
   if (!ob)
   {
-    GB.New((void **)&ob, GB.FindClass("Channel"), NULL, NULL);
+    GB.New(POINTER(&ob), GB.FindClass("Channel"), NULL, NULL);
     channel_cache[channel] = ob;
     ob->channel = channel;
     GB.Ref(ob);
@@ -342,7 +342,7 @@ BEGIN_METHOD_VOID(CCHANNEL_exit)
     /*if (ch->sound)
       GB.Unref((void **)&ch->sound);*/
 
-    GB.Unref((void **)&ch);
+    GB.Unref(POINTER(&ch));
   }
 
 END_METHOD

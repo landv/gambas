@@ -439,7 +439,7 @@ static bool callIdlMethod(CORBA::Object_var corbaobj, const char *name, GB_VALUE
 	}
 	else if (retType == 16){
 		CCORBA_OBJECT *_object = 0;	
-		GB.New((void **)&_object, GB.FindClass("CORBAObject"), NULL, NULL);
+		GB.New(POINTER(&_object), GB.FindClass("CORBAObject"), NULL, NULL);
   		//_object->ref = new DCOPRef(dcopref);
 
 		//req->set_return_type (CORBA::_tc_Object);
@@ -653,7 +653,7 @@ BEGIN_METHOD(CCORBA_APPLICATION_InitIOR,GB_STRING IOR)
 		if( CORBA::is_nil(THIS->obj_var_) ) 
 			GB.Error("Remote CORBA OBJECT not initialized!");*/
 		
-		GB.New((void **)&_obj, GB.FindClass("CORBAObject"), NULL, NULL);
+		GB.New(POINTER(&_obj), GB.FindClass("CORBAObject"), NULL, NULL);
 		_obj->obj_var_ = THIS->orb->string_to_object(sIOR_);
 
 		free(argv[0]);
@@ -727,7 +727,7 @@ BEGIN_METHOD(CCORBA_APPLICATION_InitURI,GB_OBJECT CosNamingName;GB_STRING NameSe
 		if( CORBA::is_nil(THIS->orb) ) 
 			GB.Error("ORB not initialized!");
 
-		GB.New((void **)&_obj, GB.FindClass("CORBAObject"), NULL, NULL);
+		GB.New(POINTER(&_obj), GB.FindClass("CORBAObject"), NULL, NULL);
 		_obj->obj_var_ = getObjectReference(THIS->orb,CosNaming_);
 		#ifdef CORBA_DEBUG		
 		cout << "Dopo il getObject..."<< endl;

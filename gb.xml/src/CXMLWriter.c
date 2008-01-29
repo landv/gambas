@@ -135,9 +135,9 @@ BEGIN_METHOD (CXmlWriter_StartElement,GB_STRING Name; GB_OBJECT Attributes;GB_ST
 	if (Check_Writer(THIS)) return;
 	
 	if (prefix || uri)
-		res=xmlTextWriterStartElementNS(THIS->writer,prefix,GB.ToZeroString(ARG(Name)),uri);
+		res=xmlTextWriterStartElementNS(THIS->writer,(xmlChar *)prefix,(xmlChar *)GB.ToZeroString(ARG(Name)),(xmlChar *)uri);
 	else
-		res=xmlTextWriterStartElement(THIS->writer,GB.ToZeroString(ARG(Name)));
+		res=xmlTextWriterStartElement(THIS->writer,(xmlChar *)GB.ToZeroString(ARG(Name)));
 	
 	if (Resul_Writer(THIS,res)) return;
 
@@ -155,7 +155,7 @@ BEGIN_METHOD (CXmlWriter_StartElement,GB_STRING Name; GB_OBJECT Attributes;GB_ST
 		else
 			svalue="";
 		
-		res=xmlTextWriterWriteAttribute(THIS->writer,sname,svalue);
+		res=xmlTextWriterWriteAttribute(THIS->writer,(xmlChar *)sname,(xmlChar *)svalue);
 		if (Resul_Writer(THIS,res)) return;
 	}
 	
@@ -183,20 +183,20 @@ BEGIN_METHOD(CXmlWriter_Element,GB_STRING Name;GB_STRING Value;GB_STRING Prefix;
 	
 	if (Check_Writer(THIS)) return;
 
-	name=GB.ToZeroString(ARG(Name));
+	name=(xmlChar *)GB.ToZeroString(ARG(Name));
 	if (!MISSING(Value))
 	{
-		value=GB.ToZeroString(ARG(Value));
+		value=(xmlChar *)GB.ToZeroString(ARG(Value));
 		
 		if ( prefix || uri )
-			resul=xmlTextWriterWriteElementNS(THIS->writer,prefix,name,uri,value);
+			resul=xmlTextWriterWriteElementNS(THIS->writer,(xmlChar *)prefix,name,(xmlChar *)uri,value);
 		else 
 			resul=xmlTextWriterWriteElement(THIS->writer,name,value);
 	}
 	else
 	{
 		if ( prefix || uri )
-			resul=xmlTextWriterStartElementNS(THIS->writer,prefix,name,uri);
+			resul=xmlTextWriterStartElementNS(THIS->writer,(xmlChar *)prefix,name,(xmlChar *)uri);
 		else
 			resul=xmlTextWriterStartElement(THIS->writer,name);
 		if (resul != -1) resul=xmlTextWriterEndElement(THIS->writer);
@@ -212,7 +212,7 @@ BEGIN_METHOD(CXmlWriter_Text,GB_STRING Name;)
 	xmlChar *name;
 
 	if (Check_Writer(THIS)) return;
-	name=GB.ToZeroString(ARG(Name));	
+	name=(xmlChar *)GB.ToZeroString(ARG(Name));	
 	Resul_Writer(THIS,xmlTextWriterWriteString(THIS->writer,name));
 
 END_METHOD
@@ -234,7 +234,7 @@ END_METHOD
 BEGIN_METHOD(CXmlWriter_CDATA,GB_STRING Name;)
 
 	if (Check_Writer(THIS)) return;	
-	Resul_Writer(THIS,xmlTextWriterWriteCDATA(THIS->writer,GB.ToZeroString(ARG(Name))));
+	Resul_Writer(THIS,xmlTextWriterWriteCDATA(THIS->writer,(xmlChar *)GB.ToZeroString(ARG(Name))));
 
 END_METHOD
 
@@ -255,9 +255,9 @@ BEGIN_METHOD(CXmlWriter_Attribute,GB_STRING Name;GB_STRING Value;GB_STRING Prefi
 	value=GB.ToZeroString(ARG(Value));
 		
 	if (prefix || uri)
-		res=xmlTextWriterWriteAttributeNS(THIS->writer,prefix,name,uri,value);
+		res=xmlTextWriterWriteAttributeNS(THIS->writer,(xmlChar *)prefix,(xmlChar *)name,(xmlChar *)uri,(xmlChar *)value);
 	else
-		res=xmlTextWriterWriteAttribute(THIS->writer,name,value);
+		res=xmlTextWriterWriteAttribute(THIS->writer,(xmlChar *)name,(xmlChar *)value);
 	
 	Resul_Writer(THIS,res);
 
@@ -271,7 +271,7 @@ BEGIN_METHOD(CXmlWriter_WritePI,GB_STRING Target;GB_STRING Content;)
 	if (Check_Writer(THIS)) return;
 	target=GB.ToZeroString(ARG(Target));
 	content=GB.ToZeroString(ARG(Content));	
-	Resul_Writer(THIS,xmlTextWriterWritePI(THIS->writer,target,content));
+	Resul_Writer(THIS,xmlTextWriterWritePI(THIS->writer,(xmlChar *)target,(xmlChar *)content));
 
 
 END_METHOD
@@ -282,7 +282,7 @@ END_METHOD
 BEGIN_METHOD(CXmlWriter_Comment,GB_STRING Comment)
 
 	if (Check_Writer(THIS)) return;
-	Resul_Writer(THIS,xmlTextWriterWriteComment(THIS->writer,GB.ToZeroString(ARG(Comment))));
+	Resul_Writer(THIS,xmlTextWriterWriteComment(THIS->writer,(xmlChar *)GB.ToZeroString(ARG(Comment))));
 
 END_METHOD
 
@@ -298,7 +298,7 @@ BEGIN_METHOD_VOID(CXmlWriter_EndDocument)
 		GB.ReturnNewString(NULL,0);
 		return;
 	}
-	GB.ReturnNewString(THIS->buffer->content,0);
+	GB.ReturnNewString((char *)THIS->buffer->content,0);
 	xmlBufferFree(THIS->buffer);
 	THIS->buffer=NULL;
 
@@ -321,7 +321,7 @@ BEGIN_METHOD(CXmlWriter_StartDTD,GB_STRING Name;GB_STRING PubID;GB_STRING SysID;
 	name=GB.ToZeroString(ARG(Name));
 	if (!MISSING(PubID)) pubid=GB.ToZeroString(ARG(PubID));
 	if (!MISSING(SysID)) pubid=GB.ToZeroString(ARG(SysID));
-	Resul_Writer(THIS,xmlTextWriterStartDTD(THIS->writer,name,pubid,sysid));
+	Resul_Writer(THIS,xmlTextWriterStartDTD(THIS->writer,(xmlChar *)name,(xmlChar *)pubid,(xmlChar *)sysid));
 	
 END_METHOD
 
@@ -344,11 +344,11 @@ BEGIN_METHOD (CXmlWriter_DTDElement,GB_STRING Name;GB_STRING Content;)
 	if (!MISSING(Content))
 	{
 		content=GB.ToZeroString(ARG(Content));
-		resul=xmlTextWriterWriteDTDElement (THIS->writer,name,content);
+		resul=xmlTextWriterWriteDTDElement (THIS->writer,(xmlChar *)name,(xmlChar *)content);
 	}
 	else
 	{
-		resul=xmlTextWriterStartDTDElement (THIS->writer,name);
+		resul=xmlTextWriterStartDTDElement (THIS->writer,(xmlChar *)name);
 		if (resul != 1) resul=xmlTextWriterEndDTDElement(THIS->writer);
 	}
 	
@@ -367,7 +367,7 @@ BEGIN_METHOD (CXmlWriter_DTDInternalEntity,GB_STRING Name;GB_STRING Content;GB_B
 	name=GB.ToZeroString(ARG(Name));
 	content=GB.ToZeroString(ARG(Content));
 	if (!MISSING(IsParameter)) isparameter=VARG(IsParameter);
-	Resul_Writer(THIS,xmlTextWriterWriteDTDInternalEntity(THIS->writer,isparameter,name,content));
+	Resul_Writer(THIS,xmlTextWriterWriteDTDInternalEntity(THIS->writer,isparameter,(xmlChar *)name,(xmlChar *)content));
 	
 END_METHOD
 
@@ -382,7 +382,7 @@ BEGIN_METHOD (CXmlWriter_DTDAttList,GB_STRING Name;GB_STRING Content;GB_BOOLEAN 
 	name=GB.ToZeroString(ARG(Name));
 	content=GB.ToZeroString(ARG(Content));
 	if (!MISSING(IsParameter)) isparameter=VARG(IsParameter);
-	Resul_Writer(THIS,xmlTextWriterWriteDTDAttlist(THIS->writer,name,content));
+	Resul_Writer(THIS,xmlTextWriterWriteDTDAttlist(THIS->writer,(xmlChar *)name,(xmlChar *)content));
 
 	
 END_METHOD

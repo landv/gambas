@@ -4,7 +4,8 @@ html {
 }
 
 body.left {
-  background: white;
+  background-color: #CBDAE6;
+  /*background: white;*/
   margin: 8px 8px 8px 8px;
   background-image: url("/img/background-left.jpg");
   background-attachment: fixed;
@@ -423,11 +424,16 @@ img.flag {
 
 .path {
   /*display: inline;*/
-  border: solid 1px #95C1E6;
-  background-color: #CBDAE6;
-  padding: 2px;
+  /*border-bottom: solid 1px #95C1E6;*/
+  /*background-color: #CBDAE6;*/
+  padding-bottom: 2px;
+  padding-top: 2px;
   font-size: x-small;
   margin: 0px;
+  background-color: #CBDAE6;
+  margin-left: -8px;
+  margin-top: -8px;
+  margin-right: -8px;
 }
 
 input[type=text] {
@@ -437,31 +443,6 @@ input[type=text] {
 textarea {
   border: solid 2px #95C1E6;
 }
-
-/*a:hover img {
-  background: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-a:before img {
-  content: "";
-}
-
-a.none:before {
-  content: "";
-}
-
-[dir="rtl"] a.arrow:before {
-  content: url("./img/link-left-black.png");
-}
-
-[dir="ltr"] a.arrow:before {
-  content: url("./img/link-black.png");
-}*/
-
 
 
 
