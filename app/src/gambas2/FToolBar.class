@@ -43,7 +43,7 @@ PUBLIC SUB Add(sControl AS String, OPTIONAL sComp AS String)
 
   hCtrl = NEW ToolButton(panTool) AS "btnControl"
   hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
-  hCtrl.Tag = sComp &/ sControl
+  hCtrl.Tag = sControl
   hCtrl.Border = FALSE
   hCtrl.Toggle = TRUE
   hCtrl.ToolTip = sControl
@@ -112,7 +112,7 @@ END
 
 PUBLIC FUNCTION GetTool() AS String
 
-  IF $sTool <> SELECT_TOOL THEN RETURN File.Name($sTool)
+  IF $sTool <> SELECT_TOOL THEN RETURN $sTool
 
 END
 
@@ -157,7 +157,7 @@ PUBLIC PROCEDURE btnControl_MouseUp()
 
   IF Mouse.Right THEN
   
-    MHelp.GotoClass(File.Dir(LAST.Tag), File.Name(LAST.Tag))
+    MHelp.GotoClass(CComponent.Classes[LAST.Tag].Component, LAST.Tag)
 
   ELSE
 

@@ -11,7 +11,14 @@ END
 
 PUBLIC SUB Open()
 
-  Project.OpenWebPage(GetPath("tree/index.html"))
+  DIM sTool AS String = FToolBox.GetTool()
+  
+  IF sTool THEN 
+    GotoClass(CComponent.Classes[sTool].Component, sTool)
+    FToolBox.SetTool
+  ELSE
+    Project.OpenWebPage(GetPath("tree/index.html"))
+  ENDIF
 
 END
 

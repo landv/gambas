@@ -2922,15 +2922,16 @@ PUBLIC SUB MakeSourcePackageTo(sPath AS String)
   ENDIF
 
   sCmd = "cd " & Quote.Shell(File.Dir(Project.Dir)) & ";"
-  sCmd = sCmd & " tar cfvh" & sOpt & " " & Quote.Shell(sPath)
-  sCmd = sCmd & " --exclude=" & ".gambas/*"
-  sCmd = sCmd & " --exclude=" & "*~"
-  sCmd = sCmd & " --exclude=" & ".lock"
-  sCmd = sCmd & " --exclude=" & ".lang/*.pot"
-  sCmd = sCmd & " --exclude=" & ".lang/.pot"
-  sCmd = sCmd & " --exclude=" & "*/.xvpics/*"
-  sCmd = sCmd & " --exclude=" & ".xvpics/*"
-  sCmd = sCmd & " " & Quote.Shell(File.Name(Project.Dir)) & " > /dev/null"
+  sCmd &= " tar cfvh" & sOpt & " " & Quote.Shell(sPath)
+  sCmd &= " --exclude=" & Quote.Shell(".gambas/*")
+  sCmd &= " --exclude=" & Quote.Shell("*~")
+  sCmd &= " --exclude=" & Quote.Shell("core.*")
+  sCmd &= " --exclude=" & Quote.Shell(".lock")
+  sCmd &= " --exclude=" & Quote.Shell(".lang/*.pot")
+  sCmd &= " --exclude=" & Quote.Shell(".lang/.pot")
+  sCmd &= " --exclude=" & Quote.Shell(".xvpics")
+  sCmd &= " --exclude=" & Quote.Shell(".svn")
+  sCmd &= " " & Quote.Shell(File.Name(Project.Dir)) & " > /dev/null"
 
   SHELL sCmd WAIT
 

@@ -237,7 +237,7 @@ PRIVATE SUB GetOptions(hForm AS Object)
   $bComment = Action["find-comment"].Value
   $bString = Action["find-string"].Value
   
-  IF NOT Action["find-in"].Visible THEN 
+  IF $bList THEN 'NOT Action["find-in"].Visible THEN 
     $bProject = TRUE
     $bProc = FALSE
   ENDIF
