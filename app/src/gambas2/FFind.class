@@ -229,7 +229,7 @@ END
 
 PRIVATE SUB GetOptions(hForm AS Object)
 
-  $sFind = Trim(cmbFind.Text)
+  $sFind = cmbFind.Text
   $bProc = Action["find-in-sub"].Value 
   $bProject = Action["find-in-project"].Value 
   $bCase = Action["find-case"].Value
