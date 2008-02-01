@@ -379,6 +379,40 @@ BEGIN_METHOD(GLNORMAL3I, GB_INTEGER nx; GB_INTEGER ny; GB_INTEGER nz)
 
 END_METHOD
 
+BEGIN_METHOD(GLNORMAL3FV, GB_OBJECT array)
+
+	GLdouble x,y,z;
+	GB_ARRAY normal = (GB_ARRAY) VARG(array);
+	int count = GB.Array.Count(normal);
+	
+	if (count != 3)
+		return;
+
+	x = *((GLdouble *)GB.Array.Get(normal,0));
+	y = *((GLdouble *)GB.Array.Get(normal,1));
+	z = *((GLdouble *)GB.Array.Get(normal,2));
+	
+	glNormal3d(x, y, z);
+
+END_METHOD
+
+BEGIN_METHOD(GLNORMAL3IV, GB_OBJECT array)
+
+	GLint x,y,z;
+	GB_ARRAY normal = (GB_ARRAY) VARG(array);
+	int count = GB.Array.Count(normal);
+	
+	if (count != 3)
+		return;
+
+	x = *((GLint *)GB.Array.Get(normal,0));
+	y = *((GLint *)GB.Array.Get(normal,1));
+	z = *((GLint *)GB.Array.Get(normal,2));
+	
+	glNormal3i(x, y, z);
+
+END_METHOD
+
 BEGIN_METHOD(GLSHADEMODEL, GB_INTEGER mode)
 
 	glShadeModel(VARG(mode));

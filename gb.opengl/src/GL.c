@@ -147,6 +147,8 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("Materialiv", NULL, GLMATERIALIV, "(Face)i(Pname)i(Params)Integer[]"),
 	GB_STATIC_METHOD("Normal3f", NULL, GLNORMAL3F, "(Nx)f(Ny)f(Nz)f"),
 	GB_STATIC_METHOD("Normal3i", NULL, GLNORMAL3I, "(Nx)i(Ny)i(Nz)i"),
+	GB_STATIC_METHOD("Normal3fv", NULL, GLNORMALFV, "(Params)Float[]"),
+	GB_STATIC_METHOD("Normal3iv", NULL, GLNORMALIV, "(Params)Integer[]"),
 	GB_STATIC_METHOD("ShadeModel", NULL, GLSHADEMODEL, "(Model)i"),
 
 	/* Clipping - see GLclipping.h */
