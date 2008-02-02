@@ -179,8 +179,8 @@ void ERROR_clear();
 void ERROR_reset(ERROR_INFO *info);
 void ERROR_lock();
 void ERROR_unlock();
+void ERROR_set_last();
 
-#define ERROR_set_last() ERROR_save(&ERROR_last)
 #define ERROR_exit() ERROR_reset(&ERROR_last)
 
 #endif

@@ -53,7 +53,12 @@ END_PROPERTY
 BEGIN_PROPERTY(CERROR_text)
 
 	if (ERROR_last.code)
-  	GB_ReturnString(ERROR_last.msg);
+	{
+		if (ERROR_last.free)
+  		GB_ReturnString(ERROR_last.msg);
+  	else
+  		GB_ReturnConstZeroString(ERROR_last.msg);
+  }
 	else
 		GB_ReturnNull();
 

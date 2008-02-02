@@ -764,6 +764,7 @@ void EXEC_function_real(bool keep_ret_value)
 					#endif
 
 					ERROR_set_last();
+					
 					if (EXEC_debug && !STACK_has_error_handler())
 					{
 						if (TP && TC)

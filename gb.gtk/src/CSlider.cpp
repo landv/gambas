@@ -49,22 +49,16 @@ void gb_raise_slider_Click(gSlider *sender)
 
 BEGIN_METHOD(CSLIDER_new, GB_OBJECT parent)
 
-	CCONTAINER *Parent=(CCONTAINER*)VPROP(GB_OBJECT);
-	Parent=(CCONTAINER*)GetContainer ((CWIDGET*)Parent);
-
-	THIS->widget=new gSlider(Parent->widget);
-	InitControl(THIS->widget,(CWIDGET*)THIS);
+	InitControl(new gSlider(CONTAINER(VARG(parent))),(CWIDGET*)THIS);
+	
 	SLIDER->onChange=gb_raise_slider_Click;
 	
 END_METHOD
 
 BEGIN_METHOD(CSCROLLBAR_new, GB_OBJECT parent)
 
-	CCONTAINER *Parent=(CCONTAINER*)VPROP(GB_OBJECT);
-	Parent=(CCONTAINER*)GetContainer ((CWIDGET*)Parent);
-
-	THIS->widget=new gScrollBar(Parent->widget);
-	InitControl(THIS->widget,(CWIDGET*)THIS);
+	InitControl(new gScrollBar(CONTAINER(VARG(parent))),(CWIDGET*)THIS);
+	
 	SBAR->onChange=gb_raise_slider_Click;
 
 END_METHOD

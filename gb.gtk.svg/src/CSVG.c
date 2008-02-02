@@ -107,7 +107,7 @@ BEGIN_METHOD(CSVG_load,GB_STRING Path;)
 	}
 	
 
-	GB.New ((void**)&ret,SVG_class,NULL,NULL);
+	GB.New (POINTER(&ret),SVG_class,NULL,NULL);
 	ret->handle=handle;
 	ret->dpi=72;
 	GB.ReturnObject((void*)ret);

@@ -614,7 +614,7 @@ char *TRANS_get_num_desc(int num)
     return NULL;
 
   if (num < 4)
-    return num_desc[num - 1];
+    return (char *)num_desc[num - 1];
 
   snprintf(desc, sizeof(desc), "%dth", num);
   return desc;

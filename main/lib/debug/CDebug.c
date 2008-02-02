@@ -137,7 +137,7 @@ BEGIN_METHOD_VOID(CDEBUG_begin)
   unlink(path);
   if (mkfifo(path, 0600))  
   {
-    GB.Error("Cannot create input fifo");
+    GB.Error("Cannot create input fifo in /tmp: &1", strerror(errno));
     return;
   }
   
@@ -145,7 +145,7 @@ BEGIN_METHOD_VOID(CDEBUG_begin)
   unlink(path);
   if (mkfifo(path, 0600))  
   {
-    GB.Error("Cannot create output fifo");
+    GB.Error("Cannot create output fifo in /tmp: &1", strerror(errno));
     return;
   }
   

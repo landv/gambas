@@ -38,11 +38,11 @@
 
 DECLARE_EVENT(EVENT_Change);
 
-static void raise_change(CWIDGET *_object)
+/*static void raise_change(CWIDGET *_object)
 {
 	GB.Raise(THIS, EVENT_Change, 0);
 	GB.Unref(POINTER(&_object));
-}
+}*/
 
 static void cb_change(gSpinBox *sender)
 {
@@ -54,13 +54,9 @@ static void cb_change(gSpinBox *sender)
 
 BEGIN_METHOD(CSPINBOX_new, GB_OBJECT parent)
 	
-	CCONTAINER *Parent=(CCONTAINER*)VPROP(GB_OBJECT);
-	Parent=(CCONTAINER*)GetContainer ((CWIDGET*)Parent);
-
-	THIS->widget=new gSpinBox(Parent->widget);
-	InitControl(THIS->widget,(CWIDGET*)THIS);
+	InitControl(new gSpinBox(CONTAINER(VARG(parent))),(CWIDGET*)THIS);
+	
 	SPINBOX->onChange = cb_change;
-
 
 END_METHOD
 

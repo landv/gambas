@@ -168,7 +168,7 @@ static int my_image(CIMAGE **pimage, GB_IMAGE_INFO *info)
 		if (info->data)
 			GB.Image.Convert(img->GetData(), GB_IMAGE_RGBA, info->data, info->format, info->width, info->height);
 
-		GB.New((void **)&image, CLASS_Image, NULL, NULL);
+		GB.New(POINTER(&image), CLASS_Image, NULL, NULL);
 
 		if (image->id)
 			delete image->id;

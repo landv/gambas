@@ -34,11 +34,7 @@
 
 BEGIN_METHOD(CSEPARATOR_new, GB_OBJECT parent)
 
-	CCONTAINER *Parent=(CCONTAINER*)VPROP(GB_OBJECT);
-	Parent=(CCONTAINER*)GetContainer ((CWIDGET*)Parent);
-
-	THIS->widget=new gSeparator(Parent->widget);
-	InitControl(THIS->widget,(CWIDGET*)THIS);
+	InitControl(new gSeparator(CONTAINER(VARG(parent))), (CWIDGET*)THIS);
 	
 END_METHOD
 

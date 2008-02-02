@@ -65,11 +65,11 @@ typedef
 			}
 			flags;
 		struct {
-			char *keyword;								/* keyword for limiting the result of a query */
+			const char *keyword;					/* keyword for limiting the result of a query */
 			int pos;											/* position of 'limit' keyword */
 			}
 			limit;
-		char *db_name_char;             /* These characters are allowed in a database name */
+		const char *db_name_char;       /* These characters are allowed in a database name */
 		}
   DB_DATABASE;
 
@@ -124,14 +124,14 @@ typedef
 	DB_BLOB;
 
 typedef
-  void (*DB_FORMAT_CALLBACK)(char *, int);
+  void (*DB_FORMAT_CALLBACK)(const char *, int);
 
 typedef
   void (*DB_SUBST_CALLBACK)(int, char **, int *, char);	
 
 typedef
   struct {
-    char *name;
+    const char *name;
 
     int (*Open)(DB_DESC *desc, DB_DATABASE *db);
     void (*Close)(DB_DATABASE *db);
@@ -139,12 +139,12 @@ typedef
     int (*Format)(GB_VALUE *val, DB_FORMAT_CALLBACK add);
     void (*FormatBlob)(DB_BLOB *blob, DB_FORMAT_CALLBACK add);
 
-    int (*Exec)(DB_DATABASE *db, char *, DB_RESULT *result, char *err);
+    int (*Exec)(DB_DATABASE *db, const char *, DB_RESULT *result, const char *err);
 
     int (*Begin)(DB_DATABASE *db);
     int (*Commit)(DB_DATABASE *db);
     int (*Rollback)(DB_DATABASE *db);
-    char *(*GetQuote)(void);
+    const char *(*GetQuote)(void);
 
     struct {
       void (*Init)(DB_RESULT result, DB_INFO *info, int *count);
@@ -154,7 +154,7 @@ typedef
       struct {
         GB_TYPE (*Type)(DB_RESULT result, int index);
         char *(*Name)(DB_RESULT result, int index);
-        int (*Index)(DB_RESULT result, char *name, DB_DATABASE *db);
+        int (*Index)(DB_RESULT result, const char *name, DB_DATABASE *db);
         int (*Length)(DB_RESULT result, int index);
         }
         Field;
@@ -162,51 +162,51 @@ typedef
       Result;
 
     struct {
-      int (*Exist)(DB_DATABASE *db, char *table, char *field);
-      int (*List)(DB_DATABASE *db, char *table, char ***fields);
-      int (*Info)(DB_DATABASE *db, char *table, char *field, DB_FIELD *info);
+      int (*Exist)(DB_DATABASE *db, const char *table, const char *field);
+      int (*List)(DB_DATABASE *db, const char *table, char ***fields);
+      int (*Info)(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info);
       }
       Field;
 
     struct {
-      int (*Init)(DB_DATABASE *db, char *table, DB_INFO *info);
-      int (*Index)(DB_DATABASE *db, char *table, DB_INFO *info);
+      int (*Init)(DB_DATABASE *db, const char *table, DB_INFO *info);
+      int (*Index)(DB_DATABASE *db, const char *table, DB_INFO *info);
       void (*Release)(DB_DATABASE *db, DB_INFO *info);
-      int (*Exist)(DB_DATABASE *db, char *table);
+      int (*Exist)(DB_DATABASE *db, const char *table);
       int (*List)(DB_DATABASE *db, char ***tables);
-      int (*PrimaryKey)(DB_DATABASE *db, char *table, char ***primary);
-      int (*IsSystem)(DB_DATABASE *db, char *table);
-      char *(*Type)(DB_DATABASE *db, char *table, char *type);
-      int (*Delete)(DB_DATABASE *db, char *table);
-      int (*Create)(DB_DATABASE *db, char *table, DB_FIELD *fields, char **primary, char *tabletype);
+      int (*PrimaryKey)(DB_DATABASE *db, const char *table, char ***primary);
+      int (*IsSystem)(DB_DATABASE *db, const char *table);
+      char *(*Type)(DB_DATABASE *db, const char *table, const char *type);
+      int (*Delete)(DB_DATABASE *db, const char *table);
+      int (*Create)(DB_DATABASE *db, const char *table, DB_FIELD *fields, char **primary, const char *tabletype);
       }
       Table;
 
     struct {
-      int (*Exist)(DB_DATABASE *db, char *table, char *index);
-      int (*List)(DB_DATABASE *db, char *table, char ***indexes);
-      int (*Info)(DB_DATABASE *db, char *table, char *index, DB_INDEX *info);
-      int (*Delete)(DB_DATABASE *db, char *table, char *index);
-      int (*Create)(DB_DATABASE *db, char *table, char *index, DB_INDEX *info);
+      int (*Exist)(DB_DATABASE *db, const char *table, const char *index);
+      int (*List)(DB_DATABASE *db, const char *table, char ***indexes);
+      int (*Info)(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info);
+      int (*Delete)(DB_DATABASE *db, const char *table, const char *index);
+      int (*Create)(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info);
       }
       Index;
 
     struct {
-      int (*Exist)(DB_DATABASE *db, char *name);
+      int (*Exist)(DB_DATABASE *db, const char *name);
       int (*List)(DB_DATABASE *db, char ***names);
-      int (*IsSystem)(DB_DATABASE *db, char *name);
-      int (*Delete)(DB_DATABASE *db, char *name);
-      int (*Create)(DB_DATABASE *db, char *name);
+      int (*IsSystem)(DB_DATABASE *db, const char *name);
+      int (*Delete)(DB_DATABASE *db, const char *name);
+      int (*Create)(DB_DATABASE *db, const char *name);
       }
       Database;
 
     struct {
-      int (*Exist)(DB_DATABASE *db, char *user);
+      int (*Exist)(DB_DATABASE *db, const char *user);
       int (*List)(DB_DATABASE *db, char ***users);
-      int (*Info)(DB_DATABASE *db, char *user, DB_USER *info);
-      int (*Delete)(DB_DATABASE *db, char *user);
-      int (*Create)(DB_DATABASE *db, char *user, DB_USER *info);
-      int (*SetPassword)(DB_DATABASE *db, char *user, char *password);
+      int (*Info)(DB_DATABASE *db, const char *user, DB_USER *info);
+      int (*Delete)(DB_DATABASE *db, const char *user);
+      int (*Create)(DB_DATABASE *db, const char *user, DB_USER *info);
+      int (*SetPassword)(DB_DATABASE *db, const char *user, const char *password);
       }
       User;
     }
@@ -219,14 +219,14 @@ typedef
     void (*Format)(DB_DRIVER *, GB_VALUE *, DB_FORMAT_CALLBACK);
     void (*FormatVariant)(DB_DRIVER *, GB_VARIANT_VALUE *, DB_FORMAT_CALLBACK);
     int (*IsDebug)(void);
-    void (*TryAnother)(char *);
+    void (*TryAnother)(const char *);
     char *(*SubstString)(const char *, int, DB_SUBST_CALLBACK);
     char *(*QuoteString)(const char *, int, char);
 
     struct {
       void (*Init)(void);
-      void (*Add)(char *);
-      void (*AddLength)(char *, int);
+      void (*Add)(const char *);
+      void (*AddLength)(const char *, int);
       char *(*Get)(void);
       char *(*GetNew)(void);
       int (*Length)(void);
@@ -234,7 +234,7 @@ typedef
       Query;
 
     struct {
-      int (*Find)(char **, char *);
+      int (*Find)(char **, const char *);
       }
       StringArray;
     }

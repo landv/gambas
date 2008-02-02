@@ -37,11 +37,11 @@ Thu Aug 16 2001 */
 int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned int libsmtp_flags, struct libsmtp_session_struct *libsmtp_session)
 {
   int libsmtp_socket; 		/* The temporary socket handle */
-  int libsmtp_bytes_read=0;     /* How many bytes read? */
+  //int libsmtp_bytes_read=0;     /* How many bytes read? */
   struct hostent *libsmtp_mailhost;	/* We need this to convert the hostname to an IP */
   struct sockaddr_in libsmtp_sock;	/* We need this for the connection */
   char libsmtp_temp_buffer[4096];	/* Temp string for reads and writes */
-  char *libsmtp_search_buffer;		/* Used for searching in strings */
+  //char *libsmtp_search_buffer;		/* Used for searching in strings */
   GString *libsmtp_temp_gstring;	/* Temp gstring */
 
   /* We clear up the variable space and instantiate the GStrings */

@@ -1,13 +1,17 @@
 TODO list: always incomplete :-)
 --------------------------------
 
-VERSION 2.0
------------
+COMPILER
+
+- Compilation error must indicate the column, not only the line.
+- Better error message if a class form structure is incorrect. Otherwise the error
+  talks about the form generated code.
+
+INTERPRETER
 
 - A stack that can grow dynamically.
 - A special syntax to make variable writable once only (for controls variables).
 - Add global parameters for each component.
-- Compilation error must indicate the column, not only the line.
 - Make objects printable, with a "_print" hidden method or something else.
 - Make objects writable and readable to streams.
 - Perl regexp with the MATCH operator.
@@ -16,16 +20,12 @@ VERSION 2.0
 - Special runtime debugging commands for dumping all the variables for example.
 - A new debugging compilation option to only put line number information in the output files.
 - NInstr() -> Count the number of patterns.
-
-Don't do it:
-
+/*
 - OPTIONAL arguments should takes any expression.
 - Class synonymous.
 - Array[x] when x < 0 should return Array[Array.Count - x]
 - NEW Collection OF String
-
-Do it asap:
-
+*/
 - If project compilation version < compiler version then => compile all
 - Intercept all signals in Application_Signal.
 - Structure support
@@ -33,7 +33,6 @@ Do it asap:
 - Sorting two or more arrays at the same time.
 
 DEVELOPMENT ENVIRONMENT
------------------------
 
 - .startup file, a copy of .project with only startup info inside.
 - .project files should be marked as 2.0.
@@ -47,13 +46,16 @@ DEVELOPMENT ENVIRONMENT
 - Packager should manage component projects.
 - A new folder for non-packaged data files ('Notes' ?).
 
+- Fix the GameOfLife example, remove the 'public control' option.
+- Fix the Gravity example either.
+
 GUI RELATED STUFF
------------------
 
 - Adds automatically the extension to the file in the save file dialog.
 - Deleting a currently expanding item in TreeView crashes.
 - A Settings property everywhere? Mmmfff... At least for ColumnView, GridView.
 - Popup forms => Need to redesign some properties.
+- Rewrite the HSplit/VSplit layout, and use a Integer[] or a Float[]
 
 - Style API.
   PE_Separator / paint_hline paint_vline
@@ -65,8 +67,13 @@ GUI RELATED STUFF
   PE_ExclusiveIndicator / paint_option
   PE_Button PE_Panel / paint_box
 
+DESKTOP COMPONENT
+
+- gb.desktop X11 properties management, and watch.
+- Detect an already running application.
+- gb.desktop kwalletmanager support. And gnome ?
+
 DATABASE COMPONENT
-------------------
 
 - Add Views support in database component.
 - Changeable client Charset in database driver.
@@ -76,18 +83,14 @@ DATABASE COMPONENT
 - Use SAVEPOINT in postgresql to simulate nested transactions.
 
 DOCUMENTATION WIKI
-------------------
 
 - Mass rename command.
 - Fix last changes: only those in one language.
 
-OTHER
------
-
-- gb.desktop kwalletmanager support. And gnome ?
-
 COMPONENTS
-----------
 
-- gb.corba ?
+- State of gb.corba ?
 
+HELP
+
+- Update the event nodes in the tree in 3.0 and 2.0. Replace "+event" by "_event".

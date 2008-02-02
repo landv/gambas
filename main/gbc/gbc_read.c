@@ -201,7 +201,6 @@ void READ_dump_pattern(PATTERN *pattern)
 {
   int type = PATTERN_type(*pattern);
   int index = PATTERN_index(*pattern);
-  int pos;
 
   /*pos = (int)(pattern - JOB->pattern);
   if (pos < 0 || pos >= JOB->pattern_count)

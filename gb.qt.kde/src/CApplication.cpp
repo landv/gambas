@@ -176,7 +176,7 @@ static void flush_application()
   {
     //delete it.current()->pixmap;
     app = it.current();
-    GB.Unref((void **)&app);
+    GB.Unref(POINTER(&app));
     ++it;
   }
 }
@@ -251,7 +251,7 @@ static CAPPLICATION *get_application(const char *name, bool exec = true)
 
   if (!_object)
   {
-    GB.New((void **)&_object, GB.FindClass("KDEApplication"), NULL, NULL);
+    GB.New(POINTER(&_object), GB.FindClass("KDEApplication"), NULL, NULL);
     GB.Ref(THIS);
 
     GB.NewString(&THIS->name, app, app.length());
@@ -273,7 +273,7 @@ static CDCOPREF *make_dcopref(DCOPRef& dcopref)
   if (dcopref.isNull())
     return NULL;
 
-  GB.New((void **)&_object, GB.FindClass("DCOPRef"), NULL, NULL);
+  GB.New(POINTER(&_object), GB.FindClass("DCOPRef"), NULL, NULL);
   _object->ref = new DCOPRef(dcopref);
 
   //qDebug("Create DCOPREF %p", _object);

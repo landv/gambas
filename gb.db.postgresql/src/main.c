@@ -84,7 +84,7 @@ static int check_result(PGresult *res, const char *err)
 
 /* internal function to quote a value stored as a string */
 
-static void quote_string(char *data, int len, DB_FORMAT_CALLBACK add)
+static void quote_string(const char *data, int len, DB_FORMAT_CALLBACK add)
 {
 	int i;
 	unsigned char c;
@@ -104,14 +104,14 @@ static void quote_string(char *data, int len, DB_FORMAT_CALLBACK add)
 			(*add)(buffer, n);
 		}*/
 		else
-			(*add)((char *)&c, 1);
+			(*add)((const char *)&c, 1);
 	}
 	(*add)("'", 1);
 }
 
 /* Quote a string and returns the result as a temporary string */
 
-static char *get_quote_string(char *str, int len, char quote)
+static char *get_quote_string(const char *str, int len, char quote)
 {
 	char *res, *p, c;
 	int len_res;
@@ -151,7 +151,7 @@ static char *get_quote_string(char *str, int len, char quote)
 
 /* internal function to quote a value stored as a blob */
 
-static void quote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
+static void quote_blob(const char *data, int len, DB_FORMAT_CALLBACK add)
 {
 	int i;
 	unsigned char c;
@@ -173,7 +173,7 @@ static void quote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
 			(*add)(buffer, n);
 		}*/
 		else
-			(*add)((char *)&c, 1);
+			(*add)((const char *)&c, 1);
 	}
 	(*add)("'", 1);
 }
@@ -181,7 +181,7 @@ static void quote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
 
 /* internal function to unquote a value stored as a string */
 
-static int unquote_string(char *data, int len, DB_FORMAT_CALLBACK add)
+static int unquote_string(const char *data, int len, DB_FORMAT_CALLBACK add)
 {
   int i;
   char c;
@@ -204,7 +204,7 @@ static int unquote_string(char *data, int len, DB_FORMAT_CALLBACK add)
 
 /* internal function to unquote a value stored as a blob */
 
-static int unquote_blob(char *data, int len, DB_FORMAT_CALLBACK add)
+static int unquote_blob(const char *data, int len, DB_FORMAT_CALLBACK add)
 {
   int i;
   char c;
@@ -292,7 +292,7 @@ static int conv_boolean(const char *data)
 
 /* Internal function to convert a database value into a Gambas variant value */
 
-static void conv_data(char *data, int len, GB_VARIANT_VALUE *val, Oid type)
+static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type)
 {
   GB_VALUE conv;
   GB_DATE_SERIAL date;
@@ -412,7 +412,7 @@ static void conv_data(char *data, int len, GB_VARIANT_VALUE *val, Oid type)
     default:
 
       val->_string.type = GB_T_CSTRING;
-      val->_string.value = data;
+      val->_string.value = (char *)data;
 			//val->_string.len = len;
 
       break;
@@ -515,7 +515,7 @@ static int db_version(DB_DATABASE *db)
 
 *****************************************************************************/
 
-static char *get_quote(void)
+static const char *get_quote(void)
 {
   return QUOTE_STRING;
 }
@@ -725,7 +725,7 @@ static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add)
 
 *****************************************************************************/
 
-static int exec_query(DB_DATABASE *db, char *query, DB_RESULT *result, char *err)
+static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, const char *err)
 {
   return do_query(db, err, (PGresult **)result, query, 0);
 }
@@ -884,7 +884,7 @@ static char *field_name(DB_RESULT result, int field)
 
 *****************************************************************************/
 
-static int field_index(DB_RESULT Result, char *name, DB_DATABASE *db)
+static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 {
   PGresult *result = (PGresult *)Result;
 
@@ -1087,9 +1087,9 @@ static int rollback_transaction(DB_DATABASE *db)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info);
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info);
 
-static int table_init(DB_DATABASE *db, char *table, DB_INFO *info)
+static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
   char *qfield =
     "select pg_attribute.attname, pg_attribute.atttypid::int,pg_attribute.atttypmod "
@@ -1172,7 +1172,7 @@ static int table_init(DB_DATABASE *db, char *table, DB_INFO *info)
 
 *****************************************************************************/
 
-static int table_index(DB_DATABASE *db, char *table, DB_INFO *info)
+static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
   const char *qindex =
     "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
@@ -1252,7 +1252,7 @@ static void table_release(DB_DATABASE *db, DB_INFO *info)
 
 *****************************************************************************/
 
-static int table_exist(DB_DATABASE *db, char *table)
+static int table_exist(DB_DATABASE *db, const char *table)
 {
   const char *query73 =
     "select relname from pg_class where (relkind = 'r' or relkind = 'v') "
@@ -1406,7 +1406,7 @@ static int table_list(DB_DATABASE *db, char ***tables)
 
 *****************************************************************************/
 
-static int table_primary_key(DB_DATABASE *db, char *table, char ***primary)
+static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary)
 {
   const char *query =
     "select pg_att1.attname, pg_att1.atttypid::int, pg_cl.relname "
@@ -1449,7 +1449,7 @@ static int table_primary_key(DB_DATABASE *db, char *table, char ***primary)
 
 *****************************************************************************/
 
-static int table_is_system(DB_DATABASE *db, char *table)
+static int table_is_system(DB_DATABASE *db, const char *table)
 {
   const char *query =
     "select 1 from pg_class where (relkind = 'r' or relkind = 'v') "
@@ -1509,7 +1509,7 @@ static int table_is_system(DB_DATABASE *db, char *table)
 
 *****************************************************************************/
 
-static int table_delete(DB_DATABASE *db, char *table)
+static int table_delete(DB_DATABASE *db, const char *table)
 {
   return
     do_query(db, "Unable to delete table: &1", NULL,
@@ -1533,7 +1533,7 @@ static int table_delete(DB_DATABASE *db, char *table)
 
 *****************************************************************************/
 
-static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **primary, char *not_used)
+static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, char **primary, const char *not_used)
 {
   DB_FIELD *fp;
   int comma;
@@ -1640,7 +1640,7 @@ static int table_create(DB_DATABASE *db, char *table, DB_FIELD *fields, char **p
 
 *****************************************************************************/
 
-static int field_exist(DB_DATABASE *db, char *table, char *field)
+static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 {
   const char *query = "select pg_attribute.attname from pg_class, pg_attribute "
     "where pg_class.relname = '&1' "
@@ -1680,7 +1680,7 @@ static int field_exist(DB_DATABASE *db, char *table, char *field)
 
 *****************************************************************************/
 
-static int field_list(DB_DATABASE *db, char *table, char ***fields)
+static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 {
   const char *query = "select pg_attribute.attname from pg_class, pg_attribute "
     "where pg_class.relname = '&1' "
@@ -1726,7 +1726,7 @@ static int field_list(DB_DATABASE *db, char *table, char ***fields)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info)
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
   const char *query =
     "select pg_attribute.attname, pg_attribute.atttypid::int, "
@@ -1826,7 +1826,7 @@ static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD *info)
 
 *****************************************************************************/
 
-static int index_exist(DB_DATABASE *db, char *table, char *index)
+static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 {
   const char *query =
     "select pg_class.relname from pg_class, pg_index, pg_class pg_class2 "
@@ -1871,7 +1871,7 @@ static int index_exist(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_list(DB_DATABASE *db, char *table, char ***indexes)
+static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 {
   const char *query = "select pg_class.relname from pg_class, pg_index, pg_class pg_class2 "
     "where pg_class2.relname = '&1' "
@@ -1917,7 +1917,7 @@ static int index_list(DB_DATABASE *db, char *table, char ***indexes)
 
 *****************************************************************************/
 
-static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
+static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
   const char *query =
     "select indisunique, indisprimary, indexrelid from pg_class, pg_index, pg_class pg_class2 "
@@ -1992,7 +1992,7 @@ static int index_info(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
 
 *****************************************************************************/
 
-static int index_delete(DB_DATABASE *db, char *table, char *index)
+static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
   return
     do_query(db, "Unable to delete index: &1", NULL,
@@ -2016,7 +2016,7 @@ static int index_delete(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *info)
+static int index_create(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
   DB.Query.Init();
 
@@ -2048,7 +2048,7 @@ static int index_create(DB_DATABASE *db, char *table, char *index, DB_INDEX *inf
 
 *****************************************************************************/
 
-static int database_exist(DB_DATABASE *db, char *name)
+static int database_exist(DB_DATABASE *db, const char *name)
 {
   const char *query =
     "select datname from pg_database where (datallowconn = 't') "
@@ -2127,7 +2127,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
 *****************************************************************************/
 
-static int database_is_system(DB_DATABASE *db, char *name)
+static int database_is_system(DB_DATABASE *db, const char *name)
 {
   const char *query =
     "select datname from pg_database where datallowconn "
@@ -2163,7 +2163,7 @@ static int database_is_system(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static char *table_type(DB_DATABASE *db, char *table, char *newtype)
+static char *table_type(DB_DATABASE *db, const char *table, const char *newtype)
 {
   if (newtype)
     GB.Error("PostgreSQL does not have any table types");
@@ -2185,7 +2185,7 @@ static char *table_type(DB_DATABASE *db, char *table, char *newtype)
 
 *****************************************************************************/
 
-static int database_delete(DB_DATABASE *db, char *name)
+static int database_delete(DB_DATABASE *db, const char *name)
 {
   return
     do_query(db, "Unable to delete database: &1", NULL,
@@ -2207,7 +2207,7 @@ static int database_delete(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static int database_create(DB_DATABASE *db, char *name)
+static int database_create(DB_DATABASE *db, const char *name)
 {
   return
     do_query(db, "Unable to create database: &1", NULL,
@@ -2228,7 +2228,7 @@ static int database_create(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static int user_exist(DB_DATABASE *db, char *name)
+static int user_exist(DB_DATABASE *db, const char *name)
 {
   const char *query = "select usename from pg_user "
     "where usename = '&1' ";
@@ -2304,7 +2304,7 @@ static int user_list(DB_DATABASE *db, char ***users)
 
 *****************************************************************************/
 
-static int user_info(DB_DATABASE *db, char *name, DB_USER *info)
+static int user_info(DB_DATABASE *db, const char *name, DB_USER *info)
 {
   const char *query =
     "select usecreatedb, usesuper from pg_user "
@@ -2355,7 +2355,7 @@ static int user_info(DB_DATABASE *db, char *name, DB_USER *info)
 
 *****************************************************************************/
 
-static int user_delete(DB_DATABASE *db, char *name)
+static int user_delete(DB_DATABASE *db, const char *name)
 {
   return
     do_query(db, "Unable to delete user: &1", NULL,
@@ -2378,7 +2378,7 @@ static int user_delete(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static int user_create(DB_DATABASE *db, char *name, DB_USER *info)
+static int user_create(DB_DATABASE *db, const char *name, DB_USER *info)
 {
   DB.Query.Init();
 
@@ -2419,7 +2419,7 @@ static int user_create(DB_DATABASE *db, char *name, DB_USER *info)
 
 *****************************************************************************/
 
-static int user_set_password(DB_DATABASE *db, char *name, char *password)
+static int user_set_password(DB_DATABASE *db, const char *name, const char *password)
 {
   DB.Query.Init();
 

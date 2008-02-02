@@ -613,7 +613,7 @@ static void command_eval(const char *cmd)
 {
 	static bool init = FALSE;
   EXPRESSION *expr;
-  ERROR_INFO save;
+  ERROR_INFO save = { 0 };
   VALUE *val;
   int start, len;
   FILE *out;

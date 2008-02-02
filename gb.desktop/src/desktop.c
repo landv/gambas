@@ -98,12 +98,24 @@ BEGIN_METHOD(CDESKTOP_sendkey, GB_STRING key; GB_BOOLEAN press)
 
 END_METHOD
 
+/*GB_DESC CDesktopWindowDesc[] =
+{
+  GB_DECLARE("._Desktop.Window", 0), GB_VIRTUAL_CLASS(),
+  
+  GB_STATIC_METHOD("GetProperty", "v", CDESKTOPWINDOW_get_property, "(Property)s(Type)i"),
+  GB_STATIC_METHOD("SetProperty", NULL, CDESKTOPWINDOW_set_property, "(Property)s(Type)i(Value)v"),
+  
+  GB_END_DECLARE
+};*/
+
 GB_DESC CDesktopDesc[] =
 {
   GB_DECLARE("_Desktop", 0), GB_VIRTUAL_CLASS(),
   
   GB_STATIC_METHOD("Find", "Pointer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
   GB_STATIC_METHOD("SendKey", NULL, CDESKTOP_sendkey, "(Key)s(Press)b"),
+  //GB_STATIC_PROPERTY_SELF("Root", "._Desktop.Window"),
+  //GB_STATIC_METHOD("_get", "._Desktop.Window"),
   
   GB_END_DECLARE
 };

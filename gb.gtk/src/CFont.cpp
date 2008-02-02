@@ -214,7 +214,7 @@ BEGIN_METHOD(CFONT_get, GB_STRING str)
 	CFONT *font;
 	gFont *fnt;
 	 
-  fnt = new gFont(GB.ToZeroString(PROP(GB_STRING)));
+  fnt = new gFont(GB.ToZeroString(ARG(str)));
 	font = CFONT_create(fnt);
 	gFont::assign(&fnt);
 	

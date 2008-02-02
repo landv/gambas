@@ -146,7 +146,7 @@ int Check_Reader(CXMLREADER *test)
 
 void Free_Reader(CXMLREADER *test)
 {
-	if (test->buffer)GB.Free((void**)&test->buffer);
+	if (test->buffer)GB.Free(POINTER(&test->buffer));
 	if (test->reader)
 	{
 		xmlTextReaderClose(test->reader);
@@ -175,7 +175,7 @@ BEGIN_METHOD (CXmlReader_FromString,GB_STRING Buffer;GB_STRING URL;)
 
 	Free_Reader(THIS);
 
-	GB.Alloc((void**)&THIS->buffer,LENGTH(Buffer));
+	GB.Alloc(POINTER(&THIS->buffer),LENGTH(Buffer));
 	memcpy (THIS->buffer,STRING(Buffer),LENGTH(Buffer));
 
     	if (!MISSING(URL))
@@ -218,10 +218,10 @@ BEGIN_METHOD (CXmlReader_Decode,GB_STRING Data;GB_STRING Encoding;)
 	if (!strcasecmp(GB.ToZeroString(ARG(Encoding)),"base64") ) {
 		if (!LENGTH(Data)) return;
 
-		GB.Alloc ((void**)&dst,LENGTH(Data) );
+		GB.Alloc (POINTER(&dst),LENGTH(Data) );
 		len=FromBase64(GB.ToZeroString(ARG(Data)),dst);
 		GB.ReturnNewString(dst,len);
-		GB.Free((void**)&dst);
+		GB.Free(POINTER(&dst));
 		return;
 	}
 
@@ -243,10 +243,10 @@ BEGIN_METHOD (CXmlReader_Decode,GB_STRING Data;GB_STRING Encoding;)
 		}
 
 		dst=NULL;
-		GB.Alloc ((void**)&dst,LENGTH(Data)/2);
+		GB.Alloc (POINTER(&dst),LENGTH(Data)/2);
 		FromBinHex(GB.ToZeroString(ARG(Data)),dst);
 		GB.ReturnNewString(dst,LENGTH(Data)/2);
-		GB.Free((void**)&dst);
+		GB.Free(POINTER(&dst));
 		return;
 	}
 
@@ -346,7 +346,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CRNODE_BaseUri)
 
 	if (Check_Reader(THIS)) return;
-	GB.ReturnNewString(xmlTextReaderBaseUri(THIS->reader),0);
+	GB.ReturnNewString((const char *)xmlTextReaderBaseUri(THIS->reader),0);
 
 END_PROPERTY
 
@@ -374,28 +374,28 @@ END_PROPERTY
 BEGIN_PROPERTY(CRNODE_LocalName)
 
 	if (Check_Reader(THIS)) return;
-	GB.ReturnNewString(xmlTextReaderLocalName(THIS->reader),0);
+	GB.ReturnNewString((const char *)xmlTextReaderLocalName(THIS->reader),0);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CRNODE_Name)
 
 	if (Check_Reader(THIS)) return;
-	GB.ReturnNewString(xmlTextReaderName(THIS->reader),0);
+	GB.ReturnNewString((const char *)xmlTextReaderName(THIS->reader),0);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CRNODE_NamespaceUri)
 
 	if (Check_Reader(THIS)) return;
-	GB.ReturnNewString(xmlTextReaderNamespaceUri(THIS->reader),0);
+	GB.ReturnNewString((const char *)xmlTextReaderNamespaceUri(THIS->reader),0);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CRNODE_Prefix)
 
 	if (Check_Reader(THIS)) return;
-	GB.ReturnNewString(xmlTextReaderPrefix(THIS->reader),0);
+	GB.ReturnNewString((const char *)xmlTextReaderPrefix(THIS->reader),0);
 
 END_PROPERTY
 
@@ -417,7 +417,7 @@ BEGIN_PROPERTY(CRNODE_Value)
 
 	if (Check_Reader(THIS)) return;
 
-	buf=xmlTextReaderValue(THIS->reader);
+	buf=(char *)xmlTextReaderValue(THIS->reader);
 	GB.ReturnNewString(buf,0);
 	if (buf) xmlFree(buf);
 
@@ -433,7 +433,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CRNODE_XmlLang)
 
 	if (Check_Reader(THIS)) return;
-	GB.ReturnNewString(xmlTextReaderXmlLang(THIS->reader),0);
+	GB.ReturnNewString((char *)xmlTextReaderXmlLang(THIS->reader),0);
 
 END_PROPERTY
 

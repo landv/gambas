@@ -53,7 +53,7 @@ BEGIN_METHOD(CSTOCK_get, GB_STRING path)
 		return;
 	}
 	
-	GB.New((void **)&Pic, GB.FindClass("Picture"), 0, 0);
+	GB.New(POINTER(&Pic), GB.FindClass("Picture"), 0, 0);
 	if (Pic->picture) Pic->picture->unref();
 	Pic->picture=pic;
 	GB.ReturnObject(Pic);

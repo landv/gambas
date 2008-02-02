@@ -38,7 +38,7 @@
 #include "gbx_exec.h"
 #include "gbx_api.h"
 
-//#define DEBUG_ERROR
+//#define DEBUG_ERROR 1
 
 ERROR_CONTEXT *ERROR_current = NULL;
 ERROR_INFO ERROR_last = { 0 };
@@ -131,11 +131,10 @@ void ERROR_reset(ERROR_INFO *info)
 	info->code = 0;
 	if (info->free)
 	{
-		STRING_free(&info->msg);
+		STRING_unref(&info->msg);
 		info->free = FALSE;
 	}
-	else
-		info->msg = NULL;
+	info->msg = NULL;
 	DEBUG_free_backtrace(&info->backtrace);
 }
 
@@ -182,7 +181,7 @@ void ERROR_leave(ERROR_CONTEXT *err)
 			fprintf(stderr, " -> %p", e);
 			e = e->prev;
 		}
-		fprintf(stderr, " : %s\n", err->info.msg);
+		fprintf(stderr, " : %d %s\n", err->info.code, err->info.msg);
 	}
 	#endif
 	
@@ -203,6 +202,9 @@ void ERROR_leave(ERROR_CONTEXT *err)
 
 void ERROR_propagate()
 {
+	#if DEBUG_ERROR
+	fprintf(stderr, "ERROR_propagate: %d %s\n", ERROR_current->info.code, ERROR_current->info.msg);
+	#endif
 	if (ERROR_current->ret)
 		ERROR_leave(ERROR_current);
   longjmp(ERROR_current->env, 1);
@@ -295,6 +297,10 @@ void ERROR_define(const char *pattern, char *arg[])
   	//DEBUG_free_backtrace(&ERROR_current->info.backtrace);
   	ERROR_current->info.backtrace = DEBUG_backtrace();
   }
+  
+  #if DEBUG_ERROR
+	fprintf(stderr, "ERROR_define: %s\n", ERROR_current->info.msg);
+  #endif
 }
 
 void THROW(int code, ...)
@@ -354,7 +360,7 @@ void ERROR_panic(const char *error, ...)
 
   fflush(NULL);
 
-  fprintf(stderr, "\n** INTERNAL ERROR **\n**");
+  fprintf(stderr, "\n** INTERNAL ERROR **\n** ");
   vfprintf(stderr, error, args);
   putc('\n', stderr);
   if (ERROR_current->info.code)
@@ -428,4 +434,13 @@ void ERROR_restore(ERROR_INFO *save)
 	ERROR_current->info = *save;
 	CLEAR(save);
 	//ERROR_reset(save);
+}
+
+void ERROR_set_last(void)
+{
+	ERROR_reset(&ERROR_last);
+	ERROR_last = ERROR_current->info;
+	if (ERROR_last.free)
+		STRING_ref(ERROR_last.msg);
+	ERROR_last.backtrace = DEBUG_copy_backtrace(ERROR_last.backtrace);
 }

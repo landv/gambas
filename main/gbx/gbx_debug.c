@@ -340,6 +340,20 @@ DEBUG_BACKTRACE *DEBUG_backtrace()
   return result;
 }
 
+DEBUG_BACKTRACE *DEBUG_copy_backtrace(DEBUG_BACKTRACE *bt)
+{
+	DEBUG_BACKTRACE *result;
+	int i;
+	int n = ARRAY_count(bt);
+	
+	ARRAY_create(&result);
+	ARRAY_add_many(&result, n);
+	for (i = 0; i < n; i++)
+		result[i] = bt[i];
+		
+	return result;
+}
+
 
 GB_ARRAY DEBUG_get_string_array_from_backtrace(DEBUG_BACKTRACE *bt)
 {

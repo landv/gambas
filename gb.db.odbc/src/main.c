@@ -107,16 +107,14 @@ static void *my_malloc(size_t size)
 
 static void my_free(_ptr)
 {
-
-GB.Free((void **)&_ptr);
+	GB.Free(POINTER(&_ptr));
 }
 
 #define malloc(_size) my_malloc(_size)
-
-//#define free(_ptr) GB.Free((void **)&_ptr)
 #define free(_ptr) my_free(_ptr)
 
 
+#if 0
 static void quote(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 #ifdef ODBC_DEBUG_HEADER
@@ -142,6 +140,7 @@ fflush(stderr);
 	}
 	(*add)("'", 1);
 }
+#endif
 
 /* internal function to quote a value stored as a blob */
 
@@ -180,6 +179,7 @@ fflush(stderr);
 
 /* internal function to unquote a value stored as a string */
 
+#if 0
 static int unquote(char *data, int len, DB_FORMAT_CALLBACK add)
 {
 #ifdef ODBC_DEBUG_HEADER
@@ -206,6 +206,7 @@ fflush(stderr);
 
 	return FALSE;
 }
+#endif
 
 /* internal function to unquote a value stored as a blob */
 
@@ -906,7 +907,7 @@ fflush(stderr);
 #endif
 	SQLCHAR colname[32];
 	SQLSMALLINT colnamelen;
-	SQLUINTEGER precision;
+	SQLULEN precision;
 	SQLSMALLINT scale;
 	SQLINTEGER i;
 	SQLINTEGER displaysize;
@@ -1016,7 +1017,7 @@ static void query_init(DB_RESULT result, DB_INFO * info, int *count)
 	//int V_OD_erg=0;
 	SQLRETURN retcode;
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
-	SQLINTEGER rowsNum=0;
+	SQLLEN rowsNum=0;
 	SQLSMALLINT colsNum=0;
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1182,10 +1183,10 @@ fflush(stderr);
 		{
 			displaysize=0;
 			char * fieldata;
-			SQLUINTEGER   precision=0;
+			SQLULEN   precision=0;
 			
 			SQLSMALLINT colnamelen=0,scale=0,type;
-			SQLINTEGER read=0;
+			SQLLEN read=0;
 			SQLCHAR namebuff[25];
 				
 			SQLDescribeCol(res->odbcStatHandle, i+1 , namebuff, sizeof(namebuff), &colnamelen,&type,&precision, &scale,NULL);
@@ -1280,7 +1281,7 @@ int i;
 //char * pointer;
 ODBC_RESULT * res= (ODBC_RESULT *) result;
 ODBC_FIELDS * cfield ;
-SQLINTEGER strlen;
+SQLLEN strlen;
 SQLRETURN retcode;
 i=0;
 cfield=res->fields;
@@ -1358,7 +1359,7 @@ fflush(stderr);
 	SQLCHAR colname[32];
 	SQLSMALLINT coltype=0;
 	SQLSMALLINT colnamelen=0;
-	SQLUINTEGER precision=0;
+	SQLULEN precision=0;
 	SQLSMALLINT scale=0;
 	
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
@@ -1393,7 +1394,7 @@ fflush(stderr);
 	SQLCHAR colname[32];
 	SQLSMALLINT coltype;
 	SQLSMALLINT colnamelen;
-	SQLUINTEGER precision;
+	SQLULEN precision;
 	SQLSMALLINT scale;
 	SQLSMALLINT colsNum;
 	int field;
@@ -1441,7 +1442,7 @@ fflush(stderr);
 	SQLCHAR colname[32];
 	SQLSMALLINT coltype;
 	SQLSMALLINT colnamelen;
-	SQLUINTEGER precision;
+	SQLULEN precision;
 	SQLSMALLINT scale;
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
 	SQLRETURN retcode;
@@ -1476,7 +1477,7 @@ fflush(stderr);
 	SQLCHAR colname[32];
 	SQLSMALLINT coltype;
 	SQLSMALLINT colnamelen;
-	SQLUINTEGER precision;
+	SQLULEN precision;
 	SQLSMALLINT scale;
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
 
@@ -1630,7 +1631,7 @@ fflush(stderr);
 	}
 
 	info->nfield = colsNum;
-	GB.Alloc((void **) &info->field, sizeof(DB_FIELD) * colsNum);
+	GB.Alloc(POINTER(&info->field), sizeof(DB_FIELD) * colsNum);
 	i = 0;
 	current = fieldstr;
 
@@ -1800,7 +1801,7 @@ retcode=SQLNumResultCols(statHandle2, &colsNum);
 
 
 
-	GB.Alloc((void **) &info->index, sizeof(int) * i);
+	GB.Alloc(POINTER(&info->index), sizeof(int) * i);
 	info->nindex = i;
 
 

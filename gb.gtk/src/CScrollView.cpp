@@ -52,11 +52,8 @@ void gb_raise_scrollview_Scroll(gScrollView *sender)
 
 BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
 
-	CCONTAINER *Parent=(CCONTAINER*)VPROP(GB_OBJECT);
-	Parent=(CCONTAINER*)GetContainer ((CWIDGET*)Parent);
-
-	THIS->widget=new gScrollView(Parent->widget);
-	InitControl(THIS->widget,(CWIDGET*)THIS);
+	InitControl(new gScrollView(CONTAINER(VARG(parent))),(CWIDGET*)THIS);
+	
 	SCROLLVIEW->onScroll=gb_raise_scrollview_Scroll;
 
 END_METHOD

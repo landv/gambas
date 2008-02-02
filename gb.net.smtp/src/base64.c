@@ -73,7 +73,7 @@ int libsmtp_int_init_base64 (void)
 int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_length, \
          struct libsmtp_session_struct *libsmtp_session)
 {
-  int libsmtp_int_temp, libsmtp_int_counter;
+  int libsmtp_int_counter;
 
   /* These are the input buffer and the output buffer */
   unsigned char libsmtp_int_igroup[3], libsmtp_int_ogroup[2056];
@@ -81,7 +81,7 @@ int libsmtp_int_send_base64 (char *libsmtp_int_data, unsigned int libsmtp_int_le
   int libsmtp_int_finished=0, libsmtp_int_outbytes=0, libsmtp_int_width=0;
   /* This points into the data stream to the byte we are reading ATM */
   unsigned int libsmtp_int_data_ptr=0;
-  GString *libsmtp_int_gstring=g_string_new (NULL);
+  //GString *libsmtp_int_gstring=g_string_new (NULL);
 
   if (!libsmtp_int_dtable_init)
     libsmtp_int_init_base64();

@@ -38,7 +38,7 @@ extern GB_INTERFACE GB;
 #define MAX_DRIVER 8
 
 bool DB_Open(DB_DESC *desc, DB_DRIVER **driver, DB_DATABASE *db);
-char *DB_MakeQuery(DB_DRIVER *driver, char *pattern, int len, int narg, GB_VALUE *arg);
+char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB_VALUE *arg);
 void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK func);
 void DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBACK func);
 
@@ -47,14 +47,14 @@ int DB_CheckNameWith(const char *name, const char *msg, const char *more);
 #define DB_CheckName(_name, _msg) DB_CheckNameWith(_name, _msg, NULL)
 void DB_FreeStringArray(char ***parray);
 GB_ARRAY DB_StringArrayToGambasArray(char **array);
-int DB_FindStringArray(char **array, char *elt);
+int DB_FindStringArray(char **array, const char *elt);
 void DB_SetDebug(int debug);
 int DB_IsDebug(void);
-void DB_TryAnother(char *);
+void DB_TryAnother(const char *);
 
 void q_init(void);
-void q_add(char *str);
-void q_add_length(char *str, int len);
+void q_add(const char *str);
+void q_add_length(const char *str, int len);
 char *q_get(void);
 char *q_steal(void);
 int q_length(void);

@@ -44,7 +44,7 @@ BEGIN_PROPERTY(CXMLNode_Next)
 
 	if (!THIS->node->next) return;
 
-	GB.New((void**)&nd,GB.FindClass("XmlNode"),NULL,NULL);
+	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
 	nd->node=THIS->node->next;
 
 	Doc_AddChild(THIS->parent,nd);
@@ -59,7 +59,7 @@ BEGIN_PROPERTY(CXMLNode_Prev)
 
 	if (!THIS->node->prev) return;
 
-	GB.New((void**)&nd,GB.FindClass("XmlNode"),NULL,NULL);
+	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
 	nd->node=THIS->node->prev;
 
 	Doc_AddChild(THIS->parent,nd);
@@ -74,7 +74,7 @@ BEGIN_PROPERTY(CXMLNode_Parent)
 
 	if (!THIS->node->parent) return;
 
-	GB.New((void**)&nd,GB.FindClass("XmlNode"),NULL,NULL);
+	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
 	nd->node=THIS->node->parent;
 
 	Doc_AddChild(THIS->parent,nd);
@@ -93,11 +93,11 @@ BEGIN_PROPERTY(CXMLNode_Name)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(THIS->node->name,0);
+		GB.ReturnNewString((const char *)THIS->node->name,0);
 		return;
 	}
 
-	xmlNodeSetName(THIS->node, GB.ToZeroString(PROP(GB_STRING)));
+	xmlNodeSetName(THIS->node, (const xmlChar *)GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
@@ -105,7 +105,7 @@ BEGIN_PROPERTY(CXMLNode_Value)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(xmlNodeGetContent(THIS->node),0);
+		GB.ReturnNewString((const char *)xmlNodeGetContent(THIS->node),0);
 		return;
 	}
 
@@ -189,7 +189,7 @@ BEGIN_METHOD(CXmlNode_c_get,GB_INTEGER Element)
 		return;
 	}
 
-	GB.New((void**)&nd,GB.FindClass("XmlNode"),NULL,NULL);
+	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
 	nd->node=ch;
 	Doc_AddChild(THIS->parent,nd);
 
@@ -231,7 +231,7 @@ BEGIN_METHOD_VOID(CXmlNode_a_next)
 
 	(*wenum)++;
 
-	GB.New((void**)&nd,GB.FindClass("XmlNode"),NULL,NULL);
+	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
 	nd->node=attr;
 
 	Doc_AddChild(THIS->parent,nd);
@@ -245,7 +245,7 @@ END_METHOD
 BEGIN_PROPERTY(CXmlNode_a_count)
 
 	int nval=0;
-	xmlNode *ch;
+	xmlAttr *ch;
 
 	ch=THIS->node->properties;
 

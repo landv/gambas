@@ -62,6 +62,8 @@ PRIVATE $bUndo AS Boolean
 PRIVATE $bImage AS Boolean
 PRIVATE $bDispImage AS Boolean
 PRIVATE $cCompRedirect AS Collection
+PRIVATE $bSyntax AS Boolean
+PRIVATE $sTitle AS String
 
 PRIVATE $eTime AS Float
 
@@ -209,8 +211,8 @@ PRIVATE SUB OpenDatabase()
 
   IF NOT $sUri THEN
 
-    $sUri = "/help/comp"
-    $sPath = "/comp"
+    $sUri = "/edit/comp/gb/pointer[]/_put"
+    $sPath = "/comp/gb/pointer[]/_put"
     $sLang = DEFAULT_LANG
     'DB.Debug = TRUE
     '$sRoot = "/var/www/html"
@@ -525,19 +527,24 @@ PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
   SELECT CASE $sSection
 
     CASE "syntax"
-      IF NOT sParam THEN sParam = ("Syntax")
+      IF sParam <> "no-title" THEN 
+        IF $bSyntax THEN $sRes &= "<div class=\"title\">" & $sTitle & "</div>"
+      ENDIF
+      sParam = ("Syntax")
       $sRes &= "<div class=\"black\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
       $sRes &= "<pre class=\"syntax\">"
+      $bSyntax = TRUE
 
     CASE "example"
-      'IF NOT $bExample THEN
-      '  $bExample = TRUE
-      '  $sRes &= "<h3>" & ("Example") & "</h3>\n"
-      'ENDIF
-      IF NOT sParam THEN sParam = ("Example")
-      $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
+      IF NOT $bExample THEN
+        $bExample = TRUE
+        $sRes &= "<h3>" & ("Examples") & "</h3>\n"
+      ENDIF
       $sRes &= "<pre class=\"example\">"
-      '$bVerbatim = TRUE
+      $bVerbatim = TRUE
+      ' IF NOT sParam THEN sParam = ("Example")
+      ' $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
+      ' $sRes &= "<pre class=\"example\">"
       $bNoWiki = TRUE
 
     CASE "code"
@@ -551,8 +558,8 @@ PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
       $iPos = Len($sRes)
 
     CASE "error"
-      '$sRes &= "<h3>" & ("Errors") & "</h3>\n"
-      $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & ("Errors") & "</b></font></div>\n"
+      $sRes &= "<h3>" & ("Errors") & "</h3>\n"
+      '$sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & ("Errors") & "</b></font></div>\n"
       $sRes &= "<table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\" width=\"100%\">\n"
       $sRes &= "<tr><th>" & ("Message") & "</th><th>" & ("Description") & "</th></tr><tr class=\"dark\"><td valign=\"top\">\n"
       $bWhite = TRUE
@@ -586,7 +593,7 @@ PRIVATE SUB LeaveSection()
 
     CASE "example"
       $sRes = RTrim($sRes) & "</pre>\n"
-      '$bVerbatim = FALSE
+      $bVerbatim = FALSE
       $bNoWiki = FALSE
 
     CASE "code"
@@ -807,6 +814,10 @@ PRIVATE FUNCTION Encode(sStr AS String) AS String
           CASE "version"
             $sRes = $sRes & GetVersion()
             CONTINUE
+          
+          CASE "only-in"
+            $sRes &= GetOnlyIn(sArg)
+            CONTINUE 
           
           CASE "changes"
             $sRes &= GetLastChanges()
@@ -1128,6 +1139,8 @@ PRIVATE SUB PrintTitle(sTitle AS String)
   ELSE
     PRINT $sPath
   ENDIF
+  
+  $sTitle = sTitle
 
 END
 
@@ -1176,8 +1189,8 @@ PRIVATE SUB PrintPath()
   ENDIF
     
   PRINT "&nbsp;<a href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
-  'PRINT "<img class=\"flag\" align=\"top\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\">";
-  PRINT GetImage("lang/" & $sLang, "class=\"flag\" alt=\"" & ("Home") & "\"");
+  PRINT "<img class=\"flag\" align=\"top\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\" style=\"margin-top: 2px;\">";
+  'PRINT GetImage("lang/" & $sLang, "class=\"flag\" alt=\"" & ("Home") & "\"");
   PRINT "</a>";
   
   IF $sPath AND IF $sPath <> "/" THEN
@@ -3893,6 +3906,13 @@ CATCH
   RETURN "?"
 
 END
+
+PRIVATE SUB GetOnlyIn(sVer AS String) AS String
+  
+  RETURN "<div class=\"only-in\">" & Subst(("Only in &1 version"), EncodeHTML(sVer)) & "</div>\n"
+  
+END
+
 
 PUBLIC SUB Process_Read()
 

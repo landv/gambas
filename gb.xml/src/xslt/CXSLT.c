@@ -44,9 +44,9 @@ void Doc_AddChild(void *_object,CXMLNODE *chd)
 	mythis->nchildren++;
 	
 	if (!mythis->children)
-		GB.Alloc((void**)&mythis->children,sizeof(CXMLNODE*));
+		GB.Alloc(POINTER(&mythis->children),sizeof(CXMLNODE*));
 	else
-		GB.Realloc((void**)&mythis->children,mythis->nchildren*sizeof(CXMLNODE*));	
+		GB.Realloc(POINTER(&mythis->children),mythis->nchildren*sizeof(CXMLNODE*));	
 
 	chd->parent=_object;
 	mythis->children[mythis->nchildren-1]=chd;
@@ -84,13 +84,13 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT Document;GB_OBJECT StyleSheet;)
 		return;
 	}
 	
-	GB.New((void**)&out,GB.FindClass("XmlDocument"),NULL,NULL);
+	GB.New(POINTER(&out),GB.FindClass("XmlDocument"),NULL,NULL);
 	out->doc=xsltApplyStylesheet(sheet, doc->doc, NULL);
-	GB.New((void**)&out->node,GB.FindClass("XmlNode"),NULL,NULL);
+	GB.New(POINTER(&out->node),GB.FindClass("XmlNode"),NULL,NULL);
 	
 	if (!out->doc)
 	{
-		GB.Unref((void**)&out);
+		GB.Unref(POINTER(&out));
 		GB.Error("Unable to apply Style Sheet");
 		return;
 	}

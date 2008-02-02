@@ -58,24 +58,19 @@ END_METHOD
 
 BEGIN_METHOD(CPICTUREBOX_new, GB_OBJECT parent)
 
-	CCONTAINER *Parent=(CCONTAINER*)VPROP(GB_OBJECT);
-	Parent=(CCONTAINER*)GetContainer ((CWIDGET*)Parent);
-
-	THIS->widget=new gPictureBox(Parent->widget);
-	InitControl(THIS->widget,(CWIDGET*)THIS);
-
+	InitControl(new gPictureBox(CONTAINER(VARG(parent))),(CWIDGET*)THIS);
+	
 END_METHOD
 
 BEGIN_METHOD_VOID(CPICTUREBOX_free)
 
-	if (THIS->picture) { GB.Unref((void**)&THIS->picture); THIS->picture=NULL; }
+	if (THIS->picture) { GB.Unref(POINTER(&THIS->picture)); THIS->picture=NULL; }
 
 END_METHOD
 
 BEGIN_PROPERTY(CPICTUREBOX_picture)
 
 	CPICTURE *pic=NULL;
-	gPicture *buf;
 	
 	if (READ_PROPERTY)
 	{
@@ -85,7 +80,7 @@ BEGIN_PROPERTY(CPICTUREBOX_picture)
 	
 	pic=(CPICTURE*)VPROP(GB_OBJECT);
 	if (pic) GB.Ref((void*)pic);
-	if (THIS->picture) GB.Unref((void**)&THIS->picture);
+	if (THIS->picture) GB.Unref(POINTER(&THIS->picture));
 	THIS->picture=pic;
 
 	if (!pic) PBOX->setPicture(NULL); 
@@ -127,12 +122,8 @@ MovieBox
 ***********************************************************************************/
 BEGIN_METHOD(CMOVIEBOX_new, GB_OBJECT parent)
 
-	CCONTAINER *Parent=(CCONTAINER*)VPROP(GB_OBJECT);
-	Parent=(CCONTAINER*)GetContainer ((CWIDGET*)Parent);
-
-	MTHIS->widget=new gMovieBox(Parent->widget);
-	InitControl(MTHIS->widget,(CWIDGET*)MTHIS);
-
+	InitControl(new gMovieBox(CONTAINER(VARG(parent))),(CWIDGET*)MTHIS);
+	
 END_METHOD
 
 BEGIN_METHOD_VOID(CMOVIEBOX_free)

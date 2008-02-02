@@ -1429,7 +1429,7 @@ PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) 
   sRes = AddMessage(("Nothing to do."))
 
   IF sRes THEN
-    IF sRes <> "OK" THEN
+    IF Process.LastValue THEN
 
       UnlockIt()
       CompileError(sRes)
