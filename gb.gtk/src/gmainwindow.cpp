@@ -217,6 +217,13 @@ void gMainWindow::initWindow()
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	}
 	
+	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
+	//gtk_widget_add_events(widget, GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+	
+	/*	GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
+		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
+		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_POINTER_MOTION_MASK);*/
+
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
 }
 
@@ -237,10 +244,10 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	
 	widget = gtk_layout_new(0,0);
 	
-	initWindow();
 	realize(false);
-	gtk_widget_realize(border);
+	initWindow();
 	
+	gtk_widget_realize(border);
 	gtk_widget_show(widget);
 	
 	gtk_widget_set_size_request(border, 4, 4);

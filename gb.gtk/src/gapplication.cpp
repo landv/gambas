@@ -126,7 +126,7 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 	bool filter;
 	
 	if (widget != _im_widget)
-		return false;
+		return true;
 	
 	if (!_valid)
 		disable();

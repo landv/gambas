@@ -55,6 +55,14 @@ static void cb_size(GtkWidget *wid, GtkAllocation *a, gDrawingArea *data)
 	data->updateCache();
 }
 
+static gboolean cb_button_press(GtkWidget *wid, GdkEventButton *event, gDrawingArea *data)
+{
+	if (data->canFocus())
+		data->setFocus();
+		
+	return false;
+}
+
 gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 {
 	g_typ = Type_gDrawingArea;
@@ -74,12 +82,16 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
+	
+	GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
 		
 	_event_mask = gtk_widget_get_events(widget);
 	
 	onExpose = NULL;
 	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
+	g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
+  
 	//resize(100,30);
 }
 
