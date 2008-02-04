@@ -142,11 +142,10 @@ BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
   QObject::connect(wid, SIGNAL(textChanged()), &CTextArea::manager, SLOT(changed()));
   QObject::connect(wid, SIGNAL(cursorPositionChanged(int, int)), &CTextArea::manager, SLOT(cursor()));
 
-  CWIDGET_new(wid, (void *)_object);
-
   wid->setTextFormat(Qt::PlainText);
   wid->setWordWrap(QTextEdit::NoWrap);
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

@@ -274,18 +274,17 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 
   MyTabWidget *wid = new MyTabWidget(QCONTAINER(VARG(parent))); //, 0, Qt::WNoMousePropagation);
 
-  CWIDGET_new(wid, (void *)_object, "TabStrip");
+  QObject::connect(wid, SIGNAL(currentChanged(QWidget *)), &CTabStrip::manager, SLOT(currentChanged(QWidget *)));
 
   THIS->container = NULL;
   THIS->index = -1;
   THIS->stack = new QPtrList<CTab>;
   THIS->stack->setAutoDelete(true);
 
-  QObject::connect(wid, SIGNAL(currentChanged(QWidget *)), &CTabStrip::manager, SLOT(currentChanged(QWidget *)));
-
+  CWIDGET_new(wid, (void *)_object, true);
   set_tab_count(THIS, 1);
-
   wid->show();
+
   //wid->updateLayout();
 
 END_METHOD

@@ -73,7 +73,6 @@ BEGIN_METHOD(CSCROLLBAR_new, GB_OBJECT parent)
 
   MyScrollBar *wid = new MyScrollBar(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, _object);
   //QT.SetBackgroundRole(_object, QColorGroup::Base);
 
   QObject::connect(wid, SIGNAL(valueChanged(int)), &CScrollBar::manager,
@@ -89,9 +88,9 @@ BEGIN_METHOD(CSCROLLBAR_new, GB_OBJECT parent)
   wid->setMinValue(0);
   wid->setMaxValue(100);
   wid->setLineStep(1);
-  wid-> setPageStep(10);
+  wid->setPageStep(10);
 
-  wid->show();
+  CWIDGET_new(wid, _object);
 
 END_METHOD
 

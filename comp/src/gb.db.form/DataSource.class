@@ -42,18 +42,51 @@ PUBLIC SUB _new()
   
 END
 
+PRIVATE SUB IsMultiContainer(hCont AS Container) AS Boolean
+  
+  DIM hObj AS Object = hCont
+  DIM iCount AS Integer
+  
+  TRY iCount = hObj.Count
+  RETURN NOT ERROR 
+  
+END
+
+PRIVATE SUB AddChild(aChild AS Object[], hChild AS Control)
+  
+  IF NOT hChild.Visible THEN RETURN
+  IF Common.IsControl(hChild) OR IF hChild IS DataSource OR IF hChild IS DataBrowser OR IF hChild IS DataView THEN
+    aChild.Add(hChild)
+  ELSE IF hChild IS Container THEN
+    aChild.Insert(GetChildren(hChild))
+  ENDIF
+  
+END
+
+
 PRIVATE FUNCTION GetChildren(OPTIONAL hParent AS Container = ME) AS Object[]
 
   DIM hChild AS Control
   DIM aChild AS NEW Object[]
+  DIM hTab AS Object
+  DIM iTab AS Integer
   
-  FOR EACH hChild IN hParent.Children
-    IF Common.IsControl(hChild) OR IF hChild IS DataSource OR IF hChild IS DataBrowser OR IF hChild IS DataView THEN
-      aChild.Add(hChild)
-    ELSE IF hChild IS Container THEN
-      aChild.Insert(GetChildren(hChild))
-    ENDIF
-  NEXT
+  IF IsMultiContainer(hParent) THEN 
+  
+    hTab = hParent
+    FOR iTab = 0 TO hTab.Count - 1
+      FOR EACH hChild IN hTab[iTab].Children
+        AddChild(aChild, hChild)
+      NEXT
+    NEXT
+  
+  ELSE
+  
+    FOR EACH hChild IN hParent.Children
+      AddChild(aChild, hChild)
+    NEXT
+    
+  ENDIF
   
   RETURN aChild
   
@@ -194,6 +227,7 @@ PRIVATE SUB Redraw(OPTIONAL bRefresh AS Boolean)
   SetCreateMode($iIndex < 0)
 
   FOR EACH hChild IN GetChildren()
+    'DEBUG hChild.Name
     IF Common.IsControl(hChild) OR IF hChild IS DataSource THEN
       hChild.Refresh
     ELSE IF hChild IS DataBrowser OR IF hChild IS DataView THEN

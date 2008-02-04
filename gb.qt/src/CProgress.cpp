@@ -33,13 +33,10 @@ BEGIN_METHOD(CPROGRESS_new, GB_OBJECT parent)
 
   QProgressBar *wid = new QProgressBar(100, QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object, "ProgressBar");
-
   wid->setTotalSteps(10000);
   wid->setCenterIndicator(true);
-  //wid->setFrameStyle(QFrame::Panel + QFrame::Sunken);
-  //wid->setLineWidth(2);
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

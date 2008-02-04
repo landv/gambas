@@ -57,7 +57,7 @@ PUBLIC SUB Form_Open()
   FillRecent
 
   lblVersion.Text = Project.Version 'Subst(("version &1"), Project.Version)
-  lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 2, lblGambas.Y)
+  lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 4, lblGambas.Y)
 
   IF Project.GetRecentFiles().Count THEN
     Toggle(LIST_RECENT)

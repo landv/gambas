@@ -39,12 +39,9 @@
 BEGIN_METHOD(CPANEL_new, GB_OBJECT parent)
 
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
-
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
 
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -53,13 +50,11 @@ BEGIN_METHOD(CHBOX_new, GB_OBJECT parent)
 
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
   THIS->arrangement.mode = ARRANGE_HORIZONTAL;
   //THIS->arrangement.autoresize = true;
 
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -68,13 +63,11 @@ BEGIN_METHOD(CVBOX_new, GB_OBJECT parent)
 
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
   THIS->arrangement.mode = ARRANGE_VERTICAL;
   //THIS->arrangement.autoresize = true;
 
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -83,13 +76,11 @@ BEGIN_METHOD(CHPANEL_new, GB_OBJECT parent)
 
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
   THIS->arrangement.mode = ARRANGE_ROW;
   //THIS->arrangement.autoresize = true;
 
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -98,13 +89,11 @@ BEGIN_METHOD(CVPANEL_new, GB_OBJECT parent)
 
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
   THIS->arrangement.mode = ARRANGE_COLUMN;
   //THIS->arrangement.autoresize = true;
 
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

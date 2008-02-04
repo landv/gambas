@@ -203,14 +203,16 @@ END
 PRIVATE SUB InitVersion()
 
   DIM sVer AS String
-
-  Version = "?"
-  'SHELL "gbx" & System.Version & " -V > " & TMP_FILE 'WAIT
-  'sVer = File.Load(TMP_FILE)
-  'KILL TMP_FILE
+  DIM aVer AS String[]
 
   SHELL "gbx" & System.Version & " -V" TO sVer
-  Version = Trim(Mid$(sVer, InStr(sVer, "-") + 1))
+  aVer = Split(Trim(Mid$(sVer, InStr(sVer, "-") + 1)), ".")
+  aVer.Remove(aVer.Max)
+  Version = aVer.Join(".")
+  
+CATCH 
+
+  Version = "?"
 
 END
 
@@ -1429,7 +1431,7 @@ PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) 
   sRes = AddMessage(("Nothing to do."))
 
   IF sRes THEN
-    IF sRes <> "OK" THEN
+    IF Process.LastValue THEN
 
       UnlockIt()
       CompileError(sRes)

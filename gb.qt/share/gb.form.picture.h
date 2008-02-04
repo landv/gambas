@@ -78,7 +78,7 @@ static bool init_stock()
   return error;
 }
 
-bool LOAD_IMAGE_FUNC(IMAGE_TYPE **p, char *path, int lenp)
+bool LOAD_IMAGE_FUNC(IMAGE_TYPE **p, const char *path, int lenp)
 {
   char *addr;
   int len;
@@ -125,7 +125,7 @@ __LOAD:
 }
 
 
-static CPICTURE *get_picture(char *path, int len)
+static CPICTURE *get_picture(const char *path, int len)
 {
   CPICTURE *pict = NULL;
   char key[MAX_KEY + 1];
@@ -185,7 +185,7 @@ __RETURN:
   return pict;
 }
 
-static void set_picture(char *path, int len, CPICTURE *newpict)
+static void set_picture(const char *path, int len, CPICTURE *newpict)
 {
   char key[MAX_KEY + 1];
 

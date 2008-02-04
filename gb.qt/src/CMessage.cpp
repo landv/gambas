@@ -61,7 +61,7 @@ static int make_message(int type, int nbmax, void *_param)
   QMessageBox::Icon icon;
   QPoint p;
   QWidget *parent;
-  char *stock = 0;
+  const char *stock = 0;
 
 	if (_global_lock)
 	{

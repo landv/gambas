@@ -241,7 +241,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
       // To be called first!
       QObject::connect(client, SIGNAL(destroyed()), &CWindow::manager, SLOT(destroy()));
       client->installEventFilter(&CWindow::manager);
-      CWIDGET_new(client, (void *)_object, NULL);
+      CWIDGET_new(client, (void *)_object, true);
     }
     else
     #endif
@@ -253,7 +253,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
       THIS->toplevel = true;
       THIS->xembed = false;
 
-      CWIDGET_new(win, (void *)_object, NULL);
+      CWIDGET_new(win, (void *)_object, true);
     }
   }
   else
@@ -276,7 +276,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
     THIS->toplevel = false;
 		THIS->xembed = false;
 
-    CWIDGET_new(win, (void *)_object, NULL);
+    CWIDGET_new(win, (void *)_object, true);
   }
   /*else
   {

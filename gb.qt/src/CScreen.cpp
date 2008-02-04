@@ -136,7 +136,7 @@ BEGIN_PROPERTY(CAPP_busy)
   {
     busy = VPROP(GB_INTEGER);
 
-    if (screen_busy == 0 && busy != 0)
+    if (screen_busy == 0 && busy > 0)
       qApp->setOverrideCursor(Qt::waitCursor);
     else if (screen_busy > 0 && busy == 0)
       qApp->restoreOverrideCursor();

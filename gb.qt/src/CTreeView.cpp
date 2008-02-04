@@ -354,6 +354,9 @@ static MyListView *listview_init(void *_object, void *parent)
   QObject::connect(wid, SIGNAL(pressed(QListViewItem *)), &CTreeView::manager, SLOT(clicked(QListViewItem *)));
   QObject::connect(wid, SIGNAL(itemRenamed(QListViewItem *, int)), &CTreeView::manager, SLOT(renamed(QListViewItem *, int)));
 
+  wid->setSorting(-1);
+  wid->setSelectionMode(QListView::Single);
+
   CWIDGET_new(wid, (void *)_object);
 
   THIS->dict = new QAsciiDict<MyListViewItem>;
@@ -362,9 +365,6 @@ static MyListView *listview_init(void *_object, void *parent)
   THIS->item = 0;
   THIS->save = 0;
   THIS->rename = false;
-
-  wid->setSorting(-1);
-  wid->setSelectionMode(QListView::Single);
 
   return wid;
 }
@@ -380,7 +380,6 @@ BEGIN_METHOD(CTREEVIEW_new, GB_OBJECT parent)
   wid->addColumn("-");
   wid->header()->hide();
   wid->setRootIsDecorated(true);
-  wid->show();
 
 END_METHOD
 
@@ -395,7 +394,6 @@ BEGIN_METHOD(CLISTVIEW_new, GB_OBJECT parent)
   wid->setHScrollBarMode(QScrollView::AlwaysOff);
   wid->header()->hide();
   wid->setResizeMode(QListView::LastColumn);
-  wid->show();
 
 END_METHOD
 
@@ -418,8 +416,6 @@ BEGIN_METHOD(CCOLUMNVIEW_new, GB_OBJECT parent)
   wid->setAllColumnsShowFocus(true);
   
   wid->setResizeMode(QListView::LastColumn);
-
-  wid->show();
 
 END_METHOD
 

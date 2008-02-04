@@ -557,13 +557,11 @@ BEGIN_METHOD(CUSERCONTROL_new, GB_OBJECT parent)
 
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
   THIS_ARRANGEMENT->mode = ARRANGE_FILL;
   THIS_ARRANGEMENT->user = true;
 
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

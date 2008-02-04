@@ -83,13 +83,12 @@ BEGIN_METHOD(CTEXTBOX_new, GB_OBJECT parent)
 
   QLineEdit *wid = new QLineEdit(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(event_change()));
   QObject::connect(wid, SIGNAL(returnPressed()), &CTextBox::manager, SLOT(event_activate()));
 
   wid->setAlignment(Qt::AlignLeft);
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -386,13 +385,11 @@ BEGIN_METHOD(CCOMBOBOX_new, GB_OBJECT parent)
 
   //QObject::connect(wid, SIGNAL(highlighted(int)), &CTextBox::manager, SLOT(event_click()));
 
-  CWIDGET_new(wid, (void *)_object, "ComboBox");
-
   wid->setInsertionPolicy(QComboBox::NoInsertion);
 
-  combo_set_editable(_object, true);
+  CWIDGET_new(wid, (void *)_object);
 
-  wid->show();
+  combo_set_editable(_object, true);
 
 END_METHOD
 
