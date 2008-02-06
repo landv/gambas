@@ -622,7 +622,6 @@ static bool header_function(TRANS_FUNC *func)
       		THROW("The special method must return an integer");
 				if (func->nparam != 1)
       		THROW("The special method must take exactly one argument");
-
       }
 
       break;
@@ -641,7 +640,7 @@ static bool header_function(TRANS_FUNC *func)
   for(;;)
   {
     pat = *JOB->current;
-    if (PATTERN_is_end(pat))
+    if (PATTERN_is_end(pat) || PATTERN_is_command(pat))
     {
       THROW("Missing END");
     }
@@ -818,6 +817,12 @@ PUBLIC void HEADER_do(void)
 
     if (header_library())
       continue;
+
+		if (PATTERN_is_command(*JOB->current))
+		{
+			JOB->current++;
+			continue;
+		}
 
     THROW(E_UNEXPECTED, READ_get_pattern(JOB->current));
   }

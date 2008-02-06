@@ -174,6 +174,10 @@ char *READ_get_pattern(PATTERN *pattern)
     case RT_TSTRING:
       snprintf(COMMON_buffer, COMMON_BUF_MAX, "\"%s\"", TABLE_get_symbol_name(JOB->class->string, index));
       break;
+      
+    case RT_COMMAND:
+    	snprintf(COMMON_buffer, COMMON_BUF_MAX, "#%d", index);
+    	break;
 
     case RT_NEWLINE:
       strcpy(COMMON_buffer, "end of line");
@@ -248,6 +252,8 @@ void READ_dump_pattern(PATTERN *pattern)
     printf("PARAM        %d\n", index);
   else if (type == RT_SUBR)
     printf("SUBR         %s\n", READ_get_pattern(pattern));
+  else if (type == RT_COMMAND)
+    printf("COMMAND      %d\n", index);
   else
     printf("?            %d\n", index);
 
@@ -794,6 +800,34 @@ static void add_string()
 }
 
 
+static void add_command()
+{
+  unsigned char car;
+  const char *start;
+  int len;
+
+  start = source_ptr;
+  len = 0;
+
+  for(;;)
+  {
+    source_ptr++;
+    car = get_char();
+    if (car == '\n' || !car)
+    	break;
+    len++;
+  }
+
+	if (len)
+	{
+  	//TABLE_add_symbol(comp->class->string, start + 1, len, NULL, &index);
+  	if (len == 7 && !strncasecmp(start + 1, "SECTION", 7))
+	  	add_pattern(RT_COMMAND, RC_SECTION);
+  }
+
+  add_newline();
+}
+
 void READ_do(void)
 {
   static void *jump_char[8] =
@@ -870,6 +904,13 @@ void READ_do(void)
   
   __OTHER:
   
+  	if (car == '#' && begin_line)
+  	{
+  		add_command();
+  		begin_line = FALSE;
+  		continue;
+  	}
+  	
     if (is_number())
     {
       add_number();
@@ -895,95 +936,3 @@ __BREAK:
   READ_exit();
 }
 
-#if 0
-void READ_do(void)
-{
-  unsigned char car;
-
-  comp = JOB;
-
-  READ_init();
-
-  source_ptr = comp->source;
-  source_length = BUFFER_length(comp->source);
-  begin_line = TRUE;
-
-  //while (source_ptr < source_length)
-  for(;;)
-  {
-    car = get_char();
-    if (!car)
-      break;
-
-    if (car <= ' ')
-    {
-      source_ptr++;
-      if (car == '\n')
-      {
-        add_newline();
-        begin_line = TRUE;
-      }
-      continue;
-    }
-
-    if (car == '\'')
-    {
-      do
-      {
-        source_ptr++;
-        car = get_char();
-      }
-      while (car != '\n' && car != 0);
-
-      begin_line = FALSE;
-      continue;
-    }
-
-    if (car == '"')
-    {
-      add_string();
-      begin_line = FALSE;
-      continue;
-    }
-
-    if (car & 0x80)
-      THROW("Syntax error");
-
-    if (ident_first_car[car])
-    //if (isalpha(car) || car == '_' || car == (unsigned char)'$')
-    {
-      add_identifier(FALSE);
-      begin_line = FALSE;
-      continue;
-    }
-
-    if (car == '{')
-    {
-      source_ptr++;
-      add_identifier(TRUE);
-      begin_line = FALSE;
-      continue;
-    }
-
-    if (is_number())
-    {
-      add_number();
-      begin_line = FALSE;
-      continue;
-    }
-
-    add_operator();
-    begin_line = FALSE;
-  }
-
-  /* On ajoute des marqueurs de fin pour simplifier le travail du compilateur
-     lorsqu'il examine des patterns �l'avance (pas plus de quatre !) */
-  add_newline();
-  add_end();
-  add_end();
-  add_end();
-  add_end();
-
-  READ_exit();
-}
-#endif

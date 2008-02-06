@@ -271,6 +271,8 @@ PUBLIC void FORM_do(bool ctrl_public)
     THROW("Bad version");
 
   pos_rewind = _current;
+  
+  print("#SECTION\n");
 
   while (!read_line(&line, &len))
   {
