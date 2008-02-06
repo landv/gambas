@@ -55,12 +55,14 @@ static void start_code(void)
 
 static void write_short(short value)
 {
-  if (!(cur_func->ncode & (CODE_INSTR_INC - 1)))
+  //if (!(cur_func->ncode & (CODE_INSTR_INC - 1)))
+  if (cur_func->ncode >= cur_func->ncode_max)
   {
+  	cur_func->ncode_max += CODE_INSTR_INC;
     if (!cur_func->code)
       ALLOC(&cur_func->code, sizeof(short) * CODE_INSTR_INC, "write_short");
     else
-      REALLOC(&cur_func->code, sizeof(short) * (cur_func->ncode + CODE_INSTR_INC), "write_short");
+      REALLOC(&cur_func->code, sizeof(short) * cur_func->ncode_max, "write_short");
   }
   
   cur_func->code[cur_func->ncode] = value;
@@ -154,7 +156,7 @@ static ushort *get_last_code()
 
 #ifdef PROJECT_COMP
 
-boolean CODE_popify_last(void)
+bool CODE_popify_last(void)
 {
   /*
   #ifdef DEBUG
@@ -204,7 +206,7 @@ boolean CODE_popify_last(void)
 }
 
 
-boolean CODE_check_statement_last(void)
+bool CODE_check_statement_last(void)
 {
   unsigned short op;
   PCODE *last_code;
@@ -227,7 +229,7 @@ boolean CODE_check_statement_last(void)
 }
 
 
-boolean CODE_check_pop_local_last(short *local)
+bool CODE_check_pop_local_last(short *local)
 {
   PCODE *last_code;
 
@@ -242,6 +244,22 @@ boolean CODE_check_pop_local_last(short *local)
   }
 
   return FALSE;
+}
+
+bool CODE_check_jump_not(void)
+{
+	ushort op;
+	PCODE *last_code = get_last_code();
+	
+	if (!last_code)
+		return FALSE;
+		
+	op = *last_code & 0xFF00;
+	if (op != C_NOT)
+		return FALSE;
+		
+	cur_func->ncode--;
+	return TRUE;
 }
 
 #endif

@@ -39,7 +39,7 @@ public:
 
 	void clear();
 	void resize(int width,int height);
-	int save(char *path, int quality = -1);
+	int save(const char *path, int quality = -1);
 	void fill(gColor col);
 	gPicture *copy(int x, int y, int w, int h);
 
@@ -53,7 +53,7 @@ public:
 	void replace(gColor src, gColor dst, bool noteq = false);
 	void draw(gPicture *src, int x, int y, int w = -1, int h = -1, int sx = 0, int sy = 0, int sw = -1, int sh = -1);
 
-	static gPicture *fromNamedIcon(char *name, int len = -1);
+	static gPicture *fromNamedIcon(const char *name, int len = -1);
 	static gPicture *fromMemory(char *addr, unsigned int len);
 
 //"Private"
@@ -83,8 +83,8 @@ public:
 class gPictureCache
 {
 public:
-	static void put(char *key, gPicture *img);
-	static gPicture *get(char *key);
+	static void put(const char *key, gPicture *img);
+	static gPicture *get(const char *key);
 	static void flush();
 	static void init();
 	static void exit();

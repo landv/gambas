@@ -676,6 +676,7 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
         iPos = InStr(sLine, "'")
         IF iPos THEN sLine = Trim(Left(sLine, iPos - 1))
         IF Len(sLine) = 3 AND IF UCase(sLine) = "END" THEN BREAK
+        IF Len(sLine) = 7 AND IF UCase(sLine) = "END SUB" THEN BREAK
         'aSym = Highlight.Analyze(hEditor.Lines[iLine])
         'IF aSym.Count = 1 AND IF aSym[0] = "END" THEN BREAK
       LOOP

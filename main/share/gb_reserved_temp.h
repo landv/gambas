@@ -28,7 +28,7 @@
 #include "gb_type_common.h"
 #include "gb_reserved.h"
 
-/* If this file is modified, don't forget to update GAMBAS_PCODE_VERSION in acinclude.m4 */
+/* If this file is modified, don't forget to update GAMBAS_PCODE_VERSION in acinclude.m4 if needed */
 
 COMP_INFO COMP_res_info[] =
 {
@@ -139,8 +139,9 @@ COMP_INFO COMP_res_info[] =
   { "UNLOCK"                                        },
   { "LIBRARY"                                       },
   { "DEBUG"                                         },
-  { "PIPE"																					},
-  { "RANDOMIZE"																			},
+  { "PIPE"                                          },
+  { "RANDOMIZE"                                     },
+  { "BYREF"                                         },
 
   { ":"                                                                   },
   { ";"                                                                   },

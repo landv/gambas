@@ -45,12 +45,10 @@ BEGIN_METHOD(CLABEL_new, GB_OBJECT parent)
 
   QLabel *wid = new MyLabel(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   wid->setTextFormat(Qt::PlainText);
   wid->setAlignment(Qt::AlignAuto + Qt::AlignVCenter); // + Qt::WordBreak);
-  //wid->setLineWidth(2);
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -59,13 +57,12 @@ BEGIN_METHOD(CTEXTLABEL_new, GB_OBJECT parent)
 
   MyLabel *wid = new MyLabel(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   wid->setTextFormat(Qt::RichText);
   wid->setAlignment(Qt::AlignAuto + Qt::AlignTop + Qt::WordBreak);
   //wid->setLineWidth(2);
   //wid->setAutoResize(false);
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -187,8 +184,6 @@ BEGIN_METHOD(CSEPARATOR_new, GB_OBJECT parent)
   MySeparator *wid = new MySeparator(QCONTAINER(VARG(parent)));
 
   CWIDGET_new(wid, (void *)_object);
-
-  wid->show();
 
 END_METHOD
 

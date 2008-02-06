@@ -73,8 +73,6 @@ BEGIN_METHOD(CMOVIEBOX_new, GB_OBJECT parent)
 
   CWIDGET_new(wid, _object);
 
-  wid->show();
-
 END_METHOD
 
 BEGIN_METHOD_VOID(CMOVIEBOX_free)

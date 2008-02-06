@@ -68,8 +68,6 @@ BEGIN_METHOD(CLISTBOX_new, GB_OBJECT parent)
   THIS->sorted = false;
   THIS->last = -1;
 
-  wid->show();
-
 END_METHOD
 
 

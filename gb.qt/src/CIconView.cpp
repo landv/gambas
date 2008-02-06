@@ -211,7 +211,7 @@ BEGIN_METHOD(CICONVIEW_new, GB_OBJECT parent)
   QObject::connect(wid, SIGNAL(clicked(QIconViewItem *)), &CIconView::manager, SLOT(clicked(QIconViewItem *)));
   QObject::connect(wid, SIGNAL(itemRenamed(QIconViewItem *)), &CIconView::manager, SLOT(renamed(QIconViewItem *)));
 
-  CWIDGET_new(wid, (void *)_object, "IconView");
+  CWIDGET_new(wid, (void *)_object);
 
   THIS->dict = new QAsciiDict<MyIconViewItem>;
   THIS->sorted = false;
@@ -219,8 +219,6 @@ BEGIN_METHOD(CICONVIEW_new, GB_OBJECT parent)
   THIS->item = NULL;
   THIS->save = NULL;
   THIS->editable = false;
-  
-  wid->show();
 
 END_METHOD
 

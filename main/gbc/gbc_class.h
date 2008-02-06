@@ -90,16 +90,19 @@ typedef
     char nparam;          // Maximum number of arguments
     char npmin;           // Minimum number of arguments
     char vararg;          // If this function accepts extra arguments
-    char byref;           // Binary map of byref arguments
+    char _reserved;
     short nlocal;         // Local variable count
     short nctrl;          // Control structure variable count
+    //uint byref;           // Binary map of byref arguments. Not used actually.
     PARAM *local;         // Datatypes of local variables
     PARAM *param;         // Datatypes of arguments
 
     PATTERN *start;       // Starts compilation from there
     int line;	            // ...which is this line
     ushort *code;         // Compile bytecode
+    
     ushort ncode;         // Number of instructions
+    ushort ncode_max;     // Size of the bytecode allocation
 
     short last_code;      // Last compiled bytecode position
     short stack;          // Needed stack
@@ -107,7 +110,7 @@ typedef
     short catch;          // CATCH position
 
     short *pos_line;      // Bytecode position of each code line
-    short _reserved2[3];
+    short _reserved2[2];
     }
   PACKED
   FUNCTION;

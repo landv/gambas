@@ -114,6 +114,7 @@ PUBLIC void EVAL_start(EXPRESSION *expr)
   ARRAY_create(&expr->unknown);
   expr->code = NULL;
   expr->ncode = 0;
+  expr->ncode_max = 0;
   ARRAY_create(&expr->var);
 
   expr->nvar = 0;

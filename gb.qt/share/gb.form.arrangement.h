@@ -138,12 +138,15 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
   bool rtl = IS_RIGHT_TO_LEFT();
   int rtlm = rtl ? -1 : 1;
 
+	//if (qstrcmp(GB.GetClassName(THIS), "FOutput") == 0)
+  if (!CAN_ARRANGE(_object))
+    return;
+    
   cont = (CONTAINER_TYPE)GET_CONTAINER(_object);
   arr = GET_ARRANGEMENT(_object);
 
-	//if (qstrcmp(GB.GetClassName(THIS), "FOutput") == 0)
-  if (!IS_WIDGET_VISIBLE(cont) && !IS_WIDGET_VISIBLE(GET_WIDGET(_object)))
-    return;
+  //if (!IS_WIDGET_VISIBLE(cont) && !IS_WIDGET_VISIBLE(GET_WIDGET(_object)))
+  //  return;
   
   //fprintf(stderr, "CCONTAINER_arrange: %s: locked %d: mode %d: autoresize: %d\n", GET_OBJECT_NAME(_object), arr->locked, arr->mode, arr->autoresize);
 

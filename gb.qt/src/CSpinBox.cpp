@@ -42,7 +42,6 @@ BEGIN_METHOD(CSPINBOX_new, GB_OBJECT parent)
 
   QSpinBox *wid = new QSpinBox(QCONTAINER(VARG(parent)));
   
-  CWIDGET_new(wid, _object);
   //QT.SetBackgroundRole(_object, QColorGroup::Base);
 
   QObject::connect(wid, SIGNAL(valueChanged(int)), &CSpinBox::manager, SLOT(event_change()));
@@ -55,7 +54,7 @@ BEGIN_METHOD(CSPINBOX_new, GB_OBJECT parent)
 	wid->setMaxValue(100);
 	wid->setLineStep(1);
 
-  wid->show();
+  CWIDGET_new(wid, _object);
 
 END_METHOD
 

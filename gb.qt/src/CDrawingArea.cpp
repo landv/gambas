@@ -155,6 +155,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			if (!contentsRect().contains(event->rect()))
 			{
 				p->restore();
+				//paint.setClipRegion( event->region().intersect(frameRect()) );
 				drawFrame(p);
 			}
       
@@ -380,12 +381,10 @@ BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
   MyDrawingArea *wid = new MyDrawingArea(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   //THIS->widget.background = QColorGroup::Base;
   THIS->container = wid;
 
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

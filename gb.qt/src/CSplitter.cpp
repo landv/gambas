@@ -58,13 +58,12 @@ BEGIN_METHOD(CHSPLIT_new, GB_OBJECT parent)
 
   QSplitter *wid = new MySplitter(QCONTAINER(VARG(parent)));
 
+  wid->setOrientation(Qt::Horizontal);
+  wid->setOpaqueResize(true);
+
   CWIDGET_new(wid, (void *)_object);
 
   THIS->widget.container = wid;
-
-  wid->setOrientation(Qt::Horizontal);
-  wid->setOpaqueResize(true);
-  wid->show();
 
 END_METHOD
 
@@ -110,8 +109,8 @@ BEGIN_PROPERTY(CSPLITTER_layout)
     for (i = 0; i < list.count(); i++)
     {
       pos = *it;
-      //if (pos <= 1)
-      //  pos = 0;
+      if (pos <= 1)
+        pos = 0;
       sprintf(buffer, "%d", pos);
       if (i > 0)
         s += ',';
@@ -140,6 +139,7 @@ BEGIN_PROPERTY(CSPLITTER_layout)
     #endif
 
     dim = WIDGET->orientation() == Qt::Horizontal ? WIDGET->width() : WIDGET->height();
+    dim -= WIDGET->handleWidth() * WIDGET->handleCount();
 
     for (i = 0, sum = 0; i < sl.count(); i++)
     {
@@ -154,7 +154,7 @@ BEGIN_PROPERTY(CSPLITTER_layout)
       pos = sl[i].toInt();
       if (pos < 1) // why <= before ?
         pos = 0;
-      if (pos)
+      else
         pos = pos * dim / sum;
       #ifdef DEBUG_ME
       qDebug("Splitter.Layout[%ld] = %ld  dim = %d  sum = %d  pos = %d", i, sl[i].toInt(), dim, sum, pos);
@@ -304,3 +304,18 @@ bool MySplitter::eventFilter(QObject *o, QEvent *e)
   return QObject::eventFilter(o, e);
 }
 
+int MySplitter::handleCount()
+{
+  QObjectList *list = (QObjectList *)children();
+  CWIDGET *ob;
+  int i, nh = -1;
+  
+  for (i = 0; i < (int)list->count(); i++)
+  {
+  	ob = CWidget::getReal(list->at(i));
+  	if (ob && ob->widget && !ob->widget->isHidden())
+  		nh++;
+  }
+  		
+  return nh;
+}

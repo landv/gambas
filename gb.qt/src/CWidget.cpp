@@ -211,7 +211,7 @@ void CWIDGET_init_name(CWIDGET *_object)
 	set_name(THIS, name);
 }
 
-void CWIDGET_new(QWidget *w, void *_object, const char *klass /* = NULL */, bool no_filter /* = false */, bool no_init /* = false */)
+void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool no_init)
 {
   CWidget::add(w, _object, no_filter);
 
@@ -235,6 +235,12 @@ void CWIDGET_new(QWidget *w, void *_object, const char *klass /* = NULL */, bool
 
 	THIS->flag.default_bg = true;
 	THIS->flag.default_fg = true;
+	
+	if (!no_show)
+	{
+		THIS->flag.visible = true;
+		w->show();
+	}
 
 	//WIDGET->setName(THIS->name);
 }
@@ -492,10 +498,11 @@ END_PROPERTY
 BEGIN_PROPERTY(CCONTROL_visible)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(!QWIDGET(_object)->isHidden());
+    GB.ReturnBoolean(THIS->flag.visible || !QWIDGET(_object)->isHidden());
   else
   {
-    if (VPROP(GB_BOOLEAN))
+  	THIS->flag.visible = VPROP(GB_BOOLEAN);
+    if (THIS->flag.visible)
       QWIDGET(_object)->show();
     else
       QWIDGET(_object)->hide();

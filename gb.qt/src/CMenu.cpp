@@ -121,38 +121,6 @@ static void show_menu(CMENU *item)
 
   if (parent)
   {
-    /*
-    if (QPOPUPMENU(parent) == 0)
-    {
-#ifdef DEBUG_MENU
-      qDebug("show_menu: add_popup");
-#endif
-
-      QPopupMenu *popup = new QPopupMenu(item->toplevel);
-
-      change = CMENU_is_visible(parent);
-
-      if (change)
-        hide_menu(parent);
-
-      QPOPUPMENU(parent) = popup;
-
-      //parent->dict = new QIntDict<CMENU>;
-
-      QObject::connect(popup, SIGNAL(activated(int)), &CMenu::manager, SLOT(activated(int)));
-      QObject::connect(popup, SIGNAL(aboutToShow()), &CMenu::manager, SLOT(shown()));
-      QObject::connect(popup, SIGNAL(destroyed()), &CMenu::manager, SLOT(destroy()));
-
-      // un popupmenu est r��enc�deux fois !
-      // Et il ne faut pas effacer le tag !
-      //qDebug("*** show_menu %p (Popup)", parent);
-      CWIDGET_new(popup, (void *)parent, "Menu", true, true);
-
-      if (change)
-        show_menu(parent);
-    }
-    */
-
     item->container = QPOPUPMENU(parent);
   }
 
@@ -273,7 +241,7 @@ static void init_menu(CMENU *item)
       // un popupmenu est r��enc�deux fois !
       // Et il ne faut pas effacer le tag !
       //qDebug("*** show_menu %p (Popup)", parent);
-      CWIDGET_new(popup, (void *)parent, NULL, true, true);
+      CWIDGET_new(popup, (void *)parent, true, true, true);
 
       if (change)
         show_menu(parent);

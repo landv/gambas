@@ -498,8 +498,8 @@ PUBLIC void TRANS_new(void)
         if (nparam > MAX_PARAM_FUNC)
           THROW("Too many arguments");
 
-        if (PATTERN_is(*JOB->current, RS_AT))
-          THROW("NEW cannot have output parameters");
+        if (PATTERN_is(*JOB->current, RS_AT) || PATTERN_is(*JOB->current, RS_BYREF))
+          THROW("NEW cannot have arguments passed by reference");
 
         TRANS_expression(FALSE);
         nparam++;

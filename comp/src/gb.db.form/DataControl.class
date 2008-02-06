@@ -299,6 +299,6 @@ END
 
 PUBLIC SUB SetFocus()
   
-  $hCtrl.SetFocus
+  IF $hCtrl THEN $hCtrl.SetFocus
   
 END

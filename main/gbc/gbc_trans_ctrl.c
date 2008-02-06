@@ -83,6 +83,11 @@ static void control_add_current_pos()
   control_add_pos(&current_ctrl->pos, CODE_get_current_pos());
 }
 
+static void control_add_this_pos(ushort pos)
+{
+  control_add_pos(&current_ctrl->pos, pos);
+}
+
 
 static void control_jump_each_pos_with(short *tab_pos)
 {
@@ -365,6 +370,23 @@ void TRANS_control_exit()
   }
 }
 
+static ushort trans_jump_if(bool if_true)
+{
+	ushort pos;
+	
+	if (CODE_check_jump_not())
+		if_true = !if_true;
+	
+	pos = CODE_get_current_pos();
+		
+	if (if_true)
+		CODE_jump_if_true();
+	else
+		CODE_jump_if_false();
+		
+	return pos;
+}
+
 static void trans_endif(void)
 {
   if (current_ctrl->state == 0)
@@ -407,12 +429,14 @@ static void trans_if(void)
 
     // IF NOT A THEN
 
-    control_set_value(CODE_get_current_pos());
+    /*control_set_value(CODE_get_current_pos());
 
     if (mode == RS_AND)
       CODE_jump_if_true();
     else
-      CODE_jump_if_false();
+      CODE_jump_if_false();*/
+      
+    control_set_value(trans_jump_if(mode == RS_AND));
 
     //   FALSE
     CODE_ignore_next_stack_usage();
@@ -432,12 +456,14 @@ static void trans_if(void)
 
       TRANS_expression(FALSE);
 
-      control_set_value(CODE_get_current_pos());
+      /*control_set_value(CODE_get_current_pos());
 
       if (mode == RS_AND)
         CODE_jump_if_true();
       else
-        CODE_jump_if_false();
+        CODE_jump_if_false();*/
+        
+      control_set_value(trans_jump_if(mode == RS_AND));
 
       //   FALSE
       CODE_ignore_next_stack_usage();
@@ -465,8 +491,9 @@ static void trans_if(void)
 	else if (!PATTERN_is_newline(*JOB->current))
     THROW("Syntax error. THEN expected");
 
-  control_set_value(CODE_get_current_pos());
-  CODE_jump_if_false();
+  /*control_set_value(CODE_get_current_pos());
+  CODE_jump_if_false();*/
+	control_set_value(trans_jump_if(FALSE));
 }
 
 static void trans_else_if(void)
@@ -547,19 +574,22 @@ void TRANS_do(PATTERN type)
 
     TRANS_expression(FALSE);
 
-    control_add_current_pos();
+    /*control_add_current_pos();
 
     if (is_until)
       CODE_jump_if_true();
     else
-      CODE_jump_if_false();
+      CODE_jump_if_false();*/
+      
+    control_add_this_pos(trans_jump_if(is_until));
+    
   }
 }
 
 
 void TRANS_loop(PATTERN type)
 {
-  short pos;
+  ushort pos;
 
   boolean is_until;
 
@@ -580,13 +610,15 @@ void TRANS_loop(PATTERN type)
 
     TRANS_expression(FALSE);
 
-    pos = CODE_get_current_pos();
+    /*pos = CODE_get_current_pos();
 
     if (is_until)
       CODE_jump_if_false();
     else
-      CODE_jump_if_true();
-
+      CODE_jump_if_true();*/
+      
+    pos = trans_jump_if(!is_until);
+    
     CODE_jump_length(pos, control_get_value());
   }
   else

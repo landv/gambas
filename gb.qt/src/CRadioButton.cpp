@@ -48,9 +48,7 @@ BEGIN_METHOD(CRADIOBUTTON_new, GB_OBJECT parent)
 
   QObject::connect(wid, SIGNAL(toggled(bool)), &CRadioButton::manager, SLOT(clicked(bool)));
 
-  CWIDGET_new(wid, (void *)_object, "RadioButton");
-
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

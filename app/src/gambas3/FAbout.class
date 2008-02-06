@@ -143,7 +143,7 @@ PRIVATE SUB GetAuthor()
 
   CLOSE #hFic
 
-  txtAuthor.Text = sText
+  txtAuthor.RichText = sText
   'nLig * txtAuthor.Font.Height("a") * 0.95 + 256
 
 FINALLY
@@ -153,7 +153,7 @@ FINALLY
 
 CATCH
 
-  txtAuthor.Text = Error.Text
+  txtAuthor.RichText = Error.Text
 
 END
 

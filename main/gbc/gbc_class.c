@@ -197,6 +197,7 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
   //ARRAY_create_inc(&func->code, 512);
   func->code = NULL;
   func->ncode = 0;
+  func->ncode_max = 0;
 
   if (JOB->debug)
     ARRAY_create(&func->pos_line);
@@ -224,7 +225,7 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
   func->line = decl->line;
   func->name = decl->index;
   func->last_code = (-1);
-  func->stack = 16; /* pile n�essaire aux fonctions d'initialisation */
+  func->stack = 8; // Some stack may be needed for initialization functions
   func->finally = 0;
   func->catch = 0;
   func->npmin = -1;

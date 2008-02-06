@@ -72,9 +72,18 @@ GtkPaned *gSplitter::next(GtkPaned *iter)
 			return NULL;
 			
 		child = gtk_paned_get_child1(iter);
-		if (child && gApplication::controlItem(child)->isVisible())
+		if (child) // && gApplication::controlItem(child)->isVisible())
 			return iter;
 	}	
+}
+
+static int get_child_width(GtkPaned *iter)
+{
+	GtkWidget *child = gtk_paned_get_child1(iter);
+	if (gApplication::controlItem(child)->isVisible())
+		return gtk_paned_get_position(iter);
+	else
+		return 0;
 }
 
 gSplitter::gSplitter(gContainer *parent, bool vert) : gContainer(parent)
@@ -126,12 +135,23 @@ void gSplitter::insert(gControl *child)
 	
 	gContainer::insert(child);
 	
-	emit(SIGNAL(onResize));
+	//emit(SIGNAL(onResize));
 }
 
 void gSplitter::remove(gControl *child)
 {
 	gContainer::remove(child);
+}
+
+int gSplitter::handleCount()
+{
+	int n, nh = -1;
+	
+	for (n = 0; n < childCount(); n++)
+		if (child(n)->isVisible())
+			nh++;
+			
+	return nh;
 }
 
 void gSplitter::setLayout(char *vl)
@@ -142,10 +162,15 @@ void gSplitter::setLayout(char *vl)
 	long num;
 	double factor;
 	GtkPaned *iter;
+	int shandle;
 	
 	if (!vl || !*vl) return;
 	
 	//fprintf(stderr, "setLayout: %s\n", vl);
+  
+  gtk_widget_style_get (border,
+			"handle-size", &shandle,
+			(void *)NULL);
 	
 	split=g_strsplit((const char*)vl, ",", -1);
 	if (!split) return;
@@ -158,16 +183,16 @@ void gSplitter::setLayout(char *vl)
 			break;
 		errno = 0;
 		num = strtol(sval, NULL, 10);
-		if (errno)
-			num = 1;
+		if (errno || num < 1)
+			num = 0;
 		factor += num;
 	}
 	
 	if (factor == 0)
 		return;
 	
-	factor = (vertical ? height() : width()) / factor;
-	
+	factor = ((vertical ? height() : width()) - handleCount() * shandle) / factor;
+
 	lock();
 	
 	iter = next(NULL);
@@ -181,9 +206,9 @@ void gSplitter::setLayout(char *vl)
 			break;
 			
 		errno = 0;
-		num=strtol(sval,NULL,10);
-		if (errno)
-			num = 1;
+		num = strtol(sval,NULL,10);
+		if (errno || num < 1)
+			num = 0;
 		gtk_paned_set_position(iter, (gint)(num * factor + 0.5));
 		
 		iter = next(iter);
@@ -202,25 +227,32 @@ void gSplitter::setLayout(char *vl)
 char* gSplitter::layout()
 {
 	GtkPaned *iter;
-	int vl, sum;
+	int vl, sum, nhandle, shandle;
 	GString *ret = g_string_new("");
 	char *l;
+	
+  gtk_widget_style_get (border,
+			"handle-size", &shandle,
+			(void *)NULL);
 	
 	iter = next(NULL);
 	if (iter)
 	{
 		sum = 0;
+		nhandle = 0;
 		for(;;)
 		{
-			vl = gtk_paned_get_position(iter);
+			vl = get_child_width(iter); //gtk_paned_get_position(iter);
 			iter = next(iter);
 			if (!iter)
 				break;
+			if (vl)
+				nhandle++;
 			sum += vl;
 			g_string_append_printf(ret, "%d,", vl);
 		}
 		
-		g_string_append_printf(ret, "%d", (vertical ? height() : width()) - sum);
+		g_string_append_printf(ret, "%d", (vertical ? height() : width()) - sum - nhandle * shandle);
 	}
 		
 	l = g_string_free(ret, false);

@@ -38,7 +38,7 @@ gPicture
 
 ******************************************************************/
 
-static bool pixbufFromMemory(GdkPixbuf **img,char *addr,unsigned int len, bool *trans)
+static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool *trans)
 {
 	GdkPixbufLoader* loader;
 
@@ -365,12 +365,12 @@ void gPicture::fill(gColor col)
 
 // returns -> 0, OK / -1, Bad format / -2 invalid path
 
-int gPicture::save(char *path, int quality)
+int gPicture::save(const char *path, int quality)
 {
 	bool ok=false;
 	int b;
 	char *type;
-	char *buf=NULL;
+	const char *buf=NULL;
 	GSList *formats = gdk_pixbuf_get_formats();
 	GSList *iter=formats;
 	GdkPixbuf *image = getPixbuf();
@@ -456,36 +456,37 @@ int gPicture::save(char *path, int quality)
  The following function tries to load an icon from predefined system
  paths
  ***********************************************************************/
-gPicture* gPicture::fromNamedIcon(char *name, int len)
+gPicture* gPicture::fromNamedIcon(const char *name, int len)
 {
 	GtkIconTheme* theme;
 	GdkPixbuf *buf;
 	gPicture *pic=NULL;
 	int r_type=32;
-	char *r_name;
+	char *c_name, *r_name;
 	
 	if (len < 0) len = strlen(name);
-	name = g_strndup(name, len);
+	
+	c_name = g_strndup(name, len);
+	r_name = strchr(c_name, '/');
 
-	r_name=strchr(name, '/');
-
-	if (!r_name) { r_name=name; }
+	if (!r_name)
+		r_name = c_name;
 	else
 	{
-		r_name[0]=0; r_name++;
-		if      (!strcasecmp(name,"menu"))         r_type=8;
-		else if (!strcasecmp(name,"smalltoolbar")) r_type=16;
-		else if (!strcasecmp(name,"largetoolbar")) r_type=32;
-		else if (!strcasecmp(name,"button"))       r_type=16;
-		else if (!strcasecmp(name,"dnd"))          r_type=32;
-		else if (!strcasecmp(name,"dialog"))       r_type=48;
-		else { r_name--; r_name[0]='/'; g_free(name); return NULL; }
+		r_name[0] = 0; r_name++;
+		if      (!strcasecmp(c_name,"menu"))         r_type=8;
+		else if (!strcasecmp(c_name,"smalltoolbar")) r_type=16;
+		else if (!strcasecmp(c_name,"largetoolbar")) r_type=32;
+		else if (!strcasecmp(c_name,"button"))       r_type=16;
+		else if (!strcasecmp(c_name,"dnd"))          r_type=32;
+		else if (!strcasecmp(c_name,"dialog"))       r_type=48;
+		else { r_name--; r_name[0]='/'; g_free(c_name); return NULL; }
 	}
 
 
 	theme=gtk_icon_theme_get_default();
 	buf=gtk_icon_theme_load_icon(theme,r_name,r_type,GTK_ICON_LOOKUP_USE_BUILTIN,NULL);
-	g_free(name);
+	g_free(c_name);
 	if (!buf) return NULL;
 
 	pic=gPicture::fromPixbuf(buf);
@@ -977,7 +978,7 @@ void gPictureCache::exit()
   g_hash_table_destroy(cache);
 }
 
-void gPictureCache::put(char *key, gPicture *pic)
+void gPictureCache::put(const char *key, gPicture *pic)
 {
 	if (!key || !*key) return;
   
@@ -986,7 +987,7 @@ void gPictureCache::put(char *key, gPicture *pic)
 	g_hash_table_replace(cache, (gpointer)g_strdup(key), (gpointer)pic);
 }
 
-gPicture *gPictureCache::get(char *key)
+gPicture *gPictureCache::get(const char *key)
 {
 	if (!key || !*key) return 0;
 	

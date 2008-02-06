@@ -51,6 +51,7 @@ void CODE_end_function(FUNCTION *func);
 bool CODE_popify_last(void);
 bool CODE_check_statement_last(void);
 bool CODE_check_pop_local_last(short *local);
+bool CODE_check_jump_not(void);
 
 bool CODE_check_varptr(void);
 

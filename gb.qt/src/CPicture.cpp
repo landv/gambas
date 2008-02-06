@@ -53,7 +53,7 @@ static void create(CPICTURE **ppicture)
   GB.New(POINTER(ppicture), GB.FindClass("Picture"), NULL, NULL);
 }
 
-static void insert_cache(char *key, CPICTURE *pict)
+static void insert_cache(const char *key, CPICTURE *pict)
 {
   CPICTURE *old = dict[key];
   
@@ -103,7 +103,7 @@ static void insert_cache(char *key, CPICTURE *pict)
 
 
 
-CPICTURE *CPICTURE_get_picture(char *path)
+CPICTURE *CPICTURE_get_picture(const char *path)
 {
 	return get_picture(path, strlen(path));
 }

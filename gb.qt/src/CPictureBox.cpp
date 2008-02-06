@@ -62,10 +62,9 @@ BEGIN_METHOD(CPICTUREBOX_new, GB_OBJECT parent)
 
   THIS->picture = NULL;
 
-  CWIDGET_new(wid, (void *)_object, "Image");
-
   wid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

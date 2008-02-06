@@ -178,6 +178,7 @@ typedef
     RS_DEBUG,
     RS_PIPE,
     RS_RANDOMIZE,
+    RS_BYREF,
 
     RS_COLON,
     RS_SCOLON,

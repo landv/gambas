@@ -74,9 +74,6 @@ BEGIN_METHOD(CSLIDER_new, GB_OBJECT parent)
 
   MySlider *wid = new MySlider(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, _object);
-  //QT.SetBackgroundRole(_object, QColorGroup::Base);
-
   QObject::connect(wid, SIGNAL(valueChanged(int)), &CSlider::manager, SLOT(event_change()));
   //QObject::connect(wid, SIGNAL(sliderPressed()), &CSlider::manager,
   //SLOT(event_sliderpressed()));
@@ -91,7 +88,7 @@ BEGIN_METHOD(CSLIDER_new, GB_OBJECT parent)
   wid->setLineStep(1);
   wid->setPageStep(10);
 
-  wid->show();
+  CWIDGET_new(wid, _object);
 
 END_METHOD
 

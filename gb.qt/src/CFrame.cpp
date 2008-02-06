@@ -38,11 +38,9 @@ BEGIN_METHOD(CFRAME_new, GB_OBJECT parent)
 
   QGroupBox *wid = new QGroupBox(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object, "Frame");
+  THIS->container = wid;
 
-  OBJECT(CFRAME)->container = wid;
-
-  wid->show();
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

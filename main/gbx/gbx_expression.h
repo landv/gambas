@@ -42,6 +42,7 @@ typedef
     CLASS_CONST *cst;
     ushort *code;
     ushort ncode;
+    ushort ncode_max;
     TABLE *table;
     TABLE *string;
     /*TABLE *variable;*/

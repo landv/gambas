@@ -1415,8 +1415,6 @@ BEGIN_METHOD(CGRIDVIEW_new, GB_OBJECT parent)
   THIS->col = -1;
   THIS->autoresize = true;
 
-  wid->show();
-
 END_METHOD
 
 

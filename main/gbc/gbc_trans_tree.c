@@ -477,7 +477,7 @@ static void analyze_call()
 			}
 			else
 			{
-				if (PATTERN_is(*current, RS_AT))
+				if (PATTERN_is(*current, RS_AT) || PATTERN_is(*current, RS_BYREF))
 				{
 					current++;
 					BYREF_SET(byref, nparam_post);

@@ -49,7 +49,8 @@ typedef
     	unsigned expand : 1;
     	unsigned ignore : 1;
     	unsigned notified : 1;
-    	unsigned _reserved : 11;
+    	unsigned visible : 1;
+    	unsigned _reserved : 10;
     	} flag;
     GB_VARIANT_VALUE tag;
     char *tooltip;
@@ -176,8 +177,7 @@ DECLARE_PROPERTY(CCONTROL_action);
 #define EMBED_OK     1
 #define EMBED_ERROR  2
 
-void CWIDGET_new(QWidget *w, void *_object, const char *klass = NULL,
-                 bool no_filter = false, bool no_tag = false);
+void CWIDGET_new(QWidget *w, void *_object, bool no_show = false, bool no_filter = false, bool no_tag = false);
 void CWIDGET_init_name(CWIDGET *_object);
 int CWIDGET_check(void *object);
 QString CWIDGET_Utf8ToQString(GB_STRING *str);

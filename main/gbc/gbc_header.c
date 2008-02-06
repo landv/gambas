@@ -48,7 +48,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
   bool is_output;
   bool is_optional = FALSE;
   TRANS_DECL ttyp;
-  uint byref_mask = 1;
+  //uint byref_mask = 1;
 
   if (!PATTERN_is_identifier(*look))
     THROW("Syntax error. Invalid identifier in function name");
@@ -60,7 +60,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
     TABLE_copy_symbol_with_prefix(JOB->class->table, func->index, ':', NULL, &func->index);
 
   func->nparam = 0;
-  func->byref = 0;
+  //func->byref = 0;
   func->vararg = FALSE;
 
   if ((flag & HF_VOID) && PATTERN_is_newline(*look))
@@ -111,9 +111,9 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
       }
     }
 
-    if (PATTERN_is(*look, RS_AT))
+    if (PATTERN_is(*look, RS_AT) || PATTERN_is(*look, RS_BYREF))
     {
-      func->byref |= byref_mask;
+      //func->byref |= byref_mask;
       look++;
     }
 
@@ -149,7 +149,7 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
     }
 
     func->nparam++;
-    byref_mask <<= 1;
+    //byref_mask <<= 1;
   }
 
   JOB->current = look;

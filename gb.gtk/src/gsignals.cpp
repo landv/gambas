@@ -146,7 +146,7 @@ gboolean gcb_keyrelease (GtkWidget *widget, GdkEventKey *event, gControl *data)
 	
 	gKey::enable(widget, event);
 	if (data->onKeyEvent) 
-	data->onKeyEvent(data,gEvent_KeyRelease);
+		data->onKeyEvent(data,gEvent_KeyRelease);
 	gKey::disable();
 	
 	if (event->keyval == GDK_Escape)
@@ -454,8 +454,8 @@ void gControl::widgetSignals()
 		g_signal_connect(G_OBJECT(border),"popup-menu",G_CALLBACK(sg_menu),(gpointer)this);	
 		g_signal_connect_after(G_OBJECT(border),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
 		g_signal_connect(G_OBJECT(border),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
-		g_signal_connect(G_OBJECT(border),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
-		g_signal_connect(G_OBJECT(border),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
+		//g_signal_connect(G_OBJECT(border),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
+		//g_signal_connect(G_OBJECT(border),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
 	}
 	else
 	{
@@ -464,10 +464,10 @@ void gControl::widgetSignals()
 		g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(sg_button_Press),(gpointer)this);
 		g_signal_connect(G_OBJECT(widget),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
 		g_signal_connect(G_OBJECT(widget),"popup-menu",G_CALLBACK(sg_menu),(gpointer)this);
-		g_signal_connect(G_OBJECT(widget),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
-		g_signal_connect(G_OBJECT(widget),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
 	}	
 	
+	g_signal_connect(G_OBJECT(widget),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"focus-in-event",G_CALLBACK(sg_focus_In),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"focus-out-event",G_CALLBACK(sg_focus_Out),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"event",G_CALLBACK(sg_event),(gpointer)this);

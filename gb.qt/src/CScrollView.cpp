@@ -331,7 +331,7 @@ BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
   MyScrollView *wid = new MyScrollView(QCONTAINER(VARG(parent)));
   MyContents *cont = new MyContents(wid->viewport(), wid);
 
-  CWIDGET_new(wid, (void *)_object, "ScrollView");
+  CWIDGET_new(wid, (void *)_object, true);
   //wid->setBackgroundOrigin(QWidget::WindowOrigin);
   //cont->setBackgroundOrigin(QWidget::AncestorOrigin);
 

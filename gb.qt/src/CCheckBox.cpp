@@ -39,12 +39,11 @@ BEGIN_METHOD(CCHECKBOX_new, GB_OBJECT parent)
 
   QCheckBox *wid = new QCheckBox(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object, "CheckBox");
-
   QObject::connect(wid, SIGNAL(stateChanged(int)), &CCheckBox::manager, SLOT(clicked()));
 
 	wid->setMinimumHeight(wid->sizeHint().height());
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

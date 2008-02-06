@@ -55,16 +55,13 @@ BEGIN_METHOD(CBUTTON_new, GB_OBJECT parent)
 
   QObject::connect(wid, SIGNAL(clicked()), &CButton::manager, SLOT(clicked()));
 
+  wid->setAutoDefault(false);
+  
   CWIDGET_new(wid, (void *)_object);
 
   // We assume that the button widget destructor will always be called before
   // its gambas window is released.
   WIDGET->top = CWidget::getWindow((CWIDGET *)THIS);
-  //qDebug("top = %p %s", WIDGET->top, GB.GetClassName(CWidget::get(WIDGET->top)));
-
-  //wid->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-  wid->setAutoDefault(false);
-  wid->show();
 
 END_METHOD
 
@@ -75,12 +72,11 @@ BEGIN_METHOD(CTOGGLEBUTTON_new, GB_OBJECT parent)
 
   QObject::connect(wid, SIGNAL(toggled(bool)), &CButton::manager, SLOT(clickedToggle()));
 
-  CWIDGET_new(wid, (void *)_object);
-
   //wid->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
   wid->setAutoDefault(false);
   wid->setToggleButton(TRUE);
-  wid->show();
+  
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -91,12 +87,11 @@ BEGIN_METHOD(CTOOLBUTTON_new, GB_OBJECT parent)
 
   QObject::connect(wid, SIGNAL(clicked()), &CButton::manager, SLOT(clickedTool()));
 
-  CWIDGET_new(wid, (void *)_object);
-
-  //wid->setToggleButton(TRUE);
+	//wid->setToggleButton(TRUE);
   wid->setTextPosition(QToolButton::Right);
   wid->setAutoRaise(true);
-  wid->show();
+  
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
