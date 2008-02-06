@@ -33,12 +33,23 @@
 
 DECLARE_EVENT(EVENT_Resize);
 
-void gb_raise_splitter_Resize(gControl *sender)
+static void send_event(CSPLITTER *_object)
 {
-	CWIDGET *_ob=GetObject(sender);
+	if (!THIS->widget)
+		return;
+	GB.Raise(THIS, EVENT_Resize, 0);
+	THIS->event = FALSE;
+}
+
+static void gb_raise_splitter_Resize(gControl *sender)
+{
+	CWIDGET *_object = GetObject(sender);
 	
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Resize,0);
+	if (THIS->event)
+		return;
+	
+	THIS->event = true;
+	GB.Post((void (*)())send_event, (intptr_t)THIS);
 }
 
 BEGIN_METHOD(CHSPLIT_new, GB_OBJECT parent)

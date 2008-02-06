@@ -816,7 +816,10 @@ void gControl::setFocus()
 	gMainWindow *win = window();
 	
 	if (win->isVisible())
+	{
+		//if (isVisible() && bufW > 0 && bufH > 0)
 		gtk_widget_grab_focus(widget);
+	}
 	else
 		win->focus = this;
 }

@@ -72,7 +72,7 @@ void WINDOW_kill(CWINDOW *win)
 }
 
 
-void gb_raise_window_Open(gMainWindow *sender)
+static void gb_raise_window_Open(gMainWindow *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
 
@@ -80,12 +80,12 @@ void gb_raise_window_Open(gMainWindow *sender)
 	GB.Raise((void*)_ob,EVENT_Open,0);
 }
 
-void gb_post_window_Open(gMainWindow *sender)
+/*static void gb_post_window_Open(gMainWindow *sender)
 {
 	GB.Post((GB_POST_FUNC)gb_raise_window_Open, (long)sender);
-}
+}*/
 
-void gb_raise_window_Show(gMainWindow *sender)
+static void gb_raise_window_Show(gMainWindow *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
 
@@ -95,12 +95,12 @@ void gb_raise_window_Show(gMainWindow *sender)
 		CACTION_raise(_ob);
 }
 
-void gb_post_window_Show(gMainWindow *sender)
+static void gb_post_window_Show(gMainWindow *sender)
 {
 	GB.Post( (void (*)())gb_raise_window_Show,(long)sender);
 }
 
-void gb_raise_window_Hide(gMainWindow *sender)
+static void gb_raise_window_Hide(gMainWindow *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
 
@@ -110,7 +110,7 @@ void gb_raise_window_Hide(gMainWindow *sender)
 		CACTION_raise(_ob);
 }
 
-void gb_raise_window_Move(gMainWindow *sender)
+static void gb_raise_window_Move(gMainWindow *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
 
@@ -118,7 +118,7 @@ void gb_raise_window_Move(gMainWindow *sender)
 	GB.Raise((void*)_ob,EVENT_Move,0);
 }
 
-void gb_raise_window_Resize(gMainWindow *sender)
+static void gb_raise_window_Resize(gMainWindow *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
 
@@ -176,7 +176,7 @@ static bool deleteAll()
   return false;
 }
 
-bool gb_raise_window_Close(gMainWindow *sender)
+static bool gb_raise_window_Close(gMainWindow *sender)
 {
 	CWINDOW *_ob=(CWINDOW*)GetObject(sender);
 

@@ -78,8 +78,10 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define IS_EXPAND(_object) (((CWIDGET *)_object)->flag.expand)
 #define IS_IGNORE(_object) (((CWIDGET *)_object)->flag.ignore)
 #define IS_DESIGN(_object) (CWIDGET_test_flag(_object, WF_DESIGN) && CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
-
 #define IS_WIDGET_VISIBLE(_widget) (_widget)->isVisible()
+
+#define CAN_ARRANGE(_object) (IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object)))
+
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
 	_x = (_widget)->contentsRect().x(); \
 	_y = (_widget)->contentsRect().y(); \

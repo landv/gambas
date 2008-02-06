@@ -87,6 +87,8 @@ static void resize_container(gControl *cont, int w, int h)
 #define IS_DESIGN(_object) (((gControl*)_object)->design())
 #define IS_WIDGET_VISIBLE(_widget)  (((gControl*)_widget)->isVisible())
 
+#define CAN_ARRANGE(_object) (IS_WIDGET_VISIBLE(GET_WIDGET(_object)) || (((gControl *)_object)->isTopLevel() && ((gMainWindow *)_object)->opened))
+
 // BM: ClientX() & ClientY() are relative to the border.
 // We need X & Y relative to the container widget.
 

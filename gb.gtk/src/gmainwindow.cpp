@@ -415,7 +415,6 @@ void gMainWindow::setVisible(bool vl)
 		}
 			
 		_not_spontaneous = !visible;
-			
 		visible = true;
 		
 		if (isTopLevel())

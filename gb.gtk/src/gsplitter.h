@@ -27,6 +27,7 @@ public:
 	GtkPaned *curr;
 	bool vertical;
 	GtkPaned *next(GtkPaned *iter);
+	int handleCount();
 	bool _notify;
 };
 

@@ -55,6 +55,8 @@ public:
   MySplitter(QWidget *parent);
 
   bool _event;
+  
+  int handleCount();
 
 protected:
 
