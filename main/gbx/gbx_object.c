@@ -105,20 +105,7 @@ void OBJECT_detach(OBJECT *ob)
 
 	//dump_attach("OBJECT_detach");
 
-  // Free the observers
-  
-  obs = ev->observer;
-  while (obs)
-  {
-  	next = obs->list.next;
-  	#if DEBUG_EVENT
-  	fprintf(stderr, "Remove observer %p\n", obs);
-  	#endif
-  	OBJECT_UNREF(&obs, "OBJECT_detach");
-  	obs = next;  	
-	}
-  
-  ev->observer = NULL;
+  // Do not free the observers there anymore
   
   /* Avoids an infinite recursion, if freeing the parent implies freeing the object */
   parent = OBJECT_parent(ob);
@@ -136,6 +123,29 @@ void OBJECT_detach(OBJECT *ob)
   }  
 }
 
+static void remove_observers(OBJECT *ob)
+{
+	CLASS *class = OBJECT_class(ob);
+  OBJECT *parent;
+  OBJECT_EVENT *ev;
+  bool lock;
+  COBSERVER *obs, *next;
+
+  ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
+  obs = ev->observer;
+  
+  while (obs)
+  {
+  	next = obs->list.next;
+  	#if DEBUG_EVENT
+  	fprintf(stderr, "Remove observer %p\n", obs);
+  	#endif
+  	OBJECT_UNREF(&obs, "remove_observers");
+  	obs = next;  	
+	}
+  
+  ev->observer = NULL;
+}
 
 void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 {
@@ -197,6 +207,7 @@ void OBJECT_free(CLASS *class, OBJECT *ob)
     EXEC_special_inheritance(SPEC_FREE, class, ob, 0, TRUE);*/
 
   OBJECT_detach(ob);
+  remove_observers(ob);
 
   class->count--;
 

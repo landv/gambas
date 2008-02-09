@@ -38,8 +38,12 @@ typedef
 		OBJECT ob;
 		LIST list;
 		ushort *event;
+		void *object;
 		bool after;
 	}
 	COBSERVER;
+
+void COBSERVER_attach(COBSERVER *this, void *parent, const char *name);
+void COBSERVER_detach(COBSERVER *this);
 
 #endif

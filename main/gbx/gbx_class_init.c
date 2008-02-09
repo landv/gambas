@@ -76,6 +76,7 @@ CLASS *CLASS_PointerArray = NULL;
 CLASS *CLASS_SubCollection = NULL;
 CLASS *CLASS_String = NULL;
 CLASS *CLASS_Enum = NULL;
+CLASS *CLASS_Observer = NULL;
 
 typedef
   struct {
@@ -113,7 +114,7 @@ static CLASS_INIT init_list[] =
   { NATIVE_Timer, NULL },
   { NATIVE_Quote, NULL },
   { NATIVE_Unquote, NULL },
-  { NATIVE_Observer, NULL },
+  { NATIVE_Observer, &CLASS_Observer },
 
   { NATIVE_ArrayBounds, NULL },
   { NATIVE_Array, &CLASS_Array },
