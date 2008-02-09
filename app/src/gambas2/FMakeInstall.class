@@ -58,7 +58,7 @@ PUBLIC SUB Form_Open()
   chkPrefix.Value = Project.Prefix
   chkUseRelease.Value = Project.UseRelease
 
-  InitSystemControls
+  'InitSystemControls
   InitSystems
 
   UpdatePackageName
@@ -151,23 +151,29 @@ PRIVATE SUB InitSystemControls()
   DIM hPict AS PictureBox
   DIM hLabel AS TextLabel
   DIM hTool AS ToolButton
+  DIM hCheckBox AS CheckBox
+
+  INC Application.Busy
+  
+  Package.CheckProgram
   
   FOR EACH hCont IN panSystem.Children
+  
     sMsg = Package.CheckSystem(hCont.Tag)
+    
+    hPanel = NULL
     FOR EACH hCtrl IN hCont.Children
-      IF hCtrl IS ToolButton
-        hCtrl.Design = TRUE
-        hCtrl.Enabled = FALSE
+      IF hCtrl IS ToolButton THEN
         hTool = hCtrl
-        hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2, TRUE).Picture
       ELSE IF hCtrl IS CheckBox THEN 
-        hCtrl.Enabled = NOT sMsg
-      ENDIF
+        hCheckBox = hCtrl
+      ELSE IF hCtrl IS Panel THEN 
+        hPanel = hCtrl
+      ENDIF 
     NEXT
-    IF sMsg THEN 
-      
-      hCont.Background = Color.ButtonBackground
-      
+    
+    IF NOT hPanel THEN 
+    
       hPanel = NEW Panel(hCont)
       hPanel.Border = Border.Plain
       hPanel.Background = &HFFFFDF& ' Light Yellow
@@ -183,9 +189,21 @@ PRIVATE SUB InitSystemControls()
       hLabel = NEW TextLabel(hPanel)
       hLabel.Text = sMsg
       hLabel.Expand = TRUE
-      
+
     ENDIF
+
+    hCheckBox.Enabled = NOT sMsg
+    IF NOT hCheckBox.Enabled THEN hCheckBox.Value = FALSE
+
+    hTool.Design = TRUE
+    hTool.Enabled = hCheckBox.Value
+    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2, TRUE).Picture
+    
+    hPanel.Visible = sMsg
+
   NEXT
+  
+  DEC Application.Busy
   
 END
 
@@ -268,6 +286,8 @@ PUBLIC SUB wizInstall_BeforeChange()
         STOP EVENT
         RETURN
       ENDIF
+
+      InitSystemControls      
 
     CASE 2
       Project.Systems = GetSystems()

@@ -25,9 +25,9 @@ PRIVATE CONST MAX_VERSION AS String = "2.90"
 
 PUBLIC SUB CheckProgram()
   
-  IF $bChecked THEN RETURN
+  'IF $bChecked THEN RETURN
 
-  $bChecked = TRUE
+  '$bChecked = TRUE
   
   IF NOT Project.CheckProgram("dh_install") THEN DKPG_PROG = "dh_install"
   IF NOT Project.CheckProgram("rpmbuild") THEN RPMBUILD_PROG = "rpmbuild"
@@ -41,7 +41,7 @@ PUBLIC SUB CheckSystem(sSys AS String) AS String
   
   DIM sProg AS String
   
-  CheckProgram
+  'CheckProgram
   
   SELECT CASE sSys
   
@@ -159,6 +159,21 @@ PRIVATE FUNCTION IsConsoleProject() AS Boolean
   RETURN TRUE
 
 END
+
+PRIVATE FUNCTION GetDependencies() AS String[]
+  
+  DIM aDep AS NEW String[]
+  DIM sComp AS String
+  
+  FOR EACH sComp IN Project.Libraries
+    IF sComp = "gb.debug" OR IF sComp = "gb.eval" THEN CONTINUE 
+    aDep.Add("gambas" & System.Version & "-" & Replace(sComp, ".", "-"))
+  NEXT
+  
+  RETURN aDep
+  
+END
+
 
 PRIVATE SUB PrintOnlyShowIn(hFile AS File, sCategories AS String)
   
@@ -362,8 +377,8 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFile, "Priority: optional"
   PRINT #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
   PRINT #hFile, "Build-Depends: debhelper (>= 4.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
-  FOR EACH sLib IN Project.Libraries
-    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= "; MIN_VERSION; "), gambas2-"; Replace(sLib, ".", "-"); " (<< "; MAX_VERSION; ")";
+  FOR EACH sLib IN GetDependencies()
+    PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
   NEXT 
   PRINT #hFile
   PRINT #hFile, "Standards-Version: 3.7.2"
@@ -371,8 +386,8 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFile, "Package: "; $sPackageName
   PRINT #hFile, "Architecture: any"
   PRINT #hFile, "Depends: ${shlibs:Depends}, ${misc:Depends}, gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
-    FOR EACH sLib IN Project.Libraries
-    PRINT #hFile, ", gambas2-"; Replace(sLib, ".", "-"); " (>= "; MIN_VERSION; "), gambas2-"; Replace(sLib, ".", "-"); " (<< "; MAX_VERSION; ")";
+    FOR EACH sLib IN GetDependencies()
+    PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
   NEXT 
   PRINT #hFile
   aLine = Split(Project.Description, "\n")
@@ -588,9 +603,9 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
 
   IF NOT Project.CreateComponent THEN 
   
-    FOR EACH sLib IN Project.Libraries
-      PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " >= "; MIN_VERSION;
-      PRINT #hFile, ",gambas2-"; Replace(sLib, ".", "-"); " < "; MAX_VERSION;
+    FOR EACH sLib IN GetDependencies()
+      PRINT #hFile, ","; sLib; " >= "; MIN_VERSION;
+      PRINT #hFile, ","; sLib; " < "; MAX_VERSION;
     NEXT
   
   ENDIF
@@ -1035,9 +1050,9 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
 
   IF NOT Project.CreateComponent THEN
 
-    FOR EACH sLib IN Project.Libraries
-      PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " >= "; MIN_VERSION
-      PRINT #hFile, "gambas2-"; Replace(sLib, ".", "-"); " < "; MAX_VERSION
+    FOR EACH sLib IN GetDependencies()
+      PRINT #hFile, sLib; " >= "; MIN_VERSION
+      PRINT #hFile, sLib; " < "; MAX_VERSION
     NEXT
     
   ENDIF
