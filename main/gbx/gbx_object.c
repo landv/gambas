@@ -84,7 +84,6 @@ void OBJECT_detach(OBJECT *ob)
   OBJECT *parent;
   OBJECT_EVENT *ev;
   bool lock;
-  COBSERVER *obs, *next;
 
   ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
 
@@ -126,9 +125,7 @@ void OBJECT_detach(OBJECT *ob)
 static void remove_observers(OBJECT *ob)
 {
 	CLASS *class = OBJECT_class(ob);
-  OBJECT *parent;
   OBJECT_EVENT *ev;
-  bool lock;
   COBSERVER *obs, *next;
 
   ev = (OBJECT_EVENT *)((char *)ob + class->off_event);

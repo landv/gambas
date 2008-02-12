@@ -32,19 +32,6 @@ GB_COMPONENT(
   [],
   [This library must be located inside the C library])
 
-dnl ---- Check for gettext library
-
-GB_COMPONENT(
-  gettext,
-  GETTEXT,
-  [external gettext library],
-  [],
-  [],
-  [GB_FIND(libgettextlib.$SHLIBEXT, /usr/local /usr, lib)],
-  [-lgettextlib],
-  [],
-  [This library must be located inside the C library])
-
 dnl ---- Remove DISABLED file that could have been generated before
 
 rm -f DISABLED
@@ -56,7 +43,7 @@ GB_COMPONENT(
   FFI,
   [foreign function interface],
   [],
-  [GB_FIND(ffi.h, /usr /usr/local /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
+  [GB_FIND(ffi.h, /usr/local /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
   [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
   [-lffi])
 

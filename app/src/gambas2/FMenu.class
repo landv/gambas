@@ -391,6 +391,8 @@ PUBLIC SUB btnInsert_Click()
 
   $bFreeze = TRUE
 
+  IF $iCurrent < (lstMenu.Count - 1) THEN INC $iCurrent
+
   hCMenu = NEW CMenu
   hCMenu.Name = GetName()
   hCMenu.Caption = hCMenu.Name
