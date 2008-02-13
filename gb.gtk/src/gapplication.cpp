@@ -188,6 +188,7 @@ void gKey::setActiveControl(gControl *control)
 	if (_im_widget)
 	{
 		//fprintf(stderr, "gtm_im_context_focus_out\n");
+	  gtk_im_context_set_client_window (_im_context, 0);
 		gtk_im_context_focus_out(_im_context);
 		_im_widget = NULL;
 	}
@@ -195,6 +196,7 @@ void gKey::setActiveControl(gControl *control)
 	if (control)
 	{
 		_im_widget = control->widget;
+	  gtk_im_context_set_client_window (_im_context, _im_widget->window);
 		gtk_im_context_focus_in(_im_context);
 		gtk_im_context_reset(_im_context);
 		//fprintf(stderr, "gtm_im_context_focus_in\n");
