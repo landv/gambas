@@ -171,6 +171,8 @@ AC_DEFUN([GB_INIT],
   GB_THREAD()
   dnl ---- Check for mathematic libraries
   GB_MATH()
+  dnl ---- Check for gettext lib
+  GB_GETTEXT()
   dnl ---- Check for gambas include
   dnl GB_INCLUDE(gambas.h)
 
@@ -371,6 +373,30 @@ AC_DEFUN([GB_SHARED_LIBRARY_EXT],
   AC_SUBST(SHLIBEXT)
 
   AC_MSG_RESULT([.$SHLIBEXT])
+])
+
+
+## ---------------------------------------------------------------------------
+## GB_GETTEXT
+## Detects if we must link to an external gettext library
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_GETTEXT],
+[
+  AC_MSG_CHECKING(for external gettext library)
+
+  case "${host}" in
+    *-*-openbsd* )
+      GETTEXT_LIB=-llibgettext
+      ;;
+    *)
+      GETTEXT_LIB=
+      ;;
+  esac
+
+  AC_SUBST(GETTEXT_LIB)
+
+  AC_MSG_RESULT($GETTEXT_LIB)
 ])
 
 
@@ -782,7 +808,7 @@ AC_DEFUN([GB_FIND_QT_MOC],
 
     gb_val=""
     if test "$gb_path_qt_moc" = no; then
-      GB_FIND(moc, $QTDIR /usr /usr/lib/qt* /usr/local/qt* /usr/share/qt* /usr/qt/* /usr/pkg /usr/pkg/qt* , bin)
+      GB_FIND(moc, $QTDIR /usr /usr/lib/qt* /usr/local/lib/qt* /usr/local/qt* /usr/share/qt* /usr/qt/* /usr/pkg /usr/pkg/qt* , bin)
       gb_path_qt_moc=$gb_val
     fi
     

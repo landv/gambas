@@ -47,8 +47,8 @@ typedef
   OBJECT_EVENT;
 
 #define OBJECT_event(_object) ((OBJECT_EVENT *)((char *)_object + ((OBJECT *)(_object))->class->off_event))
-
-#define OBJECT_is_class(_object) (OBJECT_class(_object) == CLASS_Class)
+#define OBJECT_is(_object, _class) (OBJECT_class(_object) == _class)
+#define OBJECT_is_class(_object) OBJECT_is(_object, CLASS_Class)
 #define OBJECT_class(_object) ((_object) ? ((OBJECT *)_object)->class : NULL)
 #define OBJECT_count(_object) ((_object) ? ((OBJECT *)_object)->ref : 0)
 

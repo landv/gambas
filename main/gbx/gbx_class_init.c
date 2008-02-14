@@ -58,6 +58,7 @@ CLASS *CLASS_AppArgs = NULL;
 CLASS *CLASS_AppEnv = NULL;
 CLASS *CLASS_Process = NULL;
 CLASS *CLASS_Component = NULL;
+CLASS *CLASS_Observer = NULL;
 
 CLASS *CLASS_Array = NULL;
 CLASS *CLASS_BooleanArray = NULL;
@@ -114,7 +115,7 @@ static CLASS_INIT init_list[] =
   { NATIVE_Timer, NULL },
   { NATIVE_Quote, NULL },
   { NATIVE_Unquote, NULL },
-  { NATIVE_Observer, NULL },
+  { NATIVE_Observer, &CLASS_Observer },
 
   { NATIVE_ArrayBounds, NULL },
   { NATIVE_Array, &CLASS_Array },

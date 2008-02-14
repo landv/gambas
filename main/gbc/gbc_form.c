@@ -272,6 +272,8 @@ PUBLIC void FORM_do(bool ctrl_public)
 
   pos_rewind = _current;
 
+  print("#SECTION\n");
+
   while (!read_line(&line, &len))
   {
     if (len == 0 || *line == '#' || *line == '\'')

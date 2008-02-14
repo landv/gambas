@@ -39,11 +39,16 @@ enum {
   RT_CLASS = 9,
   RT_COMMENT = 10, /* Used by Eval() */
   RT_OPERATOR = 11, /* Used by Eval() */
+  RT_COMMAND = 12,
   RT_OUTPUT = 0x20,
   RT_POINT = 0x40,
   RT_FIRST = 0x80
   };
    
+enum {
+	RC_SECTION = 1
+	};
+
 #define NULL_PATTERN ((PATTERN)0L)
 
 #define PATTERN_make(type, index) ((PATTERN)((type) << 24) | (index))
@@ -65,6 +70,7 @@ enum {
 #define PATTERN_is_number(pattern)      (PATTERN_type(pattern) == RT_NUMBER)
 #define PATTERN_is_string(pattern)      (PATTERN_type(pattern) == RT_STRING)
 #define PATTERN_is_tstring(pattern)     (PATTERN_type(pattern) == RT_TSTRING)
+#define PATTERN_is_command(pattern)     (PATTERN_type(pattern) == RT_COMMAND)
 
 #define PATTERN_is_newline_end(pattern) (PATTERN_is_newline(pattern) || PATTERN_is_end(pattern))
 

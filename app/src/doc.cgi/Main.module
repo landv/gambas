@@ -2077,7 +2077,7 @@ PRIVATE FUNCTION AutoLink(sStr AS String) AS String
       sRes &= sStr & "\n"
       CONTINUE
     ELSE IF Left(sStr) = "{" THEN
-      IF LCase(Mid$(sStr, 2)) = "example" OR IF LCase(Mid$(sStr, 2)) = "syntax" THEN
+      IF LCase(Mid$(sStr, 2)) = "example" OR IF Mid$(sStr, 2) LIKE "syntax*" THEN
         INC iLevelBrace
         sWait = "}"
       ENDIF

@@ -105,6 +105,17 @@ BEGIN_PROPERTY(CUNKNOWN_property)
 END_PROPERTY
 
 
+void COBSERVER_attach(COBSERVER *this, void *parent, const char *name)
+{
+	EVENT_search(OBJECT_class(this->object), this->event, name, parent);	
+}
+
+void COBSERVER_detach(COBSERVER *this)
+{
+	if (this->event)
+		FREE(&this->event, "COBSERVER_detach");
+}
+
 BEGIN_METHOD(COBSERVER_new, GB_OBJECT object; GB_BOOLEAN after)
 
 	OBJECT *object = (OBJECT *)VARG(object);
@@ -125,7 +136,9 @@ BEGIN_METHOD(COBSERVER_new, GB_OBJECT object; GB_BOOLEAN after)
   
 	ALLOC_ZERO(&this->event, sizeof(ushort) * class->n_event, "COBSERVER_new");
 
-	EVENT_search(class, this->event, name, parent);
+	this->object = object;
+	COBSERVER_attach(this, parent, name);
+	//EVENT_search(class, this->event, name, parent);
 
   LIST_insert((void **)&ev->observer, this, &this->list);
   OBJECT_REF(this, "COBSERVER_new");
@@ -135,10 +148,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(COBSERVER_free)
 
-	COBSERVER *this = ((COBSERVER *)_object);
-	
-	if (this->event)
-		FREE(&this->event, "COBSERVER_free");
+	COBSERVER_detach((COBSERVER *)_object);
 
 END_METHOD
 

@@ -40,6 +40,7 @@
 
 #include "gbx_object.h"
 #include "gbx_c_array.h"
+#include "gbx_c_gambas.h"
 #include "gbx_c_class.h"
 
 static CLASS_DESC_SYMBOL *_current_symbol = NULL;
@@ -672,7 +673,10 @@ BEGIN_METHOD(object_attach, GB_OBJECT object; GB_OBJECT parent; GB_STRING name)
   if (GB_CheckObject(parent))
     return;
 
-  OBJECT_attach(object, parent, GB_ToZeroString(ARG(name)));
+ 	OBJECT_attach(object, parent, GB_ToZeroString(ARG(name)));
+	
+	if (OBJECT_is(object, CLASS_Observer))
+		COBSERVER_attach((COBSERVER *)object, parent, GB_ToZeroString(ARG(name)));
 
 END_METHOD
 
@@ -685,7 +689,10 @@ BEGIN_METHOD(object_detach, GB_OBJECT object)
   if (GB_CheckObject(object))
     return;
 
-  OBJECT_detach(object);
+	if (OBJECT_is(object, CLASS_Observer))
+		COBSERVER_detach((COBSERVER *)object);
+ 	
+ 	OBJECT_detach(object);
 
 END_METHOD
 
