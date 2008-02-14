@@ -4,7 +4,7 @@
 
   Advanced Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -84,8 +84,11 @@ int CCURL_stream_write(GB_STREAM *stream, char *buffer, int len){return -1;}
 int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	void *_object;
+	char *tmp;
+	curlData *data=(curlData*)((void**)stream->_free)[0];	
 	
-	curl_easy_getinfo((CURL*)stream->_free[2],CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
+	_object=(void*)tmp;
 	*len=0;
 
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
@@ -95,8 +98,11 @@ int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 int CCURL_stream_eof(GB_STREAM *stream)
 {
 	void *_object;
+	char *tmp;
+	curlData *data=(curlData*)((void**)stream->_free)[0];	
 	
-	curl_easy_getinfo((CURL*)stream->_free[2],CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
+	_object=(void*)tmp;
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (!THIS->len_data) return -1;
@@ -106,8 +112,11 @@ int CCURL_stream_eof(GB_STREAM *stream)
 int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object;
+	char *tmp;
+	curlData *data=(curlData*)((void**)stream->_free)[0];	
 	
-	curl_easy_getinfo((CURL*)stream->_free[2],CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
+	_object=(void*)tmp;
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (THIS->len_data < len) return -1;
@@ -171,20 +180,20 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 {
 	if (THIS_FILE)
 	{
-		fclose((FILE*)THIS_FILE);
-		THIS_FILE=(long)NULL;
+		fclose(THIS_FILE);
+		THIS_FILE=NULL;
 	}
 		
 	switch ( ErrCode )
 	{
 		case CURLE_OK:
-			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			THIS_STATUS=0;
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_finished,(long)THIS);
 			break;
         	default:
-			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			THIS_STATUS=-1*(1000+ErrCode);
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_error,(long)THIS);
@@ -212,15 +221,15 @@ void CCURL_stop(void *_object)
 {
 	if (THIS_FILE)
 	{
-		fclose((FILE*)THIS_FILE);
-		THIS_FILE=(long)NULL;
+		fclose(THIS_FILE);
+		THIS_FILE=NULL;
 	}
 	
 	if (THIS_CURL)
 	{
-		curl_multi_remove_handle(CCURL_multicurl,(CURL*)THIS_CURL);
-		curl_easy_cleanup((CURL*)THIS_CURL);
-		THIS_CURL=(long)NULL;
+		curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+		curl_easy_cleanup(THIS_CURL);
+		THIS_CURL=NULL;
 	}
 
 	THIS_STATUS=0;
@@ -248,6 +257,7 @@ void CCURL_post_curl(long data)
 	int nread;
 	int post=1;
 	void *_object;
+	char *tmp;
 	struct timespec mywait;
 
 	do
@@ -266,7 +276,8 @@ void CCURL_post_curl(long data)
 		if (!Msg) nread=0;
 		if (Msg)
 		{
-			curl_easy_getinfo(Msg->easy_handle,CURLINFO_PRIVATE,(char**)&_object);
+			curl_easy_getinfo(Msg->easy_handle,CURLINFO_PRIVATE,&tmp);
+			_object=(void*)tmp;
 			CCURL_Manage_ErrCode(THIS,Msg->data.result);
 		}
 	} 
@@ -389,7 +400,7 @@ BEGIN_PROPERTY ( CCURL_URL )
 	
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString((char*)THIS_URL,0);
+		GB.ReturnNewString(THIS_URL,0);
 		return;
 	}
 
@@ -401,13 +412,13 @@ BEGIN_PROPERTY ( CCURL_URL )
 
 	if (THIS_URL)
 	{
-		tmp=(char*)THIS_URL;
+		tmp=THIS_URL;
 		GB.Free(POINTER(&tmp));
 	}
 	GB.Alloc(POINTER(&tmp),(strlen(GB.ToZeroString(PROP(GB_STRING)))+1)*sizeof(char));
 	strcpy(tmp,GB.ToZeroString(PROP(GB_STRING)));
-	Adv_correct_url(&tmp,(char*)THIS_PROTOCOL);
-	THIS_URL=(long)tmp;
+	Adv_correct_url(&tmp,THIS_PROTOCOL);
+	THIS_URL=tmp;
 
 END_PROPERTY
 
@@ -424,29 +435,34 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_new)
 
+	curlData *data=NULL;
+	
+	GB.Alloc(POINTER(&data),sizeof(curlData));
+	((void**)THIS->stream._free)[0]=(void*)data;
+
 	THIS->stream.desc=NULL;
-	THIS_CURL=(long)NULL;
-	THIS_URL=(long)NULL;
-	THIS_FILE=(long)NULL;
+	THIS_CURL=NULL;
+	THIS_URL=NULL;
+	THIS_FILE=NULL;
+	THIS_PROTOCOL=NULL;
+	THIS_STATUS=0;
 	GB.StoreVariant(NULL, (void *)&THIS->tag);
 	Adv_user_NEW  (&THIS->user);
-	//GB.New ((void**)&THIS->proxy,GB.FindClass(".Proxy"),NULL,NULL);
-	//GB.Ref((void*)THIS->proxy);
 	Adv_proxy_NEW(&THIS->proxy.proxy);
-	THIS->proxy.parent_status=(int*)&THIS->stream._free[1];
+	THIS->proxy.parent_status=(int*)&THIS_STATUS;
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_free)
 	
-	char *tmp=(char*)THIS_URL;
+	char *tmp=THIS_URL;
 	
 	if (tmp) GB.Free(POINTER(&tmp));
-	if (THIS_FILE) fclose((FILE*)THIS_FILE);
-	if (THIS_CURL) curl_easy_cleanup((CURL*)THIS_CURL);
+	if (THIS_FILE) fclose(THIS_FILE);
+	if (THIS_CURL) curl_easy_cleanup(THIS_CURL);
 	Adv_user_CLEAR  (&THIS->user);
 	Adv_proxy_CLEAR(&THIS->proxy.proxy);
-	tmp=(char*)THIS_PROTOCOL;
+	tmp=THIS_PROTOCOL;
 	GB.Free(POINTER(&tmp));
 	
 END_METHOD

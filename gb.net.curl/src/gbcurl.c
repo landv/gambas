@@ -4,7 +4,7 @@
 
   Advanced Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -103,17 +103,17 @@ void Adv_correct_url(char **buf,char *protocol)
 	if (pos==-1)
 	{
 
-		GB.Alloc((void**)&buftmp,len+1);
+		GB.Alloc((void**)POINTER(&buftmp),len+1);
 		strcpy(buftmp,*buf);
-		GB.Free((void**)buf);
-		GB.Alloc((void**)buf,len+strlen(protocol)+1);
+		GB.Free((void**)POINTER(buf));
+		GB.Alloc((void**)POINTER(buf),len+strlen(protocol)+1);
 	}
 	else
 	{
-		GB.Alloc((void**)&buftmp,(len-pos)+1);
+		GB.Alloc((void**)POINTER(&buftmp),(len-pos)+1);
 		strcpy(buftmp,*buf+pos+1);
-		GB.Free((void**)buf);
-		GB.Alloc((void**)buf,strlen(buftmp)+strlen(protocol)+1);
+		GB.Free((void**)POINTER(buf));
+		GB.Alloc((void**)POINTER(buf),strlen(buftmp)+strlen(protocol)+1);
 	}
 
 	strcpy(*buf,protocol);
@@ -123,7 +123,7 @@ void Adv_correct_url(char **buf,char *protocol)
 		if ( buftmp[1]=='/') myok++;
 	}
 	strcat(*buf,buftmp+myok);
-	GB.Free((void**)&buftmp);
+	GB.Free((void**)POINTER(&buftmp));
 }
 
 
@@ -136,7 +136,7 @@ int Adv_Comp(char *str1,char *user, char *pwd)
 	{
 		if (user) len+=strlen(user);
 		if (pwd) len+=strlen(pwd);
-		GB.Alloc ((void**)&str2,len);
+		GB.Alloc ((void**)POINTER(&str2),len);
 		str2[0]=0;
 		if (user) strcat (str2,user);
 		strcat(str2,":");
@@ -150,10 +150,10 @@ int Adv_Comp(char *str1,char *user, char *pwd)
 	{
 		if ( strlen(str2) )
 		{
-			GB.Free((void**)&str2);
+			GB.Free((void**)POINTER(&str2));
 			return 1;
 		}
-		GB.Free((void**)&str2);
+		GB.Free((void**)POINTER(&str2));
 		return 0;
 	}
 
@@ -165,11 +165,11 @@ int Adv_Comp(char *str1,char *user, char *pwd)
 
 	if ( strcmp (str1,str2) )
 	{
-		GB.Free((void**)&str2);
+		GB.Free((void**)POINTER(&str2));
 		return 1;
 	}
 
-	GB.Free((void**)&str2);
+	GB.Free((void**)POINTER(&str2));
 	return 0;
 }
 
@@ -193,7 +193,7 @@ void Adv_proxy_CLEAR(Adv_proxy *proxy)
 	if (proxy->host) GB.FreeString(&proxy->host);
 	if (proxy->user) GB.FreeString(&proxy->user);
 	if (proxy->pwd)  GB.FreeString(&proxy->pwd);
-	if (proxy->userpwd) GB.Free((void**)&proxy->userpwd);
+	if (proxy->userpwd) GB.Free((void**)POINTER(&proxy->userpwd));
 	proxy->user=NULL;
 	proxy->host=NULL;
 	proxy->pwd=NULL;
@@ -207,9 +207,9 @@ void Adv_proxy_SET(Adv_proxy *proxy,CURL *curl)
 
 	if ( proxy->user ) len+=strlen(proxy->user);
 	if ( proxy->pwd )  len+=strlen(proxy->pwd);
-	if ( proxy->userpwd ) GB.Free ((void**)&proxy->userpwd);
+	if ( proxy->userpwd ) GB.Free ((void**)POINTER(&proxy->userpwd));
 
-	GB.Alloc ((void**)&proxy->userpwd,sizeof(char)*len);
+	GB.Alloc ((void**)POINTER(&proxy->userpwd),sizeof(char)*len);
 	proxy->userpwd[0]=0;
 
 	if ( proxy->user ) strcat(proxy->userpwd,proxy->user);
@@ -288,7 +288,7 @@ void Adv_user_CLEAR(Adv_user *user)
 {
 	if (user->user) GB.FreeString(&user->user);
 	if (user->pwd)  GB.FreeString(&user->pwd);
-	if (user->userpwd) GB.Free((void**)&user->userpwd);
+	if (user->userpwd) GB.Free((void**)POINTER(&user->userpwd));
 	user->user=NULL;
 	user->pwd=NULL;
 }
@@ -311,8 +311,8 @@ void Adv_user_SET(Adv_user *user,CURL *curl)
 
 	if (user->user) len += strlen(user->user);
 	if (user->auth) len += strlen(user->pwd);
-	if (user->userpwd) GB.Free((void**)&user->userpwd);
-	GB.Alloc ((void**)&user->userpwd,len);
+	if (user->userpwd) GB.Free((void**)POINTER(&user->userpwd));
+	GB.Alloc ((void**)POINTER(&user->userpwd),len);
 	user->userpwd[0]=0;
 	if (user->user) strcat (user->userpwd,user->user);
 	strcat (user->userpwd,":");
