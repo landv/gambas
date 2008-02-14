@@ -4,7 +4,7 @@
 
   Advanced Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -171,20 +171,20 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 {
 	if (THIS_FILE)
 	{
-		fclose((FILE*)THIS_FILE);
-		THIS_FILE=(long)NULL;
+		fclose(THIS_FILE);
+		THIS_FILE=NULL;
 	}
 		
 	switch ( ErrCode )
 	{
 		case CURLE_OK:
-			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			THIS_STATUS=0;
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_finished,(long)THIS);
 			break;
         	default:
-			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			THIS_STATUS=-1*(1000+ErrCode);
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_error,(long)THIS);
@@ -212,15 +212,15 @@ void CCURL_stop(void *_object)
 {
 	if (THIS_FILE)
 	{
-		fclose((FILE*)THIS_FILE);
-		THIS_FILE=(long)NULL;
+		fclose(THIS_FILE);
+		THIS_FILE=NULL;
 	}
 	
 	if (THIS_CURL)
 	{
-		curl_multi_remove_handle(CCURL_multicurl,(CURL*)THIS_CURL);
-		curl_easy_cleanup((CURL*)THIS_CURL);
-		THIS_CURL=(long)NULL;
+		curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+		curl_easy_cleanup(THIS_CURL);
+		THIS_CURL=NULL;
 	}
 
 	THIS_STATUS=0;
@@ -389,7 +389,7 @@ BEGIN_PROPERTY ( CCURL_URL )
 	
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString((char*)THIS_URL,0);
+		GB.ReturnNewString(THIS_URL,0);
 		return;
 	}
 
@@ -401,13 +401,13 @@ BEGIN_PROPERTY ( CCURL_URL )
 
 	if (THIS_URL)
 	{
-		tmp=(char*)THIS_URL;
+		tmp=THIS_URL;
 		GB.Free(POINTER(&tmp));
 	}
 	GB.Alloc(POINTER(&tmp),(strlen(GB.ToZeroString(PROP(GB_STRING)))+1)*sizeof(char));
 	strcpy(tmp,GB.ToZeroString(PROP(GB_STRING)));
-	Adv_correct_url(&tmp,(char*)THIS_PROTOCOL);
-	THIS_URL=(long)tmp;
+	Adv_correct_url(&tmp,THIS_PROTOCOL);
+	THIS_URL=tmp;
 
 END_PROPERTY
 
@@ -425,13 +425,11 @@ END_METHOD
 BEGIN_METHOD_VOID(CCURL_new)
 
 	THIS->stream.desc=NULL;
-	THIS_CURL=(long)NULL;
-	THIS_URL=(long)NULL;
-	THIS_FILE=(long)NULL;
+	THIS_CURL=NULL;
+	THIS_URL=NULL;
+	THIS_FILE=NULL;
 	GB.StoreVariant(NULL, (void *)&THIS->tag);
 	Adv_user_NEW  (&THIS->user);
-	//GB.New ((void**)&THIS->proxy,GB.FindClass(".Proxy"),NULL,NULL);
-	//GB.Ref((void*)THIS->proxy);
 	Adv_proxy_NEW(&THIS->proxy.proxy);
 	THIS->proxy.parent_status=(int*)&THIS->stream._free[1];
 
@@ -439,14 +437,14 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_free)
 	
-	char *tmp=(char*)THIS_URL;
+	char *tmp=THIS_URL;
 	
 	if (tmp) GB.Free(POINTER(&tmp));
-	if (THIS_FILE) fclose((FILE*)THIS_FILE);
-	if (THIS_CURL) curl_easy_cleanup((CURL*)THIS_CURL);
+	if (THIS_FILE) fclose(THIS_FILE);
+	if (THIS_CURL) curl_easy_cleanup(THIS_CURL);
 	Adv_user_CLEAR  (&THIS->user);
 	Adv_proxy_CLEAR(&THIS->proxy.proxy);
-	tmp=(char*)THIS_PROTOCOL;
+	tmp=THIS_PROTOCOL;
 	GB.Free(POINTER(&tmp));
 	
 END_METHOD

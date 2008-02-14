@@ -4,7 +4,7 @@
 
   Advanced Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,11 +39,11 @@ extern GB_STREAM_DESC HttpStream;
 #else
 
 #define THIS            ((CHTTPCLIENT *)_object)
-#define THIS_STATUS     ((((CHTTPCLIENT *)_object)->stream._free[1]))
-#define THIS_CURL       ((((CHTTPCLIENT *)_object)->stream._free[2]))
-#define THIS_URL        ((((CHTTPCLIENT *)_object)->stream._free[3]))
-#define THIS_FILE       ((((CHTTPCLIENT *)_object)->stream._free[4]))
-#define THIS_PROTOCOL   ((((CHTTPCLIENT *)_object)->stream._free[5]))
+#define THIS_STATUS     ((curlData*)THIS->stream._free[0])->status
+#define THIS_CURL       ((curlData*)THIS->stream._free[0])->curl
+#define THIS_URL        ((curlData*)THIS->stream._free[0])->url
+#define THIS_FILE       ((curlData*)THIS->stream._free[0])->file
+#define THIS_PROTOCOL   ((curlData*)THIS->stream._free[0])->protocol
 
 #endif
 

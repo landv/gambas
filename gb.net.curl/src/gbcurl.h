@@ -4,7 +4,7 @@
 
   Advanced Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -45,6 +45,15 @@ typedef struct
 	char *userpwd;
 	int auth;
 } Adv_user;
+
+typedef struct 
+{
+	int   status;
+	CURL* curl;
+	char* url;
+	FILE* file;
+	char* protocol;
+} curlData;
 
 
 void Adv_correct_url(char **buf,char *protocol);

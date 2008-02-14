@@ -4,7 +4,7 @@
 
   Advanced Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 
 	if (THIS_FILE)
 	{
-		return fwrite(buffer,size,nmemb,(FILE*)THIS_FILE);
+		return fwrite(buffer,size,nmemb,THIS_FILE);
 	}
 	else
 	{
@@ -182,37 +182,37 @@ void http_initialize_curl_handle(void *_object)
 		{
 			CCURL_stop(_object);
 			http_reset(_object);
-			THIS_CURL=(long)curl_easy_init();
+			THIS_CURL=curl_easy_init();
 		}
 	}
 	else
 	{
-		THIS_CURL=(long)curl_easy_init();
+		THIS_CURL=curl_easy_init();
 		
 	}
 	
 	if (THIS->mode)
 	{
-		curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_NOSIGNAL,1);
-		curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
+		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
+		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
 	}
 	
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_USERAGENT,THIS->sUserAgent);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_HEADERFUNCTION, http_header_curl);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_WRITEFUNCTION, http_write_curl);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_WRITEDATA, _object);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_WRITEHEADER, _object);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_COOKIEFILE, THIS->cookiesfile);
+	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
+	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT,THIS->sUserAgent);
+	curl_easy_setopt(THIS_CURL, CURLOPT_HEADERFUNCTION, http_header_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION, http_write_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA, _object);
+	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEHEADER, _object);
+	curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEFILE, THIS->cookiesfile);
 	
 	if (THIS->updatecookies)
-		curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_COOKIEJAR, THIS->cookiesfile);
+		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, THIS->cookiesfile);
 	else
-		curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_COOKIEJAR, NULL);
+		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, NULL);
 
-	Adv_proxy_SET (&THIS->proxy.proxy,(CURL*)THIS_CURL);
-	Adv_user_SET  (&THIS->user, (CURL*)THIS_CURL);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_URL,THIS_URL);
+	Adv_proxy_SET (&THIS->proxy.proxy,THIS_CURL);
+	Adv_user_SET  (&THIS->user, THIS_CURL);
+	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
 
 	THIS->ReturnCode=0;
 	if (THIS->ReturnString)
@@ -235,16 +235,16 @@ int http_get (void *_object)
 
 	THIS->iMethod=0;
 	http_initialize_curl_handle(_object);
-	curl_easy_setopt((CURL*)THIS_CURL,CURLOPT_HTTPGET,1);
+	curl_easy_setopt(THIS_CURL,CURLOPT_HTTPGET,1);
 	
 	if (!THIS->mode)
 	{
-		curl_multi_add_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
 		return 0;
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform((CURL*)THIS_CURL));
+	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
 	return 0;
 }
 
@@ -276,19 +276,19 @@ int http_post (void *_object,char *sContent,char *sData,int lendata)
 
 	THIS->iMethod=1;
 	headers=curl_slist_append(headers,THIS->sContentType );
-	curl_easy_setopt((CURL*)THIS_CURL,CURLOPT_POSTFIELDS,THIS->sPostData);
-	curl_easy_setopt((CURL*)THIS_CURL,CURLOPT_POSTFIELDSIZE,lendata);
-	curl_easy_setopt((CURL*)THIS_CURL,CURLOPT_HTTPHEADER,headers);
+	curl_easy_setopt(THIS_CURL,CURLOPT_POSTFIELDS,THIS->sPostData);
+	curl_easy_setopt(THIS_CURL,CURLOPT_POSTFIELDSIZE,lendata);
+	curl_easy_setopt(THIS_CURL,CURLOPT_HTTPHEADER,headers);
 
 
 	if (!THIS->mode)
 	{
-		curl_multi_add_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
 		return 0;
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform((CURL*)THIS_CURL));
+	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
 	return 0;
 }
 
@@ -452,19 +452,21 @@ END_PROPERTY
 BEGIN_METHOD_VOID(CHTTPCLIENT_new)
 
 	char *tmp=NULL;
+	curlData *data=NULL;
 	
-	
+	GB.Alloc(POINTER(&data),sizeof(curlData));
+	THIS->stream._free[0]=data;
 	
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("http://127.0.0.1:80")));
 	strcpy(tmp,"http://127.0.0.1:80");
-	THIS_URL=(long)tmp;
+	THIS_URL=tmp;
 	GB.NewString(&THIS->sUserAgent,"Gambas Http/1.0",0);
 	
 	
 	tmp=NULL;
 	GB.Alloc((void**)POINTER(&tmp),8);
 	strcpy(tmp,"http://");
-	THIS_PROTOCOL=(long)tmp;
+	THIS_PROTOCOL=tmp;
 
 END_METHOD
 
@@ -480,7 +482,8 @@ BEGIN_METHOD_VOID(CHTTPCLIENT_free)
 	if (THIS->sUserAgent) GB.FreeString(&THIS->sUserAgent);
 	if (THIS->cookiesfile)	GB.Free((void**)POINTER(&THIS->cookiesfile));
 	if (THIS->ReturnString) GB.Free((void**)POINTER(&THIS->ReturnString));
-	
+
+	GB.Free(POINTER(&THIS->stream._free[0]));	
 
 END_METHOD
 
@@ -501,7 +504,7 @@ BEGIN_METHOD(CHTTPCLIENT_Get,GB_STRING TargetHost;)
 			GB.Error("Still active");
 			return;
 		}
-		THIS_FILE=(long)fopen(STRING(TargetHost),"w");
+		THIS_FILE=fopen(STRING(TargetHost),"w");
 		if (!THIS_FILE)
 		{
 			GB.Error("Unable to open file for writing");
@@ -528,7 +531,7 @@ BEGIN_METHOD(CHTTPCLIENT_Post,GB_STRING sContentType;GB_STRING sData;GB_STRING T
 			GB.Error("Still active");
 			return;
 		}
-		THIS_FILE=(long)fopen(STRING(TargetHost),"w");
+		THIS_FILE=fopen(STRING(TargetHost),"w");
 		if (!THIS_FILE)
 		{
 			GB.Error("Unable to open file for writing");

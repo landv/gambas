@@ -4,7 +4,7 @@
 
   Advanced Network component
 
-  (c) 2003-2004 Daniel Campos Fernández <danielcampos@netcourrier.com>
+  (c) 2003-2008 Daniel Campos Fernández <dcamposf@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ extern CURLM *CCURL_multicurl;
 int ftp_read_curl (void *buffer, size_t size, size_t nmemb, void *_object)
 {
 /* BM */
-        FILE *file = (FILE*)THIS_FILE;
+        FILE *file = THIS_FILE;
 	THIS_STATUS=4;
 	
 	if (!feof(file))
@@ -74,7 +74,7 @@ int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 
 	if (THIS_FILE)
 	{
-		return fwrite(buffer,size,nmemb,(FILE*)THIS_FILE);
+		return fwrite(buffer,size,nmemb,THIS_FILE);
 	}
 	else
 	{
@@ -109,32 +109,32 @@ void ftp_reset(CFTPCLIENT *mythis)
 
 void ftp_initialize_curl_handle(void *_object)
 {
-	if ((CURL*)THIS_CURL)
+	if (THIS_CURL)
 	{
 		if (Adv_Comp ( THIS->user.userpwd,THIS->user.user,THIS->user.pwd))
 		{
 			CCURL_stop(_object);
 			ftp_reset(_object);
-			THIS_CURL=(long)curl_easy_init();
+			THIS_CURL=curl_easy_init();
 		}
 	}
 	else
 	{
-		THIS_CURL=(long)curl_easy_init();
+		THIS_CURL=curl_easy_init();
 	}
 
 	if (THIS->mode)
 	{
-		curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_NOSIGNAL,1);
-		curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
+		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
+		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
 	}
 	
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_VERBOSE,1);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
+	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE,1);
+	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 
-	Adv_proxy_SET (&THIS->proxy.proxy,(CURL*)THIS_CURL);
-	Adv_user_SET  (&THIS->user, (CURL*)THIS_CURL);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_URL,THIS_URL);
+	Adv_proxy_SET (&THIS->proxy.proxy,THIS_CURL);
+	Adv_user_SET  (&THIS->user, THIS_CURL);
+	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
 
 	ftp_reset(THIS);
 	THIS_STATUS=6;
@@ -150,18 +150,18 @@ int ftp_get (void *_object)
 	
 	ftp_initialize_curl_handle(THIS);
 	
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_WRITEFUNCTION , ftp_write_curl);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_WRITEDATA     , _object);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_UPLOAD        , 0);
+	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION , ftp_write_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA     , _object);
+	curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD        , 0);
 	
 	if (!THIS->mode)
 	{
-		curl_multi_add_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
 		return 0;
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform((CURL*)THIS_CURL));
+	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
 	return 0;
 }
 
@@ -173,19 +173,19 @@ int ftp_put (void *_object)
 	
 	ftp_initialize_curl_handle(THIS);
 	
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_READFUNCTION , ftp_read_curl);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_READDATA     , _object);
-	curl_easy_setopt((CURL*)THIS_CURL, CURLOPT_UPLOAD       , 1);
+	curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION , ftp_read_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_READDATA     , _object);
+	curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD       , 1);
 	
 	
 	if (!THIS->mode)
 	{
-		curl_multi_add_handle(CCURL_multicurl,(CURL*)THIS_CURL);
+		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
 		return 0;
 	}
 	
-	CCURL_Manage_ErrCode(_object,curl_easy_perform((CURL*)THIS_CURL));
+	CCURL_Manage_ErrCode(_object,curl_easy_perform(THIS_CURL));
 	return 0;
 }
 
@@ -198,7 +198,7 @@ BEGIN_METHOD(CFTPCLIENT_Get,GB_STRING TargetHost;)
 			GB.Error("Still active");
 			return;
 		}
-		THIS_FILE=(long)fopen(STRING(TargetHost),"w");
+		THIS_FILE=fopen(STRING(TargetHost),"w");
 		if (!THIS_FILE)
 		{
 			GB.Error("Unable to open file for writing");
@@ -230,7 +230,7 @@ BEGIN_METHOD(CFTPCLIENT_Put,GB_STRING SourceFile;)
 		return;
 	}
 	
-	THIS_FILE=(long)fopen(STRING(SourceFile),"r");
+	THIS_FILE=fopen(STRING(SourceFile),"r");
 	if (!THIS_FILE)
 	{
 		GB.Error("Unable to open file for reading");
@@ -253,14 +253,18 @@ END_METHOD
 BEGIN_METHOD_VOID(CFTPCLIENT_new)
 
 	char *tmp=NULL;	
+	curlData *data=NULL;
+	
+	GB.Alloc(POINTER(&data),sizeof(curlData));
+	THIS->stream._free[0]=data;
 	
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("ftp://127.0.0.1:21")));
-	THIS_URL=(long)tmp;
+	THIS_URL=tmp;
 	strcpy(tmp,"ftp://127.0.0.1:21");
 	tmp=NULL;
 	GB.Alloc((void**)POINTER(&tmp),7);
 	strcpy(tmp,"ftp://");
-	THIS_PROTOCOL=(long)tmp;
+	THIS_PROTOCOL=tmp;
 	Adv_user_SETAUTH (&THIS->user,CURLAUTH_BASIC);
 
 
@@ -269,6 +273,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CFTPCLIENT_free)
 
 	ftp_reset(THIS);
+	GB.Free(POINTER(&THIS->stream._free[0]));
 
 END_METHOD
 
