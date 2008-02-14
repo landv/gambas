@@ -84,8 +84,11 @@ int CCURL_stream_write(GB_STREAM *stream, char *buffer, int len){return -1;}
 int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	void *_object;
+	char *tmp;
+	curlData *data=(curlData*)((void**)stream->_free)[0];	
 	
-	curl_easy_getinfo(THIS_CURL,CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
+	_object=(void*)tmp;
 	*len=0;
 
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
@@ -95,8 +98,11 @@ int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 int CCURL_stream_eof(GB_STREAM *stream)
 {
 	void *_object;
+	char *tmp;
+	curlData *data=(curlData*)((void**)stream->_free)[0];	
 	
-	curl_easy_getinfo(THIS_CURL,CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
+	_object=(void*)tmp;
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (!THIS->len_data) return -1;
@@ -106,8 +112,11 @@ int CCURL_stream_eof(GB_STREAM *stream)
 int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object;
+	char *tmp;
+	curlData *data=(curlData*)((void**)stream->_free)[0];	
 	
-	curl_easy_getinfo(THIS_CURL,CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
+	_object=(void*)tmp;
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (THIS->len_data < len) return -1;
@@ -248,6 +257,7 @@ void CCURL_post_curl(long data)
 	int nread;
 	int post=1;
 	void *_object;
+	char *tmp;
 	struct timespec mywait;
 
 	do
@@ -266,7 +276,8 @@ void CCURL_post_curl(long data)
 		if (!Msg) nread=0;
 		if (Msg)
 		{
-			curl_easy_getinfo(Msg->easy_handle,CURLINFO_PRIVATE,(char**)&_object);
+			curl_easy_getinfo(Msg->easy_handle,CURLINFO_PRIVATE,&tmp);
+			_object=(void*)tmp;
 			CCURL_Manage_ErrCode(THIS,Msg->data.result);
 		}
 	} 
@@ -424,10 +435,17 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_new)
 
+	curlData *data=NULL;
+	
+	GB.Alloc(POINTER(&data),sizeof(curlData));
+	((void**)THIS->stream._free)[0]=(void*)data;
+
 	THIS->stream.desc=NULL;
 	THIS_CURL=NULL;
 	THIS_URL=NULL;
 	THIS_FILE=NULL;
+	THIS_PROTOCOL=NULL;
+	THIS_STATUS=0;
 	GB.StoreVariant(NULL, (void *)&THIS->tag);
 	Adv_user_NEW  (&THIS->user);
 	Adv_proxy_NEW(&THIS->proxy.proxy);

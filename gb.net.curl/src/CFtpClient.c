@@ -253,10 +253,6 @@ END_METHOD
 BEGIN_METHOD_VOID(CFTPCLIENT_new)
 
 	char *tmp=NULL;	
-	curlData *data=NULL;
-	
-	GB.Alloc(POINTER(&data),sizeof(curlData));
-	THIS->stream._free[0]=data;
 	
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("ftp://127.0.0.1:21")));
 	THIS_URL=tmp;

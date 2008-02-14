@@ -452,10 +452,6 @@ END_PROPERTY
 BEGIN_METHOD_VOID(CHTTPCLIENT_new)
 
 	char *tmp=NULL;
-	curlData *data=NULL;
-	
-	GB.Alloc(POINTER(&data),sizeof(curlData));
-	THIS->stream._free[0]=data;
 	
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("http://127.0.0.1:80")));
 	strcpy(tmp,"http://127.0.0.1:80");
