@@ -85,7 +85,7 @@ int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 {
 	void *_object;
 	
-	curl_easy_getinfo((CURL*)stream->_free[2],CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(THIS_CURL,CURLINFO_PRIVATE,(char**)&_object);
 	*len=0;
 
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
@@ -96,7 +96,7 @@ int CCURL_stream_eof(GB_STREAM *stream)
 {
 	void *_object;
 	
-	curl_easy_getinfo((CURL*)stream->_free[2],CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(THIS_CURL,CURLINFO_PRIVATE,(char**)&_object);
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (!THIS->len_data) return -1;
@@ -107,7 +107,7 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
 	void *_object;
 	
-	curl_easy_getinfo((CURL*)stream->_free[2],CURLINFO_PRIVATE,(char**)&_object);
+	curl_easy_getinfo(THIS_CURL,CURLINFO_PRIVATE,(char**)&_object);
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (THIS->len_data < len) return -1;
@@ -431,7 +431,7 @@ BEGIN_METHOD_VOID(CCURL_new)
 	GB.StoreVariant(NULL, (void *)&THIS->tag);
 	Adv_user_NEW  (&THIS->user);
 	Adv_proxy_NEW(&THIS->proxy.proxy);
-	THIS->proxy.parent_status=(int*)&THIS->stream._free[1];
+	THIS->proxy.parent_status=(int*)&THIS_STATUS;
 
 END_METHOD
 
