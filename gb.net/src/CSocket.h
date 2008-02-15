@@ -48,13 +48,6 @@ extern GB_STREAM_DESC SocketStream;
 void CSocket_CallBack(int t_sock,int type,long lParam);
 void CSocket_CallBackConnecting(int t_sock,int type,long lParam);
 
-
-typedef struct SOCKET_STREAM  {
-	GB_STREAM_DESC *desc;
-    	int _reserved;
-    	void *handle;
-} SOCKET_STREAM;
-
 typedef  struct
 {
    GB_BASE ob;
@@ -83,17 +76,17 @@ typedef  struct
 }  CSOCKET;
 
 //
-void CSocket_post_error(CSOCKET *mythis);
-void CSocket_post_closed(CSOCKET *mythis);
-void CSocket_post_hostfound(CSOCKET *mythis);
-void CSocket_post_connected(CSOCKET *mythis);
-void CSocket_post_data_available(CSOCKET *mythis);
+void CSocket_post_error(void *_object);
+void CSocket_post_closed(void *_object);
+void CSocket_post_hostfound(void *_object);
+void CSocket_post_connected(void *_object);
+void CSocket_post_data_available(void *_object);
 //
-int CSocket_connect_unix(CSOCKET *mythis,char *sPath,int lenpath);
-int CSocket_connect_socket(CSOCKET *mythis,char *sHost,int lenhost,int myport);
-int CSocket_peek_data(CSOCKET *mythis,char **buf,int MaxLen);
+int CSocket_connect_unix(void *_object,char *sPath,int lenpath);
+int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport);
+int CSocket_peek_data(void *_object,char **buf,int MaxLen);
 //
-void CSocket_stream_internal_error(CSOCKET *mythis,int ncode);
+void CSocket_stream_internal_error(void *_object,int ncode);
 //
 int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len);
 int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len);

@@ -77,100 +77,98 @@ GB_STREAM_DESC SocketStream = {
 /**********************************
  Routines to call events
  **********************************/
-void CSocket_post_error(CSOCKET *mythis)
+void CSocket_post_error(void *_object)
 {
 
-	GB.Raise(mythis,SocketError,0);
-	GB.Unref(POINTER(&mythis));
+	GB.Raise(THIS,SocketError,0);
+	GB.Unref(POINTER(&_object));
 }
 
-void CSocket_post_closed(CSOCKET *mythis)
+void CSocket_post_closed(void *_object)
 {
-	GB.Raise(mythis,Closed,0);
-	GB.Unref(POINTER(&mythis));
+	GB.Raise(THIS,Closed,0);
+	GB.Unref(POINTER(&_object));
 }
 
-void CSocket_post_hostfound(CSOCKET *mythis)
+void CSocket_post_hostfound(void *_object)
 {
-	GB.Raise(mythis,HostFound,0);
-	GB.Unref(POINTER(&mythis));
+	GB.Raise(THIS,HostFound,0);
+	GB.Unref(POINTER(&_object));
 }
 
-void CSocket_post_connected(CSOCKET *mythis)
+void CSocket_post_connected(void *_object)
 {
-	GB.Raise(mythis,Connected,0);
-	GB.Unref(POINTER(&mythis));
+	GB.Raise(THIS,Connected,0);
+	GB.Unref(POINTER(&_object));
 }
 
-void CSocket_post_data_available(CSOCKET *mythis)
+void CSocket_post_data_available(void *_object)
 {
-	if (mythis->iStatus==7)	GB.Raise(mythis,Socket_Read,0);
-	GB.Unref(POINTER(&mythis));
+	if (THIS->iStatus==7)	GB.Raise(THIS,Socket_Read,0);
+	GB.Unref(POINTER(&_object));
 }
 
 /**************************************************
  This function is called by DnsClient to inform
   that it has finished its work
   *************************************************/
-void CSocket_CallBackFromDns(void *myobj)
+void CSocket_CallBackFromDns(void *_object)
 {
 	int NoBlock=1;
 	int myval=0;
-	CSOCKET *mythis;
 
-	mythis=(CSOCKET*)myobj;
-	if ( mythis->iStatus != 5) return;
-	if ( !mythis->DnsTool->sHostIP)
+	if ( THIS->iStatus != 5) return;
+	if ( !THIS->DnsTool->sHostIP)
 	{
-		mythis->iStatus=-6; /* error host not found */
-		dns_close_all(mythis->DnsTool);
-		GB.Unref(POINTER(&mythis->DnsTool));
-		mythis->DnsTool=NULL;
-		GB.Ref (mythis);
-		GB.Post (CSocket_post_error,(long)mythis);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		THIS->iStatus=-6; /* error host not found */
+		dns_close_all(THIS->DnsTool);
+		GB.Unref(POINTER(&THIS->DnsTool));
+		THIS->DnsTool=NULL;
+		GB.Ref (THIS);
+		GB.Post (CSocket_post_error,(intptr_t)THIS);
+		if (THIS->OnClose) THIS->OnClose(_object);
 		return;
 	}
 
-	GB.FreeString (&mythis->sRemoteHostIP);
-	GB.NewString ( &mythis->sRemoteHostIP ,mythis->DnsTool->sHostIP,0);
+	GB.FreeString (&THIS->sRemoteHostIP);
+	GB.NewString ( &THIS->sRemoteHostIP ,THIS->DnsTool->sHostIP,0);
 	/* Let's turn socket to async mode */
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
 	/* Third, we connect the socket */
-	mythis->Server.sin_family=AF_INET;
-  	mythis->Server.sin_port=htons(mythis->iPort);
-  	mythis->Server.sin_addr.s_addr =inet_addr(mythis->DnsTool->sHostIP);
-  	bzero(&(mythis->Server.sin_zero),8);
-	myval=connect(mythis->Socket,(struct sockaddr*)&(mythis->Server), sizeof(struct sockaddr));
+	THIS->Server.sin_family=AF_INET;
+  	THIS->Server.sin_port=htons(THIS->iPort);
+  	THIS->Server.sin_addr.s_addr =inet_addr(THIS->DnsTool->sHostIP);
+  	bzero(&(THIS->Server.sin_zero),8);
+	myval=connect(THIS->Socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
 	if (errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
-		mythis->iStatus=6;
-		GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(long)mythis);
+		THIS->iStatus=6;
+		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(long)THIS);
 	}
 	else
 	{
-		GB.Watch (mythis->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
-		mythis->stream.desc=NULL;
-		close(mythis->Socket);
-		mythis->iStatus=0;
+		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		THIS->stream.desc=NULL;
+		close(THIS->Socket);
+		THIS->iStatus=0;
 	}
-	if (mythis->DnsTool)
+	if (THIS->DnsTool)
   	{
-		dns_close_all(mythis->DnsTool);
-		GB.Unref(POINTER(&mythis->DnsTool));
-		mythis->DnsTool=NULL;
+		dns_close_all(THIS->DnsTool);
+		GB.Unref(POINTER(&THIS->DnsTool));
+		THIS->DnsTool=NULL;
   	}
-	if ( mythis->iStatus<=0 )
+	if ( THIS->iStatus<=0 )
 	{
-		mythis->iStatus=-3;
-		GB.Ref (mythis);
-		GB.Post (CSocket_post_error,(long)mythis);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		THIS->iStatus=-3;
+		GB.Ref (THIS);
+		GB.Post (CSocket_post_error,(intptr_t)THIS);
+		if (THIS->OnClose) THIS->OnClose((void*)THIS);
 		return;
 	}
 
-	GB.Ref(mythis);
-	GB.Post(CSocket_post_hostfound,(long)mythis);
+	GB.Ref(THIS);
+	GB.Post(CSocket_post_hostfound,(intptr_t)THIS);
 
 }
 /*******************************************************************
@@ -181,49 +179,46 @@ void CSocket_CallBackConnecting(int t_sock,int type,long lParam)
 	struct sockaddr_in myhost;
 	int mylen;
 	struct timespec mywait;
-	CSOCKET *mythis;
-	SOCKET_STREAM *str;
+	void *_object;
 
 	/*	Just sleeping a little to reduce CPU waste	*/
 	mywait.tv_sec=0;
 	mywait.tv_nsec=1000000;
 	nanosleep(&mywait,NULL);
 
-	mythis=(CSOCKET*)lParam;
+	_object=(void*)lParam;
 
-	if (mythis->iStatus!=6) return;
+	if (THIS->iStatus!=6) return;
 	/****************************************************
 	Checks if Connection was Stablished or there was
 	an error trying to connect
 	****************************************************/
-	mythis->iStatus=CheckConnection(mythis->Socket);
-	if (mythis->iStatus == 0)
+	THIS->iStatus=CheckConnection(THIS->Socket);
+	if (THIS->iStatus == 0)
 	{
-		GB.Watch (mythis->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
-		mythis->stream.desc=NULL;
-		close(mythis->Socket);
-		mythis->iStatus=-3;
-		GB.Ref (mythis);
-		GB.Post (CSocket_post_error,(long)mythis);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		THIS->stream.desc=NULL;
+		close(THIS->Socket);
+		THIS->iStatus=-3;
+		GB.Ref (THIS);
+		GB.Post (CSocket_post_error,(intptr_t)THIS);
+		if (THIS->OnClose) THIS->OnClose((void*)THIS);
 		return;
 	}
-	if (mythis->iStatus != 7) return;
+	if (THIS->iStatus != 7) return;
 	// we obtain local IP and host
 	mylen=sizeof(struct sockaddr);
-	getsockname (mythis->Socket,(struct sockaddr*)&myhost,(socklen_t *)&mylen);
-	mythis->iLocalPort=ntohs(myhost.sin_port);
-	GB.FreeString( &mythis->sLocalHostIP);
-	GB.NewString ( &mythis->sLocalHostIP ,inet_ntoa(myhost.sin_addr),0);
+	getsockname (THIS->Socket,(struct sockaddr*)&myhost,(socklen_t *)&mylen);
+	THIS->iLocalPort=ntohs(myhost.sin_port);
+	GB.FreeString( &THIS->sLocalHostIP);
+	GB.NewString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr),0);
 
-	GB.Watch (mythis->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(long)mythis);
-	GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)mythis);
+	GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(long)THIS);
+	GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)THIS);
 
-	mythis->stream.desc=&SocketStream;
-	str=(SOCKET_STREAM*)POINTER(&mythis->stream);
-	str->handle=POINTER(mythis);
-	GB.Ref(mythis);
-	GB.Post(CSocket_post_connected,(long)mythis);
+	THIS->stream.desc=&SocketStream;
+	GB.Ref(THIS);
+	GB.Post(CSocket_post_connected,(intptr_t)THIS);
 
 
 
@@ -237,16 +232,16 @@ void CSocket_CallBack(int t_sock,int type,long lParam)
 	struct pollfd mypoll;
 	int numpoll;
 	struct timespec mywait;
-	CSOCKET *mythis;
+	void *_object;
 
 	/*	Just sleeping a little to reduce CPU waste	*/
 	mywait.tv_sec=0;
 	mywait.tv_nsec=100000;
 	nanosleep(&mywait,NULL);
 	/* is there data avilable or an error? */
-	mythis=(CSOCKET*)lParam;
+	_object=(void*)lParam;
 
-	if (mythis->iStatus!=7) return;
+	if (THIS->iStatus!=7) return;
 
 	mypoll.fd=t_sock;
 	mypoll.events=POLLIN | POLLNVAL;
@@ -257,13 +252,13 @@ void CSocket_CallBack(int t_sock,int type,long lParam)
 	USE_MSG_NOSIGNAL(numpoll=recv(t_sock,(void*)buf,sizeof(char),MSG_PEEK | MSG_NOSIGNAL));
 	if (!numpoll)
 	{ /* socket error, no valid data received */
-		GB.Watch (mythis->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
-		mythis->stream.desc=NULL;
+		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		THIS->stream.desc=NULL;
 		close(t_sock);
-		mythis->iStatus=0;
-		GB.Ref(mythis);
-		GB.Post(CSocket_post_closed,(long)mythis);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		THIS->iStatus=0;
+		GB.Ref(THIS);
+		GB.Post(CSocket_post_closed,(intptr_t)THIS);
+		if (THIS->OnClose) THIS->OnClose((void*)THIS);
 		return;
 	}
 	/******************************************************
@@ -271,20 +266,20 @@ void CSocket_CallBack(int t_sock,int type,long lParam)
 	Socket_Read
 	*******************************************************/
 
-	GB.Ref(mythis);
-	GB.Post(CSocket_post_data_available,(long)mythis);
+	GB.Ref(_object);
+	GB.Post(CSocket_post_data_available,(intptr_t)THIS);
 
 
 }
 
 
-void CSocket_stream_internal_error(CSOCKET *mythis,int ncode)
+void CSocket_stream_internal_error(void *_object,int ncode)
 {
 	/* fatal socket error handling */
-	GB.Watch (mythis->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,0);
-	mythis->stream.desc=NULL;
-	close(mythis->Socket);
-	mythis->iStatus = ncode;
+	GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,0);
+	THIS->stream.desc=NULL;
+	close(THIS->Socket);
+	THIS->iStatus = ncode;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -309,38 +304,38 @@ int CSocket_stream_handle(GB_STREAM *stream)
 }
 int CSocket_stream_close(GB_STREAM *stream)
 {
-  CSOCKET *mythis;
+  void *_object=((void**)stream->_free)[0];
 
-  if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
+  if (!THIS ) return -1;
 
-  if (mythis->DnsTool)
+  if (THIS->DnsTool)
   {
-	dns_close_all(mythis->DnsTool);
-	GB.Unref(POINTER(&mythis->DnsTool));
-	mythis->DnsTool=NULL;
+	dns_close_all(THIS->DnsTool);
+	GB.Unref(POINTER(&THIS->DnsTool));
+	THIS->DnsTool=NULL;
   }
-  if (mythis->iStatus > 0) /* if it's not connected, does nothing */
+  if (THIS->iStatus > 0) /* if it's not connected, does nothing */
   {
-	GB.Watch (mythis->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+	GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 	stream->desc=NULL;
-  	close(mythis->Socket);
-  	mythis->iStatus=0;
+  	close(THIS->Socket);
+  	THIS->iStatus=0;
   }
-  if (mythis->OnClose) mythis->OnClose((void*)mythis);
+  if (THIS->OnClose) THIS->OnClose(_object);
   return 0;
 }
 int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	CSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int bytes;
 
 	*len=0;
-	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
+	if (!THIS) return -1;
 
-	if (ioctl(mythis->Socket,FIONREAD,&bytes))
+	if (ioctl(THIS->Socket,FIONREAD,&bytes))
 	{
-		CSocket_stream_internal_error(mythis,-4);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		CSocket_stream_internal_error(THIS,-4);
+		if (THIS->OnClose) THIS->OnClose(_object);
 		return -1;
 	}
 	*len=bytes;
@@ -348,15 +343,15 @@ int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 }
 int CSocket_stream_eof(GB_STREAM *stream)
 {
-	CSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int bytes;
 
-	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
+	if (!THIS) return -1;
 
-	if (ioctl(mythis->Socket,FIONREAD,&bytes))
+	if (ioctl(THIS->Socket,FIONREAD,&bytes))
 	{
-		CSocket_stream_internal_error(mythis,-4);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		CSocket_stream_internal_error(THIS,-4);
+		if (THIS->OnClose) THIS->OnClose(_object);
 		return -1;
 	}
 	if (!bytes) return -1;
@@ -365,51 +360,51 @@ int CSocket_stream_eof(GB_STREAM *stream)
 
 int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	CSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
   	int npos=-1;
   	int NoBlock=0;
 	int bytes;
 
-	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
+	if (!THIS) return -1;
 
-	if (ioctl(mythis->Socket,FIONREAD,&bytes))
+	if (ioctl(THIS->Socket,FIONREAD,&bytes))
 	{
-		CSocket_stream_internal_error(mythis,-4);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		CSocket_stream_internal_error(THIS,-4);
+		if (THIS->OnClose) THIS->OnClose(_object);
 		return -1;
 	}
 	if (bytes < len) return -1;
 
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(npos=recv(mythis->Socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
+	USE_MSG_NOSIGNAL(npos=recv(THIS->Socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
 	NoBlock++;
-  	ioctl(mythis->Socket,FIONBIO,&NoBlock);
+  	ioctl(THIS->Socket,FIONBIO,&NoBlock);
   	if (npos==len) return 0;
 	if (npos<0)
 	{
-		CSocket_stream_internal_error(mythis,-4);
-		if (mythis->OnClose) mythis->OnClose((void*)mythis);
+		CSocket_stream_internal_error(THIS,-4);
+		if (THIS->OnClose) THIS->OnClose(_object);
 		return -1;
 	}
-	if (mythis->OnClose) mythis->OnClose((void*)mythis);
+	if (THIS->OnClose) THIS->OnClose(_object);
 	return -1;
 }
 
 int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	CSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int npos=-1;
 	int NoBlock=0;
 
-	if (!(mythis=(CSOCKET*)((SOCKET_STREAM*)stream)->handle) ) return -1;
+	if (!THIS) return -1;
 
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(npos=send(mythis->Socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
+	USE_MSG_NOSIGNAL(npos=send(THIS->Socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
 	NoBlock++;
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
 	if (npos>=0) return 0;
-	CSocket_stream_internal_error(mythis,-5);
-	if (mythis->OnClose) mythis->OnClose((void*)mythis);
+	CSocket_stream_internal_error(THIS,-5);
+	if (THIS->OnClose) THIS->OnClose(_object);
 	return -1;
 }
 
@@ -418,58 +413,55 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 /**************************************************************************
  To start a UNIX connection
  **************************************************************************/
-int CSocket_connect_unix(CSOCKET *mythis,char *sPath,int lenpath)
+int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
 {
-	SOCKET_STREAM *str;
 	int NoBlock=1;
 
-	if ( mythis->iStatus > 0 ) return 1;
+	if ( THIS->iStatus > 0 ) return 1;
 	if (!sPath) return 7;
 	if ( (lenpath<1) || (lenpath>UNIXPATHMAX) ) return 7;
 
-	GB.FreeString(&mythis->sRemoteHostIP);
-  	GB.FreeString(&mythis->sLocalHostIP);
+	GB.FreeString(&THIS->sRemoteHostIP);
+  	GB.FreeString(&THIS->sLocalHostIP);
 
-	mythis->UServer.sun_family=AF_UNIX;
-	strcpy(mythis->UServer.sun_path,sPath);
-  	if ( (mythis->Socket=socket(AF_UNIX,SOCK_STREAM,0))==-1 )
+	THIS->UServer.sun_family=AF_UNIX;
+	strcpy(THIS->UServer.sun_path,sPath);
+  	if ( (THIS->Socket=socket(AF_UNIX,SOCK_STREAM,0))==-1 )
   	{
-    		mythis->iStatus=-2;
-		GB.Ref (mythis);
-  		CSocket_post_error(mythis); /* Unable to create socket */
+    		THIS->iStatus=-2;
+		GB.Ref (THIS);
+  		CSocket_post_error(_object); /* Unable to create socket */
 		return 2;
   	}
 
 
-  	GB.FreeString(&mythis->sPath);
-	GB.NewString ( &mythis->sPath , mythis->UServer.sun_path ,0);
-  	mythis->conn_type=1;
-  	if (connect(mythis->Socket,(struct sockaddr*)&mythis->UServer,sizeof(struct sockaddr_un))==0)
+  	GB.FreeString(&THIS->sPath);
+	GB.NewString ( &THIS->sPath , THIS->UServer.sun_path ,0);
+  	THIS->conn_type=1;
+  	if (connect(THIS->Socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un))==0)
   	{
-		mythis->iStatus=7;
-		ioctl(mythis->Socket,FIONBIO,&NoBlock);
-		GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)mythis);
-		str=(SOCKET_STREAM*)POINTER(&mythis->stream);
-		str->desc=&SocketStream;
-		str->handle=mythis;
+		THIS->iStatus=7;
+		ioctl(THIS->Socket,FIONBIO,&NoBlock);
+		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)THIS);
+		THIS->stream.desc=&SocketStream;
                 // $BM
-                if (mythis->Host) GB.FreeString(&mythis->Host);
-                if (mythis->Path) GB.FreeString(&mythis->Path);
+                if (THIS->Host) GB.FreeString(&THIS->Host);
+                if (THIS->Path) GB.FreeString(&THIS->Path);
 
-                GB.NewString(&mythis->Path,sPath,0);
-		GB.Ref (mythis);
-		CSocket_post_connected(mythis);
+                GB.NewString(&THIS->Path,sPath,0);
+		GB.Ref (THIS);
+		CSocket_post_connected(_object);
 
 		return 0;
   	}
 	/* Error */
-	mythis->stream.desc=NULL;
-	close(mythis->Socket);
-	GB.FreeString(&mythis->sPath);
-	mythis->iStatus=-3;
+	THIS->stream.desc=NULL;
+	close(THIS->Socket);
+	GB.FreeString(&THIS->sPath);
+	THIS->iStatus=-3;
 
-	GB.Ref (mythis);
-	CSocket_post_error(mythis); /* Unable to connect to remote host */
+	GB.Ref (THIS);
+	CSocket_post_error(_object); /* Unable to connect to remote host */
 
 	return 3;
 
@@ -477,62 +469,57 @@ int CSocket_connect_unix(CSOCKET *mythis,char *sPath,int lenpath)
 /**************************************************************************
  To start a TCP connection
  **************************************************************************/
-int CSocket_connect_socket(CSOCKET *mythis,char *sHost,int lenhost,int myport)
+int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 {
-	SOCKET_STREAM *str;
-
-
-	if ( mythis->iStatus > 0 ) return 1;
+	if ( THIS->iStatus > 0 ) return 1;
 	if (!lenhost) return 9;
 	if (!sHost)   return 9;
 	if ( (myport<1) || (myport>65535) ) return 8;
 
-  	GB.FreeString(&mythis->sRemoteHostIP);
-  	GB.FreeString(&mythis->sLocalHostIP);
+  	GB.FreeString(&THIS->sRemoteHostIP);
+  	GB.FreeString(&THIS->sLocalHostIP);
 
 
-	if ( (mythis->Socket=socket(AF_INET,SOCK_STREAM,0))==-1 )
+	if ( (THIS->Socket=socket(AF_INET,SOCK_STREAM,0))==-1 )
 	{
-		mythis->iStatus=-2;
-		GB.Ref (mythis);
-		CSocket_post_error(mythis);
+		THIS->iStatus=-2;
+		GB.Ref (THIS);
+		CSocket_post_error(_object);
 		return 2;
 	}
 
-	mythis->iPort=myport;
-	mythis->conn_type=0;
+	THIS->iPort=myport;
+	THIS->conn_type=0;
 	/******************************************
 	Let's turn hostname into host IP
 	*******************************************/
-	if (!mythis->DnsTool)
+	if (!THIS->DnsTool)
 	{
-		GB.New(POINTER(&mythis->DnsTool),GB.FindClass("DnsClient"),NULL,NULL);
-		mythis->DnsTool->CliParent=(void*)mythis;
+		GB.New(POINTER(&THIS->DnsTool),GB.FindClass("DnsClient"),NULL,NULL);
+		THIS->DnsTool->CliParent=_object;
 	}
 
-  	if (mythis->DnsTool->iStatus > 0 ) dns_close_all(mythis->DnsTool);
+  	if (THIS->DnsTool->iStatus > 0 ) dns_close_all(THIS->DnsTool);
 
-  	dns_set_async_mode(1,mythis->DnsTool);
-  	GB.FreeString (&(mythis->DnsTool->sHostName));
-  	GB.NewString(&mythis->DnsTool->sHostName,sHost,lenhost);
-  	mythis->DnsTool->finished_callback=CSocket_CallBackFromDns;
+  	dns_set_async_mode(1,THIS->DnsTool);
+  	GB.FreeString (&(THIS->DnsTool->sHostName));
+  	GB.NewString(&THIS->DnsTool->sHostName,sHost,lenhost);
+  	THIS->DnsTool->finished_callback=CSocket_CallBackFromDns;
 	/********************************************
 	We start DNS lookup, when it is finished
 	it will call to CSocket_CallBack_fromDns,
 	and we'll continue there connection proccess
 	********************************************/
-	mythis->iStatus=5; /* looking for IP */
-	dns_thread_getip(mythis->DnsTool);
-	str=(SOCKET_STREAM*)POINTER(&mythis->stream);
-	str->desc=&SocketStream;
-	str->handle=mythis;
-  	mythis->iUsePort=mythis->iPort;
+	THIS->iStatus=5; /* looking for IP */
+	dns_thread_getip(THIS->DnsTool);
+	THIS->stream.desc=&SocketStream;
+  	THIS->iUsePort=THIS->iPort;
 
         // $BM
-        if (mythis->Host) GB.FreeString(&mythis->Host);
-        if (mythis->Path) GB.FreeString(&mythis->Path);
+        if (THIS->Host) GB.FreeString(&THIS->Host);
+        if (THIS->Path) GB.FreeString(&THIS->Path);
 
-	GB.NewString(&mythis->Host,sHost,0);
+	GB.NewString(&THIS->Host,sHost,0);
 	return 0;
 
 }
@@ -541,11 +528,11 @@ int CSocket_connect_socket(CSOCKET *mythis,char *sHost,int lenhost,int myport)
 This function is used to peek data from socket,
 you have to pass 3 parameters:
 
-mythis -> CSocket object
+_object-> CSocket object
 buf    -> Data Buffer (you have to free it after using it!)
 MaxLen -> 0 no limit, >0 max. data t read
 ***********************************************/
-int CSocket_peek_data(CSOCKET *mythis,char **buf,int MaxLen)
+int CSocket_peek_data(void *_object,char **buf,int MaxLen)
 {
   int retval=0;
   int NoBlock=0;
@@ -553,7 +540,7 @@ int CSocket_peek_data(CSOCKET *mythis,char **buf,int MaxLen)
   int bytes=0;
 
   (*buf)=NULL;
-  nread=ioctl(mythis->Socket,FIONREAD,&bytes); /* Is there anythig to read? */
+  nread=ioctl(THIS->Socket,FIONREAD,&bytes); /* Is there anythig to read? */
   if (nread)
   	retval=-1;
   else
@@ -564,10 +551,10 @@ int CSocket_peek_data(CSOCKET *mythis,char **buf,int MaxLen)
 	if (MaxLen >0 ) bytes=MaxLen;
 	GB.Alloc((void**)buf,bytes);
 	(*buf)[0]='\0';
-  	ioctl(mythis->Socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(retval=recv(mythis->Socket,(void*)(*buf),bytes*sizeof(char),MSG_PEEK|MSG_NOSIGNAL));
+  	ioctl(THIS->Socket,FIONBIO,&NoBlock);
+	USE_MSG_NOSIGNAL(retval=recv(THIS->Socket,(void*)(*buf),bytes*sizeof(char),MSG_PEEK|MSG_NOSIGNAL));
 	NoBlock++;
-  	ioctl(mythis->Socket,FIONBIO,&NoBlock);
+  	ioctl(THIS->Socket,FIONBIO,&NoBlock);
   }
 
   if (retval==-1)
@@ -578,12 +565,12 @@ int CSocket_peek_data(CSOCKET *mythis,char **buf,int MaxLen)
 		GB.Free(POINTER(buf));
 		buf=NULL;
 	}
-	GB.Watch (mythis->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
-	mythis->stream.desc=NULL;
-	close(mythis->Socket);
-	mythis->iStatus=-4;
-	GB.Ref (mythis);
-	CSocket_post_error(mythis);
+	GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+	THIS->stream.desc=NULL;
+	close(THIS->Socket);
+	THIS->iStatus=-4;
+	GB.Ref (THIS);
+	CSocket_post_error(_object);
 	return -1;
 
   }
@@ -746,71 +733,12 @@ END_PROPERTY
 /****************************************************
  Gambas object "Constructor"
  ****************************************************/
-//BEGIN_METHOD(CSOCKET_new,GB_STRING sPath;)
 BEGIN_METHOD_VOID(CSOCKET_new)
 
-  //char *buf=NULL;
-  //int retval;
-  //int nport=0;
-
-  // $BM - The object is filled with zero at creation
-
-  //THIS->stream.desc=NULL;
-  //THIS->c_parent=NULL;
-  //THIS->DnsTool=NULL;
-  //THIS->conn_type=0;
-  //THIS->iStatus=0;
+  
+  ((void**)THIS->stream._free)[0]=_object;	
   THIS->iUsePort=80;
-  //THIS->sLocalHostIP=NULL;
-  //THIS->sRemoteHostIP=NULL;
-  //THIS->HostOrPath=NULL;
-  //THIS->OnClose=NULL;
 
-  /*
-  if (MISSING (sPath) ) return;
-  if (!STRING (sPath) ) return;
-
-  retval=IsHostPath(STRING(sPath),&buf,&nport);
-
-  if (!retval)
-  {
-  	GB.Error("Invalid Host / Path string");
-	return;
-  }
-
-  if (retval==2)
-  {
-  	switch(CSocket_connect_unix(THIS,STRING(sPath),LENGTH(sPath)))
-  	{
-  		case 1: GB.Error("Socket is already connected. Close it first."); return;
-		case 2: GB.Error("Invalid Path length"); return;
-  	}
-  	return;
-  }
-
-  if (retval==1)
-  {
-  	if (!buf)
-	{
-		GB.Error("Invalid host name");
-		return;
-	}
-	if (nport < 1)
-	{
-		GB.Error("Invalid Port");
-		return;
-	}
-	retval=CSocket_connect_socket(THIS,buf,strlen(buf),nport );
-	GB.Free((void**)&buf);
-	switch(retval)
-	{
-  		case 1: GB.Error("Socket is already connected. Close it first."); return;
-		case 8: GB.Error("Port value out of range."); return;
-		case 9: GB.Error("Invalid Host Name."); return;
-  	}
-  	return;
-  }
-  */
 
 END_METHOD
 
@@ -862,7 +790,7 @@ BEGIN_METHOD_VOID(CSOCKET_Peek)
       return;
   }
 
-  retval=CSocket_peek_data(THIS,&buf,0);
+  retval=CSocket_peek_data(_object,&buf,0);
 
   if (retval==-1)
   {
@@ -900,16 +828,16 @@ BEGIN_METHOD(CSOCKET_Connect,GB_STRING HostOrPath;GB_INTEGER Port;)
   if (!port)
   {
     if (MISSING(HostOrPath))
-      err = CSocket_connect_unix(THIS,THIS->Path,GB.StringLength(THIS->Path));
+      err = CSocket_connect_unix(_object,THIS->Path,GB.StringLength(THIS->Path));
     else
-      err = CSocket_connect_unix(THIS,STRING(HostOrPath),LENGTH(HostOrPath));
+      err = CSocket_connect_unix(_object,STRING(HostOrPath),LENGTH(HostOrPath));
   }
   else
   {
     if (MISSING(HostOrPath))
-      err = CSocket_connect_socket(THIS,THIS->Host,GB.StringLength(THIS->Host),port);
+      err = CSocket_connect_socket(_object,THIS->Host,GB.StringLength(THIS->Host),port);
     else
-      err = CSocket_connect_socket(THIS,STRING(HostOrPath),LENGTH(HostOrPath),port);
+      err = CSocket_connect_socket(_object,STRING(HostOrPath),LENGTH(HostOrPath),port);
   }
 
   switch (err)
@@ -943,7 +871,6 @@ GB_DESC CSocketDesc[] =
 
   GB_STATIC_METHOD ( "_exit" , NULL , CSOCKET_exit , NULL ),
 
-  //GB_METHOD("_new", NULL, CSOCKET_new, "[(Path)s]"),
   GB_METHOD("_new", NULL, CSOCKET_new, NULL),
   GB_METHOD("_free", NULL, CSOCKET_free, NULL),
   GB_METHOD("Peek", "s", CSOCKET_Peek, NULL),

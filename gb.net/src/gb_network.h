@@ -25,9 +25,9 @@
 
 typedef struct
 {
-	int (*ConnectLocal)	(CSOCKET *mythis,char *sPath,int lenpath);
-	int (*ConnectTCP)	(CSOCKET *mythis,char *sHost,int lenhost,int myport);
-	int (*Peek)		(CSOCKET *mythis,char **buf,int MaxLen);
+	int (*ConnectLocal)	(void *_object,char *sPath,int lenpath);
+	int (*ConnectTCP)	(void *_object,char *sHost,int lenhost,int myport);
+	int (*Peek)		(void *_object,char **buf,int MaxLen);
 	
 } SOCKET_INTERFACE;
 
@@ -37,3 +37,4 @@ typedef struct
 	
 	
 } NETWORK_INTERFACE;
+
