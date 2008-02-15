@@ -62,12 +62,6 @@ GB_STREAM_DESC SerialStream = {
 	handle: CSerialPort_stream_handle
 };
 
-typedef struct 
-{
-	GB_STREAM_DESC *desc;
-    	int _reserved;
-    	void *handle;
-} SERIAL_STREAM;
 
 DECLARE_EVENT (Serial_Read);
 DECLARE_EVENT (Serial_DTR);
@@ -249,74 +243,74 @@ int CSerialPort_stream_handle(GB_STREAM *stream)
 }
 int CSerialPort_stream_close(GB_STREAM *stream)
 {
-	CSERIALPORT *mythis;
+	void *_object=((void**)stream->_free)[0];
 
-	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;	
+	if (!_object) return -1;	
 	
-	if (mythis->iStatus)
+	if (THIS->iStatus)
 	{
-		CSerialPort_FreeCallBack((long)mythis);
-		mythis->stream.desc=NULL;
-		CloseSerialPort(mythis->Port,&mythis->oldtio);
-		mythis->iStatus=0;
+		CSerialPort_FreeCallBack((long)THIS);
+		THIS->stream.desc=NULL;
+		CloseSerialPort(THIS->Port,&THIS->oldtio);
+		THIS->iStatus=0;
 	}
 	return 0;
 }
 int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	CSERIALPORT *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int bytes;
 
 	*len=0;
-	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
+	if (!_object) return -1;
 	
-	if (ioctl(mythis->Port,FIONREAD,&bytes)) return -1;
+	if (ioctl(THIS->Port,FIONREAD,&bytes)) return -1;
 	*len=bytes;
 	return 0;
 }
 int CSerialPort_stream_eof(GB_STREAM *stream)
 {
-	CSERIALPORT *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int bytes;
 
-	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
+	if (!_object) return -1;
 	
-	if (ioctl(mythis->Port,FIONREAD,&bytes)) return -1;
+	if (ioctl(THIS->Port,FIONREAD,&bytes)) return -1;
 	if (!bytes) return -1;
 	return 0;
 }
 
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	CSERIALPORT *mythis;
+	void *_object=((void**)stream->_free)[0];
   	int npos=-1;
   	int NoBlock=0;
 	int bytes;
 
-  	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
+  	if (!_object) return -1;
 	
-	if (ioctl(mythis->Port,FIONREAD,&bytes)) return -1;
+	if (ioctl(THIS->Port,FIONREAD,&bytes)) return -1;
 	if (bytes < len) return -1;
-	ioctl(mythis->Port,FIONBIO,&NoBlock);
-	npos=read(mythis->Port,(void*)buffer,len);
+	ioctl(THIS->Port,FIONBIO,&NoBlock);
+	npos=read(THIS->Port,(void*)buffer,len);
 	NoBlock++;
-  	ioctl(mythis->Port,FIONBIO,&NoBlock);
+  	ioctl(THIS->Port,FIONBIO,&NoBlock);
   	if (npos==len) return 0;
   	return -1;
 }
 
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	CSERIALPORT *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int npos=-1;
 	int NoBlock=0;
 
-	if (!(mythis=(CSERIALPORT*)((SERIAL_STREAM*)stream)->handle)) return -1;
+	if (!_object) return -1;
 	
-	ioctl(mythis->Port,FIONBIO,&NoBlock);
-	npos=write(mythis->Port,(void*)buffer,len);
+	ioctl(THIS->Port,FIONBIO,&NoBlock);
+	npos=write(THIS->Port,(void*)buffer,len);
 	NoBlock++;
-	ioctl(mythis->Port,FIONBIO,&NoBlock);
+	ioctl(THIS->Port,FIONBIO,&NoBlock);
 	if (npos>=0) return 0;
 	return -1;
 }
@@ -627,17 +621,17 @@ END_PROPERTY
  *************************************************/
 BEGIN_METHOD_VOID(CSERIALPORT_new)
 
-  THIS->stream.desc=NULL;
-  THIS->Port=0;
-  THIS->iStatus=0;
-  THIS->sPort=NULL;
-  GB.NewString(&THIS->sPort,"/dev/ttyS0",10);
-  THIS->Speed=19200;
-  THIS->Parity=0;
-  THIS->DataBits=8;
-  THIS->StopBits=1;
-  THIS->iFlow=1;
-
+	((void**)THIS->stream._free)[0]=_object;
+	THIS->stream.desc=NULL;
+	THIS->Port=0;
+	THIS->iStatus=0;
+	THIS->sPort=NULL;
+	GB.NewString(&THIS->sPort,"/dev/ttyS0",10);
+	THIS->Speed=19200;
+	THIS->Parity=0;
+	THIS->DataBits=8;
+	THIS->StopBits=1;
+	THIS->iFlow=1;
 
 END_METHOD
 
@@ -689,7 +683,6 @@ BEGIN_METHOD_VOID(CSERIALPORT_Open)
 	CSerialPort_AssignCallBack((long)THIS,THIS->Port);
 	//CSerialPort_stream_init(&THIS->stream,THIS->Port);
 	THIS->stream.desc=&SerialStream;
-	THIS->stream._free[0]=(long)THIS;
 	THIS->iStatus=1;
 
 

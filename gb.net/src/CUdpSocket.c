@@ -118,35 +118,35 @@ int CUdpSocket_stream_handle(GB_STREAM *stream)
 }
 int CUdpSocket_stream_close(GB_STREAM *stream)
 {
-	CUDPSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
 
-	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
+	if ( !_object ) return -1;
 	stream->desc=NULL;
-	if (mythis->iStatus > 0)
+	if (THIS->iStatus > 0)
 	{
-		GB.Watch (mythis->Socket,GB_WATCH_NONE,(void *)CUdpSocket_CallBack,(long)mythis);
-		close(mythis->Socket);
-		mythis->iStatus=0;
+		GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CUdpSocket_CallBack,(long)THIS);
+		close(THIS->Socket);
+		THIS->iStatus=0;
 	}
-	if (mythis->shost) GB.FreeString(&mythis->shost);
-	if (mythis->thost) GB.FreeString(&mythis->thost);
-	mythis->shost=NULL;
-	mythis->thost=NULL;
-	mythis->sport=0;
-	mythis->tport=0;
-	mythis->iStatus=0;
+	if (THIS->shost) GB.FreeString(&THIS->shost);
+	if (THIS->thost) GB.FreeString(&THIS->thost);
+	THIS->shost=NULL;
+	THIS->thost=NULL;
+	THIS->sport=0;
+	THIS->tport=0;
+	THIS->iStatus=0;
 	return 0;
 }
 int CUdpSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	CUDPSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int bytes;
 
-	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
-	if (ioctl(mythis->Socket,FIONREAD,&bytes))
+	if ( !_object ) return -1;
+	if (ioctl(THIS->Socket,FIONREAD,&bytes))
 	{
 		CUdpSocket_stream_close(stream);
-		mythis->iStatus=-4;
+		THIS->iStatus=-4;
 		return -1;
 	}
 	*len=bytes;
@@ -154,14 +154,14 @@ int CUdpSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 }
 int CUdpSocket_stream_eof(GB_STREAM *stream)
 {
-	CUDPSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
 	int bytes;
 
-	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
-	if (ioctl(mythis->Socket,FIONREAD,&bytes))
+	if ( !_object ) return -1;
+	if (ioctl(THIS->Socket,FIONREAD,&bytes))
 	{
 		CUdpSocket_stream_close(stream);
-		mythis->iStatus=-4;
+		THIS->iStatus=-4;
 		return -1;
 	}
 	if (!bytes) return -1;
@@ -171,7 +171,7 @@ int CUdpSocket_stream_eof(GB_STREAM *stream)
 
 int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	CUDPSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
     	int retval;
 	int bytes=0;
 	int NoBlock=0;
@@ -179,57 +179,57 @@ int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 	struct sockaddr_in remhost;
 
 
-	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
-	if (ioctl(mythis->Socket,FIONREAD,&bytes))
+	if ( !_object ) return -1;
+	if (ioctl(THIS->Socket,FIONREAD,&bytes))
 	{
 		CUdpSocket_stream_close(stream);
-		mythis->iStatus=-4;
+		THIS->iStatus=-4;
 		return -1;
 	}
 	if (bytes<len) return -1;
 	rem_host_len=sizeof(struct sockaddr);
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(retval=recvfrom(mythis->Socket,(void*)buffer,len*sizeof(char) \
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
+	USE_MSG_NOSIGNAL(retval=recvfrom(THIS->Socket,(void*)buffer,len*sizeof(char) \
 	       ,MSG_NOSIGNAL,(struct sockaddr*)&remhost,&rem_host_len));
 	NoBlock++;
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
 	if (retval<0)
 	{
-		CUdpSocket_stream_close(&mythis->stream);
-		mythis->iStatus=-4;
+		CUdpSocket_stream_close(&THIS->stream);
+		THIS->iStatus=-4;
 		return -1;
 	}
-	mythis->sport=ntohs(remhost.sin_port);
-	GB.FreeString(&mythis->shost);
-	GB.NewString (&mythis->shost , inet_ntoa(remhost.sin_addr) ,0);
+	THIS->sport=ntohs(remhost.sin_port);
+	GB.FreeString(&THIS->shost);
+	GB.NewString (&THIS->shost , inet_ntoa(remhost.sin_addr) ,0);
 	return 0;
 }
 
 int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	CUDPSOCKET *mythis;
+	void *_object=((void**)stream->_free)[0];
     	int retval;
 	int NoBlock=0;
 	struct sockaddr_in remhost;
 	struct in_addr rem_ip;
 
-	if ( !(mythis=(CUDPSOCKET*)((UDP_SOCKET_STREAM*)stream)->handle) ) return -1;
+	if ( !_object ) return -1;
 
-	if (!mythis->thost) return -1;
-	if ( (mythis->tport<1) || (mythis->tport>65535) ) return -1;
-	if (!inet_aton ( (const char*)mythis->thost,&rem_ip)) return -1;
+	if (!THIS->thost) return -1;
+	if ( (THIS->tport<1) || (THIS->tport>65535) ) return -1;
+	if (!inet_aton ( (const char*)THIS->thost,&rem_ip)) return -1;
 	remhost.sin_family=AF_INET;
-	remhost.sin_port=htons(mythis->tport);
+	remhost.sin_port=htons(THIS->tport);
 	remhost.sin_addr.s_addr=rem_ip.s_addr;
 	bzero(&(remhost.sin_zero),8);
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(retval=sendto(mythis->Socket,(void*)buffer,len*sizeof(char) \
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
+	USE_MSG_NOSIGNAL(retval=sendto(THIS->Socket,(void*)buffer,len*sizeof(char) \
 		              ,MSG_NOSIGNAL,(struct sockaddr*)&remhost,sizeof(struct sockaddr)));
 	NoBlock++;
-	ioctl(mythis->Socket,FIONBIO,&NoBlock);
+	ioctl(THIS->Socket,FIONBIO,&NoBlock);
 	if (retval>=0) return 0;
 	CUdpSocket_stream_close(stream);
-	mythis->iStatus= -5;
+	THIS->iStatus= -5;
 	return -1;
 }
 
@@ -255,7 +255,6 @@ static bool update_broadcast(CUDPSOCKET *_object)
 
 static int dgram_start(CUDPSOCKET *mythis,int myport)
 {
-	UDP_SOCKET_STREAM *str;
 	int NoBlock=1;
 	struct sockaddr_in Srv;
 
@@ -296,8 +295,6 @@ static int dgram_start(CUDPSOCKET *mythis,int myport)
 	ioctl(mythis->Socket,FIONBIO,&NoBlock);
 	GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CUdpSocket_CallBack,(long)mythis);
 	mythis->stream.desc=&UdpSocketStream;
-	str=(UDP_SOCKET_STREAM*)POINTER(&mythis->stream);
-	str->handle=mythis;
 	return 0;
 }
 
@@ -365,16 +362,9 @@ END_PROPERTY
  *************************************************/
 BEGIN_METHOD(CUDPSOCKET_new,GB_INTEGER Port;)
 
-  /*THIS->iStatus=0;
-  THIS->iPort=0;
-  THIS->shost=NULL;
-  THIS->thost=NULL;
-  THIS->sport=0;
-  THIS->tport=0;*/
-
-  if (MISSING (Port) ) return;
-
-  dgram_start(THIS,VARG(Port));
+	((void**)THIS->stream._free)[0]=_object;
+	if (MISSING (Port) ) return;
+	dgram_start(THIS,VARG(Port));
 
 END_METHOD
 
