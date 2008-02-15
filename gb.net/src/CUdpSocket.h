@@ -38,13 +38,6 @@ extern GB_STREAM_DESC UdpSocketStream;
 #endif
 
 
-typedef struct 
-{
-	GB_STREAM_DESC *desc;
-    	int _reserved;
-    	void *handle;
-} UDP_SOCKET_STREAM;
-
 typedef	struct
 {
 	GB_BASE ob;
