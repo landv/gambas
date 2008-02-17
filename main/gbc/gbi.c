@@ -654,7 +654,8 @@ int main(int argc, char **argv)
   }
   else
   {
-  	if (!getenv("GB_PRELOAD"))
+  #ifdef __GNU_LIBRARY__
+ 	if (!getenv("GB_PRELOAD"))
   	{
 			for (ind = optind; ind < argc; ind++)
 			{
@@ -672,7 +673,8 @@ int main(int argc, char **argv)
 			puts(name);
 			analyze(name, FALSE);
 		}
-	}
+  #endif
+  }
 
   exit(0);
 }

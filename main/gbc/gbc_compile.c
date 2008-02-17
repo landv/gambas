@@ -96,7 +96,7 @@ static void add_list_file(char *library)
   int len;
 
   path = (char *)FILE_cat(COMP_info_path, library, NULL);
-  strlcat(path, ".list", sizeof(file_buffer));
+  strlcat(path, ".list", FILE_buffer_maxsize());
 
   /*printf("Reading component list file %s\n", path);*/
 
@@ -106,7 +106,7 @@ static void add_list_file(char *library)
 	{
 		// Try the user component directory
 	  path = (char *)FILE_cat(COMP_info_user_path, library, NULL);
-	  strlcat(path, ".list", sizeof(file_buffer));
+	  strlcat(path, ".list", FILE_buffer_maxsize());
 	  fi = fopen(path, "r");
 	}
 

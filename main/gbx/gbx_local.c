@@ -1395,7 +1395,7 @@ void LOCAL_load_translation(ARCHIVE *arch)
   mkdir(dst, S_IRWXU);
 
   dst = FILE_cat(dst, domain, NULL);
-  strlcat((char *)dst, ".mo", sizeof(file_buffer));
+  strlcat((char *)dst, ".mo", FILE_buffer_maxsize());
 
   unlink(dst);
 

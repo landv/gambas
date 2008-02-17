@@ -141,7 +141,7 @@ PUBLIC void ARCH_define_project(const char *project)
   ARCH_project_name = STR_copy(name);
 
 	if (!ARCH_output)
-  	ARCH_define_output(strlcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas", sizeof(file_buffer)));
+  	ARCH_define_output(strlcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas", FILE_buffer_maxsize()));
 
   STR_free(name);
   STR_free(dir);

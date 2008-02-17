@@ -387,7 +387,7 @@ AC_DEFUN([GB_GETTEXT],
 
   case "${host}" in
     *-*-openbsd* )
-      GETTEXT_LIB=-llibgettext
+      GETTEXT_LIB=-lgettextlib
       ;;
     *)
       GETTEXT_LIB=
