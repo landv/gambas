@@ -89,16 +89,24 @@ static gboolean resize_later(gMainWindow *data)
 	return false;
 }
 
-static gboolean cb_configure(GtkWidget *widget,GdkEventConfigure *event,gMainWindow *data)
+static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainWindow *data)
 {
+	gint x, y;
 	//fprintf(stderr, "cb_configure: %p\n", data);
 	
 	if (data->opened)
 	{
-		if ( (event->x!=data->bufX) || (event->y!=data->bufY) )
+		if (data->isTopLevel())
+			gtk_window_get_position(GTK_WINDOW(data->border), &x, &y);
+		else
 		{
-			data->bufX=event->x;
-			data->bufY=event->y;
+			x = event->x;
+			y = event->y;
+		}
+		if (x != data->bufX || y != data->bufY)
+		{
+			data->bufX = x;
+			data->bufY = y;
 			if (data->onMove) data->onMove(data);
 		}
 		
@@ -338,16 +346,19 @@ void gMainWindow::setRealBackground(gColor color)
 
 void gMainWindow::move(int x, int y)
 {
-	if ((x == bufX) && (y == bufY)) 
-		return;
+	if (isTopLevel())
+	{
+		if (x == bufX && y == bufY) 
+			return;
 	
-	if (parent())
+		bufX = x;
+		bufY = y;
+		gtk_window_move(GTK_WINDOW(border), x, y);
+	}
+	else
 	{
 		gContainer::move(x,y);
-		return;
 	}
-
-	gtk_window_move(GTK_WINDOW(border), x, y);
 }
 
 
