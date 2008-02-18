@@ -299,7 +299,7 @@ TYPE TYPE_from_string(const char **ptype)
 
 			if (*start == '*')
 			{
-				strlcpy(COMMON_buffer, TYPE_joker, COMMON_BUF_MAX);
+				strcpy(COMMON_buffer, TYPE_joker);
 				start++;
 				if (type > start)
 					strncat(COMMON_buffer, start, type - start);

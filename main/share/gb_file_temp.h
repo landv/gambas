@@ -268,11 +268,6 @@ PUBLIC int FILE_buffer_length(void)
   return file_buffer_length;
 }
 
-PUBLIC int FILE_buffer_maxsize(void)
-{
-  return sizeof(file_buffer);
-}
-
 PUBLIC const char *FILE_get_dir(const char *path)
 {
   char *p;
@@ -284,7 +279,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
     return "/";
 
   if (file_buffer != path)
-    strlcpy(file_buffer, path, sizeof(file_buffer));
+    strcpy(file_buffer, path);
 
   p = rindex(file_buffer, '/');
 
@@ -295,7 +290,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
     *p = 0;
 
     if (file_buffer[0] == 0 && path[0] == '/')
-      strlcpy(file_buffer, "/", sizeof(file_buffer));
+      strcpy(file_buffer, "/");
   }
 
   file_buffer_length = -1;
@@ -337,7 +332,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
 
   if (path != file_buffer)
   {
-    strlcpy(file_buffer, path, sizeof(file_buffer));
+    strcpy(file_buffer, path);
     path = file_buffer;
   }
 
@@ -361,7 +356,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
   if (*ext == '.')
     ext++;
 
-  strlcpy(p, ext, (&file_buffer[MAX_PATH] - p));
+  strcpy(p, ext);
 
   file_buffer_length = -1;
   return path;
@@ -375,7 +370,7 @@ PUBLIC const char *FILE_get_basename(const char *path)
   path = FILE_get_name(path);
 
   if (file_buffer != path)
-    strlcpy(file_buffer, path, sizeof(file_buffer));
+    strcpy(file_buffer, path);
 
   p = rindex(file_buffer, '.');
   if (p)
@@ -538,7 +533,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
   if (file_attr)
   {
-    strlcpy(p, file_path, (&file_buffer[MAX_PATH] - p));
+    strcpy(p, file_path);
     p += strlen(file_path);
     if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
       *p++ = '/';
@@ -558,7 +553,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 
     if (file_attr)
     {
-      strlcpy(p, entry->d_name, (&file_buffer[MAX_PATH] - p));
+      strcpy(p, entry->d_name);
       stat(file_buffer, &info);
       if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
         continue;
@@ -672,7 +667,7 @@ PUBLIC void FILE_make_path_dir(const char *path)
     return;
 
   if (path != file_buffer)
-    strlcpy(file_buffer, path, sizeof(file_buffer));
+    strcpy(file_buffer, path);
 
   for (i = 1;; i++)
   {

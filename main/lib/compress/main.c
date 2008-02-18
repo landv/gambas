@@ -69,8 +69,8 @@ COMPRESS_DRIVER *COMPRESS_GetDriver(char *type)
     return NULL;
   }
 
-  strlcpy(comp, "gb.compress.", comp_size);
-  strlcat(comp, type, comp_size);
+  strcpy(comp, "gb.compress.");
+  strcat(comp, type);
 
   if (GB.LoadComponent(comp))
   {

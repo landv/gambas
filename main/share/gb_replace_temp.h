@@ -49,9 +49,9 @@ int setenv(const char *name, const char *value, int overwrite)
   if (!env)
     return (-1);
 
-  strlcpy(env, name, env_size);
-  strlcat(env, "=", env_size);
-  strlcat(env, value, env_size);
+  strcpy(env, name);
+  strcat(env, "=");
+  strcat(env, value);
   putenv(env);
 
   return 0;

@@ -56,7 +56,7 @@ PUBLIC char *STR_copy(const char *str)
   char *cpy;
 
   ALLOC(&cpy, strlen(str) + 1, "STR_copy");
-  strlcpy(cpy, str, strlen(str)+1);
+  strcpy(cpy, str);
   return cpy;
 }
 

@@ -1051,7 +1051,7 @@ static void output_debug_filename(void)
   if (JOB->name[0] == '/')
   {
 
-    strlcpy(path, JOB->name, sizeof(path));
+    strcpy(path, JOB->name);
   }
   else
   {
@@ -1059,9 +1059,9 @@ static void output_debug_filename(void)
     n = strlen(path);
 
     if (path[n - 1] != '/')
-      strlcpy(&path[n], "/", sizeof(path)-n);
+      strcpy(&path[n], "/");
 
-    strlcat(&path[n], JOB->name, sizeof(path)-n);
+    strcat(&path[n], JOB->name);
   }
 
   n = strlen(path);
