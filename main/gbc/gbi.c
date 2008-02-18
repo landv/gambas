@@ -160,8 +160,8 @@ static void init(void)
     strncpy(_root, FILE_get_dir(FILE_get_dir(path)), MAX_PATH);
   }
 
-  strlcpy(_lib_path, FILE_cat(_root, "lib/gambas" GAMBAS_VERSION_STRING, NULL), sizeof(_lib_path));
-  strlcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL), sizeof(_info_path));
+  strcpy(_lib_path, FILE_cat(_root, "lib/gambas" GAMBAS_VERSION_STRING, NULL));
+  strcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
 
   if (lt_dlinit())
     error(TRUE, "Cannot initialize plug-in management: %s", lt_dlerror());

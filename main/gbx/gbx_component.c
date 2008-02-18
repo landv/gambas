@@ -158,7 +158,7 @@ COMPONENT *COMPONENT_create(const char *name)
 	// System wide component, located in /usr/local/lib/gambas2 (by default)
 
   path = FILE_buffer();
-  snprintf(path, FILE_buffer_maxsize(), LIB_PATTERN, COMPONENT_path, name);
+  sprintf(path, LIB_PATTERN, COMPONENT_path, name);
 
   if (FILE_exist(path))
     comp->library = LIBRARY_create(name);
@@ -166,7 +166,7 @@ COMPONENT *COMPONENT_create(const char *name)
 	if (can_archive)
 	{
 		path = FILE_buffer();
-		snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_path, name);
+		sprintf(path, ARCH_PATTERN, COMPONENT_path, name);
 
 		if (FILE_exist(path))
 			comp->archive = ARCHIVE_create(name);
@@ -178,7 +178,7 @@ COMPONENT *COMPONENT_create(const char *name)
 	// User specific component, located in ~/.local/lib/gambas2
 
   path = FILE_buffer();
-  snprintf(path, FILE_buffer_maxsize(), LIB_PATTERN, COMPONENT_user_path, name);
+  sprintf(path, LIB_PATTERN, COMPONENT_user_path, name);
 
   if (FILE_exist(path))
     comp->library = LIBRARY_create(name);
@@ -186,7 +186,7 @@ COMPONENT *COMPONENT_create(const char *name)
 	if (can_archive)
 	{
 		path = FILE_buffer();
-		snprintf(path, FILE_buffer_maxsize(), ARCH_PATTERN, COMPONENT_user_path, name);
+		sprintf(path, ARCH_PATTERN, COMPONENT_user_path, name);
 
 		if (FILE_exist(path))
 			comp->archive = ARCHIVE_create(name);

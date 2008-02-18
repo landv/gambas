@@ -392,7 +392,7 @@ CLASS *CLASS_find(const char *name)
   _classes = csym->class;
 
   ALLOC(&csym->class->name, len + 1, "CLASS_find");
-  strlcpy((char *)csym->class->name, name, len + 1);
+  strcpy((char *)csym->class->name, name);
 
   csym->sym.name = csym->class->name;
 

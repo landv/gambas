@@ -713,8 +713,8 @@ void *GB_GetClassInterface(void *_class, const char *_name)
 	
 	CLASS_load(class);
 	
-	strlcpy(name, "_@", len+4);
-	strlcat(name, _name, len+4);
+	strcpy(name, "_@");
+	strcat(name, _name);
 
   index = CLASS_find_symbol(class, name);
   if (index == NO_SYMBOL)

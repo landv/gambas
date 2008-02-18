@@ -276,7 +276,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
 
 			sym = &arch->symbol[ind];
 			len_tpath = snprintf(tpath2, sizeof(tpath2),"/%d:%s", ind, p + 1);
-			strlcpy(tpath, tpath2, sizeof(tpath));
+			strcpy(tpath, tpath2);
 		}
 		
   	SYMBOL_find(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);

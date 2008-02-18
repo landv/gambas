@@ -27,10 +27,6 @@
 #include "gb_common.h"
 #include <stdarg.h>
 #include <ctype.h>
-/* In OpenBSD, strcpy is replaced with strlcpy, which is defined in string.h header */
-#ifdef OS_OPENBSD
-#include <string.h>
-#endif
 
 #include "gb_buffer.h"
 #include "gb_error.h"

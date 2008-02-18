@@ -87,11 +87,7 @@ static void *get_symbol(LIBRARY *lib, const char *symbol, bool err)
   sym = lt_dlsym(lib->handle, symbol);
   if (sym == NULL && err)
   {
-#ifdef OS_OPENBSD
-    strlcpy(COMMON_buffer, lt_dlerror(), COMMON_BUF_MAX);
-#else
     strcpy(COMMON_buffer, lt_dlerror());
-#endif
     lt_dlclose(lib->handle);
     lib->handle = NULL;
     THROW(E_LIBRARY, lib->name, COMMON_buffer);
@@ -208,11 +204,7 @@ void LIBRARY_preload(const char *file, char **argv)
 
     if (*file == '/')
     {
-#ifdef OS_OPENBSD
-      strlcpy(dir, file, sizeof(dir));
-#else
       strcpy(dir, file);
-#endif
     }
     else
     {
@@ -229,11 +221,7 @@ void LIBRARY_preload(const char *file, char **argv)
       if (path == NULL)
         goto _PANIC;
 
-#ifdef OS_OPENBSD
-      strlcpy(dir, path, sizeof(dir));
-#else
       strcpy(dir, path);
-#endif
     }
 
     file = FILE_cat(dir, ".project", NULL);

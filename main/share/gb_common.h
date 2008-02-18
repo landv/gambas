@@ -65,13 +65,6 @@
   #define finite isfinite
 #endif
 
-/* In OpenBSD, strcpy is replaced with strlcpy */
-#ifdef OS_OPENBSD
-#else
-#define strlcpy(_a, _b, _c) strcpy(_a, _b)
-#define strlcat(_a, _b, _c) strcat(_a, _b)
-#endif
-
 #ifdef OS_SOLARIS
 
  /* PGS: The following #define prevents /usr/include/sys/mman.h on solaris
