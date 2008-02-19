@@ -37,7 +37,7 @@
 #include "gbx_class.h"
 #include "gbx_class_desc.h"
 #include "gbx_exec.h"
-
+#include "gbx_event.h"
 #include "gbx_object.h"
 #include "gbx_c_array.h"
 #include "gbx_c_gambas.h"
@@ -863,6 +863,12 @@ BEGIN_METHOD(object_new, GB_STRING class; GB_OBJECT params)
 END_METHOD
 
 
+BEGIN_PROPERTY(object_event_name)
+
+	GB_ReturnString(EVENT_Name);
+
+END_PROPERTY
+
 #endif
 
 
@@ -982,6 +988,7 @@ GB_DESC NATIVE_Object[] =
   GB_STATIC_METHOD("Unlock", NULL, object_unlock, "(Object)o"),
   GB_STATIC_METHOD("IsLocked", "b", object_is_locked, "(Object)o"),
   GB_STATIC_METHOD("Count", "i", object_count, "(Object)o"),
+  GB_STATIC_PROPERTY_READ("_LastEventName", "s", object_event_name),
 
   GB_END_DECLARE
 };

@@ -5,6 +5,8 @@ EXPORT
 INHERITS UserControl
 
 EVENT Validate(Value AS Variant)
+'EVENT GotFocus
+'EVENT LostFocus
 
 PROPERTY Field AS String
 PROPERTY Value AS Variant
@@ -19,9 +21,11 @@ PRIVATE $hCtrl AS Object
 PRIVATE $hInfo AS DataField
 PRIVATE $vVal AS Variant
 PRIVATE $hSource AS DataSource
+PRIVATE $sEventName AS String
 
 PUBLIC SUB _new()
   
+  $sEventName = Object._LastEventName
   ME._AutoResize = TRUE
   
 END
@@ -60,7 +64,10 @@ PRIVATE SUB CreateControl()
     $hCtrl = NULL
   ENDIF
 
-  IF NOT $hCtrl THEN $hCtrl = NEW (sType, ME)
+  IF NOT $hCtrl THEN 
+    $hCtrl = Object.New(sType, [ME])
+    Object.Attach($hCtrl, Object.Parent(ME), $sEventName)
+  ENDIF
   
   SELECT $hInfo.Type
   
@@ -302,3 +309,15 @@ PUBLIC SUB SetFocus()
   IF $hCtrl THEN $hCtrl.SetFocus
   
 END
+
+' PUBLIC SUB Control_GotFocus()
+'   
+'   RAISE GotFocus
+'   
+' END
+' 
+' PUBLIC SUB Control_LostFocus()
+'   
+'   RAISE LostFocus
+'   
+' END
