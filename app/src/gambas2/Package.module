@@ -19,6 +19,7 @@ PRIVATE $sPackageName AS String     ' Package name, i.e project name with prefix
 PRIVATE $sCategories AS String      ' Categories list
 PRIVATE $sHome AS String            ' Home user directory
 PRIVATE $sVersion AS String
+PRIVATE $sDescription AS String
 
 PRIVATE CONST MIN_VERSION AS String = "1.9.48"
 PRIVATE CONST MAX_VERSION AS String = "2.90"
@@ -72,6 +73,13 @@ PRIVATE SUB AddLog(sText AS String)
 
 END
 
+PRIVATE SUB RemoveEmptyLines(sText AS String) AS String
+  
+  RETURN Split(sText, "\n", "", TRUE).Join("\n")
+  
+END
+
+
 PRIVATE SUB InitMake(sSys AS String)
   
   IF Project.Prefix THEN 
@@ -93,6 +101,8 @@ PRIVATE SUB InitMake(sSys AS String)
 
   $sVersion = Project.MajorVersion & "." & Project.MinorVersion
   IF Project.UseRelease THEN $sVersion &= "." & Project.ReleaseVersion
+  
+  $sDescription = RemoveEmptyLines(Project.Description)
 
 END
 
@@ -316,8 +326,8 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
     PRINT #hFile, Project.Name
   ENDIF
   PRINT #hFile, "Comment=";    
-  IF Project.Description THEN
-    PRINT #hFile, Replace(Project.Description, "\n", " ")
+  IF $sDescription THEN
+    PRINT #hFile, Replace($sDescription, "\n", " ")
   ELSE
     PRINT #hFile, Project.Name
   ENDIF
@@ -390,7 +400,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
     PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
   NEXT 
   PRINT #hFile
-  aLine = Split(Project.Description, "\n")
+  aLine = Split($sDescription, "\n")
   IF aline.Count = 0 THEN 
     PRINT #hFile, "Description: This is ";
     IF Project.Title THEN 
@@ -614,7 +624,7 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
 
   PRINT #hFile, "AutoReqProv: no"
 
-  PRINT #hFile, "\n%description\n" & Project.Description & "\nThis program is written in Gambas, so you will need Gambas to be installed."
+  PRINT #hFile, "\n%description\n" & $sDescription & "\nThis program is written in Gambas, so you will need Gambas to be installed."
 
   PRINT #hFile, "\n%prep"
   PRINT #hFile, "rm -rf %{buildroot}"
@@ -682,8 +692,8 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
           PRINT #hFile, Project.Name
         ENDIF
         PRINT #hFile, "Comment=";    
-        IF Project.Description THEN
-          PRINT #hFile, Replace(Project.Description, "\n", " ")
+        IF $sDescription THEN
+          PRINT #hFile, Replace($sDescription, "\n", " ")
         ELSE
           PRINT #hFile, Project.Name
         ENDIF
@@ -719,8 +729,8 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
           PRINT #hFile, Project.Name
         ENDIF
         PRINT #hFile, "Comment=";    
-        IF Project.Description THEN
-          PRINT #hFile, Replace(Project.Description, "\n", " ")
+        IF $sDescription THEN
+          PRINT #hFile, Replace($sDescription, "\n", " ")
         ELSE
           PRINT #hFile, Project.Name
         ENDIF
@@ -750,8 +760,8 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
           PRINT #hFile, Project.Name
         ENDIF
         PRINT #hFile, "Comment=";    
-        IF Project.Description THEN
-          PRINT #hFile, Replace(Project.Description, "\n", " ")
+        IF $sDescription THEN
+          PRINT #hFile, Replace($sDescription, "\n", " ")
         ELSE
           PRINT #hFile, Project.Name
         ENDIF
@@ -1009,8 +1019,8 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
       PRINT #hFile, Project.Name
     ENDIF
     PRINT #hFile, "Comment=";    
-    IF Project.Description THEN
-      PRINT #hFile, Replace(Project.Description, "\n", " ")
+    IF $sDescription THEN
+      PRINT #hFile, Replace($sDescription, "\n", " ")
     ELSE
       PRINT #hFile, Project.Name
     ENDIF
@@ -1034,7 +1044,7 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
   PrintSlackDescRuler(hFile)
   PrintSlackDesc(hFile, Subst("&1 &2 &3", $sPackageName, $sVersion, Project.Title))
   PrintSlackDesc(hFile, "")
-  sData = Replace(Project.Description, "\n", " ")
+  sData = Replace($sDescription, "\n", " ")
   PrintSlackDescContents(hFile, sData, 7)
   PrintSlackDesc(hFile, "Package created by: " & Project.Maintainer)
   PrintSlackDesc(hFile, "EMail address: " & Project.Address)
@@ -1121,9 +1131,9 @@ PRIVATE SUB MakeAutotoolsPackage(sSys AS String)
   ENDIF  
 
   File.Save(sBuildDir &/ "ChangeLog", ChangeLog)
-  File.Save(sBuildDir &/ "AUTHORS", project.Maintainer & " <" & project.Address & ">")
-  File.Save(sBuildDir &/ "README", project.Description)
-  File.Save(sBuilddir &/ "COPYING", "This program is under : " & project.License)
+  File.Save(sBuildDir &/ "AUTHORS", Project.Maintainer & " <" & Project.Address & ">")
+  File.Save(sBuildDir &/ "README", Project.Description)
+  File.Save(sBuilddir &/ "COPYING", "This program is under : " & Project.License)
   File.Save(sBuilddir &/ "NEWS", "")
   
   hFile = OPEN sBuildDir &/ "configure.ac" FOR CREATE

@@ -2010,7 +2010,12 @@ PRIVATE SUB FindDefinition()
   DIM sKeyword2 AS String
 
   sLig = Highlight.Purge(edtEditor.Lines[edtEditor.Line])
-  iCol = edtEditor.Column
+  IF edtEditor.Selected THEN 
+    IF edtEditor.Selection.EndLine > edtEditor.Selection.StartLine THEN RETURN
+    iCol = edtEditor.Selection.EndColumn
+  ELSE
+    iCol = edtEditor.Column
+  ENDIF
 
   REPEAT
     INC iCol
