@@ -157,7 +157,6 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 			STRING_new(&EVENT_Name, name, 0);
 		else
 			EVENT_Name = NULL;
-		fprintf(stderr, "EVENT_Name: %s\n", EVENT_Name);
 	}
 
   if (!name)
