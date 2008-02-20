@@ -1,4 +1,253 @@
 -------------------------------------------------------------------------------
+ 2.1 - 20 Feb 2008
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Try to detect correctly all X11 linking parameters.
+* BUG: Now configure is looking for libgettextlib.so instead of
+  gettextlib.so
+* BUG: Update acinclude.m4 with libtool macro from libtool 1.5.24 one, this
+  seem to fix some problems with configure script.
+* BUG: Add linking for gbx2 with libutil on OpenBSD.
+* BUG: gambas-database-manager was renamed to gambas2-database-manager, so
+  that both gambas 1 and gambas 2 version can be installed on the same
+  system.
+* BUG: The external gettext library is now used only on OpenBSD. If needed,
+  other systems can be added of course.
+* BUG: OpenBSD, external function calling raise an error, as libffi isn't 
+  available.
+* NEW: Better message when the component cannot be built: it give what
+  files were not found.
+* NEW: 64 bits port.
+* NEW: Gambas should compile on OpenBSD.
+* NEW: Removed the out-of-date README.FEDORA and README.REDHAT files.
+* NEW: Configuration is aborted if libffi library and headers are not
+  installed.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Forgot to add the authors.txt file.
+* BUG: The completion and signature font sizes are now the default one.
+* BUG: Fix version requirements in packager.
+* BUG: Makes autotools packager independant of the Gambas version.
+* BUG: Don't use the release number if not specified in the autotools
+  packager.
+* BUG: The autotools packager now use the compilation flags defined in the
+  project properties
+* BUG: Breakpoint list is refreshed before starting a program now, so that
+  it is accurate. And removing a breakpoint should not freeze anymore.
+* BUG: Do not show the project cleanup menu when the project is read-only.
+* BUG: Making a source archive of the project does not include subversion
+  directories anymore.
+* BUG: Find is not forced to be global anymore when the find window is
+  hidden.
+* BUG: Don't trim the find string, and consequently prevent the IDE from
+  freezing when searching a string that contains only spaces.
+* BUG: Correctly checks the process state after a compilation to know if
+  there was an error.
+* BUG: END SUB can be the end of a method. The class analyze now takes
+  that into account.
+* BUG: Do not add gb.debug and gb.eval as dependencies when creating a
+  package. These components are members of the default runtime package.
+* BUG: The packager now automatically removes void lines from project
+  description to prevent bugs in package tools.
+* BUG: Selecting a text and pressing F2 is correctly handled now.
+* BUG: Making Debian packages now work if the project has capital letters 
+  in its name.
+* NEW: Add support for Basque language.
+* NEW: Spanish translation updated.
+* NEW: Better management of component projects. When the component project
+  is installed in the user component directory, or uninstalled, the IDE and
+  the toolbox are automatically refreshed.
+* NEW: The stack trace window was put on the right of the window.
+* NEW: Displays the selected control name permanently in the property
+  sheet.
+* NEW: The packager can make packages for component projects. Ubuntu and
+  Debian are not supported yet.
+* NEW: Prevents the packager to try to create the package inside the
+  project directory.
+* NEW: Icon preview in the icon editor, hidden in a side panel.
+* NEW: Pressing F1 while a control is selected in the toolbox opens the
+  help page of this control.
+* NEW: When a runtime error is raised during program startup, the program
+  is now automatically stopped.
+* NEW: In the menu editor, a new menu is now inserted after the current
+  menu and not before.
+
+[WIKI CGI SCRIPT]
+* BUG: The symbol pages work again, and inheritance between class belonging
+  to different components now is taken into account correctly.
+* NEW: Some little cosmetic changes.
+
+[EXAMPLES]
+* BUG: Fixed the AnalogWatch example.
+* BUG: Fix keypress handling in BeastScroll and 3DWebCam.
+* BUG: The Scripting example was fixed.
+* BUG: Fixed the MoviePlayer example.
+* BUG: Fixed the Clock example.
+* BUG: The Embedder example was updated according to the 64 bits changes.
+
+[INTERPRETER]
+* BUG: Does not crash anymore if a component cannot be loaded.
+* BUG: Fixed the allocation of static arrays.
+* BUG: Array classes array accessors now correctly check the number of
+  their argument when the array has just one dimension.
+* BUG: Fixed a possible spurious error when reading a file from an archive.
+* BUG: Uses the accurate method prototypes for Byte, Short and Single array
+  classes.
+* BUG: Object.Attach() and Object.Detach() now correctly deals with
+  Observer objects.
+* BUG: The gb.info file was wrong: Min() and Max() take only two arguments.
+* NEW: Pointer[] is a new class that represents an array of Pointer values.
+* NEW: The extern function implementation has been redesigned and is now
+  based on libffi, so that it works on 64 bits system. Because of a flaw in
+  the compiler design, projects that use the Pointer datatype must be
+  recompiled to be used on a 64 bits system. This flaw will be fixed in
+  Gambas 3.
+* NEW: Spanish translation updated.
+* NEW: A new interpreter API for returning a pointer.
+* NEW: New internal property in the Object class that returns the event
+  name used by the last created object. This property is internal so that
+  you don't use it in your code. It will become public in Gambas 3.
+* OPT: Put some tables into read-only memory. About 1000 bytes are saved
+  for each running interpreter, except the first one.
+
+[COMPILER]
+* BUG: Correctly compiles LONG constants inside code.
+* NEW: When a form method declaration has no END keyword, the error
+  message is now accurate. It does not talk about the form definition
+  anymore.
+
+[INFORMER]
+* BUG: Fixed the informer that was creating bad *.info files for native
+  components.
+
+[GB.COMPRESS.ZLIB]
+* BUG: Fixed the compilation on 64 bits OS.
+* BUG: 32 bits case and 64 bits case are now distinct.
+
+[GB.CORBA]
+* NEW: Fixed some warnings.
+
+[GB.DB]
+* BUG: Fixed many warnings and some 64 bits stuff in all database drivers.
+* NEW: Database driver can declare a set of character that are allowed in a
+  database name.
+
+[GB.DB.FORM]
+* BUG: Correctly manage data controls inside TabStrip-like containers.
+* BUG: Setting the focus on a non-initialized DataControl does not raise
+  an error anymore.
+* NEW: DataControl raises the event of its internal editing control.
+
+[GB.DB.ODBC]
+* BUG: Some 64 bits and warning fixes.
+
+[GB.DB.SQLITE2]
+* NEW: '.' is allowed in database names now.
+
+[GB.DB.SQLITE3]
+* BUG: Getting the primary index of a table without primary index is safe
+  now.
+* NEW: '.' is allowed in database names now.
+
+[GB.DEBUG]
+* BUG: Compiles gb.debug with threading library.
+* BUG: Debug.Write now does nothing if Debug.Start has not been called.
+* NEW: More explicit error messages when the creation of debugger fifos
+  fails.
+
+[GB.DESKTOP]
+* BUG: Try to make Xtst library detection work on Slackware.
+* BUG: All methods that deal with X11 Window identifiers now use Pointer 
+  and Pointer[] datatypes instead of Integer and Integer[].
+
+[GB.GTK]
+* BUG: The TextBox cursor is now correctly moved after a Change event.
+* BUG: Message boxes now use the application title and not the application
+  name as their title.
+* BUG: Message boxes use application title without crashing now.
+* BUG: Modified the GLib priority of watched descriptors, as the main
+  loop could enter in a loop in which user interface events were not
+  managed
+* BUG: Fixed the implementation of the Message class that was broken.
+* BUG: Fixed a crash in the Watcher class.
+* BUG: Fixed the Image.Flip() and Image.Mirror() methods.
+* BUG: Fixed a potential crash in timer management.
+* BUG: Keyboard, focus and mouse events now work correctly on Window and
+  DrawingArea controls.
+* BUG: HSplitter.Layout and VSplitter.Layout now work correctly. It is a
+  list of children widths, hidden children having a zero width.
+* BUG: Window arrangement is done before the Open event is raised, as in
+  gb.qt.
+* BUG: The use of alternative input methods do not print warnings anymore.
+* BUG: The X and Y properties of the Window class now return the same
+  values as gb.qt.
+* BUG: All methods that deal with X11 Window identifiers now use Pointer 
+  and Pointer[] datatypes instead of Integer and Integer[].
+* NEW: The GridView Select event was implemented.
+* NEW: Fixed some warnings.
+
+[GB.IMAGE]
+* NEW: Fixed some warnings.
+
+[GB.NET]
+* NEW: Fixes in Socket and ServerSocket for 32/64 bits compatibility.
+* NEW: Changes in UdpSocket for 32/64 bits compatibility.
+* NEW: Changes in SerialPort for 32/64 bits compatibility.
+
+[GB.NET.CURL]
+* BUG: Now compiles without warnings and run on a 64 bits system.
+
+[GB.NET.SMTP]
+* NEW: Fixed some warnings.
+
+[GB.OPENGL]
+* BUG: Disable dead code.
+* BUG: Add missing support for Gl.Normal3fv(Float[]) and Gl.Normal3iv(Integer[]).
+
+[GB.PDF]
+* NEW: Fixed some warnings.
+
+[GB.QT]
+* BUG: Fix qt-moc detection on OpenBSD.
+* BUG: The DrawingArea control now should draw its border correctly without
+  erasing its contents.
+* BUG: Many warning fixes.
+* BUG: Now the Control.Visible property works like in gb.gtk, i.e. it
+  returns if the control was not explicitely hidden.
+* BUG: HSplitter.Layout and VSplitter.Layout now work correctly. It is a
+  list of children widths, hidden children having a zero width.
+* BUG: All methods that deal with X11 Window identifiers now use Pointer 
+  and Pointer[] datatypes instead of Integer and Integer[].
+
+[GB.QT.EXT]
+* BUG: TextEdit.TextWidth and TextEdit.TextHeight were not declared as
+  read-only properties.
+
+[GB.QT.KDE]
+* NEW: Fixed some warnings.
+
+[GB.SDL]
+* NEW: Fixed some warnings.
+
+[GB.SDL.SOUND]
+* NEW: Fixed some warnings.
+
+[GB.XML]
+* NEW: Fixed some warnings.
+
+[GB.XML.XLST]
+* NEW: Fixed some warnings.
+
+[GB.XML.XSLT]
+* BUG: XSLT class is now declared as being not creatable.
+
+[HELP]
+* BUG: Fixed the generated treeview.
+* NEW: Help was updated.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.0.0 - 2 Jan 2008
 -------------------------------------------------------------------------------
 
