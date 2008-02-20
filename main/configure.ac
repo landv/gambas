@@ -46,6 +46,10 @@ GB_COMPONENT(
   [GB_FIND(ffi.h, /usr/local /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
   [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
   [-lffi])
+  
+if test -z $FFI_LIB; then
+  AC_MSG_ERROR([libffi library and headers are required])
+fi
 
 dnl ---- Should I use libtool to load shared libraries in gbi and gbx ?
 
