@@ -259,14 +259,14 @@ void CTRAYICON_close_all(void)
   QListIterator<CTRAYICON> it(_list);
   CTRAYICON *_object;
 
+  GB.StopAllEnum(GB.FindClass("TrayIcons"));
+  
   while ((_object = it.current()))
   {
     ++it;
     destroy_widget(THIS);
     GB.Unref(POINTER(&_object));
   }
-
-  GB.StopAllEnum(GB.FindClass("TrayIcons"));
 }
 
 
@@ -675,5 +675,8 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 _DESIGN:
 _STANDARD:
 
+	if (!find_object(widget))
+		return true;
+		
   return QObject::eventFilter(widget, event);    // standard event processing
 }
