@@ -995,7 +995,10 @@ END
 
 PUBLIC SUB SetBreakpoint(iLine AS Integer, bVal AS Boolean) AS Boolean
 
-  IF NOT CanSetBreakpoint(iLine) THEN RETURN TRUE
+  ' Update debug window
+  FDebugInfo.AddBreakpoint(Name, GetProcAt(iLine), iLine, bVal)
+
+  IF bVal AND IF NOT CanSetBreakpoint(iLine) THEN RETURN TRUE
   
   edtEditor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
   IF iLine = edtEditor.Line THEN RefreshLineInfo(TRUE) 
@@ -1019,8 +1022,12 @@ PUBLIC FUNCTION GetBreakpoints() AS Integer[]
 
     iLine = edtEditor.FindNextBreakpoint(iLine)
     IF iLine < 0 THEN BREAK
-
-    cBreak.Add(iLine)
+    
+    IF CanSetBreakpoint(iLine) THEN
+      cBreak.Add(iLine)
+    ELSE 
+      SetBreakpoint(iLine, FALSE)
+    ENDIF
     INC iLine
 
   LOOP
@@ -2003,7 +2010,12 @@ PRIVATE SUB FindDefinition()
   DIM sKeyword2 AS String
 
   sLig = Highlight.Purge(edtEditor.Lines[edtEditor.Line])
-  iCol = edtEditor.Column
+  IF edtEditor.Selected THEN 
+    IF edtEditor.Selection.EndLine > edtEditor.Selection.StartLine THEN RETURN
+    iCol = edtEditor.Selection.EndColumn
+  ELSE
+    iCol = edtEditor.Column
+  ENDIF
 
   REPEAT
     INC iCol

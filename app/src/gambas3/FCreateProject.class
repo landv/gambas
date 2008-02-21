@@ -150,7 +150,12 @@ PRIVATE SUB CreateProject() AS Boolean
       sDest = sPath
       IF Left(sDest) = "_" THEN sDest = "." & Mid(sDest, 2)
       
-      File.Save(sDir &/ sDest, GetFile("template" &/ sPath))
+      IF InStr(sDest, "/") THEN TRY MKDIR sDir &/ File.Dir(sDest)
+      IF File.Ext(sPath) = "png" THEN 
+        COPY "template" &/ File.Name(sPath) TO sDir &/ sDest
+      ELSE
+        File.Save(sDir &/ sDest, GetFile("template" &/ File.Name(sPath)))
+      ENDIF
       
     NEXT
     

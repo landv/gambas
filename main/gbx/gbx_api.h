@@ -68,7 +68,7 @@ void GB_ReturnNull(void);
 void GB_ReturnFloat(double val);
 void GB_ReturnPtr(unsigned int type, void *value);
 void GB_ReturnDate(GB_DATE *date);
-
+void GB_ReturnSelf(void *object);
 void GB_ReturnString(char *str);
 void GB_ReturnConstString(const char *str, int len);
 void GB_ReturnConstZeroString(const char *str);

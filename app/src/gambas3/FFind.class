@@ -229,7 +229,7 @@ END
 
 PRIVATE SUB GetOptions(hForm AS Object)
 
-  $sFind = Trim(cmbFind.Text)
+  $sFind = cmbFind.Text
   $bProc = Action["find-in-sub"].Value 
   $bProject = Action["find-in-project"].Value 
   $bCase = Action["find-case"].Value
@@ -237,7 +237,7 @@ PRIVATE SUB GetOptions(hForm AS Object)
   $bComment = Action["find-comment"].Value
   $bString = Action["find-string"].Value
   
-  IF NOT Action["find-in"].Visible THEN 
+  IF $bList THEN 'NOT Action["find-in"].Visible THEN 
     $bProject = TRUE
     $bProc = FALSE
   ENDIF
@@ -490,7 +490,7 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
     
     IF $bList THEN 
       INC $iWait
-      IF ($iWait AND 15) = 0 THEN WAIT 0.01
+      IF ($iWait AND 63) = 0 THEN WAIT 0.01
     ENDIF
 
   LOOP

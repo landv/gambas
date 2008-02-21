@@ -50,7 +50,8 @@ PRIVATE SUB FillTree(hCtrl AS CControl, OPTIONAL sParent AS String)
   IF NOT hCtrl THEN RETURN
 
   IF sParent THEN
-    sImg = "img/control/" & LCase(hCtrl.Kind) & ".png"
+    'sImg = "img/control/" & LCase(hCtrl.Kind) & ".png"
+    sImg = ".control" &/ LCase(hCtrl.Kind)
   ELSE
     sImg = "img/32/form.png"
   ENDIF
@@ -106,7 +107,7 @@ END
 
 
 
-PUBLIC SUB RefreshAll(OPTIONAL sKey AS String)
+PUBLIC SUB RefreshAll(OPTIONAL sKey AS String, OPTIONAL bForce AS Boolean)
 
   IF NOT ME.Visible THEN RETURN
 
@@ -117,6 +118,8 @@ PUBLIC SUB RefreshAll(OPTIONAL sKey AS String)
   IF NOT sKey THEN
     TRY sKey = $hForm.Master.Name
   ENDIF 
+  
+  IF bForce THEN $cPict.Clear
 
   tvwControl.Clear
   FillTree($hForm.Control[$hForm.Name])

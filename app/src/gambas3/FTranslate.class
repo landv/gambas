@@ -1141,9 +1141,9 @@ PUBLIC SUB cvwLang_Compare(Key AS String, OtherKey AS String)
   IF cvwLang.Columns.Sort = 1 THEN 
     iVal = Val(Replace(cvwLang[Key][1], "%", ""))
     iOtherVal = Val(Replace(cvwLang[OtherKey][1], "%", ""))
-    IF iVal > iOtherVal THEN 
+    IF iVal < iOtherVal THEN 
       iComp = 1
-    ELSE IF iVal < iOtherVal THEN 
+    ELSE IF iVal > iOtherVal THEN 
       iComp = -1
     ENDIF
   ENDIF

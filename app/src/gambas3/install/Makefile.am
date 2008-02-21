@@ -7,38 +7,49 @@ all:
 	 echo "Compiling $(PACKAGE) project..."; \
 	fi)
 	@(cd $(srcdir)/$(PACKAGE); \
-	$(GAMBAS_path)/gbc2 -ag; \
-	$(GAMBAS_path)/gba2)
+	$(GAMBAS_path)/gbc$(VERSION) $(COMPILE_FLAGS); \
+	$(GAMBAS_path)/gba$(VERSION))
 
 install-exec-local:
 	@(cd $(srcdir)/$(PACKAGE); \
 	if test "$(COMPONENT_build)" = "1"; then \
-	 $(INSTALL) $(PACKAGE).gambas $(prefix)/lib/gambas2; \
 	 echo "Installing $(PACKAGE).gambas in $(GBLIBRARY_path)"; \
-	 $(INSTALL) .component $(GBLIBRARY_path)/$(PACKAGE).component; \
+	 $(INSTALL) -d $(prefix)/$(GBLIBRARY_path); \
+	 $(INSTALL) $(PACKAGE).gambas $(prefix)/$(GBLIBRARY_path); \
 	 echo "Installing $(PACKAGE).component in $(GBLIBRARY_path)"; \
-	 chmod a-x $(GBLIBRARY_path)/$(PACKAGE).component; \
-	 $(INSTALL) .info $(GBINFO_path)/$(PACKAGE).info; \
+	 $(INSTALL) -d $(prefix)/$(GBLIBRARY_path); \
+	 $(INSTALL) .component $(prefix)/$(GBLIBRARY_path)/$(PACKAGE).component; \
+	 chmod a-x $(prefix)/$(GBLIBRARY_path)/$(PACKAGE).component; \
 	 echo "Installing $(PACKAGE).info in $(GBINFO_path)"; \
-	 chmod a-x $(GBINFO_path)/$(PACKAGE).info; \
-	 $(INSTALL) .list $(GBINFO_path)/$(PACKAGE).list; \
+	 $(INSTALL) -d .info $(prefix)/$(GBINFO_path); \
+	 $(INSTALL) .info $(prefix)/$(GBINFO_path)/$(PACKAGE).info; \
+	 chmod a-x $(prefix)/$(GBINFO_path)/$(PACKAGE).info; \
 	 echo "Installing $(PACKAGE).list in $(GBINFO_path)"; \
-	 chmod a-x $(GBINFO_path)/$(PACKAGE).list; \
+	 $(INSTALL) .list $(prefix)/$(GBINFO_path)/$(PACKAGE).list; \
+	 chmod a-x $(prefix)/$(GBINFO_path)/$(PACKAGE).list; \
+	 if test -d control; then \
+	  echo "Installing controls in $(GBCONTROL_path)"; \
+	  $(INSTALL) -d $(prefix)/$(GBCONTROL_path)/$(PACKAGE); \
+	  $(INSTALL) control/*.png $(prefix)/$(GBCONTROL_path)/$(PACKAGE); \
+	  chmod a-x $(prefix)/$(GBCONTROL_path)/$(PACKAGE)/*.png; \
+	 fi \
 	else \
 	 echo "Installing $(PACKAGE).gambas file in $(bindir)..."; \
-	 cp $(srcdir)/$(PACKAGE)/$(PACKAGE).gambas $(bindir); \
+	 $(INSTALL) -d $(prefix)/$(bindir); \
+	 $(INSTALL) $(PACKAGE).gambas $(prefix)/$(bindir); \
 	fi)
 
 uninstall-local:
 	@(if test "$(COMPONENT_build)" = "1"; then \
 	 echo "Removing $(PACKAGE) component..."; \
-	 rm -f $(GBLIBRARY_path)/$(PACKAGE).gambas; \
-	 rm -f $(GBLIBRARY_path)/$(PACKAGE).component; \
-	 rm -f $(GBINFO_path)/$(PACKAGE).info; \
-	 rm -f $(GBINFO_path)/$(PACKAGE).list; \
+	 rm -f $(prefix)/$(GBLIBRARY_path)/$(PACKAGE).gambas; \
+	 rm -f $(prefix)/$(GBLIBRARY_path)/$(PACKAGE).component; \
+	 rm -f $(prefix)/$(GBINFO_path)/$(PACKAGE).info; \
+	 rm -f $(prefix)/$(GBINFO_path)/$(PACKAGE).list; \
+	 rm -rf $(prefix)/$(GBCONTROL_path)/$(PACKAGE); \
 	else \
 	 echo "Removing $(PACKAGE).gambas file..." \
-	 rm $(bindir)/$(PACKAGE).gambas; \
+	 rm $(prefix)/$(bindir)/$(PACKAGE).gambas; \
 	fi)
 
 dist-hook:

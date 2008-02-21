@@ -35,10 +35,11 @@ PUBLIC SUB _new(sName AS String, sType AS String)
 END
 
 
-PUBLIC SUB Add(sControl AS String)
+PUBLIC SUB Add(sControl AS String, OPTIONAL sComp AS String)
 
   DIM hCtrl AS ToolButton
   DIM hPict AS Picture
+  DIM sPath AS String
 
   hCtrl = NEW ToolButton(panTool) AS "btnControl"
   hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
@@ -48,14 +49,21 @@ PUBLIC SUB Add(sControl AS String)
   hCtrl.ToolTip = sControl
   hCtrl.Design = TRUE
 
-  TRY hPict = Picture["img/control" &/ LCase(sControl) & ".png"]
+  IF sComp THEN 
+    sPath = "share/gambas" & System.Version &/ "control" &/ sComp &/ LCase(sControl) & ".png"
+    'DEBUG File.Dir(File.Dir(Component.UserPath)) &/ "share/control" &/ sComp &/ LCase(sControl) & ".png"
+    TRY hPict = Picture.Load(File.Dir(File.Dir(Component.UserPath)) &/ sPath)
+    IF NOT hPict THEN TRY hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
+  ENDIF
+  IF NOT hPict THEN TRY hPict = Picture["img/control" &/ LCase(sControl) & ".png"]
   IF NOT hPict THEN TRY hPict = Picture["img/control/unknown.png"]
   IF hPict THEN
+    Picture[".control" &/ LCase(sControl)] = hPict
     IF hPict.Width <> $iSize THEN hPict = hPict.Image.Stretch($iSize, $iSize).Picture
     hCtrl.Picture = hPict
   ENDIF
 
-  $cButton[sControl] = hCtrl
+  $cButton[hCtrl.Tag] = hCtrl
 
 END
 
@@ -147,10 +155,18 @@ PUBLIC PROCEDURE btnControl_MouseUp()
 
   IF $bNoEvent THEN RETURN 
 
-  IF LAST.Tag = $sTool THEN
-    SetTool
+  IF Mouse.Right THEN
+  
+    MHelp.GotoClass(CComponent.Classes[LAST.Tag].Component, LAST.Tag)
+
   ELSE
-    SetTool(LAST)
+
+    IF LAST.Tag = $sTool THEN
+      SetTool
+    ELSE
+      SetTool(LAST)
+    ENDIF
+    
   ENDIF
 
 END
@@ -174,18 +190,10 @@ PUBLIC SUB btnControl_MouseDrag()
   IF sTool = SELECT_TOOL THEN RETURN 
 
   Drag.Icon = hTool.Picture
-  Drag(hTool, sTool, MMime.CONTROL)
+  Drag(hTool, File.Name(sTool), MMime.CONTROL)
   
 END
 
-
-
-PUBLIC SUB btnTool_Click()
-
-  'RAISE Change
-  'FToolBox.SelectToolBar(Name)
-
-END
 
 
 PUBLIC SUB ShowToolBar(bShow AS Boolean)

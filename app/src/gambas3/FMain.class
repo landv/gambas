@@ -612,7 +612,7 @@ END
 
 PUBLIC SUB mnuDatabaseManager_Click()
 
-  Project.RunTool("gambas-database-manager")
+  Project.RunTool("gambas" & System.Version & "-database-manager")
 
 END
 
@@ -817,6 +817,7 @@ PRIVATE SUB UpdateMenu()
   mnuCopy.Visible = bVisible
   mnuPaste.Visible = bVisible
   mnuDeleteFile.Visible = bVisible
+  mnuClean.Visible = bVisible
   
   mnuClearDebugWindows.Enabled = Project.Running
 

@@ -105,7 +105,7 @@ END
 ' END
 
 
-PUBLIC SUB RefreshToolbar()
+PUBLIC SUB RefreshToolbar(OPTIONAL bForce AS Boolean)
 
   DIM hToolBar AS FToolBar
   DIM sLib AS String
@@ -119,6 +119,8 @@ PUBLIC SUB RefreshToolbar()
   DIM iOrder AS Integer
   DIM iLast AS Integer
   DIM bExist AS Boolean
+  DIM sOldTab AS String
+  DIM iInd AS Integer
 
   IF Project.Libraries THEN
 
@@ -129,9 +131,15 @@ PUBLIC SUB RefreshToolbar()
 
   ENDIF
 
-  IF $sLastLib THEN
-    IF sNewLib = $sLastLib THEN RETURN
+  IF NOT bForce THEN
+    IF $sLastLib THEN
+      IF sNewLib = $sLastLib THEN RETURN
+    ENDIF
   ENDIF
+
+  tabTool.Hide
+  
+  sOldTab = tabTool.Text
 
   FOR EACH hToolBar IN $cToolBar
     hToolBar.Hide
@@ -205,7 +213,7 @@ PUBLIC SUB RefreshToolbar()
               BREAK
             ENDIF
           NEXT
-          IF NOT bExist THEN $cToolBar[sGroup].Add(sCtrl)
+          IF NOT bExist THEN $cToolBar[sGroup].Add(sCtrl, hComp.Key)
         NEXT
 
       END WITH
@@ -218,6 +226,15 @@ PUBLIC SUB RefreshToolbar()
   ENDIF
 
   tabTool.Index = 0
+  
+  FOR iInd = 0 TO tabTool.Count - 1
+    IF tabTool[iInd].Text = sOldTab THEN 
+      tabTool.Index = iInd
+      BREAK 
+    ENDIF
+  NEXT
+  
+  tabTool.Show
 
   $sLastLib = sNewLib
 

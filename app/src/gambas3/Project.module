@@ -203,14 +203,16 @@ END
 PRIVATE SUB InitVersion()
 
   DIM sVer AS String
-
-  Version = "?"
-  'SHELL "gbx" & System.Version & " -V > " & TMP_FILE 'WAIT
-  'sVer = File.Load(TMP_FILE)
-  'KILL TMP_FILE
+  DIM aVer AS String[]
 
   SHELL "gbx" & System.Version & " -V" TO sVer
-  Version = Trim(Mid$(sVer, InStr(sVer, "-") + 1))
+  aVer = Split(Trim(Mid$(sVer, InStr(sVer, "-") + 1)), ".")
+  aVer.Remove(aVer.Max)
+  Version = aVer.Join(".")
+  
+CATCH 
+
+  Version = "?"
 
 END
 
@@ -2111,6 +2113,19 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
 
   IF Project.ReadOnly THEN RETURN
 
+  IF CreateComponent
+    IF bMakeShortcut THEN
+      IF Project.CreateShortcut THEN
+        InstallComponent
+      ELSE  
+        UninstallComponent
+      ENDIF
+    ENDIF
+  ELSE
+    MakeShortcut(bMakeShortcut)
+    IF NOT bComponentDoNotChange THEN RefreshLibrary
+  ENDIF 
+  
   hFic = OPEN Path & ".tmp" FOR CREATE
 
   PRINT #hFic, PROJECT_MAGIC
@@ -2209,18 +2224,6 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
 
   ENDIF
   
-  IF CreateComponent
-    IF Project.CreateShortcut THEN
-      IF bMakeShortcut THEN InstallComponent
-    ELSE  
-      UninstallComponent
-    ENDIF
-    RefreshLibrary(TRUE)
-  ELSE
-    MakeShortcut(bMakeShortcut)
-    IF NOT bComponentDoNotChange THEN RefreshLibrary
-  ENDIF 
-  
   FMain.UpdateTranslate
 
 CATCH
@@ -2281,10 +2284,29 @@ PRIVATE SUB MakeLink(sSrc AS String, sDst AS String)
   
 END
 
+PRIVATE SUB RefreshForComponent()
+
+  DIM hForm AS Object
+  
+  RefreshLibrary(TRUE)
+  
+  FFormStack.RefreshAll(, TRUE)
+
+  FOR EACH hForm IN Files
+    IF IsForm(hForm) AND IF hForm.Visible THEN 
+      hForm.RefreshForComponent
+    ENDIF
+  NEXT
+  
+END
+
 
 PUBLIC SUB InstallComponent()
   
   DIM sDir AS String = Component.UserPath
+  DIM hExportInfo AS CExportInfo
+  DIM sClass AS String
+  DIM sIcon AS String
   
   MakeDir(sDir)
 
@@ -2297,6 +2319,26 @@ PUBLIC SUB InstallComponent()
   MakeLink(Project.Dir &/ ".info", sDir &/ Name & ".info")
   MakeLink(Project.Dir &/ ".list", sDir &/ Name & ".list")
   
+  sDir = File.Dir(sDir) &/ "control" &/ Name
+  
+  FOR EACH sClass IN Project.GetClasses(TRUE)
+    IF NOT IsExported(sClass) THEN CONTINUE
+    sClass = LCase(File.BaseName(sClass))
+    sIcon = Project.Dir &/ "control" &/ sClass & ".png"
+    IF Exist(sIcon) THEN 
+      MakeDir(sDir)
+      MakeLink(sIcon, sDir &/ sClass & ".png")
+    ENDIF
+  NEXT
+  
+  IF NOT CComponent.All.Exist(Name) THEN 
+    CComponent.FullReset
+  ENDIF
+  IF NOT Libraries.Exist(Name) THEN 
+    Libraries.Add(Name)
+  ENDIF
+  RefreshForComponent
+  
 CATCH 
 
   FGambas.Error(("Unable to install component.") & "\n\n" & Error.Text & "\n" & Error.Where)  
@@ -2306,8 +2348,11 @@ END
 PUBLIC SUB UninstallComponent()
   
   DIM sDir AS String = Component.UserPath
+  DIM bRefresh AS Boolean
   
   'MakeDir(sDir)
+
+  bRefresh = Exist(sDir &/ Name & ".component")
 
   TRY KILL sDir &/ Name & ".gambas"
   TRY KILL sDir &/ Name & ".component"
@@ -2316,6 +2361,21 @@ PUBLIC SUB UninstallComponent()
   
   TRY KILL sDir &/ Name & ".info"
   TRY KILL sDir &/ Name & ".list"
+  
+  sDir = File.Dir(sDir) &/ "control" &/ Name
+  EXEC ["rm", "-rf", sDir] WAIT
+
+  IF bRefresh THEN
+    IF CComponent.All.Exist(Name) THEN  
+      CComponent.FullReset
+    ENDIF
+    IF NOT CComponent.All.Exist(Name) THEN
+      IF Libraries.Exist(Name) THEN 
+        Libraries.Remove(Libraries.Find(Name))
+      ENDIF
+      RefreshForComponent
+    ENDIF
+  ENDIF
   
 CATCH 
 
@@ -2864,15 +2924,16 @@ PUBLIC SUB MakeSourcePackageTo(sPath AS String)
   ENDIF
 
   sCmd = "cd " & Quote.Shell(File.Dir(Project.Dir)) & ";"
-  sCmd = sCmd & " tar cfvh" & sOpt & " " & Quote.Shell(sPath)
-  sCmd = sCmd & " --exclude=" & ".gambas/*"
-  sCmd = sCmd & " --exclude=" & "*~"
-  sCmd = sCmd & " --exclude=" & ".lock"
-  sCmd = sCmd & " --exclude=" & ".lang/*.pot"
-  sCmd = sCmd & " --exclude=" & ".lang/.pot"
-  sCmd = sCmd & " --exclude=" & "*/.xvpics/*"
-  sCmd = sCmd & " --exclude=" & ".xvpics/*"
-  sCmd = sCmd & " " & Quote.Shell(File.Name(Project.Dir)) & " > /dev/null"
+  sCmd &= " tar cfvh" & sOpt & " " & Quote.Shell(sPath)
+  sCmd &= " --exclude=" & Quote.Shell(".gambas/*")
+  sCmd &= " --exclude=" & Quote.Shell("*~")
+  sCmd &= " --exclude=" & Quote.Shell("core.*")
+  sCmd &= " --exclude=" & Quote.Shell(".lock")
+  sCmd &= " --exclude=" & Quote.Shell(".lang/*.pot")
+  sCmd &= " --exclude=" & Quote.Shell(".lang/.pot")
+  sCmd &= " --exclude=" & Quote.Shell(".xvpics")
+  sCmd &= " --exclude=" & Quote.Shell(".svn")
+  sCmd &= " " & Quote.Shell(File.Name(Project.Dir)) & " > /dev/null"
 
   SHELL sCmd WAIT
 
@@ -2961,7 +3022,7 @@ PUBLIC SUB RefreshLibrary(OPTIONAL bForce AS Boolean)
       END WITH
     NEXT
     
-    FToolBox.RefreshToolbar
+    FToolBox.RefreshToolbar(bForce)
     FCompletion.RefreshLibrary
     FProperty.RefreshAll
     'FExplorer.RefreshTree
@@ -3749,3 +3810,23 @@ PUBLIC SUB DrawTitle(hForm AS Object)
 
 END
 
+PUBLIC SUB IsExported(sPath AS String) AS Boolean
+  
+  DIM hFile AS File
+  DIM sLine AS String
+  
+  hFile = OPEN sPath
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE
+    IF Left(sLine) = "'" THEN CONTINUE
+    IF sLine LIKE "INHERITS *" THEN CONTINUE
+    IF sLine LIKE "CREATE" THEN CONTINUE
+    IF sLine LIKE "CREATE *" THEN CONTINUE
+    IF sLine LIKE "EXPORT" THEN RETURN TRUE
+    IF sLine LIKE "EXPORT OPTIONAL" THEN RETURN TRUE
+    BREAK
+  WEND 
+  
+END

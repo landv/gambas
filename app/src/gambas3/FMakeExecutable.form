@@ -14,8 +14,9 @@
     ShowBookmark = True
   }
   { Expander1 Expander
-    MoveScaled(2,47,70,13)
+    MoveScaled(2,47,70,14)
     Arrangement = Arrange.Vertical
+    Spacing = 8
     Text = ("Options")
     TextFont = Font["Bold"]
     Hidden = True
@@ -34,17 +35,20 @@
         Text = ("")
       }
     }
-    { chkDebug CheckBox
-      MoveScaled(0,3,56,3)
-      Text = ("Keep debugging information in executable")
-    }
-    { chkShortcut CheckBox
-      MoveScaled(0,6,49,3)
-      Text = ("Create a shortcut on the desktop")
+    { VBox1 VBox
+      MoveScaled(1,4,67,6)
+      { chkDebug CheckBox
+        MoveScaled(0,0,56,3)
+        Text = ("Keep debugging information in executable")
+      }
+      { chkShortcut CheckBox
+        MoveScaled(0,3,49,3)
+        Text = ("Create a shortcut on the desktop")
+      }
     }
   }
   { HBox1 HBox
-    MoveScaled(2,65,73,3)
+    MoveScaled(2,66,73,3)
     Spacing = 8
     { Panel1 Panel
       MoveScaled(30,0,4,2)

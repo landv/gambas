@@ -76,13 +76,13 @@ PRIVATE FUNCTION Icon_Read() AS Picture
     CASE "MultiContainer"
       sIcon = "img/control/tabstrip.png"
     CASE "Form"
-      sIcon = "img/16/form.png"
+      sIcon = "img/32/form.png"
     CASE ELSE
-      sIcon = "img/16/class.png"
+      sIcon = "img/32/class.png"
   END SELECT  
 
   hPict = Picture[sIcon]
-  IF hPict.Width <> 16 THEN hPict = hPict.Image.Stretch(16, 16).Picture
+  IF hPict.Width <> 24 THEN hPict = hPict.Image.Stretch(24, 24).Picture
 
   RETURN hPict
 

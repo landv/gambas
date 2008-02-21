@@ -1,42 +1,56 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0.125,2.375,35.375,60.375)
+  MoveScaled(0,2.1429,35.1429,60.1429)
   Text = ("Properties")
   Icon = Picture["img/16/grid.png"]
   Persistent = True
+  Arrangement = Arrange.Vertical
   { lblMessage TextLabel
-    MoveScaled(1,1,30,12)
+    MoveScaled(1,1,31,12)
+    Visible = False
     Padding = 8
     AutoResize = True
     Text = ("Click on a form or a control to modify its properties...")
   }
+  { lblName TextLabel
+    MoveScaled(3,16,28,3)
+    AutoResize = True
+    Text = ("")
+    Alignment = Align.Normal
+    Border = Border.Sunken
+  }
   { grdProperty GridView
-    MoveScaled(3,10,30,30)
+    MoveScaled(2,24,30,30)
     Visible = False
+    Expand = True
     Scrollbar = Scroll.Vertical
     Border = False
   }
-  { txtProperty TextBox
-    MoveScaled(5,28,16,3)
+  { spnProperty SpinBox
+    MoveScaled(6,33,14,3)
     Visible = False
+    Ignore = True
+  }
+  { btnProperty Button
+    MoveScaled(20,38,2.1429,2.1429)
+    Visible = False
+    Ignore = True
+    Text = ("")
+    Picture = Picture["img/16/points.png"]
+  }
+  { txtProperty TextBox
+    MoveScaled(4,38,16,3)
+    Visible = False
+    Ignore = True
     Text = ("")
     Border = False
   }
   { cmbProperty ComboBox
-    MoveScaled(6,33,16,3)
+    MoveScaled(5,43,16,3)
     Visible = False
+    Ignore = True
     Text = ("")
     ReadOnly = True
-  }
-  { btnProperty Button
-    MoveScaled(21,28,2.375,2.375)
-    Visible = False
-    Text = ("")
-    Picture = Picture["img/16/points.png"]
-  }
-  { spnProperty SpinBox
-    MoveScaled(7,23,14,3)
-    Visible = False
   }
 }

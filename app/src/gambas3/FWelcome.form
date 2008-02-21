@@ -29,17 +29,22 @@
       }
       { lblVersion Label
         MoveScaled(26,1,13,5)
-        Font = Font["Bold,+5"]
+        Font = Font["Bold,+6"]
         Background = Color.SelectedBackground
         Foreground = &H9FCFFF&
         Ignore = True
         Text = ("")
         Alignment = Align.TopNormal
       }
-      { Label1 Label
-        MoveScaled(1,7,26,3)
-        Font = Font["Underline"]
-        Text = ("http://gambas.sourceforge.net")
+      { HBox2 HBox
+        MoveScaled(1,6,35,2)
+        { lblWebSite Label
+          MoveScaled(0,0,25,2)
+          Font = Font["Underline"]
+          Mouse = Mouse.Pointing
+          AutoResize = True
+          Text = ("http://gambas.sourceforge.net")
+        }
       }
       { lblMessage TextLabel
         MoveScaled(1,10,37,5)

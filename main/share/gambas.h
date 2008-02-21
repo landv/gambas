@@ -458,7 +458,7 @@ void _name(void *_object, void *_param) {
 
 /* Macro for returning itself. Usable only in an implementation function */
 
-#define RETURN_SELF()  GB.ReturnObject(_object)
+#define RETURN_SELF()  GB.ReturnSelf(_object)
 
 
 /* Macro for declaring a variable used for storing an event identifier */
@@ -808,6 +808,7 @@ typedef
     void (*ReturnNull)(void);
     void (*ReturnFloat)(double);
     void (*ReturnPtr)(GB_TYPE, void *);
+    void (*ReturnSelf)(void *);
 
     void (*ReturnString)(char *);
     void (*ReturnConstString)(const char *, int);

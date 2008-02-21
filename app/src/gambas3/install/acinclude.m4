@@ -1,6 +1,6 @@
 #######################################################################################
 ##
-##   GB_FIND() macro is part of gambas2 project
+##   GB_FIND() macro is part of gambas$(VERSION) project
 ##   by Benoit Minisini
 ##   others are from me (Laurent Carlier)
 ##
@@ -10,7 +10,7 @@
 ## GB_INIT_PROJECT
 ## Initialization and checking for gambas things
 ##
-##   $1 = gambas2 project to build 
+##   $1 = gambas$(VERSION) project to build 
 ## ---------------------------------------------------------------------------
 
 AC_DEFUN([GB_INIT_PROJECT],
@@ -19,7 +19,8 @@ AC_DEFUN([GB_INIT_PROJECT],
     AC_MSG_ERROR(Cannot find .project file for $1 !)
   fi
 
-  AM_INIT_AUTOMAKE($1, `cat $1/.project | grep "Version=" | sed s/"Version="//g`)
+  ##AM_INIT_AUTOMAKE($1, `cat $1/.project | grep "Version=" | sed s/"Version="//g`)
+  AM_INIT_AUTOMAKE($1, $(PACKAGE_VERSION))
 
   ## List of needed components
   COMPONENTS=`cat $1/.project | grep "Library=" | sed s/"Library="//g`
@@ -28,31 +29,34 @@ AC_DEFUN([GB_INIT_PROJECT],
   COMPONENT_build=`cat $1/.project | grep "MakeComponent=" | sed s/"MakeComponent="//g`
   AC_SUBST(COMPONENT_build)
 
-  AC_MSG_CHECKING(for gambas2 binaries)
-  GAMBAS_path=`gbx2 -e system.path`/bin
+  AC_MSG_CHECKING(for gambas$(VERSION) binaries)
+  GAMBAS_path=`gbx$(VERSION) -e system.path`/bin
   if test "$?" != "0"; then
     AC_MSG_RESULT(No)
-    AC_MSG_ERROR(Failed to find gambas2 utilities, check your gambas2 installation !)
+    AC_MSG_ERROR(Failed to find gambas$(VERSION) utilities, check your gambas$(VERSION) installation !)
   else
     AC_MSG_RESULT(Ok)
     AC_SUBST(GAMBAS_path)
   fi
 
   ## Find component components path
-  AC_MSG_CHECKING(for gambas2 components path)
-  GBLIBRARY_path=`gbx2 -e component.path`
+  AC_MSG_CHECKING(for gambas$(VERSION) components path)
+  GBLIBRARY_path=`gbx$(VERSION) -e component.path`
   if test "$?" != "0"; then
     AC_MSG_RESULT(No)
-    AC_MSG_ERROR(Failed to find gambas2 library path !)
+    AC_MSG_ERROR(Failed to find gambas$(VERSION) library path !)
   else
     AC_MSG_RESULT(Ok)
     AC_SUBST(GBLIBRARY_path)
   fi
 
-  GBINFO_path=`echo $GBLIBRARY_path | sed s/"\/lib\/gambas2"/"\/share\/gambas2\/info"/`
+  GBINFO_path=`echo $GBLIBRARY_path | sed s/"\/lib\/gambas$(VERSION)"/"\/share\/gambas$(VERSION)\/info"/`
   AC_SUBST(GBINFO_path)
 
-  GBHOME_path=`gbx2 -e user.home`/.local/lib/gambas2
+  GBCONTROL_path=`echo $GBLIBRARY_path | sed s/"\/lib\/gambas$(VERSION)"/"\/share\/gambas$(VERSION)\/control"/`
+  AC_SUBST(GBCONTROL_path)
+
+  GBHOME_path=`gbx$(VERSION) -e user.home`/.local/lib/gambas$(VERSION)
 
   for comp in $COMPONENTS; do
     if test "$comp" = "$1"; then continue; fi

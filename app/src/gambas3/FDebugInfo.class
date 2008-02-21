@@ -381,7 +381,7 @@ PUBLIC SUB ReadConfig()
 
 END
 
-PUBLIC SUB ClearBreakpoint()
+PUBLIC SUB ResetBreakpoints()
   
   lstBreak.Clear
   
@@ -392,8 +392,8 @@ PUBLIC SUB AddBreakpoint(sName AS String, sProc AS String, iLine AS Integer, bOn
   
   DIM sText AS String
   DIM iInd AS Integer
-  
-  sText = sName & "." & sProc & "." & CStr(iLine)
+
+  sText = sName & "." & sProc & "." & CStr(iLine + 1)
   iInd = lstBreak.Find(sText)
   
   IF bOn THEN

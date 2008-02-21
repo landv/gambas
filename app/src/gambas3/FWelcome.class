@@ -57,7 +57,7 @@ PUBLIC SUB Form_Open()
   FillRecent
 
   lblVersion.Text = Project.Version 'Subst(("version &1"), Project.Version)
-  lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 2, lblGambas.Y)
+  lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 4, lblGambas.Y)
 
   IF Project.GetRecentFiles().Count THEN
     Toggle(LIST_RECENT)
@@ -370,3 +370,20 @@ PUBLIC SUB panBackground_Arrange()
   panBackground.H = lblMessage.ScreenY - panBackground.ScreenY + lblMessage.H + panBackground.Padding
 
 END
+
+PUBLIC SUB lblWebsite_MouseDown()
+
+  lblWebSite.Foreground = Color.LightBackground
+
+END
+
+PUBLIC SUB lblWebsite_MouseUp()
+  
+  lblWebSite.Foreground = Color.TextBackground
+  IF Mouse.X >= 0 AND IF Mouse.Y >= 0 AND IF Mouse.X < lblWebSite.W AND IF Mouse.Y < lblWebSite.H THEN
+    WAIT
+    Desktop.Open(lblWebsite.Text)
+  ENDIF
+  
+END
+

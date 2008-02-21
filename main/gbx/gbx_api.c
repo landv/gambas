@@ -135,6 +135,7 @@ void *GAMBAS_Api[] =
   (void *)GB_ReturnNull,
   (void *)GB_ReturnFloat,
   (void *)GB_ReturnPtr,
+  (void *)GB_ReturnSelf,
 
   (void *)GB_ReturnString,
   (void *)GB_ReturnConstString,
@@ -1078,6 +1079,15 @@ void GB_ReturnPtr(unsigned int type, void *value)
 		VALUE_default(&TEMP, type);
 	else
   	VALUE_read(&TEMP, value, type);
+}
+
+
+void GB_ReturnSelf(void *object)
+{
+  if (object)
+    GB_ReturnObject(object);
+  else
+    GB_Return(T_CLASS, NULL);
 }
 
 

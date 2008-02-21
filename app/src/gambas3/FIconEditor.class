@@ -65,6 +65,8 @@ PRIVATE $iMouse AS Integer
 
 PRIVATE $iBeginUndo AS Integer
 
+PRIVATE $bNoPreview AS Boolean
+
 STATIC PUBLIC SUB _init()
 
   DIM sColor AS String
@@ -86,7 +88,6 @@ PUBLIC SUB _new(sPath AS String)
   DIM iColor AS Integer
   DIM hColor AS DrawingArea
   DIM hCtrl AS Control
-
 
   Path = sPath
   Name = Mid$(sPath, Len(File.Dir(Project.Path)) + 1)
@@ -137,6 +138,9 @@ END
 
 PUBLIC SUB Form_Open()
 
+  dwgPreview.Resize($hImage.W + 8, $hImage.H + 8)
+  panPreview.Dimension = dwgPreview.W + 8
+  
   RefreshZoom
 
 END
@@ -548,6 +552,7 @@ PRIVATE SUB RefreshImage(X AS Integer, Y AS Integer, W AS Integer, H AS Integer)
   H = H * $iScale
 
   dwgIcon.Refresh(X - 1, Y - 1, W + 2, H + 2)
+  IF NOT $bNoPreview THEN dwgPreview.Refresh(X - 1 + 4, Y - 1 + 4, W + 2, H + 2)
 
 END
 
@@ -555,6 +560,7 @@ END
 PRIVATE SUB RefreshAllImage()
 
   dwgIcon.Refresh(svwIcon.ScrollX, svwIcon.ScrollY, svwIcon.ClientW, svwIcon.ClientH)
+  IF NOT $bNoPreview THEN dwgPreview.Refresh
 
 END
 
@@ -628,6 +634,8 @@ PRIVATE SUB DrawLine(X1 AS Integer, Y1 AS Integer, X2 AS Integer, Y2 AS Integer,
   DIM LY AS Integer
   DIM bCalc AS Boolean
 
+  $bNoPreview = TRUE
+
   D = Max(Abs(X2 - X1), Abs(Y2 - Y1))
   D = Max(D, 1)
 
@@ -669,6 +677,9 @@ PRIVATE SUB DrawLine(X1 AS Integer, Y1 AS Integer, X2 AS Integer, Y2 AS Integer,
     LOOP UNTIL bCalc
 
   LOOP
+  
+  $bNoPreview = FALSE
+  dwgPreview.Refresh
 
 END
 
@@ -2018,3 +2029,22 @@ PUBLIC SUB mnuReload_Click()
   Reload
 
 END
+
+' PUBLIC SUB Form_Resize()
+' 
+'   panPreview.Move(ME.W - $hImage.W - 8, ME.H - $hImage.H - 8, $hImage.W + 8, $hImage.H + 8)
+' 
+' END
+
+PUBLIC SUB dwgPreview_Draw()
+
+  Draw.Image($hImage, 4, 4)
+
+END
+
+' PUBLIC SUB btnPreview_Click()
+' 
+'   svwPreview.Visible = btnPreview.Value
+'   IF svwPreview.Visible THEN splPreview.Layout = CStr(dwgPreview.W) & "," & CStr(ME.H - dwgPreview.W - 16)
+' 
+' END

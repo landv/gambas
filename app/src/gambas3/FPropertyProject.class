@@ -667,28 +667,6 @@ END
 
 
 
-PRIVATE SUB IsExported(sPath AS String) AS Boolean
-  
-  DIM hFile AS File
-  DIM sLine AS String
-  
-  hFile = OPEN sPath
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
-    sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF Left(sLine) = "'" THEN CONTINUE
-    IF sLine LIKE "INHERITS *" THEN CONTINUE
-    IF sLine LIKE "CREATE" THEN CONTINUE
-    IF sLine LIKE "CREATE *" THEN CONTINUE
-    IF sLine LIKE "EXPORT" THEN RETURN TRUE
-    IF sLine LIKE "EXPORT OPTIONAL" THEN RETURN TRUE
-    BREAK
-  WEND 
-  
-END
-
-
 PRIVATE SUB ReadComponent()
   
   DIM sPath AS String = Project.Dir &/ ".component"
@@ -857,7 +835,7 @@ PUBLIC SUB InitComponent()
   DIM sComp AS String
   DIM hExportInfo AS CExportInfo
 
-  tvwControl.Columns.Count = 3
+  tvwControl.Columns.Count = 4
   tvwControl.Columns[0].Text = ("Class")
   tvwControl.Columns[0].Width = Desktop.Scale * 24
   tvwControl.Columns[1].Text = ("Type")
@@ -867,7 +845,7 @@ PUBLIC SUB InitComponent()
   CExportInfo.Reset
 
   FOR EACH sPath IN Project.GetClasses(TRUE)
-    IF IsExported(sPath) THEN 
+    IF Project.IsExported(sPath) THEN 
       sClass = File.BaseName(sPath)
       IF NOT IsLetter(Left(sClass)) THEN CONTINUE
       CExportInfo.List.Add(sClass)
@@ -879,7 +857,7 @@ PUBLIC SUB InitComponent()
   CExportInfo.Sort
   
   tvwControl.Rows.Count = CExportInfo.List.Count
-  tvwControl.Rows.Height = 24
+  tvwControl.Rows.Height = Desktop.Scale * 4
 
   ReadComponent
   
@@ -903,11 +881,19 @@ END
 PUBLIC SUB tvwControl_Data(Row AS Integer, Column AS Integer)
 
   DIM hExportInfo AS CExportInfo = CExportInfo.All[CExportInfo.List[Row]]
+  DIM hPict AS Picture
 
   SELECT CASE Column
     CASE 0
       tvwControl.Data.Text = hExportInfo.Name
-      tvwControl.Data.Picture = hExportInfo.Icon
+      IF hExportInfo.Control THEN 
+        TRY hPict = Project.GetPicture("control" &/ LCase(hExportInfo.Name) & ".png")
+        IF NOT hPict THEN hPict = Picture["img/control/unknown.png"]
+        hPict = hPict.Image.Stretch(24, 24).Picture
+      ELSE
+        hPict = hExportInfo.Icon
+      ENDIF
+      tvwControl.Data.Picture = hPict
     CASE 1
       tvwControl.Data.Text = hExportInfo.Type
     CASE 2
@@ -989,6 +975,7 @@ PRIVATE SUB ShowEditor()
   
   DIM hExportInfo AS CExportInfo = CExportInfo.All[CExportInfo.List[tvwControl.Row]]  
   DIM aList AS String[]
+  DIM sIcon AS String
   
   HideEditor
   
@@ -1003,6 +990,14 @@ PRIVATE SUB ShowEditor()
       cmbControl.List = aList
       cmbControl.ReadOnly = TRUE
       cmbControl.Text = hExportInfo.Type
+      
+    ' CASE 2
+    '   IF hExportInfo.Control THEN
+    '     sIcon = FSelectIcon.Run(hExportInfo.ControlIcon, TRUE)
+    '     IF sIcon THEN hExportInfo.ControlIcon = sIcon
+    '     tvwControl.Current.Refresh
+    '   ENDIF
+    '   RETURN
       
     CASE 2
       IF NOT hExportInfo.Control THEN RETURN

@@ -43,9 +43,8 @@ PUBLIC SUB _new(hContainer AS Container, X AS Integer, Y AS Integer, W AS Intege
   $hLabel = NEW Label($hPanel) AS "Panel"
   '$hLabel.AutoResize = FALSE
   $hLabel.Expand = TRUE
-  $hLabel.Text = sText
   IF sFont THEN $hLabel.Font = Font[sFont]
-
+  $hLabel.Text = sText
 
 END
 

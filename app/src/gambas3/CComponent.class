@@ -216,6 +216,14 @@ CATCH
   
 END
 
+STATIC PUBLIC SUB FullReset()
+  
+  All.Clear
+  Features.Clear
+  _init  
+  
+END
+
 
 STATIC PUBLIC SUB _init()
 
@@ -234,7 +242,7 @@ STATIC PUBLIC SUB _init()
   ' ENDIF
 
   'OPEN Component.Path &/ "components" FOR READ AS #hFic
-
+  
   aComp = Dir(Component.Path, "*.component").Sort()
   FOR EACH sFile IN aComp
     InitComponent(sFile, FALSE)
@@ -243,6 +251,10 @@ STATIC PUBLIC SUB _init()
   IF Exist(Component.UserPath) THEN
     aComp = Dir(Component.UserPath, "*.component").Sort()
     FOR EACH sFile IN aComp
+      IF All.Exist(File.BaseName(sFile)) THEN 
+        PRINT "Warning: User component "; File.BaseName(sFile); " is ignored"
+        CONTINUE
+      ENDIF
       InitComponent(sFile, TRUE)
     NEXT
   ENDIF
