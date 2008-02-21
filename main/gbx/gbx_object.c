@@ -152,9 +152,11 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 
 	if (EVENT_Name != name)
 	{
-		STRING_free(&EVENT_Name);
+		STRING_unref(&EVENT_Name);
 		if (name)
 			STRING_new(&EVENT_Name, name, 0);
+		else
+			EVENT_Name = NULL;
 	}
 
   if (!name)

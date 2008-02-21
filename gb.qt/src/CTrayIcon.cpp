@@ -675,5 +675,8 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 _DESIGN:
 _STANDARD:
 
+	if (!find_object(widget))
+		return true;
+		
   return QObject::eventFilter(widget, event);    // standard event processing
 }

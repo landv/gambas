@@ -11,7 +11,7 @@ gb_la_LDFLAGS = -module @LD_FLAGS@
 gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -O0
 
 gbx3_SOURCES = \
- gb_common_swap.h gb_common_check.h gb_common.c \
+ gb_common_check.h gb_common.c \
  gbx_debug.h gbx_debug.c \
  gb_error.h gb_error.c \
  gb_alloc.c gb_array.c \

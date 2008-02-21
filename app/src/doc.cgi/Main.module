@@ -574,6 +574,9 @@ PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
     CASE "box"
       IF sParam THEN $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & EncodeHTML(sParam) & "</b></font></div>"
       $sRes &= "<div class=\"box\">\n"
+      
+    CASE "only"
+      $sRes &= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"only\" width=\"8\" valign=\"top\">" & sParam & "</td><td width=\"8\"></td><td>"
 
   END SELECT
 
@@ -617,6 +620,9 @@ PRIVATE SUB LeaveSection()
 
     CASE "box"
       $sRes &= "</div>\n"
+      
+    CASE "only"
+      $sRes &= "</td></tr></table>"
 
   END SELECT
 
