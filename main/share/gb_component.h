@@ -53,4 +53,7 @@ typedef
 
 #define GAMBAS_LINK_PATH  "/usr/bin/gbx" GAMBAS_VERSION_STRING
 
+#define GAMBAS_LIB_PATH "lib/gambas" GAMBAS_VERSION_STRING
+#define GAMBAS_LIB64_PATH "lib64/gambas" GAMBAS_VERSION_STRING
+
 #endif

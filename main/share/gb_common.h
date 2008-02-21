@@ -120,7 +120,7 @@ typedef
 #define CONST __attribute__((const))
 
 #if __WORDSIZE == 64
-#define OS_64BITS
+#define OS_64BITS 1
 #endif
 
 #define CLEAR(s) (memset(s, 0, sizeof(*s)))
