@@ -70,8 +70,8 @@ static CLASS *Class;
 
 void CLASS_init(void)
 {
-  if (sizeof(CLASS) > 128)
-    fprintf(stderr, "Warning: Use the 64 bits version of Gambas at your own risk!\n");
+  //if (sizeof(CLASS) > 128)
+  //  fprintf(stderr, "Warning: Use the 64 bits version of Gambas at your own risk!\n");
 
   TABLE_create_static(&_global_table, sizeof(CLASS_SYMBOL), TF_IGNORE_CASE);
 
