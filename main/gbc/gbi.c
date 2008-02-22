@@ -72,9 +72,6 @@
 
 static char _root[MAX_PATH + 1] = { 0 };
 static char _lib_path[MAX_PATH + 1];
-#ifdef OS_64BITS
-static char _lib64_path[MAX_PATH + 1];
-#endif
 static char _info_path[MAX_PATH + 1];
 static char _buffer[MAX_PATH + 1];
 
@@ -163,10 +160,12 @@ static void init(void)
     strncpy(_root, FILE_get_dir(FILE_get_dir(path)), MAX_PATH);
   }
 
-  strcpy(_lib_path, FILE_cat(_root, GAMBAS_LIB_PATH, NULL));
   #ifdef OS_64BITS
-  strcpy(_lib64_path, FILE_cat(_root, GAMBAS_LIB64_PATH, NULL));
+  strcpy(_lib_path, FILE_cat(_root, GAMBAS_LIB64_PATH, NULL));
+  if (access(FILE_cat(_lib_path, "gb.component", NULL), F_OK))
   #endif
+  	strcpy(_lib_path, FILE_cat(_root, GAMBAS_LIB_PATH, NULL));
+  	
   strcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
 
   if (lt_dlinit())
@@ -482,32 +481,14 @@ static void analyze(const char *comp, bool include)
   char *path_list = NULL;
   char *path_info = NULL;
   bool ok;
-  #ifdef OS_64BITS
-  bool lib64_native = FALSE;
-  bool lib64_gambas = FALSE;
-  #endif
 
   name = STR_copy(comp);
 
-	#ifdef OS_64BITS
-  snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib64_path, name);
-  lib64_native = native = (access(_buffer, F_OK) == 0);
-  if (!native)
-  #endif
-  {
-		snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
-		native = (access(_buffer, F_OK) == 0);
-  }
+	snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
+	native = (access(_buffer, F_OK) == 0);
 		
-	#ifdef OS_64BITS
-  snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib64_path, name);
-  lib64_gambas = gambas = (access(_buffer, F_OK) == 0);
-  if (!gambas)
-  #endif
-  {
-  	snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
-  	gambas = (access(_buffer, F_OK) == 0);
-  }
+ 	snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
+ 	gambas = (access(_buffer, F_OK) == 0);
 
   if (!native && !gambas)
   {
@@ -535,11 +516,7 @@ static void analyze(const char *comp, bool include)
 
   if (native)
   {
-  	#ifdef OS_64BITS
-    snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, lib64_native ? _lib64_path : _lib_path, name);
-    #else
     snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
-    #endif
 
     if (analyze_native_component(_buffer))
       ok = FALSE;
@@ -547,11 +524,7 @@ static void analyze(const char *comp, bool include)
 
   if (gambas)
   {
-  	#ifdef OS_64BITS
-    snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, lib64_gambas ? _lib64_path : _lib_path, name);
-    #else
     snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
-    #endif
 
     if (analyze_gambas_component(_buffer))
     	if (!native)
