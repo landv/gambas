@@ -47,7 +47,7 @@ GB_COMPONENT(
   [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
   [-lffi])
   
-if test -z $FFI_LIB; then
+if test -z "$FFI_LIB"; then
   AC_MSG_ERROR([libffi library and headers are required])
 fi
 
