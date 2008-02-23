@@ -27,9 +27,7 @@
 #include "config.h"
 #include "gb_common.h"
 
-#ifdef HAVE_FFI
 #include <ffi.h>
-#endif
 
 #include "gb_common_buffer.h"
 #include "gb_table.h"
@@ -60,7 +58,6 @@ typedef
 
 static TABLE *_table = NULL;
 
-#ifdef HAVE_FFI
 static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_sint32, &ffi_type_sint32, &ffi_type_sint32, 
 	&ffi_type_sint32, &ffi_type_sint64, &ffi_type_float, &ffi_type_double, 
@@ -68,7 +65,6 @@ static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_void, &ffi_type_void, &ffi_type_pointer,
 	&ffi_type_pointer
 	};
-#endif
 
 static lt_dlhandle get_library(char *name)
 {
@@ -234,7 +230,6 @@ static void *get_function(CLASS_EXTERN *ext)
 
 void EXTERN_call(void)
 {
-#ifdef HAVE_FFI
   static const void *jump[17] = {
     &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
     &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT
@@ -394,9 +389,6 @@ void EXTERN_call(void)
     *SP = TEMP;
     SP++;
   }
-#else
-  GB_Error("EXTERN Call not supported!");
-#endif
 }
 
 #if 0

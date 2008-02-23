@@ -149,18 +149,10 @@ static void add_preload(char **env, const char *lib)
   {
     org = getenv("LD_PRELOAD");
     if (org && *org)
-#ifdef OS_OPENBSD
-      *env += snprintf(*env, COMMON_BUF_MAX, "%s ", org);
-#else
        *env += sprintf(*env, "%s ", org);
-#endif
   }
 
-#ifdef OS_OPENBSD
-  *env += snprintf(*env, &COMMON_buffer[COMMON_BUF_MAX] - *env, "%s ", lib);
-#else
   *env += sprintf(*env, "%s ", lib);
-#endif
 }
 
 
@@ -357,11 +349,7 @@ void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface)
     symbol[i] = c;
   }
 
-#ifdef OS_OPENBSD
-  snprintf(&symbol[len], sizeof(symbol)-len, "_%d", version);
-#else
   sprintf(&symbol[len], "_%d", version);
-#endif
   copy_interface((intptr_t *)get_symbol(lib, symbol, TRUE), (intptr_t *)iface);
 }
 
@@ -427,17 +415,10 @@ void LIBRARY_load(LIBRARY *lib)
     return;
 
   path = FILE_buffer();
-#ifdef OS_OPENBSD
-  snprintf(path, PATH_MAX, LIB_PATTERN, COMPONENT_path, lib->name);
-#else
   sprintf(path, LIB_PATTERN, COMPONENT_path, lib->name);
-#endif
+
   if (!FILE_exist(path))
-#ifdef OS_OPENBSD
-	  snprintf(path, PATH_MAX, LIB_PATTERN, COMPONENT_user_path, lib->name);
-#else
-	  sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
-#endif
+    sprintf(path, LIB_PATTERN, COMPONENT_user_path, lib->name);
 
   #ifndef DONT_USE_LTDL
     /* no more available in libltld ?

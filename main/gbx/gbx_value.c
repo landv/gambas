@@ -400,22 +400,14 @@ __c2s:
 __h2s:
 __i2s:
 
-#ifdef OS_OPENBSD
-  len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
-#else
   len = sprintf(COMMON_buffer, "%d", value->_integer.value);
-#endif
   STRING_new_temp_value(value, COMMON_buffer, len);
   BORROW(value);
   return;
 
 __l2s:
 
-#ifdef OS_OPENBSD
-  len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%" PRId64, value->_long.value);
-#else
   len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
-#endif
   STRING_new_temp_value(value, COMMON_buffer, len);
   BORROW(value);
   return;
@@ -962,22 +954,14 @@ __BYTE:
 __SHORT:
 __INTEGER:
 
-#ifdef OS_OPENBSD
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%d", value->_integer.value);
-#else
   *len = sprintf(COMMON_buffer, "%d", value->_integer.value);
-#endif
   *addr = COMMON_buffer;
 
   return;
 
 __LONG:
 
-#ifdef OS_OPENBSD
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "%" PRId64, value->_long.value);
-#else
   *len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
-#endif
   *addr = COMMON_buffer;
 
   return;
@@ -1004,11 +988,7 @@ __OBJECT:
   if (VALUE_is_null(value))
     goto __NULL;
 
-#ifdef OS_OPENBSD
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
-#else
   *len = sprintf(COMMON_buffer, "(%s %p)", OBJECT_class(value->_object.object)->name, value->_object.object);
-#endif
   *addr = COMMON_buffer;
   return;
 
@@ -1023,22 +1003,14 @@ __VOID:
 
 __CLASS:
 
-#ifdef OS_OPENBSD
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(Class %s)", value->_class.class->name);
-#else
   *len = sprintf(COMMON_buffer, "(Class %s)", value->_class.class->name);
-#endif
   *addr = COMMON_buffer;
   return;
 
 __ARRAY:
 __FUNCTION:
 
-#ifdef OS_OPENBSD
-  *len = snprintf(COMMON_buffer, COMMON_BUF_MAX, "(%s ?)", TYPE_get_name(value->type));
-#else
   *len = sprintf(COMMON_buffer, "(%s ?)", TYPE_get_name(value->type));
-#endif
   *addr = COMMON_buffer;
 
   /*THROW(E_TYPE, TYPE_get_name(T_STRING), TYPE_get_name(value->type));*/
