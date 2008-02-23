@@ -1,4 +1,30 @@
 -------------------------------------------------------------------------------
+ gambas2-2.2.0 - 23 Feb 2008
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Fixed some bugs in the configuration files.
+* BUG: Automatically search libraries in lib64 before searching in lib.
+
+[INTERPRETER]
+* BUG: Val() now takes the thousand separator into account when this
+  separator is a space character.
+* BUG: Really fixes the 'lib64' problem. Now components are searched in the
+  'lib64' directory on 64 bits OS. If they are not stored in 'lib64', then
+  the default 'lib' directory is used.
+* BUG: Removed the 64 bits warning.
+
+[INFORMER]
+* BUG: Really fixes the 'lib64' problem. Now components are searched in the
+  'lib64' directory on 64 bits OS. If they are not stored in 'lib64', then
+  the default 'lib' directory is used.
+
+[GB.QT]
+* BUG: Prevents a crash when a trayicon is destroyed or hidden during a
+  trayicon event handler.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.1.0 - 20 Feb 2008
 -------------------------------------------------------------------------------
 
