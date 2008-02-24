@@ -43,7 +43,7 @@ END
 
 PRIVATE SUB ShowNextTip(OPTIONAL bPrev AS Boolean)
 
-  txtTip.Text = GetNextTip(bPrev)
+  txtTip.RichText = GetNextTip(bPrev)
   lblTitle.Text = ("Tip of the day") & " #" & CStr($iTip)
 
 END

@@ -76,7 +76,7 @@ typedef
     TRANS_PARAM param[MAX_PARAM_FUNC];
     PATTERN *start;
     int line;
-    uint byref;
+    uint64_t byref;
     unsigned vararg : 1;
     }
   PACKED

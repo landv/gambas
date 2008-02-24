@@ -1578,6 +1578,12 @@ _QUIT:
 
 _BYREF:
 
+	if (PC == FP->code)
+	{
+		PC += GET_XX();
+		goto _NEXT;
+	}
+
 	THROW(E_BYREF);
 
 /*-----------------------------------------------*/

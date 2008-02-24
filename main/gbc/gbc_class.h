@@ -93,7 +93,7 @@ typedef
     char _reserved;
     short nlocal;         // Local variable count
     short nctrl;          // Control structure variable count
-    //uint byref;           // Binary map of byref arguments. Not used actually.
+    uint64_t byref;       // Byref mask
     PARAM *local;         // Datatypes of local variables
     PARAM *param;         // Datatypes of arguments
 
@@ -110,7 +110,6 @@ typedef
     short catch;          // CATCH position
 
     short *pos_line;      // Bytecode position of each code line
-    short _reserved2[2];
     }
   PACKED
   FUNCTION;

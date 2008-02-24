@@ -156,11 +156,10 @@ static bool read_float(double *result, boolean local, int c)
     if (c == 'e' || c == 'E')
       break;
 
-    if ((c < 0) || isspace(c))
-      goto __FIN;
-
     if (c == thsep)
       c = get_char();
+    else if ((c < 0) || isspace(c))
+      goto __FIN;
   }
 
   /* Partie d�imale */

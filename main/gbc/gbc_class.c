@@ -63,10 +63,8 @@ void CLASS_create(CLASS **result)
 
   /* Cr�tion des fonctions d'initialisation */
 
+	CLEAR(&func);
   TYPE_clear(&func.type);
-  func.nparam = 0;
-  func.start = NULL;
-  func.line = 0;
 
   func.index = CLASS_add_symbol(class, "@init");
   CLASS_add_function(class, &func);
@@ -231,10 +229,17 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
   func->npmin = -1;
   func->vararg = decl->vararg;
 
-  /* optional parameters */
+	// Function startup
 
   CODE_begin_function(func);
   JOB->func = func;
+
+	// Byref check at function startup
+	
+	if (decl->byref)
+		CODE_byref(decl->byref);
+
+  // Optional parameters
 
   for (i = 0; i < func->nparam; i++)
   {

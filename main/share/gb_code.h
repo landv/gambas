@@ -130,6 +130,7 @@ void CODE_subr_output(short subr, short nparam, int output);
 
 void CODE_call(short nparam);
 void CODE_call_byref(short nparam, uint64_t byref);
+void CODE_byref(uint64_t byref);
 void CODE_drop(void);
 void CODE_push_return(void);
 

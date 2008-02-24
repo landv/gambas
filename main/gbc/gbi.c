@@ -160,7 +160,12 @@ static void init(void)
     strncpy(_root, FILE_get_dir(FILE_get_dir(path)), MAX_PATH);
   }
 
-  strcpy(_lib_path, FILE_cat(_root, "lib/gambas" GAMBAS_VERSION_STRING, NULL));
+  #ifdef OS_64BITS
+  strcpy(_lib_path, FILE_cat(_root, GAMBAS_LIB64_PATH, NULL));
+  if (access(FILE_cat(_lib_path, "gb.component", NULL), F_OK))
+  #endif
+  	strcpy(_lib_path, FILE_cat(_root, GAMBAS_LIB_PATH, NULL));
+  	
   strcpy(_info_path, FILE_cat(_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
 
   if (lt_dlinit())
@@ -308,9 +313,6 @@ static void analyze_class(GB_DESC *desc)
     nsymbol++;
     p++;
   }
-  
-  //if (_verbose)
-  //	fprintf(stderr, "%s: %d symbols\n", name, nsymbol);
 
   if (_format)
   {
@@ -482,10 +484,11 @@ static void analyze(const char *comp, bool include)
 
   name = STR_copy(comp);
 
-  snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
-  native = (access(_buffer, F_OK) == 0);
-  snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
-  gambas = (access(_buffer, F_OK) == 0);
+	snprintf(_buffer, sizeof(_buffer), LIB_PATTERN, _lib_path, name);
+	native = (access(_buffer, F_OK) == 0);
+  
+ 	snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
+ 	gambas = (access(_buffer, F_OK) == 0);
 
   if (!native && !gambas)
   {
@@ -657,7 +660,8 @@ int main(int argc, char **argv)
   }
   else
   {
-  	if (!getenv("GB_PRELOAD"))
+  #ifdef __GNU_LIBRARY__
+ 	if (!getenv("GB_PRELOAD"))
   	{
 			for (ind = optind; ind < argc; ind++)
 			{
@@ -675,7 +679,8 @@ int main(int argc, char **argv)
 			puts(name);
 			analyze(name, FALSE);
 		}
-	}
+  #endif
+  }
 
   exit(0);
 }

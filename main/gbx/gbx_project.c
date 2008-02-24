@@ -257,8 +257,18 @@ void PROJECT_init(const char *file)
 
 	/* Component paths */
 
-  STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, "lib/gambas" GAMBAS_VERSION_STRING, NULL), 0);
-  STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_user_home, ".local/lib/gambas" GAMBAS_VERSION_STRING, NULL), 0);
+	#ifdef OS_64BITS
+  STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL), 0);
+  if (access(COMPONENT_path, F_OK))
+  {	
+  	STRING_free(&COMPONENT_path);
+	  STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL), 0);
+  }
+  #else
+  STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL), 0);
+	#endif
+  
+  STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_user_home, ".local", GAMBAS_LIB_PATH, NULL), 0);
 
   /* Project path & name*/
 

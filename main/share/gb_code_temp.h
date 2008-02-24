@@ -1019,6 +1019,32 @@ void CODE_call(short nparam)
   write_ZZxx(C_CALL, nparam);
 }
 
+void CODE_byref(uint64_t byref)
+{
+  LAST_CODE;
+  int i, n;
+
+  #ifdef DEBUG
+  printf("BYREF\n");
+  #endif
+
+  if (byref >> 48)
+  	n = 3;
+  else if (byref >> 32)
+  	n = 2;
+  else if (byref >> 16)
+  	n = 1;
+  else
+  	n = 0;
+  	
+  write_ZZxx(C_BYREF, n);
+  while (n >= 0)
+  {
+  	write_short(byref & 0xFFFF);
+  	byref >>= 16;
+  	n--;
+  }  
+}
 
 void CODE_call_byref(short nparam, uint64_t byref)
 {
@@ -1037,27 +1063,10 @@ void CODE_call_byref(short nparam, uint64_t byref)
 
   #ifdef DEBUG
   printf("CALL ( %d )\n"nparam);
-  printf("BYREF\n");
   #endif
 
   write_ZZxx(C_CALL, nparam);
-  
-  if (byref >> 48)
-  	n = 3;
-  else if (byref >> 32)
-  	n = 2;
-  else if (byref >> 16)
-  	n = 1;
-  else
-  	n = 0;
-  	
-  write_ZZxx(C_BYREF, n);
-  while (n >= 0)
-  {
-  	write_short(byref & 0xFFFF);
-  	byref >>= 16;
-  	n--;
-  }  
+	CODE_byref(byref);
 }
 
 

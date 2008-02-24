@@ -73,6 +73,7 @@ EXEC_FUNCTION EXEC;
 bool EXEC_main_hook_done = FALSE;
 int EXEC_return_value = 0;
 bool EXEC_got_error = FALSE;
+uint64_t EXEC_byref = 0;
 
 void EXEC_init(void)
 {
@@ -582,6 +583,10 @@ void EXEC_leave(bool drop)
 	bool keep_ret_value = FALSE;
 	VALUE ret;
 	ushort *pc;
+	VALUE *xp, *pp;
+	int bit, nbyref;
+	ushort *pc_func;
+	int nbyref_func;
 
 #if DEBUG_STACK
 	printf("| >> EXEC_leave\n");
@@ -597,56 +602,73 @@ void EXEC_leave(bool drop)
   
 	/* ByRef arguments management */
 
-	if (pc && PCODE_is(pc[1], C_BYREF))
-	{
-		VALUE *xp, *pp;
-		int bit, nbyref;
+	if (!(pc && PCODE_is(pc[1], C_BYREF)))
+		goto __LEAVE_NORMAL;
 		
-		xp = PP - nparam;
-		nbyref = 1 + (pc[1] & 0xF);
-		pp = xp;
-		
-		for (i = 0, n = 0; i < nparam; i++)
-		{
-			bit = i & 15;
-			if (bit == 0)
-				n++;
-			
-			if (n <= nbyref && (pc[1 + n] & (1 << bit)))
-			{
-				//printf("pp[%d] -> pp[%d]\n", i, nb);
-				xp[nb] = *pp;
-				nb++;
-			}
-			else
-			{
-				//printf("pp[%d] release (%d)\n", i, pp->type);
-				RELEASE(pp);
-			}
-			pp++;
-		}		
-  
-		n = SP - PP;
-		#if DEBUG_STACK
-		printf("release = %d, nparam = %d, byref = %d\n", n, FP->n_param, nb);
-		#endif
-		RELEASE_MANY(SP, n);
-		SP -= nparam;
-		SP += nb;
-		OBJECT_UNREF(&OP, "EXEC_leave");
-		SP -= nb;
-		STACK_pop_frame(&EXEC_current);
-		PC += nbyref + 1;
-	}
-	else
-	{
-		n = nparam + (SP - PP);
-		RELEASE_MANY(SP, n);
+	pc++;
+	nbyref = 1 + (*pc & 0xF);
+	pc_func = FP->code;
 	
-		OBJECT_UNREF(&OP, "EXEC_leave");
-		STACK_pop_frame(&EXEC_current);
+	if (!PCODE_is(*pc_func, C_BYREF))
+		goto __LEAVE_NORMAL;
+	
+	nbyref_func = 1 + (*pc_func & 0xF);
+	if (nbyref_func < nbyref)
+		goto __LEAVE_NORMAL;
+		
+	for (i = 1; i <= nbyref; i++)
+	{
+		if (pc[i] & ~pc_func[i])
+			goto __LEAVE_NORMAL;
 	}
-			
+	
+	xp = PP - nparam;
+	pp = xp;
+	
+	for (i = 0, n = 0; i < nparam; i++)
+	{
+		bit = i & 15;
+		if (bit == 0)
+			n++;
+		
+		if (n <= nbyref && (pc[n] & (1 << bit)))
+		{
+			//printf("pp[%d] -> pp[%d]\n", i, nb);
+			xp[nb] = *pp;
+			nb++;
+		}
+		else
+		{
+			//printf("pp[%d] release (%d)\n", i, pp->type);
+			RELEASE(pp);
+		}
+		pp++;
+	}		
+
+	pc--;
+	n = SP - PP;
+	#if DEBUG_STACK
+	printf("release = %d, nparam = %d, byref = %d\n", n, FP->n_param, nb);
+	#endif
+	RELEASE_MANY(SP, n);
+	SP -= nparam;
+	SP += nb;
+	OBJECT_UNREF(&OP, "EXEC_leave");
+	SP -= nb;
+	STACK_pop_frame(&EXEC_current);
+	PC += nbyref + 1;
+	goto __RETURN_VALUE;
+
+__LEAVE_NORMAL:  	
+	
+	n = nparam + (SP - PP);
+	RELEASE_MANY(SP, n);
+
+	OBJECT_UNREF(&OP, "EXEC_leave");
+	STACK_pop_frame(&EXEC_current);
+
+__RETURN_VALUE:
+
 	if (pc && !drop)
 	{
 		drop = PCODE_is_void(*pc);
@@ -681,6 +703,7 @@ void EXEC_leave(bool drop)
 	print_register();
 	printf("\n");
 #endif
+	return;
 }
 
 
