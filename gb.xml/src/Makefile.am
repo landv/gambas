@@ -1,7 +1,7 @@
 COMPONENT = gb.xml
 include $(top_srcdir)/component.am
 
-SUBDIRS = @XSLT_DIR@ rpc
+SUBDIRS = . @XSLT_DIR@ rpc
 
 INCLUDES = @XML_INC@
 
