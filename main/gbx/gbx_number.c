@@ -382,6 +382,9 @@ void NUMBER_int_to_string(uint64_t nbr, int prec, int base, VALUE *value)
   
   neg = (nbr & (1LL << 63)) != 0;
   
+  if (base == 10 && neg)
+  	nbr = 1 + ~nbr;
+  
   while (nbr > 0)
   {
     digit = nbr % base;
@@ -402,6 +405,13 @@ void NUMBER_int_to_string(uint64_t nbr, int prec, int base, VALUE *value)
     {
       ptr += len - prec;
       len = prec;
+    }
+    
+    if (base == 10)
+    {
+    	len++;
+    	ptr--;
+    	*ptr = '-';
     }
     
     STRING_new_temp_value(value, NULL, len);

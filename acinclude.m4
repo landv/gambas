@@ -196,8 +196,8 @@ AC_DEFUN([GB_INIT],
 
   AM_CONDITIONAL(OPTIMIZE, test "$gambas_optimization" = yes)
 
-  AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value"
-  AM_CXXFLAGS="$AM_CXXFLAGS -pipe -Wall -fno-exceptions -Wno-unused-value"
+  AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value -fsigned-char"
+  AM_CXXFLAGS="$AM_CXXFLAGS -pipe -Wall -fno-exceptions -Wno-unused-value -fsigned-char"
 
   have_gcc_visibility=no
   AX_CFLAGS_GCC_OPTION([-fvisibility=hidden],,
