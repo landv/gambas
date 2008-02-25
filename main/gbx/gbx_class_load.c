@@ -555,6 +555,7 @@ static CLASS_ARRAY_P *_get_section_array(void)
 #endif
 #endif
 
+#ifdef OS_64BITS
 static int sizeof_ctype(CLASS *class, CTYPE ctype)
 {
 	size_t size;
@@ -565,7 +566,7 @@ static int sizeof_ctype(CLASS *class, CTYPE ctype)
 	size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
   return (size + 3) & ~3;
 }
-
+#endif
 
 static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfirst)
 {
