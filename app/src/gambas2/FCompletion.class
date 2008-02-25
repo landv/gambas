@@ -82,6 +82,7 @@ PUBLIC SUB Open(sMode AS String, OPTIONAL sClass AS String, OPTIONAL bStatic AS 
         $iLen = 3
       ENDIF
       $iCol -= Len(sClass) + 2
+      DEBUG $iCol
       FillWithIdent(Left$(sClass, $iLen))
   END SELECT
 
@@ -292,6 +293,7 @@ PRIVATE SUB FillWithIdent(sWord AS String)
   DIM sOrg AS String
   DIM sText AS String
   DIM iLine AS Integer
+  DIM sUCaseLine AS String
 
   lvwComp.Clear
 
@@ -326,12 +328,13 @@ PRIVATE SUB FillWithIdent(sWord AS String)
     IF iLine < 0 THEN BREAK 
     IF iLine = hEditor.Line THEN CONTINUE
 
-    sLine = String.UCase(Highlight.Purge(hEditor.Lines[iLine]))
+    sLine = Highlight.Purge(hEditor.Lines[iLine])
+    sUCaseLine = UCase(sLine) ' Only ASCII are interesting there...
   
     iPos = 0
     DO
       INC iPos
-      iPos = String.InStr(sLine, sWord, iPos)
+      iPos = String.InStr(sUCaseLine, sWord, iPos)
       IF iPos = 0 THEN BREAK
       IF iPos > 1 THEN
         sCar = String.Mid$(sLine, iPos - 1, 1)
@@ -341,7 +344,7 @@ PRIVATE SUB FillWithIdent(sWord AS String)
         sCar = String.Mid$(sLine, iPos2, 1)
         IF String.InStr(FEditor.IDENT_CAR, sCar) = 0 THEN BREAK
       NEXT
-      sCar = String.Mid$(hEditor.Lines[iLine], iPos, iPos2 - iPos)
+      sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
       IF IsDigit(Left$(sCar)) THEN CONTINUE 
       IF cKey.Exist(sCar) THEN CONTINUE
       aResult.Add(sCar & " 3")
