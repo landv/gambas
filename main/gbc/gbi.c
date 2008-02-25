@@ -419,8 +419,7 @@ static bool analyze_native_component(const char *path)
     ret = TRUE;
 	}
 
-	// Do not close shared libraries,except on openbsd that seems to 
-feel better with
+	// Do not close shared libraries,except on openbsd that seems to feel better with
 	#ifdef OS_OPENBSD
 	lt_dlclose(lib);
 	#endif
