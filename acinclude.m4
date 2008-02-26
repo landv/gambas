@@ -494,7 +494,7 @@ cd $gb_save
 ##   $8 = Compiler flags (optional)
 ##   $9 = Warning message (optional)
 ##
-##   => defines HAVE_* (to know if you can compile the component)
+##   => defines HAVE_*_COMPONENT (to know if you can compile the component)
 ##      *_INC (for the compiler) and *_LIB (for the linker)
 ## ---------------------------------------------------------------------------
 
@@ -646,8 +646,9 @@ dnl    fi
 ##   $4 = Sub-directory name
 ##   $5 = pkg-config module name
 ##   $6 = pkg-config version test
+##   $7 = Warning message (optional)
 ##
-##   => defines HAVE_* (to know if you can compile the component)
+##   => defines HAVE_*_COMPONENT (to know if you can compile the component)
 ##      *_INC (for the compiler) and *_LIB / *_LDFLAGS (for the linker)
 ## ---------------------------------------------------------------------------
 
@@ -772,7 +773,11 @@ dnl    fi
     $2_LIB=""
     $2_LDFLAGS=""
     $2_DIR=""
-    AC_MSG_WARN([*** $3 is disabled])
+    if test x"$7" = x; then
+      AC_MSG_WARN([*** $3 is disabled])
+    else
+      AC_MSG_NOTICE([$7])
+    fi
     
   fi
   
