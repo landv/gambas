@@ -74,7 +74,7 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
         if (in_comment)
         {
         	if (!comment)
-          	c = ' ', lc = 1;
+          	c = ' ';
 				}
         else if (c == '"')
           wait = '"';
@@ -103,18 +103,18 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
 						if (i < len_s)
 							GB.AddString(&r, " ", 1);
 							//r += ' ';
-						c = ' ', lc = 1;
+						c = ' ';
 					}
 				}
         else
         {
         	if (!string)
-          	c = ' ', lc = 1;
+          	c = ' ';
 				}
         break;
     }
 
-		if (lc == 1)
+		if (c != s[i])
     	GB.AddString(&r, &c, 1);
 		else
     	GB.AddString(&r, &s[i], lc);

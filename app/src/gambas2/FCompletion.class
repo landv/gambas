@@ -82,7 +82,6 @@ PUBLIC SUB Open(sMode AS String, OPTIONAL sClass AS String, OPTIONAL bStatic AS 
         $iLen = 3
       ENDIF
       $iCol -= Len(sClass) + 2
-      DEBUG $iCol
       FillWithIdent(Left$(sClass, $iLen))
   END SELECT
 

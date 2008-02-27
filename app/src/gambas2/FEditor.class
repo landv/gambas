@@ -1667,7 +1667,7 @@ PRIVATE SUB CheckCompletion(sMode AS String)
 
   'IF NOT sMode THEN RETURN
 
-  sLine = Left$(Highlight.Purge(edtEditor.Lines[edtEditor.Line]), edtEditor.Column)
+  sLine = String.Left$(Highlight.Purge(edtEditor.Lines[edtEditor.Line]), edtEditor.Column)
   IF Right$(RTrim(sLine)) = "'" THEN RETURN
 
   IF sMode = " " THEN

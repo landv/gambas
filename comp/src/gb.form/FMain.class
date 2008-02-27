@@ -1,2 +1,17 @@
 ' Gambas class file
 
+
+PUBLIC SUB Form_Open()
+
+  TableView1.Rows.Count = 4
+  TableView1.Columns.Count = 4
+
+END
+
+
+
+PUBLIC SUB TableView1_Click()
+
+  IF LAST.column = 1 THEN TableView1.Edit(["A", "B", "C"], TRUE)  
+
+END
