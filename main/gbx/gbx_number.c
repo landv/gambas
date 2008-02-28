@@ -136,7 +136,7 @@ static bool read_float(double *result, boolean local, int c)
   nexp = 0;
   nexp_minus = FALSE;
 
-  /* Partie enti�e */
+  /* Integer part */
 
   for(;;)
   {
@@ -156,13 +156,14 @@ static bool read_float(double *result, boolean local, int c)
     if (c == 'e' || c == 'E')
       break;
 
-    if (c == thsep)
+    if (thsep && c == thsep)
       c = get_char();
-    else if ((c < 0) || isspace(c))
+    
+    if ((c < 0) || isspace(c))
       goto __FIN;
   }
 
-  /* Partie d�imale */
+  /* Decimal part */
 
   _can_be_integer = FALSE;
 

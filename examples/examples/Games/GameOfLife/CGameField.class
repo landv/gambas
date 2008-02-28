@@ -7,7 +7,7 @@ PRIVATE MaxY AS Integer
 PRIVATE dW AS DrawingArea
 PRIVATE $iZoom AS Integer
 
-PUBLIC FUNCTION Init() AS Integer
+PUBLIC FUNCTION Init(bSmall AS Boolean, iLife AS Integer) AS Integer
   
   DIM tmp AS NEW Collection
   DIM i, j AS Integer
@@ -22,11 +22,11 @@ PUBLIC FUNCTION Init() AS Integer
   Game = NEW Image(MaxX + 1, MaxY + 1)
   Game.Fill(Color.White)
   
-  IF FMain.chkSmall.Value THEN 
+  IF bSmall THEN 
 
     FOR i = MaxX \ 2 - 5 TO MaxX \ 2 + 5
       FOR j = MaxY \ 2 - 5 TO MaxY \ 2 + 5
-        IF Rnd(1, 100) >= FMain.Slider2.Value THEN Game[i, j] = Color.Red
+        IF Rnd(1, 100) >= iLife THEN Game[i, j] = Color.Red
       NEXT 
     NEXT
 
@@ -34,7 +34,7 @@ PUBLIC FUNCTION Init() AS Integer
   
     FOR i = 0 TO MaxX
       FOR j = 0 TO MaxY
-        IF Rnd(1, 100) >= FMain.Slider2.Value THEN Game[i, j] = Color.Red
+        IF Rnd(1, 100) >= iLife THEN Game[i, j] = Color.Red
       NEXT 
     NEXT
   
@@ -50,7 +50,8 @@ PUBLIC SUB SetDrawArea(pdW AS DrawingArea)
   
 END
 
-PUBLIC SUB drawGame()
+PUBLIC SUB DrawGame(bBorder AS Boolean)
+
   DIM SquareSize AS Integer
   DIM i, j, x, y AS Integer
   DIM tmp AS Collection
@@ -65,7 +66,7 @@ PUBLIC SUB drawGame()
   Draw.FillColor = Color.LightBackground
   Draw.Rect(4, 4, Game.Width * $iZoom, Game.Height * $iZoom)
   
-  Draw.LineStyle = If(FMain.chkBorder.Value, Line.Solid, Line.None)
+  Draw.LineStyle = If(bBorder, Line.Solid, Line.None)
   Draw.FillColor = Color.red
   Draw.Foreground = Color.LightBackground
 
@@ -137,35 +138,13 @@ PRIVATE FUNCTION CountNeighbours(x AS Integer, y AS Integer) AS Integer
 
 END
 
-PUBLIC SUB SpawnNextGeneration()
+PUBLIC SUB SpawnNextGeneration(Live AS Boolean[], Keep AS Boolean[])
 
   DIM x AS Integer
   DIM y AS Integer
   DIM i, j AS Integer
   DIM myCount AS Integer
   DIM newGame AS Image
-  DIM live AS Boolean[9]
-  DIM keep[9] AS Boolean
-  
-  live[0] = FMain.chkZero.Value = CheckBox.False
-  live[1] = fmain.chkOne.Value = CheckBox.False
-  live[2] = fmain.chkTwo.Value = CheckBox.False
-  live[3] = fmain.chkThree.Value = CheckBox.False
-  live[4] = fmain.chkFour.Value = CheckBox.False
-  live[5] = fmain.chkFive.Value = CheckBox.False
-  live[6] = fmain.chkSix.Value = CheckBox.False
-  live[7] = fmain.chkSeven.Value = CheckBox.False
-  live[8] = fmain.chkEight.Value = CheckBox.False
-  
-  keep[0] = FMain.chkZero.Value = CheckBox.None
-  keep[1] = fmain.chkOne.Value = CheckBox.None
-  keep[2] = fmain.chkTwo.Value = CheckBox.None
-  keep[3] = fmain.chkThree.Value = CheckBox.None
-  keep[4] = fmain.chkFour.Value = CheckBox.None
-  keep[5] = fmain.chkFive.Value = CheckBox.None
-  keep[6] = fmain.chkSix.Value = CheckBox.None
-  keep[7] = fmain.chkSeven.Value = CheckBox.None
-  keep[8] = fmain.chkEight.Value = CheckBox.None
   
   newgame = Game.Copy()
   

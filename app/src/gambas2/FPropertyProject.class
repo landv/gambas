@@ -186,7 +186,7 @@ PRIVATE FUNCTION DoApply() AS Boolean
     IF cmbStackSize.Index = 0 THEN 
       .Stack = 0
     ELSE
-      .Stack = Val(cmbStackSize.Text)
+      .Stack = Val(Left(cmbStackSize.Text, -1))
     ENDIF
 
     IF .ControlPublic <> (cmbControlPublic.Index = 0) OR IF .ModulePublic <> (cmbModulePublic.Index = 0) THEN

@@ -3,33 +3,64 @@
 PRIVATE Game AS NEW CGameField
 
 
+PRIVATE SUB DrawGame()
+  
+  Game.DrawGame(chkBorder.Value)
+  
+END
+
+
 PUBLIC SUB Form_Open()
-    Game.Init
+    Game.Init(chkSmall.Value, Slider2.Value)
     Game.SetDrawArea(dW)
-    Game.drawGame
+    DrawGame
 END
 
 PUBLIC SUB Button1_Click()
 
-    Game.Init
+    Game.Init(chkSmall.Value, Slider2.Value)
     Game.SetDrawArea(dW)
-    Game.drawGame
+    DrawGame
 
 END
 
 PUBLIC SUB Button2_Click()
 
-  Game.SpawnNextGeneration
-  Game.drawGame
+  tmrEvolution_Timer
+  'Game.SpawnNextGeneration
+  'DrawGame
 
 END
 
 PUBLIC SUB tmrEvolution_Timer()
 
-  IF togEvolution.Value THEN 
-    game.SpawnNextGeneration
-    game.drawGame
-  END IF
+  DIM Live AS Boolean[9]
+  DIM Keep AS Boolean[9]
+
+  IF NOT togEvolution.Value THEN RETURN
+  
+  live[0] = chkZero.Value = CheckBox.False
+  live[1] = chkOne.Value = CheckBox.False
+  live[2] = chkTwo.Value = CheckBox.False
+  live[3] = chkThree.Value = CheckBox.False
+  live[4] = chkFour.Value = CheckBox.False
+  live[5] = chkFive.Value = CheckBox.False
+  live[6] = chkSix.Value = CheckBox.False
+  live[7] = chkSeven.Value = CheckBox.False
+  live[8] = chkEight.Value = CheckBox.False
+  
+  keep[0] = chkZero.Value = CheckBox.None
+  keep[1] = chkOne.Value = CheckBox.None
+  keep[2] = chkTwo.Value = CheckBox.None
+  keep[3] = chkThree.Value = CheckBox.None
+  keep[4] = chkFour.Value = CheckBox.None
+  keep[5] = chkFive.Value = CheckBox.None
+  keep[6] = chkSix.Value = CheckBox.None
+  keep[7] = chkSeven.Value = CheckBox.None
+  keep[8] = chkEight.Value = CheckBox.None
+  
+  Game.SpawnNextGeneration(Live, Keep)
+  DrawGame
 
 END
 
@@ -42,7 +73,7 @@ END
 
 PUBLIC SUB chkBorder_Click()
 
-  IF NOT togEvolution.Value THEN Game.drawGame
+  IF NOT togEvolution.Value THEN DrawGame
 
 END
 
@@ -52,8 +83,8 @@ PUBLIC SUB togEvolution_Click()
 
 END
 
-PUBLIC SUB dW_Draw()
-
-  Game.drawGame
-
-END
+' PUBLIC SUB dW_Draw()
+' 
+'   Game.DrawGame(chkBorder.Value)
+' 
+' END
