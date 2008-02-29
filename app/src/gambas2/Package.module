@@ -256,21 +256,6 @@ CATCH
 
 END
 
-PRIVATE SUB GetDebVersion() AS String
-  
-  DIM sVer AS String = $sVersion
-  DIM iPos AS Integer = InStr(sVer, ".", iPos)
-  
-  WHILE InStr(sVer, ".", iPos + 1) > 0
-   iPos = InStr(sVer, ".", iPos + 1)
-  WEND
-  
-  IF iPos THEN sVer = Left(sVer, iPos - 1) & "-" & Mid$(sVer, iPos + 1)
-  RETURN sVer
-  
-END
-
-
 PRIVATE FUNCTION MakeDebPackage(sSys AS String)
 
   DIM sBuildDir AS String
@@ -290,56 +275,60 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   
   $sName = Replace$($sName, "_", "-")
   $sPackageName = Replace$($sPackageName, "_", "-")
-
+  $sPackageName = Replace$($sPackageName, ".", "-")
   sIcon = $sPackageName & ".png"
 
   ' Step 1. Create the build directory
 
   AddLog(("Making build directory.")) 
-  sPackagePath = Path &/ $sPackageName
-
-  sArch = Path &/ Subst("&1.orig.tar.gz", GetDebVersion())
+  sPackagePath = Path &/ Subst("&1-&2", $sPackageName, $sVersion)
+  TRY SHELL "mkdir -p " & sPackagePath &/ "src" WAIT
+  
+  sArch = sPackagePath &/ "src/raw.tar.gz"
   Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(Project.Dir &/ sIcon)
   
   Project.MakeSourcePackageTo(sArch)
   
-  sCmd = "cd " & Quote.Shell(Path) & "; tar xzf " & Quote.Shell(sArch) & " > /dev/null"
+  sCmd = "cd " & Quote.Shell(sPackagePath &/ "src") & "; tar xzf raw.tar.gz >/dev/null" 
   SHELL sCmd WAIT 
   
   ' Rename the source archive project directory to the package name
-  TRY MOVE Path &/ (sPrefix & Subst("&1", Project.Name)) TO sPackagePath
+  'TRY MOVE Path &/ (sPrefix & Subst("&1", Project.Name)) TO sPackagePath
+  TRY KILL sArch
+  TRY SHELL "cp -Rf " & sPackagePath & " " & sPackagePath & ".orig"
+  
 
   TRY MKDIR sPackagePath &/ "debian"
 
   ' Step 2. Make the desktop file
+  IF NOT Project.CreateComponent THEN
+      AddLog(("Creating desktop file..."))
+      hFile = OPEN sPackagePath &/ "debian/" & $sPackageName & ".desktop" FOR CREATE
 
-  AddLog(("Creating desktop file..."))
-  hFile = OPEN sPackagePath &/ "debian/" & $sPackageName & ".desktop" FOR CREATE
-
-  PRINT #hFile, "[Desktop Entry]"
-  PRINT #hFile, "Version=1.0"
-  PRINT #hFile, "Encoding=UTF-8"
-  PRINT #hFile, "Name=";    
-  IF Project.Title THEN
-    PRINT #hFile, Project.Title
-  ELSE
-    PRINT #hFile, Project.Name
-  ENDIF
-  PRINT #hFile, "Comment=";    
-  IF $sDescription THEN
-    PRINT #hFile, Replace($sDescription, "\n", " ")
-  ELSE
-    PRINT #hFile, Project.Name
-  ENDIF
-  PRINT #hFile, "Exec=/usr/bin/"; $sPackageName & ".gambas"
-  PRINT #hFile, "Icon=/usr/share/pixmaps/" & sIcon
-  PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
-  PRINT #hFile, "Type=Application"
-  PRINT #hFile, "StartupNotify=true"
-  PRINT #hFile, "Categories="; $sCategories
-  PrintOnlyShowIn(hFile, $sCategories)
-  CLOSE #hFile
-
+      PRINT #hFile, "[Desktop Entry]"
+      PRINT #hFile, "Version=1.0"
+      PRINT #hFile, "Encoding=UTF-8"
+      PRINT #hFile, "Name=";    
+      IF Project.Title THEN
+       PRINT #hFile, Project.Title
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Comment=";    
+      IF $sDescription THEN
+        PRINT #hFile, Replace($sDescription, "\n", " ")
+      ELSE
+        PRINT #hFile, Project.Name
+      ENDIF
+      PRINT #hFile, "Exec=/usr/bin/"; $sName & ".gambas"
+      PRINT #hFile, "Icon=/usr/share/pixmaps/" & sIcon
+      PRINT #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
+      PRINT #hFile, "Type=Application"
+      PRINT #hFile, "StartupNotify=true"
+      PRINT #hFile, "Categories="; $sCategories
+      PrintOnlyShowIn(hFile, $sCategories)
+      CLOSE #hFile
+  ENDIF 
   'Step 3. Create debianization needed files: control, rules
   'debian/copyright
 
@@ -359,34 +348,51 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   hFile = OPEN sPackagePath &/ "debian/changelog" FOR CREATE 
   PRINT #hFile, ChangelogToDebChangelog()
   CLOSE #hFile
-  
-  'debian/menu
-  hFile = OPEN sPackagePath &/ "debian/menu" FOR CREATE 
-  PRINT #hFile, "?package(controlaula):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \"Apps/" & Project.Groups[sSys]; "\"\\"
-  PRINT #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
-  PRINT #hFile, "command=\"/usr/bin/"; $sPackageName; ".gambas\"\\"
-  PRINT #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
+
+  'debian/compat
+  hFile = OPEN sPackagePath &/ "debian/compat" FOR CREATE 
+  PRINT #hFile, "5"
   CLOSE #hFile
+    
+  'debian/menu
+  IF NOT Project.CreateComponent THEN
+      hFile = OPEN sPackagePath &/ "debian/menu" FOR CREATE 
+      PRINT #hFile, "?package(controlaula):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \"Apps/" & Project.Groups[sSys]; "\"\\"
+      PRINT #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
+      PRINT #hFile, "command=\"/usr/bin/"; $sPackageName; ".gambas\"\\"
+      PRINT #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
+      CLOSE #hFile
+  ENDIF 
   
   'debian/dirs
   hFile = OPEN sPackagePath &/ "debian/dirs" FOR CREATE
-  PRINT #hFile, "usr/bin\nusr/share/applications\nusr/share/pixmaps"
+  IF Project.CreateComponent THEN
+      PRINT #hFile, "usr/share/gambas"; System.Version; "/info\nusr/lib/gambas"; System.Version 
+      IF Exist(Project.Dir &/ "control") THEN PRINT #hFile, "usr/share/gambas"; System.Version; "/control/"; Quote.Shell($sName)
+  ELSE 
+      PRINT #hFile, "usr/bin\nusr/share/applications\nusr/share/pixmaps"  
+  ENDIF 
   CLOSE #hFile
   
   'debian/install
   hFile = OPEN sPackagePath &/ "debian/install" FOR CREATE
-  PRINT #hFile, $sPackageName; ".gambas usr/bin"
-  PRINT #hFile, sIcon; " usr/share/pixmaps"
-  PRINT #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
+  IF Project.CreateComponent THEN 
+      PRINT #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/lib/gambas" & System.Version
+      IF Exist(Project.Dir &/ "control") THEN PRINT #hFile, "src/"; $sName; "/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Quote.Shell($sName)    
+  ELSE 
+      PRINT #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/bin"
+      PRINT #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
+      PRINT #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
+  ENDIF
   CLOSE #hFile  
-
+ 
   'debian/control
   hFile = OPEN sPackagePath &/ "debian/control" FOR CREATE
   PRINT #hFile, "Source: "; $sPackageName
   PRINT #hFIle, "Section: "; Split(Project.Groups[sSys], "/")[0]
   PRINT #hFile, "Priority: optional"
   PRINT #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
-  PRINT #hFile, "Build-Depends: debhelper (>= 4.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
+  PRINT #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
   FOR EACH sLib IN GetDependencies()
     PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
   NEXT 
@@ -394,11 +400,13 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFile, "Standards-Version: 3.7.2"
   PRINT #hFile
   PRINT #hFile, "Package: "; $sPackageName
-  PRINT #hFile, "Architecture: any"
-  PRINT #hFile, "Depends: ${shlibs:Depends}, ${misc:Depends}, gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
-    FOR EACH sLib IN GetDependencies()
-    PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
-  NEXT 
+  PRINT #hFile, "Architecture: all"
+  PRINT #hFile, "Depends: gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
+  IF NOT Project.CreateComponent THEN
+      FOR EACH sLib IN GetDependencies()
+        PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
+      NEXT 
+  ENDIF 
   PRINT #hFile
   aLine = Split($sDescription, "\n")
   IF aline.Count = 0 THEN 
@@ -414,7 +422,11 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
       PRINT #hFile, " "; Trim(aLine[n])
     NEXT 
   ENDIF
-  PRINT #hFile, " This program is written in Gambas"
+  IF Project.CreateComponent THEN
+    PRINT #hFile, " This is a Gambas2 component written in Gambas"
+  ELSE 
+      PRINT #hFile, " This program is written in Gambas"
+  ENDIF 
   CLOSE #hFile
   
   'debian/rules
@@ -422,8 +434,8 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFile, "#!/usr/bin/make -f"
   PRINT #hFile, "build: build-stamp\nbuild-stamp:"
   PRINT #hFile, "\tdh_testdir\n\ttouch build-stamp"
-  PRINT #hFile, "\t"; Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE)
-  PRINT #hFile, "\tgba"; System.Version
+  PRINT #hFile, "\t"; Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE) & " src" &/ $sName
+  PRINT #hFile, "\tgba"; System.Version & " src" &/ $sName
   PRINT #hFile
   PRINT #hFile, "clean:"
   PRINT #hFile, "\tdh_testdir\n\tdh_testroot\n\trm -Rf `find . -name \".gambas\"`"  
@@ -431,16 +443,22 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFile, "\trm -f build-stamp install-stamp\n\tdh_clean"
   PRINT #hFile 
   PRINT #hFile, "install: build\n\tdh_testdir\n\tdh_testroot\n\tdh_clean -k\n"
-  PRINT #hFile, "\tdh_installdirs\n\ttouch install-stamp"
+  PRINT #hFile, "\tdh_installdirs\n" 
+  IF Project.CreateComponent THEN 
+      PRINT #hFile, "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & $sPackageName & "/usr/lib/gambas" & System.Version & "/" & Quote.Shell($sName) & ".component"
+      PRINT #hFile, "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Quote.Shell($sName) & ".info " ""
+      PRINT #hFile, "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Quote.Shell($sName) & ".list"
+  ENDIF 
+  PRINT #hFile, "\ttouch install-stamp"
   PRINT #hFile
-  PRINT #hFile, "binary-indep: build install\n\tdh_testdir"
+  PRINT #hFile, "binary-arch: build install\n\tdh_testdir"
   PRINT #hFile
-  PRINT #hFile, "binary-arch: build install"
-  PRINT #hFile, "\tdh_testdir -a\n\tdh_testroot -a\n\tdh_installdocs -a"
-  PRINT #hFile, "\tdh_installchangelogs -a\n\tdh_install -a\n\tdh_installmenu"
-  PRINT #hFile, "\tdh_strip -a\n\tdh_compress -a\n\tdh_fixperms -a"
-  PRINT #hFile, "\tdh_installdeb -a\n\tdh_shlibdeps -a\n\tdh_gencontrol -a"
-  PRINT #hFile, "\tdh_md5sums -a\n\tdh_builddeb -a"
+  PRINT #hFile, "binary-indep: build install"
+  PRINT #hFile, "\tdh_testdir -i\n\tdh_testroot -i\n\tdh_installdocs -i"
+  PRINT #hFile, "\tdh_installchangelogs -i\n\tdh_install -i\n\tdh_installmenu"
+  PRINT #hFile, "\tdh_compress -i\n\tdh_fixperms -i"
+  PRINT #hFile, "\tdh_installdeb -i\n\tdh_gencontrol -i"
+  PRINT #hFile, "\tdh_md5sums -i\n\tdh_builddeb -i"
   PRINT #hFile
   PRINT #hFile, "binary: binary-indep binary-arch"
   PRINT #hFile, ".PHONY: build clean binary-indep binary-arch binary install"
@@ -484,7 +502,8 @@ PRIVATE SUB ChangelogToDebChangelog() AS String
       ENDIF
       sbits = Split(Trim$(sLine), " ")
       sDate = sbits[1] & ", " & sbits[3] & " " & sbits[2] & " " & sbits[4] & " 12:00:00 +0000"
-      sVersion = GetDebVersion()
+      'sVersion = GetDebVersion()
+      sVersion = $sVersion & "-1"
       previousLine = $sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n"
       debChangelog = debChangelog & previousLine
     ELSE 
