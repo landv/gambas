@@ -93,7 +93,11 @@ PRIVATE SUB InitMake(sSys AS String)
   ENDIF
 
   $sName = Project.Name
+
   $sPackageName = $sPrefix & String.LCase($sName)
+  $sPackageName = Replace$($sPackageName, "_", "-")
+  $sPackageName = Replace$($sPackageName, ".", "-")
+
   $sHome = System.User.Home
   
   $sCategories = Project.Categories[sSys]
@@ -274,8 +278,6 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   INC Application.Busy
   
   $sName = Replace$($sName, "_", "-")
-  $sPackageName = Replace$($sPackageName, "_", "-")
-  $sPackageName = Replace$($sPackageName, ".", "-")
   sIcon = $sPackageName & ".png"
 
   ' Step 1. Create the build directory
