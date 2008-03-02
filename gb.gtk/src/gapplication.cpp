@@ -128,18 +128,18 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 	if (widget != _im_widget)
 		return true;
 	
-	if (!_valid)
+	if (_valid)
 		disable();
 		
 	_valid = true;
 	_event = *event;
 	
-  filter = gtk_im_context_filter_keypress(_im_context, event);
+  //filter = gtk_im_context_filter_keypress(_im_context, &_event);
   //fprintf(stderr, "gKey::enable: filter = %d event->string = '%s'\n", filter, event->string);
   
   if (filter && _im_text)
   {
-  	_event.string = g_strdup(_im_text);
+		_event.string = g_strdup(_im_text);
   	filter = false;
   }
   else
@@ -156,6 +156,7 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
   	}
   }
   
+  //fprintf(stderr, "gKey::enable: --> %d\n", filter);
   return filter;
 }
 

@@ -1,36 +1,31 @@
-# Gambas Form File 1.0
+# Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,0,80,60)
-  'Move(0,0,640,480)
+  MoveScaled(0,0,80,65)
   Text = ("")
   Arrangement = Arrange.Vertical
   Spacing = 8
   Padding = 8
   { dchChoose DirChooser
     MoveScaled(1,1,56,36)
-    'Move(8,8,448,288)
     Expand = True
     ShowBookmark = True
   }
   { HBox1 HBox
-    MoveScaled(1,60,62,3)
-    'Move(8,480,496,24)
+    MoveScaled(3,40,62,3)
+    AutoResize = True
     Spacing = 8
     { Panel1 Panel
       MoveScaled(3,0,3,3)
-      'Move(24,0,24,24)
       Expand = True
     }
     { btnOK Button
       MoveScaled(33,0,14,3)
-      'Move(264,0,112,24)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
       MoveScaled(48,0,14,3)
-      'Move(384,0,112,24)
       Text = ("Cancel")
       Cancel = True
     }

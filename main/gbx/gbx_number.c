@@ -179,7 +179,7 @@ static bool read_float(double *result, boolean local, int c)
     c = get_char();
   }
 
-  /* Exposant */
+  /* Exponent */
 
   if (c == 'e' || c == 'E')
   {
