@@ -68,36 +68,49 @@ bool STREAM_in_archive(const char *path)
   return FALSE;
 }
 
-static int STREAM_get_readable(int fd, int *len)
+static int STREAM_get_readable(STREAM *stream, int *len)
 {
+	int fd;
 	int ret;
   off_t off;
   off_t end;
 
+	fd = STREAM_handle(stream);
+	
 //_IOCTL:
 
-	ret = ioctl(fd, FIONREAD, len);
-	if (ret >= 0)
+	if (!stream->common.no_fionread)
 	{
-		//fprintf(stderr, "STREAM_get_readable: ioctl: %d\n", *len);
-		return 0;
+		ret = ioctl(fd, FIONREAD, len);
+		if (ret >= 0)
+			return 0;
+		
+		stream->common.no_fionread = TRUE;
 	}
 
 //_LSEEK:
 
-	off = lseek(fd, 0, SEEK_CUR);
-	if (off < 0) return (-1);
-
-	end = lseek(fd, 0, SEEK_END);
-	if (end < 0) return (-1);
-
-	*len = (int)(end - off);
-
-	off = lseek(fd, off, SEEK_SET);
-	if (off < 0) return (-1);
+	if (!stream->common.no_lseek)
+	{
+		off = lseek(fd, 0, SEEK_CUR);
+		if (off >= 0)
+		{
+			end = lseek(fd, 0, SEEK_END);
+			if (end >= 0)
+			{
+				*len = (int)(end - off);
+	
+				off = lseek(fd, off, SEEK_SET);
+				if (off >= 0)
+					return 0;
+			}
+		}
+		
+		stream->common.no_lseek = TRUE;
+	}
 
 	//fprintf(stderr, "STREAM_get_readable: lseek: %d\n", *len);
-	return 0;
+	return (-1);
 }
 
 
@@ -827,13 +840,15 @@ void STREAM_lof(STREAM *stream, int64_t *len)
     
 	if (stream->type->lof)
 	{
-  	(*(stream->type->lof))(stream, len);
-  	return;
+  	if (!(*(stream->type->lof))(stream, len))
+  		return;
 	}
 
 	fd = STREAM_handle(stream);
-	if ((fd >= 0) && (STREAM_get_readable(fd, &ilen) == 0))
+	if ((fd >= 0) && (STREAM_get_readable(stream, &ilen) == 0))
 		*len = ilen;
+	else
+		*len = 0;
 }
 
 bool STREAM_eof(STREAM *stream)
@@ -848,7 +863,7 @@ bool STREAM_eof(STREAM *stream)
   	return ((*(stream->type->eof))(stream));
 
 	fd = STREAM_handle(stream);
-  if (fd < 0 || STREAM_get_readable(fd, &ilen))
+  if (fd < 0 || STREAM_get_readable(stream, &ilen))
     return TRUE;
 
   return (ilen == 0);
