@@ -55,7 +55,7 @@ typedef
     unsigned eof : 1;
     unsigned no_fionread : 1;
     unsigned no_lseek : 1;
-    unsigned _reserved:11;
+    unsigned _reserved : 10;
     }
   PACKED
   STREAM_COMMON;
