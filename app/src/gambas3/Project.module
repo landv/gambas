@@ -49,6 +49,7 @@ PUBLIC Language AS String
 PUBLIC CreateComponent AS Boolean
 PUBLIC ComponentState AS Integer
 PUBLIC Stack AS Integer
+PUBLIC StackTrace AS Boolean
 PUBLIC Authors AS String
 PUBLIC VersionProgram AS String
 
@@ -1940,6 +1941,7 @@ PUBLIC SUB ReadProject()
   Language = ""
   VersionProgram = ""
   Stack = 0
+  StackTrace = FALSE
 
   WHILE NOT Eof(hFic)
 
@@ -2079,6 +2081,9 @@ PUBLIC SUB ReadProject()
       CASE "stack"
         Stack = Val(sVal)
         
+      CASE "stacktrace"
+        StackTrace = Val(sVal) <> 0
+        
     END SELECT
 
   WEND
@@ -2134,6 +2139,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   IF Title THEN PRINT #hFic, "Title="; Title
   IF Startup THEN PRINT #hFic, "Startup="; Startup
   IF Stack THEN PRINT #hFic, "Stack="; Stack
+  IF StackTrace THEN PRINT #hFic, "StackTrace=1"
   IF Icon THEN PRINT #hFic, "Icon="; Icon
 
   PRINT #hFic, "Version="; CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
@@ -3386,19 +3392,26 @@ PUBLIC FUNCTION GetIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
   DIM sLig AS String
   DIM hImage AS Image
   DIM hPict AS Picture
+  DIM sIcon AS String
 
   OPEN sPath &/ ".project" AS #hFile
 
   WHILE NOT Eof(hFile)
     LINE INPUT #hFile, sLig
     IF Left$(sLig, 5) = "Icon=" THEN
-      sPath = sPath &/ Mid$(sLig, 6)
+      sIcon = Mid$(sLig, 6)
       BREAK
     ENDIF
   WEND
 
   CLOSE #hFile
 
+  IF sIcon THEN 
+    sPath = sPath &/ sIcon
+  ELSE
+    sPath = "img/logo/new-logo-32.png"
+  ENDIF
+  
   IF iSize THEN
     RETURN StretchIcon(sPath, iSize).Picture
   ELSE 
