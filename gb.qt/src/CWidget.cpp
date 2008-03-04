@@ -495,22 +495,6 @@ BEGIN_PROPERTY(CCONTROL_design)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTROL_visible)
-
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS->flag.visible || !QWIDGET(_object)->isHidden());
-  else
-  {
-  	THIS->flag.visible = VPROP(GB_BOOLEAN);
-    if (THIS->flag.visible)
-      QWIDGET(_object)->show();
-    else
-      QWIDGET(_object)->hide();
-  }
-
-END_PROPERTY
-
-
 BEGIN_PROPERTY(CCONTROL_enabled)
 
   if (READ_PROPERTY)
@@ -597,16 +581,42 @@ BEGIN_METHOD_VOID(CCONTROL_delete)
 END_METHOD
 
 
+static bool is_visible(void *_object)
+{
+	return THIS->flag.visible || !QWIDGET(_object)->isHidden();
+}
+
+
+static void set_visible(void *_object, bool v)
+{
+	THIS->flag.visible = v;
+	if (THIS->flag.visible)
+		QWIDGET(_object)->show();
+	else
+		QWIDGET(_object)->hide();
+}
+
+
+BEGIN_PROPERTY(CCONTROL_visible)
+
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(is_visible(THIS));
+  else
+  	set_visible(THIS, VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
 BEGIN_METHOD_VOID(CCONTROL_show)
 
-  QWIDGET(_object)->show();
+	set_visible(THIS, true);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCONTROL_hide)
 
-  QWIDGET(_object)->hide();
+	set_visible(THIS, false);
 
 END_METHOD
 

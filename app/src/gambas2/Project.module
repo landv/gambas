@@ -3386,18 +3386,25 @@ PUBLIC FUNCTION GetIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
   DIM sLig AS String
   DIM hImage AS Image
   DIM hPict AS Picture
+  DIM sIcon AS String
 
   OPEN sPath &/ ".project" AS #hFile
 
   WHILE NOT Eof(hFile)
     LINE INPUT #hFile, sLig
     IF Left$(sLig, 5) = "Icon=" THEN
-      sPath = sPath &/ Mid$(sLig, 6)
+      sIcon = Mid$(sLig, 6)
       BREAK
     ENDIF
   WEND
 
   CLOSE #hFile
+
+  IF sIcon THEN 
+    sPath = sPath &/ sIcon
+  ELSE 
+    sPath = "img/logo/new-logo-32.png"
+  ENDIF
 
   IF iSize THEN
     RETURN StretchIcon(sPath, iSize).Picture
