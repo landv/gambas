@@ -38,22 +38,45 @@ gPicture
 
 ******************************************************************/
 
+#define LOAD_INC 65536L
+
 static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool *trans)
 {
 	GdkPixbufLoader* loader;
+	GError *error = NULL;
 
   *img = 0;
 
-	loader=gdk_pixbuf_loader_new();
-	if (!gdk_pixbuf_loader_write(loader,(guchar*)addr,(gsize)len,NULL)){
-		 g_object_unref(G_OBJECT(loader));
-		 return false;
+	loader = gdk_pixbuf_loader_new();
+	
+	g_debug("len = %d", len);
+	
+	while (len > LOAD_INC)
+	{
+		if (!gdk_pixbuf_loader_write(loader,(guchar*)addr,(gsize)LOAD_INC, &error))
+		{
+			g_debug("ERROR: %s", error->message);
+			goto __ERROR;
+		}
+		addr += LOAD_INC;
+		len -= LOAD_INC;
 	}
-	gdk_pixbuf_loader_close(loader,NULL);
-	(*img)=gdk_pixbuf_loader_get_pixbuf(loader);
+	
+	if (!gdk_pixbuf_loader_write(loader,(guchar*)addr,(gsize)len, &error))
+	{
+		g_debug("ERROR: %s", error->message);
+		goto __ERROR;
+	}
+	
+	if (!gdk_pixbuf_loader_close(loader, &error))
+	{
+		g_debug("ERROR: %s", error->message);
+		goto __ERROR;
+	}
+	
+	(*img) = gdk_pixbuf_loader_get_pixbuf(loader);
 	g_object_ref(G_OBJECT(*img));
-	g_object_unref(G_OBJECT(loader));
-
+	
 	if (gdk_pixbuf_get_n_channels(*img) == 3)
 	{
 		// BM: convert to 4 bytes per pixels
@@ -67,7 +90,12 @@ static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool
 	else
 		*trans = true;
 
+	g_object_unref(G_OBJECT(loader));
 	return true;
+	
+__ERROR:
+	g_object_unref(G_OBJECT(loader));
+	return false;
 }
 
 /*static void render_pixbuf(gPicture *pic, GdkPixbuf *img)
