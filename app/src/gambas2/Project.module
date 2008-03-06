@@ -216,6 +216,23 @@ CATCH
 
 END
 
+PRIVATE SUB LastOpenedFiles()
+  
+  DIM nOpen AS Integer
+  DIM iInd AS Integer
+  DIM aOpen AS String[]
+  DIM hForm AS Object
+
+  nOpen = Config["/OpenFile/Count"]
+  FOR iInd = 1 TO nOpen
+    aOpen = Split(Config["/OpenFile/File[" & CStr(iInd) & "]"], ":")
+    hForm = OpenFile(Project.Dir &/ aOpen[0])
+    IF NOT hForm THEN CONTINUE
+    IF aOpen.Count = 2 THEN TRY hForm.SetState(aOpen[1])
+  NEXT
+  
+END
+
 
 PUBLIC FUNCTION Open(sDir AS String) AS Boolean
 
@@ -282,6 +299,8 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
 
   TRY File.Save(sDir &/ ".lock", "")
 
+  LastOpenedFiles
+
   IF ReadOnly THEN FGambas.Warning(("This project is read-only."))
 
   'SetMessage(("OK"))
@@ -335,6 +354,8 @@ PRIVATE FUNCTION CloseProject() AS Boolean
 
   DIM hForm AS Object
   DIM bModif AS Boolean
+  DIM nOpen AS Integer
+  DIM sState AS String
 
   'IF Len(Path) = 0 THEN RETURN
 
@@ -362,11 +383,20 @@ PRIVATE FUNCTION CloseProject() AS Boolean
   
     FMain.HideBalloon
   
+    Config.Clear("/OpenFile")
     Workspace.Lock
     FOR EACH hForm IN Files
+      IF hForm.Visible THEN 
+        INC nOpen
+        sState = ""
+        TRY sState = hForm.GetState()
+        IF sState THEN sState = ":" & sState
+        Config["/OpenFile/File[" & CStr(nOpen) & "]"] = Mid$(hForm.Path, Len(Project.Dir) + 2) & sState
+      ENDIF
       hForm.Delete
     NEXT
     Workspace.Unlock
+    Config["/OpenFile/Count"] = nOpen
   
     Design.WriteBreakpoints
     FFind.WriteConfig
@@ -1149,7 +1179,7 @@ PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
   IF InStr(sPath, "/") = 0 THEN sPath = FindPath(sPath)
 
   IF NOT Exist(sPath) THEN
-    FGambas.Warning("File not found!")
+    FGambas.Warning(("File not found!") & "\n" & sPath)
     Project.Refresh
     RETURN
   ENDIF

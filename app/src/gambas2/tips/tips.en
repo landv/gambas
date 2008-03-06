@@ -83,7 +83,7 @@ The executable name has the same name as your project.</p>
 
 [PATH]
 <p>
-Relative paths have a special meaning in <b><i>Gambas</i></b>.
+Relative paths have a special meaning in <b>Gambas</b>.
 They always refer to files inside your projects.
 <p>
 There is no concept of <i>current directory</i>, and no keyword like
@@ -96,7 +96,7 @@ you make an executable.
 
 [GLOBAL]
 
-There is <u>no global variables</u> in <b><i>Gambas</i></b>!
+There is <u>no global variables</u> in <b>Gambas</b>!
 <p>
 As a workaround, put them in your main module and declare them
 as <tt>PUBLIC</tt>.
@@ -125,6 +125,14 @@ IF Len(MyString) = 0 THEN ...</pre>
 <pre>IF MyString THEN ...
 IF NOT MyString THEN ...</pre>
 
+[TRANSLATE]
+
+<p>Gambas applications are fully translatable, provided that you tell it
+which strings must be translated, and which one must not.</p>
+<p>To mark strings as translatable, just enclose them between braces:<p>
+
+<pre>PRINT ("Translate me")
+PRINT "But do not translate me!"</pre>
 
 [EVENT]
 
@@ -156,7 +164,7 @@ END
 
 [FORM]
 
-<p>In <b><i>Gambas</i></b>, a form is its own event observer, so that 
+<p>In <b>Gambas</b>, a form is its own event observer, so that 
 you can directly manage its events (like <i>Resize</i>, 
 <i>Activate</i>, ...) into its own class code.</p>
 
@@ -166,13 +174,13 @@ disorientated :-).</p>
 
 [EMBED]
 
-<p>You can embed any form into other forms with <b><i>Gambas</i></b>
+<p>You can embed any form into other forms with <b>Gambas</b>
 &nbsp;!</p>
 
 <p>To do such a powerful thing, just instanciate the form by passing
 a parent container as last argument of the contructor.</p>
 
-<p>For example&nbsp;:</p>
+<p>For example:</p>
 <p><tt>DIM hForm AS MyDialog<br>
 DIM hSuperControl AS MyForm<br><br>
 ' Create a dialog<br>
@@ -184,7 +192,7 @@ hSuperControl = NEW MyForm(Param1, Param2, MyDialog)<br>
 hSuperControl.Move(8, 8, 128, 64)<br>
 </tt></p>
 
-<p>Be careful: a form embedded into another form is still a form, and
+<p><b>Be careful:</b> a form embedded into another form is still a form, and
 so is its own event observer.</p>
 
 
@@ -244,7 +252,7 @@ END</tt></p>
 [LEFT]
 
 <p>The well known <i>BASIC</i> routines <b>Left$</b>, <b>Right$</b>
-and <b>Mid$</b> have useful behaviours in <b><i>Gambas</i></b></p>
+and <b>Mid$</b> have useful behaviours in <b>Gambas</b></p>
 
 <p>The second parameter of <b>Left$</b> and <b>Right$</b> is
 optional, and is one by default.</p>
@@ -389,7 +397,7 @@ END</pre>
 a <b>Gambas</b> expert now ! :-)</p>
 
 <p>If you want to contribute, send new tips to the following
-address&nbsp;:</p>
+address:</p>
 <p><u>gambas@users.sourceforge.net</u></p>
 
 <p>Thanks beforehand !</p>
