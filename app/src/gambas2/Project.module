@@ -223,7 +223,7 @@ PRIVATE SUB LastOpenedFiles()
   DIM aOpen AS String[]
   DIM hForm AS Object
 
-  nOpen = Config["/OpenFile/Count"]
+  nOpen = Config["/OpenFile/Count", 0]
   FOR iInd = 1 TO nOpen
     aOpen = Split(Config["/OpenFile/File[" & CStr(iInd) & "]"], ":")
     hForm = OpenFile(Project.Dir &/ aOpen[0])
