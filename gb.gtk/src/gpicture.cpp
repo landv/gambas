@@ -44,26 +44,22 @@ static bool pixbufFromMemory(GdkPixbuf **img, char *addr, unsigned int len, bool
 {
 	GdkPixbufLoader* loader;
 	GError *error = NULL;
+	gsize size;
 
   *img = 0;
 
 	loader = gdk_pixbuf_loader_new();
 	
-	while (len > LOAD_INC)
+	while (len > 0)
 	{
-		if (!gdk_pixbuf_loader_write(loader,(guchar*)addr,(gsize)LOAD_INC, &error))
+		size = len > LOAD_INC ? LOAD_INC : len;
+		if (!gdk_pixbuf_loader_write(loader,(guchar*)addr,size, &error))
 		{
 			//g_debug("ERROR: %s", error->message);
 			goto __ERROR;
 		}
-		addr += LOAD_INC;
-		len -= LOAD_INC;
-	}
-	
-	if (!gdk_pixbuf_loader_write(loader,(guchar*)addr,(gsize)len, &error))
-	{
-		//g_debug("ERROR: %s", error->message);
-		goto __ERROR;
+		addr += size;
+		len -= size;
 	}
 	
 	if (!gdk_pixbuf_loader_close(loader, &error))

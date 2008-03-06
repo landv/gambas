@@ -25,10 +25,10 @@ PUBLIC SUB Redirect(URL AS String)
   
   IF $bBegin THEN RETURN
   
-  IF URL LIKE "http://*" THEN 
+  IF URL LIKE "*://*" THEN 
     AddHeader("Location", URL)
   ELSE 
-    AddHeader("Location", "http://" & CGI["HTTP_HOST"] &/ URL)
+    AddHeader("Location", Application.Protocol & "://" & CGI["HTTP_HOST"] &/ URL)
   ENDIF
   
   Response.Begin

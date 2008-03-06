@@ -225,6 +225,8 @@ PRIVATE SUB LastOpenedFiles()
   DIM iActive AS Integer
   DIM hActive AS Object
 
+  Workspace.Lock
+
   nOpen = Config["/OpenFile/Count", 0]
   iActive = Config["/OpenFile/Active", 0]
   FOR iInd = 1 TO nOpen
@@ -234,6 +236,8 @@ PRIVATE SUB LastOpenedFiles()
     IF aOpen.Count = 2 THEN TRY hForm.SetState(aOpen[1])
     IF iInd = iActive THEN hActive = hForm
   NEXT
+  
+  Workspace.Unlock
   
   Activate(hActive)
   IF hActive THEN Workspace.ActiveWindow = hActive
@@ -1158,8 +1162,6 @@ PRIVATE SUB FindKey(sClass AS String) AS String
 
 END
 
-
-
 PUBLIC SUB ShowFile(hForm AS Form)
   
   SELECT CASE Object.Type(hForm)
@@ -1177,8 +1179,6 @@ PUBLIC SUB ShowFile(hForm AS Form)
   END SELECT 
   
 END
-
-
 
 PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
 

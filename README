@@ -12,11 +12,16 @@ More information on http://gambas.sourceforge.net
 Before downloading Gambas, compiling it and then complaining, please read the
 following remarks CAREFULLY! 
 
+WARNING: This file may not be up to date. Check the README page on the web 
+site.
+
 To compile Gambas, you must install the following libraries on your system :
  
 +=================================+==========================================+
 | COMPONENTS                      | LIBRARIES                                |
 +=================================+==========================================+
+| Interpreter                     | libffi.so                                |
++---------------------------------+------------------------------------------+
 | gb.compress.bzlib2              | libbz2.so                                |
 +---------------------------------+------------------------------------------+
 | gb.compress.zlib                | libz.so                                  |

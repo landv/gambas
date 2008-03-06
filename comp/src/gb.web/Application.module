@@ -6,9 +6,11 @@ PROPERTY READ Host AS String
 PROPERTY READ Root AS String
 PROPERTY READ Request AS String
 PROPERTY LogFile AS String
+PROPERTY Protocol AS String
  
 PRIVATE $sLogFile AS String
 PRIVATE $hLogFile AS File
+PRIVATE $sProtocol AS String = "http"
 
 PRIVATE FUNCTION Host_Read() AS String
 
@@ -20,7 +22,7 @@ PRIVATE FUNCTION Request_Read() AS String
 
   DIM sReq AS String
   
-  sReq = "http://" & CGI["HTTP_HOST"] &/ CGI["SCRIPT_NAME"] &/ CGI["PATH_INFO"]
+  sReq = $sProtocol & "://" & CGI["HTTP_HOST"] &/ CGI["SCRIPT_NAME"] &/ CGI["PATH_INFO"]
   IF CGI["QUERY_STRING"] THEN sReq &= "?" & CGI["QUERY_STRING"]
   RETURN sReq
   
@@ -47,4 +49,16 @@ PRIVATE SUB LogFile_Write(Value AS String)
   $hLogFile = OPEN $sLogFile FOR APPEND 
   ERROR TO #$hLogFile
   
+END
+
+PRIVATE FUNCTION Protocol_Read() AS String
+
+  RETURN $sProtocol  
+
+END
+
+PRIVATE SUB Protocol_Write(Value AS String)
+
+  $sProtocol = Value
+
 END
