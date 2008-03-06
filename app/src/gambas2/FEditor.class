@@ -283,15 +283,22 @@ END
 PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
 
   IF Project.ReadOnly THEN RETURN
-  IF $bModify <> bReset THEN RETURN
+  
+  IF bReset THEN
 
-  $bModify = NOT bReset
-  DrawTitle
-  IF $bModify THEN 
+    IF NOT $bModify THEN RETURN  
+    $bModify = FALSE
+  
+  ELSE
+  
+    $bModify = TRUE
     INC Project.TimeStamp
     $cProc = NULL
-  ENDIF 
+    
+  ENDIF
 
+  DrawTitle
+  
 END
 
 
