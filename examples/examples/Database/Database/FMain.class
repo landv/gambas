@@ -5,6 +5,7 @@ PRIVATE $hConn AS Connection
 PUBLIC SUB btnConnect_Click()
 
   DIM sName AS String
+  DIM hTable AS Table
 
   TRY $hConn.Close
   '$hConn = NEW Connection
@@ -31,6 +32,10 @@ PUBLIC SUB btnConnect_Click()
 
   $hConn.Name = sName
   $hConn.Open
+
+  'FOR EACH hTable IN $hConn.Tables
+  '  PRINT hTable.Type
+  'NEXT
 
   frmDatabase.Enabled = TRUE
   frmRequest.Enabled = TRUE

@@ -63,6 +63,7 @@ PUBLIC SUB Add(hWin AS Window, OPTIONAL bResize AS Boolean, OPTIONAL iGrid AS In
     hWin.Reparent(panWorkspace)
   ENDIF
   
+  hWin.Show ' We must be sure that the Open event is raised
   hWin.Hide
   
   hWindow = NEW CWindow
@@ -230,9 +231,10 @@ PRIVATE SUB CheckWindow()
     hWindow = $aWindow[iInd]
     IF Object.IsValid(hWindow.Window) AND IF NOT hWindow.Window.Closed THEN 
       INC iInd
-      CONTINUE
+    ELSE
+      RemoveWindow(hWindow.Window)
+      iInd = 0
     ENDIF
-    RemoveWindow(hWindow.Window)
   WEND
   
 END

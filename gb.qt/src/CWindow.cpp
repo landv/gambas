@@ -193,6 +193,37 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
   }
 }
 
+static void post_show_event(void *_object)
+{
+	//qDebug("post_show_event");
+  //qDebug("> post_show_event %s %p", GB.GetClassName(THIS), THIS);
+  if (THIS->shown)
+    return;
+
+	//qDebug("EVENT_Open: %s %p %d", GB.GetClassName(THIS), THIS);
+
+  GB.Raise(THIS, EVENT_Open, 0);
+  if (CWIDGET_test_flag(THIS, WF_CLOSED))
+  	return;
+  // a move event is generated just after for real windows
+	//if (!THIS->toplevel)
+    GB.Raise(THIS, EVENT_Move, 0);
+  GB.Raise(THIS, EVENT_Resize, 0);
+  THIS->shown = true;
+  //qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
+  //qDebug("< post_show_event %p", THIS);
+  //GB.Unref(&_object);
+}
+
+/*static void post_hide_event(void *_object)
+{
+  qDebug("Hide: %s %d", GB.GetClassName(THIS), !WINDOW->isHidden());
+	GB.Raise(THIS, EVENT_Hide, 0);
+	CACTION_raise(THIS);
+  GB.Unref(&_object);
+}*/
+
+
 
 /***************************************************************************
 
@@ -482,9 +513,9 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 
   if (!THIS->toplevel)
   {
+		//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
   	if (THIS->shown)
   	{
-			//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
     	CWIDGET_set_flag(THIS, WF_IN_CLOSE);
     	closed = !GB.Raise(THIS, EVENT_Close, 0);
     	CWIDGET_clear_flag(THIS, WF_IN_CLOSE);
@@ -580,6 +611,7 @@ BEGIN_METHOD_VOID(CWINDOW_show)
   {
 	  CWIDGET_clear_flag(THIS, WF_CLOSED);
     WIDGET->show();
+    post_show_event(THIS);
   }
   else
   {
@@ -1536,8 +1568,6 @@ void MyMainWindow::showActivate()
   CWIDGET_clear_flag(THIS, WF_IN_SHOW);
 }
 
-static void post_show_event(void *_object);
-
 void MyMainWindow::showModal(void)
 {
   WFlags flags = getWFlags();
@@ -2003,6 +2033,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
     CWINDOW_LastActive = 0;
     //qDebug("CWINDOW_LastActive = 0");
   }
+	//qDebug("THIS->shown <- false: %p: %s", THIS, GB.GetClassName(THIS));
   THIS->shown = FALSE;
   
   //qDebug("THIS->enterLoop = %d", THIS->enterLoop);
@@ -2320,36 +2351,6 @@ void CWINDOW_set_cancel_button(CWINDOW *win, QPushButton *button, bool on)
 }
 
 
-static void post_show_event(void *_object)
-{
-	//qDebug("post_show_event");
-  //qDebug("> post_show_event %s %p", GB.GetClassName(THIS), THIS);
-  if (THIS->shown)
-    return;
-
-	//qDebug("EVENT_Open: %s %p %d", GB.GetClassName(THIS), THIS);
-
-  GB.Raise(THIS, EVENT_Open, 0);
-  if (CWIDGET_test_flag(THIS, WF_CLOSED))
-  	return;
-  // a move event is generated just after for real windows
-	//if (!THIS->toplevel)
-    GB.Raise(THIS, EVENT_Move, 0);
-  GB.Raise(THIS, EVENT_Resize, 0);
-  THIS->shown = true;
-  //qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
-  //qDebug("< post_show_event %p", THIS);
-  //GB.Unref(&_object);
-}
-
-/*static void post_hide_event(void *_object)
-{
-  qDebug("Hide: %s %d", GB.GetClassName(THIS), !WINDOW->isHidden());
-	GB.Raise(THIS, EVENT_Hide, 0);
-	CACTION_raise(THIS);
-  GB.Unref(&_object);
-}*/
-
 bool CWindow::eventFilter(QObject *o, QEvent *e)
 {
   CWINDOW *_object = (CWINDOW *)CWidget::get(o);
@@ -2396,8 +2397,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
       if (THIS->toplevel)
         w->center();
 
-      if (!THIS->shown)
-        post_show_event(THIS);
+      post_show_event(THIS);
       
       if (THIS->shown)
       {
