@@ -38,6 +38,7 @@
 
 ERROR_CONTEXT *ERROR_current = NULL;
 ERROR_INFO ERROR_last = { 0 };
+bool ERROR_backtrace = FALSE;
 
 static int _lock = 0;
 
@@ -132,6 +133,7 @@ void ERROR_reset(ERROR_INFO *info)
 	}
 	info->msg = NULL;
 	DEBUG_free_backtrace(&info->backtrace);
+	info->backtrace = NULL;
 }
 
 void ERROR_clear()
@@ -219,11 +221,35 @@ const char *ERROR_get(void)
   return strerror(errno);
 }
 
+static int get_message_length(const char *pattern, char *arg[])
+{
+	uchar c;
+	int len = 0;
+	
+	for(;;)
+	{
+		c = *pattern++;
+		if (!c)
+			break;
+		if (c == '&')
+		{
+			c = *pattern++;
+			if (c >= '1' && c <= '4')
+				len += strlen(arg[c - '1']);
+		}
+		else
+			len++;
+	}
+	
+	return len;
+}
 
 void ERROR_define(const char *pattern, char *arg[])
 {
   uchar c;
   boolean subst;
+  char *msg;
+  int len;
 
 	ERROR_clear();
 
@@ -246,6 +272,8 @@ void ERROR_define(const char *pattern, char *arg[])
     	pattern++;
     subst = FALSE;
 
+		STRING_new(&msg, NULL, get_message_length(pattern, arg));
+		ERROR_current->info.msg = msg;
     ERROR_current->info.free = TRUE;
     
     for (;;)
@@ -253,26 +281,23 @@ void ERROR_define(const char *pattern, char *arg[])
       c = *pattern++;
       if (c == 0)
         break;
-
-      if (subst)
+        
+      if (c == '&')
       {
-        if (c >= '1' && c <= '4')
-					STRING_add(&ERROR_current->info.msg, arg[c - '1'], 0);
-        subst = FALSE;
+      	c = *pattern++;
+      	if (c >= '1' && c <= '4')
+      	{
+      		c -= '1';
+      		len = strlen(arg[c]);
+      		memcpy(msg, arg[c], len);
+      		msg += len;
+      	}
       }
       else
-      {
-        if (c == '&')
-          subst = TRUE;
-        else
-        {
-			    if (c < ' ' && c != '\n')
-      			c = ' ';
-
-					STRING_add_char(&ERROR_current->info.msg, (char)c);
-				}
-      }
+      	*msg++ = c;
     }
+    
+    *msg = 0;
   }
   else
   {
@@ -288,7 +313,7 @@ void ERROR_define(const char *pattern, char *arg[])
   ERROR_current->info.fp = FP;
   ERROR_current->info.pc = PC;
   
-  if (EXEC_debug || (CP && CP->debug))
+  if (EXEC_debug || (ERROR_backtrace && (CP && CP->debug)))
   {
   	//DEBUG_free_backtrace(&ERROR_current->info.backtrace);
   	ERROR_current->info.backtrace = DEBUG_backtrace();

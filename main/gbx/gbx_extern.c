@@ -39,16 +39,6 @@
 
 #include "gbx_extern.h"
 
-#if 0
-/* Daniel Campos trick :-) */
-
-typedef
-  struct {
-    int args[32];
-  }
-  ARGS;
-#endif
-
 typedef
   struct {
     SYMBOL sym;
@@ -293,7 +283,9 @@ void EXTERN_call(void)
   BORROW(&TEMP);
 
   if (EXEC.drop)
+  {
     RELEASE(&TEMP);
+  }
   else
   {
     VALUE_conv(&TEMP, ext->type);

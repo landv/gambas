@@ -48,8 +48,8 @@ static void show_message_box(int type, MSG_PARAM *_p)
 	int ret;
 	
 	btn1 = MISSING(btn1) ? NULL : GB.ToZeroString(ARG(btn1));
-	btn2 = (type == 0 || MISSING(btn2)) ? NULL : GB.ToZeroString(ARG(btn1));
-	btn3 = (type == 0 || MISSING(btn3)) ? NULL : GB.ToZeroString(ARG(btn1));
+	btn2 = (type == 0 || MISSING(btn2)) ? NULL : GB.ToZeroString(ARG(btn2));
+	btn3 = (type == 0 || MISSING(btn3)) ? NULL : GB.ToZeroString(ARG(btn3));
 	
   if (_global_lock)
   {

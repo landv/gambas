@@ -68,36 +68,49 @@ bool STREAM_in_archive(const char *path)
   return FALSE;
 }
 
-static int STREAM_get_readable(int fd, int *len)
+static int STREAM_get_readable(STREAM *stream, int *len)
 {
+	int fd;
 	int ret;
   off_t off;
   off_t end;
 
+	fd = STREAM_handle(stream);
+	
 //_IOCTL:
 
-	ret = ioctl(fd, FIONREAD, len);
-	if (ret >= 0)
+	if (!stream->common.no_fionread)
 	{
-		//fprintf(stderr, "STREAM_get_readable: ioctl: %d\n", *len);
-		return 0;
+		ret = ioctl(fd, FIONREAD, len);
+		if (ret >= 0)
+			return 0;
+		
+		stream->common.no_fionread = TRUE;
 	}
 
 //_LSEEK:
 
-	off = lseek(fd, 0, SEEK_CUR);
-	if (off < 0) return (-1);
-
-	end = lseek(fd, 0, SEEK_END);
-	if (end < 0) return (-1);
-
-	*len = (int)(end - off);
-
-	off = lseek(fd, off, SEEK_SET);
-	if (off < 0) return (-1);
+	if (!stream->common.no_lseek)
+	{
+		off = lseek(fd, 0, SEEK_CUR);
+		if (off >= 0)
+		{
+			end = lseek(fd, 0, SEEK_END);
+			if (end >= 0)
+			{
+				*len = (int)(end - off);
+	
+				off = lseek(fd, off, SEEK_SET);
+				if (off >= 0)
+					return 0;
+			}
+		}
+		
+		stream->common.no_lseek = TRUE;
+	}
 
 	//fprintf(stderr, "STREAM_get_readable: lseek: %d\n", *len);
-	return 0;
+	return (-1);
 }
 
 static int default_eof(STREAM *stream)
@@ -106,7 +119,7 @@ static int default_eof(STREAM *stream)
   int ilen;
 
 	fd = STREAM_handle(stream);
-  if (fd < 0 || STREAM_get_readable(fd, &ilen))
+  if (fd < 0 || STREAM_get_readable(stream, &ilen))
     return TRUE;
 
   return (ilen == 0);
@@ -370,6 +383,9 @@ static void input(STREAM *stream, char **addr, boolean line)
   unsigned char c, lc = 0;
   void *test;
   bool eol;
+  char *buffer;
+  short buffer_len;
+  short buffer_pos;
 	
   *addr = NULL;
 
@@ -390,34 +406,44 @@ static void input(STREAM *stream, char **addr, boolean line)
 	if (STREAM_eof(stream))
 		THROW(E_EOF);
 		
-	if (!stream->common.buffer)
+	buffer = stream->common.buffer;
+	buffer_len = stream->common.buffer_len;
+	buffer_pos = stream->common.buffer_pos;
+		
+	if (!buffer)
 	{
-		ALLOC(&stream->common.buffer, STREAM_BUFFER_SIZE, "input");
-		stream->common.buffer_pos = 0;
-		stream->common.buffer_len = 0;
+		ALLOC(&buffer, STREAM_BUFFER_SIZE, "input");
+		buffer_pos = 0;
+		buffer_len = 0;
 	}
 
 	/*eof_func = stream->type->eof;
 	if (!eof_func)
 		eof_func = default_eof;*/
 
-	start = stream->common.buffer_pos;
+	start = buffer_pos;
 	
   for(;;)
   {
-  	if (stream->common.buffer_pos == stream->common.buffer_len)
+  	if (buffer_pos == buffer_len)
   	{
 			if (len)
 			{
 				//add_string(addr, &len_str, stream->common.buffer + start, len);
-				STRING_add(addr, stream->common.buffer + start, len);
+				STRING_add(addr, buffer + start, len);
 				len = 0;
 			}
 			
-  		STREAM_read_max(stream, stream->common.buffer, STREAM_BUFFER_SIZE);
-  		stream->common.buffer_pos = 0;
-  		stream->common.buffer_len = STREAM_eff_read;
-  		if (!stream->common.buffer_len)
+			stream->common.buffer = buffer;
+			stream->common.buffer_pos = buffer_pos;
+			stream->common.buffer_len = buffer_len;
+  		
+  		STREAM_read_max(stream, buffer, STREAM_BUFFER_SIZE);
+  		
+  		buffer_pos = 0;
+  		buffer_len = STREAM_eff_read;
+  		
+  		if (!buffer_len)
   		{
 	    	stream->common.eof = TRUE;
   			break;
@@ -426,7 +452,7 @@ static void input(STREAM *stream, char **addr, boolean line)
   		start = 0;
   	}
     
-    c = stream->common.buffer[stream->common.buffer_pos++]; //STREAM_getchar(stream);
+    c = buffer[buffer_pos++]; //STREAM_getchar(stream);
 
 		goto *test;
 
@@ -482,9 +508,13 @@ static void input(STREAM *stream, char **addr, boolean line)
 
   if (len > 0)
     //add_string(addr, &len_str, stream->common.buffer + start, len);
-    STRING_add(addr, stream->common.buffer + start, len);
+    STRING_add(addr, buffer + start, len);
 
   STRING_extend_end(addr);
+  
+  stream->common.buffer = buffer;
+  stream->common.buffer_pos = buffer_pos;
+  stream->common.buffer_len = buffer_len;
 }
 
 
@@ -909,12 +939,12 @@ void STREAM_lof(STREAM *stream, int64_t *len)
     
 	if (stream->type->lof)
 	{
-  	(*(stream->type->lof))(stream, len);
-  	return;
+  	if (!(*(stream->type->lof))(stream, len))
+  		return;
 	}
 
 	fd = STREAM_handle(stream);
-	if ((fd >= 0) && (STREAM_get_readable(fd, &ilen) == 0))
+	if ((fd >= 0) && (STREAM_get_readable(stream, &ilen) == 0))
 		*len = ilen;
 		
 	if (stream->common.buffer)

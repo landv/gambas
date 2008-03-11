@@ -155,15 +155,10 @@ PUBLIC SUB Edit(OPTIONAL List AS String[], OPTIONAL ReadOnly AS Boolean)
     $bTextBox = TRUE
   ENDIF
   
-  'DEBUG 
   $hEditor.Text = ME[$iRow, $iCol].Text
-  'DEBUG 
-  $hEditor.SelectAll
-  'DEBUG 
+  TRY $hEditor.SelectAll
   MoveEditor
-  'DEBUG 
   $hEditor.SetFocus  
-  'DEBUG 
 
 END
 

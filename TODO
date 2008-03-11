@@ -48,15 +48,12 @@ DEVELOPMENT ENVIRONMENT
 - Manage Object properties in IDE.
 - Put a language code in comments, and hide them as needed by the user.
 - Make a visual control clipboard.
-- Packager should manage component projects.
 - A new folder for non-packaged data files ('Notes' ?).
 - Load/Save in menu editor.
 - Manage svn conflicts.
-
-EXAMPLES
-
-- Fix the GameOfLife example, remove the 'public control' option.
-- Fix the Gravity example either.
+- Specific dependencies in the packager.
+- Generates an index control->component to suggest components for missing controls.
+- Reopen the last opened files when opening a project.
 
 GUI RELATED STUFF
 
@@ -64,7 +61,8 @@ GUI RELATED STUFF
 - Deleting a currently expanding item in TreeView crashes.
 - A Settings property everywhere? Mmmfff... At least for ColumnView, GridView.
 - Popup forms => Need to redesign some properties.
-- Rewrite the HSplit/VSplit layout, and use a Integer[] or a Float[]
+- Rewrite the HSplit/VSplit layout, and use a Integer[] or a Float[].
+- A MultiContainer property.
 
 - Style API.
   PE_Separator / paint_hline paint_vline

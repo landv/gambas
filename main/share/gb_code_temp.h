@@ -1022,7 +1022,7 @@ void CODE_call(short nparam)
 void CODE_byref(uint64_t byref)
 {
   LAST_CODE;
-  int i, n;
+  int n;
 
   #ifdef DEBUG
   printf("BYREF\n");

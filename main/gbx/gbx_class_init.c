@@ -147,6 +147,7 @@ void CLASS_init_native(void)
   CLASS_Class = CLASS_find("Class");
   CLASS_Symbol = CLASS_find("Symbol");
   CLASS_Component = CLASS_find("Component");
+  CLASS_Stream = CLASS_find("Stream");
 
   //LIBRARY_Current = LIBRARY_create(NULL);
 

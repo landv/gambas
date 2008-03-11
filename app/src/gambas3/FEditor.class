@@ -283,15 +283,22 @@ END
 PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
 
   IF Project.ReadOnly THEN RETURN
-  IF $bModify <> bReset THEN RETURN
+  
+  IF bReset THEN
 
-  $bModify = NOT bReset
-  DrawTitle
-  IF $bModify THEN 
+    IF NOT $bModify THEN RETURN  
+    $bModify = FALSE
+  
+  ELSE
+  
+    $bModify = TRUE
     INC Project.TimeStamp
     $cProc = NULL
-  ENDIF 
+    
+  ENDIF
 
+  DrawTitle
+  
 END
 
 
@@ -1667,7 +1674,7 @@ PRIVATE SUB CheckCompletion(sMode AS String)
 
   'IF NOT sMode THEN RETURN
 
-  sLine = Left$(Highlight.Purge(edtEditor.Lines[edtEditor.Line]), edtEditor.Column)
+  sLine = String.Left$(Highlight.Purge(edtEditor.Lines[edtEditor.Line]), edtEditor.Column)
   IF Right$(RTrim(sLine)) = "'" THEN RETURN
 
   IF sMode = " " THEN
@@ -2387,4 +2394,18 @@ PUBLIC SUB edtEditor_Margin({Line} AS Integer)
 
   Design.SetBreakpoint(Name, {Line}, NOT HasBreakpoint({Line}))
 
+END
+
+PUBLIC SUB GetState() AS String
+  
+  RETURN CStr(Editor.Line) & "." & CStr(Editor.Column)
+  
+END
+
+PUBLIC SUB SetState(sState AS String)
+  
+  DIM aState AS String[] = Split(sState, ".")
+  
+  Editor.Goto(CInt(aState[0]), CInt(aState[1]))
+  
 END

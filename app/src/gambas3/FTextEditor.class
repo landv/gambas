@@ -530,3 +530,17 @@ PUBLIC SUB mnuReload_Click()
   Reload
 
 END
+
+PUBLIC SUB GetState() AS String
+  
+  RETURN CStr(Editor.Line) & "." & CStr(Editor.Column)
+  
+END
+
+PUBLIC SUB SetState(sState AS String)
+  
+  DIM aState AS String[] = Split(sState, ".")
+  
+  Editor.Goto(CInt(aState[0]), CInt(aState[1]))
+  
+END

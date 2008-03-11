@@ -110,7 +110,7 @@ static void project_library(char *name, int len)
 static void project_exec(char *name, int len)
 {
   if (len == 0)
-    raise_error("Bad project startup class");
+    raise_error("Project startup class name is void");
 
   name[len] = 0;
   PROJECT_startup = name;
@@ -128,6 +128,11 @@ static void project_stack(char *name, int len)
     STACK_size = size * 1024L * sizeof(VALUE);
 }
 
+static void project_backtrace(char *name, int len)
+{
+	ERROR_backtrace = !(len == 1 && *name == '0');
+}
+
 
 static void project_command(char *line, int len)
 {
@@ -139,6 +144,7 @@ static void project_command(char *line, int len)
     { "STARTUP", project_exec },
     { "STACK", project_stack },
     { "VERSION", project_version },
+    { "STACKTRACE", project_backtrace },
     { "ARGUMENTS", NULL },
     { NULL }
     };

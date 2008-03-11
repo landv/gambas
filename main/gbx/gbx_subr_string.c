@@ -51,7 +51,7 @@ void SUBR_cat(void)
 
   for (i = 0; i < NPARAM; i++)
   {
-    VALUE_conv(&PARAM[i], T_STRING);
+    VALUE_conv_string(&PARAM[i]);
     /*BORROW(&PARAM[i]);*/
     len_cat += PARAM[i]._string.len;
   }
@@ -570,7 +570,7 @@ void SUBR_subst(void)
   SUBR_get_string_len(&PARAM[0], &string, &len);
 
   for (np = 1; np < NPARAM; np++)
-    VALUE_conv(&PARAM[np], T_STRING);
+    VALUE_conv_string(&PARAM[np]);
 
   subst_param = PARAM;
   subst_nparam = NPARAM;
@@ -643,7 +643,7 @@ void SUBR_replace(void)
   }
 
   RETURN->type = T_STRING;
-  RETURN->_string.addr = SUBST_buffer();
+  RETURN->_string.addr = SUBST_buffer;
   RETURN->_string.start = 0;
   RETURN->_string.len = STRING_length(RETURN->_string.addr);
 
@@ -859,7 +859,7 @@ void SUBR_is_chr(void)
 
   SUBR_ENTER_PARAM(1);
 
-  VALUE_conv(PARAM, T_STRING);
+  VALUE_conv_string(PARAM);
 
   SUBR_get_string_len(PARAM, &addr, &len);
 

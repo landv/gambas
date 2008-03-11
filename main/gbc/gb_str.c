@@ -60,13 +60,6 @@ PUBLIC char *STR_copy(const char *str)
   return cpy;
 }
 
-PUBLIC void STR_free(const char *str)
-{
-  if (str)
-    FREE(&str, "STR_free");
-}
-
-
 PUBLIC char *STR_cat(const char *str, ...)
 {
   va_list args;

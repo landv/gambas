@@ -22,25 +22,13 @@ END
 
 PUBLIC FUNCTION QuoteString(sVal AS String) AS String
 
-  sVal = Replace(sVal, "\n", "\\n")
-  sVal = Replace(sVal, "\t", "\\t")
-  sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
-  sVal = Replace(sVal, "\\", "\\\\")
-  sVal = Chr$(34) & sVal & Chr$(34)
-
-  RETURN sVal
+  RETURN Quote(sVal)
 
 END
 
 PUBLIC FUNCTION UnQuoteString(sVal AS String) AS String
 
-  IF Left$(sVal) = Chr$(34) THEN sVal = Mid$(sVal, 2, -1)
-  sVal = Replace(sVal, "\\n", "\n")
-  sVal = Replace(sVal, "\\t", "\t")
-  sVal = Replace(sVal, "\\" & Chr$(34), Chr$(34))
-  sVal = Replace(sVal, "\\\\", "\\")
-
-  RETURN sVal
+  RETURN UnQuote(sVal)
 
 END
 

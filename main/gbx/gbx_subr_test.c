@@ -321,8 +321,8 @@ void SUBR_near(void)
 
   SUBR_ENTER_PARAM(2);
 
-  VALUE_conv(&PARAM[0], T_STRING);
-  VALUE_conv(&PARAM[1], T_STRING);
+  VALUE_conv_string(&PARAM[0]);
+  VALUE_conv_string(&PARAM[1]);
 
   //result = STRING_comp_value_ignore_case(&PARAM[0], &PARAM[1]) ? -1 : 0;
   result = STRING_equal_ignore_case(PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[0]._string.len, PARAM[1]._string.addr + PARAM[1]._string.start, PARAM[1]._string.len) ? -1 : 0;
@@ -406,8 +406,8 @@ __NULL:
 
 __STRING:
 
-  VALUE_conv(P1, T_STRING);
-  VALUE_conv(P2, T_STRING);
+  VALUE_conv_string(P1);
+  VALUE_conv_string(P2);
 
 //   if (op < 2 && P1->_string.len != P2->_string.len)
 //     result = 1;
@@ -532,8 +532,8 @@ void SUBR_strcomp(void)
 
   SUBR_ENTER();
 
-  VALUE_conv(&PARAM[0], T_STRING);
-  VALUE_conv(&PARAM[1], T_STRING);
+  VALUE_conv_string(&PARAM[0]);
+  VALUE_conv_string(&PARAM[1]);
 
   if (NPARAM == 3)
     mode = SUBR_get_integer(&PARAM[2]);

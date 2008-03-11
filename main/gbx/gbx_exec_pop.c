@@ -318,7 +318,7 @@ __POP_QUICK_ARRAY:
 	else // CQA_COLLECTION
 	{
 		VALUE_conv(&val[-1], T_VARIANT);
-		VALUE_conv(&val[1], T_STRING);
+		VALUE_conv_string(&val[1]);
 		
 		if (GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1]))
 			PROPAGATE();

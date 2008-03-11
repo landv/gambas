@@ -380,7 +380,7 @@ STATIC PRIVATE FUNCTION Path_Read() AS String
 
   DIM sPath AS String = Application.Env["XDG_CONFIG_HOME"]
   IF NOT sPath THEN sPath = System.User.Home &/ ".config"
-  RETURN sPath &/ "gambas"
+  RETURN sPath &/ "gambas" & System.Version
 
 END
 

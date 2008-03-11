@@ -26,6 +26,7 @@
 #define __GB_ALLOC_H
 
 #define DEBUG_MEMORY 0
+#define OPTIMIZE_MEMORY 1
 //#define DO_NOT_PRINT_MEMORY
 
 #ifndef __GB_ALLOC_C
@@ -49,6 +50,15 @@ PUBLIC void MEMORY_check(void);
 
 PUBLIC void MEMORY_verify(void);
 PUBLIC void MEMORY_check_ptr(void *ptr);
+
+#elif OPTIMIZE_MEMORY
+
+#define ALLOC(_ptr, _size, _src)        ((*(_ptr) = malloc(_size)) ? MEMORY_count++ : THROW_MEMORY())
+#define ALLOC_ZERO(_ptr, _size, _src)   ((*(_ptr) = calloc(_size, 1)) ? MEMORY_count++ : THROW_MEMORY())
+#define REALLOC(_ptr, _size, _src)      ((*(_ptr) = realloc(*(_ptr), _size)) ? 0 : THROW_MEMORY())
+#define FREE(_ptr, _src)                free(*(_ptr)), *(_ptr) = NULL, MEMORY_count--
+
+int THROW_MEMORY();
 
 #else
 

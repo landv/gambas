@@ -873,6 +873,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 }
 
 /* 'all' means that size_dynamic is the entire size of the object, not just the size of the data */
+/* And check if the class is a stream */
 
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static)
 {
@@ -902,6 +903,8 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, i
     ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
   else
     class->stat = NULL;
+    
+  class->is_stream = (class == CLASS_Stream) || (class->parent && class->parent->is_stream);
 }
 
 

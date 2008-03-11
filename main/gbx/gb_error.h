@@ -123,6 +123,7 @@ typedef
 #ifndef __GB_ERROR_C
 EXTERN ERROR_CONTEXT *ERROR_current;
 EXTERN ERROR_INFO ERROR_last;
+EXTERN bool ERROR_backtrace;
 #endif
 
 #define ERROR_LEAVE_DONE ((ERROR_CONTEXT *)-1)

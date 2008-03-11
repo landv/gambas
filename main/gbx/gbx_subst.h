@@ -25,13 +25,27 @@
 #ifndef __GBX_SUBST_H
 #define __GBX_SUBST_H
 
+#ifndef __GBX_SUBST_C
+EXTERN char *SUBST_buffer;
+EXTERN char SUBST_temp[];
+EXTERN int SUBST_ntemp;
+#endif
+
+#define SUBST_TEMP_SIZE 256
+
 typedef
   void (*SUBST_FUNC)(int, char **, int *);
 
 void SUBST_init(void);
 void SUBST_add(const char *src, int len);
-void SUBST_add_char(unsigned char c);
 void SUBST_exit(void);
-char *SUBST_buffer(void);
+void SUBST_dump_temp(void);
+
+#define SUBST_add_char(_c) \
+{ \
+  if (SUBST_ntemp == SUBST_TEMP_SIZE) \
+  	SUBST_dump_temp(); \
+  SUBST_temp[SUBST_ntemp++]= (_c); \
+}
 
 #endif

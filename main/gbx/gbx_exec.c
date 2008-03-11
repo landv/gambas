@@ -99,21 +99,13 @@ void EXEC_init(void)
 }
 
 
-void BORROW(VALUE *value)
+void EXEC_borrow(TYPE type, VALUE *value)
 {
 	static void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
 		&&__STRING, &&__NONE, &&__VARIANT, &&__NONE, &&__FUNCTION, &&__NONE, &&__NONE
 		};
 
-	TYPE type = value->type;
-
-	if (TYPE_is_object(type))
-	{
-		OBJECT_REF(value->_object.object, "BORROW");
-		return;
-	}
-	
 	goto *jump[type];
 
 __VARIANT:
@@ -171,21 +163,13 @@ __NONE:
 }
 
 
-void RELEASE(VALUE *value)
+void EXEC_release(TYPE type, VALUE *value)
 {
 	static void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
 		&&__STRING, &&__NONE, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__NONE, &&__NONE
 		};
 
-	TYPE type = value->type;
-
-	if (TYPE_is_object(type))
-	{
-		OBJECT_UNREF(&value->_object.object, "RELEASE");
-		return;
-	}
-	
 	goto *jump[type];
 
 __VARIANT:
@@ -975,7 +959,9 @@ void EXEC_native_quick(void)
 		BORROW(&ret);
 
 		if (drop)
+		{
 			RELEASE(&ret);
+		}
 		else
 		{
 				
@@ -1140,7 +1126,9 @@ void EXEC_native(void)
 			BORROW(&ret);
 
 			if (drop)
+			{
 				RELEASE(&ret);
+			}
 			else
 			{
 				//VALUE_conv(&ret, desc->type);

@@ -415,56 +415,71 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 	uint i;
 	uchar c, d;
 	int np;
-	char *p;
-	int lp;
+	int len_subst;
+	char *subst;
+	char *ps;
+	char *p[10];
+	int lp[10];
 
   if (!str)
     return NULL;
 
-  SUBST_init();
-
   if (len <= 0)
     len = strlen(str);
+
+	// Calculate the length
+	
+	len_subst = len;
+	
+	for (i = 0; i < len; i++)
+	{
+		c = str[i];
+		if (c == '&')
+		{
+			i++;
+			d = str[i];
+			if (d == '&')
+				len_subst--;
+			else if (d >= '0' && d <= '9')
+			{
+				np = d - '0';
+      	(*get_param)(np, &p[np], &lp[np]);
+      	len_subst += lp[np] - 2;
+			}
+		}
+	}
+	
+	STRING_new(&subst, NULL, len_subst);
+	ps = subst;
 
 	for (i = 0; i < len; i++)
 	{
 		c = str[i];
-		if (c == '&' && (i < (len - 1)))
+		if (c == '&')
 		{
-			d = str[i + 1];
-			if (isdigit(d))
+			i++;
+			d = str[i];
+			if (d == '&')
+				*ps++ = '&';
+			else if (d >= '0' && d <= '9')
 			{
 				np = d - '0';
-				i++;
-				if (i < (len - 1))
-				{
-					d = str[i + 1];
-					if (isdigit(d))
-					{
-						np = np * 10 + d - '0';
-						i++;
-					}
-				}
-
-      	p = NULL;
-      	lp = 0;
-      	(*get_param)(np, &p, &lp);
-
-      	if (p)
-        	SUBST_add(p, lp);
-
-				continue;
+      	memcpy(ps, p[np], lp[np]);
+      	ps += lp[np];
 			}
-			else if (d == '&')
-				i++;
+			else
+			{
+				*ps++ = '&';
+				*ps++ = d;
+			}
 		}
-
-		SUBST_add_char(c);
+		else
+			*ps++ = c;
 	}
-
-  SUBST_exit();
-
-  return SUBST_buffer();
+	
+	*ps = 0;
+	post_free(subst);
+	return subst;
 }
 
 void STRING_add(char **ptr, const char *src, int len)

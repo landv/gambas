@@ -32,26 +32,25 @@
 #include "gbx_string.h"
 #include "gbx_subst.h"
 
+char *SUBST_buffer = NULL;
+char SUBST_temp[SUBST_TEMP_SIZE];
+int SUBST_ntemp;
 
-static char *subst_buffer = NULL;
-static char _temp[16];
-static int _ntemp;
-
-static void dump_temp(void)
+void SUBST_dump_temp(void)
 {
-	int n = _ntemp;
+	int n = SUBST_ntemp;
 
 	if (n)
 	{
-		_ntemp = 0;
-		SUBST_add(_temp, n);
+		SUBST_ntemp = 0;
+		SUBST_add(SUBST_temp, n);
 	}
 }
 
 void SUBST_init(void)
 {
-  subst_buffer = NULL;
-  _ntemp = 0;
+  SUBST_buffer = NULL;
+  SUBST_ntemp = 0;
 }
 
 // len == 0 est possible ! On peut vouloir ajouter une chaîne vide.
@@ -69,31 +68,17 @@ void SUBST_add(const char *src, int len)
   if (len <= 0)
     return;
 
-	dump_temp();
+	SUBST_dump_temp();
 
-  old_len = STRING_length(subst_buffer);
+  old_len = STRING_length(SUBST_buffer);
 
-  STRING_extend(&subst_buffer, old_len + len);
-  memcpy(&subst_buffer[old_len], src, len);
-}
-
-void SUBST_add_char(unsigned char c)
-{
-	if (_ntemp == sizeof(_temp))
-		dump_temp();
-	_temp[_ntemp++] = c;
+  STRING_extend(&SUBST_buffer, old_len + len);
+  memcpy(&SUBST_buffer[old_len], src, len);
 }
 
 
 void SUBST_exit(void)
 {
-	dump_temp();
-  STRING_extend_end(&subst_buffer);
+	SUBST_dump_temp();
+  STRING_extend_end(&SUBST_buffer);
 }
-
-char *SUBST_buffer(void)
-{
-  return subst_buffer;
-}
-
-

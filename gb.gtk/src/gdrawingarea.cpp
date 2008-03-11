@@ -39,6 +39,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 {
 	if (data->cached())
 	{
+		gdk_window_clear(GTK_LAYOUT(wid)->bin_window);
 	}
 	else
 	{

@@ -136,10 +136,13 @@ static STREAM *get_stream(VALUE *value, boolean can_default)
     if (VALUE_is_null(value))
       THROW(E_NULL);
 
-    /*if (OBJECT_class(value->_object.object) != CLASS_Process)*/
-    VALUE_conv(value, (TYPE)CLASS_Stream);
-
-    stream = CSTREAM_stream(value->_object.object);
+		if (TYPE_is_object(value->type) && OBJECT_class(value->_object.object)->is_stream)
+	    stream = CSTREAM_stream(value->_object.object);
+	  else
+	  {
+    	VALUE_conv(value, (TYPE)CLASS_Stream);
+    	stream = NULL;
+    }
   }
 
   if (STREAM_is_closed(stream))

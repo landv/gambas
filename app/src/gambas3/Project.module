@@ -196,7 +196,7 @@ PUBLIC SUB Main()
     FTips.Run
   ENDIF
   
-  Project.Activate(NULL)
+  'Project.Activate(NULL)
   
 END
 
@@ -215,6 +215,35 @@ CATCH
 
   Version = "?"
 
+END
+
+
+PRIVATE SUB LastOpenedFiles()
+  
+  DIM nOpen AS Integer
+  DIM iInd AS Integer
+  DIM aOpen AS String[]
+  DIM hForm AS Object
+  DIM iActive AS Integer
+  DIM hActive AS Object
+
+  Workspace.Lock
+
+  nOpen = Config["/OpenFile/Count", 0]
+  iActive = Config["/OpenFile/Active", 0]
+  FOR iInd = 1 TO nOpen
+    aOpen = Split(Config["/OpenFile/File[" & CStr(iInd) & "]"], ":")
+    hForm = OpenFile(Project.Dir &/ aOpen[0])
+    IF NOT hForm THEN CONTINUE
+    IF aOpen.Count = 2 THEN TRY hForm.SetState(aOpen[1])
+    IF iInd = iActive THEN hActive = hForm
+  NEXT
+  
+  Workspace.Unlock
+  
+  Activate(hActive)
+  IF hActive THEN Workspace.ActiveWindow = hActive
+  
 END
 
 
@@ -283,6 +312,8 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
 
   TRY File.Save(sDir &/ ".lock", "")
 
+  LastOpenedFiles
+
   IF ReadOnly THEN FGambas.Warning(("This project is read-only."))
 
   'SetMessage(("OK"))
@@ -336,6 +367,8 @@ PRIVATE FUNCTION CloseProject() AS Boolean
 
   DIM hForm AS Object
   DIM bModif AS Boolean
+  DIM nOpen AS Integer
+  DIM sState AS String
 
   'IF Len(Path) = 0 THEN RETURN
 
@@ -363,11 +396,21 @@ PRIVATE FUNCTION CloseProject() AS Boolean
   
     FMain.HideBalloon
   
+    Config.Clear("/OpenFile")
     Workspace.Lock
     FOR EACH hForm IN Files
+      IF NOT hForm.Closed THEN 
+        INC nOpen
+        sState = ""
+        TRY sState = hForm.GetState()
+        IF sState THEN sState = ":" & sState
+        Config["/OpenFile/File[" & CStr(nOpen) & "]"] = Mid$(hForm.Path, Len(Project.Dir) + 2) & sState
+        IF hForm = ActiveForm THEN Config["/OpenFile/Active"] = nOpen
+      ENDIF
       hForm.Delete
     NEXT
     Workspace.Unlock
+    Config["/OpenFile/Count"] = nOpen
   
     Design.WriteBreakpoints
     FFind.WriteConfig

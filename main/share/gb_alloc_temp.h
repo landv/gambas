@@ -36,47 +36,7 @@
 #include "gb_error.h"
 #include "gb_alloc.h"
 
-#if MEMORY_OPTIM
-
-#define MAX_KEEP 32
-#define GRANULARITY 8
-
-static void *_keep[MAX_KEEP] = { 0 };
-static int _keep_malloc = 0;
-static int _keep_free = 0;
-
-
-static size_t round_size(size_t size)
-{
-  if (size & (GRANULARITY - 1))
-    size = (size & ~(GRANULARITY - 1)) + GRANULARITY;
-
-  return size;
-}
-
-#endif
-
 PUBLIC int MEMORY_count = 0;
-#if DEBUG_MEMORY
-typedef
-  struct ALLOC {
-    int _void;
-    struct ALLOC *next;
-    struct ALLOC *prev;
-    int id;
-    size_t size;
-    }
-  PACKED
-  ALLOC;
-
-PUBLIC int MEMORY_size = 0;
-
-static int _id = 0;
-ALLOC *_alloc = NULL;
-extern void DEBUG_where(void);
-//static char buffer[512];
-//extern char *TRACE_get_current_position(void);
-#endif
 
 PUBLIC void MEMORY_init(void)
 {
@@ -101,6 +61,38 @@ PUBLIC void MEMORY_exit(void)
   }
 #endif
 }
+
+#if OPTIMIZE_MEMORY
+
+#include "gb_error.h"
+
+int THROW_MEMORY()
+{
+	THROW(E_MEMORY);
+}
+
+#else
+
+#if DEBUG_MEMORY
+typedef
+  struct ALLOC {
+    int _void;
+    struct ALLOC *next;
+    struct ALLOC *prev;
+    int id;
+    size_t size;
+    }
+  PACKED
+  ALLOC;
+
+PUBLIC int MEMORY_size = 0;
+
+static int _id = 0;
+ALLOC *_alloc = NULL;
+extern void DEBUG_where(void);
+//static char buffer[512];
+//extern char *TRACE_get_current_position(void);
+#endif
 
 #if DEBUG_MEMORY
 PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
@@ -255,3 +247,5 @@ PUBLIC void MEMORY_free(void *p_ptr)
   MEMORY_count--;
 }
 #endif
+
+#endif // OPTIMIZE_MEMORY

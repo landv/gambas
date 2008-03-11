@@ -248,7 +248,7 @@ typedef
     unsigned swap : 1;				/*      class endianness was swapped */
     unsigned enum_static : 1; /*      if class enumeration is static */
     unsigned quick_array : 2; /*      array accessor optimization type */
-    unsigned _flag : 1;       /*  30  */
+    unsigned is_stream : 1;   /*  30  If the class inherits stream */
 
     short n_desc;             /*  32  number of descriptions */
     CLASS_DESC_SYMBOL *table; /*  36  class description */

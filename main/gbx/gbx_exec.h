@@ -135,9 +135,6 @@ EXTERN bool EXEC_got_error;
 #define GET_NPARAM(var)         short var = *PC & 0x3F
 #define GET_PARAM(var, nparam)  VALUE *var = &SP[-nparam]
 
-#define PUSH() (BORROW(SP), SP++)
-#define POP()  (SP--, RELEASE(SP))
-
 void EXEC_init(void);
 
 void EXEC_enter_check(bool defined);
@@ -181,10 +178,43 @@ bool EXEC_enum_next(PCODE code);
 void *EXEC_create_object(CLASS *class, int np, char *event);
 void EXEC_new(void);
 
-void BORROW(VALUE *val);
+void EXEC_release_return_value(void);
+void EXEC_quit(void);
+
+void EXEC_dup(int n);
+
+void EXEC_borrow(TYPE type, VALUE *val);
 void UNBORROW(VALUE *val);
-void RELEASE(VALUE *val);
+void EXEC_release(TYPE type, VALUE *val);
 void RELEASE_many(VALUE *val, int n);
+
+#define BORROW(_value) \
+{ \
+	VALUE *_v = (_value); \
+	TYPE type = _v->type; \
+	if (TYPE_is_object(type)) \
+	{ \
+		OBJECT_REF(_v->_object.object, "BORROW"); \
+	} \
+	else if (type == T_STRING) \
+		STRING_ref(_v->_string.addr); \
+	else \
+		EXEC_borrow(type, _v); \
+}
+
+#define RELEASE(_value) \
+{ \
+	VALUE *_v = (_value); \
+	TYPE type = _v->type; \
+	if (TYPE_is_object(type)) \
+	{ \
+		OBJECT_UNREF(&_v->_object.object, "RELEASE"); \
+	} \
+	else if (type == T_STRING) \
+		STRING_unref(&_v->_string.addr); \
+	else \
+		EXEC_release(type, _v); \
+}
 
 #define RELEASE_MANY(_val, _n) \
 { \
@@ -203,10 +233,17 @@ void RELEASE_many(VALUE *val, int n);
  } \
 }
 
-void EXEC_release_return_value(void);
-void EXEC_quit(void);
+#define PUSH() \
+{ \
+	BORROW(SP); \
+	SP++; \
+}
 
-void EXEC_dup(int n);
+#define POP() \
+{ \
+  SP--; \
+  RELEASE(SP); \
+}
 
 #define COPY_VALUE(_dst, _src) \
 { \

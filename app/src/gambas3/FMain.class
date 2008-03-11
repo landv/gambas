@@ -59,7 +59,7 @@ PUBLIC SUB Form_Open()
   'Settings.Read(panStack, "panStack")
   Settings.Read(panDebug, "panDebug")
 
-  ShowTool(FALSE)
+  'ShowTool(FALSE)
 
   ReadConfig
 
@@ -605,6 +605,12 @@ PRIVATE SUB Translate()
 
   IF Project.Running THEN RETURN
   IF Project.Compile() THEN RETURN
+  
+  IF Project.CheckProgram("msgmerge") OR IF Project.CheckProgram("msgfmt") THEN
+    Message.Warning(("The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."))
+    RETURN
+  ENDIF
+  
   FTranslate.Run
 
 END

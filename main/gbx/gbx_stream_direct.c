@@ -76,6 +76,12 @@ static int stream_open(STREAM *stream, const char *path, int mode)
     return TRUE;
   }
 
+	if (!S_ISREG(info.st_mode))
+	{
+		stream->direct.is_device = TRUE;
+		fcntl(fd, F_SETFL, O_NONBLOCK);
+	}
+
   stream->direct.size = info.st_size;
 
   FD = fd;
@@ -143,10 +149,12 @@ static int stream_flush(STREAM *stream)
 
 static int stream_lof(STREAM *stream, int64_t *len)
 {
+	if (stream->direct.is_device)
+		return TRUE;
+		
   *len = stream->direct.size;
   return FALSE;
 }
-
 
 static int stream_handle(STREAM *stream)
 {

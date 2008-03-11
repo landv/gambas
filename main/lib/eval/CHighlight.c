@@ -35,17 +35,37 @@ static void *_analyze_pos = 0;
 
 static char *_purged_line = NULL;
 
+static int get_char_length(unsigned char c)
+{
+  int n = 1;
+
+  if (c & 0x80)
+  {
+    for (;;)
+    {
+      c <<= 1;
+      if (!(c & 0x80))
+        break;
+      n++;
+    }
+  }
+
+  return n;
+}
+
 static char *purge(const char *s, int len_s, bool comment, bool string)
 {
   char c;
   uint i;
+  int lc;
   bool in_comment = FALSE;
   char wait = 0;
   char *r = NULL;
   
-  for (i = 0; i < len_s; i++)
+  for (i = 0; i < len_s; i += lc)
   {
     c = s[i];
+    lc = get_char_length((unsigned char)c);
 
     switch(wait)
     {
@@ -54,7 +74,7 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
         if (in_comment)
         {
         	if (!comment)
-          	c = ' ';
+          	c = ' ', lc = 1;
 				}
         else if (c == '"')
           wait = '"';
@@ -75,6 +95,7 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
 							//r += c;
 						i++;
 						c = s[i];
+						lc = get_char_length((unsigned char)c);
 					}
 					else
 					{
@@ -82,18 +103,21 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
 						if (i < len_s)
 							GB.AddString(&r, " ", 1);
 							//r += ' ';
-						c = ' ';
+						c = ' ', lc = 1;
 					}
 				}
         else
         {
         	if (!string)
-          	c = ' ';
+          	c = ' ', lc = 1;
 				}
         break;
     }
 
-    GB.AddString(&r, &c, 1);
+		if (lc == 1)
+    	GB.AddString(&r, &c, 1);
+		else
+    	GB.AddString(&r, &s[i], lc);
   }
 
 	GB.FreeString(&_purged_line);

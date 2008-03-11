@@ -4,7 +4,7 @@
 
   Common string management routines
 
-  (c) 2000-2005 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2005 Benoï¿½t Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,9 +25,12 @@
 #ifndef __GB_STR_H
 #define __GB_STR_H
 
+#include "gb_alloc.h"
+
 PUBLIC char *STR_copy(const char *str);
-PUBLIC void STR_free(const char *str);
 PUBLIC char *STR_cat(const char *str, ...);
 PUBLIC char *STR_add(char *d, const char *s);
+
+#define STR_free(_str) FREE((char **)&_str, "STR_free")
 
 #endif

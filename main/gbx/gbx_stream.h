@@ -53,10 +53,12 @@ typedef
     short buffer_pos;
     short buffer_len;
     short mode;
-    unsigned swap:1;
-    unsigned eol:2;
-    unsigned eof:1;
-    unsigned _reserved:12;
+    unsigned swap : 1;
+    unsigned eol : 2;
+    unsigned eof : 1;
+    unsigned no_fionread : 1;
+    unsigned no_lseek : 1;
+    unsigned _reserved : 10;
     }
   PACKED
   STREAM_COMMON;
@@ -76,7 +78,8 @@ typedef
     int64_t size;
     int fd;
     unsigned is_term : 1;
-    unsigned _reserved : 31;
+    unsigned is_device : 1;
+    unsigned _reserved : 30;
     }
   PACKED
   STREAM_DIRECT;
