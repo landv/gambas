@@ -31,6 +31,8 @@
 #include <string.h>
 
 #include <mysql.h>
+#include <errmsg.h>
+#include <mysqld_error.h>
 
 #include "gb.db.proto.h"
 #include "main.h"
@@ -445,6 +447,8 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
   const char *query;
   MYSQL_RES *res;
   int ret;
+  int errcode;
+  int retry = 0;
 
   if (nsubst)
   {
@@ -460,14 +464,30 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
     query = qtemp;
 
   if (DB.IsDebug())
-    fprintf(stderr, "mysql: %p: %s\n", conn, query);
+    fprintf(stderr, "gb.db.mysql: %p: %s\n", conn, query);
 
-  if(mysql_query(conn, query)){
+__RETRY:
+
+  mysql_query(conn, query);
+ 	errcode = mysql_errno(conn);
+ 	
+ 	if ((errcode == CR_SERVER_GONE_ERROR || errcode == CR_SERVER_LOST) && retry < 3)
+ 	{
+	  if (DB.IsDebug())
+	  	fprintf(stderr, "gb.db.mysql: %s. Try again...\n", mysql_error(conn));
+ 		retry++;
+ 		usleep(10000);
+ 		goto __RETRY;
+ 	}
+  	  
+ 	if (errcode)
+ 	{
     ret = TRUE;
     if (error)
     	GB.Error(error, mysql_error(conn));
   }
-  else {
+  else 
+  {
     res = mysql_store_result(conn);
     ret = FALSE;
     if (pres)
