@@ -406,9 +406,10 @@ END
 
 
 PUBLIC SUB AddBookmark(sLink AS String, OPTIONAL sName AS String, sIcon AS String)
-  
+
   DIM hPanel AS HBox
   DIM hIcon AS PictureBox
+  DIM hVBox AS VBox
   DIM hText AS Label
   DIM sTooltip AS String
   
@@ -418,24 +419,45 @@ PUBLIC SUB AddBookmark(sLink AS String, OPTIONAL sName AS String, sIcon AS Strin
   sTooltip = GetRealLink(sLink)
   
   hPanel = NEW HBox(lstBookmark)
-  hPanel.Padding = 4
-  hPanel.Spacing = 8
+  hPanel.Padding = 2
+  hPanel.Spacing = 6
   hPanel.Tag = sLink
   hPanel.ToolTip = sTooltip
-  hPanel.Height = 32
+  hPanel.Height = hPanel.Font.Height() * 2 + 8
 
   hIcon = NEW PictureBox(hPanel)
   hIcon.Picture = Picture[sIcon]
   hIcon.Alignment = Align.Center
-  hIcon.Resize(16, 16)
+  hIcon.Resize(20, 16)
   hIcon.ToolTip = sTooltip
 
-  hText = NEW Label(hPanel)
+  hVBox = NEW VBox(hPanel)
+  hVBox.Expand = TRUE
+
+  hText = NEW Label(hVBox)
+  'hText.Expand = TRUE
+  hText.AutoResize = TRUE
   hText.Expand = TRUE
+  'hText.Alignment = Align.TopNormal
   hText.Text = sName  
   hText.ToolTip = sTooltip
+  'hText.Background = Color.Yellow
+  hText.Font.Bold = TRUE
+  'hText.Font.Grade = 3
 
   $iMaxWidth = Max($iMaxWidth, hText.Font.Width(sName))
+
+  IF Left(sLink) <> "$" THEN
+    hText = NEW Label(hVBox)
+    'hText.Expand = TRUE
+    hText.AutoResize = TRUE
+    hText.Expand = TRUE
+    'hText.Alignment = Align.TopNormal
+    hText.Text = Replace(sTooltip, System.User.Home, "~")
+    'hText.Font.Grade = -1
+
+    $iMaxWidth = Max($iMaxWidth, hText.Font.Width(hText.Text))
+  ENDIF
   
 END
 

@@ -17,16 +17,19 @@
       Orientation = Align.Left
       { lstBookmark ListContainer
         MoveScaled(0,1,12,33)
+        Font = Font["-1"]
         Background = Color.ButtonBackground
         Expand = True
       }
       { btnAdd Button
         MoveScaled(0,35,12,3)
         Text = ("&Add")
+        Picture = Picture["icon:/small/add"]
       }
       { btnRemove Button
         MoveScaled(0,39,12,3)
         Text = ("&Remove")
+        Picture = Picture["icon:/small/remove"]
       }
     }
     { VBox1 VBox

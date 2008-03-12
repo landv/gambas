@@ -91,6 +91,11 @@ static void set_font(gFont *font, void *object = 0)
 	MAIN_scale = gDesktop::scale();
 }
 
+static void set_tooltip_font(gFont *font, void *object = 0)
+{
+	gApplication::setToolTipsFont(font);
+}
+
 BEGIN_PROPERTY(CAPP_font)
 
   if (READ_PROPERTY)
@@ -99,6 +104,19 @@ BEGIN_PROPERTY(CAPP_font)
     set_font(((CFONT*)VPROP(GB_OBJECT))->font);
 
 END_PROPERTY
+
+
+BEGIN_PROPERTY(CAPP_tooltip_font)
+
+	CFONT *Font;
+	
+	if (READ_PROPERTY)
+    GB.ReturnObject(CFONT_create(gApplication::toolTipsFont(), set_tooltip_font));
+  else if (VPROP(GB_OBJECT))
+  	set_tooltip_font(((CFONT*)VPROP(GB_OBJECT))->font);
+  
+END_PROPERTY
+
 
 #if 0
 BEGIN_PROPERTY(CSCREEN_font)
@@ -173,25 +191,6 @@ BEGIN_PROPERTY(CAPP_tooltip_enabled)
   gApplication::enableTooltips(VPROP(GB_BOOLEAN));
 
 
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CAPP_tooltip_font)
-
-  	CFONT *Font;
-	
-	
-	if (READ_PROPERTY)
-	{
-		GB.ReturnObject(CFONT_create(gApplication::toolTipsFont()));
-		return;
-	}
-	
-	Font=(CFONT*)VPROP(GB_OBJECT);
-	if (!Font) return;
-	if (!Font->font) return;
-	gApplication::setToolTipsFont(Font->font);
-  
 END_PROPERTY
 
 

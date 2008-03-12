@@ -535,7 +535,6 @@ PUBLIC FUNCTION ManageKey() AS Boolean
 
     CASE ELSE
       IF Key.Text THEN
-        DEBUG $sMode;; Key.Text
         IF InStr(FEditor.IDENT_CAR, Key.Text) THEN
           IF Key.Text = "_" THEN 
             IF GetEvents($sText) THEN 
