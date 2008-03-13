@@ -425,6 +425,8 @@ static void cache_flush()
 #define CREATE_IMAGE_FROM_MEMORY(_image, _addr, _len, _ok) \
 	_image = gPicture::fromMemory(_addr, _len);
 
+#define DELETE_IMAGE(_image) delete _image
+
 #define CREATE_PICTURE_FROM_IMAGE(_cpicture, _image) \
 	_cpicture = CPICTURE_create(_image);
 

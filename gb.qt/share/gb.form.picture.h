@@ -38,6 +38,9 @@ Datatype of the internal image type.
 #define CREATE_IMAGE_FROM_MEMORY(_image, _addr, _len, _ok)
 Creates an image from data stored in memory.
 
+#define DELETE_IMAGE(_image)
+Deletes an image.
+
 #define CREATE_PICTURE_FROM_IMAGE(_cpicture, _image)
 How to create a CPICTURE object from the internal image type.
 
@@ -169,6 +172,7 @@ static CPICTURE *get_picture(const char *path, int len)
 				goto __RETURN;
 			
 			CREATE_PICTURE_FROM_IMAGE(pict, img);
+			DELETE_IMAGE(img);
 			
 			//if (img)
 			//	fprintf(stderr, "CREATE_PICTURE_FROM_IMAGE: %p (%d %d)\n", img, img->width(), img->height());

@@ -1541,6 +1541,7 @@ void CWidget::destroy()
 {
   QWidget *w = (QWidget *)sender();
   CWIDGET *ob = CWidget::get(w);
+  QEvent e(EVENT_DESTROY);
 
   if (ob == NULL)
     return;
@@ -1576,7 +1577,7 @@ void CWidget::destroy()
   //if (!CWIDGET_test_flag(ob, WF_NODETACH))
   GB.Detach(ob);
 
-  qApp->sendEvent(w, new QEvent(EVENT_DESTROY));
+  qApp->sendEvent(w, &e);
   //qDebug("<< CWidget::destroy %p (%p)", ob, ob->widget);
 
   GB.Unref(POINTER(&ob));
