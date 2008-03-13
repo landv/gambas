@@ -1,13 +1,8 @@
 ' Gambas module file
 
 PUBLIC SUB Main()
-  
-  ' Session["login"] = "cartable"
-  ' Session["password"] = "test"
-  ' Session["date"] = Date(1972, 9, 6)
-  ' Session["age"] = 34
-  ' Session["taille"] = 1.72
-  ' Session["liste"] = ["bleu", "blanc", "rouge"]
+
+  PRINT CGI.Encode("astreintes+2007-2008.htm")
   
 END
 

@@ -188,6 +188,7 @@ PUBLIC SUB Main()
   IF Settings["/ShowMascot", FALSE] THEN FGambas.Show
 
   FMain.Show
+  RefreshActivate
 
   DEC Application.Busy
 
@@ -1706,6 +1707,14 @@ PUBLIC FUNCTION InsertDirectory(sPath AS String, OPTIONAL bNoVerCtrl AS Boolean)
 
   RefreshKey(sPath)
   RETURN TRUE
+END
+
+PRIVATE SUB RefreshActivate()
+  
+  DIM hActive AS Object = ActiveForm
+  ActiveForm = NULL  
+  Activate(hActive)
+  
 END
 
 

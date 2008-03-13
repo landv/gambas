@@ -72,8 +72,8 @@ PUBLIC SUB Decode(URL AS String) AS String
   FOR iInd = 1 TO Len(URL)
     sCar = Mid$(URL, iInd, 1)
     IF sCar = "%" THEN 
-      sCar = Chr$(Val("&H" & Mid$(URL, iInd + 1, 2)))
-      iInd += 2
+      TRY sCar = Chr$(Val("&H" & Mid$(URL, iInd + 1, 2)))
+      IF NOT ERROR THEN iInd += 2
     ELSE IF sCar = "+" THEN 
       sCar = " "
     ENDIF

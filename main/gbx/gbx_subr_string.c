@@ -210,23 +210,26 @@ void SUBR_mid(void)
 {
   int start;
   int len;
+  bool null;
 
   SUBR_ENTER();
 
-  if (SUBR_check_string(PARAM))
-    goto FIN;
+  null = SUBR_check_string(PARAM);
 
   VALUE_conv(&PARAM[1], T_INTEGER);
   start = PARAM[1]._integer.value - 1;
 
   if (start < 0)
     THROW(E_ARG);
+    
+	if (null)
+		goto _FIN;
 
   if (start >= PARAM->_string.len)
   {
     RELEASE(PARAM);
     STRING_void_value(PARAM);
-    goto FIN;
+    goto _FIN;
   }
 
   if (NPARAM == 2)
@@ -253,7 +256,7 @@ void SUBR_mid(void)
 
   PARAM->_string.len = len;
 
-FIN:
+_FIN:
 
   SP -= NPARAM;
   SP++;
