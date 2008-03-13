@@ -713,11 +713,12 @@ BEGIN_PROPERTY(CWINDOW_text)
 		GB.ReturnNewZeroString(TO_UTF8(WIDGET->caption()));
 	else
 	{
+		QEvent e(EVENT_TITLE);
 		QString s = QSTRING_PROP();
 		THIS->title = s.length() > 0;
 		WIDGET->setCaption(s);
 		GB.Raise(THIS, EVENT_Title, 0);
-    qApp->sendEvent(WIDGET, new QEvent(EVENT_TITLE));
+    qApp->sendEvent(WIDGET, &e);
 	}
 
 
@@ -800,13 +801,14 @@ BEGIN_PROPERTY(CWINDOW_icon)
 		GB.ReturnObject(THIS->icon);
 	else
 	{
+		QEvent e(EVENT_ICON);
 		//if (THIS->toplevel)
 		//	SET_PIXMAP(WINDOW->setIcon, &(THIS->icon), PROP(GB_OBJECT));
 		//else
 			SET_PIXMAP(WIDGET->setIcon, &(THIS->icon), PROP(GB_OBJECT));
 		//WIDGET->setIcon(PICTURE_set(&(THIS->icon), PROPERTY(CPICTURE *)));
     GB.Raise(THIS, EVENT_Icon, 0);
-    qApp->sendEvent(WIDGET, new QEvent(EVENT_ICON));
+    qApp->sendEvent(WIDGET, &e);
 	}
 
 END_PROPERTY

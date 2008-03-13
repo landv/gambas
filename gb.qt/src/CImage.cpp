@@ -259,6 +259,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
   if (CPICTURE_load_image(&p, STRING(path), LENGTH(path)))
   {
+  	delete img->image;
     img->image = p;
     GB.ReturnObject(img);
 	}

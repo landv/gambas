@@ -86,6 +86,8 @@ static void insert_cache(const char *key, CPICTURE *pict)
 	_image = new QImage(img); \
 }
 
+#define DELETE_IMAGE(_image) delete _image
+
 #define CREATE_PICTURE_FROM_IMAGE(_cpicture, _image) \
 { \
 	create(&(_cpicture)); \
@@ -269,6 +271,7 @@ BEGIN_METHOD(CPICTURE_load, GB_STRING path)
 	}
 		
 	CREATE_PICTURE_FROM_IMAGE(pict, img);
+	DELETE_IMAGE(img);
 	GB.ReturnObject(pict);
 
 END_METHOD
@@ -321,6 +324,7 @@ BEGIN_METHOD(CPICTURE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
   int h = VARGOPT(h, THIS->pixmap->height());
 
   create(&pict);
+  delete pict->pixmap;
   pict->pixmap = new QPixmap(w, h);
   #if QT_VERSION >= 0x030200
   copyBlt(pict->pixmap, 0, 0, THIS->pixmap, x, y, w, h);
