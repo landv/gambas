@@ -129,7 +129,7 @@ gFont* gDesktop::font()
 
 void gDesktop::setFont(gFont *ft)
 {
-  gFont::assign(&_desktop_font, ft);
+  gFont::assign(&_desktop_font, ft->copy());
   _desktop_scale = 0;
 }
 

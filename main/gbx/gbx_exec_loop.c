@@ -1664,11 +1664,11 @@ _SUBR_MID:
 	{
 		int start;
 		int len;
+		bool null;
 	
 		SUBR_ENTER();
 	
-		if (SUBR_check_string(PARAM))
-			goto _SUBR_MID_FIN;
+		null = SUBR_check_string(PARAM);
 	
 		VALUE_conv(&PARAM[1], T_INTEGER);
 		start = PARAM[1]._integer.value - 1;
@@ -1676,6 +1676,9 @@ _SUBR_MID:
 		if (start < 0)
 			THROW(E_ARG);
 	
+		if (null)
+			goto _SUBR_MID_FIN;
+			
 		if (start >= PARAM->_string.len)
 		{
 			RELEASE(PARAM);

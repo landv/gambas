@@ -615,7 +615,7 @@ gFont* gControl::font()
 
 void gControl::setFont(gFont *ft)
 {
-	gFont::assign(&fnt, ft);
+	gFont::assign(&fnt, ft->copy());
 	gtk_widget_modify_font(widget, fnt ? fnt->desc() : NULL);
 	resize();
 }

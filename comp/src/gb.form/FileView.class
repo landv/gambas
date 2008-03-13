@@ -196,7 +196,7 @@ FINALLY
 CATCH 
 
   DEBUG Error.Where; ": "; Error.Text 
-  
+
 END
 
 PUBLIC SUB Reload()
@@ -317,7 +317,7 @@ PRIVATE SUB ShowDetailed_Write(bDetailed AS Boolean)
     $hColumnView.Hide
 
   ENDIF
-
+  
   RefreshView
   TakeSelection
 

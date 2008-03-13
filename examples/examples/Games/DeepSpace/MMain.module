@@ -81,7 +81,7 @@ SUB LoadObjectList()
         IF (NOT (Left$(aLine[I], 1) = "'")) AND (NOT (aLine[I] = "")) THEN
             V = Split(aLine[I], ",")
             IF V.Count = 4 THEN
-                FOR j = 1 TO If(v[1] = "Object1", 80, 1)
+                FOR j = 1 TO If(v[1] = "Object1", 1000, 1)
                 tmpO = NEW CObject
                 tmpO.Load2DObject(V[0], V[1], CInt(V[2]), CInt(V[3]))
                 Obj.Add(tmpO)
@@ -300,12 +300,6 @@ PUBLIC SUB MainLoop()
 
     Draw.Begin(Canvas)
 
-    Draw.Foreground = Color.Magenta
-
-    Draw.Text("Object Count: " & Obj.Count, 1, Draw.TextHeight("A") * 0)
-    Draw.Text("Bullet Count: " & Bullet.Count, 1, Draw.TextHeight("A") * 1)
-    Draw.Text("FPS         : " & FPS_COUNT, 1, Draw.TextHeight("A") * 2)
-
     eTime = Timer
     IF (eTime - FPS_TIME) > 1 THEN
         FPS_TIME = eTime
@@ -317,6 +311,13 @@ PUBLIC SUB MainLoop()
 
     RenderObjects()
     RenderBullets()
+
+    Draw.Foreground = Color.Magenta
+
+    Draw.Font.Bold = TRUE
+    Draw.Text("Object Count: " & Obj.Count, 1, Draw.TextHeight("A") * 0)
+    Draw.Text("Bullet Count: " & Bullet.Count, 1, Draw.TextHeight("A") * 1)
+    Draw.Text("FPS         : " & FPS_COUNT, 1, Draw.TextHeight("A") * 2)
 
     Draw.End()
 END

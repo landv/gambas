@@ -145,11 +145,12 @@ PUBLIC SUB TreeView_Expand()
 
 FINALLY
 
-  IF ERROR THEN DEBUG Error.Where; ": "; Error.Text 
   DEC Application.Busy
 
 CATCH
 
+  DEBUG Error.Where; ": "; Error.Text 
+  
 END
 
 PUBLIC SUB TreeView_Collapse()

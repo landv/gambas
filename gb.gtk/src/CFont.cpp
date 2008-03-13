@@ -40,8 +40,8 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 
   GB.New(POINTER(&_object), GB.FindClass("Font"), NULL, NULL);
   
-  if (func)
-  	font = font->copy();
+  //if (func)
+  //	font = font->copy();
   
   gFont::assign(&THIS->font, font);
   THIS->func = func;

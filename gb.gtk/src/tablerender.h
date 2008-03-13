@@ -27,7 +27,7 @@ public:
 
 	void setText(const char *vl);
 	void setRichText(const char *vl);
-	void setFont(gFont *f) { gFont::assign(&font, f); }
+	void setFont(gFont *f) { gFont::assign(&font, f->copy()); }
 	void setPicture(gPicture *p) { gPicture::assign(&picture, p); }
 	void clear();
 	gTableData();

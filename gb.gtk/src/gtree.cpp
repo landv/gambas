@@ -1536,6 +1536,8 @@ static void icon_cell_text(GtkIconView *view, GtkCellRenderer *cell, GtkTreeMode
 		g_object_set(G_OBJECT(cell),
 			"text", "",
 			"editable", false,
+			//"alignment", PANGO_ALIGN_LEFT,
+			//"wrap_mode", PANGO_WRAP_CHAR,
 			(void *)NULL);
 	}
 	else
@@ -1543,6 +1545,8 @@ static void icon_cell_text(GtkIconView *view, GtkCellRenderer *cell, GtkTreeMode
 		g_object_set(G_OBJECT(cell),
 			"text", row->data->text(),
 			"editable", row->isEditable(),
+			//"alignment", PANGO_ALIGN_LEFT,
+			//"wrap_mode", PANGO_WRAP_CHAR,
 			(void *)NULL);
 	}
 }
@@ -1589,8 +1593,8 @@ gIcon::gIcon(gIconView *v)
 	rtext = gtk_cell_renderer_text_new();
 	g_object_ref_sink(rtext);
 	
-	gtk_cell_layout_pack_end(GTK_CELL_LAYOUT(widget), rtext, false);
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), rgraph, false);
+	gtk_cell_layout_pack_end(GTK_CELL_LAYOUT(widget), rtext, false);
 
 	gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), rgraph, (GtkCellLayoutDataFunc)icon_cell_graph, (gpointer)this, NULL);
 	gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), rtext, (GtkCellLayoutDataFunc)icon_cell_text, (gpointer)this, NULL);
@@ -1601,12 +1605,21 @@ gIcon::gIcon(gIconView *v)
 			"yalign", 1.0,
 			(void *)NULL);
 	
+	g_object_set (rtext,
+		"xalign", 0.5,
+		"yalign", 0.0,
+		"alignment", PANGO_ALIGN_LEFT,
+		"wrap_mode", PANGO_WRAP_CHAR,
+		"editable", false,
+		//"ellipsize", _word_wrap ? PANGO_ELLIPSIZE_NONE : PANGO_ELLIPSIZE_END,
+		(void *)NULL);
+	
 	g_signal_connect(G_OBJECT(rtext), "edited", G_CALLBACK(cb_icon_edited), (gpointer)this);
 	g_signal_connect(G_OBJECT(rtext), "editing-started", G_CALLBACK(cb_icon_started), (gpointer)this);
 	g_signal_connect(G_OBJECT(rtext), "editing-canceled", G_CALLBACK(cb_icon_canceled), (gpointer)this);
 	
 	updateTextCell();
-	setWordWrap(true);
+	//setWordWrap(true);
 }
 
 gIcon::~gIcon()
@@ -1826,11 +1839,11 @@ void gIcon::updateTextCell()
 {
 	g_object_set (rtext,
 		"wrap_width", _grid_width,
-		"xalign", 0.5,
-		"yalign", 0.0,
-		"alignment", PANGO_ALIGN_CENTER,
-		"wrap_mode", PANGO_WRAP_CHAR,
-		"editable", false,
+		//"xalign", 0.0,
+		//"yalign", 0.0,
+		//"alignment", PANGO_ALIGN_CENTER,
+		//"wrap_mode", PANGO_WRAP_CHAR,
+		//"editable", false,
 		//"ellipsize", _word_wrap ? PANGO_ELLIPSIZE_NONE : PANGO_ELLIPSIZE_END,
 		(void *)NULL);
 }
