@@ -1,14 +1,17 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(12.1429,12.1429,105,64)
+  MoveScaled(12.1429,12.1429,64,44)
   Text = ("")
   Icon = Picture["icon:/24/gambas"]
-  Arrangement = Arrange.Fill
   Spacing = 8
   Padding = 8
-  { FileChooser1 FileChooser
-    MoveScaled(7,4,72,46)
-    ShowBookmark = True
+  { ValueBox1 ValueBox
+    MoveScaled(11,10,24,3)
+    Type = ValueBox.Date
+  }
+  { Button1 Button
+    MoveScaled(27,20,16,3)
+    Text = ("Button1")
   }
 }

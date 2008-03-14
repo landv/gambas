@@ -89,6 +89,7 @@ END
 PRIVATE SUB Value_Write(Value AS Variant)
 
   SUPER.Text = Str(Value)
+  TextBox_LostFocus
 
 END
 
@@ -215,6 +216,8 @@ PRIVATE SUB FormatDateTime(sSep AS String)
   
   SUPER.Text = sVal
   
+FINALLY 
+
   ME.Pos = iPos
   'DEBUG "ME.Pos = "; iPos
   'DEBUG System.Backtrace.Join("/")
