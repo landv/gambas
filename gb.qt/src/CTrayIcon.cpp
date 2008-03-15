@@ -312,6 +312,47 @@ BEGIN_PROPERTY(CTRAYICON_count)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CTRAYICON_screen_x)
+
+	if (WIDGET)
+		CCONTROL_screen_x(_object, _param);
+	else
+		GB.ReturnInteger(0);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CTRAYICON_screen_y)
+
+	if (WIDGET)
+		CCONTROL_screen_y(_object, _param);
+	else
+		GB.ReturnInteger(0);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CTRAYICON_w)
+
+	if (WIDGET)
+		CCONTROL_w(_object, _param);
+	else
+		GB.ReturnInteger(0);
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CTRAYICON_h)
+
+	if (WIDGET)
+		CCONTROL_h(_object, _param);
+	else
+		GB.ReturnInteger(0);
+
+END_PROPERTY
+
+
+
 
 GB_DESC CTrayIconsDesc[] =
 {
@@ -344,12 +385,12 @@ GB_DESC CTrayIconDesc[] =
   GB_PROPERTY("Tooltip", "s", CTRAYICON_tooltip),
   GB_PROPERTY("Tag", "v", CTRAYICON_tag),
 
-  GB_PROPERTY_READ("ScreenX", "i", CCONTROL_screen_x),
-  GB_PROPERTY_READ("ScreenY", "i", CCONTROL_screen_y),
-  GB_PROPERTY_READ("Width", "i", CCONTROL_w),
-  GB_PROPERTY_READ("Height", "i", CCONTROL_h),
-  GB_PROPERTY_READ("W", "i", CCONTROL_w),
-  GB_PROPERTY_READ("H", "i", CCONTROL_h),
+  GB_PROPERTY_READ("ScreenX", "i", CTRAYICON_screen_x),
+  GB_PROPERTY_READ("ScreenY", "i", CTRAYICON_screen_y),
+  GB_PROPERTY_READ("Width", "i", CTRAYICON_w),
+  GB_PROPERTY_READ("Height", "i", CTRAYICON_h),
+  GB_PROPERTY_READ("W", "i", CTRAYICON_w),
+  GB_PROPERTY_READ("H", "i", CTRAYICON_h),
 
   GB_EVENT("Enter", NULL, NULL, &EVENT_Enter),
   GB_EVENT("GotFocus", NULL, NULL, &EVENT_GotFocus),
