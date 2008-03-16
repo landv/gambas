@@ -39,7 +39,7 @@ class gShare
 {
 public:
   gShare() { nref = 1; tag = NULL; }
-  virtual ~gShare() { if (tag) while (nref > 1) nref--, tag->unref(); }
+  virtual ~gShare() { if (tag) { while (nref > 1) nref--, tag->unref(); delete tag; } }
   
   void ref() { nref++; if (tag) tag->ref(); }
   void unref() { nref--; if (nref <= 0) delete this; else if (tag) tag->unref(); }

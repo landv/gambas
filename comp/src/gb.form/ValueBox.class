@@ -88,7 +88,7 @@ END
 
 PRIVATE SUB Value_Write(Value AS Variant)
 
-  SUPER.Text = Str(Value)
+  SUPER.Text = Str(Value) 
   TextBox_LostFocus
 
 END

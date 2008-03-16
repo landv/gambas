@@ -134,7 +134,7 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 	_valid = true;
 	_event = *event;
 	
-  //filter = gtk_im_context_filter_keypress(_im_context, &_event);
+  filter = gtk_im_context_filter_keypress(_im_context, &_event);
   //fprintf(stderr, "gKey::enable: filter = %d event->string = '%s'\n", filter, event->string);
   
   if (filter && _im_text)
@@ -233,7 +233,7 @@ void gApplication::setToolTipsFont(gFont *ft)
 	GList *chd;
 	PangoFontDescription *desc;
 	
-	gFont::assign(&app_tooltips_font, ft->copy());
+	gFont::set(&app_tooltips_font, ft->copy());
 	
 	if (ft)
     desc = pango_context_get_font_description(ft->ct);

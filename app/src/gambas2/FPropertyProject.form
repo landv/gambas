@@ -22,21 +22,21 @@
     Index = 0
     Text = ("General")
     { Label3 Label
-      MoveScaled(1,20,79,3)
+      MoveScaled(1,21,79,3)
       Font = Font["Bold"]
       Text = ("Description")
     }
     { txtTitle TextBox
-      MoveScaled(1,16,79,3)
+      MoveScaled(1,17,79,3)
       Text = ("")
     }
     { Label12 Label
-      MoveScaled(1,13,79,3)
+      MoveScaled(1,14,79,3)
       Font = Font["Bold"]
       Text = ("Title")
     }
     { txtDesc TextArea
-      MoveScaled(1,23,79,16)
+      MoveScaled(1,24,79,15)
       Text = ("")
       Wrap = True
     }
@@ -51,31 +51,14 @@
       Wrap = True
     }
     { Panel1 Panel
-      MoveScaled(1,0,79,11)
+      MoveScaled(1,0,79,13)
       { btnIcon ToolButton
-        MoveScaled(69,1,10,10)
+        MoveScaled(67,1,12,12)
         Text = ("")
         Border = True
       }
-      { Panel2 Panel
-        MoveScaled(0,1,68,6)
-        Arrangement = Arrange.Vertical
-        Padding = 4
-        Border = Border.Sunken
-        { lblName Label
-          MoveScaled(0,0,57,3)
-          Font = Font["Bold,+2"]
-          AutoResize = True
-          Text = ("Gambas")
-          Alignment = Align.TopNormal
-        }
-        { lblPath Label
-          MoveScaled(0,3,57,2)
-          Text = ("")
-        }
-      }
       { HBox1 HBox
-        MoveScaled(0,8,68,3)
+        MoveScaled(0,10,66,3)
         Spacing = 8
         { txtMajor SpinBox
           MoveScaled(0,0,8,3)
@@ -94,6 +77,13 @@
           Visible = False
           Text = ("Version")
         }
+      }
+      { txtName TextLabel
+        MoveScaled(0,1,66,8)
+        Padding = 2
+        Text = ("")
+        Alignment = Align.Left
+        Border = Border.Sunken
       }
     }
     Index = 1

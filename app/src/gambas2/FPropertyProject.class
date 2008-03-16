@@ -49,12 +49,10 @@ PUBLIC SUB Form_Open()
 
   ME.Title = ("Project properties") & " - " & Project.Name
 
-  'txtInfo.Background = txtInfo.Parent.Background
-  'txtInfo.Text = ("Please wait...")
-  'StartInfo
-  lblName.Text = Project.Name
-  lblPath.Text = File.Dir(Project.Dir)
-  lblPath.Tooltip = File.Dir(Project.Dir)
+  ' lblName.Text = Project.Name
+  ' lblPath.Text = File.Dir(Project.Dir)
+  ' lblPath.Tooltip = File.Dir(Project.Dir)
+  txtName.Text = "<font size=\"+2\"><b>" & Project.Name & "</b></font><br>" & File.Dir(Project.Dir)
 
   cmbStackSize.List = [("(Default)"), "1 K", "2 K", "4 K", "8 K", "16 K", "32 K", "64 K"]
   

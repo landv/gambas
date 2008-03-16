@@ -946,7 +946,7 @@ gFont* gDraw::font()
 
 void gDraw::setFont(gFont *f)
 {
-  gFont::assign(&ft, f->copy());
+  gFont::set(&ft, f->copy());
 }
 
 

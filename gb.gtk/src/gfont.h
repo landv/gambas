@@ -11,6 +11,7 @@ public:
 	~gFont();
   
   static void assign(gFont **dst, gFont *src = 0) { gShare::assign((gShare **)dst, src); }
+  static void set(gFont **dst, gFont *src = 0) { gShare::assign((gShare **)dst, src); src->unref(); }
   
 	static void init();
 	static void exit();
