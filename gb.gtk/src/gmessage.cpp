@@ -388,7 +388,7 @@ gFont* gDialog::font()
 
 void gDialog::setFont(gFont *ft)
 {
-  gFont::assign(&DIALOG_font, ft->copy());
+  gFont::set(&DIALOG_font, ft->copy());
 }
 
 gColor gDialog::color()

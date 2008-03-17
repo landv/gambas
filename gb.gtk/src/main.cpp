@@ -216,8 +216,6 @@ extern "C"
 
 	int EXPORT GB_INIT(void)
 	{
-		//setGeneralMemoryHandler();
-		
 		GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
 		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
@@ -324,7 +322,7 @@ gboolean my_timer_function(GB_TIMER *timer)
 		if (timer->id)
 		{
 			MyTimerTag *tag = (MyTimerTag *)timer->tag;
-			GTimer *t = tag->timer;		
+			GTimer *t = tag->timer;
 			int elapsed = (int)(g_timer_elapsed(t, NULL) * 1000) - tag->timeout;
 			int next = timer->delay - elapsed;
 			if (next < 10)

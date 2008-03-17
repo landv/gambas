@@ -425,7 +425,7 @@ static void cache_flush()
 #define CREATE_IMAGE_FROM_MEMORY(_image, _addr, _len, _ok) \
 	_image = gPicture::fromMemory(_addr, _len);
 
-#define DELETE_IMAGE(_image) delete _image
+#define DELETE_IMAGE(_image) 
 
 #define CREATE_PICTURE_FROM_IMAGE(_cpicture, _image) \
 	_cpicture = CPICTURE_create(_image);
@@ -440,85 +440,6 @@ static void cache_flush()
 
 #include "gb.form.picture.h"
 
-// BEGIN_METHOD(CPICTURE_get, GB_STRING path)
-// 
-// 	char *addr;
-// 	int len;
-// 	CPICTURE *pic=NULL;
-// 	gPicture *buf;
-// 	GB_VALUE *value;
-// 	char *key;
-// 
-//   key = g_strdup_printf("%s\n%.*s", GB.CurrentComponent(), (int)LENGTH(path), STRING(path));
-// 
-// 	pic = cache_get(key);
-// 	if (pic)
-// 	{
-//     g_free(key);
-// 		GB.ReturnObject(pic);
-// 		return;
-// 	}
-// 
-// 	if (GB.LoadFile(STRING(path),LENGTH(path),&addr,&len))
-// 	{
-// 		buf=gPicture::fromNamedIcon(GB.ToZeroString(ARG(path)));
-// 		if (buf)
-// 		{
-// 		  pic = CPICTURE_create(buf);
-// 		  goto __OK;
-// 		}
-// 
-// 		if (LENGTH(path) >= STOCK_PREFIX_LEN && strncmp(STRING(path), STOCK_PREFIX, STOCK_PREFIX_LEN) == 0)
-// 		{
-// 			if (LENGTH(path) == STOCK_PREFIX_LEN) { GB.Error("Unable to load image");return; }
-// 			if (init_stock()) { GB.Error("Unable to load image");return; }
-// 			
-// 			GB.Push(1, GB_T_STRING, &STRING(path)[STOCK_PREFIX_LEN], LENGTH(path) - STOCK_PREFIX_LEN);
-// 			value = GB.Call(&_stock_get_func, 1, false);
-// 			if (value->type >= GB_T_OBJECT) 
-//         pic = (CPICTURE *)((GB_OBJECT *)value)->value;
-// 			if (!pic) { GB.Error("Unable to load image");return; }
-// 			GB.ReturnObject(pic);
-// 			return;
-// 				
-// 		}
-// 
-// 		//GB.Error("Unable to load image: &1", GB.ToZeroString(ARG(path)));
-// 		//return;
-// 		pic = NULL;
-// 	}
-// 	else
-// 	{
-//   	pic = CPICTURE_create(gPicture::fromMemory(addr, len));
-// 		GB.ReleaseFile(&addr,len);
-// 	}
-// 	
-// __OK:
-// 	
-// 	if (pic) 
-//     cache_add(key, pic);
-//   
-//   g_free(key);
-// 	GB.ReturnObject(pic);
-// 
-// END_METHOD
-
-
-/*BEGIN_METHOD(CPICTURE_put, GB_OBJECT picture; GB_STRING path)
-
-	CPICTURE *picture=(CPICTURE*)VARG(picture);
-	char *key;
-
-	if (picture)
-	{
-    key = g_strdup_printf("%s\n%.*s", GB.CurrentComponent(), (int)LENGTH(path), STRING(path));
-    cache_add(key, picture);
-    g_free(key);
-  }
-
-END_METHOD
-*/
-/////////////
 
 BEGIN_METHOD(CPICTURE_get, GB_STRING path)
 

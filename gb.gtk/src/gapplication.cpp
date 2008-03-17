@@ -233,7 +233,7 @@ void gApplication::setToolTipsFont(gFont *ft)
 	GList *chd;
 	PangoFontDescription *desc;
 	
-	gFont::assign(&app_tooltips_font, ft->copy());
+	gFont::set(&app_tooltips_font, ft->copy());
 	
 	if (ft)
     desc = pango_context_get_font_description(ft->ct);

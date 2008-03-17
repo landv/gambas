@@ -6,7 +6,7 @@
 class gGambasTag: public gTag
 {
 public:
-	gGambasTag(void *p) : gTag(p) {}
+	gGambasTag(void *p) : gTag(p) { }
 	virtual ~gGambasTag() {}
 	virtual void ref(void *v) { GB.Ref(v); }
 	virtual void unref(void *v) { GB.Unref((void **)&v); }

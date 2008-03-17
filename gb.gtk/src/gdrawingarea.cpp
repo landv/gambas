@@ -179,7 +179,6 @@ void gDrawingArea::resizeCache()
 	
 	if (bw != w || bh != h)
 	{		
-		//g_debug("resizeCache: (%d %d) -> (%d %d)", bw, bh, w, h);
 		buf = gdk_pixmap_new(win, w, h, -1);
 		gc2 = gdk_gc_new(buf);
 		gdk_gc_set_foreground(gc2, &widget->style->bg[GTK_STATE_NORMAL]);
