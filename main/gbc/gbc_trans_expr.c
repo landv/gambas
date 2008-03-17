@@ -191,7 +191,12 @@ static void trans_identifier(int index, boolean first, boolean point, PATTERN ne
 
       CODE_push_extern(sym->global.value);
     }
-    else if (type == TK_EVENT || type == TK_PROPERTY || type == TK_LABEL)
+    else if (type == TK_PROPERTY)
+    {
+    	CODE_push_me(FALSE);
+      CODE_push_unknown(CLASS_add_unknown(JOB->class, index));
+    }
+    else if (type == TK_EVENT || type == TK_LABEL)
     {
       goto __CLASS;
     }
@@ -559,6 +564,12 @@ PUBLIC void TRANS_expression(boolean check_statement)
 
     CODE_drop();
   }
+}
+
+PUBLIC void TRANS_ignore_expression()
+{
+  TRANS_TREE *tree = TRANS_tree(FALSE);
+  ARRAY_delete(&tree);
 }
 
 

@@ -395,7 +395,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CFORM_new)
 
-  GB.Attach(_object, _object, "Form");
+	if (!GB.Parent(_object))
+  	GB.Attach(_object, _object, "Form");
 
 END_METHOD
 

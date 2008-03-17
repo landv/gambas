@@ -227,57 +227,58 @@ enum
 
 typedef
   struct _CLASS {
-    struct _CLASS *class;     /*   4  Points at the 'Class' class ! */
-    int ref;                  /*   8  Reference count */
-    int count;                /*  12  Number of instanciated objects */
-    struct _CLASS *parent;    /*  16  Inherited class */
-    COMPONENT *component;     /*  20  The component the class belongs to */
-    char *name;               /*  24  Class name */
-    char *path;               /*  28  Source file path */
+    struct _CLASS *class;             /*   4  Points at the 'Class' class ! */
+    int ref;                          /*   8  Reference count */
+    int count;                        /*  12  Number of instanciated objects */
+    struct _CLASS *parent;            /*  16  Inherited class */
+    COMPONENT *component;             /*  20  The component the class belongs to */
+    char *name;                       /*  24  Class name */
+    char *path;                       /*  28  Source file path */
 
-    unsigned state : 2;       /*      Initialization state */
-    unsigned debug : 1;       /*      Debugging information ? */
-    unsigned free_name : 1;   /*      Must free the class name */
-    unsigned free_event : 1;  /*      Must free class->event */
-    unsigned in_load : 1;     /*      Class being loaded */
-    unsigned exit : 1;        /*      Marker used by CLASS_exit */
-    unsigned auto_create : 1; /*      Automatically instanciated */
-    unsigned no_create : 1;   /*      Cannot instanciate this class */
-    unsigned is_virtual : 1;  /*      Virtual class (name beginning with a dot) */
-    unsigned mmapped : 1;     /*      mmap() was used to load the class */
-    unsigned swap : 1;				/*      class endianness was swapped */
-    unsigned enum_static : 1; /*      if class enumeration is static */
-    unsigned quick_array : 2; /*      array accessor optimization type */
-    unsigned is_stream : 1;   /*  30  If the class inherits stream */
-
-    short n_desc;             /*  32  number of descriptions */
-    CLASS_DESC_SYMBOL *table; /*  36  class description */
-
-    short n_event;            /*  38  number of events */
-    short _reserved;          /*  40  */
-
-    CLASS_EVENT *event;       /*  44  event description */
-
-    int _reserved2;     		  /*  48  quick array get method */
-    int _reserved3;           /*  52  quick array put method */
+    unsigned state : 2;               /*      Initialization state */
+    unsigned debug : 1;               /*      Debugging information ? */
+    unsigned free_name : 1;           /*      Must free the class name */
+    unsigned free_event : 1;          /*      Must free class->event */
+    unsigned in_load : 1;             /*      Class being loaded */
+    unsigned exit : 1;                /*      Marker used by CLASS_exit */
+    unsigned auto_create : 1;         /*      Automatically instanciated */
+    unsigned no_create : 1;           /*      Cannot instanciate this class */
+    unsigned is_virtual : 1;          /*      Virtual class (name beginning with a dot) */
+    unsigned mmapped : 1;             /*      mmap() was used to load the class */
+    unsigned swap : 1;				        /*      class endianness was swapped */
+    unsigned enum_static : 1;         /*      if class enumeration is static */
+    unsigned quick_array : 2;         /*      array accessor optimization type */
+    unsigned is_stream : 1;           /*  30  If the class inherits stream */
     
-    int (*check)();           /*  56  method for checking that an object is valid */
+    unsigned _reserved : 16;          /*  32  */
 
-    short special[16];        /*  88  special functions index (_new, _free, ...) */
+    short n_desc;                     /*  34  number of descriptions */
+    short n_event;                    /*  36  number of events */
 
-    uint size_stat;           /*  92  static class size */
-    uint size;                /*  96  dynamic class size */
-    uint off_event;           /* 100  offset of OBJECT_EVENT structure in the object */
+    CLASS_DESC_SYMBOL *table;         /*  40  class description */
 
-    char *data;               /* 104  class file data for loaded class / generated description for native class */
-    CLASS_LOAD *load;         /* 108  information about loaded class */
+    CLASS_EVENT *event;               /*  44  event description */
 
-    char *stat;               /* 112  static class data */
-    TYPE *signature;          /* 116  signatures address */
-    char *string;             /* 120  strings address */
+		int _reserved1;                   /*  48  */
+    int _reserved2;                   /*  52  quick array put method */
+    
+    int (*check)();                   /*  56  method for checking that an object is valid */
 
-    void *instance;           /* 124  automatically created instance */
-    struct _CLASS *next;      /* 128  next class */
+    short special[16];                /*  88  special functions index (_new, _free, ...) */
+
+    uint size_stat;                   /*  92  static class size */
+    uint size;                        /*  96  dynamic class size */
+    uint off_event;                   /* 100  offset of OBJECT_EVENT structure in the object */
+
+    char *data;                       /* 104  class file data for loaded class / generated description for native class */
+    CLASS_LOAD *load;                 /* 108  information about loaded class */
+
+    char *stat;                       /* 112  static class data */
+    TYPE *signature;                  /* 116  signatures address */
+    char *string;                     /* 120  strings address */
+
+    void *instance;                   /* 124  automatically created instance */
+    struct _CLASS *next;              /* 128  next class */
     }
   CLASS;
 

@@ -788,6 +788,7 @@ typedef
     void (*UnrefKeep)(void **, int);
     void (*Detach)(void *);
     void (*Attach)(void *, void *, const char *);
+    void *(*Parent)(void *);
     int (*New)(void **, GB_CLASS, char *, void *);
     void *(*AutoCreate)(GB_CLASS, int);
     int (*CheckObject)(void *);

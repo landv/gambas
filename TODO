@@ -1,21 +1,16 @@
 TODO list: always incomplete :-)
 --------------------------------
 
-CONFIGURATION
-
-- Raise an error when libffi is not found.
-
 COMPILER
 
 - Compilation error must indicate the column, not only the line.
-- Better error message if a class form structure is incorrect. Otherwise the error
-  talks about the form generated code.
 
 INTERPRETER
 
 - A stack that can grow dynamically.
 - A special syntax to make variable writable once only (for controls variables).
-- Add global parameters for each component.
+- Add global parameters for each component. Or no, a global configuration repository, to
+  tell, for example, which sokcet the mysql component must use...
 - Make objects printable, with a "_print" hidden method or something else.
 - Make objects writable and readable to streams.
 - Perl regexp with the MATCH operator.

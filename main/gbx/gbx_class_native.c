@@ -145,7 +145,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
         class->check = (int (*)())(desc->hook.func);
         //SET_IF_NULL(class->check, CLASS_return_zero);
         break;
-
+        
       default:
         start = desc;
         break;

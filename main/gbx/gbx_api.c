@@ -115,6 +115,7 @@ void *GAMBAS_Api[] =
   (void *)GB_UnrefKeep,
   (void *)GB_Detach,
   (void *)GB_Attach,
+  (void *)OBJECT_parent,
   (void *)GB_New,
   (void *)CLASS_auto_create,
   (void *)GB_CheckObject,

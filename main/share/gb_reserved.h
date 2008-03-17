@@ -306,6 +306,8 @@ EXTERN TABLE *COMP_res_table;
 EXTERN TABLE *COMP_subr_table;
 
 EXTERN int SUBR_VarPtr;
+EXTERN int SUBR_Mid;
+EXTERN int SUBR_MidS;
 
 #endif
 
@@ -316,8 +318,6 @@ int RESERVED_find_word(const char *word, int len);
 
 SUBR_INFO *SUBR_get(const char *subr_name);
 SUBR_INFO *SUBR_get_from_opcode(ushort opcode, ushort optype);
-int SUBR_get_index(const char *subr_name);
-/*CONST_INFO *CONST_get(char *cst_name);
-CONST_INFO *CONST_get_from_index(short index);*/
+//int SUBR_get_index(const char *subr_name);
 
 #endif

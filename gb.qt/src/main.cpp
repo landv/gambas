@@ -526,6 +526,8 @@ static void hook_loop()
 
   if (!must_quit())
     qApp->exec();
+  else
+  	MAIN_check_quit();
 
   //qDebug("Exit event loop");
 }

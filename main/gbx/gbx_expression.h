@@ -51,11 +51,13 @@ typedef
     int *var;
     short nvar;
     short last_code;
+    short last_code2;
+    unsigned analyze : 1;
+    unsigned _reserved : 15;
     int stack_usage;
     void *op;
-    unsigned analyze : 1;
-    unsigned _reserved : 31;
     }
+  PACKED
   EXPRESSION;
 
 typedef

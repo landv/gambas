@@ -507,6 +507,8 @@ TABLE *COMP_res_table;
 TABLE *COMP_subr_table;
 
 int SUBR_VarPtr;
+int SUBR_Mid;
+int SUBR_MidS;
 
 static uchar _operator_table[256] = { 0 };
 
@@ -559,7 +561,7 @@ void RESERVED_init(void)
   }
   #endif
   
-  /* Table des routines int�r�s */
+  /* Subroutines table */
 
   TABLE_create(&COMP_subr_table, 0, TF_IGNORE_CASE);
   for (subr = &COMP_subr_info[0]; subr->name; subr++)
@@ -576,6 +578,8 @@ void RESERVED_init(void)
   #endif
 
 	SUBR_VarPtr = get_index("VarPtr");
+	SUBR_Mid = get_index("Mid");
+	SUBR_MidS = get_index("Mid$");
 
   /* Table des constantes */
 

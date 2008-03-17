@@ -226,6 +226,12 @@ void TRANS_statement(void)
       return;
     }
   }
+  else if (PATTERN_is_subr(look[0]) && (PATTERN_index(look[0]) == SUBR_Mid || PATTERN_index(look[0]) == SUBR_MidS))
+  {
+  	JOB->current++;
+  	TRANS_mid();
+  	return;
+  }
 
   if (!TRANS_affectation(FALSE))
     TRANS_expression(TRUE);

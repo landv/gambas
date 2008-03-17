@@ -101,15 +101,17 @@ typedef
     int line;	            // ...which is this line
     ushort *code;         // Compile bytecode
     
+    short *pos_line;      // Bytecode position of each code line
+    
     ushort ncode;         // Number of instructions
     ushort ncode_max;     // Size of the bytecode allocation
 
     short last_code;      // Last compiled bytecode position
+    short last_code2;     // Last last compiled bytecode position
     short stack;          // Needed stack
     short finally;        // FINALLY position
     short catch;          // CATCH position
-
-    short *pos_line;      // Bytecode position of each code line
+		short _reserved2;
     }
   PACKED
   FUNCTION;

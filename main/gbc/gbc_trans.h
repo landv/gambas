@@ -88,6 +88,8 @@ enum {
   TS_SUBR_SLEEP,
   TS_SUBR_RANDOMIZE,
   TS_SUBR_ERROR_TO,
+  TS_SUBR_LEFT,
+  TS_SUBR_MID,
   };
 
 enum {
@@ -133,6 +135,7 @@ PUBLIC void TRANS_init_optional(TRANS_PARAM *param);
 /* trans_expr.c */
 
 PUBLIC void TRANS_expression(bool check);
+PUBLIC void TRANS_ignore_expression();
 PUBLIC void TRANS_reference(void);
 PUBLIC boolean TRANS_affectation(bool check);
 PUBLIC void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
@@ -212,6 +215,7 @@ PUBLIC void TRANS_debug(void);
 PUBLIC void TRANS_error(void);
 PUBLIC void TRANS_scan(void);
 PUBLIC void TRANS_randomize(void);
+PUBLIC void TRANS_mid(void);
 
 #endif
 

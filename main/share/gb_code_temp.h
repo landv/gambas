@@ -50,6 +50,7 @@ static void start_code(void)
   if (JOB->debug && !JOB->nobreak)
     CODE_break();
   #endif
+  cur_func->last_code2 = cur_func->last_code;
   cur_func->last_code = cur_func->ncode;
 }
 
@@ -97,6 +98,13 @@ static void use_stack(int use)
   #ifdef DEBUG
   printf("%04ld: %d\n", cur_func->ncode, CODE_stack);
   #endif
+}
+
+static void CODE_undo()
+{
+	cur_func->ncode = cur_func->last_code;
+	cur_func->last_code = cur_func->last_code2;
+	cur_func->last_code2 = (-1);
 }
 
 int CODE_get_current_pos(void)
@@ -152,6 +160,14 @@ static ushort *get_last_code()
     return NULL;
 
   return &cur_func->code[cur_func->last_code];
+}
+
+static ushort *get_last_code2()
+{
+  if (cur_func->last_code2 < 0)
+    return NULL;
+
+  return &cur_func->code[cur_func->last_code2];
 }
 
 #ifdef PROJECT_COMP
@@ -258,7 +274,7 @@ bool CODE_check_jump_not(void)
 	if (op != C_NOT)
 		return FALSE;
 		
-	cur_func->ncode--;
+	CODE_undo();
 	return TRUE;
 }
 
@@ -682,10 +698,14 @@ void CODE_op(short op, short nparam, boolean fixed)
 {
   if (op == C_ADD || op == C_SUB)
   {
-    PCODE *last_code = get_last_code();
+    PCODE *last_code;
+    short value, value2;
+    
+    last_code = get_last_code();
+    
     if (last_code && ((*last_code & 0xF000) == C_PUSH_QUICK))
     {
-      short value = *last_code & 0xFFF;
+      value = *last_code & 0xFFF;
       if (value >= 0x800) value |= 0xF000;
       if (op == C_SUB) value = (-value);
 
@@ -696,6 +716,23 @@ void CODE_op(short op, short nparam, boolean fixed)
       *last_code = C_ADD_QUICK | (value & 0x0FFF);
 
       use_stack(1 - nparam);
+      
+      // Now, look if we are PUSH QUICK then ADD QUICK
+      
+      last_code = get_last_code2();
+	    if (last_code && ((*last_code & 0xF000) == C_PUSH_QUICK))
+	    {
+      	value2 = *last_code & 0xFFF;
+      	if (value2 >= 0x800) value2 |= 0xF000;
+      	value += value2;
+      	
+			  if (value >= -2048L && value < 2048L)
+			  {
+		      *last_code = C_PUSH_QUICK | (value & 0x0FFF);
+		      CODE_undo();
+			  }
+	    }
+      
       return;
     }
   }

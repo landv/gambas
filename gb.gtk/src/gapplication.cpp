@@ -134,7 +134,7 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 	_valid = true;
 	_event = *event;
 	
-  //filter = gtk_im_context_filter_keypress(_im_context, &_event);
+  filter = gtk_im_context_filter_keypress(_im_context, &_event);
   //fprintf(stderr, "gKey::enable: filter = %d event->string = '%s'\n", filter, event->string);
   
   if (filter && _im_text)

@@ -55,7 +55,8 @@ static void trans_subr(int subr, int nparam)
     { ".Shell" }, { ".Wait" }, { ".Kill" }, { ".Move" }, { ".Mkdir" },
     { ".Rmdir" }, { ".Array" }, { ".Copy" }, { ".Link" }, { ".Error" },
     { ".Lock" }, { ".Unlock" }, { ".InputFrom" }, { ".OutputTo" }, { ".Debug" },
-    { ".Sleep" }, { ".Randomize" }, { ".ErrorTo" }
+    { ".Sleep" }, { ".Randomize" }, { ".ErrorTo" },
+    { "Left" }, { "Mid" }
   };
 
   TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -692,7 +693,7 @@ void TRANS_swap(void)
   sa = JOB->current;
   TRANS_expression(FALSE);
 
-  TRANS_want(RS_COMMA, "comma");
+  TRANS_want(RS_COMMA, "Comma");
 
   sb = JOB->current;
   TRANS_expression(FALSE);
@@ -720,6 +721,63 @@ void TRANS_rmdir(void)
   TRANS_expression(FALSE);
   trans_subr(TS_SUBR_RMDIR, 1);
   CODE_drop();
+}
+
+void TRANS_mid()
+{
+	PATTERN *str;
+	PATTERN *pos;
+	PATTERN *len;
+	PATTERN *save;
+	
+	TRANS_want(RS_LBRA, "Left brace");
+	
+	str = JOB->current;
+	TRANS_expression(FALSE);
+	
+	TRANS_want(RS_COMMA, "Comma");
+	
+	pos = JOB->current;
+	TRANS_expression(FALSE);
+	CODE_push_number(1);
+	CODE_op(C_SUB, 2, TRUE);
+	TRANS_subr(TS_SUBR_LEFT, 2);
+	
+	if (TRANS_is(RS_COMMA))
+	{
+		len = JOB->current;
+		TRANS_ignore_expression();
+	}
+	else
+	{
+		len = NULL;
+	}
+	
+	TRANS_want(RS_RBRA, "Right brace");
+	TRANS_want(RS_EQUAL, "Equal");
+	
+	TRANS_expression(FALSE);
+	
+	save = JOB->current;
+	
+	if (len)
+	{
+		JOB->current = str;
+		TRANS_expression(FALSE);
+		JOB->current = pos;
+		TRANS_expression(FALSE);
+		JOB->current = len;
+		TRANS_expression(FALSE);
+		CODE_op(C_ADD, 2, TRUE);
+		TRANS_subr(TS_SUBR_MID, 2);
+	}
+	
+	CODE_op(C_CAT, len ? 3 : 2, FALSE);
+	
+	JOB->current = str;
+	TRANS_reference();
+	
+	JOB->current = save;
 }
 
 #if 0
