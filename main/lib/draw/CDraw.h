@@ -30,6 +30,7 @@
 
 extern GB_DESC CDrawDesc[];
 extern GB_DESC CDrawClipDesc[];
+extern GB_DESC CDrawStyleDesc[];
 
 #endif
 

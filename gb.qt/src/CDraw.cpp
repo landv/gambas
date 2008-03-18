@@ -39,6 +39,9 @@
 #include <qpixmap.h>
 #include <qbitmap.h>
 #include <qsimplerichtext.h>
+#include <qpalette.h>
+#include <qstyle.h>
+#include <qdrawutil.h>
 
 #include "gambas.h"
 
@@ -228,6 +231,18 @@ static void end(GB_DRAW *d)
   		wid->drawn--;
 		}
 	}
+}
+
+static void save(GB_DRAW *d)
+{
+	DP(d)->save();
+	if (DPM(d)) DPM(d)->save();
+}
+
+static void restore(GB_DRAW *d)
+{
+	DP(d)->restore();
+	if (DPM(d)) DPM(d)->restore();
 }
 
 static int get_background(GB_DRAW *d)
@@ -757,7 +772,7 @@ static void set_clipping(GB_DRAW *d, int x, int y, int w, int h)
 	if DPM(d) DPM(d)->setClipRect(x, y, w, h, QPainter::CoordPainter);
 }
 
-int is_clipping_enabled(GB_DRAW *d)
+static int is_clipping_enabled(GB_DRAW *d)
 {
 	return DP(d)->hasClipping();
 }
@@ -768,10 +783,177 @@ static void set_clipping_enabled(GB_DRAW *d, int enable)
 	if (DPM(d)) DPM(d)->setClipping(enable);
 }
 
+static QColorGroup get_color_group(int state)
+{
+	switch (state)
+	{
+		case GB_DRAW_STATE_DISABLED: return QApplication::palette().disabled();
+		default: return QApplication::palette().active();
+	}
+}
+
+static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)
+{
+	QStyle::PrimitiveElement pe;
+	
+	switch (type)
+	{
+		case ALIGN_NORMAL: pe = GB.System.IsRightToLeft() ? QStyle::PE_ArrowLeft : QStyle::PE_ArrowRight; break;
+  	case ALIGN_LEFT: pe = QStyle::PE_ArrowLeft; break;
+  	case ALIGN_RIGHT: pe = QStyle::PE_ArrowRight; break;
+  	case ALIGN_TOP: pe = QStyle::PE_ArrowUp; break;
+  	case ALIGN_BOTTOM: pe = QStyle::PE_ArrowDown; break;
+  	default:
+  		return;
+	}
+
+	QRect r(x, y, w, h);
+	QApplication::style().drawPrimitive(pe, DP(d), r, get_color_group(state));
+	if (DPM(d)) QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group(state));
+}
+
+static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
+{
+	QStyle::SFlags flags = QStyle::Style_Default;
+	QRect r(x, y, w, h);
+	
+	if (!state)
+		flags |= QStyle::Style_Enabled;
+	
+	if (value == 0)
+		flags |= QStyle::Style_Off;
+	else if (value == 1)
+		flags |= QStyle::Style_NoChange;
+	else
+		flags |= QStyle::Style_On;
+	
+	QApplication::style().drawPrimitive(QStyle::PE_Indicator, DP(d), r, get_color_group(state), flags);
+	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_IndicatorMask, DPM(d), r, get_color_group(state), flags);
+}
+
+static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
+{
+	QRect r(x, y, w, h);
+	QStyle::SFlags flags = QStyle::Style_Default;
+	
+	if (!state)
+		flags |= QStyle::Style_Enabled;
+	
+	if (!value)
+		flags |= QStyle::Style_Off;
+	else
+		flags |= QStyle::Style_On;
+	
+	QApplication::style().drawPrimitive(QStyle::PE_ExclusiveIndicator, DP(d), r, get_color_group(state), flags);
+	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_ExclusiveIndicatorMask, DPM(d), r, get_color_group(state), flags);
+}
+
+static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
+{
+	QRect r(x, y, w, h);
+	QStyle::SFlags flags = QStyle::Style_Default;
+	
+	if (!state)
+		flags |= QStyle::Style_Enabled;
+	
+	if (!vertical)
+		flags |= QStyle::Style_Horizontal;
+	
+	QApplication::style().drawPrimitive(QStyle::PE_DockWindowSeparator, DP(d), r, get_color_group(0), flags);
+	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_DockWindowSeparator, DPM(d), r, get_color_group(0), flags);
+}
+
+static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
+{
+	QRect r(x, y, w, h);
+	QApplication::style().drawPrimitive(QStyle::PE_FocusRect, DP(d), r, get_color_group(0));
+	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_FocusRect, DPM(d), r, get_color_group(0));
+}
+			
+static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
+{
+	QRect r(x, y, w, h);
+	QStyle::SFlags flags = QStyle::Style_Default;
+	
+	if (!state)
+		flags |= QStyle::Style_Enabled;
+	
+	if (!value)
+		flags |= QStyle::Style_Off;
+	else
+		flags |= QStyle::Style_On;
+	
+	QApplication::style().drawPrimitive(QStyle::PE_ButtonCommand, DP(d), r, get_color_group(state), flags);
+	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_ButtonCommand, DPM(d), r, get_color_group(state), flags);
+}
+			
+static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int state)
+{
+	QStyle::PrimitiveElement pe;
+	QRect r(x, y, w, h);
+	QStyle::SFlags flags = QStyle::Style_Default;
+	
+	if (!state)
+		flags |= QStyle::Style_Enabled;
+	
+	if (border == BORDER_NONE)
+		return;
+		
+	if (border == BORDER_PLAIN)
+	{
+		qDrawPlainRect(DP(d), r, get_color_group(state).foreground(), 1);
+		if DPM(d) qDrawPlainRect(DPM(d), r, get_color_group(state).foreground(), 1);
+		return;
+	}
+	
+	if (border == BORDER_ETCHED)
+	{
+		pe = QStyle::PE_GroupBoxFrame;
+	}
+	else
+	{
+		if (border == BORDER_RAISED)
+			flags |= QStyle::Style_Raised;
+		else if (border == BORDER_SUNKEN)
+			flags |= QStyle::Style_Sunken;
+		
+		pe = QStyle::PE_Panel;
+	}
+	
+	QApplication::style().drawPrimitive(pe, DP(d), r, get_color_group(state), flags);
+	if (DPM(d)) QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group(state), flags);
+}
+			
+static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
+{
+	QRect r(0, 0, w, h);
+	QStyle::SFlags flags = QStyle::Style_Default;
+	
+	if (!state)
+		flags |= QStyle::Style_Enabled;
+		
+	if (!vertical)
+		flags |= QStyle::Style_Horizontal;
+	
+	// Workaround a style bug
+	DP(d)->translate(x, y);
+	QApplication::style().drawPrimitive(QStyle::PE_Splitter, DP(d), r, get_color_group(state), flags);
+	DP(d)->translate(-x, -y);
+	if (DPM(d)) 
+	{
+		DPM(d)->translate(x, y);
+		QApplication::style().drawPrimitive(QStyle::PE_Splitter, DPM(d), r, get_color_group(state), flags);	
+		DPM(d)->translate(-x, -y);
+	}
+}
+
+
 GB_DRAW_DESC DRAW_Interface = {
 	sizeof(GB_DRAW_EXTRA),
 	begin,
 	end,
+	save,
+	restore,
 	get_background,
 	set_background,
 	get_foreground,
@@ -816,6 +998,16 @@ GB_DRAW_DESC DRAW_Interface = {
 		set_clipping,
 		is_clipping_enabled,
 		set_clipping_enabled
+	},
+	{
+		style_arrow,
+		style_check,
+		style_option,
+		style_separator,
+		style_focus,
+		style_button,
+		style_panel,
+		style_handle
 	}
 };
 

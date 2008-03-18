@@ -894,6 +894,7 @@ typedef
     struct {
       char *(*Charset)(void);
       char *(*Language)(void);
+      int *(*IsRightToLeft)(void);
       }
     System;
 

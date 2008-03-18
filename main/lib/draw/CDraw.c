@@ -124,6 +124,21 @@ BEGIN_METHOD_VOID(CDRAW_exit)
 END_METHOD
 
 
+BEGIN_METHOD_VOID(CDRAW_save)
+
+	CHECK_DEVICE();
+	DRAW->Save(THIS);
+	
+END_METHOD
+
+
+BEGIN_METHOD_VOID(CDRAW_restore)
+
+	CHECK_DEVICE();
+	DRAW->Restore(THIS);
+	
+END_METHOD
+
 BEGIN_PROPERTY(CDRAW_device)
 	
   CHECK_DEVICE();
@@ -911,11 +926,89 @@ END_METHOD
 // 
 // END_METHOD
 
+/****************************************************************************
+
+	Style API
+	
+****************************************************************************/
+
+#define GET_COORD() \
+	int x, y, w, h; \
+\
+  CHECK_DEVICE(); \
+\
+  x = VARG(x); \
+  y = VARG(y); \
+  w = VARG(w); \
+  h = VARG(h); \
+\
+  if (THIS->xform) \
+  	MATRIX_map_rect(THIS_MATRIX, &x, &y, &w, &h); \
+\
+  if (w < 1 || h < 1) \
+  	return;
+  
+
+BEGIN_METHOD(CDRAW_style_arrow, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER type; GB_INTEGER state)
+
+	GET_COORD();
+  DRAW->Style.Arrow(THIS, x, y, w, h, VARG(type), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(CDRAW_style_check, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER value; GB_INTEGER state)
+
+	GET_COORD();
+  DRAW->Style.Check(THIS, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(CDRAW_style_option, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state)
+
+	GET_COORD();
+  DRAW->Style.Option(THIS, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(CDRAW_style_separator, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN vertical; GB_INTEGER state)
+
+	GET_COORD();
+  DRAW->Style.Separator(THIS, x, y, w, h, VARGOPT(vertical, FALSE), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(CDRAW_style_focus, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+	GET_COORD();
+  DRAW->Style.Focus(THIS, x, y, w, h);
+
+END_METHOD
+
+BEGIN_METHOD(CDRAW_style_button, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN value; GB_INTEGER state)
+
+	GET_COORD();
+  DRAW->Style.Button(THIS, x, y, w, h, VARG(value), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(CDRAW_style_panel, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER border; GB_INTEGER state)
+
+	GET_COORD();
+  DRAW->Style.Panel(THIS, x, y, w, h, VARG(border), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
+
+BEGIN_METHOD(CDRAW_style_handle, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN vertical; GB_INTEGER state)
+
+	GET_COORD();
+  DRAW->Style.Handle(THIS, x, y, w, h, VARGOPT(vertical, FALSE), VARGOPT(state, GB_DRAW_STATE_NORMAL));
+
+END_METHOD
 
 
 GB_DESC CDrawClipDesc[] =
 {
-  GB_DECLARE(".DrawClip", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE(".Draw.Clip", 0), GB_VIRTUAL_CLASS(),
 
   GB_STATIC_PROPERTY_READ("X", "i", CDRAW_clip_x),
   GB_STATIC_PROPERTY_READ("Y", "i", CDRAW_clip_y),
@@ -930,6 +1023,22 @@ GB_DESC CDrawClipDesc[] =
   GB_END_DECLARE
 };
 
+GB_DESC CDrawStyleDesc[] =
+{
+  GB_DECLARE(".Draw.Style", 0), GB_VIRTUAL_CLASS(),
+
+	GB_STATIC_METHOD("Arrow", NULL, CDRAW_style_arrow, "(X)i(Y)i(Width)i(Height)i(Type)i[(State)i]"),
+	GB_STATIC_METHOD("Check", NULL, CDRAW_style_check, "(X)i(Y)i(Width)i(Height)i(Value)i[(State)i]"),
+	GB_STATIC_METHOD("Option", NULL, CDRAW_style_option, "(X)i(Y)i(Width)i(Height)i(Value)b[(State)i]"),
+	GB_STATIC_METHOD("Separator", NULL, CDRAW_style_separator, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(State)i]"),
+	GB_STATIC_METHOD("Focus", NULL, CDRAW_style_focus, "(X)i(Y)i(Width)i(Height)i"),
+	GB_STATIC_METHOD("Button", NULL, CDRAW_style_button, "(X)i(Y)i(Width)i(Height)i(Value)b[(State)i]"),
+	GB_STATIC_METHOD("Panel", NULL, CDRAW_style_panel, "(X)i(Y)i(Width)i(Height)i(Border)i[(State)i]"),
+	GB_STATIC_METHOD("Handle", NULL, CDRAW_style_handle, "(X)i(Y)i(Width)i(Height)i[(Vertical)b(State)i]"),
+  
+  GB_END_DECLARE
+};
+
 GB_DESC CDrawDesc[] =
 {
   GB_DECLARE("Draw", 0), GB_VIRTUAL_CLASS(),
@@ -939,6 +1048,9 @@ GB_DESC CDrawDesc[] =
   GB_STATIC_METHOD("Begin", NULL, CDRAW_begin, "(Device)o"),
   GB_STATIC_METHOD("End", NULL, CDRAW_end, NULL),
   
+	GB_STATIC_METHOD("Save", NULL, CDRAW_save, NULL),
+	GB_STATIC_METHOD("Restore", NULL, CDRAW_restore, NULL),
+  
   GB_STATIC_PROPERTY_READ("Device", "o", CDRAW_device),
 
   GB_STATIC_PROPERTY_READ("W", "i", CDRAW_width),
@@ -947,7 +1059,8 @@ GB_DESC CDrawDesc[] =
   GB_STATIC_PROPERTY_READ("Height", "i", CDRAW_height),
   GB_STATIC_PROPERTY_READ("Resolution", "i", CDRAW_resolution),
   
-  GB_STATIC_PROPERTY_SELF("Clip", ".DrawClip"),
+  GB_STATIC_PROPERTY_SELF("Clip", ".Draw.Clip"),
+  GB_STATIC_PROPERTY_SELF("Style", ".Draw.Style"),
   
   GB_STATIC_PROPERTY("Background", "i", CDRAW_background),
   GB_STATIC_PROPERTY("Foreground", "i", CDRAW_foreground),
@@ -992,7 +1105,10 @@ GB_DESC CDrawDesc[] =
 	GB_STATIC_METHOD("Pop", NULL, CDRAW_pop, NULL),
 	GB_STATIC_METHOD("Translate", NULL, CDRAW_translate, "(DX)f(DY)f"),
 	GB_STATIC_METHOD("Scale", NULL, CDRAW_scale, "(SX)f(SY)f"),
-  
+	
+	GB_CONSTANT("Normal", "i", GB_DRAW_STATE_NORMAL),
+	GB_CONSTANT("Disabled", "i", GB_DRAW_STATE_DISABLED),
+	
   #if 0
   GB_STATIC_METHOD("Drawing", NULL, CDRAW_drawing, "(Drawing)Drawing;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 

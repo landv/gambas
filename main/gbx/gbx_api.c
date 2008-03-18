@@ -214,6 +214,7 @@ void *GAMBAS_Api[] =
 
   (void *)GB_SystemCharset,
   (void *)LOCAL_get_lang,
+  (void *)GB_IsRightToLeft,
 
   (void *)GB_ArrayNew,
   (void *)GB_ArrayCount,
@@ -1543,6 +1544,11 @@ bool GB_ConvString(char **result, const char *str, int len, const char *src, con
 char *GB_SystemCharset(void)
 {
   return LOCAL_encoding;
+}
+
+int GB_IsRightToLeft(void)
+{
+  return LOCAL_local.rtl;
 }
 
 

@@ -28,6 +28,12 @@
 
 #define GB_DRAW_ALIGN_DEFAULT (-1)
 
+enum {
+  GB_DRAW_STATE_NORMAL = 0,
+  GB_DRAW_STATE_DISABLED = 1
+  };
+	
+
 typedef
 	struct _GB_MATRIX {
 		double m11, m12, m21, m22;
@@ -54,7 +60,7 @@ typedef
 		int xform;                         // if the matrix must be used
 		GB_MATRIX matrix;                  // transformation matrix (do not manage rotations)
 		GB_MATRIX *save;                   // transformation matrix stack
-		char extra[0];                     // data driver-specific
+		char extra[0];                     // driver-specific state
 	}
 	PACKED
 	GB_DRAW;
@@ -66,6 +72,9 @@ typedef
 		// Begins and terminates the drawing
 		void (*Begin)(GB_DRAW *d);
 		void (*End)(GB_DRAW *d);
+		// Save / restore state
+		void (*Save)(GB_DRAW *d);
+		void (*Restore)(GB_DRAW *d);
 		// Default colors
 		int (*GetBackground)(GB_DRAW *d);
 		void (*SetBackground)(GB_DRAW *d, int color);
@@ -115,7 +124,7 @@ typedef
 			void (*RichTextSize)(GB_DRAW *d, char *text, int len, int sw, int *w, int *h);
 			}
 			Draw;
-		// Clipping
+		// Clipping methods
 		struct {
 			void (*Get)(GB_DRAW *d, int *x, int *y, int *w, int *h);
 			void (*Set)(GB_DRAW *d, int x, int y, int w, int h);
@@ -123,6 +132,18 @@ typedef
 			void (*SetEnabled)(GB_DRAW *d, int enable);
 			}
 			Clip;
+		// Style methods
+		struct {
+			void (*Arrow)(GB_DRAW *d, int x, int y, int w, int h, int type, int state);
+			void (*Check)(GB_DRAW *d, int x, int y, int w, int h, int value, int state);
+			void (*Option)(GB_DRAW *d, int x, int y, int w, int h, int value, int state);
+			void (*Separator)(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state);
+			void (*Focus)(GB_DRAW *d, int x, int y, int w, int h);
+			void (*Button)(GB_DRAW *d, int x, int y, int w, int h, int value, int state);
+			void (*Panel)(GB_DRAW *d, int x, int y, int w, int h, int border, int state);
+			void (*Handle)(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state);
+			}
+			Style;
 		// Cairo drawing model? I must look at QT Arthur painting model first!
 	}
 	GB_DRAW_DESC;

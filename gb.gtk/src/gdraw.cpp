@@ -63,8 +63,8 @@ static const gchar _vertical_bits[]={'\x10'};
 
 void gDraw::init()
 {
-	_shadow=GTK_SHADOW_NONE;
-	_state=GTK_STATE_NORMAL;
+	_shadow = GTK_SHADOW_NONE;
+	_state = GTK_STATE_NORMAL;
 	stl = NULL;
 	dr = drm = NULL;
 	gc = gcm = NULL;
@@ -72,6 +72,36 @@ void gDraw::init()
 	stipple = NULL;
 	tag = NULL;
 	_width = _height = _resolution = 0;
+	_gc_stack = NULL;
+}
+
+void gDraw::clear()
+{
+	dArea = NULL;
+	
+	gFont::assign(&ft);
+	
+	if (dr) g_object_unref(G_OBJECT(dr));
+	if (drm) g_object_unref(G_OBJECT(drm));
+	if (gc) g_object_unref(G_OBJECT(gc));
+	if (gcm) g_object_unref(G_OBJECT(gcm));
+	if (stipple) g_object_unref(G_OBJECT(stipple));
+	
+	dr = NULL;
+	drm = NULL;
+	gc = NULL;
+	gcm = NULL;
+	stipple=NULL;
+	
+	if (_gc_stack)
+	{
+		uint i;
+		
+		for (i = 0; i < _gc_stack->len; i++)
+			g_object_unref(G_OBJECT(g_array_index(_gc_stack, GdkGC *, i)));
+		g_array_free(_gc_stack, TRUE);
+		_gc_stack = NULL;
+	}
 }
 
 gDraw::gDraw()
@@ -88,6 +118,9 @@ gDraw::~gDraw()
 
 void gDraw::reset()
 {
+	clear();
+	init();
+	
 	_shadow=GTK_SHADOW_NONE;
 	_state=GTK_STATE_NORMAL;
 	line_style = LINE_SOLID;
@@ -130,8 +163,6 @@ void gDraw::connect(gControl *wid)
 {
 	GdkSubwindowMode mode = GDK_CLIP_BY_CHILDREN;
 	
-	init();
-	clear();
 	reset();
 	
 	ft = new gFont(wid->widget); 
@@ -146,8 +177,8 @@ void gDraw::connect(gControl *wid)
 	if (_default_fg == COLOR_DEFAULT)
 		_default_fg = gDesktop::fgColor();
 	
-	stl=gtk_style_copy(wid->widget->style);
-	stl=gtk_style_attach(stl,wid->widget->window);
+	stl = gtk_style_copy(wid->widget->style);
+	stl = gtk_style_attach(stl, wid->widget->window);
 
 	switch (wid->getClass())
 	{
@@ -190,8 +221,6 @@ void gDraw::connect(gControl *wid)
 
 void gDraw::connect(gPicture *wid)
 {
-	init();
-	clear();
 	reset();
 	
 	ft = new gFont();
@@ -203,8 +232,8 @@ void gDraw::connect(gPicture *wid)
 	dr = wid->getPixmap();
 	drm = wid->getMask();
 
-	stl=gtk_style_new();
-	gtk_style_attach(stl,(GdkWindow*)dr);
+	stl = gtk_style_copy(gt_get_style("GtkButton", GTK_TYPE_BUTTON));
+	stl = gtk_style_attach(stl, (GdkWindow*)dr);
 	
 	wid->invalidate();
 	initGC();
@@ -237,18 +266,54 @@ void gDraw::disconnect()
 	}
 }
 
-void gDraw::clear()
+/**************************************************************************
+
+Save / restore GC state
+
+***************************************************************************/
+
+void gDraw::save()
 {
-	dArea=NULL;
-	gFont::assign(&ft);
-	if (dr) g_object_unref(G_OBJECT(dr));
-	if (drm) g_object_unref(G_OBJECT(drm));
-	if (gc) g_object_unref(G_OBJECT(gc));
-	if (stipple) g_object_unref(G_OBJECT(stipple));
-	dr=NULL;
-	drm=NULL;
-	gc=NULL;
-	stipple=NULL;
+	GdkGC *copy;
+	
+	if (!_gc_stack)
+		_gc_stack = g_array_new(FALSE, FALSE, sizeof(GdkGC *));
+	
+	copy = gdk_gc_new(dr);
+	gdk_gc_copy(copy, gc);
+	g_array_append_val(_gc_stack, copy);
+	
+	if (gcm)
+	{
+		copy = gdk_gc_new(drm);
+		gdk_gc_copy(copy, gcm);
+		g_array_append_val(_gc_stack, copy);
+	}
+	
+	fprintf(stderr, "save: %d\n", _gc_stack->len);
+}
+
+void gDraw::restore()
+{
+	GdkGC *copy;
+	
+	if (!_gc_stack || _gc_stack->len <= 0)
+		return;
+		
+	fprintf(stderr, "restore: %d\n", _gc_stack->len);
+	
+	copy = g_array_index(_gc_stack, GdkGC *, _gc_stack->len - 1);
+	gdk_gc_copy(gc, copy);
+	g_object_unref(G_OBJECT(copy));
+	g_array_remove_index(_gc_stack, _gc_stack->len - 1);
+	
+	if (gcm && _gc_stack->len > 0)
+	{
+		copy = g_array_index(_gc_stack, GdkGC *, _gc_stack->len - 1);
+		gdk_gc_copy(gcm, copy);
+		g_object_unref(G_OBJECT(copy));
+		g_array_remove_index(_gc_stack, _gc_stack->len - 1);
+	}
 }
 
 /**************************************************************************
@@ -256,10 +321,6 @@ void gDraw::clear()
 Information
 
 ***************************************************************************/
-GdkDrawable *gDraw::drawable()
-{
-	return dr;
-}
 
 GtkStyle *gDraw::style()
 {

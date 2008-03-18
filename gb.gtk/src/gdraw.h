@@ -35,7 +35,8 @@ public:
 	int          height() { return _height; }
 	int          resolution();
 	bool         isTransparent();
-	GdkDrawable* drawable();
+	GdkDrawable* drawable() { return dr; }
+	GdkDrawable* mask() { return drm; }
 	GtkStyle*    style();
 	int          state() { return (int)_state; };
 	int          shadow() { return (int)_shadow; };
@@ -57,6 +58,8 @@ public:
 	
 
 //"Methods"
+	void save();
+	void restore();
 	void point(int x,int y);
 	void line(int x1,int y1,int x2,int y2);
 	void rect(int x,int y,int width,int height);
@@ -91,6 +94,7 @@ private:
 	GdkPixmap *stipple;
 	GdkGC *gc;
 	GdkGC *gcm;
+	GArray *_gc_stack;
 	int fill;
 	int fillCol;
 	int line_style;

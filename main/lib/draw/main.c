@@ -39,6 +39,7 @@ GB_INTERFACE GB EXPORT;
 GB_DESC *GB_CLASSES [] EXPORT =
 {
 	CDrawClipDesc,
+	CDrawStyleDesc,
 	CDrawDesc,
   NULL
 };

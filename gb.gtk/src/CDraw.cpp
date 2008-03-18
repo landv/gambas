@@ -87,6 +87,16 @@ static void end(GB_DRAW *d)
 	delete dr;
 }
 
+static void save(GB_DRAW *d)
+{
+	DR(d)->save();
+}
+
+static void restore(GB_DRAW *d)
+{
+	DR(d)->restore();
+}
+
 static int get_background(GB_DRAW *d)
 {
 	return DR(d)->background();
@@ -296,39 +306,181 @@ static void set_clipping_enabled(GB_DRAW *d, int enable)
 	DR(d)->setClipEnabled(enable);
 }
 
-#if 0
-		// Drawing methods
-		struct {
-			void (*Rect)(GB_DRAW *d, int x, int y, int w, int h);
-			void (*Ellipse)(GB_DRAW *d, int x, int y, int w, int h, double start, double end);
-			void (*Line)(GB_DRAW *d, int x1, int y1, int x2, int y2);
-			void (*Point)(GB_DRAW *d, int x, int y);
-			void (*Picture)(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh); 
-			void (*Image)(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, int sx, int sy, int sw, int sh); 
-			void (*ZoomedImage)(GB_DRAW *d, GB_IMAGE image, int zoom, int x, int y, int sx, int sy, int sw, int sh); 
-			void (*TiledPicture)(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h);
-			void (*Text)(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align);
-			int (*TextWidth)(GB_DRAW *d, char *text, int len);
-			int (*TextHeight)(GB_DRAW *d, char *text, int len);
-			void (*Polyline)(GB_DRAW *d, int count, int *points);
-			void (*Polygon)(GB_DRAW *d, int count, int *points);
-			}
-			Draw;
-		// Clipping
-		struct {
-			void (*Get)(GB_DRAW *d, int *x, int *y, int *w, int *h);
-			void (*Set)(GB_DRAW *d, int x, int y, int w, int h);
-			void (*SetEnabled)(GB_DRAW *d, int enable);
-			int (*IsEnabled)(GB_DRAW *d);
-			}
-			Clip;
-#endif
+static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)
+{
+	GtkArrowType arrow;
+	
+	switch (type)
+	{
+		case ALIGN_NORMAL: arrow = GB.System.IsRightToLeft() ? GTK_ARROW_LEFT : GTK_ARROW_RIGHT; break;
+		case ALIGN_LEFT: arrow = GTK_ARROW_LEFT; break;
+		case ALIGN_RIGHT: arrow = GTK_ARROW_RIGHT; break;
+		case ALIGN_TOP: arrow = GTK_ARROW_UP; break;
+		case ALIGN_BOTTOM: arrow = GTK_ARROW_DOWN; break;
+		default:
+			return;
+	}
+	
+	gtk_paint_arrow(DR(d)->style(), DR(d)->drawable(), 
+		state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+		GTK_SHADOW_NONE, NULL, NULL, NULL, 
+		arrow, TRUE, x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_arrow(DR(d)->style(), DR(d)->mask(), 
+			state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+			GTK_SHADOW_NONE, NULL, NULL, NULL, 
+			arrow, TRUE, x, y, w, h);
+}
 
+static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
+{
+	GtkShadowType shadow;
+	GtkStateType st = state ? GTK_STATE_INSENSITIVE : (value ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL);
+	
+	switch (value)
+	{
+		case -1: shadow = GTK_SHADOW_IN; break;
+		case 1: shadow = GTK_SHADOW_ETCHED_IN; break;
+		default: shadow = GTK_SHADOW_OUT; break;
+	}
 
+	gtk_paint_check(DR(d)->style(), DR(d)->drawable(),
+		st, 
+		shadow, NULL, NULL, "checkbutton", 
+		x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_check(DR(d)->style(), DR(d)->mask(),
+			st, 
+			shadow, NULL, NULL, "checkbutton", 
+			x, y, w, h);
+}
+
+static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
+{
+	GtkShadowType shadow;
+	GtkStateType st = state ? GTK_STATE_INSENSITIVE : (value ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL);
+	
+	shadow = value ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
+
+	gtk_paint_option(DR(d)->style(), DR(d)->drawable(),
+		st, shadow, NULL, NULL, "radiobutton", 
+		x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_option(DR(d)->style(), DR(d)->mask(),
+			st, shadow, NULL, NULL, "radiobutton", 
+			x, y, w, h);
+}
+
+static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
+{
+	GtkStateType st = state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL;
+	
+	if (vertical)
+	{
+		gtk_paint_vline(DR(d)->style(), DR(d)->drawable(),
+			st, 
+			NULL, NULL, NULL, 
+			y, y + h - 1, x + (w / 2));
+		if (DR(d)->mask())
+			gtk_paint_vline(DR(d)->style(), DR(d)->mask(),
+				st, 
+				NULL, NULL, NULL, 
+				y, y + h - 1, x + (w / 2));
+	}
+	else
+	{
+		gtk_paint_hline(DR(d)->style(), DR(d)->drawable(),
+			st, 
+			NULL, NULL, NULL, 
+			x, x + w - 1, y + (h / 2));
+		if (DR(d)->mask())
+			gtk_paint_hline(DR(d)->style(), DR(d)->mask(),
+				st, 
+				NULL, NULL, NULL, 
+				x, x + w - 1, y + (h / 2));
+	}
+}
+
+static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
+{
+	gtk_paint_focus(DR(d)->style(), DR(d)->drawable(),
+		GTK_STATE_NORMAL, 
+		NULL, NULL, NULL, 
+		x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_focus(DR(d)->style(), DR(d)->mask(),
+			GTK_STATE_NORMAL, 
+			NULL, NULL, NULL, 
+			x, y, w, h);
+}
+			
+static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
+{
+	GtkStateType st = state ? GTK_STATE_INSENSITIVE : (value ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL);
+	
+	gtk_paint_box(DR(d)->style(), DR(d)->drawable(),
+		st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
+		NULL, NULL, "button",
+		x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_box(DR(d)->style(), DR(d)->mask(),
+			st, value ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
+			NULL, NULL, "button",
+			x, y, w, h);
+}
+			
+static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int state)
+{
+	GtkShadowType shadow;
+
+	switch (border)
+	{
+		case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
+		case BORDER_RAISED: shadow = GTK_SHADOW_OUT; break;
+		case BORDER_ETCHED: shadow = GTK_SHADOW_ETCHED_IN; break;
+		default: shadow = GTK_SHADOW_NONE;
+	}
+	
+	gtk_paint_shadow(DR(d)->style(), DR(d)->drawable(), 
+		state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+		shadow, NULL, NULL, NULL, 
+		x, y, w, h);
+	if (DR(d)->mask())
+		gtk_paint_shadow(DR(d)->style(), DR(d)->mask(), 
+			state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+			shadow, NULL, NULL, NULL, 
+			x, y, w, h);
+	
+	if (border == BORDER_PLAIN)
+	{
+		gdk_draw_rectangle(DR(d)->drawable(), DR(d)->style()->fg_gc[state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
+		if (DR(d)->mask())
+			gdk_draw_rectangle(DR(d)->mask(), DR(d)->style()->fg_gc[state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL], FALSE, x, y, w - 1, h - 1); 
+	}
+}
+			
+static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
+{
+	gtk_paint_handle(DR(d)->style(), DR(d)->drawable(),
+		state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+		GTK_SHADOW_NONE, NULL, NULL, NULL,
+		x, y, w, h,
+		(!vertical) ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL);
+	if (DR(d)->mask())
+		gtk_paint_handle(DR(d)->style(), DR(d)->mask(),
+			state ? GTK_STATE_INSENSITIVE : GTK_STATE_NORMAL, 
+			GTK_SHADOW_NONE, NULL, NULL, NULL,
+			x, y, w, h,
+			(!vertical) ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL);
+}
+			
+			
 GB_DRAW_DESC DRAW_Interface = {
 	sizeof(GB_DRAW_EXTRA),
 	begin,
 	end,
+	save,
+	restore,
 	get_background,
 	set_background,
 	get_foreground,
@@ -373,6 +525,16 @@ GB_DRAW_DESC DRAW_Interface = {
 		set_clipping,
 		is_clipping_enabled,
 		set_clipping_enabled
+	},
+	{
+		style_arrow,
+		style_check,
+		style_option,
+		style_separator,
+		style_focus,
+		style_button,
+		style_panel,
+		style_handle
 	}
 };
 

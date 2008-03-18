@@ -115,6 +115,7 @@ const char *GB_AppPath(void);
 const char *GB_AppStartup(void);
 
 char *GB_SystemCharset(void);
+int GB_IsRightToLeft(void);
 
 void *GB_Eval(void *, void *);
 
