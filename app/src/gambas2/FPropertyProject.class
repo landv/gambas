@@ -1277,7 +1277,11 @@ END
 
 PUBLIC SUB tvwEnv_Insert()
   
-  btnInsertEnv_Click
+  IF Key.Normal THEN
+    btnOK.Value = TRUE
+  ELSE IF Key.Control THEN 
+    btnInsertEnv_Click
+  ENDIF
   
 END
 

@@ -126,8 +126,8 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 {
 	bool filter;
 	
-	if (widget != _im_widget)
-		return true;
+	//if (widget != _im_widget)
+	//	return true;
 	
 	if (_valid)
 		disable();
@@ -135,7 +135,7 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 	_valid = true;
 	_event = *event;
 	
-	if (_event.type == GDK_KEY_PRESS && !_no_input_method)
+	if (_event.type == GDK_KEY_PRESS && !_no_input_method && widget == _im_widget)
 	{
 		//fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
 		filter = gtk_im_context_filter_keypress(_im_context, &_event);
