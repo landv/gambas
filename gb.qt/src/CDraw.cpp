@@ -792,9 +792,20 @@ static QColorGroup get_color_group(int state)
 	}
 }
 
+static QColorGroup get_color_group_mask(int state)
+{
+	static QColorGroup mask_cg(Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color0, Qt::color0);
+
+	return mask_cg;
+}
+
 static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int state)
 {
+	QStyle::SFlags flags = QStyle::Style_Default;
 	QStyle::PrimitiveElement pe;
+	
+	if (!state)
+		flags |= QStyle::Style_Enabled;
 	
 	switch (type)
 	{
@@ -808,8 +819,14 @@ static void style_arrow(GB_DRAW *d, int x, int y, int w, int h, int type, int st
 	}
 
 	QRect r(x, y, w, h);
-	QApplication::style().drawPrimitive(pe, DP(d), r, get_color_group(state));
-	if (DPM(d)) QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group(state));
+	QApplication::style().drawPrimitive(pe, DP(d), r, get_color_group(state), flags);
+	if (DPM(d)) 
+	{
+    DPM(d)->setRasterOp(Qt::OrROP);
+		//qDebug("arrow: %p %p %d", DPM(d), DPM(d)->device(), dynamic_cast<QBitmap *>(DPM(d)->device()) != NULL);
+		QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group_mask(state), flags);
+    DPM(d)->setRasterOp(Qt::CopyROP);
+	}
 }
 
 static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
@@ -828,7 +845,12 @@ static void style_check(GB_DRAW *d, int x, int y, int w, int h, int value, int s
 		flags |= QStyle::Style_On;
 	
 	QApplication::style().drawPrimitive(QStyle::PE_Indicator, DP(d), r, get_color_group(state), flags);
-	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_IndicatorMask, DPM(d), r, get_color_group(state), flags);
+	if (DPM(d)) 
+	{
+    DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style().drawPrimitive(QStyle::PE_IndicatorMask, DPM(d), r, get_color_group_mask(state), flags);
+		DPM(d)->setRasterOp(Qt::CopyROP);
+	}
 }
 
 static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
@@ -845,7 +867,12 @@ static void style_option(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 		flags |= QStyle::Style_On;
 	
 	QApplication::style().drawPrimitive(QStyle::PE_ExclusiveIndicator, DP(d), r, get_color_group(state), flags);
-	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_ExclusiveIndicatorMask, DPM(d), r, get_color_group(state), flags);
+	if (DPM(d)) 
+	{
+		DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style().drawPrimitive(QStyle::PE_ExclusiveIndicatorMask, DPM(d), r, get_color_group_mask(state), flags);
+		DPM(d)->setRasterOp(Qt::CopyROP);
+	}
 }
 
 static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
@@ -860,14 +887,24 @@ static void style_separator(GB_DRAW *d, int x, int y, int w, int h, int vertical
 		flags |= QStyle::Style_Horizontal;
 	
 	QApplication::style().drawPrimitive(QStyle::PE_DockWindowSeparator, DP(d), r, get_color_group(0), flags);
-	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_DockWindowSeparator, DPM(d), r, get_color_group(0), flags);
+	if (DPM(d)) 
+	{
+		DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style().drawPrimitive(QStyle::PE_DockWindowSeparator, DPM(d), r, get_color_group_mask(0), flags);
+		DPM(d)->setRasterOp(Qt::CopyROP);
+	}
 }
 
 static void style_focus(GB_DRAW *d, int x, int y, int w, int h)
 {
 	QRect r(x, y, w, h);
 	QApplication::style().drawPrimitive(QStyle::PE_FocusRect, DP(d), r, get_color_group(0));
-	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_FocusRect, DPM(d), r, get_color_group(0));
+	if (DPM(d)) 
+	{
+		DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style().drawPrimitive(QStyle::PE_FocusRect, DPM(d), r, get_color_group_mask(0));
+		DPM(d)->setRasterOp(Qt::CopyROP);
+	}	
 }
 			
 static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int state)
@@ -884,7 +921,12 @@ static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 		flags |= QStyle::Style_On;
 	
 	QApplication::style().drawPrimitive(QStyle::PE_ButtonCommand, DP(d), r, get_color_group(state), flags);
-	if (DPM(d)) QApplication::style().drawPrimitive(QStyle::PE_ButtonCommand, DPM(d), r, get_color_group(state), flags);
+	if (DPM(d)) 
+	{
+		DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style().drawPrimitive(QStyle::PE_ButtonCommand, DPM(d), r, get_color_group_mask(state), flags);
+		DPM(d)->setRasterOp(Qt::CopyROP);
+	}
 }
 			
 static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int state)
@@ -902,7 +944,7 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 	if (border == BORDER_PLAIN)
 	{
 		qDrawPlainRect(DP(d), r, get_color_group(state).foreground(), 1);
-		if DPM(d) qDrawPlainRect(DPM(d), r, get_color_group(state).foreground(), 1);
+		if DPM(d) qDrawPlainRect(DPM(d), r, get_color_group_mask(state).foreground(), 1);
 		return;
 	}
 	
@@ -921,7 +963,12 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 	}
 	
 	QApplication::style().drawPrimitive(pe, DP(d), r, get_color_group(state), flags);
-	if (DPM(d)) QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group(state), flags);
+	if (DPM(d)) 
+	{
+		DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group_mask(state), flags);
+		DPM(d)->setRasterOp(Qt::CopyROP);
+	}
 }
 			
 static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)
@@ -942,7 +989,9 @@ static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, i
 	if (DPM(d)) 
 	{
 		DPM(d)->translate(x, y);
-		QApplication::style().drawPrimitive(QStyle::PE_Splitter, DPM(d), r, get_color_group(state), flags);	
+		DPM(d)->setRasterOp(Qt::OrROP);
+		QApplication::style().drawPrimitive(QStyle::PE_Splitter, DPM(d), r, get_color_group_mask(state), flags);	
+		DPM(d)->setRasterOp(Qt::CopyROP);
 		DPM(d)->translate(-x, -y);
 	}
 }

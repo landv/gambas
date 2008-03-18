@@ -191,12 +191,13 @@ static void trans_identifier(int index, boolean first, boolean point, PATTERN ne
 
       CODE_push_extern(sym->global.value);
     }
+    /* That breaks some code if the property has the same name as a class!
     else if (type == TK_PROPERTY)
     {
     	CODE_push_me(FALSE);
       CODE_push_unknown(CLASS_add_unknown(JOB->class, index));
-    }
-    else if (type == TK_EVENT || type == TK_LABEL)
+    }*/
+    else if (type == TK_EVENT || type == TK_LABEL || type == TK_PROPERTY)
     {
       goto __CLASS;
     }

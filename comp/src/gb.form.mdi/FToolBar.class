@@ -130,11 +130,12 @@ PUBLIC SUB dwgHandle_Draw()
 
   Draw.FillX = 0
   Draw.FillY = 0
-  IF $bVertical THEN 
-    Draw.Tile(Picture["img/handle-v.png"], 2, 3, (dwgHandle.W - 4) AND NOT 3, 8)
-  ELSE
-    Draw.Tile(Picture["img/handle.png"], 3, 2, 8, (dwgHandle.H - 4) AND NOT 3)
-  ENDIF
+  Draw.Style.Handle(0, 0, dwgHandle.W, dwgHandle.H, $bVertical, NOT ME.Enabled)
+  ' IF $bVertical THEN 
+  '   Draw.Tile(Picture["img/handle-v.png"], 2, 3, (dwgHandle.W - 4) AND NOT 3, 8)
+  ' ELSE
+  '   Draw.Tile(Picture["img/handle.png"], 3, 2, 8, (dwgHandle.H - 4) AND NOT 3)
+  ' ENDIF
   
 END
 
@@ -321,7 +322,7 @@ END
 
 PUBLIC SUB dwgHandle_MouseUp()
 
-  SetHidden(NOT $bHidden)
+  'SetHidden(NOT $bHidden)
 
 END
 

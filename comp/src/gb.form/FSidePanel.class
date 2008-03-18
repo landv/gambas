@@ -215,23 +215,43 @@ END
 PRIVATE SUB RefreshArrow()
 
   DIM hPict AS Picture
+  DIM hImage AS Image
+  DIM sKey AS String
+  DIM iType AS Integer
   
   IF NOT $bOpened THEN RETURN
 
   SELECT CASE $iOrientation
     CASE Align.Top, Align.Bottom
       IF $bVisible XOR ($iOrientation = Align.Bottom) THEN
-        hPict = Picture["img/8/side-top.png"]
+        sKey = "$side-top"
+        iType = Align.Top
+        'hPict = Picture["img/8/side-top.png"]
       ELSE
-        hPict = Picture["img/8/side-bottom.png"]
+        sKey = "$side-bottom"
+        iType = Align.Bottom
+        'hPict = Picture["img/8/side-bottom.png"]
       ENDIF
     CASE Align.Left, Align.Right
       IF $bVisible XOR ($iOrientation = Align.Right) THEN
-        hPict = Picture["img/8/side-left.png"]
+        sKey = "$side-left"
+        iType = Align.Left
+        'hPict = Picture["img/8/side-left.png"]
       ELSE
-        hPict = Picture["img/8/side-right.png"]
+        sKey = "$align-right"
+        iType = Align.Right
+        'hPict = Picture["img/8/side-right.png"]
       ENDIF
   END SELECT
+
+  hPict = Picture[sKey]
+  IF NOT hPict THEN 
+    hPict = NEW Picture(8, 8, TRUE)
+    Draw.Begin(hPict)
+    Draw.Style.Arrow(0, 0, 8, 8, iType)
+    Draw.End
+    Picture[sKey] = hPict
+  ENDIF
 
   btnSide.Picture = hPict
   btnSide2.Picture = hPict

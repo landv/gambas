@@ -289,8 +289,6 @@ void gDraw::save()
 		gdk_gc_copy(copy, gcm);
 		g_array_append_val(_gc_stack, copy);
 	}
-	
-	fprintf(stderr, "save: %d\n", _gc_stack->len);
 }
 
 void gDraw::restore()
@@ -300,8 +298,6 @@ void gDraw::restore()
 	if (!_gc_stack || _gc_stack->len <= 0)
 		return;
 		
-	fprintf(stderr, "restore: %d\n", _gc_stack->len);
-	
 	copy = g_array_index(_gc_stack, GdkGC *, _gc_stack->len - 1);
 	gdk_gc_copy(gc, copy);
 	g_object_unref(G_OBJECT(copy));
