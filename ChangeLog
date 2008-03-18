@@ -1,4 +1,45 @@
 -------------------------------------------------------------------------------
+ gambas2-2.4.0 - 18 Mar 2008
+-------------------------------------------------------------------------------
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Ensure that the property panel is correctly shown or hidden when the
+  project is opened.
+* BUG: More space for displaying the project name in the project property
+  dialog.
+* NEW: Tips' Spanish translation updated.
+
+[INTERPRETER]
+* BUG: Mid$("", 0) returns an error now.
+
+[GB.FORM]
+* BUG: ValueBox now reformats its contents after its Value property has
+  been set.
+
+[GB.GTK]
+* BUG: The default tray icon is the same as gb.qt now.
+* BUG: Using stock pictures work correctly again, and does not crash the
+  interpreter anymore.
+* BUG: Fixes memory leaks with font and picture management, and in other
+  places.
+* BUG: Composed keys are correctly handled again by KeyPress events.
+* BUG: Disable the management of input methods in TextBox and TextArea
+  controls, so that the input methods are not disturbed. Consequently;
+  SCIM and Bridged SCIM work again.
+* BUG: You can read keyboard events properties in a Form KeyPress or
+  KeyRelease event handler correctly now.
+
+[GB.QT]
+* BUG: Removed some memory leaks.
+* BUG: TrayIcon objects are correctly destroyed at program exit.
+* BUG: TrayIcon Width, Height, ScreenX and ScreenY properties do not crash
+  anymore when the tray icon is hidden. They return zero instead.
+
+[GB.WEB]
+* BUG: CGI.Decode() is more robust against malformed URLs.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.3.0 - 13 Mar 2008
 -------------------------------------------------------------------------------
 
