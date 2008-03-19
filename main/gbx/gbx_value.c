@@ -1095,26 +1095,6 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 }
 
 
-void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype)
-{
-  if (ctype.id == T_OBJECT)
-  {
-    VALUE_default(value, (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT);
-  }
-  else if (ctype.id == T_ARRAY)
-  {
-    value->type = T_ARRAY;
-    //value->_array.desc = class->load->array[ctype.value];
-    value->_array.class = class;
-    value->_array.keep = FALSE;
-    value->_array.index = ctype.value;
-    ARRAY_new(&value->_array.addr, (ARRAY_DESC *)class->load->array[ctype.value]);
-  }
-  else
-    VALUE_default(value, (TYPE)ctype.id);
-}
-
-
 void VALUE_class_constant(CLASS *class, VALUE *value, int ind)
 {
   static void *jump[] =

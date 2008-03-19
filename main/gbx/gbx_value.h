@@ -234,7 +234,6 @@ void VALUE_from_string(VALUE *value, const char *addr, int len);
 
 void VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
 void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype);
-void VALUE_class_default(CLASS *class, VALUE *value, CTYPE ctype);
 void VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 
 bool VALUE_is_null(VALUE *val);

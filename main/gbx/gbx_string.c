@@ -143,7 +143,7 @@ static STRING *realloc_string(STRING *str, int new_len)
 	int new_size;
 	
   if (new_len == str->len)
-    return;
+    return str;
     
 	size = REAL_SIZE(str->len + 1 + sizeof(STRING));
 	new_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
@@ -795,98 +795,147 @@ char *STRING_conv_file_name(const char *name, int len)
 
 int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
 {
-  int pos = 0, ip;
+  int pos, ip;
 
   if (lp > ls)
-    goto __FOUND;
+    return 0;
 
-  ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
+	ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
 
-  if (is < 0)
-    is = ls - is;
-  else if (is == 0)
-    is = right ? ls : 1;
-  else if (is > ls)
-    goto __FOUND;
+	if (is < 0)
+		is = ls - is;
+	else if (is == 0)
+		is = right ? ls : 1;
+	else if (is > ls)
+		return 0;
 
-  is--;
+	is--;
 
-  ps += is;
-
-  if (right)
-  {
-    if (nocase)
-    {
-      for (; is >= 0; is--, ps--)
-      {
-        for (ip = 0; ip < lp; ip++)
-        {
-          if (tolower(ps[ip]) != tolower(pp[ip]))
-            goto __NEXT_RN;
-        }
-  
-        pos = is + 1;
-        goto __FOUND;
-  
-    __NEXT_RN:
-      ;
-      }
-    }
-    else
-    {
-      for (; is >= 0; is--, ps--)
-      {
-        for (ip = 0; ip < lp; ip++)
-        {
-          if (ps[ip] != pp[ip])
-            goto __NEXT_R;
-        }
-  
-        pos = is + 1;
-        goto __FOUND;
-  
-    __NEXT_R:
-      ;
-      }
-    }
-  }
-  else
-  {
-    if (nocase)
-    {
-      for (; is < ls; is++, ps++)
-      {
-        for (ip = 0; ip < lp; ip++)
-        {
-          if (tolower(ps[ip]) != tolower(pp[ip]))
-            goto __NEXT_LN;
-        }
-  
-        pos = is + 1;
-        goto __FOUND;
-  
-    __NEXT_LN:
-      ;
-      }
-    }
-    else
-    {
-      for (; is < ls; is++, ps++)
-      {
-        for (ip = 0; ip < lp; ip++)
-        {
-          if (ps[ip] != pp[ip])
-            goto __NEXT_L;
-        }
-  
-        pos = is + 1;
-        goto __FOUND;
-  
-    __NEXT_L:
-      ;
-      }
-    }
-  }
+	if (lp == 1)
+	{
+		uchar cp = *pp;
+		
+		if (nocase)
+		{
+			cp = tolower(cp);
+			
+			if (right)
+			{
+				for (; is >= 0; is--)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+			else
+			{
+				for (; is < ls; is++)
+				{
+					if (tolower(ps[is]) == cp)
+						return is + 1;
+				}
+			}
+		}
+		else
+		{
+			if (right)
+			{
+				for (; is >= 0; is--)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}
+			}
+			else
+			{
+				for (; is < ls; is++)
+				{
+					if (ps[is] == cp)
+						return is + 1;
+				}
+			}
+		}
+		
+		return 0;
+	}
+	
+	pos = 0;
+	ps += is;
+	
+	if (right)
+	{
+		if (nocase)
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				for (ip = 0; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_RN;
+				}
+	
+				pos = is + 1;
+				goto __FOUND;
+	
+		__NEXT_RN:
+			;
+			}
+		}
+		else
+		{
+			for (; is >= 0; is--, ps--)
+			{
+				for (ip = 0; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_R;
+				}
+	
+				pos = is + 1;
+				goto __FOUND;
+	
+		__NEXT_R:
+			;
+			}
+		}
+	}
+	else
+	{
+		if (nocase)
+		{
+			for (; is < ls; is++, ps++)
+			{
+				for (ip = 0; ip < lp; ip++)
+				{
+					if (tolower(ps[ip]) != tolower(pp[ip]))
+						goto __NEXT_LN;
+				}
+	
+				pos = is + 1;
+				goto __FOUND;
+	
+		__NEXT_LN:
+			;
+			}
+		}
+		else
+		{
+			for (; is < ls; is++, ps++)
+			{
+				for (ip = 0; ip < lp; ip++)
+				{
+					if (ps[ip] != pp[ip])
+						goto __NEXT_L;
+				}
+	
+				pos = is + 1;
+				goto __FOUND;
+	
+		__NEXT_L:
+			;
+			}
+		}
+	}
 
 __FOUND:
 

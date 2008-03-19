@@ -58,9 +58,9 @@ void STACK_exit(void)
     FREE(&STACK_base, "STACK_exit");
 }
 
+#if DEBUG_STACK
 void STACK_check(int need)
 {
-#if DEBUG_STACK
   static VALUE *old = NULL;
 
   if (SP > old)
@@ -68,11 +68,10 @@ void STACK_check(int need)
     printf("STACK = %d bytes\n", ((char *)SP - STACK_base));
     old = SP;
   }
-#endif
-
   if ((char *)(SP + need + 8) >= STACK_limit)
     THROW(E_STACK);
 }
+#endif
 
 void STACK_push_frame(STACK_CONTEXT *context)
 {

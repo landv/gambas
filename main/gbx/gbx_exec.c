@@ -103,7 +103,7 @@ void EXEC_init(void)
 
 void EXEC_borrow(TYPE type, VALUE *value)
 {
-	static void *jump[16] = {
+	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
 		&&__STRING, &&__NONE, &&__VARIANT, &&__NONE, &&__FUNCTION, &&__NONE, &&__NONE
 		};
@@ -131,7 +131,7 @@ __NONE:
 
 void UNBORROW(VALUE *value)
 {
-	static void *jump[16] = {
+	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
 		&&__STRING, &&__NONE, &&__VARIANT, &&__NONE, &&__FUNCTION, &&__NONE, &&__NONE
 		};
@@ -167,7 +167,7 @@ __NONE:
 
 void EXEC_release(TYPE type, VALUE *value)
 {
-	static void *jump[16] = {
+	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
 		&&__STRING, &&__NONE, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__NONE, &&__NONE
 		};
@@ -199,7 +199,7 @@ __NONE:
 
 void RELEASE_many(VALUE *value, int n)
 {
-	static void *jump[16] = {
+	static const void *jump[16] = {
 		&&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE, &&__NONE,
 		&&__STRING, &&__NONE, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__NONE, &&__NONE
 		};
@@ -331,6 +331,73 @@ static bool exec_enter_can_quick(void)
 	return TRUE;
 }
 
+static void set_class_default(CLASS *class, VALUE *value, CTYPE ctype)
+{
+  static const void *jump[] = {
+    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
+    &&__DATE, &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL, 
+    &&__OBJECT
+    };
+
+	value->type = ctype.id;
+  goto *jump[ctype.id];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+
+  value->_integer.value = 0;
+  return;
+
+__LONG:
+
+  value->_long.value = 0;
+  return;
+
+__SINGLE:
+__FLOAT:
+  value->_float.value = 0;
+  return;
+
+__STRING:
+  value->_string.addr = NULL;
+  value->_string.start = 0;
+  value->_string.len = 0;
+  return;
+
+__VARIANT:
+  value->_variant.vtype = T_NULL;
+  return;
+
+__DATE:
+  value->_date.date = 0;
+  value->_date.time = 0;
+  return;
+
+__VOID:
+  return;
+
+__OBJECT:
+	if (ctype.value >= 0)
+  	value->type = (TYPE)class->load->class_ref[ctype.value];
+  value->_object.object = NULL;
+  return;
+
+__ARRAY:
+
+	value->_array.class = class;
+	value->_array.keep = FALSE;
+	value->_array.index = ctype.value;
+	ARRAY_new(&value->_array.addr, (ARRAY_DESC *)class->load->array[ctype.value]);
+
+__FUNCTION:
+__CLASS:
+__NULL:
+  ERROR_panic("VALUE_default: Unknown default type");
+}
+
+
 void EXEC_enter(void)
 {
 	int i;
@@ -446,7 +513,7 @@ void EXEC_enter(void)
 	{
 		for (i = 0; i < func->n_local; i++)
 		{
-			VALUE_class_default(class, SP, func->local[i].type);
+			set_class_default(class, SP, func->local[i].type);
 			SP++;
 		}
 	}
@@ -538,7 +605,7 @@ void EXEC_enter_quick(void)
 	{
 		for (i = 0; i < func->n_local; i++)
 		{
-			VALUE_class_default(class, SP, func->local[i].type);
+			set_class_default(class, SP, func->local[i].type);
 			SP++;
 		}
 	}
@@ -1157,7 +1224,7 @@ void EXEC_native(void)
 
 void EXEC_object(VALUE *val, CLASS **pclass, OBJECT **pobject, bool *pdefined)
 {
-	static void *jump[] = {
+	static const void *jump[] = {
 		&&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR,
 		&&__ERROR, &&__ERROR, &&__VARIANT, &&__ERROR, &&__FUNCTION, &&__CLASS, &&__NULL,
 		&&__OBJECT

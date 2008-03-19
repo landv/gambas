@@ -718,7 +718,7 @@ _PUSH_ME:
 _PUSH_MISC:
 
   {
-    static void *_jump[] =
+    static const void *_jump[] =
       { &&__PUSH_NULL, &&__PUSH_VOID, &&__PUSH_FALSE, &&__PUSH_TRUE, &&__PUSH_LAST };
 
     goto *_jump[GET_XX()];
@@ -868,7 +868,7 @@ _RETURN:
 _CALL:
 
   {
-    static void *call_jump[] =
+    static const void *call_jump[] =
       { &&__CALL_NULL, &&__CALL_NATIVE, &&__CALL_PRIVATE, &&__CALL_PUBLIC,
         &&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL };
 
@@ -1050,7 +1050,7 @@ _CALL:
 _CALL_QUICK:
 
   {
-    static void *call_jump[] =
+    static const void *call_jump[] =
       { &&__CALL_NULL, &&__CALL_NATIVE_Q, &&__CALL_PRIVATE_Q, &&__CALL_PUBLIC_Q };
 
     register VALUE * NO_WARNING(val);
@@ -1105,7 +1105,7 @@ _CALL_QUICK:
 _CALL_NORM:
 
   {
-    static void *call_jump[] =
+    static const void *call_jump[] =
       { &&__CALL_NULL, &&__CALL_NATIVE_N, &&__CALL_PRIVATE_N, &&__CALL_PUBLIC_N };
 
     register VALUE * NO_WARNING(val);
@@ -1165,7 +1165,7 @@ _JUMP_FIRST:
 _JUMP_NEXT:
 
   {
-    static void *jn_jump[] = { &&_JN_START, &&_JN_NEXT_1, &&_JN_NEXT_2, &&_JN_NEXT_3, &&_JN_NEXT_4, &&_JN_NEXT_5, &&_JN_NEXT_6 };
+    static const void *jn_jump[] = { &&_JN_START, &&_JN_NEXT_1, &&_JN_NEXT_2, &&_JN_NEXT_3, &&_JN_NEXT_4, &&_JN_NEXT_5, &&_JN_NEXT_6 };
 
     VALUE * NO_WARNING(end);
     VALUE * NO_WARNING(inc);

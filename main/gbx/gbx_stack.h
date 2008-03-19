@@ -59,7 +59,13 @@ EXTERN STACK_CONTEXT *STACK_frame;
 
 void STACK_init(void);
 void STACK_exit(void);
+
+#if DEBUG_STACK
 void STACK_check(int need);
+#else
+#define STACK_check(_need) if ((char *)(SP + (_need) + 8) >= STACK_limit) THROW(E_STACK);
+
+#endif
 
 void STACK_push_frame(STACK_CONTEXT *context);
 void STACK_pop_frame(STACK_CONTEXT *context);

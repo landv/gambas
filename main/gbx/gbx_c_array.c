@@ -1469,9 +1469,12 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 	char c;
 	bool escape;
   char escl, escr;
+  bool lsep;
 	
   if (sep == NULL || *sep == 0)
     sep = ",";
+
+	lsep = sep[1];
 
   if (esc == NULL || *esc == 0)
     escl = escr = 0;
@@ -1515,7 +1518,7 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
   	{
   		escape = TRUE;
   	}
-  	else if (index(sep, c))
+  	else if (c == *sep || (lsep && index(&sep[1], c)))
   	{
   		add_entry();
   	}
