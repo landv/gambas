@@ -146,8 +146,12 @@ void ERROR_clear()
 
 void ERROR_enter(ERROR_CONTEXT *err)
 {
-  CLEAR(err);
   err->prev = ERROR_current;
+  err->info.code = 0;
+  err->info.free = FALSE;
+  err->info.msg = NULL;
+  err->info.backtrace = NULL;
+  
   ERROR_current = err;
 
 	#if DEBUG_ERROR

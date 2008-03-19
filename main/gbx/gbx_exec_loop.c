@@ -879,14 +879,6 @@ _CALL:
 
     if (!TYPE_is_function(val->type))
     {
-      /*EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object, &defined);
-      EXEC.drop = PCODE_is_void(code);
-      EXEC.nparam = ind;
-	    EXEC.use_stack = FALSE;
-
-      if (!defined)
-        *PC |= CODE_CALL_VARIANT;*/
-
 			bool defined;
 
       EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object, &defined);

@@ -145,7 +145,7 @@ void *GAMBAS_Api[] =
   (void *)GB_ReturnNewZeroString,
 
   (void *)STRING_new,
-  (void *)STRING_new_temp,
+  (void *)GB_TempString,
   (void *)GB_FreeString,
   (void *)STRING_extend,
   (void *)STRING_add,
@@ -1515,6 +1515,11 @@ void *GB_Add(void *pdata)
   return ARRAY_add_void(pdata);
 }
 
+
+void GB_TempString(char **str, char *src, int len)
+{
+  STRING_new_temp(str, src, len);
+}
 
 void GB_FreeString(char **str)
 {

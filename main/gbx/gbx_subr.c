@@ -54,19 +54,19 @@ void SUBR_leave(int nparam)
 
 bool SUBR_check_string(VALUE *param)
 {
-  if (param->type == T_VARIANT)
-    VARIANT_undo(param);
+__RETRY:
+
+  if (TYPE_is_string(param->type))
+  	return (param->_string.len == 0);
 
   if (TYPE_is_null(param->type))
     return TRUE;
 
-  if (TYPE_is_string(param->type))
+  if (param->type == T_VARIANT)
   {
-    if (param->_string.len == 0)
-      return TRUE;
-    else
-      return FALSE;
-    }
+    VARIANT_undo(param);
+    goto __RETRY;
+  }
 
   THROW(E_TYPE, TYPE_get_name(T_STRING), TYPE_get_name((param)->type));
 }
@@ -156,6 +156,10 @@ void SUBR_get_string_len(VALUE *param, char **str, int *len)
     *len = 0;
   }
   else
-    VALUE_get_string(param, str, len);
+	{
+		*str = param->_string.addr + param->_string.start;
+		*len = param->_string.len;
+	}
+  //VALUE_get_string(param, str, len);
 }
 

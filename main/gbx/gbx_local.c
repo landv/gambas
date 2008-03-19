@@ -109,6 +109,8 @@ static char *env_LANG = NULL;
 
 static bool _currency;
 
+static char *_lang = NULL;
+
 static int my_setenv(const char *name, const char *value, char **ptr)
 {
   char *str = NULL;
@@ -496,6 +498,7 @@ void LOCAL_exit(void)
   STRING_free(&env_LC_ALL);
   STRING_free(&env_LANGUAGE);
   STRING_free(&LOCAL_encoding);
+  STRING_free(&_lang);
   free_local_info();
 }
 
@@ -504,13 +507,17 @@ const char *LOCAL_get_lang(void)
 {
   char *lang;
 
-  lang = getenv("LC_ALL");
-  if (!lang)
-    lang = getenv("LANG");
-  if (!lang || !*lang)
-    lang = "en_US";
-
-  return lang;
+	if (!_lang)
+	{
+		lang = getenv("LC_ALL");
+		if (!lang)
+			lang = getenv("LANG");
+		if (!lang || !*lang)
+			lang = "en_US";
+		STRING_new(&_lang, lang, 0);
+	}
+	
+  return _lang;
 }
 
 void LOCAL_set_lang(const char *lang)
@@ -539,6 +546,9 @@ void LOCAL_set_lang(const char *lang)
   }
   else
     fprintf(stderr, "WARNING: cannot switch to language '%s'. Did you install the corresponding locale?\n", LOCAL_get_lang());
+
+	STRING_free(&_lang);
+	STRING_new(&_lang, lang, 0);
 
   fill_local_info();
 

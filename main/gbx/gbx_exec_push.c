@@ -294,7 +294,8 @@ _PUSH_PROPERTY_2:
     if (EXEC_call_native(desc->property.read, object, desc->property.type, NULL))
       PROPAGATE();
 
-    SP[-1] = TEMP;
+    //SP[-1] = TEMP;
+    VALUE_copy(&SP[-1], &TEMP);
     goto _FIN_DEFINED;
   }
   else
@@ -308,7 +309,8 @@ _PUSH_PROPERTY_2:
 
     EXEC_function_keep();
 
-    SP[-1] = *RP;
+    //SP[-1] = *RP;
+    VALUE_copy(&SP[-1], RP);
     RP->type = T_VOID;
     goto _FIN_DEFINED_NO_BORROW;
   }
@@ -480,13 +482,23 @@ __PUSH_QUICK_ARRAY:
 	
 	if (class->quick_array == CQA_ARRAY)
 	{
-		for (i = 1; i <= np; i++)
-			VALUE_conv(&val[i], T_INTEGER);
+		if (np == 1)
+		{
+			VALUE_conv(&val[1], T_INTEGER);
+			data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
+		}
+		else
+		{
+			for (i = 1; i <= np; i++)
+				VALUE_conv(&val[i], T_INTEGER);
+			
+			data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
+		}
 		
-		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
 		if (!data)
 			PROPAGATE();
 		VALUE_read(val, data, ((CARRAY *)object)->type);
+		
 		SP = val;
 		PUSH();
 	}
@@ -524,7 +536,8 @@ __PUSH_ARRAY_2:
 
 	OBJECT_UNREF(&object, "EXEC_push_array");
 	SP--;
-	SP[-1] = SP[0];
+	//SP[-1] = SP[0];
+	VALUE_copy(&SP[-1], &SP[0]);
 
 	if (!defined)
 		VALUE_conv(&SP[-1], T_VARIANT);

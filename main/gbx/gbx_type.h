@@ -73,6 +73,7 @@ typedef
 
 #ifndef __GBX_TYPE_C
 EXTERN char *TYPE_joker;
+EXTERN const size_t TYPE_sizeof_memory_tab[];
 #endif
 
 #define TYPE_is_object(type)       ((type) >= T_OBJECT)
@@ -91,7 +92,9 @@ EXTERN char *TYPE_joker;
 
 size_t TYPE_sizeof(TYPE type);
 //size_t TYPE_sizeof_native(TYPE type);
-size_t TYPE_sizeof_memory(TYPE type);
+//size_t TYPE_sizeof_memory(TYPE type);
+
+#define TYPE_sizeof_memory(_type) (TYPE_is_object(_type) ? sizeof(void *) : TYPE_sizeof_memory_tab[_type])
 
 const char *TYPE_get_name(TYPE type);
 

@@ -87,9 +87,11 @@ EXTERN VALUE RET;
 EXTERN EXEC_FUNCTION EXEC;
 
 EXTERN VALUE *EXEC_super;
+
 EXTERN bool EXEC_debug;
 EXTERN bool EXEC_arch;
 EXTERN bool EXEC_fifo;
+EXTERN bool EXEC_keep_library;
 
 EXTERN EXEC_HOOK EXEC_Hook;
 
@@ -245,14 +247,6 @@ void RELEASE_many(VALUE *val, int n);
   RELEASE(SP); \
 }
 
-#define COPY_VALUE(_dst, _src) \
-{ \
-  register intptr_t *d = (intptr_t *)(_dst); \
-  register intptr_t *s = (intptr_t *)(_src); \
-  d[0] = s[0]; \
-  d[1] = s[1]; \
-  d[2] = s[2]; \
-  d[3] = s[3]; \
-}
+#define COPY_VALUE(_dst, _src) VALUE_copy(_dst, _src)
 
 #endif /* */

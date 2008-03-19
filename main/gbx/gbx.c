@@ -200,6 +200,7 @@ int main(int argc, char **argv)
 #if DO_PRELOADING          
           "  -p             disable preloading\n"
 #endif
+          "  -k             do not unload shared libraries\n"
           "  -x             execute an archive\n"
           "\n"
           );
@@ -247,6 +248,10 @@ int main(int argc, char **argv)
       else if (strcmp(argv[i], "-p") == 0)
       {
         nopreload = TRUE;
+      }
+      else if (strcmp(argv[i], "-k") == 0)
+      {
+        EXEC_keep_library = TRUE;
       }
       else
       {

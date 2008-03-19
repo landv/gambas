@@ -65,9 +65,23 @@ void STACK_push_frame(STACK_CONTEXT *context);
 void STACK_pop_frame(STACK_CONTEXT *context);
 bool STACK_has_error_handler(void);
 STACK_CONTEXT *STACK_get_frame(int frame);
-ushort *STACK_get_previous_pc();
+
+#define STACK_get_previous_pc() ((STACK_frame_count <= 0) ? NULL : STACK_frame->pc)
 
 #define STACK_get_current() ((STACK_frame_count > 0) ? STACK_frame : NULL)
 
+#define STACK_copy(_dst, _src) \
+  (_dst)->next = (_src)->next; \
+	(_dst)->bp = (_src)->bp; \
+	(_dst)->pp = (_src)->pp; \
+	(_dst)->cp = (_src)->cp; \
+	(_dst)->op = (_src)->op; \
+	(_dst)->ep = (_src)->ep; \
+	(_dst)->fp = (_src)->fp; \
+	(_dst)->pc = (_src)->pc; \
+	(_dst)->ec = (_src)->ec; \
+	(_dst)->et = (_src)->et; \
+	(_dst)->tc = (_src)->tc; \
+	(_dst)->tp = (_src)->tp;
 
-#endif /* */
+#endif

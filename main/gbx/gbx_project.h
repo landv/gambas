@@ -51,5 +51,6 @@ EXTERN char *PROJECT_user_home;
 void PROJECT_init(const char *file);
 void PROJECT_load(void);
 void PROJECT_exit(void);
+char *PROJECT_get_home(void);
 
 #endif

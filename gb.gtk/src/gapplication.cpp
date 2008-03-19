@@ -48,6 +48,7 @@ gKey
 **************************************************************************/
 
 bool gKey::_valid = false;
+bool gKey::_no_input_method = false;
 GdkEventKey gKey::_event;
 GtkIMContext *gKey::_im_context = NULL;
 GtkWidget *gKey::_im_widget = NULL;
@@ -125,8 +126,8 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 {
 	bool filter;
 	
-	if (widget != _im_widget)
-		return true;
+	//if (widget != _im_widget)
+	//	return true;
 	
 	if (_valid)
 		disable();
@@ -134,8 +135,14 @@ bool gKey::enable(GtkWidget *widget, GdkEventKey *event)
 	_valid = true;
 	_event = *event;
 	
-  filter = gtk_im_context_filter_keypress(_im_context, &_event);
-  //fprintf(stderr, "gKey::enable: filter = %d event->string = '%s'\n", filter, event->string);
+	if (_event.type == GDK_KEY_PRESS && !_no_input_method && widget == _im_widget)
+	{
+		//fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
+		filter = gtk_im_context_filter_keypress(_im_context, &_event);
+		//fprintf(stderr, "gKey::enable: filter -> %d event->string = '%s'\n", filter, event->string);
+	}
+	else
+		filter = false;
   
   if (filter && _im_text)
   {
@@ -189,17 +196,26 @@ void gKey::setActiveControl(gControl *control)
 	if (_im_widget)
 	{
 		//fprintf(stderr, "gtm_im_context_focus_out\n");
-	  gtk_im_context_set_client_window (_im_context, 0);
-		gtk_im_context_focus_out(_im_context);
+		if (!_no_input_method)
+		{
+	  	gtk_im_context_set_client_window (_im_context, 0);
+			gtk_im_context_focus_out(_im_context);
+		}
 		_im_widget = NULL;
+		_no_input_method = false;
 	}
 	
 	if (control)
 	{
 		_im_widget = control->widget;
-	  gtk_im_context_set_client_window (_im_context, _im_widget->window);
-		gtk_im_context_focus_in(_im_context);
-		gtk_im_context_reset(_im_context);
+		_no_input_method = control->noInputMethod();
+		
+		if (!_no_input_method)
+		{
+	  	gtk_im_context_set_client_window (_im_context, _im_widget->window);
+			gtk_im_context_focus_in(_im_context);
+			gtk_im_context_reset(_im_context);
+		}
 		//fprintf(stderr, "gtm_im_context_focus_in\n");
 	}
 }

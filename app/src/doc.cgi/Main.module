@@ -576,7 +576,7 @@ PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
       $sRes &= "<div class=\"box\">\n"
       
     CASE "only"
-      $sRes &= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td class=\"only\" width=\"8\" valign=\"top\">" & sParam & "</td><td width=\"8\"></td><td>"
+      $sRes &= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td class=\"only\" width=\"8\" valign=\"top\">" & sParam & "</td><td width=\"8\"></td><td>"
 
   END SELECT
 
@@ -674,7 +674,7 @@ PRIVATE FUNCTION Encode(sStr AS String) AS String
 
       IF sStr = "==" THEN
         $bVerbatim = FALSE
-        $sRes = $sRes & "</pre><p>"
+        $sRes = $sRes & "</pre>\n"
         CONTINUE
       ELSE
         $sRes = $sRes & sStr & "\n"
@@ -2125,6 +2125,8 @@ PRIVATE FUNCTION AutoLink(sStr AS String) AS String
           sWait = "}"
         ELSE IF sCar = "%" THEN
           sWait = "%"
+        ELSE IF sCar = "<" THEN   
+          sWait = ">"
         ELSE IF sCar = "\\" THEN
           sWait = " "
           'sCar = ""

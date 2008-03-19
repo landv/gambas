@@ -89,3 +89,6 @@ gb_la_SOURCES = \
 gbx3-gbx_exec_loop.o: gbx_exec_loop.c
 	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbx3_CFLAGS) -O3 $(CFLAGS) -MT gbx3-gbx_exec_loop.o -MD -MP -MF "$(DEPDIR)/gbx3-gbx_exec_loop.Tpo" -c -o gbx3-gbx_exec_loop.o `test -f 'gbx_exec_loop.c' || echo '$(srcdir)/'`gbx_exec_loop.c; then mv -f "$(DEPDIR)/gbx3-gbx_exec_loop.Tpo" "$(DEPDIR)/gbx3-gbx_exec_loop.Po"; else rm -f "$(DEPDIR)/gbx3-gbx_exec_loop.Tpo"; exit 1; fi
 
+gbx3-gb_error.o: gb_error.c
+	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbx3_CFLAGS) -O3 $(CFLAGS) -MT gbx3-gb_error.o -MD -MP -MF "$(DEPDIR)/gbx3-gb_error.Tpo" -c -o gbx3-gb_error.o `test -f 'gb_error.c' || echo '$(srcdir)/'`gb_error.c; then mv -f "$(DEPDIR)/gbx3-gb_error.Tpo" "$(DEPDIR)/gbx3-gb_error.Po"; else rm -f "$(DEPDIR)/gbx3-gb_error.Tpo"; exit 1; fi
+

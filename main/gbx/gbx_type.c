@@ -38,6 +38,8 @@
 
 char *TYPE_joker;
 
+const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0, 0 };
+
 /* Permet de simplifier les tables de sauts associ�s aux types de donn�s */
 
 #if 0
@@ -87,16 +89,6 @@ size_t TYPE_sizeof_native(TYPE type)
     return size[type];
 }
 #endif
-
-size_t TYPE_sizeof_memory(TYPE type)
-{
-  static size_t size[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0, 0 };
-
-  if (TYPE_is_object(type))
-    return sizeof(void *);
-  else
-    return size[type];
-}
 
 
 const char *TYPE_get_name(TYPE type)

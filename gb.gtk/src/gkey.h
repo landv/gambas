@@ -30,6 +30,7 @@ private:
 	static bool _valid;
 	static GtkIMContext *_im_context;
 	static GtkWidget *_im_widget;
+	static bool _no_input_method;
 };
 
 #endif

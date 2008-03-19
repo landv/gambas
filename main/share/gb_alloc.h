@@ -41,6 +41,7 @@ EXTERN int MEMORY_size;
 #define ALLOC_ZERO(_ptr, _size, _src)   MEMORY_alloc_zero((void *)_ptr, _size, _src)
 #define REALLOC(_ptr, _size, _src)      MEMORY_realloc((void *)_ptr, _size, _src)
 #define FREE(_ptr, _src)                MEMORY_free((void *)_ptr, _src)
+#define IFREE(_ptr, _src)               FREE(&(_ptr), _src)
 
 PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src);
 PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size, const char *src);
@@ -56,7 +57,8 @@ PUBLIC void MEMORY_check_ptr(void *ptr);
 #define ALLOC(_ptr, _size, _src)        ((*(_ptr) = malloc(_size)) ? MEMORY_count++ : THROW_MEMORY())
 #define ALLOC_ZERO(_ptr, _size, _src)   ((*(_ptr) = calloc(_size, 1)) ? MEMORY_count++ : THROW_MEMORY())
 #define REALLOC(_ptr, _size, _src)      ((*(_ptr) = realloc(*(_ptr), _size)) ? 0 : THROW_MEMORY())
-#define FREE(_ptr, _src)                free(*(_ptr)), *(_ptr) = NULL, MEMORY_count--
+#define FREE(_ptr, _src)                (free(*(_ptr)), *(_ptr) = NULL, MEMORY_count--)
+#define IFREE(_ptr, _src)               (free(_ptr), MEMORY_count--)
 
 int THROW_MEMORY();
 
@@ -66,6 +68,7 @@ int THROW_MEMORY();
 #define ALLOC_ZERO(_ptr, _size, _src)   MEMORY_alloc_zero((void *)_ptr, _size)
 #define REALLOC(_ptr, _size, _src)      MEMORY_realloc((void *)_ptr, _size)
 #define FREE(_ptr, _src)                MEMORY_free((void *)_ptr)
+#define IFREE(_ptr, _src)               FREE(&(_ptr), _src)
 
 PUBLIC void MEMORY_alloc(void *p_ptr, size_t size);
 PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size);

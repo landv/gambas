@@ -44,9 +44,11 @@ void STRING_init(void);
 void STRING_exit(void);
 
 void STRING_new(char **ptr, const char *src, int len);
-void STRING_new_temp(char **ptr, const char *src, int len);
-void STRING_free(char **ptr);
+void STRING_free_real(char *ptr);
+void STRING_free_later(char *ptr);
 int STRING_get_free_index(void);
+
+#define STRING_new_temp(_pptr, _src, _len) STRING_new(_pptr, _src, _len), STRING_free_later(*_pptr)
 
 void STRING_extend(char **ptr, int new_len);
 void STRING_extend_end(char **ptr);
@@ -76,10 +78,22 @@ char *STRING_conv_to_UTF8(const char *name, int len);
 
 #if DEBUG_STRING
 
+void STRING_free(char **ptr);
 void STRING_ref(char *ptr);
 void STRING_unref(char **ptr);
 
 #else
+
+#define STRING_free(_p) \
+({ \
+  char **pptr = _p; \
+  char *ptr = *pptr; \
+  if (ptr) \
+  { \
+  	STRING_free_real(ptr); \
+  	*pptr = NULL; \
+  } \
+})
 
 #define STRING_ref(_p) \
 ({ \
@@ -97,7 +111,10 @@ void STRING_unref(char **ptr);
   { \
 	  str = STRING_from_ptr(ptr); \
   	if ((--str->ref) <= 0) \
-    	STRING_free(pptr); \
+  	{ \
+	  	STRING_free_real(ptr); \
+    	*pptr = NULL; \
+    } \
   } \
 })
 

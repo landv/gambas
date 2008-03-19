@@ -108,11 +108,9 @@ gboolean gcb_keypress (GtkWidget *widget, GdkEventKey *event, gControl *data)
 	
 	if (!gApplication::userEvents()) return false;
 	
-	if (!gKey::enable(widget, event))
-	{
-		if (data->onKeyEvent) 
-			vl = data->onKeyEvent(data,gEvent_KeyPress);
-	}
+	gKey::enable(widget, event);
+	if (data->onKeyEvent) 
+		vl = data->onKeyEvent(data,gEvent_KeyPress);
 	gKey::disable();
 	
 	if (vl)

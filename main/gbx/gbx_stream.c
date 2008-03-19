@@ -162,6 +162,8 @@ _OPEN:
   stream->common.buffer = NULL;
   stream->common.buffer_pos = 0;
   stream->common.buffer_len = 0;
+  stream->common.no_fionread = FALSE;
+  stream->common.no_lseek = FALSE;
 
   /*if (((mode & ST_BIG) && !EXEC_big_endian)
       || ((mode & ST_LITTLE) && EXEC_big_endian))
@@ -653,20 +655,33 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
         }
       }
 
-      STRING_new_temp_value(value, NULL, labs(len));
       if (len > 0)
+      {
+	      STRING_new_temp_value(value, NULL, labs(len));
         STREAM_read(stream, value->_string.addr, len);
+      }
       else
       {
         len = (-len);
+        
+        value->type = T_STRING;
+        STRING_new(&value->_string.addr, NULL, len);
+        value->_string.start = 0;
+        value->_string.len = len;
+        
         STREAM_read_max(stream, value->_string.addr, len);
+        
         if (STREAM_eff_read < len)
         {
           if (STREAM_eff_read == 0)
+          {
             value->type = T_NULL;
+            STRING_free(&value->_string.addr);
+          }
           else
           {
             STRING_extend(&value->_string.addr, STREAM_eff_read);
+            STRING_extend_end(&value->_string.addr);
             value->_string.len = STREAM_eff_read;
           }
         }

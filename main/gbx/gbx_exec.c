@@ -65,9 +65,11 @@ bool EXEC_big_endian;
 /* Current iterator */
 CENUM *EXEC_enum;
 
-bool EXEC_debug = FALSE; /* Mode d�ogage */
-bool EXEC_arch = FALSE; /* Ex�ution d'une archive */
-bool EXEC_fifo = FALSE; /* D�ogage par fifo */
+bool EXEC_debug = FALSE; // debugging mode
+bool EXEC_arch = FALSE; // executing an archive
+bool EXEC_fifo = FALSE; // debugging through a fifo
+bool EXEC_keep_library = FALSE; // do not unload libraries
+
 EXEC_HOOK EXEC_Hook = { NULL };
 EXEC_FUNCTION EXEC;
 bool EXEC_main_hook_done = FALSE;
@@ -579,7 +581,9 @@ void EXEC_leave(bool drop)
 
 	/* Save the return value. It can be erased by OBJECT_UNREF() */
 
-	ret = *RP;
+	//ret = *RP;
+	VALUE_copy(&ret, RP);
+	
   pc = STACK_get_previous_pc();
   nb = 0;
   nparam = FP->n_param;
@@ -925,7 +929,7 @@ void EXEC_native_quick(void)
 	void *object = EXEC.object;
 
 	bool error;
-	void *free;
+	void *free_later;
 	VALUE ret;
 
 	error = EXEC_call_native(desc->exec, object, desc->type, &SP[-nparam]);
@@ -942,7 +946,7 @@ void EXEC_native_quick(void)
 	/* Si la description de la fonction se trouve sur la pile */
 
 	SP--;
-	free = SP->_function.object;
+	free_later = SP->_function.object;
 	SP->type = T_NULL;
 
 	if (desc->type == T_VOID)
@@ -971,7 +975,7 @@ void EXEC_native_quick(void)
 		}
 	}
 
-	OBJECT_UNREF(&free, "EXEC_native (FUNCTION)");
+	OBJECT_UNREF(&free_later, "EXEC_native (FUNCTION)");
 
 	#if DEBUG_STACK
 	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
@@ -991,7 +995,7 @@ void EXEC_native(void)
 	VALUE *value;
 	TYPE *sign;
 	bool error;
-	void *free;
+	void *free_later;
 	int n;
 	VALUE ret;
 
@@ -1099,7 +1103,7 @@ void EXEC_native(void)
 	if (use_stack)
 	{
 		SP--;
-		free = SP->_function.object;
+		free_later = SP->_function.object;
 		SP->type = T_NULL;
 	}
 
@@ -1140,7 +1144,7 @@ void EXEC_native(void)
 	}
 
 	if (use_stack)
-		OBJECT_UNREF(&free, "EXEC_native (FUNCTION)");
+		OBJECT_UNREF(&free_later, "EXEC_native (FUNCTION)");
 
 	if (error)
 		PROPAGATE();

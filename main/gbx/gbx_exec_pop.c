@@ -298,15 +298,27 @@ __POP_QUICK_ARRAY:
 	{
 		TYPE type = ((CARRAY *)object)->type;
 		
-		swap = val[0];
-		val[0] = val[-1];
-		val[-1] = swap;
+		//swap = val[0];
+		//val[0] = val[-1];
+		//val[-1] = swap;
+		VALUE_copy(&swap, &val[0]);
+		VALUE_copy(&val[0], &val[-1]);
+		VALUE_copy(&val[-1], &swap);
 		
 		VALUE_conv(&val[0], type);
-		for (i = 1; i < np; i++)
-			VALUE_conv(&val[i], T_INTEGER);
 		
-		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
+		if (np == 2)
+		{
+			VALUE_conv(&val[1], T_INTEGER);
+			data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
+		}
+		else
+		{
+			for (i = 1; i < np; i++)
+				VALUE_conv(&val[i], T_INTEGER);
+			
+			data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
+		}
 		if (!data)
 			PROPAGATE();
 		VALUE_write(val, data, type);
@@ -336,9 +348,12 @@ __POP_ARRAY_2:
 
 	/* swap object and value to be inserted */
 
-	swap = val[0];
-	val[0] = val[-1];
-	val[-1] = swap;
+	//swap = val[0];
+	//val[0] = val[-1];
+	//val[-1] = swap;
+	VALUE_copy(&swap, &val[0]);
+	VALUE_copy(&val[0], &val[-1]);
+	VALUE_copy(&val[-1], &swap);
 
 	if (EXEC_special(SPEC_PUT, class, object, np, TRUE))
 		THROW(E_NARRAY, class->name);

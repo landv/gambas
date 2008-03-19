@@ -60,8 +60,8 @@ PUBLIC CONST DEFAULT_MAX_RECENT AS Integer = 24
 
 PUBLIC CONST FORM_MAGIC AS String = "# Gambas Form File 2.0"
 PUBLIC CONST FORM_MAGIC_1 AS String = "# Gambas Form File 1.0"
-PUBLIC CONST PROJECT_MAGIC_1 AS String = "# Gambas Project File 1.0"
 PUBLIC CONST PROJECT_MAGIC AS String = "# Gambas Project File 2.0"
+PUBLIC CONST PROJECT_MAGIC_1 AS String = "# Gambas Project File 1.0"
 
 PUBLIC CONST DEFAULT_FONT AS String = "Monospace,10"
 
@@ -91,11 +91,8 @@ PRIVATE CONST FILE_AUTH_CAR AS String = "abcdefghijklmnopqrstuvwxyz0123456789-.+
 
 PRIVATE CONST PROJECT_FILE AS String = ".project"
 
-'PRIVATE $bGetSource AS Boolean
-'PRIVATE $bDisplayForm AS Boolean
-
-PRIVATE TMP_FILE AS String '= "/tmp/.gambas.ver"
-PRIVATE OUTPUT_FILE AS String '= "/tmp/.gambas.out"
+PRIVATE TMP_FILE AS String
+PRIVATE OUTPUT_FILE AS String
 
 PUBLIC Browser AS String
 PUBLIC ImageEditors AS String[] = ["KolourPaint", "Krita", "Gimp"]

@@ -91,7 +91,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CUSER_home)
 
-	GB_ReturnString(PROJECT_user_home);
+	GB_ReturnString(PROJECT_get_home());
 
 END_PROPERTY
 

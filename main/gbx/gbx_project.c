@@ -48,7 +48,6 @@
 
 char *PROJECT_path = NULL;
 char *PROJECT_exec_path = NULL;
-char *PROJECT_user_home = NULL;
 
 char *PROJECT_name = NULL;
 char *PROJECT_title = NULL;
@@ -65,6 +64,9 @@ static char *project_buffer;
 
 static char *project_ptr;
 static int project_line;
+
+static char *_home = NULL;
+static uid_t _uid = 0;
 
 
 static void raise_error(const char *msg)
@@ -236,12 +238,27 @@ static void project_analyze(char *addr, int len)
     PROJECT_title = PROJECT_name;
 }
 
+char *PROJECT_get_home(void)
+{
+  struct passwd *info;
+	uid_t uid = getuid();
+	
+	if (!_home || _uid != uid)
+	{
+		STRING_free(&_home);
+		info = getpwuid(uid);
+		if (info)
+			STRING_new(&_home, info->pw_dir, 0);
+		_uid = uid;
+	}
+
+	return _home;
+}
 
 void PROJECT_init(const char *file)
 {
   int len;
   const char *path;
-  struct passwd *info;
 
   /* Save the working directory */
 
@@ -252,14 +269,6 @@ void PROJECT_init(const char *file)
   path = FILE_find_gambas();
 
   STRING_new(&PROJECT_exec_path, FILE_get_dir(FILE_get_dir(path)), 0);
-
-	/* Home directory */
-
-  info = getpwuid(getuid());
-  if (info)
-	  STRING_new(&PROJECT_user_home, info->pw_dir, 0);
-	else
-		PROJECT_user_home = NULL;
 
 	/* Component paths */
 
@@ -274,7 +283,7 @@ void PROJECT_init(const char *file)
   STRING_new(&COMPONENT_path, FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL), 0);
 	#endif
   
-  STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_user_home, ".local", GAMBAS_LIB_PATH, NULL), 0);
+  STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
 
   /* Project path & name*/
 
@@ -391,5 +400,5 @@ void PROJECT_exit(void)
   STRING_free(&PROJECT_oldcwd);
   STRING_free(&PROJECT_path);
   STRING_free(&PROJECT_exec_path);
-  STRING_free(&PROJECT_user_home);
+  STRING_free(&_home);
 }

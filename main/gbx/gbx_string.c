@@ -33,6 +33,7 @@
 #include "gbx_value.h"
 #include "gbx_debug.h"
 #include "gbx_local.h"
+#include "gbx_project.h"
 
 #include <unistd.h>
 #include <pwd.h>
@@ -47,9 +48,6 @@
 
 #define STRING_last_count 32
 static char *STRING_last[STRING_last_count] = { 0 };
-
-#define SIZE_INC 16
-#define REAL_SIZE(_len) (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1))
 
 static const char _char_string[512] = 
 "\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F\x00"
@@ -73,6 +71,129 @@ static int _index = 0;
 
 //static HASH_TABLE *_intern = NULL;
 
+/****************************************************************************
+ 
+	String pool management
+
+****************************************************************************/
+
+#define SIZE_INC 16
+#define REAL_SIZE(_len) (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1))
+
+#define POOL_SIZE  8
+#define POOL_MAX   32
+
+static STRING *_pool[POOL_SIZE] = { 0 };
+static int _pool_count[POOL_SIZE] = { 0 };
+
+static STRING *alloc_string(int len)
+{
+	STRING *str;
+	int size = REAL_SIZE(len + 1 + sizeof(STRING));
+	int pool = (size / SIZE_INC) - 1;
+	
+	if (pool < POOL_SIZE)
+	{
+		if (_pool_count[pool])
+		{
+			//fprintf(stderr, "alloc_string: %d bytes from pool %d\n", size, pool);
+			str = _pool[pool];
+			_pool[pool] = *((STRING **)str);
+			_pool_count[pool]--;
+			str->len = len;
+			str->ref = 1;
+			return str;
+		}
+		//else
+		//	printf("pool[%d] void\n", pool);
+	}
+	//else
+	//	printf("alloc_string: %d\n", pool);
+			
+	ALLOC(&str, size, "alloc_string");
+	str->len = len;
+	str->ref = 1;
+	return str;
+}
+
+void STRING_free_real(char *ptr)
+{
+	STRING *str = STRING_from_ptr(ptr);
+	int size = REAL_SIZE(str->len + 1 + sizeof(STRING));
+	int pool = (size / SIZE_INC) - 1;
+
+	if (pool < POOL_SIZE)
+	{
+		if (_pool_count[pool] < POOL_MAX)		
+		{
+			//fprintf(stderr, "free_string: %d bytes to pool %d\n", size, pool);
+			*((STRING **)str) = _pool[pool];
+			_pool[pool] = str;
+			_pool_count[pool]++;
+			return;
+		}
+	}
+	
+	IFREE(str, "free_string");
+}
+
+static STRING *realloc_string(STRING *str, int new_len)
+{
+	int size;
+	int new_size;
+	
+  if (new_len == str->len)
+    return;
+    
+	size = REAL_SIZE(str->len + 1 + sizeof(STRING));
+	new_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
+	
+	if (new_size != size)
+	{
+		if (new_len == 0)
+		{
+			STRING_free_real(str->data);
+			return NULL;
+		}
+		else
+		{
+			STRING *nstr = alloc_string(new_len);
+			if (new_len < str->len)
+				memcpy(nstr->data, str->data, new_len);
+			else
+				memcpy(nstr->data, str->data, str->len);
+			STRING_free_real(str->data);
+			str = nstr;
+		}
+	}
+	
+	str->len = new_len;
+	return str;
+}
+
+static void clear_pool(void)
+{
+	int i;
+	STRING *str, *next;
+	
+	for (i = 0; i < POOL_SIZE; i++)
+	{
+		str = _pool[i];
+		while (str)
+		{
+			next = *((STRING **)str);
+			IFREE(str, "clear_pool");
+			str = next;
+		}
+	}
+}
+
+/****************************************************************************
+ 
+	String routines
+
+****************************************************************************/
+
 void STRING_new(char **ptr, const char *src, int len)
 {
   STRING *str;
@@ -86,12 +207,10 @@ void STRING_new(char **ptr, const char *src, int len)
     return;
   }
 
-  ALLOC(&str, REAL_SIZE(len + 1 + sizeof(STRING)), "STRING_new");
+  //ALLOC(&str, REAL_SIZE(len + 1 + sizeof(STRING)), "STRING_new");
+  str = alloc_string(len);
 
-  str->len = len;
-  str->ref = 1;
-
-  if (src != NULL)
+  if (src)
     memcpy(str->data, src, len);
 
   str->data[len] = 0;
@@ -105,7 +224,9 @@ void STRING_new(char **ptr, const char *src, int len)
   #endif
 }
 
-static void post_free(char *ptr)
+#define post_free STRING_free_later
+
+void STRING_free_later(char *ptr)
 {
   /*if (NLast >= MAX_LAST_STRING)
     THROW(E_STRING);*/
@@ -140,12 +261,6 @@ int STRING_get_free_index(void)
   return _index;
 }
 
-void STRING_new_temp(char **ptr, const char *src, int len)
-{
-  STRING_new(ptr, src, len);
-  if (*ptr)
-    post_free(*ptr);
-}
 
 
 /*void STRING_init(void)
@@ -164,28 +279,25 @@ void STRING_exit(void)
     STRING_unref(&STRING_last[i]);
     STRING_last[i] = NULL;
   }
-
+  
   _index = 0;
+  
+  clear_pool();
 }
 
 
 void STRING_extend(char **ptr, int new_len)
 {
   STRING *str;
-  int len = STRING_length(*ptr);
-  int old_real_size;
-  int new_real_size;
 
-  if (new_len == len)
-    return;
+	if (!*ptr)
+		str = alloc_string(new_len);
+	else
+		str = realloc_string(STRING_from_ptr(*ptr), new_len);
 
-  if (new_len == 0)
-  {
-    STRING_free(ptr);
-    return;
-  }
+	*ptr = str ? str->data : NULL;
 
-	old_real_size = (len == 0) ? 0 : REAL_SIZE(len + 1 + sizeof(STRING));
+	/*old_real_size = (len == 0) ? 0 : REAL_SIZE(len + 1 + sizeof(STRING));
 	new_real_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
 
 	if (new_real_size != old_real_size)
@@ -205,7 +317,7 @@ void STRING_extend(char **ptr, int new_len)
 	else
 		str = STRING_from_ptr(*ptr);
 
-  str->len = new_len;
+  str->len = new_len;*/
 }
 
 
@@ -271,32 +383,6 @@ void STRING_char_value(VALUE *value, uchar car)
 }
 
 
-void STRING_free(char **ptr)
-{
-  STRING *str;
-
-  if (*ptr == NULL)
-    return;
-
-  str = STRING_from_ptr(*ptr);
-
-  #ifdef DEBUG_ME
-  DEBUG_where();
-  printf("STRING_free %p %p\n", *ptr, ptr);
-  fflush(NULL);
-  #endif
-
-  str->ref = 1000000000L;
-
-  FREE(&str, "STRING_free");
-  *ptr = NULL;
-
-  #ifdef DEBUG_ME
-  printf("OK\n");
-  #endif
-}
-
-
 #if 0
 int STRING_comp_value(VALUE *str1, VALUE *str2)
 {
@@ -349,6 +435,31 @@ int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2)
 #endif
 
 #if DEBUG_STRING
+
+void STRING_free(char **ptr)
+{
+  STRING *str;
+
+  if (*ptr == NULL)
+    return;
+
+  str = STRING_from_ptr(*ptr);
+
+  #ifdef DEBUG_ME
+  DEBUG_where();
+  printf("STRING_free %p %p\n", *ptr, ptr);
+  fflush(NULL);
+  #endif
+
+  str->ref = 1000000000L;
+
+  STRING_free_real(str);
+  *ptr = NULL;
+
+  #ifdef DEBUG_ME
+  printf("OK\n");
+  #endif
+}
 
 void STRING_ref(char *ptr)
 {
@@ -628,6 +739,7 @@ char *STRING_conv_file_name(const char *name, int len)
   char *result = NULL;
   int pos;
   struct passwd *info;
+  char *dir;
   char *user;
 
   if (!name)
@@ -645,23 +757,26 @@ char *STRING_conv_file_name(const char *name, int len)
   	}
 
 		if (pos <= 1)
-			info = getpwuid(getuid());
+			dir = PROJECT_get_home();
 		else
 		{
 			STRING_new_temp(&user, &name[1], pos - 1);
 			info = getpwnam(user);
+			if (info)
+				dir = info->pw_dir;
+			else
+				dir = NULL;
 		}
 
-		if (info)
+		if (dir)
 		{
-			STRING_new(&user, info->pw_dir, 0);
+			STRING_new(&user, dir, 0);
 			if (pos < len)
 				STRING_add(&user, &name[pos], len - pos);
 			name = user;
 			len = STRING_length(name);
 			post_free(user);
 		}
-
   }
 
   if (LOCAL_is_UTF8)
@@ -780,3 +895,5 @@ __FOUND:
 
 
 #include "gb_common_string_temp.h"
+
+

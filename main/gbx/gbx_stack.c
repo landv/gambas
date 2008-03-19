@@ -74,14 +74,16 @@ void STACK_check(int need)
     THROW(E_STACK);
 }
 
-
 void STACK_push_frame(STACK_CONTEXT *context)
 {
   if (((char *)SP + sizeof(STACK_CONTEXT) * 2) >= (char *)STACK_frame)
     THROW(E_STACK);
 
   STACK_frame--;
-  *STACK_frame = *context;
+  
+  //*STACK_frame = *context;
+  STACK_copy(STACK_frame, context);
+  
   STACK_frame_count++;
   STACK_limit = (char *)STACK_frame;
 
@@ -89,20 +91,14 @@ void STACK_push_frame(STACK_CONTEXT *context)
   //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
 }
 
-ushort *STACK_get_previous_pc()
-{
-  if (STACK_frame_count <= 0)
-    ERROR_panic("STACK_get_previous_pc: Stack frame is void");
-	
-	return STACK_frame->pc;
-}
-
 void STACK_pop_frame(STACK_CONTEXT *context)
 {
   if (STACK_frame_count <= 0)
     ERROR_panic("STACK_pop_frame: Stack frame is void");
 
-  *context = *STACK_frame;
+  //*context = *STACK_frame;
+  STACK_copy(context, STACK_frame);
+  
   STACK_frame++;
   STACK_frame_count--;
   STACK_limit = (char *)STACK_frame;

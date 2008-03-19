@@ -89,18 +89,24 @@ static int get_bound(CARRAY *_object, int d)
 }
 
 
-static void *get_data(CARRAY *_object, int index)
+void *CARRAY_out_of_bound()
 {
-  if ((index < 0) || (index >= ARRAY_count(THIS->data)))
-  {
-    GB_Error((char *)E_BOUND);
-    return NULL;
-  }
-
-  return (void *)((char *)(THIS->data) + index * TYPE_sizeof_memory(THIS->type));
+	GB_Error((char *)E_BOUND);
+	return NULL;
 }
 
+// static void *get_data(CARRAY *_object, int index)
+// {
+//   if ((index < 0) || (index >= ARRAY_count(THIS->data)))
+//   {
+//     return NULL;
+//   }
+// 
+//   return (void *)((char *)(THIS->data) + index * TYPE_sizeof_memory(THIS->type));
+// }
+
 #define get_data_multi CARRAY_get_data_multi
+#define get_data CARRAY_get_data
 
 void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 {
@@ -269,14 +275,10 @@ static void *insert(CARRAY *_object, int index)
 }
 
 
-
-
-
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value)
 {
 	VALUE_read(value, get_data(THIS, index), THIS->type);
 }
-
 
 
 BEGIN_METHOD(CARRAY_new, GB_INTEGER size)

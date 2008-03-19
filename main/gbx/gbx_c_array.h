@@ -29,6 +29,7 @@
 
 #include "gbx_variant.h"
 #include "gbx_object.h"
+#include "gbx_type.h"
 
 typedef
   struct {
@@ -63,11 +64,24 @@ extern GB_DESC NATIVE_TemplateArray[];
 
 #define ARRAY_TEMPLATE_NDESC 13
 
-/*CARRAY *CLIST_create(void);*/
 void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool many_esc);
 void CARRAY_reverse(void *_object, void *_param);
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value);
 #define CARRAY_invert(_array) CARRAY_reverse(_array, NULL)
 void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam);
+void *CARRAY_out_of_bound();
+
+#define CARRAY_get_data(_array, _index) \
+({ \
+	int __index = (_index); \
+	CARRAY *__array = (CARRAY *)(_array); \
+	void *__data; \
+  if ((__index < 0) || (__index >= ARRAY_count(__array->data))) \
+  	__data = CARRAY_out_of_bound(); \
+  else \
+ 		__data = (void *)((char *)(__array->data) + __index * TYPE_sizeof_memory(__array->type)); \
+ 	__data; \
+})
+
 
 #endif

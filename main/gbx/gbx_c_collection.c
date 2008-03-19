@@ -360,7 +360,8 @@ int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
   if (val)
   {
     value->type = GB_T_VARIANT;
-    *((VARIANT *)&value->value) = *((VARIANT *)val);
+    //*((VARIANT *)&value->value) = *((VARIANT *)val);
+    VARIANT_copy(&value->value, val);
     return FALSE;
   }
   else
