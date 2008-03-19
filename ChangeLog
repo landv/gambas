@@ -1,4 +1,21 @@
 -------------------------------------------------------------------------------
+ gambas2-2.4.1 - 19 Mar 2008
+-------------------------------------------------------------------------------
+
+[INTERPRETER]
+* NEW: A new interpreter option, "-k", that prevents shared library to be
+  unloaded until the process terminates. That can be useful when 
+  debugging with valgrind.
+
+[GB.NET.SMTP]
+* BUG: Fixes the Makefile.am file so that the component compiles if the 
+  glib library is installed in a non-standard directory.
+
+[GB.QTE.EXT]
+* BUG: Fixes the gb.qte.ext.component file.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.4.0 - 18 Mar 2008
 -------------------------------------------------------------------------------
 
