@@ -63,9 +63,11 @@ bool EXEC_big_endian;
 /* Current iterator */
 CENUM *EXEC_enum;
 
-bool EXEC_debug = FALSE; /* Mode d�ogage */
-bool EXEC_arch = FALSE; /* Ex�ution d'une archive */
-bool EXEC_fifo = FALSE; /* D�ogage par fifo */
+bool EXEC_debug = FALSE; // debugging mode
+bool EXEC_arch = FALSE; // executing an archive
+bool EXEC_fifo = FALSE; // debugging through a fifo
+bool EXEC_keep_library = FALSE; // do not unload libraries
+
 EXEC_HOOK EXEC_Hook = { NULL };
 EXEC_FUNCTION EXEC;
 bool EXEC_main_hook_done = FALSE;

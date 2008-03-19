@@ -90,6 +90,7 @@ EXTERN VALUE *EXEC_super;
 EXTERN bool EXEC_debug;
 EXTERN bool EXEC_arch;
 EXTERN bool EXEC_fifo;
+EXTERN bool EXEC_keep_library;
 
 EXTERN EXEC_HOOK EXEC_Hook;
 
