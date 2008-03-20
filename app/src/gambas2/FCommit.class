@@ -61,3 +61,51 @@ PUBLIC SUB btnCancel_Click()
 
 END
 
+
+PUBLIC SUB edtChange_Cursor()
+
+  lblCursor.Text = CStr(edtChange.Line + 1) & ":" & CStr(edtChange.Column + 1)
+
+END
+
+PUBLIC SUB btnCut_Click()
+
+  edtChange.Cut
+
+END
+
+PUBLIC SUB btnCopy_Click()
+
+  edtChange.Copy
+
+END
+
+PUBLIC SUB btnPaste_Click()
+
+  edtChange.Paste
+
+END
+
+PUBLIC SUB btnUndo_Click()
+
+  edtChange.Undo
+
+END
+
+PUBLIC SUB btnRedo_Click()
+
+  edtChange.Redo
+
+END
+
+PUBLIC SUB btnIndent_Click()
+
+  edtChange.Indent
+
+END
+
+PUBLIC SUB btnUnindent_Click()
+
+  edtChange.Unindent
+
+END
