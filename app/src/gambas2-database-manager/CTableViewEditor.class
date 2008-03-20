@@ -447,6 +447,18 @@ PUBLIC SUB TableView_Resize()
 
 END
 
+PUBLIC SUB TableView_RowResize(Row AS Integer)
+
+  HideEditor
+
+END
+
+PUBLIC SUB TableView_ColumnResize(Column AS Integer)
+
+  HideEditor
+
+END
+
 
 
 PUBLIC SUB Editor_Click()
