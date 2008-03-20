@@ -338,32 +338,34 @@ PUBLIC SUB UpdateRecentMenu()
   mnuOpenRecent.Children.Clear
   mnuOpenRecent.Enabled = Project.GetRecentFiles().Count > 0
 
-  IF NOT mnuOpenRecent.Enabled THEN RETURN
+  IF mnuOpenRecent.Enabled THEN
 
-  hMenu = NEW Menu(mnuOpenRecent) AS "mnuClearRecent"
-  hMenu.Text = ("&Clear history")
-  hMenu.Picture = Picture["icon:/small/trash"]
-
-  bSort = Settings["/FWelcome/SortRecent", FALSE]
-
-  hMenu = NEW Menu(mnuOpenRecent) AS "mnuSortRecent"
-  hMenu.Text = ("&Sort by path")
-  hMenu.Toggle = TRUE
-  Object.Lock(hMenu)
-  hMenu.Checked = bSort
-  Object.Unlock(hMenu)
-  'hMenu.Picture = Picture["icon:/small/trash"]
-
-  aList = Project.GetRecentFiles(bSort)
-
-  hMenu = NEW Menu(mnuOpenRecent)
-
-  FOR EACH sPath IN aList
-    hMenu = NEW Menu(mnuOpenRecent) AS "mnuOpenRecentFile"
-    hMenu.Tag = sPath
-    hMenu.Text = FormatFile(sPath)
-    hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
-  NEXT
+    hMenu = NEW Menu(mnuOpenRecent) AS "mnuClearRecent"
+    hMenu.Text = ("&Clear history")
+    hMenu.Picture = Picture["icon:/small/trash"]
+  
+    bSort = Settings["/FWelcome/SortRecent", FALSE]
+  
+    hMenu = NEW Menu(mnuOpenRecent) AS "mnuSortRecent"
+    hMenu.Text = ("&Sort by path")
+    hMenu.Toggle = TRUE
+    Object.Lock(hMenu)
+    hMenu.Checked = bSort
+    Object.Unlock(hMenu)
+    'hMenu.Picture = Picture["icon:/small/trash"]
+  
+    aList = Project.GetRecentFiles(bSort)
+  
+    hMenu = NEW Menu(mnuOpenRecent)
+  
+    FOR EACH sPath IN aList
+      hMenu = NEW Menu(mnuOpenRecent) AS "mnuOpenRecentFile"
+      hMenu.Tag = sPath
+      hMenu.Text = FormatFile(sPath)
+      hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
+    NEXT
+    
+  ENDIF
 
   DEC Application.Busy
 
