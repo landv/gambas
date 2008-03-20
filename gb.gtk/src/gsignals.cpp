@@ -163,7 +163,7 @@ gboolean gcb_keyrelease (GtkWidget *widget, GdkEventKey *event, gControl *data)
 	return false;
 }
 
-static gboolean sg_button_Press (GtkWidget *widget,GdkEventButton *event,gControl *data)
+gboolean gcb_button_press(GtkWidget *widget,GdkEventButton *event,gControl *data)
 {
 	if (!gApplication::userEvents()) return false;
 
@@ -214,7 +214,7 @@ static gboolean sg_menu(GtkWidget *widget, gControl *data)
 		return false;
 }
 
-static gboolean sg_button_Release (GtkWidget *widget,GdkEventButton *event,gControl *data)
+gboolean gcb_button_release(GtkWidget *widget,GdkEventButton *event,gControl *data)
 {	
 	if (!gApplication::userEvents()) return false;
 
@@ -447,8 +447,11 @@ void gControl::widgetSignals()
 	
 	if (border != widget && !GTK_IS_SCROLLED_WINDOW(border))
 	{
-		g_signal_connect(G_OBJECT(border),"button-release-event",G_CALLBACK(sg_button_Release),(gpointer)this);
-		g_signal_connect(G_OBJECT(border),"button-press-event",G_CALLBACK(sg_button_Press),(gpointer)this);
+		if (!_no_default_mouse_event)
+		{
+			g_signal_connect(G_OBJECT(border),"button-release-event",G_CALLBACK(gcb_button_release),(gpointer)this);
+			g_signal_connect(G_OBJECT(border),"button-press-event",G_CALLBACK(gcb_button_press),(gpointer)this);
+		}
 		g_signal_connect(G_OBJECT(border),"popup-menu",G_CALLBACK(sg_menu),(gpointer)this);	
 		g_signal_connect_after(G_OBJECT(border),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
 		g_signal_connect(G_OBJECT(border),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
@@ -458,8 +461,11 @@ void gControl::widgetSignals()
 	else
 	{
 		g_signal_connect(G_OBJECT(widget),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
-		g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(sg_button_Release),(gpointer)this);
-		g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(sg_button_Press),(gpointer)this);
+		if (!_no_default_mouse_event)
+		{
+			g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(gcb_button_release),(gpointer)this);
+			g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(gcb_button_press),(gpointer)this);
+		}
 		g_signal_connect(G_OBJECT(widget),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
 		g_signal_connect(G_OBJECT(widget),"popup-menu",G_CALLBACK(sg_menu),(gpointer)this);
 	}	

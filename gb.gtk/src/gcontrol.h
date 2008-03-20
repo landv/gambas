@@ -170,6 +170,7 @@ public:
 	
 	unsigned _no_delete : 1;         // Do not delete on destroy signal
 	unsigned no_input_method : 1;    // No input method management
+	unsigned _no_default_mouse_event : 1; // No default mouse events
 	
 	
   void removeParent() { pr = NULL; }

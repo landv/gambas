@@ -777,6 +777,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	
 	render=new gTableRender(this);
 
+	_no_default_mouse_event = true;
 	realize(true);
 
 	gtk_widget_add_events(border,GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
@@ -815,9 +816,14 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 		
 	g_signal_connect_after(G_OBJECT(contents),"event",G_CALLBACK(cb_contents_button_press),this);
 	g_signal_connect(G_OBJECT(contents),"motion-notify-event",G_CALLBACK(tblateral_move),this);
+	
+	g_signal_connect(G_OBJECT(contents),"button-release-event",G_CALLBACK(gcb_button_release),(gpointer)this);
+	g_signal_connect(G_OBJECT(contents),"button-press-event",G_CALLBACK(gcb_button_press),(gpointer)this);
+	
 	g_signal_connect(G_OBJECT(contents),"button-press-event",G_CALLBACK(tblateral_press),this);
 	g_signal_connect(G_OBJECT(contents),"button-release-event",G_CALLBACK(tblateral_release),this);
 	
+
 	//g_signal_connect(G_OBJECT(contents),"event",G_CALLBACK(gridview_release),this);
 
 	g_object_set(G_OBJECT(vbar),"visible",FALSE,(void *)NULL);
@@ -1273,15 +1279,18 @@ void gGridView::setRowCount(int vl)
 	
 	render->setRowCount(vl);
 	
-	h = minRowHeight(vl - 1);
-	render->doNotInvalidate = true;
-	for (i = old; i < vl; i++)
+	if (vl)
 	{
-		//if ((i % 1000) == 0)
-		//	fprintf(stderr, "%d\r", i);
-		setRowHeight(i, h);
+		h = minRowHeight(vl - 1);
+		render->doNotInvalidate = true;
+		for (i = old; i < vl; i++)
+		{
+			//if ((i % 1000) == 0)
+			//	fprintf(stderr, "%d\r", i);
+			setRowHeight(i, h);
+		}
+		render->doNotInvalidate = false;
 	}
-	render->doNotInvalidate = false;
 	
 	unlock();
 	
@@ -1402,7 +1411,7 @@ void gGridView::setColumnWidth(int index,int vl)
 
 int gGridView::minRowHeight(int index)
 {
-	return 8 + font()->height(rowText(index));
+	return 8 + font()->height(" "); // rowText(index)
 }
 
 void gGridView::setRowHeight(int index,int vl)

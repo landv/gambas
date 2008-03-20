@@ -221,6 +221,7 @@ void gControl::initAll(gContainer *parent)
 	_dirty_pos = _dirty_size = false;
 	_tracking = false;
 	no_input_method = false;
+	_no_default_mouse_event = false;
 
 	onFinish=NULL;
 	onFocusEvent=NULL;
