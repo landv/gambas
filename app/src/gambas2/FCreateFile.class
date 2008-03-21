@@ -313,7 +313,7 @@ PRIVATE SUB ImportDependencies(sName AS String, sOrig AS String, bLink AS Boolea
       IF NOT Exist(sDestImg) THEN
         Project.InsertFile(File.Name(sDestImg), File.Dir(sDestImg), sOrig &/ sImg, TRUE, bLink)
       ENDIF
-      sLine = Left(sLine, iPos + 7) & Chr$(34) & "import_" & sName &/ File.Name(sDestImg) & Chr$(34) & "]"    
+      sLine = Left(sLine, iPos + 7) & Chr$(34) & "import" &/ sName &/ File.Name(sDestImg) & Chr$(34) & "]"    
       bSave = TRUE
     ELSE 
       CONTINUE 
