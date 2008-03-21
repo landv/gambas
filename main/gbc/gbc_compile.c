@@ -98,8 +98,6 @@ static void add_list_file(char *library)
   path = (char *)FILE_cat(COMP_info_path, library, NULL);
   strcat(path, ".list");
 
-  /*printf("Reading component list file %s\n", path);*/
-
   fi = fopen(path, "r");
 
 	if (!fi)
@@ -116,7 +114,10 @@ static void add_list_file(char *library)
      some classes won't be declared.
 	*/
   if (!fi)
+  {
+	  fprintf(stderr, "Cannot read component list file: %s\n", path);
   	return;
+  }
 
   for(;;)
   {
