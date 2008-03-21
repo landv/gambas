@@ -117,10 +117,10 @@ void ERROR_panic(const char *error, ...)
   fprintf(stderr, "\n** INTERNAL ERROR **\n**");
   vfprintf(stderr, error, args);
   putc('\n', stderr);
-  if (ERROR_current->info.code)
+  /*if (ERROR_current->info.code)
   {
     ERROR_print();
-  }
+  }*/
   fprintf(stderr, "** Program aborting. Sorry! :-(\n");
   /*abort();*/
   _exit(1);
