@@ -59,6 +59,10 @@
 #define __null ((intptr_t)0)
 #endif
 
+#ifndef PACKED
+#define PACKED __attribute__((packed))
+#endif
+
 /* Gambas datatypes identifiers */
 
 #define GB_T_VOID         0
@@ -109,16 +113,16 @@ typedef
   union {
     GB_TYPE type;
 		intptr_t _reserved[3];
-    struct { GB_TYPE type; int value; } _boolean;
-    struct { GB_TYPE type; int value; } _byte;
-    struct { GB_TYPE type; int value; } _short;
-    struct { GB_TYPE type; int value; } _integer;
-    struct { GB_TYPE type; int64_t value; } _long;
-    struct { GB_TYPE type; double value; } _single;
-    struct { GB_TYPE type; double value; } _float;
-    struct { GB_TYPE type; int date; int time; } _date;
-    struct { GB_TYPE type; char *value; } _string;
-    struct { GB_TYPE type; void *value; } _object;
+    struct { GB_TYPE type; int value; } PACKED _boolean;
+    struct { GB_TYPE type; int value; } PACKED _byte;
+    struct { GB_TYPE type; int value; } PACKED _short;
+    struct { GB_TYPE type; int value; } PACKED _integer;
+    struct { GB_TYPE type; int64_t value; } PACKED _long;
+    struct { GB_TYPE type; double value; } PACKED _single;
+    struct { GB_TYPE type; double value; } PACKED _float;
+    struct { GB_TYPE type; int date; int time; } PACKED _date;
+    struct { GB_TYPE type; char *value; } PACKED _string;
+    struct { GB_TYPE type; void *value; } PACKED _object;
     }
   GB_VARIANT_VALUE;
 
@@ -145,6 +149,7 @@ typedef
 		intptr_t _reserved;
 		#endif
     }
+  PACKED
   GB_STRING;
 
 
@@ -159,6 +164,7 @@ typedef
     #endif
 		intptr_t _reserved[2];
     }
+  PACKED
   GB_INTEGER;
 
 
@@ -174,6 +180,7 @@ typedef
     int _reserved;
     #endif
     }
+  PACKED
   GB_LONG;
 
 
@@ -185,6 +192,7 @@ typedef
     intptr_t value;
     intptr_t _reserved[2];
     }
+  PACKED
   GB_POINTER;
 
 
@@ -199,6 +207,7 @@ typedef
     #endif
 		intptr_t _reserved[2];
     }
+  PACKED
   GB_BOOLEAN;
 
 
@@ -207,13 +216,16 @@ typedef
 typedef
   struct {
     GB_TYPE type;
+    #if __WORDSIZE == 64
+    #else
+    int _pad;
+    #endif
     double value;
     #if __WORDSIZE == 64
     intptr_t _reserved[2];
-    #else
-    int _reserved;
     #endif
     }
+  PACKED
   GB_FLOAT;
 
 
@@ -236,6 +248,7 @@ typedef
     int _reserved;
     #endif
     }
+  PACKED
   GB_DATE;
 
 
@@ -247,6 +260,7 @@ typedef
     void *value;
     intptr_t _reserved[2];
     }
+  PACKED
   GB_OBJECT;
 
 

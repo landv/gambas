@@ -37,6 +37,7 @@ typedef
     TYPE type;
     int value;
     }
+  PACKED
   VALUE_BOOLEAN;
 
 typedef
@@ -44,6 +45,7 @@ typedef
     TYPE type;
     int value;
     }
+  PACKED
   VALUE_BYTE;
 
 typedef
@@ -51,6 +53,7 @@ typedef
     TYPE type;
     int value;
     }
+  PACKED
   VALUE_SHORT;
 
 typedef
@@ -58,6 +61,7 @@ typedef
     TYPE type;
     int value;
     }
+  PACKED
   VALUE_INTEGER;
 
 typedef
@@ -79,6 +83,10 @@ typedef
 typedef
   struct {
     TYPE type;
+    #if __WORDSIZE == 64
+    #else
+    int _pad;
+    #endif
     double value;
     }
   PACKED
@@ -87,6 +95,10 @@ typedef
 typedef
   struct {
     TYPE type;
+    #if __WORDSIZE == 64
+    #else
+    int _pad;
+    #endif
     double value;
     }
   PACKED
@@ -98,6 +110,7 @@ typedef
     int date;  /* number of days */
     int time;  /* number of milliseconds */
     }
+  PACKED
   VALUE_DATE;
 
 typedef
@@ -107,6 +120,7 @@ typedef
     int start;
     int len;
     }
+  PACKED
   VALUE_STRING;
 
 typedef
@@ -140,6 +154,7 @@ typedef
     TYPE ptype;
     intptr_t value[2];
     }
+  PACKED
   VALUE_VOID;
 
 typedef
@@ -161,6 +176,7 @@ typedef
       */
     char value[8];
     }
+  PACKED
   VALUE_VARIANT;
 
 typedef
@@ -169,6 +185,7 @@ typedef
     void *object;
     void *super;
     }
+  PACKED
   VALUE_OBJECT;
 
 typedef
@@ -177,6 +194,7 @@ typedef
     CLASS *class;
     void *super;
     }
+  PACKED
   VALUE_CLASS;
 
 typedef
@@ -187,6 +205,7 @@ typedef
     short index;
     unsigned keep : 1;
     }
+  PACKED
   VALUE_ARRAY;
 
 typedef
@@ -255,4 +274,4 @@ void VALUE_get_string(VALUE *val, char **text, int *length);
 
 #define VALUE_is_super(_value) (EXEC_super && EXEC_super == (_value)->_object.super)
 
-#endif /* */
+#endif
