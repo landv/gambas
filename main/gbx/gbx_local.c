@@ -462,7 +462,12 @@ static void fill_local_info(void)
   _add_flag(info->p_sep_by_space);
   _add_flag(info->n_cs_precedes);
   _add_flag(info->p_cs_precedes);
-#ifndef OS_OPENBSD
+#if defined(OS_OPENBSD) || defined(OS_CYGWIN)
+	_add_flag(0);
+	_add_flag(0);
+	_add_flag(0);
+	_add_flag(0);
+#else
   _add_flag(info->int_n_sep_by_space);
   _add_flag(info->int_p_sep_by_space);
   _add_flag(info->int_n_cs_precedes);
