@@ -861,15 +861,18 @@ AC_DEFUN([GB_CHECK_XWINDOW],
   AC_PATH_XTRA
 
   if test x"$have_x" = xyes; then
-    if test x"$X_LIBS" = x; then
-      X_LIBS="-lX11 -lXext"
+    if test -z `echo $X_LIBS | grep "\-lX11"`; then
+      X_LIBS="$X_LIBS -lX11"
+    fi
+    if test -z `echo $X_LIBS | grep "\-lXext"`; then
+      X_LIBS="$X_LIBS -lXext"
     fi
     X_LIBS="$X_PRE_LIBS $X_LIBS"
   else
     touch DISABLED
   fi
-
 ])
+
 
 # libtool.m4 - Configure libtool for the host system. -*-Autoconf-*-
 ## Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005, 2006, 2007
