@@ -67,6 +67,10 @@ long double powl(long double x, long double y)
 	return pow((double) x, (double) y);
 }
 
+#endif
+
+#ifdef OS_CYGWIN
+
 long double modfl(long double x, long double *p)
 {
 	double r, dp;
