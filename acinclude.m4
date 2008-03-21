@@ -138,7 +138,7 @@ AC_DEFUN([GB_INIT],
   dnl AC_FUNC_WAIT3
   dnl AC_CHECK_FUNCS(getcwd gettimeofday mkdir rmdir select socket strdup strerror strtod strtol sysinfo)
   
-  AC_REPLACE_FUNCS(setenv unsetenv getdomainname getpt)
+  AC_REPLACE_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw)
 
   dnl ---- Support for ccache
 
