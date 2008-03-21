@@ -31,6 +31,52 @@
 #include "gb_common.h"
 #include "gbx_math.h"
 
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD) || defined(OS_CYGWIN)
+
+double exp10(double x)
+{
+	return pow(10, x);
+}
+
+double log2(double x)
+{
+	return log(x) / M_LN2;
+}
+
+#endif
+
+#if defined(OS_OPENBSD) || defined(OS_CYGWIN)
+
+double exp2(double x)
+{
+	return pow(2, x);
+}
+
+long double log10l(long double x)
+{
+	return log10((double) x);
+}
+
+long double fabsl(long double x)
+{
+	return fabs((double) x);
+}
+
+long double powl(long double x, long double y)
+{
+	return pow((double) x, (double) y);
+}
+
+long double modfl(long double x, long double *p)
+{
+	double r, dp;
+	r = modf((double)x, &dp);
+	*p = dp;
+	return r;
+}
+
+#endif
+
 /* This is a twisted generalized feedback shift register
    that generates pseudo-random numbers.
 
@@ -142,7 +188,7 @@ double frexp10(double x, int *exp)
   }
 
   l = modfl(log10l(fabsl(x)), &f);
-
+  
   if (f == 0.0)
     l = x;
   else
@@ -194,44 +240,6 @@ double ang(double x, double y)
 {
   return atan2(y, x);
 }
-
-#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
-
-double exp10(double x)
-{
-	return pow(10, x);
-}
-
-double log2(double x)
-{
-	return log(x) / M_LN2;
-}
-
-#endif
-
-#ifdef OS_OPENBSD
-
-double exp2(double x)
-{
-	return pow(2, x);
-}
-
-long double log10l(long double x)
-{
-	return log10((double) x);
-}
-
-long double fabsl(long double x)
-{
-	return fabs((double) x);
-}
-
-long double powl(long double x, long double y)
-{
-	return pow((double) x, (double) y);
-}
-
-#endif
 
 void MATH_init(void)
 {
