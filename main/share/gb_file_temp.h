@@ -131,15 +131,15 @@ PUBLIC char *FILE_make_temp(int *len, char *pattern)
   if (len)
   {
     if (pattern)
-      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PATTERN, getuid(), getpid(), pattern);
+      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PATTERN, (int)getuid(), (int)getpid(), pattern);
      else
     {
       count++;
-      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_FILE, getuid(), getpid(), count);
+      *len = snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_FILE, (int)getuid(), (int)getpid(), count);
     }
   }
   else
-    snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
+    snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
 
   return file_buffer;
 }
@@ -168,9 +168,9 @@ PUBLIC void FILE_init(void)
 {
 	FILE_remove_temp_file();
   
-  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, getuid());
+  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, (int)getuid());
   mkdir(file_buffer, S_IRWXU);
-  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, getuid(), getpid());
+  snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
   mkdir(file_buffer, S_IRWXU);
 }
 

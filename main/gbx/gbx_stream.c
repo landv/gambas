@@ -79,6 +79,8 @@ static int STREAM_get_readable(STREAM *stream, int *len)
 	
 //_IOCTL:
 
+	#ifdef FIONREAD
+
 	if (!stream->common.no_fionread)
 	{
 		ret = ioctl(fd, FIONREAD, len);
@@ -87,6 +89,8 @@ static int STREAM_get_readable(STREAM *stream, int *len)
 		
 		stream->common.no_fionread = TRUE;
 	}
+	
+	#endif
 
 //_LSEEK:
 
