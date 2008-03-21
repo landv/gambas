@@ -27,6 +27,7 @@
 
 #include <config.h>
 #include <gb_common.h>
+#include <termios.h>
 
 #ifndef HAVE_SETENV
 int setenv(const char *name, const char *value, int overwrite);
@@ -42,6 +43,10 @@ int getdomainname(char *name, size_t len);
 
 #ifndef HAVE_GETPT
 int getpt(void);
+#endif
+
+#ifndef HAVE_CFMAKERAW
+void cfmakeraw(struct termios *termios_p);
 #endif
 
 #endif
