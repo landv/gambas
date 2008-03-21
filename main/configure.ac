@@ -99,8 +99,14 @@ AC_ARG_ENABLE(
   gambas_preloading=yes
 )
 
-if test "$gambas_preloading" = "yes"; then
-  AC_DEFINE(DO_PRELOADING, 1, allows shared library preloading )
+if test "$SYSTEM" != "CYGWIN"; then
+  if test "$gambas_preloading" = "yes"; then
+    AC_DEFINE(DO_PRELOADING, 1, allows shared library preloading )
+  fi
+else
+  if test "$gambas_preloading" = "yes"; then
+    AC_MSG_WARN([Preloading is disabled on this system])
+  fi
 fi
 
 dnl ---- Create makefiles
