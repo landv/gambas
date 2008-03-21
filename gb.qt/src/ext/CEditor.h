@@ -68,7 +68,7 @@ public slots:
   void changed(void);
   void moved(void);
   void scrolled(int, int);
-  void marginClicked(int);
+  //void marginClicked(int);
   void marginDoubleClicked(int);
 };
 

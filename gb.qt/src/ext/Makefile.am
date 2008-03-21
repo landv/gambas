@@ -7,7 +7,7 @@ INCLUDES = @QT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
 gblib_LTLIBRARIES = gb.qt.ext.la
 
 gb_qt_ext_la_LIBADD = @QT_LIB@
-gb_qt_ext_la_LDFLAGS = -module @LD_FLAGS@
+gb_qt_ext_la_LDFLAGS = -module @LD_FLAGS@ @QT_LDFLAGS@
 
 gb_qt_ext_la_SOURCES = \
  main.h main.cpp \

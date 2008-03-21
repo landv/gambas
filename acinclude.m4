@@ -481,8 +481,160 @@ cd $gb_save
 
 
 ## ---------------------------------------------------------------------------
+## GB_COMPONENT_PKG_CONFIG
+## Component detection macro based on pkg-config
+##
+##   $1 = Component key in lower case (ex: pgsql)
+##   $2 = Component key in upper case (ex: PGSQL)
+##   $3 = Component name (ex: PostgreSQL)
+##   $4 = Sub-directory name
+##   $5 = pkg-config module name
+##   $6 = pkg-config version test
+##   $7 = Warning message (optional)
+##
+##   => defines HAVE_*_COMPONENT (to know if you can compile the component)
+##      *_INC (for the compiler) and *_LIB / *_LDFLAGS (for the linker)
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
+[
+  AC_ARG_ENABLE(
+    $1,
+    [  --enable-$1                enable $3 (default: yes)],
+    gb_enable_$1=$enableval,
+    gb_enable_$1=yes
+  )
+
+  AC_ARG_WITH($1-includes,
+    [  --with-$1-includes      where the $3 headers are located. ],
+    [  gb_inc_$1="$withval" ])
+
+  AC_ARG_WITH($1-libraries,
+    [  --with-$1-libraries     where the $3 libraries are located. ],
+    [  gb_lib_$1="$withval" ])
+
+  have_$1=no
+
+  if test "$gb_enable_$1"="yes" && test ! -e DISABLED; then
+
+    AC_MSG_CHECKING(for $3 component with pkg-config)
+  
+    pkg-config --silence-errors --exists "$5 $6"
+    if test $? -eq "0"; then
+    
+      ## Checking for headers
+      
+      gb_inc_$1=""
+      
+      #if test x"$gb_inc_$1" = x; then
+        $2_INC=`pkg-config --cflags $5`
+      #else
+      #  $2_INC=$gb_inc_$1
+      #fi
+  
+      ## Checking for libraries
+  
+      gb_lib_$1=""
+      
+      #if test x"$gb_lib_$1" = x; then
+        $2_LIB=`pkg-config --libs-only-l $5`
+      #else
+      #  $2_LIB=$gb_lib_$1
+      #fi
+      
+      gb_ldflags_$1=""
+      
+      #if test x"$gb_ldflags_$1" = x; then
+        $2_LDFLAGS="`pkg-config --libs-only-L $5` `pkg-config --libs-only-other $5`"
+      #else
+      #  $2_LDFLAGS=$gb_ldflags_$1
+      #fi
+  
+      have_$1=yes
+      $2_DIR=$4
+        
+    else
+    
+      if test x"$gb_inc_$1" != x && test x"$gb_lib_$1" != x; then
+      
+        $2_INC=""
+    
+        for gb_dir in $gb_inc_$1; do
+          if test "$gb_dir" != "/usr/include"; then
+            if test "$gb_dir" != "/usr/include/"; then
+              $2_INC="$$2_INC -I$gb_dir"
+            fi
+          fi
+        done
+        
+        $2_LIB=""
+        $2_PATH=""
+  
+        for gb_dir in $gb_lib_$1; do
+          if test "x$$2_PATH" = "x"; then
+            $2_PATH="$gb_dir/.."
+          fi
+          if test "$gb_dir" != "/lib"  && test "$gb_dir" != "/lib/"&& test "$gb_dir" != "/usr/lib" && test "$gb_dir" != "/usr/lib/"; then
+            $2_LIB="$$2_LIB -L$gb_dir"
+          fi
+        done
+        
+        $2_LDFLAGS=""
+        have_$1=yes
+        $2_DIR=$4
+        
+      else
+      
+        have_$1=no
+      
+      fi
+
+    fi
+    
+  fi
+
+  if test "$have_$1" = "no"; then
+  
+    if test "$4" = "src"; then
+      touch DISABLED
+    fi
+    AC_MSG_RESULT(no)
+    
+  else
+    
+dnl    if test "$4" = "src"; then
+dnl      rm -f DISABLED
+dnl    fi
+    
+    AC_DEFINE(HAVE_$2_COMPONENT, 1, Have $3)
+    
+    AC_MSG_RESULT(OK)
+    
+  fi
+  
+  if test "$have_$1" = "no" || test -e DISABLED; then
+  
+    $2_LIB=""
+    $2_LDFLAGS=""
+    $2_DIR=""
+    if test x"$7" = x; then
+      AC_MSG_WARN([*** $3 is disabled])
+    else
+      AC_MSG_NOTICE([$7])
+    fi
+    
+  fi
+  
+  AC_SUBST($2_INC)
+  AC_SUBST($2_LIB)
+  AC_SUBST($2_LDFLAGS)
+  AC_SUBST($2_DIR)
+])
+
+
+## ---------------------------------------------------------------------------
 ## GB_COMPONENT
-## Component detection macro
+## Component detection macro that searches for files
 ##
 ##   $1 = Component key in lower case (ex: postgresql)
 ##   $2 = Component key in upper case (ex: POSTGRESQL)
@@ -637,154 +789,56 @@ dnl    fi
 
 
 ## ---------------------------------------------------------------------------
-## GB_COMPONENT_PKG_CONFIG
-## Component detection macro based on pkg-config
+## GB_COMPONENT_SEARCH
+## Component detection macro that uses GB_COMPONENT_PKG_CONFIG first, and
+## then GB_COMPONENT then.
 ##
-##   $1 = Component key in lower case (ex: pgsql)
-##   $2 = Component key in upper case (ex: PGSQL)
-##   $3 = Component name (ex: PostgreSQL)
-##   $4 = Sub-directory name
-##   $5 = pkg-config module name
-##   $6 = pkg-config version test
-##   $7 = Warning message (optional)
+##   $1  = Component key in lower case (ex: postgresql)
+##   $2  = Component key in upper case (ex: POSTGRESQL)
+##   $3  = Component name (ex: PostgreSQL)
+##   $4  = Sub-directory name
+##   $5  = pkg-config module name (optional)
+##   $6  = pkg-config version test (optional)
+##   $7  = How to get include path (must return it in gb_val)
+##   $8  = How to get library path (must return it in gb_val)
+##   $9  = Libraries
+##   $10 = Compiler flags (optional)
+##   $11 = Warning message (optional)
 ##
 ##   => defines HAVE_*_COMPONENT (to know if you can compile the component)
-##      *_INC (for the compiler) and *_LIB / *_LDFLAGS (for the linker)
+##      *_INC (for the compiler) and *_LIB (for the linker)
 ## ---------------------------------------------------------------------------
 
-AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
+AC_DEFUN([GB_COMPONENT_SEARCH],
 [
-  AC_ARG_ENABLE(
-    $1,
-    [  --enable-$1                enable $3 (default: yes)],
-    gb_enable_$1=$enableval,
-    gb_enable_$1=yes
-  )
-
-  AC_ARG_WITH($1-includes,
-    [  --with-$1-includes      where the $3 headers are located. ],
-    [  gb_inc_$1="$withval" ])
-
-  AC_ARG_WITH($1-libraries,
-    [  --with-$1-libraries     where the $3 libraries are located. ],
-    [  gb_lib_$1="$withval" ])
-
-  have_$1=no
-
-  if test "$gb_enable_$1"="yes" && test ! -e DISABLED; then
-
-    AC_MSG_CHECKING(for $3 component with pkg-config)
+  if test x"$5" != x; then
   
-    pkg-config --silence-errors --exists "$5 $6"
-    if test $? -eq "0"; then
+    GB_COMPONENT_PKG_CONFIG(
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6,
+      $11
+    )
     
-      ## Checking for headers
-      
-      gb_inc_$1=""
-      
-      #if test x"$gb_inc_$1" = x; then
-        $2_INC=`pkg-config --cflags $5`
-      #else
-      #  $2_INC=$gb_inc_$1
-      #fi
-  
-      ## Checking for libraries
-  
-      gb_lib_$1=""
-      
-      #if test x"$gb_lib_$1" = x; then
-        $2_LIB=`pkg-config --libs-only-l $5`
-      #else
-      #  $2_LIB=$gb_lib_$1
-      #fi
-      
-      gb_ldflags_$1=""
-      
-      #if test x"$gb_ldflags_$1" = x; then
-        $2_LDFLAGS="`pkg-config --libs-only-L $5` `pkg-config --libs-only-other $5`"
-      #else
-      #  $2_LDFLAGS=$gb_ldflags_$1
-      #fi
-  
-      have_$1=yes
-      $2_DIR=$4
-        
-    else
-    
-      if test x"$gb_inc_$1" != x && test x"$gb_lib_$1" != x; then
-      
-        $2_INC=""
-    
-        for gb_dir in $gb_inc_$1; do
-          if test "$gb_dir" != "/usr/include"; then
-            if test "$gb_dir" != "/usr/include/"; then
-              $2_INC="$$2_INC -I$gb_dir"
-            fi
-          fi
-        done
-        
-        $2_LIB=""
-        $2_PATH=""
-  
-        for gb_dir in $gb_lib_$1; do
-          if test "x$$2_PATH" = "x"; then
-            $2_PATH="$gb_dir/.."
-          fi
-          if test "$gb_dir" != "/lib"  && test "$gb_dir" != "/lib/"&& test "$gb_dir" != "/usr/lib" && test "$gb_dir" != "/usr/lib/"; then
-            $2_LIB="$$2_LIB -L$gb_dir"
-          fi
-        done
-        
-        $2_LDFLAGS=""
-        have_$1=yes
-        $2_DIR=$4
-        
-      else
-      
-        have_$1=no
-      
-      fi
-
+    if test -z "$2_LIB"; then
+      GB_COMPONENT(
+        $1,
+        $2,
+        $3,
+        $4,
+        $7,
+        $8,
+        $9,
+        $10,
+        $11
+      )
     fi
-    
+  
   fi
 
-  if test "$have_$1" = "no"; then
-  
-    if test "$4" = "src"; then
-      touch DISABLED
-    fi
-    AC_MSG_RESULT(no)
-    
-  else
-    
-dnl    if test "$4" = "src"; then
-dnl      rm -f DISABLED
-dnl    fi
-    
-    AC_DEFINE(HAVE_$2_COMPONENT, 1, Have $3)
-    
-    AC_MSG_RESULT(OK)
-    
-  fi
-  
-  if test "$have_$1" = "no" || test -e DISABLED; then
-  
-    $2_LIB=""
-    $2_LDFLAGS=""
-    $2_DIR=""
-    if test x"$7" = x; then
-      AC_MSG_WARN([*** $3 is disabled])
-    else
-      AC_MSG_NOTICE([$7])
-    fi
-    
-  fi
-  
-  AC_SUBST($2_INC)
-  AC_SUBST($2_LIB)
-  AC_SUBST($2_LDFLAGS)
-  AC_SUBST($2_DIR)
 ])
 
 
@@ -843,8 +897,11 @@ AC_DEFUN([GB_CHECK_XWINDOW],
   AC_PATH_XTRA
 
   if test x"$have_x" = xyes; then
-    if test x"$X_LIBS" = x; then
-      X_LIBS="-lX11 -lXext"
+    if test -z `echo $X_LIBS | grep "\-lX11"`; then
+      X_LIBS="$X_LIBS -lX11"
+    fi
+    if test -z `echo $X_LIBS | grep "\-lXext"`; then
+      X_LIBS="$X_LIBS -lXext"
     fi
     X_LIBS="$X_PRE_LIBS $X_LIBS"
   else

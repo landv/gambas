@@ -10,7 +10,7 @@ INCLUDES = @QT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
 gblib_LTLIBRARIES = gb.qt.la
 
 gb_qt_la_LIBADD = @QT_LIB@
-gb_qt_la_LDFLAGS = -module @LD_FLAGS@
+gb_qt_la_LDFLAGS = -module @LD_FLAGS@ @QT_LDFLAGS@
 gb_qt_la_CXXFLAGS = -DGB_QT_COMPONENT $(AM_CFLAGS)
 
 gb_qt_la_SOURCES = \

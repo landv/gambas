@@ -19,13 +19,15 @@ GB_CHECK_XWINDOW
 
 GB_FIND_QT_MOC
 
-GB_COMPONENT(
+GB_COMPONENT_SEARCH(
   qt,
   QT,
   [QT component],
   [src],
+  qt-mt,
+  [>= 3.3],
   [GB_FIND(qptrlist.h, /usr/local/lib /usr/local /opt /usr/lib /usr/X11 /usr/X11R6 /usr/pkg /usr, include qt*/include qt/*/include)],
-  [GB_FIND(libqt-mt.$SHLIBEXT, /usr/local /opt /usr/X11 /usr/X11R6 /usr/pkg /usr, lib qt*/lib qt/*/lib, libqt-mt.so.3)],
+  [GB_FIND(libqt-mt.$SHLIBEXT, /usr/local /opt /usr/X11 /usr/X11R6 /usr/pkg /usr, lib qt*/lib qt/*/lib, libqt-mt.$SHLIBEXT.3)],
   [$CXX_LIB $THREAD_LIB $X_LIBS -lqt-mt],
   [$THREAD_INC])
 
