@@ -48,6 +48,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef OS_CYGWIN
+
+typedef void (*sighandler_t) (int);
+
+#endif
+
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
   /* Get definition for PATH_MAX */
