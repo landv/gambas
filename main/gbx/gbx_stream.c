@@ -929,13 +929,21 @@ void STREAM_lock(STREAM *stream)
   if (lseek(fd, 0, SEEK_SET) < 0)
     goto __ERROR;
 
-  if (lockf(fd, F_TLOCK, 0))
-  {
-    if (errno == EAGAIN)
-      THROW(E_LOCK);
-    else
-      goto __ERROR;
-  }
+	#ifdef F_TLOCK
+
+		if (lockf(fd, F_TLOCK, 0))
+		{
+			if (errno == EAGAIN)
+				THROW(E_LOCK);
+			else
+				goto __ERROR;
+		}
+		
+	#else
+	
+		fprintf(stderr, "locking is not implemented\n");
+	
+	#endif
 
   if (lseek(fd, pos, SEEK_SET) < 0)
     goto __ERROR;
