@@ -118,19 +118,31 @@ void COBSERVER_detach(COBSERVER *this)
 
 BEGIN_METHOD(COBSERVER_new, GB_OBJECT object; GB_BOOLEAN after)
 
-	OBJECT *object = (OBJECT *)VARG(object);
-	OBJECT_EVENT *ev = OBJECT_event(object);
-	char *name = EVENT_Name;
-	CLASS *class = OBJECT_class(object);
-	COBSERVER *this = ((COBSERVER *)_object);
-	OBJECT *parent = OBJECT_parent(this);
+	OBJECT *object;
+	OBJECT_EVENT *ev;
+	char *name;
+	CLASS *class;
+	COBSERVER *this;
+	OBJECT *parent;
 	
+	object = (OBJECT *)VARG(object);
+	if (GB_CheckObject(object))
+		return;
+	
+	class = OBJECT_class(object);
 	if (class->n_event == 0)
 		return;
+	
+	name = EVENT_Name;
 	if (!name || !*name)
 		return;
+	
+	this = ((COBSERVER *)_object);
+	parent = OBJECT_parent(this);
 	if (!parent)
 		return;
+	
+	ev = OBJECT_event(object);
   
   this->after = VARGOPT(after, FALSE);
   
