@@ -211,6 +211,9 @@ typedef
 			}
 			*/
 		char value[8];
+		#if __WORDSIZE == 64
+		intptr_t _reserved;
+		#endif
 		}
 	PACKED
 	VALUE_VARIANT;
@@ -220,6 +223,7 @@ typedef
 		CLASS *class;
 		void *object;
 		void *super;
+		intptr_t _reserved;
 		}
 	PACKED
 	VALUE_OBJECT;
@@ -229,6 +233,7 @@ typedef
 		TYPE type;
 		CLASS *class;
 		void *super;
+		intptr_t _reserved;
 		}
 	PACKED
 	VALUE_CLASS;
