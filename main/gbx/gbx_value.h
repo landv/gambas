@@ -1,25 +1,25 @@
 /***************************************************************************
 
-  value.h
+	value.h
 
-  Datatype management routines. Conversions between each Gambas datatype,
-  and conversions between Gambas datatypes and native datatypes.
+	Datatype management routines. Conversions between each Gambas datatype,
+	and conversions between Gambas datatypes and native datatypes.
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -33,202 +33,238 @@
 #include "gbx_class.h"
 
 typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  PACKED
-  VALUE_BOOLEAN;
-
-typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  PACKED
-  VALUE_BYTE;
-
-typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  PACKED
-  VALUE_SHORT;
-
-typedef
-  struct {
-    TYPE type;
-    int value;
-    }
-  PACKED
-  VALUE_INTEGER;
-
-typedef
-  struct {
-    TYPE type;
-    int64_t value;
-    }
-  PACKED
-  VALUE_LONG;
-
-typedef
-  struct {
-    TYPE type;
-    intptr_t value;
-    }
-  PACKED
-  VALUE_POINTER;
-
-typedef
-  struct {
-    TYPE type;
+	struct {
+		TYPE type;
+		int value;
     #if __WORDSIZE == 64
-    #else
     int _pad;
     #endif
-    double value;
-    }
-  PACKED
-  VALUE_SINGLE;
+		intptr_t _reserved[2];
+		}
+	PACKED
+	VALUE_BOOLEAN;
 
 typedef
-  struct {
-    TYPE type;
+	struct {
+		TYPE type;
+		int value;
     #if __WORDSIZE == 64
-    #else
     int _pad;
     #endif
-    double value;
-    }
-  PACKED
-  VALUE_FLOAT;
+		intptr_t _reserved[2];
+		}
+	PACKED
+	VALUE_BYTE;
 
 typedef
-  struct {
-    TYPE type;
-    int date;  /* number of days */
-    int time;  /* number of milliseconds */
-    }
-  PACKED
-  VALUE_DATE;
+	struct {
+		TYPE type;
+		int value;
+    #if __WORDSIZE == 64
+    int _pad;
+    #endif
+		intptr_t _reserved[2];
+		}
+	PACKED
+	VALUE_SHORT;
 
 typedef
-  struct {
-    TYPE type;
-    char *addr;
-    int start;
-    int len;
-    }
-  PACKED
-  VALUE_STRING;
+	struct {
+		TYPE type;
+		int value;
+    #if __WORDSIZE == 64
+    int _pad;
+    #endif
+		intptr_t _reserved[2];
+		}
+	PACKED
+	VALUE_INTEGER;
 
 typedef
-  struct {
-    TYPE type;
-    CLASS *class;
-    void *object;
-    char kind;
-    char defined;
-    short index;
-    /*long function;*/
-    }
-  PACKED
-  VALUE_FUNCTION;
+	struct {
+		TYPE type;
+		int64_t value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #else
+    int _reserved;
+    #endif
+		}
+	PACKED
+	VALUE_LONG;
+
+typedef
+	struct {
+		TYPE type;
+		intptr_t value;
+    intptr_t _reserved[2];
+		}
+	PACKED
+	VALUE_POINTER;
+
+typedef
+	struct {
+		TYPE type;
+		#if __WORDSIZE == 64
+		#else
+		int _pad;
+		#endif
+		double value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #endif
+		}
+	PACKED
+	VALUE_SINGLE;
+
+typedef
+	struct {
+		TYPE type;
+		#if __WORDSIZE == 64
+		#else
+		int _pad;
+		#endif
+		double value;
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #endif
+		}
+	PACKED
+	VALUE_FLOAT;
+
+typedef
+	struct {
+		TYPE type;
+		int date;  /* number of days */
+		int time;  /* number of milliseconds */
+    #if __WORDSIZE == 64
+    intptr_t _reserved[2];
+    #else
+    int _reserved;
+    #endif
+		}
+	PACKED
+	VALUE_DATE;
+
+typedef
+	struct {
+		TYPE type;
+		char *addr;
+		int start;
+		int len;
+		#if __WORDSIZE == 64
+		intptr_t _reserved;
+		#endif
+		}
+	PACKED
+	VALUE_STRING;
+
+typedef
+	struct {
+		TYPE type;
+		CLASS *class;
+		void *object;
+		char kind;
+		char defined;
+		short index;
+		/*long function;*/
+		}
+	PACKED
+	VALUE_FUNCTION;
 
 enum
 {
-  FUNCTION_NULL = 0,
-  FUNCTION_NATIVE = 1,
-  FUNCTION_PRIVATE = 2,
-  FUNCTION_PUBLIC = 3,
-  FUNCTION_EVENT = 4,
-  FUNCTION_EXTERN = 5,
-  FUNCTION_UNKNOWN = 6,
-  FUNCTION_CALL = 7,
+	FUNCTION_NULL = 0,
+	FUNCTION_NATIVE = 1,
+	FUNCTION_PRIVATE = 2,
+	FUNCTION_PUBLIC = 3,
+	FUNCTION_EVENT = 4,
+	FUNCTION_EXTERN = 5,
+	FUNCTION_UNKNOWN = 6,
+	FUNCTION_CALL = 7,
 };
 
 typedef
-  struct {
-    TYPE type;
-    TYPE ptype;
-    intptr_t value[2];
-    }
-  PACKED
-  VALUE_VOID;
+	struct {
+		TYPE type;
+		TYPE ptype;
+		intptr_t value[2];
+		}
+	PACKED
+	VALUE_VOID;
 
 typedef
-  struct {
-    TYPE type;
-    TYPE vtype;
-    /*
-    union {
-      char _boolean;
-      char _byte;
-      short _short;
-      double _double;
-      int _int;
-      long long _int64;
-      long long _date;
-      char *_string;
-      void *_object;
-      }
-      */
-    char value[8];
-    }
-  PACKED
-  VALUE_VARIANT;
+	struct {
+		TYPE type;
+		TYPE vtype;
+		/*
+		union {
+			char _boolean;
+			char _byte;
+			short _short;
+			double _double;
+			int _int;
+			long long _int64;
+			long long _date;
+			char *_string;
+			void *_object;
+			}
+			*/
+		char value[8];
+		}
+	PACKED
+	VALUE_VARIANT;
 
 typedef
-  struct {
-    CLASS *class;
-    void *object;
-    void *super;
-    }
-  PACKED
-  VALUE_OBJECT;
+	struct {
+		CLASS *class;
+		void *object;
+		void *super;
+		}
+	PACKED
+	VALUE_OBJECT;
 
 typedef
-  struct {
-    TYPE type;
-    CLASS *class;
-    void *super;
-    }
-  PACKED
-  VALUE_CLASS;
+	struct {
+		TYPE type;
+		CLASS *class;
+		void *super;
+		}
+	PACKED
+	VALUE_CLASS;
 
 typedef
-  struct {
-    TYPE type;
-    CLASS *class;
-    void *addr;
-    short index;
-    unsigned keep : 1;
-    }
-  PACKED
-  VALUE_ARRAY;
+	struct {
+		TYPE type;
+		CLASS *class;
+		void *addr;
+		short index;
+		unsigned keep : 1;
+		}
+	PACKED
+	VALUE_ARRAY;
 
 typedef
-  union value {
-    TYPE type;
-    VALUE_BOOLEAN _boolean;
-    VALUE_BYTE _byte;
-    VALUE_SHORT _short;
-    VALUE_INTEGER _integer;
-    VALUE_LONG _long;
-    VALUE_SINGLE _single;
-    VALUE_FLOAT _float;
-    VALUE_DATE _date;
-    VALUE_STRING _string;
-    VALUE_FUNCTION _function;
-    VALUE_VARIANT _variant;
-    VALUE_CLASS _class;
-    VALUE_OBJECT _object;
-    VALUE_ARRAY _array;
-    VALUE_VOID _void;
-    VALUE_POINTER _pointer;
-    }
-  VALUE;
+	union value {
+		TYPE type;
+		VALUE_BOOLEAN _boolean;
+		VALUE_BYTE _byte;
+		VALUE_SHORT _short;
+		VALUE_INTEGER _integer;
+		VALUE_LONG _long;
+		VALUE_SINGLE _single;
+		VALUE_FLOAT _float;
+		VALUE_DATE _date;
+		VALUE_STRING _string;
+		VALUE_FUNCTION _function;
+		VALUE_VARIANT _variant;
+		VALUE_CLASS _class;
+		VALUE_OBJECT _object;
+		VALUE_ARRAY _array;
+		VALUE_VOID _void;
+		VALUE_POINTER _pointer;
+		}
+	VALUE;
 
 #define VALUE_copy(_dst, _src) \
 	(_dst)->_void.type = (_src)->_void.type; \
@@ -261,14 +297,14 @@ void VALUE_get_string(VALUE *val, char **text, int *length);
 
 #define VALUE_conv(_value, _type) \
 { \
-  if ((_value)->type != (_type)) \
-    VALUE_convert(_value, _type); \
+	if ((_value)->type != (_type)) \
+		VALUE_convert(_value, _type); \
 }
 
 #define VALUE_conv_string(_value) \
 { \
-  if ((_value)->type != T_STRING && (_value)->type != T_CSTRING) \
-    VALUE_convert(_value, T_STRING); \
+	if ((_value)->type != T_STRING && (_value)->type != T_CSTRING) \
+		VALUE_convert(_value, T_STRING); \
 }
 
 
