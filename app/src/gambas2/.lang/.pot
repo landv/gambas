@@ -10,32 +10,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: CComponentBox.class:85 FPropertyProject.class:1601
-msgid "Beta version"
+#: .project:1
+msgid "Gambas 2"
 msgstr ""
 
-#: CComponentBox.class:87 FPropertyProject.class:1601
-msgid "Not finished but stable"
-msgstr ""
-
-#: CComponentBox.class:190
-msgid "Authors"
-msgstr ""
-
-#: CComponentBox.class:197 FPropertyProject.class:1958
-msgid "Requires"
-msgstr ""
-
-#: CComponentBox.class:199
-msgid "Excludes"
-msgstr ""
-
-#: CComponentBox.class:205
-msgid "Implements"
-msgstr ""
-
-#: CComponentBox.class:218 FPropertyProject.class:1905
-msgid "Provides"
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
 #: CComponent.class:61
@@ -234,6 +214,34 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr ""
 
+#: CComponentBox.class:85 FPropertyProject.class:1601
+msgid "Beta version"
+msgstr ""
+
+#: CComponentBox.class:87 FPropertyProject.class:1601
+msgid "Not finished but stable"
+msgstr ""
+
+#: CComponentBox.class:190
+msgid "Authors"
+msgstr ""
+
+#: CComponentBox.class:197 FPropertyProject.class:1958
+msgid "Requires"
+msgstr ""
+
+#: CComponentBox.class:199
+msgid "Excludes"
+msgstr ""
+
+#: CComponentBox.class:205
+msgid "Implements"
+msgstr ""
+
+#: CComponentBox.class:218 FPropertyProject.class:1905
+msgid "Provides"
+msgstr ""
+
 #: Design.module:283
 msgid ""
 "The program has stopped unexpectedly\n"
@@ -334,13 +342,13 @@ msgid "Free"
 msgstr ""
 
 #: FColorChooser.class:203 FCommit.class:291 FCreateFile.class:826
-#: FDebugInfo.class:342 FEditor.class:1943 FFindList.class:159 FFind.class:115
+#: FDebugInfo.class:342 FEditor.class:2004 FFind.class:115 FFindList.class:159
 #: FFontChooser.class:86 FForm.class:2509 FGotoLine.class:63
 #: FIconEditor.class:1387 FList.class:107 FMain.class:197
 #: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1076
 #: FNewTranslation.class:70 FOpenProject.class:408 FProjectEnv.class:331
 #: FPropertyProject.class:1149 FSave.class:125 FSelectIcon.class:271
-#: FTextEditor.class:527 FText.class:106 FTranslate.class:548
+#: FText.class:106 FTextEditor.class:584 FTranslate.class:548
 #: Project.module:264
 msgid "Cancel"
 msgstr ""
@@ -377,35 +385,35 @@ msgstr ""
 msgid "Changes description"
 msgstr ""
 
-#: FCommit.class:207 FEditor.class:2539 FForm.class:2919
-#: FIconEditor.class:2161 FOutput.class:291 FTextEditor.class:622
+#: FCommit.class:207 FEditor.class:2730 FForm.class:2919
+#: FIconEditor.class:2161 FOutput.class:291 FTextEditor.class:776
 msgid "Cut"
 msgstr ""
 
-#: FCommit.class:214 FEditor.class:2545 FForm.class:2926
-#: FIconEditor.class:2170 FOutput.class:298 FTextEditor.class:628
+#: FCommit.class:214 FEditor.class:2736 FForm.class:2926
+#: FIconEditor.class:2170 FOutput.class:298 FTextEditor.class:782
 msgid "Copy"
 msgstr ""
 
-#: FCommit.class:221 FEditor.class:2551 FForm.class:2933
-#: FIconEditor.class:2179 FOutput.class:305 FTextEditor.class:634
+#: FCommit.class:221 FEditor.class:2742 FForm.class:2933
+#: FIconEditor.class:2179 FOutput.class:305 FTextEditor.class:788
 msgid "Paste"
 msgstr ""
 
-#: FCommit.class:228 FEditor.class:2523 FForm.class:3155
-#: FIconEditor.class:2143 FOption.class:872 FTextEditor.class:606
+#: FCommit.class:228 FEditor.class:2714 FForm.class:3155
+#: FIconEditor.class:2143 FOption.class:900 FTextEditor.class:760
 msgid "Undo"
 msgstr ""
 
-#: FCommit.class:235 FEditor.class:2529 FForm.class:3164 FTextEditor.class:612
+#: FCommit.class:235 FEditor.class:2720 FForm.class:3164 FTextEditor.class:766
 msgid "Redo"
 msgstr ""
 
-#: FCommit.class:242 FEditor.class:2700 FTextEditor.class:750
+#: FCommit.class:242 FEditor.class:2913 FTextEditor.class:930
 msgid "Indent"
 msgstr ""
 
-#: FCommit.class:249 FEditor.class:2707 FTextEditor.class:757
+#: FCommit.class:249 FEditor.class:2920 FTextEditor.class:937
 msgid "Unindent"
 msgstr ""
 
@@ -454,7 +462,7 @@ msgstr ""
 msgid "Class"
 msgstr ""
 
-#: FCreateFile.class:585 FEditor.class:2653 FForm.class:2840 FMain.class:1288
+#: FCreateFile.class:585 FEditor.class:2866 FForm.class:2840 FMain.class:1288
 msgid "Form"
 msgstr ""
 
@@ -480,7 +488,7 @@ msgid "Name"
 msgstr ""
 
 #: FCreateFile.class:685 FCreateProject.class:526 FMakeExecutable.class:98
-#: FOption.class:724 FPropertyProject.class:1555
+#: FOption.class:752 FPropertyProject.class:1555
 msgid "Options"
 msgstr ""
 
@@ -740,7 +748,7 @@ msgstr ""
 msgid "Add expression"
 msgstr ""
 
-#: FDebugInfo.class:770 FOption.class:1061
+#: FDebugInfo.class:770 FOption.class:1089
 msgid "Breakpoints"
 msgstr ""
 
@@ -756,94 +764,109 @@ msgstr ""
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:1943 FIconEditor.class:2026 FTextEditor.class:527
+#: FEditor.class:2004 FIconEditor.class:2026 FTextEditor.class:584
 msgid ""
 "The file has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:1943 FForm.class:2509 FIconEditor.class:2026
-#: FTextEditor.class:527 FTranslate.class:642
+#: FEditor.class:2004 FForm.class:2509 FIconEditor.class:2026
+#: FTextEditor.class:584 FTranslate.class:642
 msgid "Reload"
 msgstr ""
 
-#: FEditor.class:2252
+#: FEditor.class:2322
 msgid "(Declarations)"
 msgstr ""
 
-#: FEditor.class:2479
+#: FEditor.class:2660
 msgid "Go to"
 msgstr ""
 
-#: FEditor.class:2483 FTextEditor.class:597
+#: FEditor.class:2664 FTextEditor.class:751
 msgid "Go to line..."
 msgstr ""
 
-#: FEditor.class:2488
+#: FEditor.class:2669
+msgid "Find definition"
+msgstr ""
+
+#: FEditor.class:2674
+msgid "Go back"
+msgstr ""
+
+#: FEditor.class:2679
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:2499
+#: FEditor.class:2690
 msgid "Run &until current line"
 msgstr ""
 
-#: FEditor.class:2506
+#: FEditor.class:2697
 msgid "Toggle &breakpoint"
 msgstr ""
 
-#: FEditor.class:2514
+#: FEditor.class:2705
 msgid "&Watch expression..."
 msgstr ""
 
-#: FEditor.class:2561 FTextEditor.class:644
+#: FEditor.class:2752 FTextEditor.class:798
 msgid "Select &All"
 msgstr ""
 
-#: FEditor.class:2570
+#: FEditor.class:2761
 msgid "Comment"
 msgstr ""
 
-#: FEditor.class:2576
+#: FEditor.class:2767
 msgid "Uncomment"
 msgstr ""
 
-#: FEditor.class:2586 FTextEditor.class:653
+#: FEditor.class:2777 FTextEditor.class:807
 msgid "Find..."
 msgstr ""
 
-#: FEditor.class:2592 FTextEditor.class:659
+#: FEditor.class:2783 FTextEditor.class:813
 msgid "Replace..."
 msgstr ""
 
-#: FEditor.class:2599 FTextEditor.class:666
+#: FEditor.class:2790 FTextEditor.class:820
 msgid "Find Next"
 msgstr ""
 
-#: FEditor.class:2606 FTextEditor.class:673
+#: FEditor.class:2797 FTextEditor.class:827
 msgid "Find Previous"
 msgstr ""
 
-#: FEditor.class:2621 FForm.class:3065 FIconEditor.class:1406
-#: FTextEditor.class:683
+#: FEditor.class:2807
+msgid "View"
+msgstr ""
+
+#: FEditor.class:2810 FTextEditor.class:840
+msgid "No Split"
+msgstr ""
+
+#: FEditor.class:2816 FTextEditor.class:846
+msgid "Horizontal Split"
+msgstr ""
+
+#: FEditor.class:2822 FTextEditor.class:852
+msgid "Vertical Split"
+msgstr ""
+
+#: FEditor.class:2838 FForm.class:3065 FIconEditor.class:1406
+#: FTextEditor.class:863
 msgid "Save"
 msgstr ""
 
-#: FFindList.class:47 FIconEditor.class:2269 FOption.class:832
-msgid "Line"
+#: FEditor.class:2982
+msgid "Definition"
 msgstr ""
 
-#: FFindList.class:49
-msgid "Column"
-msgstr ""
-
-#: FFindList.class:167 FIconEditor.class:1406 FMakeInstall.class:229
-#: FOption.class:1162 FTips.class:232
-msgid "Close"
-msgstr ""
-
-#: FFindList.class:197
-msgid "Find list"
+#: FEditor.class:2990
+msgid "Last Position"
 msgstr ""
 
 #: FFind.class:115
@@ -912,6 +935,23 @@ msgstr ""
 
 #: FFind.class:762
 msgid "Search in strings"
+msgstr ""
+
+#: FFindList.class:47 FIconEditor.class:2269 FOption.class:860
+msgid "Line"
+msgstr ""
+
+#: FFindList.class:49
+msgid "Column"
+msgstr ""
+
+#: FFindList.class:167 FIconEditor.class:1406 FMakeInstall.class:229
+#: FOption.class:1190 FTips.class:232
+msgid "Close"
+msgstr ""
+
+#: FFindList.class:197
+msgid "Find list"
 msgstr ""
 
 #: FFontChooser.class:57
@@ -1600,7 +1640,7 @@ msgstr ""
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2277 FOption.class:499
+#: FMain.class:2277 FOption.class:510
 msgid "Preferences"
 msgstr ""
 
@@ -1684,7 +1724,7 @@ msgstr ""
 msgid "Watch expression"
 msgstr ""
 
-#: FMain.class:2527 FProperty.class:905
+#: FMain.class:2527 FProperty.class:958
 msgid "Properties"
 msgstr ""
 
@@ -2055,223 +2095,227 @@ msgstr ""
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:511 FPropertyProject.class:1474
+#: FOption.class:522 FPropertyProject.class:1474
 msgid "General"
 msgstr ""
 
-#: FOption.class:516
-msgid "Desktop"
-msgstr ""
-
-#: FOption.class:522
-msgid "Interface"
-msgstr ""
-
-#: FOption.class:531
-msgid "Show tooltips"
-msgstr ""
-
-#: FOption.class:538 FPropertyProject.class:1618
-msgid "No"
-msgstr ""
-
-#: FOption.class:538 FPropertyProject.class:1618
-msgid "Yes"
-msgstr ""
-
-#: FOption.class:548
-msgid "Show project information balloons"
-msgstr ""
-
-#: FOption.class:565
-msgid "Show message bar"
-msgstr ""
-
-#: FOption.class:582
-msgid "Font size"
-msgstr ""
-
-#: FOption.class:590
-msgid "Normal size"
-msgstr ""
-
-#: FOption.class:590
-msgid "Small size"
-msgstr ""
-
-#: FOption.class:600
-msgid "Toolbox size"
-msgstr ""
-
-#: FOption.class:618
-msgid "Sort properties"
-msgstr ""
-
-#: FOption.class:635 FWelcome.class:47
-msgid "Recent projects"
-msgstr ""
-
-#: FOption.class:648
-msgid "Max."
-msgstr ""
-
-#: FOption.class:658
-msgid "Quiet external commands"
-msgstr ""
-
-#: FOption.class:675
+#: FOption.class:530
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.class:683
+#: FOption.class:538
+msgid "Desktop"
+msgstr ""
+
+#: FOption.class:538
 msgid "Gnome"
 msgstr ""
 
-#: FOption.class:683
+#: FOption.class:538
 msgid "KDE"
 msgstr ""
 
-#: FOption.class:693
+#: FOption.class:548
 msgid "Browser"
 msgstr ""
 
-#: FOption.class:701 FPropertyProject.class:57
+#: FOption.class:556 FPropertyProject.class:57
 msgid "(Default)"
 msgstr ""
 
-#: FOption.class:701
+#: FOption.class:556
 msgid "Konqueror"
 msgstr ""
 
-#: FOption.class:701
+#: FOption.class:556
 msgid "Firefox"
 msgstr ""
 
-#: FOption.class:701
+#: FOption.class:556
 msgid "Epiphany"
 msgstr ""
 
-#: FOption.class:701
+#: FOption.class:556
 msgid "SeaMonkey"
 msgstr ""
 
-#: FOption.class:701
+#: FOption.class:556
 msgid "Opera"
 msgstr ""
 
-#: FOption.class:705
-msgid "Editor"
+#: FOption.class:569
+msgid "Interface"
 msgstr ""
 
-#: FOption.class:710
-msgid "Font"
+#: FOption.class:578
+msgid "Show tooltips"
+msgstr ""
+
+#: FOption.class:585 FPropertyProject.class:1618
+msgid "No"
+msgstr ""
+
+#: FOption.class:585 FPropertyProject.class:1618
+msgid "Yes"
+msgstr ""
+
+#: FOption.class:595
+msgid "Show project information balloons"
+msgstr ""
+
+#: FOption.class:612
+msgid "Show message bar"
+msgstr ""
+
+#: FOption.class:629
+msgid "Font size"
+msgstr ""
+
+#: FOption.class:637
+msgid "Normal size"
+msgstr ""
+
+#: FOption.class:637
+msgid "Small size"
+msgstr ""
+
+#: FOption.class:647
+msgid "Toolbox size"
+msgstr ""
+
+#: FOption.class:665
+msgid "Sort properties"
+msgstr ""
+
+#: FOption.class:682 FWelcome.class:47
+msgid "Recent projects"
+msgstr ""
+
+#: FOption.class:695
+msgid "Max."
+msgstr ""
+
+#: FOption.class:705
+msgid "Quiet external commands"
+msgstr ""
+
+#: FOption.class:722
+msgid "Disable integrated help"
 msgstr ""
 
 #: FOption.class:733
+msgid "Editor"
+msgstr ""
+
+#: FOption.class:738
+msgid "Font"
+msgstr ""
+
+#: FOption.class:761
 msgid "Automatic completion"
 msgstr ""
 
-#: FOption.class:750
+#: FOption.class:778
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:763
+#: FOption.class:791
 msgid "spaces"
 msgstr ""
 
-#: FOption.class:773
+#: FOption.class:801
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:790
+#: FOption.class:818
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:807
+#: FOption.class:835
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.class:824
+#: FOption.class:852
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:832 FProperty.class:601
+#: FOption.class:860 FProperty.class:628
 msgid "None"
 msgstr ""
 
-#: FOption.class:832
+#: FOption.class:860
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:836
+#: FOption.class:864
 msgid "Colors"
 msgstr ""
 
-#: FOption.class:858
+#: FOption.class:886
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:865
+#: FOption.class:893
 msgid "Export theme"
 msgstr ""
 
-#: FOption.class:896
+#: FOption.class:924
 msgid "Background"
 msgstr ""
 
-#: FOption.class:903
+#: FOption.class:931
 msgid "Normal text"
 msgstr ""
 
-#: FOption.class:910
+#: FOption.class:938
 msgid "Selection"
 msgstr ""
 
-#: FOption.class:917
+#: FOption.class:945
 msgid "Highlighting"
 msgstr ""
 
-#: FOption.class:924
+#: FOption.class:952
 msgid "Keywords"
 msgstr ""
 
-#: FOption.class:931
+#: FOption.class:959
 msgid "Data types"
 msgstr ""
 
-#: FOption.class:938
+#: FOption.class:966
 msgid "Subroutines"
 msgstr ""
 
-#: FOption.class:945
+#: FOption.class:973
 msgid "Operators"
 msgstr ""
 
-#: FOption.class:1033
+#: FOption.class:1061
 msgid "Symbols"
 msgstr ""
 
-#: FOption.class:1040
+#: FOption.class:1068
 msgid "Numbers"
 msgstr ""
 
-#: FOption.class:1047
+#: FOption.class:1075
 msgid "Strings"
 msgstr ""
 
-#: FOption.class:1054 FTranslate.class:50
+#: FOption.class:1082 FTranslate.class:50
 msgid "Comments"
 msgstr ""
 
-#: FOption.class:1068
+#: FOption.class:1096
 msgid "Current line"
 msgstr ""
 
-#: FOption.class:1075
+#: FOption.class:1103
 msgid "Editing line"
 msgstr ""
 
-#: FOption.class:1082
+#: FOption.class:1110
 msgid "Error"
 msgstr ""
 
@@ -2327,23 +2371,31 @@ msgstr ""
 msgid "Author(s)"
 msgstr ""
 
-#: FProperty.class:319
+#: FProperty.class:327
 msgid "Forbidden characters in control name."
 msgstr ""
 
-#: FProperty.class:324
+#: FProperty.class:332
 msgid "This name is already in use."
 msgstr ""
 
-#: FProperty.class:334
+#: FProperty.class:342
 msgid "Forbidden characters in control group."
 msgstr ""
 
-#: FProperty.class:392
+#: FProperty.class:400
 msgid "Incorrect property value."
 msgstr ""
 
-#: FProperty.class:915
+#: FProperty.class:507
+msgid "The name of the control."
+msgstr ""
+
+#: FProperty.class:518
+msgid "The event group that the control belongs to."
+msgstr ""
+
+#: FProperty.class:968
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 
@@ -2543,6 +2595,10 @@ msgstr ""
 
 #: FText.class:89
 msgid "Use a fixed font"
+msgstr ""
+
+#: FTextEditor.class:837
+msgid "Editor View"
 msgstr ""
 
 #: FTips.class:47
@@ -2925,6 +2981,10 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
+#: MHelp.module:232
+msgid "No help found"
+msgstr ""
+
 #: Package.module:50
 msgid "'&1' is not installed on your system."
 msgstr ""
@@ -2983,14 +3043,6 @@ msgstr ""
 
 #: Package.module:1110
 msgid "'tar' has returned the following error code:"
-msgstr ""
-
-#: .project:1
-msgid "Gambas 2"
-msgstr ""
-
-#: .project:2
-msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
 #: Project.module:121

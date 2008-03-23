@@ -44,7 +44,15 @@ PRIVATE $bLastStatic AS Boolean
 PUBLIC frmCompletion AS FCompletion
 PUBLIC frmSignature AS FSignature
 
-PRIVATE edtSplit AS Editor
+PRIVATE $iViewMode AS Integer
+PRIVATE VIEWMODE_NORMAL AS Integer = 0 
+PRIVATE VIEWMODE_HORIZONTAL AS Integer = 1
+PRIVATE VIEWMODE_VERTICAL AS Integer = 2
+
+PRIVATE $edtHEditorLeft AS Editor
+PRIVATE $edtHEditorRight AS Editor
+PRIVATE $edtVEditorTop AS Editor
+PRIVATE $edtVEditorBottom AS Editor
 
 PRIVATE $cProc AS Collection
 PRIVATE $iFirstProcLine AS Integer
@@ -101,10 +109,13 @@ PUBLIC SUB _new(sPath AS String)
   
 END
 
-
 PUBLIC SUB Refresh()
 
   edtEditor.TabSize = Project.TabSize
+  IF $edtHEditorLeft THEN $edtHEditorLeft.TabSize = Project.TabSize
+  IF $edtHEditorRight THEN $edtHEditorRight.TabSize = Project.TabSize
+  IF $edtVEditorBottom THEN $edtVEditorBottom.TabSize = Project.TabSize
+  IF $edtVEditorTop THEN $edtVEditorTop.TabSize = Project.TabSize
 
 END
 
@@ -119,12 +130,12 @@ PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
 
   MColor.InitEditor(hEditor)
 
-  hEditor.Flags[edtEditor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
-  hEditor.Flags[edtEditor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
-  hEditor.Flags[edtEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
-  hEditor.Flags[edtEditor.DrawWithRelief] = Settings["/Editor/UseRelief", TRUE]
-  hEditor.Flags[edtEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
-  hEditor.Flags[edtEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
+  hEditor.Flags[hEditor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
+  hEditor.Flags[hEditor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
+  hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
+  hEditor.Flags[hEditor.DrawWithRelief] = Settings["/Editor/UseRelief", TRUE]
+  hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
+  hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
 
 END
 
@@ -140,14 +151,11 @@ PUBLIC SUB ReadConfig()
   Form_Resize
 
   ReadConfigEditor(edtEditor)
-  IF edtSplit THEN ReadConfigEditor(edtSplit)
 
   $bCompletion = Settings["/Editor/Completion", TRUE]
   $bCleanOnSave = Settings["/Editor/CleanOnSave", FALSE]
 
 END
-
-
 
 PUBLIC FUNCTION Save(OPTIONAL bReset AS Boolean) AS Boolean
 
@@ -166,11 +174,11 @@ PUBLIC FUNCTION Save(OPTIONAL bReset AS Boolean) AS Boolean
 
   IF Project.ReadOnly THEN RETURN
   IF NOT $bModify THEN
-    IF bReset THEN edtEditor.Reset
+    IF bReset THEN Editor.Reset
     RETURN
   ENDIF
 
-  edtEditor_Scroll
+  Editors_Scroll
 
   Save.Begin(Path)
 
@@ -241,22 +249,22 @@ PUBLIC FUNCTION Save(OPTIONAL bReset AS Boolean) AS Boolean
 
   sHeader = "' Gambas " & File.Ext(Path) & " file"
 
-  IF edtEditor.Lines[0] <> sHeader THEN
-    edtEditor.Insert(sHeader & "\n", 0, 0)
+  IF Editor.Lines[0] <> sHeader THEN
+    Editor.Insert(sHeader & "\n", 0, 0)
   ENDIF
 
-  IF edtEditor.Lines.Count < 2 OR IF edtEditor.Lines[1] THEN 
-    edtEditor.Insert("", 1, 0)
+  IF Editor.Lines.Count < 2 OR IF Editor.Lines[1] THEN 
+    Editor.Insert("", 1, 0)
   ENDIF
   
-  File.Save(Path, edtEditor.Text)
+  File.Save(Path, Editor.Text)
 
   ' ENDIF
 
   $bModify = FALSE
   DrawTitle
 
-  IF bReset THEN edtEditor.Reset
+  IF bReset THEN Editor.Reset
 
   Save.End()
 
@@ -275,7 +283,7 @@ END
 
 PRIVATE SUB DrawInfo()
   
-  lblEditor.Text = CStr(edtEditor.Line + 1) & ":" & CStr(edtEditor.Column + 1)
+  lblEditor.Text = CStr(Editor.Line + 1) & ":" & CStr(Editor.Column + 1)
   
 END
 
@@ -310,6 +318,7 @@ END
 
 
 PUBLIC SUB Form_Resize()
+  DIM iToolbarOffset AS Integer
 
   HideCompletion
   HideSignature
@@ -322,16 +331,27 @@ PUBLIC SUB Form_Resize()
     'panToolbar.Resize(ME.ClientW, btnGoto.Y + btnGoto.H)
     'panToolbar.W = ME.ClientW
     panToolBar.Move(0, 0, ME.CLientW)
-    edtEditor.Move(0, panToolBar.H, ME.ClientW, ME.ClientH - panToolBar.H)
+    iToolbarOffset = panToolBar.H
+    'edtEditor.Move(0, panToolBar.H, ME.ClientW, ME.ClientH - panToolBar.H)
   ELSE
-    edtEditor.Move(0, 0, ME.ClientW, ME.ClientH)
+    iToolbarOffset = 0
+    'edtEditor.Move(0, 0, ME.ClientW, ME.ClientH)
   ENDIF
   'lblCursor.Move(0, ME.ClientH - lblCursor.Height)
+
+  SELECT CASE $iViewMode
+  CASE 0
+    edtEditor.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+  CASE 1
+    HSplit1.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+  CASE 2
+    VSplit1.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+  END SELECT 
 
 END
 
 
-PUBLIC SUB edtEditor_Change()
+PUBLIC SUB Editors_Change()
 
   Modify
 
@@ -345,9 +365,9 @@ PRIVATE SUB RefreshLineInfo(OPTIONAL bForce AS Boolean)
     $iLastLine = -1
   ENDIF
   
-  IF edtEditor.Line <> $iLastLine THEN
+  IF Editor.Line <> $iLastLine THEN
     'eTime = Timer
-    $iLastLine = edtEditor.Line
+    $iLastLine = Editor.Line
     HideCompletion
     HideSignature
     'timProc.Enabled = TRUE
@@ -369,7 +389,7 @@ PRIVATE SUB RefreshLineInfo(OPTIONAL bForce AS Boolean)
 END
 
 
-PUBLIC SUB edtEditor_Cursor()
+PUBLIC SUB Editors_Cursor()
 
   RefreshLineInfo
   HideMessage
@@ -379,7 +399,7 @@ END
 
 PUBLIC SUB Form_GotFocus()
   
-  edtEditor.SetFocus
+  Editor.SetFocus
 
 END
 
@@ -396,9 +416,9 @@ END
 PUBLIC SUB Goto(iLine AS Integer, OPTIONAL iColumn AS Integer = -1, OPTIONAL bCenter AS Boolean)
 
   'DEC iLine
-  IF iColumn < 0 THEN iColumn = edtEditor.Column
+  IF iColumn < 0 THEN iColumn = Editor.Column
 
-  edtEditor.Goto(iLine, iColumn, bCenter)
+  Editor.Goto(iLine, iColumn, bCenter)
 
 END
 
@@ -411,7 +431,7 @@ PUBLIC SUB GotoCenter(iLine AS Integer, OPTIONAL iColumn AS Integer = -1, OPTION
 END
 
 
-PUBLIC SUB edtEditor_Menu()
+PUBLIC SUB Editors_Menu()
 
   DIM hMenu AS Menu
   DIM iInd AS Integer
@@ -564,26 +584,26 @@ PRIVATE FUNCTION InsertFunction(sProc AS String, sType AS String, bPublic AS Boo
   DIM sPublic AS String
   DIM sStatic AS String
 
-  FOR iLine = 0 TO edtEditor.Lines.Count - 1
-    IF IsProc(edtEditor.Lines[iLine]) THEN
+  FOR iLine = 0 TO Editor.Lines.Count - 1
+    IF IsProc(Editor.Lines[iLine]) THEN
       IF Comp($sName, sProc, gb.Text) = 0 THEN
         RETURN iLine
       ENDIF
     ENDIF
   NEXT
   
-  edtEditor.Goto(iLine - 1, Len(edtEditor.Lines[iLine - 1]))
-  IF edtEditor.Column THEN edtEditor.Insert("\n")
+  Editor.Goto(iLine - 1, Len(Editor.Lines[iLine - 1]))
+  IF Editor.Column THEN Editor.Insert("\n")
 
-  iLine = edtEditor.Line + 1
+  iLine = Editor.Line + 1
 
   sPublic = If(bPublic, "PUBLIC", "PRIVATE")
   sStatic = If(bStatic, "STATIC ", "")
 
   IF sType THEN
-    edtEditor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n  \n\nEND\n")
+    Editor.Insert("\n" & sStatic & sPublic & " FUNCTION " & sProc & "(" & sSign & ") AS " & sType & "\n\n  \n\nEND\n")
   ELSE
-    edtEditor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n  \n\nEND\n")
+    Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n  \n\nEND\n")
   ENDIF
   
   RETURN iLine
@@ -697,22 +717,22 @@ PRIVATE SUB InsertProperty()
     ENDIF
   ENDIF
   
-  iLine = edtEditor.Line
-  iCol = edtEditor.Column
+  iLine = Editor.Line
+  iCol = Editor.Column
   
   InsertFunction(sName & "_Read", sType, FALSE, "", bStatic)
   IF NOT bRead THEN
     InsertFunction(sName & "_Write", "", FALSE, "Value AS " & sType, bStatic)
   ENDIF
   'GotoCenter(iLine)
-  edtEditor.Goto(iLine, iCol)
+  Editor.Goto(iLine, iCol)
 
 CATCH
 
 END
 
 
-PUBLIC SUB edtEditor_KeyPress()
+PUBLIC SUB Editors_KeyPress()
 
   DIM sLine AS String
   DIM iLine AS Integer
@@ -721,9 +741,9 @@ PUBLIC SUB edtEditor_KeyPress()
   DIM iPos AS Integer
   DIM bStop AS Boolean
 
-  IF NOT edtEditor.ReadOnly THEN
+  IF NOT Editor.ReadOnly THEN
 
-    iLine = edtEditor.Line
+    iLine = Editor.Line
 
     IF frmCompletion.Visible THEN
       bStop = frmCompletion.ManageKey()
@@ -771,6 +791,24 @@ PUBLIC SUB edtEditor_KeyPress()
 '       STOP EVENT
 '     ENDIF
 
+  ELSE IF Key.Code = Key.Insert THEN
+
+    IF Key.Shift THEN
+      IF NOT Editor.ReadOnly THEN
+        Editor.Paste
+      ENDIF 
+    ELSE IF Key.Control THEN
+      Editor.Copy
+    ENDIF 
+    
+  ELSE IF Key.Code = Key.Delete THEN
+
+    IF Key.Shift THEN
+      IF NOT Editor.ReadOnly THEN
+        Editor.Cut
+      ENDIF 
+    ENDIF 
+
   ELSE IF Key.Control THEN
 
     IF Key.Code = Key["A"] THEN
@@ -798,29 +836,29 @@ PUBLIC SUB edtEditor_KeyPress()
 
   ENDIF
 
-  IF edtEditor.ReadOnly THEN RETURN
+  IF Editor.ReadOnly THEN RETURN
 
   IF Asc(Key.Text) = 13 THEN
 
-    sLine = Trim(edtEditor.Lines[iLine])
+    sLine = Trim(Editor.Lines[iLine])
 
-    IF edtEditor.Column < Len(sLine) THEN RETURN
+    IF Editor.Column < Len(sLine) THEN RETURN
 
     IF IsProc(sLine) THEN
 
-      FOR iInd = iLine + 1 TO edtEditor.Lines.Count - 1
-        sLine = edtEditor.Lines[iInd]
+      FOR iInd = iLine + 1 TO Editor.Lines.Count - 1
+        sLine = Editor.Lines[iInd]
         IF IsEndProc(sLine) THEN RETURN
         IF IsProc(sLine) THEN BREAK
       NEXT
 
-      sLine = Trim(edtEditor.Lines[iLine])
+      sLine = Trim(Editor.Lines[iLine])
 
-      IF InStr(sLine, "(") = 0 THEN edtEditor.Insert("()")
-      edtEditor.Insert("\n  \n  \n  \nEND\n")
+      IF InStr(sLine, "(") = 0 THEN Editor.Insert("()")
+      Editor.Insert("\n  \n  \n  \nEND\n")
       'edtEditor.Line = iLine + 2
       'edtEditor.Column = 2
-      edtEditor.Goto(iLine + 2, 2)
+      Editor.Goto(iLine + 2, 2)
 
       STOP EVENT
 
@@ -982,7 +1020,7 @@ PUBLIC FUNCTION CanSetBreakpoint(iLine AS Integer) AS Boolean
   DIM sLine AS String
   DIM iPos AS Integer
 
-  sLine = Trim(edtEditor.Lines[iLine])
+  sLine = Trim(Editor.Lines[iLine])
   iPos = InStr(sLine, "'")
   IF iPos THEN sLine = Trim(Left$(sLine, iPos - 1))
   IF Len(Trim(sLine)) = 0 THEN RETURN FALSE
@@ -992,7 +1030,7 @@ PUBLIC FUNCTION CanSetBreakpoint(iLine AS Integer) AS Boolean
     IF iLine = $cProc[cmbProc.Text] THEN RETURN FALSE
   ELSE 
     IF GetCurrentProcLine(iLine) < 0 THEN RETURN FALSE
-    IF IsProc(edtEditor.Lines[iLine]) THEN RETURN FALSE
+    IF IsProc(Editor.Lines[iLine]) THEN RETURN FALSE
   ENDIF
 
   RETURN TRUE
@@ -1007,15 +1045,15 @@ PUBLIC SUB SetBreakpoint(iLine AS Integer, bVal AS Boolean) AS Boolean
 
   IF bVal AND IF NOT CanSetBreakpoint(iLine) THEN RETURN TRUE
   
-  edtEditor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
-  IF iLine = edtEditor.Line THEN RefreshLineInfo(TRUE) 
+  Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
+  IF iLine = Editor.Line THEN RefreshLineInfo(TRUE) 
 
 END
 
 
 PUBLIC SUB HasBreakpoint(iLine AS Integer) AS Boolean
   
-  RETURN edtEditor.Lines.GetFlag(iLine, Editor.Breakpoint)
+  RETURN Editor.Lines.GetFlag(iLine, Editor.Breakpoint)
   
 END
 
@@ -1027,7 +1065,7 @@ PUBLIC FUNCTION GetBreakpoints() AS Integer[]
 
   DO
 
-    iLine = edtEditor.FindNextBreakpoint(iLine)
+    iLine = Editor.FindNextBreakpoint(iLine)
     IF iLine < 0 THEN BREAK
     
     IF CanSetBreakpoint(iLine) THEN
@@ -1056,12 +1094,10 @@ END
 
 PRIVATE SUB StoreSelection()
 
-  WITH edtEditor
-
+  WITH Editor
     $iStartLine = .Selection.StartLine
     $iEndLine = .Selection.EndLine
     IF Editor.Column > 0 OR NOT .Selected THEN INC $iEndLine
-
   END WITH
 
 END
@@ -1080,7 +1116,7 @@ PRIVATE SUB GetIndentWidth(iStart AS Integer, iEnd AS Integer) AS Integer
   DIM iIndent AS Integer = 0
   
   FOR iLine = iStart TO iEnd - 1
-    sLine = edtEditor.Lines[iLine]
+    sLine = Editor.Lines[iLine]
     IF LTrim(sLine) THEN 
       iInd = Len(sLine) - Len(LTrim(sLine))
       IF iIndent = 0 THEN
@@ -1107,22 +1143,27 @@ PUBLIC SUB mnuComment_Click()
   DIM sText AS String
   DIM iIndent AS Integer
 
-  IF edtEditor.ReadOnly THEN RETURN
-  IF NOT edtEditor.Selected THEN RETURN
+  IF Editor.ReadOnly THEN RETURN
+  'IF NOT Editor.Selected THEN RETURN
 
+  IF Editor.Selected THEN
   StoreSelection
 
   iIndent = GetIndentWidth($iStartLine, $iEndLine)
 
-  edtEditor.Begin
+  Editor.Begin
   FOR iLine = $iStartLine TO $iEndLine - 1
-    edtEditor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(edtEditor.Lines[iLine], iIndent + 1)
+    Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
   NEXT
-  edtEditor.End
+  Editor.End
   'Modify
 
   RecallSelection
-
+  ELSE 
+    'Comment only the current line
+    iLine = Editor.Line
+    Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
+  ENDIF 
 END
 
 
@@ -1135,30 +1176,45 @@ PUBLIC SUB mnuUncomment_Click()
   DIM sLine AS String
   DIM iIndent AS Integer
 
-  IF edtEditor.ReadOnly THEN RETURN
-  IF NOT edtEditor.Selected THEN RETURN
+  IF Editor.ReadOnly THEN RETURN
+  'IF NOT Editor.Selected THEN RETURN
 
-  StoreSelection
+  IF Editor.Selected THEN 
+    StoreSelection
 
-  iIndent = GetIndentWidth($iStartLine, $iEndLine)
+    iIndent = GetIndentWidth($iStartLine, $iEndLine)
 
-  FOR iLine = $iStartLine TO $iEndLine - 1
-    sLine = edtEditor.Lines[iLine]
-    IF Len(sLine) < (iIndent + 1) THEN BREAK
-    IF Left(LTrim(sLine), 2) <> "' " THEN BREAK
-  NEXT
-
-  IF iLine = $iEndLine THEN
-    edtEditor.Begin
     FOR iLine = $iStartLine TO $iEndLine - 1
-      edtEditor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(edtEditor.Lines[iLine]), 3)
+      sLine = Editor.Lines[iLine]
+      IF Len(sLine) < (iIndent + 1) THEN BREAK
+      IF Left(LTrim(sLine), 1) <> "'" THEN BREAK
     NEXT
-    edtEditor.End
-    'Modify
-  ENDIF
 
-  RecallSelection
+    IF iLine = $iEndLine THEN
+      Editor.Begin
+      FOR iLine = $iStartLine TO $iEndLine - 1
+        IF Left(LTrim(Editor.Lines[iLine]), 2) = "' " THEN 
+          Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 3)
+        ELSE 
+          Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 2)
+        ENDIF 
+      NEXT
+      Editor.End
+      'Modify
+    ENDIF
 
+    RecallSelection
+  ELSE 
+    iLine = Editor.Line
+    sLine = Editor.Lines[iLine]
+    IF Len(sLine) < (iIndent + 1) THEN RETURN 
+    IF Left(LTrim(sLine), 1) <> "'" THEN RETURN 
+    IF Left(LTrim(Editor.Lines[iLine]), 2) = "' " THEN 
+      Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 3)
+    ELSE 
+      Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 2)
+    ENDIF 
+  ENDIF 
 END
 
 
@@ -1224,7 +1280,7 @@ END
 
 PUBLIC SUB mnuSelectAll_Click()
 
-  edtEditor.SelectAll
+  Editor.SelectAll
 
 END
 
@@ -1234,14 +1290,14 @@ PRIVATE SUB GotoPreviousProc()
 
   Project.SavePosition
 
-  FOR iInd = edtEditor.Line - 2 TO 0 STEP -1
-    IF IsProc(edtEditor.Lines[iInd]) THEN
-      ME.Goto(iInd, edtEditor.Column, TRUE)
+  FOR iInd = Editor.Line - 2 TO 0 STEP -1
+    IF IsProc(Editor.Lines[iInd]) THEN
+      ME.Goto(iInd, Editor.Column, TRUE)
       RETURN
     ENDIF
   NEXT
 
-  ME.Goto(0, edtEditor.Column)
+  ME.Goto(0, Editor.Column)
 
 END
 
@@ -1251,16 +1307,16 @@ PRIVATE SUB GotoNextProc()
 
   Project.SavePosition
 
-  FOR iInd = edtEditor.Line + 1 TO edtEditor.Lines.Count - 1
+  FOR iInd = Editor.Line + 1 TO Editor.Lines.Count - 1
 
-    IF IsProc(edtEditor.Lines[iInd]) THEN
-      ME.Goto(iInd, edtEditor.Column, TRUE)
+    IF IsProc(Editor.Lines[iInd]) THEN
+      ME.Goto(iInd, Editor.Column, TRUE)
       RETURN
     ENDIF
 
   NEXT
 
-  ME.Goto(edtEditor.Lines.Count - 1, edtEditor.Column)
+  ME.Goto(Editor.Lines.Count - 1, Editor.Column)
 
 END
 
@@ -1326,12 +1382,12 @@ PRIVATE FUNCTION GetSymbolType(sSymbol AS String, OPTIONAL bPoint AS Boolean) AS
 
   ' Look for local variables
 
-  iLine = edtEditor.Line
+  iLine = Editor.Line
 
   DO
     DEC iLine
     IF iLine < 0 THEN RETURN
-    aSym = Highlight.Analyze(edtEditor.Lines[iLine])
+    aSym = Highlight.Analyze(Editor.Lines[iLine])
     IF aSym.Count >= 1 THEN
       IF asym.Count = 1 THEN
         IF aSym[0] = "END" THEN BREAK
@@ -1439,12 +1495,12 @@ PRIVATE SUB GetSymbolWith(aExpr AS String[], aType AS Integer[], OPTIONAL iInd A
   DIM iLevel AS Integer
   DIM iAssign AS Integer
 
-  iLine = edtEditor.Line
+  iLine = Editor.Line
 
   DO
     DEC iLine
     IF iLine < 0 THEN BREAK
-    aWith = Highlight.Analyze(edtEditor.Lines[iLine])
+    aWith = Highlight.Analyze(Editor.Lines[iLine])
     IF aWith.Count >= 2 THEN
       IF aWith[0] = "WITH" THEN
         IF iLevel = 0 THEN
@@ -1674,7 +1730,7 @@ PRIVATE SUB CheckCompletion(sMode AS String)
 
   'IF NOT sMode THEN RETURN
 
-  sLine = String.Left$(Highlight.Purge(edtEditor.Lines[edtEditor.Line]), edtEditor.Column)
+  sLine = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line]), Editor.Column)
   IF Right$(RTrim(sLine)) = "'" THEN RETURN
 
   IF sMode = " " THEN
@@ -1695,13 +1751,13 @@ PRIVATE SUB CheckCompletion(sMode AS String)
     ENDIF
   ELSE IF sMode = "A" THEN
     IF NOT frmCompletion.Visible THEN 
-      sWord = GetIdentifier(sLine & Key.Text, edtEditor.Column + 1)
+      sWord = GetIdentifier(sLine & Key.Text, Editor.Column + 1)
       IF Len(sWord) >= 3 THEN frmCompletion.Open(sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     ENDIF
   ELSE IF sMode = "_" THEN 
     IF NOT frmCompletion.Visible THEN 
-      sWord = GetIdentifier(sLine, edtEditor.Column)
+      sWord = GetIdentifier(sLine, Editor.Column)
       IF NOT sWord THEN 
         frmCompletion.Open(sMode)
       ELSE IF Len(sWord) >= 3 THEN 
@@ -1710,15 +1766,15 @@ PRIVATE SUB CheckCompletion(sMode AS String)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     ENDIF
   ELSE IF sMode = "<" THEN
-    IF NOT edtEditor.Selected AND IF edtEditor.Column >= 1 AND IF NOT frmCompletion.Visible THEN 
+    IF NOT Editor.Selected AND IF Editor.Column >= 1 AND IF NOT frmCompletion.Visible THEN 
       sLine = Left(sLine, -1)
-      sWord = GetIdentifier(sLine, edtEditor.Column - 1)
+      sWord = GetIdentifier(sLine, Editor.Column - 1)
       IF Right(sLine) <> "." AND IF Len(sLine) > Len(sWord) AND IF Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." THEN
-        iPos = edtEditor.Column
-        edtEditor.Goto(edtEditor.Line, edtEditor.Column - Len(sWord) - 2)
+        iPos = Editor.Column
+        Editor.Goto(Editor.Line, Editor.Column - Len(sWord) - 2)
         CheckCompletion(".")
         frmCompletion.SetText(sWord)
-        edtEditor.Goto(edtEditor.Line, iPos)
+        Editor.Goto(Editor.Line, iPos)
         RETURN 
       ENDIF      
       IF Len(sWord) >= 3 THEN frmCompletion.Open(sMode, sWord)
@@ -1777,7 +1833,7 @@ PRIVATE FUNCTION GetExpressionSignature(aExpr AS String[], aType AS Integer[]) A
 
   IF iInd < 1 THEN RETURN
 
-  $iPosSignature = edtEditor.ToPosX(Highlight.Positions[iInd - 1])
+  $iPosSignature = Editor.ToPosX(Highlight.Positions[iInd - 1])
 
   IF iInd >= 2 THEN bNew = aExpr[iInd - 2] = "NEW"
 
@@ -1878,7 +1934,7 @@ PRIVATE SUB CheckSignature(OPTIONAL sText AS String)
   IF NOT $bCompletion THEN RETURN
 
   'sLig = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column) & sText
-  sLig = Left$(Highlight.Purge(edtEditor.Lines[edtEditor.Line]), edtEditor.Column) & sText
+  sLig = Left$(Highlight.Purge(Editor.Lines[Editor.Line]), Editor.Column) & sText
   Highlight.Analyze(sLig)
 
   IF NOT IsCurrentProc() THEN
@@ -1907,7 +1963,7 @@ PRIVATE SUB HideSignature()
 END
 
 
-PUBLIC SUB edtEditor_Scroll()
+PUBLIC SUB Editors_Scroll()
 
   'PRINT "Scroll"
   HideCompletion
@@ -1920,6 +1976,11 @@ END
 PRIVATE SUB SetReadOnly()
 
   edtEditor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+  IF $edtHEditorLeft THEN $edtHEditorLeft.ReadOnly = edtEditor.ReadOnly
+  IF $edtHEditorRight THEN $edtHEditorRight.ReadOnly = edtEditor.ReadOnly
+  IF $edtVEditorBottom THEN $edtVEditorBottom.ReadOnly = edtEditor.ReadOnly
+  IF $edtVEditorTop THEN $edtVEditorTop.ReadOnly = edtEditor.ReadOnly
+  
   UpdateMenu
 
 END
@@ -1931,7 +1992,7 @@ PUBLIC SUB Reload()
   sText = File.Load(Path)
   IF Right(sText) <> "\n" THEN sText = sText & "\n"
   edtEditor.Text = sText
-  edtEditor.SetFocus
+  Editor.SetFocus
   Modify(TRUE)
 
 END
@@ -1969,7 +2030,7 @@ PRIVATE FUNCTION GetCurrentProcLine(iLine AS Integer) AS Integer
   ELSE
 
     DO
-      IF IsProc(edtEditor.Lines[iLine]) THEN RETURN iLine
+      IF IsProc(Editor.Lines[iLine]) THEN RETURN iLine
       DEC iLine
       IF iLine < 0 THEN RETURN -1
     LOOP
@@ -1987,13 +2048,13 @@ END
 
 PUBLIC SUB btnIndent_Click()
 
-  edtEditor.Indent
+  Editor.Indent
 
 END
 
 PUBLIC SUB btnUnindent_Click()
 
-  edtEditor.Unindent
+  Editor.Unindent
 
 END
 
@@ -2016,12 +2077,12 @@ PRIVATE SUB FindDefinition()
   DIM sKeyword AS String
   DIM sKeyword2 AS String
 
-  sLig = Highlight.Purge(edtEditor.Lines[edtEditor.Line])
-  IF edtEditor.Selected THEN 
-    IF edtEditor.Selection.EndLine > edtEditor.Selection.StartLine THEN RETURN
-    iCol = edtEditor.Selection.EndColumn
+  sLig = Highlight.Purge(Editor.Lines[Editor.Line])
+  IF Editor.Selected THEN 
+    IF Editor.Selection.EndLine > Editor.Selection.StartLine THEN RETURN
+    iCol = Editor.Selection.EndColumn
   ELSE
-    iCol = edtEditor.Column
+    iCol = Editor.Column
   ENDIF
 
   REPEAT
@@ -2139,17 +2200,17 @@ PUBLIC SUB WatchExpression()
   DIM sWatch AS String
 
   IF NOT Project.Running THEN RETURN
-  sWatch = Trim(edtEditor.Selection.Text)
+  sWatch = Trim(Editor.Selection.Text)
   IF NOT sWatch THEN RETURN
 
-  FDebugInfo.AddWatch(Trim(edtEditor.Selection.Text))
+  FDebugInfo.AddWatch(Trim(Editor.Selection.Text))
 
 END
 
 PUBLIC SUB RunUntil()
 
-  IF NOT CanSetBreakpoint(edtEditor.Line) THEN RETURN
-  Project.RunUntil(ME, edtEditor.Line)
+  IF NOT CanSetBreakpoint(Editor.Line) THEN RETURN
+  Project.RunUntil(ME, Editor.Line)
 
 END
 
@@ -2160,16 +2221,25 @@ PUBLIC SUB Form_Activate()
 
 END
 
+PUBLIC SUB Editors_GotFocus()
+  Editor = LAST 
+END
 
-PUBLIC SUB edtEditor_MouseUp()
+PUBLIC SUB Editors_MouseUp()
 
   HideMessage
 
   IF NOT Project.Running THEN RETURN 
-  IF NOT edtEditor.Selected THEN RETURN 
-  IF edtEditor.Selection.StartLine < edtEditor.Selection.EndLine THEN RETURN 
+  IF NOT Editor.Selected THEN RETURN 
+  IF Editor.Selection.StartLine < Editor.Selection.EndLine THEN RETURN 
   
-  FDebugInfo.InstantWatch(Trim(edtEditor.Selection.Text), edtEditor, edtEditor.CursorX + edtEditor.CharWidth * ((edtEditor.Selection.StartColumn + edtEditor.Selection.EndColumn) / 2 - edtEditor.Column), Mouse.ScreenY - edtEditor.ScreenY)
+  FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), Mouse.ScreenY - Editor.ScreenY)
+
+END
+
+PUBLIC SUB Editors_Margin({Line} AS Integer)
+
+  Design.SetBreakpoint(Name, {Line}, NOT HasBreakpoint({Line}))
 
 END
 
@@ -2212,13 +2282,13 @@ PUBLIC SUB ShowMessage(sMsg AS String)
     hIcon = Picture["icon:/32/error"]
   ENDIF 
 
-  Balloon(sMsg, edtEditor, hIcon, edtEditor.CursorX + edtEditor.CharWidth * ((edtEditor.Selection.StartColumn + edtEditor.Selection.EndColumn) / 2 - edtEditor.Column), Mouse.ScreenY - edtEditor.ScreenY)
+  Balloon(sMsg, Editor, hIcon, Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), Mouse.ScreenY - Editor.ScreenY)
 
 END
 
 PRIVATE SUB HideMessage()
   
-  IF Balloon.Control = edtEditor THEN 
+  IF Balloon.Control = Editor THEN 
     Balloon.Hide
   ENDIF
   
@@ -2235,16 +2305,16 @@ END
 PUBLIC SUB timProc_Timer()
 
   Action.Lock
-  Action["break"].Value = edtEditor.Lines.GetFlag(edtEditor.Line, edtEditor.Breakpoint)
+  Action["break"].Value = Editor.Lines.GetFlag(Editor.Line, Editor.Breakpoint)
   Action.UnLock
-  Action["break"].Enabled = CanSetBreakpoint(edtEditor.Line)
+  Action["break"].Enabled = CanSetBreakpoint(Editor.Line)
   timProc.Enabled = FALSE
 
 END 
 
 PRIVATE SUB UpdateFunction()
 
-  DIM iLine AS Integer = GetCurrentProcLine(edtEditor.Line)
+  DIM iLine AS Integer = GetCurrentProcLine(Editor.Line)
   DIM sProc AS String = $sName
   DIM iIndex AS Integer
   
@@ -2343,11 +2413,11 @@ PUBLIC SUB GotoProc(iLine AS Integer)
   
   DO
     INC iLine
-    IF iLine >= edtEditor.Lines.Count THEN 
+    IF iLine >= Editor.Lines.Count THEN 
       DEC iLine
       BREAK
     ENDIF
-    sLine = Trim(edtEditor.Lines[iLine])
+    sLine = Trim(Editor.Lines[iLine])
     IF sLine THEN BREAK
   LOOP
   
@@ -2355,13 +2425,12 @@ PUBLIC SUB GotoProc(iLine AS Integer)
     iLine = Min(iStart + 2, iLine - 1)
   ENDIF
   
-  iCol = Len(edtEditor.Lines[iLine]) - Len(LTrim(edtEditor.Lines[iLine]))
+  iCol = Len(Editor.Lines[iLine]) - Len(LTrim(Editor.Lines[iLine]))
   
   ME.GotoCenter(iLine, iCol, TRUE)
-  edtEditor.SetFocus
+  Editor.SetFocus
   
 END
-
 
 PUBLIC SUB cmbProc_Click()
 
@@ -2380,19 +2449,13 @@ END
 
 PUBLIC SUB cmbProc_GotFocus()
 
-  edtEditor.SetFocus
+  Editor.SetFocus
 
 END
 
 PRIVATE FUNCTION ReadOnly_Read() AS Boolean
 
   RETURN edtEditor.ReadOnly
-
-END
-
-PUBLIC SUB edtEditor_Margin({Line} AS Integer)
-
-  Design.SetBreakpoint(Name, {Line}, NOT HasBreakpoint({Line}))
 
 END
 
@@ -2408,4 +2471,107 @@ PUBLIC SUB SetState(sState AS String)
   
   Editor.Goto(CInt(aState[0]), CInt(aState[1]))
   
+END
+
+PUBLIC SUB mnuNoSplit_Click()
+  IF $iViewMode = VIEWMODE_NORMAL THEN RETURN 
+  $iViewMode = VIEWMODE_NORMAL
+  edtEditor.Visible = TRUE
+  VSplit1.Visible = FALSE
+  HSplit1.Visible = FALSE
+  edtEditor.SetFocus
+  Editor = edtEditor  
+  Form_Resize
+END
+
+PUBLIC SUB mnuHorizontalSplit_Click()
+  IF $iViewMode = VIEWMODE_HORIZONTAL THEN RETURN 
+  $iViewMode = VIEWMODE_HORIZONTAL
+  edtEditor.Visible = FALSE
+
+  IF NOT $edtHEditorLeft THEN  
+    $edtHEditorLeft = NEW Editor(HSplit1) AS "Editors"
+    WITH $edtHEditorLeft
+      .Clear
+      .Expand = TRUE
+      .View = edtEditor
+      .Highlight = Highlight.Custom
+      .Flags[Editor.HighlightCurrent] = TRUE
+      .ReadOnly = edtEditor.ReadOnly
+      .TabSize = Project.TabSize
+    END WITH 
+    ReadConfigEditor($edtHEditorLeft)
+  ENDIF 
+  
+  IF NOT $edtHEditorRight THEN 
+    $edtHEditorRight = NEW Editor(HSplit1) AS "Editors"
+    WITH $edtHEditorRIght
+      .Clear
+      .Expand = TRUE
+      .View = edtEditor
+      .Highlight = Highlight.Custom
+      .Flags[Editor.HighlightCurrent] = TRUE
+      .ReadOnly = edtEditor.ReadOnly
+      .TabSize = Project.TabSize
+    END WITH 
+    ReadConfigEditor($edtHEditorRight)
+  ENDIF 
+
+  HSplit1.Visible = TRUE
+  VSplit1.Visible = FALSE
+  $edtHEditorLeft.SetFocus
+  Editor = $edtHEditorLeft  
+  Form_Resize
+END
+
+PUBLIC SUB mnuVerticalSplit_Click()
+  IF $iViewMode = VIEWMODE_VERTICAL THEN RETURN 
+  $iViewMode = VIEWMODE_VERTICAL
+  edtEditor.Visible = FALSE
+
+  IF NOT $edtVEditorTop THEN  
+    $edtVEditorTop = NEW Editor(VSplit1) AS "Editors"
+    WITH $edtVEditorTop
+      .Clear
+      .Expand = TRUE
+      .View = edtEditor
+      .Highlight = Highlight.Custom
+      .Flags[Editor.HighlightCurrent] = TRUE
+      .ReadOnly = edtEditor.ReadOnly
+      .TabSize = Project.TabSize
+    END WITH 
+    ReadConfigEditor($edtVEditorTop)
+  ENDIF 
+  
+  IF NOT $edtVEditorBottom THEN 
+    $edtVEditorBottom = NEW Editor(VSplit1) AS "Editors"
+    WITH $edtVEditorBottom
+      .Clear
+      .Expand = TRUE
+      .View = edtEditor
+      .Highlight = Highlight.Custom
+      .Flags[Editor.HighlightCurrent] = TRUE
+      .ReadOnly = edtEditor.ReadOnly
+      .TabSize = Project.TabSize
+    END WITH 
+    ReadConfigEditor($edtVEditorBottom)
+  ENDIF 
+
+  HSplit1.Visible = FALSE
+  VSplit1.Visible = TRUE
+  $edtVEditorTop.SetFocus
+  Editor = $edtVEditorTop
+  Form_Resize
+END
+
+PUBLIC SUB mnuDefinition_Click()
+
+  FindDefinition
+
+END
+
+PUBLIC SUB mnuLastPosition_Click()
+
+  Project.LastPosition
+
 END
