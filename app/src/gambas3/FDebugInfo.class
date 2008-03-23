@@ -589,7 +589,7 @@ PUBLIC SUB UpdateView()
   IF panStack.Visible <> Project.Running THEN
     IF Project.Running THEN
       panStack.Visible = TRUE
-      Settings.Read(splDebug,, "1,4")
+      Settings.Read(splDebug,, "4,1")
     ELSE 
       Settings.Write(splDebug)
       panStack.Visible = FALSE
