@@ -57,8 +57,8 @@ PUBLIC void MEMORY_check_ptr(void *ptr);
 #define ALLOC(_ptr, _size, _src)        ((*(_ptr) = malloc(_size)) ? MEMORY_count++ : THROW_MEMORY())
 #define ALLOC_ZERO(_ptr, _size, _src)   ((*(_ptr) = calloc(_size, 1)) ? MEMORY_count++ : THROW_MEMORY())
 #define REALLOC(_ptr, _size, _src)      ((*(_ptr) = realloc(*(_ptr), _size)) ? 0 : THROW_MEMORY())
-#define FREE(_ptr, _src)                (free(*(_ptr)), *(_ptr) = NULL, MEMORY_count--)
-#define IFREE(_ptr, _src)               (free(_ptr), MEMORY_count--)
+#define FREE(_ptr, _src)                (*(_ptr) ? free(*(_ptr)), *(_ptr) = NULL, MEMORY_count-- : 0)
+#define IFREE(_ptr, _src)               (_ptr ? free(_ptr), MEMORY_count-- : 0)
 
 int THROW_MEMORY();
 
