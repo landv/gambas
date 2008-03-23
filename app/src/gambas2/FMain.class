@@ -697,7 +697,7 @@ PUBLIC SUB mnuPaste_Click()
 
     CASE "C"
       Project.CopyFile(sSrc, sDst)
-      Rename(sDst)
+      Rename(tvwProject.Key)
 
     CASE "X"
       IF sSrc = sDst THEN RETURN

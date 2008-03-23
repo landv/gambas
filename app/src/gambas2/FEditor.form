@@ -17,10 +17,12 @@
     }
     { mnuDefinition Menu
       Text = ("Find definition")
+      Picture = Picture["img/16/find-definition.png"]
       Shortcut = "F2"
     }
     { mnuLastPosition Menu
       Text = ("Go back")
+      Picture = Picture["icon:/16/left"]
       Shortcut = "Shift+F2"
     }
     { mnuForm Menu
@@ -280,7 +282,7 @@
       MoveScaled(83,0,3,3)
       ToolTip = ("Find definition")
       Text = ("")
-      Picture = Picture["icon:/16/find"]
+      Picture = Picture["img/16/find-definition.png"]
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"

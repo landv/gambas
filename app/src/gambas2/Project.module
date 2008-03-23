@@ -97,7 +97,7 @@ PRIVATE TMP_FILE AS String '= "/tmp/.gambas.ver"
 PRIVATE OUTPUT_FILE AS String '= "/tmp/.gambas.out"
 
 PUBLIC Browser AS String
-PUBLIC ImageEditors AS String[] = ["KolourPaint", "Krita", "Gimp"]
+PUBLIC ImageEditors AS String[] = ["Gimp", "KIconEdit", "KolourPaint", "Krita"]
 PRIVATE IMAGE_EXT AS String[] = ["jpg", "jpeg", "gif", "bmp", "xpm", "png", "tif", "tiff"]
 
 PRIVATE $iFound AS Integer
@@ -397,7 +397,7 @@ PRIVATE FUNCTION CloseProject() AS Boolean
   
     Config.Clear("/OpenFile")
     Workspace.Lock
-    FOR EACH hForm IN Files
+    FOR EACH hForm IN Workspace.Children
       IF NOT hForm.Closed THEN 
         INC nOpen
         sState = ""
@@ -3627,6 +3627,9 @@ PUBLIC SUB OpenImage(sLink AS String, sEditor AS String) AS Boolean
     
     CASE "gimp"
       aTest = ["gimp-remote"]
+      
+    CASE "kiconedit"
+      aTest = ["kiconedit"]
 
     CASE ELSE
       RETURN TRUE
