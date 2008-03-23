@@ -2546,7 +2546,7 @@ PUBLIC SUB mnuVerticalSplit_Click()
   IF NOT $edtVEditorBottom THEN 
     $edtVEditorBottom = NEW Editor(VSplit1) AS "Editors"
     WITH $edtVEditorBottom
-      .Clear
+      '.Clear
       .Expand = TRUE
       .View = edtEditor
       .Highlight = edtEditor.Highlight
