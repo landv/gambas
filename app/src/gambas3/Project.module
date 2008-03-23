@@ -60,8 +60,8 @@ PUBLIC CONST DEFAULT_MAX_RECENT AS Integer = 24
 
 PUBLIC CONST FORM_MAGIC AS String = "# Gambas Form File 2.0"
 PUBLIC CONST FORM_MAGIC_1 AS String = "# Gambas Form File 1.0"
-PUBLIC CONST PROJECT_MAGIC AS String = "# Gambas Project File 2.0"
 PUBLIC CONST PROJECT_MAGIC_1 AS String = "# Gambas Project File 1.0"
+PUBLIC CONST PROJECT_MAGIC AS String = "# Gambas Project File 2.0"
 
 PUBLIC CONST DEFAULT_FONT AS String = "Monospace,10"
 
@@ -95,7 +95,7 @@ PRIVATE TMP_FILE AS String
 PRIVATE OUTPUT_FILE AS String
 
 PUBLIC Browser AS String
-PUBLIC ImageEditors AS String[] = ["KolourPaint", "Krita", "Gimp"]
+PUBLIC ImageEditors AS String[] = ["Gimp", "KIconEdit", "KolourPaint", "Krita"]
 PRIVATE IMAGE_EXT AS String[] = ["jpg", "jpeg", "gif", "bmp", "xpm", "png", "tif", "tiff"]
 
 PRIVATE $iFound AS Integer
@@ -215,7 +215,6 @@ CATCH
 
 END
 
-
 PRIVATE SUB LastOpenedFiles()
   
   DIM nOpen AS Integer
@@ -239,7 +238,6 @@ PRIVATE SUB LastOpenedFiles()
   
   Workspace.Unlock
   
-  ActiveForm = NULL
   Activate(hActive)
   IF hActive THEN Workspace.ActiveWindow = hActive
   
@@ -397,7 +395,7 @@ PRIVATE FUNCTION CloseProject() AS Boolean
   
     Config.Clear("/OpenFile")
     Workspace.Lock
-    FOR EACH hForm IN Files
+    FOR EACH hForm IN Workspace.Children
       IF NOT hForm.Closed THEN 
         INC nOpen
         sState = ""
@@ -1163,8 +1161,6 @@ PRIVATE SUB FindKey(sClass AS String) AS String
 
 END
 
-
-
 PUBLIC SUB ShowFile(hForm AS Form)
   
   SELECT CASE Object.Type(hForm)
@@ -1183,8 +1179,6 @@ PUBLIC SUB ShowFile(hForm AS Form)
   
 END
 
-
-
 PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
 
   DIM hForm AS Object
@@ -1192,7 +1186,7 @@ PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
   IF InStr(sPath, "/") = 0 THEN sPath = FindPath(sPath)
 
   IF NOT Exist(sPath) THEN
-    FGambas.Warning("File not found!")
+    FGambas.Warning(("File not found!") & "\n" & sPath)
     Project.Refresh
     RETURN
   ENDIF
@@ -1716,7 +1710,7 @@ END
 PRIVATE SUB RefreshActivate()
   
   DIM hActive AS Object = ActiveForm
-  ActiveForm = NULL
+  ActiveForm = NULL  
   Activate(hActive)
   
 END
@@ -3458,10 +3452,10 @@ PUBLIC FUNCTION GetIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
 
   IF sIcon THEN 
     sPath = sPath &/ sIcon
-  ELSE
+  ELSE 
     sPath = "img/logo/new-logo-32.png"
   ENDIF
-  
+
   IF iSize THEN
     RETURN StretchIcon(sPath, iSize).Picture
   ELSE 
@@ -3636,6 +3630,9 @@ PUBLIC SUB OpenImage(sLink AS String, sEditor AS String) AS Boolean
     
     CASE "gimp"
       aTest = ["gimp-remote"]
+      
+    CASE "kiconedit"
+      aTest = ["kiconedit"]
 
     CASE ELSE
       RETURN TRUE

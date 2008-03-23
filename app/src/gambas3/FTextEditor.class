@@ -14,6 +14,14 @@ PRIVATE CONST STYLE_CSS AS Integer = 2
 PRIVATE $bModify AS Boolean
 PRIVATE $iStyle AS Integer
 
+PRIVATE $iViewMode AS Integer
+PRIVATE VIEWMODE_NORMAL AS Integer = 0 
+PRIVATE VIEWMODE_HORIZONTAL AS Integer = 1
+PRIVATE VIEWMODE_VERTICAL AS Integer = 2
+
+PRIVATE $hEditor1 AS Editor
+PRIVATE $hEditor2 AS Editor
+
 PUBLIC SUB _new(sPath AS String)
 
   Path = sPath
@@ -27,9 +35,12 @@ PUBLIC SUB Form_Open()
   DIM sExt AS String = LCase(File.Ext(Name))
   
   IF $aExt.Find(sExt) >= 0 THEN
-    edtEditor.Clear
-    edtEditor.Highlight = Highlight.Custom
-    edtEditor.Flags[Editor.HighlightCurrent] = TRUE
+    WITH edtEditor
+      .Clear
+      .Highlight = Highlight.Custom
+      .Flags[Editor.HighlightCurrent] = TRUE
+    END WITH     
+
     SELECT CASE sExt
       CASE "css"
         $iStyle = STYLE_CSS
@@ -52,24 +63,47 @@ PUBLIC SUB Form_Open()
   
 END
 
-
-
-PUBLIC SUB ReadConfig()
-
-  DIM iInd AS Integer
-  DIM iColor AS Integer
-  DIM hTheme AS Integer[]
-
-  edtEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
-
-  MColor.InitEditor(edtEditor)
-
-  edtEditor.Flags[Editor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
-  edtEditor.Flags[Editor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
-  edtEditor.Flags[Editor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
+PUBLIC SUB Form_Resize()
+  DIM iToolbarOffset AS Integer
+  
+  'If we add the ability to hide the toolbar then uncomment this code 
+  'IF $bToolbar THEN
+  '  panToolBar.Move(0, 0, ME.CLientW)
+  '  iToolbarOffset = panToolBar.H
+  'ELSE
+    iToolbarOffset = 0
+  'ENDIF
+  
+  SELECT CASE $iViewMode
+  CASE 0
+    edtEditor.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+  CASE 1
+    splHorizontal.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+  CASE 2
+    splVertical.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+  END SELECT 
 
 END
 
+PUBLIC SUB ReadConfig()
+
+  ReadConfigEditor(edtEditor)
+  IF $hEditor1 THEN ReadConfigEditor($hEditor1)
+  IF $hEditor2 THEN ReadConfigEditor($hEditor2)
+
+END
+
+PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
+
+  hEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+
+  MColor.InitEditor(hEditor)
+
+  hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
+  hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
+  hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
+  
+END
 
 PUBLIC FUNCTION Save() AS Boolean
 
@@ -80,8 +114,8 @@ PUBLIC FUNCTION Save() AS Boolean
 
   Save.Begin(Path)
 
-  File.Save(Path, edtEditor.Text)
-  edtEditor.Reset
+  File.Save(Path, Editor.Text)
+  Editor.Reset
   $bModify = FALSE
   DrawTitle
 
@@ -93,13 +127,11 @@ CATCH
 
 END
 
-
 PRIVATE SUB DrawTitle()
 
   Project.DrawTitle(ME)
 
 END
-
 
 PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
 
@@ -120,14 +152,14 @@ PUBLIC FUNCTION IsModified() AS Boolean
 END
 
 
-PUBLIC SUB edtEditor_Change()
+PUBLIC SUB Editors_Change()
 
   Modify
 
 END
 
 
-PUBLIC SUB edtEditor_Cursor()
+PUBLIC SUB Editors_Cursor()
 
   'PRINT edtEditor.Line; edtEditor.Column
   'lblCursor.Text = CStr(edtEditor.Line + 1) & " : " & CStr(edtEditor.Column + 1)
@@ -135,12 +167,31 @@ PUBLIC SUB edtEditor_Cursor()
 
 END
 
-PUBLIC SUB edtEditor_KeyPress()
+PUBLIC SUB Editors_KeyPress()
   
   IF Key.Code = Key.Escape THEN 
     Action["find"].Value = FALSE
   ENDIF
   
+  IF Key.Code = Key.Insert THEN
+
+    IF Key.Shift THEN
+      IF NOT Editor.ReadOnly THEN
+        Editor.Paste
+      ENDIF 
+    ELSE IF Key.Control THEN
+      Editor.Copy
+    ENDIF 
+    
+  ELSE IF Key.Code = Key.Delete THEN
+
+    IF Key.Shift THEN
+      IF NOT Editor.ReadOnly THEN
+        Editor.Cut
+      ENDIF 
+    ENDIF 
+  ENDIF 
+
 END
 
 
@@ -157,17 +208,15 @@ END
 
 PUBLIC SUB Form_GotFocus()
   
-  edtEditor.SetFocus
+  Editor.SetFocus
   
 END
-
-
 
 PUBLIC SUB Goto(iLine AS Integer, OPTIONAL iColumn AS Integer = -1)
 
   'DEC iLine
-  IF iColumn < 0 THEN iColumn = edtEditor.Column
-  edtEditor.Goto(iLine, iColumn, TRUE)
+  IF iColumn < 0 THEN iColumn = Editor.Column
+  Editor.Goto(iLine, iColumn, TRUE)
 
 END
 
@@ -179,12 +228,15 @@ PUBLIC SUB GotoCenter(iLine AS Integer, OPTIONAL iColumn AS Integer = -1)
 END
 
 
-PUBLIC SUB edtEditor_Menu()
+PUBLIC SUB Editors_Menu()
 
   mnuEditor.Popup
 
 END
 
+PUBLIC SUB Editors_GotFocus()
+  Editor = LAST 
+END
 
 PUBLIC SUB mnuSave_Click()
 
@@ -232,31 +284,31 @@ END
 
 PUBLIC SUB mnuCut_Click()
 
-  edtEditor.Cut
+  Editor.Cut
 
 END
 
 PUBLIC SUB mnuCopy_Click()
 
-  edtEditor.Copy
+  Editor.Copy
 
 END
 
 PUBLIC SUB mnuPaste_Click()
 
-  edtEditor.Paste
+  Editor.Paste
 
 END
 
 PUBLIC SUB mnuUndo_Click()
 
-  edtEditor.Undo
+  Editor.Undo
 
 END
 
 PUBLIC SUB mnuRedo_Click()
 
-  edtEditor.Redo
+  Editor.Redo
 
 END
 
@@ -265,7 +317,7 @@ PUBLIC SUB mnuGotoLine_Click()
 
   DIM iLine AS Integer
 
-  iLine = FGotoLine.Run(edtEditor.Line + 1)
+  iLine = FGotoLine.Run(Editor.Line + 1)
   IF iLine <= 0 THEN RETURN
   GotoCenter(iLine - 1)
 
@@ -282,7 +334,7 @@ END
 
 PUBLIC SUB mnuSelectAll_Click()
 
-  edtEditor.SelectAll()
+  Editor.SelectAll()
 
 END
 
@@ -290,6 +342,9 @@ END
 PRIVATE SUB SetReadOnly()
 
   edtEditor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+
+  IF $hEditor1 THEN $hEditor1.ReadOnly = edtEditor.ReadOnly
+  IF $hEditor2 THEN $hEditor2.ReadOnly = edtEditor.ReadOnly
 
 END
 
@@ -313,7 +368,7 @@ PUBLIC SUB mnuReplace_Click()
 END
 
 
-PUBLIC SUB edtEditor_Highlight()
+PUBLIC SUB Editors_Highlight()
 
   DIM iState AS Integer
   DIM iNextState AS Integer
@@ -509,14 +564,14 @@ END
 
 PRIVATE SUB DrawInfo()
   
-  lblEditor.Text = CStr(edtEditor.Line + 1) & ":" & CStr(edtEditor.Column + 1)
+  lblEditor.Text = CStr(Editor.Line + 1) & ":" & CStr(Editor.Column + 1)
   
 END
 
 PUBLIC SUB Reload()
 
   edtEditor.Text = File.Load(Path)
-  edtEditor.SetFocus
+  Editor.SetFocus
   Modify(TRUE)
 
 END
@@ -544,3 +599,78 @@ PUBLIC SUB SetState(sState AS String)
   Editor.Goto(CInt(aState[0]), CInt(aState[1]))
   
 END
+
+PRIVATE SUB InitEditor(hEditor AS Editor)
+  
+  WITH hEditor
+    .View = edtEditor
+    .Highlight = edtEditor.Highlight
+    .Flags[Editor.HighlightCurrent] = TRUE
+    .ReadOnly = edtEditor.ReadOnly
+    .TabSize = edtEditor.TabSize
+  END WITH 
+  ReadConfigEditor(hEditor)
+  
+END
+
+PRIVATE SUB SetViewMode(iViewMode AS Integer)
+  
+  IF $iViewMode = iViewMode THEN RETURN 
+  $iViewMode = iViewMode
+
+  IF $iViewMode <> VIEWMODE_NORMAL AND IF NOT $hEditor1 THEN 
+    $hEditor1 = NEW Editor(ME) AS "Editors"
+    InitEditor($hEditor1)
+    $hEditor2 = NEW Editor(ME) AS "Editors"
+    InitEditor($hEditor2)
+  ENDIF
+
+  SELECT CASE $iViewMode
+  
+    CASE VIEWMODE_NORMAL
+      edtEditor.Show
+      splHorizontal.Hide
+      splVertical.Hide
+      Editor = edtEditor  
+      
+    CASE VIEWMODE_HORIZONTAL
+      $hEditor1.Reparent(splHorizontal)
+      $hEditor2.Reparent(splHorizontal)
+      edtEditor.Hide
+      splHorizontal.Show
+      splVertical.Hide
+      Editor = $hEditor1
+  
+    CASE VIEWMODE_VERTICAL
+      $hEditor1.Reparent(splVertical)
+      $hEditor2.Reparent(splVertical)
+      edtEditor.Hide
+      splHorizontal.Hide
+      splVertical.Show
+      Editor = $hEditor1
+  
+  END SELECT   
+  
+  Editor.SetFocus
+  Form_Resize
+  
+END
+
+PUBLIC SUB mnuNoSplit_Click()
+  
+  SetViewMode(VIEWMODE_NORMAL)
+
+END
+
+PUBLIC SUB mnuHorizontalSplit_Click()
+
+  SetViewMode(VIEWMODE_HORIZONTAL)
+
+END
+
+PUBLIC SUB mnuVerticalSplit_Click()
+
+  SetViewMode(VIEWMODE_VERTICAL)
+
+END
+

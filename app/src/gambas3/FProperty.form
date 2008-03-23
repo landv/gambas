@@ -1,7 +1,7 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,2.1429,35.1429,60.1429)
+  MoveScaled(0,2.1429,64,60)
   Text = ("Properties")
   Icon = Picture["img/16/grid.png"]
   Persistent = True
@@ -21,7 +21,7 @@
     Border = Border.Sunken
   }
   { grdProperty GridView
-    MoveScaled(2,24,30,30)
+    MoveScaled(26,24,30,16)
     Visible = False
     Expand = True
     Scrollbar = Scroll.Vertical
@@ -31,6 +31,13 @@
     MoveScaled(6,33,14,3)
     Visible = False
     Ignore = True
+  }
+  { cmbProperty ComboBox
+    MoveScaled(7,35,16,3)
+    Visible = False
+    Ignore = True
+    Text = ("")
+    ReadOnly = True
   }
   { btnProperty Button
     MoveScaled(20,38,2.1429,2.1429)
@@ -46,11 +53,15 @@
     Text = ("")
     Border = False
   }
-  { cmbProperty ComboBox
-    MoveScaled(5,43,16,3)
-    Visible = False
-    Ignore = True
-    Text = ("")
-    ReadOnly = True
+  { spnHelp SidePanel
+    MoveScaled(33,44,24,13)
+    Arrangement = Arrange.Fill
+    Orientation = Align.Bottom
+    { lblHelp TextLabel
+      MoveScaled(1,1,22,10)
+      Padding = 1
+      Text = ("")
+      Border = Border.Sunken
+    }
   }
 }

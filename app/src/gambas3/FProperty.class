@@ -17,6 +17,8 @@ PRIVATE $bButton AS Boolean
 PRIVATE $bIgnoreHide AS Boolean
 PRIVATE $bIgnoreCancel AS Boolean
 PRIVATE $bSort AS Boolean
+PRIVATE $bDisableIntegratedHelp AS Boolean
+
 
 PUBLIC SUB _new()
   
@@ -41,7 +43,7 @@ END
 PUBLIC SUB Form_Close()
 
   Settings.Write(ME)
-
+  Settings["FProperty/HelpWindowHeight"] = spnHelp.Height
 END
 
 
@@ -81,6 +83,7 @@ PUBLIC SUB RefreshAll()
   DIM sVal AS String
   DIM hCtrlAlone AS CControl
   DIM cKeyProp AS Collection
+
 '   DIM aColor AS NEW Integer[]
 '   DIM sClassColor AS String
 '   DIM hClass AS CClassInfo
@@ -228,8 +231,13 @@ PUBLIC SUB RefreshAll()
   Form_Resize
   lblMessage.Hide
   'lblMessage.Ignore = TRUE
+  
+  'TODO save/restore last height
+  CheckIntegratedHelpSetting
+  
   grdProperty.Show
   lblName.Show
+  'VSplit1.Show
   
   IF NOT $bMany THEN
     FFormStack.Select($hObject.Name)
@@ -249,11 +257,11 @@ PUBLIC SUB HideAll()
   HideProperty
   grdProperty.Hide
   lblName.Hide
+  spnHelp.Hide
   lblMessage.Show
   $hForm = NULL
 
 END
-
 
 
 PUBLIC SUB RefreshOne(hCtrl AS CControl, sProp AS String)
@@ -479,6 +487,8 @@ PRIVATE SUB ShowProperty()
   DIM sCtrl AS String
   DIM aArg AS String[]
   DIM hEditor AS Object
+  DIM hSymbol AS CSymbolInfo
+  DIM sHelp AS String
 
   IF Project.Running THEN RETURN
   IF NOT $hForm THEN RETURN 
@@ -494,12 +504,20 @@ PRIVATE SUB ShowProperty()
     sProp = "Name"
     sType = "Name"
 
+    IF NOT $bDisableIntegratedHelp THEN 
+      sHelp = ("The name of the control.")
+    ENDIF 
+    
   ELSE IF grdProperty.Row = 2 THEN
 
     IF $hObject.Name = $hForm.Name THEN RETURN
 
     sProp = CPropertyInfo.EVENT_NAME
     sType = "Group"
+
+    IF NOT $bDisableIntegratedHelp THEN 
+      sHelp = ("The event group that the control belongs to.")
+    ENDIF 
 
   ELSE
 
@@ -509,7 +527,25 @@ PRIVATE SUB ShowProperty()
     sType = hProp.Type
     sOption = hProp.Argument
 
+    IF NOT $bDisableIntegratedHelp THEN 
+      hSymbol = NEW CSymbolInfo
+      WITH hSymbol
+        .Component = CComponent.Classes[$hObject.Kind].Component 
+        .Class = CComponent.Classes[$hObject.Kind].Name 
+        .Kind = CComponent.Classes[$hObject.Kind].Parent
+        .Name = hProp.Name
+      END WITH
+      
+      IF hProp.Name = CPropertyInfo.SCALE_NAME THEN
+        sHelp = ("If the form and controls dimensions must follow the size of the default font.")
+      ELSE
+        sHelp = MHelp.GetSymbolHelpText(MHelp.GetSymbolHelpPath(hSymbol))
+      ENDIF
+      
+    ENDIF 
   ENDIF
+
+  IF sHelp THEN lblHelp.Text = "<b>" & grdProperty[grdProperty.Row, 0].Text & "</b><br>" & sHelp
 
   IF $sLast THEN HideProperty()
 
@@ -850,11 +886,23 @@ PUBLIC SUB ReadConfig()
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font
+  spnHelp.Height = Settings["FProperty/HelpWindowHeight", spnHelp.Height] 
   MoveProperty
   RefreshAll
 
 END
 
+PUBLIC SUB CheckIntegratedHelpSetting()
+  
+  $bDisableIntegratedHelp = Settings["/PropertyHelp", FALSE]
+  IF $bDisableIntegratedHelp THEN 
+    lblHelp.Text = ""
+    spnHelp.Hide
+  ELSE 
+    spnHelp.Show
+  ENDIF 
+  
+END
 
 ' PUBLIC SUB grdProperty_MouseMove()
 ' 
@@ -884,4 +932,14 @@ PRIVATE SUB UpdateLabel()
   IF NOT hObject THEN hObject = $hForm.Control[$hForm.Name]
   lblName.Text = "<b>" & hObject.Name & "</b> " & hObject.Kind
   
+  IF NOT $bDisableIntegratedHelp THEN 
+    lblHelp.Text = ""
+  ENDIF 
+
+END
+
+PUBLIC SUB spnHelp_Resize()
+
+  HideProperty
+
 END

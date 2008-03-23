@@ -64,8 +64,8 @@ PUBLIC SUB _new()
     [cmbCompletion, "/Editor/Completion", 1],
     [txtRecent, "/Recent/Max", Project.DEFAULT_MAX_RECENT],
     [cmbOutput, "/QuietExternalCommands", 0],
-    [cmbMessage, "/ShowMessages", 1]]
-  
+    [cmbMessage, "/ShowMessages", 1],
+    [cmbIntegratedHelp, "/PropertyHelp", 1]]
   
   $bNoChange = TRUE
   ReadConfig
@@ -383,3 +383,11 @@ PUBLIC SUB cmbMessage_Click()
   FMain.ReadConfig
 
 END
+
+PUBLIC SUB cmbIntegratedHelp_Click()
+
+  Settings["/PropertyHelp"] = cmbIntegratedHelp.Index = 1
+  FProperty.CheckIntegratedHelpSetting
+  
+END
+

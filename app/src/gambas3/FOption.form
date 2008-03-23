@@ -1,7 +1,7 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,0,61,63)
+  MoveScaled(0,0,61,66)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -10,13 +10,43 @@
   ToolBox = True
   SkipTaskbar = True
   { TabStrip1 TabStrip
-    MoveScaled(1,1,59,57)
+    MoveScaled(1,1,59,60)
     Padding = 8
     Count = 3
     Index = 0
     Text = ("General")
+    { HBox11 HBox
+      MoveScaled(2,46,54,3)
+      Spacing = 8
+      { Label12 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Icon theme")
+      }
+      { cmbIconTheme ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("Desktop"), ("Gnome"), ("KDE")]
+      }
+    }
+    { HBox12 HBox
+      MoveScaled(2,50,54,3)
+      Spacing = 8
+      { Label13 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Browser")
+      }
+      { cmbBrowser ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("(Default)"), ("Konqueror"), ("Firefox"), ("Epiphany"), ("SeaMonkey"), ("Opera")]
+      }
+    }
     { Label25 Label
-      MoveScaled(1,38,56,3)
+      MoveScaled(1,41,56,3)
       Font = Font["Bold"]
       Text = ("Desktop")
     }
@@ -144,34 +174,18 @@
         List = [("No"), ("Yes")]
       }
     }
-    { HBox11 HBox
-      MoveScaled(2,42,54,3)
+    { HBox13 HBox
+      MoveScaled(2,37,54,3)
       Spacing = 8
-      { Label12 Label
+      { Label32 Label
         MoveScaled(0,0,36,3)
-        Text = ("Icon theme")
+        Text = ("Display property help")
       }
-      { cmbIconTheme ComboBox
-        MoveScaled(37,0,17,3)
-        Expand = True
+      { cmbIntegratedHelp ComboBox
+        MoveScaled(37,0,10,3)
         Text = ("")
         ReadOnly = True
-        List = [("Desktop"), ("Gnome"), ("KDE")]
-      }
-    }
-    { HBox12 HBox
-      MoveScaled(2,46,54,3)
-      Spacing = 8
-      { Label13 Label
-        MoveScaled(0,0,36,3)
-        Text = ("Browser")
-      }
-      { cmbBrowser ComboBox
-        MoveScaled(37,0,17,3)
-        Expand = True
-        Text = ("")
-        ReadOnly = True
-        List = [("(Default)"), ("Konqueror"), ("Firefox"), ("Epiphany"), ("SeaMonkey"), ("Opera")]
+        List = [("No"), ("Yes")]
       }
     }
     Index = 1
@@ -563,7 +577,7 @@
     Index = 0
   }
   { btnClose Button
-    MoveScaled(45,59,15,3)
+    MoveScaled(45,62,15,3)
     Text = ("Close")
     Cancel = True
   }

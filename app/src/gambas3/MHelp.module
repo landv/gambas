@@ -1,5 +1,7 @@
 ' Gambas module file
 
+PUBLIC $PopupHelpCache AS Collection
+
 PRIVATE SUB GetPath(sPath AS String) AS String
   
   sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
@@ -57,6 +59,8 @@ PUBLIC SUB GotoSymbol(hSymbol AS CSymbolInfo)
   
 END
 
+
+
 PUBLIC SUB GotoComponent(sComp AS String)
   
   DIM sLink AS String
@@ -109,4 +113,126 @@ CATCH
 
 END
 
+PUBLIC FUNCTION GetSymbolHelpPath(hSymbol AS CSymbolInfo) AS String
+  
+  DIM sLink AS String
+  DIM sName AS String
+  DIM Result AS String
+  
+  sName = LCase(hSymbol.Name)
+  
+  IF hSymbol.Component = "gb" AND IF hSymbol.Class = "." THEN
+    sLink = "help/lang"
+  ELSE
+    sLink = "help/comp"
+    sLink &= "/" & hSymbol.Component
+    IF hSymbol.Class <> "." THEN sLink &= "/" & LCase(hSymbol.Class)
+  ENDIF
+
+  sLink &/= sName 
+  sLink = FormatName(sLink)
+  
+  Result = GetPath(sLink) & ".html"
+    
+  IF NOT Exist(Result) THEN 
+    IF hSymbol.Kind THEN 
+      'Try looking for the property in the object that this object inherits from
+      hSymbol.Class = hSymbol.Kind
+      hSymbol.Kind = ""
+      Result = GetSymbolHelpPath(hsymbol)
+      IF NOT Exist(Result) THEN 
+        'Try looking for the property in the Control object
+        hSymbol.Class = "Control"
+        Result = GetSymbolHelpPath(hsymbol)
+      ENDIF   
+    ENDIF 
+  ENDIF 
+  
+  Result = LCase(Result)
+  
+  RETURN Result
+  
+END
+
+PUBLIC FUNCTION GetSymbolHelpText(SymbolHelpPath AS String) AS String
+  DIM HelpText AS String
+  
+  'Check cache
+  IF NOT $PopupHelpCache THEN 
+    'Create cache collection
+    $PopupHelpCache = NEW Collection(gb.Text)
+  ENDIF 
+  
+  IF $PopupHelpCache.Exist(SymbolHelpPath) THEN 
+    RETURN $PopupHelpCache[SymbolHelpPath]
+  ELSE 
+    'Get from file
+    HelpText = GetHelpTextFromFile(SymbolHelpPath)
+    IF HelpText THEN 
+      'Add to cache
+      $PopupHelpCache[SymbolHelpPath] = HelpText 
+      RETURN HelpText 
+    ELSE 
+      RETURN ""
+    ENDIF 
+  ENDIF 
+    
+END
+
+PRIVATE FUNCTION GetHelpTextFromFile(SymbolHelpPath AS String) AS String
+  
+  DIM hFileIn AS File
+  DIM sInputLine AS String
+  DIM bGrabNextLine AS Boolean
+  DIM sResult AS String
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+  
+  bGrabNextLine = FALSE
+  sResult = ""
+
+  OPEN SymbolHelpPath FOR READ AS #hFileIn
+
+  DO WHILE NOT Eof(hFileIn)
+    LINE INPUT #hFileIn, sInputLine
+    IF bGrabNextLine THEN 
+    
+      ' Remove links
+      
+      DO
+        iPos = InStr(sInputLine, "<a ")
+        IF iPos = 0 THEN BREAK 
+        iPos2 = InStr(sInputLine, ">", iPos)
+        IF iPos2 = 0 THEN BREAK 
+        sInputLine = Left(sInputLine, iPos - 1) & Mid$(sInputLine, iPos2 + 1)
+      LOOP 
+      
+      sInputLine = Replace(sInputLine, "</a>", "")
+    
+      sResult &= " " & Trim(sInputLine)
+      iPos = InStr(sResult, ".")
+      IF iPos THEN
+        sResult = Left(sResult, iPos)
+        BREAK 
+      ENDIF
+    ELSE 
+      IF Right(RTrim(sInputLine), 6) = "</pre>" THEN 
+        bGrabNextLine = TRUE
+      ENDIF 
+    ENDIF 
+  LOOP 
+  
+  sResult = Trim(sResult)
+  
+FINALLY 
+  
+  TRY CLOSE hFileIn
+  
+  IF NOT sResult THEN 
+    RETURN "<i>" & ("No help found.") & "</i>"
+  ELSE
+    RETURN sResult 
+  ENDIF
+  
+END
 

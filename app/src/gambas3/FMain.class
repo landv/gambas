@@ -338,8 +338,8 @@ PUBLIC SUB UpdateRecentMenu()
   mnuOpenRecent.Children.Clear
   mnuOpenRecent.Enabled = Project.GetRecentFiles().Count > 0
 
-  IF mnuOpenRecent.Enabled THEN 
-  
+  IF mnuOpenRecent.Enabled THEN
+
     hMenu = NEW Menu(mnuOpenRecent) AS "mnuClearRecent"
     hMenu.Text = ("&Clear history")
     hMenu.Picture = Picture["icon:/small/trash"]
@@ -697,6 +697,7 @@ PUBLIC SUB mnuPaste_Click()
 
     CASE "C"
       Project.CopyFile(sSrc, sDst)
+      Rename(tvwProject.Key)
 
     CASE "X"
       IF sSrc = sDst THEN RETURN

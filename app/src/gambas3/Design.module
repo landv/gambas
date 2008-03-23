@@ -200,8 +200,6 @@ PUBLIC SUB Debug_Read(Data AS String)
       FDebugInfo.DefineObject(Trim(aData[4]))
 
       SetState(STATE_DEBUG)
-      
-      IF aData[1] AND IF aPos.Count = 1 AND IF aPos[0] = "?" THEN ME.Stop
 
       IF aData[1] AND IF aPos.Count = 1 AND IF aPos[0] = "?" THEN ME.Stop
 
