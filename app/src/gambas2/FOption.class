@@ -65,7 +65,7 @@ PUBLIC SUB _new()
     [txtRecent, "/Recent/Max", Project.DEFAULT_MAX_RECENT],
     [cmbOutput, "/QuietExternalCommands", 0],
     [cmbMessage, "/ShowMessages", 1],
-    [cmbIntegratedHelp, "/DisableIntegratedHelp", 0]]
+    [cmbIntegratedHelp, "/PropertyHelp", 1]]
   
   $bNoChange = TRUE
   ReadConfig
@@ -386,7 +386,7 @@ END
 
 PUBLIC SUB cmbIntegratedHelp_Click()
 
-  Settings["/DisableIntegratedHelp"] = cmbIntegratedHelp.Index
+  Settings["/PropertyHelp"] = cmbIntegratedHelp.Index = 1
   FProperty.CheckIntegratedHelpSetting
   
 END

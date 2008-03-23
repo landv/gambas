@@ -229,7 +229,7 @@ FINALLY
   TRY CLOSE hFileIn
   
   IF NOT sResult THEN 
-    RETURN ("No help found")
+    RETURN "<i>" & ("No help found.") & "</i>"
   ELSE
     RETURN sResult 
   ENDIF

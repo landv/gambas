@@ -19,16 +19,15 @@ PRIVATE VIEWMODE_NORMAL AS Integer = 0
 PRIVATE VIEWMODE_HORIZONTAL AS Integer = 1
 PRIVATE VIEWMODE_VERTICAL AS Integer = 2
 
-PRIVATE $edtHEditorLeft AS Editor
-PRIVATE $edtHEditorRight AS Editor
-PRIVATE $edtVEditorTop AS Editor
-PRIVATE $edtVEditorBottom AS Editor
+PRIVATE $hEditor1 AS Editor
+PRIVATE $hEditor2 AS Editor
 
 PUBLIC SUB _new(sPath AS String)
 
   Path = sPath
   Name = File.Name(Path)
   Editor = edtEditor
+
 END
 
 PUBLIC SUB Form_Open()
@@ -79,24 +78,23 @@ PUBLIC SUB Form_Resize()
   CASE 0
     edtEditor.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
   CASE 1
-    HSplit1.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+    splHorizontal.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
   CASE 2
-    VSplit1.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+    splVertical.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
   END SELECT 
 
 END
 
 PUBLIC SUB ReadConfig()
 
-  ' DIM iInd AS Integer
-  ' DIM iColor AS Integer
-  ' DIM hTheme AS Integer[]
-
   ReadConfigEditor(edtEditor)
+  IF $hEditor1 THEN ReadConfigEditor($hEditor1)
+  IF $hEditor2 THEN ReadConfigEditor($hEditor2)
 
 END
 
 PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
+
   hEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
 
   MColor.InitEditor(hEditor)
@@ -104,6 +102,7 @@ PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
   hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
   hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
   hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
+  
 END
 
 PUBLIC FUNCTION Save() AS Boolean
@@ -342,11 +341,10 @@ END
 
 PRIVATE SUB SetReadOnly()
 
-  Editor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
-  IF $edtHEditorLeft THEN $edtHEditorLeft.ReadOnly = edtEditor.ReadOnly
-  IF $edtHEditorRight THEN $edtHEditorRight.ReadOnly = edtEditor.ReadOnly
-  IF $edtVEditorBottom THEN $edtVEditorBottom.ReadOnly = edtEditor.ReadOnly
-  IF $edtVEditorTop THEN $edtVEditorTop.ReadOnly = edtEditor.ReadOnly
+  edtEditor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+
+  IF $hEditor1 THEN $hEditor1.ReadOnly = edtEditor.ReadOnly
+  IF $hEditor2 THEN $hEditor2.ReadOnly = edtEditor.ReadOnly
 
 END
 
@@ -602,89 +600,77 @@ PUBLIC SUB SetState(sState AS String)
   
 END
 
-PUBLIC SUB mnuNoSplit_Click()
-  IF $iViewMode = VIEWMODE_NORMAL THEN RETURN 
-  $iViewMode = VIEWMODE_NORMAL
-  edtEditor.Visible = TRUE
-  VSplit1.Visible = FALSE
-  HSplit1.Visible = FALSE
-  edtEditor.SetFocus
-  Editor = edtEditor  
+PRIVATE SUB InitEditor(hEditor AS Editor)
+  
+  WITH hEditor
+    .View = edtEditor
+    .Highlight = edtEditor.Highlight
+    .Flags[Editor.HighlightCurrent] = TRUE
+    .ReadOnly = edtEditor.ReadOnly
+    .TabSize = edtEditor.TabSize
+  END WITH 
+  ReadConfigEditor(hEditor)
+  
+END
+
+PRIVATE SUB SetViewMode(iViewMode AS Integer)
+  
+  IF $iViewMode = iViewMode THEN RETURN 
+  $iViewMode = iViewMode
+
+  IF $iViewMode <> VIEWMODE_NORMAL AND IF NOT $hEditor1 THEN 
+    $hEditor1 = NEW Editor(ME) AS "Editors"
+    InitEditor($hEditor1)
+    $hEditor2 = NEW Editor(ME) AS "Editors"
+    InitEditor($hEditor2)
+  ENDIF
+
+  SELECT CASE $iViewMode
+  
+    CASE VIEWMODE_NORMAL
+      edtEditor.Show
+      splHorizontal.Hide
+      splVertical.Hide
+      Editor = edtEditor  
+      
+    CASE VIEWMODE_HORIZONTAL
+      $hEditor1.Reparent(splHorizontal)
+      $hEditor2.Reparent(splHorizontal)
+      edtEditor.Hide
+      splHorizontal.Show
+      splVertical.Hide
+      Editor = $hEditor1
+  
+    CASE VIEWMODE_VERTICAL
+      $hEditor1.Reparent(splVertical)
+      $hEditor2.Reparent(splVertical)
+      edtEditor.Hide
+      splHorizontal.Hide
+      splVertical.Show
+      Editor = $hEditor1
+  
+  END SELECT   
+  
+  Editor.SetFocus
   Form_Resize
+  
+END
+
+PUBLIC SUB mnuNoSplit_Click()
+  
+  SetViewMode(VIEWMODE_NORMAL)
+
 END
 
 PUBLIC SUB mnuHorizontalSplit_Click()
-  IF $iViewMode = VIEWMODE_HORIZONTAL THEN RETURN 
-  $iViewMode = VIEWMODE_HORIZONTAL
-  edtEditor.Visible = FALSE
 
-  IF NOT $edtHEditorLeft THEN  
-    $edtHEditorLeft = NEW Editor(HSplit1) AS "Editors"
-    WITH $edtHEditorLeft
-      .Clear
-      .Expand = TRUE
-      .View = edtEditor
-      .Highlight = Highlight.Custom
-      .Flags[Editor.HighlightCurrent] = TRUE
-      .ReadOnly = edtEditor.ReadOnly
-    END WITH 
-    ReadConfigEditor($edtHEditorLeft)
-  ENDIF 
-  
-  IF NOT $edtHEditorRight THEN 
-    $edtHEditorRight = NEW Editor(HSplit1) AS "Editors"
-    WITH $edtHEditorRIght
-      .Clear
-      .Expand = TRUE
-      .View = edtEditor
-      .Highlight = Highlight.Custom
-      .Flags[Editor.HighlightCurrent] = TRUE
-      .ReadOnly = edtEditor.ReadOnly
-    END WITH 
-    ReadConfigEditor($edtHEditorRight)
-  ENDIF 
+  SetViewMode(VIEWMODE_HORIZONTAL)
 
-  HSplit1.Visible = TRUE
-  VSplit1.Visible = FALSE
-  $edtHEditorLeft.SetFocus
-  Editor = $edtHEditorLeft  
-  Form_Resize
 END
 
 PUBLIC SUB mnuVerticalSplit_Click()
-  IF $iViewMode = VIEWMODE_VERTICAL THEN RETURN 
-  $iViewMode = VIEWMODE_VERTICAL
-  edtEditor.Visible = FALSE
 
-  IF NOT $edtVEditorTop THEN  
-    $edtVEditorTop = NEW Editor(VSplit1) AS "Editors"
-    WITH $edtVEditorTop
-      .Clear
-      .Expand = TRUE
-      .View = edtEditor
-      .Highlight = Highlight.Custom
-      .Flags[Editor.HighlightCurrent] = TRUE
-      .ReadOnly = edtEditor.ReadOnly
-    END WITH 
-    ReadConfigEditor($edtVEditorTop)
-  ENDIF 
-  
-  IF NOT $edtVEditorBottom THEN 
-    $edtVEditorBottom = NEW Editor(VSplit1) AS "Editors"
-    WITH $edtVEditorBottom
-      .Clear
-      .Expand = TRUE
-      .View = edtEditor
-      .Highlight = Highlight.Custom
-      .Flags[Editor.HighlightCurrent] = TRUE
-      .ReadOnly = edtEditor.ReadOnly
-    END WITH 
-    ReadConfigEditor($edtVEditorBottom)
-  ENDIF 
+  SetViewMode(VIEWMODE_VERTICAL)
 
-  HSplit1.Visible = FALSE
-  VSplit1.Visible = TRUE
-  $edtVEditorTop.SetFocus
-  Editor = $edtVEditorTop
-  Form_Resize
 END
+

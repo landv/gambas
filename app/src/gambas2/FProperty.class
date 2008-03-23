@@ -488,6 +488,7 @@ PRIVATE SUB ShowProperty()
   DIM aArg AS String[]
   DIM hEditor AS Object
   DIM hSymbol AS CSymbolInfo
+  DIM sHelp AS String
 
   IF Project.Running THEN RETURN
   IF NOT $hForm THEN RETURN 
@@ -504,7 +505,7 @@ PRIVATE SUB ShowProperty()
     sType = "Name"
 
     IF NOT $bDisableIntegratedHelp THEN 
-      tlblHelp.Text = ("The name of the control.")
+      sHelp = ("The name of the control.")
     ENDIF 
     
   ELSE IF grdProperty.Row = 2 THEN
@@ -515,7 +516,7 @@ PRIVATE SUB ShowProperty()
     sType = "Group"
 
     IF NOT $bDisableIntegratedHelp THEN 
-      tlblHelp.Text = ("The event group that the control belongs to.")
+      sHelp = ("The event group that the control belongs to.")
     ENDIF 
 
   ELSE
@@ -533,10 +534,18 @@ PRIVATE SUB ShowProperty()
         .Class = CComponent.Classes[$hObject.Kind].Name 
         .Kind = CComponent.Classes[$hObject.Kind].Parent
         .Name = hProp.Name
-      END WITH 
-      tlblHelp.Text = "<b>" & hProp.Name & "</b>: " & MHelp.GetSymbolHelpText(MHelp.GetSymbolHelpPath(hSymbol))
+      END WITH
+      
+      IF hProp.Name = CPropertyInfo.SCALE_NAME THEN
+        sHelp = ("If the form and controls dimensions must follow the size of the default font.")
+      ELSE
+        sHelp = MHelp.GetSymbolHelpText(MHelp.GetSymbolHelpPath(hSymbol))
+      ENDIF
+      
     ENDIF 
   ENDIF
+
+  IF sHelp THEN lblHelp.Text = "<b>" & grdProperty[grdProperty.Row, 0].Text & "</b><br>" & sHelp
 
   IF $sLast THEN HideProperty()
 
@@ -885,15 +894,13 @@ END
 
 PUBLIC SUB CheckIntegratedHelpSetting()
   
-  $bDisableIntegratedHelp = Settings["/DisableIntegratedHelp"]    
-  IF NOT Null?(FProperty) THEN 
-    IF $bDisableIntegratedHelp THEN 
-      tlblHelp.Text = ""
-      spnHelp.Hide
-    ELSE 
-      spnHelp.Show
-    ENDIF 
-  ENDIF  
+  $bDisableIntegratedHelp = Settings["/PropertyHelp", FALSE]
+  IF $bDisableIntegratedHelp THEN 
+    lblHelp.Text = ""
+    spnHelp.Hide
+  ELSE 
+    spnHelp.Show
+  ENDIF 
   
 END
 
@@ -926,7 +933,7 @@ PRIVATE SUB UpdateLabel()
   lblName.Text = "<b>" & hObject.Name & "</b> " & hObject.Kind
   
   IF NOT $bDisableIntegratedHelp THEN 
-    tlblHelp.Text = ""
+    lblHelp.Text = ""
   ENDIF 
 
 END

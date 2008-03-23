@@ -131,17 +131,17 @@
     { mnuEditorView Menu
       Text = ("View")
       { mnuNoSplit Menu
-        Text = ("No Split")
+        Text = ("No split")
         Picture = Picture["img/16/no-split.png"]
         Shortcut = "Ctrl+B"
       }
       { mnuHorizontalSplit Menu
-        Text = ("Horizontal Split")
+        Text = ("Horizontal split")
         Picture = Picture["img/16/h-split.png"]
         Shortcut = "Ctrl+H"
       }
       { mnuVerticalSplit Menu
-        Text = ("Vertical Split")
+        Text = ("Vertical split")
         Picture = Picture["img/16/v-split.png"]
         Shortcut = "Ctrl+J"
       }
@@ -246,21 +246,21 @@
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
       MoveScaled(36,0,3,3)
-      ToolTip = ("No Split")
+      ToolTip = ("No split")
       Text = ("")
       Picture = Picture["img/16/no-split.png"]
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
       MoveScaled(39,0,3,3)
-      ToolTip = ("Horizontal Split")
+      ToolTip = ("Horizontal split")
       Text = ("")
       Picture = Picture["img/16/h-split.png"]
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
       MoveScaled(42,0,3,3)
-      ToolTip = ("Vertical Split")
+      ToolTip = ("Vertical split")
       Text = ("")
       Picture = Picture["img/16/v-split.png"]
     }
@@ -278,14 +278,14 @@
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
       MoveScaled(83,0,3,3)
-      ToolTip = ("Definition")
+      ToolTip = ("Find definition")
       Text = ("")
-      Picture = Picture["icon:/16/lamp"]
+      Picture = Picture["icon:/16/find"]
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"
       MoveScaled(86,0,3,3)
-      ToolTip = ("Last Position")
+      ToolTip = ("Go back")
       Text = ("")
       Picture = Picture["icon:/16/left"]
     }
@@ -314,11 +314,11 @@
     #Y = 273
     Delay = 50
   }
-  { HSplit1 HSplit
+  { splHorizontal HSplit
     MoveScaled(2,53,45,18)
     Visible = False
   }
-  { VSplit1 VSplit
+  { splVertical VSplit
     MoveScaled(49,53,42,18)
     Visible = False
   }
