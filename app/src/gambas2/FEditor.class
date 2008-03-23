@@ -2492,13 +2492,13 @@ PUBLIC SUB mnuHorizontalSplit_Click()
   IF NOT $edtHEditorLeft THEN  
     $edtHEditorLeft = NEW Editor(HSplit1) AS "Editors"
     WITH $edtHEditorLeft
-      .Clear
+      '.Clear
       .Expand = TRUE
       .View = edtEditor
-      .Highlight = Highlight.Custom
+      .Highlight = edtEditor.Highlight
       .Flags[Editor.HighlightCurrent] = TRUE
       .ReadOnly = edtEditor.ReadOnly
-      .TabSize = Project.TabSize
+      .TabSize = edtEditor.TabSize
     END WITH 
     ReadConfigEditor($edtHEditorLeft)
   ENDIF 
@@ -2506,13 +2506,13 @@ PUBLIC SUB mnuHorizontalSplit_Click()
   IF NOT $edtHEditorRight THEN 
     $edtHEditorRight = NEW Editor(HSplit1) AS "Editors"
     WITH $edtHEditorRIght
-      .Clear
+      '.Clear
       .Expand = TRUE
       .View = edtEditor
-      .Highlight = Highlight.Custom
+      .Highlight = edtEditor.Highlight
       .Flags[Editor.HighlightCurrent] = TRUE
       .ReadOnly = edtEditor.ReadOnly
-      .TabSize = Project.TabSize
+      .TabSize = edtEditor.TabSize
     END WITH 
     ReadConfigEditor($edtHEditorRight)
   ENDIF 
@@ -2532,13 +2532,13 @@ PUBLIC SUB mnuVerticalSplit_Click()
   IF NOT $edtVEditorTop THEN  
     $edtVEditorTop = NEW Editor(VSplit1) AS "Editors"
     WITH $edtVEditorTop
-      .Clear
+      '.Clear
       .Expand = TRUE
       .View = edtEditor
-      .Highlight = Highlight.Custom
+      .Highlight = edtEditor.Highlight
       .Flags[Editor.HighlightCurrent] = TRUE
       .ReadOnly = edtEditor.ReadOnly
-      .TabSize = Project.TabSize
+      .TabSize = edtEditor.TabSize
     END WITH 
     ReadConfigEditor($edtVEditorTop)
   ENDIF 
@@ -2549,10 +2549,10 @@ PUBLIC SUB mnuVerticalSplit_Click()
       .Clear
       .Expand = TRUE
       .View = edtEditor
-      .Highlight = Highlight.Custom
+      .Highlight = edtEditor.Highlight
       .Flags[Editor.HighlightCurrent] = TRUE
       .ReadOnly = edtEditor.ReadOnly
-      .TabSize = Project.TabSize
+      .TabSize = edtEditor.TabSize
     END WITH 
     ReadConfigEditor($edtVEditorBottom)
   ENDIF 
