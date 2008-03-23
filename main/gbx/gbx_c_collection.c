@@ -354,14 +354,15 @@ int GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *va
 
 int GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
-  void *val;
+  VARIANT *var;
 
-  val = collection_get_key((CCOLLECTION *)col, key, len);
-  if (val)
+  var = (VARIANT *)collection_get_key((CCOLLECTION *)col, key, len);
+  if (var)
   {
     value->type = GB_T_VARIANT;
+    value->value.type = var->type;
     //*((VARIANT *)&value->value) = *((VARIANT *)val);
-    VARIANT_copy(&value->value, val);
+    VARIANT_copy_value((VARIANT *)&value->value, var);
     return FALSE;
   }
   else

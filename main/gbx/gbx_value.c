@@ -870,7 +870,7 @@ __VARIANT:
   else*/ if (value->_variant.vtype == T_VOID)
     value->_variant.vtype = T_NULL;
 
-  VARIANT_copy(value->_variant.value, ((VARIANT *)addr)->value);
+  VARIANT_copy_value(&value->_variant, ((VARIANT *)addr));
 
   return;
 

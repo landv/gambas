@@ -36,7 +36,7 @@ typedef
     }
   VARIANT;
 
-#define VARIANT_copy(_dst, _src)  (*((int64_t *)_dst) = *((int64_t *)_src))
+#define VARIANT_copy_value(_dst, _src) (*((int64_t *)((_dst)->value)) = *((int64_t *)((_src)->value)))
 
 static INLINE void VARIANT_undo(VALUE *val)
 {
