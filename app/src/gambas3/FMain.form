@@ -401,13 +401,22 @@
       Text = ("&Startup class")
       Picture = Picture["icon:/small/play"]
     }
+    { Menu24 Menu
+      Text = ("")
+    }
+    { mnuInformation Menu
+      Action = "info"
+      Text = ("&Information")
+      Picture = Picture["icon:/small/info"]
+      Shortcut = "Ctrl+I"
+    }
   }
   { panToolbar Panel
-    MoveScaled(1,1,98,4)
+    MoveScaled(0,1,103,4)
     Arrangement = Arrange.Row
     AutoResize = True
     { ToolBar1 ToolBar
-      MoveScaled(0,0,97,3)
+      MoveScaled(0,0,101,3)
       { ToolButton1 ToolButton
         MoveScaled(1,0,3,3)
         ToolTip = ("New project")
@@ -543,59 +552,59 @@
         Toggle = True
       }
       { Separator4 Separator
-        MoveScaled(55,0,1,3)
+        MoveScaled(58,0,1,3)
       }
       { btnCompile ToolButton
-        MoveScaled(56,0,3,3)
+        MoveScaled(59,0,3,3)
         ToolTip = ("Compile")
         Action = "compile"
         Text = ("")
         Picture = Picture["icon:/small/make"]
       }
       { btnCompileAll ToolButton
-        MoveScaled(59,0,3,3)
+        MoveScaled(62,0,3,3)
         ToolTip = ("Compile all")
         Action = "compile-all"
         Text = ("")
         Picture = Picture["icon:/small/make-all"]
       }
       { btnGo ToolButton
-        MoveScaled(62,0,3,3)
+        MoveScaled(65,0,3,3)
         ToolTip = ("Run")
         Action = "start"
         Text = ("")
         Picture = Picture["icon:/small/play"]
       }
       { btnPause ToolButton
-        MoveScaled(65,0,3,3)
+        MoveScaled(68,0,3,3)
         ToolTip = ("Pause")
         Action = "pause"
         Text = ("")
         Picture = Picture["icon:/small/pause"]
       }
       { btnStop ToolButton
-        MoveScaled(68,0,3,3)
+        MoveScaled(71,0,3,3)
         ToolTip = ("Stop")
         Action = "stop"
         Text = ("")
         Picture = Picture["icon:/small/stop"]
       }
       { btnStep ToolButton
-        MoveScaled(71,0,3,3)
+        MoveScaled(74,0,3,3)
         ToolTip = ("Step")
         Action = "step"
         Text = ("")
         Picture = Picture["icon:/small/end"]
       }
       { btnForward ToolButton
-        MoveScaled(74,0,3,3)
+        MoveScaled(77,0,3,3)
         ToolTip = ("Forward")
         Action = "forward"
         Text = ("")
         Picture = Picture["icon:/small/forward"]
       }
       { btnFrom ToolButton
-        MoveScaled(77,0,3,3)
+        MoveScaled(80,0,3,3)
         ToolTip = ("Finish current function")
         Action = "return"
         Text = ("")
@@ -603,14 +612,14 @@
       }
       { btnUntil ToolButton mnuUntil
         Name = "btnUntil"
-        MoveScaled(80,0,3,3)
+        MoveScaled(83,0,3,3)
         ToolTip = ("Run until current line")
         Action = "until"
         Text = ("")
         Picture = Picture["icon:/small/last"]
       }
       { btnBreakpoint ToolButton
-        MoveScaled(83,0,3,3)
+        MoveScaled(86,0,3,3)
         ToolTip = ("Toggle breakpoint")
         Action = "break"
         Text = ("")
@@ -619,14 +628,14 @@
       }
       { btnWatch ToolButton mnuWatch
         Name = "btnWatch"
-        MoveScaled(86,0,3,3)
+        MoveScaled(89,0,3,3)
         ToolTip = ("Watch expression")
         Action = "watch"
         Text = ("")
         Picture = Picture["icon:/small/watch"]
       }
       { ToolButton6 ToolButton
-        MoveScaled(90,0,3,3)
+        MoveScaled(93,0,3,3)
         Visible = False
         Text = ("")
         Picture = Picture["icon:/small/wizard"]
