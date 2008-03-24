@@ -167,13 +167,19 @@ END
 
 PRIVATE FUNCTION Settings_Read() AS String
 
+  'DEBUG If(Hidden_Read(), "1", "0") & "," & CStr(Dimension_Read())
+
   RETURN If(Hidden_Read(), "1", "0") & "," & CStr(Dimension_Read())
 
 END
 
 PRIVATE SUB Settings_Write(Value AS String)
 
-  DIM aVal AS String[] = Split(Value, ",")
+  DIM aVal AS String[]
+  
+  'DEBUG Value
+  
+  aVal = Split(Value, ",")
   
   TRY Dimension_Write(CInt(aVal[1]))
   TRY Hidden_Write(aVal[0] <> "0")

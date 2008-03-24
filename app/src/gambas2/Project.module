@@ -393,8 +393,6 @@ PRIVATE FUNCTION CloseProject() AS Boolean
   
     INC Application.Busy
   
-    FMain.HideBalloon
-  
     Config.Clear("/OpenFile")
     Workspace.Lock
     FOR EACH hForm IN Workspace.Children

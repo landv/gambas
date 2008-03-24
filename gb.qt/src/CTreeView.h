@@ -137,6 +137,10 @@ public:
   virtual void cancelRename(int col);
   //virtual void setSelected(bool s);
   
+  MyListViewItem *previousSibling();
+  MyListViewItem *findAbove();
+  MyListViewItem *findBelow();
+  
 private:
 
   void initData(CTREEVIEW *);

@@ -35,6 +35,7 @@ PUBLIC SUB Form_Open()
 
   $iBackground = grdProperty.Background
 
+  Settings.Read(spnHelp)
   ReadConfig
 
 END
@@ -43,7 +44,8 @@ END
 PUBLIC SUB Form_Close()
 
   Settings.Write(ME)
-  Settings["FProperty/HelpWindowHeight"] = spnHelp.Height
+  Settings.Write(spnHelp)
+  
 END
 
 
@@ -522,23 +524,16 @@ PRIVATE SUB ShowProperty()
   ELSE
 
     sProp = grdProperty[grdProperty.Row, 0].Text
-    'hProp = CControl.Properties[$hObject.Kind][sProp]
     hProp = CComponent.Classes[$hObject.Kind].GetProperties()[sProp]
     sType = hProp.Type
     sOption = hProp.Argument
 
     IF NOT $bDisableIntegratedHelp THEN 
-      hSymbol = NEW CSymbolInfo
-      WITH hSymbol
-        .Component = CComponent.Classes[$hObject.Kind].Component 
-        .Class = CComponent.Classes[$hObject.Kind].Name 
-        .Kind = CComponent.Classes[$hObject.Kind].Parent
-        .Name = hProp.Name
-      END WITH
       
       IF hProp.Name = CPropertyInfo.SCALE_NAME THEN
         sHelp = ("If the form and controls dimensions must follow the size of the default font.")
       ELSE
+        hSymbol = CComponent.Classes[$hObject.Kind].Symbols[hProp.Name]    
         sHelp = MHelp.GetSymbolHelpText(MHelp.GetSymbolHelpPath(hSymbol))
       ENDIF
       
@@ -886,7 +881,6 @@ PUBLIC SUB ReadConfig()
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font
-  spnHelp.Height = Settings["FProperty/HelpWindowHeight", spnHelp.Height] 
   MoveProperty
   RefreshAll
 

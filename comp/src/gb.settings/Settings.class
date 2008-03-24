@@ -334,11 +334,10 @@ PRIVATE SUB GetTopLevel(hCtrl AS Object) AS String
   
   DIM hTop AS Object
   
-  DO
-    hTop = hCtrl.Window
-    IF IsNull(hTop.Parent) THEN RETURN Object.Type(hTop)
-    hCtrl = hTop.Parent
-  LOOP
+  WHILE hCtrl
+    IF hCtrl.Window.TopLevel THEN RETURN Object.Type(hCtrl.Window)
+    hCtrl = hCtrl.Window.Parent
+  WEND
   
 CATCH
   
@@ -357,6 +356,7 @@ PUBLIC SUB Read(hObject AS Object, OPTIONAL sKey AS String, OPTIONAL vDefault AS
   ELSE
     IF NOT sKey THEN TRY sKey = hObject.Name
     sKey = GetTopLevel(hObject) &/ sKey
+    'DEBUG sKey
     TRY hObject.Settings = ME[sKey, vDefault]
   ENDIF
 
@@ -370,6 +370,7 @@ PUBLIC SUB Write(hObject AS Object, OPTIONAL sKey AS String)
   ELSE 'IF Object.Is(hObject, "SidePanel") THEN
     IF NOT sKey THEN TRY sKey = hObject.Name
     sKey = GetTopLevel(hObject) &/ sKey
+    'DEBUG sKey
     TRY ME[sKey] = hObject.Settings
   ENDIF
 

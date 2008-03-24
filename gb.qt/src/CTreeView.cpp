@@ -246,6 +246,82 @@ void MyListViewItem::cancelRename(int col)
 	QListViewItem::setSelected(s);
 }*/
 
+MyListViewItem *MyListViewItem::previousSibling()
+{
+	MyListViewItem *lwi, *lwn = 0;
+	
+	if (parent())
+		lwi = (MyListViewItem *)parent()->firstChild(); 
+	else
+		lwi = (MyListViewItem *)listView()->firstChild();
+		
+	for (;;)
+	{
+		if (!lwi || lwi == this)
+			break;
+		lwn = lwi;
+		lwi = (MyListViewItem *)lwi->nextSibling();
+	}
+
+	return lwn;
+}
+
+MyListViewItem *MyListViewItem::findAbove()
+{
+	MyListViewItem *key, *key2;
+	
+	key = previousSibling();
+	if (!key)
+		return (MyListViewItem *)parent();
+		
+	for(;;)
+	{
+		key2 = (MyListViewItem *)key->firstChild();
+		if (!key2)
+			break;
+		
+		key = key2;
+		
+		for(;;)
+		{
+			key2 = (MyListViewItem *)key->nextSibling();
+			if (!key2)
+				break;
+			key = key2;
+		}
+	}
+	
+	return key;
+}
+
+MyListViewItem *MyListViewItem::findBelow()
+{
+	MyListViewItem *key, *key2;
+	
+	key = (MyListViewItem *)firstChild();
+	if (key)
+		return key;
+		
+	key = (MyListViewItem *)nextSibling();
+	if (key)
+		return key;
+	
+	key = (MyListViewItem *)parent();
+	
+	for(;;)
+	{
+		if (!key)
+			return NULL;
+		
+		key2 = (MyListViewItem *)key->nextSibling();
+		if (key2)
+			return key2;
+		
+		key = (MyListViewItem *)key->parent();
+	}
+}
+
+
 /***************************************************************************
 
   class MyListView
@@ -837,26 +913,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTREEVIEW_previous)
 
-	MyListViewItem *lwi, *lwn = 0;
-	
-	if (THIS->item)
-	{
-		if (THIS->item->parent())
-			lwi = (MyListViewItem *)THIS->item->parent()->firstChild(); 
-		else
-			lwi = (MyListViewItem *)WIDGET->firstChild();
-		for (;;)
-		{
-			if (!lwi || lwi == THIS->item)
-				break;
-			lwn = lwi;
-			lwi = (MyListViewItem *)lwi->nextSibling();
-		}
-	}
-
-  return_item(THIS, lwn);
-
-  //return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->prev) : 0);
+  return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->previousSibling()) : 0);
 
 END_METHOD
 
@@ -883,14 +940,14 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTREEVIEW_above)
 
-  return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->itemAbove()) : 0);
+  return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->findAbove()) : 0);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CTREEVIEW_below)
 
-  return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->itemBelow()) : 0);
+  return_item(THIS, THIS->item ? (MyListViewItem *)(THIS->item->findBelow()) : 0);
 
 END_METHOD
 

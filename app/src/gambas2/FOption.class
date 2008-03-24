@@ -54,7 +54,6 @@ PUBLIC SUB _new()
     [fntEditor, "/Editor/Font", Project.DEFAULT_FONT],
     [cmbGlobalFont, "/UseSmallFont", 1],
     [cmbToolbox, "/SmallToolbox", 0],
-    [cmbBalloonTooltip, "/ShowBalloon", 1],
     [cmbSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
     [cmbProcLimit, "/Editor/ProcedureLimit", 2],
@@ -225,13 +224,6 @@ PUBLIC SUB cmbTooltip_Click()
 
   Settings["/ShowTooltip"] = cmbTooltip.Index = 1
   Application.Tooltip.Enabled = cmbTooltip.Index = 1
-  
-END
-
-PUBLIC SUB cmbBalloonTooltip_Click()
-
-  Settings["/ShowBalloon"] = cmbBalloonTooltip.Index = 1
-  FMain.ReadConfig
   
 END
 

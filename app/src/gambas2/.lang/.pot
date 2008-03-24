@@ -251,10 +251,10 @@ msgstr ""
 
 #: Design.module:341 FAbout.class:302 FColorChooser.class:197
 #: FCommit.class:285 FCreateFile.class:820 FFontChooser.class:80
-#: FGotoLine.class:57 FList.class:167 FMain.class:2584
+#: FGotoLine.class:57 FList.class:167 FMain.class:2391
 #: FMakeExecutable.class:146 FMenu.class:1070 FNewTranslation.class:64
 #: FOpenProject.class:402 FProjectEnv.class:325 FPropertyProject.class:243
-#: FSelectIcon.class:266 FText.class:100 Project.module:2486
+#: FSelectIcon.class:266 FText.class:100 Project.module:2484
 msgid "OK"
 msgstr ""
 
@@ -336,7 +336,7 @@ msgstr ""
 #: FColorChooser.class:203 FCommit.class:291 FCreateFile.class:826
 #: FDebugInfo.class:342 FEditor.class:1992 FFindList.class:159 FFind.class:115
 #: FFontChooser.class:86 FForm.class:2509 FGotoLine.class:63
-#: FIconEditor.class:1387 FList.class:107 FMain.class:197
+#: FIconEditor.class:1387 FList.class:107 FMain.class:200
 #: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1076
 #: FNewTranslation.class:70 FOpenProject.class:408 FProjectEnv.class:331
 #: FPropertyProject.class:1149 FSave.class:125 FSelectIcon.class:271
@@ -393,7 +393,7 @@ msgid "Paste"
 msgstr ""
 
 #: FCommit.class:228 FEditor.class:2687 FForm.class:3155
-#: FIconEditor.class:2143 FOption.class:900 FTextEditor.class:746
+#: FIconEditor.class:2143 FOption.class:872 FTextEditor.class:746
 msgid "Undo"
 msgstr ""
 
@@ -441,20 +441,20 @@ msgstr ""
 msgid "New file"
 msgstr ""
 
-#: FCreateFile.class:522 FMain.class:2088
+#: FCreateFile.class:522 FMain.class:1884
 msgid "New"
 msgstr ""
 
-#: FCreateFile.class:547 FMain.class:1281
+#: FCreateFile.class:547 FInfo.class:44
 msgid "Module"
 msgstr ""
 
-#: FCreateFile.class:566 FFindList.class:45 FMain.class:1285
+#: FCreateFile.class:566 FFindList.class:45 FInfo.class:48
 #: FPropertyProject.class:837
 msgid "Class"
 msgstr ""
 
-#: FCreateFile.class:585 FEditor.class:2839 FForm.class:2840 FMain.class:1289
+#: FCreateFile.class:585 FEditor.class:2839 FForm.class:2840 FInfo.class:52
 msgid "Form"
 msgstr ""
 
@@ -466,7 +466,7 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: FCreateFile.class:642 FMain.class:1298
+#: FCreateFile.class:642 FInfo.class:61
 msgid "HTML file"
 msgstr ""
 
@@ -480,7 +480,7 @@ msgid "Name"
 msgstr ""
 
 #: FCreateFile.class:685 FCreateProject.class:526 FMakeExecutable.class:98
-#: FOption.class:752 FPropertyProject.class:1555
+#: FOption.class:724 FPropertyProject.class:1555
 msgid "Options"
 msgstr ""
 
@@ -492,7 +492,8 @@ msgstr ""
 msgid "Height"
 msgstr ""
 
-#: FCreateFile.class:727 FCreateProject.class:355 FPropertyProject.class:839
+#: FCreateFile.class:727 FCreateProject.class:355 FInfo.class:272
+#: FPropertyProject.class:839
 msgid "Type"
 msgstr ""
 
@@ -552,7 +553,7 @@ msgstr ""
 msgid "The project has been successfully created."
 msgstr ""
 
-#: FCreateProject.class:324 FMain.class:2230
+#: FCreateProject.class:324 FMain.class:2037
 msgid "New project"
 msgstr ""
 
@@ -700,11 +701,11 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: FDebugInfo.class:660 FMain.class:2519
+#: FDebugInfo.class:660 FMain.class:2326
 msgid "Debug"
 msgstr ""
 
-#: FDebugInfo.class:675 FMain.class:2365
+#: FDebugInfo.class:675 FMain.class:2172
 msgid "Console"
 msgstr ""
 
@@ -740,7 +741,7 @@ msgstr ""
 msgid "Add expression"
 msgstr ""
 
-#: FDebugInfo.class:770 FOption.class:1089
+#: FDebugInfo.class:770 FOption.class:1061
 msgid "Breakpoints"
 msgstr ""
 
@@ -853,7 +854,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: FFindList.class:47 FIconEditor.class:2269 FOption.class:860
+#: FFindList.class:47 FIconEditor.class:2269 FOption.class:832
 msgid "Line"
 msgstr ""
 
@@ -861,8 +862,8 @@ msgstr ""
 msgid "Column"
 msgstr ""
 
-#: FFindList.class:167 FIconEditor.class:1406 FMakeInstall.class:229
-#: FOption.class:1190 FTips.class:232
+#: FFindList.class:167 FIconEditor.class:1406 FInfo.class:346
+#: FMakeInstall.class:229 FOption.class:1162 FTips.class:232
 msgid "Close"
 msgstr ""
 
@@ -993,7 +994,7 @@ msgstr ""
 msgid "Unselect all"
 msgstr ""
 
-#: FForm.class:2940 FMain.class:197 FTranslate.class:548
+#: FForm.class:2940 FMain.class:200 FTranslate.class:548
 msgid "Delete"
 msgstr ""
 
@@ -1113,7 +1114,7 @@ msgstr ""
 msgid "Move tab last"
 msgstr ""
 
-#: FFormStack.class:269 FMain.class:2542
+#: FFormStack.class:269 FMain.class:2349
 msgid "Hierarchy"
 msgstr ""
 
@@ -1235,6 +1236,66 @@ msgstr ""
 msgid "Pick a color"
 msgstr ""
 
+#: FInfo.class:35
+msgid "Gambas project"
+msgstr ""
+
+#: FInfo.class:37
+msgid "Directory"
+msgstr ""
+
+#: FInfo.class:56 FMenu.class:987
+msgid "Picture"
+msgstr ""
+
+#: FInfo.class:58
+msgid "Text file"
+msgstr ""
+
+#: FInfo.class:64
+msgid "CSS file"
+msgstr ""
+
+#: FInfo.class:67
+msgid "XML file"
+msgstr ""
+
+#: FInfo.class:71
+msgid "ChangeLog"
+msgstr ""
+
+#: FInfo.class:74
+msgid "File"
+msgstr ""
+
+#: FInfo.class:96
+msgid "&1 K, &2 line(s)"
+msgstr ""
+
+#: FInfo.class:98
+msgid "&1 K"
+msgstr ""
+
+#: FInfo.class:215
+msgid "Information"
+msgstr ""
+
+#: FInfo.class:251
+msgid "Link to"
+msgstr ""
+
+#: FInfo.class:289 FSelectIcon.class:235
+msgid "Size"
+msgstr ""
+
+#: FInfo.class:306
+msgid "Last modified"
+msgstr ""
+
+#: FInfo.class:324
+msgid "Details"
+msgstr ""
+
 #: FList.class:107
 msgid "Do you want to clear the value list ?"
 msgstr ""
@@ -1252,463 +1313,427 @@ msgstr ""
 msgid "&Delete"
 msgstr ""
 
-#: FMain.class:197
+#: FMain.class:200
 msgid "Do you really want to delete this directory ?"
 msgstr ""
 
-#: FMain.class:208
+#: FMain.class:211
 msgid "Do you really want to delete this file ?"
 msgstr ""
 
-#: FMain.class:216
+#: FMain.class:219
 msgid "Cannot delete file or directory"
 msgstr ""
 
-#: FMain.class:344
+#: FMain.class:347
 msgid "&Clear history"
 msgstr ""
 
-#: FMain.class:350
+#: FMain.class:353
 msgid "&Sort by path"
 msgstr ""
 
-#: FMain.class:544
+#: FMain.class:546
 msgid "New folder"
 msgstr ""
 
-#: FMain.class:612
+#: FMain.class:614
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
 "Please install them to be able to do the translation."
 msgstr ""
 
-#: FMain.class:1045
+#: FMain.class:1023
 msgid "Do you really want to update all forms?"
 msgstr ""
 
-#: FMain.class:1045
+#: FMain.class:1023
 msgid "Update"
 msgstr ""
 
-#: FMain.class:1060
+#: FMain.class:1038
 msgid "Unable to update all forms."
 msgstr ""
 
-#: FMain.class:1219
+#: FMain.class:1197
 msgid ""
 "All backup or generated files will be removed from the project directory."
 msgstr ""
 
-#: FMain.class:1219
+#: FMain.class:1197
 msgid "Clean"
 msgstr ""
 
-#: FMain.class:1272
-msgid "Gambas project"
-msgstr ""
-
-#: FMain.class:1274
-msgid "Directory"
-msgstr ""
-
-#: FMain.class:1293 FMenu.class:987
-msgid "Picture"
-msgstr ""
-
-#: FMain.class:1295
-msgid "Text file"
-msgstr ""
-
-#: FMain.class:1301
-msgid "CSS file"
-msgstr ""
-
-#: FMain.class:1304
-msgid "XML file"
-msgstr ""
-
-#: FMain.class:1307
-msgid "File"
-msgstr ""
-
-#: FMain.class:1325
-msgid "&1 K, &2 line(s)"
-msgstr ""
-
-#: FMain.class:1327
-msgid "&1 K"
-msgstr ""
-
-#: FMain.class:1348
-msgid "ERROR"
-msgstr ""
-
-#: FMain.class:1737
+#: FMain.class:1533
 msgid "&File"
 msgstr ""
 
-#: FMain.class:1741
+#: FMain.class:1537
 msgid "&New project..."
 msgstr ""
 
-#: FMain.class:1748
+#: FMain.class:1544
 msgid "&Open project..."
 msgstr ""
 
-#: FMain.class:1754
+#: FMain.class:1550
 msgid "Open &recent"
 msgstr ""
 
-#: FMain.class:1762
+#: FMain.class:1558
 msgid "Open &example"
 msgstr ""
 
-#: FMain.class:1775
+#: FMain.class:1571
 msgid "&Save project"
 msgstr ""
 
-#: FMain.class:1782
+#: FMain.class:1578
 msgid "Save project &as..."
 msgstr ""
 
-#: FMain.class:1792
+#: FMain.class:1588
 msgid "&Quit"
 msgstr ""
 
-#: FMain.class:1799
+#: FMain.class:1595
 msgid "&Project"
 msgstr ""
 
-#: FMain.class:1803
+#: FMain.class:1599
 msgid "&Compile"
 msgstr ""
 
-#: FMain.class:1810
+#: FMain.class:1606
 msgid "Compile &All"
 msgstr ""
 
-#: FMain.class:1821
+#: FMain.class:1617
 msgid "&Translate..."
 msgstr ""
 
-#: FMain.class:1831
+#: FMain.class:1627
 msgid "Make"
 msgstr ""
 
-#: FMain.class:1835
+#: FMain.class:1631
 msgid "E&xecutable..."
 msgstr ""
 
-#: FMain.class:1842
+#: FMain.class:1638
 msgid "&Source archive..."
 msgstr ""
 
-#: FMain.class:1849
+#: FMain.class:1645
 msgid "&Installation package..."
 msgstr ""
 
-#: FMain.class:1860
+#: FMain.class:1656
 msgid "&Clean up"
 msgstr ""
 
-#: FMain.class:1866
+#: FMain.class:1662
 msgid "&Refresh"
 msgstr ""
 
-#: FMain.class:1876
+#: FMain.class:1672
 msgid "&Properties..."
 msgstr ""
 
-#: FMain.class:1883
+#: FMain.class:1679
 msgid "&Debug"
 msgstr ""
 
-#: FMain.class:1887
+#: FMain.class:1683
 msgid "&Run"
 msgstr ""
 
-#: FMain.class:1898
+#: FMain.class:1694
 msgid "&Pause"
 msgstr ""
 
-#: FMain.class:1905
+#: FMain.class:1701
 msgid "&Stop"
 msgstr ""
 
-#: FMain.class:1912
+#: FMain.class:1708
 msgid "St&ep"
 msgstr ""
 
-#: FMain.class:1919
+#: FMain.class:1715
 msgid "&Forward"
 msgstr ""
 
-#: FMain.class:1926
+#: FMain.class:1722
 msgid "Finis&h"
 msgstr ""
 
-#: FMain.class:1933
+#: FMain.class:1729
 msgid "Run &until"
 msgstr ""
 
-#: FMain.class:1944
+#: FMain.class:1740
 msgid "&Toggle breakpoint"
 msgstr ""
 
-#: FMain.class:1951
+#: FMain.class:1747
 msgid "Clear &all breakpoints"
 msgstr ""
 
-#: FMain.class:1960
+#: FMain.class:1756
 msgid "&Watch expression"
 msgstr ""
 
-#: FMain.class:1965
+#: FMain.class:1761
 msgid "Close all &debug windows"
 msgstr ""
 
-#: FMain.class:1970
+#: FMain.class:1766
 msgid "&View"
 msgstr ""
 
-#: FMain.class:1974
+#: FMain.class:1770
 msgid "Pro&ject"
 msgstr ""
 
-#: FMain.class:1983
+#: FMain.class:1779
 msgid "&Properties"
 msgstr ""
 
-#: FMain.class:1991
+#: FMain.class:1787
 msgid "&Toolbox"
 msgstr ""
 
-#: FMain.class:1999
+#: FMain.class:1795
 msgid "&Console"
 msgstr ""
 
-#: FMain.class:2010
+#: FMain.class:1806
 msgid "Close &all windows"
 msgstr ""
 
-#: FMain.class:2016
+#: FMain.class:1812
 msgid "&Tools"
 msgstr ""
 
-#: FMain.class:2019
+#: FMain.class:1815
 msgid "&Find && replace"
 msgstr ""
 
-#: FMain.class:2029
+#: FMain.class:1825
 msgid "&Browse project..."
 msgstr ""
 
-#: FMain.class:2034
+#: FMain.class:1830
 msgid "&Update all forms"
 msgstr ""
 
-#: FMain.class:2039
+#: FMain.class:1835
 msgid "&Database manager..."
 msgstr ""
 
-#: FMain.class:2049
+#: FMain.class:1845
 msgid "&Preferences..."
 msgstr ""
 
-#: FMain.class:2057
+#: FMain.class:1853
 msgid "&?"
 msgstr ""
 
-#: FMain.class:2061
+#: FMain.class:1857
 msgid "&Help browser"
 msgstr ""
 
-#: FMain.class:2067
+#: FMain.class:1863
 msgid "&Tips of the day"
 msgstr ""
 
-#: FMain.class:2076
+#: FMain.class:1872
 msgid "&About Gambas..."
 msgstr ""
 
-#: FMain.class:2083
+#: FMain.class:1879
 msgid "Popup"
 msgstr ""
 
-#: FMain.class:2091
+#: FMain.class:1887
 msgid "&Directory"
 msgstr ""
 
-#: FMain.class:2101
+#: FMain.class:1897
 msgid "&Module..."
 msgstr ""
 
-#: FMain.class:2108
+#: FMain.class:1904
 msgid "&Class..."
 msgstr ""
 
-#: FMain.class:2115
+#: FMain.class:1911
 msgid "&Form..."
 msgstr ""
 
-#: FMain.class:2126
+#: FMain.class:1922
 msgid "&Image..."
 msgstr ""
 
-#: FMain.class:2133
+#: FMain.class:1929
 msgid "&Other..."
 msgstr ""
 
-#: FMain.class:2144
+#: FMain.class:1940
 msgid "&Edit"
 msgstr ""
 
-#: FMain.class:2150
+#: FMain.class:1946
 msgid "Edit &form"
 msgstr ""
 
-#: FMain.class:2155
+#: FMain.class:1951
 msgid "Edit &class"
 msgstr ""
 
-#: FMain.class:2160
+#: FMain.class:1956
 msgid "Edit with"
 msgstr ""
 
-#: FMain.class:2172
+#: FMain.class:1968
 msgid "&Cut"
 msgstr ""
 
-#: FMain.class:2178
+#: FMain.class:1974
 msgid "&Copy"
 msgstr ""
 
-#: FMain.class:2184
+#: FMain.class:1980
 msgid "&Paste"
 msgstr ""
 
-#: FMain.class:2190
+#: FMain.class:1986
 msgid "&Rename..."
 msgstr ""
 
-#: FMain.class:2196
+#: FMain.class:1992
 msgid "&Delete..."
 msgstr ""
 
-#: FMain.class:2206
+#: FMain.class:2002
 msgid "Copy file pat&h"
 msgstr ""
 
-#: FMain.class:2215
+#: FMain.class:2011
 msgid "&Startup class"
 msgstr ""
 
-#: FMain.class:2238
+#: FMain.class:2021
+msgid "&Information"
+msgstr ""
+
+#: FMain.class:2045
 msgid "Open project"
 msgstr ""
 
-#: FMain.class:2246
+#: FMain.class:2053
 msgid "Save project"
 msgstr ""
 
-#: FMain.class:2254 Project.module:1603
+#: FMain.class:2061 Project.module:1601
 msgid "Save project as"
 msgstr ""
 
-#: FMain.class:2262 FPropertyProject.class:50
+#: FMain.class:2069 FPropertyProject.class:50
 msgid "Project properties"
 msgstr ""
 
-#: FMain.class:2270
+#: FMain.class:2077
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2278 FOption.class:510
+#: FMain.class:2085 FOption.class:499
 msgid "Preferences"
 msgstr ""
 
-#: FMain.class:2291
+#: FMain.class:2098
 msgid "Translate"
 msgstr ""
 
-#: FMain.class:2299
+#: FMain.class:2106
 msgid "Make source archive"
 msgstr ""
 
-#: FMain.class:2307 FMakeExecutable.class:81
+#: FMain.class:2114 FMakeExecutable.class:81
 msgid "Make executable"
 msgstr ""
 
-#: FMain.class:2315 FMakeInstall.class:796
+#: FMain.class:2122 FMakeInstall.class:796
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.class:2327 FSelectIcon.class:214
+#: FMain.class:2134 FSelectIcon.class:214
 msgid "Project"
 msgstr ""
 
-#: FMain.class:2337
+#: FMain.class:2144
 msgid "Properties sheet"
 msgstr ""
 
-#: FMain.class:2347
+#: FMain.class:2154
 msgid "Form hierarchy"
 msgstr ""
 
-#: FMain.class:2356
+#: FMain.class:2163
 msgid "Toolbox"
 msgstr ""
 
-#: FMain.class:2374
+#: FMain.class:2181
 msgid "Find & replace"
 msgstr ""
 
-#: FMain.class:2387
+#: FMain.class:2194
 msgid "Compile"
 msgstr ""
 
-#: FMain.class:2395
+#: FMain.class:2202
 msgid "Compile all"
 msgstr ""
 
-#: FMain.class:2403
+#: FMain.class:2210
 msgid "Run"
 msgstr ""
 
-#: FMain.class:2411
+#: FMain.class:2218
 msgid "Pause"
 msgstr ""
 
-#: FMain.class:2419
+#: FMain.class:2226
 msgid "Stop"
 msgstr ""
 
-#: FMain.class:2427
+#: FMain.class:2234
 msgid "Step"
 msgstr ""
 
-#: FMain.class:2435
+#: FMain.class:2242
 msgid "Forward"
 msgstr ""
 
-#: FMain.class:2443
+#: FMain.class:2250
 msgid "Finish current function"
 msgstr ""
 
-#: FMain.class:2452
+#: FMain.class:2259
 msgid "Run until current line"
 msgstr ""
 
-#: FMain.class:2460
+#: FMain.class:2267
 msgid "Toggle breakpoint"
 msgstr ""
 
-#: FMain.class:2470
+#: FMain.class:2277
 msgid "Watch expression"
 msgstr ""
 
-#: FMain.class:2528 FProperty.class:965
+#: FMain.class:2335 FProperty.class:959
 msgid "Properties"
 msgstr ""
 
@@ -1757,7 +1782,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
 #: FMakeInstall.class:278 FPropertyProject.class:1149 FSave.class:118
-#: FTranslate.class:680 Project.module:2137
+#: FTranslate.class:680 Project.module:2135
 msgid "Continue"
 msgstr ""
 
@@ -2063,243 +2088,239 @@ msgstr ""
 msgid "Select a theme"
 msgstr ""
 
-#: FOption.class:161
+#: FOption.class:160
 msgid "Gambas highlight theme files"
 msgstr ""
 
-#: FOption.class:162
+#: FOption.class:161
 msgid "Export a theme file"
 msgstr ""
 
-#: FOption.class:283
+#: FOption.class:275
 msgid "Select a theme file"
 msgstr ""
 
-#: FOption.class:313
+#: FOption.class:305
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:522 FPropertyProject.class:1474
+#: FOption.class:511 FPropertyProject.class:1474
 msgid "General"
 msgstr ""
 
-#: FOption.class:530
+#: FOption.class:519
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.class:538
+#: FOption.class:527
 msgid "Desktop"
 msgstr ""
 
-#: FOption.class:538
+#: FOption.class:527
 msgid "Gnome"
 msgstr ""
 
-#: FOption.class:538
+#: FOption.class:527
 msgid "KDE"
 msgstr ""
 
-#: FOption.class:548
+#: FOption.class:537
 msgid "Browser"
 msgstr ""
 
-#: FOption.class:556 FPropertyProject.class:57
+#: FOption.class:545 FPropertyProject.class:57
 msgid "(Default)"
 msgstr ""
 
-#: FOption.class:556
+#: FOption.class:545
 msgid "Konqueror"
 msgstr ""
 
-#: FOption.class:556
+#: FOption.class:545
 msgid "Firefox"
 msgstr ""
 
-#: FOption.class:556
+#: FOption.class:545
 msgid "Epiphany"
 msgstr ""
 
-#: FOption.class:556
+#: FOption.class:545
 msgid "SeaMonkey"
 msgstr ""
 
-#: FOption.class:556
+#: FOption.class:545
 msgid "Opera"
 msgstr ""
 
-#: FOption.class:569
+#: FOption.class:558
 msgid "Interface"
 msgstr ""
 
-#: FOption.class:578
+#: FOption.class:567
 msgid "Show tooltips"
 msgstr ""
 
-#: FOption.class:585 FPropertyProject.class:1618
+#: FOption.class:574 FPropertyProject.class:1618
 msgid "No"
 msgstr ""
 
-#: FOption.class:585 FPropertyProject.class:1618
+#: FOption.class:574 FPropertyProject.class:1618
 msgid "Yes"
 msgstr ""
 
-#: FOption.class:595
-msgid "Show project information balloons"
-msgstr ""
-
-#: FOption.class:612
+#: FOption.class:584
 msgid "Show message bar"
 msgstr ""
 
-#: FOption.class:629
+#: FOption.class:601
 msgid "Font size"
 msgstr ""
 
-#: FOption.class:637
+#: FOption.class:609
 msgid "Normal size"
 msgstr ""
 
-#: FOption.class:637
+#: FOption.class:609
 msgid "Small size"
 msgstr ""
 
-#: FOption.class:647
+#: FOption.class:619
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.class:665
+#: FOption.class:637
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:682 FWelcome.class:47
+#: FOption.class:654 FWelcome.class:47
 msgid "Recent projects"
 msgstr ""
 
-#: FOption.class:695
+#: FOption.class:667
 msgid "Max."
 msgstr ""
 
-#: FOption.class:705
+#: FOption.class:677
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:722
+#: FOption.class:694
 msgid "Display property help"
 msgstr ""
 
-#: FOption.class:733
+#: FOption.class:705
 msgid "Editor"
 msgstr ""
 
-#: FOption.class:738
+#: FOption.class:710
 msgid "Font"
 msgstr ""
 
-#: FOption.class:761
+#: FOption.class:733
 msgid "Automatic completion"
 msgstr ""
 
-#: FOption.class:778
+#: FOption.class:750
 msgid "Default tab size"
 msgstr ""
 
-#: FOption.class:791
+#: FOption.class:763
 msgid "spaces"
 msgstr ""
 
-#: FOption.class:801
+#: FOption.class:773
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:818
+#: FOption.class:790
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:835
+#: FOption.class:807
 msgid "Highlight current line"
 msgstr ""
 
-#: FOption.class:852
+#: FOption.class:824
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:860 FProperty.class:637
+#: FOption.class:832 FProperty.class:632
 msgid "None"
 msgstr ""
 
-#: FOption.class:860
+#: FOption.class:832
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:864
+#: FOption.class:836
 msgid "Colors"
 msgstr ""
 
-#: FOption.class:886
+#: FOption.class:858
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:893
+#: FOption.class:865
 msgid "Export theme"
 msgstr ""
 
-#: FOption.class:924
+#: FOption.class:896
 msgid "Background"
 msgstr ""
 
-#: FOption.class:931
+#: FOption.class:903
 msgid "Normal text"
 msgstr ""
 
-#: FOption.class:938
+#: FOption.class:910
 msgid "Selection"
 msgstr ""
 
-#: FOption.class:945
+#: FOption.class:917
 msgid "Highlighting"
 msgstr ""
 
-#: FOption.class:952
+#: FOption.class:924
 msgid "Keywords"
 msgstr ""
 
-#: FOption.class:959
+#: FOption.class:931
 msgid "Data types"
 msgstr ""
 
-#: FOption.class:966
+#: FOption.class:938
 msgid "Subroutines"
 msgstr ""
 
-#: FOption.class:973
+#: FOption.class:945
 msgid "Operators"
 msgstr ""
 
-#: FOption.class:1061
+#: FOption.class:1033
 msgid "Symbols"
 msgstr ""
 
-#: FOption.class:1068
+#: FOption.class:1040
 msgid "Numbers"
 msgstr ""
 
-#: FOption.class:1075
+#: FOption.class:1047
 msgid "Strings"
 msgstr ""
 
-#: FOption.class:1082 FTranslate.class:50
+#: FOption.class:1054 FTranslate.class:50
 msgid "Comments"
 msgstr ""
 
-#: FOption.class:1096
+#: FOption.class:1068
 msgid "Current line"
 msgstr ""
 
-#: FOption.class:1103
+#: FOption.class:1075
 msgid "Editing line"
 msgstr ""
 
-#: FOption.class:1110
+#: FOption.class:1082
 msgid "Error"
 msgstr ""
 
@@ -2355,36 +2376,36 @@ msgstr ""
 msgid "Author(s)"
 msgstr ""
 
-#: FProperty.class:327
+#: FProperty.class:329
 msgid "Forbidden characters in control name."
 msgstr ""
 
-#: FProperty.class:332
+#: FProperty.class:334
 msgid "This name is already in use."
 msgstr ""
 
-#: FProperty.class:342
+#: FProperty.class:344
 msgid "Forbidden characters in control group."
 msgstr ""
 
-#: FProperty.class:400
+#: FProperty.class:402
 msgid "Incorrect property value."
 msgstr ""
 
-#: FProperty.class:508
+#: FProperty.class:510
 msgid "The name of the control."
 msgstr ""
 
-#: FProperty.class:519
+#: FProperty.class:521
 msgid "The event group that the control belongs to."
 msgstr ""
 
-#: FProperty.class:540
+#: FProperty.class:534
 msgid ""
 "If the form and controls dimensions must follow the size of the default font."
 msgstr ""
 
-#: FProperty.class:975
+#: FProperty.class:969
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 
@@ -2572,10 +2593,6 @@ msgstr ""
 
 #: FSelectIcon.class:222
 msgid "Stock"
-msgstr ""
-
-#: FSelectIcon.class:235
-msgid "Size"
 msgstr ""
 
 #: FText.class:85
@@ -3116,192 +3133,192 @@ msgstr ""
 msgid "Cannot open project file :\n"
 msgstr ""
 
-#: Project.module:835
+#: Project.module:833
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: Project.module:982
+#: Project.module:980
 msgid "Modules"
 msgstr ""
 
-#: Project.module:983
+#: Project.module:981
 msgid "Classes"
 msgstr ""
 
-#: Project.module:985
+#: Project.module:983
 msgid "Forms"
 msgstr ""
 
-#: Project.module:987
+#: Project.module:985
 msgid "Data"
 msgstr ""
 
-#: Project.module:1010
+#: Project.module:1008
 msgid "read-only"
 msgstr ""
 
-#: Project.module:1074
+#: Project.module:1072
 msgid "Loading &1..."
 msgstr ""
 
-#: Project.module:1122
+#: Project.module:1120
 msgid "Cannot open file."
 msgstr ""
 
-#: Project.module:1191
+#: Project.module:1189
 msgid "File not found!"
 msgstr ""
 
-#: Project.module:1306
+#: Project.module:1304
 msgid "in form definition"
 msgstr ""
 
-#: Project.module:1310
+#: Project.module:1308
 msgid "at line &1 in &2"
 msgstr ""
 
-#: Project.module:1458
+#: Project.module:1456
 msgid "Compiling project"
 msgstr ""
 
-#: Project.module:1470
+#: Project.module:1468
 msgid "Nothing to do."
 msgstr ""
 
-#: Project.module:1609
+#: Project.module:1607
 msgid "This project already exists."
 msgstr ""
 
-#: Project.module:1622
+#: Project.module:1620
 msgid "Unable to save the project."
 msgstr ""
 
-#: Project.module:1635
+#: Project.module:1633
 msgid "File already exists."
 msgstr ""
 
-#: Project.module:1676
+#: Project.module:1674
 msgid "Cannot copy template file."
 msgstr ""
 
-#: Project.module:1695
+#: Project.module:1693
 msgid "Directory already exists."
 msgstr ""
 
-#: Project.module:1849
+#: Project.module:1847
 msgid "Making executable..."
 msgstr ""
 
-#: Project.module:1891
+#: Project.module:1889
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:2136
+#: Project.module:2134
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: Project.module:2278
+#: Project.module:2276
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:2310
+#: Project.module:2308
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:2391
+#: Project.module:2389
 msgid "Unable to install component."
 msgstr ""
 
-#: Project.module:2429
+#: Project.module:2427
 msgid "Unable to uninstall component."
 msgstr ""
 
-#: Project.module:2564
+#: Project.module:2562
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:2583
+#: Project.module:2581
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:2610
+#: Project.module:2608
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:2614
+#: Project.module:2612
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:2618
+#: Project.module:2616
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:2648
+#: Project.module:2646
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:2809
+#: Project.module:2807
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:2928
+#: Project.module:2926
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:2936
+#: Project.module:2934
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:2939
+#: Project.module:2937
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:2940
+#: Project.module:2938
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:2950
+#: Project.module:2948
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:2952
+#: Project.module:2950
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:2995
+#: Project.module:2993
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:2996
+#: Project.module:2994
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:3239
+#: Project.module:3237
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:3251
+#: Project.module:3249
 msgid "Linking a directory is forbidden."
 msgstr ""
 
-#: Project.module:3281
+#: Project.module:3279
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:3293
+#: Project.module:3291
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:3337
+#: Project.module:3335
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:3864
+#: Project.module:3862
 msgid "modified"
 msgstr ""
 

@@ -8,12 +8,9 @@ PRIVATE $sKeyDrag AS String
 PRIVATE $sDeleteKey AS String
 
 PRIVATE $bUpdateRecentMenu AS Boolean
-'PRIVATE $fBalloon AS Float
-PRIVATE $sKeyBalloon AS String
-PRIVATE $bCanShowBalloon AS Boolean
-PRIVATE $bShowBalloon AS Boolean
 PRIVATE $bInTreeView AS Boolean
 PRIVATE $bInRename AS Boolean
+PRIVATE $sKeyInfo AS String
 
 PUBLIC SUB _new()
 
@@ -80,13 +77,19 @@ PUBLIC SUB Form_Close()
   IF Project.Close() THEN
     STOP EVENT
   ELSE
-    'Config.SaveWindow(ME, "/FMain")
     Settings.Write(ME)
     Settings.Write(panProject, "panProject") 
     Settings.Write(panProperty, "panProperty") 
     Settings.Write(panTool, "panTool") 
     'Settings.Write(panStack, "panStack") 
     Settings.Write(panDebug, "panDebug") 
+    
+    ' We must close them now, otherwise the Close event is raised when the embedded forms
+    ' are destroyed, and then the Settings.Save() method gets no TopLevel form anymore for generating the
+    ' settings key !
+    FProperty.Close
+    FDebugInfo.Close
+    
     Design.Exit
   ENDIF
 
@@ -530,7 +533,6 @@ END
 PRIVATE SUB Rename(sKey AS String)
   
   $bInRename = TRUE
-  HideBalloon
   tvwProject[sKey].Rename
   
 END
@@ -708,6 +710,7 @@ PUBLIC SUB mnuPaste_Click()
 
 END
 
+
 PUBLIC SUB tvwProject_Select()
 
   DIM sKey AS String
@@ -725,33 +728,7 @@ PUBLIC SUB tvwProject_Select()
 
   mnuPopup_Show
   
-  ' IF Left(sKey, 2) = Project.KEY_FIND THEN 
-  '   
-  '   sSave = sKey
-  '   sKey = Mid$(sKey, 3)
-  '   aKey = Scan(sKey, "*@*.*.*")
-  '   sKey = aKey[0]
-  '   IF File.Ext(sKey) = "form" THEN sKey = File.SetExt(sKey, "class")
-  '   Project.OpenFile(sKey)
-  ' 
-  '   hEdit = Project.Files[sKey].Editor
-  '   iLine = Val(aKey[1])
-  '   iCol = Val(aKey[2])
-  '   iLen = Val(aKey[3])
-  '   hEdit.Goto(iLine, iCol, TRUE)
-  '   hEdit.Select(iLine, iCol - 1, iLine, iCol + iLen - 1)
-  '   
-  '   tvwProject[sSave].Selected = TRUE
-  '   RETURN
-  '   
-  ' ENDIF
-
   IF tvwProject.Current.Children THEN tvwProject.Current.Expanded = TRUE
-
-  HideBalloon
-  'timProject.Enabled = TRUE
-
-  'RefreshInfo
 
 END
 
@@ -794,8 +771,8 @@ PUBLIC SUB ReadConfig()
   'wrkProject.Font = tvwProject.Font
   'tabProperty.Font = tvwProject.Font
   panMessage.Height = lblMessage.Font.Height("") + 2
-  $bCanShowBalloon = Settings["/ShowBalloon", TRUE]
-  IF NOT $bCanShowBalloon THEN HideBalloon
+  '$bCanShowBalloon = Settings["/ShowBalloon", TRUE]
+  'IF NOT $bCanShowBalloon THEN HideBalloon
   panMessage.Visible = Settings["/ShowMessages", TRUE]
 
 END
@@ -854,7 +831,6 @@ END
 PUBLIC SUB tvwProject_MouseDown()
 
   $bCtrl = Mouse.Control
-  HideBalloon
   
 END 
 
@@ -1012,6 +988,8 @@ PUBLIC SUB Action_Activate(Key AS String) AS Boolean
     CASE "until"
       hEditor = Project.ActiveForm
       IF NOT ERROR THEN hEditor.RunUntil
+    CASE "info"
+      FInfo.Run
 
   END SELECT 
   
@@ -1240,114 +1218,6 @@ PUBLIC SUB panInfo_Show()
   
 END
 
-PRIVATE SUB GetInfo(sPath AS String) AS String
-  
-  DIM sInfo AS String
-  DIM sType AS String
-  DIM sSize AS String
-  DIM iSize AS Long
-  DIM bLine AS Boolean
-  DIM sOutput AS String
-  DIM sName AS String
-  DIM sLink AS String
-  
-  IF Left(sPath) = "$" THEN RETURN
-  
-  IF NOT sPath THEN sPath = Project.Dir
-  
-  WITH Stat(sPath)
-  
-    IF .Type = gb.Link THEN 
-      sLink = .Link
-    ENDIF
-  
-  END WITH
-    
-  WITH Stat(sPath, TRUE)
-  
-    sName = tvwProject[sPath].Text
-  
-    IF .Type = gb.Directory THEN
-      IF sPath = Project.Dir THEN 
-        sType = ("Gambas project")
-      ELSE 
-        sType = ("Directory")
-      ENDIF
-      SHELL "(cd " & Quote.Shell(sPath) & "; du -k | tail -n1" & ")" TO sSize
-      iSize = Val(sSize)
-    ELSE
-      SELECT CASE File.Ext(sPath)
-        CASE "module"
-          sType = ("Module")
-          bLine = TRUE
-          sInfo = "UTF-8 Gambas module file"
-        CASE "class"
-          sType = ("Class")
-          bLine = TRUE
-          sInfo = "UTF-8 Gambas class file"
-        CASE "form"
-          sType = ("Form")
-          bLine = TRUE
-          sInfo = "UTF-8 Gambas form file"
-        CASE "png", "jpg", "gif", "jpeg", "svg"
-          sType = ("Picture")
-        CASE "txt"
-          sType = ("Text file")
-          bLine = TRUE
-        CASE "htm", "html"
-          sType = ("HTML file")
-          bLine = TRUE
-        CASE "css"
-          sType = ("CSS file")
-          bLine = TRUE
-        CASE "xml"
-          sType = ("XML file")
-          bLine = TRUE
-        CASE ELSE 
-          sType = ("File")
-      END SELECT
-  
-      iSize = CInt((.Size + 1023) \ 1024)
-      IF NOT sInfo THEN 
-        IF sLink THEN 
-          sInfo = sLink
-          IF Left(sInfo) <> "/" THEN sInfo = File.Dir(sPath) &/ sLink
-        ELSE 
-          sInfo = sPath
-        ENDIF
-        SHELL "file -b " & Quote.Shell(sInfo) TO sInfo
-      ENDIF
-      
-    ENDIF 
-    
-    IF bLine THEN 
-      SHELL "wc -l " & Quote.Shell(sPath) TO sOutput
-      sSize = Subst(("&1 K, &2 line(s)"), iSize, Val(sOutput))
-    ELSE
-      sSize = Subst(("&1 K"), iSize)
-    ENDIF
-
-    sOutput = "<b>" & sName & "</b><br>"
-    IF sLink THEN 
-      IF sLink LIKE (Project.Dir & "/*") THEN 
-        sLink = Mid$(sLink, Len(Project.Dir) + 2)
-      ENDIF
-      IF sLink LIKE (System.User.Home &/ "/*") THEN 
-        sLink = "~" &/ Mid$(sLink, Len(System.User.Home) + 1)
-      ENDIF
-      sOutput &= "<font size=\"-1\"><b>(" & sLink & ")</b></font><br>"
-    ENDIF
-    sOutput &= "<br>" & sType & "<br>" & sSize & "<br>" & Str(.Time)
-    IF Trim(sInfo) THEN sOutput &= "<br><br>" & Trim(sInfo)
-    RETURN sOutput
-    
-  END WITH 
-  
-CATCH
-
-  RETURN "<b>" & ("ERROR") & "</b><p>" & Error.Text & "<p><pre>" & sPath & "</pre>" 
-  
-END
 
 PUBLIC SUB mnuOpenRecent_Show()
 
@@ -1397,63 +1267,6 @@ PUBLIC SUB panProperty_Arrange()
 
 END
 
-PUBLIC SUB HideBalloon()
-  
-  Balloon.Hide(tvwProject)
-  $sKeyBalloon = ""
-  
-END
-
-
-PUBLIC SUB ShowBalloon()
-
-  DIM sInfo AS String
-  DIM X, Y AS Integer
-  DIM sPath AS String
-  DIM hPict AS Picture
-  DIM bVisible AS Boolean
-
-  IF NOT $bCanShowBalloon THEN RETURN  
-  IF Application.ActiveWindow <> ME THEN RETURN
-  IF NOT Balloon.Visible AND IF NOT $bInTreeView THEN RETURN
-  IF $bInRename THEN RETURN
-  
-  X = Mouse.ScreenX - tvwProject.ScreenX
-  Y = Mouse.ScreenY - tvwProject.ScreenY
-
-  tvwProject.Find(X, Y)
-  IF NOT tvwProject.Available THEN 
-    HideBalloon
-    RETURN
-  ENDIF
-  'IF NOT tvwProject.Item.Selected THEN RETURN
-  
-  sPath = tvwProject.Item.Key
-  IF sPath = $sKeyBalloon THEN RETURN 
-  
-  'X = tvwProject.Item.X + tvwProject.Item.Width / 2
-  Y = tvwProject.Item.Y + tvwProject.Item.Height / 2
-
-  sInfo = GetInfo(sPath)
-  IF NOT sInfo THEN RETURN 
-
-  IF sPath = Project.Dir THEN 
-    hPict = Project.GetIcon(Project.Dir, 32)
-  ELSE 
-    hPict = Project.GetFileIcon(sPath, 32)
-  ENDIF
-  
-  Balloon(sInfo, tvwProject, hPict, X, Y)
-  $sKeyBalloon = sPath
-
-END
-
-PUBLIC SUB tvwProject_MouseMove()
-
-  IF $bShowBalloon THEN ShowBalloon
-
-END
-
 PUBLIC SUB tvwProject_Leave()
 
   $bInTreeView = FALSE
@@ -1466,17 +1279,10 @@ PUBLIC SUB tvwProject_Enter()
 
 END
 
-PUBLIC SUB tvwProject_MouseWheel()
-
-  tvwProject_MouseMove  
-
-END
-
 PUBLIC SUB HidePanels()
   
   Action["find"].Value = FALSE
   Action["console"].Value = FALSE
-  HideBalloon
   Balloon.Hide
   
 END
@@ -1548,36 +1354,24 @@ PUBLIC SUB mnuClearDebugWindows_Click()
 
 END
 
-PUBLIC SUB tvwProject_KeyRelease()
-
-  'DEBUG Key.Code;; Key.Shift
-  IF NOT Key.Shift THEN 
-    HideBalloon
-    $bShowBalloon = FALSE
-  ENDIF
-
-END
-
-PUBLIC SUB tvwProject_KeyPress()
-
-  'DEBUG Key.Code;; Key.Shift
-  IF Key.Shift THEN 
-    $bShowBalloon = TRUE
-    ShowBalloon
-  ENDIF
-
-END
-
 PUBLIC SUB mnuFind_Click()
 
   FFind.Find
 
 END
 
-
-
 PUBLIC SUB ToolButton6_Click()
 
-  Desktop.SendKeys("ù£æ")
+  'Desktop.SendKeys("ù£æ")
+  tvwProject.MoveFirst
+  tvwProject.MoveLast
+  WHILE tvwProject.Item.Children
+    tvwProject.MoveChild
+    tvwProject.MoveLast
+  WEND
+  WHILE tvwProject.Available
+    PRINT tvwProject.Item.Key
+    tvwProject.MoveAbove
+  WEND
 
 END
