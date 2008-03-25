@@ -154,9 +154,9 @@ PUBLIC SUB Run()
   IF Left(sPath) <> "$" THEN 
 
     IF sPath = Project.Dir THEN 
-      hPict = Project.GetIcon(Project.Dir, 16)
+      hPict = Project.GetIcon(Project.Dir, 32)
     ELSE 
-      hPict = Project.GetFileIcon(sPath, 16)
+      hPict = Project.GetFileIcon(sPath, 32)
     ENDIF
     
     picInfo.Picture = hPict
