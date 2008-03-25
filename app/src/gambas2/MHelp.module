@@ -29,6 +29,7 @@ PRIVATE SUB FormatName(sName AS String) AS String
   sName = LCase(sName)
   sName = Replace(sName, "_", "+")
   sName = Replace(sName, "/.", "/_")
+  sName = Replace(sName, "/+", "/_")
   sName = Replace(sName, ".", "+")
   sName = Replace(sName, ":", "+")
   

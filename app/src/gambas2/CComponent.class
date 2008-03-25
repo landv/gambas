@@ -555,7 +555,7 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
     bCanInherit = FALSE
   ENDIF 
   
-  FOR iLine = 0 TO hEditor.Lines.Count
+  FOR iLine = 0 TO hEditor.Lines.Count - 1
 
     aSym = Highlight.Analyze(hEditor.Lines[iLine])
     IF aSym.Count = 0 THEN CONTINUE

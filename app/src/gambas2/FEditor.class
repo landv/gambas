@@ -582,7 +582,7 @@ PRIVATE FUNCTION InsertFunction(sProc AS String, sType AS String, bPublic AS Boo
     ENDIF
   NEXT
   
-  Editor.Goto(iLine - 1, Len(Editor.Lines[iLine - 1]))
+  Editor.Goto(iLine - 1, String.Len(Editor.Lines[iLine - 1]))
   IF Editor.Column THEN Editor.Insert("\n")
 
   iLine = Editor.Line + 1
@@ -832,7 +832,7 @@ PUBLIC SUB Editors_KeyPress()
 
     sLine = Trim(Editor.Lines[iLine])
 
-    IF Editor.Column < Len(sLine) THEN RETURN
+    IF Editor.Column < String.Len(sLine) THEN RETURN
 
     IF IsProc(sLine) THEN
 
@@ -1030,11 +1030,11 @@ END
 
 PUBLIC SUB SetBreakpoint(iLine AS Integer, bVal AS Boolean) AS Boolean
 
+  IF bVal AND IF NOT CanSetBreakpoint(iLine) THEN RETURN TRUE
+  
   ' Update debug window
   FDebugInfo.AddBreakpoint(Name, GetProcAt(iLine), iLine, bVal)
 
-  IF bVal AND IF NOT CanSetBreakpoint(iLine) THEN RETURN TRUE
-  
   Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
   IF iLine = Editor.Line THEN RefreshLineInfo(TRUE) 
 
@@ -1108,6 +1108,7 @@ PRIVATE SUB GetIndentWidth(iStart AS Integer, iEnd AS Integer) AS Integer
   FOR iLine = iStart TO iEnd - 1
     sLine = Editor.Lines[iLine]
     IF LTrim(sLine) THEN 
+      ' Do not have to use String.Len() there
       iInd = Len(sLine) - Len(LTrim(sLine))
       IF iIndent = 0 THEN
         iIndent = iInd
@@ -1137,22 +1138,22 @@ PUBLIC SUB mnuComment_Click()
   'IF NOT Editor.Selected THEN RETURN
 
   IF Editor.Selected THEN
-  StoreSelection
-
-  iIndent = GetIndentWidth($iStartLine, $iEndLine)
-
-  Editor.Begin
-  FOR iLine = $iStartLine TO $iEndLine - 1
-    Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
-  NEXT
-  Editor.End
-  'Modify
-
-  RecallSelection
+    StoreSelection
+  
+    iIndent = GetIndentWidth($iStartLine, $iEndLine)
+  
+    Editor.Begin
+    FOR iLine = $iStartLine TO $iEndLine - 1
+      Editor.Lines[iLine] = Space$(iIndent) & "' " & String.Mid$(Editor.Lines[iLine], iIndent + 1)
+    NEXT
+    Editor.End
+    'Modify
+  
+    RecallSelection
   ELSE 
     'Comment only the current line
     iLine = Editor.Line
-    Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
+    Editor.Lines[iLine] = Space$(iIndent) & "' " & String.Mid$(Editor.Lines[iLine], iIndent + 1)
   ENDIF 
 END
 
@@ -1184,9 +1185,9 @@ PUBLIC SUB mnuUncomment_Click()
       Editor.Begin
       FOR iLine = $iStartLine TO $iEndLine - 1
         IF Left(LTrim(Editor.Lines[iLine]), 2) = "' " THEN 
-          Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 3)
+          Editor.Lines[iLine] = Space$(iIndent) & String.Mid$(LTrim(Editor.Lines[iLine]), 3)
         ELSE 
-          Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 2)
+          Editor.Lines[iLine] = Space$(iIndent) & String.Mid$(LTrim(Editor.Lines[iLine]), 2)
         ENDIF 
       NEXT
       Editor.End
@@ -1200,9 +1201,9 @@ PUBLIC SUB mnuUncomment_Click()
     IF Len(sLine) < (iIndent + 1) THEN RETURN 
     IF Left(LTrim(sLine), 1) <> "'" THEN RETURN 
     IF Left(LTrim(Editor.Lines[iLine]), 2) = "' " THEN 
-      Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 3)
+      Editor.Lines[iLine] = Space$(iIndent) & String.Mid$(LTrim(Editor.Lines[iLine]), 3)
     ELSE 
-      Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 2)
+      Editor.Lines[iLine] = Space$(iIndent) & String.Mid$(LTrim(Editor.Lines[iLine]), 2)
     ENDIF 
   ENDIF 
 END
@@ -1924,7 +1925,7 @@ PRIVATE SUB CheckSignature(OPTIONAL sText AS String)
   IF NOT $bCompletion THEN RETURN
 
   'sLig = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column) & sText
-  sLig = Left$(Highlight.Purge(Editor.Lines[Editor.Line]), Editor.Column) & sText
+  sLig = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line]), Editor.Column) & sText
   Highlight.Analyze(sLig)
 
   IF NOT IsCurrentProc() THEN
@@ -2366,8 +2367,8 @@ PRIVATE SUB FillProcCombo()
 
     hSymbol = cSymbol[sName]
     cmbProc.Add(sName)
-    $cProc[hSymbol.Name] = hSymbol.LineNumber
-    $iFirstProcLine = Min($iFirstProcLine, hSymbol.LineNumber)
+    $cProc[hSymbol.Name] = hSymbol.LineNumber - 1
+    $iFirstProcLine = Min($iFirstProcLine, hSymbol.LineNumber - 1)
 
   NEXT
   
@@ -2409,11 +2410,11 @@ PUBLIC SUB GotoProc(iLine AS Integer)
     IF sLine THEN BREAK
   LOOP
   
-  IF UCase(sLine) = "END" THEN 
+  IF UCase(sLine) = "END" OR IF UCase(sLine) = "END SUB" THEN 
     iLine = Min(iStart + 2, iLine - 1)
   ENDIF
   
-  iCol = Len(Editor.Lines[iLine]) - Len(LTrim(Editor.Lines[iLine]))
+  iCol = String.Len(Editor.Lines[iLine]) - String.Len(LTrim(Editor.Lines[iLine]))
   
   ME.GotoCenter(iLine, iCol, TRUE)
   Editor.SetFocus

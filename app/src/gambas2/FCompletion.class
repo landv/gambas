@@ -108,7 +108,7 @@ PUBLIC SUB Open(sMode AS String, OPTIONAL sClass AS String, OPTIONAL bStatic AS 
   iX = hEditor.X + hEditor.CursorX - iLeft * hEditor.Font.Width("X")
 
   IF sMode = "<" THEN 'Key.Code = Key.Backspace THEN
-    iX = iX - hEditor.Font.Width(Mid$(hEditor.Lines[hEditor.Line], hEditor.Column, 1))
+    iX = iX - hEditor.Font.Width(String.Mid$(hEditor.Lines[hEditor.Line], hEditor.Column, 1))
   ELSE
     iX = iX + hEditor.Font.Width(Key.Text)
   ENDIF
