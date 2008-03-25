@@ -146,7 +146,9 @@ public:
   int lineLength(int y) { return lines.at(y)->s.length(); }
   int numLines() { return lines.count(); }
   
-  int getNextProc(int y);
+  bool hasLimit(int y) { colorize(y); return lines.at(y)->proc; }
+  int getNextLimit(int y);
+  int getPreviousLimit(int y);
 
   void insert(int y, int x, const GString & str);
   void remove(int y, int x, int y2, int x2);

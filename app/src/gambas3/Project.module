@@ -1215,7 +1215,6 @@ PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
   
 END
 
-
 PUBLIC FUNCTION ExistForm(sClass AS String) AS Boolean
 
   RETURN Dir(Project.Dir, "*.form").Find(sClass & ".form", gb.Text) >= 0

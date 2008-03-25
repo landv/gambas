@@ -56,6 +56,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CDialDesc,
 
 	CHighlightDesc,
+  CEditorLineDesc,
   CEditorLinesDesc,
   CEditorSelectionDesc,
   CEditorStyleDesc,

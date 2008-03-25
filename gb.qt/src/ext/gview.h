@@ -35,9 +35,11 @@
 struct GHighlightStyle
 {
   QColor color;
+  QColor backgroundColor;
   bool bold;
   bool italic;
   bool underline;
+  bool background;
 };
 
 struct GFoldedProc
@@ -91,14 +93,14 @@ private:
   bool updateCursor();
   //void updatePattern();
 
-  void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax);
+  void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h);
 
 	void docTextChanged();
 	void redrawContents();
 	
 	int viewToReal(int row);
 	int realToView(int row);
-	int checkCursor(int y, bool down = false);
+	int checkCursor(int y);
 	
 	//static void updateBreakpoint(uint bg, uint fg);
 
@@ -199,7 +201,8 @@ public:
 	void unfoldAll();
 	void unfoldLine(int row);
 	bool isFolded(int row);
-	void foldRemove(int y1, int y2);
+	bool insideFolded(int row);
+	void foldRemove(int y1, int y2 = -1);
 	void foldInsert(int y, int n);
 
 signals:

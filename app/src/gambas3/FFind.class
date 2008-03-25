@@ -353,7 +353,7 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
   DO
 
     'sLine = hEdit.Lines[iLine]
-    sLine = Highlight.Purge(hEdit.Lines[iLine], $bComment, $bString)
+    sLine = Highlight.Purge(hEdit.Lines[iLine].Text, $bComment, $bString)
     iPos = SearchString(sLine, iCol, bBack)
     
     IF iPos THEN
@@ -369,7 +369,7 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
         
       ELSE IF $bList THEN 
         
-        FFindList.AddFound(hForm.Name, iLine, iPos, String.Len($sFind), hEdit.Lines[iLine])
+        FFindList.AddFound(hForm.Name, iLine, iPos, String.Len($sFind), hEdit.Lines[iLine].Text)
         iCol = iPos + String.Len($sFind) - 1
         'WAIT
         CONTINUE
@@ -405,11 +405,11 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
 
       IF $bProc THEN
       
-        IF iLine < 0 OR IF FEditor.IsProc(hEdit.Lines[iLine]) THEN
+        IF iLine < 0 OR IF FEditor.IsProc(hEdit.Lines[iLine].Text) THEN
   
           WHILE iLine < (hEdit.Lines.Count - 1)
   
-            sLine = hEdit.Lines[iLine + 1]
+            sLine = hEdit.Lines[iLine + 1].Text
             IF FEditor.IsProc(sLine) THEN BREAK
             INC iLine
   
@@ -445,12 +445,12 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
 
       IF $bProc THEN
         
-        IF iLine >= hEdit.Lines.Count OR IF FEditor.IsProc(hEdit.Lines[iLine]) THEN
+        IF iLine >= hEdit.Lines.Count OR IF FEditor.IsProc(hEdit.Lines[iLine].Text) THEN
   
           WHILE iLine > 0
   
             DEC iLine
-            sLine = hEdit.Lines[iLine]
+            sLine = hEdit.Lines[iLine].Text
             IF FEditor.IsProc(sLine) THEN BREAK
   
           WEND

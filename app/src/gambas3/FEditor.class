@@ -247,11 +247,11 @@ PUBLIC FUNCTION Save(OPTIONAL bReset AS Boolean) AS Boolean
 
   sHeader = "' Gambas " & File.Ext(Path) & " file"
 
-  IF Editor.Lines[0] <> sHeader THEN
+  IF Editor.Lines[0].Text <> sHeader THEN
     Editor.Insert(sHeader & "\n", 0, 0)
   ENDIF
 
-  IF Editor.Lines.Count < 2 OR IF Editor.Lines[1] THEN 
+  IF Editor.Lines.Count < 2 OR IF Editor.Lines[1].Text THEN 
     Editor.Insert("", 1, 0)
   ENDIF
   
@@ -575,14 +575,14 @@ PRIVATE FUNCTION InsertFunction(sProc AS String, sType AS String, bPublic AS Boo
   DIM sStatic AS String
 
   FOR iLine = 0 TO Editor.Lines.Count - 1
-    IF IsProc(Editor.Lines[iLine]) THEN
+    IF IsProc(Editor.Lines[iLine].Text) THEN
       IF Comp($sName, sProc, gb.Text) = 0 THEN
         RETURN iLine
       ENDIF
     ENDIF
   NEXT
   
-  Editor.Goto(iLine - 1, Len(Editor.Lines[iLine - 1]))
+  Editor.Goto(iLine - 1, Editor.Lines[iLine - 1].Length)
   IF Editor.Column THEN Editor.Insert("\n")
 
   iLine = Editor.Line + 1
@@ -819,6 +819,19 @@ PUBLIC SUB Editors_KeyPress()
     ELSE IF Key.Code = Key.Home OR Key.Code = Key.End THEN 
       
       Project.SavePosition()
+      
+    ELSE IF Key.Code = Key.Return THEN 
+    
+      IF Key.Shift THEN 
+        IF Editor.Lines[Editor.Line].Expanded THEN
+          Editor.Lines.CollapseAll
+        ELSE
+          Editor.Lines.ExpandAll
+        ENDIF
+      ELSE
+        Editor.Lines[Editor.Line].Expanded = NOT Editor.Lines[Editor.Line].Expanded
+      ENDIF
+      STOP EVENT
 
     ENDIF
 
@@ -830,19 +843,19 @@ PUBLIC SUB Editors_KeyPress()
 
   IF Asc(Key.Text) = 13 THEN
 
-    sLine = Trim(Editor.Lines[iLine])
+    sLine = Trim(Editor.Lines[iLine].Text)
 
-    IF Editor.Column < Len(sLine) THEN RETURN
+    IF Editor.Column < String.Len(sLine) THEN RETURN
 
     IF IsProc(sLine) THEN
 
       FOR iInd = iLine + 1 TO Editor.Lines.Count - 1
-        sLine = Editor.Lines[iInd]
+        sLine = Editor.Lines[iInd].Text
         IF IsEndProc(sLine) THEN RETURN
         IF IsProc(sLine) THEN BREAK
       NEXT
 
-      sLine = Trim(Editor.Lines[iLine])
+      sLine = Trim(Editor.Lines[iLine].Text)
 
       IF InStr(sLine, "(") = 0 THEN Editor.Insert("()")
       Editor.Insert("\n  \n  \n  \nEND\n")
@@ -1010,7 +1023,7 @@ PUBLIC FUNCTION CanSetBreakpoint(iLine AS Integer) AS Boolean
   DIM sLine AS String
   DIM iPos AS Integer
 
-  sLine = Trim(Editor.Lines[iLine])
+  sLine = Trim(Editor.Lines[iLine].Text)
   iPos = InStr(sLine, "'")
   IF iPos THEN sLine = Trim(Left$(sLine, iPos - 1))
   IF Len(Trim(sLine)) = 0 THEN RETURN FALSE
@@ -1020,7 +1033,7 @@ PUBLIC FUNCTION CanSetBreakpoint(iLine AS Integer) AS Boolean
     IF iLine = $cProc[cmbProc.Text] THEN RETURN FALSE
   ELSE 
     IF GetCurrentProcLine(iLine) < 0 THEN RETURN FALSE
-    IF IsProc(Editor.Lines[iLine]) THEN RETURN FALSE
+    IF IsProc(Editor.Lines[iLine].Text) THEN RETURN FALSE
   ENDIF
 
   RETURN TRUE
@@ -1030,12 +1043,13 @@ END
 
 PUBLIC SUB SetBreakpoint(iLine AS Integer, bVal AS Boolean) AS Boolean
 
+  IF bVal AND IF NOT CanSetBreakpoint(iLine) THEN RETURN TRUE
+  
   ' Update debug window
   FDebugInfo.AddBreakpoint(Name, GetProcAt(iLine), iLine, bVal)
 
-  IF bVal AND IF NOT CanSetBreakpoint(iLine) THEN RETURN TRUE
-  
-  Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
+  'Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
+  Editor.Lines[iLine].Breakpoint = bVal
   IF iLine = Editor.Line THEN RefreshLineInfo(TRUE) 
 
 END
@@ -1043,7 +1057,7 @@ END
 
 PUBLIC SUB HasBreakpoint(iLine AS Integer) AS Boolean
   
-  RETURN Editor.Lines.GetFlag(iLine, Editor.Breakpoint)
+  RETURN Editor.Lines[iLine].Breakpoint
   
 END
 
@@ -1106,7 +1120,7 @@ PRIVATE SUB GetIndentWidth(iStart AS Integer, iEnd AS Integer) AS Integer
   DIM iIndent AS Integer = 0
   
   FOR iLine = iStart TO iEnd - 1
-    sLine = Editor.Lines[iLine]
+    sLine = Editor.Lines[iLine].Text
     IF LTrim(sLine) THEN 
       iInd = Len(sLine) - Len(LTrim(sLine))
       IF iIndent = 0 THEN
@@ -1143,7 +1157,7 @@ PUBLIC SUB mnuComment_Click()
 
   Editor.Begin
   FOR iLine = $iStartLine TO $iEndLine - 1
-    Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
+    Editor.Lines[iLine].Text = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine].Text, iIndent + 1)
   NEXT
   Editor.End
   'Modify
@@ -1152,7 +1166,7 @@ PUBLIC SUB mnuComment_Click()
   ELSE 
     'Comment only the current line
     iLine = Editor.Line
-    Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
+    Editor.Lines[iLine].Text = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine].Text, iIndent + 1)
   ENDIF 
 END
 
@@ -1175,7 +1189,7 @@ PUBLIC SUB mnuUncomment_Click()
     iIndent = GetIndentWidth($iStartLine, $iEndLine)
 
     FOR iLine = $iStartLine TO $iEndLine - 1
-      sLine = Editor.Lines[iLine]
+      sLine = Editor.Lines[iLine].Text
       IF Len(sLine) < (iIndent + 1) THEN BREAK
       IF Left(LTrim(sLine), 1) <> "'" THEN BREAK
     NEXT
@@ -1183,10 +1197,10 @@ PUBLIC SUB mnuUncomment_Click()
     IF iLine = $iEndLine THEN
       Editor.Begin
       FOR iLine = $iStartLine TO $iEndLine - 1
-        IF Left(LTrim(Editor.Lines[iLine]), 2) = "' " THEN 
-          Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 3)
+        IF Left(LTrim(Editor.Lines[iLine].Text), 2) = "' " THEN 
+          Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 3)
         ELSE 
-          Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 2)
+          Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 2)
         ENDIF 
       NEXT
       Editor.End
@@ -1196,13 +1210,13 @@ PUBLIC SUB mnuUncomment_Click()
     RecallSelection
   ELSE 
     iLine = Editor.Line
-    sLine = Editor.Lines[iLine]
+    sLine = Editor.Lines[iLine].Text
     IF Len(sLine) < (iIndent + 1) THEN RETURN 
     IF Left(LTrim(sLine), 1) <> "'" THEN RETURN 
-    IF Left(LTrim(Editor.Lines[iLine]), 2) = "' " THEN 
-      Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 3)
+    IF Left(LTrim(Editor.Lines[iLine].Text), 2) = "' " THEN 
+      Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 3)
     ELSE 
-      Editor.Lines[iLine] = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine]), 2)
+      Editor.Lines[iLine].Text = Space$(iIndent) & Mid$(LTrim(Editor.Lines[iLine].Text), 2)
     ENDIF 
   ENDIF 
 END
@@ -1281,7 +1295,7 @@ PRIVATE SUB GotoPreviousProc()
   Project.SavePosition
 
   FOR iInd = Editor.Line - 2 TO 0 STEP -1
-    IF IsProc(Editor.Lines[iInd]) THEN
+    IF IsProc(Editor.Lines[iInd].Text) THEN
       ME.Goto(iInd, Editor.Column, TRUE)
       RETURN
     ENDIF
@@ -1299,7 +1313,7 @@ PRIVATE SUB GotoNextProc()
 
   FOR iInd = Editor.Line + 1 TO Editor.Lines.Count - 1
 
-    IF IsProc(Editor.Lines[iInd]) THEN
+    IF IsProc(Editor.Lines[iInd].Text) THEN
       ME.Goto(iInd, Editor.Column, TRUE)
       RETURN
     ENDIF
@@ -1377,7 +1391,7 @@ PRIVATE FUNCTION GetSymbolType(sSymbol AS String, OPTIONAL bPoint AS Boolean) AS
   DO
     DEC iLine
     IF iLine < 0 THEN RETURN
-    aSym = Highlight.Analyze(Editor.Lines[iLine])
+    aSym = Highlight.Analyze(Editor.Lines[iLine].Text)
     IF aSym.Count >= 1 THEN
       IF asym.Count = 1 THEN
         IF aSym[0] = "END" THEN BREAK
@@ -1490,7 +1504,7 @@ PRIVATE SUB GetSymbolWith(aExpr AS String[], aType AS Integer[], OPTIONAL iInd A
   DO
     DEC iLine
     IF iLine < 0 THEN BREAK
-    aWith = Highlight.Analyze(Editor.Lines[iLine])
+    aWith = Highlight.Analyze(Editor.Lines[iLine].Text)
     IF aWith.Count >= 2 THEN
       IF aWith[0] = "WITH" THEN
         IF iLevel = 0 THEN
@@ -1720,7 +1734,7 @@ PRIVATE SUB CheckCompletion(sMode AS String)
 
   'IF NOT sMode THEN RETURN
 
-  sLine = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line]), Editor.Column)
+  sLine = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line].Text), Editor.Column)
   IF Right$(RTrim(sLine)) = "'" THEN RETURN
 
   IF sMode = " " THEN
@@ -1924,7 +1938,7 @@ PRIVATE SUB CheckSignature(OPTIONAL sText AS String)
   IF NOT $bCompletion THEN RETURN
 
   'sLig = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column) & sText
-  sLig = Left$(Highlight.Purge(Editor.Lines[Editor.Line]), Editor.Column) & sText
+  sLig = Left$(Highlight.Purge(Editor.Lines[Editor.Line].Text), Editor.Column) & sText
   Highlight.Analyze(sLig)
 
   IF NOT IsCurrentProc() THEN
@@ -2018,7 +2032,7 @@ PRIVATE FUNCTION GetCurrentProcLine(iLine AS Integer) AS Integer
   ELSE
 
     DO
-      IF IsProc(Editor.Lines[iLine]) THEN RETURN iLine
+      IF IsProc(Editor.Lines[iLine].Text) THEN RETURN iLine
       DEC iLine
       IF iLine < 0 THEN RETURN -1
     LOOP
@@ -2065,7 +2079,7 @@ PRIVATE SUB FindDefinition()
   DIM sKeyword AS String
   DIM sKeyword2 AS String
 
-  sLig = Highlight.Purge(Editor.Lines[Editor.Line])
+  sLig = Highlight.Purge(Editor.Lines[Editor.Line].Text)
   IF Editor.Selected THEN 
     IF Editor.Selection.EndLine > Editor.Selection.StartLine THEN RETURN
     iCol = Editor.Selection.EndColumn
@@ -2293,7 +2307,7 @@ END
 PUBLIC SUB timProc_Timer()
 
   Action.Lock
-  Action["break"].Value = Editor.Lines.GetFlag(Editor.Line, Editor.Breakpoint)
+  Action["break"].Value = Editor.Lines[Editor.Line].Breakpoint
   Action.UnLock
   Action["break"].Enabled = CanSetBreakpoint(Editor.Line)
   timProc.Enabled = FALSE
@@ -2405,7 +2419,7 @@ PUBLIC SUB GotoProc(iLine AS Integer)
       DEC iLine
       BREAK
     ENDIF
-    sLine = Trim(Editor.Lines[iLine])
+    sLine = Trim(Editor.Lines[iLine].Text)
     IF sLine THEN BREAK
   LOOP
   
@@ -2413,7 +2427,7 @@ PUBLIC SUB GotoProc(iLine AS Integer)
     iLine = Min(iStart + 2, iLine - 1)
   ENDIF
   
-  iCol = Len(Editor.Lines[iLine]) - Len(LTrim(Editor.Lines[iLine]))
+  iCol = Len(Editor.Lines[iLine].Text) - Len(LTrim(Editor.Lines[iLine].Text))
   
   ME.GotoCenter(iLine, iCol, TRUE)
   Editor.SetFocus

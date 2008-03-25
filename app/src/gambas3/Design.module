@@ -439,7 +439,7 @@ PRIVATE FUNCTION SetPosition(sClass AS String, iLine AS Integer) AS Boolean
     sPath = Project.FindPath($sPosClass)
 
     WITH Project.Files[sPath]
-      .Editor.Lines.SetFlag($iPosLine - 1, Editor.Current, FALSE)
+      .Editor.Lines[$iPosLine - 1].Current = FALSE
     END WITH
 
   ENDIF
@@ -468,7 +468,7 @@ PRIVATE FUNCTION SetPosition(sClass AS String, iLine AS Integer) AS Boolean
     WITH Project.Files[sPath]
       IF $iPosLine <= .Editor.Lines.Count THEN
         Project.OpenFile(sPath, $iPosLine)
-        .Editor.Lines.SetFlag($iPosLine - 1, Editor.Current, TRUE)
+        .Editor.Lines[$iPosLine - 1].Current = TRUE
         RETURN
       ENDIF
     END WITH
@@ -503,7 +503,7 @@ PUBLIC SUB RunUntil(hForm AS FEditor, iLine AS Integer)
   sClass = hForm.Name
 
   WITH hForm.Editor
-    bOn = NOT .Lines.GetFlag(iLine, Editor.Breakpoint)
+    bOn = NOT .Lines[iLine].Breakpoint
   END WITH
 
   INC iLine

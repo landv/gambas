@@ -32,6 +32,7 @@
 #ifndef __CEDITOR_CPP
 
 extern GB_DESC CHighlightDesc[];
+extern GB_DESC CEditorLineDesc[];
 extern GB_DESC CEditorLinesDesc[];
 extern GB_DESC CEditorSelectionDesc[];
 extern GB_DESC CEditorStyleDesc[];
@@ -52,6 +53,7 @@ typedef
   struct {
     QT_WIDGET widget;
     void *view;
+    int line;
     }
   CEDITOR;
 

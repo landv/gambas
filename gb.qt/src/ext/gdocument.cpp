@@ -438,6 +438,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 
       FOR_EACH_VIEW(v)
       {
+	    	v->foldRemove(y1);
         if (v->y == y1 && v->x > x1)
           v->x = GMAX(x1, v->x - (x2 - x1));
       }
@@ -507,7 +508,6 @@ void GDocument::setText(const GString & text)
   FOR_EACH_VIEW(v)
   {
     v->cursorGoto(0, 0, false);
-    v->foldAll();
   }
 }
 
@@ -1084,6 +1084,9 @@ void GDocument::colorize(int y)
 		else
 			l->proc = false;
 
+		if (y == 0)
+			l->proc = true;
+
 		l->modified = false;
 
 		state &= 0xF;
@@ -1152,15 +1155,26 @@ void GDocument::emitTextChanged()
 }
 
 
-int GDocument::getNextProc(int y)
+int GDocument::getNextLimit(int y)
 {
 	for(;;)
 	{
 		y++;
 		if (y >= numLines())
 			return (-1);
-		colorize(y);
-		if (lines.at(y)->proc)
+		if (hasLimit(y))
+			return y;
+	}
+}
+
+int GDocument::getPreviousLimit(int y)
+{
+	for(;;)
+	{
+		y--;
+		if (y < 0)
+			return (-1);
+		if (y == 0 || hasLimit(y))
 			return y;
 	}
 }

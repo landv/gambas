@@ -555,9 +555,9 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
     bCanInherit = FALSE
   ENDIF 
   
-  FOR iLine = 0 TO hEditor.Lines.Count
+  FOR iLine = 0 TO hEditor.Lines.Count - 1
 
-    aSym = Highlight.Analyze(hEditor.Lines[iLine])
+    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
     IF aSym.Count = 0 THEN CONTINUE
     'aSym.Insert(["", "", ""])
 
@@ -661,7 +661,7 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
         NEXT
 
         'iEnd = iInd
-        TRY .Signature = "#" & Mid$(hEditor.Lines[iLine], Highlight.Positions[iStart] + 1)
+        TRY .Signature = "#" & Mid$(hEditor.Lines[iLine].Text, Highlight.Positions[iStart] + 1)
         
         
         'FOR iInd = iStart TO iEnd
@@ -684,7 +684,7 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
       DO
         INC iLine
         IF iLine >= hEditor.Lines.Count THEN BREAK
-        sLine = Trim(hEditor.Lines[iLine])
+        sLine = Trim(hEditor.Lines[iLine].Text)
         iPos = InStr(sLine, "'")
         IF iPos THEN sLine = Trim(Left(sLine, iPos - 1))
         IF Len(sLine) = 3 AND IF UCase(sLine) = "END" THEN BREAK

@@ -68,6 +68,11 @@ static void highlightCustom(GEditor *master, uint &state, int &tag, GString &s, 
 	_highlight_data = 0;
 }
 
+/****************************************************************************
+	
+	Highlight
+
+****************************************************************************/
 
 BEGIN_PROPERTY(CHIGHLIGHT_state)
 
@@ -131,7 +136,14 @@ BEGIN_METHOD(CHIGHLIGHT_add, GB_INTEGER state; GB_INTEGER len)
 
 END_METHOD
 
-BEGIN_PROPERTY(CEDITORDOC_text)
+
+/****************************************************************************
+	
+	Editor
+
+****************************************************************************/
+
+BEGIN_PROPERTY(CEDITOR_text)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(DOC->getText().utf8());
@@ -140,13 +152,13 @@ BEGIN_PROPERTY(CEDITORDOC_text)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CEDITORDOC_length)
+BEGIN_PROPERTY(CEDITOR_length)
 
   GB.ReturnInteger(DOC->getLength());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CEDITORDOC_tab_length)
+BEGIN_PROPERTY(CEDITOR_tab_length)
 
   if (READ_PROPERTY)
     GB.ReturnInteger(DOC->getTabWidth());
@@ -155,13 +167,13 @@ BEGIN_PROPERTY(CEDITORDOC_tab_length)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CEDITORDOC_reset)
+BEGIN_METHOD_VOID(CEDITOR_reset)
 
   DOC->reset();
 
 END_METHOD
 
-BEGIN_PROPERTY(CEDITORDOC_read_only)
+BEGIN_PROPERTY(CEDITOR_read_only)
 
   if (READ_PROPERTY)
     GB.ReturnBoolean(DOC->isReadOnly());
@@ -170,13 +182,13 @@ BEGIN_PROPERTY(CEDITORDOC_read_only)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CEDITORDOC_clear)
+BEGIN_METHOD_VOID(CEDITOR_clear)
 
   DOC->clear();
 
 END_METHOD
 
-BEGIN_METHOD(CEDITORDOC_insert, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
+BEGIN_METHOD(CEDITOR_insert, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 
 	if (MISSING(y) || MISSING(x))
 		WIDGET->insert(QSTRING_ARG(str));
@@ -206,7 +218,7 @@ static void print_text(void *_object, const QString &s)
 	WIDGET->insert(s);
 }
 
-BEGIN_METHOD(CEDITORDOC_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
+BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 
 	QString s = QSTRING_ARG(str);
 	uint i, j, code;
@@ -260,132 +272,37 @@ BEGIN_METHOD(CEDITORDOC_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 END_METHOD
 
 
-BEGIN_METHOD(CEDITORDOC_remove, GB_INTEGER y; GB_INTEGER x; GB_INTEGER y2; GB_INTEGER x2)
+BEGIN_METHOD(CEDITOR_remove, GB_INTEGER y; GB_INTEGER x; GB_INTEGER y2; GB_INTEGER x2)
 
   DOC->remove(VARG(y), VARG(x), VARG(y2), VARG(x2));
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CEDITORDOC_undo)
+BEGIN_METHOD_VOID(CEDITOR_undo)
 
   WIDGET->undo();
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CEDITORDOC_redo)
+BEGIN_METHOD_VOID(CEDITOR_redo)
 
   WIDGET->redo();
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CEDITORDOC_begin)
+BEGIN_METHOD_VOID(CEDITOR_begin)
 
   DOC->begin();
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CEDITORDOC_end)
+BEGIN_METHOD_VOID(CEDITOR_end)
 
   DOC->end();
 
 END_METHOD
 
-BEGIN_PROPERTY(CEDITORDOC_line_count)
-
-  GB.ReturnInteger((int)DOC->numLines());
-
-END_PROPERTY
-
-BEGIN_METHOD(CEDITORDOC_line_get, GB_INTEGER line)
-
-  int line = VARG(line);
-
-  if (line < 0 || line >= DOC->numLines())
-    GB.ReturnNull();
-  else
-    GB.ReturnNewZeroString(DOC->getLine(line).utf8());
-
-END_METHOD
-
-BEGIN_METHOD(CEDITORDOC_line_put, GB_STRING text; GB_INTEGER line)
-
-  int line = VARG(line);
-  GString s;
-
-  if (line >= 0 && line < DOC->numLines())
-  {
-    s = GString(QSTRING_PROP());
-    DOC->setLine(line, s);
-  }
-
-END_METHOD
-
-BEGIN_METHOD(CEDITORDOC_line_get_flag, GB_INTEGER line; GB_INTEGER flag)
-
-  GB.ReturnBoolean(DOC->getLineFlag(VARG(line), VARG(flag)));
-
-END_METHOD
-
-BEGIN_METHOD(CEDITORDOC_line_set_flag, GB_INTEGER line; GB_INTEGER flag; GB_BOOLEAN value)
-
-  DOC->setLineFlag(VARG(line), VARG(flag), VARG(value));
-
-END_METHOD
-
-BEGIN_PROPERTY(CEDITORDOC_selected)
-
-  GB.ReturnBoolean(DOC->hasSelection());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CEDITORDOC_sel)
-
-  if (DOC->hasSelection())
-    DOC->getSelection(&_y1, &_x1, &_y2, &_x2);
-  else
-    _x1 = _y1 = _x2 = _y2 = -1;
-
-  RETURN_SELF();
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CEDITORDOC_sel_text)
-
-  GB.ReturnNewZeroString(DOC->getSelectedText().utf8());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CEDITORDOC_sel_start_line)
-
-  GB.ReturnInteger(_y1);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CEDITORDOC_sel_start_column)
-
-  GB.ReturnInteger(_x1);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CEDITORDOC_sel_end_line)
-
-  GB.ReturnInteger(_y2);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CEDITORDOC_sel_end_column)
-
-  GB.ReturnInteger(_x2);
-
-END_PROPERTY
-
-BEGIN_METHOD_VOID(CEDITORDOC_sel_hide)
-
-  DOC->hideSelection();
-
-END_METHOD
-
-BEGIN_METHOD(CEDITORDOC_find_next_breakpoint, GB_INTEGER line)
+BEGIN_METHOD(CEDITOR_find_next_breakpoint, GB_INTEGER line)
 
   int line = VARG(line);
 
@@ -408,7 +325,7 @@ BEGIN_METHOD(CEDITORDOC_find_next_breakpoint, GB_INTEGER line)
 
 END_METHOD
 
-BEGIN_METHOD(CEDITORDOC_find_next_word, GB_STRING word; GB_INTEGER line)
+BEGIN_METHOD(CEDITOR_find_next_word, GB_STRING word; GB_INTEGER line)
 
   int line = VARG(line);
   QString word = QSTRING_ARG(word);
@@ -434,48 +351,8 @@ BEGIN_METHOD(CEDITORDOC_find_next_word, GB_STRING word; GB_INTEGER line)
 
 END_METHOD
 
-// BEGIN_METHOD(CEDITORDOC_purge_line, GB_INTEGER line; GB_BOOLEAN comment; GB_BOOLEAN string)
-// 
-//   bool comment = VARGOPT(comment, false);
-//   bool string = VARGOPT(string, false);
-//   
-//   if (comment && string)	
-//   	GB.ReturnNewZeroString(DOC->getLine(VARG(line)).utf8());
-// 	else
-// 	{
-// 		QString s = DOC->getLine(VARG(line)).getString();
-//   	GB.ReturnNewZeroString(TO_UTF8(purge(s, VARGOPT(comment, false), VARGOPT(string, false))));
-// 	}
-// 
-// END_METHOD
-// 
-// BEGIN_METHOD(CEDITORDOC_analyze, GB_STRING text)
-// 
-//   QString s = QSTRING_ARG(text);
-//   analyze(s);
-//   GB.ReturnObject(analyze_symbol);
-// 
-// END_METHOD
-// 
-// BEGIN_PROPERTY(CEDITORDOC_analyze_symbols)
-// 
-//   GB.ReturnObject(analyze_symbol);
-// 
-// END_PROPERTY
-// 
-// BEGIN_PROPERTY(CEDITORDOC_analyze_types)
-// 
-//   GB.ReturnObject(analyze_type);
-// 
-// END_PROPERTY
-// 
-// BEGIN_PROPERTY(CEDITORDOC_analyze_positions)
-// 
-//   GB.ReturnObject(analyze_pos);
-// 
-// END_PROPERTY
 
-BEGIN_PROPERTY(CEDITORDOC_highlight)
+BEGIN_PROPERTY(CEDITOR_highlight)
 
   int mode;
 
@@ -498,6 +375,174 @@ BEGIN_PROPERTY(CEDITORDOC_highlight)
 END_PROPERTY
 
 
+/****************************************************************************
+	
+	Editor.Selection
+
+****************************************************************************/
+
+BEGIN_PROPERTY(CEDITOR_selected)
+
+  GB.ReturnBoolean(DOC->hasSelection());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_sel)
+
+  if (DOC->hasSelection())
+    DOC->getSelection(&_y1, &_x1, &_y2, &_x2);
+  else
+    _x1 = _y1 = _x2 = _y2 = -1;
+
+  RETURN_SELF();
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_sel_text)
+
+  GB.ReturnNewZeroString(DOC->getSelectedText().utf8());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_sel_start_line)
+
+  GB.ReturnInteger(_y1);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_sel_start_column)
+
+  GB.ReturnInteger(_x1);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_sel_end_line)
+
+  GB.ReturnInteger(_y2);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_sel_end_column)
+
+  GB.ReturnInteger(_x2);
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(CEDITOR_sel_hide)
+
+  DOC->hideSelection();
+
+END_METHOD
+
+
+
+/****************************************************************************
+	
+	Editor.Lines
+
+****************************************************************************/
+
+BEGIN_PROPERTY(CEDITOR_lines_count)
+
+  GB.ReturnInteger((int)DOC->numLines());
+
+END_PROPERTY
+
+BEGIN_METHOD(CEDITOR_lines_get, GB_INTEGER line)
+
+  int line = VARG(line);
+
+  if (line < 0 || line >= DOC->numLines())
+    GB.ReturnNull();
+  else
+  {
+  	THIS->line = line;
+  	RETURN_SELF();
+  }
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CEDITOR_lines_expand_all)
+
+	WIDGET->unfoldAll();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CEDITOR_lines_collapse_all)
+
+	WIDGET->foldAll();
+
+END_METHOD
+
+/****************************************************************************
+	
+	Editor.Line
+
+****************************************************************************/
+
+BEGIN_PROPERTY(CEDITOR_line_text)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(DOC->getLine(THIS->line).utf8());
+	else
+	{
+	  GString s = GString(QSTRING_PROP());
+    DOC->setLine(THIS->line, s);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_line_length)
+
+	GB.ReturnInteger(DOC->lineLength(THIS->line));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_line_expanded)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(!WIDGET->isFolded(THIS->line));
+	else
+	{
+		if (VPROP(GB_BOOLEAN))
+			WIDGET->unfoldLine(THIS->line);
+		else
+			WIDGET->foldLine(THIS->line);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_line_limit)
+
+	GB.ReturnBoolean(DOC->hasLimit(THIS->line));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_line_current)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(DOC->getLineFlag(THIS->line, GLine::CurrentFlag));
+	else
+		DOC->setLineFlag(THIS->line, GLine::CurrentFlag, VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_line_breakpoint)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(DOC->getLineFlag(THIS->line, GLine::BreakpointFlag));
+	else
+		DOC->setLineFlag(THIS->line, GLine::BreakpointFlag, VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+/****************************************************************************
+	
+	Editor (again)
+
+****************************************************************************/
+
 BEGIN_METHOD(CEDITOR_new, GB_OBJECT parent)
 
   GEditor *wid = new GEditor(QT.GetContainer(VARG(parent)));
@@ -508,6 +553,8 @@ BEGIN_METHOD(CEDITOR_new, GB_OBJECT parent)
   QObject::connect(wid, SIGNAL(contentsMoving(int, int)), &CEditor::manager, SLOT(scrolled(int, int)));
 
   QT.InitWidget(wid, _object);
+
+	THIS->line = -1;
 
   wid->show();
 
@@ -589,12 +636,6 @@ BEGIN_METHOD(CEDITOR_flags_set, GB_BOOLEAN value; GB_INTEGER flag)
 
 END_METHOD
 
-BEGIN_METHOD(CEDITOR_insert, GB_STRING text)
-
-  WIDGET->insert(QSTRING_ARG(text));
-
-END_METHOD
-
 BEGIN_METHOD_VOID(CEDITOR_indent)
 
   WIDGET->tab(false);
@@ -625,18 +666,6 @@ BEGIN_METHOD_VOID(CEDITOR_paste)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CEDITOR_undo)
-
-  WIDGET->undo();
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CEDITOR_redo)
-
-  WIDGET->redo();
-
-END_METHOD
-
 BEGIN_METHOD(CEDITOR_to_pos_x, GB_INTEGER x)
 
   int px, py;
@@ -664,6 +693,33 @@ BEGIN_PROPERTY(CEDITOR_style_color)
   else
   {
     style.color = QColor(VPROP(GB_INTEGER) & 0xFFFFFF);
+    WIDGET->setStyle(_style, &style);
+  }
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CEDITOR_style_background)
+
+  GHighlightStyle style;
+
+  WIDGET->getStyle(_style, &style);
+
+  if (READ_PROPERTY)
+  {
+  	if (style.background)
+    	GB.ReturnInteger(style.backgroundColor.rgb() & 0xFFFFFF);
+    else
+    	GB.ReturnInteger(-1);
+  }
+  else
+  {
+  	if (VPROP(GB_INTEGER) == -1)
+  		style.background = false;
+  	else
+  	{
+    	style.background = true;
+    	style.backgroundColor = QColor(VPROP(GB_INTEGER) & 0xFFFFFF);
+    }
     WIDGET->setStyle(_style, &style);
   }
 
@@ -775,6 +831,9 @@ BEGIN_PROPERTY(CEDITOR_breakpoint_picture)
 
 END_PROPERTY
 
+
+/***************************************************************************/
+
 GB_DESC CHighlightDesc[] =
 {
   GB_DECLARE("Highlight", 0), GB_VIRTUAL_CLASS(),
@@ -800,12 +859,6 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("CurrentLine", "i", HIGHLIGHT_LINE),
   GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
 
-  //GB_STATIC_METHOD("_exit", NULL, CHIGHLIGHT_exit, NULL),
-  /*GB_STATIC_METHOD("Analyze", "String[]", CEDITORDOC_analyze, "(Text)s"),
-  GB_STATIC_PROPERTY_READ("Symbols", "String[]", CEDITORDOC_analyze_symbols),
-  GB_STATIC_PROPERTY_READ("Types", "Integer[]", CEDITORDOC_analyze_types),
-  GB_STATIC_PROPERTY_READ("Positions", "Integer[]", CEDITORDOC_analyze_positions),*/
-
   GB_STATIC_PROPERTY("State", "i", CHIGHLIGHT_state),
   GB_STATIC_PROPERTY("Tag", "i", CHIGHLIGHT_tag),
   GB_STATIC_PROPERTY("ShowLimit", "b", CHIGHLIGHT_show_limit),
@@ -820,13 +873,26 @@ GB_DESC CEditorSelectionDesc[] =
 {
   GB_DECLARE(".Editor.Selection", 0), GB_VIRTUAL_CLASS(),
 
-  GB_PROPERTY_READ("Text", "s", CEDITORDOC_sel_text),
-  GB_PROPERTY_READ("StartLine", "i", CEDITORDOC_sel_start_line),
-  GB_PROPERTY_READ("StartColumn", "i", CEDITORDOC_sel_start_column),
-  GB_PROPERTY_READ("EndLine", "i", CEDITORDOC_sel_end_line),
-  GB_PROPERTY_READ("EndColumn", "i", CEDITORDOC_sel_end_column),
+  GB_PROPERTY_READ("Text", "s", CEDITOR_sel_text),
+  GB_PROPERTY_READ("StartLine", "i", CEDITOR_sel_start_line),
+  GB_PROPERTY_READ("StartColumn", "i", CEDITOR_sel_start_column),
+  GB_PROPERTY_READ("EndLine", "i", CEDITOR_sel_end_line),
+  GB_PROPERTY_READ("EndColumn", "i", CEDITOR_sel_end_column),
 
-  GB_METHOD("Hide", NULL, CEDITORDOC_sel_hide, NULL),
+  GB_METHOD("Hide", NULL, CEDITOR_sel_hide, NULL),
+
+  GB_END_DECLARE
+};
+
+GB_DESC CEditorLineDesc[] =
+{
+  GB_DECLARE(".Editor.Line", 0), GB_VIRTUAL_CLASS(),
+
+  GB_PROPERTY("Text", "s", CEDITOR_line_text),
+  GB_PROPERTY_READ("Length", "i", CEDITOR_line_length),
+  GB_PROPERTY("Expanded", "b", CEDITOR_line_expanded),
+  GB_PROPERTY("Current", "b", CEDITOR_line_current),
+  GB_PROPERTY("Breakpoint", "b", CEDITOR_line_breakpoint),
 
   GB_END_DECLARE
 };
@@ -835,11 +901,10 @@ GB_DESC CEditorLinesDesc[] =
 {
   GB_DECLARE(".Editor.Lines", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_get", "s", CEDITORDOC_line_get, "(Line)i"),
-  GB_METHOD("_put", NULL, CEDITORDOC_line_put, "(Text)s(Line)i"),
-  GB_METHOD("SetFlag", NULL, CEDITORDOC_line_set_flag, "(Line)i(Flag)i(Value)b"),
-  GB_METHOD("GetFlag", "b", CEDITORDOC_line_get_flag, "(Line)i(Flag)i"),
-  GB_PROPERTY_READ("Count", "i", CEDITORDOC_line_count),
+  GB_METHOD("_get", ".Editor.Line", CEDITOR_lines_get, "(Line)i"),
+  GB_METHOD("ExpandAll", NULL, CEDITOR_lines_expand_all, NULL),
+  GB_METHOD("CollapseAll", NULL, CEDITOR_lines_collapse_all, NULL),
+  GB_PROPERTY_READ("Count", "i", CEDITOR_lines_count),
 
   GB_END_DECLARE
 };
@@ -849,6 +914,8 @@ GB_DESC CEditorStyleDesc[] =
   GB_DECLARE(".Editor.Style", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY("Color", "i", CEDITOR_style_color),
+  GB_PROPERTY("Background", "i", CEDITOR_style_background),
+  GB_PROPERTY("Foreground", "i", CEDITOR_style_color),
   GB_PROPERTY("Bold", "b", CEDITOR_style_bold),
   GB_PROPERTY("Italic", "b", CEDITOR_style_italic),
   GB_PROPERTY("Underline", "b", CEDITOR_style_underline),
@@ -879,8 +946,8 @@ GB_DESC CEditorDesc[] =
 {
   GB_DECLARE("Editor", sizeof(CEDITOR)), GB_INHERITS("Control"),
 
-  GB_CONSTANT("Current", "i", GLine::CurrentFlag),
-  GB_CONSTANT("Breakpoint", "i", GLine::BreakpointFlag),
+  //GB_CONSTANT("Current", "i", GLine::CurrentFlag),
+  //GB_CONSTANT("Breakpoint", "i", GLine::BreakpointFlag),
 
   GB_CONSTANT("ShowProcedureLimits", "i", GEditor::ShowProcedureLimits),
   GB_CONSTANT("DrawWithRelief", "i", GEditor::DrawWithRelief),
@@ -905,7 +972,6 @@ GB_DESC CEditorDesc[] =
 
   GB_PROPERTY_SELF("Flags", ".Editor.Flags"),
 
-  //GB_METHOD("Insert", NULL, CEDITOR_insert, "(Text)s"),
   GB_METHOD("Indent", NULL, CEDITOR_indent, NULL),
   GB_METHOD("Unindent", NULL, CEDITOR_unindent, NULL),
   GB_METHOD("Copy", NULL, CEDITOR_copy, NULL),
@@ -927,33 +993,33 @@ GB_DESC CEditorDesc[] =
 
 	// Document specific
 
-  GB_PROPERTY("Text", "s", CEDITORDOC_text),
-  GB_PROPERTY_READ("Length", "i", CEDITORDOC_length),
+  GB_PROPERTY("Text", "s", CEDITOR_text),
+  GB_PROPERTY_READ("Length", "i", CEDITOR_length),
 
-  GB_PROPERTY("Highlight", "i", CEDITORDOC_highlight),
+  GB_PROPERTY("Highlight", "i", CEDITOR_highlight),
 
-  GB_PROPERTY("TabSize", "i", CEDITORDOC_tab_length),
-  GB_METHOD("Reset", NULL, CEDITORDOC_reset, NULL),
+  GB_PROPERTY("TabSize", "i", CEDITOR_tab_length),
+  GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),
 
-  GB_PROPERTY("ReadOnly", "b", CEDITORDOC_read_only),
+  GB_PROPERTY("ReadOnly", "b", CEDITOR_read_only),
 
-  GB_METHOD("Clear", NULL, CEDITORDOC_clear, NULL),
+  GB_METHOD("Clear", NULL, CEDITOR_clear, NULL),
 
-  GB_METHOD("Insert", NULL, CEDITORDOC_insert, "(Text)s[(Line)i(Column)i]"),
-  GB_METHOD("Print", NULL, CEDITORDOC_print, "(Text)s[(Line)i(Column)i]"),
-  GB_METHOD("Remove", NULL, CEDITORDOC_remove, "(Line)i(Column)i(EndLine)i(EndColumn)i"),
-  GB_METHOD("Undo", NULL, CEDITORDOC_undo, NULL),
-  GB_METHOD("Redo", NULL, CEDITORDOC_redo, NULL),
-  GB_METHOD("Begin", NULL, CEDITORDOC_begin, NULL),
-  GB_METHOD("End", NULL, CEDITORDOC_end, NULL),
+  GB_METHOD("Insert", NULL, CEDITOR_insert, "(Text)s[(Line)i(Column)i]"),
+  GB_METHOD("Print", NULL, CEDITOR_print, "(Text)s[(Line)i(Column)i]"),
+  GB_METHOD("Remove", NULL, CEDITOR_remove, "(Line)i(Column)i(EndLine)i(EndColumn)i"),
+  GB_METHOD("Undo", NULL, CEDITOR_undo, NULL),
+  GB_METHOD("Redo", NULL, CEDITOR_redo, NULL),
+  GB_METHOD("Begin", NULL, CEDITOR_begin, NULL),
+  GB_METHOD("End", NULL, CEDITOR_end, NULL),
 
-  GB_PROPERTY_READ("Selected", "b", CEDITORDOC_selected),
-  GB_PROPERTY_READ("Selection", ".Editor.Selection", CEDITORDOC_sel),
+  GB_PROPERTY_READ("Selected", "b", CEDITOR_selected),
+  GB_PROPERTY_READ("Selection", ".Editor.Selection", CEDITOR_sel),
   GB_PROPERTY_SELF("Lines", ".Editor.Lines"),
-  //GB_METHOD("GetPurgedLine", "s", CEDITORDOC_purge_line, "(Line)i[(Comment)b(String)b]"),
+  //GB_METHOD("GetPurgedLine", "s", CEDITOR_purge_line, "(Line)i[(Comment)b(String)b]"),
 
-  GB_METHOD("FindNextBreakpoint", "i", CEDITORDOC_find_next_breakpoint, "(Line)i"),
-  GB_METHOD("FindNextWord", "i", CEDITORDOC_find_next_word, "(Word)s(Line)i"),
+  GB_METHOD("FindNextBreakpoint", "i", CEDITOR_find_next_breakpoint, "(Line)i"),
+  GB_METHOD("FindNextWord", "i", CEDITOR_find_next_word, "(Word)s(Line)i"),
 
   GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
   GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),

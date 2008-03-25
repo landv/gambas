@@ -512,10 +512,10 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						{
 							if (rtl)
 								//RESIZE_WIDGET(cont, xc - x + arr->padding + wf, GET_WIDGET_H(cont));
-								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : xc - x + arr->padding + wf, dmax + hf);
+								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : xc - x + arr->padding + wf, dmax + hf + arr->padding * 2);
 							else
 								//RESIZE_WIDGET(cont, x + arr->padding + wf, GET_WIDGET_H(cont));
-								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : x + arr->padding + wf, dmax + hf);
+								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : x + arr->padding + wf, dmax + hf + arr->padding * 2);
 						}
 						
 						break;
@@ -531,7 +531,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 // 						#endif
 						//RESIZE_WIDGET(cont, GET_WIDGET_W(cont), y + arr->padding + hf);
 						if (dmax > 0)
-							RESIZE_CONTAINER(GET_WIDGET(_object), cont, dmax + wf, has_expand_children ? GET_WIDGET_H(cont) : y + arr->padding + hf);
+							RESIZE_CONTAINER(GET_WIDGET(_object), cont, dmax + wf + arr->padding * 2, has_expand_children ? GET_WIDGET_H(cont) : y + arr->padding + hf);
 						break;
 
 					case ARRANGE_COLUMN:
@@ -552,7 +552,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 // 						if (strncmp(((gControl *)_object)->name(), "DataControl", 11) == 0)
 // 							fprintf(stderr, "%s: RESIZE_CONTAINER(%p, %p, %d, %d)\n", ((gControl *)_object)->name(), GET_WIDGET(_object), cont, w, h);
 // 						#endif
-						RESIZE_CONTAINER(GET_WIDGET(_object), cont, w, h);
+						RESIZE_CONTAINER(GET_WIDGET(_object), cont, w + arr->padding * 2, h + arr->padding * 2);
 						break;
 				}
 			}
