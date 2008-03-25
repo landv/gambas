@@ -196,7 +196,7 @@ public:
   void ensureCursorVisible();
   
 	void foldClear() { fold.clear(); }
-	void foldLine(int row);
+	void foldLine(int row, bool no_refresh = false);
 	void foldAll();
 	void unfoldAll();
 	void unfoldLine(int row);

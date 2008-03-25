@@ -408,6 +408,7 @@ PUBLIC SUB Goto(iLine AS Integer, OPTIONAL iColumn AS Integer = -1, OPTIONAL bCe
   'DEC iLine
   IF iColumn < 0 THEN iColumn = Editor.Column
 
+  Editor.Lines[iLine].Expanded = TRUE
   Editor.Goto(iLine, iColumn, bCenter)
 
 END
@@ -1938,7 +1939,7 @@ PRIVATE SUB CheckSignature(OPTIONAL sText AS String)
   IF NOT $bCompletion THEN RETURN
 
   'sLig = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column) & sText
-  sLig = Left$(Highlight.Purge(Editor.Lines[Editor.Line].Text), Editor.Column) & sText
+  sLig = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line].Text), Editor.Column) & sText
   Highlight.Analyze(sLig)
 
   IF NOT IsCurrentProc() THEN
@@ -2235,7 +2236,9 @@ PUBLIC SUB Editors_MouseUp()
   IF NOT Editor.Selected THEN RETURN 
   IF Editor.Selection.StartLine < Editor.Selection.EndLine THEN RETURN 
   
-  FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), Mouse.ScreenY - Editor.ScreenY)
+  FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, 
+    Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
+    Mouse.ScreenY - Editor.ScreenY)
 
 END
 
@@ -2284,7 +2287,9 @@ PUBLIC SUB ShowMessage(sMsg AS String)
     hIcon = Picture["icon:/32/error"]
   ENDIF 
 
-  Balloon(sMsg, Editor, hIcon, Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), Mouse.ScreenY - Editor.ScreenY)
+  Balloon(sMsg, Editor, hIcon, 
+    Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
+    Mouse.ScreenY - Editor.ScreenY)
 
 END
 
@@ -2380,8 +2385,8 @@ PRIVATE SUB FillProcCombo()
 
     hSymbol = cSymbol[sName]
     cmbProc.Add(sName)
-    $cProc[hSymbol.Name] = hSymbol.LineNumber
-    $iFirstProcLine = Min($iFirstProcLine, hSymbol.LineNumber)
+    $cProc[hSymbol.Name] = hSymbol.LineNumber - 1
+    $iFirstProcLine = Min($iFirstProcLine, hSymbol.LineNumber - 1)
 
   NEXT
   
@@ -2423,11 +2428,11 @@ PUBLIC SUB GotoProc(iLine AS Integer)
     IF sLine THEN BREAK
   LOOP
   
-  IF UCase(sLine) = "END" THEN 
+  IF UCase(sLine) = "END" OR IF UCase(sLine) = "END SUB" THEN 
     iLine = Min(iStart + 2, iLine - 1)
   ENDIF
   
-  iCol = Len(Editor.Lines[iLine].Text) - Len(LTrim(Editor.Lines[iLine].Text))
+  iCol = String.Len(Editor.Lines[iLine].Text) - String.Len(LTrim(Editor.Lines[iLine].Text))
   
   ME.GotoCenter(iLine, iCol, TRUE)
   Editor.SetFocus
@@ -2560,3 +2565,14 @@ PUBLIC SUB mnuLastPosition_Click()
   Project.LastPosition
 
 END
+
+' PUBLIC SUB GetFoldedProc() AS Integer[]
+'   
+'   DIM aFold AS NEW Integer[]
+'   DIM iLine AS Integer
+'   
+'   DO
+'     IF Editor.Lines[iLine].
+'   LOOP
+'     
+' END

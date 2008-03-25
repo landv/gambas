@@ -325,6 +325,12 @@ BEGIN_METHOD(CEDITOR_find_next_breakpoint, GB_INTEGER line)
 
 END_METHOD
 
+BEGIN_METHOD(CEDITOR_find_next_limit, GB_INTEGER line)
+
+	GB.ReturnInteger(DOC->getNextLimit(VARG(line)));
+
+END_METHOD
+
 BEGIN_METHOD(CEDITOR_find_next_word, GB_STRING word; GB_INTEGER line)
 
   int line = VARG(line);
@@ -893,6 +899,7 @@ GB_DESC CEditorLineDesc[] =
   GB_PROPERTY("Expanded", "b", CEDITOR_line_expanded),
   GB_PROPERTY("Current", "b", CEDITOR_line_current),
   GB_PROPERTY("Breakpoint", "b", CEDITOR_line_breakpoint),
+  GB_PROPERTY_READ("Limit", "b", CEDITOR_line_limit),
 
   GB_END_DECLARE
 };
@@ -1020,6 +1027,8 @@ GB_DESC CEditorDesc[] =
 
   GB_METHOD("FindNextBreakpoint", "i", CEDITOR_find_next_breakpoint, "(Line)i"),
   GB_METHOD("FindNextWord", "i", CEDITOR_find_next_word, "(Word)s(Line)i"),
+  GB_METHOD("FindNextLimit", "i", CEDITOR_find_next_limit, "(Line)i"),
+  //GB_METHOD("FindPreviousLimit", "i", CEDITOR_find_next_limit, "(Line)i"),
 
   GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
   GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),

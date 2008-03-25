@@ -1336,7 +1336,8 @@ void GEditor::mouseDoubleClickEvent(QMouseEvent *e)
   		else
   			unfoldAll();
   	}
-    emit marginDoubleClicked(ny);
+  	else
+    	emit marginDoubleClicked(ny);
     return;
   }
   
@@ -1473,6 +1474,8 @@ void GEditor::setNumRows(int n)
 {
 	n = realToView(n - 1) + 1;
 	QGridView::setNumRows(n);
+	QGridView::updateScrollBars();
+	updateLength();
 	if (contentsHeight() < visibleHeight())
     repaintContents(contentsX(), contentsHeight(), visibleWidth(), visibleHeight() - contentsHeight() + contentsX(), true);
 	//if (contentsHeight() < visibleHeight())
@@ -1612,7 +1615,7 @@ int GEditor::checkCursor(int y)
 	return ny;
 }
 
-void GEditor::foldLine(int row)
+void GEditor::foldLine(int row, bool no_refresh)
 {
 	uint i;
 	int pos;
@@ -1656,8 +1659,11 @@ void GEditor::foldLine(int row)
 	if (ny != y)
 		cursorGoto(ny, x, false);
 	
-	setNumRows(numLines());	
-	redrawContents();
+	if (!no_refresh)
+	{
+		setNumRows(numLines());	
+		redrawContents();
+	}
 }
 
 void GEditor::unfoldLine(int row)
@@ -1781,11 +1787,14 @@ void GEditor::foldAll()
 	row = 0;
 	for(;;)
 	{
-		foldLine(row);
+		foldLine(row, true);
 		row = doc->getNextLimit(row);
 		if (row < 0)
 			break;
 	}
+	
+	setNumRows(numLines());
+	updateContents();
 }
 
 void GEditor::unfoldAll()
