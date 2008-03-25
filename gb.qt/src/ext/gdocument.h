@@ -145,6 +145,8 @@ public:
 
   int lineLength(int y) { return lines.at(y)->s.length(); }
   int numLines() { return lines.count(); }
+  
+  int getNextProc(int y);
 
   void insert(int y, int x, const GString & str);
   void remove(int y, int x, int y2, int x2);

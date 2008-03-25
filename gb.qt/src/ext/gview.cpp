@@ -504,18 +504,20 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   int x1, y1, x2, y2;
   QColor color, a, b, c;
   int xmin, lmax;
+  int realRow;
 
 	ur = cellGeometry(row, 0);
 	contentsToViewport(ur.x(), ur.y(), x1, y1);
 	ur.setRect(-x1, y1, ur.width(), ur.height());
 
-  if (row >= numLines())
+	realRow = viewToReal(row);
+  if (realRow >= numLines())
   {
     painter->fillRect(0/*ur.left()*/, 0/*ur.top()*/, ur.width(), ur.height(), styles[GLine::Background].color);
     return;
   }
-
-	l = doc->lines.at(row);
+  
+	l = doc->lines.at(realRow);
 
 	xmin = (ur.left() - margin) / charWidth;
 	if (xmin < 0)
@@ -530,7 +532,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	if (l->flag & (1 << GLine::CurrentFlag))
 		a = styles[GLine::Current].color;
 
-  if (getFlag(ShowCurrentLine) && row == y)
+  if (getFlag(ShowCurrentLine) && realRow == y)
     b = styles[GLine::Line].color;
 
 	color = calc_color(a, b, styles[GLine::Background].color);
@@ -562,14 +564,14 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   {
     doc->getSelection(&y1, &x1, &y2, &x2);
 
-    if (row >= y1 && row <= y2 && !(row == y2 && x2 == 0))
+    if (realRow >= y1 && realRow <= y2 && !(realRow == y2 && x2 == 0))
     {
-      if (row > y1 || x1 == 0)
+      if (realRow > y1 || x1 == 0)
         x1 = -margin;
       else
         x1 *= charWidth;
 
-      if (row < y2)
+      if (realRow < y2)
         x2 = cellWidth() + 1;
 			else
         x2 *= charWidth;
@@ -593,13 +595,20 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 
     if (getFlag(ShowLineNumbers))
     {
-      int n = row + 1;
+      int n = realRow + 1;
       if ((n % 10) == 0)
         p.setPen(styles[GLine::Normal].color);
 			else
         p.setPen(styles[GLine::Selection].color);
       p.drawText(x1 + 2, fm.ascent(), QString::number(n).rightJustify(lineNumberLength));
     }
+  }
+  
+  // Folding symbol
+  if (margin && l->proc)
+  {
+		style().drawPrimitive(isFolded(realRow) ? QStyle::PE_ArrowRight : QStyle::PE_ArrowDown, &p, 
+			QRect(margin - 12, 0, 12, 12), QApplication::palette().active(), QStyle::Style_Default | QStyle::Style_Enabled);
   }
   
   // Breakpoint symbol
@@ -611,7 +620,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	}
 
   // Highlight braces
-  if (getFlag(HighlightBraces) && row == ym && x1m >= 0)
+  if (getFlag(HighlightBraces) && realRow == ym && x1m >= 0)
   {
   	highlight_text(p, x1m * charWidth + margin, fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
   	highlight_text(p, x2m * charWidth + margin, fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
@@ -620,7 +629,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   }
 
   // Line text
-  if (doc->getHighlightMode() == GDocument::None || (l->modified && row == y && !getFlag(HighlightCurrent)))
+  if (doc->getHighlightMode() == GDocument::None || (l->modified && realRow == y && !getFlag(HighlightCurrent)))
   {
     p.setPen(styles[GLine::Normal].color);
     p.drawText(margin + xmin * charWidth, fm.ascent(), l->s.getString().mid(xmin, lmax));
@@ -632,12 +641,12 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   }*/
   else
   {
-    doc->colorize(row);
+    doc->colorize(realRow);
     paintText(p, l, margin, fm.ascent(), xmin, lmax);
   }
 
   // Text cursor
-  if (cursor && row == y)
+  if (cursor && realRow == y)
     p.fillRect(QMIN((int)l->s.length(), x) * charWidth + margin, 0, 1, cellHeight(), styles[GLine::Normal].color);
 
   p.end();
@@ -761,6 +770,11 @@ __OK:
 }
 
 
+void GEditor::ensureCursorVisible()
+{
+	QApplication::postEvent(this, new QEvent(EVENT_ENSURE_VISIBLE));
+}
+
 bool GEditor::cursorGoto(int ny, int nx, bool mark)
 {
   bool setxx;
@@ -774,6 +788,9 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
   }
 
   setxx = xx != nx;
+  
+  if (ny != y)
+ 		ny = checkCursor(ny, ny > y);
 
   if (ny < 0)
   {
@@ -832,7 +849,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
   cursorToPos(y, x, &px, &py);
   if (px < margin || px >= (visibleWidth() - 2) || py < 0 || py >= (visibleHeight() - cellHeight() - 1))
-    QApplication::postEvent(this, new QEvent(EVENT_ENSURE_VISIBLE));
+    ensureCursorVisible();
   //ensureVisible(nx * charWidth, ny * cellHeight(), charWidth, cellHeight());
 
   return change;
@@ -938,13 +955,13 @@ void GEditor::cursorEnd(bool shift, bool ctrl)
 void GEditor::cursorPageUp(bool mark)
 {
   int page = visibleHeight() / cellHeight();
-  cursorGoto(y - page, 0, mark);
+  cursorGoto(viewToReal(realToView(y) - page), 0, mark);
 }
 
 void GEditor::cursorPageDown(bool mark)
 {
   int page = visibleHeight() / cellHeight();
-  cursorGoto(y + page, 0, mark);
+  cursorGoto(viewToReal(realToView(y) + page), 0, mark);
 }
 
 void GEditor::newLine()
@@ -1249,10 +1266,10 @@ int GEditor::posToLine(int py)
   ny = rowAt(contentsY() + py);
   if (ny < 0)
     ny = 0;
-  else if (ny >= numLines())
-    ny = numLines() - 1;
-    
-  return ny;
+  else if (ny >= visibleLines())
+    ny = visibleLines() - 1;
+  
+  return viewToReal(ny); 
 }
 
 void GEditor::posToCursor(int px, int py, int *y, int *x)
@@ -1271,6 +1288,8 @@ void GEditor::posToCursor(int px, int py, int *y, int *x)
 void GEditor::cursorToPos(int y, int x, int *px, int *py)
 {
   int npx, npy;
+
+	y = realToView(y);
 
   npy = y * cellHeight() - contentsY();
   npx = x * charWidth - contentsX() + margin;
@@ -1308,7 +1327,17 @@ void GEditor::mousePressEvent(QMouseEvent *e)
   lastx = e->pos().x();
   left = updateCursor();
   
-  if (!left)
+  if (left)
+  {
+  	if (doc->lines.at(ny)->proc)
+  	{
+  		if (isFolded(ny))
+  			unfoldLine(ny);
+  		else
+  			foldLine(ny);
+  	}
+  }
+  else
     cursorGoto(ny, nx, shift);
 }
 
@@ -1333,9 +1362,19 @@ void GEditor::mouseMoveEvent(QMouseEvent *e)
 
 void GEditor::mouseDoubleClickEvent(QMouseEvent *e)
 {
+	int ny;
+	
   if (left)
   {
-    emit marginDoubleClicked(posToLine(e->pos().y()));
+		ny = posToLine(e->pos().y());
+  	if (doc->lines.at(ny)->proc)
+  	{
+  		if (isFolded(ny))
+  			foldAll();
+  		else
+  			unfoldAll();
+  	}
+    emit marginDoubleClicked(ny);
     return;
   }
   
@@ -1382,13 +1421,16 @@ void GEditor::resizeEvent(QResizeEvent *e)
 
 bool GEditor::event(QEvent *e)
 {
+	int vy;
+	
   if (e->type() == EVENT_ENSURE_VISIBLE)
   {
   	//qDebug("ensureVisible: %d %d (%d)", x, y, center);
+  	vy = realToView(y);
   	if (center)
-    	ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
+    	ensureVisible(x * charWidth, vy * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
 		else
-    	ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
+    	ensureVisible(x * charWidth, vy * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
 		center = false;
     return true;
   }
@@ -1467,6 +1509,7 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 
 void GEditor::setNumRows(int n)
 {
+	n = realToView(n - 1) + 1;
 	QGridView::setNumRows(n);
 	if (contentsHeight() < visibleHeight())
     repaintContents(contentsX(), contentsHeight(), visibleWidth(), visibleHeight() - contentsHeight() + contentsX(), true);
@@ -1572,34 +1615,253 @@ bool GEditor::focusNextPrevChild(bool)
 }
 
 #if 0
-void GEditor::updateBreakpoint(uint bg, uint fg)
+static void dump_fold(GArray<GFoldedProc> &fold)
 {
-	static uint pm_bg = 0;
-	static uint pm_fg = 0;
-	static char xpm1[12];
-	static char xpm2[12];
+	uint i;
+	GFoldedProc *fp;
 	
-	bg &= 0xFFFFFF;
-	fg &= 0xFFFFFF;
-	
-	if (bg != pm_bg || fg != pm_fg)
+	for (i = 0; i < fold.count(); i++)
 	{
-		pm_bg = bg;
-		pm_fg = fg;
-		
-		//::sprintf((char *)&breakpoint_xpm[2][5], "%06X", (uint)pm_bg.rgb());
-		//::sprintf(&breakpoint_xpm[3][5], "%06X", (uint)pm_fg.rgb());
-		
-		::sprintf(xpm1, ". c #%06X", (uint)qRgb((qRed(fg) + qRed(bg)) >> 1, (qGreen(fg) + qGreen(bg)) >> 1, (qBlue(fg) + qBlue(bg)) >> 1) & 0xFFFFFF);
-		::sprintf(xpm2, "+ c #%06X", fg);
-		
-		//qDebug("xpm1: '%s' xpm2: '%s'", xpm1, xpm2);
-		
-		breakpoint_xpm[2] = xpm1;
-		breakpoint_xpm[3] = xpm2;
-		
-		delete breakpoint;
-		breakpoint = new QPixmap(breakpoint_xpm);
+		fp = fold.at(i);
+		fprintf(stderr, "[%d %d] ", fp->start, fp->end);
 	}
+	
+	fprintf(stderr, "\n");
 }
 #endif
+
+int GEditor::checkCursor(int y, bool down)
+{
+	uint i;
+	GFoldedProc *fp;
+	int ny;
+	
+	ny = y;
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (y > fp->start && y <= fp->end)
+		{
+			if (down && fp->end < (numLines() - 1))
+				ny = fp->end + 1;
+			else
+				ny = fp->start;
+			break;
+		}
+	}
+	
+	return ny;
+}
+
+void GEditor::foldLine(int row)
+{
+	uint i;
+	int pos;
+	int start, end;
+	GFoldedProc *fp;
+	int ny;
+	
+	if (!doc->lines.at(row)->proc)
+		return;
+	
+	//fprintf(stderr, "foldLine %d\n", row);
+	
+	start = row;
+	end = doc->getNextProc(row);
+	if (end < 0)
+		end = numLines();
+	end--;
+	
+	pos = -1;
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (end >= fp->start && start <= fp->end)
+			return;
+		if (pos < 0 && start < fp->start)
+			pos = i;
+	}
+	
+	fp = new GFoldedProc;
+	fp->start = start;
+	fp->end = end;
+	
+	if (pos < 0)
+		fold.append(fp);
+	else
+		fold.insert(pos, fp);
+	
+	//dump_fold(fold);
+	
+	ny = checkCursor(y);
+	if (ny != y)
+		cursorGoto(ny, x, false);
+	
+	setNumRows(numLines());	
+	redrawContents();
+}
+
+void GEditor::unfoldLine(int row)
+{
+	uint i;
+	GFoldedProc *fp;
+
+	//fprintf(stderr, "unfoldLine %d\n", row);
+	
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (fp->start == row)
+		{
+			fold.remove(i);
+			//dump_fold(fold);
+			setNumRows(numLines());	
+			redrawContents();
+			return;
+		}
+	}
+	
+}
+
+int GEditor::viewToReal(int row)
+{
+	uint i;
+	GFoldedProc *fp;
+	
+	//fprintf(stderr, "viewToReal: %d -> ", row);
+	
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (row <= fp->start)
+			break;
+		row += fp->end - fp->start;
+	}
+	
+	//fprintf(stderr, "%d\n", row);
+	
+	return row;
+}
+
+int GEditor::realToView(int row)
+{
+	uint i;
+	GFoldedProc *fp;
+	int y;
+	
+	//fprintf(stderr, "realToView: %d -> ", row);
+	
+	y = row;
+	
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (row < fp->start)
+			continue;
+		if (row <= fp->end)
+			y -= row - fp->start;
+		else
+			y -= fp->end - fp->start;
+	}
+	
+	//fprintf(stderr, "%d\n", y);
+	
+	return y;
+}
+
+int GEditor::visibleLines()
+{
+	int n;
+	uint i;
+	GFoldedProc *fp;
+	
+	n = numLines();
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		n -= fp->end - fp->start;
+	}
+	
+	return n;
+}
+
+bool GEditor::isFolded(int row)
+{
+	uint i;
+	GFoldedProc *fp;
+	
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (fp->start == row)
+			return true;
+	}
+	
+	return false;
+}
+
+void GEditor::foldAll()
+{
+	int row;
+	
+	row = 0;
+	for(;;)
+	{
+		row = doc->getNextProc(row);
+		if (row < 0)
+			break;
+		foldLine(row);
+	}
+}
+
+void GEditor::unfoldAll()
+{
+	foldClear();
+	setNumRows(numLines());	
+	ensureCursorVisible();
+	redrawContents();
+}
+
+
+void GEditor::foldRemove(int y1, int y2)
+{
+	uint i;
+	GFoldedProc *fp;
+	int n;
+	
+	n = y2 - y1 + 1;
+	
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (y2 < fp->start)
+		{
+			fp->start -= n;
+			fp->end -= n;
+		}
+		else if (y1 > fp->end)
+			continue;
+		else
+		{
+			fold.remove(i);
+			i--;
+		}
+	}
+}
+
+
+void GEditor::foldInsert(int y, int n)
+{
+	uint i;
+	GFoldedProc *fp;
+	
+	for (i = 0; i < fold.count(); i++)
+	{
+		fp = fold.at(i);
+		if (fp->start >= y)
+			fp->start += n;
+		if (fp->end >= y)
+			fp->end += n;
+	}
+}
+

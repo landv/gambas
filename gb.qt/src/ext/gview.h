@@ -40,6 +40,12 @@ struct GHighlightStyle
   bool underline;
 };
 
+struct GFoldedProc
+{
+	int start;
+	int end;
+};
+
 class GEditor : public QGridView
 {
   Q_OBJECT
@@ -67,6 +73,7 @@ private:
   
   int lastx;
   bool left;
+  GArray<GFoldedProc> fold;
   
 	QFont italicFont;
   GHighlightStyle styles[GLine::NUM_STATE];
@@ -75,10 +82,11 @@ private:
 
   int lineLength(int y) { return doc->lineLength(y); }
   int numLines() { return doc->numLines(); }
+  int visibleLines();
   void startBlink();
   void stopBlink();
   void updateLength();
-  void updateLine(int y) { updateCell(y, 0); }
+  void updateLine(int y) { updateCell(realToView(y), 0); }
   void updateMargin();
   bool updateCursor();
   //void updatePattern();
@@ -87,6 +95,10 @@ private:
 
 	void docTextChanged();
 	void redrawContents();
+	
+	int viewToReal(int row);
+	int realToView(int row);
+	int checkCursor(int y, bool down = false);
 	
 	//static void updateBreakpoint(uint bg, uint fg);
 
@@ -179,6 +191,17 @@ public:
 
   void checkMatching();
   
+  void ensureCursorVisible();
+  
+	void foldClear() { fold.clear(); }
+	void foldLine(int row);
+	void foldAll();
+	void unfoldAll();
+	void unfoldLine(int row);
+	bool isFolded(int row);
+	void foldRemove(int y1, int y2);
+	void foldInsert(int y, int n);
+
 signals:
 
   void cursorMoved();

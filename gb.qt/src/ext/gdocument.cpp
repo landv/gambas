@@ -210,7 +210,10 @@ void GDocument::clear()
   updateViews();
 
   for (i = 0; i < views.count(); i++)
+  {
     views.at(i)->cursorGoto(0, 0, false);
+  	views.at(i)->foldClear();
+  }
 }
 
 
@@ -301,6 +304,7 @@ void GDocument::insert(int y, int x, const GString & text)
   int xs = x, ys = y;
   GLine *l;
   int n = 1;
+  int nl = 0;
   GString rest;
   int yy;
 
@@ -321,6 +325,7 @@ void GDocument::insert(int y, int x, const GString & text)
 	{
 		yy = (int)lines.count();
     lines.insert(yy, new GLine());
+    nl++;
     lines.at(yy)->modified = lines.at(yy)->changed = true;
 	}
 
@@ -370,6 +375,7 @@ void GDocument::insert(int y, int x, const GString & text)
     y++;
 
     lines.insert(y, new GLine());
+    nl++;
     lines.at(y)->modified = lines.at(y)->changed = true;
     if (baptismLimit > y)
     	baptismLimit++;
@@ -387,6 +393,11 @@ void GDocument::insert(int y, int x, const GString & text)
     maxLength = GMAX(maxLength, (int)l->s.length());
   }
 
+	FOR_EACH_VIEW(v)
+	{
+		v->foldInsert(ys, nl);
+	}
+	
   updateViews(ys, n);
 
   addUndo(new GInsertCommand(ys, xs, y, x, text));
@@ -460,6 +471,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 
     FOR_EACH_VIEW(v)
     {
+    	v->foldRemove(y1 + 1, y2);
       if (v->y > y1)
       {
         v->y = GMAX(y1, v->y - (y2 - y1));
@@ -493,7 +505,10 @@ void GDocument::setText(const GString & text)
   readOnly = oldReadOnly;
 
   FOR_EACH_VIEW(v)
+  {
     v->cursorGoto(0, 0, false);
+    v->foldAll();
+  }
 }
 
 void GDocument::unsubscribe(GEditor *view)
@@ -1137,3 +1152,15 @@ void GDocument::emitTextChanged()
 }
 
 
+int GDocument::getNextProc(int y)
+{
+	for(;;)
+	{
+		y++;
+		if (y >= numLines())
+			return (-1);
+		colorize(y);
+		if (lines.at(y)->proc)
+			return y;
+	}
+}
