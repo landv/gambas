@@ -1,5 +1,5 @@
 CLEANFILES = moc_*.cpp
 
-moc_%.cpp: %.h
+moc_*.cpp: *.h
 	$(MOC) $< -o $@
  
