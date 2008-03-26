@@ -1468,6 +1468,7 @@ void GEditor::setStyle(int index, GHighlightStyle *style)
 void GEditor::setNumRows(int n)
 {
 	QGridView::setNumRows(n);
+	QGridView::updateScrollBars();
 	if (contentsHeight() < visibleHeight())
     repaintContents(contentsX(), contentsHeight(), visibleWidth(), visibleHeight() - contentsHeight() + contentsX(), true);
 	//if (contentsHeight() < visibleHeight())

@@ -1,6 +1,17 @@
 ' Gambas class file
 
-PRIVATE SUB GetInfo(sPath AS String)
+PRIVATE SUB GetCount(sName AS String, sExt AS String, OPTIONAL sSub AS String) AS String
+  
+  DIM iCount AS Integer
+  
+  iCount = Dir(Project.Dir, "*." & sExt, gb.File).Count
+  IF sSub THEN iCount -= Dir(Project.Dir, "*." & sSub, gb.File).Count
+  RETURN Subst(("&1: &2"), sName, iCount) & "<br>"
+  
+END
+
+
+PRIVATE SUB GetInfo()
   
   DIM sLink AS String
   DIM sType AS String
@@ -11,108 +22,127 @@ PRIVATE SUB GetInfo(sPath AS String)
   DIM bLine AS Boolean
   DIM sLine AS Integer
   DIM sOutput AS String
+  DIM sName AS String
+  DIM sPath AS String
+  DIM hPict AS Picture
   
-  IF Left(sPath) = "$" THEN 
+  sPath = Project.ProjectTree.Key
 
-    sInfo = Subst("&1 element(s)", Project.ProjectTree[sPath].Children)
-
+  IF Left(sPath) = "$" THEN sPath = Project.Dir
+  IF NOT sPath THEN sPath = Project.Dir
+ 
+  IF sPath = Project.Dir THEN
+    lblName.Text = Project.Name
   ELSE
-  
-    IF NOT sPath THEN sPath = Project.Dir
-   
-    WITH Stat(sPath)
-    
-      IF .Type = gb.Link THEN 
-        sLink = .Link
-      ENDIF
-    
-    END WITH
-      
-    WITH Stat(sPath, TRUE)
-    
-      IF .Type = gb.Directory THEN
-        IF sPath = Project.Dir THEN 
-          sType = ("Gambas project")
-        ELSE 
-          sType = ("Directory")
-        ENDIF
-        SHELL "(cd " & Quote.Shell(sPath) & "; du -k | tail -n1" & ")" TO sSize
-        iSize = Val(sSize)
-      ELSE
-        SELECT CASE File.Ext(sPath)
-          CASE "module"
-            sType = ("Module")
-            bLine = TRUE
-            sInfo = "UTF-8 Gambas module file"
-          CASE "class"
-            sType = ("Class")
-            bLine = TRUE
-            sInfo = "UTF-8 Gambas class file"
-          CASE "form"
-            sType = ("Form")
-            bLine = TRUE
-            sInfo = "UTF-8 Gambas form file"
-          CASE "png", "jpg", "gif", "jpeg", "svg"
-            sType = ("Picture")
-          CASE "txt"
-            sType = ("Text file")
-            bLine = TRUE
-          CASE "htm", "html"
-            sType = ("HTML file")
-            bLine = TRUE
-          CASE "css"
-            sType = ("CSS file")
-            bLine = TRUE
-          CASE "xml"
-            sType = ("XML file")
-            bLine = TRUE
-          CASE ELSE 
-            IF UCase(File.Name(sPath)) = "CHANGELOG" THEN
-              sType = ("ChangeLog")
-              bLine = TRUE
-            ELSE
-              sType = ("File")
-            ENDIF
-        END SELECT
-    
-        iSize = CInt((.Size + 1023) \ 1024)
-        IF NOT sInfo THEN 
-          IF sLink THEN 
-            sInfo = sLink
-            IF Left(sInfo) <> "/" THEN sInfo = File.Dir(sPath) &/ sLink
-          ELSE 
-            sInfo = sPath
-          ENDIF
-          SHELL "file -b " & Quote.Shell(sInfo) TO sInfo
-        ENDIF
-        
-      ENDIF 
-      
-      IF bLine THEN 
-        SHELL "wc -l " & Quote.Shell(sPath) TO sOutput
-        TRY sLine = Split(sOutput, " ")[0]
-      ENDIF
-      IF sLine THEN
-        sSize = Subst(("&1 K, &2 line(s)"), iSize, sLine)
-      ELSE
-        sSize = Subst(("&1 K"), iSize)
-      ENDIF
-  
-      IF sLink THEN 
-        IF sLink LIKE (Project.Dir & "/*") THEN 
-          sLink = Mid$(sLink, Len(Project.Dir) + 2)
-        ENDIF
-        IF sLink LIKE (System.User.Home &/ "/*") THEN 
-          sLink = "~" &/ Mid$(sLink, Len(System.User.Home) + 1)
-        ENDIF
-      ENDIF
-
-      sTime = Str(.LastModified)
-
-    END WITH 
-    
+    lblName.Text = Project.ProjectTree.Current.Text
   ENDIF
+  lblName.Adjust
+  
+  WITH Stat(sPath)
+  
+    IF .Type = gb.Link THEN 
+      sLink = .Link
+    ENDIF
+  
+  END WITH
+    
+  WITH Stat(sPath, TRUE)
+  
+    IF .Type = gb.Directory THEN
+      IF sPath = Project.Dir THEN 
+        sType = ("Gambas project")
+        sInfo = GetCount(("Modules"), "module")
+        sInfo &= GetCount(("Classes"), "class", "form")
+        sInfo &= GetCount(("Forms"), "form")
+      ELSE 
+        sType = ("Directory")
+      ENDIF
+      SHELL "(cd " & Quote.Shell(sPath) & "; du -k | tail -n1" & ")" TO sSize
+      iSize = Val(sSize)
+    ELSE
+      SELECT CASE File.Ext(sPath)
+        CASE "module"
+          sType = ("Module")
+          bLine = TRUE
+          sInfo = "UTF-8 Gambas module file"
+        CASE "class"
+          sType = ("Class")
+          bLine = TRUE
+          sInfo = "UTF-8 Gambas class file"
+        CASE "form"
+          sType = ("Form")
+          bLine = TRUE
+          sInfo = "UTF-8 Gambas form file"
+        CASE "png", "jpg", "gif", "jpeg", "svg"
+          sType = ("Picture")
+        CASE "txt"
+          sType = ("Text file")
+          bLine = TRUE
+        CASE "htm", "html"
+          sType = ("HTML file")
+          bLine = TRUE
+        CASE "css"
+          sType = ("CSS file")
+          bLine = TRUE
+        CASE "xml"
+          sType = ("XML file")
+          bLine = TRUE
+        CASE ELSE 
+          IF UCase(File.Name(sPath)) = "CHANGELOG" THEN
+            sType = ("ChangeLog")
+            bLine = TRUE
+          ELSE
+            sType = ("File")
+          ENDIF
+      END SELECT
+  
+      iSize = CInt((.Size + 1023) \ 1024)
+      IF NOT sInfo THEN 
+        IF sLink THEN 
+          sInfo = sLink
+          IF Left(sInfo) <> "/" THEN sInfo = File.Dir(sPath) &/ sLink
+        ELSE 
+          sInfo = sPath
+        ENDIF
+        SHELL "file -b " & Quote.Shell(sInfo) TO sInfo
+      ENDIF
+      
+    ENDIF 
+    
+    IF bLine THEN 
+      SHELL "wc -l " & Quote.Shell(sPath) TO sOutput
+      TRY sLine = Split(sOutput, " ")[0]
+    ENDIF
+    IF sLine THEN
+      sSize = Subst(("&1 K, &2 line(s)"), iSize, sLine)
+    ELSE
+      sSize = Subst(("&1 K"), iSize)
+    ENDIF
 
+    IF sLink THEN 
+      IF sLink LIKE (Project.Dir & "/*") THEN 
+        sLink = Mid$(sLink, Len(Project.Dir) + 2)
+      ENDIF
+      IF sLink LIKE (System.User.Home &/ "/*") THEN 
+        sLink = "~" &/ Mid$(sLink, Len(System.User.Home) + 1)
+      ENDIF
+    ENDIF
+
+    sTime = Str(.LastModified)
+
+  END WITH 
+
+  IF sPath = Project.Dir THEN 
+    hPict = Project.GetIcon(Project.Dir, 32)
+  ELSE 
+    hPict = Project.GetFileIcon(sPath, 32)
+  ENDIF
+  
+  picInfo.Picture = hPict
+  picInfo.Resize(hPict.Width, hPict.Height)
+  panInfo.Height = Max(lblName.Height, hPict.Height) + panInfo.Padding * 2 + 4
+  picInfo.Show
+  
 FINALLY 
 
   lblLink.Text = sLink
@@ -136,41 +166,7 @@ END
 
 PUBLIC SUB Run()
 
-  DIM sPath AS String
-  DIM sInfo AS String  
-  DIM hPict AS Picture
-  DIM hTree AS ColumnView
-  
-  hTree = Project.ProjectTree
-  
-  lblName.Text = hTree.Current.Text
-  lblName.Adjust
-  
-  sPath = hTree.Key
-  GetInfo(sPath)
-  'lblInfo.Text = sInfo
-  'lblInfo.Adjust
-
-  IF Left(sPath) <> "$" THEN 
-
-    IF sPath = Project.Dir THEN 
-      hPict = Project.GetIcon(Project.Dir, 32)
-    ELSE 
-      hPict = Project.GetFileIcon(sPath, 32)
-    ENDIF
-    
-    picInfo.Picture = hPict
-    picInfo.Resize(hPict.Width, hPict.Height)
-    panInfo.Height = Max(lblName.Height, hPict.Height) + panInfo.Padding * 2 + 4
-    picInfo.Show
-    
-  ELSE 
-  
-    picInfo.Hide
-    
-  ENDIF
-  
-  'Object.Lock(ME)
+  GetInfo()
   ME.ShowDialog
   
 END

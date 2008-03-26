@@ -250,7 +250,7 @@ msgid ""
 msgstr ""
 
 #: Design.module:341 FAbout.class:302 FColorChooser.class:197
-#: FCommit.class:285 FCreateFile.class:820 FFontChooser.class:80
+#: FCommit.class:285 FCreateFile.class:822 FFontChooser.class:80
 #: FGotoLine.class:57 FList.class:167 FMain.class:2391
 #: FMakeExecutable.class:146 FMenu.class:1070 FNewTranslation.class:64
 #: FOpenProject.class:402 FProjectEnv.class:325 FPropertyProject.class:243
@@ -333,7 +333,7 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
-#: FColorChooser.class:203 FCommit.class:291 FCreateFile.class:826
+#: FColorChooser.class:203 FCommit.class:291 FCreateFile.class:828
 #: FDebugInfo.class:342 FEditor.class:1993 FFindList.class:159 FFind.class:115
 #: FFontChooser.class:86 FForm.class:2509 FGotoLine.class:63
 #: FIconEditor.class:1387 FList.class:107 FMain.class:200
@@ -429,6 +429,10 @@ msgstr ""
 msgid "HTML files"
 msgstr ""
 
+#: FCreateFile.class:66
+msgid "CSS files"
+msgstr ""
+
 #: FCreateFile.class:79
 msgid "(No parent)"
 msgstr ""
@@ -437,103 +441,103 @@ msgstr ""
 msgid "Cannot add file."
 msgstr ""
 
-#: FCreateFile.class:507
+#: FCreateFile.class:509
 msgid "New file"
 msgstr ""
 
-#: FCreateFile.class:522 FMain.class:1884
+#: FCreateFile.class:524 FMain.class:1884
 msgid "New"
 msgstr ""
 
-#: FCreateFile.class:547 FInfo.class:44
+#: FCreateFile.class:549 FInfo.class:65
 msgid "Module"
 msgstr ""
 
-#: FCreateFile.class:566 FFindList.class:45 FInfo.class:48
+#: FCreateFile.class:568 FFindList.class:45 FInfo.class:69
 #: FPropertyProject.class:837
 msgid "Class"
 msgstr ""
 
-#: FCreateFile.class:585 FEditor.class:2840 FForm.class:2840 FInfo.class:52
+#: FCreateFile.class:587 FEditor.class:2840 FForm.class:2840 FInfo.class:73
 msgid "Form"
 msgstr ""
 
-#: FCreateFile.class:604
+#: FCreateFile.class:606
 msgid "Image"
 msgstr ""
 
-#: FCreateFile.class:623 FFindList.class:50
+#: FCreateFile.class:625 FFindList.class:50
 msgid "Text"
 msgstr ""
 
-#: FCreateFile.class:642 FInfo.class:61
+#: FCreateFile.class:644 FInfo.class:82
 msgid "HTML file"
 msgstr ""
 
-#: FCreateFile.class:661
+#: FCreateFile.class:663
 msgid "Style sheet"
 msgstr ""
 
-#: FCreateFile.class:674 FCreateProject.class:631 FDebugInfo.class:18
+#: FCreateFile.class:676 FCreateProject.class:631 FDebugInfo.class:18
 #: FMenu.class:869
 msgid "Name"
 msgstr ""
 
-#: FCreateFile.class:685 FCreateProject.class:526 FMakeExecutable.class:98
+#: FCreateFile.class:687 FCreateProject.class:526 FMakeExecutable.class:98
 #: FOption.class:724 FPropertyProject.class:1555
 msgid "Options"
 msgstr ""
 
-#: FCreateFile.class:694
+#: FCreateFile.class:696
 msgid "Width"
 msgstr ""
 
-#: FCreateFile.class:707
+#: FCreateFile.class:709
 msgid "Height"
 msgstr ""
 
-#: FCreateFile.class:727 FCreateProject.class:355 FInfo.class:282
+#: FCreateFile.class:729 FCreateProject.class:355 FInfo.class:277
 #: FPropertyProject.class:839
 msgid "Type"
 msgstr ""
 
-#: FCreateFile.class:734
+#: FCreateFile.class:736
 msgid "PNG"
 msgstr ""
 
-#: FCreateFile.class:734
+#: FCreateFile.class:736
 msgid "XPM"
 msgstr ""
 
-#: FCreateFile.class:734
+#: FCreateFile.class:736
 msgid "GIF"
 msgstr ""
 
-#: FCreateFile.class:739
+#: FCreateFile.class:741
 msgid "px"
 msgstr ""
 
-#: FCreateFile.class:754
+#: FCreateFile.class:756
 msgid "Dialog box management"
 msgstr ""
 
-#: FCreateFile.class:764
+#: FCreateFile.class:766
 msgid "Parent class"
 msgstr ""
 
-#: FCreateFile.class:775
+#: FCreateFile.class:777
 msgid "Exported"
 msgstr ""
 
-#: FCreateFile.class:785
+#: FCreateFile.class:787
 msgid "Automatic extension"
 msgstr ""
 
-#: FCreateFile.class:792
+#: FCreateFile.class:794
 msgid "Existing"
 msgstr ""
 
-#: FCreateFile.class:804
+#: FCreateFile.class:806
 msgid "Create a symbolic link"
 msgstr ""
 
@@ -862,7 +866,7 @@ msgstr ""
 msgid "Column"
 msgstr ""
 
-#: FFindList.class:167 FIconEditor.class:1406 FInfo.class:359
+#: FFindList.class:167 FIconEditor.class:1406 FInfo.class:354
 #: FMakeInstall.class:229 FOption.class:1162 FTips.class:232
 msgid "Close"
 msgstr ""
@@ -1236,63 +1240,79 @@ msgstr ""
 msgid "Pick a color"
 msgstr ""
 
-#: FInfo.class:35
+#: FInfo.class:9
+msgid "&1: &2"
+msgstr ""
+
+#: FInfo.class:53
 msgid "Gambas project"
 msgstr ""
 
-#: FInfo.class:37
-msgid "Directory"
+#: FInfo.class:54 Project.module:980
+msgid "Modules"
 msgstr ""
 
-#: FInfo.class:56 FMenu.class:987
-msgid "Picture"
+#: FInfo.class:55 Project.module:981
+msgid "Classes"
+msgstr ""
+
+#: FInfo.class:56 Project.module:983
+msgid "Forms"
 msgstr ""
 
 #: FInfo.class:58
+msgid "Directory"
+msgstr ""
+
+#: FInfo.class:77 FMenu.class:987
+msgid "Picture"
+msgstr ""
+
+#: FInfo.class:79
 msgid "Text file"
 msgstr ""
 
-#: FInfo.class:64
+#: FInfo.class:85
 msgid "CSS file"
 msgstr ""
 
-#: FInfo.class:67
+#: FInfo.class:88
 msgid "XML file"
 msgstr ""
 
-#: FInfo.class:71
+#: FInfo.class:92
 msgid "ChangeLog"
 msgstr ""
 
-#: FInfo.class:74
+#: FInfo.class:95
 msgid "File"
 msgstr ""
 
-#: FInfo.class:96
+#: FInfo.class:117
 msgid "&1 K, &2 line(s)"
 msgstr ""
 
-#: FInfo.class:98
+#: FInfo.class:119
 msgid "&1 K"
 msgstr ""
 
-#: FInfo.class:217
+#: FInfo.class:213
 msgid "Information"
 msgstr ""
 
-#: FInfo.class:260
+#: FInfo.class:255
 msgid "Link to"
 msgstr ""
 
-#: FInfo.class:300 FSelectIcon.class:235
+#: FInfo.class:295 FSelectIcon.class:235
 msgid "Size"
 msgstr ""
 
-#: FInfo.class:318
+#: FInfo.class:313
 msgid "Last modified"
 msgstr ""
 
-#: FInfo.class:336
+#: FInfo.class:331
 msgid "Details"
 msgstr ""
 
@@ -1623,10 +1643,6 @@ msgstr ""
 
 #: FMain.class:2011
 msgid "&Startup class"
-msgstr ""
-
-#: FMain.class:2021
-msgid "&Information"
 msgstr ""
 
 #: FMain.class:2045
@@ -3135,18 +3151,6 @@ msgstr ""
 
 #: Project.module:833
 msgid "The following classes have circular inheritance:"
-msgstr ""
-
-#: Project.module:980
-msgid "Modules"
-msgstr ""
-
-#: Project.module:981
-msgid "Classes"
-msgstr ""
-
-#: Project.module:983
-msgid "Forms"
 msgstr ""
 
 #: Project.module:985

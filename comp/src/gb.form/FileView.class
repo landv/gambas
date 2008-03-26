@@ -28,6 +28,7 @@ PROPERTY READ Count AS Integer
 
 STATIC PRIVATE $aImgExt AS String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
 STATIC PRIVATE $cExt AS NEW Collection(gb.Text)
+STATIC PRIVATE $cName AS NEW Collection(gb.Text)
 
 PRIVATE $sDir AS String
 PRIVATE $bShowHidden AS Boolean
@@ -58,6 +59,9 @@ STATIC PUBLIC SUB _init()
   $cExt["avi"] = "video"
   $cExt["wmv"] = "video"
   $cExt["mov"] = "video"
+  
+  $cName["changelog"] = "text"
+  $cName["readme"] = "text"
 
 END
 
@@ -111,6 +115,7 @@ PRIVATE SUB GetIcon(sPath AS String, iSize AS Integer) AS picture
   IF $hPict THEN RETURN $hPict
 
   TRY sIcon = $cExt[File.Ext(sPath)]
+  IF NOT sIcon THEN TRY sIcon = $cName[File.Name(sPath)]
   IF sIcon THEN RETURN Picture["icon:/" & CStr(iSize) &/ sIcon]
 
   IF $aImgExt.Find(File.Ext(sPath)) < 0 THEN RETURN

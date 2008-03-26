@@ -47,7 +47,7 @@ PUBLIC SUB lstType_Click()
     Object.Unlock(txtName)
   ENDIF 
   
-  iFilter = ["module", "class", "form", "image", "html"].Find(LCase(sPrefix))
+  iFilter = ["module", "class", "form", "image", "html", "css"].Find(LCase(sPrefix))
   $iFilter = iFilter
   
   txtName.SetFocus
@@ -63,7 +63,7 @@ PUBLIC SUB Form_Open()
   
   Settings.Read(ME)
   
-  fchExisting.Filter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes"), "*.form", ("Gambas forms"), "*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files")]
+  fchExisting.Filter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes"), "*.form", ("Gambas forms"), "*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files"), "*.css", ("CSS files")]
   
   panForm.Visible = Project.AllowForm()
   
@@ -412,6 +412,8 @@ PUBLIC SUB tabFile_Click()
     IF $iFilter >= 0 THEN 
       fchExisting.FilterIndex = $iFilter
       $iFilter = -1
+    ELSE 
+      fchExisting.FilterIndex = -1
     ENDIF
   ENDIF
 
