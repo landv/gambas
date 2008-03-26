@@ -72,6 +72,7 @@ PUBLIC FUNCTION FromString(sVal AS String) AS Variant
   IF Left(sVal) = "\"" THEN
     RETURN UnQuoteString(sVal)
   ELSE IF Left(sVal) = "[" THEN 
+    IF sVal = "[]" THEN RETURN NULL
     aVal = Split(Mid$(sVal, 2, -1), ",", Chr$(34))
     IF Mid$(sVal, 2, 1) = Chr$(34) THEN
       RETURN aVal
