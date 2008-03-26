@@ -34,6 +34,9 @@
 
 #define IBPP_LINUX
 
+// gcc-4.3 fix
+#include <cstring>
+
 #include "_ibpp.cpp"
 #include "_dpb.cpp"
 #include "_ibs.cpp"
