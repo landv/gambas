@@ -38,16 +38,10 @@
 
 PUBLIC int MEMORY_count = 0;
 
-#if OPTIMIZE_MEMORY
+#if DEBUG_MEMORY
 
 #include "gb_error.h"
 
-int THROW_MEMORY()
-{
-	THROW(E_MEMORY);
-}
-
-#elif DEBUG_MEMORY
 typedef
   struct ALLOC {
     int _void;
@@ -64,8 +58,14 @@ PUBLIC int MEMORY_size = 0;
 static int _id = 0;
 ALLOC *_alloc = NULL;
 extern void DEBUG_where(void);
-//static char buffer[512];
-//extern char *TRACE_get_current_position(void);
+
+#elif OPTIMIZE_MEMORY
+
+int THROW_MEMORY()
+{
+	THROW(E_MEMORY);
+}
+
 #endif
 
 PUBLIC void MEMORY_init(void)

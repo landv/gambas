@@ -408,7 +408,7 @@ PUBLIC SUB Goto(iLine AS Integer, OPTIONAL iColumn AS Integer = -1, OPTIONAL bCe
   'DEC iLine
   IF iColumn < 0 THEN iColumn = Editor.Column
 
-  Editor.Lines[iLine].Expanded = TRUE
+  IF NOT Editor.Lines[iLine].Limit THEN Editor.Lines[iLine].Expanded = TRUE
   Editor.Goto(iLine, iColumn, bCenter)
 
 END
@@ -2566,13 +2566,32 @@ PUBLIC SUB mnuLastPosition_Click()
 
 END
 
-' PUBLIC SUB GetFoldedProc() AS Integer[]
-'   
-'   DIM aFold AS NEW Integer[]
-'   DIM iLine AS Integer
-'   
-'   DO
-'     IF Editor.Lines[iLine].
-'   LOOP
-'     
-' END
+PUBLIC SUB GetFoldedProc() AS Integer[]
+  
+  DIM aFold AS NEW Integer[]
+  DIM iLine AS Integer
+  
+  DO
+    IF NOT Editor.Lines[iLine].Expanded THEN 
+      'DEBUG Name;; iLine
+      aFold.Add(iLine)
+    ENDIF
+    iLine = Editor.FindNextLimit(iLine)
+    IF iLine < 0 THEN BREAK
+  LOOP
+  
+  RETURN aFold  
+  
+END
+
+PUBLIC SUB SetFoldedProc(aFold AS Integer[])
+  
+  DIM iLine AS Integer
+  
+  'Editor.Lines.ExpandAll
+  FOR EACH iLine IN aFold
+    'DEBUG Name;; iLine
+    Editor.Lines[iLine].Expanded = FALSE
+  NEXT
+  
+END

@@ -296,28 +296,6 @@ void STRING_extend(char **ptr, int new_len)
 		str = realloc_string(STRING_from_ptr(*ptr), new_len);
 
 	*ptr = str ? str->data : NULL;
-
-	/*old_real_size = (len == 0) ? 0 : REAL_SIZE(len + 1 + sizeof(STRING));
-	new_real_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
-
-	if (new_real_size != old_real_size)
-	{
-		if (len == 0)
-		{
-			ALLOC(&str, new_real_size, "STRING_extend");
-			str->ref = 1;
-		}
-		else
-		{
-			str = STRING_from_ptr(*ptr);
-			REALLOC(&str, new_real_size, "STRING_extend");
-		}
-	  *ptr = str->data;
-	}
-	else
-		str = STRING_from_ptr(*ptr);
-
-  str->len = new_len;*/
 }
 
 
@@ -381,58 +359,6 @@ void STRING_char_value(VALUE *value, uchar car)
   value->_string.start = 0;
   value->_string.len = 1;
 }
-
-
-#if 0
-int STRING_comp_value(VALUE *str1, VALUE *str2)
-{
-  uint i;
-  int len = Min(str1->_string.len, str2->_string.len);
-  int diff;
-  register const char *s1;
-  register const char *s2;
-  register char c1, c2;
-
-  s1 = str1->_string.addr + str1->_string.start;
-  s2 = str2->_string.addr + str2->_string.start;
-
-  for (i = 0; i < len; i++)
-  {
-    c1 = s1[i];
-    c2 = s2[i];
-    if (c1 > c2) return 1;
-    if (c1 < c2) return -1;
-  }
-
-  diff =  str1->_string.len - str2->_string.len;
-  return (diff < 0) ? (-1) : (diff > 0) ? 1 : 0;
-}
-
-
-int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2)
-{
-  int i;
-  int len = Min(str1->_string.len, str2->_string.len);
-  int diff;
-  register const char *s1;
-  register const char *s2;
-  register char c1, c2;
-
-  s1 = str1->_string.addr + str1->_string.start;
-  s2 = str2->_string.addr + str2->_string.start;
-
-  for (i = 0; i < len; i++)
-  {
-    c1 = tolower(s1[i]);
-    c2 = tolower(s2[i]);
-    if (c1 > c2) return 1;
-    if (c1 < c2) return -1;
-  }
-
-  diff =  str1->_string.len - str2->_string.len;
-  return (diff < 0) ? (-1) : (diff > 0) ? 1 : 0;
-}
-#endif
 
 #if DEBUG_STRING
 
@@ -520,6 +446,7 @@ void STRING_unref_keep(char **ptr)
     post_free(*ptr);
 }
 
+/* The get_param argument index starts at 1, not 0! */
 
 char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 {
@@ -529,8 +456,8 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 	int len_subst;
 	char *subst;
 	char *ps;
-	char *p[10];
-	int lp[10];
+	char *p[9];
+	int lp[9];
 
   if (!str)
     return NULL;
@@ -551,10 +478,12 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 			d = str[i];
 			if (d == '&')
 				len_subst--;
-			else if (d >= '0' && d <= '9')
+			else if (d >= '1' && d <= '9')
 			{
-				np = d - '0';
-      	(*get_param)(np, &p[np], &lp[np]);
+				np = d - '1';
+      	(*get_param)(np + 1, &p[np], &lp[np]);
+      	if (lp[np] < 0)
+      		lp[np] = strlen(p[np]);
       	len_subst += lp[np] - 2;
 			}
 		}
@@ -572,9 +501,9 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 			d = str[i];
 			if (d == '&')
 				*ps++ = '&';
-			else if (d >= '0' && d <= '9')
+			else if (d >= '1' && d <= '9')
 			{
-				np = d - '0';
+				np = d - '1';
       	memcpy(ps, p[np], lp[np]);
       	ps += lp[np];
 			}
@@ -592,6 +521,51 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 	post_free(subst);
 	return subst;
 }
+
+char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
+{
+	uint i;
+	uchar c, d;
+	int np;
+
+  if (!str)
+    return NULL;
+
+  if (len <= 0)
+    len = strlen(str);
+
+	SUBST_init();
+	
+	for (i = 0; i < len; i++)
+	{
+		c = str[i];
+		if (c == '&')
+		{
+			i++;
+			d = str[i];
+			if (d == '&')
+			{
+				SUBST_add_char('&');
+			}
+			else if (d >= '1' && d <= '9')
+			{
+				np = d - '0';
+				(*add_param)(np);
+			}
+			else
+			{
+				SUBST_add_char('&');
+				SUBST_add_char(d);
+			}
+		}
+		else
+			SUBST_add_char(c);
+	}
+	
+	SUBST_exit();
+	return SUBST_buffer;
+}
+
 
 void STRING_add(char **ptr, const char *src, int len)
 {

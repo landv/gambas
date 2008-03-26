@@ -332,7 +332,7 @@ static int query_narg;
 static GB_VALUE *query_arg;
 static DB_DRIVER *query_driver;
 
-static void mq_get_param(int index, char **str, int *len)
+static void mq_add_param(int index)
 {
   if (index < 1 || index > query_narg)
     return;
@@ -351,7 +351,7 @@ char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB
 	if (narg == 0)
 		GB.TempString(&query, pattern, len);
 	else
-  	query = GB.SubstString(pattern, len, mq_get_param);
+  	query = GB.SubstStringAdd(pattern, len, mq_add_param);
 
   if (!query || *query == 0)
   {

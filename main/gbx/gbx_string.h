@@ -67,7 +67,8 @@ void STRING_void_value(VALUE *value);
 int STRING_comp_value_equality(VALUE *str1, VALUE *str2);
 int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2);*/
 
-char *STRING_subst(const char *string, int len, SUBST_FUNC get_param);
+char *STRING_subst(const char *str, int len, SUBST_FUNC get_param);
+char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param);
 int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw);
 char *STRING_conv_file_name(const char *name, int len);
 char *STRING_conv_to_UTF8(const char *name, int len);

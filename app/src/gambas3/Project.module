@@ -223,6 +223,7 @@ PRIVATE SUB LastOpenedFiles()
   DIM hForm AS Object
   DIM iActive AS Integer
   DIM hActive AS Object
+  DIM aFold AS Integer[]
 
   Workspace.Lock
 
@@ -233,6 +234,8 @@ PRIVATE SUB LastOpenedFiles()
     hForm = OpenFile(Project.Dir &/ aOpen[0])
     IF NOT hForm THEN CONTINUE
     IF aOpen.Count = 2 THEN TRY hForm.SetState(aOpen[1])
+    aFold = Config["/OpenFile/Fold[" & CStr(iInd) & "]"]
+    IF aFold THEN TRY hForm.SetFoldedProc(aFold)
     IF iInd = iActive THEN hActive = hForm
   NEXT
   
@@ -366,6 +369,7 @@ PRIVATE FUNCTION CloseProject() AS Boolean
   DIM bModif AS Boolean
   DIM nOpen AS Integer
   DIM sState AS String
+  DIM aFold AS Integer[]
 
   'IF Len(Path) = 0 THEN RETURN
 
@@ -394,15 +398,23 @@ PRIVATE FUNCTION CloseProject() AS Boolean
     Config.Clear("/OpenFile")
     Workspace.Lock
     FOR EACH hForm IN Workspace.Children
-      IF NOT hForm.Closed THEN 
-        INC nOpen
-        sState = ""
-        TRY sState = hForm.GetState()
-        IF sState THEN sState = ":" & sState
-        Config["/OpenFile/File[" & CStr(nOpen) & "]"] = Mid$(hForm.Path, Len(Project.Dir) + 2) & sState
-        IF hForm = ActiveForm THEN Config["/OpenFile/Active"] = nOpen
-      ENDIF
+
+      INC nOpen
+      IF hForm = ActiveForm THEN Config["/OpenFile/Active"] = nOpen
+
+      sState = ""
+      TRY sState = hForm.GetState()
+
+      aFold = NULL
+      TRY aFold = hForm.GetFoldedProc()
+
+      IF sState THEN sState = ":" & sState
+      Config["/OpenFile/File[" & CStr(nOpen) & "]"] = Mid$(hForm.Path, Len(Project.Dir) + 2) & sState
+      
+      IF aFold THEN Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
+
       hForm.Delete
+
     NEXT
     Workspace.Unlock
     Config["/OpenFile/Count"] = nOpen

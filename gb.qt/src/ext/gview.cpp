@@ -586,6 +586,23 @@ void GEditor::paintCell(QPainter * painter, int row, int)
     }
   }
   
+  // Line text
+  if (doc->getHighlightMode() == GDocument::None || (l->modified && realRow == y && !getFlag(HighlightCurrent)))
+  {
+    p.setPen(styles[GLine::Normal].color);
+    p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
+  }
+  /*else if (l->flag)
+  {
+    p.setPen(styles[GLine::Background].color);
+    p.drawText(margin, fm.ascent(), l->s.getString().mid(xmin, lmax));
+  }*/
+  else
+  {
+    doc->colorize(realRow);
+    paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight());
+  }
+
   // Folding symbol
   if (margin && l->proc)
   {
@@ -608,23 +625,6 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   	highlight_text(p, x2m * charWidth + margin, fm.ascent() + 1, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
     /*p.fillRect(x1m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);
     p.fillRect(x2m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);*/
-  }
-
-  // Line text
-  if (doc->getHighlightMode() == GDocument::None || (l->modified && realRow == y && !getFlag(HighlightCurrent)))
-  {
-    p.setPen(styles[GLine::Normal].color);
-    p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
-  }
-  /*else if (l->flag)
-  {
-    p.setPen(styles[GLine::Background].color);
-    p.drawText(margin, fm.ascent(), l->s.getString().mid(xmin, lmax));
-  }*/
-  else
-  {
-    doc->colorize(realRow);
-    paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight());
   }
 
   // Text cursor
@@ -1623,7 +1623,7 @@ void GEditor::foldLine(int row, bool no_refresh)
 	GFoldedProc *fp;
 	int ny;
 	
-	if (!doc->lines.at(row)->proc)
+	if (!doc->hasLimit(row))
 		row = doc->getPreviousLimit(row);
 	
 	//fprintf(stderr, "foldLine %d\n", row);

@@ -36,6 +36,9 @@ EXTERN int SUBST_ntemp;
 typedef
   void (*SUBST_FUNC)(int, char **, int *);
 
+typedef
+  void (*SUBST_ADD_FUNC)(int);
+
 void SUBST_init(void);
 void SUBST_add(const char *src, int len);
 void SUBST_exit(void);

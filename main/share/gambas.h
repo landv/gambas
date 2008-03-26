@@ -563,6 +563,12 @@ typedef
   void (*GB_SUBST_CALLBACK)(int, char **, int *);
 
 
+/* Type of the GB.SubstStringAdd() callback */
+
+typedef
+  void (*GB_SUBST_ADD_CALLBACK)(int);
+
+
 /* Type of a posted function */
 
 typedef
@@ -844,6 +850,7 @@ typedef
     char *(*Translate)(const char *);
 
     char *(*SubstString)(const char *, int, GB_SUBST_CALLBACK);
+    char *(*SubstStringAdd)(const char *, int, GB_SUBST_ADD_CALLBACK);
     void (*SubstAdd)(const char *, int);
     int (*ConvString)(char **, const char *, int, const char *, const char *);
     char *(*FileName)(char *, int);

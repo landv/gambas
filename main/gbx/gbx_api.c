@@ -157,6 +157,7 @@ void *GAMBAS_Api[] =
   (void *)LOCAL_gettext,
   
   (void *)STRING_subst,
+  (void *)STRING_subst_add,
   (void *)SUBST_add,
   (void *)GB_ConvString,
   (void *)STRING_conv_file_name,
