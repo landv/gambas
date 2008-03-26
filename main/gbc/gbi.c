@@ -504,11 +504,17 @@ static void analyze(const char *comp, bool include)
 	
 		out_info = fopen(path_info, "w");
 		if (!out_info)
-			error(TRUE, "Cannot write file: %s", path_info);
+		{
+			error(FALSE, "Cannot write file: %s", path_info);
+			return;
+		}
 	
 		out_list = fopen(path_list, "w");
 		if (!out_list)
-			error(TRUE, "Cannot write file: %s", path_list);
+		{
+			error(FALSE, "Cannot write file: %s", path_list);
+			return;
+		}
 	}
 	
   fflush(stdout);
