@@ -30,6 +30,6 @@
 
 #define EVAL_MAX_COLOR  256
 
-PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result);
+PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result, bool rewrite);
 
 #endif

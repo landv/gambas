@@ -1,111 +1,111 @@
 ' Gambas class file
 
-PRIVATE $sChange AS String
+Private $sChange As String
 
-PRIVATE CONST DELIM_CHANGE AS String = ("This line and the following will be ignored")
+Private Const DELIM_CHANGE As String = ("This line and the following will be ignored")
 
-PUBLIC SUB Run(sChange AS String) AS Boolean
+Public Sub Run(sChange As String) As Boolean
 
   $sChange = sChange
-  RETURN NOT ME.ShowModal()
+  Return NOT Me.ShowModal()
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   
   txtName.Text = Settings["/VersionControlUser"]
-  IF NOT txtName.Text THEN 
+  If NOT txtName.Text Then 
     txtName.SetFocus
-  ELSE 
+  Else 
     txtPassword.SetFocus
-  ENDIF 
+  Endif 
   
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
   
-END
+End
 
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
-  DIM sChange AS String
-  DIM iPos AS Integer
-  DIM bRes AS Boolean
+  Dim sChange As String
+  Dim iPos As Integer
+  Dim bRes As Boolean
 
-  IF NOT Trim(txtName.Text) THEN 
+  If NOT Trim(txtName.Text) Then 
     Balloon.Warning(("Please enter the versioning user name"), txtName)
     txtName.SetFocus
-    RETURN 
-  ENDIF
+    Return 
+  Endif
   
   Settings["/VersionControlUser"] = Trim(txtName.Text)
   
   sChange = Trim(edtChange.Text)
   iPos = InStr(sChange, "---- " & DELIM_CHANGE)
-  IF iPos THEN sChange = Left(sChange, iPos - 1)
+  If iPos Then sChange = Left(sChange, iPos - 1)
 
-  INC Application.Busy
+  Inc Application.Busy
   bRes = VersionControl.Commit(Settings["/VersionControlUser"], txtPassword.Text, sChange)
-  DEC Application.Busy
+  Dec Application.Busy
   
-  IF bRes THEN
+  If bRes Then
     Message.Error(("The project could not be committed."))
-  ENDIF
+  Endif
 
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
 
-PUBLIC SUB edtChange_Cursor()
+Public Sub edtChange_Cursor()
 
   lblCursor.Text = CStr(edtChange.Line + 1) & ":" & CStr(edtChange.Column + 1)
 
-END
+End
 
-PUBLIC SUB btnCut_Click()
+Public Sub btnCut_Click()
 
   edtChange.Cut
 
-END
+End
 
-PUBLIC SUB btnCopy_Click()
+Public Sub btnCopy_Click()
 
   edtChange.Copy
 
-END
+End
 
-PUBLIC SUB btnPaste_Click()
+Public Sub btnPaste_Click()
 
   edtChange.Paste
 
-END
+End
 
-PUBLIC SUB btnUndo_Click()
+Public Sub btnUndo_Click()
 
   edtChange.Undo
 
-END
+End
 
-PUBLIC SUB btnRedo_Click()
+Public Sub btnRedo_Click()
 
   edtChange.Redo
 
-END
+End
 
-PUBLIC SUB btnIndent_Click()
+Public Sub btnIndent_Click()
 
   edtChange.Indent
 
-END
+End
 
-PUBLIC SUB btnUnindent_Click()
+Public Sub btnUnindent_Click()
 
   edtChange.Unindent
 
-END
+End

@@ -1,30 +1,30 @@
 ' Gambas module file
 
-PUBLIC $PopupHelpCache AS Collection
+Public $PopupHelpCache As Collection
 
-PRIVATE SUB GetPath(sPath AS String) AS String
+Private Sub GetPath(sPath As String) As String
   
   sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
   sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
-  RETURN System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
+  Return System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
   
-END
+End
 
 
-PUBLIC SUB Open()
+Public Sub Open()
 
-  DIM sTool AS String = FToolBox.GetTool()
+  Dim sTool As String = FToolBox.GetTool()
   
-  IF sTool THEN 
+  If sTool Then 
     GotoClass(CComponent.Classes[sTool].Component, sTool)
     FToolBox.SetTool
-  ELSE
+  Else
     Project.OpenWebPage(GetPath("tree/index.html"))
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE SUB FormatName(sName AS String) AS String
+Private Sub FormatName(sName As String) As String
 
   sName = LCase(sName)
   sName = Replace(sName, "_", "+")
@@ -33,207 +33,207 @@ PRIVATE SUB FormatName(sName AS String) AS String
   sName = Replace(sName, ".", "+")
   sName = Replace(sName, ":", "+")
   
-  RETURN sName
+  Return sName
   
-END
+End
 
 
-PUBLIC SUB GotoSymbol(hSymbol AS CSymbolInfo)
+Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   
-  DIM sLink AS String
-  DIM sName AS String
+  Dim sLink As String
+  Dim sName As String
   
   sName = LCase(hSymbol.Name)
   
-  IF hSymbol.Component = "gb" AND IF hSymbol.Class = "." THEN
+  If hSymbol.Component = "gb" AND If hSymbol.Class = "." Then
     sLink = "help/lang"
-  ELSE
+  Else
     sLink = "help/comp"
     sLink &= "/" & hSymbol.Component
-    IF hSymbol.Class <> "." THEN sLink &= "/" & LCase(hSymbol.Class)
-  ENDIF
+    If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
+  Endif
 
   sLink &/= sName '& ".html"
   sLink = FormatName(sLink)
   
   Project.OpenWebPage(GetPath(sLink) & ".html")
   
-END
+End
 
 
 
-PUBLIC SUB GotoComponent(sComp AS String)
+Public Sub GotoComponent(sComp As String)
   
-  DIM sLink AS String
+  Dim sLink As String
   
   sLink = "help/comp" &/ FormatName(sComp)
   Project.OpenWebPage(GetPath(sLink) & ".html")
   
-END
+End
 
-PUBLIC SUB GotoClass(sComp AS String, sClass AS String)
+Public Sub GotoClass(sComp As String, sClass As String)
   
-  DIM sLink AS String
+  Dim sLink As String
   
   sLink = "help/comp" &/ FormatName(sComp) &/ FormatName(sClass)
   Project.OpenWebPage(GetPath(sLink) & ".html")
   
-END
+End
 
-PUBLIC FUNCTION GotoKeyword(sName AS String, OPTIONAL sName2 AS String) AS Boolean
+Public Function GotoKeyword(sName As String, Optional sName2 As String) As Boolean
 
-  DIM sPath AS String
+  Dim sPath As String
 
-  IF sName2 THEN
-    IF NOT GotoKeyword(sName2) THEN RETURN
-  ENDIF
+  If sName2 Then
+    If NOT GotoKeyword(sName2) Then Return
+  Endif
 
-  IF Right(sName) = "$" THEN sName = Left$(sName, -1)
+  If Right(sName) = "$" Then sName = Left$(sName, -1)
 
   sPath = GetPath("help/lang" &/ LCase(sName)) & ".html"
-  IF NOT Exist(sPath) THEN RETURN TRUE
+  If NOT Exist(sPath) Then Return True
   Project.OpenWebPage(sPath)
   
-CATCH
+Catch
 
-  RETURN TRUE
+  Return True
 
-END
+End
 
-PUBLIC FUNCTION GotoDatatype(sName AS String) AS Boolean
+Public Function GotoDatatype(sName As String) As Boolean
 
-  DIM sPath AS String
+  Dim sPath As String
 
   sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
-  IF NOT Exist(sPath) THEN RETURN TRUE
+  If NOT Exist(sPath) Then Return True
   Project.OpenWebPage(sPath)
   
-CATCH
+Catch
 
-  RETURN TRUE
+  Return True
 
-END
+End
 
-PUBLIC FUNCTION GetSymbolHelpPath(hSymbol AS CSymbolInfo) AS String
+Public Function GetSymbolHelpPath(hSymbol As CSymbolInfo) As String
   
-  DIM sLink AS String
-  DIM sName AS String
-  DIM Result AS String
+  Dim sLink As String
+  Dim sName As String
+  Dim Result As String
   
   sName = LCase(hSymbol.Name)
   
-  IF hSymbol.Component = "gb" AND IF hSymbol.Class = "." THEN
+  If hSymbol.Component = "gb" AND If hSymbol.Class = "." Then
     sLink = "help/lang"
-  ELSE
+  Else
     sLink = "help/comp"
     sLink &= "/" & hSymbol.Component
-    IF hSymbol.Class <> "." THEN sLink &= "/" & LCase(hSymbol.Class)
-  ENDIF
+    If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
+  Endif
 
   sLink &/= sName 
   sLink = FormatName(sLink)
   
   Result = GetPath(sLink) & ".html"
     
-  IF NOT Exist(Result) THEN 
-    IF hSymbol.Kind THEN 
+  If NOT Exist(Result) Then 
+    If hSymbol.Kind Then 
       'Try looking for the property in the object that this object inherits from
       hSymbol.Class = hSymbol.Kind
       hSymbol.Kind = ""
       Result = GetSymbolHelpPath(hsymbol)
-      IF NOT Exist(Result) THEN 
+      If NOT Exist(Result) Then 
         'Try looking for the property in the Control object
         hSymbol.Class = "Control"
         Result = GetSymbolHelpPath(hsymbol)
-      ENDIF   
-    ENDIF 
-  ENDIF 
+      Endif   
+    Endif 
+  Endif 
   
   Result = LCase(Result)
   
-  RETURN Result
+  Return Result
   
-END
+End
 
-PUBLIC FUNCTION GetSymbolHelpText(SymbolHelpPath AS String) AS String
-  DIM HelpText AS String
+Public Function GetSymbolHelpText(SymbolHelpPath As String) As String
+  Dim HelpText As String
   
   'Check cache
-  IF NOT $PopupHelpCache THEN 
+  If NOT $PopupHelpCache Then 
     'Create cache collection
-    $PopupHelpCache = NEW Collection(gb.Text)
-  ENDIF 
+    $PopupHelpCache = New Collection(gb.Text)
+  Endif 
   
-  IF $PopupHelpCache.Exist(SymbolHelpPath) THEN 
-    RETURN $PopupHelpCache[SymbolHelpPath]
-  ELSE 
+  If $PopupHelpCache.Exist(SymbolHelpPath) Then 
+    Return $PopupHelpCache[SymbolHelpPath]
+  Else 
     'Get from file
     HelpText = GetHelpTextFromFile(SymbolHelpPath)
-    IF HelpText THEN 
+    If HelpText Then 
       'Add to cache
       $PopupHelpCache[SymbolHelpPath] = HelpText 
-      RETURN HelpText 
-    ELSE 
-      RETURN ""
-    ENDIF 
-  ENDIF 
+      Return HelpText 
+    Else 
+      Return ""
+    Endif 
+  Endif 
     
-END
+End
 
-PRIVATE FUNCTION GetHelpTextFromFile(SymbolHelpPath AS String) AS String
+Private Function GetHelpTextFromFile(SymbolHelpPath As String) As String
   
-  DIM hFileIn AS File
-  DIM sInputLine AS String
-  DIM bGrabNextLine AS Boolean
-  DIM sResult AS String
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
+  Dim hFileIn As File
+  Dim sInputLine As String
+  Dim bGrabNextLine As Boolean
+  Dim sResult As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
   
-  bGrabNextLine = FALSE
+  bGrabNextLine = False
   sResult = ""
 
-  OPEN SymbolHelpPath FOR READ AS #hFileIn
+  Open SymbolHelpPath For Read As #hFileIn
 
-  DO WHILE NOT Eof(hFileIn)
-    LINE INPUT #hFileIn, sInputLine
-    IF bGrabNextLine THEN 
+  Do While NOT Eof(hFileIn)
+    Line Input #hFileIn, sInputLine
+    If bGrabNextLine Then 
     
       ' Remove links
       
-      DO
+      Do
         iPos = InStr(sInputLine, "<a ")
-        IF iPos = 0 THEN BREAK 
+        If iPos = 0 Then Break 
         iPos2 = InStr(sInputLine, ">", iPos)
-        IF iPos2 = 0 THEN BREAK 
+        If iPos2 = 0 Then Break 
         sInputLine = Left(sInputLine, iPos - 1) & Mid$(sInputLine, iPos2 + 1)
-      LOOP 
+      Loop 
       
       sInputLine = Replace(sInputLine, "</a>", "")
     
       sResult &= " " & Trim(sInputLine)
       iPos = InStr(sResult, ".")
-      IF iPos THEN
+      If iPos Then
         sResult = Left(sResult, iPos)
-        BREAK 
-      ENDIF
-    ELSE 
-      IF Right(RTrim(sInputLine), 6) = "</pre>" THEN 
-        bGrabNextLine = TRUE
-      ENDIF 
-    ENDIF 
-  LOOP 
+        Break 
+      Endif
+    Else 
+      If Right(RTrim(sInputLine), 6) = "</pre>" Then 
+        bGrabNextLine = True
+      Endif 
+    Endif 
+  Loop 
   
   sResult = Trim(sResult)
   
-FINALLY 
+Finally 
   
-  TRY CLOSE hFileIn
+  Try Close hFileIn
   
-  IF NOT sResult THEN 
-    RETURN "<i>" & ("No help found.") & "</i>"
-  ELSE
-    RETURN sResult 
-  ENDIF
+  If NOT sResult Then 
+    Return "<i>" & ("No help found.") & "</i>"
+  Else
+    Return sResult 
+  Endif
   
-END
+End
 

@@ -28,6 +28,7 @@
 #include "gb_common.h"
 #include "eval_analyze.h"
 
+#include "CSystem.h"
 /*#define DEBUG*/
 
 static EVAL_COLOR colors[EVAL_MAX_COLOR];
@@ -66,6 +67,8 @@ static int is_me_last(PATTERN pattern)
 
 static void get_symbol(PATTERN pattern, const char **symbol, int *len)
 {
+  static char keyword[16];
+  int i;
   SYMBOL *sym;
   int type = PATTERN_type(pattern);
   int index = PATTERN_index(pattern);
@@ -100,6 +103,14 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
   *len = sym->len;
   if (*len > 4096)
     *len = 4096;
+    
+  if (type == RT_RESERVED && !EVAL->rewrite)
+  {
+  	memcpy(keyword, sym->name, sym->len);
+  	for (i = 0; i < sym->len; i++)
+  		keyword[i] = toupper(keyword[i]);
+  	*symbol = keyword;
+  }
 }
 
 
@@ -410,7 +421,7 @@ static void add_end_pattern(void)
 }
 
 
-PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result)
+PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result, bool rewrite)
 {
 	int nspace = 0;
 
@@ -440,6 +451,7 @@ PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result)
 		EVAL->len = len;
 		
 		EVAL->analyze = TRUE;
+		EVAL->rewrite = rewrite;
 
     EVAL_start(EVAL);
 

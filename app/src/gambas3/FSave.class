@@ -1,86 +1,86 @@
 ' Gambas class file
 
-STATIC cFile AS NEW String[]
+Static cFile As New String[]
 
-STATIC PUBLIC FUNCTION Run(OPTIONAL bQuit AS Boolean) AS Boolean
+Static Public Function Run(Optional bQuit As Boolean) As Boolean
 
-  DIM hForm AS Form
+  Dim hForm As Form
   
-  hForm = NEW FSave(bQuit)
-  RETURN NOT hForm.ShowModal()
+  hForm = New FSave(bQuit)
+  Return NOT hForm.ShowModal()
 
-END
+End
 
-PUBLIC SUB _new(bQuit AS Boolean)
+Public Sub _new(bQuit As Boolean)
 
-  DIM hFile AS Object
-  DIM hPict AS Picture
+  Dim hFile As Object
+  Dim hPict As Picture
 
-  FOR EACH hFile IN Project.Files
-    IF hFile.IsModified() THEN
+  For Each hFile In Project.Files
+    If hFile.IsModified() Then
       hPict = Picture["img/16/" & File.Ext(hFile.Path) & ".png"]
-      lvwFile.Add(hFile.Path, File.Name(hFile.Path), hPict).Selected = TRUE
-    ENDIF
-  NEXT
+      lvwFile.Add(hFile.Path, File.Name(hFile.Path), hPict).Selected = True
+    Endif
+  Next
 
   'lvwFile.SelectAll
   
-  IF bQuit THEN
+  If bQuit Then
     btnQuit.Picture = Picture["icon:/24/quit"]
     btnQuit.Text = ("Quit")
-  ENDIF
+  Endif
 
-  btnQuit.Enabled = FALSE
+  btnQuit.Enabled = False
 
-END
+End
 
 
-PUBLIC SUB btnSave_Click()
+Public Sub btnSave_Click()
 
   lvwFile.SelectAll
-  btnQuit.Enabled = TRUE
+  btnQuit.Enabled = True
 
-END
+End
 
 
-PUBLIC SUB btnQuit_Click()
+Public Sub btnQuit_Click()
 
-  DIM bSaved AS Boolean
-  DIM hFile AS Object
+  Dim bSaved As Boolean
+  Dim hFile As Object
   
-  FOR EACH hFile IN Project.Files
-    IF hFile.IsModified() THEN
+  For Each hFile In Project.Files
+    If hFile.IsModified() Then
 
-      IF lvwFile[hFile.Path].Selected THEN
-        IF hFile.Save() THEN RETURN
-      ENDIF
+      If lvwFile[hFile.Path].Selected Then
+        If hFile.Save() Then Return
+      Endif
       
-    ENDIF
-  NEXT
+    Endif
+  Next
 
   'IF bSaved THEN ME.Close(TRUE)
 
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
-
-
-PUBLIC SUB btnCancel_Click()
-
-  ME.Close()
-
-END
+End
 
 
-PUBLIC SUB btnIgnore_Click()
+Public Sub btnCancel_Click()
 
-  lvwFile.SelectAll(FALSE)
-  btnQuit.Enabled = TRUE
+  Me.Close()
 
-END
+End
 
-PUBLIC SUB lvwFile_MouseUp()
 
-  btnQuit.Enabled = TRUE  
+Public Sub btnIgnore_Click()
 
-END
+  lvwFile.SelectAll(False)
+  btnQuit.Enabled = True
+
+End
+
+Public Sub lvwFile_MouseUp()
+
+  btnQuit.Enabled = True  
+
+End

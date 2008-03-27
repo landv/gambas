@@ -178,6 +178,11 @@ bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
   return QObject::eventFilter(o, e);
 }
 
+void MyTabWidget::fontChange(const QFont &oldFont)
+{
+	forceLayout();
+}
+
 
 /***************************************************************************
 

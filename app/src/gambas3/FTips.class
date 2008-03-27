@@ -1,124 +1,124 @@
 ' Gambas class file
 
-STATIC PRIVATE $aOrder AS NEW String[]
+Static Private $aOrder As New String[]
 
-STATIC PRIVATE $iTip AS Integer
+Static Private $iTip As Integer
 
-STATIC PUBLIC SUB Run()
+Static Public Sub Run()
 
-  DIM hForm AS Form
+  Dim hForm As Form
 
-  hForm = NEW FTips
+  hForm = New FTips
   hForm.ShowModal
 
-END
+End
 
-STATIC PUBLIC SUB _init()
+Static Public Sub _init()
 
-  DIM hFic AS File
-  DIM sLig AS String
+  Dim hFic As File
+  Dim sLig As String
 
-  OPEN "tips/tips.en" AS #hFic
+  Open "tips/tips.en" As #hFic
 
-  WHILE NOT Eof(hFic)
-    LINE INPUT #hFic, sLig
-    IF Left$(sLig) = "[" THEN
+  While NOT Eof(hFic)
+    Line Input #hFic, sLig
+    If Left$(sLig) = "[" Then
       $aOrder.Add(Mid$(Trim$(sLig), 2, -1))
-    ENDIF
-  WEND
+    Endif
+  Wend
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  txtTip.Background = ME.Background
+  txtTip.Background = Me.Background
 
   $iTip = Settings["/LastTip", 0]
-  chkShowTip.Value = Settings["/ShowTipOnStartup", TRUE]
+  chkShowTip.Value = Settings["/ShowTipOnStartup", True]
 
   ShowNextTip
 
-END
+End
 
-PRIVATE SUB ShowNextTip(OPTIONAL bPrev AS Boolean)
+Private Sub ShowNextTip(Optional bPrev As Boolean)
 
   txtTip.RichText = GetNextTip(bPrev)
   lblTitle.Text = ("Tip of the day") & " #" & CStr($iTip)
 
-END
+End
 
 
-PRIVATE FUNCTION GetNextTip(OPTIONAL bPrev AS Boolean) AS String
+Private Function GetNextTip(Optional bPrev As Boolean) As String
 
-  DIM iInd AS Integer
-  DIM hFile AS File
-  DIM sLig AS String
-  DIM sTip AS String
-  DIM sFile AS String
-  DIM sLang AS String
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
+  Dim iInd As Integer
+  Dim hFile As File
+  Dim sLig As String
+  Dim sTip As String
+  Dim sFile As String
+  Dim sLang As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
 
-  IF bPrev THEN
-    DEC $iTip
-    IF $iTip < 1 THEN $iTip = 1
-  ELSE
-    IF $iTip >= $aOrder.Count THEN
+  If bPrev Then
+    Dec $iTip
+    If $iTip < 1 Then $iTip = 1
+  Else
+    If $iTip >= $aOrder.Count Then
       $iTip = 1
-    ELSE
-      INC $iTip
-    ENDIF
-  ENDIF
+    Else
+      Inc $iTip
+    Endif
+  Endif
 
   sLang = System.Language
 
   sFile = "tips/tips." & sLang
-  IF NOT Exist(sFile) THEN
+  If NOT Exist(sFile) Then
     iPos = InStr(sLang, "_")
-    IF iPos THEN
+    If iPos Then
       sLang = Left$(sLang, iPos - 1)
       sFile = "tips/tips." & sLang
-    ENDIF
-  ENDIF
-  IF NOT Exist(sFile) THEN
+    Endif
+  Endif
+  If NOT Exist(sFile) Then
     sFile = "tips/tips.en"
-  ENDIF
+  Endif
 
   sTip = File.Load(sFile)
   iPos = InStr(sTip, "[" & $aOrder[$iTip - 1] & "]")
-  IF iPos = 0 THEN
+  If iPos = 0 Then
     sTip = File.Load("tips/tips.en")
-  ENDIF
+  Endif
   iPos = InStr(sTip, "[" & $aOrder[$iTip - 1] & "]")
-  IF iPos = 0 THEN RETURN
+  If iPos = 0 Then Return
 
   iPos = InStr(sTip, "\n", iPos)
-  IF iPos = 0 THEN RETURN
-  INC iPos
+  If iPos = 0 Then Return
+  Inc iPos
 
   iPos2 = InStr(sTip, "\n[", iPos)
-  IF iPos2 = 0 THEN iPos2 = Len(sTip) + 1
+  If iPos2 = 0 Then iPos2 = Len(sTip) + 1
 
-  RETURN Mid$(sTip, iPos, iPos2 - iPos)
+  Return Mid$(sTip, iPos, iPos2 - iPos)
 
-CATCH
+Catch
 
   Message.Error(("Unable to read tip of the day !") & "\n\n" & Error.Text)
 
-END
+End
 
-PUBLIC SUB chkShowTip_Click()
+Public Sub chkShowTip_Click()
 
   Settings["/ShowTipOnStartup"] = chkShowTip.Value
 
-END
+End
 
-PUBLIC SUB btnNext_Click()
+Public Sub btnNext_Click()
 
   ShowNextTip
 
-END
+End
 
 
 ' PUBLIC SUB Form_Resize()
@@ -138,15 +138,15 @@ END
 ' 
 ' END
 
-PUBLIC SUB btnClose_Click()
+Public Sub btnClose_Click()
 
   Settings["/LastTip"] = $iTip
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB btnPrev_Click()
+Public Sub btnPrev_Click()
 
-  ShowNextTip(TRUE)
+  ShowNextTip(True)
 
-END
+End

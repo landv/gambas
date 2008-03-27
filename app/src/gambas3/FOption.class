@@ -1,59 +1,67 @@
 ' Gambas class file
 
-STATIC PRIVATE $aTheme AS String[] = ["amethyst", "amber", "emerald", "ruby", "sapphire", "visual", "obsidian"]
-STATIC PRIVATE $aThemeName AS String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian")]
-STATIC PRIVATE $aBrowser AS String[] = ["konqueror", "firefox", "epiphany", "seamonkey", "opera"]
+Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "ruby", "sapphire", "visual", "obsidian", "quest"]
+Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest")]
+Static Private $aBrowser As String[] = ["konqueror", "firefox", "epiphany", "seamonkey", "opera"]
 
-PRIVATE $cLast AS Collection
-PRIVATE $cCurrent AS Collection
-PRIVATE $bNoChange AS Boolean
-PRIVATE $aConfig AS Object[]
+Private $cLast As Collection
+Private $cCurrent As Collection
+Private $bNoChange As Boolean
+Private $aConfig As Object[]
+Private $sStyle As String
+Private $hDraw As DrawingArea
 
-PRIVATE SUB ReadConfig()
+Private Sub ReadConfig()
   
-  DIM aParam AS Variant[]
-  DIM hCtrl AS Object
-  DIM vVal AS Variant
+  Dim aParam As Variant[]
+  Dim hCtrl As Object
+  Dim vVal As Variant
   
-  FOR EACH aParam IN $aConfig
+  For Each aParam In $aConfig
   
     hCtrl = aParam[0]
     vVal = Settings[aParam[1], aParam[2]]
     
-    SELECT CASE Object.Type(hCtrl)
+    Select Case Object.Type(hCtrl)
     
-      CASE "FontChooser"
+      Case "FontChooser"
         hCtrl.SelectedFont = vVal
-      CASE "ComboBox"
-        IF IsBoolean(vVal) THEN 
+      Case "ComboBox"
+        If IsBoolean(vVal) Then 
           hCtrl.Index = If(vVal, 1, 0)
-        ELSE
+        Else
           hCtrl.Index = vVal
-        ENDIF
-      CASE "SpinBox"
+        Endif
+      Case "SpinBox"
         hCtrl.Value = vVal
-      DEFAULT 
-        DEBUG "Unmanaged type: "; Object.Type(hCtrl)
+      Default 
+        Debug "Unmanaged type: "; Object.Type(hCtrl)
     
-    END SELECT
+    End Select
   
-  NEXT
+  Next
   
-END
+End
 
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  cmbTheme.List = $aThemeName
+  Dim iInd As Integer
+  Dim hHBox As HBox
+  Dim hColor As DrawingArea
+  Dim hButton As Button
+
+  cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   
-  $cLast = MColor.ReadColor(Settings, "/Highlight")
-  $cCurrent = MColor.Copy($cLast)
+  $cLast = MTheme.ReadSettings(Settings, "/Highlight")
+  $cCurrent = MTheme.Copy($cLast)
   
   $aConfig = [
     [fntEditor, "/Editor/Font", Project.DEFAULT_FONT],
-    [cmbGlobalFont, "/UseSmallFont", 1],
-    [cmbToolbox, "/SmallToolbox", 0],
+    [cmbGlobalFont, "/GlobalFont", 0],
+    [cmbTabStripFont, "/TabStripFont", 0],
+    [cmbToolbox, "/ToolboxSize", 0],
     [cmbSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
     [cmbProcLimit, "/Editor/ProcedureLimit", 2],
@@ -61,148 +69,121 @@ PUBLIC SUB _new()
     [cmbShowChange, "/Editor/ShowChange", 1],
     [cmbShowCurrent, "/Editor/ShowCurrent", 1],
     [cmbCompletion, "/Editor/Completion", 1],
+    [cmbFoldProc, "/Editor/Fold", 0],
     [txtRecent, "/Recent/Max", Project.DEFAULT_MAX_RECENT],
     [cmbOutput, "/QuietExternalCommands", 0],
     [cmbMessage, "/ShowMessages", 1],
-    [cmbIntegratedHelp, "/PropertyHelp", 1]]
+    [cmbIntegratedHelp, "/PropertyHelp", 1],
+    [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0]]
   
-  $bNoChange = TRUE
+  $bNoChange = True
   ReadConfig
   cmbIconTheme.Index = ["gnome", "kde"].Find(Settings["/Theme"]) + 1
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
-  $bNoChange = FALSE
+  $bNoChange = False
   
-  ' fntEditor.SelectedFont = Settings["/Editor/Font", Project.DEFAULT_FONT]
-  ' cmbGlobalFont.Index = If(Settings["/UseSmallFont", FALSE], 1, 0)
-  ' cmbToolbox.Index = If(Settings["/ToolboxSize", FALSE], 1, 0)
-  ' cmbTooltip.Index = If(Settings["/ShowTooltip", TRUE], 0, 1)
-  ' cmbBalloonTooltip.Index = If(Settings["/ShowBalloon", TRUE], 0, 1)
-  ' 'cmbMascot.Index = If(Settings["/ShowMascot", FALSE], 0, 1)
-  ' cmbSortProperty.Index = If(Settings["/SortProperties", FALSE], 0, 1)
-  ' txtTabSize.Value = Settings["/DefaultTabSize", 2]
-  ' cmbProcLimit.Index = Settings["/Editor/ProcedureLimit", 2]
-  ' cmbLineNumber.Index = If(Settings["/Editor/ShowLineNumbers", FALSE], 0, 1)
-  ' cmbShowChange.Index = If(Settings["/Editor/ShowChange", TRUE], 0, 1)
-  ' cmbShowCurrent.Index = If(Settings["/Editor/ShowCurrent", TRUE], 0, 1)
-  ' cmbCompletion.Index = If(Settings["/Editor/Completion", TRUE], 0, 1)
-  ' cmbIconTheme.Index = ["gnome", "kde"].Find(Settings["/Theme"]) + 1
-  ' cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
-  ' 'cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1
-  ' txtRecent.Value = Settings["/Recent/Max", Project.DEFAULT_MAX_RECENT]
-  ' cmbOutput.Index = If(Settings["/QuietExternalCommands", FALSE], 0, 1)
+  For iInd = 0 To MTheme.ColorKeys.Max
   
-  ME.Center
+    hHBox = New HBox(svwTheme)
+    hHBox.Tag = MTheme.ColorKeys[iInd]
+    hHBox.Height = 3 * Desktop.Scale
+    hHBox.Spacing = 4
+    hColor = New DrawingArea(hHBox) As "dwgStyle"
+    hColor.Expand = True
+    hButton = New Button(hHBox) As "btnStyle"
+    hButton.Text = ("Define...")
+    hButton.Width = Desktop.Scale * 12
   
-END
-
-PUBLIC SUB Form_Open()
-
-  UpdateColor(TRUE)
+  Next
   
-END
-
-PUBLIC SUB Form_KeyPress()
+  RefreshStyle
   
-  IF Key.Code = Key.Esc THEN ME.Close
+  Me.Center
   
-END
+End
 
-
-PRIVATE SUB UpdateColor(OPTIONAL bNoRefresh AS Boolean)
+Public Sub Form_KeyPress()
   
-  DIM hCtrl AS Control
+  If Key.Code = Key.Esc Then Me.Close
   
-  FOR EACH hCtrl IN panColor1.Children
-    IF hCtrl.Tag THEN hCtrl.Background = $cCurrent[hCtrl.Tag]
-  NEXT
+End
 
-  FOR EACH hCtrl IN panColor2.Children
-    IF hCtrl.Tag THEN hCtrl.Background = $cCurrent[hCtrl.Tag]
-  NEXT
+Public Sub cmbTheme_Click()
 
-  IF NOT bNoRefresh THEN RefreshEditor
+  Dim cColor As Collection
 
-END
+  If cmbTheme.Index <= 0 Then Return
 
-
-PUBLIC SUB btnColor_MouseDown()
-
-  LAST.Border = Border.Sunken
-
-END
-
-PUBLIC SUB btnColor_MouseUp()
-
-  DIM hColor AS Panel = LAST
-  hColor.Border = Border.Raised
-  IF FColorChooser.Run("&H" & Hex$(hColor.Background) & "&") THEN RETURN
-  $cCurrent[hColor.Tag] = FColorChooser.Value
-  cmbTheme.Index = 0
-  UpdateColor
-
-END
-
-PUBLIC SUB cmbTheme_Click()
-
-  DIM cColor AS Collection
-
-  IF cmbTheme.Index <= 0 THEN RETURN
-
-  $cCurrent = MColor.ReadTheme($aTheme[$aThemeName.Find(cmbTheme.Text)])
-  UpdateColor
+  $cCurrent = MTheme.ReadFile($aTheme[$aThemeName.Find(cmbTheme.Text)])
+  RefreshEditor
   
-END
+End
 
-
-PUBLIC SUB btnExport_Click()
+Public Sub btnExport_Click()
 
   Dialog.Path = Settings["/FOption/ThemePath", System.User.Home &/ System.User.Name & ".gambas.theme"]
   Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
   Dialog.Title = ("Export a theme file")
-  IF Dialog.SaveFile() THEN RETURN
+  If Dialog.SaveFile() Then Return
   Settings["/FOption/ThemePath"] = Dialog.Path
   
-  MColor.WriteTheme(Dialog.Path, $cCurrent)
+  MTheme.WriteFile(Dialog.Path, $cCurrent)
   
-END
+End
 
-PRIVATE SUB RefreshEditor()
+Private Sub RefreshStyle()
   
-  DIM hFile AS Object
+  Dim hHBox As HBox
+  
+  svwTheme.Background = CStyle[$cCurrent["Background"]].Foreground
+  
+  For Each hHBox In svwTheme.Children
+    hHBox.Children[0].Refresh
+  Next  
+  
+End
 
-  IF $bNoChange THEN RETURN
 
-  MColor.WriteColor(Settings, "Highlight", $cCurrent) 
+
+Private Sub RefreshEditor()
+  
+  Dim hFile As Object
+
+  If $bNoChange Then Return
+
+  RefreshStyle
+  
+  MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
   Settings["/Editor/Font"] = fntEditor.SelectedFont
   
   Project.RefreshBreakpointPicture
   
-  FOR EACH hFile IN Project.Files
-    IF hFile IS FEditor OR hFile IS FTextEditor THEN hFile.ReadConfig()
-  NEXT  
+  For Each hFile In Project.Files
+    If hFile IS FEditor OR hFile IS FTextEditor Then hFile.ReadConfig()
+  Next  
   
   FOutput.ReadConfig
   FFindList.ReadConfig
 
-END
+End
 
-PUBLIC SUB btnUndo_Click()
+Public Sub btnUndo_Click()
 
-  $cCurrent = MColor.Copy($cLast)
-  UpdateColor
+  $cCurrent = MTheme.Copy($cLast)
   cmbTheme.Index = 0
+  RefreshEditor
 
-END
+End
 
-PUBLIC SUB fntEditor_Change()
+Public Sub fntEditor_Change()
 
   RefreshEditor
 
-END
+End
 
-PRIVATE SUB RefreshWindow()
+Private Sub RefreshWindow()
   
-  IF $bNoChange THEN RETURN
+  If $bNoChange Then Return
 
   FProperty.ReadConfig
   FMain.ReadConfig
@@ -211,80 +192,87 @@ PRIVATE SUB RefreshWindow()
   FFormStack.ReadConfig
   FToolBox.ReadConfig
 
-END
+End
 
-PUBLIC SUB cmbGlobalFont_Click()
+Public Sub cmbGlobalFont_Click()
 
-  Settings["/UseSmallFont"] = cmbGlobalFont.Index = 1
+  Settings["/GlobalFont"] = cmbGlobalFont.Index
   RefreshWindow
 
-END
+End
 
-PUBLIC SUB cmbTooltip_Click()
+Public Sub cmbTabStripFont_Click()
+
+  Settings["/TabStripFont"] = cmbTabStripFont.Index
+  RefreshWindow
+
+End
+
+Public Sub cmbTooltip_Click()
 
   Settings["/ShowTooltip"] = cmbTooltip.Index = 1
   Application.Tooltip.Enabled = cmbTooltip.Index = 1
   
-END
+End
 
-PUBLIC SUB txtTabSize_Change()
+Public Sub txtTabSize_Change()
 
   Settings["/DefaultTabSize"] = txtTabSize.Value
 
-END
+End
 
-PUBLIC SUB cmbProcLimit_Click()
+Public Sub cmbProcLimit_Click()
 
   Settings["/Editor/ProcedureLimit"] = cmbProcLimit.Index
   RefreshEditor
 
-END
+End
 
-PUBLIC SUB cmbLineNumber_Click()
+Public Sub cmbLineNumber_Click()
 
   Settings["/Editor/ShowLineNumbers"] = cmbLineNumber.Index = 1
   RefreshEditor
 
-END
+End
 
-PUBLIC SUB cmbShowChange_Click()
+Public Sub cmbShowChange_Click()
 
   Settings["/Editor/ShowChange"] = cmbShowChange.Index = 1
   RefreshEditor
 
-END
+End
 
-PUBLIC SUB cmbShowCurrent_Click()
+Public Sub cmbShowCurrent_Click()
 
   Settings["/Editor/ShowCurrent"] = cmbShowCurrent.Index = 1
   RefreshEditor
 
-END
+End
 
-PUBLIC SUB cmbCompletion_Click()
+Public Sub cmbCompletion_Click()
 
   Settings["/Editor/Completion"] = cmbCompletion.Index = 1
   RefreshEditor
 
-END
+End
 
-PUBLIC SUB btnImport_Click()
+Public Sub btnImport_Click()
 
   Dialog.Path = Settings["/FOption/ThemePath", System.User.Home]
   Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
   Dialog.Title = ("Select a theme file")
-  IF Dialog.OpenFile() THEN RETURN
+  If Dialog.OpenFile() Then Return
   
   'Enhanced Dialog.OpenFile() is buggy 
-  IF NOT Dialog.Path OR IF IsDir(Dialog.Path) THEN RETURN
+  If NOT Dialog.Path OR If IsDir(Dialog.Path) Then Return
   
   Settings["/FOption/ThemePath"] = Dialog.Path 
   
-  $cCurrent = MColor.ReadTheme(Dialog.Path)
-  UpdateColor
+  $cCurrent = MTheme.ReadFile(Dialog.Path)
   cmbTheme.Index = 0
+  RefreshEditor
 
-END
+End
 
 ' PUBLIC SUB cmbMascot_Click()
 ' 
@@ -293,43 +281,43 @@ END
 ' 
 ' END
 
-PUBLIC SUB cmbSortProperty_Click()
+Public Sub cmbSortProperty_Click()
 
   Settings["/SortProperties"] = cmbSortProperty.Index = 1
   FProperty.ReadConfig
 
-END
+End
 
-PRIVATE SUB NeedRestart(hCtrl AS Control)
+Private Sub NeedRestart(hCtrl As Control)
   
   Balloon.Warning(("You need to restart the application to see your changes."), hCtrl)  
   
-END
+End
 
 
-PUBLIC SUB cmbIconTheme_Click()
+Public Sub cmbIconTheme_Click()
 
-  IF cmbIconTheme.Index > 0
+  If cmbIconTheme.Index > 0
     Settings["/Theme"] = LCase(cmbIconTheme.Text)
-  ELSE 
+  Else 
     Settings["/Theme"] = ""
-  ENDIF
+  Endif
   
   NeedRestart(cmbIcontheme)
   
-END
+End
 
-PUBLIC SUB cmbBrowser_Click()
+Public Sub cmbBrowser_Click()
 
-  IF cmbBrowser.Index > 0 THEN 
+  If cmbBrowser.Index > 0 Then 
     Settings["/Browser"] = LCase(cmbBrowser.Text)
-  ELSE   
+  Else   
     Settings["/Browser"] = ""
-  ENDIF
+  Endif
   
   Project.Browser = ""
 
-END
+End
 
 ' PUBLIC SUB cmbImageEditor_Click()
 ' 
@@ -343,43 +331,198 @@ END
 ' 
 ' END
 
-PUBLIC SUB cmbToolbox_Click()
+Public Sub cmbToolbox_Click()
 
-  Settings["/SmallToolbox"] = cmbToolbox.Index = 1
+  Settings["/ToolboxSize"] = cmbToolbox.Index
   FToolBox.ReadConfig
 
-END
+End
 
-PUBLIC SUB txtRecent_Change()
+Public Sub txtRecent_Change()
 
   Settings["/Recent/Max"] = txtRecent.Value
   NeedRestart(txtRecent)
   
-END
+End
 
-PUBLIC SUB cmbOutput_Click()
+Public Sub cmbOutput_Click()
 
   Settings["/QuietExternalCommands"] = cmbOutput.Index = 1
 
-END
+End
 
-PUBLIC SUB btnClose_Click()
+Public Sub btnClose_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB cmbMessage_Click()
+Public Sub cmbMessage_Click()
 
   Settings["/ShowMessages"] = cmbMessage.Index
   FMain.ReadConfig
 
-END
+End
 
-PUBLIC SUB cmbIntegratedHelp_Click()
+Public Sub cmbIntegratedHelp_Click()
 
   Settings["/PropertyHelp"] = cmbIntegratedHelp.Index = 1
   FProperty.CheckIntegratedHelpSetting
   
-END
+End
 
+Public Sub dwgStyle_Draw()
+  
+  Dim hDraw As DrawingArea = Last
+  Dim sKey As String = hDraw.Parent.Tag
+  Dim hStyle As CStyle = CStyle[$cCurrent[sKey]]
+  Dim hStyle2 As CStyle
+  Dim sName As String
+  Dim iForeground As Integer
+  Dim iBackground As Integer
+
+  sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
+
+  Draw.Font = Font[fntEditor.SelectedFont]
+  If hStyle.Underline Then Draw.Font.Underline = True
+  If hStyle.Italic Then Draw.Font.Italic = True
+  
+  If MTheme.IsBackgroundStyle(sKey) Then 
+    iBackground = hStyle.Foreground
+    iForeground = CStyle[$cCurrent["Normal"]].Foreground
+  Else 
+    iBackground = hStyle.Background
+    iForeground = hStyle.Foreground
+  Endif
+  
+  If iBackground <> Color.Default Then 
+    Draw.FillColor = iBackground
+    Draw.FillStyle = Fill.Solid
+    Draw.LineStyle = Line.None
+    Draw.Rect(0, 0, hDraw.Width, hDraw.Height)
+  Endif
+  Draw.Foreground = iForeground
+  Draw.Text(sName, 4, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  If hStyle.Bold Then Draw.Text(sName, 5, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  
+End
+
+Public Sub btnStyle_Click()
+
+  $hDraw = Last.Parent.Children[0]
+  $sStyle = Last.Parent.Tag  
+  mnuPopup.Popup
+  
+End
+
+Public Sub mnuPopup_Show()
+  
+  With CStyle[$cCurrent[$sStyle]]
+  
+    mnuBold.Checked = .Bold
+    mnuItalic.Checked = .Italic
+    mnuUnderline.Checked = .Underline
+
+    If MTheme.IsBackgroundStyle($sStyle) Then 
+      mnuForeground.Hide
+      mnuBackground.Checked = False
+    Else
+      mnuForeground.Show
+      mnuBackground.Checked = .Background <> Color.Default
+    Endif
+  
+  End With 
+  
+End
+
+Private Sub UpdateStyle()
+  
+  Dim hStyle As New CStyle($cCurrent[$sStyle])
+  
+  With hStyle
+    .Bold = mnuBold.Checked
+    .Italic = mnuItalic.Checked
+    .Underline = mnuUnderline.Checked
+  End With
+  
+  $cCurrent[$sStyle] = hStyle.ToString()
+  RefreshEditor
+  
+End
+
+
+Public Sub mnuBold_Click()
+  
+  Inc mnuBold.Checked
+  UpdateStyle
+  
+End
+
+Public Sub mnuItalic_Click()
+  
+  Inc mnuItalic.Checked
+  UpdateStyle
+  
+End
+
+Public Sub mnuUnderline_Click()
+  
+  Inc mnuUnderline.Checked
+  UpdateStyle
+  
+End
+
+Public Sub mnuForeground_Click()
+  
+  Dim hStyle As New CStyle($cCurrent[$sStyle])
+  Dim iColor As Integer = hStyle.Foreground
+  
+  If FColorChooser.Run("&H" & Hex$(iColor, 6) & "&") Then Return
+  
+  hStyle.Foreground = FColorChooser.Value
+  $cCurrent[$sStyle] = hStyle.ToString()
+  RefreshEditor
+  
+End
+
+Public Sub mnuBackground_Click()
+  
+  Dim hStyle As New CStyle($cCurrent[$sStyle])
+  Dim iColor As Integer = hStyle.Background
+  Dim iDefault As Integer
+  
+  If MTheme.IsBackgroundStyle($sStyle) Then 
+    mnuForeground_Click
+    Return 
+  Endif
+  
+  iDefault = CStyle[$cCurrent["Background"]].Foreground
+  If iColor = Color.Default Then iColor = iDefault
+
+  If FColorChooser.Run("&H" & Hex$(iColor, 6) & "&") Then Return
+  
+  If FColorChooser.Color = "" OR If FColorChooser.Value = iDefault Then 
+    hStyle.Background = Color.Default
+  Else
+    hStyle.Background = FColorChooser.Value
+  Endif
+  $cCurrent[$sStyle] = hStyle.ToString()
+  RefreshEditor
+  
+End
+
+Public Sub cmbUpperCaseKeywords_Click()
+
+  Dim hFile As Object
+
+  Settings["/Editor/KeywordsUseUpperCase"] = cmbUpperCaseKeywords.Index = 1
+
+  RefreshEditor
+
+End
+
+Public Sub cmbFoldProc_Click()
+
+  Settings["/Editor/Fold"] = cmbFoldProc.Index = 1  
+
+End

@@ -1,8 +1,8 @@
 ' Gambas module file
 
-PRIVATE Name AS NEW Collection
+Private Name As New Collection
 
-PUBLIC SUB _init()
+Public Sub _init()
 
   Name["ar"] = ("Arabic (Egypt)")
   Name["ar_TN"] = ("Arabic (Tunisia)")
@@ -92,81 +92,81 @@ PUBLIC SUB _init()
   Name["zh"] = ("Simplified chinese (China)")
   Name["zh_TW"] = ("Traditional chinese (Taiwan)")
 
-END
+End
 
-PUBLIC SUB Find(OPTIONAL sLang AS String) AS String
+Public Sub Find(Optional sLang As String) As String
   
-  DIM sName AS String
-  DIM iPos AS Integer
-  DIM sOrg AS String
+  Dim sName As String
+  Dim iPos As Integer
+  Dim sOrg As String
 
-  IF NOT sLang THEN sLang = System.Language
+  If NOT sLang Then sLang = System.Language
 
   sOrg = sLang
 
-  DO
+  Do
 
-    IF Name.Exist(sLang) THEN RETURN sLang
+    If Name.Exist(sLang) Then Return sLang
 
     iPos = InStr(sLang, ".")
-    IF iPos THEN
+    If iPos Then
       sLang = Left$(sLang, iPos - 1)
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
 
     iPos = InStr(sLang, "_")
-    IF iPos THEN
+    If iPos Then
       sLang = Left$(sLang, iPos - 1)
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
 
-    RETURN sOrg
+    Return sOrg
 
-  LOOP
+  Loop
 
-END
+End
 
 
-PUBLIC FUNCTION ToName(OPTIONAL sLang AS String) AS String
+Public Function ToName(Optional sLang As String) As String
 
-  DIM sName AS String
+  Dim sName As String
   
   sLang = Find(sLang)
   sName = Name[sLang]
 
-  IF sName THEN 
-    RETURN sName
-  ELSE
-    RETURN ("Unknown") & " (" & sLang & ")"
-  ENDIF
+  If sName Then 
+    Return sName
+  Else
+    Return ("Unknown") & " (" & sLang & ")"
+  Endif
 
-END
+End
 
 
-PUBLIC FUNCTION FromName(sName AS String) AS String
+Public Function FromName(sName As String) As String
 
-  DIM sStr AS String
+  Dim sStr As String
 
   'PRINT "sName = "; sName
 
-  FOR EACH sStr IN Name
-    IF sStr = sName THEN RETURN Name.Key
-  NEXT
+  For Each sStr In Name
+    If sStr = sName Then Return Name.Key
+  Next
 
-END
+End
 
 
-PUBLIC FUNCTION GetAll() AS String[]
+Public Function GetAll() As String[]
 
-  DIM aLang AS NEW String[]
-  DIM sStr AS String
+  Dim aLang As New String[]
+  Dim sStr As String
 
-  FOR EACH sStr IN Name
+  For Each sStr In Name
     aLang.Add(Name.Key)
-  NEXT
+  Next
 
   aLang.Sort
 
-  RETURN aLang
+  Return aLang
 
-END
+End

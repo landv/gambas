@@ -1,139 +1,139 @@
 ' Gambas class file
 
-STATIC PUBLIC Color AS String
-STATIC PUBLIC Value AS Integer
+Static Public Color As String
+Static Public Value As Integer
 
-STATIC PRIVATE $sColor AS String
-STATIC PRIVATE $bAlpha AS Boolean
-STATIC PRIVATE $aSystem AS String[] = ["Background", "Foreground", "SelectedBackground", "SelectedForeground", "LightBackground", "TextBackground", "TextForeground", "ButtonBackground", "ButtonForeground"]
+Static Private $sColor As String
+Static Private $bAlpha As Boolean
+Static Private $aSystem As String[] = ["Background", "Foreground", "SelectedBackground", "SelectedForeground", "LightBackground", "TextBackground", "TextForeground", "ButtonBackground", "ButtonForeground"]
 
-PRIVATE CONST DEFAULT_COLOR AS String = "-"
+Private Const DEFAULT_COLOR As String = "-"
 
-PRIVATE $cColor AS NEW Collection
+Private $cColor As New Collection
 
-STATIC PUBLIC FUNCTION Run(OPTIONAL sColor AS String, OPTIONAL bAlpha AS Boolean) AS Boolean
+Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean) As Boolean
 
   $sColor = sColor
   $bAlpha = bAlpha
   'IF NOT $sColor THEN $sColor = Color
   'IF NOT $sColor THEN $sColor = "&H" & Hex$(Value, 6)
-  IF FColorChooser.ShowModal() THEN
+  If FColorChooser.ShowModal() Then
     Color = $sColor
-    IF $sColor THEN
-      TRY Value = Val($sColor)
-      IF ERROR THEN 
+    If $sColor Then
+      Try Value = Val($sColor)
+      If Error Then 
         Value = Object.GetProperty(Classes["Color"], $sColor)
-      ELSE 
+      Else 
         Color = "&H" & Hex$(Value, 8) & "&"
-      ENDIF
-    ELSE
+      Endif
+    Else
       Value = -1
-    ENDIF
+    Endif
     'DEBUG Value;; "'"; Color; "'"
-  ELSE
-    RETURN TRUE
-  ENDIF
+  Else
+    Return True
+  Endif
 
-END
+End
 
 
-PRIVATE SUB AddColor(sText AS String, sTag AS String, sColor AS String)
+Private Sub AddColor(sText As String, sTag As String, sColor As String)
 
-  DIM hBox AS hBox
-  DIM hLabel AS Label
-  DIM hColor AS Label
-  DIM hPict AS PictureBox
+  Dim hBox As hBox
+  Dim hLabel As Label
+  Dim hColor As Label
+  Dim hPict As PictureBox
 
-  hBox = NEW hBox(lstSystem)
+  hBox = New hBox(lstSystem)
   hBox.Padding = 4
   hBox.Spacing = 4
   hBox.Height = 24
   hBox.Tag = sTag
 
-  IF sColor = DEFAULT_COLOR THEN
-    hPict = NEW PictureBox(hBox)
+  If sColor = DEFAULT_COLOR Then
+    hPict = New PictureBox(hBox)
     'hPict.Border = Border.Plain
     hPict.Picture = Picture["img/16/tile.png"]
     hPict.Resize(16, 16)
-    hPict.Design = TRUE
-  ELSE
-    hColor = NEW Label(hBox)
+    hPict.Design = True
+  Else
+    hColor = New Label(hBox)
     hColor.Background = Object.GetProperty(Classes["Color"], sColor)
     hColor.Border = Border.Plain
     hColor.Resize(16, 16)
-    hColor.Design = TRUE
-  ENDIF
+    hColor.Design = True
+  Endif
 
-  hLabel = NEW Label(hBox)
-  hLabel.Expand = TRUE
+  hLabel = New Label(hBox)
+  hLabel.Expand = True
   hLabel.Text = sText
-  hLabel.Design = TRUE
+  hLabel.Design = True
 
   $cColor[sColor] = hBox
 
-END
+End
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
-  IF tabColor.Index = 1 THEN
+  If tabColor.Index = 1 Then
     $sColor = dlgColor.SelectedColor
-  ELSE
-    TRY $sColor = lstSystem.Current.Tag
-  ENDIF
-  ME.Close(TRUE)
+  Else
+    Try $sColor = lstSystem.Current.Tag
+  Endif
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  DIM sSystem AS String
+  Dim sSystem As String
 
-  Settings.Read(ME)
+  Settings.Read(Me)
 
   lstSystem.Clear
   AddColor("Default", "", DEFAULT_COLOR)
-  FOR EACH sSystem IN $aSystem
+  For Each sSystem In $aSystem
     AddColor(sSystem, sSystem, sSystem)
-  NEXT
+  Next
 
-  IF NOT IsNull(Val($sColor)) THEN
+  If NOT IsNull(Val($sColor)) Then
     dlgColor.SelectedColor = Val($sColor)
     tabColor.Index = 1
-  ELSE
-    IF $sColor THEN
+  Else
+    If $sColor Then
       lstSystem.Select($cColor[$sColor])
-    ELSE
+    Else
       lstSystem.Select($cColor[DEFAULT_COLOR])
-    ENDIF
+    Endif
     tabColor.Index = 0
-  ENDIF
+  Endif
   
   dlgColor.ShowAlpha = $bAlpha
 
-END
+End
 
-PUBLIC SUB dlgColor_Activate()
+Public Sub dlgColor_Activate()
 
-  btnOK.Value = TRUE
+  btnOK.Value = True
 
-END
-
-
-PUBLIC SUB lstSystem_Activate()
-
-  btnOK.Value = TRUE
-
-END
+End
 
 
-PUBLIC SUB Form_Close()
+Public Sub lstSystem_Activate()
 
-  Settings.Write(ME)  
+  btnOK.Value = True
 
-END
+End
+
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)  
+
+End

@@ -1,75 +1,75 @@
 ' Gambas class file
 
-PUBLIC Name AS String
-PUBLIC Title AS String
-PUBLIC Version AS String
-PUBLIC Description AS String
-PUBLIC Authors AS String[]
-PUBLIC Icon AS Picture
+Public Name As String
+Public Title As String
+Public Version As String
+Public Description As String
+Public Authors As String[]
+Public Icon As Picture
 
-PRIVATE SUB GetProjectPath(sPath AS String) AS String
+Private Sub GetProjectPath(sPath As String) As String
   
-  DO
-    IF Exist(sPath &/ ".project") THEN RETURN sPath
+  Do
+    If Exist(sPath &/ ".project") Then Return sPath
     sPath = File.Dir(sPath)
-    IF sPath = "/" THEN BREAK
-  LOOP
+    If sPath = "/" Then Break
+  Loop
   
-CATCH
+Catch
   
-END
+End
 
-PUBLIC SUB _new(sPath AS String)
+Public Sub _new(sPath As String)
   
-  DIM hFile AS File
-  DIM sIcon AS String
-  DIM sLine AS String
-  DIM iPos AS Integer
-  DIM sKey AS String
-  DIM sVal AS String
+  Dim hFile As File
+  Dim sIcon As String
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sVal As String
   
   sPath = GetProjectPath(sPath)
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
   
   Name = File.Name(sPath)
     
-  hFile = OPEN sPath &/ ".project"
+  hFile = Open sPath &/ ".project"
   
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
+  While NOT Eof(hFile)
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE 
-    IF Left(sLine) = "#" THEN CONTINUE
+    If NOT sLine Then Continue 
+    If Left(sLine) = "#" Then Continue
 
     iPos = InStr(sLine, "=")
-    IF iPos = 0 THEN CONTINUE
+    If iPos = 0 Then Continue
 
     sKey = Lower$(Trim(Left$(sLine, iPos - 1)))
     sVal = Trim(Mid$(sLine, iPos + 1))
 
-    SELECT CASE sKey
+    Select Case sKey
     
-      CASE "title"
+      Case "title"
         Title = sVal
 
-      CASE "version"
+      Case "version"
         Version = sVal
         
-      CASE "description"
+      Case "description"
         Description = Replace(sVal, "\\n", "\n")
 
-      CASE "authors"
+      Case "authors"
         Authors = Split(Replace(sVal, "\\n", "\n"), "\n")
 
-      CASE "icon"
+      Case "icon"
         sIcon = sVal
 
-    END SELECT
+    End Select
   
-  WEND
+  Wend
   
-  CLOSE #hFile
+  Close #hFile
 
   Icon = Project.StretchIcon(sPath &/ sIcon, 58).Picture
 
-END
+End

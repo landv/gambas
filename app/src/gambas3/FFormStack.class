@@ -1,125 +1,125 @@
 ' Gambas class file
 
-STATIC PRIVATE $hForm AS FForm 'FForm
-STATIC PRIVATE $cPict AS NEW Collection
+Static Private $hForm As FForm 'FForm
+Static Private $cPict As New Collection
 
-PRIVATE $bNoSelect AS Boolean
+Private $bNoSelect As Boolean
 
-PRIVATE SUB GetForm() AS Boolean
+Private Sub GetForm() As Boolean
   
-  $hForm = NULL
-  TRY $hForm = Project.ActiveForm
-  IF NOT $hForm THEN 
+  $hForm = Null
+  Try $hForm = Project.ActiveForm
+  If NOT $hForm Then 
     HideAll
-    RETURN TRUE
-  ENDIF
+    Return True
+  Endif
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   
   ReadConfig
   
-END
+End
 
 
-PUBLIC SUB Form_Show()
+Public Sub Form_Show()
 
   RefreshAll
 
-END
+End
 
 
-PUBLIC SUB Form_Hide()
+Public Sub Form_Hide()
 
-  $hForm = NULL
+  $hForm = Null
 
-END
+End
 
 
-PRIVATE SUB FillTree(hCtrl AS CControl, OPTIONAL sParent AS String)
+Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
 
-  DIM hChild AS Control
-  DIM hTab AS Object
-  DIM iTab AS Integer
-  DIM sImg AS String
-  DIM sKey AS String
-  DIM hPict AS Picture
+  Dim hChild As Control
+  Dim hTab As Object
+  Dim iTab As Integer
+  Dim sImg As String
+  Dim sKey As String
+  Dim hPict As Picture
 
-  IF NOT hCtrl THEN RETURN
+  If NOT hCtrl Then Return
 
-  IF sParent THEN
+  If sParent Then
     'sImg = "img/control/" & LCase(hCtrl.Kind) & ".png"
     sImg = ".control" &/ LCase(hCtrl.Kind)
-  ELSE
+  Else
     sImg = "img/32/form.png"
-  ENDIF
+  Endif
 
   hPict = $cPict[sImg]
-  IF NOT hPict THEN
+  If NOT hPict Then
     hPict = Picture[sImg]
-    IF NOT hPict THEN hPict = Picture["img/control/unknown.png"]
-    hPict = hPict.Image.Stretch(16, 16, TRUE).Picture  
+    If NOT hPict Then hPict = Picture["img/control/unknown.png"]
+    hPict = hPict.Image.Stretch(16, 16, True).Picture  
     $cPict[sImg] = hPict
-  ENDIF
+  Endif
 
   tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
 
-  IF NOT hCtrl.IsContainer() THEN RETURN
+  If NOT hCtrl.IsContainer() Then Return
 
   'IF hCtrl.Kind = "TabStrip" THEN
-  IF hCtrl.IsMultiContainer() THEN
+  If hCtrl.IsMultiContainer() Then
 
     hTab = hCtrl.Control
 
-    FOR iTab = 0 TO hTab.Count - 1
+    For iTab = 0 To hTab.Count - 1
       sKey = hCtrl.Name & "." & iTab
       tvwControl.Add(sKey, hTab[iTab].Text, $cPict["img/control/tabstrip.png"], hCtrl.Name)
-      FOR EACH hChild IN hTab[iTab].Children
-        IF NOT hChild.Tag THEN CONTINUE
+      For Each hChild In hTab[iTab].Children
+        If NOT hChild.Tag Then Continue
         FillTree($hForm.Control[hChild.Tag], sKey)
-      NEXT
-      tvwControl[sKey].Expanded = TRUE
-    NEXT
+      Next
+      tvwControl[sKey].Expanded = True
+    Next
 
-  ELSE
+  Else
 
-    FOR EACH hChild IN hCtrl.Control.Children
-      IF NOT hChild.Tag THEN CONTINUE
+    For Each hChild In hCtrl.Control.Children
+      If NOT hChild.Tag Then Continue
       FillTree($hForm.Control[hChild.Tag], hCtrl.Name)
-    NEXT
+    Next
 
-  ENDIF
+  Endif
 
-  tvwControl[hCtrl.Name].Expanded = TRUE
+  tvwControl[hCtrl.Name].Expanded = True
 
-END
+End
 
-PUBLIC SUB RefreshReadOnly()
+Public Sub RefreshReadOnly()
   
-  IF GetForm() THEN RETURN
+  If GetForm() Then Return
 
   panControl.Visible = NOT $hForm.ReadOnly  
   
-END
+End
 
 
 
 
-PUBLIC SUB RefreshAll(OPTIONAL sKey AS String, OPTIONAL bForce AS Boolean)
+Public Sub RefreshAll(Optional sKey As String, Optional bForce As Boolean)
 
-  IF NOT ME.Visible THEN RETURN
+  If NOT Me.Visible Then Return
 
-  IF GetForm() THEN RETURN
+  If GetForm() Then Return
   
   'IF NOT Project.IsForm($hForm) THEN RETURN
 
-  IF NOT sKey THEN
-    TRY sKey = $hForm.Master.Name
-  ENDIF 
+  If NOT sKey Then
+    Try sKey = $hForm.Master.Name
+  Endif 
   
-  IF bForce THEN $cPict.Clear
+  If bForce Then $cPict.Clear
 
   tvwControl.Clear
   FillTree($hForm.Control[$hForm.Name])
@@ -127,19 +127,19 @@ PUBLIC SUB RefreshAll(OPTIONAL sKey AS String, OPTIONAL bForce AS Boolean)
   lblMessage.Hide
   RefreshReadOnly
   
-  IF sKey THEN
-    TRY tvwControl[sKey].Selected = TRUE
-    TRY tvwControl[sKey].EnsureVisible
-  ENDIF
+  If sKey Then
+    Try tvwControl[sKey].Selected = True
+    Try tvwControl[sKey].EnsureVisible
+  Endif
   
-  $bNoSelect = FALSE
+  $bNoSelect = False
   
-END
+End
 
-PUBLIC SUB RefreshOne(sKey AS String)
+Public Sub RefreshOne(sKey As String)
   
-  IF NOT ME.Visible THEN RETURN
-  IF GetForm() THEN RETURN
+  If NOT Me.Visible Then Return
+  If GetForm() Then Return
   
   tvwControl[sKey].Delete
   FillTree($hForm.Control[sKey])
@@ -147,105 +147,105 @@ PUBLIC SUB RefreshOne(sKey AS String)
   'TRY tvwControl[sKey].Selected = TRUE
   'TRY tvwControl[sKey].EnsureVisible
 
-END
+End
 
 
-PUBLIC SUB HideAll()
+Public Sub HideAll()
 
   tvwControl.Hide
   panControl.Hide
   lblMessage.Show
 
-END
+End
 
 
 
 
-PUBLIC SUB btnDown_Click()
+Public Sub btnDown_Click()
 
-  DIM sKey AS String
-
-  sKey = tvwControl.Key
-  TRY $hForm.Control[tvwControl.Current.Text].MoveDown
-  IF ERROR THEN RETURN
-  RefreshAll(sKey)
-
-END
-
-PUBLIC SUB btnBottom_Click()
-
-  DIM sKey AS String
+  Dim sKey As String
 
   sKey = tvwControl.Key
-  TRY $hForm.Control[tvwControl.Current.Text].Raise
-  IF ERROR THEN RETURN
+  Try $hForm.Control[tvwControl.Current.Text].MoveDown
+  If Error Then Return
   RefreshAll(sKey)
 
-END
+End
 
-PUBLIC SUB btnTop_Click()
+Public Sub btnBottom_Click()
 
-  DIM sKey AS String
+  Dim sKey As String
 
   sKey = tvwControl.Key
-  TRY $hForm.Control[tvwControl.Current.Text].Lower
-  IF ERROR THEN RETURN
+  Try $hForm.Control[tvwControl.Current.Text].Raise
+  If Error Then Return
   RefreshAll(sKey)
 
-END
+End
 
-PUBLIC SUB btnUp_Click()
+Public Sub btnTop_Click()
 
-  DIM sKey AS String
+  Dim sKey As String
 
   sKey = tvwControl.Key
-  TRY $hForm.Control[tvwControl.Current.Text].MoveUp
-  IF ERROR THEN RETURN
+  Try $hForm.Control[tvwControl.Current.Text].Lower
+  If Error Then Return
   RefreshAll(sKey)
 
-END
+End
 
-PUBLIC SUB Select(sName AS String)
+Public Sub btnUp_Click()
+
+  Dim sKey As String
+
+  sKey = tvwControl.Key
+  Try $hForm.Control[tvwControl.Current.Text].MoveUp
+  If Error Then Return
+  RefreshAll(sKey)
+
+End
+
+Public Sub Select(sName As String)
   
-  IF tvwControl.Exist(sName) THEN 
-    TRY tvwControl[sName].EnsureVisible
-    $bNoSelect = TRUE
-    tvwControl[sName].Selected = TRUE
-    $bNoSelect = FALSE
-  ENDIF
+  If tvwControl.Exist(sName) Then 
+    Try tvwControl[sName].EnsureVisible
+    $bNoSelect = True
+    tvwControl[sName].Selected = True
+    $bNoSelect = False
+  Endif
 
-END
+End
 
 
-PUBLIC SUB tvwControl_Select()
+Public Sub tvwControl_Select()
   
-  IF NOT $bNoSelect THEN 
-    IF InStr(tvwControl.Current.Key, ".") THEN 
+  If NOT $bNoSelect Then 
+    If InStr(tvwControl.Current.Key, ".") Then 
       tvwControl.MoveParent
-      TRY $hForm.SelectControl(tvwControl.Item.Text)
-    ELSE
-      TRY $hForm.SelectControl(tvwControl.Current.Text)
-    ENDIF
-  ENDIF 
+      Try $hForm.SelectControl(tvwControl.Item.Text)
+    Else
+      Try $hForm.SelectControl(tvwControl.Current.Text)
+    Endif
+  Endif 
 
-END
+End
 
-PUBLIC SUB tvwControl_Collapse()
+Public Sub tvwControl_Collapse()
 
-  tvwControl.Item.Expanded = TRUE  
+  tvwControl.Item.Expanded = True  
 
-END
+End
 
 
-PUBLIC SUB ReadConfig()
+Public Sub ReadConfig()
 
-  tvwControl.Font.Grade = If(Settings["/UseSmallFont", FALSE], -2, 0)
+  tvwControl.Font.Grade = - Settings["/GlobalFont", 0]
   RefreshAll
 
-END
+End
 
-PUBLIC SUB tvwControl_Activate()
+Public Sub tvwControl_Activate()
 
   FMain.ActivatePropertyTab
 
-END
+End

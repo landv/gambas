@@ -1,18 +1,18 @@
 ' Gambas class file
 
-PUBLIC Pan AS panel
-PRIVATE arButton AS NEW String[]
-PRIVATE arPanel AS NEW Object[]
-PUBLIC Current AS PictureBox
-PRIVATE iDTab AS Integer
-PRIVATE btnTop AS Integer
-PUBLIC StaticButton AS Integer
-EVENT ButtonClick(Index AS Integer, Button AS Integer)
+Public Pan As panel
+Private arButton As New String[]
+Private arPanel As New Object[]
+Public Current As PictureBox
+Private iDTab As Integer
+Private btnTop As Integer
+Public StaticButton As Integer
+Event ButtonClick(Index As Integer, Button As Integer)
 
 
-PUBLIC SUB _new(hContainer AS Container, bRoot AS Boolean, bHome AS Boolean, bProject AS Boolean)
-  DIM But AS PictureBox
-  Pan = NEW Panel(hContainer) AS "Panel"
+Public Sub _new(hContainer As Container, bRoot As Boolean, bHome As Boolean, bProject As Boolean)
+  Dim But As PictureBox
+  Pan = New Panel(hContainer) As "Panel"
   Pan.Width = 24
 
   Pan.Border = Border.None
@@ -23,8 +23,8 @@ PUBLIC SUB _new(hContainer AS Container, bRoot AS Boolean, bHome AS Boolean, bPr
   'iDTab = iDefaultTab
   btnTop = 0
   
-  IF bHome THEN  
-    But = NEW PictureBox(Pan) AS "Button"
+  If bHome Then  
+    But = New PictureBox(Pan) As "Button"
     But.ForeColor = Color.LightGray
     But.Border = Border.Plain
     But.Alignment = Align.Center
@@ -36,10 +36,10 @@ PUBLIC SUB _new(hContainer AS Container, bRoot AS Boolean, bHome AS Boolean, bPr
     But.Mouse = Mouse.Pointing
     btnTop = btnTop + 24
     StaticButton = StaticButton + 1
-  ENDIF
+  Endif
   
-  IF bRoot THEN
-    But = NEW PictureBox(Pan) AS "Button"
+  If bRoot Then
+    But = New PictureBox(Pan) As "Button"
     But.ForeColor = Color.LightGray
     But.Border = Border.Plain
     But.Alignment = Align.Center
@@ -51,11 +51,11 @@ PUBLIC SUB _new(hContainer AS Container, bRoot AS Boolean, bHome AS Boolean, bPr
     But.Mouse = Mouse.Pointing
     btnTop = btnTop + 24
     StaticButton = StaticButton + 1
-  ENDIF
+  Endif
 
-  IF bProject THEN
-    IF Project.Path THEN
-      But = NEW PictureBox(Pan) AS "Button"
+  If bProject Then
+    If Project.Path Then
+      But = New PictureBox(Pan) As "Button"
       But.ForeColor = Color.LightGray
       But.Border = Border.Plain
       But.Alignment = Align.Center
@@ -67,30 +67,30 @@ PUBLIC SUB _new(hContainer AS Container, bRoot AS Boolean, bHome AS Boolean, bPr
       But.Mouse = Mouse.Pointing
       btnTop = btnTop + 24
       StaticButton = StaticButton + 1
-    ENDIF
-  ENDIF
+    Endif
+  Endif
   
   'AddButton("/mnt/windows/Mes documents")
   
   Current = arPanel[0]
   
-END
+End
 
 
-PUBLIC SUB AddButton(sPath AS String)
+Public Sub AddButton(sPath As String)
 
-DIM SDir AS String
-DIM But AS PictureBox
+Dim SDir As String
+Dim But As PictureBox
 
 
-DIM i AS Integer
+Dim i As Integer
 
-IF NOT Exist(sPath) THEN RETURN
+If NOT Exist(sPath) Then Return
 
 'FOR i = 0 TO arButton.count - 1
 'FOR EACH sDir IN ArButton
 
-But = NEW PictureBox(Pan) AS "Button"
+But = New PictureBox(Pan) As "Button"
 
 'But.BackGround = Color.Green
 But.ForeColor = Color.LightGray
@@ -109,40 +109,40 @@ Current = arPanel[0]
 
 
 
-END
+End
 
-PUBLIC FUNCTION Width() AS Integer
+Public Function Width() As Integer
   
-  RETURN Pan.Width
+  Return Pan.Width
   
-END
+End
 
 
-PUBLIC SUB Move(iLeft AS Integer, OPTIONAL iTop AS Integer, OPTIONAL iWidth AS Integer, OPTIONAL iHeight AS Integer)
+Public Sub Move(iLeft As Integer, Optional iTop As Integer, Optional iWidth As Integer, Optional iHeight As Integer)
   
 Pan.Move(iLeft, iTop, 24, iHeight)
   
-END
+End
 
 
-PUBLIC SUB Button_MouseUp()
-  DIM img AS PictureBox
+Public Sub Button_MouseUp()
+  Dim img As PictureBox
 
 
-   img = LAST
-   IF Current.BackColor <> &HE9E9E9 AND NOT Mouse.Right THEN Button_UnSelect(-1)
-   Button_Select(LAST.Tag)
+   img = Last
+   If Current.BackColor <> &HE9E9E9 AND NOT Mouse.Right Then Button_UnSelect(-1)
+   Button_Select(Last.Tag)
 
-   RAISE ButtonClick(img.Tag, Mouse.Button)
+   Raise ButtonClick(img.Tag, Mouse.Button)
 
-END
+End
 
 
-PUBLIC SUB Button_Select(Button AS Integer)
+Public Sub Button_Select(Button As Integer)
   'DIM Img AS Image
   'Img = LAST
-  IF arPanel.Count - 1 < Button THEN Button = arPanel.Count - 1
-  IF arPanel[Button].Border = Border.Raised THEN RETURN
+  If arPanel.Count - 1 < Button Then Button = arPanel.Count - 1
+  If arPanel[Button].Border = Border.Raised Then Return
   
   arPanel[Button].Border = Border.Raised
   arPanel[Button].BackColor = &HFFFFFF&
@@ -151,74 +151,74 @@ PUBLIC SUB Button_Select(Button AS Integer)
   'Message (Current.ToolTip)
   
   
-END
+End
 
 
-PUBLIC SUB Button_Enter()
+Public Sub Button_Enter()
   
-  LAST.BackColor = &HFFFFFF&
+  Last.BackColor = &HFFFFFF&
   
-END
+End
 
 
-PUBLIC SUB Button_Leave()
+Public Sub Button_Leave()
   
-  IF LAST.border = Border.Raised THEN RETURN
-  LAST.BackColor = &HE9E9E9&
+  If Last.border = Border.Raised Then Return
+  Last.BackColor = &HE9E9E9&
   
-END
+End
 
-PUBLIC SUB Button_UnSelect(OPTIONAL Index AS Integer)
-  DIM Cur AS PictureBox
+Public Sub Button_UnSelect(Optional Index As Integer)
+  Dim Cur As PictureBox
   
-  IF Index <> -1 THEN
+  If Index <> -1 Then
   
       
       arPanel[Index].Border = Border.Plain
       arPanel[Index].BackColor = Pan.BackColor
-      IF arPanel[Index].Left <> 2 THEN arPanel[Index].Move(arPanel[Index].Left + 1, arPanel[Index].Top - 1)
+      If arPanel[Index].Left <> 2 Then arPanel[Index].Move(arPanel[Index].Left + 1, arPanel[Index].Top - 1)
   
-   ELSE
+   Else
     
-      FOR EACH cur IN arPanel
+      For Each cur In arPanel
         'IF Cur.Border = Border.Plain THEN RETURN
         Cur.Border = Border.Plain
         Cur.BackColor = Pan.BackColor
-        IF Cur.Left <> 2 THEN Cur.Move(Cur.Left + 1, Cur.Top - 1)
-      NEXT
-  END IF
-END
+        If Cur.Left <> 2 Then Cur.Move(Cur.Left + 1, Cur.Top - 1)
+      Next
+  End If
+End
 
-PUBLIC SUB Remove(Index AS Integer)
+Public Sub Remove(Index As Integer)
   'DIM iTop AS Integer
-  DIM i AS Integer
-  arPanel[index].Visible = FALSE
+  Dim i As Integer
+  arPanel[index].Visible = False
   btnTop = arPanel[Index].Top
-  FOR i = index + 1 TO arPanel.Count - 1
+  For i = index + 1 To arPanel.Count - 1
     arPanel[i].Top = btnTop 
     arPanel[i].Tag = arPanel[i].Tag - 1
     btnTop = btnTop + 24
-  NEXT
+  Next
   arPanel.Remove(index)
   Button_Select(index - 1)
-  RAISE ButtonClick(Current.Tag, 1)
-END
+  Raise ButtonClick(Current.Tag, 1)
+End
 
-PUBLIC FUNCTION GetTabUrl(Index AS Integer) AS String
+Public Function GetTabUrl(Index As Integer) As String
   
-  RETURN arPanel[Index].ToolTip
+  Return arPanel[Index].ToolTip
   
-END
+End
 
-PUBLIC FUNCTION Count() AS Integer
+Public Function Count() As Integer
   
   'Message(arPanel.Count)
-  RETURN arPanel.Count
+  Return arPanel.Count
   
-END
+End
 
-PUBLIC FUNCTION GetBookMark(Index AS Integer) AS PictureBox
+Public Function GetBookMark(Index As Integer) As PictureBox
   
-  RETURN arPanel[Index]
+  Return arPanel[Index]
   
-END
+End

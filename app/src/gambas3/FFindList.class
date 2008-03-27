@@ -1,29 +1,29 @@
 ' Gambas class file
 
-PRIVATE $aFound AS NEW Object[]
-PRIVATE $hFont AS Font
-PRIVATE $eAngle AS Float
+Private $aFound As New Object[]
+Private $hFont As Font
+Private $eAngle As Float
 
-PUBLIC SUB ClearFound()
+Public Sub ClearFound()
 
   tvwFind.Rows.Count = 0
   $aFound.Clear
   
-END
+End
 
-PUBLIC SUB AddFound(sName AS String, iLine AS Integer, iCol AS Integer, iLen AS Integer, sText AS String)
+Public Sub AddFound(sName As String, iLine As Integer, iCol As Integer, iLen As Integer, sText As String)
   
-  $aFound.Add([sName, iLine + 1, iCol, sText, iLen, FALSE])
-  IF $aFound.Count > 1 THEN 
-    IF $aFound[$aFound.Max][0] = $aFound[$aFound.Max - 1][0] THEN
+  $aFound.Add([sName, iLine + 1, iCol, sText, iLen, False])
+  If $aFound.Count > 1 Then 
+    If $aFound[$aFound.Max][0] = $aFound[$aFound.Max - 1][0] Then
       $aFound[$aFound.Max][5] = $aFound[$aFound.Max - 1][5]
-    ELSE
+    Else
       $aFound[$aFound.Max][5] = NOT $aFound[$aFound.Max - 1][5]
-    ENDIF
-  ENDIF
+    Endif
+  Endif
   tvwFind.Rows.Count = $aFound.Count
   
-END
+End
 
 ' PUBLIC SUB SelectFound(sName AS String, iLine AS Integer, iCol AS Integer, iLen AS Integer)
 '   
@@ -37,9 +37,9 @@ END
 '   
 ' END
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  WITH tvwFind
+  With tvwFind
     .Columns.Count = 4  
     .Columns[0].Width = Desktop.Scale * 16
     .Columns[0].Text = ("Class")
@@ -48,61 +48,61 @@ PUBLIC SUB _new()
     .Columns[2].Width = Desktop.Scale * 8
     .Columns[2].Text = ("Column")
     .Columns[3].Text = ("Text")    
-  END WITH
+  End With
   
   ReadConfig
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  Settings.Read(ME)
+  Settings.Read(Me)
   MoveMag
 
-END
+End
 
-PUBLIC SUB tvwFind_Data(Row AS Integer, Column AS Integer)
+Public Sub tvwFind_Data(Row As Integer, Column As Integer)
 
-  WITH tvwFind.Data
+  With tvwFind.Data
     
-    IF Column = 3 THEN .Font = $hFont 
+    If Column = 3 Then .Font = $hFont 
     
     .Text = $aFound[Row][Column]
 
-    IF Row THEN
-      IF Column = 0 THEN 
-        IF $aFound[Row - 1][0] = .Text THEN 
+    If Row Then
+      If Column = 0 Then 
+        If $aFound[Row - 1][0] = .Text Then 
           .Text = ""
-        ENDIF
-      ELSE IF Column = 1 THEN
-        IF $aFound[Row - 1][0] = $aFound[Row][0] AND $aFound[Row - 1][1] = $aFound[Row][1] THEN 
+        Endif
+      Else If Column = 1 Then
+        If $aFound[Row - 1][0] = $aFound[Row][0] AND $aFound[Row - 1][1] = $aFound[Row][1] Then 
           .Text = "-"
-        ENDIF
-      ENDIF
-    ENDIF 
+        Endif
+      Endif
+    Endif 
     
     .Background = If($aFound[Row][5], Color.LightBackground, Color.TextBackground)
     
-  END WITH
+  End With
 
-END
+End
 
-PUBLIC SUB tvwFind_Select()
+Public Sub tvwFind_Select()
 
-  DIM aFind AS Variant[]
-  DIM iLine AS Integer
-  DIM iCol AS Integer
-  DIM iLen AS Integer 
-  DIM hEdit AS Editor
-  DIM sPath AS String
+  Dim aFind As Variant[]
+  Dim iLine As Integer
+  Dim iCol As Integer
+  Dim iLen As Integer 
+  Dim hEdit As Editor
+  Dim sPath As String
 
-  IF timSearch.Enabled THEN RETURN
-  IF $aFound.Count = 0 THEN RETURN
+  If timSearch.Enabled Then Return
+  If $aFound.Count = 0 Then Return
   
   aFind = $aFound[tvwFind.Row]
   
   sPath = Project.FindPath(aFind[0])
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
   
   Project.OpenFile(sPath)
 
@@ -110,26 +110,26 @@ PUBLIC SUB tvwFind_Select()
   iLine = aFind[1] - 1
   iCol = aFind[2] - 1
   iLen = aFind[4]
-  hEdit.Goto(iLine, iCol, TRUE)
+  hEdit.Goto(iLine, iCol, True)
   hEdit.Select(iLine, iCol, iLine, iCol + iLen)
   
   'Project.ProjectTree[sSave].Selected = TRUE
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
-  Settings.Write(ME)  
+  Settings.Write(Me)  
 
-END
+End
 
-PUBLIC SUB ReadConfig()
+Public Sub ReadConfig()
   
-  tvwFind.Font.Grade = If(Settings["/UseSmallFont", FALSE], -1, 0)
+  tvwFind.Font.Grade = - Settings["/GlobalFont", 0]
   $hFont = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
   tvwFind.Refresh
 
-END
+End
 
 ' PUBLIC SUB panSearch_Arrange()
 ' 
@@ -137,44 +137,44 @@ END
 ' 
 ' END
 
-PRIVATE SUB MoveMag()
+Private Sub MoveMag()
   
   picSearch.Move(16 + Cos($eAngle) * 8, 16 + Sin($eAngle) * 8 + btnCancel.Y + btnCancel.H + Desktop.Scale)
   
-END
+End
 
 
-PUBLIC SUB timSearch_Timer()
+Public Sub timSearch_Timer()
 
   $eAngle += 0.4
   MoveMag
 
-END
+End
 
-PUBLIC SUB Start()
+Public Sub Start()
   
-  FMain.Enabled = FALSE
-  ME.Enabled = TRUE
+  FMain.Enabled = False
+  Me.Enabled = True
   ClearFound
   btnCancel.Text = ("Cancel")
   timSearch.Start
   
-END
+End
 
-PUBLIC SUB Stop()
+Public Sub Stop()
   
   timSearch.Stop
   btnCancel.Text = ("Close")
-  FMain.Enabled = TRUE
+  FMain.Enabled = True
   
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  IF timSearch.Enabled THEN
+  If timSearch.Enabled Then
     FFind.Cancel
-  ELSE 
-    ME.Close
-  ENDIF
+  Else 
+    Me.Close
+  Endif
 
-END
+End

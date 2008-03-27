@@ -1,70 +1,70 @@
 ' Gambas class file
 
-PUBLIC Name AS String
-PUBLIC Path AS String
-PUBLIC Editor AS Editor
+Public Name As String
+Public Path As String
+Public Editor As Editor
 
-PROPERTY READ ReadOnly AS Boolean
+Property Read ReadOnly As Boolean
 
-STATIC PRIVATE $aExt AS String[] = ["htm", "html", "xml", "svg", "css"]
+Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css"]
 
-PRIVATE CONST STYLE_HTML AS Integer = 1
-PRIVATE CONST STYLE_CSS AS Integer = 2
+Private Const STYLE_HTML As Integer = 1
+Private Const STYLE_CSS As Integer = 2
 
-PRIVATE $bModify AS Boolean
-PRIVATE $iStyle AS Integer
+Private $bModify As Boolean
+Private $iStyle As Integer
 
-PRIVATE $iViewMode AS Integer
-PRIVATE VIEWMODE_NORMAL AS Integer = 0 
-PRIVATE VIEWMODE_HORIZONTAL AS Integer = 1
-PRIVATE VIEWMODE_VERTICAL AS Integer = 2
+Private $iViewMode As Integer
+Private VIEWMODE_NORMAL As Integer = 0 
+Private VIEWMODE_HORIZONTAL As Integer = 1
+Private VIEWMODE_VERTICAL As Integer = 2
 
-PRIVATE $hEditor1 AS Editor
-PRIVATE $hEditor2 AS Editor
+Private $hEditor1 As Editor
+Private $hEditor2 As Editor
 
-PUBLIC SUB _new(sPath AS String)
+Public Sub _new(sPath As String)
 
   Path = sPath
   Name = File.Name(Path)
   Editor = edtEditor
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   
-  DIM sExt AS String = LCase(File.Ext(Name))
+  Dim sExt As String = LCase(File.Ext(Name))
   
-  IF $aExt.Find(sExt) >= 0 THEN
-    WITH edtEditor
+  If $aExt.Find(sExt) >= 0 Then
+    With edtEditor
       .Clear
       .Highlight = Highlight.Custom
-      .Flags[Editor.HighlightCurrent] = TRUE
-    END WITH     
+      .Flags[Editor.HighlightCurrent] = True
+    End With     
 
-    SELECT CASE sExt
-      CASE "css"
+    Select Case sExt
+      Case "css"
         $iStyle = STYLE_CSS
-      CASE ELSE 
+      Case Else 
         $iStyle = STYLE_HTML
-    END SELECT 
-  ENDIF
+    End Select 
+  Endif
 
   ReadConfig
 
-  Project.InitMove(ME)
+  Project.InitMove(Me)
 
   SetReadOnly
   Reload
 
-  $bModify = FALSE
+  $bModify = False
   edtEditor.SetFocus
 
   DrawTitle
   
-END
+End
 
-PUBLIC SUB Form_Resize()
-  DIM iToolbarOffset AS Integer
+Public Sub Form_Resize()
+  Dim iToolbarOffset As Integer
   
   'If we add the ability to hide the toolbar then uncomment this code 
   'IF $bToolbar THEN
@@ -74,125 +74,125 @@ PUBLIC SUB Form_Resize()
     iToolbarOffset = 0
   'ENDIF
   
-  SELECT CASE $iViewMode
-  CASE 0
-    edtEditor.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
-  CASE 1
-    splHorizontal.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
-  CASE 2
-    splVertical.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
-  END SELECT 
+  Select Case $iViewMode
+  Case 0
+    edtEditor.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  Case 1
+    splHorizontal.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  Case 2
+    splVertical.Move(0, iToolbarOffset, Me.ClientW, Me.ClientH - iToolbarOffset)
+  End Select 
 
-END
+End
 
-PUBLIC SUB ReadConfig()
+Public Sub ReadConfig()
 
   ReadConfigEditor(edtEditor)
-  IF $hEditor1 THEN ReadConfigEditor($hEditor1)
-  IF $hEditor2 THEN ReadConfigEditor($hEditor2)
+  If $hEditor1 Then ReadConfigEditor($hEditor1)
+  If $hEditor2 Then ReadConfigEditor($hEditor2)
 
-END
+End
 
-PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
+Private Sub ReadConfigEditor(hEditor As Editor)
 
   hEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
 
-  MColor.InitEditor(hEditor)
+  MTheme.InitEditor(hEditor)
 
-  hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
-  hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
-  hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
+  hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", True]
+  hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", False]
+  hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", True]
   
-END
+End
 
-PUBLIC FUNCTION Save() AS Boolean
+Public Function Save() As Boolean
 
   'Project.Config.WriteString("/Window" &/ Name &/ "Pos",
   '  CStr(ME.X) & "," & CStr(ME.Y) & "," & CStr(ME.Width) & "," & CStr(ME.Height))
 
-  IF NOT $bModify THEN RETURN
+  If NOT $bModify Then Return
 
   Save.Begin(Path)
 
   File.Save(Path, Editor.Text)
   Editor.Reset
-  $bModify = FALSE
+  $bModify = False
   DrawTitle
 
   Save.End()
 
-CATCH
+Catch
 
-  RETURN Save.Error()
+  Return Save.Error()
 
-END
+End
 
-PRIVATE SUB DrawTitle()
+Private Sub DrawTitle()
 
-  Project.DrawTitle(ME)
+  Project.DrawTitle(Me)
 
-END
+End
 
-PUBLIC SUB Modify(OPTIONAL bReset AS Boolean)
+Public Sub Modify(Optional bReset As Boolean)
 
-  IF Project.ReadOnly THEN RETURN
-  IF $bModify <> bReset THEN RETURN
+  If Project.ReadOnly Then Return
+  If $bModify <> bReset Then Return
 
   $bModify = NOT bReset
   DrawTitle
-  IF $bModify THEN INC Project.TimeStamp
+  If $bModify Then Inc Project.TimeStamp
 
-END
-
-
-PUBLIC FUNCTION IsModified() AS Boolean
-
-  RETURN $bModify
-
-END
+End
 
 
-PUBLIC SUB Editors_Change()
+Public Function IsModified() As Boolean
+
+  Return $bModify
+
+End
+
+
+Public Sub Editors_Change()
 
   Modify
 
-END
+End
 
 
-PUBLIC SUB Editors_Cursor()
+Public Sub Editors_Cursor()
 
   'PRINT edtEditor.Line; edtEditor.Column
   'lblCursor.Text = CStr(edtEditor.Line + 1) & " : " & CStr(edtEditor.Column + 1)
   DrawInfo
 
-END
+End
 
-PUBLIC SUB Editors_KeyPress()
+Public Sub Editors_KeyPress()
   
-  IF Key.Code = Key.Escape THEN 
-    Action["find"].Value = FALSE
-  ENDIF
+  If Key.Code = Key.Escape Then 
+    Action["find"].Value = False
+  Endif
   
-  IF Key.Code = Key.Insert THEN
+  If Key.Code = Key.Insert Then
 
-    IF Key.Shift THEN
-      IF NOT Editor.ReadOnly THEN
+    If Key.Shift Then
+      If NOT Editor.ReadOnly Then
         Editor.Paste
-      ENDIF 
-    ELSE IF Key.Control THEN
+      Endif 
+    Else If Key.Control Then
       Editor.Copy
-    ENDIF 
+    Endif 
     
-  ELSE IF Key.Code = Key.Delete THEN
+  Else If Key.Code = Key.Delete Then
 
-    IF Key.Shift THEN
-      IF NOT Editor.ReadOnly THEN
+    If Key.Shift Then
+      If NOT Editor.ReadOnly Then
         Editor.Cut
-      ENDIF 
-    ENDIF 
-  ENDIF 
+      Endif 
+    Endif 
+  Endif 
 
-END
+End
 
 
 
@@ -206,43 +206,43 @@ END
 
 
 
-PUBLIC SUB Form_GotFocus()
+Public Sub Form_GotFocus()
   
   Editor.SetFocus
   
-END
+End
 
-PUBLIC SUB Goto(iLine AS Integer, OPTIONAL iColumn AS Integer = -1)
+Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1)
 
   'DEC iLine
-  IF iColumn < 0 THEN iColumn = Editor.Column
-  Editor.Goto(iLine, iColumn, TRUE)
+  If iColumn < 0 Then iColumn = Editor.Column
+  Editor.Goto(iLine, iColumn, True)
 
-END
+End
 
 
-PUBLIC SUB GotoCenter(iLine AS Integer, OPTIONAL iColumn AS Integer = -1)
+Public Sub GotoCenter(iLine As Integer, Optional iColumn As Integer = -1)
 
   Goto(iLine, iColumn)
 
-END
+End
 
 
-PUBLIC SUB Editors_Menu()
+Public Sub Editors_Menu()
 
   mnuEditor.Popup
 
-END
+End
 
-PUBLIC SUB Editors_GotFocus()
-  Editor = LAST 
-END
+Public Sub Editors_GotFocus()
+  Editor = Last 
+End
 
-PUBLIC SUB mnuSave_Click()
+Public Sub mnuSave_Click()
 
   Save
 
-END
+End
 
 
 ' PUBLIC SUB mnuFind_Click()
@@ -273,55 +273,55 @@ END
 ' END
 
 
-PUBLIC SUB Rename(sNewName AS String, sNewPath AS String)
+Public Sub Rename(sNewName As String, sNewPath As String)
 
   Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
   DrawTitle
 
-END
+End
 
 
-PUBLIC SUB mnuCut_Click()
+Public Sub mnuCut_Click()
 
   Editor.Cut
 
-END
+End
 
-PUBLIC SUB mnuCopy_Click()
+Public Sub mnuCopy_Click()
 
   Editor.Copy
 
-END
+End
 
-PUBLIC SUB mnuPaste_Click()
+Public Sub mnuPaste_Click()
 
   Editor.Paste
 
-END
+End
 
-PUBLIC SUB mnuUndo_Click()
+Public Sub mnuUndo_Click()
 
   Editor.Undo
 
-END
+End
 
-PUBLIC SUB mnuRedo_Click()
+Public Sub mnuRedo_Click()
 
   Editor.Redo
 
-END
+End
 
 
-PUBLIC SUB mnuGotoLine_Click()
+Public Sub mnuGotoLine_Click()
 
-  DIM iLine AS Integer
+  Dim iLine As Integer
 
   iLine = FGotoLine.Run(Editor.Line + 1)
-  IF iLine <= 0 THEN RETURN
+  If iLine <= 0 Then Return
   GotoCenter(iLine - 1)
 
-END
+End
 
 
 ' PUBLIC SUB mnuWordWrap_Click()
@@ -332,55 +332,55 @@ END
 ' END
 
 
-PUBLIC SUB mnuSelectAll_Click()
+Public Sub mnuSelectAll_Click()
 
   Editor.SelectAll()
 
-END
+End
 
 
-PRIVATE SUB SetReadOnly()
+Private Sub SetReadOnly()
 
   edtEditor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
 
-  IF $hEditor1 THEN $hEditor1.ReadOnly = edtEditor.ReadOnly
-  IF $hEditor2 THEN $hEditor2.ReadOnly = edtEditor.ReadOnly
+  If $hEditor1 Then $hEditor1.ReadOnly = edtEditor.ReadOnly
+  If $hEditor2 Then $hEditor2.ReadOnly = edtEditor.ReadOnly
 
-END
+End
 
-PUBLIC SUB OnProjectDebug()
+Public Sub OnProjectDebug()
 
   SetReadOnly
 
-END
+End
 
 
-PUBLIC SUB mnuFind_Click()
+Public Sub mnuFind_Click()
 
   FFind.Find
 
-END
+End
 
-PUBLIC SUB mnuReplace_Click()
+Public Sub mnuReplace_Click()
 
-  FFind.Find(TRUE)
+  FFind.Find(True)
 
-END
+End
 
 
-PUBLIC SUB Editors_Highlight()
+Public Sub Editors_Highlight()
 
-  DIM iState AS Integer
-  DIM iNextState AS Integer
-  DIM iInd AS Integer
-  DIM J AS Integer
-  DIM sText AS String
-  DIM sCar AS String
-  DIM iPos AS Integer
-  DIM bMarkup AS Boolean
-  DIM bQuote AS Boolean
-  DIM bLimit AS Boolean
-  DIM iTag AS Integer
+  Dim iState As Integer
+  Dim iNextState As Integer
+  Dim iInd As Integer
+  Dim J As Integer
+  Dim sText As String
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim bMarkup As Boolean
+  Dim bQuote As Boolean
+  Dim bLimit As Boolean
+  Dim iTag As Integer
 
   iState = Highlight.State
   iTag = Highlight.Tag
@@ -388,252 +388,252 @@ PUBLIC SUB Editors_Highlight()
 
   'PRINT "Highlight:";; iState;; iTag;; sText
 
-  SELECT CASE $iStyle
+  Select Case $iStyle
   
-    CASE STYLE_HTML
+    Case STYLE_HTML
 
       bMarkup = iState = Highlight.Keyword
     
-      FOR iInd = 1 TO String.Len(sText)
+      For iInd = 1 To String.Len(sText)
     
         iNextState = iState
         sCar = String.Mid$(sText, iInd, 1)
     
-        IF bMarkup THEN
+        If bMarkup Then
     
-          IF bQuote THEN
-            IF sCar = Chr$(34) THEN 
-              bQuote = FALSE
+          If bQuote Then
+            If sCar = Chr$(34) Then 
+              bQuote = False
               iNextState = Highlight.Operator
-            ENDIF
-          ELSE IF sCar = ">" THEN
-            bMarkup = FALSE
+            Endif
+          Else If sCar = ">" Then
+            bMarkup = False
             iState = Highlight.Keyword
             iNextState = Highlight.Normal
-          ELSE IF sCar = " " THEN
+          Else If sCar = " " Then
             iNextState = Highlight.Operator
-          ELSE IF sCar = "=" THEN
+          Else If sCar = "=" Then
             iNextState = Highlight.String
-          ELSE IF sCar = Chr$(34) THEN 
-            bQuote = TRUE
-          ENDIF
+          Else If sCar = Chr$(34) Then 
+            bQuote = True
+          Endif
     
-        ELSE
+        Else
     
-          SELECT CASE iState
-            CASE Highlight.Normal
-              IF sCar = "<" THEN
-                IF Mid$(sText, iInd, 4) = "<!--" THEN
+          Select Case iState
+            Case Highlight.Normal
+              If sCar = "<" Then
+                If Mid$(sText, iInd, 4) = "<!--" Then
                   iState = Highlight.Comment
                   iNextState = Highlight.Comment
-                ELSE IF Mid$(sText, iInd, 9) = "<![CDATA[" THEN
+                Else If Mid$(sText, iInd, 9) = "<![CDATA[" Then
                   iState = Highlight.Symbol
                   iNextState = Highlight.Symbol
-                ELSE
+                Else
                   iState = Highlight.Keyword
                   iNextState = Highlight.Keyword
-                  bMarkup = TRUE
-                  IF Mid$(sText, iInd, 5) = "<body" THEN bLimit = TRUE
-                ENDIF
-              ELSE IF sCar = "&" THEN
+                  bMarkup = True
+                  If Mid$(sText, iInd, 5) = "<body" Then bLimit = True
+                Endif
+              Else If sCar = "&" Then
                 iPos = String.InStr(sText, ";", iInd)
-                IF iPos = 0 OR iPos = iInd + 1 THEN
+                If iPos = 0 OR iPos = iInd + 1 Then
                   iState = Highlight.Error
-                ELSE
-                  FOR J = iInd + 1 TO iPos - 1
+                Else
+                  For J = iInd + 1 To iPos - 1
                     sCar = String.Mid$(sText, J, 1)
-                    IF IsLetter(sCar) THEN CONTINUE
-                    IF IsDigit(sCar) THEN CONTINUE
-                    IF InStr("_#", sCar) THEN CONTINUE
-                    BREAK
-                  NEXT
-                  IF J = iPos THEN
+                    If IsLetter(sCar) Then Continue
+                    If IsDigit(sCar) Then Continue
+                    If InStr("_#", sCar) Then Continue
+                    Break
+                  Next
+                  If J = iPos Then
                     Highlight.Add(Highlight.Number, iPos - iInd + 1)
                     iInd = iPos
-                    CONTINUE
-                  ELSE
+                    Continue
+                  Else
                     iState = Highlight.Error
-                  ENDIF
-                ENDIF
-              ENDIF
-            CASE Highlight.Comment
-              IF sCar = ">" AND IF iInd > 2 AND IF String.Mid$(sText, iInd - 2, 2) = "--" THEN
+                  Endif
+                Endif
+              Endif
+            Case Highlight.Comment
+              If sCar = ">" AND If iInd > 2 AND If String.Mid$(sText, iInd - 2, 2) = "--" Then
                 iNextState = Highlight.Normal
-              ENDIF
-            CASE Highlight.Symbol
-              IF sCar = ">" AND IF iInd > 2 AND IF String.Mid$(sText, iInd - 2, 2) = "]]" THEN
+              Endif
+            Case Highlight.Symbol
+              If sCar = ">" AND If iInd > 2 AND If String.Mid$(sText, iInd - 2, 2) = "]]" Then
                 iNextState = Highlight.Normal
-              ENDIF
-          END SELECT
+              Endif
+          End Select
     
-        ENDIF
+        Endif
     
         Highlight.Add(iState)
         iState = iNextState
     
-      NEXT
+      Next
     
-      IF iNextState <> Highlight.Comment AND IF iNextState <> Highlight.Symbol THEN
-        IF bMarkup THEN 
+      If iNextState <> Highlight.Comment AND If iNextState <> Highlight.Symbol Then
+        If bMarkup Then 
           iNextState = Highlight.Keyword
-        ELSE 
+        Else 
           iNextState = Highlight.Normal
-        ENDIF
-      ENDIF
+        Endif
+      Endif
       
-    CASE STYLE_CSS
+    Case STYLE_CSS
     
-      FOR iInd = 1 TO String.Len(sText)
+      For iInd = 1 To String.Len(sText)
     
         iNextState = iState
         sCar = String.Mid$(sText, iInd, 1)
 
-        SELECT CASE iState
+        Select Case iState
         
-          CASE Highlight.Normal, Highlight.String
-            IF sCar = "." OR IF sCar = "#" THEN 
+          Case Highlight.Normal, Highlight.String
+            If sCar = "." OR If sCar = "#" Then 
               iState = Highlight.String
               iNextState = iState
-            ELSE IF sCar = " " THEN 
+            Else If sCar = " " Then 
               iState = Highlight.Normal
               iNextState = iState
-            ELSE IF sCar = "{" THEN 
+            Else If sCar = "{" Then 
               iState = Highlight.Keyword
               iNextState = iState
               iTag = Highlight.Keyword
-            ELSE IF sCar = "/" THEN 
-              IF Mid$(sText, iInd, 2) = "/*" THEN 
+            Else If sCar = "/" Then 
+              If Mid$(sText, iInd, 2) = "/*" Then 
                 iState = Highlight.Comment
                 iNextState = iState
-              ENDIF
-            ENDIF
+              Endif
+            Endif
             
-          CASE Highlight.Keyword, Highlight.Number
-            IF sCar = ":" THEN 
+          Case Highlight.Keyword, Highlight.Number
+            If sCar = ":" Then 
               iNextState = Highlight.Number
-            ELSE IF sCar = ";" THEN 
+            Else If sCar = ";" Then 
               iState = Highlight.Keyword
               iNextState = iState
-            ELSE IF sCar = "}" THEN 
+            Else If sCar = "}" Then 
               iNextState = Highlight.Normal
               iTag = 0
-            ELSE IF sCar = "/" THEN 
-              IF Mid$(sText, iInd, 2) = "/*" THEN 
+            Else If sCar = "/" Then 
+              If Mid$(sText, iInd, 2) = "/*" Then 
                 iState = Highlight.Comment
                 iNextState = iState
-              ENDIF
-            ENDIF
+              Endif
+            Endif
                         
-          CASE Highlight.Comment
-            IF sCar = "/" AND IF iInd > 1 AND IF String.Mid$(sText, iInd - 1, 1) = "*" THEN
+          Case Highlight.Comment
+            If sCar = "/" AND If iInd > 1 AND If String.Mid$(sText, iInd - 1, 1) = "*" Then
               iNextState = IIf(iTag, iTag, Highlight.Normal)
-            ENDIF
+            Endif
             
-        END SELECT
+        End Select
         
         Highlight.Add(iState)
         iState = iNextState
     
-      NEXT
+      Next
     
-  END SELECT 
+  End Select 
 
   Highlight.State = iNextState
   Highlight.Tag = iTag
   Highlight.ShowLimit = bLimit
 
-END
+End
 
-PUBLIC SUB Form_Activate()
+Public Sub Form_Activate()
 
-  mnuEditor.Enabled = TRUE
+  mnuEditor.Enabled = True
 
-END
+End
 
-PUBLIC SUB Form_Deactivate()
+Public Sub Form_Deactivate()
 
-  mnuEditor.Enabled = FALSE
+  mnuEditor.Enabled = False
 
-END
+End
 
-PRIVATE FUNCTION ReadOnly_Read() AS Boolean
+Private Function ReadOnly_Read() As Boolean
 
-  RETURN edtEditor.ReadOnly  
+  Return edtEditor.ReadOnly  
 
-END
+End
 
-PRIVATE SUB DrawInfo()
+Private Sub DrawInfo()
   
   lblEditor.Text = CStr(Editor.Line + 1) & ":" & CStr(Editor.Column + 1)
   
-END
+End
 
-PUBLIC SUB Reload()
+Public Sub Reload()
 
   edtEditor.Text = File.Load(Path)
   Editor.SetFocus
-  Modify(TRUE)
+  Modify(True)
 
-END
+End
 
-PUBLIC SUB mnuReload_Click()
+Public Sub mnuReload_Click()
 
-  IF IsModified() THEN
-    IF Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 THEN RETURN
-  ENDIF
+  If IsModified() Then
+    If Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 Then Return
+  Endif
 
   Reload
 
-END
+End
 
-PUBLIC SUB GetState() AS String
+Public Sub GetState() As String
   
-  RETURN CStr(Editor.Line) & "." & CStr(Editor.Column)
+  Return CStr(Editor.Line) & "." & CStr(Editor.Column)
   
-END
+End
 
-PUBLIC SUB SetState(sState AS String)
+Public Sub SetState(sState As String)
   
-  DIM aState AS String[] = Split(sState, ".")
+  Dim aState As String[] = Split(sState, ".")
   
   Editor.Goto(CInt(aState[0]), CInt(aState[1]))
   
-END
+End
 
-PRIVATE SUB InitEditor(hEditor AS Editor)
+Private Sub InitEditor(hEditor As Editor)
   
-  WITH hEditor
+  With hEditor
     .View = edtEditor
     .Highlight = edtEditor.Highlight
-    .Flags[Editor.HighlightCurrent] = TRUE
+    .Flags[Editor.HighlightCurrent] = True
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
-  END WITH 
+  End With 
   ReadConfigEditor(hEditor)
   
-END
+End
 
-PRIVATE SUB SetViewMode(iViewMode AS Integer)
+Private Sub SetViewMode(iViewMode As Integer)
   
-  IF $iViewMode = iViewMode THEN RETURN 
+  If $iViewMode = iViewMode Then Return 
   $iViewMode = iViewMode
 
-  IF $iViewMode <> VIEWMODE_NORMAL AND IF NOT $hEditor1 THEN 
-    $hEditor1 = NEW Editor(ME) AS "Editors"
+  If $iViewMode <> VIEWMODE_NORMAL AND If NOT $hEditor1 Then 
+    $hEditor1 = New Editor(Me) As "Editors"
     InitEditor($hEditor1)
-    $hEditor2 = NEW Editor(ME) AS "Editors"
+    $hEditor2 = New Editor(Me) As "Editors"
     InitEditor($hEditor2)
-  ENDIF
+  Endif
 
-  SELECT CASE $iViewMode
+  Select Case $iViewMode
   
-    CASE VIEWMODE_NORMAL
+    Case VIEWMODE_NORMAL
       edtEditor.Show
       splHorizontal.Hide
       splVertical.Hide
       Editor = edtEditor  
       
-    CASE VIEWMODE_HORIZONTAL
+    Case VIEWMODE_HORIZONTAL
       $hEditor1.Reparent(splHorizontal)
       $hEditor2.Reparent(splHorizontal)
       edtEditor.Hide
@@ -641,7 +641,7 @@ PRIVATE SUB SetViewMode(iViewMode AS Integer)
       splVertical.Hide
       Editor = $hEditor1
   
-    CASE VIEWMODE_VERTICAL
+    Case VIEWMODE_VERTICAL
       $hEditor1.Reparent(splVertical)
       $hEditor2.Reparent(splVertical)
       edtEditor.Hide
@@ -649,28 +649,28 @@ PRIVATE SUB SetViewMode(iViewMode AS Integer)
       splVertical.Show
       Editor = $hEditor1
   
-  END SELECT   
+  End Select   
   
   Editor.SetFocus
   Form_Resize
   
-END
+End
 
-PUBLIC SUB mnuNoSplit_Click()
+Public Sub mnuNoSplit_Click()
   
   SetViewMode(VIEWMODE_NORMAL)
 
-END
+End
 
-PUBLIC SUB mnuHorizontalSplit_Click()
+Public Sub mnuHorizontalSplit_Click()
 
   SetViewMode(VIEWMODE_HORIZONTAL)
 
-END
+End
 
-PUBLIC SUB mnuVerticalSplit_Click()
+Public Sub mnuVerticalSplit_Click()
 
   SetViewMode(VIEWMODE_VERTICAL)
 
-END
+End
 

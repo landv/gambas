@@ -1,43 +1,43 @@
 ' Gambas module file
 
-PRIVATE $sPath AS String
-PRIVATE $bRename AS Boolean
+Private $sPath As String
+Private $bRename As Boolean
 
-PUBLIC SUB Begin(sPath AS String)
+Public Sub Begin(sPath As String)
   
-  $bRename = FALSE
+  $bRename = False
   $sPath = sPath
     
-  TRY KILL sPath & "~"
-  MOVE sPath TO sPath & "~"
+  Try Kill sPath & "~"
+  Move sPath To sPath & "~"
   
-  $bRename = TRUE
+  $bRename = True
 
-END
+End
 
-PUBLIC SUB End()
+Public Sub End()
   
   Project.RefreshKey($sPath)
   Project.SelectKey($sPath)
   $sPath = ""
-  $bRename = FALSE
+  $bRename = False
   
-END
+End
 
 
-PUBLIC FUNCTION Error() AS Boolean
+Public Function Error() As Boolean
   
-  DIM sError AS String
+  Dim sError As String
   
   sError = Error.Text & " (" & Error.Where & ")"
   
-  IF $bRename THEN 
-    TRY MOVE $sPath & "~" TO $sPath
-  ENDIF
+  If $bRename Then 
+    Try Move $sPath & "~" To $sPath
+  Endif
   
   FGambas.Error(("Cannot save file !") & "\n\n" & $sPath & "\n\n" & sError)
   Save.End
-  RETURN TRUE
+  Return True
   
-END
+End
 

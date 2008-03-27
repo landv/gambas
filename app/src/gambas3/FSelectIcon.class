@@ -2,27 +2,27 @@
 
 'STATIC PRIVATE $aImgExt AS String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
 
-PRIVATE $sIcon AS String
-PRIVATE $sSize AS String
-PRIVATE $bNoStock AS Boolean
+Private $sIcon As String
+Private $sSize As String
+Private $bNoStock As Boolean
 
-PUBLIC SUB Run(sIcon AS String, OPTIONAL bNoStock AS Boolean) AS String
+Public Sub Run(sIcon As String, Optional bNoStock As Boolean) As String
   
   $sIcon = sIcon
   $bNoStock = bNoStock OR NOT Project.IsStockAllowed()
-  IF NOT ME.ShowModal() THEN RETURN
-  RETURN $sIcon
+  If NOT Me.ShowModal() Then Return
+  Return $sIcon
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  DIM iPos AS Integer
+  Dim iPos As Integer
 
-  INC Application.Busy
+  Inc Application.Busy
   
-  Settings.Read(ME)
+  Settings.Read(Me)
 
   fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Picture files")]
   fchIcon.Root = Project.Dir
@@ -31,31 +31,31 @@ PUBLIC SUB Form_Open()
   
   tabIcon[1].Visible = NOT $bNoStock
   
-  IF $sIcon LIKE "icon:/*" THEN 
+  If $sIcon LIKE "icon:/*" Then 
     $sIcon = Mid$($sIcon, 7)
     iPos = InStr($sIcon, "/")
     icwStock.Clear
-    IF iPos THEN 
+    If iPos Then 
       SetSize(Left$($sIcon, iPos - 1))
-    ELSE 
+    Else 
       SetSize(Settings["FSelectIcon/Size", "32"])
-    ENDIF
+    Endif
     $sIcon = Mid$($sIcon, iPos + 1)
-    IF icwStock.Exist($sIcon) THEN
-      icwStock[$sIcon].Selected = TRUE
+    If icwStock.Exist($sIcon) Then
+      icwStock[$sIcon].Selected = True
       icwStock[$sIcon].EnsureVisible
-    ENDIF
+    Endif
     tabIcon.Index = 1 
-  ELSE IF $sIcon THEN
+  Else If $sIcon Then
     fchIcon.SelectedPath = Project.Dir &/ $sIcon
     tabIcon.Index = 0
-  ENDIF
+  Endif
 
-  IF NOT $sSize THEN SetSize(Settings["FSelectIcon/Size", "32"])
+  If NOT $sSize Then SetSize(Settings["FSelectIcon/Size", "32"])
   
-  DEC Application.Busy
+  Dec Application.Busy
   
-END
+End
 
 ' PUBLIC SUB fchIcon_Icon(Path AS String)
 ' 
@@ -65,115 +65,115 @@ END
 ' 
 ' END
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB cmbSize_Activate()
-
-  SetSize(cmbSize.Text)
-
-END
-
-PUBLIC SUB cmbSize_Click()
+Public Sub cmbSize_Activate()
 
   SetSize(cmbSize.Text)
 
-END
+End
 
-PRIVATE SUB RefreshStock()
+Public Sub cmbSize_Click()
+
+  SetSize(cmbSize.Text)
+
+End
+
+Private Sub RefreshStock()
   
-  DIM sIcon AS String
-  DIM sKey AS String
+  Dim sIcon As String
+  Dim sKey As String
   
-  INC Application.Busy
+  Inc Application.Busy
 
   sKey = icwStock.Key
   icwStock.Clear
 
-  FOR EACH sIcon IN Stock.List
+  For Each sIcon In Stock.List
     icwStock.Add(sIcon, sIcon, Stock[$sSize &/ sIcon])
-  NEXT
+  Next
   
-  IF sKey THEN 
-    icwStock[sKey].Selected = TRUE
+  If sKey Then 
+    icwStock[sKey].Selected = True
     icwStock[sKey].EnsureVisible
-  ENDIF
+  Endif
   
-  DEC Application.Busy
+  Dec Application.Busy
   
-END
+End
 
-PRIVATE SUB SetSize(sSize AS String) AS Boolean
+Private Sub SetSize(sSize As String) As Boolean
 
-  DIM iSize AS Integer
+  Dim iSize As Integer
   
   sSize = LCase(sSize)
-  TRY iSize = CInt(sSize)
-  IF ERROR THEN 
-    IF NOT ["small", "medium", "large", "huge"].Exist(sSize) THEN 
+  Try iSize = CInt(sSize)
+  If Error Then 
+    If NOT ["small", "medium", "large", "huge"].Exist(sSize) Then 
       cmbSize.Text = $sSize
-      RETURN TRUE
-    ENDIF
-  ELSE 
-    IF iSize < 8 OR iSize > 256 THEN 
+      Return True
+    Endif
+  Else 
+    If iSize < 8 OR iSize > 256 Then 
       cmbSize.Text = $sSize
-      RETURN TRUE
-    ENDIF
+      Return True
+    Endif
     sSize = CStr(iSize)
-  ENDIF
+  Endif
   
   $sSize = sSize
   cmbSize.Text = sSize
   RefreshStock
   
-END
+End
 
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
-  SELECT CASE tabIcon.Index
+  Select Case tabIcon.Index
   
-    CASE 0
+    Case 0
       $sIcon = Mid$(fchIcon.SelectedPath, Len(fchIcon.Root) + 1)
-      IF Left($sIcon) = "/" THEN $sIcon = Mid$($sIcon, 2)
+      If Left($sIcon) = "/" Then $sIcon = Mid$($sIcon, 2)
   
-    CASE 1
+    Case 1
       $sIcon = "icon:/" &/ $sSize &/ icwStock.Key
       Settings["FSelectIcon/Size"] = $sSize
       
-  END SELECT 
+  End Select 
   
-  IF NOT $sIcon THEN RETURN
+  If NOT $sIcon Then Return
 
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB icwStock_Activate()
+Public Sub icwStock_Activate()
 
-  btnOK.Value = TRUE
+  btnOK.Value = True
 
-END
+End
 
-PUBLIC SUB fchIcon_Activate()
+Public Sub fchIcon_Activate()
 
-  btnOK.Value = TRUE
+  btnOK.Value = True
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
-  Settings.Write(ME)  
+  Settings.Write(Me)  
 
-END
+End
 
-PUBLIC SUB tabIcon_Click()
+Public Sub tabIcon_Click()
 
-  IF tabIcon.Index = 1 THEN 
+  If tabIcon.Index = 1 Then 
     icwStock.SetFocus
-  ENDIF 
+  Endif 
 
-END
+End

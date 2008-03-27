@@ -1,63 +1,63 @@
 ' Gambas class file
 
-STATIC PUBLIC Value AS String[]
+Static Public Value As String[]
 
-STATIC PUBLIC FUNCTION Run(aValue AS String[]) AS Boolean
+Static Public Function Run(aValue As String[]) As Boolean
   
-  DIM hForm AS Form
+  Dim hForm As Form
   
   Value = aValue
   
-  hForm = NEW FList
-  RETURN NOT hForm.ShowModal()
+  hForm = New FList
+  Return NOT hForm.ShowModal()
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   lstValue.List = Value
-  IF lstValue.Count THEN lstValue.Index = 0
+  If lstValue.Count Then lstValue.Index = 0
   Refresh
 
-END
+End
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
   Value = lstValue.List
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB lstValue_Click()
+Public Sub lstValue_Click()
 
   'PRINT "lstValue_Click"
 
-  IF NOT lstValue.Current THEN RETURN
+  If NOT lstValue.Current Then Return
 
   txtValue.Text = lstValue.Current.Text
   txtValue.SetFocus
   txtValue.SelectAll
 
-END
+End
 
 
-PUBLIC SUB txtValue_Change()
+Public Sub txtValue_Change()
 
-  IF lstValue.Current THEN
+  If lstValue.Current Then
     lstValue.Current.Text = txtValue.Text
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC SUB btnInsert_Click()
+Public Sub btnInsert_Click()
 
   lstValue.Add("Item " & CStr(lstValue.Count + 1))
   'PRINT "Count ="; lstValue.Count
@@ -65,12 +65,12 @@ PUBLIC SUB btnInsert_Click()
   lstValue.Index = lstValue.Count - 1
   'PRINT "Index ="; lstValue.Index; " /"; lstValue.Count
 
-END
+End
 
 
-PRIVATE SUB Refresh()
+Private Sub Refresh()
   
-  DIM bEnabled AS Boolean
+  Dim bEnabled As Boolean
   
   bEnabled = lstValue.Count
   
@@ -80,59 +80,59 @@ PRIVATE SUB Refresh()
   btnDown.Enabled = bEnabled
   btnClear.Enabled = bEnabled
   
-  IF NOT bEnabled THEN txtValue.Clear
+  If NOT bEnabled Then txtValue.Clear
   
-END
+End
 
-PUBLIC SUB btnDelete_Click()
+Public Sub btnDelete_Click()
 
-  DIM iIndex AS Integer
+  Dim iIndex As Integer
   
   iIndex = lstValue.Index
 
-  IF iIndex < 0 THEN RETURN
+  If iIndex < 0 Then Return
   
   lstValue.Remove(iIndex)
 
-  IF iIndex >= lstValue.Count THEN DEC iIndex
+  If iIndex >= lstValue.Count Then Dec iIndex
 
   lstValue.Index = iIndex
 
   Refresh
 
-END
+End
 
-PUBLIC SUB btnClear_Click()
+Public Sub btnClear_Click()
 
-  IF Message.Question(("Do you want to clear the value list ?"), ("Clear"), ("Cancel")) <> 1 THEN RETURN
+  If Message.Question(("Do you want to clear the value list ?"), ("Clear"), ("Cancel")) <> 1 Then Return
 
   lstValue.Clear
   Refresh
 
-END
+End
 
-PUBLIC SUB btnDown_Click()
+Public Sub btnDown_Click()
 
-  DIM iInd AS Integer
+  Dim iInd As Integer
 
   iInd = lstValue.Index
 
-  IF iInd < (lstValue.Count - 1) THEN
-    SWAP lstValue[iInd].Text, lstValue[iInd + 1].Text
+  If iInd < (lstValue.Count - 1) Then
+    Swap lstValue[iInd].Text, lstValue[iInd + 1].Text
     lstValue.Index = iInd + 1
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB btnUp_Click()
+Public Sub btnUp_Click()
 
-  DIM iInd AS Integer
+  Dim iInd As Integer
 
   iInd = lstValue.Index
 
-  IF iInd > 0 THEN
-    SWAP lstValue[iInd].Text, lstValue[iInd - 1].Text
+  If iInd > 0 Then
+    Swap lstValue[iInd].Text, lstValue[iInd - 1].Text
     lstValue.Index = iInd - 1
-  ENDIF
+  Endif
 
-END
+End

@@ -2,15 +2,15 @@
 
 'PUBLIC Shown AS Boolean
 
-PRIVATE $iCol AS Integer
-PRIVATE $iLine AS Integer
-PRIVATE $bWelcome AS Boolean
-PRIVATE $bOpened AS Boolean
+Private $iCol As Integer
+Private $iLine As Integer
+Private $bWelcome As Boolean
+Private $bOpened As Boolean
 
-PUBLIC SUB _new()
+Public Sub _new()
 
   'Config.LoadWindow(ME, "/FOutput")
-  Settings.Read(ME)
+  Settings.Read(Me)
   ReadConfig
   
   chkCharset.Visible = System.Charset <> Desktop.Charset
@@ -19,61 +19,61 @@ PUBLIC SUB _new()
   btnAbove.Value = Settings["/FOutput/KeepAbove"]
   OnProjectDebug
 
-END
+End
 
 
-PUBLIC SUB Clear()
+Public Sub Clear()
 
   edtOutput.Clear
   $iLine = 0
 
-  IF NOT $bWelcome THEN
+  If NOT $bWelcome Then
 
     edtOutput.Insert(("Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"))
     $iCol = edtOutput.Column
     $iLine = edtOutput.Line
 
-    $bWelcome = TRUE
+    $bWelcome = True
 
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC SUB Insert(sText AS String, OPTIONAL bCurrent AS Boolean)
+Public Sub Insert(sText As String, Optional bCurrent As Boolean)
 
-  IF chkCharset.Value THEN  
-    TRY sText = DConv$(sText)
-  ENDIF
+  If chkCharset.Value Then  
+    Try sText = DConv$(sText)
+  Endif
 
-  IF NOT bCurrent THEN 
+  If NOT bCurrent Then 
     'edtOutput.Line = edtOutput.Lines.Count
     'edtOutput.Goto(edtOutput.Lines.Count, 10000)
-  ENDIF
+  Endif
   
   edtOutput.Print(sText)
   
   $iLine = edtOutput.Line
   $iCol = edtOutput.Column
 
-  IF NOT Action["console"].Value THEN Action["console"].Value = TRUE
+  If NOT Action["console"].Value Then Action["console"].Value = True
 
-END
+End
 
-PUBLIC SUB ReadConfig()
+Public Sub ReadConfig()
 
   edtOutput.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
-  MColor.InitEditor(edtOutput)
+  MTheme.InitEditor(edtOutput)
 
-END
+End
 
-PUBLIC SUB edtOutput_KeyPress()
+Public Sub edtOutput_KeyPress()
 
-  DIM sText AS String
-  DIM iPos AS Integer
-  DIM sVal AS String
+  Dim sText As String
+  Dim iPos As Integer
+  Dim sVal As String
 
-  IF Key.Code = Key.Enter OR Key.Code = Key.Return THEN
+  If Key.Code = Key.Enter OR Key.Code = Key.Return Then
 
     'TRY sText = SConv$(edtOutput.Text)
 
@@ -81,124 +81,124 @@ PUBLIC SUB edtOutput_KeyPress()
     'sText = Mid$(sText, iPos + 1, edtOutput.Pos - iPos)
     
     sText = edtOutput.Lines[edtOutput.Line].Text
-    IF chkCharset.Value THEN
-      TRY sText = SConv$(sText)
-    ENDIF
+    If chkCharset.Value Then
+      Try sText = SConv$(sText)
+    Endif
 
-    IF Design.IsRunning() THEN
+    If Design.IsRunning() Then
 
       'IF $iPos > iPos THEN sText = Mid$(sText, $iPos - iPos + 1)
       
-      IF $iLine = edtOutput.Line THEN
+      If $iLine = edtOutput.Line Then
         sText = Mid$(sText, $iCol + 1)
-      ENDIF
+      Endif
 
       edtOutput.Insert("\n")
       Design.Send(sText & "\n")
       'Key.Cancel = TRUE
-      STOP EVENT
+      Stop Event
 
-    ELSE IF Left$(sText) = "?" THEN
+    Else If Left$(sText) = "?" Then
 
       sText = Mid$(sText, 2)
-      IF NOT sText THEN RETURN
+      If NOT sText Then Return
 
-      IF Project.Running THEN
+      If Project.Running Then
 
         edtOutput.Insert("\n")
         Design.Command("!\t" & sText)
-        STOP EVENT
+        Stop Event
 
-      ELSE
+      Else
 
-        TRY sVal = Str(Eval(sText & "\n"))
-        IF ERROR THEN sVal = Error.Text
+        Try sVal = Str(Eval(sText & "\n"))
+        If Error Then sVal = Error.Text
         Insert("\n" & DConv$(sVal) & "\n")
         'Key.Cancel = TRUE
-        STOP EVENT
+        Stop Event
 
-      ENDIF
+      Endif
 
-    ENDIF
+    Endif
 
-  ELSE IF Key.Code = Key.Escape THEN 
+  Else If Key.Code = Key.Escape Then 
   
-    Action["console"].Value = FALSE
+    Action["console"].Value = False
 
-  ELSE IF Key.Control THEN
+  Else If Key.Control Then
 
-    IF Key.Code = Key["L"] THEN
+    If Key.Code = Key["L"] Then
       Clear
     'ELSE IF Code = Key["C"] THEN
     '  Project.DebugForm.Stop
     '  RETURN FALSE
-    ENDIF
+    Endif
 
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
-  IF NOT ME.Parent THEN 
+  If NOT Me.Parent Then 
     'DEBUG "Write: "; ME.X;; ME.Y
-    Settings.Write(ME)
-  ENDIF
+    Settings.Write(Me)
+  Endif
   'Action["console"].Value = FALSE
   'Settings.Write(ME)
 
-END
+End
 
-PUBLIC SUB Form_Show()
+Public Sub Form_Show()
 
   'Action["console"].Value = TRUE
 
-END
+End
 
-PUBLIC SUB Form_GotFocus()
+Public Sub Form_GotFocus()
 
   edtOutput.SetFocus
 
-END
+End
 
-PUBLIC SUB btnClear_Click()
+Public Sub btnClear_Click()
 
   Clear
   edtOutput.SetFocus
 
-END
+End
 
-PUBLIC SUB btnCut_Click()
+Public Sub btnCut_Click()
 
   edtOutput.Cut
 
-END
+End
 
-PUBLIC SUB btnCopy_Click()
+Public Sub btnCopy_Click()
 
   edtOutput.Copy
 
-END
+End
 
-PUBLIC SUB btnPaste_Click()
+Public Sub btnPaste_Click()
 
   edtOutput.Paste
 
-END
+End
 
-PUBLIC SUB Form_Activate()
+Public Sub Form_Activate()
 
   edtOutput.SetFocus
 
-END
+End
 
-PUBLIC SUB btnUndock_Click()
+Public Sub btnUndock_Click()
 
   Settings["/FOutput/Undock"] = btnUndock.Value
   OnProjectDebug
   FDebugInfo.UpdateView
 
-END
+End
 
 ' PUBLIC SUB Toggle(bShow AS Boolean)
 '   
@@ -212,26 +212,26 @@ END
 '   
 ' END
 
-PUBLIC SUB OnProjectDebug()
+Public Sub OnProjectDebug()
   
   btnAbove.Visible = Project.Running AND btnUndock.Value
-  ME.Stacking = If(Project.Running AND btnAbove.Value, Window.Above, Window.Normal)
+  Me.Stacking = If(Project.Running AND btnAbove.Value, Window.Above, Window.Normal)
   
-END
+End
 
 
-PUBLIC SUB btnAbove_Click()
+Public Sub btnAbove_Click()
 
   Settings["/FOutput/KeepAbove"] = btnAbove.Value
   OnProjectDebug
   
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  IF NOT ME.Parent THEN 
-    Settings.Read(ME)
+  If NOT Me.Parent Then 
+    Settings.Read(Me)
     'DEBUG "Read: "; ME.X;; ME.Y
-  ENDIF
+  Endif
 
-END
+End

@@ -241,14 +241,18 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
   	if (pos > (xmin + lmax))
   		break;
 
-    style = l->highlight[i].state;
     len = l->highlight[i].len;
-    st = &styles[style];
 		w = len * charWidth;
 
 		if ((pos + len) >= xmin)
 		{
-			sd = l->s.mid(pos, len).getString();
+			style = l->highlight[i].state;
+			st = &styles[style];
+			
+			if (style == GLine::Keyword && doc->isKeywordsUseUpperCase())
+				sd = l->s.mid(pos, len).upper().getString();
+			else
+				sd = l->s.mid(pos, len).getString();
 
 			if (st->italic != italic)
 			{
@@ -257,7 +261,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			}
 
 			if (st->background)
-				p.fillRect(x, 0, w, h, st->backgroundColor);
+				p.fillRect(x, 1, w, h - 1, st->backgroundColor);
 			
 			p.setPen(st->color);
 			p.drawText(x, y, sd);
@@ -279,131 +283,6 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
     p.drawText(x, y, l->s.mid(pos).getString());
   }
 }
-
-#if 0
-void GEditor::paintCell(QPainter * painter, int row, int)
-{
-  QRect ur = cellRect();
-  GLine *l;
-  QFontMetrics fm(painter->fontMetrics());
-  int x1, y1, x2, y2;
-  QColor color;
-  int xmin, lmax;
-
-  if (row >= numLines())
-  {
-    painter->fillRect(ur.left(), ur.top(), ur.width(), ur.height(), styles[GLine::Background].color);
-    return;
-  }
-
-	l = doc->lines.at(row);
-
-	xmin = (ur.left() - margin) / charWidth;
-	if (xmin < 0)
-		xmin = 0;
-	lmax = 1 + ur.width() / charWidth;
-
-  // Line background
-  if (l->flag)
-  {
-    if (l->flag & (1 << GLine::CurrentFlag))
-      color = styles[GLine::Current].color;
-    else if (l->flag & (1 << GLine::BreakpointFlag))
-      color = styles[GLine::Breakpoint].color;
-		else
-	    color = styles[GLine::Background].color;
-  }
-  else if (getFlag(ShowCurrentLine) && row == y)
-    color = styles[GLine::Line].color;
-  else
-    color = styles[GLine::Background].color;
-
-  cache->fill(color);
-
-  QPainter p(cache);
-  p.setFont(painter->font());
-  p.translate(-ur.left(), -ur.top());
-
-  // Selection background
-  if (doc->hasSelection())
-  {
-    doc->getSelection(&y1, &x1, &y2, &x2);
-
-    if (row >= y1 && row <= y2)
-    {
-      if (row > y1)
-        x1 = 0;
-      else
-        x1 *= charWidth;
-
-      if (row < y2)
-        x2 = cellWidth() + 1;
-      else
-        x2 *= charWidth;
-
-      p.fillRect(x1 + margin, 0, x2 - x1, cellHeight(), styles[GLine::Selection].color);
-    }
-  }
-
-  // Margin
-  if (margin && (margin > ur.left()))
-  {
-		if (!l->flag)
-    	p.fillRect(0, 0, margin, cellHeight(), styles[GLine::Background].color);
-
-    if (getFlag(ShowModifiedLines) && l->changed)
-      p.fillRect(0, 0, margin - 1, cellHeight(), styles[GLine::Highlight].color);
-    else if (getFlag(ShowLineNumbers))
-      p.fillRect(0, 0, margin - 1, cellHeight(), styles[GLine::Line].color);
-
-    x1 = 0;
-
-    if (getFlag(ShowLineNumbers))
-    {
-      int n = row + 1;
-      if ((n % 10) == 0)
-        p.setPen(styles[GLine::Normal].color);
-			else
-        p.setPen(styles[GLine::Selection].color);
-      p.drawText(x1, fm.ascent(), QString::number(n).rightJustify(lineNumberLength));
-    }
-  }
-
-  // Highlight braces
-  if (getFlag(HighlightBraces) && row == ym && x1m >= 0)
-  {
-    p.fillRect(x1m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);
-    p.fillRect(x2m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);
-  }
-
-  // Line text
-  if (doc->getHighlightMode() == GDocument::None || (l->modified && row == y && !getFlag(HighlightCurrent)) || l->flag)
-  {
-    p.setPen(styles[GLine::Normal].color);
-    p.drawText(margin, fm.ascent(), l->s.getString().mid(xmin, lmax));
-  }
-  else
-  {
-    doc->colorize(row);
-    paintText(p, l, margin, fm.ascent(), xmin, lmax);
-  }
-
-  // Procedure separation lines (after colorize !)
-  if (getFlag(ShowProcedureLimits) && l->proc)
-  {
-    QBrush brush(styles[GLine::Selection].color, Qt::Dense4Pattern);
-    p.fillRect(0, 0, ur.width(), 1, brush);
-  }
-
-  // Text cursor
-  if (cursor && row == y)
-    p.fillRect(QMIN((int)l->s.length(), x) * charWidth + margin, 0, 2, cellHeight(), styles[GLine::Normal].color);
-
-  p.end();
-
-  painter->drawPixmap(ur.left(), ur.top(), *cache, 0, 0, ur.width(), ur.height());
-}
-#endif
 
 static void make_blend(QPixmap &pix, QColor start, QColor end) //, bool loop = false)
 {
@@ -487,6 +366,8 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   QColor color, a, b, c;
   int xmin, lmax;
   int realRow;
+  bool folded;
+  bool highlight;
 
 	ur = cellGeometry(row, 0);
 	contentsToViewport(ur.x(), ur.y(), x1, y1);
@@ -499,7 +380,15 @@ void GEditor::paintCell(QPainter * painter, int row, int)
     return;
   }
   
+  
 	l = doc->lines.at(realRow);
+  
+  // Colorize as soon as possible
+  highlight = !(doc->getHighlightMode() == GDocument::None || (l->modified && realRow == y && !getFlag(HighlightCurrent)));
+  if (highlight)
+    doc->colorize(realRow);
+  
+  folded = l->proc && isFolded(realRow);
 
 	xmin = (ur.left() - margin) / charWidth;
 	if (xmin < 0)
@@ -510,7 +399,6 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	//	qDebug("%d: %d %d %d %d (%d %d)", row, ur.left(), ur.top(), ur.width(), ur.height(), xmin, lmax);
 
   // Line background
-
 	if (l->flag & (1 << GLine::CurrentFlag))
 		a = styles[GLine::Current].color;
 
@@ -529,7 +417,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   {
   	if (getFlag(BlendedProcedureLimits))
   	{
-			make_blend(pattern, styles[GLine::Current].color, color);
+			make_blend(pattern, styles[GLine::Line].color, color);
   		p.drawTiledPixmap(0, 0, cache->width(), cache->height(), pattern);
 		}
 		else
@@ -578,7 +466,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
     if (getFlag(ShowLineNumbers))
     {
       int n = realRow + 1;
-      if ((n % 10) == 0)
+      if ((n % 10) == 0 || (l->proc && folded))
         p.setPen(styles[GLine::Normal].color);
 			else
         p.setPen(styles[GLine::Selection].color);
@@ -586,8 +474,17 @@ void GEditor::paintCell(QPainter * painter, int row, int)
     }
   }
   
+  // Highlight braces
+  if (getFlag(HighlightBraces) && realRow == ym && x1m >= 0)
+  {
+  	highlight_text(p, x1m * charWidth + margin, fm.ascent() + 1, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
+  	highlight_text(p, x2m * charWidth + margin, fm.ascent() + 1, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
+    /*p.fillRect(x1m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);
+    p.fillRect(x2m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);*/
+  }
+
   // Line text
-  if (doc->getHighlightMode() == GDocument::None || (l->modified && realRow == y && !getFlag(HighlightCurrent)))
+  if (!highlight)
   {
     p.setPen(styles[GLine::Normal].color);
     p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
@@ -599,14 +496,13 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   }*/
   else
   {
-    doc->colorize(realRow);
     paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight());
   }
 
   // Folding symbol
   if (margin && l->proc)
   {
-		style().drawPrimitive(isFolded(realRow) ? QStyle::PE_ArrowRight : QStyle::PE_ArrowDown, &p, 
+		style().drawPrimitive(folded ? QStyle::PE_ArrowRight : QStyle::PE_ArrowDown, &p, 
 			QRect(margin - 12, 0, 12, 12), QApplication::palette().active(), QStyle::Style_Default | QStyle::Style_Enabled);
   }
   
@@ -617,15 +513,6 @@ void GEditor::paintCell(QPainter * painter, int row, int)
     //updateBreakpoint(styles[GLine::Background].color.rgb(), styles[GLine::Breakpoint].color.rgb());
 		p.drawPixmap(margin - (cellHeight() + breakpoint->width()) / 2, (cellHeight() - breakpoint->height()) / 2, *breakpoint);
 	}
-
-  // Highlight braces
-  if (getFlag(HighlightBraces) && realRow == ym && x1m >= 0)
-  {
-  	highlight_text(p, x1m * charWidth + margin, fm.ascent() + 1, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-  	highlight_text(p, x2m * charWidth + margin, fm.ascent() + 1, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
-    /*p.fillRect(x1m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);
-    p.fillRect(x2m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);*/
-  }
 
   // Text cursor
   if (cursor && realRow == y)

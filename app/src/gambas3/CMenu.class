@@ -1,73 +1,73 @@
 ' Gambas class file
 
-PUBLIC Name AS String
-PUBLIC Caption AS String
-PUBLIC Shortcut AS String
-PUBLIC Group AS String
-PUBLIC Ctrl AS Boolean
-PUBLIC Shift AS Boolean
-PUBLIC Alt AS Boolean
-PUBLIC Enabled AS Boolean
-PUBLIC Visible AS Boolean
-PUBLIC Checked AS Boolean
-PUBLIC Toggle AS Boolean
-PUBLIC Level AS Integer
-PUBLIC Picture AS String
-PUBLIC Tag AS String
-PUBLIC Action AS String
+Public Name As String
+Public Caption As String
+Public Shortcut As String
+Public Group As String
+Public Ctrl As Boolean
+Public Shift As Boolean
+Public Alt As Boolean
+Public Enabled As Boolean
+Public Visible As Boolean
+Public Checked As Boolean
+Public Toggle As Boolean
+Public Level As Integer
+Public Picture As String
+Public Tag As String
+Public Action As String
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  Enabled = TRUE
-  Visible = TRUE
+  Enabled = True
+  Visible = True
 
-END
+End
 
-PUBLIC SUB SetShortcut(sShortcut AS String)
+Public Sub SetShortcut(sShortcut As String)
 
   sShortcut = Upper(sShortcut)
 
-  DO
+  Do
 
-    IF Left$(sShortcut, 5) = "CTRL+" THEN
-      Ctrl = TRUE
+    If Left$(sShortcut, 5) = "CTRL+" Then
+      Ctrl = True
       sShortcut = Mid$(sShortcut, 6)
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
 
-    IF Left$(sShortcut, 6) = "SHIFT+" THEN
-      Shift = TRUE
+    If Left$(sShortcut, 6) = "SHIFT+" Then
+      Shift = True
       sShortcut = Mid$(sShortcut, 7)
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
 
-    IF Left$(sShortcut, 4) = "ALT+" THEN
-      Alt = TRUE
+    If Left$(sShortcut, 4) = "ALT+" Then
+      Alt = True
       sShortcut = Mid$(sShortcut, 5)
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
 
     Shortcut = Left$(sShortcut) & Lower(Mid$(sShortcut, 2))
-    RETURN
+    Return
 
-  LOOP
+  Loop
 
-END
+End
 
 
-PUBLIC FUNCTION GetShortcut() AS String
+Public Function GetShortcut() As String
 
-  DIM sShortcut AS String
+  Dim sShortcut As String
 
-  IF Shortcut THEN
+  If Shortcut Then
 
-    IF Ctrl THEN sShortcut = sShortcut & "Ctrl+"
-    IF Shift THEN sShortcut = sShortcut & "Shift+"
-    IF Alt THEN sShortcut = sShortcut & "Alt+"
+    If Ctrl Then sShortcut = sShortcut & "Ctrl+"
+    If Shift Then sShortcut = sShortcut & "Shift+"
+    If Alt Then sShortcut = sShortcut & "Alt+"
     sShortcut = sShortcut & Shortcut
 
-    RETURN sShortcut
+    Return sShortcut
 
-  ENDIF
+  Endif
 
-END
+End

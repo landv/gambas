@@ -1,81 +1,81 @@
 ' Gambas class file
 
-STATIC PRIVATE $sPath AS String
+Static Private $sPath As String
 
-PRIVATE btnNew AS CCoolButton
-PRIVATE btnOpen AS CCoolButton
-PRIVATE btnRecent AS CCoolButton
-PRIVATE btnExample AS CCoolButton
-PRIVATE btnQuit AS CCoolButton
+Private btnNew As CCoolButton
+Private btnOpen As CCoolButton
+Private btnRecent As CCoolButton
+Private btnExample As CCoolButton
+Private btnQuit As CCoolButton
 
-PRIVATE $iRecent AS Integer
-PRIVATE $aExample AS String[]
-PRIVATE $bExample AS Boolean
-PRIVATE $hPicture AS Picture
+Private $iRecent As Integer
+Private $aExample As String[]
+Private $bExample As Boolean
+Private $hPicture As Picture
 
-PRIVATE CONST LIST_NONE AS Integer = 0
-PRIVATE CONST LIST_RECENT AS Integer = 1
-PRIVATE CONST LIST_EXAMPLE AS Integer = 2
+Private Const LIST_NONE As Integer = 0
+Private Const LIST_RECENT As Integer = 1
+Private Const LIST_EXAMPLE As Integer = 2
 
-PRIVATE CONST POS_BUTTON AS Integer = 0
-PRIVATE HEIGHT_BUTTON AS Integer = Desktop.Scale * 6
+Private Const POS_BUTTON As Integer = 0
+Private HEIGHT_BUTTON As Integer = Desktop.Scale * 6
 
 'PRIVATE $aExample as String[] = [ ("Automation"),("Basic"),("Database"),
-STATIC PUBLIC FUNCTION Run() AS String
+Static Public Function Run() As String
 
   'DIM hForm AS Form
 
   $sPath = ""
   'hForm = NEW FWelcome
   FWelcome.ShowModal()
-  RETURN $sPath
+  Return $sPath
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  DIM W AS Integer
-  DIM sFont AS String
+  Dim W As Integer
+  Dim sFont As String
 
   sFont = "Bold"
   W = panButton.ClientW
 
-  btnNew = NEW CCoolButton(panButton, 0, POS_BUTTON, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) AS "btnNew"
+  btnNew = New CCoolButton(panButton, 0, POS_BUTTON, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
   btnNew.Foreground = Color.SelectedBackground
-  btnOpen = NEW CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project..."), "icon:/large/open", sFont) AS "btnOpen"
+  btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project..."), "icon:/large/open", sFont) As "btnOpen"
   btnOpen.Foreground = Color.SelectedBackground
-  btnRecent = NEW CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/play", sFont) AS "btnRecent"
+  btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/play", sFont) As "btnRecent"
   btnRecent.Foreground = Color.SelectedBackground
-  btnExample = NEW CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) AS "btnExample"
+  btnExample = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
   btnExample.Foreground = Color.SelectedBackground
-  btnQuit = NEW CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) AS "btnQuit"
+  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
   btnQuit.Foreground = Color.SelectedBackground
 
   ' Fill recent list
 
-  chkSortRecent.Value = Settings["/FWelcome/SortRecent", FALSE]
+  chkSortRecent.Value = Settings["/FWelcome/SortRecent", False]
   FillRecent
 
   lblVersion.Text = Project.Version 'Subst(("version &1"), Project.Version)
   lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 4, lblGambas.Y)
 
-  IF Project.GetRecentFiles().Count THEN
+  If Project.GetRecentFiles().Count Then
     Toggle(LIST_RECENT)
-  ELSE
+  Else
     Toggle(LIST_EXAMPLE)
-  ENDIF
+  Endif
 
-  Settings.Read(ME)
+  Settings.Read(Me)
 
-END
+End
 
 
-PUBLIC SUB cvwRecent_Click()
+Public Sub cvwRecent_Click()
 
-  $sPath = Project.Recent[Val(LAST.Key)]
-  ME.Close
+  $sPath = Project.Recent[Val(Last.Key)]
+  Me.Close
 
-END
+End
 
 
 ' PUBLIC SUB timMessage_Timer()
@@ -95,45 +95,45 @@ END
 ' END
 
 
-PUBLIC SUB btnNew_Click()
+Public Sub btnNew_Click()
 
   $sPath = FCreateProject.Run()
-  IF $sPath THEN ME.Close
+  If $sPath Then Me.Close
 
-END
+End
 
 
-PUBLIC SUB btnOpen_Click()
+Public Sub btnOpen_Click()
 
   $sPath = FOpenProject.Run()
-  IF $sPath THEN ME.Close
+  If $sPath Then Me.Close
 
-END
+End
 
 
-PUBLIC SUB btnRecent_Click()
+Public Sub btnRecent_Click()
 
   Toggle(LIST_RECENT)
 
-END
+End
 
 
-PUBLIC SUB btnExample_Click()
+Public Sub btnExample_Click()
 
   Toggle(LIST_EXAMPLE)
 
-END
+End
 
 
 
-PUBLIC SUB btnQuit_Click()
+Public Sub btnQuit_Click()
 
   $sPath = ""
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PRIVATE SUB Toggle(iState AS Integer)
+Private Sub Toggle(iState As Integer)
 
   'IF iState = $iRecent THEN
   '  $iRecent = LIST_NONE
@@ -143,51 +143,51 @@ PRIVATE SUB Toggle(iState AS Integer)
 
   'ME.Border = Window.Resizable
 
-  IF $iRecent THEN
+  If $iRecent Then
     'btnQuit.Move(8, 216 + cvwRecent.H + 8)
     'cvwRecent.Move(360 - cvwRecent.W, 216)
     panList.Raise
     svwRecent.Visible = $iRecent = LIST_RECENT
     svwExample.Visible = $iRecent = LIST_EXAMPLE
-    panList.Visible = TRUE
-    IF $iRecent = LIST_RECENT THEN
+    panList.Visible = True
+    If $iRecent = LIST_RECENT Then
       lblList.Text = ("Recent projects")
       panSort.Show
-    ELSE
+    Else
       lblList.Text = ("Examples")
       panSort.Hide
-    ENDIF
-  ELSE
-    panList.Visible = FALSE
-  ENDIF
+    Endif
+  Else
+    panList.Visible = False
+  Endif
 
-  IF $iRecent = LIST_EXAMPLE THEN 
+  If $iRecent = LIST_EXAMPLE Then 
     FillExample
-  ENDIF
+  Endif
   
-END
+End
 
 
-PUBLIC SUB btnOpenRecent_Click()
+Public Sub btnOpenRecent_Click()
 
-  $sPath = LAST.Tag
-  ME.Close
+  $sPath = Last.Tag
+  Me.Close
 
-END
+End
 
-PUBLIC SUB Form_KeyPress()
+Public Sub Form_KeyPress()
 
-  IF Key.Code = Key.Esc THEN
+  If Key.Code = Key.Esc Then
     btnQuit_Click
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  DIM hCtrl AS Control
-  DIM W AS Integer
-  DIM sMsg AS String
+  Dim hCtrl As Control
+  Dim W As Integer
+  Dim sMsg As String
 
   'lblBackground.Width = ME.ClientW
   'imgGambas.X = Max(lblGambas.X + lblGambas.W, ME.ClientW - 24 - imgGambas.Width)
@@ -218,83 +218,83 @@ PUBLIC SUB Form_Resize()
 '   btnExample.Resize(W, HEIGHT_BUTTON)
 '   btnQuit.Resize(W, HEIGHT_BUTTON)
 
-END
+End
 
 
-PRIVATE SUB FillExample()
+Private Sub FillExample()
 
-  DIM sLastDir AS String
-  DIM sDir AS String
-  DIM hButton AS CCoolButton
+  Dim sLastDir As String
+  Dim sDir As String
+  Dim hButton As CCoolButton
   'DIM hLabel AS Label
-  DIM hDrawingArea AS DrawingArea
-  DIM iInd AS Integer
-  DIM sPath AS String
-  DIM iHeight, X, Y AS Integer
-  DIM C AS Integer
-  DIM hImage AS Image
+  Dim hDrawingArea As DrawingArea
+  Dim iInd As Integer
+  Dim sPath As String
+  Dim iHeight, X, Y As Integer
+  Dim C As Integer
+  Dim hImage As Image
 
-  IF $bExample THEN RETURN
+  If $bExample Then Return
 
-  INC Application.Busy
+  Inc Application.Busy
 
   iHeight = Desktop.Scale * 3
 
-  IF NOT $hPicture THEN 
-    hImage = NEW Image(16, iHeight, TRUE)
+  If NOT $hPicture Then 
+    hImage = New Image(16, iHeight, True)
     'hImage.Fill(Color.SelectedBackground)
-    FOR Y = 0 TO iHeight
+    For Y = 0 To iHeight
       C = Color.SelectedBackground
       C = Color.RGB(Color[C].Red, Color[C].Green, Color[C].Blue, Max(0, 320 * Y / iHeight - 64))
-      FOR X = 0 TO 15
+      For X = 0 To 15
         hImage[X, Y] = C
         'hImage[X, iHeight - Y - 1] = C
-      NEXT 
-    NEXT
+      Next 
+    Next
     $hPicture = hImage.Picture
-  ENDIF
+  Endif
 
   $aExample = Project.GetExamples()
 
   sLastDir = ""
   Y = 0
 
-  FOR iInd = 0 TO $aExample.Count - 1
+  For iInd = 0 To $aExample.Count - 1
     sPath = $aExample[iInd]
     sDir = File.Dir(sPath)
-    IF sDir <> sLastDir THEN
+    If sDir <> sLastDir Then
       sLastDir = sDir
-      hDrawingArea = NEW DrawingArea(svwExample) AS "dwgExample"
+      hDrawingArea = New DrawingArea(svwExample) As "dwgExample"
       'hLabel = NEW Label()
-      WITH hDrawingArea
+      With hDrawingArea
         .Move(0, Y, 1024, iHeight)
         .Tag = Project.ExampleTitle[sDir]
         .Font = Font["Bold"]
         .Foreground = Color.TextBackground
         '.Background = Color.TextBackground
         Y = Y + .H
-      END WITH
-    ENDIF
-    hButton = NEW CCoolButton(svwExample, 0, Y, svwExample.ClientW, 32, File.Name(sPath), Project.GetIcon(Project.EXAMPLES_DIR &/ sPath, 24)) AS "btnOpenRecent"
+      End With
+    Endif
+    hButton = New CCoolButton(svwExample, 0, Y, svwExample.ClientW, 32, File.Name(sPath), Project.GetIcon(Project.EXAMPLES_DIR &/ sPath, 24)) As "btnOpenRecent"
     Y = Y + 32
     hButton.Tag = Project.EXAMPLES_DIR &/ sPath
-  NEXT
+  Next
 
-  $bExample = TRUE
+  $bExample = True
 
-FINALLY
+Finally
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
-  Settings.Write(ME)
+  Settings.Write(Me)
   Settings["/FWelcome/SortRecent"] = chkSortRecent.Value
 
-END
+End
 
 ' PUBLIC SUB dwgRound_Draw()
 ' 
@@ -305,11 +305,11 @@ END
 ' 
 ' END
 
-PUBLIC SUB dwgExample_Draw()
+Public Sub dwgExample_Draw()
   
-  DIM hDrawingArea AS DrawingArea = LAST
+  Dim hDrawingArea As DrawingArea = Last
   
-  WITH hDrawingArea
+  With hDrawingArea
     Draw.Font = .Font
 
     'Draw.Foreground = .Foreground
@@ -323,67 +323,67 @@ PUBLIC SUB dwgExample_Draw()
     
     Draw.Text(.Tag, 8, 0, .W - 8, .H, Align.Normal)
   
-  END WITH
+  End With
   
-END
+End
 
 
-PRIVATE SUB FillRecent()
+Private Sub FillRecent()
 
-  DIM aList AS String[]
-  DIM hChild AS Control
-  DIM iInd AS Integer
-  DIM hButton AS CCoolButton
+  Dim aList As String[]
+  Dim hChild As Control
+  Dim iInd As Integer
+  Dim hButton As CCoolButton
 
-  INC Application.Busy
+  Inc Application.Busy
   
   aList = Project.GetRecentFiles(chkSortRecent.Value)
   
   svwRecent.Hide
   
-  FOR EACH hChild IN svwRecent.Children
+  For Each hChild In svwRecent.Children
     hChild.Delete
-  NEXT
+  Next
 
-  FOR iInd = 0 TO aList.Count - 1
-    hButton = NEW CCoolButton(svwRecent, 0, iInd * 32, svwRecent.ClientW, 32, File.Name(aList[iInd]), Project.GetIcon(aList[iInd], 24)) AS "btnOpenRecent"
+  For iInd = 0 To aList.Count - 1
+    hButton = New CCoolButton(svwRecent, 0, iInd * 32, svwRecent.ClientW, 32, File.Name(aList[iInd]), Project.GetIcon(aList[iInd], 24)) As "btnOpenRecent"
     hButton.Tag = aList[iInd]
     hButton.ToolTip = File.Dir(aList[iInd])
-  NEXT
+  Next
 
-  IF aList.Count = 0 THEN btnRecent.Enabled = FALSE
+  If aList.Count = 0 Then btnRecent.Enabled = False
   
   svwRecent.Show
   
-  DEC Application.Busy
+  Dec Application.Busy
   
-END
+End
 
-PUBLIC SUB chkSortRecent_Click()
+Public Sub chkSortRecent_Click()
 
   FillRecent  
 
-END
+End
 
-PUBLIC SUB panBackground_Arrange()
+Public Sub panBackground_Arrange()
 
   panBackground.H = lblMessage.ScreenY - panBackground.ScreenY + lblMessage.H + panBackground.Padding
 
-END
+End
 
-PUBLIC SUB lblWebsite_MouseDown()
+Public Sub lblWebsite_MouseDown()
 
   lblWebSite.Foreground = Color.LightBackground
 
-END
+End
 
-PUBLIC SUB lblWebsite_MouseUp()
+Public Sub lblWebsite_MouseUp()
   
   lblWebSite.Foreground = Color.TextBackground
-  IF Mouse.X >= 0 AND IF Mouse.Y >= 0 AND IF Mouse.X < lblWebSite.W AND IF Mouse.Y < lblWebSite.H THEN
-    WAIT
+  If Mouse.X >= 0 AND If Mouse.Y >= 0 AND If Mouse.X < lblWebSite.W AND If Mouse.Y < lblWebSite.H Then
+    Wait
     Desktop.Open(lblWebsite.Text)
-  ENDIF
+  Endif
   
-END
+End
 

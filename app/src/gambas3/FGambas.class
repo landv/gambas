@@ -1,13 +1,13 @@
 ' Gambas class file
 
-STATIC PRIVATE $cAnim AS NEW Collection
-STATIC PRIVATE $hPict[8] AS Picture
+Static Private $cAnim As New Collection
+Static Private $hPict[8] As Picture
 
-PRIVATE $sAnim AS String
-PRIVATE $iWait AS Integer
-PRIVATE $MX AS Integer
-PRIVATE $MY AS Integer
-PRIVATE $bHide AS Boolean
+Private $sAnim As String
+Private $iWait As Integer
+Private $MX As Integer
+Private $MY As Integer
+Private $bHide As Boolean
 'PRIVATE $sMessage AS String
 
 ' STATIC PUBLIC SUB _init()
@@ -59,117 +59,117 @@ PRIVATE $bHide AS Boolean
 ' END
 
 
-PUBLIC SUB Animate(sAnim AS String, OPTIONAL sMsg AS String)
+Public Sub Animate(sAnim As String, Optional sMsg As String)
 
-  IF NOT ME.Visible THEN RETURN
+  If NOT Me.Visible Then Return
 
-  IF sMsg THEN  
+  If sMsg Then  
     $sAnim = $cAnim[sAnim]
-    $bHide = TRUE
+    $bHide = True
     Warning(sMsg)
-  ELSE
+  Else
     $sAnim &= $cAnim[sAnim]
-  ENDIF
+  Endif
   $iWait = 0
 
   'ME.Raise
 
-END
+End
 
 
-PUBLIC SUB timAnim_Timer()
+Public Sub timAnim_Timer()
 
-  DIM iPos AS Integer
-  DIM iCmd AS Integer
-  DIM eRnd AS Float
+  Dim iPos As Integer
+  Dim iCmd As Integer
+  Dim eRnd As Float
 
-  IF $iWait > 0 THEN
-    DEC $iWait
-    RETURN
-  ENDIF
+  If $iWait > 0 Then
+    Dec $iWait
+    Return
+  Endif
 
-  IF NOT $sAnim THEN
-    IF $bHide THEN 
+  If NOT $sAnim Then
+    If $bHide Then 
       'Balloon.Hide
-      $bHide = FALSE
-    ENDIF
+      $bHide = False
+    Endif
     eRnd = Rnd
-    IF eRnd < 0.02 THEN
+    If eRnd < 0.02 Then
       $sAnim = $cAnim["Blink"]
-    ELSE IF eRnd < 0.04 THEN
+    Else If eRnd < 0.04 Then
       $sAnim = $cAnim["Blink2"]
-    ELSE
-      RETURN
-    ENDIF
-  ENDIF
+    Else
+      Return
+    Endif
+  Endif
 
   iPos = InStr($sAnim, ",")
-  IF iPos = 0 THEN iPos = Len($sAnim) + 1
+  If iPos = 0 Then iPos = Len($sAnim) + 1
   iCmd = Val(Left$($sAnim, iPos - 1))
   $sAnim = Mid$($sAnim, iPos + 1)
 
-  IF iCmd < 0 THEN
+  If iCmd < 0 Then
     $iWait = Abs(iCmd) - 1
-    RETURN
-  ENDIF
+    Return
+  Endif
 
-  ME.Picture = $hPict[iCmd]
+  Me.Picture = $hPict[iCmd]
 
-END
+End
 
-PUBLIC SUB Form_MouseDown()
+Public Sub Form_MouseDown()
 
-  $MX = Mouse.ScreenX - ME.X
-  $MY = Mouse.ScreenY - ME.Y
+  $MX = Mouse.ScreenX - Me.X
+  $MY = Mouse.ScreenY - Me.Y
 
-END
+End
 
-PUBLIC SUB Form_MouseMove()
+Public Sub Form_MouseMove()
 
   'Balloon.Hide
-  ME.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
+  Me.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
   
-END
+End
 
-PUBLIC SUB Form_Hide()
+Public Sub Form_Hide()
 
-  timAnim.Enabled = FALSE
+  timAnim.Enabled = False
 
-END
+End
 
-PUBLIC SUB Form_Show()
+Public Sub Form_Show()
 
-  timAnim.Enabled = TRUE
+  timAnim.Enabled = True
 
-END
+End
 
-PUBLIC SUB Warning(sMsg AS String)
+Public Sub Warning(sMsg As String)
   
-  IF ME.Visible THEN
-    Balloon.Warning(sMsg, ME, panThere.X, panThere.Y)
-  ELSE 
+  If Me.Visible Then
+    Balloon.Warning(sMsg, Me, panThere.X, panThere.Y)
+  Else 
     Message.Warning(sMsg)
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB Error(sMsg AS String)
+Public Sub Error(sMsg As String)
 
-  IF ME.Visible THEN  
+  If Me.Visible Then  
     Animate("Depressive")
-    Balloon.Error(sMsg, ME, panThere.X, panThere.Y)
-  ELSE
+    Balloon.Error(sMsg, Me, panThere.X, panThere.Y)
+  Else
     Message.Error(sMsg)
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB Info(sMsg AS String)
+Public Sub Info(sMsg As String)
   
-  IF ME.Visible THEN  
-    Balloon.Info(sMsg, ME, panThere.X, panThere.Y)
-  ELSE 
+  If Me.Visible Then  
+    Balloon.Info(sMsg, Me, panThere.X, panThere.Y)
+  Else 
     Message.Info(sMsg)
-  ENDIF
+  Endif
   
-END
+End

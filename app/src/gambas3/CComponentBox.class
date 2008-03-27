@@ -1,247 +1,247 @@
 ' Gambas class file
 
-INHERITS UserControl
+Inherits UserControl
 
-EVENT Click
+Event Click
 
-PROPERTY READ Key AS String
-PROPERTY Value AS Boolean
-PROPERTY Locked AS Boolean
-PROPERTY Expanded AS Boolean
+Property Read Key As String
+Property Value As Boolean
+Property Locked As Boolean
+Property Expanded As Boolean
 
-STATIC PRIVATE $iMaxWidth AS Integer
+Static Private $iMaxWidth As Integer
 
-PRIVATE panName AS HPanel
-PRIVATE picCheck AS PictureBox
-PRIVATE txtName AS TextLabel
-PRIVATE txtDesc AS TextLabel
-PRIVATE panInfo AS Panel
-PRIVATE txtInfo AS TextLabel
-PRIVATE panVBox AS VBox
+Private panName As HPanel
+Private picCheck As PictureBox
+Private txtName As TextLabel
+Private txtDesc As TextLabel
+Private panInfo As Panel
+Private txtInfo As TextLabel
+Private panVBox As VBox
 
-PRIVATE $bCheck AS Boolean
-PRIVATE $bLock AS Boolean
-PRIVATE $sKey AS String
-PRIVATE $sInfo AS String
+Private $bCheck As Boolean
+Private $bLock As Boolean
+Private $sKey As String
+Private $sInfo As String
 
-PRIVATE SUB AddInfo(aInfo AS String[], sTitle AS String)
+Private Sub AddInfo(aInfo As String[], sTitle As String)
 
-  IF aInfo AND IF aInfo.Count THEN 
-    IF $sInfo THEN $sInfo &= "<br>"
+  If aInfo AND If aInfo.Count Then 
+    If $sInfo Then $sInfo &= "<br>"
     $sInfo &= "<b>" & sTitle & " :</b> " & aInfo.Join(", ") & "."
-  ENDIF
+  Endif
   
-END
+End
 
-STATIC PUBLIC SUB ResizeNames(hCont AS Container)
+Static Public Sub ResizeNames(hCont As Container)
   
-  DIM hCompBox AS CComponentBox
+  Dim hCompBox As CComponentBox
   
-  FOR EACH hCompBox IN hCont.Children
+  For Each hCompBox In hCont.Children
     hCompBox._SetLabelWidth
-  NEXT
+  Next
   
-END
+End
 
 
-PUBLIC SUB _new(hComp AS CComponent, bDark AS Boolean)
+Public Sub _new(hComp As CComponent, bDark As Boolean)
 
-  DIM W, H AS Integer
-  DIM hSpace AS Panel
-  DIM hVBox AS VBox
-  DIM hWatch AS Observer
+  Dim W, H As Integer
+  Dim hSpace As Panel
+  Dim hVBox As VBox
+  Dim hWatch As Observer
   
   $sKey = hComp.Key
   
   H = 3 * Desktop.Scale
-  IF bDark THEN ME.Background = Color.LightBackground
+  If bDark Then Me.Background = Color.LightBackground
   
-  panVBox = NEW VBox(ME)
+  panVBox = New VBox(Me)
   
-  panName = NEW HPanel(panVBox) AS "panComp"
+  panName = New HPanel(panVBox) As "panComp"
   
-  hVBox = NEW VBox(panName)
+  hVBox = New VBox(panName)
   hVBox.W = 24
   
-  picCheck = NEW PictureBox(hVBox) AS "picCheck"
+  picCheck = New PictureBox(hVBox) As "picCheck"
   picCheck.Alignment = Align.Center
   picCheck.Picture = Picture["img/16/unchecked.png"]
   picCheck.Resize(24, 24)
   
-  txtName = NEW TextLabel(panName)
+  txtName = New TextLabel(panName)
   txtName.Padding = 2
   txtName.Text = hComp.Key
   txtName.Alignment = Align.TopNormal
-  txtName.AutoResize = TRUE
+  txtName.AutoResize = True
   
-  txtDesc = NEW TextLabel(panName)
-  txtDesc.Expand = TRUE
+  txtDesc = New TextLabel(panName)
+  txtDesc.Expand = True
   txtDesc.Padding = 2
   txtDesc.Alignment = Align.TopNormal
   
   txtDesc.Text = hComp.Name
-  SELECT CASE hComp.State
-    CASE CComponent.UNSTABLE
+  Select Case hComp.State
+    Case CComponent.UNSTABLE
       txtDesc.Text &= " <b>(" & ("Beta version") & ")</b>"
-    CASE CComponent.STABLE_NOT_FINISHED
+    Case CComponent.STABLE_NOT_FINISHED
       txtDesc.Text &= " <b>(" & ("Not finished but stable") & ")</b>"
-  END SELECT 
+  End Select 
   
-  hWatch = NEW Observer(ME) AS "Watcher"
+  hWatch = New Observer(Me) As "Watcher"
   
-  panInfo = NEW Panel(panVBox)
-  panInfo.Visible = FALSE
+  panInfo = New Panel(panVBox)
+  panInfo.Visible = False
 
-  txtInfo = NEW TextLabel(panInfo)
+  txtInfo = New TextLabel(panInfo)
   txtInfo.Padding = 2
   'txtInfo.Background = Color.Yellow
 
   W = txtName.Font.Width(txtName.Text)
-  IF W > $iMaxWidth THEN 
+  If W > $iMaxWidth Then 
     $iMaxWidth = W
-  ENDIF
+  Endif
   
   'txtInfo.Text = $sInfo
   
-  Expanded_Write(FALSE)
+  Expanded_Write(False)
   
-END
+End
 
-PUBLIC SUB _SetLabelWidth()
+Public Sub _SetLabelWidth()
   
   txtName.Width = $iMaxWidth + 16
   picCheck.H = txtName.H
   
-END
+End
 
 
-PRIVATE SUB RefreshCheck()
+Private Sub RefreshCheck()
   
   picCheck.Picture = Picture[If($bCheck, "img/16/checked.png", "img/16/unchecked.png")]  
   
-END
+End
 
-PUBLIC SUB picCheck_MouseDown()
+Public Sub picCheck_MouseDown()
   
-  IF $bLock THEN RETURN
+  If $bLock Then Return
   $bCheck = NOT $bCheck
   RefreshCheck
-  RAISE Click
+  Raise Click
   
-END
+End
 
-PRIVATE FUNCTION Value_Read() AS Boolean
+Private Function Value_Read() As Boolean
 
-  RETURN $bCheck  
+  Return $bCheck  
 
-END
+End
 
-PRIVATE SUB Value_Write(Value AS Boolean)
+Private Sub Value_Write(Value As Boolean)
 
   $bCheck = Value
   RefreshCheck
 
-END
+End
 
-PRIVATE FUNCTION Locked_Read() AS Boolean
+Private Function Locked_Read() As Boolean
 
-  RETURN $bLock
+  Return $bLock
 
-END
+End
 
-PRIVATE SUB Locked_Write(Value AS Boolean)
+Private Sub Locked_Write(Value As Boolean)
 
   $bLock = Value
 
-END
+End
 
-PRIVATE FUNCTION Key_Read() AS String
+Private Function Key_Read() As String
 
-  RETURN $sKey  
+  Return $sKey  
 
-END
+End
 
-STATIC PUBLIC SUB Reset()
+Static Public Sub Reset()
   
   $iMaxWidth = 0
   
-END
+End
 
-PRIVATE FUNCTION Expanded_Read() AS Boolean
+Private Function Expanded_Read() As Boolean
 
-  RETURN panInfo.Visible  
+  Return panInfo.Visible  
 
-END
+End
 
-PRIVATE SUB Expanded_Write(Value AS Boolean)
+Private Sub Expanded_Write(Value As Boolean)
 
-  DIM hComp AS CComponent
-  DIM aInfo AS String[]
-  DIM I AS Integer
+  Dim hComp As CComponent
+  Dim aInfo As String[]
+  Dim I As Integer
 
   panInfo.Visible = Value
 
-  IF Value THEN 
+  If Value Then 
       
-    IF NOT $sInfo THEN 
+    If NOT $sInfo Then 
     
       hComp = CComponent.All[$sKey]
 
       AddInfo(hComp.Authors, ("Authors"))
       
       aInfo = hComp.Need.Copy()
-      FOR I = 0 TO aInfo.Max
+      For I = 0 To aInfo.Max
         aInfo[I] = CComponent.Features[LCase(aInfo[I])]
-      NEXT
+      Next
       aInfo.Insert(hComp.Require)
       AddInfo(aInfo, ("Requires"))
       
       AddInfo(hComp.Exclude, ("Excludes"))
       
       aInfo = hComp.Implement.Copy()
-      FOR I = 0 TO aInfo.Max
+      For I = 0 To aInfo.Max
         aInfo[I] = CComponent.Features[LCase(aInfo[I])]
-      NEXT
+      Next
       AddInfo(aInfo, ("Implements"))
       
       aInfo = hComp.Controls.Copy()
       I = 0
-      WHILE I < aInfo.Count
-        IF Left(aInfo[I]) = "@" THEN 
+      While I < aInfo.Count
+        If Left(aInfo[I]) = "@" Then 
           aInfo.Remove(I)
-        ELSE 
-          INC I
-        ENDIF
-      WEND 
+        Else 
+          Inc I
+        Endif
+      Wend 
       aInfo.Sort
       
       AddInfo(aInfo, ("Provides"))
       $sInfo &= " "
       
-    ENDIF
+    Endif
     
     txtInfo.Text = $sInfo
     txtInfo.Move(txtDesc.X, 0, panInfo.W - txtDesc.X - 24, 8)
     txtInfo.Adjust
     panInfo.H = txtInfo.H
-    ME.Height = panInfo.Height + panName.Height + panVBox.Padding * 2
+    Me.Height = panInfo.Height + panName.Height + panVBox.Padding * 2
 
-  ELSE 
+  Else 
 
-    ME.Height = panName.Height + panVBox.Padding * 2
+    Me.Height = panName.Height + panVBox.Padding * 2
 
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB Watcher_Arrange()
+Public Sub Watcher_Arrange()
 
-  Object.Lock(ME)
+  Object.Lock(Me)
   txtDesc.Adjust
-  IF panName.H <> txtDesc.H THEN
+  If panName.H <> txtDesc.H Then
     panName.H = txtDesc.H
     Expanded_Write(panInfo.Visible)
-  ENDIF
-  Object.Unlock(ME)
+  Endif
+  Object.Unlock(Me)
   
-END
+End

@@ -1,58 +1,58 @@
 ' Gambas class file
 
-PRIVATE $iBackground AS Integer
-PRIVATE $cIndex AS NEW Collection
-PRIVATE $bMany AS Boolean
-PRIVATE $hObject AS CControl
-PRIVATE $hForm AS FForm
+Private $iBackground As Integer
+Private $cIndex As New Collection
+Private $bMany As Boolean
+Private $hObject As CControl
+Private $hForm As FForm
 
-PRIVATE $iLast AS Integer
-PRIVATE $sLast AS String
-PRIVATE $sType AS String
-PRIVATE $sOption AS String
-PRIVATE $hEditor AS Object
-PRIVATE $sOldVal AS String
-PRIVATE $bFreeze AS Boolean
-PRIVATE $bButton AS Boolean
-PRIVATE $bIgnoreHide AS Boolean
-PRIVATE $bIgnoreCancel AS Boolean
-PRIVATE $bSort AS Boolean
-PRIVATE $bDisableIntegratedHelp AS Boolean
+Private $iLast As Integer
+Private $sLast As String
+Private $sType As String
+Private $sOption As String
+Private $hEditor As Object
+Private $sOldVal As String
+Private $bFreeze As Boolean
+Private $bButton As Boolean
+Private $bIgnoreHide As Boolean
+Private $bIgnoreCancel As Boolean
+Private $bSort As Boolean
+Private $bDisableIntegratedHelp As Boolean
 
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  Settings.Read(ME)
+  Settings.Read(Me)
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   grdProperty.Columns.Count = 2
   grdProperty.ScrollBar = Scroll.Vertical
-  grdProperty.Columns.Resizable = TRUE
+  grdProperty.Columns.Resizable = True
 
   $iBackground = grdProperty.Background
 
   Settings.Read(spnHelp)
   ReadConfig
 
-END
+End
 
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
-  Settings.Write(ME)
+  Settings.Write(Me)
   Settings.Write(spnHelp)
   
-END
+End
 
 
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  DIM iWidth AS Integer
+  Dim iWidth As Integer
   ' 
   ' lblMessage.Move(0, 0, ME.ClientW)
   ' 
@@ -69,81 +69,81 @@ PUBLIC SUB Form_Resize()
 
   'CATCH $$ Non déréférencement en cas d'erreur
 
-END
+End
 
 
-PUBLIC SUB RefreshAll()
+Public Sub RefreshAll()
 
-  DIM cSelection AS Collection
-  DIM hCtrl AS CControl
-  DIM sClass AS String
-  DIM bDiff AS Boolean
-  DIM aProp AS String[]
-  DIM hProp AS CPropertyInfo
-  DIM iRow AS Integer
-  DIM sProp AS String
-  DIM sVal AS String
-  DIM hCtrlAlone AS CControl
-  DIM cKeyProp AS Collection
+  Dim cSelection As Collection
+  Dim hCtrl As CControl
+  Dim sClass As String
+  Dim bDiff As Boolean
+  Dim aProp As String[]
+  Dim hProp As CPropertyInfo
+  Dim iRow As Integer
+  Dim sProp As String
+  Dim sVal As String
+  Dim hCtrlAlone As CControl
+  Dim cKeyProp As Collection
 
 '   DIM aColor AS NEW Integer[]
 '   DIM sClassColor AS String
 '   DIM hClass AS CClassInfo
 
-  TRY $hForm = Project.ActiveForm
-  IF ERROR OR IF NOT $hForm THEN
+  Try $hForm = Project.ActiveForm
+  If Error OR If NOT $hForm Then
     HideAll
-    RETURN 
-  ENDIF 
+    Return 
+  Endif 
   'IF NOT $hForm THEN RETURN 'GOTO _HIDE
 
-  TRY cSelection = $hForm.Selection
-  IF NOT cSelection THEN RETURN
+  Try cSelection = $hForm.Selection
+  If NOT cSelection Then Return
 
   $cIndex.Clear
-  $bMany = FALSE
+  $bMany = False
   HideProperty
-  $hObject = NULL
+  $hObject = Null
 
-  IF NOT cSelection THEN GOTO _HIDE
+  If NOT cSelection Then Goto _HIDE
 
-  IF cSelection.Count = 0 THEN
-    cSelection = NEW Collection
+  If cSelection.Count = 0 Then
+    cSelection = New Collection
     cSelection.Add($hForm.Control[$hForm.Name], $hForm.Name)
-  ENDIF
+  Endif
 
   $bMany = cSelection.Count > 1
 
-  FOR EACH hCtrl IN cSelection
+  For Each hCtrl In cSelection
 
-    IF sClass = "" THEN
+    If sClass = "" Then
       $hObject = hCtrl
       sClass = hCtrl.Kind
-    ELSE IF sClass <> hCtrl.Kind THEN
-      bDiff = TRUE
-    ENDIF
+    Else If sClass <> hCtrl.Kind Then
+      bDiff = True
+    Endif
 
-  NEXT
+  Next
   
   UpdateLabel
 
-  IF bDiff THEN sClass = "Control"
+  If bDiff Then sClass = "Control"
 
   'PRINT "Kind = "; sClass
 
   'cProp = CControl.PropertiesInOrder[sClass]
-  TRY aProp = CComponent.Classes[sClass].PropertyList
-  IF NOT aProp THEN
-    PRINT "FProperty.RefreshAll: Cannot get property list of "; sClass
-    aProp = NEW String[]
-  ELSE
+  Try aProp = CComponent.Classes[sClass].PropertyList
+  If NOT aProp Then
+    Print "FProperty.RefreshAll: Cannot get property list of "; sClass
+    aProp = New String[]
+  Else
 '     sClassColor = sClass
 '     WHILE sClassColor
 '       hClass = CComponent.Classes[sClassColor]
 '       aColor.Add(hClass.PropertyList.Count, 0)
 '       sClassColor = hClass.ParentComponent &/ hClass.Parent
 '     WEND
-  ENDIF
+  Endif
 
   grdProperty.Rows.Count = aProp.Count + 2
   grdProperty.Clear
@@ -154,14 +154,14 @@ PUBLIC SUB RefreshAll()
   grdProperty[iRow, 0].Text = "(Class)"
   grdProperty[iRow, 1].Text = $hObject.Kind
 
-  INC iRow
+  Inc iRow
 
   grdProperty[iRow, 0].Text = "(Name)"
-  IF $bMany THEN
+  If $bMany Then
     grdProperty[iRow, 1].Text = ""
-  ELSE
+  Else
     grdProperty[iRow, 1].Text = $hObject.Name
-  ENDIF
+  Endif
 
   iRow = iRow + 1
 
@@ -174,16 +174,16 @@ PUBLIC SUB RefreshAll()
   '
   'iRow = iRow + 1
 
-  IF $bSort THEN 
+  If $bSort Then 
     aProp = aProp.Copy().Sort()
-  ENDIF
+  Endif
 
-  FOR EACH sProp IN aProp
+  For Each sProp In aProp
 
     'PRINT sProp
 
     hProp = CComponent.Classes[sClass].GetProperties()[sProp]
-    IF hProp.Hidden THEN CONTINUE
+    If hProp.Hidden Then Continue
 
     $cIndex[sProp] = iRow
 
@@ -195,21 +195,21 @@ PUBLIC SUB RefreshAll()
     grdProperty[iRow, 0].Alignment = Align.TopNormal
     grdProperty[iRow, 1].Alignment = Align.TopNormal
 
-    IF CControl.WasDefaultValue THEN 
+    If CControl.WasDefaultValue Then 
       grdProperty[iRow, 0].Background = Color.TextBackground
       grdProperty[iRow, 1].Background = Color.TextBackground
-      grdProperty[iRow, 0].Font.Bold = FALSE
-    ELSE
+      grdProperty[iRow, 0].Font.Bold = False
+    Else
       grdProperty[iRow, 0].Background = Color.LightBackground
       grdProperty[iRow, 1].Background = Color.LightBackground
-      grdProperty[iRow, 0].Font.Bold = TRUE
-    ENDIF
+      grdProperty[iRow, 0].Font.Bold = True
+    Endif
 
     grdProperty[iRow, 1].Text = sVal
     grdProperty[iRow, 0].Padding = 2
-    INC iRow
+    Inc iRow
 
-  NEXT
+  Next
 
   ' Can be lesser than predicted, as some properties may be hidden
   grdProperty.Rows.Count = iRow
@@ -241,308 +241,308 @@ PUBLIC SUB RefreshAll()
   lblName.Show
   'VSplit1.Show
   
-  IF NOT $bMany THEN
+  If NOT $bMany Then
     FFormStack.Select($hObject.Name)
-  ENDIF 
+  Endif 
   
-  RETURN
+  Return
 
 _HIDE:
 
   HideAll
 
-END
+End
 
 
-PUBLIC SUB HideAll()
+Public Sub HideAll()
 
   HideProperty
   grdProperty.Hide
   lblName.Hide
   spnHelp.Hide
   lblMessage.Show
-  $hForm = NULL
+  $hForm = Null
 
-END
+End
 
 
-PUBLIC SUB RefreshOne(hCtrl AS CControl, sProp AS String)
+Public Sub RefreshOne(hCtrl As CControl, sProp As String)
 
-  DIM iRow AS Integer
+  Dim iRow As Integer
 
-  IF NOT $bMany THEN
-    IF $hObject <> hCtrl THEN RETURN
-  ENDIF
+  If NOT $bMany Then
+    If $hObject <> hCtrl Then Return
+  Endif
 
-  IF sProp = "Name" THEN
+  If sProp = "Name" Then
 
-    IF $bMany THEN RETURN
+    If $bMany Then Return
     grdProperty[1, 1].Text = $hObject.Name
     UpdateLabel
 
-  ELSE
+  Else
 
-    IF NOT $cIndex.Exist(sProp) THEN RETURN
+    If NOT $cIndex.Exist(sProp) Then Return
 
     iRow = $cIndex[sProp]
     grdProperty[iRow, 1].Text = GetProperty(sProp)
 
-    IF CControl.WasDefaultValue THEN 
+    If CControl.WasDefaultValue Then 
       grdProperty[iRow, 0].Background = Color.TextBackground
       grdProperty[iRow, 1].Background = Color.TextBackground
-      grdProperty[iRow, 0].Font.Bold = FALSE
-    ELSE
+      grdProperty[iRow, 0].Font.Bold = False
+    Else
       grdProperty[iRow, 0].Background = Color.LightBackground
       grdProperty[iRow, 1].Background = Color.LightBackground
-      grdProperty[iRow, 0].Font.Bold = TRUE
-    ENDIF
+      grdProperty[iRow, 0].Font.Bold = True
+    Endif
 
-  ENDIF
+  Endif
 
-  IF sProp = $sLast THEN
+  If sProp = $sLast Then
     CancelProperty
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC FUNCTION SaveProperty() AS Boolean
+Public Function SaveProperty() As Boolean
 
-  DIM vVal AS Variant
-  DIM hCtrl AS CControl
-  DIM sMsg AS String
+  Dim vVal As Variant
+  Dim hCtrl As CControl
+  Dim sMsg As String
 
-  IF NOT $hForm THEN RETURN
-  IF $hForm.ReadOnly THEN RETURN
-  IF IsNull($hEditor) THEN RETURN FALSE
+  If NOT $hForm Then Return
+  If $hForm.ReadOnly Then Return
+  If IsNull($hEditor) Then Return False
 
   vVal = $hEditor.Text
-  IF vVal = $sOldVal THEN RETURN FALSE
+  If vVal = $sOldVal Then Return False
 
-  SELECT $sType
+  Select $sType
 
-    CASE "Name"
+    Case "Name"
 
-      IF IsNull(vVal) THEN GOTO _CANCEL
+      If IsNull(vVal) Then Goto _CANCEL
 
-      IF CControl.CheckName(vVal) THEN
+      If CControl.CheckName(vVal) Then
         sMsg = ("Forbidden characters in control name.")
-        GOTO _CANCEL
-      ENDIF
+        Goto _CANCEL
+      Endif
 
-      IF $hObject.Rename(vVal) THEN
+      If $hObject.Rename(vVal) Then
         sMsg = ("This name is already in use.")
-        GOTO _CANCEL
-      ENDIF
+        Goto _CANCEL
+      Endif
 
       RefreshOne($hObject, "Name")
-      RETURN FALSE
+      Return False
 
-    CASE "Group"
+    Case "Group"
 
-      IF CControl.CheckName(vVal) THEN
+      If CControl.CheckName(vVal) Then
         sMsg = ("Forbidden characters in control group.")
-        GOTO _CANCEL
-      ENDIF
+        Goto _CANCEL
+      Endif
 
-    CASE "i", "l", "b", "Range", "Position", "Dimension"
+    Case "i", "l", "b", "Range", "Position", "Dimension"
 
       vVal = Val(vVal)
-      IF IsNull(vVal) THEN GOTO _BAD
+      If IsNull(vVal) Then Goto _BAD
 
-    CASE "f"
+    Case "f"
 
-      TRY vVal = CFloat(vVal)
-      IF ERROR THEN GOTO _BAD
+      Try vVal = CFloat(vVal)
+      If Error Then Goto _BAD
 
-    CASE "d"
+    Case "d"
 
-      TRY vVal = CDate(vVal)
-      IF ERROR THEN GOTO _BAD
+      Try vVal = CDate(vVal)
+      If Error Then Goto _BAD
 
-    CASE "Color"
+    Case "Color"
 
-      IF NOT IsNull(Val(vVal)) THEN vVal = Val(vVal)
+      If NOT IsNull(Val(vVal)) Then vVal = Val(vVal)
 
-    CASE "s", "Font", "Picture", "Constant", "List", "Path"
+    Case "s", "Font", "Picture", "Constant", "List", "Path"
     
-    CASE "String[]"
+    Case "String[]"
     
-      TRY vVal = Split(vVal, "\n")
-      IF ERROR THEN GOTO _BAD
+      Try vVal = Split(vVal, "\n")
+      If Error Then Goto _BAD
 
-    CASE ELSE ' Object
+    Case Else ' Object
 
       'RETURN FALSE
 
-  END SELECT
+  End Select
 
-  $bIgnoreCancel = TRUE
+  $bIgnoreCancel = True
 
-  IF $bMany THEN
+  If $bMany Then
 
-    FOR EACH hCtrl IN $hForm.Selection
-      IF hCtrl.SetProperty($sLast, vVal) THEN GOTO _BAD
-    NEXT
+    For Each hCtrl In $hForm.Selection
+      If hCtrl.SetProperty($sLast, vVal) Then Goto _BAD
+    Next
 
-  ELSE
+  Else
 
-    IF $hObject.SetProperty($sLast, vVal) THEN GOTO _BAD
+    If $hObject.SetProperty($sLast, vVal) Then Goto _BAD
 
-  ENDIF
+  Endif
 
-  $bIgnoreCancel = FALSE
+  $bIgnoreCancel = False
 
   $sOldVal = $hEditor.Text
   'DEBUG "$sOldVal =";; $sOldVal
-  RETURN
+  Return
 
 _BAD:
 
   sMsg = ("Incorrect property value.")
-  $bIgnoreCancel = FALSE
+  $bIgnoreCancel = False
 
 _CANCEL:
 
   CancelProperty
   $hEditor.SetFocus
-  IF sMsg THEN Balloon.Warning(sMsg, grdProperty, $hEditor.X - grdProperty.X + $hEditor.W / 2, $hEditor.Y - grdProperty.Y + $hEditor.H / 2)
-  RETURN TRUE
+  If sMsg Then Balloon.Warning(sMsg, grdProperty, $hEditor.X - grdProperty.X + $hEditor.W / 2, $hEditor.Y - grdProperty.Y + $hEditor.H / 2)
+  Return True
 
-END
+End
 
 
-PRIVATE SUB HideProperty() AS Boolean
+Private Sub HideProperty() As Boolean
 
-  IF $bIgnoreHide THEN RETURN
+  If $bIgnoreHide Then Return
 
-  IF $sLast THEN
+  If $sLast Then
 
-    IF SaveProperty() THEN RETURN TRUE
+    If SaveProperty() Then Return True
 
-    cmbProperty.Visible = FALSE
-    txtProperty.Visible = FALSE
-    btnProperty.Visible = FALSE
-    spnProperty.Visible = FALSE
+    cmbProperty.Visible = False
+    txtProperty.Visible = False
+    btnProperty.Visible = False
+    spnProperty.Visible = False
 
     $sLast = ""
     $iLast = -1
-    $hEditor = NULL
+    $hEditor = Null
 
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE SUB MoveProperty()
+Private Sub MoveProperty()
 
-  DIM iW AS Integer
+  Dim iW As Integer
 
-  IF IsNull($hEditor) THEN RETURN
+  If IsNull($hEditor) Then Return
 
-  WITH grdProperty[grdProperty.Row, 1]
+  With grdProperty[grdProperty.Row, 1]
 
     iW = .Width '- 2
-    IF $bButton THEN iW = iW - (.Height)
+    If $bButton Then iW = iW - (.Height)
 
     $hEditor.Move(grdProperty.X + .X, grdProperty.Y + .Y, iW, .Height)
     $hEditor.Raise
 
-  END WITH
+  End With
 
-  IF $bButton THEN
+  If $bButton Then
     btnProperty.Resize(txtProperty.Height, txtProperty.Height)
     btnProperty.Move(txtProperty.X + txtProperty.Width, txtProperty.Y)
     btnProperty.Raise
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE SUB CancelProperty()
+Private Sub CancelProperty()
 
-  IF $bIgnoreCancel THEN RETURN
-  IF IsNull($hEditor) THEN RETURN
+  If $bIgnoreCancel Then Return
+  If IsNull($hEditor) Then Return
 
   $sOldVal = grdProperty[$iLast, 1].Text
   'DEBUG "$sOldVal =";; $sOldVal
-  IF $hEditor.Text <> $sOldVal THEN
-    IF $hEditor IS SpinBox THEN 
-      TRY $hEditor.Value = Val($sOldVal)
-    ELSE
+  If $hEditor.Text <> $sOldVal Then
+    If $hEditor IS SpinBox Then 
+      Try $hEditor.Value = Val($sOldVal)
+    Else
       $hEditor.Text = $sOldVal
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
-END
+End
 
 
-PRIVATE SUB ShowProperty()
+Private Sub ShowProperty()
 
-  DIM hProp AS CPropertyInfo
-  DIM sType AS String
-  DIM sOption AS String
-  DIM bButton AS Boolean
-  DIM sProp AS String
-  DIM sConst AS String
-  DIM aCtrl AS String[]
-  DIM sCtrl AS String
-  DIM aArg AS String[]
-  DIM hEditor AS Object
-  DIM hSymbol AS CSymbolInfo
-  DIM sHelp AS String
+  Dim hProp As CPropertyInfo
+  Dim sType As String
+  Dim sOption As String
+  Dim bButton As Boolean
+  Dim sProp As String
+  Dim sConst As String
+  Dim aCtrl As String[]
+  Dim sCtrl As String
+  Dim aArg As String[]
+  Dim hEditor As Object
+  Dim hSymbol As CSymbolInfo
+  Dim sHelp As String
 
-  IF Project.Running THEN RETURN
-  IF NOT $hForm THEN RETURN 
-  IF $hForm.ReadOnly THEN RETURN
+  If Project.Running Then Return
+  If NOT $hForm Then Return 
+  If $hForm.ReadOnly Then Return
 
-  IF grdProperty.Row = 0 THEN RETURN
+  If grdProperty.Row = 0 Then Return
 
-  IF grdProperty.Row = 1 THEN
+  If grdProperty.Row = 1 Then
 
-    IF $hObject.Name = $hForm.Name THEN RETURN
-    IF $bMany THEN RETURN
+    If $hObject.Name = $hForm.Name Then Return
+    If $bMany Then Return
 
     sProp = "Name"
     sType = "Name"
 
-    IF NOT $bDisableIntegratedHelp THEN 
+    If NOT $bDisableIntegratedHelp Then 
       sHelp = ("The name of the control.")
-    ENDIF 
+    Endif 
     
-  ELSE IF grdProperty.Row = 2 THEN
+  Else If grdProperty.Row = 2 Then
 
-    IF $hObject.Name = $hForm.Name THEN RETURN
+    If $hObject.Name = $hForm.Name Then Return
 
     sProp = CPropertyInfo.EVENT_NAME
     sType = "Group"
 
-    IF NOT $bDisableIntegratedHelp THEN 
+    If NOT $bDisableIntegratedHelp Then 
       sHelp = ("The event group that the control belongs to.")
-    ENDIF 
+    Endif 
 
-  ELSE
+  Else
 
     sProp = grdProperty[grdProperty.Row, 0].Text
     hProp = CComponent.Classes[$hObject.Kind].GetProperties()[sProp]
     sType = hProp.Type
     sOption = hProp.Argument
 
-    IF NOT $bDisableIntegratedHelp THEN 
+    If NOT $bDisableIntegratedHelp Then 
       
-      IF hProp.Name = CPropertyInfo.SCALE_NAME THEN
+      If hProp.Name = CPropertyInfo.SCALE_NAME Then
         sHelp = ("If the form and controls dimensions must follow the size of the default font.")
-      ELSE
+      Else
         hSymbol = CComponent.Classes[$hObject.Kind].Symbols[hProp.Name]    
         sHelp = MHelp.GetSymbolHelpText(MHelp.GetSymbolHelpPath(hSymbol))
-      ENDIF
+      Endif
       
-    ENDIF 
-  ENDIF
+    Endif 
+  Endif
 
-  IF sHelp THEN lblHelp.Text = "<b>" & grdProperty[grdProperty.Row, 0].Text & "</b><br>" & sHelp
+  If sHelp Then lblHelp.Text = "<b>" & grdProperty[grdProperty.Row, 0].Text & "</b><br>" & sHelp
 
-  IF $sLast THEN HideProperty()
+  If $sLast Then HideProperty()
 
   $sLast = sProp
   $iLast = grdProperty.Row
@@ -551,64 +551,64 @@ PRIVATE SUB ShowProperty()
 
   ' We assign $hEditor latter, so that SaveProperty can be called without any effect until the editor is initialized.
   hEditor = txtProperty
-  txtProperty.ReadOnly = FALSE
+  txtProperty.ReadOnly = False
 
-  SELECT CASE $sType
+  Select Case $sType
 
-    CASE "i", "l", "f", "d", "v", "Name", "Group" ', "EventName"
+    Case "i", "l", "f", "d", "v", "Name", "Group" ', "EventName"
 
-    CASE "s"
-      bButton = TRUE
+    Case "s"
+      bButton = True
 
-    CASE "String[]"
-      bButton = TRUE
-      txtProperty.ReadOnly = TRUE
+    Case "String[]"
+      bButton = True
+      txtProperty.ReadOnly = True
 
-    CASE "Constant"
+    Case "Constant"
 
-      IF hProp.ConstantClass THEN
+      If hProp.ConstantClass Then
 
         hEditor = cmbProperty
-        cmbProperty.ReadOnly = TRUE
+        cmbProperty.ReadOnly = True
         cmbProperty.Clear
 
-        FOR EACH sConst IN hProp.ConstantList
+        For Each sConst In hProp.ConstantList
           cmbProperty.Add(sConst)
-        NEXT
+        Next
 
         'cmbProperty.Sort
 
-      ENDIF
+      Endif
 
-    CASE "b"
+    Case "b"
 
       hEditor = cmbProperty
-      cmbProperty.ReadOnly = TRUE
+      cmbProperty.ReadOnly = True
       cmbProperty.Clear
       cmbProperty.Add("False")
       cmbProperty.Add("True")
 
-    CASE "Font", "Picture", "Path", "Color"
+    Case "Font", "Picture", "Path", "Color"
       
-      bButton = TRUE
-      txtProperty.ReadOnly = TRUE
+      bButton = True
+      txtProperty.ReadOnly = True
 
-    CASE "Range"
+    Case "Range"
     
       hEditor = spnProperty
       aArg = Split(sOption, ";")
-      TRY spnProperty.MinValue = aArg[0]
-      TRY spnProperty.MaxValue = aArg[1]
+      Try spnProperty.MinValue = aArg[0]
+      Try spnProperty.MaxValue = aArg[1]
       spnProperty.Step = 1
       'spnProperty.Suffix = ""
-      IF aArg.Count > 2 THEN
-        TRY spnProperty.Step = aArg[2]
-        IF aArg.Count > 3 THEN 
+      If aArg.Count > 2 Then
+        Try spnProperty.Step = aArg[2]
+        If aArg.Count > 3 Then 
           'spnProperty.Suffix = " " & aArg[3]
-        ENDIF
-      ENDIF
+        Endif
+      Endif
       
-    CASE "Position"
+    Case "Position"
 
       hEditor = spnProperty
       spnProperty.MinValue = -1024
@@ -616,7 +616,7 @@ PRIVATE SUB ShowProperty()
       spnProperty.Step = Desktop.Scale
       'spnProperty.Suffix = ""
       
-    CASE "Dimension"
+    Case "Dimension"
 
       hEditor = spnProperty
       spnProperty.MinValue = 1
@@ -624,18 +624,18 @@ PRIVATE SUB ShowProperty()
       spnProperty.Step = Desktop.Scale
       'spnProperty.Suffix = ""
       
-    CASE ELSE 'object
+    Case Else 'object
     
       hEditor = cmbProperty
-      cmbProperty.ReadOnly = TRUE
+      cmbProperty.ReadOnly = True
       cmbProperty.Clear
       cmbProperty.Add("(" & ("None") & ")")
       
-      FOR EACH sCtrl IN $hForm.FindControlFromType($sType).Sort()
+      For Each sCtrl In $hForm.FindControlFromType($sType).Sort()
         cmbProperty.Add(sCtrl)
-      NEXT
+      Next
 
-  END SELECT
+  End Select
 
   $hEditor = hEditor
   CancelProperty
@@ -646,122 +646,122 @@ PRIVATE SUB ShowProperty()
 
   MoveProperty
 
-  $hEditor.Visible = TRUE
+  $hEditor.Visible = True
   btnProperty.Visible = bButton
 
   $hEditor.SetFocus
 
-  IF $hEditor = txtProperty THEN
+  If $hEditor = txtProperty Then
     'IF NOT txtProperty.ReadOnly THEN
       txtProperty.SelectAll
     'ENDIF
-  ELSE IF $hEditor = spnProperty THEN 
+  Else If $hEditor = spnProperty Then 
     spnProperty.SelectAll
-  ENDIF
+  Endif
 
-END
-
-
-PUBLIC SUB cmbProperty_Activate()
-
-  SaveProperty
-
-END
+End
 
 
-PUBLIC SUB cmbProperty_Click()
+Public Sub cmbProperty_Activate()
 
   SaveProperty
 
-END
+End
 
 
-PUBLIC SUB txtProperty_Activate()
+Public Sub cmbProperty_Click()
 
   SaveProperty
 
-END
+End
 
 
-PUBLIC SUB txtProperty_Change()
+Public Sub txtProperty_Activate()
 
-  IF $sLast = "Text" THEN
-    $bFreeze = TRUE
+  SaveProperty
+
+End
+
+
+Public Sub txtProperty_Change()
+
+  If $sLast = "Text" Then
+    $bFreeze = True
     SaveProperty
-    $bFreeze = FALSE
-  ENDIF
+    $bFreeze = False
+  Endif
 
-END
+End
 
 
-PUBLIC SUB txtProperty_KeyPress()
+Public Sub txtProperty_KeyPress()
 
-  IF txtProperty.ReadOnly THEN
-    IF $sType = "Font" OR $sType = "Picture" OR $sType = "String[]" OR $sType = "Path" OR $sType = "Color" THEN
-      IF Key.Code = Key.Delete OR Key.Code = Key.Backspace THEN
+  If txtProperty.ReadOnly Then
+    If $sType = "Font" OR $sType = "Picture" OR $sType = "String[]" OR $sType = "Path" OR $sType = "Color" Then
+      If Key.Code = Key.Delete OR Key.Code = Key.Backspace Then
 
         txtProperty.Text = ""
         SaveProperty
 
-      ENDIF
-    ENDIF
-  ENDIF
+      Endif
+    Endif
+  Endif
 
-END
+End
 
 
-PRIVATE FUNCTION GetFont(sFont AS String) AS String
+Private Function GetFont(sFont As String) As String
 
-  DIM bDefault AS Boolean
-  DIM aFont AS String[]
-  DIM iInd AS Integer
+  Dim bDefault As Boolean
+  Dim aFont As String[]
+  Dim iInd As Integer
 
   bDefault = Font[sFont].Name = Application.Font.Name
 
-  IF bDefault THEN
+  If bDefault Then
     aFont = Split(sFont, ",")
-    FOR iInd = 0 TO aFont.Max
-      IF aFont[iInd] = Application.Font.Name THEN 
+    For iInd = 0 To aFont.Max
+      If aFont[iInd] = Application.Font.Name Then 
         aFont[iInd] = ""
-      ENDIF
-    NEXT
+      Endif
+    Next
     sFont = aFont.Join(",")
-    WHILE Left$(sFont) = ","
+    While Left$(sFont) = ","
       sFont = Mid$(sFont, 2)
-    WEND
-    WHILE Right$(sFont) = ","
+    Wend
+    While Right$(sFont) = ","
       sFont = Left$(sFont, -1)
-    WEND
-  ENDIF
+    Wend
+  Endif
 
-  RETURN sFont
+  Return sFont
 
-END
+End
 
 
 
-PUBLIC SUB btnProperty_Click()
+Public Sub btnProperty_Click()
 
-  DIM sDir AS String
-  DIM sVal AS String
-  DIM sSrc AS String
-  DIM sDest AS String
-  DIM sFont AS String
-  DIM sColor AS String
+  Dim sDir As String
+  Dim sVal As String
+  Dim sSrc As String
+  Dim sDest As String
+  Dim sFont As String
+  Dim sColor As String
 
-  $bIgnoreHide = TRUE
+  $bIgnoreHide = True
 
-  SELECT $sType
+  Select $sType
 
-    CASE "s"
-      IF FText.Run($sOldVal) THEN GOTO _EXIT
+    Case "s"
+      If FText.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FText.Value
 
-    CASE "String[]"
-      IF FList.Run(Split($sOldVal, "\n")) THEN GOTO _EXIT
+    Case "String[]"
+      If FList.Run(Split($sOldVal, "\n")) Then Goto _EXIT
       $hEditor.Text = FList.Value.Join("\n")
 
-    CASE "Font"
+    Case "Font"
 
       'IF $sOldVal THEN
         sFont = $sOldVal
@@ -770,81 +770,81 @@ PUBLIC SUB btnProperty_Click()
       'ENDIF
 
       sFont = FFontChooser.Run(sFont, $sOption = "Fixed")
-      IF NOT sFont THEN GOTO _EXIT
+      If NOT sFont Then Goto _EXIT
 
       $hEditor.Text = GetFont(sFont)
 
-    CASE "Color"
-      IF $sOldVal THEN
+    Case "Color"
+      If $sOldVal Then
         sColor = $sOldVal
-      ELSE
+      Else
         sColor = ""
-      ENDIF
+      Endif
 
-      IF FColorChooser.Run(sColor) THEN GOTO _EXIT
+      If FColorChooser.Run(sColor) Then Goto _EXIT
       $hEditor.Text = FColorChooser.Color
 
-    CASE "Picture"
+    Case "Picture"
 
       sDest = FSelectIcon.Run($sOldVal) 'GetPicture()
-      IF NOT sDest THEN GOTO _EXIT
+      If NOT sDest Then Goto _EXIT
       $hEditor.Text = sDest
 
-    CASE "Path"
+    Case "Path"
       Dialog.Path = $sOldVal
-      IF Dialog.OpenFile() THEN GOTO _EXIT
+      If Dialog.OpenFile() Then Goto _EXIT
       $hEditor.Text = Dialog.Path
 
-  END SELECT
+  End Select
 
   SaveProperty
 
 _EXIT:
 
-  $bIgnoreHide = FALSE
+  $bIgnoreHide = False
 
-END
+End
 
 
-PUBLIC SUB grdProperty_DblClick()
+Public Sub grdProperty_DblClick()
 
-  IF cmbProperty.Visible THEN
-    IF cmbProperty.ReadOnly THEN
+  If cmbProperty.Visible Then
+    If cmbProperty.ReadOnly Then
       cmbProperty.Index = (cmbProperty.Index + 1) MOD cmbProperty.Count
-    ENDIF
-  ELSE IF btnProperty.Visible THEN
+    Endif
+  Else If btnProperty.Visible Then
     btnProperty_Click
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE FUNCTION GetProperty(sProp AS String) AS String
+Private Function GetProperty(sProp As String) As String
 
-  DIM sVal AS String
-  DIM hCtrl AS CControl
-  DIM bFirst AS Boolean
+  Dim sVal As String
+  Dim hCtrl As CControl
+  Dim bFirst As Boolean
 
-  IF NOT $bMany THEN RETURN $hObject.GetPropertyString(sProp)
+  If NOT $bMany Then Return $hObject.GetPropertyString(sProp)
 
-  FOR EACH hCtrl IN $hForm.Selection
+  For Each hCtrl In $hForm.Selection
 
-    IF bFirst THEN
-      IF sVal <> hCtrl.GetPropertyString(sProp) THEN
-        CControl.WasDefaultValue = FALSE
-        RETURN ""
-      ENDIF
-    ELSE
+    If bFirst Then
+      If sVal <> hCtrl.GetPropertyString(sProp) Then
+        CControl.WasDefaultValue = False
+        Return ""
+      Endif
+    Else
       sVal = hCtrl.GetPropertyString(sProp)
-      bFirst = TRUE
-    ENDIF
+      bFirst = True
+    Endif
 
-  NEXT
+  Next
 
-  CControl.WasDefaultValue = TRUE
-  RETURN sVal
+  CControl.WasDefaultValue = True
+  Return sVal
 
-END
+End
 
 
 ' PUBLIC SUB grdProperty_MouseDown(X AS Integer, Y AS Integer, Button AS Integer)
@@ -854,49 +854,49 @@ END
 ' END
 '
 '
-PUBLIC SUB grdProperty_MouseUp()
+Public Sub grdProperty_MouseUp()
 
   'DEBUG grdProperty[grdProperty.Row, 0].Text
   ShowProperty
 
-END
+End
 
 
-PUBLIC SUB grdProperty_Scroll()
+Public Sub grdProperty_Scroll()
 
   MoveProperty
 
-END
+End
 
-PUBLIC SUB txtProperty_LostFocus()
+Public Sub txtProperty_LostFocus()
 
   SaveProperty
 
-END
+End
 
-PUBLIC SUB ReadConfig()
+Public Sub ReadConfig()
 
-  $bSort = Settings["/SortProperties", TRUE]
-  grdProperty.Font.Grade = If(Settings["/UseSmallFont", FALSE], -2, 0)
+  $bSort = Settings["/SortProperties", True]
+  grdProperty.Font.Grade = - Settings["/GlobalFont", 0]
   txtProperty.Font = grdProperty.Font
   cmbProperty.Font = grdProperty.Font
   spnProperty.Font = grdProperty.Font
   MoveProperty
   RefreshAll
 
-END
+End
 
-PUBLIC SUB CheckIntegratedHelpSetting()
+Public Sub CheckIntegratedHelpSetting()
   
-  $bDisableIntegratedHelp = Settings["/PropertyHelp", FALSE]
-  IF $bDisableIntegratedHelp THEN 
+  $bDisableIntegratedHelp = Settings["/PropertyHelp", False]
+  If $bDisableIntegratedHelp Then 
     lblHelp.Text = ""
     spnHelp.Hide
-  ELSE 
+  Else 
     spnHelp.Show
-  ENDIF 
+  Endif 
   
-END
+End
 
 ' PUBLIC SUB grdProperty_MouseMove()
 ' 
@@ -906,34 +906,34 @@ END
 ' 
 ' END
 
-PUBLIC SUB spnProperty_Change()
+Public Sub spnProperty_Change()
 
   SaveProperty  
 
-END
+End
 
 
-PUBLIC SUB RefreshReadOnly()
+Public Sub RefreshReadOnly()
   
   HideProperty
   
-END
+End
 
-PRIVATE SUB UpdateLabel()
+Private Sub UpdateLabel()
 
-  DIM hObject AS CControl = $hForm.Master
+  Dim hObject As CControl = $hForm.Master
   
-  IF NOT hObject THEN hObject = $hForm.Control[$hForm.Name]
+  If NOT hObject Then hObject = $hForm.Control[$hForm.Name]
   lblName.Text = "<b>" & hObject.Name & "</b> " & hObject.Kind
   
-  IF NOT $bDisableIntegratedHelp THEN 
+  If NOT $bDisableIntegratedHelp Then 
     lblHelp.Text = ""
-  ENDIF 
+  Endif 
 
-END
+End
 
-PUBLIC SUB spnHelp_Resize()
+Public Sub spnHelp_Resize()
 
   HideProperty
 
-END
+End

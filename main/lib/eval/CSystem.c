@@ -34,6 +34,7 @@ BEGIN_PROPERTY(CSYSTEM_keywords)
 	COMP_INFO *info;
 	SUBR_INFO *subr;
 	char *str;
+	int i;
 
 	if (!_keywords)
 	{
@@ -60,7 +61,6 @@ BEGIN_PROPERTY(CSYSTEM_keywords)
 	GB.ReturnObject(_keywords);
 
 END_PROPERTY
-
 
 BEGIN_METHOD_VOID(CSYSTEM_exit)
 

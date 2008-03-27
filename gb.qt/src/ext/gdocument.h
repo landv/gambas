@@ -85,6 +85,7 @@ private:
   GArray<GCommand> undoList;
   GArray<GCommand> redoList;
   int highlightMode;
+  bool keywordsUseUpperCase;
   GHighlightCallback highlightCallback;
   int maxLength;
   int oldMaxLength;
@@ -160,6 +161,10 @@ public:
 
   void setHighlightMode(int mode, GHighlightCallback cb = 0);
   int getHighlightMode() const { return highlightMode; }
+  
+  void setKeywordsUseUpperCase(bool v);
+  bool isKeywordsUseUpperCase() const { return keywordsUseUpperCase; }
+  
   void colorize(int y);
   void baptizeUntil(int y);
 

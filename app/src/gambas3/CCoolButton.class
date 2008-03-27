@@ -1,101 +1,101 @@
 ' Gambas class file
 
-PROPERTY Enabled AS Boolean
-PROPERTY ToolTip AS String
-PROPERTY Foreground AS Integer
+Property Enabled As Boolean
+Property ToolTip As String
+Property Foreground As Integer
 
-PUBLIC Tag AS String
+Public Tag As String
 
-PRIVATE $hPanel AS Panel
-PRIVATE $hImage AS PictureBox
-PRIVATE $hLabel AS Label
-PRIVATE $iColor AS Integer
+Private $hPanel As Panel
+Private $hImage As PictureBox
+Private $hLabel As Label
+Private $iColor As Integer
 
-EVENT Click()
+Event Click()
 
 
-PUBLIC SUB _new(hContainer AS Container, X AS Integer, Y AS Integer, W AS Integer, H AS Integer, sText AS String, vIcon AS Variant, OPTIONAL sFont AS String)
+Public Sub _new(hContainer As Container, X As Integer, Y As Integer, W As Integer, H As Integer, sText As String, vIcon As Variant, Optional sFont As String)
 
-  DIM hPict AS Picture
+  Dim hPict As Picture
 
-  $hPanel = NEW Panel(hContainer) AS "Panel"
+  $hPanel = New Panel(hContainer) As "Panel"
   $hPanel.Move(X, Y, W, H)
   $hPanel.Mouse = Mouse.Pointing
   $hPanel.Arrangement = Arrange.Horizontal
   $hPanel.Padding = 2
   $hPanel.Spacing = 8
 
-  IF TypeOf(vIcon) = gb.String THEN
+  If TypeOf(vIcon) = gb.String Then
     hPict = Picture[vIcon]
-  ELSE
+  Else
     hPict = vIcon
-  ENDIF
+  Endif
 
-  $hImage = NEW PictureBox($hPanel) AS "Panel"
-  IF hPict THEN
+  $hImage = New PictureBox($hPanel) As "Panel"
+  If hPict Then
     $hImage.Resize(hPict.Width + 4, H - 8)
     $hImage.Alignment = Align.Right
     $hImage.Picture = hPict
-  ELSE
+  Else
     $hImage.Resize(32, H - 8)
-  ENDIF
+  Endif
 
-  $hLabel = NEW Label($hPanel) AS "Panel"
+  $hLabel = New Label($hPanel) As "Panel"
   '$hLabel.AutoResize = FALSE
-  $hLabel.Expand = TRUE
-  IF sFont THEN $hLabel.Font = Font[sFont]
+  $hLabel.Expand = True
+  If sFont Then $hLabel.Font = Font[sFont]
   $hLabel.Text = sText
 
-END
+End
 
-PUBLIC SUB Panel_Enter()
+Public Sub Panel_Enter()
 
-  IF Object.Type(LAST) <> "Panel" THEN RETURN
-  $iColor = LAST.Foreground
-  LAST.BackColor = Color.SelectedBackground '&88D5FF&
-  LAST.Foreground = Color.SelectedForeground '&88D5FF&
+  If Object.Type(Last) <> "Panel" Then Return
+  $iColor = Last.Foreground
+  Last.BackColor = Color.SelectedBackground '&88D5FF&
+  Last.Foreground = Color.SelectedForeground '&88D5FF&
 
-END
+End
 
-PUBLIC SUB Panel_Leave()
+Public Sub Panel_Leave()
 
-  IF Object.Type(LAST) <> "Panel" THEN RETURN
-  LAST.BackColor = LAST.Parent.Background
-  LAST.Foreground = $iColor
+  If Object.Type(Last) <> "Panel" Then Return
+  Last.BackColor = Last.Parent.Background
+  Last.Foreground = $iColor
 
-END
+End
 
-PRIVATE FUNCTION GetPanel() AS Panel
+Private Function GetPanel() As Panel
 
-  DIM hPanel AS Panel
+  Dim hPanel As Panel
 
-  TRY hPanel = LAST
-  IF ERROR THEN
-    hPanel = LAST.Parent
-  ENDIF
+  Try hPanel = Last
+  If Error Then
+    hPanel = Last.Parent
+  Endif
 
-  RETURN hPanel
+  Return hPanel
 
-END
+End
 
 
-PUBLIC SUB Panel_MouseDown()
+Public Sub Panel_MouseDown()
 
-  WITH GetPanel()
+  With GetPanel()
     .Border = Border.Sunken
-  END WITH
+  End With
 
   '$hLabel.Move($hLabel.X + 1, $hLabel.Y + 1)
   '$hImage.Move($hImage.X + 1, $hImage.Y + 1)
 
-END
+End
 
 
-PUBLIC SUB Panel_MouseUp()
+Public Sub Panel_MouseUp()
 
-  DIM hPanel AS Panel
-  DIM X AS Integer
-  DIM Y AS Integer
+  Dim hPanel As Panel
+  Dim X As Integer
+  Dim Y As Integer
 
   hPanel = GetPanel()
   hPanel.Border = Border.None
@@ -103,78 +103,78 @@ PUBLIC SUB Panel_MouseUp()
   X = Mouse.X
   Y = Mouse.Y
 
-  IF LAST <> hPanel THEN
-    X = X + LAST.X
-    Y = Y + LAST.Y
-  ENDIF
+  If Last <> hPanel Then
+    X = X + Last.X
+    Y = Y + Last.Y
+  Endif
 
   '$hLabel.Move($hLabel.X - 1, $hLabel.Y - 1)
   '$hImage.Move($hImage.X - 1, $hImage.Y - 1)
 
 
-  IF (X >= 0 AND Y >= 0 AND X < hPanel.W AND Y < hPanel.H) THEN
+  If (X >= 0 AND Y >= 0 AND X < hPanel.W AND Y < hPanel.H) Then
 
-    RAISE Click()
+    Raise Click()
 
-  ELSE
+  Else
 
     'PRINT "Pas Click !"; X; " "; Y; " "; hPanel.W; " "; hPanel.H
 
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE FUNCTION Enabled_Read() AS Boolean
+Private Function Enabled_Read() As Boolean
 
-  RETURN $hPanel.Enabled
+  Return $hPanel.Enabled
 
-END
+End
 
-PRIVATE SUB Enabled_Write(bEnabled AS Boolean)
+Private Sub Enabled_Write(bEnabled As Boolean)
 
   $hPanel.Enabled = bEnabled
 
-END
+End
 
 
-PUBLIC SUB Move(X AS Integer, Y AS Integer)
+Public Sub Move(X As Integer, Y As Integer)
 
   $hPanel.Move(X, Y)
 
-END
+End
 
 
-PUBLIC SUB Resize(W AS Integer, H AS Integer)
+Public Sub Resize(W As Integer, H As Integer)
 
   $hPanel.Resize(W, H)
   '$hLabel.Resize(W - ($hImage.X + $hImage.W + 8) - 8, H - 8)
 
-END
+End
 
-PRIVATE FUNCTION ToolTip_Read() AS String
+Private Function ToolTip_Read() As String
 
-  RETURN $hPanel.ToolTip
+  Return $hPanel.ToolTip
 
-END
+End
 
-PRIVATE SUB ToolTip_Write(sToolTip AS String)
+Private Sub ToolTip_Write(sToolTip As String)
 
   $hPanel.ToolTip = sToolTip
   '$hImage.ToolTip = sToolTip
   '$hLabel.ToolTip = sToolTip
 
-END
+End
 
 
-PRIVATE FUNCTION Foreground_Read() AS Integer
+Private Function Foreground_Read() As Integer
 
-  RETURN $hPanel.Foreground
+  Return $hPanel.Foreground
 
-END
+End
 
-PRIVATE SUB Foreground_Write(Value AS Integer)
+Private Sub Foreground_Write(Value As Integer)
 
   $hPanel.Foreground = Value
 
-END
+End

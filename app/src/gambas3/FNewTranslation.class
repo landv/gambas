@@ -1,45 +1,45 @@
 ' Gambas class file
 
-STATIC PRIVATE $sLang AS String
+Static Private $sLang As String
 
-STATIC PUBLIC FUNCTION Run() AS String
+Static Public Function Run() As String
 
   FNewTranslation.ShowModal
-  RETURN $sLang
+  Return $sLang
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   
-  DIM sLang AS String
+  Dim sLang As String
   
-  FOR EACH sLang IN Language.GetAll()
-    IF Project.HasTranslation(sLang) THEN CONTINUE
+  For Each sLang In Language.GetAll()
+    If Project.HasTranslation(sLang) Then Continue
     lstLanguage.Add(Language.ToName(sLang))
-  NEXT
+  Next
 
-  TRY lstLanguage.Index = 0
+  Try lstLanguage.Index = 0
 
-END
+End
 
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
   $sLang = Language.FromName(lstLanguage.Text)
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
   $sLang = ""
-  ME.Close
+  Me.Close
 
-END
+End
 
 
-PUBLIC SUB lstLanguage_Activate()
+Public Sub lstLanguage_Activate()
 
-  btnOK.Value = TRUE
+  btnOK.Value = True
 
-END
+End

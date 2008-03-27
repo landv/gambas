@@ -1,125 +1,125 @@
 ' Gambas class file
 
-PRIVATE $sPath AS String
+Private $sPath As String
 
-PRIVATE $cVar AS NEW Collection(gb.Text)
-PRIVATE $bRepository AS Boolean
+Private $cVar As New Collection(gb.Text)
+Private $bRepository As Boolean
 
-PUBLIC SUB Run() AS String
+Public Sub Run() As String
   
-  IF ME.ShowModal() THEN RETURN $sPath
+  If Me.ShowModal() Then Return $sPath
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   'dchProject.SelectedPath = Settings["/FCreateProject/Path", System.User.Home]
-  Settings.Read(ME)
+  Settings.Read(Me)
   Settings.Read(dchProject, "dchProject")
   lstType.Select(panDefaultType)
   wizProject.Index = 0
   edtOutput.Text = ""
 
-END
+End
 
-PRIVATE SUB GetTest(sTest AS String) AS Boolean
+Private Sub GetTest(sTest As String) As Boolean
   
-  RETURN Eval(sTest, $cVar)
+  Return Eval(sTest, $cVar)
   
-END
+End
 
 
-PRIVATE SUB JumpFile(hFile AS File, sBegin AS String, sEnd AS String, OPTIONAL sSearch AS String)
+Private Sub JumpFile(hFile As File, sBegin As String, sEnd As String, Optional sSearch As String)
   
-  DIM sLine AS String
-  DIM iLevel AS Integer
+  Dim sLine As String
+  Dim iLevel As Integer
 
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
+  While NOT Eof(hFile)
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
     
-    IF sSearch AND IF sLine = sSearch THEN 
-      IF iLevel = 0 THEN RETURN 
-      CONTINUE
-    ENDIF
+    If sSearch AND If sLine = sSearch Then 
+      If iLevel = 0 Then Return 
+      Continue
+    Endif
     
-    IF sLine LIKE sBegin & " *" THEN 
-      INC iLevel
-    ELSE IF sLine = sEnd THEN 
-      IF iLevel = 0 THEN RETURN
-      DEC iLevel
-    ENDIF
+    If sLine LIKE sBegin & " *" Then 
+      Inc iLevel
+    Else If sLine = sEnd Then 
+      If iLevel = 0 Then Return
+      Dec iLevel
+    Endif
   
-  WEND
+  Wend
   
-END
+End
 
 
-PRIVATE SUB GetFile(sPath AS String) AS String
+Private Sub GetFile(sPath As String) As String
   
-  DIM hFile AS File
-  DIM sLine AS String
-  DIM sTrim AS String
-  DIM sResult AS String
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
+  Dim hFile As File
+  Dim sLine As String
+  Dim sTrim As String
+  Dim sResult As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
   
-  hFile = OPEN sPath
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
+  hFile = Open sPath
+  While NOT Eof(hFile)
+    Line Input #hFile, sLine
     sTrim = Trim(sLine)
     
-    IF Left(sTrim, 4) = "@IF " THEN 
-      IF NOT GetTest(Mid$(sTrim, 5)) THEN 
+    If Left(sTrim, 4) = "@IF " Then 
+      If NOT GetTest(Mid$(sTrim, 5)) Then 
         JumpFile(hFile, "@IF", "@ENDIF", "@ELSE")
-      ENDIF 
-    ELSE IF sTrim = "@ELSE" THEN 
+      Endif 
+    Else If sTrim = "@ELSE" Then 
       JumpFile(hFile, "@IF", "@ENDIF")
-    ELSE IF Left(sTrim) <> "@" THEN 
+    Else If Left(sTrim) <> "@" Then 
     
       iPos = 1
-      DO
+      Do
         iPos = InStr(sLine, "$(", iPos)
-        IF iPos = 0 THEN BREAK
+        If iPos = 0 Then Break
         iPos2 = InStr(sLine, ")", iPos)
         sLine = Left(sLine, iPos - 1) & CStr($cVar[Mid$(sLine, iPos + 2, iPos2 - iPos - 2)]) & Mid(sLine, iPos2 + 1)
-      LOOP
+      Loop
     
       sResult &= sLine & "\n"
       
-    ENDIF
+    Endif
     
-  WEND 
+  Wend 
   
-  RETURN sResult
+  Return sResult
   
-END
+End
 
 
-PRIVATE SUB CreateProject() AS Boolean
+Private Sub CreateProject() As Boolean
   
-  DIM sDir AS String
-  DIM sName AS String
-  DIM hCtrl AS Object
-  DIM sPath AS String 
-  DIM sDest AS String
-  DIM sErr AS String
-  DIM bErr AS Boolean
+  Dim sDir As String
+  Dim sName As String
+  Dim hCtrl As Object
+  Dim sPath As String 
+  Dim sDest As String
+  Dim sErr As String
+  Dim bErr As Boolean
   'DIM hIcon AS Picture
 
-  IF $bRepository THEN 
+  If $bRepository Then 
   
     sPath = Trim(txtRepository.Text)
     sDir = dchProject.SelectedPath 
-    edtOutput.ReadOnly = FALSE
+    edtOutput.ReadOnly = False
     bErr = VersionControl.CheckoutSVN(sPath, sDir, edtOutput)
-    edtOutput.ReadOnly = TRUE
+    edtOutput.ReadOnly = True
     
-    IF bErr THEN Error.Raise(("Project checkout has failed."))
+    If bErr Then Error.Raise(("Project checkout has failed."))
     
     sDir &/= File.Name(sPath)
 
-  ELSE
+  Else
   
     sName = Trim(txtName.Text)
     sDir = dchProject.SelectedPath &/ sName
@@ -127,106 +127,106 @@ PRIVATE SUB CreateProject() AS Boolean
     $cVar["NAME"] = sName
     
     $cVar["TITLE"] = Trim(txtTitle.Text)
-    IF NOT $cVar["TITLE"] THEN $cVar["TITLE"] = sName
+    If NOT $cVar["TITLE"] Then $cVar["TITLE"] = sName
     $cVar["LANGUAGE"] = System.Language
   
-    FOR EACH hCtrl IN lstType.Children
-      IF hCtrl.Tag THEN $cVar[hCtrl.Tag] = FALSE
-    NEXT
-    $cVar[lstType.Current.Tag] = TRUE
+    For Each hCtrl In lstType.Children
+      If hCtrl.Tag Then $cVar[hCtrl.Tag] = False
+    Next
+    $cVar[lstType.Current.Tag] = True
     
-    FOR EACH hCtrl IN svwOption.Children
-      IF hCtrl.Tag THEN $cVar[hCtrl.Tag] = hCtrl.Value
-    NEXT
+    For Each hCtrl In svwOption.Children
+      If hCtrl.Tag Then $cVar[hCtrl.Tag] = hCtrl.Value
+    Next
     
     $cVar["GRAPHIC"] = $cVar["QT"] OR $cVar["GTK"] OR $cVar["GUI"]
     
-    TRY RMDIR sDir
+    Try Rmdir sDir
     
-    MKDIR sDir
+    Mkdir sDir
     
-    FOR EACH sPath IN Split(GetFile("template/list"), "\n", "", TRUE)
+    For Each sPath In Split(GetFile("template/list"), "\n", "", True)
       
       sDest = sPath
-      IF Left(sDest) = "_" THEN sDest = "." & Mid(sDest, 2)
+      If Left(sDest) = "_" Then sDest = "." & Mid(sDest, 2)
       
-      IF InStr(sDest, "/") THEN TRY MKDIR sDir &/ File.Dir(sDest)
-      IF File.Ext(sPath) = "png" THEN 
-        COPY "template" &/ File.Name(sPath) TO sDir &/ sDest
-      ELSE
+      If InStr(sDest, "/") Then Try Mkdir sDir &/ File.Dir(sDest)
+      If File.Ext(sPath) = "png" Then 
+        Copy "template" &/ File.Name(sPath) To sDir &/ sDest
+      Else
         File.Save(sDir &/ sDest, GetFile("template" &/ File.Name(sPath)))
-      ENDIF
+      Endif
       
-    NEXT
+    Next
     
     Project.MakeDirectoryIcon(sDir)
 
-  ENDIF
+  Endif
   
   $sPath = sDir
-  RETURN FALSE
+  Return False
 
-CATCH
+Catch
 
   Message.Error(("Cannot create project!") & "\n\n" & Error.Text)
-  RETURN TRUE
+  Return True
   
-END
+End
 
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   Settings.Write(dchProject, "dchProject")
-  Settings.Write(ME)
+  Settings.Write(Me)
 
-END
+End
 
-PUBLIC SUB dchProject_Icon(Path AS String)
+Public Sub dchProject_Icon(Path As String)
 
-  IF Exist(Path &/ ".project") THEN 
+  If Exist(Path &/ ".project") Then 
     dchProject.Icon = Project.GetIcon(Path, 16)
-  ENDIF  
+  Endif  
 
-END
+End
 
-PUBLIC SUB wizProject_BeforeChange()
+Public Sub wizProject_BeforeChange()
   
-  IF wizProject.Index = 1 THEN 
+  If wizProject.Index = 1 Then 
     panRepository.Visible = $bRepository
     panIdent.Visible = NOT $bRepository
-    IF $bRepository THEN  
+    If $bRepository Then  
       txtRepository.SetFocus
-    ELSE 
+    Else 
       txtName.SetFocus
-    ENDIF
-  ENDIF
+    Endif
+  Endif
   
-END
+End
 
 
-PUBLIC SUB wizProject_Close()
+Public Sub wizProject_Close()
 
-  DIM sMsg AS String
+  Dim sMsg As String
 
-  IF $bRepository THEN 
+  If $bRepository Then 
   
-    IF NOT Trim(txtRepository.Text) THEN
+    If NOT Trim(txtRepository.Text) Then
       txtRepository.SetFocus
       Balloon.Warning(("Please enter the location of the repository."), txtRepository)
-      RETURN
-    ENDIF
+      Return
+    Endif
   
-  ELSE
+  Else
 
     sMsg = Project.CheckProjectName(txtName.Text, dchProject.SelectedPath) 
-    IF sMsg
+    If sMsg
       txtName.SetFocus
       txtName.SelectAll
       Balloon.Warning(sMsg, txtName)
-      RETURN
-    ENDIF  
+      Return
+    Endif  
 
-  ENDIF
+  Endif
 
   ' IF NOT dchProject.SelectedPath THEN 
   '   dchProject.SetFocus
@@ -235,23 +235,23 @@ PUBLIC SUB wizProject_Close()
   '   RETURN
   ' ENDIF
 
-  IF CreateProject() THEN RETURN
+  If CreateProject() Then Return
   
   Message(("The project has been successfully created."))
   
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB wizProject_Cancel()
+Public Sub wizProject_Cancel()
 
-  ME.Close  
+  Me.Close  
 
-END
+End
 
-PUBLIC SUB lstType_Click()
+Public Sub lstType_Click()
 
   $bRepository = Left(lstType.Current.Tag) = "!"
   svwOption.Enabled = NOT $bRepository
 
-END
+End

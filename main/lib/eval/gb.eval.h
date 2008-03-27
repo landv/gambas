@@ -101,7 +101,7 @@ typedef
 typedef
   struct {
     int version;
-    void (*Analyze)(const char *src, int len, EVAL_ANALYZE *result);
+    void (*Analyze)(const char *src, int len, EVAL_ANALYZE *result, bool rewrite);
     void (*New)(EVAL_EXPRESSION *expr, const char *src, int len);
     bool (*Compile)(EVAL_EXPRESSION expr);
     GB_VALUE *(*Run)(EVAL_EXPRESSION expr, EVAL_FUNCTION func);

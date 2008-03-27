@@ -84,6 +84,7 @@ public:
 	
 protected:
 
+	virtual void fontChange(const QFont &oldFont);
   virtual bool eventFilter(QObject *, QEvent *);
 };
 

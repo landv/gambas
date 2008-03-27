@@ -153,7 +153,7 @@ static void analyze(const char *src, int len_src)
   char *str;
   EVAL_ANALYZE result;
 
-  EVAL_analyze(src, len_src, &result);
+  EVAL_analyze(src, len_src, &result, FALSE);
 
   n = 0;
   for (i = 0; i < result.len; i++)
@@ -312,6 +312,7 @@ BEGIN_PROPERTY(CHIGHLIGHT_analyze_positions)
   GB.ReturnObject(_analyze_pos);
 
 END_PROPERTY
+
 
 GB_DESC CHighlightDesc[] =
 {

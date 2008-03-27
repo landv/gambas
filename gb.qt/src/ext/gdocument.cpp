@@ -183,6 +183,7 @@ GDocument::GDocument()
   tabWidth = 2;
   readOnly = false;
   highlightMode = None;
+  keywordsUseUpperCase = false;
 
   //lines = new GArray<GLine>;
   lines.setAutoDelete(true);
@@ -500,6 +501,7 @@ void GDocument::setText(const GString & text)
 
   clear();
   insert(0, 0, text);
+  colorize(0);
   reset();
 
   blockUndo = false;
@@ -935,7 +937,7 @@ int GDocument::convState(int state)
   }
 }
 
-void GDocument::highlightGambas(GEditor *, uint &state, int &tag, GString &s, GHighlightArray *data, bool &proc)
+void GDocument::highlightGambas(GEditor *editor, uint &state, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
   const char *src;
   EVAL_ANALYZE result;
@@ -945,7 +947,7 @@ void GDocument::highlightGambas(GEditor *, uint &state, int &tag, GString &s, GH
   ls = s.length();
   src = (const char *)s.utf8();
 
-  EVAL.Analyze(src, strlen(src), &result);
+  EVAL.Analyze(src, strlen(src), &result, TRUE);
 
 	GB.NewArray(data, sizeof(GHighlight), result.len);
 
@@ -1147,6 +1149,14 @@ void GDocument::setHighlightMode(int mode, GHighlightCallback cb)
 	updateViews();
 }
 
+void GDocument::setKeywordsUseUpperCase(bool v)
+{ 
+	if (v == keywordsUseUpperCase)
+		return;
+		
+	keywordsUseUpperCase = v; 
+	setHighlightMode(getHighlightMode());
+}
 
 void GDocument::emitTextChanged()
 {

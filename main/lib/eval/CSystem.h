@@ -24,6 +24,7 @@
 #define __CSYSTEM_H
 
 #include "gambas.h"
+#include "gb_common.h"
 #include "eval.h"
 
 #ifndef __CSYSTEM_C

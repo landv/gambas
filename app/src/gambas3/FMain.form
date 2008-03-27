@@ -406,7 +406,7 @@
     }
     { mnuInformation Menu
       Action = "info"
-      Text = ("&Information")
+      Text = ("&Properties...")
       Picture = Picture["icon:/small/info"]
       Shortcut = "Ctrl+I"
     }
@@ -666,7 +666,6 @@
       Arrangement = Arrange.Vertical
       { wrkProject Workspace
         MoveScaled(1,2,19,30)
-        Font = Font["-1"]
         Expand = True
       }
       { panDebug SidePanel
@@ -686,7 +685,6 @@
       Hidden = True
       { tabProperty TabStrip
         MoveScaled(4,0,26,4)
-        Font = Font["-1"]
         Arrangement = Arrange.Fill
         Count = 2
         Index = 0
@@ -696,7 +694,7 @@
         Index = 0
       }
       { panFrame Panel
-        MoveScaled(4,5,22,32)
+        MoveScaled(5,5,22,32)
         Expand = True
         Arrangement = Arrange.Fill
         Border = Border.Raised

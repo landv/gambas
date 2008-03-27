@@ -1,156 +1,156 @@
 ' Gambas class file
 
-STATIC PUBLIC All AS NEW Collection
-STATIC PUBLIC List AS NEW String[]
+Static Public All As New Collection
+Static Public List As New String[]
 
-STATIC PRIVATE $iSortKey AS Integer
+Static Private $iSortKey As Integer
 
 
-PUBLIC Name AS String
-PROPERTY Group AS String
-PROPERTY Type AS String
-PROPERTY READ Icon AS Picture
-PUBLIC Parent AS String
-PUBLIC SortKey AS Integer
+Public Name As String
+Property Group As String
+Property Type As String
+Property Read Icon As Picture
+Public Parent As String
+Public SortKey As Integer
 
-PUBLIC Control AS Boolean
-PUBLIC Virtual AS Boolean
-PUBLIC Container AS Boolean
-PUBLIC MultiContainer AS Boolean 
-PUBLIC Form AS Boolean
+Public Control As Boolean
+Public Virtual As Boolean
+Public Container As Boolean
+Public MultiContainer As Boolean 
+Public Form As Boolean
 
-PRIVATE $sGroup AS String
+Private $sGroup As String
 
-PUBLIC SUB _new(sName AS String)
+Public Sub _new(sName As String)
   
   Name = sName
-  All[Name] = ME
+  All[Name] = Me
   
-END
+End
 
-PRIVATE FUNCTION Type_Read() AS String
+Private Function Type_Read() As String
 
-  IF Form THEN 
-    RETURN "Form"
-  ELSE IF MultiContainer THEN 
-    RETURN "MultiContainer"
-  ELSE IF Container THEN 
-    RETURN "Container"
-  ELSE IF Virtual THEN 
-    RETURN "Virtual"
-  ELSE IF Control THEN 
-    RETURN "Control"
-  ELSE 
-    RETURN "Class"
-  ENDIF
+  If Form Then 
+    Return "Form"
+  Else If MultiContainer Then 
+    Return "MultiContainer"
+  Else If Container Then 
+    Return "Container"
+  Else If Virtual Then 
+    Return "Virtual"
+  Else If Control Then 
+    Return "Control"
+  Else 
+    Return "Class"
+  Endif
 
-END
+End
 
-PRIVATE SUB Type_Write(Value AS String)
+Private Sub Type_Write(Value As String)
 
   Form = Value = "Form"
   Virtual = Value = "Virtual"
   MultiContainer = Value = "MultiContainer"
   Container = Value = "Container" OR MultiContainer
   Control = Value = "Control" OR Container OR Virtual
-  IF Control THEN 
-    IF $sGroup = "" THEN $sGroup = Type_Read()
-  ELSE 
+  If Control Then 
+    If $sGroup = "" Then $sGroup = Type_Read()
+  Else 
     $sGroup = ""
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE FUNCTION Icon_Read() AS Picture
+Private Function Icon_Read() As Picture
 
-  DIM sIcon AS String
-  DIM hPict AS Picture
+  Dim sIcon As String
+  Dim hPict As Picture
 
-  SELECT CASE ME.Type
-    CASE "Control"
+  Select Case Me.Type
+    Case "Control"
       sIcon = "img/control/button.png"
-    CASE "Virtual"
+    Case "Virtual"
       sIcon = "img/control/timer.png"
-    CASE "Container"
+    Case "Container"
       sIcon = "img/control/panel.png"
-    CASE "MultiContainer"
+    Case "MultiContainer"
       sIcon = "img/control/tabstrip.png"
-    CASE "Form"
+    Case "Form"
       sIcon = "img/32/form.png"
-    CASE ELSE
+    Case Else
       sIcon = "img/32/class.png"
-  END SELECT  
+  End Select  
 
   hPict = Picture[sIcon]
-  IF hPict.Width <> 24 THEN hPict = hPict.Image.Stretch(24, 24).Picture
+  If hPict.Width <> 24 Then hPict = hPict.Image.Stretch(24, 24).Picture
 
-  RETURN hPict
+  Return hPict
 
-END
+End
 
-PRIVATE FUNCTION Group_Read() AS String
+Private Function Group_Read() As String
 
-  RETURN $sGroup  
+  Return $sGroup  
 
-END
+End
 
-PRIVATE SUB Group_Write(Value AS String)
+Private Sub Group_Write(Value As String)
 
-  IF NOT Control THEN RETURN 
+  If NOT Control Then Return 
   Value = Trim(Value)
-  IF NOT Value THEN RETURN
+  If NOT Value Then Return
   $sGroup = Value
 
-END
+End
 
-STATIC PRIVATE SUB CalcSortKey(sClass AS String) AS Integer
+Static Private Sub CalcSortKey(sClass As String) As Integer
   
-  DIM hExportInfo AS CExportInfo = All[sClass]
-  DIM sParent AS String 
+  Dim hExportInfo As CExportInfo = All[sClass]
+  Dim sParent As String 
   
-  IF NOT hExportInfo THEN RETURN
+  If NOT hExportInfo Then Return
   
-  WITH hExportInfo
+  With hExportInfo
   
-    IF .SortKey = 0 THEN
-      IF .Parent THEN CalcSortKey(.Parent)
-      INC $iSortKey
+    If .SortKey = 0 Then
+      If .Parent Then CalcSortKey(.Parent)
+      Inc $iSortKey
       .SortKey = $iSortKey
-    ENDIF
+    Endif
   
-    RETURN .SortKey
+    Return .SortKey
   
-  END WITH
+  End With
   
-END
+End
 
-STATIC PUBLIC SUB Sort()
+Static Public Sub Sort()
   
-  DIM sClass AS String
-  DIM iMax AS Integer
-  DIM cSort AS NEW Collection
-  DIM iKey AS Integer
+  Dim sClass As String
+  Dim iMax As Integer
+  Dim cSort As New Collection
+  Dim iKey As Integer
 
   $iSortKey = 0
   
-  FOR EACH sClass IN List
+  For Each sClass In List
     iKey = CalcSortKey(sClass)
     cSort[iKey] = All[sClass]
     iMax = Max(iMax, iKey)
-  NEXT
+  Next
   
-  List = NEW String[]
+  List = New String[]
   
-  FOR iKey = 1 TO iMax
+  For iKey = 1 To iMax
     List.Add(cSort[iKey].Name)
-  NEXT
+  Next
   
-END
+End
 
 
-STATIC PUBLIC SUB Reset()
+Static Public Sub Reset()
   
-  All = NEW Collection
-  List = NEW String[]
+  All = New Collection
+  List = New String[]
   
-END
+End

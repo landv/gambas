@@ -1,70 +1,70 @@
 ' Gambas class file
 
-STATIC PUBLIC Value AS String
+Static Public Value As String
 
 
-STATIC PUBLIC FUNCTION Run(sText AS String) AS Boolean
+Static Public Function Run(sText As String) As Boolean
 
-  DIM hForm AS Form
+  Dim hForm As Form
 
   Value = sText
-  hForm = NEW FText
+  hForm = New FText
 
-  RETURN hForm.ShowModal()
+  Return hForm.ShowModal()
 
-END
+End
 
 
-PUBLIC SUB _new()
+Public Sub _new()
 
   txtText.Text = Value
   txtText.SetFocus
 
   'Config.LoadWindow(ME, "/FText")
-  Settings.Read(ME)
-  chkFont.Value = Settings["/FText/UseFixedFont", FALSE]
+  Settings.Read(Me)
+  chkFont.Value = Settings["/FText/UseFixedFont", False]
   
-END
+End
 
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  btnCancel.Move(ME.ClientW - 8 - btnCancel.Width, ME.ClientH - 8 - btnCancel.Height)
+  btnCancel.Move(Me.ClientW - 8 - btnCancel.Width, Me.ClientH - 8 - btnCancel.Height)
   btnOK.Move(btnCancel.X - 8 - btnOK.Width, btnCancel.Y)
-  txtText.Move(8, 8, ME.ClientW - 16, ME.ClientH - btnCancel.H - 24)
+  txtText.Move(8, 8, Me.ClientW - 16, Me.ClientH - btnCancel.H - 24)
   chkFont.Move(8, btnOK.Y)
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
   Value = txtText.Text
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   'Config.SaveWindow(ME, "/FText")
-  Settings.Write(ME)
+  Settings.Write(Me)
   Settings["/FText/UseFixedFont"] = chkFont.Value
 
-END
+End
 
 
-PUBLIC SUB chkFont_Click()
+Public Sub chkFont_Click()
 
-  IF chkFont.Value THEN
+  If chkFont.Value Then
     txtText.Font = Font["Monospace"]
-  ELSE
-    txtText.Font = NULL
-  ENDIF
+  Else
+    txtText.Font = Null
+  Endif
 
-END
+End
 

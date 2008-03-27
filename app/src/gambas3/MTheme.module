@@ -1,0 +1,109 @@
+' Gambas module file
+
+Private Const DEFAULT_THEME As String = "sapphire"
+
+Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Datatype", "Function", "Operator", "Symbol", "Number", "String", "Comment", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
+Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Numbers"), ("Strings"), ("Comments"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
+
+Private $cDefault As Collection
+
+Public Sub _init()
+  
+  $cDefault = ReadFile(DEFAULT_THEME)
+
+End
+
+Public Sub IsBackgroundStyle(sKey As String) As Boolean
+  
+  Return ["Background", "Selection", "CurrentLine", "Current", "Breakpoint", "Highlight"].Exist(sKey)
+  
+End
+
+Public Function ReadSettings(hSettings As Settings, sParent As String) As Collection
+  
+  Dim cColor As New Collection
+  Dim sKey As String
+  Dim sColor As String
+  
+  For Each sKey In ColorKeys
+    sColor = hSettings[sParent &/ sKey]
+    cColor[sKey] = sColor
+  Next
+  
+  Return cColor
+  
+End
+
+Public Sub WriteSettings(hSettings As Settings, sParent As String, cColor As Collection)
+  
+  Dim sColor As String
+  Dim sKey As String
+  
+  For Each sKey In ColorKeys
+    hSettings[sParent &/ sKey] = cColor[sKey]
+  Next
+  
+End
+
+
+Public Function ReadFile(sPath As String) As Collection
+  
+  Dim hSettings As Settings
+  Dim sTemp As String
+  
+  If Left(sPath) <> "/" Then
+    sPath = "theme" &/ sPath
+    sTemp = Temp$()
+    Copy sPath To sTemp
+    sPath = sTemp
+  Endif
+  
+  hSettings = New Settings(sPath)
+  If sTemp Then Kill sTemp
+  
+  Return ReadSettings(hSettings, "Theme")
+  
+End
+
+Public Sub WriteFile(sPath As String, cColor As Collection)
+  
+  Dim hSettings As Settings
+  Dim hCtrl As Control
+
+  hSettings = New Settings(sPath)
+  WriteSettings(hSettings, "Theme", cColor)  
+  
+End
+
+Public Sub Copy(cColor As Collection) As Collection
+  
+  Dim cNew As New Collection
+  Dim sValue As String
+  
+  For Each sValue In cColor
+    cNew[cColor.Key] = sValue
+  Next
+  
+  Return cNew
+  
+End
+
+Public Sub InitEditor(hEditor As Editor)
+
+  Dim iInd As Integer  
+  Dim hStyle As New CStyle
+  
+  For iInd = 0 To ColorKeys.Max
+
+    hStyle.FromString(Settings["Highlight" &/ ColorKeys[iInd], $cDefault[ColorKeys[iInd]]])
+    With hEditor.Styles[Object.GetProperty(Classes["Highlight"], ColorKeys[iInd])]
+      .Background = hStyle.Background
+      .Bold = hStyle.Bold
+      .Foreground = hStyle.Foreground
+      .Italic = hStyle.Italic
+      .Underline = hStyle.Underline
+    End With
+
+  Next
+  
+End

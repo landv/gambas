@@ -837,6 +837,15 @@ BEGIN_PROPERTY(CEDITOR_breakpoint_picture)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CEDITOR_keywords_ucase)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(DOC->isKeywordsUseUpperCase());
+	else
+		DOC->setKeywordsUseUpperCase(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 
 /***************************************************************************/
 
@@ -1004,6 +1013,7 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY_READ("Length", "i", CEDITOR_length),
 
   GB_PROPERTY("Highlight", "i", CEDITOR_highlight),
+  GB_PROPERTY("KeywordsUseUpperCase", "b", CEDITOR_keywords_ucase),
 
   GB_PROPERTY("TabSize", "i", CEDITOR_tab_length),
   GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),
@@ -1015,8 +1025,6 @@ GB_DESC CEditorDesc[] =
   GB_METHOD("Insert", NULL, CEDITOR_insert, "(Text)s[(Line)i(Column)i]"),
   GB_METHOD("Print", NULL, CEDITOR_print, "(Text)s[(Line)i(Column)i]"),
   GB_METHOD("Remove", NULL, CEDITOR_remove, "(Line)i(Column)i(EndLine)i(EndColumn)i"),
-  GB_METHOD("Undo", NULL, CEDITOR_undo, NULL),
-  GB_METHOD("Redo", NULL, CEDITOR_redo, NULL),
   GB_METHOD("Begin", NULL, CEDITOR_begin, NULL),
   GB_METHOD("End", NULL, CEDITOR_end, NULL),
 

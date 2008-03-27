@@ -1,53 +1,53 @@
 ' Gambas class file
 
-STATIC PRIVATE $bShowUsed AS Boolean
-STATIC PRIVATE $bShowBeta AS Boolean
+Static Private $bShowUsed As Boolean
+Static Private $bShowBeta As Boolean
 
-PRIVATE $cCheckBox AS NEW Collection
+Private $cCheckBox As New Collection
 
-PRIVATE $hCheck AS Picture
-PRIVATE $hUncheck AS Picture
+Private $hCheck As Picture
+Private $hUncheck As Picture
 
-PRIVATE $sLibName AS String
+Private $sLibName As String
 
 'PRIVATE $hProcess AS Process
-PRIVATE $sTemp AS String
-PRIVATE $sIcon AS String
+Private $sTemp As String
+Private $sIcon As String
 
-PRIVATE $bCanInitLibrary AS Boolean
+Private $bCanInitLibrary As Boolean
 'PRIVATE $bLibModify AS Boolean
 
 ' Component
-PRIVATE $aNeed AS String[]
-PRIVATE $aRequire AS String[]
-PRIVATE $aImplement AS String[]
-PRIVATE $iRow AS Integer
-PRIVATE $iCol AS Integer
+Private $aNeed As String[]
+Private $aRequire As String[]
+Private $aImplement As String[]
+Private $iRow As Integer
+Private $iCol As Integer
 
-PRIVATE $aArg AS String[]
-PRIVATE $aEnv AS String[]
+Private $aArg As String[]
+Private $aEnv As String[]
 
-PRIVATE $cComp AS NEW Collection
-PRIVATE $hLastComp AS CComponentBox
-PRIVATE $bLockComp AS Boolean
+Private $cComp As New Collection
+Private $hLastComp As CComponentBox
+Private $bLockComp As Boolean
 
-PRIVATE CONST LIBRARY_TAB AS Integer = 2
-PRIVATE CONST VERSION_TAB AS Integer = 4
-PRIVATE CONST COMPONENT_TAB AS Integer = 5
+Private Const LIBRARY_TAB As Integer = 2
+Private Const VERSION_TAB As Integer = 4
+Private Const COMPONENT_TAB As Integer = 5
 
-STATIC PUBLIC FUNCTION Run() AS Boolean
+Static Public Function Run() As Boolean
 
-  RETURN FPropertyProject.ShowModal()
+  Return FPropertyProject.ShowModal()
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  DIM sClass AS String
-  DIM sLib AS String
-  DIM sLang AS String
+  Dim sClass As String
+  Dim sLib As String
+  Dim sLang As String
 
-  ME.Title = ("Project properties") & " - " & Project.Name
+  Me.Title = ("Project properties") & " - " & Project.Name
 
   ' lblName.Text = Project.Name
   ' lblPath.Text = File.Dir(Project.Dir)
@@ -58,7 +58,7 @@ PUBLIC SUB Form_Open()
   
   cmbComponent_Click
 
-  WITH Project
+  With Project
 
     txtTitle.Text = .Title
     txtDesc.Text = .Description
@@ -76,18 +76,18 @@ PUBLIC SUB Form_Open()
     btnIcon.ToolTip = .Icon
     txtTabSize.Value = .TabSize
     cmbStackSize.Index = 0
-    IF .Stack THEN cmbStackSize.Text = .Stack & " K"
+    If .Stack Then cmbStackSize.Text = .Stack & " K"
     txtVersionProg.Text = .VersionProgram
     'chkVersion.Value = NOT IsNull(.VersionProgram)
 
-  END WITH
+  End With
 
   $hCheck = Picture["img/16/checked.png"]
   $hUncheck = Picture["img/16/unchecked.png"]
 
   chkShowUsed.Value = $bShowUsed
   chkShowBeta.Value = $bShowBeta
-  $bCanInitLibrary = TRUE
+  $bCanInitLibrary = True
 
   tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
   tabProject.Index = 0
@@ -100,67 +100,67 @@ PUBLIC SUB Form_Open()
 
   cmbDefaultLanguage.Clear
   cmbDefaultLanguage.Add(("Not translatable"))
-  FOR EACH sLang IN Language.GetAll()
+  For Each sLang In Language.GetAll()
     cmbDefaultLanguage.Add(Language.ToName(sLang))
-  NEXT
+  Next
   
   cmbTranslate_Click
   
-END
+End
 
-PRIVATE SUB InitEnvironment()
+Private Sub InitEnvironment()
   
   $aArg = Project.Arguments.Copy()
   $aEnv = Project.Environment.Copy()
 
   tvwArg.Rows.Count = $aArg.Count
-  tvwArg.Rows.Resizable = FALSE
+  tvwArg.Rows.Resizable = False
   tvwArg.Columns.Count = 1
-  tvwArg.Columns.Resizable = TRUE
+  tvwArg.Columns.Resizable = True
   'tvwArg.Columns[0].Text = ("Argument")
     
   tvwEnv.Rows.Count = $aEnv.Count
-  tvwEnv.Rows.Resizable = FALSE
+  tvwEnv.Rows.Resizable = False
   tvwEnv.Columns.Count = 2
   tvwEnv.Columns[0].Text = ("Variable")
   tvwEnv.Columns[1].Text = ("Value")
   
-END
+End
 
-PRIVATE SUB SaveEnvironment()
+Private Sub SaveEnvironment()
   
-  DIM iInd AS Integer
+  Dim iInd As Integer
   
   tvwArg.Save
   tvwEnv.Save
   
-  WHILE iInd < $aEnv.Count
-    IF NOT Trim(Scan($aEnv[iInd], "*=*")[0]) THEN 
+  While iInd < $aEnv.Count
+    If NOT Trim(Scan($aEnv[iInd], "*=*")[0]) Then 
       $aEnv.Remove(iInd)
-    ELSE 
-      INC iInd
-    ENDIF
-  WEND
+    Else 
+      Inc iInd
+    Endif
+  Wend
 
   Project.Arguments = $aArg
   Project.Environment = $aEnv
   
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
 
-PRIVATE FUNCTION DoApply() AS Boolean
+Private Function DoApply() As Boolean
 
-  DIM bCheck AS Boolean
-  DIM vVal AS Variant
-  DIM bRefreshForm AS Boolean
-  DIM bRefreshEditor AS Boolean
-  DIM hFile AS Object
+  Dim bCheck As Boolean
+  Dim vVal As Variant
+  Dim bRefreshForm As Boolean
+  Dim bRefreshEditor As Boolean
+  Dim hFile As Object
 
 '   IF chkSnap.Value THEN
 '
@@ -173,35 +173,35 @@ PRIVATE FUNCTION DoApply() AS Boolean
 '
 '   ENDIF
 
-  IF CheckComponentConfig() THEN RETURN TRUE
+  If CheckComponentConfig() Then Return True
 
-  WITH Project
+  With Project
 
     .Title = Trim(txtTitle.Text)
     .Description = Trim(txtDesc.Text)
     .Authors = Trim(txtAuthor.Text)
     .Icon = $sIcon
-    IF cmbStackSize.Index = 0 THEN 
+    If cmbStackSize.Index = 0 Then 
       .Stack = 0
-    ELSE
+    Else
       .Stack = Val(Left(cmbStackSize.Text, -1))
-    ENDIF
+    Endif
 
-    IF .ControlPublic <> (cmbControlPublic.Index = 0) OR IF .ModulePublic <> (cmbModulePublic.Index = 0) THEN
+    If .ControlPublic <> (cmbControlPublic.Index = 0) OR If .ModulePublic <> (cmbModulePublic.Index = 0) Then
       Project.ResetScan
       Project.DeleteCompiledFiles
-    ENDIF
+    Endif
 
     .ControlPublic = cmbControlPublic.Index = 0
     .ModulePublic = cmbModulePublic.Index = 0
     .MajorVersion = txtMajor.Value
     .MinorVersion = txtMinor.Value
     .ReleaseVersion = txtRelease.Value
-    IF Trim(txtVersionProg.Text) THEN
+    If Trim(txtVersionProg.Text) Then
       .VersionProgram = Trim(txtVersionProg.Text)
-    ELSE 
+    Else 
       .VersionProgram = ""
-    ENDIF
+    Endif
     '.SnapToGrid = chkSnap.Value
 
     'IF chkShowGrid.Value <> .ShowGrid OR .Snap <> txtGrid.Value THEN
@@ -210,25 +210,25 @@ PRIVATE FUNCTION DoApply() AS Boolean
 
     '.ShowGrid = chkShowGrid.Value
     '.Snap = txtGrid.Value
-    IF cmbTranslate.Index = 0 AND NOT .Localize THEN
+    If cmbTranslate.Index = 0 AND NOT .Localize Then
       Project.DeleteCompiledFiles()
-    ENDIF
+    Endif
     .Localize = cmbTranslate.Index = 0
-    IF .Localize THEN
+    If .Localize Then
       .Language = Language.FromName(cmbDefaultLanguage.Text)
-    ELSE 
+    Else 
       .Language = ""
-    ENDIF
+    Endif
     .CreateComponent = cmbComponent.Index = 0
     .ComponentState = cmbComponentState.Index
 
-    IF .TabSize <> txtTabSize.Value THEN
-      bRefreshEditor = TRUE
-    ENDIF
+    If .TabSize <> txtTabSize.Value Then
+      bRefreshEditor = True
+    Endif
 
     .TabSize = txtTabSize.Value
 
-  END WITH
+  End With
 
   SaveLibrary
   SaveEnvironment
@@ -237,60 +237,60 @@ PRIVATE FUNCTION DoApply() AS Boolean
   Project.MakeDirectoryIcon
 
   Project.RefreshRoot
-  IF bRefreshForm THEN Project.RefreshForm
-  IF bRefreshEditor THEN Project.RefreshEditor
+  If bRefreshForm Then Project.RefreshForm
+  If bRefreshEditor Then Project.RefreshEditor
   
   Project.SetMessage(("OK"))
 
-  RETURN
+  Return
 
 BAD_GRID:
 
   Message.Error(("Snapping value is incorrect."))
-  RETURN TRUE
+  Return True
 
-END
+End
 
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
-  IF DoApply() THEN RETURN
+  If DoApply() Then Return
   
-  IF cmbComponent.Index = 0 THEN
-    IF WriteComponent() THEN RETURN 
-  ENDIF
+  If cmbComponent.Index = 0 Then
+    If WriteComponent() Then Return 
+  Endif
 
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
 
-PRIVATE SUB SaveLibrary()
+Private Sub SaveLibrary()
 
-  DIM sLib AS String
-  DIM bCheck AS Boolean
-  DIM hComp AS CComponent
+  Dim sLib As String
+  Dim bCheck As Boolean
+  Dim hComp As CComponent
 
   Project.Libraries.Clear
 
-  FOR EACH hComp IN CComponent.All
+  For Each hComp In CComponent.All
 
     sLib = CComponent.All.Key
-    bCheck = FALSE
+    bCheck = False
 
-    TRY bCheck = $cComp[sLib].Value
+    Try bCheck = $cComp[sLib].Value
 
-    IF bCheck THEN
-      IF sLib <> "gb" THEN Project.Libraries.Add(sLib)
-    ENDIF
+    If bCheck Then
+      If sLib <> "gb" Then Project.Libraries.Add(sLib)
+    Endif
 
-  NEXT
+  Next
 
   Project.Libraries.Sort
 
   Project.RefreshLibrary
 
-END
+End
 
 
 ' PRIVATE FUNCTION CountChr(sStr AS String, sChr AS String) AS Integer
@@ -310,46 +310,46 @@ END
 ' END
 
 
-PRIVATE SUB InitLibrary()
+Private Sub InitLibrary()
 
-  DIM sLib AS String
-  DIM hComp AS CComponent
-  DIM aRemove AS NEW String[]
-  DIM sParent AS String
-  DIM hCompBox AS CComponentBox
-  DIM aComp AS NEW String[]
-  DIM bDark AS Boolean
-  DIM hOld AS ListContainer
+  Dim sLib As String
+  Dim hComp As CComponent
+  Dim aRemove As New String[]
+  Dim sParent As String
+  Dim hCompBox As CComponentBox
+  Dim aComp As New String[]
+  Dim bDark As Boolean
+  Dim hOld As ListContainer
 
-  IF NOT $bCanInitLibrary THEN RETURN
+  If NOT $bCanInitLibrary Then Return
 
   lstComponent.Clear
   
   $cComp.Clear
-  $hLastComp = NULL
+  $hLastComp = Null
   
-  FOR EACH hComp IN CComponent.All
+  For Each hComp In CComponent.All
     aComp.Add(hComp.Key)
-  NEXT 
+  Next 
   aComp.Sort
   
   lstComponent.Lock
   CComponentBox.Reset
-  FOR EACH sLib IN aComp
+  For Each sLib In aComp
     hComp = CComponent.All[sLib]
-    IF $bShowUsed THEN
-      IF sLib <> "gb" AND IF NOT Project.Libraries.Exist(hComp.Key) THEN CONTINUE
-    ENDIF
-    hCompBox = NEW CComponentBox(hComp, bDark, lstComponent)
+    If $bShowUsed Then
+      If sLib <> "gb" AND If NOT Project.Libraries.Exist(hComp.Key) Then Continue
+    Endif
+    hCompBox = New CComponentBox(hComp, bDark, lstComponent)
     bDark = NOT bDark
     $cComp[hComp.Key] = hCompBox 
     hCompBox.Locked = sLib = "gb" OR $bShowUsed
-  NEXT
+  Next
   
-  FOR EACH sLib IN Project.Libraries
-    $cComp[sLib].Value = TRUE
-  NEXT
-  $cComp["gb"].Value = TRUE
+  For Each sLib In Project.Libraries
+    $cComp[sLib].Value = True
+  Next
+  $cComp["gb"].Value = True
   
   CComponentBox.ResizeNames(lstComponent)
   
@@ -357,58 +357,58 @@ PRIVATE SUB InitLibrary()
 
   'IF hOld THEN hOld.Delete
 
-END
+End
 
 
-PRIVATE FUNCTION IsChecked(sKey AS String) AS Boolean
+Private Function IsChecked(sKey As String) As Boolean
   
-  RETURN $cComp[sKey].Value
+  Return $cComp[sKey].Value
   
-END
+End
 
-PRIVATE SUB CheckComponentConfig() AS Boolean
+Private Sub CheckComponentConfig() As Boolean
   
-  DIM aComp AS NEW String[]
-  DIM hComp AS CComponent
-  DIM sComp AS String
-  DIM aExclude AS String[]
-  DIM aNeed AS String[]
-  DIM sImpl AS String
-  DIM sExcl AS String
-  DIM sNeed AS String
-  DIM bFound AS Boolean
+  Dim aComp As New String[]
+  Dim hComp As CComponent
+  Dim sComp As String
+  Dim aExclude As String[]
+  Dim aNeed As String[]
+  Dim sImpl As String
+  Dim sExcl As String
+  Dim sNeed As String
+  Dim bFound As Boolean
 
-  IF $bShowUsed THEN RETURN
+  If $bShowUsed Then Return
   
   ' Makes the list of all checked components
   
-  FOR EACH hComp IN CComponent.All
-    IF IsChecked(hComp.Key) THEN aComp.Add(hComp.Key)
-  NEXT
+  For Each hComp In CComponent.All
+    If IsChecked(hComp.Key) Then aComp.Add(hComp.Key)
+  Next
   
-  FOR EACH sComp IN aComp
+  For Each sComp In aComp
   
-    aNeed = NEW String[]
-    aExclude = NEW String[]
+    aNeed = New String[]
+    aExclude = New String[]
 
-    FOR EACH sImpl IN CComponent.All[sComp].Implement
+    For Each sImpl In CComponent.All[sComp].Implement
     
-      FOR EACH hComp IN CComponent.All
+      For Each hComp In CComponent.All
       
-        IF hComp.Key = sComp THEN CONTINUE
-        IF hComp.Implement.Find(sImpl) >= 0 THEN
-          IF NOT aComp.Exist(hComp.Key) THEN CONTINUE
-          IF aExclude.Find(hComp.Key) < 0 THEN aExclude.Add(hComp.Key)
-        ENDIF
+        If hComp.Key = sComp Then Continue
+        If hComp.Implement.Find(sImpl) >= 0 Then
+          If NOT aComp.Exist(hComp.Key) Then Continue
+          If aExclude.Find(hComp.Key) < 0 Then aExclude.Add(hComp.Key)
+        Endif
       
-      NEXT
+      Next
     
-    NEXT
+    Next
 
-    FOR EACH sExcl IN CComponent.All[sComp].Exclude
-      IF NOT aComp.Find(sExcl) THEN CONTINUE
-      IF NOT aExclude.Exist(sExcl) THEN aExclude.Add(sExcl)
-    NEXT
+    For Each sExcl In CComponent.All[sComp].Exclude
+      If NOT aComp.Find(sExcl) Then Continue
+      If NOT aExclude.Exist(sExcl) Then aExclude.Add(sExcl)
+    Next
     
     ' IF aExclude.Count = 1 THEN
     '   Message.Warning(Subst(("The &2 component is incompatible with the &1 component."), "<b>" & sComp & "</b>", "<b>" & aExclude[0] & "</b>"))
@@ -418,47 +418,47 @@ PRIVATE SUB CheckComponentConfig() AS Boolean
     '   RETURN TRUE
     ' ENDIF
 
-    IF aExclude.Count THEN
+    If aExclude.Count Then
       Message.Warning(Subst(("These components are incompatible:<br>&1."), "<b>" & sComp & "</b>, <b>" & aExclude.Join("</b>, <b>") & "</b>"))
-      RETURN TRUE
-    ENDIF
+      Return True
+    Endif
 
-    FOR EACH sNeed IN CComponent.All[sComp].Need
-      bFound = FALSE
-      FOR EACH hComp IN CComponent.All
-        IF hComp.Implement.Exist(sNeed) THEN
+    For Each sNeed In CComponent.All[sComp].Need
+      bFound = False
+      For Each hComp In CComponent.All
+        If hComp.Implement.Exist(sNeed) Then
           aNeed.Add(hComp.Key)
-          IF aComp.Exist(hComp.Key) THEN bFound = TRUE
-        ENDIF
-      NEXT
-      IF NOT bFound THEN
+          If aComp.Exist(hComp.Key) Then bFound = True
+        Endif
+      Next
+      If NOT bFound Then
         Message.Warning(Subst(("The &1 component needs one of the following components:<br>&2."), "<b>" & sComp & "</b>", "<b>" & aNeed.Join("</b>, <b>") & "</b>"))
-        RETURN TRUE
-      ENDIF 
-    NEXT
+        Return True
+      Endif 
+    Next
       
-    FOR EACH sNeed IN CComponent.All[sComp].Require
-      IF NOT aComp.Exist(sNeed) THEN 
+    For Each sNeed In CComponent.All[sComp].Require
+      If NOT aComp.Exist(sNeed) Then 
         Message.Warning(Subst(("The &1 component needs the &2 component."), "<b>" & sComp & "</b>", "<b>" & sNeed & "</b>"))
-        RETURN TRUE
-      ENDIF
-    NEXT
+        Return True
+      Endif
+    Next
   
-  NEXT  
+  Next  
   
-END
+End
 
 
-PRIVATE FUNCTION CheckComponent(sKey AS String, bCheck AS Boolean) AS Boolean
+Private Function CheckComponent(sKey As String, bCheck As Boolean) As Boolean
 
-  DIM bBefore AS Boolean
+  Dim bBefore As Boolean
 
   bBefore = IsChecked(sKey)
-  IF bBefore = bCheck THEN RETURN 
+  If bBefore = bCheck Then Return 
 
   $cComp[sKey].Value = bCheck
   
-END
+End
 
 ' PRIVATE FUNCTION CheckComponent(sKey AS String, bCheck AS Boolean) AS Boolean
 ' 
@@ -543,12 +543,12 @@ END
 ' END
 
 
-PUBLIC SUB chkShowUsed_Click()
+Public Sub chkShowUsed_Click()
 
   $bShowUsed = chkShowUsed.Value
   InitLibrary
 
-END
+End
 
 
 ' PRIVATE SUB FillLibrary(sLib AS String)
@@ -590,248 +590,248 @@ END
 ' END
 
 
-PUBLIC SUB btnIcon_Click()
+Public Sub btnIcon_Click()
 
-  DIM sIcon AS String
-  DIM hImage AS Image
-  DIM hBackground AS Image
+  Dim sIcon As String
+  Dim hImage As Image
+  Dim hBackground As Image
 
-  sIcon = FSelectIcon.Run($sIcon, TRUE)
-  IF NOT sIcon THEN RETURN
+  sIcon = FSelectIcon.Run($sIcon, True)
+  If NOT sIcon Then Return
 
   $sIcon = sIcon
   btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, 56).Picture
   
-END
+End
 
-PUBLIC SUB chkShowBeta_Click()
+Public Sub chkShowBeta_Click()
 
   $bShowBeta = chkShowBeta.Value
   InitLibrary
 
-END
+End
 
 
-PUBLIC SUB btnHelp_Click()
+Public Sub btnHelp_Click()
 
-  DIM hCompBox AS CComponentBox
-  DIM sKey AS String
+  Dim hCompBox As CComponentBox
+  Dim sKey As String
   
   hCompBox = CComponentBox(lstComponent.Current)
-  TRY sKey = hCompBox.Key
-  IF NOT sKey THEN RETURN 
+  Try sKey = hCompBox.Key
+  If NOT sKey Then Return 
   MHelp.GotoComponent(sKey)
 
-END
+End
 
 
-PUBLIC SUB cmbComponent_Click()
+Public Sub cmbComponent_Click()
 
-  DIM bComp AS Boolean = cmbComponent.Index = 0
+  Dim bComp As Boolean = cmbComponent.Index = 0
 
-  IF bComp THEN InitComponent
+  If bComp Then InitComponent
 
   tabProject[COMPONENT_TAB].Visible = bComp
   tabProject[COMPONENT_TAB + 1].Visible = bComp
   cmbComponentState.Enabled = bComp
 
-END
+End
 
 
-PRIVATE SUB GetParent(sPath AS String) AS String
+Private Sub GetParent(sPath As String) As String
   
-  DIM hFile AS File
-  DIM sLine AS String
-  DIM sParent AS String
+  Dim hFile As File
+  Dim sLine As String
+  Dim sParent As String
   
-  hFile = OPEN sPath
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
+  hFile = Open sPath
+  While NOT Eof(hFile)
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF Left(sLine) = "'" THEN CONTINUE
-    IF sLine LIKE "INHERITS *" THEN 
-      TRY sParent = Trim(Scan(sLine, "INHERITS *")[0])
-      RETURN sParent
-    ENDIF
-    IF sLine LIKE "EXPORT" THEN CONTINUE
-    IF sLine LIKE "CREATE" THEN CONTINUE
-    IF sLine LIKE "EXPORT *" THEN CONTINUE
-    IF sLine LIKE "CREATE *" THEN CONTINUE
-    BREAK
-  WEND 
+    If NOT sLine Then Continue
+    If Left(sLine) = "'" Then Continue
+    If sLine LIKE "INHERITS *" Then 
+      Try sParent = Trim(Scan(sLine, "INHERITS *")[0])
+      Return sParent
+    Endif
+    If sLine LIKE "EXPORT" Then Continue
+    If sLine LIKE "CREATE" Then Continue
+    If sLine LIKE "EXPORT *" Then Continue
+    If sLine LIKE "CREATE *" Then Continue
+    Break
+  Wend 
   
-END
+End
 
 
 
-PRIVATE SUB ReadComponent()
+Private Sub ReadComponent()
   
-  DIM sPath AS String = Project.Dir &/ ".component"
-  DIM hFile AS File
-  DIM sLine AS String
-  DIM sGroup AS String
-  DIM iPos AS Integer
-  DIM sKey AS String
+  Dim sPath As String = Project.Dir &/ ".component"
+  Dim hFile As File
+  Dim sLine As String
+  Dim sGroup As String
+  Dim iPos As Integer
+  Dim sKey As String
   
-  $aNeed = NEW String[]
-  $aRequire = NEW String[]
-  $aImplement = NEW String[]
+  $aNeed = New String[]
+  $aRequire = New String[]
+  $aImplement = New String[]
   
-  IF NOT Exist(sPath) THEN RETURN
+  If NOT Exist(sPath) Then Return
   
-  hFile = OPEN sPath
+  hFile = Open sPath
   
-  LINE INPUT #hFile, sLine
-  IF Trim(sLine) <> "[Component]" THEN RETURN
+  Line Input #hFile, sLine
+  If Trim(sLine) <> "[Component]" Then Return
   
-  WHILE NOT Eof(hFile)
+  While NOT Eof(hFile)
     
-    LINE INPUT #hFile, sLine
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE 
-    IF Left(sLine) = ";" THEN CONTINUE
+    If NOT sLine Then Continue 
+    If Left(sLine) = ";" Then Continue
     
-    IF Left(sLine) = "[" THEN 
-      IF sLine = "[Component]" THEN BREAK 
+    If Left(sLine) = "[" Then 
+      If sLine = "[Component]" Then Break 
       sGroup = Mid$(sLine, 2, -1)
-    ENDIF 
+    Endif 
     
     iPos = InStr(sLine, "=")
-    IF iPos = 0 THEN CONTINUE
+    If iPos = 0 Then Continue
     sKey = LCase(Left(sLine, iPos - 1))
     sLine = Mid$(sLine, iPos + 1)
     
-    SELECT CASE sKey
-      CASE "need", "needs"
+    Select Case sKey
+      Case "need", "needs"
         $aNeed = Split(sLine, ",")
-      CASE "require", "requires"
+      Case "require", "requires"
         $aRequire = Split(sLine, ",")
-      CASE "implement", "implements"
+      Case "implement", "implements"
         $aImplement = Split(sLine, ",")
-      CASE "control", "controls"
-        FOR EACH sKey IN Split(sLine, ",")
-          IF CExportInfo.All.Exist(sKey) THEN
-            CExportInfo.All[sKey].Control = TRUE
+      Case "control", "controls"
+        For Each sKey In Split(sLine, ",")
+          If CExportInfo.All.Exist(sKey) Then
+            CExportInfo.All[sKey].Control = True
             CExportInfo.All[sKey].Group = sGroup
-          ELSE 
-            DEBUG "Control="; sKey; "?"
-          ENDIF
-        NEXT
-      CASE "virtual"
-        FOR EACH sKey IN Split(sLine, ",")
-          IF CExportInfo.All.Exist(sKey) THEN
-            CExportInfo.All[sKey].Virtual = TRUE
-          ELSE 
-            DEBUG "Virtual="; sKey; "?"
-          ENDIF 
-        NEXT
-      CASE "container"
-        FOR EACH sKey IN Split(sLine, ",")
-          IF CExportInfo.All.Exist(sKey) THEN
-            CExportInfo.All[sKey].Container = TRUE
-          ELSE 
-            DEBUG "Container="; sKey; "?"
-          ENDIF
-        NEXT
-      CASE "multicontainer"
-        FOR EACH sKey IN Split(sLine, ",")
-          IF CExportInfo.All.Exist(sKey) THEN
-            CExportInfo.All[sKey].MultiContainer = TRUE
-          ELSE 
-            DEBUG "MultiContainer="; sKey; "?"
-          ENDIF
-        NEXT
-      CASE "type"
-        TRY CExportInfo.All[sLine].Form = TRUE
+          Else 
+            Debug "Control="; sKey; "?"
+          Endif
+        Next
+      Case "virtual"
+        For Each sKey In Split(sLine, ",")
+          If CExportInfo.All.Exist(sKey) Then
+            CExportInfo.All[sKey].Virtual = True
+          Else 
+            Debug "Virtual="; sKey; "?"
+          Endif 
+        Next
+      Case "container"
+        For Each sKey In Split(sLine, ",")
+          If CExportInfo.All.Exist(sKey) Then
+            CExportInfo.All[sKey].Container = True
+          Else 
+            Debug "Container="; sKey; "?"
+          Endif
+        Next
+      Case "multicontainer"
+        For Each sKey In Split(sLine, ",")
+          If CExportInfo.All.Exist(sKey) Then
+            CExportInfo.All[sKey].MultiContainer = True
+          Else 
+            Debug "MultiContainer="; sKey; "?"
+          Endif
+        Next
+      Case "type"
+        Try CExportInfo.All[sLine].Form = True
         
-    END SELECT 
+    End Select 
     
-  WEND
+  Wend
   
-CATCH 
+Catch 
 
-  DEBUG Error.Text;; Error.Where
+  Debug Error.Text;; Error.Where
   
-END
+End
 
 
-PRIVATE SUB WriteComponent() AS Boolean
+Private Sub WriteComponent() As Boolean
 
-  DIM sPath AS String = Project.Dir &/ ".component"
-  DIM hFile AS File
-  DIM cGroup AS NEW Collection
-  DIM sGroup AS String
-  DIM hExportInfo AS CExportInfo
-  DIM sClass AS String
-  DIM aControl AS String[]
-  DIM aVirtual AS String[]
-  DIM aContainer AS String[]
-  DIM aMultiContainer AS String[]
+  Dim sPath As String = Project.Dir &/ ".component"
+  Dim hFile As File
+  Dim cGroup As New Collection
+  Dim sGroup As String
+  Dim hExportInfo As CExportInfo
+  Dim sClass As String
+  Dim aControl As String[]
+  Dim aVirtual As String[]
+  Dim aContainer As String[]
+  Dim aMultiContainer As String[]
 
   HideEditor
   WriteFeatures(panNeed, $aNeed)
 
-  hFile = OPEN Temp$("component") FOR CREATE 
+  hFile = Open Temp$("component") For Create 
   
-  PRINT #hFile, "[Component]"
-  PRINT #hFile, "Key="; Project.Name
-  IF cmbComponentState.Index THEN PRINT #hFile, "State="; cmbComponentState.Index
-  IF Project.Authors THEN PRINT #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
-  IF GetForm() THEN PRINT #hFile, "Type="; GetForm()
-  IF $aImplement.Count THEN PRINT #hFile, "Implements="; $aImplement.Join(",")
-  IF $aNeed.Count THEN PRINT #hFile, "Needs="; $aNeed.Join(",")
-  IF $aRequire.Count THEN PRINT #hFile, "Requires="; $aRequire.Join(",")
-  PRINT #hFile
+  Print #hFile, "[Component]"
+  Print #hFile, "Key="; Project.Name
+  If cmbComponentState.Index Then Print #hFile, "State="; cmbComponentState.Index
+  If Project.Authors Then Print #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
+  If GetForm() Then Print #hFile, "Type="; GetForm()
+  If $aImplement.Count Then Print #hFile, "Implements="; $aImplement.Join(",")
+  If $aNeed.Count Then Print #hFile, "Needs="; $aNeed.Join(",")
+  If $aRequire.Count Then Print #hFile, "Requires="; $aRequire.Join(",")
+  Print #hFile
   
-  FOR EACH sGroup IN GetGroups()
-    cGroup[sGroup] = NEW String[]
+  For Each sGroup In GetGroups()
+    cGroup[sGroup] = New String[]
     
-    PRINT #hFile, "["; sGroup; "]"
+    Print #hFile, "["; sGroup; "]"
     
-    aControl = NEW String[]
-    aVirtual = NEW String[]
-    aContainer = NEW String[]
-    aMultiContainer = NEW String[]
+    aControl = New String[]
+    aVirtual = New String[]
+    aContainer = New String[]
+    aMultiContainer = New String[]
     
-    FOR EACH sClass IN CExportInfo.List
+    For Each sClass In CExportInfo.List
       hExportInfo = CExportInfo.All[sClass]
-      IF hExportInfo.Group <> sGroup THEN CONTINUE
-      IF hExportInfo.Control THEN aControl.Add(sClass)
-      IF hExportInfo.Virtual THEN aVirtual.Add(sClass)
-      IF hExportInfo.Container THEN aContainer.Add(sClass)
-      IF hExportInfo.MultiContainer THEN aMultiContainer.Add(sClass)
-    NEXT
+      If hExportInfo.Group <> sGroup Then Continue
+      If hExportInfo.Control Then aControl.Add(sClass)
+      If hExportInfo.Virtual Then aVirtual.Add(sClass)
+      If hExportInfo.Container Then aContainer.Add(sClass)
+      If hExportInfo.MultiContainer Then aMultiContainer.Add(sClass)
+    Next
     
-    IF aControl.Count THEN PRINT #hFile, "Control="; aControl.Join(",")
-    IF aContainer.Count THEN PRINT #hFile, "Container="; aContainer.Join(",")
-    IF aMultiContainer.Count THEN PRINT #hFile, "MultiContainer="; aMultiContainer.Join(",")
-    IF aVirtual.Count THEN PRINT #hFile, "Virtual="; aVirtual.Join(",")
-    PRINT #hFile
+    If aControl.Count Then Print #hFile, "Control="; aControl.Join(",")
+    If aContainer.Count Then Print #hFile, "Container="; aContainer.Join(",")
+    If aMultiContainer.Count Then Print #hFile, "MultiContainer="; aMultiContainer.Join(",")
+    If aVirtual.Count Then Print #hFile, "Virtual="; aVirtual.Join(",")
+    Print #hFile
     
-  NEXT
+  Next
   
-  CLOSE #hFile    
+  Close #hFile    
   
-  TRY KILL sPath
-  COPY Temp$("component") TO sPath
+  Try Kill sPath
+  Copy Temp$("component") To sPath
   
-CATCH 
+Catch 
 
   Message.Error(("Cannot write component description file.") & "\n\n" & Error.Text & "\n" & Error.Where)
-  RETURN TRUE
+  Return True
   
-END
+End
 
 
-PUBLIC SUB InitComponent()
+Public Sub InitComponent()
 
-  DIM sPath AS String
-  DIM sClass AS String
-  DIM hComp AS CComponent
-  DIM aComp AS NEW String[]
-  DIM sComp AS String
-  DIM hExportInfo AS CExportInfo
+  Dim sPath As String
+  Dim sClass As String
+  Dim hComp As CComponent
+  Dim aComp As New String[]
+  Dim sComp As String
+  Dim hExportInfo As CExportInfo
 
   tvwControl.Columns.Count = 4
   tvwControl.Columns[0].Text = ("Class")
@@ -842,15 +842,15 @@ PUBLIC SUB InitComponent()
 
   CExportInfo.Reset
 
-  FOR EACH sPath IN Project.GetClasses(TRUE)
-    IF Project.IsExported(sPath) THEN 
+  For Each sPath In Project.GetClasses(True)
+    If Project.IsExported(sPath) Then 
       sClass = File.BaseName(sPath)
-      IF NOT IsLetter(Left(sClass)) THEN CONTINUE
+      If NOT IsLetter(Left(sClass)) Then Continue
       CExportInfo.List.Add(sClass)
-      hExportInfo = NEW CExportInfo(sClass)
+      hExportInfo = New CExportInfo(sClass)
       hExportInfo.Parent = GetParent(sPath)
-    ENDIF 
-  NEXT 
+    Endif 
+  Next 
   
   CExportInfo.Sort
   
@@ -859,11 +859,11 @@ PUBLIC SUB InitComponent()
 
   ReadComponent
   
-  FOR EACH hComp IN CComponent.All
-    IF hComp.Key = Project.Name THEN CONTINUE 
-    IF hComp.Key = "gb" THEN CONTINUE
+  For Each hComp In CComponent.All
+    If hComp.Key = Project.Name Then Continue 
+    If hComp.Key = "gb" Then Continue
     aComp.Add(hComp.Key)
-  NEXT
+  Next
   aComp.Sort
   cmbRequire.List = aComp
  
@@ -874,119 +874,119 @@ PUBLIC SUB InitComponent()
   
   'txtImplement.Text = GetForm()
 
-END
+End
 
-PUBLIC SUB tvwControl_Data(Row AS Integer, Column AS Integer)
+Public Sub tvwControl_Data(Row As Integer, Column As Integer)
 
-  DIM hExportInfo AS CExportInfo = CExportInfo.All[CExportInfo.List[Row]]
-  DIM hPict AS Picture
+  Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[Row]]
+  Dim hPict As Picture
 
-  SELECT CASE Column
-    CASE 0
+  Select Case Column
+    Case 0
       tvwControl.Data.Text = hExportInfo.Name
-      IF hExportInfo.Control THEN 
-        TRY hPict = Project.GetPicture("control" &/ LCase(hExportInfo.Name) & ".png")
-        IF NOT hPict THEN hPict = Picture["img/control/unknown.png"]
+      If hExportInfo.Control Then 
+        Try hPict = Project.GetPicture("control" &/ LCase(hExportInfo.Name) & ".png")
+        If NOT hPict Then hPict = Picture["img/control/unknown.png"]
         hPict = hPict.Image.Stretch(24, 24).Picture
-      ELSE
+      Else
         hPict = hExportInfo.Icon
-      ENDIF
+      Endif
       tvwControl.Data.Picture = hPict
-    CASE 1
+    Case 1
       tvwControl.Data.Text = hExportInfo.Type
-    CASE 2
+    Case 2
       tvwControl.Data.Text = hExportInfo.Group
-  END SELECT 
+  End Select 
   
   tvwControl.Data.Background = If(Row AND 1, Color.LightBackground, Color.TextBackground)
 
-END
+End
 
-PRIVATE SUB MoveEditor()
+Private Sub MoveEditor()
   
-  WITH tvwControl.Current
+  With tvwControl.Current
     cmbControl.Move(tvwControl.X + .Left, tvwControl.Y + .Top, .W, .H)
-  END WITH
+  End With
   
-END
+End
 
-PRIVATE SUB HideEditor()
+Private Sub HideEditor()
 
-  IF NOT cmbControl.Visible THEN RETURN 
+  If NOT cmbControl.Visible Then Return 
   SaveEditor  
   cmbControl.Hide
   
-END
+End
 
-PRIVATE SUB GetGroups() AS String[]
+Private Sub GetGroups() As String[]
   
-  DIM aGroup AS NEW String[]
-  DIM hOther AS CExportInfo
+  Dim aGroup As New String[]
+  Dim hOther As CExportInfo
 
   'aGroup.Add(("(None)"))
 
-  FOR EACH hOther IN CExportInfo.All
-    IF NOT hOther.Group THEN CONTINUE
-    IF aGroup.Find(hOther.Group) >= 0 THEN CONTINUE
+  For Each hOther In CExportInfo.All
+    If NOT hOther.Group Then Continue
+    If aGroup.Find(hOther.Group) >= 0 Then Continue
     aGroup.Add(hOther.Group)
-  NEXT
+  Next
   
-  RETURN aGroup
+  Return aGroup
   
-END
+End
 
-PRIVATE SUB SaveEditor()
+Private Sub SaveEditor()
   
-  DIM hExportInfo AS CExportInfo
+  Dim hExportInfo As CExportInfo
   
-  IF NOT cmbControl.Visible THEN RETURN
+  If NOT cmbControl.Visible Then Return
   
   hExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
   
-  SELECT CASE $iCol
+  Select Case $iCol
   
-    CASE 1
+    Case 1
       hExportInfo.Type = cmbControl.Text
     
-    CASE 2
+    Case 2
       hExportInfo.Group = cmbControl.Text
   
-  END SELECT 
+  End Select 
   
   tvwControl.Rows[$iRow].Refresh
   
-END
+End
 
-PRIVATE SUB GetForm() AS String
+Private Sub GetForm() As String
   
-  DIM hExportInfo AS CExportInfo
+  Dim hExportInfo As CExportInfo
   
-  FOR EACH hExportInfo IN CExportInfo.All
-    IF hExportInfo.Form THEN RETURN hExportInfo.Name
-  NEXT
+  For Each hExportInfo In CExportInfo.All
+    If hExportInfo.Form Then Return hExportInfo.Name
+  Next
   
-END
+End
 
 
 
-PRIVATE SUB ShowEditor()
+Private Sub ShowEditor()
   
-  DIM hExportInfo AS CExportInfo = CExportInfo.All[CExportInfo.List[tvwControl.Row]]  
-  DIM aList AS String[]
-  DIM sIcon AS String
+  Dim hExportInfo As CExportInfo = CExportInfo.All[CExportInfo.List[tvwControl.Row]]  
+  Dim aList As String[]
+  Dim sIcon As String
   
   HideEditor
   
-  SELECT CASE tvwControl.Column
+  Select Case tvwControl.Column
   
-    CASE 0
-      RETURN 
+    Case 0
+      Return 
       
-    CASE 1
+    Case 1
       aList = ["Class", "Control", "Virtual", "Container", "MultiContainer"]
-      IF NOT GetForm() OR GetForm() = hExportInfo.Name THEN aList.Add("Form")
+      If NOT GetForm() OR GetForm() = hExportInfo.Name Then aList.Add("Form")
       cmbControl.List = aList
-      cmbControl.ReadOnly = TRUE
+      cmbControl.ReadOnly = True
       cmbControl.Text = hExportInfo.Type
       
     ' CASE 2
@@ -997,13 +997,13 @@ PRIVATE SUB ShowEditor()
     '   ENDIF
     '   RETURN
       
-    CASE 2
-      IF NOT hExportInfo.Control THEN RETURN
-      cmbControl.ReadOnly = FALSE
+    Case 2
+      If NOT hExportInfo.Control Then Return
+      cmbControl.ReadOnly = False
       cmbControl.List = GetGroups()
       cmbControl.Text = hExportInfo.Group
   
-  END SELECT
+  End Select
   
   $iRow = tvwControl.Row
   $iCol = tvwControl.Column
@@ -1012,81 +1012,81 @@ PRIVATE SUB ShowEditor()
   cmbControl.Show
   cmbControl.SetFocus
   
-END
+End
 
 
-PUBLIC SUB tvwControl_MouseUp()
+Public Sub tvwControl_MouseUp()
 
   ShowEditor
 
-END
+End
 
-PUBLIC SUB tvwControl_Scroll()
+Public Sub tvwControl_Scroll()
 
   HideEditor
 
-END
+End
 
-PUBLIC SUB cmbControl_Click()
+Public Sub cmbControl_Click()
 
   SaveEditor
 
-END
+End
 
-PRIVATE SUB ReadFeatures(hCont AS Container, aFeature AS String[])
+Private Sub ReadFeatures(hCont As Container, aFeature As String[])
   
-  DIM hCtrl AS CheckBox
+  Dim hCtrl As CheckBox
   
-  FOR EACH hCtrl IN hCont.Children
+  For Each hCtrl In hCont.Children
     hCtrl.Value = aFeature.Find(hCtrl.Tag, gb.Text) >= 0
-  NEXT
+  Next
   
-END
+End
 
-PRIVATE SUB WriteFeatures(hCont AS Container, aFeature AS String[])
+Private Sub WriteFeatures(hCont As Container, aFeature As String[])
   
-  DIM hCtrl AS CheckBox
+  Dim hCtrl As CheckBox
   
   aFeature.Clear
-  FOR EACH hCtrl IN hCont.Children
-    IF hCtrl.Value THEN aFeature.Add(hCtrl.Tag)
-  NEXT
+  For Each hCtrl In hCont.Children
+    If hCtrl.Value Then aFeature.Add(hCtrl.Tag)
+  Next
   
-END
+End
 
-PRIVATE SUB AddRequire(sComp AS String)
+Private Sub AddRequire(sComp As String)
 
-  IF sComp = Project.Name THEN RETURN  
-  IF $aRequire.Find(sComp) >= 0 THEN RETURN 
+  If sComp = Project.Name Then Return  
+  If $aRequire.Find(sComp) >= 0 Then Return 
   $aRequire.Add(sComp)
   lstRequire.Add(sComp)
   
-END
+End
 
 
-PUBLIC SUB btnAdd_Click()
+Public Sub btnAdd_Click()
 
-  DIM sComp AS String
+  Dim sComp As String
   
   sComp = Trim(LCase(cmbRequire.Text))
   AddRequire(sComp)
 
-END
+End
 
-PUBLIC SUB btnRemove_Click()
+Public Sub btnRemove_Click()
 
-  IF lstRequire.Index < 0 THEN RETURN 
+  If lstRequire.Index < 0 Then Return 
   $aRequire.Remove($aRequire.Find(lstRequire.Text))
   lstRequire.Remove(lstRequire.Index)
 
-END
+End
 
-PUBLIC SUB btnRemoveAll_Click()
+Public Sub btnRemoveAll_Click()
 
   lstRequire.Clear
   $aRequire.Clear
 
-END
+End
 
 ' PUBLIC SUB cmbRequire_Click()
 ' 
@@ -1095,11 +1095,11 @@ END
 ' END
 
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   CExportInfo.Reset  
 
-END
+End
 
 ' PUBLIC SUB chkVersion_Click()
 ' 
@@ -1108,56 +1108,56 @@ END
 ' 
 ' END
 ' 
-PUBLIC SUB tabProject_Click()
+Public Sub tabProject_Click()
 
-  IF tabProject.Index = VERSION_TAB THEN 
-    IF VersionControl.Enabled() THEN 
-      INC Application.Busy
+  If tabProject.Index = VERSION_TAB Then 
+    If VersionControl.Enabled() Then 
+      Inc Application.Busy
       panVersioning.Show
       txtVerCtrlChange.Text = VersionControl.Status()
       btnCommit.Enabled = txtVerCtrlChange.Length
       btnRevert.Enabled = btnCommit.Enabled
-      DEC Application.Busy
-    ELSE 
+      Dec Application.Busy
+    Else 
       panVersioning.Hide
-    ENDIF
+    Endif
   'ELSE IF tabProject.Index = LIBRARY_TAB THEN 
   '  IF NOT lstComponent THEN InitLibrary
-  ENDIF   
+  Endif   
 
-END
+End
 
-PUBLIC SUB btnCommit_Click()
+Public Sub btnCommit_Click()
 
-  IF FCommit.Run(txtVerCtrlChange.Text) THEN RETURN
+  If FCommit.Run(txtVerCtrlChange.Text) Then Return
   tabProject_Click
   
-END
+End
 
-PUBLIC SUB btnUpdate_Click()
+Public Sub btnUpdate_Click()
 
-  INC Application.Busy
+  Inc Application.Busy
   VersionControl.Update  
   Project.Refresh
-  DEC Application.Busy
+  Dec Application.Busy
   tabProject_Click
     
-END
+End
 
-PUBLIC SUB btnRevert_Click()
+Public Sub btnRevert_Click()
 
-  IF Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 THEN RETURN
+  If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
 
-  INC Application.Busy
+  Inc Application.Busy
   
   VersionControl.Revert
   Project.Refresh
   Project.ReloadAll
   
-  DEC Application.Busy
+  Dec Application.Busy
   tabProject_Click  
 
-END
+End
 
 ' PUBLIC SUB btnSwap_Click()
 ' 
@@ -1171,170 +1171,170 @@ END
 ' 
 ' END
 
-PUBLIC SUB btnUndo_Click()
+Public Sub btnUndo_Click()
 
   InitLibrary
 
-END
+End
 
-PUBLIC SUB tvwArg_Data(Row AS Integer, Column AS Integer)
+Public Sub tvwArg_Data(Row As Integer, Column As Integer)
 
   tvwArg.Data.Text = $aArg[Row]  
 
-END
+End
 
-PUBLIC SUB btnInsertArg_Click()
+Public Sub btnInsertArg_Click()
 
-  IF $aArg.Count >= 255 THEN RETURN
+  If $aArg.Count >= 255 Then Return
   $aArg.Add("")
-  INC tvwArg.Rows.Count
+  Inc tvwArg.Rows.Count
   tvwArg.MoveTo($aArg.Max, 0)
   tvwArg.Edit  
 
-END
+End
 
-PUBLIC SUB btnRemoveArg_Click()
+Public Sub btnRemoveArg_Click()
   
-  IF $aArg.Count = 0 THEN RETURN
-  IF tvwArg.Row < 0 THEN RETURN
+  If $aArg.Count = 0 Then Return
+  If tvwArg.Row < 0 Then Return
   tvwArg.Save
   $aArg.Remove(tvwArg.Row)
-  DEC tvwArg.Rows.Count
+  Dec tvwArg.Rows.Count
   tvwArg.Refresh
   tvwArg.Edit
   
-END
+End
 
 
-PUBLIC SUB tvwArg_Save(Row AS Integer, Column AS Integer, Value AS String)
+Public Sub tvwArg_Save(Row As Integer, Column As Integer, Value As String)
 
   $aArg[Row] = Value  
 
-END
+End
 
-PUBLIC SUB tvwArg_Insert()
+Public Sub tvwArg_Insert()
   
   btnInsertArg_Click
   
-END
+End
 
 
-PUBLIC SUB tvwArg_Click()
+Public Sub tvwArg_Click()
 
   tvwArg.Edit  
 
-END
+End
 
-PUBLIC SUB btnMoveUpArg_Click()
+Public Sub btnMoveUpArg_Click()
 
-  IF tvwArg.Row <= 0 THEN RETURN 
+  If tvwArg.Row <= 0 Then Return 
   tvwArg.Save
-  SWAP $aArg[tvwArg.Row], $aArg[tvwArg.Row - 1]
+  Swap $aArg[tvwArg.Row], $aArg[tvwArg.Row - 1]
   tvwArg.Refresh
-  DEC tvwArg.Row
+  Dec tvwArg.Row
   tvwArg.Edit  
 
-END
+End
 
-PUBLIC SUB btnMoveDownArg_Click()
+Public Sub btnMoveDownArg_Click()
 
-  IF tvwArg.Row >= (tvwArg.Rows.Count - 1) THEN RETURN 
+  If tvwArg.Row >= (tvwArg.Rows.Count - 1) Then Return 
   tvwArg.Save
-  SWAP $aArg[tvwArg.Row], $aArg[tvwArg.Row + 1]
+  Swap $aArg[tvwArg.Row], $aArg[tvwArg.Row + 1]
   tvwArg.Refresh
-  INC tvwArg.Row
+  Inc tvwArg.Row
   tvwArg.Edit
 
-END
+End
 
-PUBLIC SUB tvwEnv_Click()
+Public Sub tvwEnv_Click()
 
   tvwEnv.Edit
 
-END
+End
 
-PUBLIC SUB tvwEnv_Data(Row AS Integer, Column AS Integer)
+Public Sub tvwEnv_Data(Row As Integer, Column As Integer)
 
-  DIM aEnv AS String[] = Scan($aEnv[Row], "*=*")
+  Dim aEnv As String[] = Scan($aEnv[Row], "*=*")
   
-  TRY tvwEnv.Data.Text = aEnv[Column]
+  Try tvwEnv.Data.Text = aEnv[Column]
   
-CATCH
+Catch
 
-END
+End
 
-PUBLIC SUB tvwEnv_Save(Row AS Integer, Column AS Integer, Value AS String)
+Public Sub tvwEnv_Save(Row As Integer, Column As Integer, Value As String)
 
-  DIM aEnv AS String[] = Scan($aEnv[Row], "*=*")
+  Dim aEnv As String[] = Scan($aEnv[Row], "*=*")
   
-  IF Column = 0 THEN 
+  If Column = 0 Then 
     $aEnv[Row] = Trim(Value) & "=" & aEnv[1]
-  ELSE 
+  Else 
     $aEnv[Row] = aEnv[0] & "=" & Value
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB tvwEnv_Insert()
+Public Sub tvwEnv_Insert()
   
-  IF Key.Normal THEN
-    btnOK.Value = TRUE
-  ELSE IF Key.Control THEN 
+  If Key.Normal Then
+    btnOK.Value = True
+  Else If Key.Control Then 
     btnInsertEnv_Click
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB btnInsertEnv_Click()
+Public Sub btnInsertEnv_Click()
 
-  IF $aEnv.Count >= 255 THEN RETURN
+  If $aEnv.Count >= 255 Then Return
   $aEnv.Add("=")
-  INC tvwEnv.Rows.Count
+  Inc tvwEnv.Rows.Count
   tvwEnv.MoveTo($aEnv.Max, 0)
   tvwEnv.Edit      
 
-END
+End
 
-PUBLIC SUB btnRemoveEnv_Click()
+Public Sub btnRemoveEnv_Click()
   
-  IF $aEnv.Count = 0 THEN RETURN
-  IF tvwEnv.Row < 0 THEN RETURN
+  If $aEnv.Count = 0 Then Return
+  If tvwEnv.Row < 0 Then Return
   tvwEnv.Save
   $aEnv.Remove(tvwEnv.Row)
-  DEC tvwEnv.Rows.Count
+  Dec tvwEnv.Rows.Count
   tvwEnv.Refresh
   
-END
+End
 
 
-PUBLIC SUB cvwComponent_Collapse()
+Public Sub cvwComponent_Collapse()
 
-  LAST.Item.Expanded = TRUE
+  Last.Item.Expanded = True
 
-END
+End
 
 
-PUBLIC SUB lstComponent_Click()
+Public Sub lstComponent_Click()
 
-  DIM hCurrent AS CComponentBox = lstComponent.Current
-  IF $hLastComp THEN $hLastComp.Expanded = FALSE
+  Dim hCurrent As CComponentBox = lstComponent.Current
+  If $hLastComp Then $hLastComp.Expanded = False
   $hLastComp = hCurrent
   
   'IF $hLastComp.Find(Mouse.X, Mouse.Y) IS PictureBox THEN RETURN
   
-  $hLastComp.Expanded = TRUE
+  $hLastComp.Expanded = True
     
-END
+End
 
-PUBLIC SUB cmbTranslate_Click()
+Public Sub cmbTranslate_Click()
 
-  IF cmbTranslate.Index = 0 THEN 
-    cmbDefaultLanguage.Enabled = TRUE
+  If cmbTranslate.Index = 0 Then 
+    cmbDefaultLanguage.Enabled = True
     cmbDefaultLanguage.Text = Language.ToName(System.Language)
-    TRY cmbDefaultLanguage.Text = Language.ToName(Project.Language)
-  ELSE 
+    Try cmbDefaultLanguage.Text = Language.ToName(Project.Language)
+  Else 
     cmbDefaultLanguage.Index = 0
-    cmbDefaultLanguage.Enabled = FALSE
-  ENDIF
+    cmbDefaultLanguage.Enabled = False
+  Endif
 
-END
+End

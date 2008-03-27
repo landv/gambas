@@ -1,227 +1,227 @@
 ' Gambas module file
 
-PRIVATE $bSVN AS Boolean
-PRIVATE $bCVS AS Boolean
-PRIVATE $bEnd AS Boolean
-PRIVATE $hEditor AS Editor
+Private $bSVN As Boolean
+Private $bCVS As Boolean
+Private $bEnd As Boolean
+Private $hEditor As Editor
 
-PUBLIC SUB Enabled() AS Boolean
+Public Sub Enabled() As Boolean
   
-  RETURN $bSVN OR $bCVS
+  Return $bSVN OR $bCVS
   
-END
+End
 
 
-PUBLIC SUB Refresh()
+Public Sub Refresh()
 
   $bSVN = Exist(Project.Dir &/ ".svn")
   $bCVS = Exist(Project.Dir &/ "CVS") OR Exist(Project.Dir &/ "CVSROOT")
 
-END
+End
 
-PRIVATE SUB Insert(sText AS String)
+Private Sub Insert(sText As String)
   
-  IF $hEditor THEN 
+  If $hEditor Then 
     $hEditor.Print(DConv(sText))
-  ELSE 
-    IF NOT Settings["/QuietExternalCommands", FALSE] THEN FOutput.Insert(sText)
-  ENDIF
+  Else 
+    If NOT Settings["/QuietExternalCommands", False] Then FOutput.Insert(sText)
+  Endif
   
-END
+End
 
 
-PRIVATE SUB Run(sCmd AS String, OPTIONAL sRemove AS String)
+Private Sub Run(sCmd As String, Optional sRemove As String)
 
-  $bEnd = FALSE
-  SHELL sCmd & " 2>&1" FOR READ 'TO sOutput
+  $bEnd = False
+  Shell sCmd & " 2>&1" For Read 'TO sOutput
   
-  IF sRemove THEN sCmd = Replace(sCmd, sRemove, "")
+  If sRemove Then sCmd = Replace(sCmd, sRemove, "")
   
   Insert(sCmd & "\n")  
   
-  REPEAT
-    SLEEP 0.1 
-    WAIT
-  UNTIL $bEnd
+  Repeat
+    Sleep 0.1 
+    Wait
+  Until $bEnd
   
-END
+End
 
-PUBLIC SUB Process_Read()
+Public Sub Process_Read()
   
-  DIM sData AS String
+  Dim sData As String
   
-  READ #LAST, sData, -64
+  Read #Last, sData, -64
   Insert(sData)
   
-END
+End
 
 
-PUBLIC SUB Process_Kill()
+Public Sub Process_Kill()
   
-  $bEnd = TRUE
+  $bEnd = True
   
-END
+End
 
 
-PUBLIC SUB AddFile(sPath AS String)
+Public Sub AddFile(sPath As String)
 
-  IF $bSVN THEN
+  If $bSVN Then
     Run("svn add " & Quote.Shell(sPath))
-  ENDIF
-  IF $bCVS THEN
+  Endif
+  If $bCVS Then
     'NB: For CVS file must already exist
     Run("cvs add " & Quote.Shell(sPath))
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB AddDir(sPath AS String)
+Public Sub AddDir(sPath As String)
 
-  IF $bSVN THEN
+  If $bSVN Then
     Run("svn add " & Quote.Shell(sPath))
-  ENDIF
-  IF $bCVS THEN
+  Endif
+  If $bCVS Then
     'NB: For CVS, directory must already exist
     Run("cvs add " & Quote.Shell(sPath))
-  ENDIF
+  Endif
 
-END
+End
 
 ' Must be called *after* the file has been deleted
 
-PUBLIC SUB RemoveFile(sPath AS String, OPTIONAL bForce AS Boolean)
+Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
 
-  IF $bSVN THEN
+  If $bSVN Then
     Run("svn remove " & IIf(bForce, "--force ", "") & Quote.Shell(sPath))
-  ENDIF
-  IF $bCVS THEN
+  Endif
+  If $bCVS Then
     'NB: For CVS do 'cvs remove file' first then delete file
     Run("cvs remove " & Quote.Shell(sPath))
-  ENDIF
+  Endif
   
-END
+End
 
 ' Must be called *after* the directory has been deleted
 ' The directory must be empty
 
-PUBLIC SUB RemoveDir(sPath AS String)
+Public Sub RemoveDir(sPath As String)
 
-  IF $bSVN THEN
-    RemoveFile(sPath, TRUE)
-  ENDIF
-  IF $bCVS THEN
+  If $bSVN Then
+    RemoveFile(sPath, True)
+  Endif
+  If $bCVS Then
     'NB: For CVS do 'cvs remove dirname' first then delete dirname
     Run("cvs remove " & Quote.Shell(sPath))
-  ENDIF
+  Endif
 
-END
+End
 
 ' Must be called *after* the file has been moved
 
-PUBLIC SUB MoveFile(sOld AS String, sNew AS String)
+Public Sub MoveFile(sOld As String, sNew As String)
 
-  IF $bSVN THEN
+  If $bSVN Then
     'SHELL "svn move " & Quote.Shell(sOld) & " " & Quote.Shell(sNew) WAIT
     AddFile(sNew)
-    RemoveFile(sOld, TRUE)
+    RemoveFile(sOld, True)
     'RemoveFile(sOld)
-  ENDIF
-  IF $bCVS THEN
+  Endif
+  If $bCVS Then
     'NB: make sure the file is added BEFORE
     AddFile(sNew)
     'NB: make sure the file deleted AFTER
     RemoveFile(sOld)
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB MoveDir(sOld AS String, sNew AS String)
+Public Sub MoveDir(sOld As String, sNew As String)
 
-  DIM sDir AS String
+  Dim sDir As String
 
-  IF $bSVN THEN
+  If $bSVN Then
     'SHELL "svn move " & Quote.Shell(sOld) & " " & Quote.Shell(sNew) WAIT
     'AddFile(sNew)
-    FOR EACH sDir IN RDir(sNew, "*", gb.Directory)
-      IF File.Name(sDir) <> ".svn" THEN CONTINUE
-      SHELL "rm -rf " & Quote.Shell(sNew &/ sDir) WAIT
-    NEXT
+    For Each sDir In RDir(sNew, "*", gb.Directory)
+      If File.Name(sDir) <> ".svn" Then Continue
+      Shell "rm -rf " & Quote.Shell(sNew &/ sDir) Wait
+    Next
     AddFile(sNew)
-    RemoveFile(sOld, TRUE)
+    RemoveFile(sOld, True)
     'RemoveFile(sOld)
-  ENDIF
-  IF $bCVS THEN
+  Endif
+  If $bCVS Then
     'NB: make sure the file is added BEFORE
     AddFile(sNew)
     'NB: make sure the file deleted AFTER
     RemoveFile(sOld)
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB Status() AS String
+Public Sub Status() As String
   
-  DIM sStatus AS String
+  Dim sStatus As String
   
-  IF $bSvn THEN 
-    SHELL "cd " & Quote.Shell(Project.Dir) & "; svn status -q" TO sStatus
-    RETURN sStatus
-  ENDIF
+  If $bSvn Then 
+    Shell "cd " & Quote.Shell(Project.Dir) & "; svn status -q" To sStatus
+    Return sStatus
+  Endif
   
-  IF $bCVS THEN
-    SHELL "cd " & Quote.Shell(Project.Dir) & "; cvs status" TO sStatus
-    RETURN sStatus
-  ENDIF
+  If $bCVS Then
+    Shell "cd " & Quote.Shell(Project.Dir) & "; cvs status" To sStatus
+    Return sStatus
+  Endif
   
-END
+End
 
 
-PUBLIC SUB Commit(sUser AS String, sPassword AS String, sChange AS String) AS Boolean
+Public Sub Commit(sUser As String, sPassword As String, sChange As String) As Boolean
   
-  DIM hFile AS File
-  DIM sCmd AS String
+  Dim hFile As File
+  Dim sCmd As String
   
-  IF $bSvn THEN 
-    hFile = OPEN Temp$("commit") FOR CREATE 
-    PRINT #hFile, sChange;
-    CLOSE #hFile
+  If $bSvn Then 
+    hFile = Open Temp$("commit") For Create 
+    Print #hFile, sChange;
+    Close #hFile
     sCmd = "svn commit --username " & Quote.Shell(sUser) 
-    IF sPassword THEN 
+    If sPassword Then 
       sPassword = " --password " & Quote.Shell(sPassword)
       sCmd &= sPassword
-    ENDIF
+    Endif
     sCmd &= " --file " & Quote.Shell(Temp$("commit")) & " " & Quote.Shell(Project.Dir)
     Run(sCmd, sPassword)
-    RETURN Process.LastValue
-  ENDIF    
+    Return Process.LastValue
+  Endif    
   
-END
+End
 
 
-PUBLIC SUB Update() AS Boolean
+Public Sub Update() As Boolean
   
-  IF $bSvn THEN 
+  If $bSvn Then 
     Run("svn update " & Quote.Shell(Project.Dir))
-    RETURN Process.LastValue
-  ENDIF
+    Return Process.LastValue
+  Endif
   
-END
+End
 
 
-PUBLIC SUB Revert() AS Boolean
+Public Sub Revert() As Boolean
   
-  IF $bSvn THEN 
+  If $bSvn Then 
     Run("svn -R revert " & Quote.Shell(Project.Dir))
-    RETURN Process.LastValue
-  ENDIF
+    Return Process.LastValue
+  Endif
   
-END
+End
 
 
-PUBLIC SUB CheckoutSVN(sPath AS String, sDir AS String, hEditor AS Editor) AS Boolean
+Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As Editor) As Boolean
 
   $hEditor = hEditor
   Run("cd " & Quote.Shell(sDir) & "; svn checkout " & Quote.Shell(sPath))
-  $hEditor = NULL
+  $hEditor = Null
   
-END
+End

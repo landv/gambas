@@ -506,7 +506,7 @@ BEGIN_METHOD(object_get_property, GB_OBJECT object; GB_STRING property)
       return;
     }
   }
-  else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_PROPERTY_READ || type == CD_STATIC_VARIABLE)
+  else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_PROPERTY_READ || type == CD_STATIC_VARIABLE || type == CD_CONSTANT)
   {
     if (object)
     {
@@ -524,6 +524,8 @@ BEGIN_METHOD(object_get_property, GB_OBJECT object; GB_STRING property)
     VALUE_read(&TEMP, (char *)object + desc->variable.offset, desc->property.type);
 	else if (type == CD_STATIC_VARIABLE)
     VALUE_read(&TEMP, (char *)class->stat + desc->variable.offset, desc->property.type);
+  else if (type == CD_CONSTANT)
+	  VALUE_read(&TEMP, (void *)&desc->constant.value, desc->constant.type);
 	else
 	{
 		if (desc->property.native)

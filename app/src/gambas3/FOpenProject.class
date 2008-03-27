@@ -1,40 +1,40 @@
 ' Gambas class file
 
-STATIC PRIVATE $sPath AS String
-STATIC PRIVATE $sLast AS String
-STATIC PRIVATE $bAnother AS Boolean
+Static Private $sPath As String
+Static Private $sLast As String
+Static Private $bAnother As Boolean
 
-STATIC PUBLIC InAnotherWindow AS Boolean
+Static Public InAnotherWindow As Boolean
 
-PRIVATE frmProjectItem AS FProjectItem
+Private frmProjectItem As FProjectItem
 
-PUBLIC SUB Run(OPTIONAL bAnother AS Boolean) AS String
+Public Sub Run(Optional bAnother As Boolean) As String
 
   $bAnother = bAnother
-  IF ME.ShowModal() THEN RETURN $sPath
+  If Me.ShowModal() Then Return $sPath
 
-END
+End
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  frmProjectItem = NEW FProjectItem(panProject)
+  frmProjectItem = New FProjectItem(panProject)
   
-END
+End
 
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
-  DIM sPath AS String
+  Dim sPath As String
   
-  IF tabProject.Index = 0 THEN
+  If tabProject.Index = 0 Then
     sPath = GetProjectPath(dchProject.Value)
-  ELSE IF tabProject.Index = 1 THEN
-    TRY sPath = lstRecent.Current.Tag
-  ELSE IF tabProject.Index = 2 THEN
-    TRY sPath = lstExample.Current.Tag
-  ENDIF
+  Else If tabProject.Index = 1 Then
+    Try sPath = lstRecent.Current.Tag
+  Else If tabProject.Index = 2 Then
+    Try sPath = lstExample.Current.Tag
+  Endif
 
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
 
   $sPath = sPath
   'Settings["/FOpenProject/Path"] = $sPath
@@ -42,80 +42,80 @@ PUBLIC SUB btnOK_Click()
   lstRecent.Clear
   InAnotherWindow = chkOther.Value  
   
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   $sLast = ""
-  Settings.Read(ME)
+  Settings.Read(Me)
   Settings.Read(dchProject)
   Settings.Read(splProject)
   'dchProject.Value = Settings["/FOpenProject/Path"]
   dchProject_Change
   tabProject_Click
 
-  chkOther.Value = FALSE
-  InAnotherWindow = FALSE
+  chkOther.Value = False
+  InAnotherWindow = False
   chkOther.Visible = $bAnother
-  chkSortRecent.Value = Settings["/FOpenProjet/SortRecent", FALSE]  
+  chkSortRecent.Value = Settings["/FOpenProjet/SortRecent", False]  
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
-  Settings.Write(ME)  
+  Settings.Write(Me)  
   Settings.Write(splProject)
   Settings.Write(dchProject)
   Settings["/FOpenProject/SortRecent"] = chkSortRecent.Value
   
-END
+End
 
-PUBLIC SUB dchProject_Icon(Path AS String)
+Public Sub dchProject_Icon(Path As String)
 
-  IF Exist(Path &/ ".project") THEN 
+  If Exist(Path &/ ".project") Then 
     dchProject.Icon = Project.GetIcon(Path)    
-  ENDIF  
+  Endif  
 
-END
+End
 
-PRIVATE SUB GetProjectPath(sPath AS String) AS String
+Private Sub GetProjectPath(sPath As String) As String
   
-  DO
-    IF Exist(sPath &/ ".project") THEN RETURN sPath
+  Do
+    If Exist(sPath &/ ".project") Then Return sPath
     sPath = File.Dir(sPath)
-    IF sPath = "/" THEN BREAK
-  LOOP
+    If sPath = "/" Then Break
+  Loop
   
-CATCH
+Catch
   
-END
+End
 
 
-PUBLIC SUB dchProject_Change()
+Public Sub dchProject_Change()
 
-  DIM sPath AS String
+  Dim sPath As String
   
   fvwProject.ShowHidden = dchProject.ShowHidden  
   fvwProject.Dir = dchProject.Value
 
   sPath = GetProjectPath(dchProject.Value)
   
-  IF NOT sPath THEN
+  If NOT sPath Then
     $sLast = ""
     sdpProject.Hide
-    RETURN 
-  ENDIF
+    Return 
+  Endif
   
-  IF sPath = $sLast THEN RETURN
+  If sPath = $sLast Then Return
   
   $sLast = sPath
   
@@ -123,156 +123,156 @@ PUBLIC SUB dchProject_Change()
   
   sdpProject.Show
 
-END
+End
 
-PUBLIC SUB fvwProject_Activate()
+Public Sub fvwProject_Activate()
 
   dchProject.Value = fvwProject.Dir &/ fvwProject.Current
 
-END
+End
 
-PUBLIC SUB fvwProject_Icon(Path AS String)
+Public Sub fvwProject_Icon(Path As String)
 
-  IF Exist(Path &/ ".project") THEN 
+  If Exist(Path &/ ".project") Then 
     fvwProject.Icon = Project.GetIcon(Path, 16)    
-  ENDIF    
+  Endif    
 
-END
+End
 
-PRIVATE SUB FillRecent()
+Private Sub FillRecent()
   
-  DIM sRecent AS String
-  DIM hProjectItem AS FProjectItem
-  DIM hFirst AS FProjectItem
-  DIM aRecent AS String[]
-  DIM bHighlight AS Boolean
+  Dim sRecent As String
+  Dim hProjectItem As FProjectItem
+  Dim hFirst As FProjectItem
+  Dim aRecent As String[]
+  Dim bHighlight As Boolean
   
-  IF lstRecent.Children.Count THEN RETURN
+  If lstRecent.Children.Count Then Return
 
-  INC Application.Busy
+  Inc Application.Busy
 
   panRecent.Arrangement = Arrange.None
   lstRecent.Hide
 
   aRecent = Project.GetRecentFiles(chkSortRecent.Value)
 
-  FOR EACH sRecent IN aRecent
-    hProjectItem = NEW FProjectItem(lstRecent)
-    IF bHighlight THEN hProjectItem.Background = Color.LightBackground
+  For Each sRecent In aRecent
+    hProjectItem = New FProjectItem(lstRecent)
+    If bHighlight Then hProjectItem.Background = Color.LightBackground
     bHighlight = NOT bHighlight
-    IF NOT hFirst THEN hFirst = hProjectItem
+    If NOT hFirst Then hFirst = hProjectItem
     hProjectItem.SetPath(sRecent)
-  NEXT
+  Next
   
-  IF hFirst THEN lstRecent.Select(hFirst)
+  If hFirst Then lstRecent.Select(hFirst)
   
   ' Workaround a scrollview bug that does not show the scrollbars.
   lstRecent.Show 
   panRecent.Arrangement = Arrange.Vertical
   
-  DEC Application.Busy
+  Dec Application.Busy
   
-END
+End
 
-PUBLIC SUB tabProject_Click()
+Public Sub tabProject_Click()
 
-  IF tabProject.Index = 1 THEN 
+  If tabProject.Index = 1 Then 
     FillRecent
-  ELSE IF tabProject.Index = 2 THEN 
+  Else If tabProject.Index = 2 Then 
     FillExample
-  ENDIF  
+  Endif  
 
-END
+End
 
-PUBLIC SUB lstRecent_Activate()
+Public Sub lstRecent_Activate()
   
-  btnOK.Value = TRUE
+  btnOK.Value = True
   
-END
+End
 
-PRIVATE SUB FillExample()
+Private Sub FillExample()
 
-  DIM sExample AS String
-  DIM sDir AS String
-  DIM sLastDir AS String
-  DIM hDrawingArea AS DrawingArea
-  DIM hProjectItem AS FProjectItem
-  DIM hLabel AS Label
-  DIM bHighlight AS Boolean
+  Dim sExample As String
+  Dim sDir As String
+  Dim sLastDir As String
+  Dim hDrawingArea As DrawingArea
+  Dim hProjectItem As FProjectItem
+  Dim hLabel As Label
+  Dim bHighlight As Boolean
   
-  IF lstExample.Children.Count THEN RETURN
+  If lstExample.Children.Count Then Return
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  FOR EACH sExample IN Project.GetExamples()
+  For Each sExample In Project.GetExamples()
   
     sDir = File.Dir(sExample)
-    IF sDir <> sLastDir THEN
-      hDrawingArea = NEW DrawingArea(lstExample) AS "dwgExample"
-      WITH hDrawingArea
-        .Enabled = FALSE
+    If sDir <> sLastDir Then
+      hDrawingArea = New DrawingArea(lstExample) As "dwgExample"
+      With hDrawingArea
+        .Enabled = False
         .Tag = Project.ExampleTitle[sDir]
         .Font = Font["Bold,+2"]
         .H = .Font.Height() + If(sLastDir, 16, 8)
         .Foreground = Color.SelectedBackground
-      END WITH
-      bHighlight = FALSE
+      End With
+      bHighlight = False
       sLastDir = sDir
-    ENDIF
+    Endif
     
-    hProjectItem = NEW FProjectItem(lstExample)
-    IF bHighlight THEN hProjectItem.Background = Color.LightBackground
+    hProjectItem = New FProjectItem(lstExample)
+    If bHighlight Then hProjectItem.Background = Color.LightBackground
     bHighlight = NOT bHighlight
     hProjectItem.SetPath(Project.EXAMPLES_DIR &/ sExample)
   
-  NEXT
+  Next
 
   lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
-PUBLIC SUB dwgExample_Draw()
+Public Sub dwgExample_Draw()
   
-  DIM hDrawingArea AS DrawingArea = LAST
+  Dim hDrawingArea As DrawingArea = Last
   
-  WITH hDrawingArea
+  With hDrawingArea
     Draw.Font = .Font
     Draw.Foreground = .Foreground
     'Draw.Line(0, .H / 2 - 1, .W - 1, .H / 2 - 1)
     'Draw.Transparent = FALSE
     Draw.Text(.Tag, 4, 0, .W - 16, .H - 4, Align.BottomNormal)
     Draw.Line(4, .H - 4, .W - 9, .H - 4)
-  END WITH
+  End With
   
-END
+End
 
-PUBLIC SUB dchProject_Activate()
+Public Sub dchProject_Activate()
 
-  btnOK.Value = TRUE  
+  btnOK.Value = True  
 
-END
+End
 
 
-PUBLIC SUB chkSortRecent_Click()
+Public Sub chkSortRecent_Click()
 
-  IF tabProject.Index = 1 THEN 
+  If tabProject.Index = 1 Then 
     lstRecent.Clear
     FillRecent
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB OnUpdateRecent()
+Public Sub OnUpdateRecent()
   
   chkSortRecent_Click
   
-END
+End
 
 
-PUBLIC SUB lstExample_Activate()
+Public Sub lstExample_Activate()
 
-  btnOK.Value = TRUE
+  btnOK.Value = True
 
-END
+End

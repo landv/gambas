@@ -1,7 +1,7 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,0,61,61)
+  MoveScaled(0,0,61,69)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -9,14 +9,36 @@
   Border = Window.Fixed
   ToolBox = True
   SkipTaskbar = True
+  { mnuPopup Menu
+    Text = ("")
+    Visible = False
+    { mnuForeground Menu
+      Text = ("Foreground color...")
+    }
+    { mnuBackground Menu
+      Text = ("Background color...")
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { mnuBold Menu
+      Text = ("Bold")
+    }
+    { mnuItalic Menu
+      Text = ("Italic")
+    }
+    { mnuUnderline Menu
+      Text = ("Underline")
+    }
+  }
   { TabStrip1 TabStrip
-    MoveScaled(1,1,59,55)
+    MoveScaled(1,1,59,63)
     Padding = 8
     Count = 3
     Index = 0
     Text = ("General")
     { HBox11 HBox
-      MoveScaled(2,42,54,3)
+      MoveScaled(2,46,54,3)
       Spacing = 8
       { Label12 Label
         MoveScaled(0,0,36,3)
@@ -31,7 +53,7 @@
       }
     }
     { HBox12 HBox
-      MoveScaled(2,46,54,3)
+      MoveScaled(2,50,54,3)
       Spacing = 8
       { Label13 Label
         MoveScaled(0,0,36,3)
@@ -46,7 +68,7 @@
       }
     }
     { Label25 Label
-      MoveScaled(1,38,56,3)
+      MoveScaled(1,42,56,3)
       Font = Font["Bold"]
       Text = ("Desktop")
     }
@@ -95,11 +117,11 @@
         Expand = True
         Text = ("")
         ReadOnly = True
-        List = [("Normal size"), ("Small size")]
+        List = [("Normal"), ("Small")]
       }
     }
     { HBox7 HBox
-      MoveScaled(2,17,54,3)
+      MoveScaled(2,21,54,3)
       Spacing = 8
       { Label1 Label
         MoveScaled(0,0,36,3)
@@ -110,11 +132,11 @@
         Expand = True
         Text = ("")
         ReadOnly = True
-        List = [("Normal size"), ("Small size")]
+        List = [("Normal"), ("Small")]
       }
     }
     { HBox8 HBox
-      MoveScaled(2,21,54,3)
+      MoveScaled(2,25,54,3)
       Spacing = 8
       { Label2 Label
         MoveScaled(0,0,36,3)
@@ -128,7 +150,7 @@
       }
     }
     { HBox9 HBox
-      MoveScaled(2,25,54,3)
+      MoveScaled(2,29,54,3)
       Spacing = 8
       { Label14 Label
         MoveScaled(0,0,36,3)
@@ -147,7 +169,7 @@
       }
     }
     { HBox10 HBox
-      MoveScaled(2,29,54,3)
+      MoveScaled(2,33,54,3)
       Spacing = 8
       { Label16 Label
         MoveScaled(0,0,36,3)
@@ -161,7 +183,7 @@
       }
     }
     { HBox13 HBox
-      MoveScaled(2,33,54,3)
+      MoveScaled(2,37,54,3)
       Spacing = 8
       { Label32 Label
         MoveScaled(0,0,36,3)
@@ -172,6 +194,21 @@
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
+      }
+    }
+    { HBox19 HBox
+      MoveScaled(2,17,54,3)
+      Spacing = 8
+      { Label19 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Tabstrip font size")
+      }
+      { cmbTabStripFont ComboBox
+        MoveScaled(37,0,17,3)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("Normal"), ("Small"), ("Tiny")]
       }
     }
     Index = 1
@@ -208,7 +245,7 @@
       }
     }
     { HBox14 HBox
-      MoveScaled(2,46,54,3)
+      MoveScaled(2,50,54,3)
       Spacing = 8
       { Label40 Label
         MoveScaled(0,0,36,3)
@@ -283,10 +320,38 @@
         List = [("None"), ("Line"), ("Blend")]
       }
     }
+    { HBox4 HBox
+      MoveScaled(2,46,54,3)
+      Spacing = 8
+      { Label17 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Fold procedures by default")
+      }
+      { cmbFoldProc ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
+    { HBox20 HBox
+      MoveScaled(2,54,54,3)
+      Spacing = 8
+      { Label20 Label
+        MoveScaled(0,0,36,3)
+        Text = ("Keywords in upper case")
+      }
+      { cmbUpperCaseKeywords ComboBox
+        MoveScaled(37,0,10,3)
+        Text = ("")
+        ReadOnly = True
+        List = [("No"), ("Yes")]
+      }
+    }
     Index = 2
-    Text = ("Colors")
+    Text = ("Theme")
     { VBox1 VBox
-      MoveScaled(1,1,56,49)
+      MoveScaled(1,1,56,56)
       Spacing = 8
       { HBox1 HBox
         MoveScaled(1,1,48,3)
@@ -318,252 +383,20 @@
           Picture = Picture["icon:/small/undo"]
         }
       }
-      { Panel4 Panel
-        MoveScaled(1,5,46,33)
+      { svwTheme ScrollView
+        MoveScaled(2,6,50,43)
         Background = Color.TextBackground
+        Foreground = Color.TextForeground
         Expand = True
-        Arrangement = Arrange.Horizontal
-        Padding = 8
-        Border = Border.Sunken
-        { Panel3 Panel
-          MoveScaled(1,1,17,31)
-          Expand = True
-          Arrangement = Arrange.Vertical
-          Spacing = 8
-          { Label26 Label
-            MoveScaled(0,0,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Background")
-          }
-          { Label31 Label
-            MoveScaled(0,4,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Normal text")
-          }
-          { Label33 Label
-            MoveScaled(0,8,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Selection")
-          }
-          { Label58 Label
-            MoveScaled(0,12,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Highlighting")
-          }
-          { Label35 Label
-            MoveScaled(0,16,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Keywords")
-          }
-          { Label37 Label
-            MoveScaled(0,20,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Data types")
-          }
-          { Label39 Label
-            MoveScaled(0,24,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Subroutines")
-          }
-          { Label41 Label
-            MoveScaled(0,28,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Operators")
-          }
-        }
-        { panColor1 Panel
-          MoveScaled(16,1,5,31)
-          Arrangement = Arrange.Vertical
-          Spacing = 8
-          { Panel2 Panel btnColor
-            Name = "Panel2"
-            MoveScaled(0,0,5,3)
-            Tag = "Background"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel5 Panel btnColor
-            Name = "Panel5"
-            MoveScaled(0,4,5,3)
-            Tag = "Normal"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel6 Panel btnColor
-            Name = "Panel6"
-            MoveScaled(0,8,5,3)
-            Tag = "Selection"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel7 Panel btnColor
-            Name = "Panel7"
-            MoveScaled(0,12,5,3)
-            Tag = "Highlight"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel8 Panel btnColor
-            Name = "Panel8"
-            MoveScaled(0,16,5,3)
-            Tag = "Keyword"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel9 Panel btnColor
-            Name = "Panel9"
-            MoveScaled(0,20,5,3)
-            Tag = "Datatype"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel10 Panel btnColor
-            Name = "Panel10"
-            MoveScaled(0,24,5,3)
-            Tag = "Subr"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel11 Panel btnColor
-            Name = "Panel11"
-            MoveScaled(0,28,5,3)
-            Tag = "Operator"
-            Expand = True
-            Border = Border.Raised
-          }
-        }
-        { Panel12 Panel
-          MoveScaled(21,12,3,2)
-        }
-        { Panel13 Panel
-          MoveScaled(24,1,16,31)
-          Expand = True
-          Arrangement = Arrange.Vertical
-          Spacing = 8
-          { Label19 Label
-            MoveScaled(0,0,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Symbols")
-          }
-          { Label20 Label
-            MoveScaled(0,4,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Numbers")
-          }
-          { Label21 Label
-            MoveScaled(0,8,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Strings")
-          }
-          { Label22 Label
-            MoveScaled(0,12,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Comments")
-          }
-          { Label23 Label
-            MoveScaled(0,16,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Breakpoints")
-          }
-          { Label24 Label
-            MoveScaled(0,20,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Current line")
-          }
-          { Label27 Label
-            MoveScaled(0,24,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Editing line")
-          }
-          { Label28 Label
-            MoveScaled(0,28,17,3)
-            Expand = True
-            Padding = 2
-            Text = ("Error")
-          }
-        }
-        { panColor2 Panel
-          MoveScaled(40,1,5,31)
-          Arrangement = Arrange.Vertical
-          Spacing = 8
-          { Panel25 Panel btnColor
-            Name = "Panel25"
-            MoveScaled(0,0,5,3)
-            Tag = "Symbol"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel26 Panel btnColor
-            Name = "Panel26"
-            MoveScaled(0,4,5,3)
-            Tag = "Number"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel27 Panel btnColor
-            Name = "Panel27"
-            MoveScaled(0,8,5,3)
-            Tag = "String"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel28 Panel btnColor
-            Name = "Panel28"
-            MoveScaled(0,12,5,3)
-            Tag = "Comment"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel29 Panel btnColor
-            Name = "Panel29"
-            MoveScaled(0,16,5,3)
-            Tag = "Breakpoint"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel30 Panel btnColor
-            Name = "Panel30"
-            MoveScaled(0,20,5,3)
-            Tag = "Current"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel31 Panel btnColor
-            Name = "Panel31"
-            MoveScaled(0,24,5,3)
-            Tag = "Line"
-            Expand = True
-            Border = Border.Raised
-          }
-          { Panel32 Panel btnColor
-            Name = "Panel32"
-            MoveScaled(0,28,5,3)
-            Tag = "Error"
-            Expand = True
-            Border = Border.Raised
-          }
-        }
+        Arrangement = Arrange.Vertical
+        Spacing = 4
+        Padding = 4
       }
     }
     Index = 0
   }
   { btnClose Button
-    MoveScaled(45,57,15,3)
+    MoveScaled(45,65,15,3)
     Text = ("Close")
     Cancel = True
   }

@@ -1,71 +1,71 @@
 ' Gambas class file
 
-CONST YW_DUMMY_INFO AS String = "@"
-CONST YW_NOT_AVAILABLE AS String = ("not available")
+Const YW_DUMMY_INFO As String = "@"
+Const YW_NOT_AVAILABLE As String = ("not available")
 
-STATIC PRIVATE $cAll AS NEW Collection
-STATIC PRIVATE $sYWindow AS String
-STATIC PRIVATE $sLastExpr AS String
+Static Private $cAll As New Collection
+Static Private $sYWindow As String
+Static Private $sLastExpr As String
 
-PRIVATE $sExpr AS String
-PRIVATE $sKey AS String
-PRIVATE $sInfo AS String
-PRIVATE $sLastGood AS String
-PRIVATE $aSym AS String[]
-PRIVATE $cVal AS NEW Collection
-PRIVATE $cOldVal AS NEW Collection
+Private $sExpr As String
+Private $sKey As String
+Private $sInfo As String
+Private $sLastGood As String
+Private $aSym As String[]
+Private $cVal As New Collection
+Private $cOldVal As New Collection
 
-PRIVATE $iRowStatic AS Integer
-PRIVATE $iRowDynamic AS Integer
+Private $iRowStatic As Integer
+Private $iRowDynamic As Integer
 
-PRIVATE $sClass AS String
-PRIVATE $sRealClass AS String
-PRIVATE $bArray AS Boolean
-PRIVATE $bCollection AS Boolean
+Private $sClass As String
+Private $sRealClass As String
+Private $bArray As Boolean
+Private $bCollection As Boolean
 
-STATIC PUBLIC SUB Add(sExpr AS String, sInfo AS String)
+Static Public Sub Add(sExpr As String, sInfo As String)
 
-  DIM hWin AS FDebugExpr
+  Dim hWin As FDebugExpr
 
-  IF NOT sInfo THEN RETURN
+  If NOT sInfo Then Return
 
-  IF NOT $cAll.Exist(sExpr) THEN
-    $cAll[sExpr] = NEW FDebugExpr(sExpr, sInfo)
+  If NOT $cAll.Exist(sExpr) Then
+    $cAll[sExpr] = New FDebugExpr(sExpr, sInfo)
     $cAll[sExpr].Show
-  ELSE 
+  Else 
     hWin = $cAll[sExpr]
     hWin.RefreshInfo(sInfo) 
-  ENDIF 
+  Endif 
   
-END
+End
 
-STATIC PUBLIC SUB AddResult(sWindow AS String, sValue AS String)
+Static Public Sub AddResult(sWindow As String, sValue As String)
   
-  DIM iPos AS Integer
-  DIM hWin AS FDebugExpr
+  Dim iPos As Integer
+  Dim hWin As FDebugExpr
   
   iPos = RInStr(sWindow, "#")
     
   hWin = $cAll[Left(sWindow, iPos - 1)]
   hWin.SetValue(CInt(Mid(sWindow, iPos + 1)), sValue)
   
-END
+End
 
-STATIC PUBLIC SUB Clear()
+Static Public Sub Clear()
   
-  DIM hWin AS FDebugExpr
+  Dim hWin As FDebugExpr
   
-  FOR EACH hWin IN $cAll
-    TRY hWin.Close
-  NEXT
+  For Each hWin In $cAll
+    Try hWin.Close
+  Next
   
   $cAll.Clear
   
-END
+End
 
-PUBLIC SUB _new(sExpr AS String, sInfo AS String)
+Public Sub _new(sExpr As String, sInfo As String)
   
-  DIM aGeom AS Integer[]
+  Dim aGeom As Integer[]
   
   $sExpr = sExpr
   $sKey = Replace(sExpr, "/", "|")
@@ -73,109 +73,109 @@ PUBLIC SUB _new(sExpr AS String, sInfo AS String)
   
   'Project.Config.Read(ME, $sKey)
   aGeom = Project.Config["DebugWindow" &/ $sKey &/ "Geometry"]
-  IF aGeom THEN TRY ME.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
-  btnHidden.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", FALSE]
+  If aGeom Then Try Me.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
+  btnHidden.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False]
   
-  IF sInfo = YW_DUMMY_INFO THEN
-    ME.Enabled = FALSE
-    ME.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
-  ELSE 
-    Init(sInfo, TRUE)
-  ENDIF 
+  If sInfo = YW_DUMMY_INFO Then
+    Me.Enabled = False
+    Me.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
+  Else 
+    Init(sInfo, True)
+  Endif 
   
   $sLastGood = sExpr
   txtExpr.Text = sExpr
 
-  IF $sLastExpr THEN 
-    IF $cAll.Exist($sLastExpr) THEN 
-      WITH $cAll[$sLastExpr]
-        ME.Move(.X + Desktop.Scale * 2, .Y + Desktop.Scale * 2, .W, .H)
-      END WITH 
-    ENDIF 
+  If $sLastExpr Then 
+    If $cAll.Exist($sLastExpr) Then 
+      With $cAll[$sLastExpr]
+        Me.Move(.X + Desktop.Scale * 2, .Y + Desktop.Scale * 2, .W, .H)
+      End With 
+    Endif 
     $sLastExpr = ""
-  ENDIF
+  Endif
   
   gvwExpr.SetFocus
 
-END 
+End 
 
-PUBLIC SUB gvwExpr_Data(Row AS Integer, Column AS Integer)
+Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
 
-  DIM sSym AS String
-  DIM sVal AS String
+  Dim sSym As String
+  Dim sVal As String
 
-  IF $bArray THEN 
+  If $bArray Then 
   
-    IF Column = 0 THEN 
+    If Column = 0 Then 
       gvwExpr.Data.Text = Row
-    ELSE 
+    Else 
       sVal = $cVal[Row]
-      IF sVal THEN 
+      If sVal Then 
         gvwExpr.Data.Text = sVal
         '$cVal.Remove(Row)
-      ELSE  
+      Else  
         Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & Row & "]")
-      ENDIF
-    ENDIF
+      Endif
+    Endif
     
-  ELSE IF $bCollection THEN
+  Else If $bCollection Then
   
     sSym = Chr$(34) & $aSym[Row] & Chr$(34)
 
-    IF Column = 0 THEN 
+    If Column = 0 Then 
       gvwExpr.Data.Text = sSym
-    ELSE 
+    Else 
       sVal = $cVal[Row]
-      IF sVal THEN 
+      If sVal Then 
         gvwExpr.Data.Text = sVal
         '$cVal.Remove(Row)
-      ELSE  
+      Else  
         Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & sSym & "]")
-      ENDIF
-    ENDIF
+      Endif
+    Endif
     
-  ELSE
+  Else
 
     sSym = $aSym[Row]
     
-    IF Right(sSym) = ":" THEN 
+    If Right(sSym) = ":" Then 
       gvwExpr.Data.Background = Color.ButtonBackground
-      RETURN 
-    ENDIF
+      Return 
+    Endif
     
-    IF Column = 0 THEN
+    If Column = 0 Then
       gvwExpr.Data.Text = sSym
-      IF $iRowStatic >= 0 THEN 
-        IF $iRowDynamic < 0 OR IF Row < $iRowDynamic THEN gvwExpr.Data.Font.Bold = TRUE
-      ENDIF
-    ELSE
+      If $iRowStatic >= 0 Then 
+        If $iRowDynamic < 0 OR If Row < $iRowDynamic Then gvwExpr.Data.Font.Bold = True
+      Endif
+    Else
       sVal = $cVal[Row]
-      IF sVal THEN 
+      If sVal Then 
         gvwExpr.Data.Text = sVal
-      ELSE 
-        IF Left($sClass) = "." OR IF NOT $sRealClass THEN
+      Else 
+        If Left($sClass) = "." OR If NOT $sRealClass Then
           Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "." & sSym)
-        ELSE 
+        Else 
           Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sRealClass & "(" & $sExpr & ")." & sSym)
-        ENDIF
-      ENDIF
+        Endif
+      Endif
         
-    ENDIF
+    Endif
     
-  ENDIF
+  Endif
 
-  IF Column <> 0 THEN 
-    IF Left(gvwExpr.Data.Text) <> "!" THEN
+  If Column <> 0 Then 
+    If Left(gvwExpr.Data.Text) <> "!" Then
 
-      IF $cVal.Exist(Row) AND IF $cOldVal.Exist(Row) AND IF gvwExpr.Data.Text <> $cOldVal[Row] THEN 
+      If $cVal.Exist(Row) AND If $cOldVal.Exist(Row) AND If gvwExpr.Data.Text <> $cOldVal[Row] Then 
         gvwExpr.Data.Background = Color.Yellow
-        gvwExpr.Data.Font.Bold = TRUE
-      ENDIF
+        gvwExpr.Data.Font.Bold = True
+      Endif
       
-    ELSE   
+    Else   
       gvwExpr.Data.Text = Mid$(gvwExpr.Data.Text, 2)
       gvwExpr.Data.Background = Color.Lighter(Color.Red)
-    ENDIF 
+    Endif 
 
   ' ELSE  
   '   
@@ -183,90 +183,90 @@ PUBLIC SUB gvwExpr_Data(Row AS Integer, Column AS Integer)
   '     gvwExpr.Data.Background = Color.Yellow
   '   ENDIF 
 
-  ENDIF 
+  Endif 
 
-END
+End
 
-PUBLIC SUB SetValue(iRow AS Integer, sVal AS String)
+Public Sub SetValue(iRow As Integer, sVal As String)
   
-  DIM vVal AS Variant
-  DIM sHex AS String
+  Dim vVal As Variant
+  Dim sHex As String
 
   vVal = Val(sVal)
   
-  SELECT CASE TypeOf(vVal)
-    CASE gb.Integer
+  Select Case TypeOf(vVal)
+    Case gb.Integer
       sHex = Hex$(vVal, 8)
-    CASE gb.Long
+    Case gb.Long
       sHex = Hex$(vVal, 16)
-  END SELECT 
+  End Select 
   
-  IF sHex THEN 
-    WHILE Left(sHex) = "0"
+  If sHex Then 
+    While Left(sHex) = "0"
       sHex = Mid$(sHex, 2)
-    WEND
-    IF sHex THEN sVal &= " / &H" & sHex
-  ENDIF
+    Wend
+    If sHex Then sVal &= " / &H" & sHex
+  Endif
   
   $cVal[iRow] = sVal
   gvwExpr[iRow, 1].Refresh
   
-END
+End
 
-PRIVATE SUB OpenExpr(sExpr AS String, OPTIONAL sRealExpr AS String)
+Private Sub OpenExpr(sExpr As String, Optional sRealExpr As String)
   
   $sYWindow = $sExpr
   $sLastExpr = $sExpr
-  IF NOT sRealExpr THEN sRealExpr = sExpr
+  If NOT sRealExpr Then sRealExpr = sExpr
   Design.Command("#X" & sExpr & "\t" & sRealExpr)   
   
-END
+End
 
 
-PUBLIC SUB gvwExpr_Activate()
+Public Sub gvwExpr_Activate()
 
-  DIM sText AS String
-  DIM sVal AS String
-  DIM sExpr AS String
+  Dim sText As String
+  Dim sVal As String
+  Dim sExpr As String
   
-  IF gvwExpr.Row >= 0 THEN
+  If gvwExpr.Row >= 0 Then
   
     sText = gvwExpr[gvwExpr.Row, 0].Text    
-    IF NOT sText OR Right(sText) = ":" THEN RETURN
+    If NOT sText OR Right(sText) = ":" Then Return
     sVal = gvwExpr[gvwExpr.Row, 1].Text
-    IF Left(sVal) <> "(" THEN RETURN 
+    If Left(sVal) <> "(" Then Return 
 
-    IF $bArray OR $bCollection
+    If $bArray OR $bCollection
       sText = $sExpr & "[" & sText & "]"
-    ELSE 
-      IF Left($sClass) = "." OR IF NOT $sRealClass THEN
+    Else 
+      If Left($sClass) = "." OR If NOT $sRealClass Then
         sText = $sExpr & "." & sText
-      ELSE 
+      Else 
         'sText = $sExpr & "." & sText
         sText = $sRealClass & "(" & $sExpr & ")." & sText
-      ENDIF
-    ENDIF 
+      Endif
+    Endif 
     
-    WITH gvwExpr[gvwExpr.Row, 1]
+    With gvwExpr[gvwExpr.Row, 1]
       Design.SetBalloon(gvwExpr, .X + .W / 2, .Y + .H / 2)
-    END WITH
+    End With
     OpenExpr(sText)
     
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE SUB Init(sInfo AS String, bNew AS Boolean)
+Private Sub Init(sInfo As String, bNew As Boolean)
 
-  DIM aStatic AS NEW String[]
-  DIM aDynamic AS NEW String[]
-  DIM sSym AS String
-  DIM sType AS String
-  DIM iCol AS Integer
-  DIM nRow AS Integer
-  DIM nRowAsArray AS Integer = -1
-  DIM bShowHidden AS Boolean = btnHidden.Value
-  DIM bHasHidden AS Boolean
+  Dim aStatic As New String[]
+  Dim aDynamic As New String[]
+  Dim sSym As String
+  Dim sType As String
+  Dim iCol As Integer
+  Dim nRow As Integer
+  Dim nRowAsArray As Integer = -1
+  Dim bShowHidden As Boolean = btnHidden.Value
+  Dim bHasHidden As Boolean
 
   $aSym = Split(sInfo, " ", Chr$(34))
 
@@ -283,83 +283,83 @@ PRIVATE SUB Init(sInfo AS String, bNew AS Boolean)
   $iRowStatic = -1
   $iRowDynamic = -1
     
-  IF $bArray THEN 
+  If $bArray Then 
   
     nRow = Val($aSym[0])
-    $aSym = NULL
+    $aSym = Null
 
-  ELSE IF $bCollection THEN  
+  Else If $bCollection Then  
 
     nRow = Val($aSym[0])  
     $aSym.Remove(0) ' Remove the count 
 
-  ELSE 
+  Else 
 
     ' Sort symbols
     
-    FOR EACH sSym IN $aSym
-      IF Right(sSym) = ":" THEN   
+    For Each sSym In $aSym
+      If Right(sSym) = ":" Then   
         sType = UCase(sSym)
-      ELSE
-        IF Left(sSym) = "_" THEN 
-          bHasHidden = TRUE
-          IF NOT bShowHidden THEN CONTINUE
-        ENDIF
-        IF Left(sSym) = "[" THEN
+      Else
+        If Left(sSym) = "_" Then 
+          bHasHidden = True
+          If NOT bShowHidden Then Continue
+        Endif
+        If Left(sSym) = "[" Then
           nRowAsArray = CInt(Mid$(sSym, 2, -1))
-          CONTINUE
-        ENDIF
-        IF sType = "S:" THEN 
+          Continue
+        Endif
+        If sType = "S:" Then 
           aStatic.Add(sSym)
-        ELSE 
+        Else 
           aDynamic.Add(sSym)
-        ENDIF
-      ENDIF
-    NEXT
+        Endif
+      Endif
+    Next
     
-    IF aDynamic.Count THEN 
-      IF aStatic.Count THEN
-        bHasHidden = TRUE
-        IF NOT bShowHidden THEN aStatic.Clear
-      ENDIF
-    ENDIF
+    If aDynamic.Count Then 
+      If aStatic.Count Then
+        bHasHidden = True
+        If NOT bShowHidden Then aStatic.Clear
+      Endif
+    Endif
     
     aStatic.Sort
     aDynamic.Sort
     
     $aSym.Clear
     
-    IF aStatic.Count THEN
+    If aStatic.Count Then
       $iRowStatic = $aSym.Count 
       'IF aDynamic.Count THEN $aSym.Add("S:")
       $aSym.Insert(aStatic)
-    ENDIF
+    Endif
     
-    IF aDynamic.Count THEN 
+    If aDynamic.Count Then 
       $iRowDynamic = $aSym.Count 
-      IF aStatic.Count THEN $aSym.Add("D:")
+      If aStatic.Count Then $aSym.Add("D:")
       $aSym.Insert(aDynamic)
-    ENDIF
+    Endif
     
     nRow = $aSym.Count
     
-    IF aStatic.Count = 1 AND IF aDynamic.Count = 0 AND IF aStatic[0] = "Count" AND IF nRowAsArray >= 0 THEN 
+    If aStatic.Count = 1 AND If aDynamic.Count = 0 AND If aStatic[0] = "Count" AND If nRowAsArray >= 0 Then 
       nRow = nRowAsArray
-      $bArray = TRUE
-      $aSym = NULL
-    ELSE IF aDynamic.Count = 1 AND IF aStatic.Count = 0 AND IF aDynamic[0] = "Count" AND IF nRowAsArray >= 0 THEN 
+      $bArray = True
+      $aSym = Null
+    Else If aDynamic.Count = 1 AND If aStatic.Count = 0 AND If aDynamic[0] = "Count" AND If nRowAsArray >= 0 Then 
       nRow = nRowAsArray
-      $bArray = TRUE
-      $aSym = NULL
-    ENDIF
+      $bArray = True
+      $aSym = Null
+    Endif
     
-  ENDIF
+  Endif
 
-  IF Left$($sClass) = "." OR IF NOT $sRealClass THEN
-    ME.Title = $sExpr & " (" & $sClass & ")"
-  ELSE 
-    ME.Title = $sExpr & " (" & $sRealClass & ")"
-  ENDIF
+  If Left$($sClass) = "." OR If NOT $sRealClass Then
+    Me.Title = $sExpr & " (" & $sClass & ")"
+  Else 
+    Me.Title = $sExpr & " (" & $sRealClass & ")"
+  Endif
 
   ' iCol = 0 
   ' FOR nI = 2 TO aInfo.Count STEP 2
@@ -373,77 +373,77 @@ PRIVATE SUB Init(sInfo AS String, bNew AS Boolean)
   ' 
   ' NEXT
 
-  WITH gvwExpr
+  With gvwExpr
   
     .Columns.Count = 2
     .Rows.Count = nRow
   
-    IF $bArray THEN 
+    If $bArray Then 
     
       .Columns[0].Text = ("Index")
       '.Columns[0].Width = Max(80, .Font.Width(CStr(nRow)) + 16)
       .Columns[1].Text = ("Value")
   
-    ELSE IF $bCollection THEN  
+    Else If $bCollection Then  
     
       .Columns[0].Text = ("Key")
       '.Columns[0].Width = .Font.Width("Key") + 16
       .Columns[1].Text = ("Value")
   
-    ELSE 
+    Else 
   
       .Columns[0].Text = ("Symbol")
       '.Columns[0].Width = .Font.Width("Symbol") + 16
       .Columns[1].Text = ("Value")
   
-    ENDIF
+    Endif
     
-  END WITH
+  End With
 
   'IF $iRowStatic >= 0 THEN gvwExpr.Rows[$iRowStatic].Height = 4
   gvwExpr.Rows.Height = -1
-  IF $iRowDynamic >= 0 AND IF $iRowStatic >= 0 THEN gvwExpr.Rows[$iRowDynamic].Height = 4
+  If $iRowDynamic >= 0 AND If $iRowStatic >= 0 Then gvwExpr.Rows[$iRowDynamic].Height = 4
   
-  IF NOT bNew THEN TRY gvwExpr.Columns[0].Width = -1
+  If NOT bNew Then Try gvwExpr.Columns[0].Width = -1
 
   btnHidden.Visible = bHasHidden
 
-END
+End
 
-PUBLIC SUB RefreshInfo(sInfo AS String)
+Public Sub RefreshInfo(sInfo As String)
 
-  DIM xStr AS String
+  Dim xStr As String
 
     $sInfo = sInfo
-    ME.Enabled = TRUE
+    Me.Enabled = True
 
-    FOR EACH xStr IN $cVal
+    For Each xStr In $cVal
       $cOldVal.Add(xStr, $cVal.Key)
-    NEXT 
+    Next 
 
     $cVal.Clear
-    Init(sInfo, FALSE) 
+    Init(sInfo, False) 
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   WriteSetting
   $cAll.Remove($sExpr)
 
-CATCH
+Catch
 
-END
+End
 
-STATIC PUBLIC SUB RefreshAll()
+Static Public Sub RefreshAll()
 
-  DIM xObj AS Object
+  Dim xObj As Object
 
-  FOR EACH xObj IN $cAll
+  For Each xObj In $cAll
     Design.Command("#X" & $cAll.Key & "\t" & $cAll.Key)
-  NEXT 
+  Next 
 
-END
+End
 
 ' STATIC PUBLIC FUNCTION IsSender() AS Form
 ' 
@@ -459,24 +459,24 @@ END
 ' 
 ' END
 
-STATIC PUBLIC FUNCTION Exist(sExpr AS String) AS Boolean
+Static Public Function Exist(sExpr As String) As Boolean
   
-  IF NOT sExpr THEN RETURN
-  RETURN $cAll.Exist(sExpr)
+  If NOT sExpr Then Return
+  Return $cAll.Exist(sExpr)
 
-END
+End
 
-STATIC PUBLIC SUB Disable(sExpr AS String, sError AS String)
+Static Public Sub Disable(sExpr As String, sError As String)
 
-  DIM hWin AS FDebugExpr
+  Dim hWin As FDebugExpr
   
-  IF NOT sError THEN RETURN 
+  If NOT sError Then Return 
   
   hWin = $cAll[sExpr]
-  hWin.Enabled = FALSE
+  hWin.Enabled = False
   hWin.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
 
-END
+End
 
 ' PUBLIC SUB mnuCloseAll_Click()
 ' 
@@ -497,20 +497,20 @@ END
 ' 
 ' END
 
-PUBLIC SUB WriteSetting()
+Public Sub WriteSetting()
   
   Project.Config.Clear("DebugWindow" &/ $sKey)
-  IF btnHidden.Value THEN Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden"] = TRUE  
-  Project.Config["DebugWindow" &/ $sKey &/ "Geometry"] = [ME.X, ME.Y, ME.W, ME.H]  
+  If btnHidden.Value Then Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden"] = True  
+  Project.Config["DebugWindow" &/ $sKey &/ "Geometry"] = [Me.X, Me.Y, Me.W, Me.H]  
   
-END
+End
 
 
-STATIC PUBLIC SUB WriteSettings()
+Static Public Sub WriteSettings()
 
-  DIM iInd AS Integer
-  DIM sFlag AS String
-  DIM hExpr AS FDebugExpr
+  Dim iInd As Integer
+  Dim sFlag As String
+  Dim hExpr As FDebugExpr
 
   sFlag = "/DebugWindow"
   iInd = 0
@@ -518,34 +518,34 @@ STATIC PUBLIC SUB WriteSettings()
 
   Project.Config[sFlag &/ "Count"] = $cAll.Count  
 
-  FOR EACH hExpr IN $cAll
-    INC iInd
+  For Each hExpr In $cAll
+    Inc iInd
     Project.Config[sFlag &/ "DebugWindow[" & CStr(iInd) & "]"] = $cAll.Key
     hExpr.WriteSetting
-  NEXT 
+  Next 
   
-END
+End
 
-STATIC PUBLIC SUB ReadSettings()
+Static Public Sub ReadSettings()
 
-  DIM iCount AS Integer
-  DIM iInd AS Integer
-  DIM sString AS String
-  DIM sArg AS String[]
-  DIM sFlag AS String
+  Dim iCount As Integer
+  Dim iInd As Integer
+  Dim sString As String
+  Dim sArg As String[]
+  Dim sFlag As String
   
   sFlag = "/DebugWindow"
   iInd = 0
   iCount = Project.Config[sFlag &/ "Count", "0"]
-  FOR iInd = 1 TO iCount
+  For iInd = 1 To iCount
     sString = Project.Config[sFlag &/ "DebugWindow[" & CStr(iInd) & "]"]
-    IF sString THEN 
-      IF NOT $cAll.Exist(sString) THEN
+    If sString Then 
+      If NOT $cAll.Exist(sString) Then
         Add(sString, YW_DUMMY_INFO) 
-      ENDIF 
-    ENDIF 
-  NEXT
-END
+      Endif 
+    Endif 
+  Next
+End
 
 
 ' PUBLIC SUB txtExpr_Change()
@@ -562,41 +562,41 @@ END
 ' 
 ' END
 
-PUBLIC SUB txtExpr_Activate()
+Public Sub txtExpr_Activate()
 
-  DIM sExpr AS String = Trim(txtExpr.Text)
+  Dim sExpr As String = Trim(txtExpr.Text)
   
-  IF sExpr THEN 
+  If sExpr Then 
     Design.SetBalloon(txtExpr)
     OpenExpr(sExpr)
     gvwExpr.SetFocus
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB txtExpr_LostFocus()
+Public Sub txtExpr_LostFocus()
   
   txtExpr.Text = $sExpr
   
-END
+End
 
 
-PUBLIC SUB txtExpr_KeyPress()
+Public Sub txtExpr_KeyPress()
 
-  IF Key.Code = Key.Escape THEN txtExpr.Text = $sExpr
+  If Key.Code = Key.Escape Then txtExpr.Text = $sExpr
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  TRY gvwExpr.Columns[0].Width = -1
+  Try gvwExpr.Columns[0].Width = -1
 
-END
+End
 
-PUBLIC SUB btnHidden_Click()
+Public Sub btnHidden_Click()
 
   $cVal.Clear
-  Init($sInfo, FALSE)
+  Init($sInfo, False)
 
-END
+End

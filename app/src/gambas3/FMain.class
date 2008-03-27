@@ -1,18 +1,18 @@
 ' Gambas class file
 
-PRIVATE $sKey AS String
-PRIVATE $bCtrl AS Boolean
-PRIVATE $bTool AS Boolean
-PRIVATE $bLock AS Boolean
-PRIVATE $sKeyDrag AS String
-PRIVATE $sDeleteKey AS String
+Private $sKey As String
+Private $bCtrl As Boolean
+Private $bTool As Boolean
+Private $bLock As Boolean
+Private $sKeyDrag As String
+Private $sDeleteKey As String
 
-PRIVATE $bUpdateRecentMenu AS Boolean
-PRIVATE $bInTreeView AS Boolean
-PRIVATE $bInRename AS Boolean
-PRIVATE $sKeyInfo AS String
+Private $bUpdateRecentMenu As Boolean
+Private $bInTreeView As Boolean
+Private $bInRename As Boolean
+Private $sKeyInfo As String
 
-PUBLIC SUB _new()
+Public Sub _new()
 
   'DEBUG ME
 
@@ -27,7 +27,6 @@ PUBLIC SUB _new()
   'FIconTool.Load(panIcon)
   FProperty.Load(panFrame)
   FFormStack.Load(panFrame)
-  tabProperty.H = tabProperty.ClientY - 2
   
   FFind.Load(panCentral)
   FFind.Next = panDebug
@@ -42,14 +41,14 @@ PUBLIC SUB _new()
   
   'tvwProject.Columns.Count = 1
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   'DEBUG
 
-  Settings.Read(ME)
+  Settings.Read(Me)
   Settings.Read(panProject, "panProject")
   Settings.Read(panProperty, "panProperty")
   Settings.Read(panTool, "panTool")
@@ -67,17 +66,17 @@ PUBLIC SUB Form_Open()
   
   mnuOpenExample.Tag = "."
 
-END
+End
 
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
-  DIM bRet AS Boolean
+  Dim bRet As Boolean
 
-  IF Project.Close() THEN
-    STOP EVENT
-  ELSE
-    Settings.Write(ME)
+  If Project.Close() Then
+    Stop Event
+  Else
+    Settings.Write(Me)
     Settings.Write(panProject, "panProject") 
     Settings.Write(panProperty, "panProperty") 
     Settings.Write(panTool, "panTool") 
@@ -91,183 +90,185 @@ PUBLIC SUB Form_Close()
     FDebugInfo.Close
     
     Design.Exit
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE SUB OpenProject()
+Private Sub OpenProject()
 
-  DIM sPath AS String
+  Dim sPath As String
 
-  sPath = FOpenProject.Run(TRUE)
-  IF NOT sPath THEN RETURN
+  sPath = FOpenProject.Run(True)
+  If NOT sPath Then Return
 
-  IF FOpenProject.InAnotherWindow THEN
+  If FOpenProject.InAnotherWindow Then
     'DEBUG Application.Path &/ Application.Name & ".gambas";; sPath
-    EXEC [Application.Path &/ Application.Name & ".gambas", sPath]
-  ELSE
+    Exec [Application.Path &/ Application.Name & ".gambas", sPath]
+  Else
     Project.Open(sPath)
     UpdateRecentMenu
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC SUB tvwProject_Activate()
+Public Sub tvwProject_Activate()
 
-  DIM sKey AS String
+  Dim sKey As String
 
   sKey = tvwProject.Key
 
-  IF sKey THEN
-    IF CanEdit(sKey) THEN
-      IF $bCtrl THEN
+  If sKey Then
+    If CanEdit(sKey) Then
+      If $bCtrl Then
         tvwProject.MoveParent
-        IF tvwProject.Item.Key = Project.KEY_FORM THEN
+        If tvwProject.Item.Key = Project.KEY_FORM Then
           sKey = Left(sKey, -5) & ".class"
-        ENDIF
-      ENDIF
+        Endif
+      Endif
       Project.OpenFile(sKey)
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
-END
+End
 
 
-PUBLIC SUB mnuEditFile_Click()
+Public Sub mnuEditFile_Click()
 
   tvwProject_Activate()
 
-END
+End
 
 
-PUBLIC SUB mnuEditClass_Click()
+Public Sub mnuEditClass_Click()
 
-  $bCtrl = TRUE
+  $bCtrl = True
   tvwProject_Activate()
 
-END
+End
 
-PUBLIC SUB mnuQuit_Click()
+Public Sub mnuQuit_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB mnuSaveFile_Click()
+Public Sub mnuSaveFile_Click()
 
-  DIM sPath AS String
-  DIM hForm AS Object
+  Dim sPath As String
+  Dim hForm As Object
 
   sPath = GetCurrent()
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
 
   hForm = Project.Files[sPath]
-  IF NOT hForm THEN RETURN
+  If NOT hForm Then Return
 
   hForm.Save
 
-END
+End
 
 
-PUBLIC SUB mnuView_Show()
+Public Sub mnuView_Show()
 
   'mnuViewTool.Checked = Project.ToolForm.Visible
   'mnuViewProperty.Checked = Project.PropertyForm.Visible
   'mnuViewMessage.Checked = Project.MessageForm.Visible
 
-END
+End
 
 
-PUBLIC SUB mnuAbout_Click()
+Public Sub mnuAbout_Click()
 
   FAbout.Run
 
-END
+End
 
 
-PUBLIC SUB mnuDeleteFile_Click()
+Public Sub mnuDeleteFile_Click()
 
-  DIM sPath AS String
-  DIM sName AS String
+  Dim sPath As String
+  Dim sName As String
 
   sPath = GetCurrent()
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
 
-  IF IsDir(sPath) THEN
+  If IsDir(sPath) Then
 
-    IF Message.Delete(File.Name(sPath) & "\n\n" & ("Do you really want to delete this directory ?"), ("Delete"), ("Cancel")) <> 1 THEN RETURN
+    If Message.Delete(File.Name(sPath) & "\n\n" & ("Do you really want to delete this directory ?"), ("Delete"), ("Cancel")) <> 1 Then Return
     Project.DeleteDir(sPath)
 
-  ELSE
+  Else
 
-    IF Project.IsClassPath(sPath) THEN
+    If Project.IsClassPath(sPath) Then
       sName = File.BaseName(sPath)
-    ELSE
+    Else
       sName = File.Name(sPath)
-    ENDIF
+    Endif
 
-    IF Message.Delete(sName & "\n\n" & ("Do you really want to delete this file ?"), ("Delete"), ("Cancel")) <> 1 THEN RETURN
+    If Message.Delete(sName & "\n\n" & ("Do you really want to delete this file ?"), ("Delete"), ("Cancel")) <> 1 Then Return
 
     Project.DeleteFile(sPath)
 
-  ENDIF
+  Endif
 
-CATCH
+Catch
 
   FGambas.Error(("Cannot delete file or directory") & "\n\n" & Error.Text)
 
-END
+End
 
 
-PUBLIC SUB tvwProject_Menu()
+Public Sub tvwProject_Menu()
 
   'mnuPopup.Enabled = TRUE
   mnuPopup.Popup
   'mnuPopup.Enabled = FALSE
 
-END
+End
 
 
-PRIVATE FUNCTION GetCurrent() AS String
+Private Function GetCurrent() As String
 
   $sKey = ""
-  IF NOT tvwProject.Key THEN RETURN
-  IF NOT tvwProject.Current.Selected THEN RETURN
+  If NOT tvwProject.Key Then Return
+  If NOT tvwProject.Current.Selected Then Return
   $sKey = tvwProject.Key
-  IF Left$($sKey) = "$" THEN RETURN
-  IF IsProject($sKey) THEN RETURN
-  RETURN $sKey
+  If Left$($sKey) = "$" Then Return
+  If IsProject($sKey) Then Return
+  Return $sKey
 
-END
+End
 
 
-PRIVATE FUNCTION GetCurrentDir(OPTIONAL sKey AS String) AS String
+Private Function GetCurrentDir(Optional sKey As String) As String
 
-  IF sKey THEN 
+  If sKey Then 
     $sKey = sKey
-  ELSE
+  Else
     GetCurrent
-  ENDIF
-  IF NOT $sKey THEN RETURN Project.Dir
-  IF $sKey = Project.KEY_MISC THEN RETURN Project.Dir
-  IF Left$($sKey) = "$" THEN RETURN
+  Endif
+  If NOT $sKey Then Return Project.Dir
+  If $sKey = Project.KEY_MISC Then Return Project.Dir
+  If $sKey = Project.KEY_PROJECT Then Return Project.Dir &/ ".hidden"
+  If Left$($sKey) = "$" Then Return
 
-  IF IsDir($sKey) THEN
-    RETURN $sKey
-  ELSE
-    RETURN File.Dir($sKey)
-  ENDIF
+  If IsDir($sKey) Then
+    Return $sKey
+  Else
+    Return File.Dir($sKey)
+  Endif
 
-END
+End
 
 
-PUBLIC SUB mnuPopup_Show()
+Public Sub mnuPopup_Show()
 
-  DIM sCurrent AS String
-  DIM bCurrent AS Boolean
-  DIM bFile AS Boolean
+  Dim sCurrent As String
+  Dim bCurrent As Boolean
+  Dim bFile As Boolean
+  Dim bCanStoreFile As Boolean
 
   sCurrent = GetCurrent()
   bCurrent = sCurrent
@@ -285,73 +286,75 @@ PUBLIC SUB mnuPopup_Show()
   'mnuPropertyFile.Enabled = bCurrent OR IsProject($sKey)
 
   mnuStartup.Visible = mnuStartup.Visible AND Project.IsClassPath(sCurrent)
-  IF mnuStartup.Visible THEN
+  If mnuStartup.Visible Then
     mnuStartup.Checked = (Project.Startup = File.BaseName(sCurrent))
-  ENDIF
+  Endif
 
+  bCanStoreFile = $sKey = Project.KEY_MISC OR $sKey = Project.KEY_PROJECT
   bFile = NOT Project.IsClassPath(sCurrent) AND bCurrent
+  
   mnuCut.Visible = mnuCut.Visible AND (bFile AND NOT IsDir($sKey))
   mnuCopy.Visible = mnuCopy.Visible AND (bFile AND NOT IsDir($sKey))
-  mnuPaste.Visible = mnuPaste.Visible AND (bFile OR $sKey = Project.KEY_MISC)
+  mnuPaste.Visible = mnuPaste.Visible AND (bFile OR bCanStoreFile)
   mnuPaste.Enabled = Clipboard.Format = MMime.FILE
 
-  IF Project.IsFormPath(sCurrent) THEN
-    mnuEditFile.Visible = FALSE
-  ELSE
-    mnuEditForm.Visible = FALSE
-    mnuEditClass.Visible = FALSE
-  ENDIF
+  If Project.IsFormPath(sCurrent) Then
+    mnuEditFile.Visible = False
+  Else
+    mnuEditForm.Visible = False
+    mnuEditClass.Visible = False
+  Endif
   
   mnuEditWith.Visible = Project.IsImagePath(sCurrent) AND mnuEditFile.Visible
   
   mnuCopyPath.Visible = mnuCopy.Visible
   
-  mnuAddDirectory.Visible = (sCurrent AND NOT Project.IsClassPath(sCurrent)) OR tvwProject.Key = Project.KEY_MISC
+  mnuAddDirectory.Visible = (sCurrent AND NOT Project.IsClassPath(sCurrent)) OR bCanStoreFile
   mnuNewFile.Visible = mnuAddDirectory.Visible
   mnuNewImage.Visible = mnuAddDirectory.Visible
   mnuNewForm.Visible = Project.AllowForm()
 
-END
+End
 
 
-PRIVATE FUNCTION FormatFile(sPath AS String) AS String
+Private Function FormatFile(sPath As String) As String
 
-  DIM sText AS String
+  Dim sText As String
 
   sText = File.Name(sPath)
 
-  IF Left$(sPath, Len(User.Home)) = User.Home THEN
+  If Left$(sPath, Len(User.Home)) = User.Home Then
     sPath = "~" &/ Mid$(sPath, Len(User.Home) + 1)
-  ENDIF
+  Endif
 
-  RETURN sText & "  (" & File.Dir(sPath) & ")"
+  Return sText & "  (" & File.Dir(sPath) & ")"
 
-END
+End
 
 
-PUBLIC SUB UpdateRecentMenu()
+Public Sub UpdateRecentMenu()
 
-  DIM hMenu AS Menu
-  DIM sPath AS String
-  DIM aList AS String[]
-  DIM bSort AS Boolean
+  Dim hMenu As Menu
+  Dim sPath As String
+  Dim aList As String[]
+  Dim bSort As Boolean
 
-  INC Application.Busy
+  Inc Application.Busy
 
   mnuOpenRecent.Children.Clear
   mnuOpenRecent.Enabled = Project.GetRecentFiles().Count > 0
 
-  IF mnuOpenRecent.Enabled THEN
+  If mnuOpenRecent.Enabled Then
 
-    hMenu = NEW Menu(mnuOpenRecent) AS "mnuClearRecent"
+    hMenu = New Menu(mnuOpenRecent) As "mnuClearRecent"
     hMenu.Text = ("&Clear history")
     hMenu.Picture = Picture["icon:/small/trash"]
   
-    bSort = Settings["/FWelcome/SortRecent", FALSE]
+    bSort = Settings["/FWelcome/SortRecent", False]
   
-    hMenu = NEW Menu(mnuOpenRecent) AS "mnuSortRecent"
+    hMenu = New Menu(mnuOpenRecent) As "mnuSortRecent"
     hMenu.Text = ("&Sort by path")
-    hMenu.Toggle = TRUE
+    hMenu.Toggle = True
     Object.Lock(hMenu)
     hMenu.Checked = bSort
     Object.Unlock(hMenu)
@@ -359,27 +362,27 @@ PUBLIC SUB UpdateRecentMenu()
   
     aList = Project.GetRecentFiles(bSort)
   
-    hMenu = NEW Menu(mnuOpenRecent)
+    hMenu = New Menu(mnuOpenRecent)
   
-    FOR EACH sPath IN aList
-      hMenu = NEW Menu(mnuOpenRecent) AS "mnuOpenRecentFile"
+    For Each sPath In aList
+      hMenu = New Menu(mnuOpenRecent) As "mnuOpenRecentFile"
       hMenu.Tag = sPath
       hMenu.Text = FormatFile(sPath)
       hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
-    NEXT
+    Next
     
-  ENDIF
+  Endif
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
-PUBLIC SUB mnuSortRecent_Click()
+Public Sub mnuSortRecent_Click()
   
-  Settings["/FWelcome/SortRecent"] = NOT Settings["/FWelcome/SortRecent", FALSE]
+  Settings["/FWelcome/SortRecent"] = NOT Settings["/FWelcome/SortRecent", False]
   UpdateRecentMenu
   
-END
+End
 
 
 ' PUBLIC SUB UpdateRunWithMenu()
@@ -420,29 +423,29 @@ END
 ' END
 
 
-PRIVATE SUB UpdateExampleMenu(OPTIONAL hParent AS Menu)
+Private Sub UpdateExampleMenu(Optional hParent As Menu)
 
-  DIM hMenu AS Menu
-  DIM aList AS String[]
-  DIM iInd AS Integer
-  DIM sPath AS String
-  DIM sParent AS String
-  DIM sDir AS String
+  Dim hMenu As Menu
+  Dim aList As String[]
+  Dim iInd As Integer
+  Dim sPath As String
+  Dim sParent As String
+  Dim sDir As String
 
-  IF NOT hParent THEN hParent = mnuOpenExample
+  If NOT hParent Then hParent = mnuOpenExample
   
-  IF NOT hParent.Tag THEN RETURN
+  If NOT hParent.Tag Then Return
   
-  INC Application.Busy 
+  Inc Application.Busy 
 
   hParent.Children.Clear
 
   aList = Project.GetExamples(hParent.Tag)
   hParent.Tag = ""
 
-  IF aList THEN 
+  If aList Then 
   
-    FOR EACH sPath IN aList
+    For Each sPath In aList
   
       ' IF InStr(sPath, "/") THEN
       '   sDir = File.Dir(sPath)
@@ -457,62 +460,62 @@ PRIVATE SUB UpdateExampleMenu(OPTIONAL hParent AS Menu)
       '   sParent = ""
       ' ENDIF
   
-      IF Exist(Project.EXAMPLES_DIR &/ sPath &/ ".project") THEN
-        hMenu = NEW Menu(hParent) AS "mnuOpenRecentFile"
+      If Exist(Project.EXAMPLES_DIR &/ sPath &/ ".project") Then
+        hMenu = New Menu(hParent) As "mnuOpenRecentFile"
         hMenu.Tag = Project.EXAMPLES_DIR &/ sPath
         hMenu.Text = File.Name(sPath) 'FormatFile(sPath)
         hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
-      ELSE 
-        hMenu = NEW Menu(hParent) AS "mnuOpenExample"
+      Else 
+        hMenu = New Menu(hParent) As "mnuOpenExample"
         hMenu.Tag = sPath
         hMenu.Text = Project.ExampleTitle[File.Name(sPath)]
-        hMenu = NEW Menu(hMenu)
-      ENDIF
+        hMenu = New Menu(hMenu)
+      Endif
   
-    NEXT
+    Next
     
-  ENDIF
+  Endif
     
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PUBLIC SUB mnuOpenRecentFile_Click()
+Public Sub mnuOpenRecentFile_Click()
 
-  Project.Open(LAST.Tag)
+  Project.Open(Last.Tag)
   UpdateRecentMenu
 
-END
+End
 
 
-PUBLIC SUB mnuClearRecent_Click()
+Public Sub mnuClearRecent_Click()
 
   Project.ClearRecent
   UpdateRecentMenu
 
-END
+End
 
 
 
-PRIVATE SUB NewProject()
+Private Sub NewProject()
 
-  DIM sPath AS String
+  Dim sPath As String
 
   sPath = FCreateProject.Run()
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
 
   Project.Open(sPath)
   UpdateRecentMenu
 
-END
+End
 
 
-PUBLIC SUB mnuTip_Click()
+Public Sub mnuTip_Click()
 
   FTips.Run
 
-END
+End
 
 
 ' PUBLIC SUB mnuAddIcon_Click()
@@ -530,61 +533,61 @@ END
 ' 
 ' END
 
-PRIVATE SUB Rename(sKey AS String)
+Private Sub Rename(sKey As String)
   
-  $bInRename = TRUE
+  $bInRename = True
   tvwProject[sKey].Rename
   
-END
+End
 
 
-PUBLIC SUB mnuAddDirectory_Click()
+Public Sub mnuAddDirectory_Click()
 
-  DIM sPath AS String
-  DIM iInd AS Integer = 1
+  Dim sPath As String
+  Dim iInd As Integer = 1
 
   sPath = GetCurrentDir() &/ ("New folder")
-  WHILE Exist(sPath)
-    INC iInd
+  While Exist(sPath)
+    Inc iInd
     sPath = GetCurrentDir() &/ ("New folder") & " (" & iInd & ")"
-  WEND
+  Wend
   
-  IF NOT Project.InsertDirectory(sPath, TRUE) THEN RETURN
+  If NOT Project.InsertDirectory(sPath, True) Then Return
   $sDeleteKey = sPath
 
   Rename(sPath)  
   'IF FNewDirectory.Run(GetCurrentDir()) THEN RETURN
   'Project.InsertDirectory(FNewDirectory.ParentDir &/ FNewDirectory.Name)
 
-END
+End
 
 
-PRIVATE FUNCTION CanEdit(sPath AS String) AS Boolean
+Private Function CanEdit(sPath As String) As Boolean
 
-  IF NOT sPath THEN RETURN
-  IF Left$(sPath) = "$" THEN RETURN
-  RETURN NOT IsDir(sPath)
+  If NOT sPath Then Return
+  If Left$(sPath) = "$" Then Return
+  Return NOT IsDir(sPath)
 
-END
-
-
-PRIVATE FUNCTION CanDelete(sPath AS String) AS Boolean
-
-  IF NOT sPath THEN RETURN
-  IF Left$(sPath) = "$" THEN RETURN
-  RETURN tvwProject[sPath].Count = 0
-
-END
+End
 
 
-PUBLIC SUB UpdateTranslate()
+Private Function CanDelete(sPath As String) As Boolean
+
+  If NOT sPath Then Return
+  If Left$(sPath) = "$" Then Return
+  Return tvwProject[sPath].Count = 0
+
+End
+
+
+Public Sub UpdateTranslate()
 
   Action["translate"].Visible = Project.Localize AND NOT (Project.ReadOnly OR Project.Running)
   'Action["component"].Visible = Project.CreateComponent 'AND NOT (Project.ReadOnly OR Project.Running)
 
-END
+End
 
-PUBLIC SUB UpdateConsoleAction(bDebug AS Boolean)
+Public Sub UpdateConsoleAction(bDebug As Boolean)
   
   'DIM bVal AS Boolean
 
@@ -594,59 +597,59 @@ PUBLIC SUB UpdateConsoleAction(bDebug AS Boolean)
   panDebug.Action = If(FOutput.Parent, "console", "")
   FOutput.Action = If(FOutput.Parent, "", "console")
 
-  IF FOutput.Parent THEN 
+  If FOutput.Parent Then 
     Action["console"].Value = NOT panDebug.Hidden
-  ELSE 
+  Else 
     Action["console"].Value = FOutput.Visible
-  ENDIF
+  Endif
 
   'Action["console"].Value = bVal  
 
-END
+End
 
 
-PRIVATE SUB Translate()
+Private Sub Translate()
 
-  IF Project.Running THEN RETURN
-  IF Project.Compile() THEN RETURN
+  If Project.Running Then Return
+  If Project.Compile() Then Return
   
-  IF Project.CheckProgram("msgmerge") OR IF Project.CheckProgram("msgfmt") THEN
+  If Project.CheckProgram("msgmerge") OR If Project.CheckProgram("msgfmt") Then
     Message.Warning(("The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."))
-    RETURN
-  ENDIF
+    Return
+  Endif
   
   FTranslate.Run
 
-END
+End
 
 
-PUBLIC SUB mnuDatabaseManager_Click()
+Public Sub mnuDatabaseManager_Click()
 
   Project.RunTool("gambas" & System.Version & "-database-manager")
 
-END
+End
 
 
 
-PUBLIC SUB mnuStartup_Click()
+Public Sub mnuStartup_Click()
 
-  IF mnuStartup.Checked THEN RETURN
-  mnuStartup.Checked = TRUE
+  If mnuStartup.Checked Then Return
+  mnuStartup.Checked = True
   Project.DefineStartup(GetCurrent())
 
-END
+End
 
 
-PRIVATE FUNCTION IsProject(sKey AS String) AS Boolean
+Private Function IsProject(sKey As String) As Boolean
 
-  RETURN sKey = Project.Dir
+  Return sKey = Project.Dir
 
-END
+End
 
 
-PUBLIC SUB mnuCopy_Click()
+Public Sub mnuCopy_Click()
 
-  DIM sPath AS String
+  Dim sPath As String
 
   'DEBUG 
 
@@ -655,71 +658,71 @@ PUBLIC SUB mnuCopy_Click()
 
   mnuPopup_Show
 
-END
+End
 
-PUBLIC SUB mnuCopyPath_Click()
+Public Sub mnuCopyPath_Click()
   
-  DIM sPath AS String
+  Dim sPath As String
 
   sPath = GetCurrent()
-  IF Left(sPath, Len(Project.Dir)) = Project.Dir THEN
+  If Left(sPath, Len(Project.Dir)) = Project.Dir Then
     sPath = Mid$(sPath, Len(Project.Dir) + 2)
     'IF Left(sPath) = "/" THEN sPath = Mid$(sPath, 2)
-  ENDIF
+  Endif
 
   Clipboard.Copy(sPath)
   
-END
+End
 
 
 
-PUBLIC SUB mnuCut_Click()
+Public Sub mnuCut_Click()
 
-  DIM sPath AS String
+  Dim sPath As String
 
   sPath = GetCurrent()
   Clipboard.Copy("X" & sPath, MMime.FILE)
 
-END
+End
 
 
-PUBLIC SUB mnuPaste_Click()
+Public Sub mnuPaste_Click()
 
-  DIM sFile AS String
-  DIM sAction AS String
-  DIM sSrc AS String
-  DIM sDst AS String
+  Dim sFile As String
+  Dim sAction As String
+  Dim sSrc As String
+  Dim sDst As String
 
   sFile = Clipboard.Paste(MMime.FILE)
   sAction = Left$(sFile)
   sSrc = Mid$(sFile, 2)
   sDst = GetCurrentDir() &/ File.Name(sFile)
 
-  SELECT CASE sAction
+  Select Case sAction
 
-    CASE "C"
+    Case "C"
       Project.CopyFile(sSrc, sDst)
       Rename(tvwProject.Key)
 
-    CASE "X"
-      IF sSrc = sDst THEN RETURN
+    Case "X"
+      If sSrc = sDst Then Return
       Project.MoveFile(sSrc, sDst)
       Clipboard.Clear
 
-  END SELECT
+  End Select
 
-END
+End
 
 
-PUBLIC SUB tvwProject_Select()
+Public Sub tvwProject_Select()
 
-  DIM sKey AS String
-  DIM sSave AS String
-  DIM aKey AS String[]
-  DIM hEdit AS Editor
-  DIM iLine AS Integer
-  DIM iCol AS Integer
-  DIM iLen AS Integer
+  Dim sKey As String
+  Dim sSave As String
+  Dim aKey As String[]
+  Dim hEdit As Editor
+  Dim iLine As Integer
+  Dim iCol As Integer
+  Dim iLen As Integer
 
   sKey = tvwProject.Key
   ' WITH tvwProject.Current
@@ -728,9 +731,9 @@ PUBLIC SUB tvwProject_Select()
 
   mnuPopup_Show
   
-  IF tvwProject.Current.Children THEN tvwProject.Current.Expanded = TRUE
+  If tvwProject.Current.Children Then tvwProject.Current.Expanded = True
 
-END
+End
 
 ' PUBLIC SUB tvwProject_Expand()
 ' 
@@ -748,13 +751,13 @@ END
 ' 
 ' END
 
-PUBLIC SUB mnuCloseAll_Click()
+Public Sub mnuCloseAll_Click()
 
   Project.CloseAll
 
-END
+End
 
-PUBLIC SUB ReadConfig()
+Public Sub ReadConfig()
 
 '   DIM hFont AS Font
 '
@@ -766,16 +769,20 @@ PUBLIC SUB ReadConfig()
 '
 '   tvwProject.Font = hFont
 
-  tvwProject.Font.Grade = If(Settings["/UseSmallFont", FALSE], -2, 0)
+  tvwProject.Font.Grade = - Settings["/GlobalFont", 0]
   lblMessage.Font = tvwProject.Font
+  tabProperty.Font.Grade = - Settings["/TabStripFont", 0]
+  wrkProject.Font = tabProperty.Font
   'wrkProject.Font = tvwProject.Font
   'tabProperty.Font = tvwProject.Font
   panMessage.Height = lblMessage.Font.Height("") + 2
   '$bCanShowBalloon = Settings["/ShowBalloon", TRUE]
   'IF NOT $bCanShowBalloon THEN HideBalloon
-  panMessage.Visible = Settings["/ShowMessages", TRUE]
+  panMessage.Visible = Settings["/ShowMessages", True]
 
-END
+  tabProperty.H = tabProperty.ClientY - 2
+
+End
 
 ' PUBLIC SUB mnuViewDebug_Click()
 ' 
@@ -783,9 +790,9 @@ END
 ' 
 ' END
 
-PRIVATE SUB UpdateMenu()
+Private Sub UpdateMenu()
 
-  DIM bVisible AS Boolean
+  Dim bVisible As Boolean
 
   bVisible = NOT (Project.ReadOnly OR Project.Running)
 
@@ -807,32 +814,32 @@ PRIVATE SUB UpdateMenu()
   
   mnuClearDebugWindows.Enabled = Project.Running
 
-END
+End
 
 
-PUBLIC SUB OnProjectChange()
+Public Sub OnProjectChange()
 
   UpdateMenu
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
 
-END
+End
 
 
-PUBLIC SUB OnProjectDebug()
+Public Sub OnProjectDebug()
 
   UpdateMenu
 
-END
+End
 
 
 
-PUBLIC SUB tvwProject_MouseDown()
+Public Sub tvwProject_MouseDown()
 
   $bCtrl = Mouse.Control
   
-END 
+End 
 
 ' PUBLIC SUB Form_Show()
 ' 
@@ -841,30 +848,30 @@ END
 ' END
 
 
-PUBLIC SUB ShowTool(bShow AS Boolean)
+Public Sub ShowTool(bShow As Boolean)
 
-  IF bShow <> panProperty.Hidden THEN RETURN
+  If bShow <> panProperty.Hidden Then Return
 
-  IF NOT bShow THEN $bTool = NOT panTool.Hidden
+  If NOT bShow Then $bTool = NOT panTool.Hidden
   
   Action["property"].Value = bShow
   Action["control"].Value = bShow AND $bTool
   
-END
+End
 
 
-PUBLIC SUB ShowDebug(bShow AS Boolean)
+Public Sub ShowDebug(bShow As Boolean)
   
   panDebug.Hidden = NOT bShow
   'FDebugInfo.UpdateView
   
-END
+End
 
-PUBLIC SUB HideDebug(bHide AS Boolean)
+Public Sub HideDebug(bHide As Boolean)
   
   panDebug.Visible = NOT bHide
   
-END
+End
 
 
 ' PUBLIC SUB mnuHideAll_Click()
@@ -900,478 +907,478 @@ END
 '   
 ' END
 
-PUBLIC SUB wrkProject_Activate()
+Public Sub wrkProject_Activate()
 
   Project.Activate(wrkProject.ActiveWindow)
 
-END
+End
 
-PUBLIC SUB ActivateCurrentWindow()
+Public Sub ActivateCurrentWindow()
   
-  TRY wrkProject.ActiveWindow.SetFocus
+  Try wrkProject.ActiveWindow.SetFocus
   wrkProject_Activate ' If it already has the focus
   
-END
+End
 
 
-PUBLIC SUB Action_Activate(Key AS String) AS Boolean
+Public Sub Action_Activate(Key As String) As Boolean
 
-  DIM hEditor AS FEditor
+  Dim hEditor As FEditor
 
   'DEBUG Key
   
-  SELECT Key
+  Select Key
 
-    CASE "project"
+    Case "project"
       panProject.Hidden = NOT Action[Key].Value
-    CASE "start"
-      Project.Run(FALSE)
-    CASE "pause"
+    Case "start"
+      Project.Run(False)
+    Case "pause"
       Design.Pause
-    CASE "stop"
+    Case "stop"
       Design.Stop
-    CASE "forward"
-      Project.Run(FALSE, 2)
-    CASE "step"
-      Project.Run(FALSE, 1)
-    CASE "return"
-      Project.Run(FALSE, 3)
+    Case "forward"
+      Project.Run(False, 2)
+    Case "step"
+      Project.Run(False, 1)
+    Case "return"
+      Project.Run(False, 3)
 
-    CASE "new-project"
+    Case "new-project"
       NewProject
-    CASE "open-project"
+    Case "open-project"
       OpenProject
-    CASE "save-project"
+    Case "save-project"
       Project.Save
-    CASE "save-project-as"
+    Case "save-project-as"
       Project.SaveAs
-    CASE "refresh-project"
+    Case "refresh-project"
       Project.Refresh
-    CASE "project-property"
+    Case "project-property"
       FPropertyProject.Run
-    CASE "translate"
+    Case "translate"
       Translate
-    CASE "compile"
+    Case "compile"
       Project.Compile()
-    CASE "compile-all"
-      Project.Compile(TRUE)
-    CASE "archive"
+    Case "compile-all"
+      Project.Compile(True)
+    Case "archive"
       Project.MakePackage
-    CASE "exec"
+    Case "exec"
       Project.MakeExecutable
-    CASE "install"
+    Case "install"
       Project.MakeInstall
       
-    CASE "find-next"
+    Case "find-next"
       FFind.FindNext
-    CASE "find-previous"
+    Case "find-previous"
       FFind.FindPrevious
-    CASE "replace"
+    Case "replace"
       FFind.Replace
-    CASE "replace-all"
+    Case "replace-all"
       FFind.ReplaceAll
-    CASE "find-all"
+    Case "find-all"
       FFind.FindAll
     
-    CASE "help"
+    Case "help"
       MHelp.Open
-    CASE "console"
-      TRY FOutput.SetFocus
+    Case "console"
+      Try FOutput.SetFocus
       'FOutput.Toggle(Action["console"].Value)
     
-    CASE "break"
+    Case "break"
       hEditor = Project.ActiveForm
-      IF NOT ERROR THEN Design.SetBreakpoint(hEditor.Name, hEditor.Editor.Line, Action["break"].Value)
-    CASE "watch"
+      If NOT Error Then Design.SetBreakpoint(hEditor.Name, hEditor.Editor.Line, Action["break"].Value)
+    Case "watch"
       hEditor = Project.ActiveForm
-      IF NOT ERROR THEN hEditor.WatchExpression
-    CASE "until"
+      If NOT Error Then hEditor.WatchExpression
+    Case "until"
       hEditor = Project.ActiveForm
-      IF NOT ERROR THEN hEditor.RunUntil
-    CASE "info"
+      If NOT Error Then hEditor.RunUntil
+    Case "info"
       FInfo.Run
 
-  END SELECT 
+  End Select 
   
-END
+End
 
-PUBLIC SUB Form_Activate()
+Public Sub Form_Activate()
 
   'DEBUG
-  mnuPopup.Enabled = TRUE
+  mnuPopup.Enabled = True
 
-END
+End
 
-PUBLIC SUB Form_Deactivate()
-
-  'DEBUG
-  mnuPopup.Enabled = FALSE
-
-END
-
-PUBLIC SUB wrkProject_WindowMenu()
+Public Sub Form_Deactivate()
 
   'DEBUG
+  mnuPopup.Enabled = False
 
-END
+End
 
-PUBLIC SUB mnuUpdateForm_Click()
+Public Sub wrkProject_WindowMenu()
 
-  DIM sForm AS String
-  DIM hForm AS FForm
+  'DEBUG
+
+End
+
+Public Sub mnuUpdateForm_Click()
+
+  Dim sForm As String
+  Dim hForm As FForm
   
-  IF Message.Warning(("Do you really want to update all forms?"), ("Update"), ("Cancel")) <> 1 THEN RETURN
+  If Message.Warning(("Do you really want to update all forms?"), ("Update"), ("Cancel")) <> 1 Then Return
 
-  INC Application.Busy
+  Inc Application.Busy
   
-  FOR EACH sForm IN Dir(Project.Dir, "*.form")
+  For Each sForm In Dir(Project.Dir, "*.form")
     hForm = Project.LoadFile(Project.Dir &/ sForm)
     hForm.Modify
     hForm.Save
-  NEXT
+  Next
   
-  DEC Application.Busy
+  Dec Application.Busy
 
-CATCH 
+Catch 
   
-  DEC Application.Busy
+  Dec Application.Busy
   FGambas.Error(("Unable to update all forms.") & "\n\n" & Error.Text)
 
-END
+End
 
-PUBLIC SUB tvwProject_Rename()
+Public Sub tvwProject_Rename()
 
-  DIM sPath AS String
-  DIM sNew AS String
+  Dim sPath As String
+  Dim sNew As String
 
-  $bInRename = FALSE
+  $bInRename = False
   sPath = GetCurrent()
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
 
   'DEBUG Before;; tvwProject.Item.Text
-  IF $sDeleteKey THEN
+  If $sDeleteKey Then
     sNew = File.Dir($sDeleteKey) &/ tvwProject.Item.Text
-    Project.DeleteDir(sPath, TRUE)
+    Project.DeleteDir(sPath, True)
     Project.InsertDirectory(sNew)
     $sDeleteKey = ""
-  ELSE
+  Else
     Project.RenameFile(sPath, tvwProject.Item.Text)
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB mnuRenameFile_Click()
+Public Sub mnuRenameFile_Click()
   
   Rename(tvwProject.Key)
   
-END
+End
 
-PRIVATE SUB IsDataKey(sKey AS String) AS Boolean
+Private Sub IsDataKey(sKey As String) As Boolean
 
-  DIM sPrevious AS String
+  Dim sPrevious As String
   
   tvwProject.MoveTo(sKey)
-  DO
+  Do
     tvwProject.MoveParent
-    IF NOT tvwProject.Available THEN BREAK
+    If NOT tvwProject.Available Then Break
     sPrevious = sKey
     sKey = tvwProject.Item.Key
-  LOOP 
+  Loop 
   
-  RETURN sPrevious = Project.KEY_MISC
+  Return sPrevious = Project.KEY_MISC OR sPrevious = Project.KEY_PROJECT
   
-END
+End
 
 
-PUBLIC SUB tvwProject_DragMove()
+Public Sub tvwProject_DragMove()
 
-  DIM sKey AS String
+  Dim sKey As String
 
-  IF Drag.Format = MMime.DATA THEN 
-    IF NOT tvwProject.Find(Drag.X, Drag.Y) THEN 
+  If Drag.Format = MMime.DATA Then 
+    If NOT tvwProject.Find(Drag.X, Drag.Y) Then 
       $sKey = tvwProject.Item.Key
-      IF IsDataKey($sKey) THEN
-        WITH tvwProject[$sKey] 
-          IF .Children THEN 
-            IF NOT timOpen.Enabled OR $sKey <> $sKeyDrag THEN 
+      If IsDataKey($sKey) Then
+        With tvwProject[$sKey] 
+          If .Children Then 
+            If NOT timOpen.Enabled OR $sKey <> $sKeyDrag Then 
               $sKeyDrag = $sKey
-              timOpen.Enabled = TRUE
-            ENDIF
-          ELSE  
-            timOpen.Enabled = FALSE
-          ENDIF
+              timOpen.Enabled = True
+            Endif
+          Else  
+            timOpen.Enabled = False
+          Endif
           Drag.Show(tvwProject, .X, .Y, .W, .H)
           'Drag.Show(tvwProject)
-        END WITH
-        RETURN
-      ENDIF
-    ENDIF
-  ELSE 
+        End With
+        Return
+      Endif
+    Endif
+  Else 
     'DEBUG Drag.Format;; Drag.Data
-  ENDIF
+  Endif
   
-  STOP EVENT
+  Stop Event
 
-END
+End
 
-PUBLIC SUB tvwProject_Drop()
+Public Sub tvwProject_Drop()
 
-  DIM sSrc AS String = Drag.Data
+  Dim sSrc As String = Drag.Data
   
   'DEBUG Drag.Format;; Drag.Data
   
-  IF Drag.Action = Drag.Move THEN
+  If Drag.Action = Drag.Move Then
     Project.MoveFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
-  ELSE IF Drag.Action = Drag.Copy THEN
+  Else If Drag.Action = Drag.Copy Then
     Project.CopyFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
-  ELSE IF Drag.Action = Drag.Link THEN
+  Else If Drag.Action = Drag.Link Then
     Project.LinkFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC SUB tvwProject_MouseDrag()
+Public Sub tvwProject_MouseDrag()
 
-  DIM sKey AS String
+  Dim sKey As String
   
-  IF NOT Mouse.Left THEN RETURN
+  If NOT Mouse.Left Then Return
   
   sKey = GetCurrent()
-  IF NOT sKey THEN RETURN
+  If NOT sKey Then Return
   'if tvwProject[sKey].Parent.Key
-  IF Project.IsClassPath(sKey) THEN RETURN
-  IF sKey = Project.KEY_MISC THEN RETURN
+  If Project.IsClassPath(sKey) Then Return
+  If sKey = Project.KEY_MISC OR sKey = Project.KEY_PROJECT Then Return
   
   Drag.Icon = tvwProject.Current.Picture
   Drag(tvwProject, sKey, MMime.DATA)
   
-END
+End
 
-PUBLIC SUB timOpen_Timer()
+Public Sub timOpen_Timer()
 
-  IF Drag.Pending THEN TRY tvwProject[$sKeyDrag].Expanded = TRUE
-  timOpen.Enabled = FALSE
+  If Drag.Pending Then Try tvwProject[$sKeyDrag].Expanded = True
+  timOpen.Enabled = False
 
-END
+End
 
-PUBLIC SUB mnuNewFile_Click()
+Public Sub mnuNewFile_Click()
   
-  FCreateFile.Run(GetCurrent(), GetCurrentDir(), LAST.Tag)
+  FCreateFile.Run(GetCurrent(), GetCurrentDir(), Last.Tag)
   
-END
+End
 
-PUBLIC SUB tvwProject_Cancel()
+Public Sub tvwProject_Cancel()
 
-  DIM sPath AS String
+  Dim sPath As String
 
-  $bInRename = FALSE
+  $bInRename = False
   sPath = GetCurrent()
-  IF NOT sPath THEN RETURN
+  If NOT sPath Then Return
   
-  IF sPath = $sDeleteKey THEN Project.DeleteDir(sPath, TRUE)
+  If sPath = $sDeleteKey Then Project.DeleteDir(sPath, True)
   $sDeleteKey = ""
 
-END
+End
 
-PUBLIC SUB tvwProject_Expand()
+Public Sub tvwProject_Expand()
   
-  DIM sKey AS String = tvwProject.Item.Key
-  IF NOT sKey THEN RETURN
-  IF Left(sKey) = "$" THEN RETURN
+  Dim sKey As String = tvwProject.Item.Key
+  If NOT sKey Then Return
+  If Left(sKey) = "$" Then Return
   Project.FillDir(sKey)  
     
-END
+End
 
 
-PUBLIC SUB tvwProject_Collapse()
+Public Sub tvwProject_Collapse()
 
-  DIM sKey AS String = tvwProject.Item.Key
-  IF NOT sKey THEN RETURN
-  IF File.Dir(sKey) = Project.Dir AND IF NOT IsDir(sKey) THEN tvwProject[sKey].Expanded = TRUE
+  Dim sKey As String = tvwProject.Item.Key
+  If NOT sKey Then Return
+  If File.Dir(sKey) = Project.Dir AND If NOT IsDir(sKey) Then tvwProject[sKey].Expanded = True
 
-END
+End
 
-PUBLIC SUB mnuClean_Click()
+Public Sub mnuClean_Click()
 
-  IF Message.Warning(("All backup or generated files will be removed from the project directory."), ("Clean"), ("Cancel")) = 2 THEN RETURN 
+  If Message.Warning(("All backup or generated files will be removed from the project directory."), ("Clean"), ("Cancel")) = 2 Then Return 
   
   Project.CleanUp
 
-END
+End
 
-PUBLIC SUB mnuEnv_Click()
+Public Sub mnuEnv_Click()
 
   FProjectEnv.Run  
 
-END
+End
 
-PUBLIC SUB mnuClearBreakpoints_Click()
+Public Sub mnuClearBreakpoints_Click()
   
   Design.ClearBreakpoints
   
-END
+End
 
-PUBLIC SUB panInfo_Show()
+Public Sub panInfo_Show()
 
   'RefreshInfo  
   
-END
+End
 
 
-PUBLIC SUB mnuOpenRecent_Show()
+Public Sub mnuOpenRecent_Show()
 
-  IF $bUpdateRecentMenu THEN RETURN
+  If $bUpdateRecentMenu Then Return
   UpdateRecentMenu
-  $bUpdateRecentMenu = TRUE
+  $bUpdateRecentMenu = True
   
-END
+End
 
-PUBLIC SUB OnUpdateRecent()
+Public Sub OnUpdateRecent()
   
-  $bUpdateRecentMenu = FALSE
+  $bUpdateRecentMenu = False
   
-END
+End
 
-PUBLIC SUB mnuOpenExample_Show()
+Public Sub mnuOpenExample_Show()
   
-  UpdateExampleMenu(LAST)
+  UpdateExampleMenu(Last)
   
-END
+End
 
-PUBLIC SUB tabProperty_Click()
+Public Sub tabProperty_Click()
 
-  WITH tabProperty
+  With tabProperty
 
-  SELECT CASE .Index
+  Select Case .Index
   
-    CASE 0
+    Case 0
       FFormStack.Hide
       'FProperty.Move(.X, .Y + .ClientY - 2, .W, .ClientH + 2)
       FProperty.Show
     
-    CASE 1
+    Case 1
       FProperty.Hide
       'FFormStack.Move(.X, .Y + .ClientY - 2, .W, .ClientH + 2)
       FFormStack.Show
   
-  END SELECT 
+  End Select 
   
-  END WITH
+  End With
   
-END
+End
 
-PUBLIC SUB panProperty_Arrange()
+Public Sub panProperty_Arrange()
 
   tabProperty_Click  
 
-END
+End
 
-PUBLIC SUB tvwProject_Leave()
+Public Sub tvwProject_Leave()
 
-  $bInTreeView = FALSE
+  $bInTreeView = False
 
-END
+End
 
-PUBLIC SUB tvwProject_Enter()
+Public Sub tvwProject_Enter()
 
-  $bInTreeView = TRUE  
+  $bInTreeView = True  
 
-END
+End
 
-PUBLIC SUB HidePanels()
+Public Sub HidePanels()
   
-  Action["find"].Value = FALSE
-  Action["console"].Value = FALSE
+  Action["find"].Value = False
+  Action["console"].Value = False
   Balloon.Hide
   
-END
+End
 
 
-PUBLIC SUB Form_KeyPress()
+Public Sub Form_KeyPress()
   
-  IF Key.Code = Key.Escape THEN HidePanels
+  If Key.Code = Key.Escape Then HidePanels
   
-END
+End
 
-PUBLIC SUB ActivatePropertyTab()
+Public Sub ActivatePropertyTab()
   
   tabProperty.Index = 0
   
-END
+End
 
-PUBLIC SUB SetMessage(sMsg AS String)
+Public Sub SetMessage(sMsg As String)
   
   lblMessage.Text = sMsg
   timMessage.Stop
   timMessage.Start
-  WAIT
+  Wait
   
-END
+End
 
-PUBLIC SUB timMessage_Timer()
+Public Sub timMessage_Timer()
 
   lblMessage.Text = ""
   timMessage.Stop
 
-END
+End
 
-PUBLIC SUB mnuBrowse_Click()
+Public Sub mnuBrowse_Click()
 
   Desktop.Open(Project.Dir)
 
-END
+End
 
-PUBLIC SUB mnuEditWith_Show()
+Public Sub mnuEditWith_Show()
   
-  DIM sApp AS String
-  DIM hMenu AS Menu
+  Dim sApp As String
+  Dim hMenu As Menu
   
   mnuEditWith.Children.Clear
-  FOR EACH sApp IN Project.ImageEditors
-    hMenu = NEW Menu(mnuEditWith) AS "mnuEditWithProg"
+  For Each sApp In Project.ImageEditors
+    hMenu = New Menu(mnuEditWith) As "mnuEditWithProg"
     hMenu.Caption = sApp
-  NEXT
+  Next
   
-END
+End
 
-PUBLIC SUB mnuEditWithProg_Click()
+Public Sub mnuEditWithProg_Click()
   
-  DIM sKey AS String = tvwProject.Key
+  Dim sKey As String = tvwProject.Key
 
-  IF sKey THEN
-    IF CanEdit(sKey) THEN
-      Project.OpenImage(sKey, LAST.Text)
-    ENDIF
-  ENDIF
+  If sKey Then
+    If CanEdit(sKey) Then
+      Project.OpenImage(sKey, Last.Text)
+    Endif
+  Endif
 
-END
+End
 
 
-PUBLIC SUB mnuClearDebugWindows_Click()
+Public Sub mnuClearDebugWindows_Click()
 
   FDebugExpr.Clear
 
-END
+End
 
-PUBLIC SUB mnuFind_Click()
+Public Sub mnuFind_Click()
 
   FFind.Find
 
-END
+End
 
-PUBLIC SUB ToolButton6_Click()
+Public Sub ToolButton6_Click()
 
   'Desktop.SendKeys("ù£æ")
   tvwProject.MoveFirst
   tvwProject.MoveLast
-  WHILE tvwProject.Item.Children
+  While tvwProject.Item.Children
     tvwProject.MoveChild
     tvwProject.MoveLast
-  WEND
-  WHILE tvwProject.Available
-    PRINT tvwProject.Item.Key
+  Wend
+  While tvwProject.Available
+    Print tvwProject.Item.Key
     tvwProject.MoveAbove
-  WEND
+  Wend
 
-END
+End

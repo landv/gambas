@@ -1,59 +1,59 @@
 ' Gambas class file
 
-PRIVATE $sMenuSystem AS String
-PRIVATE $sGroupSystem AS String
-PRIVATE $cCatCache AS NEW Collection
-PRIVATE $sLastCat AS String
+Private $sMenuSystem As String
+Private $sGroupSystem As String
+Private $cCatCache As New Collection
+Private $sLastCat As String
 
-PRIVATE SUB MakeChangeLog() AS String
+Private Sub MakeChangeLog() As String
 
-  DIM aLine AS String[]
-  DIM sLine AS String
-  DIM sChangeLog AS String
+  Dim aLine As String[]
+  Dim sLine As String
+  Dim sChangeLog As String
  
   aLine = Split(txtChange.Text, "\n")
-  FOR EACH sLine IN aLine
+  For Each sLine In aLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF Left(sLine) <> "-" THEN sLine = "- " & sLine
+    If NOT sLine Then Continue
+    If Left(sLine) <> "-" Then sLine = "- " & sLine
     sChangeLog &= sLine & "\n"
-  NEXT
+  Next
 
   sChangeLog = "* " & Package.GetChangeDate() & "\n" & sChangeLog & "\n"
 
   sChangeLog &= txtChangeLog.Text
-  RETURN sChangeLog
+  Return sChangeLog
   
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   
-  IF Project.Maintainer THEN
+  If Project.Maintainer Then
     txtName.Text = Project.Maintainer
-  ELSE 
+  Else 
     txtName.Text = System.User.Name
-  ENDIF
+  Endif
   
   txtName.SelectAll
   txtName.SetFocus
   
-  IF Project.Address THEN
+  If Project.Address Then
     txtMail.Text = Project.Address
-  ELSE 
+  Else 
     txtMail.Text = System.User.Name & "@" & System.Host
-  ENDIF
+  Endif
   
   txtVendor.Text = Project.Vendor
   
-  IF Project.License THEN
+  If Project.License Then
     txtLicense.Text = Project.License
-  ELSE 
+  Else 
     txtLicense.Text = "General Public Licence"
-  ENDIF
+  Endif
   
   txtDescribe.Text = Project.Description
 
-  TRY txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
+  Try txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
 
   chkPrefix.Value = Project.Prefix
   chkUseRelease.Value = Project.UseRelease
@@ -63,271 +63,271 @@ PUBLIC SUB Form_Open()
 
   UpdatePackageName
 
-  cmbCategories.List = Split(File.Load("install/categories"), "\n", "", TRUE)
+  cmbCategories.List = Split(File.Load("install/categories"), "\n", "", True)
 
   txtLicense.List = ["General Public Licence", "Freeware", "Public Domain", "Lesser General Public Licence", "Other Licence(s)", "Non-Free Licence"]
   
-  IF Project.CreateComponent THEN 
-    chkPrefix.Value = TRUE
-    chkPrefix.Enabled = FALSE
-  ENDIF 
+  If Project.CreateComponent Then 
+    chkPrefix.Value = True
+    chkPrefix.Enabled = False
+  Endif 
 
-END
+End
 
-PUBLIC SUB wizInstall_Cancel()
+Public Sub wizInstall_Cancel()
 
-  ME.Close  
+  Me.Close  
 
-END
+End
 
-PRIVATE SUB UpdatePackageName()
+Private Sub UpdatePackageName()
   
-  DIM sVendor AS String
-  DIM sText AS String
+  Dim sVendor As String
+  Dim sText As String
 
-  IF Project.CreateComponent THEN
+  If Project.CreateComponent Then
 
     sVendor = String.LCase(Trim(txtVendor.Text))
-    IF NOT sVendor THEN sVendor = "gb"
-    IF LCase(Project.Name) LIKE sVendor & ".*" THEN 
+    If NOT sVendor Then sVendor = "gb"
+    If LCase(Project.Name) LIKE sVendor & ".*" Then 
       sVendor = ""
-    ELSE 
+    Else 
       sVendor &= "-"
-    ENDIF
+    Endif
     sText = "gambas" & System.Version & "-" & sVendor & Replace(LCase(Project.Name), ".", "-")
   
-  ELSE
+  Else
 
-    IF chkPrefix.Value THEN
+    If chkPrefix.Value Then
       sVendor = String.LCase(Trim(txtVendor.Text))
-      IF NOT sVendor THEN sVendor = "gambas"
+      If NOT sVendor Then sVendor = "gambas"
       sText = sVendor & "-" & LCase(Project.Name)
-    ELSE
+    Else
       sText = LCase(Project.Name)
-    ENDIF
+    Endif
     
-  ENDIF
+  Endif
   
   sText &= Subst("-&1.&2", Project.MajorVersion, Project.MinorVersion)
-  IF chkUseRelease.Value THEN sText &= "." & Project.ReleaseVersion
+  If chkUseRelease.Value Then sText &= "." & Project.ReleaseVersion
   
   txtPackage.Text = sText
   
-END
+End
 
 
-PUBLIC SUB chkPrefix_Click()
+Public Sub chkPrefix_Click()
 
   UpdatePackageName
 
-END
+End
 
-PRIVATE SUB GetSystemControls() AS Object[]
+Private Sub GetSystemControls() As Object[]
   
-  DIM aObject AS NEW Object[]
-  DIM hCtrl AS Control
-  DIM hCont AS Container
-  DIM hCheck AS CheckBox
+  Dim aObject As New Object[]
+  Dim hCtrl As Control
+  Dim hCont As Container
+  Dim hCheck As CheckBox
 
-  FOR EACH hCont IN panSystem.Children
-    FOR EACH hCtrl IN hCont.Children
-      IF hCtrl IS CheckBox THEN
+  For Each hCont In panSystem.Children
+    For Each hCtrl In hCont.Children
+      If hCtrl IS CheckBox Then
         aObject.Add(hCtrl)
-      ENDIF
-    NEXT
-  NEXT
+      Endif
+    Next
+  Next
   
-  RETURN aObject  
+  Return aObject  
   
-END
+End
 
-PRIVATE SUB InitSystemControls()
+Private Sub InitSystemControls()
   
-  DIM aObject AS NEW Object[]
-  DIM hCtrl AS Control
-  DIM hCont AS Container
-  DIM sMsg AS String
-  DIM hPanel AS Panel
-  DIM hPict AS PictureBox
-  DIM hLabel AS TextLabel
-  DIM hTool AS ToolButton
-  DIM hCheckBox AS CheckBox
+  Dim aObject As New Object[]
+  Dim hCtrl As Control
+  Dim hCont As Container
+  Dim sMsg As String
+  Dim hPanel As Panel
+  Dim hPict As PictureBox
+  Dim hLabel As TextLabel
+  Dim hTool As ToolButton
+  Dim hCheckBox As CheckBox
 
-  INC Application.Busy
+  Inc Application.Busy
   
   Package.CheckProgram
   
-  FOR EACH hCont IN panSystem.Children
+  For Each hCont In panSystem.Children
   
     sMsg = Package.CheckSystem(hCont.Tag)
     
-    hPanel = NULL
-    FOR EACH hCtrl IN hCont.Children
-      IF hCtrl IS ToolButton THEN
+    hPanel = Null
+    For Each hCtrl In hCont.Children
+      If hCtrl IS ToolButton Then
         hTool = hCtrl
-      ELSE IF hCtrl IS CheckBox THEN 
+      Else If hCtrl IS CheckBox Then 
         hCheckBox = hCtrl
-      ELSE IF hCtrl IS Panel THEN 
+      Else If hCtrl IS Panel Then 
         hPanel = hCtrl
-      ENDIF 
-    NEXT
+      Endif 
+    Next
     
-    IF NOT hPanel THEN 
+    If NOT hPanel Then 
     
-      hPanel = NEW Panel(hCont)
+      hPanel = New Panel(hCont)
       hPanel.Border = Border.Plain
       hPanel.Background = &HFFFFDF& ' Light Yellow
       hPanel.Arrangement = Arrange.Horizontal
       hPanel.Spacing = 8
       hPanel.Padding = 4
-      hPanel.Expand = TRUE
+      hPanel.Expand = True
       
-      hPict = NEW PictureBox(hPanel)
+      hPict = New PictureBox(hPanel)
       hPict.Picture = Picture["icon:/32/warning"]
       hPict.Width = 32
       
-      hLabel = NEW TextLabel(hPanel)
+      hLabel = New TextLabel(hPanel)
       hLabel.Text = sMsg
-      hLabel.Expand = TRUE
+      hLabel.Expand = True
 
-    ENDIF
+    Endif
 
     hCheckBox.Enabled = NOT sMsg
-    IF NOT hCheckBox.Enabled THEN hCheckBox.Value = FALSE
+    If NOT hCheckBox.Enabled Then hCheckBox.Value = False
 
-    hTool.Design = TRUE
+    hTool.Design = True
     hTool.Enabled = hCheckBox.Value
-    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2, TRUE).Picture
+    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2, True).Picture
     
     hPanel.Visible = sMsg
 
-  NEXT
+  Next
   
-  DEC Application.Busy
+  Dec Application.Busy
   
-END
+End
 
 
-PRIVATE SUB InitSystems()
+Private Sub InitSystems()
 
-  DIM hCtrl AS CheckBox
-  DIM hCont AS Container
-  DIM hCheck AS CheckBox
+  Dim hCtrl As CheckBox
+  Dim hCont As Container
+  Dim hCheck As CheckBox
 
-  FOR EACH hCtrl IN GetSystemControls()
+  For Each hCtrl In GetSystemControls()
     hCtrl.Value = hCtrl.Enabled AND Project.Systems.Find(hCtrl.Parent.Tag) >= 0
-  NEXT
+  Next
 
-END
+End
 
-PUBLIC SUB wizInstall_Close()
+Public Sub wizInstall_Close()
 
   Project.WriteProject
   
-  IF Package.Make() THEN RETURN
+  If Package.Make() Then Return
   
-  IF Message.Warning(("The packages have been successfully created."), ("Close"), ("Retry")) = 2 THEN RETURN
+  If Message.Warning(("The packages have been successfully created."), ("Close"), ("Retry")) = 2 Then Return
   
-  ME.Close
+  Me.Close
 
-END
+End
 
-PRIVATE FUNCTION CheckSys(cCol AS Collection) AS Boolean
+Private Function CheckSys(cCol As Collection) As Boolean
 
-  DIM sSys AS String
+  Dim sSys As String
 
-  FOR EACH sSys IN Project.Systems
-    IF sSys = "autotools" THEN CONTINUE
-    IF NOT cCol.Exist(sSys) THEN RETURN TRUE
-  NEXT
+  For Each sSys In Project.Systems
+    If sSys = "autotools" Then Continue
+    If NOT cCol.Exist(sSys) Then Return True
+  Next
 
-END
+End
 
 
-PUBLIC SUB wizInstall_BeforeChange()
+Public Sub wizInstall_BeforeChange()
 
-  DIM sName AS String
-  DIM sDir AS String
-  DIM iSize AS Integer
+  Dim sName As String
+  Dim sDir As String
+  Dim iSize As Integer
 
-  SELECT CASE wizInstall.Index
+  Select Case wizInstall.Index
 
-    CASE 0
+    Case 0
       Project.Maintainer = Trim(txtName.Text)
       Project.Address = Trim(txtMail.Text)
       Project.Vendor = Trim(txtVendor.Text)
       Project.License = Trim(txtLicense.Text)
 
-      IF NOT Project.Maintainer THEN
+      If NOT Project.Maintainer Then
         Message.Warning(("Please enter your name."))
-        STOP EVENT
-        RETURN
-      ENDIF
-      IF NOT Project.Address THEN
+        Stop Event
+        Return
+      Endif
+      If NOT Project.Address Then
         Message.Warning(("Please enter your e-mail address."))
-        STOP EVENT
-        RETURN
-      ENDIF
+        Stop Event
+        Return
+      Endif
 
       Project.Description = txtDescribe.Text
       Project.Prefix = chkPrefix.Value
       Project.UseRelease = chkUseRelease.Value
 
-    CASE 1
-      IF NOT Trim(txtChange.Text) THEN 
-        IF Message.Warning(("There is no CHANGELOG entry for this release."), ("Continue"), ("Cancel")) = 2 THEN 
-          STOP EVENT
-          RETURN 
-        ENDIF
-      ENDIF
+    Case 1
+      If NOT Trim(txtChange.Text) Then 
+        If Message.Warning(("There is no CHANGELOG entry for this release."), ("Continue"), ("Cancel")) = 2 Then 
+          Stop Event
+          Return 
+        Endif
+      Endif
       Package.ChangeLog = MakeChangeLog()
-      IF NOT Package.ChangeLog THEN
+      If NOT Package.ChangeLog Then
         Message.Warning(("Please enter the first CHANGELOG entry."))
-        STOP EVENT
-        RETURN
-      ENDIF
+        Stop Event
+        Return
+      Endif
 
       InitSystemControls      
 
-    CASE 2
+    Case 2
       Project.Systems = GetSystems()
-      IF Project.Systems.Count = 0 THEN
+      If Project.Systems.Count = 0 Then
         Message.Warning(("Please choose at least one target distribution."))
-        STOP EVENT
-        RETURN
-      ENDIF
-      IF Project.Systems.Count = 1 AND IF Project.Systems[0] = "autotools" THEN 
-        wizInstall[3].Enabled = FALSE
-        wizInstall[4].Enabled = FALSE
-      ELSE
-        wizInstall[3].Enabled = TRUE
-        wizInstall[4].Enabled = TRUE
-      ENDIF
-      IF Project.CreateComponent
-        wizInstall[4].Enabled = FALSE
-      ENDIF
+        Stop Event
+        Return
+      Endif
+      If Project.Systems.Count = 1 AND If Project.Systems[0] = "autotools" Then 
+        wizInstall[3].Enabled = False
+        wizInstall[4].Enabled = False
+      Else
+        wizInstall[3].Enabled = True
+        wizInstall[4].Enabled = True
+      Endif
+      If Project.CreateComponent
+        wizInstall[4].Enabled = False
+      Endif
 
-    CASE 3
-      IF CheckSys(Project.Groups) THEN
-        IF cmbGroup.Count > 1 THEN
+    Case 3
+      If CheckSys(Project.Groups) Then
+        If cmbGroup.Count > 1 Then
           Message.Warning(("Please choose the package group for each target distribution."))
-        ELSE 
+        Else 
           Message.Warning(("Please choose a package group."))
-        ENDIF
-        STOP EVENT
-        RETURN
-      ENDIF
+        Endif
+        Stop Event
+        Return
+      Endif
 
-    CASE 4
-      IF CheckSys(Project.Menus) THEN
-        IF cmbMenu.Count > 1 THEN
+    Case 4
+      If CheckSys(Project.Menus) Then
+        If cmbMenu.Count > 1 Then
           Message.Warning(("Please choose the menu location for each target distribution."))
-        ELSE 
+        Else 
           Message.Warning(("Please choose a menu location."))          
-        ENDIF 
-        STOP EVENT
-        RETURN
-      ENDIF
+        Endif 
+        Stop Event
+        Return
+      Endif
       
       ' IF CheckSys(Project.Categories) THEN
       '   IF cmbMenu.Count > 1 THEN
@@ -339,310 +339,310 @@ PUBLIC SUB wizInstall_BeforeChange()
       '   RETURN
       ' ENDIF
       
-    CASE 5
+    Case 5
       Package.Path = dchInstall.SelectedPath
-      IF Package.Path = Project.Dir OR IF Package.Path LIKE Project.Dir &/ "/*" THEN 
+      If Package.Path = Project.Dir OR If Package.Path LIKE Project.Dir &/ "/*" Then 
         Message.Warning(("The package cannot be stored inside the project directory."))
-        STOP EVENT 
-        RETURN 
-      ENDIF
+        Stop Event 
+        Return 
+      Endif
 
-  END SELECT
+  End Select
   
-END 
+End 
 
-PUBLIC SUB wizInstall_Change()
+Public Sub wizInstall_Change()
 
-  SELECT CASE wizInstall.Index
+  Select Case wizInstall.Index
 
-    CASE 1
+    Case 1
       lblChangeDate.Text = Package.GetChangeDate()
-      IF NOT txtChangeLog.Text THEN txtChange.Text = ("Initial release")
+      If NOT txtChangeLog.Text Then txtChange.Text = ("Initial release")
       txtChange.SetFocus
       
-    CASE 3
+    Case 3
       InitGroupTree
       cmbGroup.Visible = cmbGroup.Count > 1
       
-    CASE 4
+    Case 4
       InitMenuTree
       cmbMenu.Visible = cmbMenu.Count > 1
 
-  END SELECT
+  End Select
 
-END
+End
 
-PRIVATE FUNCTION GetSystems() AS String[]
+Private Function GetSystems() As String[]
 
-  DIM hCtrl AS CheckBox
-  DIM aSys AS NEW String[]
+  Dim hCtrl As CheckBox
+  Dim aSys As New String[]
 
-  FOR EACH hCtrl IN GetSystemControls()
-    IF hCtrl.Value THEN aSys.Add(hCtrl.Parent.Tag)
-  NEXT
+  For Each hCtrl In GetSystemControls()
+    If hCtrl.Value Then aSys.Add(hCtrl.Parent.Tag)
+  Next
 
-  RETURN aSys
+  Return aSys
 
-END
-
-
-PRIVATE FUNCTION GetSystemNames(OPTIONAL bRemoveSystemWithoutMenu AS Boolean) AS String[]
-
-  DIM hCtrl AS CheckBox
-  DIM aSys AS NEW String[]
-
-  FOR EACH hCtrl IN GetSystemControls()
-    IF bRemoveSystemWithoutMenu AND IF hCtrl.Parent.Tag = "autotools" THEN CONTINUE
-    IF hCtrl.Value THEN aSys.Add(hCtrl.Text)
-  NEXT
-
-  RETURN aSys
-
-END
+End
 
 
+Private Function GetSystemNames(Optional bRemoveSystemWithoutMenu As Boolean) As String[]
 
-PRIVATE FUNCTION GetSystemFromName(sName AS String) AS String
+  Dim hCtrl As CheckBox
+  Dim aSys As New String[]
 
-  DIM hCtrl AS CheckBox
+  For Each hCtrl In GetSystemControls()
+    If bRemoveSystemWithoutMenu AND If hCtrl.Parent.Tag = "autotools" Then Continue
+    If hCtrl.Value Then aSys.Add(hCtrl.Text)
+  Next
 
-  FOR EACH hCtrl IN GetSystemControls()
-    IF hCtrl.Text = sName THEN RETURN hCtrl.Parent.Tag
-  NEXT
+  Return aSys
 
-END
-
-
-PUBLIC FUNCTION GetSystemName(sTag AS String) AS String
-
-  DIM hCtrl AS CheckBox
-
-  FOR EACH hCtrl IN GetSystemControls()
-    IF hCtrl.Parent.Tag = sTag THEN RETURN hCtrl.Text
-  NEXT
-
-END
+End
 
 
 
-PUBLIC SUB AddLog(sText AS String, OPTIONAL bNoNewLine AS Boolean)
+Private Function GetSystemFromName(sName As String) As String
+
+  Dim hCtrl As CheckBox
+
+  For Each hCtrl In GetSystemControls()
+    If hCtrl.Text = sName Then Return hCtrl.Parent.Tag
+  Next
+
+End
+
+
+Public Function GetSystemName(sTag As String) As String
+
+  Dim hCtrl As CheckBox
+
+  For Each hCtrl In GetSystemControls()
+    If hCtrl.Parent.Tag = sTag Then Return hCtrl.Text
+  Next
+
+End
+
+
+
+Public Sub AddLog(sText As String, Optional bNoNewLine As Boolean)
 
   txtLog.Insert(sText)
-  IF NOT bNoNewLine THEN txtLog.Insert("\n")
-  WAIT
+  If NOT bNoNewLine Then txtLog.Insert("\n")
+  Wait
 
-END
+End
 
-PRIVATE SUB FillComboWithSystems(hCombo AS ComboBox)
+Private Sub FillComboWithSystems(hCombo As ComboBox)
 
-  DIM sSys AS String
+  Dim sSys As String
 
   hCombo.Clear
 
-  FOR EACH sSys IN GetSystemNames(TRUE)
+  For Each sSys In GetSystemNames(True)
     hCombo.Add(sSys)
-  NEXT
+  Next
 
   hCombo.Index = 0
 
-END
+End
 
 
-PRIVATE SUB InitMenuTree()
+Private Sub InitMenuTree()
 
   FillComboWithSystems(cmbMenu)
 
-END
+End
 
 
-PRIVATE SUB InitGroupTree()
+Private Sub InitGroupTree()
 
   FillComboWithSystems(cmbGroup)
 
-END
+End
 
-PRIVATE SUB FindCategoriesFromMenu(sMenu AS String) AS String
+Private Sub FindCategoriesFromMenu(sMenu As String) As String
   
-  DIM sCat AS String
-  DIM aCat AS NEW String[]
+  Dim sCat As String
+  Dim aCat As New String[]
   
   sMenu = Replace(sMenu, " ", "")
   
-  FOR EACH sCat IN Split(sMenu, "/")
-    IF cmbCategories.Find(sCat) >= 0 THEN aCat.Add(sCat)
-  NEXT
+  For Each sCat In Split(sMenu, "/")
+    If cmbCategories.Find(sCat) >= 0 Then aCat.Add(sCat)
+  Next
   
-  RETURN aCat.Join(";")
+  Return aCat.Join(";")
   
-END
+End
 
 
-PRIVATE SUB FillTreeWith(hTree AS TreeView, sTitle AS String, sIcon AS String, sFile AS String, hTextBox AS TextBox, sSelect AS String, OPTIONAL bCat AS Boolean)
+Private Sub FillTreeWith(hTree As TreeView, sTitle As String, sIcon As String, sFile As String, hTextBox As TextBox, sSelect As String, Optional bCat As Boolean)
 
-  DIM hFile AS File
-  DIM sLig AS String
-  DIM iLevel AS Integer
-  DIM iNewLevel AS Integer
-  DIM sParent AS String
-  DIM sKey AS String
-  DIM iPos AS Integer
-  DIM sCat AS String
-  DIM sAdd AS String
-  DIM sElt AS String
+  Dim hFile As File
+  Dim sLig As String
+  Dim iLevel As Integer
+  Dim iNewLevel As Integer
+  Dim sParent As String
+  Dim sKey As String
+  Dim iPos As Integer
+  Dim sCat As String
+  Dim sAdd As String
+  Dim sElt As String
   
   hTree.Clear
-  hTree.Add("/", sTitle, Picture[sIcon]).Expanded = TRUE
+  hTree.Add("/", sTitle, Picture[sIcon]).Expanded = True
   sParent = "/"
   
-  IF bCat THEN
+  If bCat Then
     $cCatCache.Clear
     $sLastCat = ""
-  ENDIF
+  Endif
 
-  OPEN sFile AS #hFile
+  Open sFile As #hFile
 
-  WHILE NOT Eof(hFile)
+  While NOT Eof(hFile)
 
-    LINE INPUT #hFile, sLig
+    Line Input #hFile, sLig
     sLig = RTrim(sLig)
-    IF NOT sLig THEN CONTINUE
+    If NOT sLig Then Continue
 
-    IF bCat THEN
+    If bCat Then
       iPos = InStr(sLig, "#")
-      IF iPos THEN 
+      If iPos Then 
         sCat = Trim(Mid(sLig, iPos + 1))
         sLig = RTrim(Left(sLig, iPos - 1))
-      ELSE 
+      Else 
         sCat = ""
-      ENDIF  
-    ENDIF
+      Endif  
+    Endif
 
-    IF InStr(sLig, "/") THEN 
+    If InStr(sLig, "/") Then 
     
       sKey = "/"
       sParent = "/"
       
-      FOR EACH sElt IN Split(Trim(sLig), "/")
+      For Each sElt In Split(Trim(sLig), "/")
         sKey &/= sElt
-        IF NOT hTree.Exist(sKey) THEN
-          hTree.Add(sKey, File.Name(sKey),, sParent).Expanded = TRUE
-          hTree[sParent].Expanded = TRUE
-        ENDIF
+        If NOT hTree.Exist(sKey) Then
+          hTree.Add(sKey, File.Name(sKey),, sParent).Expanded = True
+          hTree[sParent].Expanded = True
+        Endif
         sParent = sKey
-      NEXT
+      Next
       
       sParent = File.Dir(sLig)
-      IF sParent = "" THEN sParent = "/"
+      If sParent = "" Then sParent = "/"
       sLig = File.Name(sLig)
     
-    ELSE
+    Else
 
       iNewLevel = Len(sLig) - Len(LTrim(sLig))
   
-      IF iNewLevel > iLevel THEN
+      If iNewLevel > iLevel Then
         sParent = sKey
-      ELSE IF iNewLevel < iLevel THEN
-        WHILE iLevel > iNewLevel
+      Else If iNewLevel < iLevel Then
+        While iLevel > iNewLevel
           hTree.MoveTo(sParent)
-          IF hTree.MoveParent() THEN
+          If hTree.MoveParent() Then
             sParent = ""
-          ELSE
+          Else
             sParent = hTree.Item.Key
-          ENDIF
-          DEC iLevel
-        WEND
-      ENDIF
+          Endif
+          Dec iLevel
+        Wend
+      Endif
   
       iLevel = iNewLevel
 
-      IF sParent = "" THEN sParent = "/"
+      If sParent = "" Then sParent = "/"
       sKey = sParent &/ Trim(sLig)
   
       hTree.Add(sKey, Trim(sLig),, sParent)
-      hTree[sParent].Expanded = TRUE
+      hTree[sParent].Expanded = True
       'DEBUG sKey
     
-    ENDIF
+    Endif
     
-    IF bCat THEN
+    If bCat Then
       sAdd = FindCategoriesFromMenu(sKey)
-      IF sAdd AND IF sCat THEN sCat &= ";"
+      If sAdd AND If sCat Then sCat &= ";"
       $cCatCache[sKey] = sCat & sAdd
-    ENDIF 
+    Endif 
     
-  WEND
+  Wend
 
-  CLOSE #hFile
+  Close #hFile
 
   sSelect = "/" &/ sSelect
   hTextBox.Clear
-  IF sSelect THEN
-    TRY hTree[sSelect].Selected = TRUE
-    TRY hTree[sSelect].EnsureVisible
-  ENDIF
+  If sSelect Then
+    Try hTree[sSelect].Selected = True
+    Try hTree[sSelect].EnsureVisible
+  Endif
 
-END
+End
 
 
 
-PUBLIC SUB cmbMenu_Click()
+Public Sub cmbMenu_Click()
 
   $sMenuSystem = GetSystemFromName(cmbMenu.Text)
 
   cmbCategories.Text = Project.Categories[$sMenuSystem]
-  FillTreeWith(tvwMenu, ("Menus"), "img/16/menu.png", "install/menu" &/ $sMenuSystem, txtMenu, Project.Menus[$sMenuSystem], TRUE)
+  FillTreeWith(tvwMenu, ("Menus"), "img/16/menu.png", "install/menu" &/ $sMenuSystem, txtMenu, Project.Menus[$sMenuSystem], True)
 
-END
+End
 
-PRIVATE SUB AddCategory(sAdd AS String)
+Private Sub AddCategory(sAdd As String)
   
-  DIM sAll AS String = cmbCategories.Text & ";" & sAdd
-  DIM aCat AS NEW String[]
-  DIM sCat AS String
+  Dim sAll As String = cmbCategories.Text & ";" & sAdd
+  Dim aCat As New String[]
+  Dim sCat As String
   
-  FOR EACH sCat IN Split(sAll, ";").Sort()
-    IF NOT sCat THEN CONTINUE 
-    IF aCat.Exist(sCat) THEN CONTINUE 
+  For Each sCat In Split(sAll, ";").Sort()
+    If NOT sCat Then Continue 
+    If aCat.Exist(sCat) Then Continue 
     aCat.Add(sCat)
-  NEXT
+  Next
   
   cmbCategories.Text = aCat.Join(";")
   
-END
+End
 
-PRIVATE SUB RemoveCategory(sAdd AS String)
+Private Sub RemoveCategory(sAdd As String)
   
-  DIM aRemove AS String[] = Split(sAdd, ";")
-  DIM aCat AS NEW String[]
-  DIM sCat AS String
+  Dim aRemove As String[] = Split(sAdd, ";")
+  Dim aCat As New String[]
+  Dim sCat As String
   
-  FOR EACH sCat IN Split(cmbCategories.Text, ";").Sort()
-    IF NOT sCat THEN CONTINUE 
-    IF aRemove.Exist(sCat) THEN CONTINUE 
+  For Each sCat In Split(cmbCategories.Text, ";").Sort()
+    If NOT sCat Then Continue 
+    If aRemove.Exist(sCat) Then Continue 
     aCat.Add(sCat)
-  NEXT
+  Next
   
   cmbCategories.Text = aCat.Join(";")
   
-END
+End
 
 
 
-PUBLIC SUB tvwMenu_Select()
+Public Sub tvwMenu_Select()
 
-  DIM sMenu AS String
+  Dim sMenu As String
 
-  IF tvwMenu.Item.Children THEN RETURN
+  If tvwMenu.Item.Children Then Return
 
   RemoveCategory($sLastCat)
   $sLastCat = $cCatCache[tvwMenu.Key]
   AddCategory($sLastCat)
 
   tvwMenu.MoveCurrent
-  WHILE tvwMenu.Item.Key <> "/"
+  While tvwMenu.Item.Key <> "/"
     sMenu = tvwMenu.Item.Text &/ sMenu
     tvwMenu.MoveParent
-  WEND
+  Wend
 
   txtMenu.Text = sMenu
   
@@ -651,78 +651,78 @@ PUBLIC SUB tvwMenu_Select()
   Project.Menus[$sMenuSystem] = sMenu
   Project.Categories[$sMenuSystem] = cmbCategories.Text
   
-END
+End
 
-PUBLIC SUB cmbGroup_Click()
+Public Sub cmbGroup_Click()
 
   $sGroupSystem = GetSystemFromName(cmbGroup.Text)
 
   txtGroup.Clear
   FillTreeWith(tvwGroup, ("Groups"), "icon:/small/package", "install/group" &/ $sGroupSystem, txtMenu, Project.Groups[$sGroupSystem])
 
-END
+End
 
-PUBLIC SUB tvwGroup_Select()
+Public Sub tvwGroup_Select()
 
-  DIM sGroup AS String
+  Dim sGroup As String
 
   tvwGroup.MoveCurrent
-  WHILE tvwGroup.Item.Key <> "/"
+  While tvwGroup.Item.Key <> "/"
     sGroup = tvwGroup.Item.Text &/ sGroup
     tvwGroup.MoveParent
-  WEND
+  Wend
 
   txtGroup.Text = sGroup
   Project.Groups[GetSystemFromName(cmbGroup.Text)] = sGroup
 
-END
+End
 
-PUBLIC SUB cmbCategories_LostFocus()
+Public Sub cmbCategories_LostFocus()
 
   AddCategory("")
   Project.Categories[$sMenuSystem] = cmbCategories.Text  
 
-END
+End
 
-PUBLIC SUB cmbCategories_Click()
+Public Sub cmbCategories_Click()
 
-  DIM sCat AS String = cmbCategories[cmbCategories.Index].Text
+  Dim sCat As String = cmbCategories[cmbCategories.Index].Text
   
   cmbCategories.Text = Project.Categories[$sMenuSystem]
   AddCategory(sCat)  
   Project.Categories[$sMenuSystem] = cmbCategories.Text  
 
-END
+End
 
-PUBLIC SUB tvwMenu_Collapse()
+Public Sub tvwMenu_Collapse()
 
-  tvwMenu.Item.Expanded = TRUE  
+  tvwMenu.Item.Expanded = True  
 
-END
+End
 
-PUBLIC SUB tvwGroup_Collapse()
+Public Sub tvwGroup_Collapse()
 
-  tvwGroup.Item.Expanded = TRUE    
+  tvwGroup.Item.Expanded = True    
 
-END
+End
 
-PUBLIC SUB chkDistro_Click()
+Public Sub chkDistro_Click()
 
-  DIM hCheckBox AS CheckBox = LAST
-  DIM hButton AS ToolButton = hCheckBox.Previous
+  Dim hCheckBox As CheckBox = Last
+  Dim hButton As ToolButton = hCheckBox.Previous
   
   hButton.Enabled = hCheckBox.Value
   
-END
+End
 
-PUBLIC SUB txtVendor_Change()
+Public Sub txtVendor_Change()
 
   UpdatePackageName  
 
-END
+End
 
-PUBLIC SUB chkUseRelease_Click()
+Public Sub chkUseRelease_Click()
 
   UpdatePackageName
 
-END
+End

@@ -1,178 +1,178 @@
 ' Gambas class file
 
-PRIVATE $iCol AS Integer
-PRIVATE $sText AS String
-PRIVATE $bLoaded AS Boolean
-PRIVATE $sMode AS String
-PRIVATE $iLen AS Integer
-PRIVATE $bUserChoice AS Boolean
-PRIVATE $iMaxLen AS Integer
+Private $iCol As Integer
+Private $sText As String
+Private $bLoaded As Boolean
+Private $sMode As String
+Private $iLen As Integer
+Private $bUserChoice As Boolean
+Private $iMaxLen As Integer
 
-PUBLIC SUB RefreshLibrary()
+Public Sub RefreshLibrary()
 
-  $bLoaded = FALSE
+  $bLoaded = False
 
-END
-
-
-PRIVATE FUNCTION GetEditor() AS Editor
-
-  DIM hForm AS FEditor
-
-  hForm = ME.Parent.Window
-  RETURN hForm.Editor
-
-END
+End
 
 
-PRIVATE FUNCTION GetClass() AS String
+Private Function GetEditor() As Editor
+
+  Dim hForm As FEditor
+
+  hForm = Me.Parent.Window
+  Return hForm.Editor
+
+End
+
+
+Private Function GetClass() As String
   
-  DIM hForm AS FEditor
+  Dim hForm As FEditor
 
-  hForm = ME.Parent.Window
-  RETURN hForm.Name  
+  hForm = Me.Parent.Window
+  Return hForm.Name  
   
-END
+End
 
-PUBLIC SUB Open(sMode AS String, OPTIONAL sClass AS String, OPTIONAL bStatic AS Boolean, OPTIONAL bPrivate AS Boolean)
+Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As Boolean, Optional bPrivate As Boolean)
 
-  DIM hEditor AS Editor
-  DIM iX AS Integer
-  DIM iY AS Integer
-  DIM iLeft AS Integer
-  DIM iPos AS Integer
+  Dim hEditor As Editor
+  Dim iX As Integer
+  Dim iY As Integer
+  Dim iLeft As Integer
+  Dim iPos As Integer
 
   hEditor = GetEditor()
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  $bUserChoice = FALSE
+  $bUserChoice = False
   $sMode = sMode
   $iLen = 0
   $iMaxLen = 16
   $iCol = hEditor.Column + 1
   
-  SELECT $sMode
-    CASE "."
+  Select $sMode
+    Case "."
       '$sText = FEditor.GetIdentifier(hEditor.Lines[hEditor.Line], $iCol)
       $sText = ""
-      IF Len(sClass) = 1 THEN 
-        DEC Application.Busy
-        RETURN
-      ENDIF 
+      If Len(sClass) = 1 Then 
+        Dec Application.Busy
+        Return
+      Endif 
       FillWithSymbol(sClass, bStatic, bPrivate)
-    CASE " "
+    Case " "
       $sText = ""
       FillWithClasses
-    CASE "A"
+    Case "A"
       $sText = sClass
       $iLen = Len(sClass)
       iLeft = $iLen
       $iCol -= Len(sClass)
       FillWithIdent(sClass)
-    CASE "_"
+    Case "_"
       FillWithSpecial()
-    CASE "<"
+    Case "<"
       $sText = sClass
       iLeft = Len(sClass)
       iPos = InStr(sClass, "_")
-      IF iPos THEN 
+      If iPos Then 
         $iLen = iPos
-      ELSE
+      Else
         $iLen = 3
-      ENDIF
+      Endif
       $iCol -= Len(sClass) + 2
       FillWithIdent(Left$(sClass, $iLen))
-  END SELECT
+  End Select
 
-  IF lvwComp.Count = 0 THEN
-    DEC Application.Busy
-    RETURN
-  ENDIF
+  If lvwComp.Count = 0 Then
+    Dec Application.Busy
+    Return
+  Endif
   
-  ME.Resize(($iMaxLen + 6) * ME.Font.Width("A"), (Max(18, ME.Font.Height(" ") + 3)) * Min(8, lvwComp.Count) + 2)
+  Me.Resize(($iMaxLen + 6) * Me.Font.Width("A"), (Max(18, Me.Font.Height(" ") + 3)) * Min(8, lvwComp.Count) + 2)
 
   'PRINT "Open: $hEditor = "; $hEditor
 
-  IF sMode = "<" OR sMode = "A" THEN 
-    IF FindItem(TRUE) THEN 
-      DEC Application.Busy
-      RETURN
-    ENDIF 
-  ELSE 
+  If sMode = "<" OR sMode = "A" Then 
+    If FindItem(True) Then 
+      Dec Application.Busy
+      Return
+    Endif 
+  Else 
     lvwComp.MoveFirst
-    lvwComp.Item.Selected = TRUE
+    lvwComp.Item.Selected = True
     lvwComp.Item.EnsureVisible
-  ENDIF 
+  Endif 
 
   iX = hEditor.X + hEditor.CursorX - iLeft * hEditor.Font.Width("X")
 
-  IF sMode = "<" THEN 'Key.Code = Key.Backspace THEN
+  If sMode = "<" Then 'Key.Code = Key.Backspace THEN
     iX = iX - hEditor.Font.Width(String.Mid$(hEditor.Lines[hEditor.Line].Text, hEditor.Column, 1))
-  ELSE
+  Else
     iX = iX + hEditor.Font.Width(Key.Text)
-  ENDIF
+  Endif
 
-  iX = Max(0, Min(iX, ME.Parent.Window.ClientW - ME.Width))
+  iX = Max(0, Min(iX, Me.Parent.Window.ClientW - Me.Width))
 
   iY = hEditor.Y + hEditor.CursorY + hEditor.LineHeight
 
-  IF (iY + ME.Height) > (hEditor.Y + hEditor.H) THEN
-    iY = hEditor.Y + hEditor.CursorY - ME.Height
-  ENDIF
+  If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
+    iY = hEditor.Y + hEditor.CursorY - Me.Height
+  Endif
 
-  ME.Move(iX, iY)
-  ME.Show
-  ME.Raise
+  Me.Move(iX, iY)
+  Me.Show
+  Me.Raise
   hEditor.SetFocus
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
-PUBLIC SUB SetText(sText AS String)
+Public Sub SetText(sText As String)
   
   $sText = sText
-  FindItem(TRUE)
+  FindItem(True)
   
-END
+End
 
 
-PRIVATE SUB AddClassesAndFill(aClass AS String[], OPTIONAL sBegin AS String)
+Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   
-  DIM sClass AS String
-  DIM sLib AS String
-  DIM iType AS Integer
-  DIM hPic AS NEW Object[5]
-  DIM aLib AS String[]
+  Dim sClass As String
+  Dim sLib As String
+  Dim iType As Integer
+  Dim hPic As New Object[5]
+  Dim aLib As String[]
 
   CComponent.All["gb"].Load
 
   sBegin &= "*"
 
-  FOR EACH sClass IN Project.GetClasses()
-    IF sClass LIKE sBegin THEN aClass.Add(sClass & " 1")
+  For Each sClass In Project.GetClasses()
+    If sClass LIKE sBegin Then aClass.Add(sClass & " 1")
     'TRY lvwComp.Add(sClass, sClass)
-  NEXT
+  Next
 
   aLib = Project.Libraries.Copy()
   aLib.Add("gb", 0)
 
-  FOR EACH sLib IN aLib
-    IF NOT CComponent.All.Exist(sLib) THEN CONTINUE
+  For Each sLib In aLib
+    If NOT CComponent.All.Exist(sLib) Then Continue
     CComponent.All[sLib].Load
-    FOR EACH sClass IN CComponent.All[sLib].ClassList
-      IF IsLetter(Left$(sClass)) THEN
-        IF sClass LIKE sBegin THEN 
-          IF CComponent.Classes[sClass].Properties THEN
+    For Each sClass In CComponent.All[sLib].ClassList
+      If IsLetter(Left$(sClass)) Then
+        If sClass LIKE sBegin Then 
+          If CComponent.Classes[sClass].Properties Then
             aClass.Add(sClass & " 2")
-          ELSE
+          Else
             aClass.Add(sClass & " 1")
-          ENDIF
-        ENDIF 
-      ENDIF
-    NEXT
-  NEXT
+          Endif
+        Endif 
+      Endif
+    Next
+  Next
 
   aClass.Sort(gb.Text)
 
@@ -184,115 +184,115 @@ PRIVATE SUB AddClassesAndFill(aClass AS String[], OPTIONAL sBegin AS String)
 
   lvwComp.Clear
 
-  FOR EACH sClass IN aClass
+  For Each sClass In aClass
     iType = Val(Right$(sClass))
     sClass = Left$(sClass, -2)
-    TRY lvwComp.Add(sClass, sClass, hPic[iType])
+    Try lvwComp.Add(sClass, sClass, hPic[iType])
     $iMaxLen = Max($iMaxLen, Len(sClass))
-  NEXT
+  Next
   
-END
+End
 
-PUBLIC SUB FillWithClasses()
+Public Sub FillWithClasses()
 
   AddClassesAndFill(["Boolean 0", "Byte 0", "Short 0", "Integer 0", "Long 0", "Single 0", "Float 0", "Date 0", "String 0", "Object 0", "Variant 0", "Pointer 0"])
 
-END
+End
 
 
 
-PUBLIC SUB FillWithSymbol(sClass AS String, bStatic AS Boolean, bPrivate AS Boolean)
+Public Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boolean)
 
-  DIM cSymbol AS Collection
-  DIM hSymbol AS CSymbolInfo
-  DIM aSymbol AS NEW String[]
-  DIM sSymbol AS String
-  DIM sName AS String
-  DIM hClass AS CClassInfo
+  Dim cSymbol As Collection
+  Dim hSymbol As CSymbolInfo
+  Dim aSymbol As New String[]
+  Dim sSymbol As String
+  Dim sName As String
+  Dim hClass As CClassInfo
 
   lvwComp.Clear
 
   cSymbol = CComponent.GetClassSymbols(sClass)
-  IF NOT cSymbol THEN RETURN
+  If NOT cSymbol Then Return
 
-  IF CComponent.IsAutoCreatable(sClass) THEN bStatic = FALSE
+  If CComponent.IsAutoCreatable(sClass) Then bStatic = False
 
-  FOR EACH hSymbol IN cSymbol
-    IF hSymbol.NotPublic <> bPrivate THEN CONTINUE
-    IF Left(hSymbol.Name) = "_" THEN CONTINUE
-    IF hSymbol.Kind = "m" AND IF InStr(hSymbol.Name, "_") THEN CONTINUE
-    IF hSymbol.Kind = ":" THEN CONTINUE
-    IF bStatic THEN
-      IF UCase(hSymbol.Kind) <> hSymbol.Kind THEN
-        CONTINUE
-      ENDIF
-    ENDIF
+  For Each hSymbol In cSymbol
+    If hSymbol.NotPublic <> bPrivate Then Continue
+    If Left(hSymbol.Name) = "_" Then Continue
+    If hSymbol.Kind = "m" AND If InStr(hSymbol.Name, "_") Then Continue
+    If hSymbol.Kind = ":" Then Continue
+    If bStatic Then
+      If UCase(hSymbol.Kind) <> hSymbol.Kind Then
+        Continue
+      Endif
+    Endif
     aSymbol.Add(hSymbol.Name)
-  NEXT
+  Next
 
   aSymbol.Sort(gb.Text)
 
-  FOR EACH sSymbol IN aSymbol
+  For Each sSymbol In aSymbol
     hSymbol = cSymbol[sSymbol]
-    TRY lvwComp.Add(sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
+    Try lvwComp.Add(sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
     $iMaxLen = Max($iMaxLen, Len(sSymbol))
-  NEXT
+  Next
 
-END
+End
 
 
-PRIVATE SUB GetEvents(sCtrl AS String) AS String[]
+Private Sub GetEvents(sCtrl As String) As String[]
   
-  DIM sName AS String
-  DIM hForm AS FForm
-  DIM aEvent AS String[]
+  Dim sName As String
+  Dim hForm As FForm
+  Dim aEvent As String[]
   
   hForm = Project.FindForm(GetClass())
-  IF NOT hForm THEN RETURN  
+  If NOT hForm Then Return  
 
-  IF LCase(sCtrl) = "form" THEN 
-    TRY aEvent = CComponent.Classes["Form"].Events
-  ELSE
-    TRY aEvent = CComponent.Classes[hForm.Control[sCtrl].Kind].Events
-  ENDIF
+  If LCase(sCtrl) = "form" Then 
+    Try aEvent = CComponent.Classes["Form"].Events
+  Else
+    Try aEvent = CComponent.Classes[hForm.Control[sCtrl].Kind].Events
+  Endif
   
-  RETURN aEvent
+  Return aEvent
   
-END
+End
 
 
-PRIVATE SUB AddEvents(aResult AS String[], sCtrl AS String)
+Private Sub AddEvents(aResult As String[], sCtrl As String)
 
-  DIM sName AS String
-  DIM aEvent AS String[]
+  Dim sName As String
+  Dim aEvent As String[]
 
   aEvent = GetEvents(sCtrl)
-  IF NOT aEvent THEN RETURN
+  If NOT aEvent Then Return
   
-  FOR EACH sName IN aEvent
+  For Each sName In aEvent
     aResult.Add(sCtrl & "_" & sName & " 4")
-  NEXT
+  Next
   
-END
+End
 
-PRIVATE SUB FillWithIdent(sWord AS String)
+Private Sub FillWithIdent(sWord As String)
 
-  DIM hEditor AS Editor
-  DIM iInd AS Integer
-  DIM sLine AS String
-  DIM iPos AS Integer
-  DIM iUPos AS Integer
-  DIM iPos2 AS Integer
-  DIM iPos3 AS Integer
-  DIM sCar AS String
-  DIM aResult AS NEW String[]
-  DIM cKey AS NEW Collection
-  DIM hSymbol AS CSymbolInfo
-  DIM cSymbol AS Collection
-  DIM sOrg AS String
-  DIM sText AS String
-  DIM iLine AS Integer
-  DIM sUCaseLine AS String
+  Dim hEditor As Editor
+  Dim iInd As Integer
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim iUPos As Integer
+  Dim iPos2 As Integer
+  Dim iPos3 As Integer
+  Dim sCar As String
+  Dim aResult As New String[]
+  Dim cKey As New Collection
+  Dim hSymbol As CSymbolInfo
+  Dim cSymbol As Collection
+  Dim sOrg As String
+  Dim sText As String
+  Dim iLine As Integer
+  Dim sUCaseLine As String
 
   lvwComp.Clear
 
@@ -301,56 +301,56 @@ PRIVATE SUB FillWithIdent(sWord AS String)
   sOrg = sWord
   sWord = UCase(sWord)
   
-  FOR EACH sCar IN ["TRUE", "FALSE", "NULL", "LAST", "ME", "SUPER"]
-    IF sCar LIKE (sWord & "*") THEN 
-      cKey[sCar] = TRUE
+  For Each sCar In ["TRUE", "FALSE", "NULL", "LAST", "ME", "SUPER"]
+    If sCar LIKE (sWord & "*") Then 
+      cKey[sCar] = True
       aResult.Add(sCar & " 0")
-    ENDIF
-  NEXT
+    Endif
+  Next
 
-  FOR EACH sCar IN System.Keywords
-    IF sCar LIKE (sWord & "*") THEN 
-      IF cKey.Exist(sCar) THEN CONTINUE
-      cKey[sCar] = TRUE
-      IF sCar = UCase(sCar) THEN sCar &= " "
+  For Each sCar In System.Keywords
+    If sCar LIKE (sWord & "*") Then 
+      If cKey.Exist(sCar) Then Continue
+      cKey[sCar] = True
+      If sCar = UCase(sCar) Then sCar &= " "
       aResult.Add(sCar & " 0")
-    ENDIF
-  NEXT
+    Endif
+  Next
 
   'sText = hEditor.Text
   'IF InStr(sText, sWord, 1, gb.Text) THEN
   
   iLine = -1
-  DO
+  Do
   
     iLine = hEditor.FindNextWord(sWord, iLine + 1)
-    IF iLine < 0 THEN BREAK 
-    IF iLine = hEditor.Line THEN CONTINUE
+    If iLine < 0 Then Break 
+    If iLine = hEditor.Line Then Continue
 
     sLine = Highlight.Purge(hEditor.Lines[iLine].Text)
     sUCaseLine = UCase(sLine) ' Only ASCII characters are interesting there...
   
     iPos = 0
-    DO
-      INC iPos
+    Do
+      Inc iPos
       iPos = String.InStr(sUCaseLine, sWord, iPos)
-      IF iPos = 0 THEN BREAK
-      IF iPos > 1 THEN
+      If iPos = 0 Then Break
+      If iPos > 1 Then
         sCar = String.Mid$(sLine, iPos - 1, 1)
-        IF InStr(FEditor.IDENT_CAR, sCar) THEN BREAK
-      ENDIF
-      FOR iPos2 = iPos + String.Len(sWord) TO String.Len(sLine)
+        If InStr(FEditor.IDENT_CAR, sCar) Then Break
+      Endif
+      For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
         sCar = String.Mid$(sLine, iPos2, 1)
-        IF String.InStr(FEditor.IDENT_CAR, sCar) = 0 THEN BREAK
-      NEXT
+        If String.InStr(FEditor.IDENT_CAR, sCar) = 0 Then Break
+      Next
       sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
-      IF IsDigit(Left$(sCar)) THEN CONTINUE 
-      IF cKey.Exist(sCar) THEN CONTINUE
+      If IsDigit(Left$(sCar)) Then Continue 
+      If cKey.Exist(sCar) Then Continue
       aResult.Add(sCar & " 3")
-      cKey[sCar] = TRUE
-    LOOP
+      cKey[sCar] = True
+    Loop
   
-  LOOP 
+  Loop 
 
 
   'ENDIF
@@ -383,37 +383,37 @@ PRIVATE SUB FillWithIdent(sWord AS String)
   ' LOOP 
 
   cSymbol = CComponent.GetClassSymbols(GetClass())
-  IF cSymbol THEN
-    FOR EACH hSymbol IN cSymbol
-      IF NOT hSymbol.NotPublic THEN CONTINUE
+  If cSymbol Then
+    For Each hSymbol In cSymbol
+      If NOT hSymbol.NotPublic Then Continue
       sCar = hSymbol.Name
-      IF NOT (sCar LIKE (sWord & "*")) THEN CONTINUE
-      IF cKey.Exist(sCar) THEN CONTINUE
+      If NOT (sCar LIKE (sWord & "*")) Then Continue
+      If cKey.Exist(sCar) Then Continue
       aResult.Add(sCar & " 3")
-      cKey[sCar] = TRUE
-    NEXT
-  ENDIF
+      cKey[sCar] = True
+    Next
+  Endif
   
-  IF Right(sWord) = "_" THEN
+  If Right(sWord) = "_" Then
     AddEvents(aResult, Left(sOrg, -1))
-  ENDIF
+  Endif
 
   AddClassesAndFill(aResult, sWord)
 
-END
+End
 
-PRIVATE SUB FillWithSpecial()
+Private Sub FillWithSpecial()
 
-  DIM sName AS String
-  DIM hPict AS Picture = Picture["img/16/point.png"]
+  Dim sName As String
+  Dim hPict As Picture = Picture["img/16/point.png"]
   
   lvwComp.Clear
   
-  FOR EACH sName IN ["_call", "_compare", "_exit", "_get", "_init", "_new", "_next", "_put", "_unknown"]
-    TRY lvwComp.Add(sName, sName, hPict)
-  NEXT
+  For Each sName In ["_call", "_compare", "_exit", "_get", "_init", "_new", "_next", "_put", "_unknown"]
+    Try lvwComp.Add(sName, sName, hPict)
+  Next
   
-END
+End
 
 
 ' PUBLIC SUB Form_Resize()
@@ -424,226 +424,226 @@ END
 '
 ' END
 
-PUBLIC FUNCTION ManageKey() AS Boolean
+Public Function ManageKey() As Boolean
 
-  DIM iInd AS Integer
+  Dim iInd As Integer
 
-  SELECT CASE Key.Code
+  Select Case Key.Code
 
-    CASE Key.Up, Key.PageUp
+    Case Key.Up, Key.PageUp
 
       lvwComp.MoveCurrent
-      IF lvwComp.Item.Selected THEN
+      If lvwComp.Item.Selected Then
 
-        FOR iInd = 1 TO If(Key.Code = Key.Up, 1, 8)
-          IF lvwComp.MoveAbove() THEN BREAK
-        NEXT
+        For iInd = 1 To If(Key.Code = Key.Up, 1, 8)
+          If lvwComp.MoveAbove() Then Break
+        Next
 
-      ENDIF
+      Endif
 
-      IF NOT lvwComp.Available THEN lvwComp.MoveFirst
-      IF lvwComp.Available THEN
-        lvwComp.Item.Selected = TRUE
+      If NOT lvwComp.Available Then lvwComp.MoveFirst
+      If lvwComp.Available Then
+        lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible
-        $bUserChoice = TRUE
-      ENDIF
+        $bUserChoice = True
+      Endif
 
-    CASE Key.Down, Key.PageDown
+    Case Key.Down, Key.PageDown
 
       lvwComp.MoveCurrent
-      IF lvwComp.Item.Selected THEN
+      If lvwComp.Item.Selected Then
 
-        FOR iInd = 1 TO If(Key.Code = Key.Down, 1, 8)
-          IF lvwComp.MoveBelow() THEN BREAK
-        NEXT
+        For iInd = 1 To If(Key.Code = Key.Down, 1, 8)
+          If lvwComp.MoveBelow() Then Break
+        Next
 
-      ENDIF
+      Endif
 
-      IF NOT lvwComp.Available THEN lvwComp.MoveLast
-      IF lvwComp.Available THEN
-        lvwComp.Item.Selected = TRUE
+      If NOT lvwComp.Available Then lvwComp.MoveLast
+      If lvwComp.Available Then
+        lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible
-        $bUserChoice = TRUE
-      ENDIF
+        $bUserChoice = True
+      Endif
 
-    CASE Key.Home
+    Case Key.Home
 
       lvwComp.MoveCurrent
-      IF lvwComp.MovePrevious() THEN
-        ME.Hide
-        RETURN
-      ENDIF
+      If lvwComp.MovePrevious() Then
+        Me.Hide
+        Return
+      Endif
 
       lvwComp.MoveFirst
-      IF lvwComp.Available THEN
-        lvwComp.Item.Selected = TRUE
+      If lvwComp.Available Then
+        lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible
-        $bUserChoice = TRUE
-      ENDIF
+        $bUserChoice = True
+      Endif
 
-    CASE Key.End
+    Case Key.End
 
       lvwComp.MoveCurrent
-      IF lvwComp.MoveNext() THEN
-        ME.Hide
-        RETURN
-      ENDIF
+      If lvwComp.MoveNext() Then
+        Me.Hide
+        Return
+      Endif
 
       lvwComp.MoveLast
-      IF lvwComp.Available THEN
-        lvwComp.Item.Selected = TRUE
+      If lvwComp.Available Then
+        lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible
-        $bUserChoice = TRUE
-      ENDIF
+        $bUserChoice = True
+      Endif
 
-    CASE Key.Esc
-      ME.Hide
+    Case Key.Esc
+      Me.Hide
 
-    CASE Key.Left, Key.Right
-      ME.Hide
-      RETURN
+    Case Key.Left, Key.Right
+      Me.Hide
+      Return
 
-    CASE Key.Enter, Key.Return
+    Case Key.Enter, Key.Return
       InsertItem
       'IF Key.Code <> Key.Tab THEN RETURN
 
-    CASE Key.Space
-      IF Key.Control THEN
-        IF UCase($sText) = "NEW" THEN RETURN
-        InsertItem(TRUE)
-      ELSE
-        ME.Hide
-      ENDIF
-      RETURN FALSE 
+    Case Key.Space
+      If Key.Control Then
+        If UCase($sText) = "NEW" Then Return
+        InsertItem(True)
+      Else
+        Me.Hide
+      Endif
+      Return False 
 
-    CASE Key.Backspace
-      IF Len($sText) > $iLen THEN
+    Case Key.Backspace
+      If Len($sText) > $iLen Then
         $sText = Left$($sText, -1)
         FindItem
-      ELSE
-        ME.Hide
-      ENDIF
-      RETURN FALSE
+      Else
+        Me.Hide
+      Endif
+      Return False
       
-    CASE Key.Tab
+    Case Key.Tab
 
-      IF $bUserChoice THEN 
+      If $bUserChoice Then 
         InsertItem
-      ELSE
-        RETURN CompleteItem()
-      ENDIF 
+      Else
+        Return CompleteItem()
+      Endif 
 
-    CASE ELSE
-      IF Key.Text THEN
-        IF InStr(FEditor.IDENT_CAR, Key.Text) THEN
-          IF Key.Text = "_" THEN 
-            IF GetEvents($sText) THEN 
-              ME.Hide
-              RETURN 
-            ENDIF
-          ENDIF
+    Case Else
+      If Key.Text Then
+        If InStr(FEditor.IDENT_CAR, Key.Text) Then
+          If Key.Text = "_" Then 
+            If GetEvents($sText) Then 
+              Me.Hide
+              Return 
+            Endif
+          Endif
           $sText = $sText & Key.Text
-          RETURN FindItem()
-        ELSE IF InStr("([.!", Key.Text) > 0 AND InStr(". A<", $sMode) > 0 THEN
+          Return FindItem()
+        Else If InStr("([.!", Key.Text) > 0 AND InStr(". A<", $sMode) > 0 Then
           InsertItem
-        ELSE
-          ME.Hide
-        ENDIF
-        RETURN FALSE
-      ENDIF
+        Else
+          Me.Hide
+        Endif
+        Return False
+      Endif
 
-  END SELECT
+  End Select
 
-  RETURN TRUE
+  Return True
 
-END
+End
 
-PRIVATE FUNCTION FindItem(OPTIONAL bNoInsert AS Boolean) AS Boolean
+Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
 
-  DIM sComp AS String
-  DIM iLevel AS Integer
-  DIM sKey AS String
-  DIM nComp AS Integer
-  DIM sText AS String
+  Dim sComp As String
+  Dim iLevel As Integer
+  Dim sKey As String
+  Dim nComp As Integer
+  Dim sText As String
 
   sComp = Replace($sText, "[", "[[]") & "*"
 
   lvwComp.MoveFirst
-  WHILE lvwComp.Available
-    IF UCase(lvwComp.Item.Text) LIKE sComp THEN BREAK
+  While lvwComp.Available
+    If UCase(lvwComp.Item.Text) LIKE sComp Then Break
     lvwComp.MoveNext
-  WEND
+  Wend
   
-  IF NOT lvwComp.Available THEN
-    ME.Hide
-    RETURN 
-  ENDIF 
+  If NOT lvwComp.Available Then
+    Me.Hide
+    Return 
+  Endif 
   
   sKey = lvwComp.Item.Key
 
-  WHILE lvwComp.Available
-    WITH lvwComp.Item
+  While lvwComp.Available
+    With lvwComp.Item
       sText = Trim(.Text)
-      IF NOT (UCase(sText) LIKE sComp) THEN BREAK
-      IF iLevel <= 2 AND IF .Text = $sText THEN
+      If NOT (UCase(sText) LIKE sComp) Then Break
+      If iLevel <= 2 AND If .Text = $sText Then
         sKey = .Key
         iLevel = 3
-      ELSE IF iLevel <= 1 AND IF UCase(sText) = UCase($sText) THEN
+      Else If iLevel <= 1 AND If UCase(sText) = UCase($sText) Then
         sKey = .Key
         iLevel = 2
-      ELSE IF iLevel <= 0 AND IF Left(sText, Len($sText)) = $sText THEN 
+      Else If iLevel <= 0 AND If Left(sText, Len($sText)) = $sText Then 
         sKey = .Key
         iLevel = 1
-      ENDIF
-    END WITH
-    INC nComp
+      Endif
+    End With
+    Inc nComp
     lvwComp.MoveNext
-  WEND
+  Wend
 
   lvwComp.MoveTo(sKey)
-  lvwComp.Item.Selected = TRUE
+  lvwComp.Item.Selected = True
   lvwComp.Item.EnsureVisible
   
-  IF nComp = 1 AND iLevel = 3 THEN
-    IF NOT bNoInsert THEN InsertItem(TRUE)
-    RETURN TRUE
-  ENDIF
+  If nComp = 1 AND iLevel = 3 Then
+    If NOT bNoInsert Then InsertItem(True)
+    Return True
+  Endif
   
-END
+End
 
-PRIVATE FUNCTION InsertItem(OPTIONAL bNoSpace AS Boolean) AS Boolean
+Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
 
-  DIM sText AS String
-  DIM hEditor AS Editor
+  Dim sText As String
+  Dim hEditor As Editor
 
-  TRY sText = lvwComp.Current.Text
-  IF NOT lvwComp.Current.Selected THEN RETURN
-  IF NOT sText THEN RETURN TRUE
+  Try sText = lvwComp.Current.Text
+  If NOT lvwComp.Current.Selected Then Return
+  If NOT sText Then Return True
 
-  IF bNoSpace THEN
-    IF Right(sText) = " " THEN sText = Left$(sText, -1)
-  ENDIF
+  If bNoSpace Then
+    If Right(sText) = " " Then sText = Left$(sText, -1)
+  Endif
 
   hEditor = GetEditor()
-  WITH hEditor
+  With hEditor
     .Select(.Line, $iCol, .Line, .Column)
     .Insert(sText)
-  END WITH
+  End With
 
-  ME.Hide
+  Me.Hide
 
-END
+End
 
-PUBLIC SUB lvwComp_Click()
+Public Sub lvwComp_Click()
 
   InsertItem
 
-END
+End
 
-PUBLIC SUB lvwComp_KeyPress()
+Public Sub lvwComp_KeyPress()
 
-  DIM hEditor AS Editor
-  DIM hForm AS FEditor
+  Dim hEditor As Editor
+  Dim hForm As FEditor
 
   'IF Key.Code = Key.Escape THEN ME.Hide
 
@@ -652,40 +652,40 @@ PUBLIC SUB lvwComp_KeyPress()
   hForm = hEditor.Window
   hForm.Editors_KeyPress
 
-END
+End
 
-PRIVATE SUB CompleteItem() AS Boolean
+Private Sub CompleteItem() As Boolean
   
-  DIM sCurrent AS String
-  DIM sNext AS String
-  DIM sText AS String
-  DIM iPos AS Integer
-  DIM hEditor AS Editor
+  Dim sCurrent As String
+  Dim sNext As String
+  Dim sText As String
+  Dim iPos As Integer
+  Dim hEditor As Editor
   
   sCurrent = lvwComp.Current.Text
   lvwComp.MoveCurrent
   lvwComp.MoveNext
-  TRY sNext = lvwComp.Item.Text
+  Try sNext = lvwComp.Item.Text
   
-  FOR iPos = Len($sText) + 1 TO Min(Len(sCurrent), Len(sNext))
-    IF Comp(Mid$(sCurrent, iPos, 1), Mid$(sNext, iPos, 1), gb.Text) THEN BREAK
-  NEXT
+  For iPos = Len($sText) + 1 To Min(Len(sCurrent), Len(sNext))
+    If Comp(Mid$(sCurrent, iPos, 1), Mid$(sNext, iPos, 1), gb.Text) Then Break
+  Next
 
   sText = Left$(sCurrent, iPos - 1)    
-  IF Comp(sText, $sText, gb.Text) = 0 OR NOT sText THEN 
+  If Comp(sText, $sText, gb.Text) = 0 OR NOT sText Then 
     InsertItem
-  ELSE  
+  Else  
     $sText = sText
 
     hEditor = GetEditor()
-    WITH hEditor
+    With hEditor
       .Select(.Line, $iCol, .Line, .Column)
       .Insert($sText)
-    END WITH
+    End With
 
     FindItem
-  ENDIF
+  Endif
   
-  RETURN TRUE
+  Return True
   
-END
+End

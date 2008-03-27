@@ -1,14 +1,14 @@
 ' Gambas class file
 
 
-PRIVATE FUNCTION GetEditor() AS Editor
+Private Function GetEditor() As Editor
   
-  DIM hForm AS FEditor
+  Dim hForm As FEditor
   
-  hForm = ME.Parent.Window
-  RETURN hForm.Editor
+  hForm = Me.Parent.Window
+  Return hForm.Editor
   
-END
+End
 
 
 ' PUBLIC SUB OnMove()
@@ -30,17 +30,17 @@ END
 ' END
 
 
-PUBLIC SUB Open(iX AS Integer, hSymbol AS CSymbolInfo, OPTIONAL bDoNotUseKey AS Boolean)
+Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, Optional bDoNotUseKey As Boolean)
   
-  DIM sSign AS String
-  DIM hEditor AS Editor
-  DIM iY AS Integer
+  Dim sSign As String
+  Dim hEditor As Editor
+  Dim iY As Integer
   
   hEditor = GetEditor()
   
   sSign = hSymbol.Name
-  IF Left$(sSign) = "_" THEN sSign = hSymbol.Class
-  sSign = "<b>" & sSign & "</b> " & hSymbol.GetSignature(FALSE)
+  If Left$(sSign) = "_" Then sSign = hSymbol.Class
+  sSign = "<b>" & sSign & "</b> " & hSymbol.GetSignature(False)
   'sSignBal = hSymbol.GetSignature(TRUE)
   
   lblNewSignature.W = Max(64, hEditor.W - 64)
@@ -54,46 +54,46 @@ PUBLIC SUB Open(iX AS Integer, hSymbol AS CSymbolInfo, OPTIONAL bDoNotUseKey AS 
   'DEBUG "->";; lblSignature.W
   lblSignature.Adjust
   
-  ME.Resize(lblSignature.W, lblSignature.H)
+  Me.Resize(lblSignature.W, lblSignature.H)
 
   iY = hEditor.Y + hEditor.CursorY + hEditor.LineHeight
   
-  IF (iY + ME.Height) > (hEditor.Y + hEditor.H) THEN
-    iY = hEditor.Y + hEditor.CursorY - ME.Height
-  ENDIF
+  If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
+    iY = hEditor.Y + hEditor.CursorY - Me.Height
+  Endif
 
-  iX = Max(0, Min(iX, hEditor.W - ME.Width))
+  iX = Max(0, Min(iX, hEditor.W - Me.Width))
 
-  IF iX = ME.X AND iY = ME.Y AND ME.Visible THEN RETURN
+  If iX = Me.X AND iY = Me.Y AND Me.Visible Then Return
 
-  ME.Move(iX, iY)
-  ME.Show
-  ME.Raise
+  Me.Move(iX, iY)
+  Me.Show
+  Me.Raise
   hEditor.SetFocus
   
-END
+End
 
 
-PUBLIC FUNCTION ManageKey() AS Boolean
+Public Function ManageKey() As Boolean
   
-  DIM iInd AS Integer
+  Dim iInd As Integer
   
-  SELECT CASE Key.Code
+  Select Case Key.Code
   
-    CASE Key.Esc
-      ME.Hide
-      RETURN TRUE
+    Case Key.Esc
+      Me.Hide
+      Return True
     
     'CASE Key.Backspace
       'ME.Hide
       
-  END SELECT
+  End Select
   
-END
+End
 
 
-PUBLIC SUB lblSignature_MouseDown()
+Public Sub lblSignature_MouseDown()
 
-  ME.Hide
+  Me.Hide
 
-END
+End

@@ -1,120 +1,122 @@
 ' Gambas module file
 
-PUBLIC ProjectTree AS ColumnView
-PUBLIC ProjectMessage AS Label
-PUBLIC Workspace AS Workspace
+Public ProjectTree As ColumnView
+Public ProjectMessage As Label
+Public Workspace As Workspace
 
-PUBLIC ActiveForm AS Object
+Public ActiveForm As Object
 
-PUBLIC Path AS String
-PUBLIC Name AS String
-PUBLIC Dir AS String
-PUBLIC ReadOnly AS Boolean
+Public Path As String
+Public Name As String
+Public Dir As String
+Public ReadOnly As Boolean
 
-PUBLIC Title AS String
-PUBLIC Startup AS String
-PUBLIC Libraries AS String[]
-PUBLIC Arguments AS String[]
-PUBLIC Environment AS String[]
-PUBLIC KeepDebugInfo AS Boolean
-PUBLIC CreateShortcut AS Boolean
-PUBLIC RunAfterMakingExec AS String
-PUBLIC ControlPublic AS Boolean
-PUBLIC ModulePublic AS Boolean
-PUBLIC MajorVersion AS Integer
-PUBLIC MinorVersion AS Integer
-PUBLIC ReleaseVersion AS Integer
+Public Title As String
+Public Startup As String
+Public Libraries As String[]
+Public Arguments As String[]
+Public Environment As String[]
+Public KeepDebugInfo As Boolean
+Public CreateShortcut As Boolean
+Public RunAfterMakingExec As String
+Public ControlPublic As Boolean
+Public ModulePublic As Boolean
+Public MajorVersion As Integer
+Public MinorVersion As Integer
+Public ReleaseVersion As Integer
 'PUBLIC SnapToGrid AS Boolean
 'PUBLIC ShowGrid AS Boolean
-PUBLIC Snap AS Integer
-PUBLIC Localize AS Boolean
-PUBLIC Description AS String
-PUBLIC Icon AS String
+Public Snap As Integer
+Public Localize As Boolean
+Public Description As String
+Public Icon As String
 
-PUBLIC Systems AS String[]
-PUBLIC Menus AS Collection
-PUBLIC Groups AS Collection
-PUBLIC Categories AS Collection
-PUBLIC Prefix AS Boolean
-PUBLIC UseRelease AS Boolean
-PUBLIC Maintainer AS String
-PUBLIC Address AS String
-PUBLIC Vendor AS String
-PUBLIC License AS String
+Public Systems As String[]
+Public Menus As Collection
+Public Groups As Collection
+Public Categories As Collection
+Public Prefix As Boolean
+Public UseRelease As Boolean
+Public Maintainer As String
+Public Address As String
+Public Vendor As String
+Public License As String
 
-PUBLIC TabSize AS Integer
-PUBLIC Version AS String
-PUBLIC ExecPath AS String
-PUBLIC Language AS String
-PUBLIC CreateComponent AS Boolean
-PUBLIC ComponentState AS Integer
-PUBLIC Stack AS Integer
-PUBLIC StackTrace AS Boolean
-PUBLIC Authors AS String
-PUBLIC VersionProgram AS String
+Public TabSize As Integer
+Public Version As String
+Public ExecPath As String
+Public Language As String
+Public CreateComponent As Boolean
+Public ComponentState As Integer
+Public Stack As Integer
+Public StackTrace As Boolean
+Public Authors As String
+Public VersionProgram As String
 
-PUBLIC Running AS Boolean
+Public Running As Boolean
 
-PRIVATE Recent AS NEW String[]
-PUBLIC CONST DEFAULT_MAX_RECENT AS Integer = 24
+Private Recent As New String[]
+Public Const DEFAULT_MAX_RECENT As Integer = 24
 
-PUBLIC CONST FORM_MAGIC AS String = "# Gambas Form File 2.0"
-PUBLIC CONST FORM_MAGIC_1 AS String = "# Gambas Form File 1.0"
-PUBLIC CONST PROJECT_MAGIC_1 AS String = "# Gambas Project File 1.0"
-PUBLIC CONST PROJECT_MAGIC AS String = "# Gambas Project File 2.0"
+Public Const FORM_MAGIC As String = "# Gambas Form File 2.0"
+Public Const FORM_MAGIC_1 As String = "# Gambas Form File 1.0"
+Public Const PROJECT_MAGIC_1 As String = "# Gambas Project File 1.0"
+Public Const PROJECT_MAGIC As String = "# Gambas Project File 2.0"
 
-PUBLIC CONST DEFAULT_FONT AS String = "Monospace,10"
+Public Const DEFAULT_FONT As String = "Monospace,10"
 
-PUBLIC Files AS NEW Collection
+Public Files As New Collection
 
-PUBLIC AboutToQuit AS Boolean
+Public AboutToQuit As Boolean
 
-PUBLIC Positions AS NEW String[]
+Public Positions As New String[]
 
-PUBLIC CONST MAX_ICON_SIZE AS Integer = 8192
+Public Const MAX_ICON_SIZE As Integer = 8192
 
-PUBLIC EXAMPLES_DIR AS String
+Public EXAMPLES_DIR As String
 
-PUBLIC ShowAlwaysProperty AS Boolean
+Public ShowAlwaysProperty As Boolean
 
-PRIVATE CONST IMAGE_DIR AS String = "img/16"
+Private Const IMAGE_DIR As String = "img/16"
 
-PRIVATE CONST KEY_MODULE AS String = "$M"
-PRIVATE CONST KEY_CLASS AS String = "$C"
-PUBLIC CONST KEY_FORM AS String = "$F"
-PUBLIC CONST KEY_MISC AS String = "$O"
-PUBLIC CONST KEY_FIND AS String = "$@"
+Private Const KEY_MODULE As String = "$M"
+Private Const KEY_CLASS As String = "$C"
+Public Const KEY_FORM As String = "$F"
+Public Const KEY_MISC As String = "$O"
+Public Const KEY_PROJECT As String = "$P"
 
-PRIVATE CONST CLASS_AUTH_CAR AS String = "abcdefghijklmnopqrstuvwxyz0123456789"
-PRIVATE CONST CLASS_AUTH_FIRST_CAR AS String = "abcdefghijklmnopqrstuvwxyz_"
-PRIVATE CONST FILE_AUTH_CAR AS String = "abcdefghijklmnopqrstuvwxyz0123456789-.+_"
+Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789"
+Private Const CLASS_AUTH_FIRST_CAR As String = "abcdefghijklmnopqrstuvwxyz_"
+Private Const FILE_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789-.+_"
 
-PRIVATE CONST PROJECT_FILE AS String = ".project"
+Private Const PROJECT_FILE As String = ".project"
 
-PRIVATE TMP_FILE AS String
-PRIVATE OUTPUT_FILE AS String
+Private TMP_FILE As String
+Private OUTPUT_FILE As String
 
-PUBLIC Browser AS String
-PUBLIC ImageEditors AS String[] = ["Gimp", "KIconEdit", "KolourPaint", "Krita"]
-PRIVATE IMAGE_EXT AS String[] = ["jpg", "jpeg", "gif", "bmp", "xpm", "png", "tif", "tiff"]
+Public Browser As String
+Public ImageEditors As String[] = ["Gimp", "KIconEdit", "KolourPaint", "Krita"]
+Private IMAGE_EXT As String[] = ["jpg", "jpeg", "gif", "bmp", "xpm", "png", "tif", "tiff"]
 
-PRIVATE $iFound AS Integer
-PRIVATE $bDoNotSavePosition AS Boolean
-PRIVATE $sOldRefreshLibrary AS String
+Private $iFound As Integer
+Private $bDoNotSavePosition As Boolean
+Private $sOldRefreshLibrary As String
 
-PUBLIC ExampleTitle AS NEW Collection
+Public ExampleTitle As New Collection
 
-PUBLIC ComponentFromType AS NEW Collection
-PUBLIC FormType AS NEW Collection
+Public ComponentFromType As New Collection
+Public FormType As New Collection
 
-PUBLIC TimeStamp AS Integer
-PUBLIC Config AS Settings
+Public TimeStamp As Integer
+Public Config As Settings
 
-PRIVATE $aRefreshAfter AS NEW String[]
-PRIVATE $iNoRefresh AS Integer
-PRIVATE $bDoRefresh AS Boolean
+Public RestoringFiles As Boolean
 
-PUBLIC SUB _init()
+Private $aRefreshAfter As New String[]
+Private $iNoRefresh As Integer
+Private $bDoRefresh As Boolean
+
+Public Sub _init()
   
   ExampleTitle["Automation"] = ("Automation")
   ExampleTitle["Basic"] = ("Basic")
@@ -129,13 +131,13 @@ PUBLIC SUB _init()
   ExampleTitle["Video"] = ("Video")
   ExampleTitle["Control"] = ("Controls")  
   
-END
+End
 
-PUBLIC SUB Main()
+Public Sub Main()
 
-  DIM sPath AS String
-  DIM hGambas AS FGambas
-  DIM iTest AS Integer
+  Dim sPath As String
+  Dim hGambas As FGambas
+  Dim iTest As Integer
   
   'Application.Font = Font["Sans,8"]
   Application.Theme = Settings["/Theme"]
@@ -146,7 +148,7 @@ PUBLIC SUB Main()
 
   EXAMPLES_DIR = System.Path &/ "share/gambas" & System.Version & "/examples"
 
-  Application.Tooltip.Enabled = Settings["/ShowTooltip", TRUE]
+  Application.Tooltip.Enabled = Settings["/ShowTooltip", True]
 
   RefreshBreakpointPicture
   InitVersion
@@ -155,130 +157,132 @@ PUBLIC SUB Main()
   FMain.Load 
   FGambas.Load
 
-  IF Application.Args.Count >= 2 THEN
+  If Application.Args.Count >= 2 Then
     sPath = Application.Args[1]
-  ENDIF
+  Endif
 
-  DO
+  Do
 
-    IF NOT sPath THEN sPath = FWelcome.Run()
+    If NOT sPath Then sPath = FWelcome.Run()
     'sPath = User.Home &/ "gambas/test/gambas"
 
-    IF sPath THEN
+    If sPath Then
       Project.Open(sPath)
-    ELSE
+    Else
       FMain.Close
-      RETURN
-    ENDIF
+      Return
+    Endif
 
-    IF Project.Name THEN BREAK
+    If Project.Name Then Break
 
     sPath = ""
 
-  LOOP
+  Loop
 
-  INC Application.Busy
+  Inc Application.Busy
 
   'FProperty.Show
   'FToolBox.Show
   'FFormStack.Load
 
-  IF Settings["/ShowMascot", FALSE] THEN FGambas.Show
+  If Settings["/ShowMascot", False] Then FGambas.Show
 
   FMain.Show
   RefreshActivate
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-  IF Settings["/ShowTipOnStartup", TRUE] THEN
+  If Settings["/ShowTipOnStartup", True] Then
     FTips.Run
-  ENDIF
+  Endif
   
   'Project.Activate(NULL)
   
-END
+End
 
 
-PRIVATE SUB InitVersion()
+Private Sub InitVersion()
 
-  DIM sVer AS String
-  DIM aVer AS String[]
+  Dim sVer As String
+  Dim aVer As String[]
 
-  SHELL "gbx" & System.Version & " -V" TO sVer
+  Shell "gbx" & System.Version & " -V" To sVer
   aVer = Split(Trim(Mid$(sVer, InStr(sVer, "-") + 1)), ".")
   aVer.Remove(aVer.Max)
   Version = aVer.Join(".")
   
-CATCH 
+Catch 
 
   Version = "?"
 
-END
+End
 
-PRIVATE SUB LastOpenedFiles()
+Private Sub LastOpenedFiles()
   
-  DIM nOpen AS Integer
-  DIM iInd AS Integer
-  DIM aOpen AS String[]
-  DIM hForm AS Object
-  DIM iActive AS Integer
-  DIM hActive AS Object
-  DIM aFold AS Integer[]
+  Dim nOpen As Integer
+  Dim iInd As Integer
+  Dim aOpen As String[]
+  Dim hForm As Object
+  Dim iActive As Integer
+  Dim hActive As Object
+  Dim aFold As Integer[]
 
+  RestoringFiles = True
   Workspace.Lock
 
   nOpen = Config["/OpenFile/Count", 0]
   iActive = Config["/OpenFile/Active", 0]
-  FOR iInd = 1 TO nOpen
+  For iInd = 1 To nOpen
     aOpen = Split(Config["/OpenFile/File[" & CStr(iInd) & "]"], ":")
     hForm = OpenFile(Project.Dir &/ aOpen[0])
-    IF NOT hForm THEN CONTINUE
-    IF aOpen.Count = 2 THEN TRY hForm.SetState(aOpen[1])
+    If NOT hForm Then Continue
+    If aOpen.Count = 2 Then Try hForm.SetState(aOpen[1])
     aFold = Config["/OpenFile/Fold[" & CStr(iInd) & "]"]
-    IF aFold THEN TRY hForm.SetFoldedProc(aFold)
-    IF iInd = iActive THEN hActive = hForm
-  NEXT
+    If aFold Then Try hForm.SetFoldedProc(aFold)
+    If iInd = iActive Then hActive = hForm
+  Next
   
   Workspace.Unlock
+  RestoringFiles = False
   
   Activate(hActive)
-  IF hActive THEN Workspace.ActiveWindow = hActive
+  If hActive Then Workspace.ActiveWindow = hActive
   
-END
+End
 
 
-PUBLIC FUNCTION Open(sDir AS String) AS Boolean
+Public Function Open(sDir As String) As Boolean
 
-  DIM sOldPath AS String
-  DIM sOldName AS String
-  DIM bSave AS Boolean
+  Dim sOldPath As String
+  Dim sOldName As String
+  Dim bSave As Boolean
 
-  IF NOT Exist(sDir &/ ".project") THEN 
+  If NOT Exist(sDir &/ ".project") Then 
     FGambas.Error(("This project does not exist.") & "\n\n" & sDir)
-    RETURN TRUE
-  ENDIF
+    Return True
+  Endif
 
   sOldPath = Project.Path
   sOldName = Project.Name
 
-  IF CheckProjectVersion(sDir &/ PROJECT_FILE) THEN 
-    IF Message.Warning(("This is a Gambas 1.0 project.\n\nDo you want to open it anyway?"), ("Open"), ("Cancel")) = 2 THEN 
-      RETURN TRUE
-    ELSE 
-      bSave = TRUE
-    ENDIF
-  ENDIF
+  If CheckProjectVersion(sDir &/ PROJECT_FILE) Then 
+    If Message.Warning(("This is a Gambas 1.0 project.\n\nDo you want to open it anyway?"), ("Open"), ("Cancel")) = 2 Then 
+      Return True
+    Else 
+      bSave = True
+    Endif
+  Endif
 
-  IF Exist(sDir &/ ".lock") THEN
-    IF Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."), 
-      ("Open after all"), ("Do not open")) = 2 THEN
-      RETURN TRUE
-    ENDIF
-  ENDIF
+  If Exist(sDir &/ ".lock") Then
+    If Message.Warning(("This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."), 
+      ("Open after all"), ("Do not open")) = 2 Then
+      Return True
+    Endif
+  Endif
 
-  IF CloseProject() THEN RETURN TRUE
+  If CloseProject() Then Return True
 
-  TRY KILL sDir &/ ".lock"
+  Try Kill sDir &/ ".lock"
 
   ReadOnly = NOT Access(sDir, gb.write)
 
@@ -286,16 +290,16 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
   Name = File.Name(sDir)
   Project.Dir = sDir
 
-  Config = NEW Settings(sDir &/ ".settings")
+  Config = New Settings(sDir &/ ".settings")
 
-  INC $iNoRefresh
+  Inc $iNoRefresh
   ReadProject
-  IF bSave THEN WriteProject(TRUE)
-  DEC $iNoRefresh
+  If bSave Then WriteProject(True)
+  Dec $iNoRefresh
 
   VersionControl.Refresh
 
-  INC Project.TimeStamp
+  Inc Project.TimeStamp
 
   Refresh
   AddRecent(sDir)
@@ -310,20 +314,20 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
   Design.Clear
   Design.ReadBreakpoints
 
-  TRY File.Save(sDir &/ ".lock", "")
+  Try File.Save(sDir &/ ".lock", "")
 
   LastOpenedFiles
 
-  IF ReadOnly THEN FGambas.Warning(("This project is read-only."))
+  If ReadOnly Then FGambas.Warning(("This project is read-only."))
 
   'SetMessage(("OK"))
-  RETURN
+  Return
 
-CATCH
+Catch
 
-  IF Error.Text THEN
+  If Error.Text Then
     FGambas.Error(("Cannot open project file :\n") & sDir & "\n\n" & Error.Text & "\n" & Error.Where)
-  ENDIF
+  Endif
 
 _CANCEL:
 
@@ -332,127 +336,127 @@ _CANCEL:
   Name = sOldName
   $iNoRefresh = 0
 
-  IF Path THEN ReadProject
+  If Path Then ReadProject
 
-  RETURN TRUE
+  Return True
 
-END
+End
 
 
-PUBLIC SUB CloseAll()
+Public Sub CloseAll()
 
-  DIM hForm AS Object
+  Dim hForm As Object
 
   Workspace.Lock
-  FOR EACH hForm IN Files
+  For Each hForm In Files
     hForm.Close
-  NEXT
+  Next
   Workspace.Unlock
 
-END
+End
 
 
-PUBLIC SUB ReloadAll()
+Public Sub ReloadAll()
 
-  DIM hForm AS Object
+  Dim hForm As Object
 
-  FOR EACH hForm IN Files
-    TRY hForm.Reload
-  NEXT
+  For Each hForm In Files
+    Try hForm.Reload
+  Next
 
-END
+End
 
 
-PRIVATE FUNCTION CloseProject() AS Boolean
+Private Function CloseProject() As Boolean
 
-  DIM hForm AS Object
-  DIM bModif AS Boolean
-  DIM nOpen AS Integer
-  DIM sState AS String
-  DIM aFold AS Integer[]
+  Dim hForm As Object
+  Dim bModif As Boolean
+  Dim nOpen As Integer
+  Dim sState As String
+  Dim aFold As Integer[]
 
   'IF Len(Path) = 0 THEN RETURN
 
-  IF Path THEN
+  If Path Then
 
-    IF Running THEN
+    If Running Then
       Design.Stop
       'WAIT 0.5
-    ENDIF
+    Endif
     
-    FOR EACH hForm IN Files
-      IF hForm.IsModified() THEN
-        bModif = TRUE
-        BREAK
-      ENDIF
-    NEXT
+    For Each hForm In Files
+      If hForm.IsModified() Then
+        bModif = True
+        Break
+      Endif
+    Next
   
-    IF bModif THEN
-      IF FSave.Run(AboutToQuit) THEN RETURN TRUE
-    ENDIF
+    If bModif Then
+      If FSave.Run(AboutToQuit) Then Return True
+    Endif
   
     'FFind.Close
   
-    INC Application.Busy
+    Inc Application.Busy
   
     Config.Clear("/OpenFile")
     Workspace.Lock
-    FOR EACH hForm IN Workspace.Children
+    For Each hForm In Workspace.Children
 
-      INC nOpen
-      IF hForm = ActiveForm THEN Config["/OpenFile/Active"] = nOpen
+      Inc nOpen
+      If hForm = ActiveForm Then Config["/OpenFile/Active"] = nOpen
 
       sState = ""
-      TRY sState = hForm.GetState()
+      Try sState = hForm.GetState()
 
-      aFold = NULL
-      TRY aFold = hForm.GetFoldedProc()
+      aFold = Null
+      Try aFold = hForm.GetFoldedProc()
 
-      IF sState THEN sState = ":" & sState
+      If sState Then sState = ":" & sState
       Config["/OpenFile/File[" & CStr(nOpen) & "]"] = Mid$(hForm.Path, Len(Project.Dir) + 2) & sState
       
-      IF aFold THEN Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
+      If aFold Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
 
       hForm.Delete
 
-    NEXT
+    Next
     Workspace.Unlock
     Config["/OpenFile/Count"] = nOpen
   
     Design.WriteBreakpoints
     FFind.WriteConfig
-    TRY Config = NULL
+    Try Config = Null
   
     Files.Clear
-    ActiveForm = NULL
+    ActiveForm = Null
   
-    DEC Application.Busy
+    Dec Application.Busy
   
-  ENDIF
+  Endif
 
-  IF NOT AboutToQuit THEN 
+  If NOT AboutToQuit Then 
     FProperty.HideAll
     FFormStack.HideAll
-  ENDIF
+  Endif
   
-  TRY KILL Project.Dir &/ ".lock"
+  Try Kill Project.Dir &/ ".lock"
 
-  RETURN FALSE
+  Return False
 
-END
+End
 
 
-PUBLIC FUNCTION Close() AS Boolean
+Public Function Close() As Boolean
 
-  DIM hForm AS Form
-  DIM iInd AS Integer
-  DIM sLig AS String
+  Dim hForm As Form
+  Dim iInd As Integer
+  Dim sLig As String
 
-  AboutToQuit = TRUE
-  IF CloseProject() THEN
-    AboutToQuit = FALSE
-    RETURN TRUE
-  ENDIF
+  AboutToQuit = True
+  If CloseProject() Then
+    AboutToQuit = False
+    Return True
+  Endif
 
   'Design.Close
 
@@ -474,210 +478,210 @@ PUBLIC FUNCTION Close() AS Boolean
 
   CComponent.Exit
 
-END
+End
 
 
-PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
+Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   
-  DIM hImage AS Image
-  DIM hPict AS Picture
-  DIM hStartup AS Picture
-  DIM sKey AS String
-  DIM bLink AS Boolean
-  DIM sIcon AS String
-  DIM sExt AS String
-  DIM bStartup AS Boolean
-  DIM iFileSize AS Long
-  DIM hFile AS File
-  DIM sPrefix AS String
-  DIM bNoStartup AS Boolean
-  DIM iDim AS Integer
+  Dim hImage As Image
+  Dim hPict As Picture
+  Dim hStartup As Picture
+  Dim sKey As String
+  Dim bLink As Boolean
+  Dim sIcon As String
+  Dim sExt As String
+  Dim bStartup As Boolean
+  Dim iFileSize As Long
+  Dim hFile As File
+  Dim sPrefix As String
+  Dim bNoStartup As Boolean
+  Dim iDim As Integer
   
-  IF iSize THEN 
+  If iSize Then 
     sPrefix = "icon:/" & iSize
     'bNoStartup = iSize <> 16
-  ELSE  
+  Else  
     sPrefix = "icon:/small"
-  ENDIF
+  Endif
   
-  WITH Stat(sPath)
+  With Stat(sPath)
 
     bLink = .Type = gb.Link
     
-    IF .Type = gb.Directory THEN 
+    If .Type = gb.Directory Then 
     
       sIcon = sPrefix &/ "directory"
   
-    ELSE
+    Else
     
       sIcon = sPrefix &/ "file"
     
       sExt = File.Ext(sPath)
-      SELECT CASE sExt
+      Select Case sExt
       
-        CASE "form", "class", "module"
-          IF File.Dir(sPath) = Project.Dir THEN 
-            IF iSize > 16 THEN
+        Case "form", "class", "module"
+          If File.Dir(sPath) = Project.Dir Then 
+            If iSize > 16 Then
               sIcon = "img/32" &/ sExt & ".png"
-            ELSE
+            Else
               sIcon = "img/16" &/ sExt & ".png"
-            ENDIF
+            Endif
             bStartup = File.BaseName(sPath) = Startup AND NOT bNoStartup
-          ENDIF
+          Endif
         
-        CASE "jpg", "jpeg", "xpm", "bmp", "png", "gif"
+        Case "jpg", "jpeg", "xpm", "bmp", "png", "gif"
 
-          IF bLink THEN 
-            TRY hFile = OPEN sPath
-            IF ERROR THEN 
+          If bLink Then 
+            Try hFile = Open sPath
+            If Error Then 
               iFileSize = 0
-            ELSE
+            Else
               iFileSize = Lof(hFile)
-              CLOSE hFile
-            ENDIF
-          ELSE
+              Close hFile
+            Endif
+          Else
             iFileSize = .Size
-          ENDIF
+          Endif
           
-          IF iFileSize > MAX_ICON_SIZE THEN
+          If iFileSize > MAX_ICON_SIZE Then
             sIcon = sPrefix &/ "image"
-          ELSE
+          Else
             sIcon = sPath
-          ENDIF
+          Endif
   
-        CASE "svg"
+        Case "svg"
           sIcon = sPrefix &/ "image"
   
-        CASE "htm", "html", "css"
+        Case "htm", "html", "css"
           sIcon = sPrefix &/ "html"
         
-        CASE "txt", "text"
+        Case "txt", "text"
           sIcon = sPrefix &/ "text"
       
-      END SELECT
+      End Select
     
-    ENDIF
+    Endif
   
-  END WITH
+  End With
   
-  IF Left$(sIcon) = "/" THEN
+  If Left$(sIcon) = "/" Then
     
-    TRY hImage = Image.Load(sIcon)
-    IF hImage THEN
+    Try hImage = Image.Load(sIcon)
+    If hImage Then
 
-      IF iSize THEN 
-         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize, TRUE)
-      ELSE 
+      If iSize Then 
+         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize, True)
+      Else 
         iSize = 32
-        IF hImage.Height > iSize THEN
-          hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize, TRUE)
-        ENDIF
-        IF hImage.Width > iSize THEN
-          hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width, TRUE)
-        ENDIF
-      ENDIF 
+        If hImage.Height > iSize Then
+          hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize, True)
+        Endif
+        If hImage.Width > iSize Then
+          hImage = hImage.Stretch(iSize, hImage.Height * iSize / hImage.Width, True)
+        Endif
+      Endif 
       
       hPict = hImage.Picture
-    ELSE  
+    Else  
       hPict = Picture[sPrefix &/ "image"].Copy()
-    ENDIF
-    IF bLink THEN 
+    Endif
+    If bLink Then 
       Draw.Begin(hPict)
       Draw.Picture(Picture["img/16/link.png"], 0, hPict.Height - 16)
       Draw.End
-    ENDIF
+    Endif
 
-  ELSE
+  Else
 
     sKey = sIcon
-    IF bLink THEN sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-link" & ".png"
-    IF bStartup THEN sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-startup" & ".png"
+    If bLink Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-link" & ".png"
+    If bStartup Then sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-startup" & ".png"
     
     'hPict = NULL
     'IF NOT bNoStartup THEN hPict = Picture[sKey]
     
-    TRY hPict = Picture[sKey]
-    IF NOT hPict THEN 
+    Try hPict = Picture[sKey]
+    If NOT hPict Then 
     
       hPict = Picture[sIcon]
-      IF NOT hPict THEN hPict = Picture[sPrefix &/ "file"]
-      IF NOT hPict THEN hPict = Picture["img/16/unknown.png"]
+      If NOT hPict Then hPict = Picture[sPrefix &/ "file"]
+      If NOT hPict Then hPict = Picture["img/16/unknown.png"]
       hPict = hPict.Copy()
       
-      IF bStartup THEN
+      If bStartup Then
       
-        hImage = NEW Image(hPict.Width + 8, hPict.Height, TRUE)
+        hImage = New Image(hPict.Width + 8, hPict.Height, True)
         hImage.Fill(Color.Transparent)
         hImage.Draw(hPict.Image, 8, 0)
         hImage.Draw(Image.Load("img/16/startup.png"), 0, 0)
         hPict = hImage.Picture
         
-      ENDIF 
+      Endif 
 
-      IF iSize THEN 
-         hPict = hPict.Image.Stretch(hPict.Width * iSize / hPict.Height, iSize, TRUE).Picture
-      ENDIF      
+      If iSize Then 
+         hPict = hPict.Image.Stretch(hPict.Width * iSize / hPict.Height, iSize, True).Picture
+      Endif      
 
-      IF bLink THEN 
+      If bLink Then 
         Draw.Begin(hPict)
         Draw.Picture(Picture["img/16/link.png"], 0, hPict.Height - 16)
         Draw.End
-      ENDIF
+      Endif
       
-      IF NOT bNoStartup THEN Picture[sKey] = hPict
+      If NOT bNoStartup Then Picture[sKey] = hPict
 
-    ENDIF  
+    Endif  
   
-  ENDIF  
+  Endif  
   
-  RETURN hPict
+  Return hPict
   
-END
+End
 
-PUBLIC SUB GetParentClass(sPath AS String) AS String
+Public Sub GetParentClass(sPath As String) As String
   
-  DIM hFile AS File
-  DIM sLine AS String
+  Dim hFile As File
+  Dim sLine As String
   
-  IF Left(sPath) <> "/" THEN sPath = FindPath(sPath)
+  If Left(sPath) <> "/" Then sPath = FindPath(sPath)
   
-  hFile = OPEN sPath FOR INPUT
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
+  hFile = Open sPath For Input
+  While NOT Eof(hFile)
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF Left(sLine) = "'" THEN CONTINUE
-    IF sLine LIKE "INHERITS *" THEN 
+    If NOT sLine Then Continue
+    If Left(sLine) = "'" Then Continue
+    If sLine LIKE "INHERITS *" Then 
       'Highlight.Analyze(sLine)
       'RETURN Highlight.Symbols[1]
       sLine = Scan(sLine, "INHERITS *")[0]
-      IF Comp(sLine, File.BaseName(sPath), gb.Text) = 0 THEN sLine = ""
-      RETURN sLine
-    ENDIF
-    IF sLine LIKE "CREATE" THEN CONTINUE 
-    IF sLine LIKE "EXPORT" THEN CONTINUE
-    IF sLine LIKE "CREATE *" THEN CONTINUE 
-    IF sLine LIKE "EXPORT *" THEN CONTINUE
-    BREAK
-  WEND 
+      If Comp(sLine, File.BaseName(sPath), gb.Text) = 0 Then sLine = ""
+      Return sLine
+    Endif
+    If sLine LIKE "CREATE" Then Continue 
+    If sLine LIKE "EXPORT" Then Continue
+    If sLine LIKE "CREATE *" Then Continue 
+    If sLine LIKE "EXPORT *" Then Continue
+    Break
+  Wend 
   
-END
+End
 
-PRIVATE SUB AddFile(sDir AS String, sFile AS String, OPTIONAL bAfter AS Boolean, OPTIONAL bIgnoreInheritance AS Boolean) AS Boolean
+Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean, Optional bIgnoreInheritance As Boolean) As Boolean
   
-  DIM bAllowForm AS Boolean
-  DIM bIgnore AS Boolean
-  DIM sPath AS String
-  DIM sKey AS String
-  DIM bShow AS Boolean
-  DIM sExt AS String
-  DIM sParent AS String
-  DIM hImage AS Image
-  DIM hPict AS Picture
-  DIM bChecked AS Boolean
-  DIM bDir AS Boolean
-  DIM sAfter AS String
-  DIM hForm AS Object
+  Dim bAllowForm As Boolean
+  Dim bIgnore As Boolean
+  Dim sPath As String
+  Dim sKey As String
+  Dim bShow As Boolean
+  Dim sExt As String
+  Dim sParent As String
+  Dim hImage As Image
+  Dim hPict As Picture
+  Dim bChecked As Boolean
+  Dim bDir As Boolean
+  Dim sAfter As String
+  Dim hForm As Object
 
   bAllowForm = AllowForm()
   
@@ -685,256 +689,258 @@ PRIVATE SUB AddFile(sDir AS String, sFile AS String, OPTIONAL bAfter AS Boolean,
   sKey = sPath
   sParent = sDir
 
-  IF sDir = Project.Dir THEN
+  If sDir = Project.Dir Then
     sParent = KEY_MISC
-  ENDIF
+  Else If sDir = Project.Dir &/ ".hidden" Then 
+    sParent = KEY_PROJECT
+  Endif
 
-  WITH Stat(sPath)
+  With Stat(sPath)
 
-    IF .Hidden THEN RETURN
+    If .Hidden Then Return
 
-    bShow = FALSE
+    bShow = False
 
-    IF .Type = gb.Directory THEN
+    If .Type = gb.Directory Then
 
-      IF sFile = "CVS" OR IF sFile = "CVSROOT" THEN RETURN
+      If sFile = "CVS" OR If sFile = "CVSROOT" Then Return
 
       'IF cDir THEN cDir.Add(sPath)
-      bDir = TRUE
+      bDir = True
       'sIcon = "icon:/small/directory" 'IMAGE_DIR &/ "close.png"
-      bShow = TRUE
+      bShow = True
 
-    ELSE
+    Else
 
       'IF InStr(.Perm.User & .Perm.Group & .Perm.Other, "x") THEN CONTINUE
 
       sExt = Lower(File.Ext(sFile))
-      bChecked = FALSE
+      bChecked = False
 
-      IF sDir = Project.Dir THEN
+      If sDir = Project.Dir Then
 
-        SELECT CASE sExt
+        Select Case sExt
 
-          CASE "form", "class", "module"
+          Case "form", "class", "module"
 
             'sIcon = IMAGE_DIR &/ sExt & ".png"
-            bShow = TRUE
-            bChecked = TRUE
+            bShow = True
+            bChecked = True
   
-            IF sExt = "form" THEN
+            If sExt = "form" Then
               sParent = KEY_FORM
-              IF NOT bAllowForm THEN bIgnore = TRUE
-            ELSE IF sExt = "class" THEN
+              If NOT bAllowForm Then bIgnore = True
+            Else If sExt = "class" Then
               sParent = ""
-              IF Exist(sDir &/ File.BaseName(sFile) & ".form") THEN
-                bIgnore = TRUE
-              ELSE 
+              If Exist(sDir &/ File.BaseName(sFile) & ".form") Then
+                bIgnore = True
+              Else 
                 'IF sFile = "ReportContainer.class" THEN STOP
                 sParent = FindKey(GetParentClass(sPath))
-                IF sParent THEN
-                  IF File.Ext(sParent) <> "class" THEN 
+                If sParent Then
+                  If File.Ext(sParent) <> "class" Then 
                     sParent = ""
-                  ELSE IF NOT ProjectTree.Exist(sParent) THEN 
-                    IF NOT bIgnoreInheritance THEN
+                  Else If NOT ProjectTree.Exist(sParent) Then 
+                    If NOT bIgnoreInheritance Then
                       $aRefreshAfter.Add(sPath)
-                      bIgnore = TRUE
-                    ELSE 
+                      bIgnore = True
+                    Else 
                       sParent = ""
-                    ENDIF
-                  ENDIF
-                ENDIF
-              ENDIF
-              IF NOT sParent THEN sParent = KEY_CLASS
-            ELSE IF sExt = "module" THEN
+                    Endif
+                  Endif
+                Endif
+              Endif
+              If NOT sParent Then sParent = KEY_CLASS
+            Else If sExt = "module" Then
               sParent = KEY_MODULE
-            ENDIF
+            Endif
   
             sFile = File.BaseName(sFile)
             
-        END SELECT
+        End Select
 
-      ENDIF
+      Endif
 
-      IF NOT bChecked THEN
+      If NOT bChecked Then
       
         bIgnore = sExt = "gambas" OR Right$(sFile) = "~"
       
-      ENDIF
+      Endif
 
-    ENDIF
+    Endif
 
-    IF NOT bIgnore THEN
+    If NOT bIgnore Then
 
       hPict = GetFileIcon(sPath)
 
-      IF bAfter THEN 
-        WITH ProjectTree
+      If bAfter Then 
+        With ProjectTree
           .MoveTo(sParent)
           .MoveChild
-          IF NOT bDir THEN
-            WHILE .Available
-              IF NOT IsDir(.Item.Key) THEN BREAK
+          If NOT bDir Then
+            While .Available
+              If NOT IsDir(.Item.Key) Then Break
               sAfter = .Item.Key
               .MoveNext
-            WEND
-          ENDIF
-          WHILE .Available
-            IF String.Comp(.Item.Text, sFile, gb.Text) > 0 THEN BREAK
-            IF bDir AND IF NOT IsDir(.Item.Key) THEN BREAK
+            Wend
+          Endif
+          While .Available
+            If String.Comp(.Item.Text, sFile, gb.Text) > 0 Then Break
+            If bDir AND If NOT IsDir(.Item.Key) Then Break
             sAfter = .Item.Key
             .MoveNext
-          WEND
-        END WITH
-      ENDIF
+          Wend
+        End With
+      Endif
 
-      WITH ProjectTree.Add(sKey, sFile, hPict, sParent)        
-        .Editable = TRUE
-        IF bAfter THEN .MoveAfter(sAfter)
-        IF bShow THEN
+      With ProjectTree.Add(sKey, sFile, hPict, sParent)        
+        .Editable = True
+        If bAfter Then .MoveAfter(sAfter)
+        If bShow Then
           ProjectTree.MoveTo(sKey)
           ProjectTree.MoveParent
-          ProjectTree.Item.Expanded = TRUE
-        ENDIF
-      END WITH
+          ProjectTree.Item.Expanded = True
+        Endif
+      End With
       
-      IF bDir THEN 
+      If bDir Then 
         ProjectTree.Add(sKey & "/", "",, sKey)
-      ENDIF
+      Endif
       
       hForm = Files[sKey]
-      IF hForm THEN hForm.Icon = GetFileIcon(sKey, 16)
-      IF sParent = KEY_FORM THEN 
+      If hForm Then hForm.Icon = GetFileIcon(sKey, 16)
+      If sParent = KEY_FORM Then 
         hForm = Files[File.SetExt(sKey, "class")]
-        IF hForm THEN hForm.Icon = GetFileIcon(sKey, 16)
-      ENDIF
+        If hForm Then hForm.Icon = GetFileIcon(sKey, 16)
+      Endif
       
-    ENDIF
+    Endif
 
-  END WITH  
+  End With  
 
-  RETURN bDir
+  Return bDir
   
-END
+End
 
-PRIVATE SUB DoRefreshAfter()
+Private Sub DoRefreshAfter()
   
-  DIM sKey AS String
-  DIM iInd AS Integer
-  DIM iCount AS Integer
+  Dim sKey As String
+  Dim iInd As Integer
+  Dim iCount As Integer
 
-  IF $aRefreshAfter.Count = 0 THEN RETURN
+  If $aRefreshAfter.Count = 0 Then Return
 
-  DO
+  Do
     iCount = $aRefreshAfter.Count
-    FOR iInd = 0 TO iCount - 1
+    For iInd = 0 To iCount - 1
       sKey = $aRefreshAfter[0]
       $aRefreshAfter.Remove(0)
-      AddFile(File.Dir(sKey), File.Name(sKey), TRUE)
-    NEXT
-    IF $aRefreshAfter.Count >= iCount THEN BREAK
-  LOOP
+      AddFile(File.Dir(sKey), File.Name(sKey), True)
+    Next
+    If $aRefreshAfter.Count >= iCount Then Break
+  Loop
 
-  IF $aRefreshAfter.Count THEN 
-    FOR iInd = 0 TO $aRefreshAfter.Max
+  If $aRefreshAfter.Count Then 
+    For iInd = 0 To $aRefreshAfter.Max
       sKey = $aRefreshAfter[iInd]
-      AddFile(File.Dir(sKey), File.Name(sKey), TRUE, TRUE)
+      AddFile(File.Dir(sKey), File.Name(sKey), True, True)
       $aRefreshAfter[iInd] = File.BaseName(sKey)
-    NEXT
+    Next
     FGambas.Error(("The following classes have circular inheritance:") & "\n\n" & $aRefreshAfter.Join(", "))
     $aRefreshAfter.Clear
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE PROCEDURE AddDir(OPTIONAL sDir AS String)
+Private Procedure AddDir(Optional sDir As String)
 
-  DIM cDir AS NEW String[]
-  DIM sFile AS String
-  DIM aFile AS NEW String[]
+  Dim cDir As New String[]
+  Dim sFile As String
+  Dim aFile As New String[]
 
-  IF sDir THEN 
+  If sDir Then 
     cDir.Add(sDir)
-  ELSE 
+  Else 
     cDir.Add(Project.Dir)
-  ENDIF
+  Endif
 
-  REPEAT
+  Repeat
 
     sDir = cDir[0]
     aFile.Clear
 
     '$bGetSource = FALSE
 
-    FOR EACH sFile IN Dir(sDir, "*")
-      IF IsDir(sDir &/ sFile) THEN aFile.Add("D" & sFile)
-    NEXT
+    For Each sFile In Dir(sDir, "*")
+      If IsDir(sDir &/ sFile) Then aFile.Add("D" & sFile)
+    Next
   
-    FOR EACH sFile IN Dir(sDir, "*")
-      IF NOT IsDir(sDir &/ sFile) THEN aFile.Add("F" & sFile)
-    NEXT
+    For Each sFile In Dir(sDir, "*")
+      If NOT IsDir(sDir &/ sFile) Then aFile.Add("F" & sFile)
+    Next
   
     aFile.Sort
   
     $aRefreshAfter.Clear
   
-    FOR EACH sFile IN aFile
+    For Each sFile In aFile
   
       sFile = Mid$(sFile, 2)
       'IF AddFile(sDir, sFile, TRUE) THEN cDir.Add(sDir &/ sFile)
-      AddFile(sDir, sFile, TRUE)
+      AddFile(sDir, sFile, True)
       
-    NEXT
+    Next
     
     DoRefreshAfter
     
     cDir.Remove(0)
     
-  UNTIL cDir.Count = 0
+  Until cDir.Count = 0
 
-END
+End
 
-PUBLIC SUB FillDir(sDir AS String)
+Public Sub FillDir(sDir As String)
 
   ProjectTree.MoveTo(sDir)
-  IF ProjectTree.MoveChild() THEN RETURN
-  IF ProjectTree.Item.Key <> sDir & "/" THEN RETURN
+  If ProjectTree.MoveChild() Then Return
+  If ProjectTree.Item.Key <> sDir & "/" Then Return
 
-  INC Application.Busy  
+  Inc Application.Busy  
   ProjectTree[sDir & "/"].Delete
   AddDir(sDir)
-  DEC Application.Busy
+  Dec Application.Busy
   
-END
+End
 
-PRIVATE SUB EnsureKey(sKey AS String)
+Private Sub EnsureKey(sKey As String)
   
-  DIM sPath AS String
-  DIM sElt AS String
+  Dim sPath As String
+  Dim sElt As String
 
   sPath = "/"
-  FOR EACH sElt IN Split(sKey, "/")
+  For Each sElt In Split(sKey, "/")
     sPath &/= sElt
-    IF ProjectTree.Exist(sPath) THEN FillDir(sPath)
-  NEXT
+    If ProjectTree.Exist(sPath) Then FillDir(sPath)
+  Next
   
-END
+End
 
 
-PUBLIC SUB SelectKey(sKey AS String)
+Public Sub SelectKey(sKey As String)
 
   EnsureKey(sKey)
 
-  IF NOT ProjectTree.Exist(sKey) THEN
-    IF Right$(sKey, 6) = ".class" THEN
+  If NOT ProjectTree.Exist(sKey) Then
+    If Right$(sKey, 6) = ".class" Then
       sKey = Left$(sKey, -6) & ".form"
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
-  TRY ProjectTree[sKey].Selected = TRUE
-  TRY ProjectTree[sKey].EnsureVisible
+  Try ProjectTree[sKey].Selected = True
+  Try ProjectTree[sKey].EnsureVisible
 
-END
+End
 
 ' PRIVATE SUB UpdateInheritance()
 ' 
@@ -959,125 +965,132 @@ END
 '   
 ' END
 
-PUBLIC SUB RefreshRoot()
+Public Sub RefreshRoot()
   
   ProjectTree[Project.Dir].Picture = GetIcon(Project.Dir, 16)
   
-END
+End
 
-PRIVATE SUB DoRefresh(OPTIONAL bReset AS Boolean)
+Private Sub DoRefresh(Optional bReset As Boolean)
 
-  DIM sFile AS String
-  DIM sDir AS String
-  DIM sKey AS String
-  DIM sKeyReset AS String
+  Dim sFile As String
+  Dim sDir As String
+  Dim sKey As String
+  Dim sKeyReset As String
+  Dim sTitle As String
 
   '$bDisplayForm = Settings["/DisplayForm"]
 
-  IF $iNoRefresh THEN RETURN
+  If $iNoRefresh Then Return
 
-  IF NOT bReset THEN
+  If NOT bReset Then
     sKeyReset = ProjectTree.Key
-  ENDIF
+  Endif
 
-  WITH ProjectTree
+  With ProjectTree
 
     .Clear()
 
     sKey = Project.Dir
     .Add(sKey, Name, GetIcon(Project.Dir, 16))
 
+    .Add(KEY_PROJECT, ("Project"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_MODULE, ("Modules"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_CLASS, ("Classes"), Picture["icon:/small/directory"], sKey)
-    IF AllowForm() THEN
+    If AllowForm() Then
       .Add(KEY_FORM, ("Forms"), Picture["icon:/small/directory"], sKey)
-    ENDIF
+    Endif
     .Add(KEY_MISC, ("Data"), Picture["icon:/small/directory"], sKey)
 
     '$bGetSource = TRUE
 
     AddDir()
+    If Exist(Project.Dir &/ ".hidden") Then AddDir(Project.Dir &/ ".hidden")
 
-  END WITH
+  End With
 
-  WITH ProjectTree
+  With ProjectTree
     .MoveFirst
-    WHILE .Available
-      .Item.Expanded = TRUE
+    While .Available
+      .Item.Expanded = True
       .MoveNext
-    WEND
-  END WITH
+    Wend
+  End With
 
-  IF sKeyReset THEN sKey = sKeyReset
+  If sKeyReset Then sKey = sKeyReset
 
   SelectKey(sKey)
 
-  DefineStartup(Startup, TRUE)
+  DefineStartup(Startup, True)
 
   'STOP
-  FMain.Title = Name & If(ReadOnly, " [" & ("read-only") & "]", "") & " - " & Application.Title
-  $bDoRefresh = FALSE
+  sTitle = Name
+  If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
+  sTitle &= " - " & Application.Title
+  If Application.Version LIKE "*.99.*" Then sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK! :-)")
+  FMain.Title = sTitle
+  $bDoRefresh = False
 
-END
+End
 
-PUBLIC SUB timRefresh_Timer()
+Public Sub timRefresh_Timer()
   
   DoRefresh
   
-END
+End
 
-PRIVATE SUB DisableRefresh()
+Private Sub DisableRefresh()
   
-  IF $iNoRefresh = 0 THEN $bDoRefresh = FALSE
-  INC $iNoRefresh
+  If $iNoRefresh = 0 Then $bDoRefresh = False
+  Inc $iNoRefresh
   
-END
+End
 
 
-PUBLIC SUB Refresh(OPTIONAL bReset AS Boolean)
+Public Sub Refresh(Optional bReset As Boolean)
 
-  IF bReset OR IF $iNoRefresh = 0 THEN 
+  If bReset OR If $iNoRefresh = 0 Then 
     DoRefresh(bReset)
-  ELSE
-    $bDoRefresh = TRUE
-  ENDIF
+  Else
+    $bDoRefresh = True
+  Endif
   
-END
+End
 
-PRIVATE SUB EnableRefresh()
+Private Sub EnableRefresh()
   
-  DEC $iNoRefresh
-  IF $iNoRefresh = 0 THEN 
-    IF $bDoRefresh THEN DoRefresh()
-  ENDIF
+  Dec $iNoRefresh
+  If $iNoRefresh = 0 Then 
+    If $bDoRefresh Then DoRefresh()
+  Endif
   
-END
+End
 
 
-PUBLIC FUNCTION IsEditor(hFile AS Object) AS Boolean
+Public Function IsEditor(hFile As Object) As Boolean
 
-  RETURN Object.Type(hFile) = "FEditor"
+  Return Object.Type(hFile) = "FEditor"
 
-END
-
-
-PUBLIC FUNCTION IsForm(hFile AS Object) AS Boolean
-
-  IF hFile THEN RETURN Object.Type(hFile) = "FForm"
-
-END
+End
 
 
-PUBLIC FUNCTION LoadFile(sPath AS String) AS Object
+Public Function IsForm(hFile As Object) As Boolean
 
-  DIM hForm AS Object
+  If hFile Then Return Object.Type(hFile) = "FForm"
+
+End
+
+
+Public Function LoadFile(sPath As String) As Object
+
+  Dim hForm As Object
   'DIM hActive AS Object
 
   hForm = Files[sPath]
 
-  IF NOT hForm THEN
+  If NOT hForm Then
 
-    INC Application.Busy
+    Inc Application.Busy
 
     SetMessage(Subst(("Loading &1..."), File.Name(sPath)))
 
@@ -1085,97 +1098,97 @@ PUBLIC FUNCTION LoadFile(sPath AS String) AS Object
 
     'hActive = ActiveForm
 
-    IF File.Dir(sPath) = Project.Dir THEN
+    If File.Dir(sPath) = Project.Dir Then
 
-      SELECT CASE File.Ext(sPath)
+      Select Case File.Ext(sPath)
   
-        CASE "module", "class"
-          hForm = NEW FEditor(sPath)
+        Case "module", "class"
+          hForm = New FEditor(sPath)
   
-        CASE "form"
-          IF AllowForm() THEN 
-            hForm = NEW FForm(sPath)
-          ENDIF
+        Case "form"
+          If AllowForm() Then 
+            hForm = New FForm(sPath)
+          Endif
           
-        END SELECT 
+        End Select 
     
-    ENDIF
+    Endif
 
-    IF NOT hForm THEN
+    If NOT hForm Then
 
-      SELECT CASE Lower(File.Ext(sPath))
+      Select Case Lower(File.Ext(sPath))
   
-        CASE "png", "gif", "jpg", "jpeg", "bmp", "xpm"          
-          hForm = NEW FIconEditor(sPath)
+        Case "png", "gif", "jpg", "jpeg", "bmp", "xpm"          
+          hForm = New FIconEditor(sPath)
   
-        CASE ELSE
-          hForm = NEW FTextEditor(sPath)
+        Case Else
+          hForm = New FTextEditor(sPath)
   
-      END SELECT
+      End Select
       
-    ENDIF
+    Endif
 
     Files[sPath] = hForm
-    IF hForm THEN hForm.Icon = GetFileIcon(sPath, 16)
+    If hForm Then hForm.Icon = GetFileIcon(sPath, 16)
 
-    DEC Application.Busy
+    Dec Application.Busy
   
-  ENDIF
+  Endif
 
-  RETURN hForm
+  Return hForm
 
-CATCH
+Catch
 
-  DEC Application.Busy
+  Dec Application.Busy
   FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
 
-END
+End
 
 
-PUBLIC FUNCTION FindPath(sClass AS String) AS String
+Public Function FindPath(sClass As String) As String
 
-  DIM sPath AS String
-  DIM aDir AS String[]
-  DIM iInd AS Integer
+  Dim sPath As String
+  Dim aDir As String[]
+  Dim iInd As Integer
 
   aDir = Dir(Project.Dir)
 
   iInd = aDir.Find(sClass & ".class", gb.Text)
-  IF iInd >= 0 THEN RETURN Project.Dir &/ aDir[iInd]
+  If iInd >= 0 Then Return Project.Dir &/ aDir[iInd]
 
   iInd = aDir.Find(sClass & ".module", gb.Text)
-  IF iInd >= 0 THEN RETURN Project.Dir &/ aDir[iInd]
+  If iInd >= 0 Then Return Project.Dir &/ aDir[iInd]
 
   'PRINT "FindPath: "; sClass; " ?"
 
-END
+End
 
-PRIVATE SUB FindKey(sClass AS String) AS String
+Private Sub FindKey(sClass As String) As String
   
-  DIM sPath AS String
-  DIM aDir AS String[]
-  DIM iInd AS Integer
+  Dim sPath As String
+  Dim aDir As String[]
+  Dim iInd As Integer
 
-  IF NOT sClass THEN RETURN
+  If NOT sClass Then Return
 
   aDir = Dir(Project.Dir)
 
   iInd = aDir.Find(sClass & ".form", gb.Text)
-  IF iInd >= 0 THEN RETURN Project.Dir &/ aDir[iInd]
+  If iInd >= 0 Then Return Project.Dir &/ aDir[iInd]
 
   iInd = aDir.Find(sClass & ".class", gb.Text)
-  IF iInd >= 0 THEN RETURN Project.Dir &/ aDir[iInd]
+  If iInd >= 0 Then Return Project.Dir &/ aDir[iInd]
 
   iInd = aDir.Find(sClass & ".module", gb.Text)
-  IF iInd >= 0 THEN RETURN Project.Dir &/ aDir[iInd]
+  If iInd >= 0 Then Return Project.Dir &/ aDir[iInd]
 
-END
+End
 
-PUBLIC SUB ShowFile(hForm AS Form)
+Public Sub ShowFile(hForm As Form)
   
-  SELECT CASE Object.Type(hForm)
+  Select Case Object.Type(hForm)
   
-    CASE "FEditor", "FTextEditor", "FIconEditor", "FForm"
+    Case "FEditor", "FTextEditor", "FIconEditor", "FForm"
       Workspace.Add(hForm)
       Workspace.ActiveWindow = hForm
       hForm.SetFocus
@@ -1185,21 +1198,21 @@ PUBLIC SUB ShowFile(hForm AS Form)
 '       Workspace.SetResizable(hForm, TRUE, Project.Snap)
 '       Workspace.ActiveWindow = hForm
 
-  END SELECT 
+  End Select 
   
-END
+End
 
-PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
+Public Sub OpenFile(sPath As String, Optional iLine As Integer) As Object
 
-  DIM hForm AS Object
+  Dim hForm As Object
 
-  IF InStr(sPath, "/") = 0 THEN sPath = FindPath(sPath)
+  If InStr(sPath, "/") = 0 Then sPath = FindPath(sPath)
 
-  IF NOT Exist(sPath) THEN
+  If NOT Exist(sPath) Then
     FGambas.Warning(("File not found!") & "\n" & sPath)
     Project.Refresh
-    RETURN
-  ENDIF
+    Return
+  Endif
 
   'IF File.Ext(sPath) = "form" THEN
   '  FProperty.Show
@@ -1209,7 +1222,7 @@ PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
   LoadFile(sPath)
 
   hForm = Files[sPath]
-  IF NOT hForm THEN RETURN
+  If NOT hForm Then Return
 
   ShowFile(hForm)
 
@@ -1219,55 +1232,55 @@ PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
   '  hForm.Editor.SetFocus
   'ENDIF
 
-  IF iLine THEN 
+  If iLine Then 
     hForm.GotoCenter(iLine - 1, 0)
-  ENDIF
+  Endif
   
-  RETURN hForm
+  Return hForm
   
-END
+End
 
-PUBLIC FUNCTION ExistForm(sClass AS String) AS Boolean
+Public Function ExistForm(sClass As String) As Boolean
 
-  RETURN Dir(Project.Dir, "*.form").Find(sClass & ".form", gb.Text) >= 0
+  Return Dir(Project.Dir, "*.form").Find(sClass & ".form", gb.Text) >= 0
 
-END
+End
 
-PUBLIC SUB FindForm(sClass AS String) AS FForm
+Public Sub FindForm(sClass As String) As FForm
   
-  DIM sPath AS String
+  Dim sPath As String
 
   sPath = Project.Dir &/ sClass & ".form"
-  IF Exist(sPath) THEN RETURN LoadFile(sPath)
+  If Exist(sPath) Then Return LoadFile(sPath)
   
-END
+End
 
 
 
-PUBLIC SUB OpenForm(sName AS String)
+Public Sub OpenForm(sName As String)
 
-  DIM sPath AS String
+  Dim sPath As String
 
   sPath = Project.Dir &/ sName & ".form"
-  IF Exist(sPath) THEN OpenFile(sPath)
+  If Exist(sPath) Then OpenFile(sPath)
 
-END
+End
 
 
 
-PRIVATE FUNCTION AddMessage(sVoid AS String) AS String
+Private Function AddMessage(sVoid As String) As String
 
   ' DIM hFic AS File
   ' DIM sLig AS String
 
-  IF Stat(OUTPUT_FILE).Size = 0 THEN
+  If Stat(OUTPUT_FILE).Size = 0 Then
 
     SetMessage(sVoid)
-    RETURN
+    Return
 
-  ELSE
+  Else
   
-    RETURN Replace(Trim(File.Load(OUTPUT_FILE)), "\n", " ")
+    Return Replace(Trim(File.Load(OUTPUT_FILE)), "\n", " ")
 
     ' OPEN OUTPUT_FILE FOR READ AS #hFic
     ' 
@@ -1280,17 +1293,17 @@ PRIVATE FUNCTION AddMessage(sVoid AS String) AS String
     ' 
     ' CLOSE #hFic
 
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE SUB CompileError(sMsg AS String)
+Private Sub CompileError(sMsg As String)
 
-  DIM iPos AS Integer
-  DIM sFile AS String
-  DIM iLine AS Integer
-  DIM hForm AS FEditor
+  Dim iPos As Integer
+  Dim sFile As String
+  Dim iLine As Integer
+  Dim hForm As FEditor
 
   iPos = InStr(sMsg, ":")
   'if iPos = 0 then return
@@ -1309,23 +1322,23 @@ PRIVATE SUB CompileError(sMsg AS String)
   hForm = OpenFile(sFile, iLine)
 
   sMsg = Trim(Mid$(sMsg, iPos + 1))
-  IF hForm AND IF iLine >= hForm.Editor.Lines.Count THEN
+  If hForm AND If iLine >= hForm.Editor.Lines.Count Then
     SetMessage(File.BaseName(sFile) & ": " & sMsg & " " & ("in form definition"))
     sMsg &= "\n" & ("in form definition")
-  ELSE
+  Else
     SetMessage(File.BaseName(sFile) & "." & CStr(iLine) & ": " & sMsg)
     sMsg &= "\n" & Subst(("at line &1 in &2"), CStr(iLine), File.Name(sFile))
-  ENDIF
+  Endif
 
-  IF FGambas.Visible THEN
+  If FGambas.Visible Then
     FGambas.Animate("Depressive", sMsg)
-  ELSE
+  Else
     Message.Warning(sMsg)
-  ENDIF
+  Endif
 
-CATCH
+Catch
 
-END
+End
 
 
 ' PUBLIC FUNCTION Quote(sPath AS String) AS String
@@ -1354,108 +1367,108 @@ END
 ' END
 
 
-PRIVATE FUNCTION Escape(sStr AS String) AS String
+Private Function Escape(sStr As String) As String
 
-  DIM sRes AS String
-  DIM iInd AS Integer
-  DIM sCar AS String
-  DIM iPos AS Integer
+  Dim sRes As String
+  Dim iInd As Integer
+  Dim sCar As String
+  Dim iPos As Integer
 
-  FOR iInd = 1 TO Len(sStr)
+  For iInd = 1 To Len(sStr)
 
     sCar = Mid$(sStr, iInd, 1)
     iPos = InStr("\"\\\n\r\t", sCar)
 
-    IF iPos THEN sCar = "\\" & Mid$("\"\\nrt", iPos, 1)
+    If iPos Then sCar = "\\" & Mid$("\"\\nrt", iPos, 1)
 
     sRes = sRes & sCar
 
-  NEXT
+  Next
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
-PUBLIC SUB Process_Read()
+Public Sub Process_Read()
 
-  DIM sLig AS String
+  Dim sLig As String
 
-  READ #LAST, sLig, -4096
-  PRINT sLig;
+  Read #Last, sLig, -4096
+  Print sLig;
 
-END
+End
 
-PUBLIC SUB Process_Kill()
+Public Sub Process_Kill()
   
-  DIM sLink AS String = LAST.Tag
+  Dim sLink As String = Last.Tag
   
-  IF sLink THEN RefreshKey(sLink)
+  If sLink Then RefreshKey(sLink)
   
-END
+End
 
 
-PUBLIC SUB DeleteCompiledFiles()
+Public Sub DeleteCompiledFiles()
 
-  DIM sFile AS String
+  Dim sFile As String
 
-  EXEC ["rm", "-rf", Project.Dir &/ ".gambas"] WAIT
+  Exec ["rm", "-rf", Project.Dir &/ ".gambas"] Wait
 
-  IF Exist(Project.Dir &/ ".lang") THEN
-    FOR EACH sFile IN Dir(Project.Dir &/ ".lang", "*.pot")
-      TRY KILL Project.Dir &/ ".lang" &/ sFile
-    NEXT
-  ENDIF
+  If Exist(Project.Dir &/ ".lang") Then
+    For Each sFile In Dir(Project.Dir &/ ".lang", "*.pot")
+      Try Kill Project.Dir &/ ".lang" &/ sFile
+    Next
+  Endif
 
-END
+End
 
 
-PUBLIC FUNCTION GetCompileCommand(bAll AS Boolean, bNoDebug AS Boolean, bIDE AS Boolean) AS String
+Public Function GetCompileCommand(bAll As Boolean, bNoDebug As Boolean, bIDE As Boolean) As String
 
-  DIM sExec AS String
+  Dim sExec As String
 
   sExec = System.Path &/ "bin/gbc" & System.Version & " "
-  IF bAll THEN sExec &= "-a "
-  IF NOT bNoDebug THEN sExec &= "-g "
-  IF Localize THEN sExec &= "-t "
-  IF ControlPublic THEN sExec &= "-p "
-  IF ModulePublic THEN sExec &= "-m "
+  If bAll Then sExec &= "-a "
+  If NOT bNoDebug Then sExec &= "-g "
+  If Localize Then sExec &= "-t "
+  If ControlPublic Then sExec &= "-p "
+  If ModulePublic Then sExec &= "-m "
   'sExec = sExec & "-c " & Quote(CLASSES_FILE) & " " & Quote(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1"
-  IF bIDE THEN
+  If bIDE Then
     sExec = sExec & Quote.Shell(Project.Dir)
     sExec = sExec & " > " & OUTPUT_FILE & " 2>&1"
-  ENDIF
+  Endif
 
-  RETURN sExec
+  Return sExec
 
-END
+End
 
-PRIVATE SUB CreateLangDirectory()
+Private Sub CreateLangDirectory()
   
-  DIM sDir AS String = Project.Dir &/ ".lang"
+  Dim sDir As String = Project.Dir &/ ".lang"
   
-  IF NOT Exist(sDir) THEN
-    MKDIR sDir
+  If NOT Exist(sDir) Then
+    Mkdir sDir
     VersionControl.AddDir(sDir)
-  ENDIF
+  Endif
     
-END
+End
 
 
 
-PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) AS Boolean
+Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean) As Boolean
 
-  DIM sExec AS String
-  DIM sRes AS String
-  DIM sDir AS String
-  DIM sPath AS String
-  DIM iPos AS Integer
-  DIM sTrans AS String
+  Dim sExec As String
+  Dim sRes As String
+  Dim sDir As String
+  Dim sPath As String
+  Dim iPos As Integer
+  Dim sTrans As String
 
-  IF Project.ReadOnly THEN RETURN
-  IF Project.Running THEN RETURN 'TRUE
+  If Project.ReadOnly Then Return
+  If Project.Running Then Return 'TRUE
 
-  IF LockIt() THEN RETURN TRUE
+  If LockIt() Then Return True
 
   sDir = Project.Dir
 
@@ -1464,292 +1477,292 @@ PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) 
 
   SetMessage(("Compiling project") & " " & Project.Name & "...")
 
-  IF bAll THEN
+  If bAll Then
     'CleanUp
     DeleteCompiledFiles
-    WriteProject(TRUE)
-  ENDIF
+    WriteProject(True)
+  Endif
 
-  sExec = GetCompileCommand(bAll, bNoDebug, TRUE)
-  SHELL sExec WAIT
+  sExec = GetCompileCommand(bAll, bNoDebug, True)
+  Shell sExec Wait
 
   'Stat(OUTPUT_FILE)
   sRes = AddMessage(("Nothing to do."))
 
-  IF sRes THEN
-    IF Process.LastValue THEN
+  If sRes Then
+    If Process.LastValue Then
 
       UnlockIt()
       CompileError(sRes)
-      RETURN TRUE
+      Return True
 
-    ELSE
+    Else
 
-      IF Localize THEN
+      If Localize Then
         CreateLangDirectory
         sPath = sDir &/ ".lang/.pot"
-        SHELL "msgcat " & Quote.Shell(sDir) &/ ".lang/*.pot > " & Quote.Shell(sPath) & " 2>/dev/null" WAIT
+        Shell "msgcat " & Quote.Shell(sDir) &/ ".lang/*.pot > " & Quote.Shell(sPath) & " 2>/dev/null" Wait
         sTrans = File.Load(sPath)
         iPos = InStr(sTrans, "#,")
-        IF iPos THEN sTrans = Mid$(sTrans, iPos)
+        If iPos Then sTrans = Mid$(sTrans, iPos)
         File.Save(sDir &/ ".lang/.pot", sTrans)
-      ENDIF
+      Endif
 
       'SetMessage(("OK"))
       FGambas.Animate("Happy")
 
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
   UnlockIt()
 
-END
+End
 
-PRIVATE FUNCTION CheckRunning(OPTIONAL bCompileAll AS Boolean) AS Boolean
+Private Function CheckRunning(Optional bCompileAll As Boolean) As Boolean
 
-  IF Project.Running THEN RETURN
-  IF Compile(bCompileAll) THEN RETURN TRUE
-  IF CheckStartupClass() THEN RETURN TRUE
+  If Project.Running Then Return
+  If Compile(bCompileAll) Then Return True
+  If CheckStartupClass() Then Return True
 
-END
+End
 
 
-PUBLIC SUB Run(OPTIONAL bCompileAll AS Boolean, OPTIONAL iDebug AS Integer)
+Public Sub Run(Optional bCompileAll As Boolean, Optional iDebug As Integer)
 
-  IF CheckRunning(bCompileAll) THEN RETURN
+  If CheckRunning(bCompileAll) Then Return
 
-  IF iDebug = 1 THEN
+  If iDebug = 1 Then
     Design.Step
-  ELSE IF iDebug = 2 THEN
+  Else If iDebug = 2 Then
     Design.Forward
-  ELSE IF iDebug = 3 THEN
+  Else If iDebug = 3 Then
     Design.ReturnFrom
-  ELSE
+  Else
     Design.Run
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC SUB Forward()
+Public Sub Forward()
 
-  IF CheckRunning() THEN RETURN
+  If CheckRunning() Then Return
   Design.Forward
 
-END
+End
 
 
-PUBLIC SUB ReturnFrom()
+Public Sub ReturnFrom()
 
-  IF CheckRunning() THEN RETURN
+  If CheckRunning() Then Return
   Design.ReturnFrom
 
-END
+End
 
-PUBLIC SUB RunUntil(hForm AS FEditor, iLine AS Integer)
+Public Sub RunUntil(hForm As FEditor, iLine As Integer)
 
-  IF CheckRunning() THEN RETURN
+  If CheckRunning() Then Return
   Design.RunUntil(hForm, iLine)
 
-END
+End
 
 
-PUBLIC SUB Step()
+Public Sub Step()
 
-  IF Compile() THEN RETURN
-  IF CheckStartupClass() THEN RETURN
+  If Compile() Then Return
+  If CheckStartupClass() Then Return
 
   Design.Step
 
-END
+End
 
 
-PUBLIC SUB Save()
+Public Sub Save()
 
-  DIM hForm AS Object
+  Dim hForm As Object
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  FOR EACH hForm IN Files
-    IF Object.Type(hForm) = "FEditor" THEN
-      IF hForm.Save(TRUE) THEN BREAK
-    ELSE
-      IF hForm.Save() THEN BREAK
-    ENDIF
+  For Each hForm In Files
+    If Object.Type(hForm) = "FEditor" Then
+      If hForm.Save(True) Then Break
+    Else
+      If hForm.Save() Then Break
+    Endif
 
-  NEXT
+  Next
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PRIVATE SUB CopyProject(sSrc AS String, sDst AS String)
+Private Sub CopyProject(sSrc As String, sDst As String)
   
-  DIM sFile AS String
+  Dim sFile As String
   
-  TRY MKDIR sDst
+  Try Mkdir sDst
   
-  FOR EACH sFile IN Dir(sSrc) 
-    IF sFile = ".svn" OR sFile = "CVS" OR sFile = ".lock" THEN CONTINUE
-    IF IsDir(sSrc &/ sFile) THEN
+  For Each sFile In Dir(sSrc) 
+    If sFile = ".svn" OR sFile = "CVS" OR sFile = ".lock" Then Continue
+    If IsDir(sSrc &/ sFile) Then
       CopyProject(sSrc &/ sFile, sDst &/ sFile)
-    ELSE 
-      COPY sSrc &/ sFile TO sDst &/ sFile
-    ENDIF    
-  NEXT
+    Else 
+      Copy sSrc &/ sFile To sDst &/ sFile
+    Endif    
+  Next
   
-END
+End
 
 
-PUBLIC SUB SaveAs()
+Public Sub SaveAs()
   
-  DIM sDir AS String
+  Dim sDir As String
 
   Dialog.Path = Settings["/SaveProjectAs", System.User.Home]  
   Dialog.Title = ("Save project as")
-  IF Dialog.SelectDirectory() THEN RETURN
+  If Dialog.SelectDirectory() Then Return
   
   Settings["/SaveProjectAs"] = Dialog.Path
   sDir = Dialog.Path &/ Project.Name
-  IF Exist(sDir) THEN 
+  If Exist(sDir) Then 
     FGambas.Warning(("This project already exists."))
-    RETURN
-  ENDIF
+    Return
+  Endif
   
-  INC Application.Busy
+  Inc Application.Busy
   Project.Save
   CopyProject(Project.Dir, sDir)
-  DEC Application.Busy
+  Dec Application.Busy
   Project.Open(sDir)
 
-CATCH 
+Catch 
 
   Application.Busy = 0
   FGambas.Error(("Unable to save the project.") & "\n\n" & Error.Text)
 
-END
+End
 
 
 
-PUBLIC SUB Insert(sName AS String, sType AS String, OPTIONAL sTemplate AS String, OPTIONAL bNoRefresh AS Boolean, OPTIONAL bNoOpen AS Boolean, OPTIONAL bLink AS Boolean)
+Public Sub Insert(sName As String, sType As String, Optional sTemplate As String, Optional bNoRefresh As Boolean, Optional bNoOpen As Boolean, Optional bLink As Boolean)
 
-  DIM sPath AS String
-  DIM sData AS String
+  Dim sPath As String
+  Dim sData As String
 
   sPath = Project.Dir &/ File.BaseName(sName) & "." & sType
-  IF Exist(sPath) THEN
+  If Exist(sPath) Then
     FGambas.Warning(("File already exists."))
-    RETURN
-  ENDIF
+    Return
+  Endif
 
-  IF bLink THEN
-    LINK sTemplate TO sPath ' swapped
-  ELSE IF Left(sTemplate) = "/" THEN
-    TRY COPY sTemplate TO sPath
-  ELSE
+  If bLink Then
+    Link sTemplate To sPath ' swapped
+  Else If Left(sTemplate) = "/" Then
+    Try Copy sTemplate To sPath
+  Else
     File.Save(sPath, sTemplate)
-  ENDIF
+  Endif
   
   VersionControl.AddFile(sPath)
 
-  IF NOT bNoRefresh THEN Refresh
-  IF NOT bNoOpen THEN OpenFile(sPath)
+  If NOT bNoRefresh Then Refresh
+  If NOT bNoOpen Then OpenFile(sPath)
 
-END
+End
 
 
-PUBLIC SUB InsertFile(sName AS String, sDir AS String, OPTIONAL sTemplate AS String, OPTIONAL bNoOpen AS Boolean, OPTIONAL bLink AS Boolean)
+Public Sub InsertFile(sName As String, sDir As String, Optional sTemplate As String, Optional bNoOpen As Boolean, Optional bLink As Boolean)
 
-  DIM sPath AS String
-  DIM sData AS String
+  Dim sPath As String
+  Dim sData As String
 
   sPath = sDir &/ sName
 
-  IF Len(sTemplate) THEN
+  If Len(sTemplate) Then
 
-    IF Exist(sPath) THEN
+    If Exist(sPath) Then
       FGambas.Warning(("File already exists."))
-      RETURN
-    ENDIF
+      Return
+    Endif
 
     'SHELL "cp " & Quote(sTemplate) & " " & Quote(sPath) WAIT
-    IF bLink THEN
-      TRY LINK sTemplate TO sPath ' swapped
-    ELSE
-      TRY COPY sTemplate TO sPath
-    ENDIF
-    IF NOT Exist(sPath) THEN
+    If bLink Then
+      Try Link sTemplate To sPath ' swapped
+    Else
+      Try Copy sTemplate To sPath
+    Endif
+    If NOT Exist(sPath) Then
       FGambas.Error(("Cannot copy template file.") & "\n\n" & Error.Text)
-      RETURN
-    ENDIF
+      Return
+    Endif
 
-  ENDIF
+  Endif
 
   VersionControl.AddFile(sPath)
 
   Refresh
   'RefreshLibrary
 
-  IF NOT bNoOpen THEN OpenFile(sPath)
+  If NOT bNoOpen Then OpenFile(sPath)
 
-END
+End
 
 
-PUBLIC FUNCTION InsertDirectory(sPath AS String, OPTIONAL bNoVerCtrl AS Boolean) AS Boolean
+Public Function InsertDirectory(sPath As String, Optional bNoVerCtrl As Boolean) As Boolean
 
-  IF Exist(sPath) THEN
+  If Exist(sPath) Then
     FGambas.Warning(("Directory already exists."))
-    RETURN TRUE
-  ENDIF
+    Return True
+  Endif
 
-  TRY MKDIR sPath
+  Try Mkdir sPath
   
-  IF ERROR THEN 
+  If Error Then 
     Message.Error(Error.Text)
-    RETURN FALSE
-  ENDIF
+    Return False
+  Endif
   
-  IF NOT bNoVerCtrl THEN VersionControl.AddDir(sPath)
+  If NOT bNoVerCtrl Then VersionControl.AddDir(sPath)
 
   RefreshKey(sPath)
-  RETURN TRUE
-END
+  Return True
+End
 
-PRIVATE SUB RefreshActivate()
+Private Sub RefreshActivate()
   
-  DIM hActive AS Object = ActiveForm
-  ActiveForm = NULL  
+  Dim hActive As Object = ActiveForm
+  ActiveForm = Null  
   Activate(hActive)
   
-END
+End
 
 
-PUBLIC SUB Activate(hForm AS Object)
+Public Sub Activate(hForm As Object)
 
-  DIM sType AS String
-  DIM bEditor AS Boolean
-  DIM bTextEditor AS Boolean
+  Dim sType As String
+  Dim bEditor As Boolean
+  Dim bTextEditor As Boolean
 
-  IF AboutToQuit THEN RETURN
+  If AboutToQuit Then Return
 
-  IF hForm THEN
+  If hForm Then
     SelectKey(hForm.Path)
-    IF ActiveForm = hForm THEN RETURN
+    If ActiveForm = hForm Then Return
   'ELSE
     'IF NOT ActiveForm THEN RETURN
-  ENDIF
+  Endif
 
   ActiveForm = hForm
 
-  IF NOT ActiveForm THEN 
+  If NOT ActiveForm Then 
   
     FProperty.HideAll
     FFormStack.HideAll
-    FMain.ShowTool(FALSE)
+    FMain.ShowTool(False)
     sType = ""
   
-  ELSE
+  Else
   
     FProperty.RefreshAll
     FFormStack.RefreshAll
@@ -1758,7 +1771,7 @@ PUBLIC SUB Activate(hForm AS Object)
   
     FMain.ShowTool(sType = "FForm" OR ShowAlwaysProperty)
     
-  ENDIF
+  Endif
 
   bEditor = sType = "FEditor"
   bTextEditor = sType = "FTextEditor"
@@ -1775,597 +1788,597 @@ PUBLIC SUB Activate(hForm AS Object)
   Action["replace"].Visible = bEditor OR bTextEditor
   'Action["replace-all"].Visible = bEditor OR bTextEditor
   
-END
+End
 
-PUBLIC SUB Deactivate(hForm AS Object)
+Public Sub Deactivate(hForm As Object)
 
-  IF ActiveForm <> hForm THEN RETURN
+  If ActiveForm <> hForm Then Return
 
   'DEBUG hForm
 
   'DEBUG "DeActivate: "; hForm.Title
 
-  SELECT CASE Object.Type(hForm)
+  Select Case Object.Type(hForm)
 
-    CASE "FForm"
+    Case "FForm"
       FProperty.HideAll
       FFormStack.HideAll
       'FProperty.Hide
      ' FToolBox.Hide
 
-  END SELECT
+  End Select
 
-END
-
-
+End
 
 
-PRIVATE SUB GetVersion()
+
+
+Private Sub GetVersion()
   
-  DIM sVer AS String
-  DIM aVer AS String[]
-  DIM iMajor AS Integer
-  DIM iMinor AS Integer
-  DIM iRelease AS Integer
+  Dim sVer As String
+  Dim aVer As String[]
+  Dim iMajor As Integer
+  Dim iMinor As Integer
+  Dim iRelease As Integer
   
-  IF NOT VersionProgram THEN RETURN
+  If NOT VersionProgram Then Return
   
-  SHELL VersionProgram TO sVer
+  Shell VersionProgram To sVer
   aVer = Split(Trim(sVer), ".")
   iMajor = aVer[0]
   iMinor = aVer[1]
-  TRY iRelease = aVer[2]
+  Try iRelease = aVer[2]
   MajorVersion = iMajor
   MinorVersion = iMinor
-  IF iRelease THEN ReleaseVersion = iRelease
+  If iRelease Then ReleaseVersion = iRelease
 
-CATCH 
+Catch 
 
-  DEBUG "Unable to get version from: "; VersionProgram  
+  Debug "Unable to get version from: "; VersionProgram  
   
-END
+End
 
 
-PUBLIC FUNCTION MakeExecutable(OPTIONAL bDoNotIncVersion AS Boolean, OPTIONAL bSilent AS Boolean) AS Boolean
+Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bSilent As Boolean) As Boolean
 
-  DIM sExec AS String
-  DIM sPath AS String
-  DIM bOK AS Boolean
+  Dim sExec As String
+  Dim sPath As String
+  Dim bOK As Boolean
 
-  IF CheckStartupClass() THEN RETURN TRUE
+  If CheckStartupClass() Then Return True
 
   DisableRefresh
 
   sPath = Project.Dir &/ Project.Name & ".gambas"
 
-  IF NOT bSilent THEN
+  If NOT bSilent Then
 
-    IF Exist(File.Dir(ExecPath)) THEN sPath = ExecPath
+    If Exist(File.Dir(ExecPath)) Then sPath = ExecPath
     
     'IF Dialog.SaveFile() THEN RETURN TRUE
     sPath = FMakeExecutable.Run(sPath)
-    IF NOT sPath THEN 
+    If NOT sPath Then 
       EnableRefresh
-      RETURN
-    ENDIF
+      Return
+    Endif
     
     ExecPath = File.SetExt(sPath, "gambas")
     
-  ENDIF 
+  Endif 
 
   SetMessage(("Making executable..."))
 
-  IF Compile(TRUE) THEN 
+  If Compile(True) Then 
     EnableRefresh
-    RETURN TRUE
-  ENDIF
+    Return True
+  Endif
   
-  EXEC ["rm", "-rf", Project.Dir &/ ".gambas.save"] WAIT
-  EXEC ["cp", "-rf", Project.Dir &/ ".gambas", Project.Dir &/ ".gambas.save"] WAIT
+  Exec ["rm", "-rf", Project.Dir &/ ".gambas.save"] Wait
+  Exec ["cp", "-rf", Project.Dir &/ ".gambas", Project.Dir &/ ".gambas.save"] Wait
   'MOVE Project.Dir &/ ".gambas" TO Project.Dir &/ ".gambas.save"
   
-  IF NOT Compile(TRUE, NOT KeepDebugInfo) THEN 
+  If NOT Compile(True, NOT KeepDebugInfo) Then 
 
     GetVersion()
   
     sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Quote.Shell(ExecPath) & " " & Quote.Shell(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1" 
-    SHELL sExec WAIT
+    Shell sExec Wait
   
     'SetMessage(("OK"))
     
-    IF NOT VersionProgram THEN INC ReleaseVersion
-    WriteProject(TRUE, TRUE)
+    If NOT VersionProgram Then Inc ReleaseVersion
+    WriteProject(True, True)
   
-    IF RunAfterMakingExec THEN 
-      SHELL Replace(RunAfterMakingExec, "$(FILE)", Quote.Shell(ExecPath)) WAIT
-    ENDIF 
+    If RunAfterMakingExec Then 
+      Shell Replace(RunAfterMakingExec, "$(FILE)", Quote.Shell(ExecPath)) Wait
+    Endif 
   
-    bOK = TRUE
+    bOK = True
     
-  ENDIF
+  Endif
 
-  EXEC ["rm", "-rf", Project.Dir &/ ".gambas"] WAIT
-  TRY MOVE Project.Dir &/ ".gambas.save" TO Project.Dir &/ ".gambas"
-  IF ERROR THEN DEBUG Error.Text
+  Exec ["rm", "-rf", Project.Dir &/ ".gambas"] Wait
+  Try Move Project.Dir &/ ".gambas.save" To Project.Dir &/ ".gambas"
+  If Error Then Debug Error.Text
 
 _ERROR:
 
   EnableRefresh
-  RETURN NOT bOK
+  Return NOT bOK
 
-CATCH 
+Catch 
 
   FGambas.Error(("Cannot make executable.") & "\n\n" & Error.Text & "\n" & Error.Where)
   EnableRefresh
-  RETURN TRUE
+  Return True
 
-END
+End
 
 
-PUBLIC FUNCTION GetClasses(OPTIONAL bFullPath AS Boolean) AS String[]
+Public Function GetClasses(Optional bFullPath As Boolean) As String[]
 
-  DIM sFile AS String
-  DIM aModule AS NEW String[]
-  DIM aClass AS NEW String[]
-  DIM bStop AS Boolean
+  Dim sFile As String
+  Dim aModule As New String[]
+  Dim aClass As New String[]
+  Dim bStop As Boolean
 
-  FOR EACH sFile IN Dir(Project.Dir, "*.module")
-    IF bFullPath THEN
+  For Each sFile In Dir(Project.Dir, "*.module")
+    If bFullPath Then
       aModule.Add(Project.Dir &/ sFile)
-    ELSE
+    Else
       aModule.Add(File.BaseName(sFile))
-    ENDIF
-  NEXT
+    Endif
+  Next
   aModule.Sort
 
-  FOR EACH sFile IN Dir(Project.Dir, "*.class")
-    IF bFullPath THEN
+  For Each sFile In Dir(Project.Dir, "*.class")
+    If bFullPath Then
       aClass.Add(Project.Dir &/ sFile)
-    ELSE
+    Else
       aClass.Add(File.BaseName(sFile))
-    ENDIF
-  NEXT
+    Endif
+  Next
   aClass.Sort
 
   aModule.Insert(aClass)
-  IF NOT bFullPath THEN aModule.Sort
+  If NOT bFullPath Then aModule.Sort
 
-  RETURN aModule
+  Return aModule
 
-END
+End
 
-PRIVATE SUB CheckProjectVersion(sPath AS String) AS Boolean
+Private Sub CheckProjectVersion(sPath As String) As Boolean
 
-  DIM hFic AS File
-  DIM sLig AS String
+  Dim hFic As File
+  Dim sLig As String
   
-  hFic = OPEN sPath 
+  hFic = Open sPath 
 
-  LINE INPUT #hFic, sLig
-  IF sLig = PROJECT_MAGIC_1 THEN RETURN TRUE 
+  Line Input #hFic, sLig
+  If sLig = PROJECT_MAGIC_1 Then Return True 
   
-END
+End
 
 
-PUBLIC SUB ReadProject() 
+Public Sub ReadProject() 
 
-  DIM hFic AS File
-  DIM sLig AS String
-  DIM iPos AS Integer
-  DIM sKey AS String
-  DIM sVal AS String
-  DIM cVer AS String[]
-  DIM sElt AS String
-  DIM iElt AS Integer
-  DIM aMissing AS NEW String[]
-  DIM sMsg AS String
+  Dim hFic As File
+  Dim sLig As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sVal As String
+  Dim cVer As String[]
+  Dim sElt As String
+  Dim iElt As Integer
+  Dim aMissing As New String[]
+  Dim sMsg As String
 
-  hFic = OPEN Path FOR INPUT
+  hFic = Open Path For Input
 
-  Libraries = NEW String[]
+  Libraries = New String[]
   Title = ""
   TabSize = Settings["/DefaultTabSize", 2]
-  Arguments = NEW String[]
-  Environment = NEW String[]
+  Arguments = New String[]
+  Environment = New String[]
   MajorVersion = 0
   MinorVersion = 0
   ReleaseVersion = 1
   'SnapToGrid = TRUE
   'ShowGrid = TRUE
   Snap = Desktop.Scale 'Settings["/DefaultGridResolution", 8]
-  ControlPublic = FALSE
-  ModulePublic = FALSE
-  KeepDebugInfo = FALSE
-  Localize = FALSE
+  ControlPublic = False
+  ModulePublic = False
+  KeepDebugInfo = False
+  Localize = False
   Description = ""
   Authors = ""
   Icon = ""
-  Systems = NEW String[]
-  Menus = NEW Collection
-  Categories = NEW Collection
-  Groups = NEW Collection
-  Prefix = FALSE
-  UseRelease = FALSE
+  Systems = New String[]
+  Menus = New Collection
+  Categories = New Collection
+  Groups = New Collection
+  Prefix = False
+  UseRelease = False
   ExecPath = Project.Dir &/ Project.Name & ".gambas"
-  CreateComponent = FALSE
+  CreateComponent = False
   ComponentState = CComponent.STABLE
-  CreateShortcut = FALSE
+  CreateShortcut = False
   RunAfterMakingExec = ""
   Language = ""
   VersionProgram = ""
   Stack = 0
-  StackTrace = FALSE
+  StackTrace = False
 
-  WHILE NOT Eof(hFic)
+  While NOT Eof(hFic)
 
-    LINE INPUT #hFic, sLig
+    Line Input #hFic, sLig
     sLig = Trim(sLig)
 
-    IF Len(sLig) = 0 THEN CONTINUE
-    IF Left$(sLig, 1) = "#" THEN CONTINUE
+    If Len(sLig) = 0 Then Continue
+    If Left$(sLig, 1) = "#" Then Continue
 
     iPos = InStr(sLig, "=")
-    IF iPos = 0 THEN CONTINUE
+    If iPos = 0 Then Continue
 
     sKey = Lower$(Trim(Left$(sLig, iPos - 1)))
     sVal = Trim(Mid$(sLig, iPos + 1))
 
-    SELECT sKey
+    Select sKey
 
-      CASE "title"
+      Case "title"
         Title = sVal
 
-      CASE "startup"
-        DefineStartup(sVal, TRUE)
+      Case "startup"
+        DefineStartup(sVal, True)
 
-      CASE "library"
-        IF CComponent.All.Exist(sVal) THEN
+      Case "library"
+        If CComponent.All.Exist(sVal) Then
           Libraries.Add(sVal)
-        ELSE
+        Else
           aMissing.Add(sVal)
-        ENDIF
+        Endif
 
-      CASE "tabsize"
+      Case "tabsize"
         TabSize = Val(sVal)
 
-      CASE "arguments"
+      Case "arguments"
         Arguments = Split(Unquote(sVal), "\n")
 
-      CASE "environment"
+      Case "environment"
         Environment = Split(Unquote(sVal), "\n")
 
-      CASE "version"
+      Case "version"
         cVer = Split(sVal, ".")
-        TRY MajorVersion = Val(cVer[0])
-        TRY MinorVersion = Val(cVer[1])
-        TRY ReleaseVersion = Val(cVer[2])
+        Try MajorVersion = Val(cVer[0])
+        Try MinorVersion = Val(cVer[1])
+        Try ReleaseVersion = Val(cVer[2])
         
-      CASE "versionprogram"
+      Case "versionprogram"
         VersionProgram = sVal
 
-      CASE "localize", "translate"
+      Case "localize", "translate"
         Localize = Val(sVal) <> 0
 
-      CASE "language"
+      Case "language"
         Language = sVal
 
-      CASE "keepdebuginfo"
+      Case "keepdebuginfo"
         KeepDebugInfo = Val(sVal) <> 0
 
-      CASE "createshortcut"
+      Case "createshortcut"
         CreateShortcut = Val(sVal) <> 0
         
-      CASE "runafter"
+      Case "runafter"
         RunAfterMakingExec = sVal
         
-      CASE "makecomponent"
+      Case "makecomponent"
         CreateComponent = Val(sVal) <> 0
 
-      CASE "alphacomponent"
-        IF Val(sVal) THEN ComponentState = CComponent.UNSTABLE
+      Case "alphacomponent"
+        If Val(sVal) Then ComponentState = CComponent.UNSTABLE
         
-      CASE "state"
+      Case "state"
         ComponentState = Val(sVal)
-        IF ComponentState < 0 OR ComponentState > 2 THEN ComponentState = CComponent.UNSTABLE
+        If ComponentState < 0 OR ComponentState > 2 Then ComponentState = CComponent.UNSTABLE
 
-      CASE "controlpublic"
+      Case "controlpublic"
         ControlPublic = Val(sVal) <> 0
 
-      CASE "modulepublic"
+      Case "modulepublic"
         ModulePublic = Val(sVal) <> 0
 
-      CASE "description"
+      Case "description"
         Description = Replace(sVal, "\\n", "\n")
 
-      CASE "authors"
+      Case "authors"
         Authors = Replace(sVal, "\\n", "\n")
 
-      CASE "icon"
+      Case "icon"
         Icon = sVal
 
-      CASE "systems"
+      Case "systems"
         Systems = Split(sVal, ",")
 
-      CASE "menus"
+      Case "menus"
         iElt = 0
-        FOR EACH sElt IN Split(sVal, ",")
-          IF iElt >= Systems.Count THEN BREAK
+        For Each sElt In Split(sVal, ",")
+          If iElt >= Systems.Count Then Break
           Menus[Systems[iElt]] = sElt
-          INC iElt
-        NEXT
+          Inc iElt
+        Next
 
-      CASE "categories"
+      Case "categories"
         iElt = 0
-        FOR EACH sElt IN Split(sVal, ",")
-          IF iElt >= Systems.Count THEN BREAK
+        For Each sElt In Split(sVal, ",")
+          If iElt >= Systems.Count Then Break
           Categories[Systems[iElt]] = sElt
-          INC iElt
-        NEXT
+          Inc iElt
+        Next
 
-      CASE "groups"
+      Case "groups"
         iElt = 0
-        FOR EACH sElt IN Split(sVal, ",")
-          IF iElt >= Systems.Count THEN BREAK
+        For Each sElt In Split(sVal, ",")
+          If iElt >= Systems.Count Then Break
           Groups[Systems[iElt]] = sElt
-          INC iElt
-        NEXT
+          Inc iElt
+        Next
 
-      CASE "prefix"
+      Case "prefix"
         Prefix = Val(sVal)
         
-      CASE "userelease"
+      Case "userelease"
         UseRelease = Val(sVal)
         
-      CASE "maintainer"
+      Case "maintainer"
         Maintainer = sVal
         
-      CASE "vendor"
+      Case "vendor"
         Vendor = sVal
         
-      CASE "address"
+      Case "address"
         Address = sVal
         
-      CASE "license"
+      Case "license"
         License = sVal
 
-      CASE "execpath"
+      Case "execpath"
         ExecPath = sVal
         
-      CASE "stack"
+      Case "stack"
         Stack = Val(sVal)
         
-      CASE "stacktrace"
+      Case "stacktrace"
         StackTrace = Val(sVal) <> 0
         
-    END SELECT
+    End Select
 
-  WEND
+  Wend
 
-  CLOSE hFic
+  Close hFic
 
-  IF aMissing.Count THEN
+  If aMissing.Count Then
     sMsg = Subst(("Some components are missing: &1"), aMissing.Join(", "))
-    IF Message.Error(sMsg, ("Continue"), ("Cancel")) = 2 THEN
+    If Message.Error(sMsg, ("Continue"), ("Cancel")) = 2 Then
       Error.Raise("")
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
   FMain.UpdateTranslate
   RefreshLibrary
 
-END
+End
 
 
-PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMakeShortcut AS Boolean)
+Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMakeShortcut As Boolean)
 
-  DIM hFic AS File
-  DIM sLib AS String
-  DIM sSys AS String
-  DIM sElt AS String
-  DIM sPath AS String
-  DIM sVal AS String
-  DIM iKey AS Integer
-  DIM iCount AS Integer
-  DIM hComp AS CComponent
-  DIM sShortcut AS String
+  Dim hFic As File
+  Dim sLib As String
+  Dim sSys As String
+  Dim sElt As String
+  Dim sPath As String
+  Dim sVal As String
+  Dim iKey As Integer
+  Dim iCount As Integer
+  Dim hComp As CComponent
+  Dim sShortcut As String
 
-  IF Project.ReadOnly THEN RETURN
+  If Project.ReadOnly Then Return
 
-  IF CreateComponent
-    IF bMakeShortcut THEN
-      IF Project.CreateShortcut THEN
+  If CreateComponent
+    If bMakeShortcut Then
+      If Project.CreateShortcut Then
         InstallComponent
-      ELSE  
+      Else  
         UninstallComponent
-      ENDIF
-    ENDIF
-  ELSE
+      Endif
+    Endif
+  Else
     MakeShortcut(bMakeShortcut)
-    IF NOT bComponentDoNotChange THEN RefreshLibrary
-  ENDIF 
+    If NOT bComponentDoNotChange Then RefreshLibrary
+  Endif 
   
-  hFic = OPEN Path & ".tmp" FOR CREATE
+  hFic = Open Path & ".tmp" For Create
 
-  PRINT #hFic, PROJECT_MAGIC
+  Print #hFic, PROJECT_MAGIC
   'PRINT #hFic, "Project="; Name
 
-  IF Title THEN PRINT #hFic, "Title="; Title
-  IF Startup THEN PRINT #hFic, "Startup="; Startup
-  IF Stack THEN PRINT #hFic, "Stack="; Stack
-  IF StackTrace THEN PRINT #hFic, "StackTrace=1"
-  IF Icon THEN PRINT #hFic, "Icon="; Icon
+  If Title Then Print #hFic, "Title="; Title
+  If Startup Then Print #hFic, "Startup="; Startup
+  If Stack Then Print #hFic, "Stack="; Stack
+  If StackTrace Then Print #hFic, "StackTrace=1"
+  If Icon Then Print #hFic, "Icon="; Icon
 
-  PRINT #hFic, "Version="; CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
-  IF VersionProgram THEN PRINT #hFic, "VersionProgram="; VersionProgram
+  Print #hFic, "Version="; CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
+  If VersionProgram Then Print #hFic, "VersionProgram="; VersionProgram
 
-  FOR EACH hComp IN CComponent.All
-    IF Libraries.Find(hComp.Key) >= 0 THEN
-      PRINT #hFic, "Library="; hComp.Key
-    ENDIF
-  NEXT
+  For Each hComp In CComponent.All
+    If Libraries.Find(hComp.Key) >= 0 Then
+      Print #hFic, "Library="; hComp.Key
+    Endif
+  Next
 
-  IF Description THEN PRINT #hFic, "Description="; Replace(Description, "\n", "\\n")
-  IF Authors THEN PRINT #hFic, "Authors="; Replace(Authors, "\n", "\\n")
+  If Description Then Print #hFic, "Description="; Replace(Description, "\n", "\\n")
+  If Authors Then Print #hFic, "Authors="; Replace(Authors, "\n", "\\n")
 
-  IF Arguments.Count THEN PRINT #hFic, "Arguments="; Quote(Arguments.Join("\n"))
-  IF Environment.Count THEN PRINT #hFic, "Environment="; Quote(Environment.Join("\n"))
+  If Arguments.Count Then Print #hFic, "Arguments="; Quote(Arguments.Join("\n"))
+  If Environment.Count Then Print #hFic, "Environment="; Quote(Environment.Join("\n"))
     
-  PRINT #hFic, "TabSize="; CStr(TabSize)
-  IF Localize THEN PRINT #hFic, "Translate=1"
-  IF Language THEN PRINT #hFic, "Language="; Language
-  IF KeepDebugInfo THEN PRINT #hFic, "KeepDebugInfo=1"
-  IF CreateShortcut THEN PRINT #hFic, "CreateShortcut=1"
-  IF RunAfterMakingExec THEN PRINT #hFic, "RunAfter="; RunAfterMakingExec
-  IF CreateComponent THEN PRINT #hFic, "MakeComponent=1"
-  IF ComponentState THEN PRINT #hFic, "State="; ComponentState
-  IF ControlPublic THEN PRINT #hFic, "ControlPublic=1"
-  IF ModulePublic THEN PRINT #hFic, "ModulePublic=1"
-  IF ExecPath <> (Project.Dir &/ Project.Name & ".gambas") THEN
-    PRINT #hFic, "ExecPath="; ExecPath
-  ENDIF
+  Print #hFic, "TabSize="; CStr(TabSize)
+  If Localize Then Print #hFic, "Translate=1"
+  If Language Then Print #hFic, "Language="; Language
+  If KeepDebugInfo Then Print #hFic, "KeepDebugInfo=1"
+  If CreateShortcut Then Print #hFic, "CreateShortcut=1"
+  If RunAfterMakingExec Then Print #hFic, "RunAfter="; RunAfterMakingExec
+  If CreateComponent Then Print #hFic, "MakeComponent=1"
+  If ComponentState Then Print #hFic, "State="; ComponentState
+  If ControlPublic Then Print #hFic, "ControlPublic=1"
+  If ModulePublic Then Print #hFic, "ModulePublic=1"
+  If ExecPath <> (Project.Dir &/ Project.Name & ".gambas") Then
+    Print #hFic, "ExecPath="; ExecPath
+  Endif
 
-  IF Maintainer THEN PRINT #hFic, "Maintainer="; Maintainer
-  IF Vendor THEN PRINT #hFic, "Vendor="; Vendor
-  IF Address THEN PRINT #hFic, "Address="; Address
-  IF License THEN PRINT #hFic, "License="; License
-  IF Prefix THEN PRINT #hFic, "Prefix=1"
-  IF UseRelease THEN PRINT #hFic, "UseRelease=1"
+  If Maintainer Then Print #hFic, "Maintainer="; Maintainer
+  If Vendor Then Print #hFic, "Vendor="; Vendor
+  If Address Then Print #hFic, "Address="; Address
+  If License Then Print #hFic, "License="; License
+  If Prefix Then Print #hFic, "Prefix=1"
+  If UseRelease Then Print #hFic, "UseRelease=1"
 
-  IF Systems.Count THEN
+  If Systems.Count Then
 
-    PRINT #hFic, "Systems="; Systems.Join(",")
+    Print #hFic, "Systems="; Systems.Join(",")
 
     sElt = ""
-    FOR EACH sSys IN Systems
+    For Each sSys In Systems
       sElt = sElt & "," & Menus[sSys]
-    NEXT
-    PRINT #hFic, "Menus="; Mid$(sElt, 2)
+    Next
+    Print #hFic, "Menus="; Mid$(sElt, 2)
 
     sElt = ""
-    FOR EACH sSys IN Systems
+    For Each sSys In Systems
       sElt = sElt & "," & Categories[sSys]
-    NEXT
-    PRINT #hFic, "Categories="; Mid$(sElt, 2)
+    Next
+    Print #hFic, "Categories="; Mid$(sElt, 2)
 
     sElt = ""
-    FOR EACH sSys IN Systems
+    For Each sSys In Systems
       sElt = sElt & "," & Groups[sSys]
-    NEXT
-    PRINT #hFic, "Groups="; Mid$(sElt, 2)
+    Next
+    Print #hFic, "Groups="; Mid$(sElt, 2)
 
-  ENDIF
+  Endif
   
-  CLOSE #hFic
+  Close #hFic
 
-  KILL Path
-  MOVE Path & ".tmp" TO Path
+  Kill Path
+  Move Path & ".tmp" To Path
 
   sPath = Project.Dir &/ ".lang/#project.pot"
-  TRY KILL sPath
-  IF Localize THEN
+  Try Kill sPath
+  If Localize Then
 
     CreateLangDirectory
     
-    OPEN sPath FOR CREATE AS #hFic
-    PRINT #hFic, "# "; Path
-    PRINT #hFic, File.Load("pot-header.txt")
-    IF Title THEN
-      PRINT #hFic, "#: .project:1"
-      PRINT #hFic, "msgid \""; Escape(Title); "\""
-      PRINT #hFic, "msgstr \"\"\n"
-    ENDIF
-    IF Description THEN
-      PRINT #hFic, "#: .project:2"
-      PRINT #hFic, "msgid \""; Escape(Description); "\""
-      PRINT #hFic, "msgstr \"\"\n"
-    ENDIF
-    CLOSE #hFic
+    Open sPath For Create As #hFic
+    Print #hFic, "# "; Path
+    Print #hFic, File.Load("pot-header.txt")
+    If Title Then
+      Print #hFic, "#: .project:1"
+      Print #hFic, "msgid \""; Escape(Title); "\""
+      Print #hFic, "msgstr \"\"\n"
+    Endif
+    If Description Then
+      Print #hFic, "#: .project:2"
+      Print #hFic, "msgid \""; Escape(Description); "\""
+      Print #hFic, "msgstr \"\"\n"
+    Endif
+    Close #hFic
 
-  ENDIF
+  Endif
   
   FMain.UpdateTranslate
 
-CATCH
+Catch
 
   FGambas.Error(("Cannot write project file.") & "\n\n" & Error.Text)
 
-END
+End
 
 
-PUBLIC SUB MakeShortcut(OPTIONAL bForce AS Boolean)
+Public Sub MakeShortcut(Optional bForce As Boolean)
   
-  DIM sPath AS String
-  DIM sShortcut AS String
+  Dim sPath As String
+  Dim sShortcut As String
   
-  IF NOT CreateShortcut THEN RETURN 
+  If NOT CreateShortcut Then Return 
   
   sPath = "~/Desktop" &/ Name & ".desktop"
   
-  IF NOT bForce THEN 
-    IF NOT Exist(sPath) THEN RETURN
-  ENDIF
+  If NOT bForce Then 
+    If NOT Exist(sPath) Then Return
+  Endif
   
   sShortcut = File.Load("shortcut.desktop")
   sShortcut = Replace(sShortcut, "$(NAME)", If(Title, Title, Name))
   sShortcut = Replace(sShortcut, "$(EXEC)", ExecPath)
   
   sPath = ""
-  IF Icon AND IF Exist(Project.Dir &/ Icon) THEN
+  If Icon AND If Exist(Project.Dir &/ Icon) Then
     sPath = Project.Dir &/ Icon
-  ENDIF
+  Endif
   sShortcut = Replace(sShortcut, "$(ICON)", sPath)
 
   File.Save("~/Desktop" &/ Name & ".desktop", sShortcut)
 
-CATCH 
+Catch 
 
   FGambas.Error(("Unable to create desktop shortcut.") & "\n\n" & Error.Text & "\n" & Error.Where)
   
-END
+End
 
-PUBLIC SUB MakeDir(sDir AS String) AS Boolean
+Public Sub MakeDir(sDir As String) As Boolean
   
-  DIM sPath AS String
-  DIM sElt AS String
+  Dim sPath As String
+  Dim sElt As String
   
-  FOR EACH sElt IN Split(sDir, "/")
+  For Each sElt In Split(sDir, "/")
     sPath &/= sElt
-    TRY MKDIR "/" & sPath
-  NEXT
+    Try Mkdir "/" & sPath
+  Next
   
-  IF NOT Exist(sDir) OR IF NOT IsDir(sDir) THEN RETURN TRUE
+  If NOT Exist(sDir) OR If NOT IsDir(sDir) Then Return True
   
-END
+End
 
-PRIVATE SUB MakeLink(sSrc AS String, sDst AS String)
+Private Sub MakeLink(sSrc As String, sDst As String)
   
-  IF NOT Exist(sDst) THEN LINK sSrc TO sDst
+  If NOT Exist(sDst) Then Link sSrc To sDst
   
-END
+End
 
-PRIVATE SUB RefreshForComponent()
+Private Sub RefreshForComponent()
 
-  DIM hForm AS Object
+  Dim hForm As Object
   
-  RefreshLibrary(TRUE)
+  RefreshLibrary(True)
   
-  FFormStack.RefreshAll(, TRUE)
+  FFormStack.RefreshAll(, True)
 
-  FOR EACH hForm IN Files
-    IF IsForm(hForm) AND IF hForm.Visible THEN 
+  For Each hForm In Files
+    If IsForm(hForm) AND If hForm.Visible Then 
       hForm.RefreshForComponent
-    ENDIF
-  NEXT
+    Endif
+  Next
   
-END
+End
 
 
-PUBLIC SUB InstallComponent()
+Public Sub InstallComponent()
   
-  DIM sDir AS String = Component.UserPath
-  DIM hExportInfo AS CExportInfo
-  DIM sClass AS String
-  DIM sIcon AS String
+  Dim sDir As String = Component.UserPath
+  Dim hExportInfo As CExportInfo
+  Dim sClass As String
+  Dim sIcon As String
   
   MakeDir(sDir)
 
@@ -2380,607 +2393,607 @@ PUBLIC SUB InstallComponent()
   
   sDir = File.Dir(sDir) &/ "control" &/ Name
   
-  FOR EACH sClass IN Project.GetClasses(TRUE)
-    IF NOT IsExported(sClass) THEN CONTINUE
+  For Each sClass In Project.GetClasses(True)
+    If NOT IsExported(sClass) Then Continue
     sClass = LCase(File.BaseName(sClass))
     sIcon = Project.Dir &/ "control" &/ sClass & ".png"
-    IF Exist(sIcon) THEN 
+    If Exist(sIcon) Then 
       MakeDir(sDir)
       MakeLink(sIcon, sDir &/ sClass & ".png")
-    ENDIF
-  NEXT
+    Endif
+  Next
   
-  IF NOT CComponent.All.Exist(Name) THEN 
+  If NOT CComponent.All.Exist(Name) Then 
     CComponent.FullReset
-  ENDIF
-  IF NOT Libraries.Exist(Name) THEN 
+  Endif
+  If NOT Libraries.Exist(Name) Then 
     Libraries.Add(Name)
-  ENDIF
+  Endif
   RefreshForComponent
   
-CATCH 
+Catch 
 
   FGambas.Error(("Unable to install component.") & "\n\n" & Error.Text & "\n" & Error.Where)  
   
-END
+End
 
-PUBLIC SUB UninstallComponent()
+Public Sub UninstallComponent()
   
-  DIM sDir AS String = Component.UserPath
-  DIM bRefresh AS Boolean
+  Dim sDir As String = Component.UserPath
+  Dim bRefresh As Boolean
   
   'MakeDir(sDir)
 
   bRefresh = Exist(sDir &/ Name & ".component")
 
-  TRY KILL sDir &/ Name & ".gambas"
-  TRY KILL sDir &/ Name & ".component"
+  Try Kill sDir &/ Name & ".gambas"
+  Try Kill sDir &/ Name & ".component"
   
   sDir = File.Dir(File.Dir(sDir)) &/ "share/gambas" & System.Version & "/info"
   
-  TRY KILL sDir &/ Name & ".info"
-  TRY KILL sDir &/ Name & ".list"
+  Try Kill sDir &/ Name & ".info"
+  Try Kill sDir &/ Name & ".list"
   
   sDir = File.Dir(sDir) &/ "control" &/ Name
-  EXEC ["rm", "-rf", sDir] WAIT
+  Exec ["rm", "-rf", sDir] Wait
 
-  IF bRefresh THEN
-    IF CComponent.All.Exist(Name) THEN  
+  If bRefresh Then
+    If CComponent.All.Exist(Name) Then  
       CComponent.FullReset
-    ENDIF
-    IF NOT CComponent.All.Exist(Name) THEN
-      IF Libraries.Exist(Name) THEN 
+    Endif
+    If NOT CComponent.All.Exist(Name) Then
+      If Libraries.Exist(Name) Then 
         Libraries.Remove(Libraries.Find(Name))
-      ENDIF
+      Endif
       RefreshForComponent
-    ENDIF
-  ENDIF
+    Endif
+  Endif
   
-CATCH 
+Catch 
 
   FGambas.Error(("Unable to uninstall component.") & "\n\n" & Error.Text & "\n" & Error.Where)    
   
-END
+End
 
 
 
-PUBLIC FUNCTION GetNextEditor(sKey AS String) AS String
+Public Function GetNextEditor(sKey As String) As String
 
-  DIM sFirst AS String
-  DIM sFile AS String
-  DIM bNext AS Boolean
+  Dim sFirst As String
+  Dim sFile As String
+  Dim bNext As Boolean
 
-  IF NOT sKey THEN bNext = TRUE
+  If NOT sKey Then bNext = True
 
-  FOR EACH sFile IN GetClasses(TRUE)
+  For Each sFile In GetClasses(True)
 
-    IF bNext THEN RETURN sFile
+    If bNext Then Return sFile
 
-    IF NOT sFirst THEN
+    If NOT sFirst Then
       sFirst = sFile
-    ENDIF
+    Endif
 
-    IF sFile = sKey THEN
-      bNext = TRUE
-    ENDIF
+    If sFile = sKey Then
+      bNext = True
+    Endif
 
-  NEXT
+  Next
 
-  IF bNext THEN RETURN sFirst
+  If bNext Then Return sFirst
 
-END
+End
 
 
-PUBLIC FUNCTION GetPreviousEditor(sKey AS String) AS String
+Public Function GetPreviousEditor(sKey As String) As String
 
-  DIM sLast AS String
-  DIM sFile AS String
+  Dim sLast As String
+  Dim sFile As String
 
-  FOR EACH sFile IN GetClasses(TRUE)
+  For Each sFile In GetClasses(True)
 
-    IF sFile = sKey THEN
-      IF sLast THEN
-        RETURN sLast
-      ENDIF
-    ENDIF
+    If sFile = sKey Then
+      If sLast Then
+        Return sLast
+      Endif
+    Endif
 
     sLast = sFile
 
-  NEXT
+  Next
 
-  RETURN sLast
+  Return sLast
 
-END
+End
 
 
-PUBLIC SUB SetMessage(sMsg AS String)
+Public Sub SetMessage(sMsg As String)
 
-  IF FGambas.Visible AND IF sMsg <> ("OK") THEN
+  If FGambas.Visible AND If sMsg <> ("OK") Then
     FGambas.Info(sMsg)
-  ENDIF
+  Endif
   FMain.SetMessage(sMsg)
 
-END
+End
 
 
-PUBLIC SUB DeleteFile(sPath AS String)
+Public Sub DeleteFile(sPath As String)
 
-  DIM sExt AS String
-  DIM hForm AS Object
-  DIM bLink AS Boolean
-  DIM bProject AS Boolean
+  Dim sExt As String
+  Dim hForm As Object
+  Dim bLink As Boolean
+  Dim bProject As Boolean
 
-  IF NOT Exist(sPath) THEN RETURN
+  If NOT Exist(sPath) Then Return
   
   bLink = Stat(sPath).Type = gb.Link
   bProject = File.Dir(sPath) = Project.Dir
 
   hForm = Files[sPath]
 
-  IF hForm THEN
+  If hForm Then
     hForm.Delete
-    Files[sPath] = NULL
-  ENDIF
+    Files[sPath] = Null
+  Endif
 
-  TRY ProjectTree.Remove(sPath)
+  Try ProjectTree.Remove(sPath)
 
-  IF NOT bLink THEN
-    TRY KILL sPath & "~"
-    TRY MOVE sPath TO sPath & "~"
-  ELSE
-    TRY KILL sPath
-  ENDIF 
+  If NOT bLink Then
+    Try Kill sPath & "~"
+    Try Move sPath To sPath & "~"
+  Else
+    Try Kill sPath
+  Endif 
   
   VersionControl.RemoveFile(sPath)
   
-  IF bProject THEN
+  If bProject Then
 
     sExt = File.Ext(sPath)
 
-    IF sExt = "form" OR sExt = "class" OR sExt = "module" THEN
-      TRY KILL Project.Dir &/ ".gambas" &/ UCase(File.BaseName(sPath))
-      TRY KILL Project.Dir &/ ".lang" &/ File.BaseName(sPath) & ".pot"
-    ENDIF
+    If sExt = "form" OR sExt = "class" OR sExt = "module" Then
+      Try Kill Project.Dir &/ ".gambas" &/ UCase(File.BaseName(sPath))
+      Try Kill Project.Dir &/ ".lang" &/ File.BaseName(sPath) & ".pot"
+    Endif
 
-    IF sExt = "form" THEN
+    If sExt = "form" Then
       DeleteFile(File.Dir(sPath) &/ File.BaseName(sPath) & ".class")
-    ELSE IF sExt = "class" THEN
+    Else If sExt = "class" Then
       DeleteFile(File.Dir(sPath) &/ File.BaseName(sPath) & ".form")
-    ENDIF
+    Endif
 
-    IF File.BaseName(sPath) = Startup THEN
+    If File.BaseName(sPath) = Startup Then
       DefineStartup("")
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
 'CATCH
 
   'Message("*Unable to delete file.||" & sPath)
   'Refresh
 
-END
+End
 
-PUBLIC SUB DeleteDir(sDir AS String, OPTIONAL bNoVerCtrl AS Boolean)
+Public Sub DeleteDir(sDir As String, Optional bNoVerCtrl As Boolean)
 
-  DIM sFile AS String
+  Dim sFile As String
 
-  FOR EACH sFile IN Dir(sDir, "*~")
-    TRY KILL sDir &/ sFile
-  NEXT
+  For Each sFile In Dir(sDir, "*~")
+    Try Kill sDir &/ sFile
+  Next
   
-  IF NOT bNoVerCtrl AND IF VersionControl.Enabled() THEN 
+  If NOT bNoVerCtrl AND If VersionControl.Enabled() Then 
   
     VersionControl.RemoveDir(sDir)
-    IF Exist(sDir) THEN
-      TRY RMDIR sDir
-      IF ERROR THEN Message.Warning(("The directory will be removed at the next commit."))
-    ENDIF
+    If Exist(sDir) Then
+      Try Rmdir sDir
+      If Error Then Message.Warning(("The directory will be removed at the next commit."))
+    Endif
 
-  ELSE
+  Else
 
-    RMDIR sDir
+    Rmdir sDir
 
-  ENDIF
+  Endif
   
   Project.RefreshKey(sDir)
   
-END
+End
 
 
 
-PRIVATE FUNCTION CheckStartupClass() AS Boolean
+Private Function CheckStartupClass() As Boolean
 
-  IF Startup THEN RETURN
+  If Startup Then Return
 
   FGambas.Warning(("You must define a startup class or form!"))
 
-  RETURN TRUE
+  Return True
 
-END
+End
 
 
-PUBLIC FUNCTION CheckFileName(sName AS String, OPTIONAL sDir AS String) AS String
+Public Function CheckFileName(sName As String, Optional sDir As String) As String
 
-  DIM iInd AS Integer
+  Dim iInd As Integer
 
-  IF NOT sName THEN GOTO VOID_NAME
+  If NOT sName Then Goto VOID_NAME
 
-  FOR iInd = 1 TO Len(sName)
+  For iInd = 1 To Len(sName)
 
-    IF InStr(FILE_AUTH_CAR & "-._+()", LCase(Mid$(sName, iInd, 1))) = 0 THEN GOTO BAD_CHAR
+    If InStr(FILE_AUTH_CAR & "-._+()", LCase(Mid$(sName, iInd, 1))) = 0 Then Goto BAD_CHAR
 
-  NEXT
+  Next
 
-  IF Len(sDir) THEN
-    IF Exist(sDir &/ sName) THEN GOTO ALREADY_EXIST
-  ENDIF
+  If Len(sDir) Then
+    If Exist(sDir &/ sName) Then Goto ALREADY_EXIST
+  Endif
 
-  RETURN
+  Return
 
 VOID_NAME:
 
-  RETURN ("Please type a name.")
+  Return ("Please type a name.")
 
 BAD_CHAR:
 
-  RETURN ("This name contains a forbidden character:") & " [ " & Mid$(sName, iInd, 1) & " ]"
+  Return ("This name contains a forbidden character:") & " [ " & Mid$(sName, iInd, 1) & " ]"
 
 ALREADY_EXIST:
 
-  RETURN ("This name is already used. Choose another one.")
+  Return ("This name is already used. Choose another one.")
 
-END
+End
 
 
-PUBLIC FUNCTION CheckClassName(sName AS String, OPTIONAL bCheckNotExist AS Boolean) AS String
+Public Function CheckClassName(sName As String, Optional bCheckNotExist As Boolean) As String
 
-  DIM iInd AS Integer
+  Dim iInd As Integer
 
-  IF NOT sName THEN GOTO VOID_NAME
+  If NOT sName Then Goto VOID_NAME
 
   iInd = 1
-  IF InStr(CLASS_AUTH_FIRST_CAR, String.LCase(String.Left(sName))) = 0 THEN GOTO BAD_CHAR
+  If InStr(CLASS_AUTH_FIRST_CAR, String.LCase(String.Left(sName))) = 0 Then Goto BAD_CHAR
 
-  FOR iInd = 2 TO String.Len(sName)
-    IF InStr(CLASS_AUTH_CAR, LCase(String.Mid$(sName, iInd, 1))) = 0 THEN GOTO BAD_CHAR
-  NEXT
+  For iInd = 2 To String.Len(sName)
+    If InStr(CLASS_AUTH_CAR, LCase(String.Mid$(sName, iInd, 1))) = 0 Then Goto BAD_CHAR
+  Next
 
-  IF bCheckNotExist THEN
-    IF Project.Exist(sName) THEN GOTO ALREADY_EXIST
-  ENDIF
+  If bCheckNotExist Then
+    If Project.Exist(sName) Then Goto ALREADY_EXIST
+  Endif
 
-  RETURN
+  Return
 
 VOID_NAME:
 
-  RETURN ("Please type a name.")
+  Return ("Please type a name.")
 
 BAD_CHAR:
 
-  RETURN ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]" & "\n\n" & ("A class name must begin with a letter or an underscore, followed by any letter or digit.")
+  Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]" & "\n\n" & ("A class name must begin with a letter or an underscore, followed by any letter or digit.")
 
 ALREADY_EXIST:
 
-  RETURN ("This name is already used. Choose another one.")
+  Return ("This name is already used. Choose another one.")
 
-END
+End
 
 
-PRIVATE FUNCTION RenameOneFile(sDir AS String, sName AS String, sNewName AS String, OPTIONAL sExt AS String) AS String
+Private Function RenameOneFile(sDir As String, sName As String, sNewName As String, Optional sExt As String) As String
 
-  DIM sPath AS String
-  DIM hForm AS Object
-  DIM sNewPath AS String
+  Dim sPath As String
+  Dim hForm As Object
+  Dim sNewPath As String
 
   sPath = sDir &/ sName
-  IF sExt THEN sPath = sPath & "." & sExt
-  IF NOT Exist(sPath) THEN RETURN
+  If sExt Then sPath = sPath & "." & sExt
+  If NOT Exist(sPath) Then Return
 
   sNewPath = sDir &/ sNewName
-  IF sExt THEN sNewPath = sNewPath & "." & sExt
+  If sExt Then sNewPath = sNewPath & "." & sExt
 
-  IF IsDir(sPath) THEN
-    MOVE sPath TO sNewPath  
+  If IsDir(sPath) Then
+    Move sPath To sNewPath  
     VersionControl.MoveDir(sPath, sNewPath)
-  ELSE IF Stat(sPath).Type = gb.Link THEN 
-    MOVE sPath TO sNewPath  
+  Else If Stat(sPath).Type = gb.Link Then 
+    Move sPath To sNewPath  
     VersionControl.MoveFile(sPath, sNewPath)
-  ELSE
-    COPY sPath TO sNewPath  
+  Else
+    Copy sPath To sNewPath  
     VersionControl.MoveFile(sPath, sNewPath)
-    TRY KILL sPath
-  ENDIF
+    Try Kill sPath
+  Endif
   
-  IF sExt THEN
-    TRY KILL sDir &/ ".gambas" &/ UCase(sName)
-  ENDIF
+  If sExt Then
+    Try Kill sDir &/ ".gambas" &/ UCase(sName)
+  Endif
 
   hForm = Files[sPath]
-  IF hForm THEN
+  If hForm Then
     hForm.Rename(sNewName, sNewPath)
-    Files[sPath] = NULL
+    Files[sPath] = Null
     Files[sNewPath] = hForm
-  ENDIF
+  Endif
 
-  RETURN sNewPath
+  Return sNewPath
 
-END
+End
 
-PUBLIC SUB GetClassesOnly() AS String[]
+Public Sub GetClassesOnly() As String[]
   
-  DIM sFile AS String
-  DIM sKey AS String
-  DIM aClass AS NEW String[]
+  Dim sFile As String
+  Dim sKey As String
+  Dim aClass As New String[]
   
-  FOR EACH sFile IN Dir(Project.Dir, "*.class")
-    IF Exist(Project.Dir &/ File.BaseName(sFile) & ".form") THEN CONTINUE
+  For Each sFile In Dir(Project.Dir, "*.class")
+    If Exist(Project.Dir &/ File.BaseName(sFile) & ".form") Then Continue
     aClass.Add(File.BaseName(sFile))
-  NEXT
+  Next
   
-  RETURN aClass.Sort()
+  Return aClass.Sort()
   
-END
+End
 
 
-PRIVATE SUB RefreshInheritance()
+Private Sub RefreshInheritance()
   
-  DIM sClass AS String
-  DIM sKey AS String
+  Dim sClass As String
+  Dim sKey As String
   
   $aRefreshAfter.Clear
   
-  FOR EACH sClass IN GetClassesOnly()
+  For Each sClass In GetClassesOnly()
     sKey = Project.Dir &/ sClass & ".class"
-    TRY ProjectTree[sKey].Delete
+    Try ProjectTree[sKey].Delete
     $aRefreshAfter.Add(sKey)
-  NEXT
+  Next
   
   DoRefreshAfter
   
-END
+End
 
 
-PUBLIC SUB RefreshKey(sKey AS String, OPTIONAL sOld AS String)
+Public Sub RefreshKey(sKey As String, Optional sOld As String)
 
-  IF NOT sKey THEN RETURN  
-  IF NOT sOld THEN sOld = sKey
+  If NOT sKey Then Return  
+  If NOT sOld Then sOld = sKey
   
   EnsureKey(sOld)  
-  TRY ProjectTree[sOld].Delete
+  Try ProjectTree[sOld].Delete
   
-  IF NOT Exist(sKey) THEN RETURN
+  If NOT Exist(sKey) Then Return
 
-  IF File.Dir(sKey) = Project.Dir AND IF File.Ext(sKey) = "class" AND IF NOT Exist(File.Dir(sKey) &/ File.BaseName(sKey) & ".form") THEN
+  If File.Dir(sKey) = Project.Dir AND If File.Ext(sKey) = "class" AND If NOT Exist(File.Dir(sKey) &/ File.BaseName(sKey) & ".form") Then
     RefreshInheritance
-    RETURN
-  ENDIF
+    Return
+  Endif
 
-  AddFile(File.Dir(sKey), File.Name(sKey), TRUE)
+  AddFile(File.Dir(sKey), File.Name(sKey), True)
   
-  IF IsDir(sKey) THEN AddDir(sKey)
+  If IsDir(sKey) Then AddDir(sKey)
   
-END
+End
 
 
 
-PUBLIC SUB RenameFile(sPath AS String, sNewName AS String)
+Public Sub RenameFile(sPath As String, sNewName As String)
 
-  DIM sName AS String
-  DIM sExt AS String
-  DIM sDir AS String
-  DIM sNewPath AS String
-  DIM sMsg AS String
+  Dim sName As String
+  Dim sExt As String
+  Dim sDir As String
+  Dim sNewPath As String
+  Dim sMsg As String
 
   sDir = File.Dir(sPath)
   sExt = File.Ext(sPath)
   
-  IF Project.IsClassPath(sPath) THEN
+  If Project.IsClassPath(sPath) Then
 
     sName = File.BaseName(sPath)
-    IF sName = sNewName THEN RETURN
+    If sName = sNewName Then Return
 
-    sMsg = CheckClassName(sNewName, TRUE)
-    IF sMsg THEN Error.Raise(sMsg)
+    sMsg = CheckClassName(sNewName, True)
+    If sMsg Then Error.Raise(sMsg)
 
-    IF sName = Startup THEN
+    If sName = Startup Then
       Startup = sNewName
-      WriteProject(TRUE)
-    ENDIF
+      WriteProject(True)
+    Endif
 
     sNewPath = RenameOneFile(sDir, sName, sNewName, sExt)
 
-    IF sExt = "form" THEN
+    If sExt = "form" Then
       RenameOneFile(sDir, sName, sNewName, "class")
-    ELSE IF sExt = "class" THEN
+    Else If sExt = "class" Then
       RenameOneFile(sDir, sName, sNewName, "form")
-    ENDIF
+    Endif
 
-  ELSE
+  Else
 
     sName = File.Name(sPath)
-    IF sName = sNewName THEN RETURN
+    If sName = sNewName Then Return
     
     sMsg = CheckFileName(sNewName)
-    IF sMsg THEN Error.Raise(sMsg)
+    If sMsg Then Error.Raise(sMsg)
     
     sNewPath = RenameOneFile(sDir, sName, sNewName)
 
-  ENDIF
+  Endif
 
   RefreshKey(sNewPath, sPath)
   'AddFile(File.Dir(sNewPath), File.Name(sNewPath), TRUE)
   'IF IsDir(sNewPath) THEN AddDir(sNewPath)
   
-  TRY ProjectTree[sNewPath].Selected = TRUE
-  TRY ProjectTree[sNewPath].EnsureVisible
+  Try ProjectTree[sNewPath].Selected = True
+  Try ProjectTree[sNewPath].EnsureVisible
 
-CATCH
+Catch
 
   sMsg = Error.Text
   RefreshKey(sPath)
   FGambas.Error(Subst(("Unable to rename '&1'") & "\n\n" & sMsg, File.Name(sPath)))
 
-END
+End
 
 
-PUBLIC FUNCTION Exist(sName AS String) AS Boolean
+Public Function Exist(sName As String) As Boolean
 
-  RETURN Project.GetClasses().Find(sName, gb.Text) >= 0
+  Return Project.GetClasses().Find(sName, gb.Text) >= 0
 
-END
+End
 
 
-PRIVATE FUNCTION LockIt() AS Boolean
+Private Function LockIt() As Boolean
 
-  IF Application.Busy THEN RETURN TRUE
-  INC Application.Busy
+  If Application.Busy Then Return True
+  Inc Application.Busy
   'PRINT "Lock"
 
-END
+End
 
-PRIVATE SUB UnLockIt()
+Private Sub UnLockIt()
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PRIVATE SUB LoadRecent()
+Private Sub LoadRecent()
 
-  DIM nRecent AS Integer
-  DIM hMenu AS Menu
-  DIM iInd AS Integer
-  DIM sPath AS String
-  DIM nMax AS Integer
+  Dim nRecent As Integer
+  Dim hMenu As Menu
+  Dim iInd As Integer
+  Dim sPath As String
+  Dim nMax As Integer
 
   nRecent = Settings["/Recent/Count", 0]
   nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
   
   Recent.Clear
 
-  FOR iInd = 1 TO nRecent
+  For iInd = 1 To nRecent
     sPath = Settings["/Recent/File[" & CStr(iInd) & "]"]
-    IF sPath THEN
-      IF Exist(sPath) THEN
+    If sPath Then
+      If Exist(sPath) Then
         Recent.Add(sPath)
-        IF Recent.Count >= nMax THEN BREAK
-      ENDIF
-    ENDIF
-  NEXT
+        If Recent.Count >= nMax Then Break
+      Endif
+    Endif
+  Next
 
-END
+End
 
 
-PRIVATE SUB AddRecent(sPath AS String)
+Private Sub AddRecent(sPath As String)
 
-  DIM iInd AS Integer
-  DIM nMax AS Integer
+  Dim iInd As Integer
+  Dim nMax As Integer
 
-  IF Right$(sPath) = "/" THEN sPath = Left$(sPath, -1)
+  If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
 
   'sPath = "(" & File.BaseName(sPath) & ") " & File.Dir(sPath)
 
-  WHILE iInd < Recent.Count
+  While iInd < Recent.Count
 
-    IF Recent[iInd] = sPath THEN
+    If Recent[iInd] = sPath Then
       Recent.Remove(iInd)
-    ELSE
-      INC iind
-    ENDIF
+    Else
+      Inc iind
+    Endif
 
-  WEND
+  Wend
 
   Recent.Add(sPath, 0)
 
   nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
-  WHILE Recent.Count > nMax
+  While Recent.Count > nMax
     Recent.Remove(Recent.Count - 1)
-  WEND
+  Wend
 
   SaveRecent
 
-END
+End
 
 
-PRIVATE SUB SaveRecent()
+Private Sub SaveRecent()
 
-  DIM iInd AS Integer
-  DIM nMax AS Variant = Settings["/Recent/Max"]
+  Dim iInd As Integer
+  Dim nMax As Variant = Settings["/Recent/Max"]
 
   Settings.Clear("/Recent")
 
   Settings["/Recent/Count"] = Recent.Count
   Settings["/Recent/Max"] = nMax
 
-  FOR iInd = 0 TO Recent.Count - 1
+  For iInd = 0 To Recent.Count - 1
     Settings["/Recent/File[" & CStr(iInd + 1) & "]"] = Recent[iInd]
-  NEXT
+  Next
 
   Settings.Save
 
-END
+End
 
-PUBLIC SUB ClearRecent()
+Public Sub ClearRecent()
   
   Recent.Clear
   SaveRecent
   
-END
+End
 
 
 
-PUBLIC FUNCTION CheckProjectName(sName AS String, OPTIONAL sDir AS String) AS String
+Public Function CheckProjectName(sName As String, Optional sDir As String) As String
 
-  DIM iInd AS Integer
-  DIM sCar AS String
+  Dim iInd As Integer
+  Dim sCar As String
 
   sName = Trim(sName)
 
-  IF NOT sName THEN
-    RETURN ("Please type a project name.")
-  ENDIF
+  If NOT sName Then
+    Return ("Please type a project name.")
+  Endif
 
-  FOR iInd = 1 TO Len(sName)
+  For iInd = 1 To Len(sName)
 
     sCar = Mid$(sName, iInd, 1)
 
-    IF iInd = 1 THEN
-      IF sCar = "." THEN RETURN ("The project name cannot begin with a dot.")
-    ENDIF
+    If iInd = 1 Then
+      If sCar = "." Then Return ("The project name cannot begin with a dot.")
+    Endif
 
-    IF Asc(sCar) > 127 THEN RETURN ("Non-ASCII characters are forbidden in a project name.")
-    IF InStr(" ?*/\\", sCar) THEN RETURN ("The following characters are forbidden in a project name: ? * / \\ SPACE")
+    If Asc(sCar) > 127 Then Return ("Non-ASCII characters are forbidden in a project name.")
+    If InStr(" ?*/\\", sCar) Then Return ("The following characters are forbidden in a project name: ? * / \\ SPACE")
 
-  NEXT
+  Next
 
-  IF sDir THEN
+  If sDir Then
     sDir &/= sName
-    IF Exist(sDir &/ PROJECT_FILE) THEN
-      RETURN ("This project already exists.")
-    ELSE IF Exist(sDir) THEN 
-      IF IsDir(sDir) THEN
-        RETURN Subst(("The project directory already exists."), sDir)
-      ELSE 
-        RETURN Subst(("The project directory cannot be created because a file with the same name already exists."), sDir)
-      ENDIF
-    ENDIF
-  ENDIF
+    If Exist(sDir &/ PROJECT_FILE) Then
+      Return ("This project already exists.")
+    Else If Exist(sDir) Then 
+      If IsDir(sDir) Then
+        Return Subst(("The project directory already exists."), sDir)
+      Else 
+        Return Subst(("The project directory cannot be created because a file with the same name already exists."), sDir)
+      Endif
+    Endif
+  Endif
 
-END
+End
 
 
-PUBLIC SUB MakeSourcePackageTo(sPath AS String)
+Public Sub MakeSourcePackageTo(sPath As String)
 
-  DIM sCmd AS String
-  DIM sOpt AS String
+  Dim sCmd As String
+  Dim sOpt As String
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  IF Right$(sPath, 3) = ".gz" THEN
+  If Right$(sPath, 3) = ".gz" Then
     sOpt = "z"
-  ELSE IF Right$(sPath, 4) = ".bz2" THEN
+  Else If Right$(sPath, 4) = ".bz2" Then
     sOpt = "j"
-  ENDIF
+  Endif
 
   sCmd = "cd " & Quote.Shell(File.Dir(Project.Dir)) & ";"
   sCmd &= " tar cfvh" & sOpt & " " & Quote.Shell(sPath)
@@ -2994,92 +3007,92 @@ PUBLIC SUB MakeSourcePackageTo(sPath AS String)
   sCmd &= " --exclude=" & Quote.Shell(".svn")
   sCmd &= " " & Quote.Shell(File.Name(Project.Dir)) & " > /dev/null"
 
-  SHELL sCmd WAIT
+  Shell sCmd Wait
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PUBLIC SUB MakePackage()
+Public Sub MakePackage()
 
   Dialog.Path = User.Home &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
   Dialog.Title = ("Create source package")
   Dialog.Filter = ["*.tar.gz", ("Source packages")] '& " (*.tar.gz)", ("All files") & " (*)"]
 
-  IF Dialog.SaveFile() THEN RETURN
+  If Dialog.SaveFile() Then Return
 
   MakeSourcePackageTo(Dialog.Path)
 
-END
+End
 
 
 
-PUBLIC SUB RefreshForm()
+Public Sub RefreshForm()
 
-  DIM hFile AS Object
+  Dim hFile As Object
 
-  FOR EACH hFile IN Project.Files
+  For Each hFile In Project.Files
 
-    IF Object.Type(hFile) = "FForm" THEN
+    If Object.Type(hFile) = "FForm" Then
       hFile.Refresh
-    ENDIF
+    Endif
 
-  NEXT
+  Next
 
-END
+End
 
 
-PUBLIC SUB RefreshEditor()
+Public Sub RefreshEditor()
 
-  DIM hFile AS Object
+  Dim hFile As Object
 
-  FOR EACH hFile IN Project.Files
+  For Each hFile In Project.Files
 
-    IF Project.IsEditor(hFile) THEN
+    If Project.IsEditor(hFile) Then
       hFile.Refresh
-    ENDIF
+    Endif
 
-  NEXT
+  Next
 
-END
+End
 
 
-PUBLIC SUB RefreshLibrary(OPTIONAL bForce AS Boolean)
+Public Sub RefreshLibrary(Optional bForce As Boolean)
 
-  DIM sLib AS String
-  DIM sClass AS String
-  DIM aLib AS NEW String[]
-  DIM hComp AS CComponent
-  DIM sLibComp AS String
+  Dim sLib As String
+  Dim sClass As String
+  Dim aLib As New String[]
+  Dim hComp As CComponent
+  Dim sLibComp As String
 
   ' Sort components
 
-  FOR EACH hComp IN CComponent.All
-    IF Libraries.Find(hComp.Key) >= 0 THEN
+  For Each hComp In CComponent.All
+    If Libraries.Find(hComp.Key) >= 0 Then
       aLib.Add(hComp.Key)
-    ENDIF
-  NEXT
+    Endif
+  Next
   
   Libraries = aLib
   sLibComp = aLib.Join(" ")
   
-  IF sLibComp <> $sOldRefreshLibrary OR IF bForce THEN
+  If sLibComp <> $sOldRefreshLibrary OR If bForce Then
   
     CComponent.Reset
   
     ComponentFromType.Clear
     FormType.Clear
   
-    FOR EACH sLib IN Libraries
+    For Each sLib In Libraries
       'IF NOT CComponent.All.Exist(sLib) THEN CONTINUE
-      WITH CComponent.All[sLib]
+      With CComponent.All[sLib]
         .Load
-        IF .Type THEN 
+        If .Type Then 
           ComponentFromType[.Type] = sLib
-        ENDIF
-      END WITH
-    NEXT
+        Endif
+      End With
+    Next
     
     FToolBox.RefreshToolbar(bForce)
     FCompletion.RefreshLibrary
@@ -3089,266 +3102,266 @@ PUBLIC SUB RefreshLibrary(OPTIONAL bForce AS Boolean)
     
     $sOldRefreshLibrary = sLibComp
 
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC FUNCTION IsClassPath(sPath AS String) AS Boolean
+Public Function IsClassPath(sPath As String) As Boolean
 
-  DIM sExt AS String
+  Dim sExt As String
 
-  IF Left(sPath) = "/" THEN
-    IF File.Dir(sPath) <> Project.Dir THEN RETURN
-  ENDIF 
+  If Left(sPath) = "/" Then
+    If File.Dir(sPath) <> Project.Dir Then Return
+  Endif 
   
   sExt = File.Ext(sPath)
-  IF sExt = "class" THEN RETURN TRUE
-  IF sExt = "module" THEN RETURN TRUE
-  IF sExt = "form" THEN RETURN TRUE
+  If sExt = "class" Then Return True
+  If sExt = "module" Then Return True
+  If sExt = "form" Then Return True
 
-END
+End
 
-PUBLIC FUNCTION IsFormPath(sPath AS String) AS Boolean
+Public Function IsFormPath(sPath As String) As Boolean
 
-  IF NOT IsClassPath(sPath) THEN RETURN
-  RETURN File.Ext(sPath) = "form"
+  If NOT IsClassPath(sPath) Then Return
+  Return File.Ext(sPath) = "form"
 
-END
+End
 
-PUBLIC FUNCTION IsImagePath(sPath AS String) AS Boolean
+Public Function IsImagePath(sPath As String) As Boolean
   
-  RETURN IMAGE_EXT.Exist(File.Ext(sPath))
+  Return IMAGE_EXT.Exist(File.Ext(sPath))
   
-END
+End
 
 
-PUBLIC FUNCTION StripPath(sPath AS String) AS String
+Public Function StripPath(sPath As String) As String
 
-  DIM sDir AS String
+  Dim sDir As String
 
   sDir = Project.Dir
-  IF Right$(sDir) <> "/" THEN sDir = sDir & "/"
+  If Right$(sDir) <> "/" Then sDir = sDir & "/"
 
-  IF Left$(sPath, Len(sDir)) = sDir THEN
-    RETURN Mid$(sPath, Len(sDir) + 1)
-  ELSE
-    RETURN sPath
-  ENDIF
+  If Left$(sPath, Len(sDir)) = sDir Then
+    Return Mid$(sPath, Len(sDir) + 1)
+  Else
+    Return sPath
+  Endif
 
-END
+End
 
 
-PUBLIC SUB RunTool(sTool AS String)
+Public Sub RunTool(sTool As String)
 
-  DIM aExec AS NEW String[]
+  Dim aExec As New String[]
 
   aExec.Add(System.Path &/ "bin" &/ sTool & ".gambas")
   aExec.Add(Project.Dir)
 
-  EXEC aExec
+  Exec aExec
 
-END
+End
 
 
-PUBLIC FUNCTION GetExamples(OPTIONAL sParent AS String) AS String[]
+Public Function GetExamples(Optional sParent As String) As String[]
 
-  DIM sFile AS String
-  DIM sFile2 AS String
-  DIM aList AS NEW String[]
+  Dim sFile As String
+  Dim sFile2 As String
+  Dim aList As New String[]
 
-  IF sParent THEN 
+  If sParent Then 
   
-    IF sParent = "." THEN sParent = ""
+    If sParent = "." Then sParent = ""
   
-    IF Exist(EXAMPLES_DIR &/ sFile &/ ".project") THEN RETURN
+    If Exist(EXAMPLES_DIR &/ sFile &/ ".project") Then Return
 
-    FOR EACH sFile IN Dir(EXAMPLES_DIR &/ sParent)
-      IF Left(sFile) = "." THEN CONTINUE
+    For Each sFile In Dir(EXAMPLES_DIR &/ sParent)
+      If Left(sFile) = "." Then Continue
       'IF Exist(EXAMPLES_DIR &/ sParent &/ sFile &/ ".project") THEN
         aList.Add(sParent &/ sFile)
       'ENDIF
-    NEXT
+    Next
     
-  ELSE
+  Else
 
-    FOR EACH sFile IN Dir(EXAMPLES_DIR)
-      IF Left(sFile) = "." THEN CONTINUE
-      IF Exist(EXAMPLES_DIR &/ sFile &/ ".project") THEN
+    For Each sFile In Dir(EXAMPLES_DIR)
+      If Left(sFile) = "." Then Continue
+      If Exist(EXAMPLES_DIR &/ sFile &/ ".project") Then
         aList.Add(sFile)
-      ELSE
-        FOR EACH sFile2 IN Dir(EXAMPLES_DIR &/ sFile)
-          IF Left(sFile2) = "." THEN CONTINUE
+      Else
+        For Each sFile2 In Dir(EXAMPLES_DIR &/ sFile)
+          If Left(sFile2) = "." Then Continue
           aList.Add(sFile &/ sFile2)
-        NEXT
-      ENDIF
-    NEXT
+        Next
+      Endif
+    Next
     
-  ENDIF
+  Endif
 
   aList.Sort
 
-FINALLY
+Finally
 
-  RETURN aList
+  Return aList
 
-END
+End
 
 
-PUBLIC SUB DefineStartup(sPath AS String, OPTIONAL bDoNotWrite AS Boolean)
+Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
 
   sPath = File.BaseName(sPath)
-  IF NOT Project.Exist(sPath) THEN sPath = ""
+  If NOT Project.Exist(sPath) Then sPath = ""
 
-  SWAP Startup, sPath
-  IF sPath THEN RefreshKey(FindKey(sPath))
-  IF Startup THEN RefreshKey(FindKey(Startup))
+  Swap Startup, sPath
+  If sPath Then RefreshKey(FindKey(sPath))
+  If Startup Then RefreshKey(FindKey(Startup))
 
-  IF NOT bDoNotWrite THEN WriteProject(TRUE)
+  If NOT bDoNotWrite Then WriteProject(True)
 
-CATCH
+Catch
 
-END
+End
 
-PUBLIC SUB GetUniqueName(sDir AS String, sName AS String, OPTIONAL sSuffix AS String = "&1") AS String
+Public Sub GetUniqueName(sDir As String, sName As String, Optional sSuffix As String = "&1") As String
 
-  DIM iInd AS Integer
-  DIM sDest AS String
-  DIM sExt AS String
-  DIM sPath AS String
+  Dim iInd As Integer
+  Dim sDest As String
+  Dim sExt As String
+  Dim sPath As String
 
   sDest = sDir &/ sName
 
-  WHILE Exist(sDest)
-    INC iInd
+  While Exist(sDest)
+    Inc iInd
     sExt = File.Ext(sName)
-    IF sExt THEN
+    If sExt Then
       sDest = sDir &/ File.BaseName(sName) & Subst(sSuffix, CStr(iInd)) & "." & sExt
-    ELSE
+    Else
       sDest = sDir &/ sName & Subst(sSuffix, CStr(iInd))
-    ENDIF
-  WEND
+    Endif
+  Wend
   
-  RETURN File.Name(sDest)
+  Return File.Name(sDest)
   
-END
+End
 
 
-PUBLIC SUB CopyFile(sSrc AS String, sDst AS String)
+Public Sub CopyFile(sSrc As String, sDst As String)
 
-  DIM sDest AS String
+  Dim sDest As String
 
   sDest = File.Dir(sDst) &/ GetUniqueName(File.Dir(sDst), File.Name(sDst), " (&1)")
-  COPY sSrc TO sDest
+  Copy sSrc To sDest
   
   VersionControl.AddFile(sDest)
   
   RefreshKey(sDest)
   SelectKey(sDest)
 
-CATCH
+Catch
 
   Message.Error(Subst(("Cannot copy file &1."), sSrc) & "\n\n" & Error.Text)
 
-END
+End
 
-PUBLIC SUB LinkFile(sSrc AS String, sDst AS String)
+Public Sub LinkFile(sSrc As String, sDst As String)
 
-  DIM sDest AS String
-  DIM aDst AS String[]
-  DIM aSrc AS String[]
-  DIM sDir AS String
+  Dim sDest As String
+  Dim aDst As String[]
+  Dim aSrc As String[]
+  Dim sDir As String
 
-  IF IsDir(sSrc) THEN
+  If IsDir(sSrc) Then
     Message.Warning(("Linking a directory is forbidden."))
-    RETURN 
-  ENDIF
+    Return 
+  Endif
 
   sDest = File.Dir(sDst) &/ GetUniqueName(File.Dir(sDst), File.Name(sDst), " (&1)")
-  IF sSrc LIKE (Project.Dir & "/*") THEN 
+  If sSrc LIKE (Project.Dir & "/*") Then 
 
     aDst = Split(File.Dir(Mid$(sDest, Len(Project.Dir) + 2)), "/")
 
     sSrc = Mid$(sSrc, Len(Project.Dir) + 2)
     aSrc = Split(File.Dir(sSrc), "/")
 
-    WHILE aDst.Count > 0 AND aSrc.Count > 0
-      IF aSrc[0] <> aDst[0] THEN BREAK
+    While aDst.Count > 0 AND aSrc.Count > 0
+      If aSrc[0] <> aDst[0] Then Break
       aDst.Remove(0)
       aSrc.Remove(0)
-    WEND    
+    Wend    
 
     sSrc = String(aDst.Count, "../") & aSrc.Join("/") &/ File.Name(sSrc)
 
-  ENDIF
+  Endif
   
-  LINK sSrc TO sDest ' swapped
+  Link sSrc To sDest ' swapped
   VersionControl.AddFile(sDest)
   
   RefreshKey(sDest)
   SelectKey(sDest)
 
-CATCH
+Catch
 
   Message.Error(Subst(("Cannot create link &1."), sSrc) & "\n\n" & Error.Text)
 
-END
+End
 
-PUBLIC SUB MoveFile(sSrc AS String, sDst AS String)
+Public Sub MoveFile(sSrc As String, sDst As String)
 
-  DIM hForm AS Object
-  DIM sLink AS String
-  DIM sDir AS String
+  Dim hForm As Object
+  Dim sLink As String
+  Dim sDir As String
 
-  IF sSrc = sDst THEN RETURN
-  IF Len(sDst) > Len(sSrc) AND IF Left(sDst, Len(sSrc)) = sSrc THEN
+  If sSrc = sDst Then Return
+  If Len(sDst) > Len(sSrc) AND If Left(sDst, Len(sSrc)) = sSrc Then
     Message.Error(("Cannot move a directory inside itself."))
-    RETURN
-  ENDIF
+    Return
+  Endif
   
-  WITH Stat(sSrc)
-    IF .Type = gb.Link THEN 
+  With Stat(sSrc)
+    If .Type = gb.Link Then 
       sLink = .Link
-      IF Left(sLink) <> "/" THEN 
+      If Left(sLink) <> "/" Then 
         sDir = File.Dir(sSrc)
-        WHILE Left(sLink, 3) = "../"
+        While Left(sLink, 3) = "../"
           sLink = Mid(sLink, 4)
           sDir = File.Dir(sDir)
-        WEND
+        Wend
         sLink = sDir &/ sLink
-      ENDIF
+      Endif
       DeleteFile(sSrc)
       LinkFile(sLink, sDst)
-      RETURN
-    ENDIF
-  END WITH 
+      Return
+    Endif
+  End With 
   
-  IF IsDir(sSrc) THEN
-    MOVE sSrc TO sDst
+  If IsDir(sSrc) Then
+    Move sSrc To sDst
     VersionControl.MoveDir(sSrc, sDst)
-  ELSE
-    COPY sSrc TO sDst  
+  Else
+    Copy sSrc To sDst  
     VersionControl.MoveFile(sSrc, sDst)
-    TRY KILL sSrc
-  ENDIF
+    Try Kill sSrc
+  Endif
 
   hForm = Files[sSrc]
-  IF hForm THEN
+  If hForm Then
     hForm.Rename(File.Name(sDst), sDst)
-    Files[sSrc] = NULL
+    Files[sSrc] = Null
     Files[sDst] = hForm
-  ENDIF
+  Endif
 
   RefreshKey(sDst, sSrc)
   
   'Refresh
   SelectKey(sDst)
 
-CATCH
+Catch
 
   Message.Error(Subst(("Cannot move file &1."), sSrc) & "\n\n" & Error.Text)
 
-END
+End
 
 
 ' PUBLIC SUB RefreshToolbox()
@@ -3358,150 +3371,150 @@ END
 ' END
 
 
-PUBLIC FUNCTION GetNewName(sPrefix AS String) AS String
+Public Function GetNewName(sPrefix As String) As String
 
-  DIM iInd AS Integer
-  DIM sName AS String
+  Dim iInd As Integer
+  Dim sName As String
 
-  DO
-    INC iInd
+  Do
+    Inc iInd
     sName = sPrefix & iInd
-    IF NOT Project.Exist(sName) THEN RETURN sName
-  LOOP
+    If NOT Project.Exist(sName) Then Return sName
+  Loop
 
-END
-
-
-PUBLIC SUB ResetScan()
-
-  DIM hFile AS Object
-
-  FOR EACH hFile IN Files
-    TRY hFile.Scan = NULL
-  NEXT
-
-END
-
-PUBLIC FUNCTION AllowForm() AS Boolean
-
-  RETURN ComponentFromType.Exist("Form")
-
-END
+End
 
 
-PUBLIC SUB MakeInstall()
+Public Sub ResetScan()
 
-  IF MakeExecutable(TRUE, TRUE) THEN RETURN
+  Dim hFile As Object
+
+  For Each hFile In Files
+    Try hFile.Scan = Null
+  Next
+
+End
+
+Public Function AllowForm() As Boolean
+
+  Return ComponentFromType.Exist("Form")
+
+End
+
+
+Public Sub MakeInstall()
+
+  If MakeExecutable(True, True) Then Return
   FMakeInstall.ShowModal
 
-END
+End
 
-PUBLIC SUB InitMove(hForm AS Form)
+Public Sub InitMove(hForm As Form)
 
   'hForm.Move(Int(Rnd(0, Max(0, Workspace.Width - hForm.Width - 8))), Int(Rnd(0, Max(0, Workspace.Height - hForm.Height - 8))))
 
-END
+End
 
 
-PUBLIC FUNCTION StretchIcon(sPath AS String, OPTIONAL iSize AS Integer = 48) AS Image
+Public Function StretchIcon(sPath As String, Optional iSize As Integer = 48) As Image
 
-  DIM hImage AS Image
-  DIM hBackground AS Image
-  DIM W, H AS Integer
+  Dim hImage As Image
+  Dim hBackground As Image
+  Dim W, H As Integer
   
   hImage = Image.Load(sPath)
-  IF hImage.Width > hImage.Height THEN 
+  If hImage.Width > hImage.Height Then 
     W = iSize
     H = iSize * hImage.H / hImage.W
     'hImage = hImage.Stretch(iSize, iSize * hImage.H / hImage.W)
-  ELSE
+  Else
     W = iSize * hImage.W / hImage.H
     H = iSize 
     'hImage = hImage.Stretch(iSize * hImage.W / hImage.H, iSize)
-  ENDIF
+  Endif
   
-  IF W < iSize OR H < iSize THEN
-    hBackground = NEW Image(iSize, iSize, TRUE)
+  If W < iSize OR H < iSize Then
+    hBackground = New Image(iSize, iSize, True)
     hBackground.Fill(Color.Transparent)
     hBackground.Draw(hImage, (iSize - W) / 2, (iSize - H) / 2, W, H)
     hImage = hBackground
-  ELSE 
+  Else 
     hImage = hImage.Stretch(W, H)
-  ENDIF 
+  Endif 
     
-  RETURN hImage
+  Return hImage
 
-CATCH
+Catch
 
-  RETURN Image.Load("img/logo/new-logo-32.png").Stretch(iSize, iSize)
+  Return Image.Load("img/logo/new-logo-32.png").Stretch(iSize, iSize)
   
-END
+End
 
 
 
-PUBLIC FUNCTION GetIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
+Public Function GetIcon(sPath As String, Optional iSize As Integer) As Picture
 
-  DIM hFile AS File
-  DIM sLig AS String
-  DIM hImage AS Image
-  DIM hPict AS Picture
-  DIM sIcon AS String
+  Dim hFile As File
+  Dim sLig As String
+  Dim hImage As Image
+  Dim hPict As Picture
+  Dim sIcon As String
 
-  OPEN sPath &/ ".project" AS #hFile
+  Open sPath &/ ".project" As #hFile
 
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLig
-    IF Left$(sLig, 5) = "Icon=" THEN
+  While NOT Eof(hFile)
+    Line Input #hFile, sLig
+    If Left$(sLig, 5) = "Icon=" Then
       sIcon = Mid$(sLig, 6)
-      BREAK
-    ENDIF
-  WEND
+      Break
+    Endif
+  Wend
 
-  CLOSE #hFile
+  Close #hFile
 
-  IF sIcon THEN 
+  If sIcon Then 
     sPath = sPath &/ sIcon
-  ELSE 
+  Else 
     sPath = "img/logo/new-logo-32.png"
-  ENDIF
+  Endif
 
-  IF iSize THEN
-    RETURN StretchIcon(sPath, iSize).Picture
-  ELSE 
-    RETURN Picture.Load(sPath)
-  ENDIF
+  If iSize Then
+    Return StretchIcon(sPath, iSize).Picture
+  Else 
+    Return Picture.Load(sPath)
+  Endif
 
-CATCH
+Catch
 
   sPath = "img/logo/new-logo-32.png"
 
-  IF iSize THEN
-    RETURN StretchIcon(sPath, iSize).Picture
-  ELSE 
-    RETURN Picture.Load(sPath)
-  ENDIF
+  If iSize Then
+    Return StretchIcon(sPath, iSize).Picture
+  Else 
+    Return Picture.Load(sPath)
+  Endif
 
-END
+End
 
 
-PUBLIC SUB CleanUp()
+Public Sub CleanUp()
 
-  DIM iInd AS Integer
-  DIM aClear AS String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core.*", ".kdbg*"]
-  DIM sClear AS String
+  Dim iInd As Integer
+  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core.*", ".kdbg*"]
+  Dim sClear As String
   
-  FOR iInd = 0 TO aClear.Max
-    IF iInd THEN sClear &= " -o"
+  For iInd = 0 To aClear.Max
+    If iInd Then sClear &= " -o"
     sClear &= " -name \"" & aClear[iInd] & "\""
-  NEXT
+  Next
   
-  SHELL "cd " & Quote.Shell(Project.Dir) & "; rm -rf `find . " & sClear & "`" WAIT
+  Shell "cd " & Quote.Shell(Project.Dir) & "; rm -rf `find . " & sClear & "`" Wait
   Project.Refresh
 
-END
+End
 
 
-PUBLIC SUB SetFormIcon(hForm AS FForm)
+Public Sub SetFormIcon(hForm As FForm)
 '
 '   DIM hPict AS Picture
 '   DIM eRap AS Float
@@ -3534,56 +3547,56 @@ PUBLIC SUB SetFormIcon(hForm AS FForm)
 '
 '   PRINT Error.Text
 '
-END
+End
 
-PUBLIC FUNCTION CheckProgram(sProg AS String) AS Boolean
+Public Function CheckProgram(sProg As String) As Boolean
 
-  DIM iPos AS Integer
+  Dim iPos As Integer
   
   iPos = InStr(sProg, " ")
-  IF iPos THEN sProg = Left(sProg, iPos - 1)
+  If iPos Then sProg = Left(sProg, iPos - 1)
 
-  SHELL "which " & sProg & " >/dev/null 2>&1" WAIT 
-  IF Process.LastValue THEN RETURN TRUE
+  Shell "which " & sProg & " >/dev/null 2>&1" Wait 
+  If Process.LastValue Then Return True
   
-END
+End
 
 
-PUBLIC SUB OpenWebPage(sLink AS String)
+Public Sub OpenWebPage(sLink As String)
 
-  DIM sExec AS String
-  DIM aTest AS String[]
-  DIM bCheck AS Boolean
-  DIM hFirefox AS Process 
+  Dim sExec As String
+  Dim aTest As String[]
+  Dim bCheck As Boolean
+  Dim hFirefox As Process 
 
-  IF NOT Browser THEN
+  If NOT Browser Then
 
-    SELECT CASE Settings["/Browser"]
+    Select Case Settings["/Browser"]
     
-      CASE "konqueror"
+      Case "konqueror"
         aTest = ["konqueror"]
       
-      CASE "epiphany"
+      Case "epiphany"
         aTest = ["epiphany"]
       
-      CASE "firefox"
+      Case "firefox"
         aTest = ["firefox", "mozilla-firefox"]
 
-      CASE "seamonkey"
+      Case "seamonkey"
         aTest = ["seamonkey"]
         
-      CASE ELSE
+      Case Else
     
         aTest = [Application.Env["BROWSER"]]
     
-        IF Application.Env["KDE_FULL_SESSION"] THEN 
+        If Application.Env["KDE_FULL_SESSION"] Then 
           aTest.Add("konqueror")
-        ELSE IF Application.Env["GNOME_DESKTOP_SESSION_ID"] THEN 
+        Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then 
           aTest.Add("epiphany")
           aTest.Add("firefox")
-        ENDIF
+        Endif
       
-    END SELECT
+    End Select
 
     aTest.Add("konqueror")
     aTest.Add("mozilla-firefox")
@@ -3592,59 +3605,59 @@ PUBLIC SUB OpenWebPage(sLink AS String)
     aTest.Add("seamonkey")
     aTest.Add("opera")
     
-    FOR EACH sExec IN aTest
+    For Each sExec In aTest
       bCheck = NOT CheckProgram(sExec) 
-      IF bCheck THEN BREAK
-    NEXT
+      If bCheck Then Break
+    Next
     
-    IF NOT bCheck THEN RETURN
+    If NOT bCheck Then Return
     
     Browser = sExec
 
-  ENDIF
+  Endif
 
-  IF Left(sLink) = "/" THEN 
+  If Left(sLink) = "/" Then 
     sLink = "file://" & Replace(sLink, "?", "%3F")
-  ENDIF
+  Endif
 
-  IF Browser = "firefox" THEN 
-    hFirefox = SHELL "firefox -remote \"openURL(" & sLink & ",new-window)\"" WAIT 
-    IF hFirefox.Value = 2 THEN 
-      SHELL Browser & " " & Chr$(34) & sLink & Chr$(34)
-    END IF
-  ELSE 
-    SHELL Browser & " " & Chr$(34) & sLink & Chr$(34)
-  END IF
+  If Browser = "firefox" Then 
+    hFirefox = Shell "firefox -remote \"openURL(" & sLink & ",new-window)\"" Wait 
+    If hFirefox.Value = 2 Then 
+      Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
+    End If
+  Else 
+    Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
+  End If
 
-CATCH
+Catch
 
   Message.Error(Error.Text)
 
-END
+End
 
-PUBLIC SUB OpenImage(sLink AS String, sEditor AS String) AS Boolean
+Public Sub OpenImage(sLink As String, sEditor As String) As Boolean
 
-  DIM sExec AS String
-  DIM aTest AS String[]
-  DIM bCheck AS Boolean
-  DIM hProcess AS Process
+  Dim sExec As String
+  Dim aTest As String[]
+  Dim bCheck As Boolean
+  Dim hProcess As Process
 
-  SELECT CASE LCase(sEditor)
+  Select Case LCase(sEditor)
   
-    CASE "kolourpaint"
+    Case "kolourpaint"
       aTest = ["kolourpaint"]
     
-    CASE "krita"
+    Case "krita"
       aTest = ["krita"]
     
-    CASE "gimp"
+    Case "gimp"
       aTest = ["gimp-remote"]
       
-    CASE "kiconedit"
+    Case "kiconedit"
       aTest = ["kiconedit"]
 
-    CASE ELSE
-      RETURN TRUE
+    Case Else
+      Return True
   
       ' IF Application.Env["KDE_FULL_SESSION"] THEN
       '   aTest = ["kolourpaint", "gimp"]
@@ -3652,23 +3665,23 @@ PUBLIC SUB OpenImage(sLink AS String, sEditor AS String) AS Boolean
       '   aTest = ["gimp-remote"]
       ' ENDIF
       
-  END SELECT
+  End Select
 
-  FOR EACH sExec IN aTest
+  For Each sExec In aTest
     bCheck = NOT CheckProgram(sExec) 
-    IF bCheck THEN BREAK
-  NEXT
+    If bCheck Then Break
+  Next
   
-  IF NOT bCheck THEN RETURN
+  If NOT bCheck Then Return
     
-  hProcess = SHELL sExec & " " & Chr$(34) & sLink & Chr$(34)
+  hProcess = Shell sExec & " " & Chr$(34) & sLink & Chr$(34)
   hProcess.Tag = sLink
 
-CATCH
+Catch
 
   Message.Error(Error.Text)
 
-END
+End
 
 ' PUBLIC SUB ClearFound()
 '   
@@ -3752,15 +3765,15 @@ END
 '   
 ' END
 
-PUBLIC SUB LastPosition()
+Public Sub LastPosition()
 
-  DIM aPos AS String[]
-  DIM iPos AS Integer
-  DIM hForm AS Object
+  Dim aPos As String[]
+  Dim iPos As Integer
+  Dim hForm As Object
 
-  WITH Positions
+  With Positions
 
-    IF .Count = 0 THEN RETURN
+    If .Count = 0 Then Return
 
     aPos = Split(.Pop(), "\n")
 '     IF aPos[0] = Path AND (Val(aPos[1]) = edtEditor.Line) AND (Val(aPos[2]) = edtEditor.Column) THEN
@@ -3770,132 +3783,132 @@ PUBLIC SUB LastPosition()
 
     'PRINT "-> "; aPos.Join(" ")
     hForm = OpenFile(aPos[0])
-    IF hForm THEN hForm.GotoCenter(Val(aPos[1]), Val(aPos[2]))
+    If hForm Then hForm.GotoCenter(Val(aPos[1]), Val(aPos[2]))
 
-  END WITH
+  End With
 
-END
+End
 
 
-PUBLIC SUB SavePosition()
+Public Sub SavePosition()
 
-  DIM hEditor AS FEditor
-  DIM sPos AS String
+  Dim hEditor As FEditor
+  Dim sPos As String
 
-  IF $bDoNotSavePosition THEN RETURN 
+  If $bDoNotSavePosition Then Return 
   
-  TRY hEditor = ActiveForm
-  IF ERROR THEN RETURN
+  Try hEditor = ActiveForm
+  If Error Then Return
   
   sPos = hEditor.Path & "\n" & hEditor.Editor.Line & "\n" & hEditor.Editor.Column
 
-  IF Positions.Count > 0 THEN   
-    IF Positions[Positions.Max] = sPos THEN 
-      RETURN 
-    ENDIF 
-  ENDIF 
+  If Positions.Count > 0 Then   
+    If Positions[Positions.Max] = sPos Then 
+      Return 
+    Endif 
+  Endif 
   
   Positions.Push(sPos)
   'PRINT "Save: "; Project.Positions[Project.Positions.Count - 1]
 
-END
+End
 
-PUBLIC SUB GetPicture(sPict AS String) AS Picture
+Public Sub GetPicture(sPict As String) As Picture
 
-  IF NOT sPict THEN RETURN
+  If NOT sPict Then Return
   
-  IF sPict LIKE "icon:/*" THEN 
-    RETURN Picture[sPict]
-  ELSE  
-    RETURN Picture.Load(Project.Dir &/ sPict)
-  ENDIF 
+  If sPict LIKE "icon:/*" Then 
+    Return Picture[sPict]
+  Else  
+    Return Picture.Load(Project.Dir &/ sPict)
+  Endif 
   
-END
+End
 
-PUBLIC SUB HasTranslation(sLang AS String) AS Boolean
+Public Sub HasTranslation(sLang As String) As Boolean
   
-  RETURN Exist(Project.Dir &/ ".lang" &/ sLang & ".po")
+  Return Exist(Project.Dir &/ ".lang" &/ sLang & ".po")
   
-END
+End
 
-PUBLIC SUB MakeDirectoryIcon(OPTIONAL sDir AS String)
+Public Sub MakeDirectoryIcon(Optional sDir As String)
   
-  DIM sIcon AS String
-  DIM hDirIcon AS Image
-  DIM hIcon AS Image
+  Dim sIcon As String
+  Dim hDirIcon As Image
+  Dim hIcon As Image
   
-  IF NOT sDir THEN
+  If NOT sDir Then
     sDir = Project.Dir
-    IF Project.Icon THEN sIcon = sDir &/ Project.Icon
-  ENDIF
+    If Project.Icon Then sIcon = sDir &/ Project.Icon
+  Endif
   
   hDirIcon = Image.Load("img/logo/gambas-folder-64.png")
   
-  IF sIcon THEN 
-    TRY hIcon = StretchIcon(sIcon, 16)
-    IF hIcon THEN hDirIcon.Draw(hIcon, 26, 47)
-  ENDIF
+  If sIcon Then 
+    Try hIcon = StretchIcon(sIcon, 16)
+    If hIcon Then hDirIcon.Draw(hIcon, 26, 47)
+  Endif
   
   hDirIcon.Save(sDir &/ ".icon.png")
   
   File.Save(sDir &/ ".directory", "[Desktop Entry]\nIcon=./.icon.png\n")
   
-END
+End
 
-PUBLIC SUB RefreshBreakpointPicture()
+Public Sub RefreshBreakpointPicture()
 
-  DIM iSize AS Integer
+  Dim iSize As Integer
   
   iSize = Font[Settings["/Editor/Font"]].Height("")
-  TRY Editor.BreakpointPicture = Picture["icon:/small/flag"].Image.Stretch(iSize, iSize, TRUE).Picture 
+  Try Editor.BreakpointPicture = Picture["icon:/small/flag"].Image.Stretch(iSize, iSize, True).Picture 
   
-END
+End
 
-PUBLIC SUB GetRecentFiles(OPTIONAL bSort AS Boolean) AS String[]
+Public Sub GetRecentFiles(Optional bSort As Boolean) As String[]
   
-  DIM aList AS String[]
+  Dim aList As String[]
   
-  IF NOT bSort THEN RETURN Recent
+  If NOT bSort Then Return Recent
   
   aList = Recent.Copy()
-  RETURN aList.Sort()
+  Return aList.Sort()
   
-END
+End
 
-PUBLIC SUB IsStockAllowed() AS Boolean
+Public Sub IsStockAllowed() As Boolean
   
-  RETURN Libraries.Exist("gb.form")
+  Return Libraries.Exist("gb.form")
   
-END
+End
 
-PUBLIC SUB DrawTitle(hForm AS Object) 
+Public Sub DrawTitle(hForm As Object) 
   
-  DIM sTitle AS String
+  Dim sTitle As String
 
   sTitle = File.Name(hForm.Path)
-  IF hForm.IsModified() THEN sTitle &= " [" & ("modified") & "]"
-  IF hForm.ReadOnly AND IF NOT Project.ReadOnly AND IF NOT Project.Running THEN sTitle &= " [" & ("read-only") & "]"
+  If hForm.IsModified() Then sTitle &= " [" & ("modified") & "]"
+  If hForm.ReadOnly AND If NOT Project.ReadOnly AND If NOT Project.Running Then sTitle &= " [" & ("read-only") & "]"
   hForm.Title = sTitle '& " - " & Project.Name
 
-END
+End
 
-PUBLIC SUB IsExported(sPath AS String) AS Boolean
+Public Sub IsExported(sPath As String) As Boolean
   
-  DIM hFile AS File
-  DIM sLine AS String
+  Dim hFile As File
+  Dim sLine As String
   
-  hFile = OPEN sPath
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLine
+  hFile = Open sPath
+  While NOT Eof(hFile)
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF Left(sLine) = "'" THEN CONTINUE
-    IF sLine LIKE "INHERITS *" THEN CONTINUE
-    IF sLine LIKE "CREATE" THEN CONTINUE
-    IF sLine LIKE "CREATE *" THEN CONTINUE
-    IF sLine LIKE "EXPORT" THEN RETURN TRUE
-    IF sLine LIKE "EXPORT OPTIONAL" THEN RETURN TRUE
-    BREAK
-  WEND 
+    If NOT sLine Then Continue
+    If Left(sLine) = "'" Then Continue
+    If sLine LIKE "INHERITS *" Then Continue
+    If sLine LIKE "CREATE" Then Continue
+    If sLine LIKE "CREATE *" Then Continue
+    If sLine LIKE "EXPORT" Then Return True
+    If sLine LIKE "EXPORT OPTIONAL" Then Return True
+    Break
+  Wend 
   
-END
+End

@@ -1,22 +1,22 @@
 ' Gambas class file
 
-STATIC PRIVATE $aSupport AS String[]
-STATIC PRIVATE $iWait AS Integer
-STATIC PRIVATE $iSupport AS Integer
+Static Private $aSupport As String[]
+Static Private $iWait As Integer
+Static Private $iSupport As Integer
 
-STATIC PUBLIC SUB Run()
+Static Public Sub Run()
 
-  DIM hForm AS FAbout
+  Dim hForm As FAbout
 
-  hForm = NEW FAbout
+  hForm = New FAbout
   hForm.ShowModal
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  DIM sText AS String
+  Dim sText As String
 
   txtAuthor.BackColor = svwAuthor.BackColor
 
@@ -30,158 +30,158 @@ PUBLIC SUB Form_Open()
 '   txtGift.Text = "<b>" & ("Thanks to") & "</b>..." & Replace("\n" & sText, "\n", String$(8, "&nbsp;"))
 '   txtGift.W = txtGift.Font.Width(Replace(sText, "\n", "        ")) + 128
 
-END
+End
 
 
-PRIVATE SUB GetVersion()
+Private Sub GetVersion()
 
   lblVersion.Text = Project.Version
   lblVersion.X = lblGambas.X + lblGambas.Font.Width(lblGambas.Text)
 
-END
+End
 
 
-PUBLIC SUB btnClose_Click()
+Public Sub btnClose_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
 
-PUBLIC SUB timAuthor_Timer()
+Public Sub timAuthor_Timer()
 
-  DIM Y AS Integer
+  Dim Y As Integer
 
   Y = svwAuthor.ScrollY
-  INC svwAuthor.ScrollY
-  IF Y = svwAuthor.ScrollY THEN
+  Inc svwAuthor.ScrollY
+  If Y = svwAuthor.ScrollY Then
     svwAuthor.ScrollY = 0
-  ENDIF
+  Endif
 
-  WITH txtGift
+  With txtGift
 
-    IF $iWait > 0 THEN
-      DEC $iWait
-    ELSE IF .X > 0 THEN
+    If $iWait > 0 Then
+      Dec $iWait
+    Else If .X > 0 Then
       .X = Max(0, .X - 8)
-      IF .X = 0 THEN $iWait = 50
-    ELSE
+      If .X = 0 Then $iWait = 50
+    Else
       .X = panGift.Width
       txtGift.Text = $aSupport[$iSupport]
-      INC $iSupport
-      IF $iSupport >= $aSupport.Count THEN $iSupport = 0
-    ENDIF
+      Inc $iSupport
+      If $iSupport >= $aSupport.Count Then $iSupport = 0
+    Endif
 
-  END WITH
+  End With
 
-END
+End
 
-PRIVATE SUB RemoveLink(sStr AS String) AS String
+Private Sub RemoveLink(sStr As String) As String
   
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
+  Dim iPos As Integer
+  Dim iPos2 As Integer
   
-  DO
+  Do
 
     iPos = InStr(sStr, "<a href=")
-    IF iPos = 0 THEN BREAK
+    If iPos = 0 Then Break
 
     iPos2 = InStr(sStr, ">", iPos)
-    IF iPos2 = 0 THEN iPos2 = Len(sStr) + 1
+    If iPos2 = 0 Then iPos2 = Len(sStr) + 1
     sStr = Left(sStr, iPos - 1) & Mid(sStr, iPos2 + 1)
     
-  LOOP
+  Loop
   
-  RETURN Replace(sStr, "</a>", "")
+  Return Replace(sStr, "</a>", "")
   
-END
+End
 
 
-PRIVATE SUB GetAuthor()
+Private Sub GetAuthor()
 
-  DIM hFic AS File
-  DIM sText AS String
-  DIM sLig AS String
-  DIM nLig AS Integer
-  DIM sMail AS String
-  DIM sCountry AS String
+  Dim hFic As File
+  Dim sText As String
+  Dim sLig As String
+  Dim nLig As Integer
+  Dim sMail As String
+  Dim sCountry As String
 
-  hFic = OPEN "authors.txt"
+  hFic = Open "authors.txt"
 
-  WHILE NOT Eof(hFic)
+  While NOT Eof(hFic)
 
-    LINE INPUT #hFic, sLig
-    IF NOT sLig THEN CONTINUE
-    IF Left(sLig) = "-" THEN CONTINUE
+    Line Input #hFic, sLig
+    If NOT sLig Then Continue
+    If Left(sLig) = "-" Then Continue
 
-    LINE INPUT #hFic, sMail
-    LINE INPUT #hFic, sCountry
+    Line Input #hFic, sMail
+    Line Input #hFic, sCountry
     
     sText &= "<p><font size=+1><b>" & sLig & "</b>"
-    IF sCountry THEN sText &= " (" & sCountry & ")"
+    If sCountry Then sText &= " (" & sCountry & ")"
     sText &= "</font></p><blockquote>\n"
     
     sText &= "<u>" & sMail & "</u><br>"
 
-    WHILE NOT Eof(hFic)
+    While NOT Eof(hFic)
 
-      LINE INPUT #hFic, sLig
-      IF NOT sLig THEN CONTINUE
-      IF Left(sLig) = "-" THEN BREAK
+      Line Input #hFic, sLig
+      If NOT sLig Then Continue
+      If Left(sLig) = "-" Then Break
       
       sLig = RemoveLink(sLig)
-      IF Right(sLig) <> "." THEN sLig &= "."
+      If Right(sLig) <> "." Then sLig &= "."
       sText &= sLig & "<br>"
 
-    WEND
+    Wend
 
     'IF Right$(sText, 4) = "<br>" THEN sText = Left$(sText, -4)
 
     sText = sText & "</blockquote>\n"
 
-  WEND
+  Wend
 
-  CLOSE #hFic
+  Close #hFic
 
   txtAuthor.RichText = sText
   'nLig * txtAuthor.Font.Height("a") * 0.95 + 256
 
-FINALLY
+Finally
 
   txtAuthor.Height = txtAuthor.TextHeight '+ 256
   'PRINT txtAuthor.TextHeight
 
-CATCH
+Catch
 
   txtAuthor.RichText = Error.Text
 
-END
+End
 
-PRIVATE SUB GetSupport()
+Private Sub GetSupport()
 
-  DIM iInd AS Integer
+  Dim iInd As Integer
 
   $aSupport = Split(Trim(File.Load("support.txt")), "\n")
 
-  FOR iInd = 0 TO $aSupport.Count - 1
+  For iInd = 0 To $aSupport.Count - 1
 
     $aSupport[iInd] = "<b>" & $aSupport[iInd] & "...</b>"
 
-  NEXT
+  Next
 
   $aSupport.Add("<b>" & ("Thanks to") & "...</b>", 0)
 
-END
+End
 
 
-PUBLIC SUB Form_Show()
+Public Sub Form_Show()
 
   txtAuthor.Height = txtAuthor.TextHeight + 256
 
-END
+End
 
-PUBLIC SUB btnGift_Click()
+Public Sub btnGift_Click()
 
   Project.OpenWebPage("https://www.paypal.com/xclick/business=gambas%40users.sourceforge.net&no_note=1&tax=0&currency_code=EUR")
 
-END
+End

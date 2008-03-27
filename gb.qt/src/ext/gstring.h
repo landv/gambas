@@ -61,6 +61,8 @@ public:
   bool isWordChar(uint pos);
 	int find(char c, int index = 0) const;
 	char at(uint pos);
+	GString lower() const;
+	GString upper() const;
 };
 
 inline GString::GString(const GString &str)
@@ -117,6 +119,29 @@ inline GString GString::mid(uint index, uint len) const
 {
 	return GString(s.mid(index, len));
 }
+
+inline GString GString::lower() const
+{
+	QString sl = s;
+	uint i;
+	
+	for (i = 0; i < s.length(); i++)
+		sl[i] = tolower(s[i].latin1());
+		
+	return GString(sl);
+}
+
+inline GString GString::upper() const
+{
+	QString sl = s;
+	uint i;
+	
+	for (i = 0; i < s.length(); i++)
+		sl[i] = toupper(s[i].latin1());
+		
+	return GString(sl);
+}
+
 
 inline GString &GString::remove(uint index, uint len)
 {

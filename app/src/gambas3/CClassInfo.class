@@ -1,64 +1,64 @@
 ' Gambas class file
 
-PUBLIC Name AS String
-PUBLIC Parent AS String
-PUBLIC Symbols AS Collection
-PUBLIC Creatable AS Boolean
-PUBLIC AutoCreatable AS Boolean
-PUBLIC Component AS String
-PUBLIC ParentComponent AS String
-PUBLIC DefaultEvent AS String
-PUBLIC Events AS String[]
-PUBLIC PropertyList AS String[]
-PUBLIC Properties AS Collection
-PUBLIC VirtualControl AS Boolean
-PUBLIC DrawWith AS String
-PUBLIC Container AS Boolean
-PUBLIC Form AS Boolean
-PUBLIC MultiContainer AS Boolean
-PUBLIC DefaultWidth AS Short
-PUBLIC DefaultHeight AS Short
+Public Name As String
+Public Parent As String
+Public Symbols As Collection
+Public Creatable As Boolean
+Public AutoCreatable As Boolean
+Public Component As String
+Public ParentComponent As String
+Public DefaultEvent As String
+Public Events As String[]
+Public PropertyList As String[]
+Public Properties As Collection
+Public VirtualControl As Boolean
+Public DrawWith As String
+Public Container As Boolean
+Public Form As Boolean
+Public MultiContainer As Boolean
+Public DefaultWidth As Short
+Public DefaultHeight As Short
 
-PUBLIC SUB _new(sName AS String, OPTIONAL sParent AS String)
+Public Sub _new(sName As String, Optional sParent As String)
 
-  DIM hSym AS CSymbolInfo
+  Dim hSym As CSymbolInfo
 
   Name = sName
   {Parent} = sParent
-  Symbols = NEW Collection(gb.Text)
+  Symbols = New Collection(gb.Text)
 
-  IF {Parent} THEN
+  If {Parent} Then
     'IF Parent = "GridView" THEN STOP
     ParentComponent = CComponent.Classes[sParent].Component
     'IF ERROR THEN
     '  STOP
     '  Error.Raise(Error.Text)
     'ENDIF
-    FOR EACH hSym IN CComponent.Classes[sParent].Symbols
+    For Each hSym In CComponent.Classes[sParent].Symbols
       Symbols[hSym.Name] = hSym
-    NEXT
-  ENDIF
+    Next
+  Endif
 
-END
+End
 
 
 
-PUBLIC SUB InitControl(hWin AS Form)
+Public Sub InitControl(hWin As Form)
 
-  DIM aProp AS String[]
-  DIM sProp AS String
-  DIM sStr AS String
-  DIM sParent AS String
-  DIM hProp AS CPropertyInfo
-  DIM hSym AS CSymbolInfo
+  Dim aProp As String[]
+  Dim sProp As String
+  Dim sStr As String
+  Dim sParent As String
+  Dim hProp As CPropertyInfo
+  Dim hSym As CSymbolInfo
   'DIM hCtrl AS Object
-  DIM sDefVal AS String
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
-  DIM hClass AS CClassInfo
-  DIM bRemove AS Boolean
-  DIM aCont AS String[]
-  DIM sKind AS String
+  Dim sDefVal As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim hClass As CClassInfo
+  Dim bRemove As Boolean
+  Dim aCont As String[]
+  Dim sKind As String
 
   'DEBUG Component;; Name
 
@@ -107,28 +107,28 @@ PUBLIC SUB InitControl(hWin AS Form)
   MultiContainer = CComponent.All[Component].MultiContainers.Find(Name) >= 0 OR Name = "TabStrip"
 
   hSym = Symbols["_Properties"]
-  IF hSym THEN
-    IF hSym.Class = Name AND IF hSym.Component = Component THEN
+  If hSym Then
+    If hSym.Class = Name AND If hSym.Component = Component Then
       sProp = hSym.Value
-    ELSE 
+    Else 
       sProp = "*"
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
   sParent = ParentComponent &/ Parent
-  WHILE Left$(sProp) = "*"
+  While Left$(sProp) = "*"
     sProp = Mid$(sProp, 3)
     sStr = ""
-    TRY sStr = CComponent.Classes[sParent].Symbols["_Properties"].Value 
-    IF sStr THEN 
-      IF sProp THEN
+    Try sStr = CComponent.Classes[sParent].Symbols["_Properties"].Value 
+    If sStr Then 
+      If sProp Then
         sProp = sStr & "," & sProp
-      ELSE 
+      Else 
         sProp = sStr
-      ENDIF 
-    ENDIF
+      Endif 
+    Endif
     sParent = CComponent.Classes[sParent].ParentComponent &/ CComponent.Classes[sParent].Parent
-  WEND
+  Wend
 
 '   IF Left$(sProp) = "*" THEN
 '     sProp = Mid$(sProp, 3)
@@ -142,104 +142,104 @@ PUBLIC SUB InitControl(hWin AS Form)
 '     ENDIF
 '   ENDIF
 
-  Properties = NEW Collection
-  FOR EACH sProp IN Split(sProp)
+  Properties = New Collection
+  For Each sProp In Split(sProp)
 
     ' Name can be "Name{Kind}=Default"
     iPos = InStr(sProp, "{")
-    IF iPos THEN
+    If iPos Then
       iPos2 = InStr(sProp, "}", iPos + 1)
-      IF iPos2 = 0 THEN iPos2 = Len(sProp)
+      If iPos2 = 0 Then iPos2 = Len(sProp)
       sKind = Mid$(sProp, iPos + 1, iPos2 - iPos - 1)
       sProp = Left$(sProp, iPos - 1) & Mid$(sProp, iPos2 + 1)
-    ELSE 
+    Else 
       sKind = ""
-    ENDIF
+    Endif
     iPos = InStr(sProp, "=")
-    IF iPos THEN
+    If iPos Then
       sDefVal = Mid$(sProp, iPos + 1)
       sProp = Left$(sProp, iPos - 1)
-    ELSE
+    Else
       sDefVal = ""
-    ENDIF
+    Endif
 
     bRemove = Left(sProp) = "-"
-    IF bRemove THEN sProp = Mid$(sProp, 2)
+    If bRemove Then sProp = Mid$(sProp, 2)
 
     ' IF sProp = "Action" AND Name = "ToolBar" THEN 
     '   DEBUG CComponent.Classes.Count;; Component;; CComponent.Classes[Component &/ Name].Symbols[sProp]
     '   STOP
     ' ENDIF
 
-    IF bRemove THEN
-      Properties[sProp] = NULL
-    ELSE
+    If bRemove Then
+      Properties[sProp] = Null
+    Else
 
-      IF Component THEN
+      If Component Then
         'PRINT "? "; Component; ": "; Name; "."; sProp
-        IF NOT CComponent.Classes[Component &/ Name].Symbols[sProp] THEN
-          ERROR Component; ": "; Name; "."; sProp; " declared but not implemented"
-          CONTINUE
-        ENDIF
-      ENDIF
+        If NOT CComponent.Classes[Component &/ Name].Symbols[sProp] Then
+          Error Component; ": "; Name; "."; sProp; " declared but not implemented"
+          Continue
+        Endif
+      Endif
 
-      hProp = NEW CPropertyInfo(Component, Name, sProp, sKind, NULL, FALSE, VirtualControl, sDefVal)
+      hProp = New CPropertyInfo(Component, Name, sProp, sKind, Null, False, VirtualControl, sDefVal)
       Properties[sProp] = hProp
-    ENDIF
+    Endif
 
-  NEXT
+  Next
 
-  TRY DefaultEvent = Symbols["_DefaultEvent"].Value
+  Try DefaultEvent = Symbols["_DefaultEvent"].Value
 
-  Events = NEW String[]
-  FOR EACH hSym IN Symbols
-    IF hSym.Kind = ":" THEN
-      IF Left$(hSym.Name) = ":" THEN
+  Events = New String[]
+  For Each hSym In Symbols
+    If hSym.Kind = ":" Then
+      If Left$(hSym.Name) = ":" Then
         Events.Add(Mid$(hSym.Name, 2))
-      ELSE
+      Else
         Events.Add(hSym.Name)
-      ENDIF
-    ENDIF
-  NEXT
+      Endif
+    Endif
+  Next
   Events.Sort
 
   ' Taille par défaut
   
   'IF Name = "Button" THEN STOP
-  TRY sStr = Symbols["_DefaultSize"].Value 
-  IF sStr THEN 
+  Try sStr = Symbols["_DefaultSize"].Value 
+  If sStr Then 
     aCont = Split(sStr)
-    TRY DefaultWidth = Val(aCont[0]) * Desktop.Scale
-    TRY DefaultHeight = Val(aCont[1]) * Desktop.Scale
-  ENDIF
+    Try DefaultWidth = Val(aCont[0]) * Desktop.Scale
+    Try DefaultHeight = Val(aCont[1]) * Desktop.Scale
+  Endif
   
   ' Modification des propriétés
 
-  PropertyList = NEW String[]
+  PropertyList = New String[]
 
-  FOR EACH hProp IN Properties
+  For Each hProp In Properties
     PropertyList.Add(hProp.Name)
-  NEXT
+  Next
 
-  IF VirtualControl THEN
+  If VirtualControl Then
 
-    Properties["Y"] = NEW CPropertyInfo("", Name, "Y", "", hWin, TRUE)
+    Properties["Y"] = New CPropertyInfo("", Name, "Y", "", hWin, True)
     PropertyList.Add("Y", 0)
-    Properties["X"] = NEW CPropertyInfo("", Name, "X", "", hWin, TRUE)
+    Properties["X"] = New CPropertyInfo("", Name, "X", "", hWin, True)
     PropertyList.Add("X", 0)
 
-  ENDIF
+  Endif
 
-  IF {Form} THEN 
-    Properties[CPropertyInfo.SCALE_NAME] = NEW CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", NULL)
+  If {Form} Then 
+    Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "", Null)
     PropertyList.Add(CPropertyInfo.SCALE_NAME, 0)
-  ENDIF
+  Endif
 
-  Properties[CPropertyInfo.EVENT_NAME] = NEW CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "", NULL)
+  Properties[CPropertyInfo.EVENT_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "", Null)
   PropertyList.Add(CPropertyInfo.EVENT_NAME, 0)
 
   'IF Name = "Timer" THEN
-  TRY DrawWith = Symbols["_DrawWith"].Value
+  Try DrawWith = Symbols["_DrawWith"].Value
   'IF DrawWith THEN ?Me. <= CRASH!
   '  PRINT ME.Name;; "->";; DrawWith
   'ENDIF
@@ -247,31 +247,31 @@ PUBLIC SUB InitControl(hWin AS Form)
   ' IF hCtrl <> hWin THEN
   '   TRY hCtrl.Delete
   ' ENDIF
-END
+End
 
 
-PUBLIC FUNCTION GetProperties() AS Collection
+Public Function GetProperties() As Collection
 
-  IF Properties THEN
-    IF Properties.Count THEN
-      RETURN Properties
-    ENDIF
-  ENDIF
+  If Properties Then
+    If Properties.Count Then
+      Return Properties
+    Endif
+  Endif
 
-  IF {Parent} THEN
-    RETURN CComponent.Classes[ParentComponent &/ {Parent}].GetProperties()
-  ENDIF
+  If {Parent} Then
+    Return CComponent.Classes[ParentComponent &/ {Parent}].GetProperties()
+  Endif
 
-END
+End
 
 
-PUBLIC FUNCTION Inherits(sClass AS String) AS Boolean
+Public Function Inherits(sClass As String) As Boolean
 
-  IF {Parent} = sClass THEN RETURN TRUE
-  IF NOT Parent THEN RETURN FALSE
-  RETURN CComponent.Classes[ParentComponent &/ Parent].Inherits(sClass)
+  If {Parent} = sClass Then Return True
+  If NOT Parent Then Return False
+  Return CComponent.Classes[ParentComponent &/ Parent].Inherits(sClass)
 
-END
+End
 
 
 ' PRIVATE FUNCTION IsContainer(hCtrl AS Control) AS Boolean

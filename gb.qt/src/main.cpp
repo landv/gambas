@@ -33,7 +33,6 @@
 
 #include "gambas.h"
 
-#define QT_THREAD_SUPPORT
 #include <qapplication.h>
 #include <qtooltip.h>
 #include <qmessagebox.h>
