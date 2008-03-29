@@ -64,9 +64,14 @@ rm -f DISABLED
 
 dnl ---- Should I use libtool to load shared libraries in gbi and gbx ?
 
-if test "$SYSTEM" != "CYGWIN" && test "$SYSTEM" != "OPENBSD"; then
+if test "$SYSTEM" != "CYGWIN"; then
   AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
-  DL_LIB="-ldl"
+
+  if test "$SYSTEM" != "OPENBSD"; then
+    DL_LIB="-ldl"
+  else
+    DL_LIB=""
+  fi
 else
   DL_LIB=$LIBLTDL
 fi
