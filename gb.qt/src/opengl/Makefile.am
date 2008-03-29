@@ -11,5 +11,5 @@ gb_qt_opengl_la_LDFLAGS = -module @LD_FLAGS@ @QT_LDFLAGS@ @QTOPENGL_LDFLAGS@
 
 gb_qt_opengl_la_SOURCES = \
  main.h main.cpp \
- CGLarea.h moc_CGLarea.cpp CGLarea.cpp
+ CGLarea.h CGLarea_moc.cpp CGLarea.cpp
 

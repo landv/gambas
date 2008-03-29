@@ -15,48 +15,48 @@ gb_qt_la_CXXFLAGS = -DGB_QT_COMPONENT $(AM_CFLAGS)
 
 gb_qt_la_SOURCES = \
  x11.h x11.c \
- qtxembed.h moc_qtxembed.cpp qtxembed.cpp \
- gb.qt.h main.h moc_main.cpp main.cpp \
+ qtxembed.h qtxembed_moc.cpp qtxembed.cpp \
+ gb.qt.h main.h main_moc.cpp main.cpp \
  CFont.h CFont.cpp \
  CScreen.h CScreen.cpp \
- CWidget.h moc_CWidget.cpp CWidget.cpp \
- CWindow.h moc_CWindow.cpp CWindow.cpp \
- CButton.h moc_CButton.cpp CButton.cpp \
- CContainer.h moc_CContainer.cpp CContainer.cpp \
- CLabel.h moc_CLabel.cpp CLabel.cpp \
- CListBox.h moc_CListBox.cpp CListBox.cpp \
- CTextBox.h moc_CTextBox.cpp CTextBox.cpp \
- CPictureBox.h moc_CPictureBox.cpp CPictureBox.cpp \
- CMenu.h moc_CMenu.cpp CMenu.cpp \
- CMouse.h moc_CMouse.cpp CMouse.cpp \
- CKey.h moc_CKey.cpp CKey.cpp \
- CColor.h moc_CColor.cpp CColor.cpp \
+ CWidget.h CWidget_moc.cpp CWidget.cpp \
+ CWindow.h CWindow_moc.cpp CWindow.cpp \
+ CButton.h CButton_moc.cpp CButton.cpp \
+ CContainer.h CContainer_moc.cpp CContainer.cpp \
+ CLabel.h CLabel_moc.cpp CLabel.cpp \
+ CListBox.h CListBox_moc.cpp CListBox.cpp \
+ CTextBox.h CTextBox_moc.cpp CTextBox.cpp \
+ CPictureBox.h CPictureBox_moc.cpp CPictureBox.cpp \
+ CMenu.h CMenu_moc.cpp CMenu.cpp \
+ CMouse.h CMouse_moc.cpp CMouse.cpp \
+ CKey.h CKey_moc.cpp CKey.cpp \
+ CColor.h CColor_moc.cpp CColor.cpp \
  CConst.h CConst.cpp \
- CCheckBox.h moc_CCheckBox.cpp CCheckBox.cpp \
- CFrame.h moc_CFrame.cpp CFrame.cpp \
- CPanel.h moc_CPanel.cpp CPanel.cpp \
- CRadioButton.h moc_CRadioButton.cpp CRadioButton.cpp \
- CTreeView.h moc_CTreeView.cpp CTreeView.cpp \
- CGridView.h moc_CGridView.cpp CGridView.cpp \
- CTextArea.h moc_CTextArea.cpp CTextArea.cpp \
- CTabStrip.h moc_CTabStrip.cpp CTabStrip.cpp \
- CDialog.h moc_CDialog.cpp CDialog.cpp \
- CPicture.h moc_CPicture.cpp CPicture.cpp \
- CImage.h moc_CImage.cpp CImage.cpp \
- CClipboard.h moc_CClipboard.cpp CClipboard.cpp \
+ CCheckBox.h CCheckBox_moc.cpp CCheckBox.cpp \
+ CFrame.h CFrame_moc.cpp CFrame.cpp \
+ CPanel.h CPanel_moc.cpp CPanel.cpp \
+ CRadioButton.h CRadioButton_moc.cpp CRadioButton.cpp \
+ CTreeView.h CTreeView_moc.cpp CTreeView.cpp \
+ CGridView.h CGridView_moc.cpp CGridView.cpp \
+ CTextArea.h CTextArea_moc.cpp CTextArea.cpp \
+ CTabStrip.h CTabStrip_moc.cpp CTabStrip.cpp \
+ CDialog.h CDialog_moc.cpp CDialog.cpp \
+ CPicture.h CPicture_moc.cpp CPicture.cpp \
+ CImage.h CImage_moc.cpp CImage.cpp \
+ CClipboard.h CClipboard_moc.cpp CClipboard.cpp \
  CDraw.h CDraw.cpp \
- CWatch.h moc_CWatch.cpp CWatch.cpp \
- CScrollView.h moc_CScrollView.cpp CScrollView.cpp \
- CDrawingArea.h moc_CDrawingArea.cpp CDrawingArea.cpp \
- CProgress.h moc_CProgress.cpp CProgress.cpp \
- CMessage.h moc_CMessage.cpp CMessage.cpp \
- CIconView.h moc_CIconView.cpp CIconView.cpp \
- CSlider.h moc_CSlider.cpp CSlider.cpp \
- CScrollBar.h moc_CScrollBar.cpp CScrollBar.cpp \
- CMovieBox.h moc_CMovieBox.cpp CMovieBox.cpp \
- CSpinBox.h moc_CSpinBox.cpp CSpinBox.cpp \
- CEmbedder.h moc_CEmbedder.cpp CEmbedder.cpp \
- CTrayIcon.h moc_CTrayIcon.cpp CTrayIcon.cpp \
- CSplitter.h moc_CSplitter.cpp CSplitter.cpp \
- CWatcher.h moc_CWatcher.cpp CWatcher.cpp
+ CWatch.h CWatch_moc.cpp CWatch.cpp \
+ CScrollView.h CScrollView_moc.cpp CScrollView.cpp \
+ CDrawingArea.h CDrawingArea_moc.cpp CDrawingArea.cpp \
+ CProgress.h CProgress_moc.cpp CProgress.cpp \
+ CMessage.h CMessage_moc.cpp CMessage.cpp \
+ CIconView.h CIconView_moc.cpp CIconView.cpp \
+ CSlider.h CSlider_moc.cpp CSlider.cpp \
+ CScrollBar.h CScrollBar_moc.cpp CScrollBar.cpp \
+ CMovieBox.h CMovieBox_moc.cpp CMovieBox.cpp \
+ CSpinBox.h CSpinBox_moc.cpp CSpinBox.cpp \
+ CEmbedder.h CEmbedder_moc.cpp CEmbedder.cpp \
+ CTrayIcon.h CTrayIcon_moc.cpp CTrayIcon.cpp \
+ CSplitter.h CSplitter_moc.cpp CSplitter.cpp \
+ CWatcher.h CWatcher_moc.cpp CWatcher.cpp
  
