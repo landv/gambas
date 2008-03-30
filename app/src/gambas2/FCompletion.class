@@ -41,6 +41,7 @@ PUBLIC SUB Open(sMode AS String, OPTIONAL sClass AS String, OPTIONAL bStatic AS 
   DIM iY AS Integer
   DIM iLeft AS Integer
   DIM iPos AS Integer
+  DIM hCont AS Container
 
   hEditor = GetEditor()
 
@@ -121,6 +122,14 @@ PUBLIC SUB Open(sMode AS String, OPTIONAL sClass AS String, OPTIONAL bStatic AS 
     iY = hEditor.Y + hEditor.CursorY - ME.Height
   ENDIF
 
+  hCont = hEditor.Parent
+  DO
+    IF hCont IS Form THEN BREAK
+    iX += hCont.X
+    iY += hCont.Y
+    hCont = hCont.Parent
+  LOOP
+  
   ME.Move(iX, iY)
   ME.Show
   ME.Raise

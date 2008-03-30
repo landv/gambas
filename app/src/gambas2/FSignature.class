@@ -35,6 +35,7 @@ PUBLIC SUB Open(iX AS Integer, hSymbol AS CSymbolInfo, OPTIONAL bDoNotUseKey AS 
   DIM sSign AS String
   DIM hEditor AS Editor
   DIM iY AS Integer
+  DIM hCont AS container
   
   hEditor = GetEditor()
   
@@ -62,6 +63,14 @@ PUBLIC SUB Open(iX AS Integer, hSymbol AS CSymbolInfo, OPTIONAL bDoNotUseKey AS 
     iY = hEditor.Y + hEditor.CursorY - ME.Height
   ENDIF
 
+  hCont = hEditor.Parent
+  DO
+    IF hCont IS Form THEN BREAK
+    iX += hCont.X
+    iY += hCont.Y
+    hCont = hCont.Parent
+  LOOP
+  
   iX = Max(0, Min(iX, hEditor.W - ME.Width))
 
   IF iX = ME.X AND iY = ME.Y AND ME.Visible THEN RETURN
