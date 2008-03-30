@@ -27,7 +27,7 @@ END
 '   
 '   ME.Move(iX, iY)
 '   
-' END
+' END 
 
 
 PUBLIC SUB Open(iX AS Integer, hSymbol AS CSymbolInfo, OPTIONAL bDoNotUseKey AS Boolean)
@@ -37,7 +37,7 @@ PUBLIC SUB Open(iX AS Integer, hSymbol AS CSymbolInfo, OPTIONAL bDoNotUseKey AS 
   DIM iY AS Integer
   DIM hCont AS container
   
-  hEditor = GetEditor()
+  hEditor = GetEditor() 
   
   sSign = hSymbol.Name
   IF Left$(sSign) = "_" THEN sSign = hSymbol.Class

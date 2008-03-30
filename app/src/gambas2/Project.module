@@ -1443,7 +1443,7 @@ PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) 
   sDir = Project.Dir
 
   FProperty.SaveProperty
-  Save
+  Save(TRUE)
 
   SetMessage(("Compiling project") & " " & Project.Name & "...")
 
@@ -1547,15 +1547,15 @@ PUBLIC SUB Step()
 END
 
 
-PUBLIC SUB Save()
+PUBLIC SUB Save(OPTIONAL bReset AS Boolean)
 
   DIM hForm AS Object
 
   INC Application.Busy
 
   FOR EACH hForm IN Files
-    IF Object.Type(hForm) = "FEditor" THEN
-      IF hForm.Save(TRUE) THEN BREAK
+    IF hForm IS FEditor THEN
+      IF hForm.Save(bReset) THEN BREAK
     ELSE
       IF hForm.Save() THEN BREAK
     ENDIF

@@ -928,9 +928,9 @@ PUBLIC SUB Action_Activate(Key AS String) AS Boolean
       Project.Run(FALSE)
     CASE "pause"
       Design.Pause
-    CASE "stop"
+    CASE "stop" 
       Design.Stop
-    CASE "forward"
+    CASE "forward" 
       Project.Run(FALSE, 2)
     CASE "step"
       Project.Run(FALSE, 1)
