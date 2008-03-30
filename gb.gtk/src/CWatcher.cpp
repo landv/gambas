@@ -88,7 +88,7 @@ BEGIN_METHOD(CWATCHER_new, GB_OBJECT control)
 	if (GB.CheckObject(THIS->wid))
 		return;
 
-	fprintf(stderr, "Watcher %p: Ref %p (%s %p)\n", _object, THIS->wid, GB.GetClassName(THIS->wid), THIS->wid);
+	//fprintf(stderr, "Watcher %p: Ref %p (%s %p)\n", _object, THIS->wid, GB.GetClassName(THIS->wid), THIS->wid);
 	GB.Ref((void*)THIS->wid);
 
 	control = THIS->wid->widget;
@@ -108,7 +108,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWATCHER_free)
 
-	fprintf(stderr, "Watcher %p: UnRef %p %p ?\n", THIS, THIS->wid, THIS->wid ? THIS->wid->widget : 0);
+	//fprintf(stderr, "Watcher %p: UnRef %p %p ?\n", THIS, THIS->wid, THIS->wid ? THIS->wid->widget : 0);
 	
 	if (THIS->wid)
 	{
