@@ -69,6 +69,12 @@ static void raise_configure(GtkWidget *widget, GdkEventConfigure *e, CWATCHER *_
 	GB.Unref(POINTER(&_object));
 }
 
+static void cb_destroy(GtkWidget *widget, CWATCHER *_object)
+{
+	GB.Unref(POINTER(&THIS->wid));
+	THIS->wid = 0;
+}
+
 
 /** Watcher class *********************************************************/
 
@@ -82,6 +88,7 @@ BEGIN_METHOD(CWATCHER_new, GB_OBJECT control)
 	if (GB.CheckObject(THIS->wid))
 		return;
 
+	fprintf(stderr, "Watcher %p: Ref %p (%s %p)\n", _object, THIS->wid, GB.GetClassName(THIS->wid), THIS->wid);
 	GB.Ref((void*)THIS->wid);
 
 	control = THIS->wid->widget;
@@ -95,14 +102,18 @@ BEGIN_METHOD(CWATCHER_new, GB_OBJECT control)
 	g_signal_connect(G_OBJECT(wid), "show", G_CALLBACK(raise_show), _object);
 	g_signal_connect(G_OBJECT(wid), "hide", G_CALLBACK(raise_hide), _object);
 	g_signal_connect(G_OBJECT(wid), "configure-event", G_CALLBACK(raise_configure), _object);
+	g_signal_connect(G_OBJECT(wid), "destroy", G_CALLBACK(cb_destroy), _object);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CWATCHER_free)
 
+	fprintf(stderr, "Watcher %p: UnRef %p %p ?\n", THIS, THIS->wid, THIS->wid ? THIS->wid->widget : 0);
+	
 	if (THIS->wid)
 	{
-		g_signal_handlers_disconnect_matched(G_OBJECT(THIS->wid->widget->border), G_SIGNAL_MATCH_DATA, 0, (GQuark)0, NULL, NULL, _object);
+		if (THIS->wid->widget)
+			g_signal_handlers_disconnect_matched(G_OBJECT(THIS->wid->widget->border), G_SIGNAL_MATCH_DATA, 0, (GQuark)0, NULL, NULL, _object);
 		GB.Unref(POINTER(&THIS->wid));
 	}
 

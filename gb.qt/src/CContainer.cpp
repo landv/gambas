@@ -232,7 +232,8 @@ void MyContainer::childEvent(QChildEvent *e)
 {
   void *_object = CWidget::get(this);
   void *child;
-  //qDebug("MyContainer::childEvent %p", CWidget::get(this));
+  
+  qDebug("MyContainer::childEvent %p %p", CWidget::get(this), child);
   
   QFrame::childEvent(e);
 

@@ -62,7 +62,7 @@ static void init()
 	_init = TRUE;
 }
 
-static void begin(GB_DRAW *d)
+static int begin(GB_DRAW *d)
 {
 	gDraw *dr;
 	
@@ -74,11 +74,20 @@ static void begin(GB_DRAW *d)
 	else if (GB.Is(d->device, CLASS_DrawingArea))
 		dr->connect(((CDRAWINGAREA *)d->device)->widget);
 	else if (GB.Is(d->device, CLASS_Picture))
-		dr->connect(((CPICTURE*)d->device)->picture);
+	{
+		gPicture *pic = ((CPICTURE*)d->device)->picture;
+		if (pic->isVoid())
+		{
+			GB.Error("Bad picture");
+			return TRUE;
+		}
+		dr->connect(pic);
+	}
 		
 	d->width = dr->width();
 	d->height = dr->height();
 	d->resolution = dr->resolution();
+	return FALSE;
 }
 
 static void end(GB_DRAW *d)

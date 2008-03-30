@@ -141,7 +141,7 @@ static uint get_color(GB_DRAW *d, int col, bool bg)
 	return col;
 }
 
-static void begin(GB_DRAW *d)
+static int begin(GB_DRAW *d)
 {
 	void *device = d->device;
 	
@@ -157,7 +157,7 @@ static void begin(GB_DRAW *d)
 		if (pict->pixmap->isNull())
 		{
 			GB.Error("Bad picture");
-			return;
+			return TRUE;
 		}
 
     init_drawing(d, new QPainter(pict->pixmap), pict->pixmap->width(), pict->pixmap->height());
@@ -196,6 +196,7 @@ static void begin(GB_DRAW *d)
 		QPaintDeviceMetrics pdm(printer);
     DRAW_begin(device, new QPainter(printer), pdm.width(), pdm.height(), printer->resolution());
   }*/
+  return FALSE;
 }
 
 static void end(GB_DRAW *d)

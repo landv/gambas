@@ -487,6 +487,7 @@ void GDocument::setText(const GString & text)
 
   clear();
   insert(0, 0, text);
+  colorize(0);
   reset();
 
   blockUndo = false;
@@ -1067,7 +1068,10 @@ void GDocument::colorize(int y)
 				l->baptized = true;
 		}
 		else
+		{
+			GB.FreeArray(&l->highlight);
 			l->proc = false;
+		}
 
 		l->modified = false;
 

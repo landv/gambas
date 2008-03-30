@@ -99,6 +99,8 @@ PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
 
   MColor.InitEditor(hEditor)
 
+  hEditor.Flags[hEditor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
+  hEditor.Flags[hEditor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
   hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", TRUE]
   hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", FALSE]
   hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", TRUE]
@@ -433,7 +435,7 @@ PUBLIC SUB Editors_Highlight()
                   iState = Highlight.Keyword
                   iNextState = Highlight.Keyword
                   bMarkup = TRUE
-                  IF Mid$(sText, iInd, 5) = "<body" THEN bLimit = TRUE
+                  IF Mid$(sText, iInd, 5) = "<body" OR IF Mid$(sText, iInd, 5) = "<head" THEN bLimit = TRUE
                 ENDIF
               ELSE IF sCar = "&" THEN
                 iPos = String.InStr(sText, ";", iInd)
@@ -501,6 +503,7 @@ PUBLIC SUB Editors_Highlight()
               iState = Highlight.Keyword
               iNextState = iState
               iTag = Highlight.Keyword
+              bLimit = TRUE
             ELSE IF sCar = "/" THEN 
               IF Mid$(sText, iInd, 2) = "/*" THEN 
                 iState = Highlight.Comment

@@ -42,7 +42,7 @@
 
 #include "gbx_exec.h"
 
-#define DEBUG_PCODE 0
+//#define DEBUG_PCODE 1
 
 #if DEBUG_PCODE
 #define PROJECT_EXEC

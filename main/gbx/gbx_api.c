@@ -524,6 +524,16 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 
 	OBJECT_REF(object, "GB_Raise");
 
+	#if DEBUG_EVENT
+	{
+		CLASS *class = OBJECT_class(object);
+		fprintf(stderr, "GB_Raise(%p, %d, %s)\n", object, event_id, class->event[event_id].name);
+		/*fprintf(stderr, "func_id = %d  parent = (%s %p)\n", func_id, parent->class->name, parent);
+		if (OBJECT_is_locked(parent))
+			fprintf(stderr, "parent is locked!\n");*/
+	}
+	#endif
+		
 	arg = nparam < 0;
 	nparam = abs(nparam);
 
@@ -568,15 +578,6 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 		func_id = get_event_func_id(OBJECT_event(object)->event, event_id);
 		if (func_id)
 		{
-			#if DEBUG_EVENT
-				class = OBJECT_class(object);
-				printf("GB_Raise(%p, %d, %s)\n", object, event_id, class->event[event_id].name);
-				printf("func_id = %d  parent = (%s %p)\n", func_id, parent->class->name, parent);
-				if (OBJECT_is_locked(parent))
-					printf("parent is locked!\n");
-				fflush(NULL);
-			#endif
-		
 			if (parent->class->check && (*parent->class->check)(parent))
 				OBJECT_detach(object);
 			else

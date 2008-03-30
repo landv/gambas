@@ -64,7 +64,7 @@ typedef
 		// Size of the GB_DRAW structure extra data
 		int size;
 		// Begins and terminates the drawing
-		void (*Begin)(GB_DRAW *d);
+		int (*Begin)(GB_DRAW *d);
 		void (*End)(GB_DRAW *d);
 		// Default colors
 		int (*GetBackground)(GB_DRAW *d);

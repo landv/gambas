@@ -255,19 +255,15 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
   QImage *p;
   CIMAGE *img;
 
-  create(&img);
-
   if (CPICTURE_load_image(&p, STRING(path), LENGTH(path)))
   {
+	  create(&img);
   	delete img->image;
     img->image = p;
     GB.ReturnObject(img);
 	}
   else
-  {
-  	GB.Unref(POINTER(&img));
     GB.Error("Unable to load image");
-	}
 
 END_METHOD
 

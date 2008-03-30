@@ -1248,8 +1248,8 @@ END
 
 PRIVATE FUNCTION AddMessage(sVoid AS String) AS String
 
-  ' DIM hFic AS File
-  ' DIM sLig AS String
+  DIM iPos AS Integer
+  DIM sMsg AS String
 
   IF Stat(OUTPUT_FILE).Size = 0 THEN
 
@@ -1258,18 +1258,10 @@ PRIVATE FUNCTION AddMessage(sVoid AS String) AS String
 
   ELSE
   
-    RETURN Replace(Trim(File.Load(OUTPUT_FILE)), "\n", " ")
-
-    ' OPEN OUTPUT_FILE FOR READ AS #hFic
-    ' 
-    ' WHILE NOT Eof(hFic)
-    ' 
-    '   LINE INPUT #hFic, sLig
-    '   'ProjectMessage.Add(sLig)
-    ' 
-    ' WEND
-    ' 
-    ' CLOSE #hFic
+    sMsg = RTrim(File.Load(OUTPUT_FILE))
+    iPos = RInStr(sMsg, "\n")
+    IF iPos THEN sMsg = Mid$(sMsg, iPos + 1)
+    RETURN sMsg
 
   ENDIF
 
