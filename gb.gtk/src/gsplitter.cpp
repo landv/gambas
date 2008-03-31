@@ -57,6 +57,11 @@ static void cb_size_allocate(GtkPaned *widget, GtkAllocation *allocation, gSplit
 	data->updateChild(gtk_paned_get_child1(widget));
 }
 
+static void cb_child_visibility(GtkWidget *widget, gSplitter *data)
+{
+	data->updateVisibility();
+}
+	
 GtkPaned *gSplitter::next(GtkPaned *iter)
 {
 	GtkWidget *child;
@@ -75,6 +80,43 @@ GtkPaned *gSplitter::next(GtkPaned *iter)
 		if (child) // && gApplication::controlItem(child)->isVisible())
 			return iter;
 	}	
+}
+
+void gSplitter::updateVisibility()
+{
+	int i, n;
+	GtkPaned *iter;
+	
+	// Hide internal GTK_PANED 
+	
+	n = childCount() - 1;
+	while (n >= 0)
+	{
+		//fprintf(stderr, "child(%d)->isVisible() = %d\n", n, child(n)->isVisible());
+		if (child(n)->isVisible())
+			break;
+		n--;
+	}
+	
+  //fprintf(stderr, "updateVisibility: last visible is child #%d\n", n);
+  
+	for (i = 0; i <= n; i++)
+	{
+		iter = GTK_PANED(gtk_widget_get_parent(child(i)->border));
+		gtk_widget_show(GTK_WIDGET(iter));
+	}
+	
+	n++;
+	
+	if (n < childCount())
+	{
+		iter = GTK_PANED(gtk_widget_get_parent(child(n)->border));
+		gtk_widget_hide(GTK_WIDGET(iter));
+	}
+	
+	if (n >= (childCount() - 1))
+		refresh(); // Workaround frame drawing bug when the last one is shown or hidden
+	emit(SIGNAL(onResize));
 }
 
 static int get_child_width(GtkPaned *iter)
@@ -122,7 +164,7 @@ void gSplitter::insert(gControl *child)
 		else
 			tmp=gtk_vpaned_new();
 			
-		gtk_widget_show_all(tmp);
+		//gtk_widget_show_all(tmp);
 		gtk_paned_pack2(curr, tmp, TRUE, TRUE);
 		curr=GTK_PANED(tmp);
 		gtk_paned_pack1(curr, w, TRUE, TRUE);	
@@ -131,9 +173,13 @@ void gSplitter::insert(gControl *child)
 		g_signal_connect_after(G_OBJECT(curr), "notify", G_CALLBACK(cb_notify), (gpointer)this);
 	}
 	
+	g_signal_connect_after(G_OBJECT(w), "show", G_CALLBACK(cb_child_visibility), (gpointer)this);
+	g_signal_connect_after(G_OBJECT(w), "hide", G_CALLBACK(cb_child_visibility), (gpointer)this);
+	
 	unlock();
 	
 	gContainer::insert(child);
+	//updateVisibility();
 	
 	//emit(SIGNAL(onResize));
 }
@@ -141,6 +187,8 @@ void gSplitter::insert(gControl *child)
 void gSplitter::remove(gControl *child)
 {
 	gContainer::remove(child);
+
+	g_signal_handlers_disconnect_matched(G_OBJECT(child->border), G_SIGNAL_MATCH_DATA, 0, (GQuark)0, NULL, NULL, (gpointer)this);
 }
 
 int gSplitter::handleCount()
@@ -178,14 +226,19 @@ void gSplitter::setLayout(char *vl)
 	factor = 0;
 	for (i = 0;; i++)
 	{
-		sval = split[i];
-		if (!sval)
+		if (i >= childCount())
 			break;
-		errno = 0;
-		num = strtol(sval, NULL, 10);
-		if (errno || num < 1)
-			num = 0;
-		factor += num;
+		if (child(i)->isVisible())
+		{
+			sval = split[i];
+			if (!sval)
+				break;
+			errno = 0;
+			num = strtol(sval, NULL, 10);
+			if (errno || num < 1)
+				num = 0;
+			factor += num;
+		}
 	}
 	
 	if (factor == 0)
@@ -200,16 +253,21 @@ void gSplitter::setLayout(char *vl)
 	for (i = 0;; i++)
 	{
 	 	if (!iter) break;
-		
-		sval = split[i];
-		if (!sval)
+		if (i >= childCount())
 			break;
-			
-		errno = 0;
-		num = strtol(sval,NULL,10);
-		if (errno || num < 1)
-			num = 0;
-		gtk_paned_set_position(iter, (gint)(num * factor + 0.5));
+		
+		if (child(i)->isVisible())
+		{
+			sval = split[i];
+			if (!sval)
+				break;
+				
+			errno = 0;
+			num = strtol(sval,NULL,10);
+			if (errno || num < 1)
+				num = 0;
+			gtk_paned_set_position(iter, (gint)(num * factor + 0.5));
+		}
 		
 		iter = next(iter);
 	}
@@ -252,7 +310,10 @@ char* gSplitter::layout()
 			g_string_append_printf(ret, "%d,", vl);
 		}
 		
-		g_string_append_printf(ret, "%d", (vertical ? height() : width()) - sum - nhandle * shandle);
+		if (childCount() > 1 && child(childCount() - 1)->isVisible())
+			g_string_append_printf(ret, "%d", (vertical ? height() : width()) - sum - nhandle * shandle);
+		else	
+			g_string_append(ret, "0");
 	}
 		
 	l = g_string_free(ret, false);
@@ -340,6 +401,7 @@ void gSplitter::updateChild(GtkWidget *w)
 void gSplitter::performArrange()
 {
 	updateChild();
+	updateVisibility();
 }
 
 void gSplitter::resize(int w, int h)

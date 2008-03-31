@@ -5,6 +5,10 @@ ScreenSaver
 R
 _DesktopScreenSaver
 
+Type
+R
+s
+
 SendMail
 M
 
@@ -13,14 +17,18 @@ Open
 M
 
 (URL)s
-Find
+FindWindow
 M
-Pointer[]
+Integer[]
 [(Title)s(Application)s(Role)s]
 SendKeys
 M
 
 (Keys)s
+OpenTerminal
+M
+
+[(Dir)s]
 #DesktopFile
 
 C

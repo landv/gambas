@@ -115,10 +115,10 @@ gPlugin::gPlugin(gContainer *parent) : gControl(parent)
 	g_object_set(G_OBJECT(widget),"can-focus",TRUE, (void *)NULL);
 }
 
-long gPlugin::client()
+int gPlugin::client()
 {
 	GdkNativeWindow win=gtk_socket_get_id(GTK_SOCKET(widget));
-	return (long)win;
+	return (int)win;
 }
 
 void gPlugin::plug(long id,bool prepared)

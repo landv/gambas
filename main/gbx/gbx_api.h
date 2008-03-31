@@ -123,6 +123,7 @@ void GB_ArrayNew(GB_ARRAY *array, unsigned int type, int size);
 int GB_ArrayCount(GB_ARRAY array);
 void *GB_ArrayAdd(GB_ARRAY array);
 void *GB_ArrayGet(GB_ARRAY array, int index);
+TYPE GB_ArrayType(GB_ARRAY array);
 
 void GB_CollectionNew(GB_COLLECTION *col, int mode);
 int GB_CollectionCount(GB_COLLECTION col);

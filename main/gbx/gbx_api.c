@@ -221,6 +221,7 @@ void *GAMBAS_Api[] =
   (void *)GB_ArrayCount,
   (void *)GB_ArrayAdd,
   (void *)GB_ArrayGet,
+  (void *)GB_ArrayType,
 
   (void *)GB_CollectionNew,
   (void *)GB_CollectionCount,

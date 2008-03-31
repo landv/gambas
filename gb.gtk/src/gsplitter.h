@@ -24,6 +24,7 @@ public:
 	virtual void insert(gControl *child);
 	virtual void remove(gControl *child);
 	void updateChild(GtkWidget *wid = 0);
+	void updateVisibility();
 	GtkPaned *curr;
 	bool vertical;
 	GtkPaned *next(GtkPaned *iter);

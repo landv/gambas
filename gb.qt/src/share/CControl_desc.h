@@ -63,8 +63,8 @@ GB_DESC CControlDesc[] =
 
   GB_PROPERTY_READ("Parent", "Container", CCONTROL_parent),
   GB_PROPERTY_READ("Window", "Window", CCONTROL_window),
-  GB_PROPERTY_READ("Id", "p", CCONTROL_id),
-  GB_PROPERTY_READ("Handle", "p", CCONTROL_id),
+  GB_PROPERTY_READ("Id", "i", CCONTROL_id),
+  GB_PROPERTY_READ("Handle", "i", CCONTROL_id),
 
   GB_EVENT("Enter", NULL, NULL, &EVENT_Enter),
   GB_EVENT("GotFocus", NULL, NULL, &EVENT_GotFocus),

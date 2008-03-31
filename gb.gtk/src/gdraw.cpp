@@ -140,7 +140,7 @@ void gDraw::initGC()
 	if (dr) 
 	{
 		g_object_ref(G_OBJECT(dr));
-		gc=gdk_gc_new(dr);
+		gc = gdk_gc_new(dr);
 		gdk_gc_set_fill(gc,GDK_SOLID);
 		#ifdef GOT_X11_PLATFORM
 		XSetArcMode(GDK_GC_XDISPLAY(gc), GDK_GC_XGC(gc), ArcPieSlice);

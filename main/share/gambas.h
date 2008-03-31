@@ -924,6 +924,7 @@ typedef
       int (*Count)(GB_ARRAY);
       void *(*Add)(GB_ARRAY);
       void *(*Get)(GB_ARRAY, int);
+      GB_TYPE (*Type)(GB_ARRAY);
       }
     Array;
 

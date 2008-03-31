@@ -49,8 +49,10 @@ Atom X11_atom_net_current_desktop;
 
 static bool _init = FALSE;
 
-static Display *_display = NULL;
-static Window _root = 0;
+Display *X11_display = NULL;
+#define _display X11_display
+Window X11_root = 0;
+#define _root X11_root
 
 static bool _atom_init = FALSE;
 
@@ -73,6 +75,8 @@ typedef
 
 static X11_PROPERTY _window_prop;
 static X11_PROPERTY _window_save[2];
+
+static char *_property_value = NULL;
 
 static void init_atoms()
 {
@@ -105,6 +109,68 @@ static void get_property(Window wid, Atom prop, int maxlength, unsigned char **d
   XGetWindowProperty(_display, wid, prop, 0, maxlength / 4,
     False, AnyPropertyType, &type, &format,
     count, &after, data);
+}
+
+#define PROPERTY_START_READ 256
+
+char *X11_get_property(Window wid, Atom prop, Atom *type, int *format)
+{
+	uchar *data;
+  unsigned long count;
+  unsigned long after;
+
+	if (XGetWindowProperty(_display, wid, prop, 0, PROPERTY_START_READ / 4,
+			False, AnyPropertyType, type, format,
+			&count, &after, &data) != Success)
+		return NULL;
+	
+	GB.FreeString(&_property_value);
+	GB.NewString(&_property_value, (char *)data, count * *format / 8);
+	XFree(data);
+	
+	if (after)
+	{
+		if (XGetWindowProperty(_display, wid, prop, PROPERTY_START_READ / 4, (after + 3) / 4,
+				False, AnyPropertyType, type, format,
+				&count, &after, &data) != Success)
+			return NULL;
+		
+		GB.AddString(&_property_value, (char *)data, count * *format / 8);
+		XFree(data);
+	}
+	
+	return _property_value;
+}
+
+Atom X11_get_property_type(Window wid, Atom prop, int *format)
+{
+	uchar *data = NULL;
+  unsigned long count;
+  unsigned long after;
+  Atom type;
+
+	if (XGetWindowProperty(X11_display, wid, prop, 0, PROPERTY_START_READ / 4,
+			False, AnyPropertyType, &type, format,
+			&count, &after, &data) != Success)
+		return None;
+	
+	XFree(data);
+	return type;
+}
+
+void X11_set_property(Window wid, Atom prop, Atom type, int format, void *data, int count)
+{
+	XChangeProperty(X11_display, wid, prop, type, format, PropModeReplace, (uchar *)data, count);
+}
+
+Atom X11_intern_atom(const char *name, bool create)
+{
+	int val = atoi(name);
+	
+	if (val)
+		return (Atom)val;
+	else
+		return XInternAtom(X11_display, name, !create);
 }
 
 static void load_window_state(Window win, Atom prop)
@@ -216,8 +282,33 @@ void X11_exit()
 		XFree(_keycode_map);
 	if (_modifier_map)
 		XFreeModifiermap(_modifier_map);
+	if (_property_value)
+		GB.FreeString(&_property_value);
 }
 
+void X11_send_client_message(Window window, Atom message, char *data, int format, int count)
+{
+  XEvent e;
+  int mask = (SubstructureRedirectMask | SubstructureNotifyMask);
+  int i;
+
+	e.xclient.type = ClientMessage;
+	e.xclient.message_type = message;
+	e.xclient.display = X11_display;
+	e.xclient.window = window;
+	e.xclient.format = format;
+	
+	memset(&e.xclient.data.l[0], 0, 20);
+	if (data)
+	{
+		count *= format / 8;
+		if (count > 20)
+			count = 20;
+		memcpy(&e.xclient.data.l[0], data, count);
+	}
+
+	XSendEvent(X11_display, window, False, mask, &e);
+}
 
 void X11_window_change_property(Window window, bool visible, Atom property, bool set)
 {

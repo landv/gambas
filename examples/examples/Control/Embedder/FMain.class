@@ -1,86 +1,86 @@
 ' Gambas class file
 
-PUBLIC SUB btnEmbed_Click()
+Public Sub btnEmbed_Click()
 
-  DIM sTitle AS String
-  DIM aHandle AS Pointer[]
-  DIM iHandle AS Integer
+  Dim sTitle As String
+  Dim aHandle As Integer[]
+  Dim iHandle As Integer
   
   sTitle = txtTitle.Text
-  IF Left(sTitle, 2) = "0x" THEN 
+  If Left(sTitle, 2) = "0x" Then 
     iHandle = Val("&" & Mid$(sTitle, 3))
-  ELSE IF Left(sTitle) = "&" THEN 
+  Else If Left(sTitle) = "&" Then 
     iHandle = Val(sTitle)
-  ELSE
-    aHandle = Desktop.Find(Trim(txtTitle.Text))
-    IF aHandle.Count = 0 THEN 
+  Else
+    aHandle = Desktop.FindWindow(Trim(txtTitle.Text))
+    If aHandle.Count = 0 Then 
       Message.Warning("Window not found!")
-      RETURN
-    ELSE IF aHandle.Count >= 2 THEN 
+      Return
+    Else If aHandle.Count >= 2 Then 
       Message("Several windows found. I take the first one!")
-    ENDIF
+    Endif
     iHandle = aHandle[0]
-  ENDIF
+  Endif
   
-  TRY embEmbedder.Embed(iHandle)
-  IF ERROR THEN Message.Warning(Error.Text)
+  Try embEmbedder.Embed(iHandle)
+  If Error Then Message.Warning(Error.Text)
 
-END
+End
 
-PUBLIC SUB embEmbedder_Embed()
+Public Sub embEmbedder_Embed()
 
-  btnEmbed.Enabled = FALSE
-  btnDiscard.Enabled = TRUE
+  btnEmbed.Enabled = False
+  btnDiscard.Enabled = True
 
-END
+End
 
-PUBLIC SUB btnDiscard_Click()
+Public Sub btnDiscard_Click()
 
   embEmbedder.Discard
   embEmbedder_Close
 
-END
+End
 
-PUBLIC SUB embEmbedder_Close()
+Public Sub embEmbedder_Close()
 
-  btnEmbed.Enabled = TRUE
-  btnDiscard.Enabled = FALSE
+  btnEmbed.Enabled = True
+  btnDiscard.Enabled = False
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   lblID.Text = "&" & Hex$(embEmbedder.Id)
 
-END
+End
 
-PUBLIC SUB embEmbedder_Error()
+Public Sub embEmbedder_Error()
 
   Message.Error("Embed error")
 
-END
+End
 
 
-PUBLIC SUB Process_Read()
+Public Sub Process_Read()
 
-  DIM sStr AS String
+  Dim sStr As String
 
   'READ #LAST, sStr, Lof(LAST)
-  LINE INPUT #LAST, sStr
-  PRINT "\t"; sStr
+  Line Input #Last, sStr
+  Print "\t"; sStr
 
-END
+End
 
-PUBLIC SUB Process_Error(sStr AS String)
+Public Sub Process_Error(sStr As String)
 
-  PRINT "\t"; sStr; 
-  IF Right(sStr) <> "\n" THEN PRINT
+  Print "\t"; sStr; 
+  If Right(sStr) <> "\n" Then Print
 
-END
+End
 
-PUBLIC SUB Process_Kill()
+Public Sub Process_Kill()
 
-  PRINT "Process_Kill"
-  PRINT LAST.State;; LAST.Value
+  Print "Process_Kill"
+  Print Last.State;; Last.Value
 
-END
+End

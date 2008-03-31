@@ -8,7 +8,7 @@ public:
 	void plug(long id,bool prepared=true);
 	void discard();
 //"Properties"
-	long client();
+	int client();
 
 	int getBorder() { return getFrameBorder(); }
 	void setBorder(int vl) { setFrameBorder(vl); }

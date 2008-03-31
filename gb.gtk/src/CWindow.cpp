@@ -37,7 +37,7 @@
 #include "CDraw.h"
 #include "gapplication.h"
 
-long CWINDOW_Embedder = 0;
+int CWINDOW_Embedder = 0;
 bool CWINDOW_Embedded = false;
 
 CWINDOW *CWINDOW_Active = NULL;

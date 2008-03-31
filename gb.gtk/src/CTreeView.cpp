@@ -41,7 +41,6 @@ DECLARE_EVENT(EVENT_Cancel);
 DECLARE_EVENT(EVENT_Compare);
 DECLARE_EVENT(EVENT_Expand);
 DECLARE_EVENT(EVENT_Collapse);
-DECLARE_EVENT(EVENT_ColumnClick);
 
 static void set_item(CTREEVIEW *_object, char *key)
 {
@@ -1273,7 +1272,6 @@ GB_DESC CColumnViewDesc[] =
   GB_EVENT("Compare", 0, "(Key)s(OtherKey)s", &EVENT_Compare),
   GB_EVENT("Expand", 0, 0, &EVENT_Expand),
   GB_EVENT("Collapse", 0, 0, &EVENT_Collapse),
-  GB_EVENT("ColumnClick", 0, "(Column)i", &EVENT_ColumnClick),
 
   GB_PROPERTY_SELF("Columns", ".ColumnViewColumns"),
 

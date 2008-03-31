@@ -1084,7 +1084,10 @@ void GDocument::colorize(int y)
 				l->baptized = true;
 		}
 		else
+		{
+			GB.FreeArray(&l->highlight);
 			l->proc = false;
+		}
 
 		if (y == 0)
 			l->proc = true;

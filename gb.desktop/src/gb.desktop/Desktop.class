@@ -1,83 +1,84 @@
 ' Gambas class file
 
-EXPORT 
+Export 
 
-CLASS _Desktop
+Class _Desktop
 
 'STATIC PROPERTY READ Menus AS _DesktopMenus
 'STATIC PROPERTY READ Icons AS _DesktopIcons
-STATIC PROPERTY READ ScreenSaver AS _DesktopScreenSaver
+Static Property Read ScreenSaver As _DesktopScreenSaver
+Static Property Read Type As String
 
-'STATIC PRIVATE $cKeys AS Collection
+Static Private $sDesktop As String
 
-STATIC PUBLIC SUB SendMail({To} AS String[], OPTIONAL Cc AS String[], OPTIONAL Bcc AS String[], OPTIONAL Subject AS String, OPTIONAL Body AS String, OPTIONAL Attachment AS String)
+Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional Bcc As String[], Optional Subject As String, Optional Body As String, Optional Attachment As String)
   
-  DIM aArg AS String[]
+  Dim aArg As String[]
   'xdg-email [--utf8] [--cc address] [--bcc address] [--subject text] [--body text
   ' ] [--attach file] { mailto-uri | address(es) }
   
   aArg = ["--utf8"]
-  IF CC AND IF CC.Count THEN 
+  If CC And If CC.Count Then 
     aArg.Add("--cc")
     aArg.Insert(CC)
-  ENDIF
-  IF BCC AND IF BCC.Count THEN 
+  Endif
+  If BCC And If BCC.Count Then 
     aArg.Add("--bcc")
     aArg.Insert(BCC)
-  ENDIF
-  IF Subject THEN 
+  Endif
+  If Subject Then 
     aArg.Add("--subject")
     aArg.Add(Subject)
-  ENDIF 
-  IF Body THEN 
+  Endif 
+  If Body Then 
     aArg.Add("--body")
     aArg.Add(Body)
-  ENDIF
-  IF Attachment THEN 
+  Endif
+  If Attachment Then 
     aArg.Add("--attach")
     aArg.Add(Attachment)
-  ENDIF 
+  Endif 
   
-  IF {To} AND IF To.Count THEN 
+  If {To} And If To.Count Then 
     aArg.Insert({To})
-  ENDIF
+  Endif
   
   Main.RunXdgUtil("xdg-email", aArg)
   
-END
+End
 
-STATIC PUBLIC SUB {Open}(URL AS String)
+Static Public Sub {Open}(URL As String)
   
   Main.RunXdgUtil("xdg-open", [URL])
   
-END
+End
 
-STATIC PRIVATE FUNCTION Menus_Read() AS _DesktopMenus
+Static Private Function Menus_Read() As _DesktopMenus
 
-  RETURN _DesktopMenus  
+  Return _DesktopMenus  
 
-END
+End
 
 
-STATIC PRIVATE FUNCTION Icons_Read() AS _DesktopIcons
+Static Private Function Icons_Read() As _DesktopIcons
 
-  RETURN _DesktopIcons
+  Return _DesktopIcons
 
-END
+End
 
-STATIC PRIVATE FUNCTION ScreenSaver_Read() AS _DesktopScreenSaver
+Static Private Function ScreenSaver_Read() As _DesktopScreenSaver
 
-  RETURN _DesktopScreenSaver
+  Return _DesktopScreenSaver
 
-END
+End
 
 '  GB_STATIC_METHOD("Find", "Integer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
 
-STATIC PUBLIC SUB Find(OPTIONAL Title AS String, Application AS String, Role AS String) AS Pointer[]
+Static Public Sub FindWindow(Optional Title As String, Application As String, Role As String) As Integer[]
   
-  RETURN _Desktop.Find(Title, Application, Role)
+  Return _Desktop.FindWindow(Title, Application, Role)
   
-END
+End
 
 ' STATIC PRIVATE SUB InitKeys()
 '   
@@ -86,68 +87,128 @@ END
 '   
 ' END
 
-STATIC PUBLIC SUB SendKeys(Keys AS String)
+Static Public Sub SendKeys(Keys As String)
   
-  DIM iInd AS Integer
-  DIM sCar AS String
-  DIM iPos AS Integer
-  DIM aRelease AS NEW String[]
-  DIM bHold AS Boolean
-  DIM sErr AS String
-  DIM iLen AS Integer = String.Len(Keys)
+  Dim iInd As Integer
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim aRelease As New String[]
+  Dim bHold As Boolean
+  Dim sErr As String
+  Dim iLen As Integer = String.Len(Keys)
   
-  DO
+  Do
   
-    INC iInd
-    IF iInd > iLen THEN BREAK
+    Inc iInd
+    If iInd > iLen Then Break
     
     sCar = String.Mid$(Keys, iInd, 1)
     
-    IF sCar = "[" THEN 
+    If sCar = "[" Then 
       iPos = String.InStr(Keys, "]", iInd)
-      IF iPos = 0 THEN BREAK
+      If iPos = 0 Then Break
       sCar = String.Mid$(Keys, iInd + 1, iPos - iInd - 1)
       iInd = iPos
-      IF NOT sCar THEN CONTINUE
-    ELSE IF sCar = "{" AND IF NOT bHold THEN
-      bHold = TRUE
-      CONTINUE
-    ELSE IF sCar = "}" AND IF bHold THEN 
-      bHold = FALSE
+      If Not sCar Then Continue
+    Else If sCar = "{" And If Not bHold Then
+      bHold = True
+      Continue
+    Else If sCar = "}" And If bHold Then 
+      bHold = False
       aRelease.Reverse
-      FOR EACH sCar IN aRelease
+      For Each sCar In aRelease
         'DEBUG sCar;; FALSE
-        _Desktop.SendKey(sCar, FALSE)
-      NEXT
+        _Desktop.SendKey(sCar, False)
+      Next
       aRelease.Clear
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
     
-    IF Len(sCar) >= 2 THEN 
-      TRY sCar = Conv(sCar, "UTF-8", "LATIN1")
-    ENDIF
+    If Len(sCar) >= 2 Then 
+      Try sCar = Conv(sCar, "UTF-8", "LATIN1")
+    Endif
     
-    IF bHold THEN
+    If bHold Then
       'DEBUG sCar;; TRUE
-      _Desktop.SendKey(sCar, TRUE)
+      _Desktop.SendKey(sCar, True)
       aRelease.Add(sCar)
-    ELSE
+    Else
       'DEBUG sCar;; TRUE
-      _Desktop.SendKey(sCar, TRUE)
+      _Desktop.SendKey(sCar, True)
       'DEBUG sCar;; FALSE
-      _Desktop.SendKey(sCar, FALSE)
-    ENDIF
+      _Desktop.SendKey(sCar, False)
+    Endif
     
-  LOOP 
+  Loop 
   
-CATCH 
+Catch 
 
   sErr = Error.Text & ": '" & sCar & "'"
   
-  FOR EACH sCar IN aRelease
-    _Desktop.SendKey(sCar, FALSE)
-  NEXT
+  For Each sCar In aRelease
+    _Desktop.SendKey(sCar, False)
+  Next
 
   Error.Raise(sErr)
   
-END
+End
+
+Static Private Sub GetDesktop() As String
+  
+  If Not $sDesktop Then
+    ' If [x "$KDE_FULL_SESSION" = x "true"]; Then DE = kde;
+    ' elif[x "$GNOME_DESKTOP_SESSION_ID"! = x ""]; Then DE = gnome;
+    ' elif xprop - root _DT_SAVE_MODE | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
+    ' fi
+    
+    If Application.Env["KDE_FULL_SESSION"] Then
+      $sDesktop = "KDE"
+    Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
+      $sDesktop = "GNOME"
+    Else If InStr(_Desktop.GetWindowProperty(_Desktop.RootWindow, "_DT_SAVE_MODE"), "xfce4") Then
+      $sDesktop = "XFCE"
+    Else
+      $sDesktop = "?"
+    Endif
+    
+  Endif
+  
+  Return $sDesktop
+  
+End
+
+
+Static Public Sub OpenTerminal(Optional {Dir} As String)
+  
+  Dim sExec As String
+  Dim sCmd As String
+  
+  Select Case GetDesktop()
+  
+    Case "KDE"
+      sExec = "konsole"
+    Case "GNOME"
+      sExec = "gnome-terminal"
+    Case "XFCE"
+      sExec = "Terminal"
+    Case Else
+      sExec = "xterm"
+  
+  End Select
+  
+  If {Dir} Then
+    sCmd = "(cd " & Quote.Shell({Dir}) & "; " & sExec & ")"
+  Else
+    sCmd = sExec
+  Endif
+  
+  Shell sCmd
+  
+End
+
+
+Static Private Function Type_Read() As String
+
+  Return GetDesktop()  
+
+End

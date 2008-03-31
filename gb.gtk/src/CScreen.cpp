@@ -36,7 +36,7 @@
 #include "gapplication.h"
 #include "gmainwindow.h"
 
-extern long CWINDOW_Embedder;
+extern int CWINDOW_Embedder;
 extern bool CWINDOW_Embedded;
 
 extern int MAIN_scale;
@@ -108,8 +108,6 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CAPP_tooltip_font)
 
-	CFONT *Font;
-	
 	if (READ_PROPERTY)
     GB.ReturnObject(CFONT_create(gApplication::toolTipsFont(), set_tooltip_font));
   else if (VPROP(GB_OBJECT))
@@ -246,7 +244,7 @@ GB_DESC CApplicationTooltipDesc[] =
 BEGIN_PROPERTY(CAPP_embedder)
 
   if (READ_PROPERTY)
-    GB.ReturnPointer((void *)CWINDOW_Embedder);
+    GB.ReturnInteger(CWINDOW_Embedder);
   else
   {
     if (CWINDOW_Embedded)
@@ -255,7 +253,7 @@ BEGIN_PROPERTY(CAPP_embedder)
       return;
     }
   
-    CWINDOW_Embedder = VPROP(GB_POINTER);
+    CWINDOW_Embedder = VPROP(GB_INTEGER);
   }
 
 END_PROPERTY
@@ -273,7 +271,7 @@ GB_DESC CApplicationDesc[] =
   GB_STATIC_PROPERTY("Busy", "i", CSCREEN_busy),
   GB_STATIC_PROPERTY_SELF("ToolTip", ".ApplicationTooltip"),
   
-  GB_STATIC_PROPERTY("Embedder", "p", CAPP_embedder),
+  GB_STATIC_PROPERTY("Embedder", "i", CAPP_embedder),
   GB_STATIC_PROPERTY("Theme", "s", CAPP_theme),
 
   GB_END_DECLARE

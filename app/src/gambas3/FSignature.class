@@ -35,8 +35,9 @@ Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, Optional bDoNotUseKey As 
   Dim sSign As String
   Dim hEditor As Editor
   Dim iY As Integer
+  Dim hCont As Container
   
-  hEditor = GetEditor()
+  hEditor = GetEditor() 
   
   sSign = hSymbol.Name
   If Left$(sSign) = "_" Then sSign = hSymbol.Class
@@ -62,9 +63,17 @@ Public Sub Open(iX As Integer, hSymbol As CSymbolInfo, Optional bDoNotUseKey As 
     iY = hEditor.Y + hEditor.CursorY - Me.Height
   Endif
 
+  hCont = hEditor.Parent
+  Do
+    If hCont Is Form Then Break
+    iX += hCont.X
+    iY += hCont.Y
+    hCont = hCont.Parent
+  Loop
+  
   iX = Max(0, Min(iX, hEditor.W - Me.Width))
 
-  If iX = Me.X AND iY = Me.Y AND Me.Visible Then Return
+  If iX = Me.X And iY = Me.Y And Me.Visible Then Return
 
   Me.Move(iX, iY)
   Me.Show

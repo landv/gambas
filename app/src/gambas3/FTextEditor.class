@@ -99,6 +99,8 @@ Private Sub ReadConfigEditor(hEditor As Editor)
 
   MTheme.InitEditor(hEditor)
 
+  hEditor.Flags[hEditor.ShowProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] > 0
+  hEditor.Flags[hEditor.BlendedProcedureLimits] = Settings["/Editor/ProcedureLimit", 2] = 2
   hEditor.Flags[hEditor.ShowModifiedLines] = Settings["/Editor/ShowChange", True]
   hEditor.Flags[hEditor.ShowLineNumbers] = Settings["/Editor/ShowLineNumbers", False]
   hEditor.Flags[hEditor.ShowCurrentLine] = Settings["/Editor/ShowCurrent", True]
@@ -110,7 +112,7 @@ Public Function Save() As Boolean
   'Project.Config.WriteString("/Window" &/ Name &/ "Pos",
   '  CStr(ME.X) & "," & CStr(ME.Y) & "," & CStr(ME.Width) & "," & CStr(ME.Height))
 
-  If NOT $bModify Then Return
+  If Not $bModify Then Return
 
   Save.Begin(Path)
 
@@ -138,7 +140,7 @@ Public Sub Modify(Optional bReset As Boolean)
   If Project.ReadOnly Then Return
   If $bModify <> bReset Then Return
 
-  $bModify = NOT bReset
+  $bModify = Not bReset
   DrawTitle
   If $bModify Then Inc Project.TimeStamp
 
@@ -176,7 +178,7 @@ Public Sub Editors_KeyPress()
   If Key.Code = Key.Insert Then
 
     If Key.Shift Then
-      If NOT Editor.ReadOnly Then
+      If Not Editor.ReadOnly Then
         Editor.Paste
       Endif 
     Else If Key.Control Then
@@ -186,7 +188,7 @@ Public Sub Editors_KeyPress()
   Else If Key.Code = Key.Delete Then
 
     If Key.Shift Then
-      If NOT Editor.ReadOnly Then
+      If Not Editor.ReadOnly Then
         Editor.Cut
       Endif 
     Endif 
@@ -341,7 +343,7 @@ End
 
 Private Sub SetReadOnly()
 
-  edtEditor.ReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+  edtEditor.ReadOnly = Project.ReadOnly Or Project.Running Or Stat(Path).Type = gb.Link
 
   If $hEditor1 Then $hEditor1.ReadOnly = edtEditor.ReadOnly
   If $hEditor2 Then $hEditor2.ReadOnly = edtEditor.ReadOnly
@@ -433,11 +435,11 @@ Public Sub Editors_Highlight()
                   iState = Highlight.Keyword
                   iNextState = Highlight.Keyword
                   bMarkup = True
-                  If Mid$(sText, iInd, 5) = "<body" Then bLimit = True
+                  If Mid$(sText, iInd, 5) = "<body" Or If Mid$(sText, iInd, 5) = "<head" Then bLimit = True
                 Endif
               Else If sCar = "&" Then
                 iPos = String.InStr(sText, ";", iInd)
-                If iPos = 0 OR iPos = iInd + 1 Then
+                If iPos = 0 Or iPos = iInd + 1 Then
                   iState = Highlight.Error
                 Else
                   For J = iInd + 1 To iPos - 1
@@ -457,11 +459,11 @@ Public Sub Editors_Highlight()
                 Endif
               Endif
             Case Highlight.Comment
-              If sCar = ">" AND If iInd > 2 AND If String.Mid$(sText, iInd - 2, 2) = "--" Then
+              If sCar = ">" And If iInd > 2 And If String.Mid$(sText, iInd - 2, 2) = "--" Then
                 iNextState = Highlight.Normal
               Endif
             Case Highlight.Symbol
-              If sCar = ">" AND If iInd > 2 AND If String.Mid$(sText, iInd - 2, 2) = "]]" Then
+              If sCar = ">" And If iInd > 2 And If String.Mid$(sText, iInd - 2, 2) = "]]" Then
                 iNextState = Highlight.Normal
               Endif
           End Select
@@ -473,7 +475,7 @@ Public Sub Editors_Highlight()
     
       Next
     
-      If iNextState <> Highlight.Comment AND If iNextState <> Highlight.Symbol Then
+      If iNextState <> Highlight.Comment And If iNextState <> Highlight.Symbol Then
         If bMarkup Then 
           iNextState = Highlight.Keyword
         Else 
@@ -491,7 +493,7 @@ Public Sub Editors_Highlight()
         Select Case iState
         
           Case Highlight.Normal, Highlight.String
-            If sCar = "." OR If sCar = "#" Then 
+            If sCar = "." Or If sCar = "#" Then 
               iState = Highlight.String
               iNextState = iState
             Else If sCar = " " Then 
@@ -501,6 +503,7 @@ Public Sub Editors_Highlight()
               iState = Highlight.Keyword
               iNextState = iState
               iTag = Highlight.Keyword
+              bLimit = True
             Else If sCar = "/" Then 
               If Mid$(sText, iInd, 2) = "/*" Then 
                 iState = Highlight.Comment
@@ -525,7 +528,7 @@ Public Sub Editors_Highlight()
             Endif
                         
           Case Highlight.Comment
-            If sCar = "/" AND If iInd > 1 AND If String.Mid$(sText, iInd - 1, 1) = "*" Then
+            If sCar = "/" And If iInd > 1 And If String.Mid$(sText, iInd - 1, 1) = "*" Then
               iNextState = IIf(iTag, iTag, Highlight.Normal)
             Endif
             
@@ -618,7 +621,7 @@ Private Sub SetViewMode(iViewMode As Integer)
   If $iViewMode = iViewMode Then Return 
   $iViewMode = iViewMode
 
-  If $iViewMode <> VIEWMODE_NORMAL AND If NOT $hEditor1 Then 
+  If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then 
     $hEditor1 = New Editor(Me) As "Editors"
     InitEditor($hEditor1)
     $hEditor2 = New Editor(Me) As "Editors"

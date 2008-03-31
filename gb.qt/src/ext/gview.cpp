@@ -106,6 +106,7 @@ GEditor::GEditor(QWidget *parent) : QGridView(parent, 0, WNoAutoErase)
   viewport()->setCursor(ibeamCursor);
   //viewport()->setWFlags(WRepaintNoErase);
 
+  flags = 0;
   x = y = xx = 0;
   x1m = x2m = 0;
   ym = -1;
@@ -115,7 +116,6 @@ GEditor::GEditor(QWidget *parent) : QGridView(parent, 0, WNoAutoErase)
   lineNumberLength = 0;
   doc = 0;
   center = false;
-  setDocument(NULL);
 
   for (i = 0; i < GLine::NUM_STATE; i++)
   {
@@ -132,7 +132,7 @@ GEditor::GEditor(QWidget *parent) : QGridView(parent, 0, WNoAutoErase)
     	styles[i].background = false;
   }
 
-  flags = 0;
+  setDocument(NULL);
   //setFlag(ShowCurrentLine, true);
   setFont(QFont("monospace", QApplication::font().pointSize()));
   updateLength();
@@ -261,7 +261,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			}
 
 			if (st->background)
-				p.fillRect(x, 1, w, h - 1, st->backgroundColor);
+				p.fillRect(x, 1, w, h - 2, st->backgroundColor);
 			
 			p.setPen(st->color);
 			p.drawText(x, y, sd);

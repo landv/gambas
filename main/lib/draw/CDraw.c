@@ -62,7 +62,10 @@ bool DRAW_begin(void *device)
  
 	desc = (GB_DRAW_DESC *)GB.GetClassInterface(klass, "Draw");
 	if (!desc)
+	{
+		GB.Error("Not a drawable object");
 		return TRUE;
+	}
 
 	GB.Alloc(POINTER(&draw), sizeof(GB_DRAW) + desc->size);
 	draw->desc = desc;
@@ -75,9 +78,9 @@ bool DRAW_begin(void *device)
 	draw->save = NULL;
 	draw->xform = FALSE;
 	
-	draw->desc->Begin(draw);
-	return FALSE;
+	return draw->desc->Begin(draw);
 }
+
 
 BEGIN_METHOD(CDRAW_begin, GB_OBJECT device)
 
@@ -86,8 +89,7 @@ BEGIN_METHOD(CDRAW_begin, GB_OBJECT device)
   if (GB.CheckObject(device))
     return;
 
-	if (DRAW_begin(device))
-		GB.Error("Not a drawable object");
+	DRAW_begin(device);
 
 END_METHOD
 

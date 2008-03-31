@@ -1584,4 +1584,9 @@ void *GB_ArrayGet(GB_ARRAY array, int index)
   return get_data((CARRAY *)array, index);
 }
 
+TYPE GB_ArrayType(GB_ARRAY array)
+{
+	return ((CARRAY *)array)->type;
+}
+
 #endif

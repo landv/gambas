@@ -1,51 +1,76 @@
 ' Gambas module file
 
-PUBLIC Result AS String
+Public Result As String
 
-PRIVATE $cTool AS NEW Collection
+Private $cTool As New Collection
 
-PUBLIC SUB RunXdgUtil(sProg AS String, aArg AS String[]) 
+Public Sub RunXdgUtil(sProg As String, aArg As String[]) 
   
-  DIM sCmd AS String
-  DIM sPath AS String
-  DIM sDir AS String
-  DIM aCmd AS String[]
+  Dim sCmd As String
+  Dim sPath As String
+  Dim sDir As String
+  Dim aCmd As String[]
   
   sCmd = $cTool[sProg]
   
-  IF NOT sCmd THEN 
-    SHELL "which " & sProg & " 2>&1" TO sCmd
-    IF Process.LastValue THEN 
+  If Not sCmd Then 
+    Shell "which " & sProg & " 2>&1" To sCmd
+    If Process.LastValue Then 
       sDir = Temp$("xdg-utils")
       sDir = File.Dir(sDir) &/ File.BaseName(sDir)
-      TRY MKDIR sDir
+      Try Mkdir sDir
       sCmd = sDir &/ sProg
-      COPY "xdg-utils-1.0.2/scripts" &/ sProg TO sCmd
-      SHELL "chmod a+x " & Quote.Shell(sCmd)
-    ENDIF
+      Copy "xdg-utils-1.0.2/scripts" &/ sProg To sCmd
+      Shell "chmod a+x " & Quote.Shell(sCmd)
+    Endif
     sCmd = Trim(sCmd)
     $cTool[sProg] = sCmd
-  ENDIF
+  Endif
   
   aCmd = [sCmd]
   aCmd.Insert(aArg)
-  EXEC aCmd TO Result 
+  Exec aCmd To Result 
   
-  SELECT CASE Process.LastValue  
-    CASE 1
+  Select Case Process.LastValue  
+    Case 1
       Error.Raise("Syntax error")
-    CASE 2
+    Case 2
       Error.Raise("File does not exist")
-    CASE 3
+    Case 3
       Error.Raise("A required tool could not be found")
-    CASE 4
+    Case 4
       Error.Raise("The action has failed")
-    CASE 5
+    Case 5
       Error.Raise("File access forbidden")
-  END SELECT 
+  End Select 
   
-END
+End
 
-PUBLIC SUB Main()
+Public Sub Main()
   
-END
+  Dim vVal As Variant
+  Dim iInd As Integer
+  Dim iAtom As Integer
+  
+  'Desktop.OpenTerminal("/home/test")
+  'Return
+  
+  iAtom = _Desktop.InternAtom("_NET_CURRENT_DESKTOP")
+  Print iAtom
+  '_Desktop.SetWindowProperty(_Desktop.RootWindow, iAtom, "XA_INTEGER", 1)
+  _Desktop.SendClientMessageToRootWindow("_NET_CURRENT_DESKTOP", [0])
+  Wait 0.5
+  vVal = _Desktop.GetWindowProperty(_Desktop.RootWindow, iAtom)
+  
+  If IsString(vVal) Then
+    Print vVal
+  Else If vVal Is Array Then
+    Print "[";
+    For iInd = 0 To vVal.Max
+      If iInd Then Print ", ";
+      Print vVal[iInd];
+    Next
+    Print "]"
+  Endif
+  
+End

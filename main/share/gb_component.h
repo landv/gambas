@@ -44,7 +44,11 @@ typedef
 #define LIB_GAMBAS       "GB"
 
 #ifdef DONT_USE_LTDL
-#define LIB_PATTERN    "%s/%s." SHARED_LIBRARY_EXT
+ #ifdef OS_OPENBSD
+ #define LIB_PATTERN    "%s/%s." SHARED_LIBRARY_EXT ".0.0"
+ #else
+ #define LIB_PATTERN    "%s/%s." SHARED_LIBRARY_EXT
+ #endif
 #else
 #define LIB_PATTERN    "%s/%s.la"
 #endif

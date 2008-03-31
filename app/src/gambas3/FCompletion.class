@@ -41,6 +41,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dim iY As Integer
   Dim iLeft As Integer
   Dim iPos As Integer
+  Dim hCont As Container
 
   hEditor = GetEditor()
 
@@ -94,7 +95,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
 
   'PRINT "Open: $hEditor = "; $hEditor
 
-  If sMode = "<" OR sMode = "A" Then 
+  If sMode = "<" Or sMode = "A" Then 
     If FindItem(True) Then 
       Dec Application.Busy
       Return
@@ -108,7 +109,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   iX = hEditor.X + hEditor.CursorX - iLeft * hEditor.Font.Width("X")
 
   If sMode = "<" Then 'Key.Code = Key.Backspace THEN
-    iX = iX - hEditor.Font.Width(String.Mid$(hEditor.Lines[hEditor.Line].Text, hEditor.Column, 1))
+    iX = iX - hEditor.Font.Width(String.Mid$(hEditor.Lines[hEditor.Line], hEditor.Column, 1))
   Else
     iX = iX + hEditor.Font.Width(Key.Text)
   Endif
@@ -121,6 +122,14 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     iY = hEditor.Y + hEditor.CursorY - Me.Height
   Endif
 
+  hCont = hEditor.Parent
+  Do
+    If hCont Is Form Then Break
+    iX += hCont.X
+    iY += hCont.Y
+    hCont = hCont.Parent
+  Loop
+  
   Me.Move(iX, iY)
   Me.Show
   Me.Raise
@@ -151,7 +160,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   sBegin &= "*"
 
   For Each sClass In Project.GetClasses()
-    If sClass LIKE sBegin Then aClass.Add(sClass & " 1")
+    If sClass Like sBegin Then aClass.Add(sClass & " 1")
     'TRY lvwComp.Add(sClass, sClass)
   Next
 
@@ -159,11 +168,11 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   aLib.Add("gb", 0)
 
   For Each sLib In aLib
-    If NOT CComponent.All.Exist(sLib) Then Continue
+    If Not CComponent.All.Exist(sLib) Then Continue
     CComponent.All[sLib].Load
     For Each sClass In CComponent.All[sLib].ClassList
       If IsLetter(Left$(sClass)) Then
-        If sClass LIKE sBegin Then 
+        If sClass Like sBegin Then 
           If CComponent.Classes[sClass].Properties Then
             aClass.Add(sClass & " 2")
           Else
@@ -213,14 +222,14 @@ Public Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Bool
   lvwComp.Clear
 
   cSymbol = CComponent.GetClassSymbols(sClass)
-  If NOT cSymbol Then Return
+  If Not cSymbol Then Return
 
   If CComponent.IsAutoCreatable(sClass) Then bStatic = False
 
   For Each hSymbol In cSymbol
     If hSymbol.NotPublic <> bPrivate Then Continue
     If Left(hSymbol.Name) = "_" Then Continue
-    If hSymbol.Kind = "m" AND If InStr(hSymbol.Name, "_") Then Continue
+    If hSymbol.Kind = "m" And If InStr(hSymbol.Name, "_") Then Continue
     If hSymbol.Kind = ":" Then Continue
     If bStatic Then
       If UCase(hSymbol.Kind) <> hSymbol.Kind Then
@@ -248,7 +257,7 @@ Private Sub GetEvents(sCtrl As String) As String[]
   Dim aEvent As String[]
   
   hForm = Project.FindForm(GetClass())
-  If NOT hForm Then Return  
+  If Not hForm Then Return  
 
   If LCase(sCtrl) = "form" Then 
     Try aEvent = CComponent.Classes["Form"].Events
@@ -267,7 +276,7 @@ Private Sub AddEvents(aResult As String[], sCtrl As String)
   Dim aEvent As String[]
 
   aEvent = GetEvents(sCtrl)
-  If NOT aEvent Then Return
+  If Not aEvent Then Return
   
   For Each sName In aEvent
     aResult.Add(sCtrl & "_" & sName & " 4")
@@ -302,14 +311,14 @@ Private Sub FillWithIdent(sWord As String)
   sWord = UCase(sWord)
   
   For Each sCar In ["TRUE", "FALSE", "NULL", "LAST", "ME", "SUPER"]
-    If sCar LIKE (sWord & "*") Then 
+    If sCar Like (sWord & "*") Then 
       cKey[sCar] = True
       aResult.Add(sCar & " 0")
     Endif
   Next
 
   For Each sCar In System.Keywords
-    If sCar LIKE (sWord & "*") Then 
+    If sCar Like (sWord & "*") Then 
       If cKey.Exist(sCar) Then Continue
       cKey[sCar] = True
       If sCar = UCase(sCar) Then sCar &= " "
@@ -385,9 +394,9 @@ Private Sub FillWithIdent(sWord As String)
   cSymbol = CComponent.GetClassSymbols(GetClass())
   If cSymbol Then
     For Each hSymbol In cSymbol
-      If NOT hSymbol.NotPublic Then Continue
+      If Not hSymbol.NotPublic Then Continue
       sCar = hSymbol.Name
-      If NOT (sCar LIKE (sWord & "*")) Then Continue
+      If Not (sCar Like (sWord & "*")) Then Continue
       If cKey.Exist(sCar) Then Continue
       aResult.Add(sCar & " 3")
       cKey[sCar] = True
@@ -441,7 +450,7 @@ Public Function ManageKey() As Boolean
 
       Endif
 
-      If NOT lvwComp.Available Then lvwComp.MoveFirst
+      If Not lvwComp.Available Then lvwComp.MoveFirst
       If lvwComp.Available Then
         lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible
@@ -459,7 +468,7 @@ Public Function ManageKey() As Boolean
 
       Endif
 
-      If NOT lvwComp.Available Then lvwComp.MoveLast
+      If Not lvwComp.Available Then lvwComp.MoveLast
       If lvwComp.Available Then
         lvwComp.Item.Selected = True
         lvwComp.Item.EnsureVisible
@@ -544,7 +553,7 @@ Public Function ManageKey() As Boolean
           Endif
           $sText = $sText & Key.Text
           Return FindItem()
-        Else If InStr("([.!", Key.Text) > 0 AND InStr(". A<", $sMode) > 0 Then
+        Else If InStr("([.!", Key.Text) > 0 And InStr(". A<", $sMode) > 0 Then
           InsertItem
         Else
           Me.Hide
@@ -570,11 +579,11 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
 
   lvwComp.MoveFirst
   While lvwComp.Available
-    If UCase(lvwComp.Item.Text) LIKE sComp Then Break
+    If UCase(lvwComp.Item.Text) Like sComp Then Break
     lvwComp.MoveNext
   Wend
   
-  If NOT lvwComp.Available Then
+  If Not lvwComp.Available Then
     Me.Hide
     Return 
   Endif 
@@ -584,14 +593,14 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
   While lvwComp.Available
     With lvwComp.Item
       sText = Trim(.Text)
-      If NOT (UCase(sText) LIKE sComp) Then Break
-      If iLevel <= 2 AND If .Text = $sText Then
+      If Not (UCase(sText) Like sComp) Then Break
+      If iLevel <= 2 And If .Text = $sText Then
         sKey = .Key
         iLevel = 3
-      Else If iLevel <= 1 AND If UCase(sText) = UCase($sText) Then
+      Else If iLevel <= 1 And If UCase(sText) = UCase($sText) Then
         sKey = .Key
         iLevel = 2
-      Else If iLevel <= 0 AND If Left(sText, Len($sText)) = $sText Then 
+      Else If iLevel <= 0 And If Left(sText, Len($sText)) = $sText Then 
         sKey = .Key
         iLevel = 1
       Endif
@@ -604,8 +613,8 @@ Private Function FindItem(Optional bNoInsert As Boolean) As Boolean
   lvwComp.Item.Selected = True
   lvwComp.Item.EnsureVisible
   
-  If nComp = 1 AND iLevel = 3 Then
-    If NOT bNoInsert Then InsertItem(True)
+  If nComp = 1 And iLevel = 3 Then
+    If Not bNoInsert Then InsertItem(True)
     Return True
   Endif
   
@@ -617,8 +626,8 @@ Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
   Dim hEditor As Editor
 
   Try sText = lvwComp.Current.Text
-  If NOT lvwComp.Current.Selected Then Return
-  If NOT sText Then Return True
+  If Not lvwComp.Current.Selected Then Return
+  If Not sText Then Return True
 
   If bNoSpace Then
     If Right(sText) = " " Then sText = Left$(sText, -1)
@@ -672,7 +681,7 @@ Private Sub CompleteItem() As Boolean
   Next
 
   sText = Left$(sCurrent, iPos - 1)    
-  If Comp(sText, $sText, gb.Text) = 0 OR NOT sText Then 
+  If Comp(sText, $sText, gb.Text) = 0 Or Not sText Then 
     InsertItem
   Else  
     $sText = sText

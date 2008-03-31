@@ -83,7 +83,7 @@ static void init_drawing(GB_DRAW *d, QPainter *p, int w, int h, int dpi = 0)
 		#endif
 }
 
-static void begin(GB_DRAW *d)
+static int begin(GB_DRAW *d)
 {
 	void *device = d->device;
 	
@@ -101,6 +101,8 @@ static void begin(GB_DRAW *d)
     CDRAWING *drawing = (CDRAWING *)device;
     init_drawing(d, new QPainter(drawing->picture), drawing->picture->boundingRect().width(), drawing->picture->boundingRect().height());
   }
+  
+  return FALSE;
 }
 
 void DRAW_init()

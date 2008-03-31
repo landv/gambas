@@ -70,7 +70,7 @@ typedef
 		// Size of the GB_DRAW structure extra data
 		int size;
 		// Begins and terminates the drawing
-		void (*Begin)(GB_DRAW *d);
+		int (*Begin)(GB_DRAW *d);
 		void (*End)(GB_DRAW *d);
 		// Save / restore state
 		void (*Save)(GB_DRAW *d);

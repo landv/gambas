@@ -50,6 +50,9 @@ EXTERN Atom X11_atom_net_wm_state_stays_on_top;
 EXTERN Atom X11_atom_net_wm_state_skip_taskbar;
 EXTERN Atom X11_atom_net_wm_window_type;
 EXTERN Atom X11_atom_net_wm_desktop;
+
+EXTERN Window X11_root;
+EXTERN Display *X11_display;
 #endif
 
 typedef
@@ -85,6 +88,12 @@ void X11_window_set_desktop(Window window, bool visible, int desktop);
 int X11_window_get_desktop(Window window);
 int X11_get_current_desktop();
 char *X11_send_key(char *key, bool press);
+
+Atom X11_intern_atom(const char *name, bool create);
+char *X11_get_property(Window wid, Atom prop, Atom *type, int *format);
+Atom X11_get_property_type(Window wid, Atom prop, int *format);
+void X11_set_property(Window wid, Atom prop, Atom type, int format, void *data, int count);
+void X11_send_client_message(Window window, Atom message, char *data, int format, int count);
 
 #ifdef __cplusplus
 }
