@@ -10,5 +10,5 @@ gb_qt_kde_html_la_LIBADD = @QT_LIB@ @KDE_LIB@ -lkhtml -lkjs
 gb_qt_kde_html_la_LDFLAGS = -module @LD_FLAGS@
 
 gb_qt_kde_html_la_SOURCES = \
- main.h main.cpp moc_main.cpp \
- CWebBrowser.h moc_CWebBrowser.cpp CWebBrowser.cpp
+ main.h main_moc.cpp main.cpp \
+ CWebBrowser.h CWebBrowser_moc.cpp CWebBrowser.cpp

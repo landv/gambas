@@ -12,9 +12,9 @@ gb_qt_kde_la_LIBADD = @QT_LIB@ @KDE_LIB@
 gb_qt_kde_la_LDFLAGS = -module @LD_FLAGS@
 
 gb_qt_kde_la_SOURCES = \
- main.h main.cpp moc_main.cpp \
+ main.h main_moc.cpp main.cpp \
  CDialog.h CDialog.cpp \
  CApplication.h CApplication.cpp \
- CURLLabel.h moc_CURLLabel.cpp CURLLabel.cpp \
- CArrowButton.h moc_CArrowButton.cpp CArrowButton.cpp \
- CColorBox.h moc_CColorBox.cpp CColorBox.cpp
+ CURLLabel.h CURLLabel_moc.cpp CURLLabel.cpp \
+ CArrowButton.h CArrowButton_moc.cpp CArrowButton.cpp \
+ CColorBox.h CColorBox_moc.cpp CColorBox.cpp
