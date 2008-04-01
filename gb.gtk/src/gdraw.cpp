@@ -203,10 +203,8 @@ void gDraw::connect(gPicture *wid)
 	dr = wid->getPixmap();
 	drm = wid->getMask();
 
-	stl = gtk_widget_get_default_style();
-	g_object_ref(G_OBJECT(stl));
-	//gtk_style_new();
-	//gtk_style_attach(stl,(GdkWindow*)dr);
+	stl = gtk_style_copy(gt_get_style("GtkButton", GTK_TYPE_BUTTON));
+	stl = gtk_style_attach(stl, (GdkWindow*)dr);
 	
 	wid->invalidate();
 	initGC();

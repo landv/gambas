@@ -115,7 +115,7 @@ void gSplitter::updateVisibility()
 	}
 	
 	if (n >= (childCount() - 1))
-		refresh(); // Workaround frame drawing bug when the last one is hidden
+		refresh(); // Workaround frame drawing bug when the last one is shown or hidden
 	emit(SIGNAL(onResize));
 }
 
