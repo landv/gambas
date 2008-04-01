@@ -868,6 +868,7 @@ AC_DEFUN([GB_CHECK_XWINDOW],
       X_LIBS="$X_LIBS -lXext"
     fi
     X_LIBS="$X_PRE_LIBS $X_LIBS"
+    X_INC="-I$x_includes"
   else
     touch DISABLED
   fi
