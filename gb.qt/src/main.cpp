@@ -125,6 +125,10 @@ static GB_FUNCTION _application_keypress_func;
 static QWidget *_mouseGrabber = 0;
 static QWidget *_keyboardGrabber = 0;
 
+#ifndef NO_X_WINDOW
+static void (*_x11_event_filter)(XEvent *) = 0;
+#endif
+
 
 /***************************************************************************
 
@@ -344,14 +348,22 @@ bool MyApplication::notify(QObject *o, QEvent *e)
 }
 
 #ifndef NO_X_WINDOW
-// Workaround for input methods that void the key code of KeyRelease eventFilter
+
+static void x11_set_event_filter(void (*filter)(XEvent *))
+{
+	_x11_event_filter = filter;
+}
 
 bool MyApplication::x11EventFilter(XEvent *e)
 {
+	// Workaround for input methods that void the key code of KeyRelease eventFilter
 	if (e->type == XKeyPress)
 		MAIN_x11_last_key_code = e->xkey.keycode;
 	else if (e->type == XKeyRelease)
 		MAIN_x11_last_key_code = e->xkey.keycode;
+	
+	if (_x11_event_filter)
+		(*_x11_event_filter)(e);
 	
 	return false;
 }
@@ -894,6 +906,11 @@ int EXPORT GB_INFO(const char *key, void **value)
 	else if (!strcasecmp(key, "ROOT_WINDOW"))
 	{
 		*value = (void *)QPaintDevice::x11AppRootWindow();
+		return TRUE;
+	}
+	else if (!strcasecmp(key, "SET_EVENT_FILTER"))
+	{
+		*value = (void *)x11_set_event_filter;
 		return TRUE;
 	}
 	else

@@ -159,7 +159,7 @@ Private Sub RefreshEditor()
   Project.RefreshBreakpointPicture
   
   For Each hFile In Project.Files
-    If hFile IS FEditor OR hFile IS FTextEditor Then hFile.ReadConfig()
+    If hFile Is FEditor Or hFile Is FTextEditor Then hFile.ReadConfig()
   Next  
   
   FOutput.ReadConfig
@@ -264,7 +264,7 @@ Public Sub btnImport_Click()
   If Dialog.OpenFile() Then Return
   
   'Enhanced Dialog.OpenFile() is buggy 
-  If NOT Dialog.Path OR If IsDir(Dialog.Path) Then Return
+  If Not Dialog.Path Or If IsDir(Dialog.Path) Then Return
   
   Settings["/FOption/ThemePath"] = Dialog.Path 
   
@@ -501,7 +501,7 @@ Public Sub mnuBackground_Click()
 
   If FColorChooser.Run("&H" & Hex$(iColor, 6) & "&") Then Return
   
-  If FColorChooser.Color = "" OR If FColorChooser.Value = iDefault Then 
+  If FColorChooser.Color = "" Or If FColorChooser.Value = iDefault Then 
     hStyle.Background = Color.Default
   Else
     hStyle.Background = FColorChooser.Value

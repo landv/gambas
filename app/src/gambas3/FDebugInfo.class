@@ -10,6 +10,8 @@ Private Const TAB_BREAK As Integer = 4
 
 Public Sub Form_Open()
 
+  Settings.Read(splDebug)
+
   ReadConfig
 
   With cvwLocal
@@ -183,7 +185,7 @@ Public Sub AddLocal(sVar As String, sValue As String)
 End
 
 Public Function LocalExists(sExpr As String) As Boolean
-  If NOT sExpr Then Return
+  If Not sExpr Then Return
   
   Return cvwLocal.Exist(sExpr)
 
@@ -277,7 +279,7 @@ End
 
 Public Sub RefreshAllWatch()
 
-  If NOT cvwWatch.MoveFirst() Then
+  If Not cvwWatch.MoveFirst() Then
 
     Do
 
@@ -304,7 +306,7 @@ End
 
 Public Sub InstantWatch(sExpr As String, hCtrl As Control, X As Integer, Y As Integer)
   
-  If NOT sExpr Then Return
+  If Not sExpr Then Return
   Design.SetBalloon(hCtrl, X, Y)
   Design.Command("?I" & sExpr & "\t" & sExpr)
   
@@ -317,7 +319,7 @@ Public Sub cmbWatch_Activate()
   Dim sExpr As String
 
   sExpr = Trim(cmbWatch.Text)
-  If NOT sExpr Then Return
+  If Not sExpr Then Return
 
   AddWatch(sExpr)
 
@@ -471,7 +473,7 @@ End
 
 Public Sub Form_Close()
 
-  Settings.Write(splDebug, "splDebug")
+  Settings.Write(splDebug)
 
 End
 
@@ -526,7 +528,7 @@ Public Sub WriteWatchSettings()
   Project.Config.Clear(sFlag)
 
   Project.Config[sFlag &/ "Count"] = cvwWatch.Count
-  If NOT cvwWatch.MoveFirst() Then
+  If Not cvwWatch.MoveFirst() Then
 
     Do
       Inc iInd
@@ -576,12 +578,12 @@ Public Sub UpdateView()
       FOutput.Show
       'DEBUG FOutput.X;; FOutput.Y
       'Action["console"].Visible = TRUE
-      If NOT Project.Running Then FMain.ShowDebug(False)
+      If Not Project.Running Then FMain.ShowDebug(False)
     Endif
     'FOutput.Stacking = If(Project.Running, Window.Above, Window.Normal)
   Endif
   
-  tabDebug[TAB_CONSOLE].Visible = NOT bUndock
+  tabDebug[TAB_CONSOLE].Visible = Not bUndock
   tabDebug[TAB_LOCAL].Visible = Project.Running
   tabDebug[TAB_ME].Visible = Project.Running
   tabDebug[TAB_WATCH].Visible = Project.Running
@@ -597,8 +599,8 @@ Public Sub UpdateView()
     Endif
   Endif 
         
-  If NOT bUndock Then 
-    If NOT FOutput.Parent Then 
+  If Not bUndock Then 
+    If Not FOutput.Parent Then 
       bVisible = FOutput.Visible
       'DEBUG "Write: "; FOutput.X;; FOutput.Y
       Settings.Write(FOutput)
@@ -612,7 +614,7 @@ Public Sub UpdateView()
     FOutput.SetFocus
   Endif 
   
-  FMain.UpdateConsoleAction(NOT bUndock OR Project.Running)
+  FMain.UpdateConsoleAction(Not bUndock Or Project.Running)
   
 End
 

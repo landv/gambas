@@ -62,6 +62,12 @@ static PROPERTY_FORMAT _property_format[] = {
 };
 #endif
 
+/*BEGIN_METHOD_VOID(CDESKTOP_init)
+
+	X11_init();
+
+END_METHOD*/
+
 BEGIN_METHOD(CDESKTOP_find, GB_STRING title; GB_STRING klass; GB_STRING role)
 
 	Window *windows;
@@ -167,6 +173,15 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_POINTER id; GB_STRING name)
 	}
 	
 	value = X11_get_property((Window)VARG(id), prop, &type, &format);
+	if (!value)
+	{
+		GB.ReturnNull();
+		return;
+	}
+	
+	/*name = XGetAtomName(X11_display, type);
+	fprintf(stderr, "type = %s\n", name);
+	XFree(name);*/
 	
 	if (type == XA_ATOM)
 	{
@@ -209,12 +224,9 @@ END_METHOD
 
 BEGIN_METHOD(CDESKTOP_set_window_property, GB_POINTER id; GB_STRING name; GB_STRING type; GB_VARIANT value)
 
-	char *value;
 	Atom type;
 	Atom prop;
 	int format;
-	GB_ARRAY array;
-	int i;
 	int count;
 	void *data;
 	void *object;
@@ -253,20 +265,22 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_POINTER id; GB_STRING name; GB_STR
 				data = GB.Array.Get((GB_ARRAY)object, 0);
 				count = GB.Array.Count((GB_ARRAY)object);
 				
-				if (GB.Is(object, GB.FindClass("String[]")))
+				switch((int)GB.Array.Type(object))
 				{
-				 // TODO: convert String[] to Integer[] of atoms
+					case GB_T_BYTE:
+						format = 8;
+						break;
+						
+					case GB_T_SHORT:
+						format = 16;
+						break;
+						
+					case GB_T_INTEGER:
+						format = 32;
+						break;
 				}
-				else if (GB.Is(object, GB.FindClass("Byte[]")))
-					format = 8;
-				else if (GB.Is(object, GB.FindClass("Short[]")))
-					format = 16;
-				else if (GB.Is(object, GB.FindClass("Integer[]")))
-					format = 32;
 			}
-			
 			break;
-		
 	}
 	
 	if (format)
@@ -282,6 +296,19 @@ BEGIN_METHOD(CDESKTOP_intern_atom, GB_STRING atom; GB_BOOLEAN create)
 
 END_METHOD
 
+BEGIN_METHOD(CDESKTOP_get_atom_name, GB_INTEGER atom)
+
+	char *name;
+
+	if (X11_init())
+		return;
+		
+	name = XGetAtomName(X11_display, VARG(atom));
+	GB.ReturnNewZeroString(name);
+	XFree(name);
+
+END_METHOD
+
 BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data)
 
 	GB_ARRAY array;
@@ -289,6 +316,9 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data)
 	int count = 0;
 	int format = 0;
 	
+	if (X11_init())
+		return;
+		
 	if (!MISSING(data) && VARG(data))
 	{
 		array = VARG(data);
@@ -309,10 +339,10 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data)
 				format = 32;
 				break;
 				
-			case GB_T_STRING:
+			/*case GB_T_STRING:
 				format = 32;
 				// TODO: convert strings to Atom
-				break;
+				break;*/
 				
 			default:
 				return;
@@ -326,21 +356,75 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data)
 
 END_METHOD
 
-/*GB_DESC CDesktopWindowDesc[] =
-{
-  GB_DECLARE("._Desktop.Window", 0), GB_VIRTUAL_CLASS(),
-  
-  GB_STATIC_METHOD("GetProperty", "v", CDESKTOPWINDOW_get_property, "(Property)s(Type)i"),
-  GB_STATIC_METHOD("SetProperty", NULL, CDESKTOPWINDOW_set_property, "(Property)s(Type)i(Value)v"),
-  
-  GB_END_DECLARE
-};*/
+BEGIN_PROPERTY(CDESKTOP_event_filter)
+
+	if (X11_init())
+		return;
+		
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(X11_event_filter_enabled);
+	else
+		X11_enable_event_filter(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_METHOD(CDESKTOP_watch_window, GB_INTEGER window; GB_BOOLEAN watch)
+
+	XWindowAttributes attr;
+	int mask = PropertyChangeMask | StructureNotifyMask;
+	
+	if (X11_init())
+		return;
+		
+	XGetWindowAttributes(X11_display, VARG(window), &attr);
+
+	if (VPROP(GB_BOOLEAN))
+		XSelectInput(X11_display, VARG(window), attr.your_event_mask | mask);
+	else
+		XSelectInput(X11_display, VARG(window), attr.your_event_mask & ~mask);
+
+END_METHOD
+
+BEGIN_METHOD(CDESKTOP_get_window_geometry, GB_INTEGER window)
+
+	GB_ARRAY array;
+	int *data;
+	Window root;
+	uint ignore;
+
+	if (X11_init())
+		return;
+		
+	GB.Array.New(&array, GB_T_INTEGER, 4);
+	data = (int *)GB.Array.Get(array, 0);
+	
+	XGetGeometry(X11_display, VARG(window), &root, &data[0], &data[1], (uint *)&data[2], (uint *)&data[3], &ignore, &ignore);
+	GB.ReturnObject(array);
+
+END_METHOD
+
+BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data)
+
+	GB_IMAGE image;
+	GB_ARRAY array;
+	int *data;
+	
+	array = VARG(data);
+	if (GB.CheckObject(array))
+		return;
+	
+	data = (int *)GB.Array.Get(array, 0);
+	
+	GB.Image.Create(&image, &data[2], data[0], data[1], GB_IMAGE_BGRA);
+	GB.ReturnObject(image);
+
+END_METHOD
 
 GB_DESC CDesktopDesc[] =
 {
   GB_DECLARE("_Desktop", 0), GB_VIRTUAL_CLASS(),
   
-  //GB_STATIC_METHOD("_init", NULL, CDESKTOP_init, NULL),
+  //GB_STATIC_METHOD("Init", NULL, CDESKTOP_init, NULL),
   
 	GB_STATIC_METHOD("FindWindow", "Integer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
 	GB_STATIC_METHOD("SendKey", NULL, CDESKTOP_sendkey, "(Key)s(Press)b"),
@@ -349,9 +433,14 @@ GB_DESC CDesktopDesc[] =
 	//GB_STATIC_METHOD("GetWindowPropertyType", "s", CDESKTOP_get_window_property_type, "(Window)i(Property)s"),
 	GB_STATIC_METHOD("SetWindowProperty", NULL, CDESKTOP_set_window_property, "(Window)i(Property)s(Type)s(Value)v"),
 	GB_STATIC_METHOD("InternAtom", "i", CDESKTOP_intern_atom, "(Atom)s[(Create)b]"),
+	GB_STATIC_METHOD("GetAtomName", "s", CDESKTOP_get_atom_name, "(Atom)i"),
 	GB_STATIC_METHOD("SendClientMessageToRootWindow", NULL, CDESKTOP_send_client_message, "(Message)s[(Data)Array;]"),
   //GB_STATIC_PROPERTY_SELF("Root", "._Desktop.Window"),
   //GB_STATIC_METHOD("_get", "._Desktop.Window"),
+  GB_STATIC_PROPERTY("EventFilter", "b", CDESKTOP_event_filter),
+  GB_STATIC_METHOD("WatchWindow", NULL, CDESKTOP_watch_window, "(Window)i(Watch)b"),
+  GB_STATIC_METHOD("GetWindowGeometry", "Integer[]", CDESKTOP_get_window_geometry, "(Window)i"),
+  GB_STATIC_METHOD("MakeIcon", "Image", CDESKTOP_make_icon, "(Data)Array;"),
   
   GB_END_DECLARE
 };

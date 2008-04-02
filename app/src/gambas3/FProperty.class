@@ -91,21 +91,21 @@ Public Sub RefreshAll()
 '   DIM hClass AS CClassInfo
 
   Try $hForm = Project.ActiveForm
-  If Error OR If NOT $hForm Then
+  If Error Or If Not $hForm Then
     HideAll
     Return 
   Endif 
   'IF NOT $hForm THEN RETURN 'GOTO _HIDE
 
   Try cSelection = $hForm.Selection
-  If NOT cSelection Then Return
+  If Not cSelection Then Return
 
   $cIndex.Clear
   $bMany = False
   HideProperty
   $hObject = Null
 
-  If NOT cSelection Then Goto _HIDE
+  If Not cSelection Then Goto _HIDE
 
   If cSelection.Count = 0 Then
     cSelection = New Collection
@@ -133,7 +133,7 @@ Public Sub RefreshAll()
 
   'cProp = CControl.PropertiesInOrder[sClass]
   Try aProp = CComponent.Classes[sClass].PropertyList
-  If NOT aProp Then
+  If Not aProp Then
     Print "FProperty.RefreshAll: Cannot get property list of "; sClass
     aProp = New String[]
   Else
@@ -241,7 +241,7 @@ Public Sub RefreshAll()
   lblName.Show
   'VSplit1.Show
   
-  If NOT $bMany Then
+  If Not $bMany Then
     FFormStack.Select($hObject.Name)
   Endif 
   
@@ -270,7 +270,7 @@ Public Sub RefreshOne(hCtrl As CControl, sProp As String)
 
   Dim iRow As Integer
 
-  If NOT $bMany Then
+  If Not $bMany Then
     If $hObject <> hCtrl Then Return
   Endif
 
@@ -282,7 +282,7 @@ Public Sub RefreshOne(hCtrl As CControl, sProp As String)
 
   Else
 
-    If NOT $cIndex.Exist(sProp) Then Return
+    If Not $cIndex.Exist(sProp) Then Return
 
     iRow = $cIndex[sProp]
     grdProperty[iRow, 1].Text = GetProperty(sProp)
@@ -312,7 +312,7 @@ Public Function SaveProperty() As Boolean
   Dim hCtrl As CControl
   Dim sMsg As String
 
-  If NOT $hForm Then Return
+  If Not $hForm Then Return
   If $hForm.ReadOnly Then Return
   If IsNull($hEditor) Then Return False
 
@@ -362,7 +362,7 @@ Public Function SaveProperty() As Boolean
 
     Case "Color"
 
-      If NOT IsNull(Val(vVal)) Then vVal = Val(vVal)
+      If Not IsNull(Val(vVal)) Then vVal = Val(vVal)
 
     Case "s", "Font", "Picture", "Constant", "List", "Path"
     
@@ -467,7 +467,7 @@ Private Sub CancelProperty()
   $sOldVal = grdProperty[$iLast, 1].Text
   'DEBUG "$sOldVal =";; $sOldVal
   If $hEditor.Text <> $sOldVal Then
-    If $hEditor IS SpinBox Then 
+    If $hEditor Is SpinBox Then 
       Try $hEditor.Value = Val($sOldVal)
     Else
       $hEditor.Text = $sOldVal
@@ -493,7 +493,7 @@ Private Sub ShowProperty()
   Dim sHelp As String
 
   If Project.Running Then Return
-  If NOT $hForm Then Return 
+  If Not $hForm Then Return 
   If $hForm.ReadOnly Then Return
 
   If grdProperty.Row = 0 Then Return
@@ -506,7 +506,7 @@ Private Sub ShowProperty()
     sProp = "Name"
     sType = "Name"
 
-    If NOT $bDisableIntegratedHelp Then 
+    If Not $bDisableIntegratedHelp Then 
       sHelp = ("The name of the control.")
     Endif 
     
@@ -517,7 +517,7 @@ Private Sub ShowProperty()
     sProp = CPropertyInfo.EVENT_NAME
     sType = "Group"
 
-    If NOT $bDisableIntegratedHelp Then 
+    If Not $bDisableIntegratedHelp Then 
       sHelp = ("The event group that the control belongs to.")
     Endif 
 
@@ -528,7 +528,7 @@ Private Sub ShowProperty()
     sType = hProp.Type
     sOption = hProp.Argument
 
-    If NOT $bDisableIntegratedHelp Then 
+    If Not $bDisableIntegratedHelp Then 
       
       If hProp.Name = CPropertyInfo.SCALE_NAME Then
         sHelp = ("If the form and controls dimensions must follow the size of the default font.")
@@ -697,8 +697,8 @@ End
 Public Sub txtProperty_KeyPress()
 
   If txtProperty.ReadOnly Then
-    If $sType = "Font" OR $sType = "Picture" OR $sType = "String[]" OR $sType = "Path" OR $sType = "Color" Then
-      If Key.Code = Key.Delete OR Key.Code = Key.Backspace Then
+    If $sType = "Font" Or $sType = "Picture" Or $sType = "String[]" Or $sType = "Path" Or $sType = "Color" Then
+      If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
 
         txtProperty.Text = ""
         SaveProperty
@@ -770,7 +770,7 @@ Public Sub btnProperty_Click()
       'ENDIF
 
       sFont = FFontChooser.Run(sFont, $sOption = "Fixed")
-      If NOT sFont Then Goto _EXIT
+      If Not sFont Then Goto _EXIT
 
       $hEditor.Text = GetFont(sFont)
 
@@ -787,7 +787,7 @@ Public Sub btnProperty_Click()
     Case "Picture"
 
       sDest = FSelectIcon.Run($sOldVal) 'GetPicture()
-      If NOT sDest Then Goto _EXIT
+      If Not sDest Then Goto _EXIT
       $hEditor.Text = sDest
 
     Case "Path"
@@ -810,7 +810,7 @@ Public Sub grdProperty_DblClick()
 
   If cmbProperty.Visible Then
     If cmbProperty.ReadOnly Then
-      cmbProperty.Index = (cmbProperty.Index + 1) MOD cmbProperty.Count
+      cmbProperty.Index = (cmbProperty.Index + 1) Mod cmbProperty.Count
     Endif
   Else If btnProperty.Visible Then
     btnProperty_Click
@@ -825,7 +825,7 @@ Private Function GetProperty(sProp As String) As String
   Dim hCtrl As CControl
   Dim bFirst As Boolean
 
-  If NOT $bMany Then Return $hObject.GetPropertyString(sProp)
+  If Not $bMany Then Return $hObject.GetPropertyString(sProp)
 
   For Each hCtrl In $hForm.Selection
 
@@ -888,7 +888,7 @@ End
 
 Public Sub CheckIntegratedHelpSetting()
   
-  $bDisableIntegratedHelp = Settings["/PropertyHelp", False]
+  $bDisableIntegratedHelp = Not Settings["/PropertyHelp", True]
   If $bDisableIntegratedHelp Then 
     lblHelp.Text = ""
     spnHelp.Hide
@@ -923,10 +923,10 @@ Private Sub UpdateLabel()
 
   Dim hObject As CControl = $hForm.Master
   
-  If NOT hObject Then hObject = $hForm.Control[$hForm.Name]
+  If Not hObject Then hObject = $hForm.Control[$hForm.Name]
   lblName.Text = "<b>" & hObject.Name & "</b> " & hObject.Kind
   
-  If NOT $bDisableIntegratedHelp Then 
+  If Not $bDisableIntegratedHelp Then 
     lblHelp.Text = ""
   Endif 
 

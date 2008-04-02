@@ -1,0 +1,20 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,64,46)
+  Text = ("")
+  Icon = Picture["icon:/64/bookmark"]
+  Sticky = True
+  Arrangement = Arrange.Vertical
+  { Button1 Button
+    MoveScaled(4,2,16,4)
+    Text = ("Go")
+  }
+  { ScrollView1 ScrollView
+    MoveScaled(3,7,49,31)
+    Expand = True
+    Arrangement = Arrange.Row
+    Spacing = 2
+    Padding = 2
+  }
+}

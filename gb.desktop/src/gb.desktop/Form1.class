@@ -1,0 +1,41 @@
+' Gambas class file
+
+Private _NET_CLIENT_LIST As Integer
+Private _NET_WM_ICON As Integer
+
+Public Sub Button1_Click()
+
+  Dim aWindow As Integer[]
+  Dim hWindow As Integer
+  Dim aIcon As Integer[]
+  Dim hImage As Image
+  Dim hPictureBox As PictureBox
+  Dim iCurrentDesktop As Integer
+  Dim iDesktop As Integer
+  
+  iCurrentDesktop = _Desktop.GetWindowProperty(_Desktop.RootWindow, "_NET_CURRENT_DESKTOP")[0]
+
+  For Each hPictureBox In ScrollView1.Children
+    hPictureBox.Delete
+  Next
+
+  _NET_CLIENT_LIST = _Desktop.InternAtom("_NET_CLIENT_LIST")  
+  _NET_WM_ICON = _Desktop.InternAtom("_NET_WM_ICON")  
+  aWindow = _Desktop.GetWindowProperty(_Desktop.RootWindow, _NET_CLIENT_LIST)
+  For Each hWindow In aWindow
+    iDesktop = _Desktop.GetWindowProperty(hWindow, "_NET_WM_DESKTOP")[0]
+    If iDesktop <> iCurrentDesktop And If iDesktop >= 0 Then Continue
+    aIcon = _Desktop.GetWindowProperty(hWindow, "_NET_WM_ICON")
+    hPictureBox = New PictureBox(ScrollView1)
+    hPictureBox.Border = Border.Plain
+    If aIcon Then
+      hImage = _Desktop.MakeIcon(aIcon) 
+      hPictureBox.Picture = hImage.Picture
+      hPictureBox.Resize(hImage.W, hImage.H)
+    Else
+      hPictureBox.Resize(8, 8)
+    Endif
+  Next
+
+
+End

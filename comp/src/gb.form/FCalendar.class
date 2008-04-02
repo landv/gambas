@@ -1,19 +1,19 @@
 ' Gambas class file
 
-PRIVATE $dDate AS Date
-PRIVATE $dStart AS Date
-PRIVATE $dMonth AS Date
-PRIVATE $dLast AS Date
-PRIVATE $iDisabledColor AS Integer
-PRIVATE $cDateColor AS NEW Collection
+Private $dDate As Date
+Private $dStart As Date
+Private $dMonth As Date
+Private $dLast As Date
+Private $iDisabledColor As Integer
+Private $cDateColor As New Collection
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  DIM iMonth AS Integer
+  Dim iMonth As Integer
   
-  FOR iMonth = 1 TO 12
+  For iMonth = 1 To 12
     cmbMonth.Add(DConv(Format(Date(1972, iMonth, 1), "mmmm")))
-  NEXT 
+  Next 
 
   $dDate = Now  
   SetDate()
@@ -22,56 +22,56 @@ PUBLIC SUB _new()
   
   UpdateFont
   
-END
+End
 
-PRIVATE SUB GetDisabledColor() AS Integer
+Private Sub GetDisabledColor() As Integer
 
-  DIM H, S, V AS Integer
+  Dim H, S, V As Integer
   
   H = Color[Color.Foreground].Hue
   S = 0 'Color[Color.Foreground].Saturation
   V = Color[Color.Foreground].Value
   
-  IF V < 128 THEN
+  If V < 128 Then
     V = 255 - (255 - Color[Color.Foreground].Value) / 4
-  ELSE 
+  Else 
     V /= 4
-  ENDIF 
+  Endif 
   
-  RETURN Color.HSV(H, S, V)
+  Return Color.HSV(H, S, V)
 
-END
+End
 
 
 
-PRIVATE SUB GetParent() AS DateChooser
+Private Sub GetParent() As DateChooser
   
-  RETURN ME.Parent
+  Return Me.Parent
   
-END
+End
 
 
-PRIVATE SUB SetDate(OPTIONAL iYear AS Integer, OPTIONAL iMonth AS Integer, OPTIONAL iDay AS Integer)
+Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optional iDay As Integer)
   
-  DIM dMonth AS Date
-  DIM dDate AS Date
+  Dim dMonth As Date
+  Dim dDate As Date
 
-  IF iYear <= 0 THEN iYear = Year($dDate)
-  IF iMonth <= 0 THEN iMonth = Month($dDate)
-  IF iDay <= 0 THEN iDay = Day($dDate)
+  If iYear <= 0 Then iYear = Year($dDate)
+  If iMonth <= 0 Then iMonth = Month($dDate)
+  If iDay <= 0 Then iDay = Day($dDate)
   
-  DO  
-    TRY dDate = Date(iYear, iMonth, iDay)
-    IF NOT ERROR THEN BREAK 
-    DEC iDay
-    IF iDay < 29 THEN RETURN
-  LOOP
+  Do  
+    Try dDate = Date(iYear, iMonth, iDay)
+    If Not Error Then Break 
+    Dec iDay
+    If iDay < 29 Then Return
+  Loop
 
   $dDate = dDate
   
   dMonth = Date(Year(dDate), Month(dDate), 1)
   
-  IF dMonth <> $dMonth THEN
+  If dMonth <> $dMonth Then
   
     $dMonth = dMonth
     
@@ -79,43 +79,43 @@ PRIVATE SUB SetDate(OPTIONAL iYear AS Integer, OPTIONAL iMonth AS Integer, OPTIO
     txtYear.Value = Year($dMonth)
     
     iDay = WeekDay($dMonth) - 1
-    IF iDay < 1 THEN iDay += 7
+    If iDay < 1 Then iDay += 7
     $dStart = $dMonth - iDay
     
-  ENDIF
+  Endif
     
   dwgMonth.Refresh
   
-  IF $dDate <> $dLast THEN 
+  If $dDate <> $dLast Then 
     $dLast = $dDate
     GetParent()._Change    
-  ENDIF
+  Endif
   
-END
+End
 
 
-PUBLIC SUB SetValue(dDate AS Date)
+Public Sub SetValue(dDate As Date)
   
   SetDate(Year(dDate), Month(dDate), Day(dDate))
   
-END
+End
 
-PUBLIC SUB GetValue() AS Date
+Public Sub GetValue() As Date
   
-  RETURN Date($dDate)
+  Return Date($dDate)
   
-END
+End
 
 
-PUBLIC SUB dwgMonth_Draw()
+Public Sub dwgMonth_Draw()
 
-  DIM I, J AS Integer
-  DIM X, Y, W, H AS Integer
-  DIM XD, YD AS Integer
-  DIM dDate AS Date
-  DIM iForeground AS Integer
-  DIM iBackground AS Integer
-  DIM sKey AS String
+  Dim I, J As Integer
+  Dim X, Y, W, H As Integer
+  Dim XD, YD As Integer
+  Dim dDate As Date
+  Dim iForeground As Integer
+  Dim iBackground As Integer
+  Dim sKey As String
   
   iForeground = dwgMonth.Foreground 'Draw.Foreground
   iBackground = dwgMonth.Background 'Draw.Background
@@ -123,7 +123,7 @@ PUBLIC SUB dwgMonth_Draw()
   W = dwgMonth.ClientW / 7
   H = dwgMonth.ClientH / 7
   
-  IF W = 0 OR H = 0 THEN RETURN
+  If W = 0 Or H = 0 Then Return
   
   XD = 0 '(Draw.W - W * 7) / 2
   YD = dwgMonth.ClientH - H * 6
@@ -136,24 +136,24 @@ PUBLIC SUB dwgMonth_Draw()
   Draw.Font = dwgMonth.Font
   Draw.Font.Size = Draw.Font.Size * H / Draw.Font.Height("a") * 0.7
   'DEBUG dwgMonth.Font.Size;; Draw.Font.Size
-  Draw.Font.Bold = TRUE
+  Draw.Font.Bold = True
   
   X = XD
   Y = 0
-  FOR I = 0 TO 4
+  For I = 0 To 4
     Draw.Rect(X, Y, W, YD)
     Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
     X += W
-  NEXT  
+  Next  
   
   Draw.FillColor = iBackground
   Draw.Foreground = Color.SelectedBackground
 
-  FOR I = 5 TO 6
+  For I = 5 To 6
     Draw.Rect(X, Y, W, YD)
     Draw.Text(Format(CDate($dStart + I), "ddd"), X, Y, W, YD, Align.Center)
     X += W
-  NEXT
+  Next
 
   Draw.LineStyle = Line.Solid
   Draw.Foreground = iForeground
@@ -162,30 +162,30 @@ PUBLIC SUB dwgMonth_Draw()
   Draw.LineStyle = Line.None
   dDate = $dStart
   Y = YD
-  FOR J = 0 TO 5
+  For J = 0 To 5
     X = XD
-    FOR I = 0 TO 6
+    For I = 0 To 6
 
-      IF CInt(dDate) = CInt($dDate) THEN
+      If CInt(dDate) = CInt($dDate) Then
         Draw.FillColor = Color.SelectedBackground
         Draw.Foreground = Color.SelectedForeground
-      ELSE 
-        IF Month(dDate) <> Month($dMonth) THEN 
+      Else 
+        If Month(dDate) <> Month($dMonth) Then 
           Draw.FillColor = iBackground
           Draw.Foreground = $iDisabledColor
-        ELSE
+        Else
           Draw.FillColor = iBackground
           Draw.Foreground = iForeground
-        ENDIF
+        Endif
         sKey = CStr(Date(dDate))
-        IF $cDateColor.Exist(sKey) THEN 
-          IF Draw.Foreground = $iDisabledColor THEN 
+        If $cDateColor.Exist(sKey) Then 
+          If Draw.Foreground = $iDisabledColor Then 
             Draw.FillColor = Color.Medium(Draw.Foreground, $cDateColor[sKey])
-          ELSE 
+          Else 
             Draw.FillColor = $cDateColor[sKey]
-          ENDIF
-        ENDIF
-      ENDIF
+          Endif
+        Endif
+      Endif
 
       Draw.Rect(X + 1, Y + 1, W - 2, H - 2)
 
@@ -193,141 +193,144 @@ PUBLIC SUB dwgMonth_Draw()
 
       Draw.Text(Day(dDate), X, Y, W, H, Align.Center)
       
-      IF CInt(Now) = CInt(dDate) THEN 
+      If CInt(Now) = CInt(dDate) Then 
         Draw.LineStyle = Line.Solid
         Draw.FillStyle = Fill.None
         Draw.Foreground = iForeground
         Draw.Rect(X, Y, W, H)
         Draw.FillStyle = Fill.Solid
         Draw.LineStyle = Line.None
-      ENDIF
+      Endif
 
       X += W
-      INC dDate
+      Inc dDate
       
-    NEXT 
+    Next 
     Y += H
-  NEXT
+  Next
 
-END
+End
 
-PUBLIC SUB cmbMonth_Click()
+Public Sub cmbMonth_Click()
 
   SetDate(0, cmbMonth.Index + 1)
 
-END
+End
 
-PUBLIC SUB btnPrevMonth_Click()
+Public Sub btnPrevMonth_Click()
 
-  IF Month($dMonth) = 1 THEN 
+  If Month($dMonth) = 1 Then 
     SetDate(Year($dMonth) - 1, 12)
-  ELSE 
+  Else 
     SetDate(0, Month($dMonth) - 1)
-  ENDIF  
+  Endif  
 
-END
+End
 
-PUBLIC SUB btnNextMonth_Click()
+Public Sub btnNextMonth_Click()
 
-  IF Month($dMonth) = 12 THEN 
+  If Month($dMonth) = 12 Then 
     SetDate(Year($dMonth) + 1, 1)
-  ELSE 
+  Else 
     SetDate(0, Month($dMonth) + 1)
-  ENDIF  
+  Endif  
 
-END
+End
 
-PUBLIC SUB txtYear_Change()
+Public Sub txtYear_Change()
 
   SetDate(txtYear.Value)
 
-END
+End
 
-PUBLIC SUB btnPrevYear_Click()
+Public Sub btnPrevYear_Click()
 
   SetDate(Year($dMonth) - 1)
 
-END
+End
 
-PUBLIC SUB btnNextYear_Click()
+Public Sub btnNextYear_Click()
 
   SetDate(Year($dMonth) + 1)
 
-END
+End
 
-PUBLIC SUB dwgMonth_KeyPress()
+Public Sub dwgMonth_KeyPress()
 
-  SELECT CASE Key.Code
+  Select Case Key.Code
   
-    CASE Key.Left
-      DEC $dDate
+    Case Key.Left
+      Dec $dDate
       SetDate
   
-    CASE Key.Right
-      INC $dDate
+    Case Key.Right
+      Inc $dDate
       SetDate
   
-    CASE Key.Up
+    Case Key.Up
       $dDate -= 7
       SetDate
   
-    CASE Key.Down
+    Case Key.Down
       $dDate += 7
       SetDate
+      
+    Case Key.Space
+      dwgMonth_DblClick
   
-  END SELECT   
+  End Select   
 
-END
+End
 
-PUBLIC SUB dwgMonth_MouseDown()
+Public Sub dwgMonth_MouseDown()
 
-  DIM W, H AS Integer
-  DIM XD, YD AS Integer
+  Dim W, H As Integer
+  Dim XD, YD As Integer
   
   W = dwgMonth.ClientW / 7
   H = dwgMonth.ClientH / 7
   
-  IF W = 0 OR H = 0 THEN RETURN
+  If W = 0 Or H = 0 Then Return
   
   XD = 0 '(Draw.W - W * 7) / 2
   YD = dwgMonth.ClientH - H * 6
 
-  IF Mouse.Y < YD THEN RETURN 
+  If Mouse.Y < YD Then Return 
   
   $dDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
   SetDate
 
-END
+End
 
-PUBLIC SUB btnReload_Click()
+Public Sub btnReload_Click()
 
   $dDate = Now
   SetDate  
 
-END
+End
 
-PUBLIC SUB dwgMonth_DblClick()
+Public Sub dwgMonth_DblClick()
 
   GetParent()._Activate
 
-END
+End
 
-PUBLIC SUB UpdateFont()
+Public Sub UpdateFont()
 
   cmbMonth.Height = Desktop.Scale * 3
   'IF panToolbar.H <> cmbMonth.H THEN DEBUG panToolbar.H;; "->";; cmbMonth.H
   panToolbar.H = cmbMonth.Height
   
-END
+End
 
-PUBLIC SUB SetDateColor(dDate AS Date, iColor AS Integer)
+Public Sub SetDateColor(dDate As Date, iColor As Integer)
   
-  DIM sKey AS String = CStr(Date(dDate))
+  Dim sKey As String = CStr(Date(dDate))
   
-  IF iColor = Color.Default THEN 
+  If iColor = Color.Default Then 
     $cDateColor.Remove(sKey)
-  ELSE 
+  Else 
     $cDateColor[sKey] = iColor
-  ENDIF
+  Endif
   
-END
+End

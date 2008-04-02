@@ -53,6 +53,8 @@ EXTERN Atom X11_atom_net_wm_desktop;
 
 EXTERN Window X11_root;
 EXTERN Display *X11_display;
+EXTERN bool X11_ready;
+EXTERN bool X11_event_filter_enabled;
 #endif
 
 typedef
@@ -63,7 +65,8 @@ typedef
 		}
 	X11_WINDOW_INFO;
 
-bool X11_init();
+bool X11_do_init();
+#define X11_init() (!X11_ready && X11_do_init())
 void X11_exit();
 void X11_sync(void);
 
@@ -94,6 +97,8 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format);
 Atom X11_get_property_type(Window wid, Atom prop, int *format);
 void X11_set_property(Window wid, Atom prop, Atom type, int format, void *data, int count);
 void X11_send_client_message(Window window, Atom message, char *data, int format, int count);
+void X11_event_filter(XEvent *e);
+void X11_enable_event_filter(bool enable);
 
 #ifdef __cplusplus
 }

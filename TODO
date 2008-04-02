@@ -10,7 +10,7 @@ INTERPRETER
 - A stack that can grow dynamically.
 - A special syntax to make variable writable once only (for controls variables).
 - Add global parameters for each component. Or no, a global configuration repository, to
-  tell, for example, which sokcet the mysql component must use...
+  tell, for example, which socket the mysql component must use...
 - Make objects printable, with a "_print" hidden method or something else.
 - Make objects writable and readable to streams.
 - Perl regexp with the MATCH operator.
@@ -31,6 +31,7 @@ INTERPRETER
 - Callback support
 - Sorting two or more arrays at the same time.
 - A special method named _attach, to be warned when the parent object changes.
+- A ConstCopy() function for arrays, and const arrays.
 
 DEVELOPMENT ENVIRONMENT
 

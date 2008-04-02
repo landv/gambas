@@ -595,10 +595,12 @@ typedef
 
 typedef
   struct {
-    void *_reserved1;
-    void *_reserved2;
+    void *object;
+    void *desc;
     }
   GB_FUNCTION;
+
+#define GB_FUNCTION_IS_VALID(_func) ((_func)->desc)
 
 
 /* Opaque type of a Gambas Array */

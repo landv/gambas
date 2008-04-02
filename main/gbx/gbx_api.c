@@ -743,7 +743,7 @@ GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
   GB_API_FUNCTION *func = (GB_API_FUNCTION *)_func;
   bool stop_event;
 
-	if (!func->desc)
+	if (!func || !func->desc)
 		GB_Error("Unknown function call");
 	else
 	{

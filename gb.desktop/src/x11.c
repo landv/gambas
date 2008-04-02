@@ -47,12 +47,13 @@ Atom X11_atom_net_wm_window_type_utility;
 Atom X11_atom_net_wm_desktop;
 Atom X11_atom_net_current_desktop;
 
-static bool _init = FALSE;
+bool X11_ready = FALSE;
 
 Display *X11_display = NULL;
 #define _display X11_display
 Window X11_root = 0;
 #define _root X11_root
+bool X11_event_filter_enabled = FALSE;
 
 static bool _atom_init = FALSE;
 
@@ -77,6 +78,9 @@ static X11_PROPERTY _window_prop;
 static X11_PROPERTY _window_save[2];
 
 static char *_property_value = NULL;
+
+static GB_FUNCTION _desktop_change_func;
+static GB_FUNCTION _desktop_window_func;
 
 static void init_atoms()
 {
@@ -247,11 +251,11 @@ static void clear_window_state(Atom prop)
 }
 
 
-bool X11_init()
+bool X11_do_init()
 {
 	int event_base, error_base, major_version, minor_version;
 
-	if (_init)
+	if (X11_ready)
 		return FALSE;
 		
 	GB.GetComponentInfo("DISPLAY", POINTER(&_display));
@@ -261,9 +265,9 @@ bool X11_init()
   fprintf(stderr, "_display = %p\n", _display);
   _root = DefaultRootWindow(_display);*/
   
-  _init = _display != NULL;
+  X11_ready = _display != NULL;
   
-  if (!_init)
+  if (!X11_ready)
   {
   	fprintf(stderr, "WARNING: X11_init() has failed\n");
   	return TRUE;
@@ -290,7 +294,6 @@ void X11_send_client_message(Window window, Atom message, char *data, int format
 {
   XEvent e;
   int mask = (SubstructureRedirectMask | SubstructureNotifyMask);
-  int i;
 
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = message;
@@ -692,4 +695,42 @@ char *X11_send_key(char *key, bool press)
 	usleep(1000);
 	
 	return NULL;
+}
+
+void X11_enable_event_filter(bool enable)
+{
+	void (*set_event_filter)(void *) = NULL;
+	
+	if (enable)
+	{
+		GB_CLASS startup = GB.FindClass(GB.Application.Startup());
+		
+		GB.GetFunction(&_desktop_change_func, startup, "Desktop_Change", "ii", "");
+		GB.GetFunction(&_desktop_window_func, startup, "Desktop_Window", "iiiii", "");
+	}
+	
+	X11_event_filter_enabled = enable;
+	
+	GB.GetComponentInfo("SET_EVENT_FILTER", POINTER(&set_event_filter));
+	if (set_event_filter)
+		(*set_event_filter)(enable ? X11_event_filter : 0);
+}
+
+void X11_event_filter(XEvent *e)
+{
+	if (e->type == PropertyNotify && GB_FUNCTION_IS_VALID(&_desktop_change_func))
+	{
+		GB.Push(2, GB_T_INTEGER, e->xany.window, GB_T_INTEGER, e->xproperty.atom);
+		GB.Call(&_desktop_change_func, 2, FALSE);
+	}
+	else if (e->type == ConfigureNotify && GB_FUNCTION_IS_VALID(&_desktop_window_func))
+	{
+		GB.Push(5, GB_T_INTEGER, e->xany.window,
+			GB_T_INTEGER, e->xconfigure.x,
+			GB_T_INTEGER, e->xconfigure.y,
+			GB_T_INTEGER, e->xconfigure.width,
+			GB_T_INTEGER, e->xconfigure.height);
+			
+		GB.Call(&_desktop_window_func, 5, FALSE);
+	}
 }
