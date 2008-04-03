@@ -295,9 +295,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: FMain.class:2054
+#: FMain.class:1874
 msgid "&?"
 msgstr "&?"
+
+#: FInfo.class:9
+msgid "&1: &2"
+msgstr "&1: &2"
 
 #: Package.module:59
 msgid "'&1' and '&2' are not installed on your system."
@@ -307,11 +311,11 @@ msgstr "'&1' och '&2' är ej installerade i ditt system."
 msgid "'&1' is not installed on your system."
 msgstr "'&1' är ej installerat i ditt system."
 
-#: FMain.class:1324
+#: FInfo.class:119
 msgid "&1 K"
 msgstr "&1 K"
 
-#: FMain.class:1322
+#: FInfo.class:117
 msgid "&1 K, &2 line(s)"
 msgstr "&1 K, &2 rad(er)"
 
@@ -367,11 +371,11 @@ msgstr "7. Skapa paket"
 msgid "About"
 msgstr "Om"
 
-#: FPropertyProject.class:1800
+#: FPropertyProject.class:1766
 msgid "About &component..."
 msgstr "Om &komponent..."
 
-#: FMain.class:2073
+#: FMain.class:1893
 msgid "&About Gambas..."
 msgstr "&Om Gambas..."
 
@@ -379,7 +383,7 @@ msgstr "&Om Gambas..."
 msgid "About Gambas..."
 msgstr "Om Gambas..."
 
-#: Project.module:2660
+#: Project.module:2676
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Ett klassnamn måste börja med bokstav eller understreck, följt av bokstäver eller siffror."
 
@@ -387,11 +391,11 @@ msgstr "Ett klassnamn måste börja med bokstav eller understreck, följt av bok
 msgid "Action"
 msgstr "Aktion"
 
-#: FPropertyProject.class:2063
+#: FPropertyProject.class:2029
 msgid "&Add"
 msgstr "&Lägg till"
 
-#: FDebugInfo.class:748
+#: FDebugInfo.class:751
 msgid "Add expression"
 msgstr "Lägg till uttryck"
 
@@ -435,7 +439,7 @@ msgstr "Placera jäms med &topp"
 msgid "&All"
 msgstr "&Allt"
 
-#: FMain.class:1216
+#: FMain.class:1204
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Samliga säkerhetskopior och skapade filer kommer att tas bort från projektmappen."
 
@@ -446,6 +450,10 @@ msgstr "Alla filer"
 #: FMakeInstall.class:1175
 msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
 msgstr "All behövlig information har samlats in. Du kan nu skapa installationspaketet till din tillämpning...\n<p>Klicka på <b>OK</b>-knappen för att skapa paketen.\n<p>Klicka på<b>Föregående</b>-knappen om du gjort ett misstag.\n<p>Klicka på<b>Avbrytl</b>-knappen för att avbryta uppgiften.\n\n"
+
+#: Project.module:1036
+msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
+msgstr "ALPHA-VERSION, ANVÄNDS PÅ EGET ANSVAR! :-)"
 
 #: FMenu.class:969
 msgid "ALT"
@@ -483,7 +491,7 @@ msgstr "Arabiska (Tunisien)"
 msgid "Are you sure to want to replace all?"
 msgstr "Är du säker på att du vill byta allt?"
 
-#: FProjectEnv.class:239 FPropertyProject.class:1828
+#: FProjectEnv.class:239 FPropertyProject.class:1794
 msgid "Arguments"
 msgstr "Argument"
 
@@ -491,11 +499,11 @@ msgstr "Argument"
 msgid "Arrangement"
 msgstr "Uppställning"
 
-#: Project.module:1317
+#: Project.module:1331
 msgid "at line &1 in &2"
 msgstr "vid rad &1 i &2"
 
-#: FCommit.class:96
+#: FCommit.class:155
 msgid "Authentification"
 msgstr "Autentisering"
 
@@ -503,11 +511,11 @@ msgstr "Autentisering"
 msgid "Authors"
 msgstr "Författare"
 
-#: FProjectItem.class:20 FPropertyProject.class:1507
+#: FProjectItem.class:20 FPropertyProject.class:1502
 msgid "Author(s)"
 msgstr "Författare"
 
-#: FOption.class:733
+#: FOption.class:902
 msgid "Automatic completion"
 msgstr "Automatisk komplettering"
 
@@ -527,9 +535,13 @@ msgstr "Automatiska verktyg"
 msgid "Azerbaijani (Azerbaijan)"
 msgstr "Azerbajan (Azerbaijan)"
 
-#: FOption.class:896
+#: MTheme.module:6
 msgid "Background"
 msgstr "Bakgrund"
+
+#: FOption.class:637
+msgid "Background color..."
+msgstr "Bakgrundsfärg..."
 
 #: FForm.class:107
 msgid "Bad form file"
@@ -551,7 +563,7 @@ msgstr "Basic"
 msgid "Basque (Basque country)"
 msgstr "Baskiska (Baskien)"
 
-#: CComponentBox.class:85 FPropertyProject.class:1618
+#: CComponentBox.class:85 FPropertyProject.class:1601
 msgid "Beta version"
 msgstr "Beta-version"
 
@@ -559,15 +571,19 @@ msgstr "Beta-version"
 msgid "<b>$(FILE)</b> will be replaced by the path of the executable"
 msgstr "<b>$(FILE)</b> kommer att bytas ut mot  det körbara programmets sökväg"
 
-#: FOption.class:832
+#: FOption.class:1001
 msgid "Blend"
 msgstr "Blandning"
+
+#: FOption.class:645
+msgid "Bold"
+msgstr "Fetstil"
 
 #: FIconEditor.class:2323
 msgid "Border only"
 msgstr "Endast kanter"
 
-#: FDebugInfo.class:770 FOption.class:1061
+#: FDebugInfo.class:773 MTheme.module:6
 msgid "Breakpoints"
 msgstr "Brytpunkter"
 
@@ -575,11 +591,11 @@ msgstr "Brytpunkter"
 msgid "Bring to foreground"
 msgstr "Hämta tiil förgrund"
 
-#: FMain.class:2026
+#: FMain.class:1839
 msgid "&Browse project..."
 msgstr "&Bläddra i projekt..."
 
-#: FOption.class:693
+#: FOption.class:688
 msgid "Browser"
 msgstr "Bläddrare"
 
@@ -591,7 +607,7 @@ msgstr "Bulgariska (Bulgarien)"
 msgid "(c) 2000-2007 Benoît Minisini"
 msgstr "(c) 2000-2007 Benoît Minisini"
 
-#: Project.module:267
+#: Project.module:275
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -599,15 +615,15 @@ msgstr "Avbryt"
 msgid "Cannot add file."
 msgstr "Kan ej lägga till fil."
 
-#: Project.module:3251
+#: Project.module:3267
 msgid "Cannot copy file &1."
 msgstr "Kan ej kopiera fil &1."
 
-#: Project.module:1683
+#: Project.module:1697
 msgid "Cannot copy template file."
 msgstr "Kan ej kopiera mallfil."
 
-#: Project.module:3293
+#: Project.module:3309
 msgid "Cannot create link &1."
 msgstr "Kan ej skapa länk &1."
 
@@ -615,7 +631,7 @@ msgstr "Kan ej skapa länk &1."
 msgid "Cannot create project!"
 msgstr "Kan ej skapa projekt!"
 
-#: FMain.class:216
+#: FMain.class:218
 msgid "Cannot delete file or directory"
 msgstr "Kan ej ta bort fil eller mapp"
 
@@ -623,23 +639,23 @@ msgstr "Kan ej ta bort fil eller mapp"
 msgid "Cannot import translation file."
 msgstr "Kan ej importera översättningsfil."
 
-#: Project.module:1898
+#: Project.module:1912
 msgid "Cannot make executable."
 msgstr "Kan ej göra körbart program."
 
-#: Project.module:3305
+#: Project.module:3321
 msgid "Cannot move a directory inside itself."
 msgstr "Kan eh flytta en mapp inuti sig slälv."
 
-#: Project.module:3349
+#: Project.module:3365
 msgid "Cannot move file &1."
 msgstr "Kan ej flytta fil &1."
 
-#: Project.module:1125
+#: Project.module:1149
 msgid "Cannot open file."
 msgstr "Kan ej öppna fil."
 
-#: Project.module:327
+#: Project.module:335
 msgid "Cannot open project file :\n"
 msgstr "Kan ej öppna projektfil :\n"
 
@@ -655,11 +671,11 @@ msgstr "Kan ej spara fil!"
 msgid "Cannot save translation."
 msgstr "Kan ej spar översättning."
 
-#: FPropertyProject.class:825
+#: FPropertyProject.class:821
 msgid "Cannot write component description file."
 msgstr "Kan ej skriva komponentbeskrivningsfil."
 
-#: Project.module:2290
+#: Project.module:2306
 msgid "Cannot write project file."
 msgstr "Kan ej skriva projektfil."
 
@@ -683,11 +699,15 @@ msgstr "Kategorier"
 msgid "CGI Web application"
 msgstr "CGI Web-tillämpning"
 
-#: FCommit.class:135
+#: FInfo.class:92
+msgid "ChangeLog"
+msgstr "ChangeLog"
+
+#: FCommit.class:194
 msgid "Changes description"
 msgstr "Ändringsbeskrivning"
 
-#: FPropertyProject.class:1912
+#: FPropertyProject.class:1878
 msgid "Changes since last commit"
 msgstr "Ändringar sedan senaste inlämning"
 
@@ -699,27 +719,27 @@ msgstr "Diagramritning"
 msgid "Checked"
 msgstr "Avbockad"
 
-#: FPropertyProject.class:841
+#: FPropertyProject.class:837
 msgid "Class"
 msgstr "Klass"
 
-#: FMain.class:2105
+#: FMain.class:1925
 msgid "&Class..."
 msgstr "&Klass..."
 
-#: Project.module:986
+#: FInfo.class:55 Project.module:1005
 msgid "Classes"
 msgstr "Klasser"
 
-#: FMain.class:1216
+#: FMain.class:1204
 msgid "Clean"
 msgstr "Ren"
 
-#: FMain.class:1857
+#: FMain.class:1670
 msgid "&Clean up"
 msgstr "&Städa upp"
 
-#: FDebugInfo.class:342 FIconEditor.class:1387 FList.class:107
+#: FDebugInfo.class:344 FIconEditor.class:1387 FList.class:107
 msgid "Clear"
 msgstr "Töm"
 
@@ -727,7 +747,7 @@ msgstr "Töm"
 msgid "Clear all"
 msgstr "Töm allt"
 
-#: FMain.class:1948
+#: FMain.class:1761
 msgid "Clear &all breakpoints"
 msgstr "Rensa &alla brytpunkter"
 
@@ -735,7 +755,7 @@ msgstr "Rensa &alla brytpunkter"
 msgid "Clear console"
 msgstr "Rensa konsol"
 
-#: FMain.class:344
+#: FMain.class:350
 msgid "&Clear history"
 msgstr "&Töm historik"
 
@@ -743,7 +763,7 @@ msgstr "&Töm historik"
 msgid "Clear this translation"
 msgstr "Rensa denna översättning"
 
-#: FProperty.class:915
+#: FProperty.class:969
 msgid "Click on a form or a control to modify its properties..."
 msgstr "Klicka på ett formulär eller en kontrol för att ändra dess egenskaper..."
 
@@ -755,7 +775,7 @@ msgstr "Klicka på ett formulär för att visa dess kontroll-hierarki..."
 msgid "Click on Insert to add a new menu."
 msgstr "Klicka på Insätt för att lägga till en ny meny."
 
-#: FOption.class:1162 FTips.class:232
+#: FMakeInstall.class:229 FOption.class:1096 FTips.class:232
 msgid "Close"
 msgstr "Stäng"
 
@@ -763,21 +783,17 @@ msgstr "Stäng"
 msgid "&Close"
 msgstr "&Stäng"
 
-#: FMain.class:1962
+#: FMain.class:1775
 msgid "Close all &debug windows"
 msgstr "Stäng alla &avlusningsfönster"
 
-#: FMain.class:2007
+#: FMain.class:1820
 msgid "Close &all windows"
 msgstr "Stänga &alla fönster"
 
 #: FForm.class:3100
 msgid "Code"
 msgstr "Kod"
-
-#: FOption.class:836
-msgid "Colors"
-msgstr "Färger"
 
 #: FFindList.class:49
 msgid "Column"
@@ -791,47 +807,47 @@ msgstr "Kolumner"
 msgid "Command-line application"
 msgstr "Kommandoradstillämpning"
 
-#: FEditor.class:2570
+#: FEditor.class:2787
 msgid "Comment"
 msgstr "Kommentar"
 
-#: FOption.class:1054 FTranslate.class:50
+#: FTranslate.class:50 MTheme.module:6
 msgid "Comments"
 msgstr "Kommentarer"
 
-#: FPropertyProject.class:1934
+#: FPropertyProject.class:1900
 msgid "&Commit..."
 msgstr "&Lämna in..."
 
-#: FPropertyProject.class:1583
+#: FPropertyProject.class:1566
 msgid "Compilation"
 msgstr "Samling"
 
-#: FMain.class:2384
+#: FMain.class:2215
 msgid "Compile"
 msgstr "Kompilera"
 
-#: FMain.class:1800
+#: FMain.class:1613
 msgid "&Compile"
 msgstr "&Kompilera"
 
-#: FMain.class:2392
+#: FMain.class:2223
 msgid "Compile all"
 msgstr "Kompilera allt"
 
-#: FMain.class:1807
+#: FMain.class:1620
 msgid "Compile &All"
 msgstr "Kompilera &Allt"
 
-#: Project.module:1465
+#: Project.module:1479
 msgid "Compiling project"
 msgstr "Kompilerar projekt"
 
-#: FPropertyProject.class:1595
+#: FPropertyProject.class:1578
 msgid "Component"
 msgstr "Komponent"
 
-#: FPropertyProject.class:1610
+#: FPropertyProject.class:1593
 msgid "Component advancement"
 msgstr "Komponentbefordran"
 
@@ -839,7 +855,7 @@ msgstr "Komponentbefordran"
 msgid "Component programming"
 msgstr "Komponentprogrammering"
 
-#: FPropertyProject.class:1778
+#: FPropertyProject.class:1744
 msgid "Components"
 msgstr "Komponenter"
 
@@ -847,11 +863,11 @@ msgstr "Komponenter"
 msgid "Compression & decompression"
 msgstr "Packning & uppackning"
 
-#: FDebugInfo.class:675 FMain.class:2362
+#: FDebugInfo.class:678 FMain.class:2193
 msgid "Console"
 msgstr "Konsol"
 
-#: FMain.class:1996
+#: FMain.class:1809
 msgid "&Console"
 msgstr "&Konsol"
 
@@ -859,7 +875,7 @@ msgstr "&Konsol"
 msgid "Console - Gambas"
 msgstr "Konsol - Gambas"
 
-#: FTranslate.class:680 Project.module:2148
+#: FTranslate.class:680 Project.module:2164
 msgid "Continue"
 msgstr "Fortsätt"
 
@@ -867,15 +883,15 @@ msgstr "Fortsätt"
 msgid "Controls"
 msgstr "Kontroller"
 
-#: FOutput.class:298 FTextEditor.class:628
+#: FIconEditor.class:2170 FOutput.class:298 FTextEditor.class:771
 msgid "Copy"
 msgstr "Kopiera"
 
-#: FMain.class:2175
+#: FMain.class:1995
 msgid "&Copy"
 msgstr "&Kopiera"
 
-#: FMain.class:2203
+#: FMain.class:2023
 msgid "Copy file pat&h"
 msgstr "Kopiera filsökvä&g"
 
@@ -895,27 +911,27 @@ msgstr "Skapa en genväg på skrivbordet"
 msgid "Create a symbolic link"
 msgstr "Skapa en symbolisk länk"
 
-#: Project.module:3007
+#: Project.module:3023
 msgid "Create source package"
 msgstr "Skapa ett källkodspaket"
 
-#: Package.module:316
+#: Package.module:307
 msgid "Creating desktop file..."
 msgstr "Skapar skrivbordfil..."
 
-#: Package.module:452
+#: Package.module:472
 msgid "Creating package..."
 msgstr "Skapar paket..."
 
-#: Package.module:227
+#: Package.module:231
 msgid "Creating package for &1."
 msgstr "Skapar paket för &1."
 
-#: Package.module:566
+#: Package.module:587
 msgid "Creating source package."
 msgstr "Skapar käll-paket."
 
-#: Package.module:590
+#: Package.module:611
 msgid "Creating .spec file."
 msgstr "Skapar .spec-fil."
 
@@ -923,7 +939,7 @@ msgstr "Skapar .spec-fil."
 msgid "Croatian (Croatia)"
 msgstr "Kroatiska (Kroatioen)"
 
-#: FMain.class:1298
+#: FInfo.class:85
 msgid "CSS file"
 msgstr "CSS-fil"
 
@@ -931,19 +947,19 @@ msgstr "CSS-fil"
 msgid "CTRL"
 msgstr "CTRL"
 
-#: FOption.class:1068
+#: MTheme.module:6
 msgid "Current line"
 msgstr "Aktuell rad"
 
-#: FDebugInfo.class:699
+#: FDebugInfo.class:702
 msgid "Current object"
 msgstr "Aktuellt objekt"
 
-#: FOutput.class:291 FTextEditor.class:622
+#: FIconEditor.class:2161 FOutput.class:291 FTextEditor.class:765
 msgid "Cut"
 msgstr "Klipp ut"
 
-#: FMain.class:2169
+#: FMain.class:1989
 msgid "&Cut"
 msgstr "&Klipp ut"
 
@@ -955,7 +971,7 @@ msgstr "Tjeckiska (Tjeckien)"
 msgid "Danish (Denmark)"
 msgstr "Danska (Danmark)"
 
-#: Project.module:990
+#: Project.module:1009
 msgid "Data"
 msgstr "Data"
 
@@ -967,7 +983,7 @@ msgstr "Databas"
 msgid "Database access"
 msgstr "Databastillgång"
 
-#: FMain.class:2036
+#: FMain.class:1856
 msgid "&Database manager..."
 msgstr "&Databashanterare..."
 
@@ -975,7 +991,7 @@ msgstr "&Databashanterare..."
 msgid "Data bound controls"
 msgstr "Datagränsvärdeskontroller"
 
-#: FOption.class:931
+#: MTheme.module:6
 msgid "Data types"
 msgstr "Datatyper"
 
@@ -983,31 +999,35 @@ msgstr "Datatyper"
 msgid "Debian"
 msgstr "Debian"
 
-#: FDebugInfo.class:660 FMain.class:2516
+#: FDebugInfo.class:663 FMain.class:2346
 msgid "Debug"
 msgstr "Avlusa"
 
-#: FMain.class:1880
+#: FMain.class:1693
 msgid "&Debug"
 msgstr "Av&lusa"
 
-#: FEditor.class:2252
+#: FEditor.class:2333
 msgid "(Declarations)"
 msgstr "(Deklarationer)"
 
-#: FOption.class:701 FPropertyProject.class:59
+#: FOption.class:696 FPropertyProject.class:57
 msgid "(Default)"
 msgstr "(Standard)"
 
-#: FPropertyProject.class:1661
+#: FPropertyProject.class:1644
 msgid "Default language"
 msgstr "Standardspråk"
 
-#: FOption.class:750
+#: FOption.class:919
 msgid "Default tab size"
 msgstr "Standard för tab-storlek"
 
-#: FForm.class:2940 FMain.class:197 FTranslate.class:548
+#: FOption.class:94
+msgid "Define..."
+msgstr "Definiera..."
+
+#: FForm.class:2940 FMain.class:199 FTranslate.class:548
 msgid "Delete"
 msgstr "Tag bort"
 
@@ -1015,7 +1035,7 @@ msgstr "Tag bort"
 msgid "&Delete"
 msgstr "&Tag bort"
 
-#: FMain.class:2193
+#: FMain.class:2013
 msgid "&Delete..."
 msgstr "&Tag bort..."
 
@@ -1023,11 +1043,11 @@ msgstr "&Tag bort..."
 msgid "Delete translation"
 msgstr "Tag bort översättning"
 
-#: FMakeInstall.class:899 FPropertyProject.class:1484
+#: FMakeInstall.class:899 FPropertyProject.class:1479
 msgid "Description"
 msgstr "Beskrivning"
 
-#: FOption.class:516
+#: FOption.class:678
 msgid "Desktop"
 msgstr "Skrivbord"
 
@@ -1035,31 +1055,39 @@ msgstr "Skrivbord"
 msgid "Desktop-neutral routines from Portland project"
 msgstr "Skrivbordsneutrala rutiner från Portland-projekt"
 
+#: FInfo.class:331
+msgid "Details"
+msgstr "Detaljer"
+
 #: FCreateFile.class:754
 msgid "Dialog box management"
 msgstr "Hantering av dialogrutor"
 
-#: FMain.class:1271
+#: FInfo.class:58
 msgid "Directory"
 msgstr "Katalog"
 
-#: FMain.class:2088
+#: FMain.class:1908
 msgid "&Directory"
 msgstr "&Mapp"
 
-#: Project.module:1702
+#: Project.module:1716
 msgid "Directory already exists."
 msgstr "Katalog finns redan."
 
-#: Project.module:276
+#: FOption.class:845
+msgid "Display property help"
+msgstr "Visa egenskapshjälp"
+
+#: Project.module:284
 msgid "Do not open"
 msgstr "Öppna ej"
 
-#: FMain.class:197
+#: FMain.class:199
 msgid "Do you really want to delete this directory ?"
 msgstr "Vill du verkligen ta bort denna katalog?"
 
-#: FMain.class:208
+#: FMain.class:210
 msgid "Do you really want to delete this file ?"
 msgstr "Vill du verkligen ta bort denna fil?"
 
@@ -1071,11 +1099,11 @@ msgstr "Vill du verkligen ta bort denna översättning?"
 msgid "Do you really want to reload this translation ?"
 msgstr "Vill du verkligen ladda om denna översättning?"
 
-#: FMain.class:1042
+#: FMain.class:1030
 msgid "Do you really want to update all forms?"
 msgstr "Vill du verkligen uppdatera alla formulär?"
 
-#: FDebugInfo.class:342
+#: FDebugInfo.class:344
 msgid "Do you want to clear the expression list ?"
 msgstr "Vill du sudda denna uttryckslista?"
 
@@ -1087,7 +1115,7 @@ msgstr "Vill du sudda denna bild?"
 msgid "Do you want to clear the value list ?"
 msgstr "Vill du sudda värdelistan?"
 
-#: Package.module:455
+#: Package.module:475
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' har misslyckats."
 
@@ -1107,27 +1135,27 @@ msgstr "Dutch (Belgien)"
 msgid "Dutch (Netherlands)"
 msgstr "Dutch (Nederländerna)"
 
-#: FDebugInfo.class:141
+#: FDebugInfo.class:143
 msgid "Dynamic variables"
 msgstr "Dynamiska variabler"
 
-#: FMain.class:2141
+#: FMain.class:1961
 msgid "&Edit"
 msgstr "&Redigera"
 
-#: FMain.class:2152
+#: FMain.class:1972
 msgid "Edit &class"
 msgstr "Redigera &klass"
 
-#: FMain.class:2147
+#: FMain.class:1967
 msgid "Edit &form"
 msgstr "Redigera &formulär"
 
-#: FOption.class:1075
+#: MTheme.module:6
 msgid "Editing line"
 msgstr "Redigeringsrad"
 
-#: FPropertyProject.class:1577
+#: FPropertyProject.class:1560
 msgid "Edition"
 msgstr "Utgåva"
 
@@ -1135,7 +1163,7 @@ msgstr "Utgåva"
 msgid "Edit list property"
 msgstr "Redigera listegenskaper"
 
-#: FOption.class:705
+#: FOption.class:874
 msgid "Editor"
 msgstr "Redigerare"
 
@@ -1143,7 +1171,7 @@ msgstr "Redigerare"
 msgid "Edit text property"
 msgstr "Redigera textegenskaper"
 
-#: FMain.class:2157
+#: FMain.class:1977
 msgid "Edit with"
 msgstr "Redigera med"
 
@@ -1183,25 +1211,21 @@ msgstr "Engelska (U.S.A.)"
 msgid "Enhanced standard dialogs"
 msgstr "Utökada standarddialoger"
 
-#: FPropertyProject.class:1816
+#: FPropertyProject.class:1782
 msgid "Environment"
 msgstr "Miljö"
 
-#: FProjectEnv.class:284 FPropertyProject.class:1870
+#: FProjectEnv.class:284 FPropertyProject.class:1836
 msgid "Environment variables"
 msgstr "Miljövariabler"
 
-#: FOption.class:701
+#: FOption.class:696
 msgid "Epiphany"
 msgstr "Epiphany"
 
-#: FOption.class:1082
-msgid "Error"
+#: MTheme.module:6
+msgid "Errors"
 msgstr "Fel"
-
-#: FMain.class:1345
-msgid "ERROR"
-msgstr "FEL"
 
 #: Language.module:34
 msgid "Esperanto (Anywhere!)"
@@ -1215,7 +1239,7 @@ msgstr "Estniska (Estland)"
 msgid "Event"
 msgstr "Händelse"
 
-#: CComponent.class:107 FPropertyProject.class:1969
+#: CComponent.class:107 FPropertyProject.class:1935
 msgid "Event loop management"
 msgstr "Hantering av händelse slinga"
 
@@ -1231,11 +1255,11 @@ msgstr "Exempel"
 msgid "Excludes"
 msgstr "Utesluter"
 
-#: FMain.class:1832
+#: FMain.class:1645
 msgid "E&xecutable..."
 msgstr "E&xekverbara..."
 
-#: FPropertyProject.class:1589
+#: FPropertyProject.class:1572
 msgid "Execution"
 msgstr "Utförande"
 
@@ -1247,7 +1271,7 @@ msgstr "Befintlig"
 msgid "&Export..."
 msgstr "&Exportera..."
 
-#: FOption.class:162
+#: FOption.class:126
 msgid "Export a theme file"
 msgstr "Exportera en temafil"
 
@@ -1259,11 +1283,11 @@ msgstr "Exportera en översättning"
 msgid "Exported"
 msgstr "Exporterade"
 
-#: FPropertyProject.class:1989
+#: FPropertyProject.class:1955
 msgid "Exported classes"
 msgstr "Exportera klasser"
 
-#: FOption.class:865
+#: FOption.class:1068
 msgid "Export theme"
 msgstr "Exportera tema"
 
@@ -1271,7 +1295,7 @@ msgstr "Exportera tema"
 msgid "Export to a translation file"
 msgstr "Exportera en översättningsfil"
 
-#: FDebugInfo.class:32
+#: FDebugInfo.class:34
 msgid "Expression"
 msgstr "Uttryck"
 
@@ -1283,7 +1307,7 @@ msgstr "Exportera en utvärderare"
 msgid "Farsi (Iran)"
 msgstr "Farsi (Iran)"
 
-#: FPropertyProject.class:2003
+#: FPropertyProject.class:1969
 msgid "Features"
 msgstr "Egenskaper"
 
@@ -1291,17 +1315,21 @@ msgstr "Egenskaper"
 msgid "Fedora"
 msgstr "Fedora"
 
-#: FMain.class:1304
+#: FInfo.class:95
 msgid "File"
 msgstr "Fil"
 
-#: FMain.class:1734
+#: FMain.class:1547
 msgid "&File"
 msgstr "&Arkiv"
 
-#: Project.module:1642
+#: Project.module:1656
 msgid "File already exists."
 msgstr "Fil finns redan."
+
+#: Project.module:1218
+msgid "File not found!"
+msgstr "Fil ej hittad!"
 
 #: FIconEditor.class:2333
 msgid "Filled"
@@ -1315,13 +1343,17 @@ msgstr "Fylld med kant"
 msgid "Find"
 msgstr "Hitta"
 
-#: FEditor.class:2586 FTextEditor.class:653
+#: FEditor.class:2803 FTextEditor.class:796
 msgid "Find..."
 msgstr "Hitta..."
 
 #: FTranslate.class:1341
 msgid "Find a string in translation"
 msgstr "Hitta en sträng i översättning"
+
+#: FEditor.class:2693
+msgid "Find definition"
+msgstr "Leta efter definition"
 
 #: FFindList.class:197
 msgid "Find list"
@@ -1331,7 +1363,7 @@ msgstr "Lista över hittat"
 msgid "Find next"
 msgstr "Hitta nästa"
 
-#: FEditor.class:2599 FTextEditor.class:666
+#: FEditor.class:2816 FTextEditor.class:809
 msgid "Find Next"
 msgstr "Hitta nästa"
 
@@ -1343,7 +1375,7 @@ msgstr "Hitta nästa oöversatta sträng"
 msgid "Find previous"
 msgstr "Hitta föregående"
 
-#: FEditor.class:2606 FTextEditor.class:673
+#: FEditor.class:2823 FTextEditor.class:816
 msgid "Find Previous"
 msgstr "Hitta föregående"
 
@@ -1351,27 +1383,27 @@ msgstr "Hitta föregående"
 msgid "Find previous untranslated string"
 msgstr "Hitta föregående oöversatta sträng"
 
-#: FMain.class:2016
+#: FMain.class:1829
 msgid "&Find && replace"
 msgstr "&Hitta && byt ut"
 
-#: FMain.class:2371
+#: FMain.class:2202
 msgid "Find & replace"
 msgstr "Hitta & ersätt"
 
-#: FMain.class:1923
+#: FMain.class:1736
 msgid "Finis&h"
 msgstr "A&vsluta"
 
-#: FMain.class:2440
+#: FMain.class:2271
 msgid "Finish current function"
 msgstr "Avsluta aktuell funktion"
 
-#: FPropertyProject.class:1618
+#: FPropertyProject.class:1601
 msgid "Finished and stable"
 msgstr "Avslutad och stabil"
 
-#: FOption.class:701
+#: FOption.class:696
 msgid "Firefox"
 msgstr "Firefox"
 
@@ -1383,47 +1415,55 @@ msgstr "&Första"
 msgid "Flood fill"
 msgstr "Ymnig fyllning"
 
-#: FOption.class:710
+#: FOption.class:1011
+msgid "Fold procedures by default"
+msgstr "Fold procedures by default"
+
+#: FOption.class:879
 msgid "Font"
 msgstr "Font"
 
-#: FOption.class:582
+#: FOption.class:752
 msgid "Font size"
 msgstr "Teckensittsstorlek"
 
-#: FProperty.class:334
+#: FProperty.class:344
 msgid "Forbidden characters in control group."
 msgstr "Ej tillåtna tecken i control-grupp."
 
-#: FProperty.class:319
+#: FProperty.class:329
 msgid "Forbidden characters in control name."
 msgstr "Ej tillåtna tecken i kontroll-namn."
 
-#: FCreateFile.class:585 FEditor.class:2653 FForm.class:2840 FMain.class:1286
+#: FOption.class:633
+msgid "Foreground color..."
+msgstr "Förgrundsfärg..."
+
+#: FCreateFile.class:585 FEditor.class:2892 FForm.class:2840 FInfo.class:73
 msgid "Form"
 msgstr "Formulär"
 
-#: FMain.class:2112
+#: FMain.class:1932
 msgid "&Form..."
 msgstr "&Formulär..."
 
-#: FPropertyProject.class:1711
+#: FPropertyProject.class:1694
 msgid "Form controls are public"
 msgstr "Formulärskontroller är publika"
 
-#: FMain.class:2344
+#: FMain.class:2175
 msgid "Form hierarchy"
 msgstr "Formulärhierarki"
 
-#: Project.module:988
+#: FInfo.class:56 Project.module:1007
 msgid "Forms"
 msgstr "Formulär"
 
-#: FMain.class:1916
+#: FMain.class:1729
 msgid "&Forward"
 msgstr "&Framåt"
 
-#: FMain.class:2432
+#: FMain.class:2263
 msgid "Forward"
 msgstr "Framåt"
 
@@ -1455,9 +1495,13 @@ msgstr "Franska(Schweitz)"
 msgid "Galician (Spain)"
 msgstr "Galisiska(Spanien)"
 
-#: FAbout.class:319 FPropertyProject.class:1535 FWelcome.class:443
+#: FAbout.class:319 FWelcome.class:443
 msgid "Gambas"
 msgstr "Gambas"
+
+#: .project:1
+msgid "Gambas 3"
+msgstr "Gambas 3"
 
 #: FAbout.class:263
 msgid "Gambas Almost Means Basic!"
@@ -1475,7 +1519,7 @@ msgstr "Gambas klasser"
 msgid "Gambas forms"
 msgstr "Gambas formulär"
 
-#: FOption.class:161
+#: FOption.class:125
 msgid "Gambas highlight theme files"
 msgstr "Gambas \"highlight\" temafil"
 
@@ -1483,7 +1527,7 @@ msgstr "Gambas \"highlight\" temafil"
 msgid "Gambas modules"
 msgstr "Gambas moduler"
 
-#: FMain.class:1269
+#: FInfo.class:53
 msgid "Gambas project"
 msgstr "Gambas-projekt"
 
@@ -1491,17 +1535,13 @@ msgstr "Gambas-projekt"
 msgid "Games"
 msgstr "Spel"
 
-#: FOption.class:511 FPropertyProject.class:1479
+#: FOption.class:662 FPropertyProject.class:1474
 msgid "General"
 msgstr "Allmänt"
 
 #: FMakeInstall.class:920
 msgid "General Public Licence"
 msgstr "General Public Licence"
-
-#: FPropertyProject.class:1767
-msgid "Generate stack trace"
-msgstr "Skapa stackspårning"
 
 #: Language.module:24
 msgid "German (Belgium)"
@@ -1511,7 +1551,7 @@ msgstr "Tyska (Belgien)"
 msgid "German (Germany)"
 msgstr "Tyska (Tyskland)"
 
-#: FPropertyProject.class:1695
+#: FPropertyProject.class:1678
 msgid "Get version from program"
 msgstr "Hämta version från program"
 
@@ -1519,7 +1559,7 @@ msgstr "Hämta version från program"
 msgid "GIF"
 msgstr "GIF"
 
-#: FOption.class:683
+#: FOption.class:678
 msgid "Gnome"
 msgstr "Gnome"
 
@@ -1527,7 +1567,11 @@ msgstr "Gnome"
 msgid "GNU command option parser"
 msgstr "GNU-kommandalternativstolkare"
 
-#: FEditor.class:2479
+#: FEditor.class:2699
+msgid "Go back"
+msgstr "Gå tillbaka"
+
+#: FEditor.class:2684
 msgid "Go to"
 msgstr "Gå till"
 
@@ -1535,7 +1579,7 @@ msgstr "Gå till"
 msgid "Go to line"
 msgstr "Gå till rad"
 
-#: FEditor.class:2483 FTextEditor.class:597
+#: FEditor.class:2688 FTextEditor.class:740
 msgid "Go to line..."
 msgstr "Gå till rad..."
 
@@ -1543,7 +1587,7 @@ msgstr "Gå till rad..."
 msgid "Graphical application"
 msgstr "Grafisk tillämpning"
 
-#: CComponent.class:106 FPropertyProject.class:1963
+#: CComponent.class:106 FPropertyProject.class:1929
 msgid "Graphical form management"
 msgstr "hantering av grafiskt formulär"
 
@@ -1551,7 +1595,7 @@ msgstr "hantering av grafiskt formulär"
 msgid "Greek (Greece)"
 msgstr "Grekiska (Grekland)"
 
-#: FMenu.class:885 FPropertyProject.class:845
+#: FMenu.class:885 FPropertyProject.class:841
 msgid "Group"
 msgstr "Grupp"
 
@@ -1591,23 +1635,23 @@ msgstr "\"Hatched flood fill\""
 msgid "Height"
 msgstr "Höjd"
 
-#: FMain.class:2058
+#: FMain.class:1878
 msgid "&Help browser"
 msgstr "&Hjälpbläddrare"
 
-#: FFormStack.class:269 FMain.class:2539
+#: FFormStack.class:269 FMain.class:2368
 msgid "Hierarchy"
 msgstr "Hierarki"
 
-#: FOption.class:807
+#: FOption.class:976
 msgid "Highlight current line"
 msgstr "Markera gällande rad"
 
-#: FOption.class:917
+#: MTheme.module:6
 msgid "Highlighting"
 msgstr "Markerade"
 
-#: FOption.class:790
+#: FOption.class:959
 msgid "Highlight modified lines"
 msgstr "Markera ändrade rader"
 
@@ -1619,7 +1663,11 @@ msgstr "Horisontell"
 msgid "Horizontal flip"
 msgstr "Horisontell vikning"
 
-#: FCreateFile.class:642 FMain.class:1295
+#: FEditor.class:2842 FTextEditor.class:835
+msgid "Horizontal split"
+msgstr "Horisontell delning"
+
+#: FCreateFile.class:642 FInfo.class:82
 msgid "HTML file"
 msgstr "HTML-fil"
 
@@ -1635,7 +1683,7 @@ msgstr "http://gambas.sourceforge.net"
 msgid "Hungarian (Hungary)"
 msgstr "Ungerska (Ungern)"
 
-#: FOption.class:675
+#: FOption.class:670
 msgid "Icon theme"
 msgstr "Ikontema"
 
@@ -1643,11 +1691,15 @@ msgstr "Ikontema"
 msgid "Identification"
 msgstr "Identifikation"
 
+#: FProperty.class:534
+msgid "If the form and controls dimensions must follow the size of the default font."
+msgstr "Om formulärets och kontrollens dimensioner måste följa storleken på standardteckensnittet."
+
 #: FCreateFile.class:604
 msgid "Image"
 msgstr "Bild"
 
-#: FMain.class:2123
+#: FMain.class:1943
 msgid "&Image..."
 msgstr "B&ild..."
 
@@ -1655,7 +1707,7 @@ msgstr "B&ild..."
 msgid "Image processing"
 msgstr "Bildbehandling"
 
-#: CComponent.class:108 FPropertyProject.class:1975
+#: CComponent.class:108 FPropertyProject.class:1941
 msgid "Image provider"
 msgstr "Bildleverantör"
 
@@ -1675,15 +1727,15 @@ msgstr "Importera en översättning"
 msgid "Import a translation file"
 msgstr "Importera en översättningsfil"
 
-#: FOption.class:858
+#: FOption.class:1061
 msgid "Import theme"
 msgstr "Importtema"
 
-#: FProperty.class:392
+#: FProperty.class:402
 msgid "Incorrect property value."
 msgstr "Felaktigt egenskapsvärde."
 
-#: FEditor.class:2700 FTextEditor.class:750
+#: FCommit.class:242 FEditor.class:2939 FTextEditor.class:919
 msgid "Indent"
 msgstr "Indragning"
 
@@ -1699,11 +1751,11 @@ msgstr "Indonesiska (Indonesien)"
 msgid "Information about components"
 msgstr "Information om komponenter"
 
-#: Project.module:1313
+#: Project.module:1327
 msgid "in form definition"
 msgstr "i formulärsdefinition"
 
-#: Package.module:546
+#: Package.module:567
 msgid "Initializing ~/RPM directory."
 msgstr "Initierar ~/RPM-mapp."
 
@@ -1711,7 +1763,7 @@ msgstr "Initierar ~/RPM-mapp."
 msgid "Initial release"
 msgstr "Första utgåva"
 
-#: FPropertyProject.class:1837
+#: FPropertyProject.class:1803
 msgid "&Insert"
 msgstr "&Insättning"
 
@@ -1719,7 +1771,7 @@ msgstr "&Insättning"
 msgid "Insert release number in package version"
 msgstr "Skjut in utgåvenummer i paketversion"
 
-#: FMain.class:1846
+#: FMain.class:1659
 msgid "&Installation package..."
 msgstr "&Installationspaket..."
 
@@ -1727,7 +1779,11 @@ msgstr "&Installationspaket..."
 msgid "Install in the user component directory"
 msgstr "Installera i användarens komponentmapp"
 
-#: FOption.class:522
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
+msgstr "Integrerad utvecklingsmiljö för Gambas"
+
+#: FOption.class:709
 msgid "Interface"
 msgstr "Snitt"
 
@@ -1747,11 +1803,15 @@ msgstr "Irländska (Irland)"
 msgid "Italian (Italy)"
 msgstr "Italienska (Italien)"
 
+#: FOption.class:649
+msgid "Italic"
+msgstr "Kursiv"
+
 #: Language.module:62
 msgid "Japanese (Japan)"
 msgstr "Japanska (Japan)"
 
-#: FOption.class:683
+#: FOption.class:678
 msgid "KDE"
 msgstr "KDE"
 
@@ -1775,11 +1835,15 @@ msgstr "Behåll avlusningsinformation i det exekverbara programmet"
 msgid "Key"
 msgstr "Nyckel"
 
-#: FOption.class:924
+#: MTheme.module:6
 msgid "Keywords"
 msgstr "Nyckelord"
 
-#: FOption.class:701
+#: FOption.class:1028
+msgid "Keywords in upper case"
+msgstr "Nyckelord med stora bokstäver"
+
+#: FOption.class:696
 msgid "Konqueror"
 msgstr "Konqueror"
 
@@ -1795,6 +1859,10 @@ msgstr "Språk"
 msgid "&Last"
 msgstr "&Sista"
 
+#: FInfo.class:313
+msgid "Last modified"
+msgstr "Senast ändrad"
+
 #: FMakeInstall.class:920
 msgid "Lesser General Public Licence"
 msgstr "Lesser General Public Licence"
@@ -1803,15 +1871,19 @@ msgstr "Lesser General Public Licence"
 msgid "Licence"
 msgstr "Licens"
 
-#: FFindList.class:47 FIconEditor.class:2269 FOption.class:832
+#: FFindList.class:47 FIconEditor.class:2269 FOption.class:1001
 msgid "Line"
 msgstr "Rad"
 
-#: Project.module:3263
+#: Project.module:3279
 msgid "Linking a directory is forbidden."
 msgstr "Att länka en mapp är förbjudet."
 
-#: Project.module:1077
+#: FInfo.class:255
+msgid "Link to"
+msgstr "Länk till"
+
+#: Project.module:1101
 msgid "Loading &1..."
 msgstr "Laddar &1..."
 
@@ -1819,7 +1891,7 @@ msgstr "Laddar &1..."
 msgid "Loading information on component &1..."
 msgstr "Laddar information om komponent &1..."
 
-#: FDebugInfo.class:684
+#: FDebugInfo.class:687
 msgid "Local variables"
 msgstr "Lokala variabler"
 
@@ -1831,7 +1903,7 @@ msgstr "Lås formulär"
 msgid "Maintainer information"
 msgstr "Information om underhållare"
 
-#: FMain.class:1828
+#: FMain.class:1641
 msgid "Make"
 msgstr "Gör"
 
@@ -1839,23 +1911,23 @@ msgstr "Gör"
 msgid "Make a gift!"
 msgstr "Gör en gåva!"
 
-#: FMain.class:2304 FMakeExecutable.class:81
+#: FMain.class:2135 FMakeExecutable.class:81
 msgid "Make executable"
 msgstr "Gör exekverbar"
 
-#: FMain.class:2312 FMakeInstall.class:796
+#: FMain.class:2143 FMakeInstall.class:796
 msgid "Make installation package"
 msgstr "Gör installationspaket"
 
-#: FMain.class:2296
+#: FMain.class:2127
 msgid "Make source archive"
 msgstr "Gör källarkiv"
 
-#: Package.module:298
+#: Package.module:285
 msgid "Making build directory."
 msgstr "Gör byggkataloger."
 
-#: Project.module:1856
+#: Project.module:1870
 msgid "Making executable..."
 msgstr "Gör exekverbar..."
 
@@ -1863,7 +1935,7 @@ msgstr "Gör exekverbar..."
 msgid "Mandriva Linux"
 msgstr "Mandriva Linux"
 
-#: FOption.class:648
+#: FOption.class:818
 msgid "Max."
 msgstr "Max."
 
@@ -1887,23 +1959,23 @@ msgstr "Menyer"
 msgid "Miscellaneous"
 msgstr "Diverse"
 
-#: Project.module:3873
+#: Project.module:3892
 msgid "modified"
 msgstr "ändrad"
 
-#: FCreateFile.class:547 FMain.class:1278
+#: FCreateFile.class:547 FInfo.class:65
 msgid "Module"
 msgstr "Modul"
 
-#: FMain.class:2098
+#: FMain.class:1918
 msgid "&Module..."
 msgstr "&Modul..."
 
-#: Project.module:985
+#: FInfo.class:54 Project.module:1004
 msgid "Modules"
 msgstr "Moduler"
 
-#: FPropertyProject.class:1728
+#: FPropertyProject.class:1711
 msgid "Module symbols are public by default"
 msgstr "Modulsymboler är publika som standard"
 
@@ -1955,7 +2027,7 @@ msgstr "Mång-dokumentsnitt"
 msgid "Name"
 msgstr "Namn"
 
-#: FDebugInfo.class:69
+#: FDebugInfo.class:71
 msgid "native code"
 msgstr "native code"
 
@@ -1975,7 +2047,7 @@ msgstr "Närverksprogrammering"
 msgid "&New..."
 msgstr "&Ny..."
 
-#: FCreateFile.class:522 FMain.class:2085
+#: FCreateFile.class:522 FMain.class:1905
 msgid "New"
 msgstr "Nytt"
 
@@ -1983,15 +2055,15 @@ msgstr "Nytt"
 msgid "New file"
 msgstr "Ny fil"
 
-#: FMain.class:542
+#: FMain.class:549
 msgid "New folder"
 msgstr "Ny mapp"
 
-#: FMain.class:1738
+#: FMain.class:1551
 msgid "&New project..."
 msgstr "&Nytt projekt..."
 
-#: FCreateProject.class:324 FMain.class:2227
+#: FCreateProject.class:324 FMain.class:2058
 msgid "New project"
 msgstr "Nytt projekt"
 
@@ -2007,15 +2079,19 @@ msgstr "Ny översättning"
 msgid "&Next"
 msgstr "&Nästa"
 
-#: FOption.class:538 FPropertyProject.class:1635
+#: FOption.class:725 FPropertyProject.class:1618
 msgid "No"
 msgstr "Nej"
 
-#: Project.module:2951
+#: MHelp.module:233
+msgid "No help found."
+msgstr "Ingen hjälp funnen."
+
+#: Project.module:2967
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Icke-ASCII-tecken är förbjudna i projektnamn."
 
-#: FOption.class:832 FProperty.class:601
+#: FOption.class:1001 FProperty.class:632
 msgid "None"
 msgstr "Inga"
 
@@ -2031,11 +2107,11 @@ msgstr "Non-free Licence"
 msgid "(No parent)"
 msgstr "(Ingen förälder)"
 
-#: FOption.class:590
-msgid "Normal size"
-msgstr "Normal storlek"
+#: FOption.class:760
+msgid "Normal"
+msgstr "Normal"
 
-#: FOption.class:903
+#: MTheme.module:6
 msgid "Normal text"
 msgstr "Normal text"
 
@@ -2043,23 +2119,27 @@ msgstr "Normal text"
 msgid "Norwegian (Norway)"
 msgstr "Norska (Norge)"
 
+#: FEditor.class:2836 FTextEditor.class:829
+msgid "No split"
+msgstr "Ingen delning"
+
 #: FDebugExpr.class:4
 msgid "not available"
 msgstr "ej tillgängligt"
 
-#: CComponentBox.class:87 FPropertyProject.class:1618
+#: CComponentBox.class:87 FPropertyProject.class:1601
 msgid "Not finished but stable"
 msgstr "Ej avslutad, men stabil"
 
-#: Project.module:1477
+#: Project.module:1491
 msgid "Nothing to do."
 msgstr "Inget att göra."
 
-#: FPropertyProject.class:105
+#: FPropertyProject.class:102
 msgid "Not translatable"
 msgstr "Ej översättningsbart"
 
-#: FOption.class:1040
+#: MTheme.module:6
 msgid "Numbers"
 msgstr "Tal"
 
@@ -2067,7 +2147,7 @@ msgstr "Tal"
 msgid "Obsidian"
 msgstr "Obsidian"
 
-#: FSelectIcon.class:266 FText.class:100 Project.module:2498
+#: FSelectIcon.class:266 FText.class:100 Project.module:2514
 msgid "OK"
 msgstr "OK"
 
@@ -2079,23 +2159,27 @@ msgstr "När informationer väl är inmatad, kan du\nklicka på<b>OK</b>-knappen
 msgid "Opaque"
 msgstr "Ogenomskinlig"
 
-#: FOpenProject.class:319 Project.module:267
+#: FOpenProject.class:319 Project.module:275
 msgid "Open"
 msgstr "Öppna"
 
-#: Project.module:276
+#: Project.module:284
 msgid "Open after all"
 msgstr "Öppna ändå"
+
+#: FMain.class:1845
+msgid "&Open a terminal..."
+msgstr "&Öppna en terminal..."
 
 #: FForm.class:2856
 msgid "Open code"
 msgstr "Öppna kod"
 
-#: FMain.class:1759
+#: FMain.class:1572
 msgid "Open &example"
 msgstr "Öppna &exempel"
 
-#: FEditor.class:2488
+#: FEditor.class:2705
 msgid "Open form"
 msgstr "Öppna formulär"
 
@@ -2103,7 +2187,7 @@ msgstr "Öppna formulär"
 msgid "OpenGL"
 msgstr "OpenGL"
 
-#: CComponent.class:109 FPropertyProject.class:1981
+#: CComponent.class:109 FPropertyProject.class:1947
 msgid "OpenGL display"
 msgstr "OpenGL display"
 
@@ -2123,11 +2207,11 @@ msgstr "Öppna i annat fönster"
 msgid "OpenLDAP client"
 msgstr "OpenLDAP-klient"
 
-#: FMain.class:1745
+#: FMain.class:1558
 msgid "&Open project..."
 msgstr "&Öppna projekt..."
 
-#: FMain.class:2235
+#: FMain.class:2066
 msgid "Open project"
 msgstr "Öppna projekt"
 
@@ -2135,7 +2219,7 @@ msgstr "Öppna projekt"
 msgid "Open project..."
 msgstr "Öppna projekt..."
 
-#: FMain.class:1751
+#: FMain.class:1564
 msgid "Open &recent"
 msgstr "Öppna &senaste"
 
@@ -2143,19 +2227,19 @@ msgstr "Öppna &senaste"
 msgid "OpenSUSE"
 msgstr "OpenSUSE"
 
-#: FOption.class:701
+#: FOption.class:696
 msgid "Opera"
 msgstr "Opera"
 
-#: FOption.class:945
+#: MTheme.module:6
 msgid "Operators"
 msgstr "Operatorer"
 
-#: FOption.class:724 FPropertyProject.class:1572
+#: FOption.class:893 FPropertyProject.class:1555
 msgid "Options"
 msgstr "Val"
 
-#: FMain.class:2130
+#: FMain.class:1950
 msgid "&Other..."
 msgstr "&Annat..."
 
@@ -2171,23 +2255,23 @@ msgstr "Paketnamn"
 msgid "Parent class"
 msgstr "Föräldraklass"
 
-#: FCommit.class:121
+#: FCommit.class:180
 msgid "Password"
 msgstr "Lösenord"
 
-#: FOutput.class:305 FTextEditor.class:634
+#: FIconEditor.class:2179 FOutput.class:305 FTextEditor.class:777
 msgid "Paste"
 msgstr "Klistra in"
 
-#: FMain.class:2181
+#: FMain.class:2001
 msgid "&Paste"
 msgstr "&Klistra in"
 
-#: FMain.class:2408
+#: FMain.class:2239
 msgid "Pause"
 msgstr "Paus"
 
-#: FMain.class:1895
+#: FMain.class:1708
 msgid "&Pause"
 msgstr "&Paus"
 
@@ -2203,7 +2287,7 @@ msgstr "Perl-kompatibel reguljäruttrycksmatchning"
 msgid "Pick a color"
 msgstr "Tag en färg"
 
-#: FMain.class:1290 FMenu.class:987
+#: FInfo.class:77 FMenu.class:987
 msgid "Picture"
 msgstr "Bild"
 
@@ -2259,11 +2343,11 @@ msgstr "Skriv in din e-postadress."
 msgid "Please enter your name."
 msgstr "Skriv in ditt namn."
 
-#: Project.module:2622
+#: Project.module:2638
 msgid "Please type a name."
 msgstr "Skriv ett namn."
 
-#: Project.module:2940
+#: Project.module:2956
 msgid "Please type a project name."
 msgstr "Skriv ett projektnamn."
 
@@ -2275,7 +2359,7 @@ msgstr "PNG"
 msgid "Polish (Poland)"
 msgstr "Polska (polen)"
 
-#: FMain.class:2080
+#: FMain.class:1900
 msgid "Popup"
 msgstr "Popupp"
 
@@ -2287,11 +2371,11 @@ msgstr "Portugisiska (Brasilien)"
 msgid "Portuguese (Portugal)"
 msgstr "Portugisiska (Porugal)"
 
-#: FMain.class:2275 FOption.class:499
+#: FMain.class:2106 FOption.class:621
 msgid "Preferences"
 msgstr "Preferenser"
 
-#: FMain.class:2046
+#: FMain.class:1866
 msgid "&Preferences..."
 msgstr "&Inställningar..."
 
@@ -2307,19 +2391,19 @@ msgstr "&Föregående"
 msgid "Printing"
 msgstr "Utskrift"
 
-#: FOption.class:824
+#: FOption.class:993
 msgid "Procedure separation"
 msgstr "Proceduråtskillnad"
 
-#: FMain.class:2324 FSelectIcon.class:214
+#: FMain.class:2155 FSelectIcon.class:214 Project.module:1003
 msgid "Project"
 msgstr "Projekt"
 
-#: FMain.class:1796
+#: FMain.class:1609
 msgid "&Project"
 msgstr "&Projekt"
 
-#: FMain.class:1971
+#: FMain.class:1784
 msgid "Pro&ject"
 msgstr "Pro&jekt"
 
@@ -2327,7 +2411,7 @@ msgstr "Pro&jekt"
 msgid "Project checkout has failed."
 msgstr "Projektutkopiering har misslyckats."
 
-#: FCommit.class:87
+#: FCommit.class:146
 msgid "Project commit"
 msgstr "Projektinlämning"
 
@@ -2335,11 +2419,11 @@ msgstr "Projektinlämning"
 msgid "Project environment"
 msgstr "Projektmiljö"
 
-#: FPropertyProject.class:1678
+#: FPropertyProject.class:1661
 msgid "Project is translatable"
 msgstr "Projekt är översättningsbart"
 
-#: FMain.class:2259 FPropertyProject.class:50
+#: FMain.class:2090 FPropertyProject.class:50
 msgid "Project properties"
 msgstr "Projektegenskaper"
 
@@ -2347,23 +2431,23 @@ msgstr "Projektegenskaper"
 msgid "Project translation"
 msgstr "Projektöversättning"
 
-#: FMain.class:2525 FProperty.class:905
+#: FInfo.class:213 FMain.class:2355 FProperty.class:959
 msgid "Properties"
 msgstr "Egenskaper"
 
-#: FMain.class:1980
+#: FMain.class:1793
 msgid "&Properties"
 msgstr "&Egenskaper"
 
-#: FMain.class:1873
+#: FMain.class:1686
 msgid "&Properties..."
 msgstr "&Egenskaper..."
 
-#: FMain.class:2334
+#: FMain.class:2165
 msgid "Properties sheet"
 msgstr "Egenskapsblad"
 
-#: CComponentBox.class:218 FPropertyProject.class:1939
+#: CComponentBox.class:218 FPropertyProject.class:1905
 msgid "Provides"
 msgstr "Levererar"
 
@@ -2403,7 +2487,11 @@ msgstr "QT-verktygslåda"
 msgid "QT toolkit extension"
 msgstr "Utvidgad QT-verktygslåda"
 
-#: FOption.class:658
+#: FOption.class:4
+msgid "Quest"
+msgstr "Sök"
+
+#: FOption.class:828
 msgid "Quiet external commands"
 msgstr "Kör externa kommandon tyst"
 
@@ -2411,11 +2499,11 @@ msgstr "Kör externa kommandon tyst"
 msgid "Quit"
 msgstr "Avsluta"
 
-#: FMain.class:1789
+#: FMain.class:1602
 msgid "&Quit"
 msgstr "&Avsluta"
 
-#: Project.module:1013
+#: Project.module:1034
 msgid "read-only"
 msgstr "skrivskyddat"
 
@@ -2423,7 +2511,7 @@ msgstr "skrivskyddat"
 msgid "Recent"
 msgstr "Tidigare"
 
-#: FOption.class:635 FWelcome.class:47
+#: FOption.class:805 FWelcome.class:47
 msgid "Recent projects"
 msgstr "Aktuella projekt"
 
@@ -2431,15 +2519,15 @@ msgstr "Aktuella projekt"
 msgid "Rectangle"
 msgstr "Rektangel"
 
-#: FEditor.class:2529 FForm.class:3164 FTextEditor.class:612
+#: FCommit.class:235 FEditor.class:2746 FForm.class:3164 FTextEditor.class:755
 msgid "Redo"
 msgstr "Gör om"
 
-#: FMain.class:1863
+#: FMain.class:1676
 msgid "&Refresh"
 msgstr "&Friska upp"
 
-#: FMain.class:2267
+#: FMain.class:2098
 msgid "Refresh project"
 msgstr "Friska upp projekt"
 
@@ -2447,7 +2535,7 @@ msgstr "Friska upp projekt"
 msgid "Regular expressions"
 msgstr "Reguljära uttryck"
 
-#: FTextEditor.class:527 FTranslate.class:642
+#: FTextEditor.class:585 FTranslate.class:642
 msgid "Reload"
 msgstr "Ladda om"
 
@@ -2459,31 +2547,31 @@ msgstr "&Ladda om"
 msgid "Reload translation"
 msgstr "Ladda om översättning"
 
-#: FProjectEnv.class:253 FPropertyProject.class:1842
+#: FProjectEnv.class:253 FPropertyProject.class:1808
 msgid "&Remove"
 msgstr "&Tag bort"
 
-#: FPropertyProject.class:2075
+#: FPropertyProject.class:2041
 msgid "Remove All"
 msgstr "Tag bort allt"
 
-#: FDebugInfo.class:791
+#: FDebugInfo.class:794
 msgid "Remove all breakpoints"
 msgstr "Tag bort alla brytpunkter"
 
-#: FDebugInfo.class:734
+#: FDebugInfo.class:737
 msgid "Remove all expressions"
 msgstr "Tag bort alla uttryck"
 
-#: FDebugInfo.class:784
+#: FDebugInfo.class:787
 msgid "Remove current breakpoint"
 msgstr "Tag bort aktuell brytpunkt"
 
-#: FDebugInfo.class:741
+#: FDebugInfo.class:744
 msgid "Remove current expression"
 msgstr "Tag bort aktuellt uttryck"
 
-#: FMain.class:2187
+#: FMain.class:2007
 msgid "&Rename..."
 msgstr "&Döp om..."
 
@@ -2491,7 +2579,7 @@ msgstr "&Döp om..."
 msgid "Replace"
 msgstr "Byt ut"
 
-#: FEditor.class:2592 FTextEditor.class:659
+#: FEditor.class:2809 FTextEditor.class:802
 msgid "Replace..."
 msgstr "Byt ut..."
 
@@ -2511,11 +2599,11 @@ msgstr "Rapportkonstruktör"
 msgid "Repository"
 msgstr "Arkiv"
 
-#: CComponentBox.class:197 FPropertyProject.class:1992
+#: CComponentBox.class:197 FPropertyProject.class:1958
 msgid "Requires"
 msgstr "Kräver"
 
-#: FPropertyProject.class:1811
+#: FPropertyProject.class:1777
 msgid "&Reset"
 msgstr "Åte&rställ"
 
@@ -2523,7 +2611,7 @@ msgstr "Åte&rställ"
 msgid "Retry"
 msgstr "Försök igen"
 
-#: FPropertyProject.class:1928
+#: FPropertyProject.class:1894
 msgid "&Revert..."
 msgstr "&Återgå..."
 
@@ -2539,7 +2627,7 @@ msgstr "Rotera medsols"
 msgid "Rows"
 msgstr "Rader"
 
-#: Package.module:861
+#: Package.module:882
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' har svarat med följande felkod:"
 
@@ -2547,11 +2635,11 @@ msgstr "'rpmbuild' har svarat med följande felkod:"
 msgid "Ruby"
 msgstr "Rubin"
 
-#: FMain.class:2400
+#: FMain.class:2231
 msgid "Run"
 msgstr "Kör"
 
-#: FMain.class:1884
+#: FMain.class:1697
 msgid "&Run"
 msgstr "&Kör"
 
@@ -2559,15 +2647,15 @@ msgstr "&Kör"
 msgid "Run this command after"
 msgstr "Kör detta kommndo efter"
 
-#: FMain.class:1930
+#: FMain.class:1743
 msgid "Run &until"
 msgstr "Kör &tills"
 
-#: FEditor.class:2499
+#: FEditor.class:2716
 msgid "Run &until current line"
 msgstr "Kör &till aktuell rad"
 
-#: FMain.class:2449
+#: FMain.class:2280
 msgid "Run until current line"
 msgstr "Kör till aktuell rad"
 
@@ -2595,7 +2683,7 @@ msgstr "Samma &bredd"
 msgid "Sapphire"
 msgstr "Safir"
 
-#: FTextEditor.class:683
+#: FTextEditor.class:852
 msgid "Save"
 msgstr "Spara"
 
@@ -2603,19 +2691,19 @@ msgstr "Spara"
 msgid "Save modified files"
 msgstr "Spara ändrade filer"
 
-#: FMain.class:1772
+#: FMain.class:1585
 msgid "&Save project"
 msgstr "&Spara projekt"
 
-#: FMain.class:2243
+#: FMain.class:2074
 msgid "Save project"
 msgstr "Spara projekt"
 
-#: FMain.class:2251 Project.module:1610
+#: FMain.class:2082 Project.module:1624
 msgid "Save project as"
 msgstr "Spara projekt som"
 
-#: FMain.class:1779
+#: FMain.class:1592
 msgid "Save project &as..."
 msgstr "Sp&ara projekt som..."
 
@@ -2623,7 +2711,7 @@ msgstr "Sp&ara projekt som..."
 msgid "Save translation"
 msgstr "Spara översättning"
 
-#: Package.module:133
+#: Package.module:137
 msgid "Saving CHANGELOG file."
 msgstr "Spara fil med ÄNDRINGSLOGG."
 
@@ -2643,7 +2731,7 @@ msgstr "SDL-bibliotek"
 msgid "SDL sound & CD-ROM management"
 msgstr "Hantering av SDL-ljud & CD-ROM"
 
-#: FOption.class:701
+#: FOption.class:696
 msgid "SeaMonkey"
 msgstr "SeaMonkey"
 
@@ -2699,7 +2787,7 @@ msgstr "Välj ett typsnitt"
 msgid "Select all"
 msgstr "Välj allt"
 
-#: FEditor.class:2561 FTextEditor.class:644
+#: FEditor.class:2778 FTextEditor.class:787
 msgid "Select &All"
 msgstr "Välj &allt"
 
@@ -2711,15 +2799,15 @@ msgstr "Välj en bild"
 msgid "Select a project"
 msgstr "Välj ett projekt"
 
-#: FOption.class:48
+#: FOption.class:55
 msgid "Select a theme"
 msgstr "Välj ett tema"
 
-#: FOption.class:283
+#: FOption.class:263
 msgid "Select a theme file"
 msgstr "Välj en temafil"
 
-#: FOption.class:910
+#: MTheme.module:6
 msgid "Selection"
 msgstr "Urval"
 
@@ -2743,7 +2831,7 @@ msgstr "SHIFT"
 msgid "Shortcut"
 msgstr "Genväg"
 
-#: FPropertyProject.class:1783
+#: FPropertyProject.class:1749
 msgid "Show components in beta version"
 msgstr "Visa komponenter i beta-version"
 
@@ -2751,21 +2839,17 @@ msgstr "Visa komponenter i beta-version"
 msgid "Show hidden symbols"
 msgstr "Visa gömda symboler"
 
-#: FOption.class:773
+#: FOption.class:942
 msgid "Show line numbers"
 msgstr "Visa radnummer"
 
-#: FOption.class:565
+#: FOption.class:735
 msgid "Show message bar"
 msgstr "Visa meddelanderad"
 
-#: FPropertyProject.class:1788
+#: FPropertyProject.class:1754
 msgid "Show only components used in project"
 msgstr "Visa endast komponenter, som används i projekt"
-
-#: FOption.class:548
-msgid "Show project information balloons"
-msgstr "Visa projektinformation i pratbubblor"
 
 #: FTranslate.class:1250
 msgid "Show statistics"
@@ -2775,7 +2859,7 @@ msgstr "Visa statistik"
 msgid "Show tips on startup"
 msgstr "Visa tips vid start"
 
-#: FOption.class:531
+#: FOption.class:718
 msgid "Show tooltips"
 msgstr "Visa verktygstips"
 
@@ -2783,7 +2867,7 @@ msgstr "Visa verktygstips"
 msgid "Simplified chinese (China)"
 msgstr "Förenklad kinesiska (Kina)"
 
-#: FSelectIcon.class:235
+#: FInfo.class:295 FSelectIcon.class:235
 msgid "Size"
 msgstr "Storlek"
 
@@ -2795,19 +2879,19 @@ msgstr "Slackware"
 msgid "Slovenian (Slovenia)"
 msgstr "Slovenska (Slovenien)"
 
-#: FOption.class:590
-msgid "Small size"
-msgstr "Liten storlek"
+#: FOption.class:760
+msgid "Small"
+msgstr "Liten"
 
-#: FPropertyProject.class:253
+#: FPropertyProject.class:249
 msgid "Snapping value is incorrect."
 msgstr "Låsningsvärde är fel."
 
-#: Project.module:2147
+#: Project.module:2163
 msgid "Some components are missing: &1"
 msgstr "Några komponenter saknas: &1"
 
-#: FMain.class:350
+#: FMain.class:356
 msgid "&Sort by path"
 msgstr "&Sortera sökvägsvis"
 
@@ -2815,15 +2899,15 @@ msgstr "&Sortera sökvägsvis"
 msgid "Sort by path"
 msgstr "Sortera sökvägsvis"
 
-#: FDebugInfo.class:696
+#: FDebugInfo.class:699
 msgid "Sort local variables"
 msgstr "Sortera lokala variabler"
 
-#: FDebugInfo.class:716
+#: FDebugInfo.class:719
 msgid "Sort object variables"
 msgstr "Sortera objektvariabler"
 
-#: FOption.class:618
+#: FOption.class:788
 msgid "Sort properties"
 msgstr "Sortera egenskaper"
 
@@ -2831,23 +2915,23 @@ msgstr "Sortera egenskaper"
 msgid "Sound"
 msgstr "Ljud"
 
-#: FMain.class:1839
+#: FMain.class:1652
 msgid "&Source archive..."
 msgstr "&Källarkiv..."
 
-#: Project.module:3008
+#: Project.module:3024
 msgid "Source packages"
 msgstr "Källpaket"
 
-#: Package.module:346
+#: Package.module:337
 msgid "Sources are being debianizated."
 msgstr "Källor debianiseras."
 
-#: FOption.class:763
+#: FOption.class:932
 msgid "spaces"
 msgstr "mellanslag"
 
-#: FPropertyProject.class:1757
+#: FPropertyProject.class:1740
 msgid "space(s)"
 msgstr "mellanslag"
 
@@ -2859,27 +2943,27 @@ msgstr "Spanska (Argentina)"
 msgid "Spanish (Spain)"
 msgstr "Spanska (Spanien)"
 
-#: FDebugInfo.class:823
+#: FDebugInfo.class:826
 msgid "Stack backtrace"
 msgstr "Stackbakåtspårning"
 
-#: FPropertyProject.class:1645
+#: FPropertyProject.class:1628
 msgid "Stack size"
 msgstr "Stackstorlek"
 
-#: FMain.class:2212
+#: FMain.class:2032
 msgid "&Startup class"
 msgstr "&Startklass"
 
-#: FDebugInfo.class:139
+#: FDebugInfo.class:141
 msgid "Static variables"
 msgstr "Statiska variabler"
 
-#: FMain.class:2424
+#: FMain.class:2255
 msgid "Step"
 msgstr "Steg"
 
-#: FMain.class:1909
+#: FMain.class:1722
 msgid "St&ep"
 msgstr "St&eg"
 
@@ -2891,15 +2975,15 @@ msgstr "STMP-klient"
 msgid "Stock"
 msgstr "Lager"
 
-#: FMain.class:2416
+#: FMain.class:2247
 msgid "Stop"
 msgstr "Stopp"
 
-#: FMain.class:1902
+#: FMain.class:1715
 msgid "&Stop"
 msgstr "&Stopp"
 
-#: FOption.class:1047
+#: MTheme.module:6
 msgid "Strings"
 msgstr "Strängar"
 
@@ -2907,7 +2991,7 @@ msgstr "Strängar"
 msgid "Style sheet"
 msgstr "Stilark"
 
-#: FOption.class:938
+#: MTheme.module:6
 msgid "Subroutines"
 msgstr "Subrutiner"
 
@@ -2927,7 +3011,7 @@ msgstr "Svenska (Sverige)"
 msgid "Symbol"
 msgstr "Symbol"
 
-#: FOption.class:1033
+#: MTheme.module:6
 msgid "Symbols"
 msgstr "Symboler"
 
@@ -2935,15 +3019,19 @@ msgstr "Symboler"
 msgid "System"
 msgstr "System"
 
-#: FPropertyProject.class:1745
+#: FPropertyProject.class:1728
 msgid "Tab size"
 msgstr "Tabulatorstorlek"
+
+#: FOption.class:862
+msgid "Tabstrip font size"
+msgstr "Flikteckensnittsstorlek"
 
 #: FMenu.class:933
 msgid "Tag"
 msgstr "Märke"
 
-#: Package.module:1089
+#: Package.module:1110
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' har svarat med följande felkod:"
 
@@ -2951,7 +3039,7 @@ msgstr "'tar' har svarat med följande felkod:"
 msgid "Text"
 msgstr "Text"
 
-#: FMain.class:1292
+#: FInfo.class:79
 msgid "Text file"
 msgstr "Textfil"
 
@@ -2959,27 +3047,31 @@ msgstr "Textfil"
 msgid "Thanks to"
 msgstr "Tack till"
 
-#: FPropertyProject.class:439
+#: FPropertyProject.class:435
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr "&1-komponenten behöver en av följande komponenter:<br>&2."
 
-#: FPropertyProject.class:446
+#: FPropertyProject.class:442
 msgid "The &1 component needs the &2 component."
 msgstr "&1-komponenten behöver &2-kcomponenten."
 
-#: Project.module:2576
+#: Project.module:2592
 msgid "The directory will be removed at the next commit."
 msgstr "Mappen kommer att tas bort vid nästa inlämning."
 
-#: FEditor.class:1943 FIconEditor.class:2026 FTextEditor.class:527
+#: FProperty.class:521
+msgid "The event group that the control belongs to."
+msgstr "Den händelsegrupp som kontrollen hör till."
+
+#: FEditor.class:2011 FIconEditor.class:2026 FTextEditor.class:585
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Filen har ändrats.\n\nAlla dina ändringar kommer att förloras."
 
-#: Project.module:2952
+#: Project.module:2968
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Följande tecken är förbjudna i projektnamn: ? * / \\ mellanslag"
 
-#: Project.module:838
+#: Project.module:855
 msgid "The following classes have circular inheritance:"
 msgstr "Följande klasser har cirkulärt arv:"
 
@@ -2987,15 +3079,23 @@ msgstr "Följande klasser har cirkulärt arv:"
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Formuläret har ändrats.\n\n Alla dina ändringar kommer att förloras."
 
-#: FMain.class:610
+#: FMain.class:617
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
 msgstr "GNU's översättningshjälpmedel är ej installerade på ditt system.\nInstallera dem så kan du göra översättningar."
+
+#: FOption.class:1039
+msgid "Theme"
+msgstr "Tema"
 
 #: FTranslate.class:908
 msgid "The 'msgmerge' command has failed"
 msgstr "'msgmerge'-kommandot fungerade inte"
 
-#: Package.module:252
+#: FProperty.class:510
+msgid "The name of the control."
+msgstr "Kontrollens namn."
+
+#: Package.module:256
 msgid "The package build has failed."
 msgstr "Paketbygget har misslyckats."
 
@@ -3003,15 +3103,15 @@ msgstr "Paketbygget har misslyckats."
 msgid "The package cannot be stored inside the project directory."
 msgstr "Paketet kan ej lagras inuti projektmappen."
 
-#: FMakeInstall.class:229 Package.module:140
+#: FMakeInstall.class:229 Package.module:144
 msgid "The packages have been successfully created."
 msgstr "Paketen har skapats."
 
-#: Design.module:289
+#: Design.module:287
 msgid "The program has returned\nthe value: &1"
 msgstr "Programmet returnerade\nvärdet: &1"
 
-#: Design.module:285
+#: Design.module:283
 msgid "The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."
 msgstr "programmet har oväntat stoppats\ngenom signal #&1.\n\nVar vänlig och skicka en felrapport till\ngambas@users.sourceforge.net."
 
@@ -3019,11 +3119,11 @@ msgstr "programmet har oväntat stoppats\ngenom signal #&1.\n\nVar vänlig och s
 msgid "The project could not be committed."
 msgstr "projektet kunde inte lämnas in."
 
-#: Project.module:2962
+#: Project.module:2978
 msgid "The project directory already exists."
 msgstr "Projektmappen finns redan."
 
-#: Project.module:2964
+#: Project.module:2980
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Projektmappen kan ej skapas, ty det finns redan en fil med samma namn."
 
@@ -3035,7 +3135,7 @@ msgstr "Projektet har lyckligt skapats."
 msgid "The project is void. There is nothing to translate."
 msgstr "Projektet är tomt. Det finns inget att översätta."
 
-#: Project.module:2948
+#: Project.module:2964
 msgid "The project name cannot begin with a dot."
 msgstr "projektnamnet kan ej börja med en punkt."
 
@@ -3043,7 +3143,7 @@ msgstr "projektnamnet kan ej börja med en punkt."
 msgid "There is no CHANGELOG entry for this release."
 msgstr "Det finns ingen ÄNDRINGSLOGs uppgift för denna utgåva."
 
-#: FPropertyProject.class:426
+#: FPropertyProject.class:422
 msgid "These components are incompatible:<br>&1."
 msgstr "Dessa komponenter är ej kompatibla:<br>&1."
 
@@ -3055,9 +3155,13 @@ msgstr "Dessa filer har ändrats.\nDo&nbsp;vill du spara dem?"
 msgid "This image has been modified.\nDo you want to save it ?"
 msgstr "Denna bild har ändrats.\n Vill du spar den?"
 
-#: Project.module:267
-msgid "This is a Gambas 1.0 project.\n\nDo you want to open it anyway?"
-msgstr "Detta är ett Gambas 1.0 projekt.\n\nVill du ändå öppna det?"
+#: Project.module:275
+msgid "This is a Gambas &1 project.\n\nDo you want to open it anyway?"
+msgstr "Detta ätr ett Gambas &1-projekt.\n\nVill du öppna det ändå?"
+
+#: Project.module:273
+msgid "This is not a Gambas project."
+msgstr "Detta är inte ett Gambas-projekt."
 
 #: FCommit.class:5
 msgid "This line and the following will be ignored"
@@ -3067,15 +3171,15 @@ msgstr "Denna och följande rad kommer att ignoreras"
 msgid "This menu is too deep !"
 msgstr "Denna mey är för djup!"
 
-#: Project.module:2626
+#: Project.module:2642
 msgid "This name contains a forbidden character:"
 msgstr "Detta namn innehåller förbjudna tecken:"
 
-#: FProperty.class:324
+#: FProperty.class:334
 msgid "This name is already in use."
 msgstr "Detta namn används redan."
 
-#: Project.module:2630
+#: Project.module:2646
 msgid "This name is already used. Choose another one."
 msgstr "Detta namn används redan. Välj ett annat."
 
@@ -3083,23 +3187,23 @@ msgstr "Detta namn används redan. Välj ett annat."
 msgid "This program is published under the GNU General Public Licence."
 msgstr "This program is published under the GNU General Public Licence."
 
-#: Project.module:1616
+#: Project.module:1630
 msgid "This project already exists."
 msgstr "Detta projekt finns redan."
 
-#: Project.module:259
+#: Project.module:263
 msgid "This project does not exist."
 msgstr "Projektet finns ej."
 
-#: FPropertyProject.class:1628
+#: FPropertyProject.class:1611
 msgid "This project is a component"
 msgstr "Detta projekt är en komponent"
 
-#: Project.module:319
+#: Project.module:327
 msgid "This project is read-only."
 msgstr "Detta projekt är skrivskyddat."
 
-#: Project.module:276
+#: Project.module:284
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr "Detta projekt varkar redan vara öppnat.\n\nAtt öppna samma projekt två gånger kan leda till förlust av data."
 
@@ -3107,11 +3211,15 @@ msgstr "Detta projekt varkar redan vara öppnat.\n\nAtt öppna samma projekt tv�
 msgid "This string must not be translated"
 msgstr "Denna sträng får ej översättas"
 
+#: FOption.class:870
+msgid "Tiny"
+msgstr "Tunn"
+
 #: FTips.class:47
 msgid "Tip of the day"
 msgstr "Dagens tips"
 
-#: FMain.class:2064
+#: FMain.class:1884
 msgid "&Tips of the day"
 msgstr "&Dagens tips"
 
@@ -3119,7 +3227,7 @@ msgstr "&Dagens tips"
 msgid "Tips of the day"
 msgstr "Dagens tips"
 
-#: FCreateProject.class:646 FPropertyProject.class:1495
+#: FCreateProject.class:646 FPropertyProject.class:1490
 msgid "Title"
 msgstr "Titel"
 
@@ -3127,15 +3235,15 @@ msgstr "Titel"
 msgid "Toggle"
 msgstr "Växla"
 
-#: FMain.class:1941
+#: FMain.class:1754
 msgid "&Toggle breakpoint"
 msgstr "&Växla brytpunkt"
 
-#: FMain.class:2457
+#: FMain.class:2288
 msgid "Toggle breakpoint"
 msgstr "Växla brytpunkt"
 
-#: FEditor.class:2506
+#: FEditor.class:2723
 msgid "Toggle &breakpoint"
 msgstr "Växla &brytpunkt"
 
@@ -3143,19 +3251,19 @@ msgstr "Växla &brytpunkt"
 msgid "Toggle grid"
 msgstr "Växla rutnät"
 
-#: FMain.class:2353
+#: FMain.class:2184
 msgid "Toolbox"
 msgstr "Verktygslåda"
 
-#: FMain.class:1988
+#: FMain.class:1801
 msgid "&Toolbox"
 msgstr "&Verktygslåda"
 
-#: FOption.class:600
+#: FOption.class:770
 msgid "Toolbox size"
 msgstr "Storlek på verktygslåda"
 
-#: FMain.class:2013
+#: FMain.class:1826
 msgid "&Tools"
 msgstr "Verk&tyg"
 
@@ -3163,11 +3271,11 @@ msgstr "Verk&tyg"
 msgid "Traditional chinese (Taiwan)"
 msgstr "Traditionell kinesiska (Taiwan)"
 
-#: FMain.class:2288
+#: FMain.class:2119
 msgid "Translate"
 msgstr "Översätt"
 
-#: FMain.class:1818
+#: FMain.class:1631
 msgid "&Translate..."
 msgstr "&Översätt..."
 
@@ -3175,7 +3283,7 @@ msgstr "&Översätt..."
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Översatta strängsymboler matchar ej de oöversatta."
 
-#: FPropertyProject.class:1601
+#: FPropertyProject.class:1584
 msgid "Translation"
 msgstr "Översättning"
 
@@ -3191,7 +3299,7 @@ msgstr "Genomskinligt"
 msgid "Turkish (Turkey)"
 msgstr "Turkiska (Turkiet)"
 
-#: FCreateFile.class:727 FCreateProject.class:355 FPropertyProject.class:843
+#: FPropertyProject.class:839
 msgid "Type"
 msgstr "Typ"
 
@@ -3199,11 +3307,11 @@ msgstr "Typ"
 msgid "Ubuntu"
 msgstr "Ubuntu"
 
-#: Project.module:2322
+#: Project.module:2338
 msgid "Unable to create desktop shortcut."
 msgstr "Kan ej skap genväg till skrivbordet."
 
-#: Project.module:2403
+#: Project.module:2419
 msgid "Unable to install component."
 msgstr "Kan ej installera komponent."
 
@@ -3211,27 +3319,31 @@ msgstr "Kan ej installera komponent."
 msgid "Unable to read tip of the day !"
 msgstr "Kan ej läsa dagens tips!"
 
-#: Project.module:2821
+#: Project.module:2837
 msgid "Unable to rename '&1'"
 msgstr "Kan ej döpa '&1'"
 
-#: Project.module:1629
+#: Project.module:1643
 msgid "Unable to save the project."
 msgstr "Kunde ej spara projektet."
 
-#: Project.module:2441
+#: Project.module:2457
 msgid "Unable to uninstall component."
 msgstr "Kaj ej avinstallera komponent."
 
-#: FMain.class:1057
+#: FMain.class:1045
 msgid "Unable to update all forms."
 msgstr "Kunde ej uppdatera alla formulär."
 
-#: FEditor.class:2576
+#: FEditor.class:2793
 msgid "Uncomment"
 msgstr "Avkommentera"
 
-#: FOption.class:872 FTextEditor.class:606
+#: FOption.class:653
+msgid "Underline"
+msgstr "Understrykning"
+
+#: FIconEditor.class:2143 FOption.class:1075 FTextEditor.class:749
 msgid "Undo"
 msgstr "Ångra"
 
@@ -3239,7 +3351,7 @@ msgstr "Ångra"
 msgid "Undock console"
 msgstr "Koppla loss konsol"
 
-#: FEditor.class:2707 FTextEditor.class:757
+#: FCommit.class:249 FEditor.class:2946 FTextEditor.class:926
 msgid "Unindent"
 msgstr "Ångra indragning"
 
@@ -3255,15 +3367,15 @@ msgstr "Avmarkera allt"
 msgid "Untranslated"
 msgstr "Oöversatt"
 
-#: FMain.class:1042
+#: FMain.class:1030
 msgid "Update"
 msgstr "Uppdatera"
 
-#: FPropertyProject.class:1922
+#: FPropertyProject.class:1888
 msgid "&Update"
 msgstr "&Uppdatera"
 
-#: FMain.class:2031
+#: FMain.class:1851
 msgid "&Update all forms"
 msgstr "&Uppdatera alla formulär"
 
@@ -3271,7 +3383,7 @@ msgstr "&Uppdatera alla formulär"
 msgid "Use a fixed font"
 msgstr "Använd en fast font"
 
-#: FCommit.class:105
+#: FCommit.class:164
 msgid "User"
 msgstr "Användare"
 
@@ -3283,11 +3395,11 @@ msgstr "Använd systemets teckensnitt"
 msgid "Wallon (Belgium)"
 msgstr "Vallonska (Belgien)"
 
-#: FPropertyProject.class:129
+#: FPropertyProject.class:126
 msgid "Value"
 msgstr "Värde"
 
-#: FProjectEnv.class:58 FPropertyProject.class:128
+#: FProjectEnv.class:58 FPropertyProject.class:125
 msgid "Variable"
 msgstr "Variabel"
 
@@ -3295,19 +3407,19 @@ msgstr "Variabel"
 msgid "Warning ! The translation file does not match the current language."
 msgstr "Varning! Översättningsfilen passar inte till aktuellt språk."
 
-#: FDebugInfo.class:726
+#: FDebugInfo.class:729
 msgid "Watch"
 msgstr "Bevakning"
 
-#: FMain.class:2467
+#: FMain.class:2298
 msgid "Watch expression"
 msgstr "Bevakningsuttryck"
 
-#: FMain.class:1957
+#: FMain.class:1770
 msgid "&Watch expression"
 msgstr "&Bevaka uttryck"
 
-#: FEditor.class:2514
+#: FEditor.class:2731
 msgid "&Watch expression..."
 msgstr "&Bevakningsuttryck..."
 
@@ -3335,11 +3447,11 @@ msgstr "Tillverkarnamn"
 msgid "Verify the translation"
 msgstr "Verifiera översättningen"
 
-#: FPropertyProject.class:1567
+#: FPropertyProject.class:1542
 msgid "Version"
 msgstr "Version"
 
-#: FPropertyProject.class:1897
+#: FPropertyProject.class:1863
 msgid "Versioning"
 msgstr "Versionshantering"
 
@@ -3350,6 +3462,10 @@ msgstr "Vertikal"
 #: FIconEditor.class:2395
 msgid "Vertical flip"
 msgstr "Vertikal vikning"
+
+#: FEditor.class:2848 FTextEditor.class:841
+msgid "Vertical split"
+msgstr "Vertikal delning"
 
 #: Project.module:132
 msgid "Video"
@@ -3367,9 +3483,13 @@ msgstr "Bredd"
 msgid "Vietnamese (Vietnam)"
 msgstr "Vietnamesiska (Vietnam)"
 
-#: FMain.class:1967
+#: FMain.class:1780
 msgid "&View"
 msgstr "&Visa"
+
+#: FEditor.class:2833 FTextEditor.class:826
+msgid "View"
+msgstr "Vy"
 
 #: FMenu.class:1032
 msgid "Visible"
@@ -3391,7 +3511,7 @@ msgstr "Visual Basic™ konverteringshjälp"
 msgid "Word only"
 msgstr "Endast ord"
 
-#: FMain.class:1301
+#: FInfo.class:88
 msgid "XML file"
 msgstr "XML-fil"
 
@@ -3415,11 +3535,11 @@ msgstr "XPM"
 msgid "XSLT tools based on libxslt"
 msgstr "XSLT-verktyg baserade på libxslt"
 
-#: FOption.class:538 FPropertyProject.class:1635
+#: FOption.class:725 FPropertyProject.class:1618
 msgid "Yes"
 msgstr "Ja"
 
-#: FPropertyProject.class:1153
+#: FPropertyProject.class:1149
 msgid "You are going to cancel your changes!"
 msgstr "Då skall till att saka dina ändringar!"
 
@@ -3427,11 +3547,11 @@ msgstr "Då skall till att saka dina ändringar!"
 msgid "You can support <b>Gambas</b> by writing components, documentation, examples, and so on...\n<p>\nYou can also make a gift to the project by using PayPal:"
 msgstr "Du kan stödja <b>Gambas</b> genom att skriva komponenter, dokumentation, exempel m m... \n<p>\nDu kan också ge en gåva till projektet via PayPal:"
 
-#: Project.module:2595
+#: Project.module:2611
 msgid "You must define a startup class or form!"
 msgstr "Du måste definiera startklass eller startformulär!"
 
-#: FOption.class:313
+#: FOption.class:293
 msgid "You need to restart the application to see your changes."
 msgstr "Du måste starta om tillämpningen för att se dina ändringar."
 
