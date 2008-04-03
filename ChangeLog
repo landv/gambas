@@ -1,4 +1,135 @@
 -------------------------------------------------------------------------------
+ gambas2-2.5.0 - 03 Apr 2008
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Support for X11 libraries not installed in the default library paths.
+* BUG: The config.h.in files were removed from the subversion repository.
+* BUG: Adds /usr/local/lib/include as include search path for libffi.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: The busy cursor is now correctly reset in all cases when clearing
+  the recent file history.
+* BUG: Importing a form now correctly associates the imported pictures.
+* BUG: The initial stack backtrace list width is correct now.
+* BUG: Fixed comment/uncomment so that they will work correctly if there
+  is not a space after the comment mark
+* BUG: Fixed the name of tooltips and menu entries. Only the first letter 
+  is in upper case.
+* BUG: Fixes the generation of the list of last opened files.
+* BUG: Explicitely closes embedded forms in FMain, so that their settings
+  are correctly written. See the source code comments for more details.
+* BUG: Use a relative font size in the workspace, toolbox and property
+  sheet.
+* BUG: UTF-8 fixes in the code editor.
+* BUG: Help pages on special method are opened correctly now.
+* BUG: Breakpoint list is not filled with impossible breakpoints anymore.
+* BUG: The procedure combo-box now always displays the correct current
+  procedure name.
+* BUG: In the file creation dialog, always select a filter if we click on
+  the "existing" tab.
+* BUG: Compiler output is now correctly handled when some warning messages
+  are printed.
+* BUG: Auto-completion and function signature are displayed at the right
+  position now, when the editor has been split.
+* BUG: Saving the entire project does not reset the highlighting of the
+  modified lines anymore.
+* NEW: The editor in the commit window has been enhanced. It has a little
+  toolbar and displays the cursor position now.
+* NEW: Added split editor views.
+* NEW: Added buttons for Definition and Last Position to the editor 
+  toolbar.
+* NEW: Added additional hotkeys for Cut (Shift+Delete), Copy (CTRL+Insert)
+  and Paste (Shift+Insert).
+* NEW: Added a textlabel to the bottom of the property window that
+  displays help text for the selected property.
+* NEW: Added an option to preferences to disable integrated help.
+* NEW: Adds KIconEdit as image editor.
+* NEW: Copying a file automatically enters in rename mode.
+* NEW: Balloon file information were replaced by a standard dialog.
+* NEW: New icon for the TextEdit control.
+* NEW: CSS and HTML highlighting now use procedure separation.
+
+[DATABASE MANAGER]
+* BUG: Correctly manages editable GridViews when a row or a column is
+  resized.
+
+[EXAMPLES]
+* NEW: Spanish translation added/updated for all translatable projects.
+
+[INTERPRETER]
+* BUG: NEW Observer(NULL) now raises an error, and does not crash anymore.
+* BUG: The binary and hexadecimal numbers with a '&' suffix are now
+  correctly extended to a Long unsigned constant if needed.
+
+[INFORMER]
+* BUG: Now gbi2 use native dlopen() functions instead of libltdl wrapper 
+  on OpenBSD.
+
+[GB.DB.FIREBIRD]
+* BUG: Fixed building with gcc 4.3.
+
+[GB.EVAL]
+* BUG: The long binary and hexadecimal numbers are correctly interpreted
+  now.
+
+[GB.FORM]
+* BUG: The SidePanel.Border works correctly now.
+* NEW: Spanish translation updated.
+* NEW: ChangeLog and README files are displayed with a text file icon in
+  the FileView control.
+* NEW: The Space key now raises the Activate event in the DateChooser
+  control.
+* NEW: The ColorChooser text box that display the hexadecimal value of the
+  color is now editable.
+
+[GB.FORM.DIALOG]
+* NEW: Spanish translation updated.
+
+[GB.FORM.MDI]
+* NEW: Spanish translation updated.
+
+[GB.GB.FORM]
+* NEW: Spanish translation updated.
+
+[GB.GTK]
+* BUG: Correctly handles mouse button events in the GridView control.
+* BUG: Setting GridView.Rows.Count to zero does not make rows too small
+  anymore.
+* BUG: Fix the Key.Enter keyboard constant value.
+* BUG: The AutoResize property of containers now takes the Padding
+  property into account in all cases.
+* BUG: Watcher are correctly released when the watched object is destroyed.
+* BUG: Drawing on a null picture now raises an error.
+* BUG: ColumnView has no ColumnClick event anymore, as in gb.qt.
+* BUG: Splitter correctly handle the visibility of its children now.
+
+[GB.QT]
+* BUG: As promised, the TreeView/ListView/ColumnView MoveAbove() and
+  MoveBelow() methods were rewritten to behave exactly as in gb.gtk.
+  This way, enumerating all items of a TreeView is just a loop with
+  a call to MoveFirst() and many calls to MoveBelow().
+* BUG: The AutoResize property of containers now takes the Padding
+  property into account in all cases.
+* BUG: A failing Image.Load() does not create a useless internal image
+  anymore.
+* BUG: Fix automake warning. Should fix building when GNU/make isn't 
+  available.
+* BUG: Include path check for X11 include files.
+* BUG: Add x11 include path through GB_CHECK_XWINDOW macro.
+
+[GB.QT.EXT]
+* BUG: Backport a fix from Gambas3 where sometimes the Editor scroll bars
+  are not correctly updated.
+* BUG: Void lines are correctly highlighted in all cases now.
+
+[GB.SETTINGS]
+* BUG: Settings.Read() and Settings.Write() now use the Window class of the
+  specified control, not the TopLevel window, which may not necessarily
+  exist anymore.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.4.1 - 19 Mar 2008
 -------------------------------------------------------------------------------
 
@@ -992,15 +1123,15 @@
 * NEW: TrayIcon Menu and MouseWheel events were implemented.
 
 [GB.GTK.EXT]
-* New methods added to Theme drawing
-* Added ResizeGrip drawing method
-* Removed Shadow and State classes: mixed with Draw.Theme class
+* NEW: New methods added to Theme drawing.
+* NEW: Added ResizeGrip drawing method.
+* NEW: Removed Shadow and State classes: mixed with Draw.Theme class
 
 [GB.GUI]
-*BUG: Now Draw.RichTextHeight and Draw.RichTextWidth return values.
+* BUG: Now Draw.RichTextHeight and Draw.RichTextWidth return values.
 
 [GB.NET.CURL]
-*BUG: Many compiler warnings removed
+* BUG: Many compiler warnings removed
 
 [GB.PDF]
 * BUG: Some annotations to continue the work later
