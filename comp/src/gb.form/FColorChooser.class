@@ -357,3 +357,20 @@ PUBLIC SUB SetAlpha(Value AS Boolean)
   IF NOT Value THEN txtA.Value = 0
   
 END
+
+PUBLIC SUB txtHexa_Change()
+
+  DIM iColor AS Integer
+
+  IF $bLock THEN RETURN
+  IF panAlpha.Visible THEN 
+    IF txtHexa.Length <> 8 THEN RETURN 
+  ELSE 
+    IF txtHexa.Length <> 6 THEN RETURN 
+  ENDIF
+  iColor = Val("&H" & txtHexa.Text & "&")
+  IF iColor = $iColor THEN RETURN
+  $iColor = iColor
+  RefreshColor(TRUE, TRUE)
+
+END
