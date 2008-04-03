@@ -274,6 +274,9 @@ PUBLIC SUB dwgMonth_KeyPress()
     CASE Key.Down
       $dDate += 7
       SetDate
+      
+    CASE Key.Space
+      dwgMonth_DblClick
   
   END SELECT   
 

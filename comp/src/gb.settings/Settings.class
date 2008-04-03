@@ -332,14 +332,16 @@ END
 
 PRIVATE SUB GetTopLevel(hCtrl AS Object) AS String
   
-  DIM hTop AS Object
-  
-  WHILE hCtrl
-    IF hCtrl.Window.TopLevel THEN RETURN Object.Type(hCtrl.Window)
-    hCtrl = hCtrl.Window.Parent
-  WEND
-  
-CATCH
+'   DIM hTop AS Object
+'   
+'   WHILE hCtrl
+'     IF hCtrl.Window.TopLevel THEN RETURN Object.Type(hCtrl.Window)
+'     hCtrl = hCtrl.Window.Parent
+'   WEND
+'   
+' CATCH
+
+  RETURN Object.Type(hCtrl.Window)
   
 END
 

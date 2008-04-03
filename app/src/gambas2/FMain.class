@@ -50,11 +50,11 @@ PUBLIC SUB Form_Open()
   'DEBUG
 
   Settings.Read(ME)
-  Settings.Read(panProject, "panProject")
-  Settings.Read(panProperty, "panProperty")
-  Settings.Read(panTool, "panTool")
+  Settings.Read(panProject)
+  Settings.Read(panProperty)
+  Settings.Read(panTool)
   'Settings.Read(panStack, "panStack")
-  Settings.Read(panDebug, "panDebug")
+  Settings.Read(panDebug)
 
   'ShowTool(FALSE)
 

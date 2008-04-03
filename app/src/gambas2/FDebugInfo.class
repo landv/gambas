@@ -10,6 +10,8 @@ PRIVATE CONST TAB_BREAK AS Integer = 4
 
 PUBLIC SUB Form_Open()
 
+  Settings.Read(splDebug)
+
   ReadConfig
 
   WITH cvwLocal
@@ -470,7 +472,7 @@ END
 
 PUBLIC SUB Form_Close()
 
-  Settings.Write(splDebug, "splDebug")
+  Settings.Write(splDebug)
 
 END
 
