@@ -139,17 +139,17 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
     hComponent.Key = File.BaseName(sFile)
     hComponent.Name = $cName[hComponent.Key]
 
-    While NOT Eof(hFic)
+    While Not Eof(hFic)
 
       Line Input #hFic, sLig
       sLig = Trim(sLig)
 
-      If NOT sLig Then Continue
-      If Left(sLig) = ";" OR Left(sLig) = "'" Then Continue
+      If Not sLig Then Continue
+      If Left(sLig) = ";" Or Left(sLig) = "'" Then Continue
 
       If sLig = "[Component]" Then Break
 
-      If Left(sLig) = "[" AND If Right(sLig) = "]" Then
+      If Left(sLig) = "[" And If Right(sLig) = "]" Then
         sGroup = Mid$(sLig, 2, -1)
         Continue
       Endif
@@ -167,13 +167,13 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
         ' ELSE IF sKey = "Name" THEN 'OR sKey = "Name[" & sLangShort & "]" OR sKey = "Name[" & sLang & "]" THEN
         '   PRINT "cName[\""; .Key; "\"] = (\""; sLig; "\")"
         '   .Name = sLig
-        If sKey = "Author" OR sKey = "Authors" Then
+        If sKey = "Author" Or sKey = "Authors" Then
           .Authors = Split(sLig)
         Else If sKey = "Type" Then
           .Type = sLig
         Else If sKey = "Group" Then
           sGroup = sLig
-        Else If sKey = "Control" OR If sKey = "Controls" Then
+        Else If sKey = "Control" Or If sKey = "Controls" Then
           .Controls.Add("@" & sGroup)
           .Controls.Insert(Split(sLig))
         Else If sKey = "Container" Then
@@ -182,13 +182,13 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
           .MultiContainers.Insert(Split(sLig))
         Else If sKey = "Virtual" Then
           .Virtuals.Insert(Split(sLig))
-        Else If sKey = "Require" OR sKey = "Requires" Then
+        Else If sKey = "Require" Or sKey = "Requires" Then
           .Require = Split(LCase(sLig))
-        Else If sKey = "Exclude" OR sKey = "Excludes" Then
+        Else If sKey = "Exclude" Or sKey = "Excludes" Then
           .Exclude = Split(LCase(sLig))
-        Else If sKey = "Implement" OR sKey = "Implements" Then
+        Else If sKey = "Implement" Or sKey = "Implements" Then
           .Implement = Split(LCase(sLig))
-        Else If sKey = "Need" OR sKey = "Needs" Then
+        Else If sKey = "Need" Or sKey = "Needs" Then
           .Need = Split(LCase(sLig))
         Else If sKey = "Alpha" Then
           .State = UNSTABLE
@@ -278,7 +278,7 @@ Public Sub CalcSortKey()
 
   If SortKey = 0 Then 
 
-    If Require.Count OR If Need.Count Then
+    If Require.Count Or If Need.Count Then
 
       For Each sComp In Require
         hComp = All[sComp]
@@ -340,7 +340,7 @@ Public Sub Load()
   
   sPath &/= "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
   
-  If NOT Exist(sPath) Then
+  If Not Exist(sPath) Then
     Print "Warning: cannot find "; sPath
     Return
   Endif
@@ -359,7 +359,7 @@ Public Sub Load()
 
     Open sPath As #hFic
 
-    While NOT Eof(hFic)
+    While Not Eof(hFic)
       Line Input #hFic, sLig
 
       If Left$(sLig) = "#" Then
@@ -379,7 +379,7 @@ Public Sub Load()
         'IF sClass = "Dialog" THEN STOP
 
         Line Input #hFic, sParent
-        If NOT sParent Then
+        If Not sParent Then
           If Classes.Exist(sClass) Then
             sParent = sClass
           Endif
@@ -388,8 +388,8 @@ Public Sub Load()
         ' Ce test peut foirer si une classe veut hériter d'une autre classe
         ' du même composant, qui existe déjà dans un composant déjà déclaré.
 
-        If sParent AND If NOT Classes.Exist(sParent) Then
-          If NOT cClass.Exist(sParent) Then 
+        If sParent And If Not Classes.Exist(sParent) Then
+          If Not cClass.Exist(sParent) Then 
             Error.Raise("'" & sParent & "' class is missing in " & Key & " component exported classes")
           Endif
           bAgain = True
@@ -441,7 +441,7 @@ Public Sub Load()
 
     Close #hFic
 
-  Until NOT bAgain
+  Until Not bAgain
 
   'PRINT "Initializing controls..."
 
@@ -502,7 +502,7 @@ Static Private Sub MakeInheritance(hModule As Object, cSymbol As Collection, sPa
   Dim hSymbol As CSymbolInfo
     
   hModule.ParentClass = sParent
-  If NOT hModule.AutoCreatable Then hModule.AutoCreatable = IsAutoCreatable(hModule.ParentClass)
+  If Not hModule.AutoCreatable Then hModule.AutoCreatable = IsAutoCreatable(hModule.ParentClass)
   cClassSymbol = CComponent.GetClassSymbols(sComponent &/ sParent)
   If cClassSymbol Then
     For Each hSymbol In cClassSymbol
@@ -511,6 +511,8 @@ Static Private Sub MakeInheritance(hModule As Object, cSymbol As Collection, sPa
   Endif
   
 End
+
+
 
 
 Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boolean, Optional bCanInherit As Boolean = True)
@@ -545,7 +547,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
   hClass = Classes[hModule.Name]
   
-  If hClass AND If hClass.Component = Project.Name AND If hClass.Parent Then 
+  If hClass And If hClass.Component = Project.Name And If hClass.Parent Then 
     hClass = Classes[hClass.Parent]
   Endif
   
@@ -574,7 +576,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     Endif
 
     If aSym[0] = "CREATE" Then 
-      If aSym.Count = 1 OR If aSym[1] = "STATIC" Then 
+      If aSym.Count = 1 Or If aSym[1] = "STATIC" Then 
         hModule.AutoCreatable = True
         'DEBUG hModule.Name; " := "; hModule.AutoCreatable
       Else If aSym[1] = "PRIVATE" Then 
@@ -625,7 +627,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     Next
 
     'IF NOT bPublic THEN CONTINUE
-    If NOT sKind Then Continue
+    If Not sKind Then Continue
     If iInd >= aSym.Count Then Continue
 
     sName = aSym[iInd]
@@ -641,7 +643,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
       .Name = sName
       .Class = hModule.Name
       .Kind = sKind
-      .NotPublic = NOT bPublic
+      .NotPublic = Not bPublic
       .LineNumber = iLine + 1
       
       If sKind = "m" Then
@@ -687,8 +689,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         sLine = Trim(hEditor.Lines[iLine].Text)
         iPos = InStr(sLine, "'")
         If iPos Then sLine = Trim(Left(sLine, iPos - 1))
-        If Len(sLine) = 3 AND If UCase(sLine) = "END" Then Break
-        If Len(sLine) = 7 AND If UCase(sLine) = "END SUB" Then Break
+        If Len(sLine) = 3 And If UCase(sLine) = "END" Then Break
+        If Len(sLine) = 7 And If UCase(sLine) = "END SUB" Then Break
         'aSym = Highlight.Analyze(hEditor.Lines[iLine])
         'IF aSym.Count = 1 AND IF aSym[0] = "END" THEN BREAK
       Loop
@@ -716,7 +718,7 @@ Static Private Sub ScanForm(hForm As FForm, cSymbol As Collection)
       .Type = hControl.Kind
       .Class = hForm.Name
       .Kind = "t"
-      .NotPublic = NOT Project.ControlPublic
+      .NotPublic = Not Project.ControlPublic
       cSymbol[.Name] = hSymbol
     End With
   Next
@@ -747,13 +749,23 @@ Static Public Sub IsAutoCreatable(sClass As String) As Boolean
   If hClass Then Return hClass.AutoCreatable
 
   hModule = GetModule(sClass)
-  If hModule IS FEditor Then 
+  If hModule Is FEditor Then 
     'DEBUG sClass; " -> "; hModule.AutoCreatable
     Return hModule.AutoCreatable
   Endif
   
 End
 
+Static Private Sub MustScan(hEditor As FEditor) As Boolean
+
+  If Not hEditor.Scan Then Return True
+
+  If hEditor.ParentClass Then 
+    hEditor = Project.Files[Project.FindPath(hEditor.ParentClass)]
+    If hEditor Then Return MustScan(hEditor)
+  Endif
+  
+End
 
 Static Public Function GetClassSymbols(sClass As String, Optional bInProject As Boolean) As Collection
 
@@ -804,14 +816,14 @@ Static Public Function GetClassSymbols(sClass As String, Optional bInProject As 
 
   If hPModule Then
     cSymbol = hPModule.Scan
-    If NOT cSymbol Then
+    If MustScan(hPModule) Then
       cSymbol = New Collection(gb.Text)
       hPModule.Scan = cSymbol
       ScanClass(hPModule, cSymbol, True)
     Endif
   Else If hPClass Then
     cSymbol = hPClass.Scan
-    If NOT cSymbol Then
+    If MustScan(hPClass) Then
       cSymbol = New Collection(gb.Text)
       hPClass.Scan = cSymbol
       If hPForm Then
