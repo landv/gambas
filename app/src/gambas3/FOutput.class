@@ -27,7 +27,7 @@ Public Sub Clear()
   edtOutput.Clear
   $iLine = 0
 
-  If NOT $bWelcome Then
+  If Not $bWelcome Then
 
     edtOutput.Insert(("Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"))
     $iCol = edtOutput.Column
@@ -46,7 +46,7 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
     Try sText = DConv$(sText)
   Endif
 
-  If NOT bCurrent Then 
+  If Not bCurrent Then 
     'edtOutput.Line = edtOutput.Lines.Count
     'edtOutput.Goto(edtOutput.Lines.Count, 10000)
   Endif
@@ -56,7 +56,7 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
   $iLine = edtOutput.Line
   $iCol = edtOutput.Column
 
-  If NOT Action["console"].Value Then Action["console"].Value = True
+  If Not Action["console"].Value Then Action["console"].Value = True
 
 End
 
@@ -73,7 +73,7 @@ Public Sub edtOutput_KeyPress()
   Dim iPos As Integer
   Dim sVal As String
 
-  If Key.Code = Key.Enter OR Key.Code = Key.Return Then
+  If Key.Code = Key.Enter Or Key.Code = Key.Return Then
 
     'TRY sText = SConv$(edtOutput.Text)
 
@@ -101,7 +101,7 @@ Public Sub edtOutput_KeyPress()
     Else If Left$(sText) = "?" Then
 
       sText = Mid$(sText, 2)
-      If NOT sText Then Return
+      If Not sText Then Return
 
       If Project.Running Then
 
@@ -140,7 +140,7 @@ End
 
 Public Sub Form_Close()
 
-  If NOT Me.Parent Then 
+  If Not Me.Parent Then 
     'DEBUG "Write: "; ME.X;; ME.Y
     Settings.Write(Me)
   Endif
@@ -188,7 +188,7 @@ End
 
 Public Sub Form_Activate()
 
-  edtOutput.SetFocus
+  'edtOutput.SetFocus
 
 End
 
@@ -214,8 +214,8 @@ End
 
 Public Sub OnProjectDebug()
   
-  btnAbove.Visible = Project.Running AND btnUndock.Value
-  Me.Stacking = If(Project.Running AND btnAbove.Value, Window.Above, Window.Normal)
+  btnAbove.Visible = Project.Running And btnUndock.Value
+  Me.Stacking = If(Project.Running And btnAbove.Value, Window.Above, Window.Normal)
   
 End
 
@@ -229,9 +229,107 @@ End
 
 Public Sub Form_Open()
 
-  If NOT Me.Parent Then 
+  If Not Me.Parent Then 
     Settings.Read(Me)
     'DEBUG "Read: "; ME.X;; ME.Y
   Endif
+  
+End
+
+Private Sub Search(bBack As Boolean)
+
+  Dim sFind As String = txtFind.Text
+  Dim iLine, iCol As Integer
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim iStart As Integer
+  Dim bCase As Boolean = Not btnCase.Value
+  Dim bLoop As Boolean
+  
+  If Not sFind Then Return
+  
+  If edtOutput.Selected Then
+    If bBack Then
+      edtOutput.Goto(edtOutput.Selection.StartLine, edtOutput.Selection.StartColumn)
+    Else
+      edtOutput.Goto(edtOutput.Selection.EndLine, edtOutput.Selection.EndColumn)
+    Endif
+  Endif
+  
+  iLine = edtOutput.Line
+  iStart = iLine
+  iCol = edtOutput.Column
+  
+  If bCase Then sFind = String.UCase(sFind)
+  
+  If bBack Then
+  
+    Do
+      If iCol Then
+        sLine = edtOutput.Lines[iLine].Text
+        If bCase Then sLine = String.UCase(sLine)
+        iPos = String.RInStr(sLine, sFind, iCol)
+        If iPos Then
+          Dec iPos
+          edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
+          Return
+        Endif
+      Endif
+      If iLine = iStart And If bLoop Then Return
+      Dec iLine
+      If iLine < 0 Then iLine = edtOutput.Lines.Count - 1
+      iCol = edtOutput.Lines[iLine].Length
+      bLoop = True
+    Loop
+
+  Else
+  
+    Do
+      sLine = edtOutput.Lines[iLine].Text
+      If bCase Then sLine = String.UCase(sLine)
+      iPos = String.InStr(sLine, sFind, iCol + 1)
+      If iPos Then
+        Dec iPos
+        edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
+        Return
+      Endif
+      If iLine = iStart And If bLoop Then Return
+      Inc iLine
+      If iLine >= edtOutput.Lines.Count Then iLine = 0
+      iCol = 0
+      bLoop = True
+    Loop
+    
+  Endif
+  
+End
+
+Public Sub txtFind_Activate()
+
+  btnNext_Click
+
+End
+
+Public Sub btnNext_Click()
+
+  Search(False)
+
+End
+
+Public Sub btnPrev_Click()
+
+  Search(True)
+
+End
+
+Public Sub btnFind_Click()
+
+  sepFind.Visible = btnFind.Value
+  txtFind.Visible = btnFind.Value
+  btnNext.Visible = btnFind.Value
+  btnPrev.Visible = btnFind.Value
+  btnCase.Visible = btnFind.Value
+  txtFind.Font = Font["0"]
+  If btnFind.Value Then txtFind.SetFocus
 
 End
