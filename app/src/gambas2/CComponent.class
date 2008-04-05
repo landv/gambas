@@ -757,15 +757,16 @@ END
 
 STATIC PRIVATE SUB MustScan(hEditor AS FEditor) AS Boolean
 
+  DIM hParentEditor AS FEditor
+
   IF NOT hEditor.Scan THEN RETURN TRUE
 
   IF hEditor.ParentClass THEN 
-    hEditor = Project.Files[Project.FindPath(hEditor.ParentClass)]
-    IF hEditor THEN RETURN MustScan(hEditor)
+    hParentEditor = GetModule(hEditor.ParentClass)
+    IF hParentEditor AND IF hParentEditor <> hEditor THEN RETURN MustScan(hParentEditor)
   ENDIF
   
 END
-
 
 STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String, OPTIONAL bInProject AS Boolean) AS Collection
 
