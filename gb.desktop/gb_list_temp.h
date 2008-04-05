@@ -1,1 +1,1 @@
-/home/benoit/gambas/3.0/menu/trunk/main/share/gb_list_temp.h
+../main/share/gb_list_temp.h
