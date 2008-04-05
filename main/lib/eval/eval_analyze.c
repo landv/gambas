@@ -405,7 +405,7 @@ static void add_end_pattern(void)
   }
   
   add_pattern(EVAL_TYPE_END, 0);
-  get_symbol(PATTERN_make(EVAL_TYPE_ERROR, index), &sym, &len);
+  //get_symbol(PATTERN_make(EVAL_TYPE_ERROR, index), &sym, &len);
 }
 
 

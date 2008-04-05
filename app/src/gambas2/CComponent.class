@@ -755,6 +755,18 @@ STATIC PUBLIC SUB IsAutoCreatable(sClass AS String) AS Boolean
 END
 
 
+STATIC PRIVATE SUB MustScan(hEditor AS FEditor) AS Boolean
+
+  IF NOT hEditor.Scan THEN RETURN TRUE
+
+  IF hEditor.ParentClass THEN 
+    hEditor = Project.Files[Project.FindPath(hEditor.ParentClass)]
+    IF hEditor THEN RETURN MustScan(hEditor)
+  ENDIF
+  
+END
+
+
 STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String, OPTIONAL bInProject AS Boolean) AS Collection
 
   DIM hClass AS CClassInfo
@@ -804,14 +816,14 @@ STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String, OPTIONAL bInProject AS 
 
   IF hPModule THEN
     cSymbol = hPModule.Scan
-    IF NOT cSymbol THEN
+    IF MustScan(hPModule) THEN
       cSymbol = NEW Collection(gb.Text)
       hPModule.Scan = cSymbol
       ScanClass(hPModule, cSymbol, TRUE)
     ENDIF
   ELSE IF hPClass THEN
     cSymbol = hPClass.Scan
-    IF NOT cSymbol THEN
+    IF MustScan(hPClass) THEN
       cSymbol = NEW Collection(gb.Text)
       hPClass.Scan = cSymbol
       IF hPForm THEN
