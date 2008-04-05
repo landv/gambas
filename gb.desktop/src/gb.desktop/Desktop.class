@@ -8,8 +8,20 @@ Class _Desktop
 'STATIC PROPERTY READ Icons AS _DesktopIcons
 Static Property Read ScreenSaver As _DesktopScreenSaver
 Static Property Read Type As String
+Static Property Count As Integer
+Static Property Current As Integer
+Static Property Read Windows As _DesktopWindows
+Static Property ActiveWindow As Integer
+Static Property Showing As Boolean
+Static Property Read Width As Integer
+Static Property Read Height As Integer
+Static Property Read W As Integer
+Static Property Read H As Integer
+Static Property {Watch} As Boolean
 
 Static Private $sDesktop As String
+Static Private $cDesktop As Collection
+Static Private $hWatch As _DesktopWatcher
 
 Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional Bcc As String[], Optional Subject As String, Optional Body As String, Optional Attachment As String)
   
@@ -165,7 +177,7 @@ Static Private Sub GetDesktop() As String
       $sDesktop = "KDE"
     Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
       $sDesktop = "GNOME"
-    Else If InStr(_Desktop.GetWindowProperty(_Desktop.RootWindow, "_DT_SAVE_MODE"), "xfce4") Then
+    Else If InStr(_Desktop.GetWindowProperty("_DT_SAVE_MODE"), "xfce4") Then
       $sDesktop = "XFCE"
     Else
       $sDesktop = "?"
@@ -211,4 +223,127 @@ Static Private Function Type_Read() As String
 
   Return GetDesktop()  
 
+End
+
+
+Static Public Sub _get(Index As Integer) As _DesktopVirtual
+
+  Dim hVirtual As _DesktopVirtual
+  
+  If Not $cDesktop Then $cDesktop = New Collection
+  
+  hVirtual = $cDesktop[Index]
+  If Not hVirtual Then
+    hVirtual = New _DesktopVirtual(Index)
+    $cDesktop[Index] = hVirtual
+  Endif
+  Return hVirtual
+  
+End
+
+
+Static Private Function Current_Read() As Integer
+
+  Try Return _Desktop.GetWindowProperty(Atom["_NET_CURRENT_DESKTOP"])[0]  
+
+End
+
+Static Private Sub Current_Write(Value As Integer)
+
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_CURRENT_DESKTOP"], [Value])
+
+End
+
+Static Private Function Count_Read() As Integer
+
+  Try Return _Desktop.GetWindowProperty(Atom["_NET_NUMBER_OF_DESKTOPS"])[0]
+  Return 1
+
+End
+
+Static Private Sub Count_Write(Value As Integer)
+
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_NUMBER_OF_DESKTOPS"], [Value])  
+
+End
+
+Static Private Function Windows_Read() As _DesktopWindows
+
+  Return _DesktopWindows
+
+End
+
+Static Private Function ActiveWindow_Read() As Integer
+
+  Return _Desktop.GetWindowProperty(Atom["_NET_ACTIVE_WINDOW"])[0]
+
+End
+
+Static Private Sub ActiveWindow_Write(Value As Integer)
+
+  Dim iActiveWindow As Integer
+  
+  Try iActiveWindow = Application.ActiveWindow.Id
+
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_ACTIVE_WINDOW"], [2, _Desktop.CurrentTime, iActiveWindow])
+
+End
+
+Static Private Function Showing_Read() As Boolean
+
+  Return _Desktop.GetWindowProperty(Atom["_NET_SHOWING_DESKTOP"])[0]
+
+End
+
+Static Private Sub Showing_Write(Value As Boolean)
+
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_SHOWING_DESKTOP"], [If(Value, 1, 0)])  
+
+End
+
+Static Private Function Width_Read() As Integer
+
+  Return _Desktop.GetWindowProperty(Atom["_NET_DESKTOP_GEOMETRY"])[0]
+
+End
+
+Static Private Function Height_Read() As Integer
+
+  Return _Desktop.GetWindowProperty(Atom["_NET_DESKTOP_GEOMETRY"])[1]
+
+End
+
+Static Private Function W_Read() As Integer
+
+  Return Width_Read()
+
+End
+
+Static Private Function H_Read() As Integer
+
+  Return Height_Read()
+
+End
+
+Static Private Function Watch_Read() As Boolean
+
+  Return $hWatch  
+
+End
+
+Static Private Sub Watch_Write(Value As Boolean)
+
+  If Value Then
+    $hWatch = New _DesktopWatcher As "DesktopWatcher"
+  Else
+    $hWatch = Null
+  Endif
+
+End
+
+Public Sub DesktopWatcher_Change(Window As Integer, {Property} As Integer)
+  
+  If {Property} = Atom["_NET_CLIENT_LIST"] Then
+  Endif
+  
 End

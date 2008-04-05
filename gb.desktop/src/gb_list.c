@@ -1,10 +1,10 @@
 /***************************************************************************
 
-  main.c
+  list.c
 
-  gb.desktop component
+  Linked lists management routines
 
-  (c) 2007 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2007 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
@@ -22,27 +22,4 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
-
-#include "x11.h"
-#include "desktop.h"
-#include "main.h"
-
-GB_INTERFACE GB EXPORT;
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  CDesktopDesc,
-  CDesktopWatcherDesc,
-  NULL
-};
-
-int EXPORT GB_INIT(void)
-{
-  return 0;
-}
-
-void EXPORT GB_EXIT(void)
-{
-	X11_exit();
-}
+#include "gb_list_temp.h"

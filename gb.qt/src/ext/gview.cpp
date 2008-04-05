@@ -191,7 +191,7 @@ void GEditor::updateLength()
 
   //qDebug("contentsWidth() = %d  cellWidth() = %d", contentsWidth(), cellWidth());
 	setCellWidth(QMAX(visibleWidth(), margin + charWidth * doc->getMaxLineLength() + 2));
-  setCellHeight(fm.lineSpacing() + 1);
+  setCellHeight(fm.lineSpacing());
 
   //if (cache->width() < cellWidth() || cache->height() < cellHeight())
   //  cache->resize(cellWidth(), cellHeight());
@@ -225,7 +225,7 @@ void GEditor::fontChange(const QFont &oldFont)
   updateContents();
 }
 
-void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h)
+void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2)
 {
   int i, w;
   int len, style, pos;
@@ -261,13 +261,27 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			}
 
 			if (st->background)
-				p.fillRect(x, 1, w, h - 2, st->backgroundColor);
+			{
+				int x1 = x;
+				int x2 = x + w;
+				int xd1 = xs1;
+				int xd2 = xs2;
+				
+				if (xd1 < x1)
+					xd1 = x1;
+				if (xd2 > x2)
+					xd2 = x2;
+				
+				p.fillRect(x, 0, w, h, st->backgroundColor);
+				
+				if (xd2 > xd1)
+	      	p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
+			}
 			
 			p.setPen(st->color);
-			p.drawText(x, y, sd);
-
 			if (st->bold)
 				p.drawText(x + 1, y, sd);
+			p.drawText(x, y, sd);
 
 			if (st->underline)
 				p.drawLine(x, y + 2, x + len * charWidth - 1, y + 2);
@@ -362,7 +376,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   QRect ur;
   GLine *l;
   QFontMetrics fm(painter->fontMetrics());
-  int x1, y1, x2, y2;
+  int x1, y1, x2, y2, xs1, xs2;
   QColor color, a, b, c;
   int xmin, lmax;
   int realRow;
@@ -430,6 +444,8 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	p.translate(-ur.left(), 0);
 
   // Selection background
+  xs1 = 0;
+  xs2 = 0;
   if (doc->hasSelection())
   {
     doc->getSelection(&y1, &x1, &y2, &x2);
@@ -437,16 +453,18 @@ void GEditor::paintCell(QPainter * painter, int row, int)
     if (realRow >= y1 && realRow <= y2 && !(realRow == y2 && x2 == 0))
     {
       if (realRow > y1 || x1 == 0)
-        x1 = -margin;
+        x1 = 0;
       else
-        x1 *= charWidth;
+        x1 = margin + x1 * charWidth;
 
       if (realRow < y2)
         x2 = cellWidth() + 1;
 			else
-        x2 *= charWidth;
+        x2 = margin + x2 * charWidth;
 
-      p.fillRect(x1 + margin, 0, x2 - x1, cellHeight(), styles[GLine::Selection].color);
+      p.fillRect(x1, 0, x2 - x1, cellHeight(), styles[GLine::Selection].color);
+      xs1 = x1;
+      xs2 = x2;
     }
   }
 
@@ -461,7 +479,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
     else //if (getFlag(ShowLineNumbers))
       p.fillRect(0, 0, margin - 2, cellHeight(), styles[GLine::Line].color);
 
-    x1 = 0;
+    //x1 = 0;
 
     if (getFlag(ShowLineNumbers))
     {
@@ -470,7 +488,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
         p.setPen(styles[GLine::Normal].color);
 			else
         p.setPen(styles[GLine::Selection].color);
-      p.drawText(x1 + 2, fm.ascent() + 1, QString::number(n).rightJustify(lineNumberLength));
+      p.drawText(2, fm.ascent() + 1, QString::number(n).rightJustify(lineNumberLength));
     }
   }
   
@@ -496,7 +514,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   }*/
   else
   {
-    paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight());
+    paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight(), xs1, xs2);
   }
 
   // Folding symbol

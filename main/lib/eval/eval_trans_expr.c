@@ -81,11 +81,11 @@ static void push_number(int index)
 
   sym = TABLE_get_symbol(EVAL->table, index);
 
-  cst.type = T_FLOAT;
-  if (GB.NumberFromString(GB_NB_READ_FLOAT, sym->name, sym->len, &value))
-    THROW("Bad floating point constant");
-
-  cst._float.value = ((GB_FLOAT *)(void *)&value)->value;
+	cst.type = number.type;
+	if (cst.type == T_FLOAT)
+		cst._float.value = number.dval;
+	else if (cst.type == T_LONG)
+		cst._long.value = number.lval;
 
   CODE_push_const(EVAL_add_constant(&cst));
 }

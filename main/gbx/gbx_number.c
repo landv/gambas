@@ -227,7 +227,8 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
   TYPE type;
 
   int base = 10;
-  boolean minus = FALSE;
+  bool minus = FALSE;
+  bool is_unsigned = FALSE;
 
   buffer_init(str, len);
 
@@ -303,18 +304,6 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
     }
   }
 
-  /*if (option & NB_READ_INT_LONG)
-  {*/
-  
-  if (option & NB_READ_INTEGER)
-  {
-    if (!read_integer(base, &val, FALSE))
-    {
-      type = T_INTEGER;
-      goto __INTEGER_LONG;
-    }
-  }
-    
   if (option & NB_READ_LONG)
   {
     if (!read_integer(base, &val, TRUE))
@@ -323,10 +312,14 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
       goto __INTEGER_LONG;
     }
   }
-
-    /*if (base > 0)
-      return TRUE;
-  }*/
+  else if (option & NB_READ_INTEGER)
+  {
+    if (!read_integer(base, &val, FALSE))
+    {
+      type = T_INTEGER;
+      goto __INTEGER_LONG;
+    }
+  }
 
   return TRUE;
 
@@ -334,13 +327,27 @@ __INTEGER_LONG:
 
   if (base != 10)
   {
-    c = last_char();
-
-    if (c != '&' && val >= 0x8000L && val <= 0xFFFFL)
-      val |= 0xFFFFFFFFFFFF0000LL;
+  	c = last_char();
+  	if (c == '&')
+  	{
+  		is_unsigned = TRUE;
+  		c = get_char();
+  	}
+  	
+		if ((uint)val == (uint64_t)val)
+			type = T_INTEGER;
     
-    if (c == '&')
-      c = get_char();
+    if (!is_unsigned)
+    {
+			if (val >= 0x8000L && val <= 0xFFFFL)
+				val |= INT64_C(0xFFFFFFFFFFFF0000);
+		}
+		else
+		{
+			if (type == T_INTEGER && ((int)val < 0))
+				type = T_LONG;
+		}
+    
   }
 
 __END:

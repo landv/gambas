@@ -47,6 +47,8 @@ Atom X11_atom_net_wm_window_type_utility;
 Atom X11_atom_net_wm_desktop;
 Atom X11_atom_net_current_desktop;
 
+Atom X11_UTF8_STRING;
+
 bool X11_ready = FALSE;
 
 Display *X11_display = NULL;
@@ -100,6 +102,8 @@ static void init_atoms()
 	X11_atom_net_wm_window_type = XInternAtom(_display, "_NET_WM_WINDOW_TYPE", True);
 	X11_atom_net_wm_window_type_normal = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_NORMAL", True);
 	X11_atom_net_wm_window_type_utility = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_UTILITY", True);
+	
+	X11_UTF8_STRING = XInternAtom(X11_display, "UTF8_STRING", True);
 
   _atom_init = TRUE;
 }
@@ -290,7 +294,7 @@ void X11_exit()
 		GB.FreeString(&_property_value);
 }
 
-void X11_send_client_message(Window window, Atom message, char *data, int format, int count)
+void X11_send_client_message(Window dest, Window window, Atom message, char *data, int format, int count)
 {
   XEvent e;
   int mask = (SubstructureRedirectMask | SubstructureNotifyMask);
@@ -310,7 +314,7 @@ void X11_send_client_message(Window window, Atom message, char *data, int format
 		memcpy(&e.xclient.data.l[0], data, count);
 	}
 
-	XSendEvent(X11_display, window, False, mask, &e);
+	XSendEvent(X11_display, dest, False, mask, &e);
 }
 
 void X11_window_change_property(Window window, bool visible, Atom property, bool set)

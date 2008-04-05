@@ -1,100 +1,101 @@
 ' Gambas module file
 
-PUBLIC InfoFilePath AS String
+Public InfoFilePath As String
 
-PRIVATE CONST DEFAULT_LANG AS String = "en"
+Private Const DEFAULT_LANG As String = "en"
 
-PRIVATE CONST TYPE_COMMON AS Integer = 0
-PRIVATE CONST TYPE_COMPONENT AS Integer = 1
-PRIVATE CONST TYPE_CLASS AS Integer = 2
-PRIVATE CONST TYPE_SYMBOL AS Integer = 3
+Private Const TYPE_COMMON As Integer = 0
+Private Const TYPE_COMPONENT As Integer = 1
+Private Const TYPE_CLASS As Integer = 2
+Private Const TYPE_SYMBOL As Integer = 3
 
-PRIVATE CONST BULLET AS String = ""
+Private Const BULLET As String = ""
 'PRIVATE CONST BRK AS String = "<p>"
 
-PRIVATE $hConn AS NEW Connection
+Private $hConn As New Connection
 
-PRIVATE $aLang AS String[]
+Private $aLang As String[]
 
-PRIVATE $sUser AS String
+Private $sUser As String
 
-PRIVATE $bWget AS Boolean
+Private $bWget As Boolean
 
-PRIVATE $bHelp AS Boolean
-PRIVATE $bShow AS Boolean
-PRIVATE $bEdit AS Boolean
-PRIVATE $bRename AS Boolean
-PRIVATE $bAdmin AS Boolean
-PRIVATE $bHistory AS Boolean
-PRIVATE $bComment AS Boolean
-PRIVATE $bLogin AS Boolean
-PRIVATE $bFind AS Boolean
-PRIVATE $bView AS Boolean
+Private $sVersion As String
+Private $bHelp As Boolean
+Private $bShow As Boolean
+Private $bEdit As Boolean
+Private $bRename As Boolean
+Private $bAdmin As Boolean
+Private $bHistory As Boolean
+Private $bComment As Boolean
+Private $bLogin As Boolean
+Private $bFind As Boolean
+Private $bView As Boolean
 
-PRIVATE $bNew AS Boolean
+Private $bNew As Boolean
 
-PRIVATE $sLang AS String
-PRIVATE $sLangSuff AS String
-PRIVATE $sShowSuff AS String
-PRIVATE $sPath AS String
-PRIVATE $sRoot AS String
-PRIVATE $aPath AS String[]
-PRIVATE $sUri AS String
-PRIVATE $bExample AS Boolean
-PRIVATE $iType AS Integer
-PRIVATE $cGotSpecial AS Collection
-PRIVATE $bHeader AS Boolean
+Private $sLang As String
+Private $sLangSuff As String
+Private $sShowSuff As String
+Private $sPath As String
+Private $sRoot As String
+Private $aPath As String[]
+Private $sUri As String
+Private $bExample As Boolean
+Private $iType As Integer
+Private $cGotSpecial As Collection
+Private $bHeader As Boolean
 
-PRIVATE $hComp AS CComponent
-PRIVATE $hClass AS CClassInfo
-PRIVATE $hSym AS CSymbolInfo
+Private $hComp As CComponent
+Private $hClass As CClassInfo
+Private $hSym As CSymbolInfo
 
-PRIVATE $sSection AS String
-PRIVATE $aSection AS String[]
-PRIVATE $bVerbatim AS Boolean
-PRIVATE $bNoWiki AS Boolean
-PRIVATE $sRes AS String
-PRIVATE $sList AS String
-PRIVATE $iPos AS Integer
-PRIVATE $bWhite AS Boolean
-PRIVATE $bRefresh AS Boolean
-PRIVATE $bUndo AS Boolean
-PRIVATE $bImage AS Boolean
-PRIVATE $bDispImage AS Boolean
-PRIVATE $cCompRedirect AS Collection
-PRIVATE $bSyntax AS Boolean
-PRIVATE $sTitle AS String
+Private $sSection As String
+Private $aSection As String[]
+Private $bVerbatim As Boolean
+Private $bNoWiki As Boolean
+Private $sRes As String
+Private $sList As String
+Private $iPos As Integer
+Private $bWhite As Boolean
+Private $bRefresh As Boolean
+Private $bUndo As Boolean
+Private $bImage As Boolean
+Private $bDispImage As Boolean
+Private $cCompRedirect As Collection
+Private $bSyntax As Boolean
+Private $sTitle As String
 
-PRIVATE $eTime AS Float
+Private $eTime As Float
 
-PRIVATE PARA AS String
+Private PARA As String
 
-PRIVATE SUB AddParam(sReq AS String, sParam AS String) AS String
+Private Sub AddParam(sReq As String, sParam As String) As String
   
-  IF NOT sParam THEN RETURN sReq
+  If Not sParam Then Return sReq
   
-  IF InStr(sReq, "?") = 0 THEN 
-    RETURN sReq & "?" & sParam
-  ELSE 
-    RETURN sReq & "&" & sParam
-  ENDIF
+  If InStr(sReq, "?") = 0 Then 
+    Return sReq & "?" & sParam
+  Else 
+    Return sReq & "&" & sParam
+  Endif
   
-END
+End
 
-PRIVATE SUB DeleteTempFile()
+Private Sub DeleteTempFile()
   
-  SHELL "rm -rf " & File.Dir(Temp$()) & " > /dev/null 2>&1" WAIT
+  Shell "rm -rf " & File.Dir(Temp$()) & " > /dev/null 2>&1" Wait
   
-END
+End
 
 
-PUBLIC SUB Main()
+Public Sub Main()
 
-  DIM rPage AS Result
-  DIM sPath AS String
-  DIM bPost AS Boolean
-  DIM sDir AS String
-  DIM sErr AS String
+  Dim rPage As Result
+  Dim sPath As String
+  Dim bPost As Boolean
+  Dim sDir As String
+  Dim sErr As String
 
   'File.In.EndOfLine = gb.Windows
   'File.Out.EndOfLine = gb.Windows
@@ -104,7 +105,7 @@ PUBLIC SUB Main()
   $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "ca", "ar", "fa", "vi", "ja", "ru", "zh", "zh_TW", "eo"]
 
   $sRoot = File.Dir(File.Dir(Application.Path)) 'Application.Env["DOCUMENT_ROOT"]
-  IF NOT Exist($sRoot &/ ".htaccess") THEN $sRoot = User.Home &/ "www/help"
+  If Not Exist($sRoot &/ ".htaccess") Then $sRoot = User.Home &/ "www/help"
 
   $sUser = Application.Env["REMOTE_USER"]
 
@@ -112,92 +113,86 @@ PUBLIC SUB Main()
 
   System.Language = $sLang
   
-  IF $sLang <> DEFAULT_LANG THEN
-    $sLangSuff = $sLang
-  ELSE IF $bWget THEN
-    $sLangSuff = $sLang
-  ENDIF
-  IF $sLangSuff THEN $sLangSuff = "?" & $sLangSuff
-  
   bPost = Application.Env["REQUEST_METHOD"] = "POST"
 
-  IF $bAdmin THEN
-    IF bPost THEN
+  If $bAdmin Then
+    If bPost Then
       DoAdminPage
-    ELSE
+    Else
       AdminPage
-    ENDIF
-  ELSE IF $bEdit THEN
-    IF bPost THEN
+    Endif
+  Else If $bEdit Then
+    If bPost Then
       UpdatePage
-    ELSE IF $bUndo THEN
+    Else If $bUndo Then
       UndoPage
-    ELSE
+    Else
       EditPage
-    ENDIF
-  ELSE IF $bRename THEN
-    IF bPost THEN
+    Endif
+  Else If $bRename Then
+    If bPost Then
       DoRenamePage
-    ELSE
+    Else
       RenamePage
-    ENDIF
-  ELSE IF $bHistory THEN
+    Endif
+  Else If $bHistory Then
     HistoryPage
-  ELSE IF $bLogin THEN
+  Else If $bLogin Then
     LoginPage
-  ELSE IF $bDispImage THEN
+  Else If $bDispImage Then
     DisplayImage
-  ELSE IF $bFind THEN
-    IF bPost THEN
+  Else If $bFind Then
+    If bPost Then
       DoSearchPage
-    ELSE 
+    Else 
       SearchPage
-    ENDIF
-  ELSE
+    Endif
+  Else
     DisplayPage
-  ENDIF
+  Endif
 
   CComponent.Exit
   DeleteTempFile
 
-CATCH
+Catch
 
   sErr = Error.Where & ": " & Error.Text
-  DEBUG sErr
+  Debug sErr
 
-  OUTPUT TO DEFAULT
-  IF NOT $bHeader THEN
-    PRINT "Content-type: text/html"
-    PRINT
-  ENDIF
-  PRINT "<h2>Unexpected error while displaying this page.</h2>"
-  PRINT "<pre>"; Error.Text
-  PRINT "<b>"; Error.Where; "</b></pre>"
+  Output To Default
+  If Not $bHeader Then
+    Print "Content-type: text/html"
+    Print
+  Endif
+  Print "<h2>Unexpected error while displaying this page.</h2>"
+  Print "<pre>"; Error.Text
+  Print "<b>"; Error.Where; "</b></pre>"
   DeleteTempFile
   
-END
+End
 
-PRIVATE SUB ReadConfiguration()
+Private Sub ReadConfiguration()
 
-  DIM hFile AS File
+  Dim hFile As File
 
-  OPEN $sRoot &/ ".conf" FOR READ AS #hFile
-  LINE INPUT #hFile, $hConn.Type
-  LINE INPUT #hFile, $hConn.Login
-  LINE INPUT #hFile, $hConn.Password
-  LINE INPUT #hFile, $hConn.Name
-  CLOSE #hFile
+  Open $sRoot &/ ".conf" For Read As #hFile
+  Line Input #hFile, $hConn.Type
+  Line Input #hFile, $hConn.Login
+  Line Input #hFile, $hConn.Password
+  Line Input #hFile, $hConn.Name
+  Close #hFile
 
-  InfoFilePath = $sRoot &/ "info"
+Catch
 
-CATCH
+  Print $sRoot;; Error.Where;; Error.Text
 
-  PRINT $sRoot;; Error.Where;; Error.Text
-
-END
+End
 
 
-PRIVATE SUB OpenDatabase()
+Private Sub OpenDatabase()
+
+  Dim aQuery As String[]
+  Dim sQuery As String
 
   $hConn.Type = "mysql"
   $hConn.Login = "root"
@@ -209,7 +204,7 @@ PRIVATE SUB OpenDatabase()
 
   $sUri = Application.Env["REQUEST_URI"]
 
-  IF NOT $sUri THEN
+  If Not $sUri Then
 
     $sUri = "/edit/comp/gb/pointer[]/_put"
     $sPath = "/comp/gb/pointer[]/_put"
@@ -217,302 +212,330 @@ PRIVATE SUB OpenDatabase()
     'DB.Debug = TRUE
     '$sRoot = "/var/www/html"
 
-  ELSE
+  Else
 
     $sPath = Application.Env["PATH_INFO"]
-    IF Right$($sPath) = "/" THEN $sPath = Left$($sPath, -1)
-    IF NOT $sPath THEN $sPath = "/"
+    If Right$($sPath) = "/" Then $sPath = Left$($sPath, -1)
+    If Not $sPath Then $sPath = "/"
 
-    $sLang = Application.Env["QUERY_STRING"]
-    IF Right($sLang, 7) = "refresh" THEN
-      $bRefresh = TRUE
-      $sLang = Left$($sLang, -7)
-      IF Right($sLang) = "&" THEN $sLang = Left$($sLang, -1)
-    ELSE IF Right($sLang, 4) = "undo" THEN
-      $bUndo = TRUE
-      $sLang = Left$($sLang, -4)
-      IF Right($sLang) = "&" THEN $sLang = Left$($sLang, -1)
-    ELSE IF Right($sLang, 4) = "view" THEN
-      $bView = TRUE
-      $bShow = TRUE
-      $sLang = Left$($sLang, -4)
-      IF Right($sLang) = "&" THEN $sLang = Left$($sLang, -1)
-    ELSE IF Right($sLang, 4) = "show" THEN
-      $bShow = TRUE
-      $sLang = Left$($sLang, -4)
-      IF Right($sLang) = "&" THEN $sLang = Left$($sLang, -1)
-    ENDIF
-    IF $aLang.Find($sLang) < 0 THEN $sLang = DEFAULT_LANG
+    aQuery = Split(Application.Env["QUERY_STRING"], "&")
+    
+    $sVersion = "2.0"
+    
+    For Each sQuery In aQuery
+      
+      If sQuery = "refresh" Then
+        $bRefresh = True
+      Else If sQuery = "undo" Then
+        $bUndo = True
+      Else If sQuery = "view" Then
+        $bView = True
+        $bShow = True
+      Else If sQuery = "show" Then
+        $bShow = True
+      Else If sQuery = "v3" Then
+        $sVersion = "3.0"
+      Else If $aLang.Find(sQuery) >= 0 Then
+        $sLang = sQuery
+      Endif
+      
+    Next
 
-  ENDIF
+    If Not $sLang Then $sLang = DEFAULT_LANG
 
-  $bWget = Application.Env["HTTP_USER_AGENT"] LIKE "WGet*"
+  Endif
+
+  $bWget = Application.Env["HTTP_USER_AGENT"] Like "WGet*"
 
   '$bComment = IsCommentPath($sPath)
   $bImage = Left(File.Name($sPath)) = ":"
-  $bDispImage = $sUri LIKE "/image*"
-  IF NOT $bShow THEN $bShow = $bWget OR $sUri LIKE "/show*"
-  $bHelp = $bShow OR $sUri LIKE "/help*"
-  $bEdit = $sUri LIKE "/edit*"
-  $bRename = $sUri LIKE "/rename*"
-  $bFind = $sUri LIKE "/help/search*"
-  IF $bFind THEN $bHelp = FALSE
-  $bAdmin = $sUri LIKE "/admin*"
-  $bHistory = $sUri LIKE "/hist*"
+  $bDispImage = $sUri Like "/image*"
+  If Not $bShow Then $bShow = $bWget Or $sUri Like "/show*"
+  $bHelp = $bShow Or $sUri Like "/help*"
+  $bEdit = $sUri Like "/edit*"
+  $bRename = $sUri Like "/rename*"
+  $bFind = $sUri Like "/help/search*"
+  If $bFind Then $bHelp = False
+  $bAdmin = $sUri Like "/admin*"
+  $bHistory = $sUri Like "/hist*"
+
+  ' URI 
 
   $sUri = $sPath
-  IF $sLang <> DEFAULT_LANG THEN $sUri = AddParam($sUri, $sLang)
-  IF $bShow THEN 
+  If $sLang <> DEFAULT_LANG Then $sUri = AddParam($sUri, $sLang)
+  If $sVersion <> "2.0" Then 
+    $sUri = AddParam($sUri, "v3")
+  Endif
+
+  ' Suffixe ?show
+
+  If $bShow Then 
     $sUri = AddParam($sUri, "show")
     $sShowSuff = "show"
-  ENDIF
+  Endif
+  
+  ' suffixe de langue et de version
 
+  If $sLang <> DEFAULT_LANG Then
+    $sLangSuff = $sLang
+  Else If $bWget Then
+    $sLangSuff = $sLang
+  Endif
+  If $sVersion = "3.0" Then 
+    If $sLangSuff Then $sLangSuff &= "&"
+    $sLangSuff &= "v3"
+  Endif
+  If $sLangSuff Then $sLangSuff = "?" & $sLangSuff
+  
   $aPath = Split($sPath, "/")
 
-  IF $sPath LIKE "/comp/*" THEN
+  InfoFilePath = $sRoot &/ "info" &/ $sVersion
+    
+  If $sPath Like "/comp/*" Then
     $iType = $aPath.Count - 2
-    IF $aPath.Count > 2 THEN
+    If $aPath.Count > 2 Then
+    
       CComponent.Init
       $hComp = CComponent.All[$aPath[2]]
-      IF $hComp THEN
+      If $hComp Then
         $hComp.Load
-        IF $aPath.Count > 3 THEN $hClass = CComponent.All[$aPath[2]][$aPath[3]]
-        IF $hClass THEN
-          IF $aPath.Count > 4 THEN
+        If $aPath.Count > 3 Then $hClass = CComponent.All[$aPath[2]][$aPath[3]]
+        If $hClass Then
+          If $aPath.Count > 4 Then
             $hSym = $hClass.Symbols[Replace($aPath[4], ".", ":")]
-          ENDIF
-        ENDIF
-      ENDIF
-    ENDIF
-  ENDIF
+          Endif
+        Endif
+      Endif
+    Endif
+  Endif
 
-  IF $bWget THEN $bRefresh = TRUE
+  If $bWget Then $bRefresh = True
 
-END
-
-
-PRIVATE FUNCTION IsCommentPath(sPath AS String) AS Boolean
-
-  RETURN Right(sPath, 8) = ".comment"
-
-END
+End
 
 
-PRIVATE FUNCTION GetCommentPath(sPath AS String) AS String
+Private Function IsCommentPath(sPath As String) As Boolean
 
-  IF Right(sPath, 8) = ".comment" THEN
-    RETURN sPath
-  ELSE
-    RETURN sPath & ".comment"
-  ENDIF
+  Return Right(sPath, 8) = ".comment"
 
-END
+End
 
 
-PRIVATE FUNCTION GetUncommentPath(sPath AS String) AS String
+Private Function GetCommentPath(sPath As String) As String
 
-  IF Right(sPath, 8) = ".comment" THEN
-    RETURN Left$(sPath, -8)
-  ELSE
-    RETURN sPath
-  ENDIF
+  If Right(sPath, 8) = ".comment" Then
+    Return sPath
+  Else
+    Return sPath & ".comment"
+  Endif
 
-END
+End
 
-PRIVATE FUNCTION GetAbsolutePath(sRoot AS String, sPath AS String) AS String
+
+Private Function GetUncommentPath(sPath As String) As String
+
+  If Right(sPath, 8) = ".comment" Then
+    Return Left$(sPath, -8)
+  Else
+    Return sPath
+  Endif
+
+End
+
+Private Function GetAbsolutePath(sRoot As String, sPath As String) As String
   
-  DIM sElt AS String
-  DIM sRes AS String
+  Dim sElt As String
+  Dim sRes As String
   
-  IF Left(sPath, 2) <> "./" AND Left(sPath, 3) <> "../" THEN 
-    IF Left(sPath) <> "/" THEN sPath = "/" & sPath
-    RETURN sPath
-  ENDIF 
+  If Left(sPath, 2) <> "./" And Left(sPath, 3) <> "../" Then 
+    If Left(sPath) <> "/" Then sPath = "/" & sPath
+    Return sPath
+  Endif 
   
   sRes = sRoot
-  IF Right(sRes) = "/" AND Len(sRes) > 1 THEN sRes = Left(sRes, -1)
+  If Right(sRes) = "/" And Len(sRes) > 1 Then sRes = Left(sRes, -1)
   
-  FOR EACH sElt IN Split(sPath, "/")
-    IF sElt = "." THEN CONTINUE
-    IF sElt = ".." THEN
+  For Each sElt In Split(sPath, "/")
+    If sElt = "." Then Continue
+    If sElt = ".." Then
       'IF sRes = sRoot THEN CONTINUE 
       sRes = File.Dir(sRes)
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
     sRes &/= sElt
-  NEXT
+  Next
   
-  RETURN sRes
+  Return sRes
   
-END
+End
 
 
-PRIVATE SUB GetLinkClass(sClass AS String, bLTR AS Boolean, sTitle AS String) AS String
+Private Sub GetLinkClass(sClass As String, bLTR As Boolean, sTitle As String) As String
   
-  IF System.RightToLeft AND IF NOT bLTR AND IF IsAscii(sTitle) THEN 
+  If System.RightToLeft And If Not bLTR And If IsAscii(sTitle) Then 
     sClass &= "lang=\"en\" "
-    bLTR = TRUE
-  ENDIF
-  IF bLTR THEN sClass &= "dir=\"ltr\" "
-  RETURN sClass   
+    bLTR = True
+  Endif
+  If bLTR Then sClass &= "dir=\"ltr\" "
+  Return sClass   
   
-END
+End
 
 
 
-PRIVATE FUNCTION GetLink(sPath AS String, OPTIONAL sMyTitle AS String, OPTIONAL bNoImage AS Boolean, OPTIONAL sClass AS String, OPTIONAL bLTR AS Boolean) AS String
+Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional bNoImage As Boolean, Optional sClass As String, Optional bLTR As Boolean) As String
 
-  DIM sTitle AS String
-  DIM sRelPath AS String
+  Dim sTitle As String
+  Dim sRelPath As String
 
-  IF sClass THEN sClass = "class=\"" & sClass & "\" "
+  If sClass Then sClass = "class=\"" & sClass & "\" "
 
-  IF sPath LIKE "http://*" OR IF sPath LIKE "mailto:*" THEN
+  If sPath Like "http://*" Or If sPath Like "mailto:*" Then
 
-    IF NOT sMyTitle THEN sMyTitle = sPath
-    RETURN "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"" & sPath & "\">" & EncodeHTML(sMyTitle) & "</a>"
+    If Not sMyTitle Then sMyTitle = sPath
+    Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"" & sPath & "\">" & EncodeHTML(sMyTitle) & "</a>"
 
-  ELSE
+  Else
 
-    IF sPath LIKE ($sPath &/ "*") THEN
+    If sPath Like ($sPath &/ "*") Then
       sRelPath = "." &/ Mid$(sPath, Len($sPath) + 1)
-    ELSE 
+    Else 
       sRelPath = sPath
-    ENDIF 
+    Endif 
     
     sPath = LCase(GetAbsolutePath($sPath, sRelPath))
     sTitle = GetTitle(sPath)
     
-    IF sTitle THEN
+    If sTitle Then
       
-      IF Left(File.Name(sPath)) = ":" AND NOT bNoImage THEN
+      If Left(File.Name(sPath)) = ":" And Not bNoImage Then
     
-        IF sMyTitle THEN sTitle = sMyTitle
-        RETURN "<img src=\"/image" &/ sPath & $sLangSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\">"
+        If sMyTitle Then sTitle = sMyTitle
+        Return "<img src=\"/image" &/ sPath & $sLangSuff & "\" alt=\"" & EncodeHTML(sTitle) & "\">"
       
-      ELSE
+      Else
 
-        IF sMyTitle THEN sTitle = sMyTitle
+        If sMyTitle Then sTitle = sMyTitle
         
-        RETURN "<a " & GetLinkClass(sClass, bLTR, sTitle) & "href=\"/help" &/ sPath & AddParam($sLangSuff, $sShowSuff) & "\">" & EncodeHTML(sTitle) & "</a>"
+        Return "<a " & GetLinkClass(sClass, bLTR, sTitle) & "href=\"/help" &/ sPath & AddParam($sLangSuff, $sShowSuff) & "\">" & EncodeHTML(sTitle) & "</a>"
       
-      ENDIF
+      Endif
         
-    ELSE
+    Else
     
-      IF $bWget THEN 
+      If $bWget Then 
     
-        IF sMyTitle THEN
-          RETURN "<i>" & EncodeHTML(sMyTitle) & "</i>"
-        ELSE
-          RETURN "<i>" & EncodeHTML(sPath) & "</i>"
-        ENDIF
+        If sMyTitle Then
+          Return "<i>" & EncodeHTML(sMyTitle) & "</i>"
+        Else
+          Return "<i>" & EncodeHTML(sPath) & "</i>"
+        Endif
         
-      ELSE
+      Else
     
-        IF sMyTitle THEN
-          RETURN "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"/edit" &/ sPath & $sLangSuff & "\"><i>" & EncodeHTML(sMyTitle) & "</i></a>"
-        ELSE
-          RETURN "<a " & GetLinkClass(sClass, TRUE, "a") & "href=\"/edit" &/ sPath & $sLangSuff & "\"><i>" & EncodeHTML(sRelPath) & "</i></a>"
-        ENDIF
+        If sMyTitle Then
+          Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"/edit" &/ sPath & $sLangSuff & "\"><i>" & EncodeHTML(sMyTitle) & "</i></a>"
+        Else
+          Return "<a " & GetLinkClass(sClass, True, "a") & "href=\"/edit" &/ sPath & $sLangSuff & "\"><i>" & EncodeHTML(sRelPath) & "</i></a>"
+        Endif
         
-      ENDIF
+      Endif
       
-    ENDIF
+    Endif
 
-  ENDIF
+  Endif
 
-END
-
-
-PRIVATE FUNCTION GetImage(sImg AS String, OPTIONAL sAdd AS String) AS String
-
-  IF sAdd THEN sAdd = " " & sAdd
-  RETURN "<img" & sAdd & " border=\"0\" src=\"/img/" & sImg & ".png\" align=\"center\">"
-
-END
+End
 
 
-PRIVATE FUNCTION EncodeHTML(sStr AS String) AS String
+Private Function GetImage(sImg As String, Optional sAdd As String) As String
 
-  DIM iPos AS Integer
-  DIM sRes AS String
-  DIM sCar AS String
+  If sAdd Then sAdd = " " & sAdd
+  Return "<img" & sAdd & " border=\"0\" src=\"/img/" & sImg & ".png\" align=\"center\">"
 
-  FOR iPos = 1 TO Len(sStr)
+End
+
+
+Private Function EncodeHTML(sStr As String) As String
+
+  Dim iPos As Integer
+  Dim sRes As String
+  Dim sCar As String
+
+  For iPos = 1 To Len(sStr)
 
     sCar = Mid$(sStr, iPos, 1)
 
-    IF sCar = "<" THEN
+    If sCar = "<" Then
       sCar = "&lt;"
-    ELSE IF sCar = ">" THEN
+    Else If sCar = ">" Then
       sCar = "&gt;"
-    ELSE IF sCar = "&" THEN
+    Else If sCar = "&" Then
       sCar = "&amp;"
-    ELSE IF sCar = "\"" THEN
+    Else If sCar = "\"" Then
       sCar = "&quot;"
     'ELSE IF Asc(sCar) > 127 THEN
       'sCar = "&#" & Asc(sCar) & ";"
-    ENDIF
+    Endif
 
     sRes = sRes & sCar
 
-  NEXT
+  Next
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
-PRIVATE SUB FinishList()
+Private Sub FinishList()
 
-  IF $sList THEN
+  If $sList Then
     $sRes = $sRes & $sList & "\n"
     $sList = ""
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE SUB AddPara()
+Private Sub AddPara()
 
-  IF Right($sRes, 4) <> "<p>\n" THEN
-    IF Right$($sRes) = "\n" THEN
+  If Right($sRes, 4) <> "<p>\n" Then
+    If Right$($sRes) = "\n" Then
       $sRes &= "<p>"
-    ELSE
+    Else
       $sRes &= "\n"
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
-END
+End
 
-PRIVATE SUB RemovePara()
+Private Sub RemovePara()
 
-  IF Right($sRes, 4) = "<p>\n" THEN
+  If Right($sRes, 4) = "<p>\n" Then
     $sRes = Left$($sRes, -4) & "\n"
-  ENDIF
+  Endif
 
-END
+End
 
 
 
-PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
+Private Sub EnterSection(sSection As String, Optional sArg As String)
 
-  DIM aSection AS String[]
-  DIM sParam AS String
-  DIM iPos AS Integer
+  Dim aSection As String[]
+  Dim sParam As String
+  Dim iPos As Integer
 
   'IF $sSection <> "example" AND IF $sSection <> "syntax" AND IF $sSection <> "title" THEN
   '  AddPara
  ' ENDIF
 
-  IF sSection THEN
+  If sSection Then
     iPos = InStr(sSection, " ")
-    IF iPos THEN
+    If iPos Then
       sParam = Mid$(sSection, iPos + 1)
       sSection = Left$(sSection, iPos - 1)
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
   sSection = LCase(sSection)
 
@@ -521,375 +544,375 @@ PRIVATE SUB EnterSection(sSection AS String, OPTIONAL sArg AS String)
   'LeaveSection()
   $aSection.Push($sSection)
   $sSection = sSection
-  $bVerbatim = FALSE
+  $bVerbatim = False
   $sList = ""
 
-  SELECT CASE $sSection
+  Select Case $sSection
 
-    CASE "syntax"
-      IF sParam <> "no-title" THEN 
-        IF $bSyntax THEN $sRes &= "<div class=\"title\">" & $sTitle & "</div>"
-      ENDIF
+    Case "syntax"
+      If sParam <> "no-title" Then 
+        If $bSyntax Then $sRes &= "<div class=\"title\">" & $sTitle & "</div>"
+      Endif
       sParam = ("Syntax")
       $sRes &= "<div class=\"black\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
       $sRes &= "<pre class=\"syntax\">"
-      $bSyntax = TRUE
+      $bSyntax = True
 
-    CASE "example"
-      IF NOT $bExample THEN
-        $bExample = TRUE
+    Case "example"
+      If Not $bExample Then
+        $bExample = True
         $sRes &= "<h3>" & ("Examples") & "</h3>\n"
-      ENDIF
+      Endif
       $sRes &= "<pre class=\"example\">"
-      $bVerbatim = TRUE
+      $bVerbatim = True
       ' IF NOT sParam THEN sParam = ("Example")
       ' $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
       ' $sRes &= "<pre class=\"example\">"
-      $bNoWiki = TRUE
+      $bNoWiki = True
 
-    CASE "code"
+    Case "code"
       $sRes &= "<pre class=\"example\">"
 
-    CASE "seealso"
+    Case "seealso"
       '$sRes &= "<p><table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\">\n"
       '$sRes &= "<tr><th>" & ("See also") & "</th></tr><tr><td valign=\"top\">\n"
       $sRes &= "<div class=\"seealso\">\n"
       $sRes &= "<h3>" & ("See also") & "</h3>\n"
       $iPos = Len($sRes)
 
-    CASE "error"
+    Case "error"
       $sRes &= "<h3>" & ("Errors") & "</h3>\n"
       '$sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & ("Errors") & "</b></font></div>\n"
       $sRes &= "<table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\" width=\"100%\">\n"
       $sRes &= "<tr><th>" & ("Message") & "</th><th>" & ("Description") & "</th></tr><tr class=\"dark\"><td valign=\"top\">\n"
-      $bWhite = TRUE
+      $bWhite = True
 
-    CASE "warning", "info", "vb", "critical", "tip"
+    Case "warning", "info", "vb", "critical", "tip"
       $sRes &= "<div class=\"" & "warning" & "\"><table class=\"none\" border=\"0\"><tr><td width=\"40\" valign=\"top\">" & GetImage($sSection) & "</td><td valign=\"top\">\n"
 
-    CASE "title"
-      IF NOT sParam THEN sParam = "gray"
+    Case "title"
+      If Not sParam Then sParam = "gray"
       $sRes &= "<div class=\"" & sParam & "\"><font size=\"-2\"><b>"
 
-    CASE "box"
-      IF sParam THEN $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & EncodeHTML(sParam) & "</b></font></div>"
+    Case "box"
+      If sParam Then $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & EncodeHTML(sParam) & "</b></font></div>"
       $sRes &= "<div class=\"box\">\n"
       
-    CASE "only"
+    Case "only"
       $sRes &= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td class=\"only\" width=\"8\" valign=\"top\">" & sParam & "</td><td width=\"8\"></td><td>"
 
-  END SELECT
+  End Select
 
-END
+End
 
-PRIVATE SUB LeaveSection()
+Private Sub LeaveSection()
 
-  DIM sList AS String
+  Dim sList As String
 
   FinishList
   RemovePara
 
-  SELECT CASE $sSection
+  Select Case $sSection
 
-    CASE "syntax"
+    Case "syntax"
       $sRes = RTrim($sRes) & "</pre><p>\n"
 
-    CASE "example"
+    Case "example"
       $sRes = RTrim($sRes) & "</pre>\n"
-      $bVerbatim = FALSE
-      $bNoWiki = FALSE
+      $bVerbatim = False
+      $bNoWiki = False
 
-    CASE "code"
+    Case "code"
       $sRes = RTrim($sRes) & "</pre></div>\n"
 
-    CASE "error"
+    Case "error"
       $sRes &= "</td></tr>\n"
       $sRes &= "</table>\n"
 
-    CASE "seealso"
+    Case "seealso"
       $sRes = Left$($sRes, $iPos) & Replace(Mid$($sRes, $iPos + 1), "</a>", "</a>&nbsp;")
       '$sRes &= "</td></tr>\n"
       '$sRes &= "</table>\n"
       $sRes &= "</div>\n"
 
-    CASE "warning", "info", "vb", "critical", "tip"
+    Case "warning", "info", "vb", "critical", "tip"
       $sRes &= "</td></tr></table></div>\n"
 
-    CASE "title"
+    Case "title"
       $sRes &= "</b></font></div>" ' no '\n' to prevent an '<p>' to be added
 
-    CASE "box"
+    Case "box"
       $sRes &= "</div>\n"
       
-    CASE "only"
+    Case "only"
       $sRes &= "</td></tr></table>"
 
-  END SELECT
+  End Select
 
-  TRY $sSection = $aSection.Pop()
+  Try $sSection = $aSection.Pop()
 
-END
+End
 
 
-PRIVATE FUNCTION Encode(sStr AS String) AS String
+Private Function Encode(sStr As String) As String
 
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
-  DIM sCar AS String
-  DIM bBold AS Boolean
-  DIM bItalic AS Boolean
-  DIM bUnderline AS Boolean
-  DIM bTT AS Boolean
-  DIM sTitle AS String
-  DIM sLink AS String
-  DIM sLinkTitle AS String
-  DIM bLinkTitle AS String
-  DIM sLine AS String
-  DIM bLastVoid AS Boolean
-  DIM bHeader AS Boolean
-  DIM sArg AS String
-  DIM iLevel AS Integer
-  DIM iLevelLen AS Integer
-  DIM bList AS Boolean
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sCar As String
+  Dim bBold As Boolean
+  Dim bItalic As Boolean
+  Dim bUnderline As Boolean
+  Dim bTT As Boolean
+  Dim sTitle As String
+  Dim sLink As String
+  Dim sLinkTitle As String
+  Dim bLinkTitle As String
+  Dim sLine As String
+  Dim bLastVoid As Boolean
+  Dim bHeader As Boolean
+  Dim sArg As String
+  Dim iLevel As Integer
+  Dim iLevelLen As Integer
+  Dim bList As Boolean
 
   $sRes = ""
-  $aSection = NEW String[]
+  $aSection = New String[]
   EnterSection("")
 
-  FOR EACH sStr IN Split(RTrim(sStr), "\n")
+  For Each sStr In Split(RTrim(sStr), "\n")
 
-    IF Left$(sStr) = "{" AND IF Len(sStr) >= 2 THEN
+    If Left$(sStr) = "{" And If Len(sStr) >= 2 Then
 
       EnterSection(Trim(Mid$(sStr, 2)))
-      CONTINUE
+      Continue
 
-    ELSE IF RTrim(sStr) = "}" THEN
+    Else If RTrim(sStr) = "}" Then
 
       LeaveSection()
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF $bVerbatim THEN
+    If $bVerbatim Then
 
-      IF sStr = "==" THEN
-        $bVerbatim = FALSE
+      If sStr = "==" Then
+        $bVerbatim = False
         $sRes = $sRes & "</pre>\n"
-        CONTINUE
-      ELSE
-        $sRes = $sRes & sStr & "\n"
-        CONTINUE
-      ENDIF
+        Continue
+      Else
+        $sRes = $sRes & EncodeHTML(sStr) & "\n"
+        Continue
+      Endif
 
-    ENDIF
+    Endif
 
-    IF NOT $bNoWiki THEN
+    If Not $bNoWiki Then
 
       sStr = RTrim(sStr)
       sTitle = ""
 
-      IF NOT sStr THEN
+      If Not sStr Then
   '       IF bLastVoid THEN
   '         $sRes = $sRes & "<br>\n"
   '       ELSE
   '         bLastVoid = TRUE
   '         $sRes = $sRes & "\n"
   '       ENDIF
-        IF Right($sRes, 4) <> "<p>\n" THEN
+        If Right($sRes, 4) <> "<p>\n" Then
           $sRes = $sRes & "<p>\n"
-        ELSE
+        Else
           $sRes = $sRes & "\n"
-        ENDIF
-        CONTINUE
-      ENDIF
+        Endif
+        Continue
+      Endif
 
-      WHILE Left(sStr) = " "
+      While Left(sStr) = " "
         sStr = Mid$(sStr, 2)
         $sRes &= "&nbsp;"
-      WEND
+      Wend
 
-      bLastVoid = FALSE
-      bList = FALSE
+      bLastVoid = False
+      bList = False
 
       iPos = InStr(sStr, " ")
 
-      IF iPos >= 2 THEN
-        IF Left$(sStr, iPos - 1) = String(iPos - 1, "*") THEN
+      If iPos >= 2 Then
+        If Left$(sStr, iPos - 1) = String(iPos - 1, "*") Then
 
           iLevel = iPos - 1
           iLevelLen = iLevel * 6
-          IF Len($sList) > iLevelLen THEN
+          If Len($sList) > iLevelLen Then
             sCar = Mid$($sList, 1 + iLevelLen)
             $sList = Left($sList, iLevelLen)
-          ELSE IF Len($sList) < iLevelLen THEN
+          Else If Len($sList) < iLevelLen Then
             sCar = String$((iLevelLen - Len($sList)) \ 6, "<ul>\n")
             $sList &= String$((iLevelLen - Len($sList)) \ 6, "</ul>\n")
-          ELSE
+          Else
             sCar = ""
-          ENDIF
+          Endif
 
           $sRes &= sCar & "<li>"
           sStr = Trim(Mid$(sStr, iPos + 1))
-          bList = TRUE
+          bList = True
 
-        ELSE IF Left$(sStr, iPos - 1) = String(iPos - 1, "#") THEN
+        Else If Left$(sStr, iPos - 1) = String(iPos - 1, "#") Then
 
           iLevel = iPos - 1
           iLevelLen = iLevel * 6
-          IF Len($sList) > iLevelLen THEN
+          If Len($sList) > iLevelLen Then
             sCar = Mid$($sList, 1 + iLevelLen)
             $sList = Left($sList, iLevelLen)
-          ELSE IF Len($sList) < iLevelLen THEN
+          Else If Len($sList) < iLevelLen Then
             sCar = String$((iLevelLen - Len($sList)) \ 6, "<ol>\n")
             $sList &= String$((iLevelLen - Len($sList)) \ 6, "</ol>\n")
-          ELSE
+          Else
             sCar = ""
-          ENDIF
+          Endif
 
           $sRes &= sCar & "<li>"
           sStr = Trim(Mid$(sStr, iPos + 1))
-          bList = TRUE
+          bList = True
 
-        ENDIF
+        Endif
 
-      ENDIF
+      Endif
 
-      IF NOT bList THEN FinishList
+      If Not bList Then FinishList
 
-      IF Left$(sStr) = "@" THEN
+      If Left$(sStr) = "@" Then
 
         iPos = InStr(sStr, " ")
-        IF iPos THEN
+        If iPos Then
           sArg = Trim(Mid$(sStr, iPos + 1))
           sStr = Left$(sStr, iPos - 1)
-        ENDIF
+        Endif
 
         sStr = Mid$(sStr, 2)
         
-        TRY $cGotSpecial[sStr] = TRUE
+        Try $cGotSpecial[sStr] = True
 
-        SELECT CASE sStr
+        Select Case sStr
 
-          CASE "classes"
+          Case "classes"
             $sRes = $sRes & GetClasses()
-            CONTINUE
+            Continue
 
-          CASE "no-classes"
-            TRY $cGotSpecial["classes"] = FALSE
-            CONTINUE
+          Case "no-classes"
+            Try $cGotSpecial["classes"] = False
+            Continue
 
-          CASE "symbols"
+          Case "symbols"
             $sRes = $sRes & GetSymbols()
-            CONTINUE
+            Continue
 
-          CASE "components"
+          Case "components"
             $sRes = $sRes & GetComponents()
-            CONTINUE
+            Continue
 
-          CASE "redirect"
+          Case "redirect"
             iPos = InStr(sArg, " ")
-            IF iPos THEN
-              IF NOT $cCompRedirect THEN $cCompRedirect = NEW Collection
+            If iPos Then
+              If Not $cCompRedirect Then $cCompRedirect = New Collection
               $cCompRedirect[Trim(Left(sArg, iPos - 1))] = Trim(Mid$(sArg, iPos + 1))
-            ENDIF
-            CONTINUE             
+            Endif
+            Continue             
 
           ' @index /path prefix
-          CASE "index"
+          Case "index"
             $sRes = $sRes & GetIndex2(sArg)
-            CONTINUE
+            Continue
 
           ' @list /path +-number
-          CASE "list"
+          Case "list"
             '$sRes = $sRes & GetList(sArg)
-            CONTINUE
+            Continue
 
           ' @header /path +-number
-          CASE "header"
+          Case "header"
             '$sRes = $sRes & GetList(sArg)
-            CONTINUE
+            Continue
 
-          CASE "syntax"
-            IF $hSym THEN
+          Case "syntax"
+            If $hSym Then
               EnterSection("syntax")
               $sRes = $sRes & GetSyntax()
               LeaveSection()
-            ENDIF
-            CONTINUE
+            Endif
+            Continue
           
-          CASE "version"
+          Case "version"
             $sRes = $sRes & GetVersion()
-            CONTINUE
+            Continue
           
-          CASE "only-in"
+          Case "only-in"
             $sRes &= GetOnlyIn(sArg)
-            CONTINUE 
+            Continue 
           
-          CASE "changes"
+          Case "changes"
             $sRes &= GetLastChanges()
-            CONTINUE
+            Continue
           
-          CASE "translate"
+          Case "translate"
             $sRes &= GetTranslate()
-            CONTINUE
+            Continue
           
-          CASE "class-stat"
+          Case "class-stat"
             $sRes &= GetClassStat()
-            CONTINUE 
+            Continue 
           
-          CASE "no-autolink"
-            CONTINUE
+          Case "no-autolink"
+            Continue
             
-          CASE ELSE 
+          Case Else 
             $sRes &= "<div style=\"background:solid yellow;\"><b><tt>" & sStr & " ?</tt></b></div>"
-            CONTINUE 
+            Continue 
             
-        END SELECT
+        End Select
 
-      ELSE IF Left$(sStr) = "+" THEN
+      Else If Left$(sStr) = "+" Then
 
         iPos = 1
-        WHILE Mid$(sStr, iPos, 1) = "+"
-          INC iPos
-        WEND
+        While Mid$(sStr, iPos, 1) = "+"
+          Inc iPos
+        Wend
         sStr = LTrim(Mid$(sStr, iPos))
-        IF Len(sStr) THEN
+        If Len(sStr) Then
           'DEC iPos
           $sRes = $sRes & "<h" & iPos & ">"
           sTitle = "</h" & iPos & ">"
-        ENDIF
+        Endif
 
-      ENDIF
+      Endif
 
-      IF Left(sStr, 2) = "[[" THEN
+      If Left(sStr, 2) = "[[" Then
 
         $sRes = $sRes & "<table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"4\" cellspacing=\"0\"" & Trim(Mid$(sStr, 3)) & ">\n"
-        bHeader = TRUE
+        bHeader = True
         $sRes = $sRes & "<tr><th>\n"
-        $bWhite = FALSE
-        CONTINUE
+        $bWhite = False
+        Continue
 
-      ELSE IF Len(sStr) <= 2 THEN
+      Else If Len(sStr) <= 2 Then
 
-        IF sStr = "]]" THEN
-          IF bHeader THEN
+        If sStr = "]]" Then
+          If bHeader Then
             $sRes = $sRes & "</th></tr>\n"
-            bHeader = FALSE
-          ELSE
+            bHeader = False
+          Else
             $sRes = $sRes & "</td></tr>\n"
-          ENDIF
+          Endif
           $sRes = $sRes & "</table>\n"
-          CONTINUE
-        ELSE IF sStr = "[]" THEN
-          bHeader = FALSE
-          CONTINUE
-        ELSE IF sStr = "--" THEN
+          Continue
+        Else If sStr = "[]" Then
+          bHeader = False
+          Continue
+        Else If sStr = "--" Then
           $sRes = $sRes & "<hr>\n"
-          CONTINUE
-        ELSE IF sStr = "==" THEN
-          $bVerbatim = TRUE
+          Continue
+        Else If sStr = "==" Then
+          $bVerbatim = True
           $sRes = $sRes & "<pre class=\"code\">"
-          CONTINUE
+          Continue
   '       ELSE IF sStr = "[" THEN
   '         IF bHeader THEN
   '           $sRes = $sRes & "<tr><th>\n"
@@ -905,464 +928,483 @@ PRIVATE FUNCTION Encode(sStr AS String) AS String
   '           $sRes = $sRes & "</td></tr>\n"
   '         ENDIF
   '         CONTINUE
-        ELSE IF sStr = "][" THEN
-          $bWhite = NOT $bWhite
-          IF bHeader THEN
-            IF Right($sRes, 9) = "<tr><th>\n" THEN
-              IF $bWhite THEN
+        Else If sStr = "][" Then
+          $bWhite = Not $bWhite
+          If bHeader Then
+            If Right($sRes, 9) = "<tr><th>\n" Then
+              If $bWhite Then
                 $sRes = Left$($sRes, -9) & "<tr class=\"dark\"><td valign=\"top\">\n"
-              ELSE
+              Else
                 $sRes = Left$($sRes, -9) & "<tr><td valign=\"top\">\n"
-              ENDIF
-            ELSE
-              IF $bWhite THEN
+              Endif
+            Else
+              If $bWhite Then
                 $sRes = $sRes & "</th></tr>\n<tr class=\"dark\"><td valign=\"top\">\n"
-              ELSE
+              Else
                 $sRes = $sRes & "</th></tr>\n<tr><td valign=\"top\">\n"
-              ENDIF
-            ENDIF
-            bHeader = FALSE
-          ELSE
-            IF $bWhite THEN
+              Endif
+            Endif
+            bHeader = False
+          Else
+            If $bWhite Then
               $sRes = $sRes & "</td></tr>\n<tr class=\"dark\"><td valign=\"top\">\n"
-            ELSE
+            Else
               $sRes = $sRes & "</td></tr>\n<tr><td valign=\"top\">\n"
-            ENDIF
-          ENDIF
-          CONTINUE
-        ELSE IF sStr = "-" THEN
-          IF bHeader THEN
+            Endif
+          Endif
+          Continue
+        Else If sStr = "-" Then
+          If bHeader Then
             $sRes = $sRes & "</th><th>\n"
-          ELSE
+          Else
             $sRes = $sRes & "</td><td valign=\"top\">\n"
-          ENDIF
-          CONTINUE
+          Endif
+          Continue
         'ELSE IF sStr = "_" THEN
         '  $sRes = $sRes & "<br><br>"
         '  CONTINUE
-        ENDIF
+        Endif
 
-      ENDIF
-    ENDIF
+      Endif
+    Endif
 
-    FOR iPos = 1 TO Len(sStr)
+    For iPos = 1 To Len(sStr)
 
       sCar = Mid$(sStr, iPos, 1)
 
-      IF sCar = "\\" THEN
-        INC iPos
+      If sCar = "\\" Then
+        Inc iPos
         sCar = Mid$(sStr, iPos, 1)
-        IF sCar = "<" THEN
+        If sCar = "<" Then
           sCar = "&lt;"
-        ELSE IF sCar = ">" THEN
+        Else If sCar = ">" Then
           sCar = "&gt;"
-        ELSE IF sCar = "&" THEN
+        Else If sCar = "&" Then
           sCar = "&amp;"
-        ENDIF
-      ELSE IF sCar = "\"" THEN
+        Endif
+      Else If sCar = "\"" Then
         sCar = "&quot;"
-      ELSE IF sCar = "<" THEN
+      Else If sCar = "<" Then
         iPos2 = InStr(sStr, ">", iPos)
-        IF iPos2 = 0 THEN iPos2 = Len(sStr) + 1
+        If iPos2 = 0 Then iPos2 = Len(sStr) + 1
         sCar = Mid$(sStr, iPos, iPos2 - iPos + 1)
         iPos = iPos2
-      ELSE IF $bNoWiki THEN
+      Else If $bNoWiki Then
 
-      ELSE IF sCar = "*" THEN
-        bBold = NOT bBold
+      Else If sCar = "*" Then
+        bBold = Not bBold
         sCar = If(bBold, "<b>", "</b>")
-      ELSE IF sCar = "/" THEN
-        IF bItalic OR Asc(Mid$(sStr, iPos + 1, 1)) > 32 THEN
-          bItalic = NOT bItalic
+      Else If sCar = "/" Then
+        If bItalic Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
+          bItalic = Not bItalic
           sCar = If(bItalic, "<i>", "</i>")
-        ENDIF
-      ELSE IF sCar = "_" THEN
-        IF iPos = Len(sStr) AND NOT bUnderline THEN
+        Endif
+      Else If sCar = "_" Then
+        If iPos = Len(sStr) And Not bUnderline Then
           sCar = "<br>"
-        ELSE
-          bUnderline = NOT bUnderline
+        Else
+          bUnderline = Not bUnderline
           sCar = If(bUnderline, "<u>", "</u>")
-        ENDIF
-      ELSE IF sCar = "=" THEN
-        IF bTT OR Asc(Mid$(sStr, iPos + 1, 1)) > 32 THEN
-          bTT = NOT bTT
+        Endif
+      Else If sCar = "=" Then
+        If bTT Or Asc(Mid$(sStr, iPos + 1, 1)) > 32 Then
+          bTT = Not bTT
           sCar = If(bTT, "<tt>", "</tt>")
-        ENDIF
-      ELSE IF sCar = "[" THEN
+        Endif
+      Else If sCar = "[" Then
 
-        IF Mid$(sStr, iPos + 1, 1) <> " " THEN
+        If Mid$(sStr, iPos + 1, 1) <> " " Then
 
           sLink = ""
           sLinkTitle = ""
-          bLinkTitle = FALSE
+          bLinkTitle = False
           iPos2 = iPos + 1
 
-          WHILE iPos2 <= Len(sStr)
+          While iPos2 <= Len(sStr)
             sCar = Mid$(sStr, iPos2, 1)
-            IF sCar = "]" THEN BREAK
-            IF sCar = "|" THEN
-              bLinkTitle = TRUE
-            ELSE
-              IF sCar = "\\" THEN
-                INC iPos2
+            If sCar = "]" Then Break
+            If sCar = "|" Then
+              bLinkTitle = True
+            Else
+              If sCar = "\\" Then
+                Inc iPos2
                 sCar = Mid$(sStr, iPos2, 1)
-              ENDIF
-              IF bLinkTitle THEN
+              Endif
+              If bLinkTitle Then
                 sLinkTitle &= sCar
-              ELSE
+              Else
                 sLink &= sCar
-              ENDIF
-            ENDIF
-            INC iPos2
-          WEND
+              Endif
+            Endif
+            Inc iPos2
+          Wend
 
           sCar = "["
 
-          IF iPos2 <= Len(sStr) AND IF Len(Trim(sLink)) THEN
+          If iPos2 <= Len(sStr) And If Len(Trim(sLink)) Then
             sCar = GetLink(Trim(sLink), Trim(sLinkTitle))
             iPos = iPos2
-          ENDIF
+          Endif
 
-        ENDIF
+        Endif
 
-      ELSE IF sCar = "%" THEN
-        IF Mid$(sStr, iPos + 1, 1) <> " " THEN
+      Else If sCar = "%" Then
+        If Mid$(sStr, iPos + 1, 1) <> " " Then
           iPos2 = InStr(sStr, "%", iPos + 1)
-          IF iPos2 THEN
+          If iPos2 Then
             sLink = Mid$(sStr, iPos + 1, iPos2 - iPos - 1)
             sCar = GetImage(sLink)
             iPos = iPos2
-          ENDIF
-        ENDIF
+          Endif
+        Endif
       'ELSE IF Asc(sCar) > 127 THEN
         'sCar = "&#" & Asc(sCar) & ";"
-      ENDIF
+      Endif
 
       $sRes = $sRes & sCar
 
-    NEXT
+    Next
 
     $sRes = $sRes & sTitle & "\n"
 
-  NEXT
+  Next
 
-  WHILE $aSection.Count
+  While $aSection.Count
     LeaveSection()
-  WEND
+  Wend
 
-  WHILE Right$($sRes) = "\n"
+  While Right$($sRes) = "\n"
     $sRes = Left$($sRes, -1)
-  WEND
+  Wend
 
-  RETURN $sRes
+  Return $sRes
 
-END
+End
 
-PRIVATE FUNCTION DecodeURL(sUrl AS String) AS String
+Private Function DecodeURL(sUrl As String) As String
 
-  DIM sRes AS String
-  DIM iPos AS Integer
-  DIM sCar AS String
+  Dim sRes As String
+  Dim iPos As Integer
+  Dim sCar As String
 
-  FOR iPos = 1 TO Len(sUrl)
+  For iPos = 1 To Len(sUrl)
 
     sCar = Mid$(sUrl, iPos, 1)
 
-    IF sCar = "+" THEN
+    If sCar = "+" Then
       sCar = " "
-    ELSE IF sCar = "%" THEN
+    Else If sCar = "%" Then
       sCar = Chr$(Val("&H" & Mid$(sUrl, iPos + 1, 2)))
       iPos = iPos + 2
-    ENDIF
+    Endif
 
     sRes = sRes & sCar
 
-  NEXT
+  Next
 
   sRes = Replace(sRes, "\r", "")
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
-PRIVATE SUB EncodeURL(URL AS String) AS String
+Private Sub EncodeURL(URL As String) As String
   
-  DIM iInd AS Integer
-  DIM sRes AS String
-  DIM sCar AS String
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
   
-  FOR iInd = 1 TO Len(URL)
+  For iInd = 1 To Len(URL)
     sCar = Mid$(URL, iInd, 1)
-    IF sCar = " " THEN 
+    If sCar = " " Then 
       sCar = "+"
-    ELSE IF IsLetter(sCar) OR IF IsDigit(sCar) OR IF InStr("*-._", sCar) THEN 
-    ELSE 
+    Else If IsLetter(sCar) Or If IsDigit(sCar) Or If InStr("*-._", sCar) Then 
+    Else 
       sCar = "%" & Hex$(Asc(sCar), 2)
-    ENDIF
+    Endif
     sRes &= sCar
-  NEXT
+  Next
 
-  RETURN sRes
+  Return sRes
   
-END
+End
 
-PRIVATE FUNCTION GetForm() AS Collection
+Private Function GetForm() As Collection
 
-  DIM sLine AS String
-  DIM iPos AS Integer
-  DIM sVal AS String
-  DIM sName AS String
-  DIM cForm AS NEW Collection
-  DIM sForm AS String
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sVal As String
+  Dim sName As String
+  Dim cForm As New Collection
+  Dim sForm As String
 
-  READ #File.In, sForm, Val(Application.Env["CONTENT_LENGTH"])
+  Read #File.In, sForm, Val(Application.Env["CONTENT_LENGTH"])
 
-  FOR EACH sLine IN Split(sForm, "&")
+  For Each sLine In Split(sForm, "&")
 
     iPos = InStr(sLine, "=")
-    IF iPos = 0 THEN CONTINUE
+    If iPos = 0 Then Continue
     sVal = DecodeURL(Mid$(sLine, iPos + 1))
     sName = Left$(sLine, iPos - 1)
     cForm[sName] = sVal
 
-  NEXT
+  Next
 
-  RETURN cForm
+  Return cForm
 
-END
+End
 
 
-PRIVATE SUB PrintTitle(sTitle AS String)
+Private Sub PrintTitle(sTitle As String)
 
-  IF sTitle THEN
-    IF $hSym THEN
-      IF NOT $hSym.IsHidden() THEN PRINT $hClass.Name; ".";
-    ENDIF
-    PRINT EncodeHTML(sTitle)
-    IF $hClass THEN
-      PRINT " ("; $hComp.Key; ")";
-    ENDIF
-  ELSE
-    PRINT $sPath
-  ENDIF
+  If sTitle Then
+    If $hSym Then
+      If Not $hSym.IsHidden() Then Print $hClass.Name; ".";
+    Endif
+    Print EncodeHTML(sTitle)
+    If $hClass Then
+      Print " ("; $hComp.Key; ")";
+    Endif
+  Else
+    Print $sPath
+  Endif
   
   $sTitle = sTitle
 
-END
+End
 
 
 
-PRIVATE SUB MakeTitle(sTitle AS String)
+Private Sub MakeTitle(sTitle As String)
 
-  PRINT "<title>"
-  PRINT ("Gambas Documentation"); " - ";
+  Print "<title>"
+  Print ("Gambas Documentation"); " - ";
   PrintTitle(sTitle)
-  PRINT "</title>"
+  Print "</title>"
 
-END
+End
 
-PRIVATE SUB PrintTab(sText AS String, bOn AS Boolean, sClass AS String, sPath AS String, OPTIONAL sLink AS String)
+Private Sub PrintTab(sText As String, bOn As Boolean, sClass As String, sPath As String, Optional sLink As String)
 
-  IF bOn THEN
-    PRINT "<td class=\"tabon\" width=\"1\"><font size=\"-1\"><b>"; sText; "</font></b></td>"
-  ELSE
-    PRINT "<td class=\"taboff\" width=\"1\"><div style=\"height: 4px;\"></div>"
-    PRINT "<table cellspacing=\"0\"><tr><td class=\""; sClass; "\">";
-    IF sPath THEN
-      PRINT "<font size=\"-1\">"; GetLink(sPath, sText, TRUE); "</font>"
-    ELSE
-      PRINT "<font size=\"-1\"><a href=\""; sLink; "\">"; sText; "</a></font>"
-    ENDIF
-    PRINT "</td></tr></table>"
-    PRINT "</td>"
-  ENDIF
+  If bOn Then
+    Print "<td class=\"tabon\" width=\"1\"><font size=\"-1\"><b>"; sText; "</font></b></td>"
+  Else
+    Print "<td class=\"taboff\" width=\"1\"><div style=\"height: 4px;\"></div>"
+    Print "<table cellspacing=\"0\"><tr><td class=\""; sClass; "\">";
+    If sPath Then
+      Print "<font size=\"-1\">"; GetLink(sPath, sText, True); "</font>"
+    Else
+      Print "<font size=\"-1\"><a href=\""; sLink; "\">"; sText; "</a></font>"
+    Endif
+    Print "</td></tr></table>"
+    Print "</td>"
+  Endif
 
-END
+End
 
 
-PRIVATE SUB PrintPath()
+Private Sub PrintPath()
   
-  DIM sElt AS String
-  DIM sPath AS String
-  DIM aElt AS String[]
+  Dim sElt As String
+  Dim sPath As String
+  Dim aElt As String[]
 
-  IF $bView THEN RETURN
+  If $bView Then Return
 
-  IF System.RightToLeft THEN   
-    PRINT "<div class=\"path\" dir=\"rtl\">";
-  ELSE 
-    PRINT "<div class=\"path\">";
-  ENDIF
+  If System.RightToLeft Then   
+    Print "<div class=\"path\" dir=\"rtl\">";
+  Else 
+    Print "<div class=\"path\">";
+  Endif
     
-  PRINT "&nbsp;<a href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
-  PRINT "<img class=\"flag\" align=\"top\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\" style=\"margin-top: 2px;\">";
+  Print "&nbsp;<a href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
+  Print "<img class=\"flag\" valign=\"middle\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\">";
   'PRINT GetImage("lang/" & $sLang, "class=\"flag\" alt=\"" & ("Home") & "\"");
-  PRINT "</a>";
+  Print "</a>";
   
-  IF $sPath AND IF $sPath <> "/" THEN
+  If $sPath And If $sPath <> "/" Then
   
-    PRINT "&nbsp;/&nbsp;";
+    Print "&nbsp;/&nbsp;";
     
     sPath = "/"
     aElt = Split(File.Dir($sPath), "/")
-    FOR EACH sElt IN aElt
-      IF NOT sElt THEN CONTINUE
+    For Each sElt In aElt
+      If Not sElt Then Continue
       sPath &/= sElt
-      IF $bHelp THEN
-        PRINT GetLink(sPath, sElt);
-      ELSE 
-        PRINT sElt;
-      ENDIF
-      PRINT "&nbsp;/&nbsp;";
-    NEXT
-    PRINT File.Name($sPath);
+      If $bHelp Then
+        Print GetLink(sPath, sElt);
+      Else 
+        Print sElt;
+      Endif
+      Print "&nbsp;/&nbsp;";
+    Next
+    Print File.Name($sPath);
     
-  ENDIF
+  Endif
 
-  PRINT "&nbsp;</div>"
+  Print "&nbsp;</div>"
   
-END
+End
 
+Private Sub PrintVersion()
 
+  Dim sElt As String
+  
+  If $bWget Then Return
+  
+  If $sUri Like "/comp*" Then
+    Print "<div class=\"path\">";
+    If $sVersion = "3.0" Then
+      sElt = Replace($sUri, "v3", "")
+      If Right(sElt) = "&" Or Right(sElt) = "?" Then sElt = Left$(sElt, -1)
+      Print "<a href=\"/help" &/ sElt; "\">-&gt;&nbsp;2.0</a>";
+    Else
+      Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">&rarr;&nbsp;3.0</a>";
+    Endif
+    Print "</div>"
+  Endif
+  
+End
 
-PRIVATE SUB MakeHeader(OPTIONAL sTitle AS String, OPTIONAL sWarn AS String)
+Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
-  DIM iPos AS Integer
-  DIM sLang AS String
-  DIM rPage AS Result
+  Dim iPos As Integer
+  Dim sLang As String
+  Dim rPage As Result
 
-  PRINT "Content-type: text/html;charset=UTF-8"
-  PRINT "Content-language: "; Replace(System.Language, "_", "-")
-  PRINT
-  PRINT "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
+  Print "Content-type: text/html;charset=UTF-8"
+  Print "Content-language: "; Replace(System.Language, "_", "-")
+  Print
+  Print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
 
-  PRINT "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"" & $sLang & "\" lang=\"" & $sLang & "\"";
-  IF System.RightToLeft THEN 
-    PRINT " dir=\"rtl\">"
-  ELSE 
-    PRINT " dir=\"ltr\">"
-  ENDIF
-  PRINT "<head>"
-  PRINT "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
-  PRINT "<link rel=\"stylesheet\" href=\"/style.css\">"
+  Print "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"" & $sLang & "\" lang=\"" & $sLang & "\"";
+  If System.RightToLeft Then 
+    Print " dir=\"rtl\">"
+  Else 
+    Print " dir=\"ltr\">"
+  Endif
+  Print "<head>"
+  Print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
+  Print "<link rel=\"stylesheet\" href=\"/style.css\">"
   MakeTitle(sTitle)
-  PRINT "</head>"
+  Print "</head>"
   'IF System.RightToLeft THEN 
   '  PRINT "<body dir=\"rtl\">"
   'ELSE 
   '  PRINT "<body>"
   'ENDIF 
 
-  $bHeader = TRUE
+  $bHeader = True
 
   'PRINT "<p>&nbsp;<p>&nbsp;<p>"
   'IF NOT $bWget THEN PRINT "<div style=\"height: 16px;\"></div>"
 
-  IF NOT $bShow THEN
+  If Not $bShow Then
 
-    PRINT "<table class=\"none\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">"
-    IF System.RightToLeft THEN 
-      PRINT "<tr><td align=\"right\">"
-    ELSE
-      PRINT "<tr><td align=\"left\">"
-    ENDIF
+    Print "<table class=\"none\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">"
+    If System.RightToLeft Then 
+      Print "<tr><td align=\"right\">"
+    Else
+      Print "<tr><td align=\"left\">"
+    Endif
     'PRINT "<font size=\"-1\">"
   
     PrintPath
   
-    IF $bHelp THEN
+    If $bHelp Then
   
       rPage = DB.Exec("SELECT sPath FROM page WHERE sPath < &1 ORDER BY sPath DESC LIMIT 2", $sPath)
-      IF rPage.Available AND IF IsCommentPath(rPage!sPath) THEN rPage.MoveNext
-      IF rPage.Available THEN
-        PRINT "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Previous") & "</a>&nbsp;"
-      ELSE
-        PRINT ("Previous") & "&nbsp;"
-      ENDIF
+      If rPage.Available And If IsCommentPath(rPage!sPath) Then rPage.MoveNext
+      If rPage.Available Then
+        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Previous") & "</a>&nbsp;"
+      Else
+        Print ("Previous") & "&nbsp;"
+      Endif
   
       rPage = DB.Exec("SELECT sPath FROM page WHERE sPath > &1 ORDER BY sPath LIMIT 2", $sPath)
-      IF rPage.Available AND IF IsCommentPath(rPage!sPath) THEN rPage.MoveNext
-      IF rPage.Available THEN
-        PRINT "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Next") & "</a>&nbsp;"
-      ELSE
-        PRINT ("Next") & "&nbsp;"
-      ENDIF
+      If rPage.Available And If IsCommentPath(rPage!sPath) Then rPage.MoveNext
+      If rPage.Available Then
+        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Next") & "</a>&nbsp;"
+      Else
+        Print ("Next") & "&nbsp;"
+      Endif
   
-    ENDIF
+    Endif
   
-    IF NOT $bWget THEN
+    If Not $bWget Then
   
-      IF TRUE THEN '$sUser
+      If True Then '$sUser
   
-        IF $bAdmin OR $bFind THEN
-        ELSE IF $bEdit OR $bRename THEN
-          IF $bNew THEN
-            PRINT "<a href=\"/help" &/ GetUncommentPath($sPath) & $sLangSuff & "\">"
-          ELSE
-            PRINT "<a href=\"/help" &/ $sPath & $sLangSuff & "\">"
-          ENDIF
-          PRINT ("Cancel")
-          PRINT "</a>&nbsp;"
-        ELSE
-          PRINT "<a href=\"/edit" &/ $sPath & $sLangSuff & "\">";
-          IF sTitle THEN
-            PRINT ("Edit");
-          ELSE
-            PRINT ("Create");
-          ENDIF
-          PRINT "</a>&nbsp;"
-          IF sTitle AND $sPath <> "/" AND NOT $bComment THEN
-            PRINT "<a href=\"/rename" &/ $sPath & $sLangSuff & "\">";
-            PRINT ("Rename");
-            PRINT "</a>&nbsp;"
-          ENDIF
-          IF sTitle AND NOT $bImage THEN
-            PRINT "<a href=\"/edit" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "undo\">";
-            PRINT ("Undo");
-            PRINT "</a>&nbsp;"
-          ENDIF
-          IF NOT ($bComment OR $bNew) THEN
-            PRINT "<a href=\"/help" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "refresh\">";
-            PRINT ("Refresh");
-            PRINT "</a>&nbsp;"
-          ENDIF
-        ENDIF
+        If $bAdmin Or $bFind Then
+        Else If $bEdit Or $bRename Then
+          If $bNew Then
+            Print "<a href=\"/help" &/ GetUncommentPath($sPath) & $sLangSuff & "\">"
+          Else
+            Print "<a href=\"/help" &/ $sPath & $sLangSuff & "\">"
+          Endif
+          Print ("Cancel")
+          Print "</a>&nbsp;"
+        Else
+          Print "<a href=\"/edit" &/ $sPath & $sLangSuff & "\">";
+          If sTitle Then
+            Print ("Edit");
+          Else
+            Print ("Create");
+          Endif
+          Print "</a>&nbsp;"
+          If sTitle And $sPath <> "/" And Not $bComment Then
+            Print "<a href=\"/rename" &/ $sPath & $sLangSuff & "\">";
+            Print ("Rename");
+            Print "</a>&nbsp;"
+          Endif
+          If sTitle And Not $bImage Then
+            Print "<a href=\"/edit" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "undo\">";
+            Print ("Undo");
+            Print "</a>&nbsp;"
+          Endif
+          If Not ($bComment Or $bNew) Then
+            Print "<a href=\"/help" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "refresh\">";
+            Print ("Refresh");
+            Print "</a>&nbsp;"
+          Endif
+        Endif
   
-        IF $bHelp THEN
-          PRINT "<a href=\"/help/search" & $sLangSuff & "\">"; ("Search"); "</a>&nbsp;"          
-          PRINT "<a href=\"/admin" & $sLangSuff & "\">"; ("Administration"); "</a>&nbsp;"
-        ENDIF
+        If $bHelp Then
+          Print "<a href=\"/help/search" & $sLangSuff & "\">"; ("Search"); "</a>&nbsp;"          
+          Print "<a href=\"/admin" & $sLangSuff & "\">"; ("Administration"); "</a>&nbsp;"
+        Endif
   
-      ELSE
+      Else
   
-        IF NOT ($bComment OR $bNew) THEN
-          PRINT "<a href=\"/help" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "refresh\">";
-          PRINT ("Refresh");
-          PRINT "</a>&nbsp;"
-        ENDIF
+        If Not ($bComment Or $bNew) Then
+          Print "<a href=\"/help" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "refresh\">";
+          Print ("Refresh");
+          Print "</a>&nbsp;"
+        Endif
   
-      ENDIF
+      Endif
   
+      PrintVersion
       ' PRINT "</font>"
-      PRINT "&nbsp;</td>"
+      Print "&nbsp;</td>"
       
-      IF System.RightToLeft THEN
-        PRINT "<td align=\"left\">"
-      ELSE    
-        PRINT "<td align=\"right\">"
-      ENDIF
+      If System.RightToLeft Then
+        Print "<td align=\"left\">"
+      Else    
+        Print "<td align=\"right\">"
+      Endif
   
-      FOR EACH sLang IN $aLang
-        IF sLang = $sLang THEN CONTINUE
-        IF $bAdmin THEN
-          PRINT "<a href=\"/admin" &/ $sPath;
-        ELSE
-          PRINT "<a href=\"/help" &/ $sPath;
-        ENDIF
-        PRINT "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"");
-        PRINT "</a>&nbsp;"
+      For Each sLang In $aLang
+        If sLang = $sLang Then Continue
+        If $bAdmin Then
+          Print "<a href=\"/admin" &/ $sPath;
+        Else
+          Print "<a href=\"/help" &/ $sPath;
+        Endif
+        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"");
+        Print "</a>&nbsp;"
         '"<img class=\"flag\" align=\"top\" src=\"/img/lang/"; sLang; ".png\" alt=\"" & sLang & "\">"; "</a>&nbsp;&nbsp;"
-      NEXT
+      Next
   
       'IF $sUser THEN
       '  PRINT $sUser
@@ -1370,71 +1412,72 @@ PRIVATE SUB MakeHeader(OPTIONAL sTitle AS String, OPTIONAL sWarn AS String)
       '  PRINT "<font size=\"-1\"><a href=\"/login\">"; ("Login"); "</a></font>"
       'ENDIF
   
-    ENDIF
+    Endif
   
-    PRINT "</td></tr></table>"
+    Print "</td></tr></table>"
     
-  ELSE 
+  Else 
   
     PrintPath
+    PrintVersion
     
-  ENDIF
+  Endif
 
-  IF NOT $bShow AND ($bHelp OR $bEdit OR $bHistory) THEN
+  If Not $bShow And ($bHelp Or $bEdit Or $bHistory) Then
 
-    PRINT "<table class=\"tabheader\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr>"
+    Print "<table class=\"tabheader\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr>"
 
-    PrintTab(("Documentation"), NOT ($bComment OR $bHistory), "taboffl", GetUncommentPath($sPath))
-    IF (NOT $bNew OR $bComment) AND NOT $bImage THEN
-      IF GetTitle(GetUncommentPath($sPath)) THEN
+    PrintTab(("Documentation"), Not ($bComment Or $bHistory), "taboffl", GetUncommentPath($sPath))
+    If (Not $bNew Or $bComment) And Not $bImage Then
+      If GetTitle(GetUncommentPath($sPath)) Then
         'PrintTab(("Comments"), $bComment, If($bHistory, "taboffl", "taboffr"), GetCommentPath($sPath))
         PrintTab(("History"), $bHistory, "taboffr", "", "/hist" &/ GetUncommentPath($sPath) & $sLangSuff)
-      ENDIF
-    ENDIF
+      Endif
+    Endif
 
-    PRINT "<td class=\"tabnone\">&nbsp;</td>"
-    PRINT "</tr></table>"
+    Print "<td class=\"tabnone\">&nbsp;</td>"
+    Print "</tr></table>"
 
-    PRINT "<div class=\"tab\">"
+    Print "<div class=\"tab\">"
 
-  ELSE
+  Else
 
-    IF $bShow THEN 
-      PRINT "<div>"
-    ELSE 
-      PRINT "<div class=\"notab\">"
-    ENDIF
+    If $bShow Then 
+      Print "<div>"
+    Else 
+      Print "<div class=\"notab\">"
+    Endif
 
-  ENDIF
+  Endif
 
-  IF sWarn THEN
-    PRINT "<br><div class=\"alert\"><font size=\"-1\">"
-    PRINT "<b>"; ("Warning!"); "&nbsp;"; sWarn; "</b>&nbsp;"
-    IF NOT $bWget THEN
-      PRINT "<a href=\"/help" &/ $sPath & "?en\" target=\"_blank\">" & ("See english version") & "</a>&nbsp;"
-    ENDIF
-    PRINT "</font></div>"
-  ENDIF
+  If sWarn Then
+    Print "<br><div class=\"alert\"><font size=\"-1\">"
+    Print "<b>"; ("Warning!"); "&nbsp;"; sWarn; "</b>&nbsp;"
+    If Not $bWget Then
+      Print "<a href=\"/help" &/ $sPath & "?en\" target=\"_blank\">" & ("See english version") & "</a>&nbsp;"
+    Endif
+    Print "</font></div>"
+  Endif
 
-  IF NOT $bEdit THEN
-    IF $bComment THEN
-      PRINT "<h3>"; Subst(("Comments on &1"), GetTitle(GetUncommentPath($sPath))); "<h3>"
-    ELSE
-      PRINT "<div class=\"title\">"
+  If Not $bEdit Then
+    If $bComment Then
+      Print "<h3>"; Subst(("Comments on &1"), GetTitle(GetUncommentPath($sPath))); "<h3>"
+    Else
+      Print "<div class=\"title\">"
       'PrintTitle(String.UCase(String.Left(sTitle)) & String.Mid(sTitle, 2))
       PrintTitle(sTitle)
-      PRINT "</div>"
-    ENDIF
-  ENDIF
+      Print "</div>"
+    Endif
+  Endif
 
-END
+End
 
 
-PRIVATE SUB MakeFooter(OPTIONAL dDate AS Date)
+Private Sub MakeFooter(Optional dDate As Date)
 
-  DIM sEnv AS String
+  Dim sEnv As String
 
-  PRINT "</div>"
+  Print "</div>"
 
 '   IF NOT $bWGet THEN
 ' '     PRINT "<br><table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">"
@@ -1461,75 +1504,75 @@ PRIVATE SUB MakeFooter(OPTIONAL dDate AS Date)
 '   ELSE
 '     PRINT "<hr>"
 '   ENDIF
-  PRINT "</body>"
-  PRINT "</html>"
-  PRINT
+  Print "</body>"
+  Print "</html>"
+  Print
 
-END
+End
 
-PRIVATE FUNCTION GetRealPath(sPath AS String) AS String
+Private Function GetRealPath(sPath As String) As String
 
-  DIM rPage AS Result
+  Dim rPage As Result
 
 RETRY:
 
   rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
 
-  IF rPage.Available AND IF Left$(rPage!sTitle) = "@" THEN
+  If rPage.Available And If Left$(rPage!sTitle) = "@" Then
     sPath = GetAbsolutePath(sPath, Mid$(rPage!sTitle, 2))
-    GOTO RETRY
-  ENDIF
+    Goto RETRY
+  Endif
 
-  RETURN sPath
+  Return sPath
 
-END
+End
 
 
 
-PRIVATE FUNCTION FindPage(sPath AS String, OPTIONAL bNoLink AS Boolean) AS Result
+Private Function FindPage(sPath As String, Optional bNoLink As Boolean) As Result
 
-  DIM rPage AS Result
+  Dim rPage As Result
 
-  IF NOT bNoLink THEN sPath = GetRealPath(sPath)
+  If Not bNoLink Then sPath = GetRealPath(sPath)
 
   rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, $sLang)
-  IF NOT rPage.Available THEN
+  If Not rPage.Available Then
     rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
-  ENDIF
+  Endif
 
-  RETURN rPage
+  Return rPage
 
-END
+End
 
 
-PRIVATE FUNCTION GetTitle(sPath AS String) AS String
+Private Function GetTitle(sPath As String) As String
 
-  DIM rPage AS Result
+  Dim rPage As Result
 
   rPage = FindPage(sPath)
-  IF rPage.Available THEN
+  If rPage.Available Then
     'IF sPath LIKE "/comp/*/*/*" THEN
     '  RETURN GetTitle(File.Dir(sPath)) & "." & rPage!sTitle
     'ELSE
-      RETURN rPage!sTitle
+      Return rPage!sTitle
     'ENDIF
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE SUB PrintExample(sExample AS String)
+Private Sub PrintExample(sExample As String)
 
-  IF NOT sExample THEN RETURN
+  If Not sExample Then Return
 
-  IF NOT $bExample THEN
-    $bExample = TRUE
-    PRINT "<h3>" & ("Example") & "</h3>"
-  ENDIF
+  If Not $bExample Then
+    $bExample = True
+    Print "<h3>" & ("Example") & "</h3>"
+  Endif
 
-  PRINT "<pre class=\"example\">"; RTrim(sExample); "</pre><p>"
+  Print "<pre class=\"example\">"; RTrim(sExample); "</pre><p>"
 
-END
+End
 
 ' PRIVATE SUB PrintSection(sCode AS String)
 ' 
@@ -1541,605 +1584,605 @@ END
 ' 
 ' END
 
-PRIVATE SUB DisplayImage()
+Private Sub DisplayImage()
 
-  DIM rPage AS Result
-  DIM rPageDef AS Result
-  DIM bWarn AS Boolean
-  DIM sWarn AS String
-  DIM sPath AS String
-  DIM sPage AS String
+  Dim rPage As Result
+  Dim rPageDef As Result
+  Dim bWarn As Boolean
+  Dim sWarn As String
+  Dim sPath As String
+  Dim sPage As String
 
   sPath = GetRealPath($sPath)
 
   rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, $sLang)
   rPageDef = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
 
-  IF rPageDef.Available THEN
-    IF NOT rPage.Available THEN
+  If rPageDef.Available Then
+    If Not rPage.Available Then
 '       IF sPath = $sPath THEN
 '         sWarn = ("This page is not translated.")
 '         $bNew = TRUE
 '       ENDIF
       rPage = rPageDef
-    ELSE
+    Else
 '       IF rPageDef!dDate > rPage!dDate THEN
 '         IF sPath = $sPath THEN sWarn = ("This page is not up to date.")
 '       ENDIF
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
   'DEBUG DB.Tables["page"].Fields["sdata"].Type
   'PRINT #File.Err, rPage.Fields["sData"].Type; "/"; Len(rPage["sData"].Data)
   'DEBUG rPage!sData.Length
 
-  PRINT rPage!sHtml
-  PRINT "Content-Length: "; rPage["sData"].Length
-  PRINT
-  PRINT rPage!sData.Data;
+  Print rPage!sHtml
+  Print "Content-Length: "; rPage["sData"].Length
+  Print
+  Print rPage!sData.Data;
 
-END
+End
 
-PRIVATE SUB DisplayPage()
+Private Sub DisplayPage()
 
-  DIM rPage AS Result
-  DIM rPageDef AS Result
-  DIM bWarn AS Boolean
-  DIM sWarn AS String
-  DIM sPath AS String
-  DIM sPage AS String
+  Dim rPage As Result
+  Dim rPageDef As Result
+  Dim bWarn As Boolean
+  Dim sWarn As String
+  Dim sPath As String
+  Dim sPage As String
 
   sPath = GetRealPath($sPath)
 
-  IF $bRefresh THEN
+  If $bRefresh Then
     rPage = DB.Edit("page", "sPath = &1 AND sLang = &2", sPath, $sLang)
     rPageDef = DB.Edit("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
-  ELSE
+  Else
     rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, $sLang)
     rPageDef = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
-  ENDIF
+  Endif
 
-  IF rPageDef.Available THEN
-    IF NOT rPage.Available THEN
-      IF sPath = $sPath THEN
+  If rPageDef.Available Then
+    If Not rPage.Available Then
+      If sPath = $sPath Then
         sWarn = ("This page is not translated.")
-        $bNew = TRUE
-      ENDIF
+        $bNew = True
+      Endif
       rPage = rPageDef
-      $bRefresh = FALSE
-    ELSE
-      IF rPageDef!dDate > rPage!dDate THEN
-        IF sPath = $sPath THEN sWarn = ("This page is not up to date.")
-      ENDIF
-    ENDIF
-  ENDIF
+      $bRefresh = False
+    Else
+      If rPageDef!dDate > rPage!dDate Then
+        If sPath = $sPath Then sWarn = ("This page is not up to date.")
+      Endif
+    Endif
+  Endif
 
-  IF NOT rPage.Available THEN
+  If Not rPage.Available Then
     MakeHeader()
-    IF $bComment THEN
-      PRINT "<h3>" & ("There is no comment on this page yet.") & "</h3>"
-    ELSE
-      PRINT "<h3>" & ("This documentation page is not available.") & "</h3>"
-    ENDIF
+    If $bComment Then
+      Print "<h3>" & ("There is no comment on this page yet.") & "</h3>"
+    Else
+      Print "<h3>" & ("This documentation page is not available.") & "</h3>"
+    Endif
     MakeFooter
-    RETURN
-  ENDIF
+    Return
+  Endif
 
   MakeHeader(rPage!sTitle, sWarn)
 
-  IF $bImage THEN
+  If $bImage Then
   
-    PRINT "<img border=\"1\" src=\"/image" &/ $sUri; "\">"
+    Print "<img border=\"1\" src=\"/image" &/ $sUri; "\">"
   
-  ELSE IF $bShow THEN
+  Else If $bShow Then
   
-    PRINT MakePageWithoutHeader(rPage)
+    Print MakePageWithoutHeader(rPage)
     MakeFooter
   
-  ELSE
+  Else
 
-    IF $bRefresh AND NOT $bNew THEN
+    If $bRefresh And Not $bNew Then
       sPage = MakePageWithoutHeader(rPage)
-      IF $cGotSpecial.Count = 0 THEN
+      If $cGotSpecial.Count = 0 Then
         rPage!sHTML = sPage
         rPage.Update
-      ENDIF
-    ENDIF
+      Endif
+    Endif
 
-    IF rPage!sHTML THEN
-      PRINT rPage!sHTML
+    If rPage!sHTML Then
+      Print rPage!sHTML
       MakeFooter(rPage!dDate)
-    ELSE
-      IF NOT sPage THEN sPage = MakePageWithoutHeader(rPage)
-      PRINT sPage
+    Else
+      If Not sPage Then sPage = MakePageWithoutHeader(rPage)
+      Print sPage
       MakeFooter
-    ENDIF
+    Endif
     
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE FUNCTION MakePageWithoutHeader(rPage AS Result) AS String
+Private Function MakePageWithoutHeader(rPage As Result) As String
 
-  DIM bExample AS Boolean
-  DIM bPrint AS Boolean
-  DIM hFile AS File
-  DIM sFile AS String
-  DIM sResult AS String
+  Dim bExample As Boolean
+  Dim bPrint As Boolean
+  Dim hFile As File
+  Dim sFile As String
+  Dim sResult As String
 
   sFile = Temp$()
-  TRY KILL sFile
-  TRY OPEN sFile FOR CREATE AS #hFile
-  IF ERROR THEN
-    OPEN sFile FOR CREATE AS #hFile
-  ENDIF
-  OUTPUT TO #hFile
+  Try Kill sFile
+  Try Open sFile For Create As #hFile
+  If Error Then
+    Open sFile For Create As #hFile
+  Endif
+  Output To #hFile
 
-  $cGotSpecial = NEW Collection
+  $cGotSpecial = New Collection
 
-  bPrint = FALSE
+  bPrint = False
 
-  IF $iType = TYPE_SYMBOL AND IF $hSym THEN
-    PRINT Encode("@syntax")
-  ENDIF
+  If $iType = TYPE_SYMBOL And If $hSym Then
+    Print Encode("@syntax")
+  Endif
 
-  PRINT Encode(rPage!sDesc)
+  Print Encode(rPage!sDesc)
 
-  IF $iType = TYPE_COMPONENT AND IF NOT $cGotSpecial.Exist("classes") THEN
-    PRINT "<p>"
-    PRINT Encode("@classes")
-  ELSE IF $iType = TYPE_CLASS AND IF NOT $cGotSpecial.Exist("symbols") THEN
-    PRINT "<p>"
-    PRINT Encode("@symbols")
-  ENDIF
+  If $iType = TYPE_COMPONENT And If Not $cGotSpecial.Exist("classes") Then
+    Print "<p>"
+    Print Encode("@classes")
+  Else If $iType = TYPE_CLASS And If Not $cGotSpecial.Exist("symbols") Then
+    Print "<p>"
+    Print Encode("@symbols")
+  Endif
 
-  OUTPUT TO DEFAULT
-  CLOSE #hFile
+  Output To Default
+  Close #hFile
 
   sResult = File.Load(sFile)
-  KILL sFile
-  RETURN sResult
+  Kill sFile
+  Return sResult
 
-END
+End
 
-PRIVATE FUNCTION QuoteSpecial(sName AS String) AS String
+Private Function QuoteSpecial(sName As String) As String
 
   sName = Replace(sName, "[", "\\[")
   sName = Replace(sName, "_", "\\_")
-  RETURN sName
+  Return sName
 
-END
+End
 
 
-PRIVATE FUNCTION GetOld(sPath AS String, OPTIONAL bSyntax AS Boolean) AS String
+Private Function GetOld(sPath As String, Optional bSyntax As Boolean) As String
 
-  DIM sData AS String
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
-  DIM sRes AS String
-  DIM sCar AS String
+  Dim sData As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sRes As String
+  Dim sCar As String
 
   sData = File.Load(sPath)
   iPos = InStr(sData, "</h1>")
-  IF iPos THEN sData = Mid$(sData, iPos + 5)
+  If iPos Then sData = Mid$(sData, iPos + 5)
 
-  IF bSyntax THEN
+  If bSyntax Then
     iPos = InStr(sData, "</table>")
-  IF iPos THEN sData = Mid$(sData, iPos + 8)
-  ENDIF
+  If iPos Then sData = Mid$(sData, iPos + 8)
+  Endif
 
   iPos = 1
-  DO
+  Do
     iPos = InStr(sData, "<", iPos)
-    IF iPos = 0 THEN BREAK
-    IF InStr(" =>", Mid$(sData, iPos + 1, 1)) THEN
-      INC iPos
-      CONTINUE
-    ENDIF
+    If iPos = 0 Then Break
+    If InStr(" =>", Mid$(sData, iPos + 1, 1)) Then
+      Inc iPos
+      Continue
+    Endif
     iPos2 = InStr(sData, ">", iPos + 1)
-    IF iPos2 = 0 THEN BREAK
+    If iPos2 = 0 Then Break
     sData = Left$(sData, iPos - 1) & Mid$(sData, iPos2 + 1)
-  LOOP
+  Loop
 
   sData = Trim(sData)
-  IF LCase(sData) = "not documented" THEN sData = ""
+  If LCase(sData) = "not documented" Then sData = ""
 
-  RETURN sData
+  Return sData
 
-END
+End
 
 
-PRIVATE FUNCTION GetOldComponentName(sComp AS String) AS String
+Private Function GetOldComponentName(sComp As String) As String
 
-  DIM sRes AS String
-  DIM iPos AS Integer
-  DIM sCar AS String
+  Dim sRes As String
+  Dim iPos As Integer
+  Dim sCar As String
 
-  SELECT CASE sComp
+  Select Case sComp
 
-    CASE "gb.xml"
-      RETURN "GbXmlLibxml"
+    Case "gb.xml"
+      Return "GbXmlLibxml"
 
-    CASE "gb.xml.rpc"
-      RETURN "GbXmlLibxmlRpc"
+    Case "gb.xml.rpc"
+      Return "GbXmlLibxmlRpc"
 
-    CASE "gb.xml.xslt"
-      RETURN "GbXmlLibxmlXslt"
+    Case "gb.xml.xslt"
+      Return "GbXmlLibxmlXslt"
 
-    CASE "gb.sdl.sound"
-      RETURN "GbSdl"
+    Case "gb.sdl.sound"
+      Return "GbSdl"
 
-    CASE "gb.settings"
-      RETURN "Gb"
+    Case "gb.settings"
+      Return "Gb"
 
-    DEFAULT
+    Default
 
       sComp = "." & sComp
 
-      FOR iPos = 1 TO Len(sComp)
+      For iPos = 1 To Len(sComp)
         sCar = Mid$(sComp, iPos, 1)
-        IF sCar = "." THEN
-          INC iPos
+        If sCar = "." Then
+          Inc iPos
           sCar = UCase(Mid$(sComp, iPos, 1))
-        ENDIF
+        Endif
         sRes = sRes & sCar
-      NEXT
+      Next
 
-      RETURN sRes
+      Return sRes
 
-  END SELECT
+  End Select
 
-END
+End
 
 
-PRIVATE FUNCTION GetOldName(sName AS String) AS String
+Private Function GetOldName(sName As String) As String
 
   sName = Replace(sName, "$", "")
   sName = Replace(sName, "[", "")
   sName = Replace(sName, "]", "")
   sName = Replace(sName, "_", "")
   sName = Replace(sName, ".", "")
-  RETURN sName
+  Return sName
 
-END
+End
 
 
-PRIVATE FUNCTION GetOldClassName(sName AS String) AS String
+Private Function GetOldClassName(sName As String) As String
 
   sName = Replace(sName, "[]", "Array")
   sName = Replace(sName, ".", "")
-  RETURN sName
+  Return sName
 
-END
+End
 
 
-PRIVATE SUB RemoveMarkup(sStr AS String) AS String
+Private Sub RemoveMarkup(sStr As String) As String
   
-  DIM iInd AS Integer
-  DIM aWait AS NEW String[]
-  DIM sWait AS String
-  DIM sCar AS String
-  DIM sRes AS String
+  Dim iInd As Integer
+  Dim aWait As New String[]
+  Dim sWait As String
+  Dim sCar As String
+  Dim sRes As String
   
-  FOR iInd = 1 TO Len(sStr)
+  For iInd = 1 To Len(sStr)
     sCar = Mid$(sStr, iInd, 1)
-    IF sCar = sWait THEN 
+    If sCar = sWait Then 
       sWait = aWait.Pop()
-      CONTINUE 
-    ENDIF 
-    IF sCar = "<" THEN 
+      Continue 
+    Endif 
+    If sCar = "<" Then 
       aWait.Push(sWait)
       sWait = ">"
-      CONTINUE 
-    ENDIF 
-    IF sCar = Chr$(34) THEN 
-      IF sWait THEN
+      Continue 
+    Endif 
+    If sCar = Chr$(34) Then 
+      If sWait Then
         aWait.Push(sWait)
         sWait = Chr$(34)
-        CONTINUE
-      ENDIF 
-    ENDIF
-    IF NOT sWait THEN sRes &= sCar
-  NEXT
+        Continue
+      Endif 
+    Endif
+    If Not sWait Then sRes &= sCar
+  Next
   
-  RETURN sRes
+  Return sRes
   
-END
+End
 
 
-PRIVATE SUB EditPage()
+Private Sub EditPage()
 
-  DIM rPage AS Result
-  DIM sSave AS String
-  DIM aFile AS String[]
-  DIM sName AS String
-  DIM iPos AS Integer
-  DIM sDir AS String
-  DIM sPath AS String
-  DIM sKind AS String
+  Dim rPage As Result
+  Dim sSave As String
+  Dim aFile As String[]
+  Dim sName As String
+  Dim iPos As Integer
+  Dim sDir As String
+  Dim sPath As String
+  Dim sKind As String
 
-  rPage = FindPage($sPath, TRUE)
-  IF NOT rPage.Available THEN
+  rPage = FindPage($sPath, True)
+  If Not rPage.Available Then
     rPage = DB.Create("page")
-    IF $bComment THEN
+    If $bComment Then
       rPage!sTitle = Subst(("Comments on &1"), GetTitle(GetUncommentPath($sPath)))
-    ELSE
+    Else
 
       sDir = $sRoot &/ "old" 'System.Path &/ "share/gambas2/help/"
-      IF Exist(sDir) THEN
+      If Exist(sDir) Then
 
-        SELECT CASE $iType
+        Select Case $iType
 
-          CASE TYPE_COMPONENT
+          Case TYPE_COMPONENT
             
-            IF $hComp THEN 
+            If $hComp Then 
             
               rPage!sTitle = $hComp.Key
   
               sPath = sDir &/ GetOldComponentName($hComp.Key) & ".html"
-              IF Exist(sPath) THEN
+              If Exist(sPath) Then
                 rPage!sDesc = GetOld(sPath)
-              ENDIF
+              Endif
               
-            ENDIF
+            Endif
 
-          CASE TYPE_CLASS
+          Case TYPE_CLASS
 
-            IF $hClass THEN
+            If $hClass Then
               rPage!sTitle = QuoteSpecial($hClass.Name)
   
               sPath = sDir &/ GetOldComponentName($hComp.Key) & GetOldClassName($hClass.Name) & ".html"
-              IF Exist(sPath) THEN
+              If Exist(sPath) Then
                 rPage!sDesc = GetOld(sPath)
-              ENDIF
-            ENDIF
+              Endif
+            Endif
 
-          CASE TYPE_SYMBOL
+          Case TYPE_SYMBOL
 
-            IF $hSym THEN
-              IF Left$($hSym.Name) = "_" THEN
-                SELECT CASE $hSym.Name
-                  CASE "_new"
+            If $hSym Then
+              If Left$($hSym.Name) = "_" Then
+                Select Case $hSym.Name
+                  Case "_new"
                     rPage!sTitle = "NEW " & $hClass.Name
-                  CASE "_put"
+                  Case "_put"
                     rPage!sTitle = $hClass.Name & "[] = ..."
-                  CASE "_get"
+                  Case "_get"
                     rPage!sTitle = $hClass.Name & "[]"
-                  CASE "_call"
+                  Case "_call"
                     rPage!sTitle = $hClass.Name & "()"
-                  CASE "_next"
+                  Case "_next"
                     rPage!sTitle = "FOR EACH " & $hClass.Name
-                  DEFAULT
+                  Default
                     rPage!sTitle = $hSym.Name
-                END SELECT
-              ELSE
+                End Select
+              Else
                 rPage!sTitle = $hSym.Name
-              ENDIF
+              Endif
   
-              IF Left$(rPage!sTitle) = ":" THEN rPage!sTitle = Mid$(rPage!sTitle, 2)
+              If Left$(rPage!sTitle) = ":" Then rPage!sTitle = Mid$(rPage!sTitle, 2)
   
               sName = UCase($hSym.Kind)
-              IF sName = ":" THEN
+              If sName = ":" Then
                 sName = "E" & Mid$($hSym.Name, 2)
-              ELSE
+              Else
                 sName = sName & $hSym.Name
-              ENDIF
+              Endif
               sName = Replace(sName, "_", "")
   
               sPath = sDir &/ GetOldComponentName($hComp.Key) & GetOldClassName($hClass.Name) & sName & ".html"
-              IF Exist(sPath) THEN
-                rPage!sDesc = GetOld(sPath, TRUE)
-              ELSE 
+              If Exist(sPath) Then
+                rPage!sDesc = GetOld(sPath, True)
+              Else 
                 rPage!sDesc = "<!--" & ("DELETE ME") & "\n" & RemoveMarkup(GetSymbolSyntax($hSym)) & "\n-->\n"
-              ENDIF
-            ENDIF
+              Endif
+            Endif
 
-          CASE ELSE
+          Case Else
 
-            IF $sPath LIKE "/lang/*" THEN
+            If $sPath Like "/lang/*" Then
               sName = Mid$($sPath, 7)
               sName = UCase(Left$(sName)) & Mid$(sName, 2)
               aFile = Dir(sDir, "Lang" & sName & ".html")
-              IF aFile.Count = 0 THEN aFile = Dir(sDir, "Lang" & UCase(sName) & ".html")
-              IF aFile.Count = 0 THEN aFile = Dir(sDir, "Lang" & sName & "*.html")
-              IF aFile.Count THEN
+              If aFile.Count = 0 Then aFile = Dir(sDir, "Lang" & UCase(sName) & ".html")
+              If aFile.Count = 0 Then aFile = Dir(sDir, "Lang" & sName & "*.html")
+              If aFile.Count Then
                 rPage!sDesc = GetOld(sDir &/ aFile[0])
                 rPage!sTitle = Mid$(File.BaseName(aFile[0]), 5)
-              ENDIF
-            ELSE IF $sPath LIKE "/api/name/*" THEN
+              Endif
+            Else If $sPath Like "/api/name/*" Then
               sName = LCase(Mid$($sPath, 11))
               aFile = Dir(sDir, "Api*.html")
               iPos = aFile.Find("api" & GetOldName(sName) & ".html", gb.Text)
-              IF iPos >= 0 THEN
+              If iPos >= 0 Then
                 rPage!sDesc = GetOld(sDir &/ aFile[iPos])
                 rPage!sTitle = Mid$(File.BaseName(aFile[iPos]), 4)
-              ENDIF
+              Endif
             'ELSE IF InStr(Mid$($sPath, 2), "/") = 0 THEN
-            ELSE
+            Else
               sName = Mid$(File.Name($sPath), 2)
               aFile = Dir(sDir, "*.html")
               iPos = aFile.Find(GetOldName(sName) & ".html", gb.Text)
-              IF iPos >= 0 THEN
+              If iPos >= 0 Then
                 rPage!sDesc = GetOld(sDir &/ aFile[iPos])
                 rPage!sTitle = File.BaseName(aFile[iPos])
-              ENDIF
-            ENDIF
+              Endif
+            Endif
 
-        END SELECT
+        End Select
 
-      ENDIF
+      Endif
 
-      IF $hComp THEN
-        IF $hComp.Key = "gb.gtk" OR $hComp.Key = "gb.gui" THEN
+      If $hComp Then
+        If $hComp.Key = "gb.gtk" Or $hComp.Key = "gb.gui" Then
           rPage!sTitle = "@" & Replace($sPath, "/" & $hComp.Key, "/gb.qt")
           'rPage!sDesc = NULL
-        ENDIF
-      ENDIF
+        Endif
+      Endif
 
-    ENDIF
+    Endif
     
-    IF IsNull(rPage!sTitle) THEN
+    If IsNull(rPage!sTitle) Then
       sName = File.Name($sPath)
-      IF Left(sName) = ":" THEN sName = Mid$(sName, 2)
+      If Left(sName) = ":" Then sName = Mid$(sName, 2)
       rPage!sTitle = sName
-    ENDIF
+    Endif
     
-  ENDIF
+  Endif
 
   $bNew = rPage!sLang <> $sLang
   MakeHeader(rPage!sTitle)
 
   sSave = "\n<input type=\"submit\" name=\"command\" value=\"" & ("Save") & "\"></input>" &
           "&nbsp;&nbsp;<input type=\"submit\" name=\"command\" value=\"" & ("Delete") & "\"></input>"
-  IF $bImage THEN
-    PRINT "<form action=\"" & "/edit" &/ $sUri & "\" method=\"post\" name=\"edit\" enctype=\"multipart/form-data\">"
-    PRINT "<p><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & rPage!sTitle & "\"></input>&nbsp;&nbsp;" & sSave & "</p>"
-    PRINT "<p><input type=\"file\" name=\"sData\" size=\"64\"></input></p>"
-    PRINT "</form>"
-  ELSE
-    PRINT "<form action=\"" & "/edit" &/ $sUri & "\" method=\"post\" name=\"edit\">"
-    PRINT "<p><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & rPage!sTitle & "\"></input>&nbsp;&nbsp;" & sSave & "</p>"
-    PRINT "<p><textarea style=\"width:100%;\" rows=\"32\" name=\"sDesc\">"; EncodeHTML(rPage!sDesc); "</textarea></p>"
-    PRINT "</form>"
-  ENDIF
+  If $bImage Then
+    Print "<form action=\"" & "/edit" &/ $sUri & "\" method=\"post\" name=\"edit\" enctype=\"multipart/form-data\">"
+    Print "<p><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & rPage!sTitle & "\"></input>&nbsp;&nbsp;" & sSave & "</p>"
+    Print "<p><input type=\"file\" name=\"sData\" size=\"64\"></input></p>"
+    Print "</form>"
+  Else
+    Print "<form action=\"" & "/edit" &/ $sUri & "\" method=\"post\" name=\"edit\">"
+    Print "<p><input type=\"text\" name=\"sTitle\" size=\"64\" maxlength=\"64\" value=\"" & rPage!sTitle & "\"></input>&nbsp;&nbsp;" & sSave & "</p>"
+    Print "<p><textarea style=\"width:100%;\" rows=\"32\" name=\"sDesc\">"; EncodeHTML(rPage!sDesc); "</textarea></p>"
+    Print "</form>"
+  Endif
 
   MakeFooter()
 
-END
+End
 
 
-PRIVATE FUNCTION MakeRelative(sLink AS String) AS String
+Private Function MakeRelative(sLink As String) As String
 
-  DIM aPath AS String[]
-  DIM aLink AS String[]
-  DIM iInd AS Integer
-  DIM iMax AS Integer
+  Dim aPath As String[]
+  Dim aLink As String[]
+  Dim iInd As Integer
+  Dim iMax As Integer
 
   aPath = Split($sPath, "/")
   aLink = Split(sLink, "/")
 
   iMax = Min(aPath.Max, aLink.Max)
-  FOR iInd = 0 TO iMax
-    IF aPath[iInd] <> aLink[iInd] THEN BREAK
-  NEXT
+  For iInd = 0 To iMax
+    If aPath[iInd] <> aLink[iInd] Then Break
+  Next
 
-  IF iInd <= iMax AND (aPath.Count - iInd <= 2) THEN
+  If iInd <= iMax And (aPath.Count - iInd <= 2) Then
 
     sLink = String$(aPath.Count - iInd, "../")
-    WHILE iInd < aLink.Count
+    While iInd < aLink.Count
       sLink = sLink &/ aLink[iInd]
-      INC iInd
-    WEND
+      Inc iInd
+    Wend
 
-  ENDIF
+  Endif
 
-  RETURN sLink
+  Return sLink
 
-END
+End
 
 
 
-PRIVATE FUNCTION AutoLink(sStr AS String) AS String
+Private Function AutoLink(sStr As String) As String
 
-  DIM cCache AS NEW Collection
-  DIM sRes AS String
-  DIM iInd AS Integer
-  DIM rPage AS Result
-  DIM rComp AS Result
-  DIM sCar AS String
-  DIM iWord AS Integer
-  DIM sWait AS String
-  DIM sWord AS String
-  DIM sOrig AS String
-  DIM nSpace AS Integer
-  DIM aWord AS String[]
-  DIM nWord AS Integer
-  DIM iPos AS Integer
+  Dim cCache As New Collection
+  Dim sRes As String
+  Dim iInd As Integer
+  Dim rPage As Result
+  Dim rComp As Result
+  Dim sCar As String
+  Dim iWord As Integer
+  Dim sWait As String
+  Dim sWord As String
+  Dim sOrig As String
+  Dim nSpace As Integer
+  Dim aWord As String[]
+  Dim nWord As Integer
+  Dim iPos As Integer
   'DIM bSkip AS Boolean
-  DIM iLevelBrace AS Integer
-  DIM sClass AS String
-  DIM sSymbol AS String
-  DIM sTitle AS String
+  Dim iLevelBrace As Integer
+  Dim sClass As String
+  Dim sSymbol As String
+  Dim sTitle As String
 
-  FOR EACH sStr IN Split(sStr, "\n")
+  For Each sStr In Split(sStr, "\n")
 
     sStr = RTrim(sStr)
 
-    IF sWait THEN
-      IF sStr = sWait THEN
-        IF sWait = "}" THEN
-          DEC iLevelBrace
-          IF iLevelBrace = 0 THEN
+    If sWait Then
+      If sStr = sWait Then
+        If sWait = "}" Then
+          Dec iLevelBrace
+          If iLevelBrace = 0 Then
             sWait = ""
-          ENDIF
-        ELSE
+          Endif
+        Else
           sWait = ""
-        ENDIF
-      ENDIF
+        Endif
+      Endif
       sRes &= sStr & "\n"
-      CONTINUE
-    ELSE IF sStr = "==" THEN
+      Continue
+    Else If sStr = "==" Then
       sWait = sStr
       sRes &= sStr & "\n"
-      CONTINUE
-    ELSE IF Left(sStr) = "{" THEN
-      IF LCase(Mid$(sStr, 2)) = "example" OR IF Mid$(sStr, 2) LIKE "syntax*" THEN
-        INC iLevelBrace
+      Continue
+    Else If Left(sStr) = "{" Then
+      If LCase(Mid$(sStr, 2)) = "example" Or If Mid$(sStr, 2) Like "syntax*" Then
+        Inc iLevelBrace
         sWait = "}"
-      ENDIF
+      Endif
       sRes &= sStr & "\n"
-      CONTINUE
-    ELSE IF Left(sStr) = "@" THEN
+      Continue
+    Else If Left(sStr) = "@" Then
       sRes &= sStr & "\n"
-      CONTINUE
-    ELSE IF Left(sStr) = "+" THEN 
+      Continue
+    Else If Left(sStr) = "+" Then 
       cCache.Clear
       sRes &= sStr & "\n"
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
 
     'bSkip = FALSE
     sWait = ""
     iWord = 0
 
     sStr &= " "
-    FOR iInd = 1 TO Len(sStr)
+    For iInd = 1 To Len(sStr)
 
       sCar = Mid$(sStr, iInd, 1)
 
-      IF sWait = " " THEN
-        IF IsPunct(sCar) OR IF IsSpace(sCar) THEN
+      If sWait = " " Then
+        If IsPunct(sCar) Or If IsSpace(sCar) Then
           sWait = ""
-        ENDIF
-      ELSE IF sWait THEN
-        IF sCar = sWait THEN
+        Endif
+      Else If sWait Then
+        If sCar = sWait Then
           sWait = ""
-        ENDIF
-      ELSE IF iWord = 0 THEN
-        IF LCase(sCar) >= "a" AND LCase(sCar) <= "z" THEN
+        Endif
+      Else If iWord = 0 Then
+        If LCase(sCar) >= "a" And LCase(sCar) <= "z" Then
           iWord = iInd
-          CONTINUE
-        ELSE IF sCar = "[" THEN
+          Continue
+        Else If sCar = "[" Then
           sWait = "]"
-        ELSE IF sCar = "{" THEN
+        Else If sCar = "{" Then
           sWait = "}"
-        ELSE IF sCar = "%" THEN
+        Else If sCar = "%" Then
           sWait = "%"
-        ELSE IF sCar = "<" THEN   
+        Else If sCar = "<" Then   
           sWait = ">"
-        ELSE IF sCar = "\\" THEN
+        Else If sCar = "\\" Then
           sWait = " "
           'sCar = ""
           'INC iInd
           'sCar &= Mid$(sStr, iInd, 1)
-        ENDIF
-      ELSE
-        IF LCase(sCar) >= "a" AND LCase(sCar) <= "z" THEN CONTINUE
-        IF sCar >= "0" AND sCar <= "9" THEN CONTINUE
-        IF sCar = "$" OR sCar = "-" OR sCar = "_" OR sCar = "\\" THEN CONTINUE
-        IF sCar = "." THEN 
-          IF IsLetter(Mid$(sStr, iInd + 1, 1)) THEN CONTINUE
-        ENDIF
+        Endif
+      Else
+        If LCase(sCar) >= "a" And LCase(sCar) <= "z" Then Continue
+        If sCar >= "0" And sCar <= "9" Then Continue
+        If sCar = "$" Or sCar = "-" Or sCar = "_" Or sCar = "\\" Then Continue
+        If sCar = "." Then 
+          If IsLetter(Mid$(sStr, iInd + 1, 1)) Then Continue
+        Endif
         'IF sCar = " " AND nSpace < 2 THEN
         '  INC nSpace
         '  CONTINUE
@@ -2148,114 +2191,114 @@ PRIVATE FUNCTION AutoLink(sStr AS String) AS String
         sWord = Replace(sOrig, "\\_", "_")
         sTitle = ""
         
-        IF NOT cCache.Exist(sWord) THEN
+        If Not cCache.Exist(sWord) Then
         
-          cCache[sWord] = TRUE
+          cCache[sWord] = True
           
-          IF Len(sWord) > 1 THEN
+          If Len(sWord) > 1 Then
           
-            aWord = Split(sWord, ".", "", TRUE)
+            aWord = Split(sWord, ".", "", True)
   
-            IF aWord.Count = 1 THEN
+            If aWord.Count = 1 Then
   
               rPage = DB.Find("page", "sTitle = &1 AND sLang = &2", sWord, DEFAULT_LANG)
     
-              IF $hComp THEN
-                FOR EACH rPage
-                  IF rPage!sPath LIKE "/lang/*" OR IF (rPage!sPath LIKE ("/comp/" &/ $hComp.Key & "/*") AND NOT (rPage!sPath LIKE "/comp/*/*/*")) THEN
-                    IF rPage!sTitle = sWord THEN
-                      GOTO FOUND
-                    ENDIF
-                  ENDIF
-                NEXT
-              ENDIF
+              If $hComp Then
+                For Each rPage
+                  If rPage!sPath Like "/lang/*" Or If (rPage!sPath Like ("/comp/" &/ $hComp.Key & "/*") And Not (rPage!sPath Like "/comp/*/*/*")) Then
+                    If rPage!sTitle = sWord Then
+                      Goto FOUND
+                    Endif
+                  Endif
+                Next
+              Endif
     
-              FOR EACH rPage
-                IF rPage!sPath LIKE "/lang/*" OR IF (rPage!sPath LIKE "/comp/*/*" AND NOT (rPage!sPath LIKE "/comp/*/*/*")) THEN
-                  IF rPage!sTitle = sWord THEN
-                    BREAK
-                  ENDIF
-                ELSE IF rPage!sPath LIKE "/def/*" THEN
-                  BREAK
-                ENDIF
-              NEXT
+              For Each rPage
+                If rPage!sPath Like "/lang/*" Or If (rPage!sPath Like "/comp/*/*" And Not (rPage!sPath Like "/comp/*/*/*")) Then
+                  If rPage!sTitle = sWord Then
+                    Break
+                  Endif
+                Else If rPage!sPath Like "/def/*" Then
+                  Break
+                Endif
+              Next
     
-            ELSE 
+            Else 
             
-              IF aWord[0] = "gb" THEN 
+              If aWord[0] = "gb" Then 
                 rPage = DB.Find("page", "sPath = &1 AND sLang = &2", "/comp" &/ LCase(sWord), DEFAULT_LANG)
-                IF rPage.Available THEN GOTO FOUND
-              ENDIF
+                If rPage.Available Then Goto FOUND
+              Endif
               
-              IF aWord.Count = 2 THEN
+              If aWord.Count = 2 Then
               
                 rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb.qt" &/ LCase(aWord[0]) &/ "%")
-                IF NOT rPage.Available THEN 
+                If Not rPage.Available Then 
                   rPage = DB.Find("page", "sTitle = &1 AND sLang = &2 AND sPath LIKE &3", aWord[1], DEFAULT_LANG, "/comp/gb%" &/ LCase(aWord[0]) &/ "%")
-                ENDIF 
+                Endif 
                 sTitle = sWord
                 
-              ENDIF 
+              Endif 
             
-            ENDIF
+            Endif
   
           FOUND:
   
-            IF rPage.Available THEN
-              IF rPage!sPath <> $sPath THEN
-                IF sTitle THEN 
+            If rPage.Available Then
+              If rPage!sPath <> $sPath Then
+                If sTitle Then 
                   sRes &= "[" & MakeRelative(rPage!sPath) & "|" & sTitle & "]" & sCar
-                ELSE
+                Else
                   sRes &= "[" & MakeRelative(rPage!sPath) & "]" & sCar
-                ENDIF
+                Endif
                 iInd = iWord + Len(sOrig)
                 iWord = 0
                 nSpace = 0
                 'sTitle = ""
-              ENDIF
-              CONTINUE
-            ENDIF
+              Endif
+              Continue
+            Endif
             
-          ENDIF
+          Endif
             
           sRes &= sOrig & sCar 'aWord[0]
           iInd = iWord + Len(sOrig) 'Len(aWord[0])
           iWord = 0
           nSpace = 0
           'bSkip = FALSE
-          CONTINUE
+          Continue
 
-        ELSE
+        Else
           sCar = sOrig & sCar
-        ENDIF
+        Endif
         iWord = 0
-      ENDIF
+      Endif
 
       sRes &= sCar
 
-    NEXT
+    Next
 
-    IF Right(sRes) = " " THEN sRes = Left(sRes, -1)
+    If Right(sRes) = " " Then sRes = Left(sRes, -1)
     sRes &= "\n"
     sWait = ""
 
-  NEXT
+  Next
 
-  RETURN Trim(sRes) & "\n"
+  Return Trim(sRes) & "\n"
 
-END
+End
 
 
-PRIVATE SUB UndoPage()
+Private Sub UndoPage()
   
-  DIM rPage AS Result
-  DIM rArch AS Result
+  Dim rPage As Result
+  Dim rArch As Result
   
   rPage = DB.Edit("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
-  IF rPage.Available THEN
+  If rPage.Available Then
 
     rArch = DB.Limit(2).Find("archive", "sPath = &1 AND sLang = &2 ORDER BY dDate DESC", $sPath, $sLang)
-    IF rArch.Count >= 2 THEN
+    If rArch.Count >= 2 Then
     
       rArch.MoveNext
     
@@ -2268,49 +2311,49 @@ PRIVATE SUB UndoPage()
       
       DB.Delete("archive", "sPath = &1 AND sLang = &2 AND dDate > &3", $sPath, $sLang, rArch!dDate)
       
-    ELSE
+    Else
     
       DB.Delete("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
       DB.Delete("archive", "sPath = &1 AND sLang = &2", $sPath, $sLang)
     
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
-  PRINT "Content-type: text/html"
-  PRINT "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri
-  PRINT
+  Print "Content-type: text/html"
+  Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri
+  Print
 
-END
+End
 
 
-PRIVATE SUB UpdatePage()
+Private Sub UpdatePage()
 
-  DIM sForm AS String
-  DIM sLine AS String
-  DIM iPos AS Integer
-  DIM iPos2 AS Integer
-  DIM rPage AS Result
-  DIM sVal AS String
-  DIM bCreate AS Boolean
+  Dim sForm As String
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim rPage As Result
+  Dim sVal As String
+  Dim bCreate As Boolean
   'DIM bOK AS Boolean
-  DIM bDelete AS Boolean
-  DIM rArch AS Result
-  DIM hField AS ResultField
-  DIM sBoundary AS String
-  DIM sName AS String
-  DIM sField AS String
-  DIM bStop AS Boolean
+  Dim bDelete As Boolean
+  Dim rArch As Result
+  Dim hField As ResultField
+  Dim sBoundary As String
+  Dim sName As String
+  Dim sField As String
+  Dim bStop As Boolean
 
   rPage = DB.Create("page")
   rPage!sPath = $sPath
   rPage!sLang = $sLang
   rPage!dDate = Now
-  TRY rPage.Update
+  Try rPage.Update
 
   rPage = DB.Edit("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
-  IF NOT rPage.Available THEN
+  If Not rPage.Available Then
     Error.Raise("Unable to edit the page")
-  ENDIF
+  Endif
 
   'rPage!bDoNotCache = FALSE
 
@@ -2319,7 +2362,7 @@ PRIVATE SUB UpdatePage()
   rPage!dDate = Now
   rPage!sUser = $sUser
 
-  IF $bImage THEN
+  If $bImage Then
   
 '     PRINT "Content-type: application/octet-stream"
 '     PRINT
@@ -2332,98 +2375,98 @@ PRIVATE SUB UpdatePage()
    ' PRINT #File.Err, rPage!sData.Length
 
     File.In.EndOfLine = gb.Windows
-    LINE INPUT sBoundary
+    Line Input sBoundary
     'DEBUG sBoundary
     
-    DO
-      DO
-        LINE INPUT sLine
+    Do
+      Do
+        Line Input sLine
         'DEBUG sLine
-        IF NOT sLine THEN BREAK
-        IF sLine LIKE "Content-Disposition: *" THEN
+        If Not sLine Then Break
+        If sLine Like "Content-Disposition: *" Then
           'sField = Scan(sLine, "*name=\"*\"*")[1]
           iPos = InStr(sLine, "name=\"")
           iPos2 = InStr(sLine, "\"", iPos + 6)
           sField = Mid$(sLine, iPos + 6, iPos2 - iPos - 6)
-        ELSE IF sLine LIKE "Content-Type: *" THEN
+        Else If sLine Like "Content-Type: *" Then
           rPage!sHtml = sLine
-        ENDIF
-      LOOP
+        Endif
+      Loop
       sForm = ""
-      DO
-        LINE INPUT sLine
+      Do
+        Line Input sLine
         'DEBUG Left$(sLine, 32)
-        IF sLine = sBoundary THEN BREAK
-        IF sLine = (sBoundary & "--") THEN 
-          bStop = TRUE
-          BREAK
-        ENDIF
-        IF sForm THEN sForm &= "\r\n"
+        If sLine = sBoundary Then Break
+        If sLine = (sBoundary & "--") Then 
+          bStop = True
+          Break
+        Endif
+        If sForm Then sForm &= "\r\n"
         sForm &= sLine
-      LOOP
+      Loop
       'PRINT #File.Err, sField; "->"; rPage.Fields[sField].Type
-      IF sField = "command" THEN
+      If sField = "command" Then
         bDelete = sForm = ("Delete")
-      ELSE IF Trim(sForm) THEN
+      Else If Trim(sForm) Then
         rPage[sField] = sForm
-      ENDIF
+      Endif
       'PRINT #File.Err, sField; "<-"; Len(sForm)
-    LOOP UNTIL bStop
+    Loop Until bStop
         
     'PRINT #File.Err, "-> "; rPage!sData.Length
     
     File.In.EndOfLine = gb.Unix
     
-  ELSE
+  Else
 
-    READ sForm, Val(Application.Env["CONTENT_LENGTH"])
+    Read sForm, Val(Application.Env["CONTENT_LENGTH"])
 
-    FOR EACH sLine IN Split(sForm, "&")
+    For Each sLine In Split(sForm, "&")
 
       iPos = InStr(sLine, "=")
-      IF iPos = 0 THEN CONTINUE
+      If iPos = 0 Then Continue
       sVal = DecodeURL(Mid$(sLine, iPos + 1))
       'IF sVal THEN bOK = TRUE
       sField = Left$(sLine, iPos - 1) 
-      IF sField = "command" THEN
+      If sField = "command" Then
         bDelete = sVal = ("Delete")
-      ELSE
+      Else
         rPage[sField] = sVal
-      ENDIF
+      Endif
 
-    NEXT
+    Next
 
-    IF NOT (rPage!sDesc LIKE "@no-autolink\n*") THEN
+    If Not (rPage!sDesc Like "@no-autolink\n*") Then
       rPage!sDesc = AutoLink(rPage!sDesc)
-    ENDIF
+    Endif
     rPage!sHTML = MakePageWithoutHeader(rPage)
-    IF $cGotSpecial.Count THEN
+    If $cGotSpecial.Count Then
       rPage!sHTML = ""
-    ENDIF
+    Endif
     
-  ENDIF
+  Endif
 
-  IF bDelete THEN
+  If bDelete Then
   
     rPage.Delete
     
-  ELSE
+  Else
 
-    IF NOT $bImage THEN
+    If Not $bImage Then
       rArch = DB.Create("archive")
-      FOR EACH hField IN rArch.Fields
+      For Each hField In rArch.Fields
         'PRINT "<pre>"; hField.Name; " = "; rPage[hField.Name]; "</pre>"
         rArch[hField.Name] = rPage[hField.Name]
-      NEXT
-    ENDIF
+      Next
+    Endif
 
     'db.Debug = TRUE
     DB.Begin
 
     'DEBUG "rArch.Update"
-    IF NOT $bImage THEN
-      TRY rArch.Update
-    ENDIF
+    If Not $bImage Then
+      Try rArch.Update
+    Endif
     'DEBUG "rPage.Update"
     rPage.Update
     'DEBUG "Commit"
@@ -2431,166 +2474,166 @@ PRIVATE SUB UpdatePage()
     DB.Commit
     'db.Debug = FALSE
 
-  ENDIF
+  Endif
 
-  PRINT "Content-type: text/html"
-  PRINT "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri;
+  Print "Content-type: text/html"
+  Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri;
   'IF $bImage AND IF Right($sUri, 8) <> "?refresh" THEN PRINT "?refresh";
-  PRINT
-  PRINT
+  Print
+  Print
 
-END
+End
 
 
-PRIVATE SUB RenamePage()
+Private Sub RenamePage()
 
-  DIM rPage AS Result
-  DIM sSave AS String
-  DIM aFile AS String[]
-  DIM sName AS String
-  DIM iPos AS Integer
-  DIM sDir AS String
-  DIM sPath AS String
-  DIM sKind AS String
+  Dim rPage As Result
+  Dim sSave As String
+  Dim aFile As String[]
+  Dim sName As String
+  Dim iPos As Integer
+  Dim sDir As String
+  Dim sPath As String
+  Dim sKind As String
 
   rPage = FindPage($sPath)
 
-  IF NOT rPage.Available THEN
+  If Not rPage.Available Then
     MakeHeader()
-    PRINT "<h3>" & ("This documentation page is not available.") & "</h3>"
+    Print "<h3>" & ("This documentation page is not available.") & "</h3>"
     MakeFooter
-    RETURN
-  ENDIF
+    Return
+  Endif
 
   MakeHeader(rPage!sTitle)
 
   sSave = "&nbsp;&nbsp;<input type=\"submit\" value=\"" & ("Save") & "\"></input>"
 
-  PRINT "<form action=\"" & "/rename" &/ $sUri & "\" method=\"post\" name=\"rename\">"
+  Print "<form action=\"" & "/rename" &/ $sUri & "\" method=\"post\" name=\"rename\">"
 
-  PRINT "<b>" & ("New path") & "</b>&nbsp;&nbsp;"
-  PRINT "<input type=\"text\" name=\"sNewPath\" size=\"80\" maxlength=\"64\" value=\"" & rPage!sPath & "\"></input>"
-  PRINT "<p><input type=\"checkbox\" name=\"bChild\">" & ("Rename children") & "</input>"
-  PRINT "<p>"
-  PRINT "<input type=\"submit\" value=\"" & ("Rename") & "\"></input>"
+  Print "<b>" & ("New path") & "</b>&nbsp;&nbsp;"
+  Print "<input type=\"text\" name=\"sNewPath\" size=\"80\" maxlength=\"64\" value=\"" & rPage!sPath & "\"></input>"
+  Print "<p><input type=\"checkbox\" name=\"bChild\">" & ("Rename children") & "</input>"
+  Print "<p>"
+  Print "<input type=\"submit\" value=\"" & ("Rename") & "\"></input>"
 
-  PRINT "</form>"
+  Print "</form>"
 
   MakeFooter()
 
-END
+End
 
-PRIVATE SUB RenameOnePage(sPath AS String, sNewPath AS String)
+Private Sub RenameOnePage(sPath As String, sNewPath As String)
   
-  DIM rPage AS Result
-  DIM sOld AS String
+  Dim rPage As Result
+  Dim sOld As String
 
   rPage = DB.Edit("page")
-  WHILE rPage.Available
+  While rPage.Available
 
-    IF Left$(File.Name(rPage!sPath)) <> ":" THEN 
+    If Left$(File.Name(rPage!sPath)) <> ":" Then 
 
-      IF rPage!sPath = sPath THEN
+      If rPage!sPath = sPath Then
         rPage!sPath = sNewPath
         rPage!dDate = Now
         rPage!sUser = Application.Env["REMOTE_USER"]
-      ENDIF
+      Endif
 
       sOld = sPath
       rPage!sDesc = Replace(rPage!sDesc, "[" & sOld & "]", "[" & sNewPath & "]")
       rPage!sDesc = Replace(rPage!sDesc, "[" & sOld &/ "]", "[" & sNewPath & "]")
-      IF Left(sOld) = "/" THEN
+      If Left(sOld) = "/" Then
         sOld = Mid$(sOld, 2)
         rPage!sDesc = Replace(rPage!sDesc, "[" & sOld & "]", "[" & sNewPath & "]")
         rPage!sDesc = Replace(rPage!sDesc, "[" & sOld &/ "]", "[" & sNewPath & "]")
-      ENDIF
+      Endif
 
       rPage.Update
       
-    ENDIF
+    Endif
 
     rPage.MoveNext
-  WEND
+  Wend
   
-END
+End
 
 
-PRIVATE SUB DoRenamePage()
+Private Sub DoRenamePage()
 
-  DIM sNewPath AS String
-  DIM rPage AS Result
-  DIM bUpdate AS Boolean
-  DIM cForm AS Collection
-  DIM bChild AS Boolean
+  Dim sNewPath As String
+  Dim rPage As Result
+  Dim bUpdate As Boolean
+  Dim cForm As Collection
+  Dim bChild As Boolean
 
   cForm = GetForm()
   sNewPath = cForm!sNewPath
   bChild = cForm.Exist("bChild")
 
-  IF Left$(sNewPath) <> "/" THEN sNewPath = "/" & sNewPath
-  IF Right$(sNewPath) = "/" THEN sNewPath = Right(sNewPath, -1)
+  If Left$(sNewPath) <> "/" Then sNewPath = "/" & sNewPath
+  If Right$(sNewPath) = "/" Then sNewPath = Right(sNewPath, -1)
 
-  IF FindPage(sNewPath).Available THEN
+  If FindPage(sNewPath).Available Then
     MakeHeader
-    PRINT "<h3>" & ("This documentation page already exists.") & "</h3>"
+    Print "<h3>" & ("This documentation page already exists.") & "</h3>"
     MakeFooter
-    RETURN
-  ENDIF
+    Return
+  Endif
 
   DB.Begin
 
-  IF NOT bChild THEN
+  If Not bChild Then
 
     RenameOnePage($sPath, sNewPath)
 
-  ELSE 
+  Else 
   
     rPage = DB.Edit("page")
-    WHILE rPage.Available
+    While rPage.Available
   
-      IF Left$(File.Name(rPage!sPath)) <> ":" THEN 
+      If Left$(File.Name(rPage!sPath)) <> ":" Then 
   
-        IF rPage!sPath LIKE ($sPath & "*") THEN
+        If rPage!sPath Like ($sPath & "*") Then
           RenameOnePage(rPage!sPath, sNewPath & Mid$(rPage!sPath, Len($sPath) + 1))
-        ENDIF
+        Endif
   
-      ENDIF
+      Endif
   
       rPage.MoveNext
-    WEND
+    Wend
     
-  ENDIF
+  Endif
 
   DB.Commit
 
-  PRINT "Content-type: text/html"
-  PRINT "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ sNewPath & $sLangSuff
-  PRINT
+  Print "Content-type: text/html"
+  Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ sNewPath & $sLangSuff
+  Print
 
-END
+End
 
 
-PRIVATE SUB HistoryPage()
+Private Sub HistoryPage()
 
-  DIM rPage AS Result
-  DIM sBefore AS String
-  DIM sNext AS String
-  DIM sDiff AS String
-  DIM sLig AS String
-  DIM sLeft AS String
-  DIM sRight AS String
-  DIM sSym AS String
-  DIM sDesc AS String
-  DIM dDate AS Date
-  DIM sUser AS String
-  DIM aSplit AS String[]
-  DIM aPrint AS Byte[]
-  DIM iWidth AS Integer
-  DIM sRes AS String
-  DIM bGotSym AS Boolean
-  DIM iInd AS Integer
-  DIM iSet AS Integer
-  DIM bPrint AS Boolean
+  Dim rPage As Result
+  Dim sBefore As String
+  Dim sNext As String
+  Dim sDiff As String
+  Dim sLig As String
+  Dim sLeft As String
+  Dim sRight As String
+  Dim sSym As String
+  Dim sDesc As String
+  Dim dDate As Date
+  Dim sUser As String
+  Dim aSplit As String[]
+  Dim aPrint As Byte[]
+  Dim iWidth As Integer
+  Dim sRes As String
+  Dim bGotSym As Boolean
+  Dim iInd As Integer
+  Dim iSet As Integer
+  Dim bPrint As Boolean
 
   MakeHeader(Subst(("&1 - History"), GetTitle($sPath)))
 
@@ -2600,167 +2643,167 @@ PRIVATE SUB HistoryPage()
   iWidth = 80
 
   rPage = DB.Find("archive", "sPath = &1 AND sLang = &2 ORDER BY dDate DESC", $sPath, $sLang)
-  IF NOT rPage.Available THEN rPage = DB.Find("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
+  If Not rPage.Available Then rPage = DB.Find("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
 
-  FOR EACH rPage
+  For Each rPage
 
-    IF sUser THEN
+    If sUser Then
 
-      PRINT "<div class=\"black\"><font size=\"-2\"><b>";
-      PRINT dDate; " - "; sUser;
-      PRINT "</b></font></div>"
+      Print "<div class=\"black\"><font size=\"-2\"><b>";
+      Print dDate; " - "; sUser;
+      Print "</b></font></div>"
 
       File.Save(sNext, sDesc)
       File.Save(sBefore, rPage!sDesc)
-      EXEC ["diff", "-bByt", "-W", 2 * iWidth, sBefore, sNext] TO sDiff
+      Exec ["diff", "-bByt", "-W", 2 * iWidth, sBefore, sNext] To sDiff
 
       aSplit = Split(sDiff, "\n")
-      aPrint = NEW Byte[aSplit.Count]
+      aPrint = New Byte[aSplit.Count]
 
-      bGotSym = FALSE
+      bGotSym = False
       sRes = "<pre class=\"example\"><font size=\"-2\">"
 
-      FOR iInd = 0 TO aSplit.Max
+      For iInd = 0 To aSplit.Max
 
-        IF Trim(Mid$(aSplit[iInd], iWidth - 1, 3)) THEN
-          FOR iSet = Max(0, iInd - 3) TO Min(aSplit.Max, iInd + 3)
+        If Trim(Mid$(aSplit[iInd], iWidth - 1, 3)) Then
+          For iSet = Max(0, iInd - 3) To Min(aSplit.Max, iInd + 3)
             aPrint[iSet] = 1
-          NEXT
-        ENDIF
+          Next
+        Endif
 
-      NEXT
+      Next
 
-      bPrint = TRUE
+      bPrint = True
 
-      FOR iInd = 0 TO aSplit.Max
+      For iInd = 0 To aSplit.Max
 
-        IF aPrint[iInd] = 0 THEN
-          IF bPrint THEN
-            bPrint = FALSE
+        If aPrint[iInd] = 0 Then
+          If bPrint Then
+            bPrint = False
             sRes &= String$(iWidth - 2, ".") & "   " & String$(iWidth - 2, ".") & "\n"
-          ENDIF
-          CONTINUE
-        ENDIF
+          Endif
+          Continue
+        Endif
 
-        bPrint = TRUE
+        bPrint = True
 
         sLig = aSplit[iInd]
 
         sLeft = Left$(sLig, iWidth - 2)
         sLeft &= Space$(Max(0, iWidth - 2 - String.Len(sLeft)))
         sLeft = EncodeHTML(sLeft)
-        IF Left(sLeft) = " " THEN sLeft = "&nbsp;" & Mid$(sLeft, 2)
+        If Left(sLeft) = " " Then sLeft = "&nbsp;" & Mid$(sLeft, 2)
 
         sRight = Mid$(sLig, iWidth + 3)
         sRight &= Space$(Max(0, iWidth - 2 - String.Len(sRight)))
         sRight = EncodeHTML(sRight)
-        IF Left(sRight) = " " THEN sRight = "&nbsp;" & Mid$(sRight, 2)
+        If Left(sRight) = " " Then sRight = "&nbsp;" & Mid$(sRight, 2)
 
         sSym = Trim(Mid$(sLig, iWidth - 1, 3))
 
-        IF sSym THEN bGotSym = TRUE
+        If sSym Then bGotSym = True
 
-        IF InStr("|<(", sSym) THEN
+        If InStr("|<(", sSym) Then
           sRes &= "<font style=\"background: #FFD0D0;\">" & sLeft & "</font>"
-        ELSE
+        Else
           sRes &= sLeft
-        ENDIF
+        Endif
 
         sRes &= "&nbsp;&nbsp;&nbsp;"
 
-        IF InStr("|>)", sSym) THEN
+        If InStr("|>)", sSym) Then
           sRes &= "<font style=\"background: #D0FFD0;\">" & sRight & "</font> "
-        ELSE
+        Else
           sRes &= sRight
-        ENDIF
+        Endif
 
         sRes &= "\n"
 
-      NEXT
+      Next
 
       sRes &= "</font></pre>"
 
-      IF bGotSym THEN
-        PRINT sRes
-      ELSE
-        PRINT "<div class=\"example\"><b>"; ("No change"); "</b></div>"
-      ENDIF
+      If bGotSym Then
+        Print sRes
+      Else
+        Print "<div class=\"example\"><b>"; ("No change"); "</b></div>"
+      Endif
 
-    ENDIF
+    Endif
 
     sDesc = rPage!sDesc
     sUser = rPage!sUser
     dDate = rPage!dDate
 
-  NEXT
+  Next
 
-  IF sUser THEN
+  If sUser Then
 
-    PRINT "<div class=\"black\"><font size=\"-2\"><b>";
-    PRINT dDate; " - "; sUser;
-    PRINT "</b></font></div>"
-    PRINT "<div class=\"example\"><b>"; ("Creation"); "</b></div>"
+    Print "<div class=\"black\"><font size=\"-2\"><b>";
+    Print dDate; " - "; sUser;
+    Print "</b></font></div>"
+    Print "<div class=\"example\"><b>"; ("Creation"); "</b></div>"
 
-  ENDIF
+  Endif
 
 
   MakeFooter
 
-END
+End
 
 
-PRIVATE SUB LoginPage()
+Private Sub LoginPage()
 
   MakeHeader("Welcome")
 
-  PRINT "<h2>"; Subst(("Welcome back &1!"), $sUser); "</h2>"
+  Print "<h2>"; Subst(("Welcome back &1!"), $sUser); "</h2>"
 
   MakeFooter
 
-END
+End
 
 
-PRIVATE FUNCTION GetUserPath() AS String
+Private Function GetUserPath() As String
 
-  RETURN $sRoot &/ ".htaccess"
+  Return $sRoot &/ ".htaccess"
 
-END
+End
 
 
-PRIVATE FUNCTION GetUser() AS String[]
+Private Function GetUser() As String[]
 
-  DIM aUser AS NEW String[]
-  DIM sLine AS String
-  DIM sPath AS String
-  DIM iPos AS Integer
+  Dim aUser As New String[]
+  Dim sLine As String
+  Dim sPath As String
+  Dim iPos As Integer
 
-  FOR EACH sLine IN Split(File.Load(GetUserPath()), "\n")
+  For Each sLine In Split(File.Load(GetUserPath()), "\n")
 
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
+    If Not sLine Then Continue
     iPos = InStr(sLine, ":")
-    IF iPos = 0 THEN CONTINUE
+    If iPos = 0 Then Continue
     aUser.Add(Left$(sLine, iPos - 1))
 
-  NEXT
+  Next
 
   'RETURN aUser.Sort()
   aUser.Sort
-  RETURN aUser
+  Return aUser
 
-END
+End
 
 
-PRIVATE SUB AdminPage()
+Private Sub AdminPage()
 
-  DIM aUser AS String[]
-  DIM sUser AS String
+  Dim aUser As String[]
+  Dim sUser As String
 
   aUser = GetUser()
 
   MakeHeader(("Administration"))
 
-  PRINT "<h2>"; ("User management"); "</h2>"
+  Print "<h2>"; ("User management"); "</h2>"
 
   'PRINT "<pre class=\"example\">";
   'FOR EACH sUser IN aUser
@@ -2768,223 +2811,223 @@ PRIVATE SUB AdminPage()
   'NEXT
   'PRINT "</pre><br>"
 
-  PRINT "<table class=\"table\" cellpadding=\"8\" cellspacing=\"0\" border=\"0\">"
+  Print "<table class=\"table\" cellpadding=\"8\" cellspacing=\"0\" border=\"0\">"
 
-  PRINT "<tr><th>"
-  PRINT ("Create user")
-  PRINT "</th><th>"
-  PRINT ("Edit user")
-  PRINT "</th><th>"
-  PRINT ("Delete user")
-  PRINT "</th></tr>"
+  Print "<tr><th>"
+  Print ("Create user")
+  Print "</th><th>"
+  Print ("Edit user")
+  Print "</th><th>"
+  Print ("Delete user")
+  Print "</th></tr>"
 
-  PRINT "<tr><td align=\"top\">"
+  Print "<tr><td align=\"top\">"
 
-  PRINT "<form action=\"" & "/admin/create" & $sLangSuff & "\" method=\"post\" name=\"new\">"
-  PRINT "<table class=\"none\">"
-  PRINT "<tr><td width=\"100\">"; ("Name"); "</td><td><input type=\"text\" name=\"sName\" size=\"16\" maxlength=\"16\"></input></td></tr>"
-  PRINT "<tr><td>"; ("Password"); "</td><td><input type=\"password\" name=\"sPassword\" size=\"16\" maxlength=\"16\"></input></td></tr>"
-  PRINT "<tr><td>"; ("Confirm"); "</td><td><input type=\"password\" name=\"sPasswordAgain\" size=\"16\" maxlength=\"16\"></input></td></tr>"
-  PRINT "</table>"
-  PRINT "<p><input type=\"submit\" value=\"" & ("Create user") & "\"></input>"
-  PRINT "</form>"
+  Print "<form action=\"" & "/admin/create" & $sLangSuff & "\" method=\"post\" name=\"new\">"
+  Print "<table class=\"none\">"
+  Print "<tr><td width=\"100\">"; ("Name"); "</td><td><input type=\"text\" name=\"sName\" size=\"16\" maxlength=\"16\"></input></td></tr>"
+  Print "<tr><td>"; ("Password"); "</td><td><input type=\"password\" name=\"sPassword\" size=\"16\" maxlength=\"16\"></input></td></tr>"
+  Print "<tr><td>"; ("Confirm"); "</td><td><input type=\"password\" name=\"sPasswordAgain\" size=\"16\" maxlength=\"16\"></input></td></tr>"
+  Print "</table>"
+  Print "<p><input type=\"submit\" value=\"" & ("Create user") & "\"></input>"
+  Print "</form>"
 
-  PRINT "</td><td valign=\"top\">"
+  Print "</td><td valign=\"top\">"
 
-  PRINT "<form action=\"" & "/admin/edit" & $sLangSuff & "\" method=\"post\" name=\"new\">"
-  PRINT "<table class=\"none\">"
-  PRINT "<tr><td width=\"100\">"; ("Name"); "</td><td>"
+  Print "<form action=\"" & "/admin/edit" & $sLangSuff & "\" method=\"post\" name=\"new\">"
+  Print "<table class=\"none\">"
+  Print "<tr><td width=\"100\">"; ("Name"); "</td><td>"
 
-  PRINT "<select name=\"sName\" size=\"1\" style=\"width: 100%;\">"
-  FOR EACH sUser IN aUser
-    PRINT "<option value=\""; sUser; "\">"; sUser; "</option>"
-  NEXT
-  PRINT "</select>"
-  PRINT "</td></tr>"
-  PRINT "<tr><td>"; ("Password"); "</td><td><input type=\"password\" name=\"sPassword\" size=\"16\" maxlength=\"16\"></input></td></tr>"
-  PRINT "<tr><td>"; ("Confirm"); "</td><td><input type=\"password\" name=\"sPasswordAgain\" size=\"16\" maxlength=\"16\"></input></td></tr>"
-  PRINT "</table>"
-  PRINT "<p><input type=\"submit\" value=\"" & ("Edit user") & "\"></input>"
-  PRINT "</form>"
+  Print "<select name=\"sName\" size=\"1\" style=\"width: 100%;\">"
+  For Each sUser In aUser
+    Print "<option value=\""; sUser; "\">"; sUser; "</option>"
+  Next
+  Print "</select>"
+  Print "</td></tr>"
+  Print "<tr><td>"; ("Password"); "</td><td><input type=\"password\" name=\"sPassword\" size=\"16\" maxlength=\"16\"></input></td></tr>"
+  Print "<tr><td>"; ("Confirm"); "</td><td><input type=\"password\" name=\"sPasswordAgain\" size=\"16\" maxlength=\"16\"></input></td></tr>"
+  Print "</table>"
+  Print "<p><input type=\"submit\" value=\"" & ("Edit user") & "\"></input>"
+  Print "</form>"
 
-  PRINT "</td><td valign=\"top\">"
+  Print "</td><td valign=\"top\">"
 
-  PRINT "<form action=\"" & "/admin/delete" & $sLangSuff & "\" method=\"post\" name=\"new\">"
-  PRINT "<table class=\"none\">"
-  PRINT "<tr><td width=\"100\">"; ("Name"); "</td><td>"
+  Print "<form action=\"" & "/admin/delete" & $sLangSuff & "\" method=\"post\" name=\"new\">"
+  Print "<table class=\"none\">"
+  Print "<tr><td width=\"100\">"; ("Name"); "</td><td>"
 
-  PRINT "<select name=\"sName\" size=\"1\" style=\"width: 100%;\">"
-  FOR EACH sUser IN aUser
-    PRINT "<option value=\""; sUser; "\">"; sUser; "</option>"
-  NEXT
-  PRINT "</select>"
+  Print "<select name=\"sName\" size=\"1\" style=\"width: 100%;\">"
+  For Each sUser In aUser
+    Print "<option value=\""; sUser; "\">"; sUser; "</option>"
+  Next
+  Print "</select>"
 
-  PRINT "</td></tr>"
-  PRINT "</table>"
-  PRINT "<p><input type=\"submit\" value=\"" & ("Delete user") & "\"></input>"
-  PRINT "</form>"
+  Print "</td></tr>"
+  Print "</table>"
+  Print "<p><input type=\"submit\" value=\"" & ("Delete user") & "\"></input>"
+  Print "</form>"
 
-  PRINT "</td></tr>"
-  PRINT "</table>"
+  Print "</td></tr>"
+  Print "</table>"
 
-  PRINT "<h2>"; ("Database management"); "</h2>"
+  Print "<h2>"; ("Database management"); "</h2>"
 
-  PRINT "<form action=\"" & "/admin/save.sql.bz2" & $sLangSuff & "\" method=\"post\" name=\"save\">"
-  PRINT "<input type=\"submit\" value=\"" & ("Download database") & "\"></input>"
-  PRINT "</form>"
+  Print "<form action=\"" & "/admin/save.sql.bz2" & $sLangSuff & "\" method=\"post\" name=\"save\">"
+  Print "<input type=\"submit\" value=\"" & ("Download database") & "\"></input>"
+  Print "</form>"
 
-  PRINT "<form action=\"" & "/admin/purge" & $sLangSuff & "\" method=\"post\" name=\"purge\">"
-  PRINT "<input type=\"submit\" value=\"" & ("Purge temporary files") & "\"></input>"
-  PRINT "</form>"
+  Print "<form action=\"" & "/admin/purge" & $sLangSuff & "\" method=\"post\" name=\"purge\">"
+  Print "<input type=\"submit\" value=\"" & ("Purge temporary files") & "\"></input>"
+  Print "</form>"
 
   MakeFooter
 
-END
+End
 
 
-PRIVATE SUB DoAdminPage()
+Private Sub DoAdminPage()
 
-  DIM cForm AS Collection
-  DIM hProcess AS Process
-  DIM sSave AS String
+  Dim cForm As Collection
+  Dim hProcess As Process
+  Dim sSave As String
 
   cForm = GetForm()
 
-  IF $sPath = "/create" THEN
+  If $sPath = "/create" Then
 
     MakeHeader(("Create user"))
-    IF NOT Trim(cForm!sName) THEN
-      PRINT ("Please enter a user name.")
-    ELSE IF cForm!sPassword <> cForm!sPasswordAgain THEN
-      PRINT ("Passwords do not match.")
-    ELSE IF NOT Trim(cForm!sPassword) THEN
-      PRINT ("Please enter a password.")
-    ELSE IF GetUser().Find(cForm!sName) >= 0 THEN
-      PRINT ("User already exists.")
-    ELSE
-      hProcess = SHELL "/usr/sbin/htpasswd -b \"" & GetUserPath() & "\" \"" & cForm!sName & "\" \"" & cForm!sPassword & "\"" WAIT
-      IF hProcess.Value = 0 THEN
-        PRINT Subst(("User '&1' created."), cForm!sName)
-      ELSE
-        PRINT Subst(("Cannot create user '&1'. Error code #&2."), cForm!sName, hProcess.Value)
-      ENDIF
-    ENDIF
+    If Not Trim(cForm!sName) Then
+      Print ("Please enter a user name.")
+    Else If cForm!sPassword <> cForm!sPasswordAgain Then
+      Print ("Passwords do not match.")
+    Else If Not Trim(cForm!sPassword) Then
+      Print ("Please enter a password.")
+    Else If GetUser().Find(cForm!sName) >= 0 Then
+      Print ("User already exists.")
+    Else
+      hProcess = Shell "/usr/sbin/htpasswd -b \"" & GetUserPath() & "\" \"" & cForm!sName & "\" \"" & cForm!sPassword & "\"" Wait
+      If hProcess.Value = 0 Then
+        Print Subst(("User '&1' created."), cForm!sName)
+      Else
+        Print Subst(("Cannot create user '&1'. Error code #&2."), cForm!sName, hProcess.Value)
+      Endif
+    Endif
 
-  ELSE IF $sPath = "/edit" THEN
+  Else If $sPath = "/edit" Then
 
     MakeHeader(("Edit user"))
-    IF cForm!sPassword <> cForm!sPasswordAgain THEN
-      PRINT ("Passwords do not match.")
-    ELSE IF NOT Trim(cForm!sPassword) THEN
-      PRINT ("Please enter a password.")
-    ELSE
-      hProcess = SHELL "/usr/sbin/htpasswd -b \"" & GetUserPath() & "\" \"" & cForm!sName & "\" \"" & cForm!sPassword & "\"" WAIT
-      IF hProcess.Value = 0 THEN
-        PRINT Subst(("User '&1' modified."), cForm!sName)
-      ELSE
-        PRINT Subst(("Cannot edit user '&1'. Error code #&2."), cForm!sName, hProcess.Value)
-      ENDIF
-    ENDIF
+    If cForm!sPassword <> cForm!sPasswordAgain Then
+      Print ("Passwords do not match.")
+    Else If Not Trim(cForm!sPassword) Then
+      Print ("Please enter a password.")
+    Else
+      hProcess = Shell "/usr/sbin/htpasswd -b \"" & GetUserPath() & "\" \"" & cForm!sName & "\" \"" & cForm!sPassword & "\"" Wait
+      If hProcess.Value = 0 Then
+        Print Subst(("User '&1' modified."), cForm!sName)
+      Else
+        Print Subst(("Cannot edit user '&1'. Error code #&2."), cForm!sName, hProcess.Value)
+      Endif
+    Endif
 
-  ELSE IF $sPath = "/delete" THEN
+  Else If $sPath = "/delete" Then
 
     MakeHeader(("Delete user"))
 
-    IF cForm!sName = "gambas" THEN
-      PRINT ("Cannot delete user 'gambas'. This user is reserved.")
-    ELSE
-      hProcess = SHELL "/usr/sbin/htpasswd -D \"" & GetUserPath() & "\" \"" & cForm!sName & "\"" WAIT
-      IF hProcess.Value = 0 THEN
-        PRINT Subst(("User '&1' deleted."), cForm!sName)
-      ELSE
-        PRINT Subst(("Cannot delete user '&1'. Error code #&2."), cForm!sName, hProcess.Value)
-      ENDIF
-    ENDIF
+    If cForm!sName = "gambas" Then
+      Print ("Cannot delete user 'gambas'. This user is reserved.")
+    Else
+      hProcess = Shell "/usr/sbin/htpasswd -D \"" & GetUserPath() & "\" \"" & cForm!sName & "\"" Wait
+      If hProcess.Value = 0 Then
+        Print Subst(("User '&1' deleted."), cForm!sName)
+      Else
+        Print Subst(("Cannot delete user '&1'. Error code #&2."), cForm!sName, hProcess.Value)
+      Endif
+    Endif
 
-  ELSE IF $sPath = "/save.sql.bz2" THEN
+  Else If $sPath = "/save.sql.bz2" Then
 
-    PRINT "Content-Type: application/x-bzip2"
-    PRINT
+    Print "Content-Type: application/x-bzip2"
+    Print
 
     'hProcess = EXEC ["mysqldump", "-e", "--compatible=mysql40", "--user=" & $hConn.Login, $hConn.Name] FOR READ
-    hProcess = SHELL "mysqldump --default-character-set=latin1 -e --compatible=mysql40 --user=" & $hConn.Login & " " & $hConn.Name & " | bzip2" FOR READ
-    REPEAT
-      WAIT 0.2
-    UNTIL hProcess.State <> Process.Running
-    RETURN
+    hProcess = Shell "mysqldump --default-character-set=latin1 -e --compatible=mysql40 --user=" & $hConn.Login & " " & $hConn.Name & " | bzip2" For Read
+    Repeat
+      Wait 0.2
+    Until hProcess.State <> Process.Running
+    Return
     
-  ELSE IF $sPath = "/purge" THEN 
+  Else If $sPath = "/purge" Then 
   
-    SHELL "rm -rf " & File.Dir(File.Dir(Temp$())) WAIT
+    Shell "rm -rf " & File.Dir(File.Dir(Temp$())) Wait
     
-  ENDIF
+  Endif
 
-  PRINT "<p><a href=\"/admin" & $sLangSuff & "\">"; ("Return to administration page"); "</a>"
+  Print "<p><a href=\"/admin" & $sLangSuff & "\">"; ("Return to administration page"); "</a>"
   MakeFooter()
 
   'PRINT "Content-type: text/html"
  ' PRINT "Location: http://" & Application.Env["HTTP_HOST"] &/ "admin"
 
-END
+End
 
 
-PRIVATE SUB SearchPage()
+Private Sub SearchPage()
 
   MakeHeader(("Search"))
 
-  PRINT "<h2>"; ("Search with Google"); "</h2>"
+  Print "<h2>"; ("Search with Google"); "</h2>"
 
-  PRINT "<form action=\"/help/search\" method=\"post\" name=\"search\">"
-  PRINT "<input type=\"text\" name=\"q\" size=\"64\"></input>"
-  PRINT "<input type=\"hidden\" name=\"hl\" value=\""; EncodeHTML($sLang); "\"></input>"
-  PRINT "<input type=\"submit\" value=\"" & ("Search") & "\"></input>"  
-  PRINT "</form>"
+  Print "<form action=\"/help/search\" method=\"post\" name=\"search\">"
+  Print "<input type=\"text\" name=\"q\" size=\"64\"></input>"
+  Print "<input type=\"hidden\" name=\"hl\" value=\""; EncodeHTML($sLang); "\"></input>"
+  Print "<input type=\"submit\" value=\"" & ("Search") & "\"></input>"  
+  Print "</form>"
 
   MakeFooter
 
-END
+End
 
-PRIVATE SUB DoSearchPage()
+Private Sub DoSearchPage()
 
-  DIM cForm AS Collection
+  Dim cForm As Collection
 
   cForm = GetForm()
 
-  PRINT "Content-type: text/html;charset=UTF-8"
+  Print "Content-type: text/html;charset=UTF-8"
   'PRINT "Refresh: 0;http://www.google.com/search?hl="; EncodeURL(cForm["hl"]); "&q="; EncodeURL(cForm["q"] & " +site:gambasdoc.org")
-  PRINT "Location: http://www.google.com/search?hl="; EncodeURL(cForm["hl"]); "&q="; EncodeURL(cForm["q"] & " +site:gambasdoc.org")
-  PRINT
+  Print "Location: http://www.google.com/search?hl="; EncodeURL(cForm["hl"]); "&q="; EncodeURL(cForm["q"] & " +site:gambasdoc.org")
+  Print
   
-END
+End
 
 
-PRIVATE FUNCTION GetComponents() AS String
+Private Function GetComponents() As String
 
-  DIM hComp AS CComponent
-  DIM sPath AS String
-  DIM sRes AS String
+  Dim hComp As CComponent
+  Dim sPath As String
+  Dim sRes As String
 
   CComponent.Init
 
   sRes = "<ul>\n"
-  FOR EACH hComp IN CComponent.All
+  For Each hComp In CComponent.All
     sRes = sRes & "<li>" & GetLink("/comp" &/ hComp.Key,,, "arrow") & "\n"
-  NEXT
+  Next
   sRes = sRes & "</ul>\n"
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
-PRIVATE FUNCTION GetClasses() AS String
+Private Function GetClasses() As String
 
   'DIM sComp AS String
-  DIM sClass AS String
-  DIM sRes AS String
-  DIM iInd AS Integer
-  DIM iPos AS Integer
-  DIM aClass AS NEW String[]
+  Dim sClass As String
+  Dim sRes As String
+  Dim iInd As Integer
+  Dim iPos As Integer
+  Dim aClass As New String[]
 
   'CComponent.Init
   'sComp = $aPath[1]
@@ -2997,333 +3040,333 @@ PRIVATE FUNCTION GetClasses() AS String
   sRes &= "<table class=\"none\" border=\"0\" cellpadding=\"2\" cellspacing=\"0\">\n"
   sRes &= "<tr valign=\"top\">\n"
 
-  FOR EACH sClass IN $hComp.ClassList
-    IF Left(sClass) = "." OR IF Left(sClass) = "_" THEN CONTINUE
+  For Each sClass In $hComp.ClassList
+    If Left(sClass) = "." Or If Left(sClass) = "_" Then Continue
     aClass.Add(sClass)
-  NEXT
+  Next
 
-  FOR iInd = 0 TO aClass.Max STEP 16
-    IF iInd > 0 THEN sRes = sRes & "<td width=\"16\"></td>\n"
+  For iInd = 0 To aClass.Max Step 16
+    If iInd > 0 Then sRes = sRes & "<td width=\"16\"></td>\n"
     sRes = sRes & "<td>\n"
-    FOR iPos = iInd TO Min(iInd + 15, aClass.Max)
+    For iPos = iInd To Min(iInd + 15, aClass.Max)
       sClass = aClass[iPos]
       'sRes = sRes & "<a href=\"/help" &/ sComp &/ LCase$(sClass) & $sLangSuff & "\">" & sClass & "</a><br>\n"
       sRes = sRes & GetLink("/comp" &/ LCase($hComp.Key &/ sClass),,, "arrow") & "<br>\n"
-    NEXT
+    Next
     sRes = sRes & "</td>\n"
-  NEXT
+  Next
 
   sRes = sRes & "</tr>\n</table>\n</div><p>\n"
 
-  RETURN sRes
+  Return sRes
 
-CATCH
+Catch
 
-  RETURN "<pre>" & Error.Where & ": " & Error.Text & "</pre>\n"
+  Return "<pre>" & Error.Where & ": " & Error.Text & "</pre>\n"
 
-END
+End
 
-PRIVATE FUNCTION GetIndex(sRoot AS String) AS String
+Private Function GetIndex(sRoot As String) As String
 
-  DIM rPage AS Result
-  DIM sLetter AS String
-  DIM sPath AS String
-  DIM sTitle AS String
-  DIM sRes AS String
-  DIM aPath AS NEW String[]
-  DIM aSplit AS String[]
+  Dim rPage As Result
+  Dim sLetter As String
+  Dim sPath As String
+  Dim sTitle As String
+  Dim sRes As String
+  Dim aPath As New String[]
+  Dim aSplit As String[]
 
-  IF NOT sRoot THEN Error.Raise("@index needs an argument")
+  If Not sRoot Then Error.Raise("@index needs an argument")
 
   rPage = DB.Find("page", "sLang = &1 AND sPath LIKE &2", DEFAULT_LANG, sRoot &/ "%") ' $Lang
-  FOR EACH rPage
+  For Each rPage
     sPath = GetRealPath(rPage!sPath)
     sTitle = GetTitle(sPath)
     aPath.Add(sTitle & "\n" & rPage!sPath)
-  NEXT
+  Next
 
-  FOR EACH sPath IN aPath.Sort(gb.Text)
+  For Each sPath In aPath.Sort(gb.Text)
     aSplit = Split(sPath, "\n")
     sTitle = aSplit[0]
     sPath = aSplit[1]
-    IF UCase(Left(sTitle)) <> sLetter THEN
+    If UCase(Left(sTitle)) <> sLetter Then
       sLetter = UCase(Left(sTitle))
-      sRes &= "<h3>" & sLetter & "</h3>\n" & GetLink(sPath,, TRUE, "arrow") & "\n"
-    ELSE
-    sRes &= "&nbsp;&bull;&nbsp;&nbsp;" & GetLink(sPath,, TRUE, "arrow") & "\n"
-    ENDIF
-  NEXT
+      sRes &= "<h3>" & sLetter & "</h3>\n" & GetLink(sPath,, True, "arrow") & "\n"
+    Else
+    sRes &= "&nbsp;&bull;&nbsp;&nbsp;" & GetLink(sPath,, True, "arrow") & "\n"
+    Endif
+  Next
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
-PRIVATE FUNCTION AddIndexEntry(aPath AS String[], iInd AS Integer) AS String
+Private Function AddIndexEntry(aPath As String[], iInd As Integer) As String
 
-  DIM sRes AS String
-  DIM aSplit AS String[]
-  DIM sPath AS String
-  DIM sTitle AS String
-  DIM sOldTitle AS String
+  Dim sRes As String
+  Dim aSplit As String[]
+  Dim sPath As String
+  Dim sTitle As String
+  Dim sOldTitle As String
 
   aSplit = Split(aPath[iInd], "\n")
   sTitle = aSplit[0]
   sPath = aSplit[1]
-  IF iInd THEN
+  If iInd Then
     aSplit = Split(aPath[iInd - 1], "\n")
     sOldTitle = asPlit[0]
-  ENDIF
+  Endif
 
-  IF String.UCase(String.Left(sTitle)) <> String.UCase(String.Left(sOldTitle)) THEN
-    IF System.RightToLeft THEN 
+  If String.UCase(String.Left(sTitle)) <> String.UCase(String.Left(sOldTitle)) Then
+    If System.RightToLeft Then 
       sRes = "<td align=\"left\""
-    ELSE
+    Else
       sRes = "<td align=\"right\""
-    ENDIF
+    Endif
     sRes &= " valign=\"top\"><b>" & String.UCase(String.Left(sTitle)) & "</b></td>\n"
-  ELSE
+  Else
     sRes = "<td></td>\n"
-  ENDIF
+  Endif
 
-  sRes &= "<td width=\"4\"></td><td valign=\"top\">" & GetLink(sPath,, TRUE, "arrow") & "</td>\n"
-  RETURN sRes
+  sRes &= "<td width=\"4\"></td><td valign=\"top\">" & GetLink(sPath,, True, "arrow") & "</td>\n"
+  Return sRes
 
-END
+End
 
 
-PRIVATE FUNCTION GetIndex2(sRoot AS String) AS String
+Private Function GetIndex2(sRoot As String) As String
 
-  DIM rPage AS Result
-  DIM sRes AS String
-  DIM aPath AS NEW String[]
-  DIM iInd AS Integer
-  DIM iInd2 AS Integer
-  DIM sPath AS String
-  DIM sTitle AS String
-  DIM iPos AS Integer
-  DIM sPrefix AS String
+  Dim rPage As Result
+  Dim sRes As String
+  Dim aPath As New String[]
+  Dim iInd As Integer
+  Dim iInd2 As Integer
+  Dim sPath As String
+  Dim sTitle As String
+  Dim iPos As Integer
+  Dim sPrefix As String
 
-  IF NOT sRoot THEN Error.Raise("@index needs an argument")
+  If Not sRoot Then Error.Raise("@index needs an argument")
 
   iPos = InStr(sRoot, " ")
-  IF iPos THEN
+  If iPos Then
     sPrefix = Trim(Mid$(sRoot, iPos + 1)) & "*"
     sRoot = Left$(sRoot, iPos - 1)
-  ENDIF
+  Endif
 
   rPage = DB.Find("page", "sLang = &1 AND sPath LIKE &2", DEFAULT_LANG, sRoot &/ "%") ' $Lang
-  FOR EACH rPage
-    IF InStr(Mid$(rPage!sPath, Len(sRoot) + 2), "/") THEN CONTINUE
-    IF IsCommentPath(rPage!sPath) THEN CONTINUE
+  For Each rPage
+    If InStr(Mid$(rPage!sPath, Len(sRoot) + 2), "/") Then Continue
+    If IsCommentPath(rPage!sPath) Then Continue
     sPath = GetRealPath(rPage!sPath)
-    IF Left(rPage!sTitle) = "@" THEN
-      IF sPath LIKE (sRoot &/ "*") THEN CONTINUE
-    ENDIF
+    If Left(rPage!sTitle) = "@" Then
+      If sPath Like (sRoot &/ "*") Then Continue
+    Endif
     sTitle = GetTitle(sPath)
-    IF sTitle LIKE sPrefix THEN
+    If sTitle Like sPrefix Then
       sTitle = LTrim(Mid$(sTitle, Len(sPrefix)))
-    ENDIF
+    Endif
     aPath.Add(sTitle & "\n" & rPage!sPath)
-  NEXT
+  Next
 
   aPath.Sort(gb.Text)
 
   sRes = "<table width=\"100%\">\n"
 
-  FOR iInd = 0 TO aPath.Count \ 4
+  For iInd = 0 To aPath.Count \ 4
 
     sRes &= "<tr>\n"
 
     iInd2 = iInd
-    WHILE iInd2 < aPath.Count
+    While iInd2 < aPath.Count
       sRes &= AddIndexEntry(aPath, iInd2)
       iInd2 += 1 + aPath.Count \ 4
-    WEND
+    Wend
 
     sRes &= "</tr>\n"
 
-  NEXT
+  Next
 
   sRes &= "</table>\n"
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
-PRIVATE FUNCTION GetLastChanges() AS String
+Private Function GetLastChanges() As String
 
-  DIM rPage AS Result
-  DIM sRes AS String
-  DIM bOdd AS Boolean
+  Dim rPage As Result
+  Dim sRes As String
+  Dim bOdd As Boolean
 
   rPage = DB.Find("page", "sLang = &1 ORDER BY dDate DESC LIMIT 100", $sLang)
 
   sRes = "<table class=\"table\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\">\n"
   sRes &= "<tr><th>" & ("Date") & "</th><th>" & ("User") & "</th><th>" & ("Page") & "</th></tr>\n"
 
-  FOR EACH rPage
+  For Each rPage
 
-    IF bOdd THEN
+    If bOdd Then
       sRes &= "<tr class=\"dark\">\n"
-    ELSE
+    Else
       sRes &= "<tr>\n"
-    ENDIF
+    Endif
     sRes &= "<td>" & rPage!dDate & "</td>\n"
     sRes &= "<td>" & rPage!sUser & "</td>\n"
-    sRes &= "<td>" & GetLink(rPage!sPath,, TRUE, "arrow") & "</td>\n"
+    sRes &= "<td>" & GetLink(rPage!sPath,, True, "arrow") & "</td>\n"
     sRes &= "</tr>\n"
 
-    bOdd = NOT bOdd
-  NEXT
+    bOdd = Not bOdd
+  Next
 
   sRes &= "</table>\n"
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
-PRIVATE FUNCTION GetTranslate() AS String
+Private Function GetTranslate() As String
 
-  DIM rPage AS Result
-  DIM rPageDef AS Result
-  DIM sRes AS String
-  DIM bOdd AS Boolean
+  Dim rPage As Result
+  Dim rPageDef As Result
+  Dim sRes As String
+  Dim bOdd As Boolean
 
   rPageDef = DB.Find("page", "sLang = &1 ORDER BY dDate DESC", DEFAULT_LANG)
 
   sRes = "<table class=\"table\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\">\n"
   sRes &= "<tr><th>" & ("State") & "</th><th>" & ("Date") & "</th><th>" & ("User") & "</th><th>" & ("Page") & "</th></tr>\n"
 
-  FOR EACH rPageDef
+  For Each rPageDef
     rPage = DB.Find("page", "sLang = &1 AND sPath = &2", $sLang, rPageDef!sPath)
-    IF rPage.Available AND IF rPage!dDate >= rPageDef!dDate THEN CONTINUE
+    If rPage.Available And If rPage!dDate >= rPageDef!dDate Then Continue
 
-    IF bOdd THEN
+    If bOdd Then
       sRes &= "<tr class=\"dark\">\n"
-    ELSE
+    Else
       sRes &= "<tr>\n"
-    ENDIF
+    Endif
 
-    IF rPage.Available THEN
+    If rPage.Available Then
       sRes &= "<td align=\"center\">" & GetImage("refresh") & "</td>"
-    ELSE
+    Else
       sRes &= "<td align=\"center\">" & GetImage("new") & "</td>"
-    ENDIF
+    Endif
 
-    IF rPage.Available THEN
+    If rPage.Available Then
       sRes &= "<td>" & rPage!dDate & "</td>\n"
       sRes &= "<td>" & rPage!sUser & "</td>\n"
-    ELSE
+    Else
       sRes &= "<td>" & rPageDef!dDate & "</td>\n"
       sRes &= "<td>" & rPageDef!sUser & "</td>\n"
-    ENDIF
-    sRes &= "<td>" & GetLink(rPageDef!sPath,, TRUE, "arrow") & "</td>\n"
+    Endif
+    sRes &= "<td>" & GetLink(rPageDef!sPath,, True, "arrow") & "</td>\n"
     sRes &= "</tr>\n"
 
-    bOdd = NOT bOdd
-  NEXT
+    bOdd = Not bOdd
+  Next
 
   sRes &= "</table>\n"
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
 
-PRIVATE FUNCTION GetSymbolLink(hSym AS CSymbolInfo, OPTIONAL sMyTitle AS String) AS String
+Private Function GetSymbolLink(hSym As CSymbolInfo, Optional sMyTitle As String) As String
 
-  DIM sRes AS String
-  DIM sComp AS String
+  Dim sRes As String
+  Dim sComp As String
   
-  IF $cCompRedirect THEN sComp = $cCompRedirect[hSym.Component]
-  IF NOT sComp THEN sComp = hSym.Component
+  If $cCompRedirect Then sComp = $cCompRedirect[hSym.Component]
+  If Not sComp Then sComp = hSym.Component
 
-  IF hSym.IsStatic() THEN sRes = sRes & "<b>"
+  If hSym.IsStatic() Then sRes = sRes & "<b>"
   sRes = sRes & GetLink("/comp" &/ LCase(sComp &/ hSym.Class &/ Replace(hSym.Name, ":", ".")), sMyTitle,, "none")
-  IF hSym.IsStatic() THEN sRes = sRes & "</b>"
+  If hSym.IsStatic() Then sRes = sRes & "</b>"
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
-PRIVATE FUNCTION GetSymbolType(hComp AS CComponent, hClass AS CClassInfo, aSym AS String[]) AS String
+Private Function GetSymbolType(hComp As CComponent, hClass As CClassInfo, aSym As String[]) As String
 
-  DIM sRes AS String
-  DIM hSym AS CSymbolInfo
-  DIM sName AS String
+  Dim sRes As String
+  Dim hSym As CSymbolInfo
+  Dim sName As String
 
-  IF aSym.Count = 0 THEN RETURN
+  If aSym.Count = 0 Then Return
 
   sRes = sRes & "<td dir=\"ltr\">\n"
 
-  FOR EACH sName IN aSym
+  For Each sName In aSym
     hSym = hClass.Symbols[sName]
-    IF System.RightToLeft THEN 
+    If System.RightToLeft Then 
       sRes &= " &nbsp;" & GetSymbolLink(hSym)
-    ELSE 
+    Else 
       sRes &= GetSymbolLink(hSym) & "&nbsp; "
-    ENDIF 
-  NEXT
+    Endif 
+  Next
 
   sRes = sRes & "</td><td>&nbsp;</td>\n"
-  RETURN sRes
+  Return sRes
 
-END
+End
 
-PRIVATE FUNCTION GetSymbols() AS String
+Private Function GetSymbols() As String
 
-  DIM sSymbol AS String
-  DIM sRes AS String
-  DIM iInd AS Integer
-  DIM iPos AS Integer
-  DIM cSymbol AS NEW Collection
-  DIM hSym AS CSymbolInfo
-  DIM bSymbol AS Boolean
-  DIM bDynamic AS Boolean
-  DIM sBreak AS String
-  DIM bStatic AS Boolean
-  DIM sSpace AS String
+  Dim sSymbol As String
+  Dim sRes As String
+  Dim iInd As Integer
+  Dim iPos As Integer
+  Dim cSymbol As New Collection
+  Dim hSym As CSymbolInfo
+  Dim bSymbol As Boolean
+  Dim bDynamic As Boolean
+  Dim sBreak As String
+  Dim bStatic As Boolean
+  Dim sSpace As String
 
-  IF NOT $hClass THEN RETURN "<p>No symbols."
+  If Not $hClass Then Return "<p>No symbols."
 
-  IF $hClass.Symbols.Count THEN
+  If $hClass.Symbols.Count Then
 
-    cSymbol["P"] = NEW String[]
-    cSymbol["C"] = NEW String[]
-    cSymbol["M"] = NEW String[]
-    cSymbol["p"] = NEW String[]
-    cSymbol["e"] = NEW String[]
-    cSymbol["m"] = NEW String[]
+    cSymbol["P"] = New String[]
+    cSymbol["C"] = New String[]
+    cSymbol["M"] = New String[]
+    cSymbol["p"] = New String[]
+    cSymbol["e"] = New String[]
+    cSymbol["m"] = New String[]
 
-    FOR EACH hSym IN $hClass.Symbols
-      IF hSym.IsHidden() THEN CONTINUE
-      IF Right$(hSym.Name) = "$" THEN CONTINUE
-      bSymbol = TRUE
-      SELECT CASE hSym.Kind
-        CASE "r", "p"
+    For Each hSym In $hClass.Symbols
+      If hSym.IsHidden() Then Continue
+      If Right$(hSym.Name) = "$" Then Continue
+      bSymbol = True
+      Select Case hSym.Kind
+        Case "r", "p"
           cSymbol["p"].Add(hSym.Name)
-        CASE "R", "P"
+        Case "R", "P"
           cSymbol["P"].Add(hSym.Name)
-        CASE "C"
+        Case "C"
           cSymbol["C"].Add(hSym.Name)
-        CASE ":", "e", "E"
+        Case ":", "e", "E"
           hSym.Kind = "e"
           cSymbol["e"].Add(hSym.Name)
-        CASE "m"
+        Case "m"
           cSymbol["m"].Add(hSym.Name)
-        CASE "M"
+        Case "M"
           cSymbol["M"].Add(hSym.Name)
-        DEFAULT
-          PRINT hSym.Kind; " ?"
-      END SELECT
+        Default
+          Print hSym.Kind; " ?"
+      End Select
       'IF InStr("rpm", hSym.Kind) THEN bDynamic = TRUE
-      IF hSym.IsStatic() THEN
-        bStatic = TRUE
-      ELSE
-        bDynamic = TRUE
-      ENDIF
-    NEXT
+      If hSym.IsStatic() Then
+        bStatic = True
+      Else
+        bDynamic = True
+      Endif
+    Next
 
     cSymbol["p"].Sort
     cSymbol["e"].Sort
@@ -3332,7 +3375,7 @@ PRIVATE FUNCTION GetSymbols() AS String
     cSymbol["C"].Sort
     cSymbol["M"].Sort
 
-  ENDIF
+  Endif
 
   sRes = "<div class=\"black\"><font size=\"-2\"><b>" & ("Symbols") & "</b></font></div>\n"
 
@@ -3340,70 +3383,70 @@ PRIVATE FUNCTION GetSymbols() AS String
 
   sBreak = "<br>\n"
 
-  IF $hClass.Parent THEN
+  If $hClass.Parent Then
     'PRINT #$hFile, "<div class=\"table\">"
-    IF $hClass.Parent = $hClass.Name THEN
+    If $hClass.Parent = $hClass.Name Then
       sRes = sRes & ("This class reimplements")
-    ELSE
+    Else
       sRes = sRes & ("This class inherits")
-    ENDIF
+    Endif
 
     sRes = sRes & " " & GetLink("/comp" &/ $hClass.ParentComponent &/ $hClass.Parent,,, "arrow")
 
-    IF $hClass.ParentComponent <> $hClass.Component THEN
+    If $hClass.ParentComponent <> $hClass.Component Then
       sRes = sRes & " " & ("in") & " " & GetLink("/comp" &/ $hClass.ParentComponent,,, "arrow")
-    ENDIF
+    Endif
 
     sRes = sRes & ".\n<hr class=\"border\">\n"
     'PRINT #$hFile, "</div>"
-  ENDIF
+  Endif
 
-  IF $hClass.IsVirtual() THEN
+  If $hClass.IsVirtual() Then
     sRes = sRes & BULLET & Subst(("This class is &1."), GetLink("/def/virtual")) & sBreak
-  ELSE IF $hClass.AutoCreatable THEN
+  Else If $hClass.AutoCreatable Then
     sRes = sRes & BULLET & ("This class can be used like an object by creating an hidden instance on demand.") & sBreak
-  ENDIF
+  Endif
 
-  IF $hClass.Symbols.Exist("_new") AND $hClass.Creatable THEN
+  If $hClass.Symbols.Exist("_new") And $hClass.Creatable Then
     sRes = sRes & BULLET & Subst(("This class is &1."), GetSymbolLink($hClass.Symbols["_new"], ("creatable"))) & sBreak
-  ELSE
-    IF NOT bDynamic THEN
+  Else
+    If Not bDynamic Then
       sRes = sRes & BULLET & ("This class is static.") & sBreak
-    ELSE
+    Else
       sRes = sRes & BULLET & ("This class is not creatable.") & sBreak
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
-  IF $hClass.Symbols.Exist("_get") THEN
-    IF $hClass.Symbols.Exist("_put") THEN
+  If $hClass.Symbols.Exist("_get") Then
+    If $hClass.Symbols.Exist("_put") Then
       sRes = sRes & BULLET & Subst(("This class acts like a &1 / &2 array."), GetSymbolLink($hClass.Symbols["_get"], ("read")), GetSymbolLink($hClass.Symbols["_put"], ("write")))
-    ELSE
+    Else
       sRes = sRes & BULLET & Subst(("This class acts like a &1 array."), GetSymbolLink($hClass.Symbols["_get"], ("read-only")))
-    ENDIF
+    Endif
     sRes = sRes & sBreak
-  ENDIF
+  Endif
 
-  IF $hClass.Symbols.Exist("_next") THEN
+  If $hClass.Symbols.Exist("_next") Then
     sRes = sRes & BULLET & Subst(("This class is &1 with the &2 keyword."), GetSymbolLink($hClass.Symbols["_next"], ("enumerable")), GetLink("/lang/foreach")) & sBreak
-  ENDIF
+  Endif
 
-  IF $hClass.Symbols.Exist("_call") THEN
+  If $hClass.Symbols.Exist("_call") Then
     sRes = sRes & BULLET & Subst(("This class can be used as a &1."), GetSymbolLink($hClass.Symbols["_call"], ("function"))) & sBreak
-  ENDIF
+  Endif
 
-  IF bSymbol THEN
+  If bSymbol Then
 
     sSpace = "<td width=\"32\">&nbsp;</td>"
 
-    IF bStatic THEN
+    If bStatic Then
 
       sRes &= "<hr class=\"border\">"
       sRes = sRes & "<table class=\"none\" cellspacing=\"0\" cellpadding=\"0\">\n"
       sRes = sRes & "<tr>\n"
-      IF cSymbol["P"].Count THEN sRes = sRes & "<td><b>" & ("Static&nbsp;properties") & "</b></td>" & sSpace & "\n"
-      IF cSymbol["M"].Count THEN sRes = sRes & "<td><b>" & ("Static&nbsp;methods") & "</b></td>" & sSpace & "\n"
+      If cSymbol["P"].Count Then sRes = sRes & "<td><b>" & ("Static&nbsp;properties") & "</b></td>" & sSpace & "\n"
+      If cSymbol["M"].Count Then sRes = sRes & "<td><b>" & ("Static&nbsp;methods") & "</b></td>" & sSpace & "\n"
       'IF cSymbol["E"].Count THEN sRes = sRes & "<td align=left><b>" & ("Events") & "</b></td>" & sSpace & "\n"
-      IF cSymbol["C"].Count THEN sRes = sRes & "<td><b>" & ("Constants") & "</b></td>" & sSpace & "\n"
+      If cSymbol["C"].Count Then sRes = sRes & "<td><b>" & ("Constants") & "</b></td>" & sSpace & "\n"
       sRes = sRes & "</tr>\n"
       sRes = sRes & "<tr valign=top>\n"
         sRes = sRes & GetSymbolType($hComp, $hClass, cSymbol["P"])
@@ -3413,16 +3456,16 @@ PRIVATE FUNCTION GetSymbols() AS String
       sRes = sRes & "</tr>\n"
       sRes = sRes & "</table>\n"
 
-    ENDIF
+    Endif
 
-    IF bDynamic THEN
+    If bDynamic Then
 
       sRes &= "<hr class=\"border\">"
       sRes = sRes & "<table class=\"none\" cellspacing=\"0\" cellpadding=\"0\">\n"
       sRes = sRes & "<tr>\n"
-      IF cSymbol["p"].Count THEN sRes = sRes & "<td><b>" & ("Properties") & "</b></td>" & sSpace & "\n"
-      IF cSymbol["m"].Count THEN sRes = sRes & "<td><b>" & ("Methods") & "</b></td>" & sSpace & "\n"
-      IF cSymbol["e"].Count THEN sRes = sRes & "<td><b>" & ("Events") & "</b></td>" & sSpace & "\n"
+      If cSymbol["p"].Count Then sRes = sRes & "<td><b>" & ("Properties") & "</b></td>" & sSpace & "\n"
+      If cSymbol["m"].Count Then sRes = sRes & "<td><b>" & ("Methods") & "</b></td>" & sSpace & "\n"
+      If cSymbol["e"].Count Then sRes = sRes & "<td><b>" & ("Events") & "</b></td>" & sSpace & "\n"
       'IF cSymbol["C"].Count THEN sRes = sRes & "<td align=left><b>" & ("Constants") & "</b></td>" & sSpace & "\n"
       sRes = sRes & "</tr>\n"
       sRes = sRes & "<tr valign=top>\n"
@@ -3433,43 +3476,43 @@ PRIVATE FUNCTION GetSymbols() AS String
       sRes = sRes & "</tr>\n"
       sRes = sRes & "</table>\n"
 
-    ENDIF
+    Endif
 
-  ENDIF
+  Endif
 
   sRes = sRes & "</div><p>\n"
 
-  RETURN sRes
+  Return sRes
   
-CATCH
+Catch
 
-  RETURN "<pre>" & Error.Where & ": " & Error.Text & "</pre>\n"
+  Return "<pre>" & Error.Where & ": " & Error.Text & "</pre>\n"
 
-END
+End
 
-PRIVATE FUNCTION GetSyntax() AS String
+Private Function GetSyntax() As String
 
-  IF $hSym THEN RETURN GetSymbolSyntax($hSym)
+  If $hSym Then Return GetSymbolSyntax($hSym)
 
-END
+End
 
 
-PRIVATE FUNCTION GetSymbolSyntax(hSym AS CSymbolInfo) AS String
+Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
-  DIM sSyntax AS String
-  DIM sName AS String
-  DIM sValue AS String
+  Dim sSyntax As String
+  Dim sName As String
+  Dim sValue As String
 
-  SELECT CASE hSym.Name
+  Select Case hSym.Name
 
-    CASE "_get"
+    Case "_get"
 
-      IF hSym.IsStatic() THEN
+      If hSym.IsStatic() Then
         sName = hSym.Class
-      ELSE
+      Else
         sName = GetClassVariableName(hSym.Class)
         sSyntax = sSyntax & Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n"
-      ENDIF
+      Endif
 
       sValue = GetClassVariableName(hSym.Type)
 
@@ -3477,16 +3520,16 @@ PRIVATE FUNCTION GetSymbolSyntax(hSym AS CSymbolInfo) AS String
       sSyntax = sSyntax & sValue & " " & Keyword("=") & " "
       sSyntax = sSyntax & sName & " " & Keyword("[") & GetSignature(hSym.Signature) & Keyword("]")
 
-    CASE "_put"
+    Case "_put"
 
       hSym = CComponent.All[hSym.Component][hSym.Class].Symbols["_get"]
 
-      IF hSym.IsStatic() THEN
+      If hSym.IsStatic() Then
         sName = hSym.Class
-      ELSE
+      Else
         sName = GetClassVariableName(hSym.Class)
         sSyntax = sSyntax & Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n"
-      ENDIF
+      Endif
 
       sValue = GetClassVariableName(hSym.Type)
 
@@ -3494,26 +3537,26 @@ PRIVATE FUNCTION GetSymbolSyntax(hSym AS CSymbolInfo) AS String
       sSyntax = sSyntax & sName & " " & Keyword("[") & GetSignature(hSym.Signature) & Keyword("]")
       sSyntax = sSyntax & " " & Keyword("=") & " " & sValue
 
-    CASE "_next"
+    Case "_next"
 
-      IF hSym.IsStatic() THEN
+      If hSym.IsStatic() Then
         sName = hSym.Class
-      ELSE
+      Else
         sName = GetClassVariableName(hSym.Class)
         sSyntax = sSyntax & Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n"
-      ENDIF
+      Endif
 
-      IF hSym.Type THEN
+      If hSym.Type Then
         sValue = GetClassVariableName(hSym.Type)
         sSyntax = sSyntax & Keyword("DIM") & " " & sValue & " " & Keyword("AS") & " " & GetType(hSym.Type) & "\n\n"
         sSyntax = sSyntax & Keyword("FOR EACH") & " " & sValue & " " & Keyword("IN") & " " & sName & "\n"
-      ELSE
+      Else
         sSyntax = sSyntax & Keyword("FOR EACH") & " " & sName & "\n"
-      ENDIF
+      Endif
 
       sSyntax = sSyntax & "&nbsp;&nbsp;...<br>" & Keyword("NEXT")
 
-    CASE "_new"
+    Case "_new"
 
       sName = GetClassVariableName(hSym.Class)
 
@@ -3521,153 +3564,153 @@ PRIVATE FUNCTION GetSymbolSyntax(hSym AS CSymbolInfo) AS String
       sSyntax = sSyntax & sName & " " & Keyword("=") & " " & Keyword("NEW") & " " & GetType(hSym.Class)
       sSyntax = sSyntax & " " & Keyword("(") & GetSignature(hSym.Signature) & Keyword(")")
 
-    CASE ELSE
+    Case Else
 
-      IF hSym.IsStatic() AND hSym.Kind <> "C" THEN
+      If hSym.IsStatic() And hSym.Kind <> "C" Then
         sSyntax = Keyword("STATIC") & " "
-      ENDIF
+      Endif
 
-      SELECT CASE LCase(hSym.Kind)
+      Select Case LCase(hSym.Kind)
 
-        CASE "p"
+        Case "p"
           sSyntax = sSyntax & Keyword("PROPERTY") & " "
-        CASE "r"
+        Case "r"
           sSyntax = sSyntax & Keyword("PROPERTY READ") & " "
-        CASE "c"
+        Case "c"
           sSyntax = sSyntax & Keyword("CONST") & " "
-        CASE ":"
+        Case ":"
           sSyntax = sSyntax & Keyword("EVENT") & " "
-        CASE "m"
-          IF hSym.Type THEN
+        Case "m"
+          If hSym.Type Then
             sSyntax = sSyntax & Keyword("FUNCTION") & " "
-          ELSE
+          Else
             sSyntax = sSyntax & Keyword("SUB") & " "
-          ENDIF
+          Endif
 
-      END SELECT
+      End Select
 
-      IF hSym.Name = "_call" THEN
+      If hSym.Name = "_call" Then
         sSyntax = sSyntax & "<b>" & GetSymbolName(hSym.Class) & "</b>"
-      ELSE
+      Else
         sSyntax = sSyntax & "<b>" & GetSymbolName(hSym.Name) & "</b>"
-      ENDIF
+      Endif
 
-      IF InStr(":m", LCase(hSym.Kind)) THEN
+      If InStr(":m", LCase(hSym.Kind)) Then
         sSyntax = sSyntax & " " & Keyword("(") & GetSignature(hSym.Signature) & Keyword(")")
-      ENDIF
+      Endif
 
-      IF hSym.Type THEN sSyntax = sSyntax & " " & Keyword("AS") & " " & GetType(hSym.Type)
+      If hSym.Type Then sSyntax = sSyntax & " " & Keyword("AS") & " " & GetType(hSym.Type)
 
-      IF hSym.Kind = "C" THEN
+      If hSym.Kind = "C" Then
         sSyntax = sSyntax & " " & Keyword("=") & " "
-        SELECT CASE hSym.Type
-          CASE "s"
+        Select Case hSym.Type
+          Case "s"
             sSyntax = sSyntax & Keyword(Chr$(34)) & hSym.Value & Keyword(Chr$(34))
-          CASE ELSE
+          Case Else
             sSyntax = sSyntax & hSym.Value
-        END SELECT
-      ENDIF
+        End Select
+      Endif
 
-  END SELECT
+  End Select
 
-  RETURN sSyntax
+  Return sSyntax
 
-END
+End
 
 '$$$$$$$$$$$$$$$$$$$$$$$$
 
-PRIVATE FUNCTION GetName(sKey AS String) AS String
+Private Function GetName(sKey As String) As String
 
-  DIM sName AS String
-  DIM sElt AS String
+  Dim sName As String
+  Dim sElt As String
 
-  FOR EACH sElt IN Split(sKey, ".")
+  For Each sElt In Split(sKey, ".")
     sElt = Replace(sElt, "[]", "Array")
     sName = sName & UCase(Left$(sElt)) & Mid$(sElt, 2)
-  NEXT
+  Next
 
-  RETURN sName
+  Return sName
 
-END
+End
 
-PRIVATE FUNCTION GetOldData(sOld AS String) AS String
+Private Function GetOldData(sOld As String) As String
 
-  DIM hFic AS File
-  DIM sData AS String
-  DIM sLig AS String
+  Dim hFic As File
+  Dim sData As String
+  Dim sLig As String
 
-  IF Exist(sOld) THEN
+  If Exist(sOld) Then
 
-    OPEN sOld FOR READ AS #hFic
+    Open sOld For Read As #hFic
 
-    WHILE NOT Eof(hFic)
+    While Not Eof(hFic)
 
-      LINE INPUT #hFic, sLig
-      IF Left(LTrim(sLig)) = "%" THEN CONTINUE
-      IF Trim(sLig) = "<nopublish>" THEN CONTINUE
-      IF Trim(sLig) = "</nopublish>" THEN CONTINUE
-      IF Left$(sLig, 4) = "<!--" THEN CONTINUE
+      Line Input #hFic, sLig
+      If Left(LTrim(sLig)) = "%" Then Continue
+      If Trim(sLig) = "<nopublish>" Then Continue
+      If Trim(sLig) = "</nopublish>" Then Continue
+      If Left$(sLig, 4) = "<!--" Then Continue
       sData = sData & sLig & "\n"
 
-    WEND
+    Wend
 
-    CLOSE #hFic
+    Close #hFic
 
-  ENDIF
+  Endif
 
   'IF Instr(sOld, "Settings") THEN
   '  STOP
   'ENDIF
 
-  WHILE Right$(sData, 2) = "\n\n"
+  While Right$(sData, 2) = "\n\n"
     sData = Left$(sData, -1)
-  WEND
+  Wend
 
-  IF NOT Trim(sData) THEN
-    PRINT File.BaseName(sOld)
+  If Not Trim(sData) Then
+    Print File.BaseName(sOld)
     sData = "_[[" & File.BaseName(sOld) & "][Not documented]]_"
-  ENDIF
+  Endif
 
-  RETURN sData
+  Return sData
 
 'CATCH
 
 '  PRINT File.BaseName(sOld); " ?"
 
-END
+End
 
 
 
 
-PRIVATE FUNCTION FormatClassName(sName AS String) AS String
+Private Function FormatClassName(sName As String) As String
 
-  RETURN Replace(sName, "]", "&#93;")
+  Return Replace(sName, "]", "&#93;")
 
-END
+End
 
 
-PRIVATE FUNCTION GetClassPageFromName(sClass AS String) AS String
+Private Function GetClassPageFromName(sClass As String) As String
 
-  DIM sComp AS String
-  DIM sName AS String
+  Dim sComp As String
+  Dim sName As String
 
   sComp = $hComp.Key
 
-  IF IsNull(CComponent.All[sComp][sClass]) THEN
+  If IsNull(CComponent.All[sComp][sClass]) Then
     sComp = CComponent.Classes[sClass].Component
-  ENDIF
+  Endif
 
   'sName = FormatClassName(sClass)
   'IF Left$(sClass) = "." THEN sName = "<i>" & sName & "</i>"
 
   'RETURN "[[" & GetName(sComp & "." & sClass) & "][" & sName & "]]"
-  RETURN GetLink("/comp" &/ sComp &/ sClass,,, "arrow")
+  Return GetLink("/comp" &/ sComp &/ sClass,,, "arrow")
 
-CATCH
+Catch
 
-  RETURN sClass
+  Return sClass
 
-END
+End
 
 ' 
 ' PRIVATE FUNCTION GetSymbolPage(hSym AS CSymbolInfo) AS String
@@ -3717,38 +3760,38 @@ END
 ' 
 ' 
 
-PRIVATE FUNCTION GetSymbolName(sName AS String) AS String
+Private Function GetSymbolName(sName As String) As String
 
   'sName = Replace(sName, "_", "")
   sName = Replace(sName, ":", "")
   sName = Replace(sName, "$", "")
-  RETURN sName
+  Return sName
 
-END
+End
 
-PRIVATE FUNCTION Keyword(sWord AS String, OPTIONAL iColor AS Integer) AS String
+Private Function Keyword(sWord As String, Optional iColor As Integer) As String
 
-  IF iColor THEN
-    RETURN "<font color=\"#" & Hex$(iColor, 6) & "\">" & sWord & "</font>"
-  ELSE
-    RETURN "<font color=\"blue\">" & sWord & "</font>"
-  ENDIF
+  If iColor Then
+    Return "<font color=\"#" & Hex$(iColor, 6) & "\">" & sWord & "</font>"
+  Else
+    Return "<font color=\"blue\">" & sWord & "</font>"
+  Endif
 
-END
+End
 ' 
 ' 
-PRIVATE FUNCTION GetType(sType AS String) AS String
+Private Function GetType(sType As String) As String
 
-  IF Len(sType) = 1 THEN
+  If Len(sType) = 1 Then
     sType = CSymbolInfo.GetNativeType(sType)
-  ELSE
-    IF Right$(sType) = ";" THEN sType = Left$(sType, -1)
+  Else
+    If Right$(sType) = ";" Then sType = Left$(sType, -1)
     sType = GetClassPageFromName(sType)
-  ENDIF
+  Endif
 
-  RETURN Keyword(sType, &H0080FF&)
+  Return Keyword(sType, &H0080FF&)
 
-END
+End
 ' 
 '
 
@@ -3763,198 +3806,198 @@ END
 ' END
 
 
-PRIVATE FUNCTION GetSignature(sSign AS String) AS String
+Private Function GetSignature(sSign As String) As String
 
-  DIM iInd AS Integer
-  DIM sRes AS String
-  DIM sCar AS String
-  DIM iPos AS Integer
-  DIM bName AS Boolean
-  DIM bFirst AS Boolean
-  DIM iLen AS Integer
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim bName As Boolean
+  Dim bFirst As Boolean
+  Dim iLen As Integer
 
-  bFirst = TRUE
+  bFirst = True
 
-  DO
+  Do
 
     iInd = iInd + 1
 
-    IF iInd > Len(sSign) THEN BREAK
+    If iInd > Len(sSign) Then Break
 
     sCar = Mid$(sSign, iInd, 1)
 
-    IF sCar = "'" OR sCar = "(" THEN
+    If sCar = "'" Or sCar = "(" Then
 
-      IF sCar = "'" THEN
+      If sCar = "'" Then
         iPos = InStr(sSign, "'", iInd + 1)
-      ELSE
+      Else
         iPos = InStr(sSign, ")", iInd + 1)
-      ENDIF
+      Endif
 
-      IF iPos = 0 THEN BREAK
+      If iPos = 0 Then Break
 
-      IF bFirst THEN
-        bFirst = FALSE
-      ELSE
+      If bFirst Then
+        bFirst = False
+      Else
         sRes = sRes & Keyword(",") & " "
-      ENDIF
+      Endif
 
       sRes = sRes & "<u>" & Mid$(sSign, iInd + 1, iPos - iInd - 1) & "</u> " & Keyword("AS") & " "
 
       iInd = iPos
-      bName = TRUE
+      bName = True
 
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF sCar = "<" THEN
+    If sCar = "<" Then
 
       iPos = InStr(sSign, ">", iInd + 1)
-      IF iPos = 0 THEN BREAK
+      If iPos = 0 Then Break
       iInd = iPos
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF sCar = "[" THEN
+    If sCar = "[" Then
 
       sRes = RTrim(sRes) & " <b>[</b> "
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF sCar = "]" THEN
+    If sCar = "]" Then
 
       sRes = RTrim(sRes) & " <b>]</b>"
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF NOT bName THEN
+    If Not bName Then
 
-      IF bFirst THEN
-        bFirst = FALSE
-      ELSE
+      If bFirst Then
+        bFirst = False
+      Else
         sRes = sRes & ", "
-      ENDIF
+      Endif
 
       sRes = sRes & "? " & Keyword("AS") & " "
-      bName = FALSE
+      bName = False
 
-    ENDIF
+    Endif
 
-    IF sCar = "." THEN
+    If sCar = "." Then
       sRes = sRes & ", ..."
-      CONTINUE
-    ENDIF
+      Continue
+    Endif
 
-    IF sCar >= "A" AND sCar <= "Z" THEN
+    If sCar >= "A" And sCar <= "Z" Then
 
       iPos = InStr(sSign, ";", iInd)
-      IF iPos = 0 THEN iPos = Len(sSign) + 1
+      If iPos = 0 Then iPos = Len(sSign) + 1
 
       sRes = sRes & GetType(Mid$(sSign, iInd, iPos - iInd))
 
       iInd = iPos
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
     sRes = sRes & GetType(sCar)
 
-  LOOP
+  Loop
 
   'sRes = "( " & sRes & " )"
 
   sRes = " " & sRes & " "
 
-  DO
+  Do
     iLen = Len(sRes)
     sRes = Replace(sRes, "  ", " ")
-    IF Len(sRes) = iLen THEN BREAK
-  LOOP
+    If Len(sRes) = iLen Then Break
+  Loop
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
-PRIVATE FUNCTION GetClassVariableName(sClass AS String) AS String
+Private Function GetClassVariableName(sClass As String) As String
 
-  DIM sRes AS String
+  Dim sRes As String
 
-  IF Len(sClass) = 1 THEN
+  If Len(sClass) = 1 Then
     sClass = CSymbolInfo.GetNativeType(sClass)
-    IF InStr("aeiou", LCase(Left$(sClass))) THEN
+    If InStr("aeiou", LCase(Left$(sClass))) Then
       sRes = "an" & sClass
-    ELSE
+    Else
       sRes = "a" & sClass
-    ENDIF
-  ELSE
+    Endif
+  Else
     sClass = Replace(sClass, "[]", "Array")
-    IF Left$(sClass) = "." THEN sClass = Mid$(sClass, 2)
+    If Left$(sClass) = "." Then sClass = Mid$(sClass, 2)
     sRes = "h" & sClass
-  ENDIF
+  Endif
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
-PRIVATE FUNCTION GetVersion() AS String
+Private Function GetVersion() As String
 
-  DIM sVer AS String
+  Dim sVer As String
 
-  SHELL "gbx" & System.Version & " -V " TO sVer
+  Shell "gbx" & System.Version & " -V " To sVer
 
-  RETURN Trim(Mid$(sVer, InStr(sVer, "-") + 1))
+  Return Trim(Mid$(sVer, InStr(sVer, "-") + 1))
 
-CATCH
+Catch
 
-  RETURN "?"
+  Return "?"
 
-END
+End
 
-PRIVATE SUB GetOnlyIn(sVer AS String) AS String
+Private Sub GetOnlyIn(sVer As String) As String
   
-  RETURN "<div class=\"only-in\">" & Subst(("Only in &1 version"), EncodeHTML(sVer)) & "</div>\n"
+  Return "<div class=\"only-in\">" & Subst(("Only in &1 version"), EncodeHTML(sVer)) & "</div>\n"
   
-END
+End
 
 
-PUBLIC SUB Process_Read()
+Public Sub Process_Read()
 
-  DIM sStr AS String
+  Dim sStr As String
 
-  READ #LAST, sStr, Lof(LAST)
-  PRINT sStr;
+  Read #Last, sStr, Lof(Last)
+  Print sStr;
 
-END
+End
 
-PRIVATE SUB GetClassStat() AS String
+Private Sub GetClassStat() As String
   
-  DIM sRes AS String
-  DIM sVal AS String
-  DIM nClass AS Integer
-  DIM nSym AS Integer
-  DIM sFile AS String
-  DIM aFile AS String[]
-  DIM iCpt AS Integer
-  DIM sLine AS String
+  Dim sRes As String
+  Dim sVal As String
+  Dim nClass As Integer
+  Dim nSym As Integer
+  Dim sFile As String
+  Dim aFile As String[]
+  Dim iCpt As Integer
+  Dim sLine As String
   
-  FOR EACH sFile IN Dir(InfoFilePath, "*.info")
-    IF sFile = "gb.gui.info" OR sFile = "gb.gtk.info" THEN CONTINUE
-    aFile = Split(File.Load(InfoFilePath &/ sFile), "\n", "", TRUE)
+  For Each sFile In Dir(InfoFilePath, "*.info")
+    If sFile = "gb.gui.info" Or sFile = "gb.gtk.info" Then Continue
+    aFile = Split(File.Load(InfoFilePath &/ sFile), "\n", "", True)
     iCpt = 0
-    FOR EACH sLine IN aFile
-      IF Left(sLine) = "#" THEN INC iCpt
-    NEXT
+    For Each sLine In aFile
+      If Left(sLine) = "#" Then Inc iCpt
+    Next
     nClass += iCpt
     nSym += (aFile.Count - iCpt * 3) / 4
-  NEXT
+  Next
   
-  RETURN Subst(("There are &1 classes and &2 symbols in all Gambas components."), nClass, nSym)
+  Return Subst(("There are &1 classes and &2 symbols in all Gambas components."), nClass, nSym)
   
-CATCH
+Catch
   
-END
+End

@@ -93,7 +93,7 @@ private:
   bool updateCursor();
   //void updatePattern();
 
-  void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h);
+  void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2);
 
 	void docTextChanged();
 	void redrawContents();

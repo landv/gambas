@@ -1,0 +1,145 @@
+' Gambas class file
+
+Export
+
+Property Read X As Integer
+Property Read Y As Integer
+Property Read Width As Integer
+Property Read Height As Integer
+Property Read Name As String
+Property Read VisibleName As String
+Property Desktop As Integer
+Property Read State As Integer[]
+Property Read Id As Integer
+
+Private $iId As Integer
+Private $aDim As Integer[]
+Private $sName As String
+
+Public Sub _new(Window As Integer)
+  
+  $iId = Window
+  
+End
+
+Public Sub Refresh()
+  
+  $aDim = Null
+  
+End
+
+Private Sub GetDimensions()
+  
+  If Not $aDim Then $aDim = _Desktop.GetWindowGeometry($iId)
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  GetDimensions
+  Return $aDim[0]
+
+End
+
+Private Function Y_Read() As Integer
+
+  GetDimensions
+  Return $aDim[1]  
+
+End
+
+Private Function Width_Read() As Integer
+
+  GetDimensions
+  Return $aDim[2]
+
+End
+
+Private Function Height_Read() As Integer
+
+  GetDimensions
+  Return $aDim[3]  
+
+End
+
+Public Sub Close()
+  
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_CLOSE_WINDOW"], [_Desktop.CurrentTime, 2], $iId)
+  
+End
+
+Public Sub MoveResize(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10111100000000, X, Y, Width, Height], $iId)
+  
+End
+
+Public Sub Move(X As Integer, Y As Integer)
+  
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10001100000000, X, Y], $iId)
+  
+End
+
+Public Sub Resize(Width As Integer, Height As Integer)
+  
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10110000000000, Width, Height], $iId)
+  
+End
+
+Private Function Name_Read() As String
+
+  Try Return _Desktop.GetWindowProperty(Atom["_NET_WM_NAME"], $iId)[0]
+
+End
+
+Private Function VisibleName_Read() As String
+
+  Dim sName As String
+
+  Try sName = _Desktop.GetWindowProperty(Atom["_NET_WM_VISIBLE_NAME"], $iId)[0]
+  If Not sName Then Return Name_Read()
+
+End
+
+Private Function Desktop_Read() As Integer
+
+  Try Return _Desktop.GetWindowProperty(Atom["_NET_WM_DESKTOP"], $iId)[0]
+
+End
+
+Private Sub Desktop_Write(Value As Integer)
+
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_DESKTOP"], [Value, 2], $iId)
+
+End
+
+Private Function State_Read() As Integer[]
+
+  Return _Desktop.GetWindowProperty(Atom["_NET_WM_STATE"], $iId)
+
+End
+
+Public Sub SetState(State As String, Optional State2 As String)
+  
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_ADD"], Atom[State], Atom[State2], 2], $iId)
+  
+End
+
+Public Sub ClearState(State As String, Optional State2 As String)
+  
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_REMOVE"], Atom[State], Atom[State2], 2], $iId)
+  
+End
+
+Public Sub ToggleState(State As String, Optional State2 As String)
+  
+  _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_TOGGLE"], Atom[State], Atom[State2], 2], $iId)
+  
+End
+
+Private Function Id_Read() As Integer
+
+  Return $iId  
+
+End

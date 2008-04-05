@@ -90,8 +90,7 @@ AC_DEFUN([GB_LIBTOOL],
   AC_SUBST(INCLTDL)
   AC_SUBST(LIBLTDL)
 
-  #LD_FLAGS="-z defs"
-  LD_FLAGS="-no-undefined"
+  LD_FLAGS="-O1 -z defs"
   AC_SUBST(LD_FLAGS)
 ])
 
@@ -222,9 +221,11 @@ dnl  # gambas_flags="$gambas_flags -fomit-frame-pointer"
   if test "x$gambas_optimization" = "xyes"; then
     AM_CFLAGS="$AM_CFLAGS -Os"
     AM_CXXFLAGS="$AM_CXXFLAGS -Os -fno-omit-frame-pointer"
+    #AM_LDFLAGS="$AM_LDFLAGS -Wl,-O1,-z,defs"
   else
     AM_CFLAGS="$AM_CFLAGS -O0"
     AM_CXXFLAGS="$AM_CXXFLAGS -O0"
+    #AM_LDFLAGS="$AM_LDFLAGS -Wl,-O0,z,defs"
   fi
 
   CFLAGS=""

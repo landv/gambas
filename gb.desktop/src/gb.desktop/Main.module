@@ -49,49 +49,19 @@ Public Sub RunXdgUtil(sProg As String, aArg As String[])
 End
 
 Public Sub Main()
-  
-  Dim vVal As Variant
+
+  ' Dim hWindow As DesktopWindow
+  ' 
+  ' For Each hWindow In Desktop.Windows
+  '   Print Hex$(hWindow.Id);; hWindow.VisibleName
+  ' Next
+
   Dim iInd As Integer
-  Dim iAtom As Integer
   
-  'Desktop.OpenTerminal("/home/test")
-  'Return
-  
-  'iAtom = _Desktop.InternAtom("_NET_CURRENT_DESKTOP")
-  'Print iAtom
-  '_Desktop.SetWindowProperty(_Desktop.RootWindow, iAtom, "XA_INTEGER", 1)
-  '_Desktop.SendClientMessageToRootWindow(iAtom, [0])
-  'Wait 0.5
-  'vVal = _Desktop.GetWindowProperty(_Desktop.RootWindow, iAtom)
-  
-  ' If IsString(vVal) Then
-  '   Print vVal
-  ' Else If vVal Is Array Then
-  '   Print "[";
-  '   For iInd = 0 To vVal.Max
-  '     If iInd Then Print ", ";
-  '     Print vVal[iInd];
-  '   Next
-  '   Print "]"
-  ' Endif
-
-  'WatchWindows
-  
-End
-
-Private Sub WatchWindows()
-  
-  Dim aWindow As Integer[]
-  Dim hWindow As Integer
-  Dim aIcon As Integer[]
-
-  _NET_CLIENT_LIST = _Desktop.InternAtom("_NET_CLIENT_LIST")  
-  aWindow = _Desktop.GetWindowProperty(_Desktop.RootWindow, _NET_CLIENT_LIST)
-  For Each hWindow In aWindow
-    Print hWindow;;
-    aIcon = _Desktop.GetWindowProperty(hWindow, "_NET_WM_ICON")
-    If aIcon Then Print aIcon[0];; aIcon[1];
-    Print
+  For iInd = 0 To Desktop.Count - 1
+    With Desktop[iInd]
+      Print .Name;; .X;; .Y;; .Width;; .Height
+    End With
   Next
   
 End
@@ -101,7 +71,6 @@ Public Sub Desktop_Change(Window As Integer, Atom As Integer)
   Debug Window;; _Desktop.GetAtomName(Atom)
   
   If Window = _Desktop.RootWindow And If Atom = _NET_CLIENT_LIST Then
-    WatchWindows
   Endif
   
 End

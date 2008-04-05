@@ -4,8 +4,7 @@ html {
 }
 
 body.left {
-  background-color: #CBDAE6;
-  /*background: white;*/
+  background: #B0CEE6; /*white; #6e9bed;*/
   margin: 8px 8px 8px 8px;
   background-image: url("/img/background-left.jpg");
   background-attachment: fixed;
@@ -75,7 +74,8 @@ td p {
 hr {
   border: solid;
   border-width: 1px;
-  border-color: #B2E8FF;
+  border-bottom: none;
+  border-color: #808080;
 }
 
 pre { 
@@ -182,6 +182,7 @@ a:hover {
   text-shadow: 2px 2px 2px #808080;
   margin-top: 4px;
   margin-bottom: 8px;
+  letter-spacing: 2px;
   /*text-decoration: underline;*/
 }
 
@@ -201,14 +202,14 @@ table.tabheader {
 
 td.tabon {
   padding: 4px 6px;
-  border-top: 1px solid #95C1E6;
-  border-right: 1px solid #95C1E6;
-  border-left: 1px solid #95C1E6;
+  border-top: 2px solid #95C1E6;
+  border-right: 2px solid #95C1E6;
+  border-left: 2px solid #95C1E6;
 }
 
 td.taboff {
   padding: 0px;
-  border-bottom: 1px solid #95C1E6;
+  border-bottom: 2px solid #95C1E6;
 }
 
 [dir="ltr"] * .taboffr {
@@ -234,7 +235,7 @@ td.taboff {
 
 td.tabnone {
   padding: 2px 6px;
-  border-bottom: 1px solid #95C1E6;
+  border-bottom: 2px solid #95C1E6;
 }
 
 .tab { 
@@ -243,10 +244,10 @@ td.tabnone {
   padding-right: 16px;
   padding-top: 1px;
   padding-bottom: 8px;
-  border-left: solid 1px #95C1E6;
-  border-right: solid 1px #95C1E6;
+  border-left: solid 2px #95C1E6;
+  border-right: solid 2px #95C1E6;
   border-top: none;
-  border-bottom: solid 1px #95C1E6;
+  border-bottom: solid 2px #95C1E6;
   /*background-image: url(/img/tab-background.png);*/
   /*background-repeat: no-repeat;*/
  }
@@ -306,26 +307,26 @@ tr.dark {
   background: #CBDAE6;
 }
 
-hr {
+/*hr {
   border-top: dotted;
   border-left: none;
   border-bottom: none;
   border-right: none;
   border-width: 1px;
   border-color: #808080;
-}
+}*/
 
 .box { 
   padding: 8px;
   margin: 0px 0px 8px 0px;
-  border: dotted 1px #95C1E6;
+  border: solid 1px #95C1E6;
  }
 
 .example { 
   /*background-color: white; /*#f8f8f8;*/
   padding: 8px;
   margin: 0px 0px 8px 0px;
-  border: dotted 1px #95C1E6;
+  border: solid 1px #95C1E6;
   direction: ltr;
  }
 
@@ -333,23 +334,27 @@ hr {
   /*background-color: white; /*#f8f8f8;*/
   padding: 8px;
   margin: 8px 0px 8px 0px;
-  border: dotted 1px #95C1E6;
+  border: solid 1px #95C1E6;
   direction: ltr;
  }
 
 .warning { 
-  background-color: #CBDAE6;
-  /*width: 100%;*/
+  /*background-color: #CBDAE6;
   padding: 4px;
   margin: 0px 0px 8px 0px;
-  border: dotted 1px #95C1E6;
+  border: dotted 1px #95C1E6;*/
+  border-left: solid 8px #C0C0C0;
+  border-right: solid 8px #C0C0C0;
+  border-top: solid 2px #C0C0C0;
+  border-bottom: solid 2px #C0C0C0;
+  padding: 4px;
  }
 
 .info { 
   /*background-color: white; /*#f8f8f8;*/
   padding: 8px;
   margin: 0px 0px 8px 0px;
-  border: dotted 1px #95C1E6;
+  border: solid 1px #95C1E6;
   width: 100%;
  }
 
@@ -402,12 +407,23 @@ hr {
   padding: 2px;
 }
 
-.border {
+DIV.border {
   border: solid;
-  border-width: 1px;
+  border-width: 2px;
   border-color: #95C1E6;
   margin: 0px 0px 16px 0px;
   padding: 4px;
+}
+
+HR.border {
+  border-top: solid;
+  border-left: none;
+  border-bottom: none;
+  border-right: none;
+  border-width: 1px;
+  border-color: #95C1E6;
+  margin: 6px -4px;
+  padding: 0px;
 }
 
 .footer {
@@ -444,5 +460,80 @@ textarea {
   border: solid 2px #95C1E6;
 }
 
+/*a:hover img {
+  background: none;
+}
 
+a:hover {
+  text-decoration: underline;
+}
 
+a:before img {
+  content: "";
+}
+
+a.none:before {
+  content: "";
+}
+
+[dir="rtl"] a.arrow:before {
+  content: url("./img/link-left-black.png");
+}
+
+[dir="ltr"] a.arrow:before {
+  content: url("./img/link-black.png");
+}*/
+
+H2 {
+  letter-spacing: 2px;
+  color: #808080;
+}
+
+H3 {
+  letter-spacing: 1px;
+  color: #808080;
+}
+
+.seealso {
+  border-left: solid 8px #C0C0C0;
+  padding-left: 8px;
+  margin-top: 20px;
+}
+
+.seealso H3 {
+  margin-bottom: 2px;
+}
+
+/*.only-in {
+  background-image: url("/img/only-in.png");
+  background-repeat: no-repeat;
+  position: fixed;
+  padding: 16px 0px;
+  width: 64px;
+  height: 68px;
+  top: 32px;
+  right: 24px;
+  font-size: xx-large;
+  color: white;
+  text-shadow: 2px 2px 2px #808080;
+  text-align: center;
+  vertical-align: middle;
+}*/
+
+.only-in {
+  display: inline;
+  background: red;
+  color: white;
+  padding: 2px 6px;
+  text-shadow: 2px 2px 2px #808080;
+  border: solid 2px #C00000;
+  margin: 4px 0px;
+}
+
+TD.only {
+  background: #FF6060;
+  color: white;
+  padding: 4px;
+  /*font-weight: bold;*/
+  text-shadow: 2px 2px 2px #808080;
+}

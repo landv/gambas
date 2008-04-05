@@ -24,9 +24,22 @@
 #define __DESKTOP_H
 
 #include "main.h"
+#include "gb_list.h"
 
 #ifndef __DESKTOP_C
 extern GB_DESC CDesktopDesc[];
+extern GB_DESC CDesktopWatcherDesc[];
 #endif
+
+typedef
+	struct {
+		GB_BASE ob;
+		Atom property;
+		Window window;
+		LIST list;
+		}
+	CDESKTOPWATCHER;
+	
+#define WATCHER ((CDESKTOPWATCHER *)_object)
 
 #endif
