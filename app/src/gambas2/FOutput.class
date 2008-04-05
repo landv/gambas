@@ -80,7 +80,7 @@ PUBLIC SUB edtOutput_KeyPress()
     'iPos = RInStr(sText, "\n", edtOutput.Pos)
     'sText = Mid$(sText, iPos + 1, edtOutput.Pos - iPos)
     
-    sText = edtOutput.Lines[edtOutput.Line]
+    sText = edtOutput.Lines[edtOutput.Line].Text
     IF chkCharset.Value THEN
       TRY sText = SConv$(sText)
     ENDIF
@@ -188,7 +188,7 @@ END
 
 PUBLIC SUB Form_Activate()
 
-  edtOutput.SetFocus
+  'edtOutput.SetFocus
 
 END
 
@@ -233,5 +233,103 @@ PUBLIC SUB Form_Open()
     Settings.Read(ME)
     'DEBUG "Read: "; ME.X;; ME.Y
   ENDIF
+  
+END
+
+PRIVATE SUB Search(bBack AS Boolean)
+
+  DIM sFind AS String = txtFind.Text
+  DIM iLine, iCol AS Integer
+  DIM sLine AS String
+  DIM iPos AS Integer
+  DIM iStart AS Integer
+  DIM bCase AS Boolean = NOT btnCase.Value
+  DIM bLoop AS Boolean
+  
+  IF NOT sFind THEN RETURN
+  
+  IF edtOutput.Selected THEN
+    IF bBack THEN
+      edtOutput.Goto(edtOutput.Selection.StartLine, edtOutput.Selection.StartColumn)
+    ELSE
+      edtOutput.Goto(edtOutput.Selection.EndLine, edtOutput.Selection.EndColumn)
+    ENDIF
+  ENDIF
+  
+  iLine = edtOutput.Line
+  iStart = iLine
+  iCol = edtOutput.Column
+  
+  IF bCase THEN sFind = String.UCase(sFind)
+  
+  IF bBack THEN
+  
+    DO
+      IF iCol THEN
+        sLine = edtOutput.Lines[iLine]
+        IF bCase THEN sLine = String.UCase(sLine)
+        iPos = String.RInStr(sLine, sFind, iCol)
+        IF iPos THEN
+          DEC iPos
+          edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
+          RETURN
+        ENDIF
+      ENDIF
+      IF iLine = iStart AND IF bLoop THEN RETURN
+      DEC iLine
+      IF iLine < 0 THEN iLine = edtOutput.Lines.Count - 1
+      iCol = String.Len(edtOutput.Lines[iLine])
+      bLoop = TRUE
+    LOOP
+
+  ELSE
+  
+    DO
+      sLine = edtOutput.Lines[iLine]
+      IF bCase THEN sLine = String.UCase(sLine)
+      iPos = String.InStr(sLine, sFind, iCol + 1)
+      IF iPos THEN
+        DEC iPos
+        edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
+        RETURN
+      ENDIF
+      IF iLine = iStart AND IF bLoop THEN RETURN
+      INC iLine
+      IF iLine >= edtOutput.Lines.Count THEN iLine = 0
+      iCol = 0
+      bLoop = TRUE
+    LOOP
+    
+  ENDIF
+  
+END
+
+PUBLIC SUB txtFind_Activate()
+
+  btnNext_Click
+
+END
+
+PUBLIC SUB btnNext_Click()
+
+  Search(FALSE)
+
+END
+
+PUBLIC SUB btnPrev_Click()
+
+  Search(TRUE)
+
+END
+
+PUBLIC SUB btnFind_Click()
+
+  sepFind.Visible = btnFind.Value
+  txtFind.Visible = btnFind.Value
+  btnNext.Visible = btnFind.Value
+  btnPrev.Visible = btnFind.Value
+  btnCase.Visible = btnFind.Value
+  txtFind.Font = Font["0"]
+  IF btnFind.Value THEN txtFind.SetFocus
 
 END
