@@ -185,6 +185,7 @@ private:
   bool _no_row;
   bool _no_col;
   int _last_col_width;
+  bool _updating_last_column;
 };
 
 class CGridView : public QObject

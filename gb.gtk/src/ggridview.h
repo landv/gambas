@@ -137,6 +137,7 @@ public:
 	GHashTable    *vdata;
 	guint scroll_timer;
 	int mouse_pos;
+	bool _updating_last_column;
 	
 	void          calculateBars();
 	void updateLateralWidth(int w);

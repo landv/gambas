@@ -758,11 +758,13 @@ End
 
 Static Private Sub MustScan(hEditor As FEditor) As Boolean
 
+  Dim hParentEditor As FEditor
+
   If Not hEditor.Scan Then Return True
 
   If hEditor.ParentClass Then 
-    hEditor = Project.Files[Project.FindPath(hEditor.ParentClass)]
-    If hEditor Then Return MustScan(hEditor)
+    hParentEditor = GetModule(hEditor.ParentClass)
+    If hParentEditor And If hParentEditor <> hEditor Then Return MustScan(hParentEditor)
   Endif
   
 End
