@@ -279,7 +279,7 @@ static void analyze_single(int op)
            || PATTERN_is(*current, RS_LAST)
            || PATTERN_is(*current, RS_TRUE)
            || PATTERN_is(*current, RS_FALSE)
-           || PATTERN_is(*current, RS_ERROR)
+           //|| PATTERN_is(*current, RS_ERROR)
            || (!PATTERN_is_reserved(*current) && !PATTERN_is_newline(*current) && !PATTERN_is_end(*current)))
   {
     add_pattern(*current);

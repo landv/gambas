@@ -814,6 +814,8 @@ void EXEC_function_real(bool keep_ret_value)
 					printf("#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
 					#endif
 
+					ERROR_set_last();
+					
 					while (SP > EP)
 						POP();
 

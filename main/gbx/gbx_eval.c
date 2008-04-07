@@ -92,7 +92,7 @@ static bool EVAL_exec()
   END_TRY
 
   //AP = ARCH_from_class(CP);
-	EXEC_debug = debug;  
+	EXEC_debug = debug;
   return (ERROR_current->info.code != 0);
 }
 

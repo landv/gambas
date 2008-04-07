@@ -698,11 +698,12 @@ Private Function Encode(sStr As String) As String
       If sStr = "==" Then
         $bVerbatim = False
         $sRes = $sRes & "</pre>\n"
-        Continue
+      Else If sStr = "--" Then
+        $sRes = $sRes & "<hr>"
       Else
         $sRes = $sRes & EncodeHTML(sStr) & "\n"
-        Continue
       Endif
+      Continue
 
     Endif
 
