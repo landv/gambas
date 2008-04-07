@@ -749,6 +749,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	vdata=NULL;
 	_last_col_width = 0;
 	scroll_timer = 0;
+	_updating_last_column = false;
 
 	border=gtk_event_box_new();
 	widget=gtk_table_new(3,3,FALSE);
@@ -1906,6 +1907,11 @@ void gGridView::updateLastColumn()
 	
 	if (n < 0)
 		return;
+		
+	if (_updating_last_column)
+		return;
+		
+	_updating_last_column = true;
 	
 	if (!_last_col_width)
 		_last_col_width = columnWidth(n);
@@ -1917,6 +1923,8 @@ void gGridView::updateLastColumn()
 		//fprintf(stderr, "updateLastColumn: vw = %d -> %d\n", vw, vw - columnPos(n));
 		setColumnWidth(n, vw - columnPos(n));
 	}
+
+	_updating_last_column = false;
 }
 
 void gGridView::startScrollTimer(GSourceFunc func)

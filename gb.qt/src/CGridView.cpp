@@ -312,6 +312,7 @@ QTable(0, 0, parent)
   _last_col_width = 0;
   _no_row = true;
   _no_col = true;
+  _updating_last_column = false;
    
   setSelectionMode(NoSelection);
   setFocusStyle(FollowStyle);
@@ -350,7 +351,7 @@ void MyTable::setRowHeight(int row, int height)
 
 void MyTable::setColumnWidth(int col, int width)
 {
-  //qDebug("MyTable::setColumnWidth(%d, %ld)", col, width);
+  //qDebug("MyTable::setColumnWidth(%d, %ld): %d", col, width, columnWidth(col));
   if (width < 0)
     adjustColumn(col);
   else
@@ -676,11 +677,18 @@ void MyTable::updateLastColumn()
 	if (n < 0)
 		return;
 	
+	if (_updating_last_column)
+		return;
+		
+	_updating_last_column = true;
+	
 	if (!_last_col_width)
 		_last_col_width = columnWidth(n);
 	
 	if (((columnPos(n) + _last_col_width) < visibleWidth()) && (columnWidth(n) != visibleWidth() - columnPos(n)))
 		setColumnWidth(n, visibleWidth() - columnPos(n));
+
+	_updating_last_column = false;
 }
 
 void MyTable::resizeEvent(QResizeEvent *e)
@@ -691,6 +699,7 @@ void MyTable::resizeEvent(QResizeEvent *e)
 
 void MyTable::columnWidthChanged(int col)
 {
+	//qDebug("MyTable::columnWidthChanged");
 	QTable::columnWidthChanged(col);
 	//if (col != (numCols() - 1))
 		updateLastColumn();
