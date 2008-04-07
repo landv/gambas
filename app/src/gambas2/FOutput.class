@@ -80,7 +80,7 @@ PUBLIC SUB edtOutput_KeyPress()
     'iPos = RInStr(sText, "\n", edtOutput.Pos)
     'sText = Mid$(sText, iPos + 1, edtOutput.Pos - iPos)
     
-    sText = edtOutput.Lines[edtOutput.Line].Text
+    sText = edtOutput.Lines[edtOutput.Line]
     IF chkCharset.Value THEN
       TRY sText = SConv$(sText)
     ENDIF

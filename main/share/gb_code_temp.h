@@ -1,8 +1,6 @@
 /***************************************************************************
 
-  code_t.h
-
-  P-code assembler
+  gb_code_temp.h
 
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
