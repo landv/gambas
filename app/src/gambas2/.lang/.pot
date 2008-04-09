@@ -254,7 +254,7 @@ msgstr ""
 #: FGotoLine.class:56 FList.class:167 FMain.class:2391
 #: FMakeExecutable.class:146 FMenu.class:1070 FNewTranslation.class:64
 #: FOpenProject.class:402 FProjectEnv.class:325 FPropertyProject.class:243
-#: FSelectIcon.class:266 FText.class:100 Project.module:2476
+#: FSelectIcon.class:266 FText.class:100 Project.module:2482
 msgid "OK"
 msgstr ""
 
@@ -341,7 +341,7 @@ msgstr ""
 #: FNewTranslation.class:70 FOpenProject.class:408 FProjectEnv.class:331
 #: FPropertyProject.class:1149 FSave.class:125 FSelectIcon.class:271
 #: FTextEditor.class:585 FText.class:106 FTranslate.class:548
-#: Project.module:264
+#: Project.module:266
 msgid "Cancel"
 msgstr ""
 
@@ -1248,15 +1248,15 @@ msgstr ""
 msgid "Gambas project"
 msgstr ""
 
-#: FInfo.class:54 Project.module:980
+#: FInfo.class:54 Project.module:985
 msgid "Modules"
 msgstr ""
 
-#: FInfo.class:55 Project.module:981
+#: FInfo.class:55 Project.module:986
 msgid "Classes"
 msgstr ""
 
-#: FInfo.class:56 Project.module:983
+#: FInfo.class:56 Project.module:988
 msgid "Forms"
 msgstr ""
 
@@ -1653,7 +1653,7 @@ msgstr ""
 msgid "Save project"
 msgstr ""
 
-#: FMain.class:2061 Project.module:1593
+#: FMain.class:2061 Project.module:1598
 msgid "Save project as"
 msgstr ""
 
@@ -1798,7 +1798,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
 #: FMakeInstall.class:278 FPropertyProject.class:1149 FSave.class:118
-#: FTranslate.class:680 Project.module:2127
+#: FTranslate.class:680 Project.module:2133
 msgid "Continue"
 msgstr ""
 
@@ -2052,7 +2052,7 @@ msgstr ""
 msgid "Select a project"
 msgstr ""
 
-#: FOpenProject.class:319 Project.module:264
+#: FOpenProject.class:319 Project.module:266
 msgid "Open"
 msgstr ""
 
@@ -3115,214 +3115,218 @@ msgstr ""
 msgid "Controls"
 msgstr ""
 
-#: Project.module:256
+#: Project.module:257
 msgid "This project does not exist."
 msgstr ""
 
-#: Project.module:264
+#: Project.module:266
 msgid ""
 "This is a Gambas 1.0 project.\n"
 "\n"
 "Do you want to open it anyway?"
 msgstr ""
 
-#: Project.module:273
+#: Project.module:272
+msgid "This is not a Gambas 2 project."
+msgstr ""
+
+#: Project.module:278
 msgid ""
 "This project seems to be already opened.\n"
 "\n"
 "Opening the same project twice can lead to data loss."
 msgstr ""
 
-#: Project.module:273
+#: Project.module:278
 msgid "Open after all"
 msgstr ""
 
-#: Project.module:273
+#: Project.module:278
 msgid "Do not open"
 msgstr ""
 
-#: Project.module:316
+#: Project.module:321
 msgid "This project is read-only."
 msgstr ""
 
-#: Project.module:324
+#: Project.module:329
 msgid "Cannot open project file :\n"
 msgstr ""
 
-#: Project.module:833
+#: Project.module:838
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: Project.module:985
+#: Project.module:990
 msgid "Data"
 msgstr ""
 
-#: Project.module:1008
+#: Project.module:1013
 msgid "read-only"
 msgstr ""
 
-#: Project.module:1072
+#: Project.module:1077
 msgid "Loading &1..."
 msgstr ""
 
-#: Project.module:1120
+#: Project.module:1125
 msgid "Cannot open file."
 msgstr ""
 
-#: Project.module:1189
+#: Project.module:1194
 msgid "File not found!"
 msgstr ""
 
-#: Project.module:1296
+#: Project.module:1301
 msgid "in form definition"
 msgstr ""
 
-#: Project.module:1300
+#: Project.module:1305
 msgid "at line &1 in &2"
 msgstr ""
 
-#: Project.module:1448
+#: Project.module:1453
 msgid "Compiling project"
 msgstr ""
 
-#: Project.module:1460
+#: Project.module:1465
 msgid "Nothing to do."
 msgstr ""
 
-#: Project.module:1599
+#: Project.module:1604
 msgid "This project already exists."
 msgstr ""
 
-#: Project.module:1612
+#: Project.module:1617
 msgid "Unable to save the project."
 msgstr ""
 
-#: Project.module:1625
+#: Project.module:1630
 msgid "File already exists."
 msgstr ""
 
-#: Project.module:1666
+#: Project.module:1671
 msgid "Cannot copy template file."
 msgstr ""
 
-#: Project.module:1685
+#: Project.module:1690
 msgid "Directory already exists."
 msgstr ""
 
-#: Project.module:1839
+#: Project.module:1844
 msgid "Making executable..."
 msgstr ""
 
-#: Project.module:1881
+#: Project.module:1886
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:2126
+#: Project.module:2132
 msgid "Some components are missing: &1"
 msgstr ""
 
-#: Project.module:2268
+#: Project.module:2274
 msgid "Cannot write project file."
 msgstr ""
 
-#: Project.module:2300
+#: Project.module:2306
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:2381
+#: Project.module:2387
 msgid "Unable to install component."
 msgstr ""
 
-#: Project.module:2419
+#: Project.module:2425
 msgid "Unable to uninstall component."
 msgstr ""
 
-#: Project.module:2554
+#: Project.module:2560
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:2573
+#: Project.module:2579
 msgid "You must define a startup class or form!"
 msgstr ""
 
-#: Project.module:2600
+#: Project.module:2606
 msgid "Please type a name."
 msgstr ""
 
-#: Project.module:2604
+#: Project.module:2610
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:2608
+#: Project.module:2614
 msgid "This name is already used. Choose another one."
 msgstr ""
 
-#: Project.module:2638
+#: Project.module:2644
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:2799
+#: Project.module:2805
 msgid "Unable to rename '&1'"
 msgstr ""
 
-#: Project.module:2918
+#: Project.module:2924
 msgid "Please type a project name."
 msgstr ""
 
-#: Project.module:2926
+#: Project.module:2932
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:2929
+#: Project.module:2935
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:2930
+#: Project.module:2936
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:2940
+#: Project.module:2946
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:2942
+#: Project.module:2948
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 
-#: Project.module:2985
+#: Project.module:2991
 msgid "Create source package"
 msgstr ""
 
-#: Project.module:2986
+#: Project.module:2992
 msgid "Source packages"
 msgstr ""
 
-#: Project.module:3229
+#: Project.module:3235
 msgid "Cannot copy file &1."
 msgstr ""
 
-#: Project.module:3241
+#: Project.module:3247
 msgid "Linking a directory is forbidden."
 msgstr ""
 
-#: Project.module:3271
+#: Project.module:3277
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:3283
+#: Project.module:3289
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:3327
+#: Project.module:3333
 msgid "Cannot move file &1."
 msgstr ""
 
-#: Project.module:3854
+#: Project.module:3860
 msgid "modified"
 msgstr ""
 

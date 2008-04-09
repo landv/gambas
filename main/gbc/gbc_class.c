@@ -187,6 +187,11 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
   int i;
   CLASS_SYMBOL *sym;
   PARAM *param;
+  int count;
+
+	count = ARRAY_count(class->function);
+	if (count >= MAX_CLASS_FUNCTION)
+		THROW("Too many functions");
 
   func = ARRAY_add_void(&class->function);
   TYPE_clear(&func->type);
@@ -258,6 +263,11 @@ void CLASS_add_event(CLASS *class, TRANS_EVENT *decl)
   EVENT *event;
   int i;
   CLASS_SYMBOL *sym;
+  int count;
+  
+  count = ARRAY_count(class->event);
+  if (count >= MAX_CLASS_EVENT)
+  	THROW("Too many events");
 
   event = ARRAY_add_void(&class->event);
   TYPE_clear(&event->type);
@@ -319,6 +329,11 @@ void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
   EXTFUNC *extfunc;
   int i;
   CLASS_SYMBOL *sym;
+  int count;
+  
+  count = ARRAY_count(class->ext_func);
+  if (count >= MAX_CLASS_EXTERN)
+  	THROW("Too many external functions");
 
   extfunc = ARRAY_add_void(&class->ext_func);
   TYPE_clear(&extfunc->type);
@@ -359,6 +374,8 @@ int CLASS_add_constant(CLASS *class, TRANS_DECL *decl)
   int num;
 
   num =  ARRAY_count(class->constant);
+  if (num >= MAX_CLASS_CONST)
+  	THROW("Too many constants");
 
   desc = ARRAY_add(&class->constant);
   desc->type = decl->type;
@@ -384,6 +401,8 @@ int CLASS_add_class(CLASS *class, int index)
   if (num < 0)
   {
     num =  ARRAY_count(class->class);
+    if (num >= MAX_CLASS_CLASS)
+    	THROW("Too many different classes used");
 
     desc = ARRAY_add(&class->class);
     desc->index = index;
@@ -449,6 +468,8 @@ int CLASS_add_unknown(CLASS *class, int index)
   if (num < 0)
   {
     num =  ARRAY_count(class->unknown);
+    if (num >= MAX_CLASS_UNKNOWN)
+    	THROW("Too many unknown symbols");
 
     desc = ARRAY_add(&class->unknown);
     *desc = index;
@@ -468,6 +489,8 @@ int CLASS_add_array(CLASS *class, TRANS_ARRAY *array)
   int i;
 
   num =  ARRAY_count(class->array);
+  if (num >= MAX_CLASS_ARRAY)
+  	THROW("Too many array declarations");
 
   desc = ARRAY_add(&class->array);
   desc->type = array->type;
@@ -484,6 +507,7 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 {
   CLASS_SYMBOL *sym = CLASS_declare(class, decl->index, TRUE);
   VARIABLE *var;
+  int count;
 
   sym->global.type = decl->type;
 
@@ -493,7 +517,11 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
   }
   else if (TYPE_is_static(decl->type))
   {
-    sym->global.value = ARRAY_count(class->stat);
+  	count = ARRAY_count(class->stat);
+  	if (count >= MAX_CLASS_SYMBOL)
+  		THROW("Too many static variables");
+  	
+    sym->global.value = count;
     var = ARRAY_add(&class->stat);
 
     var->type = decl->type;
@@ -509,7 +537,11 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
   }
   else
   {
-    sym->global.value = ARRAY_count(class->dyn);
+  	count = ARRAY_count(class->dyn);
+  	if (count >= MAX_CLASS_SYMBOL)
+  		THROW("Too many dynamic variables");
+    
+    sym->global.value = count;
     var = ARRAY_add(&class->dyn);
 
     var->type = decl->type;

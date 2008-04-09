@@ -251,6 +251,7 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
   DIM sOldPath AS String
   DIM sOldName AS String
   DIM bSave AS Boolean
+  DIM sVer AS String
 
   IF NOT Exist(sDir &/ ".project") THEN 
     FGambas.Error(("This project does not exist.") & "\n\n" & sDir)
@@ -260,12 +261,16 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
   sOldPath = Project.Path
   sOldName = Project.Name
 
-  IF CheckProjectVersion(sDir &/ PROJECT_FILE) THEN 
+  sVer = CheckProjectVersion(sDir &/ PROJECT_FILE)
+  IF sVer = "1.0" THEN
     IF Message.Warning(("This is a Gambas 1.0 project.\n\nDo you want to open it anyway?"), ("Open"), ("Cancel")) = 2 THEN 
       RETURN TRUE
     ELSE 
       bSave = TRUE
     ENDIF
+  ELSE IF sVer = "?" THEN 
+    Message.Warning(("This is not a Gambas 2 project."))
+    RETURN TRUE
   ENDIF
 
   IF Exist(sDir &/ ".lock") THEN
@@ -1917,7 +1922,7 @@ PUBLIC FUNCTION GetClasses(OPTIONAL bFullPath AS Boolean) AS String[]
 
 END
 
-PRIVATE SUB CheckProjectVersion(sPath AS String) AS Boolean
+PRIVATE SUB CheckProjectVersion(sPath AS String) AS String
 
   DIM hFic AS File
   DIM sLig AS String
@@ -1925,7 +1930,8 @@ PRIVATE SUB CheckProjectVersion(sPath AS String) AS Boolean
   hFic = OPEN sPath 
 
   LINE INPUT #hFic, sLig
-  IF sLig = PROJECT_MAGIC_1 THEN RETURN TRUE 
+  IF sLig = PROJECT_MAGIC_1 THEN RETURN "1.0"
+  IF sLig <> PROJECT_MAGIC THEN RETURN "?"
   
 END
 

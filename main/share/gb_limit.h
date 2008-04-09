@@ -43,9 +43,29 @@
 /* Maximum length of a symbol */
 #define MAX_SYMBOL_LEN      255
 
-/* Maximum number of symbols for a same class, each symbol being of the same type:
-   static, dynamic or method - CANNOT CHANGE */
-#define MAX_CLASS_SYMBOL    1024
+/* Maximum number of constants in the same class - CANNOT CHANGE */
+#define MAX_CLASS_CONST     4096
+
+/* Maximum number of static or dynamic symbols in the same class - CANNOT CHANGE */
+#define MAX_CLASS_SYMBOL    2048
+
+/* Maximum number of functions in the same class - CANNOT CHANGE */
+#define MAX_CLASS_FUNCTION  2048
+
+/* Maximum number of class uses in the same class - CANNOT CHANGE */
+#define MAX_CLASS_CLASS     2048
+
+/* Maximum number of class uses in the same class - CANNOT CHANGE */
+#define MAX_CLASS_EXTERN    256
+
+/* Maximum number of events in the same class - CANNOT CHANGE */
+#define MAX_CLASS_EVENT     256
+
+/* Maximum number of unknown symbols in the same class - CANNOT CHANGE */
+#define MAX_CLASS_UNKNOWN   65536
+
+/* Maximum number of array declarations in the same class - CANNOT CHANGE */
+#define MAX_CLASS_ARRAY     32678
 
 /* Maximum number of local variables in a function - CANNOT CHANGE */
 #define MAX_LOCAL_SYMBOL    127

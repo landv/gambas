@@ -541,7 +541,7 @@ AC_DEFUN([GB_COMPONENT],
 
     if test "$gb_cv_header_$1" = "no"; then
       for gb_result in $gb_file_list; do
-        echo "* Failed to find file $gb_result"
+        AC_MSG_WARN([Unable to find file: $gb_result])
       done
     fi
 
@@ -597,7 +597,7 @@ AC_DEFUN([GB_COMPONENT],
 
     if test "$gb_cv_lib_$1" = "no"; then
       for gb_result in $gb_file_list; do
-        echo "* Failed to find file $gb_result"
+        AC_MSG_WARN([Unable to find file: $gb_result])
       done
     fi
 
