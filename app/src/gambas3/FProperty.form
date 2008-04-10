@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1429,64,60)
+  MoveScaled(0,2,64,60)
   Text = ("Properties")
   Icon = Picture["img/16/grid.png"]
   Persistent = True
@@ -14,7 +14,7 @@
     Text = ("Click on a form or a control to modify its properties...")
   }
   { lblName TextLabel
-    MoveScaled(3,16,28,3)
+    MoveScaled(3,16,28,4)
     AutoResize = True
     Text = ("")
     Alignment = Align.Normal
@@ -27,24 +27,17 @@
     Scrollbar = Scroll.Vertical
     Border = False
   }
-  { spnProperty SpinBox
-    MoveScaled(6,33,14,3)
-    Visible = False
-    Ignore = True
-  }
   { cmbProperty ComboBox
-    MoveScaled(7,35,16,3)
+    MoveScaled(6,28,16,4)
     Visible = False
     Ignore = True
     Text = ("")
     ReadOnly = True
   }
-  { btnProperty Button
-    MoveScaled(20,38,2.1429,2.1429)
+  { spnProperty SpinBox
+    MoveScaled(6,33,14,4)
     Visible = False
     Ignore = True
-    Text = ("")
-    Picture = Picture["img/16/points.png"]
   }
   { txtProperty TextBox
     MoveScaled(4,38,16,3)
@@ -52,6 +45,13 @@
     Ignore = True
     Text = ("")
     Border = False
+  }
+  { btnProperty Button
+    MoveScaled(20,38,3,3)
+    Visible = False
+    Ignore = True
+    Text = ("")
+    Picture = Picture["img/16/points.png"]
   }
   { spnHelp SidePanel
     MoveScaled(33,44,24,13)

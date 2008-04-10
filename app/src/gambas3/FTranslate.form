@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7,15.1429,110,74)
+  MoveScaled(7,15,119,75)
   Text = ("Project translation")
   Icon = Picture["icon:/small/language"]
   Persistent = True
@@ -43,7 +43,7 @@
         ScrollBar = Scroll.Vertical
       }
       { chkStat CheckBox
-        MoveScaled(3,49,22,3)
+        MoveScaled(3,49,22,4)
         Text = ("Show statistics")
       }
     }
@@ -52,74 +52,74 @@
       Expand = True
       Spacing = 8
       { HBox3 HBox
-        MoveScaled(3,1,74,3)
+        MoveScaled(3,1,74,4)
         Spacing = 8
         { cbxFileChoice ComboBox
-          MoveScaled(0,0,37,3)
+          MoveScaled(0,0,37,4)
           Text = ("")
           ReadOnly = True
         }
         { lblInfo Label
-          MoveScaled(38,0,35,3)
+          MoveScaled(38,0,35,4)
           Expand = True
           Text = ("")
           Alignment = Align.Right
         }
       }
       { HBox5 HBox
-        MoveScaled(3,5,65,3)
+        MoveScaled(3,5,71,4)
         { btnSave ToolButton
-          MoveScaled(0,0,3,3)
+          MoveScaled(0,0,4,4)
           ToolTip = ("Save translation")
           Text = ("")
           Picture = Picture["icon:/small/save"]
         }
         { btnClear ToolButton
-          MoveScaled(3,0,3,3)
+          MoveScaled(4,0,4,4)
           ToolTip = ("Clear this translation")
           Text = ("")
           Picture = Picture["icon:/small/clear"]
         }
         { btnDoNotTranslate ToolButton
-          MoveScaled(6,0,3,3)
+          MoveScaled(10,0,4,4)
           ToolTip = ("This string must not be translated")
           Text = ("")
           Picture = Picture["icon:/small/warning"]
         }
         { btnCopy ToolButton
-          MoveScaled(9,0,3,3)
+          MoveScaled(14,0,4,4)
           ToolTip = ("Copy untranslated string")
           Text = ("")
           Picture = Picture["icon:/small/paste"]
         }
         { btnVerify ToolButton
-          MoveScaled(13,0,3,3)
+          MoveScaled(18,0,4,4)
           ToolTip = ("Verify the translation")
           Text = ("")
           Picture = Picture["icon:/small/watch"]
         }
         { btnNext ToolButton
-          MoveScaled(16,0,3,3)
+          MoveScaled(22,0,4,4)
           ToolTip = ("Find next untranslated string")
           Text = ("")
           Picture = Picture["icon:/small/down"]
         }
         { btnPrevious ToolButton
-          MoveScaled(19,0,3,3)
+          MoveScaled(26,0,4,4)
           ToolTip = ("Find previous untranslated string")
           Text = ("")
           Picture = Picture["icon:/small/up"]
         }
         { Panel2 Panel
-          MoveScaled(23,0,1,3)
+          MoveScaled(31,0,1,4)
         }
         { txtFind TextBox
-          MoveScaled(27,0,31,3)
+          MoveScaled(33,0,31,4)
           Expand = True
           Text = ("")
         }
         { btnFind ToolButton
-          MoveScaled(59,0,3,3)
+          MoveScaled(65,0,4,4)
           ToolTip = ("Find a string in translation")
           Text = ("")
           Picture = Picture["icon:/small/find"]
@@ -136,7 +136,7 @@
         Expand = True
         Spacing = 8
         { lblComment Label
-          MoveScaled(2,1,48,3)
+          MoveScaled(2,1,48,4)
           Text = ("")
         }
         { txtOrig TextArea
@@ -157,49 +157,49 @@
     }
   }
   { VBox3 VBox
-    MoveScaled(0,69,106,4)
+    MoveScaled(0,69,118,5)
     { Panel3 Panel
-      MoveScaled(55,0,3,1)
+      MoveScaled(55,0,4,1)
     }
     { HBox1 HBox
-      MoveScaled(0,1,101,3)
+      MoveScaled(0,1,117,4)
       Spacing = 8
       { btnNew Button
-        MoveScaled(0,0,15,3)
+        MoveScaled(0,0,18,4)
         ToolTip = ("New translation")
         Text = ("&New...")
         Picture = Picture["icon:/small/new"]
       }
       { btnUndo Button
-        MoveScaled(16,0,15,3)
+        MoveScaled(19,0,18,4)
         ToolTip = ("Reload translation")
         Text = ("&Reload")
         Picture = Picture["icon:/small/undo"]
       }
       { btnDelete Button
-        MoveScaled(32,0,15,3)
+        MoveScaled(38,0,18,4)
         ToolTip = ("Delete translation")
         Text = ("&Delete")
         Picture = Picture["icon:/small/delete"]
       }
       { btnImport Button
-        MoveScaled(48,0,15,3)
+        MoveScaled(57,0,18,4)
         ToolTip = ("Import a translation file")
         Text = ("&Import...")
         Picture = Picture["icon:/small/open"]
       }
       { btnExport Button
-        MoveScaled(64,0,15,3)
+        MoveScaled(76,0,18,4)
         ToolTip = ("Export to a translation file")
         Text = ("&Export...")
         Picture = Picture["icon:/small/save"]
       }
       { Panel1 Panel
-        MoveScaled(81,0,3,3)
+        MoveScaled(94,0,1,4)
         Expand = True
       }
       { btnOK Button
-        MoveScaled(85,0,15,3)
+        MoveScaled(98,0,18,4)
         Text = ("&Close")
         Cancel = True
       }

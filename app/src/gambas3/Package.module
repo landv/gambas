@@ -30,11 +30,11 @@ Public Sub CheckProgram()
 
   '$bChecked = TRUE
   
-  If NOT Project.CheckProgram("dh_install") Then DKPG_PROG = "dh_install"
-  If NOT Project.CheckProgram("rpmbuild") Then RPMBUILD_PROG = "rpmbuild"
-  If NOT Project.CheckProgram("tar-1.13") Then TAR_1_13_PROG = "tar-1.13"
-  If NOT Project.CheckProgram("autoconf") Then AUTOCONF_PROG = "autoconf"
-  If NOT Project.CheckProgram("automake") Then AUTOMAKE_PROG = "automake"
+  If Not Project.CheckProgram("dh_install") Then DKPG_PROG = "dh_install"
+  If Not Project.CheckProgram("rpmbuild") Then RPMBUILD_PROG = "rpmbuild"
+  If Not Project.CheckProgram("tar-1.13") Then TAR_1_13_PROG = "tar-1.13"
+  If Not Project.CheckProgram("autoconf") Then AUTOCONF_PROG = "autoconf"
+  If Not Project.CheckProgram("automake") Then AUTOMAKE_PROG = "automake"
   
 End
 
@@ -47,18 +47,18 @@ Public Sub CheckSystem(sSys As String) As String
   Select Case sSys
   
     Case "mandriva", "fedora", "suse"
-      If NOT RPMBUILD_PROG Then Return Subst(("'&1' is not installed on your system."), "rpmbuild")
+      If Not RPMBUILD_PROG Then Return Subst(("'&1' is missing."), "rpmbuild")
       
     Case "debian", "ubuntu"
-      If NOT DKPG_PROG Then Return Subst(("'&1' is not installed on your system."), "debhelper")
+      If Not DKPG_PROG Then Return Subst(("'&1' is missing."), "debhelper")
 
     Case "slackware"
-      If NOT TAR_1_13_PROG Then Return Subst(("'&1' is not installed on your system."), "tar-1.13")
+      If Not TAR_1_13_PROG Then Return Subst(("'&1' is missing."), "tar-1.13")
 
     Case "autotools"
-      If NOT AUTOCONF_PROG AND If NOT AUTOMAKE_PROG Then Return Subst(("'&1' and '&2' are not installed on your system."), "autoconf", "automake")
-      If NOT AUTOCONF_PROG Then Return Subst(("'&1' is not installed on your system."), "autoconf")
-      If NOT AUTOMAKE_PROG Then Return Subst(("'&1' is not installed on your system."), "automake")
+      If Not AUTOCONF_PROG And If Not AUTOMAKE_PROG Then Return Subst(("'&1' and '&2' are missing."), "autoconf", "automake")
+      If Not AUTOCONF_PROG Then Return Subst(("'&1' is missing."), "autoconf")
+      If Not AUTOMAKE_PROG Then Return Subst(("'&1' is missing."), "automake")
       
     Case Else
       Return
@@ -136,7 +136,7 @@ Public Function Make() As Boolean
 
   AddLog(("Saving CHANGELOG file."))
   sPath = Project.Dir &/ "CHANGELOG"
-  bAdd = NOT Exist(sPath)
+  bAdd = Not Exist(sPath)
   File.Save(sPath, ChangeLog)
   Project.RefreshKey(sPath)
   If bAdd Then VersionControl.AddFile(sPath)
@@ -180,7 +180,7 @@ Private Function GetDependencies() As String[]
   Dim sComp As String
   
   For Each sComp In Project.Libraries
-    If sComp = "gb.debug" OR If sComp = "gb.eval" Then Continue 
+    If sComp = "gb.debug" Or If sComp = "gb.eval" Then Continue 
     aDep.Add("gambas" & System.Version & "-" & Replace(sComp, ".", "-"))
   Next
   
@@ -195,10 +195,10 @@ Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
   Dim sCat As String
   Dim aOnly As New String[]
   
-  If aCat.Exist("Screensaver") OR If aCat.Exist("TrayIcon") OR If aCat.Exist("Applet") OR If aCat.Exist("Shell") Then
+  If aCat.Exist("Screensaver") Or If aCat.Exist("TrayIcon") Or If aCat.Exist("Applet") Or If aCat.Exist("Shell") Then
   
     For Each sCat In aCat
-      If sCat = "KDE" OR If sCat = "GNOME" OR If sCat = "ROX" OR If sCat = "XFCE" Then
+      If sCat = "KDE" Or If sCat = "GNOME" Or If sCat = "ROX" Or If sCat = "XFCE" Then
         aOnly.Add(sCat)
       Endif
     Next
@@ -303,7 +303,7 @@ Private Function MakeDebPackage(sSys As String)
   Try Mkdir sPackagePath &/ "debian"
 
   ' Step 2. Make the desktop file
-  If NOT Project.CreateComponent Then
+  If Not Project.CreateComponent Then
       AddLog(("Creating desktop file..."))
       hFile = Open sPackagePath &/ "debian/" & $sPackageName & ".desktop" For Create
 
@@ -357,7 +357,7 @@ Private Function MakeDebPackage(sSys As String)
   Close #hFile
     
   'debian/menu
-  If NOT Project.CreateComponent Then
+  If Not Project.CreateComponent Then
       hFile = Open sPackagePath &/ "debian/menu" For Create 
       Print #hFile, "?package(controlaula):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section \"Apps/" & Project.Groups[sSys]; "\"\\"
       Print #hFile, "title=\""; IIf(Project.Title <> "", Project.Title, Project.Name); "\"\\" 
@@ -404,7 +404,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Package: "; $sPackageName
   Print #hFile, "Architecture: all"
   Print #hFile, "Depends: gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
-  If NOT Project.CreateComponent Then
+  If Not Project.CreateComponent Then
       For Each sLib In GetDependencies()
         Print #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
       Next 
@@ -436,7 +436,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "#!/usr/bin/make -f"
   Print #hFile, "build: build-stamp\nbuild-stamp:"
   Print #hFile, "\tdh_testdir\n\ttouch build-stamp"
-  Print #hFile, "\t"; Project.GetCompileCommand(True, NOT Project.KeepDebugInfo, False) & " src" &/ $sName
+  Print #hFile, "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False) & " src" &/ $sName
   Print #hFile, "\tgba"; System.Version & " src" &/ $sName
   Print #hFile
   Print #hFile, "clean:"
@@ -632,7 +632,7 @@ Private Function MakeRpmPackage(sSys As String)
 
   Print #hFile, "Requires: gambas2-runtime >= "; MIN_VERSION; ",gambas2-runtime < "; MAX_VERSION;
 
-  If NOT Project.CreateComponent Then 
+  If Not Project.CreateComponent Then 
   
     For Each sLib In GetDependencies()
       Print #hFile, ","; sLib; " >= "; MIN_VERSION;
@@ -658,7 +658,7 @@ Private Function MakeRpmPackage(sSys As String)
     ' How can we do that? Hardcode installation path according to the distribution?
 
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True, NOT Project.KeepDebugInfo, False) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False) & "\ngba"; System.Version
      
     Print #hFile, "\n%install"
      
@@ -678,7 +678,7 @@ Private Function MakeRpmPackage(sSys As String)
   Else 
   
     Print #hFile, "\n%build"
-    Print #hFile, Project.GetCompileCommand(True, NOT Project.KeepDebugInfo, False) & "\ngba"; System.Version
+    Print #hFile, Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False) & "\ngba"; System.Version
   
     Print #hFile, "\n%install"
   
@@ -882,7 +882,7 @@ Private Function MakeRpmPackage(sSys As String)
   If Process.LastValue Then Error.Raise(("'rpmbuild' has returned the following error code:") & " " & Process.LastValue)
 
   For Each sCmd In Split(sOutput, "\n")
-    If Left(sCmd, 6) = "Wrote:" AND Right$(sCmd, 10) = "noarch.rpm" Then
+    If Left(sCmd, 6) = "Wrote:" And Right$(sCmd, 10) = "noarch.rpm" Then
 
       sPackage = Subst("&1-&2-&3.noarch.rpm", $sPackageName, $sVersion, sRelease)
             ' IF sSys = "debian" THEN
@@ -1079,7 +1079,7 @@ Private Sub MakeTgzPackage(sSys As String)
   Print #hFile, "gambas2-runtime >= "; MIN_VERSION
   Print #hFile, "gambas2-runtime < "; MAX_VERSION
 
-  If NOT Project.CreateComponent Then
+  If Not Project.CreateComponent Then
 
     For Each sLib In GetDependencies()
       Print #hFile, sLib; " >= "; MIN_VERSION
@@ -1135,7 +1135,7 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   
   ' 2. Copy needed files 
 
-  Try sCmd = Scan(Project.GetCompileCommand(True, NOT Project.KeepDebugInfo, False), "*/bin/gbc" & System.Version & " *")[1]
+  Try sCmd = Scan(Project.GetCompileCommand(True, Not Project.KeepDebugInfo, False), "*/bin/gbc" & System.Version & " *")[1]
 
   Shell "cp -r " & Project.Dir & " " & sBuildDir &/ Project.Name Wait 
   sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))

@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,92,71)
+  MoveScaled(0,0,99,77)
   Text = ("Select a project")
   Icon = Picture["icon:/32/open"]
   Persistent = True
@@ -9,7 +9,7 @@
   Spacing = 8
   Padding = 8
   { tabProject TabStrip
-    MoveScaled(1,1,90,65)
+    MoveScaled(1,1,96,69)
     Expand = True
     Arrangement = Arrange.Fill
     Padding = 8
@@ -17,19 +17,19 @@
     Index = 0
     Text = ("Open")
     { splProject HSplit
-      MoveScaled(1,1,87,61)
+      MoveScaled(2,1,93,61)
       Expand = True
       { dchProject DirChooser
-        MoveScaled(1,0,38,58)
+        MoveScaled(1,0,45,58)
         Expand = True
         ShowBookmark = True
         ShowSplitter = False
       }
       { Panel2 Panel
-        MoveScaled(40,1,46,56)
+        MoveScaled(50,3,42,56)
         Arrangement = Arrange.Vertical
         { sdpProject SidePanel
-          MoveScaled(1,1,43,12)
+          MoveScaled(1,3,40,12)
           Arrangement = Arrange.Fill
           { panProject Panel
             MoveScaled(5,3,34,7)
@@ -40,7 +40,7 @@
           }
         }
         { fvwProject FileView
-          MoveScaled(1,23,45,32)
+          MoveScaled(1,23,40,32)
           Expand = True
           ShowDetailed = True
           ShowDirectory = True
@@ -54,7 +54,7 @@
       Arrangement = Arrange.Vertical
       Spacing = 8
       { chkSortRecent CheckBox
-        MoveScaled(0,0,24,3)
+        MoveScaled(0,0,24,4)
         Text = ("Sort by path")
       }
       { lstRecent ListContainer
@@ -71,24 +71,24 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(1,67,62,3)
+    MoveScaled(1,71,87,4)
     Spacing = 8
     { chkOther CheckBox
-      MoveScaled(1,0,24,3)
+      MoveScaled(1,0,36,4)
       Expand = True
       Text = ("Open in another window")
     }
     { Panel1 Panel
-      MoveScaled(28,0,2,3)
+      MoveScaled(42,0,3,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(33,0,14,3)
+      MoveScaled(48,0,14,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(48,0,14,3)
+      MoveScaled(65,0,14,4)
       Text = ("Cancel")
       Cancel = True
     }

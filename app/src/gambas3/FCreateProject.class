@@ -34,16 +34,16 @@ Private Sub JumpFile(hFile As File, sBegin As String, sEnd As String, Optional s
   Dim sLine As String
   Dim iLevel As Integer
 
-  While NOT Eof(hFile)
+  While Not Eof(hFile)
     Line Input #hFile, sLine
     sLine = Trim(sLine)
     
-    If sSearch AND If sLine = sSearch Then 
+    If sSearch And If sLine = sSearch Then 
       If iLevel = 0 Then Return 
       Continue
     Endif
     
-    If sLine LIKE sBegin & " *" Then 
+    If sLine Like sBegin & " *" Then 
       Inc iLevel
     Else If sLine = sEnd Then 
       If iLevel = 0 Then Return
@@ -65,12 +65,12 @@ Private Sub GetFile(sPath As String) As String
   Dim iPos2 As Integer
   
   hFile = Open sPath
-  While NOT Eof(hFile)
+  While Not Eof(hFile)
     Line Input #hFile, sLine
     sTrim = Trim(sLine)
     
     If Left(sTrim, 4) = "@IF " Then 
-      If NOT GetTest(Mid$(sTrim, 5)) Then 
+      If Not GetTest(Mid$(sTrim, 5)) Then 
         JumpFile(hFile, "@IF", "@ENDIF", "@ELSE")
       Endif 
     Else If sTrim = "@ELSE" Then 
@@ -127,7 +127,7 @@ Private Sub CreateProject() As Boolean
     $cVar["NAME"] = sName
     
     $cVar["TITLE"] = Trim(txtTitle.Text)
-    If NOT $cVar["TITLE"] Then $cVar["TITLE"] = sName
+    If Not $cVar["TITLE"] Then $cVar["TITLE"] = sName
     $cVar["LANGUAGE"] = System.Language
   
     For Each hCtrl In lstType.Children
@@ -139,7 +139,7 @@ Private Sub CreateProject() As Boolean
       If hCtrl.Tag Then $cVar[hCtrl.Tag] = hCtrl.Value
     Next
     
-    $cVar["GRAPHIC"] = $cVar["QT"] OR $cVar["GTK"] OR $cVar["GUI"]
+    $cVar["GRAPHIC"] = $cVar["QT"] Or $cVar["GTK"] Or $cVar["GUI"]
     
     Try Rmdir sDir
     
@@ -193,7 +193,7 @@ Public Sub wizProject_BeforeChange()
   
   If wizProject.Index = 1 Then 
     panRepository.Visible = $bRepository
-    panIdent.Visible = NOT $bRepository
+    panIdent.Visible = Not $bRepository
     If $bRepository Then  
       txtRepository.SetFocus
     Else 
@@ -210,7 +210,7 @@ Public Sub wizProject_Close()
 
   If $bRepository Then 
   
-    If NOT Trim(txtRepository.Text) Then
+    If Not Trim(txtRepository.Text) Then
       txtRepository.SetFocus
       Balloon.Warning(("Please enter the location of the repository."), txtRepository)
       Return
@@ -252,6 +252,6 @@ End
 Public Sub lstType_Click()
 
   $bRepository = Left(lstType.Current.Tag) = "!"
-  svwOption.Enabled = NOT $bRepository
+  svwOption.Enabled = Not $bRepository
 
 End

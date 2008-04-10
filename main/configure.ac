@@ -17,7 +17,7 @@ GB_COMPONENT(
   [GB_FIND(libintl.$SHLIBEXT, /usr/local /usr /, lib)],
   [-lintl],
   [],
-  [This library should be located inside the system C library])
+  [This library may be located inside the system C library, so let's go on...])
 
 dnl ---- Check for charset conversion library
 
@@ -30,7 +30,7 @@ GB_COMPONENT(
   [GB_FIND(libiconv.$SHLIBEXT, /usr/local /usr, lib)],
   [-liconv],
   [],
-  [This library must be located inside the C library])
+  [This library may be located inside the system C library, so let's go on...])
 
 dnl ---- Check for gettext library
 
@@ -54,7 +54,7 @@ GB_COMPONENT_PKG_CONFIG(
   [],
   libffi,
   [],
-  [Cannnot find libffi support with pkg-config])
+  [Cannot find libffi support with pkg-config])
 
 if test -z "$FFI_LIB"; then
   GB_COMPONENT(

@@ -1,86 +1,86 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0.1429,2.4286,84,54)
+  MoveScaled(0,2.3333,97,54)
   Text = ("Console - Gambas")
   Icon = Picture["icon:/small/terminal"]
   Persistent = True
   Arrangement = Arrange.Vertical
   { ToolBar1 ToolBar
-    MoveScaled(1,1,81,3)
+    MoveScaled(1,1,90,4)
     { btnUndock ToolButton
-      MoveScaled(0,0,3,3)
+      MoveScaled(0,0,4,4)
       ToolTip = ("Undock console")
       Text = ("")
       Picture = Picture["icon:/small/fullscreen"]
       Toggle = True
     }
     { btnAbove ToolButton
-      MoveScaled(3,0,3,3)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Keep above")
       Text = ("")
       Picture = Picture["img/16/raise.png"]
       Toggle = True
     }
     { btnClear ToolButton
-      MoveScaled(6,0,3,3)
+      MoveScaled(8,0,4,4)
       ToolTip = ("Clear console")
       Text = ("")
       Picture = Picture["icon:/small/clear"]
     }
     { btnCut ToolButton
-      MoveScaled(9,0,3,3)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Cut")
       Text = ("")
       Picture = Picture["icon:/small/cut"]
     }
     { btnCopy ToolButton
-      MoveScaled(12,0,3,3)
+      MoveScaled(16,0,4,4)
       ToolTip = ("Copy")
       Text = ("")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPaste ToolButton
-      MoveScaled(15,0,3,3)
+      MoveScaled(20,0,4,4)
       ToolTip = ("Paste")
       Text = ("")
       Picture = Picture["icon:/small/paste"]
     }
     { HBox1 HBox
-      MoveScaled(18,0,60,3)
+      MoveScaled(24,0,62,4)
       Expand = True
       { btnFind ToolButton
-        MoveScaled(0,0,3,3)
+        MoveScaled(0,0,4,4)
         ToolTip = ("Find")
         Text = ("")
         Picture = Picture["icon:/small/find"]
         Toggle = True
       }
       { sepFind Panel
-        MoveScaled(4,0,1,3)
+        MoveScaled(4,0,2,4)
       }
       { txtFind TextBox
-        MoveScaled(5,0,12,3)
+        MoveScaled(5,0,12,4)
         Visible = False
         Expand = True
         Text = ("")
       }
       { btnNext ToolButton
-        MoveScaled(17,0,3,3)
+        MoveScaled(17,0,4,4)
         Visible = False
         ToolTip = ("Find next")
         Text = ("")
         Picture = Picture["icon:/small/down"]
       }
       { btnPrev ToolButton
-        MoveScaled(20,0,3,3)
+        MoveScaled(21,0,4,4)
         Visible = False
         ToolTip = ("Find previous")
         Text = ("")
         Picture = Picture["icon:/small/up"]
       }
       { btnCase ToolButton
-        MoveScaled(23,0,3,3)
+        MoveScaled(25,0,4,4)
         Visible = False
         ToolTip = ("Case sensitive")
         Text = ("")
@@ -88,10 +88,10 @@
         Toggle = True
       }
       { sepCharset Separator
-        MoveScaled(27,0,2,3)
+        MoveScaled(29,0,3,4)
       }
       { chkCharset CheckBox
-        MoveScaled(29,0,29,3)
+        MoveScaled(32,0,28,4)
         Expand = True
         Text = ("Use system charset")
       }

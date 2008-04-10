@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,77,60)
+  MoveScaled(0,0,79,66)
   Text = ("New file")
   Icon = Picture["icon:/small/new"]
   Persistent = True
@@ -9,7 +9,7 @@
   Spacing = 8
   Padding = 8
   { tabFile TabStrip
-    MoveScaled(1,1,74,53)
+    MoveScaled(1,1,76,58)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = 8
@@ -18,11 +18,11 @@
     Index = 0
     Text = ("New")
     { HBox3 HBox
-      MoveScaled(1,1,72,47)
+      MoveScaled(1,1,72,51)
       Expand = True
       Spacing = 8
       { lstType ListContainer
-        MoveScaled(1,1,27,44)
+        MoveScaled(1,1,27,47)
         { panModule HBox
           MoveScaled(0,0,39,6)
           Tag = "module"
@@ -137,103 +137,103 @@
         }
       }
       { panOption VBox
-        MoveScaled(29,1,42,44)
+        MoveScaled(29,1,42,48)
         Expand = True
         Spacing = 8
         { Label9 Label
-          MoveScaled(0,0,25,3)
+          MoveScaled(0,0,25,4)
           Font = Font["Bold"]
           Text = ("Name")
         }
         { txtName TextBox
-          MoveScaled(0,3,26,3)
+          MoveScaled(0,3,26,4)
           Text = ("")
         }
         { lblOption Label
-          MoveScaled(0,7,25,3)
+          MoveScaled(0,7,25,4)
           Font = Font["Bold"]
           Text = ("Options")
         }
         { panImageOption Panel
-          MoveScaled(0,10,27,12)
+          MoveScaled(0,11,31,15)
           Tag = "image"
           { Label7 Label
-            MoveScaled(1,0,12,3)
+            MoveScaled(1,0,12,4)
             Text = ("Width")
           }
           { txtWidth SpinBox
-            MoveScaled(13,0,8,3)
+            MoveScaled(13,0,8,4)
             MinValue = 1
             MaxValue = 1024
             Step = 8
             Value = 8
           }
           { Label8 Label
-            MoveScaled(1,4,12,3)
+            MoveScaled(1,5,12,4)
             Text = ("Height")
           }
           { txtHeight SpinBox
-            MoveScaled(13,4,8,3)
+            MoveScaled(13,5,8,4)
             MinValue = 1
             MaxValue = 1024
             Step = 8
             Value = 8
           }
           { btnLinked ToggleButton
-            MoveScaled(25,0,2,7)
+            MoveScaled(26,0,3,9)
             Text = ("")
             Picture = Picture["img/32/linked.png"]
             Value = True
           }
           { Label11 Label
-            MoveScaled(1,8,11,3)
+            MoveScaled(1,10,11,4)
             Text = ("Type")
           }
           { cmbImageType ComboBox
-            MoveScaled(13,8,14,3)
+            MoveScaled(13,10,16,4)
             Text = ("")
             ReadOnly = True
             List = [("PNG"), ("XPM"), ("GIF")]
           }
           { Label13 Label
-            MoveScaled(22,0,3,3)
+            MoveScaled(22,0,4,4)
             Text = ("px")
           }
           { Label14 Label
-            MoveScaled(22,4,3,3)
+            MoveScaled(22,5,4,4)
             Text = ("px")
           }
         }
         { panFormOption Panel
-          MoveScaled(0,23,41,3)
+          MoveScaled(0,26,41,4)
           Tag = "form"
           { chkDialog CheckBox
-            MoveScaled(1,0,39,3)
+            MoveScaled(1,0,39,4)
             Text = ("Dialog box management")
           }
         }
         { Panel2 Panel
-          MoveScaled(0,28,42,7)
+          MoveScaled(0,31,42,9)
           Tag = "class"
           { Label10 Label
-            MoveScaled(1,0,15,3)
+            MoveScaled(1,0,15,4)
             Text = ("Parent class")
           }
           { cmbParent ComboBox
-            MoveScaled(17,0,25,3)
+            MoveScaled(17,0,25,4)
             Text = ("")
             ReadOnly = True
           }
           { chkExported CheckBox
-            MoveScaled(1,4,39,3)
+            MoveScaled(1,5,39,4)
             Text = ("Exported")
           }
         }
         { Panel3 Panel
-          MoveScaled(0,36,41,3)
+          MoveScaled(0,40,41,4)
           Tag = "image,html,css"
           { chkExt CheckBox
-            MoveScaled(1,0,36,3)
+            MoveScaled(1,0,36,4)
             Text = ("Automatic extension")
             Value = CheckBox.True
           }
@@ -250,25 +250,25 @@
       ReadOnly = True
     }
     { chkLink CheckBox
-      MoveScaled(1,37,56,2)
+      MoveScaled(1,37,56,3)
       Text = ("Create a symbolic link")
     }
     Index = 0
   }
   { HBox6 HBox
-    MoveScaled(12,56,60,3)
+    MoveScaled(11,60,60,4)
     Spacing = 8
     { Panel1 Panel
-      MoveScaled(11,0,4,3)
+      MoveScaled(11,0,4,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(29,0,15,3)
+      MoveScaled(29,0,15,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(45,0,15,3)
+      MoveScaled(45,0,15,4)
       Text = ("Cancel")
       Cancel = True
     }

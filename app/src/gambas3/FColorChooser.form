@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0.1429,2.4286,48,51)
+  MoveScaled(0,2.1667,48,52)
   Text = ("Select a color")
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -27,20 +27,20 @@
     Index = 0
   }
   { Panel2 Panel
-    MoveScaled(1,47,40,3)
+    MoveScaled(1,47,40,4)
     Arrangement = Arrange.Horizontal
     Spacing = 8
     { Panel1 Panel
-      MoveScaled(0,0,8,3)
+      MoveScaled(0,0,8,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(13,0,13,3)
+      MoveScaled(9,0,15,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(27,0,13,3)
+      MoveScaled(25,0,15,4)
       Text = ("Cancel")
       Cancel = True
     }

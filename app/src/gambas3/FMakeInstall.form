@@ -1,123 +1,123 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,78,79)
+  MoveScaled(0,0,78,82)
   Text = ("Make installation package")
   Icon = Picture["icon:/small/package"]
   Arrangement = Arrange.Fill
   Padding = 8
   { wizInstall Wizard
-    MoveScaled(1,1,76,76)
+    MoveScaled(1,1,76,80)
     Arrangement = Arrange.Vertical
     Spacing = 8
     Count = 7
     Border = False
     Index = 0
-    Text = ("1. Package information")
+    Text = ("Package information")
     { TextLabel1 TextLabel
-      MoveScaled(1,0,64,3)
+      MoveScaled(1,0,64,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("Package name")
       Alignment = Align.BottomNormal
     }
     { txtPackage Label
-      MoveScaled(1,3,70,3)
+      MoveScaled(1,5,70,4)
       Font = Font["Bold,+2"]
       AutoResize = True
       Text = ("")
       Border = Border.Sunken
     }
     { VBox1 VBox
-      MoveScaled(1,7,70,6)
+      MoveScaled(1,10,70,8)
       { chkPrefix CheckBox
-        MoveScaled(0,0,65,3)
+        MoveScaled(0,0,65,4)
         Text = ("Prefix package name with the vendor name")
       }
       { chkUseRelease CheckBox
-        MoveScaled(0,3,65,3)
+        MoveScaled(0,4,65,4)
         Text = ("Insert release number in package version")
       }
     }
     { TextLabel2 TextLabel
-      MoveScaled(1,13,64,3)
+      MoveScaled(1,18,64,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("Maintainer information")
       Alignment = Align.BottomNormal
     }
     { HBox1 HBox
-      MoveScaled(1,17,71,3)
+      MoveScaled(1,22,71,4)
       Spacing = 8
       { Label1 Label
-        MoveScaled(0,0,23,3)
+        MoveScaled(0,0,23,4)
         Text = ("Your name")
       }
       { txtName TextBox
-        MoveScaled(24,0,44,3)
+        MoveScaled(24,0,44,4)
         Expand = True
         Text = ("")
       }
     }
     { HBox2 HBox
-      MoveScaled(1,21,70,3)
+      MoveScaled(1,27,70,4)
       Spacing = 8
       { Label2 Label
-        MoveScaled(0,0,23,3)
+        MoveScaled(0,0,23,4)
         Text = ("Your e-mail address")
       }
       { txtMail TextBox
-        MoveScaled(24,0,44,3)
+        MoveScaled(24,0,44,4)
         Expand = True
         Text = ("")
       }
     }
     { HBox8 HBox
-      MoveScaled(1,25,70,3)
+      MoveScaled(1,32,70,4)
       Spacing = 8
       { Label3 Label
-        MoveScaled(0,0,23,3)
+        MoveScaled(0,0,23,4)
         Text = ("Vendor name")
       }
       { txtVendor TextBox
-        MoveScaled(24,0,44,3)
+        MoveScaled(24,0,44,4)
         Expand = True
         Text = ("")
       }
     }
     { Label6 Label
-      MoveScaled(1,30,68,3)
+      MoveScaled(1,37,68,4)
       Font = Font["Bold"]
       Text = ("Description")
       Alignment = Align.BottomNormal
     }
     { txtDescribe TextArea
-      MoveScaled(1,33,71,14)
+      MoveScaled(1,42,71,14)
       Expand = True
       Text = ("")
       Wrap = True
     }
     { Label5 Label
-      MoveScaled(1,49,70,3)
+      MoveScaled(1,56,70,4)
       Font = Font["Bold"]
       Text = ("Licence")
       Alignment = Align.BottomNormal
     }
     { txtLicense ComboBox
-      MoveScaled(1,53,71,3)
+      MoveScaled(1,61,71,4)
       Text = ("")
       List = [("General Public Licence"), ("Freeware"), ("Public Domain"), ("Lesser General Public Licence"), ("Other Licence(s)"), ("Non-free Licence")]
       Sorted = True
     }
     Index = 1
-    Text = ("2. Changelog")
+    Text = ("Changelog")
     { TextLabel11 TextLabel
-      MoveScaled(1,0,68,3)
+      MoveScaled(1,0,68,4)
       AutoResize = True
       Text = ("Please enter the changes of your project.")
     }
     { lblChangeDate Label
-      MoveScaled(1,5,68,3)
+      MoveScaled(1,5,68,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("")
@@ -135,7 +135,7 @@
       Wrap = True
     }
     Index = 2
-    Text = ("3. Target distribution")
+    Text = ("Target distribution")
     { panSystem VBox
       MoveScaled(0,0,72,65)
       Expand = True
@@ -153,8 +153,7 @@
         }
         { chkDebian CheckBox chkDistro
           Name = "chkDebian"
-          MoveScaled(9,2,29,4)
-          Expand = True
+          MoveScaled(9,2,26,4)
           Text = ("Debian")
         }
       }
@@ -171,8 +170,7 @@
         }
         { CheckBox3 CheckBox chkDistro
           Name = "CheckBox3"
-          MoveScaled(9,1,24,4)
-          Expand = True
+          MoveScaled(9,1,26,4)
           Text = ("Fedora")
         }
       }
@@ -190,7 +188,6 @@
         { chkMandriva CheckBox chkDistro
           Name = "chkMandriva"
           MoveScaled(10,1,26,4)
-          Expand = True
           Text = ("Mandriva Linux")
         }
       }
@@ -207,8 +204,7 @@
         }
         { CheckBox4 CheckBox chkDistro
           Name = "CheckBox4"
-          MoveScaled(9,1,22,4)
-          Expand = True
+          MoveScaled(9,2,26,4)
           Text = ("OpenSUSE")
         }
       }
@@ -225,8 +221,7 @@
         }
         { CheckBox2 CheckBox chkDistro
           Name = "CheckBox2"
-          MoveScaled(9,1,23,4)
-          Expand = True
+          MoveScaled(9,1,25,4)
           Text = ("Slackware")
         }
       }
@@ -243,8 +238,7 @@
         }
         { CheckBox1 CheckBox chkDistro
           Name = "CheckBox1"
-          MoveScaled(9,1,23,4)
-          Expand = True
+          MoveScaled(9,1,26,4)
           Text = ("Ubuntu")
         }
       }
@@ -261,16 +255,15 @@
         }
         { CheckBox5 CheckBox chkDistro
           Name = "CheckBox5"
-          MoveScaled(9,1,24,4)
-          Expand = True
+          MoveScaled(9,1,26,4)
           Text = ("Autotools")
         }
       }
     }
     Index = 3
-    Text = ("4. Package group")
+    Text = ("Package group")
     { cmbGroup ComboBox
-      MoveScaled(1,1,68,3)
+      MoveScaled(1,1,68,4)
       Text = (" ")
       ReadOnly = True
     }
@@ -281,14 +274,14 @@
       ScrollBar = Scroll.Vertical
     }
     { txtGroup TextBox
-      MoveScaled(1,47,68,3)
+      MoveScaled(1,47,68,4)
       Text = ("")
       ReadOnly = True
     }
     Index = 4
-    Text = ("5. Menu entry")
+    Text = ("Menu entry")
     { cmbMenu ComboBox
-      MoveScaled(1,1,68,3)
+      MoveScaled(1,1,68,4)
       Text = (" ")
       ReadOnly = True
     }
@@ -298,30 +291,30 @@
       ScrollBar = Scroll.Vertical
     }
     { txtMenu TextBox
-      MoveScaled(1,39,68,3)
+      MoveScaled(1,39,68,4)
       Text = ("")
       ReadOnly = True
     }
     { Label4 Label
-      MoveScaled(1,43,67,3)
+      MoveScaled(1,43,67,4)
       Font = Font["Bold"]
       Text = ("Categories")
       Alignment = Align.BottomNormal
     }
     { cmbCategories ComboBox
-      MoveScaled(1,47,68,3)
+      MoveScaled(1,48,68,4)
       Text = ("")
       Sorted = True
     }
     Index = 5
-    Text = ("6. Destination directory")
+    Text = ("Destination directory")
     { dchInstall DirChooser
-      MoveScaled(1,1,72,52)
+      MoveScaled(1,1,72,58)
       Expand = True
       ShowBookmark = True
     }
     Index = 6
-    Text = ("7. Create package")
+    Text = ("Create package")
     { TextLabel9 TextLabel
       MoveScaled(1,2,67,17)
       AutoResize = True

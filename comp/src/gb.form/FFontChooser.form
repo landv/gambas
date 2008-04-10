@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,26,71.4286,44.4286)
+  MoveScaled(3,26,71.1667,44.1667)
   Text = ("")
   Arrangement = Arrange.Vertical
   Spacing = 8
@@ -14,7 +14,7 @@
       Expand = True
       Spacing = 8
       { lblFamily Label
-        MoveScaled(2,1,20,2)
+        MoveScaled(2,1,20,3)
         Text = ("Family")
       }
       { lstFamily ListView
@@ -26,7 +26,7 @@
       MoveScaled(28,2,13,28)
       Spacing = 8
       { lblStyle Label
-        MoveScaled(2,1,9,2)
+        MoveScaled(2,1,9,3)
         Text = ("Style")
       }
       { lstStyle ListBox
@@ -37,11 +37,11 @@
       { VBox2 VBox
         MoveScaled(1,21,11,6)
         { chkUnderline CheckBox
-          MoveScaled(0,0,10,3)
+          MoveScaled(0,0,10,4)
           Text = ("Underline")
         }
         { chkStrikeOut CheckBox
-          MoveScaled(0,3,10,3)
+          MoveScaled(0,3,10,4)
           Text = ("Strikeout")
         }
       }
@@ -49,17 +49,17 @@
     { panSize VBox
       MoveScaled(45,2,17,28)
       { lblSize Label
-        MoveScaled(2,1,13,3)
+        MoveScaled(2,1,13,4)
         Text = ("Size")
       }
       { HBox2 HBox
-        MoveScaled(1,5,15,3)
+        MoveScaled(1,5,15,4)
         { chkSize CheckBox
-          MoveScaled(0,0,3,3)
+          MoveScaled(0,0,4,4)
           Text = ("")
         }
         { txtSize SpinBox
-          MoveScaled(4,0,11,3)
+          MoveScaled(4,0,11,4)
           Expand = True
           MinValue = 1
           MaxValue = 360

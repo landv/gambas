@@ -453,7 +453,7 @@ void MAIN_check_quit(void)
 void MAIN_update_scale(void)
 {
 	QFontMetrics fm(QApplication::font());
-  MAIN_scale = fm.height() / 2;
+  MAIN_scale = (1 + fm.ascent()) / 2;
 }
 
 static void QT_InitEventLoop(void)

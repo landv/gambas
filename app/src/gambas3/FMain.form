@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,105,85)
+  MoveScaled(0,0,140,85)
   Text = ("")
   Icon = Picture["img/logo/new-logo-32.png"]
   Maximized = True
@@ -418,55 +418,55 @@
     }
   }
   { panToolbar Panel
-    MoveScaled(0,1,103,4)
+    MoveScaled(0,0,132,4)
     Arrangement = Arrange.Row
     AutoResize = True
     { ToolBar1 ToolBar
-      MoveScaled(0,0,101,3)
+      MoveScaled(0,0,128,4)
       { ToolButton1 ToolButton
-        MoveScaled(1,0,3,3)
+        MoveScaled(0,0,4,4)
         ToolTip = ("New project")
         Action = "new-project"
         Text = ("")
         Picture = Picture["icon:/small/new"]
       }
       { ToolButton2 ToolButton
-        MoveScaled(4,0,3,3)
+        MoveScaled(4,0,4,4)
         ToolTip = ("Open project")
         Action = "open-project"
         Text = ("")
         Picture = Picture["icon:/small/open"]
       }
       { btnSave ToolButton
-        MoveScaled(7,0,3,3)
+        MoveScaled(8,0,4,4)
         ToolTip = ("Save project")
         Action = "save-project"
         Text = ("")
         Picture = Picture["icon:/small/save"]
       }
       { ToolButton15 ToolButton
-        MoveScaled(10,0,3,3)
+        MoveScaled(12,0,4,4)
         ToolTip = ("Save project as")
         Action = "save-project-as"
         Text = ("")
         Picture = Picture["icon:/small/save-as"]
       }
       { btnProperty ToolButton
-        MoveScaled(13,0,3,3)
+        MoveScaled(16,0,4,4)
         ToolTip = ("Project properties")
         Action = "project-property"
         Text = ("")
         Picture = Picture["icon:/small/properties"]
       }
       { ToolButton7 ToolButton
-        MoveScaled(16,0,3,3)
+        MoveScaled(20,0,4,4)
         ToolTip = ("Refresh project")
         Action = "refresh-project"
         Text = ("")
         Picture = Picture["icon:/small/refresh"]
       }
       { ToolButton12 ToolButton
-        MoveScaled(19,0,3,3)
+        MoveScaled(24,0,4,4)
         ToolTip = ("Preferences")
         Action = "option"
         Text = ("")
@@ -474,41 +474,41 @@
         Toggle = True
       }
       { Separator3 Separator
-        MoveScaled(22,0,1,3)
+        MoveScaled(28,0,2,4)
       }
       { btnTranslate ToolButton
-        MoveScaled(23,0,3,3)
+        MoveScaled(30,0,4,4)
         ToolTip = ("Translate")
         Action = "translate"
         Text = ("")
         Picture = Picture["icon:/small/language"]
       }
       { ToolButton4 ToolButton
-        MoveScaled(26,0,3,3)
+        MoveScaled(34,0,4,4)
         ToolTip = ("Make source archive")
         Action = "archive"
         Text = ("")
         Picture = Picture["icon:/small/archive"]
       }
       { ToolButton5 ToolButton
-        MoveScaled(29,0,3,3)
+        MoveScaled(38,0,4,4)
         ToolTip = ("Make executable")
         Action = "exec"
         Text = ("")
         Picture = Picture["icon:/small/exec"]
       }
       { ToolButton14 ToolButton
-        MoveScaled(32,0,3,3)
+        MoveScaled(42,0,4,4)
         ToolTip = ("Make installation package")
         Action = "install"
         Text = ("")
         Picture = Picture["icon:/small/package"]
       }
       { Separator2 Separator
-        MoveScaled(35,0,1,3)
+        MoveScaled(46,0,2,4)
       }
       { ToolButton3 ToolButton
-        MoveScaled(37,0,3,3)
+        MoveScaled(49,0,4,4)
         ToolTip = ("Project")
         Action = "project"
         Text = ("")
@@ -517,7 +517,7 @@
         Value = True
       }
       { ToolButton8 ToolButton
-        MoveScaled(40,0,3,3)
+        MoveScaled(53,0,4,4)
         ToolTip = ("Properties sheet")
         Action = "property"
         Text = ("")
@@ -525,7 +525,7 @@
         Toggle = True
       }
       { ToolButton9 ToolButton
-        MoveScaled(43,0,3,3)
+        MoveScaled(57,0,4,4)
         Visible = False
         ToolTip = ("Form hierarchy")
         Action = "hierarchy"
@@ -534,7 +534,7 @@
         Toggle = True
       }
       { ToolButton10 ToolButton
-        MoveScaled(46,0,3,3)
+        MoveScaled(61,0,4,4)
         ToolTip = ("Toolbox")
         Action = "control"
         Text = ("")
@@ -542,7 +542,7 @@
         Toggle = True
       }
       { btnShowConsole ToolButton
-        MoveScaled(49,0,3,3)
+        MoveScaled(65,0,4,4)
         ToolTip = ("Console")
         Action = "console"
         Text = ("")
@@ -550,7 +550,7 @@
         Toggle = True
       }
       { ToolButton11 ToolButton
-        MoveScaled(52,0,3,3)
+        MoveScaled(69,0,4,4)
         ToolTip = ("Find & replace")
         Action = "find"
         Text = ("")
@@ -558,59 +558,59 @@
         Toggle = True
       }
       { Separator4 Separator
-        MoveScaled(58,0,1,3)
+        MoveScaled(74,0,2,4)
       }
       { btnCompile ToolButton
-        MoveScaled(59,0,3,3)
+        MoveScaled(75,0,4,4)
         ToolTip = ("Compile")
         Action = "compile"
         Text = ("")
         Picture = Picture["icon:/small/make"]
       }
       { btnCompileAll ToolButton
-        MoveScaled(62,0,3,3)
+        MoveScaled(79,0,4,4)
         ToolTip = ("Compile all")
         Action = "compile-all"
         Text = ("")
         Picture = Picture["icon:/small/make-all"]
       }
       { btnGo ToolButton
-        MoveScaled(65,0,3,3)
+        MoveScaled(83,0,4,4)
         ToolTip = ("Run")
         Action = "start"
         Text = ("")
         Picture = Picture["icon:/small/play"]
       }
       { btnPause ToolButton
-        MoveScaled(68,0,3,3)
+        MoveScaled(87,0,4,4)
         ToolTip = ("Pause")
         Action = "pause"
         Text = ("")
         Picture = Picture["icon:/small/pause"]
       }
       { btnStop ToolButton
-        MoveScaled(71,0,3,3)
+        MoveScaled(91,0,4,4)
         ToolTip = ("Stop")
         Action = "stop"
         Text = ("")
         Picture = Picture["icon:/small/stop"]
       }
       { btnStep ToolButton
-        MoveScaled(74,0,3,3)
+        MoveScaled(95,0,4,4)
         ToolTip = ("Step")
         Action = "step"
         Text = ("")
         Picture = Picture["icon:/small/end"]
       }
       { btnForward ToolButton
-        MoveScaled(77,0,3,3)
+        MoveScaled(99,0,4,4)
         ToolTip = ("Forward")
         Action = "forward"
         Text = ("")
         Picture = Picture["icon:/small/forward"]
       }
       { btnFrom ToolButton
-        MoveScaled(80,0,3,3)
+        MoveScaled(103,0,4,4)
         ToolTip = ("Finish current function")
         Action = "return"
         Text = ("")
@@ -618,14 +618,14 @@
       }
       { btnUntil ToolButton mnuUntil
         Name = "btnUntil"
-        MoveScaled(83,0,3,3)
+        MoveScaled(107,0,4,4)
         ToolTip = ("Run until current line")
         Action = "until"
         Text = ("")
         Picture = Picture["icon:/small/last"]
       }
       { btnBreakpoint ToolButton
-        MoveScaled(86,0,3,3)
+        MoveScaled(111,0,4,4)
         ToolTip = ("Toggle breakpoint")
         Action = "break"
         Text = ("")
@@ -634,14 +634,14 @@
       }
       { btnWatch ToolButton mnuWatch
         Name = "btnWatch"
-        MoveScaled(89,0,3,3)
+        MoveScaled(115,0,4,4)
         ToolTip = ("Watch expression")
         Action = "watch"
         Text = ("")
         Picture = Picture["icon:/small/watch"]
       }
       { ToolButton6 ToolButton
-        MoveScaled(93,0,3,3)
+        MoveScaled(119,0,4,4)
         Visible = False
         Text = ("")
         Picture = Picture["icon:/small/wizard"]
@@ -720,22 +720,22 @@
     #X = 644
     #Y = 406
   }
-  { timMessage #Timer
-    #X = 679
-    #Y = 497
-    Delay = 4000
-  }
   { panMessage Panel
     MoveScaled(1,77,53,4)
     Arrangement = Arrange.Horizontal
     { Panel2 Panel
-      MoveScaled(0,0,0,2)
+      MoveScaled(0,0,1,3)
     }
     { lblMessage Label
-      MoveScaled(2,1,39,2)
+      MoveScaled(2,1,39,3)
       Expand = True
       AutoResize = True
       Text = ("OK")
     }
+  }
+  { timMessage #Timer
+    #X = 679
+    #Y = 497
+    Delay = 4000
   }
 }

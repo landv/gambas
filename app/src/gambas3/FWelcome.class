@@ -18,7 +18,7 @@ Private Const LIST_RECENT As Integer = 1
 Private Const LIST_EXAMPLE As Integer = 2
 
 Private Const POS_BUTTON As Integer = 0
-Private HEIGHT_BUTTON As Integer = Desktop.Scale * 6
+Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
 'PRIVATE $aExample as String[] = [ ("Automation"),("Basic"),("Database"),
 Static Public Function Run() As String
@@ -240,7 +240,7 @@ Private Sub FillExample()
 
   iHeight = Desktop.Scale * 3
 
-  If NOT $hPicture Then 
+  If Not $hPicture Then 
     hImage = New Image(16, iHeight, True)
     'hImage.Fill(Color.SelectedBackground)
     For Y = 0 To iHeight
@@ -380,7 +380,7 @@ End
 Public Sub lblWebsite_MouseUp()
   
   lblWebSite.Foreground = Color.TextBackground
-  If Mouse.X >= 0 AND If Mouse.Y >= 0 AND If Mouse.X < lblWebSite.W AND If Mouse.Y < lblWebSite.H Then
+  If Mouse.X >= 0 And If Mouse.Y >= 0 And If Mouse.X < lblWebSite.W And If Mouse.Y < lblWebSite.H Then
     Wait
     Desktop.Open(lblWebsite.Text)
   Endif

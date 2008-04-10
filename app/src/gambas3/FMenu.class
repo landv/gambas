@@ -241,13 +241,13 @@ Private Sub WriteMenu() As Boolean
 
   iInd = $iCurrent
 
-  If iInd < 0 OR iInd >= $cMenu.Count Then Return 
+  If iInd < 0 Or iInd >= $cMenu.Count Then Return 
 
   With $cMenu[iInd]
 
     sName = Trim(txtName.Text)
 
-    If NOT sName Then
+    If Not sName Then
       Balloon.Warning(("Please enter a menu name."), txtName)
       txtName.SetFocus
       Return True
@@ -266,7 +266,7 @@ Private Sub WriteMenu() As Boolean
     Endif
 
     If sName <> .Name Then
-      If NOT $cName.Exist(sName) Then
+      If Not $cName.Exist(sName) Then
         $cName[.Name] = Null
         $cName[sName] = True
         .Name = sName
@@ -306,7 +306,7 @@ Private Sub ReadMenu()
   
   iInd = $iCurrent
 
-  If iInd >= 0 AND iInd < $cMenu.Count Then
+  If iInd >= 0 And iInd < $cMenu.Count Then
   
     With $cMenu[iInd]
     
@@ -430,7 +430,7 @@ Private Function GetName() As String
 
     iCpt = iCpt + 1
     sName = "Menu" & CStr(iCpt)
-    If NOT $cName.Exist(sName) Then Return sName
+    If Not $cName.Exist(sName) Then Return sName
 
   Loop
 
@@ -630,7 +630,7 @@ Public Sub btnDown_Click()
 
   If $iCurrent = (lstMenu.Count - 1) Then Return
 
-  If lstMenu[iCount - 2].Selected OR lstMenu[iCount - 1].Selected Then Return
+  If lstMenu[iCount - 2].Selected Or lstMenu[iCount - 1].Selected Then Return
 
   For iInd = lstMenu.Count - 2 To 0 Step -1
 
@@ -709,7 +709,7 @@ Public Sub lstMenu_MouseDown()
 
   Dim iInd As Integer
   
-  If NOT (Mouse.Control OR Mouse.Shift) Then
+  If Not (Mouse.Control Or Mouse.Shift) Then
     For iInd = 0 To lstMenu.Count - 1
       lstMenu[iInd].Selected = False
     Next

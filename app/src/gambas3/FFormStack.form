@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0.125,2.375,27.125,55.5)
+  MoveScaled(0,2.3333,27,55.5)
   Text = ("Hierarchy")
   Icon = Picture["img/16/stack-order.png"]
   Persistent = True
@@ -13,27 +13,27 @@
     Text = ("Click on a form to display the hierarchy of its controls...")
   }
   { panControl ToolBar
-    MoveScaled(1,12,22,3)
+    MoveScaled(1,12,22,4)
     { btnTop ToolButton
-      MoveScaled(0,0,3,3)
+      MoveScaled(0,0,4,4)
       ToolTip = ("Move top")
       Text = ("")
       Picture = Picture["icon:/small/top"]
     }
     { btnUp ToolButton
-      MoveScaled(3,0,3,3)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Move up")
       Text = ("")
       Picture = Picture["icon:/small/up"]
     }
     { btnDown ToolButton
-      MoveScaled(6,0,3,3)
+      MoveScaled(8,0,4,4)
       ToolTip = ("Move down")
       Text = ("")
       Picture = Picture["icon:/small/down"]
     }
     { btnBottom ToolButton
-      MoveScaled(9,0,3,3)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Move bottom")
       Text = ("")
       Picture = Picture["icon:/small/bottom"]

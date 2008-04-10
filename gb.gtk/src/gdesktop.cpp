@@ -264,7 +264,8 @@ int gDesktop::scale()
 			
 		fm = pango_context_get_metrics (ct,ft,lng);
 		
-		val = (pango_font_metrics_get_ascent(fm) + pango_font_metrics_get_descent(fm)) / PANGO_SCALE;
+		//val = (pango_font_metrics_get_ascent(fm) + pango_font_metrics_get_descent(fm)) / PANGO_SCALE;
+		val = pango_font_metrics_get_ascent(fm) / PANGO_SCALE;
 		val = (val + 1) / 2;
 		
 		pango_font_metrics_unref(fm);

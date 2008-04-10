@@ -1,4 +1,4 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
   MoveScaled(0,0,75,71)
@@ -26,15 +26,15 @@
       MoveScaled(1,1,63,42)
       Spacing = 8
       { HBox2 HBox
-        MoveScaled(1,1,42,3)
+        MoveScaled(2,1,42,4)
         Spacing = 8
         { Label1 Label
-          MoveScaled(0,0,4,3)
+          MoveScaled(0,0,4,4)
           AutoResize = True
           Text = ("Size")
         }
         { cmbSize ComboBox
-          MoveScaled(6,0,13,3)
+          MoveScaled(6,0,13,4)
           Text = ("")
           List = []
         }
@@ -49,18 +49,18 @@
     Index = 0
   }
   { HBox1 HBox
-    MoveScaled(3,52,44,3)
+    MoveScaled(3,52,44,4)
     Spacing = 8
     { Panel1 Panel
-      MoveScaled(7,1,4,2)
+      MoveScaled(7,1,4,3)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(19,0,12,3)
+      MoveScaled(19,0,12,4)
       Text = ("OK")
     }
     { btnCancel Button
-      MoveScaled(32,0,12,3)
+      MoveScaled(32,0,12,4)
       Text = ("Cancel")
       Cancel = True
     }

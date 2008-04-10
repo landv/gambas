@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(31.7143,17,81,61)
+  MoveScaled(31.6667,17,95,79)
   Background = Color.TextBackground
   Text = ("Tips of the day")
   Icon = Picture["img/16/tip.png"]
@@ -32,27 +32,27 @@
     Border = False
   }
   { panBottom Panel
-    MoveScaled(1,47,76,3)
+    MoveScaled(1,47,76,4)
     Arrangement = Arrange.Horizontal
     AutoResize = True
     Spacing = 8
     { chkShowTip CheckBox
-      MoveScaled(0,0,31,3)
+      MoveScaled(0,0,31,4)
       Expand = True
       Text = ("Show tips on startup")
     }
     { btnPrev Button
-      MoveScaled(32,0,14,3)
+      MoveScaled(32,0,14,4)
       Text = ("&Previous")
       Picture = Picture["icon:/small/rewind"]
     }
     { btnNext Button
-      MoveScaled(47,0,14,3)
+      MoveScaled(47,0,14,4)
       Text = ("&Next")
       Picture = Picture["icon:/small/forward"]
     }
     { btnClose Button
-      MoveScaled(62,0,14,3)
+      MoveScaled(62,0,14,4)
       Text = ("Close")
       Default = True
       Cancel = True

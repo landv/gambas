@@ -1,4 +1,4 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
   MoveScaled(0,0,60,50)
@@ -7,49 +7,49 @@
   Arrangement = Arrange.Vertical
   Spacing = 4
   { panToolbar HBox
-    MoveScaled(1,1,55,3)
+    MoveScaled(1,1,55,4)
     { btnReload ToolButton
-      MoveScaled(0,0,3,3)
+      MoveScaled(0,0,4,4)
       ToolTip = ("Today")
       Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
     { btnPrevYear ToolButton
-      MoveScaled(3,0,3,3)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Previous year")
       Text = ("")
       Picture = Picture["icon:/small/rewind"]
     }
     { HBox2 HBox
-      MoveScaled(6,0,39,3)
+      MoveScaled(9,0,41,4)
       Expand = True
       Spacing = 8
       { btnPrevMonth ToolButton
-        MoveScaled(1,0,3,3)
+        MoveScaled(1,0,4,4)
         ToolTip = ("Previous month")
         Text = ("")
         Picture = Picture["icon:/small/previous"]
       }
       { cmbMonth ComboBox
-        MoveScaled(4,0,19,3)
+        MoveScaled(5,0,19,4)
         Expand = True
         Text = ("")
         ReadOnly = True
       }
       { txtYear SpinBox
-        MoveScaled(26,0,8,3)
+        MoveScaled(25,0,10,4)
         MinValue = 1600
         MaxValue = 9999
       }
       { btnNextMonth ToolButton
-        MoveScaled(36,0,3,3)
+        MoveScaled(36,0,4,4)
         ToolTip = ("Next month")
         Text = ("")
         Picture = Picture["icon:/small/next"]
       }
     }
     { btnNextYear ToolButton
-      MoveScaled(48,0,3,3)
+      MoveScaled(51,0,4,4)
       ToolTip = ("Next year")
       Text = ("")
       Picture = Picture["icon:/small/forward"]

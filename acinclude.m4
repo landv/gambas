@@ -685,6 +685,12 @@ AC_DEFUN([GB_COMPONENT],
     ])
 
     AC_MSG_RESULT([$gb_cv_header_$1])
+    
+    if test "$gb_cv_header_$1" = "no"; then
+      for gb_result in $gb_file_list; do
+        AC_MSG_WARN([Unable to find file: $gb_result])
+      done
+    fi
 
     $2_INC=""
 
@@ -735,6 +741,12 @@ AC_DEFUN([GB_COMPONENT],
     fi
 
     AC_MSG_RESULT([$gb_cv_lib_$1])
+
+    if test "$gb_cv_lib_$1" = "no"; then
+      for gb_result in $gb_file_list; do
+        AC_MSG_WARN([Unable to find file: $gb_result])
+      done
+    fi
 
     $2_LIB=""
     $2_PATH=""

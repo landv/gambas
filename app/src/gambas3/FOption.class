@@ -86,7 +86,7 @@ Public Sub _new()
   
     hHBox = New HBox(svwTheme)
     hHBox.Tag = MTheme.ColorKeys[iInd]
-    hHBox.Height = 3 * Desktop.Scale
+    hHBox.Height = 4 * Desktop.Scale
     hHBox.Spacing = 4
     hColor = New DrawingArea(hHBox) As "dwgStyle"
     hColor.Expand = True

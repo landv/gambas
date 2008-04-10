@@ -213,20 +213,30 @@ BEGIN_METHOD(CCOLOR_darker, GB_INTEGER color)
 
 END_METHOD
 
-BEGIN_METHOD(CCOLOR_medium, GB_INTEGER color1; GB_INTEGER color2)
+BEGIN_METHOD(CCOLOR_mix, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
 
 	int col1, col2;
 	int r, g, b, a;
+	double weight = VARGOPT(weight, 0.5);
 	
 	col1 = VARG(color1);
 	col2 = VARG(color2);
 	
-	a = (((col1 >> 24) & 0xFF) + ((col2 >> 24) & 0xFF)) >> 1;
-	r = (((col1 >> 16) & 0xFF) + ((col2 >> 16) & 0xFF)) >> 1;
-	g = (((col1 >> 8) & 0xFF) + ((col2 >> 8) & 0xFF)) >> 1;
-	b = ((col1 & 0xFF) + (col2 & 0xFF)) >> 1;
-	
-  GB.ReturnInteger(qRgb(r, g, b) & 0x00FFFFFF | ((a & 0xFF) << 24));
+	if (weight == 0.0)
+		GB.ReturnInteger(col1);
+	else if (weight == 1.0)
+		GB.ReturnInteger(col2);
+	else
+	{
+		#define MIX_COLOR(_shift) (int)((((col2 >> _shift) & 0xFF) * weight + ((col1 >> _shift) & 0xFF) * (1 - weight)) + 0.5)
+		
+		a = MIX_COLOR(24);
+		r = MIX_COLOR(16);
+		g = MIX_COLOR(8);
+		b = MIX_COLOR(0);
+		
+		GB.ReturnInteger(qRgb(r, g, b) & 0x00FFFFFF | ((a & 0xFF) << 24));
+	}
 
 END_METHOD
 
@@ -343,7 +353,7 @@ GB_DESC CColorDesc[] =
   
   GB_STATIC_METHOD("Lighter", "i", CCOLOR_lighter, "(Color)i"),
   GB_STATIC_METHOD("Darker", "i", CCOLOR_darker, "(Color)i"),
-  GB_STATIC_METHOD("Medium", "i", CCOLOR_medium, "(Color1)i(Color2)i"),
+  GB_STATIC_METHOD("Mix", "i", CCOLOR_mix, "(Color1)i(Color2)i[(Weight)f]"),
   GB_STATIC_METHOD("Blend", "i", CCOLOR_blend, "(Source)i(Destination)i"),
 
   GB_STATIC_METHOD("_get", ".ColorInfo", CCOLOR_get, "(Color)i"),

@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,84,66)
+  MoveScaled(0,0,87,69)
   Text = ("New project")
   Icon = Picture["icon:/small/new"]
   Persistent = True
@@ -9,16 +9,16 @@
   Spacing = 8
   Padding = 8
   { wizProject Wizard
-    MoveScaled(1,0,81,62)
+    MoveScaled(1,0,84,67)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = 8
     Count = 3
     Border = False
     Index = 0
-    Text = ("1. Project type")
+    Text = ("Project type")
     { HBox5 HBox
-      MoveScaled(0,0,79,52)
+      MoveScaled(0,0,79,56)
       Expand = True
       Spacing = 8
       { VBox3 VBox
@@ -26,7 +26,7 @@
         Expand = True
         Spacing = 8
         { Label5 Label
-          MoveScaled(1,0,25,3)
+          MoveScaled(1,0,25,4)
           Font = Font["Bold"]
           AutoResize = True
           Text = ("Type")
@@ -144,7 +144,7 @@
             }
           }
           { Separator2 Separator
-            MoveScaled(-3,37,37,2)
+            MoveScaled(-3,37,37,3)
             Enabled = False
           }
           { HBox8 HBox
@@ -168,73 +168,73 @@
         }
       }
       { VBox1 VBox
-        MoveScaled(36,1,39,46)
+        MoveScaled(36,1,39,53)
         Expand = True
         Spacing = 8
         { Label12 Label
-          MoveScaled(1,0,25,3)
+          MoveScaled(1,0,25,4)
           Font = Font["Bold"]
           AutoResize = True
           Text = ("Options")
           Alignment = Align.BottomNormal
         }
         { svwOption ScrollView
-          MoveScaled(0,4,39,42)
+          MoveScaled(0,4,39,48)
           Background = Color.TextBackground
           Expand = True
           Arrangement = Arrange.Vertical
           Padding = 4
           ScrollBar = Scroll.Vertical
           { chkLocalize CheckBox
-            MoveScaled(1,0,37,3)
+            MoveScaled(1,0,37,4)
             Tag = "TRANSLATE"
             Text = ("Internationalization")
           }
           { CheckBox2 CheckBox
-            MoveScaled(1,3,37,3)
+            MoveScaled(1,4,37,4)
             Tag = "DATABASE"
             Text = ("Database access")
           }
           { CheckBox3 CheckBox
-            MoveScaled(1,6,37,3)
+            MoveScaled(1,8,37,4)
             Tag = "NETWORK"
             Text = ("Network programming")
           }
           { CheckBox7 CheckBox
-            MoveScaled(1,9,37,3)
+            MoveScaled(1,12,37,4)
             Tag = "SETTINGS"
             Text = ("Settings files management")
           }
           { CheckBox1 CheckBox
-            MoveScaled(1,12,37,3)
+            MoveScaled(1,16,37,4)
             Tag = "REGEXP"
             Text = ("Regular expressions")
           }
           { CheckBox4 CheckBox
-            MoveScaled(1,15,37,3)
+            MoveScaled(1,20,37,4)
             Tag = "XML"
             Text = ("XML / XSLT programming")
           }
           { CheckBox6 CheckBox
-            MoveScaled(1,18,37,3)
+            MoveScaled(1,24,37,4)
             Tag = "OPENGL"
             Text = ("OpenGL programming")
           }
           { CheckBox5 CheckBox
-            MoveScaled(1,21,37,3)
+            MoveScaled(1,28,37,4)
             Tag = "IMAGE"
             Text = ("Image processing")
           }
           { chkCtrlPublic CheckBox
-            MoveScaled(1,24,37,3)
+            MoveScaled(1,32,37,4)
             Tag = "VISUAL"
             Text = ("Visual Basic\xE2\x84\xA2 conversion help")
           }
           { Separator1 Separator
-            MoveScaled(1,27,37,2)
+            MoveScaled(1,36,37,3)
           }
           { CheckBox8 CheckBox
-            MoveScaled(1,29,35,3)
+            MoveScaled(1,39,35,4)
             Tag = "COMPONENT"
             Text = ("Component programming")
           }
@@ -242,7 +242,7 @@
       }
     }
     Index = 1
-    Text = ("2. Project directory")
+    Text = ("Project directory")
     { dchProject DirChooser
       MoveScaled(1,0,77,50)
       Expand = True
@@ -250,65 +250,66 @@
       ShowBookmark = True
     }
     Index = 2
-    Text = ("3. Project information")
+    Text = ("Project information")
     { panIdent VBox
-      MoveScaled(0,0,80,12)
+      MoveScaled(0,0,80,15)
       Spacing = 8
       { Label10 Label
-        MoveScaled(0,0,25,3)
+        MoveScaled(0,0,25,4)
         Font = Font["Bold"]
         Text = ("Identification")
       }
       { HBox6 HBox
-        MoveScaled(2,4,70,3)
+        MoveScaled(2,4,70,4)
         { Label2 Label
-          MoveScaled(0,0,14,3)
+          MoveScaled(0,0,14,4)
           Text = ("Name")
         }
         { txtName TextBox
-          MoveScaled(15,0,49,3)
+          MoveScaled(15,0,49,4)
           Expand = True
           Text = ("")
         }
       }
       { HBox7 HBox
-        MoveScaled(2,8,71,3)
+        MoveScaled(2,9,71,4)
         { Label3 Label
-          MoveScaled(0,0,14,3)
+          MoveScaled(0,0,14,4)
           Text = ("Title")
         }
         { txtTitle TextBox
-          MoveScaled(15,0,51,3)
+          MoveScaled(15,0,51,4)
           Expand = True
           Text = ("")
         }
       }
     }
     { panRepository VBox
-      MoveScaled(0,10,81,23)
+      MoveScaled(0,15,81,23)
       Expand = True
       Spacing = 8
       { Label7 Label
-        MoveScaled(0,0,25,3)
+        MoveScaled(0,0,25,4)
         Font = Font["Bold"]
         Text = ("Repository")
       }
       { txtRepository TextBox
-        MoveScaled(0,4,51,3)
+        MoveScaled(0,4,51,4)
         Text = ("")
       }
       { edtOutput Editor
-        MoveScaled(0,8,79,13)
+        MoveScaled(0,9,79,12)
         Font = Font["Monospace,-1"]
         Expand = True
         ReadOnly = True
       }
     }
     { Panel1 Panel
-      MoveScaled(1,33,17,4)
+      MoveScaled(1,38,17,4)
     }
     { TextLabel9 TextLabel
-      MoveScaled(1,41,78,13)
+      MoveScaled(1,42,78,12)
+      AutoResize = True
       Text = ("Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
     }
     Index = 0
