@@ -19,7 +19,7 @@
         Border = Border.Sunken
       }
       { sldValue Slider
-        MoveScaled(29,4,2,22)
+        MoveScaled(28,3,3,23)
         MaxValue = 255
         PageStep = 16
       }
@@ -28,39 +28,38 @@
       MoveScaled(2,37,49,28)
     }
   }
-  { VBox1 VBox
-    MoveScaled(56,0,10,51)
-    Spacing = 8
+  { panInfoColor VBox
+    MoveScaled(56,1,12,66)
     { Panel1 Panel
-      MoveScaled(0,1,10,23)
+      MoveScaled(0,1,12,24)
       { txtR SpinBox txtRGB
         Name = "txtR"
-        MoveScaled(3,0,7,3)
+        MoveScaled(3,0,9,3)
         MaxValue = 255
       }
       { txtG SpinBox txtRGB
         Name = "txtG"
-        MoveScaled(3,4,7,3)
+        MoveScaled(3,4,9,3)
         MaxValue = 255
       }
       { txtB SpinBox txtRGB
         Name = "txtB"
-        MoveScaled(3,8,7,3)
+        MoveScaled(3,8,9,3)
         MaxValue = 255
       }
       { txtH SpinBox txtHSV
         Name = "txtH"
-        MoveScaled(3,12,7,3)
+        MoveScaled(3,12,9,3)
         MaxValue = 359
       }
       { txtS SpinBox txtHSV
         Name = "txtS"
-        MoveScaled(3,16,7,3)
+        MoveScaled(3,16,9,3)
         MaxValue = 255
       }
       { txtV SpinBox txtHSV
         Name = "txtV"
-        MoveScaled(3,20,7,3)
+        MoveScaled(3,20,9,3)
         MaxValue = 255
       }
       { Label1 Label
@@ -89,7 +88,7 @@
       }
     }
     { panAlpha Panel
-      MoveScaled(0,26,10,3)
+      MoveScaled(0,26,12,7)
       Visible = False
       { Label7 Label
         MoveScaled(0,0,2,3)
@@ -97,16 +96,25 @@
       }
       { txtA SpinBox txtRGB
         Name = "txtA"
-        MoveScaled(3,0,7,3)
+        MoveScaled(3,0,9,3)
         MaxValue = 255
+      }
+      { sldAlpha Slider
+        MoveScaled(0,3,12,3)
+        MaxValue = 255
+        PageStep = 16
       }
     }
     { txtHexa TextBox
-      MoveScaled(1,33,7,3)
+      MoveScaled(2,34,7,3)
       Text = ("")
     }
+    { Panel2 Panel
+      MoveScaled(3,39,3,1)
+      Expand = True
+    }
     { panColor DrawingArea
-      MoveScaled(1,38,8,12)
+      MoveScaled(2,44,8,11)
       Border = Border.Sunken
     }
   }

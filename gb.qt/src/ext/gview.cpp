@@ -1427,18 +1427,17 @@ void GEditor::blinkTimerTimeout()
   updateLine(y);
 }
 
-void GEditor::focusInEvent(QFocusEvent *)
+void GEditor::focusInEvent(QFocusEvent *e)
 {
   startBlink();
+  QGridView::focusInEvent(e);
 }
 
-void GEditor::focusOutEvent(QFocusEvent *)
+void GEditor::focusOutEvent(QFocusEvent *e)
 {
-  //if (doc->getHighlightMode() == GDocument::Gambas)
-  //  doc->colorize(y);
   stopBlink();
+  QGridView::focusOutEvent(e);
 }
-
 
 void GEditor::scrollTimerTimeout()
 {

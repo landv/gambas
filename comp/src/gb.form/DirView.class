@@ -363,6 +363,7 @@ PUBLIC SUB TreeView_Rename()
   
 CATCH 
 
+  $hTreeView[sKey].Text = File.Name(sKey)
   Message.Error(("Cannot rename directory.") & "\n\n" & Error.Text)  
   
 END
