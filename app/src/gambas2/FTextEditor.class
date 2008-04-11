@@ -64,6 +64,7 @@ PUBLIC SUB Form_Open()
 END
 
 PUBLIC SUB Form_Resize()
+
   DIM iToolbarOffset AS Integer
   
   'If we add the ability to hide the toolbar then uncomment this code 
@@ -71,16 +72,18 @@ PUBLIC SUB Form_Resize()
   '  panToolBar.Move(0, 0, ME.CLientW)
   '  iToolbarOffset = panToolBar.H
   'ELSE
-    iToolbarOffset = 0
+  '  iToolbarOffset = 0
   'ENDIF
   
+  iToolbarOffset = panToolBar.H
+  
   SELECT CASE $iViewMode
-  CASE 0
-    edtEditor.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
-  CASE 1
-    splHorizontal.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
-  CASE 2
-    splVertical.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+    CASE 0
+      edtEditor.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+    CASE 1
+      splHorizontal.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
+    CASE 2
+      splVertical.Move(0, iToolbarOffset, ME.ClientW, ME.ClientH - iToolbarOffset)
   END SELECT 
 
 END
