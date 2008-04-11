@@ -1022,3 +1022,20 @@ void gPictureCache::flush()
   init();
 }
 
+void gPicture::makeGray()
+{
+	if (_type == VOID)
+		return;
+	
+	gt_pixbuf_make_gray(getPixbuf());
+	invalidate();
+}
+
+void gPicture::makeTransparent(gColor color)
+{
+	if (_type == VOID)
+		return;
+	
+	gt_pixbuf_make_alpha(getPixbuf(), color);
+	invalidate();
+}

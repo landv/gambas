@@ -520,6 +520,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   // Folding symbol
   if (margin && l->proc)
   {
+    p.setPen(styles[GLine::Normal].color);
 		style().drawPrimitive(folded ? QStyle::PE_ArrowRight : QStyle::PE_ArrowDown, &p, 
 			QRect(margin - 12, 0, 12, 12), QApplication::palette().active(), QStyle::Style_Default | QStyle::Style_Enabled);
   }

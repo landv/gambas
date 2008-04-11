@@ -34,6 +34,8 @@ GB_COMPONENT(
 
 dnl ---- Check for gettext library
 
+if test "x$GETTEXT_LIB" != x; then
+
 GB_COMPONENT(
   gettext,
   GETTEXT,
@@ -43,7 +45,9 @@ GB_COMPONENT(
   [GB_FIND(libgettextlib.$SHLIBEXT, /usr/local /usr, lib)],
   [-lgettextlib],
   [],
-  [This library must be located inside the C library])
+  [This library may be located inside the system C library, so let's go on...])
+  
+fi
 
 dnl ---- Check for ffi library
 

@@ -173,6 +173,8 @@ Private Sub InitUser()
   Dim iPos As Integer
   Dim iGray As Integer
   Dim iInd As Integer
+  Dim hPict As Picture
+  Dim W, H As Integer
   
   hFile = Open "support.txt" 
   
@@ -218,6 +220,33 @@ Private Sub InitUser()
   
   Close #hFile
 
+  For Each hUser In $aUser
+    With hUser
+      Draw.Begin(dwgAbout)
+      Draw.Font.Bold = True
+      Draw.Font.Size = GetFontSize(hUser)
+      W = Draw.TextWidth(.Name)
+      H = Draw.TextHeight(.Name)
+      Draw.End
+
+      hPict = New Picture(W, H)
+      hPict.Fill(Color.White)
+      Draw.Begin(hPict)
+      Draw.Font.Bold = True
+      Draw.Font.Size = GetFontSize(hUser)
+      'Draw.ForeColor = Color.White
+      'Draw.Text(.Name, 0, 0, W, H)
+      'Draw.Text(.Name, 2, 0, W, H)
+      'Draw.Text(.Name, 0, 2, W, H)
+      'Draw.Text(.Name, 2, 2, W, H)
+      Draw.ForeColor = .Color 'Color.Black
+      Draw.Text(.Name, 0, 0, W, H)
+      Draw.End
+      .Image = hPict.Image
+      .Image.MakeTransparent
+    End With
+  Next
+
   For iInd = 1 To $aUser.Count
     iPos = Int(Rnd(0, $aUser.Count))
     Swap $aUser[0], $aUser[iPos]
@@ -244,6 +273,7 @@ Private Sub DrawText(iIndex As Integer) As Boolean
   Dim W, H As Integer
   Dim iStep As Integer
   Dim eBlend As Float
+  Dim hImage As Image
 
   hUser = $aUser[iIndex Mod $aUser.Count]
   With hUser
@@ -269,19 +299,25 @@ Private Sub DrawText(iIndex As Integer) As Boolean
     
       If eSize >= 1 Then
       
-        Draw.Font.Bold = True
-        Draw.Font.Size = eSize
-        W = Draw.TextWidth(.Name)
-        H = Draw.TextHeight(.Name)
-        X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP
-        Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP
-        Draw.ForeColor = Color.White
-        Draw.Text(.Name, X + 1, Y + 1, W, H)
-        Draw.Text(.Name, X + 1, Y - 1, W, H)
-        Draw.Text(.Name, X - 1, Y + 1, W, H)
-        Draw.Text(.Name, X - 1, Y - 1, W, H)
-        Draw.ForeColor = .Color 'Color.Black
-        Draw.Text(.Name, X, Y, W, H)
+        ' Draw.Font.Bold = True
+        ' Draw.Font.Size = eSize
+        ' W = Draw.TextWidth(.Name)
+        ' H = Draw.TextHeight(.Name)
+        ' X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP + 0.5
+        ' Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP + 0.5
+        ' Draw.ForeColor = Color.White
+        ' Draw.Text(.Name, X + 1, Y + 1, W, H)
+        ' Draw.Text(.Name, X + 1, Y - 1, W, H)
+        ' Draw.Text(.Name, X - 1, Y + 1, W, H)
+        ' Draw.Text(.Name, X - 1, Y - 1, W, H)
+        ' Draw.ForeColor = .Color 'Color.Black
+        ' Draw.Text(.Name, X, Y, W, H)
+
+        W = .Image.W * iStep / NSTEP + 0.5
+        H = .Image.H * iStep / NSTEP + 0.5
+        X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP + 0.5
+        Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP + 0.5
+        Draw.Image(.Image.Stretch(W, H, True), X, Y)
       
       Endif
     
@@ -293,11 +329,11 @@ Private Sub DrawText(iIndex As Integer) As Boolean
       H = Draw.TextHeight(.Name)
       X = .XD 'dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP
       Y = .YD 'dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP
-      Draw.ForeColor = Color.White
-      Draw.Text(.Name, X + 1, Y + 1, W, H)
-      Draw.Text(.Name, X + 1, Y - 1, W, H)
-      Draw.Text(.Name, X - 1, Y + 1, W, H)
-      Draw.Text(.Name, X - 1, Y - 1, W, H)
+      'Draw.ForeColor = Color.White
+      'Draw.Text(.Name, X + 1, Y + 1, W, H)
+      'Draw.Text(.Name, X + 1, Y - 1, W, H)
+      'Draw.Text(.Name, X - 1, Y + 1, W, H)
+      'Draw.Text(.Name, X - 1, Y - 1, W, H)
       eBlend = (iStep - NSTEP) / (9 * NSTEP)
       Draw.ForeColor = Color.Mix(.Color, Color.White, eBlend)
       'Draw.ForeColor = Color.RGB(Color[.Color].Red + (&HFF - Color[.Color].Red) * eBlend, Color[.Color].Green + (&HFF - Color[.Color].Green) * eBlend, Color[.Color].Blue + (&HFF - Color[.Color].Blue) * eBlend)

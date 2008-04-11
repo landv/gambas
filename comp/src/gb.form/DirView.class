@@ -1,56 +1,56 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserControl
+Export
+Inherits UserControl
 
-PUBLIC CONST _Properties AS String = "*,Border=True,Root,Picture,ShowHidden"
-PUBLIC CONST _DefaultEvent AS String = "Click"
+Public Const _Properties As String = "*,Border=True,Root,Picture,ShowHidden"
+Public Const _DefaultEvent As String = "Click"
 
-EVENT {Select}
-EVENT Click
-EVENT Activate
-EVENT Menu
-EVENT Icon(Path AS String)
+Event {Select}
+Event Click
+Event Activate
+Event Menu
+Event Icon(Path As String)
 
-PROPERTY Root AS String
-PROPERTY Current AS String
-PROPERTY ShowHidden AS Boolean
-PROPERTY Picture AS Picture
-PROPERTY Border AS Boolean
-PROPERTY Icon AS Picture
+Property Root As String
+Property Current As String
+Property ShowHidden As Boolean
+Property Picture As Picture
+Property Border As Boolean
+Property Icon As Picture
 
-PRIVATE $sRoot AS String
-PRIVATE $hTreeView AS TreeView
-PRIVATE $bShowHidden AS Boolean
-PRIVATE $hRootPict AS Picture
-PRIVATE $hPict AS Picture
-PRIVATE $bDeleteOnCancel AS Boolean
-PRIVATE $bNoExpand AS Boolean
-PRIVATE $bNoEvent AS Boolean
+Private $sRoot As String
+Private $hTreeView As TreeView
+Private $bShowHidden As Boolean
+Private $hRootPict As Picture
+Private $hPict As Picture
+Private $bDeleteOnCancel As Boolean
+Private $bNoExpand As Boolean
+Private $bNoEvent As Boolean
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  $hTreeView = NEW TreeView(ME) AS "TreeView"
-  $hTreeView.Editable = TRUE
+  $hTreeView = New TreeView(Me) As "TreeView"
+  $hTreeView.Editable = True
   ClearView
 
-END
+End
 
 
-PRIVATE FUNCTION GetRoot() AS String
+Private Function GetRoot() As String
 
-  IF Trim($sRoot) THEN RETURN $sRoot
-  RETURN User.Home
+  If Trim($sRoot) Then Return $sRoot
+  Return User.Home
 
-END
+End
 
 
 
-PRIVATE SUB ClearView()
+Private Sub ClearView()
 
-  DIM sRoot AS String = GetRoot()
+  Dim sRoot As String = GetRoot()
 
-  $bNoEvent = TRUE
+  $bNoEvent = True
   $hTreeView.Clear
   AddDir(File.Dir(sRoot), File.Name(sRoot))
   '$hTreeView.Add(sRoot, sRoot, $hRootPict)
@@ -59,294 +59,294 @@ PRIVATE SUB ClearView()
   'IF NOT $hRootPict THEN Picture_Write(Picture["icon:/small/directory"]) 'open
 
   $hTreeView.MoveFirst
-  $hTreeView.Item.Expanded = TRUE
+  $hTreeView.Item.Expanded = True
   TreeView_Expand
-  $bNoEvent = FALSE
+  $bNoEvent = False
 
-END
+End
 
 
-PRIVATE FUNCTION Root_Read() AS String
+Private Function Root_Read() As String
 
-  RETURN $sRoot
+  Return $sRoot
 
-END
+End
 
-PRIVATE SUB Root_Write(sRoot AS String)
+Private Sub Root_Write(sRoot As String)
 
-  IF sRoot = $sRoot THEN RETURN
+  If sRoot = $sRoot Then Return
   $sRoot = sRoot
   RefreshView
 
-END
+End
 
-PRIVATE SUB AddDir(sDir AS String, sFile AS String)
+Private Sub AddDir(sDir As String, sFile As String)
   
-  DIM sParent AS String
-  DIM hPict AS Picture
-  DIM bNoEdit AS Boolean
-  DIM sAfter AS String
+  Dim sParent As String
+  Dim hPict As Picture
+  Dim bNoEdit As Boolean
+  Dim sAfter As String
   
-  IF NOT $bShowHidden AND IF Left(sFile) = "." THEN RETURN
+  If Not $bShowHidden And If Left(sFile) = "." Then Return
   
   sParent = sDir
-  IF GetRoot() = (sDir &/ sFile) THEN 
+  If GetRoot() = (sDir &/ sFile) Then 
     sParent = ""
     hPict = $hRootPict
-    IF NOT hPict THEN hPict = Picture["icon:/small/directory"]
-    bNoEdit = TRUE
-  ELSE 
+    If Not hPict Then hPict = Picture["icon:/small/directory"]
+    bNoEdit = True
+  Else 
     hPict = GetIcon(sDir &/ sFile)
-  ENDIF
+  Endif
   
   sAfter = FindAfter($hTreeView, sFile, sParent)
   
-  WITH $hTreeView.Add(sDir &/ sFile, sFile, hPict, sParent)
-    .Editable = NOT bNoEdit
+  With $hTreeView.Add(sDir &/ sFile, sFile, hPict, sParent)
+    .Editable = Not bNoEdit
     'DEBUG sFile; " -> "; sAfter
     .MoveAfter(sAfter)
-  END WITH
+  End With
   
-  $hTreeView.Add(sDir &/ sFile & "/", "",, sDir &/ sFile).Expanded = FALSE
+  $hTreeView.Add(sDir &/ sFile & "/", "",, sDir &/ sFile).Expanded = False
   
-END
+End
 
-PUBLIC SUB TreeView_Expand()
+Public Sub TreeView_Expand()
 
-  DIM sFile AS String
-  DIM sDir AS String
-  DIM sDelete AS String
+  Dim sFile As String
+  Dim sDir As String
+  Dim sDelete As String
 
-  $hTreeView.Item.Selected = TRUE
+  $hTreeView.Item.Selected = True
   sDir = $hTreeView.Item.Key
-  IF sDir = GetRoot() THEN
+  If sDir = GetRoot() Then
     $hTreeView.Item.Picture = $hRootPict
-  ELSE
+  Else
     $hTreeView.Item.Picture = GetIcon($hTreeView.Item.key) 'open
-  ENDIF
+  Endif
 
-  IF $hTreeView.MoveChild() THEN RETURN
-  IF $hTreeView.Item.Text THEN RETURN
+  If $hTreeView.MoveChild() Then Return
+  If $hTreeView.Item.Text Then Return
   sDelete = $hTreeView.Item.Key
   
-  INC Application.Busy
+  Inc Application.Busy
 
   $hTreeView[sDelete].Delete
 
-  FOR EACH sFile IN Dir(sDir, "*", gb.Directory).Sort()
+  For Each sFile In Dir(sDir, "*", gb.Directory).Sort()
     AddDir(sDir, sFile)
-  NEXT
+  Next
 
-  IF $hTreeView[sDir].Children = 0 THEN
+  If $hTreeView[sDir].Children = 0 Then
     $hTreeView[sDir].Picture = GetIcon(sDir)
-  ELSE
+  Else
     '$hTreeView[sDir].Expanded = TRUE
-  ENDIF
+  Endif
 
-FINALLY
+Finally
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-CATCH
+Catch
 
-  DEBUG Error.Where; ": "; Error.Text 
+  Debug Error.Where; ": "; Error.Text 
   
-END
+End
 
-PUBLIC SUB TreeView_Collapse()
+Public Sub TreeView_Collapse()
 
   '$hTreeView.Item.Selected = TRUE
   'IF $hTreeView.Item.Key = GetRoot() THEN RETURN
  ' $hTreeView.Item.Picture = GetIcon(
 
-  $bNoExpand = TRUE
-  LAST.Item.Selected = TRUE
-  $bNoExpand = FALSE
+  $bNoExpand = True
+  Last.Item.Selected = True
+  $bNoExpand = False
 
-END
+End
 
-PUBLIC SUB TreeView_Select()
+Public Sub TreeView_Select()
 
-  IF NOT $bNoExpand THEN
-    LAST.Item.Expanded = TRUE
-  ENDIF
-  IF $bNoEvent THEN RETURN 
-  RAISE {Select}
-  RAISE Click
+  If Not $bNoExpand Then
+    Last.Item.Expanded = True
+  Endif
+  If $bNoEvent Then Return 
+  Raise {Select}
+  Raise Click
 
-END
+End
 
-PUBLIC SUB TreeView_Activate()
+Public Sub TreeView_Activate()
 
-  RAISE Activate
+  Raise Activate
 
-END
+End
 
-PUBLIC SUB TreeView_Click()
+Public Sub TreeView_Click()
 
-  IF $bNoEvent THEN RETURN
-  RAISE Click
+  If $bNoEvent Then Return
+  Raise Click
 
-END
-
-
-PUBLIC SUB TreeView_Menu()
-
-  RAISE Menu
-
-END
+End
 
 
-PRIVATE FUNCTION Current_Read() AS String
+Public Sub TreeView_Menu()
 
-  TRY RETURN $hTreeView.Current.Key
+  Raise Menu
 
-END
+End
 
-PRIVATE SUB MoveToLastChild()
+
+Private Function Current_Read() As String
+
+  Try Return $hTreeView.Current.Key
+
+End
+
+Private Sub MoveToLastChild()
 
   $hTreeView.MoveChild
-  REPEAT
-  UNTIL $hTreeView.MoveNext()
+  Repeat
+  Until $hTreeView.MoveNext()
   $hTreeView.MoveBack
   $hTreeView.Item.EnsureVisible
 
-CATCH
+Catch
 
-END
+End
 
 
-PRIVATE SUB Current_Write(sDir AS String)
+Private Sub Current_Write(sDir As String)
 
-  DIM sElt AS String
-  DIM sSubDir AS String
+  Dim sElt As String
+  Dim sSubDir As String
 
   sDir = Trim(sDir)
   'IF Right(sDir) = "/" THEN sDir = Left(sDir, - 1)
-  IF sDir = Current_Read() THEN RETURN
+  If sDir = Current_Read() Then Return
 
   'ClearView
 
-  $bNoEvent = TRUE
+  $bNoEvent = True
   sSubDir = "/"
-  FOR EACH sElt IN Split(File.Dir(sDir), "/", "", TRUE)
+  For Each sElt In Split(File.Dir(sDir), "/", "", True)
     sSubDir &/= sElt
-    TRY $hTreeView[sSubDir].Expanded = TRUE
-  NEXT
-  $bNoEvent = FALSE
+    Try $hTreeView[sSubDir].Expanded = True
+  Next
+  $bNoEvent = False
 
-  TRY $hTreeView[sDir].Selected = TRUE
-  IF NOT ERROR THEN
+  Try $hTreeView[sDir].Selected = True
+  If Not Error Then
     $hTreeView.MoveTo(sDir)
-    $hTreeView.Item.Expanded = TRUE
+    $hTreeView.Item.Expanded = True
     MoveToLastChild
     'TRY $hTreeView.MoveNext
     'TRY $hTreeView.Item.EnsureVisible
-  ENDIF
-  TRY $hTreeView.Current.EnsureVisible
-  RAISE Click
+  Endif
+  Try $hTreeView.Current.EnsureVisible
+  Raise Click
   
   'RAISE Refresh
 
-END
+End
 
 
-PRIVATE SUB RefreshView()
+Private Sub RefreshView()
 
-  DIM sDir AS String
+  Dim sDir As String
 
   sDir = Current_Read()
   ClearView
   Current_Write(sDir)  
 
-END
+End
 
 
-PRIVATE FUNCTION ShowHidden_Read() AS Boolean
+Private Function ShowHidden_Read() As Boolean
 
-  RETURN $bShowHidden
+  Return $bShowHidden
 
-END
+End
 
-PRIVATE SUB ShowHidden_Write(bShowHidden AS Boolean)
+Private Sub ShowHidden_Write(bShowHidden As Boolean)
 
-  IF bShowHidden <> $bShowHidden THEN
+  If bShowHidden <> $bShowHidden Then
     $bShowHidden = bShowHidden
     RefreshView
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE FUNCTION Picture_Read() AS Picture
+Private Function Picture_Read() As Picture
 
-  DIM hPict AS Picture
+  Dim hPict As Picture
 
   hPict = $hTreeView[GetRoot()].Picture
-  IF hPict <> Picture["icon:/small/directory"] THEN RETURN hPict 'open
+  If hPict <> Picture["icon:/small/directory"] Then Return hPict 'open
 
-END
+End
 
-PRIVATE SUB Picture_Write(hPict AS Picture)
+Private Sub Picture_Write(hPict As Picture)
 
-  IF hPict THEN
+  If hPict Then
     $hRootPict = hPict
-  ELSE
+  Else
     $hRootPict = Picture["icon:/small/directory"] 'open
-  ENDIF
+  Endif
 
   $hTreeView[GetRoot()].Picture = $hRootPict
 
-END
+End
 
 
-PRIVATE SUB Border_Write(bBorder AS Boolean)
+Private Sub Border_Write(bBorder As Boolean)
 
   $hTreeView.Border = bBorder
 
-END
+End
 
-PRIVATE FUNCTION Border_Read() AS Boolean
+Private Function Border_Read() As Boolean
 
-  RETURN $hTreeView.Border
+  Return $hTreeView.Border
 
-END
+End
 
-PRIVATE FUNCTION GetIcon(sPath AS String) AS picture
+Private Function GetIcon(sPath As String) As picture
 
-  IF sPath = GetRoot() THEN RETURN $hRootPict  
-  $hPict = NULL
-  RAISE Icon(sPath)
-  IF $hPict THEN RETURN $hPict
-  RETURN Picture["icon:/small/directory"]
+  If sPath = GetRoot() Then Return $hRootPict  
+  $hPict = Null
+  Raise Icon(sPath)
+  If $hPict Then Return $hPict
+  Return Picture["icon:/small/directory"]
   
-END
+End
 
 
-PRIVATE FUNCTION Icon_Read() AS Picture
+Private Function Icon_Read() As Picture
 
-  RETURN $hPict
+  Return $hPict
 
-END
+End
 
-PRIVATE SUB Icon_Write(Value AS Picture)
+Private Sub Icon_Write(Value As Picture)
 
-  IF Value.Height <> 16 THEN 
+  If Value.Height <> 16 Then 
     Value = Value.Image.Stretch(Value.Width * 16 / Value.Height, 16).Picture
-  ENDIF
+  Endif
   $hPict = Value
 
-END
+End
 
-PUBLIC SUB TreeView_Rename()
+Public Sub TreeView_Rename()
   
-  DIM sKey AS String = $hTreeView.Item.Key
-  DIM sParent AS String
-  DIM sNewName AS String = $hTreeView.Item.Text
+  Dim sKey As String = $hTreeView.Item.Key
+  Dim sParent As String
+  Dim sNewName As String = $hTreeView.Item.Text
   
-  IF $hTreeView.MoveParent() THEN RETURN
-  IF sNewName = File.Name(sKey) THEN RETURN 
+  If $hTreeView.MoveParent() Then Return
+  If sNewName = File.Name(sKey) Then Return 
   
-  MOVE sKey TO File.SetName(sKey, sNewName)
+  Move sKey To File.SetName(sKey, sNewName)
   
   sParent = File.Dir(sKey)
   
@@ -358,79 +358,80 @@ PUBLIC SUB TreeView_Rename()
   AddDir(File.Dir(sKey), File.Name(sKey))
   Object.Unlock($hTreeView)
   
-  $hTreeView[sKey].Selected = TRUE
+  $hTreeView[sKey].Selected = True
   
-  $bDeleteOnCancel = FALSE
+  $bDeleteOnCancel = False
   
-CATCH 
+Catch 
+  
+  $hTreeView[sKey] = File.Name(sKey)
+  Message.Error(("Cannot rename directory.") & "\n\n" & Error.Text)
+  
+End
 
-  Message.Error(("Cannot rename directory.") & "\n\n" & Error.Text)  
+Public Sub TreeView_Cancel()
   
-END
-
-PUBLIC SUB TreeView_Cancel()
+  If Not $bDeleteOnCancel Then Return
   
-  IF NOT $bDeleteOnCancel THEN RETURN
-  
-  TRY RMDIR $hTreeView.Item.Key
+  Try Rmdir $hTreeView.Item.Key
   $hTreeView.Item.Delete
 
-  $bDeleteOnCancel = FALSE
+  $bDeleteOnCancel = False
   
-END
+End
 
 
-PUBLIC SUB NewFolder()
+Public Sub NewFolder()
   
-  DIM sDir AS String
-  DIM iInd AS Integer
+  Dim sDir As String
+  Dim iInd As Integer
   
   sDir = ("New folder")
   iInd = 1
   
-  DO
-    IF NOT Exist(Current_Read() &/ sDir) THEN BREAK
-    INC iInd
+  Do
+    If Not Exist(Current_Read() &/ sDir) Then Break
+    Inc iInd
     sDir = ("New folder") & " (" & CStr(iInd) & ")"
-  LOOP  
+  Loop  
   
-  MKDIR Current_Read() &/ sDir
+  Mkdir Current_Read() &/ sDir
   AddDir(Current_Read(), sDir)
-  $bDeleteOnCancel = TRUE
+  $bDeleteOnCancel = True
   $hTreeView[Current_Read() &/ sDir].Rename
   
-CATCH
+Catch
 
   Message.Error(("Cannot create directory.") & "\n\n" & Error.Text)
   
-END
+End
 
-PRIVATE SUB FindAfter(hView AS TreeView, sText AS String, OPTIONAL sParent AS String) AS String
+Private Sub FindAfter(hView As TreeView, sText As String, Optional sParent As String) As String
   
-  DIM sAfter AS String
-  DIM iConv AS Integer
+  Dim sAfter As String
+  Dim iConv As Integer
   
-  WITH hView
-    IF sParent THEN
+  With hView
+    If sParent Then
       .MoveTo(sParent)
       .MoveChild
-    ELSE 
+    Else 
       .MoveFirst
-    ENDIF
-    WHILE .Available
-      IF Comp(.Item.Text, sText, gb.Text + gb.Language) > 0 THEN BREAK
-      IF iConv > 0 THEN BREAK
+    Endif
+    While .Available
+      If Comp(.Item.Text, sText, gb.Text + gb.Language) > 0 Then Break
+      If iConv > 0 Then Break
       sAfter = .Item.Key
       .MoveNext
-    WEND
-  END WITH
+    Wend
+  End With
 
-  RETURN sAfter
+  Return sAfter
   
-END
+End
 
-PUBLIC SUB Reload()
+Public Sub Reload()
   
   RefreshView
   
-END
+End

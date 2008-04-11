@@ -1,4 +1,4 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
   MoveScaled(0,0,62,47)
@@ -12,34 +12,34 @@
       MoveScaled(0,0,21,42)
       Arrangement = Arrange.Vertical
       { HPanel1 HPanel
-        MoveScaled(0,0,20,4)
+        MoveScaled(0,0,21,5)
         AutoResize = True
         { ToolButtonAdd ToolButton
-          MoveScaled(0,0,4,4)
+          MoveScaled(0,0,5,5)
           ToolTip = ("Add image to database")
           Text = ("")
           Picture = Picture["Images/list-add.png"]
         }
         { ToolButtonRemove ToolButton
-          MoveScaled(4,0,4,4)
+          MoveScaled(5,0,5,5)
           ToolTip = ("Remove Image from database")
           Text = ("")
           Picture = Picture["Images/list-remove.png"]
         }
         { Separator1 Separator
-          MoveScaled(8,0,1,4)
+          MoveScaled(8,0,2,4)
         }
         { ToolButtonExport ToolButton
-          MoveScaled(9,0,4,4)
+          MoveScaled(10,0,5,5)
           ToolTip = ("Export image from database")
           Text = ("")
           Picture = Picture["Images/document-save-as.png"]
         }
         { Separator2 Separator
-          MoveScaled(14,0,1,4)
+          MoveScaled(14,0,2,4)
         }
         { ToolButtonUpdate ToolButton
-          MoveScaled(15,0,4,4)
+          MoveScaled(16,0,5,5)
           ToolTip = ("Update image description")
           Text = ("")
           Picture = Picture["Images/document-save.png"]

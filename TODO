@@ -7,6 +7,14 @@ COMPILER
 
 INTERPRETER
 
+/**** NEIN!
+- OPTIONAL arguments should takes any expression.
+- Class synonymous.
+- Array[x] when x < 0 should return Array[Array.Count - x]
+- NEW Collection OF String
+- A ConstCopy() function for arrays, and const arrays.
+****/
+
 - A stack that can grow dynamically.
 - A special syntax to make variable writable once only (for controls variables).
 - Add global parameters for each component. Or no, a global configuration repository, to
@@ -19,19 +27,13 @@ INTERPRETER
 - Special runtime debugging commands for dumping all the variables for example.
 - A new debugging compilation option to only put line number information in the output files.
 - NInstr() -> Count the number of patterns.
-/*
-- OPTIONAL arguments should takes any expression.
-- Class synonymous.
-- Array[x] when x < 0 should return Array[Array.Count - x]
-- NEW Collection OF String
-*/
 - If project compilation version < compiler version then => compile all
 - Intercept all signals in Application_Signal.
 - Structure support
 - Callback support
 - Sorting two or more arrays at the same time.
 - A special method named _attach, to be warned when the parent object changes.
-- A ConstCopy() function for arrays, and const arrays.
+- MOD with floats.
 
 DEVELOPMENT ENVIRONMENT
 

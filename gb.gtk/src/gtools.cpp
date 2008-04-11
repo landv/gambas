@@ -1200,7 +1200,123 @@ void gt_pixbuf_replace_color(GdkPixbuf *pixbuf, gColor src, gColor dst, bool not
 	}
 }
 
-void gt_pixbuf_make_alpha_from_white(GdkPixbuf *pixbuf)
+// Comes from the GIMP
+
+typedef
+	struct {
+		float r;
+		float b;
+		float g;
+		float a;
+		}
+	RGB;
+
+static void color_to_alpha(RGB *src, const RGB *color)
+{
+  RGB alpha;
+
+  alpha.a = src->a;
+
+  if (color->r < 0.0001)
+    alpha.r = src->r;
+  else if (src->r > color->r)
+    alpha.r = (src->r - color->r) / (1.0 - color->r);
+  else if (src->r < color->r)
+    alpha.r = (color->r - src->r) / color->r;
+  else alpha.r = 0.0;
+
+  if (color->g < 0.0001)
+    alpha.g = src->g;
+  else if (src->g > color->g)
+    alpha.g = (src->g - color->g) / (1.0 - color->g);
+  else if (src->g < color->g)
+    alpha.g = (color->g - src->g) / (color->g);
+  else alpha.g = 0.0;
+
+  if (color->b < 0.0001)
+    alpha.b = src->b;
+  else if (src->b > color->b)
+    alpha.b = (src->b - color->b) / (1.0 - color->b);
+  else if (src->b < color->b)
+    alpha.b = (color->b - src->b) / (color->b);
+  else alpha.b = 0.0;
+
+  if (alpha.r > alpha.g)
+    {
+      if (alpha.r > alpha.b)
+        {
+          src->a = alpha.r;
+        }
+      else
+        {
+          src->a = alpha.b;
+        }
+    }
+  else if (alpha.g > alpha.b)
+    {
+      src->a = alpha.g;
+    }
+  else
+    {
+      src->a = alpha.b;
+    }
+
+  if (src->a < 0.0001)
+    return;
+
+  src->r = (src->r - color->r) / src->a + color->r;
+  src->g = (src->g - color->g) / src->a + color->g;
+  src->b = (src->b - color->b) / src->a + color->b;
+
+  src->a *= alpha.a;
+}
+
+void gt_pixbuf_make_alpha(GdkPixbuf *pixbuf, gColor color)
+{
+	guchar *p;
+	int i, n;
+	RGB rgb_color, rgb_src;
+	int r, g, b;
+	
+	p = gdk_pixbuf_get_pixels(pixbuf);
+	n = gdk_pixbuf_get_width(pixbuf) * gdk_pixbuf_get_height(pixbuf);
+
+	gt_color_to_rgb(color, &r, &g, &b);
+
+	rgb_color.b = b / 255.0;
+	rgb_color.g = g / 255.0;
+	rgb_color.r = r / 255.0;
+	rgb_color.a = 1.0;
+
+	for (i = 0; i < n; i++, p += 4)
+	{
+		rgb_src.r = p[0] / 255.0;
+		rgb_src.g = p[1] / 255.0;
+		rgb_src.b = p[2] / 255.0;
+		rgb_src.a = p[3] / 255.0;
+		
+		color_to_alpha(&rgb_src, &rgb_color);
+		
+		p[0] = rgb_src.r * 255.0 + 0.5;
+		p[1] = rgb_src.g * 255.0 + 0.5;
+		p[2] = rgb_src.b * 255.0 + 0.5;
+		p[3] = 0xFF ^ (uchar)(rgb_src.a * 255.0 + 0.5);
+	}
+}
+
+void gt_pixbuf_make_gray(GdkPixbuf *pixbuf)
+{
+	guchar *p;
+	int i, n;
+	
+	p = gdk_pixbuf_get_pixels(pixbuf);
+	n = gdk_pixbuf_get_width(pixbuf) * gdk_pixbuf_get_height(pixbuf);
+
+	for (i = 0; i < n; i++, p += 4)
+		p[0] = p[1] = p[2] = (p[0] * 11 + p[1] * 16 + p[2] * 5) / 32;
+}
+
+static void gt_pixbuf_make_alpha_from_white(GdkPixbuf *pixbuf)
 {
 	guchar *p;
 	int i, n;
@@ -1213,6 +1329,7 @@ void gt_pixbuf_make_alpha_from_white(GdkPixbuf *pixbuf)
 		p[3] = (p[0] * 11 + p[1] * 16 + p[2] * 5) / 32;
 	}
 }
+
 
 
 GdkBitmap *gt_make_text_mask(GdkDrawable *dr, int w, int h, PangoLayout *ly, int x, int y)

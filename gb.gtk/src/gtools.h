@@ -89,7 +89,8 @@ void gt_drawable_fill(GdkDrawable *d, gColor col, GdkGC *gc);
 GdkPixbuf *gt_pixbuf_create_disabled(GdkPixbuf *img);
 void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_return, GdkBitmap **mask_return, int alpha_threshold);
 void gt_pixbuf_replace_color(GdkPixbuf *pixbuf, gColor src, gColor dst, bool noteq);
-void gt_pixbuf_make_alpha_from_white(GdkPixbuf *pixbuf);
+void gt_pixbuf_make_alpha(GdkPixbuf *pixbuf, gColor color);
+void gt_pixbuf_make_gray(GdkPixbuf *pixbuf);
 
 // Makes a bitmap mask from a Pango layout
 

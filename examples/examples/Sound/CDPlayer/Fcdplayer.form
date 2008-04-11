@@ -1,45 +1,44 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
-{ Fcdplayer Form
-  Move(418,689,298,176)
+{ Form Form
+  MoveScaled(69.6667,114.8333,50,26)
   Text = ("CDplayer")
   Icon = Picture["cd.png"]
   Border = Window.Fixed
   { TrackInfo ComboBox
-    Move(8,8,288,32)
+    MoveScaled(1,1,48,4)
     ToolTip = ("Track")
     Text = ("")
     ReadOnly = True
   }
   { PButton Button
-    Move(8,80,120,32)
+    MoveScaled(1,11,21,4)
     Text = ("&Play")
   }
   { EButton Button
-    Move(8,112,120,32)
+    MoveScaled(1,16,21,4)
     Text = ("&Eject")
   }
   { TextBox1 TextBox
-    Move(8,48,256,24)
-    Drop = False
+    MoveScaled(1,6,43,4)
     Text = ("")
     ReadOnly = True
   }
   { SButton Button
-    Move(144,80,120,32)
+    MoveScaled(23,11,21,4)
     Text = ("&Stop")
   }
   { PTButton Button
-    Move(144,112,120,32)
+    MoveScaled(23,16,21,4)
     Text = ("Play &Track")
   }
   { Timer1 #Timer
-    #X = 272
-    #Y = 144
+    #X = 246
+    #Y = 102
     Enabled = True
   }
   { Volume Slider
-    Move(272,48,16,120)
+    MoveScaled(46,6,3,17)
     Mouse = Mouse.SizeS
     ToolTip = ("Volume")
     MaxValue = 255
@@ -47,6 +46,6 @@
     Mark = True
   }
   { TrackPos ProgressBar
-    Move(8,152,256,16)
+    MoveScaled(1,21,43,4)
   }
 }

@@ -2028,19 +2028,19 @@ _STANDARD:
 
 static void gray_image(QImage &img)
 {
-	register uchar * r(img.bits());
-	register uchar * g(img.bits() + 1);
-	register uchar * b(img.bits() + 2);
+	register uchar *b(img.bits());
+	register uchar *g(img.bits() + 1);
+	register uchar *r(img.bits() + 2);
 
 	uchar * end(img.bits() + img.numBytes());
 
-	while (r != end) {
+	while (b != end) {
 
-			*r = *g = *b = 0x80 | (((*r + *b) >> 1) + *g) >> 2; // (r + b + g) / 3
+			*b = *g = *r = 0x80 | (((*r + *b) >> 1) + *g) >> 2; // (r + b + g) / 3
 
-			r += 4;
-			g += 4;
 			b += 4;
+			g += 4;
+			r += 4;
 	}
 }
 

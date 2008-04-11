@@ -1,60 +1,60 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,91,54)
+  MoveScaled(0,0,94,54)
   Text = ("Text Editor")
   Icon = Picture["icon:/16/edit"]
   Arrangement = Arrange.Vertical
   Spacing = 5
   Padding = 5
   { HBox1 HBox
-    MoveScaled(1,0,90,3)
+    MoveScaled(1,1,92,4)
     { btnLock ToolButton
-      MoveScaled(0,0,3,3)
+      MoveScaled(0,0,4,4)
       ToolTip = ("Read-only")
       Text = ("")
       Picture = Picture["icon:/16/lock"]
       Toggle = True
     }
     { Separator5 Separator
-      MoveScaled(3,0,1,3)
+      MoveScaled(3,0,2,4)
     }
     { btnBold ToolButton
-      MoveScaled(4,0,3,3)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Bold")
       Text = ("")
       Picture = Picture["icon:/16/text-bold"]
       Toggle = True
     }
     { btnItalic ToolButton
-      MoveScaled(7,0,3,3)
+      MoveScaled(7,0,4,4)
       ToolTip = ("Italic")
       Text = ("")
       Picture = Picture["icon:/16/text-italic"]
       Toggle = True
     }
     { btnUnderline ToolButton
-      MoveScaled(10,0,3,3)
+      MoveScaled(10,0,4,4)
       ToolTip = ("Underline")
       Text = ("")
       Picture = Picture["icon:/16/text-underline"]
       Toggle = True
     }
     { btnStrikeOut ToolButton
-      MoveScaled(13,0,3,3)
+      MoveScaled(13,0,4,4)
       ToolTip = ("StrikeOut")
       Text = ("")
       Picture = Picture["icon:/16/text-strike"]
       Toggle = True
     }
     { Separator1 Separator
-      MoveScaled(16,0,1,3)
+      MoveScaled(16,0,2,4)
     }
     { HBox3 HBox
-      MoveScaled(19,0,13,3)
+      MoveScaled(19,0,13,4)
       AutoResize = True
       { btnAlignLeft ToolButton
-        MoveScaled(0,0,3,3)
+        MoveScaled(0,0,4,4)
         ToolTip = ("Align Left")
         Text = ("")
         Picture = Picture["icon:/16/text-left"]
@@ -62,7 +62,7 @@
         Toggle = True
       }
       { btnAlignCenter ToolButton
-        MoveScaled(3,0,3,3)
+        MoveScaled(3,0,4,4)
         ToolTip = ("Align Center")
         Text = ("")
         Picture = Picture["icon:/16/text-center"]
@@ -70,7 +70,7 @@
         Toggle = True
       }
       { btnAlignRight ToolButton
-        MoveScaled(6,0,3,3)
+        MoveScaled(6,0,4,4)
         ToolTip = ("Align Right")
         Text = ("")
         Picture = Picture["icon:/16/text-right"]
@@ -78,7 +78,7 @@
         Toggle = True
       }
       { btnAlignJustify ToolButton
-        MoveScaled(9,0,3,3)
+        MoveScaled(9,0,4,4)
         ToolTip = ("Align Right")
         Text = ("")
         Picture = Picture["icon:/16/text-fill"]
@@ -87,43 +87,43 @@
       }
     }
     { Separator2 Separator
-      MoveScaled(35,0,2,3)
+      MoveScaled(35,0,1,4)
     }
     { ComboBox1 ComboBox
-      MoveScaled(37,0,26,3)
+      MoveScaled(37,0,26,4)
       ToolTip = ("Set font face")
       Text = ("ComboBox1")
       ReadOnly = True
     }
     { Panel2 Panel
-      MoveScaled(63,0,1,4)
+      MoveScaled(63,0,2,4)
     }
     { SpinBox1 SpinBox
-      MoveScaled(64,0,7,3)
+      MoveScaled(64,0,7,4)
       ToolTip = ("Set font size")
     }
     { Separator3 Separator
-      MoveScaled(72,0,1,3)
+      MoveScaled(72,0,1,4)
     }
     { ColorButton1 ColorButton
-      MoveScaled(74,0,3,3)
+      MoveScaled(74,0,4,4)
       ToolTip = ("Set font color")
     }
     { Separator4 Separator
-      MoveScaled(79,0,1,3)
+      MoveScaled(79,0,1,4)
     }
     { Panel1 Panel
-      MoveScaled(80,0,2,3)
+      MoveScaled(80,0,1,4)
       Expand = True
     }
     { ToolButton1 ToolButton
-      MoveScaled(82,0,3,3)
+      MoveScaled(82,0,4,4)
       ToolTip = ("Show html source code")
       Text = ("")
       Picture = Picture["icon:/16/html"]
     }
     { btnabout ToolButton
-      MoveScaled(87,0,3,3)
+      MoveScaled(87,0,4,4)
       ToolTip = ("About this example...")
       Text = ("")
       Picture = Picture["icon:/16/info"]

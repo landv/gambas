@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(56,27,44,48)
+  MoveScaled(56,27,44,56)
   Text = ("Drag & Drop")
   Icon = Picture["drop.png"]
   Arrangement = Arrange.Horizontal
@@ -15,7 +15,7 @@
     Spacing = 8
     { Button1 Button Test
       Name = "Button1"
-      MoveScaled(1,2,7,3)
+      MoveScaled(1,2,7,4)
       Drop = True
       Text = ("Button1")
     }
@@ -43,11 +43,11 @@
     Expand = True
   }
   { VBox1 VBox
-    MoveScaled(36,2,5,43)
+    MoveScaled(36,2,6,44)
     Spacing = 8
     { PictureBox1 PictureBox imgIcon
       Name = "PictureBox1"
-      MoveScaled(0,0,5,5)
+      MoveScaled(0,0,6,6)
       Tag = "Bicycle"
       Picture = Picture["bicycle.png"]
       Alignment = Align.Center
@@ -55,7 +55,7 @@
     }
     { PictureBox2 PictureBox imgIcon
       Name = "PictureBox2"
-      MoveScaled(0,6,5,5)
+      MoveScaled(0,6,6,6)
       Tag = "Eye"
       Picture = Picture["eye.png"]
       Alignment = Align.Center
@@ -63,7 +63,7 @@
     }
     { PictureBox3 PictureBox imgIcon
       Name = "PictureBox3"
-      MoveScaled(0,12,5,5)
+      MoveScaled(0,12,6,6)
       Tag = "Map"
       Picture = Picture["france.png"]
       Alignment = Align.Center
@@ -71,7 +71,7 @@
     }
     { PictureBox4 PictureBox imgIcon
       Name = "PictureBox4"
-      MoveScaled(0,18,5,5)
+      MoveScaled(0,18,6,6)
       Tag = "Happy"
       Picture = Picture["happy.png"]
       Alignment = Align.Center
@@ -79,7 +79,7 @@
     }
     { PictureBox5 PictureBox imgIcon
       Name = "PictureBox5"
-      MoveScaled(0,24,5,5)
+      MoveScaled(0,24,6,6)
       Tag = "Magnify"
       Picture = Picture["loupe.png"]
       Alignment = Align.Center
@@ -87,18 +87,18 @@
     }
     { PictureBox6 PictureBox imgIcon
       Name = "PictureBox6"
-      MoveScaled(0,30,5,5)
+      MoveScaled(0,30,6,6)
       Tag = "Highlight"
       Picture = Picture["pen.png"]
       Alignment = Align.Center
       Border = Border.Raised
     }
     { Panel1 Panel
-      MoveScaled(1,36,3,2)
+      MoveScaled(1,36,4,3)
       Expand = True
     }
     { imgHole PictureBox
-      MoveScaled(0,38,5,5)
+      MoveScaled(0,38,6,6)
       Drop = True
       Picture = Picture["BulletHole.xpm"]
       Stretch = True

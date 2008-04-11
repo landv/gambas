@@ -1,75 +1,75 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(32,28,49.125,34.25)
+  MoveScaled(32,28,49,35)
   Text = ("Evaluator")
   Icon = Picture["calculator.png"]
   Border = Window.Fixed
   { Label4 Label
-    MoveScaled(27,13,7,3)
+    MoveScaled(27,13,7,4)
     Text = ("y =")
   }
   { Label3 Label
-    MoveScaled(27,8,7,3)
+    MoveScaled(27,8,7,4)
     Text = ("x =")
   }
   { Label2 Label
-    MoveScaled(2,13,7,3)
+    MoveScaled(2,13,7,4)
     Text = ("b =")
   }
   { Label1 Label
-    MoveScaled(2,8,7,3)
+    MoveScaled(2,8,7,4)
     Text = ("a =")
   }
   { txtValueA TextBox txtValue
     Name = "txtValueA"
-    MoveScaled(6,8,17,3)
+    MoveScaled(6,8,17,4)
     Text = ("0,5")
   }
   { txtValueB TextBox txtValue
     Name = "txtValueB"
-    MoveScaled(6,13,17,3)
+    MoveScaled(6,13,17,4)
     Text = ("1")
   }
   { txtValueX TextBox txtValue
     Name = "txtValueX"
-    MoveScaled(31,8,17,3)
+    MoveScaled(31,8,17,4)
     Text = ("45")
   }
   { txtValueY TextBox txtValue
     Name = "txtValueY"
-    MoveScaled(31,13,17,3)
+    MoveScaled(31,13,17,4)
     Text = ("60")
   }
   { Label6 Label
-    MoveScaled(2,19,13,2)
+    MoveScaled(2,19,13,3)
     Text = ("Expression")
   }
   { txtExpr TextBox
-    MoveScaled(13,19,35,3)
+    MoveScaled(13,19,35,4)
     Text = ("a * Cos(Rad(x)) + b * Sin(Rad(y))")
   }
   { Label7 Label
-    MoveScaled(2,23,9,2)
+    MoveScaled(2,24,9,3)
     Text = ("Result")
   }
   { txtResult TextBox
-    MoveScaled(13,23,35,3)
+    MoveScaled(13,24,35,4)
     Text = ("")
     ReadOnly = True
   }
   { btnUpdate Button
-    MoveScaled(1,30,16,3)
+    MoveScaled(1,30,16,4)
     Text = ("&Update result")
     Default = True
   }
   { btnClose Button
-    MoveScaled(38,30,10,3)
+    MoveScaled(38,30,10,4)
     Text = ("&Quit")
     Cancel = True
   }
   { TextLabel1 TextLabel
-    MoveScaled(1,1,47,5)
+    MoveScaled(1,1,47,6)
     Text = ("This is a sample of how to use the expression evaluator.")
     Alignment = Align.Center
   }

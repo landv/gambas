@@ -1,130 +1,130 @@
 ' Gambas class file
-PUBLIC NKIs AS Object[]
-PUBLIC Robot AS Object
-PUBLIC OrigHeight AS Integer
-PUBLIC OrigWidth AS Integer
-PUBLIC OrigFontSize AS Integer
-PUBLIC KittenIsFound AS Boolean
-PUBLIC NumNKIs AS Integer
-PUBLIC KittenIndex AS Integer
+Public NKIs As Object[]
+Public Robot As Object
+Public OrigHeight As Integer
+Public OrigWidth As Integer
+Public OrigFontSize As Integer
+Public KittenIsFound As Boolean
+Public NumNKIs As Integer
+Public KittenIndex As Integer
 
-PUBLIC SUB Timer1_Timer()
+Public Sub Timer1_Timer()
 
-  DIM middle AS Float
-  DIM kitten AS Object
+  Dim middle As Float
+  Dim kitten As Object
 
-  TRY Label1.setfocus()
-  IF kittenisfound THEN
+  Try TextLabel1.setfocus()
+  If kittenisfound Then
     kitten = nkis[kittenindex]
     middle = CFloat(kitten.x + robot.x) / 2
     robot.x = robot.x + Round(CFloat(middle - 8 - robot.x) / 2)
     kitten.x = kitten.x + Round(CFloat(middle + 8 - kitten.x) / 2)
-  END IF
-END
+  End If
+End
 
-PUBLIC SUB Label1_KeyPress()
+Public Sub TextLabel1_KeyPress()
 
-  DIM i AS Integer
+  Dim i As Integer
   
-  IF Key.Code = Key.Escape THEN Esc_Click
-  IF kittenisfound THEN RETURN
+  If Key.Code = Key.Escape Then Esc_Click
+  If kittenisfound Then Return
   
-  SELECT CASE Key.Code
-  CASE Key.Up
-    FOR i = 0 TO nkis.count - 1
-      IF Abs(robot.y - (nkis[i].y + nkis[i].height)) < 4 AND Abs(robot.x - nkis[i].x) < 4 THEN
-        label1.text = nkis[i].tag
-        IF nkis[i].tag = "kitten" THEN FoundKitten(i)
-        RETURN
-      ENDIF
-    NEXT
-    IF robot.y - robot.height >= label1.height THEN
+  Select Case Key.Code
+  Case Key.Up
+    For i = 0 To nkis.count - 1
+      If Abs(robot.y - (nkis[i].y + nkis[i].height)) < 4 And Abs(robot.x - nkis[i].x) < 4 Then
+        Textlabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.y - robot.height >= Textlabel1.height Then
       robot.y = robot.y - robot.height
-    ENDIF
-  CASE Key.Down
-    FOR i = 0 TO nkis.count - 1
-      IF Abs(robot.y + robot.height - nkis[i].y) < 4 AND Abs(robot.x - nkis[i].x) < 4 THEN
-        label1.text = nkis[i].tag
-        IF nkis[i].tag = "kitten" THEN FoundKitten(i)
-        RETURN
-      ENDIF
-    NEXT
-    IF robot.y + robot.height + robot.height < ME.clientheight THEN
+    Endif
+  Case Key.Down
+    For i = 0 To nkis.count - 1
+      If Abs(robot.y + robot.height - nkis[i].y) < 4 And Abs(robot.x - nkis[i].x) < 4 Then
+        TextLabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.y + robot.height + robot.height < Me.clientheight Then
       robot.y = robot.y + robot.height
-    ENDIF
-  CASE Key.Left
-    FOR i = 0 TO nkis.count - 1
-      IF Abs(robot.x - (nkis[i].x + nkis[i].width)) < 4 AND Abs(robot.y - nkis[i].y) < 4 THEN
-        label1.text = nkis[i].tag
-        IF nkis[i].tag = "kitten" THEN FoundKitten(i)
-        RETURN
-      ENDIF
-    NEXT
-    IF robot.x - robot.width >= 0 THEN
+    Endif
+  Case Key.Left
+    For i = 0 To nkis.count - 1
+      If Abs(robot.x - (nkis[i].x + nkis[i].width)) < 4 And Abs(robot.y - nkis[i].y) < 4 Then
+        TextLabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.x - robot.width >= 0 Then
       robot.x = robot.x - robot.width
-    ENDIF
-  CASE Key.Right
-    FOR i = 0 TO nkis.count - 1
-      IF Abs(robot.x + robot.width - nkis[i].x) < 4 AND Abs(robot.y - nkis[i].y) < 4 THEN
-        label1.text = nkis[i].tag
-        IF nkis[i].tag = "kitten" THEN FoundKitten(i)
-        RETURN
-      ENDIF
-    NEXT
-    IF robot.x + robot.width + robot.width < ME.clientwidth THEN
+    Endif
+  Case Key.Right
+    For i = 0 To nkis.count - 1
+      If Abs(robot.x + robot.width - nkis[i].x) < 4 And Abs(robot.y - nkis[i].y) < 4 Then
+        TextLabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.x + robot.width + robot.width < Me.clientwidth Then
       robot.x = robot.x + robot.width
-    ENDIF
-  END SELECT
+    Endif
+  End Select
 
-END
+End
 
-PUBLIC SUB Esc_Click()
+Public Sub Esc_Click()
 
-  ME.close
+  Me.close
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  DIM tmp AS Label
-  DIM i AS Integer
-  DIM nkistring AS String
-  DIM nkitext AS String[]
-  NKIs = NEW Object[]
-  nkitext = NEW String[]
+  Dim tmp As Label
+  Dim i As Integer
+  Dim nkistring As String
+  Dim nkitext As String[]
+  NKIs = New Object[]
+  nkitext = New String[]
   
   Randomize
-  origheight = ME.height
-  origwidth = ME.width
+  origheight = Me.height
+  origwidth = Me.width
   origfontsize = 12
-  TRY nkistring = File.load("nkis.txt")
+  Try nkistring = File.load("nkis.txt")
   nkitext = Split(nkistring, "\n")
-  KittenisFound = FALSE
+  KittenisFound = False
   numnkis = 20
   
-  FOR i = 1 TO NumNKIs
-    tmp = NEW Label(ME)
-    tmp.x = Int(Rnd(0, ME.width / 16)) * 16
-    tmp.y = Int(Rnd(5, ME.height / 16)) * 16
-    tmp.AutoResize = FALSE
+  For i = 1 To NumNKIs
+    tmp = New Label(Me)
+    tmp.x = Int(Rnd(0, Me.width / 16)) * 16
+    tmp.y = Int(Rnd(5, Me.height / 16)) * 16
+    tmp.AutoResize = False
     tmp.width = 16
     tmp.height = 16
     tmp.font.size = 12
     tmp.forecolor = Int(Rnd(32, 255)) * 65536 + Int(Rnd(32, 255)) * 256 + Int(Rnd(32, 255))
     tmp.alignment = Align.center
     tmp.text = "#"
-    DO WHILE tmp.text = "#"
+    Do While tmp.text = "#"
       tmp.text = Chr(Rnd(33, 126))
-    LOOP
+    Loop
     tmp.tag = nkitext[Int(Rnd(0, nkitext.count))]
     NKIs.add(tmp)
-  NEXT
+  Next
   nkis[nkis.count - 1].tag = "kitten"
-  robot = NEW Label(ME)
+  robot = New Label(Me)
   robot.x = 192
   robot.y = 192
-  robot.AutoResize = FALSE
+  robot.AutoResize = False
   robot.height = 16
   robot.width = 16
   robot.font.size = 12
@@ -134,53 +134,53 @@ PUBLIC SUB Form_Open()
   robot.text = "#"
   
 
-END
+End
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  DIM scalex AS Float
-  DIM scaley AS Float
-  DIM i AS Integer
+  Dim scalex As Float
+  Dim scaley As Float
+  Dim i As Integer
   
   'STOP
-  scalex = CFloat(ME.width) / origwidth
-  scaley = CFloat(ME.height) / origheight
-  IF nkis.count < NumNKIs THEN RETURN
-  FOR i = 0 TO nkis.count - 1
+  scalex = CFloat(Me.width) / origwidth
+  scaley = CFloat(Me.height) / origheight
+  If nkis.count < NumNKIs Then Return
+  For i = 0 To nkis.count - 1
     NKIs[i].x = NKIs[i].x * scalex
     NKIs[i].y = NKIs[i].y * scaley
     NKIs[i].width = Round(NKIs[i].width * scalex)
     NKIs[i].height = Round(NKIs[i].height * scaley)
-    IF nkis[i].y < label1.height THEN nkis[i].y = Round(label1.height / nkis[i].height) * nkis[i].height
+    If nkis[i].y < TextLabel1.height Then nkis[i].y = Round(TextLabel1.height / nkis[i].height) * nkis[i].height
     NKIs[i].font.size = Round(NKIs[i].font.size * scaley)
-  NEXT
+  Next
   robot.x = robot.x * scalex
   robot.y = robot.y * scaley
   robot.width = Round(robot.width * scalex)
   robot.height = Round(robot.height * scaley)
   robot.font.size = Round(robot.font.size * scaley)
-  origwidth = ME.width
-  origheight = ME.height
+  origwidth = Me.width
+  origheight = Me.height
 
-END
+End
 
-SUB FoundKitten(nki AS Integer)
+Sub FoundKitten(nki As Integer)
   
-  DIM i AS Integer
-  FOR i = 0 TO nkis.count - 1
-    IF i <> nki THEN 
-      nkis[i].visible = FALSE
-      nkis[i].x = ME.width + 100
-      nkis[i].y = ME.height + 100
-    ENDIF
-  NEXT
-  heart.visible = TRUE
-  KittenIsFound = TRUE
+  Dim i As Integer
+  For i = 0 To nkis.count - 1
+    If i <> nki Then 
+      nkis[i].visible = False
+      nkis[i].x = Me.width + 100
+      nkis[i].y = Me.height + 100
+    Endif
+  Next
+  heart.visible = True
+  KittenIsFound = True
   kittenindex = nki
-  label1.text = "You found kitten! Way to go, robot!"
+  TextLabel1.text = "You found kitten! Way to go, robot!"
   nkis[nki].y = heart.y + heart.height
   robot.y = heart.y + heart.height
   robot.x = heart.x - robot.width
   nkis[nki].x = heart.x + heart.width
   
-END
+End

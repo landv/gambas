@@ -1,37 +1,37 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(41.5,35.375,47.875,11.25)
+  MoveScaled(41.5,35.3333,49,13)
   Text = ("Gambas Music Player")
   Icon = Picture["sound.png"]
   Border = Window.Fixed
   { btnOpen ToolButton
-    MoveScaled(0,8,3,3)
+    MoveScaled(0,9,4,4)
     Text = ("")
     Picture = Picture["icon:/16/open"]
   }
   { btnPlay ToolButton
-    MoveScaled(3,8,3,3)
+    MoveScaled(4,9,4,4)
     Text = ("")
     Picture = Picture["icon:/16/play"]
   }
   { btnPause ToolButton
-    MoveScaled(6,8,3,3)
+    MoveScaled(8,9,4,4)
     Text = ("")
     Picture = Picture["icon:/16/pause"]
   }
   { btnStop ToolButton
-    MoveScaled(9,8,3,3)
+    MoveScaled(12,9,4,4)
     Text = ("")
     Picture = Picture["icon:/16/stop"]
   }
   { sldPos Slider
-    MoveScaled(0,5,45,3)
+    MoveScaled(0,5,45,4)
     MaxValue = 3600
     Step = 2
   }
   { lblPos Label
-    MoveScaled(30,8,15,3)
+    MoveScaled(30,9,15,4)
     Font = Font["14,Bold"]
     Text = ("")
     Alignment = Align.Right
@@ -41,7 +41,7 @@
     #Y = 64
   }
   { sldVolume Slider
-    MoveScaled(45,0,3,11)
+    MoveScaled(45,0,4,13)
     MaxValue = 128
     PageStep = 8
   }

@@ -777,6 +777,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
   int i, j;
   const char *name;
   const char **pnonher;
+  CLASS *parent;
   
 	#if DEBUG_DESC
   fprintf(stderr, "\n---- %s\n", class->name);
@@ -813,19 +814,23 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 
 			// A inherited symbol has two or more entries in the table. Only the first one
 			// will be used, and so it must point at the new description, not the inherited one.
-			ind = CLASS_find_symbol(class->parent, name);
-			if (ind != NO_SYMBOL)
+			parent = class;
+			while (parent = parent->parent)
 			{
-				#if DEBUG_DESC
-				fprintf(stderr, "%s: [%d] %p -> %p\n", name, ind, class->table[ind].desc, &desc[j]);
-				#endif
-				class->table[ind].desc = &desc[j];
-				class->table[ind].sort = 0;
-				class->table[ind].name = ".";
-				class->table[ind].len = 1;
-				if (!desc[j].gambas.val1 && index(CD_CALL_SOMETHING_LIST, CLASS_DESC_get_type(&desc[j])) != NULL)
+				ind = CLASS_find_symbol(parent, name);
+				if (ind != NO_SYMBOL)
 				{
-					desc[j].gambas.val1 = class->parent->table[ind].desc->gambas.val1;
+					#if DEBUG_DESC
+					fprintf(stderr, "%s: [%d] %p -> %p\n", name, ind, class->table[ind].desc, &desc[j]);
+					#endif
+					class->table[ind].desc = &desc[j];
+					class->table[ind].sort = 0;
+					class->table[ind].name = ".";
+					class->table[ind].len = 1;
+					if (!desc[j].gambas.val1 && index(CD_CALL_SOMETHING_LIST, CLASS_DESC_get_type(&desc[j])) != NULL)
+					{
+						desc[j].gambas.val1 = class->parent->table[ind].desc->gambas.val1;
+					}
 				}
 			}
     }

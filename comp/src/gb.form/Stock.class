@@ -131,6 +131,7 @@ Static Private Sub InitTheme()
           If sStyle Then
             For Each sPath In Split(sIconPath, ":")
               AddPath("kde", sPath &/ sStyle)
+              AddPath("gnome", sPath &/ sStyle)
             Next
           Endif 
           
@@ -231,38 +232,44 @@ Static Public Function _get(Key As String) As Picture
       sFile = Key & ".png"
     Endif
   
-    If Left(sPath) = "/" Then   
-      sTemplate = sPath &/ "&1x&1" &/ sFile
-    Else 
-      sTemplate = sPath &/ "&1" &/ sFile
-    Endif 
-    
-    Try hPict = Picture[Subst(sTemplate, iSize)]
-    If hPict Then Return hPict
-    
-    hImage = Null
-    
-    For Each iTry In $aSizeInc
-      If iTry <= iSize Then Continue
-      Try hImage = Image.Load(Subst(sTemplate, iTry))
-      If Not Error Then Break
-    Next
-    
-    If Not hImage Then 
-    
-      For Each iTry In $aSizeDec
-        If iTry >= iSize Then Continue
+    'If File.Dir(sFile) = "filesystems" Then sFile &= ";places" &/ File.Name(sFile)
+  
+    For Each sFile In Split(sFile, ";")
+  
+      If Left(sPath) = "/" Then   
+        sTemplate = sPath &/ "&1x&1" &/ sFile
+      Else 
+        sTemplate = sPath &/ "&1" &/ sFile
+      Endif 
+      
+      Try hPict = Picture[Subst(sTemplate, iSize)]
+      If hPict Then Return hPict
+      
+      hImage = Null
+      
+      For Each iTry In $aSizeInc
+        If iTry <= iSize Then Continue
         Try hImage = Image.Load(Subst(sTemplate, iTry))
         If Not Error Then Break
       Next
-    
-    Endif
-    
-    If hImage Then  
-      hPict = hImage.Stretch(iSize, iSize, True).Picture
-      Picture[Subst(sTemplate, iSize)] = hPict
-      Return hPict
-    Endif
+      
+      If Not hImage Then 
+      
+        For Each iTry In $aSizeDec
+          If iTry >= iSize Then Continue
+          Try hImage = Image.Load(Subst(sTemplate, iTry))
+          If Not Error Then Break
+        Next
+      
+      Endif
+      
+      If hImage Then  
+        hPict = hImage.Stretch(iSize, iSize, True).Picture
+        Picture[Subst(sTemplate, iSize)] = hPict
+        Return hPict
+      Endif
+      
+    Next
 
   Next
   

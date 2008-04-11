@@ -552,6 +552,142 @@ BEGIN_METHOD(CIMAGE_draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER 
 
 END_METHOD
 
+// Fast algorithm not really accurate.
+
+BEGIN_METHOD_VOID(CIMAGE_make_gray)
+
+	QImage *img = THIS->image;
+	
+	uchar *b = img->bits();
+	uchar *g = b + 1;
+	uchar *r = b + 2;
+
+	uchar *end = img->bits() + img->numBytes();
+
+	while (b != end) 
+	{
+		*b = *g = *r = (((*r + *b) >> 1) + *g) >> 1; // (r + b + g) / 3
+
+		b += 4;
+		g += 4;
+		r += 4;
+	}
+
+END_METHOD
+
+// Comes from the GIMP
+
+typedef
+	struct {
+		float r;
+		float b;
+		float g;
+		float a;
+		}
+	RGB;
+
+static void color_to_alpha(RGB *src, const RGB *color)
+{
+  RGB alpha;
+
+  alpha.a = src->a;
+
+  if (color->r < 0.0001)
+    alpha.r = src->r;
+  else if (src->r > color->r)
+    alpha.r = (src->r - color->r) / (1.0 - color->r);
+  else if (src->r < color->r)
+    alpha.r = (color->r - src->r) / color->r;
+  else alpha.r = 0.0;
+
+  if (color->g < 0.0001)
+    alpha.g = src->g;
+  else if (src->g > color->g)
+    alpha.g = (src->g - color->g) / (1.0 - color->g);
+  else if (src->g < color->g)
+    alpha.g = (color->g - src->g) / (color->g);
+  else alpha.g = 0.0;
+
+  if (color->b < 0.0001)
+    alpha.b = src->b;
+  else if (src->b > color->b)
+    alpha.b = (src->b - color->b) / (1.0 - color->b);
+  else if (src->b < color->b)
+    alpha.b = (color->b - src->b) / (color->b);
+  else alpha.b = 0.0;
+
+  if (alpha.r > alpha.g)
+    {
+      if (alpha.r > alpha.b)
+        {
+          src->a = alpha.r;
+        }
+      else
+        {
+          src->a = alpha.b;
+        }
+    }
+  else if (alpha.g > alpha.b)
+    {
+      src->a = alpha.g;
+    }
+  else
+    {
+      src->a = alpha.b;
+    }
+
+  if (src->a < 0.0001)
+    return;
+
+  src->r = (src->r - color->r) / src->a + color->r;
+  src->g = (src->g - color->g) / src->a + color->g;
+  src->b = (src->b - color->b) / src->a + color->b;
+
+  src->a *= alpha.a;
+}
+
+BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
+
+	QImage *img = THIS->image;
+	uchar *b = img->bits();
+	uchar *g = b + 1;
+	uchar *r = b + 2;
+	uchar *a = b + 3;
+	uchar *end = img->bits() + img->numBytes();
+	uint color = VARGOPT(color, 0xFFFFFFL);
+	RGB rgb_color;
+	RGB rgb_src;
+
+	THIS->image->setAlphaBuffer(true);
+
+	rgb_color.b = (color & 0xFF) / 255.0;
+	rgb_color.g = ((color >> 8) & 0xFF) / 255.0;
+	rgb_color.r = ((color >> 16) & 0xFF) / 255.0;
+	rgb_color.a = 1.0;
+
+	while (b != end) 
+	{
+		rgb_src.b = *b / 255.0;
+		rgb_src.g = *g / 255.0;
+		rgb_src.r = *r / 255.0;
+		rgb_src.a = *a / 255.0;
+		
+		color_to_alpha(&rgb_src, &rgb_color);
+	
+		*b = 255.0 * rgb_src.b + 0.5;
+		*g = 255.0 * rgb_src.g + 0.5;
+		*r = 255.0 * rgb_src.r + 0.5;
+		*a = 255.0 * rgb_src.a + 0.5;
+	
+		b += 4;
+		g += 4;
+		r += 4;
+		a += 4;
+	}
+
+END_METHOD
+
+
 
 GB_DESC CImageDesc[] =
 {
@@ -592,6 +728,8 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
   GB_METHOD("Fill", NULL, CIMAGE_fill, "(Color)i"),
   GB_METHOD("Replace", NULL, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
+  GB_METHOD("MakeGray", NULL, CIMAGE_make_gray, NULL),
+  GB_METHOD("MakeTransparent", NULL, CIMAGE_make_transparent, "[(Color)i]"),
   //GB_METHOD("Mask", NULL, CPICTURE_mask, "[(Color)i]"),
 
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),

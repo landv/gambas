@@ -217,15 +217,15 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
           'hCtrl = NEW (sClass, hParent)
         Endif
 
-        If NOT hCtrl Then
+        If Not hCtrl Then
           'PRINT "DrawingArea: sClass"
           hCtrl = New DrawingArea(hParent)
           hCtrl.Merge = True
           'hCtrl.Text = sClass & " ?"
           hCtrl.Design = True
         Else
-          hCtrl.Design = NOT IsContainer()
-          If NOT IsMultiContainer() Then
+          hCtrl.Design = Not IsContainer()
+          If Not IsMultiContainer() Then
             Try hCtrl.Text = sName
           Endif
         Endif
@@ -260,6 +260,7 @@ End
 Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As FForm)
 
   Dim hCtrl As Object
+  Dim iDim As Integer
 
   Name = sName
   Kind = sClass
@@ -293,7 +294,8 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
         'PRINT sName; " is virtual"
         hCtrl = CreateControl(sName, sClass, Parent.Control)
         'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
-        hCtrl.ResizeScaled(5.0, 5.0)
+        iDim = (40 + Desktop.Scale - 1) Div Desktop.Scale
+        hCtrl.ResizeScaled(iDim, iDim)
 
       Else
 
@@ -364,8 +366,8 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   'IF sProp = "Background" THEN STOP
 
-  If NOT IsNull(vDefault) Then
-    If NOT IsNull(vVal) Then
+  If Not IsNull(vDefault) Then
+    If Not IsNull(vVal) Then
        If vVal = vDefault Then
         vVal = Null
         'PRINT "Default !"
@@ -376,8 +378,8 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   If hProp.DoNotApply Then Goto _DO_NOT_APPLY
   If bDoNotApply Then Goto _DO_NOT_APPLY
   If Unknown Then 
-    If NOT hProp.Coord Then 
-      If sProp <> "Background" AND sProp <> "Foreground" Then 
+    If Not hProp.Coord Then 
+      If sProp <> "Background" And sProp <> "Foreground" Then 
         Goto _DO_NOT_APPLY
       Endif
     Endif
@@ -396,7 +398,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
     Endif
   Endif
 
-  If NOT IsNull(vRealVal) Then
+  If Not IsNull(vRealVal) Then
 
     Select hProp.Type
 
@@ -409,7 +411,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
       Case "Color"
 
         If IsString(vRealVal) Then
-          If NOT IsNull(Val(vRealVal)) Then
+          If Not IsNull(Val(vRealVal)) Then
             vRealVal = Val(vRealVal)
           Else
             vRealVal = Object.GetProperty(Color, vRealVal)
@@ -418,7 +420,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
       Case "Picture"
 
-        If vRealVal LIKE "icon:/*" Then 
+        If vRealVal Like "icon:/*" Then 
           hPict = Picture[vRealVal]
         Else
           hPict = Picture.Load(File.Dir(Project.Path) &/ vRealVal)
@@ -433,7 +435,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
         If IsNull(vConstVal) Then vConstVal = vRealVal
         'ENDIF
 
-        If NOT IsNull(vConstVal) Then
+        If Not IsNull(vConstVal) Then
           vRealVal = CInt(CComponent.Classes[hProp.ConstantClass].Symbols[vConstVal].Value)
         Else 
           vRealVal = Null
@@ -503,7 +505,7 @@ Public Function GetProperty(sProp As String) As Variant
 
     vVal = Object.GetProperty(Control, sProp)
 
-    If NOT IsNull(vVal) Then
+    If Not IsNull(vVal) Then
       If hProp.Type = "Font" Then vVal = vVal.ToString()
     Endif
 
@@ -573,7 +575,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
     Case "Color"
 
       vVal = CStr(vVal)
-      If NOT IsNull(Val(vVal)) Then
+      If Not IsNull(Val(vVal)) Then
         Return "&H" & Hex$(vVal, 6) & "&"
       Else
         Return vVal
@@ -686,9 +688,9 @@ Static Public Function CheckName(sName As String) As Boolean
   Dim iInd As Integer
 
   ' Control and group names can be void
-  If NOT sName Then Return
+  If Not sName Then Return
 
-  If NOT IsLetter(Left(sName)) Then Return True
+  If Not IsLetter(Left(sName)) Then Return True
 
   For iInd = 2 To Len(sName)
     If InStr("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", UCase(Mid$(sName, iInd, 1))) = 0 Then
@@ -800,7 +802,7 @@ Public Sub UnSelect(hForm As FForm, Optional bDoNotRemove As Boolean)
 
   If IsNull(Parent) Then Return
 
-  If NOT Selected Then Return
+  If Not Selected Then Return
 
   For iInd = 0 To 7
     $hHandle[iInd].Delete
@@ -811,7 +813,7 @@ Public Sub UnSelect(hForm As FForm, Optional bDoNotRemove As Boolean)
 
   Selected = False
 
-  If NOT bDoNotRemove Then
+  If Not bDoNotRemove Then
     hForm.Selection.Remove(Name)
     If hForm.Master = Me Then hForm.Master = Null
   Endif
@@ -893,7 +895,7 @@ Private Sub MoveAllHandle()
 
   Dim iInd As Integer
 
-  If NOT Selected Then Return
+  If Not Selected Then Return
   If $bDoNotMoveHandle Then Return
 
   For iInd = 0 To 7
@@ -905,7 +907,7 @@ End
 
 Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
 
-  If NOT bFree Then
+  If Not bFree Then
     X = Grid(X, Project.Snap)
     Y = Grid(Y, Project.Snap)
     'X = Grid(X, Desktop.Scale)
@@ -938,7 +940,7 @@ Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
 
   If Virtual Then Return
 
-  If NOT bFree Then
+  If Not bFree Then
     W = Grid(W, Project.Snap)
     H = Grid(H, Project.Snap)
     'W = Grid(W, Desktop.Scale)
@@ -967,7 +969,7 @@ Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer,
     Return
   Endif
 
-  If NOT bFree Then
+  If Not bFree Then
     X = Grid(X, Project.Snap)
     Y = Grid(Y, Project.Snap)
     W = Grid(W, Project.Snap)
@@ -1030,11 +1032,11 @@ Public Procedure Panel_MouseMove()
   Dim iXP As Integer
   Dim iYP As Integer
 
-  If NOT $bMove Then Return
+  If Not $bMove Then Return
 
   'PRINT "Panel_MouseMove"
 
-  CControl.SetGrid(NOT Mouse.Shift)
+  CControl.SetGrid(Not Mouse.Shift)
 
   hPanel = Last
   hCtrl = Control
@@ -1086,15 +1088,15 @@ Public Procedure Panel_MouseMove()
 
   End Select
 
-  If (iW > 0) AND (iH > 0) Then
+  If (iW > 0) And (iH > 0) Then
 
-    If (iX <> hCtrl.X) OR (iY <> hCtrl.Y) Then
-      If (iW <> hCtrl.W) OR (iH <> hCtrl.H) Then
+    If (iX <> hCtrl.X) Or (iY <> hCtrl.Y) Then
+      If (iW <> hCtrl.W) Or (iH <> hCtrl.H) Then
         MoveAndResize(iX, iY, iW, iH)
       Else
         Move(iX, iY)
       Endif
-    Else If (iW <> hCtrl.W) OR (iH <> hCtrl.H) Then
+    Else If (iW <> hCtrl.W) Or (iH <> hCtrl.H) Then
       Resize(iW, iH)
     Endif
 
@@ -1133,7 +1135,7 @@ Static Public Function Grid(iVal As Integer, iGrid As Integer) As Integer
   'ENDIF
 
   If $bGrid Then
-    iMod = iVal MOD iGrid
+    iMod = iVal Mod iGrid
     If (iMod < 0) Then iMod = iMod + iGrid
 
     If iMod < (iGrid \ 2) Then
@@ -1184,7 +1186,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
     'PRINT Name; "."; sProp
 
-    If NOT cProp.Exist(sProp) Then Continue
+    If Not cProp.Exist(sProp) Then Continue
 
     hProp = cProp[sProp]
 
@@ -1204,7 +1206,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
     '    GOTO _SUIVANT
     '  ENDIF
     'ELSE
-    If NOT hProp.Required Then
+    If Not hProp.Required Then
       If IsNull(vVal) Then Continue
     Endif
     'ENDIF
@@ -1218,7 +1220,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
       vVal = ConvertToString(vVal, hProp)
     Endif
 
-    If hProp.Coord AND NOT hProp.Virtual Then
+    If hProp.Coord And Not hProp.Virtual Then
 
       cCoord[sProp] = vVal
 
@@ -1241,7 +1243,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
         
           aVal = vVal.Copy()
           
-          If NOT aVal Then
+          If Not aVal Then
           
             sLine &= "NULL"
             
@@ -1252,7 +1254,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
             For iInd = 0 To aVal.Max
               sVal = Quote(aVal[iInd])
               If hProp.Translate Then sVal = "(" & sVal & ")"
-              If iInd MOD 32 = 0 Then
+              If iInd Mod 32 = 0 Then
                 If iInd Then 
                   sLine &= "]"
                   If iInd > 32 Then sLine &= ")"
@@ -1273,7 +1275,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           sLine = sLine & "Font[" & Chr$(34) & vVal & Chr$(34) & "]"
 
         Case "Color"
-          If NOT IsNull(Val(vVal)) Then
+          If Not IsNull(Val(vVal)) Then
             sLine = sLine & vVal
           Else
             sLine = sLine & "Color." & vVal
@@ -1401,7 +1403,7 @@ Public Function GetGroup() As String
   Dim sGroup As String
 
   sGroup = GetProperty(CPropertyInfo.EVENT_NAME)
-  If NOT sGroup Then sGroup = Name
+  If Not sGroup Then sGroup = Name
   Return sGroup
 
 End

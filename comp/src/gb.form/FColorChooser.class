@@ -78,6 +78,7 @@ PRIVATE SUB RefreshColor(OPTIONAL bRGB AS Boolean = TRUE, OPTIONAL bHSV AS Boole
 
   sldValue.Value = 255 - $iVal
   IF panAlpha.Visible THEN
+    sldAlpha.Value = txtA.Value
     txtHexa.Text = Hex$($iColor, 8)
   ELSE 
     txtHexa.Text = Hex$($iColor, 6)
@@ -130,7 +131,7 @@ PUBLIC SUB Form_Resize()
 
   DIM H AS Integer
 
-  $iSize = Max(12, Min(Min(dwgColor.W / $aHue.Count, boxColor.H / 2 / NCOLH), 32))
+  $iSize = Max(8, Min(Min((dwgColor.W - 1) / $aHue.Count, (boxColor.H - 1) / 2 / NCOLH), 32))
   H = $iSize * NCOLH + 7
   dwgColor.H = H
 
@@ -356,4 +357,33 @@ PUBLIC SUB SetAlpha(Value AS Boolean)
   panAlpha.Visible = Value
   IF NOT Value THEN txtA.Value = 0
   
+END
+
+PUBLIC SUB txtHexa_Change()
+
+  DIM iColor AS Integer
+
+  IF $bLock THEN RETURN
+  IF panAlpha.Visible THEN 
+    IF txtHexa.Length <> 8 THEN RETURN 
+  ELSE 
+    IF txtHexa.Length <> 6 THEN RETURN 
+  ENDIF
+  iColor = Val("&H" & txtHexa.Text & "&")
+  IF iColor = $iColor THEN RETURN
+  $iColor = iColor
+  RefreshColor(TRUE, TRUE)
+
+END
+
+PUBLIC SUB sldAlpha_Change()
+
+  txtA.Value = sldAlpha.Value
+
+END
+
+PUBLIC SUB panInfoColor_Arrange()
+
+  panColor.H = Min(panInfoColor.W, panInfoColor.H - txtHexa.Y - txtHexa.H - Desktop.Scale)
+
 END

@@ -1,15 +1,15 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(34,23.75,48.625,57)
+  MoveScaled(34,23.6667,49,60)
   Text = ("Client socket example ")
   Border = Window.Fixed
   { Button1 Button
-    MoveScaled(31,7,17,3)
+    MoveScaled(31,7,17,4)
     Text = ("Connect")
   }
   { TextArea1 TextArea
-    MoveScaled(1,41,47,15)
+    MoveScaled(1,44,47,15)
     Text = ("")
     ReadOnly = True
   }
@@ -19,50 +19,50 @@
     Delay = 10
   }
   { Button2 Button
-    MoveScaled(31,10,17,3)
+    MoveScaled(31,12,17,4)
     Enabled = False
     Text = ("Close")
   }
   { TextBox1 TextBox
-    MoveScaled(11,7,18,3)
+    MoveScaled(11,7,18,4)
     Text = ("localhost")
   }
   { Label1 Label
-    MoveScaled(1,7,9,3)
+    MoveScaled(1,7,9,4)
     Text = ("Host :")
   }
   { Label2 Label
-    MoveScaled(1,10,9,3)
+    MoveScaled(1,12,9,4)
     Text = ("Port :")
   }
   { TextBox2 TextBox
-    MoveScaled(11,10,18,3)
+    MoveScaled(11,12,18,4)
     Text = ("7")
   }
   { TextLabel1 TextLabel
-    MoveScaled(1,37,47,3)
+    MoveScaled(1,40,47,4)
     Text = ("Data Received :")
   }
   { TextArea2 TextArea
-    MoveScaled(1,24,47,6)
+    MoveScaled(1,27,47,6)
     Enabled = False
     Text = ("")
   }
   { Button3 Button
-    MoveScaled(13,31,23,4)
+    MoveScaled(13,34,23,4)
     Enabled = False
     Text = ("Send Data")
   }
   { Label4 Label
-    MoveScaled(1,21,47,2)
+    MoveScaled(1,24,47,3)
     Text = ("Write here data to send, then press \"Send Data\"")
   }
   { Label5 Label
-    MoveScaled(1,1,17,3)
+    MoveScaled(1,1,17,4)
     Text = ("Select protocol :")
   }
   { CmbProtocol ComboBox
-    MoveScaled(20,1,19,3)
+    MoveScaled(19,1,29,4)
     Text = (" ")
     ReadOnly = True
     List = [("TCP"), ("UNIX")]
@@ -73,7 +73,7 @@
     Port = 7
   }
   { Label3 TextLabel
-    MoveScaled(1,14,47,6)
+    MoveScaled(1,17,47,6)
     Font = Font["Bold"]
     Text = ("")
     Alignment = Align.Center

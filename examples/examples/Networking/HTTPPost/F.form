@@ -1,51 +1,51 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
-{ F Form
-  Move(229,76,577,545)
+{ Form Form
+  MoveScaled(38.1667,12.6667,95,85)
   Text = ("Internet Calculator")
   Border = Window.Fixed
   { Button1 Button
-    Move(224,104,88,24)
+    MoveScaled(37,18,14.6667,4)
     Text = ("Post")
   }
   { TextArea1 TextArea
-    Move(8,392,560,144)
+    MoveScaled(1,60,93,24)
     Text = ("")
   }
   { TextArea2 TextArea
-    Move(8,248,560,96)
+    MoveScaled(1,39,93,16)
     Text = ("")
   }
   { Label1 Label
-    Move(16,216,536,24)
+    MoveScaled(1,35,89.3333,4)
     Text = ("HTTP Header :")
   }
   { Label2 Label
-    Move(16,360,544,24)
+    MoveScaled(1,56,90.6667,4)
     Text = ("HTTP Data :")
   }
   { Label3 Label
-    Move(24,48,192,24)
+    MoveScaled(4,8,32,4)
     Text = ("Write Here a Number :")
   }
   { Label4 Label
-    Move(24,72,192,24)
+    MoveScaled(4,13,32,4)
     Text = ("Write Here Another Number :")
   }
   { TextBox1 TextBox
-    Move(224,48,88,24)
+    MoveScaled(37,8,14.6667,4)
     Text = ("5")
   }
   { TextBox2 TextBox
-    Move(224,72,88,24)
+    MoveScaled(37,13,14.6667,4)
     Text = ("5")
   }
   { Label5 Label
-    Move(24,104,192,24)
+    MoveScaled(4,18,32,4)
     Text = ("Finally Press Post button ->")
   }
   { TextLabel1 TextLabel
-    Move(0,0,576,40)
+    MoveScaled(0,0,96,6)
     Font = Font["Bold"]
     Background = &H101A9E&
     Foreground = &HF7F02A&
@@ -53,35 +53,35 @@
     Alignment = Align.Center
   }
   { Label6 Label
-    Move(360,40,200,40)
+    MoveScaled(60,8,34,5)
     Font = Font["12,Bold"]
     Background = &H092773&
     Foreground = &HFFFFFF&
     Text = ("")
   }
   { Label7 Label
-    Move(360,80,200,40)
+    MoveScaled(60,14,34,5)
     Font = Font["12,Bold"]
     Background = &H092773&
     Foreground = &HFFFFFF&
     Text = ("")
   }
   { LblInfo Label
-    Move(360,128,200,24)
+    MoveScaled(60,20,34,4)
     Font = Font["Bold"]
     Background = &H003DB6&
     Foreground = &HFFFF00&
     Text = ("")
   }
   { Frame1 Frame
-    Move(16,160,536,48)
+    MoveScaled(1,26,93,8)
     Text = ("")
     { ChkProxy CheckBox
-      Move(16,8,112,24)
+      MoveScaled(1,2,18.6667,4)
       Text = ("Use Proxy")
     }
     { TxtProxy TextBox
-      Move(144,8,368,24)
+      MoveScaled(24,2,67,4)
       Enabled = False
       Text = ("127.0.0.1:3128")
     }

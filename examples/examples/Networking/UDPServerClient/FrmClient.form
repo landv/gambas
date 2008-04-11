@@ -1,17 +1,14 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
-{ FrmClient Form
-  MoveScaled(10.25,48.625,59.75,43)
-  'Move(82,389,478,344)
+{ Form Form
+  MoveScaled(10.1667,48.5,59.6667,43)
   Text = ("Client")
   Border = Window.Fixed
   { Panel2 Panel
     MoveScaled(0,0,60,43)
-    'Move(0,0,480,344)
     Background = &H4F87E7&
     { Label3 Label
-      MoveScaled(0,1,29,3)
-      'Move(0,8,232,24)
+      MoveScaled(0,1,29,4)
       Font = Font["Bold"]
       Background = &H4F87E7&
       Foreground = &HFFFF7F&
@@ -19,8 +16,7 @@
       Alignment = Align.Center
     }
     { Label4 Label
-      MoveScaled(1,5,12,3)
-      'Move(8,40,96,24)
+      MoveScaled(1,5,12,4)
       Font = Font["Bold"]
       Background = &H4F87E7&
       Foreground = &HFFFF7F&
@@ -28,8 +24,7 @@
       Alignment = Align.Center
     }
     { Label5 Label
-      MoveScaled(1,8,12,3)
-      'Move(8,64,96,24)
+      MoveScaled(1,9,12,4)
       Font = Font["Bold"]
       Background = &H4F87E7&
       Foreground = &HFFFF7F&
@@ -37,41 +32,35 @@
       Alignment = Align.Center
     }
     { TxtIP TextBox
-      MoveScaled(14,5,14,3)
-      'Move(112,40,112,24)
+      MoveScaled(14,5,14,4)
       Text = ("127.0.0.1")
     }
     { TxtPort TextBox
-      MoveScaled(14,8,8,3)
-      'Move(112,64,64,24)
+      MoveScaled(14,10,8,4)
       Text = ("32340")
     }
     { Button2 Button
-      MoveScaled(35,5,11,3)
-      'Move(280,40,88,24)
+      MoveScaled(35,5,11,4)
       Text = ("Start !")
     }
     { TxtData TextBox
-      MoveScaled(2,19,42,3)
-      'Move(16,152,336,24)
+      MoveScaled(2,19,42,4)
       Enabled = False
       Text = ("")
     }
     { Button3 Button
-      MoveScaled(47,19,10,3)
-      'Move(376,152,80,24)
+      MoveScaled(45,19,13,4)
       Enabled = False
       Text = ("Send Data")
+      Default = True
     }
     { TxtRecClient TextArea
       MoveScaled(2,24,56,17)
-      'Move(16,192,448,136)
       Text = ("")
       ReadOnly = True
     }
     { Label1 Label
-      MoveScaled(2,15,53,2)
-      'Move(16,120,424,16)
+      MoveScaled(2,15,53,3)
       Font = Font["Bold"]
       Background = &H4F87E7&
       Foreground = &HFFFF00&

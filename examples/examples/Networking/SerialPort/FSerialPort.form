@@ -1,72 +1,72 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(70.125,26.625,51.625,59.875)
+  MoveScaled(70,26.5,52,60)
   Text = ("Serial Port")
   { TextLabel1 TextLabel
-    MoveScaled(1,2,21,3)
+    MoveScaled(1,1,21,4)
     Text = ("Port Name :")
   }
   { TxtPort TextBox
-    MoveScaled(23,2,15,3)
+    MoveScaled(23,1,15,4)
     Text = ("/dev/ttyS0")
   }
   { TextLabel2 TextLabel
-    MoveScaled(1,6,21,3)
+    MoveScaled(1,6,21,4)
     Text = ("Speed :")
   }
   { CmbSpeed ComboBox
-    MoveScaled(23,6,15,3)
+    MoveScaled(23,6,15,4)
     Text = ("")
     ReadOnly = True
     List = [("1200"), ("2400"), ("9600"), ("19200"), ("38400")]
   }
   { TextLabel3 TextLabel
-    MoveScaled(1,10,21,3)
+    MoveScaled(1,11,21,4)
     Text = ("Parity :")
   }
   { TextLabel4 TextLabel
-    MoveScaled(1,14,21,3)
+    MoveScaled(1,16,21,4)
     Text = ("Data Bits :")
   }
   { TextLabel5 TextLabel
-    MoveScaled(1,18,21,3)
+    MoveScaled(1,21,21,4)
     Text = ("Stop Bits :")
   }
   { CmbParity ComboBox
-    MoveScaled(23,10,15,3)
+    MoveScaled(23,11,15,4)
     Text = ("")
     ReadOnly = True
     List = [("None"), ("Even"), ("Odd")]
   }
   { CmbData ComboBox
-    MoveScaled(23,14,15,3)
+    MoveScaled(23,16,15,4)
     Text = ("")
     ReadOnly = True
     List = [("8"), ("7"), ("6"), ("5")]
   }
   { CmbStop ComboBox
-    MoveScaled(23,18,15,3)
+    MoveScaled(23,21,15,4)
     Text = ("")
     ReadOnly = True
     List = [("1"), ("2")]
   }
   { Button1 Button
-    MoveScaled(23,22,15,3)
+    MoveScaled(40,26,11,4)
     Text = ("Open")
   }
   { TxtSend TextBox
-    MoveScaled(1,38,43,3)
+    MoveScaled(1,37,43,4)
     Text = ("")
   }
   { TextLabel6 TextLabel
-    MoveScaled(1,34,50,3)
+    MoveScaled(1,32,50,4)
     Foreground = &H030303&
     Text = ("Write data then press \"CR\"")
     Alignment = Align.Center
   }
   { Button2 Button
-    MoveScaled(45,38,6,3)
+    MoveScaled(45,37,6,4)
     Text = ("CR")
   }
   { TextArea1 TextArea
@@ -74,35 +74,35 @@
     Text = ("")
   }
   { ChkDSR CheckBox
-    MoveScaled(39,14,11,3)
+    MoveScaled(40,17,11,4)
     Text = ("DSR")
   }
   { ChkDTR CheckBox
-    MoveScaled(39,2,11,3)
+    MoveScaled(40,1,11,4)
     Text = ("DTR")
   }
   { ChkRTS CheckBox
-    MoveScaled(39,5,11,3)
+    MoveScaled(40,5,11,4)
     Text = ("RTS")
   }
   { ChkCTS CheckBox
-    MoveScaled(39,8,11,3)
+    MoveScaled(40,9,11,4)
     Text = ("CTS")
   }
   { ChkDCD CheckBox
-    MoveScaled(39,11,11,3)
+    MoveScaled(40,13,11,4)
     Text = ("DCD")
   }
   { ChkRNG CheckBox
-    MoveScaled(39,17,11,3)
+    MoveScaled(40,21,11,4)
     Text = ("RNG")
   }
   { Label1 Label
-    MoveScaled(1,27,15,3)
+    MoveScaled(1,26,15,4)
     Text = ("Flow control :")
   }
   { ComboBox1 ComboBox
-    MoveScaled(18,27,20,3)
+    MoveScaled(23,26,15,4)
     Text = (" ")
     ReadOnly = True
     List = [("NONE"), ("CRTSCTS"), ("XON/XOFF"), ("CRTSCTS + XON/XOFF")]

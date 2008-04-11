@@ -131,9 +131,9 @@ Public Sub dwgHandle_Draw()
   Draw.FillX = 0
   Draw.FillY = 0
   If $bVertical Then
-    Draw.Style.Handle(2, 2, dwgHandle.W - 4, 4, $bVertical, Not Me.Enabled)
+    Draw.Style.Handle(0, 0, dwgHandle.W, 8, $bVertical, Not Me.Enabled)
   Else
-    Draw.Style.Handle(2, 2, 4, dwgHandle.H - 4, $bVertical, Not Me.Enabled)
+    Draw.Style.Handle(0, 0, 8, dwgHandle.H, $bVertical, Not Me.Enabled)
   Endif
   
 End

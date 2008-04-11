@@ -262,6 +262,19 @@ BEGIN_METHOD(CIMAGE_replace, GB_INTEGER src; GB_INTEGER dst; GB_BOOLEAN noteq)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(CIMAGE_make_gray)
+
+	IMAGE->makeGray();
+
+END_METHOD
+
+BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
+
+	IMAGE->makeTransparent(VARGOPT(color, 0xFFFFFF));
+
+END_METHOD
+
+
 
 
 /*******************************************************************************
@@ -347,6 +360,8 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Clear", 0, CIMAGE_clear, 0),
   GB_METHOD("Fill", 0, CIMAGE_fill, "(Color)i"),
   GB_METHOD("Replace", 0, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
+  GB_METHOD("MakeGray", NULL, CIMAGE_make_gray, NULL),
+  GB_METHOD("MakeTransparent", NULL, CIMAGE_make_transparent, "[(Color)i]"),
 
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i[(Smooth)b]"),
