@@ -310,6 +310,10 @@ __VARIANT:
   THROW(E_TYPE, "Number", TYPE_get_name(type));
 
 __BOOLEAN:
+  
+  P1->_integer.value ^= (value & 1) ? -1 : 0;
+  goto *jump_end;
+
 __BYTE:
 __SHORT:
 __INTEGER:

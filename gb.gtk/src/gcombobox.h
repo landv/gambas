@@ -18,17 +18,17 @@ public:
 	virtual char *text();
 
 	void setIndex(int vl);
-	void setItemText(int ind,char *txt);
+	void setItemText(int ind, const char *txt);
 	//void setList(char **vl);
 	virtual void setReadOnly(bool vl);
 	void setSorted(bool vl);
-	virtual void setText(char *vl);
+	virtual void setText(const char *vl);
 
 //"Methods"
 	void popup();
-	void add(char *vl, int pos = -1);
+	void add(const char *vl, int pos = -1);
 	virtual void clear();
-	int find(char *ptr);
+	int find(const char *ptr);
 	void remove(int pos);
 	
 	virtual void resize(int w, int h);

@@ -188,6 +188,7 @@ PRIVATE FUNCTION GetHelpTextFromFile(SymbolHelpPath AS String) AS String
   DIM sResult AS String
   DIM iPos AS Integer
   DIM iPos2 AS Integer
+  DIM sWord AS String
   
   bGrabNextLine = FALSE
   sResult = ""
@@ -210,12 +211,13 @@ PRIVATE FUNCTION GetHelpTextFromFile(SymbolHelpPath AS String) AS String
       
       sInputLine = Replace(sInputLine, "</a>", "")
     
-      sResult &= " " & Trim(sInputLine)
-      iPos = InStr(sResult, ".")
-      IF iPos THEN
-        sResult = Left(sResult, iPos)
-        BREAK 
-      ENDIF
+      FOR EACH sWord IN Split(Trim(sInputLine), " \n")
+        sResult &= " " & sWord
+        iPos = InStr(sWord, ".")
+        IF iPos > 0 AND IF iPos = Len(sWord) THEN BREAK
+      NEXT
+      IF iPos > 0 AND IF iPos = Len(sWord) THEN BREAK
+
     ELSE 
       IF Right(RTrim(sInputLine), 6) = "</pre>" THEN 
         bGrabNextLine = TRUE

@@ -1858,7 +1858,7 @@ PUBLIC FUNCTION MakeExecutable(OPTIONAL bDoNotIncVersion AS Boolean, OPTIONAL bS
   
     sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Quote.Shell(ExecPath) & " " & Quote.Shell(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1" 
     SHELL sExec WAIT
-  
+    IF Process.LastValue THEN Error.Raise(Trim(File.Load(OUTPUT_FILE)))
     'SetMessage(("OK"))
     
     IF NOT VersionProgram THEN INC ReleaseVersion
@@ -1883,7 +1883,7 @@ _ERROR:
 
 CATCH 
 
-  FGambas.Error(("Cannot make executable.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  FGambas.Error(("Cannot make executable.") & "\n\n" & Error.Text) ' & "\n" & Error.Where)
   EnableRefresh
   RETURN TRUE
 
