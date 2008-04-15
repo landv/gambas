@@ -1,0 +1,233 @@
+' Gambas class file
+Inherits UserControl
+Export
+ 
+Public Const ThisDay As Integer = 0
+Public Const FirstDayOfWeek As Integer = 1
+Public Const FirstDayOfMonth As Integer = 2
+Public Const FirstDayOfYear As Integer = 3
+
+Public Const _Properties As String = "*,Tag,HeightForm=200,WidthForm=300,FormatString=%dddd% %dd% %mmmm% %yyyy%,Value,Range,Alignment{Align.*}=Align.Center,Begin{DatePicker.*}=DatePicker.ThisDay"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "20,4"
+Public Const _DrawWith As String = "ComboBox"
+
+Private $hObserver As Observer
+
+Private $hHBox As HBox
+Private $hForm As Form
+Private $hButton As ToggleButton
+Private $hTextBox As TextBox
+Private $hdatechooser As DateChooser
+Private $iWidthForm As Integer
+Private $iHeightForm As Integer
+Private $hList As Integer
+Private $sFormat As String
+Private $iFin As Integer
+Private $iDebut As Integer
+Private htimer As timer
+Private IsActivate As Boolean
+Property Tag As Variant
+Property HeightForm As Integer
+Property WidthForm As Integer
+Property FormatString As String
+Property Value As Date
+Property Range As Integer
+Property Alignment As Integer
+Property Begin As Integer
+
+Event Change()
+
+Public Sub _New()
+  
+  Dim hPanel, hPanel2 As Panel
+  
+  hTimer = New timer As "hTimer"
+  htimer.delay = 100
+  hPanel2 = New Panel(Me)
+  hPanel2.Arrangement = Arrange.Horizontal
+  $hTextBox = New TextBox(hPanel2) As "TextBox"
+  $hTextBox.Expand = True
+  $hTextBox.Enabled = False
+  $hTextBox.ForeColor = Color.Black
+  $hButton = New ToggleButton(hPanel2) As "Button"
+  $hButton.Width = 40
+  $hButton.Picture = Picture["icon:/medium/calendar"]
+  
+  
+  $hForm = New Form As "LstForm"
+  Object.Attach($hForm, Me, "LstForm")
+  $hForm.Border = Form.None
+  $hForm.SkipTaskbar = True
+  $hForm.Arrangement = Arrange.Fill
+  $hForm.Stacking = Form.Above
+
+  HPanel = New Panel($hForm)
+  HPanel.Arrangement = Arrange.Fill
+  $hdatechooser = New DateChooser(HPanel) As "DateChooser"
+  Me.WidthForm = 300
+  Me.HeightForm = 200
+  $hForm.Resize($iWidthForm, $iHeightForm)
+  Me.FormatString = "%dddd% %dd% %mmmm% %yyyy%"
+  Me.Begin = ThisDay
+  Me.Value = Now()
+  Me.Alignment = Align.Center
+  $hObserver = New Observer(Me.Window) As "OBS"
+End
+
+Public Sub Form_Open()
+  Display_Text()
+End
+
+
+Public Sub Form_Resize()
+    $hForm.Resize($iWidthForm, $iHeightForm)
+End
+
+Public Sub Button_MouseDown()
+  $hForm.visible = Not (isActivate Or $hForm.visible)
+  isActivate = $hForm.visible
+  $hButton.Value = Not IsActivate
+End
+
+Public Sub TextBox_MouseDown()
+ Button_MouseDown
+  $hButton.Value = IsActivate
+End
+
+Public Sub LstForm_DeACtivate()
+  htimer.Start
+  $hForm.hide
+End
+
+Public Sub hTimer_Timer()
+  hTimer.Stop
+  isActivate = False
+  $hButton.Value = IsActivate
+End 
+
+Public Sub LstForm_Show()
+    If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
+      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
+    Else 
+      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
+    Endif
+End
+
+
+Private Function Tag_Read() As Variant
+  Return $hTextBox.Tag
+End
+
+Private Sub Tag_Write(Value As Variant)
+  $hTextBox.Tag = Value
+End
+
+Private Function Value_Read() As Date
+  Return $hdatechooser.Value
+End
+
+Private Sub Value_Write(d As Date)
+  $hdatechooser.Value = d
+  Display_Text()
+End
+
+Private Function WidthForm_Read() As Integer
+  Return $iWidthForm
+End
+
+Private Sub WidthForm_Write(Value As Integer)
+  $iWidthForm = Value
+  $hForm.Resize($iWidthForm, $iHeightForm)
+End
+
+Private Function HeightForm_Read() As Integer
+  Return $iHeightForm
+End
+
+Private Sub HeightForm_Write(Value As Integer)
+  $iHeightForm = Value
+  $hForm.Resize($iWidthForm, $iHeightForm)
+End
+
+Private Function FormatString_Read() As String
+  Return $sFormat
+End
+
+Private Sub FormatString_Write(Value As String)
+  $sFormat = Value
+End
+
+Private Function Range_Read() As Integer
+  Return $iFin
+End
+
+Private Sub Range_Write(Value As Integer)
+   $iFin = Value
+End
+
+Private Function Begin_Read() As Integer
+  Return $iDebut
+End
+
+Private Sub Begin_Write(Value As Integer)
+   $iDebut = Value
+End
+
+Private Function Alignment_Read() As Integer
+  Return $hTextBox.Alignment
+End
+
+Private Sub Alignment_Write(Value As Integer)
+   $hTextBox.Alignment = Value
+End
+
+Public Sub TextBox_Change()
+  Raise Change()
+End
+
+Private Sub Display_Text()
+  Dim form As New String[]
+  Dim ret As String
+  Dim d As Date
+  Dim s As String
+  d = $hdatechooser.Value
+  Select $iDebut
+  Case FirstDayOfWeek
+    d = DateAdd(d, gb.day, (- WeekDay(d) + 1))
+   d = Date(Year(d), Month(d), Day(d), 0, 0, 0)
+  Case FirstDayOfMonth
+    d = Date(Year(d), Month(d), 1, 0, 0, 0)
+   Case FirstDayOfYear
+    d = Date(Year(d), 1, 1, 0, 0, 0)
+  End Select
+ $hdatechooser.Value = d
+  
+  form = ["yy", "yyyy", "m", "mm", "mmm", "mmmm", "d", "dd", "ddd", "dddd", "h", "hh", "n", "nn", "s", "ss", "u"]
+  ret = $sFormat
+  ret = Replace$(ret, "%w%", CStr(Week(d)))
+  For Each s In form
+    ret = Replace$(ret, "%" & s & "%", Format$(d, s))
+  Next
+  If $iFin Then 
+    d = DateAdd(d, gb.Day, $iFin)
+    For Each s In form
+      ret = Replace$(ret, "%" & s & "2%", Format$(d, s))
+    Next
+  Endif
+  $hTextBox.Text = ret
+End
+
+Public Sub DateChooser_Change()
+ Display_Text()
+End
+
+Public Sub OBS_Move()
+  If $hForm.Visible Then 
+    If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
+      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
+    Else 
+      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
+    Endif
+  Endif
+End
