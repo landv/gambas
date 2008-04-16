@@ -1,46 +1,62 @@
 ' Gambas class file
 
-EXPORT
-INHERITS TextBox
+Export
+Inherits UserControl
+'Inherits TextBox
 
-PUBLIC CONST _Properties AS String = "*,-Password,-Text,-Alignment,Type{ValueBox.Date;Identifier;Number;Time}=Number,Allowed"
-PUBLIC CONST _DrawWith AS String = "TextBox"
+Public Const _Properties As String = "*,-Password,-Text,-Alignment,Type{ValueBox.Date;Identifier;Number;Time}=Number,Allowed,HeightForm=200,WidthForm=300"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "30,4"
+Public Const _DrawWith As String = "TextBox"
 
-PUBLIC CONST {Number} AS Integer = 0
-PUBLIC CONST {Date} AS Integer = 1
-PUBLIC CONST {Time} AS Integer = 2
-PUBLIC CONST {Identifier} AS Integer = 3
+Public Const {Number} As Integer = 0
+Public Const {Date} As Integer = 1
+Public Const {Time} As Integer = 2
+Public Const {Identifier} As Integer = 3
 'PUBLIC CONST {Currency} AS Integer = 2
 'PUBLIC CONST {MailAddress} AS Integer = 5
 'PUBLIC CONST {IPAddress} AS Integer = 6
 
-PROPERTY Value AS Variant
-PROPERTY Type AS Integer
-PROPERTY READ Text AS String
-PROPERTY Allowed AS String
+Private $hObserver As Observer
 
-PRIVATE $iType AS Integer
+Property Value As Variant
+Property Type As Integer
+Property Read Text As String
+Property Allowed As String
+Property HeightForm As Integer
+Property WidthForm As Integer
+
+Private $iType As Integer
 'PRIVATE $bNull AS Boolean
-PRIVATE $sAllowed AS String
+Private $sAllowed As String
 
-PRIVATE $sLast AS String
-PRIVATE $sLastGood AS String
+Private $sLast As String
+Private $sLastGood As String
 
-STATIC PRIVATE $sDateSep AS String
-STATIC PRIVATE $sTimeSep AS String
-STATIC PRIVATE $sDateFormat AS String
-STATIC PRIVATE $sTimeFormat AS String
-STATIC PRIVATE $sPointSep AS String
+Static Private $sDateSep As String
+Static Private $sTimeSep As String
+Static Private $sDateFormat As String
+Static Private $sTimeFormat As String
+Static Private $sPointSep As String
 
-PRIVATE $hTimer AS Timer
-PRIVATE $iWarnBackground AS Integer
-PRIVATE $iWarnForeground AS Integer
-PRIVATE $bWarnReadOnly AS Boolean
-PRIVATE $bDelete AS Boolean
+Private $hForm As Form
+Private $hButton As ToggleButton
+Private $hTextBox As TextBox
+Private $hdatechooser As DateChooser
+Private $iWidthForm As Integer
+Private $iHeightForm As Integer
+Private hTimer As Timer
+Private $hTimer As Timer
+Private IsActivate As Boolean
 
-STATIC PRIVATE SUB GetSeparators()
+Private $iWarnBackground As Integer
+Private $iWarnForeground As Integer
+Private $bWarnReadOnly As Boolean
+Private $bDelete As Boolean
+
+Static Private Sub GetSeparators()
   
-  IF $sDateSep THEN RETURN
+  If $sDateSep Then Return
   
   $sDateSep = Format$(Now, "/")
   $sTimeSep = Format$(Now, ":")
@@ -56,364 +72,388 @@ STATIC PRIVATE SUB GetSeparators()
   $sTimeFormat = Replace($sTimeFormat, "22", "nn")
   $sTimeFormat = Replace($sTimeFormat, "33", "ss")
 
-END
+End
 
-PUBLIC SUB _new()
-
-  DIM hObs AS Observer
+Public Sub _new()
+  Dim hPanel, hPanel2 As panel
 
   GetSeparators  
-  hObs = NEW Observer(ME) AS "TextBox"
-
+  
+  hTimer = New timer As "hTimer"
+  htimer.delay = 100
+  hPanel2 = New Panel(Me) As "Pan"
+  hPanel2.Arrangement = Arrange.Horizontal
+  $hTextBox = New TextBox(hPanel2) As "TextBox"
+  $hTextBox.Expand = True
+    $hButton = New ToggleButton(hPanel2) As "Button"
+    $hButton.Width = 32
+    $hButton.Picture = Picture["icon:/small/calendar"]
+    $hButton.Hide
+    $hForm = New Form As "LstForm"
+    Object.Attach($hForm, Me, "LstForm")
+    $hForm.Border = Form.None
+    $hForm.SkipTaskbar = True
+    $hForm.Arrangement = Arrange.Fill
+    $hForm.Stacking = Form.Above
+  
+    HPanel = New Panel($hForm)
+    HPanel.Arrangement = Arrange.Fill
+    $hdatechooser = New DateChooser(HPanel) As "DateChooser"
+    Me.WidthForm = 300
+    Me.HeightForm = 200
+    $hForm.Resize($iWidthForm, $iHeightForm)
+  $hObserver = New Observer(Me.Window) As "OBS"
   Type_Write(Number)
 
-END
+End
 
+Public Sub Pan_Arrange()
+  If Me.Type = {Date} Then $hButton.Show
+End
 
-PRIVATE FUNCTION Value_Read() AS Variant
+Private Function Value_Read() As Variant
 
-  SELECT CASE $iType
+  Select Case $iType
 
-    CASE Identifier
-      RETURN ME.Text
+    Case Identifier
+      Return $hTextBox.Text
       
-    CASE ELSE 
-      RETURN Val(ME.Text)
+    Case Else 
+      Return Val($hTextBox.Text)
   
-  END SELECT
+  End Select
   
-CATCH
+Catch
 
-END
+End
 
-PRIVATE SUB Value_Write(Value AS Variant)
+Private Sub Value_Write(Value As Variant)
 
-  SUPER.Text = Str(Value)
+  $hTextBox.Text = Str(Value)
   TextBox_LostFocus
 
-END
+End
 
-PRIVATE FUNCTION Type_Read() AS Integer
+Private Function Type_Read() As Integer
 
-  RETURN $iType
+  Return $iType
 
-END
+End
 
 
-PRIVATE SUB Type_Write(Type AS Integer)
+Private Sub Type_Write(Type As Integer)
 
-  DIM sVal AS String
+  Dim sVal As String
 
-  Object.Lock(ME)
+  Object.Lock(Me)
 
-  SUPER.Text = ""
-  ME.Alignment = Align.Right
+  $hTextBox.Text = ""
+  $hTextBox.Alignment = Align.Right
   'ME.Alignment = Align.Left
   
-  SELECT CASE Type
+  Select Case Type
 
-    CASE {Number}
-      SUPER.Text = "0"
+    Case {Number}
+      $hTextBox.Text = "0"
     
-    CASE {Date}, {Time}
-      SUPER.Text = ""
+    Case {Date}, {Time}
+      $hTextBox.Text = ""
     
-    CASE Identifier
-      SUPER.Text = ""
-      ME.Alignment = Align.Normal
+    Case Identifier
+      $hTextBox.Text = ""
+      $hTextBox.Alignment = Align.Normal
     
-    CASE ELSE
+    Case Else
       Type = $iType 
         
-  END SELECT
+  End Select
   
-  Object.Unlock(ME)
-  $sLast = ME.Text
+  Object.Unlock(Me)
+  $sLast = $hTextBox.Text
   $sLastGood = $sLast
   $iType = Type
   
-END
+End
 
-PRIVATE SUB RemoveLeadingZeros()
+Private Sub RemoveLeadingZeros()
   
-  DIM iPos AS Integer
-  DIM bNeg AS Boolean
+  Dim iPos As Integer
+  Dim bNeg As Boolean
   
-  iPos = ME.Pos
-  bNeg = Left(ME.Text) = "-"
+  iPos = $hTextBox.Pos
+  bNeg = Left($hTextBox.Text) = "-"
   
-  IF bNeg THEN SUPER.Text = Mid$(ME.Text, 2)
-  WHILE Left(ME.Text) = "0"
-    SUPER.Text = Mid$(ME.Text, 2)
-    DEC iPos
-  WEND
+  If bNeg Then $hTextBox.Text = Mid$($hTextBox.Text, 2)
+  While Left($hTextBox.Text) = "0"
+    $hTextBox.Text = Mid$($hTextBox.Text, 2)
+    Dec iPos
+  Wend
 
-  IF ME.Length = 0 THEN SUPER.Text = "0"
-  IF bNeg THEN SUPER.Text = "-" & ME.Text
+  If $hTextBox.Length = 0 Then $hTextBox.Text = "0"
+  If bNeg Then $hTextBox.Text = "-" & $hTextBox.Text
 
-  ME.Pos = iPos
+  $hTextBox.Pos = iPos
   
-END
+End
 
-PRIVATE SUB FormatDateTime(sSep AS String)
+Private Sub FormatDateTime(sSep As String)
   
-  DIM iPos AS Integer
-  DIM sVal AS String
-  DIM sElt AS String
-  DIM aFormat AS String[]
-  DIM aValue AS String[]
-  DIM iInd AS Integer
-  DIM sRes AS String
-  DIM iSep AS Integer
-  DIM sRest AS String
+  Dim iPos As Integer
+  Dim sVal As String
+  Dim sElt As String
+  Dim aFormat As String[]
+  Dim aValue As String[]
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim iSep As Integer
+  Dim sRest As String
   
   'IF ME.Text = "31/12/2007/" THEN STOP
 
   'DEBUG "ME.Pos = "; ME.Pos  
-  iPos = ME.Pos
+  iPos = $hTextBox.Pos
 
-  aValue = Split(ME.Text, sSep)
-  IF sSep = $sDateSep THEN
+  aValue = Split($hTextBox.Text, sSep)
+  If sSep = $sDateSep Then
     aFormat = Split($sDateFormat, sSep)
-  ELSE 
+  Else 
     aFormat = Split($sTimeFormat, sSep)
-  ENDIF 
+  Endif 
     
-  FOR iInd = 0 TO aValue.Max
+  For iInd = 0 To aValue.Max
   
-    IF iInd > aFormat.Max THEN BREAK
+    If iInd > aFormat.Max Then Break
     sElt = aValue[iInd]
   
-    IF iInd < aValue.Max THEN 
+    If iInd < aValue.Max Then 
       sElt = Right(sElt, Len(aFormat[iInd]))
-      WHILE Len(sElt) < Len(aFormat[iInd])
-        IF iPos >= (Len(sVal) + Len(sElt)) THEN INC iPos
+      While Len(sElt) < Len(aFormat[iInd])
+        If iPos >= (Len(sVal) + Len(sElt)) Then Inc iPos
         sElt = "0" & sElt
-      WEND
-    ELSE
+      Wend
+    Else
       sRest = Mid(sElt, Len(aFormat[iInd]) + 1)
       sElt = Left(sElt, Len(aFormat[iInd]))
-    ENDIF
+    Endif
     
-    IF Len(sElt) = Len(aFormat[iInd]) THEN
-      IF sSep = $sDateSep THEN
-        IF CInt(sElt) = 0 THEN sElt = Left(sElt, -1) & "1"  
-      ENDIF
-      IF iInd < aFormat.Max THEN 
-        IF iPos >= (Len(sVal) + Len(sElt)) THEN INC iPos
+    If Len(sElt) = Len(aFormat[iInd]) Then
+      If sSep = $sDateSep Then
+        If CInt(sElt) = 0 Then sElt = Left(sElt, -1) & "1"  
+      Endif
+      If iInd < aFormat.Max Then 
+        If iPos >= (Len(sVal) + Len(sElt)) Then Inc iPos
         sElt &= sSep
-      ENDIF
-    ENDIF
+      Endif
+    Endif
     
     sVal &= sElt
   
-  NEXT
+  Next
   
-  IF aValue.Count < aFormat.Count AND IF sRest THEN 
-    IF iPos >= (Len(sVal) + 1) THEN INC iPos
+  If aValue.Count < aFormat.Count And If sRest Then 
+    If iPos >= (Len(sVal) + 1) Then Inc iPos
     sVal &= sSep & sRest
-  ENDIF
+  Endif
   
-  SUPER.Text = sVal
+  $hTextBox.Text = sVal
   
-FINALLY 
+Finally 
 
-  ME.Pos = iPos
+  $hTextBox.Pos = iPos
   'DEBUG "ME.Pos = "; iPos
   'DEBUG System.Backtrace.Join("/")
     
-END
+End
 
-PRIVATE SUB CheckIdentifierChar(iPos AS Integer, sChar AS String) AS Boolean
+Private Sub CheckIdentifierChar(iPos As Integer, sChar As String) As Boolean
 
-  IF IsLetter(sChar) THEN RETURN
-  IF iPos > 0 THEN 
-    IF IsLetter(sChar) THEN RETURN
-    IF IsDigit(sChar) THEN RETURN
-    IF $sAllowed THEN
-      IF String.InStr($sAllowed, sChar) THEN RETURN
-    ELSE 
-      IF sChar = "_" THEN RETURN
-    ENDIF
-  ENDIF  
+  If IsLetter(sChar) Then Return
+  If iPos > 0 Then 
+    If IsLetter(sChar) Then Return
+    If IsDigit(sChar) Then Return
+    If $sAllowed Then
+      If String.InStr($sAllowed, sChar) Then Return
+    Else 
+      If sChar = "_" Then Return
+    Endif
+  Endif  
   
-  RETURN TRUE
+  Return True
   
-END
+End
 
 
 
-PUBLIC SUB TextBox_KeyPress()
+Public Sub TextBox_KeyPress()
   
-  DIM iPos AS Integer
+  Dim iPos As Integer
   
   'DEBUG
   
-  IF Key.Code = Key.Escape THEN 
-    SUPER.Text = $sLastGood
-    STOP EVENT 
-    RETURN 
-  ENDIF
+  If Key.Code = Key.Escape Then 
+    $hTextBox.Text = $sLastGood
+    Stop Event 
+    Return 
+  Endif
   
-  IF Key.Code = Key.Delete OR IF Key.Code = Key.BackSpace THEN 
-    $bDelete = TRUE
-    RETURN 
-  ENDIF
+  If Key.Code = Key.Delete Or If Key.Code = Key.BackSpace Then 
+    $bDelete = True
+    Return 
+  Endif
   
-  IF Asc(Key.Text) < 32 THEN RETURN 
+  If Asc(Key.Text) < 32 Then Return 
   
-  $bDelete = FALSE
+  $bDelete = False
   
-  SELECT CASE $iType
+  Select Case $iType
   
-    CASE {Number} 
+    Case {Number} 
           
-      IF IsDigit(Key.Text) THEN 
-        ME.Insert(Key.Text)
-      ELSE IF Key.Text = $sPointSep OR Key.Text = "." THEN 
-        IF InStr(ME.Text, $sPointSep) = 0 THEN ME.Insert($sPointSep)
-      ELSE IF Key.Text = "-" THEN 
-        IF Left(ME.Text) <> "-" THEN 
-          iPos = ME.Pos
-          SUPER.Text = "-" & ME.Text
-          ME.Pos = iPos + 1
-        ELSE 
-          iPos = ME.Pos
-          SUPER.Text = Mid$(ME.Text, 2)
-          ME.Pos = iPos - 1
-        ENDIF
-      ENDIF
+      If IsDigit(Key.Text) Then 
+        $hTextBox.Insert(Key.Text)
+      Else If Key.Text = $sPointSep Or Key.Text = "." Then 
+        If InStr($hTextBox.Text, $sPointSep) = 0 Then $hTextBox.Insert($sPointSep)
+      Else If Key.Text = "-" Then 
+        If Left($hTextBox.Text) <> "-" Then 
+          iPos = $hTextBox.Pos
+          $hTextBox.Text = "-" & $hTextBox.Text
+          $hTextBox.Pos = iPos + 1
+        Else 
+          iPos = $hTextBox.Pos
+          $hTextBox.Text = Mid$($hTextBox.Text, 2)
+          $hTextBox.Pos = iPos - 1
+        Endif
+      Endif
       
-    CASE {Date}
+    Case {Date}
     
       'DEBUG "IsDigit: "; IsDigit(Key.Text)
       'DEBUG "Key.Text = $sDateSep: "; Key.Text = $sDateSep
       'DEBUG "ME.Pos: "; ME.Pos; " ME.Length: "; ME.Length
-      IF IsDigit(Key.Text) THEN RETURN
-      IF Key.Text = $sDateSep AND IF ME.Pos = ME.Length THEN RETURN
+      If IsDigit(Key.Text) Then Return
+      If Key.Text = $sDateSep And If $hTextBox.Pos = $hTextBox.Length Then Return
     
-    CASE {Time}
+    Case {Time}
     
-      IF IsDigit(Key.Text) THEN RETURN
-      IF Key.Text = $sTimeSep AND IF ME.Pos = ME.Length THEN RETURN
+      If IsDigit(Key.Text) Then Return
+      If Key.Text = $sTimeSep And If $hTextBox.Pos = $hTextBox.Length Then Return
 
-    CASE {Identifier}
+    Case {Identifier}
     
-      IF NOT CheckIdentifierChar(ME.Pos, Key.Text) THEN RETURN
+      If Not CheckIdentifierChar($hTextBox.Pos, Key.Text) Then Return
       
     ', {Time}, {DateTime}
         
-  END SELECT
+  End Select
   
-  STOP EVENT
+  Stop Event
   
-END
+End
 
-PUBLIC SUB TextBox_Change()
-
-  IF $sLast = ME.Text THEN RETURN
-  IF $bDelete THEN RETURN
+Public Sub TextBox_Change()
+  If $sLast = $hTextBox.Text Then Return
+  If $bDelete Then Return
   
-  Object.Lock(ME)
+  Object.Lock(Me)
   
   'DEBUG
   
-  SELECT CASE $iType
+  Select Case $iType
   
-    CASE Number
+    Case Number
       RemoveLeadingZeros
       
-    CASE {Date}
+    Case {Date}
       FormatDateTime($sDateSep)
   
-    CASE {Time}
+    Case {Time}
       FormatDateTime($sTimeSep)
       
-  END SELECT
+  End Select
   
-  $sLast = ME.Text  
+  $sLast = $hTextBox.Text  
   
-  Object.Unlock(ME)
+  Object.Unlock(Me)
   
-END
+End
 
-PRIVATE SUB CheckIdentifier() 
+Private Sub CheckIdentifier() 
   
-  DIM iInd AS Integer
-  DIM sCar AS String
+  Dim iInd As Integer
+  Dim sCar As String
   
-  FOR iInd = 1 TO String.Len(ME.Text)
-    sCar = String.Mid(ME.Text, iInd, 1)
-    IF CheckIdentifierChar(iInd - 1, sCar) THEN Error.Raise("Bad character")
-  NEXT 
+  For iInd = 1 To String.Len($hTextBox.Text)
+    sCar = String.Mid($hTextBox.Text, iInd, 1)
+    If CheckIdentifierChar(iInd - 1, sCar) Then Error.Raise("Bad character")
+  Next 
   
-END
+End
 
 
-PUBLIC SUB TextBox_LostFocus()
+Public Sub TextBox_LostFocus()
 
-  SELECT CASE $iType
+  Select Case $iType
   
-    CASE Number
-      SUPER.Text = Str(Val(ME.Text))
+    Case Number
+      $hTextBox.Text = Str(Val($hTextBox.Text))
       
-    CASE {Date}
-      IF ME.Text THEN SUPER.Text = Format(Val(ME.Text), $sDateFormat)
+    Case {Date}
+      If $hTextBox.Text Then $hTextBox.Text = Format(Val($hTextBox.Text), $sDateFormat)
   
-    CASE {Time}
-      IF ME.Text THEN SUPER.Text = Format(Val(Format(Date(1972, 09, 06), gb.ShortDate) & " " & ME.Text), $sTimeFormat)
+    Case {Time}
+      If $hTextBox.Text Then $hTextBox.Text = Format(Val(Format(Date(1972, 09, 06), gb.ShortDate) & " " & $hTextBox.Text), $sTimeFormat)
       
-    CASE {Identifier}
+    Case {Identifier}
       CheckIdentifier  
   
-  END SELECT
+  End Select
   
-  $sLastGood = ME.Text
+  $sLastGood = $hTextBox.Text
   
-CATCH 
+Catch 
 
   WarningTimer
   
-END
+End
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN SUPER.Text  
+  Return $hTextBox.Text  
 
-END
+End
 
 
-PRIVATE FUNCTION Allowed_Read() AS String
+Private Function Allowed_Read() As String
 
-  RETURN $sAllowed  
+  Return $sAllowed  
 
-END
+End
 
-PRIVATE SUB Allowed_Write(Value AS String)
+Private Sub Allowed_Write(Value As String)
 
   $sAllowed = Value
 
-END
+End
 
-PRIVATE SUB WarningTimer()
+Private Sub WarningTimer()
 
   ' DIM sMsg AS String
 
-  IF $hTimer THEN 
+  If $hTimer Then 
     Timer_Timer
-  ENDIF
+  Endif
   
-  $hTimer = NEW Timer AS "Timer"
+  $hTimer = New Timer As "Timer"
   $hTimer.Delay = 100
-  $hTimer.Enabled = TRUE
+  $hTimer.Enabled = True
   
-  $iWarnBackground = ME.Background
-  $iWarnForeground = ME.Foreground
-  $bWarnReadOnly = ME.ReadOnly
+  $iWarnBackground = $hTextBox.Background
+  $iWarnForeground = $hTextBox.Foreground
+  $bWarnReadOnly = $hTextBox.ReadOnly
 
-  ME.Background = Color.SelectedBackground
-  ME.Foreground = Color.SelectedForeground
-  ME.ReadOnly = TRUE
+  $hTextBox.Background = Color.SelectedBackground
+  $hTextBox.Foreground = Color.SelectedForeground
+  $hTextBox.ReadOnly = True
   
   ' SELECT $iType
   '   CASE Number
@@ -429,15 +469,68 @@ PRIVATE SUB WarningTimer()
   ' DEBUG ME
   ' Balloon.Warning(sMsg, ME, 0, 0)
   
-END
+End
 
-PUBLIC SUB Timer_Timer()
+Public Sub Timer_Timer()
   
-  ME.Background = $iWarnBackground
-  ME.Foreground = $iWarnForeground
-  ME.ReadOnly = $bWarnReadOnly
+  $hTextBox.Background = $iWarnBackground
+  $hTextBox.Foreground = $iWarnForeground
+  $hTextBox.ReadOnly = $bWarnReadOnly
   
-  $hTimer = NULL
-  SUPER.Text = $sLastGood
+  $hTimer = Null
+  $hTextBox.Text = $sLastGood
   
-END
+End
+
+Private Function WidthForm_Read() As Integer
+  Return $iWidthForm
+End
+
+Private Sub WidthForm_Write(Value As Integer)
+  $iWidthForm = Value
+  $hForm.Resize($iWidthForm, $iHeightForm)
+End
+
+Private Function HeightForm_Read() As Integer
+  Return $iHeightForm
+End
+
+Private Sub HeightForm_Write(Value As Integer)
+  $iHeightForm = Value
+  $hForm.Resize($iWidthForm, $iHeightForm)
+End
+
+Public Sub LstForm_DeACtivate()
+  htimer.Start
+  $hForm.hide
+End
+
+Public Sub hTimer_Timer()
+  hTimer.Stop
+  isActivate = False
+  $hButton.Value = IsActivate
+End 
+
+Public Sub Form_Resize()
+    $hForm.Resize($iWidthForm, $iHeightForm)
+End
+
+Public Sub Button_MouseDown()
+  $hDateChooser.Value = Val($hTextBox.Text)
+  $hForm.visible = Not (isActivate Or $hForm.visible)
+  isActivate = $hForm.visible
+  $hButton.Value = Not IsActivate
+End
+
+Public Sub DateChooser_Change()
+  $hTextBox.Text = Str($hDateChooser.Value)
+  TextBox_LostFocus
+End
+
+Public Sub OBS_Move()
+    If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
+      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
+    Else 
+      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
+    Endif
+End

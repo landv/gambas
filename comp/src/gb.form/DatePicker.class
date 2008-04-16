@@ -9,19 +9,17 @@ Public Const FirstDayOfYear As Integer = 3
 
 Public Const _Properties As String = "*,Tag,HeightForm=200,WidthForm=300,FormatString=%dddd% %dd% %mmmm% %yyyy%,Value,Range,Alignment{Align.*}=Align.Center,Begin{DatePicker.*}=DatePicker.ThisDay"
 Public Const _DefaultEvent As String = "Change"
-Public Const _DefaultSize As String = "20,4"
-Public Const _DrawWith As String = "ComboBox"
+Public Const _DefaultSize As String = "30,4"
+Public Const _DrawWith As String = "DatePicker"
 
 Private $hObserver As Observer
 
-Private $hHBox As HBox
 Private $hForm As Form
 Private $hButton As ToggleButton
 Private $hTextBox As TextBox
 Private $hdatechooser As DateChooser
 Private $iWidthForm As Integer
 Private $iHeightForm As Integer
-Private $hList As Integer
 Private $sFormat As String
 Private $iFin As Integer
 Private $iDebut As Integer
@@ -51,9 +49,8 @@ Public Sub _New()
   $hTextBox.Enabled = False
   $hTextBox.ForeColor = Color.Black
   $hButton = New ToggleButton(hPanel2) As "Button"
-  $hButton.Width = 40
-  $hButton.Picture = Picture["icon:/medium/calendar"]
-  
+  $hButton.Width = 32
+  $hButton.Picture = Picture["icon:/small/calendar"]
   
   $hForm = New Form As "LstForm"
   Object.Attach($hForm, Me, "LstForm")
@@ -91,7 +88,7 @@ Public Sub Button_MouseDown()
 End
 
 Public Sub TextBox_MouseDown()
- Button_MouseDown
+  Button_MouseDown
   $hButton.Value = IsActivate
 End
 
@@ -223,11 +220,9 @@ Public Sub DateChooser_Change()
 End
 
 Public Sub OBS_Move()
-  If $hForm.Visible Then 
     If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
       $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
     Else 
       $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
     Endif
-  Endif
 End

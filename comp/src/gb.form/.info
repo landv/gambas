@@ -224,11 +224,11 @@ Change
 _DefaultSize
 C
 s
-20,4
+30,4
 _DrawWith
 C
 s
-ComboBox
+DatePicker
 Tag
 p
 v
@@ -1158,12 +1158,20 @@ m
 ToolPanelContainer
 (Index)i
 #ValueBox
-TextBox
+UserControl
 C
 _Properties
 C
 s
-*,-Password,-Text,-Alignment,Type{ValueBox.Date;Identifier;Number;Time}=Number,Allowed
+*,-Password,-Text,-Alignment,Type{ValueBox.Date;Identifier;Number;Time}=Number,Allowed,HeightForm=200,WidthForm=300
+_DefaultEvent
+C
+s
+Change
+_DefaultSize
+C
+s
+30,4
 _DrawWith
 C
 s
@@ -1200,7 +1208,19 @@ Allowed
 p
 s
 
+HeightForm
+p
+i
+
+WidthForm
+p
+i
+
 _new
+m
+
+
+Pan_Arrange
 m
 
 
@@ -1217,6 +1237,30 @@ m
 
 
 Timer_Timer
+m
+
+
+LstForm_DeACtivate
+m
+
+
+hTimer_Timer
+m
+
+
+Form_Resize
+m
+
+
+Button_MouseDown
+m
+
+
+DateChooser_Change
+m
+
+
+OBS_Move
 m
 
 
