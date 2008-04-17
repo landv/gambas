@@ -390,6 +390,7 @@ __ARRAY:
 	value->_array.keep = FALSE;
 	value->_array.index = ctype.value;
 	ARRAY_new(&value->_array.addr, (ARRAY_DESC *)class->load->array[ctype.value]);
+	return;
 
 __FUNCTION:
 __CLASS:
