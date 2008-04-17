@@ -7,7 +7,7 @@ Public Const FirstDayOfWeek As Integer = 1
 Public Const FirstDayOfMonth As Integer = 2
 Public Const FirstDayOfYear As Integer = 3
 
-Public Const _Properties As String = "*,Tag,HeightForm=200,WidthForm=300,FormatString=%dddd% %dd% %mmmm% %yyyy%,Value,Range,Alignment{Align.*}=Align.Center,Begin{DatePicker.*}=DatePicker.ThisDay"
+Public Const _Properties As String = "*,HeightForm=200,WidthForm=300,FormatString=%dddd% %dd% %mmmm% %yyyy%,Value,Range,Alignment{Align.*}=Center,Begin{DatePicker.*}=ThisDay"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "30,4"
 Public Const _DrawWith As String = "DatePicker"
@@ -25,7 +25,7 @@ Private $iFin As Integer
 Private $iDebut As Integer
 Private htimer As timer
 Private IsActivate As Boolean
-Property Tag As Variant
+'Property Tag As Variant
 Property HeightForm As Integer
 Property WidthForm As Integer
 Property FormatString As String
@@ -112,13 +112,13 @@ Public Sub LstForm_Show()
 End
 
 
-Private Function Tag_Read() As Variant
-  Return $hTextBox.Tag
-End
-
-Private Sub Tag_Write(Value As Variant)
-  $hTextBox.Tag = Value
-End
+' Private Function Tag_Read() As Variant
+'   Return $hTextBox.Tag
+' End
+' 
+' Private Sub Tag_Write(Value As Variant)
+'   $hTextBox.Tag = Value
+' End
 
 Private Function Value_Read() As Date
   Return $hdatechooser.Value

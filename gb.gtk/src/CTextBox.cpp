@@ -272,7 +272,7 @@ END_METHOD
 
 BEGIN_METHOD(CCOMBOBOX_get, GB_INTEGER index)
 
-	long index = VARG(index);
+	int index = VARG(index);
 
 	if (index < 0 || index >= COMBOBOX->count())
 	{
@@ -299,7 +299,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 
-	long Pos;
+	int Pos;
 	char *Item=GB.ToZeroString(ARG(item));
 
 	if (MISSING(pos)) Pos=COMBOBOX->count();

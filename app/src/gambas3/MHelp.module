@@ -45,7 +45,7 @@ Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   
   sName = LCase(hSymbol.Name)
   
-  If hSymbol.Component = "gb" AND If hSymbol.Class = "." Then
+  If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
     sLink = "help/lang"
   Else
     sLink = "help/comp"
@@ -85,13 +85,13 @@ Public Function GotoKeyword(sName As String, Optional sName2 As String) As Boole
   Dim sPath As String
 
   If sName2 Then
-    If NOT GotoKeyword(sName2) Then Return
+    If Not GotoKeyword(sName2) Then Return
   Endif
 
   If Right(sName) = "$" Then sName = Left$(sName, -1)
 
   sPath = GetPath("help/lang" &/ LCase(sName)) & ".html"
-  If NOT Exist(sPath) Then Return True
+  If Not Exist(sPath) Then Return True
   Project.OpenWebPage(sPath)
   
 Catch
@@ -105,7 +105,7 @@ Public Function GotoDatatype(sName As String) As Boolean
   Dim sPath As String
 
   sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
-  If NOT Exist(sPath) Then Return True
+  If Not Exist(sPath) Then Return True
   Project.OpenWebPage(sPath)
   
 Catch
@@ -122,7 +122,7 @@ Public Function GetSymbolHelpPath(hSymbol As CSymbolInfo) As String
   
   sName = LCase(hSymbol.Name)
   
-  If hSymbol.Component = "gb" AND If hSymbol.Class = "." Then
+  If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
     sLink = "help/lang"
   Else
     sLink = "help/comp"
@@ -135,13 +135,13 @@ Public Function GetSymbolHelpPath(hSymbol As CSymbolInfo) As String
   
   Result = GetPath(sLink) & ".html"
     
-  If NOT Exist(Result) Then 
+  If Not Exist(Result) Then 
     If hSymbol.Kind Then 
       'Try looking for the property in the object that this object inherits from
       hSymbol.Class = hSymbol.Kind
       hSymbol.Kind = ""
       Result = GetSymbolHelpPath(hsymbol)
-      If NOT Exist(Result) Then 
+      If Not Exist(Result) Then 
         'Try looking for the property in the Control object
         hSymbol.Class = "Control"
         Result = GetSymbolHelpPath(hsymbol)
@@ -159,7 +159,7 @@ Public Function GetSymbolHelpText(SymbolHelpPath As String) As String
   Dim HelpText As String
   
   'Check cache
-  If NOT $PopupHelpCache Then 
+  If Not $PopupHelpCache Then 
     'Create cache collection
     $PopupHelpCache = New Collection(gb.Text)
   Endif 
@@ -188,13 +188,14 @@ Private Function GetHelpTextFromFile(SymbolHelpPath As String) As String
   Dim sResult As String
   Dim iPos As Integer
   Dim iPos2 As Integer
+  Dim sWord As String
   
   bGrabNextLine = False
   sResult = ""
 
   Open SymbolHelpPath For Read As #hFileIn
 
-  Do While NOT Eof(hFileIn)
+  Do While Not Eof(hFileIn)
     Line Input #hFileIn, sInputLine
     If bGrabNextLine Then 
     
@@ -210,12 +211,13 @@ Private Function GetHelpTextFromFile(SymbolHelpPath As String) As String
       
       sInputLine = Replace(sInputLine, "</a>", "")
     
-      sResult &= " " & Trim(sInputLine)
-      iPos = InStr(sResult, ".")
-      If iPos Then
-        sResult = Left(sResult, iPos)
-        Break 
-      Endif
+      For Each sWord In Split(Trim(sInputLine), " \n")
+        sResult &= " " & sWord
+        iPos = InStr(sWord, ".")
+        If iPos > 0 And If iPos = Len(sWord) Then Break
+      Next
+      If iPos > 0 And If iPos = Len(sWord) Then Break
+    
     Else 
       If Right(RTrim(sInputLine), 6) = "</pre>" Then 
         bGrabNextLine = True
@@ -229,7 +231,7 @@ Finally
   
   Try Close hFileIn
   
-  If NOT sResult Then 
+  If Not sResult Then 
     Return "<i>" & ("No help found.") & "</i>"
   Else
     Return sResult 

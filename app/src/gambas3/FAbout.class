@@ -209,9 +209,28 @@ Private Sub InitUser()
       iPos = InStr(sLine, "(")
       If iPos Then sLine = Mid$(sLine, iPos + 1, -1)
       hUser.Name = sLine
-      hUser.Score = 10
-      iGray = Int(Rnd(64, 128))
-      hUser.Color = Color.RGB(&H95 * iGray / 128, &HC1 * iGray / 128, &HE6 * iGray / 128)
+      
+      Line Input #hFile, sLine ' Mail
+      Line Input #hFile, sLine ' country
+      
+      Do
+        Line Input #hFile, sLine
+        sLine = Trim(sLine)
+        If Not sLine Then Break
+        If InStr(sLine, "translation") = 0 Then Break
+      Loop
+      
+      If sLine Then
+        hUser.Score = 10
+        hUser.Color = Color.HSV(Int(Rnd(36)) * 10, Int(Rnd(128, 256)), 255)
+        hUser.Bold = True
+      Else
+        hUser.Score = 5
+        iGray = Int(Rnd(64, 128))
+        hUser.Color = Color.RGB(&H95 * iGray / 128, &HC1 * iGray / 128, &HE6 * iGray / 128)
+        hUser.Bold = True
+      Endif
+      
       $aUser.Add(hUser)
       
     Endif
@@ -223,7 +242,7 @@ Private Sub InitUser()
   For Each hUser In $aUser
     With hUser
       Draw.Begin(dwgAbout)
-      Draw.Font.Bold = True
+      Draw.Font.Bold = .Bold
       Draw.Font.Size = GetFontSize(hUser)
       W = Draw.TextWidth(.Name)
       H = Draw.TextHeight(.Name)
@@ -232,7 +251,7 @@ Private Sub InitUser()
       hPict = New Picture(W, H)
       hPict.Fill(Color.White)
       Draw.Begin(hPict)
-      Draw.Font.Bold = True
+      Draw.Font.Bold = .Bold
       Draw.Font.Size = GetFontSize(hUser)
       'Draw.ForeColor = Color.White
       'Draw.Text(.Name, 0, 0, W, H)
@@ -284,12 +303,12 @@ Private Sub DrawText(iIndex As Integer) As Boolean
 
     If iStep = 0 Then
     
-      Draw.Font.Bold = True
+      Draw.Font.Bold = .Bold
       Draw.Font.Size = GetFontSize(hUser)
       W = Draw.TextWidth(.Name)
       H = Draw.TextHeight(.Name)
-      .XD = Int(Rnd(16, dwgAbout.W - W - 16))
-      .YD = Int(Rnd(16, dwgAbout.H - H - 16))
+      .XD = Int(Rnd(0, dwgAbout.W - W - 0))
+      .YD = Int(Rnd(0, dwgAbout.H - H - 0))
       
     Endif
   
@@ -323,7 +342,7 @@ Private Sub DrawText(iIndex As Integer) As Boolean
     
     Else If iStep < (10 * NSTEP) Then
     
-      Draw.Font.Bold = True
+      Draw.Font.Bold = .Bold
       Draw.Font.Size = GetFontSize(hUser)
       W = Draw.TextWidth(.Name)
       H = Draw.TextHeight(.Name)

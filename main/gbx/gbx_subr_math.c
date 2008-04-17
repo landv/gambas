@@ -280,66 +280,6 @@ __END:
   return;
 }
 
-
-
-void SUBR_add_quick(int value)
-{
-  static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
-    };
-
-  TYPE type;
-  VALUE *P1 = SP - 1;
-  void *jump_end;
-
-__VARIANT:
-
-  if (TYPE_is_variant(P1->type))
-  {
-    jump_end = &&__VARIANT_END;
-    VARIANT_undo(P1);
-  }
-  else
-    jump_end = &&__END;
-
-  type = P1->type;
-
-  if (TYPE_is_number_date(type))
-    goto *jump[type];
-
-  THROW(E_TYPE, "Number", TYPE_get_name(type));
-
-__BOOLEAN:
-__BYTE:
-__SHORT:
-__INTEGER:
-
-  P1->_integer.value += value;
-  goto *jump_end;
-
-__LONG:
-
-  P1->_long.value += (int64_t)value;
-  goto *jump_end;
-
-__DATE:
-
-  VALUE_conv(P1, T_FLOAT);
-
-__FLOAT:
-
-  P1->_float.value += (double)value;
-  goto *jump_end;
-
-__VARIANT_END:
-
-  VALUE_conv(P1, T_VARIANT);
-
-__END:
-  return;
-}
-
-
 void SUBR_and_(void)
 {
   static void *jump[] = {

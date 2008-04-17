@@ -815,7 +815,7 @@ void GEditor::cursorHome(bool shift, bool ctrl)
 void GEditor::cursorEnd(bool shift, bool ctrl)
 {
   if (ctrl)
-    cursorGoto(numLines(), 0, shift);
+    cursorGoto(numLines() - 1, lineLength(numLines() - 1), shift);
   else
     cursorGoto(y, lineLength(y), shift);
 }
@@ -1015,7 +1015,7 @@ void GEditor::redo()
 void GEditor::selectAll()
 {
   cursorGoto(0, 0, false);
-  cursorGoto(numLines(), 0, true);
+  cursorGoto(numLines() - 1, lineLength(numLines() - 1), true);
 }
 
 void GEditor::keyPressEvent(QKeyEvent *e)
@@ -1528,6 +1528,7 @@ void GEditor::foldLine(int row, bool no_refresh)
 	int start, end;
 	GFoldedProc *fp;
 	int ny;
+	GLine *l;
 	
 	if (!doc->hasLimit(row))
 		row = doc->getPreviousLimit(row);
@@ -1537,8 +1538,18 @@ void GEditor::foldLine(int row, bool no_refresh)
 	start = row;
 	end = doc->getNextLimit(row);
 	if (end < 0)
-		end = numLines();
-	end--;
+		end = numLines() - 1;
+	else
+	{
+		for(;;)
+		{
+			end--;
+			l = doc->lines.at(end);
+			//qDebug("[%d] state = %d %d", end, l->highlight ? l->highlight[0].state : -1, l->highlight ? l->highlight[0].len : -1);
+			if (l->highlight && l->highlight[0].state != GLine::Comment)
+				break;
+		}
+	}
 	
 	pos = -1;
 	for (i = 0; i < fold.count(); i++)

@@ -1,259 +1,298 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserContainer
+Export
+Inherits UserContainer
 
-PUBLIC CONST _Properties AS String = "*,Count{Range:1;256}=1,Index,Text,Picture,ShowTitle=TRUE,Border=TRUE"
-PUBLIC CONST _DefaultEvent AS String = "Change"
+Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,Picture,ShowTitle=True,ShowIndex=False,Border=True"
+Public Const _DefaultEvent As String = "Change"
 
-EVENT BeforeChange
-EVENT Change
-EVENT Cancel
-EVENT Click
-EVENT {Close}
+Event BeforeChange
+Event Change
+Event Cancel
+Event Click
+Event {Close}
 
-PROPERTY Count AS Integer
-PROPERTY Index AS Integer
-PROPERTY READ LastIndex AS Integer
-PROPERTY Text AS String
-PROPERTY Picture AS Picture
-PROPERTY ShowTitle AS Boolean
-PROPERTY Border AS Boolean
+Property Count As Integer
+Property Index As Integer
+Property Read LastIndex As Integer
+Property Text As String
+Property Picture As Picture
+Property ShowTitle As Boolean
+Property ShowIndex As Boolean
+Property Border As Boolean
 
-PRIVATE $hWizard AS FWizard
-PRIVATE $aStep AS NEW Object[]
-PRIVATE $iCurrent AS Integer = -1
-PRIVATE $iLast AS Integer = -1
+Private $hWizard As FWizard
+Private $aStep As New Object[]
+Private $iCurrent As Integer = -1
+Private $iLast As Integer = -1
+Private $bShowIndex As Boolean
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  $hWizard = NEW FWizard(ME)
-  Object.Attach($hWizard, ME, "Wizard")
+  $hWizard = New FWizard(Me)
+  Object.Attach($hWizard, Me, "Wizard")
 
-  ME.Count = 1
+  Me.Count = 1
   'ME.Index = 0
 
-END
+End
 
-PRIVATE FUNCTION Count_Read() AS Integer
+Private Function Count_Read() As Integer
 
-  RETURN $aStep.Count
+  Return $aStep.Count
 
-END
+End
 
-PRIVATE SUB Count_Write(iCount AS Integer)
+Private Sub Count_Write(iCount As Integer)
 
-  DIM iInd AS Integer
-  DIM hStep AS WizardContainer
+  Dim iInd As Integer
+  Dim hStep As WizardContainer
 
-  IF iCount < 1 THEN Error.Raise("Bad argument")
-  IF iCount = $aStep.Count THEN RETURN
+  If iCount < 1 Then Error.Raise("Bad argument")
+  If iCount = $aStep.Count Then Return
 
-  IF iCount < $aStep.Count THEN
+  If iCount < $aStep.Count Then
 
-    FOR iInd = $aStep.Max TO iCount STEP -1
+    For iInd = $aStep.Max To iCount Step -1
       hStep = $aStep[iInd]
-      IF hStep.Children.Count THEN Error.Raise("Wizard step is not empty")
-    NEXT
+      If hStep.Children.Count Then Error.Raise("Wizard step is not empty")
+    Next
 
-    FOR iInd = $aStep.Max TO iCount STEP -1
+    For iInd = $aStep.Max To iCount Step -1
       $aStep[iInd].Delete
-    NEXT
+    Next
 
     $aStep.Remove(iCount, -1)
     Index_Write(Min($iCurrent, $aStep.Max))
 
-  ELSE
+  Else
 
-    FOR iInd = $aStep.Count TO iCount - 1
-      hStep = NEW WizardContainer($hWizard.GetContainer()) AS "WizardContainer"
+    For iInd = $aStep.Count To iCount - 1
+      hStep = New WizardContainer($hWizard.GetContainer()) As "WizardContainer"
       hStep.Tag = iInd
       $aStep.Add(hStep)
       hStep.Text = Subst(("Step #&1"), CInt(iInd + 1))
-    NEXT
+    Next
     'ME.Index = iCount - 1
     Index_Write(0)
 
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE SUB GetNext(iInd AS Integer) AS Integer
+Private Sub GetNext(iInd As Integer) As Integer
   
-  DO
-    INC iInd
-    IF iInd >= $aStep.Count THEN RETURN -1
-    IF $aStep[iInd].Enabled THEN RETURN iInd
-  LOOP
+  Do
+    Inc iInd
+    If iInd >= $aStep.Count Then Return -1
+    If $aStep[iInd].Enabled Then Return iInd
+  Loop
   
-END
+End
 
-PRIVATE SUB GetPrevious(iInd AS Integer) AS Integer
+Private Sub GetPrevious(iInd As Integer) As Integer
   
-  DO
-    DEC iInd
-    IF iInd < 0 THEN RETURN -1
-    IF $aStep[iInd].Enabled THEN RETURN iInd
-  LOOP
+  Do
+    Dec iInd
+    If iInd < 0 Then Return -1
+    If $aStep[iInd].Enabled Then Return iInd
+  Loop
   
-END
+End
 
 
-PRIVATE FUNCTION Index_Read() AS Integer
+Private Function Index_Read() As Integer
 
-  RETURN $iCurrent
+  Return $iCurrent
 
-END
+End
 
-PRIVATE SUB Index_Write(iIndex AS Integer)
+Private Sub Index_Write(iIndex As Integer)
 
-  DIM bCancel AS Boolean
-  DIM bWasNext AS Boolean
+  Dim bCancel As Boolean
+  Dim bWasNext As Boolean
 
-  IF iIndex < 0 OR iIndex >= $aStep.Count THEN Error.Raise("Bad index")
+  If iIndex < 0 Or iIndex >= $aStep.Count Then Error.Raise("Bad index")
 
-  IF iIndex = $iCurrent THEN RETURN
+  If iIndex = $iCurrent Then Return
   
-  IF NOT $aStep[iIndex].Enabled THEN RETURN
+  If Not $aStep[iIndex].Enabled Then Return
 
-  IF iIndex > $iCurrent THEN
+  If iIndex > $iCurrent Then
   
     bWasNext = iIndex = GetNext($iCurrent)
     
-    bCancel = RAISE BeforeChange
-    IF bCancel THEN RETURN
+    bCancel = Raise BeforeChange
+    If bCancel Then Return
     
-    IF bWasNext THEN
+    If bWasNext Then
       iIndex = GetNext($iCurrent)
-      IF iIndex < 0 THEN RETURN
-    ENDIF
+      If iIndex < 0 Then Return
+    Endif
   
-  ENDIF
+  Endif
 
-  ME._Container = $aStep[iIndex]
+  Me._Container = $aStep[iIndex]
 
   $iLast = $iCurrent
   $iCurrent = iIndex
 
   RefreshWizard
 
-  RAISE Change
-  RAISE Click
+  Raise Change
+  Raise Click
 
-END
+End
 
-PRIVATE SUB RefreshWizard()
+Private Sub GetEnabledIndex(iCurrent As Integer) As Integer
+  
+  Dim iCount As Integer
+  Dim iIndex As Integer
+  
+  iIndex = -1
+  Do
+    iIndex = GetNext(iIndex)
+    If iIndex > iCurrent Then Return
+    Inc iCount
+    If iIndex = iCurrent Then Return iCount
+  Loop
+  
+End
 
-  DIM hCurrent AS WizardContainer
 
-  IF $iCurrent >= 0 THEN
+Private Sub RefreshWizard()
+
+  Dim hCurrent As WizardContainer
+  Dim iIndex As Integer
+  Dim sText As String
+
+  If $iCurrent >= 0 Then
 
     hCurrent = $aStep[$iCurrent]
     hCurrent.Show
     hCurrent.Raise
-    $hWizard.SetTitle(hCurrent.Text, hCurrent.Picture)
+    
+    sText = hCurrent.Text
+    If $bShowIndex Then
+      iIndex = GetEnabledIndex($iCurrent)
+      If iIndex Then sText = CStr(iIndex) & ". " & sText
+    Endif
+    $hWizard.SetTitle(sText, hCurrent.Picture)
     $hWizard.SetPosition($iCurrent, GetPrevious($iCurrent) >= 0, GetNext($iCurrent) >= 0)
    
-    WAIT
+    Wait
 
-  ENDIF
+  Endif
 
-  IF $iLast >= 0 AND $iLast <= $aStep.Max THEN
+  If $iLast >= 0 And $iLast <= $aStep.Max Then
     $aStep[$iLast].Lower
     $aStep[$iLast].Hide
-  ENDIF
+  Endif
 
-END
+End
 
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN $aStep[$iCurrent].Text
+  Return $aStep[$iCurrent].Text
 
-END
+End
 
-PRIVATE SUB Text_Write(sText AS String)
+Private Sub Text_Write(sText As String)
 
   $aStep[$iCurrent].Text = sText
 
-END
+End
 
-PRIVATE FUNCTION Picture_Read() AS Picture
+Private Function Picture_Read() As Picture
 
-  RETURN $aStep[$iCurrent].Picture
+  Return $aStep[$iCurrent].Picture
 
-END
+End
 
-PRIVATE SUB Picture_Write(hPict AS Picture)
+Private Sub Picture_Write(hPict As Picture)
 
   $aStep[$iCurrent].Picture = hPict
 
-END
+End
 
-PUBLIC SUB WizardContainer_Refresh()
+Public Sub WizardContainer_Refresh()
 
   RefreshWizard
 
-END
+End
 
-PUBLIC FUNCTION _get(Index AS Integer) AS WizardContainer
+Public Function _get(Index As Integer) As WizardContainer
 
-  IF Index < 0 OR Index >= $aStep.Count THEN Error.Raise("Bad index")
-  RETURN $aStep[Index]
+  If Index < 0 Or Index >= $aStep.Count Then Error.Raise("Bad index")
+  Return $aStep[Index]
 
-END
+End
 
-PUBLIC SUB Wizard_Previous()
+Public Sub Wizard_Previous()
 
-  DIM iInd AS Integer = GetPrevious($iCurrent)
-  IF iInd >= 0 THEN Index_Write(iInd)
+  Dim iInd As Integer = GetPrevious($iCurrent)
+  If iInd >= 0 Then Index_Write(iInd)
 
-END
+End
 
-PUBLIC SUB Wizard_Next()
+Public Sub Wizard_Next()
 
-  DIM iInd AS Integer = GetNext($iCurrent)
-  IF iInd >= 0 THEN
+  Dim iInd As Integer = GetNext($iCurrent)
+  If iInd >= 0 Then
     Index_Write(iInd)
-  ELSE
-    RAISE BeforeChange
-    RAISE {Close}
-  ENDIF
+  Else
+    Raise BeforeChange
+    Raise {Close}
+  Endif
 
-END
+End
 
-PUBLIC SUB Wizard_Cancel()
+Public Sub Wizard_Cancel()
 
-  RAISE Cancel
+  Raise Cancel
 
-END
+End
 
-PRIVATE FUNCTION ShowTitle_Read() AS Boolean
+Private Function ShowTitle_Read() As Boolean
 
-  RETURN $hWizard.GetShowTitle()
+  Return $hWizard.GetShowTitle()
 
-END
+End
 
-PRIVATE SUB ShowTitle_Write(Value AS Boolean)
+Private Sub ShowTitle_Write(Value As Boolean)
 
   $hWizard.SetShowTitle(Value)
 
-END
+End
 
-PRIVATE FUNCTION Border_Read() AS Boolean
+Private Function Border_Read() As Boolean
 
-  RETURN $hWizard.GetBorder()
+  Return $hWizard.GetBorder()
 
-END
+End
 
-PRIVATE SUB Border_Write(Value AS Boolean)
+Private Sub Border_Write(Value As Boolean)
 
   $hWizard.SetBorder(Value)
 
-END
+End
 
-PRIVATE FUNCTION LastIndex_Read() AS Integer
+Private Function LastIndex_Read() As Integer
 
-  RETURN $iLast  
+  Return $iLast  
 
-END
+End
+
+Private Function ShowIndex_Read() As Boolean
+
+  Return $bShowIndex
+
+End
+
+Private Sub ShowIndex_Write(Value As Boolean)
+
+  $bShowIndex = Value
+  RefreshWizard
+
+End

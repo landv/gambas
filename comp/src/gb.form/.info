@@ -216,7 +216,7 @@ i
 _Properties
 C
 s
-*,Tag,HeightForm=200,WidthForm=300,FormatString=%dddd% %dd% %mmmm% %yyyy%,Value,Range,Alignment{Align.*}=Align.Center,Begin{DatePicker.*}=DatePicker.ThisDay
+*,HeightForm=200,WidthForm=300,FormatString=%dddd% %dd% %mmmm% %yyyy%,Value,Range,Alignment{Align.*}=Center,Begin{DatePicker.*}=ThisDay
 _DefaultEvent
 C
 s
@@ -229,10 +229,6 @@ _DrawWith
 C
 s
 DatePicker
-Tag
-p
-v
-
 HeightForm
 p
 i
@@ -1270,7 +1266,7 @@ C
 _Properties
 C
 s
-*,Count{Range:1;256}=1,Index,Text,Picture,ShowTitle=TRUE,Border=TRUE
+*,Count{Range:1;256}=1,Index,Text,Picture,ShowTitle=True,ShowIndex=False,Border=True
 _DefaultEvent
 C
 s
@@ -1316,6 +1312,10 @@ p
 Picture
 
 ShowTitle
+p
+b
+
+ShowIndex
 p
 b
 

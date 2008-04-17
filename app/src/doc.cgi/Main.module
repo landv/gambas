@@ -2104,6 +2104,7 @@ Private Function AutoLink(sStr As String) As String
   Dim sClass As String
   Dim sSymbol As String
   Dim sTitle As String
+  Dim sLink As String
 
   For Each sStr In Split(sStr, "\n")
 
@@ -2157,13 +2158,21 @@ Private Function AutoLink(sStr As String) As String
         Endif
       Else If sWait Then
         If sCar = sWait Then
+          If sWait = "]" Then
+            iPos = InStr(sLink, "|")
+            If iPos Then sLink = Left$(sLink, iPos - 1)
+            cCache["#" & GetAbsolutePath($sPath, sLink)] = True
+          Endif
           sWait = ""
+        Else
+          If sWait = "]" Then sLink &= sCar
         Endif
       Else If iWord = 0 Then
         If LCase(sCar) >= "a" And LCase(sCar) <= "z" Then
           iWord = iInd
           Continue
         Else If sCar = "[" Then
+          sLink = ""
           sWait = "]"
         Else If sCar = "{" Then
           sWait = "}"
@@ -2247,15 +2256,18 @@ Private Function AutoLink(sStr As String) As String
   
             If rPage.Available Then
               If rPage!sPath <> $sPath Then
-                If sTitle Then 
-                  sRes &= "[" & MakeRelative(rPage!sPath) & "|" & sTitle & "]" & sCar
-                Else
-                  sRes &= "[" & MakeRelative(rPage!sPath) & "]" & sCar
+                If Not cCache.Exist("#" & rPage!sPath) Then
+                  If sTitle Then 
+                    sRes &= "[" & MakeRelative(rPage!sPath) & "|" & sTitle & "]" & sCar
+                  Else
+                    sRes &= "[" & MakeRelative(rPage!sPath) & "]" & sCar
+                  Endif
+                  cCache["#" & rPage!sPath] = True
+                  iInd = iWord + Len(sOrig)
+                  iWord = 0
+                  nSpace = 0
+                  'sTitle = ""
                 Endif
-                iInd = iWord + Len(sOrig)
-                iWord = 0
-                nSpace = 0
-                'sTitle = ""
               Endif
               Continue
             Endif

@@ -7,7 +7,7 @@ Static Public Function Run(Optional bQuit As Boolean) As Boolean
   Dim hForm As Form
   
   hForm = New FSave(bQuit)
-  Return NOT hForm.ShowModal()
+  Return Not hForm.ShowModal()
 
 End
 
@@ -26,7 +26,7 @@ Public Sub _new(bQuit As Boolean)
   'lvwFile.SelectAll
   
   If bQuit Then
-    btnQuit.Picture = Picture["icon:/24/quit"]
+    btnQuit.Picture = Picture["icon:/small/quit"]
     btnQuit.Text = ("Quit")
   Endif
 

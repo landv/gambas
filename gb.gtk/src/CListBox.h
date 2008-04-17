@@ -49,8 +49,7 @@ typedef  struct
 	GB_BASE ob;
 	gControl *widget;
 	GB_VARIANT_VALUE tag;
-
-	long index;
+	int index;
 
 } CLISTBOX;
 

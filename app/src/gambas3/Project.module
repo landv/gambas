@@ -92,6 +92,7 @@ Private Const CLASS_AUTH_FIRST_CAR As String = "abcdefghijklmnopqrstuvwxyz_"
 Private Const FILE_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789-.+_"
 
 Private Const PROJECT_FILE As String = ".project"
+Private Const STARTUP_FILE As String = ".startup"
 
 Private TMP_FILE As String
 Private OUTPUT_FILE As String
@@ -2035,7 +2036,7 @@ Public Sub ReadProject()
       Case "startup"
         DefineStartup(sVal, True)
 
-      Case "library"
+      Case "library", "component"
         If CComponent.All.Exist(sVal) Then
           Libraries.Add(sVal)
         Else
@@ -2185,7 +2186,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Dim iCount As Integer
   Dim hComp As CComponent
   Dim sShortcut As String
-
+  
   If Project.ReadOnly Then Return
 
   If CreateComponent
@@ -2201,7 +2202,11 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     If Not bComponentDoNotChange Then RefreshLibrary
   Endif 
   
-  hFic = Open Path & ".tmp" For Create
+  ' Creates the .project file
+  
+  sPath = Path
+  Try Kill sPath & ".tmp"
+  hFic = Open sPath & ".tmp" For Create
 
   Print #hFic, PROJECT_MAGIC
   'PRINT #hFic, "Project="; Name
@@ -2217,7 +2222,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   For Each hComp In CComponent.All
     If Libraries.Find(hComp.Key) >= 0 Then
-      Print #hFic, "Library="; hComp.Key
+      Print #hFic, "Component="; hComp.Key
     Endif
   Next
 
@@ -2274,8 +2279,35 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   
   Close #hFic
 
-  Kill Path
-  Move Path & ".tmp" To Path
+  Try Kill sPath
+  Move sPath & ".tmp" To sPath
+
+  ' ' Creates the .startup file
+  ' ' This is done automatically by the compiler now!
+  ' 
+  ' sPath = Project.Dir &/ STARTUP_FILE
+  ' Try Kill sPath & ".tmp"
+  ' hFic = Open sPath & ".tmp" For Create
+  ' 
+  ' Print #hFic, Startup
+  ' Print #hFic, Title
+  ' Print #hFic, Stack
+  ' Print #hFic, If(StackTrace, "1", "0")
+  ' Print #hFic, Version
+  ' Print #hFic
+  ' 
+  ' For Each hComp In CComponent.All
+  '   If Libraries.Find(hComp.Key) >= 0 Then
+  '     Print #hFic, hComp.Key
+  '   Endif
+  ' Next
+  ' 
+  ' Print #hFic
+  ' 
+  ' Close #hFic
+  ' 
+  ' Try Kill sPath
+  ' Move sPath & ".tmp" To sPath
 
   sPath = Project.Dir &/ ".lang/#project.pot"
   Try Kill sPath

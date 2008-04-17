@@ -2246,6 +2246,32 @@ void MyMainWindow::setName(const char *name, CWIDGET *control)
 		names.insert(name, control);
 }
 
+void MyMainWindow::resize(int w, int h)
+{
+	int save = border;
+	
+	if (border != BorderResizable)
+		setBorder(BorderResizable);
+		
+	QMainWindow::resize(w, h);
+	
+	if (border != save)
+		setBorder(save);
+}
+
+void MyMainWindow::setGeometry(int x, int y, int w, int h)
+{
+	int save = border;
+	
+	if (border != BorderResizable)
+		setBorder(BorderResizable);
+		
+	QMainWindow::setGeometry(x, y, w, h);
+
+	if (border != save)
+		setBorder(save);
+}
+
 
 /***************************************************************************
 

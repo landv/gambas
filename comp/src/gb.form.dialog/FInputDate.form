@@ -1,0 +1,39 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,59,43)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { lblMessage TextLabel
+    MoveScaled(1,1,48,4)
+    Visible = False
+    Font = Font["+1"]
+    AutoResize = True
+    Text = ("")
+    Alignment = Align.Center
+  }
+  { dlgDate DateChooser
+    MoveScaled(1,6,48,31)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,38,48,4)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(7,0,2,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(19,0,14,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(34,0,14,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

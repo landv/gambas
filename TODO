@@ -37,8 +37,6 @@ INTERPRETER
 
 DEVELOPMENT ENVIRONMENT
 
-- .startup file, a copy of .project with only startup info inside.
-- .project files should be marked as 2.0.
 - Renaming controls in the IDE renames the source code too.
 - Loading a "form" component needs calling InitControl on classes that are not
   member of the list of controls.
@@ -85,3 +83,4 @@ DOCUMENTATION WIKI
 COMPONENTS
 
 - State of gb.corba ?
+- Put version number in *.component files, and use it when making dependencies in the IDE.

@@ -62,7 +62,7 @@ char *PROJECT_oldcwd = NULL;
 
 static char *project_buffer;
 
-static char *project_ptr;
+//static char *project_ptr;
 static int project_line;
 
 static char *_home = NULL;
@@ -92,7 +92,7 @@ static void project_version(char *name, int len)
 }
 
 
-static void project_library(char *name, int len)
+static void project_component(char *name, int len)
 {
   const char *delim = ",";
   char *comp;
@@ -109,7 +109,7 @@ static void project_library(char *name, int len)
 }
 
 
-static void project_exec(char *name, int len)
+static void project_startup(char *name, int len)
 {
   if (len == 0)
     raise_error("Project startup class name is void");
@@ -130,24 +130,23 @@ static void project_stack(char *name, int len)
     STACK_size = size * 1024L * sizeof(VALUE);
 }
 
-static void project_backtrace(char *name, int len)
+static void project_stacktrace(char *name, int len)
 {
 	ERROR_backtrace = !(len == 1 && *name == '0');
 }
 
-
+#if 0
 static void project_command(char *line, int len)
 {
   static PROJECT_COMMAND command[] = {
     { "PROJECT", NULL },
     { "TITLE", project_title },
-    { "LIBRARY", project_library },
-    { "COMPONENT", project_library },
-    { "STARTUP", project_exec },
+    { "LIBRARY", project_component },
+    { "COMPONENT", project_component },
+    { "STARTUP", project_startup },
     { "STACK", project_stack },
     { "VERSION", project_version },
-    { "STACKTRACE", project_backtrace },
-    { "ARGUMENTS", NULL },
+    { "STACKTRACE", project_stacktrace },
     { NULL }
     };
 
@@ -180,8 +179,21 @@ static void project_command(char *line, int len)
     }
   }
 }
+#endif
 
+static void check_after_analyze()
+{
+  if (!PROJECT_name || PROJECT_name[0] == 0)
+    raise_error("No project name");
 
+  if (!PROJECT_startup || PROJECT_startup[0] == 0)
+    raise_error("No startup class");
+
+  if (!PROJECT_title || PROJECT_title[0] == 0)
+    PROJECT_title = PROJECT_name;
+}
+
+#if 0
 static void project_analyze(char *addr, int len)
 {
   char *end = &addr[len];
@@ -228,14 +240,50 @@ static void project_analyze(char *addr, int len)
     project_ptr--;
   }
 
-  if (!PROJECT_name || PROJECT_name[0] == 0)
-    raise_error("No project name");
+	check_after_analyze();
+}
+#endif
 
-  if (!PROJECT_startup || PROJECT_startup[0] == 0)
-    raise_error("No startup class");
+static bool get_line(char **addr, const char *end, char **start, int *len)
+{
+	char *p = *addr;
+	
+	if (p >= end)
+		return FALSE;
+	
+	while (p < end && *p && *p != '\n')
+		p++;
+	
+	*start = *addr;
+	*len = p - *start;
+	*addr = p + 1;
+	
+	return (*len > 0);
+}
 
-  if (!PROJECT_title || PROJECT_title[0] == 0)
-    PROJECT_title = PROJECT_name;
+static void project_analyze_startup(char *addr, int len)
+{
+  char *end = &addr[len];
+	char *p;
+	int l;
+
+	if (get_line(&addr, end, &p, &l))
+		project_startup(p, l);
+	if (get_line(&addr, end, &p, &l))
+		project_title(p, l);
+	if (get_line(&addr, end, &p, &l))
+		project_stack(p, l);
+	if (get_line(&addr, end, &p, &l))
+		project_stacktrace(p, l);
+	if (get_line(&addr, end, &p, &l))
+		project_version(p, l);
+
+	while (get_line(&addr, end, &p, &l));
+
+	while (get_line(&addr, end, &p, &l))
+		project_component(p, l);
+		
+	check_after_analyze();
 }
 
 char *PROJECT_get_home(void)
@@ -365,17 +413,42 @@ void PROJECT_load()
 {
 	const char *file;
 	int len;
+	//bool failed;
 
 	/* Project file analyze */
 
   if (EXEC_arch)
-    file = ".project";
+    file = ".startup";
   else
-    file = FILE_cat(PROJECT_path, ".project", NULL);
+    file = FILE_cat(PROJECT_path, ".startup", NULL);
 
-  STREAM_load(file, &project_buffer, &len);
+	#if 0
+	TRY
+	{
+		failed = FALSE;
+  	STREAM_load(file, &project_buffer, &len);
+  	project_analyze_startup(project_buffer, len);
+  }
+  CATCH
+  {
+  	failed = TRUE;
+  }
+  END_TRY
+  
+  if (failed)
+  {
+		if (EXEC_arch)
+			file = ".project";
+		else
+			file = FILE_cat(PROJECT_path, ".project", NULL);
 
-  project_analyze(project_buffer, len);
+  	STREAM_load(file, &project_buffer, &len);
+	  project_analyze(project_buffer, len);
+	}
+	#else
+	STREAM_load(file, &project_buffer, &len);
+ 	project_analyze_startup(project_buffer, len);
+	#endif
 
   STACK_init();
 

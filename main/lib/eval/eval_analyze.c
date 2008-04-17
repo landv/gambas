@@ -118,7 +118,7 @@ static void add_data(int state, int len)
 {
   EVAL_COLOR *color;
 
-  if (colors_len >= EVAL_MAX_COLOR)
+  if (colors_len >= EVAL_MAX_COLOR || len == 0)
     return;
 
   //printf("[%d] %d %d\n", colors_len, state, len);
@@ -195,7 +195,7 @@ static void analyze(EVAL_ANALYZE *result)
   bool empty;
   int type, old_type, next_type;
   const char *symbol;
-  bool space_before, space_after;
+  bool space_before, space_after, in_quote;
   //bool me = FALSE;
   int len;
 
@@ -221,6 +221,7 @@ static void analyze(EVAL_ANALYZE *result)
   type = EVAL_TYPE_END;
   next_type = EVAL_TYPE_END;
   space_after = FALSE;
+  in_quote = FALSE;
 
   for(;;)
   {
@@ -234,6 +235,9 @@ static void analyze(EVAL_ANALYZE *result)
 
     if (type == EVAL_TYPE_END)
       break;
+
+		if (in_quote && (type == EVAL_TYPE_RESERVED || type == EVAL_TYPE_DATATYPE || type == EVAL_TYPE_SUBR))
+			type = EVAL_TYPE_IDENTIFIER;
 
     switch(type)
     {
@@ -315,11 +319,13 @@ static void analyze(EVAL_ANALYZE *result)
           if (old_type != EVAL_TYPE_OPERATOR)
             space_before = TRUE;
           space_after = FALSE;
+          in_quote = *symbol == '{';
         }
         else if (index("}", *symbol))
         {
           space_before = FALSE;
           space_after = FALSE;
+          in_quote = FALSE;
         }
         else if (index(".!", *symbol)) //symbol[0] == '.' && symbol[1] == 0)
         {
@@ -406,7 +412,6 @@ static void analyze(EVAL_ANALYZE *result)
 static void add_end_pattern(void)
 {
   int index;
-  const char *sym;
   int len;
 
   len = EVAL->len - (READ_source_ptr - EVAL->source);

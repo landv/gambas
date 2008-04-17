@@ -1,21 +1,21 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7.1667,8,29,11)
+  MoveScaled(7.1667,8,33,12)
   Text = ("Go to line")
   Border = Window.Fixed
   { btnOK Button
-    MoveScaled(1,6,13,4)
+    MoveScaled(1,7,15,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(15,6,13,4)
+    MoveScaled(17,7,15,4)
     Text = ("Cancel")
     Cancel = True
   }
   { HBox1 HBox
-    MoveScaled(1,1,27,4)
+    MoveScaled(1,1,31,4)
     Spacing = 8
     { Label1 Label
       MoveScaled(0,0,11,4)
@@ -23,7 +23,7 @@
       Text = ("Go to line")
     }
     { txtLine TextBox
-      MoveScaled(13,0,10,4)
+      MoveScaled(13,0,15,4)
       Expand = True
       Text = ("")
       Alignment = Align.Right

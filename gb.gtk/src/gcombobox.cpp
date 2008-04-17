@@ -122,16 +122,17 @@ char* gStoreList_itemText(GtkListStore *store,int ind)
 	return ret;
 }
 
-void gStoreList_setItemText(GtkListStore *store,int ind,char *txt)
+void gStoreList_setItemText(GtkListStore *store,int ind, const char *txt)
 {
 	GtkTreeIter iter;
 
+	if (!txt) txt = "";
 	if (gStoreList_Iter(store,&iter,ind)) return;
 	gtk_list_store_set (store,&iter,0,txt,-1);
 }
 
 
-int gStoreList_Find(GtkListStore *store,char *ptr)
+int gStoreList_Find(GtkListStore *store, const char *ptr)
 {
 	int len=0;
 	char *buf;
@@ -478,7 +479,7 @@ void gComboBox::setIndex(int vl)
 	gtk_combo_box_set_active(GTK_COMBO_BOX(widget),vl);
 }
 
-void gComboBox::setItemText(int ind,char *txt)
+void gComboBox::setItemText(int ind, const char *txt)
 {
 	int buf;
 	
@@ -544,14 +545,14 @@ void gComboBox::setSorted(bool vl)
 	if (sort) gStoreList_sortData(STORE_LIST);
 }
 
-void gComboBox::setText(char *vl)
+void gComboBox::setText(const char *vl)
 {
 	setIndex(find(vl));
 	if (entry)
 		gTextBox::setText(vl);
 }
 
-void gComboBox::add(char *vl,int pos)
+void gComboBox::add(const char *vl,int pos)
 {
 	GtkTreeIter iter,curr;
 	GtkListStore *store;
@@ -562,6 +563,9 @@ void gComboBox::add(char *vl,int pos)
 		pos = count();
 	
 	ind = index();
+	
+	if (!vl) 
+		vl = "";
 	
 	store = (GtkListStore*)gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
 	
@@ -590,7 +594,7 @@ void gComboBox::clear()
 	setIndex(-1);
 }
 
-int gComboBox::find(char *ptr)
+int gComboBox::find(const char *ptr)
 {
 	return gStoreList_Find(STORE_LIST, ptr);
 }

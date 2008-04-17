@@ -135,6 +135,34 @@ static void add_list_file(char *library)
   fclose(fi);
 }
 
+static void startup_print(FILE *fs, const char *key, const char *def)
+{
+	FILE *fp;
+  char line[256];
+  int len = strlen(key);
+  bool print = FALSE;
+	
+	fp = fopen(COMP_project, "r");
+	if (!fp)
+		return;
+		
+  for(;;)
+  {
+    if (read_line(fp, line, sizeof(line)))
+      break;
+
+    if (strncmp(line, key, len) == 0)
+    {
+    	fprintf(fs, "%s\n", &line[len]);
+    	print = TRUE;
+    }
+  }
+  
+  fclose(fp);
+  
+  if (!print && def)
+  	fprintf(fs, "%s\n", def);
+}
 
 void COMPILE_init(void)
 {
@@ -145,6 +173,7 @@ void COMPILE_init(void)
   struct dirent *dirent;
   const char *name;
   struct passwd *info;
+  FILE *fs;
 
   RESERVED_init();
 
@@ -174,7 +203,7 @@ void COMPILE_init(void)
   fp = fopen(COMP_project, "r");
   if (!fp)
     THROW(E_OPEN, COMP_project);
-
+    
   for(;;)
   {
     if (read_line(fp, line, sizeof(line)))
@@ -182,13 +211,30 @@ void COMPILE_init(void)
 
     /*printf("%s\n", line);*/
 
-    if (strncmp(line, "Library=", 8))
-      continue;
-
-    add_list_file(&line[8]);
+    if (strncmp(line, "Library=", 8) == 0)
+	    add_list_file(&line[8]);
+	  else if (strncmp(line, "Component=", 10) == 0)
+	    add_list_file(&line[10]);
   }
 
   fclose(fp);
+
+  fs = fopen(FILE_cat(FILE_get_dir(COMP_project), ".startup", NULL), "w");
+  if (!fs)
+  	THROW("Cannot create .startup file");
+
+	startup_print(fs, "Startup=", "");
+	startup_print(fs, "Title=", "");
+	startup_print(fs, "Stack=", "0");
+	startup_print(fs, "StackTrace=", "0");
+	startup_print(fs, "Version=", "");
+	fputc('\n', fs);
+	startup_print(fs, "Library=", NULL);
+	startup_print(fs, "Component=", NULL);
+	fputc('\n', fs);
+
+	if (fclose(fs))
+  	THROW("Cannot create .startup file");
 
   dir = opendir(FILE_get_dir(COMP_project));
   if (dir)

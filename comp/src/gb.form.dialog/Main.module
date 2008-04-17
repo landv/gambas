@@ -1,8 +1,11 @@
 ' Gambas module file
 
-PUBLIC SUB Main()
+Public Sub Main()
 
-  Dialog.OpenFile
+  Dialog.Title = "Select something"
+  Dialog.Date = Val("6/9/72")
+  Dialog.SelectDate
+  Print Dialog.Date
   
-END
+End
 

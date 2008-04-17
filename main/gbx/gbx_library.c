@@ -63,6 +63,13 @@
 /*#define DEBUG*/
 //#define DEBUG_PRELOAD
 
+// Maximum size of a project or startup file
+// This avoids reading too much in the archive file!
+
+#define MAX_SIZE 2048
+
+int _bytes_read = 0;
+
 #if 0
 static lt_ptr library_malloc(size_t size)
 {
@@ -109,7 +116,6 @@ static void copy_interface(intptr_t *src, intptr_t *dst)
 }
 
 
-
 static bool read_line(FILE *fd, char *dir, int max)
 {
   char *p;
@@ -120,8 +126,10 @@ static bool read_line(FILE *fd, char *dir, int max)
 
   for(;;)
   {
-    max--;
-
+    _bytes_read++;
+		if (_bytes_read > MAX_SIZE)
+			return TRUE;
+	
     for (;;)
     {
       c = fgetc(fd); //read(fd, &c, 1);
@@ -131,13 +139,15 @@ static bool read_line(FILE *fd, char *dir, int max)
         return TRUE;
     }
 
-    if (c == '\n' || max == 0)
+    if (c == '\n')
     {
       *p = 0;
       return FALSE;
     }
 
-    *p++ = c;
+    max--;
+		if (max > 0)
+    	*p++ = c;
   }
 }
 
@@ -163,6 +173,44 @@ static void add_preload(char **env, const char *lib)
 #endif
 }
 
+/*
+static const char *start_with(const char *str, const char *begin)
+{
+	int len = strlen(begin);
+	if (!strncasecmp(str, begin, len))
+		return &str[len];
+	else
+		return NULL;
+}
+*/
+
+static bool check_preload(const char *lib, char **penv)
+{
+	if (strcasecmp(lib, "gb.qt") == 0)
+	{
+		add_preload(penv, "libqt-mt.so.3");
+		#ifdef DEBUG_PRELOAD
+		fprintf(stderr, "found %s\n", lib);
+		#endif
+		return TRUE;
+	}
+	//#if HAVE_KDE_COMPONENT
+	else if (strcasecmp(lib, "gb.qt.kde") == 0)
+	{
+		/*add_preload(&env, libdir, p);*/
+		add_preload(penv, "libkdecore.so.4");
+		add_preload(penv, "libkdeui.so.4");
+		add_preload(penv, "libDCOP.so.4");
+		add_preload(penv, "libkio.so.4");
+		/*fprintf(stderr, "Warning: preloading KDE libraries\n");*/
+		#ifdef DEBUG_PRELOAD
+		fprintf(stderr, "found %s\n", lib);
+		#endif
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
 
 void LIBRARY_preload(const char *file, char **argv)
 {
@@ -171,11 +219,10 @@ void LIBRARY_preload(const char *file, char **argv)
   char dir[MAX_PATH];
   /*char libdir[MAX_PATH];*/
   FILE *fd;
-  char *p;
   char *env;
   bool preload;
-  bool stop;
   char *err = NULL;
+  bool startup = FALSE;
 
   env = getenv("GAMBAS_PRELOAD");
 
@@ -195,6 +242,7 @@ void LIBRARY_preload(const char *file, char **argv)
     return;
   }
 
+	_bytes_read = 0;
   preload = FALSE;
 
   if (!EXEC_arch)
@@ -224,7 +272,9 @@ void LIBRARY_preload(const char *file, char **argv)
       strcpy(dir, path);
     }
 
-    file = FILE_cat(dir, ".project", NULL);
+    file = FILE_cat(dir, ".startup", NULL);
+    /*if (!FILE_exist(file))
+	    file = FILE_cat(dir, ".project", NULL);*/
   }
 
   fd = fopen(file, "r");
@@ -237,55 +287,44 @@ void LIBRARY_preload(const char *file, char **argv)
 
   read_line(fd, dir, MAX_PATH);
 
-  if (strncasecmp(dir, PROJECT_MAGIC, strlen(PROJECT_MAGIC)))
-  {
-    err = "This is not a Gambas project file.";
-    goto _PANIC;
-  }
-
   env = COMMON_buffer;
-  stop = FALSE;
-
-  for(;;)
-  {
-    if (read_line(fd, dir, MAX_PATH))
-      break;
-
-    if (strncasecmp(dir, "library=", 8) == 0)
+  
+  //if (!start_with(dir, PROJECT_MAGIC))
+  //{
+  	// We suppose that we have a .startup file.
+    startup = TRUE;
+    while (*dir)
+    	read_line(fd, dir, MAX_PATH);
+    
+    for(;;)
     {
-      stop = TRUE;
-      p = &dir[8];
-
-      if (strcasecmp(p, "gb.qt") == 0)
-      {
-        add_preload(&env, "libqt-mt.so.3");
-        preload = TRUE;
-        #ifdef DEBUG_PRELOAD
-        fprintf(stderr, "found %s\n", dir);
-        #endif
-      }
-      //#if HAVE_KDE_COMPONENT
-      else if (strcasecmp(p, "gb.qt.kde") == 0)
-      {
-        /*add_preload(&env, libdir, p);*/
-        add_preload(&env, "libkdecore.so.4");
-        add_preload(&env, "libkdeui.so.4");
-        add_preload(&env, "libDCOP.so.4");
-        add_preload(&env, "libkio.so.4");
-        /*fprintf(stderr, "Warning: preloading KDE libraries\n");*/
-        preload = TRUE;
-        #ifdef DEBUG_PRELOAD
-        fprintf(stderr, "found %s\n", dir);
-        #endif
-      }
-      //#endif
+			if (read_line(fd, dir, MAX_PATH))
+				break;
+			if (!*dir)
+				break;
+			preload |= check_preload(dir, &env);
     }
-    else
-    {
-      if (stop)
-        break;
-    }
+  /*
   }
+  else
+  {
+		stop = FALSE;
+	
+		for(;;)
+		{
+			if (read_line(fd, dir, MAX_PATH))
+				break;
+	
+			if ((p = start_with(dir, "library=")) || (p = start_with(dir, "component=")))
+			{
+				preload |= check_preload(p, &env);
+				stop = TRUE;
+			}
+			else if (stop)
+				break;
+		}
+  }
+  */
 
   fclose(fd);
 

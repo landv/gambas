@@ -106,8 +106,6 @@ void SUBR_randomize(void);
 void SUBR_rnd(void);
 void SUBR_round(void);
 
-void SUBR_add_quick(int value);
-
 /* subr_string.c */
 
 void SUBR_cat(void);

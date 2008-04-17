@@ -124,6 +124,7 @@ PUBLIC void ARCH_define_project(const char *project)
 {
   char *name;
   char *dir;
+  const char *path;
 
   if (project == NULL)
     project = FILE_get_current_dir();
@@ -133,7 +134,11 @@ PUBLIC void ARCH_define_project(const char *project)
 
   arch_dir_pos = strlen(dir) + 1;
 
-  ARCH_project = STR_copy(FILE_cat(dir, ".project", NULL));
+	path = FILE_cat(dir, ".startup", NULL);
+	if (FILE_exist(path))
+  	ARCH_project = STR_copy(path);
+  else
+  	ARCH_project = STR_copy(FILE_cat(dir, ".project", NULL));
 
   name = STR_copy(FILE_get_name(dir));
 

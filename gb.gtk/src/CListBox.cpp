@@ -108,7 +108,7 @@ END_METHOD
 
 BEGIN_METHOD(CLISTBOX_add, GB_STRING item; GB_INTEGER pos)
 
-	LISTBOX->add( GB.ToZeroString(PROP(GB_STRING)), VARGOPT(pos, -1));	
+	LISTBOX->add( GB.ToZeroString(ARG(item)), VARGOPT(pos, -1));	
 
 END_METHOD
 

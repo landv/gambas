@@ -1464,9 +1464,67 @@ _PUSH_QUICK:
 
 _ADD_QUICK:
 
-  SUBR_add_quick(GET_XXX());
-
-  goto _NEXT;
+	{
+		static void *_aq_jump[] = {
+			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_FLOAT, &&__AQ_FLOAT, &&__AQ_DATE
+			};
+	
+		TYPE type;
+		int NO_WARNING(value);
+		VALUE * NO_WARNING(P1);
+		void * NO_WARNING(jump_end);
+	
+		P1 = SP - 1;
+	
+		if (TYPE_is_variant(P1->type))
+		{
+			jump_end = &&__AQ_VARIANT_END;
+			VARIANT_undo(P1);
+		}
+		else
+			jump_end = &&__AQ_END;
+	
+		type = P1->type;
+		value = GET_XXX();
+	
+		if (TYPE_is_number_date(type))
+			goto *_aq_jump[type];
+	
+		THROW(E_TYPE, "Number", TYPE_get_name(type));
+	
+	__AQ_BOOLEAN:
+		
+		P1->_integer.value ^= (value & 1) ? -1 : 0;
+		goto *jump_end;
+	
+	__AQ_BYTE:
+	__AQ_SHORT:
+	__AQ_INTEGER:
+	
+		P1->_integer.value += value;
+		goto *jump_end;
+	
+	__AQ_LONG:
+	
+		P1->_long.value += (int64_t)value;
+		goto *jump_end;
+	
+	__AQ_DATE:
+	
+		VALUE_conv(P1, T_FLOAT);
+	
+	__AQ_FLOAT:
+	
+		P1->_float.value += (double)value;
+		goto *jump_end;
+	
+	__AQ_VARIANT_END:
+	
+		VALUE_conv(P1, T_VARIANT);
+	
+	__AQ_END:
+  	goto _NEXT;
+	}
 
 /*-----------------------------------------------*/
 

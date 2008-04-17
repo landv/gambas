@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Public Const EVENT_NAME As String = "(Group)"
-Public Const SCALE_NAME As String = "(Scaled)"
+Public Const SCALE_NAME As String = "Scaled"
 
 Static Private $cRedirect As New Collection
 Static Private $cTranslate As New Collection
@@ -125,7 +125,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
     Type = hSym.Type
     sSign = hSym.Signature
   Else
-    If Name = "X" OR Name = "Y" Then
+    If Name = "X" Or Name = "Y" Then
       Type = "Position"
     Endif
   Endif
@@ -134,7 +134,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   If Len(Type) = 1 Then
     'IF Name = "Visible" THEN
     '  DefaultValue = TRUE
-    If Name = "X" OR Name = "Y" OR Name = "Width" OR Name = "Height" OR Name = "Text" Then
+    If Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height" Or Name = "Text" Then
       Required = True
     Else If Name = "Tag" Then
       Type = "s"
@@ -190,9 +190,9 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
         For Each hSym In CComponent.Classes[ConstantClass].Symbols
 
           If hSym.Kind = "C" Then
-            If NOT hSym.IsHidden() Then
+            If Not hSym.IsHidden() Then
               ConstantList["#" & CStr(hSym.Value)] = hSym.Name
-              If NOT sFirst Then sFirst = hSym.Name
+              If Not sFirst Then sFirst = hSym.Name
             Endif
           Endif
 
@@ -239,7 +239,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
     If Type = "i" Then
   
-      If Name = "Background" OR Name = "Foreground" OR InStr(Name, "Color") > 0 Then
+      If Name = "Background" Or Name = "Foreground" Or InStr(Name, "Color") > 0 Then
   
         Type = "Color"
   
@@ -310,7 +310,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
   If Type = "Color" Then DefaultValue = Color.Default
 
-  Coord = Name = "X" OR Name = "Y" OR Name = "Width" OR Name = "Height"
+  Coord = Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height"
   If Coord Then DefaultValue = Null
   'AlwaysRead = Name = "Font"
 
@@ -320,7 +320,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
     DoNotApply = $cRedirect[sClass & "." & Name]
   Else If $cRedirect.Exist("*." & Name) Then
     DoNotApply = $cRedirect["*." & Name]
-  Else If Name = "Enabled" AND If CComponent.Classes[sClass].Container Then 
+  Else If Name = "Enabled" And If CComponent.Classes[sClass].Container Then 
     DoNotApply = True
   Endif
 
@@ -332,25 +332,25 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
       AlwaysRead = Name = "Value"
 
     Case "Button"
-      AlwaysRead = Name = "Default" OR Name = "Cancel"
+      AlwaysRead = Name = "Default" Or Name = "Cancel"
 
     'CASE "TabStrip"
     '  Exclude = Name = "Text" OR Name = "Index" OR Name = "Picture"
     '  Hidden = Name = "Index"
 
     Case "ProgressBar"
-      AlwaysRead = Name = "Value" OR Name = "Max"
+      AlwaysRead = Name = "Value" Or Name = "Max"
 
   End Select
 
   If CComponent.Classes[sClass].MultiContainer Then
-    Exclude = Name = "Text" OR Name = "Index" OR Name = "Picture"
+    Exclude = Name = "Text" Or Name = "Index" Or Name = "Picture"
     'AlwaysRead = Name = "Text" OR Name = "Picture"
     Hidden = Name = "Index"
   Endif
 
-  Translate = $cTranslate.Exist(Name) OR $cTranslate.Exist(sClass & "." & Name)
-  UpdateName = $cUpdateName.Exist(sClass & "." & Name) OR $cUpdateName.Exist("*." & Name)
+  Translate = $cTranslate.Exist(Name) Or $cTranslate.Exist(sClass & "." & Name)
+  UpdateName = $cUpdateName.Exist(sClass & "." & Name) Or $cUpdateName.Exist("*." & Name)
   
   Virtual = bVirtual
 
