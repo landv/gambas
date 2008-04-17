@@ -15,7 +15,7 @@ STATIC PUBLIC FUNCTION Run(sText AS String) AS Boolean
 END
 
 
-PUBLIC SUB _new()
+PUBLIC SUB Form_Open()
 
   txtText.Text = Value
   txtText.SetFocus
@@ -26,15 +26,6 @@ PUBLIC SUB _new()
   
 END
 
-
-PUBLIC SUB Form_Resize()
-
-  btnCancel.Move(ME.ClientW - 8 - btnCancel.Width, ME.ClientH - 8 - btnCancel.Height)
-  btnOK.Move(btnCancel.X - 8 - btnOK.Width, btnCancel.Y)
-  txtText.Move(8, 8, ME.ClientW - 16, ME.ClientH - btnCancel.H - 24)
-  chkFont.Move(8, btnOK.Y)
-
-END
 
 PUBLIC SUB btnCancel_Click()
 
