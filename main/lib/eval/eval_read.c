@@ -119,7 +119,10 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
 
     case RT_STRING:
     case RT_TSTRING:
-      snprintf(_buffer, BUF_MAX, "\"%s\"", TABLE_get_symbol_name(EVAL->string, index));
+    	if (_no_quote)
+	      snprintf(_buffer, BUF_MAX, "\"%s\"", TABLE_get_symbol_name(EVAL->string, index));
+      else
+      	strcpy(_buffer, "string");
       break;
 
     case RT_NEWLINE:
