@@ -7,16 +7,16 @@
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
+  it under the terms of the GNU General License as published by
   the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  GNU General License for more details.
 
-  You should have received a copy of the GNU General Public License
+  You should have received a copy of the GNU General License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
@@ -35,21 +35,28 @@
 
 #define MAX_WINDOW_PROP 16
 
-PUBLIC Atom X11_atom_net_wm_state;
-PUBLIC Atom X11_atom_net_wm_state_above;
-PUBLIC Atom X11_atom_net_wm_state_below;
-PUBLIC Atom X11_atom_net_wm_state_stays_on_top;
-PUBLIC Atom X11_atom_net_wm_state_skip_taskbar;
-PUBLIC Atom X11_atom_net_wm_window_type;
-PUBLIC Atom X11_atom_net_wm_window_type_normal;
-PUBLIC Atom X11_atom_net_wm_window_type_utility;
-PUBLIC Atom X11_atom_net_wm_desktop;
-PUBLIC Atom X11_atom_net_current_desktop;
+Atom X11_atom_net_wm_state;
+Atom X11_atom_net_wm_state_above;
+Atom X11_atom_net_wm_state_below;
+Atom X11_atom_net_wm_state_stays_on_top;
+Atom X11_atom_net_wm_state_skip_taskbar;
+Atom X11_atom_net_wm_window_type;
+Atom X11_atom_net_wm_window_type_normal;
+Atom X11_atom_net_wm_window_type_utility;
+Atom X11_atom_net_wm_desktop;
+Atom X11_atom_net_current_desktop;
 
 static Display *_display;
 static Window _root;
 
 static bool _atom_init = FALSE;
+
+typedef
+	struct {
+		char *name;
+		Atom atom;
+		}
+	X11_ATOM;
 
 typedef
 	struct {
@@ -60,6 +67,25 @@ typedef
 
 static X11_PROPERTY _window_prop;
 static X11_PROPERTY _window_save[2];
+
+static X11_ATOM _atoms[] =
+{
+	{"_NET_WM_WINDOW_TYPE_NORMAL"},
+	{"_NET_WM_WINDOW_TYPE_DESKTOP"},
+	{"_NET_WM_WINDOW_TYPE_DOCK"},
+	{"_NET_WM_WINDOW_TYPE_TOOLBAR"},
+	{"_NET_WM_WINDOW_TYPE_MENU"},
+	{"_NET_WM_WINDOW_TYPE_UTILITY"},
+	{"_NET_WM_WINDOW_TYPE_SPLASH"},
+	{"_NET_WM_WINDOW_TYPE_DIALOG"},
+	{"_NET_WM_WINDOW_TYPE_DROPDOWN_MENU"},
+	{"_NET_WM_WINDOW_TYPE_POPUP_MENU"},
+	{"_NET_WM_WINDOW_TYPE_TOOLTIP"},
+	{"_NET_WM_WINDOW_TYPE_NOTIFICATION"},
+	{"_NET_WM_WINDOW_TYPE_COMBO"},
+	{"_NET_WM_WINDOW_TYPE_DND"},
+	{NULL}
+};
 
 static void init_atoms()
 {
@@ -81,6 +107,34 @@ static void init_atoms()
 
   _atom_init = TRUE;
 }
+
+static Atom get_atom(int index)
+{
+	X11_ATOM *a = &_atoms[index];
+	
+	if (!a->atom)
+		a->atom = XInternAtom(_display, a->name, True);
+		
+	return a->atom;
+}
+
+static int find_atom(Atom atom)
+{
+	int i = 0;
+	X11_ATOM *p = _atoms;
+	
+	while (p->name)
+	{
+		if (!p->atom)
+			p->atom = XInternAtom(_display, p->name, True);
+		if (p->atom == atom)
+			return i;
+		p++;
+		i++;
+	}
+	return (-1);
+}
+
 
 static void get_property(Window wid, Atom prop, int maxlength, unsigned char **data, unsigned long *count)
 {
@@ -167,19 +221,19 @@ static void clear_window_state(Atom prop)
 }
 
 
-PUBLIC void X11_init(Display *display, Window root)
+void X11_init(Display *display, Window root)
 {
   _display = display;
   _root = root;
   init_atoms();
 }
 
-PUBLIC void X11_exit()
+void X11_exit()
 {
 }
 
 
-PUBLIC void X11_window_change_property(Window window, bool visible, Atom property, bool set)
+void X11_window_change_property(Window window, bool visible, Atom property, bool set)
 {
   XEvent e;
   long mask = (SubstructureRedirectMask | SubstructureNotifyMask);
@@ -213,18 +267,18 @@ PUBLIC void X11_window_change_property(Window window, bool visible, Atom propert
 }
 
 
-PUBLIC bool X11_window_has_property(Window window, Atom property)
+bool X11_window_has_property(Window window, Atom property)
 {
   load_window_state(window, X11_atom_net_wm_state);
   return has_window_state(property);
 }
 
-PUBLIC void X11_sync(void)
+void X11_sync(void)
 {
   XSync(_display, False);
 }
 
-PUBLIC void X11_window_save_properties(Window window)
+void X11_window_save_properties(Window window)
 {
   load_window_state(window, X11_atom_net_wm_state);
   _window_save[0] = _window_prop;
@@ -232,7 +286,7 @@ PUBLIC void X11_window_save_properties(Window window)
   //_window_save[1] = _window_prop;
 }
 
-PUBLIC void X11_window_restore_properties(Window window)
+void X11_window_restore_properties(Window window)
 {
   _window_prop = _window_save[0];
   save_window_state(window, X11_atom_net_wm_state);
@@ -246,7 +300,7 @@ PUBLIC void X11_window_restore_properties(Window window)
 
 #define OPCODE "_NET_SYSTEM_TRAY_OPCODE"
 
-PUBLIC void X11_window_dock(Window window)
+void X11_window_dock(Window window)
 {
   Window xmanager=None;
   XClientMessageEvent ev;
@@ -290,7 +344,7 @@ PUBLIC void X11_window_dock(Window window)
   XSync(_display, 0);
 }
 
-PUBLIC void X11_window_startup(Window window, int x, int y, int w, int h)
+void X11_window_startup(Window window, int x, int y, int w, int h)
 {
   XSizeHints s;
 
@@ -306,7 +360,7 @@ PUBLIC void X11_window_startup(Window window, int x, int y, int w, int h)
 
 // ### Do not forget to call XFree() on window_list once finished with it
 
-PUBLIC void X11_find_windows(Window **window_list, int *count)
+void X11_find_windows(Window **window_list, int *count)
 {
 	static Atom _net_client_list = 0;
 
@@ -318,21 +372,21 @@ PUBLIC void X11_find_windows(Window **window_list, int *count)
 
 // ### Do not forget to call XFree() on result once finished with it
 
-PUBLIC void X11_get_window_title(Window window, char **result, int *length)
+void X11_get_window_title(Window window, char **result, int *length)
 {
 	unsigned long l;
 	get_property(window, XA_WM_NAME, 256, (unsigned char **)result, &l);
 	*length = (int)l;
 }
 
-PUBLIC void X11_get_window_class(Window window, char **result, int *length)
+void X11_get_window_class(Window window, char **result, int *length)
 {
 	unsigned long l;
 	get_property(window, XA_WM_CLASS, 256, (unsigned char **)result, &l);
 	*length = (int)l;
 }
 
-PUBLIC void X11_get_window_role(Window window, char **result, int *length)
+void X11_get_window_role(Window window, char **result, int *length)
 {
 	static Atom wm_window_role = (Atom)0;
 	unsigned long l;
@@ -347,7 +401,7 @@ PUBLIC void X11_get_window_role(Window window, char **result, int *length)
 
 // Makes a tool window
 
-PUBLIC void X11_set_window_tool(Window window, int tool, Window parent)
+void X11_set_window_tool(Window window, int tool, Window parent)
 {
 	load_window_state(window, X11_atom_net_wm_window_type);
 
@@ -367,7 +421,7 @@ PUBLIC void X11_set_window_tool(Window window, int tool, Window parent)
 	save_window_state(window, X11_atom_net_wm_window_type);
 }
 
-PUBLIC int X11_get_window_tool(Window window)
+int X11_get_window_tool(Window window)
 {
 	load_window_state(window, X11_atom_net_wm_window_type);
   return has_window_state(X11_atom_net_wm_window_type_utility);
@@ -376,7 +430,7 @@ PUBLIC int X11_get_window_tool(Window window)
 
 // Set window desktop
 
-PUBLIC void X11_window_set_desktop(Window window, bool visible, int desktop)
+void X11_window_set_desktop(Window window, bool visible, int desktop)
 {
   XEvent e;
   long mask = (SubstructureRedirectMask | SubstructureNotifyMask);
@@ -404,7 +458,7 @@ PUBLIC void X11_window_set_desktop(Window window, bool visible, int desktop)
 }
 
 
-PUBLIC int X11_window_get_desktop(Window window)
+int X11_window_get_desktop(Window window)
 {
 	unsigned long length = 0;
 	unsigned char *data = NULL;
@@ -421,7 +475,7 @@ PUBLIC int X11_window_get_desktop(Window window)
 	return desktop;
 }
 
-PUBLIC int X11_get_current_desktop()
+int X11_get_current_desktop()
 {
 	unsigned long length = 0;
 	unsigned char *data = NULL;
@@ -434,4 +488,28 @@ PUBLIC int X11_get_current_desktop()
 	XFree(data);
 	
 	return desktop;
+}
+
+int X11_get_window_type(Window window)
+{
+	int index;
+	
+	load_window_state(window, X11_atom_net_wm_window_type);
+	index = find_atom(_window_prop.atoms[0]);
+	if (index < 0)
+		return _NET_WM_WINDOW_TYPE_NORMAL;
+	else
+		return index;
+}
+
+void X11_set_window_type(Window window, int type)
+{
+	_window_prop.count = 1;
+	_window_prop.atoms[0] = get_atom(type);
+	save_window_state(window, X11_atom_net_wm_window_type);
+}
+
+void X11_set_transient_for(Window window, Window parent)
+{
+	XSetTransientForHint(_display, window, parent);
 }

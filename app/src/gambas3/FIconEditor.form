@@ -1,4 +1,4 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
   MoveScaled(2,14,85,81)
@@ -13,7 +13,7 @@
       MoveScaled(0,1,26,4)
       { btnSave ToolButton btnTool
         Name = "btnSave"
-        MoveScaled(0,0,3,3)
+        MoveScaled(0,0,4,4)
         Tag = "save"
         ToolTip = ("Save")
         Text = ("")
@@ -21,14 +21,14 @@
       }
       { btnReload ToolButton mnuReload
         Name = "btnReload"
-        MoveScaled(3,0,3,3)
+        MoveScaled(3,0,4,4)
         ToolTip = ("Reload")
         Text = ("")
         Picture = Picture["icon:/small/refresh"]
       }
       { ToolButton1 ToolButton btnTool
         Name = "ToolButton1"
-        MoveScaled(6,0,3,3)
+        MoveScaled(6,0,4,4)
         Tag = "undo"
         ToolTip = ("Undo")
         Text = ("")
@@ -36,7 +36,7 @@
       }
       { btnClear ToolButton btnTool
         Name = "btnClear"
-        MoveScaled(9,0,3,3)
+        MoveScaled(9,0,4,4)
         Tag = "clear"
         ToolTip = ("Clear all")
         Text = ("")
@@ -44,7 +44,7 @@
       }
       { ToolButton16 ToolButton btnTool
         Name = "ToolButton16"
-        MoveScaled(12,0,3,3)
+        MoveScaled(12,0,4,4)
         Tag = "cut"
         ToolTip = ("Cut")
         Text = ("")
@@ -52,7 +52,7 @@
       }
       { ToolButton15 ToolButton btnTool
         Name = "ToolButton15"
-        MoveScaled(15,0,3,3)
+        MoveScaled(15,0,4,4)
         Tag = "copy"
         ToolTip = ("Copy")
         Text = ("")
@@ -60,14 +60,14 @@
       }
       { btnPaste ToolButton btnTool
         Name = "btnPaste"
-        MoveScaled(18,0,3,3)
+        MoveScaled(18,0,4,4)
         Tag = "paste"
         ToolTip = ("Paste")
         Text = ("")
         Picture = Picture["icon:/small/paste"]
       }
       { btnPreview ToolButton
-        MoveScaled(21,0,3,3)
+        MoveScaled(21,0,4,4)
         Visible = False
         Text = ("")
         Picture = Picture["icon:/small/camera"]
@@ -77,22 +77,22 @@
     { tlbMove ToolBar
       MoveScaled(26,1,31,4)
       { lblCoord Label
-        MoveScaled(0,0,9,3)
+        MoveScaled(0,0,9,4)
         Text = ("")
         Alignment = Align.Center
         Border = Border.Sunken
       }
       { Panel1 Panel
-        MoveScaled(10,0,1,3)
+        MoveScaled(10,0,2,4)
       }
       { cmbZoom ComboBox
-        MoveScaled(11,0,7,3)
+        MoveScaled(11,0,7,4)
         Text = ("")
         ReadOnly = True
       }
       { ToolButton3 ToolButton btnTool
         Name = "ToolButton3"
-        MoveScaled(18,0,3,3)
+        MoveScaled(18,0,4,4)
         Tag = "zoom-in"
         ToolTip = ("Zoom in")
         Text = ("")
@@ -100,7 +100,7 @@
       }
       { ToolButton17 ToolButton btnTool
         Name = "ToolButton17"
-        MoveScaled(21,0,3,3)
+        MoveScaled(21,0,4,4)
         Tag = "zoom-out"
         ToolTip = ("Zoom out")
         Text = ("")
@@ -108,7 +108,7 @@
       }
       { btnMove ToolButton btnTool
         Name = "btnMove"
-        MoveScaled(24,0,3,3)
+        MoveScaled(24,0,4,4)
         Tag = "move"
         ToolTip = ("Scroll")
         Text = ("")
@@ -120,7 +120,7 @@
       MoveScaled(55,1,25,4)
       { btnSelect ToolButton btnTool
         Name = "btnSelect"
-        MoveScaled(0,0,3,3)
+        MoveScaled(0,0,4,4)
         Tag = "select"
         ToolTip = ("Select")
         Text = ("")
@@ -129,7 +129,7 @@
       }
       { ToolButton5 ToolButton btnTool
         Name = "ToolButton5"
-        MoveScaled(3,0,3,3)
+        MoveScaled(3,0,4,4)
         Tag = "pen"
         ToolTip = ("Draw")
         Text = ("")
@@ -138,7 +138,7 @@
       }
       { ToolButton6 ToolButton btnTool
         Name = "ToolButton6"
-        MoveScaled(6,0,3,3)
+        MoveScaled(6,0,4,4)
         Tag = "line"
         ToolTip = ("Line")
         Text = ("")
@@ -147,7 +147,7 @@
       }
       { ToolButton7 ToolButton btnTool
         Name = "ToolButton7"
-        MoveScaled(9,0,3,3)
+        MoveScaled(9,0,4,4)
         Tag = "rect"
         ToolTip = ("Rectangle")
         Text = ("")
@@ -156,7 +156,7 @@
       }
       { ToolButton10 ToolButton btnTool
         Name = "ToolButton10"
-        MoveScaled(12,0,3,3)
+        MoveScaled(12,0,4,4)
         Tag = "circle"
         ToolTip = ("Ellipse")
         Text = ("")
@@ -165,7 +165,7 @@
       }
       { btnFill ToolButton btnTool
         Name = "btnFill"
-        MoveScaled(15,0,3,3)
+        MoveScaled(15,0,4,4)
         Tag = "fill"
         ToolTip = ("Flood fill")
         Text = ("")
@@ -174,7 +174,7 @@
       }
       { ToolButton11 ToolButton btnTool
         Name = "ToolButton11"
-        MoveScaled(18,0,3,3)
+        MoveScaled(18,0,4,4)
         Tag = "fill-alt"
         ToolTip = ("Hatched flood fill")
         Text = ("")
@@ -186,7 +186,7 @@
       MoveScaled(1,7,18,5)
       { btnBorder ToolButton btnTool
         Name = "btnBorder"
-        MoveScaled(0,0,3,3)
+        MoveScaled(0,0,4,4)
         Tag = "border"
         ToolTip = ("Border only")
         Text = ("")
@@ -195,7 +195,7 @@
       }
       { btnFilled ToolButton btnTool
         Name = "btnFilled"
-        MoveScaled(3,0,3,3)
+        MoveScaled(3,0,4,4)
         Tag = "full"
         ToolTip = ("Filled")
         Text = ("")
@@ -204,7 +204,7 @@
       }
       { btnBorderFilled ToolButton btnTool
         Name = "btnBorderFilled"
-        MoveScaled(6,0,3,3)
+        MoveScaled(6,0,4,4)
         Tag = "border-full"
         ToolTip = ("Filled with border")
         Text = ("")
@@ -213,7 +213,7 @@
       }
       { btnTransparent ToolButton btnTool
         Name = "btnTransparent"
-        MoveScaled(9,0,3,3)
+        MoveScaled(9,0,4,4)
         Tag = "transparent"
         ToolTip = ("Transparent")
         Text = ("")
@@ -222,7 +222,7 @@
       }
       { btnOpaque ToolButton btnTool
         Name = "btnOpaque"
-        MoveScaled(12,0,3,3)
+        MoveScaled(12,0,4,4)
         Tag = "opaque"
         ToolTip = ("Opaque")
         Text = ("")
@@ -234,7 +234,7 @@
       MoveScaled(19,7,17,4)
       { btnSwap ToolButton btnTool
         Name = "btnSwap"
-        MoveScaled(0,0,3,3)
+        MoveScaled(0,0,4,4)
         Tag = "swap"
         ToolTip = ("Replace color")
         Text = ("")
@@ -242,7 +242,7 @@
       }
       { btnFlip ToolButton btnTool
         Name = "btnFlip"
-        MoveScaled(3,0,3,3)
+        MoveScaled(3,0,4,4)
         Tag = "flip-h"
         ToolTip = ("Horizontal flip")
         Text = ("")
@@ -250,7 +250,7 @@
       }
       { ToolButton12 ToolButton btnTool
         Name = "ToolButton12"
-        MoveScaled(6,0,3,3)
+        MoveScaled(6,0,4,4)
         Tag = "flip-v"
         ToolTip = ("Vertical flip")
         Text = ("")
@@ -258,7 +258,7 @@
       }
       { ToolButton13 ToolButton btnTool
         Name = "ToolButton13"
-        MoveScaled(9,0,3,3)
+        MoveScaled(9,0,4,4)
         Tag = "rotate"
         ToolTip = ("Rotate clockwise")
         Text = ("")
@@ -266,7 +266,7 @@
       }
       { ToolButton2 ToolButton btnTool
         Name = "ToolButton2"
-        MoveScaled(12,0,3,3)
+        MoveScaled(12,0,4,4)
         Tag = "rotate-back"
         ToolTip = ("Rotate counter-clockwise")
         Text = ("")
@@ -276,14 +276,14 @@
     { tlbColor ToolBar
       MoveScaled(41,7,33,4)
       { dwgForeground DrawingArea
-        MoveScaled(1,0,3,3)
+        MoveScaled(1,0,4,4)
       }
       { dwgBackground DrawingArea
-        MoveScaled(4,0,3,3)
+        MoveScaled(4,0,4,4)
       }
       { ToolButton4 ToolButton btnTool
         Name = "ToolButton4"
-        MoveScaled(7,0,3,3)
+        MoveScaled(7,0,4,4)
         Tag = "exchange"
         ToolTip = ("Swap colors")
         Text = ("")
@@ -291,7 +291,7 @@
       }
       { ToolButton19 ToolButton btnTool
         Name = "ToolButton19"
-        MoveScaled(10,0,3,3)
+        MoveScaled(10,0,4,4)
         Tag = "pipette"
         ToolTip = ("Pick a color")
         Text = ("")

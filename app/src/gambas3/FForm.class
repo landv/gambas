@@ -348,6 +348,21 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
               Print "Bad property value "; sValue
               ' This is an object !
             Endif
+            
+            If sClass = "Form" And If sProperty = "Border" Then
+            
+              Select Case vValue
+                Case "None"
+                  vValue = False
+                Case "Resizable"
+                  vValue = True
+                  hCtrl.SetProperty("Resizable", True)
+                Case "Fixed"
+                  vValue = True
+                  hCtrl.SetProperty("Resizable", False)
+              End Select
+            
+            Endif
 
           Endif
 

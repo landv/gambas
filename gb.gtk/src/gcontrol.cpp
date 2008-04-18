@@ -756,11 +756,11 @@ gMainWindow* gControl::topLevel()
 	return (gMainWindow *)child;
 }
 
-long gControl::handle()
+int gControl::handle()
 {
 	#ifndef GAMBAS_DIRECTFB
 	#ifdef GDK_WINDOWING_X11
-	return (long)GDK_WINDOW_XID(border->window);
+	return GDK_WINDOW_XID(border->window);
 	#else
 	stub("no-X11/gControl::handle()");
 	return 0;

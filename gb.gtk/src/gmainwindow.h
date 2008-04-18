@@ -11,7 +11,9 @@ public:
 	~gMainWindow();
 
 //"Properties"
-	int getBorder();
+	bool hasBorder();
+	bool isResizable();
+	int getType();
 	gPicture *icon() { return _icon; }
 	gPicture *picture() { return _picture; }
 	bool mask() { return _mask; }
@@ -26,14 +28,15 @@ public:
 	bool getSticky();
 	int  getStacking();
 	bool isPersistent() { return persistent; }
-	bool isToolBox() { return _toolbox; }
 	bool isClosed() { return !opened; }
 	
 	int controlCount();
 	gControl *getControl(char *name);
 	gControl *getControl(int i);
 
-	void setBorder(int b);
+	void setBorder(bool b);
+	void setResizable(bool b);
+	void setType(int type);
 	void setIcon(gPicture *pic);
 	void setMask(bool vl);
 	void setPicture(gPicture *pic);
@@ -46,7 +49,7 @@ public:
 	void setSticky(bool vl);
 	void setStacking(int vl);
   void setPersistent(bool vl);
-  void setToolBox(bool vl);
+	
 	virtual void setVisible(bool vl);
 	virtual void setRealBackground(gColor vl);
 
@@ -116,7 +119,6 @@ public:
 	unsigned sticky : 1;
 	unsigned opened : 1;
 	unsigned _closing : 1;
-	unsigned _toolbox : 1;
 	unsigned _not_spontaneous : 1;
 	unsigned _skip_taskbar : 1;
 	unsigned _masked : 1;

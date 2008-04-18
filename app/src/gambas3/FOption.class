@@ -54,7 +54,7 @@ Public Sub _new()
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   
-  $cLast = MTheme.ReadSettings(Settings, "/Highlight")
+  $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)
   
   $aConfig = [
@@ -449,8 +449,6 @@ Private Sub UpdateStyle()
   RefreshEditor
   
 End
-
-
 Public Sub mnuBold_Click()
   
   Inc mnuBold.Checked

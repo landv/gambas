@@ -28,6 +28,7 @@
 
 #define __CWINDOW_CPP
 
+#include "x11.h"
 #include "main.h"
 #include "CWindow.h"
 #include "CWidget.h"
@@ -451,8 +452,30 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_border)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(WINDOW->getBorder()); return; }
-	WINDOW->setBorder(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->hasBorder());
+	else
+		WINDOW->setBorder(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CWINDOW_resizable)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->isResizable());
+	else
+		WINDOW->setResizable(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CWINDOW_type)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WINDOW->getType());
+	else
+		WINDOW->setType(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -489,14 +512,6 @@ BEGIN_PROPERTY(CWINDOW_skip_taskbar)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CWINDOW_toolbox)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(WINDOW->isToolBox());
-	else
-		WINDOW->setToolBox(VPROP(GB_BOOLEAN));
-
-END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_mask)
 
@@ -680,9 +695,18 @@ GB_DESC CWindowDesc[] =
 {
   GB_DECLARE("Window", sizeof(CWINDOW)), GB_INHERITS("Container"),
 
-  GB_CONSTANT("None", "i", 0),
-  GB_CONSTANT("Fixed", "i", 1),
-  GB_CONSTANT("Resizable", "i", 2),
+  GB_CONSTANT("Toolbar", "i", _NET_WM_WINDOW_TYPE_UTILITY),
+  GB_CONSTANT("Splash", "i", _NET_WM_WINDOW_TYPE_SPLASH),
+  GB_CONSTANT("Popup", "i", _NET_WM_WINDOW_TYPE_POPUP_MENU),
+  GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),
+  GB_CONSTANT("Panel", "i", _NET_WM_WINDOW_TYPE_DOCK),
+  GB_CONSTANT("Notification", "i", _NET_WM_WINDOW_TYPE_NOTIFICATION),
+  GB_CONSTANT("Drag", "i", _NET_WM_WINDOW_TYPE_DND),
+  GB_CONSTANT("Desktop", "i", _NET_WM_WINDOW_TYPE_DESKTOP),
+  
+  //GB_CONSTANT("None", "i", 0),
+  //GB_CONSTANT("Fixed", "i", 1),
+  //GB_CONSTANT("Resizable", "i", 2),
 
   GB_CONSTANT("Normal", "i", 0),
   GB_CONSTANT("Above", "i", 1),
@@ -711,7 +735,6 @@ GB_DESC CWindowDesc[] =
   GB_PROPERTY("Title", "s", CWINDOW_text),
   GB_PROPERTY("Caption", "s", CWINDOW_text),
   GB_PROPERTY("Icon", "Picture", CWINDOW_icon),
-  GB_PROPERTY("Border", "i", CWINDOW_border),
 
   GB_PROPERTY("Minimized", "b", CWINDOW_minimized),
   GB_PROPERTY("Maximized", "b", CWINDOW_maximized),
@@ -719,12 +742,14 @@ GB_DESC CWindowDesc[] =
 
   GB_PROPERTY("TopOnly", "b", CWINDOW_top_only),
   GB_PROPERTY("SkipTaskbar", "b", CWINDOW_skip_taskbar),
-  GB_PROPERTY("ToolBox", "b", CWINDOW_toolbox),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
-
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+
+	GB_PROPERTY("Type", "i", CWINDOW_type),
+  GB_PROPERTY("Border", "b", CWINDOW_border),
+	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
 
   GB_PROPERTY("Mask","b",CWINDOW_mask),
   GB_PROPERTY("Picture", "Picture", CWINDOW_picture),

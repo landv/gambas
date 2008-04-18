@@ -94,4 +94,5 @@ gb_gtk_la_SOURCES = \
 	gapplication.h gapplication.cpp \
 	gclipboard.h \
 	gdrag.h gdrag.cpp \
-	gtools.h kentities.h
+	gtools.h kentities.h \
+	x11.h x11.c

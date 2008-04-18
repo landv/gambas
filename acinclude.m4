@@ -419,10 +419,24 @@ gb_val=""
 gb_save=`pwd`
 gb_file_list="$1"
 
-for gb_main_dir in $2; do
+gb_main_dir_list="$2"
+gb_main_dir_list_64=`echo "$gb_main_dir_list" | sed s/"lib"/"lib64"/g`
+
+if test "$gb_main_dir_list_64" != "$gb_main_dir_list"; then
+  gb_main_dir_list="$gb_main_dir_list_64 $gb_main_dir_list";
+fi
+
+gb_sub_dir_list="$3"
+gb_sub_dir_list_64=`echo "$gb_sub_dir_list" | sed s/"lib"/"lib64"/g`
+
+if test "$gb_sub_dir_list_64" != "$gb_sub_dir_list"; then
+  gb_sub_dir_list="$gb_sub_dir_list_64 $gb_sub_dir_list";
+fi
+
+for gb_main_dir in $gb_main_dir_list; do
   if test -d $gb_main_dir; then
     cd $gb_main_dir
-    for gb_search_dir in $3; do
+    for gb_search_dir in $gb_sub_dir_list; do
       for gb_dir in $gb_search_dir/ $gb_search_dir/*/ $gb_search_dir/*/*/; do
 
         gb_new_file_list=""

@@ -118,7 +118,8 @@ static void clear_mask(CWINDOW *_object)
     WINDOW->clearMask();
 
     bool v = !WINDOW->isHidden() && WINDOW->isVisible();
-    WINDOW->setBorder(WINDOW->getBorder(), true);
+    WINDOW->setBorder(WINDOW->hasBorder(), true);
+    WINDOW->setResizable(WINDOW->isResizable(), true);
     if (v)
       WINDOW->show();
   }
@@ -619,7 +620,10 @@ BEGIN_METHOD_VOID(CWINDOW_show)
     //if (CWINDOW_Current)
     //  WINDOW->showModal(); //GB.Error("A modal window is already displayed");
     //else
-    WINDOW->showActivate();
+    //CWINDOW *parent = (CWINDOW *)VARGOPT(parent, NULL);
+    //if (parent && GB.CheckObject(parent))
+    //	return;
+    WINDOW->showActivate(); //parent ? parent->widget.widget : 0);
   }
 
 END_METHOD
@@ -778,6 +782,7 @@ BEGIN_METHOD(CWINDOW_menu_get, GB_INTEGER index)
 END_PROPERTY
 
 
+#if 0
 BEGIN_PROPERTY(CWINDOW_border)
 
   if (!THIS->toplevel)
@@ -794,7 +799,25 @@ BEGIN_PROPERTY(CWINDOW_border)
   }
 
 END_PROPERTY
+#endif
 
+BEGIN_PROPERTY(CWINDOW_border)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->hasBorder());
+	else
+		WINDOW->setBorder(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWINDOW_resizable)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->isResizable());
+	else
+		WINDOW->setResizable(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_icon)
 
@@ -942,6 +965,13 @@ BEGIN_PROPERTY(CWINDOW_sticky)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CWINDOW_type)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(0);
+
+END_PROPERTY
+
 #else //-------------------------------------------------------------------------------------------
 
 static void manage_window_property(void *_object, void *_param, Atom property)
@@ -1039,6 +1069,15 @@ BEGIN_PROPERTY(CWINDOW_sticky)
 		GB.ReturnBoolean(X11_window_get_desktop(WINDOW->winId()) < 0);
 	else
 		X11_window_set_desktop(WINDOW->winId(), WINDOW->isVisible(), VPROP(GB_BOOLEAN) ? 0xFFFFFFFF : X11_get_current_desktop());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWINDOW_type)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WINDOW->getType());
+	else
+		WINDOW->setType(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -1253,9 +1292,20 @@ GB_DESC CWindowDesc[] =
 {
   GB_DECLARE("Window", sizeof(CWINDOW)), GB_INHERITS("Container"),
 
-  GB_CONSTANT("None", "i", 0),
-  GB_CONSTANT("Fixed", "i", 1),
-  GB_CONSTANT("Resizable", "i", 2),
+  //GB_CONSTANT("Normal", "i", 0),
+  GB_CONSTANT("Toolbar", "i", _NET_WM_WINDOW_TYPE_UTILITY),
+  GB_CONSTANT("Splash", "i", _NET_WM_WINDOW_TYPE_SPLASH),
+  GB_CONSTANT("Popup", "i", _NET_WM_WINDOW_TYPE_POPUP_MENU),
+  GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),
+  GB_CONSTANT("Panel", "i", _NET_WM_WINDOW_TYPE_DOCK),
+  GB_CONSTANT("Notification", "i", _NET_WM_WINDOW_TYPE_NOTIFICATION),
+  GB_CONSTANT("Drag", "i", _NET_WM_WINDOW_TYPE_DND),
+  GB_CONSTANT("Desktop", "i", _NET_WM_WINDOW_TYPE_DESKTOP),
+  
+	// Deprecated
+  //GB_CONSTANT("None", "i", 0),
+  //GB_CONSTANT("Fixed", "i", 1),
+  //GB_CONSTANT("Resizable", "i", 2),
 
   GB_CONSTANT("Normal", "i", 0),
   GB_CONSTANT("Above", "i", 1),
@@ -1287,7 +1337,6 @@ GB_DESC CWindowDesc[] =
   GB_PROPERTY("Icon", "Picture", CWINDOW_icon),
   GB_PROPERTY("Picture", "Picture", CWINDOW_picture),
   GB_PROPERTY("Mask", "b", CWINDOW_mask),
-  GB_PROPERTY("Border", "i", CWINDOW_border),
   GB_PROPERTY("Minimized", "b", CWINDOW_minimized),
   GB_PROPERTY("Maximized", "b", CWINDOW_maximized),
   GB_PROPERTY("FullScreen", "b", CWINDOW_full_screen),
@@ -1295,12 +1344,15 @@ GB_DESC CWindowDesc[] =
   GB_PROPERTY("Stacking", "i", CWINDOW_stacking),
   GB_PROPERTY("Sticky", "b", CWINDOW_sticky),
   GB_PROPERTY("SkipTaskbar", "b", CWINDOW_skip_taskbar),
-  GB_PROPERTY("ToolBox", "b", CWINDOW_tool),
   GB_PROPERTY("Visible", "b", CWINDOW_visible),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+	
+	GB_PROPERTY("Type", "i", CWINDOW_type),
+  GB_PROPERTY("Border", "b", CWINDOW_border),
+	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
 
   GB_PROPERTY_SELF("Menus", ".WindowMenus"),
   GB_PROPERTY_SELF("Controls", ".WindowControls"),
@@ -1367,7 +1419,9 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 {
   sg = 0;
   //shown = false;
-  border = BorderResizable;
+  //border = BorderResizable;
+  _border = true;
+  _resizable = true;
   //state = StateNormal;
   mustCenter = false;
 
@@ -1466,7 +1520,7 @@ void MyMainWindow::afterShow()
 	}
 }
 
-void MyMainWindow::showActivate()
+void MyMainWindow::showActivate(QWidget *transient)
 {
   CWIDGET *_object = CWidget::get(this);
   CWINDOW *parent;
@@ -1497,13 +1551,16 @@ void MyMainWindow::showActivate()
 		doReparent(newParentWidget, getWFlags(), pos());
 	}
 
+	if (THIS != CWINDOW_Main)
+		X11_set_transient_for(winId(), QWIDGET(CWINDOW_Main)->winId());
+
   //qDebug("showActivate %p", _object);
 
   CWIDGET_clear_flag(THIS, WF_CLOSED);
 
   CWIDGET_set_flag(THIS, WF_IN_SHOW);
 
-	if (!THIS->title && border != BorderNone)
+	if (!THIS->title && _border)
 		setCaption(GB.Application.Title());
 
   initProperties();
@@ -1551,12 +1608,12 @@ void MyMainWindow::showActivate()
     if (!isVisible())
     {
       show();
-      if (getTool())
+      /*if (getTool())
       {
 	      qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
 				usleep(50000);
       	setActiveWindow();
-			}
+			}*/
     }
     else
     {
@@ -1603,7 +1660,7 @@ void MyMainWindow::showModal(void)
     doReparent(reparent, getWFlags() | WType_Dialog | WShowModal | WStyle_DialogBorder | WStyle_Dialog, p);
   #endif
 
-  if (border == BorderResizable)
+  if (_resizable && _border)
   {
   	if (!THIS->minsize)
   	{
@@ -1696,6 +1753,68 @@ void MyMainWindow::setSizeGrip(bool on)
   }
 }
 
+void MyMainWindow::setBorder(bool b, bool force)
+{
+	int flags;
+	
+	if (_border == b && !force)
+		return;
+		
+	_border = b;
+	flags = getWFlags();
+	
+	if (b)
+		flags |= WType_TopLevel;
+	else
+		flags |= WStyle_Customize | WStyle_NoBorderEx | WType_TopLevel;
+	
+	doReparent(parentWidget(), flags, pos());
+}
+
+void MyMainWindow::setResizable(bool b, bool force)
+{
+	int flags;
+	
+	if (_resizable == b && !force)
+		return;
+		
+	_resizable = b;
+	flags = getWFlags();
+	
+  if (!b)
+  {
+  	if (layout())
+    	layout()->setResizeMode(QLayout::FreeResize);
+    setMinimumSize(width(), height());
+    setMaximumSize(width(), height());
+  }
+  else
+  {
+    setMinimumSize(0, 0);
+    setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+  	if (layout())
+	    layout()->setResizeMode(QLayout::Minimum);
+  }
+}
+
+#ifdef NO_X_WINDOW
+#else
+int MyMainWindow::getType()
+{
+	if (!isTopLevel())
+		return 0;
+	return X11_get_window_type(winId());
+}
+
+void MyMainWindow::setType(int type)
+{
+	if (!isTopLevel())
+		return;
+	X11_set_window_type(winId(), type);
+}
+#endif
+
+#if 0
 void MyMainWindow::setBorder(int b, bool force)
 {
   int f;
@@ -1751,7 +1870,7 @@ void MyMainWindow::setBorder(int b, bool force)
 
   border = b;
 }
-
+#endif
 
 void MyMainWindow::paintUnclip(bool on)
 {
@@ -1782,7 +1901,7 @@ void MyMainWindow::moveEvent(QMoveEvent *e)
 
 	if (THIS->toplevel)
 	{
-		if (getBorder() && !THIS->reallyMasked)
+		if (hasBorder() && !THIS->reallyMasked)
 			if (geometry().x() == frameGeometry().x() && geometry().y() == frameGeometry().y())
 				return;
 
@@ -2248,28 +2367,28 @@ void MyMainWindow::setName(const char *name, CWIDGET *control)
 
 void MyMainWindow::resize(int w, int h)
 {
-	int save = border;
+	bool save = _resizable;
 	
-	if (border != BorderResizable)
-		setBorder(BorderResizable);
+	if (!_resizable)
+		setResizable(true);
 		
 	QMainWindow::resize(w, h);
 	
-	if (border != save)
-		setBorder(save);
+	if (_resizable != save)
+		setResizable(save);
 }
 
 void MyMainWindow::setGeometry(int x, int y, int w, int h)
 {
-	int save = border;
+	bool save = _resizable;
 	
-	if (border != BorderResizable)
-		setBorder(BorderResizable);
+	if (!_resizable)
+		setResizable(true);
 		
 	QMainWindow::setGeometry(x, y, w, h);
-
-	if (border != save)
-		setBorder(save);
+	
+	if (_resizable != save)
+		setResizable(save);
 }
 
 

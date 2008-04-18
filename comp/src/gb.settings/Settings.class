@@ -309,7 +309,7 @@ PRIVATE SUB LoadWindow(hWindow AS Window, sKey AS String)
   IF NOT aPos THEN RETURN
 
   'cPos = Split(sPos, ",")
-  IF aPos.Count = 4 AND hWindow.Border = Window.Resizable THEN
+  IF aPos.Count = 4 AND hWindow.Resizable THEN
     IF hWindow.Modal THEN
       hWindow.Resize(aPos[2], aPos[3])
       hWindow.Center

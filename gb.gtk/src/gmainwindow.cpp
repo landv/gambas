@@ -36,6 +36,8 @@
 #include <X11/extensions/shape.h>
 #endif
 
+#include "x11.h"
+
 #include "gapplication.h"
 #include "gdesktop.h"
 #include "gkey.h"
@@ -181,7 +183,6 @@ void gMainWindow::initialize()
 	focus = 0;
 	_closing = false;
 	_title = NULL;
-	_toolbox = false;
 	_not_spontaneous = false;
 	_skip_taskbar = false;
 	_current = NULL;
@@ -408,6 +409,7 @@ void gMainWindow::emitOpen()
 void gMainWindow::setVisible(bool vl)
 {
 	GtkWindowGroup *group;
+  gMainWindow *active;
 
 	if (vl)
 	{
@@ -432,6 +434,11 @@ void gMainWindow::setVisible(bool vl)
 		{
 			if (!_title || !*_title)
 				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
+			
+			active = gDesktop::activeWindow();
+			if (active && active != this)
+				gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
+			
 			gtk_window_present(GTK_WINDOW(border));
 			drawMask();
 		}
@@ -517,7 +524,6 @@ void gMainWindow::showModal()
 {
   gMainWindow *save;
   GtkWindowGroup *save_group;
-  gMainWindow *active;
 	
 	if (!isTopLevel()) return;
 	if (modal()) return;
@@ -525,9 +531,6 @@ void gMainWindow::showModal()
 	save = _current;
 	_current = this;
 	
-	active = gDesktop::activeWindow();
-	if (active && active != this)
-    gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 	gtk_window_set_modal(GTK_WINDOW(border), true);
   
   center();
@@ -586,42 +589,41 @@ void gMainWindow::setText(const char *txt)
 		gtk_window_set_title(GTK_WINDOW(border), txt);
 }
 
-int gMainWindow::getBorder()
+bool gMainWindow::hasBorder()
 {
-	if (parent()) return 0;
-	
-	if (!gtk_window_get_decorated(GTK_WINDOW(border))) return 0;
-	if (!gtk_window_get_resizable(GTK_WINDOW(border))) return 1;
-	return 2;
+	return gtk_window_get_decorated(GTK_WINDOW(border));
 }
 
-void gMainWindow::setBorder(int b)
+bool gMainWindow::isResizable()
 {
-  if (parent()) return;
-	 
-	switch (b)
-	{
-		case 0: // None
-			gtk_window_set_decorated(GTK_WINDOW(border),false);
-			break;
-		case 1: // Fixed
-			gtk_window_set_decorated(GTK_WINDOW(border),true);
-			if (gtk_window_get_resizable(GTK_WINDOW(border)))
-			{
-				gtk_window_set_resizable(GTK_WINDOW(border),false);
-				gtk_widget_set_size_request(border,bufW,bufH);
-			}
-			break;
-		case 2: // Resizable
-			gtk_window_set_decorated(GTK_WINDOW(border),true);
-			if (!gtk_window_get_resizable(GTK_WINDOW(border)))
-			{
-				gtk_window_set_resizable(GTK_WINDOW(border),true);
-				gtk_widget_set_size_request(border,1,1);
-			}
-			break;
-	}
+	return gtk_window_get_resizable(GTK_WINDOW(border));
 }
+
+void gMainWindow::setBorder(bool b)
+{
+  if (parent()) 
+  	return;
+	
+	gtk_window_set_decorated(GTK_WINDOW(border), b);
+}
+
+void gMainWindow::setResizable(bool b)
+{
+  if (parent()) 
+  	return;
+	
+	if (b == isResizable())
+		return;
+		
+	gtk_window_set_resizable(GTK_WINDOW(border), b);
+	
+	if (b)
+		gtk_widget_set_size_request(border, 1, 1);
+	else
+		gtk_widget_set_size_request(border, bufW, bufH);
+}
+
+
 
 void gMainWindow::setSkipTaskBar(bool b)
 {
@@ -1034,12 +1036,28 @@ void gMainWindow::setActiveWindow(gControl *control)
 		window->emit(SIGNAL(window->onActivate));
 }
 
-void gMainWindow::setToolBox(bool vl)
+#ifdef GDK_WINDOWING_X11
+int gMainWindow::getType()
 {
-	_toolbox = vl;
-	
-	// Should be replaced by a "Type" property that tells which is the type of the window
-	// see gdk_window_set_type_hint()
-	
-	stub("gMainWindow::setToolBox");
+	if (parent())
+		return 0;
+	return X11_get_window_type(handle());
 }
+
+void gMainWindow::setType(int type)
+{
+	if (parent())
+		return;
+	X11_set_window_type(handle(), type);
+}
+#else
+int gMainWindow::getType()
+{
+	return 0;
+}
+
+void gMainWindow::setType()
+{
+}
+#endif
+

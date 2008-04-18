@@ -140,10 +140,12 @@ private:
 
   QSizeGrip *sg;
   //bool shown;
-  int border;
+  //int border;
   //int state;
   bool mustCenter;
   bool _activate;
+  bool _border;
+  bool _resizable;
 
   void doReparent(QWidget *, WFlags, const QPoint &, bool showIt = false);
 
@@ -170,7 +172,7 @@ public:
 
 	void hide();
   void initProperties();
-  void showActivate();
+  void showActivate(QWidget *parent = 0);
   //void activateLater() { _activate = true; }
   void showModal();
   void showPopup();
@@ -178,10 +180,21 @@ public:
   bool isModal() { return testWFlags(WShowModal); }
   void doReparent(QWidget *w, const QPoint &p, bool showIt = false) { doReparent(w, getWFlags(), p, showIt); }
 
-  int getBorder(void) { return border; }
-  void setBorder(int, bool = false);
+  bool hasBorder(void) { return _border; }
+  void setBorder(bool, bool = false);
+  
+  bool isResizable(void) { return _resizable; }
+  void setResizable(bool, bool = false);
+  
+  #ifdef NO_X_WINDOW
+  #else
+  int getType(void);
+  void setType(int type);
+  #endif
+  
   bool getTool(void) { return testWFlags(WStyle_Tool); }
   void setTool(bool);
+  
   void setSizeGrip(bool);
   void moveSizeGrip();
 

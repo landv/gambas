@@ -1546,7 +1546,7 @@ void GEditor::foldLine(int row, bool no_refresh)
 			end--;
 			l = doc->lines.at(end);
 			//qDebug("[%d] state = %d %d", end, l->highlight ? l->highlight[0].state : -1, l->highlight ? l->highlight[0].len : -1);
-			if (l->highlight && l->highlight[0].state != GLine::Comment)
+			if (!l->highlight || l->highlight[0].state != GLine::Comment)
 				break;
 		}
 	}

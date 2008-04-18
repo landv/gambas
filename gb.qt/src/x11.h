@@ -63,6 +63,24 @@ typedef
 		}
 	X11_WINDOW_INFO;
 
+enum
+{
+	_NET_WM_WINDOW_TYPE_NORMAL,
+	_NET_WM_WINDOW_TYPE_DESKTOP,
+	_NET_WM_WINDOW_TYPE_DOCK,
+	_NET_WM_WINDOW_TYPE_TOOLBAR,
+	_NET_WM_WINDOW_TYPE_MENU,
+	_NET_WM_WINDOW_TYPE_UTILITY,
+	_NET_WM_WINDOW_TYPE_SPLASH,
+	_NET_WM_WINDOW_TYPE_DIALOG,
+	_NET_WM_WINDOW_TYPE_DROPDOWN_MENU,
+	_NET_WM_WINDOW_TYPE_POPUP_MENU,
+	_NET_WM_WINDOW_TYPE_TOOLTIP,
+	_NET_WM_WINDOW_TYPE_NOTIFICATION,
+	_NET_WM_WINDOW_TYPE_COMBO,
+	_NET_WM_WINDOW_TYPE_DND
+};
+
 PUBLIC void X11_init(Display *display, Window root);
 PUBLIC void X11_exit();
 PUBLIC void X11_sync(void);
@@ -87,6 +105,10 @@ PUBLIC int X11_get_window_tool(Window window);
 PUBLIC void X11_window_set_desktop(Window window, bool visible, int desktop);
 PUBLIC int X11_window_get_desktop(Window window);
 PUBLIC int X11_get_current_desktop();
+
+PUBLIC int X11_get_window_type(Window window);
+PUBLIC void X11_set_window_type(Window window, int type);
+PUBLIC void X11_set_transient_for(Window window, Window parent);
 
 #ifdef __cplusplus
 }

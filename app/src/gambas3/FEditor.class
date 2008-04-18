@@ -411,6 +411,12 @@ Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1, Optional bCe
   'DEC iLine
   If iColumn < 0 Then iColumn = Editor.Column
 
+  If iLine < 0 Then
+    iLine = 0
+  Else If iLine >= Editor.Lines.Count Then
+    iLine = Editor.Lines.Count - 1
+  Endif
+  
   If Not Editor.Lines[iLine].Limit Then Editor.Lines[iLine].Expanded = True
   Editor.Goto(iLine, iColumn, bCenter)
 

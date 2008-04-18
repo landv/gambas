@@ -1,6 +1,6 @@
 ' Gambas module file
 
-Private Const DEFAULT_THEME As String = "sapphire"
+Public Const DEFAULT_THEME As String = "sapphire"
 
 Public ColorKeys As String[] = ["Background", "Normal", "Keyword", "Datatype", "Function", "Operator", "Symbol", "Number", "String", "Comment", "Breakpoint", "Current", "Selection", "Highlight", "CurrentLine", "Error"]
 Public ColorNames As String[] = [("Background"), ("Normal text"), ("Keywords"), ("Data types"), ("Subroutines"), ("Operators"), ("Symbols"), ("Numbers"), ("Strings"), ("Comments"), ("Breakpoints"), ("Current line"), ("Selection"), ("Highlighting"), ("Editing line"), ("Errors")]
@@ -19,14 +19,18 @@ Public Sub IsBackgroundStyle(sKey As String) As Boolean
   
 End
 
-Public Function ReadSettings(hSettings As Settings, sParent As String) As Collection
+Public Function ReadSettings(hSettings As Settings, sParent As String, Optional bDefault As Boolean) As Collection
   
   Dim cColor As New Collection
   Dim sKey As String
   Dim sColor As String
   
   For Each sKey In ColorKeys
-    sColor = hSettings[sParent &/ sKey]
+    If bDefault Then
+      sColor = hSettings[sParent &/ sKey, $cDefault[sKey]]
+    Else
+      sColor = hSettings[sParent &/ sKey]
+    Endif
     cColor[sKey] = sColor
   Next
   

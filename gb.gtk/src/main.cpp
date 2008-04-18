@@ -35,6 +35,7 @@
 #include "gb.gtk.h"
 #include "watcher.h"
 
+#include "x11.h"
 #include "CScreen.h"
 #include "CDraw.h"
 #include "CConst.h"
@@ -298,6 +299,9 @@ static void my_main(int *argc, char **argv)
 	gApplication::setDefaultTitle(GB.Application.Title());
 	gDesktop::init();
 	MAIN_scale = gDesktop::scale();
+	#ifdef GDK_WINDOWING_X11
+  	X11_init(gdk_x11_display_get_xdisplay(gdk_display_get_default()), gdk_x11_get_default_root_xwindow());
+  #endif
 }
 
 /*static void raise_timer(GB_TIMER *timer)

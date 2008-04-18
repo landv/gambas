@@ -172,7 +172,10 @@ char *READ_get_pattern(PATTERN *pattern)
 
     case RT_STRING:
     case RT_TSTRING:
-      snprintf(COMMON_buffer, COMMON_BUF_MAX, "\"%s\"", TABLE_get_symbol_name(JOB->class->string, index));
+    	if (_no_quote)
+      	snprintf(COMMON_buffer, COMMON_BUF_MAX, "\"%s\"", TABLE_get_symbol_name(JOB->class->string, index));
+      else
+      	strcpy(COMMON_buffer, "string");
       break;
 
     case RT_COMMAND:

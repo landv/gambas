@@ -1,14 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(17,15,72,79)
+  MoveScaled(17,15,83,80)
   Text = ("Menu editor")
   Icon = Picture["img/16/menu.png"]
   Arrangement = Arrange.Vertical
   Spacing = 16
   Padding = 8
   { VBox4 VBox
-    MoveScaled(1,1,62,34)
+    MoveScaled(1,1,80,35)
     Expand = True
     Spacing = 8
     { lstMenu ListBox
@@ -17,49 +17,52 @@
       Mode = Select.Multiple
     }
     { HBox1 HBox
-      MoveScaled(0,31,60,4)
+      MoveScaled(0,31,79,4)
       Spacing = 8
       { btnNext Button
-        MoveScaled(0,0,12,4)
+        MoveScaled(0,0,17,4)
         Text = ("&Next")
+        Picture = Picture["icon:/small/next"]
       }
       { btnInsert Button
-        MoveScaled(13,0,12,4)
+        MoveScaled(18,0,17,4)
         Text = ("&Insert")
+        Picture = Picture["icon:/small/add"]
       }
       { btnDelete Button
-        MoveScaled(26,0,12,4)
+        MoveScaled(37,0,17,4)
         Text = ("&Delete")
+        Picture = Picture["icon:/small/delete"]
       }
       { btnUp Button
-        MoveScaled(39,0,4,4)
+        MoveScaled(55,0,4,4)
         Text = ("")
         Picture = Picture["icon:/small/up"]
       }
       { btnDown Button
-        MoveScaled(43,0,4,4)
+        MoveScaled(60,0,4,4)
         Text = ("")
         Picture = Picture["icon:/small/down"]
       }
       { btnLeft Button
-        MoveScaled(47,0,4,4)
+        MoveScaled(65,0,4,4)
         Text = ("")
         Picture = Picture["icon:/small/left"]
       }
       { btnRight Button
-        MoveScaled(51,0,4,4)
+        MoveScaled(70,0,4,4)
         Text = ("")
         Picture = Picture["icon:/small/right"]
       }
       { btnSave Button
-        MoveScaled(55,0,4,4)
+        MoveScaled(75,0,4,4)
         Text = ("")
         Picture = Picture["icon:/small/save"]
       }
     }
   }
   { VBox3 VBox
-    MoveScaled(1,36,67,37)
+    MoveScaled(1,37,67,37)
     Spacing = 8
     { frmMenu HBox
       MoveScaled(0,0,66,37)
@@ -71,11 +74,11 @@
           MoveScaled(0,0,49,4)
           Expand = True
           { Label1 Label
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             Text = ("Name")
           }
           { txtName TextBox
-            MoveScaled(11,0,37,4)
+            MoveScaled(13,0,35,4)
             Expand = True
             Text = ("")
           }
@@ -84,11 +87,11 @@
           MoveScaled(0,5,49,4)
           Expand = True
           { Label6 Label
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             Text = ("Group")
           }
           { txtGroup TextBox
-            MoveScaled(11,0,37,4)
+            MoveScaled(13,0,35,4)
             Expand = True
             Text = ("")
           }
@@ -97,11 +100,11 @@
           MoveScaled(0,10,49,4)
           Expand = True
           { Label2 Label
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             Text = ("Caption")
           }
           { txtCaption TextBox
-            MoveScaled(11,0,37,4)
+            MoveScaled(13,0,35,4)
             Expand = True
             Text = ("")
           }
@@ -110,11 +113,11 @@
           MoveScaled(0,15,49,4)
           Expand = True
           { Label8 Label
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             Text = ("Action")
           }
           { txtAction TextBox
-            MoveScaled(11,0,37,4)
+            MoveScaled(13,0,35,4)
             Expand = True
             Text = ("")
           }
@@ -123,40 +126,40 @@
           MoveScaled(0,20,49,4)
           Expand = True
           { Label7 Label
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             Text = ("Tag")
           }
           { txtTag TextBox
-            MoveScaled(11,0,37,4)
+            MoveScaled(13,0,35,4)
             Expand = True
             Text = ("")
           }
         }
         { HPanel6 HPanel
-          MoveScaled(0,25,49,4)
+          MoveScaled(0,25,50,4)
           Expand = True
           { Label3 Label
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             Text = ("Shortcut")
           }
           { HBox3 HBox
-            MoveScaled(11,0,37,4)
+            MoveScaled(13,0,36,4)
             Expand = True
             Spacing = 8
             { chkCtrl CheckBox
-              MoveScaled(0,0,7,4)
+              MoveScaled(0,0,9,4)
               Text = ("CTRL")
             }
             { chkShift CheckBox
-              MoveScaled(8,0,8,4)
+              MoveScaled(9,0,9,4)
               Text = ("SHIFT")
             }
             { chkAlt CheckBox
-              MoveScaled(17,0,6,4)
+              MoveScaled(18,0,8,4)
               Text = ("ALT")
             }
             { cmbShortcut ComboBox
-              MoveScaled(24,0,13,4)
+              MoveScaled(27,0,8,4)
               Expand = True
               Text = ("")
               ReadOnly = True
@@ -164,29 +167,29 @@
           }
         }
         { HPanel7 HPanel
-          MoveScaled(0,30,49,4)
+          MoveScaled(0,30,50,4)
           Expand = True
           { Label5 Label
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             Text = ("Picture")
           }
           { HBox4 HBox
-            MoveScaled(11,0,38,4)
+            MoveScaled(13,0,37,4)
             Expand = True
             Spacing = 8
             { txtPicture TextBox
-              MoveScaled(0,0,28,4)
+              MoveScaled(0,0,27,4)
               Expand = True
               Text = ("")
               ReadOnly = True
             }
             { btnKillPicture Button
-              MoveScaled(29,0,4,4)
+              MoveScaled(28,0,4,4)
               Text = ("")
               Picture = Picture["icon:/small/delete"]
             }
             { btnPicture Button
-              MoveScaled(34,0,4,4)
+              MoveScaled(33,0,4,4)
               Text = ("")
               Picture = Picture["icon:/small/open"]
             }
@@ -228,7 +231,7 @@
     }
   }
   { HBox2 HBox
-    MoveScaled(1,74,55,4)
+    MoveScaled(1,75,55,4)
     Spacing = 8
     { Panel2 Panel
       MoveScaled(3,0,4,4)

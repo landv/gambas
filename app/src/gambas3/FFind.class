@@ -41,7 +41,7 @@ Private Sub Store(hCombo As ComboBox)
   Dim sText As String = hCombo.Text
   Dim iInd As Integer
 
-  If NOT sText Then Return 
+  If Not sText Then Return 
   
   iInd = hCombo.Find(sText)
   If iInd >= 0 Then hCombo.Remove(iInd)
@@ -54,7 +54,7 @@ End
 
 Public Sub FindNext()
 
-  If NOT cmbFind.Text Then Return
+  If Not cmbFind.Text Then Return
   Store(cmbFind)
 
   Search(False, False)
@@ -64,7 +64,7 @@ End
 
 Public Sub FindPrevious()
 
-  If NOT cmbFind.Text Then Return
+  If Not cmbFind.Text Then Return
   Store(cmbFind)
 
   Search(True, False)
@@ -73,19 +73,19 @@ End
 
 Public Sub FindAll()
 
-  If NOT cmbFind.Text Then Return
+  If Not cmbFind.Text Then Return
   Store(cmbFind)
 
   $bList = True
   
-  If NOT FFindList.Visible AND If $iLastTimeStamp = Project.TimeStamp AND If $sLastSearch = cmbFind.Text Then
+  If Not FFindList.Visible And If $iLastTimeStamp = Project.TimeStamp And If $sLastSearch = cmbFind.Text Then
     FFindList.Show
   Else
     FFindList.Show
     FFindList.Start
     Search(False, False)
     FFindList.Stop
-    If NOT $bCanceled Then
+    If Not $bCanceled Then
       $iLastTimeStamp = Project.TimeStamp
       $sLastSearch = cmbFind.Text
     Endif
@@ -99,7 +99,7 @@ End
 
 Public Sub Replace()
   
-  If NOT cmbFind.Text Then Return
+  If Not cmbFind.Text Then Return
   Store(cmbReplace)
 
   $bReplaceAll = False
@@ -110,7 +110,7 @@ End
 
 Public Sub ReplaceAll()
 
-  If NOT cmbFind.Text Then Return
+  If Not cmbFind.Text Then Return
 
   If Message.Warning(("Are you sure to want to replace all?"), ("Replace"), ("Cancel")) = 2 Then Return
   
@@ -176,7 +176,7 @@ Public Sub Form_Show()
     Endif
   Endif
 
-  If $bReplace AND If cmbFind.Text Then 
+  If $bReplace And If cmbFind.Text Then 
     cmbReplace.SetFocus
   Else
     cmbFind.SetFocus
@@ -217,7 +217,7 @@ End
 Public Sub cmbFind_KeyPress()
 
   If Key.Code = Key.Escape Then Me.Hide
-  If Key.Code = Key["F"] AND Key.Control Then Me.Hide
+  If Key.Code = Key["F"] And Key.Control Then Me.Hide
 
 End
 
@@ -242,7 +242,7 @@ Private Sub GetOptions(hForm As Object)
     $bProc = False
   Endif
   
-  If NOT $bCase Then $sFind = String.Upper($sFind)
+  If Not $bCase Then $sFind = String.Upper($sFind)
   
   If Object.Type(hForm) <> "FEditor" Then 
     $bComment = True
@@ -301,24 +301,24 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
   
   hForm = Project.ActiveForm
   Try hEdit = hForm.Editor
-  If NOT hEdit OR If $bList AND NOT hForm IS FEditor Then 
+  If Not hEdit Or If $bList And Not hForm Is FEditor Then 
     sNext = Project.GetNextEditor("")
     hForm = Project.LoadFile(sNext)
     Try hEdit = hForm.Editor
-    If NOT hEdit Then Return  
+    If Not hEdit Then Return  
     hEdit.Goto(0, 0)
   Endif
   
   GetOptions(hForm)
 
-  If $bList AND If NOT $bProc Then hEdit.Goto(0, 0)
+  If $bList And If Not $bProc Then hEdit.Goto(0, 0)
   
   Try hForm.SavePosition()
   
   With hEdit
     If .Selected Then
     
-      If bReplace AND NOT hEdit.ReadOnly Then
+      If bReplace And Not hEdit.ReadOnly Then
         If $bCase Then
           If .Selection.Text = $sFind Then
             .Insert($sReplace)
@@ -358,9 +358,9 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
     
     If iPos Then
 
-      If NOT $bList Then hEdit.Select(iLine, iPos - 1, iLine, iPos + String.Len($sFind) - 1)
+      If Not $bList Then hEdit.Select(iLine, iPos - 1, iLine, iPos + String.Len($sFind) - 1)
 
-      If bReplace AND $bReplaceAll AND NOT hEdit.ReadOnly Then
+      If bReplace And $bReplaceAll And Not hEdit.ReadOnly Then
  
         hEdit.Insert($sReplace)
         iCol = iPos + String.Len($sReplace) - 1
@@ -392,7 +392,7 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
         Else
           ShowMessage(Subst(("Search string replaced &1 times."), $iNbrReplace), cmbReplace)
         Endif
-      Else If NOT $bList Then
+      Else If Not $bList Then
         ShowMessage(("Search string cannot be found."), cmbFind)
       Endif
       Return True
@@ -405,7 +405,7 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
 
       If $bProc Then
       
-        If iLine < 0 OR If FEditor.IsProc(hEdit.Lines[iLine].Text) Then
+        If iLine < 0 Or If FEditor.IsProc(hEdit.Lines[iLine].Text) Then
   
           While iLine < (hEdit.Lines.Count - 1)
   
@@ -445,7 +445,7 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
 
       If $bProc Then
         
-        If iLine >= hEdit.Lines.Count OR If FEditor.IsProc(hEdit.Lines[iLine].Text) Then
+        If iLine >= hEdit.Lines.Count Or If FEditor.IsProc(hEdit.Lines[iLine].Text) Then
   
           While iLine > 0
   
@@ -490,7 +490,7 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
     
     If $bList Then 
       Inc $iWait
-      If ($iWait AND 63) = 0 Then Wait 0.01
+      If ($iWait And 63) = 0 Then Wait 0.01
     Endif
 
   Loop
@@ -512,14 +512,14 @@ Private Function SearchString(sLine As String, iPos As Integer, Optional bBack A
 
   Dim iPosC As Integer
 
-  If bBack AND iPos = 0 Then Return
+  If bBack And iPos = 0 Then Return
 
   ' IF NOT $bComment THEN
   '   iPosC = InStr(sLine, "'")
   '   IF iPosC THEN sLine = Left$(sLine, iPosC - 1)
   ' ENDIF
 
-  If NOT $bCase Then sLine = String.UCase(sLine)
+  If Not $bCase Then sLine = String.UCase(sLine)
 
   'iPos = String.Pos(sLine, iPos)
 
@@ -557,7 +557,7 @@ End
 
 Public Sub Action_Activate(Key As String) As Boolean
   
-  If Key = "find-comment" OR If Key = "find-case" OR If Key = "find-word" OR If Key = "find-string" OR If Key LIKE "find-in*" Then $iLastTimeStamp = 0
+  If Key = "find-comment" Or If Key = "find-case" Or If Key = "find-word" Or If Key = "find-string" Or If Key Like "find-in*" Then $iLastTimeStamp = 0
   
   Return True
   
