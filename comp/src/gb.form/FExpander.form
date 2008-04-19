@@ -1,4 +1,4 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
   MoveScaled(0,0,65,59)
@@ -6,17 +6,17 @@
   Resizable = False
   Arrangement = Arrange.Vertical
   { panTitle Panel
-    MoveScaled(1,2,46,3)
+    MoveScaled(1,2,46,4)
     Arrangement = Arrange.Horizontal
     AutoResize = True
     { btnExpand PictureBox
-      MoveScaled(1,0,2,3)
+      MoveScaled(1,0,3,4)
       Picture = Picture["img/8/side-bottom-void.png"]
       Alignment = Align.Left
     }
     { lblTitle Label btnExpand
       Name = "lblTitle"
-      MoveScaled(4,0,33,3)
+      MoveScaled(4,0,33,4)
       Expand = True
       AutoResize = True
       Text = ("")

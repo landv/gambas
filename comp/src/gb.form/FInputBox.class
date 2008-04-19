@@ -1,55 +1,57 @@
 ' Gambas class file
 
-PRIVATE $sPrompt AS String
-PRIVATE $sTitle AS String
-PRIVATE $sValue AS String
+Private $sPrompt As String
+Private $sTitle As String
+Private $sValue As String
 
-PUBLIC SUB Run(sPrompt AS String, OPTIONAL sTitle AS String, sDefault AS String) AS String
+Public Sub Run(sPrompt As String, Optional sTitle As String, sDefault As String) As String
 
-  IF NOT sTitle THEN 
-    TRY sTitle = Application.ActiveWindow.Title
-    IF ERROR THEN sTitle = Application.Name
-  ENDIF 
+  If Not sTitle Then 
+    Try sTitle = Application.ActiveWindow.Title
+    If Error Then sTitle = Application.Name
+  Endif 
   
   $sPrompt = sPrompt
   $sTitle = sTitle
   $sValue = sDefault
   
-  IF ME.ShowModal() THEN RETURN $sValue
+  If Me.ShowModal() Then Return $sValue
   
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  ME.Center
+  Me.Center
   
   lblMessage.Text = $sPrompt
   txtValue.Text = $sValue
   
-  ME.Title = $sTitle
+  Me.Title = $sTitle
   
   panBox.W = lblMessage.W
   panBox.Arrangement = Arrange.Vertical
   
-  ME.Border = Window.Resizable
-  ME.Resize(btnOK.Parent.X + btnOK.W + ME.Padding, txtValue.Parent.Y + txtValue.Y + txtValue.H + ME.Padding)
-  ME.Border = Window.Fixed
+  'Me.Border = Window.Resizable
+  'Me.Border = Window.Normal
+  'Me.Resizable = True
+  Me.Resize(btnOK.Parent.X + btnOK.W + Me.Padding, txtValue.Parent.Y + txtValue.Y + txtValue.H + Me.Padding)
+  'Me.Border = Window.Fixed
 
   txtValue.SelectAll
   txtValue.SetFocus
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
   $sValue = txtValue.Text
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
