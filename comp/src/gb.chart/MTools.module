@@ -1,66 +1,66 @@
 ' Gambas module file
 
-PUBLIC ColorList AS Integer[] = [&hff6f00,
+Public ColorList As Integer[] = [&hff6f00,
 &h800080, &h666666, &h6B4794, &h290099, &h7da647,
 &he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
 
-PUBLIC FUNCTION GetChartMaxValue(oChart AS Chart) AS Float
-  DIM hSeries AS _CSerie
-  DIM f AS Float
-  DIM fCurMax AS Float
+Public Function GetChartMaxValue(oChart As Chart) As Float
+  Dim hSeries As _CSerie
+  Dim f As Float
+  Dim fCurMax As Float
   fCurMax = 0
-  FOR EACH hSeries IN oChart
-    FOR EACH f IN hSeries
-      IF fCurMax < f THEN fCurMax = f
-    NEXT
-  NEXT
-  RETURN fCurMax
+  For Each hSeries In oChart
+    For Each f In hSeries
+      If fCurMax < f Then fCurMax = f
+    Next
+  Next
+  Return fCurMax
   
-END
+End
 
-PUBLIC FUNCTION GetChartMaxCumulateValue(oChart AS Chart) AS Float
-  DIM hSeries AS _CSerie
-  DIM f AS Float
-  DIM fCurMax AS Float
-  DIM i AS Integer
+Public Function GetChartMaxCumulateValue(oChart As Chart) As Float
+  Dim hSeries As _CSerie
+  Dim f As Float
+  Dim fCurMax As Float
+  Dim i As Integer
   fCurMax = 0
-  FOR i = 0 TO oChart.Count - 1
+  For i = 0 To oChart.Count - 1
     f = 0
-    FOR EACH hSeries IN Chart
+    For Each hSeries In Chart
       f += hSeries[i]
-    NEXT
-    IF fCurMax < f THEN fCurMax = f
-  NEXT
-  RETURN fCurMax
-END
+    Next
+    If fCurMax < f Then fCurMax = f
+  Next
+  Return fCurMax
+End
 
-PUBLIC FUNCTION GetChartMaxCumulate(oChart AS Chart) AS Float
+Public Function GetChartMaxCumulate(oChart As Chart) As Float
   
-  DIM f, fMaxValue AS Float
-  DIM hSeries AS _CSerie
-  DIM i AS Integer
+  Dim f, fMaxValue As Float
+  Dim hSeries As _CSerie
+  Dim i As Integer
   
-  FOR EACH hSeries IN Chart
+  For Each hSeries In Chart
     f = 0
-    FOR i = 0 TO Chart.Count - 1
+    For i = 0 To Chart.Count - 1
       f += hSeries[i]
-    NEXT
-    IF fMaxValue < f THEN fMaxValue = f
-  NEXT
-  RETURN fMaxValue
-END
+    Next
+    If fMaxValue < f Then fMaxValue = f
+  Next
+  Return fMaxValue
+End
 
 
 
-PUBLIC FUNCTION DrawChartAxes(oChart AS Chart, hChartRect AS CRect, fMinValue AS Float, fMaxValue AS Float, OPTIONAL iAlign AS Integer) AS CPoint
-  DIM fTabPos AS Float
-  DIM i, iStaticSpace AS Integer
-  DIM fXUnit, fYUnit AS Float
-  DIM hPoint AS CPoint
-  DIM f AS Float
-  DIM fStep AS Float
-  DIM fMultiple AS Float
-  DIM oSerie AS _CSerie
+Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As Float, fMaxValue As Float, Optional iAlign As Integer) As CPoint
+  Dim fTabPos As Float
+  Dim i, iStaticSpace As Integer
+  Dim fXUnit, fYUnit As Float
+  Dim hPoint As CPoint
+  Dim f As Float
+  Dim fStep As Float
+  Dim fMultiple As Float
+  Dim oSerie As _CSerie
     'Draw the Y axe
   iStaticSpace = 5 * oChart._fProportionnal
   Draw.Line(hChartRect.Left, hChartRect.Top, hChartRect.Left, hChartRect.Bottom)
@@ -68,36 +68,36 @@ PUBLIC FUNCTION DrawChartAxes(oChart AS Chart, hChartRect AS CRect, fMinValue AS
   fYUnit = (hChartRect.Bottom - hChartRect.Top) / (fMaxValue)
   
   fMultiple = Round(fMaxValue / 100)
-  IF fMultiple = 0 THEN fMultiple = 1
-  IF fMaxValue > 1 THEN 
+  If fMultiple = 0 Then fMultiple = 1
+  If fMaxValue > 1 Then 
     
-    IF fMaxValue / fMultiple < 10 THEN 
+    If fMaxValue / fMultiple < 10 Then 
       fStep = 0.5 * fMultiple
-    ELSE IF fMaxValue / fMultiple < 25 THEN 
+    Else If fMaxValue / fMultiple < 25 Then 
       fStep = 1 * fMultiple
-    ELSE IF fMaxValue / fMultiple < 50 THEN 
+    Else If fMaxValue / fMultiple < 50 Then 
       fStep = 2 * fMultiple
-    ELSE IF fMaxValue / fMultiple < 75 THEN 
+    Else If fMaxValue / fMultiple < 75 Then 
       fStep = 3 * fMultiple
     'ELSE IF fMaxValue / fMultiple < 90 THEN 
       'fStep = 4 * fMultiple
-    ELSE IF fMaxValue / fMultiple <= 100 THEN 
+    Else If fMaxValue / fMultiple <= 100 Then 
       fStep = 5 * fMultiple
-    ENDIF
+    Endif
     
-ENDIF
+Endif
   
   
-  FOR f = 0 TO fMaxValue STEP fStep 'Round(fMaxValue / 20)
+  For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Bottom - (fYUnit * f)
     'Dessine le taquet
     Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
     'Dessine les intervalles Verticaux
-    IF Chart.YAxe.ShowIntervalLines THEN Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
+    If Chart.YAxe.ShowIntervalLines Then Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
     'Dessine l'étiquette
     Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
-  NEXT
+  Next
   
   'IF $iType = ChartType.AreaPercent THEN fMaxVal = GetChartMaxCumulateValue(Chart)
   
@@ -105,20 +105,20 @@ ENDIF
   'Draw the X axe
   Draw.Line(hChartRect.Left, hChartRect.Bottom, hChartRect.Right, hChartRect.Bottom)
   
-  IF iAlign = Align.Center THEN 
+  If iAlign = Align.Center Then 
     fXUnit = ((hChartRect.Right - hChartRect.Left) / (Chart.Count + 1)) / Chart.CountDataSets
-  ELSE 
+  Else 
     fXUnit = ((hChartRect.Right - hChartRect.Left) / (oChart.Count - 1))
-  ENDIF
+  Endif
   fTabPos = hChartRect.Left 
-  IF iAlign = Align.Center THEN 
-  FOR EACH oSerie IN Chart
+  If iAlign = Align.Center Then 
+  For Each oSerie In Chart
       fTabPos += fXUnit * (Chart.Count + 1)
         Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + iStaticSpace)
       Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
-  NEXT
-  ELSE
-  FOR i = 0 TO Chart.Count - 1
+  Next
+  Else
+  For i = 0 To Chart.Count - 1
   
      '* '(Chart.Count + 1)
    
@@ -128,36 +128,135 @@ ENDIF
     Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
     fTabPos += fXUnit
 
-  NEXT
-ENDIF
-  hPoint = NEW CPoint(fXUnit, fYUnit)
-  RETURN hPoint
-END
+  Next
+Endif
+  hPoint = New CPoint(fXUnit, fYUnit)
+  Return hPoint
+End
 
 
-PUBLIC SUB DrawSymbol(iType AS Integer, X AS Integer, Y AS Integer)
-  DIM ariSymbol AS Integer[]
-  DIM iStaticSpace AS Integer = 10 * Chart._fProportionnal
+Public Sub DrawSymbol(iType As Integer, X As Integer, Y As Integer)
+  Dim ariSymbol As Integer[]
+  Dim iStaticSpace As Integer = 10 * Chart._fProportionnal
   X -= iStaticSpace / 2
   Y -= iStaticSpace / 2
-  SELECT CASE iType
-    CASE 0 'carré
+  Select Case iType
+    Case 0 'carré
      ariSymbol = [X, Y, X + iStaticSpace, Y, X + iStaticSpace, Y + iStaticSpace, X, Y + iStaticSpace]
      Draw.Polygon(ariSymbol)
-    CASE 1 'cercle
+    Case 1 'cercle
       Draw.Circle(X + iStaticSpace / 2, Y + iStaticSpace / 2, iStaticSpace / 2)
-    CASE 2 'Triangle
+    Case 2 'Triangle
       ariSymbol = [X + CInt(iStaticSpace / 2), Y, X + iStaticSpace, Y + iStaticSpace, X, Y + iStaticSpace]
       Draw.Polygon(ariSymbol)
-    CASE 3 'TriangleInverse
+    Case 3 'TriangleInverse
       ariSymbol = [X + CInt(iStaticSpace / 2), Y + iStaticSpace, X + iStaticSpace, Y, X, Y]
       Draw.Polygon(ariSymbol)
-    CASE 4 'sablier
+    Case 4 'sablier
       ariSymbol = [X, Y, X + iStaticSpace, Y, X, Y + iStaticSpace, X + iStaticSpace, Y + iStaticSpace]
       Draw.Polygon(ariSymbol)
-    CASE 5 'sablierH
+    Case 5 'sablierH
       
-  END SELECT
+  End Select
   
-END
+End
+
+Public Function DrawVertChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As Float, fMaxValue As Float, Optional iAlign As Integer) As CPoint
+  Dim fTabPos As Float
+  Dim i, iStaticSpace As Integer
+  Dim fXUnit, fYUnit As Float
+  Dim hPoint As CPoint
+  Dim f As Float
+  Dim fStep As Float
+  Dim fMultiple As Float
+  Dim oSerie As _CSerie
+    'Draw the Y axe
+  iStaticSpace = 5 * oChart._fProportionnal
+  Draw.Line(hChartRect.Left, hChartRect.Top, hChartRect.Left, hChartRect.Bottom)
+  
+  fYUnit = (hChartRect.Right - hChartRect.Left) / (fMaxValue)
+  
+  fMultiple = Round(fMaxValue / 100)
+  If fMultiple = 0 Then fMultiple = 1
+  If fMaxValue > 1 Then 
+    
+    If fMaxValue / fMultiple < 10 Then 
+      fStep = 0.5 * fMultiple
+    Else If fMaxValue / fMultiple < 25 Then 
+      fStep = 1 * fMultiple
+    Else If fMaxValue / fMultiple < 50 Then 
+      fStep = 2 * fMultiple
+    Else If fMaxValue / fMultiple < 75 Then 
+      fStep = 3 * fMultiple
+    'ELSE IF fMaxValue / fMultiple < 90 THEN 
+      'fStep = 4 * fMultiple
+    Else If fMaxValue / fMultiple <= 100 Then 
+      fStep = 5 * fMultiple
+    Endif
+    
+Endif
+  
+  
+  For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
+    'Position du taquet
+    fTabPos = hChartRect.Left + (fYUnit * f)
+    'Dessine le taquet
+    Draw.Line(fTabPos, hChartRect.Bottom - iStaticSpace, fTabPos, hChartRect.Bottom)
+    'Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
+    'Dessine les intervalles Verticaux
+    If Chart.YAxe.ShowIntervalLines Then Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Top)
+    'Dessine l'étiquette
+    'Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
+    Draw.Text(f, fTabPos - Draw.Font.Width(f) / 2, hChartRect.Bottom + iStaticSpace * oChart._fProportionnal)
+  Next
+  
+  'If $iType = ChartType.AreaPercent Then fMaxVal = GetChartMaxCumulateValue(Chart)
+  
+  
+ 'Draw the X axe
+ Draw.Line(hChartRect.Left, hChartRect.Bottom, hChartRect.Right, hChartRect.Bottom)
+ 
+ If iAlign = Align.Center Then 
+   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (oChart.Count + 1)) / Chart.CountDataSets
+ Else 
+   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (oChart.Count - 1))
+ Endif
+ fTabPos = hChartRect.Bottom
+ If iAlign = Align.Center Then 
+ 
+ For Each oSerie In Chart
+     fTabPos -= fXUnit * (Chart.Count + 1)
+       Draw.Line(hChartRect.Left, fTabPos, hChartRect.Left - iStaticSpace, fTabPos)
+     Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (Chart.Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)
+ Next
+ Else
+ For i = 0 To Chart.Count - 1
+ 
+    '* '(Chart.Count + 1)
+  
+   
+ 
+   Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
+   Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+   fTabPos += fXUnit
+ 
+ Next
+Endif
+  hPoint = New CPoint(fXUnit, fYUnit)
+  Return hPoint
+End
+
+
+Public Function GetChartMaxLenLabel() As String
+  
+  Dim hSeries As _CSerie
+  Dim s As String
+  Dim sCurMax As String
+  fCurMax = 0
+  For Each hSeries In oChart
+    If Len(hSeries.Text) > Len(sCurMax) Then sCurMax = hSeries.Text
+  Next
+  Return sCurMax
+  
+End
 

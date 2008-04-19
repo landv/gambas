@@ -1,6 +1,6 @@
 ' Gambas class file
 
-PUBLIC SUB _new()
+Public Sub _new()
 ' 'Set the number of DataSets (the default is already 1)
 ' Chart.CountDataSets = 5
 ' 'Set the Data headers
@@ -17,11 +17,11 @@ PUBLIC SUB _new()
 ' Chart[4].Text = "Set 5"
 ' Chart[4].Values = [1.0, 8.0, 3.0, 5]
 
-  DEBUG Desktop.Scale
+  Debug Desktop.Scale
 
 Chart.Legend.Title = "Legend"
-Chart.Legend.Visible = TRUE
-Chart.Title.Visible = TRUE
+Chart.Legend.Visible = True
+Chart.Title.Visible = True
 Chart.Title.Text = "A Gambas Chart"
 
 tvdata.Columns.Count = 2
@@ -39,153 +39,153 @@ tvData[1, 1].Text = "2"
 tvData[2, 1].Text = "3"
 tvData[3, 1].Text = "4"
 SetChartValues
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  DIM hClass AS Class
-  DIM s AS String
-  DIM hPicBox AS ToggleButton
-  DIM hPic AS Picture
+  Dim hClass As Class
+  Dim s As String
+  Dim hPicBox As ToggleButton
+  Dim hPic As Picture
   hClass = class.Load("ChartType")
-FOR EACH s IN hClass.Symbols
+For Each s In hClass.Symbols
 
-  IF hClass[s].Kind <> Class.Constant THEN CONTINUE
+  If hClass[s].Kind <> Class.Constant Then Continue
   
-  SELECT CASE hClass[s].Value 
-    CASE 0, 10, 20, 30
-      hPicBox = NEW ToggleButton(ScrollView1) AS "MyPicBox"
+  Select Case hClass[s].Value 
+    Case 0, 10, 20, 30, 40
+      hPicBox = New ToggleButton(ScrollView1) As "MyPicBox"
       hPic = Picture["img" &/ LCase(s) & ".png"]
-      TRY hPicBox.Picture = hPic
-      hPicBox.Visible = TRUE
+      Try hPicBox.Picture = hPic
+      hPicBox.Visible = True
       hPicBox.BackColor = Color.Black
       hPicBox.Resize(hPic.Width, hPic.Height)
       hPicBox.Tag = hClass[s].Value
-      hPicBox.Radio = TRUE
+      hPicBox.Radio = True
       
-  END SELECT 
+  End Select 
   
-NEXT
+Next
 'LAST = ScrollView1.Children[1]
 'MyPicBox_MouseUp
-END
+End
 
-PUBLIC SUB MyPicBox_Click()
+Public Sub MyPicBox_Click()
   
-  DIM hClass AS Class
-  DIM s AS String
-  DIM hPicBox AS ToggleButton
-  DIM hPic AS Picture
-  DIM i AS Integer
-  DIM o AS Control
+  Dim hClass As Class
+  Dim s As String
+  Dim hPicBox As ToggleButton
+  Dim hPic As Picture
+  Dim i As Integer
+  Dim o As Control
   hClass = class.Load("ChartType")
-  FOR EACH o IN ScrollView2.Children
+  For Each o In ScrollView2.Children
     o.Delete
-  NEXT
-FOR EACH s IN hClass.Symbols
+  Next
+For Each s In hClass.Symbols
 
-  IF hClass[s].Kind <> Class.Constant THEN CONTINUE
-  i = hClass[s].Value - LAST.Tag 
+  If hClass[s].Kind <> Class.Constant Then Continue
+  i = hClass[s].Value - Last.Tag 
   'PRINT hClass[s].Value, "-", LAST.tag, i
-  IF i >= 0 AND i < 5 THEN
-      hPicBox = NEW ToggleButton(ScrollView2) AS "MyPicBox2"
-      IF i = 0 THEN 
+  If i >= 0 And i < 5 Then
+      hPicBox = New ToggleButton(ScrollView2) As "MyPicBox2"
+      If i = 0 Then 
         hPic = Picture["img" &/ LCase(s) & "normal.png"]
-      ELSE 
+      Else 
         hPic = Picture["img" &/ LCase(s) & ".png"]
-      ENDIF
+      Endif
         'IF IsNull(hpic) THEN hpic = NEW Picture(58, 51, TRUE)
       hPicBox.Picture = hPic
-      hPicBox.Visible = TRUE
+      hPicBox.Visible = True
       hPicBox.BackColor = Color.Black
-      TRY hPicBox.Resize(hPic.Width, hPic.Height)
+      Try hPicBox.Resize(hPic.Width, hPic.Height)
       hPicBox.Tag = hClass[s].Value
-      hPicBox.Radio = TRUE
-  ENDIF
+      hPicBox.Radio = True
+  Endif
   
   
-NEXT
+Next
   
-END
+End
 
-PRIVATE FUNCTION GetConstNameByValue(Value AS Integer) AS String
+Private Function GetConstNameByValue(Value As Integer) As String
   
-  DIM hClass AS Class
-  DIM s AS String
+  Dim hClass As Class
+  Dim s As String
   hClass = Class.Load("ChartType")
   
-  FOR EACH s IN hClass.Symbols
-    IF hClass[s].Kind <> Class.Constant THEN CONTINUE 
-    IF hClass[s].Value = Value THEN RETURN s
-  NEXT
+  For Each s In hClass.Symbols
+    If hClass[s].Kind <> Class.Constant Then Continue 
+    If hClass[s].Value = Value Then Return s
+  Next
   
-END
+End
 
-PUBLIC SUB MyPicBox_Enter()
-  Label1.Text = GetConstNameByValue(LAST.tag)
-END
+Public Sub MyPicBox_Enter()
+  Label1.Text = GetConstNameByValue(Last.tag)
+End
   
-PUBLIC SUB MyPicBox_Leave()
+Public Sub MyPicBox_Leave()
   Label1.Text = ""
-END
+End
 
-PUBLIC SUB MyPicBox2_Enter()
-  Label1.Text = GetConstNameByValue(LAST.tag)
-END
+Public Sub MyPicBox2_Enter()
+  Label1.Text = GetConstNameByValue(Last.tag)
+End
   
-PUBLIC SUB MyPicBox2_Leave()
+Public Sub MyPicBox2_Leave()
   Label1.Text = ""
-END
+End
 
-PUBLIC SUB MyPicBox2_Click()
+Public Sub MyPicBox2_Click()
   
-  Chart.Type = LAST.Tag
-  Chart.Title.Text = "Type: " & GetConstNameByValue(LAST.tag)
+  Chart.Type = Last.Tag
+  Chart.Title.Text = "Type: " & GetConstNameByValue(Last.tag)
   DrawingArea1.Refresh
   
-END
+End
 
-PUBLIC SUB DrawingArea1_Draw()
+Public Sub DrawingArea1_Draw()
   Chart.Width = DrawingArea1.Width
   Chart.Height = DrawingArea1.Height
   Chart.Draw()
   
-END
+End
 
 
-PUBLIC SUB CheckBox2_Click()
+Public Sub CheckBox2_Click()
 
-  Chart.Title.Visible = LAST.Value
+  Chart.Title.Visible = Last.Value
   DrawingArea1.Refresh
-END
+End
 
-PUBLIC SUB CheckBox1_Click()
+Public Sub CheckBox1_Click()
 
-  Chart.Legend.Visible = LAST.Value
+  Chart.Legend.Visible = Last.Value
   DrawingArea1.Refresh
-END
+End
 
-PRIVATE SUB SetChartValues()
+Private Sub SetChartValues()
   
-  DIM ars AS NEW String[]
-  DIM arf AS NEW Float[]
-  DIM i AS Integer
-  DIM j AS Integer
+  Dim ars As New String[]
+  Dim arf As New Float[]
+  Dim i As Integer
+  Dim j As Integer
   Chart.CountDataSets = tvData.Columns.Count - 1
   
-  FOR i = 0 TO tvdata.Rows.Count - 1
+  For i = 0 To tvdata.Rows.Count - 1
     ars.Add(tvdata[i, 0].Text)
-  NEXT
-  FOR j = 0 TO tvData.Columns.Count - 2
-    arf = NEW Float[]
-    FOR i = 0 TO tvdata.Rows.Count - 1
-      TRY arf.Add(CFloat(tvdata[i, J + 1].Text))
-      IF ERROR THEN arf.Add(0)
-    NEXT
+  Next
+  For j = 0 To tvData.Columns.Count - 2
+    arf = New Float[]
+    For i = 0 To tvdata.Rows.Count - 1
+      Try arf.Add(CFloat(tvdata[i, J + 1].Text))
+      If Error Then arf.Add(0)
+    Next
     Chart.Headers.Values = ars
     Chart[J].Values = arf
     Chart[J].Text = tvdata.Columns[J + 1].Text
-  NEXT
+  Next
   
  
   
@@ -193,76 +193,76 @@ PRIVATE SUB SetChartValues()
   
   
   
-END
+End
 
 
 
-PUBLIC SUB tvdata_Click()
+Public Sub tvdata_Click()
 
   tvdata.Edit
 
-END
+End
 
 
-PUBLIC SUB tvdata_Change()
+Public Sub tvdata_Change()
 
   
 
-END
+End
 
-PUBLIC SUB tvdata_Save(Row AS Integer, Column AS Integer, Value AS String)
+Public Sub tvdata_Save(Row As Integer, Column As Integer, Value As String)
 
   tvData[Row, Column].Text = Value
   SetChartValues
   DrawingArea1.Refresh
   
 
-END
+End
 
-PUBLIC SUB Button4_Click()
+Public Sub Button4_Click()
 
-  IF tvdata.Columns.Count > 2 THEN DEC Chart.CountDataSets
+  If tvdata.Columns.Count > 2 Then Dec Chart.CountDataSets
   SetChartValues
   DrawingArea1.Refresh
 
-END
+End
 
-PUBLIC SUB Button3_Click()
-  DIM s AS String
+Public Sub Button3_Click()
+  Dim s As String
   FInput.Value = ""
   s = InputBox("Dataset Name", "New DataSet")
-  IF NOT IsNull(s) THEN 
-    INC tvData.Columns.Count
+  If Not IsNull(s) Then 
+    Inc tvData.Columns.Count
     tvData.Columns[tvData.Columns.Count - 1].Text = s
-  ENDIF
+  Endif
     SetChartValues
   DrawingArea1.Refresh
-END
+End
 
-PUBLIC SUB Button1_Click()
+Public Sub Button1_Click()
 
-  INC tvdata.Rows.Count
+  Inc tvdata.Rows.Count
     SetChartValues
   DrawingArea1.Refresh
-END
+End
 
-PUBLIC SUB Button2_Click()
+Public Sub Button2_Click()
 
-  IF tvData.Rows.Count > 1 THEN DEC tvData.Rows.Count
+  If tvData.Rows.Count > 1 Then Dec tvData.Rows.Count
     SetChartValues
   DrawingArea1.Refresh
-END
+End
 
-PUBLIC SUB tvdata_ColumnClick(Column AS Integer)
+Public Sub tvdata_ColumnClick(Column As Integer)
 
-    DIM s AS String
-    IF Column = 0 THEN RETURN 
+    Dim s As String
+    If Column = 0 Then Return 
   FInput.Value = ""
   s = InputBox("Dataset Name", "Set DataSet Name")
-  IF NOT IsNull(s) THEN 
+  If Not IsNull(s) Then 
     tvData.Columns[Column].Text = s
-  ENDIF
+  Endif
   SetChartValues
   DrawingArea1.Refresh
   
-END
+End

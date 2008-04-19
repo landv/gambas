@@ -1,0 +1,105 @@
+' Gambas class file
+
+Private $iType As Integer
+
+Public Sub _New(Value As Integer)
+  
+  $iType = Value
+  
+End
+
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
+  Dim oSerie As _CSerie
+  Dim cnt As Integer
+  Dim fMaxVal As Float
+  Dim itmp As Float
+  Dim i, j As Integer
+  Dim f As Float
+  Dim YHeadersW As Integer
+  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * Chart._fProportionnal
+  Dim fTabPos As Float
+  Dim iXUnit As Float
+  Dim iStaticSpace As Integer = 5 * Chart._fProportionnal
+  Dim hRect As New CRect
+  Dim hUnits As CPoint
+  Dim fCumul As Float
+  Dim fPrevCumul As Float
+  'Get the maxValue for Y Labels width and value
+  
+  ' FOR i = 0 TO Chart.DataSet[0].Data.Max
+  '   itmp = Chart.DataSet[0].Data[i]
+  '   IF fMaxVal < itmp THEN fMaxVal = itmp
+  '   IF cnt < draw.TextWidth(itmp & "  ") THEN cnt = draw.TextWidth(itmp & "  ")
+  ' NEXT 
+  draw.Font.Size = 11 * Chart._fProportionnal
+  
+  'Select Case $iType
+  '  Case ChartType.Bars
+  '    fMaxVal = MTools.GetChartMaxValue(Chart)
+  '  Case ChartType.BarsStacked
+  '    fMaxVal = MTools.GetChartMaxCumulate(Chart)
+   ' Case ChartType.BarsPercent
+  '    fMaxVal = 100
+  'End Select
+  If fMaxVal = 0 Then Return 
+  cnt = draw.TextWidth(fMaxVal & "00")
+  'Get the max width needed for draw the Y labels
+  YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
+  
+  'Set the graph square position value
+  hRect.Top = CY + iTwoLetterHeight
+  hRect.Bottom = CY + CH - iTwoLetterHeight
+  hRect.Left = YHeadersW
+  hRect.Right = CX + CW - YHeadersW
+  'Draw the background
+  Draw.ForeColor = Color.LightGray
+  Draw.FillColor = Color.LightGray
+  Draw.FillStyle = Fill.Solid
+  Draw.Rect(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
+  Draw.ForeColor = Color.Black
+  
+  hUnits = MTools.DrawVertChartAxes(Chart, hRect, 0, fMaxVal, Align.Center)
+  
+  Select Case $iType
+    Case ChartType.Bars
+      fTabPos = hRect.Left + hUnits.x / 2
+      For Each oSerie In Chart
+        For i = 0 To Chart.Count - 1
+          draw.ForeColor = Color.DarkGray
+          Draw.FillStyle = Fill.Solid
+          Draw.FillColor = Chart.Colors[i]
+          draw.Rect(fTabPos + i * (hUnits.X - 1), hRect.Bottom, hUnits.X, oSerie[i] * - hUnits.y)
+        Next
+        fTabPos += i * hUnits.x + hUnits.x
+      Next
+    Case ChartType.BarsStacked, ChartType.BarsPercent
+      hUnits.X = (hRect.Right - hRect.Left) / (Chart.CountDataSets * 2)
+      fTabPos = hRect.Left + hUnits.x / 2
+      For Each oSerie In Chart
+        fCumul = hRect.Bottom + 1
+        If $iType = ChartType.ColumnsPercent Then 
+          fMaxVal = 0
+          For i = 0 To Chart.Count - 1
+            fMaxVal += oSerie[i]
+          Next
+        Endif
+        If fMaxVal = 0 Then Return 
+        For i = 0 To Chart.Count - 1 
+          If $iType = ChartType.ColumnsPercent Then             
+            f = ((oSerie[i] / fMaxVal * 100) * - hUnits.y) - 1
+          Else 
+            f = (oSerie[i] * - hUnits.y) - 1
+          Endif
+          draw.ForeColor = Color.DarkGray
+          Draw.FillStyle = Fill.Solid
+          Draw.FillColor = Chart.Colors[i]
+          draw.Rect(fTabPos, fCumul, hUnits.X, f)
+          fCumul += f + 1
+          
+        Next
+        'fPrevCumul = fCumul * hUnits.Y
+        fTabPos += hUnits.x * 2
+      Next
+  End Select
+  'MTools.DrawSymbol(5, 15, 15)
+End
