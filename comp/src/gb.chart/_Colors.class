@@ -1,48 +1,62 @@
 ' Gambas class file
 
 
-PUBLIC CONST Custom AS Integer = 0
-PUBLIC CONST Auto AS Integer = 1
+Public Const Custom As Integer = 0
+Public Const Auto As Integer = 1
 
-PRIVATE $ariCustomColors AS Integer[]
-PRIVATE $ariColors AS Integer[] = [&hff6f00,
+Private $ariCustomColors As New Integer[]
+Private $ariColors As Integer[] = [&hff6f00,
 &h800080, &h666666, &h6B4794, &h290099, &h7da647,
 &he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
-PRIVATE $iMode AS Integer = Auto
+Private $iMode As Integer = Auto
 
-PROPERTY Values AS Integer[]
+Property Values As Integer[]
+Property Style As Integer
 
 
-PRIVATE FUNCTION Values_Read() AS Integer[]
+Private Function Values_Read() As Integer[]
 
-  RETURN $ariCustomColors
+  Return $ariCustomColors
 
-END
+End
 
-PRIVATE SUB Values_Write(Value AS Integer[])
+Private Sub Values_Write(Value As Integer[])
 
   $ariCustomColors = Value
+  $iMode = Custom
 
-END
+End
 
-PUBLIC FUNCTION _Get(Index AS Integer) AS Integer
+Public Function _Get(Index As Integer) As Integer
   
-  DIM ariTmp AS Integer[]
-  DIM i AS Integer
-  IF $iMode = Auto THEN 
+  Dim ariTmp As Integer[]
+  Dim i As Integer
+  If $iMode = Auto Then 
     
     ariTmp = $ariColors
-  ELSE 
-    IF IsNull($ariCustomColors) THEN Error.Raise(("You must to define the custom color array before"))
-    ariTmp = $ariCustomColors[Index]
-  ENDIF
+  Else 
+    If IsNull($ariCustomColors) Or $ariCustomColors.Count = 0 Then Error.Raise(("You must to define the custom color array before"))
+    ariTmp = $ariCustomColors
+  Endif
   
-  IF Index > ariTmp.Max THEN 
-    i = Index MOD ariTmp.Max
-    RETURN ariTmp[i]
-  ELSE 
-    RETURN ariTmp[Index]
-  ENDIF  
+  If Index > ariTmp.Max Then 
+    i = Index Mod ariTmp.Count
+    Return ariTmp[i]
+  Else 
+    Return ariTmp[Index]
+  Endif  
   
-END
+End
 
+
+Private Function Style_Read() As Integer
+
+  Return $iMode   
+
+End
+
+Private Sub Style_Write(Value As Integer)
+
+  $iMode = Value
+
+End

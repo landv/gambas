@@ -1,14 +1,13 @@
 # Gambas Form File 3.0
-#LOCKED
 
 { Form Form
-  MoveScaled(0,0,110,80)
+  MoveScaled(0,0,111,90)
   Text = ("")
   Arrangement = Arrange.Vertical
   Spacing = 5
   Padding = 5
   { HBox1 HBox
-    MoveScaled(2,2,105,72)
+    MoveScaled(2,2,105,79)
     Expand = True
     Spacing = 5
     { DrawingArea1 DrawingArea
@@ -17,11 +16,11 @@
       Expand = True
     }
     { TabStrip1 TabStrip
-      MoveScaled(63,2,44,67)
+      MoveScaled(63,2,44,72)
       Arrangement = Arrange.Vertical
       Spacing = 5
       Padding = 5
-      Count = 2
+      Count = 4
       Index = 0
       Text = ("Data")
       { tvdata TableView
@@ -47,7 +46,7 @@
         Text = ("Remove a Dataset")
       }
       Index = 1
-      Text = ("Chart")
+      Text = ("Chart Style")
       { Label2 Label
         MoveScaled(1,2,11,3)
         Text = ("Style")
@@ -69,31 +68,82 @@
         Spacing = 5
         Padding = 5
       }
-      { CheckBox2 CheckBox
-        MoveScaled(1,47,22,4)
-        Text = ("Show Title")
-        Value = CheckBox.True
+      Index = 2
+      Text = ("Other")
+      { Frame3 Frame
+        MoveScaled(2,1,38,17)
+        Text = ("General")
+        { CheckBox2 CheckBox
+          MoveScaled(2,4,22,4)
+          Text = ("Show Title")
+          Value = CheckBox.True
+        }
+        { Label4 Label
+          MoveScaled(2,8,16,3)
+          Text = ("BackColor")
+        }
+        { ColorButton1 ColorButton
+          MoveScaled(17,7,9,4)
+        }
       }
-      { CheckBox1 CheckBox
-        MoveScaled(1,50,30,3)
-        Text = ("Show Legend")
-        Value = CheckBox.True
+      { Frame1 Frame
+        MoveScaled(2,20,38,13)
+        Text = ("Legend")
+        { CheckBox1 CheckBox
+          MoveScaled(1,3,30,3)
+          Text = ("Show Legend")
+          Value = CheckBox.True
+        }
+        { ComboBox1 ComboBox
+          MoveScaled(1,6,25,4)
+          Text = ("")
+          ReadOnly = True
+          List = [("Right"), ("Bottom")]
+        }
       }
-      { CheckBox3 CheckBox
-        MoveScaled(1,55,30,3)
-        Text = ("Show X Labels")
-        Value = CheckBox.True
+      { Frame2 Frame
+        MoveScaled(2,39,37,23)
+        Text = ("Axes")
+        { CheckBox3 CheckBox
+          MoveScaled(2,3,30,3)
+          Text = ("Show X Labels")
+          Value = CheckBox.True
+        }
+        { CheckBox4 CheckBox
+          MoveScaled(2,8,30,3)
+          Text = ("Show Y Labels")
+          Value = CheckBox.True
+        }
+        { CheckBox5 CheckBox
+          MoveScaled(2,12,30,3)
+          Text = ("Show Y Interlines")
+          Value = CheckBox.True
+        }
       }
-      { CheckBox4 CheckBox
-        MoveScaled(1,58,30,3)
-        Text = ("Show Y Labels")
-        Value = CheckBox.True
+      Index = 3
+      Text = ("Colors")
+      { CheckBox6 CheckBox
+        MoveScaled(1,3,26,1)
+        Text = ("Auto")
+      }
+      { ScrollView3 ScrollView
+        MoveScaled(1,6,29,44)
+        Arrangement = Arrange.Vertical
+        ScrollBar = Scroll.Vertical
+      }
+      { Button5 Button
+        MoveScaled(31,10,9,5)
+        Text = ("Add")
+      }
+      { Button6 Button
+        MoveScaled(31,16,9,5)
+        Text = ("Remove")
       }
       Index = 0
     }
   }
   { Label1 Label
-    MoveScaled(4,75,96,4)
+    MoveScaled(7,84,96,4)
     Text = ("")
     Border = Border.Etched
   }

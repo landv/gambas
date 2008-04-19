@@ -25,6 +25,13 @@ Private $iType As Integer
 Private $iWidth As Integer
 Private $iHeight As Integer
 Private $oHeaders As New _CHeaders
+Private $iBackColor As Integer = Color.LightGray
+
+
+
+
+Property BackColor As Integer
+
 Property Height As Integer
 Property Width As Integer
 Property Type As Integer
@@ -306,5 +313,17 @@ End
 Private Function XAxe_Read() As _CXAxe
 
   Return $oXAxe
+
+End
+
+Private Function BackColor_Read() As Integer
+
+  Return $iBackColor  
+
+End
+
+Private Sub BackColor_Write(Value As Integer)
+
+  $iBackColor = Value
 
 End

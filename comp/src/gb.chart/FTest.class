@@ -1,5 +1,5 @@
 ' Gambas class file
-
+Private $oLastChild As Object
 Public Sub _new()
 ' 'Set the number of DataSets (the default is already 1)
 ' Chart.CountDataSets = 5
@@ -21,10 +21,11 @@ Public Sub _new()
 
 Chart.Legend.Title = "Legend"
 Chart.Legend.Visible = True
+
 Chart.Title.Visible = True
 Chart.Title.Text = "A Gambas Chart"
 
-tvdata.Columns.Count = 2
+tvdata.Columns.Count = 3
 tvData.Rows.Count = 4
 tvData.Header = tvData.Both
 tvdata.Columns[0].Text = "Headers"
@@ -34,10 +35,16 @@ tvData[1, 0].Text = "Tac"
 tvData[2, 0].Text = "Toe"
 tvData[3, 0].Text = "Tata"
 
-tvData[0, 1].Text = "1"
+tvData[0, 1].Text = "10"
 tvData[1, 1].Text = "2"
-tvData[2, 1].Text = "3"
-tvData[3, 1].Text = "4"
+tvData[2, 1].Text = "30"
+tvData[3, 1].Text = "45"
+
+tvdata.Columns[2].Text = "Set 2"
+tvData[0, 2].Text = "5"
+tvData[1, 2].Text = "23"
+tvData[2, 2].Text = "10"
+tvData[3, 2].Text = "25"
 SetChartValues
 End
 
@@ -66,6 +73,8 @@ For Each s In hClass.Symbols
   End Select 
   
 Next
+
+ColorButton1.Color = Chart.BackColor
 'LAST = ScrollView1.Children[1]
 'MyPicBox_MouseUp
 End
@@ -229,7 +238,7 @@ End
 
 Public Sub Button3_Click()
   Dim s As String
-  FInput.Value = ""
+  'FInput.Value = ""
   s = InputBox("Dataset Name", "New DataSet")
   If Not IsNull(s) Then 
     Inc tvData.Columns.Count
@@ -257,7 +266,7 @@ Public Sub tvdata_ColumnClick(Column As Integer)
 
     Dim s As String
     If Column = 0 Then Return 
-  FInput.Value = ""
+  'FInput.Value = ""
   s = InputBox("Dataset Name", "Set DataSet Name")
   If Not IsNull(s) Then 
     tvData.Columns[Column].Text = s
@@ -279,4 +288,90 @@ Public Sub CheckBox4_Click()
   Chart.YAxe.Visible = CheckBox4.Value
   DrawingArea1.Refresh
 
+End
+
+Public Sub ComboBox1_Click()
+
+  Select Case ComboBox1.Text
+  
+    Case "Right"
+      Chart.Legend.Position = Align.Right
+    Case "Bottom"
+      Chart.Legend.Position = Align.Bottom
+    End Select
+    DrawingArea1.Refresh
+End
+
+Public Sub ColorButton1_Change()
+  ' Dialog.Color = ColorButton1.Color
+  ' If Not Dialog.SelectColor() Then 
+  '   ColorButton1.Color = Dialog.Color
+  '   Chart.BackColor = Dialog.Color
+  'Endif
+  Chart.BackColor = ColorButton1.Color
+  DrawingArea1.Refresh
+End
+
+Public Sub CheckBox5_Click()
+
+  Chart.YAxe.ShowIntervalLines = CheckBox5.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub CheckBox6_Click()
+
+  Chart.Colors.Style = IIf(CheckBox6.Value, Chart.Colors.Auto, Chart.Colors.Custom)
+  DrawingArea1.Refresh
+End
+
+Public Sub Button5_Click()
+
+  Dim hBut As ColorButton
+  
+  hBut = New ColorButton(ScrollView3) As "BtnColors"
+  hBut.Height = hBut.Height * 2
+  hBut.Visible = True
+  hBut.Refresh
+  'Chart.Colors.Style = Chart.Colors.Custom
+  CheckBox6.Value = False
+  RefreshCustomColors
+  CheckBox6_Click
+  'RefreshCustomColors
+
+End
+
+Public Sub RefreshCustomColors()
+  Dim o As ColorButton
+  Chart.Colors.Values.Clear
+  For Each o In ScrollView3.Children
+  
+    Chart.Colors.Values.Add(o.Color)
+    
+  Next
+  $oLastChild = o
+  DrawingArea1.Refresh
+  
+End
+
+Public Sub BtnColors_Change()
+  
+  RefreshCustomColors
+  
+End
+
+Public Sub Button6_Click()
+
+  If Not IsNull($oLastChild) Then 
+    $oLastChild.delete
+    Wait
+    If ScrollView3.Children.Count = 0 Then 
+      CheckBox6.Value = True
+      CheckBox6_Click
+    Endif
+    RefreshCustomColors
+    
+  Endif
+Catch
+RefreshCustomColors
 End

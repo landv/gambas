@@ -68,7 +68,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   'Draw the background
   Draw.ForeColor = Color.LightGray
-  Draw.FillColor = Color.LightGray
+  Draw.FillColor = Chart.BackColor
   Draw.FillStyle = Fill.Solid
   Draw.Rect(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
   Draw.ForeColor = Color.Black
