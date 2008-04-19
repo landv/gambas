@@ -1,18 +1,19 @@
 ' Gambas class file
 
-EXPORT 
-PRIVATE $bShowIntervalLines AS Boolean = TRUE
-PROPERTY ShowIntervalLines AS Boolean
+Export 
+Inherits _CAxes
+Private $bShowIntervalLines As Boolean = True
+Property ShowIntervalLines As Boolean
 
 
-PRIVATE FUNCTION ShowIntervalLines_Read() AS Boolean
+Private Function ShowIntervalLines_Read() As Boolean
 
-  RETURN $bShowIntervalLines
+  Return $bShowIntervalLines
 
-END
+End
 
-PRIVATE SUB ShowIntervalLines_Write(Value AS Boolean)
+Private Sub ShowIntervalLines_Write(Value As Boolean)
 
   $bShowIntervalLines = Value
 
-END
+End

@@ -91,12 +91,14 @@ Endif
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Bottom - (fYUnit * f)
-    'Dessine le taquet
-    Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
     'Dessine les intervalles Verticaux
     If Chart.YAxe.ShowIntervalLines Then Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
     'Dessine l'étiquette
-    Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
+    If Chart.YAxe.Visible Then 
+      'Dessine le taquet
+      Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
+      Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
+    Endif
   Next
   
   'IF $iType = ChartType.AreaPercent THEN fMaxVal = GetChartMaxCumulateValue(Chart)
@@ -115,7 +117,7 @@ Endif
   For Each oSerie In Chart
       fTabPos += fXUnit * (Chart.Count + 1)
         Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + iStaticSpace)
-      Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+      If oChart.XAxe.Visible Then Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
   Next
   Else
   For i = 0 To Chart.Count - 1
@@ -125,7 +127,7 @@ Endif
     
 
     Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
-    Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+    If oChart.XAxe.Visible Then Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
     fTabPos += fXUnit
 
   Next
@@ -200,14 +202,17 @@ Endif
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Left + (fYUnit * f)
-    'Dessine le taquet
-    Draw.Line(fTabPos, hChartRect.Bottom - iStaticSpace, fTabPos, hChartRect.Bottom)
+    
     'Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
     'Dessine les intervalles Verticaux
     If Chart.YAxe.ShowIntervalLines Then Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Top)
     'Dessine l'étiquette
     'Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
-    Draw.Text(f, fTabPos - Draw.Font.Width(f) / 2, hChartRect.Bottom + iStaticSpace * oChart._fProportionnal)
+    If Chart.XAxe.Visible Then 
+      Draw.Text(f, fTabPos - Draw.Font.Width(f) / 2, hChartRect.Bottom + iStaticSpace * oChart._fProportionnal)
+      'Dessine le taquet
+      Draw.Line(fTabPos, hChartRect.Bottom - iStaticSpace, fTabPos, hChartRect.Bottom)
+    Endif
   Next
   
   'If $iType = ChartType.AreaPercent Then fMaxVal = GetChartMaxCumulateValue(Chart)
@@ -227,7 +232,7 @@ Endif
  For Each oSerie In Chart
      fTabPos -= fXUnit * (Chart.Count + 1)
        Draw.Line(hChartRect.Left, fTabPos, hChartRect.Left - iStaticSpace, fTabPos)
-     Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (Chart.Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)
+     If oChart.YAxe.Visible Then Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (Chart.Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)
  Next
  Else
  For i = 0 To Chart.Count - 1
@@ -237,7 +242,7 @@ Endif
    
  
    Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
-   Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+   If oChart.YAxe.Visible Then Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
    fTabPos += fXUnit
  
  Next
@@ -247,12 +252,13 @@ Endif
 End
 
 
-Public Function GetChartMaxLenLabel() As String
+Public Function GetChartMaxLenLabel(oChart As Chart) As String
   
   Dim hSeries As _CSerie
   Dim s As String
   Dim sCurMax As String
-  fCurMax = 0
+  
+  sCurMax = 0
   For Each hSeries In oChart
     If Len(hSeries.Text) > Len(sCurMax) Then sCurMax = hSeries.Text
   Next

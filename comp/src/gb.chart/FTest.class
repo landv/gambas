@@ -266,3 +266,17 @@ Public Sub tvdata_ColumnClick(Column As Integer)
   DrawingArea1.Refresh
   
 End
+
+Public Sub CheckBox3_Click()
+
+  Chart.XAxe.Visible = CheckBox3.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub CheckBox4_Click()
+
+  Chart.YAxe.Visible = CheckBox4.Value
+  DrawingArea1.Refresh
+
+End

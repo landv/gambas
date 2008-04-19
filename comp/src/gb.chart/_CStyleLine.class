@@ -1,49 +1,58 @@
 ' Gambas class file
 
-PRIVATE $iType AS Integer
+Private $iType As Integer
 
-PUBLIC SUB _New(Value AS Integer)
+Public Sub _New(Value As Integer)
   
   $iType = Value
-END
+End
 
 
-PUBLIC SUB Draw(CX AS Integer, CY AS Integer, CW AS Integer, CH AS Integer)  
-  DIM oSerie AS _CSerie
-  DIM cnt AS Integer
-  DIM fMaxVal AS Float
-  DIM itmp AS Float
-  DIM i, j AS Integer
-  DIM f AS Float
-  DIM YHeadersW AS Integer
-  DIM iTwoLetterHeight AS Integer = draw.Font.Height() * 2 * Chart._fProportionnal
-  DIM iTabPos AS Integer
-  DIM iXUnit AS Integer
-  DIM iYUnit AS Integer
-  DIM ariPolyLine AS NEW Integer[]
-  DIM aroPolyLines AS NEW Object[]
-  DIM iStaticSpace AS Integer = 5 * Chart._fProportionnal
-  DIM hRect AS NEW CRect
-  DIM hUnits AS CPoint
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)  
+  Dim oSerie As _CSerie
+  Dim cnt As Integer
+  Dim fMaxVal As Float
+  Dim itmp As Float
+  Dim i, j As Integer
+  Dim f As Float
+  Dim YHeadersW As Integer
+  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * Chart._fProportionnal
+  Dim iTabPos As Integer
+  Dim iXUnit As Integer
+  Dim iYUnit As Integer
+  Dim ariPolyLine As New Integer[]
+  Dim aroPolyLines As New Object[]
+  Dim iStaticSpace As Integer = 5 * Chart._fProportionnal
+  Dim hRect As New CRect
+  Dim hUnits As CPoint
   draw.Font.Size = 11 * Chart._fProportionnal
   
-  SELECT CASE $iType
-    CASE ChartType.Lines, ChartType.LinesSymbols
+  Select Case $iType
+    Case ChartType.Lines, ChartType.LinesSymbols
       fMaxVal = MTools.GetChartMaxValue(Chart)
-    CASE ChartType.LinesStacked
+    Case ChartType.LinesStacked
       fMaxVal = MTools.GetChartMaxCumulateValue(Chart)
-    CASE ChartType.LinesPercent
+    Case ChartType.LinesPercent
       fMaxVal = 100
-  END SELECT
+  End Select
   cnt = draw.TextWidth(fMaxVal & "00")
-  'Get the max width needed for draw the Y labels
-  YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
+    'Get the max width needed for draw the Y labels
+  If Chart.YAxe.Visible Then 
+    YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
+  Else
+    YHeadersW = CX + iStaticSpace * 2
+  Endif
   
   'Set the graph square position value
-  hRect.Top = CY + iTwoLetterHeight
-  hRect.Bottom = CY + CH - iTwoLetterHeight
+  If Chart.XAxe.Visible Then 
+    hRect.Top = CY + iTwoLetterHeight
+    hRect.Bottom = CY + CH - iTwoLetterHeight
+  Else
+    hRect.Top = CY + iTwoLetterHeight
+    hRect.Bottom = CY + CH - iStaticSpace * 2
+  Endif
   hRect.Left = YHeadersW
-  hRect.Right = CX + CW - YHeadersW
+  hRect.Right = CX + CW - YHeadersW / 2
   
   'Draw the background
   Draw.ForeColor = Color.LightGray
@@ -55,60 +64,60 @@ PUBLIC SUB Draw(CX AS Integer, CY AS Integer, CW AS Integer, CH AS Integer)
   
   hUnits = MTools.DrawChartAxes(Chart, hRect, 0, fMaxVal)
   
- IF Chart.Count < 2 THEN RETURN 
+ If Chart.Count < 2 Then Return 
   Draw.FillStyle = Fill.Solid
   
-  FOR j = 0 TO Chart.CountDataSets - 1
-    ariPolyLine = NEW Integer[]
+  For j = 0 To Chart.CountDataSets - 1
+    ariPolyLine = New Integer[]
     ariPolyLine.Resize(Chart.Count * 2)
     aroPolyLines.Add(ariPolyLine)
     
-  NEXT  
+  Next  
   
-  FOR i = 0 TO Chart.Count - 1
+  For i = 0 To Chart.Count - 1
   f = 0
   fMaxVal = 0  
-    FOR j = 0 TO Chart.CountDataSets - 1
+    For j = 0 To Chart.CountDataSets - 1
       fMaxVal += Chart[j][i]
-    NEXT
-    FOR j = 0 TO Chart.CountDataSets - 1
-      SELECT CASE $iType
-        CASE ChartType.LinesPercent
+    Next
+    For j = 0 To Chart.CountDataSets - 1
+      Select Case $iType
+        Case ChartType.LinesPercent
           f += Chart[j][i] / fMaxVal * 100
-        CASE ChartType.LinesStacked
+        Case ChartType.LinesStacked
           f += Chart[j][i]
-        CASE ELSE
+        Case Else
           f = Chart[j][i]
-      END SELECT 
+      End Select 
       aroPolyLines[j][i * 2] = hRect.Left + (hUnits.X * i)
       aroPolyLines[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y
-    NEXT
+    Next
     
 
-  NEXT
+  Next
   
-  FOR i = 0 TO aroPolyLines.Max 'TO 0 STEP -1
+  For i = 0 To aroPolyLines.Max 'TO 0 STEP -1
   Draw.LineWidth = 2
   Draw.ForeColor = Chart.Colors[i]
   Draw.LineStyle = Line.Solid
     draw.Polyline(aroPolyLines[i])  
-  NEXT
+  Next
   
-  IF $iType = ChartType.LinesSymbols THEN 
+  If $iType = ChartType.LinesSymbols Then 
   
-    FOR i = 0 TO aroPolyLines.Max
+    For i = 0 To aroPolyLines.Max
     
-      FOR j = 0 TO aroPolyLines[i].Max STEP 2
+      For j = 0 To aroPolyLines[i].Max Step 2
         Draw.LineWidth = 1
         Draw.FillColor = Chart.Colors[i]
         Draw.ForeColor = Color.DarkGray
         MTools.DrawSymbol(i, aroPolyLines[i][j], aroPolyLines[i][j + 1])
       
-      NEXT
+      Next
     
-    NEXT
+    Next
   
-  ENDIF
+  Endif
   
   
-END
+End

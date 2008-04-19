@@ -1,29 +1,29 @@
 ' Gambas class file
 
-PRIVATE $iType AS Integer
+Private $iType As Integer
 
-PUBLIC SUB _New(Value AS Integer)
+Public Sub _New(Value As Integer)
   
   $iType = Value
   
-END
+End
 
-PUBLIC SUB Draw(CX AS Integer, CY AS Integer, CW AS Integer, CH AS Integer)
-  DIM oSerie AS _CSerie
-  DIM cnt AS Integer
-  DIM fMaxVal AS Float
-  DIM itmp AS Float
-  DIM i, j AS Integer
-  DIM f AS Float
-  DIM YHeadersW AS Integer
-  DIM iTwoLetterHeight AS Integer = draw.Font.Height() * 2 * Chart._fProportionnal
-  DIM fTabPos AS Float
-  DIM iXUnit AS Float
-  DIM iStaticSpace AS Integer = 5 * Chart._fProportionnal
-  DIM hRect AS NEW CRect
-  DIM hUnits AS CPoint
-  DIM fCumul AS Float
-  DIM fPrevCumul AS Float
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
+  Dim oSerie As _CSerie
+  Dim cnt As Integer
+  Dim fMaxVal As Float
+  Dim itmp As Float
+  Dim i, j As Integer
+  Dim f As Float
+  Dim YHeadersW As Integer
+  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * Chart._fProportionnal
+  Dim fTabPos As Float
+  Dim iXUnit As Float
+  Dim iStaticSpace As Integer = 5 * Chart._fProportionnal
+  Dim hRect As New CRect
+  Dim hUnits As CPoint
+  Dim fCumul As Float
+  Dim fPrevCumul As Float
   'Get the maxValue for Y Labels width and value
   
   ' FOR i = 0 TO Chart.DataSet[0].Data.Max
@@ -33,24 +33,33 @@ PUBLIC SUB Draw(CX AS Integer, CY AS Integer, CW AS Integer, CH AS Integer)
   ' NEXT 
   draw.Font.Size = 11 * Chart._fProportionnal
   
-  SELECT CASE $iType
-    CASE ChartType.Columns, ChartType.ColumnsLineCombination
+  Select Case $iType
+    Case ChartType.Columns, ChartType.ColumnsLineCombination
       fMaxVal = MTools.GetChartMaxValue(Chart)
-    CASE ChartType.ColumnsStacked
+    Case ChartType.ColumnsStacked
       fMaxVal = MTools.GetChartMaxCumulate(Chart)
-    CASE ChartType.ColumnsPercent
+    Case ChartType.ColumnsPercent
       fMaxVal = 100
-  END SELECT
-  IF fMaxVal = 0 THEN RETURN 
+  End Select
+  If fMaxVal = 0 Then Return 
   cnt = draw.TextWidth(fMaxVal & "00")
-  'Get the max width needed for draw the Y labels
-  YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
+    'Get the max width needed for draw the Y labels
+  If Chart.YAxe.Visible Then 
+    YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
+  Else
+    YHeadersW = CX + iStaticSpace * 2
+  Endif
   
   'Set the graph square position value
-  hRect.Top = CY + iTwoLetterHeight
-  hRect.Bottom = CY + CH - iTwoLetterHeight
+  If Chart.XAxe.Visible Then 
+    hRect.Top = CY + iTwoLetterHeight
+    hRect.Bottom = CY + CH - iTwoLetterHeight
+  Else
+    hRect.Top = CY + iTwoLetterHeight
+    hRect.Bottom = CY + CH - iStaticSpace * 2
+  Endif
   hRect.Left = YHeadersW
-  hRect.Right = CX + CW - YHeadersW
+  hRect.Right = CX + CW - YHeadersW / 2
   'Draw the background
   Draw.ForeColor = Color.LightGray
   Draw.FillColor = Color.LightGray
@@ -60,46 +69,46 @@ PUBLIC SUB Draw(CX AS Integer, CY AS Integer, CW AS Integer, CH AS Integer)
   
   hUnits = MTools.DrawChartAxes(Chart, hRect, 0, fMaxVal, Align.Center)
   
-  SELECT CASE $iType
-    CASE ChartType.Columns
+  Select Case $iType
+    Case ChartType.Columns
       fTabPos = hRect.Left + hUnits.x / 2
-      FOR EACH oSerie IN Chart
-        FOR i = 0 TO Chart.Count - 1
+      For Each oSerie In Chart
+        For i = 0 To Chart.Count - 1
           draw.ForeColor = Color.DarkGray
           Draw.FillStyle = Fill.Solid
           Draw.FillColor = Chart.Colors[i]
           draw.Rect(fTabPos + i * (hUnits.X - 1), hRect.Bottom, hUnits.X, oSerie[i] * - hUnits.y)
-        NEXT
+        Next
         fTabPos += i * hUnits.x + hUnits.x
-      NEXT
-    CASE ChartType.ColumnsStacked, ChartType.ColumnsPercent
+      Next
+    Case ChartType.ColumnsStacked, ChartType.ColumnsPercent
       hUnits.X = (hRect.Right - hRect.Left) / (Chart.CountDataSets * 2)
       fTabPos = hRect.Left + hUnits.x / 2
-      FOR EACH oSerie IN Chart
+      For Each oSerie In Chart
         fCumul = hRect.Bottom + 1
-        IF $iType = ChartType.ColumnsPercent THEN 
+        If $iType = ChartType.ColumnsPercent Then 
           fMaxVal = 0
-          FOR i = 0 TO Chart.Count - 1
+          For i = 0 To Chart.Count - 1
             fMaxVal += oSerie[i]
-          NEXT
-        ENDIF
-        IF fMaxVal = 0 THEN RETURN 
-        FOR i = 0 TO Chart.Count - 1 
-          IF $iType = ChartType.ColumnsPercent THEN             
+          Next
+        Endif
+        If fMaxVal = 0 Then Return 
+        For i = 0 To Chart.Count - 1 
+          If $iType = ChartType.ColumnsPercent Then             
             f = ((oSerie[i] / fMaxVal * 100) * - hUnits.y) - 1
-          ELSE 
+          Else 
             f = (oSerie[i] * - hUnits.y) - 1
-          ENDIF
+          Endif
           draw.ForeColor = Color.DarkGray
           Draw.FillStyle = Fill.Solid
           Draw.FillColor = Chart.Colors[i]
           draw.Rect(fTabPos, fCumul, hUnits.X, f)
           fCumul += f + 1
           
-        NEXT
+        Next
         'fPrevCumul = fCumul * hUnits.Y
         fTabPos += hUnits.x * 2
-      NEXT
-  END SELECT
+      Next
+  End Select
   'MTools.DrawSymbol(5, 15, 15)
-END
+End

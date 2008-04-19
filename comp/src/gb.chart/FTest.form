@@ -1,22 +1,23 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
+#LOCKED
 
 { Form Form
-  MoveScaled(0,0,110,74)
+  MoveScaled(0,0,110,80)
   Text = ("")
   Arrangement = Arrange.Vertical
   Spacing = 5
   Padding = 5
   { HBox1 HBox
-    MoveScaled(2,2,105,67)
+    MoveScaled(2,2,105,72)
     Expand = True
     Spacing = 5
     { DrawingArea1 DrawingArea
-      MoveScaled(1,2,61,61)
+      MoveScaled(1,4,61,61)
       Background = &HFFFFFF&
       Expand = True
     }
     { TabStrip1 TabStrip
-      MoveScaled(63,2,44,64)
+      MoveScaled(63,2,44,67)
       Arrangement = Arrange.Vertical
       Spacing = 5
       Padding = 5
@@ -35,7 +36,7 @@
         Text = ("Remove a Row")
       }
       { Separator1 Separator
-        MoveScaled(2,41,36,3)
+        MoveScaled(2,41,36,4)
       }
       { Button3 Button
         MoveScaled(4,44,18,4)
@@ -48,7 +49,7 @@
       Index = 1
       Text = ("Chart")
       { Label2 Label
-        MoveScaled(1,2,11,2)
+        MoveScaled(1,2,11,3)
         Text = ("Style")
       }
       { ScrollView1 ScrollView
@@ -59,7 +60,7 @@
         ScrollBar = Scroll.Horizontal
       }
       { Label3 Label
-        MoveScaled(1,25,11,2)
+        MoveScaled(1,25,11,3)
         Text = ("SubStyle")
       }
       { ScrollView2 ScrollView
@@ -69,20 +70,30 @@
         Padding = 5
       }
       { CheckBox2 CheckBox
-        MoveScaled(1,47,22,3)
+        MoveScaled(1,47,22,4)
         Text = ("Show Title")
         Value = CheckBox.True
       }
       { CheckBox1 CheckBox
-        MoveScaled(1,50,30,2)
+        MoveScaled(1,50,30,3)
         Text = ("Show Legend")
+        Value = CheckBox.True
+      }
+      { CheckBox3 CheckBox
+        MoveScaled(1,55,30,3)
+        Text = ("Show X Labels")
+        Value = CheckBox.True
+      }
+      { CheckBox4 CheckBox
+        MoveScaled(1,58,30,3)
+        Text = ("Show Y Labels")
         Value = CheckBox.True
       }
       Index = 0
     }
   }
   { Label1 Label
-    MoveScaled(4,70,96,3)
+    MoveScaled(4,75,96,4)
     Text = ("")
     Border = Border.Etched
   }

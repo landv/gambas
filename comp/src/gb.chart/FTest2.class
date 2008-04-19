@@ -1,0 +1,19 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  'Simple Chart
+  Chart.Headers.Values = ["tic", "tac", "toe"]
+  Chart[0].Values = [1.0, 2.0, 3.0]
+  
+
+End
+
+Public Sub DrawingArea1_Draw()
+Chart.Resize(DrawingArea1.Width, DrawingArea1.Height)
+
+Chart.Draw
+  
+
+End
