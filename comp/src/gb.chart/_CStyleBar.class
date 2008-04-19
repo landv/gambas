@@ -31,7 +31,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   '   IF fMaxVal < itmp THEN fMaxVal = itmp
   '   IF cnt < draw.TextWidth(itmp & "  ") THEN cnt = draw.TextWidth(itmp & "  ")
   ' NEXT 
-  draw.Font.Size = 11 * Chart._fProportionnal
+  'draw.Font.Size = 11 * Chart._fProportionnal
   
   Select Case $iType
     Case ChartType.Bars

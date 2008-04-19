@@ -26,10 +26,10 @@ Private $iWidth As Integer
 Private $iHeight As Integer
 Private $oHeaders As New _CHeaders
 Private $iBackColor As Integer = Color.LightGray
+Private $iBorder As Boolean = True
 
 
-
-
+Property Border As Boolean
 Property BackColor As Integer
 
 Property Height As Integer
@@ -167,7 +167,7 @@ Public Sub Draw()
   
   
   Draw.FillColor = color.White
-  Draw.Rect(iStaticSpace, iStaticSpace, iClientWidth, iClientHeight)
+  If $iBorder Then Draw.Rect(iStaticSpace, iStaticSpace, iClientWidth, iClientHeight)
   'Draw.Font.Grade = 4
   
   $oGraphStyle.Draw(iStaticSpace, iStaticSpace + iTitleHeight, iClientWidth, iClientHeight - iTitleHeight)
@@ -325,5 +325,17 @@ End
 Private Sub BackColor_Write(Value As Integer)
 
   $iBackColor = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $iBorder  
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $iBorder = Value
 
 End

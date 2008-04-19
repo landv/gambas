@@ -25,6 +25,16 @@ Chart.Legend.Visible = True
 Chart.Title.Visible = True
 Chart.Title.Text = "A Gambas Chart"
 
+txtLegend.Text = Chart.Legend.Title
+txtChart.Text = Chart.Title.Text
+
+
+btnLegFont.Tag = Chart.Legend.Font
+btnTitleFont.Tag = Chart.Title.Font
+btnXFont.Tag = Chart.XAxe.Font
+btnYFont.Tag = Chart.YAxe.Font
+
+
 tvdata.Columns.Count = 3
 tvData.Rows.Count = 4
 tvData.Header = tvData.Both
@@ -71,6 +81,7 @@ For Each s In hClass.Symbols
       hPicBox.Radio = True
       
   End Select 
+  
   
 Next
 
@@ -374,4 +385,80 @@ Public Sub Button6_Click()
   Endif
 Catch
 RefreshCustomColors
+End
+
+Public Sub CheckBox7_Click()
+
+  Chart.Border = CheckBox7.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub txtLegend_Change()
+
+  Chart.Legend.Title = txtLegend.Text
+  DrawingArea1.Refresh
+
+End
+
+
+Public Sub txtChart_Change()
+
+  Chart.Title.Text = txtChart.Text
+  DrawingArea1.Refresh
+
+
+End
+
+Public Sub btnTitleFont_Click()
+  Dialog.Font = Last.tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.Title.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+  
+  
+  
+End
+
+Public Sub btnLegFont_Click()
+
+    Dialog.Font = Last.tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.Legend.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+
+End
+
+Public Sub btnXFont_Click()
+
+  
+  Dialog.Font = Last.Tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.XAxe.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+
+
+End
+
+Public Sub btnYFont_Click()
+
+      Dialog.Font = Last.Tag
+  If Not Dialog.SelectFont() Then
+    Last.tag = Dialog.Font
+    Chart.YAxe.Font = Last.tag
+    DrawingArea1.Refresh
+  Endif
+
+End
+
+Public Sub CheckBox8_Click()
+
+  Chart.Proportionnal = CheckBox8.Value
+  DrawingArea1.Refresh
 End

@@ -87,7 +87,7 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
     
 Endif
   
-  
+  Draw.Font.Size = Chart.YAxe.Font.Size * Chart._fProportionnal  
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Bottom - (fYUnit * f)
@@ -96,6 +96,7 @@ Endif
     'Dessine l'étiquette
     If Chart.YAxe.Visible Then 
       'Dessine le taquet
+
       Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
       Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
     Endif
@@ -114,10 +115,14 @@ Endif
   Endif
   fTabPos = hChartRect.Left 
   If iAlign = Align.Center Then 
+  Draw.Font.Size = Chart.XAxe.Font.Size * Chart._fProportionnal
   For Each oSerie In Chart
       fTabPos += fXUnit * (Chart.Count + 1)
         Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + iStaticSpace)
-      If oChart.XAxe.Visible Then Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+      If oChart.XAxe.Visible Then 
+        
+        Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+      Endif
   Next
   Else
   For i = 0 To Chart.Count - 1
@@ -198,7 +203,7 @@ Public Function DrawVertChartAxes(oChart As Chart, hChartRect As CRect, fMinValu
     
 Endif
   
-  
+  Draw.Font.Size = Chart.XAxe.Font.Size * Chart._fProportionnal
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Left + (fYUnit * f)
@@ -209,6 +214,7 @@ Endif
     'Dessine l'étiquette
     'Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
     If Chart.XAxe.Visible Then 
+      
       Draw.Text(f, fTabPos - Draw.Font.Width(f) / 2, hChartRect.Bottom + iStaticSpace * oChart._fProportionnal)
       'Dessine le taquet
       Draw.Line(fTabPos, hChartRect.Bottom - iStaticSpace, fTabPos, hChartRect.Bottom)
@@ -228,8 +234,9 @@ Endif
  Endif
  fTabPos = hChartRect.Bottom
  If iAlign = Align.Center Then 
- 
+ Draw.Font.Size = Chart.YAxe.Font.Size * Chart._fProportionnal
  For Each oSerie In Chart
+      
      fTabPos -= fXUnit * (Chart.Count + 1)
        Draw.Line(hChartRect.Left, fTabPos, hChartRect.Left - iStaticSpace, fTabPos)
      If oChart.YAxe.Visible Then Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (Chart.Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)

@@ -25,7 +25,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim iStaticSpace As Integer = 5 * Chart._fProportionnal
   Dim hRect As New CRect
   Dim hUnits As CPoint
-  draw.Font.Size = 11 * Chart._fProportionnal
+  'draw.Font.Size = 11 * Chart._fProportionnal
   
   Select Case $iType
     Case ChartType.Lines, ChartType.LinesSymbols

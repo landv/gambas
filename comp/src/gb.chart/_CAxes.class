@@ -4,7 +4,7 @@ Property MinValue As Float
 Property MaxValue As Float
 Property {Step} As Float
 Property {Font} As Font
-Private $oFont As New Font
+Private $oFont As Font = Font["11"]
 Private $bVisible As Boolean = True
 Property Visible As Boolean
 
