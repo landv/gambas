@@ -86,7 +86,7 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
     Endif
     
 Endif
-  
+  Draw.Font = Chart.YAxe.Font
   Draw.Font.Size = Chart.YAxe.Font.Size * Chart._fProportionnal  
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
@@ -115,6 +115,7 @@ Endif
   Endif
   fTabPos = hChartRect.Left 
   If iAlign = Align.Center Then 
+  Draw.Font = Chart.XAxe.Font
   Draw.Font.Size = Chart.XAxe.Font.Size * Chart._fProportionnal
   For Each oSerie In Chart
       fTabPos += fXUnit * (Chart.Count + 1)
@@ -202,7 +203,7 @@ Public Function DrawVertChartAxes(oChart As Chart, hChartRect As CRect, fMinValu
     Endif
     
 Endif
-  
+  Draw.Font = Chart.XAxe.Font
   Draw.Font.Size = Chart.XAxe.Font.Size * Chart._fProportionnal
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
@@ -234,6 +235,7 @@ Endif
  Endif
  fTabPos = hChartRect.Bottom
  If iAlign = Align.Center Then 
+ Draw.Font = Chart.YAxe.Font
  Draw.Font.Size = Chart.YAxe.Font.Size * Chart._fProportionnal
  For Each oSerie In Chart
       

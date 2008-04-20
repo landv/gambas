@@ -158,6 +158,7 @@ Public Sub Draw()
   If Not IsNull(Me.Title.Text) And Me.Title.Visible Then 
   
     'Draw.Font.Grade = 4
+    Draw.Font = $oTitle.Font
     Draw.Font.Size = $oTitle.Font.Size * _fProportionnal
     iTitleHeight = Draw.Font.Height() * 1.5
   Endif
