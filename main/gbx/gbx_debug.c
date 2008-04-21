@@ -236,7 +236,7 @@ int DEBUG_can_be_used_like_an_array(void *object, CLASS *class)
 	if (!object)
 		return 0;
 	
-	if (class == CLASS_Class)
+	if (class == CLASS_Class || OBJECT_is_class(object))
 	{
 		class = (CLASS *)object;
 		object = NULL;
