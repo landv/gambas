@@ -591,7 +591,7 @@ Public Sub UpdateConsoleAction(bDebug As Boolean)
   
   'DIM bVal AS Boolean
 
-  HideDebug(Not bDebug)
+  'HideDebug(Not bDebug)
 
   'bVal = Action["console"].Value
   panDebug.Action = If(FOutput.Parent, "console", "")
@@ -1291,7 +1291,10 @@ End
 
 Public Sub Form_KeyPress()
   
-  If Key.Code = Key.Escape Then HidePanels
+  If Key.Code = Key.Escape Then 
+    HidePanels
+    FProperty.HideProperty
+  Endif
   
 End
 

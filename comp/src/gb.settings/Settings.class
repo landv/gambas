@@ -1,86 +1,86 @@
 ' Gambas class file
 
-EXPORT
-CREATE STATIC
+Export
+Create Static
 
-CLASS Window
+Class Window
 
-STATIC PROPERTY READ Path AS String
+Static Property Read Path As String
 
-PRIVATE $sPath AS String
-PRIVATE $sTitle AS String
-PRIVATE $cSlot AS Collection
-PRIVATE $bModify AS Boolean
+Private $sPath As String
+Private $sTitle As String
+Private $cSlot As Collection
+Private $bModify As Boolean
 
-PRIVATE SUB Load()
+Private Sub Load()
   
-  DIM hFile AS File
-  DIM iLine AS Integer
-  DIM sLine AS String
-  DIM sSlot AS String
-  DIM iPos AS Integer
+  Dim hFile As File
+  Dim iLine As Integer
+  Dim sLine As String
+  Dim sSlot As String
+  Dim iPos As Integer
 
-  $cSlot = NEW Collection
-  IF NOT Exist($sPath) THEN RETURN
+  $cSlot = New Collection
+  If Not Exist($sPath) Then Return
 
-  hFile = OPEN $sPath
+  hFile = Open $sPath
 
-  WHILE NOT Eof(hFile)
+  While Not Eof(hFile)
 
-    INC iLine
-    LINE INPUT #hFile, sLine
+    Inc iLine
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF InStr("#;'", Left$(sLine)) THEN CONTINUE
+    If Not sLine Then Continue
+    If InStr("#;'", Left$(sLine)) Then Continue
 
-    IF Left$(sLine) = "[" THEN
-      IF Right$(sLine) = "]" THEN
+    If Left$(sLine) = "[" Then
+      If Right$(sLine) = "]" Then
         sSlot = Mid$(sLine, 2, -1)
-        $cSlot[sSlot] = NEW Collection
-        CONTINUE
-      ELSE
-        sSlot = FALSE
-      ENDIF
-    ENDIF
+        $cSlot[sSlot] = New Collection
+        Continue
+      Else
+        sSlot = False
+      Endif
+    Endif
 
-    IF NOT sSlot THEN CONTINUE
+    If Not sSlot Then Continue
 
     iPos = InStr(sLine, "=")
 
     $cSlot[sSlot][Trim(Left$(sLine, iPos - 1))] = Main.FromString(Trim(Mid$(sLine, iPos + 1)))
 
-  WEND
+  Wend
 
-  CLOSE #hFile
+  Close #hFile
 
-CATCH
+Catch
 
-  IF iLine THEN
+  If iLine Then
     Error.Raise("Syntax error in settings file at line #" & iLine & ": " & Error.Text)
-  ELSE
+  Else
     Error.Raise(Error.Text)
-  ENDIF
+  Endif
   
-END
+End
 
 
-PUBLIC SUB _new(OPTIONAL Path AS String, OPTIONAL Title AS String)
+Public Sub _new(Optional Path As String, Optional Title As String)
 
-  DIM sDir AS String
-  DIM sPath AS String
-  DIM sElt AS String
+  Dim sDir As String
+  Dim sPath As String
+  Dim sElt As String
 
-  IF Left(Path) <> "/" THEN 
-    IF NOT Path THEN
+  If Left(Path) <> "/" Then 
+    If Not Path Then
       Path = Settings.Path &/ Application.Name & ".conf"
-    ELSE 
+    Else 
       Path = Settings.Path &/ Path & ".conf"
-    ENDIF
-    FOR EACH sElt IN Split(Settings.Path, "/")
+    Endif
+    For Each sElt In Split(Settings.Path, "/")
       sPath &/= sElt
-      TRY MKDIR "/" & sPath
-    NEXT
-  ENDIF
+      Try Mkdir "/" & sPath
+    Next
+  Endif
 
 '   IF Left$(Path) <> "/" THEN
 '     sDir = "~/.config"
@@ -96,100 +96,100 @@ PUBLIC SUB _new(OPTIONAL Path AS String, OPTIONAL Title AS String)
   
   Load
 
-END
+End
 
 
-PUBLIC SUB _free()
+Public Sub _free()
 
-  TRY ME.Save
+  Try Me.Save
 
-END
+End
 
 
-PUBLIC SUB Save()
+Public Sub Save()
 
-  DIM aKey AS NEW String[]
-  DIM cSlot AS Collection
-  DIM sKey AS String
-  DIM hFile AS File
-  DIM vVal AS Variant
+  Dim aKey As New String[]
+  Dim cSlot As Collection
+  Dim sKey As String
+  Dim hFile As File
+  Dim vVal As Variant
 
-  IF NOT $bModify THEN RETURN
+  If Not $bModify Then Return
 
-  FOR EACH cSlot IN $cSlot
+  For Each cSlot In $cSlot
     aKey.Add($cSlot.Key)
-  NEXT
+  Next
 
   aKey.Sort
 
-  $bModify = FALSE
+  $bModify = False
 
-  OPEN $sPath FOR CREATE AS #hFile
+  Open $sPath For Create As #hFile
 
-  IF $sTitle THEN
-    PRINT #hFile, "# "; $sTitle
-  ENDIF
+  If $sTitle Then
+    Print #hFile, "# "; $sTitle
+  Endif
 
-  FOR EACH sKey IN aKey
+  For Each sKey In aKey
     cSlot = $cSlot[sKey]
-    IF cSlot.Count THEN
-      PRINT #hFile, "[" & sKey & "]"
-      FOR EACH vVal IN cSlot
-        PRINT #hFile, cSlot.Key; "="; Main.ToString(vVal)
-      NEXT
-      PRINT #hFile
-    ENDIF
-  NEXT
+    If cSlot.Count Then
+      Print #hFile, "[" & sKey & "]"
+      For Each vVal In cSlot
+        Print #hFile, cSlot.Key; "="; Main.ToString(vVal)
+      Next
+      Print #hFile
+    Endif
+  Next
 
-  CLOSE #hFile
+  Close #hFile
 
 'CATCH
 '
 '  PRINT #File.Err, "Cannot write "; $sPath
 '  PRINT #File.Err, Error.Text
 
-END
+End
 
 
-PRIVATE FUNCTION GetSlot(sKey AS String) AS String
+Private Function GetSlot(sKey As String) As String
 
-  DIM sSlot AS String
+  Dim sSlot As String
 
   sSlot = File.Dir(sKey)
-  IF NOT sSlot THEN sSlot = "/"
-  IF sSlot = "/" THEN
+  If Not sSlot Then sSlot = "/"
+  If sSlot = "/" Then
     sSlot = "General"
-  ENDIF
-  IF Left(sSlot) = "/" THEN sSlot = Mid$(sSlot, 2)
+  Endif
+  If Left(sSlot) = "/" Then sSlot = Mid$(sSlot, 2)
 
-  RETURN sSlot
+  Return sSlot
 
-END
+End
 
 
-PUBLIC FUNCTION _get(Key AS String, OPTIONAL {Default} AS Variant) AS Variant
+Public Function _get(Key As String, Optional {Default} As Variant) As Variant
 
-  DIM sSlot AS String
+  Dim sSlot As String
 
   sSlot = GetSlot(Key)
-  IF $cSlot.Exist(sSlot) THEN
+  If $cSlot.Exist(sSlot) Then
     Key = File.Name(Key)
-    IF $cSlot[sSlot].Exist(Key) THEN
-      RETURN $cSlot[sSlot][Key]
-    ENDIF
-  ENDIF
+    If $cSlot[sSlot].Exist(Key) Then
+      Return $cSlot[sSlot][Key]
+    Endif
+  Endif
 
-  RETURN {Default}
+  Return {Default}
 
-END
+End
 
 
-PUBLIC SUB _put(Value AS Variant, Key AS String)
+Public Sub _put(Value As Variant, Key As String)
 
-  DIM sSlot AS String
+  Dim sSlot As String
 
   sSlot = GetSlot(Key)
-  IF NOT $cSlot.Exist(sSlot) THEN $cSlot[sSlot] = NEW Collection
+  If Not $cSlot.Exist(sSlot) Then $cSlot[sSlot] = New Collection
 
   Key = File.Name(Key)
   'IF $cSlot[sSlot].Exist(Key) THEN
@@ -197,20 +197,20 @@ PUBLIC SUB _put(Value AS Variant, Key AS String)
   'ENDIF
 
   $cSlot[sSlot][Key] = Value
-  $bModify = TRUE
+  $bModify = True
 
-END
+End
 
 
-PUBLIC SUB Clear(ParentKey AS String)
+Public Sub Clear(ParentKey As String)
 
-  DIM sSlot AS String
+  Dim sSlot As String
 
   sSlot = GetSlot(ParentKey &/ "g")
   $cSlot.Remove(sSlot)
-  $bModify = TRUE
+  $bModify = True
 
-END
+End
 
 
 ' PUBLIC FUNCTION MakeWindowKey(sWin AS String, sKey AS String) AS String
@@ -300,110 +300,102 @@ END
 ' 
 ' END
 
-PRIVATE SUB LoadWindow(hWindow AS Window, sKey AS String)
+Private Sub LoadWindow(hWindow As Window, sKey As String)
 
-  DIM sPos AS String
-  DIM aPos AS Integer[]
+  Dim sPos As String
+  Dim aPos As Integer[]
 
-  aPos = ME[sKey &/ "Geometry"]
-  IF NOT aPos THEN RETURN
+  aPos = Me[sKey &/ "Geometry"]
+  If Not aPos Then Return
 
   'cPos = Split(sPos, ",")
-  IF aPos.Count = 4 AND hWindow.Resizable THEN
-    IF hWindow.Modal THEN
+  If aPos.Count = 4 And hWindow.Resizable Then
+    If hWindow.Modal Then
       hWindow.Resize(aPos[2], aPos[3])
       hWindow.Center
-    ELSE
+    Else
       hWindow.Move(Max(0, aPos[0]), Max(0, aPos[1]), aPos[2], aPos[3])
-    ENDIF
-  ELSE
-    IF NOT hWindow.Modal THEN hWindow.Move(aPos[0], aPos[1])
-  ENDIF
+    Endif
+  Else
+    If Not hWindow.Modal Then hWindow.Move(aPos[0], aPos[1])
+  Endif
 
-END
-
-
-PRIVATE SUB SaveWindow(hWindow AS Window, sKey AS String)
-
-  ME[sKey &/ "Geometry"] = [hWindow.X, hWindow.Y, hWindow.Width, hWindow.Height]
-
-END
+End
 
 
-PRIVATE SUB GetTopLevel(hCtrl AS Object) AS String
+Private Sub SaveWindow(hWindow As Window, sKey As String)
+
+  Me[sKey &/ "Geometry"] = [hWindow.X, hWindow.Y, hWindow.Width, hWindow.Height]
+
+End
+
+
+Private Sub GetTopLevel(hCtrl As Object) As String
   
-  DIM hTop AS Object
+  Return Object.Type(hCtrl.Window)
   
-  DO
-    hTop = hCtrl.Window
-    IF IsNull(hTop.Parent) THEN RETURN Object.Type(hTop)
-    hCtrl = hTop.Parent
-  LOOP
-  
-CATCH
-  
-END
+End
 
 
 
-PUBLIC SUB Read(hObject AS Object, OPTIONAL sKey AS String, OPTIONAL vDefault AS Variant)
+Public Sub Read(hObject As Object, Optional sKey As String, Optional vDefault As Variant)
 
-  DIM sVal AS String
-  DIM aVal AS String[]
+  Dim sVal As String
+  Dim aVal As String[]
 
-  IF Object.Is(hObject, "Window") THEN
+  If Object.Is(hObject, "Window") Then
     sKey = Object.Type(hObject) &/ sKey
     LoadWindow(hObject, sKey)
-  ELSE
-    IF NOT sKey THEN TRY sKey = hObject.Name
+  Else
+    If Not sKey Then Try sKey = hObject.Name
     sKey = GetTopLevel(hObject) &/ sKey
-    TRY hObject.Settings = ME[sKey, vDefault]
-  ENDIF
+    Try hObject.Settings = Me[sKey, vDefault]
+  Endif
 
-END
+End
 
-PUBLIC SUB Write(hObject AS Object, OPTIONAL sKey AS String)
+Public Sub Write(hObject As Object, Optional sKey As String)
 
-  IF Object.Is(hObject, "Window") THEN
+  If Object.Is(hObject, "Window") Then
     sKey = Object.Type(hObject) &/ sKey
     SaveWindow(hObject, sKey)
-  ELSE 'IF Object.Is(hObject, "SidePanel") THEN
-    IF NOT sKey THEN TRY sKey = hObject.Name
+  Else 'IF Object.Is(hObject, "SidePanel") THEN
+    If Not sKey Then Try sKey = hObject.Name
     sKey = GetTopLevel(hObject) &/ sKey
-    TRY ME[sKey] = hObject.Settings
-  ENDIF
+    Try Me[sKey] = hObject.Settings
+  Endif
 
-END
+End
 
 
-STATIC PRIVATE FUNCTION Path_Read() AS String
+Static Private Function Path_Read() As String
 
-  DIM sPath AS String = Application.Env["XDG_CONFIG_HOME"]
-  IF NOT sPath THEN sPath = System.User.Home &/ ".config"
-  RETURN sPath &/ "gambas" & System.Version
+  Dim sPath As String = Application.Env["XDG_CONFIG_HOME"]
+  If Not sPath Then sPath = System.User.Home &/ ".config"
+  Return sPath &/ "gambas" & System.Version
 
-END
+End
 
-STATIC PUBLIC FUNCTION Array(...) AS String[]
+Static Public Function Array(...) As String[]
   
-  DIM aVal AS NEW String[]
-  DIM iInd AS Integer
-  DIM sVal AS String
-  DIM vVal AS Variant
+  Dim aVal As New String[]
+  Dim iInd As Integer
+  Dim sVal As String
+  Dim vVal As Variant
   
-  FOR iInd = 0 TO Param.Max
+  For iInd = 0 To Param.Max
     vVal = Param[iInd]
-    IF IsBoolean(vVal) THEN 
+    If IsBoolean(vVal) Then 
       sVal = IIf(vVal, "1", "0")
-    ELSE
+    Else
       sVal = CStr(vVal)
-    ENDIF
+    Endif
     aVal.Add(sVal)
-  NEXT
+  Next
   
-  RETURN aVal
+  Return aVal
   
-END
+End
 
 ' STATIC PUBLIC FUNCTION FromString(Value AS String) AS String[]
 '   
@@ -420,8 +412,8 @@ END
 ' END
 ' 
 
-PUBLIC SUB Reload()
+Public Sub Reload()
   
   Load
   
-END
+End

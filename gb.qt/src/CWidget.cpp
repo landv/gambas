@@ -1815,11 +1815,11 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
     #if QT_VERSION > 0x030005
     if (!original && type != QEvent::IMEnd)
-      goto _ACCEL;
+      goto _DESIGN; //_ACCEL;
     #endif
 
     if (type == QEvent::KeyPress && GB.Is(control, CLASS_Window))
-      goto _ACCEL;
+      goto _DESIGN; //_ACCEL;
       
     //qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
 
@@ -1854,7 +1854,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
         return true;
     }
 
-_ACCEL:
+/*_ACCEL:
 
     if (event_id == EVENT_KeyPress && CWINDOW_Main && ((QWidget *)widget)->isTopLevel())
     {
@@ -1870,7 +1870,7 @@ _ACCEL:
         qApp->postEvent(QWIDGET(CWINDOW_Main),
           new QKeyEvent(QEvent::Accel, kevent->key(), kevent->ascii(), kevent->state(), kevent->text(), kevent->isAutoRepeat(), kevent->count()));
       }
-    }
+    }*/
   }
   else if (type == QEvent::IMEnd)
   {

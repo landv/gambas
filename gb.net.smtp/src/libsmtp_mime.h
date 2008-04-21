@@ -149,10 +149,11 @@
     GString *Description;	/* MIME part description */
     GString *Boundary;	 /* optional Multipart boundary string */
     int Tag; /* tag for user */
+    int length; // part length
   };
 
-  struct libsmtp_part_struct *libsmtp_part_new \
-        (struct libsmtp_part_struct *, int, int, int, int, char *,\
+  struct libsmtp_part_struct *libsmtp_part_new
+        (struct libsmtp_part_struct *, int, int, int, int, char *, int,
         struct libsmtp_session_struct *libsmtp_session);
 
   int libsmtp_mime_type_custom (char *, struct libsmtp_part_struct *);

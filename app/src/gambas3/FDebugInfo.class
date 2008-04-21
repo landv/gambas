@@ -10,8 +10,6 @@ Private Const TAB_BREAK As Integer = 4
 
 Public Sub Form_Open()
 
-  Settings.Read(splDebug)
-
   ReadConfig
 
   With cvwLocal
@@ -471,12 +469,6 @@ Public Sub chkSortObject_Click()
 
 End
 
-Public Sub Form_Close()
-
-  Settings.Write(splDebug)
-
-End
-
 Public Sub tabDebug_Click()
 
   If Design.IsRunning() Then Return
@@ -578,7 +570,7 @@ Public Sub UpdateView()
       FOutput.Show
       'DEBUG FOutput.X;; FOutput.Y
       'Action["console"].Visible = TRUE
-      If Not Project.Running Then FMain.ShowDebug(False)
+      'If Not Project.Running Then FMain.ShowDebug(False)
     Endif
     'FOutput.Stacking = If(Project.Running, Window.Above, Window.Normal)
   Endif
@@ -608,13 +600,13 @@ Public Sub UpdateView()
       FOutput.Show
       'Action["console"].Value = TRUE
       'Action["console"].Visible = FALSE
-      If bVisible Then FMain.ShowDebug(True)
+      'If bVisible Then FMain.ShowDebug(True)
     Endif
     tabDebug.Index = TAB_CONSOLE
     FOutput.SetFocus
   Endif 
   
-  FMain.UpdateConsoleAction(Not bUndock Or Project.Running)
+  FMain.UpdateConsoleAction(Project.Running)
   
 End
 

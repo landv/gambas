@@ -3254,6 +3254,8 @@ Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
   If Startup Then RefreshKey(FindKey(Startup))
 
   If Not bDoNotWrite Then WriteProject(True)
+  
+  Compile
 
 Catch
 

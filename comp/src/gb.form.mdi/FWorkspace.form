@@ -1,4 +1,4 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
   MoveScaled(0,0,69,74)
@@ -17,7 +17,7 @@
     Index = 0
   }
   { panTitle Panel
-    MoveScaled(0,0,68,3)
+    MoveScaled(0,0,68,4)
     Visible = False
     Background = Color.SelectedBackground
     Arrangement = Arrange.Horizontal
@@ -25,19 +25,19 @@
     Spacing = 2
     Padding = 4
     { imgIcon PictureBox
-      MoveScaled(0,0,2,2)
+      MoveScaled(0,0,3,3)
       Picture = Picture["img/gambas.png"]
       Alignment = Align.Normal
     }
     { lblTitle Label
-      MoveScaled(4,0,34,2)
+      MoveScaled(4,0,34,3)
       Font = Font["Bold"]
       Foreground = Color.SelectedForeground
       Expand = True
       Text = ("")
     }
     { btnClose Button
-      MoveScaled(65,0,2,2)
+      MoveScaled(65,0,3,3)
       Text = ("")
       Picture = Picture["img/close.png"]
     }

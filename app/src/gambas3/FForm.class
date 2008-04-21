@@ -78,6 +78,8 @@ Private $bAfterLock As Boolean
 
 Private $bConvert As Boolean ' Convert from 2.0 to 3.0
 
+Private $bBorder As Boolean
+
 Public Sub _new(sPath As String)
 
   btnCloseWindow.Design = True
@@ -1143,6 +1145,12 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
     Endif
     hCtrl.Resize(W, H)
   End With
+
+  $hCurrent = hCtrl
+  UnSelectAll
+  SelectCurrent(True)
+  FProperty.FocusOn("(Name)")
+  RefreshProperty
 
   Return hCtrl
 
@@ -2238,12 +2246,13 @@ Public Sub UpdateBorder()
 
   With hCtrl.Control
 
-    If hCtrl.GetPropertyDefault("Border") = "None" Then
+    If hCtrl.GetPropertyDefault("Border") = False Then
     
       panTitle.Hide
       H = 0
       panBorder.Move(0, 0, .Width + 2, .Height + 2)
-      panBorder.Border = Border.Plain
+      $bBorder = False
+      'panBorder.Border = Border.Plain
       hCtrl.Control.Move(1, 1)
     
     Else
@@ -2253,7 +2262,8 @@ Public Sub UpdateBorder()
       btnMaxWindow.W = H - 4
       imgIcon.W = H - 4
       panBorder.Move(0, H, .Width + 4, .Height + 2)
-      panBorder.Border = Border.Raised
+      $bBorder = True
+      'panBorder.Border = Border.Raised
       panTitle.Resize(panBorder.W, H)
       panInside.Move(0, 0, panTitle.W, panTitle.H + 8)
       panTitle.Show
@@ -2261,6 +2271,8 @@ Public Sub UpdateBorder()
       hCtrl.Control.Move(2, 0)
       
     Endif 
+    
+    panBorder.Refresh
       
     panRight.Move(panBorder.W - 4, Max(0, ((.Height + H) - panRight.Height) / 2))
     panDown.Move(Max(0, (.Width - panDown.Width + 4) / 2), panBorder.H + H - 4)
@@ -2269,7 +2281,7 @@ Public Sub UpdateBorder()
     'panBorder.Lower
     panRight.Raise
     panDown.Raise
-    panRightDown.Raise      
+    panRightDown.Raise
     
   End With
   
@@ -2306,13 +2318,7 @@ Public Sub UpdateTitle()
 
   Endif
 
-  Select Case hCtrl.GetPropertyDefault("Border")
-    Case "Fixed"
-      btnMaxWindow.Visible = False
-    Case "Resizable"
-      btnMaxWindow.Visible = True
-  End Select 
-  
+  btnMaxWindow.Visible = hCtrl.GetPropertyDefault("Resizable")  
   UpdateBorder 
   
 End
@@ -2626,9 +2632,6 @@ Public Sub Control_Drop()
     Y = $iContY
 
     $hCurrent = AddControl(Drag.Data, hParent, X, Y)
-    UnSelectAll
-    SelectCurrent(True)
-    RefreshProperty
     FToolBox.SetTool()
 
   Endif
@@ -2759,5 +2762,15 @@ Public Sub SelectControl(sControl As String)
   UnselectAll
   Control[sControl].Select(Me, True)
   RefreshProperty
+
+End
+
+Public Sub panBorder_Draw()
+
+  If $bBorder Then
+    Draw.Style.Panel(0, -4, panBorder.W, panBorder.H + 4, Border.Raised)
+  Else
+    Draw.Style.Panel(0, 0, panBorder.W, panBorder.H, Border.Plain)
+  Endif
 
 End

@@ -929,6 +929,7 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 	QStyle::PrimitiveElement pe;
 	QRect r(x, y, w, h);
 	QStyle::SFlags flags = QStyle::Style_Default;
+	QStyleOption opt(2, 0);	
 	
 	if (!state)
 		flags |= QStyle::Style_Enabled;
@@ -957,11 +958,11 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 		pe = QStyle::PE_Panel;
 	}
 	
-	QApplication::style().drawPrimitive(pe, DP(d), r, get_color_group(state), flags);
+	QApplication::style().drawPrimitive(pe, DP(d), r, get_color_group(state), flags, opt);
 	if (DPM(d)) 
 	{
 		DPM(d)->setRasterOp(Qt::OrROP);
-		QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group_mask(state), flags);
+		QApplication::style().drawPrimitive(pe, DPM(d), r, get_color_group_mask(state), flags, opt);
 		DPM(d)->setRasterOp(Qt::CopyROP);
 	}
 }

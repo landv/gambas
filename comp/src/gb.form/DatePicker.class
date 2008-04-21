@@ -41,7 +41,7 @@ Public Sub _New()
   Dim hPanel1, hPanel2 As Panel
   
   hTimer = New timer As "hTimer"
-  htimer.delay = 100
+  'htimer.delay = 100
   hPanel2 = New Panel(Me)
   hPanel2.Arrangement = Arrange.Horizontal
   hPanel2.Border = Border.Sunken
@@ -62,7 +62,7 @@ Public Sub _New()
   $hForm.Persistent = True
   HPanel1 = New Panel($hForm)
   HPanel1.Arrangement = Arrange.Fill
-  hPanel1.Border = Border.Etched
+  hPanel1.Border = Border.Plain
   $hdatechooser = New DateChooser(HPanel1) As "DateChooser"
   Me.WidthForm = 300
   Me.HeightForm = 200
@@ -101,7 +101,7 @@ Public Sub TextBox_MouseDown()
 End
 
 Public Sub LstForm_DeACtivate()
- htimer.Start
+ htimer.Trigger
 End
 
 Public Sub LstForm_Show()
@@ -113,7 +113,7 @@ Public Sub LstForm_Hide()
 End
 
 Public Sub hTimer_Timer()
-  hTimer.Stop
+  'hTimer.Stop
   Try $hForm.Close
   isActivate = False
 End 

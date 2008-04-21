@@ -82,7 +82,7 @@ char *libsmtp_mime_charsets[] = {
 struct libsmtp_part_struct *libsmtp_part_new \
     (struct libsmtp_part_struct *libsmtp_int_parent_part, int libsmtp_int_type,\
     int libsmtp_int_subtype, int libsmtp_int_encoding, int libsmtp_int_charset, \
-    char *libsmtp_int_desc, struct libsmtp_session_struct *libsmtp_session)
+    char *libsmtp_int_desc, int length, struct libsmtp_session_struct *libsmtp_session)
 {
   struct libsmtp_part_struct *libsmtp_int_part;
   GNode *libsmtp_int_temp_node;
@@ -148,6 +148,8 @@ struct libsmtp_part_struct *libsmtp_part_new \
   libsmtp_int_part->Encoding=libsmtp_int_encoding;
   libsmtp_int_part->Description=g_string_new (libsmtp_int_desc);
   libsmtp_int_part->Charset=libsmtp_int_charset;
+  
+  libsmtp_int_part->length = length;
 
   if (libsmtp_int_check_part (libsmtp_int_part))
   {
@@ -418,6 +420,18 @@ int libsmtp_int_nextpart (struct libsmtp_session_struct *libsmtp_session)
                 printf ("libsmtp_mime_headers: %s", libsmtp_temp_gstring->str);
               #endif
             }
+
+					if (libsmtp_temp_part->length > 0)
+					{
+						g_string_sprintf (libsmtp_temp_gstring, "\r\nContent-Length: %d", libsmtp_temp_part->length);
+
+						#ifdef LIBSMTP_DEBUG
+							printf ("libsmtp_int_nextpart: %s\n", libsmtp_temp_gstring);
+						#endif
+
+						if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
+							return LIBSMTP_ERRORSENDFATAL;
+					}
 
           /* We need a transfer encoding, too */
 

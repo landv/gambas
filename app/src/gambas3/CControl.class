@@ -473,7 +473,7 @@ _DO_NOT_APPLY:
         GetForm().UpdateBorder
       Case "Background"
         GetForm().UpdateSnap
-      Case "Text", "Icon", "Border"
+      Case "Text", "Icon", "Border", "Resizable"
         GetForm().UpdateTitle
     End Select 
   Endif
@@ -546,6 +546,7 @@ Public Function GetPropertyDefault(sProp As String) As Variant
   Endif 
   
   Return vVal
+
 End
 
 Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As String

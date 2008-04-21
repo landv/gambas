@@ -1,51 +1,52 @@
 ' Gambas class file
 
-EXPORT
+Export
 
-INHERITS UserControl
+Inherits UserControl
 
-PUBLIC CONST _Properties AS String = "*"
-PUBLIC CONST _DefaultEvent AS String = "Activate"
+Public Const _Properties As String = "*,Orientation{TabStrip.Top;Bottom}"
+Public Const _DefaultEvent As String = "Activate"
 
-EVENT Activate
+Event Activate
 'EVENT WindowMenu
 
-PROPERTY ActiveWindow AS Window
+Property ActiveWindow As Window
 'PROPERTY ShowTitle AS Boolean
-PROPERTY READ Children AS Object[]
-PROPERTY Font AS Font
-PROPERTY Background AS Integer
-PROPERTY BackColor AS Integer
+Property Read Children As Object[]
+Property Font As Font
+Property Background As Integer
+Property BackColor As Integer
+Property Orientation As Integer
 
-PRIVATE hWorkspace AS FWorkspace
+Private hWorkspace As FWorkspace
 
-PUBLIC SUB _new()
+Public Sub _new()
   
   'SUPER.Background = Color.Yellow
-  hWorkspace = NEW FWorkspace(ME)
+  hWorkspace = New FWorkspace(Me)
   'ME.Container = hWorkspace.Container
   
-END
+End
 
-PUBLIC SUB Add(hWindow AS Window, OPTIONAL Resizable AS Boolean) AS Window
+Public Sub Add(hWindow As Window, Optional Resizable As Boolean) As Window
   
   hWorkspace.Add(hWindow, Resizable)
   
-  RETURN hWindow
+  Return hWindow
   
-END
+End
 
-PUBLIC SUB Lock()
+Public Sub Lock()
   
   hWorkspace.Lock
   
-END
+End
 
-PUBLIC SUB Unlock()
+Public Sub Unlock()
   
   hWorkspace.UnLock
   
-END
+End
 
 
 
@@ -56,74 +57,86 @@ END
 ' END
 
 
-PRIVATE FUNCTION ActiveWindow_Read() AS Window
+Private Function ActiveWindow_Read() As Window
 
-  RETURN hWorkspace.GetActiveWindow()
+  Return hWorkspace.GetActiveWindow()
 
-END
+End
 
-PRIVATE SUB ActiveWindow_Write(Value AS Window)
+Private Sub ActiveWindow_Write(Value As Window)
 
   hWorkspace.Activate(Value)
 
-END
+End
 
-PRIVATE FUNCTION Children_Read() AS Object[]
+Private Function Children_Read() As Object[]
 
-  RETURN hWorkspace.GetWindows()
+  Return hWorkspace.GetWindows()
 
-END
+End
 
-PUBLIC SUB _Activate()
+Public Sub _Activate()
   
-  RAISE Activate
+  Raise Activate
   
-END
+End
 
-PRIVATE FUNCTION ShowTitle_Read() AS Boolean
+Private Function ShowTitle_Read() As Boolean
 
-  RETURN hWorkspace.IsShowTitle()
+  Return hWorkspace.IsShowTitle()
 
-END
+End
 
-PRIVATE SUB ShowTitle_Write(Value AS Boolean)
+Private Sub ShowTitle_Write(Value As Boolean)
 
   hWorkspace.SetShowTitle(Value)
 
-END
+End
 
-PRIVATE FUNCTION Font_Read() AS Font
+Private Function Font_Read() As Font
 
-  RETURN hWorkspace.TitleBar.Font  
+  Return hWorkspace.TitleBar.Font  
 
-END
+End
 
-PRIVATE SUB Font_Write(Value AS Font)
+Private Sub Font_Write(Value As Font)
 
   hWorkspace.TitleBar.Font = Value
 
-END
+End
 
-PRIVATE FUNCTION Background_Read() AS Integer
+Private Function Background_Read() As Integer
 
-  RETURN hWorkspace.GetBackground()
+  Return hWorkspace.GetBackground()
 
-END
+End
 
-PRIVATE SUB Background_Write(Value AS Integer)
-
-  hWorkspace.SetBackground(Value)
-
-END
-
-PRIVATE FUNCTION BackColor_Read() AS Integer
-
-  RETURN hWorkspace.GetBackground()  
-
-END
-
-PRIVATE SUB BackColor_Write(Value AS Integer)
+Private Sub Background_Write(Value As Integer)
 
   hWorkspace.SetBackground(Value)
 
-END
+End
+
+Private Function BackColor_Read() As Integer
+
+  Return hWorkspace.GetBackground()  
+
+End
+
+Private Sub BackColor_Write(Value As Integer)
+
+  hWorkspace.SetBackground(Value)
+
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return hWorkspace.GetOrientation()  
+
+End
+
+Private Sub Orientation_Write(Value As Integer)
+
+  hWorkspace.SetOrientation(Value)
+
+End

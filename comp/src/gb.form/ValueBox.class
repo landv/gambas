@@ -41,6 +41,7 @@ Static Private $sPointSep As String
 
 Private $hForm As Form
 Private $hButton As DrawingArea
+Private $bInButton As Boolean
 Private $hTextBox As TextBox
 Private $hdatechooser As DateChooser
 Private $iWidthForm As Integer
@@ -507,21 +508,18 @@ Public Sub Form_Resize()
 End
 
 Public Sub Button_Draw()
-  Draw.Begin($hButton)
-  Draw.Style.Button(0, -5, 54, Me.Height + 50, False)
+  Draw.Style.Button(0, -5, 54, Me.Height + 50, $bInButton)
   Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
-  Draw.End()
 End
 
 Public Sub Button_Enter()
-  Draw.Begin($hButton)
-  Draw.Style.Button(0, -5, 54, Me.Height + 50, True)
-  Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
-  Draw.End()
+  $bInButton = True
+  $hButton.Refresh
 End
 
 Public Sub Button_Leave()
-  If Not isActivate Then Button_Draw
+  $bInButton = False
+  $hButton.Refresh
 End
 
 Public Sub Button_MouseDown()

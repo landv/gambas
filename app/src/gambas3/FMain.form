@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,140,85)
+  MoveScaled(0,0,140,86)
   Text = ("")
   Icon = Picture["img/logo/new-logo-32.png"]
   Maximized = True
@@ -716,6 +716,11 @@
       }
     }
   }
+  { timMessage #Timer
+    #X = 666
+    #Y = 270
+    Delay = 2000
+  }
   { timOpen #Timer
     #X = 644
     #Y = 406
@@ -732,10 +737,5 @@
       AutoResize = True
       Text = ("OK")
     }
-  }
-  { timMessage #Timer
-    #X = 679
-    #Y = 497
-    Delay = 4000
   }
 }

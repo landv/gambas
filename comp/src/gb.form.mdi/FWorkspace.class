@@ -345,30 +345,58 @@ Public Sub Form_Resize()
 
   Dim H As Integer
 
-  'DEBUG
   If tabWorkspace.Visible Then
+
     If $bLogo Then picLogo.Hide
-    H = tabWorkspace.ClientY - 2
-    'H = panChild.ScreenY - tabWorkspace.ScreenY
-    If btnTabClose.W <> H Or btnTabClose.H <> H Then 
-      btnTabClose.Resize(H - 2, H - 2)
-      btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
-    Endif
-    btnTabClose.Move(Me.ClientW - H + 1, 1)
-    tabWorkspace.Move(0, 0, Me.ClientW - H, Me.ClientH)
-    With tabWorkspace
-      If $bShowTitle Then
-        panTitle.Move(.X, H, .W + btnTabClose.W, panTitle.H)
-        svwWorkspace.Move(.X, panTitle.H + H, .W + H, .H - panTitle.H - H)
-        panWorkspace.Move(.X, panTitle.H + H, .W + H, .H - panTitle.H - H)
-      Else 
-        svwWorkspace.Move(.X, H, .W + H, .H - H)
-        panWorkspace.Move(.X, H, .W + H, .H - H)
-      Endif 
-    End With 
+    
+    If tabWorkspace.Orientation = TabStrip.Top Then
+    
+      H = tabWorkspace.ClientY - 2
+      'H = panChild.ScreenY - tabWorkspace.ScreenY
+      If btnTabClose.W <> H Or btnTabClose.H <> H Then 
+        btnTabClose.Resize(H - 2, H - 2)
+        btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
+      Endif
+      btnTabClose.Move(Me.ClientW - H + 1, 1)
+      tabWorkspace.Move(0, 0, Me.ClientW - H, Me.ClientH)
+      With tabWorkspace
+        If $bShowTitle Then
+          panTitle.Move(.X, H, .W + btnTabClose.W, panTitle.H)
+          svwWorkspace.Move(.X, panTitle.H + H, .W + H, .H - panTitle.H - H)
+          panWorkspace.Move(.X, panTitle.H + H, .W + H, .H - panTitle.H - H)
+        Else 
+          svwWorkspace.Move(.X, H, .W + H, .H - H)
+          panWorkspace.Move(.X, H, .W + H, .H - H)
+        Endif 
+      End With 
+
+    Else
+    
+      H = tabWorkspace.H - tabWorkspace.ClientY - tabWorkspace.ClientH - 2
+      If btnTabClose.W <> H Or btnTabClose.H <> H Then 
+        btnTabClose.Resize(H - 2, H - 2)
+        btnTabClose.Picture = Picture["icon:/" & (H - 10) & "/close"]
+      Endif
+      btnTabClose.Move(Me.ClientW - H + 1, Me.ClientH - H + 1)
+      tabWorkspace.Move(0, 0, Me.ClientW - H, Me.ClientH)
+      With tabWorkspace
+        If $bShowTitle Then
+          panTitle.Move(.X, Me.ClientH - H, .W + btnTabClose.W, panTitle.H)
+          svwWorkspace.Move(.X, Me.ClientH - panTitle.H - H, .W + H, .H - panTitle.H - H)
+          panWorkspace.Move(.X, Me.ClientH - panTitle.H - H, .W + H, .H - panTitle.H - H)
+        Else 
+          svwWorkspace.Move(.X, Me.ClientY, .W + H, .H - H)
+          panWorkspace.Move(.X, Me.ClientY, .W + H, .H - H)
+        Endif 
+      End With 
+
+    Endif  
+    
     panWorkspace.BackColor = Color.Background
     panWorkspace.Border = Border.Raised
+
   Else
+
     svwWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     panWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     panWorkspace.BackColor = If($iBackground = Color.Default, Color.Mix(Color.Background, Color.Foreground), $iBackground)
@@ -380,6 +408,7 @@ Public Sub Form_Resize()
     Endif
 
     panWorkspace.Raise
+
   Endif
   
   'DEBUG tabWorkspace.Visible;; "Index =";; tabWorkspace.Index;; "ClientY =";; tabWorkspace.ClientY
@@ -636,5 +665,17 @@ Public Sub UnLock()
     Activate
     ShowTabStrip
   Endif
+  
+End
+
+Public Sub GetOrientation() As Integer
+  
+  Return tabWorkspace.Orientation
+  
+End
+
+Public Sub SetOrientation(iOrientation As Integer)
+  
+  tabWorkspace.Orientation = iOrientation
   
 End

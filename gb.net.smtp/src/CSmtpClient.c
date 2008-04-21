@@ -244,7 +244,7 @@ static int decode_mime(char *mime, int *type, int *subtype, int *encoding, int *
 }
 
 
-static int add_part(CSMTPCLIENT *_object, char *mime, char *name)
+static int add_part(CSMTPCLIENT *_object, char *mime, char *name, int length)
 {
 	struct libsmtp_part_struct *part;
 	struct libsmtp_part_struct *parent_part;
@@ -255,9 +255,9 @@ static int add_part(CSMTPCLIENT *_object, char *mime, char *name)
 	if (!THIS->main)
 	{
 		if (THIS->alternative)
-			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_ALTERNATIVE, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", THIS->session);
+			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_ALTERNATIVE, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
 		else
-			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_MIXED, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", THIS->session);
+			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_MIXED, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
 		THIS->main->Tag = -1;
 		THIS->parent = -1;
 	}
@@ -278,7 +278,7 @@ static int add_part(CSMTPCLIENT *_object, char *mime, char *name)
 		name = buffer;
 	}
 
-  part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, THIS->session);
+  part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, length, THIS->session);
   if (!part)
   {
     GB.Error("Cannot add part: &1", libsmtp_strerr(THIS->session));
@@ -453,7 +453,7 @@ BEGIN_METHOD(CSMTPCLIENT_add, GB_STRING data; GB_STRING mime; GB_STRING name)
 	char *mime = MISSING(mime) ? 0 : GB.ToZeroString(ARG(mime));
 	char *name = MISSING(name) ? 0 : GB.ToZeroString(ARG(name));
 
-	if (add_part(THIS, mime, name) < 0)
+	if (add_part(THIS, mime, name, LENGTH(data)) < 0)
 		return;
 
 	GB.StoreString(ARG(data), (char **)GB.Add(&THIS->data));

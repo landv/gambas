@@ -8,6 +8,8 @@ Private $hForm As FForm
 
 Private $iLast As Integer
 Private $sLast As String
+Private $sFocus As String
+Private $sFocusForm As String
 Private $sType As String
 Private $sOption As String
 Private $hEditor As Object
@@ -105,6 +107,11 @@ Public Sub RefreshAll()
   HideProperty
   $hObject = Null
 
+  If $hForm.Name <> $sFocusForm Then
+    $sFocusForm = $hForm.Name
+    $sFocus = ""
+  Endif
+
   If Not cSelection Then Goto _HIDE
 
   If cSelection.Count = 0 Then
@@ -163,16 +170,7 @@ Public Sub RefreshAll()
     grdProperty[iRow, 1].Text = $hObject.Name
   Endif
 
-  iRow = iRow + 1
-
-  'grdProperty[iRow, 0].Text = "(Event name)"
-  'IF $bMany THEN
-  '  grdProperty[iRow, 1].Text = ""
-  'ELSE
-  '  grdProperty[iRow, 1].Text = $hObject.EventName
-  'ENDIF
-  '
-  'iRow = iRow + 1
+  Inc iRow
 
   If $bSort Then 
     aProp = aProp.Copy().Sort()
@@ -245,6 +243,8 @@ Public Sub RefreshAll()
     FFormStack.Select($hObject.Name)
   Endif 
   
+  If $sFocus Then ShowProperty($sFocus)
+  
   Return
 
 _HIDE:
@@ -252,6 +252,7 @@ _HIDE:
   HideAll
 
 End
+
 
 
 Public Sub HideAll()
@@ -412,7 +413,7 @@ _CANCEL:
 End
 
 
-Private Sub HideProperty() As Boolean
+Public Sub HideProperty() As Boolean
 
   If $bIgnoreHide Then Return
 
@@ -476,8 +477,14 @@ Private Sub CancelProperty()
 
 End
 
+Public Sub FocusOn(sFocus As String)
+  
+  $sFocus = sFocus
+  
+End
 
-Private Sub ShowProperty()
+
+Private Sub ShowProperty(Optional sFocus As String)
 
   Dim hProp As CPropertyInfo
   Dim sType As String
@@ -491,10 +498,21 @@ Private Sub ShowProperty()
   Dim hEditor As Object
   Dim hSymbol As CSymbolInfo
   Dim sHelp As String
+  Dim iRow As Integer
 
   If Project.Running Then Return
   If Not $hForm Then Return 
   If $hForm.ReadOnly Then Return
+
+  If sFocus Then
+    For iRow = 0 To grdProperty.Rows.Count - 1
+      If $sFocus = grdProperty[iRow, 0].Text Then
+        grdProperty.Row = iRow
+        Break
+      Endif
+    Next
+    If iRow >= grdProperty.Rows.Count Then Return
+  Endif
 
   If grdProperty.Row = 0 Then Return
 
@@ -650,6 +668,7 @@ Private Sub ShowProperty()
   btnProperty.Visible = bButton
 
   $hEditor.SetFocus
+  $sFocus = grdProperty[grdProperty.Row, 0].Text
 
   If $hEditor = txtProperty Then
     'IF NOT txtProperty.ReadOnly THEN
@@ -935,5 +954,14 @@ End
 Public Sub spnHelp_Resize()
 
   HideProperty
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Code = Key.Escape Then
+    HideProperty
+    $sFocus = ""
+  Endif  
 
 End

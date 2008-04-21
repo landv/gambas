@@ -449,12 +449,12 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
   }
   else
   {
-    text = l->s.mid(x1) + '\n';
-    rest = lines.at(y2)->s.left(x2);
+		text = l->s.mid(x1) + '\n';
+		rest = lines.at(y2)->s.left(x2);
 
-    l->s = l->s.left(x1) + lines.at(y2)->s.mid(x2);
-    l->modified = l->changed = true;
-    l->state = 0; // force highlighting of next line.
+		l->s = l->s.left(x1) + lines.at(y2)->s.mid(x2);
+		l->modified = l->changed = true;
+		l->state = 0; // force highlighting of next line.
 
     maxLength = GMAX(maxLength, (int)l->s.length());
 
