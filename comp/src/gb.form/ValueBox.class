@@ -40,7 +40,7 @@ Static Private $sTimeFormat As String
 Static Private $sPointSep As String
 
 Private $hForm As Form
-Private $hButton As PictureBox
+Private $hButton As DrawingArea
 Private $hTextBox As TextBox
 Private $hdatechooser As DateChooser
 Private $iWidthForm As Integer
@@ -48,6 +48,7 @@ Private $iHeightForm As Integer
 Private hTimer As Timer
 Private $hTimer As Timer
 Private IsActivate As Boolean
+Private hIcon As Picture
 
 Private $iWarnBackground As Integer
 Private $iWarnForeground As Integer
@@ -87,18 +88,15 @@ Public Sub _new()
   $hTextBox = New TextBox(hPanel2) As "TextBox"
   $hTextBox.Expand = True
   $hTextBox.Border = Border.None
-  $hButton = New PictureBox(hPanel2) As "Button"
+  hIcon = Picture["icon:/small/calendar"]
+  $hButton = New DrawingArea(hPanel2) As "Button"
   $hButton.Width = 24
-  $hButton.Picture = Picture["icon:/small/calendar"]
-  $hButton.Alignment = Align.Center
   $hButton.Hide
   $hForm = New Form As "LstForm"
-  Object.Attach($hForm, Me, "LstForm")
-  $hForm.Border = False
-  $hForm.Type = Form.Popup
-  $hForm.SkipTaskbar = True
   $hForm.Arrangement = Arrange.Fill
-  $hForm.Stacking = Form.Above
+  $hForm.Border = False
+  $hForm.Type = Form.Combo
+  $hForm.Persistent = True
   
   HPanel = New Panel($hForm)
   HPanel.Arrangement = Arrange.Fill
@@ -504,26 +502,55 @@ Private Sub HeightForm_Write(Value As Integer)
   $hForm.Resize($iWidthForm, $iHeightForm)
 End
 
-Public Sub LstForm_DeACtivate()
-  htimer.Start
-  $hForm.hide
-End
-
-Public Sub hTimer_Timer()
-  hTimer.Stop
-  isActivate = False
-  $hButton.BackColor = Color.ButtonBackground
-End 
-
 Public Sub Form_Resize()
     $hForm.Resize($iWidthForm, $iHeightForm)
 End
 
+Public Sub Button_Draw()
+  Draw.Begin($hButton)
+  Draw.Style.Button(0, -5, 54, Me.Height + 50, False)
+  Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
+  Draw.End()
+End
+
+Public Sub Button_Enter()
+  Draw.Begin($hButton)
+  Draw.Style.Button(0, -5, 54, Me.Height + 50, True)
+  Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
+  Draw.End()
+End
+
+Public Sub Button_Leave()
+  If Not isActivate Then Button_Draw
+End
+
 Public Sub Button_MouseDown()
   $hDateChooser.Value = Val($hTextBox.Text)
-  $hForm.visible = Not (isActivate Or $hForm.visible)
-  isActivate = Not isActivate
-  $hButton.BackColor = Color.LightBackground
+  isActivate = True
+  $hForm.Show
+End
+
+Public Sub LstForm_DeACtivate()
+ htimer.Start
+End
+
+Public Sub LstForm_Show()
+  Button_Enter
+End
+
+Public Sub LstForm_Hide()
+  Button_Draw
+End
+
+Public Sub hTimer_Timer()
+  hTimer.Stop
+  Try $hForm.Close
+  isActivate = False
+End 
+
+Public Sub DateChooser_Activate()
+  Try $hForm.Close
+  isActivate = False
 End
 
 Public Sub DateChooser_Change()

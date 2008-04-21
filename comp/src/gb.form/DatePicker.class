@@ -14,8 +14,8 @@ Public Const _DrawWith As String = "DatePicker"
 
 Private $hObserver As Observer
 
-Private $hForm As Window
-Private $hButton As PictureBox
+Private $hDraw As DrawingArea
+Private $hForm As form
 Private $hTextBox As Label
 Private $hdatechooser As DateChooser
 Private $iWidthForm As Integer
@@ -25,6 +25,7 @@ Private $iFin As Integer
 Private $iDebut As Integer
 Private htimer As timer
 Private IsActivate As Boolean
+Private hIcon As Picture
 Property HeightForm As Integer
 Property WidthForm As Integer
 Property FormatString As String
@@ -49,17 +50,16 @@ Public Sub _New()
   $hTextBox.BackColor = Color.White
   $hTextBox.ForeColor = Color.Black
   $hTextBox.Border = Border.None
-  $hButton = New PictureBox(hPanel2) As "Button"
-  $hButton.Width = 24
-  $hButton.Picture = Picture["icon:/small/calendar"]
-  $hButton.Alignment = Align.Center
-
-  $hForm = New Window As "LstForm"
-  Object.Attach($hForm, Me, "LstForm")
+  
+  hIcon = Picture["icon:/small/calendar"]
+  $hDraw = New DrawingArea(hPanel2) As "Draw"
+  $hDraw.Width = 24
+  
+  $hForm = New Form As "LstForm"
   $hForm.Arrangement = Arrange.Fill
-  $hForm.Stacking = Form.Above
   $hForm.Border = False
-  $hForm.Type = Form.Popup
+  $hForm.Type = Form.Combo
+  $hForm.Persistent = True
   HPanel1 = New Panel($hForm)
   HPanel1.Arrangement = Arrange.Fill
   hPanel1.Border = Border.Etched
@@ -73,6 +73,57 @@ Public Sub _New()
   $hObserver = New Observer(Me.Window) As "OBS"
 End
 
+Public Sub Draw_Draw()
+  Draw.Begin($hDraw)
+  Draw.Style.Button(0, -5, 54, Me.Height + 50, False)
+  Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
+  Draw.End()
+End
+
+Public Sub Draw_Enter()
+  Draw.Begin($hDraw)
+  Draw.Style.Button(0, -5, 54, Me.Height + 50, True)
+  Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
+  Draw.End()
+End
+
+Public Sub Draw_Leave()
+  If Not isActivate Then Draw_Draw
+End
+
+Public Sub Draw_MouseDown()
+  isActivate = True
+  $hForm.Show
+End
+
+Public Sub TextBox_MouseDown()
+  Draw_MouseDown
+End
+
+Public Sub LstForm_DeACtivate()
+ htimer.Start
+End
+
+Public Sub LstForm_Show()
+  Draw_Enter
+End
+
+Public Sub LstForm_Hide()
+  Draw_Draw
+End
+
+Public Sub hTimer_Timer()
+  hTimer.Stop
+  Try $hForm.Close
+  isActivate = False
+End 
+
+Public Sub DateChooser_Activate()
+  Try $hForm.Close
+  isActivate = False
+End
+
+
 Public Sub Form_Open()
   Display_Text()
 End
@@ -81,38 +132,6 @@ End
 Public Sub Form_Resize()
     $hForm.Resize($iWidthForm, $iHeightForm)
 End
-
-Public Sub Button_MouseDown()
-  $hForm.visible = Not (isActivate Or $hForm.visible)
-  isActivate = Not isActivate
-  $hButton.BackColor = Color.LightBackground
-End
-
-Public Sub TextBox_MouseDown()
-  Button_MouseDown
-End
-
-Public Sub LstForm_DeACtivate()
-  htimer.Start
-  $hForm.hide
-End
-
-Public Sub LstForm_Show()
-'  $hForm.Border = Form.Resizable
-    ' If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
-    '   $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
-    ' Else 
-    '   $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
-    ' Endif
-  $hForm.Border = Border.None
-End
-
-Public Sub hTimer_Timer()
-  hTimer.Stop
-  isActivate = False
-  $hButton.BackColor = Color.ButtonBackground
-End 
-
 
 Private Function Value_Read() As Date
   Return $hdatechooser.Value
@@ -215,9 +234,9 @@ End
 
 Public Sub OBS_Move()
    $hdatechooser.Font = Me.Font
-    If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
-      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
+    If $hDraw.ScreenY + $hDraw.Height + $hForm.Height < Desktop.Height Then 
+      $hForm.Move($hDraw.ScreenX + $hDraw.Width - $iWidthForm, $hDraw.ScreenY + $hDraw.Height)
     Else 
-      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
+      $hForm.Move($hDraw.ScreenX + $hDraw.Width - $iWidthForm, $hDraw.ScreenY - $hForm.Height)
     Endif
 End
