@@ -50,7 +50,8 @@ Public Sub _New()
   
   $hForm = New Form As "LstForm"
   Object.Attach($hForm, Me, "LstForm")
-  $hForm.Border = Form.None
+  $hForm.Border = False
+  $hForm.Type = Form.Popup
   $hForm.SkipTaskbar = True
   $hForm.Arrangement = Arrange.Fill
   $hForm.Stacking = Form.Above
