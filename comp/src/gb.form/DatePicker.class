@@ -1,7 +1,7 @@
 ' Gambas class file
 Inherits UserControl
 Export
- 
+
 Public Const ThisDay As Integer = 0
 Public Const FirstDayOfWeek As Integer = 1
 Public Const FirstDayOfMonth As Integer = 2
@@ -14,9 +14,9 @@ Public Const _DrawWith As String = "DatePicker"
 
 Private $hObserver As Observer
 
-Private $hForm As Form
-Private $hButton As ToggleButton
-Private $hTextBox As TextBox
+Private $hForm As Window
+Private $hButton As PictureBox
+Private $hTextBox As Label
 Private $hdatechooser As DateChooser
 Private $iWidthForm As Integer
 Private $iHeightForm As Integer
@@ -25,7 +25,6 @@ Private $iFin As Integer
 Private $iDebut As Integer
 Private htimer As timer
 Private IsActivate As Boolean
-'Property Tag As Variant
 Property HeightForm As Integer
 Property WidthForm As Integer
 Property FormatString As String
@@ -34,37 +33,39 @@ Property Range As Integer
 Property Alignment As Integer
 Property Begin As Integer
 
+
 Event Change()
 
 Public Sub _New()
-  
-  Dim hPanel, hPanel2 As Panel
+  Dim hPanel1, hPanel2 As Panel
   
   hTimer = New timer As "hTimer"
   htimer.delay = 100
   hPanel2 = New Panel(Me)
   hPanel2.Arrangement = Arrange.Horizontal
-  $hTextBox = New TextBox(hPanel2) As "TextBox"
+  hPanel2.Border = Border.Sunken
+  $hTextBox = New Label(hPanel2) As "TextBox"
   $hTextBox.Expand = True
-  $hTextBox.Enabled = False
+  $hTextBox.BackColor = Color.White
   $hTextBox.ForeColor = Color.Black
-  $hButton = New ToggleButton(hPanel2) As "Button"
-  $hButton.Width = 32
+  $hTextBox.Border = Border.None
+  $hButton = New PictureBox(hPanel2) As "Button"
+  $hButton.Width = 24
   $hButton.Picture = Picture["icon:/small/calendar"]
-  
-  $hForm = New Form As "LstForm"
+  $hButton.Alignment = Align.Center
+
+  $hForm = New Window As "LstForm"
   Object.Attach($hForm, Me, "LstForm")
-  $hForm.Border = Form.None
-  $hForm.SkipTaskbar = True
   $hForm.Arrangement = Arrange.Fill
   $hForm.Stacking = Form.Above
-
-  HPanel = New Panel($hForm)
-  HPanel.Arrangement = Arrange.Fill
-  $hdatechooser = New DateChooser(HPanel) As "DateChooser"
+  $hForm.Border = False
+  $hForm.Type = Form.Popup
+  HPanel1 = New Panel($hForm)
+  HPanel1.Arrangement = Arrange.Fill
+  hPanel1.Border = Border.Etched
+  $hdatechooser = New DateChooser(HPanel1) As "DateChooser"
   Me.WidthForm = 300
   Me.HeightForm = 200
-  $hForm.Resize($iWidthForm, $iHeightForm)
   Me.FormatString = "%dddd% %dd% %mmmm% %yyyy%"
   Me.Begin = ThisDay
   Me.Value = Now()
@@ -83,13 +84,12 @@ End
 
 Public Sub Button_MouseDown()
   $hForm.visible = Not (isActivate Or $hForm.visible)
-  isActivate = $hForm.visible
-  $hButton.Value = Not IsActivate
+  isActivate = Not isActivate
+  $hButton.BackColor = Color.LightBackground
 End
 
 Public Sub TextBox_MouseDown()
   Button_MouseDown
-  $hButton.Value = IsActivate
 End
 
 Public Sub LstForm_DeACtivate()
@@ -97,28 +97,22 @@ Public Sub LstForm_DeACtivate()
   $hForm.hide
 End
 
+Public Sub LstForm_Show()
+'  $hForm.Border = Form.Resizable
+    ' If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
+    '   $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
+    ' Else 
+    '   $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
+    ' Endif
+  $hForm.Border = Border.None
+End
+
 Public Sub hTimer_Timer()
   hTimer.Stop
   isActivate = False
-  $hButton.Value = IsActivate
+  $hButton.BackColor = Color.ButtonBackground
 End 
 
-Public Sub LstForm_Show()
-    If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
-      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
-    Else 
-      $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
-    Endif
-End
-
-
-' Private Function Tag_Read() As Variant
-'   Return $hTextBox.Tag
-' End
-' 
-' Private Sub Tag_Write(Value As Variant)
-'   $hTextBox.Tag = Value
-' End
 
 Private Function Value_Read() As Date
   Return $hdatechooser.Value
@@ -135,7 +129,7 @@ End
 
 Private Sub WidthForm_Write(Value As Integer)
   $iWidthForm = Value
-  $hForm.Resize($iWidthForm, $iHeightForm)
+  Form_Resize
 End
 
 Private Function HeightForm_Read() As Integer
@@ -144,7 +138,7 @@ End
 
 Private Sub HeightForm_Write(Value As Integer)
   $iHeightForm = Value
-  $hForm.Resize($iWidthForm, $iHeightForm)
+  Form_Resize
 End
 
 Private Function FormatString_Read() As String
@@ -220,6 +214,7 @@ Public Sub DateChooser_Change()
 End
 
 Public Sub OBS_Move()
+   $hdatechooser.Font = Me.Font
     If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
       $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
     Else 

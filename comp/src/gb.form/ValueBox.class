@@ -40,7 +40,7 @@ Static Private $sTimeFormat As String
 Static Private $sPointSep As String
 
 Private $hForm As Form
-Private $hButton As ToggleButton
+Private $hButton As PictureBox
 Private $hTextBox As TextBox
 Private $hdatechooser As DateChooser
 Private $iWidthForm As Integer
@@ -83,25 +83,29 @@ Public Sub _new()
   htimer.delay = 100
   hPanel2 = New Panel(Me) As "Pan"
   hPanel2.Arrangement = Arrange.Horizontal
+  hPanel2.Border = Border.Sunken
   $hTextBox = New TextBox(hPanel2) As "TextBox"
   $hTextBox.Expand = True
-    $hButton = New ToggleButton(hPanel2) As "Button"
-    $hButton.Width = 32
-    $hButton.Picture = Picture["icon:/small/calendar"]
-    $hButton.Hide
-    $hForm = New Form As "LstForm"
-    Object.Attach($hForm, Me, "LstForm")
-    $hForm.Border = Form.None
-    $hForm.SkipTaskbar = True
-    $hForm.Arrangement = Arrange.Fill
-    $hForm.Stacking = Form.Above
+  $hTextBox.Border = Border.None
+  $hButton = New PictureBox(hPanel2) As "Button"
+  $hButton.Width = 24
+  $hButton.Picture = Picture["icon:/small/calendar"]
+  $hButton.Alignment = Align.Center
+  $hButton.Hide
+  $hForm = New Form As "LstForm"
+  Object.Attach($hForm, Me, "LstForm")
+  $hForm.Border = False
+  $hForm.Type = Form.Popup
+  $hForm.SkipTaskbar = True
+  $hForm.Arrangement = Arrange.Fill
+  $hForm.Stacking = Form.Above
   
-    HPanel = New Panel($hForm)
-    HPanel.Arrangement = Arrange.Fill
-    $hdatechooser = New DateChooser(HPanel) As "DateChooser"
-    Me.WidthForm = 300
-    Me.HeightForm = 200
-    $hForm.Resize($iWidthForm, $iHeightForm)
+  HPanel = New Panel($hForm)
+  HPanel.Arrangement = Arrange.Fill
+  $hdatechooser = New DateChooser(HPanel) As "DateChooser"
+  Me.WidthForm = 300
+  Me.HeightForm = 200
+  $hForm.Resize($iWidthForm, $iHeightForm)
   $hObserver = New Observer(Me.Window) As "OBS"
   Type_Write(Number)
 
@@ -508,7 +512,7 @@ End
 Public Sub hTimer_Timer()
   hTimer.Stop
   isActivate = False
-  $hButton.Value = IsActivate
+  $hButton.BackColor = Color.ButtonBackground
 End 
 
 Public Sub Form_Resize()
@@ -518,8 +522,8 @@ End
 Public Sub Button_MouseDown()
   $hDateChooser.Value = Val($hTextBox.Text)
   $hForm.visible = Not (isActivate Or $hForm.visible)
-  isActivate = $hForm.visible
-  $hButton.Value = Not IsActivate
+  isActivate = Not isActivate
+  $hButton.BackColor = Color.LightBackground
 End
 
 Public Sub DateChooser_Change()
@@ -528,6 +532,7 @@ Public Sub DateChooser_Change()
 End
 
 Public Sub OBS_Move()
+   $hdatechooser.Font = Me.Font
     If $hButton.ScreenY + $hButton.Height + $hForm.Height < Desktop.Height Then 
       $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY + $hButton.Height)
     Else 

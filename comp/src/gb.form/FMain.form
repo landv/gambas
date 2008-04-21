@@ -3,17 +3,11 @@
 { Form Form
   MoveScaled(12,12,89,64)
   Text = ("")
-  Icon = Picture["icon:/24/gambas"]
+  Icon = Picture["icon:/small/gambas"]
   Spacing = 8
   Padding = 8
-  { DatePicker1 DatePicker
-    MoveScaled(21,23,33,4)
-  }
   { ValueBox1 ValueBox
-    MoveScaled(37,36,24,4)
-    Type = ValueBox.Time
-  }
-  { ValueBox2 ValueBox
-    MoveScaled(36,51,30,4)
+    MoveScaled(41,23,30,4)
+    Type = ValueBox.Date
   }
 }

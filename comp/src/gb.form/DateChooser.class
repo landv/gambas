@@ -1,114 +1,114 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserControl
+Export
+Inherits UserControl
 
-PROPERTY Value AS Date
-PROPERTY Year AS Integer
-PROPERTY Month AS Integer
-PROPERTY Day AS Integer
-PROPERTY Font AS Font
+Property Value As Date
+Property Year As Integer
+Property Month As Integer
+Property Day As Integer
+Property Font As Font
 
-EVENT Change
-EVENT Activate
+Event Change
+Event Activate
 
-PUBLIC CONST _Properties AS String = "*"
-PUBLIC CONST _DefaultEvent AS String = "Change"
-PUBLIC CONST _DefaultSize AS String = "40,28"
+Public Const _Properties As String = "*"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "40,28"
 
-PRIVATE $hCal AS FCalendar
+Private $hCal As FCalendar
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  $hCal = NEW FCalendar(ME)
+  $hCal = New FCalendar(Me)
   
-END
+End
 
-PRIVATE FUNCTION Value_Read() AS Date
+Private Function Value_Read() As Date
 
-  RETURN $hCal.GetValue()
+  Return $hCal.GetValue()
 
-END
+End
 
-PRIVATE SUB Value_Write(Value AS Date)
+Private Sub Value_Write(Value As Date)
 
   $hCal.SetValue(Value)
 
-END
+End
 
-PUBLIC SUB _Change()
+Public Sub _Change()
   
-  RAISE Change
+  Raise Change
   
-END
+End
 
-PUBLIC SUB _Activate()
+Public Sub _Activate()
   
-  RAISE Activate
+  Raise Activate
   
-END
+End
 
-PRIVATE FUNCTION Year_Read() AS Integer
+Private Function Year_Read() As Integer
 
-  RETURN Year(Value_Read())
+  Return Year(Value_Read())
 
-END
+End
 
-PRIVATE SUB Year_Write(Value AS Integer)
+Private Sub Year_Write(Value As Integer)
 
-  DIM dDate AS Date = Value_Read()
+  Dim dDate As Date = Value_Read()
   
   dDate = Date(Value, Month(dDate), Day(dDate))
   Value_Write(dDate)
 
-END
+End
 
-PRIVATE FUNCTION Month_Read() AS Integer
+Private Function Month_Read() As Integer
 
-  RETURN Month(Value_Read())  
+  Return Month(Value_Read())  
 
-END
+End
 
-PRIVATE SUB Month_Write(Value AS Integer)
+Private Sub Month_Write(Value As Integer)
 
-  DIM dDate AS Date = Value_Read()
+  Dim dDate As Date = Value_Read()
   
   dDate = Date(Year(Value), Value, Day(dDate))
   Value_Write(dDate)  
 
-END
+End
 
-PRIVATE FUNCTION Day_Read() AS Integer
+Private Function Day_Read() As Integer
 
-  RETURN Day(Value_Read())
+  Return Day(Value_Read())
 
-END
+End
 
-PRIVATE SUB Day_Write(Value AS Integer)
+Private Sub Day_Write(Value As Integer)
 
-  DIM dDate AS Date = Value_Read()
+  Dim dDate As Date = Value_Read()
   
   dDate = Date(Year(dDate), Month(dDate), Value)
   Value_Write(dDate)
 
-END
+End
 
-PRIVATE FUNCTION Font_Read() AS Font
+Private Function Font_Read() As Font
 
-  RETURN SUPER.Font  
+  Return Super.Font  
 
-END
+End
 
-PRIVATE SUB Font_Write(Value AS Font)
+Private Sub Font_Write(Value As Font)
 
-  SUPER.Font = Value
+  Super.Font = Value
   $hCal.UpdateFont
   
-END
+End
 
-PUBLIC SUB SetDateColor({Date} AS Date, Color AS Integer)
+Public Sub SetDateColor({Date} As Date, Color As Integer)
   
   $hCal.SetDateColor({Date}, Color)
   
-END
+End
 
