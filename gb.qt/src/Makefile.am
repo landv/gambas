@@ -2,7 +2,7 @@ COMPONENT = gb.qt
 include $(top_srcdir)/component.am
 include $(top_srcdir)/gb.qt.am
 
-SUBDIRS = share ext @QTOPENGL_DIR@
+SUBDIRS = ext @QTOPENGL_DIR@
 EXTRA_DIST = trayicon.xpm
 
 INCLUDES = @QT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share

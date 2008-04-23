@@ -53,8 +53,10 @@ class MyPictureBox : public QLabel
   Q_OBJECT
 
 public:
-
   MyPictureBox(QWidget *parent);
+  
+protected:
+	virtual void setPalette(const QPalette &);
 };
 
 #endif

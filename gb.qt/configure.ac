@@ -43,7 +43,6 @@ GB_COMPONENT(
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
-src/share/Makefile \
 src/ext/Makefile \
 src/opengl/Makefile \
 )

@@ -216,14 +216,6 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 }
 #endif
 
-/*
-void MyDrawingArea::backgroundPixmapChange(const QPixmap &)
-{
-  if (!lock)
-    update();
-}
-*/
-
 
 void MyDrawingArea::setBackground()
 {
@@ -347,29 +339,13 @@ void MyDrawingArea::setCached(bool c)
   setBackground();
 }
 
-
-
-/*
-void MyDrawingArea::setTransparent(bool trans)
+void MyDrawingArea::setPalette(const QPalette &pal)
 {
-  if (trans == transparent)
-    return;
-
-  if (trans)
-  {
-    setWFlags(WRepaintNoErase | WResizeNoErase | WPaintClever);
-    setBackgroundMode(NoBackground);
-  }
-  else
-  {
-    clearWFlags(WRepaintNoErase | WResizeNoErase | WPaintClever);
-    setBackgroundMode(PaletteBackground);
-  }
-
-  transparent = trans;
-  update();
+	QFrame::setPalette(pal);
+	repaint();
 }
-*/
+
+
 
 /***************************************************************************
 

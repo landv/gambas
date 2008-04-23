@@ -43,6 +43,12 @@ MyPictureBox::MyPictureBox(QWidget *parent)
   setWFlags(Qt::WNoAutoErase);
 }
 
+void MyPictureBox::setPalette(const QPalette &pal)
+{
+	QLabel::setPalette(pal);
+	repaint();
+}
+
 
 BEGIN_METHOD(CPICTUREBOX_new, GB_OBJECT parent)
 
