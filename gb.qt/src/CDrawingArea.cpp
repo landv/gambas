@@ -347,6 +347,11 @@ void MyDrawingArea::setCached(bool c)
   setBackground();
 }
 
+void MyDrawingArea::setPalette(const QPalette &pal)
+{
+	QFrame::setPalette(pal);
+	repaint();
+}
 
 
 /*

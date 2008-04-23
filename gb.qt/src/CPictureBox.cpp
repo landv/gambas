@@ -25,6 +25,7 @@
 #define __CPICTUREBOX_CPP
 
 #include <qapplication.h>
+#include <qevent.h>
 #include <qlabel.h>
 #include <qpixmap.h>
 #include <qframe.h>
@@ -39,6 +40,12 @@ MyPictureBox::MyPictureBox(QWidget *parent)
 : QLabel(parent)
 {
   setWFlags(Qt::WNoAutoErase);
+}
+
+void MyPictureBox::setPalette(const QPalette &pal)
+{
+	QLabel::setPalette(pal);
+	repaint();
 }
 
 

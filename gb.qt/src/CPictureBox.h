@@ -27,6 +27,8 @@
 
 #include "gambas.h"
 
+#include <qpalette.h>
+#include <qevent.h>
 #include <qlabel.h>
 
 #include "CWidget.h"
@@ -53,8 +55,10 @@ class MyPictureBox : public QLabel
   Q_OBJECT
 
 public:
-
   MyPictureBox(QWidget *parent);
+  
+protected:
+	virtual void setPalette(const QPalette &);
 };
 
 #endif

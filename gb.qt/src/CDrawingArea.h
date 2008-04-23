@@ -88,6 +88,7 @@ protected:
   virtual void paintEvent(QPaintEvent *);
   //virtual void drawContents(QPainter *p);
   virtual void setGeometry(int x, int y, int w, int h);
+	virtual void setPalette(const QPalette &);
 
 private:
 
