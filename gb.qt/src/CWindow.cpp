@@ -56,6 +56,24 @@
 
 #ifndef NO_X_WINDOW
 #include "x11.h"
+#else
+enum
+{
+	_NET_WM_WINDOW_TYPE_NORMAL,
+	_NET_WM_WINDOW_TYPE_DESKTOP,
+	_NET_WM_WINDOW_TYPE_DOCK,
+	_NET_WM_WINDOW_TYPE_TOOLBAR,
+	_NET_WM_WINDOW_TYPE_MENU,
+	_NET_WM_WINDOW_TYPE_UTILITY,
+	_NET_WM_WINDOW_TYPE_SPLASH,
+	_NET_WM_WINDOW_TYPE_DIALOG,
+	_NET_WM_WINDOW_TYPE_DROPDOWN_MENU,
+	_NET_WM_WINDOW_TYPE_POPUP_MENU,
+	_NET_WM_WINDOW_TYPE_TOOLTIP,
+	_NET_WM_WINDOW_TYPE_NOTIFICATION,
+	_NET_WM_WINDOW_TYPE_COMBO,
+	_NET_WM_WINDOW_TYPE_DND
+};
 #endif
 
 
@@ -1551,8 +1569,10 @@ void MyMainWindow::showActivate(QWidget *transient)
 		doReparent(newParentWidget, getWFlags(), pos());
 	}
 
+	#ifndef NO_X_WINDOW
 	if (THIS != CWINDOW_Main)
 		X11_set_transient_for(winId(), QWIDGET(CWINDOW_Main)->winId());
+	#endif
 
   //qDebug("showActivate %p", _object);
 

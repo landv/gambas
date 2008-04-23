@@ -12,14 +12,14 @@ gb_qte_ext_la_CXXFLAGS = -fno-rtti -DQWS -DGB_QT_COMPONENT $(AM_CXXFLAGS)
 
 gb_qte_ext_la_SOURCES = \
  main.h main.cpp \
- CLCDNumber.h moc_CLCDNumber.cpp CLCDNumber.cpp \
- CDial.h moc_CDial.cpp CDial.cpp \
+ CLCDNumber.h CLCDNumber_moc.cpp CLCDNumber.cpp \
+ CDial.h CDial_moc.cpp CDial.cpp \
  garray.h garray.cpp \
  gstring.h gstring.cpp \
  gdocument.h gdocument.cpp \
  gview.h moc_gview.cpp gview.cpp \
  CEditor.h moc_CEditor.cpp CEditor.cpp \
  CDraw.h CDraw.cpp \
- CDrawing.h moc_CDrawing.cpp CDrawing.cpp \
- CPrinter.h moc_CPrinter.cpp CPrinter.cpp \
- CTextEdit.h moc_CTextEdit.cpp CTextEdit.cpp
+ CDrawing.h CDrawing_moc.cpp CDrawing.cpp \
+ CPrinter.h CPrinter_moc.cpp CPrinter.cpp \
+ CTextEdit.h CTextEdit_moc.cpp CTextEdit.cpp

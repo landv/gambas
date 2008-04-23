@@ -259,21 +259,23 @@ int gPictureBox::alignment()
 
 void gPictureBox::setAlignment(int al)
 {
-	gfloat x,y;
+	gfloat x,y,xn;
 		
+	xn = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL ? 1 : 0;
+	
 	switch (al)
 	{
 		case ALIGN_BOTTOM: 	y=1; 	x=0.5; break;
 		case ALIGN_BOTTOM_LEFT: 	y=1; 	x=0; break;
-		case ALIGN_BOTTOM_NORMAL: y=1; 	x=0; break;
+		case ALIGN_BOTTOM_NORMAL: y=1; 	x=xn; break;
 		case ALIGN_BOTTOM_RIGHT: 	y=1; 	x=1; break;
 		case ALIGN_CENTER: 	y=0.5; 	x=0.5; break;
 		case ALIGN_LEFT: 	y=0.5; 	x=0; break;
-		case ALIGN_NORMAL: 	y=0.5;  x=0; break;
+		case ALIGN_NORMAL: 	y=0.5;  x=xn; break;
 		case ALIGN_RIGHT: 	y=0.5; 	x=1; break;
 		case ALIGN_TOP: 		y=0; 	x=0.5; break;
 		case ALIGN_TOP_LEFT: 	y=0; 	x=0; break;
-		case ALIGN_TOP_NORMAL: 	y=0; 	x=0; break;
+		case ALIGN_TOP_NORMAL: 	y=0; 	x=xn; break;
 		case ALIGN_TOP_RIGHT: 	y=0; 	x=1; break;
 		default: return;
 	}
