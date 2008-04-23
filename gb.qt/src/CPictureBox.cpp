@@ -24,8 +24,6 @@
 
 #define __CPICTUREBOX_CPP
 
-
-
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qpixmap.h>
@@ -37,28 +35,16 @@
 #include "CPicture.h"
 #include "CPictureBox.h"
 
-/*#define DEBUG_CBUTTON*/
-
-#if 0
-MyLabel::MyLabel(QWidget *parent)
+MyPictureBox::MyPictureBox(QWidget *parent)
 : QLabel(parent)
 {
+  setWFlags(Qt::WNoAutoErase);
 }
 
-MyLabel::~MyLabel()
-{
-}
-
-
-void MyLabel::resizeEvent( QResizeEvent* e )
-{
-  QFrame::resizeEvent(e);
-}
-#endif
 
 BEGIN_METHOD(CPICTUREBOX_new, GB_OBJECT parent)
 
-  QLabel *wid = new QLabel(QCONTAINER(VARG(parent)));
+  MyPictureBox *wid = new MyPictureBox(QCONTAINER(VARG(parent)));
 
   THIS->picture = NULL;
 

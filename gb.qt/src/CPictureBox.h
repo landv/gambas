@@ -36,9 +36,7 @@
 extern GB_DESC CPictureBoxDesc[];
 #else
 
-#define QLABEL(object) ((QLabel *)((CWIDGET *)object)->widget)
-
-#define WIDGET ((QLabel *)((CWIDGET *)_object)->widget)
+#define WIDGET ((MyPictureBox *)((CWIDGET *)_object)->widget)
 #define THIS ((CPICTUREBOX *)_object)
 
 #endif
@@ -50,21 +48,13 @@ typedef
     }
   CPICTUREBOX;
 
-/*
-class MyLabel : public QLabel
+class MyPictureBox : public QLabel
 {
   Q_OBJECT
 
 public:
 
-  MyLabel(QWidget *parent);
-  ~MyLabel();
-
-protected:
-
-  void resizeEvent( QResizeEvent* e );
+  MyPictureBox(QWidget *parent);
 };
-*/
-
 
 #endif

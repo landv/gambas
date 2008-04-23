@@ -181,10 +181,10 @@ void COMPILE_init(void)
 
     /*printf("%s\n", line);*/
 
-    if (strncmp(line, "Library=", 8))
-      continue;
-
-    add_list_file(&line[8]);
+    if (strncmp(line, "Library=", 8) == 0)
+	    add_list_file(&line[8]);
+    else if (strncmp(line, "Component=", 10) == 0)
+	    add_list_file(&line[10]);
   }
 
   fclose(fp);
