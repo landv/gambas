@@ -502,7 +502,7 @@ cd $gb_save
 ##   $2 = Component key in upper case (ex: PGSQL)
 ##   $3 = Component name (ex: PostgreSQL)
 ##   $4 = Sub-directory name
-##   $5 = pkg-config module name
+##   $5 = pkg-config module(s) name(s)
 ##   $6 = pkg-config version test
 ##   $7 = Warning message (optional)
 ##
@@ -533,77 +533,34 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
     AC_MSG_CHECKING(for $3 component with pkg-config)
   
-    pkg-config --silence-errors --exists "$5 $6"
-    if test $? -eq "0"; then
-    
-      ## Checking for headers
-      
-      gb_inc_$1=""
-      
-      #if test x"$gb_inc_$1" = x; then
-        $2_INC=`pkg-config --cflags $5`
-      #else
-      #  $2_INC=$gb_inc_$1
-      #fi
-  
-      ## Checking for libraries
-  
-      gb_lib_$1=""
-      
-      #if test x"$gb_lib_$1" = x; then
-        $2_LIB=`pkg-config --libs-only-l $5`
-      #else
-      #  $2_LIB=$gb_lib_$1
-      #fi
-      
-      gb_ldflags_$1=""
-      
-      #if test x"$gb_ldflags_$1" = x; then
-        $2_LDFLAGS="`pkg-config --libs-only-L $5` `pkg-config --libs-only-other $5`"
-      #else
-      #  $2_LDFLAGS=$gb_ldflags_$1
-      #fi
-  
-      have_$1=yes
-      $2_DIR=$4
+    gb_inc_$1=""
+    gb_lib_$1=""
+    gb_ldflags_$1=""
+    have_$1=yes
         
-    else
-    
-      if test x"$gb_inc_$1" != x && test x"$gb_lib_$1" != x; then
-      
-        $2_INC=""
-    
-        for gb_dir in $gb_inc_$1; do
-          if test "$gb_dir" != "/usr/include"; then
-            if test "$gb_dir" != "/usr/include/"; then
-              $2_INC="$$2_INC -I$gb_dir"
-            fi
-          fi
-        done
-        
-        $2_LIB=""
-        $2_PATH=""
+    for gb_pkg_name in $5; do
   
-        for gb_dir in $gb_lib_$1; do
-          if test "x$$2_PATH" = "x"; then
-            $2_PATH="$gb_dir/.."
-          fi
-          if test "$gb_dir" != "/lib"  && test "$gb_dir" != "/lib/"&& test "$gb_dir" != "/usr/lib" && test "$gb_dir" != "/usr/lib/"; then
-            $2_LIB="$$2_LIB -L$gb_dir"
-          fi
-        done
+      pkg-config --silence-errors --exists "$gb_pkg_name $6"
+      if test $? -eq "0"; then
+      
+        ## Checking for headers
         
-        $2_LDFLAGS=""
-        have_$1=yes
+        $2_INC="$$2_INC `pkg-config --cflags $5`"
+    
+        ## Checking for libraries
+        
+        $2_LIB="$$2_LIB `pkg-config --libs-only-l $5`"
+        $2_LDFLAGS="$$2_LDFLAGS `pkg-config --libs-only-L $5` `pkg-config --libs-only-other $5`"
         $2_DIR=$4
-        
+          
       else
       
         have_$1=no
-      
-      fi
+        break
 
-    fi
+      fi
+      
+    done
     
   fi
 
@@ -628,6 +585,7 @@ dnl    fi
   
   if test "$have_$1" = "no" || test -e DISABLED; then
   
+    $2_INC=""
     $2_LIB=""
     $2_LDFLAGS=""
     $2_DIR=""

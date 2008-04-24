@@ -1,0 +1,226 @@
+/***************************************************************************
+
+  CWindow.h
+
+  The Window and Form classes
+
+  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 1, or (at your option)
+  any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+***************************************************************************/
+
+#ifndef __CWINDOW_H
+#define __CWINDOW_H
+
+#include <q3mainwindow.h>
+#include <q3asciidict.h>
+#include <qmenubar.h>
+#include <q3ptrdict.h>
+#include <qevent.h>
+#include <qpushbutton.h>
+#include <qsizegrip.h>
+//Added by qt3to4:
+#include <QMoveEvent>
+#include <QCloseEvent>
+#include <QShowEvent>
+#include <QResizeEvent>
+#include <QKeyEvent>
+
+#include "gambas.h"
+#include "CContainer.h"
+#include "CMenu.h"
+#include "CPicture.h"
+
+//class MyCentral;
+
+typedef
+  struct CWINDOW {
+    CWIDGET widget;
+    QWidget *container;
+    CARRANGEMENT arrangement;
+    QMenuBar *menuBar;
+    CMenuList *menu;
+    int ret;
+    CPICTURE *icon;
+    CPICTURE *picture;
+    CWIDGET *focus;
+	  QPushButton *defaultButton;
+  	QPushButton *cancelButton;
+    int loopLevel;
+    int x;
+    int y;
+    int w;
+    int h;
+    unsigned toplevel : 1;
+    unsigned embedded : 1;
+    unsigned xembed : 1;
+    unsigned stacking : 2;
+    unsigned skipTaskbar : 1;
+    unsigned masked : 1;
+    unsigned reallyMasked : 1;
+    unsigned shown : 1;
+    unsigned hidden : 1;
+    unsigned toolbar : 1;
+    unsigned scale : 1;
+    unsigned minsize : 1;
+    unsigned title : 1;
+    unsigned enterLoop : 1;
+    }
+  CWINDOW;
+
+typedef
+  struct {
+    CWINDOW window;
+    }
+  CFORM;
+
+
+#ifndef __CWINDOW_CPP
+
+extern GB_DESC CWindowDesc[];
+extern GB_DESC CWindowMenusDesc[];
+extern GB_DESC CWindowControlsDesc[];
+//extern GB_DESC CWindowToolBarsDesc[];
+extern GB_DESC CWindowsDesc[];
+extern GB_DESC CFormDesc[];
+
+extern CWINDOW *CWINDOW_Main;
+extern CWINDOW *CWINDOW_Current;
+extern CWINDOW *CWINDOW_Active;
+extern CWINDOW *CWINDOW_LastActive;
+extern int CWINDOW_Embedder;
+extern bool CWINDOW_Embedded;
+
+#else
+
+#define THIS ((CWINDOW *)_object)
+#define WIDGET ((QWidget *)(((CWIDGET *)_object)->widget))
+#define WINDOW ((MyMainWindow *)WIDGET)
+#define XEMBED ((QX11EmbedWidget *)WIDGET)
+
+#endif
+
+class CWindow : public QObject
+{
+  Q_OBJECT
+
+public:
+
+  static Q3PtrDict<CWINDOW> dict;
+
+  static CWindow manager;
+  static int count;
+
+protected:
+
+  bool eventFilter(QObject *, QEvent *);
+
+public slots:
+
+  void error(void);
+  void embedded(void);
+  void closed(void);
+  void destroy(void);
+};
+
+
+class MyMainWindow : public Q3MainWindow
+{
+  Q_OBJECT
+
+private:
+
+  QSizeGrip *sg;
+  //bool shown;
+  //int border;
+  //int state;
+  bool mustCenter;
+  bool _activate;
+  bool _border;
+  bool _resizable;
+
+  void doReparent(QWidget *, Qt::WFlags, const QPoint &, bool showIt = false);
+
+protected:
+
+	//bool event(QEvent *);
+  void showEvent(QShowEvent *);
+  //void hideEvent(QHideEvent *);
+  void resizeEvent(QResizeEvent *);
+  void moveEvent(QMoveEvent *);
+  void keyPressEvent(QKeyEvent *);
+  void closeEvent(QCloseEvent *);
+
+  //bool eventFilter(QObject *, QEvent *);
+
+public:
+
+  enum { BorderNone = 0, BorderFixed = 1, BorderResizable = 2 };
+  Q3AsciiDict<CWIDGET> names;
+  void *_object;
+
+  MyMainWindow(QWidget *parent, const char *name, bool embedded = false);
+  ~MyMainWindow();
+
+	void hide();
+  void initProperties();
+  void showActivate(QWidget *parent = 0);
+  //void activateLater() { _activate = true; }
+  void showModal();
+  void showPopup();
+  void afterShow();
+  //bool isModal() { return testWFlags(WShowModal); }
+  void doReparent(QWidget *w, const QPoint &p, bool showIt = false) { doReparent(w, windowFlags(), p, showIt); }
+
+  bool hasBorder(void) { return _border; }
+  void setBorder(bool, bool = false);
+  
+  bool isResizable(void) { return _resizable; }
+  void setResizable(bool, bool = false);
+  
+  #ifdef NO_X_WINDOW
+  #else
+  int getType(void);
+  void setType(int type);
+  #endif
+  
+  //bool getTool(void) { return testWFlags(WStyle_Tool); }
+  //void setTool(bool);
+  
+  void setSizeGrip(bool);
+  void moveSizeGrip();
+
+  void paintUnclip(bool);
+  bool isPersistent(void);
+  void setPersistent(bool);
+
+  void center(bool);
+  void configure(void);
+  
+  void setName(const char *, CWIDGET *);
+  
+  virtual void resize(int w, int h);
+  virtual void setGeometry(int x, int y, int w, int h);
+};
+
+
+//void CWINDOW_set_top_only(QWidget *w, bool top);
+void CWINDOW_activate(CWIDGET *ob);
+void CWINDOW_set_default_button(CWINDOW *win, QPushButton *button, bool on);
+void CWINDOW_set_cancel_button(CWINDOW *win, QPushButton *button, bool on);
+
+
+#endif

@@ -1,0 +1,469 @@
+' Gambas class file
+
+Export 
+
+Static Private $aVoid As New Object[]
+Static Private $cControls As New Collection(gb.Text)
+Static Private $cLock As New Collection
+Static Private $bGlobalLock As Boolean
+
+Property Enabled As Boolean
+Property Visible As Boolean
+Property ToolTip As String
+Property Text As String
+Property Picture As Picture
+Property Value As Boolean
+'Property Shortcut As String
+'Property Icon As Picture
+
+Private $sKey As String
+Private $aKey As String[]
+Private $hParent As Control
+
+Static Private Sub IsToggle(hCtrl As Object) As Boolean
+  
+  If hCtrl Is Menu And If hCtrl.Toggle Then Return True
+  If hCtrl Is ToggleButton Then Return True
+  If hCtrl Is ToolButton And If hCtrl.Toggle Then Return True
+  If hCtrl Is Window Then Return True
+  If Object.Type(hCtrl) = "SidePanel" Then Return True
+  If Object.Type(hCtrl) = "ToolBar" Then Return True
+  
+End
+
+Static Private Sub GetToggle(hCtrl As Object) As Boolean
+  
+  If hCtrl Is Menu And If hCtrl.Toggle Then Return hCtrl.Checked
+  If hCtrl Is ToggleButton Then Return hCtrl.Value
+  If hCtrl Is ToolButton And If hCtrl.Toggle Then Return hCtrl.Value
+  If hCtrl Is Window Then Return hCtrl.Visible
+  If Object.Type(hCtrl) = "SidePanel" Then Return Not hCtrl.Hidden
+  If Object.Type(hCtrl) = "ToolBar" Then Return Not hCtrl.Hidden
+  
+End
+
+Static Private Sub SetToggle(hCtrl As Object, bVal As Boolean)
+  
+  If hCtrl Is Menu And If hCtrl.Toggle Then hCtrl.Checked = bVal
+  If hCtrl Is ToggleButton Then hCtrl.Value = bVal
+  If hCtrl Is ToolButton And If hCtrl.Toggle Then hCtrl.Value = bVal
+  If hCtrl Is Window Then hCtrl.Visible = bVal
+  If Object.Type(hCtrl) = "SidePanel" Then hCtrl.Hidden = Not bVal
+  If Object.Type(hCtrl) = "ToolBar" Then hCtrl.Hidden = Not bVal
+  
+End
+
+
+
+Static Public Sub Get(Control As Object) As String
+  
+  Dim aCtrl As Object[]
+  
+  For Each aCtrl In $cControls
+    If aCtrl.Find(Control) >= 0 Then Return $cControls.Key
+  Next
+  
+End
+ 
+
+Static Public Sub Register(Control As Object, Key As String)
+  
+  Dim iInd As Integer
+  Dim aCtrl As Object[]
+  Dim sOld As String
+  
+  sOld = Get(Control)
+  If sOld = Key Then Return
+  
+  'DEBUG Control;; Key  
+  
+  If sOld Then
+    aCtrl = $cControls[sOld]
+    iInd = aCtrl.Find(Control)
+    aCtrl.Remove(iInd)
+  Endif
+  
+  If Key Then
+    If Not $cControls.Exist(Key) Then
+      $cControls[Key] = New Object[]
+    Endif
+
+    aCtrl = $cControls[Key]
+    aCtrl.Add(Control)
+  Endif
+
+End
+
+Static Private Sub HasHandler(hForm As Object) As Boolean
+  
+  Dim iType As Integer
+  
+  Try iType = TypeOf(hForm.Action_Activate)
+  Return iType <> 0
+  
+End
+
+Static Private Sub GetActiveWindow(hCtrl As Object) As Window
+  
+  Dim hForm As Window = Application.ActiveWindow
+  Dim hCtrlWin As Window = hCtrl.Window
+  
+  'RETURN hForm
+  
+  Do
+    If HasHandler(hCtrlWin) Then Break
+    Try hCtrlWin = hCtrlWin.Parent.Window
+    If Error Then Break
+  Loop
+  
+  While hForm
+    If hForm = hCtrlWin Then Return Application.ActiveWindow  
+    Try hForm = hForm.Parent.Window
+    If Error Then Break
+  Wend 
+  
+  Return hCtrl.Window
+  
+End
+
+Static Public Sub Lock()
+  
+  Inc $bGlobalLock
+  
+End
+
+Static Public Sub UnLock()
+  
+  $bGlobalLock = Max(0, $bGlobalLock - 1)
+  
+End
+
+
+
+Static Public Sub Raise(Control As Object)
+  
+  Dim hForm As Control
+  Dim hObject As Object
+  Dim sKey As String
+  Dim bCont As Boolean
+  Dim hLock As Integer[]
+
+  If $bGlobalLock Then Return
+
+  sKey = Get(Control)
+  'DEBUG Control;; sKey
+  If Not sKey Then Return
+
+  If $cLock.Exist(sKey) Then 
+    If Object.Count($cLock[sKey]) = 2 Then 
+      'DEBUG sKey;; "is locked"
+      Return 
+    Endif
+    'DEBUG sKey;; Object.Count($cLock[sKey])
+  Endif
+  
+  hLock = New Integer[]
+  $cLock[sKey] = hLock
+
+  If IsToggle(Control) Then
+    If Left(sKey) = "." Then
+      Action[sKey, Object.Parent(Control)].Value = GetToggle(Control)
+    Else
+      Action[sKey].Value = GetToggle(Control)
+    Endif
+  Endif
+
+  hForm = GetActiveWindow(Control)
+  'DEBUG "Active: ";; hForm;; Application.ActiveWindow
+
+  If hForm Then
+
+      While hForm
+
+        If Not Object.IsValid(hForm) Then Break
+        If Object.IsLocked(hForm) Then Break
+
+        If hForm Is Window Then
+          hObject = hForm
+          If HasHandler(hObject) Then
+            bCont = False
+            bCont = hObject.Action_Activate(sKey)
+            If Not bCont Then Break
+          Endif
+        Endif
+
+        hForm = hForm.Parent
+      Wend
+        
+  Endif
+  
+  $cLock[sKey] = Null
+
+' FINALLY 
+' 
+'   $cLock[sKey] = NULL
+'   
+' CATCH
+'   
+'   DEBUG "******* "; Error.Where; ": "; Error.Text  
+'   Error.Propagate
+  
+End
+
+Static Public Sub _get(Key As String, Optional Parent As Control) As Action ', OPTIONAL Window AS Window) AS Action
+
+  Dim hAction As Action
+  
+  'IF Left(Key) = "." AND IF NOT Parent THEN Error.Raise("Parent must be specified for a local action")
+  
+  hAction = New Action(Key, Parent)
+  Return hAction  
+  
+End
+
+Static Private Sub IsChildOfWindow(hWindow As Window, hMain As Window) As Boolean
+  
+  Do
+    If hWindow = hMain Then Return True
+    Try hWindow = hWindow.Parent.Window
+    If Error Then Return
+  Loop
+  
+End
+
+Static Private Sub FindKey(sPattern As String) As String[]
+  
+  Dim aKey As New String[]
+  Dim aCtrl As Object[]
+  Dim sKey As String
+  
+  For Each aCtrl In $cControls
+    sKey = $cControls.Key
+    If sKey Like sPattern Then aKey.Add(sKey)
+  Next
+  
+  Return aKey
+  
+End
+
+
+Private Function GetControls() As Object[]
+
+  Dim aObj As Object[]
+  Dim aObj2 As Object[]
+  Dim hCtrl As Object
+  Dim iInd As Integer
+  Dim sKey As String
+  
+  If $aKey Then
+    
+    aObj2 = New Object[]
+    
+    For Each sKey In $aKey
+    
+      Try aObj = $cControls[sKey]
+      If Not aObj Then Continue
+      
+      If Not $hParent Then
+        aObj2.Insert(aObj)
+      Else
+        For Each hCtrl In aObj
+          If Object.Parent(hCtrl) = $hParent Then
+            aObj2.Add(hCtrl)
+          Endif
+        Next
+      Endif
+
+    Next
+    
+    Return aObj2
+
+  Else If $sKey Then
+
+    Try aObj = $cControls[$sKey]
+    If Not aObj Then 
+      Print #File.Err, "Warning: Unknown action: '"; $sKey; "'"
+      Return $aVoid
+    Endif
+    
+    If Not $hParent Then Return aObj
+  
+    aObj2 = New Object[]
+    For Each hCtrl In aObj
+      If Object.Parent(hCtrl) = $hParent Then
+        aObj2.Add(hCtrl)
+      Endif
+    Next
+
+    Return aObj2
+
+  Else 
+
+    Return $aVoid
+
+  Endif
+  
+End
+
+
+Public Sub _new(Key As String, Parent As Control)
+  
+  Dim sKey As String
+  
+  If InStr(Key, ",") = 0 And InStr(Key, "*") = 0 Then
+    $sKey = Key
+  Else
+    $aKey = New String[]
+    For Each sKey In Split(Key, ",")
+      If Right(sKey) = "*" Then
+        $aKey.Insert(FindKey(sKey))
+      Else
+        $aKey.Add(sKey)
+      Endif
+    Next
+  Endif
+  
+  $hParent = Parent
+  
+End
+
+
+Private Function Enabled_Read() As Boolean
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    If Not hCtrl.Enabled Then Return False
+  Next
+  Return True
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    hCtrl.Enabled = Value
+  Next
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    If Not hCtrl.Visible Then Return False
+  Next
+  Return True
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    'DEBUG hCtrl;; Value
+    hCtrl.Visible = Value
+  Next
+
+End
+
+Private Function ToolTip_Read() As String
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    If hCtrl.ToolTip Then Return hCtrl.ToolTip
+  Next
+
+End
+
+Private Sub ToolTip_Write(Value As String)
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    hCtrl.ToolTip = Value
+  Next
+
+End
+
+Private Function Text_Read() As String
+
+  Dim hCtrl As Object
+  Dim sText As String
+  
+  For Each hCtrl In GetControls()
+    Try sText = hCtrl.Text
+    If sText Then Return sText
+  Next
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    Try hCtrl.Text = Value
+  Next  
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Dim hCtrl As Object
+  Dim hPict As Picture
+  
+  For Each hCtrl In GetControls()
+    Try hPict = hCtrl.Picture
+    If hPict Then Return hPict
+  Next
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    Try hCtrl.Picture = Value
+  Next    
+
+End
+
+Private Function Value_Read() As Boolean
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    If IsToggle(hCtrl) Then Return GetToggle(hCtrl)
+  Next    
+
+End
+
+Private Sub Value_Write(Value As Boolean)
+
+  Dim hCtrl As Object
+  Dim aCtrl As Object[] = GetControls()
+  Dim cKey As New Collection
+  Dim sKey As String
+  
+  For Each hCtrl In aCtrl
+    'DEBUG hCtrl;; Value
+    If IsToggle(hCtrl) Then 
+      SetToggle(hCtrl, Value)
+    Else 
+      sKey = Get(hCtrl)
+      cKey[sKey] = hCtrl
+    Endif
+  Next    
+
+  For Each hCtrl In cKey
+    Action.Raise(hCtrl)
+  Next
+
+End

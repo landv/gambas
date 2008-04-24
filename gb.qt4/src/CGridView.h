@@ -24,10 +24,14 @@
 #define __CGRIDVIEW_H
 
 #include "gambas.h"
+#include "gb.qt.h"
 
-#include <qasciidict.h>
-#include <qtable.h>
+#include <q3asciidict.h>
+#include <q3table.h>
 #include <qevent.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QPixmap>
 
 #include "CWidget.h"
 #include "CPicture.h"
@@ -75,11 +79,11 @@ struct MyTableData
   CPICTURE *pict;
 };
 
-class MyTableItem : public QTableItem
+class MyTableItem : public Q3TableItem
 {
 public:
 
-  MyTableItem(QTable *table, CGRIDVIEW *view);
+  MyTableItem(Q3Table *table, CGRIDVIEW *view);
   ~MyTableItem();
 
   virtual int alignment() const;
@@ -106,11 +110,11 @@ private:
 
   CGRIDVIEW *_view;
 	MyTableData _default;
-  QIntDict<MyTableData> _dict;
+  Q3IntDict<MyTableData> _dict;
 	MyTableData *_data;
 };
 
-class MyTable : public QTable
+class MyTable : public Q3Table
 {
   Q_OBJECT
 
@@ -131,14 +135,14 @@ public:
   //void setTableView(CTABLEVIEW *tv) { tableView = tv; }
 
   void resizeData( int ) { }
-  QTableItem *item( int r, int c ) const;
-  void setItem(int r, int c, QTableItem *i) { }
+  Q3TableItem *item( int r, int c ) const;
+  void setItem(int r, int c, Q3TableItem *i) { }
   void clearCell( int r, int c ) {  }
   void insertWidget( int r, int c, QWidget *w ) { }
   QWidget *cellWidget( int r, int c ) const { return 0; }
   void clearCellWidget( int r, int c ) { }
   MyTableItem *item() const { return _item; }
-  void takeItem( QTableItem * ) { }
+  void takeItem( Q3TableItem * ) { }
 
   void swapRows(int row1, int row2, bool swapHeader = FALSE) { }
   void swapColumns(int col1, int col2, bool swapHeader = FALSE) { }
@@ -194,9 +198,9 @@ class CGridView : public QObject
 public:
 
   static CGridView manager;
-  static bool check(QTable *, int, int);
-  static bool checkRow(QTable *, int);
-  static bool checkCol(QTable *, int);
+  static bool check(Q3Table *, int, int);
+  static bool checkRow(Q3Table *, int);
+  static bool checkCol(Q3Table *, int);
 
 public slots:
 

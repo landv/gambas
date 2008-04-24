@@ -26,10 +26,11 @@
 #define __CMENU_H
 
 #include "gambas.h"
+#include <QAction>
 #include <qmenudata.h>
-#include <qpopupmenu.h>
-#include <qintdict.h>
-#include <qptrlist.h>
+#include <q3popupmenu.h>
+#include <q3intdict.h>
+#include <q3ptrlist.h>
 #include <qkeysequence.h>
 
 #include "CWidget.h"
@@ -43,8 +44,7 @@ extern GB_DESC CMenuChildrenDesc[];
 #define THIS  OBJECT(CMENU)
 #define CONTROL  OBJECT(CWIDGET)
 
-#define QPOPUPMENU(object) ((QPopupMenu *)((CWIDGET *)object)->widget)
-#define QMENUDATA(object) ((QMenuData *)((CWIDGET *)object)->widget)
+#define QMENU(object) ((QMenu *)((CWIDGET *)object)->widget)
 
 #define CMENU_is_popup(_menu) (((CMENU *)_menu)->children != NULL)
 #define CMENU_is_top(_menu) (((CMENU *)_menu)->parent == NULL)
@@ -70,10 +70,11 @@ typedef
     CWIDGET widget;
     char *text;
     CPICTURE *picture;
-    QMenuData *container;
+    QMenu *parentMenu;
+    QMenuBar *parentMenuBar;
     struct _CMENU *parent;
     QWidget *toplevel;
-    QList<struct _CMENU> *children;
+    QList<struct _CMENU *> *children;
     int id;
     int pos;
     QKeySequence *accel;
@@ -86,11 +87,14 @@ typedef
     }
   CMENU;
 
-typedef
-  QIntDict<CMENU> CMenuDict;
+#define CONTAINER_FUNC(_menu, _func) ((_menu)->parentMenuBar ? (_menu)->parentMenuBar->_func : (_menu)->parentMenu->_func)
+#define CONTAINER_CALL(_menu, _func) { if ((_menu)->parentMenuBar) { (_menu)->parentMenuBar->_func; } else { (_menu)->parentMenu->_func; } }
 
 typedef
-  QPtrList<CMENU> CMenuList;
+  Q3IntDict<CMENU> CMenuDict;
+
+typedef
+  QList<CMENU *> CMenuList;
 
 
 class CMenu : public QObject
