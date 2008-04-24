@@ -289,12 +289,13 @@ bool MyEventLoop::processEvents(ProcessEventsFlags flags)
 
 /** MyApplication **********************************************************/
 
+bool MyApplication::_tooltip_disable = false;
+int MyApplication::_event_filter = 0;
+QEventLoop *MyApplication::eventLoop = 0;
+
 MyApplication::MyApplication(int &argc, char **argv)
 : QApplication(argc, argv)
 {
-	_event_filter = 0;
-	_tooltip_disable = false;
-	eventLoop = 0;
 }
 
 static bool QT_EventFilter(QEvent *e)
@@ -952,9 +953,9 @@ int EXPORT GB_INFO(const char *key, void **value)
 }
 #endif
 
-#ifndef NO_X_WINDOW
+/*#ifndef NO_X_WINDOW
 extern Time	qt_x_time;
-#endif
+#endif*/
 
 static void activate_main_window(int value)
 {
@@ -971,9 +972,9 @@ static void activate_main_window(int value)
 		win = (MyMainWindow *)win->topLevelWidget();
 	if (win)
 	{
-		#ifndef NO_X_WINDOW
+		/*#ifndef NO_X_WINDOW
 		qt_x_time = CurrentTime;
-		#endif
+		#endif*/
 		win->raise();
 		win->setActiveWindow();
 	}
