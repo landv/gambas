@@ -111,7 +111,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CSPINBOX_text)
 
-  GB.ReturnNewZeroString(WIDGET->cleanText());
+  GB.ReturnNewZeroString(TO_UTF8(WIDGET->cleanText()));
 
 END_PROPERTY
 
