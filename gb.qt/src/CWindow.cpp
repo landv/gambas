@@ -297,6 +297,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
     #endif
     {
       win = new MyMainWindow(CWINDOW_Main ? (MyMainWindow *)QWIDGET(CWINDOW_Main) : 0, name);
+      //win = new MyMainWindow(0, name);
       container = new MyContainer(win);
 		  container->raise();
       THIS->embedded = false;

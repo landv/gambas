@@ -27,10 +27,8 @@
 
 #include "gambas.h"
 
-#include <qobject.h>
-#include <qevent.h>
-#include <qapplication.h>
-//Added by qt3to4:
+#include <QEvent>
+#include <QApplication>
 #include <QTimerEvent>
 #include <QEventLoop>
 
@@ -71,7 +69,7 @@ public:
   virtual bool x11EventFilter(XEvent *e);
  	#endif
   virtual bool eventFilter(QObject *o, QEvent *e);
-  virtual bool notify(QObject *o, QEvent *e);
+  //virtual bool notify(QObject *o, QEvent *e);
   
   static void setEventFilter(bool set);
   
@@ -111,6 +109,7 @@ void MAIN_update_scale(void);
 const char *QT_ToUTF8(const QString &str);
 void QT_RegisterAction(void *object, const char *key, int on);
 void QT_RaiseAction(const char *key);
-Q3MimeSourceFactory *QT_MimeSourceFactory(void);
+
+void show_slider();
 
 #endif

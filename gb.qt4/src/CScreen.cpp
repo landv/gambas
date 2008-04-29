@@ -22,9 +22,10 @@
 
 #define __CDESKTOP_CPP
 
-#include <qapplication.h>
-#include <qtooltip.h>
+#include <QApplication>
 #include <QDesktopWidget>
+#include <QX11Info>
+#include <QToolTip>
 
 #include "gambas.h"
 #include "main.h"
@@ -40,29 +41,6 @@
 
 static int screen_busy = 0;
 char *CAPPLICATION_Theme = 0;
-
-#if 0
-
-/* NET WM: read the _NET_WORKAREA property of the root window to get the viewport
-   of each desktop
-*/
-	if (XGetWindowProperty(p->display, p->root, net_workarea, 0l,
-			       (p->number_of_desktops * 4), False, XA_CARDINAL,
-			       &type_ret, &format_ret, &nitems_ret, &unused,
-			       &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == (unsigned) (p->number_of_desktops * 4)) {
-		int *d = (int *) data_ret;
-		int i, j;
-		for (i = 0, j = 0; i < p->number_of_desktops; i++) {
-		    p->workarea[i].pos.x       = d[j++];
-		    p->workarea[i].pos.y       = d[j++];
-		    p->workarea[i].size.width  = d[j++];
-		    p->workarea[i].size.height = d[j++];
-		}
-	    }
-#endif
 
 
 BEGIN_METHOD_VOID(CAPPLICATION_exit)
@@ -91,14 +69,14 @@ BEGIN_PROPERTY(CDESKTOP_resolution)
 	#ifdef NO_X_WINDOW
   	GB.ReturnInteger(72);
 	#else
-  	GB.ReturnInteger(QPaintDevice::x11AppDpiY());
+  	GB.ReturnInteger(QX11Info::appDpiY());
   #endif
 
 END_PROPERTY
 
 static void set_font(QFont &font, void *object = 0)
 {
-  qApp->setFont(font, true);
+  qApp->setFont(font);
   MAIN_update_scale();
 }
 
@@ -138,7 +116,7 @@ BEGIN_PROPERTY(CAPP_busy)
     busy = VPROP(GB_INTEGER);
 
     if (screen_busy == 0 && busy > 0)
-      qApp->setOverrideCursor(Qt::waitCursor);
+      qApp->setOverrideCursor(Qt::WaitCursor);
     else if (screen_busy > 0 && busy == 0)
       qApp->restoreOverrideCursor();
 

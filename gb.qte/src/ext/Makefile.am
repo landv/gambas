@@ -17,8 +17,8 @@ gb_qte_ext_la_SOURCES = \
  garray.h garray.cpp \
  gstring.h gstring.cpp \
  gdocument.h gdocument.cpp \
- gview.h moc_gview.cpp gview.cpp \
- CEditor.h moc_CEditor.cpp CEditor.cpp \
+ gview.h gview_moc.cpp gview.cpp \
+ CEditor.h CEditor_moc.cpp CEditor.cpp \
  CDraw.h CDraw.cpp \
  CDrawing.h CDrawing_moc.cpp CDrawing.cpp \
  CPrinter.h CPrinter_moc.cpp CPrinter.cpp \

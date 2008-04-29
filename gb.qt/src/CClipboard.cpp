@@ -208,7 +208,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
         goto _BAD_FORMAT;
     }
 
-    drag->setText(VARG(data)._string.value);
+    drag->setText(TO_QSTRING(VARG(data)._string.value));
     drag->setSubtype(format);
 
     QApplication::clipboard()->setData(drag);

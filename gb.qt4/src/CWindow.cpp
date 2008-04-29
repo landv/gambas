@@ -27,9 +27,7 @@
 #include <qnamespace.h>
 #include <qapplication.h>
 #include <qmenubar.h>
-#include <q3frame.h>
 #include <qsizepolicy.h>
-#include <q3toolbar.h>
 #include <qnamespace.h>
 #include <qpixmap.h>
 #include <qbitmap.h>
@@ -45,6 +43,7 @@
 #include <QLayout>
 #include <QEventLoop>
 #include <QDesktopWidget>
+#include <QAction>
 
 #include "main.h"
 
@@ -131,6 +130,7 @@ static void clear_mask(CWINDOW *_object)
 	//qDebug("clear_mask: %p", _object);
 
 	THIS->reallyMasked = false;
+	THIS->container->setPalette(QPalette());
 
   if (!THIS->toplevel)
   {
@@ -155,6 +155,7 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
   QPixmap p;
   QColor c;
   QWidget *root = THIS->container;
+  QPalette palette(root->palette());
   //QBitmap b;
 
   //qDebug("define_mask: visible: %d", WIDGET->isVisible());
@@ -169,10 +170,9 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
   if (!new_pict)
   {
     root->clearMask();
-  	root->setErasePixmap(0);
-    root->setBackgroundOrigin(QWidget::WidgetOrigin);
-    root->setBackgroundMode(Qt::PaletteBackground);
-
+  	//root->setErasePixmap(0);
+    //root->setBackgroundOrigin(QWidget::WidgetOrigin);
+    //root->setBackgroundMode(Qt::PaletteBackground);
     clear_mask(THIS);
   }
   else
@@ -186,13 +186,13 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
       else
         clear_mask(THIS);
 
-      root->setErasePixmap(p);
+      //root->setErasePixmap(p);
 
-      if (THIS->toplevel)
-      {
-        root->setBackgroundOrigin(QWidget::WindowOrigin);
-        root->move(0, 0);
-      }
+      //if (THIS->toplevel)
+      //{
+      //  root->setBackgroundOrigin(QWidget::WindowOrigin);
+      //  root->move(0, 0);
+      //}
     }
     else
     {
@@ -204,11 +204,14 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
       //if (THIS->toplevel)
       //	WINDOW->setCentralWidget(root);
 
-      root->setBackgroundOrigin(QWidget::WidgetOrigin);
-      root->setErasePixmap(p);
+      //root->setBackgroundOrigin(QWidget::WidgetOrigin);
+      //root->setErasePixmap(p);
     }
   }
-
+  
+	palette.setBrush(root->backgroundRole(), QBrush(p));
+ 	root->setPalette(palette);
+ 
   THIS->masked = new_mask;
 
   if (new_pict != THIS->picture)
@@ -361,8 +364,8 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
       return;
     }*/
 
-    CWindow::dict.insert(_object, OBJECT(const CWINDOW));
-    CWindow::count = CWindow::dict.count();
+    CWindow::list.append(THIS);
+    CWindow::count = CWindow::list.count();
 
     //qDebug("CWindow::count = %d (%p %s)", CWindow::count, _object, THIS->embedded ? "E" : "W");
 
@@ -390,7 +393,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 
     for(;;)
     {
-      qApp->processEvents(QEventLoop::ExcludeUserInput);
+      qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
       if (CWINDOW_EmbedState)
         break;
       usleep(10000);
@@ -457,51 +460,32 @@ BEGIN_METHOD_VOID(CWINDOW_free)
 
   //qDebug("CWINDOW_free");
 
-  if (THIS->menu)
-    delete THIS->menu;
-
-  //PICTURE_set(&(window->icon), 0);
   GB.StoreObject(NULL, POINTER(&(THIS->icon)));
   GB.StoreObject(NULL, POINTER(&(THIS->picture)));
   GB.Unref(POINTER(&THIS->focus));
-
-  /*CALL_METHOD_VOID(CWIDGET_delete);*/
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CWINDOW_next)
 
-  CWINDOW *next;
-  Q3PtrDictIterator<CWINDOW> *iter = ENUM(Q3PtrDictIterator<CWINDOW> *);
+  int index = ENUM(int);
 
-  if (iter == NULL)
-  {
-    iter = new Q3PtrDictIterator<CWINDOW>(CWindow::dict);
-    ENUM(Q3PtrDictIterator<CWINDOW> *) = iter;
-  }
+	if (index >= CWindow::list.count())
+	{
+		GB.StopEnum();
+		return;
+	}
 
-  next = iter->current();
-
-  // ### Memory leak if you abort the enumeration!
-
-  if (next == NULL)
-  {
-    delete iter;
-    //ENUM(QPtrDictIterator<CWINDOW>) = NULL;
-    GB.StopEnum();
-    return;
-  }
-
-  ++(*iter);
-  GB.ReturnObject(next);
+	GB.ReturnObject(CWindow::list.at(index));
+	ENUM(int) = index + 1;
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CWINDOW_count)
 
-  GB.ReturnInteger(CWindow::dict.count());
+  GB.ReturnInteger(CWindow::list.count());
 
 END_PROPERTY
 
@@ -737,13 +721,13 @@ END_PROPERTY
 BEGIN_PROPERTY(CWINDOW_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->caption()));
+		GB.ReturnNewZeroString(TO_UTF8(WIDGET->windowTitle()));
 	else
 	{
 		QEvent e(EVENT_TITLE);
 		QString s = QSTRING_PROP();
 		THIS->title = s.length() > 0;
-		WIDGET->setCaption(s);
+		WIDGET->setWindowTitle(s);
 		GB.Raise(THIS, EVENT_Title, 0);
     qApp->sendEvent(WIDGET, &e);
 	}
@@ -754,8 +738,8 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_menu_count)
 
-  if (THIS->menu)
-    GB.ReturnInteger(THIS->menu->count());
+  if (THIS->menuBar)
+    GB.ReturnInteger(THIS->menuBar->actions().count());
   else
     GB.ReturnInteger(0);
 
@@ -767,7 +751,7 @@ BEGIN_METHOD_VOID(CWINDOW_menu_next)
   CWINDOW *window = OBJECT(CWINDOW);
   int index;
 
-  if (window->menu == NULL)
+  if (window->menuBar == NULL)
   {
     GB.StopEnum();
     return;
@@ -775,13 +759,13 @@ BEGIN_METHOD_VOID(CWINDOW_menu_next)
 
   index = ENUM(int);
 
-  if (index >= window->menu->count())
+  if (index >= window->menuBar->actions().count())
   {
     GB.StopEnum();
     return;
   }
 
-  GB.ReturnObject(window->menu->at(index));
+  GB.ReturnObject(CMenu::dict[window->menuBar->actions().at(index)]);
 
   ENUM(int) = index + 1;
 
@@ -793,13 +777,13 @@ BEGIN_METHOD(CWINDOW_menu_get, GB_INTEGER index)
   CWINDOW *window = OBJECT(CWINDOW);
   int index = VARG(index);
 
-  if (window->menu == NULL || index < 0 || index >= (int)window->menu->count())
+  if (window->menuBar == NULL || index < 0 || index >= window->menuBar->actions().count())
   {
     GB.Error(GB_ERR_BOUND);
     return;
   }
 
-  GB.ReturnObject(window->menu->at(index));
+  GB.ReturnObject(CMenu::dict[window->menuBar->actions().at(index)]);
 
 END_PROPERTY
 
@@ -851,7 +835,7 @@ BEGIN_PROPERTY(CWINDOW_icon)
 		//if (THIS->toplevel)
 		//	SET_PIXMAP(WINDOW->setIcon, &(THIS->icon), PROP(GB_OBJECT));
 		//else
-			SET_PIXMAP(WIDGET->setIcon, &(THIS->icon), PROP(GB_OBJECT));
+			SET_PIXMAP(WIDGET->setWindowIcon, &(THIS->icon), PROP(GB_OBJECT));
 		//WIDGET->setIcon(PICTURE_set(&(THIS->icon), PROPERTY(CPICTURE *)));
     GB.Raise(THIS, EVENT_Icon, 0);
     qApp->sendEvent(WIDGET, &e);
@@ -1428,13 +1412,8 @@ GB_DESC CFormDesc[] =
 
 ***************************************************************************/
 
-#if QT_VERSION >= 0x030005
 MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
-  Q3MainWindow::Q3MainWindow(parent, name, embedded ? Qt::Widget : (parent ? Qt::Window : (Qt::Window | Qt::WGroupLeader)))
-#else
-MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
-  Q3MainWindow::Q3MainWindow(0, name) //, 0, Qt::WType_TopLevel) // | (copy ? copy->getWFlags() : 0)) // | Qt::WDestructiveClose)
-#endif
+  QMainWindow::QMainWindow(parent, embedded ? Qt::Widget : Qt::Window)
 {
   sg = 0;
   //shown = false;
@@ -1443,10 +1422,12 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
   _resizable = true;
   //state = StateNormal;
   mustCenter = false;
-
-	setKeyCompression(true);
+  _deleted = false;
+	
+	setAttribute(Qt::WA_KeyCompression, true);
+	setAttribute(Qt::WA_InputMethodEnabled, true);
+	setObjectName(name);
 	//setFocusPolicy(ClickFocus);
-	setInputMethodEnabled(true);
 
 	_activate = false;
 }
@@ -1454,12 +1435,12 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 
 static void remove_window_check_quit(CWINDOW *ob)
 {
-  CWindow::dict.remove(ob);
+  CWindow::list.removeAll(ob);
 
   //if (ob == window_main)
   //  window_main = NULL;
 
-  CWindow::count = CWindow::dict.count();
+  CWindow::count = CWindow::list.count();
   //qDebug("~MyMainWindow: CWindow::count = %d (%p %s)", CWindow::count, ob, ob->embedded ? "E" : "W");
 
   MAIN_check_quit();
@@ -1493,10 +1474,12 @@ MyMainWindow::~MyMainWindow()
 
   GB.Detach(THIS);
 
-	if (THIS->menu)
-		CMenu::unrefChildren(THIS->menu);
+	if (THIS->menuBar)
+		CMenu::unrefChildren(THIS->menuBar);
 
 	remove_window_check_quit(THIS);
+	
+	_deleted = true;
 
   //qDebug("~MyMainWindow %p (end)", this);
 }
@@ -1508,7 +1491,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
   {
 	  //CWINDOW *ob = (CWINDOW *)CWidget::get(this);
   	//qDebug("_activate: %s %p", GB.GetClassName(ob), ob);
-    setActiveWindow();
+    activateWindow();
     raise();
     setFocus();
     _activate = false;
@@ -1582,7 +1565,7 @@ void MyMainWindow::showActivate(QWidget *transient)
   CWIDGET_set_flag(THIS, WF_IN_SHOW);
 
 	if (!THIS->title && _border)
-		setCaption(GB.Application.Title());
+		setWindowTitle(GB.Application.Title());
 
   initProperties();
 
@@ -1639,7 +1622,7 @@ void MyMainWindow::showActivate(QWidget *transient)
     else
     {
 			raise();
-			setActiveWindow();
+			activateWindow();
     }
 
   }
@@ -1654,8 +1637,8 @@ void MyMainWindow::showModal(void)
   Qt::WindowFlags flags = windowFlags();
   CWIDGET *_object = CWidget::get(this);
   bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
-  QWidget *parent = parentWidget();
-  QWidget *reparent;
+  //QWidget *parent = parentWidget();
+  //QWidget *reparent;
   CWINDOW *save = CWINDOW_Current;
   QPoint p = pos();
   QEventLoop *old;
@@ -1672,7 +1655,7 @@ void MyMainWindow::showModal(void)
 
   mustCenter = true;
 
-  reparent = qApp->activeWindow();
+  /*reparent = qApp->activeWindow();
   if (!reparent && CWINDOW_Main)
   {
     reparent = CWINDOW_Main->widget.widget;
@@ -1680,7 +1663,8 @@ void MyMainWindow::showModal(void)
       reparent = 0;
   }
 
-  doReparent(reparent, windowFlags() | Qt::WStyle_DialogBorder | Qt::WShowModal, p);
+  doReparent(reparent, windowFlags(), p);*/
+  setWindowModality(Qt::WindowModal);
 
   if (_resizable && _border)
   {
@@ -1719,8 +1703,8 @@ void MyMainWindow::showModal(void)
   {
     setSizeGrip(false);
     //clearWState(WShowModal);
-    setWindowFlags(flags & ~Qt::WShowModal);
-    doReparent(parent, flags, p);
+    setWindowModality(Qt::NonModal);
+    //doReparent(parent, flags, p);
   }
 }
 
@@ -1750,7 +1734,7 @@ void MyMainWindow::moveSizeGrip()
   window = (CWINDOW *)CWidget::get(this);
   cont = window->container;
 
-	if (qApp->reverseLayout())
+	if (qApp->isRightToLeft())
   	sg->move(cont->rect().bottomLeft() - sg->rect().bottomLeft());
 	else
   	sg->move(cont->rect().bottomRight() - sg->rect().bottomRight());
@@ -1772,8 +1756,8 @@ void MyMainWindow::setSizeGrip(bool on)
     sg->adjustSize();
     moveSizeGrip();
     sg->lower();
-    if (paletteBackgroundPixmap())
-      sg->setBackgroundOrigin(QWidget::AncestorOrigin);
+    //if (paletteBackgroundPixmap())
+    //  sg->setBackgroundOrigin(QWidget::AncestorOrigin);
     sg->show();
   }
 }
@@ -1789,9 +1773,9 @@ void MyMainWindow::setBorder(bool b, bool force)
 	flags = windowFlags();
 	
 	if (b)
-		flags |= Qt::WType_TopLevel;
+		flags &= ~Qt::FramelessWindowHint;
 	else
-		flags |= Qt::WStyle_Customize | Qt::WStyle_NoBorderEx | Qt::WType_TopLevel;
+		flags |= Qt::FramelessWindowHint;
 	
 	doReparent(parentWidget(), flags, pos());
 }
@@ -1906,7 +1890,7 @@ void MyMainWindow::moveEvent(QMoveEvent *e)
 
   //qDebug("Move: (%s %p) %d %d", GB.GetClassName(THIS), THIS, e->pos().x(), e->pos().y());
 
-  Q3MainWindow::moveEvent(e);
+  QMainWindow::moveEvent(e);
 
   //qDebug("Move (pos %d %d) (oldPos %d %d)", e->pos().x(), e->pos().y(), e->oldPos().x(), e->oldPos().y());
   //qDebug("     (geom %d %d) (fgeom %d %d)", geometry().x(), geometry().y(), frameGeometry().x(), frameGeometry().y());
@@ -2007,7 +1991,7 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 
     GB.FreeString(&CKEY_info.text);
     GB.NewString(&CKEY_info.text, TO_UTF8(e->text()), 0);
-    CKEY_info.state = e->state();
+    CKEY_info.state = e->modifiers();
     CKEY_info.code = e->key();
 
     cancel = GB.Raise(THIS, EVENT_KeyPress, 0);
@@ -2018,7 +2002,7 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
       return;
   }
   
-  if ((e->state() == 0 || (e->state() & Qt::Keypad && e->key() == Qt::Key_Enter )))
+  if ((e->modifiers() == Qt::NoModifier || (e->modifiers() & Qt::KeypadModifier && e->key() == Qt::Key_Enter )))
   {
     switch (e->key())
     {
@@ -2055,22 +2039,20 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 
 static bool closeAll()
 {
+	QList<CWINDOW *> list(CWindow::list);
   CWINDOW *win;
-  Q3PtrDictIterator<CWINDOW> iter(CWindow::dict);
+  int i;
 
   //qDebug("CLOSE ALL");
 
-  for(;;)
+  for (i = 0; i < list.count(); i++)
   {
-    win = iter.current();
-    if (!win)
-      break;
+    win = list.at(i);
     if (win != CWINDOW_Main && do_close(win, 0))
     {
       //qDebug("ABORTED %p", win);
       return true;
     }
-    ++iter;
   }
 
   return false;
@@ -2078,18 +2060,15 @@ static bool closeAll()
 
 static void deleteAll()
 {
+	QList<CWINDOW *> list(CWindow::list);
   CWINDOW *win;
-  Q3PtrDictIterator<CWINDOW> iter(CWindow::dict);
+  int i;
 
   //qDebug("DELETE ALL");
 
-  for(;;)
+  for (i = 0; i < list.count(); i++)
   {
-    win = iter.current();
-    if (!win)
-      break;
-
-    ++iter;
+    win = list.at(i);
 
     if (win != CWINDOW_Main)
     {
@@ -2118,8 +2097,6 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 
   //if (_object == CWINDOW_Main && qApp->loopLevel() > 1)
   //  return;
-
-  //qDebug("closeEvent");
 
   if (MAIN_in_wait)
     goto IGNORE;
@@ -2275,15 +2252,12 @@ void MyMainWindow::defineMask()
 void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &pos, bool showIt)
 {
   CWINDOW *_object = (CWINDOW *)CWidget::get(this);
-  bool hasIcon;
-  QPixmap p;
+  QIcon icon;
  	#ifndef NO_X_WINDOW
   bool saveProp = false;
  	#endif
 
-  hasIcon = icon() != 0;
-  if (hasIcon)
-    p = *icon();
+  icon = windowIcon();
 
  	#ifndef NO_X_WINDOW
   if (THIS->toplevel && THIS->shown)
@@ -2298,17 +2272,14 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 
 	if (THIS->toplevel)
 	{
-		f |= Qt::WType_TopLevel;
-		if (!parent)
-			f |= Qt::WGroupLeader;
-		else
-			f &= ~Qt::WGroupLeader;
+		f |= Qt::Window;
 	}
 	else	
-		f &= ~Qt::WType_TopLevel;
+		f &= ~Qt::Window;
 
-  reparent(parent, f, pos, showIt);
+  setParent(parent, f);
   move(pos);
+  if (showIt) show();
   //qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
   
  	#ifndef NO_X_WINDOW
@@ -2321,8 +2292,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 		}
 	#endif
 
-  if (hasIcon)
-    setIcon(p);
+  setWindowIcon(icon);
   //qDebug("new parent = %p", parentWidget());
 }
 
@@ -2371,11 +2341,14 @@ void MyMainWindow::hide(void)
 {
   CWIDGET *_object = CWidget::get(this);
   THIS->hidden = TRUE;
-  Q3MainWindow::hide();
+  QMainWindow::hide();
 }
 
 void MyMainWindow::setName(const char *name, CWIDGET *control)
 {
+	if (_deleted)
+		return;
+		
 	names.remove(name);
 	if (control)
 		names.insert(name, control);
@@ -2388,7 +2361,7 @@ void MyMainWindow::resize(int w, int h)
 	if (!_resizable)
 		setResizable(true);
 		
-	Q3MainWindow::resize(w, h);
+	QMainWindow::resize(w, h);
 	
 	if (_resizable != save)
 		setResizable(save);
@@ -2401,7 +2374,7 @@ void MyMainWindow::setGeometry(int x, int y, int w, int h)
 	if (!_resizable)
 		setResizable(true);
 		
-	Q3MainWindow::setGeometry(x, y, w, h);
+	QMainWindow::setGeometry(x, y, w, h);
 	
 	if (_resizable != save)
 		setResizable(save);
@@ -2416,7 +2389,7 @@ void MyMainWindow::setGeometry(int x, int y, int w, int h)
 
 CWindow CWindow::manager;
 int CWindow::count = 0;
-Q3PtrDict<CWINDOW> CWindow::dict;
+QList<CWINDOW *> CWindow::list;
 
 /*static void post_activate_event(void *ob)
 {

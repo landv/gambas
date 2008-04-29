@@ -2,7 +2,7 @@ COMPONENT = gb.qt4
 include $(top_srcdir)/component.am
 include $(top_srcdir)/gb.qt.am
 
-SUBDIRS = ext @QTOPENGL_DIR@
+SUBDIRS = @QTEXT_DIR@ @QTOPENGL_DIR@
 EXTRA_DIST = trayicon.xpm
 
 INCLUDES = -DQT3_SUPPORT @QT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
@@ -35,8 +35,6 @@ gb_qt4_la_SOURCES = \
  CFrame.h CFrame_moc.cpp CFrame.cpp \
  CPanel.h CPanel_moc.cpp CPanel.cpp \
  CRadioButton.h CRadioButton_moc.cpp CRadioButton.cpp \
- CTreeView.h CTreeView_moc.cpp CTreeView.cpp \
- CGridView.h CGridView_moc.cpp CGridView.cpp \
  CTextArea.h CTextArea_moc.cpp CTextArea.cpp \
  CTabStrip.h CTabStrip_moc.cpp CTabStrip.cpp \
  CDialog.h CDialog_moc.cpp CDialog.cpp \
@@ -49,7 +47,6 @@ gb_qt4_la_SOURCES = \
  CDrawingArea.h CDrawingArea_moc.cpp CDrawingArea.cpp \
  CProgress.h CProgress_moc.cpp CProgress.cpp \
  CMessage.h CMessage_moc.cpp CMessage.cpp \
- CIconView.h CIconView_moc.cpp CIconView.cpp \
  CSlider.h CSlider_moc.cpp CSlider.cpp \
  CScrollBar.h CScrollBar_moc.cpp CScrollBar.cpp \
  CMovieBox.h CMovieBox_moc.cpp CMovieBox.cpp \
@@ -57,5 +54,8 @@ gb_qt4_la_SOURCES = \
  CEmbedder.h CEmbedder_moc.cpp CEmbedder.cpp \
  CTrayIcon.h CTrayIcon_moc.cpp CTrayIcon.cpp \
  CSplitter.h CSplitter_moc.cpp CSplitter.cpp \
- CWatcher.h CWatcher_moc.cpp CWatcher.cpp
+ CWatcher.h CWatcher_moc.cpp CWatcher.cpp \
+ CGridView.h CGridView_moc.cpp CGridView.cpp \
+ CTreeView.h CTreeView_moc.cpp CTreeView.cpp \
+ CIconView.h CIconView_moc.cpp CIconView.cpp
  

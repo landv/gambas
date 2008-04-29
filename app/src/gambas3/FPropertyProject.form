@@ -53,12 +53,12 @@
     { Panel1 Panel
       MoveScaled(1,0,80,14)
       { btnIcon ToolButton
-        MoveScaled(68,1,12,12)
+        MoveScaled(67,1,13,13)
         Text = ("")
         Border = True
       }
       { HBox1 HBox
-        MoveScaled(0,10,67,4)
+        MoveScaled(0,10,66,4)
         Spacing = 8
         { txtMajor SpinBox
           MoveScaled(0,0,8,4)
@@ -79,7 +79,7 @@
         }
       }
       { txtName TextLabel
-        MoveScaled(0,1,67,8)
+        MoveScaled(0,1,66,8)
         Padding = 2
         Text = ("")
         Alignment = Align.Left
@@ -254,10 +254,10 @@
       Text = ("Show only components used in project")
     }
     { lstComponent ListContainer
-      MoveScaled(1,5,80,61)
+      MoveScaled(1,5,80,60)
     }
     { HBox14 HBox
-      MoveScaled(1,67,80,4)
+      MoveScaled(1,66,80,4)
       { btnHelp Button
         MoveScaled(0,0,35,4)
         Text = ("About &component...")
@@ -346,9 +346,9 @@
     Index = 4
     Text = ("Versioning")
     { panVersioning Panel
-      MoveScaled(1,1,80,65)
+      MoveScaled(1,1,80,64)
       { txtVerCtrlChange TextArea
-        MoveScaled(0,4,80,61)
+        MoveScaled(0,4,80,60)
         Font = Font["Monospace"]
         Text = ("")
         ReadOnly = True
@@ -360,7 +360,7 @@
       }
     }
     { HBox15 HBox
-      MoveScaled(1,67,80,4)
+      MoveScaled(1,66,80,4)
       Spacing = 8
       { btnUpdate Button
         MoveScaled(0,0,18,4)
@@ -381,7 +381,7 @@
     Index = 5
     Text = ("Provides")
     { tvwControl GridView
-      MoveScaled(1,1,80,70)
+      MoveScaled(1,1,80,69)
       Grid = False
       Header = GridView.Horizontal
       Scrollbar = Scroll.Vertical

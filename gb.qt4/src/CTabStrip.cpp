@@ -25,14 +25,11 @@
 #define __CTABSTRIP_CPP
 
 #include <qapplication.h>
-#include <q3frame.h>
 #include <qtabbar.h>
-#include <qtabwidget.h>
-//Added by qt3to4:
 #include <QShowEvent>
 #include <QWheelEvent>
-#include <Q3PtrList>
 #include <QEvent>
+#include <QTabWidget>
 
 #include "gambas.h"
 
@@ -60,10 +57,11 @@ public:
 	CTab(CTABSTRIP *parent, QWidget *page);
 	~CTab();
 	
+	int index() { return WIDGET->indexOf(widget); }
 	bool isEmpty() { return widget->children().count() == 0; }
-	void ensureVisible() { WIDGET->showPage(widget); }
-	void setEnabled(bool e) { WIDGET->setTabEnabled(widget, e); }
-	bool isEnabled() { return WIDGET->isTabEnabled(widget); }
+	void ensureVisible() { WIDGET->setCurrentIndex(index()); }
+	void setEnabled(bool e) { WIDGET->setTabEnabled(index(), e); }
+	bool isEnabled() { return WIDGET->isTabEnabled(index()); }
 	bool isVisible() { return visible; }
 	void setVisible(bool v);
 	void updateIcon();
@@ -77,9 +75,7 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 	_object = parent;
 	widget = page; 
 	icon = 0; 
-	//THIS->id++;
-	//id = THIS->id;
-	id = THIS->stack->count();
+	id = THIS->stack.count();
 	visible = true; 
   setEnabled(WIDGET->isEnabled());
 }	
@@ -100,17 +96,17 @@ void CTab::setVisible(bool v)
 	
 	if (!visible)
 	{
-		text = WIDGET->tabLabel(widget);
-		WIDGET->removePage(widget);
+		text = WIDGET->tabText(index());
+		WIDGET->removeTab(index());
 	}
 	else
 	{
-		for (i = 0; i < (int)THIS->stack->count(); i++)
+		for (i = 0; i < (int)THIS->stack.count(); i++)
 		{
-			if (id == THIS->stack->at(i)->id)
+			if (id == THIS->stack.at(i)->id)
 				break;
 		}
-		WIDGET->insertTab(widget, text, i);
+		WIDGET->insertTab(i, widget, text);
 	  setEnabled(WIDGET->isEnabled());
 		updateIcon();
 	}
@@ -124,7 +120,7 @@ void CTab::updateIcon()
 	if (icon)
 		CWIDGET_iconset(iconset, *(icon->pixmap));
 	
-	WIDGET->setTabIconSet(widget, iconset);
+	WIDGET->setTabIcon(index(), iconset);
 }
 
 /** MyTabWidget **********************************************************/
@@ -141,8 +137,8 @@ void MyTabWidget::setEnabled(bool e)
 	
 	QTabWidget::setEnabled(e);
 	
-	for (i = 0; i < (int)THIS->stack->count(); i++)
-		THIS->stack->at(i)->widget->setEnabled(e);
+	for (i = 0; i < (int)THIS->stack.count(); i++)
+		THIS->stack.at(i)->widget->setEnabled(e);
 }
 
 void MyTabWidget::forceLayout()
@@ -198,7 +194,7 @@ void MyTabWidget::fontChange(const QFont &oldFont)
 
 static bool remove_page(void *_object, int i)
 {
-	CTab *tab = THIS->stack->at(i);
+	CTab *tab = THIS->stack.at(i);
 
 	if (!tab->isEmpty())
 	{
@@ -207,9 +203,10 @@ static bool remove_page(void *_object, int i)
 	}
 
 	THIS->lock = true;
-	WIDGET->removePage(tab->widget);
+	WIDGET->removeTab(tab->index());
 	delete tab->widget;
-	THIS->stack->remove(i);
+	delete tab;
+	THIS->stack.removeAt(i);
 	THIS->lock = false;
 
 	return false;
@@ -217,7 +214,7 @@ static bool remove_page(void *_object, int i)
 
 static bool set_tab_count(void *_object, int new_count)
 {
-  int count = THIS->stack->count();
+  int count = THIS->stack.count();
   int i;
   int index;
   QString label;
@@ -239,24 +236,24 @@ static bool set_tab_count(void *_object, int new_count)
     	tab = new CTab(THIS, new MyContainer(WIDGET));
 
       label.sprintf("Tab %d", i);
-      WIDGET->insertTab(tab->widget, label);
+      WIDGET->addTab(tab->widget, label);
       
-      THIS->stack->append(tab);
+      THIS->stack.append(tab);
     }
 
     index = new_count - 1;
 
-		THIS->stack->at(index)->ensureVisible();
-		THIS->container = THIS->stack->at(index)->widget;    
+		THIS->stack.at(index)->ensureVisible();
+		THIS->container = THIS->stack.at(index)->widget;    
   }
   else
   {
-    index = WIDGET->currentPageIndex();
+    index = WIDGET->currentIndex();
     //same = (id == PARAM(index));
 
     for (i = new_count; i < count; i++)
     {
-      if (!THIS->stack->at(i)->isEmpty())
+      if (!THIS->stack.at(i)->isEmpty())
       {
         GB.Error("Tab is not empty");
         return true;
@@ -266,15 +263,15 @@ static bool set_tab_count(void *_object, int new_count)
 		if (index >= new_count)
 			index = new_count - 1;
 	
-		THIS->stack->at(index)->ensureVisible();
-		THIS->container = THIS->stack->at(index)->widget;
+		THIS->stack.at(index)->ensureVisible();
+		THIS->container = THIS->stack.at(index)->widget;
     
     for (i = count - 1; i >= new_count; i--)
     {
 			remove_page(THIS, i);
     }
 
-    //THIS->stack->resize(new_count);
+    //THIS->stack.resize(new_count);
     //THIS->icon->resize(new_count);
   }
 
@@ -286,12 +283,10 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 
   MyTabWidget *wid = new MyTabWidget(QCONTAINER(VARG(parent))); //, 0, Qt::WNoMousePropagation);
 
-  QObject::connect(wid, SIGNAL(currentChanged(QWidget *)), &CTabStrip::manager, SLOT(currentChanged(QWidget *)));
+  QObject::connect(wid, SIGNAL(currentChanged(int)), &CTabStrip::manager, SLOT(currentChanged(int)));
 
   THIS->container = NULL;
   THIS->index = -1;
-  THIS->stack = new Q3PtrList<CTab>;
-  THIS->stack->setAutoDelete(true);
 
   CWIDGET_new(wid, (void *)_object, true);
   set_tab_count(THIS, 1);
@@ -304,15 +299,13 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTABSTRIP_free)
 
-  delete OBJECT(CTABSTRIP)->stack;
-
 END_METHOD
 
 
 BEGIN_PROPERTY(CTABSTRIP_count)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(THIS->stack->count());
+    GB.ReturnInteger(THIS->stack.count());
   else
     set_tab_count(THIS, VPROP(GB_INTEGER));
 
@@ -321,7 +314,7 @@ END_PROPERTY
 
 static bool check_index(CTABSTRIP *_object, int index)
 {
-  if (index < 0 || index >= (int)THIS->stack->count())
+  if (index < 0 || index >= (int)THIS->stack.count())
   {
     GB.Error("Bad index");
     return true;
@@ -332,12 +325,12 @@ static bool check_index(CTABSTRIP *_object, int index)
 
 static int get_real_index(CTABSTRIP *_object)
 {
-	QWidget *current = WIDGET->currentPage();
 	int i;
-	
-	for (i = 0; i < (int)THIS->stack->count(); i++)
+	QWidget *current = WIDGET->currentWidget();
+
+	for (i = 0; i < (int)THIS->stack.count(); i++)
 	{
-		if (THIS->stack->at(i)->widget == current)
+		if (THIS->stack.at(i)->widget == current)
 			return i;
 	}
 	
@@ -360,10 +353,10 @@ BEGIN_PROPERTY(CTABSTRIP_index)
     if (index == get_real_index(THIS))
       return;
 
-		if (!THIS->stack->at(index)->isVisible())
+		if (!THIS->stack.at(index)->isVisible())
 			return;
 			
-    THIS->stack->at(index)->ensureVisible();
+    THIS->stack.at(index)->ensureVisible();
   }
 
 END_PROPERTY
@@ -407,31 +400,31 @@ END_PROPERTY
 
 ***************************************************************************/
 
-static QWidget *get_page(CTABSTRIP *_object)
+static int get_page_index(CTABSTRIP *_object)
 {
   int index = THIS->index;
 
   if (index < 0)
-    return (Q3Frame *)WIDGET->currentPage();
+    return WIDGET->currentIndex();
 
-  return THIS->stack->at(index)->widget;
+  return THIS->stack.at(index)->index();
 }
 
 BEGIN_PROPERTY(CTAB_text)
 
-  QWidget *page = get_page(THIS);
+  int index = get_page_index(THIS);
 
   if (READ_PROPERTY)
   {
-  	if (page)
-    	GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabLabel(page)));
+  	if (index >= 0)
+    	GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabText(index)));
 		else
 			GB.ReturnNull();
 	}
   else
   {
-  	if (page)
-    	WIDGET->changeTab(page, QSTRING_PROP());
+  	if (index >= 0)
+    	WIDGET->setTabText(index, QSTRING_PROP());
 	}
 
 END_PROPERTY
@@ -440,28 +433,25 @@ END_PROPERTY
 BEGIN_PROPERTY(CTAB_picture)
 
   int index;
-  QWidget *page;
 
   index = THIS->index;
   if (index < 0)
-    index = WIDGET->currentPageIndex();
+    index = get_real_index(THIS);
     
-  page = get_page(THIS);
-
   if (READ_PROPERTY)
   {
   	if (index < 0)
   		GB.ReturnNull();
 		else
-    	GB.ReturnObject(THIS->stack->at(index)->icon);
+    	GB.ReturnObject(THIS->stack.at(index)->icon);
 	}
   else if (index >= 0)
   {
     CPICTURE *pict;
 
-    GB.StoreObject(PROP(GB_OBJECT), POINTER(&(THIS->stack->at(index))->icon));
+    GB.StoreObject(PROP(GB_OBJECT), POINTER(&(THIS->stack.at(index))->icon));
     pict = (CPICTURE *)VPROP(GB_OBJECT);
-		THIS->stack->at(index)->updateIcon();
+		THIS->stack.at(index)->updateIcon();
   }
 
 END_PROPERTY
@@ -469,19 +459,19 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTAB_enabled)
 
-  QWidget *page = get_page(THIS);
+  int index = get_page_index(THIS);
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->isTabEnabled(page));
+    GB.ReturnBoolean(WIDGET->isTabEnabled(index));
   else
-    WIDGET->setTabEnabled(page, VPROP(GB_BOOLEAN));
+    WIDGET->setTabEnabled(index, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTAB_visible)
 
-  CTab *tab = THIS->stack->at(THIS->index);
+  CTab *tab = THIS->stack.at(THIS->index);
 
   if (READ_PROPERTY)
     GB.ReturnBoolean(tab->isVisible());
@@ -509,7 +499,7 @@ BEGIN_METHOD_VOID(CTAB_next)
 
   //qDebug("CTAB_next: iter = (%d, %d, %d)", iter->init, iter->index, iter->child);
 
-  page = THIS->stack->at(iter->index)->widget;
+  page = THIS->stack.at(iter->index)->widget;
   list = page->children();
 
   for(;;)
@@ -537,7 +527,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CTAB_count)
 
-  QWidget *page = THIS->stack->at(THIS->index)->widget;
+  QWidget *page = THIS->stack.at(THIS->index)->widget;
 
   GB.ReturnInteger(page->children().count());
 
@@ -548,7 +538,7 @@ BEGIN_METHOD_VOID(CTAB_delete)
 
 	int index = get_real_index(THIS);
 
-	if (THIS->stack->count() == 1)
+	if (THIS->stack.count() == 1)
 	{
 		GB.Error("TabStrip cannot be empty");
 		return;
@@ -557,10 +547,10 @@ BEGIN_METHOD_VOID(CTAB_delete)
 	if (remove_page(THIS, THIS->index))
 		return;
 
-	if (index >= (int)THIS->stack->count())
-		index = THIS->stack->count() - 1;
+	if (index >= (int)THIS->stack.count())
+		index = THIS->stack.count() - 1;
 
-  THIS->stack->at(index)->ensureVisible();
+  THIS->stack.at(index)->ensureVisible();
 
   THIS->index = -1;
 
@@ -569,15 +559,15 @@ END_METHOD
 
 BEGIN_PROPERTY(CTABSTRIP_enabled)
 
-  uint i;
+  int i;
 
   if (READ_PROPERTY)
     GB.ReturnBoolean(WIDGET->isEnabled());
   else
   {
     WIDGET->setEnabled(VPROP(GB_BOOLEAN));
-    for (i = 0; i < THIS->stack->count(); i++)
-      THIS->stack->at(i)->setEnabled(VPROP(GB_BOOLEAN));
+    for (i = 0; i < THIS->stack.count(); i++)
+      THIS->stack.at(i)->setEnabled(VPROP(GB_BOOLEAN));
   }
 
 END_PROPERTY
@@ -648,11 +638,14 @@ END_PROPERTY
 
 CTabStrip CTabStrip::manager;
 
-void CTabStrip::currentChanged(QWidget *wid)
+void CTabStrip::currentChanged(int index)
 {
+	QWidget *wid;
   GET_SENDER(_object);
 
   //qDebug("CTabStrip::currentChanged: %p -> %p", THIS->container, wid);
+
+	wid = WIDGET->currentWidget();
 
 	if (wid != THIS->container)
 	{

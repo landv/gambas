@@ -24,10 +24,7 @@
 
 #define __CPANEL_CPP
 
-
-
 #include <qapplication.h>
-#include <q3frame.h>
 #include <qobject.h>
 
 #include "gambas.h"

@@ -27,8 +27,8 @@
 #include "main.h"
 #include "CWatch.h"
 
-Q3IntDict<CWatch> CWatch::readDict;
-Q3IntDict<CWatch> CWatch::writeDict;
+QHash<int, CWatch *> CWatch::readDict;
+QHash<int, CWatch *> CWatch::writeDict;
 int CWatch::count = 0;
 
 void CWatch::watch(int fd, int type, GB_WATCH_CALLBACK callback, intptr_t param)

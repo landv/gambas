@@ -25,19 +25,18 @@
 #ifndef __CWINDOW_H
 #define __CWINDOW_H
 
-#include <q3mainwindow.h>
-#include <q3asciidict.h>
-#include <qmenubar.h>
-#include <q3ptrdict.h>
-#include <qevent.h>
-#include <qpushbutton.h>
-#include <qsizegrip.h>
-//Added by qt3to4:
 #include <QMoveEvent>
 #include <QCloseEvent>
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QKeyEvent>
+#include <QMainWindow>
+#include <QHash>
+#include <QList>
+#include <QMenuBar>
+#include <QEvent>
+#include <QPushButton>
+#include <QSizeGrip>
 
 #include "gambas.h"
 #include "CContainer.h"
@@ -52,7 +51,6 @@ typedef
     QWidget *container;
     CARRANGEMENT arrangement;
     QMenuBar *menuBar;
-    CMenuList *menu;
     int ret;
     CPICTURE *icon;
     CPICTURE *picture;
@@ -119,7 +117,7 @@ class CWindow : public QObject
 
 public:
 
-  static Q3PtrDict<CWINDOW> dict;
+  static QList<CWINDOW *> list;
 
   static CWindow manager;
   static int count;
@@ -137,7 +135,7 @@ public slots:
 };
 
 
-class MyMainWindow : public Q3MainWindow
+class MyMainWindow : public QMainWindow
 {
   Q_OBJECT
 
@@ -151,25 +149,26 @@ private:
   bool _activate;
   bool _border;
   bool _resizable;
+  bool _deleted;
 
   void doReparent(QWidget *, Qt::WFlags, const QPoint &, bool showIt = false);
 
 protected:
 
 	//bool event(QEvent *);
-  void showEvent(QShowEvent *);
+  virtual void showEvent(QShowEvent *);
   //void hideEvent(QHideEvent *);
-  void resizeEvent(QResizeEvent *);
-  void moveEvent(QMoveEvent *);
-  void keyPressEvent(QKeyEvent *);
-  void closeEvent(QCloseEvent *);
+  virtual void resizeEvent(QResizeEvent *);
+  virtual void moveEvent(QMoveEvent *);
+  virtual void keyPressEvent(QKeyEvent *);
+  virtual void closeEvent(QCloseEvent *);
 
   //bool eventFilter(QObject *, QEvent *);
 
 public:
 
   enum { BorderNone = 0, BorderFixed = 1, BorderResizable = 2 };
-  Q3AsciiDict<CWIDGET> names;
+  QHash<QString, CWIDGET *> names;
   void *_object;
 
   MyMainWindow(QWidget *parent, const char *name, bool embedded = false);

@@ -120,7 +120,7 @@ static void set_font_from_string(CFONT *_object, QString &str)
 
   if (str.length())
   {
-    list = QStringList::split(",", str);
+    list = str.split(",");
 
     f.setBold(false);
     f.setItalic(false);
@@ -130,7 +130,7 @@ static void set_font_from_string(CFONT *_object, QString &str)
     for (QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     {
       elt = (*it);
-      flag = elt.upper();
+      flag = elt.toUpper();
       size = elt.toDouble(&number);
 
       if (flag == "BOLD")
@@ -144,10 +144,10 @@ static void set_font_from_string(CFONT *_object, QString &str)
       else if (flag[0] == '+' || flag[0] == '-' || flag[0] == '0')
       {
         //f.setPointSizeFloat((int)(powf(qApp->font().pointSizeFloat(), 1.0 + ((int)size / 10.0)) + 0.5));
-        f.setPointSizeFloat(GRADE_TO_SIZE(size, qApp->font().pointSizeFloat()));
+        f.setPointSizeF(GRADE_TO_SIZE(size, qApp->font().pointSizeF()));
       }
       else if (number && size > 0.0)
-        f.setPointSizeFloat(SIZE_VIRTUAL_TO_REAL(size));
+        f.setPointSizeF(SIZE_VIRTUAL_TO_REAL(size));
       else
       {
         if (!name.isEmpty())
@@ -214,19 +214,19 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
   {
     switch(prop)
     {
-      case CFONT::Name: GB.ReturnNewZeroString(f->family()); break;
+      case CFONT::Name: GB.ReturnNewZeroString(f->family().toUtf8()); break;
       case CFONT::Size:
         if (noResize)
-          GB.ReturnFloat(f->pointSizeFloat());
+          GB.ReturnFloat(f->pointSizeF());
         else
-          GB.ReturnFloat(SIZE_REAL_TO_VIRTUAL(f->pointSizeFloat()));
+          GB.ReturnFloat(SIZE_REAL_TO_VIRTUAL(f->pointSizeF()));
         break;
       case CFONT::Grade:
         /*{
           float r = logf(f->pointSizeFloat()) / logf(qApp->font().pointSizeFloat());
           GB.ReturnInteger((int)(10 * r + 0.5) - 10);
         }*/
-        GB.ReturnInteger(SIZE_TO_GRADE(f->pointSizeFloat(), qApp->font().pointSizeFloat()));
+        GB.ReturnInteger(SIZE_TO_GRADE(f->pointSizeF(), qApp->font().pointSizeF()));
         break;
       case CFONT::Bold: GB.ReturnBoolean(f->bold()); break;
       case CFONT::Italic: GB.ReturnBoolean(f->italic()); break;
@@ -241,9 +241,9 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
       case CFONT::Name: f->setFamily(GB.ToZeroString(PROP(GB_STRING))); break;
       case CFONT::Size:
         if (noResize)
-          f->setPointSizeFloat(VPROP(GB_FLOAT));
+          f->setPointSizeF(VPROP(GB_FLOAT));
         else
-          f->setPointSizeFloat(SIZE_VIRTUAL_TO_REAL(VPROP(GB_FLOAT)));
+          f->setPointSizeF(SIZE_VIRTUAL_TO_REAL(VPROP(GB_FLOAT)));
         break;
       case CFONT::Grade:
         {
@@ -253,7 +253,7 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
           else if (g > 16)
             g = 16;
           //f->setPointSizeFloat((int)(powf(qApp->font().pointSizeFloat(), 1.0 + ((int)g / 16.0)) + 0.5));
-          f->setPointSizeFloat(GRADE_TO_SIZE(g, qApp->font().pointSizeFloat()));
+          f->setPointSizeF(GRADE_TO_SIZE(g, qApp->font().pointSizeF()));
         }
         break;
       case CFONT::Bold: f->setBold(VPROP(GB_BOOLEAN)); break;
@@ -342,7 +342,7 @@ BEGIN_METHOD_VOID(CFONT_to_string)
 
   //str = qfont.family().left(1).upper() + qfont.family().mid(1).lower() + " " + QString::number(qfont.pointSize());
   add(str, f->family());
-  size = SIZE_REAL_TO_VIRTUAL(f->pointSizeFloat());
+  size = SIZE_REAL_TO_VIRTUAL(f->pointSizeF());
   size = (double)((int)(size * 10 + 0.5)) / 10;
   add(str, QString::number(size));
   if (f->bold())
@@ -383,9 +383,9 @@ BEGIN_METHOD(CFONT_width, GB_STRING text)
   int w, width = 0;
   int i;
 
-  QString str;
+  QString str = QSTRING_ARG(text);
 
-  sl = QStringList::split('\n', QSTRING_ARG(text));
+  sl = str.split('\n');
 
   for (i = 0; i < (int)sl.count(); i++)
   {

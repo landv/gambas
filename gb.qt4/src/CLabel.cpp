@@ -29,12 +29,12 @@
 #include <qstyle.h>
 #include <qbitmap.h>
 #include <qpainter.h>
-#include <q3simplerichtext.h>
 //Added by qt3to4:
 #include <QPaintEvent>
 #include <QResizeEvent>
 #include <QPixmap>
 #include <QStyleOption>
+#include <QTextDocument>
 
 #include "gambas.h"
 
@@ -51,7 +51,7 @@ BEGIN_METHOD(CLABEL_new, GB_OBJECT parent)
   QLabel *wid = new MyLabel(QCONTAINER(VARG(parent)));
 
   wid->setTextFormat(Qt::PlainText);
-  wid->setAlignment(Qt::AlignLeft + Qt::AlignVCenter); // + Qt::WordBreak);
+  wid->setAlignment(Qt::AlignLeft | Qt::AlignVCenter); // + Qt::WordBreak);
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -63,7 +63,8 @@ BEGIN_METHOD(CTEXTLABEL_new, GB_OBJECT parent)
   MyLabel *wid = new MyLabel(QCONTAINER(VARG(parent)));
 
   wid->setTextFormat(Qt::RichText);
-  wid->setAlignment(Qt::AlignLeft + Qt::AlignTop + Qt::TextWordWrap);
+  wid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  wid->setWordWrap(true);
   //wid->setLineWidth(2);
   //wid->setAutoResize(false);
 
@@ -87,7 +88,7 @@ BEGIN_PROPERTY(CLABEL_alignment)
   if (READ_PROPERTY)
     GB.ReturnInteger(CCONST_alignment(WIDGET->alignment() & ALIGN_MASK, ALIGN_NORMAL, false));
   else
-    WIDGET->setAlignment(CCONST_alignment(VPROP(GB_INTEGER), ALIGN_NORMAL, true));
+    WIDGET->setAlignment((Qt::Alignment)CCONST_alignment(VPROP(GB_INTEGER), ALIGN_NORMAL, true));
 
 END_PROPERTY
 
@@ -119,7 +120,7 @@ BEGIN_PROPERTY(CTEXTLABEL_alignment)
   if (READ_PROPERTY)
     GB.ReturnInteger(CCONST_alignment(WIDGET->alignment() & ALIGN_MASK, ALIGN_NORMAL, false));
   else
-    WIDGET->setAlignment(CCONST_alignment(VPROP(GB_INTEGER), ALIGN_NORMAL, true) | Qt::TextWordWrap);
+    WIDGET->setAlignment((Qt::Alignment)CCONST_alignment(VPROP(GB_INTEGER), ALIGN_NORMAL, true));
 
 END_PROPERTY
 
@@ -251,12 +252,16 @@ void MyLabel::calcMinimumHeight(bool adjust, bool noresize)
 
 	  if (textFormat() == Qt::RichText)
 	  {
-			Q3SimpleRichText rt(text(), font());
+			QTextDocument doc;
+			
+			doc.setHtml(text());
+			doc.setDefaultFont(font());
+			
 			w = width() - f * 2;
 			
-			rt.setWidth(w);
-			nh = rt.height();
-			nw = adjust ? rt.widthUsed() : w;
+			doc.setTextWidth(w);
+			nh = doc.size().height();
+			nw = adjust ? doc.idealWidth() : w;
 		}
 	  else
 	  {
@@ -303,7 +308,7 @@ void MyLabel::resizeEvent(QResizeEvent *e)
 	if ((alignment() & (Qt::AlignLeft|Qt::AlignTop) ) != (Qt::AlignLeft|Qt::AlignTop))
 	{
 		updateMask();
-  	repaint(true);
+  	repaint();
   }
 }
 
@@ -372,11 +377,10 @@ void MyLabel::updateMask()
 	//QSharedDoubleBuffer::setDisabled( dblbfr );
 	QPainter::redirect(this, oldRedirect);*/
 
-	QImage img = buffer->convertToImage();
-	img.setAlphaBuffer(true);
+	QImage img = buffer->toImage().convertToFormat(QImage::Format_ARGB32);
 	
 	make_alpha_from_white(img);
-	buffer->convertFromImage(img);
+	*buffer = QPixmap::fromImage(img);
 	if (!buffer->mask().isNull()) setMask(buffer->mask());
 	delete buffer;	
 }

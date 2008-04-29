@@ -29,14 +29,14 @@
 
 #include "CWidget.h"
 
-#include <q3textedit.h>
+#include <QTextEdit>
 
 #ifndef __CTEXTAREA_CPP
 extern GB_DESC CTextAreaDesc[];
 extern GB_DESC CTextAreaSelectionDesc[];
 #else
 
-#define WIDGET       ((Q3TextEdit *)((CWIDGET *)_object)->widget)
+#define WIDGET       ((QTextEdit *)((CWIDGET *)_object)->widget)
 #define MYTEXTEDIT   ((MyTextEdit *)((CWIDGET *)_object)->widget)
 #define THIS_AREA    ((CTEXTAREA *)_object)
 
@@ -48,12 +48,12 @@ typedef
     }
   CTEXTAREA;
 
-class MyTextEdit: public Q3TextEdit
+class MyTextEdit: public QTextEdit
 {
   Q_OBJECT
   
 public:
-  MyTextEdit(QWidget *parent = 0, const char *name = 0);
+  MyTextEdit(QWidget *parent = 0);
   ~MyTextEdit();
   
 signals:

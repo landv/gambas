@@ -502,9 +502,8 @@ cd $gb_save
 ##   $2 = Component key in upper case (ex: PGSQL)
 ##   $3 = Component name (ex: PostgreSQL)
 ##   $4 = Sub-directory name
-##   $5 = pkg-config module(s) name(s)
-##   $6 = pkg-config version test
-##   $7 = Warning message (optional)
+##   $5 = pkg-config module(s) name(s) with optional required version(s)
+##   $6 = Warning message (optional)
 ##
 ##   => defines HAVE_*_COMPONENT (to know if you can compile the component)
 ##      *_INC (for the compiler) and *_LIB / *_LDFLAGS (for the linker)
@@ -538,30 +537,25 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     gb_ldflags_$1=""
     have_$1=yes
         
-    for gb_pkg_name in $5; do
-  
-      pkg-config --silence-errors --exists "$gb_pkg_name $6"
-      if test $? -eq "0"; then
+    pkg-config --silence-errors --exists $5
+    if test $? -eq "0"; then
       
-        ## Checking for headers
-        
-        $2_INC="$$2_INC `pkg-config --cflags $5`"
+      ## Checking for headers
+      
+      $2_INC="`pkg-config --cflags $5`"
     
-        ## Checking for libraries
-        
-        $2_LIB="$$2_LIB `pkg-config --libs-only-l $5`"
-        $2_LDFLAGS="$$2_LDFLAGS `pkg-config --libs-only-L $5` `pkg-config --libs-only-other $5`"
-        $2_DIR=$4
+      ## Checking for libraries
+      
+      $2_LIB="`pkg-config --libs-only-l $5`"
+      $2_LDFLAGS="`pkg-config --libs-only-L $5` `pkg-config --libs-only-other $5`"
+      $2_DIR=$4
           
-      else
+    else
       
-        have_$1=no
-        break
+      have_$1=no
 
-      fi
+    fi
       
-    done
-    
   fi
 
   if test "$have_$1" = "no"; then
@@ -589,10 +583,10 @@ dnl    fi
     $2_LIB=""
     $2_LDFLAGS=""
     $2_DIR=""
-    if test x"$7" = x; then
+    if test x"$6" = x; then
       AC_MSG_WARN([*** $3 is disabled])
     else
-      AC_MSG_NOTICE([$7])
+      AC_MSG_NOTICE([$6])
     fi
     
   fi
@@ -782,12 +776,11 @@ dnl    fi
 ##   $3  = Component name (ex: PostgreSQL)
 ##   $4  = Sub-directory name
 ##   $5  = pkg-config module name (optional)
-##   $6  = pkg-config version test (optional)
-##   $7  = How to get include path (must return it in gb_val)
-##   $8  = How to get library path (must return it in gb_val)
-##   $9  = Libraries
-##   $10 = Compiler flags (optional)
-##   $11 = Warning message (optional)
+##   $6  = How to get include path (must return it in gb_val)
+##   $7  = How to get library path (must return it in gb_val)
+##   $8  = Libraries
+##   $9  = Compiler flags (optional)
+##   $10 = Warning message (optional)
 ##
 ##   => defines HAVE_*_COMPONENT (to know if you can compile the component)
 ##      *_INC (for the compiler) and *_LIB (for the linker)
@@ -795,34 +788,29 @@ dnl    fi
 
 AC_DEFUN([GB_COMPONENT_SEARCH],
 [
-  if test x"$5" != x; then
-  
-    GB_COMPONENT_PKG_CONFIG(
+  GB_COMPONENT_PKG_CONFIG(
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $10
+  )
+    
+  if test -z "$2_LIB"; then
+    GB_COMPONENT(
       $1,
       $2,
       $3,
       $4,
-      $5,
       $6,
-      $11
+      $7,
+      $8,
+      $9,
+      $10
     )
-    
-    if test -z "$2_LIB"; then
-      GB_COMPONENT(
-        $1,
-        $2,
-        $3,
-        $4,
-        $7,
-        $8,
-        $9,
-        $10,
-        $11
-      )
-    fi
-  
   fi
-
+  
 ])
 
 

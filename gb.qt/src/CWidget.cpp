@@ -1615,9 +1615,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   bool cancel;
   QPoint p;
 
-	//qDebug("eventFilter: (%s %p) %d", widget->className(), widget, event->type());
 	//if (widget->isA("MyMainWindow"))
 	//	getDesignDebug(widget);
+
+  //qDebug("eventFilter: DragEnter: (%s %p) %d", GB.GetClassName(control), control, event->type());
 
   control = CWidget::getDesign(widget);
   if (!control || GB.Is(control, CLASS_Menu))

@@ -26,12 +26,12 @@
 #include "gambas.h"
 #include "CWidget.h"
 #include "CPicture.h"
-//Added by qt3to4:
+#include <QMimeData>
 #include <QDropEvent>
 
 typedef
   struct {
-    QDropEvent *drop;
+    const QDropEvent *event;
     int x;
     int y;
     unsigned valid : 1;

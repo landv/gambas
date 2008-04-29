@@ -32,7 +32,7 @@ extern GB_DESC CProgressDesc[];
 #else
 
 #define THIS    ((CPROGRESS *)_object)
-#define WIDGET  ((Q3ProgressBar *)((CWIDGET *)_object)->widget)
+#define WIDGET  ((QProgressBar *)((CWIDGET *)_object)->widget)
 
 #endif
 

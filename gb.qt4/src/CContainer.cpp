@@ -26,14 +26,14 @@
 
 #include <qnamespace.h>
 #include <qapplication.h>
-#include <q3mainwindow.h>
 #include <qlayout.h>
 #include <qevent.h>
 //Added by qt3to4:
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QChildEvent>
-#include <Q3Frame>
+#include <QFrame>
+#include <QMainWindow>
 
 #include "gambas.h"
 
@@ -64,7 +64,7 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
     
     if (ob->isWidgetType())
     {
-      if (!((QWidget *)ob)->isHidden() && !((QWidget *)ob)->isA("QSizeGrip"))
+      if (!((QWidget *)ob)->isHidden() && !qobject_cast<QSizeGrip *>(ob))
         return (QWidget *)ob;
     }
   }
@@ -76,10 +76,10 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 }
 
 #define WIDGET_TYPE QWidget *
-#define CONTAINER_TYPE Q3Frame *
+#define CONTAINER_TYPE QFrame *
 #define ARRANGEMENT_TYPE CCONTAINER_ARRANGEMENT *
 
-#define IS_RIGHT_TO_LEFT() qApp->reverseLayout()
+#define IS_RIGHT_TO_LEFT() qApp->isRightToLeft()
 
 #define GET_WIDGET(_object) ((CWIDGET *)_object)->widget
 #define GET_CONTAINER(_object) ((CCONTAINER *)_object)->container
@@ -211,30 +211,22 @@ static void arrange_later(QWidget *cont)
 ***************************************************************************/
 
 MyContainer::MyContainer(QWidget *parent)
-: Q3Frame(parent)
+: QFrame(parent)
 {
 }
 
-
-void MyContainer::frameChanged(void)
-{
-  //qDebug("MyContainer::frameChanged %p", CWidget::get(this));
-  Q3Frame::frameChanged();
-  //CCONTAINER_arrange(this);
-  arrange_now(this);
-}
 
 void MyContainer::resizeEvent(QResizeEvent *e)
 {
   //qDebug("MyContainer::resizeEvent %s %p", GB.GetClassName(CWidget::get(this)), CWidget::get(this));
-  Q3Frame::resizeEvent(e);
+  QFrame::resizeEvent(e);
   arrange_now(this);
 }
 
 void MyContainer::showEvent(QShowEvent *e)
 {
   //qDebug("MyContainer::showEvent %p %s", CWidget::get(this), GB.GetClassName(CWidget::get(this)));
-  Q3Frame::showEvent(e);
+  QFrame::showEvent(e);
   arrange_now(this);
 }
 
@@ -244,14 +236,14 @@ void MyContainer::childEvent(QChildEvent *e)
   void *child;
   //qDebug("MyContainer::childEvent %p", CWidget::get(this));
   
-  Q3Frame::childEvent(e);
+  QFrame::childEvent(e);
 
   if (!e->child()->isWidgetType())
     return;
 
 	child = CWidget::get((QWidget *)e->child());
 
-  if (e->inserted())
+  if (e->added())
   {
     e->child()->installEventFilter(this);
     GB.Raise(THIS, EVENT_Insert, 1, GB_T_OBJECT, child);
@@ -294,11 +286,11 @@ static QRect getRect(void *_object)
 {
 	QWidget *w = CONTAINER;
 
-	if (WIDGET->isA("MyMainWindow"))
+	if (qobject_cast<MyMainWindow *>(WIDGET))
 		((MyMainWindow *)WIDGET)->configure();
 
 	if (w->inherits("QFrame"))
-		return ((Q3Frame *)w)->contentsRect();
+		return ((QFrame *)w)->contentsRect();
 	else
 		return QRect(0, 0, w->width(), w->height());
 }

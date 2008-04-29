@@ -26,8 +26,8 @@
 #define __CWATCH_H
 
 #include <qobject.h>
-#include <q3intdict.h>
 #include <qsocketnotifier.h>
+#include <QHash>
 
 #include "gambas.h"
 
@@ -46,8 +46,8 @@ public:
 
 private:
 
-  static Q3IntDict<CWatch> readDict;
-  static Q3IntDict<CWatch> writeDict;
+  static QHash<int, CWatch *> readDict;
+  static QHash<int, CWatch *> writeDict;
 
   QSocketNotifier *notifier;
   GB_WATCH_CALLBACK callback;

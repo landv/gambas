@@ -31,11 +31,7 @@
 #include <qobject.h>
 #include <qwidget.h>
 #include <qicon.h>
-#include <q3ptrdict.h>
-#include <q3asciidict.h>
 #include <qpixmap.h>
-#include <q3cstring.h>
-//Added by qt3to4:
 #include <QEvent>
 
 /* (!) Reporter les modifications de CWIDGET dans gb.qt.h */
@@ -55,7 +51,6 @@ typedef
     	unsigned _reserved : 10;
     	} flag;
     GB_VARIANT_VALUE tag;
-    char *tooltip;
     char *name;
     void *cursor;
     CWIDGET *next;
@@ -71,7 +66,7 @@ typedef
   struct {
     CWIDGET widget;
     QWidget *container;
-    int arrangement;
+    int32_t arrangement;
     }
   CCONTAINER;
 
@@ -246,7 +241,6 @@ public:
   //static const char *getProperties(const void *klass);
   //static void setProperties(const void *klass, const char *prop);
 
-  static void resetTooltip(CWIDGET *);
   static void removeFocusPolicy(QWidget *);
 
 public slots:
@@ -262,7 +256,7 @@ private:
   static bool real;
 
   static CWIDGET *enter;
-  static Q3PtrDict<CWIDGET> dict;
+  static QHash<QObject *, CWIDGET *> dict;
 };
 
 #endif

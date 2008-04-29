@@ -26,11 +26,11 @@
 #include "gambas.h"
 
 #include <qevent.h>
-#include <q3scrollview.h>
 //Added by qt3to4:
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QChildEvent>
+#include <QScrollArea>
 
 #include "CWidget.h"
 #include "CContainer.h"
@@ -56,7 +56,7 @@ typedef
   CSCROLLVIEW;
 
 
-class MyScrollView : public Q3ScrollView
+class MyScrollView : public QScrollArea
 {
   Q_OBJECT
 
@@ -66,7 +66,7 @@ public:
 
 protected:
 
-  void frameChanged();
+  //void frameChanged();
   void resizeEvent(QResizeEvent *);
   void showEvent(QShowEvent *);
 };
@@ -78,7 +78,7 @@ class MyContents : public MyContainer
 
 public:
 
-  MyContents(QWidget *parent, MyScrollView *scrollview);
+  MyContents(MyScrollView *scrollview);
   
 public slots:
 

@@ -11,8 +11,7 @@ GB_COMPONENT_PKG_CONFIG(
   GTK,
   [GTK+ component],
   [src],
-  gtk+-2.0,
-  [>= 2.8.0]
+  gtk+-2.0 ">= 2.8.0"
 )
 
 GB_COMPONENT_PKG_CONFIG(
@@ -20,8 +19,7 @@ GB_COMPONENT_PKG_CONFIG(
   GTK_SVG,
   [SVG loader for GTK+],
   [src],
-  librsvg-2.0,
-  [>= 2.14.3]
+  librsvg-2.0 ">= 2.14.3"
 )
 
 AC_OUTPUT( \

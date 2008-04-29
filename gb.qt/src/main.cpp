@@ -452,8 +452,9 @@ void MAIN_check_quit(void)
 
 void MAIN_update_scale(void)
 {
-	QFontMetrics fm(QApplication::font());
-  MAIN_scale = (1 + fm.ascent()) / 2;
+	QFontMetrics fm(qApp->desktop()->font());
+  MAIN_scale = 1 + fm.height() / 3;
+  qDebug("%s %d %d -> %d", qApp->font().family().latin1(), qApp->font().pointSize(), fm.height(), MAIN_scale);
 }
 
 static void QT_InitEventLoop(void)

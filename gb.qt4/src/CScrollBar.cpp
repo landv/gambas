@@ -87,9 +87,9 @@ BEGIN_METHOD(CSCROLLBAR_new, GB_OBJECT parent)
 //  SLOT(event_sliderreleased()));
 
   wid->setTracking(true);
-  wid->setMinValue(0);
-  wid->setMaxValue(100);
-  wid->setLineStep(1);
+  wid->setMinimum(0);
+  wid->setMaximum(100);
+  wid->setSingleStep(1);
   wid->setPageStep(10);
 
   CWIDGET_new(wid, _object);
@@ -136,27 +136,27 @@ END_PROPERTY
 BEGIN_PROPERTY(CSCROLLBAR_minval)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->minValue());
+    GB.ReturnInteger(WIDGET->minimum());
   else
-    WIDGET->setMinValue(VPROP(GB_INTEGER));
+    WIDGET->setMinimum(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CSCROLLBAR_maxval)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->maxValue());
+    GB.ReturnInteger(WIDGET->maximum());
   else
-    WIDGET->setMaxValue(VPROP(GB_INTEGER));
+    WIDGET->setMaximum(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CSCROLLBAR_linestep)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->lineStep());
+    GB.ReturnInteger(WIDGET->singleStep());
   else
-    WIDGET->setLineStep(VPROP(GB_INTEGER));
+    WIDGET->setSingleStep(VPROP(GB_INTEGER));
 
 END_PROPERTY
 

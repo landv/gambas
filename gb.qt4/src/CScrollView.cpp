@@ -22,23 +22,20 @@
 
 #define __CSCROLLVIEW_CPP
 
-#include <q3frame.h>
-#if QT_VERSION >= 0x030200
 #include <qobject.h>
-#else
-#include <qobjcoll.h>
-#endif
-#include <q3scrollview.h>
 #include <qtimer.h>
 //Added by qt3to4:
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QChildEvent>
 #include <QEvent>
+#include <QScrollArea>
+#include <QScrollBar>
 
 #include "gambas.h"
 
 #include "CConst.h"
+#include "CColor.h"
 #include "CScrollView.h"
 
 
@@ -52,25 +49,26 @@ DECLARE_EVENT(EVENT_Scroll);
 ***************************************************************************/
 
 MyScrollView::MyScrollView(QWidget *parent)
-: Q3ScrollView(parent)
+: QScrollArea(parent)
 {
 }
 
-
+/*
 void MyScrollView::frameChanged(void)
 {
   CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(this);
 
-  Q3ScrollView::frameChanged();
+  QScrollArea::frameChanged();
   if (THIS->container)
   	THIS->container->autoResize();
 }
+*/
 
 void MyScrollView::resizeEvent(QResizeEvent *e)
 {
   CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(this);
   
-  Q3ScrollView::resizeEvent(e);
+  QScrollArea::resizeEvent(e);
   if (THIS->container)
 	  THIS->container->autoResize();
 }
@@ -80,7 +78,7 @@ void MyScrollView::showEvent(QShowEvent *e)
 {
   CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(this);
   
-  Q3ScrollView::showEvent(e);
+  QScrollArea::showEvent(e);
   if (THIS->container)
 	  THIS->container->autoResize();
 }
@@ -91,12 +89,13 @@ void MyScrollView::showEvent(QShowEvent *e)
 
 ***************************************************************************/
 
-MyContents::MyContents(QWidget *parent, MyScrollView *scrollview)
-: MyContainer(parent)
+MyContents::MyContents(MyScrollView *scrollview)
+: MyContainer(scrollview)
 {
   right = 0;
   bottom = 0;
   sw = scrollview;
+  sw->setWidget(this);
   timer = false;
 }
 
@@ -152,8 +151,8 @@ __AGAIN:
 	
 	if (ww < 0)
 	{
-		ww = sw->visibleWidth();
-		hh = sw->visibleHeight();	
+		ww = sw->viewport()->width();
+		hh = sw->viewport()->height(); //visibleHeight();	
 	}
 	
 	if (w < ww || THIS->arrangement.mode == ARRANGE_VERTICAL || THIS->arrangement.mode == ARRANGE_ROW)
@@ -178,12 +177,12 @@ __AGAIN:
 		
 		//CCONTAINER_arrange(THIS);
 		
-		sw->updateScrollBars();
+		//sw->updateScrollBars();
 				
 		if (cw)
-			w = sw->visibleWidth();
+			w = sw->viewport()->width();
 		if (ch)
-			h = sw->visibleHeight();
+			h = sw->viewport()->height();
 			
 		if (w != width() || h != height())
 		{
@@ -285,7 +284,7 @@ void MyContents::childEvent(QChildEvent *e)
 
   MyContainer::childEvent(e);
 
-  if (e->inserted())
+  if (e->added())
   {
     //e->child()->installEventFilter(this);
     checkWidget((QWidget *)e->child());
@@ -332,16 +331,17 @@ bool MyContents::eventFilter(QObject *o, QEvent *e)
 BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
 
   MyScrollView *wid = new MyScrollView(QCONTAINER(VARG(parent)));
-  MyContents *cont = new MyContents(wid->viewport(), wid);
+  MyContents *cont = new MyContents(wid);
 
   CWIDGET_new(wid, (void *)_object, true);
   //wid->setBackgroundOrigin(QWidget::WindowOrigin);
   //cont->setBackgroundOrigin(QWidget::AncestorOrigin);
 
   THIS->container = cont;
-  wid->addChild(THIS->container);
+  wid->setWidget(THIS->container);
 
-  QObject::connect(wid, SIGNAL(contentsMoving(int, int)), &CScrollView::manager, SLOT(scrolled()));
+  QObject::connect(wid->horizontalScrollBar(), SIGNAL(valueChanged(int)), &CScrollView::manager, SLOT(scrolled()));
+  QObject::connect(wid->verticalScrollBar(), SIGNAL(valueChanged(int)), &CScrollView::manager, SLOT(scrolled()));
 
   //CWidget::installFilter(THIS->container);
   //CWidget::removeFilter(wid->horizontalScrollBar());
@@ -349,7 +349,7 @@ BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
 
   // Border.Sunken by default
   wid->setLineWidth(2);
-  wid->setFrameStyle(Q3Frame::StyledPanel + Q3Frame::Sunken);
+  wid->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
 	//THIS->arrangement.autoresize = true;
 
@@ -389,9 +389,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CSCROLLVIEW_scroll_x)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->contentsX());
+    GB.ReturnInteger(WIDGET->horizontalScrollBar()->value());
   else
-    WIDGET->setContentsPos(VPROP(GB_INTEGER), WIDGET->contentsY());
+    WIDGET->horizontalScrollBar()->setValue(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -399,30 +399,31 @@ END_PROPERTY
 BEGIN_PROPERTY(CSCROLLVIEW_scroll_y)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->contentsY());
+    GB.ReturnInteger(WIDGET->verticalScrollBar()->value());
   else
-    WIDGET->setContentsPos(WIDGET->contentsX(), VPROP(GB_INTEGER));
+    WIDGET->verticalScrollBar()->setValue(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CSCROLLVIEW_scroll_w)
 
-  GB.ReturnInteger(WIDGET->contentsWidth());
+  GB.ReturnInteger(WIDGET->widget()->width());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CSCROLLVIEW_scroll_h)
 
-  GB.ReturnInteger(WIDGET->contentsHeight());
+  GB.ReturnInteger(WIDGET->widget()->height());
 
 END_PROPERTY
 
 
 BEGIN_METHOD(CSCROLLVIEW_scroll, GB_INTEGER x; GB_INTEGER y)
 
-  WIDGET->setContentsPos(VARG(x), VARG(y));
+  WIDGET->horizontalScrollBar()->setValue(VARG(x));
+  WIDGET->verticalScrollBar()->setValue(VARG(y));
 
 END_METHOD
 
@@ -441,9 +442,9 @@ BEGIN_PROPERTY(CSCROLLVIEW_scrollbar)
   if (READ_PROPERTY)
   {
     scroll = 0;
-    if (WIDGET->hScrollBarMode() == Q3ScrollView::Auto)
+    if (WIDGET->horizontalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
       scroll += 1;
-    if (WIDGET->vScrollBarMode() == Q3ScrollView::Auto)
+    if (WIDGET->verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
       scroll += 2;
 
     GB.ReturnInteger(scroll);
@@ -451,8 +452,8 @@ BEGIN_PROPERTY(CSCROLLVIEW_scrollbar)
   else
   {
     scroll = VPROP(GB_INTEGER) & 3;
-    WIDGET->setHScrollBarMode( (scroll & 1) ? Q3ScrollView::Auto : Q3ScrollView::AlwaysOff);
-    WIDGET->setVScrollBarMode( (scroll & 2) ? Q3ScrollView::Auto : Q3ScrollView::AlwaysOff);
+    WIDGET->setHorizontalScrollBarPolicy((scroll & 1) ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+    WIDGET->setVerticalScrollBarPolicy((scroll & 2) ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
   }
 
 END_PROPERTY
@@ -461,9 +462,18 @@ END_PROPERTY
 BEGIN_PROPERTY(CSCROLLVIEW_background)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(THIS->container->paletteBackgroundColor().rgb() & 0xFFFFFF);
+    GB.ReturnInteger(THIS->container->palette().color(QPalette::Window).rgb() & 0xFFFFFF);
   else
-    THIS->container->setPaletteBackgroundColor(QColor((QRgb)VPROP(GB_INTEGER)));
+  {
+  	QPalette pal;
+  	
+  	if (VPROP(GB_INTEGER) != COLOR_DEFAULT)
+  	{
+  		pal = THIS->container->palette();
+  		pal.setColor(QPalette::Window, QColor((QRgb)VPROP(GB_INTEGER)));
+  	}
+    THIS->container->setPalette(pal);
+  }
 
 END_PROPERTY
 

@@ -54,15 +54,15 @@ Private Sub SetState(iState As Integer)
 
   'PRINT "SetState:"; iState
 
-  bDebug = $iState <> STATE_STOP AND $iState <> STATE_STARTING
+  bDebug = $iState <> STATE_STOP And $iState <> STATE_STARTING
 
   $iState = iState
 
   Action["pause"].Enabled = $iState = STATE_RUNNING
-  bEnable = $iState <> STATE_RUNNING AND $iState <> STATE_STARTING
+  bEnable = $iState <> STATE_RUNNING And $iState <> STATE_STARTING
   Action["forward"].Enabled = bEnable
   Action["step"].Enabled = bEnable
-  Action["return"].Enabled = bEnable AND $iState <> STATE_STOP
+  Action["return"].Enabled = bEnable And $iState <> STATE_STOP
   Action["start"].Enabled = bEnable
 
   Action["stop"].Enabled = $iState <> STATE_STOP
@@ -124,7 +124,7 @@ Public Sub Debug_Read(Data As String)
   Dim sVar As String
 
   'DEBUG Data
-  If NOT Data Then Return 
+  If Not Data Then Return 
   
   If Data = "!" Then 
     Signal
@@ -173,7 +173,7 @@ Public Sub Debug_Read(Data As String)
       If aData[1] Then 
         If sClass Then SetPosition(sClass, iLine)
       Else
-        If NOT sClass OR If SetPosition(sClass, iLine) Then 
+        If Not sClass Or If SetPosition(sClass, iLine) Then 
           If $bIgnoreNextInfo Then 
             $bIgnoreNextInfo = False
           Else
@@ -201,7 +201,7 @@ Public Sub Debug_Read(Data As String)
 
       SetState(STATE_DEBUG)
 
-      If aData[1] AND If aPos.Count = 1 AND If aPos[0] = "?" Then Me.Stop
+      If aData[1] And If aPos.Count = 1 And If aPos[0] = "?" Then Me.Stop
 
     Case "I", "W"
     
@@ -237,7 +237,7 @@ Public Sub Debug_Read(Data As String)
       Select Case Left(sVar)
       
         Case "X"
-          If NOT aData[1] Then
+          If Not aData[1] Then
             ' sending to Ballon
             Design.Command("?I" & Mid$(sVar, 2) & ":\t" & Mid$(sVar, 2))  
             
@@ -266,7 +266,7 @@ End
 
 Public Function DebugExprCheck(sExpr As String) As Boolean
 
-  Return NOT (Left(sExpr) = "!")
+  Return Not (Left(sExpr) = "!")
 
 End
 
@@ -275,11 +275,11 @@ Public Sub Process_Kill()
   Dim sMsg As String
   'PRINT "KILL"
 
-  If NOT Project.AboutToQuit Then AfterStop
+  If Not Project.AboutToQuit Then AfterStop
 
   If $hProcess.State = Process.Crashed Then
     ' SIGKILL and SIGTERM are not considered as bugs in the program
-    If $hProcess.Value <> 9 AND $hProcess.Value <> 15 Then
+    If $hProcess.Value <> 9 And $hProcess.Value <> 15 Then
       sMsg = Subst(("The program has stopped unexpectedly\nby raising signal #&1.\n\nPlease send a bug report to\ngambas@users.sourceforge.net."), $hProcess.Value)
       FGambas.Error(sMsg)
     Endif
@@ -430,8 +430,8 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
 
   'PRINT "SetPosition "; sClass; iLine
 
-  If Len(sClass) > 0 AND iLine > 0 Then
-    If sClass = $sPosClass AND iLine = $iPosLine Then Return
+  If Len(sClass) > 0 And iLine > 0 Then
+    If sClass = $sPosClass And iLine = $iPosLine Then Return
   Endif
 
   If $sPosClass Then
@@ -439,7 +439,7 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
     sPath = Project.FindPath($sPosClass)
 
     With Project.Files[sPath]
-      .Editor.Lines[$iPosLine - 1].Current = False
+      Try .Editor.Lines[$iPosLine - 1].Current = False
     End With
 
   Endif
@@ -503,7 +503,7 @@ Public Sub RunUntil(hForm As FEditor, iLine As Integer)
   sClass = hForm.Name
 
   With hForm.Editor
-    bOn = NOT .Lines[iLine].Breakpoint
+    bOn = Not .Lines[iLine].Breakpoint
   End With
 
   Inc iLine
@@ -689,7 +689,7 @@ Private Sub Start(sCmd As String)
   FMain.ShowDebug(True)
   FDebugInfo.UpdateView
 
-  If Project.Environment AND If Project.Environment.Count Then 
+  If Project.Environment And If Project.Environment.Count Then 
   
     sExec = Project.Environment.Join(" ")
     sExec &= " exec " & Quote.Shell(System.Path &/ "bin/gbx" & System.Version) & " -g -f " & Quote.Shell(File.Dir(SConv(Project.Path)))
@@ -731,7 +731,7 @@ Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST, O
   'IF NOT Project.Running THEN RETURN
 
   'WAIT
-  If NOT $hProcess Then Return
+  If Not $hProcess Then Return
 
   'IF bResult THEN
   '  $cCommand.Add(sPrefix & sCmd)
@@ -867,7 +867,7 @@ Public Sub Eval(sExpr As String) As String
   Command("!" & sExpr)
 
   Wait
-  While NOT $bResult
+  While Not $bResult
     Wait 
   Wend
   
@@ -898,7 +898,7 @@ Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean)
 
   ' Update editor
   hEditor = Project.LoadFile(Project.FindPath(sClass))
-  If NOT hEditor Then Return 
+  If Not hEditor Then Return 
   If hEditor.SetBreakpoint(iLine, bOn) Then Return 
   
   'IF $iState = STATE_STOP THEN RETURN
@@ -934,7 +934,7 @@ Public Sub HasBreakpoint(sClass As String, iLine As Integer) As Boolean
   
   ' Update editor
   hEditor = Project.Files[Project.FindPath(sClass)]
-  If NOT hEditor Then Return
+  If Not hEditor Then Return
   Return hEditor.HasBreakpoint(iLine)
    
 End
@@ -963,7 +963,7 @@ Public Sub WriteBreakpoints()
   Project.Config.Clear("/Breakpoints")
 
   For Each hFile In Project.Files
-    If NOT Project.IsEditor(hFile) Then Continue 
+    If Not Project.IsEditor(hFile) Then Continue 
     hEditor = hFile
     For Each iLine In hEditor.GetBreakpoints()
       Inc iCount
@@ -982,7 +982,7 @@ Public Sub ClearBreakpoints()
   Dim iLine As Integer
 
   For Each hFile In Project.Files
-    If NOT Project.IsEditor(hFile) Then Continue 
+    If Not Project.IsEditor(hFile) Then Continue 
     hEditor = hFile
 
     For Each iLine In hEditor.GetBreakpoints()

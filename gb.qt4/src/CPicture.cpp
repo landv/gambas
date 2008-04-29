@@ -29,9 +29,10 @@
 #include <qpixmap.h>
 #include <qbitmap.h>
 #include <qnamespace.h>
-#include <q3dict.h>
 #include <qpainter.h>
 #include <qmatrix.h>
+#include <QByteArray>
+#include <QHash>
 
 #include "gambas.h"
 #include "main.h"
@@ -42,11 +43,12 @@
 #include "CPicture.h"
 
 #ifndef NO_X_WINDOW
+#include <QX11Info>
 #include <X11/Xlib.h>
 #endif
 
 
-static Q3Dict<CPICTURE> dict;
+static QHash<QByteArray, CPICTURE *> dict;
 
 static void create(CPICTURE **ppicture)
 {
@@ -62,7 +64,7 @@ static void insert_cache(const char *key, CPICTURE *pict)
   
   if (pict)
   {
-		dict.replace(key, pict); 
+		dict.insert(key, pict); 
 		GB.Ref(pict);
 	}
   
@@ -81,7 +83,7 @@ static void insert_cache(const char *key, CPICTURE *pict)
 	if (_ok) \
 	{ \
 		if (img.depth() < 32 && !img.isNull()) \
-			img = img.convertDepth(32); \
+			img = img.convertToFormat(QImage::Format_ARGB32); \
 	} \
 	_image = new QImage(img); \
 }
@@ -92,7 +94,7 @@ static void insert_cache(const char *key, CPICTURE *pict)
 { \
 	create(&(_cpicture)); \
 	if ((_image) && !(_image)->isNull()) \
-		(_cpicture)->pixmap->convertFromImage(*(_image)); \
+		*((_cpicture)->pixmap) = QPixmap::fromImage(*(_image)); \
 }
 
 #define GET_FROM_CACHE(_key) (dict[_key])
@@ -112,18 +114,17 @@ CPICTURE *CPICTURE_get_picture(const char *path)
 
 static void flush_picture()
 {
-  Q3DictIterator<CPICTURE> it(dict);
+  QHash<QByteArray, CPICTURE *>::iterator it;
   CPICTURE *pict;
 
   //qDebug("flush_picture");
 
-  while (it.current())
-  {
+	for (it = dict.begin(); it != dict.end(); it++)
+	{
     //delete it.current()->pixmap;
-    pict = it.current();
+    pict = it.value();
     //qDebug("flushing: %s %p", it.currentKey().latin1(), pict);
     GB.Unref(POINTER(&pict));
-    ++it;
   }
 
   dict.clear();
@@ -142,11 +143,7 @@ CPICTURE *CPICTURE_grab(QWidget *wid)
 		#ifdef NO_X_WINDOW
 			qDebug("Qt/Embedded: Full screen grab not implemented");
 		#else
-			#if QT_VERSION >= 0x030100
-				id = QPaintDevice::x11AppRootWindow();
-			#else
-				id = RootWindow(QPaintDevice::x11AppDisplay(), QPaintDevice::x11AppScreen());
-			#endif
+			id = QX11Info::appRootWindow();
 	
 			*pict->pixmap = QPixmap::grabWindow(id);
 		#endif
@@ -199,8 +196,6 @@ BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 
   int w, h;
 
-  THIS->pixmap = new QPixmap;
-
 	if (!MISSING(w) && !MISSING(h))
 	{
 		w = VARG(w);
@@ -211,7 +206,8 @@ BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 			return;
 		}
 
-		THIS->pixmap->resize(w, h);
+	  THIS->pixmap = new QPixmap(w, h);
+
 		if (VARGOPT(trans, false))
 		{
 			QBitmap b(w, h);
@@ -219,6 +215,8 @@ BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 			THIS->pixmap->setMask(b);
 		}
 	}
+	else
+		THIS->pixmap = new QPixmap;
 
 END_METHOD
 
@@ -233,7 +231,14 @@ END_METHOD
 
 BEGIN_METHOD(CPICTURE_resize, GB_INTEGER width; GB_INTEGER height)
 
-  THIS->pixmap->resize(VARG(width), VARG(height));
+	QPixmap *pixmap = new QPixmap(VARG(width), VARG(height));
+	
+	QPainter p(pixmap);
+	p.drawPixmap(0, 0, *THIS->pixmap);
+	p.end();
+		
+	delete THIS->pixmap;
+	THIS->pixmap = pixmap;
 
 END_METHOD
 
@@ -326,11 +331,10 @@ BEGIN_METHOD(CPICTURE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
   create(&pict);
   delete pict->pixmap;
   pict->pixmap = new QPixmap(w, h);
-  #if QT_VERSION >= 0x030200
-  copyBlt(pict->pixmap, 0, 0, THIS->pixmap, x, y, w, h);
-  #else
-  bitBlt(THIS->pixmap, 0, 0, pict->pixmap, x, y, w, h, Qt::CopyROP, TRUE);
-  #endif
+  
+  QPainter p(pict->pixmap);
+  p.drawPixmap(0, 0, *THIS->pixmap, x, y, w, h);
+  p.end();
 
   GB.ReturnObject(pict);
 
@@ -342,9 +346,9 @@ BEGIN_PROPERTY(CPICTURE_image)
   CIMAGE *img;
 
   GB.New(POINTER(&img), GB.FindClass("Image"), NULL, NULL);
-  *(img->image) = THIS->pixmap->convertToImage();
+  *(img->image) = THIS->pixmap->toImage();
   if (!img->image->isNull())
-  	img->image->convertDepth(32);
+  	img->image->convertToFormat(QImage::Format_ARGB32);
 
   GB.ReturnObject(img);
 

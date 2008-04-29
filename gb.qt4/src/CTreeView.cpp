@@ -29,16 +29,12 @@
 #include <qpalette.h>
 #include <q3scrollview.h>
 #include <q3listview.h>
-#if QT_VERSION >= 0x030200
 #include <qobject.h>
-#else
-#include <qobjcoll.h>
 //Added by qt3to4:
 #include <QDragLeaveEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
 #include <QDropEvent>
-#endif
 
 #include "gambas.h"
 

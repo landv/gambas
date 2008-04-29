@@ -31,8 +31,6 @@
 #include "CContainer.h"
 #include "CPicture.h"
 
-#include <q3frame.h>
-#include <q3ptrlist.h>
 #include <qtabwidget.h>
 #include <qtabbar.h>
 //Added by qt3to4:
@@ -64,7 +62,7 @@ typedef
     CWIDGET widget;
     QWidget *container;
     CARRANGEMENT arrangement;
-    Q3PtrList<CTab> *stack;
+    QList<CTab *> stack;
     int index;
     int id;
     unsigned geom : 1;
@@ -100,7 +98,7 @@ public:
 
 public slots:
 
-  void currentChanged(QWidget *);
+  void currentChanged(int);
 };
 
 #endif

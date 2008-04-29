@@ -40,7 +40,7 @@ static void free_movie(void *_object)
   
   delete THIS->movie;
   THIS->movie = 0;
-  THIS->ba->resetRawData((const char *)THIS->addr, THIS->len);  
+  THIS->ba->clear();
   delete THIS->ba;
   
   GB.ReleaseFile(&THIS->addr, THIS->len);
@@ -57,7 +57,7 @@ static bool load_movie(void *_object, char *path, int len)
     return true;
 
   THIS->ba = new QByteArray();    
-  THIS->ba->setRawData((const char *)THIS->addr, THIS->len);
+  THIS->ba->fromRawData((const char *)THIS->addr, THIS->len);
   THIS->movie = new QMovie(*(THIS->ba));
   
   GB.NewString(&THIS->path, path, len);
@@ -93,7 +93,7 @@ BEGIN_PROPERTY(CMOVIEBOX_path)
     bool playing = false;
 
     if (THIS->movie)
-      playing = THIS->movie->running();
+      playing = THIS->movie->state() == QMovie::Running;
     else
       playing = FALSE;
 
@@ -101,7 +101,7 @@ BEGIN_PROPERTY(CMOVIEBOX_path)
       return;
           
     if (!playing)
-      THIS->movie->pause();
+      THIS->movie->setPaused(true);
   }
 
 END_PROPERTY
@@ -110,13 +110,13 @@ END_PROPERTY
 BEGIN_PROPERTY(CMOVIEBOX_playing)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS->movie ? THIS->movie->running() : FALSE);
+    GB.ReturnBoolean(THIS->movie ? THIS->movie->state() == QMovie::Running : FALSE);
   else if (THIS->movie)
   {
     if (VPROP(GB_BOOLEAN))
-      THIS->movie->unpause();
+      THIS->movie->setPaused(false);
     else
-      THIS->movie->pause();
+      THIS->movie->setPaused(true);
   }
 
 END_PROPERTY
@@ -127,7 +127,8 @@ BEGIN_METHOD_VOID(CMOVIEBOX_rewind)
   if (!THIS->movie)
     return;
     
-  THIS->movie->restart();
+  THIS->movie->stop();
+  THIS->movie->start();
 
 END_METHOD
 

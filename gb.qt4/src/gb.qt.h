@@ -27,8 +27,6 @@
 
 #include "gambas.h"
 
-#include <Q3MimeSourceFactory>
-
 #include <qwidget.h>
 #include <qfont.h>
 #include <qstring.h>
@@ -75,7 +73,7 @@ typedef
   struct {
     QT_WIDGET widget;
     QWidget *container;
-    int arrangement;
+    int32_t arrangement;
     }
   QT_CONTAINER;
 
@@ -115,7 +113,7 @@ typedef
     void (*ScrollBarProperty)(void *, void *);
     void (*FontProperty)(void *, void *);
     QT_FONT *(*CreateFont)(const QFont &, QT_FONT_FUNC, void *);
-    Q3MimeSourceFactory *(*MimeSourceFactory)(void);
+    //QMimeSourceFactory *(*MimeSourceFactory)(void);
     QPixmap *(*GetPixmap)(QT_PICTURE);
     const char *(*ToUTF8)(const QString &);
     bool (*EventFilter)(QEvent *);

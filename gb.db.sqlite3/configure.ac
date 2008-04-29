@@ -9,8 +9,7 @@ GB_COMPONENT_SEARCH(
   SQLITE3,
   [SQLite 3 driver],
   [src],
-  sqlite3,
-  [>= 3.0],
+  sqlite3 ">= 3.0",
   [GB_FIND(sqlite3.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include sqlite*/include)],
   [GB_FIND(libsqlite3.$SHLIBEXT, /usr/local /opt /usr, lib sqlite*/lib)],
   [$C_LIB $CXX_LIB -lsqlite3])

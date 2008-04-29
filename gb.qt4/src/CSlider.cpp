@@ -85,9 +85,9 @@ BEGIN_METHOD(CSLIDER_new, GB_OBJECT parent)
   //SLOT(event_sliderreleased()));
 
   wid->setTracking(true); //Set the tracking off by default
-  wid->setMinValue(0);
-  wid->setMaxValue(100);
-  wid->setLineStep(1);
+  wid->setMinimum(0);
+  wid->setMaximum(100);
+  wid->setSingleStep(1);
   wid->setPageStep(10);
 
   CWIDGET_new(wid, _object);
@@ -104,14 +104,15 @@ BEGIN_PROPERTY(CSLIDER_tracking)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CSLIDER_tickinterval)
+
+/*BEGIN_PROPERTY(CSLIDER_tickinterval)
 
   if (READ_PROPERTY)
     GB.ReturnInteger(WIDGET->tickInterval());
   else
     WIDGET->setTickInterval(VPROP(GB_INTEGER));
 
-END_PROPERTY
+END_PROPERTY*/
 
 /*
 BEGIN_PROPERTY(CSLIDER_orientation)
@@ -166,13 +167,13 @@ END_PROPERTY
 BEGIN_PROPERTY(CSLIDER_mark)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->tickmarks() != QSlider::NoTicks);
+    GB.ReturnBoolean(WIDGET->tickPosition() != QSlider::NoTicks);
   else
   {
     if (VPROP(GB_BOOLEAN))
-      WIDGET->setTickmarks(QSlider::TicksBothSides);
+      WIDGET->setTickPosition(QSlider::TicksBothSides);
     else
-      WIDGET->setTickmarks(QSlider::NoTicks);
+      WIDGET->setTickPosition(QSlider::NoTicks);
   }
 
 END_PROPERTY
@@ -181,27 +182,27 @@ END_PROPERTY
 BEGIN_PROPERTY(CSLIDER_minval)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->minValue());
+    GB.ReturnInteger(WIDGET->minimum());
   else
-    WIDGET->setMinValue(VPROP(GB_INTEGER));
+    WIDGET->setMinimum(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CSLIDER_maxval)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->maxValue());
+    GB.ReturnInteger(WIDGET->maximum());
   else
-    WIDGET->setMaxValue(VPROP(GB_INTEGER));
+    WIDGET->setMaximum(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CSLIDER_linestep)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->lineStep());
+    GB.ReturnInteger(WIDGET->singleStep());
   else
-    WIDGET->setLineStep(VPROP(GB_INTEGER));
+    WIDGET->setSingleStep(VPROP(GB_INTEGER));
 
 END_PROPERTY
 

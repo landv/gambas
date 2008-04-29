@@ -30,7 +30,6 @@
 #include <stdarg.h>
 
 #include <qnamespace.h>
-#include <q3frame.h>
 #include <qkeysequence.h>
 
 #include "main.h"

@@ -25,10 +25,9 @@
 #ifndef __CLISTBOX_H
 #define __CLISTBOX_H
 
-#include <q3listbox.h>
-//Added by qt3to4:
 #include <QResizeEvent>
 #include <QMouseEvent>
+#include <QListWidget>
 
 #include "gambas.h"
 
@@ -39,10 +38,8 @@ extern GB_DESC CListBoxDesc[];
 extern GB_DESC CListBoxItemDesc[];
 #else
 
-#define QLISTBOX(object) ((Q3ListBox *)((CWIDGET *)object)->widget)
-
 #define THIS   ((CLISTBOX *)_object)
-#define WIDGET ((Q3ListBox *)((CWIDGET *)_object)->widget)
+#define WIDGET ((QListWidget *)((CWIDGET *)_object)->widget)
 
 #define CUSTOM_RTTI 1000
 
@@ -52,49 +49,26 @@ typedef
   struct {
     CWIDGET widget;
     int index;
-    bool sorted;
     int last;
     }
   CLISTBOX;
 
-#if 0
-class MyListBoxItem : public Q3ListBoxItem
-{
-public:
-  MyListBoxItem(Q3ListBox* listbox, QString& text, int width, int height);
-  ~MyListBoxItem();
 
-  int height(const Q3ListBox *) const;
-  int width(const Q3ListBox *)  const;
-
-  int rtti() const;
-  static int RTTI;
-
-protected:
-    void paint(QPainter *);
-
-private:
-  int w, h;
-  //MyListBoxItem( const MyListBoxItem &);
-  //MyListBoxItem &operator=(const MyListBoxItem &);
-};
-#endif
-
-class MyListBox : public Q3ListBox
+/*class MyListBox : public QListWidget
 {
   Q_OBJECT
 
 public:
 
   MyListBox(QWidget *parent);
-  virtual void setCurrentItem(Q3ListBoxItem *);
+  virtual void setCurrentItem(QListBoxItem *);
 
 protected:
 
   void resizeEvent(QResizeEvent *);
   void mousePressEvent(QMouseEvent *);
 
-};
+};*/
 
 class CListBox : public QObject
 {
@@ -104,17 +78,17 @@ public:
 
   static CListBox manager;
 
-  static void getAll(Q3ListBox *list, GB_ARRAY array);
-  static void setAll(Q3ListBox *list, GB_ARRAY array);
-  static int find(Q3ListBox *list, const QString& elt);
-  static int currentItem(Q3ListBox *list);
+  static void getAll(QListWidget *list, GB_ARRAY array);
+  static void setAll(QListWidget *list, GB_ARRAY array);
+  static int find(QListWidget *list, const QString& elt);
+  //static int currentItem(QListWidget *list);
 
 public slots:
 
   void selected(void);
-  void activated(int);
-  void highlighted(int);
-  void clicked(Q3ListBoxItem *);
+  void activated(QListWidgetItem *);
+  //void highlighted(int);
+  void clicked(QListWidgetItem *);
 
 };
 

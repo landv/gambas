@@ -24,9 +24,9 @@
 
 #include <qcolor.h>
 #include <qapplication.h>
-#include <q3filedialog.h>
 #include <qcolordialog.h>
 #include <qfontdialog.h>
+#include <QFileDialog>
 
 #include "gambas.h"
 #include "CColor.h"
@@ -38,7 +38,7 @@ static QString dialog_title;
 static GB_ARRAY dialog_filter = NULL;
 static QString dialog_path;
 static GB_ARRAY dialog_paths = NULL;
-static QFont dialog_font;
+static QFont *dialog_font;
 
 static unsigned int dialog_color = 0;
 
@@ -72,10 +72,18 @@ static QString get_filter(void)
 }
 
 
+BEGIN_METHOD_VOID(CDIALOG_init)
+
+	//dialog_font = new QFont();
+
+END_METHOD
+
 BEGIN_METHOD_VOID(CDIALOG_exit)
 
   GB.StoreObject(NULL, POINTER(&dialog_filter));
   GB.StoreObject(NULL, POINTER(&dialog_paths));
+  if (dialog_font)
+  	delete dialog_font;
 
 END_METHOD
 
@@ -120,12 +128,12 @@ END_PROPERTY
 BEGIN_PROPERTY(CDIALOG_font)
 
   if (READ_PROPERTY)
-    GB.ReturnObject(CFONT_create(dialog_font));
+    GB.ReturnObject(CFONT_create(*dialog_font));
   else
   {
     if (GB.CheckObject(VPROP(GB_OBJECT)))
       return;
-    dialog_font = *(((CFONT *)VPROP(GB_OBJECT))->font);
+    *dialog_font = *(((CFONT *)VPROP(GB_OBJECT))->font);
   }
 
 END_PROPERTY
@@ -147,7 +155,7 @@ BEGIN_METHOD(CDIALOG_open_file, GB_BOOLEAN multi)
   {
     QString file;
   
-    file = Q3FileDialog::getOpenFileName(dialog_path, get_filter(), qApp->activeWindow(), 0, dialog_title);
+    file = QFileDialog::getOpenFileName(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
 
     if (file.isNull())
       GB.ReturnBoolean(true);
@@ -162,9 +170,9 @@ BEGIN_METHOD(CDIALOG_open_file, GB_BOOLEAN multi)
     QStringList files;
     GB_ARRAY list;
     GB_OBJECT ob;
-    unsigned int i;
+    int i;
 
-    files = Q3FileDialog::getOpenFileNames(get_filter(), dialog_path, qApp->activeWindow(), 0, dialog_title);
+    files = QFileDialog::getOpenFileNames(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
 
     if (files.isEmpty())
     {
@@ -193,7 +201,7 @@ BEGIN_METHOD_VOID(CDIALOG_save_file)
 
   QString file;
 
-  file = Q3FileDialog::getSaveFileName(dialog_path, get_filter(), qApp->activeWindow(), 0, dialog_title);
+  file = QFileDialog::getSaveFileName(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
 
   if (file.isNull())
     GB.ReturnBoolean(true);
@@ -212,7 +220,7 @@ BEGIN_METHOD_VOID(CDIALOG_get_directory)
 
   QString file;
 
-  file = Q3FileDialog::getExistingDirectory(dialog_path, qApp->activeWindow(), 0, dialog_title);
+  file = QFileDialog::getExistingDirectory(qApp->activeWindow(), dialog_title, dialog_path);
 
   if (file.isNull())
     GB.ReturnBoolean(true);
@@ -252,9 +260,9 @@ BEGIN_METHOD_VOID(CDIALOG_select_font)
   int dpiX, dpiY;
   #endif
 
-  qfont = dialog_font;
+  qfont = *dialog_font;
   //qDebug("AVANT: %g --> %g", qfont.pointSizeFloat(), SIZE_REAL_TO_VIRTUAL(qfont.pointSizeFloat()));
-  qfont.setPointSizeFloat(SIZE_REAL_TO_VIRTUAL(qfont.pointSizeFloat()));
+  qfont.setPointSizeF(SIZE_REAL_TO_VIRTUAL(qfont.pointSizeF()));
   
   #ifdef USE_DPI
   dpiX = QPaintDevice::x11AppDpiX();
@@ -271,13 +279,13 @@ BEGIN_METHOD_VOID(CDIALOG_select_font)
   #endif
   
   //qDebug("APRES: %g --> %g", qfont.pointSizeFloat(), SIZE_VIRTUAL_TO_REAL(qfont.pointSizeFloat()));
-  qfont.setPointSizeFloat(SIZE_VIRTUAL_TO_REAL(qfont.pointSizeFloat()));
+  qfont.setPointSizeF(SIZE_VIRTUAL_TO_REAL(qfont.pointSizeF()));
   
   if (!ok)
     GB.ReturnBoolean(true);
   else
   {
-    dialog_font = qfont;
+    *dialog_font = qfont;
     GB.ReturnBoolean(false);
   }
 
@@ -287,6 +295,7 @@ GB_DESC CDialogDesc[] =
 {
   GB_DECLARE("Dialog", 0), GB_VIRTUAL_CLASS(),
 
+  GB_STATIC_METHOD("_init", NULL, CDIALOG_init, NULL),
   GB_STATIC_METHOD("_exit", NULL, CDIALOG_exit, NULL),
 
   GB_STATIC_METHOD("OpenFile", "b", CDIALOG_open_file, "[(Multi)b]"),

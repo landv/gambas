@@ -50,9 +50,9 @@ BEGIN_METHOD(CSPINBOX_new, GB_OBJECT parent)
   // printf("Down Details %i %i %i %i\n", wid->downRect());
   //printf("Geometry Details %i %i %i %i\n", wid->geometry());
 
-	wid->setMinValue(0);
-	wid->setMaxValue(100);
-	wid->setLineStep(1);
+	wid->setMinimum(0);
+	wid->setMaximum(100);
+	wid->setSingleStep(1);
 
   CWIDGET_new(wid, _object);
 
@@ -111,7 +111,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CSPINBOX_text)
 
-  GB.ReturnNewZeroString(WIDGET->cleanText());
+  GB.ReturnNewZeroString(TO_UTF8(WIDGET->cleanText()));
 
 END_PROPERTY
 
@@ -119,18 +119,18 @@ END_PROPERTY
 BEGIN_PROPERTY(CSPINBOX_minval)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->minValue());
+    GB.ReturnInteger(WIDGET->minimum());
   else
-    WIDGET->setMinValue(VPROP(GB_INTEGER));
+    WIDGET->setMinimum(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CSPINBOX_maxval)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->maxValue());
+    GB.ReturnInteger(WIDGET->maximum());
   else
-    WIDGET->setMaxValue(VPROP(GB_INTEGER));
+    WIDGET->setMaximum(VPROP(GB_INTEGER));
 
 END_PROPERTY
 

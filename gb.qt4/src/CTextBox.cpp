@@ -26,11 +26,11 @@
 #define __CTEXTBOX_CPP
 
 #include <qapplication.h>
-#include <qlineedit.h>
 #include <qcombobox.h>
-#include <q3listbox.h>
 #include <qcursor.h>
 #include <qsizepolicy.h>
+#include <QLineEdit>
+#include <QListView>
 
 #include "gambas.h"
 
@@ -54,14 +54,14 @@ static bool get(void *_object, QLineEdit **wid, bool error = true)
 {
   QComboBox *combo;
 
-  if (TEXTBOX->isA("QLineEdit"))
+  if (qobject_cast<QLineEdit *>(TEXTBOX))
   {
     *wid = TEXTBOX;
     return false;
   }
 
   combo = COMBOBOX;
-  if (!combo->editable())
+  if (!combo->isEditable())
   {
     if (error)
       GB.Error("ComboBox is read-only");
@@ -89,7 +89,7 @@ BEGIN_METHOD(CTEXTBOX_new, GB_OBJECT parent)
   wid->setAlignment(Qt::AlignLeft);
 
   CWIDGET_new(wid, (void *)_object);
-
+  
 END_METHOD
 
 
@@ -163,7 +163,7 @@ BEGIN_PROPERTY(CTEXTBOX_border)
   GET_TEXT_BOX();
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(textbox->frame());
+    GB.ReturnBoolean(textbox->hasFrame());
   else
     textbox->setFrame(VPROP(GB_BOOLEAN));
 
@@ -223,7 +223,7 @@ BEGIN_PROPERTY(CTEXTBOX_sel_text)
   GET_TEXT_BOX();
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(textbox->markedText()));
+    GB.ReturnNewZeroString(TO_UTF8(textbox->selectedText()));
   else
     textbox->insert(QSTRING_PROP());
 
@@ -255,10 +255,10 @@ static void set_selection(QLineEdit *textbox, int start, int length)
 static void get_selection(QLineEdit *textbox, int *start, int *length)
 {
   *start = textbox->cursorPosition();
-  if (!textbox->hasMarkedText())
+  if (!textbox->hasSelectedText())
     *length = 0;
   else
-    *length = textbox->markedText().length();
+    *length = textbox->selectedText().length();
 }
 
 
@@ -336,7 +336,7 @@ END_METHOD
 static void setCurrentItem(void *_object, int item)
 {
   if (item < COMBOBOX->count())
-  	COMBOBOX->setCurrentItem(item);
+  	COMBOBOX->setCurrentIndex(item);
   if (item >= 0)
     GB.Raise(_object, EVENT_Click, 0);
 }
@@ -346,9 +346,11 @@ static void combo_set_editable(void *_object, bool ed)
 {
   QLineEdit *textbox;
 
+	return;
+
   if (ed)
   {
-    if (!COMBOBOX->editable())
+    if (!COMBOBOX->isEditable())
     {
       //CWidget::removeFilter(COMBOBOX);
       COMBOBOX->setEditable(true);
@@ -371,21 +373,21 @@ static void combo_set_editable(void *_object, bool ed)
   if (CWIDGET_test_flag(THIS, WF_DESIGN))
     COMBOBOX->setFocusPolicy(Qt::NoFocus);
 
-  COMBOBOX->calcMinimumHeight();
+  //COMBOBOX->calcMinimumHeight();
 }
 
 
 
 BEGIN_METHOD(CCOMBOBOX_new, GB_OBJECT parent)
 
-  MyComboBox *wid = new MyComboBox(QCONTAINER(VARG(parent)));
+  QComboBox *wid = new QComboBox(QCONTAINER(VARG(parent)));
 
   QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(event_change()));
   QObject::connect(wid, SIGNAL(activated(int)), &CTextBox::manager, SLOT(event_click()));
 
   //QObject::connect(wid, SIGNAL(highlighted(int)), &CTextBox::manager, SLOT(event_click()));
 
-  wid->setInsertionPolicy(QComboBox::NoInsert);
+  wid->setInsertPolicy(QComboBox::NoInsert);
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -397,14 +399,14 @@ END_METHOD
 BEGIN_METHOD_VOID(CCOMBOBOX_clear)
 
   COMBOBOX->clear();
-  COMBOBOX->clearEdit();
+  COMBOBOX->clearEditText();
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCOMBOBOX_popup)
 
-  COMBOBOX->popup();
+  COMBOBOX->showPopup();
 
 END_METHOD
 
@@ -419,11 +421,11 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
   {
     QString text = QSTRING_PROP();
 
-    if (COMBOBOX->editable())
+    if (COMBOBOX->isEditable())
       COMBOBOX->lineEdit()->setText(text);
 
     pos = CTextBox::find(COMBOBOX, text);
-    COMBOBOX->setCurrentItem(pos);
+    COMBOBOX->setCurrentIndex(pos);
   }
 
 END_PROPERTY
@@ -440,7 +442,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CCOMBOBOX_read_only)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(!COMBOBOX->editable());
+    GB.ReturnBoolean(!COMBOBOX->isEditable());
   else
     combo_set_editable(_object, !VPROP(GB_BOOLEAN));
 
@@ -467,11 +469,11 @@ END_METHOD
 BEGIN_PROPERTY(CCOMBOBOX_item_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(COMBOBOX->text(THIS->index));
+    GB.ReturnNewZeroString(TO_UTF8(COMBOBOX->itemText(THIS->index)));
   else
   {
     COMBOBOX->blockSignals(true);
-    COMBOBOX->changeItem(QSTRING_PROP(), THIS->index);
+    COMBOBOX->setItemText(THIS->index, QSTRING_PROP());
     COMBOBOX->blockSignals(false);
   }
 
@@ -481,13 +483,18 @@ END_PROPERTY
 BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 
 	int index;
+	int pos = VARGOPT(pos, -1);
 
   COMBOBOX->blockSignals(true);
-  index = COMBOBOX->currentItem();
-  COMBOBOX->insertItem(QSTRING_ARG(item), VARGOPT(pos, -1));
+  index = COMBOBOX->currentIndex();
+  
+  if (pos < 0)
+  	COMBOBOX->addItem(QSTRING_ARG(item));
+  else
+  	COMBOBOX->insertItem(pos, QSTRING_ARG(item));
   //if (THIS->sorted)
   //  COMBOBOX->view()->sort();
-  COMBOBOX->setCurrentItem(index);
+  COMBOBOX->setCurrentIndex(index);
   COMBOBOX->blockSignals(false);
 
 END_METHOD
@@ -526,7 +533,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CCOMBOBOX_index)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(COMBOBOX->currentItem());
+    GB.ReturnInteger(COMBOBOX->currentIndex());
   else
     setCurrentItem(_object, VPROP(GB_INTEGER));
 
@@ -535,7 +542,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCOMBOBOX_current)
 
-  THIS->index = COMBOBOX->currentItem();
+  THIS->index = COMBOBOX->currentIndex();
 
   if (THIS->index < 0)
     GB.ReturnNull();
@@ -596,23 +603,24 @@ END_PROPERTY
 ***************************************************************************/
 
 MyComboBox::MyComboBox(QWidget *parent) :
-  QComboBox(false, parent)
+  QComboBox(parent)
 {
   calcMinimumHeight();
 }
 
 
-void MyComboBox::fontChange(const QFont &font)
+void MyComboBox::changeEvent(QEvent *e)
 {
-  QWidget::fontChange(font);
-  calcMinimumHeight();
+	QComboBox::changeEvent(e);
+	if (e->type() == QEvent::FontChange)
+  	calcMinimumHeight();
 }
 
 void MyComboBox::calcMinimumHeight()
 {
   QFontMetrics fm = fontMetrics();
 
-  if (editable())
+  if (isEditable())
     setMinimumHeight(fm.lineSpacing() + height() - lineEdit()->height());
   else
     setMinimumHeight(fm.lineSpacing() + 2);
@@ -648,7 +656,7 @@ int CTextBox::find(QComboBox *list, const QString& s)
 {
   for (int i = 0; i < (int)list->count(); i++)
   {
-    if (list->text(i) == s)
+    if (list->itemText(i) == s)
       return i;
   }
 
@@ -663,7 +671,7 @@ void CTextBox::getAll(QComboBox *list, GB_ARRAY array)
 	
 	for (i = 0; i < list->count(); i++)
 	{
-		GB.NewString(&str, TO_UTF8(list->text(i)), 0);
+		GB.NewString(&str, TO_UTF8(list->itemText(i)), 0);
 		*((char **)GB.Array.Get(array, i)) = str;
 	}
 }
@@ -680,7 +688,7 @@ void CTextBox::setAll(QComboBox *list, GB_ARRAY array)
 	{
 		for (i = 0; i < GB.Array.Count(array); i++)
 		{
-			list->insertItem(TO_QSTRING(*((char **)GB.Array.Get(array, i))));
+			list->addItem(TO_QSTRING(*((char **)GB.Array.Get(array, i))));
 		}
 	}
 

@@ -34,7 +34,7 @@
 extern GB_DESC CFrameDesc[];
 #else
 
-#define QGROUPBOX(object) ((Q3GroupBox *)((CWIDGET *)object)->widget)
+#define QGROUPBOX(object) ((QGroupBox *)((CWIDGET *)object)->widget)
 #define WIDGET QGROUPBOX(_object)
 #define THIS ((CFRAME *)_object)
 

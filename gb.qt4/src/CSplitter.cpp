@@ -30,8 +30,6 @@
 #include <qsplitter.h>
 //Added by qt3to4:
 #include <QChildEvent>
-#include <Q3Frame>
-#include <Q3ValueList>
 #include <QEvent>
 
 #include "CConst.h"
@@ -101,38 +99,36 @@ END_PROPERTY
 BEGIN_PROPERTY(CSPLITTER_layout)
 
   int i;
-  Q3ValueList<int> list;
+  QList<int> list;
   char buffer[16];
   int pos;
 
   if (READ_PROPERTY)
   {
     list = WIDGET->sizes();
-    Q3ValueList<int>::Iterator it = list.begin();
     QString s;
 
     for (i = 0; i < list.count(); i++)
     {
-      pos = *it;
+      pos = list.at(i);
       if (pos <= 1)
         pos = 0;
       sprintf(buffer, "%d", pos);
       if (i > 0)
         s += ',';
       s += buffer;
-      ++it;
     }
 
     #ifdef DEBUG_ME
     qDebug("Splitter.Layout -> %s", s.latin1());
     #endif
 
-    GB.ReturnNewZeroString(s.latin1());
+    GB.ReturnNewZeroString(s.toLatin1());
   }
   else
   {
     QString s = QSTRING_PROP();
-    QStringList sl = QStringList::split(',', s);
+    QStringList sl = s.split(',');
     int sum;
     int dim;
 

@@ -34,19 +34,20 @@
 #include <qpen.h>
 #include <qbrush.h>
 #include <qapplication.h>
-#include <q3paintdevicemetrics.h>
-#include <q3picture.h>
 #include <qpixmap.h>
 #include <qbitmap.h>
-#include <q3simplerichtext.h>
 #include <qpalette.h>
 #include <qstyle.h>
 #include <qdrawutil.h>
 //Added by qt3to4:
-#include <Q3PointArray>
-#include <Q3MemArray>
 #include <QStyle>
 #include <QStyleOption>
+#include <QVector>
+#include <QTextDocument>
+
+#ifndef NO_X_WINDOW
+#include <QX11Info>
+#endif
 
 #include "gambas.h"
 
@@ -100,7 +101,7 @@ static void init_drawing(GB_DRAW *d, QPainter *p, QWidget *init, int w, int h, i
 		#ifdef NO_X_WINDOW
 			d->resolution = 72;
 		#else
-			d->resolution = QPaintDevice::x11AppDpiY();
+			d->resolution = QX11Info::appDpiY();
 		#endif
 }
 
@@ -141,9 +142,9 @@ static uint get_color(GB_DRAW *d, int col, bool bg)
 		if (wid)
 		{
 			if (bg)
-				col = wid->paletteBackgroundColor().rgb() & 0xFFFFFF;
+				col = wid->palette().color(QPalette::Window).rgb() & 0xFFFFFF;
 			else
-				col = wid->paletteForegroundColor().rgb() & 0xFFFFFF;
+				col = wid->palette().color(QPalette::WindowText).rgb() & 0xFFFFFF;
 		}
 		else
 			col = bg ? 0xFFFFFF : 0x000000;
@@ -250,16 +251,16 @@ static void restore(GB_DRAW *d)
 
 static int get_background(GB_DRAW *d)
 {
-	return COLOR_TO_INT(DP(d)->backgroundColor());
+	return COLOR_TO_INT(DP(d)->background().color());
 }
 
 static void set_background(GB_DRAW *d, int col)
 {
 	col = get_color(d, col, true);
 	
-	DP(d)->setBackgroundColor(QColor(col));
+	DP(d)->setBackground(QColor(col));
 	if (DPM(d))
-		DPM(d)->setBackgroundColor(MASK_COLOR(col));
+		DPM(d)->setBackground(MASK_COLOR(col));
 }
 
 static int get_foreground(GB_DRAW *d)
@@ -493,9 +494,7 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 
   if (DPM(d))
   {
-    QPixmap p;
-
-    p.convertFromImage(*img);
+    QPixmap p = QPixmap::fromImage(*img);
 
     DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
 
@@ -543,7 +542,7 @@ static void draw_tiled_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int
 }
 
 static QStringList text_sl;
-static Q3MemArray<int> text_w;
+static QVector<int> text_w;
 static int text_line;
 
 static int get_text_width(QPainter *dp, QString &s)
@@ -551,18 +550,16 @@ static int get_text_width(QPainter *dp, QString &s)
   int w, width = 0;
   int i;
 
-  text_sl = QStringList::split('\n', s, true);
+  text_sl = s.split('\n', QString::KeepEmptyParts);
 
-  Q3MemArray<int> tw(text_sl.count());
+  text_w.resize(text_sl.count());
 
   for (i = 0; i < (int)text_sl.count(); i++)
   {
     w = dp->fontMetrics().width(text_sl[i]);
     if (w > width) width = w;
-    tw[i] = w;
+    text_w[i] = w;
   }
-
-  text_w = tw;
 
   return width;
 }
@@ -601,7 +598,7 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
     default: break;
   }
 
-  align = qApp->horizontalAlignment((Qt::Alignment)align);
+  align = QStyle::visualAlignment(qApp->layoutDirection(), (Qt::Alignment)align);
 
   for (i = 0; i < (int)text_sl.count(); i++)
   {
@@ -629,14 +626,13 @@ static void text_size(GB_DRAW *d, char *text, int len, int *w, int *h)
 	if (h) *h = get_text_height(DP(d), s);
 }
 
-void DRAW_rich_text(QPainter *p, const QColorGroup &cg, int x, int y, int w, int h, int align, QString &text, QPainter *p2)
+void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString &text, QPainter *p2)
 {
   QString a;
-  QRect clip;
   int tw, th;
   QString t = text;
 
-  switch(qApp->horizontalAlignment((Qt::Alignment)align))
+  switch(QStyle::visualAlignment(qApp->layoutDirection(), (Qt::Alignment)align))
   {
   	case Qt::AlignRight: a = "right"; break;
   	case Qt::AlignHCenter: a = "center"; break;
@@ -646,13 +642,15 @@ void DRAW_rich_text(QPainter *p, const QColorGroup &cg, int x, int y, int w, int
   if (a.length())
   	t = "<div align=\"" + a + "\">" + t + "</div>";
   
-	Q3SimpleRichText rt(t, p->font()); 
+	QTextDocument rt;
+	rt.setHtml(t);
+	rt.setDefaultFont(p->font()); 
   
   if (w > 0)
-  	rt.setWidth(w);
+  	rt.setTextWidth(w);
   	
-  tw = rt.widthUsed();
-  th = rt.height();
+  tw = rt.idealWidth();
+  th = rt.size().height();
 
 	if (w < 0) w = tw;
 	if (h < 0) h = th;
@@ -664,14 +662,19 @@ void DRAW_rich_text(QPainter *p, const QColorGroup &cg, int x, int y, int w, int
     default: break;
   }
 
-	rt.draw(p, x, y, clip, cg);
-	if (p2) rt.draw(p2, x, y, clip, cg);
+	p->translate(x, y);
+	rt.drawContents(p);
+	p->translate(-x, -y);
+	if (p2) 
+	{
+		p2->translate(x, y);
+		rt.drawContents(p2);
+		p2->translate(-x, -y);
+	}
 }
 
 static void draw_rich_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
 {
-  QColorGroup cg;
-
   QString t = QString::fromUtf8((const char *)text, len);
   
 	if (align == GB_DRAW_ALIGN_DEFAULT)
@@ -679,9 +682,7 @@ static void draw_rich_text(GB_DRAW *d, char *text, int len, int x, int y, int w,
 
 	align = CCONST_alignment(align, ALIGN_TOP_NORMAL, true);
 
-	cg = QApplication::palette(get_widget(d)).active();
-
-	DRAW_rich_text(DP(d), cg, x, y, w, h, align, t, DPM(d));
+	DRAW_rich_text(DP(d), x, y, w, h, align, t, DPM(d));
 
 //   switch(qApp->horizontalAlignment(align))
 //   {
@@ -719,28 +720,31 @@ static void draw_rich_text(GB_DRAW *d, char *text, int len, int x, int y, int w,
 
 static void rich_text_size(GB_DRAW *d, char *text, int len, int sw, int *w, int *h)
 {
-	Q3SimpleRichText rt(QString::fromUtf8((const char *)text, len), DP(d)->font());
+	QTextDocument rt;
+	
+	rt.setHtml(QString::fromUtf8((const char *)text, len));
+	rt.setDefaultFont(DP(d)->font());
 	
 	if (sw > 0)
-		rt.setWidth(DP(d), sw);
+		rt.setTextWidth(sw);
 	
-	if (w) *w = rt.widthUsed();
-	if (h) *h = rt.height();
+	if (w) *w = rt.idealWidth();
+	if (h) *h = rt.size().height();
 }
 
 static void draw_poly(GB_DRAW *d, bool fill, int n, int *points)
 {
   int i, j;
 
-  Q3PointArray p(n);
+  QPolygon p(n);
 
   for (i = 0, j = 0; i < n; i++, j += 2)
     p.setPoint(i, points[j], points[j + 1]);
 
   if (fill)
   {
-    DP(d)->drawPolygon(p, true);
-    if (DPM(d)) DPM(d)->drawPolygon(p, true);
+    DP(d)->drawPolygon(p);
+    if (DPM(d)) DPM(d)->drawPolygon(p);
   }
   else
   {
@@ -784,22 +788,6 @@ static void set_clipping_enabled(GB_DRAW *d, int enable)
 {
 	DP(d)->setClipping(enable);
 	if (DPM(d)) DPM(d)->setClipping(enable);
-}
-
-static QColorGroup get_color_group(int state)
-{
-	switch (state)
-	{
-		case GB_DRAW_STATE_DISABLED: return QApplication::palette().disabled();
-		default: return QApplication::palette().active();
-	}
-}
-
-static QColorGroup get_color_group_mask(int state)
-{
-	static QColorGroup mask_cg(Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color1, Qt::color0, Qt::color0);
-
-	return mask_cg;
 }
 
 QStyleOption get_option(int x, int y, int w, int h, int state)
@@ -938,13 +926,13 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 	if (border == BORDER_PLAIN)
 	{
 		DP(d)->save();
-		DP(d)->setPen(get_color_group(state).foreground());
+		DP(d)->setPen(state == GB_DRAW_STATE_DISABLED ? QApplication::palette().color(QPalette::Active, QPalette::WindowText) : QApplication::palette().color(QPalette::Disabled, QPalette::WindowText));
 		DP(d)->drawRect(x, y, w, h);
 		DP(d)->restore();
 		if DPM(d) 
 		{	
 			DPM(d)->save();
-			DPM(d)->setPen(get_color_group_mask(state).foreground());
+			DPM(d)->setPen(Qt::color1);
 			DPM(d)->drawRect(x, y, w, h);
 			DPM(d)->restore();
 		}

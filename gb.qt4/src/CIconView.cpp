@@ -30,11 +30,7 @@
 #include <qpalette.h>
 #include <q3scrollview.h>
 #include <q3iconview.h>
-#if QT_VERSION >= 0x030200
 #include <qobject.h>
-#else
-#include <qobjcoll.h>
-#endif
 
 #include "gambas.h"
 

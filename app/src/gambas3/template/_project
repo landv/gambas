@@ -1,4 +1,4 @@
-# Gambas Project File 2.0
+# Gambas Project File 3.0
 Title=$(TITLE)
 @
 @IF CONSOLE OR GAME OR WEB
@@ -17,68 +17,68 @@ Startup=FMain
 @ENDIF
 @
 @IF DATABASE
-Library=gb.db
+Component=gb.db
 @ENDIF
 @
 @IF NETWORK
-Library=gb.net
-Library=gb.net.smtp
+Component=gb.net
+Component=gb.net.smtp
 @ENDIF
 @
 @IF REGEXP
-Library=gb.pcre
+Component=gb.pcre
 @ENDIF
 @
 @IF SETTINGS
-Library=gb.settings
+Component=gb.settings
 @ENDIF
 @
 @IF VISUAL
-Library=gb.vb
+Component=gb.vb
 @ENDIF
 @
 @IF XML
-Library=gb.xml
-Library=gb.xml.xslt
+Component=gb.xml
+Component=gb.xml.xslt
 @ENDIF
 @
 @IF OPENGL
-Library=gb.opengl
+Component=gb.opengl
 @ENDIF
 @IF GRAPHIC
   @IF GTK
-Library=gb.gtk
-Library=gb.gtk.ext
-Library=gb.form
+Component=gb.gtk
+Component=gb.gtk.ext
+Component=gb.form
   @ENDIF
   @IF QT
-Library=gb.qt
-Library=gb.qt.ext
-Library=gb.form
+Component=gb.qt
+Component=gb.qt.ext
+Component=gb.form
     @IF OPENGL
-Library=gb.qt.opengl
+Component=gb.qt.opengl
     @ENDIF
   @ENDIF
   @IF GUI
-Library=gb.gui
-Library=gb.form
+Component=gb.gui
+Component=gb.form
   @ENDIF
   @IF DATABASE
-Library=gb.db.form
+Component=gb.db.form
   @ENDIF
 @ENDIF
 @
 @IF IMAGE
-Library=gb.image
+Component=gb.image
 @ENDIF
 @
 @IF GAME
-Library=gb.sdl
-Library=gb.sdl.sound
+Component=gb.sdl
+Component=gb.sdl.sound
 @ENDIF
 @
 @IF WEB
-Library=gb.web
+Component=gb.web
 @ENDIF
 @
 @IF TRANSLATE

@@ -24,15 +24,9 @@
 
 #define __CRADIOBUTTON_CPP
 
-
-
 #include <qapplication.h>
 #include <qradiobutton.h>
-#if QT_VERSION >= 0x030200
 #include <qobject.h>
-#else
-#include <qobjcoll.h>
-#endif
 
 #include "gambas.h"
 

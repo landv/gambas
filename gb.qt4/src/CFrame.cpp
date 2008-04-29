@@ -24,10 +24,8 @@
 
 #define __CFRAME_CPP
 
-
-
 #include <qapplication.h>
-#include <q3groupbox.h>
+#include <QGroupBox>
 
 #include "gambas.h"
 
@@ -36,7 +34,7 @@
 
 BEGIN_METHOD(CFRAME_new, GB_OBJECT parent)
 
-  Q3GroupBox *wid = new Q3GroupBox(QCONTAINER(VARG(parent)));
+  QGroupBox *wid = new QGroupBox(QCONTAINER(VARG(parent)));
 
   THIS->container = wid;
 

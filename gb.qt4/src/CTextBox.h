@@ -27,7 +27,8 @@
 
 #include "gambas.h"
 
-#include <qcombobox.h>
+#include <QComboBox>
+#include <QEvent>
 
 #include "CWidget.h"
 
@@ -43,7 +44,7 @@ extern GB_DESC CComboBoxItemDesc[];
 #define QLINEEDIT(object) ((QLineEdit *)((CWIDGET *)object)->widget)
 
 #define TEXTBOX ((QLineEdit *)((CWIDGET *)_object)->widget)
-#define COMBOBOX ((MyComboBox *)((CWIDGET *)_object)->widget)
+#define COMBOBOX ((QComboBox *)((CWIDGET *)_object)->widget)
 
 #endif
 
@@ -69,7 +70,7 @@ class MyComboBox : public QComboBox
 public:
 
   MyComboBox(QWidget *parent);
-  void fontChange(const QFont &);
+  virtual void changeEvent(QEvent *e);
   void calcMinimumHeight();
 };
 

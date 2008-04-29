@@ -26,12 +26,12 @@
 #define __CMENU_H
 
 #include "gambas.h"
+
 #include <QAction>
-#include <qmenudata.h>
-#include <q3popupmenu.h>
-#include <q3intdict.h>
-#include <q3ptrlist.h>
-#include <qkeysequence.h>
+#include <QMenu>
+#include <QMenuBar>
+#include <QKeySequence>
+#include <QList>
 
 #include "CWidget.h"
 #include "CPicture.h"
@@ -42,56 +42,28 @@ extern GB_DESC CMenuChildrenDesc[];
 #else
 
 #define THIS  OBJECT(CMENU)
-#define CONTROL  OBJECT(CWIDGET)
+//#define CONTROL  OBJECT(CWIDGET)
+#define ACTION ((QAction *)((CWIDGET *)_object)->widget)
 
-#define QMENU(object) ((QMenu *)((CWIDGET *)object)->widget)
-
-#define CMENU_is_popup(_menu) (((CMENU *)_menu)->children != NULL)
-#define CMENU_is_top(_menu) (((CMENU *)_menu)->parent == NULL)
-#define CMENU_is_visible(_menu) (CWIDGET_test_flag(_menu, WF_VISIBLE))
-#define CMENU_is_separator(_menu) (((CMENU *)_menu)->text == 0 || *((CMENU *)_menu)->text == 0)
+#define CMENU_is_toplevel(_menu) (GB.Is((_menu)->parent, CLASS_Window))
 
 #endif
-
-/*
-typedef
-  struct {
-    GB_BASE ob;
-    struct _CMENU *menu;
-    CPICTURE *picture;
-    int id;
-    //char *key;
-    }
-  CMENUITEM;
-*/
 
 typedef
   struct _CMENU {
     CWIDGET widget;
-    char *text;
-    CPICTURE *picture;
-    QMenu *parentMenu;
-    QMenuBar *parentMenuBar;
-    struct _CMENU *parent;
+    void *parent;
+    //QList<struct _CMENU *> children;
+    //QMenu *parentMenu;
+    //QMenuBar *parentMenuBar;
     QWidget *toplevel;
-    QList<struct _CMENU *> *children;
-    int id;
-    int pos;
-    QKeySequence *accel;
-    unsigned enabled : 1;
-    unsigned checked : 1;
+    QMenu *menu;
+    CPICTURE *picture;
     unsigned deleted : 1;
     unsigned toggle : 1;
     unsigned noshortcut : 1;
-    unsigned stretch : 1;
     }
   CMENU;
-
-#define CONTAINER_FUNC(_menu, _func) ((_menu)->parentMenuBar ? (_menu)->parentMenuBar->_func : (_menu)->parentMenu->_func)
-#define CONTAINER_CALL(_menu, _func) { if ((_menu)->parentMenuBar) { (_menu)->parentMenuBar->_func; } else { (_menu)->parentMenu->_func; } }
-
-typedef
-  Q3IntDict<CMENU> CMenuDict;
 
 typedef
   QList<CMENU *> CMenuList;
@@ -104,18 +76,18 @@ class CMenu : public QObject
 public:
 
   static CMenu manager;
-  static CMenuDict dict;
+	static QHash<QAction *, CMENU *> dict;
 
-  static void unrefChildren(CMenuList *list);
+  static void unrefChildren(QWidget *wid);
   static void enableAccel(CMENU *item, bool enable);
   static void hideSeparators(CMENU *item);
 
 public slots:
 
-  void activated(int);
-  void shown();
-  void hidden();
-  void destroy();
+  void slotTriggered(QAction *);
+  void slotDestroyed();
+  void slotShown();
+  void slotHidden();
 };
 
 #endif

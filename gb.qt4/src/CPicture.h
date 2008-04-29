@@ -27,7 +27,6 @@
 
 #include <qpixmap.h>
 #include <qimage.h>
-#include <q3picture.h>
 
 #include "gambas.h"
 
@@ -35,8 +34,6 @@ typedef
   struct {
     GB_BASE ob;
     QPixmap *pixmap;
-    //QPicture *picture;
-    //QImage *image;
     }
   CPICTURE;
 
@@ -65,7 +62,7 @@ extern GB_DESC CPictureDesc[];
   if (_pict && !((_pict)->pixmap->isNull())) \
     _method_pixmap(*((_pict)->pixmap)); \
   else \
-    _method_pixmap(0); \
+    _method_pixmap(QPixmap()); \
 }
 
 #define SET_PICTURE(_method_pixmap, _method_picture, _store, _object) \

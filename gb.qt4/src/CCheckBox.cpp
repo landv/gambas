@@ -67,19 +67,19 @@ BEGIN_PROPERTY(CCHECKBOX_value)
 
   if (READ_PROPERTY)
   {
-		switch(WIDGET->state())
+		switch(WIDGET->checkState())
 		{
-			case QCheckBox::Off: GB.ReturnInteger(0); break;
-			case QCheckBox::On: GB.ReturnInteger(-1); break;
-			case QCheckBox::NoChange: GB.ReturnInteger(1); break;
+			case Qt::Unchecked: GB.ReturnInteger(0); break;
+			case Qt::Checked: GB.ReturnInteger(-1); break;
+			case Qt::PartiallyChecked: GB.ReturnInteger(1); break;
 		}
 	}
   else
   {
   	if (WIDGET->isTristate() && VPROP(GB_INTEGER) == 1)
-  		WIDGET->setNoChange();
+  		WIDGET->setCheckState(Qt::PartiallyChecked);
 		else
-	    WIDGET->setChecked(VPROP(GB_INTEGER));
+	    WIDGET->setCheckState(VPROP(GB_INTEGER) == 0 ? Qt::Unchecked : Qt::Checked);
 	}
 
 END_PROPERTY

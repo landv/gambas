@@ -11,8 +11,7 @@ GB_COMPONENT_PKG_CONFIG(
   GTK,
   [GTK+ toolkit],
   [src],
-  gtk+-2.0,
-  [>= 2.10]
+  gtk+-2.0 ">= 2.10"
 )
   
 AC_OUTPUT( \

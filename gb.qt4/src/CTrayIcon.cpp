@@ -27,12 +27,8 @@
 #include <qtooltip.h>
 #include <qpixmap.h>
 #include <qbitmap.h>
-#include <q3ptrlist.h>
 #include <qevent.h>
-
-#if QT_VERSION >= 0x030100
-  #include <qeventloop.h>
-#endif
+#include <qeventloop.h>
 
 //Added by qt3to4:
 #include <QContextMenuEvent>
@@ -102,6 +98,7 @@ void CTRAYICON_close_all(void)
 
   GB.StopAllEnum(GB.FindClass("TrayIcons"));
   
+  i = 0;
   for (;;)
   {
   	if (i >= _list.count())
@@ -135,7 +132,7 @@ BEGIN_METHOD_VOID(CTRAYICON_free)
 
   //qDebug("CTRAYICON_free");
 
-  _list.remove(THIS);
+  _list.removeAt(_list.indexOf(THIS));
 
   GB.StoreObject(NULL, POINTER(&THIS->icon));
   GB.FreeString(&THIS->tooltip);
@@ -149,6 +146,7 @@ END_METHOD
 static void define_mask(CTRAYICON *_object)
 {
   QPixmap *p;
+	QPalette palette;
 
   if (!WIDGET)
     return;
@@ -161,8 +159,10 @@ static void define_mask(CTRAYICON *_object)
   WIDGET->clearMask();
   if (p->hasAlpha())
     WIDGET->setMask(p->mask());
-
-  WIDGET->setErasePixmap(*p);
+ 
+	palette.setBrush(WIDGET->backgroundRole(), QBrush(*p));
+ 	WIDGET->setPalette(palette);
+ 
   WIDGET->resize(p->width(), p->height());
 
   if (!THIS->icon)
@@ -172,16 +172,10 @@ static void define_mask(CTRAYICON *_object)
 
 static void define_tooltip(CTRAYICON *_object)
 {
-  char *tooltip;
-
   if (!WIDGET)
     return;
 
-  tooltip = THIS->tooltip;
-  if (tooltip)
-    QToolTip::add(WIDGET, TO_QSTRING(tooltip));
-  else
-    QToolTip::remove(WIDGET);
+	WIDGET->setToolTip(TO_QSTRING(THIS->tooltip));
 }
 
 
@@ -233,7 +227,7 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
     _state = EMBED_WAIT;
     for(i = 0; i < 500; i++)
     {
-      qApp->processEvents(QEventLoop::ExcludeUserInput);
+      qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
       if (_state)
         break;
       usleep(10000);
@@ -288,7 +282,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTRAYICON_next)
 
-  unsigned int index;
+  int index;
 
   index = ENUM(int);
 
@@ -307,7 +301,7 @@ END_METHOD
 
 BEGIN_METHOD(CTRAYICON_get, GB_INTEGER index)
 
-  uint index = (uint)VARG(index);
+  int index = (uint)VARG(index);
 
   if (index >= _list.count())
 	{
@@ -503,12 +497,12 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
     if (type == QEvent::MouseButtonPress)
     {
       event_id = EVENT_MouseDown;
-      state = mevent->stateAfter();
+      state = mevent->modifiers();
     }
     else
     {
       event_id = (type == QEvent::MouseButtonRelease) ? EVENT_MouseUp : EVENT_MouseMove;
-      state = mevent->state();
+      state = mevent->modifiers();
     }
 
     if (GB.CanRaise(THIS, event_id))
@@ -555,7 +549,7 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
       CMOUSE_clear(true);
       CMOUSE_info.x = p.x();
       CMOUSE_info.y = p.y();
-      CMOUSE_info.state = ev->state();
+      CMOUSE_info.state = ev->modifiers();
       CMOUSE_info.orientation = ev->orientation();
       CMOUSE_info.delta = ev->delta();
 

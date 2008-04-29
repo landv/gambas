@@ -27,7 +27,6 @@
 
 #include <qapplication.h>
 #include <qevent.h>
-#include <q3frame.h>
 #include <qpushbutton.h>
 #include <qtoolbutton.h>
 #include <qsizepolicy.h>
@@ -77,7 +76,7 @@ BEGIN_METHOD(CTOGGLEBUTTON_new, GB_OBJECT parent)
 
   //wid->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
   wid->setAutoDefault(false);
-  wid->setToggleButton(TRUE);
+  wid->setCheckable(TRUE);
   
   CWIDGET_new(wid, (void *)_object);
 
@@ -91,7 +90,7 @@ BEGIN_METHOD(CTOOLBUTTON_new, GB_OBJECT parent)
   QObject::connect(wid, SIGNAL(clicked()), &CButton::manager, SLOT(clickedTool()));
 
 	//wid->setToggleButton(TRUE);
-  wid->setTextPosition(QToolButton::BesideIcon);
+  wid->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
   wid->setAutoRaise(true);
   
   CWIDGET_new(wid, (void *)_object);
@@ -127,7 +126,7 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
   QIcon icon;
   int size;
 
-	size = QMIN(WIDGET_TOOL->width(), WIDGET_TOOL->height()) - 6;
+	size = qMin(WIDGET_TOOL->width(), WIDGET_TOOL->height()) - 6;
 	if (resize && size == THIS->last_size)
 		return;
 
@@ -145,12 +144,11 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
 			}
 			else
 				CWIDGET_iconset(icon, p);
-			WIDGET->setIconSet(icon);
+			WIDGET->setIcon(icon);
 		}
 		else
 		{
-			if (WIDGET->iconSet())
-				WIDGET->setIconSet(icon);
+			WIDGET->setIcon(icon);
 		}
   }
   else // We are changing text
@@ -170,13 +168,13 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
   QIcon icon;
   int size;
 
-	size = QMIN(WIDGET_TOOL->width(), WIDGET_TOOL->height()) - 6;
+	size = qMin(WIDGET_TOOL->width(), WIDGET_TOOL->height()) - 6;
     
 	if (resize && size == THIS->last_size)
 		return;
 	
   if (text == NULL)
-    qtext = WIDGET_TOOL->textLabel();
+    qtext = WIDGET_TOOL->text();
   else
     qtext = TO_QSTRING(text);
 
@@ -184,7 +182,7 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
   {
     p = *(THIS->picture->pixmap);
 
-    WIDGET_TOOL->setTextLabel(qtext);
+    WIDGET_TOOL->setText(qtext);
  		if (THIS->stretch)
  		{
     	if (size > 0)
@@ -193,19 +191,19 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
 	  else
 	    CWIDGET_iconset(icon, p);
 	    	
-    WIDGET_TOOL->setIconSet(icon);
-    WIDGET_TOOL->setUsesTextLabel(qtext.length() > 0);
+    WIDGET_TOOL->setIcon(icon);
+    //WIDGET_TOOL->setUsesTextLabel(qtext.length() > 0);
     
 		THIS->last_size = size;
   }
   else
   {
-    WIDGET_TOOL->setIconSet(icon);
-    WIDGET_TOOL->setTextLabel(qtext);
-    WIDGET_TOOL->setUsesTextLabel(qtext.length() > 0);
+    WIDGET_TOOL->setIcon(icon);
+    WIDGET_TOOL->setText(qtext);
+    //WIDGET_TOOL->setUsesTextLabel(qtext.length() > 0);
   }
 
-  CWidget::resetTooltip((CWIDGET *)_object);
+  //CWidget::resetTooltip((CWIDGET *)_object);
   WIDGET->calcMinimumHeight();
 }
 
@@ -282,9 +280,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CTOGGLEBUTTON_value)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->isOn());
+    GB.ReturnBoolean(WIDGET->isChecked());
   else
-    WIDGET->setOn(VPROP(GB_BOOLEAN));
+    WIDGET->setChecked(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -292,11 +290,11 @@ END_PROPERTY
 BEGIN_PROPERTY(CTOOLBUTTON_value)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET_TOOL->isOn());
+    GB.ReturnBoolean(WIDGET_TOOL->isChecked());
   else
   {
-    if (WIDGET->isToggleButton())
-      WIDGET_TOOL->setOn(VPROP(GB_BOOLEAN));
+    if (WIDGET->isCheckable())
+      WIDGET_TOOL->setChecked(VPROP(GB_BOOLEAN));
     else
       WIDGET->animateClick();
     //qApp->postEvent(WIDGET_TOOL, new QEvent(QEvent::Leave));
@@ -338,10 +336,10 @@ END_PROPERTY
 BEGIN_PROPERTY(CTOOLBUTTON_toggle)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET_TOOL->isToggleButton());
+    GB.ReturnBoolean(WIDGET_TOOL->isCheckable());
   else
   {
-    WIDGET_TOOL->setToggleButton(VPROP(GB_BOOLEAN));
+    WIDGET_TOOL->setCheckable(VPROP(GB_BOOLEAN));
     QObject::disconnect(WIDGET_TOOL, 0, &CButton::manager, 0);
     if (VPROP(GB_BOOLEAN))
 	  	QObject::connect(WIDGET_TOOL, SIGNAL(toggled(bool)), &CButton::manager, SLOT(clickedTool()));
@@ -601,10 +599,11 @@ void CButton::onlyMe(CBUTTON *_object)
 		if (!other->radio)
 			continue;
 		o->blockSignals(true);
-		if (o->isA("MyPushButton"))
-			((MyPushButton *)o)->setOn(false);
+		/*if (qobject_cast<MyPushButton *>(o))
+			((MyPushButton *)o)->setChecked(false);
 		else
-			((MyToolButton *)o)->setOn(false);
+			((MyToolButton *)o)->setChecked(false);*/
+		(qobject_cast<QAbstractButton *>(o))->setChecked(false);
 		o->blockSignals(false);
   }
 }
@@ -620,11 +619,11 @@ void CButton::clickedToggle(void)
 	
 	if (THIS->radio)
 	{ 
-		if (WIDGET->isOn())
+		if (WIDGET->isChecked())
 			onlyMe(THIS);
 		else
 		{
-			WIDGET->setOn(true);
+			WIDGET->setChecked(true);
 			return;
 		}
 	}
@@ -638,11 +637,11 @@ void CButton::clickedTool(void)
 	
 	if (THIS->radio)
 	{ 
-		if (WIDGET_TOOL->isOn())
+		if (WIDGET_TOOL->isChecked())
 			onlyMe(THIS);
 		else
 		{
-			WIDGET_TOOL->setOn(true);
+			WIDGET_TOOL->setChecked(true);
 			return;
 		}
 	}

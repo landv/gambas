@@ -23,7 +23,6 @@
 #define __CWATCHER_CPP
 
 #include <qevent.h>
-#include <q3scrollview.h>
 
 #include "main.h"
 #include "CWatcher.h"

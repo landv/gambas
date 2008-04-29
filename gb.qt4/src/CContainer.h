@@ -26,12 +26,7 @@
 #define __CCONTAINER_H
 
 #include <qobject.h>
-#if QT_VERSION >= 0x030200
-#include <qobject.h>
-#else
-#include <qobjcoll.h>
-#endif
-#include <q3frame.h>
+#include <qframe.h>
 //Added by qt3to4:
 #include <QResizeEvent>
 #include <QShowEvent>
@@ -105,7 +100,7 @@ DECLARE_PROPERTY(CCONTAINER_spacing);
 void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);
 
-class MyContainer : public Q3Frame
+class MyContainer : public QFrame
 {
   Q_OBJECT
 
@@ -115,7 +110,6 @@ public:
 
 protected:
 
-  virtual void frameChanged();
   virtual void resizeEvent(QResizeEvent *);
   virtual void childEvent(QChildEvent *);
   virtual void showEvent(QShowEvent *);

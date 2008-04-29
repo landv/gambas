@@ -24,12 +24,9 @@
 
 #define __CPICTUREBOX_CPP
 
-
-
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qpixmap.h>
-#include <q3frame.h>
 
 #include "gambas.h"
 
@@ -122,7 +119,7 @@ BEGIN_PROPERTY(CPICTUREBOX_alignment)
   if (READ_PROPERTY)
     GB.ReturnInteger(CCONST_alignment(WIDGET->alignment() & ALIGN_MASK, ALIGN_TOP_LEFT, false));
   else
-    WIDGET->setAlignment(CCONST_alignment(VPROP(GB_INTEGER), ALIGN_TOP_LEFT, true));
+    WIDGET->setAlignment((Qt::Alignment)CCONST_alignment(VPROP(GB_INTEGER), ALIGN_TOP_LEFT, true));
 
 END_PROPERTY
 /*

@@ -29,15 +29,13 @@
 #include <qmime.h>
 #include <qclipboard.h>
 #include <qimage.h>
-#include <q3picture.h>
-#include <q3dragobject.h>
-#include <q3cstring.h>
 #include <qevent.h>
 #include <qcolor.h>
 //Added by qt3to4:
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QDragEnterEvent>
+#include <QMimeData>
 
 #include "CWidget.h"
 #include "CImage.h"
@@ -54,23 +52,23 @@ static CPICTURE *_picture = 0;
 static int _picture_x = -1;
 static int _picture_y = -1;
 
-static int get_type(QMimeSource *src)
+static int get_type(const QMimeData *src)
 {
-  if (Q3TextDrag::canDecode(src))
+  if (src->formats().indexOf(QRegExp("text/.*")) >= 0)
     return 1;
-  else if (Q3ImageDrag::canDecode(src))
+  else if (src->hasImage())
     return 2;
   else
     return 0;
 }
 
-static Q3CString get_format(QMimeSource *src, int i = 0, bool charset = false)
+static QString get_format(const QMimeData *src, int i = 0, bool charset = false)
 {
-  Q3CString format = src->format(i);
+  QString format = src->formats().at(i);
 
 	if (!charset)
 	{
-		int pos = format.find(';');
+		int pos = format.indexOf(';');
 		if (pos >= 0)
 			format = format.left(pos);
 	}
@@ -78,72 +76,58 @@ static Q3CString get_format(QMimeSource *src, int i = 0, bool charset = false)
   return format;
 }
 
-static void get_formats(QMimeSource *src, GB_ARRAY array)
+static void get_formats(const QMimeData *src, GB_ARRAY array)
 {
   int i, j;
-  Q3CString fmt;
+  QStringList formats = src->formats();
+  QString fmt;
   char *str;
   
-  for (i = 0;; i++)
+  for (i = 0; i < formats.count(); i++)
   {
-    if (!src->format(i))
-      break;
-      
     fmt = get_format(src, i, true); 
-    if (*fmt < 'a' || *fmt > 'z')
+    if (!fmt[0].isLower())
       continue;
     for (j = 0; j < GB.Array.Count(array); j++)
     {
-      if (strcasecmp(fmt, *((char **)GB.Array.Get(array, j))) == 0)
+      if (strcasecmp(fmt.toUtf8().data(), *((char **)GB.Array.Get(array, j))) == 0)
         break;
     }
     if (j < GB.Array.Count(array))
       continue;
     //fmt = get_format(src, i);
-		GB.NewString(&str, fmt, 0);
+		GB.NewString(&str, fmt.toUtf8().data(), 0);
 		*((char **)GB.Array.Add(array)) = str;
   }
 }
 
-static void paste(QMimeSource *data, const char *fmt)
+static void paste(const QMimeData *data, const char *fmt)
 {
   CIMAGE *img;
+  QString format = fmt;
 
-  if (fmt)
-  {
-    if (!data->provides(fmt))
-    {
-      GB.ReturnNull();
-      return;
-    }
-  }
+	if (!data->hasFormat(format))
+	{
+		GB.ReturnNull();
+		return;
+	}
 
-  if (Q3TextDrag::canDecode(data))
-  {
-    QString text;
-    QString subtype;
-    
-    if (fmt)
-    {
-      subtype = fmt;
-      if (subtype.left(5) == "text/")
-        subtype = subtype.mid(5);
-      else
-        subtype = QString();
-    }
-
-    Q3TextDrag::decode(data, text, subtype);
-    GB.ReturnNewZeroString(text.latin1());
-  }
-  else if (Q3ImageDrag::canDecode(data))
-  {
-    GB.New(POINTER(&img), GB.FindClass("Image"), 0, 0);
-    Q3ImageDrag::decode(data, *(img->image));
-    img->image->convertDepth(32);
-    GB.ReturnObject(img);
-  }
-  else
-    GB.ReturnNull();
+	switch(get_type(data))
+	{
+		case 1:
+			GB.ReturnNewZeroString(data->data(format).data());
+			break;
+		
+		case 2:
+			GB.New(POINTER(&img), GB.FindClass("Image"), 0, 0);
+			*img->image = qvariant_cast<QImage>(data->imageData());
+			img->image->convertToFormat(QImage::Format_ARGB32);
+			GB.ReturnObject(img);
+			break;
+		
+		default:
+			GB.ReturnNull();
+	}
 }
 
 
@@ -169,7 +153,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CCLIPBOARD_format)
 
-  GB.ReturnNewZeroString(get_format(QApplication::clipboard()->data()));
+  GB.ReturnNewZeroString(TO_UTF8(get_format(QApplication::clipboard()->mimeData())));
 
 END_PROPERTY
 
@@ -179,7 +163,7 @@ BEGIN_PROPERTY(CCLIPBOARD_formats)
   GB_ARRAY array;
   
   GB.Array.New(&array, GB_T_STRING, 0);
-  get_formats(QApplication::clipboard()->data(), array);
+  get_formats(QApplication::clipboard()->mimeData(), array);
   GB.ReturnObject(array);
 
 END_PROPERTY
@@ -187,35 +171,31 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCLIPBOARD_type)
 
-  GB.ReturnInteger(get_type(QApplication::clipboard()->data()));
+  GB.ReturnInteger(get_type(QApplication::clipboard()->mimeData()));
 
 END_PROPERTY
 
 
 BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 
-  Q3CString format;
+  QString format;
+  QMimeData *data = new QMimeData();
 
   if (VARG(data).type == GB_T_STRING)
   {
-    Q3TextDrag *drag = new Q3TextDrag();
-
     if (MISSING(format))
       format = "plain";
     else
     {
-      format = GB.ToZeroString(ARG(format));
+      format = TO_QSTRING(GB.ToZeroString(ARG(format)));
       if (format.left(5) != "text/")
         goto _BAD_FORMAT;
-      format = format.mid(5);
-      if (format.length() == 0)
+      if (format.length() == 5)
         goto _BAD_FORMAT;
     }
 
-    drag->setText(VARG(data)._string.value);
-    drag->setSubtype(format);
-
-    QApplication::clipboard()->setData(drag);
+    data->setData(format, QByteArray(VARG(data)._string.value, GB.StringLength(VARG(data)._string.value)));
+    QApplication::clipboard()->setMimeData(data);
   }
   else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, CLASS_Image))
   {
@@ -242,7 +222,7 @@ END_METHOD
 
 BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 
-  paste(QApplication::clipboard()->data(), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
+  paste(QApplication::clipboard()->mimeData(), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
 
 END_METHOD
 
@@ -272,9 +252,11 @@ GB_DESC CClipboardDesc[] =
 
 //MyDragFrame::MyDragFrame() : QWidget(0, 0, Qt::WType_TopLevel | Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WStyle_StaysOnTop | Qt::WX11BypassWM)
 MyDragFrame::MyDragFrame(QWidget *parent) : 
-  QWidget(parent, 0, Qt::WStyle_Customize | Qt::WStyle_NoBorder | Qt::WX11BypassWM)
+  QWidget(parent, Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint)
 {
-	setPaletteBackgroundColor(Qt::black);
+	QPalette pal(palette());
+	pal.setColor(QPalette::Window, Qt::black);
+	setPalette(pal);
 }
 
 /*MyDragFrame::paintEvent(QPaintEvent *e)
@@ -375,8 +357,9 @@ static void post_exit_drag(intptr_t param)
 
 void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 {
-  Q3DragObject *drag;
-  Q3CString format;
+  QDrag *drag;
+  QMimeData *mimeData;
+  QString format;
   CIMAGE *img;
 
   if (GB.CheckObject(source))
@@ -388,52 +371,48 @@ void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 		return;
 	}
 
+	drag = new QDrag(source->widget);
+	mimeData = new QMimeData();
+
   if (data->type == GB_T_STRING)
   {
-     drag = new Q3TextDrag(source->widget);
-
     if (fmt == NULL)
-      format = "plain";
+      format = "text/plain";
     else
     {
-      format = GB.ToZeroString(fmt);
+      format = TO_QSTRING(GB.ToZeroString(fmt));
       if (format.left(5) != "text/")
         goto _BAD_FORMAT;
-      format = format.mid(5);
-      if (format.length() == 0)
+      if (format.length() == 5)
         goto _BAD_FORMAT;
     }
-
-    ((Q3TextDrag *)drag)->setText(data->_string.value);
-    ((Q3TextDrag *)drag)->setSubtype(format);
+    
+    mimeData->setData(format, QByteArray(data->_string.value, GB.StringLength(data->_string.value)));
   }
   else if (data->type >= GB_T_OBJECT && GB.Is(data->_object.value, CLASS_Image))
   {
     if (fmt)
       goto _BAD_FORMAT;
 
-    drag = new Q3ImageDrag(source->widget);
-
     img = (CIMAGE *)data->_object.value;
 
-    ((Q3ImageDrag *)drag)->setImage(*(img->image));
+		mimeData->setImageData(*(img->image));
   }
   else
     goto _BAD_FORMAT;
 
+  drag->setMimeData(mimeData);
+  
   if (_picture)
   {
-    //QPoint p(_cursor->x, _cursor->y);
-    //pict = _cursor->picture;
+   	drag->setPixmap(*(_picture->pixmap));
 		if (_picture_x >= 0 && _picture_y >= 0)
-    	drag->setPixmap(*(_picture->pixmap), QPoint(_picture_x, _picture_y));
-		else
-    	drag->setPixmap(*(_picture->pixmap));
+    	drag->setHotSpot(QPoint(_picture_x, _picture_y));
   }
 
 	CDRAG_dragging = true;
 	
-  drag->drag();
+  drag->exec();
   
   hide_frame(NULL);
   GB.Post((GB_POST_FUNC)post_exit_drag, 0);
@@ -459,14 +438,14 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 	if (!GB.CanRaise(control, EVENT_Drag))
 	{
 		if (!GB.CanRaise(control, EVENT_DragMove) && GB.CanRaise(control, EVENT_Drop))
-			e->acceptAction();
+			e->acceptProposedAction();
 		else
 			e->ignore();
 		return true;
 	}
 	
 	CDRAG_clear(true);
-	CDRAG_info.drop = e;
+	CDRAG_info.event = e;
 
 	cancel = GB.Raise(control, EVENT_Drag, 0);
 	
@@ -475,7 +454,7 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 	if (cancel)
 		e->ignore();
 	else
-		e->acceptAction(true);
+		e->acceptProposedAction();
 	return cancel;
 }
 
@@ -498,7 +477,7 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 		accepted = e->isAccepted();
 		((MyListView *)QWIDGET(control))->contentsDragMoveEvent((QDragMoveEvent *)e);
 		if (accepted)
-			e->acceptAction();
+			e->acceptProposedAction();
 		else
 			e->ignore();
 	}
@@ -513,7 +492,7 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 	}
 
 	CDRAG_clear(true);
-	CDRAG_info.drop = e;
+	CDRAG_info.event = e;
 
 	p = e->pos();
 	p = w->mapTo(QWIDGET(control), p);
@@ -522,9 +501,9 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 
 	cancel = GB.Raise(control, EVENT_DragMove, 0);
 	if (cancel)
-		CDRAG_info.drop->ignore();
+		e->ignore();
 	else
-		CDRAG_info.drop->acceptAction(true);
+		e->acceptProposedAction();
 
 	CDRAG_clear(false);
 	return cancel;
@@ -544,7 +523,7 @@ void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 		((MyListView *)QWIDGET(control))->contentsDropEvent((QDragMoveEvent *)e);
 	
 	CDRAG_clear(true);
-	CDRAG_info.drop = e;
+	CDRAG_info.event = e;
 
 	p = e->pos();
 	p = w->mapTo(QWIDGET(control), p);
@@ -610,7 +589,7 @@ BEGIN_PROPERTY(CDRAG_type)
 
   CHECK_VALID();
 
-  GB.ReturnInteger(get_type(CDRAG_info.drop));
+  GB.ReturnInteger(get_type(CDRAG_info.event->mimeData()));
 
 END_PROPERTY
 
@@ -619,7 +598,7 @@ BEGIN_PROPERTY(CDRAG_format)
 
   CHECK_VALID();
 
-  GB.ReturnNewZeroString(get_format(CDRAG_info.drop));
+  GB.ReturnNewZeroString(TO_UTF8(get_format(CDRAG_info.event->mimeData())));
 
 END_PROPERTY
 
@@ -631,7 +610,7 @@ BEGIN_PROPERTY(CDRAG_formats)
   CHECK_VALID();
   
   GB.Array.New(&array, GB_T_STRING, 0);
-  get_formats(CDRAG_info.drop, array);
+  get_formats(CDRAG_info.event->mimeData(), array);
   GB.ReturnObject(array);
 
 END_PROPERTY
@@ -645,7 +624,7 @@ BEGIN_PROPERTY(CDRAG_data)
     return;
   }
 
-  paste(CDRAG_info.drop, NULL);
+  paste(CDRAG_info.event->mimeData(), NULL);
 
 END_PROPERTY
 
@@ -658,7 +637,7 @@ BEGIN_METHOD(CDRAG_paste, GB_STRING format)
     return;
   }
 
-  paste(CDRAG_info.drop, MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
+  paste(CDRAG_info.event->mimeData(), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
 
 END_METHOD
 
@@ -667,13 +646,13 @@ BEGIN_PROPERTY(CDRAG_action)
 
   CHECK_VALID();
 
-  switch(CDRAG_info.drop->action())
+  switch(CDRAG_info.event->dropAction())
   {
-    case QDropEvent::Link:
+    case Qt::LinkAction:
       GB.ReturnInteger(1);
       break;
 
-    case QDropEvent::Move:
+    case Qt::MoveAction:
       GB.ReturnInteger(2);
       break;
 
@@ -689,7 +668,7 @@ BEGIN_PROPERTY(CDRAG_source)
 
   CHECK_VALID();
 
-  GB.ReturnObject(CWidget::get(CDRAG_info.drop->source()));
+  GB.ReturnObject(CWidget::get(CDRAG_info.event->source()));
 
 END_PROPERTY
 

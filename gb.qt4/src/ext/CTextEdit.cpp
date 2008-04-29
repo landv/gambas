@@ -534,7 +534,7 @@ BEGIN_METHOD(CTEXTEDIT_new, GB_OBJECT parent)
   QT.InitWidget(wid, _object);
 
   wid->setTextFormat(Qt::RichText);
-  wid->setMimeSourceFactory(QT.MimeSourceFactory());
+  //wid->setMimeSourceFactory(QT.MimeSourceFactory());
   wid->show();
 
 END_METHOD

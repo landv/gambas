@@ -29,15 +29,14 @@
 #include "main.h"
 
 #include <qnamespace.h>
-#include <qmessagebox.h>
 #include <qpixmap.h>
 #include <qsizepolicy.h>
 #include <qeventloop.h>
 #include <qapplication.h>
-//Added by qt3to4:
 #include <QShowEvent>
 #include <QEvent>
 #include <QDesktopWidget>
+#include <QMessageBox>
 
 #include "gb.qt.h"
 #include "CWindow.h"
@@ -179,7 +178,7 @@ static int make_message(int type, int nbmax, void *_param)
   }
   #endif
   
-  mb->adjustSize();
+  //mb->adjustSize();
   if (mb->width() < 256)
     mb->resize(256, mb->height());
   
@@ -187,7 +186,7 @@ static int make_message(int type, int nbmax, void *_param)
   mb->setMaximumSize(mb->width(), mb->height());
   mb->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));*/
   
-  mb->reparent(parent, Qt::WType_TopLevel | Qt::WStyle_Customize | Qt::WStyle_DialogBorder | Qt::WStyle_Title | Qt::WStyle_SysMenu, mb->pos()); // WShowModal
+  mb->setParent(parent, mb->windowFlags()); // WShowModal
   mb->installEventFilter(&CMessage::manager);
   
   //qDebug("message-box: parent = %p", mb->parentWidget());

@@ -41,25 +41,22 @@
 
 #include <qnamespace.h>
 #include <qapplication.h>
-#if QT_VERSION >= 0x030200
 #include <qobject.h>
-#else
-#include <qobjcoll.h>
-#endif
 #include <qpalette.h>
 #include <qtooltip.h>
 #include <qpushbutton.h>
-#include <q3scrollview.h>
 #include <qmap.h>
 //Added by qt3to4:
 #include <QContextMenuEvent>
 #include <QKeyEvent>
 #include <QPixmap>
-#include <Q3Frame>
+#include <QFrame>
 #include <QDropEvent>
 #include <QMouseEvent>
 #include <QEvent>
 #include <QWheelEvent>
+#include <QHash>
+#include <QAbstractScrollArea>
 
 CWIDGET *CWIDGET_destroy_list = 0;
 CWIDGET *CWIDGET_destroy_last = 0;
@@ -173,7 +170,7 @@ static void set_name(CWIDGET *_object, const char *name)
 	
 	if (GB.Is(THIS, CLASS_Menu))
 	{
-		if (((CMENU *)THIS)->toplevel->isA("MyMainWindow"))
+		if (qobject_cast<MyMainWindow *>(((CMENU *)THIS)->toplevel))
 			win = (MyMainWindow *)((CMENU *)THIS)->toplevel;
 	}
 	else
@@ -216,6 +213,8 @@ void CWIDGET_init_name(CWIDGET *_object)
 
 void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool no_init)
 {
+	QAbstractScrollArea *sa;
+	
   CWidget::add(w, _object, no_filter);
 
   //qDebug("CWIDGET_new: %p: %p", object, w);
@@ -230,14 +229,19 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 		CWIDGET_init_name(THIS);	
 	}
 
-	if (w->inherits("QScrollView"))
+	sa = qobject_cast<QAbstractScrollArea *>(w);
+	if (sa)
 	{
 		CWIDGET_set_flag(THIS, WF_SCROLLVIEW);
-    ((Q3ScrollView *)w)->setFrameStyle(Q3Frame::LineEditPanel + Q3Frame::Sunken);
+    //sa->setFrameStyle(QFrame::LineEditPanel + QFrame::Sunken);
 	}
 
 	THIS->flag.default_bg = true;
 	THIS->flag.default_fg = true;
+	
+	w->setPalette(QApplication::palette());
+	
+	//w->setAutoFillBackground(true);
 	
 	if (!no_show)
 	{
@@ -271,7 +275,7 @@ void CWIDGET_destroy(CWIDGET *object)
 
   //qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
 
-  if (!CWIDGET_destroy_list)
+  /*if (!CWIDGET_destroy_list)
     CWIDGET_destroy_list = object;
   else
   {
@@ -279,21 +283,22 @@ void CWIDGET_destroy(CWIDGET *object)
     object->prev = CWIDGET_destroy_last;
   }
 
-  CWIDGET_destroy_last = object;
+  CWIDGET_destroy_last = object;*/
 
   CWIDGET_set_flag(object, WF_DELETED);
 
-  //qDebug("destroy: %s %p", GB.GetClassName(object), object);
+  //qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);
 
   object->widget->hide();
-  //GB.Ref(object);
+  // delete object->widget;
+  object->widget->deleteLater();
 }
 
 
 //#if QT_VERSION >= 0x030005
 //  #define COORD(_c) (WIDGET->pos()._c())
 //#else
-#define COORD(_c) ((WIDGET->isA("MyMainWindow") && WIDGET->isTopLevel()) ? ((CWINDOW *)_object)->_c : WIDGET->pos()._c())
+#define COORD(_c) ((qobject_cast<MyMainWindow *>(WIDGET) && WIDGET->isTopLevel()) ? ((CWINDOW *)_object)->_c : WIDGET->pos()._c())
 //#define WIDGET_POS(_c) ((WIDGET->isTopLevel()) ? ((CWINDOW *)_object)->_c : WIDGET->pos()._c())
 //#define WIDGET_SIZE(_c) ((WIDGET->isA("MyMainWindow")) ? ((CWINDOW *)_object)->_c : WIDGET->pos()._c())
 //#endif
@@ -358,7 +363,7 @@ static void resize_widget(void *_object, int w, int h)
     h = wid->height();
 
 	if (wid)
-  	wid->resize(QMAX(0, w), QMAX(0, h));
+  	wid->resize(qMax(0, w), qMax(0, h));
 
   if (GB.Is(THIS, CLASS_Window))
   {
@@ -376,13 +381,6 @@ static void move_resize_widget(void *_object, int x, int y, int w, int h)
 {
   QWidget *wid = get_widget(THIS);
 
-  if (wid->isA("QWorkspaceChild"))
-  {
-  	move_widget(THIS, x, y);
-  	resize_widget(THIS, w, h);
-  	return;
-  }
-
 	if (w < 0)
 		w = wid->width();
 
@@ -390,7 +388,7 @@ static void move_resize_widget(void *_object, int x, int y, int w, int h)
 		h = wid->height();
 
 	if (wid)
-		wid->setGeometry(x, y, QMAX(0, w), QMAX(0, h));
+		wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
 
   if (GB.Is(THIS, CLASS_Window))
   {
@@ -471,7 +469,7 @@ BEGIN_PROPERTY(CCONTROL_font)
     font = (CFONT *)VPROP(GB_OBJECT);
 
     if (font == 0)
-      WIDGET->unsetFont();
+      WIDGET->setFont(QFont());
     else
       WIDGET->setFont(*(font->font));
   }
@@ -803,7 +801,7 @@ BEGIN_PROPERTY(CCONTROL_mouse)
 
   if (READ_PROPERTY)
   {
-    if (wid->ownCursor())
+    if (wid->testAttribute(Qt::WA_SetCursor))
     {
       shape = wid->cursor().shape();
       if (shape == Qt::BitmapCursor)
@@ -921,36 +919,54 @@ BEGIN_PROPERTY(CWIDGET_foreground)
 END_PROPERTY
 #endif
 
+static QWidget *get_color_widget(QWidget *w)
+{
+	if (qobject_cast<QAbstractScrollArea *>(w))
+		return ((QAbstractScrollArea *)w)->viewport();
+	else
+		return w;
+}
+
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 {
-	//qDebug("set_color: (%s %p) bg = %06X fg = %06X", GB.GetClassName(THIS), THIS, bg, fg);
-	//if (bg == COLOR_DEFAULT && fg == COLOR_DEFAULT)
-	WIDGET->unsetPalette();
-  	
+	QPalette palette;
+	QWidget *w = get_color_widget(WIDGET);
+	
+	//qDebug("set_color: (%s %p) bg = %06X (%d) fg = %06X (%d)", GB.GetClassName(THIS), THIS, bg, w->backgroundRole(), fg, w->foregroundRole());
+	
+	palette = w->palette();
+	
   if (bg != COLOR_DEFAULT)
-    WIDGET->setPaletteBackgroundColor(QColor((QRgb)bg));
+  	palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
     
   if (fg != COLOR_DEFAULT)
-    WIDGET->setPaletteForegroundColor(QColor((QRgb)fg));
+  	palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
 	
 	THIS->flag.default_bg = bg == COLOR_DEFAULT;
   THIS->flag.default_fg = fg == COLOR_DEFAULT;
+  
+  w->setAutoFillBackground(!THIS->flag.default_bg);
+ 	w->setPalette(palette);
 }
 
 int CWIDGET_get_background(CWIDGET *_object)
 {
+	QWidget *w = get_color_widget(WIDGET);
+	
 	if (THIS->flag.default_bg)
 		return COLOR_DEFAULT;
 	else
-		return WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF;
+		return w->palette().color(w->backgroundRole()).rgb() & 0xFFFFFF;
 }
 	
 int CWIDGET_get_foreground(CWIDGET *_object)
 {
+	QWidget *w = get_color_widget(WIDGET);
+	
 	if (THIS->flag.default_fg)
 		return COLOR_DEFAULT;
 	else
-		return WIDGET->paletteForegroundColor().rgb() & 0xFFFFFF;
+		return w->palette().color(w->foregroundRole()).rgb() & 0xFFFFFF;
 }
 	
 BEGIN_PROPERTY(CCONTROL_background)
@@ -962,13 +978,13 @@ BEGIN_PROPERTY(CCONTROL_background)
   	int col = VPROP(GB_INTEGER);
   	if (col != CWIDGET_get_background(THIS))
   	{
-			if (WIDGET->paletteBackgroundPixmap())
+			/*if (WIDGET->paletteBackgroundPixmap())
 			{
 				QPixmap p(*WIDGET->paletteBackgroundPixmap());
 				CWIDGET_set_color(THIS, col, CWIDGET_get_foreground(THIS));
 				WIDGET->setPaletteBackgroundPixmap(p);
 			}
-			else
+			else*/
 				CWIDGET_set_color(THIS, col, CWIDGET_get_foreground(THIS));
 		}
   }
@@ -1043,18 +1059,18 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_tooltip)
 
-  QWidget *w;
+  //QWidget *w;
 
   if (READ_PROPERTY)
-    GB.ReturnString(THIS->tooltip);
+    GB.ReturnNewZeroString(TO_UTF8(WIDGET->toolTip()));
   else
   {
-    GB.StoreString(PROP(GB_STRING), &(THIS->tooltip));
-    w = WIDGET;
+    //GB.StoreString(PROP(GB_STRING), &(THIS->tooltip));
+    /*w = WIDGET;
 		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
-			w = ((Q3ScrollView *)w)->viewport();
-
-		CWidget::resetTooltip(THIS);
+			w = ((QScrollView *)w)->viewport();*/
+		//CWidget::resetTooltip(THIS);
+		WIDGET->setToolTip(QSTRING_PROP());
   }
 
 END_PROPERTY
@@ -1108,7 +1124,9 @@ BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 	if (GB.CheckObject(VARG(container)))
 		return;
 
-	WIDGET->reparent(QCONTAINER(VARG(container)), p, showIt);
+	WIDGET->setParent(QCONTAINER(VARG(container)));
+	WIDGET->move(p);
+	if (showIt) WIDGET->show();
 
 END_METHOD
 
@@ -1121,7 +1139,7 @@ BEGIN_PROPERTY(CCONTROL_drop)
   {
     WIDGET->setAcceptDrops(VPROP(GB_BOOLEAN));
 		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
-    	((Q3ScrollView *)WIDGET)->viewport()->setAcceptDrops(VPROP(GB_BOOLEAN));
+    	((QAbstractScrollArea *)WIDGET)->viewport()->setAcceptDrops(VPROP(GB_BOOLEAN));
 	}
 
 END_PROPERTY
@@ -1129,18 +1147,18 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWIDGET_border_full)
 
-  Q3Frame *wid = (Q3Frame *)QWIDGET(_object);
+  QFrame *wid = (QFrame *)QWIDGET(_object);
   int border, lw;
 
   if (READ_PROPERTY)
   {
-    if (wid->frameStyle() == (Q3Frame::Box + Q3Frame::Plain))
+    if (wid->frameStyle() == (QFrame::Box + QFrame::Plain))
       border = BORDER_PLAIN;
-    else if (wid->frameStyle() == (Q3Frame::StyledPanel + Q3Frame::Sunken))
+    else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Sunken))
       border = BORDER_SUNKEN;
-    else if (wid->frameStyle() == (Q3Frame::StyledPanel + Q3Frame::Raised))
+    else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Raised))
       border = BORDER_RAISED;
-    else if (wid->frameStyle() == (Q3Frame::Box + Q3Frame::Sunken))
+    else if (wid->frameStyle() == (QFrame::Box + QFrame::Sunken))
       border = BORDER_ETCHED;
     else
       border = BORDER_NONE;
@@ -1153,11 +1171,11 @@ BEGIN_PROPERTY(CWIDGET_border_full)
 
     switch (VPROP(GB_INTEGER))
     {
-      case BORDER_PLAIN: border = Q3Frame::Box + Q3Frame::Plain; break;
-      case BORDER_SUNKEN: border = Q3Frame::StyledPanel + Q3Frame::Sunken; lw = 2; break;
-      case BORDER_RAISED: border = Q3Frame::StyledPanel + Q3Frame::Raised; lw = 2; break;
-      case BORDER_ETCHED: border = Q3Frame::Box + Q3Frame::Sunken; break;
-      default: border = Q3Frame::NoFrame; break;
+      case BORDER_PLAIN: border = QFrame::Box + QFrame::Plain; break;
+      case BORDER_SUNKEN: border = QFrame::StyledPanel + QFrame::Sunken; lw = 2; break;
+      case BORDER_RAISED: border = QFrame::StyledPanel + QFrame::Raised; lw = 2; break;
+      case BORDER_ETCHED: border = QFrame::Box + QFrame::Sunken; break;
+      default: border = QFrame::NoFrame; break;
     }
 
     wid->setFrameStyle(border);
@@ -1170,11 +1188,11 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWIDGET_border_simple)
 
-  Q3Frame *wid = (Q3Frame *)QWIDGET(_object);
+  QFrame *wid = (QFrame *)QWIDGET(_object);
 
   if (READ_PROPERTY)
   {
-    GB.ReturnBoolean(wid->frameStyle() != Q3Frame::NoFrame);
+    GB.ReturnBoolean(wid->frameStyle() != QFrame::NoFrame);
   }
   else
   {
@@ -1182,13 +1200,13 @@ BEGIN_PROPERTY(CWIDGET_border_simple)
 
     if (VPROP(GB_BOOLEAN))
     {
-      wid->setFrameStyle(QFrame::StyledPanel + Q3Frame::Sunken);
+      wid->setFrameStyle(QFrame::StyledPanel + QFrame::Sunken);
       //wid->setFrameStyle(QFrame::LineEditPanel);
       //wid->setLineWidth(2);
     }
     else
     {
-      wid->setFrameStyle(Q3Frame::NoFrame);
+      wid->setFrameStyle(QFrame::NoFrame);
     }
 
     //qDebug("--> %d", wid->frameStyle());
@@ -1201,15 +1219,15 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWIDGET_scrollbar)
 
-  Q3ScrollView *wid = (Q3ScrollView *)QWIDGET(_object);
+  QAbstractScrollArea *wid = (QAbstractScrollArea *)QWIDGET(_object);
   int scroll;
 
   if (READ_PROPERTY)
   {
     scroll = 0;
-    if (wid->hScrollBarMode() == Q3ScrollView::Auto)
+    if (wid->horizontalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
       scroll += 1;
-    if (wid->vScrollBarMode() == Q3ScrollView::Auto)
+    if (wid->verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
       scroll += 2;
 
     GB.ReturnInteger(scroll);
@@ -1217,8 +1235,8 @@ BEGIN_PROPERTY(CWIDGET_scrollbar)
   else
   {
     scroll = VPROP(GB_INTEGER) & 3;
-    wid->setHScrollBarMode( (scroll & 1) ? Q3ScrollView::Auto : Q3ScrollView::AlwaysOff);
-    wid->setVScrollBarMode( (scroll & 2) ? Q3ScrollView::Auto : Q3ScrollView::AlwaysOff);
+    wid->setHorizontalScrollBarPolicy( (scroll & 1) ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+    wid->setVerticalScrollBarPolicy( (scroll & 2) ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
   }
 
 END_PROPERTY
@@ -1228,7 +1246,7 @@ END_PROPERTY
 /* Classe CWidget */
 
 CWidget CWidget::manager;
-Q3PtrDict<CWIDGET> CWidget::dict;
+QHash<QObject *, CWIDGET *> CWidget::dict;
 bool CWidget::real;
 CWIDGET *CWidget::enter = NULL;
 //QPtrDict<char> CWidget::propDict;
@@ -1509,23 +1527,16 @@ void CWidget::setName(CWIDGET *object, const char *name)
 }
 #endif
 
-void CWidget::resetTooltip(CWIDGET *_object)
-{
-  QToolTip::remove(WIDGET);
-  if (THIS->tooltip)
-    QToolTip::add(WIDGET, TO_QSTRING(THIS->tooltip));
-}
-
 void CWidget::destroy()
 {
   QWidget *w = (QWidget *)sender();
   CWIDGET *ob = CWidget::get(w);
-  QEvent e(EVENT_DESTROY);
+  //QEvent e(EVENT_DESTROY);
+
+  //qDebug(">> CWidget::destroy (%s %p)", GB.GetClassName(ob), ob);
 
   if (ob == NULL)
     return;
-
-  //qDebug(">> CWidget::destroy %p (%p) :%p:%ld", ob, ob->widget, ob->ob.klass, ob->ob.ref);
 
   //w->blockSignals(TRUE);
   //w->disconnect();
@@ -1548,7 +1559,6 @@ void CWidget::destroy()
   QWIDGET(ob) = NULL;
 
   GB.StoreVariant(NULL, &ob->tag);
-  GB.FreeString(&ob->tooltip);
   GB.Unref(POINTER(&ob->cursor));
 
 	CACTION_register(ob, NULL);
@@ -1556,7 +1566,7 @@ void CWidget::destroy()
   //if (!CWIDGET_test_flag(ob, WF_NODETACH))
   GB.Detach(ob);
 
-  qApp->sendEvent(w, &e);
+  //qApp->sendEvent(w, &e);
   //qDebug("<< CWidget::destroy %p (%p)", ob, ob->widget);
 
   GB.Unref(POINTER(&ob));
@@ -1594,7 +1604,6 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   bool cancel;
   QPoint p;
 
-	//qDebug("eventFilter: (%s %p) %d", widget->className(), widget, event->type());
 	//if (widget->isA("MyMainWindow"))
 	//	getDesignDebug(widget);
 
@@ -1675,7 +1684,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				}
 				else
 				{*/
-    			if (widget != ((Q3ScrollView *)QWIDGET(cont))->viewport() && widget->name(0))
+    			if (widget != ((QAbstractScrollArea *)QWIDGET(cont))->viewport() && !widget->objectName().isNull())
 						goto _STANDARD;					
 				//}
 			}
@@ -1690,7 +1699,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
       //qDebug("MouseDown on %p (%s %p) %s%s", widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "");
 
       event_id = EVENT_MouseDown;
-      state = mevent->stateAfter();
+      state = mevent->buttons();
       
       CMOUSE_info.sx = p.x();
       CMOUSE_info.sy = p.y();
@@ -1699,10 +1708,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
     else
     {
       event_id = (type == QEvent::MouseButtonRelease) ? EVENT_MouseUp : EVENT_MouseMove;
-      state = mevent->state();
+      state = mevent->buttons();
     }
 
-    if (event_id == EVENT_MouseMove && (state & Qt::MouseButtonMask) == 0 && !QWIDGET(control)->hasMouseTracking())
+    if (event_id == EVENT_MouseMove && state == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
 		  goto _DESIGN;
 
 
@@ -1808,7 +1817,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
       GB.FreeString(&CKEY_info.text);
 			GB.NewString(&CKEY_info.text, TO_UTF8(kevent->text()), 0);
-			CKEY_info.state = kevent->state();
+			CKEY_info.state = kevent->modifiers();
 			CKEY_info.code = kevent->key();
 			CKEY_info.release = type == QEvent::KeyRelease;
 			
@@ -1911,7 +1920,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
       CMOUSE_clear(true);
       CMOUSE_info.x = p.x();
       CMOUSE_info.y = p.y();
-      CMOUSE_info.state = ev->state();
+      CMOUSE_info.state = ev->modifiers();
       CMOUSE_info.orientation = ev->orientation();
       CMOUSE_info.delta = ev->delta();
 
@@ -1952,11 +1961,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
     
   if (!control || CWIDGET_test_flag(control, WF_DELETED))
   {
-    if (type != EVENT_DESTROY)
-    {
-      QObject::eventFilter(widget, event); 
-      return true;
-    }
+    QObject::eventFilter(widget, event); 
+    return (type != QEvent::DeferredDelete);
   }
   
   /*if (CCONTROL_check(control))
@@ -2007,6 +2013,7 @@ _STANDARD:
 
 #include "gb.form.action.h"
 
+#if 0
 static void gray_image(QImage &img)
 {
 	register uchar *b(img.bits());
@@ -2024,6 +2031,7 @@ static void gray_image(QImage &img)
 			r += 4;
 	}
 }
+#endif
 
 void CWIDGET_iconset(QIcon &icon, QPixmap &pixmap, int size)
 {
@@ -2031,17 +2039,17 @@ void CWIDGET_iconset(QIcon &icon, QPixmap &pixmap, int size)
 	//QPixmap disabled;
 	QPixmap normal;
 
-	img = pixmap.convertToImage().convertDepth(32);
+	img = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
 	if (size > 0)
 	{
 		size = ((size + 1) & ~3);
-		img = img.smoothScale(size, size, Qt::KeepAspectRatioByExpanding);
+		img = img.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 	}
 	
 	if (size <= 0)
 		normal = pixmap;
 	else
-		normal.convertFromImage(img);
+		normal = QPixmap::fromImage(img);
 		
 	icon = QIcon(normal);
 	

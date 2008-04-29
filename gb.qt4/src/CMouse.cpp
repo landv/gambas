@@ -35,8 +35,6 @@
 #include "CPicture.h"
 #include "CMouse.h"
 
-#include <X11/Xlib.h>
-
 CMOUSE_INFO CMOUSE_info = { 0 };
 
 void CMOUSE_clear(int valid)

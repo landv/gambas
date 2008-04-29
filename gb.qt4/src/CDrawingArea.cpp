@@ -26,10 +26,10 @@
 #include <qpainter.h>
 //Added by qt3to4:
 #include <QPaintEvent>
-#include <Q3Frame>
 #include <QPixmap>
 
 #ifndef NO_X_WINDOW
+#include <QX11Info>
 #include <X11/Xlib.h>
 #endif
 
@@ -45,8 +45,7 @@ DECLARE_EVENT(EVENT_draw);
 
 ***************************************************************************/
 
-MyDrawingArea::MyDrawingArea(QWidget *parent) :
-Q3Frame(parent)
+MyDrawingArea::MyDrawingArea(QWidget *parent) : QFrame(parent)
 {
 	drawn = 0;
 	cache = 0;
@@ -57,7 +56,7 @@ Q3Frame(parent)
   setCached(false);
   setBackground();
   setAllowFocus(false);
-	setKeyCompression(false);
+	setAttribute(Qt::WA_KeyCompression, false);
 }
 
 
@@ -72,7 +71,7 @@ void MyDrawingArea::setAllowFocus(bool f)
 	if (f)
 	{
   	setFocusPolicy(Qt::WheelFocus);
-  	setInputMethodEnabled(true);
+  	setAttribute(Qt::WA_InputMethodEnabled, true);
 	}
 	else
 		setFocusPolicy(Qt::NoFocus);
@@ -99,16 +98,16 @@ void MyDrawingArea::setFrozen(bool f)
   if (f)
   {
     //setBackgroundMode(Qt::NoBackground);
-    XGetWindowAttributes(x11Display(), winId(), &attr);
+    XGetWindowAttributes(QX11Info::display(), winId(), &attr);
     _event_mask = attr.your_event_mask;
-    XSelectInput(x11Display(), winId(), ExposureMask);
+    XSelectInput(QX11Info::display(), winId(), ExposureMask);
     //clearWFlags(Qt::WPaintClever);
     //qDebug("frozen");
   }
   else
   {
     //setBackgroundMode(Qt::PaletteBackground);
-    XSelectInput(x11Display(), winId(), _event_mask);
+    XSelectInput(QX11Info::display(), winId(), _event_mask);
     setMerge(_merge);
     //qDebug("unfrozen");
   }
@@ -230,7 +229,7 @@ void MyDrawingArea::setBackground()
     #ifdef NO_X_WINDOW
     setErasePixmap(*_background);
     #else
-    XSetWindowBackgroundPixmap(x11AppDisplay(), winId(), _background->handle());
+    XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
     #endif
     //setWFlags(Qt::WNoAutoErase);
     setAttribute(Qt::WA_NoBackground, true);
@@ -242,7 +241,7 @@ void MyDrawingArea::setBackground()
     #ifdef NO_X_WINDOW
     setBackgroundMode(Qt::NoBackground);
     #else
-    XSetWindowBackgroundPixmap(x11AppDisplay(), winId(), None);
+    XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
     #endif
     //setWFlags(Qt::WNoAutoErase);
     setAttribute(Qt::WA_NoBackground, true);
@@ -254,11 +253,12 @@ void MyDrawingArea::setBackground()
 void MyDrawingArea::refreshBackground()
 {
 	QPainter p;
-	p.begin(_background, this);
+	p.begin(_background);
+	p.initFrom(this);
 	drawFrame(&p);
 	p.end();
 	#ifndef NO_X_WINDOW
-  XClearWindow(x11AppDisplay(), winId());
+  XClearWindow(QX11Info::display(), winId());
   #endif
 }
 
@@ -268,7 +268,7 @@ void MyDrawingArea::clearBackground()
   if (_background)
   {
     QPainter p(_background);
-    p.fillRect(0, 0, _background->width(), _background->height(), paletteBackgroundColor());
+    p.fillRect(0, 0, _background->width(), _background->height(), palette().color(QPalette::Window));
     p.end();
 
     setBackground();
@@ -291,14 +291,14 @@ bool MyDrawingArea::doResize(int w, int h)
 
   if (_background)
   {
-  	w = QMAX(w, 1);
-    h = QMAX(h, 1);
+  	w = qMax(w, 1);
+    h = qMax(h, 1);
 
     QPixmap *pix = new QPixmap(w, h);
-    pix->fill(paletteBackgroundColor());
+    pix->fill(palette().color(QPalette::Window));
 
-    wb = QMIN(w, _background->width());
-    hb = QMIN(h, _background->height());
+    wb = qMin(w, _background->width());
+    hb = qMin(h, _background->height());
 
     QPainter p(pix);
     p.drawPixmap(0, 0, *_background, 0, 0, wb, hb);
@@ -317,7 +317,7 @@ void MyDrawingArea::resize(int w, int h)
 {
   if (doResize(w, h))
   	return;
-  Q3Frame::resize(w, h);
+  QFrame::resize(w, h);
 }
 
 
@@ -325,7 +325,7 @@ void MyDrawingArea::setGeometry(int x, int y, int w, int h)
 {
   if (doResize(w, h))
   	return;
-  Q3Frame::setGeometry(x, y, w, h);
+  QFrame::setGeometry(x, y, w, h);
 }
 
 
@@ -337,7 +337,7 @@ void MyDrawingArea::setCached(bool c)
   if (c)
   {
     _background = new QPixmap(width(), height());
-    _background->fill(paletteBackgroundColor());
+    _background->fill(palette().color(QPalette::Window));
     setAttribute(Qt::WA_NoBackground, false);
   }
   else
@@ -351,7 +351,7 @@ void MyDrawingArea::setCached(bool c)
 
 void MyDrawingArea::setPalette(const QPalette &pal)
 {
-	Q3Frame::setPalette(pal);
+	QFrame::setPalette(pal);
 	repaint();
 }
 

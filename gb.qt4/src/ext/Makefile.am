@@ -2,12 +2,12 @@ COMPONENT = gb.qt4.ext
 include $(top_srcdir)/component.am
 include $(top_srcdir)/gb.qt.am
 
-INCLUDES = -DQT3_SUPPORT @QT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
+INCLUDES = -DQT3_SUPPORT @QTEXT_INC@-I$(top_srcdir)/share -I$(top_srcdir)/src/share
 
 gblib_LTLIBRARIES = gb.qt4.ext.la
 
-gb_qt4_ext_la_LIBADD = @QT_LIB@
-gb_qt4_ext_la_LDFLAGS = -module @LD_FLAGS@ @QT_LDFLAGS@
+gb_qt4_ext_la_LIBADD = @QTEXT_LIB@
+gb_qt4_ext_la_LDFLAGS = -module @LD_FLAGS@ @QTEXT_LDFLAGS@
 
 gb_qt4_ext_la_SOURCES = \
  main.h main.cpp \

@@ -25,7 +25,6 @@
 #define __CCOLOR_CPP
 
 #include <qapplication.h>
-#include <q3frame.h>
 #include <qcolor.h>
 #include <qpalette.h>
 
@@ -64,44 +63,44 @@ END_METHOD
 
 BEGIN_METHOD(CCOLOR_hsv, GB_INTEGER h; GB_INTEGER s; GB_INTEGER v; GB_INTEGER a)
 
-  QColor col(VARG(h), VARG(s), VARG(v), QColor::Hsv);
+  QColor col = QColor::fromHsv(VARG(h), VARG(s), VARG(v));
 
   GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF | ((VARGOPT(a, 0) & 0xFF) << 24));
 
 END_METHOD
 
-static void return_color(QColorGroup::ColorRole role)
+static void return_color(QPalette::ColorRole role)
 {
-  GB.ReturnInteger(QApplication::palette().active().color(role).rgb() & 0xFFFFFF);
+  GB.ReturnInteger(QApplication::palette().color(role).rgb() & 0xFFFFFF);
 }
 
 BEGIN_PROPERTY(CCOLOR_background)
 
-  return_color(QColorGroup::Background);
+  return_color(QPalette::Window);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_foreground)
 
-  return_color(QColorGroup::Foreground);
+  return_color(QPalette::WindowText);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_text_background)
 
-  return_color(QColorGroup::Base);
+  return_color(QPalette::Base);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_text_foreground)
 
-  return_color(QColorGroup::Text);
+  return_color(QPalette::Text);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_selected_background)
 
-  return_color(QColorGroup::Highlight);
+  return_color(QPalette::Highlight);
 
 END_PROPERTY
 
@@ -110,12 +109,12 @@ BEGIN_PROPERTY(CCOLOR_light_background)
 	QColor col;
 	int h, s, v;
 
-	get_hsv(QApplication::palette().active().color(QColorGroup::Highlight).rgb() & 0xFFFFFF);
+	get_hsv(QApplication::palette().color(QPalette::Highlight).rgb() & 0xFFFFFF);
 	h = _h; s = _s; v = _v;
 	
-	get_hsv(QApplication::palette().active().color(QColorGroup::Base).rgb() & 0xFFFFFF);
+	get_hsv(QApplication::palette().color(QPalette::Base).rgb() & 0xFFFFFF);
 	
-	col = QColor(h, (_s * 3 + s) / 4, (_v * 3 + v) / 4, QColor::Hsv);
+	col = QColor::fromHsv(h, (_s * 3 + s) / 4, (_v * 3 + v) / 4);
 	
   GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF);
 
@@ -123,19 +122,19 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_selected_foreground)
 
-  return_color(QColorGroup::HighlightedText);
+  return_color(QPalette::HighlightedText);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_button_background)
 
-  return_color(QColorGroup::Button);
+  return_color(QPalette::Button);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCOLOR_button_foreground)
 
-  return_color(QColorGroup::ButtonText);
+  return_color(QPalette::ButtonText);
 
 END_PROPERTY
 
@@ -196,7 +195,7 @@ BEGIN_METHOD(CCOLOR_lighter, GB_INTEGER color)
 	int a = VARG(color) & 0xFF000000;
 	get_hsv(VARG(color) & 0xFFFFFF);
 
-  QColor col(_h, _s / 2, 255 - (255 - _v) / 2, QColor::Hsv);
+  QColor col = QColor::fromHsv(_h, _s / 2, 255 - (255 - _v) / 2);
 
   GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF | a);
 
@@ -207,7 +206,7 @@ BEGIN_METHOD(CCOLOR_darker, GB_INTEGER color)
 	int a = VARG(color) & 0xFF000000;
 	get_hsv(VARG(color) & 0xFFFFFF);
 
-  QColor col(_h, 255 - (255 - _s) / 2, _v / 2, QColor::Hsv);
+  QColor col = QColor::fromHsv(_h, 255 - (255 - _s) / 2, _v / 2);
 
   GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF | a);
 

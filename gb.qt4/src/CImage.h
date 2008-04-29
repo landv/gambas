@@ -26,7 +26,6 @@
 #define __CIMAGE_H
 
 #include <qpixmap.h>
-#include <q3picture.h>
 #include <qimage.h>
 
 #include "gambas.h"

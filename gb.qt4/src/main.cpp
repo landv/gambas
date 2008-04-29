@@ -47,16 +47,16 @@
 #include <qtextcodec.h>
 #include <qpaintdevice.h>
 #include <qtimer.h>
-#include <q3stylesheet.h>
 
-#include <qeventloop.h>
 //Added by qt3to4:
 #include <QTranslator>
 #include <QTimerEvent>
 #include <QKeyEvent>
-#include <Q3CString>
 #include <QPixmap>
 #include <QImageReader>
+#include <QEventLoop>
+#include <QDesktopWidget>
+#include <QX11Info>
 
 #include "gb.qt.h"
 
@@ -119,7 +119,7 @@ GB_INTERFACE GB EXPORT;
 
 int MAIN_in_wait = 0;
 int MAIN_loop_level = 0;
-int MAIN_scale = 8;
+int MAIN_scale = 6;
 #ifndef NO_X_WINDOW
 int MAIN_x11_last_key_code = 0;
 #endif
@@ -134,6 +134,7 @@ static QWidget *_keyboardGrabber = 0;
 static void (*_x11_event_filter)(XEvent *) = 0;
 #endif
 
+//static MyApplication *myApp;
 
 /***************************************************************************
 
@@ -143,6 +144,7 @@ static void (*_x11_event_filter)(XEvent *) = 0;
 
 ***************************************************************************/
 
+#if 0
 class MyMimeSourceFactory: public Q3MimeSourceFactory
 {
 public:
@@ -222,8 +224,9 @@ const QMimeSource* MyMimeSourceFactory::data(const QString& abs_name) const
 }
 
 static MyMimeSourceFactory myMimeSourceFactory;
+#endif
 
-
+#if 0
 /***************************************************************************
 
   MyEventLoop
@@ -285,7 +288,7 @@ bool MyEventLoop::processEvents(ProcessEventsFlags flags)
   }
   //return ret;
 }
-
+#endif
 
 /** MyApplication **********************************************************/
 
@@ -307,7 +310,7 @@ static bool QT_EventFilter(QEvent *e)
 
 	GB.FreeString(&CKEY_info.text);
 	GB.NewString(&CKEY_info.text, QT_ToUTF8(kevent->text()), 0);
-	CKEY_info.state = kevent->state();
+	CKEY_info.state = kevent->modifiers();
 	CKEY_info.code = kevent->key();
 
 	GB.Call(&_application_keypress_func, 0, FALSE);
@@ -342,10 +345,10 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 		}
 	}
 
-	return QObject::eventFilter(o, e);
+	return QApplication::eventFilter(o, e);
 }
 
-bool MyApplication::notify(QObject *o, QEvent *e)
+/*bool MyApplication::notify(QObject *o, QEvent *e)
 {
 	if (o->isWidgetType())
 	{
@@ -362,7 +365,7 @@ bool MyApplication::notify(QObject *o, QEvent *e)
 	}
 	
 	return QApplication::notify(o, e);
-}
+}*/
 
 void MyApplication::setEventFilter(bool set)
 {
@@ -451,9 +454,8 @@ static void release_grab()
 	#ifndef NO_X_WINDOW
 	if (qApp->activePopupWidget())
 	{
-		QWidget *popup = qApp->activePopupWidget();
-		XUngrabPointer(popup->x11Display(), CurrentTime);
-		XFlush(popup->x11Display());
+		XUngrabPointer(QX11Info::display(), CurrentTime);
+		XFlush(QX11Info::display());
 	}
 	#endif
 }
@@ -495,13 +497,14 @@ void MAIN_check_quit(void)
 
 void MAIN_update_scale(void)
 {
-	QFontMetrics fm(QApplication::font());
-  MAIN_scale = (1 + fm.ascent()) / 2;
+	QFontMetrics fm(qApp->desktop()->font());
+  MAIN_scale = 1 + fm.height() / 3;
+  qDebug("logicalDpiY = %d  physicalDpiY = %d", qApp->desktop()->logicalDpiY(), qApp->desktop()->physicalDpiY());
+  qDebug("%s %d  fm.height() = %d  pixelSize = %d -> %d", qApp->font().family().toAscii().data(), qApp->font().pointSize(), fm.height(), qApp->font().pixelSize(), MAIN_scale);
 }
 
 static void QT_InitEventLoop(void)
 {
-  new MyEventLoop();
 }
 
 static void QT_Init(void)
@@ -512,12 +515,15 @@ static void QT_Init(void)
   if (init)
     return;
 
+	//qApp->setAttribute(Qt::AA_ImmediateWidgetCreation);
+
 	#ifndef NO_X_WINDOW
-  	X11_init(QPaintDevice::x11AppDisplay(), QPaintDevice::x11AppRootWindow());
+  	X11_init(QX11Info::display(), QX11Info::appRootWindow());
   #endif
 
   /*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
-  Q3MimeSourceFactory::addFactory(&myMimeSourceFactory);
+  
+  //Q3MimeSourceFactory::addFactory(&myMimeSourceFactory);
 
   MAIN_update_scale();
 
@@ -526,8 +532,8 @@ static void QT_Init(void)
 
   qApp->installEventFilter(&CWidget::manager);
 
-	Q3StyleSheet::defaultSheet()->item("tt")->setFontFamily("Monospace");
-	Q3StyleSheet::defaultSheet()->item("pre")->setFontFamily("Monospace");
+	//Q3StyleSheet::defaultSheet()->item("tt")->setFontFamily("Monospace");
+	//Q3StyleSheet::defaultSheet()->item("pre")->setFontFamily("Monospace");
 
   init = true;
 }
@@ -542,7 +548,7 @@ static void init_lang(QString locale, bool rtl)
 
   qApp->installTranslator(qt);
   if (rtl)
-    qApp->setReverseLayout(true);
+    qApp->setLayoutDirection(Qt::RightToLeft);
 }
 
 static void hook_lang(char *lang, int rtl)
@@ -561,14 +567,18 @@ static void hook_lang(char *lang, int rtl)
   //locale = QTextCodec::locale();
 }
 
+void show_slider()
+{
+  QMainWindow *win = new QMainWindow;
+  QSlider *sld = new QSlider(win);
+  sld->setGeometry(0, 0, 24, 80);
+  win->show();
+}
 
 static void hook_main(int *argc, char **argv)
 {
   new MyApplication(*argc, argv);
-  #if QT_VERSION <= 0x030005
-  qApp->unlock();
-  #endif
-  //qApp->setStyle("windows");
+  
   QT_Init();
   init_lang(_init_lang, _init_rtl);
 }
@@ -582,8 +592,6 @@ static void hook_loop()
     qApp->exec();
   else
   	MAIN_check_quit();
-
-  //qDebug("Exit event loop");
 }
 
 
@@ -593,7 +601,7 @@ static void hook_wait(int duration)
 	if (duration > 0)
 		qApp->processEvents(QEventLoop::AllEvents, duration);
 	else
-		qApp->processEvents(QEventLoop::ExcludeUserInput, duration);
+		qApp->processEvents(QEventLoop::ExcludeUserInputEvents, duration);
   MAIN_in_wait--;
 }
 
@@ -660,7 +668,6 @@ static void hook_error(int code, char *error, char *where)
   while (qApp->activePopupWidget())
     delete qApp->activePopupWidget();
   CWatch::stop();
-  qApp->exit();
 
   msg = "<b>This application has raised an unexpected<br>error and must abort.</b><br><br>";
 	
@@ -678,6 +685,8 @@ static void hook_error(int code, char *error, char *where)
 	release_grab();
   QMessageBox::critical(0, TO_QSTRING(GB.Application.Name()), msg);
   unrelease_grab();
+
+  qApp->exit();
 }
 
 
@@ -688,8 +697,7 @@ static int hook_image(CIMAGE **pimage, GB_IMAGE_INFO *info) //void **pdata, int 
 
 	if (!image)
 	{
-  	img = new QImage(info->width, info->height, 32);
-		img->setAlphaBuffer(GB_IMAGE_TRANSPARENT(info->format));
+  	img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 
 		if (info->data)
 		  GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
@@ -705,7 +713,7 @@ static int hook_image(CIMAGE **pimage, GB_IMAGE_INFO *info) //void **pdata, int 
 		info->data = image->image->bits();
 		info->width = image->image->width();
 		info->height = image->image->height();
-		info->format = image->image->hasAlphaBuffer() ? GB_IMAGE_BGRA : GB_IMAGE_BGRX;
+		info->format = image->image->hasAlphaChannel() ? GB_IMAGE_BGRA : GB_IMAGE_BGRX;
 	}
 
 	return 0;
@@ -719,18 +727,16 @@ static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info)
 	if (!picture)
 	{
 		if (info->format == GB_IMAGE_BGRA || info->format == GB_IMAGE_BGRX)
-			img = new QImage((uchar *)info->data, info->width, info->height, 32, NULL, 0, QImage::LittleEndian);
+			img = new QImage((uchar *)info->data, info->width, info->height, info->format == GB_IMAGE_BGRA ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 		else
 		{
-			img = new QImage(info->width, info->height, 32);
+	  	img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 		  GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
 		}
 
-		img->setAlphaBuffer(info->format == GB_IMAGE_BGRA || info->format == GB_IMAGE_ARGB);
-
 		GB.New(POINTER(&picture), GB.FindClass("Picture"), NULL, NULL);
 		delete picture->pixmap;
-		picture->pixmap = new QPixmap(*img);
+		*picture->pixmap = QPixmap::fromImage(*img);
 		delete img;
 
 		*ppicture = picture;
@@ -771,20 +777,15 @@ static QPixmap *QT_GetPixmap(CPICTURE *pict)
   return pict->pixmap;
 }
 
-Q3MimeSourceFactory *QT_MimeSourceFactory(void)
-{
-  return &myMimeSourceFactory;
-}
-
 const char *QT_ToUTF8(const QString &str)
 {
-  static Q3CString buf[UTF8_NBUF];
+  static QByteArray buf[UTF8_NBUF];
   static int cpt = 0;
 
   const char *res;
 
-  buf[cpt] = str.utf8();
-  res = (const char *)buf[cpt];
+  buf[cpt] = str.toUtf8();
+  res = buf[cpt].data();
   cpt++;
   if (cpt >= UTF8_NBUF)
     cpt = 0;
@@ -843,7 +844,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
-void *GB_QT_1[] EXPORT = {
+void *GB_QT4_1[] EXPORT = {
 
   (void *)1,
 
@@ -857,7 +858,7 @@ void *GB_QT_1[] EXPORT = {
   (void *)CWIDGET_scrollbar,
   (void *)CCONTROL_font,
   (void *)QT_CreateFont,
-  (void *)QT_MimeSourceFactory,
+  //(void *)QT_MimeSourceFactory,
   (void *)QT_GetPixmap,
   (void *)QT_ToUTF8,
   (void *)QT_EventFilter,
@@ -867,6 +868,7 @@ void *GB_QT_1[] EXPORT = {
   NULL
 };
 
+#if 0
 #if QT_VERSION >= 0x030304
 static void myMessageHandler(QtMsgType type, const char *msg )
 {
@@ -881,13 +883,16 @@ static void myMessageHandler(QtMsgType type, const char *msg )
 		abort();
 }
 #endif
+#endif
 
 const char *GB_INCLUDE EXPORT = "gb.draw";
 
 int EXPORT GB_INIT(void)
 {
+	#if 0
 	#if QT_VERSION >= 0x030304
   qInstallMsgHandler(myMessageHandler);
+  #endif
   #endif
 
   GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
@@ -935,12 +940,12 @@ int EXPORT GB_INFO(const char *key, void **value)
 {
 	if (!strcasecmp(key, "DISPLAY"))
 	{
-		*value = (void *)QPaintDevice::x11AppDisplay();
+		*value = (void *)QX11Info::display();
 		return TRUE;
 	}
 	else if (!strcasecmp(key, "ROOT_WINDOW"))
 	{
-		*value = (void *)QPaintDevice::x11AppRootWindow();
+		*value = (void *)QX11Info::appRootWindow();
 		return TRUE;
 	}
 	else if (!strcasecmp(key, "SET_EVENT_FILTER"))
@@ -976,7 +981,7 @@ static void activate_main_window(int value)
 		qt_x_time = CurrentTime;
 		#endif*/
 		win->raise();
-		win->setActiveWindow();
+		win->activateWindow();
 	}
 }
 

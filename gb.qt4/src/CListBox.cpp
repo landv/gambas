@@ -25,14 +25,12 @@
 
 #define __CLISTBOX_CPP
 
-
-
 #include <qapplication.h>
-#include <q3listbox.h>
 #include <qpainter.h>
 //Added by qt3to4:
 #include <QResizeEvent>
 #include <QMouseEvent>
+#include <QListWidget>
 
 #include "gambas.h"
 
@@ -50,25 +48,24 @@ DECLARE_EVENT(EVENT_Activate);  /* double click */
 
 static int _selection_mode[] = 
 {
-	SELECT_NONE, Q3ListBox::NoSelection, 
-	SELECT_SINGLE, Q3ListBox::Single, 
-	SELECT_MULTIPLE, Q3ListBox::Extended, 
+	SELECT_NONE, QAbstractItemView::NoSelection, 
+	SELECT_SINGLE, QAbstractItemView::SingleSelection, 
+	SELECT_MULTIPLE, QAbstractItemView::ExtendedSelection, 
 	CONST_MAGIC
 };
 
 
 BEGIN_METHOD(CLISTBOX_new, GB_OBJECT parent)
 
-  Q3ListBox *wid = new MyListBox(QCONTAINER(VARG(parent)));
+  QListWidget *wid = new QListWidget(QCONTAINER(VARG(parent)));
 
-  QObject::connect(wid, SIGNAL(selectionChanged()), &CListBox::manager, SLOT(selected()));
-  QObject::connect(wid, SIGNAL(selected(int)), &CListBox::manager, SLOT(activated(int)));
-  QObject::connect(wid, SIGNAL(highlighted(int)), &CListBox::manager, SLOT(highlighted(int)));
-  QObject::connect(wid, SIGNAL(clicked(Q3ListBoxItem *)), &CListBox::manager, SLOT(clicked(Q3ListBoxItem *)));
+  QObject::connect(wid, SIGNAL(itemSelectionChanged()), &CListBox::manager, SLOT(selected()));
+  QObject::connect(wid, SIGNAL(itemActivated(QListWidgetItem *)), &CListBox::manager, SLOT(activated(QListWidgetItem *)));
+  //QObject::connect(wid, SIGNAL(highlighted(int)), &CListBox::manager, SLOT(highlighted(int)));
+  QObject::connect(wid, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), &CListBox::manager, SLOT(clicked(QListWidgetItem *)));
 
   CWIDGET_new(wid, (void *)_object);
 
-  THIS->sorted = false;
   THIS->last = -1;
 
 END_METHOD
@@ -123,20 +120,11 @@ BEGIN_METHOD(CLISTBOX_add, GB_STRING item; GB_INTEGER pos)
 
   int pos = VARGOPT(pos, -1);
 
-  //if (GB.IsMissing(2))
-  //WIDGET->blockSignals(true);
-  WIDGET->insertItem(QSTRING_ARG(item), pos);
-  if (THIS->sorted)
-    WIDGET->sort();
-  //WIDGET->blockSignals(false);
-  //else
-  //{
-    //QLISTBOX(_object)->insertItem(PIXMAP_get(GB.ToZeroString(PARAM(picture))),
-    //  GB.ToZeroString(PARAM(item)), pos);
-  //}
-
-  //QLISTBOX(_object)->updateGeometry();
-
+  if (pos < 0)
+  	WIDGET->addItem(QSTRING_ARG(item));
+  else
+  	WIDGET->insertItem(pos, QSTRING_ARG(item));
+  
 END_METHOD
 
 
@@ -156,7 +144,7 @@ END_METHOD
 BEGIN_METHOD(CLISTBOX_remove, GB_INTEGER pos)
 
   //WIDGET->blockSignals(true);
-  WIDGET->removeItem(VARG(pos));
+  WIDGET->removeItemWidget(WIDGET->item(VARG(pos)));
   //WIDGET->blockSignals(false);
 
 END_METHOD
@@ -165,13 +153,9 @@ END_METHOD
 BEGIN_PROPERTY(CLISTBOX_sorted)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS->sorted);
+    GB.ReturnBoolean(WIDGET->isSortingEnabled());
   else
-  {
-    THIS->sorted = VPROP(GB_BOOLEAN);
-    if (THIS->sorted)
-      WIDGET->sort();
-  }
+  	WIDGET->setSortingEnabled(VPROP(GB_BOOLEAN));
 
 END_METHOD
 
@@ -188,7 +172,7 @@ BEGIN_PROPERTY(CLISTBOX_index)
   int index;
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(CListBox::currentItem(WIDGET));
+    GB.ReturnInteger(WIDGET->currentRow());
   else
   {
     index = VPROP(GB_INTEGER);
@@ -198,18 +182,18 @@ BEGIN_PROPERTY(CLISTBOX_index)
       return;
     }
 
-    //if (WIDGET->selectionMode() == QListBox::Multi || WIDGET->selectionMode() == QListBox::Extended)
+    //if (WIDGET->selectionMode() == QListWidget::Multi || WIDGET->selectionMode() == QListWidget::Extended)
     //{
       //WIDGET->clearSelection();
       //WIDGET->setSelected(index, true);
     //}
 
-    WIDGET->setCurrentItem(index);
+    WIDGET->setCurrentRow(index);
 
-    if (WIDGET->selectionMode() == Q3ListBox::Single)
-      WIDGET->setSelected(WIDGET->currentItem(), true);
+    //if (WIDGET->selectionMode() == QAbstractItemView::SingleSelection)
+    //  WIDGET->setSelected(WIDGET->currentItem(), true);
 
-    WIDGET->ensureCurrentVisible();
+    //WIDGET->ensureCurrentVisible();
   }
 
 END_PROPERTY
@@ -217,7 +201,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CLISTBOX_current)
 
-  THIS->index = CListBox::currentItem(WIDGET);
+  THIS->index = WIDGET->currentRow();
 
   if (THIS->index < 0)
     GB.ReturnNull();
@@ -229,12 +213,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CLISTBOX_text)
 
-  int index = CListBox::currentItem(WIDGET);
+  QListWidgetItem *item = WIDGET->currentItem();
 
-  if (index < 0)
+  if (!item)
     GB.ReturnNull();
   else
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->text(index)));
+    GB.ReturnNewZeroString(TO_UTF8(item->text()));
 
 END_PROPERTY
 
@@ -244,7 +228,7 @@ BEGIN_PROPERTY(CLISTBOX_mode)
   if (READ_PROPERTY)
     GB.ReturnInteger(CCONST_convert(_selection_mode, WIDGET->selectionMode(), SELECT_NONE, false));
   else
-    WIDGET->setSelectionMode((Q3ListBox::SelectionMode)CCONST_convert(_selection_mode, VPROP(GB_INTEGER), SELECT_NONE, true));
+    WIDGET->setSelectionMode((QListWidget::SelectionMode)CCONST_convert(_selection_mode, VPROP(GB_INTEGER), SELECT_NONE, true));
 
 END_PROPERTY
 
@@ -252,36 +236,19 @@ END_PROPERTY
 BEGIN_PROPERTY(CLISTBOX_item_selected)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->isSelected(THIS->index));
+    GB.ReturnBoolean(WIDGET->item(THIS->index)->isSelected());
   else
-    WIDGET->setSelected(THIS->index, VPROP(GB_BOOLEAN));
+    WIDGET->item(THIS->index)->setSelected(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CLISTBOX_item_text)
 
-  bool selected;
-  int current;
-
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->text(THIS->index)));
+    GB.ReturnNewZeroString(TO_UTF8(WIDGET->item(THIS->index)->text()));
   else
-  {
-    current = WIDGET->currentItem();
-    WIDGET->blockSignals(true);
-
-    selected = WIDGET->isSelected(THIS->index);
-
-    WIDGET->changeItem(QSTRING_PROP(), THIS->index);
-
-    if (selected)
-      WIDGET->setSelected(THIS->index, selected);
-
-    WIDGET->setCurrentItem(current);
-
-    WIDGET->blockSignals(false);
-  }
+  	WIDGET->item(THIS->index)->setText(QSTRING_PROP());
 
 END_PROPERTY
 
@@ -314,8 +281,6 @@ BEGIN_PROPERTY(CLISTBOX_list)
   else
   {
     CListBox::setAll(WIDGET, (GB_ARRAY)VPROP(GB_OBJECT));
-    if (THIS->sorted)
-      WIDGET->sort();
   }
 
 END_PROPERTY
@@ -342,7 +307,7 @@ GB_DESC CListBoxDesc[] =
   //GB_CONSTANT("Single", "i", SELECT_SINGLE),
   //GB_CONSTANT("Multi", "i", SELECT_MULTIPLE), // REMOVE
   //GB_CONSTANT("Multiple", "i", SELECT_MULTIPLE),
-  //GB_CONSTANT("Extended", "i", QListBox::Extended),
+  //GB_CONSTANT("Extended", "i", QListWidget::Extended),
 
   GB_METHOD("_new", NULL, CLISTBOX_new, "(Parent)Container;"),
 
@@ -385,15 +350,16 @@ GB_DESC CListBoxDesc[] =
 
 /** MyListBox ***************************************************************/
 
+#if 0
 MyListBox::MyListBox(QWidget *parent) :
-  Q3ListBox(parent)
+  QListWidget(parent)
 {
 }
 
 void MyListBox::mousePressEvent( QMouseEvent *e )
 {
   if (e->button() == Qt::LeftButton)
-    Q3ListBox::mousePressEvent(e);
+    QListWidget::mousePressEvent(e);
 }
 
 void MyListBox::resizeEvent( QResizeEvent *e )
@@ -402,27 +368,28 @@ void MyListBox::resizeEvent( QResizeEvent *e )
   Q3ScrollView::resizeEvent(e);
   triggerUpdate(true);
   doLayout();
-  viewport()->repaint( FALSE );
+  viewport()->repaint();
   ensureCurrentVisible();
 }
 
-void MyListBox::setCurrentItem(Q3ListBoxItem *item)
+void MyListBox::setCurrentItem(QListWidgetItem *item)
 {
 	//void *_object = CWidget::get(this);
 	//int current = currentItem();
 	
 	//qDebug("setCurrentItem");
-	Q3ListBox::setCurrentItem(item);
+	QListWidget::setCurrentItem(item);
 	//if (current == currentItem())
 	//  GB.Raise(THIS, EVENT_Click, 0);	
 }
+#endif
 
 
 #if 0
 /** MyListBoxItem ***********************************************************/
 
-MyListBoxItem::MyListBoxItem(Q3ListBox *listbox, QString& text, int width, int height)
-  :Q3ListBoxItem(listbox)
+MyListBoxItem::MyListBoxItem(QListWidget *listbox, QString& text, int width, int height)
+  :QListWidgetItem(listbox)
 {
   setText(text);
   w = width;
@@ -445,12 +412,12 @@ void MyListBoxItem::paint(QPainter *painter)
   DRAW_restore(status);
 }
 
-int MyListBoxItem::height( const Q3ListBox* lb ) const
+int MyListBoxItem::height( const QListWidget* lb ) const
 {
   return QMAX(h, QApplication::globalStrut().height());
 }
 
-int MyListBoxItem::width( const Q3ListBox* lb ) const
+int MyListBoxItem::width( const QListWidget* lb ) const
 {
   return QMAX(w, QApplication::globalStrut().width());
 }
@@ -477,7 +444,7 @@ static void post_select_event(void *_object)
 void CListBox::selected(void)
 {
 	GET_SENDER(_object);
-	if (WIDGET->selectionMode() == Q3ListBox::Single)
+	if (WIDGET->selectionMode() == QAbstractItemView::SingleSelection)
 		GB.Raise(_object, EVENT_Select, 0);
 	else
 	{
@@ -487,26 +454,28 @@ void CListBox::selected(void)
   //RAISE_EVENT(EVENT_Select);
 }
 
-void CListBox::activated(int index)
+void CListBox::activated(QListWidgetItem *)
 {
   RAISE_EVENT(EVENT_Activate);
 }
 
+#if 0
 void CListBox::highlighted(int index)
 {
   GET_SENDER(_object);
 
-  if (currentItem(WIDGET) < 0)
+  /*if (currentItem(WIDGET) < 0)
     return;
 
 	if (!WIDGET->isSelected(index))
-		return;
+		return;*/
 
 	THIS->last = index;
   GB.Raise(_object, EVENT_Click, 0);
 }
+#endif
 
-void CListBox::clicked(Q3ListBoxItem *i)
+void CListBox::clicked(QListWidgetItem *i)
 {
 	int current;
   GET_SENDER(_object);
@@ -514,7 +483,7 @@ void CListBox::clicked(Q3ListBoxItem *i)
   if (!i)
     return;
 
-	current = currentItem(WIDGET);
+	current = WIDGET->row(i);
 
 	if (THIS->last == current)
 	{
@@ -527,7 +496,7 @@ void CListBox::clicked(Q3ListBoxItem *i)
 }
 
 #if 0
-void CListBox::clicked(Q3ListBoxItem *item)
+void CListBox::clicked(QListWidgetItem *item)
 {
   int current;
 
@@ -545,11 +514,11 @@ void CListBox::clicked(Q3ListBoxItem *item)
 }
 #endif
 
-int CListBox::find(Q3ListBox *list, const QString& s)
+int CListBox::find(QListWidget *list, const QString& s)
 {
   for (int i = 0; i < (int)list->count(); i++)
   {
-    if (list->text(i) == s)
+    if (list->item(i)->text() == s)
       return i;
   }
 
@@ -557,20 +526,20 @@ int CListBox::find(Q3ListBox *list, const QString& s)
 }
 
 
-void CListBox::getAll(Q3ListBox *list, GB_ARRAY array)
+void CListBox::getAll(QListWidget *list, GB_ARRAY array)
 {
-	uint i;
+	int i;
 	char *str;
 	
 	for (i = 0; i < list->count(); i++)
 	{
-		GB.NewString(&str, TO_UTF8(list->text(i)), 0);
+		GB.NewString(&str, TO_UTF8(list->item(i)->text()), 0);
 		*((char **)GB.Array.Get(array, i)) = str;
 	}
 }
 
 
-void CListBox::setAll(Q3ListBox *list, GB_ARRAY array)
+void CListBox::setAll(QListWidget *list, GB_ARRAY array)
 {
 	int i;
 	
@@ -581,7 +550,7 @@ void CListBox::setAll(Q3ListBox *list, GB_ARRAY array)
 	{
 		for (i = 0; i < GB.Array.Count(array); i++)
 		{
-			list->insertItem(TO_QSTRING(*((char **)GB.Array.Get(array, i))));
+			list->addItem(TO_QSTRING(*((char **)GB.Array.Get(array, i))));
 		}
 	}
 
@@ -589,17 +558,18 @@ void CListBox::setAll(Q3ListBox *list, GB_ARRAY array)
 }
 
 
-int CListBox::currentItem(Q3ListBox *list)
+/*
+int CListBox::currentItem(QListWidget *list)
 {
   int mode = list->selectionMode();
   int index;
 
-  if (mode == Q3ListBox::NoSelection)
+  if (mode == QAbstractItemView::NoSelection)
     return -1;
 
-  index = list->currentItem();
+  index = list->currentRow();
 
-  if (mode == Q3ListBox::Single)
+  if (mode == QAbstractItemView::SingleSelection)
   {
     if (!list->isSelected(index))
       index = -1;
@@ -607,4 +577,6 @@ int CListBox::currentItem(Q3ListBox *list)
 
   return index;
 }
+
+*/
 

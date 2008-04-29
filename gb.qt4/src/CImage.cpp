@@ -26,9 +26,7 @@
 
 #include <qpixmap.h>
 #include <qbitmap.h>
-#include <q3picture.h>
 #include <qnamespace.h>
-#include <q3dict.h>
 #include <qpainter.h>
 #include <qmatrix.h>
 
@@ -63,11 +61,11 @@ const char *CIMAGE_get_format(QString path)
 {
   int pos;
 
-  pos = path.findRev('.');
+  pos = path.lastIndexOf('.');
   if (pos < 0)
     return NULL;
 
-  path = path.mid(pos + 1).lower();
+  path = path.mid(pos + 1).toLower();
 
   if (path == "png")
     return "PNG";
@@ -145,8 +143,6 @@ BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 
   int w, h;
 
-  THIS->image = new QImage();
-
 	if (!MISSING(w) && !MISSING(h))
 	{
 		w = VARG(w);
@@ -157,8 +153,11 @@ BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 			return;
 		}
 
-    THIS->image->create(w, h, 32);
-    THIS->image->setAlphaBuffer(VARGOPT(trans, false));
+    THIS->image = new QImage(w, h, QImage::Format_ARGB32);
+  }
+  else
+  {
+  	THIS->image = new QImage();
   }
 
 END_METHOD
@@ -177,7 +176,8 @@ BEGIN_PROPERTY(CIMAGE_picture)
   CPICTURE *pict;
 
   GB.New(POINTER(&pict), GB.FindClass("Picture"), NULL, NULL);
-  pict->pixmap->convertFromImage(*(THIS->image));
+  delete pict->pixmap;
+  *pict->pixmap = QPixmap::fromImage(*(THIS->image));
 
   GB.ReturnObject(pict);
 
@@ -188,8 +188,8 @@ BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 
   if (THIS->image->isNull())
   {
-    THIS->image->create(VARG(width), VARG(height), 32);
-    THIS->image->setAlphaBuffer(true);
+  	delete THIS->image;
+    THIS->image = new QImage(VARG(width), VARG(height), QImage::Format_ARGB32);
   }
   else
   {
@@ -243,9 +243,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CIMAGE_transparent)
 
 	if (READ_PROPERTY)
-  	GB.ReturnBoolean(THIS->image->hasAlphaBuffer());
+  	GB.ReturnBoolean(THIS->image->hasAlphaChannel());
 	else
-		THIS->image->setAlphaBuffer(VPROP(GB_BOOLEAN));
+		THIS->image->convertToFormat(VPROP(GB_BOOLEAN) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 
 END_PROPERTY
 
@@ -257,9 +257,9 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
   if (CPICTURE_load_image(&p, STRING(path), LENGTH(path)))
   {
+  	p->convertToFormat(QImage::Format_ARGB32);
 	  create(&img);
-  	delete img->image;
-    img->image = p;
+    *img->image = *p;
     GB.ReturnObject(img);
 	}
   else
@@ -302,12 +302,12 @@ BEGIN_METHOD(CIMAGE_fill, GB_INTEGER col)
   int col = VARG(col);
 
   //a = THIS->image->hasAlphaBuffer();
-  THIS->image->setAlphaBuffer(false);
+  //THIS->image->setAlphaBuffer(false);
 
   col ^= 0xFF000000;
   THIS->image->fill(col);
 
-  THIS->image->setAlphaBuffer(true);
+  //THIS->image->setAlphaBuffer(true);
 
 END_METHOD
 
@@ -321,17 +321,18 @@ BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h
   int h = VARGOPT(h, THIS->image->height());
 
   create(&img);
+  *img->image = THIS->image->copy(x, y, w, h);
+  
+  //new QImage(w, h, QImage::Format_ARGB32);
 
-  img->image->create(w, h, 32);
-
-  bool a = THIS->image->hasAlphaBuffer();
+  /*bool a = THIS->image->hasAlphaBuffer();
   THIS->image->setAlphaBuffer(false);
   img->image->setAlphaBuffer(false);
 
   bitBlt(img->image, 0, 0, THIS->image, x, y, w, h);
 
   THIS->image->setAlphaBuffer(a);
-  img->image->setAlphaBuffer(a);
+  img->image->setAlphaBuffer(a);*/
 
   GB.ReturnObject(img);
 
@@ -347,13 +348,12 @@ BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smo
 
 	if (THIS->image->isNull())
 	{
-    img->image->create(VARG(width), VARG(height), 32);
-    img->image->setAlphaBuffer(true);
+    *img->image = QImage(VARG(width), VARG(height), QImage::Format_ARGB32);
 	}
 	else
 	{
 		if (VARGOPT(smooth, TRUE))
-			*(img->image) = THIS->image->smoothScale(VARG(width), VARG(height));
+			*(img->image) = THIS->image->scaled(VARG(width), VARG(height), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 		else
 			*(img->image) = THIS->image->scaled(VARG(width), VARG(height));
 	}
@@ -368,7 +368,7 @@ BEGIN_METHOD_VOID(CIMAGE_flip)
   CIMAGE *img;
 
   create(&img);
-  *(img->image) = THIS->image->mirror(true, false);
+  *(img->image) = THIS->image->mirrored(true, false);
   GB.ReturnObject(img);
 
 END_METHOD
@@ -379,7 +379,7 @@ BEGIN_METHOD_VOID(CIMAGE_mirror)
   CIMAGE *img;
 
   create(&img);
-  *(img->image) = THIS->image->mirror(false, true);
+  *(img->image) = THIS->image->mirrored(false, true);
   GB.ReturnObject(img);
 
 END_METHOD
@@ -389,15 +389,12 @@ BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
 
   CIMAGE *img;
   QMatrix mat;
-  bool a = THIS->image->hasAlphaBuffer();
 
   create(&img);
 
   mat.rotate(VARG(angle) * -360.0 / 2 / M_PI);
   
-  THIS->image->setAlphaBuffer(true);
-  *(img->image) = THIS->image->xForm(mat);
-  THIS->image->setAlphaBuffer(a);
+  *(img->image) = THIS->image->transformed(mat);
   
   GB.ReturnObject(img);
 
@@ -408,8 +405,6 @@ BEGIN_METHOD(CIMAGE_replace, GB_INTEGER src; GB_INTEGER dst; GB_BOOLEAN noteq)
 
 	uint *p;
   uint i, n, src, dst;
-
-  THIS->image->setAlphaBuffer(true);
 
   src = VARG(src) ^ 0xFF000000;
   dst = VARG(dst) ^ 0xFF000000;
@@ -541,14 +536,16 @@ BEGIN_METHOD(CIMAGE_draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER 
 		scale_x = (double)w / sw;
 		scale_y = (double)h / sh;
 		
-		img = img.smoothScale((int)(img.width() * scale_x + 0.5), (int)(img.height() * scale_y + 0.5));
+		img = img.scaled((int)(img.width() * scale_x + 0.5), (int)(img.height() * scale_y + 0.5), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 		sx = (int)(sx * scale_x + 0.5);
 		sy = (int)(sy * scale_y + 0.5);
 		sw = w;
 		sh = h;
 	}
 	
-	bitBlt(THIS->image, x, y, &img, sx, sy, sw, sh); //, Qt::AutoColor); 
+	QPainter p(THIS->image);
+	p.drawImage(x, y, img, sx, sy, sw, sh); //, Qt::AutoColor); 
+	p.end();
 
 END_METHOD
 
@@ -657,8 +654,6 @@ BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
 	uint color = VARGOPT(color, 0xFFFFFFL);
 	RGB rgb_color;
 	RGB rgb_src;
-
-	THIS->image->setAlphaBuffer(true);
 
 	rgb_color.b = (color & 0xFF) / 255.0;
 	rgb_color.g = ((color >> 8) & 0xFF) / 255.0;

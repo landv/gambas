@@ -26,8 +26,8 @@
 
 #include <qapplication.h>
 #include <qpalette.h>
-#include <q3textedit.h>
-#include <q3scrollview.h>
+#include <QTextEdit>
+#include <QTextBlock>
 
 #include "gambas.h"
 #include "main.h"
@@ -40,39 +40,47 @@ DECLARE_EVENT(EVENT_Change);
 DECLARE_EVENT(EVENT_Cursor);
 DECLARE_EVENT(EVENT_Link);
 
-static void to_pos(Q3TextEdit *wid, int par, int car, int *pos)
+#if 0
+static void to_pos(QTextEdit *wid, int par, int car, int *pos)
 {
-  int i, l;
+	QTextCursor cursor(wid);
+	QTextBlock block = cursor.block();
   int p = 0;
 
-  for (i = 0; i < par; i++)
+  while (par)
   {
-    l = wid->paragraphLength(i);
-    if (l < 0)
-      break;
-    p += l + 1;
+  	if (!block.isValid())
+  		break;
+    p += block.length() + 1;
+    block = block.next();
+    par--;
   }
 
   *pos = p + car;
 }
 
 
-static void from_pos(Q3TextEdit *wid, int pos, int *par, int *car)
+static void from_pos(QTextEdit *wid, int pos, int *par, int *car)
 {
+	QTextCursor cursor(wid);
+	QTextBlock block = cursor.block();
   int i;
   int l;
 
-  for (i = 0; i <= wid->paragraphs(); i++)
+  for (i = 0;; i++)
   {
-    l = wid->paragraphLength(i);
-    if (l < 0)
-    {
+  	if (!block.isValid())
+  	{
       pos = wid->length();
       i--;
-      break;
-    }
+  		break;
+  	}
+  		
+    l = block.length();
+    
     if (pos <= l)
       break;
+    
     pos -= l + 1;
   }
 
@@ -81,7 +89,7 @@ static void from_pos(Q3TextEdit *wid, int pos, int *par, int *car)
 }
 
 
-static void look_pos(Q3TextEdit *wid, int *line, int *col)
+static void look_pos(QTextEdit *wid, int *line, int *col)
 {
   if (*line == -1)
     *line = wid->paragraphs();
@@ -89,36 +97,22 @@ static void look_pos(Q3TextEdit *wid, int *line, int *col)
   if (*col == -1)
     *col = wid->paragraphLength(*line);
 }
+#endif
 
-
-static void get_selection(Q3TextEdit *wid, int *start, int *length)
+static void get_selection(QTextEdit *wid, int *start, int *length)
 {
-  int pStart, iStart, pEnd, iEnd;
-  int posEnd;
-
-  wid->getSelection(&pStart, &iStart, &pEnd, &iEnd);
-
-  if (pStart < 0)
-  {
-    wid->getCursorPosition(&pStart, &iStart);
-    to_pos(wid, pStart, iStart, start);
-    *length = 0;
-    return;
-  }
-
-  to_pos(wid, pStart, iStart, start);
-  to_pos(wid, pEnd, iEnd, &posEnd);
-
-  *length = posEnd - *start;
+	QTextCursor cursor = wid->textCursor();
+	
+	*start = cursor.selectionStart();
+	*length = cursor.selectionEnd() - *start;
 }
 
 
 /** MyTextEdit *************************************************************/
 
-MyTextEdit::MyTextEdit(QWidget *parent, const char *name)
-  : Q3TextEdit( parent, name )
+MyTextEdit::MyTextEdit(QWidget *parent) : QTextEdit( parent)
 {
-  viewport()->setMouseTracking(true);
+  //viewport()->setMouseTracking(true);
 }
 
 MyTextEdit::~MyTextEdit()
@@ -137,13 +131,13 @@ void MyTextEdit::emitLinkClicked(const QString &s)
 
 BEGIN_METHOD(CTEXTAREA_new, GB_OBJECT parent)
 
-  Q3TextEdit *wid = new Q3TextEdit(QCONTAINER(VARG(parent)));
+  QTextEdit *wid = new QTextEdit(QCONTAINER(VARG(parent)));
 
   QObject::connect(wid, SIGNAL(textChanged()), &CTextArea::manager, SLOT(changed()));
-  QObject::connect(wid, SIGNAL(cursorPositionChanged(int, int)), &CTextArea::manager, SLOT(cursor()));
+  QObject::connect(wid, SIGNAL(cursorPositionChanged()), &CTextArea::manager, SLOT(cursor()));
 
-  wid->setTextFormat(Qt::PlainText);
-  wid->setWordWrap(Q3TextEdit::NoWrap);
+  //wid->setTextFormat(Qt::PlainText);
+  wid->setLineWrapMode(QTextEdit::NoWrap);
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -153,9 +147,9 @@ END_METHOD
 BEGIN_PROPERTY(CTEXTAREA_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->text()));
+    GB.ReturnNewZeroString(TO_UTF8(WIDGET->document()->toPlainText()));
   else
-    WIDGET->setText(QSTRING_PROP());
+    WIDGET->document()->setPlainText(QSTRING_PROP());
 
 END_PROPERTY
 
@@ -172,20 +166,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTEXTAREA_length)
 
-#if QT_VERSION <= 0x030005
+	QTextBlock block = WIDGET->document()->begin();
+	int len = 0;
+	
+	while (block.isValid())
+	{
+		len += block.length() + 1;
+		block = block.next();
+	}
 
-  GB.ReturnInteger(WIDGET->length());
-
-#else
-
-  int np = WIDGET->paragraphs();
-
-  if (np > 0)
-    np--;
-
-  GB.ReturnInteger(WIDGET->length() + np);
-
-#endif
+  GB.ReturnInteger(len - 1);
 
 END_PROPERTY
 
@@ -203,11 +193,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CTEXTAREA_wrap)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->wordWrap() != Q3TextEdit::NoWrap);
+    GB.ReturnBoolean(WIDGET->lineWrapMode() != QTextEdit::NoWrap);
   else
-    WIDGET->setWordWrap(
-      VPROP(GB_BOOLEAN) ? Q3TextEdit::WidgetWidth : Q3TextEdit::NoWrap
-      );
+    WIDGET->setLineWrapMode(VPROP(GB_BOOLEAN) ? QTextEdit::WidgetWidth : QTextEdit::NoWrap);
 
 END_PROPERTY
 
@@ -233,6 +221,7 @@ BEGIN_PROPERTY(CTEXTAREA_max_length)
 END_PROPERTY
 */
 
+/*
 BEGIN_PROPERTY(CTEXTAREA_line)
 
   int line, col;
@@ -269,23 +258,20 @@ BEGIN_PROPERTY(CTEXTAREA_column)
   }
 
 END_PROPERTY
-
+*/
 
 BEGIN_PROPERTY(CTEXTAREA_pos)
 
-  int par, car;
-  int pos;
-
   if (READ_PROPERTY)
   {
-    WIDGET->getCursorPosition(&par, &car);
-    to_pos(WIDGET, par, car, &pos);
-    GB.ReturnInteger(pos);
+  	GB.ReturnInteger(WIDGET->textCursor().position());
   }
   else
   {
-    from_pos(WIDGET, VPROP(GB_INTEGER), &par, &car);
-    WIDGET->setCursorPosition(par, car);
+  	QTextCursor cursor = WIDGET->textCursor();
+  	
+  	cursor.setPosition(VPROP(GB_INTEGER));
+  	WIDGET->setTextCursor(cursor);
   }
 
 END_PROPERTY
@@ -320,7 +306,7 @@ END_METHOD
 
 BEGIN_METHOD(CTEXTAREA_insert, GB_STRING text)
 
-  WIDGET->insert(QSTRING_ARG(text));
+  WIDGET->textCursor().insertText(QSTRING_ARG(text));
 
 END_METHOD
 
@@ -354,9 +340,10 @@ END_PROPERTY
 BEGIN_PROPERTY(CTEXTAREA_sel_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->selectedText()));
+  	// TODO: replace U+2029 by '\n'
+    GB.ReturnNewZeroString(TO_UTF8(WIDGET->textCursor().selectedText()));
   else
-    WIDGET->insert(QSTRING_PROP());
+    WIDGET->textCursor().insertText(QSTRING_PROP());
 
 END_PROPERTY
 
@@ -383,30 +370,28 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CTEXTAREA_sel_clear)
 
-  WIDGET->selectAll(false);
+  WIDGET->textCursor().clearSelection();	
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CTEXTAREA_selected)
 
-	GB.ReturnBoolean(WIDGET->hasSelectedText());
+	GB.ReturnBoolean(WIDGET->textCursor().hasSelection());
 
 END_PROPERTY
 
 
 BEGIN_METHOD(CTEXTAREA_sel_select, GB_INTEGER start; GB_INTEGER length)
 
-  int ps, is, pe, ie;
-
 	if (MISSING(start) && MISSING(length))
-	  WIDGET->selectAll(true);
+	  WIDGET->textCursor().select(QTextCursor::Document);
 	else if (!MISSING(start) && !MISSING(length))
 	{
-		from_pos(WIDGET, VARG(start), &ps, &is);
-		from_pos(WIDGET, VARG(start) + VARG(length), &pe, &ie);
-
-		WIDGET->setSelection(ps, is, pe, ie);
+		QTextCursor cursor = WIDGET->textCursor();
+		
+		cursor.setPosition(VARG(start));
+		cursor.setPosition(VARG(start) + VARG(length), QTextCursor::KeepAnchor);
 	}
 
 END_METHOD
@@ -414,12 +399,12 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTEXTAREA_sel_all) //, GB_BOOLEAN sel)
 
-  WIDGET->selectAll(true);
+  WIDGET->textCursor().select(QTextCursor::Document);
 
 END_METHOD
 
 
-
+#if 0
 BEGIN_METHOD(CTEXTAREA_to_pos, GB_INTEGER line; GB_INTEGER col)
 
   int pos;
@@ -451,6 +436,7 @@ BEGIN_METHOD(CTEXTAREA_to_col, GB_INTEGER pos)
   GB.ReturnInteger(col);
 
 END_METHOD
+#endif
 
 
 BEGIN_METHOD_VOID(CTEXTAREA_copy)
@@ -562,8 +548,8 @@ GB_DESC CTextAreaDesc[] =
   GB_PROPERTY("Wrap", "b", CTEXTAREA_wrap),
   GB_PROPERTY("Border", "b", CWIDGET_border_simple),
 
-  GB_PROPERTY("Line", "i", CTEXTAREA_line),
-  GB_PROPERTY("Column", "i", CTEXTAREA_column),
+  //GB_PROPERTY("Line", "i", CTEXTAREA_line),
+  //GB_PROPERTY("Column", "i", CTEXTAREA_column),
   GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
 
   GB_PROPERTY_SELF("Selection", ".TextAreaSelection"),
@@ -581,9 +567,9 @@ GB_DESC CTextAreaDesc[] =
   GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
   GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),
 
-  GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
-  GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
-  GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
+  //GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
+  //GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
+  //GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
 
   GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
 

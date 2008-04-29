@@ -20,10 +20,17 @@ GB_CHECK_XWINDOW
 GB_COMPONENT_PKG_CONFIG(
   qt,
   QT,
-  [QT4 component],
+  [QT4 toolkit],
   [src],
-  QtCore QtGui Qt3Support,
-  [>= 4.3.4]
+  QtCore ">= 4.3.4" QtGui Qt3Support
+)
+
+GB_COMPONENT_PKG_CONFIG(
+  qtext,
+  QTEXT,
+  [QT4 toolkit extension],
+  [ext],
+  QtCore ">= 4.3.4" QtGui Qt3Support
 )
 
 GB_COMPONENT(
@@ -38,10 +45,9 @@ GB_COMPONENT(
 GB_COMPONENT_PKG_CONFIG(
   qtopengl,
   QTOPENGL,
-  [QT4 OpenGL component],
+  [QT4 OpenGL],
   [opengl],
-  QtOpenGL,
-  [>= 4.3.4]
+  QtOpenGL ">= 4.3.4"
 )
 
 MOC=`pkg-config --variable=moc_location QtCore`

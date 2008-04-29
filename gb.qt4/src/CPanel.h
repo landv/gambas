@@ -27,7 +27,7 @@
 
 #include "gambas.h"
 
-#include <q3frame.h>
+#include <QFrame>
 
 #include "CWidget.h"
 #include "CContainer.h"

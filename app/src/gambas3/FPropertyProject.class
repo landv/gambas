@@ -95,7 +95,7 @@ Public Sub Form_Open()
   InitLibrary
   InitEnvironment
 
-  btnOK.Enabled = NOT Project.ReadOnly AND NOT Project.Running
+  btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
   tabProject[VERSION_TAB].Enabled = btnOK.Enabled
 
   cmbDefaultLanguage.Clear
@@ -135,7 +135,7 @@ Private Sub SaveEnvironment()
   tvwEnv.Save
   
   While iInd < $aEnv.Count
-    If NOT Trim(Scan($aEnv[iInd], "*=*")[0]) Then 
+    If Not Trim(Scan($aEnv[iInd], "*=*")[0]) Then 
       $aEnv.Remove(iInd)
     Else 
       Inc iInd
@@ -187,7 +187,7 @@ Private Function DoApply() As Boolean
       .Stack = Val(Left(cmbStackSize.Text, -1))
     Endif
 
-    If .ControlPublic <> (cmbControlPublic.Index = 0) OR If .ModulePublic <> (cmbModulePublic.Index = 0) Then
+    If .ControlPublic <> (cmbControlPublic.Index = 0) Or If .ModulePublic <> (cmbModulePublic.Index = 0) Then
       Project.ResetScan
       Project.DeleteCompiledFiles
     Endif
@@ -210,7 +210,7 @@ Private Function DoApply() As Boolean
 
     '.ShowGrid = chkShowGrid.Value
     '.Snap = txtGrid.Value
-    If cmbTranslate.Index = 0 AND NOT .Localize Then
+    If cmbTranslate.Index = 0 And Not .Localize Then
       Project.DeleteCompiledFiles()
     Endif
     .Localize = cmbTranslate.Index = 0
@@ -235,6 +235,7 @@ Private Function DoApply() As Boolean
 
   Project.WriteProject
   Project.MakeDirectoryIcon
+  Project.Compile
 
   Project.RefreshRoot
   If bRefreshForm Then Project.RefreshForm
@@ -321,7 +322,7 @@ Private Sub InitLibrary()
   Dim bDark As Boolean
   Dim hOld As ListContainer
 
-  If NOT $bCanInitLibrary Then Return
+  If Not $bCanInitLibrary Then Return
 
   lstComponent.Clear
   
@@ -338,12 +339,12 @@ Private Sub InitLibrary()
   For Each sLib In aComp
     hComp = CComponent.All[sLib]
     If $bShowUsed Then
-      If sLib <> "gb" AND If NOT Project.Libraries.Exist(hComp.Key) Then Continue
+      If sLib <> "gb" And If Not Project.Libraries.Exist(hComp.Key) Then Continue
     Endif
     hCompBox = New CComponentBox(hComp, bDark, lstComponent)
-    bDark = NOT bDark
+    bDark = Not bDark
     $cComp[hComp.Key] = hCompBox 
-    hCompBox.Locked = sLib = "gb" OR $bShowUsed
+    hCompBox.Locked = sLib = "gb" Or $bShowUsed
   Next
   
   For Each sLib In Project.Libraries
@@ -397,7 +398,7 @@ Private Sub CheckComponentConfig() As Boolean
       
         If hComp.Key = sComp Then Continue
         If hComp.Implement.Find(sImpl) >= 0 Then
-          If NOT aComp.Exist(hComp.Key) Then Continue
+          If Not aComp.Exist(hComp.Key) Then Continue
           If aExclude.Find(hComp.Key) < 0 Then aExclude.Add(hComp.Key)
         Endif
       
@@ -406,8 +407,8 @@ Private Sub CheckComponentConfig() As Boolean
     Next
 
     For Each sExcl In CComponent.All[sComp].Exclude
-      If NOT aComp.Find(sExcl) Then Continue
-      If NOT aExclude.Exist(sExcl) Then aExclude.Add(sExcl)
+      If Not aComp.Find(sExcl) Then Continue
+      If Not aExclude.Exist(sExcl) Then aExclude.Add(sExcl)
     Next
     
     ' IF aExclude.Count = 1 THEN
@@ -431,14 +432,14 @@ Private Sub CheckComponentConfig() As Boolean
           If aComp.Exist(hComp.Key) Then bFound = True
         Endif
       Next
-      If NOT bFound Then
+      If Not bFound Then
         Message.Warning(Subst(("The &1 component needs one of the following components:<br>&2."), "<b>" & sComp & "</b>", "<b>" & aNeed.Join("</b>, <b>") & "</b>"))
         Return True
       Endif 
     Next
       
     For Each sNeed In CComponent.All[sComp].Require
-      If NOT aComp.Exist(sNeed) Then 
+      If Not aComp.Exist(sNeed) Then 
         Message.Warning(Subst(("The &1 component needs the &2 component."), "<b>" & sComp & "</b>", "<b>" & sNeed & "</b>"))
         Return True
       Endif
@@ -597,7 +598,7 @@ Public Sub btnIcon_Click()
   Dim hBackground As Image
 
   sIcon = FSelectIcon.Run($sIcon, True)
-  If NOT sIcon Then Return
+  If Not sIcon Then Return
 
   $sIcon = sIcon
   btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, 56).Picture
@@ -619,7 +620,7 @@ Public Sub btnHelp_Click()
   
   hCompBox = CComponentBox(lstComponent.Current)
   Try sKey = hCompBox.Key
-  If NOT sKey Then Return 
+  If Not sKey Then Return 
   MHelp.GotoComponent(sKey)
 
 End
@@ -645,19 +646,19 @@ Private Sub GetParent(sPath As String) As String
   Dim sParent As String
   
   hFile = Open sPath
-  While NOT Eof(hFile)
+  While Not Eof(hFile)
     Line Input #hFile, sLine
     sLine = Trim(sLine)
-    If NOT sLine Then Continue
+    If Not sLine Then Continue
     If Left(sLine) = "'" Then Continue
-    If sLine LIKE "INHERITS *" Then 
+    If sLine Like "INHERITS *" Then 
       Try sParent = Trim(Scan(sLine, "INHERITS *")[0])
       Return sParent
     Endif
-    If sLine LIKE "EXPORT" Then Continue
-    If sLine LIKE "CREATE" Then Continue
-    If sLine LIKE "EXPORT *" Then Continue
-    If sLine LIKE "CREATE *" Then Continue
+    If sLine Like "EXPORT" Then Continue
+    If sLine Like "CREATE" Then Continue
+    If sLine Like "EXPORT *" Then Continue
+    If sLine Like "CREATE *" Then Continue
     Break
   Wend 
   
@@ -678,18 +679,18 @@ Private Sub ReadComponent()
   $aRequire = New String[]
   $aImplement = New String[]
   
-  If NOT Exist(sPath) Then Return
+  If Not Exist(sPath) Then Return
   
   hFile = Open sPath
   
   Line Input #hFile, sLine
   If Trim(sLine) <> "[Component]" Then Return
   
-  While NOT Eof(hFile)
+  While Not Eof(hFile)
     
     Line Input #hFile, sLine
     sLine = Trim(sLine)
-    If NOT sLine Then Continue 
+    If Not sLine Then Continue 
     If Left(sLine) = ";" Then Continue
     
     If Left(sLine) = "[" Then 
@@ -845,7 +846,7 @@ Public Sub InitComponent()
   For Each sPath In Project.GetClasses(True)
     If Project.IsExported(sPath) Then 
       sClass = File.BaseName(sPath)
-      If NOT IsLetter(Left(sClass)) Then Continue
+      If Not IsLetter(Left(sClass)) Then Continue
       CExportInfo.List.Add(sClass)
       hExportInfo = New CExportInfo(sClass)
       hExportInfo.Parent = GetParent(sPath)
@@ -886,7 +887,7 @@ Public Sub tvwControl_Data(Row As Integer, Column As Integer)
       tvwControl.Data.Text = hExportInfo.Name
       If hExportInfo.Control Then 
         Try hPict = Project.GetPicture("control" &/ LCase(hExportInfo.Name) & ".png")
-        If NOT hPict Then hPict = Picture["img/control/unknown.png"]
+        If Not hPict Then hPict = Picture["img/control/unknown.png"]
         hPict = hPict.Image.Stretch(24, 24).Picture
       Else
         hPict = hExportInfo.Icon
@@ -898,7 +899,7 @@ Public Sub tvwControl_Data(Row As Integer, Column As Integer)
       tvwControl.Data.Text = hExportInfo.Group
   End Select 
   
-  tvwControl.Data.Background = If(Row AND 1, Color.LightBackground, Color.TextBackground)
+  tvwControl.Data.Background = If(Row And 1, Color.LightBackground, Color.TextBackground)
 
 End
 
@@ -912,7 +913,7 @@ End
 
 Private Sub HideEditor()
 
-  If NOT cmbControl.Visible Then Return 
+  If Not cmbControl.Visible Then Return 
   SaveEditor  
   cmbControl.Hide
   
@@ -926,7 +927,7 @@ Private Sub GetGroups() As String[]
   'aGroup.Add(("(None)"))
 
   For Each hOther In CExportInfo.All
-    If NOT hOther.Group Then Continue
+    If Not hOther.Group Then Continue
     If aGroup.Find(hOther.Group) >= 0 Then Continue
     aGroup.Add(hOther.Group)
   Next
@@ -939,7 +940,7 @@ Private Sub SaveEditor()
   
   Dim hExportInfo As CExportInfo
   
-  If NOT cmbControl.Visible Then Return
+  If Not cmbControl.Visible Then Return
   
   hExportInfo = CExportInfo.All[CExportInfo.List[$iRow]]
   
@@ -984,7 +985,7 @@ Private Sub ShowEditor()
       
     Case 1
       aList = ["Class", "Control", "Virtual", "Container", "MultiContainer"]
-      If NOT GetForm() OR GetForm() = hExportInfo.Name Then aList.Add("Form")
+      If Not GetForm() Or GetForm() = hExportInfo.Name Then aList.Add("Form")
       cmbControl.List = aList
       cmbControl.ReadOnly = True
       cmbControl.Text = hExportInfo.Type
@@ -998,7 +999,7 @@ Private Sub ShowEditor()
     '   RETURN
       
     Case 2
-      If NOT hExportInfo.Control Then Return
+      If Not hExportInfo.Control Then Return
       cmbControl.ReadOnly = False
       cmbControl.List = GetGroups()
       cmbControl.Text = hExportInfo.Group

@@ -22,7 +22,7 @@
 
 #define __CPROGRESS_CPP
 
-#include <q3progressbar.h>
+#include <QProgressBar>
 
 #include "gambas.h"
 
@@ -31,10 +31,10 @@
 
 BEGIN_METHOD(CPROGRESS_new, GB_OBJECT parent)
 
-  Q3ProgressBar *wid = new Q3ProgressBar(100, QCONTAINER(VARG(parent)));
+  QProgressBar *wid = new QProgressBar(QCONTAINER(VARG(parent)));
 
-  wid->setTotalSteps(10000);
-  wid->setCenterIndicator(true);
+  wid->setMaximum(10000);
+  wid->setTextVisible(true);
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -65,8 +65,8 @@ BEGIN_PROPERTY(CPROGRESS_value)
 
   if (READ_PROPERTY)
   {
-  	int pr = WIDGET->progress();
-    GB.ReturnFloat(pr < 0 ? 0 : (double)pr / WIDGET->totalSteps());
+  	int pr = WIDGET->value();
+    GB.ReturnFloat(pr < 0 ? 0 : (double)pr / WIDGET->maximum());
   }
   else
   {
@@ -78,7 +78,7 @@ BEGIN_PROPERTY(CPROGRESS_value)
     {
       if (val > 1)
         val = 1;
-      WIDGET->setProgress((int)(WIDGET->totalSteps() * val + 0.5));
+      WIDGET->setValue((int)(WIDGET->maximum() * val + 0.5));
     }
   }
 
@@ -88,9 +88,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CPROGRESS_label)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->percentageVisible());
+    GB.ReturnBoolean(WIDGET->isTextVisible());
   else
-    WIDGET->setPercentageVisible(VPROP(GB_BOOLEAN));
+    WIDGET->setTextVisible(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

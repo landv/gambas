@@ -26,7 +26,6 @@
 #include "gambas.h"
 
 #include <qevent.h>
-#include <q3frame.h>
 //Added by qt3to4:
 #include <QPaintEvent>
 #include <QPixmap>
@@ -51,7 +50,7 @@ typedef
     }
   CDRAWINGAREA;
 
-class MyDrawingArea : public Q3Frame
+class MyDrawingArea : public QFrame
 {
   Q_OBJECT
 
