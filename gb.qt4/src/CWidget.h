@@ -42,20 +42,21 @@ typedef
     QWidget *widget;
     struct {
     	unsigned short f;
-    	unsigned default_bg : 1;
-    	unsigned default_fg : 1;
     	unsigned expand : 1;
     	unsigned ignore : 1;
     	unsigned notified : 1;
     	unsigned visible : 1;
-    	unsigned _reserved : 10;
+    	unsigned fillBackground : 1;
+    	unsigned _reserved : 11;
     	} flag;
     GB_VARIANT_VALUE tag;
     char *name;
     void *cursor;
-    CWIDGET *next;
-    CWIDGET *prev;
+    //CWIDGET *next;
+    //CWIDGET *prev;
     int level;
+    int32_t fg;
+    int32_t bg;
     }
   CWIDGET;
 
@@ -80,7 +81,7 @@ enum {
   WF_DELETED          = (1 << 6),
   WF_VISIBLE					= (1 << 7),  // Only for menus
   WF_ACTION           = (1 << 8),  // Has an action
-  WF_SCROLLVIEW				= (1 << 9)   // Inherits QScrollView
+  WF_SCROLLVIEW				= (1 << 9)   // Inherits QAbstractScrollArea
   };
 
 
@@ -88,8 +89,6 @@ enum {
 #ifndef __CWIDGET_CPP
 
 extern GB_DESC CControlDesc[];
-extern CWIDGET *CWIDGET_destroy_list;
-extern CWIDGET *CWIDGET_destroy_last;
 
 extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Container;
@@ -227,6 +226,7 @@ public:
   static void add(QObject *, void *, bool no_filter);
   static CWIDGET *get(QObject *);
   static CWIDGET *getReal(QObject *);
+	static CWIDGET *getRealExisting(QObject *);
   static CWIDGET *getDesign(QObject *);
 
   static QWidget *getContainerWidget(CCONTAINER *object);

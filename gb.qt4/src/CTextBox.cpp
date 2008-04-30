@@ -83,8 +83,8 @@ BEGIN_METHOD(CTEXTBOX_new, GB_OBJECT parent)
 
   QLineEdit *wid = new QLineEdit(QCONTAINER(VARG(parent)));
 
-  QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(event_change()));
-  QObject::connect(wid, SIGNAL(returnPressed()), &CTextBox::manager, SLOT(event_activate()));
+  QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
+  QObject::connect(wid, SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
 
   wid->setAlignment(Qt::AlignLeft);
 
@@ -346,8 +346,6 @@ static void combo_set_editable(void *_object, bool ed)
 {
   QLineEdit *textbox;
 
-	return;
-
   if (ed)
   {
     if (!COMBOBOX->isEditable())
@@ -355,7 +353,7 @@ static void combo_set_editable(void *_object, bool ed)
       //CWidget::removeFilter(COMBOBOX);
       COMBOBOX->setEditable(true);
       //CWidget::installFilter(COMBOBOX);
-      QObject::connect(COMBOBOX->lineEdit(), SIGNAL(returnPressed()), &CTextBox::manager, SLOT(event_activate()));
+      QObject::connect(COMBOBOX->lineEdit(), SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
 
       if (CWIDGET_test_flag(THIS, WF_DESIGN))
       {
@@ -380,10 +378,10 @@ static void combo_set_editable(void *_object, bool ed)
 
 BEGIN_METHOD(CCOMBOBOX_new, GB_OBJECT parent)
 
-  QComboBox *wid = new QComboBox(QCONTAINER(VARG(parent)));
+  MyComboBox *wid = new MyComboBox(QCONTAINER(VARG(parent)));
 
-  QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(event_change()));
-  QObject::connect(wid, SIGNAL(activated(int)), &CTextBox::manager, SLOT(event_click()));
+  QObject::connect(wid, SIGNAL(editTextChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
+  QObject::connect(wid, SIGNAL(activated(int)), &CTextBox::manager, SLOT(onClick()));
 
   //QObject::connect(wid, SIGNAL(highlighted(int)), &CTextBox::manager, SLOT(event_click()));
 
@@ -421,11 +419,12 @@ BEGIN_PROPERTY(CCOMBOBOX_text)
   {
     QString text = QSTRING_PROP();
 
+    pos = CTextBox::find(COMBOBOX, text);
+    if (pos >= 0)
+    	COMBOBOX->setCurrentIndex(pos);
+    
     if (COMBOBOX->isEditable())
       COMBOBOX->lineEdit()->setText(text);
-
-    pos = CTextBox::find(COMBOBOX, text);
-    COMBOBOX->setCurrentIndex(pos);
   }
 
 END_PROPERTY
@@ -635,19 +634,19 @@ void MyComboBox::calcMinimumHeight()
 
 CTextBox CTextBox::manager;
 
-void CTextBox::event_change(void)
+void CTextBox::onChange(void)
 {
   RAISE_EVENT(EVENT_Change);
 }
 
 
-void CTextBox::event_activate(void)
+void CTextBox::onActivate(void)
 {
   RAISE_EVENT(EVENT_Activate);
 }
 
 
-void CTextBox::event_click()
+void CTextBox::onClick()
 {
   RAISE_EVENT(EVENT_Click);
 }

@@ -22,11 +22,10 @@
 
 #define __CDRAWINGAREA_CPP
 
-#include <qapplication.h>
-#include <qpainter.h>
-//Added by qt3to4:
+#include <QApplication>
 #include <QPaintEvent>
 #include <QPixmap>
+#include <QPainter>
 
 #ifndef NO_X_WINDOW
 #include <QX11Info>
@@ -56,7 +55,11 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : QFrame(parent)
   setCached(false);
   setBackground();
   setAllowFocus(false);
+  
 	setAttribute(Qt::WA_KeyCompression, false);
+	setAttribute(Qt::WA_OpaquePaintEvent, true);
+	//setAttribute(Qt::WA_PaintOnScreen, true);
+	//setAttribute(Qt::WA_NoSystemBackground, true);
 }
 
 
@@ -74,7 +77,9 @@ void MyDrawingArea::setAllowFocus(bool f)
   	setAttribute(Qt::WA_InputMethodEnabled, true);
 	}
 	else
+	{
 		setFocusPolicy(Qt::NoFocus);
+	}
 }
 
 
@@ -159,6 +164,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			{
 				p->restore();
 				//paint.setClipRegion( event->region().intersect(frameRect()) );
+				p->setRenderHint(QPainter::Antialiasing, false);
 				drawFrame(p);
 			}
       
@@ -232,7 +238,6 @@ void MyDrawingArea::setBackground()
     XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
     #endif
     //setWFlags(Qt::WNoAutoErase);
-    setAttribute(Qt::WA_NoBackground, true);
     //setWFlags(Qt::WStaticContents);
     setAttribute(Qt::WA_StaticContents, true);
   }
@@ -244,7 +249,6 @@ void MyDrawingArea::setBackground()
     XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
     #endif
     //setWFlags(Qt::WNoAutoErase);
-    setAttribute(Qt::WA_NoBackground, true);
     //clearWFlags(Qt::WStaticContents);
     setAttribute(Qt::WA_StaticContents, false);
   }
@@ -252,11 +256,11 @@ void MyDrawingArea::setBackground()
 
 void MyDrawingArea::refreshBackground()
 {
-	QPainter p;
-	p.begin(_background);
+	QPainter p(_background);
 	p.initFrom(this);
 	drawFrame(&p);
 	p.end();
+	//setBackground();
 	#ifndef NO_X_WINDOW
   XClearWindow(QX11Info::display(), winId());
   #endif
@@ -276,58 +280,32 @@ void MyDrawingArea::clearBackground()
 }
 
 
-bool MyDrawingArea::doResize(int w, int h)
+void MyDrawingArea::resizeEvent(QResizeEvent *e)
 {
-  int wb, hb;
-
-	if (drawn)
+  QFrame::resizeEvent(e);
+	
+	if (!drawn && _background && e->size() != e->oldSize())
 	{
-		GB.Error("DrawingArea is being drawn");
-		return true;
+		int w = qMax(e->size().width(), 1);
+		int h = qMax(e->size().height(), 1);
+	  int wb, hb;
+
+		QPixmap *pix = new QPixmap(w, h);
+		pix->fill(palette().color(QPalette::Window));
+
+		wb = qMin(w, _background->width());
+		hb = qMin(h, _background->height());
+
+		QPainter p(pix);
+		p.drawPixmap(0, 0, *_background, 0, 0, wb, hb);
+		p.end();
+
+		delete _background;
+		_background = pix;
+
+		setBackground();
 	}
-
-  if (w == width() && h == height())
-    return false;
-
-  if (_background)
-  {
-  	w = qMax(w, 1);
-    h = qMax(h, 1);
-
-    QPixmap *pix = new QPixmap(w, h);
-    pix->fill(palette().color(QPalette::Window));
-
-    wb = qMin(w, _background->width());
-    hb = qMin(h, _background->height());
-
-    QPainter p(pix);
-    p.drawPixmap(0, 0, *_background, 0, 0, wb, hb);
-    p.end();
-
-    delete _background;
-    _background = pix;
-
-    setBackground();
-  }
-  
-  return false;
 }
-
-void MyDrawingArea::resize(int w, int h)
-{
-  if (doResize(w, h))
-  	return;
-  QFrame::resize(w, h);
-}
-
-
-void MyDrawingArea::setGeometry(int x, int y, int w, int h)
-{
-  if (doResize(w, h))
-  	return;
-  QFrame::setGeometry(x, y, w, h);
-}
-
 
 void MyDrawingArea::setCached(bool c)
 {

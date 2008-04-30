@@ -25,6 +25,7 @@
 
 #include "gambas.h"
 #include "gb.qt.h"
+#include "CWidget.h"
 
 #include <qsplitter.h>
 #include <qevent.h>
@@ -42,7 +43,8 @@ extern GB_DESC CVSplitDesc[];
 
 typedef
   struct {
-    QT_CONTAINER widget;
+    CWIDGET widget;
+    QWidget *container;
     }
   CSPLITTER;
 

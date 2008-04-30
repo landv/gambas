@@ -159,8 +159,12 @@ Public Sub UpdateSnap()
     If iColor = Color.Default Then iColor = Color.Background
     hPict.Fill(iColor)
     Draw.Begin(hPict)
-    Draw.Invert = True
-    Draw.ForeColor = Color.White
+    If (Color[iColor].Value > 128) Then
+      iColor = Color.Black
+    Else
+      iColor = Color.White
+    Endif
+    Draw.ForeColor = iColor
     Draw.Point(0, 0)
     Draw.End
     hCtrl.Control.Picture = hPict

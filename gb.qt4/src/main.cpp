@@ -442,12 +442,12 @@ static void release_grab()
 	
 	if (_mouseGrabber) 
 	{
-		qDebug("releaseMouse");
+		//qDebug("releaseMouse");
 		_mouseGrabber->releaseMouse();
 	}
 	if (_keyboardGrabber)
 	{
-		qDebug("releaseKeyboard");
+		//qDebug("releaseKeyboard");
 		_keyboardGrabber->releaseKeyboard();
 	}
 	
@@ -465,14 +465,14 @@ static void unrelease_grab()
 {
 	if (_mouseGrabber)
 	{
-		qDebug("grabMouse");
+		//qDebug("grabMouse");
 		_mouseGrabber->grabMouse();
 		_mouseGrabber = 0;
 	}
 	
 	if (_keyboardGrabber)
 	{
-		qDebug("grabKeyboard");
+		//qDebug("grabKeyboard");
 		_keyboardGrabber->grabKeyboard();
 		_keyboardGrabber = 0;
 	}
@@ -499,8 +499,8 @@ void MAIN_update_scale(void)
 {
 	QFontMetrics fm(qApp->desktop()->font());
   MAIN_scale = 1 + fm.height() / 3;
-  qDebug("logicalDpiY = %d  physicalDpiY = %d", qApp->desktop()->logicalDpiY(), qApp->desktop()->physicalDpiY());
-  qDebug("%s %d  fm.height() = %d  pixelSize = %d -> %d", qApp->font().family().toAscii().data(), qApp->font().pointSize(), fm.height(), qApp->font().pixelSize(), MAIN_scale);
+  //qDebug("logicalDpiY = %d  physicalDpiY = %d", qApp->desktop()->logicalDpiY(), qApp->desktop()->physicalDpiY());
+  //qDebug("%s %d  fm.height() = %d  pixelSize = %d -> %d", qApp->font().family().toAscii().data(), qApp->font().pointSize(), fm.height(), qApp->font().pixelSize(), MAIN_scale);
 }
 
 static void QT_InitEventLoop(void)
@@ -565,14 +565,6 @@ static void hook_lang(char *lang, int rtl)
 	init_lang(locale, rtl);
 
   //locale = QTextCodec::locale();
-}
-
-void show_slider()
-{
-  QMainWindow *win = new QMainWindow;
-  QSlider *sld = new QSlider(win);
-  sld->setGeometry(0, 0, 24, 80);
-  win->show();
 }
 
 static void hook_main(int *argc, char **argv)
@@ -973,8 +965,8 @@ static void activate_main_window(int value)
 		return;
 	
 	MyMainWindow *win = (MyMainWindow *)active->widget.widget;
-	if (win && !win->isTopLevel())
-		win = (MyMainWindow *)win->topLevelWidget();
+	if (win && !win->isWindow())
+		win = (MyMainWindow *)win->window();
 	if (win)
 	{
 		/*#ifndef NO_X_WINDOW

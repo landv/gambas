@@ -89,9 +89,9 @@ public:
 
 public slots:
 
-  void event_change(void);
-  void event_activate(void);
-  void event_click(void);
+  void onChange(void);
+  void onActivate(void);
+  void onClick(void);
 
 };
 

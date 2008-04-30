@@ -99,6 +99,7 @@ DECLARE_PROPERTY(CCONTAINER_spacing);
 
 void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);
+void CCONTAINER_insert_child(void *_object);
 
 class MyContainer : public QFrame
 {

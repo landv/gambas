@@ -1,129 +1,133 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserContainer
+Export
+Inherits UserContainer
 
-PUBLIC CONST _Properties AS String = "*,-Padding,-Spacing,-Arrangement,-AutoResize"
-PUBLIC CONST _Arrangement AS Integer = 2
-PUBLIC CONST _DefaultEvent AS String = "Click"
+Public Const _Properties As String = "*,-Padding,-Spacing,-Arrangement,-AutoResize"
+Public Const _Arrangement As Integer = 2
+Public Const _DefaultEvent As String = "Click"
 
-EVENT Click
-EVENT Activate
+Event Click
+Event Activate
 
-PROPERTY READ Count AS Integer
-PROPERTY Index AS Integer
-PROPERTY Current AS Control
-PROPERTY Background AS Integer
+Property Read Count As Integer
+Property Index As Integer
+Property Current As Control
+Property Background As Integer
 
-PRIVATE $hScrollView AS ScrollView
+Private $hScrollView As ScrollView
 'PRIVATE $hWatcher AS Watcher
-PRIVATE $hLast AS Control
-PRIVATE $hSelected AS Control
-PRIVATE $bNoMouse AS Boolean
-PRIVATE $hTimer AS Timer
-PRIVATE $iSaveBackground AS Integer
-PRIVATE $iSaveForeground AS Integer
-PRIVATE $iLastX AS Integer
-PRIVATE $iLastY AS Integer
-PRIVATE $iLock AS Integer
+Private $hLast As Control
+Private $hSelected As Control
+Private $bNoMouse As Boolean
+Private $hTimer As Timer
+Private $iSaveBackground As Integer
+Private $iSaveForeground As Integer
+Private $iLastX As Integer
+Private $iLastY As Integer
+Private $iLock As Integer
+Private $bMouseDown As Boolean
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  $hScrollView = NEW ScrollView(ME) AS "ScrollView"
-  $hTimer = NEW Timer AS "Child"
+  $hScrollView = New ScrollView(Me) As "ScrollView"
+  $hTimer = New Timer As "Child"
   $hTimer.Delay = 80
-  WITH $hScrollView
+  With $hScrollView
     .Border = Border.Sunken
     .ScrollBar = Scroll.Vertical
     .Background = Color.TextBackground
     .Arrangement = Arrange.Vertical
-  END WITH 
+    $iSaveBackground = .Background
+    $iSaveForeground = Color.TextForeground
+  End With 
   
   '$hWatcher = NEW Watcher($hScrollView) AS "ScrollView"
   
-  ME._Container = $hScrollView
-  ME.Arrangement = Arrange.Vertical
+  Me._Container = $hScrollView
+  Me.Arrangement = Arrange.Vertical
   
-END
+End
 
-PRIVATE SUB AttachRec(hItem AS Control)
+Private Sub AttachRec(hItem As Control)
 
-  DIM hCont AS Container
-  DIM hObs AS Observer
+  Dim hCont As Container
+  Dim hObs As Observer
   
-  IF NOT hItem.Enabled THEN RETURN
+  If Not hItem.Enabled Then Return
   'Object.Attach(hItem, ME, "Child")
-  hObs = NEW Observer(hItem) AS "Child"
-  TRY hCont = hItem
-  IF NOT hCont THEN RETURN
-  IF hCont IS UserControl THEN RETURN
+  hObs = New Observer(hItem) As "Child"
+  
+  'Try hCont = hItem
+  'If Not hCont Then Return
+  'If hCont Is UserControl Then Return
 
   'FOR EACH hItem IN hCont.Children
   '  AttachRec(hItem)
   'NEXT
 
-END
+End
 
-PRIVATE FUNCTION GetReal(hCtrl AS Control) AS Control
+Private Function GetReal(hCtrl As Control) As Control
 
-  IF NOT hCtrl THEN RETURN
-  WHILE hCtrl.Parent <> $hScrollView
+  If Not hCtrl Then Return
+  While hCtrl.Parent <> $hScrollView
     hCtrl = hCtrl.Parent
-  WEND
-  RETURN hCtrl
+  Wend
+  Return hCtrl
 
-END
+End
 
-PUBLIC SUB ScrollView_Insert(Child AS Control)
+Public Sub ScrollView_Insert(Child As Control)
 
-  IF ME.Design THEN RETURN 
+  If Me.Design Then Return 
   AttachRec(Child)
   
-END
+End
 
-PUBLIC SUB Child_Insert(Child AS Control)
+Public Sub Child_Insert(Child As Control)
 
-  IF ME.Design THEN RETURN 
+  If Me.Design Then Return 
   AttachRec(Child)
   
-END
+End
 
-PRIVATE FUNCTION Count_Read() AS Integer
+Private Function Count_Read() As Integer
 
-  RETURN $hScrollView.Children.Count
+  Return $hScrollView.Children.Count
 
-END
+End
 
-PRIVATE SUB ChildFromIndex(Index AS Integer) AS Control
+Private Sub ChildFromIndex(Index As Integer) As Control
   
-  DIM hChild AS Control
-  DIM iInd AS Integer
+  Dim hChild As Control
+  Dim iInd As Integer
 
-  FOR EACH hChild IN $hScrollView.Children
-    IF Index = iInd THEN RETURN hChild
-    INC iInd
-  NEXT
+  For Each hChild In $hScrollView.Children
+    If Index = iInd Then Return hChild
+    Inc iInd
+  Next
   
-END
+End
 
-PRIVATE SUB IndexFromChild(Child AS Control) AS Integer
+Private Sub IndexFromChild(Child As Control) As Integer
   
-  DIM hChild AS Control
-  DIM iInd AS Integer
+  Dim hChild As Control
+  Dim iInd As Integer
 
-  FOR EACH hChild IN $hScrollView.Children
-    IF hChild = Child THEN RETURN iInd
-    INC iInd
-  NEXT
+  For Each hChild In $hScrollView.Children
+    If hChild = Child Then Return iInd
+    Inc iInd
+  Next
   
-  RETURN -1
+  Return -1
   
-END
+End
 
 
-PRIVATE SUB GetSelected() AS Control
+Private Sub GetSelected() As Control
 
-  RETURN $hSelected
+  Return $hSelected
   
   ' DIM hChild AS Control
   ' 
@@ -132,186 +136,189 @@ PRIVATE SUB GetSelected() AS Control
   '   IF hChild.Background = Color.SelectedBackground THEN RETURN hChild
   ' NEXT
   
-END
+End
 
 
-PRIVATE FUNCTION Index_Read() AS Integer
+Private Function Index_Read() As Integer
 
-  RETURN IndexFromChild(GetSelected())
+  Return IndexFromChild(GetSelected())
 
-END
+End
 
-PRIVATE SUB SetSelected(Child AS Control)
+Private Sub SetSelected(Child As Control)
   
-  DIM hChild AS Control
-  DIM hOld AS Control
-  DIM iSaveBackground AS Integer
-  DIM iSaveForeground AS Integer
+  Dim hChild As Control
+  Dim hOld As Control
+  Dim iSaveBackground As Integer
+  Dim iSaveForeground As Integer
   'DIM bNoEvent AS Boolean
   
-  IF Child.Parent <> $hScrollView THEN RETURN
-  IF NOT Child.Enabled THEN RETURN
+  If Child.Parent <> $hScrollView Then Return
+  If Not Child.Enabled Then Return
   
   hOld = GetSelected()
-  IF hOld = Child THEN RETURN 
+  If hOld = Child Then Return 
   
-  FOR EACH hChild IN $hScrollView.Children
-    IF NOT hChild.Enabled THEN CONTINUE
-    IF hChild = Child THEN 
+  For Each hChild In $hScrollView.Children
+    If Not hChild.Enabled Then Continue
+    If hChild = Child Then 
       iSaveBackground = hChild.Background
       iSaveForeground = hChild.Foreground
       hChild.Background = Color.SelectedBackground
       hChild.Foreground = Color.SelectedForeground
       $hSelected = hChild
-    ELSE IF hChild = hOld THEN
+    Else If hChild = hOld Then
       hChild.Background = $iSaveBackground
       hChild.Foreground = $iSaveForeground
-    ENDIF
-  NEXT  
+    Endif
+  Next  
   
   $iSaveBackground = iSaveBackground
   $iSaveForeground = iSaveForeground
 
-  RAISE Click
+  Raise Click
   
-END
+End
 
 
-PRIVATE SUB Index_Write(Value AS Integer)
+Private Sub Index_Write(Value As Integer)
 
   SetSelected(ChildFromIndex(Value))
   EnsureVisible
 
-END
+End
 
-PRIVATE FUNCTION Current_Read() AS Control
+Private Function Current_Read() As Control
 
-  RETURN GetSelected()
+  Return GetSelected()
 
-END
+End
 
-PRIVATE SUB Current_Write(Value AS Control)
+Private Sub Current_Write(Value As Control)
 
   SetSelected(Value)  
 
-END
+End
 
-PRIVATE SUB DoMouse()
+Private Sub DoMouse()
   
-  DIM hChild AS Control
-  DIM Y AS Integer
+  Dim hChild As Control
+  Dim Y As Integer
   
-  IF $bNoMouse THEN RETURN
+  If $bNoMouse Then Return
   
   Y = Mouse.ScreenY - $hScrollView.ScreenY + $hScrollView.ScrollY
   Y = Max(0, Min($hScrollView.ScrollH, Y))
   
   hChild = $hScrollView.Find(Mouse.ScreenX - $hScrollView.ScreenX + $hScrollView.ScrollX, Y)
   hChild = GetReal(hChild)
-  IF hChild THEN 
-    $bNoMouse = TRUE
-    IF hChild.Enabled AND IF hChild <> $hLast THEN 
+  If hChild Then 
+    $bNoMouse = True
+    If hChild.Enabled And If hChild <> $hLast Then 
       SetSelected(hChild)  
       $hLast = hChild
-    ENDIF
+    Endif
     $hScrollView.EnsureVisible(hChild.X, hChild.Y, hChild.W, hChild.H)
-    $bNoMouse = FALSE
-  ENDIF 
+    $bNoMouse = False
+  Endif 
     
-END
+End
 
 
-PUBLIC SUB Child_MouseDown()
+Public Sub Child_MouseDown()
   
-  $hLast = NULL
+  $hLast = Null
   DoMouse
   $iLastX = Mouse.ScreenX
   $iLastY = Mouse.ScreenY
+  $bMouseDown = True
   
-END
+End
 
 
-PUBLIC SUB Child_MouseMove()
+Public Sub Child_MouseMove()
   
+  If Not $bMouseDown Then Return
   'IF LAST.Parent <> $hScrollView THEN RETURN
-  IF $iLastX = Mouse.ScreenX AND IF $iLastY = Mouse.ScreenY THEN RETURN
-  IF NOT $hTimer.Enabled THEN $hTimer.Enabled = TRUE 
+  If $iLastX = Mouse.ScreenX And If $iLastY = Mouse.ScreenY Then Return
+  If Not $hTimer.Enabled Then $hTimer.Enabled = True 
   'DoMouse
   $iLastX = Mouse.ScreenX
   $iLastY = Mouse.ScreenY
   
-END
+End
 
-PUBLIC SUB Child_MouseUp()
+Public Sub Child_MouseUp()
   
-  $hTimer.Enabled = FALSE
+  $hTimer.Enabled = False
+  $bMouseDown = False
   
-END
+End
 
-PUBLIC SUB Child_Timer()
+Public Sub Child_Timer()
   
   DoMouse
   
-END
+End
 
-PUBLIC SUB Child_DblClick()
+Public Sub Child_DblClick()
   
-  RAISE Activate
+  Raise Activate
   
-END
+End
 
-PUBLIC SUB EnsureVisible()
+Public Sub EnsureVisible()
   
-  IF $hSelected THEN $hScrollView.EnsureVisible($hSelected.X, $hSelected.Y, $hSelected.W, $hSelected.H)  
+  If $hSelected Then $hScrollView.EnsureVisible($hSelected.X, $hSelected.Y, $hSelected.W, $hSelected.H)  
   
-END
+End
 
 
-PUBLIC SUB Select(hChild AS control)
+Public Sub Select(hChild As control)
   
   SetSelected(hChild)
   EnsureVisible
   
-END
+End
 
-PUBLIC SUB Clear()
+Public Sub Clear()
   
-  DIM hChild AS Control
+  Dim hChild As Control
   
-  FOR EACH hChild IN $hScrollView.Children
+  For Each hChild In $hScrollView.Children
     hChild.Delete
-  NEXT
-  $hSelected = NULL
-  WAIT
+  Next
+  $hSelected = Null
+  Wait
   
-END
+End
 
 
-PRIVATE FUNCTION Background_Read() AS Integer
+Private Function Background_Read() As Integer
 
-  RETURN $hScrollView.Background  
+  Return $hScrollView.Background  
 
-END
+End
 
-PRIVATE SUB Background_Write(Value AS Integer)
+Private Sub Background_Write(Value As Integer)
 
-  IF Value = Color.Default THEN Value = Color.TextBackground
+  If Value = Color.Default Then Value = Color.TextBackground
   $hScrollView.Background = Value
 
-END
+End
 
-PUBLIC SUB {Lock}()
+Public Sub {Lock}()
   
-  INC $iLock
-  ME.Arrangement = Arrange.None
+  Inc $iLock
+  Me.Arrangement = Arrange.None
   
-END
+End
 
 
-PUBLIC SUB Unlock()
+Public Sub Unlock()
   
-  IF $iLock <= 0 THEN RETURN
-  DEC $iLock
-  IF $iLock = 0 THEN ME.Arrangement = Arrange.Vertical
+  If $iLock <= 0 Then Return
+  Dec $iLock
+  If $iLock = 0 Then Me.Arrangement = Arrange.Vertical
   
-END
+End

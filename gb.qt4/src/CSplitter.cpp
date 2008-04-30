@@ -66,7 +66,7 @@ BEGIN_METHOD(CHSPLIT_new, GB_OBJECT parent)
 
   CWIDGET_new(wid, (void *)_object);
 
-  THIS->widget.container = wid;
+  THIS->container = wid;
 
 END_METHOD
 
@@ -77,7 +77,7 @@ BEGIN_METHOD(CVSPLIT_new, GB_OBJECT parent)
 
   CWIDGET_new(wid, (void *)_object);
 
-  THIS->widget.container = wid;
+  THIS->container = wid;
 
   wid->setOrientation(Qt::Vertical);
   wid->setOpaqueResize(true);
@@ -263,6 +263,7 @@ MySplitter::MySplitter(QWidget *parent) :
 {
   _event = false;
   installEventFilter(this);
+  //setAttribute(Qt::WA_NoSystemBackground, true);
 }
 
 static void send_event(QT_WIDGET *ob)

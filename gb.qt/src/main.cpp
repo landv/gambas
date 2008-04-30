@@ -396,12 +396,12 @@ static void release_grab()
 	
 	if (_mouseGrabber) 
 	{
-		qDebug("releaseMouse");
+		//qDebug("releaseMouse");
 		_mouseGrabber->releaseMouse();
 	}
 	if (_keyboardGrabber)
 	{
-		qDebug("releaseKeyboard");
+		//qDebug("releaseKeyboard");
 		_keyboardGrabber->releaseKeyboard();
 	}
 	
@@ -420,14 +420,14 @@ static void unrelease_grab()
 {
 	if (_mouseGrabber)
 	{
-		qDebug("grabMouse");
+		//qDebug("grabMouse");
 		_mouseGrabber->grabMouse();
 		_mouseGrabber = 0;
 	}
 	
 	if (_keyboardGrabber)
 	{
-		qDebug("grabKeyboard");
+		//qDebug("grabKeyboard");
 		_keyboardGrabber->grabKeyboard();
 		_keyboardGrabber = 0;
 	}
@@ -454,7 +454,7 @@ void MAIN_update_scale(void)
 {
 	QFontMetrics fm(qApp->desktop()->font());
   MAIN_scale = 1 + fm.height() / 3;
-  qDebug("%s %d %d -> %d", qApp->font().family().latin1(), qApp->font().pointSize(), fm.height(), MAIN_scale);
+  //qDebug("%s %d %d -> %d", qApp->font().family().latin1(), qApp->font().pointSize(), fm.height(), MAIN_scale);
 }
 
 static void QT_InitEventLoop(void)

@@ -1,104 +1,104 @@
 ' Gambas class file
 
-PRIVATE $iColor AS Integer
-PRIVATE $iOldColor AS Integer
+Private $iColor As Integer
+Private $iOldColor As Integer
 
 'PRIVATE $sSystem AS String
 
-PRIVATE $iHue AS Integer
-PRIVATE $iSat AS Integer
-PRIVATE $iVal AS Integer
+Private $iHue As Integer
+Private $iSat As Integer
+Private $iVal As Integer
 
-PRIVATE $bLock AS Boolean
+Private $bLock As Boolean
 
-PRIVATE $hImage AS Image
-PRIVATE $hMap AS Picture
-PRIVATE $hCross AS Picture
-PRIVATE $bHide AS Boolean
-PRIVATE $X AS Integer
-PRIVATE $Y AS Integer
+Private $hImage As Image
+Private $hMap As Picture
+Private $hCross As Picture
+Private $bHide As Boolean
+Private $X As Integer
+Private $Y As Integer
 
-PRIVATE $iSize AS Integer
-PRIVATE $I AS Integer
-PRIVATE $J AS Integer
+Private $iSize As Integer
+Private $I As Integer
+Private $J As Integer
 
-PRIVATE CONST NCOLH AS Integer = 11
-STATIC PRIVATE $aHue AS Integer[] = [360, 330, 300, 285, 270, 240, 210, 195, 180, 165, 150, 120, 90, 75, 60, 45, 30]
+Private Const NCOLH As Integer = 11
+Static Private $aHue As Integer[] = [0, 330, 300, 285, 270, 240, 210, 195, 180, 165, 150, 120, 90, 75, 60, 45, 30]
 
-EVENT Change()
-EVENT Confirm()
+Event Change()
+Event Confirm()
 
-PUBLIC SUB _new()
+Public Sub _new()
 
   $hImage = Image.Load("img/colormap.png")
   $hCross = Picture["img/cross.png"]
 
-END
+End
 
-PRIVATE SUB MoveCross()
+Private Sub MoveCross()
 
-  $bHide = TRUE
+  $bHide = True
   dwgColorMap.Refresh($X - 7, $Y - 7, 16, 16)
-  $bHide = FALSE
+  $bHide = False
   $X = (359 - $iHue) * dwgColorMap.ClientW / 360
   $Y = (255 - $iSat) * dwgColorMap.ClientH / 256
   dwgColorMap.Refresh($X - 7, $Y - 7, 16, 16)
 
-END
+End
 
 
-PRIVATE SUB RefreshColor(OPTIONAL bRGB AS Boolean = TRUE, OPTIONAL bHSV AS Boolean = TRUE)
+Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boolean = True)
 
-  DIM X AS Integer
-  DIM Y AS Integer
+  Dim X As Integer
+  Dim Y As Integer
 
-  $bLock = TRUE
+  $bLock = True
 
-  IF bHSV THEN
+  If bHSV Then
     $iHue = Color[$iColor].Hue
     $iSat = Color[$iColor].Saturation
     $iVal = Color[$iColor].Value
     txtH.Value = $iHue
     txtS.Value = $iSat
     txtV.Value = $iVal
-  ELSE
+  Else
     $iHue = txtH.Value
     $iSat = txtS.Value
     $iVal = txtV.Value
-  ENDIF
+  Endif
 
-  IF bRGB THEN
+  If bRGB Then
     txtR.Value = Color[$iColor].Red
     txtG.Value = Color[$iColor].Green
     txtB.Value = Color[$iColor].Blue
     txtA.Value = Color[$iColor].Alpha
-  ENDIF
+  Endif
 
   MoveCross
 
   sldValue.Value = 255 - $iVal
-  IF panAlpha.Visible THEN
+  If panAlpha.Visible Then
     sldAlpha.Value = txtA.Value
     txtHexa.Text = Hex$($iColor, 8)
-  ELSE 
+  Else 
     txtHexa.Text = Hex$($iColor, 6)
-  ENDIF
+  Endif
 
   'panColor.Background = $iColor
   panColor.Refresh
 
-  $bLock = FALSE
+  $bLock = False
 
-  IF $iColor <> $iOldColor THEN
+  If $iColor <> $iOldColor Then
     $iOldColor = $iColor
-    RAISE Change
-  ENDIF
+    Raise Change
+  Endif
 
-END
+End
 
 
 
-PUBLIC SUB SetColor(iColor AS Integer)
+Public Sub SetColor(iColor As Integer)
 
   'IF IsNull(Val(sColor)) THEN
   '  $sSystem = sColor
@@ -110,99 +110,99 @@ PUBLIC SUB SetColor(iColor AS Integer)
   'ENDIF
   RefreshColor
 
-END
+End
 
 
-PUBLIC FUNCTION GetColor() AS Integer
+Public Function GetColor() As Integer
 
-  TRY sldValue.SetFocus
+  Try sldValue.SetFocus
   'IF tabColor.Index = 0 THEN
-    RETURN $iColor
+    Return $iColor
   'ELSE
   '  RETURN $sSystem
   'ENDIF
 
-END
+End
 
 
 
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  DIM H AS Integer
+  Dim H As Integer
 
   $iSize = Max(8, Min(Min((dwgColor.W - 1) / $aHue.Count, (boxColor.H - 1) / 2 / NCOLH), 32))
   H = $iSize * NCOLH + 7
   dwgColor.H = H
 
   'PRINT "Form_Resize"
-  $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height, TRUE).Picture
+  $hMap = $hImage.Stretch(dwgColorMap.Width, dwgColorMap.Height, True).Picture
   MoveCross
 
-END
+End
 
 
-PUBLIC SUB txtRGB_Change()
+Public Sub txtRGB_Change()
 
-  IF $bLock THEN RETURN
+  If $bLock Then Return
   $iColor = Color.RGB(txtR.Value, txtG.Value, txtB.Value, txtA.Value)
-  RefreshColor(FALSE, TRUE)
+  RefreshColor(False, True)
 
-END
+End
 
-PUBLIC SUB txtHSV_Change()
+Public Sub txtHSV_Change()
 
-  IF $bLock THEN RETURN
+  If $bLock Then Return
   $iColor = Color.HSV(txtH.Value, txtS.Value, txtV.Value, txtA.Value)
-  RefreshColor(TRUE, FALSE)
+  RefreshColor(True, False)
 
-END
+End
 
-PUBLIC SUB dwgColorMap_Draw()
+Public Sub dwgColorMap_Draw()
 
-  IF NOT $hMap THEN RETURN
+  If Not $hMap Then Return
 
   Draw.Picture($hMap, 0, 0)
-  IF $bHide THEN RETURN
+  If $bHide Then Return
   Draw.Picture($hCross, $X - 7, $Y - 7)
 
-END
+End
 
-PUBLIC SUB dwgColorMap_MouseMove()
+Public Sub dwgColorMap_MouseMove()
 
-  $bLock = TRUE
-  txtH.Value = 359 - (Mouse.ScreenX - LAST.ScreenX) * 360 / dwgColorMap.ClientW
-  txtS.Value = 255 - (Mouse.ScreenY - LAST.ScreenY) * 256 / dwgColorMap.ClientH
-  $bLock = FALSE
+  $bLock = True
+  txtH.Value = 359 - (Mouse.ScreenX - Last.ScreenX) * 360 / dwgColorMap.ClientW
+  txtS.Value = 255 - (Mouse.ScreenY - Last.ScreenY) * 256 / dwgColorMap.ClientH
+  $bLock = False
   txtHSV_Change
 
-END
+End
 
-PUBLIC SUB sldValue_Change()
+Public Sub sldValue_Change()
 
   txtV.Value = 255 - sldValue.Value
 
-END
+End
 
-PUBLIC SUB dwgColorMap_DblClick()
+Public Sub dwgColorMap_DblClick()
 
-  RAISE Confirm
+  Raise Confirm
 
-END
+End
 
-PUBLIC SUB dwgColorMap_MouseDown()
+Public Sub dwgColorMap_MouseDown()
 
   dwgColorMap_MouseMove
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   'PRINT "Form_Open"
   RefreshColor
   txtHexa.SetFocus
 
-END
+End
 
 
 ' PUBLIC SUB lstSystem_DblClick()
@@ -223,39 +223,39 @@ END
 ' 
 ' END
 
-PUBLIC SUB panColor_DblClick()
+Public Sub panColor_DblClick()
 
-  RAISE Confirm
+  Raise Confirm
 
-END
+End
 
-PRIVATE FUNCTION CalcColor(I AS Integer, J AS Integer) AS Integer
+Private Function CalcColor(I As Integer, J As Integer) As Integer
 
-  DIM iCol AS Integer
-  DIM iAlpha AS Integer
+  Dim iCol As Integer
+  Dim iAlpha As Integer
   
   iAlpha = txtA.Value
 
-  SELECT CASE J
-    CASE 0
+  Select Case J
+    Case 0
       iCol = Color.HSV(0, 0, Min(255, 256 - Int(256 * I / $aHue.Max)), iAlpha)
-    CASE 1 TO 4
+    Case 1 To 4
       iCol = Color.HSV($aHue[I], 255, Min(255, 64 * J), iAlpha)
-    CASE ELSE
+    Case Else
       iCol = Color.HSV($aHue[I], 192 - (J - 5) * 32, 255, iAlpha)
-  END SELECT
+  End Select
 
-  RETURN iCol
+  Return iCol
 
-END
+End
 
-PUBLIC SUB dwgColor_Draw()
+Public Sub dwgColor_Draw()
 
-  DIM W AS Integer
-  DIM H AS Integer
-  DIM I AS Integer
-  DIM J AS Integer
-  DIM Y AS Integer
+  Dim W As Integer
+  Dim H As Integer
+  Dim I As Integer
+  Dim J As Integer
+  Dim Y As Integer
 
   W = $iSize
   H = $iSize
@@ -264,126 +264,126 @@ PUBLIC SUB dwgColor_Draw()
   Draw.LineStyle = Line.Solid
   Draw.Foreground = Color.DarkGray
 
-  FOR J = 0 TO NCOLH - 1
-    FOR I = 0 TO $aHue.Max
+  For J = 0 To NCOLH - 1
+    For I = 0 To $aHue.Max
       Draw.FillColor = CalcColor(I, J)
       Draw.Rect(I * W, Y, W + 1, H + 1)
-    NEXT
+    Next
     Y += H
-    IF J = 0 OR J = 3 OR J = 4 THEN
+    If J = 0 Or J = 3 Or J = 4 Then
       Y += 2
-    ENDIF
-  NEXT
+    Endif
+  Next
 
-END
+End
 
-PUBLIC SUB dwgColor_MouseDown()
+Public Sub dwgColor_MouseDown()
 
-  DIM Y AS Integer
-  DIM J AS Integer
+  Dim Y As Integer
+  Dim J As Integer
 
   $I = Mouse.X / $iSize
 
   Y = Max(0, Mouse.Y - 1)
-  FOR EACH J IN [1, 4, 5]
-    IF Y >= (J * $iSize) THEN
+  For Each J In [1, 4, 5]
+    If Y >= (J * $iSize) Then
       Y -= 2
-    ENDIF
-  NEXT
+    Endif
+  Next
   $J = Y / $iSize
 
-  IF $I < 0 OR IF $I > $aHue.Max OR IF $J < 0 OR IF $J >= NCOLH THEN RETURN
+  If $I < 0 Or If $I > $aHue.Max Or If $J < 0 Or If $J >= NCOLH Then Return
 
   $iColor = CalcColor($I, $J)
   RefreshColor
 
-END
+End
 
-PUBLIC SUB dwgColor_MouseMove()
+Public Sub dwgColor_MouseMove()
 
   dwgColor_MouseDown
 
-END
+End
 
 
-PUBLIC SUB dwgColor_DblClick()
+Public Sub dwgColor_DblClick()
 
-  IF $I < 0 OR IF $I > $aHue.Max OR IF $J < 0 OR IF $J >= NCOLH THEN RETURN
+  If $I < 0 Or If $I > $aHue.Max Or If $J < 0 Or If $J >= NCOLH Then Return
 
-  RAISE Confirm
+  Raise Confirm
 
-END
+End
 
-PUBLIC SUB panColor_Draw()
+Public Sub panColor_Draw()
 
-  DIM X, Y AS Integer
-  DIM C AS Integer
+  Dim X, Y As Integer
+  Dim C As Integer
 
   Draw.FillStyle = Fill.Solid
   Draw.LineStyle = Line.None
   
-  IF $iColor AND &HFF000000 THEN 
+  If $iColor And &HFF000000 Then 
   
-    FOR Y = 0 TO panColor.H STEP 8
-      FOR X = 0 TO panColor.W STEP 8
+    For Y = 0 To panColor.H Step 8
+      For X = 0 To panColor.W Step 8
       
-        IF ((X + Y) \ 8) AND 1 THEN 
+        If ((X + Y) \ 8) And 1 Then 
           C = Color.Blend($iColor, &H808080)
-        ELSE 
+        Else 
           C = Color.Blend($iColor, &HC0C0C0)
-        ENDIF
+        Endif
       
         Draw.FillColor = C
         Draw.Rect(X, Y, 8, 8)
         
-      NEXT 
-    NEXT
+      Next 
+    Next
   
-  ELSE 
+  Else 
     Draw.FillColor = $iColor
     Draw.Rect(0, 0, panColor.W, panColor.H)
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB GetAlpha() AS Boolean
+Public Sub GetAlpha() As Boolean
   
-  RETURN panAlpha.Visible
+  Return panAlpha.Visible
   
-END
+End
 
-PUBLIC SUB SetAlpha(Value AS Boolean)
+Public Sub SetAlpha(Value As Boolean)
   
   panAlpha.Visible = Value
-  IF NOT Value THEN txtA.Value = 0
+  If Not Value Then txtA.Value = 0
   
-END
+End
 
-PUBLIC SUB txtHexa_Change()
+Public Sub txtHexa_Change()
 
-  DIM iColor AS Integer
+  Dim iColor As Integer
 
-  IF $bLock THEN RETURN
-  IF panAlpha.Visible THEN 
-    IF txtHexa.Length <> 8 THEN RETURN 
-  ELSE 
-    IF txtHexa.Length <> 6 THEN RETURN 
-  ENDIF
+  If $bLock Then Return
+  If panAlpha.Visible Then 
+    If txtHexa.Length <> 8 Then Return 
+  Else 
+    If txtHexa.Length <> 6 Then Return 
+  Endif
   iColor = Val("&H" & txtHexa.Text & "&")
-  IF iColor = $iColor THEN RETURN
+  If iColor = $iColor Then Return
   $iColor = iColor
-  RefreshColor(TRUE, TRUE)
+  RefreshColor(True, True)
 
-END
+End
 
-PUBLIC SUB sldAlpha_Change()
+Public Sub sldAlpha_Change()
 
   txtA.Value = sldAlpha.Value
 
-END
+End
 
-PUBLIC SUB panInfoColor_Arrange()
+Public Sub panInfoColor_Arrange()
 
   panColor.H = Min(panInfoColor.W, panInfoColor.H - txtHexa.Y - txtHexa.H - Desktop.Scale)
 
-END
+End

@@ -1,24 +1,24 @@
 ' Gambas class file
 
-PUBLIC DirView AS DirView 
-PUBLIC FileView AS FileView
+Public DirView As DirView 
+Public FileView As FileView
 
-EVENT Change
-EVENT {Select}
-EVENT GetIcon(Path AS String)
-EVENT ShowHidden
+Event Change
+Event {Select}
+Event GetIcon(Path As String)
+Event ShowHidden
 'EVENT ShowHiddenChange
 
-PRIVATE $bView AS Boolean
-PRIVATE $sActivate AS String
-PRIVATE $aFilter AS String[]
-PRIVATE $bFile AS Boolean
-PRIVATE $aBookmark AS Array
-PRIVATE $iMaxWidth AS Integer
+Private $bView As Boolean
+Private $sActivate As String
+Private $aFilter As String[]
+Private $bFile As Boolean
+Private $aBookmark As Array
+Private $iMaxWidth As Integer
 
-CLASS Settings
+Class Settings
 
-PUBLIC SUB _new(OPTIONAL bFile AS Boolean)
+Public Sub _new(Optional bFile As Boolean)
 
   DirView = dvwChoose
   FileView = fvwChoose
@@ -26,281 +26,281 @@ PUBLIC SUB _new(OPTIONAL bFile AS Boolean)
   SetRoot()  
 
   $bFile = bFile
-  IF NOT bFile THEN RETURN
+  If Not bFile Then Return
 
   btnView_Click
-  btnView.Visible = FALSE
-  txtFile.Visible = TRUE
-  cmbFilter.Visible = TRUE
-  SetMulti(FALSE)
-  SetFont(ME.Font)
+  btnView.Visible = False
+  txtFile.Visible = True
+  cmbFilter.Visible = True
+  SetMulti(False)
+  SetFont(Me.Font)
   SetFilter()
   
-END
+End
 
 
-PUBLIC SUB cmbDir_Change()
+Public Sub cmbDir_Change()
 
   $sActivate = cmbDir.Text
   dvwChoose.Current = cmbDir.Text
 
-END
+End
 
-PUBLIC SUB cmbDir_Click()
+Public Sub cmbDir_Click()
 
   'cmbDir_Activate
 
-END
+End
 
 
-PUBLIC SUB dvwChoose_Click()
+Public Sub dvwChoose_Click()
 
-  IF fvwChoose.Visible THEN fvwChoose.Dir = dvwChoose.Current
+  If fvwChoose.Visible Then fvwChoose.Dir = dvwChoose.Current
 
   cmbDir.Text = dvwChoose.Current
 
-  IF $sActivate THEN
-    IF $sActivate = dvwChoose.Current THEN
-      IF cmbDir.Find($sActivate) = 0 THEN cmbDir.Add($sActivate)
-    ENDIF
+  If $sActivate Then
+    If $sActivate = dvwChoose.Current Then
+      If cmbDir.Find($sActivate) = 0 Then cmbDir.Add($sActivate)
+    Endif
     $sActivate = ""
-  ENDIF
+  Endif
 
-  IF txtFile.Visible AND IF txtFile.ReadOnly THEN
+  If txtFile.Visible And If txtFile.ReadOnly Then
     txtFile.Text = ""
-  ENDIF
+  Endif
 
-  RAISE Change
+  Raise Change
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   'DirView = dvwChoose
   'FileView = fvwChoose
 
   cmbDir.Text = dvwChoose.Current
-  IF $bFile THEN txtFile.SetFocus
-  RAISE Change
+  If $bFile Then txtFile.SetFocus
+  Raise Change
 
-END
+End
 
-PUBLIC SUB btnView_Click()
+Public Sub btnView_Click()
 
-  INC $bView
+  Inc $bView
   fvwChoose.Visible = $bView
   btnDetailed.Visible = $bView
-  IF $bView THEN
+  If $bView Then
     fvwChoose.Dir = dvwChoose.Current
     splChoose.Layout = "10,20"
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB btnDetailed_Click()
+Public Sub btnDetailed_Click()
 
-  INC fvwChoose.ShowDetailed
-  IF fvwChoose.ShowDetailed THEN
+  Inc fvwChoose.ShowDetailed
+  If fvwChoose.ShowDetailed Then
     btnDetailed.Picture = Picture["icon:/small/view-icon"]
-  ELSE
+  Else
     btnDetailed.Picture = Picture["icon:/small/view-detail"]
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB btnParent_Click()
+Public Sub btnParent_Click()
 
   dvwChoose.Current = File.Dir(dvwChoose.Current)
 
-END
+End
 
-PUBLIC SUB SetDir(sDir AS String)
+Public Sub SetDir(sDir As String)
 
-  IF panBookmark.Visible THEN FindBestBookmark(sDir)
+  If panBookmark.Visible Then FindBestBookmark(sDir)
     
   dvwChoose.Current = sDir
 
-END
+End
 
-PUBLIC FUNCTION GetDir() AS String
+Public Function GetDir() As String
 
-  RETURN dvwChoose.Current
+  Return dvwChoose.Current
 
-END
+End
 
-PUBLIC FUNCTION GetShowDetailed() AS Boolean
+Public Function GetShowDetailed() As Boolean
 
-  RETURN fvwChoose.ShowDetailed
+  Return fvwChoose.ShowDetailed
 
-END
+End
 
-PUBLIC SUB SetShowDetailed(bShowDetailed AS Boolean)
+Public Sub SetShowDetailed(bShowDetailed As Boolean)
 
-  IF fvwChoose.ShowDetailed <> bShowDetailed THEN btnDetailed_Click
+  If fvwChoose.ShowDetailed <> bShowDetailed Then btnDetailed_Click
 
-END
+End
 
-PUBLIC FUNCTION GetFileVisible() AS Boolean
+Public Function GetFileVisible() As Boolean
 
-  RETURN fvwChoose.Visible
+  Return fvwChoose.Visible
 
-END
+End
 
-PUBLIC SUB SetFileVisible(bVisible AS Boolean)
+Public Sub SetFileVisible(bVisible As Boolean)
 
-  IF fvwChoose.Visible <> bVisible THEN btnView_Click
+  If fvwChoose.Visible <> bVisible Then btnView_Click
 
-END
+End
 
-PUBLIC FUNCTION GetShowHidden() AS Boolean
+Public Function GetShowHidden() As Boolean
 
-  RETURN fvwChoose.ShowHidden
+  Return fvwChoose.ShowHidden
 
-END
+End
 
 
-PUBLIC SUB btnShowHidden_Click()
+Public Sub btnShowHidden_Click()
 
   fvwChoose.ShowHidden = btnShowHidden.Value
   dvwChoose.ShowHidden = fvwChoose.ShowHidden
-  RAISE ShowHidden
+  Raise ShowHidden
 '   IF fvwChoose.ShowHidden THEN
 '     btnShowHidden.Picture = Picture["img/16/hide-hidden.png"]
 '   ELSE
 '     btnShowHidden.Picture = Picture["img/16/show-hidden.png"]
 '   ENDIF
 
-END
+End
 
 
-PUBLIC SUB SetShowHidden(bShowHidden AS Boolean)
+Public Sub SetShowHidden(bShowHidden As Boolean)
 
   btnShowHidden.Value = bShowHidden
 
   'IF fvwChoose.ShowHidden <> bShowHidden THEN btnShowHidden_Click
 
-END
+End
 
-PUBLIC FUNCTION GetMulti() AS Boolean
+Public Function GetMulti() As Boolean
 
-  RETURN fvwChoose.Mode = Select.Multiple
+  Return fvwChoose.Mode = Select.Multiple
 
-END
+End
 
-PUBLIC SUB SetMulti(bMulti AS Boolean)
+Public Sub SetMulti(bMulti As Boolean)
 
   fvwChoose.Mode = If(bMulti, Select.Multiple, Select.Single)
 
-END
+End
 
-PUBLIC FUNCTION GetPath() AS String
+Public Function GetPath() As String
 
-  IF GetMulti() THEN RETURN
+  If GetMulti() Then Return
 
-  IF txtFile.Text THEN RETURN dvwChoose.Current &/ txtFile.Text
+  If txtFile.Text Then Return dvwChoose.Current &/ txtFile.Text
 
-END
+End
 
-PUBLIC SUB SetPath(sPath AS String)
+Public Sub SetPath(sPath As String)
   
-  IF txtFile.ReadOnly THEN
+  If txtFile.ReadOnly Then
     SetDir(sPath)
-  ELSE
+  Else
     SetDir(File.Dir(sPath))
-  ENDIF
+  Endif
 
-  IF GetMulti() THEN RETURN 
+  If GetMulti() Then Return 
   
   'DEBUG dvwChoose.Current;; File.Dir(sPath)
   'IF dvwChoose.Current = File.Dir(sPath) THEN
   fvwChoose.Current = File.Name(sPath)
-  IF txtFile.ReadOnly THEN
+  If txtFile.ReadOnly Then
     txtFile.Text = fvwChoose.Current
-  ELSE 
+  Else 
     txtFile.Text = File.Name(sPath)
-  ENDIF
+  Endif
   'ENDIF
   
-END
+End
 
 
-PUBLIC FUNCTION GetPaths() AS String[]
+Public Function GetPaths() As String[]
 
-  DIM aPath AS NEW String[]
-  DIM sFile AS String
+  Dim aPath As New String[]
+  Dim sFile As String
 
-  IF GetMulti() THEN
+  If GetMulti() Then
 
-    FOR EACH sFile IN fvwChoose.Selection
+    For Each sFile In fvwChoose.Selection
       aPath.Add(dvwChoose.Current &/ sFile)
-    NEXT
+    Next
 
-  ENDIF
+  Endif
 
-  RETURN aPath
+  Return aPath
 
-END
+End
 
 
-PUBLIC SUB fvwChoose_Select()
+Public Sub fvwChoose_Select()
 
   'IF txtFile.Visible THEN 
   txtFile.Text = fvwChoose.Current
-  IF $bFile THEN RAISE Change
+  If $bFile Then Raise Change
   
-END
+End
 
-PUBLIC SUB SetShowDirectory(bShow AS Boolean)
+Public Sub SetShowDirectory(bShow As Boolean)
 
   fvwChoose.ShowDirectory = bShow
 
-END
+End
 
-PUBLIC FUNCTION GetShowDirectory() AS Boolean
+Public Function GetShowDirectory() As Boolean
 
-  RETURN fvwChoose.ShowDirectory
+  Return fvwChoose.ShowDirectory
 
-END
+End
 
 
-PUBLIC SUB SetFont(hFont AS Font)
+Public Sub SetFont(hFont As Font)
 
   'fvwChoose.Font = hFont
  ' DEC fvwChoose.Font.Grade
 
-END
+End
 
-PUBLIC SUB fvwChoose_Activate()
+Public Sub fvwChoose_Activate()
 
-  IF IsDir(dvwChoose.Current &/ fvwChoose.Current) THEN
+  If IsDir(dvwChoose.Current &/ fvwChoose.Current) Then
     dvwChoose.Current &/= fvwChoose.Current
-  ELSE
-    RAISE {Select}
-  ENDIF
+  Else
+    Raise {Select}
+  Endif
 
-END
+End
 
-PUBLIC SUB SetFilter(OPTIONAL aFilter AS String[])
+Public Sub SetFilter(Optional aFilter As String[])
 
-  DIM iInd AS Integer
+  Dim iInd As Integer
 
   cmbFilter.Clear
-  $aFilter = NEW String[]
+  $aFilter = New String[]
 
-  IF aFilter THEN
+  If aFilter Then
 
-    IF aFilter.Count AND 1 THEN
+    If aFilter.Count And 1 Then
       aFilter.Remove(aFilter.Max)
-    ENDIF
+    Endif
 
-    FOR iInd = 0 TO aFilter.Max STEP 2
-      IF aFilter[iInd] = "*" THEN CONTINUE 
+    For iInd = 0 To aFilter.Max Step 2
+      If aFilter[iInd] = "*" Then Continue 
       $aFilter.Add(aFilter[iInd])
       cmbFilter.Add(aFilter[iInd + 1] & " (" & aFilter[iInd] & ")")
-    NEXT
+    Next
 
-  ENDIF
+  Endif
 
   $aFilter.Add("*")
   cmbFilter.Add(("All files (*)"))
@@ -308,220 +308,220 @@ PUBLIC SUB SetFilter(OPTIONAL aFilter AS String[])
   cmbFilter.Index = 0
   cmbFilter.Visible = cmbFilter.Count > 1
 
-END
+End
 
-PUBLIC SUB SetFilterIndex(iInd AS Integer)
+Public Sub SetFilterIndex(iInd As Integer)
   
-  IF iInd < 0 THEN iInd = cmbFilter.Count - 1
-  TRY cmbFilter.Index = iInd
+  If iInd < 0 Then iInd = cmbFilter.Count - 1
+  Try cmbFilter.Index = iInd
   
-END
+End
 
-PUBLIC SUB GetFilterIndex() AS Integer
+Public Sub GetFilterIndex() As Integer
   
-  RETURN cmbFilter.Index
+  Return cmbFilter.Index
   
-END
+End
 
 
 
-PUBLIC FUNCTION GetFilter() AS String[]
+Public Function GetFilter() As String[]
 
-  DIM iInd AS Integer
-  DIM aFilter AS NEW String[]
+  Dim iInd As Integer
+  Dim aFilter As New String[]
 
-  FOR iInd = 0 TO $aFilter.Max
+  For iInd = 0 To $aFilter.Max
     aFilter.Add($aFilter(iInd))
     aFilter.Add(cmbFilter[iInd].Text)
-  NEXT
+  Next
 
-  RETURN aFilter
+  Return aFilter
 
-END
-
-
-PUBLIC SUB cmbFilter_Click()
-
-  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";,", Chr$(34), TRUE)
-
-END
-
-PUBLIC SUB dvwChoose_Activate()
-
-  IF NOT $bFile THEN RAISE {Select}
-
-END
-
-PUBLIC SUB fvwChoose_Icon(Path AS String)
-
-  RAISE GetIcon(Path)    
-
-END
-
-PUBLIC SUB dvwChoose_Icon(Path AS String)
-
-  RAISE GetIcon(Path)    
-
-END
+End
 
 
-PUBLIC SUB SetReadOnly(bReadOnly AS Boolean)
+Public Sub cmbFilter_Click()
+
+  fvwChoose.Filter = Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True)
+
+End
+
+Public Sub dvwChoose_Activate()
+
+  If Not $bFile Then Raise {Select}
+
+End
+
+Public Sub fvwChoose_Icon(Path As String)
+
+  Raise GetIcon(Path)    
+
+End
+
+Public Sub dvwChoose_Icon(Path As String)
+
+  Raise GetIcon(Path)    
+
+End
+
+
+Public Sub SetReadOnly(bReadOnly As Boolean)
   
-  IF NOT $bFile THEN RETURN 
+  If Not $bFile Then Return 
   txtFile.ReadOnly = bReadOnly
   
-END
+End
 
-PUBLIC SUB GetReadOnly() AS Boolean
+Public Sub GetReadOnly() As Boolean
   
-  IF NOT $bFile THEN RETURN
-  RETURN txtFile.ReadOnly
+  If Not $bFile Then Return
+  Return txtFile.ReadOnly
   
-END
+End
 
-PUBLIC SUB SetPicture(hPict AS Picture)
+Public Sub SetPicture(hPict As Picture)
 
   dvwChoose.Picture = hPict
   
-END 
+End 
 
-PUBLIC SUB GetPicture() AS Picture
+Public Sub GetPicture() As Picture
   
-  RETURN dvwChoose.Picture
+  Return dvwChoose.Picture
   
-END
+End
 
-PUBLIC SUB txtFile_GotFocus()
+Public Sub txtFile_GotFocus()
 
-  IF NOT txtFile.ReadOnly THEN txtFile.SelectAll
+  If Not txtFile.ReadOnly Then txtFile.SelectAll
 
-END
+End
 
-PRIVATE SUB GetRealLink(sLink AS String) AS String
+Private Sub GetRealLink(sLink As String) As String
   
-  IF Left(sLink) <> "/" THEN sLink = Mid$(sLink, 2)
-  RETURN sLink  
+  If Left(sLink) <> "/" Then sLink = Mid$(sLink, 2)
+  Return sLink  
   
-END
+End
 
 
-PUBLIC SUB AddBookmark(sLink AS String, OPTIONAL sName AS String, sIcon AS String)
+Public Sub AddBookmark(sLink As String, Optional sName As String, sIcon As String)
 
-  DIM hPanel AS HBox
-  DIM hIcon AS PictureBox
-  DIM hVBox AS VBox
-  DIM hText AS Label
-  DIM sTooltip AS String
+  Dim hPanel As HBox
+  Dim hIcon As PictureBox
+  Dim hVBox As VBox
+  Dim hText As Label
+  Dim sTooltip As String
   
-  IF NOT sName THEN sName = File.Name(sLink)
-  IF NOT sIcon THEN sIcon = "icon:/small/bookmark"
+  If Not sName Then sName = File.Name(sLink)
+  If Not sIcon Then sIcon = "icon:/small/bookmark"
 
   sTooltip = GetRealLink(sLink)
   
-  hPanel = NEW HBox(lstBookmark)
+  hPanel = New HBox(lstBookmark)
   hPanel.Padding = 2
   hPanel.Spacing = 6
   hPanel.Tag = sLink
   hPanel.ToolTip = sTooltip
   hPanel.Height = hPanel.Font.Height() * 2 + 8
 
-  hIcon = NEW PictureBox(hPanel)
+  hIcon = New PictureBox(hPanel)
   hIcon.Picture = Picture[sIcon]
   hIcon.Alignment = Align.Center
   hIcon.Resize(20, 16)
   hIcon.ToolTip = sTooltip
 
-  hVBox = NEW VBox(hPanel)
-  hVBox.Expand = TRUE
+  hVBox = New VBox(hPanel)
+  hVBox.Expand = True
 
-  hText = NEW Label(hVBox)
+  hText = New Label(hVBox)
   'hText.Expand = TRUE
-  hText.AutoResize = TRUE
-  hText.Expand = TRUE
+  hText.AutoResize = True
+  hText.Expand = True
   'hText.Alignment = Align.TopNormal
   hText.Text = sName  
   hText.ToolTip = sTooltip
   'hText.Background = Color.Yellow
-  hText.Font.Bold = TRUE
+  hText.Font.Bold = True
   'hText.Font.Grade = 3
 
   $iMaxWidth = Max($iMaxWidth, hText.Font.Width(sName))
 
-  IF Left(sLink) <> "$" THEN
-    hText = NEW Label(hVBox)
+  If Left(sLink) <> "$" Then
+    hText = New Label(hVBox)
     'hText.Expand = TRUE
-    hText.AutoResize = TRUE
-    hText.Expand = TRUE
+    hText.AutoResize = True
+    hText.Expand = True
     'hText.Alignment = Align.TopNormal
     hText.Text = Replace(sTooltip, System.User.Home, "~")
     'hText.Font.Grade = -1
 
     $iMaxWidth = Max($iMaxWidth, hText.Font.Width(hText.Text))
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB RemoveBookmark(sLink AS String)
+Public Sub RemoveBookmark(sLink As String)
   
-  DIM hPanel AS Container
+  Dim hPanel As Container
   
-  FOR EACH hPanel IN lstBookmark.Children
-    IF hPanel.Tag THEN hPanel.Delete
-  NEXT
+  For Each hPanel In lstBookmark.Children
+    If hPanel.Tag Then hPanel.Delete
+  Next
   
-END
+End
 
 
-PRIVATE SUB LoadBookmark()
+Private Sub LoadBookmark()
   
-  DIM hSettings AS Settings 
-  DIM iInd AS Integer
-  DIM aBookmark AS String[]
+  Dim hSettings As Settings 
+  Dim iInd As Integer
+  Dim aBookmark As String[]
 
-  IF NOT Components["gb.settings"] THEN RETURN
+  If Not Components["gb.settings"] Then Return
   
-  hSettings = NEW Settings("gb.form")
+  hSettings = New Settings("gb.form")
   
-  FOR iInd = 1 TO hSettings["/Bookmarks/Count", 0]
+  For iInd = 1 To hSettings["/Bookmarks/Count", 0]
     aBookmark = hSettings["/Bookmarks/Bookmark" & CStr(iInd)]
     AddBookmark(aBookmark[0], aBookmark[1])
-  NEXT
+  Next
 
-END
+End
 
 
-PRIVATE SUB SaveBookmark()
+Private Sub SaveBookmark()
   
-  DIM hSettings AS Settings 
-  DIM iInd AS Integer  
-  DIM hPanel AS Container
+  Dim hSettings As Settings 
+  Dim iInd As Integer  
+  Dim hPanel As Container
   
-  IF NOT Components["gb.settings"] THEN RETURN
+  If Not Components["gb.settings"] Then Return
   
-  hSettings = NEW Settings("gb.form")
+  hSettings = New Settings("gb.form")
 
   hSettings.Clear("/Bookmarks")
   
-  FOR EACH hPanel IN lstBookmark.Children
-    IF Left(hPanel.Tag) <> "/" THEN CONTINUE
-    IF NOT hPanel.Visible THEN CONTINUE
-    INC iInd
+  For Each hPanel In lstBookmark.Children
+    If Left(hPanel.Tag) <> "/" Then Continue
+    If Not hPanel.Visible Then Continue
+    Inc iInd
     hSettings["/Bookmarks/Bookmark" & CStr(iInd)] = [CStr(hPanel.Tag), File.Name(hPanel.Tag)]
-  NEXT
+  Next
   
   hSettings["/Bookmarks/Count"] = iInd
 
   hSettings.Save
     
-END
+End
 
 
-PRIVATE SUB FillBookmark()
+Private Sub FillBookmark()
   
-  DIM iInd AS Integer
-  DIM sLink AS String
-  DIM sName AS String
-  DIM sIcon AS String
+  Dim iInd As Integer
+  Dim sLink As String
+  Dim sName As String
+  Dim sIcon As String
   
   lstBookmark.Clear
   $iMaxWidth = 0
@@ -530,244 +530,244 @@ PRIVATE SUB FillBookmark()
   AddBookmark("$" & System.User.Home &/ "Desktop", ("Desktop"), "icon:/small/desktop")
   AddBookmark("$/", ("System"), "icon:/small/system")
 
-  IF $aBookmark THEN
-    FOR iInd = 0 TO $aBookmark.Max
+  If $aBookmark Then
+    For iInd = 0 To $aBookmark.Max
       sName = ""
       sIcon = ""
-      IF IsObject($aBookmark[iInd]) THEN
+      If IsObject($aBookmark[iInd]) Then
         sLink = $aBookmark[iInd][0]
-        TRY sName = $aBookmark[iInd][1]
-        TRY sIcon = $aBookmark[iInd][2]
-      ELSE 
+        Try sName = $aBookmark[iInd][1]
+        Try sIcon = $aBookmark[iInd][2]
+      Else 
         sLink = $aBookmark[iInd]
-      ENDIF
+      Endif
       AddBookmark("#" & sLink, sName, sIcon)
-    NEXT
-  ENDIF 
+    Next
+  Endif 
 
   LoadBookmark
   
-  panBookmark.Dimension = Min($iMaxWidth + 52, ME.Width / 2)
+  panBookmark.Dimension = Min($iMaxWidth + 52, Me.Width / 2)
 
   SelectBookmark
   
-END
+End
 
 
-PUBLIC SUB ShowBookmark(bShow AS Boolean)
+Public Sub ShowBookmark(bShow As Boolean)
 
   panBookmark.Visible = bShow
   FillBookmark  
   'FindBookmark
   
-END
+End
 
-PUBLIC SUB IsBookmarkVisible() AS Boolean
+Public Sub IsBookmarkVisible() As Boolean
   
-  RETURN panBookmark.Visible
+  Return panBookmark.Visible
   
-END
+End
 
-PRIVATE SUB SelectBookmark()
+Private Sub SelectBookmark()
   
-  DIM hPanel AS Container
-  DIM hIcon AS PictureBox
-  DIM sRoot AS String
+  Dim hPanel As Container
+  Dim hIcon As PictureBox
+  Dim sRoot As String
 
-  IF NOT panBookmark.Visible THEN RETURN
+  If Not panBookmark.Visible Then Return
   
   sRoot = dvwChoose.Root
-  IF NOT sRoot THEN sRoot = System.User.Home
+  If Not sRoot Then sRoot = System.User.Home
   
-  FOR EACH hPanel IN lstBookmark.Children
-    IF GetRealLink(hPanel.Tag) = sRoot THEN 
-      FOR EACH hIcon IN hPanel.Children
+  For Each hPanel In lstBookmark.Children
+    If GetRealLink(hPanel.Tag) = sRoot Then 
+      For Each hIcon In hPanel.Children
         dvwChoose.Picture = hIcon.Picture
-        BREAK
-      NEXT
+        Break
+      Next
       lstBookmark.Select(hPanel)
-      RETURN
-    ENDIF
-  NEXT
+      Return
+    Endif
+  Next
   
-END
+End
 
-PRIVATE SUB FindBookmark(sLink AS String) AS Container
+Private Sub FindBookmark(sLink As String) As Container
   
-  DIM hPanel AS Container
+  Dim hPanel As Container
   
-  FOR EACH hPanel IN lstBookmark.Children
-    IF GetRealLink(hPanel.Tag) = sLink THEN RETURN hPanel
-  NEXT  
+  For Each hPanel In lstBookmark.Children
+    If GetRealLink(hPanel.Tag) = sLink Then Return hPanel
+  Next  
   
-END
+End
 
 
-PUBLIC SUB lstBookmark_Click()
+Public Sub lstBookmark_Click()
 
-  DIM sLink AS String = lstBookmark.Current.Tag
+  Dim sLink As String = lstBookmark.Current.Tag
 
   SetRoot(GetRealLink(sLink))
   btnRemove.Enabled = Left(sLink) = "/"
   
-END
+End
 
 
-PUBLIC SUB SetRoot(OPTIONAL sRoot AS String)
+Public Sub SetRoot(Optional sRoot As String)
   
-  IF sRoot = dvwChoose.Root THEN RETURN  
+  If sRoot = dvwChoose.Root Then Return  
   dvwChoose.Root = sRoot
   
   SelectBookmark
   
-END
+End
 
-PUBLIC SUB GetRoot() AS String
+Public Sub GetRoot() As String
   
-  RETURN dvwChoose.Root
+  Return dvwChoose.Root
   
-END
+End
 
-PUBLIC SUB SetPrivateBookmarks(aBookmark AS Array)
+Public Sub SetPrivateBookmarks(aBookmark As Array)
   
   $aBookmark = aBookmark
   FillBookmark    
   
-END
+End
 
-PUBLIC SUB GetPrivateBookmarks() AS Array
+Public Sub GetPrivateBookmarks() As Array
   
-  RETURN $aBookmark
+  Return $aBookmark
   
-END
+End
 
-PUBLIC SUB btnAdd_Click()
+Public Sub btnAdd_Click()
 
-  DIM sLink AS String = dvwChoose.Current
+  Dim sLink As String = dvwChoose.Current
   
-  IF FindBookmark(sLink) THEN RETURN 
+  If FindBookmark(sLink) Then Return 
   AddBookmark(sLink)
   SaveBookmark
 
-END
+End
 
-PUBLIC SUB btnRemove_Click()
+Public Sub btnRemove_Click()
 
   lstBookmark.Current.Delete
   SetRoot()
   SaveBookmark
 
-END
+End
 
-PUBLIC SUB GetSettings() AS String[]
+Public Sub GetSettings() As String[]
   
-  IF NOT $bFile THEN 
-    RETURN Settings.Array(dvwChoose.Root, dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, NOT panBookmark.Hidden)
-  ELSE
-    RETURN Settings.Array(dvwChoose.Root, dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), NOT panBookmark.Hidden)
-  ENDIF 
+  If Not $bFile Then 
+    Return Settings.Array(dvwChoose.Root, dvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, Not panBookmark.Hidden)
+  Else
+    Return Settings.Array(dvwChoose.Root, dvwChoose.Current, fvwChoose.Current, $bView, splChoose.Layout, btnShowHidden.Value, fvwChoose.Settings, GetFilterIndex(), Not panBookmark.Hidden)
+  Endif 
 
-END
+End
 
-PUBLIC SUB SetSettings(aStr AS String[])
+Public Sub SetSettings(aStr As String[])
   
-  IF NOT $bFile THEN 
+  If Not $bFile Then 
   
-    TRY SetRoot(aStr[0])
-    TRY dvwChoose.Current = aStr[1]
-    TRY $bView = aStr[2] = "0"
-    IF NOT ERROR THEN btnView_Click
-    TRY splChoose.Layout = aStr[3]
-    TRY btnShowHidden.Value = aStr[4] <> "0"
-    TRY fvwChoose.Settings = aStr[5] 
-    TRY panBookmark.Hidden = aStr[6] = "0"
+    Try SetRoot(aStr[0])
+    Try dvwChoose.Current = aStr[1]
+    Try $bView = aStr[2] = "0"
+    If Not Error Then btnView_Click
+    Try splChoose.Layout = aStr[3]
+    Try btnShowHidden.Value = aStr[4] <> "0"
+    Try fvwChoose.Settings = aStr[5] 
+    Try panBookmark.Hidden = aStr[6] = "0"
     
-  ELSE
+  Else
   
-    TRY SetRoot(aStr[0])
-    TRY dvwChoose.Current = aStr[1]
-    TRY fvwChoose.Current = aStr[2]
-    TRY $bView = aStr[3] = "0"
-    IF NOT ERROR THEN btnView_Click
-    TRY splChoose.Layout = aStr[4]
-    TRY btnShowHidden.Value = aStr[5] <> "0"
-    TRY fvwChoose.Settings = aStr[6]
-    TRY SetFilterIndex(CInt(aStr[7]))
-    TRY panBookmark.Hidden = aStr[8] = "0"
+    Try SetRoot(aStr[0])
+    Try dvwChoose.Current = aStr[1]
+    Try fvwChoose.Current = aStr[2]
+    Try $bView = aStr[3] = "0"
+    If Not Error Then btnView_Click
+    Try splChoose.Layout = aStr[4]
+    Try btnShowHidden.Value = aStr[5] <> "0"
+    Try fvwChoose.Settings = aStr[6]
+    Try SetFilterIndex(CInt(aStr[7]))
+    Try panBookmark.Hidden = aStr[8] = "0"
     
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB btnNewDir_Click()
+Public Sub btnNewDir_Click()
 
   dvwChoose.NewFolder
 
-END
+End
 
-PRIVATE SUB FindBestBookmark(sDir AS String)
+Private Sub FindBestBookmark(sDir As String)
   
-  DIM hPanel AS Container
-  DIM sBest AS String
-  DIM iScore AS Integer
-  DIM aBook AS String[]
-  DIM aDir AS String[]
-  DIM iInd AS Integer
+  Dim hPanel As Container
+  Dim sBest As String
+  Dim iScore As Integer
+  Dim aBook As String[]
+  Dim aDir As String[]
+  Dim iInd As Integer
   
   aDir = Split(sDir, "/")
   
-  FOR EACH hPanel IN lstBookmark.Children
+  For Each hPanel In lstBookmark.Children
     aBook = Split(GetRealLink(hPanel.Tag), "/")
-    FOR iInd = 0 TO Min(aDir.Max, aBook.Max)
-      IF aBook[iInd] <> aDir[iInd] THEN BREAK
-    NEXT
+    For iInd = 0 To Min(aDir.Max, aBook.Max)
+      If aBook[iInd] <> aDir[iInd] Then Break
+    Next
     'DEBUG "Comp:";; aBook.Join("|");; aDir.Join("|");; "=";; iInd
-    IF iInd > iScore AND IF iInd > aBook.Max THEN   
+    If iInd > iScore And If iInd > aBook.Max Then   
       iScore = iInd
       sBest = hPanel.Tag
-    ENDIF
-  NEXT  
+    Endif
+  Next  
   
-  IF iScore <= 1 THEN sBest = "$/"
+  If iScore <= 1 Then sBest = "$/"
   
-  FOR EACH hPanel IN lstBookmark.Children
-    IF hPanel.Tag = sBest THEN 
+  For Each hPanel In lstBookmark.Children
+    If hPanel.Tag = sBest Then 
       'DEBUG sDir; " -> "; hPanel.Tag
       lstBookmark.Select(hPanel)
-      BREAK 
-    ENDIF
-  NEXT  
+      Break 
+    Endif
+  Next  
   
   
-END
+End
 
-PUBLIC SUB btnRefresh_Click()
+Public Sub btnRefresh_Click()
 
   dvwChoose.Reload
   'fvwChoose.Reload
   
-END
+End
 
-PUBLIC SUB splChoose_Resize()
+Public Sub splChoose_Resize()
 
   'DEBUG splChoose.Layout  
 
-END
+End
 
-PUBLIC SUB SetSplitter(bOn AS Boolean)
+Public Sub SetSplitter(bOn As Boolean)
   
   btnView.Visible = bOn
   
-END
+End
 
-PUBLIC SUB GetSplitter() AS Boolean
+Public Sub GetSplitter() As Boolean
   
-  RETURN btnView.Visible
+  Return btnView.Visible
   
-END
+End
 
-PUBLIC SUB Reload()
+Public Sub Reload()
   
   btnRefresh_Click
   
-END
+End

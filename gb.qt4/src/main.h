@@ -110,6 +110,4 @@ const char *QT_ToUTF8(const QString &str);
 void QT_RegisterAction(void *object, const char *key, int on);
 void QT_RaiseAction(const char *key);
 
-void show_slider();
-
 #endif

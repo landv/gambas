@@ -51,6 +51,7 @@ DECLARE_EVENT(EVENT_Scroll);
 MyScrollView::MyScrollView(QWidget *parent)
 : QScrollArea(parent)
 {
+	setMouseTracking(false);
 }
 
 /*
@@ -458,7 +459,7 @@ BEGIN_PROPERTY(CSCROLLVIEW_scrollbar)
 
 END_PROPERTY
 
-
+#if 0
 BEGIN_PROPERTY(CSCROLLVIEW_background)
 
   if (READ_PROPERTY)
@@ -476,7 +477,7 @@ BEGIN_PROPERTY(CSCROLLVIEW_background)
   }
 
 END_PROPERTY
-
+#endif
 
 
 /***************************************************************************
@@ -494,9 +495,6 @@ GB_DESC CScrollViewDesc[] =
   GB_METHOD("_new", NULL, CSCROLLVIEW_new, "(Parent)Container;"),
 
   GB_PROPERTY("ScrollBar", "i", CSCROLLVIEW_scrollbar),
-
-  GB_PROPERTY("Background", "i", CSCROLLVIEW_background),
-  GB_PROPERTY("BackColor", "i", CSCROLLVIEW_background),
 
   GB_PROPERTY("Border", "b", CWIDGET_border_simple),
 
@@ -519,10 +517,6 @@ GB_DESC CScrollViewDesc[] =
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
 
-  /*GB_EVENT("ChildInsert", NULL, "(Child)Control;", &EVENT_ChildInsert),
-  GB_EVENT("ChildRemove", NULL, "(Child)Control;", &EVENT_ChildRemove),
-  GB_EVENT("ChildShow", NULL, "(Child)Control;", &EVENT_ChildShow),
-  GB_EVENT("ChildHide", NULL, "(Child)Control;", &EVENT_ChildHide),*/
   GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),
 
   SCROLLVIEW_DESCRIPTION,

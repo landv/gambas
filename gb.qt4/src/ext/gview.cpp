@@ -223,12 +223,15 @@ void GEditor::redrawContents()
     repaintContents(contentsX(), contentsHeight(), visibleWidth(), visibleHeight() - contentsHeight() + contentsX(), true);
 }
 
-void GEditor::fontChange(const QFont &oldFont)
+void GEditor::changeEvent(QEvent *e)
 {
-	Q3GridView::fontChange(oldFont);
-	updateMargin();
-  updateLength();
-  updateContents();
+	Q3GridView::changeEvent(e);
+	if (e->type() == QEvent::FontChange)
+	{
+		updateMargin();
+  	updateLength();
+  	updateContents();
+  }
 }
 
 void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2)
@@ -510,6 +513,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   // Line text
   if (!highlight)
   {
+	  p.setFont(font());
     p.setPen(styles[GLine::Normal].color);
     p.drawText(margin + xmin * charWidth, fm.ascent() + 1, l->s.getString().mid(xmin, lmax));
   }
@@ -527,8 +531,11 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   if (margin && l->proc)
   {
   	QStyleOption opt;
+  	int w;
   	
-  	opt.rect = QRect(margin - 12, 0, 12, 12);
+  	w = qMin(cellHeight(), 12);
+  	//opt.rect = QRect(margin - 12, 0, 12, 12);
+  	opt.rect = QRect(margin - w, 0, w, cellHeight());
   	opt.palette = palette();
   	opt.state |= QStyle::State_Enabled;
   	

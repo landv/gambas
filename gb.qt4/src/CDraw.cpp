@@ -44,6 +44,9 @@
 #include <QStyleOption>
 #include <QVector>
 #include <QTextDocument>
+#include <QColor>
+#include <QPen>
+#include <QBrush>
 
 #ifndef NO_X_WINDOW
 #include <QX11Info>
@@ -68,7 +71,7 @@ typedef
 #define DP(d) (EXTRA(d)->p)
 #define DPM(d) (EXTRA(d)->pm)
 
-#define COLOR_TO_INT(color) ((color).rgb() ^ 0xFF000000)
+#define COLOR_TO_INT(color) ((color).rgba() ^ 0xFF000000)
 #define MASK_COLOR(col) ((col & 0xFF000000) ? Qt::color0 : Qt::color1)
 
 DRAW_INTERFACE DRAW EXPORT;
@@ -89,6 +92,8 @@ static void init_drawing(GB_DRAW *d, QPainter *p, QWidget *init, int w, int h, i
   EXTRA(d)->p = p;
   EXTRA(d)->pm = 0;
   EXTRA(d)->mask = 0;
+  EXTRA(d)->fg = COLOR_DEFAULT;
+  EXTRA(d)->fillColor = COLOR_DEFAULT;
   d->width = w;
   d->height = h;
   
@@ -153,6 +158,28 @@ static uint get_color(GB_DRAW *d, int col, bool bg)
 	return col;
 }
 
+static Qt::Alignment get_horizontal_alignment(Qt::Alignment align)
+{
+	align &= Qt::AlignHorizontal_Mask;
+	switch (align)
+	{
+		case Qt::AlignLeft:
+			if (QApplication::isRightToLeft())
+				return Qt::AlignRight;
+			break;
+			
+		case Qt::AlignRight:
+			if (QApplication::isRightToLeft())
+				return Qt::AlignLeft;
+			break;
+			
+		default:
+			break;
+	}
+
+	return align & ~Qt::AlignAbsolute;
+}
+
 static int begin(GB_DRAW *d)
 {
 	void *device = d->device;
@@ -201,6 +228,8 @@ static int begin(GB_DRAW *d)
       
 		wid->drawn++;
   }
+  
+	//DP(d)->setRenderHint(QPainter::Antialiasing, true);
   
   return FALSE;
 }
@@ -258,24 +287,27 @@ static void set_background(GB_DRAW *d, int col)
 {
 	col = get_color(d, col, true);
 	
-	DP(d)->setBackground(QColor(col));
+	DP(d)->setBackground(QColor((QRgb)col));
 	if (DPM(d))
 		DPM(d)->setBackground(MASK_COLOR(col));
 }
 
 static int get_foreground(GB_DRAW *d)
 {
-	return COLOR_TO_INT(DP(d)->pen().color());
+	return EXTRA(d)->fg; //COLOR_TO_INT(DP(d)->pen().color());
 }
 
 static void set_foreground(GB_DRAW *d, int col)
 {
+	QPen pen = DP(d)->pen();
+	EXTRA(d)->fg = col;
 	col = get_color(d, col, false);
 	
-	QPen pen = DP(d)->pen();
 	DP(d)->setPen(QPen(QColor(col), pen.width(), pen.style()));
+	
 	if (DPM(d))
 		DPM(d)->setPen(QPen(MASK_COLOR(col), pen.width(), pen.style()));
+		
 }
 
 static void apply_font(QFont &font, void *object = 0)
@@ -340,23 +372,24 @@ static int get_line_style(GB_DRAW *d)
 static void set_line_style(GB_DRAW *d, int style)
 {
 	QPen pen = DP(d)->pen();
-	DP(d)->setPen(QPen(pen.color(), pen.width(), (Qt::PenStyle)style));
+	DP(d)->setPen(QPen(QColor(EXTRA(d)->fg), pen.width(), (Qt::PenStyle)style));
 	if (DPM(d))
-		DPM(d)->setPen(QPen(DPM(d)->pen().color(), pen.width(), (Qt::PenStyle)style));
+		DPM(d)->setPen(QPen(MASK_COLOR(EXTRA(d)->fg), pen.width(), (Qt::PenStyle)style));
 }
 
 static int get_fill_color(GB_DRAW *d)
 {
-	return COLOR_TO_INT(DP(d)->brush().color());
+	return EXTRA(d)->fillColor; //COLOR_TO_INT(DP(d)->brush().color());
 }
 
 static void set_fill_color(GB_DRAW *d, int col)
 {
 	QBrush brush = DP(d)->brush();
-		
+	
+	EXTRA(d)->fillColor = col;
 	col = get_color(d, col, false);
 	
-	DP(d)->setBrush(QBrush(QColor(col), brush.style()));
+	DP(d)->setBrush(QBrush(QColor((QRgb)col), brush.style()));
 	if (DPM(d))
 		DPM(d)->setBrush(QBrush(MASK_COLOR(col), brush.style()));
 }
@@ -368,11 +401,11 @@ static int get_fill_style(GB_DRAW *d)
 
 static void set_fill_style(GB_DRAW *d, int style)
 {
-	QBrush brush(DP(d)->brush().color(), (Qt::BrushStyle)style);
+	QBrush brush(QColor(EXTRA(d)->fillColor), (Qt::BrushStyle)style);
 	DP(d)->setBrush(brush);
 	if (DPM(d))
 	{
-		QBrush brushm(DPM(d)->brush().color(), (Qt::BrushStyle)style);
+		QBrush brushm(MASK_COLOR(EXTRA(d)->fillColor), (Qt::BrushStyle)style);
 		DPM(d)->setBrush(brushm);
 	}
 }
@@ -390,8 +423,17 @@ static void set_fill_origin(GB_DRAW *d, int x, int y)
 		DPM(d)->setBrushOrigin(x, y);
 }
 
+#define FIX_RECT(_d, _w, _h) \
+	if (DP(_d)->pen().style() != Qt::NoPen) \
+	{ \
+		if (_w > 0) (_w--); \
+		if (_h > 0) (_h--); \
+	}
+
 static void draw_rect(GB_DRAW *d, int x, int y, int w, int h)
 {
+	FIX_RECT(d, w, h);
+  
   DP(d)->drawRect(x, y, w, h);
   if (DPM(d))
 	  DPM(d)->drawRect(x, y, w, h);
@@ -399,6 +441,8 @@ static void draw_rect(GB_DRAW *d, int x, int y, int w, int h)
 
 static void draw_ellipse(GB_DRAW *d, int x, int y, int w, int h, double start, double end)
 {
+	FIX_RECT(d, w, h);
+	
 	if (start == end)
 	{
 		DP(d)->drawEllipse(x, y, w, h);
@@ -572,6 +616,7 @@ static int get_text_height(QPainter *dp, QString &s)
 
 static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int h, int align)
 {
+	QPen pen, penm;
   QString t;
   int xx, ww;
   int tw, th;
@@ -598,7 +643,15 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
     default: break;
   }
 
-  align = QStyle::visualAlignment(qApp->layoutDirection(), (Qt::Alignment)align);
+  align = get_horizontal_alignment((Qt::Alignment)align);
+
+	pen = DP(d)->pen();
+	DP(d)->setPen(QColor(EXTRA(d)->fg));
+	if (DPM(d))
+	{
+		penm = DPM(d)->pen();
+		DPM(d)->setPen(Qt::color1);
+	}
 
   for (i = 0; i < (int)text_sl.count(); i++)
   {
@@ -617,6 +670,9 @@ static void draw_text(GB_DRAW *d, char *text, int len, int x, int y, int w, int 
 
     y += text_line;
   }
+  
+  DP(d)->setPen(pen);
+  if (DPM(d)) DPM(d)->setPen(penm);
 }
 
 static void text_size(GB_DRAW *d, char *text, int len, int *w, int *h)
@@ -632,7 +688,7 @@ void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString 
   int tw, th;
   QString t = text;
 
-  switch(QStyle::visualAlignment(qApp->layoutDirection(), (Qt::Alignment)align))
+  switch(get_horizontal_alignment((Qt::Alignment)align))
   {
   	case Qt::AlignRight: a = "right"; break;
   	case Qt::AlignHCenter: a = "center"; break;

@@ -65,8 +65,6 @@ BEGIN_METHOD(CTEXTLABEL_new, GB_OBJECT parent)
   wid->setTextFormat(Qt::RichText);
   wid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   wid->setWordWrap(true);
-  //wid->setLineWidth(2);
-  //wid->setAutoResize(false);
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -217,18 +215,16 @@ MyLabel::MyLabel(QWidget *parent) : QLabel(parent)
 }
 
 
-void MyLabel::fontChange(const QFont &font)
+void MyLabel::changeEvent(QEvent *e)
 {
-  QLabel::fontChange(font);
+  QLabel::changeEvent(e);
   calcMinimumHeight();
-  updateMask();
 }
 
 void MyLabel::setText(const QString &text)
 {
   QLabel::setText(text);
   calcMinimumHeight();
-  updateMask();
   //qDebug("%s: %d", text.latin1(), isVisible());
 }
 
@@ -292,24 +288,12 @@ void MyLabel::calcMinimumHeight(bool adjust, bool noresize)
 	}
 }
 
-void MyLabel::frameChanged()
-{
-	calcMinimumHeight();
-	updateMask();
-}
-
 void MyLabel::resizeEvent(QResizeEvent *e)
 {
 	QLabel::resizeEvent(e);
   
   if (autoResize && !locked && textFormat() == Qt::RichText && e->oldSize().width() != e->size().width())
   	calcMinimumHeight(false, true);
-  	
-	if ((alignment() & (Qt::AlignLeft|Qt::AlignTop) ) != (Qt::AlignLeft|Qt::AlignTop))
-	{
-		updateMask();
-  	repaint();
-  }
 }
 
 void MyLabel::adjust()
@@ -323,9 +307,10 @@ void MyLabel::setTransparent(bool t)
 		return;
 		
 	transparent = t;
-	updateMask();
+  //setAutoFillBackground(!t);
 }
 
+#if 0
 static void make_alpha_from_white(QImage &img)
 {
 	uchar *p;
@@ -337,7 +322,6 @@ static void make_alpha_from_white(QImage &img)
 	for (i = 0; i < n; i++, p += 4)
 		p[3] = (p[2] * 11 + p[1] * 16 + p[0] * 5) / 32;
 }
-
 
 void MyLabel::updateMask()
 {
@@ -384,6 +368,7 @@ void MyLabel::updateMask()
 	if (!buffer->mask().isNull()) setMask(buffer->mask());
 	delete buffer;	
 }
+#endif
 
 /** class MySeparator ******************************************************/
 

@@ -120,7 +120,7 @@ private slots:
 protected:
 
   virtual void paintCell(QPainter *, int row, int);
-  virtual void fontChange(const QFont &oldFont);
+  virtual void changeEvent(QEvent *e);
   virtual void keyPressEvent(QKeyEvent *e);
   virtual void mousePressEvent(QMouseEvent *e);
   virtual void mouseReleaseEvent(QMouseEvent *e);

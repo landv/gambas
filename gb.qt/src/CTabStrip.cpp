@@ -532,11 +532,23 @@ END_METHOD
 BEGIN_PROPERTY(CTAB_count)
 
   QWidget *page = THIS->stack->at(THIS->index)->widget;
+  QObjectList *list = (QObjectList *)page->children();
 
   if (page->children() == NULL)
     GB.ReturnInteger(0);
   else
-    GB.ReturnInteger(page->children()->count());
+  {
+  	int n = 0;
+  	uint i;
+  	
+  	for (i = 0; i < list->count(); i++)
+  	{
+  		if (CWidget::getReal(list->at(i)))
+  			n++;
+  	}
+  	
+    GB.ReturnInteger(n);
+  }
 
 END_PROPERTY
 

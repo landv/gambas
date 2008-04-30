@@ -834,6 +834,9 @@ Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bM
   hPanel.Mouse = iMouse
   hPanel.Tag = "#" & sTag
 
+  $hHandle[iIndex] = hPanel
+  MovePanel(iIndex)
+
   hPanel.Border = Border.Plain
   If bMaster Then
     hPanel.Background = Color.White
@@ -842,10 +845,6 @@ Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bM
     hPanel.Background = Color.Black
     hPanel.Foreground = Color.White
   Endif
-
-  $hHandle[iIndex] = hPanel
-
-  MovePanel(iIndex)
 
 End
 

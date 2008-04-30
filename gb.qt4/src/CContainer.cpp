@@ -33,7 +33,6 @@
 #include <QResizeEvent>
 #include <QChildEvent>
 #include <QFrame>
-#include <QMainWindow>
 
 #include "gambas.h"
 
@@ -204,6 +203,13 @@ static void arrange_later(QWidget *cont)
 }
 #endif
 
+void CCONTAINER_insert_child(void *_object)
+{
+	CWIDGET *parent = CWidget::get(WIDGET->parentWidget());
+	if (parent)
+  	GB.Raise(parent, EVENT_Insert, 1, GB_T_OBJECT, THIS);
+}
+
 /***************************************************************************
 
   class MyContainer
@@ -246,7 +252,6 @@ void MyContainer::childEvent(QChildEvent *e)
   if (e->added())
   {
     e->child()->installEventFilter(this);
-    GB.Raise(THIS, EVENT_Insert, 1, GB_T_OBJECT, child);
 		//qApp->sendEvent(WIDGET, new QEvent(EVENT_INSERT));
     //if (THIS_ARRANGEMENT->user)
     //	GB.Raise(THIS, EVENT_Insert, 1, GB_T_OBJECT, child);    
@@ -318,7 +323,7 @@ BEGIN_METHOD_VOID(CCONTAINER_children_next)
 
     ENUM(int) = index + 1;
 
-    widget = CWidget::getReal(list.at(index));
+    widget = CWidget::getRealExisting(list.at(index));
     if (widget)
     {
       GB.ReturnObject(widget);
@@ -341,7 +346,7 @@ BEGIN_METHOD(CCONTAINER_children_get, GB_INTEGER index)
 		i = 0;
 		for(i = 0; i < list.count(); i++)
 		{
-			widget = CWidget::getReal(list.at(i));
+			widget = CWidget::getRealExisting(list.at(i));
 			if (!widget)
 				continue;
 			if (index == 0)
@@ -373,7 +378,7 @@ BEGIN_PROPERTY(CCONTAINER_children_count)
 		for(i = 0; i < list.count(); i++)
 		{
 			ob = list.at(i);
-			if (ob->isWidgetType() && CWidget::getReal(ob))
+			if (ob->isWidgetType() && CWidget::getRealExisting(ob))
 				n++;
 		}
 	}

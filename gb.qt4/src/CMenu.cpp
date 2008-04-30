@@ -22,7 +22,6 @@
 
 #define __CMENU_CPP
 
-#include <QMainWindow>
 #include <QMenuBar>
 #include <QMenu>
 
@@ -44,21 +43,32 @@ static int check_menu(void *_object)
   return THIS->deleted;
 }
 
-static void refresh_menubar(QMenuBar *menuBar)
+static void refresh_menubar(CMENU *menu)
 {
 	int i;
-	QList<QAction *> list = menuBar->actions();
+	QList<QAction *> list;
+	MyMainWindow *toplevel;
+	QMenuBar *menuBar;
 	
+	if (!GB.Is(menu->parent, CLASS_Window))
+		return;
+	
+	toplevel = (MyMainWindow *)(menu->toplevel);
+	menuBar = ((CWINDOW *)(menu->parent))->menuBar;
+	list = menuBar->actions();
+	 
 	for (i = 0; i < list.count(); i++)
 	{
 		if (list.at(i)->isVisible())
-		{
-			menuBar->show();
-			return;
-		}
+			break;
 	}
 	
-	menuBar->hide();
+	if (i < list.count())
+		menuBar->show();
+	else
+		menuBar->hide();
+	
+	toplevel->configure();
 }
 
 static void unregister_menu(CMENU *_object)
@@ -71,12 +81,17 @@ static void delete_menu(CMENU *_object)
 	if (THIS->deleted)
 		return;
 		
+	//qDebug("delete_menu: THIS = %p", _object);
+		
+	if (THIS->menu)
+	{
+		delete THIS->menu;
+		THIS->menu = 0;
+	}
+
   CMenu::dict.remove(ACTION);
 
-	if (THIS->menu)
-		delete THIS->menu;
-
-	delete ACTION;
+	//delete ACTION;
 	THIS->widget.widget = 0;
 
 	THIS->deleted = true;
@@ -105,18 +120,7 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
   if (GB.CheckObject(parent))
     return;
 
-	action = new QAction(0);
-	action->setSeparator(true);
-	action->setVisible(!VARGOPT(hidden, FALSE));
-    
-  THIS->widget.widget = (QWidget *)action;
-  CMenu::dict.insert(action, THIS);
-
-	THIS->parent = parent;
-  THIS->widget.tag.type = GB_T_NULL;
-  THIS->widget.name = NULL;
-  THIS->picture = NULL;
-  THIS->deleted = false;
+	//qDebug("CMENU_new: (%s %p)", GB.GetClassName(THIS), THIS);
 	
   if (GB.Is(parent, CLASS_Menu))
   {
@@ -127,16 +131,21 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
     if (!menu->menu)
     {
     	menu->menu = new QMenu();
+    	menu->menu->setSeparatorsCollapsible(true);
     	((QAction *)(menu->widget.widget))->setMenu(menu->menu);
 	
 			QObject::connect(menu->menu, SIGNAL(triggered(QAction *)), &CMenu::manager, SLOT(slotTriggered(QAction *)));
-			QObject::connect(menu->menu, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
 			QObject::connect(menu->menu, SIGNAL(aboutToShow()), &CMenu::manager, SLOT(slotShown()));
 			QObject::connect(menu->menu, SIGNAL(aboutToHide()), &CMenu::manager, SLOT(slotHidden()));
     }
     
-    menu->menu->addAction(action);
+		action = new QAction(menu->menu);
+		action->setSeparator(true);
+		action->setVisible(!VARGOPT(hidden, FALSE));
+		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
     
+    menu->menu->addAction(action);
+    //qDebug("New action %p for Menu %p", action, THIS);
   }
   else if (GB.Is(parent, CLASS_Window))
   {
@@ -146,14 +155,17 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
     menuBar = window->menuBar;
     if (!menuBar)
     {
-      if (qobject_cast<QMainWindow *>(topLevel))
-        menuBar = ((QMainWindow *)topLevel)->menuBar();
-      else
-        menuBar = new QMenuBar(topLevel);
+      menuBar = new QMenuBar(topLevel);
       window->menuBar = menuBar;
     }
+    
+		action = new QAction(menuBar);
+		action->setSeparator(true);
+		action->setVisible(!VARGOPT(hidden, FALSE));
+		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
+    
     menuBar->addAction(action);
-    refresh_menubar(menuBar);
+    //qDebug("New action %p for top level Menu %p", action, THIS);
   }
   else
   {
@@ -161,13 +173,23 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
     return;
   }
 	
-	THIS->toplevel = topLevel;
+  THIS->widget.widget = (QWidget *)action;
+  CMenu::dict.insert(action, THIS);
+
+	THIS->parent = parent;
+  THIS->widget.tag.type = GB_T_NULL;
+  THIS->widget.name = NULL;
+  THIS->picture = NULL;
+  THIS->deleted = false;
+	
 	CWIDGET_init_name((CWIDGET *)THIS);
   
 #ifdef DEBUG_MENU
   qDebug("CMENU_new: item = %p (%d) parent = %p (%d) toplevel = %p", item, item->id, item->parent, item->parent ? item->parent->id : 0, item->toplevel);
 #endif
 
+	THIS->toplevel = topLevel;
+	refresh_menubar(THIS);
   //qDebug("*** CMENU_new %p", _object);
   GB.Ref(THIS);
 
@@ -180,6 +202,8 @@ BEGIN_METHOD_VOID(CMENU_free)
   qDebug("CMENU_free: item = %p '%s' (%d) parent = %p (%d)", item, item->text, item->id, item->parent, item->parent ? item->parent->id : 0);
 #endif
 
+	//qDebug("CMENU_free: (%s %p)", GB.GetClassName(THIS), THIS);
+	
 	delete_menu(THIS);
 
   GB.StoreObject(NULL, POINTER(&(THIS->picture)));
@@ -318,14 +342,18 @@ BEGIN_PROPERTY(CMENU_visible)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(ACTION->isVisible());
 	else
+	{
 		ACTION->setVisible(VPROP(GB_BOOLEAN));
-
+		refresh_menubar(THIS);
+	}
+	
 END_PROPERTY
 
 
 BEGIN_METHOD_VOID(CMENU_show)
 
 	ACTION->setVisible(true);
+	refresh_menubar(THIS);
 
 END_METHOD
 
@@ -333,6 +361,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CMENU_hide)
 
 	ACTION->setVisible(false);
+	refresh_menubar(THIS);
 
 END_METHOD
 
@@ -414,11 +443,11 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 	if (THIS->menu)
 	{
 		if (MISSING(x) || MISSING(y))
-			THIS->menu->exec();
+			THIS->menu->exec(QCursor::pos());
 		else
 			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
 		
-		//qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+		qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
   }
 
 END_METHOD
@@ -628,7 +657,7 @@ void CMenu::hideSeparators(CMENU *item)
 }
 
 
-
+/*
 void CMenu::unrefChildren(QWidget *w)
 {
 	int i;
@@ -638,23 +667,31 @@ void CMenu::unrefChildren(QWidget *w)
 	for (i = 0; i < list.count(); i++)
 	{
 		child = dict[list.at(i)];
+		//qDebug("CMenu::unrefChildren: (%s %p)", GB.GetClassName(child), child);
 		GB.Detach(child);
 		unregister_menu(child);
 		//qDebug("*** CMenu::destroy %p (child)", child);
 		GB.Unref(POINTER(&child));
 	}
-}
+}*/
 
 void CMenu::slotDestroyed(void)
 {
-  GET_SENDER(_object);
+  CMENU *_object = dict[(QAction *)sender()];
 
   #ifdef DEBUG_MENU
   qDebug("*** { CMenu::destroy %p", menu);
   #endif
 
-	if (THIS->menu)
-  	unrefChildren(THIS->menu);
+	//qDebug("CMenu::slotDestroyed: action = %p  THIS = %p", sender(), _object);
+	
+	if (!_object)
+		return;
+
+	//qDebug("CMenu::slotDestroyed: (%s %p)", GB.GetClassName(THIS), THIS);
+
+	//if (THIS->menu)
+  //	unrefChildren(THIS->menu);
 
   #ifdef DEBUG_MENU
   qDebug("***  CMenu::destroy %p (UNREF)", menu);

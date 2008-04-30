@@ -26,9 +26,8 @@
 #include "gambas.h"
 #include "gb.draw.h"
 
-#include <qpainter.h>
-#include <qstring.h>
-#include <qpalette.h>
+#include <QPainter>
+#include <QString>
 
 #ifndef __CDRAW_C
 
@@ -43,6 +42,6 @@ void DRAW_init();
 void DRAW_begin(void *device);
 void DRAW_end();
 QPainter *DRAW_get_current();
-void DRAW_rich_text(QPainter *p, const QColorGroup &cg, int x, int y, int w, int h, int align, QString &text, QPainter *p2 = 0);
+void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString &text, QPainter *p2 = 0);
 
 #endif

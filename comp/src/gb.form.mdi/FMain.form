@@ -1,29 +1,35 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,69,71)
+  MoveScaled(0,0,69,72)
   Text = ("")
-  { Workspace1 Workspace
-    MoveScaled(1,5,67,61)
-    Orientation = TabStrip.Bottom
-  }
-  { Button1 Button
-    MoveScaled(1,67,15,4)
-    Text = ("Button1")
-  }
-  { Button2 Button
-    MoveScaled(27,67,15,4)
-    Text = ("Button2")
-  }
-  { Button3 Button
-    MoveScaled(52,67,16,4)
-    Text = ("Button3")
-  }
+  Arrangement = Arrange.Vertical
   { ToolBar1 ToolBar
     MoveScaled(0,0,69,4)
     { Button4 Button
       MoveScaled(0,0,16,4)
       Text = ("Button4")
+    }
+  }
+  { Workspace1 Workspace
+    MoveScaled(1,5,67,61)
+    Expand = True
+    Orientation = TabStrip.Bottom
+  }
+  { HBox1 HBox
+    MoveScaled(1,67,67,4)
+    Spacing = 6
+    { Button1 Button
+      MoveScaled(0,0,15,4)
+      Text = ("Button1")
+    }
+    { Button2 Button
+      MoveScaled(25,0,15,4)
+      Text = ("Button2")
+    }
+    { Button3 Button
+      MoveScaled(50,0,16,4)
+      Text = ("Button3")
     }
   }
 }

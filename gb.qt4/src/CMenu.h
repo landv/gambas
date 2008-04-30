@@ -78,7 +78,7 @@ public:
   static CMenu manager;
 	static QHash<QAction *, CMENU *> dict;
 
-  static void unrefChildren(QWidget *wid);
+  //static void unrefChildren(QWidget *wid);
   static void enableAccel(CMENU *item, bool enable);
   static void hideSeparators(CMENU *item);
 

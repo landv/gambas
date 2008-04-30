@@ -135,9 +135,8 @@ Public Sub dwgMonth_Draw()
   Draw.Foreground = Color.SelectedForeground
   Draw.Font = dwgMonth.Font
   Draw.Font.Size = Draw.Font.Size * H / Draw.Font.Height("a") * 0.7
-  'DEBUG dwgMonth.Font.Size;; Draw.Font.Size
   Draw.Font.Bold = True
-  
+
   X = XD
   Y = 0
   For I = 0 To 4
@@ -158,8 +157,8 @@ Public Sub dwgMonth_Draw()
   Draw.LineStyle = Line.Solid
   Draw.Foreground = iForeground
   Draw.Line(XD, YD - 1, XD + Draw.W - 1, YD - 1)
-
   Draw.LineStyle = Line.None
+
   dDate = $dStart
   Y = YD
   For J = 0 To 5
@@ -318,7 +317,6 @@ End
 Public Sub UpdateFont()
 
   cmbMonth.Height = Desktop.Scale * 4
-  'IF panToolbar.H <> cmbMonth.H THEN DEBUG panToolbar.H;; "->";; cmbMonth.H
   panToolbar.H = cmbMonth.Height
   
 End
@@ -333,4 +331,10 @@ Public Sub SetDateColor(dDate As Date, iColor As Integer)
     $cDateColor[sKey] = iColor
   Endif
   
+End
+
+Public Sub Form_Open()
+
+  
+
 End

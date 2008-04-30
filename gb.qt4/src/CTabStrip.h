@@ -55,14 +55,11 @@ typedef
     }
   CTABSTRIP_ENUM;
 
-class CTab;
-
 typedef
   struct {
     CWIDGET widget;
     QWidget *container;
     CARRANGEMENT arrangement;
-    QList<CTab *> stack;
     int index;
     int id;
     unsigned geom : 1;
@@ -72,20 +69,24 @@ typedef
 
 #endif
 
+class CTab;
+
 class MyTabWidget : public QTabWidget
 {
 Q_OBJECT
 
 public:
 
+  QList<CTab *> stack;
+
 	MyTabWidget(QWidget *parent);
+	~MyTabWidget();
 	virtual void setEnabled(bool e);
 	void forceLayout();
-	
-protected:
 
-	virtual void fontChange(const QFont &oldFont);
-  //virtual bool eventFilter(QObject *, QEvent *);
+protected:
+  
+  virtual bool eventFilter(QObject *, QEvent *);
 };
 
 class CTabStrip : public QObject

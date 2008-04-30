@@ -10,7 +10,7 @@ Private $bAutoResize As Boolean
 Public Sub _new()
   
   'dwgHandle.Width = 6
-  $hWatcher = New Watcher(panToolBar) As "panToolBar"
+  '$hWatcher = New Watcher(panToolBar) As "panToolBar"
   $hWatcherParent = New Watcher(Me.Parent.Parent) As "Container"
   $bAutoResize = True
   

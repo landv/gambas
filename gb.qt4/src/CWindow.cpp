@@ -108,7 +108,7 @@ static int CWINDOW_EmbedState = 0;
 #ifndef NO_X_WINDOW
 void CWINDOW_change_property(QWidget *w, Atom property, bool set)
 {
-  if (!w->isTopLevel())
+  if (!w->isWindow())
     return;
 
   X11_window_change_property(w->winId(), w->isVisible(), property, set);
@@ -116,7 +116,7 @@ void CWINDOW_change_property(QWidget *w, Atom property, bool set)
 
 bool CWINDOW_has_property(QWidget *w, Atom property)
 {
-  if (!w->isTopLevel())
+  if (!w->isWindow())
     return false;
 
   return X11_window_has_property(w->winId(), property);
@@ -127,10 +127,12 @@ bool CWINDOW_has_property(QWidget *w, Atom property)
 
 static void clear_mask(CWINDOW *_object)
 {
+	QPalette palette;
 	//qDebug("clear_mask: %p", _object);
 
 	THIS->reallyMasked = false;
-	THIS->container->setPalette(QPalette());
+	//THIS->container->setPalette(QPalette());
+	CWIDGET_set_color((CWIDGET *)THIS, THIS->widget.bg, THIS->widget.fg);
 
   if (!THIS->toplevel)
   {
@@ -155,12 +157,9 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
   QPixmap p;
   QColor c;
   QWidget *root = THIS->container;
-  QPalette palette(root->palette());
-  //QBitmap b;
+  QPalette palette;
 
-  //qDebug("define_mask: visible: %d", WIDGET->isVisible());
-
-	//qDebug("define_mask: %p  new_pict = %p  new_mask = %d", _object, new_pict, new_mask);
+	//qDebug("define_mask: (%s %p)  new_pict = %p  new_mask = %d", GB.GetClassName(THIS), THIS, new_pict, new_mask);
 
 	//if (THIS->embedded)
 	//	return;
@@ -207,10 +206,13 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
       //root->setBackgroundOrigin(QWidget::WidgetOrigin);
       //root->setErasePixmap(p);
     }
+		
+		//palette = root->palette();
+		//palette.setBrush(root->backgroundRole(), QBrush(p));
+		//root->setPalette(palette);
+		WINDOW->setBackgroundPixmap(p);
   }
   
-	palette.setBrush(root->backgroundRole(), QBrush(p));
- 	root->setPalette(palette);
  
   THIS->masked = new_mask;
 
@@ -284,6 +286,8 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
   QX11EmbedWidget *client = 0;
   #endif
   const char *name = GB.GetClassName(THIS);
+
+	THIS->widget.flag.fillBackground = true;
 
   if (MISSING(parent) || !VARG(parent))
   {
@@ -496,7 +500,7 @@ BEGIN_METHOD(CWINDOW_get_from_id, GB_INTEGER id)
 
   //qDebug("id = %d wid = %p", PARAM(id), wid);
 
-  if (wid != 0 && wid->isTopLevel())
+  if (wid != 0 && wid->isWindow())
   {
     //qDebug("-> %p", CWidget::getReal(wid));
     GB.ReturnObject(CWidget::getReal(wid));
@@ -748,10 +752,9 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CWINDOW_menu_next)
 
-  CWINDOW *window = OBJECT(CWINDOW);
   int index;
 
-  if (window->menuBar == NULL)
+  if (!THIS->menuBar)
   {
     GB.StopEnum();
     return;
@@ -759,13 +762,13 @@ BEGIN_METHOD_VOID(CWINDOW_menu_next)
 
   index = ENUM(int);
 
-  if (index >= window->menuBar->actions().count())
+  if (index >= THIS->menuBar->actions().count())
   {
     GB.StopEnum();
     return;
   }
 
-  GB.ReturnObject(CMenu::dict[window->menuBar->actions().at(index)]);
+  GB.ReturnObject(CMenu::dict[THIS->menuBar->actions().at(index)]);
 
   ENUM(int) = index + 1;
 
@@ -774,16 +777,15 @@ END_PROPERTY
 
 BEGIN_METHOD(CWINDOW_menu_get, GB_INTEGER index)
 
-  CWINDOW *window = OBJECT(CWINDOW);
   int index = VARG(index);
 
-  if (window->menuBar == NULL || index < 0 || index >= window->menuBar->actions().count())
+  if (!THIS->menuBar || index < 0 || index >= THIS->menuBar->actions().count())
   {
     GB.Error(GB_ERR_BOUND);
     return;
   }
 
-  GB.ReturnObject(CMenu::dict[window->menuBar->actions().at(index)]);
+  GB.ReturnObject(CMenu::dict[THIS->menuBar->actions().at(index)]);
 
 END_PROPERTY
 
@@ -1413,7 +1415,7 @@ GB_DESC CFormDesc[] =
 ***************************************************************************/
 
 MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
-  QMainWindow::QMainWindow(parent, embedded ? Qt::Widget : Qt::Window)
+  QWidget::QWidget(parent, embedded ? Qt::Widget : Qt::Window)
 {
   sg = 0;
   //shown = false;
@@ -1463,7 +1465,7 @@ MyMainWindow::~MyMainWindow()
 
   if (sg)
     delete sg;
-
+    
   /*if (THIS == NULL)
   {
     qWarning("~MyMainWindow: ob == NULL");
@@ -1475,7 +1477,12 @@ MyMainWindow::~MyMainWindow()
   GB.Detach(THIS);
 
 	if (THIS->menuBar)
-		CMenu::unrefChildren(THIS->menuBar);
+	{
+		//CMenu::unrefChildren(THIS->menuBar);
+		//qDebug("delete menuBar");
+		delete THIS->menuBar;
+		THIS->menuBar = 0;
+	}
 
 	remove_window_check_quit(THIS);
 	
@@ -1787,10 +1794,8 @@ void MyMainWindow::setResizable(bool b, bool force)
 		
 	_resizable = b;
 	
-  if (!b)
+  if (!b && isWindow())
   {
-  	if (layout())
-    	layout()->setSizeConstraint(QLayout::SetFixedSize);
     setMinimumSize(width(), height());
     setMaximumSize(width(), height());
   }
@@ -1798,8 +1803,6 @@ void MyMainWindow::setResizable(bool b, bool force)
   {
     setMinimumSize(0, 0);
     setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-  	if (layout())
-	    layout()->setSizeConstraint(QLayout::SetDefaultConstraint);
   }
 }
 
@@ -1807,14 +1810,14 @@ void MyMainWindow::setResizable(bool b, bool force)
 #else
 int MyMainWindow::getType()
 {
-	if (!isTopLevel())
+	if (!isWindow())
 		return 0;
 	return X11_get_window_type(winId());
 }
 
 void MyMainWindow::setType(int type)
 {
-	if (!isTopLevel())
+	if (!isWindow())
 		return;
 	X11_set_window_type(winId(), type);
 }
@@ -1890,7 +1893,7 @@ void MyMainWindow::moveEvent(QMoveEvent *e)
 
   //qDebug("Move: (%s %p) %d %d", GB.GetClassName(THIS), THIS, e->pos().x(), e->pos().y());
 
-  QMainWindow::moveEvent(e);
+  QWidget::moveEvent(e);
 
   //qDebug("Move (pos %d %d) (oldPos %d %d)", e->pos().x(), e->pos().y(), e->oldPos().x(), e->oldPos().y());
   //qDebug("     (geom %d %d) (fgeom %d %d)", geometry().x(), geometry().y(), frameGeometry().x(), frameGeometry().y());
@@ -1937,8 +1940,6 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
 {
   CWINDOW *_object = (CWINDOW *)CWidget::getReal(this);
   //int w, h;
-
-  //qDebug("Resize");
 
   //qDebug("Resize %p: %d %d <- %d %d", _object, e->size().width(), e->size().height(), e->oldSize().width(), e->oldSize().height());
 
@@ -2267,7 +2268,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	}
   #endif
 
-	THIS->toplevel = !parent || parent->isTopLevel();
+	THIS->toplevel = !parent || parent->isWindow();
 	THIS->embedded = !THIS->toplevel;
 
 	if (THIS->toplevel)
@@ -2315,12 +2316,16 @@ void MyMainWindow::center(bool force = false)
 void MyMainWindow::configure()
 {
   CWINDOW *_object = (CWINDOW *)CWidget::get(this);
-
+  QMenuBar *menuBar = THIS->menuBar;
+	int h;
+	
 	//qDebug("THIS->menuBar = %p  menuBar() = %p", THIS->menuBar, menuBar());
 
-	if (THIS->menuBar && !menuBar()->isHidden())
+	if (menuBar && !menuBar->isHidden())
 	{
-		THIS->container->setGeometry(0, menuBar()->height(), this->width(), this->height() - menuBar()->height());
+		h = menuBar->sizeHint().height();
+		menuBar->setGeometry(0, 0, this->width(), h);
+		THIS->container->setGeometry(0, h, this->width(), this->height() - h);
 	}
 	else
 	{
@@ -2328,8 +2333,9 @@ void MyMainWindow::configure()
 		THIS->container->setGeometry(0, 0, this->width(), this->height());
 		//THIS->container->setGeometry(0, 0, THIS->w, THIS->h);
 		THIS->container->raise();
-		CCONTAINER_arrange(THIS);
 	}
+	
+	CCONTAINER_arrange(THIS);
 
 	//qDebug(">>> THIS->menuBar = %p  menuBar() = %p", THIS->menuBar, menuBar());
 
@@ -2341,7 +2347,7 @@ void MyMainWindow::hide(void)
 {
   CWIDGET *_object = CWidget::get(this);
   THIS->hidden = TRUE;
-  QMainWindow::hide();
+  QWidget::hide();
 }
 
 void MyMainWindow::setName(const char *name, CWIDGET *control)
@@ -2361,7 +2367,7 @@ void MyMainWindow::resize(int w, int h)
 	if (!_resizable)
 		setResizable(true);
 		
-	QMainWindow::resize(w, h);
+	QWidget::resize(w, h);
 	
 	if (_resizable != save)
 		setResizable(save);
@@ -2374,7 +2380,7 @@ void MyMainWindow::setGeometry(int x, int y, int w, int h)
 	if (!_resizable)
 		setResizable(true);
 		
-	QMainWindow::setGeometry(x, y, w, h);
+	QWidget::setGeometry(x, y, w, h);
 	
 	if (_resizable != save)
 		setResizable(save);
@@ -2533,7 +2539,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 			
       if (THIS->toplevel)
         w->center();
-
+        
       post_show_event(THIS);
       
       if (THIS->shown)

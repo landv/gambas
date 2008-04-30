@@ -25,10 +25,9 @@
 
 #include "gambas.h"
 
-#include <qevent.h>
-//Added by qt3to4:
 #include <QPaintEvent>
 #include <QPixmap>
+#include <QEvent>
 
 #include "CWidget.h"
 #include "CContainer.h"
@@ -86,10 +85,8 @@ public:
 
 protected:
 
-  virtual void resize(int w, int h);
+  virtual void resizeEvent(QResizeEvent *);
   virtual void paintEvent(QPaintEvent *);
-  //virtual void drawContents(QPainter *p);
-  virtual void setGeometry(int x, int y, int w, int h);
 	virtual void setPalette(const QPalette &);
 
 private:
@@ -99,8 +96,6 @@ private:
   bool _merge;
   bool _focus;
   int _event_mask;
-
-  bool doResize(int w, int h);
 };
 
 #endif

@@ -57,15 +57,13 @@ typedef
   struct {
     GB_BASE ob;
     QWidget *widget;
-    unsigned short flag;
-    unsigned short _reserved0;
+    int32_t flag;
     GB_VARIANT_VALUE _reserved1;
     char *_reserved2;
-    char *_reserved3;
-    void *_reserved4;
-    void *_reserved5;
-    void *_reserved6;
-    int _reserved7;
+    void *_reserved3;
+    int _reserved4;
+    int32_t _reserved5;
+    int32_t _reserved6;
     }
   QT_WIDGET;
 
@@ -93,7 +91,9 @@ typedef
 	struct {
     QPainter *p;
     QPainter *pm;
-    QBitmap *mask;		
+    QBitmap *mask;
+    int fg;
+    int fillColor;
 		}
 	QT_DRAW_EXTRA;
 

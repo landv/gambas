@@ -180,7 +180,7 @@ Private Sub RefreshWizard()
     $hWizard.SetTitle(sText, hCurrent.Picture)
     $hWizard.SetPosition($iCurrent, GetPrevious($iCurrent) >= 0, GetNext($iCurrent) >= 0)
    
-    Wait
+    'Wait
 
   Endif
 

@@ -176,8 +176,8 @@ BEGIN_PROPERTY(CIMAGE_picture)
   CPICTURE *pict;
 
   GB.New(POINTER(&pict), GB.FindClass("Picture"), NULL, NULL);
-  delete pict->pixmap;
-  *pict->pixmap = QPixmap::fromImage(*(THIS->image));
+  if (!THIS->image->isNull())
+  	*pict->pixmap = QPixmap::fromImage(*(THIS->image));
 
   GB.ReturnObject(pict);
 

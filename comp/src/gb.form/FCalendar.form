@@ -5,59 +5,47 @@
   Text = ("")
   Resizable = False
   Arrangement = Arrange.Vertical
-  Spacing = 4
+  Spacing = 6
   { panToolbar HBox
     MoveScaled(1,1,55,4)
-    { btnReload ToolButton
-      MoveScaled(0,0,4,4)
-      ToolTip = ("Today")
-      Text = ("")
-      Picture = Picture["icon:/small/refresh"]
-    }
-    { btnPrevYear ToolButton
-      MoveScaled(4,0,4,4)
-      ToolTip = ("Previous year")
-      Text = ("")
-      Picture = Picture["icon:/small/rewind"]
-    }
-    { HBox2 HBox
-      MoveScaled(9,0,41,4)
-      Expand = True
-      Spacing = 8
+    Spacing = 6
+    { HBox1 HBox
+      MoveScaled(1,0,12,4)
+      { btnReload ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Today")
+        Text = ("")
+        Picture = Picture["icon:/small/calendar"]
+      }
       { btnPrevMonth ToolButton
-        MoveScaled(1,0,4,4)
+        MoveScaled(4,0,4,4)
         ToolTip = ("Previous month")
         Text = ("")
-        Picture = Picture["icon:/small/previous"]
-      }
-      { cmbMonth ComboBox
-        MoveScaled(5,0,19,4)
-        Expand = True
-        Text = ("")
-        ReadOnly = True
-      }
-      { txtYear SpinBox
-        MoveScaled(25,0,10,4)
-        MinValue = 1600
-        MaxValue = 9999
+        Picture = Picture["icon:/small/left"]
       }
       { btnNextMonth ToolButton
-        MoveScaled(36,0,4,4)
+        MoveScaled(8,0,4,4)
         ToolTip = ("Next month")
         Text = ("")
-        Picture = Picture["icon:/small/next"]
+        Picture = Picture["icon:/small/right"]
       }
     }
-    { btnNextYear ToolButton
-      MoveScaled(51,0,4,4)
-      ToolTip = ("Next year")
+    { cmbMonth ComboBox
+      MoveScaled(19,0,19,4)
+      Expand = True
       Text = ("")
-      Picture = Picture["icon:/small/forward"]
+      ReadOnly = True
+    }
+    { txtYear SpinBox
+      MoveScaled(39,0,10,4)
+      MinValue = 1600
+      MaxValue = 9999
     }
   }
   { dwgMonth DrawingArea
-    MoveScaled(1,6,56,29)
+    MoveScaled(1,7,56,29)
     Background = Color.TextBackground
+    Foreground = Color.TextForeground
     Expand = True
     Focus = True
     Border = Border.Sunken

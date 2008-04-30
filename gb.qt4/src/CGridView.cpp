@@ -32,6 +32,7 @@
 #include <QPixmap>
 #include <QResizeEvent>
 #include <QPaintEvent>
+#include <QColor>
 
 #include "CConst.h"
 #include "CColor.h"
@@ -246,13 +247,13 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
   else if (_fg == COLOR_DEFAULT)
     p->setPen(cg.text());
   else
-    p->setPen(QColor((uint)_fg));
+    p->setPen(QColor(_fg));
 
 	if (d->font)
 		p->setFont(*(d->font->font));
 
 	if (rich)
-		DRAW_rich_text(p, QApplication::palette(table()).active(), x, y, w, h, wordWrap() ? (_alignment | Qt::WordBreak) : _alignment, txt );
+		DRAW_rich_text(p, x, y, w, h, wordWrap() ? (_alignment | Qt::WordBreak) : _alignment, txt );
 	else
 		p->drawText(x, y, w, h, wordWrap() ? (_alignment | Qt::WordBreak) : _alignment, txt );
     

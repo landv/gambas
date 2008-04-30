@@ -76,14 +76,11 @@ public:
 	
 protected:
 
-  virtual void fontChange(const QFont &);
-  virtual void frameChanged();
+  virtual void changeEvent(QEvent *);
   virtual void resizeEvent(QResizeEvent *);
 
 private:
 
-	void updateMask();
-	
 	unsigned autoResize : 1;
 	unsigned transparent : 1;
 	unsigned locked : 1;

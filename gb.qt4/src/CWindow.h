@@ -135,13 +135,14 @@ public slots:
 };
 
 
-class MyMainWindow : public QMainWindow
+class MyMainWindow : public QWidget
 {
   Q_OBJECT
 
 private:
 
   QSizeGrip *sg;
+  QMenuBar *mb;
   //bool shown;
   //int border;
   //int state;
