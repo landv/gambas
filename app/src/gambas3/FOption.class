@@ -53,6 +53,8 @@ Public Sub _new()
 
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
+  cmbIconTheme.List = [("Desktop"), "Gnome", "KDE"]
+  cmbBrowser.List = [("(Default)"), "Konqueror", "Firefox", "Epiphany", "SeaMonkey", "Opera"]
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)

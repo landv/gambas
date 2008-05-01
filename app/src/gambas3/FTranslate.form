@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7,15,128,75)
+  MoveScaled(7,15,141,75)
   Text = ("Project translation")
   Icon = Picture["icon:/small/language"]
   Persistent = True
@@ -35,7 +35,7 @@
       Arrangement = Arrange.Vertical
       Orientation = Align.Left
       { cvwLang ColumnView
-        MoveScaled(1,19,19,25)
+        MoveScaled(1,4,19,25)
         Mouse = Mouse.Arrow
         Expand = True
         Sorted = True
@@ -54,13 +54,20 @@
       { HBox3 HBox
         MoveScaled(3,1,74,4)
         Spacing = 8
+        { lblFile Label
+          MoveScaled(0,0,12,4)
+          Font = Font["Bold"]
+          Padding = 2
+          Text = ("")
+          Border = Border.Sunken
+        }
         { cbxFileChoice ComboBox
-          MoveScaled(0,0,37,4)
+          MoveScaled(17,0,33,4)
           Text = ("")
           ReadOnly = True
         }
         { lblInfo Label
-          MoveScaled(38,0,35,4)
+          MoveScaled(57,0,16,4)
           Expand = True
           Text = ("")
           Alignment = Align.Right
@@ -126,7 +133,7 @@
         }
       }
       { cvwTranslate ColumnView
-        MoveScaled(3,10,70,25)
+        MoveScaled(3,19,70,16)
         Expand = True
         Sorted = True
         ScrollBar = Scroll.Vertical

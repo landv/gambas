@@ -568,7 +568,7 @@ msgstr "Libre"
 #: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1081
 #: FNewTranslation.class:70 FOpenProject.class:408 FPropertyProject.class:1150
 #: FSave.class:125 FSelectIcon.class:271 FTextEditor.class:588 FText.class:107
-#: FTranslate.class:548 Project.module:278
+#: FTranslate.class:551 Project.module:278
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -620,7 +620,7 @@ msgid "Paste"
 msgstr "Coller"
 
 #: FCommit.class:229 FConflict.class:348 FEditor.class:2751 FForm.class:3197
-#: FIconEditor.class:2143 FOption.class:1073 FTextEditor.class:753
+#: FIconEditor.class:2143 FOption.class:1075 FTextEditor.class:753
 msgid "Undo"
 msgstr "Annuler"
 
@@ -644,56 +644,53 @@ msgid ""
 "This file is in conflict with the revision #&1.\n"
 "You must resolve the conflict in order to use the file."
 msgstr ""
+"Ce fichier entre en conflit avec la révision #&1.\n"
+"Vous devez résoudre le conflit pour pouvoir utiliser ce fichier de nouveau."
 
 #: FConflict.class:25 FMain.class:1957
 msgid "&Edit"
 msgstr "&Éditer"
 
 #: FConflict.class:25 FFindList.class:167 FIconEditor.class:1406
-#: FInfo.class:399 FMakeInstall.class:229 FOption.class:1094 FTips.class:232
+#: FInfo.class:399 FMakeInstall.class:229 FOption.class:1096 FTips.class:232
 msgid "Close"
 msgstr "Fermer"
 
 #: FConflict.class:135
-#, fuzzy
 msgid "Version conflict"
-msgstr "Suivi"
+msgstr "Conflit de version"
 
 #: FConflict.class:191
-#, fuzzy
 msgid ""
 "The file has been modified.\n"
 "Do you really want to close the dialog?"
 msgstr ""
-"Cette image a été modifiée.\n"
-"Désirez-vous l'enregistrer ?"
+"Le fichier a été modifié.\n"
+"Désirez-vous réellement fermer la boite de dialogue ?"
 
 #: FConflict.class:219
 msgid "Some conflicts are not yet resolved."
-msgstr ""
+msgstr "Tous les conflits ne sont pas résolus."
 
 #: FConflict.class:225
-#, fuzzy
 msgid "Unable to resolve the conflict."
-msgstr "Impossible d'enregistrer le projet."
+msgstr "Impossible de résoudre le conflit."
 
 #: FConflict.class:254
-#, fuzzy
 msgid ""
 "The file has been modified.\n"
 "Do you really want to open another file?"
 msgstr ""
-"Cette image a été modifiée.\n"
-"Désirez-vous l'enregistrer ?"
+"Le fichier a été modifié.\n"
+"Désirez-vous réellement ouvrir un autre fichier ?"
 
 #: FConflict.class:254 FOpenProject.class:319 Project.module:278
 msgid "Open"
 msgstr "Ouvrir"
 
 #: FConflict.class:262
-#, fuzzy
 msgid "Conflict files"
-msgstr "Fichiers image"
+msgstr "Fichiers en conflits"
 
 #: FConflict.class:320 FEditor.class:2875 FForm.class:3107
 #: FIconEditor.class:1406 FTextEditor.class:856
@@ -714,22 +711,19 @@ msgstr "Détails"
 
 #: FConflict.class:421
 msgid "Resolve conflict with"
-msgstr ""
+msgstr "Résoudre le conflit avec"
 
 #: FConflict.class:438 FInfo.class:235
-#, fuzzy
 msgid "Information"
-msgstr "Information sur le projet"
+msgstr "Information"
 
 #: FConflict.class:456
-#, fuzzy
 msgid "&Save"
-msgstr "Enregistrer"
+msgstr "Enregi&strer"
 
 #: FConflict.class:462
-#, fuzzy
 msgid "Sol&ve"
-msgstr "Enregistrer"
+msgstr "&Résoudre"
 
 #: FCreateFile.class:66
 msgid "Gambas modules"
@@ -794,7 +788,7 @@ msgid "Name"
 msgstr "Nom"
 
 #: FCreateFile.class:685 FCreateProject.class:527 FMakeExecutable.class:98
-#: FOption.class:891 FPropertyProject.class:1556
+#: FOption.class:893 FPropertyProject.class:1556
 msgid "Options"
 msgstr "Options"
 
@@ -1088,7 +1082,7 @@ msgstr ""
 "Toutes les modifications seront perdues."
 
 #: FEditor.class:2021 FForm.class:2544 FIconEditor.class:2026
-#: FTextEditor.class:588 FTranslate.class:642
+#: FTextEditor.class:588 FTranslate.class:645
 msgid "Reload"
 msgstr "Recharger"
 
@@ -1172,7 +1166,7 @@ msgstr "Séparation horizontale"
 msgid "Vertical split"
 msgstr "Séparation verticale"
 
-#: FFindList.class:47 FIconEditor.class:2269 FOption.class:999
+#: FFindList.class:47 FIconEditor.class:2269 FOption.class:1001
 msgid "Line"
 msgstr "Ligne"
 
@@ -1192,7 +1186,7 @@ msgstr "Désirez-vous vraiment tout remplacer ?"
 msgid "Replace"
 msgstr "Remplacer"
 
-#: FFind.class:389 FTranslate.class:517
+#: FFind.class:389 FTranslate.class:520
 msgid "Search string cannot be found."
 msgstr "La chaîne recherchée est introuvable."
 
@@ -1310,7 +1304,7 @@ msgstr "Sélectionner tout"
 msgid "Unselect all"
 msgstr "Déselectionner tout"
 
-#: FForm.class:2982 FMain.class:199 FTranslate.class:548
+#: FForm.class:2982 FMain.class:199 FTranslate.class:551
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1635,7 +1629,7 @@ msgstr "Éditer la liste des propriétés"
 msgid "&Insert"
 msgstr "&Insérer"
 
-#: FList.class:197 FMenu.class:820 FTranslate.class:1411
+#: FList.class:197 FMenu.class:820 FTranslate.class:1587
 msgid "&Delete"
 msgstr "&Supprimer"
 
@@ -1976,7 +1970,7 @@ msgstr "Propriétés du projet"
 msgid "Refresh project"
 msgstr "Rafraîchir le projet"
 
-#: FMain.class:2102 FOption.class:619
+#: FMain.class:2102 FOption.class:621
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -2109,7 +2103,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr "Il n'y aucune information de changement pour cette version."
 
 #: FMakeInstall.class:278 FPropertyProject.class:1150 FSave.class:118
-#: FTranslate.class:680 Project.module:2207
+#: Project.module:2207
 msgid "Continue"
 msgstr "Continuer"
 
@@ -2363,7 +2357,7 @@ msgstr "Checked"
 msgid "Click on Insert to add a new menu."
 msgstr "Cliquez sur Insérer pour ajouter un nouveau menu."
 
-#: FNewTranslation.class:59 FTranslate.class:1396
+#: FNewTranslation.class:59 FTranslate.class:1572
 msgid "New translation"
 msgstr "Nouvelle traduction"
 
@@ -2427,220 +2421,192 @@ msgstr "Rapide"
 msgid "Select a theme"
 msgstr "Choisissez un thème"
 
-#: FOption.class:94
+#: FOption.class:56
+msgid "Desktop"
+msgstr "Bureau"
+
+#: FOption.class:57 FPropertyProject.class:57
+msgid "(Default)"
+msgstr "(Défaut)"
+
+#: FOption.class:96
 msgid "Define..."
 msgstr "Définir..."
 
-#: FOption.class:125
+#: FOption.class:127
 msgid "Gambas highlight theme files"
 msgstr "Fichiers thèmes de coloration de Gambas"
 
-#: FOption.class:126
+#: FOption.class:128
 msgid "Export a theme file"
 msgstr "Exporter un fichier thème"
 
-#: FOption.class:263
+#: FOption.class:265
 msgid "Select a theme file"
 msgstr "Choisissez un fichier thème"
 
-#: FOption.class:293
+#: FOption.class:295
 msgid "You need to restart the application to see your changes."
 msgstr ""
 "Vous devez redémarrer l'application pour que vos changements prennent effet."
 
-#: FOption.class:631
+#: FOption.class:633
 msgid "Foreground color..."
 msgstr "Avant-plan..."
 
-#: FOption.class:635
+#: FOption.class:637
 msgid "Background color..."
 msgstr "Arrière-plan..."
 
-#: FOption.class:643
+#: FOption.class:645
 msgid "Bold"
 msgstr "Gras"
 
-#: FOption.class:647
+#: FOption.class:649
 msgid "Italic"
 msgstr "Italique"
 
-#: FOption.class:651
+#: FOption.class:653
 msgid "Underline"
 msgstr "Souligné"
 
-#: FOption.class:660 FPropertyProject.class:1475
+#: FOption.class:662 FPropertyProject.class:1475
 msgid "General"
 msgstr "Général"
 
-#: FOption.class:668
+#: FOption.class:670
 msgid "Icon theme"
 msgstr "Thème d'icône"
 
-#: FOption.class:676
-msgid "Desktop"
-msgstr "Bureau"
-
-#: FOption.class:676
-msgid "Gnome"
-msgstr "-"
-
-#: FOption.class:676
-msgid "KDE"
-msgstr "-"
-
-#: FOption.class:686
+#: FOption.class:688
 msgid "Browser"
 msgstr "Navigateur"
 
-#: FOption.class:694 FPropertyProject.class:57
-msgid "(Default)"
-msgstr "(Défaut)"
-
-#: FOption.class:694
-msgid "Konqueror"
-msgstr "-"
-
-#: FOption.class:694
-msgid "Firefox"
-msgstr "-"
-
-#: FOption.class:694
-msgid "Epiphany"
-msgstr "-"
-
-#: FOption.class:694
-msgid "SeaMonkey"
-msgstr "-"
-
-#: FOption.class:694
-msgid "Opera"
-msgstr "-"
-
-#: FOption.class:707
+#: FOption.class:709
 msgid "Interface"
 msgstr "Interface"
 
-#: FOption.class:716
+#: FOption.class:718
 msgid "Show tooltips"
 msgstr "Afficher les bulles d'aide"
 
-#: FOption.class:723 FPropertyProject.class:1619
+#: FOption.class:725 FPropertyProject.class:1619
 msgid "No"
 msgstr "Non"
 
-#: FOption.class:723 FPropertyProject.class:1619
+#: FOption.class:725 FPropertyProject.class:1619
 msgid "Yes"
 msgstr "Oui"
 
-#: FOption.class:733
+#: FOption.class:735
 msgid "Show message bar"
 msgstr "Afficher la barre de message"
 
-#: FOption.class:750
+#: FOption.class:752
 msgid "Font size"
 msgstr "Taille de police"
 
-#: FOption.class:758
+#: FOption.class:760
 msgid "Normal"
 msgstr "Normal"
 
-#: FOption.class:758
+#: FOption.class:760
 msgid "Small"
 msgstr "Petite"
 
-#: FOption.class:768
+#: FOption.class:770
 msgid "Toolbox size"
 msgstr "Taille de la boîte à outils"
 
-#: FOption.class:786
+#: FOption.class:788
 msgid "Sort properties"
 msgstr "Trier les propriétés"
 
-#: FOption.class:803 FWelcome.class:47
+#: FOption.class:805 FWelcome.class:47
 msgid "Recent projects"
 msgstr "Projets récents"
 
-#: FOption.class:816
+#: FOption.class:818
 msgid "Max."
 msgstr "-"
 
-#: FOption.class:826
+#: FOption.class:828
 msgid "Quiet external commands"
 msgstr "Commandes externes silencieuses"
 
-#: FOption.class:843
+#: FOption.class:845
 msgid "Display property help"
 msgstr "Afficher l'aide des propriétés"
 
-#: FOption.class:860
+#: FOption.class:862
 msgid "Tabstrip font size"
 msgstr "Taille des titres d'onglets"
 
-#: FOption.class:868
+#: FOption.class:870
 msgid "Tiny"
 msgstr "Très petite"
 
-#: FOption.class:872
+#: FOption.class:874
 msgid "Editor"
 msgstr "Éditeur"
 
-#: FOption.class:877
+#: FOption.class:879
 msgid "Font"
 msgstr "Police"
 
-#: FOption.class:900
+#: FOption.class:902
 msgid "Automatic completion"
 msgstr "Complétion automatique"
 
-#: FOption.class:917
+#: FOption.class:919
 msgid "Default tab size"
 msgstr "Tabulation par défaut"
 
-#: FOption.class:930
+#: FOption.class:932
 msgid "spaces"
 msgstr "espaces"
 
-#: FOption.class:940
+#: FOption.class:942
 msgid "Show line numbers"
 msgstr "Afficher les numéros de lignes"
 
-#: FOption.class:957
+#: FOption.class:959
 msgid "Highlight modified lines"
 msgstr "Indiquer les lignes modifiées"
 
-#: FOption.class:974
+#: FOption.class:976
 msgid "Highlight current line"
 msgstr "Surligner la ligne courante"
 
-#: FOption.class:991
+#: FOption.class:993
 msgid "Procedure separation"
 msgstr "Séparation des procédures"
 
-#: FOption.class:999 FProperty.class:650
+#: FOption.class:1001 FProperty.class:650
 msgid "None"
 msgstr "Aucun"
 
-#: FOption.class:999
+#: FOption.class:1001
 msgid "Blend"
 msgstr "Dégradé"
 
-#: FOption.class:1009
+#: FOption.class:1011
 msgid "Fold procedures by default"
 msgstr "Replier les procedures par défaut"
 
-#: FOption.class:1026
+#: FOption.class:1028
 msgid "Keywords in upper case"
 msgstr "Mots-clefs en majuscule"
 
-#: FOption.class:1037
+#: FOption.class:1039
 msgid "Theme"
 msgstr "Thème"
 
-#: FOption.class:1059
+#: FOption.class:1061
 msgid "Import theme"
 msgstr "Importer un thème"
 
-#: FOption.class:1066
+#: FOption.class:1068
 msgid "Export theme"
 msgstr "Exporter le thème"
 
@@ -2944,155 +2910,161 @@ msgstr "Astuces du jour"
 msgid "Show tips on startup"
 msgstr "Afficher les astuces au démarrage"
 
-#: FTranslate.class:36
+#: FTranslate.class:37
 msgid "The project is void. There is nothing to translate."
 msgstr "Le projet est vide. Il n'y a rien à traduire."
 
-#: FTranslate.class:49
+#: FTranslate.class:50
 msgid "Untranslated"
 msgstr "Non traduit"
 
-#: FTranslate.class:50 MTheme.module:6
+#: FTranslate.class:51 MTheme.module:6
 msgid "Comments"
 msgstr "Commentaires"
 
-#: FTranslate.class:63
+#: FTranslate.class:64
 msgid "Language"
 msgstr "Langage"
 
-#: FTranslate.class:310
+#: FTranslate.class:313
 msgid "Cannot read translation file for language '&1'"
 msgstr "Impossible de lire le fichier de traduction pour la langue '&1'"
 
-#: FTranslate.class:458
+#: FTranslate.class:461
 msgid "Cannot save translation."
 msgstr "Impossible de sauvegarder la traduction."
 
-#: FTranslate.class:548
+#: FTranslate.class:551
 msgid "Do you really want to delete this translation ?"
 msgstr "Voulez-vous vraiment supprimer cette traduction ?"
 
-#: FTranslate.class:642
+#: FTranslate.class:645
 msgid "Do you really want to reload this translation ?"
 msgstr "Voulez-vous vraiment recharger cette traduction ?"
 
-#: FTranslate.class:656
+#: FTranslate.class:660
 msgid "Export a translation"
 msgstr "Exporter une traduction"
 
-#: FTranslate.class:658
+#: FTranslate.class:662
 msgid "Translation files"
 msgstr "Fichiers de traduction"
 
-#: FTranslate.class:672
+#: FTranslate.class:823
 msgid "Import a translation"
 msgstr "Importer une traduction"
 
-#: FTranslate.class:680
-msgid "Warning ! The translation file does not match the current language."
-msgstr ""
-"Attention ! Le nom du fichier de traduction ne correspond pas à la langue "
-"courante."
+#: FTranslate.class:850
+msgid "No translation were picked up."
+msgstr "Aucune traduction n'a été récupérée."
 
-#: FTranslate.class:696
+#: FTranslate.class:852
+msgid "One translation was picked up."
+msgstr "Une traduction a été récupérée."
+
+#: FTranslate.class:854
+msgid "&1 translations were picked up."
+msgstr "&1 traductions ont été récupérées."
+
+#: FTranslate.class:863
 msgid "Cannot import translation file."
 msgstr "Impossible d'importer le fichier de traduction."
 
-#: FTranslate.class:748
+#: FTranslate.class:915
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr ""
 "Les symboles de la chaîne traduite ne correspondent pas à ceux de la chaîne "
 "non traduite."
 
-#: FTranslate.class:761
+#: FTranslate.class:928
 msgid "Everything seems to be correct."
 msgstr "Tout semble correct."
 
-#: FTranslate.class:779
+#: FTranslate.class:946
 msgid "&1 strings (&2 not translated) - &3 % done"
 msgstr "&1 chaînes (&2 non traduites) - &3 % effectué"
 
-#: FTranslate.class:908
+#: FTranslate.class:1075
 msgid "The 'msgmerge' command has failed"
 msgstr "La commande 'msgmerge' a échoué"
 
-#: FTranslate.class:991
+#: FTranslate.class:1158
 msgid "All files"
 msgstr "Tous les fichiers"
 
-#: FTranslate.class:1201
+#: FTranslate.class:1369
 msgid "Project translation"
 msgstr "Traduction du projet"
 
-#: FTranslate.class:1250
+#: FTranslate.class:1418
 msgid "Show statistics"
 msgstr "Afficher les statistiques"
 
-#: FTranslate.class:1282
+#: FTranslate.class:1458
 msgid "Save translation"
 msgstr "Enregistrer la traduction"
 
-#: FTranslate.class:1289
+#: FTranslate.class:1465
 msgid "Clear this translation"
 msgstr "Effacer cette traduction"
 
-#: FTranslate.class:1296
+#: FTranslate.class:1472
 msgid "This string must not be translated"
 msgstr "Cette chaîne ne doit pas être traduite"
 
-#: FTranslate.class:1303
+#: FTranslate.class:1479
 msgid "Copy untranslated string"
 msgstr "Copier la chaîne non traduite"
 
-#: FTranslate.class:1310
+#: FTranslate.class:1486
 msgid "Verify the translation"
 msgstr "Vérifier la traduction"
 
-#: FTranslate.class:1317
+#: FTranslate.class:1493
 msgid "Find next untranslated string"
 msgstr "Rechercher la chaîne non traduite suivante"
 
-#: FTranslate.class:1324
+#: FTranslate.class:1500
 msgid "Find previous untranslated string"
 msgstr "Rechercher la chaîne non traduite précédente"
 
-#: FTranslate.class:1341
+#: FTranslate.class:1517
 msgid "Find a string in translation"
 msgstr "Rechercher une chaine dans la traduction"
 
-#: FTranslate.class:1397
+#: FTranslate.class:1573
 msgid "&New..."
 msgstr "&Nouveau..."
 
-#: FTranslate.class:1403
+#: FTranslate.class:1579
 msgid "Reload translation"
 msgstr "Recharger la traduction"
 
-#: FTranslate.class:1404
+#: FTranslate.class:1580
 msgid "&Reload"
 msgstr "&Recharger"
 
-#: FTranslate.class:1410
+#: FTranslate.class:1586
 msgid "Delete translation"
 msgstr "Supprimer la traduction"
 
-#: FTranslate.class:1417
+#: FTranslate.class:1593
 msgid "Import a translation file"
 msgstr "Importer un fichier de traduction"
 
-#: FTranslate.class:1418
+#: FTranslate.class:1594
 msgid "&Import..."
 msgstr "&Importer..."
 
-#: FTranslate.class:1424
+#: FTranslate.class:1600
 msgid "Export to a translation file"
 msgstr "Exporter vers un fichier de traduction"
 
-#: FTranslate.class:1425
+#: FTranslate.class:1601
 msgid "&Export..."
 msgstr "&Exporter..."
 
-#: FTranslate.class:1436
+#: FTranslate.class:1612
 msgid "&Close"
 msgstr "&Fermer"
 
@@ -3574,6 +3546,8 @@ msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
 msgstr ""
+"Certains fichiers sources du projet sont en conflit.\n"
+"Veuillez résoudre ces conflits pour pouvoir compiler le projet."
 
 #: Project.module:1522
 msgid "Compiling project"
@@ -3729,3 +3703,32 @@ msgstr "modifié"
 #: Save.module:38
 msgid "Cannot save file !"
 msgstr "Impossible d'enregistrer le fichier !"
+
+#~ msgid "Gnome"
+#~ msgstr "-"
+
+#~ msgid "KDE"
+#~ msgstr "-"
+
+#~ msgid "Konqueror"
+#~ msgstr "-"
+
+#~ msgid "Firefox"
+#~ msgstr "-"
+
+#~ msgid "Epiphany"
+#~ msgstr "-"
+
+#~ msgid "SeaMonkey"
+#~ msgstr "-"
+
+#~ msgid "Opera"
+#~ msgstr "-"
+
+#~ msgid "Unable to convert translation file to UTF-8."
+#~ msgstr "Impossible de convertir le fichier de traduction en UTF-8."
+
+#~ msgid "Warning ! The translation file does not match the current language."
+#~ msgstr ""
+#~ "Attention ! Le nom du fichier de traduction ne correspond pas à la langue "
+#~ "courante."

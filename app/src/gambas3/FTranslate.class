@@ -29,6 +29,7 @@ Private $sErrMerge As String
 Private cvwTranslateOrg As ColumnView
 Private $bDeleteIfVoid As Boolean
 Private $iLangW As Integer
+Private $cCacheImport As Collection
 
 Static Public Sub Run()
 
@@ -71,12 +72,12 @@ Private Sub GetTransCount(sLang As String) As Integer
   Dim hFile As File
   Dim iVal As Integer
   
-  If NOT Exist(Project.Dir &/ ".lang" &/ sLang & ".mo") Then Return 
+  If Not Exist(Project.Dir &/ ".lang" &/ sLang & ".mo") Then Return 
   
   hFile = Open Project.Dir &/ ".lang" &/ sLang & ".mo"
   
   Read #hFile, iVal
-  If (iVal = &h950412DE) XOR (System.ByteOrder = gb.BigEndian) Then
+  If (iVal = &h950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
     hFile.ByteOrder = gb.LittleEndian
   Else 
     hFile.ByteOrder = gb.BigEndian
@@ -94,12 +95,12 @@ Private Sub DisplayCompiledTrans(sLang As String, Optional nTrans As Integer)
   
   Dim nStr As Integer
 
-  If NOT chkStat.Value Then Return
+  If Not chkStat.Value Then Return
 
   If nTrans = 0 Then nTrans = cvwTranslateOrg.Count
   
   Try nStr = GetTransCount(sLang)
-  If NOT Error Then
+  If Not Error Then
     'DEBUG sLang;; nStr;; nTrans
     cvwLang[sLang][1] = Min(100, (nStr * 100) \ nTrans) & "%"
   Else 
@@ -141,7 +142,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   Dim sDir As String
   Dim sPath As String
   Dim hFic As File
-  Dim sLig As String
+  Dim sLine As String
   Dim bFuzzy As Boolean
   Dim bHeader As Boolean
   Dim iMode As Integer
@@ -155,20 +156,22 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
   SaveTranslate
 
-  If NOT sLang Then sLang = Language.Find(System.Language)
+  If Not sLang Then sLang = Language.Find(System.Language)
 
   sDir = Project.Dir &/ ".lang"
   sPath = sDir &/ sLang & ".po"
 
+  lblFile.Text = File.Name(sPath)
+
   $bDeleteIfVoid = False
 
-  If NOT Exist(sPath) Then
+  If Not Exist(sPath) Then
     Copy sDir &/ ".pot" To sPath
     VersionControl.AddFile(sPath)
     $bDeleteIfVoid = True
     'SHELL "cp " & Project.Quote(sDir &/ ".pot") & " " & Project.Quote(sPath) WAIT
   Else
-    Try MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(sPath) & " " & Quote.Shell(sDir &/ ".pot"))
+    Try MergeMessage(sPath, Quote.Shell(sPath) & " " & Quote.Shell(sDir &/ ".pot"))
     If Error Then 
       Debug $sErrMerge
       Copy sDir &/ ".pot" To sPath 
@@ -193,12 +196,12 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
   'PRINT "Loading "; sPath
 
-  Open sPath As #hFic
+  hFic = Open sPath 
 
-  While NOT Eof(hFic)
-    Line Input #hFic, sLig
-    If NOT sLig Then Break
-    $sHeader = $sHeader & sLig & "\n"
+  While Not Eof(hFic)
+    Line Input #hFic, sLine
+    If Not sLine Then Break
+    $sHeader = $sHeader & sLine & "\n"
   Wend
 
   $bIgnore = True
@@ -206,19 +209,19 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
   Do
 
-    If NOT Eof(hFic) Then
+    If Not Eof(hFic) Then
 
-      Line Input #hFic, sLig
+      Line Input #hFic, sLine
 
-      If Left$(sLig) = "#" Then
+      If Left$(sLine) = "#" Then
 
-        If Left$(sLig, 2) = "#:" Then
-          sMsgComment = Trim(Mid$(sLig, 3))
+        If Left$(sLine, 2) = "#:" Then
+          sMsgComment = Trim(Mid$(sLine, 3))
           Continue
         Endif
 
-        If Left$(sLig, 2) = "#," Then
-          If InStr(sLig, "fuzzy") Then
+        If Left$(sLine, 2) = "#," Then
+          If InStr(sLine, "fuzzy") Then
             bFuzzy = True
             Continue
           Endif
@@ -226,23 +229,23 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
       Endif
 
-      If Left$(sLig, 6) = "msgid " Then
-        sMsgId = Mid$(sLig, 8, -1)
+      If Left$(sLine, 6) = "msgid " Then
+        sMsgId = Mid$(sLine, 8, -1)
         iMode = MODE_MSGID
         Continue
       Endif
 
-      If Left$(sLig, 7) = "msgstr " Then
-        sMsgStr = Mid$(sLig, 9, -1)
+      If Left$(sLine, 7) = "msgstr " Then
+        sMsgStr = Mid$(sLine, 9, -1)
         iMode = MODE_MSGSTR
         Continue
       Endif
 
-      If Left$(sLig) = Chr$(34) Then
+      If Left$(sLine) = Chr$(34) Then
         If iMode = MODE_MSGID Then
-          sMsgId = sMsgId & Mid$(sLig, 2, -1)
+          sMsgId = sMsgId & Mid$(sLine, 2, -1)
         Else If iMode = MODE_MSGSTR Then
-          sMsgStr = sMsgStr & Mid$(sLig, 2, -1)
+          sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
         Endif
         Continue
       Endif
@@ -295,7 +298,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   $bModify = False
   
   Try cvwLang.Add($sLang, Language.ToName($sLang))
-  If NOT Error AND If chkStat.Value Then cvwLang[$sLang][1] = "0%"
+  If Not Error And If chkStat.Value Then cvwLang[$sLang][1] = "0%"
   Try cvwLang[$sLang].Selected = True
 
   DisplayTrans
@@ -364,10 +367,10 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
   Dim bExistMO As Boolean
   Dim sPathMO As String
 
-  If NOT $sLang Then Return
+  If Not $sLang Then Return
 
-  If NOT $bDeleteIfVoid Then  
-    If NOT ($bModify OR bForce) Then Return
+  If Not $bDeleteIfVoid Then  
+    If Not ($bModify Or bForce) Then Return
   Endif
 
   UpdateOrg()
@@ -431,7 +434,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
     Shell "msgfmt -o " & Quote.Shell(sPathMO) & " " & Quote.Shell($sPath) Wait
     
-    If NOT bExistMO Then VersionControl.AddFile(sPathMO)
+    If Not bExistMO Then VersionControl.AddFile(sPathMO)
 
   Else
 
@@ -492,7 +495,7 @@ Public Sub btnFind_Click()
   Dim sKey As String
 
   sFind = LCase(txtFind.Text)
-  If NOT sFind Then Return
+  If Not sFind Then Return
   If cvwTranslate.Count = 0 Then Return
 
   With cvwTranslate
@@ -502,7 +505,7 @@ Public Sub btnFind_Click()
     Do
 
       .MoveNext()
-      If NOT .Available Then
+      If Not .Available Then
         .MoveFirst()
       Endif
 
@@ -574,7 +577,7 @@ Public Sub btnNew_Click()
   Dim sLang As String
 
   sLang = FNewTranslation.Run()
-  If NOT sLang Then Return
+  If Not sLang Then Return
 
   SetLang(sLang)
 
@@ -651,6 +654,7 @@ Public Sub btnClear_Click()
 
 End
 
+
 Public Sub btnExport_Click()
 
   Dialog.Title = ("Export a translation")
@@ -665,9 +669,156 @@ Public Sub btnExport_Click()
 
 End
 
+Private Sub InitIndex()
+  
+  $cCacheImport = New Collection
+  
+  cvwTranslate.MoveFirst
+  While cvwTranslate.Available
+    $cCacheImport[cvwTranslate.Item[0]] = CInt(cvwTranslate.Item.Key)
+    cvwTranslate.MoveNext
+  Wend
+  
+End
+
+
+Private Sub FindIndex(sMsgId As String) As Integer
+
+  sMsgId = Trim(sMsgId)
+  If Not sMsgId Then Return
+  If $cCacheImport.Exist(sMsgId) Then 
+    Return $cCacheImport[sMsgId]
+  Endif
+  
+End
+
+
+Private Sub ImportMessage(sPath As String) As Integer
+
+  Dim hFic As File
+  Dim sLine As String
+  Dim sMsgComment As String
+  Dim bFuzzy As Boolean
+  Dim sMsgId As String
+  Dim iMode As Integer
+  Dim sMsgStr As String
+  Dim iIndex As Integer
+  Dim nTrans As Integer
+  Dim sTemp As String
+  Dim sOutput As String
+  Dim sCharset As String
+  
+  ' sTemp = Temp$()
+  ' sOutput = Temp$()
+  ' Shell "msgconv -t UTF-8 -o " & Quote.Shell(sTemp) & " " & Quote.Shell(sPath) & " > " & Quote.Shell(sOutput) & " 2>&1" Wait
+  ' If Process.LastValue Then 
+  '   $sErrMerge = "\n\n" & DConv(File.Load(sOutput))
+  '   Error.Raise(("Unable to convert translation file to UTF-8."))
+  ' Endif
+  
+  InitIndex
+  
+  hFic = Open sPath
+
+  Do
+
+    If Not Eof(hFic) Then
+
+      Line Input #hFic, sLine
+
+      If Left$(sLine) = "#" Then
+
+        If Left$(sLine, 2) = "#:" Then
+          sMsgComment = Trim(Mid$(sLine, 3))
+          Continue
+        Endif
+
+        If Left$(sLine, 2) = "#," Then
+          If InStr(sLine, "fuzzy") Then
+            bFuzzy = True
+            Continue
+          Endif
+        Endif
+
+        Continue
+
+      Endif
+
+      If Left$(sLine, 6) = "msgid " Then
+        sMsgId = Mid$(sLine, 8, -1)
+        iMode = MODE_MSGID
+        Continue
+      Endif
+
+      If Left$(sLine, 7) = "msgstr " Then
+        sMsgStr = Mid$(sLine, 9, -1)
+        iMode = MODE_MSGSTR
+        Continue
+      Endif
+
+      If Left$(sLine) = Chr$(34) Then
+        If iMode = MODE_MSGID Then
+          sMsgId = sMsgId & Mid$(sLine, 2, -1)
+        Else If iMode = MODE_MSGSTR Then
+          If Not sMsgId Then
+            If sLine Like "\"Content-type:*; charset=*" Then
+              sLine = Replace(Mid$(sLine, 2, -1), "\\n", "")
+              Try sCharset = UCase(Trim(Scan(sLine, "*; charset=*")[1]))
+              If sCharset = "UTF-8" Then sCharset = ""
+            Endif
+          Else
+            sMsgStr = sMsgStr & Mid$(sLine, 2, -1)
+          Endif
+        Endif
+        Continue
+      Endif
+
+    Endif
+
+    If Trim(sMsgId) Then
+
+      iIndex = FindIndex(sMsgId)
+        
+      If iIndex > 0 And If cvwTranslate[iIndex][1] = "" Then
+      
+        If sCharset Then sMsgStr = Conv(sMsgStr, sCharset, "UTF-8")
+      
+        If sMsgStr = "-\\n" Then sMsgStr = "-"
+  
+        If bFuzzy Then
+          bFuzzy = False
+        Else
+          'Debug sMsgId
+          cvwTranslate[iIndex][1] = sMsgStr
+          If sMsgStr Then 
+            Inc $nTrans
+            Inc nTrans
+          Endif
+        Endif
+          
+      Endif
+      
+    Endif
+
+    sMsgId = ""
+    sMsgComment = ""
+    sMsgStr = ""
+
+    If Eof(hFic) Then Break
+
+  Loop
+  
+  Close hFic
+
+  Return nTrans
+  
+End
+
+
 Public Sub btnImport_Click()
 
   Dim sPath As String
+  Dim nTrans As Integer
 
   Dialog.Title = ("Import a translation")
   Dialog.Path = Settings["/FTranslate/ImportPath", System.User.Home]  
@@ -676,23 +827,39 @@ Public Sub btnImport_Click()
   
   Settings["/FTranslate/ImportPath"] = Dialog.Path
 
-  If NOT (File.BaseName(Dialog.Path) LIKE (Project.Name & "-" & $sLang & "-*")) Then
-    If Message.Warning(("Warning ! The translation file does not match the current language."), ("Continue"), ("Cancel")) <> 1 Then
-      Return
-    Endif
-  Endif
+  ' If Not (File.BaseName(Dialog.Path) Like (Project.Name & "-" & $sLang & "-*")) Then
+  '   If Message.Warning(("Warning ! The translation file does not match the current language."), ("Continue"), ("Cancel")) <> 1 Then
+  '     Return
+  '   Endif
+  ' Endif
+
+  Inc Application.Busy
 
   sPath = Project.Dir &/ ".lang" &/ $sLang & ".po"
 
   'SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(Dialog.Path) & " " & Project.Quote(sPath) & " 2>/dev/null" WAIT
-  MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(Dialog.Path) & " " & Quote.Shell(sPath))
-  $bDeleteIfVoid = False
-  SetLang($sLang)
+  'MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(Dialog.Path) & " " & Quote.Shell(sPath))
+  nTrans = ImportMessage(Dialog.Path)
+  DisplayTrans
   $bModify = True
+  SaveTranslate
+
+  Dec Application.Busy
+
+  If nTrans = 0 Then
+    Message.Info(("No translation were picked up."))
+  Else If nTrans = 1 Then
+    Message.Info(("One translation was picked up."))
+  Else If nTrans > 0
+    Message.Info(Subst(("&1 translations were picked up."), nTrans))
+  Endif
+
+
   'SaveTranslate(TRUE)
 
 Catch
 
+  Application.Busy = 0
   Message.Error(("Cannot import translation file.") & "\n\n" & Error.Text & $sErrMerge)
 
 End
@@ -730,7 +897,7 @@ Public Sub btnVerify_Click()
   Dim sOrig As String
   Dim sTrans As String
 
-  If NOT cvwTranslate.Key Then Return
+  If Not cvwTranslate.Key Then Return
 
   With cvwTranslate
 
@@ -753,7 +920,7 @@ Public Sub btnVerify_Click()
       Endif
 
       .MoveNext()
-      If NOT .Available Then
+      If Not .Available Then
         .MoveFirst()
       Endif
 
@@ -841,11 +1008,11 @@ Public Sub btnNext_Click()
     Do
 
       .MoveBelow()
-      If NOT .Available Then
+      If Not .Available Then
         .MoveFirst()
       Endif
 
-      If NOT .Item[1] Then
+      If Not .Item[1] Then
         .Item.EnsureVisible
         .Item.Selected = True
         Return
@@ -870,11 +1037,11 @@ Public Sub btnPrevious_Click()
     Do
 
       .MoveAbove()
-      If NOT .Available Then
+      If Not .Available Then
         .MoveLast()
       Endif
 
-      If NOT .Item[1] Then
+      If Not .Item[1] Then
         .Item.EnsureVisible
         .Item.Selected = True
         Return
@@ -895,7 +1062,7 @@ Private Sub MergeMessage(sPath As String, sOption As String)
 
   sTemp = Temp$
 
-  Shell "msgmerge " & sOption & " > " & Quote.Shell(sTemp) & " 2>&1" Wait
+  Shell "msgmerge -o " & Quote.Shell(sPath & ".new") & " " & sOption & " > " & Quote.Shell(sTemp) & " 2>&1" Wait
   If Exist(sPath & ".new") Then
     Kill sPath
     Move sPath & ".new" To sPath
@@ -1036,7 +1203,7 @@ Private Sub ShiftToSort(Optional sSortText As String)
   ResizeTable
   
   Try cvwTranslate.MoveTo(sLastKey)
-  If NOT cvwTranslate.Available Then 
+  If Not cvwTranslate.Available Then 
     cvwTranslate.MoveFirst
   Endif 
   cvwTranslate.item.Selected = True
@@ -1054,7 +1221,7 @@ Private Sub UpdateOrg(Optional bNew As Boolean)
   With cvwTranslate
     .MoveFirst
     Do While .Available
-      sKey = .item.Key
+      sKey = .Item.Key
       If bNew Then 
         cvwTranslateOrg.Add(sKey, .item[0])
         For ni = 1 To .Columns.Count - 1
