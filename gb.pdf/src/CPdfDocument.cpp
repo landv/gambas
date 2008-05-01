@@ -255,7 +255,11 @@ static char* aux_get_target_from_action(LinkAction *act)
 			tmp=((LinkNamed*)act)->getName(); break;
 
 		case actionMovie:
+			#ifdef POPPLER_VERSION_0_8
+			tmp=((LinkMovie*)act)->getAnnotTitle(); break;
+			#else
 			tmp=((LinkMovie*)act)->getTitle(); break;
+			#endif
 
 		default:
 			break;
