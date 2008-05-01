@@ -661,6 +661,8 @@ END
 
 PRIVATE SUB SetCurrent(iCurrent AS Integer)
 
+  IF iCurrent < 0 OR iCurrent >= lstMenu.Count THEN RETURN
+
   $iCurrent = iCurrent
   lstMenu.Index = $iCurrent
   lstMenu[iCurrent].Selected = TRUE

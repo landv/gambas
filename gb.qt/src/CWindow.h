@@ -193,6 +193,9 @@ public:
   void configure(void);
   
   void setName(const char *, CWIDGET *);
+
+  virtual void resize(int w, int h);
+  virtual void setGeometry(int x, int y, int w, int h);
 };
 
 

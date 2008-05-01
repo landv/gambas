@@ -19,7 +19,8 @@ PUBLIC SUB Form_Open()
   ELSE 
     txtPassword.SetFocus
   ENDIF 
-  
+
+  FTextEditor.ReadConfigEditor(edtChange)  
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
   
 END

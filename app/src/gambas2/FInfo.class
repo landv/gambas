@@ -11,7 +11,18 @@ PRIVATE SUB GetCount(sName AS String, sExt AS String, OPTIONAL sSub AS String) A
 END
 
 
-PRIVATE SUB GetInfo()
+PRIVATE SUB FormatPath(sPath AS String) AS String
+  
+  IF sPath LIKE (System.User.Home & "/*") THEN   
+    sPath = "~" &/ Mid$(sPath, Len(System.User.Home) + 2)
+  ENDIF 
+  
+  RETURN sPath
+  
+END
+
+
+PRIVATE SUB GetInfo(sPath AS String)
   
   DIM sLink AS String
   DIM sType AS String
@@ -23,11 +34,8 @@ PRIVATE SUB GetInfo()
   DIM sLine AS Integer
   DIM sOutput AS String
   DIM sName AS String
-  DIM sPath AS String
   DIM hPict AS Picture
   
-  sPath = Project.ProjectTree.Key
-
   IF Left(sPath) = "$" THEN sPath = Project.Dir
   IF NOT sPath THEN sPath = Project.Dir
  
@@ -37,6 +45,9 @@ PRIVATE SUB GetInfo()
     lblName.Text = Project.ProjectTree.Current.Text
   ENDIF
   lblName.Adjust
+  
+  lblDir.Text = FormatPath(File.Dir(sPath))
+  lblDir.Pos = 0
   
   WITH Stat(sPath)
   
@@ -145,7 +156,7 @@ PRIVATE SUB GetInfo()
   
 FINALLY 
 
-  lblLink.Text = sLink
+  lblLink.Text = FormatPath(sLink)
   lblLink.Parent.Visible = sLink
   lblLink.Pos = 0
   lblType.Text = sType
@@ -166,7 +177,7 @@ END
 
 PUBLIC SUB Run()
 
-  GetInfo()
+  GetInfo(Project.ProjectTree.Key)
   ME.ShowDialog
   
 END
@@ -175,5 +186,12 @@ PUBLIC SUB btnClose_Click()
 
   ME.Close
 
+END
+
+PUBLIC SUB ShowInfo(sPath AS String)
+  
+  GetInfo(sPath)
+  panButton.Hide
+  
 END
 

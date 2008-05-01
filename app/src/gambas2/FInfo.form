@@ -1,7 +1,7 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,0,43,34)
+  MoveScaled(0,0,66,36)
   Text = ("Information")
   Icon = Picture["icon:/small/info"]
   Persistent = True
@@ -13,6 +13,8 @@
     Arrangement = Arrange.Horizontal
     AutoResize = True
     Spacing = 8
+    Padding = 2
+    Border = Border.Sunken
     { picInfo PictureBox
       MoveScaled(0,0,6,4)
     }
@@ -50,7 +52,7 @@
       }
     }
     { HBox1 HBox
-      MoveScaled(1,5,35,3)
+      MoveScaled(1,4,35,3)
       AutoResize = True
       Spacing = 8
       { Label1 Label
@@ -65,7 +67,7 @@
       }
     }
     { HBox3 HBox
-      MoveScaled(1,9,35,3)
+      MoveScaled(1,7,35,3)
       AutoResize = True
       Spacing = 8
       { Label2 Label
@@ -80,7 +82,7 @@
       }
     }
     { HBox4 HBox
-      MoveScaled(1,13,35,3)
+      MoveScaled(1,10,35,3)
       AutoResize = True
       Spacing = 8
       { Label3 Label
@@ -94,8 +96,27 @@
         Text = ("")
       }
     }
+    { HBox2 HBox
+      MoveScaled(1,13,35,3)
+      Spacing = 8
+      { Label6 Label
+        MoveScaled(0,0,12,3)
+        Font = Font["Bold"]
+        Text = ("Directory")
+        Alignment = Align.TopNormal
+      }
+      { lblDir TextBox
+        MoveScaled(15,0,18,3)
+        Background = Color.Background
+        Foreground = Color.Foreground
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        Border = False
+      }
+    }
     { HBox6 HBox
-      MoveScaled(1,17,35,3)
+      MoveScaled(1,18,35,3)
       Expand = True
       Spacing = 8
       { Label4 Label
@@ -112,17 +133,21 @@
       }
     }
   }
-  { HBox2 HBox
+  { panButton HBox
     MoveScaled(1,30,36,3)
     { Panel1 Panel
       MoveScaled(5,1,3,2)
       Expand = True
     }
     { btnClose Button
-      MoveScaled(18,0,15,3)
+      MoveScaled(14,0,15,3)
       Text = ("Close")
       Default = True
       Cancel = True
+    }
+    { Panel3 Panel
+      MoveScaled(30,0,3,2)
+      Expand = True
     }
   }
 }

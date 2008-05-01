@@ -96,7 +96,7 @@ PUBLIC SUB ReadConfig()
 
 END
 
-PRIVATE SUB ReadConfigEditor(hEditor AS Editor)
+STATIC PUBLIC SUB ReadConfigEditor(hEditor AS Editor)
 
   hEditor.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
 
@@ -659,6 +659,7 @@ PRIVATE SUB SetViewMode(iViewMode AS Integer)
   
   Editor.SetFocus
   Form_Resize
+  Editors_Cursor
   
 END
 

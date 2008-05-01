@@ -39,7 +39,17 @@
 MyPictureBox::MyPictureBox(QWidget *parent)
 : QLabel(parent)
 {
-  setWFlags(Qt::WNoAutoErase);
+}
+
+void MyPictureBox::updateBackground()
+{
+	if (pixmap() && pixmap()->hasAlpha())
+	{
+		clearWFlags(Qt::WNoAutoErase);
+		update();
+	}
+	else
+		setWFlags(Qt::WNoAutoErase);
 }
 
 void MyPictureBox::setPalette(const QPalette &pal)
@@ -78,7 +88,7 @@ BEGIN_PROPERTY(CPICTUREBOX_picture)
   else
   {
     SET_PICTURE(WIDGET->setPixmap, WIDGET->setPicture, &(THIS->picture), PROP(GB_OBJECT));
-
+    WIDGET->updateBackground();
     /*
     if (wid->pixmap() != 0)
       if (!wid->hasScaledContents())

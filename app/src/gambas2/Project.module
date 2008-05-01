@@ -232,6 +232,7 @@ PRIVATE SUB LastOpenedFiles()
   iActive = Config["/OpenFile/Active", 0]
   FOR iInd = 1 TO nOpen
     aOpen = Split(Config["/OpenFile/File[" & CStr(iInd) & "]"], ":")
+    IF VersionControl.InConflict(Project.Dir &/ aOpen[0]) THEN CONTINUE
     hForm = OpenFile(Project.Dir &/ aOpen[0])
     IF NOT hForm THEN CONTINUE
     IF aOpen.Count = 2 THEN TRY hForm.SetState(aOpen[1])
@@ -471,6 +472,24 @@ PUBLIC FUNCTION Close() AS Boolean
 
 END
 
+PRIVATE SUB AddEmblem(hPict AS Picture, sEmblem AS String) AS Picture
+
+  DIM hImage AS Image
+  DIM hEmblem AS Image
+  DIM iSize AS Integer
+
+  iSize = ((hPict.Height \ 2) \ 8) * 8
+  
+  hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5, TRUE)
+  
+  hImage = NEW Image(hPict.Width + iSize, hPict.Height, TRUE)
+  hImage.Fill(Color.Transparent)
+  hImage.Draw(hPict.Image, iSize, 0)
+  hImage.Draw(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
+  RETURN hImage.Picture
+  
+END
+
 
 PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
   
@@ -487,6 +506,8 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
   DIM sPrefix AS String
   DIM bNoStartup AS Boolean
   DIM iDim AS Integer
+  DIM bConflict AS Boolean
+  DIM hConflict AS Image
   
   IF iSize THEN 
     sPrefix = "icon:/" & iSize
@@ -498,6 +519,7 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
   WITH Stat(sPath)
 
     bLink = .Type = gb.Link
+    bConflict = FALSE
     
     IF .Type = gb.Directory THEN 
     
@@ -505,6 +527,7 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
   
     ELSE
     
+      bConflict = VersionControl.InConflict(sPath)
       sIcon = sPrefix &/ "file"
     
       sExt = File.Ext(sPath)
@@ -576,6 +599,9 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
     ELSE  
       hPict = Picture[sPrefix &/ "image"].Copy()
     ENDIF
+
+    IF bConflict THEN hPict = AddEmblem(hPict, "icon:/32/warning")
+
     IF bLink THEN 
       Draw.Begin(hPict)
       Draw.Picture(Picture["img/16/link.png"], 0, hPict.Height - 16)
@@ -587,6 +613,7 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
     sKey = sIcon
     IF bLink THEN sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-link" & ".png"
     IF bStartup THEN sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-startup" & ".png"
+    IF bConflict THEN sKey = File.Dir(sKey) &/ File.BaseName(sKey) & "-conflict" & ".png"
     
     'hPict = NULL
     'IF NOT bNoStartup THEN hPict = Picture[sKey]
@@ -599,15 +626,8 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
       IF NOT hPict THEN hPict = Picture["img/16/unknown.png"]
       hPict = hPict.Copy()
       
-      IF bStartup THEN
-      
-        hImage = NEW Image(hPict.Width + 8, hPict.Height, TRUE)
-        hImage.Fill(Color.Transparent)
-        hImage.Draw(hPict.Image, 8, 0)
-        hImage.Draw(Image.Load("img/16/startup.png"), 0, 0)
-        hPict = hImage.Picture
-        
-      ENDIF 
+      IF bStartup THEN hPict = AddEmblem(hPict, "icon:/32/play")
+      IF bConflict THEN hPict = AddEmblem(hPict, "icon:/32/warning")
 
       IF iSize THEN 
          hPict = hPict.Image.Stretch(hPict.Width * iSize / hPict.Height, iSize, TRUE).Picture
@@ -623,8 +643,8 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
 
     ENDIF  
   
-  ENDIF  
-  
+  ENDIF
+
   RETURN hPict
   
 END
@@ -756,6 +776,12 @@ PRIVATE SUB AddFile(sDir AS String, sFile AS String, OPTIONAL bAfter AS Boolean,
       
       ENDIF
 
+    ENDIF
+
+    IF sExt = "mine" OR IF Left(sExt) = "r" AND IsDigit(Mid$(sExt, 2)) THEN 
+      IF Exist(sDir &/ File.BaseName(sPath)) THEN 
+        bIgnore = TRUE
+      ENDIF
     ENDIF
 
     IF NOT bIgnore THEN
@@ -1074,6 +1100,8 @@ PUBLIC FUNCTION LoadFile(sPath AS String) AS Object
 
     INC Application.Busy
 
+    IF VersionControl.InConflict(sPath) THEN Error.Raise("File in conflict")
+
     SetMessage(Subst(("Loading &1..."), File.Name(sPath)))
 
     'PRINT "Load: "; sPath
@@ -1200,6 +1228,12 @@ PUBLIC SUB OpenFile(sPath AS String, OPTIONAL iLine AS Integer) AS Object
   '  FProperty.Show
   '  FToolBox.Show
   'ENDIF
+  
+  IF VersionControl.InConflict(sPath) THEN 
+    FConflict.Run(sPath)
+    IF VersionControl.InConflict(sPath) THEN RETURN
+    RefreshKey(sPath)
+  ENDIF
 
   LoadFile(sPath)
 
@@ -1449,6 +1483,12 @@ PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) 
 
   FProperty.SaveProperty
   Save(TRUE)
+
+  IF VersionControl.HasConflict() THEN 
+    UnlockIt()
+    Message.Warning(("Some project source files are in conflict.\nPlease solve them if you want to compile the project."))
+    RETURN TRUE
+  ENDIF
 
   SetMessage(("Compiling project") & " " & Project.Name & "...")
 

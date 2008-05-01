@@ -163,7 +163,7 @@ PUBLIC SUB Status() AS String
   
   DIM sStatus AS String
   
-  IF $bSvn THEN 
+  IF $bSVN THEN 
     SHELL "cd " & Quote.Shell(Project.Dir) & "; svn status -q" TO sStatus
     RETURN sStatus
   ENDIF
@@ -181,7 +181,7 @@ PUBLIC SUB Commit(sUser AS String, sPassword AS String, sChange AS String) AS Bo
   DIM hFile AS File
   DIM sCmd AS String
   
-  IF $bSvn THEN 
+  IF $bSVN THEN 
     hFile = OPEN Temp$("commit") FOR CREATE 
     PRINT #hFile, sChange;
     CLOSE #hFile
@@ -191,6 +191,7 @@ PUBLIC SUB Commit(sUser AS String, sPassword AS String, sChange AS String) AS Bo
       sCmd &= sPassword
     ENDIF
     sCmd &= " --file " & Quote.Shell(Temp$("commit")) & " " & Quote.Shell(Project.Dir)
+    sCmd &= " --non-interactive"
     Run(sCmd, sPassword)
     RETURN Process.LastValue
   ENDIF    
@@ -200,7 +201,7 @@ END
 
 PUBLIC SUB Update() AS Boolean
   
-  IF $bSvn THEN 
+  IF $bSVN THEN 
     Run("svn update " & Quote.Shell(Project.Dir))
     RETURN Process.LastValue
   ENDIF
@@ -210,7 +211,7 @@ END
 
 PUBLIC SUB Revert() AS Boolean
   
-  IF $bSvn THEN 
+  IF $bSVN THEN 
     Run("svn -R revert " & Quote.Shell(Project.Dir))
     RETURN Process.LastValue
   ENDIF
@@ -224,4 +225,32 @@ PUBLIC SUB CheckoutSVN(sPath AS String, sDir AS String, hEditor AS Editor) AS Bo
   Run("cd " & Quote.Shell(sDir) & "; svn checkout " & Quote.Shell(sPath))
   $hEditor = NULL
   
+END
+
+PUBLIC SUB InConflict(sPath AS String) AS Boolean
+  
+  IF $bSVN THEN 
+    'IF Exist(sPath & ".mine") THEN RETURN TRUE
+    IF Dir(File.Dir(sPath), File.Name(sPath) & ".r*").Count THEN RETURN TRUE
+  ENDIF
+  
+END
+
+PUBLIC SUB Resolve(sPath AS String) AS Boolean
+  
+  IF $bSVN THEN 
+    Run("svn resolved " & Quote.Shell(sPath))
+    RETURN Process.LastValue
+  ENDIF  
+  
+END
+
+PUBLIC SUB HasConflict() AS Boolean
+
+  IF $bSVN THEN
+    IF Dir(Project.Dir, "*.module.mine").Count THEN RETURN TRUE  
+    IF Dir(Project.Dir, "*.class.mine").Count THEN RETURN TRUE  
+    IF Dir(Project.Dir, "*.form.mine").Count THEN RETURN TRUE  
+  ENDIF  
+ 
 END

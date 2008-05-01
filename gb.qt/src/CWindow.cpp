@@ -1616,9 +1616,10 @@ void MyMainWindow::showModal(void)
 	
   CWIDGET_clear_flag(THIS, WF_CLOSED); // Normaly done in showActivate()
   
-  CWIDGET_set_flag(THIS, WF_IN_SHOW);
-	post_show_event(THIS);
-  CWIDGET_clear_flag(THIS, WF_IN_SHOW);
+  // If we done that now, the form is not arranged!
+  //CWIDGET_set_flag(THIS, WF_IN_SHOW);
+	//post_show_event(THIS);
+  //CWIDGET_clear_flag(THIS, WF_IN_SHOW);
 
 	if (!CWIDGET_test_flag(THIS, WF_CLOSED))
 	{
@@ -2245,6 +2246,31 @@ void MyMainWindow::setName(const char *name, CWIDGET *control)
 		names.insert(name, control);
 }
 
+void MyMainWindow::resize(int w, int h)
+{
+	int save = border;
+	
+	if (border == BorderFixed)
+		setBorder(BorderResizable);
+		
+	QMainWindow::resize(w, h);
+	
+	if (border != save)
+		setBorder(save);
+}
+
+void MyMainWindow::setGeometry(int x, int y, int w, int h)
+{
+	int save = border;
+	
+	if (border == BorderFixed)
+		setBorder(BorderResizable);
+		
+	QMainWindow::setGeometry(x, y, w, h);
+	
+	if (border != save)
+		setBorder(save);
+}
 
 /***************************************************************************
 
