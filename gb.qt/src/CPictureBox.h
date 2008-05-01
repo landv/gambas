@@ -54,6 +54,7 @@ class MyPictureBox : public QLabel
 
 public:
   MyPictureBox(QWidget *parent);
+  void updateBackground();
   
 protected:
 	virtual void setPalette(const QPalette &);

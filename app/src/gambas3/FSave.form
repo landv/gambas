@@ -24,17 +24,17 @@
     Cancel = True
   }
   { Panel1 Panel
-    MoveScaled(1,1,52,9)
+    MoveScaled(1,1,54,9)
     { TextLabel1 TextLabel
-      MoveScaled(6,0,45,6)
+      MoveScaled(7,0,45,6)
       Font = Font["Bold,+1"]
       Text = ("These files have been modified.\nDo&nbsp;you want to save them?")
       Alignment = Align.Normal
     }
     { Image1 PictureBox
-      MoveScaled(0,1,5,5)
-      Picture = Picture["icon:/32/warning"]
-      Alignment = Align.TopNormal
+      MoveScaled(0,0,5,6)
+      Picture = Picture["icon:/32/save"]
+      Alignment = Align.Center
     }
   }
   { lvwFile ListView

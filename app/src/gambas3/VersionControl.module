@@ -7,7 +7,7 @@ Private $hEditor As Editor
 
 Public Sub Enabled() As Boolean
   
-  Return $bSVN OR $bCVS
+  Return $bSVN Or $bCVS
   
 End
 
@@ -15,7 +15,7 @@ End
 Public Sub Refresh()
 
   $bSVN = Exist(Project.Dir &/ ".svn")
-  $bCVS = Exist(Project.Dir &/ "CVS") OR Exist(Project.Dir &/ "CVSROOT")
+  $bCVS = Exist(Project.Dir &/ "CVS") Or Exist(Project.Dir &/ "CVSROOT")
 
 End
 
@@ -24,7 +24,7 @@ Private Sub Insert(sText As String)
   If $hEditor Then 
     $hEditor.Print(DConv(sText))
   Else 
-    If NOT Settings["/QuietExternalCommands", False] Then FOutput.Insert(sText)
+    If Not Settings["/QuietExternalCommands", False] Then FOutput.Insert(sText)
   Endif
   
 End
@@ -163,7 +163,7 @@ Public Sub Status() As String
   
   Dim sStatus As String
   
-  If $bSvn Then 
+  If $bSVN Then 
     Shell "cd " & Quote.Shell(Project.Dir) & "; svn status -q" To sStatus
     Return sStatus
   Endif
@@ -181,7 +181,7 @@ Public Sub Commit(sUser As String, sPassword As String, sChange As String) As Bo
   Dim hFile As File
   Dim sCmd As String
   
-  If $bSvn Then 
+  If $bSVN Then 
     hFile = Open Temp$("commit") For Create 
     Print #hFile, sChange;
     Close #hFile
@@ -191,6 +191,7 @@ Public Sub Commit(sUser As String, sPassword As String, sChange As String) As Bo
       sCmd &= sPassword
     Endif
     sCmd &= " --file " & Quote.Shell(Temp$("commit")) & " " & Quote.Shell(Project.Dir)
+    sCmd &= " --non-interactive"
     Run(sCmd, sPassword)
     Return Process.LastValue
   Endif    
@@ -200,7 +201,7 @@ End
 
 Public Sub Update() As Boolean
   
-  If $bSvn Then 
+  If $bSVN Then 
     Run("svn update " & Quote.Shell(Project.Dir))
     Return Process.LastValue
   Endif
@@ -210,7 +211,7 @@ End
 
 Public Sub Revert() As Boolean
   
-  If $bSvn Then 
+  If $bSVN Then 
     Run("svn -R revert " & Quote.Shell(Project.Dir))
     Return Process.LastValue
   Endif
@@ -224,4 +225,32 @@ Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As Editor) As Bo
   Run("cd " & Quote.Shell(sDir) & "; svn checkout " & Quote.Shell(sPath))
   $hEditor = Null
   
+End
+
+Public Sub InConflict(sPath As String) As Boolean
+  
+  If $bSVN Then 
+    'IF Exist(sPath & ".mine") THEN RETURN TRUE
+    If Dir(File.Dir(sPath), File.Name(sPath) & ".r*").Count Then Return True
+  Endif
+  
+End
+
+Public Sub Resolve(sPath As String) As Boolean
+  
+  If $bSVN Then 
+    Run("svn resolved " & Quote.Shell(sPath))
+    Return Process.LastValue
+  Endif  
+  
+End
+
+Public Sub HasConflict() As Boolean
+
+  If $bSVN Then
+    If Dir(Project.Dir, "*.module.r*").Count Then Return True  
+    If Dir(Project.Dir, "*.class.r*").Count Then Return True  
+    If Dir(Project.Dir, "*.form.r*").Count Then Return True  
+  Endif  
+ 
 End

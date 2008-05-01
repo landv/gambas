@@ -1,0 +1,268 @@
+' Gambas class file
+
+Private $sPath As String
+Private $sLoadedPath As String
+Private $bArrange As Boolean
+Private $bModify As Boolean
+Private $iType As Integer
+Private $hForm As FInfo
+
+Private Const TYPE_TEXT As Integer = 0
+Private Const TYPE_IMAGE As Integer = 1
+Private Const TYPE_BINARY As Integer = 2
+
+Public Sub Run(sPath As String) As Boolean
+  
+  Dim sFile As String
+  Dim iRev As Integer
+  Dim iMaxRev As Integer
+
+  For Each sFile In Dir(File.Dir(sPath), File.Name(sPath) & ".r*")
+    Try iRev = CInt(Mid$(File.Ext(sFile), 2))
+    If iRev > iMaxRev Then iMaxRev = iRev
+  Next
+  
+  Select Case Message.Warning(Subst(("This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."), CStr(iMaxRev)), ("&Edit"), ("Close"))
+    Case 2
+      Return
+  End Select
+
+  $sPath = sPath
+  FConflict.ShowDialog
+  
+End
+
+
+Public Sub edtConflict_Cursor()
+
+  lblCursor.Text = CStr(edtConflict.Line + 1) & ":" & CStr(edtConflict.Column + 1)
+
+End
+
+Public Sub btnCut_Click()
+
+  edtConflict.Cut
+
+End
+
+Public Sub btnCopy_Click()
+
+  edtConflict.Copy
+
+End
+
+Public Sub btnPaste_Click()
+
+  edtConflict.Paste
+
+End
+
+Public Sub btnUndo_Click()
+
+  edtConflict.Undo
+
+End
+
+Public Sub btnRedo_Click()
+
+  edtConflict.Redo
+
+End
+
+Public Sub btnIndent_Click()
+
+  edtConflict.Indent
+
+End
+
+Public Sub btnUnindent_Click()
+
+  edtConflict.Unindent
+
+End
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Private Sub LoadFile(sPath As String)
+
+  If $iType = TYPE_TEXT Then
+    edtConflict.Text = File.Load(sPath)
+    $bModify = False
+    edtConflict.SetFocus
+  Else If $iType = TYPE_IMAGE Then
+    picFile.Picture = Picture.Load(sPath)
+  Endif
+  
+  $hForm.ShowInfo(sPath)
+  $sLoadedPath = sPath
+  lblPath.Text = File.Name($sLoadedPath)
+    
+End
+
+Private Sub GetFileType() As Integer
+  
+  Select Case String.LCase(File.Name($sPath))
+    Case "changelog"
+      Return TYPE_TEXT
+  End Select
+  
+  Select Case LCase(File.Ext($sPath))
+  
+    Case "class", "module", "form", "text", "txt", "html", "css", "svg", "desktop", "inf"
+      Return TYPE_TEXT
+      
+    Case "jpg", "jpeg", "png", "gif", "xpm", "bmp"
+      Return TYPE_IMAGE
+  
+  End Select
+  
+  Return TYPE_BINARY
+  
+End
+
+
+
+Public Sub Form_Open()
+
+  Dim sFile As String
+  Dim iRev As Integer
+  Dim iMaxRev As Integer
+
+  Me.Title = Mid$($sPath, Len(Project.Dir) + 2) & " - " & ("Version conflict")
+  Me.Icon = Project.GetFileIcon($sPath)
+  
+  $iType = GetFileType()
+  
+  tabConflict[0].Visible = $iType = TYPE_TEXT
+  tabConflict[1].Visible = $iType = TYPE_IMAGE
+  
+  $hForm = New FInfo(panInfo)
+  $hForm.Padding = 0
+  
+  FTextEditor.ReadConfigEditor(edtConflict)  
+  edtConflict.Styles[Highlight.Comment].Bold = True
+
+  LoadFile($sPath)
+  
+  Settings.Read(Me)
+
+End
+
+
+Public Sub edtConflict_Highlight()
+
+  Dim iState As Integer
+  Dim sText As String
+  Dim iPos As Integer
+
+  iState = Highlight.State
+  sText = Highlight.Text
+
+  Highlight.ShowLimit = False
+  
+  If sText Like "<<<<<<*" Then 
+    'iPos = String.InStr(sText, " ")
+    Highlight.Add(Highlight.Comment, String.Len(sText))
+    'Highlight.Add(Highlight.Keyword, String.Len(sText) - iPos)
+    Highlight.State = Highlight.Number
+    Highlight.ShowLimit = True
+  Else If sText Like "======*" Then
+    Highlight.Add(Highlight.Comment, String.Len(sText))
+    Highlight.State = Highlight.Function
+  Else If sText Like ">>>>>>*" Then
+    Highlight.Add(Highlight.Comment, String.Len(sText))
+    'iPos = String.InStr(sText, " ")
+    'Highlight.Add(Highlight.Comment, iPos)
+    'Highlight.Add(Highlight.Keyword, String.Len(sText) - iPos)
+    Highlight.State = Highlight.Normal
+  Else 
+    Highlight.Add(iState, String.Len(sText))
+  Endif
+
+End
+
+Public Sub Form_Close()
+
+  If $bModify Then 
+    Select Case Message.Question(("The file has been modified.\nDo you really want to close the dialog?"), ("Close"), ("Cancel"))
+      Case 2
+        Stop Event
+        Return
+    End Select
+  Endif
+
+  If panConflict.Visible Then Settings.Write(Me)
+
+End
+
+Public Sub edtConflict_Change()
+
+  $bModify = True
+
+End
+
+Public Sub btnSolve_Click()
+
+  Dim iInd As Integer
+  Dim sText As String
+  
+  btnSave_Click
+  
+  For iInd = 0 To edtConflict.Lines.Count - 1
+    sText = edtConflict.Lines[iInd]
+    If sText Like "<<<<<<*" Or If sText Like "======*" Or If sText Like ">>>>>>*" Then 
+      edtConflict.Goto(iInd, 0)
+      Message.Warning(("Some conflicts are not yet resolved."))
+      Return
+    Endif
+  Next
+
+  If VersionControl.Resolve($sPath) Then 
+    Message.Error(("Unable to resolve the conflict."))
+    Return
+  Endif
+  
+  Me.Close
+
+End
+
+Public Sub btnSave_Click()
+
+  Select $iType
+    Case TYPE_TEXT
+      File.Save($sPath, edtConflict.Text)
+      $bModify = False
+      edtConflict.Reset
+    Default
+      If $sLoadedPath <> $sPath Then
+        Kill $sPath
+        Copy $sLoadedPath To $sPath
+        $bModify = False
+      Endif
+  End Select
+
+End
+
+Public Sub btnOpen_Click()
+
+  If $iType = TYPE_TEXT Then
+    If $bModify Then 
+      Select Case Message.Question(("The file has been modified.\nDo you really want to open another file?"), ("Open"), ("Cancel"))
+        Case 2
+          Return
+      End Select
+    Endif
+  Endif
+
+  Dialog.Path = $sPath
+  Dialog.Filter = [File.Name($sPath) & "*", ("Conflict files")]
+  If Dialog.OpenFile() Then Return
+
+  LoadFile(Dialog.Path)
+  $bModify = True
+
+End

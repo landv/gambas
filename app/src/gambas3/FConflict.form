@@ -1,0 +1,149 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,102,74)
+  Text = ("")
+  Icon = Picture["icon:/small/warning"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { panConflict VBox
+    MoveScaled(0,1,86,52)
+    Expand = True
+    Spacing = 2
+    { HBox4 HBox
+      MoveScaled(3,2,63,4)
+      { btnOpen ToolButton
+        MoveScaled(0,0,4,4)
+        ToolTip = ("Save")
+        Text = ("")
+        Picture = Picture["icon:/small/open"]
+      }
+      { btnCut ToolButton
+        MoveScaled(4,0,4,4)
+        ToolTip = ("Cut")
+        Text = ("")
+        Picture = Picture["icon:/small/cut"]
+      }
+      { btnCopy ToolButton
+        MoveScaled(8,0,4,4)
+        ToolTip = ("Copy")
+        Text = ("")
+        Picture = Picture["icon:/small/copy"]
+      }
+      { btnPaste ToolButton
+        MoveScaled(12,0,4,4)
+        ToolTip = ("Paste")
+        Text = ("")
+        Picture = Picture["icon:/small/paste"]
+      }
+      { btnUndo ToolButton
+        MoveScaled(16,0,4,4)
+        ToolTip = ("Undo")
+        Text = ("")
+        Picture = Picture["icon:/small/undo"]
+      }
+      { btnRedo ToolButton
+        MoveScaled(20,0,4,4)
+        ToolTip = ("Redo")
+        Text = ("")
+        Picture = Picture["icon:/small/redo"]
+      }
+      { btnIndent ToolButton
+        MoveScaled(24,0,4,4)
+        ToolTip = ("Indent")
+        Text = ("")
+        Picture = Picture["icon:/small/indent"]
+      }
+      { btnUnindent ToolButton
+        MoveScaled(28,0,4,4)
+        ToolTip = ("Unindent")
+        Text = ("")
+        Picture = Picture["icon:/small/unindent"]
+      }
+      { Panel2 Panel
+        MoveScaled(32,0,4,4)
+        Expand = True
+      }
+      { lblCursor Label
+        MoveScaled(55,0,5,4)
+        Font = Font["Bold"]
+        AutoResize = True
+        Text = ("")
+      }
+    }
+    { tabConflict TabStrip
+      MoveScaled(3,7,79,41)
+      Expand = True
+      Arrangement = Arrange.Fill
+      Padding = 8
+      Count = 3
+      Index = 0
+      Text = ("Text")
+      { edtConflict Editor
+        MoveScaled(1,1,23,26)
+        Font = Font["Monospace"]
+        Expand = True
+        Highlight = Highlight.Custom
+      }
+      Index = 1
+      Text = ("Image")
+      { picFile PictureBox
+        MoveScaled(1,1,19,22)
+        Background = Color.TextBackground
+        Expand = True
+        Border = Border.Sunken
+      }
+      Index = 2
+      Text = ("Details")
+      { panInfo VBox
+        MoveScaled(1,1,76,35)
+        { Label1 Label
+          MoveScaled(1,1,33,4)
+          Font = Font["Bold"]
+          AutoResize = True
+          Text = ("Resolve conflict with")
+        }
+        { lblPath Label
+          MoveScaled(2,5,53,4)
+          Font = Font["+2"]
+          Text = ("")
+          Border = Border.Sunken
+        }
+        { Panel3 Panel
+          MoveScaled(11,10,4,3)
+        }
+        { Label2 Label
+          MoveScaled(2,12,23,4)
+          Font = Font["Bold"]
+          Text = ("Information")
+        }
+      }
+      Index = 0
+    }
+  }
+  { panButton HBox
+    MoveScaled(1,57,56,4)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(1,0,3,3)
+      Expand = True
+    }
+    { btnSave Button
+      MoveScaled(4,0,16,4)
+      Text = ("&Save")
+      Picture = Picture["icon:/small/save-as"]
+    }
+    { btnSolve Button
+      MoveScaled(21,0,16,4)
+      Text = ("Sol&ve")
+      Picture = Picture["icon:/small/apply"]
+    }
+    { btnClose Button
+      MoveScaled(38,0,16,4)
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Cancel = True
+    }
+  }
+}

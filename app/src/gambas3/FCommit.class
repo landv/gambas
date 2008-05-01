@@ -7,19 +7,20 @@ Private Const DELIM_CHANGE As String = ("This line and the following will be ign
 Public Sub Run(sChange As String) As Boolean
 
   $sChange = sChange
-  Return NOT Me.ShowModal()
+  Return Not Me.ShowModal()
 
 End
 
 Public Sub Form_Open()
   
   txtName.Text = Settings["/VersionControlUser"]
-  If NOT txtName.Text Then 
+  If Not txtName.Text Then 
     txtName.SetFocus
   Else 
     txtPassword.SetFocus
   Endif 
   
+  FTextEditor.ReadConfigEditor(edtChange)
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
   
 End
@@ -31,7 +32,7 @@ Public Sub btnOK_Click()
   Dim iPos As Integer
   Dim bRes As Boolean
 
-  If NOT Trim(txtName.Text) Then 
+  If Not Trim(txtName.Text) Then 
     Balloon.Warning(("Please enter the versioning user name"), txtName)
     txtName.SetFocus
     Return 
