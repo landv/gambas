@@ -162,7 +162,10 @@ static STRING *realloc_string(STRING *str, int new_len)
 				memcpy(nstr->data, str->data, new_len);
 			else
 				memcpy(nstr->data, str->data, str->len);
-			STRING_free_real(str->data);
+			if (str->ref == 1)
+				STRING_free_real(str->data);
+			else
+				str->ref--;
 			str = nstr;
 		}
 	}
@@ -219,8 +222,8 @@ void STRING_new(char **ptr, const char *src, int len)
 
   #ifdef DEBUG_ME
   DEBUG_where();
-  printf("STRING_new %p ( 0 ) \"%.*s\"\n", *ptr, len, src);
-  fflush(NULL);
+  fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", *ptr, len, src);
+  fflush(stderr);
   #endif
 }
 
@@ -235,16 +238,16 @@ void STRING_free_later(char *ptr)
   if (STRING_last[_index])
   {
     DEBUG_where();
-    printf("STRING: release temp: %p '%s'\n", STRING_last[_index], STRING_last[_index]);
-    fflush(NULL);
+    fprintf(stderr, "STRING_free_later: release temp: %p '%s'\n", STRING_last[_index], STRING_last[_index]);
+    fflush(stderr);
   }
   #endif
 
   STRING_unref(&STRING_last[_index]);
 
   #ifdef DEBUG_ME
-  printf("STRING: post temp: %p '%s'\n", ptr, ptr);
-  fflush(NULL);
+  fprintf(stderr, "STRING_free_later: post temp: %p '%s'\n", ptr, ptr);
+  fflush(stderr);
   #endif
 
   STRING_last[_index] = ptr;
@@ -364,22 +367,16 @@ void STRING_char_value(VALUE *value, uchar car)
 
 void STRING_free(char **ptr)
 {
-  STRING *str;
-
   if (*ptr == NULL)
     return;
 
-  str = STRING_from_ptr(*ptr);
-
   #ifdef DEBUG_ME
   DEBUG_where();
-  printf("STRING_free %p %p\n", *ptr, ptr);
-  fflush(NULL);
+  fprintf(stderr, "STRING_free: %p %p\n", *ptr, ptr);
+  fflush(stderr);
   #endif
 
-  str->ref = 1000000000L;
-
-  STRING_free_real(str);
+  STRING_free_real(*ptr);
   *ptr = NULL;
 
   #ifdef DEBUG_ME
@@ -396,13 +393,12 @@ void STRING_ref(char *ptr)
 
   str = STRING_from_ptr(ptr);
 
-
   #ifdef DEBUG_ME
   DEBUG_where();
-  printf("STRING_ref %p ( %ld -> %ld )\n", ptr, str->ref, str->ref + 1);
+  fprintf(stderr, "STRING_ref: %p ( %ld -> %ld )\n", ptr, str->ref, str->ref + 1);
   if (str->ref < 0 || str->ref > 10000)
-    printf("*** BAD\n");
-  fflush(NULL);
+    fprintf(stderr, "*** BAD\n");
+  fflush(stderr);
   #endif
 
   str->ref++;
@@ -420,10 +416,10 @@ void STRING_unref(char **ptr)
 
   #ifdef DEBUG_ME
   DEBUG_where();
-  printf("STRING_unref %p ( %ld -> %ld )\n", *ptr, str->ref, str->ref - 1);
+  fprintf(stderr, "STRING_unref: %p ( %ld -> %ld )\n", *ptr, str->ref, str->ref - 1);
   if (str->ref < 1 || str->ref > 10000)
-    printf("*** BAD\n");
-  fflush(NULL);
+    fprintf(stderr, "*** BAD\n");
+  fflush(stderr);
   #endif
 
   if ((--str->ref) <= 0)

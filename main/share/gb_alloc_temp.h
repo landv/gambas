@@ -122,7 +122,7 @@ PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
   #ifndef DO_NOT_PRINT_MEMORY
   DEBUG_where();
   fprintf(stderr, "<%d> %s: MEMORY_alloc(%d) -> %p\n", _id, src, (int)size, (char *)alloc + sizeof(ALLOC));
-  fflush(stdout);
+  fflush(stderr);
   #endif
 }
 #else
@@ -187,7 +187,7 @@ PUBLIC void MEMORY_realloc(void *p_ptr, size_t size, const char *src)
   #ifndef DO_NOT_PRINT_MEMORY
   DEBUG_where();
   fprintf(stderr, "<%d> %s: MEMORY_realloc(%p, %d) -> %p\n", alloc->id, src, *((void **)p_ptr), (int)size, (char *)alloc + sizeof(ALLOC));
-  fflush(stdout);
+  fflush(stderr);
   #endif
   
   *((void **)p_ptr) = (char *)alloc + sizeof(ALLOC);
@@ -226,7 +226,7 @@ PUBLIC void MEMORY_free(void *p_ptr, const char *src)
   #ifndef DO_NOT_PRINT_MEMORY
   DEBUG_where();
   fprintf(stderr, "<%d> %s: MEMORY_free(%p)\n", alloc->id, src, (char *)alloc + sizeof(ALLOC));
-  fflush(stdout);
+  fflush(stderr);
   #endif
 
   MEMORY_size -= alloc->size;

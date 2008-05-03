@@ -675,20 +675,20 @@ void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value, int len)
         
         STREAM_read_max(stream, value->_string.addr, len);
         
-        if (STREAM_eff_read < len)
-        {
-          if (STREAM_eff_read == 0)
-          {
-            value->type = T_NULL;
-            STRING_free(&value->_string.addr);
-          }
-          else
-          {
-            STRING_extend(&value->_string.addr, STREAM_eff_read);
-            STRING_extend_end(&value->_string.addr);
-            value->_string.len = STREAM_eff_read;
-          }
-        }
+				if (STREAM_eff_read == 0)
+				{
+					value->type = T_NULL;
+					STRING_free(&value->_string.addr);
+				}
+				else
+				{
+	        if (STREAM_eff_read < len)
+	        {
+						STRING_extend(&value->_string.addr, STREAM_eff_read);
+						value->_string.len = STREAM_eff_read;
+					}
+					STRING_extend_end(&value->_string.addr);
+				}
       }
 
       break;

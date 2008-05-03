@@ -463,6 +463,9 @@ _MAIN:
     fprintf(stderr, "[%4d] ", (int)(intptr_t)(SP - (VALUE *)STACK_base));
     if (*PC >> 8)
       PCODE_dump(stderr, PC - FP->code, PC);
+    else
+    	fprintf(stderr, "\n");
+    fflush(stderr);
 #endif
 
   code = *PC;
