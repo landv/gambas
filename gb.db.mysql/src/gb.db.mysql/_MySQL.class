@@ -1,0 +1,151 @@
+' Gambas class file
+
+Export
+
+Private $hResultQuery As Result
+Private $Engine As String = "InnoDB" 'Engines: InnoDB, MyISAM, Memory, Merge, Archive, Federated, NDB, CSV, Blackhole, Example
+Private $CharSet As String = "utf8"
+Private $Collation As String = "utf8_general_ci"
+Private $sTmp As String
+Private $DataTypes As _DataTypes
+Private $DataBase As _DataBase
+Private $Table As _Table
+Private $Index As _Index
+Private $Field As _Field
+Private $View As _View
+
+Property Engine As String
+Property CharSet As String
+Property Collation As String
+Property Read DataTypes As _DataTypes
+Property Read DataBase As _DataBase
+Property Read Index As _Index
+Property Read Table As _Table
+Property Read Field As _Field
+Property Read View As _View
+Property Confirm As Boolean
+
+Public Sub _new(hCon As Connection)
+
+  If hCon.Type <> "mysql" Then Error.Raise(("Not a MySQL connection."))
+  modMain.$Connection = hCon
+
+End
+
+Private Function Engine_Read() As String
+
+  Return $Engine
+
+End
+
+Private Sub Engine_Write(Value As String)
+
+  $Engine = Value
+
+End
+
+Private Function CharSet_Read() As String
+
+  Return $CharSet
+
+End
+
+Private Sub CharSet_Write(Value As String) 'Validate if the Char Set is valid
+   
+  Dim iCounter As Integer
+  Dim csCharSets As New Collection
+
+  $hResultQuery = modMain.$Connection.Exec("SELECT CHARACTER_SET_NAME FROM information_schema.CHARACTER_SETS")
+  For iCounter = 0 To $hResultQuery.Count - 1
+    csCharSets[iCounter] = $hResultQuery["CHARACTER_SET_NAME"]
+    $hResultQuery.MoveNext()
+  Next
+  For Each $sTmp In csCharSets
+    If $sTmp = Value Then
+      $CharSet = Value
+      Return
+    Endif
+  Next
+  Error.Raise(("Character Set not valid."))
+
+End
+
+Private Function Collation_Read() As String
+
+  Return $Collation
+
+End
+
+Private Sub Collation_Write(Value As String)
+
+  Dim iCounter As Integer
+  Dim csCharSets As New Collection
+
+  $hResultQuery = modMain.$Connection.Exec("SELECT COLLATION_NAME FROM information_schema.COLLATIONS")
+  For iCounter = 0 To $hResultQuery.Count - 1
+    csCharSets[iCounter] = $hResultQuery["COLLATION_NAME"]
+    $hResultQuery.MoveNext()
+  Next
+  For Each $sTmp In csCharSets
+    If $sTmp = Value Then
+      $Collation = Value
+      Return
+    Endif
+  Next
+  Error.Raise(("Collation not valid."))
+
+End
+
+Private Function DataTypes_Read() As _DataTypes
+
+  $DataTypes = New _DataTypes
+  Return $DataTypes
+
+End
+
+Private Function DataBase_Read() As _DataBase
+
+  $DataBase = New _DataBase
+  Return $DataBase
+
+End
+
+Private Function Index_Read() As _Index
+
+  $Index = New _Index
+  Return $Index
+
+End
+
+Private Function Table_Read() As _Table
+
+  $Table = New _Table
+  Return $Table
+
+End
+
+Private Function Field_Read() As _Field
+
+  $Field = New _Field
+  Return $Field
+
+End
+
+Private Function Confirm_Read() As Boolean
+
+  Return modMain.$Confirm
+
+End
+
+Private Sub Confirm_Write(Value As Boolean)
+
+  modMain.$Confirm = Value
+
+End
+
+Private Function View_Read() As _View
+
+  $View = New _View
+  Return $View
+
+End

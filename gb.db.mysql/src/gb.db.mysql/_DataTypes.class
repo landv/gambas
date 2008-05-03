@@ -1,0 +1,239 @@
+' Gambas class file
+
+Export
+Create Static
+
+Private $Tmp As String
+
+'MySQL Const Data Types
+'Numeric Types
+Public Const UnsignedTinyInt As String = "TINYINT UNSIGNED" 'Range: 0 to 255
+Public Const SignedTinyInt As String = "TINYINT" 'Range: -128 to 127
+Public Const Bool As String = "BOOL" 'Range: True or False
+Public Const Boolean As String = "BOOLEAN" 'Range: True or False
+Public Const SignedSmallInt As String = "SMALLINT" 'Range: 0 to 65535
+Public Const UnsignedSmallInt As String = "SMALLINT UNSIGNED" 'Range: -32768 to 32767
+Public Const SignedMediumInt As String = "MEDIUMINT" 'Range: 0 to 16777215
+Public Const UnsignedMediumInt As String = "MEDIUMINT UNSIGNED" 'Range: -8388608 to 8388607
+Public Const SignedInt As String = "INT" 'Range: -2147483648 to 2147483647
+Public Const UnsignedInt As String = "INT UNSIGNED" 'Range: 0 to 4294967295
+Public Const SignedInteger As String = "INTEGER" 'Range: -2147483648 to 2147483647
+Public Const UnsignedInteger As String = "INTEGER UNSIGNED" 'Range: 0 to 4294967295
+Public Const SignedBigInt As String = "BIGINT" 'Range: -9223372036854775808 to 9223372036854775807
+Public Const UnsignedBigInt As String = "BIGINT UNSIGNED" 'Range: 0 to 18446744073709551615
+Public Const Serial As String = "BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE" 'Range: 0 to 18446744073709551615
+'Date and Time Types
+Public Const {Date} As String = "DATE" 'Range: '1000-01-01' to '9999-12-31', Formart: 'YYYY-MM-DD'
+Public Const DateTime As String = "DATETIME" 'Range: '1000-01-01 00:00:00' to '9999-12-31 23:59:59', Formart: 'YYYY-MM-DD HH:MM:SS'
+Public Const TimeStamp As String = "TIMESTAMP" 'Range: ''1970-01-01 00:00:01' to 2038, Formart: 'YYYY-MM-DD HH:MM:SS'
+Public Const {Time} As String = "TIME" 'Range: '-838:59:59' to '838:59:59', Formart: 'HH:MM:SS'
+'String Types
+Public Const TinyBlob As String = "TINYBLOB" 'Max: 255 (2^8 – 1) bytes
+Public Const MediumBlob As String = "MEDIUMBLOB" 'Max: 16,777,215 (2^24 – 1) bytes
+Public Const LongBlob As String = "LONGBLOB" 'Max: 4,294,967,295 or 4GB (2^32 – 1) bytes
+'End of MySQL Const Data Types
+
+'DataTypes that requieres arguments
+Public Function Bit(Optional Lenght As Integer) As String 'Range: 1 to 64
+
+  If Lenght Then
+    Return "BIT(" & Lenght & ")"
+  Else
+    Return "BIT(1)"
+  Endif
+
+End
+
+Public Function SignedFloat(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -3.402823466E+38 to -1.175494351E-38 and 0
+
+  If Decimals Then
+    Return "FLOAT(" & Lenght & "," & Decimals & ")"
+  Else
+    Return "FLOAT(" & Lenght & ")"
+  Endif
+
+End
+
+Public Function UnsignedFloat(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 1.175494351E-38 to 3.402823466E+38 and 0
+
+  If Decimals Then
+    Return "FLOAT(" & Lenght & "," & Decimals & ") UNSIGNED"
+  Else
+    Return "FLOAT(" & Lenght & ") UNSIGNED"
+  Endif
+
+End
+
+Public Function SignedDouble(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
+
+  If Decimals Then
+    Return "DOUBLE(" & Lenght & ", " & Decimals & ")"
+  Else
+    Return "DOUBLE(" & Lenght & ")"
+  Endif
+
+End
+
+Public Function UnsignedDouble(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
+
+  If Decimals Then
+    Return "DOUBLE(" & Lenght & ", " & Decimals & ") UNSIGNED"
+  Else
+    Return "DOUBLE(" & Lenght & ") UNSIGNED"
+  Endif
+
+End
+
+Public Function SignedDoublePrecision(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
+
+  Return SignedDouble(Lenght, Decimals)
+
+End
+
+Public Function UnsignedDoublePrecision(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
+
+  Return UnsignedDouble(Lenght, Decimals)
+
+End
+
+Public Function SignedReal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
+
+  Return SignedDouble(Lenght, Decimals)
+
+End
+
+Public Function UnsignedReal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
+
+  Return UnsignedDouble(Lenght, Decimals)
+
+End
+
+Public Function SignedDecimal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
+
+  If Decimals Then
+    Return "DECIMAL(" & Lenght & "," & Decimals & ")"
+  Else
+    Return "DECIMAL(" & Lenght & ")"
+  Endif
+
+End
+
+Public Function UnsignedDecimal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
+
+  If Decimals Then
+    Return "DECIMAL(" & Lenght & "," & Decimals & ") UNSIGNED"
+  Else
+    Return "DECIMAL(" & Lenght & ") UNSIGNED"
+  Endif
+
+End
+
+Public Function SignedDec(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
+
+  Return SignedDecimal(Lenght, Decimals)
+
+End
+
+Public Function UnsignedDec(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
+
+  Return UnsignedDecimal(Lenght, Decimals)
+
+End
+
+Public Function Year(Optional Lenght As Integer) As String 'In four-digit format, the allowable values are 1901 to 2155, and 0000. In two-digit Format, the allowable values are 70 To 69, representing years From 1970 To 2069.
+
+  Select (Lenght)
+    Case 2, 4
+      Return "YEAR(" & Lenght & ")"
+    Case 0
+      Return "YEAR"
+  End Select
+
+End
+
+Public Function Char(Optional Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 255
+
+  If Lenght Then 
+    Return "CHAR(" & Lenght & ") " & CharSet & " " & Collation
+  Else
+    Return "CHAR(1) " & CharSet & " " & Collation
+  Endif
+
+End
+
+Public Function VarChar(Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 65.535
+
+  Return "VARCHAR(" & Lenght & ") " & CharSet & " " & Collation
+
+End
+
+Public Function Binary(Lenght As Integer) As String 'Range: 0 to 255
+
+  Return "BINARY(" & Lenght & ")"
+
+End
+
+Public Function VarBinary(Lenght As Integer) As String 'Range: 0 to 65.535
+
+  Return "VARBINARY(" & Lenght & ")"
+
+End
+
+Public Function TinyText(Optional Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 255
+
+  Return "TINYTEXT(" & Lenght & ") " & CharSet & " " & Collation
+
+End
+
+Public Function Blob(Optional Lenght As Integer) As String 'Range: 1 to 65.535 bytes
+
+  Return "BLOB(" & Lenght & ")"
+
+End
+
+Public Function Text(Optional Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 65.535
+
+  Return "TEXT(" & Lenght & ") " & CharSet & " " & Collation
+
+End
+
+Public Function MediumText(Optional CharSet As String, Optional Collation As String) As String 'Max: 16,777,215 (2^24 – 1) characters
+
+  Return "MEDIUMTEXT " & CharSet & " " & Collation
+
+End
+
+Public Function LongText(Optional CharSet As String, Optional Collation As String) As String 'Max: 4,294,967,295 or 4GB (2^32 – 1) characters
+
+  Return "LONGTEXT " & CharSet & " " & Collation
+
+End
+
+Public Function Enum(Values As String[], Optional CharSet As String, Optional Collation As String) As String 'Max: 65,535 distinct values
+
+  Dim $iCounter As Integer
+
+  $Tmp = "ENUM("
+  For $iCounter = 0 To Values.Count - 1
+    $Tmp &= "'" & Values[$iCounter] & "', "
+  Next
+  $Tmp = Mid($Tmp, 1, Len($Tmp) - 2) 'Strips the last two characters
+  $Tmp &= ")"
+  Return $Tmp
+
+End
+
+Public Function Set(Values As String[], Optional CharSet As String, Optional Collation As String) As String 'Max: 64 members
+
+  Dim $iCounter As Integer
+
+  $Tmp = "SET("
+  For $iCounter = 0 To Values.Count - 1
+    $Tmp &= "'" & Values[$iCounter] & "', "
+  Next
+  $Tmp = Mid($Tmp, 1, Len($Tmp) - 2) 'Strips the last two characters
+  $Tmp &= ")"
+  Return $Tmp
+
+End
+'End of DataTypes that requiere arguments

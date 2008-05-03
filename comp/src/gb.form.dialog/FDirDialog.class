@@ -2,38 +2,44 @@
 
 ' Gambas class file
 
-PRIVATE $bReadOnly AS Boolean
+Private $bReadOnly As Boolean
 
-PUBLIC SUB SelectDirectory() AS Boolean
+Public Sub SelectDirectory() As Boolean
   
-  RETURN NOT ME.ShowModal()
+  Return Not Me.ShowModal()
   
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   ' DEBUG "Dialog.Title:";; Dialog.Title
   ' DEBUG "Dialog.Path:";; Dialog.Path
 
-  ME.Title = Dialog.Title
+  Me.Title = Dialog.Title
   dchChoose.Root = "/"
-  IF NOT Dialog.Path THEN 
+  If Not Dialog.Path Then 
     dchChoose.SelectedPath = "~"
-  ELSE
+  Else
     dchChoose.SelectedPath = Dialog.Path
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB btnOK_Click()
+Public Sub btnOK_Click()
 
   Dialog.Path = dchChoose.SelectedPath
-  ME.Close(TRUE)
+  Me.Close(True)
 
-END
+End
 
-PUBLIC SUB btnCancel_Click()
+Public Sub btnCancel_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
+
+Public Sub dchChoose_Activate()
+
+  btnOK.Value = True
+
+End

@@ -1,0 +1,54 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Sub Process_Error(sError As String)
+
+  Error.Raise(Error.Text)
+
+End
+
+Public Procedure Modify(DataBase As String, Optional CharSet As String, Optional Collation As String)
+
+  modMain.$Query = "ALTER DATABASE " & DB.Quote(DataBase)
+  If CharSet Then modMain.$Query &= " DEFAULT CHARACTER SET = " & CharSet
+  If Collation Then modMain.$Query &= " DEFAULT COLLATE " & Collation
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Delete(DataBase As String, IfExists As Boolean)
+
+  modMain.$Query = "DROP DATABASE "
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= DB.Quote(DataBase)
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Add(DataBase As String, Optional CharSet As String, Optional Collation As String)
+
+  modMain.$Query = "CREATE DATABASE " & DB.Quote(DataBase)
+  If CharSet Then modMain.$Query &= " DEFAULT CHARACTER SET = " & CharSet
+  If Collation Then modMain.$Query &= " DEFAULT COLLATE " & Collation
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Dump(Optional File As String)
+
+  Dim sTmp As String
+
+  sTmp = "mysqldump -u " & modMain.$Connection.User & " -h " & modMain.$Connection.Host
+  If modMain.$Connection.Port Then sTmp &= " -P " & modMain.$Connection.Port
+  sTmp &= " --password='" & modMain.$Connection.Password & "' -B " & modMain.$Connection.Name
+  'If Tables Then sTmp &= " " & modMain.ArrayToString(Tables, True)
+  If File Then
+    sTmp &= " > " & File
+  Else
+    sTmp &= " > " & User.Home &/ "Dump_" & modMain.$Connection.Name & ".sql"
+  Endif
+  Shell sTmp For Read
+
+End

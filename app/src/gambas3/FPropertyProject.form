@@ -437,7 +437,6 @@
     }
     { panNeed Panel
       MoveScaled(1,4,80,16)
-      Arrangement = Arrange.Vertical
       { CheckBox5 CheckBox
         MoveScaled(0,1,43,3)
         Tag = "Form"
@@ -463,22 +462,22 @@
       MoveScaled(1,25,80,45)
       Spacing = 8
       { VBox4 VBox
-        MoveScaled(1,1,59,35)
+        MoveScaled(1,1,56,35)
         Expand = True
         Spacing = 8
         { cmbRequire ComboBox
-          MoveScaled(0,0,58,4)
+          MoveScaled(0,0,55,4)
           Text = ("")
           ReadOnly = True
         }
         { lstRequire ListBox
-          MoveScaled(0,4,58,29)
+          MoveScaled(0,4,55,29)
           Expand = True
           Sorted = True
         }
       }
       { VBox5 VBox
-        MoveScaled(61,1,17,35)
+        MoveScaled(58,1,21,35)
         Spacing = 8
         { btnAdd Button
           MoveScaled(0,0,17,4)

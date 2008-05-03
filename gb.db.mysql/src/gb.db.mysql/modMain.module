@@ -1,0 +1,46 @@
+' Gambas module file
+
+Public $Query As String
+Public $NotNULL As Boolean = True
+Public $FieldDefinition As New String[]
+Public $Index As New String[]
+Public $ForeignKey As New String[]
+Public $PrimaryKey As String
+Public $Connection As New Connection
+Public $Confirm As Boolean = False
+Public $Process As Process
+
+Public Function ArrayToString(Array As String[], Quote As Boolean) As String
+
+  Dim $iCounter As Integer
+  Dim $Tmp As String
+
+  For $iCounter = 0 To Array.Count - 1
+    If Quote Then
+      $Tmp &= DB.Quote(Array[$iCounter]) & ", "
+    Else
+      $Tmp &= Array[$iCounter] & ", "
+    Endif
+  Next
+  $Tmp = Mid($Tmp, 1, Len($Tmp) - 2) 'Strips the last two characters
+  Return $Tmp
+
+End
+
+Public Procedure RunQuery(Query As String)
+
+  If $Confirm Then
+    If Message.Question(("Do you really want to execute the following statement?") & GB.NewLine & Query, ("&Yes"), ("&No")) = 1 Then $Connection.Exec(Query)
+  Else
+    $Connection.Exec(Query)
+  Endif
+  Catch
+    Error.Raise(Error.Text)
+
+End
+
+Public Sub Main()
+
+
+
+End

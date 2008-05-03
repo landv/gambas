@@ -1,0 +1,21 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Procedure Add(Index As String, Columns As String[], Optional Table As String)
+
+  If Table Then
+    modMain.$Query = "CREATE INDEX " & DB.Quote(Index) & " ON " & DB.Quote(Table) & " (" & modMain.ArrayToString(Columns, True) & ")"
+    modMain.RunQuery(modMain.$Query)
+  Else
+    modMain.$Index.Add("INDEX " & DB.Quote(Index) & " (" & modMain.ArrayToString(Columns, True) & ")")
+  Endif  
+
+End
+
+Public Procedure Delete(Table As String, Index As String)
+
+  modMain.RunQuery("DROP INDEX " & DB.Quote(Index) & " ON " & DB.Quote(Table))
+
+End

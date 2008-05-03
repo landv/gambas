@@ -1,0 +1,53 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Procedure Modify(Table As String, Action As String, Optional Symbol As String, Optional Definition As String)
+
+  Action = Upper(Action)
+  If (Not ((Action = "DROP") Or (Action = "ADD") Or (Action = "MODIFY") Or (Action = "CHANGE"))) Then Error.Raise(("Action no allowed."))
+  modMain.$Query = "ALTER TABLE " & DB.Quote(Table) & " " & Action & " " & DB.Quote(Symbol)
+  If Definition Then modMain.$Query &= " " & Definition
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Add(Table As String, Optional Engine As String, Optional CharSet As String)
+
+  'Construc the table statement
+  modMain.$Query = "CREATE TABLE " & DB.Quote(Table) & " ("
+  modMain.$Query &= modMain.ArrayToString(modMain.$FieldDefinition, False)
+  If modMain.$PrimaryKey Then modMain.$Query &= modMain.$PrimaryKey
+  If modMain.$Index.Count Then modMain.$Query &= ", " & modMain.ArrayToString(modMain.$Index, False)
+  If modMain.$ForeignKey.Count Then modMain.$Query &= ", " & modMain.ArrayToString(modMain.$ForeignKey, False)
+  modMain.$Query &= ")"
+  If Engine Then modMain.$Query &= " ENGINE = " & Engine
+  If CharSet Then modMain.$Query &= " DEFAULT CHARSET = " & CharSet
+
+  'Clears all the information from this table to be ready for the next one
+  modMain.$FieldDefinition.Clear()
+  modMain.$PrimaryKey = Null
+  modMain.$ForeignKey.Clear()
+  modMain.$Index.Clear()
+
+  'Runs the query
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Delete(Tables As String[], IfExists As Boolean)
+
+  modMain.$Query = "DROP TABLE "
+  If IfExists Then modMain.$Query &= "IF EXISTS "
+  modMain.$Query &= modMain.ArrayToString(Tables, True)
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure LoadData(Table As String, File As String)
+
+  modMain.$Query = "LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE " & Table
+  modMain.RunQuery(modMain.$Query)
+
+End

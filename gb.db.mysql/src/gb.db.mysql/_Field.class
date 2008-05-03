@@ -1,0 +1,50 @@
+' Gambas class file
+
+Export
+Create Static
+
+Private $sTmp As String
+
+Public Procedure PrimaryKey(Fields As String[])
+
+  modMain.$PrimaryKey = ", PRIMARY KEY (" & modMain.ArrayToString(Fields, True) & ")"
+
+End
+
+Public Procedure Add(Field As String, DataType As String, Optional AceptNull? As Boolean, Optional DefaultValue As Variant, Optional AutoIncrement? As Boolean, Optional OnUpdate As String, Optional Comment As String)
+
+ $sTmp = DB.Quote(Field) & " " & DataType
+  If Not AceptNull? Then $sTmp &= " NOT NULL"
+  If DefaultValue <> Null Then
+    Select (DefaultValue)
+      Case True
+        $sTmp &= " DEFAULT '1'"
+      Case False
+        $sTmp &= " DEFAULT '0'"
+      Case "CURRENT_TIMESTAMP"
+        $sTmp &= " DEFAULT CURRENT_TIMESTAMP"
+      Default
+        $sTmp &= " DEFAULT '" & DefaultValue & "'"
+    End Select
+  Endif    
+  If AutoIncrement? Then $sTmp &= " AUTO_INCREMENT"
+  If OnUpdate Then $sTmp &= " ON UPDATE " & OnUpdate
+  If Comment Then $sTmp &= " COMMENT '" & Comment & "'"
+  modMain.$FieldDefinition.Add($sTmp)
+
+End
+
+Public Procedure Index(Index As String, Field As String)
+
+  modMain.$Index.Add("INDEX " & DB.Quote(Index) & " (" & DB.Quote(Field) & ")")
+
+End
+
+Public Procedure ForeignKey(Field As String, RefTable As String, RefField As String, Optional OnDelete As String, Optional OnUpdate As String)
+
+ $sTmp = "FOREIGN KEY (" & DB.Quote(Field) & ") REFERENCES " & DB.Quote(RefTable) & "(" & DB.Quote(RefField) & ")"
+ If OnDelete Then $sTmp &= " ON DELETE " & OnDelete
+ If OnUpdate Then $sTmp &= " ON UPDATE " & OnUpdate
+ modMain.$ForeignKey.Add($sTmp)
+
+End
