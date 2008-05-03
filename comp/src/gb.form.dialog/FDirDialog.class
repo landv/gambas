@@ -37,3 +37,9 @@ PUBLIC SUB btnCancel_Click()
   ME.Close
 
 END
+
+PUBLIC SUB dchChoose_Activate()
+
+  btnOK.Value = TRUE
+
+END

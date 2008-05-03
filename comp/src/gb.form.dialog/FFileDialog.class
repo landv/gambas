@@ -56,3 +56,9 @@ PUBLIC SUB btnCancel_Click()
   ME.Close
 
 END
+
+PUBLIC SUB fchChoose_Activate()
+
+  btnOK.Value = TRUE
+
+END
