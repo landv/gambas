@@ -6,7 +6,9 @@ Static Property Read MySQL As _MySQL
 
 Static Private Sub MySQL_Read() As _MySQL
 
-  Dim $_MySQL As New _MySQL(DB.Current)
-  Return $_MySQL
+  'Dim $_MySQL As New _MySQL(DB.Current)
+  'Return $_MySQL
+  modMain.SetConnection(DB.Current)
+  Return _MySQL
 
 End

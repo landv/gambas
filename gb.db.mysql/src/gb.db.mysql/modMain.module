@@ -10,6 +10,14 @@ Public $Connection As New Connection
 Public $Confirm As Boolean = False
 Public $Process As Process
 
+Public Sub SetConnection(hCon As Connection)
+
+  If hCon.Type <> "mysql" Then Error.Raise("Current connection is not a MySQL connection")
+  $Connection = hCon
+
+End
+
+
 Public Function ArrayToString(Array As String[], Quote As Boolean) As String
 
   Dim $iCounter As Integer

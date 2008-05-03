@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Export
+Create Static
 
 Private $hResultQuery As Result
 Private $Engine As String = "InnoDB" 'Engines: InnoDB, MyISAM, Memory, Merge, Archive, Federated, NDB, CSV, Blackhole, Example
@@ -24,13 +25,6 @@ Property Read Table As _Table
 Property Read Field As _Field
 Property Read View As _View
 Property Confirm As Boolean
-
-Public Sub _new(hCon As Connection)
-
-  If hCon.Type <> "mysql" Then Error.Raise(("Not a MySQL connection."))
-  modMain.$Connection = hCon
-
-End
 
 Private Function Engine_Read() As String
 

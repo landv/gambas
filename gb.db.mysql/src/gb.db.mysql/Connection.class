@@ -6,7 +6,9 @@ Property Read MySQL As _MySQL
 
 Private Sub MySQL_Read() As _MySQL
 
-  Dim $_MySQL As New _MySQL(Me)
-  Return $_MySQL
+  ' Dim $_MySQL As New _MySQL(Me)
+  ' Return $_MySQL
+  modMain.SetConnection(Me)
+  Return _MySQL
 
 End
