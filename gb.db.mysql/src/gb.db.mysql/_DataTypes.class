@@ -34,188 +34,188 @@ Public Const LongBlob As String = "LONGBLOB" 'Max: 4,294,967,295 or 4GB (2^32 �
 'End of MySQL Const Data Types
 
 'DataTypes that requieres arguments
-Public Function Bit(Optional Lenght As Integer) As String 'Range: 1 to 64
+Public Function Bit(Optional Length As Integer) As String 'Range: 1 to 64
 
-  If Lenght Then
-    Return "BIT(" & Lenght & ")"
+  If Length Then
+    Return "BIT(" & Length & ")"
   Else
     Return "BIT(1)"
   Endif
 
 End
 
-Public Function SignedFloat(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -3.402823466E+38 to -1.175494351E-38 and 0
+Public Function SignedFloat(Length As Integer, Optional Decimals As Integer) As String 'Range: -3.402823466E+38 to -1.175494351E-38 and 0
 
   If Decimals Then
-    Return "FLOAT(" & Lenght & "," & Decimals & ")"
+    Return "FLOAT(" & Length & "," & Decimals & ")"
   Else
-    Return "FLOAT(" & Lenght & ")"
+    Return "FLOAT(" & Length & ")"
   Endif
 
 End
 
-Public Function UnsignedFloat(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 1.175494351E-38 to 3.402823466E+38 and 0
+Public Function UnsignedFloat(Length As Integer, Optional Decimals As Integer) As String 'Range: 1.175494351E-38 to 3.402823466E+38 and 0
 
   If Decimals Then
-    Return "FLOAT(" & Lenght & "," & Decimals & ") UNSIGNED"
+    Return "FLOAT(" & Length & "," & Decimals & ") UNSIGNED"
   Else
-    Return "FLOAT(" & Lenght & ") UNSIGNED"
+    Return "FLOAT(" & Length & ") UNSIGNED"
   Endif
 
 End
 
-Public Function SignedDouble(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
+Public Function SignedDouble(Length As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
 
   If Decimals Then
-    Return "DOUBLE(" & Lenght & ", " & Decimals & ")"
+    Return "DOUBLE(" & Length & ", " & Decimals & ")"
   Else
-    Return "DOUBLE(" & Lenght & ")"
+    Return "DOUBLE(" & Length & ")"
   Endif
 
 End
 
-Public Function UnsignedDouble(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
+Public Function UnsignedDouble(Length As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
 
   If Decimals Then
-    Return "DOUBLE(" & Lenght & ", " & Decimals & ") UNSIGNED"
+    Return "DOUBLE(" & Length & ", " & Decimals & ") UNSIGNED"
   Else
-    Return "DOUBLE(" & Lenght & ") UNSIGNED"
+    Return "DOUBLE(" & Length & ") UNSIGNED"
   Endif
 
 End
 
-Public Function SignedDoublePrecision(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
+Public Function SignedDoublePrecision(Length As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
 
-  Return SignedDouble(Lenght, Decimals)
-
-End
-
-Public Function UnsignedDoublePrecision(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
-
-  Return UnsignedDouble(Lenght, Decimals)
+  Return SignedDouble(Length, Decimals)
 
 End
 
-Public Function SignedReal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
+Public Function UnsignedDoublePrecision(Length As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
 
-  Return SignedDouble(Lenght, Decimals)
-
-End
-
-Public Function UnsignedReal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
-
-  Return UnsignedDouble(Lenght, Decimals)
+  Return UnsignedDouble(Length, Decimals)
 
 End
 
-Public Function SignedDecimal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
+Public Function SignedReal(Length As Integer, Optional Decimals As Integer) As String 'Range: -1.7976931348623157E+308 to -2.2250738585072014E-308 and 0
+
+  Return SignedDouble(Length, Decimals)
+
+End
+
+Public Function UnsignedReal(Length As Integer, Optional Decimals As Integer) As String 'Range: 2.2250738585072014E-308 to 1.7976931348623157E+308 and 0
+
+  Return UnsignedDouble(Length, Decimals)
+
+End
+
+Public Function SignedDecimal(Length As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
 
   If Decimals Then
-    Return "DECIMAL(" & Lenght & "," & Decimals & ")"
+    Return "DECIMAL(" & Length & "," & Decimals & ")"
   Else
-    Return "DECIMAL(" & Lenght & ")"
+    Return "DECIMAL(" & Length & ")"
   Endif
 
 End
 
-Public Function UnsignedDecimal(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
+Public Function UnsignedDecimal(Length As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
 
   If Decimals Then
-    Return "DECIMAL(" & Lenght & "," & Decimals & ") UNSIGNED"
+    Return "DECIMAL(" & Length & "," & Decimals & ") UNSIGNED"
   Else
-    Return "DECIMAL(" & Lenght & ") UNSIGNED"
+    Return "DECIMAL(" & Length & ") UNSIGNED"
   Endif
 
 End
 
-Public Function SignedDec(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
+Public Function SignedDec(Length As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
 
-  Return SignedDecimal(Lenght, Decimals)
-
-End
-
-Public Function UnsignedDec(Lenght As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
-
-  Return UnsignedDecimal(Lenght, Decimals)
+  Return SignedDecimal(Length, Decimals)
 
 End
 
-Public Function Year(Optional Lenght As Integer) As String 'In four-digit format, the allowable values are 1901 to 2155, and 0000. In two-digit Format, the allowable values are 70 To 69, representing years From 1970 To 2069.
+Public Function UnsignedDec(Length As Integer, Optional Decimals As Integer) As String 'Range: M = 0 to M = 65, D = 0 to D = 30
 
-  Select (Lenght)
+  Return UnsignedDecimal(Length, Decimals)
+
+End
+
+Public Function Year(Optional Length As Integer) As String 'In four-digit format, the allowable values are 1901 to 2155, and 0000. In two-digit Format, the allowable values are 70 To 69, representing years From 1970 To 2069.
+
+  Select (Length)
     Case 2, 4
-      Return "YEAR(" & Lenght & ")"
+      Return "YEAR(" & Length & ")"
     Case 0
       Return "YEAR"
   End Select
 
 End
 
-Public Function Char(Optional Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 255
+Public Function Char(Optional Length As Integer, Optional Charset As String, Optional Collation As String) As String 'Range: 0 to 255
 
-  If Lenght Then 
-    Return "CHAR(" & Lenght & ") " & CharSet & " " & Collation
+  If Length Then 
+    Return "CHAR(" & Length & ") " & Charset & " " & Collation
   Else
-    Return "CHAR(1) " & CharSet & " " & Collation
+    Return "CHAR(1) " & Charset & " " & Collation
   Endif
 
 End
 
-Public Function VarChar(Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 65.535
+Public Function VarChar(Length As Integer, Optional Charset As String, Optional Collation As String) As String 'Range: 0 to 65.535
 
-  Return "VARCHAR(" & Lenght & ") " & CharSet & " " & Collation
-
-End
-
-Public Function Binary(Lenght As Integer) As String 'Range: 0 to 255
-
-  Return "BINARY(" & Lenght & ")"
+  Return "VARCHAR(" & Length & ") " & Charset & " " & Collation
 
 End
 
-Public Function VarBinary(Lenght As Integer) As String 'Range: 0 to 65.535
+Public Function Binary(Length As Integer) As String 'Range: 0 to 255
 
-  Return "VARBINARY(" & Lenght & ")"
-
-End
-
-Public Function TinyText(Optional Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 255
-
-  Return "TINYTEXT(" & Lenght & ") " & CharSet & " " & Collation
+  Return "BINARY(" & Length & ")"
 
 End
 
-Public Function Blob(Optional Lenght As Integer) As String 'Range: 1 to 65.535 bytes
+Public Function VarBinary(Length As Integer) As String 'Range: 0 to 65.535
 
-  Return "BLOB(" & Lenght & ")"
-
-End
-
-Public Function Text(Optional Lenght As Integer, Optional CharSet As String, Optional Collation As String) As String 'Range: 0 to 65.535
-
-  Return "TEXT(" & Lenght & ") " & CharSet & " " & Collation
+  Return "VARBINARY(" & Length & ")"
 
 End
 
-Public Function MediumText(Optional CharSet As String, Optional Collation As String) As String 'Max: 16,777,215 (2^24 – 1) characters
+Public Function TinyText(Optional Length As Integer, Optional Charset As String, Optional Collation As String) As String 'Range: 0 to 255
 
-  Return "MEDIUMTEXT " & CharSet & " " & Collation
-
-End
-
-Public Function LongText(Optional CharSet As String, Optional Collation As String) As String 'Max: 4,294,967,295 or 4GB (2^32 – 1) characters
-
-  Return "LONGTEXT " & CharSet & " " & Collation
+  Return "TINYTEXT(" & Length & ") " & Charset & " " & Collation
 
 End
 
-Public Function Enum(Values As String[], Optional CharSet As String, Optional Collation As String) As String 'Max: 65,535 distinct values
+Public Function Blob(Optional Length As Integer) As String 'Range: 1 to 65.535 bytes
 
-  Dim $iCounter As Integer
+  Return "BLOB(" & Length & ")"
+
+End
+
+Public Function Text(Optional Length As Integer, Optional Charset As String, Optional Collation As String) As String 'Range: 0 to 65.535
+
+  Return "TEXT(" & Length & ") " & Charset & " " & Collation
+
+End
+
+Public Function MediumText(Optional Charset As String, Optional Collation As String) As String 'Max: 16,777,215 (2^24 – 1) characters
+
+  Return "MEDIUMTEXT " & Charset & " " & Collation
+
+End
+
+Public Function LongText(Optional Charset As String, Optional Collation As String) As String 'Max: 4,294,967,295 or 4GB (2^32 – 1) characters
+
+  Return "LONGTEXT " & Charset & " " & Collation
+
+End
+
+Public Function Enum(Values As String[], Optional Charset As String, Optional Collation As String) As String 'Max: 65,535 distinct values
+
+  Dim iCounter As Integer
 
   $Tmp = "ENUM("
-  For $iCounter = 0 To Values.Count - 1
-    $Tmp &= "'" & Values[$iCounter] & "', "
+  For iCounter = 0 To Values.Count - 1
+    $Tmp &= "'" & Values[iCounter] & "', "
   Next
   $Tmp = Mid($Tmp, 1, Len($Tmp) - 2) 'Strips the last two characters
   $Tmp &= ")"
@@ -223,13 +223,13 @@ Public Function Enum(Values As String[], Optional CharSet As String, Optional Co
 
 End
 
-Public Function Set(Values As String[], Optional CharSet As String, Optional Collation As String) As String 'Max: 64 members
+Public Function Set(Values As String[], Optional Charset As String, Optional Collation As String) As String 'Max: 64 members
 
-  Dim $iCounter As Integer
+  Dim iCounter As Integer
 
   $Tmp = "SET("
-  For $iCounter = 0 To Values.Count - 1
-    $Tmp &= "'" & Values[$iCounter] & "', "
+  For iCounter = 0 To Values.Count - 1
+    $Tmp &= "'" & Values[iCounter] & "', "
   Next
   $Tmp = Mid($Tmp, 1, Len($Tmp) - 2) 'Strips the last two characters
   $Tmp &= ")"

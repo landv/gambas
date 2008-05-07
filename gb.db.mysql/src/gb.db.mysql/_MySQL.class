@@ -5,7 +5,7 @@ Create Static
 
 Private $hResultQuery As Result
 Private $Engine As String = "InnoDB" 'Engines: InnoDB, MyISAM, Memory, Merge, Archive, Federated, NDB, CSV, Blackhole, Example
-Private $CharSet As String = "utf8"
+Private $Charset As String = "utf8"
 Private $Collation As String = "utf8_general_ci"
 Private $sTmp As String
 Private $DataTypes As _DataTypes
@@ -14,9 +14,10 @@ Private $Table As _Table
 Private $Index As _Index
 Private $Field As _Field
 Private $View As _View
+Private $User As _User
 
 Property Engine As String
-Property CharSet As String
+Property Charset As String
 Property Collation As String
 Property Read DataTypes As _DataTypes
 Property Read DataBase As _DataBase
@@ -24,6 +25,7 @@ Property Read Index As _Index
 Property Read Table As _Table
 Property Read Field As _Field
 Property Read View As _View
+Property Read User As _User
 Property Confirm As Boolean
 
 Private Function Engine_Read() As String
@@ -38,29 +40,29 @@ Private Sub Engine_Write(Value As String)
 
 End
 
-Private Function CharSet_Read() As String
+Private Function Charset_Read() As String
 
-  Return $CharSet
+  Return $Charset
 
 End
 
-Private Sub CharSet_Write(Value As String) 'Validate if the Char Set is valid
+Private Sub Charset_Write(Value As String) 'Validate if the Char Set is valid
    
   Dim iCounter As Integer
-  Dim csCharSets As New Collection
+  Dim csCharsets As New Collection
 
   $hResultQuery = modMain.$Connection.Exec("SELECT CHARACTER_SET_NAME FROM information_schema.CHARACTER_SETS")
   For iCounter = 0 To $hResultQuery.Count - 1
-    csCharSets[iCounter] = $hResultQuery["CHARACTER_SET_NAME"]
+    csCharsets[iCounter] = $hResultQuery["CHARACTER_SET_NAME"]
     $hResultQuery.MoveNext()
   Next
-  For Each $sTmp In csCharSets
+  For Each $sTmp In csCharsets
     If $sTmp = Value Then
-      $CharSet = Value
+      $Charset = Value
       Return
     Endif
   Next
-  Error.Raise(("Character Set not valid."))
+  Error.Raise("Invalid Charset")
 
 End
 
@@ -73,20 +75,20 @@ End
 Private Sub Collation_Write(Value As String)
 
   Dim iCounter As Integer
-  Dim csCharSets As New Collection
+  Dim csCharsets As New Collection
 
   $hResultQuery = modMain.$Connection.Exec("SELECT COLLATION_NAME FROM information_schema.COLLATIONS")
   For iCounter = 0 To $hResultQuery.Count - 1
-    csCharSets[iCounter] = $hResultQuery["COLLATION_NAME"]
+    csCharsets[iCounter] = $hResultQuery["COLLATION_NAME"]
     $hResultQuery.MoveNext()
   Next
-  For Each $sTmp In csCharSets
+  For Each $sTmp In csCharsets
     If $sTmp = Value Then
       $Collation = Value
       Return
     Endif
   Next
-  Error.Raise(("Collation not valid."))
+  Error.Raise("Invalid Collation")
 
 End
 
@@ -141,5 +143,12 @@ Private Function View_Read() As _View
 
   $View = New _View
   Return $View
+
+End
+
+Private Function User_Read() As _User
+
+  $User = New _User
+  Return $User
 
 End

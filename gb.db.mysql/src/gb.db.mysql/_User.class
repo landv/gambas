@@ -1,0 +1,39 @@
+' Gambas class file
+
+Export
+Create Static
+
+Public Procedure Delete(User As String, Host As String, Optional IfExists As Boolean)
+
+  modMain.$Query = "DROP USER '" & User & "'@'" & Host & "'"
+  If IfExists Then
+    Try modMain.RunQuery(modMain.$Query)
+  Else
+    modMain.RunQuery(modMain.$Query)
+  Endif
+
+End
+
+Public Procedure Add(User As String, Password As String, Host As String)
+
+  modMain.$Query = "CREATE USER '" & User & "'@'" & Host & "'"
+  modMain.RunQuery(modMain.$Query)
+  modMain.$Query = "UPDATE mysql.user SET Password = PASSWORD('" & Password & "') WHERE User = '" & User & "'"
+  modMain.RunQuery(modMain.$Query)
+
+End
+
+Public Procedure Grant(Privileges As String[], User As String, Password As String, Host As String, DataBase As String)
+
+  Dim iCounter As Integer
+
+  If Privileges[0] = "All" Or Privileges[0] = "all" Or Privileges[0] = "ALL" Then
+    modMain.$Query = "GRANT ALL PRIVILEGES"
+  Else
+    modMain.$Query = "GRANT "
+    modMain.$Query &= modMain.ArrayToString(Privileges, False)
+  Endif
+  modMain.$Query &= " ON " & DataBase & ".* TO '" & User & "'@'" & Host & "' IDENTIFIED BY '" & Password & "'"
+  modMain.RunQuery(modMain.$Query)
+
+End

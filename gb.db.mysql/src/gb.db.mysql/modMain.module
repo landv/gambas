@@ -20,18 +20,18 @@ End
 
 Public Function ArrayToString(Array As String[], Quote As Boolean) As String
 
-  Dim $iCounter As Integer
-  Dim $Tmp As String
+  Dim iCounter As Integer
+  Dim Tmp As String
 
-  For $iCounter = 0 To Array.Count - 1
+  For iCounter = 0 To Array.Count - 1
     If Quote Then
-      $Tmp &= DB.Quote(Array[$iCounter]) & ", "
+      Tmp &= DB.Quote(Array[iCounter]) & ", "
     Else
-      $Tmp &= Array[$iCounter] & ", "
+      Tmp &= Array[iCounter] & ", "
     Endif
   Next
-  $Tmp = Mid($Tmp, 1, Len($Tmp) - 2) 'Strips the last two characters
-  Return $Tmp
+  Tmp = Mid(Tmp, 1, Len(Tmp) - 2) 'Strips the last two characters
+  Return Tmp
 
 End
 

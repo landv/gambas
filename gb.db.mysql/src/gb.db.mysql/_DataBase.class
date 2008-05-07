@@ -9,10 +9,10 @@ Public Sub Process_Error(sError As String)
 
 End
 
-Public Procedure Modify(DataBase As String, Optional CharSet As String, Optional Collation As String)
+Public Procedure Modify(DataBase As String, Optional Charset As String, Optional Collation As String)
 
   modMain.$Query = "ALTER DATABASE " & DB.Quote(DataBase)
-  If CharSet Then modMain.$Query &= " DEFAULT CHARACTER SET = " & CharSet
+  If Charset Then modMain.$Query &= " DEFAULT CHARACTER SET = " & Charset
   If Collation Then modMain.$Query &= " DEFAULT COLLATE " & Collation
   modMain.RunQuery(modMain.$Query)
 
@@ -27,10 +27,10 @@ Public Procedure Delete(DataBase As String, IfExists As Boolean)
 
 End
 
-Public Procedure Add(DataBase As String, Optional CharSet As String, Optional Collation As String)
+Public Procedure Add(DataBase As String, Optional Charset As String, Optional Collation As String)
 
   modMain.$Query = "CREATE DATABASE " & DB.Quote(DataBase)
-  If CharSet Then modMain.$Query &= " DEFAULT CHARACTER SET = " & CharSet
+  If Charset Then modMain.$Query &= " DEFAULT CHARACTER SET = " & Charset
   If Collation Then modMain.$Query &= " DEFAULT COLLATE " & Collation
   modMain.RunQuery(modMain.$Query)
 

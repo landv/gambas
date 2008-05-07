@@ -6,14 +6,14 @@ Create Static
 Public Procedure Modify(Table As String, Action As String, Optional Symbol As String, Optional Definition As String)
 
   Action = Upper(Action)
-  If (Not ((Action = "DROP") Or (Action = "ADD") Or (Action = "MODIFY") Or (Action = "CHANGE"))) Then Error.Raise(("Action no allowed."))
+  If (Not ((Action = "DROP") Or (Action = "ADD") Or (Action = "MODIFY") Or (Action = "CHANGE"))) Then Error.Raise("Invalid Action")
   modMain.$Query = "ALTER TABLE " & DB.Quote(Table) & " " & Action & " " & DB.Quote(Symbol)
   If Definition Then modMain.$Query &= " " & Definition
   modMain.RunQuery(modMain.$Query)
 
 End
 
-Public Procedure Add(Table As String, Optional Engine As String, Optional CharSet As String)
+Public Procedure Add(Table As String, Optional Engine As String, Optional Charset As String)
 
   'Construc the table statement
   modMain.$Query = "CREATE TABLE " & DB.Quote(Table) & " ("
@@ -23,7 +23,7 @@ Public Procedure Add(Table As String, Optional Engine As String, Optional CharSe
   If modMain.$ForeignKey.Count Then modMain.$Query &= ", " & modMain.ArrayToString(modMain.$ForeignKey, False)
   modMain.$Query &= ")"
   If Engine Then modMain.$Query &= " ENGINE = " & Engine
-  If CharSet Then modMain.$Query &= " DEFAULT CHARSET = " & CharSet
+  If Charset Then modMain.$Query &= " DEFAULT CHARSET = " & Charset
 
   'Clears all the information from this table to be ready for the next one
   modMain.$FieldDefinition.Clear()
@@ -47,7 +47,7 @@ End
 
 Public Procedure LoadData(Table As String, File As String)
 
-  modMain.$Query = "LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE " & Table
+  modMain.$Query = "LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE " & DB.Quote(Table)
   modMain.RunQuery(modMain.$Query)
 
 End
