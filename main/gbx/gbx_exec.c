@@ -668,10 +668,8 @@ void EXEC_leave(bool drop) //bool keep_ret_value)
 }
 
 
-void EXEC_function_real(bool keep_ret_value)
+void EXEC_function_real()
 {
-	bool retry = FALSE;
-
 	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
 	STACK_push_frame(&EXEC_current);
 
@@ -687,6 +685,13 @@ void EXEC_function_real(bool keep_ret_value)
 		PROPAGATE();	
 	}
 	END_TRY
+
+	EXEC_function_loop();
+}
+
+void EXEC_function_loop()
+{
+	bool retry = FALSE;
 
 	if (PC != NULL)
 	{
@@ -818,9 +823,6 @@ void EXEC_function_real(bool keep_ret_value)
 		}
 		while (retry);
 	}
-
-	if (!keep_ret_value)
-		EXEC_release_return_value();
 
 	STACK_pop_frame(&EXEC_current);
 	/*PC = save;*/

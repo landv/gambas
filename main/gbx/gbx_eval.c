@@ -61,7 +61,7 @@ static void EVAL_enter()
   RP->type = T_VOID;
 }
 
-
+#if 0
 static bool EVAL_exec()
 {
 	bool debug = EXEC_debug;
@@ -72,7 +72,7 @@ static bool EVAL_exec()
 	
   PC = NULL;
 
-  EVAL_enter();
+	EVAL_enter();
   
   ERROR_clear();
 
@@ -95,12 +95,175 @@ static bool EVAL_exec()
 	EXEC_debug = debug;  
   return (ERROR_info.code != 0);
 }
+#endif
 
+static void EVAL_exec()
+{
+	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
+	STACK_push_frame(&EXEC_current);
+
+	PC = NULL;
+
+	TRY
+	{
+		EVAL_enter();
+	}
+	CATCH
+	{
+		STACK_pop_frame(&EXEC_current);
+		PROPAGATE();	
+	}
+	END_TRY
+
+	EXEC_function_loop();
+
+	TEMP = *RP;
+	UNBORROW(&TEMP);
+	
+	#if 0
+	if (PC != NULL)
+	{
+		do
+		{
+			TRY
+			{
+				EXEC_loop();
+				TEMP = *RP;
+				UNBORROW(&TEMP);
+				retry = FALSE;
+			}
+			CATCH
+			{
+				// QUIT was called
+				if (ERROR_info.code == E_ABORT)
+				{
+					#if DEBUG_ERROR
+					printf("#0 QUIT\n");
+					#endif
+					ERROR_lock();
+					while (PC != NULL)
+						EXEC_leave(TRUE);
+					ERROR_unlock();
+
+					//STACK_pop_frame(&EXEC_current);
+					PROPAGATE();
+				}
+				// We are in a TRY
+				else if (EP != NULL)
+				{
+					#if DEBUG_ERROR
+					printf("#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+					#endif
+
+					while (SP > EP)
+						POP();
+
+					PC = EC;
+					EP = NULL;
+					retry = TRUE;
+					/* On va directement sur le END TRY */
+				}
+				// There is a CATCH in the function
+				else if (EC != NULL)
+				{
+					#if DEBUG_ERROR
+					printf("#2 EC = %p\n", EC);
+					#endif
+
+					PC = EC;
+					EC = NULL;
+					retry = TRUE;
+				}
+				// There is no event handler in the function
+				else
+				{
+					#if DEBUG_ERROR
+					printf("#3\n");
+					#endif
+
+					/*if (EXEC_debug && !STACK_has_error_handler())
+					{
+						if (TP && TC)
+						{
+							ERROR_lock();
+							while (BP > TP)
+							{
+								EXEC_leave(TRUE);
+								if (!PC)
+									STACK_pop_frame(&EXEC_current);
+							}
+							while (SP > TP)
+								POP();
+							PC = TC;
+							ERROR_unlock();
+						}
+
+						DEBUG.Main(TRUE);
+						retry = TRUE;
+					}
+					else*/
+					{
+						ERROR_lock();
+						while (PC != NULL && EC == NULL)
+							EXEC_leave(TRUE);
+						ERROR_unlock();
+
+						if (PC == NULL)
+						{
+							/*printf("try to propagate\n");*/
+							STACK_pop_frame(&EXEC_current);
+							PROPAGATE();
+
+							/*ERROR_print();
+							exit(1);*/
+							/*retry = FALSE;*/
+						}
+
+						if (EP != NULL)
+						{
+							#if DEBUG_ERROR
+							printf("#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+							#endif
+
+							ERROR_lock();
+							while (SP > EP)
+								POP();
+							ERROR_unlock();
+
+							EP = NULL;
+							/* On va directement sur le END TRY */
+						}
+
+						PC = EC;
+						EC = NULL;
+
+						retry = TRUE;
+					}
+				}
+
+				while (SP < EXEC_super)
+					EXEC_super = ((VALUE *)EXEC_super)->_object.super;
+			}
+			END_TRY
+
+			#if DEBUG_ERROR
+			if (retry)
+				printf("retry %p\n", PC);
+			#endif
+		}
+		while (retry);
+	}
+
+	STACK_pop_frame(&EXEC_current);
+	#endif
+}
 
 bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 {
   int i;
   EVAL_SYMBOL *sym;
+  bool debug;
+  bool error;
   /*HASH_TABLE *hash_table;
   char *name;
   CCOL_ENUM enum_state;*/
@@ -122,19 +285,30 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
     if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)SP))
     {
       GB_Error("Unknown symbol");
-      /* ?? La pile est elle bien lib�� */
       return TRUE;
     }
 
-    /*VALUE_read(SP, &value, T_VARIANT);*/
     BORROW(SP);
 
     SP++;
   }
 
-  /*EXEC_function(&exec, EVAL->nvar);*/
+	debug = EXEC_debug;
+	EXEC_debug = FALSE;
+	error = FALSE;
 
-  return EVAL_exec();
+	TRY
+	{
+  	EVAL_exec();
+  }
+  CATCH
+  {
+  	error = TRUE;
+  }
+  END_TRY
+  
+  EXEC_debug = debug;
+  return error;
 }
 
 

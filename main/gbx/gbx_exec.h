@@ -152,10 +152,11 @@ void *EXEC_auto_create(CLASS *class, bool ref);
 
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param);
 void EXEC_native();
-void EXEC_function_real(bool keep_ret_value);
+void EXEC_function_real();
+void EXEC_function_loop();
 
-#define EXEC_function() EXEC_function_real(FALSE)
-#define EXEC_function_keep() EXEC_function_real(TRUE)
+#define EXEC_function() EXEC_function_real(), EXEC_release_return_value()
+#define EXEC_function_keep() EXEC_function_real()
 
 void EXEC_public(CLASS *class, void *object, const char *name, int nparam);
 

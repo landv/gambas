@@ -1144,7 +1144,7 @@ PUBLIC SUB mnuComment_Click()
   
     Editor.Begin
     FOR iLine = $iStartLine TO $iEndLine - 1
-      Editor.Lines[iLine] = Space$(iIndent) & "' " & String.Mid$(Editor.Lines[iLine], iIndent + 1)
+      Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
     NEXT
     Editor.End
     'Modify
@@ -1153,7 +1153,7 @@ PUBLIC SUB mnuComment_Click()
   ELSE 
     'Comment only the current line
     iLine = Editor.Line
-    Editor.Lines[iLine] = Space$(iIndent) & "' " & String.Mid$(Editor.Lines[iLine], iIndent + 1)
+    Editor.Lines[iLine] = Space$(iIndent) & "' " & Mid$(Editor.Lines[iLine], iIndent + 1)
   ENDIF 
 END
 

@@ -71,18 +71,12 @@ _PUSH_GENERIC:
 
 	// The first time we access a symbol, we must not be virtual to find it
 	val = &SP[-1];
+	
 	if (defined && object && !VALUE_is_super(val))
   	index = CLASS_find_symbol(val->_object.class, name);
 	else
   	index = CLASS_find_symbol(class, name);
 
-	/*FILE *file = fopen("/tmp/bug.log", "a");
-	if (file)
-	{
-		fprintf(file, "EXEC_push: %s.%s\n", class->name, name);
-		fclose(file);
-	}*/
-	
   if (index == NO_SYMBOL)
   {
     //index = CLASS_find_symbol(class, name);
