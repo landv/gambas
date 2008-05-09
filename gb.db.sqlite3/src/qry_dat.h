@@ -110,6 +110,14 @@ class field_value
 		{
 			return field_type;
 		}
+		
+		fType get_field_type() const
+		{
+			return field_type;
+		}
+		
+		string gft();
+		
 		bool get_isNull() const
 		{
 			return is_null;
@@ -126,6 +134,7 @@ class field_value
 		unsigned long get_asULong() const;
 		double get_asDouble() const;
 
+		#if 0
 		 field_value & operator=(const char *s)
 		{
 			set_asString(s);
@@ -136,6 +145,9 @@ class field_value
 			set_asString(s);
 			return *this;
 		}
+		#endif
+		
+		#if 0
 		field_value & operator=(const bool b)
 		{
 			set_asBool(b);
@@ -171,9 +183,12 @@ class field_value
 			set_asDouble(d);
 			return *this;
 		}
+		#endif
+		
 		field_value & operator=(const field_value & fv);
 
 		//class ostream;
+		#if 0
 		friend ostream & operator<<(ostream & os, const field_value & fv)
 		{
 			switch (fv.get_fType())
@@ -231,6 +246,7 @@ class field_value
 					}
 			}
 		}
+		#endif
 
 		void set_isNull(fType f)
 		{
@@ -238,9 +254,10 @@ class field_value
 			field_type = f;
 			str_value = "";
 		}
-		void set_asString(const char *s);
-		void set_asString(const string & s);
-		void set_asBool(const bool b);
+		void set_asString(const char *s, fType type);
+		void set_asString(const string & s, fType type);
+		void set_asBlob(const char *s, int l);	//BM
+		/*void set_asBool(const bool b);
 		void set_asChar(const char c);
 		void set_asShort(const short s);
 		void set_asUShort(const unsigned short us);
@@ -249,11 +266,7 @@ class field_value
 		void set_asULong(const unsigned long l);
 		void set_asDouble(const double d);
 		void set_asDate(const char *s);	//NG
-		void set_asDate(const string & s);	//NG
-		void set_asBlob(const char *s, int l);	//BM
-
-		fType get_field_type();
-		string gft();
+		void set_asDate(const string & s);	//NG*/
 	};
 
 struct field_prop

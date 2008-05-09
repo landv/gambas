@@ -79,7 +79,7 @@ PUBLIC FUNCTION FromString(sVal AS String) AS Variant
 
   DIM aVal AS String[]
   DIM iInd AS Integer
-  DIM aVar AS Array
+  DIM aVar AS Object
 
   IF Left(sVal) = "\"" THEN
     RETURN UnQuoteString(sVal)

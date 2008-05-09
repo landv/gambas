@@ -62,7 +62,11 @@ field_value::~field_value()
 		 string field_value::get_asString() const
 		 {
 			 static string tmp;
-
+			 
+			 tmp = str_value;
+			 return tmp;
+			
+			/*
 			 switch (field_type)
 			 {
 				 case ft_Blob:
@@ -126,6 +130,7 @@ field_value::~field_value()
 						 return tmp;
 					 }
 			 }
+			 */
 		 };
 
 		 char *field_value::get_asBlob() const
@@ -505,14 +510,10 @@ field_value & field_value::operator=(const field_value & fv)
 	{
 		switch (fv.get_fType())
 		{
+			/*
 			case ft_String:
 				{
 					set_asString(fv.get_asString());
-					break;
-				}
-			case ft_Blob:
-				{
-					set_asBlob(fv.get_asBlob(), fv.get_len());
 					break;
 				}
 			case ft_Boolean:
@@ -555,10 +556,15 @@ field_value & field_value::operator=(const field_value & fv)
 				{
 					set_asDate(fv.get_asString());
 					break;
+				}*/
+			case ft_Blob:
+				{
+					set_asBlob(fv.get_asBlob(), fv.get_len());
+					break;
 				}
 			default:
 				{
-					set_asString(fv.get_asString());
+					set_asString(fv.get_asString(), fv.get_field_type());
 					break;
 				}
 		}
@@ -569,20 +575,21 @@ field_value & field_value::operator=(const field_value & fv)
 
 
 //Set functions
-void field_value::set_asString(const char *s)
+void field_value::set_asString(const char *s, fType type)
 {
 	str_value = s;
-	field_type = ft_String;
+	field_type = type;
 	is_null = s == NULL || *s == 0;
 };
 
-void field_value::set_asString(const string & s)
+void field_value::set_asString(const string & s, fType type)
 {
 	str_value = s;
-	field_type = ft_String;
+	field_type = type;
 	is_null = s.length() == 0;
 };
 
+#if 0
 void field_value::set_asBool(const bool b)
 {
 	bool_value = b;
@@ -654,6 +661,7 @@ void field_value::set_asDate(const string & s)
 	field_type = ft_Date;
 	is_null = false;
 };
+#endif
 
 void field_value::set_asBlob(const char *data, int l)	// BM
 {
@@ -678,11 +686,6 @@ void field_value::set_asBlob(const char *data, int l)	// BM
 	is_null = (l == 0);
 };
 
-
-fType field_value::get_field_type()
-{
-	return field_type;
-}
 
 
 string field_value::gft()
