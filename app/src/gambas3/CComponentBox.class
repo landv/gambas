@@ -23,10 +23,12 @@ Private $bCheck As Boolean
 Private $bLock As Boolean
 Private $sKey As String
 Private $sInfo As String
+Private $hWatch As Observer
+Private $bAnim As Boolean
 
 Private Sub AddInfo(aInfo As String[], sTitle As String)
 
-  If aInfo AND If aInfo.Count Then 
+  If aInfo And If aInfo.Count Then 
     If $sInfo Then $sInfo &= "<br>"
     $sInfo &= "<b>" & sTitle & " :</b> " & aInfo.Join(", ") & "."
   Endif
@@ -49,7 +51,6 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   Dim W, H As Integer
   Dim hSpace As Panel
   Dim hVBox As VBox
-  Dim hWatch As Observer
   
   $sKey = hComp.Key
   
@@ -82,12 +83,13 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   txtDesc.Text = hComp.Name
   Select Case hComp.State
     Case CComponent.UNSTABLE
-      txtDesc.Text &= " <b>(" & ("Beta version") & ")</b>"
+      txtDesc.Text &= " <b>(" & ("Experimental") & ")</b>"
     Case CComponent.STABLE_NOT_FINISHED
       txtDesc.Text &= " <b>(" & ("Not finished but stable") & ")</b>"
   End Select 
+  txtDesc.Adjust
   
-  hWatch = New Observer(Me) As "Watcher"
+  $hWatch = New Observer(Me) As "Watcher"
   
   panInfo = New Panel(panVBox)
   panInfo.Visible = False
@@ -104,6 +106,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   'txtInfo.Text = $sInfo
   
   Expanded_Write(False)
+  $bAnim = True
   
 End
 
@@ -124,7 +127,7 @@ End
 Public Sub picCheck_MouseDown()
   
   If $bLock Then Return
-  $bCheck = NOT $bCheck
+  $bCheck = Not $bCheck
   RefreshCheck
   Raise Click
   
@@ -178,12 +181,13 @@ Private Sub Expanded_Write(Value As Boolean)
   Dim hComp As CComponent
   Dim aInfo As String[]
   Dim I As Integer
+  Dim H As Integer
 
   panInfo.Visible = Value
 
   If Value Then 
       
-    If NOT $sInfo Then 
+    If Not $sInfo Then 
     
       hComp = CComponent.All[$sKey]
 
@@ -224,13 +228,27 @@ Private Sub Expanded_Write(Value As Boolean)
     txtInfo.Move(txtDesc.X, 0, panInfo.W - txtDesc.X - 24, 8)
     txtInfo.Adjust
     panInfo.H = txtInfo.H
-    Me.Height = panInfo.Height + panName.Height + panVBox.Padding * 2
+    H = panInfo.Height + panName.Height + panVBox.Padding * 2
 
   Else 
 
-    Me.Height = panName.Height + panVBox.Padding * 2
+    H = panName.Height + panVBox.Padding * 2
 
   Endif
+
+  If $bAnim Then  
+    Object.Lock($hWatch)
+    While Abs(Me.Height - H) >= 2
+      If Me.Height > H Then
+        Me.Height -= 2
+      Else
+        Me.Height += 2
+      Endif
+      Wait
+    Wend
+    Object.Unlock($hWatch)
+  Endif
+  Me.Height = H
   
 End
 
@@ -240,7 +258,9 @@ Public Sub Watcher_Arrange()
   txtDesc.Adjust
   If panName.H <> txtDesc.H Then
     panName.H = txtDesc.H
+    $bAnim = False
     Expanded_Write(panInfo.Visible)
+    $bAnim = True
   Endif
   Object.Unlock(Me)
   

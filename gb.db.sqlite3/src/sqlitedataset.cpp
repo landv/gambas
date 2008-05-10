@@ -263,7 +263,7 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 			{
 				switch (r->record_header[i].type)
 				{
-					case ft_String:
+					/*case ft_String:
 						r->records[sz][i].set_asString(reslt[i]);
 						break;
 					case ft_Boolean:
@@ -299,14 +299,15 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 						r->records[sz][i].set_asDouble(strtod(reslt[i], NULL));
 						break;
 					case ft_Date:
+						r->records[sz][i].set_asString(reslt[i]);
 						r->records[sz][i].set_asDate(reslt[i]);
-						break;
+						break;*/
 					case ft_Blob:
 						if (stmt)
 							r->records[sz][i].set_asBlob(reslt[i], sqlite3_column_bytes(stmt, i));
 						break;
 					default:
-						r->records[sz][i].set_asString(reslt[i]);
+						r->records[sz][i].set_asString(reslt[i], r->record_header[i].type);
 				}
 			}
 		}
@@ -701,12 +702,15 @@ void SqliteDataset::fill_fields()
 		}
 	}
 	else
+	{
+		field_value tmp;
+	
 		for (uint i = 0; i < result.record_header.size(); i++)
 		{
-			(*fields_object)[i].val = "";
+			(*fields_object)[i].val = tmp;
 			//(*edit_object)[i].val = "";
 		}
-
+	}
 }
 
 

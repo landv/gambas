@@ -71,10 +71,6 @@ if test -z "$FFI_LIB"; then
     [-lffi])
 fi
 
-if test -z "$FFI_LIB"; then
-  AC_MSG_ERROR([libffi library and headers are required])
-fi
-
 dnl ---- Remove DISABLED file that could have been generated before
 
 rm -f DISABLED

@@ -1298,7 +1298,7 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 
 			for (i = 0; i < info->nindex; i++)
 			{
-				info->index[i] = r->records[i][1].get_asShort();
+				info->index[i] = r->records[i][1].get_asInteger();
 			}
 			break;
 		}

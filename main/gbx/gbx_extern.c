@@ -27,7 +27,9 @@
 #include "config.h"
 #include "gb_common.h"
 
+#if HAVE_FFI_COMPONENT
 #include <ffi.h>
+#endif
 
 #include "gb_common_buffer.h"
 #include "gb_table.h"
@@ -48,6 +50,7 @@ typedef
 
 static TABLE *_table = NULL;
 
+#if HAVE_FFI_COMPONENT
 static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_sint32, &ffi_type_sint32, &ffi_type_sint32, 
 	&ffi_type_sint32, &ffi_type_sint64, &ffi_type_float, &ffi_type_double, 
@@ -55,7 +58,7 @@ static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_void, &ffi_type_void, &ffi_type_pointer,
 	&ffi_type_pointer
 	};
-
+#endif
 
 static lt_dlhandle get_library(char *name)
 {
@@ -96,6 +99,96 @@ static lt_dlhandle get_library(char *name)
   return esym->handle;
 }  
   
+#if 0
+static int put_arg(void *addr, VALUE *value)
+{
+  static void *jump[16] = {
+    &&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+    &&__STRING, &&__STRING, &&__VARIANT, &&__ARRAY, &&__FUNCTION, &&__CLASS, &&__NULL
+    };
+    
+  if (TYPE_is_object(value->type))
+    goto __OBJECT;
+  else
+    goto *jump[value->type];
+
+__BOOLEAN:
+
+  *((int *)addr) = (value->_boolean.value != 0 ? 1 : 0);
+  return 1;
+
+__BYTE:
+
+  *((int *)addr) = (unsigned char)(value->_byte.value);
+  return 1;
+
+__SHORT:
+
+  *((int *)addr) = (short)(value->_short.value);
+  return 1;
+
+__INTEGER:
+
+  *((int *)addr) = value->_integer.value;
+  return 1;
+
+__LONG:
+
+  *((int64_t *)addr) = value->_long.value;
+  return 2;
+
+__SINGLE:
+
+  *((float *)addr) = (float)value->_float.value;
+  return 1;
+
+__FLOAT:
+
+  *((double *)addr) = value->_float.value;
+  return 2;
+
+__DATE:
+
+  /* Inverser au cas o value ~= addr */
+
+  ((int *)addr)[1] = value->_date.time;
+  ((int *)addr)[0] = value->_date.date;
+  return 2;
+
+__STRING:
+
+  *((char **)addr) = (char *)(value->_string.addr + value->_string.start);
+  return 1;
+
+__OBJECT:
+
+  {
+    void *ob = value->_object.object;
+    CLASS *class = OBJECT_class(ob);
+    
+    if (!CLASS_is_native(class) && class == CLASS_Class)
+      *((void **)addr) = class->stat;
+    else
+      *((void **)addr) = (char *)ob + sizeof(OBJECT);
+    
+    return 1;
+  }
+
+__NULL:
+  *((void **)addr) = NULL;
+  return 1;
+
+__VARIANT:
+__VOID:
+__ARRAY:
+__CLASS:
+__FUNCTION:
+
+  ERROR_panic("Bad type (%d) for EXTERN_call", value->type);
+}
+#endif
+
+
 
 static void *get_function(CLASS_EXTERN *ext)
 {
@@ -129,6 +222,7 @@ static void *get_function(CLASS_EXTERN *ext)
   EXEC.drop : if the return value should be dropped.
 */
 
+#if HAVE_FFI_COMPONENT
 void EXTERN_call(void)
 {
   static const void *jump[17] = {
@@ -283,9 +377,7 @@ void EXTERN_call(void)
   BORROW(&TEMP);
 
   if (EXEC.drop)
-  {
     RELEASE(&TEMP);
-  }
   else
   {
     VALUE_conv(&TEMP, ext->type);
@@ -293,95 +385,10 @@ void EXTERN_call(void)
     SP++;
   }
 }
-
-#if 0
-#define CAST(_type, _func) (*((_type (*)())_func))
-
-void old_EXTERN_call(void)
+#else
+void EXTERN_call(void)
 {
-  CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];
-  int nparam = EXEC.nparam;
-  int i, sz;
-  VALUE *value;
-  TYPE *sign;
-  ARGS args;
-  int *parg, *marg;
-  void *func;
-  
-  if (nparam < ext->n_param)
-    THROW(E_NEPARAM);
-  if (nparam > ext->n_param)
-    THROW(E_TMPARAM);
-  
-  if (nparam)
-  {
-    value = &SP[-nparam];
-    sign = (TYPE *)ext->param;
-    parg = (int *)&args;
-    marg = parg + sizeof(ARGS) / sizeof(int);
-  
-    for (i = 0, sz = 0; i < nparam; i++, value++, sign++)
-    {
-      VALUE_conv(value, *sign);
-      if (parg >= marg)
-        THROW(E_TMPARAM);      
-      parg += put_arg(parg, value);
-    }
-  }
-  
-  func = get_function(ext);
-  
-  switch (ext->type)
-  {
-    case T_BOOLEAN:
-    case T_BYTE:
-    case T_SHORT:
-    case T_INTEGER:
-      GB_ReturnInteger(CAST(int, func)(args));
-      break;
-    
-    case T_LONG:
-      GB_ReturnLong(CAST(int64_t, func)(args));
-      break;
-    
-    case T_SINGLE:
-      GB_ReturnFloat(CAST(float, func)(args));
-      break;
-      
-    case T_FLOAT:
-      GB_ReturnFloat(CAST(double, func)(args));
-      break;
-      
-    case T_STRING:
-      GB_ReturnConstString(CAST(char *, func)(args), 0);
-      break;
-    
-    default:
-      CAST(void, func)(args);
-      GB_ReturnNull();
-      break;
-  }
-  
-  while (nparam > 0)
-  {
-    nparam--;
-    POP();
-  }
-
-  POP(); /* extern function */
-  
-  /* from EXEC_native() */
-    
-  BORROW(&TEMP);
-
-  if (EXEC.drop)
-    RELEASE(&TEMP);
-  else
-  {
-    VALUE_conv(&TEMP, ext->type);
-    *SP = TEMP;
-    SP++;
-  }
+	THROW(E_ILLEGAL);
 }
 #endif
 
@@ -402,4 +409,3 @@ void EXTERN_exit(void)
   
   TABLE_delete(&_table);
 }
-

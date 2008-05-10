@@ -34,7 +34,7 @@ Public Sub btnOK_Click()
     Try sPath = lstExample.Current.Tag
   Endif
 
-  If NOT sPath Then Return
+  If Not sPath Then Return
 
   $sPath = sPath
   'Settings["/FOpenProject/Path"] = $sPath
@@ -109,7 +109,7 @@ Public Sub dchProject_Change()
 
   sPath = GetProjectPath(dchProject.Value)
   
-  If NOT sPath Then
+  If Not sPath Then
     $sLast = ""
     sdpProject.Hide
     Return 
@@ -152,22 +152,22 @@ Private Sub FillRecent()
   Inc Application.Busy
 
   panRecent.Arrangement = Arrange.None
-  lstRecent.Hide
+  lstRecent.Lock
 
   aRecent = Project.GetRecentFiles(chkSortRecent.Value)
 
   For Each sRecent In aRecent
     hProjectItem = New FProjectItem(lstRecent)
     If bHighlight Then hProjectItem.Background = Color.LightBackground
-    bHighlight = NOT bHighlight
-    If NOT hFirst Then hFirst = hProjectItem
+    bHighlight = Not bHighlight
+    If Not hFirst Then hFirst = hProjectItem
     hProjectItem.SetPath(sRecent)
   Next
   
   If hFirst Then lstRecent.Select(hFirst)
   
   ' Workaround a scrollview bug that does not show the scrollbars.
-  lstRecent.Show 
+  lstRecent.Unlock 
   panRecent.Arrangement = Arrange.Vertical
   
   Dec Application.Busy
@@ -222,7 +222,7 @@ Private Sub FillExample()
     
     hProjectItem = New FProjectItem(lstExample)
     If bHighlight Then hProjectItem.Background = Color.LightBackground
-    bHighlight = NOT bHighlight
+    bHighlight = Not bHighlight
     hProjectItem.SetPath(Project.EXAMPLES_DIR &/ sExample)
   
   Next

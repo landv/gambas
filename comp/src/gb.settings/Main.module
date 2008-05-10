@@ -1,12 +1,12 @@
 ' Gambas module file
 
-PUBLIC SUB Main()
+Public Sub Main()
 
-  DIM hSettings AS Settings
+  Dim hSettings As Settings
 
-  hSettings = NEW Settings("~/.config/gambas/gb.form.conf")
+  hSettings = New Settings("~/.config/gambas/gb.form.conf")
 
-  PRINT hSettings["/Bookmarks/Count", 0]
+  Print hSettings["/Bookmarks/Count", 0]
 
   'PRINT hSettings["/test/Array"].Join(" ")
  ' hSettings["PROJECTLANG"] = "toto"
@@ -17,91 +17,91 @@ PUBLIC SUB Main()
 
   'PRINT hSettings["External/Browser", "mozilla"]
 
-END
+End
 
 
-PUBLIC FUNCTION QuoteString(sVal AS String) AS String
+Public Function QuoteString(sVal As String) As String
 
-  RETURN Quote(sVal)
+  Return Quote(sVal)
 
-END
+End
 
-PUBLIC FUNCTION UnQuoteString(sVal AS String) AS String
+Public Function UnQuoteString(sVal As String) As String
 
-  RETURN UnQuote(sVal)
+  Return UnQuote(sVal)
 
-END
+End
 
-PUBLIC FUNCTION ToString(vVal AS Variant) AS String
+Public Function ToString(vVal As Variant) As String
 
-  DIM sVal AS String
-  DIM iInd AS Integer
+  Dim sVal As String
+  Dim iInd As Integer
 
-  IF IsString(vVal) THEN
-    RETURN QuoteString(vVal)
-  ELSE IF IsBoolean(vVal) THEN
-    RETURN IIf(vVal, "True", "False")
-  ELSE IF IsObject(vVal) 
-    IF vVal IS String[] OR IF vVal IS Integer[] OR IF vVal IS Float[] THEN
+  If IsString(vVal) Then
+    Return QuoteString(vVal)
+  Else If IsBoolean(vVal) Then
+    Return IIf(vVal, "True", "False")
+  Else If IsObject(vVal) 
+    If vVal Is String[] Or If vVal Is Integer[] Or If vVal Is Float[] Then
       sVal = "["
-      FOR iInd = 0 TO vVal.Max
-        IF iInd THEN sVal &= ","
+      For iInd = 0 To vVal.Max
+        If iInd Then sVal &= ","
         sVal &= ToString(vVal[iInd])
-      NEXT
+      Next
       sVal &= "]"
-    ELSE 
+    Else 
       Error.Raise("Unsupported datatype: " & Object.Type(vVal))
-    ENDIF
-  ELSE
+    Endif
+  Else
     sVal = CStr(vVal)
-    IF IsFloat(vVal) THEN
-      IF InStr(sVal, ".") = "0" THEN sVal = sVal & ".0"
-    ENDIF
-  ENDIF
+    If IsFloat(vVal) Then
+      If InStr(sVal, ".") = "0" Then sVal = sVal & ".0"
+    Endif
+  Endif
 
-  RETURN sVal
+  Return sVal
   
-END
+End
 
-PUBLIC FUNCTION FromString(sVal AS String) AS Variant
+Public Function FromString(sVal As String) As Variant
 
-  DIM aVal AS String[]
-  DIM iInd AS Integer
-  DIM aVar AS Array
+  Dim aVal As String[]
+  Dim iInd As Integer
+  Dim aVar As Object
 
-  IF Left(sVal) = "\"" THEN
-    RETURN UnQuoteString(sVal)
-  ELSE IF Left(sVal) = "[" THEN 
-    IF sVal = "[]" THEN RETURN NULL
+  If Left(sVal) = "\"" Then
+    Return UnQuoteString(sVal)
+  Else If Left(sVal) = "[" Then 
+    If sVal = "[]" Then Return Null
     aVal = Split(Mid$(sVal, 2, -1), ",", Chr$(34))
-    IF Mid$(sVal, 2, 1) = Chr$(34) THEN
-      RETURN aVal
-    ELSE
-      SELECT CASE TypeOf(FromString(aVal[0]))
-        CASE gb.Integer
-          aVar = NEW Integer[aVal.Count]
-        CASE gb.Float
-          aVar = NEW Float[aVal.Count]
-        CASE ELSE
-          RETURN NULL
-      END SELECT
-      FOR iInd = 0 TO aVal.Max
+    If Mid$(sVal, 2, 1) = Chr$(34) Then
+      Return aVal
+    Else
+      Select Case TypeOf(FromString(aVal[0]))
+        Case gb.Integer
+          aVar = New Integer[aVal.Count]
+        Case gb.Float
+          aVar = New Float[aVal.Count]
+        Case Else
+          Return Null
+      End Select
+      For iInd = 0 To aVal.Max
         aVar[iInd] = FromString(aVal[iInd])
-      NEXT    
-      RETURN aVar
-    ENDIF
-  ELSE IF InStr(sVal, "/") THEN
-    RETURN CDate(sVal)
-  ELSE IF InStr(sVal, ".") THEN
-    RETURN CFloat(sVal)
-  ELSE IF LCase(sVal) = "true" THEN 
-    RETURN TRUE
-  ELSE IF LCase(sVal) = "false" THEN 
-    RETURN FALSE
-  ELSE
-    RETURN CInt(sVal)
-  ENDIF
+      Next    
+      Return aVar
+    Endif
+  Else If InStr(sVal, "/") Then
+    Return CDate(sVal)
+  Else If InStr(sVal, ".") Then
+    Return CFloat(sVal)
+  Else If LCase(sVal) = "true" Then 
+    Return True
+  Else If LCase(sVal) = "false" Then 
+    Return False
+  Else
+    Return CInt(sVal)
+  Endif
 
-END
+End
 
 

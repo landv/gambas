@@ -53,7 +53,7 @@ enum fType
 		ft_Double,
 		ft_LongDouble,
 		ft_Date,
-		ft_Object
+		ft_Object,
 	};
 
 /* Size of Strings for fType */
@@ -70,18 +70,6 @@ class field_value
 	private:
 		fType field_type;
 		string str_value;
-		union
-			{
-				bool bool_value;
-				char char_value;
-				short short_value;
-				unsigned short ushort_value;
-				long long_value;
-				unsigned long ulong_value;
-				double double_value;
-				void *object_value;
-			};
-
 		bool is_null;
 		int len;
 
@@ -89,25 +77,20 @@ class field_value
 		 field_value();
 		~field_value();
 
-		 #if 0 //BM
-		 field_value(const char *s);
-		 field_value(const bool b);
-		 field_value(const char c);
-		 field_value(const short s);
-		 field_value(const unsigned short us);
-		 field_value(const long l);
-		 field_value(const unsigned long ul);
-		 field_value(const int i);
-		 field_value(const double d);
-		 field_value(const field_value & fv);
-		#endif
-
 		int get_len() const { return len; }
 
 		fType get_fType() const
 		{
 			return field_type;
 		}
+		
+		fType get_field_type() const
+		{
+			return field_type;
+		}
+		
+		string gft();
+		
 		bool get_isNull() const
 		{
 			return is_null;
@@ -115,14 +98,17 @@ class field_value
 
 		string get_asString() const;
 		bool get_asBool() const;
+		int get_asInteger() const;
+		#if 0
 		char get_asChar() const;
 		short get_asShort() const;
 		unsigned short get_asUShort() const;
 		long get_asLong() const;
-		int get_asInteger() const;
 		unsigned long get_asULong() const;
 		double get_asDouble() const;
+		#endif
 
+		#if 0
 		 field_value & operator=(const char *s)
 		{
 			set_asString(s);
@@ -133,6 +119,9 @@ class field_value
 			set_asString(s);
 			return *this;
 		}
+		#endif
+		
+		#if 0
 		field_value & operator=(const bool b)
 		{
 			set_asBool(b);
@@ -168,9 +157,12 @@ class field_value
 			set_asDouble(d);
 			return *this;
 		}
+		#endif
+		
 		field_value & operator=(const field_value & fv);
 
 		//class ostream;
+		#if 0
 		friend ostream & operator<<(ostream & os, const field_value & fv)
 		{
 			switch (fv.get_fType())
@@ -227,6 +219,7 @@ class field_value
 					}
 			}
 		}
+		#endif
 
 		void set_isNull(fType f)
 		{
@@ -234,9 +227,9 @@ class field_value
 			field_type = f;
 			str_value = "";
 		}
-		void set_asString(const char *s);
-		void set_asString(const string & s);
-		void set_asBool(const bool b);
+		void set_asString(const char *s, fType type);
+		void set_asString(const string & s, fType type);
+		/*void set_asBool(const bool b);
 		void set_asChar(const char c);
 		void set_asShort(const short s);
 		void set_asUShort(const unsigned short us);
@@ -245,10 +238,7 @@ class field_value
 		void set_asULong(const unsigned long l);
 		void set_asDouble(const double d);
 		void set_asDate(const char *s);	//NG
-		void set_asDate(const string & s);	//NG
-
-		fType get_field_type();
-		string gft();
+		void set_asDate(const string & s);	//NG*/
 	};
 
 struct field_prop

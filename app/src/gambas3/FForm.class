@@ -963,6 +963,7 @@ Public Sub Control_MouseUp()
 
     If Last.Mouse = Mouse.Cross Then
       $hCurrent.Control.Mouse = Mouse.Arrow
+      FProperty.FocusOn("Name")
       SelectCurrent(True)
     Endif
 
@@ -1153,7 +1154,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
   $hCurrent = hCtrl
   UnSelectAll
   SelectCurrent(True)
-  FProperty.FocusOn("(Name)")
+  FProperty.FocusOn("Name")
   RefreshProperty
 
   Return hCtrl

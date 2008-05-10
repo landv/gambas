@@ -18,6 +18,9 @@ Public Sub _new()
 
   Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
+
+  tvwProject.Columns.Count = 2
+  tvwProject.Columns[0].Width = Desktop.Width 
   
   Design.Init
 

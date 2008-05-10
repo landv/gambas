@@ -261,6 +261,13 @@ __POP_GENERIC:
 	
 	EXEC_object(val, &class, &object, &defined);
 	
+	// The first time we access a symbol, we must not be virtual to find it
+	if (defined && object && !VALUE_is_super(val))
+	{
+		//fprintf(stderr, "%s -> %s\n", class->name, val->_object.class->name);
+  	class = val->_object.class;
+  }
+	
 	if (defined && class->quick_array)
 	{
 		*PC |= 2 << 6;

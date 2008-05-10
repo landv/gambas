@@ -1315,15 +1315,27 @@ Public Sub cvwComponent_Collapse()
 End
 
 
-Public Sub lstComponent_Click()
+' Public Sub lstComponent_Click()
+' 
+'   Dim hCurrent As CComponentBox = lstComponent.Current
+'   If $hLastComp Then $hLastComp.Expanded = False
+'   $hLastComp = hCurrent
+'   
+'   If $hLastComp.Find(Mouse.ScreenX - $hLastComp.ScreenX, Mouse.ScreenY - $hLastComp.ScreenY) Is PictureBox Then Return
+'   
+'   $hLastComp.Expanded = True
+'     
+' End
+
+Public Sub lstComponent_Activate()
 
   Dim hCurrent As CComponentBox = lstComponent.Current
-  If $hLastComp Then $hLastComp.Expanded = False
-  $hLastComp = hCurrent
   
-  'IF $hLastComp.Find(Mouse.X, Mouse.Y) IS PictureBox THEN RETURN
-  
-  $hLastComp.Expanded = True
+  If hCurrent.Find(Mouse.ScreenX - hCurrent.ScreenX, Mouse.ScreenY - hCurrent.ScreenY) Is PictureBox Then Return
+  'lstComponent.Lock
+  Inc hCurrent.Expanded
+  'lstComponent.Unlock
+  lstComponent.EnsureVisible
     
 End
 

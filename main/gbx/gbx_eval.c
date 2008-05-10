@@ -62,45 +62,36 @@ static void EVAL_enter()
 }
 
 
-static bool EVAL_exec()
+static void EVAL_exec()
 {
-	bool debug = EXEC_debug;
-	
-  STACK_push_frame(&EXEC_current);
+	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
+	STACK_push_frame(&EXEC_current);
 
-	EXEC_debug = FALSE;
-	
-  PC = NULL;
+	PC = NULL;
 
-  EVAL_enter();
-  
-  ERROR_clear();
+	TRY
+	{
+		EVAL_enter();
+	}
+	CATCH
+	{
+		STACK_pop_frame(&EXEC_current);
+		PROPAGATE();	
+	}
+	END_TRY
 
-  TRY
-  {
-    EXEC_loop();
-    TEMP = *RP;
-    /*RET.type = T_VOID;*/
-    UNBORROW(&TEMP);
-    STACK_pop_frame(&EXEC_current);
-  }
-  CATCH
-  {
-    STACK_pop_frame(&EXEC_current);
-    STACK_pop_frame(&EXEC_current);
-  }
-  END_TRY
+	EXEC_function_loop();
 
-  //AP = ARCH_from_class(CP);
-	EXEC_debug = debug;
-  return (ERROR_current->info.code != 0);
+	TEMP = *RP;
+	UNBORROW(&TEMP);
 }
-
 
 bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 {
   int i;
   EVAL_SYMBOL *sym;
+  bool debug;
+  bool error;
   /*HASH_TABLE *hash_table;
   char *name;
   CCOL_ENUM enum_state;*/
@@ -132,9 +123,22 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
     SP++;
   }
 
-  /*EXEC_function(&exec, EVAL->nvar);*/
+	debug = EXEC_debug;
+	EXEC_debug = FALSE;
+	error = FALSE;
 
-  return EVAL_exec();
+	TRY
+	{
+  	EVAL_exec();
+  }
+  CATCH
+  {
+  	error = TRUE;
+  }
+  END_TRY
+  
+  EXEC_debug = debug;
+  return error;
 }
 
 

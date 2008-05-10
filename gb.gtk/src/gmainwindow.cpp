@@ -188,6 +188,7 @@ void gMainWindow::initialize()
 	_current = NULL;
 	_background = NULL;
 	_style = NULL;
+	_next_timer = 0;
 
 	onOpen = NULL;
 	onShow = NULL;

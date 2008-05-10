@@ -744,6 +744,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	cursor_row=-1;
 	sel_row=-1;
 	sel_mode=0;
+	sel_current = -1;
 	scroll=3;
 	hdata=NULL;
 	vdata=NULL;

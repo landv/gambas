@@ -58,148 +58,43 @@ field_value::~field_value()
 }
 
 
-//Conversations functions
-		 string field_value::get_asString() const
-		 {
-			 static string tmp;
+string field_value::get_asString() const
+{
+	static string tmp;
+	
+	tmp = str_value;
+	return tmp;
+};
 
-			 switch (field_type)
-			 {
-				 case ft_Blob:
-				 	return "";
+char *field_value::get_asBlob() const
+{
+	string tmp;
 
-				 case ft_String:
-					 {
-						 tmp = str_value;
-						 return tmp;
-					 }
-					 case ft_Boolean:
-					 {
-						 if (bool_value)
-							 return tmp = "True";
-						 else
-							 return tmp = "False";
-					 }
-				 case ft_Char:
-					 {
-						 return tmp = char_value;
-					 }
-				 case ft_Short:
-					 {
-						 char t[ft_Short_Length];
+	switch (field_type)
+	{
+		case ft_Blob:
+			{
+				return (char *)blob_value;
+			}
+		default:
+			{
+				return (char *)get_asString().data();
+			}
+	}
+};
 
-						 sprintf(t, "%i", short_value);
-						 return tmp = t;
-					 }
-				 case ft_UShort:
-					 {
-						 char t[ft_Short_Length];
+bool field_value::get_asBool() const
+{
+	return (str_value != "" && str_value != "0");
+};
 
-						 sprintf(t, "%i", ushort_value);
-						 return tmp = t;
-					 }
-				 case ft_Long:
-					 {
-						 char t[ft_Long_Length];
-
-						 sprintf(t, "%ld", long_value);
-						 return tmp = t;
-					 }
-				 case ft_ULong:
-					 {
-						 char t[ft_Long_Length];
-
-						 sprintf(t, "%lu", ulong_value);
-						 return tmp = t;
-					 }
-				 case ft_Float:
-				 case ft_Double:
-					 {
-						 char t[ft_Double_Length];
-
-						 sprintf(t, "%.*g", DBL_DIG, double_value);
-						 return tmp = t;
-					 }
-				 default:
-					 {
-						 tmp = str_value;
-						 return tmp;
-					 }
-			 }
-		 };
-
-		 char *field_value::get_asBlob() const
-		 {
-			 string tmp;
-
-			 switch (field_type)
-			 {
-				 case ft_Blob:
-					 {
-					 	 return (char *)blob_value;
-					 }
-				 default:
-					 {
-						 return (char *)get_asString().data();
-					 }
-			 }
-		 };
+int field_value::get_asInteger() const
+{
+	return atoi(str_value.data());
+};
 
 
-		 bool field_value::get_asBool() const
-		 {
-			 switch (field_type)
-			 {
-				 case ft_String:
-					 {
-						 if (str_value == "True")
-							 return true;
-						 else
-							 return false;
-					 }
-					 case ft_Boolean:
-					 {
-						 return bool_value;
-					 }
-				 case ft_Char:
-					 {
-						 if (char_value == 'T')
-							 return true;
-						 else
-							 return false;
-					 }
-				 case ft_Short:
-					 {
-						 return (bool) short_value;
-					 }
-				 case ft_UShort:
-					 {
-						 return (bool) ushort_value;
-					 }
-				 case ft_Long:
-					 {
-						 return (bool) long_value;
-					 }
-				 case ft_ULong:
-					 {
-						 return (bool) ulong_value;
-					 }
-				 case ft_Float:
-				 case ft_Double:
-					 {
-						 return (bool) double_value;
-					 }
-				 default:
-					 {
-						 if (str_value == "True")
-							 return true;
-						 else
-							 return false;
-					 }
-			 }
-		 };
-
-
+		 #if 0
 		 char field_value::get_asChar() const
 		 {
 			 switch (field_type)
@@ -492,7 +387,7 @@ field_value::~field_value()
 					 }
 			 }
 		 };
-
+#endif
 
 field_value & field_value::operator=(const field_value & fv)
 {
@@ -505,14 +400,10 @@ field_value & field_value::operator=(const field_value & fv)
 	{
 		switch (fv.get_fType())
 		{
+			/*
 			case ft_String:
 				{
 					set_asString(fv.get_asString());
-					break;
-				}
-			case ft_Blob:
-				{
-					set_asBlob(fv.get_asBlob(), fv.get_len());
 					break;
 				}
 			case ft_Boolean:
@@ -555,10 +446,15 @@ field_value & field_value::operator=(const field_value & fv)
 				{
 					set_asDate(fv.get_asString());
 					break;
+				}*/
+			case ft_Blob:
+				{
+					set_asBlob(fv.get_asBlob(), fv.get_len());
+					break;
 				}
 			default:
 				{
-					set_asString(fv.get_asString());
+					set_asString(fv.get_asString(), fv.get_field_type());
 					break;
 				}
 		}
@@ -569,20 +465,21 @@ field_value & field_value::operator=(const field_value & fv)
 
 
 //Set functions
-void field_value::set_asString(const char *s)
+void field_value::set_asString(const char *s, fType type)
 {
 	str_value = s;
-	field_type = ft_String;
+	field_type = type;
 	is_null = s == NULL || *s == 0;
 };
 
-void field_value::set_asString(const string & s)
+void field_value::set_asString(const string & s, fType type)
 {
 	str_value = s;
-	field_type = ft_String;
+	field_type = type;
 	is_null = s.length() == 0;
 };
 
+#if 0
 void field_value::set_asBool(const bool b)
 {
 	bool_value = b;
@@ -654,6 +551,7 @@ void field_value::set_asDate(const string & s)
 	field_type = ft_Date;
 	is_null = false;
 };
+#endif
 
 void field_value::set_asBlob(const char *data, int l)	// BM
 {
@@ -678,11 +576,6 @@ void field_value::set_asBlob(const char *data, int l)	// BM
 	is_null = (l == 0);
 };
 
-
-fType field_value::get_field_type()
-{
-	return field_type;
-}
 
 
 string field_value::gft()

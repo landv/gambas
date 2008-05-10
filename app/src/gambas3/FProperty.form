@@ -13,12 +13,24 @@
     AutoResize = True
     Text = ("Click on a form or a control to modify its properties...")
   }
-  { lblName TextLabel
-    MoveScaled(3,16,28,4)
+  { panProperty Panel
+    MoveScaled(4,16,54,5)
     AutoResize = True
-    Text = ("")
-    Alignment = Align.Normal
     Border = Border.Sunken
+    { lblName TextLabel
+      MoveScaled(0,0,28,4)
+      Expand = True
+      AutoResize = True
+      Text = ("")
+      Alignment = Align.Normal
+    }
+    { btnLock ToolButton
+      MoveScaled(49,1,4,4)
+      ToolTip = ("Lock property")
+      Text = ("")
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
   }
   { grdProperty GridView
     MoveScaled(26,24,30,16)

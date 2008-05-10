@@ -9,7 +9,7 @@ Private $hForm As FForm
 Private $iLast As Integer
 Private $sLast As String
 Private $sFocus As String
-Private $sFocusForm As String
+'Private $sFocusForm As String
 Private $sType As String
 Private $sOption As String
 Private $hEditor As Object
@@ -87,6 +87,7 @@ Public Sub RefreshAll()
   Dim sVal As String
   Dim hCtrlAlone As CControl
   Dim cKeyProp As Collection
+  Dim iInd As Integer
 
 '   DIM aColor AS NEW Integer[]
 '   DIM sClassColor AS String
@@ -106,11 +107,6 @@ Public Sub RefreshAll()
   $bMany = False
   HideProperty
   $hObject = Null
-
-  If $hForm.Name <> $sFocusForm Then
-    $sFocusForm = $hForm.Name
-    $sFocus = ""
-  Endif
 
   If Not cSelection Then Goto _HIDE
 
@@ -158,22 +154,27 @@ Public Sub RefreshAll()
 
   grdProperty.Columns.Count = 2
 
-  grdProperty[iRow, 0].Text = "(Class)"
+  grdProperty[iRow, 0].Text = "Class"
   grdProperty[iRow, 1].Text = $hObject.Kind
 
   Inc iRow
 
-  grdProperty[iRow, 0].Text = "(Name)"
+  grdProperty[iRow, 0].Text = "Name"
   If $bMany Then
     grdProperty[iRow, 1].Text = ""
   Else
     grdProperty[iRow, 1].Text = $hObject.Name
   Endif
-
+  
   Inc iRow
 
   If $bSort Then 
     aProp = aProp.Copy().Sort()
+    iInd = aProp.Find(CPropertyInfo.EVENT_NAME)
+    If iInd >= 0 Then
+      aProp.Remove(iInd)
+      aProp.Add(CPropertyInfo.EVENT_NAME, 0)
+    Endif
   Endif
 
   For Each sProp In aProp
@@ -205,6 +206,7 @@ Public Sub RefreshAll()
 
     grdProperty[iRow, 1].Text = sVal
     grdProperty[iRow, 0].Padding = 2
+
     Inc iRow
 
   Next
@@ -243,7 +245,14 @@ Public Sub RefreshAll()
     FFormStack.Select($hObject.Name)
   Endif 
   
-  If $sFocus Then ShowProperty($sFocus)
+  'If btnLock.Value Then 
+  If $sFocus Then
+    iRow = FindProperty($sFocus)
+    If iRow >= 0 Then 
+      If btnLock.Value Then grdProperty[iRow, 0].Picture = Picture["icon:/small/lock"]
+      ShowProperty
+    Endif
+  Endif
   
   Return
 
@@ -426,10 +435,16 @@ Public Sub HideProperty() As Boolean
     btnProperty.Visible = False
     spnProperty.Visible = False
 
+    ' If btnLock.Value Then
+    '   $sFocus = $sLast
+    ' Else
+    '   $sFocus = ""
+    ' Endif
+
     $sLast = ""
     $iLast = -1
     $hEditor = Null
-
+    
   Endif
 
 End
@@ -483,8 +498,27 @@ Public Sub FocusOn(sFocus As String)
   
 End
 
+Private Sub FindProperty(sProp As String) As Integer
 
-Private Sub ShowProperty(Optional sFocus As String)
+  Dim iRow As Integer
+  
+  If sProp Then
+  
+    For iRow = 0 To grdProperty.Rows.Count - 1
+      If sProp = grdProperty[iRow, 0].Text Then
+        Return iRow
+      Endif
+    Next
+    
+  Endif
+  
+  Return -1
+  
+End
+
+
+
+Private Sub ShowProperty()
 
   Dim hProp As CPropertyInfo
   Dim sType As String
@@ -504,14 +538,11 @@ Private Sub ShowProperty(Optional sFocus As String)
   If Not $hForm Then Return 
   If $hForm.ReadOnly Then Return
 
-  If sFocus Then
-    For iRow = 0 To grdProperty.Rows.Count - 1
-      If $sFocus = grdProperty[iRow, 0].Text Then
-        grdProperty.Row = iRow
-        Break
-      Endif
-    Next
-    If iRow >= grdProperty.Rows.Count Then Return
+  If $sLast Then HideProperty()
+
+  If $sFocus Then
+    iRow = FindProperty($sFocus)
+    If iRow >= 0 Then grdProperty.Row = iRow
   Endif
 
   If grdProperty.Row = 0 Then Return
@@ -559,8 +590,6 @@ Private Sub ShowProperty(Optional sFocus As String)
   Endif
 
   If sHelp Then lblHelp.Text = "<b>" & grdProperty[grdProperty.Row, 0].Text & "</b><br>" & sHelp
-
-  If $sLast Then HideProperty()
 
   $sLast = sProp
   $iLast = grdProperty.Row
@@ -668,7 +697,6 @@ Private Sub ShowProperty(Optional sFocus As String)
   btnProperty.Visible = bButton
 
   $hEditor.SetFocus
-  $sFocus = grdProperty[grdProperty.Row, 0].Text
 
   If $hEditor = txtProperty Then
     'IF NOT txtProperty.ReadOnly THEN
@@ -876,6 +904,7 @@ End
 Public Sub grdProperty_MouseUp()
 
   'DEBUG grdProperty[grdProperty.Row, 0].Text
+  btnLock.Value = False
   ShowProperty
 
 End
@@ -961,7 +990,33 @@ Public Sub Form_KeyPress()
 
   If Key.Code = Key.Escape Then
     HideProperty
-    $sFocus = ""
   Endif  
+
+End
+
+Public Sub panProperty_Arrange()
+
+  lblName.Move(4, (panProperty.H - lblName.H) \ 2)
+  btnLock.Move(panProperty.W - btnLock.W - 4, (panProperty.H - btnLock.H) \ 2)
+
+End
+
+Public Sub btnLock_Click()
+
+  Dim iRow As Integer
+
+  If btnLock.Value Then 
+    $sFocus = $sLast
+    iRow = FindProperty($sFocus)
+    If iRow >= 0 Then 
+      grdProperty[iRow, 0].Picture = Picture["icon:/small/lock"]
+    Else
+      btnLock.Value = False
+    Endif
+  Else
+    iRow = FindProperty($sFocus)
+    If iRow >= 0 Then grdProperty[iRow, 0].Picture = Null
+    $sFocus = ""
+  Endif
 
 End
