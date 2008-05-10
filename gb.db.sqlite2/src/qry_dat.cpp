@@ -26,7 +26,6 @@
  *
  **********************************************************************/
 
-
 #include "qry_dat.h"
 
 extern "C" {
@@ -52,127 +51,26 @@ field_value::~field_value()
 }
 
 
-//Conversations functions
-		 string field_value::get_asString() const
-		 {
-			 static string tmp;
+string field_value::get_asString() const
+{
+	static string tmp;
+	
+	tmp = str_value;
+	return tmp;
+};
 
-			 switch (field_type)
-			 {
-				 case ft_String:
-					 {
-						 tmp = str_value;
-						 return tmp;
-					 }
-					 case ft_Boolean:
-					 {
-						 if (bool_value)
-							 return tmp = "True";
-						 else
-							 return tmp = "False";
-					 }
-				 case ft_Char:
-					 {
-						 return tmp = char_value;
-					 }
-				 case ft_Short:
-					 {
-						 char t[ft_Short_Length];
+bool field_value::get_asBool() const
+{
+	return (str_value != "" && str_value != "0");
+};
 
-						 sprintf(t, "%i", short_value);
-						 return tmp = t;
-					 }
-				 case ft_UShort:
-					 {
-						 char t[ft_Short_Length];
-
-						 sprintf(t, "%i", ushort_value);
-						 return tmp = t;
-					 }
-				 case ft_Long:
-					 {
-						 char t[ft_Long_Length];
-
-						 sprintf(t, "%ld", long_value);
-						 return tmp = t;
-					 }
-				 case ft_ULong:
-					 {
-						 char t[ft_Long_Length];
-
-						 sprintf(t, "%lu", ulong_value);
-						 return tmp = t;
-					 }
-				 case ft_Float:
-				 case ft_Double:
-					 {
-						 char t[ft_Double_Length];
-
-						 sprintf(t, "%.*g", DBL_DIG, double_value);
-						 return tmp = t;
-					 }
-				 default:
-					 {
-						 tmp = str_value;
-						 return tmp;
-					 }
-			 }
-		 };
-
-		 bool field_value::get_asBool() const
-		 {
-			 switch (field_type)
-			 {
-				 case ft_String:
-					 {
-						 if (str_value == "True")
-							 return true;
-						 else
-							 return false;
-					 }
-					 case ft_Boolean:
-					 {
-						 return bool_value;
-					 }
-				 case ft_Char:
-					 {
-						 if (char_value == 'T')
-							 return true;
-						 else
-							 return false;
-					 }
-				 case ft_Short:
-					 {
-						 return (bool) short_value;
-					 }
-				 case ft_UShort:
-					 {
-						 return (bool) ushort_value;
-					 }
-				 case ft_Long:
-					 {
-						 return (bool) long_value;
-					 }
-				 case ft_ULong:
-					 {
-						 return (bool) ulong_value;
-					 }
-				 case ft_Float:
-				 case ft_Double:
-					 {
-						 return (bool) double_value;
-					 }
-				 default:
-					 {
-						 if (str_value == "True")
-							 return true;
-						 else
-							 return false;
-					 }
-			 }
-		 };
+int field_value::get_asInteger() const
+{
+	return atoi(str_value.data());
+};
 
 
+		 #if 0
 		 char field_value::get_asChar() const
 		 {
 			 switch (field_type)
@@ -465,7 +363,7 @@ field_value::~field_value()
 					 }
 			 }
 		 };
-
+#endif
 
 field_value & field_value::operator=(const field_value & fv)
 {
@@ -475,158 +373,26 @@ field_value & field_value::operator=(const field_value & fv)
 	if (fv.get_isNull())
 		set_isNull(fv.get_fType());
 	else
-	{
-		switch (fv.get_fType())
-		{
-			case ft_String:
-				{
-					set_asString(fv.get_asString());
-					break;
-				}
-			case ft_Boolean:
-				{
-					set_asBool(fv.get_asBool());
-					break;
-				}
-			case ft_Char:
-				{
-					set_asChar(fv.get_asChar());
-					break;
-				}
-			case ft_Short:
-				{
-					set_asShort(fv.get_asShort());
-					break;
-				}
-			case ft_UShort:
-				{
-					set_asUShort(fv.get_asUShort());
-					break;
-				}
-			case ft_Long:
-				{
-					set_asLong(fv.get_asLong());
-					break;
-				}
-			case ft_ULong:
-				{
-					set_asULong(fv.get_asULong());
-					break;
-				}
-			case ft_Float:
-			case ft_Double:
-				{
-					set_asDouble(fv.get_asDouble());
-					break;
-				}
-			case ft_Date:
-				{
-					set_asDate(fv.get_asString());
-					break;
-				}
-			default:
-				{
-					set_asString(fv.get_asString());
-					break;
-				}
-		}
-	}
+		set_asString(fv.get_asString(), fv.get_field_type());
 		
 	return *this;
 };
 
 
 //Set functions
-void field_value::set_asString(const char *s)
+void field_value::set_asString(const char *s, fType type)
 {
 	str_value = s;
-	field_type = ft_String;
+	field_type = type;
 	is_null = s == NULL || *s == 0;
 };
 
-void field_value::set_asString(const string & s)
+void field_value::set_asString(const string & s, fType type)
 {
 	str_value = s;
-	field_type = ft_String;
+	field_type = type;
 	is_null = s.length() == 0;
 };
-
-void field_value::set_asBool(const bool b)
-{
-	bool_value = b;
-	field_type = ft_Boolean;
-	is_null = false;
-};
-
-void field_value::set_asChar(const char c)
-{
-	char_value = c;
-	field_type = ft_Char;
-	is_null = false;
-};
-
-void field_value::set_asShort(const short s)
-{
-	short_value = s;
-	field_type = ft_Short;
-	is_null = false;
-};
-
-void field_value::set_asUShort(const unsigned short us)
-{
-	ushort_value = us;
-	field_type = ft_UShort;
-	is_null = false;
-};
-
-void field_value::set_asLong(const long l)
-{
-	long_value = l;
-	field_type = ft_Long;
-	is_null = false;
-};
-
-void field_value::set_asInteger(const int i)
-{
-	long_value = (long) i;
-	field_type = ft_Long;
-	is_null = false;
-};
-
-void field_value::set_asULong(const unsigned long ul)
-{
-	long_value = ul;
-	field_type = ft_ULong;
-	is_null = false;
-};
-
-
-
-void field_value::set_asDouble(const double d)
-{
-	double_value = d;
-	field_type = ft_Double;
-	is_null = false;
-};
-
-void field_value::set_asDate(const char *s)
-{																//NG
-	str_value = s;
-	field_type = ft_Date;
-	is_null = false;
-};
-
-void field_value::set_asDate(const string & s)
-{																//NG
-	str_value = s;
-	field_type = ft_Date;
-	is_null = false;
-};
-
-fType field_value::get_field_type()
-{
-	return field_type;
-}
 
 
 string field_value::gft()
