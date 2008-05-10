@@ -1,4 +1,114 @@
 -------------------------------------------------------------------------------
+ gambas2-2.6.0 - 10 May 2008
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Search include files inside lib64 directories too. Hurra for the
+  distributions that put non 64 bits specific files into a 64 bits specific
+  directory!
+* NEW: Makes better configuration warning messages when detecting libintl
+  and libiconv libraries.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: The auto-completion of a child class now is correctly updated if its
+  parent class is modified.
+* BUG: The auto-completion of children classes does not overflow the stack
+  anymore.
+* BUG: Evaluating expressions in the output console works again.
+* BUG: Text editor does not flash anymore when being resized.
+* BUG: Correctly raise an error when making an executable fails for any
+  reason.
+* BUG: Extract the property help better.
+* BUG: Fix the layout of the property sheet text edit dialog.
+* BUG: Splitting view in editor correctly updates the procedure combo-box
+  now.
+* BUG: The menu editor does not crash anymore when all menus are deleted
+  at once.
+* NEW: Add a search box in the output console toolbar.
+* NEW: Displays an error message if a project is not a Gambas 2 project.
+* NEW: Subversion conflicts support.
+* OPT: Do not set Project ColumnView AutoResize property to TRUE. Use a
+  very wide column instead to optimize redrawing.
+
+[INTERPRETER]
+* BUG: Symbol polymorphism is now correctly handled when the inheritance
+  depth is greater than two!
+* BUG: INC and DEC now toggle boolean values.
+* BUG: Getting information on a not yet loaded class does not crash the
+  debugger anymore.
+* BUG: Handle the evaluation of Eval() expressions the same way as any
+  other code. Otherwise, stack can be leaked when there is an exception
+  inside.
+* NEW: The foreign function interface is now optional.
+
+[COMPILER]
+* BUG: Adds many error messages when a compiler limit is reached: too many
+  static symbols in a same class, too many dynamic symbols, too many
+  functions, and so on.
+* BUG: Do not print error messages on unexpected strings with newline
+  inside. Just claim that an unexpected string has been encountered.
+
+[GB.DB.SQLITE2]
+* BUG: Reading floating point values and other values do not depend on the
+  locale anymore.
+* NEW: Remove useless code.
+
+[GB.DB.SQLITE3]
+* BUG: Reading floating point values and other values do not depend on the
+  locale anymore.
+* NEW: Remove useless code.
+
+[GB.EVAL]
+* BUG: Remove an apparently useless line of code that made the highlighter
+  sometimes crash!
+* BUG: Evaluating "Error" does not crash anymore. It just raises an error.
+* BUG: Do not print error messages on unexpected strings with newline
+  inside. Just claim that an unexpected string has been encountered.
+
+[GB.FORM]
+* BUG: Correctly cancel a impossible rename operation in the DirView
+  control.
+* NEW: Add a slider for setting the alpha color component.
+
+[GB.FORM.DIALOG]
+* BUG: Standard dialogs now correctly react to double clicks.
+
+[GB.GTK]
+* BUG: Void items are correctly handled by ComboBox without crashing now.
+* BUG: Windows cannot get focus anymore.
+* BUG: PictureBox.Alignment property now correctly deals with Align.Normal,
+  Align.TopNormal, and Align.BottomNormal alignments.
+* BUG: Fix uninitialized variables in ggridview.cpp and gmainwindow.cpp.
+
+[GB.PDF]
+* BUG: Compiles correctly against poppler 0.8 now.
+
+[GB.QT]
+* BUG: Resizing a GridView column inside the ColumnResize event handler
+  does not lead to a crash anymore.
+* BUG: Correctly update the PictureBox and DrawingArea background when the
+  background color changes.
+* BUG: Clipboard.Copy() sends UTF-8 strings to the clipboard correctly now.
+* BUG: SpinBox.Text works correctly now.
+* BUG: PictureBox is correctly refreshed now when its contents change.
+* BUG: TabStrip[].Count now always returns the correct number of child
+  controls in a tab.
+* NEW: Non resizable windows can be resized by the Move() or Resize()
+  methods now.
+* OPT: The PictureBox control does not flicker anymore when its Picture
+  property is changed.
+
+[GB.QT.EXT]
+* BUG: Editor now correctly highlight its frame according to the focus
+  change on styles that have use of that.
+* BUG: Editor correctly goes to the end of file when pressing CTRL+END.
+  Consequently, SelectAll() works correctly too now.
+
+[GB.SETTINGS]
+* BUG: Do not use Array datatype incorrectly anymore.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.5.0 - 03 Apr 2008
 -------------------------------------------------------------------------------
 
