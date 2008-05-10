@@ -58,153 +58,43 @@ field_value::~field_value()
 }
 
 
-//Conversations functions
-		 string field_value::get_asString() const
-		 {
-			 static string tmp;
-			 
-			 tmp = str_value;
-			 return tmp;
-			
-			/*
-			 switch (field_type)
-			 {
-				 case ft_Blob:
-				 	return "";
+string field_value::get_asString() const
+{
+	static string tmp;
+	
+	tmp = str_value;
+	return tmp;
+};
 
-				 case ft_String:
-					 {
-						 tmp = str_value;
-						 return tmp;
-					 }
-					 case ft_Boolean:
-					 {
-						 if (bool_value)
-							 return tmp = "True";
-						 else
-							 return tmp = "False";
-					 }
-				 case ft_Char:
-					 {
-						 return tmp = char_value;
-					 }
-				 case ft_Short:
-					 {
-						 char t[ft_Short_Length];
+char *field_value::get_asBlob() const
+{
+	string tmp;
 
-						 sprintf(t, "%i", short_value);
-						 return tmp = t;
-					 }
-				 case ft_UShort:
-					 {
-						 char t[ft_Short_Length];
+	switch (field_type)
+	{
+		case ft_Blob:
+			{
+				return (char *)blob_value;
+			}
+		default:
+			{
+				return (char *)get_asString().data();
+			}
+	}
+};
 
-						 sprintf(t, "%i", ushort_value);
-						 return tmp = t;
-					 }
-				 case ft_Long:
-					 {
-						 char t[ft_Long_Length];
+bool field_value::get_asBool() const
+{
+	return (str_value != "" && str_value != "0");
+};
 
-						 sprintf(t, "%ld", long_value);
-						 return tmp = t;
-					 }
-				 case ft_ULong:
-					 {
-						 char t[ft_Long_Length];
-
-						 sprintf(t, "%lu", ulong_value);
-						 return tmp = t;
-					 }
-				 case ft_Float:
-				 case ft_Double:
-					 {
-						 char t[ft_Double_Length];
-
-						 sprintf(t, "%.*g", DBL_DIG, double_value);
-						 return tmp = t;
-					 }
-				 default:
-					 {
-						 tmp = str_value;
-						 return tmp;
-					 }
-			 }
-			 */
-		 };
-
-		 char *field_value::get_asBlob() const
-		 {
-			 string tmp;
-
-			 switch (field_type)
-			 {
-				 case ft_Blob:
-					 {
-					 	 return (char *)blob_value;
-					 }
-				 default:
-					 {
-						 return (char *)get_asString().data();
-					 }
-			 }
-		 };
+int field_value::get_asInteger() const
+{
+	return atoi(str_value.data());
+};
 
 
-		 bool field_value::get_asBool() const
-		 {
-			 switch (field_type)
-			 {
-				 case ft_String:
-					 {
-						 if (str_value == "True")
-							 return true;
-						 else
-							 return false;
-					 }
-					 case ft_Boolean:
-					 {
-						 return bool_value;
-					 }
-				 case ft_Char:
-					 {
-						 if (char_value == 'T')
-							 return true;
-						 else
-							 return false;
-					 }
-				 case ft_Short:
-					 {
-						 return (bool) short_value;
-					 }
-				 case ft_UShort:
-					 {
-						 return (bool) ushort_value;
-					 }
-				 case ft_Long:
-					 {
-						 return (bool) long_value;
-					 }
-				 case ft_ULong:
-					 {
-						 return (bool) ulong_value;
-					 }
-				 case ft_Float:
-				 case ft_Double:
-					 {
-						 return (bool) double_value;
-					 }
-				 default:
-					 {
-						 if (str_value == "True")
-							 return true;
-						 else
-							 return false;
-					 }
-			 }
-		 };
-
-
+		 #if 0
 		 char field_value::get_asChar() const
 		 {
 			 switch (field_type)
@@ -497,7 +387,7 @@ field_value::~field_value()
 					 }
 			 }
 		 };
-
+#endif
 
 field_value & field_value::operator=(const field_value & fv)
 {

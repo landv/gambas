@@ -27,7 +27,9 @@
 #include "config.h"
 #include "gb_common.h"
 
+#if HAVE_FFI_COMPONENT
 #include <ffi.h>
+#endif
 
 #include "gb_common_buffer.h"
 #include "gb_table.h"
@@ -39,16 +41,6 @@
 
 #include "gbx_extern.h"
 
-#if 0
-/* Daniel Campos trick :-) */
-
-typedef
-  struct {
-    int args[32];
-  }
-  ARGS;
-#endif
-
 typedef
   struct {
     SYMBOL sym;
@@ -58,6 +50,7 @@ typedef
 
 static TABLE *_table = NULL;
 
+#if HAVE_FFI_COMPONENT
 static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_sint32, &ffi_type_sint32, &ffi_type_sint32, 
 	&ffi_type_sint32, &ffi_type_sint64, &ffi_type_float, &ffi_type_double, 
@@ -65,6 +58,7 @@ static ffi_type *_to_ffi_type[17] = {
 	&ffi_type_void, &ffi_type_void, &ffi_type_void, &ffi_type_pointer,
 	&ffi_type_pointer
 	};
+#endif
 
 static lt_dlhandle get_library(char *name)
 {
@@ -228,6 +222,7 @@ static void *get_function(CLASS_EXTERN *ext)
   EXEC.drop : if the return value should be dropped.
 */
 
+#if HAVE_FFI_COMPONENT
 void EXTERN_call(void)
 {
   static const void *jump[17] = {
@@ -390,95 +385,10 @@ void EXTERN_call(void)
     SP++;
   }
 }
-
-#if 0
-#define CAST(_type, _func) (*((_type (*)())_func))
-
-void old_EXTERN_call(void)
+#else
+void EXTERN_call(void)
 {
-  CLASS_EXTERN *ext = &EXEC.class->load->ext[EXEC.index];
-  int nparam = EXEC.nparam;
-  int i, sz;
-  VALUE *value;
-  TYPE *sign;
-  ARGS args;
-  int *parg, *marg;
-  void *func;
-  
-  if (nparam < ext->n_param)
-    THROW(E_NEPARAM);
-  if (nparam > ext->n_param)
-    THROW(E_TMPARAM);
-  
-  if (nparam)
-  {
-    value = &SP[-nparam];
-    sign = (TYPE *)ext->param;
-    parg = (int *)&args;
-    marg = parg + sizeof(ARGS) / sizeof(int);
-  
-    for (i = 0, sz = 0; i < nparam; i++, value++, sign++)
-    {
-      VALUE_conv(value, *sign);
-      if (parg >= marg)
-        THROW(E_TMPARAM);      
-      parg += put_arg(parg, value);
-    }
-  }
-  
-  func = get_function(ext);
-  
-  switch (ext->type)
-  {
-    case T_BOOLEAN:
-    case T_BYTE:
-    case T_SHORT:
-    case T_INTEGER:
-      GB_ReturnInteger(CAST(int, func)(args));
-      break;
-    
-    case T_LONG:
-      GB_ReturnLong(CAST(int64_t, func)(args));
-      break;
-    
-    case T_SINGLE:
-      GB_ReturnFloat(CAST(float, func)(args));
-      break;
-      
-    case T_FLOAT:
-      GB_ReturnFloat(CAST(double, func)(args));
-      break;
-      
-    case T_STRING:
-      GB_ReturnConstString(CAST(char *, func)(args), 0);
-      break;
-    
-    default:
-      CAST(void, func)(args);
-      GB_ReturnNull();
-      break;
-  }
-  
-  while (nparam > 0)
-  {
-    nparam--;
-    POP();
-  }
-
-  POP(); /* extern function */
-  
-  /* from EXEC_native() */
-    
-  BORROW(&TEMP);
-
-  if (EXEC.drop)
-    RELEASE(&TEMP);
-  else
-  {
-    VALUE_conv(&TEMP, ext->type);
-    *SP = TEMP;
-    SP++;
-  }
+	THROW(E_ILLEGAL);
 }
 #endif
 

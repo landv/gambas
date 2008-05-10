@@ -55,7 +55,7 @@ if test -z "$FFI_LIB"; then
 fi
 
 if test -z "$FFI_LIB"; then
-  AC_MSG_ERROR([libffi library and headers are required])
+   AC_MSG_WARN([foreign function interface is disabled])
 fi
 
 dnl ---- Remove DISABLED file that could have been generated before

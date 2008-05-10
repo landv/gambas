@@ -72,37 +72,12 @@ class field_value
 		fType field_type;
 		string str_value;
 		void *blob_value;
-		union
-			{
-				bool bool_value;
-				char char_value;
-				short short_value;
-				unsigned short ushort_value;
-				long long_value;
-				unsigned long ulong_value;
-				double double_value;
-				void *object_value;
-			};
-
 		bool is_null;
 		int len;
 
 	public:
 		 field_value();
 		~field_value();
-
-		 #if 0 //BM
-		 field_value(const char *s);
-		 field_value(const bool b);
-		 field_value(const char c);
-		 field_value(const short s);
-		 field_value(const unsigned short us);
-		 field_value(const long l);
-		 field_value(const unsigned long ul);
-		 field_value(const int i);
-		 field_value(const double d);
-		 field_value(const field_value & fv);
-		#endif
 
 		int get_len() const { return len; }
 
@@ -126,13 +101,15 @@ class field_value
 		string get_asString() const;
 		char *get_asBlob() const;
 		bool get_asBool() const;
+		int get_asInteger() const;
+		#if 0
 		char get_asChar() const;
 		short get_asShort() const;
 		unsigned short get_asUShort() const;
 		long get_asLong() const;
-		int get_asInteger() const;
 		unsigned long get_asULong() const;
 		double get_asDouble() const;
+		#endif
 
 		#if 0
 		 field_value & operator=(const char *s)
