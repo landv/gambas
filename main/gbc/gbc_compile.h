@@ -7,16 +7,16 @@
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
+  it under the terms of the GNU General License as published by
   the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  GNU General License for more details.
 
-  You should have received a copy of the GNU General Public License
+  You should have received a copy of the GNU General License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
@@ -53,10 +53,10 @@ typedef
     unsigned exported : 1;             /* there are some exported class */
     unsigned all : 1;                  /* compile everything */
     unsigned swap : 1;                 /* endianness must be swapped */
-    unsigned public_module : 1;        /* modules symbols are public by default */
+    unsigned public_module : 1;        /* modules symbols are by default */
     unsigned _reserved : 22;           /* reserved*/
     const char *output;                /* output file */
-    PATTERN *pattern;                  /* analyse lexicale du source */
+    PATTERN *pattern;                  /* lexical analyze */
     int pattern_count;                 /* number of patterns */
     PATTERN *current;                  /* position de traduction courante */
     PATTERN *end;                      /* fin de traduction */
@@ -81,11 +81,11 @@ EXTERN char *COMP_classes;
 
 #define JOB (&COMP_current)
 
-PUBLIC void COMPILE_init(void);
-PUBLIC void COMPILE_load(void);
-PUBLIC void COMPILE_exit(void);
-PUBLIC void COMPILE_begin(const char *file, bool trans);
-PUBLIC void COMPILE_end(void);
-PUBLIC void COMPILE_export_class(char *name);
+void COMPILE_init(void);
+void COMPILE_load(void);
+void COMPILE_exit(void);
+void COMPILE_begin(const char *file, bool trans);
+void COMPILE_end(void);
+void COMPILE_export_class(char *name);
 
 #endif

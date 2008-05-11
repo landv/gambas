@@ -77,6 +77,7 @@ Private Const MOVE_PREVIOUS As Integer = 3
 Private $bAfterLock As Boolean
 
 Private $bConvert As Boolean ' Convert from 2.0 to 3.0
+Private $bNoWarning As Boolean ' Do not warn if a property does not exist in FromString()
 
 Private $bBorder As Boolean
 
@@ -91,10 +92,6 @@ Public Sub _new(sPath As String)
   Type = "Form" 'File.Ext(sPath)
   
   Container = panBorder
-
-  Reload
-  
-  SetReadOnly
 
 End
 
@@ -137,6 +134,7 @@ Public Sub Reload()
   UpdateSnap
 
   'SetLock($bAfterLock)
+  If $bAfterLock Then Stop
   Action[".lock", Me].Value = $bAfterLock
 
   DrawTitle
@@ -375,7 +373,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
         Endif
 
         If hCtrl.SetProperty(sProperty, vValue) Then
-          Print "Error: "; hCtrl.Kind; "."; sProperty; " = "; sValue
+          If Not $bNoWarning Then Print "Error: "; hCtrl.Kind; "."; sProperty; " = "; sValue
         Endif
 
       Else If Left$(sLine, 5) = "Move(" Then
@@ -1309,9 +1307,8 @@ Private Sub DrawRectSelect(W As Integer, H As Integer)
 
 End
 
-
-Public Sub DeleteSelection()
-
+Private Sub KillSelection()
+  
   Dim hCtrl As CControl
   Dim cCopy As New Object[]
   Dim hParent As CControl
@@ -1336,18 +1333,27 @@ Public Sub DeleteSelection()
 
     ResetClassScan
 
+  Endif
+  
+End
+
+
+Public Sub DeleteSelection()
+
+  If Selection.Count Then
+    
+    KillSelection
+    
     SelectionChange
     RefreshProperty
     FFormStack.RefreshAll
 
   Endif
 
-  'STOP
-
 End
 
 
-Public Sub CopySelection()
+Public Sub GetSelection(Optional bAbsolute As Boolean) As String
 
   Dim hCtrl As CControl
 
@@ -1355,15 +1361,19 @@ Public Sub CopySelection()
 
   ResetSave
 
-  $iSaveX = Master.GetProperty("X")
-  $iSaveY = Master.GetProperty("Y")
+  If Not bAbsolute Then
 
-  For Each hCtrl In Selection
-
-    $iSaveX = Min($iSaveX, hCtrl.GetProperty("X"))
-    $iSaveY = Min($iSaveY, hCtrl.GetProperty("Y"))
-
-  Next
+    $iSaveX = Master.GetProperty("X")
+    $iSaveY = Master.GetProperty("Y")
+  
+    For Each hCtrl In Selection
+  
+      $iSaveX = Min($iSaveX, hCtrl.GetProperty("X"))
+      $iSaveY = Min($iSaveY, hCtrl.GetProperty("Y"))
+  
+    Next
+    
+  Endif
 
   $bDoNotArrange = True
   For Each hCtrl In Selection
@@ -1371,10 +1381,20 @@ Public Sub CopySelection()
   Next
   $bDoNotArrange = False
 
-  Clipboard.Copy($sSave, MMime.FORM)
-
   $iSaveX = 0
   $iSaveY = 0
+  
+  Return $sSave
+
+End
+
+Public Sub CopySelection()
+
+  Dim sStr As String
+  
+  sStr = GetSelection()
+
+  If sStr Then Clipboard.Copy(sStr, MMime.FORM)
 
 End
 
@@ -1385,14 +1405,24 @@ Function CanPaste() As Boolean
 
 End
 
+Public Sub PutSelection(sData As String, hParent As CControl)
+  
+  If Not sData Then Return
+
+  'PRINT Clipboard.Text
+  $bSelectNew = True
+  FromString(sData, hParent)
+  $bSelectNew = False
+
+  RefreshProperty
+  FFormStack.RefreshAll
+  
+End
+
 
 Public Sub PasteSelection()
 
   Dim hParent As CControl
-  Dim sData As String
-
-  sData = Clipboard.Paste(MMime.FORM)
-  If Not sData Then Return
 
   If Selection.Count = 1 Then
     hParent = Master
@@ -1408,13 +1438,7 @@ Public Sub PasteSelection()
 
   UnSelectAll
 
-  'PRINT Clipboard.Text
-  $bSelectNew = True
-  FromString(sData, hParent)
-  $bSelectNew = False
-
-  RefreshProperty
-  FFormStack.RefreshAll
+  PutSelection(Clipboard.Paste(MMime.FORM))
 
 End
 
@@ -1670,6 +1694,7 @@ Private Sub CreateMenu()
   Dim cSymbol As Collection
   Dim hSymbol As CSymbolInfo
   Dim sGroup As String
+  Dim aChange As String[]
 
   mnuSelect.Children.Clear
 
@@ -1694,6 +1719,7 @@ Private Sub CreateMenu()
   Next
 
   mnuEvent.Visible = False
+  mnuChange.Visible = False
 
   If Not $bReadOnly Then
 
@@ -1725,7 +1751,26 @@ Private Sub CreateMenu()
       mnuEvent.Visible = True
 
     Endif
+    
+    mnuChange.Children.Clear
+    
+    If Selection.Count = 1 Then
+    
+      aChange = CComponent.GetChanges(Master.Kind)
+      If aChange Then
+        For Each sName In aChange
+          If sName = Master.Kind Then Continue
+          hMenu = New Menu(mnuChange) As "mnuChange"
+          hMenu.Text = sName
+          hMenu.Picture = FFormStack.GetControlIcon(sName)
+          mnuChange.Show
+        Next
+      Endif
+    
+    Endif
 
+    'mnuChange.Visible = mnuChange.Children.Count > 0
+    
   Endif
 
   RefreshMenu
@@ -2158,6 +2203,7 @@ Private Sub SetLock(bLock As Boolean)
   Endif
   
   SetReadOnly
+  DrawTitle
   
 End
 
@@ -2180,6 +2226,9 @@ End
 Public Sub Form_Open()
 
   'IF $bActivate THEN RETURN
+  Reload
+  SetReadOnly
+
   Project.SetFormIcon(Me)
   '$bActivate = TRUE
 
@@ -2778,4 +2827,43 @@ Public Sub panBorder_Draw()
     Draw.Style.Panel(0, 0, panBorder.W, panBorder.H, Border.Plain)
   Endif
 
+End
+
+Public Sub mnuChange_Click()
+  
+  Dim sNewClass As String
+  Dim hParent As CControl
+  Dim sStr As String
+  Dim hCtrl As CControl
+  Dim sName As String
+  Dim sClass As String
+  Dim sFind As String
+  Dim iPos As Integer 
+  
+  If Selection.Count <> 1 Then Return
+  
+  sNewClass = Last.Text
+
+  sStr = GetSelection(True)
+  
+  sClass = Master.Kind
+  If Master.Virtual Then sClass = "#" & sClass
+  
+  sFind = "{ " & Master.Name & " " & sClass
+  iPos = InStr(sStr, sFind)
+  If iPos = 0 Then Return
+  
+  sStr = Left$(sStr, iPos - 1) & "{ " & Master.Name & " " & sNewClass & Mid$(sStr, iPos + Len(sFind))
+  
+  hParent = Master.Parent
+  
+  KillSelection
+  $bNoWarning = True
+  PutSelection(sStr, hParent)
+  $bNoWarning = False
+
+  SelectionChange
+  RefreshProperty
+  FFormStack.RefreshAll
+  
 End

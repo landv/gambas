@@ -9,7 +9,7 @@ Private Sub GetForm() As Boolean
   
   $hForm = Null
   Try $hForm = Project.ActiveForm
-  If NOT $hForm Then 
+  If Not $hForm Then 
     HideAll
     Return True
   Endif
@@ -37,36 +37,53 @@ Public Sub Form_Hide()
 
 End
 
+Static Public Sub GetControlIcon(sKind As String) As Picture
+  
+  Dim sImg As String
+  Dim hPict As Picture
+  
+  If sKind <> "Form" Then
+    sImg = ".control" &/ LCase(sKind)
+  Else
+    sImg = "img/32/form.png"
+  Endif
+
+  hPict = $cPict[sImg]
+  If Not hPict Then
+    hPict = Picture[sImg]
+    If Not hPict Then hPict = Picture["img/control/unknown.png"]
+    hPict = hPict.Image.Stretch(16, 16, True).Picture  
+    $cPict[sImg] = hPict
+  Endif
+  
+  Return hPict
+  
+End
+
+
 
 Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
 
   Dim hChild As Control
   Dim hTab As Object
   Dim iTab As Integer
-  Dim sImg As String
   Dim sKey As String
   Dim hPict As Picture
 
-  If NOT hCtrl Then Return
+  If Not hCtrl Then Return
 
   If sParent Then
     'sImg = "img/control/" & LCase(hCtrl.Kind) & ".png"
-    sImg = ".control" &/ LCase(hCtrl.Kind)
+    'sImg = ".control" &/ LCase(hCtrl.Kind)
+    hPict = GetControlIcon(hCtrl.Kind)
   Else
-    sImg = "img/32/form.png"
-  Endif
-
-  hPict = $cPict[sImg]
-  If NOT hPict Then
-    hPict = Picture[sImg]
-    If NOT hPict Then hPict = Picture["img/control/unknown.png"]
-    hPict = hPict.Image.Stretch(16, 16, True).Picture  
-    $cPict[sImg] = hPict
+    hPict = Picture["img/16/form.png"]
+    'sImg = "img/32/form.png"
   Endif
 
   tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
 
-  If NOT hCtrl.IsContainer() Then Return
+  If Not hCtrl.IsContainer() Then Return
 
   'IF hCtrl.Kind = "TabStrip" THEN
   If hCtrl.IsMultiContainer() Then
@@ -75,9 +92,9 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
 
     For iTab = 0 To hTab.Count - 1
       sKey = hCtrl.Name & "." & iTab
-      tvwControl.Add(sKey, hTab[iTab].Text, $cPict["img/control/tabstrip.png"], hCtrl.Name)
+      tvwControl.Add(sKey, hTab[iTab].Text, GetControlIcon("TabStrip"), hCtrl.Name)
       For Each hChild In hTab[iTab].Children
-        If NOT hChild.Tag Then Continue
+        If Not hChild.Tag Then Continue
         FillTree($hForm.Control[hChild.Tag], sKey)
       Next
       tvwControl[sKey].Expanded = True
@@ -86,7 +103,7 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
   Else
 
     For Each hChild In hCtrl.Control.Children
-      If NOT hChild.Tag Then Continue
+      If Not hChild.Tag Then Continue
       FillTree($hForm.Control[hChild.Tag], hCtrl.Name)
     Next
 
@@ -100,7 +117,7 @@ Public Sub RefreshReadOnly()
   
   If GetForm() Then Return
 
-  panControl.Visible = NOT $hForm.ReadOnly  
+  panControl.Visible = Not $hForm.ReadOnly  
   
 End
 
@@ -109,13 +126,13 @@ End
 
 Public Sub RefreshAll(Optional sKey As String, Optional bForce As Boolean)
 
-  If NOT Me.Visible Then Return
+  If Not Me.Visible Then Return
 
   If GetForm() Then Return
   
   'IF NOT Project.IsForm($hForm) THEN RETURN
 
-  If NOT sKey Then
+  If Not sKey Then
     Try sKey = $hForm.Master.Name
   Endif 
   
@@ -138,7 +155,7 @@ End
 
 Public Sub RefreshOne(sKey As String)
   
-  If NOT Me.Visible Then Return
+  If Not Me.Visible Then Return
   If GetForm() Then Return
   
   tvwControl[sKey].Delete
@@ -219,7 +236,7 @@ End
 
 Public Sub tvwControl_Select()
   
-  If NOT $bNoSelect Then 
+  If Not $bNoSelect Then 
     If InStr(tvwControl.Current.Key, ".") Then 
       tvwControl.MoveParent
       Try $hForm.SelectControl(tvwControl.Item.Text)

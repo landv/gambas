@@ -25,9 +25,11 @@ Public ClassList As New String[]
 Public State As Integer
 Public SortKey As Integer
 Public User As Boolean
+'Public Change As New Collection
 
 Static Private $cName As Collection
 Static Public Features As New Collection
+Static Public Changes As New Collection
 
 Static Private Sub SortComponents()
 
@@ -114,6 +116,27 @@ Static Private Sub InitComponentNames()
 
 End
 
+Static Public Sub GetChanges(sKind As String) As String[]
+  
+  Dim sGroup As String
+  Dim aChange As New String[]
+  Dim aGroup As String[]
+  Dim sChange As String
+  
+  aGroup = Changes[sKind]
+  If aGroup Then
+    For Each sGroup In aGroup
+      For Each sChange In Changes[sGroup]
+        If Not aChange.Exist(sChange) Then aChange.Add(sChange)
+      Next
+    Next
+  Endif
+
+  Return aChange
+  
+End
+
+
 Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   
   Dim hComponent As CComponent
@@ -127,6 +150,9 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   Dim sLib As String
   Dim iKey As Integer
   Dim sGroup As String
+  Dim aChange As String[]
+  Dim aStr As String[]
+  Dim sChange As String
 
   If bUser Then
     Open Component.UserPath &/ sFile As #hFic
@@ -165,39 +191,68 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
       sLig = Mid$(sLig, iPos + 1)
 
       With hComponent
+      
+        If sGroup = "Change" Then
+        
+          aChange = Changes["." & sKey]
+          If Not aChange Then
+            aChange = New String[]
+            Changes["." & sKey] = aChange
+          Endif
+          
+          aStr = Split(sLig, ",")
+          aStr.Add(sKey)
+          aChange.Insert(aStr)
+          aChange.Sort()
+        
+          For Each sChange In aStr
 
-        ' IF sKey = "Key" THEN
-        '   .Key = sLig
-        ' ELSE IF sKey = "Name" THEN 'OR sKey = "Name[" & sLangShort & "]" OR sKey = "Name[" & sLang & "]" THEN
-        '   PRINT "cName[\""; .Key; "\"] = (\""; sLig; "\")"
-        '   .Name = sLig
-        If sKey = "Author" Or sKey = "Authors" Then
-          .Authors = Split(sLig)
-        Else If sKey = "Type" Then
-          .Type = sLig
-        Else If sKey = "Group" Then
-          sGroup = sLig
-        Else If sKey = "Control" Or If sKey = "Controls" Then
-          .Controls.Add("@" & sGroup)
-          .Controls.Insert(Split(sLig))
-        Else If sKey = "Container" Then
-          .Containers.Insert(Split(sLig))
-        Else If sKey = "MultiContainer" Then
-          .MultiContainers.Insert(Split(sLig))
-        Else If sKey = "Virtual" Then
-          .Virtuals.Insert(Split(sLig))
-        Else If sKey = "Require" Or sKey = "Requires" Then
-          .Require = Split(LCase(sLig))
-        Else If sKey = "Exclude" Or sKey = "Excludes" Then
-          .Exclude = Split(LCase(sLig))
-        Else If sKey = "Implement" Or sKey = "Implements" Then
-          .Implement = Split(LCase(sLig))
-        Else If sKey = "Need" Or sKey = "Needs" Then
-          .Need = Split(LCase(sLig))
-        Else If sKey = "Alpha" Then
-          .State = UNSTABLE
-        Else If sKey = "State" Then 
-          .State = CInt(sLig)
+            aChange = Changes[sChange]
+            If Not aChange Then
+              aChange = New String[]
+              Changes[sChange] = aChange
+            Endif
+            
+            aChange.Add("." & sKey)
+            
+          Next
+        
+        Else
+
+          ' IF sKey = "Key" THEN
+          '   .Key = sLig
+          ' ELSE IF sKey = "Name" THEN 'OR sKey = "Name[" & sLangShort & "]" OR sKey = "Name[" & sLang & "]" THEN
+          '   PRINT "cName[\""; .Key; "\"] = (\""; sLig; "\")"
+          '   .Name = sLig
+          If sKey = "Author" Or sKey = "Authors" Then
+            .Authors = Split(sLig)
+          Else If sKey = "Type" Then
+            .Type = sLig
+          Else If sKey = "Group" Then
+            sGroup = sLig
+          Else If sKey = "Control" Or If sKey = "Controls" Then
+            .Controls.Add("@" & sGroup)
+            .Controls.Insert(Split(sLig))
+          Else If sKey = "Container" Then
+            .Containers.Insert(Split(sLig))
+          Else If sKey = "MultiContainer" Then
+            .MultiContainers.Insert(Split(sLig))
+          Else If sKey = "Virtual" Then
+            .Virtuals.Insert(Split(sLig))
+          Else If sKey = "Require" Or sKey = "Requires" Then
+            .Require = Split(LCase(sLig))
+          Else If sKey = "Exclude" Or sKey = "Excludes" Then
+            .Exclude = Split(LCase(sLig))
+          Else If sKey = "Implement" Or sKey = "Implements" Then
+            .Implement = Split(LCase(sLig))
+          Else If sKey = "Need" Or sKey = "Needs" Then
+            .Need = Split(LCase(sLig))
+          Else If sKey = "Alpha" Then
+            .State = UNSTABLE
+          Else If sKey = "State" Then 
+            .State = CInt(sLig)
+          Endif
+          
         Endif
 
       End With

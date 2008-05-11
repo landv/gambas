@@ -293,7 +293,10 @@ Public Function Open(sDir As String) As Boolean
 
   Try Kill sDir &/ ".lock"
 
-  ReadOnly = Not Access(sDir, gb.write)
+  ReadOnly = Not Access(sDir, gb.Write)
+  If Not ReadOnly Then
+    If Exist(sDir &/ ".startup") And If Not Access(sDir &/ ".startup", gb.Write) Then ReadOnly = True
+  Endif
 
   Path = sDir &/ PROJECT_FILE
   Name = File.Name(sDir)
@@ -1343,35 +1346,43 @@ Private Sub CompileError(sMsg As String)
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
 
-  iPos = InStr(sMsg, ":")
-  'if iPos = 0 then return
+  If sMsg Like "gbc: ERROR: *" Then
+  
+    sMsg = Mid$(sMsg, Len("gbc: ERROR: ") + 1)
+    SetMessage(sMsg)
+    Message.Error(("Cannot compile the project.") & "\n" & sMsg)
 
-  sFile = Left$(sMsg, iPos - 1)
-  sMsg = Mid$(sMsg, iPos + 1)
-
-  iPos = InStr(sMsg, ":")
-  'if iPos = 0 then return
-
-  iLine = Val(Left$(sMsg, iPos - 1))
-  'if iLine = 0 then return
-
-  sFile = File.Dir(Path) &/ File.Name(sFile)
-
-  hForm = OpenFile(sFile, iLine)
-
-  sMsg = Trim(Mid$(sMsg, iPos + 1))
-  If hForm And If iLine >= hForm.Editor.Lines.Count Then
-    SetMessage(File.BaseName(sFile) & ": " & sMsg & " " & ("in form definition"))
-    sMsg &= "\n" & ("in form definition")
   Else
-    SetMessage(File.BaseName(sFile) & "." & CStr(iLine) & ": " & sMsg)
-    sMsg &= "\n" & Subst(("at line &1 in &2"), CStr(iLine), File.Name(sFile))
-  Endif
-
-  If FGambas.Visible Then
-    FGambas.Animate("Depressive", sMsg)
-  Else
-    Message.Warning(sMsg)
+  
+    iPos = InStr(sMsg, ":")
+    sFile = Left$(sMsg, iPos - 1)
+    sMsg = Mid$(sMsg, iPos + 1)
+  
+    iPos = InStr(sMsg, ":")
+    'if iPos = 0 then return
+  
+    iLine = Val(Left$(sMsg, iPos - 1))
+    'if iLine = 0 then return
+  
+    sFile = File.Dir(Path) &/ File.Name(sFile)
+  
+    hForm = OpenFile(sFile, iLine)
+  
+    sMsg = Trim(Mid$(sMsg, iPos + 1))
+    If hForm And If iLine >= hForm.Editor.Lines.Count Then
+      SetMessage(File.BaseName(sFile) & ": " & sMsg & " " & ("in form definition"))
+      sMsg &= "\n" & ("in form definition")
+    Else
+      SetMessage(File.BaseName(sFile) & "." & CStr(iLine) & ": " & sMsg)
+      sMsg &= "\n" & Subst(("at line &1 in &2"), CStr(iLine), File.Name(sFile))
+    Endif
+    
+    If FGambas.Visible Then
+      FGambas.Animate("Depressive", sMsg)
+    Else
+      Message.Warning(sMsg)
+    Endif
+    
   Endif
 
 Catch
@@ -3294,9 +3305,10 @@ Public Sub DefineStartup(sPath As String, Optional bDoNotWrite As Boolean)
   If sPath Then RefreshKey(FindKey(sPath))
   If Startup Then RefreshKey(FindKey(Startup))
 
-  If Not bDoNotWrite Then WriteProject(True)
-  
-  Compile
+  If Not bDoNotWrite Then 
+    WriteProject(True)
+    Compile
+  Endif
 
 Catch
 

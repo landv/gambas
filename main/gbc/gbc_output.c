@@ -40,7 +40,7 @@
 #include "gb_file.h"
 #include "gb_common_swap.h"
 #include "gb_magic.h"
-
+#include "gbc_chown.h"
 #include "gbc_compile.h"
 
 #include "gbc_output.h"
@@ -1111,7 +1111,8 @@ PUBLIC const char *OUTPUT_get_file(const char *file)
   }
 
   output = FILE_cat(dir, ".gambas", NULL);
-  mkdir(output, 0777);
+  if (mkdir(output, 0777) == 0)
+  	FILE_set_owner(output, COMP_project);
 
   output = STR_copy(FILE_cat(dir, ".gambas", name, NULL));
 
@@ -1132,7 +1133,8 @@ PUBLIC const char *OUTPUT_get_trans_file(const char *file)
   name = STR_copy(FILE_get_name(file));
 
   output = FILE_cat(dir, ".lang", NULL);
-  mkdir(output, 0777);
+  if (mkdir(output, 0777) == 0)
+  	FILE_set_owner(output, COMP_project);
 
   output = FILE_cat(dir, ".lang", name, NULL);
   output = STR_copy(FILE_set_ext(output, "pot"));
@@ -1225,6 +1227,7 @@ static void output_translation(void)
   }
 
   fclose(file);
+  FILE_set_owner(JOB->tname, COMP_project);
 }
 
 
@@ -1297,6 +1300,7 @@ PUBLIC void OUTPUT_do(bool swap)
   output_finalize();
   
   fclose(_file);
+  FILE_set_owner(JOB->output, COMP_project);
 
   output_exit();
 

@@ -26,6 +26,7 @@ gbc3_SOURCES = \
  gb_file.h gb_file.c \
  gbc_form.h gbc_form.c \
  gb_str.h gb_str.c \
+ gbc_chown.h gbc_chown.c \
  gb_common.c \
  gbc.c 
 
@@ -36,6 +37,7 @@ gba3_SOURCES = \
  gb_str.h gb_str.c \
  gb_file.h gb_file.c \
  gbc_archive.h gbc_archive.c \
+ gbc_chown.h gbc_chown.c \
  gb_common.c \
  gba.c
 

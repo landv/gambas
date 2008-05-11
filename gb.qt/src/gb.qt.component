@@ -1,10 +1,5 @@
 [Component]
 Key=gb.qt
-Name=Graphical QT toolkit component
-Name[fr]=Composant graphique du toolkit QT
-Name[pl]=Kontrolki QT
-Name[es]=Componente gráfico basado en QT
-Name[tr]=Grafiksel QT araçları bileşeni
 Author=Benoît Minisini
 Implements=Form,EventLoop,ImageProvider
 Type=Form
@@ -24,37 +19,10 @@ MultiContainer=TabStrip
 Control=Embedder,TrayIcon
 Virtual=TrayIcon
 
-'----------------------------------------------------------------------------
-
-[Component]
-Name=gb.qt
-Description=Graphical QT toolkit component
-Description[fr]=Composant graphique du toolkit QT
-Description[pl]=Kontrolki QT
-Description[es]=Componente gráfico basado en QT
-Author=Benoît Minisini
-Exclude=gb.gtk
-Implements=Form
-Type=Form
-
-Init=Control,Form,Menu
-
-DoNotWrite=Visible,Enabled,Tag,Password,Mouse,ToolTip,List,Arrangement,Form.Persistent,Form.Border,Form.Text,Form.Icon,Form.State,Form.Mask,Form.Picture,Form.TopOnly,Form.SkipTaskBar,!Menu.Visible,Menu.Shortcut,DrawingArea.Cached
-AlwaysRead=RadioButton.Value,Button.Default,Button.Cancel,ProgressBar.Value,ProgressBar.Max
-Translate=Text,Title,List,Caption,Tooltip
-
-[Control]
-Control=Label,TextLabel,Separator,PictureBox,MovieBox,ProgressBar
-Control=Button,CheckBox,RadioButton,ToggleButton,ToolButton,Slider,ScrollBar
-Control=ListBox,ComboBox,TextBox,SpinBox,TextArea
-Control=ListView,TreeView,IconView,GridView,ColumnView
-
-[Container]
-Control=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,TabStrip,ScrollView,DrawingArea
-Container=HBox,VBox,HPanel,VPanel,HSplit,VSplit,Panel,Frame,TabStrip,ScrollView,DrawingArea
-MultiContainer=TabStrip
-
-[Special]
-Control=Embedder,TrayIcon
-Virtual=TrayIcon
-
+[Change]
+Label=TextLabel
+Button=ToggleButton,ToolButton
+Slider=ScrollBar,SpinBox
+TextBox=SpinBox,TextArea
+ListView=TreeView,ColumnView
+Panel=HBox,VBox,HPanel,VPanel,Frame,ScrollView

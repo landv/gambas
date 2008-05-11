@@ -34,7 +34,6 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-
 #include <unistd.h>
 
 #include "gb_common.h"
@@ -43,7 +42,7 @@
 #include "gb_file.h"
 #include "gb_magic.h"
 #include "gb_common_swap.h"
-
+#include "gbc_chown.h"
 #include "gbc_archive.h"
 
 /*#define DEBUG*/
@@ -108,7 +107,10 @@ static void make_executable(void)
 
   if (stat(ARCH_output, &info) == 0)
     if (chmod(ARCH_output, info.st_mode | S_IXUSR | S_IXGRP | S_IXOTH) == 0)
+    {
+    	FILE_set_owner(ARCH_output, FILE_cat(FILE_get_dir(ARCH_project), ".project", NULL));
       return;
+    }
 
   THROW("Cannot make executable: &1", strerror(errno));
 }

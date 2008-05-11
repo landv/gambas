@@ -50,6 +50,7 @@
 #include "gb_code.h"
 #include "gbc_output.h"
 #include "gbc_form.h"
+#include "gbc_chown.h"
 
 /*#define DEBUG*/
 
@@ -219,7 +220,8 @@ void COMPILE_init(void)
 
   fclose(fp);
 
-  fs = fopen(FILE_cat(FILE_get_dir(COMP_project), ".startup", NULL), "w");
+	name = FILE_cat(FILE_get_dir(COMP_project), ".startup", NULL);
+  fs = fopen(name, "w");
   if (!fs)
   	THROW("Cannot create .startup file");
 
@@ -235,6 +237,8 @@ void COMPILE_init(void)
 
 	if (fclose(fs))
   	THROW("Cannot create .startup file");
+  	
+  FILE_set_owner(name, COMP_project);
 
   dir = opendir(FILE_get_dir(COMP_project));
   if (dir)
@@ -337,3 +341,4 @@ void COMPILE_exit(void)
   STR_free(COMP_info_path);
   STR_free(COMP_root);
 }
+
