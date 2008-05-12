@@ -22,7 +22,7 @@ m
 Modify
 m
 
-(DataBase)s[(CharSet)s(Collation)s]
+(DataBase)s[(Charset)s(Collation)s]
 Delete
 m
 
@@ -30,7 +30,7 @@ m
 Add
 m
 
-(DataBase)s[(CharSet)s(Collation)s]
+(DataBase)s[(Charset)s(Collation)s]
 Dump
 m
 
@@ -129,103 +129,103 @@ LONGBLOB
 Bit
 m
 s
-[(Lenght)i]
+[(Length)i]
 SignedFloat
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 UnsignedFloat
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 SignedDouble
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 UnsignedDouble
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 SignedDoublePrecision
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 UnsignedDoublePrecision
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 SignedReal
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 UnsignedReal
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 SignedDecimal
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 UnsignedDecimal
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 SignedDec
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 UnsignedDec
 m
 s
-(Lenght)i[(Decimals)i]
+(Length)i[(Decimals)i]
 Year
 m
 s
-[(Lenght)i]
+[(Length)i]
 Char
 m
 s
-[(Lenght)i(CharSet)s(Collation)s]
+[(Length)i(Charset)s(Collation)s]
 VarChar
 m
 s
-(Lenght)i[(CharSet)s(Collation)s]
+(Length)i[(Charset)s(Collation)s]
 Binary
 m
 s
-(Lenght)i
+(Length)i
 VarBinary
 m
 s
-(Lenght)i
+(Length)i
 TinyText
 m
 s
-[(Lenght)i(CharSet)s(Collation)s]
+[(Length)i(Charset)s(Collation)s]
 Blob
 m
 s
-[(Lenght)i]
+[(Length)i]
 Text
 m
 s
-[(Lenght)i(CharSet)s(Collation)s]
+[(Length)i(Charset)s(Collation)s]
 MediumText
 m
 s
-[(CharSet)s(Collation)s]
+[(Charset)s(Collation)s]
 LongText
 m
 s
-[(CharSet)s(Collation)s]
+[(Charset)s(Collation)s]
 Enum
 m
 s
-(Values)String[];[(CharSet)s(Collation)s]
+(Values)String[];[(Charset)s(Collation)s]
 Set
 m
 s
-(Values)String[];[(CharSet)s(Collation)s]
+(Values)String[];[(Charset)s(Collation)s]
 #_Field
 
 CA
@@ -263,7 +263,7 @@ Engine
 p
 s
 
-CharSet
+Charset
 p
 s
 
@@ -295,6 +295,10 @@ View
 r
 _View
 
+User
+r
+_User
+
 Confirm
 p
 b
@@ -309,7 +313,7 @@ m
 Add
 m
 
-(Table)s[(Engine)s(CharSet)s]
+(Table)s[(Engine)s(Charset)s]
 Delete
 m
 
@@ -318,6 +322,21 @@ LoadData
 m
 
 (Table)s(File)s
+#_User
+
+CA
+Delete
+m
+
+(User)s(Host)s[(IfExists)b]
+Add
+m
+
+(User)s(Password)s(Host)s
+Grant
+m
+
+(Privileges)String[];(User)s(Password)s(Host)s(DataBase)s
 #_View
 
 CA

@@ -9,6 +9,7 @@ Public $PrimaryKey As String
 Public $Connection As New Connection
 Public $Confirm As Boolean = False
 Public $Process As Process
+Public $hResult As Result
 
 Public Sub SetConnection(hCon As Connection)
 
@@ -16,7 +17,6 @@ Public Sub SetConnection(hCon As Connection)
   $Connection = hCon
 
 End
-
 
 Public Function ArrayToString(Array As String[], Quote As Boolean) As String
 

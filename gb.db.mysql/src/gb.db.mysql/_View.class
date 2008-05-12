@@ -27,3 +27,10 @@ Public Procedure Delete(Views As String[], IfExists As Boolean)
   modMain.RunQuery(modMain.$Query)
 
 End
+
+Public Function Info(View As String) As String
+
+  modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE VIEW " & DB.Quote(View))
+  Return modMain.$hResult["Create View"]
+
+End

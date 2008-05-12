@@ -152,3 +152,16 @@ Private Function User_Read() As _User
   Return $User
 
 End
+
+Public Function CBool(Value As Variant) As Integer
+
+  Select (Value)
+    Case -1, "T"
+      Return 1
+    Case 0
+      Return 0
+    Default
+      Error.Raise("Invalid value")
+  End Select
+
+End

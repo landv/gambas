@@ -27,7 +27,7 @@ Public Procedure Grant(Privileges As String[], User As String, Password As Strin
 
   Dim iCounter As Integer
 
-  If Privileges[0] = "All" Or Privileges[0] = "all" Or Privileges[0] = "ALL" Then
+  If Upper(Privileges[0]) = "ALL" Then
     modMain.$Query = "GRANT ALL PRIVILEGES"
   Else
     modMain.$Query = "GRANT "

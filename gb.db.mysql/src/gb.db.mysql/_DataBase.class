@@ -43,12 +43,18 @@ Public Procedure Dump(Optional File As String)
   sTmp = "mysqldump -u " & modMain.$Connection.User & " -h " & modMain.$Connection.Host
   If modMain.$Connection.Port Then sTmp &= " -P " & modMain.$Connection.Port
   sTmp &= " --password='" & modMain.$Connection.Password & "' -B " & modMain.$Connection.Name
-  'If Tables Then sTmp &= " " & modMain.ArrayToString(Tables, True)
   If File Then
     sTmp &= " > " & File
   Else
     sTmp &= " > " & User.Home &/ "Dump_" & modMain.$Connection.Name & ".sql"
   Endif
   Shell sTmp For Read
+
+End
+
+Public Function Info(DataBase As String) As String
+
+  modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE DATABASE " & DB.Quote(DataBase))
+  Return modMain.$hResult["Create Database"]
 
 End

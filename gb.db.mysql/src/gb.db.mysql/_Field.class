@@ -48,3 +48,18 @@ Public Procedure ForeignKey(Field As String, RefTable As String, RefField As Str
  modMain.$ForeignKey.Add($sTmp)
 
 End
+
+Public Function Info(Table As String, Field As String) As String
+
+  Dim sDefinition As String
+
+  modMain.$hResult = modMain.$Connection.Exec("SHOW COLUMNS FROM " & Table & " LIKE '" & Field & "'")
+  sDefinition &= "Field:   " & modMain.$hResult!Field & GB.NewLine
+  sDefinition &= "Type:    " & modMain.$hResult!Type & GB.NewLine
+  sDefinition &= "Null:    " & modMain.$hResult!Null & GB.NewLine
+  sDefinition &= "Key:     " & modMain.$hResult!Key & GB.NewLine
+  sDefinition &= "Default: " & modMain.$hResult!Default & GB.NewLine
+  sDefinition &= "Extra:   " & modMain.$hResult!Extra
+  Return sDefinition
+
+End

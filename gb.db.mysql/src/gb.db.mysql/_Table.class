@@ -51,3 +51,38 @@ Public Procedure LoadData(Table As String, File As String)
   modMain.RunQuery(modMain.$Query)
 
 End
+
+Public Function Info(Table As String) As String
+
+  modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE TABLE " & DB.Quote(Table))
+  Return modMain.$hResult["Create Table"]
+
+End
+
+Public Procedure Insert(Table As String, Fields As String[], Values As String[])
+
+  Dim iCounter As Integer
+
+  modMain.$Query = "INSERT INTO " & DB.Quote(Table)
+  If Upper(Fields[0]) = "ALL" Then
+    modMain.$Query &= " VALUES ("
+  Else
+    modMain.$Query &= " (" & modMain.ArrayToString(Fields, False) & ") VALUES ("
+  Endif
+  'If the Value is string type, we need to use the Apostrophe caracter
+  For iCounter = 0 To Values.Count - 1
+    If (IsNumber(Val(Values[iCounter]))) Then
+      modMain.$Query &= Values[iCounter] & ", "
+    Else
+      If Upper(Values[iCounter]) = "NULL" Or Upper(Values[iCounter]) = "TRUE" Or Upper(Values[iCounter]) = "FALSE" Then
+        modMain.$Query &= Values[iCounter] & ", "
+      Else
+        modMain.$Query &= "'" & Values[iCounter] & "', "
+      Endif
+    Endif
+  Next
+  modMain.$Query = Mid(modMain.$Query, 1, Len(modMain.$Query) - 2) 'Strips the last two characters
+  modMain.$Query &= ")"
+  modMain.RunQuery(modMain.$Query)
+
+End
