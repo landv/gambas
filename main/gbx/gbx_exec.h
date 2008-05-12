@@ -206,7 +206,7 @@ void RELEASE_many(VALUE *val, int n);
 }
 
 #define RELEASE(_value) \
-{ \
+do { \
 	VALUE *_v = (_value); \
 	TYPE type = _v->type; \
 	if (TYPE_is_object(type)) \
@@ -217,10 +217,10 @@ void RELEASE_many(VALUE *val, int n);
 		STRING_unref(&_v->_string.addr); \
 	else \
 		EXEC_release(type, _v); \
-}
+} while (0)
 
 #define RELEASE_MANY(_val, _n) \
-{ \
+do { \
  if (_n) \
  { \
   if ((_n) == 1) \
@@ -234,19 +234,19 @@ void RELEASE_many(VALUE *val, int n);
     _val -= (_n); \
   } \
  } \
-}
+} while (0)
 
 #define PUSH() \
-{ \
+do { \
 	BORROW(SP); \
 	SP++; \
-}
+} while (0)
 
 #define POP() \
-{ \
+do { \
   SP--; \
   RELEASE(SP); \
-}
+} while (0)
 
 #define COPY_VALUE(_dst, _src) VALUE_copy(_dst, _src)
 

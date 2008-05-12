@@ -1472,7 +1472,7 @@ _ADD_QUICK:
 			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_FLOAT, &&__AQ_FLOAT, &&__AQ_DATE
 			};
 	
-		TYPE type;
+		TYPE NO_WARNING(type);
 		int NO_WARNING(value);
 		VALUE * NO_WARNING(P1);
 		void * NO_WARNING(jump_end);
@@ -1496,6 +1496,10 @@ _ADD_QUICK:
 		THROW(E_TYPE, "Number", TYPE_get_name(type));
 	
 	__AQ_BOOLEAN:
+		
+		fprintf(stderr, "Warning: ");
+		DEBUG_where();
+		fprintf(stderr, "ADD QUICK with Boolean\n");
 		
 		P1->_integer.value ^= (value & 1) ? -1 : 0;
 		goto *jump_end;
