@@ -564,17 +564,38 @@ Public Sub tabWorkspace_MouseUp()
 
 End
 
+Private Sub FindTabFromTitle(sTitle As String) As Integer
+
+  Dim iInd As Integer
+  
+  For iInd = 0 To tabWorkspace.Count - 1
+    If tabWorkspace[iInd].Text = sTitle Then Return iInd
+  Next
+
+  Return -1  
+  
+End
+
+
 Public Sub tabWorkspace_Menu()
 
   Dim iInd As Integer
   Dim hWin As CWindow
   Dim hMenu As Menu
+  Dim aTitle As New String[]
+  Dim sTitle As String
   
   'GetParent()._Menu
 
   mnuWindow.Children.Clear
-  
+
   For iInd = 0 To tabWorkspace.Count - 1
+    aTitle.Add(tabWorkspace[iInd].Text)
+  Next
+  aTitle.Sort
+  
+  For Each sTitle In aTitle
+    iInd = FindTabFromTitle(sTitle)
     With tabWorkspace[iInd]
       hMenu = New Menu(mnuWindow) As "mnuWindow"
       If .Text Then

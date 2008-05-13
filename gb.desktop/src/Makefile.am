@@ -1,6 +1,8 @@
 COMPONENT = gb.desktop
 include $(top_srcdir)/component.am
 
+SUBDIRS = . @GNOME_DIR@
+
 INCLUDES = @DESKTOP_INC@
 
 gblib_LTLIBRARIES = gb.desktop.la

@@ -431,8 +431,15 @@ int CLASS_add_class_unused(CLASS *class, int index)
 	return num;
 }
 
+int CLASS_add_class_exported(CLASS *class, int index)
+{
+	int num = CLASS_add_class(class, index);
+	JOB->class->class[num].exported = TRUE;
+	return num;
+}
 
-boolean CLASS_exist_class(CLASS *class, int index)
+
+bool CLASS_exist_class(CLASS *class, int index)
 {
   return CLASS_get_symbol(class, index)->class > 0;
 }

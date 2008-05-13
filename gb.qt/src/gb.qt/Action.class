@@ -5,7 +5,7 @@ Export
 Static Private $aVoid As New Object[]
 Static Private $cControls As New Collection(gb.Text)
 Static Private $cLock As New Collection
-Static Private $bGlobalLock As Boolean
+Static Private $iGlobalLock As Integer
 
 Property Enabled As Boolean
 Property Visible As Boolean
@@ -128,13 +128,13 @@ End
 
 Static Public Sub Lock()
   
-  Inc $bGlobalLock
+  Inc $iGlobalLock
   
 End
 
 Static Public Sub UnLock()
   
-  $bGlobalLock = Max(0, $bGlobalLock - 1)
+  $iGlobalLock = Max(0, $iGlobalLock - 1)
   
 End
 
@@ -148,7 +148,7 @@ Static Public Sub Raise(Control As Object)
   Dim bCont As Boolean
   Dim hLock As Integer[]
 
-  If $bGlobalLock Then Return
+  If $iGlobalLock Then Return
 
   sKey = Get(Control)
   'DEBUG Control;; sKey

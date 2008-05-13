@@ -18,6 +18,7 @@ Static Property Read Height As Integer
 Static Property Read W As Integer
 Static Property Read H As Integer
 Static Property {Watch} As Boolean
+Static Property Read Passwords As _DesktopPasswords
 
 Static Private $sDesktop As String
 Static Private $cDesktop As Collection
@@ -174,7 +175,11 @@ Static Private Sub GetDesktop() As String
     ' fi
     
     If Application.Env["KDE_FULL_SESSION"] Then
-      $sDesktop = "KDE"
+      If Application.Env["KDE_SESSION_VERSION"] = "4" Then
+        $sDesktop = "KDE4"
+      Else
+        $sDesktop = "KDE"
+      Endif
     Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
       $sDesktop = "GNOME"
     Else If InStr(_Desktop.GetWindowProperty("_DT_SAVE_MODE"), "xfce4") Then
@@ -185,6 +190,7 @@ Static Private Sub GetDesktop() As String
     
   Endif
   
+  $sDesktop = "GNOME"
   Return $sDesktop
   
 End
@@ -346,4 +352,10 @@ Public Sub DesktopWatcher_Change(Window As Integer, {Property} As Integer)
   If {Property} = Atom["_NET_CLIENT_LIST"] Then
   Endif
   
+End
+
+Static Private Function Passwords_Read() As _DesktopPasswords
+
+  Return _DesktopPasswords
+
 End

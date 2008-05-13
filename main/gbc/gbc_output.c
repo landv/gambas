@@ -561,13 +561,16 @@ static void output_class_ref(void)
    	sym = TABLE_get_symbol(Class->table, ref->index);
   	if (ref->used)
   	{
-	    write_int(get_string(sym->name, sym->len));
+  		if (ref->exported)
+		    write_int(-get_string(sym->name, sym->len));
+  		else
+		    write_int(get_string(sym->name, sym->len));
 		}
 		else
 		{
 			if (JOB->verbose)
 				printf("Ignoring class %.*s\n", sym->len, sym->name);
-    	write_int(-get_string(sym->name, sym->len));
+    	write_int(-1);
 		}
   }
 

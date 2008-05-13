@@ -449,6 +449,8 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   	offset = (int)(intptr_t)class->load->class_ref[i];
   	if (offset >= 0)
     	class->load->class_ref[i] = CLASS_find(&class->string[offset]);
+		else if (offset < -1)
+    	class->load->class_ref[i] = CLASS_find_global(&class->string[-offset]);
 		else
 			class->load->class_ref[i] = 0; //0x31415926; //CLASS_find(&class->string[-offset]);
 	}

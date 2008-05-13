@@ -1333,7 +1333,7 @@ Public Sub lstComponent_Activate()
   
   If hCurrent.Find(Mouse.ScreenX - hCurrent.ScreenX, Mouse.ScreenY - hCurrent.ScreenY) Is PictureBox Then Return
   'lstComponent.Lock
-  Inc hCurrent.Expanded
+  hCurrent.Expanded = Not hCurrent.Expanded
   'lstComponent.Unlock
   lstComponent.EnsureVisible
     

@@ -105,13 +105,11 @@ typedef
 typedef
 	struct {
 		TYPE type;
-		#if __WORDSIZE == 64
-		#else
-		int _pad;
-		#endif
 		double value;
     #if __WORDSIZE == 64
     intptr_t _reserved[2];
+    #else
+		int _pad;
     #endif
 		}
 	PACKED
@@ -120,13 +118,11 @@ typedef
 typedef
 	struct {
 		TYPE type;
-		#if __WORDSIZE == 64
-		#else
-		int _pad;
-		#endif
 		double value;
     #if __WORDSIZE == 64
     intptr_t _reserved[2];
+    #else
+		int _pad;
     #endif
 		}
 	PACKED

@@ -790,7 +790,7 @@ PUBLIC void HEADER_do(void)
 
     if (header_class(&trans.decl))
     {
-      CLASS_add_class(JOB->class, trans.decl.index);
+      CLASS_add_class_exported(JOB->class, trans.decl.index);
       continue;
     }
 

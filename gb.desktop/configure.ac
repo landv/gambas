@@ -18,4 +18,15 @@ GB_COMPONENT(
   [$C_LIB $THREAD_LIB $X_LIBS],
   [$THREAD_INC ])
 
-AC_OUTPUT( Makefile src/Makefile )
+GB_COMPONENT_PKG_CONFIG(
+  gnome,
+  GNOME,
+  [Gnome desktop routines],
+  [gnome],
+  gnome-keyring-1)
+
+AC_OUTPUT( \
+Makefile \
+src/Makefile \
+src/gnome/Makefile \
+)

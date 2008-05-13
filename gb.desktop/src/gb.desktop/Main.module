@@ -56,13 +56,16 @@ Public Sub Main()
   '   Print Hex$(hWindow.Id);; hWindow.VisibleName
   ' Next
 
-  Dim iInd As Integer
-  
-  For iInd = 0 To Desktop.Count - 1
-    With Desktop[iInd]
-      Print .Name;; .X;; .Y;; .Width;; .Height
-    End With
-  Next
+  ' Dim iInd As Integer
+  ' 
+  ' For iInd = 0 To Desktop.Count - 1
+  '   With Desktop[iInd]
+  '     Print .Name;; .X;; .Y;; .Width;; .Height
+  '   End With
+  ' Next
+
+  'Desktop.Passwords["Test"] = "barbapapa"
+  Print Desktop.Passwords["Test"] 
   
 End
 

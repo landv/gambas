@@ -320,6 +320,8 @@ void DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBA
       break;
 
     default:
+    	// WARNING: That works only if the data value is stored just after the type 
+    	// inside the GB_VALUE structure! Yet another stupid hack I should fix...
       memcpy(&value, arg, sizeof(GB_VARIANT_VALUE));
       break;
   }

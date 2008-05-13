@@ -586,5 +586,7 @@ GB_DESC CDesktopWatcherDesc[] =
   GB_METHOD("_free", NULL, CDESKTOPWATCHER_free, NULL),
   
   GB_EVENT("Change", NULL, "(Window)i(Property)i", &EVENT_Change),
-  GB_EVENT("Window", NULL, "(Window)i(X)i(Y)i(Width)i(Height)i", &EVENT_Window)
+  GB_EVENT("Window", NULL, "(Window)i(X)i(Y)i(Width)i(Height)i", &EVENT_Window),
+  
+  GB_END_DECLARE
 };

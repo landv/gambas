@@ -7,16 +7,16 @@
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
+  it under the terms of the GNU General License as published by
   the Free Software Foundation; either version 1, or (at your option)
   any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+  GNU General License for more details.
 
-  You should have received a copy of the GNU General Public License
+  You should have received a copy of the GNU General License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
@@ -171,6 +171,7 @@ typedef
 	struct {
 		int index;
 		bool used;
+		bool exported;
 		}
 	CLASS_REF;
 
@@ -207,37 +208,38 @@ typedef
 #define FUNCTION_is_procedure(func)  (TYPE_get_id((func)->type) == T_VOID)
 #define FUNCTION_is_static(func)     (TYPE_is_static((func)->type))
 
-PUBLIC void CLASS_create(CLASS **result);
-PUBLIC void CLASS_delete(CLASS **class);
+void CLASS_create(CLASS **result);
+void CLASS_delete(CLASS **class);
 
-PUBLIC CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global);
+CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global);
 
-PUBLIC void CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
-PUBLIC void CLASS_add_event(CLASS *class, TRANS_EVENT *decl);
-PUBLIC void CLASS_add_property(CLASS *class, TRANS_PROPERTY *prop);
-PUBLIC void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl);
-PUBLIC void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl);
-PUBLIC int CLASS_add_constant(CLASS *class, TRANS_DECL *decl);
-PUBLIC int CLASS_add_class(CLASS *class, int index);
-PUBLIC int CLASS_add_class_unused(CLASS *class, int index);
-PUBLIC bool CLASS_exist_class(CLASS *class, int index);
-PUBLIC int CLASS_add_unknown(CLASS *class, int index);
-PUBLIC int CLASS_add_array(CLASS *class, TRANS_ARRAY *array);
+void CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
+void CLASS_add_event(CLASS *class, TRANS_EVENT *decl);
+void CLASS_add_property(CLASS *class, TRANS_PROPERTY *prop);
+void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl);
+void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl);
+int CLASS_add_constant(CLASS *class, TRANS_DECL *decl);
+int CLASS_add_class(CLASS *class, int index);
+int CLASS_add_class_unused(CLASS *class, int index);
+int CLASS_add_class_exported(CLASS *class, int index);
+bool CLASS_exist_class(CLASS *class, int index);
+int CLASS_add_unknown(CLASS *class, int index);
+int CLASS_add_array(CLASS *class, TRANS_ARRAY *array);
 
-PUBLIC int CLASS_get_array_class(CLASS *class, int type);
+int CLASS_get_array_class(CLASS *class, int type);
 
-PUBLIC void FUNCTION_add_pos_line(void);
-PUBLIC char *FUNCTION_get_fake_name(int func);
+void FUNCTION_add_pos_line(void);
+char *FUNCTION_get_fake_name(int func);
 
-PUBLIC int CLASS_add_symbol(CLASS *class, const char *name);
+int CLASS_add_symbol(CLASS *class, const char *name);
 
-PUBLIC void CLASS_sort_declaration(CLASS *class);
-PUBLIC void CLASS_check_properties(CLASS *class);
+void CLASS_sort_declaration(CLASS *class);
+void CLASS_check_properties(CLASS *class);
 
 /* gbc_dump.c */
 
-PUBLIC void CLASS_dump(void);
-PUBLIC void CLASS_export(void);
-PUBLIC void CLASS_exit_export(void);
+void CLASS_dump(void);
+void CLASS_export(void);
+void CLASS_exit_export(void);
 
 #endif

@@ -35,6 +35,10 @@ Dump
 m
 
 [(File)s]
+Info
+m
+s
+(DataBase)s
 #_DataTypes
 
 CA
@@ -245,6 +249,10 @@ ForeignKey
 m
 
 (Field)s(RefTable)s(RefField)s[(OnDelete)s(OnUpdate)s]
+Info
+m
+s
+(Table)s(Field)s
 #_Index
 
 CA
@@ -303,6 +311,10 @@ Confirm
 p
 b
 
+CBool
+m
+i
+(Value)v
 #_Table
 
 CA
@@ -322,6 +334,14 @@ LoadData
 m
 
 (Table)s(File)s
+Info
+m
+s
+(Table)s
+Insert
+m
+
+(Table)s(Fields)String[];(Values)String[];
 #_User
 
 CA
@@ -352,3 +372,7 @@ Delete
 m
 
 (Views)String[];(IfExists)b
+Info
+m
+s
+(View)s
