@@ -421,6 +421,7 @@ int CLASS_add_class(CLASS *class, int index)
   }
 
 	JOB->class->class[num].used = TRUE;
+	JOB->class->class[num].exported = FALSE;
   return num;
 }
 
