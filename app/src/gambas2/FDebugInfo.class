@@ -10,7 +10,7 @@ PRIVATE CONST TAB_BREAK AS Integer = 4
 
 PUBLIC SUB Form_Open()
 
-  Settings.Read(splDebug)
+  'Settings.Read(splDebug)
 
   ReadConfig
 
@@ -472,7 +472,7 @@ END
 
 PUBLIC SUB Form_Close()
 
-  Settings.Write(splDebug)
+  'Settings.Write(splDebug)
 
 END
 
