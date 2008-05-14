@@ -385,11 +385,13 @@ void gContainer::insert(gControl *child)
 	
 	//g_debug("gContainer::insert: visible = %d", isReallyVisible());
 	performArrange();
+	updateFocusChain();
 }
 
 void gContainer::remove(gControl *child)
 {
 	ch_list = g_list_remove(ch_list, child);
+	updateFocusChain();
 }
 
 
@@ -509,3 +511,26 @@ void gContainer::setVisible(bool vl)
 		performArrange();
 }
 
+void gContainer::updateFocusChain()
+{
+	GList *chain = NULL;
+	GList *iter = ch_list;
+	gControl *child;
+	
+	//fprintf(stderr, "updateFocusChain()\n");
+	
+	iter = g_list_first(ch_list);
+	while (iter)
+	{
+		child = (gControl*)(iter->data);
+		//fprintf(stderr, "%s\n", child->name());	
+	  chain = g_list_prepend(chain, child->border);
+		iter = iter->next;
+	}
+	
+	chain = g_list_reverse(chain);
+	
+	gtk_container_set_focus_chain(GTK_CONTAINER(widget), chain);
+	
+	g_list_free(chain);
+}
