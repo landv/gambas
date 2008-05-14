@@ -186,6 +186,8 @@ gPictureBox::gPictureBox(gContainer *parent) : gControl(parent)
 	realize(true);
 	
 	setAlignment(ALIGN_TOP_LEFT);
+	_autoresize = false;
+	
 	// BM: The gControl signal handlers are used only there. Is it really needed ?
 	//g_signal_connect(G_OBJECT(border),"button-press-event",G_CALLBACK(sg_button_Press),(gpointer)this);
 	//g_signal_connect_after(G_OBJECT(border),"motion-notify-event",G_CALLBACK(sg_motion),(gpointer)this);
@@ -226,6 +228,7 @@ void gPictureBox::setForeground(long color)
 void gPictureBox::setPicture(gPicture *pic)
 {
   gPicture::assign(&_picture, pic);
+  adjust();
 	redraw();
 }
 
@@ -294,14 +297,15 @@ void gPictureBox::setStretch(bool vl)
 		gtk_image_set_pixel_size(GTK_IMAGE(widget),-1);
 	else
 		gtk_image_set_pixel_size(GTK_IMAGE(widget),0);
-		
+	
+	adjust();
 	redraw();
 }
 
 void gPictureBox::resize(long w,long h)
 {
 	gControl::resize(w,h);
-	if ( stretch() ) redraw();	
+	if ( stretch() ) redraw();
 }
 
 void gPictureBox::redraw()
@@ -321,3 +325,22 @@ void gPictureBox::redraw()
 }
 
 
+void gPictureBox::setAutoResize(bool v)
+{
+	_autoresize = v;
+	adjust();	
+}
+
+void gPictureBox::adjust()
+{
+	if (!_autoresize || stretch() || !_picture)
+		return;
+		
+	resize(_picture->width() + getFrameWidth() * 2, _picture->height() + getFrameWidth() * 2);
+}
+
+void gPictureBox::updateBorder()
+{
+	gControl::updateBorder();
+	adjust();
+}

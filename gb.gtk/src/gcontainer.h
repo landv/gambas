@@ -72,6 +72,7 @@ public:
 	virtual void remove(gControl *child);
 	virtual GtkWidget *getContainer();
 	gControl *findFirstFocus();	
+	void updateFocusChain();
 
 	static int _arrangement_level;
 

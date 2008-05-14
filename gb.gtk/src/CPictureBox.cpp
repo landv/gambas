@@ -91,8 +91,19 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CPICTUREBOX_stretch)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(PBOX->stretch()); return; }
-	PBOX->setStretch(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(PBOX->stretch());
+	else
+		PBOX->setStretch(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CPICTUREBOX_auto_resize)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(PBOX->isAutoResize());
+	else
+		PBOX->setAutoResize(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -199,6 +210,7 @@ GB_DESC CPictureBoxDesc[] =
   
   GB_PROPERTY("Picture", "Picture", CPICTUREBOX_picture),
   GB_PROPERTY("Stretch", "b", CPICTUREBOX_stretch),
+  GB_PROPERTY("AutoResize", "b", CPICTUREBOX_auto_resize),
 
   GB_PROPERTY("Border", "i", CPICTUREBOX_border),
   GB_PROPERTY("Alignment", "i", CPICTUREBOX_alignment),

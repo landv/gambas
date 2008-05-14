@@ -25,9 +25,11 @@ public:
 
 //"Methods"
 	void resize(long w,long h);
+	virtual void updateBorder();
 
 //"Private"
 	void redraw();
+	void adjust();
   gPicture *_picture;
   bool _autoresize;
 };

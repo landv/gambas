@@ -183,7 +183,7 @@ public:
 	
 	bool noInputMethod() { return no_input_method; }
 	
-	void updateBorder();
+	virtual void updateBorder();
 	int getFrameBorder() { return frame_border; }
 	void setFrameBorder(int border);
 	int getFramePadding() { return frame_padding; }
