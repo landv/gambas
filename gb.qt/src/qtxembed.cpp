@@ -380,19 +380,6 @@ static void sendXEmbedMessage(WId window, Display *display, long message,
     XSendEvent(display, window, false, NoEventMask, (XEvent *) &c);
 }
 
-// Sends a focus message.
-static void sendFocusMessage(Window window, int type, int mode, int detail)
-{
-  if (!window) return;
-  XEvent ev;
-  memset(&ev, 0, sizeof(ev));
-  ev.xfocus.type = type;
-  ev.xfocus.window = window;
-  ev.xfocus.mode = mode;
-  ev.xfocus.detail = detail;
-  XSendEvent(qt_xdisplay(), window, FALSE, FocusChangeMask, &ev);
-}
-
 // The purpose of this global x11 filter is for one to capture the key
 // events in their original state, but most importantly this is the
 // only way to get the WM_TAKE_FOCUS message from WM_PROTOCOLS.
@@ -431,17 +418,15 @@ static int x11EventFilter(XEvent *event)
     Constructs a QtXEmbedClient object. The \a parent and \a name
     arguments are passed on to QWidget's constructor.
 */
-QtXEmbedClient::QtXEmbedClient(bool nofocus)
-    : QWidget(0, 0), container(0), nofocus(nofocus)
+QtXEmbedClient::QtXEmbedClient(QWidget *parent, const char *name)
+    : QWidget(parent, name), container(0)
 {
     XSetErrorHandler(x11ErrorHandler);
     initXEmbedAtoms(x11Display());
 
-    /* BM: Add EnterWindowMask & LeaveWindowMask */
-
     XSelectInput(qt_xdisplay(), winId(),
-                 EnterWindowMask | LeaveWindowMask
-                 | KeyPressMask | KeyReleaseMask | ButtonPressMask
+    						 EnterWindowMask | LeaveWindowMask |
+                 KeyPressMask | KeyReleaseMask | ButtonPressMask
 		 | ButtonReleaseMask
                  | KeymapStateMask | ButtonMotionMask | PointerMotionMask
                  | FocusChangeMask
@@ -453,13 +438,9 @@ QtXEmbedClient::QtXEmbedClient(bool nofocus)
 		    XA_CARDINAL, 32, PropModeReplace,
 		    (unsigned char*) data, 2);
 
-   	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-   	
-		if (!nofocus)
-		{
-    	setFocusPolicy(StrongFocus);
-    	qApp->installEventFilter(this);
-		}
+    setFocusPolicy(StrongFocus);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    qApp->installEventFilter(this);
 }
 
 /*!
@@ -839,7 +820,7 @@ WId QtXEmbedClient::containerWinId() const
     arguments are passed on to QWidget.
 */
 QtXEmbedContainer::QtXEmbedContainer(QWidget *parent, const char *name)
-    : QWidget(parent, name), client(0), focusProxy(0), clientIsXEmbed(false), xgrab(false)
+    : QWidget(parent, name), client(0), focusProxy(0), clientIsXEmbed(false)
 {
     XSetErrorHandler(x11ErrorHandler);
     initXEmbedAtoms(x11Display());
@@ -848,6 +829,7 @@ QtXEmbedContainer::QtXEmbedContainer(QWidget *parent, const char *name)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setKeyCompression(false);
     setAcceptDrops(true);
+    setEnabled(false);
 
     // Everybody gets a focus proxy, but only one toplevel container's
     // focus proxy is actually in use.
@@ -877,7 +859,7 @@ QtXEmbedContainer::QtXEmbedContainer(QWidget *parent, const char *name)
     // Move input to our focusProxy if this widget is active, and not
     // shaded by a modal dialog (in which case isActiveWindow() would
     // still return true, but where we must not move input focus).
-    if (qApp->activeWindow() == topLevelWidget())
+    if (qApp->activeWindow() == topLevelWidget() && !isEmbedded())
 	moveInputToProxy();
 }
 
@@ -893,25 +875,6 @@ QtXEmbedContainer::~QtXEmbedContainer()
 
     if (xgrab)
 	XUngrabButton(x11Display(), AnyButton, AnyModifier, winId());
-}
-
-/*! \internal
-
-    Draws a focus rect if there is not client and the widget has
-    focus.
-*/
-void QtXEmbedContainer::paintEvent(QPaintEvent *)
-{
-    if (!client && hasFocus()) {
-	QRect r = rect();
-	r.setLeft(r.left() + 1);
-	r.setRight(r.right() - 1);
-	r.setTop(r.top() + 1);
-	r.setBottom(r.bottom() - 1);
-
-	QPainter p(this);
-	style().drawPrimitive(QStyle::PE_FocusRect, &p, r, colorGroup());
-    }
 }
 
 /*! \internal
@@ -958,16 +921,29 @@ void QtXEmbedContainer::embed(WId id, bool xEmbedClient)
 	return;
     }
 
-    // It doesn't make any sense to embed oneself or any ancestors.
-    QWidget *w = this;
-    while (w && w->isWidgetType()) {
-	if (w->winId() == id) {
-	    emit error(InvalidWindowID);
-	    return;
-	}
+    // Walk up the tree of parent windows to prevent embedding of ancestors.
+    WId thisId = winId();
+    Window rootReturn;
+    Window parentReturn;
+    Window *childrenReturn = 0;
+    unsigned int nchildrenReturn;
+    do {
+        if (XQueryTree(x11Display(), thisId, &rootReturn,
+                       &parentReturn, &childrenReturn, &nchildrenReturn) == 0) {
+            emit error(InvalidWindowID);
+            return;
+        }
+        if (childrenReturn) {
+            XFree(childrenReturn);
+            childrenReturn = 0;
+        }
 
-	w = static_cast<QWidget *>(w->parent());
-    }
+        thisId = parentReturn;
+        if (id == thisId) {
+            emit error(InvalidWindowID);
+            return;
+        }
+    } while (thisId != rootReturn);
 
     clientIsXEmbed = xEmbedClient;
 
@@ -975,7 +951,7 @@ void QtXEmbedContainer::embed(WId id, bool xEmbedClient)
     XGrabServer(x11Display());
     XWindowAttributes attrib;
     if (!XGetWindowAttributes(x11Display(), id, &attrib)) {
-        XUngrabServer(x11Display()); // BM: Arrgh!
+        XUngrabServer(x11Display());
 	emit error(InvalidWindowID);
 	return;
     }
@@ -1019,7 +995,7 @@ void QtXEmbedContainer::embed(WId id, bool xEmbedClient)
 	long *state;
 	unsigned long nitems, after;
 	status = XGetWindowProperty(x11Display(), id, qt_wm_state, 0, 2, False, qt_wm_state,
-				    &ret, &format, &nitems, &after, (unsigned char **) (void *)&state );
+				    &ret, &format, &nitems, &after, (unsigned char **) &state );
 	if (status == Success && ret == qt_wm_state && format == 32 && nitems > 0) {
 	    if (state[0] == WithdrawnState)
 		break;
@@ -1069,13 +1045,16 @@ bool QtXEmbedContainer::eventFilter(QObject *o, QEvent *event)
 	// focus is set to our focus proxy. We want to intercept all
 	// keypresses.
 	if (o == topLevelWidget() && client) {
-	    if (clientIsXEmbed)
-		sendXEmbedMessage(client, x11Display(), XEMBED_WINDOW_ACTIVATE);
-	    else
-		checkGrab();
-
 	    if (!isEmbedded())
 		moveInputToProxy();
+
+	    if (clientIsXEmbed) {
+		sendXEmbedMessage(client, x11Display(), XEMBED_WINDOW_ACTIVATE);
+	    } else {
+		checkGrab();
+                if (hasFocus())
+                    XSetInputFocus(x11Display(), client, RevertToParent, qt_x_time);
+            }
 	}
 	break;
     case QEvent::WindowDeactivate:
@@ -1094,10 +1073,10 @@ bool QtXEmbedContainer::eventFilter(QObject *o, QEvent *event)
 	// directly to the client, and it will ask us for focus with
 	// XEMBED_REQUEST_FOCUS.
 	if (o == this && client) {
-	    if (!isEmbedded())
-		moveInputToProxy();
-
 	    if (clientIsXEmbed) {
+                if (!isEmbedded())
+                    moveInputToProxy();
+
 		QFocusEvent *fe = (QFocusEvent *)event;
 		switch (fe->reason()) {
 		case QFocusEvent::Tab:
@@ -1111,7 +1090,7 @@ bool QtXEmbedContainer::eventFilter(QObject *o, QEvent *event)
 		}
 	    } else {
 		checkGrab();
-		sendFocusMessage(client, XFocusIn, NotifyNormal, NotifyPointer);
+		XSetInputFocus(x11Display(), client, RevertToParent, qt_x_time);
 	    }
 	}
 
@@ -1120,7 +1099,8 @@ bool QtXEmbedContainer::eventFilter(QObject *o, QEvent *event)
 	// When receiving a FocusOut, we ask our client to remove its
 	// focus.
 	if (o == this && client) {
-	    if (!isEmbedded() && focusProxy)
+
+	    if (!isEmbedded())
 		moveInputToProxy();
 
 	    if (clientIsXEmbed) {
@@ -1129,7 +1109,6 @@ bool QtXEmbedContainer::eventFilter(QObject *o, QEvent *event)
 		    sendXEmbedMessage(client, x11Display(), XEMBED_FOCUS_OUT);
 	    } else {
 		checkGrab();
-		sendFocusMessage(client, XFocusOut, NotifyNormal, NotifyPointer);
 	    }
 	}
     }
@@ -1156,6 +1135,9 @@ bool QtXEmbedContainer::eventFilter(QObject *o, QEvent *event)
 	    XFlush(x11Display());
 	    client = 0;
 	    clientIsXEmbed = false;
+            wmMinimumSizeHint = QSize();
+            updateGeometry();
+            setEnabled(false);
 	    update();
 
 	    emit clientClosed();
@@ -1187,6 +1169,9 @@ bool QtXEmbedContainer::x11Event(XEvent *event)
 	    // The client died.
 	    client = 0;
 	    clientIsXEmbed = false;
+            wmMinimumSizeHint = QSize();
+            updateGeometry();
+            setEnabled(false);
 	    update();
 	    emit clientClosed();
 	}
@@ -1197,6 +1182,9 @@ bool QtXEmbedContainer::x11Event(XEvent *event)
 	if (event->xreparent.window == client && event->xreparent.parent != winId()) {
 	    client = 0;
 	    clientIsXEmbed = false;
+            wmMinimumSizeHint = QSize();
+            updateGeometry();
+            setEnabled(false);
 	    update();
 	    emit clientClosed();
 	} else if (event->xreparent.parent == winId()) {
@@ -1367,7 +1355,8 @@ void QtXEmbedContainer::hideEvent(QHideEvent *)
 */
 void QtXEmbedContainer::rejectClient(WId window)
 {
-    // ### qWarning("Warning: QtXEmbedContainer %s rejected client %li", name(), window);
+    setEnabled(false);
+    XRemoveFromSaveSet(x11Display(), window);
     XReparentWindow(x11Display(), window, qt_xrootwin(), 0, 0);
 }
 
@@ -1379,7 +1368,7 @@ void QtXEmbedContainer::rejectClient(WId window)
 void QtXEmbedContainer::acceptClient(WId window)
 {
     client = window;
-    update();
+    setEnabled(true);
 
     // This tells Qt that we wish to forward DnD messages to
     // our client.
@@ -1395,6 +1384,12 @@ void QtXEmbedContainer::acceptClient(WId window)
     bool useXEmbedInfo = false;
     unsigned int clientflags = 0;
     unsigned int clientversion = 0;
+
+    // Add this client to our saveset, so if we crash, the client window
+    // doesn't get destroyed. This is useful for containers that restart
+    // automatically after a crash, because it can simply reembed its clients
+    // without having to restart them (KDE panel).
+    XAddToSaveSet(x11Display(), client);
 
     // XEmbed clients have an _XEMBED_INFO property in which we can
     // fetch the version
@@ -1417,15 +1412,6 @@ void QtXEmbedContainer::acceptClient(WId window)
 	XFree(prop_return);
     }
 
-    // The container should set the data2 field to the lowest of its
-    // supported version number and that of the client (from
-    // _XEMBED_INFO property).
-    unsigned int minversion = version > clientversion ? clientversion : version;
-
-    sendXEmbedMessage(client, x11Display(), XEMBED_EMBEDDED_NOTIFY, winId(), minversion);
-
-    XMapWindow(x11Display(), client);
-
     // Store client window's original size and placement.
     Window root;
     int x_return, y_return;
@@ -1435,6 +1421,26 @@ void QtXEmbedContainer::acceptClient(WId window)
     clientOriginalRect.setCoords(x_return, y_return,
 				 x_return + width_return - 1,
 				 y_return + height_return - 1);
+
+    // Ask the client for its minimum size.
+    XSizeHints size;
+    long msize;
+    if (XGetWMNormalHints(x11Display(), client, &size, &msize) && (size.flags & PMinSize)) {
+        wmMinimumSizeHint = QSize(size.min_width, size.min_height);
+        updateGeometry();
+    }
+
+    // The container should set the data2 field to the lowest of its
+    // supported version number and that of the client (from
+    // _XEMBED_INFO property).
+    unsigned int minversion = version > clientversion ? clientversion : version;
+    sendXEmbedMessage(client, x11Display(), XEMBED_EMBEDDED_NOTIFY, winId(), minversion);
+    XMapWindow(x11Display(), client);
+
+    // Resize it, but no smaller than its minimum size hint.
+    XResizeWindow(x11Display(), client,
+                  QMAX(width(), size.min_width), QMAX(height(), size.min_height));
+    update();
 
     // Resize it.
     XResizeWindow(x11Display(), client, width(), height());
@@ -1449,11 +1455,17 @@ void QtXEmbedContainer::acceptClient(WId window)
     // send a focus in message to its new client.
     if (focusWidget() == this && hasFocus())
 	sendXEmbedMessage(client, x11Display(), XEMBED_FOCUS_IN, XEMBED_FOCUS_FIRST);
+    else
+        sendXEmbedMessage(client, x11Display(), XEMBED_FOCUS_OUT);
 
     if (!clientIsXEmbed) {
         checkGrab();
-        if (hasFocus())
-            sendFocusMessage(client, XFocusIn, NotifyNormal, NotifyPointer);
+        if (hasFocus()) {
+            XSetInputFocus(x11Display(), client, RevertToParent, qt_x_time);
+        } else {
+            if (!isEmbedded())
+                moveInputToProxy();
+        }
     }
 
     emit clientIsEmbedded();
@@ -1482,16 +1494,9 @@ void QtXEmbedContainer::moveInputToProxy()
 */
 QSize QtXEmbedContainer::minimumSizeHint() const
 {
-    if (!client)
+    if (!client || !wmMinimumSizeHint.isValid())
 	return QWidget::minimumSizeHint();
-
-    XSizeHints size;
-    long msize;
-    if (!(XGetWMNormalHints(x11Display(), client, &size, &msize)
-	  && (size.flags & PMinSize)))
-	return QWidget::minimumSizeHint();
-
-    return QSize(size.min_width, size.min_height);
+    return wmMinimumSizeHint;
 }
 
 /*! \internal
@@ -1500,10 +1505,11 @@ QSize QtXEmbedContainer::minimumSizeHint() const
 void QtXEmbedContainer::checkGrab()
 {
     if (!clientIsXEmbed && isActiveWindow() && !hasFocus()) {
-        if (!xgrab)
+        if (!xgrab) {
             XGrabButton(x11Display(), AnyButton, AnyModifier, winId(),
                         true, ButtonPressMask, GrabModeSync, GrabModeAsync,
                         None, None);
+        }
         xgrab = true;
     } else {
 	if (xgrab)
@@ -1523,7 +1529,5 @@ void QtXEmbedContainer::discardClient()
 		      clientOriginalRect.height());
 
 	rejectClient(client);
-	client = 0;
-	clientIsXEmbed = false;
     }
 }

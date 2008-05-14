@@ -18,7 +18,7 @@ class QtXEmbedClient : public QWidget
 {
     Q_OBJECT
 public:
-    QtXEmbedClient(bool nofocus = false);
+    QtXEmbedClient(QWidget *parent = 0, const char *name = 0);
     ~QtXEmbedClient();
 
     void embedInto(WId id);
@@ -45,7 +45,6 @@ private:
 
     WId container;
     QGuardedPtr<QWidget> currentFocus;
-    bool nofocus;
 };
 
 class QtXEmbedContainer : public QWidget
@@ -76,7 +75,6 @@ signals:
 protected:
     bool x11Event(XEvent *);
     bool eventFilter(QObject *, QEvent *);
-    void paintEvent(QPaintEvent *e);
     void resizeEvent(QResizeEvent *);
     void showEvent(QShowEvent *);
     void hideEvent(QHideEvent *);
@@ -97,6 +95,7 @@ private:
     bool clientIsXEmbed;
     bool xgrab;
     QRect clientOriginalRect;
+    QSize wmMinimumSizeHint;
 };
 
 #endif

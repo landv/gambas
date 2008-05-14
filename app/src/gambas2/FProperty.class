@@ -532,6 +532,8 @@ PRIVATE SUB ShowProperty()
       
       IF hProp.Name = CPropertyInfo.SCALE_NAME THEN
         sHelp = ("If the form and controls dimensions must follow the size of the default font.")
+      ELSE IF hProp.Virtual THEN 
+        sHelp = ""
       ELSE
         hSymbol = CComponent.Classes[$hObject.Kind].Symbols[hProp.Name]    
         sHelp = MHelp.GetSymbolHelpText(MHelp.GetSymbolHelpPath(hSymbol))

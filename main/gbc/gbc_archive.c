@@ -1,24 +1,24 @@
 /***************************************************************************
 
-  archive.c
+	archive.c
 
-  The GAMBAS Archiver
+	The GAMBAS Archiver
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -43,7 +43,7 @@
 #include "gb_file.h"
 #include "gb_magic.h"
 #include "gb_common_swap.h"
-
+#include "gbc_chown.h"
 #include "gbc_archive.h"
 
 /*#define DEBUG*/
@@ -63,132 +63,135 @@ static int pos_start;
 
 static void write_int(uint val)
 {
- 	if (ARCH_swap)
- 		SWAP_int((int *)&val);
-  if (fwrite(&val, sizeof(uint), 1, arch_file) < 1)
-    THROW("Write error");
+	if (ARCH_swap)
+		SWAP_int((int *)&val);
+	if (fwrite(&val, sizeof(uint), 1, arch_file) < 1)
+		THROW("Write error");
 }
 
 
 static void write_short(ushort val)
 {
- 	if (ARCH_swap)
- 		SWAP_short((short *)&val);
-  if (fwrite(&val, sizeof(ushort), 1, arch_file) < 1)
-    THROW("Write error");
+	if (ARCH_swap)
+		SWAP_short((short *)&val);
+	if (fwrite(&val, sizeof(ushort), 1, arch_file) < 1)
+		THROW("Write error");
 }
 
 
 static int get_pos(void)
 {
-  return ftell(arch_file);
+	return ftell(arch_file);
 }
 
 
 static void write_int_at(int pos, uint val)
 {
-  int old_pos = get_pos();
+	int old_pos = get_pos();
 
-  fseek(arch_file, pos, SEEK_SET);
-  write_int(val);
-  fseek(arch_file, old_pos, SEEK_SET);
+	fseek(arch_file, pos, SEEK_SET);
+	write_int(val);
+	fseek(arch_file, old_pos, SEEK_SET);
 }
 
 
 static void write_string(const char *str, int len)
 {
-  if (fwrite(str, sizeof(char), len, arch_file) < len)
-    THROW("Write error");
+	if (fwrite(str, sizeof(char), len, arch_file) < len)
+		THROW("Write error");
 }
 
 
 static void make_executable(void)
 {
-  struct stat info;
+	struct stat info;
 
-  if (stat(ARCH_output, &info) == 0)
-    if (chmod(ARCH_output, info.st_mode | S_IXUSR | S_IXGRP | S_IXOTH) == 0)
-      return;
+	if (stat(ARCH_output, &info) == 0)
+		if (chmod(ARCH_output, info.st_mode | S_IXUSR | S_IXGRP | S_IXOTH) == 0)
+		{
+			FILE_set_owner(ARCH_output, FILE_cat(FILE_get_dir(ARCH_project), ".project", NULL));
+			return;
+		}
 
-  THROW("Cannot make executable: &1", strerror(errno));
+	THROW("Cannot make executable: &1", strerror(errno));
 }
 
 
 PUBLIC void ARCH_define_output(const char *path)
 {
 	STR_free(ARCH_output);
-  ARCH_output = STR_copy(path);
+	ARCH_output = STR_copy(path);
 }
 
 PUBLIC void ARCH_define_project(const char *project)
 {
-  char *name;
-  char *dir;
+	char *name;
+	char *dir;
 
-  if (project == NULL)
-    project = FILE_get_current_dir();
+	if (project == NULL)
+		project = FILE_get_current_dir();
 
-  chdir(project);
-  dir = STR_copy(FILE_get_current_dir());
+	chdir(project);
+	dir = STR_copy(FILE_get_current_dir());
 
-  arch_dir_pos = strlen(dir) + 1;
+	arch_dir_pos = strlen(dir) + 1;
 
-  ARCH_project = STR_copy(FILE_cat(dir, ".project", NULL));
+	ARCH_project = STR_copy(FILE_cat(dir, ".project", NULL));
 
-  name = STR_copy(FILE_get_name(dir));
+	name = STR_copy(FILE_get_name(dir));
 
-  /*ARCH_project_name = STR_copy(FILE_set_ext(name, NULL));*/
-  ARCH_project_name = STR_copy(name);
+	/*ARCH_project_name = STR_copy(FILE_set_ext(name, NULL));*/
+	ARCH_project_name = STR_copy(name);
 
 	if (!ARCH_output)
-  	ARCH_define_output(strcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas"));
+		ARCH_define_output(strcat((char *)FILE_cat(dir, ARCH_project_name, NULL), ".gambas"));
 
-  STR_free(name);
-  STR_free(dir);
+	STR_free(name);
+	STR_free(dir);
 }
 
 
 PUBLIC void ARCH_init(void)
 {
-  TABLE_create(&arch_table, sizeof(ARCH_SYMBOL), TF_NORMAL);
+	TABLE_create(&arch_table, sizeof(ARCH_SYMBOL), TF_NORMAL);
 
 	ALLOC(&arch_buffer, 4096, "ARCH_init");
 
-  arch_file = fopen(ARCH_output, "w");
-  if (arch_file == NULL)
-    THROW("Cannot create temporary archive file: &1", ARCH_output);
+	arch_file = fopen(ARCH_output, "w");
+	if (arch_file == NULL)
+		THROW("Cannot create temporary archive file: &1", ARCH_output);
 
-  fputs("#! /usr/bin/env gbr" GAMBAS_VERSION_STRING "\n", arch_file);
+	fputs("#! /usr/bin/env gbr" GAMBAS_VERSION_STRING "\n", arch_file);
 
-  while (get_pos() < 31)
-    fprintf(arch_file, " ");
-  fprintf(arch_file, "\n");
+	while (get_pos() < 31)
+		fprintf(arch_file, " ");
+	fprintf(arch_file, "\n");
 
-  write_int(ARCH_MAGIC);
-  write_int(ARCH_VERSION);
-  
-  if (ARCH_verbose)
-  	printf("Format version: %d\n", ARCH_VERSION);
+	write_int(ARCH_MAGIC);
+	write_int(ARCH_VERSION);
+	
+	if (ARCH_verbose)
+		printf("Format version: %d\n", ARCH_VERSION);
 
-  pos_start = get_pos();
-  write_int(0);
-  write_int(0);
-  write_int(0);
-  write_int(0);
+	pos_start = get_pos();
+	write_int(0);
+	write_int(0);
+	write_int(0);
+	write_int(0);
 
-  write_int_at(pos_start, get_pos());
+	write_int_at(pos_start, get_pos());
 }
 
 
 #if ARCH_VERSION == 2
 static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 {
-  char *p;
-  char tpath[MAX_PATH];
-  char tpath2[MAX_PATH];
-  int len;
-  int ind;
-  ARCH_SYMBOL *sym;
+	char *p;
+	char tpath[MAX_PATH];
+	char tpath2[MAX_PATH];
+	int len;
+	int ind;
+	ARCH_SYMBOL *sym;
 
 	strncpy(tpath, src, lsrc);
 	tpath[lsrc] = 0;
@@ -203,10 +206,10 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 		if (!p)
 			break;
 			
-	  if (!TABLE_find_symbol(arch_table, tpath, p - tpath, (SYMBOL **)(void *)&sym, &ind))
-	  {
-	  	*p = 0;
-	  	THROW("&1: not in archive!\n", tpath);
+		if (!TABLE_find_symbol(arch_table, tpath, p - tpath, (SYMBOL **)(void *)&sym, &ind))
+		{
+			*p = 0;
+			THROW("&1: not in archive!\n", tpath);
 		}
 	
 		len = snprintf(tpath2, sizeof(tpath2), "/%d:%s", ind, p + 1);
@@ -216,106 +219,106 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 	if (ARCH_verbose)
 		printf(" -> %s\n", tpath); 	
 		
-  *dst = tpath;
-  *ldst = len;
+	*dst = tpath;
+	*ldst = len;
 }
 #endif
 
 PUBLIC void ARCH_exit(void)
 {
-  int i;
-  ARCH_SYMBOL *sym;
-  int pos_str;
+	int i;
+	ARCH_SYMBOL *sym;
+	int pos_str;
 
-  /* Write strings */
+	/* Write strings */
 
-  write_int_at(pos_start + sizeof(int), get_pos());
+	write_int_at(pos_start + sizeof(int), get_pos());
 
-  pos_str = 0;
+	pos_str = 0;
 
-  for (i = 0; i < TABLE_count(arch_table); i++)
-  {
-    sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, i);
-    write_string(sym->symbol.name, sym->symbol.len);
-  }
+	for (i = 0; i < TABLE_count(arch_table); i++)
+	{
+		sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, i);
+		write_string(sym->symbol.name, sym->symbol.len);
+	}
 
-  /* Write file names */
+	/* Write file names */
 
-  write_int_at(pos_start + sizeof(int) * 2, get_pos());
+	write_int_at(pos_start + sizeof(int) * 2, get_pos());
 
-  write_int_at(pos_start + sizeof(int) * 3, TABLE_count(arch_table));
+	write_int_at(pos_start + sizeof(int) * 3, TABLE_count(arch_table));
 
-  for (i = 0; i < TABLE_count(arch_table); i++)
-  {
-    sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, i);
-    //write_short((ushort)i);
-    write_short(sym->symbol.sort);
-    write_short(sym->symbol.len);
-    write_int(pos_str);
-    write_int(sym->pos);
-    write_int(sym->len);
+	for (i = 0; i < TABLE_count(arch_table); i++)
+	{
+		sym = (ARCH_SYMBOL *)TABLE_get_symbol(arch_table, i);
+		//write_short((ushort)i);
+		write_short(sym->symbol.sort);
+		write_short(sym->symbol.len);
+		write_int(pos_str);
+		write_int(sym->pos);
+		write_int(sym->len);
 
-    pos_str += sym->symbol.len;
-  }
+		pos_str += sym->symbol.len;
+	}
 
-  /* Close file */
+	/* Close file */
 
-  fclose(arch_file);
+	fclose(arch_file);
 
-  make_executable();
+	make_executable();
 
-  /* Free everything */
+	/* Free everything */
 
-  for (i = 0; i < TABLE_count(arch_table); i++)
-    STR_free(TABLE_get_symbol(arch_table, i)->name);
+	for (i = 0; i < TABLE_count(arch_table); i++)
+		STR_free(TABLE_get_symbol(arch_table, i)->name);
 
-  TABLE_delete(&arch_table);
+	TABLE_delete(&arch_table);
 
-  STR_free(ARCH_output);
-  STR_free(ARCH_project);
-  STR_free(ARCH_project_name);
-  
-  FREE(&arch_buffer, "ARCH_exit");
+	STR_free(ARCH_output);
+	STR_free(ARCH_project);
+	STR_free(ARCH_project_name);
+	
+	FREE(&arch_buffer, "ARCH_exit");
 }
 
 
 PUBLIC int ARCH_add_file(const char *path)
 {
-  char *rel_path;
-  ARCH_SYMBOL *sym;
-  FILE *file;
-  struct stat info;
-  int len, len_read;
-  
-  int ind;
-  
-  #if ARCH_VERSION == 2
-  compress_file_name(&path[arch_dir_pos], strlen(&path[arch_dir_pos]), &rel_path, &len);
-  rel_path = STR_copy(rel_path);
-  #else
-  rel_path = STR_copy(&path[arch_dir_pos]);
-  len = strlen(rel_path);
-  #endif
-  
-  TABLE_add_symbol(arch_table, rel_path, len, (SYMBOL **)(void *)&sym, &ind);
-  sym->pos = get_pos();
+	char *rel_path;
+	ARCH_SYMBOL *sym;
+	FILE *file;
+	struct stat info;
+	int len, len_read;
+	
+	int ind;
+	
+	#if ARCH_VERSION == 2
+	compress_file_name(&path[arch_dir_pos], strlen(&path[arch_dir_pos]), &rel_path, &len);
+	rel_path = STR_copy(rel_path);
+	#else
+	rel_path = STR_copy(&path[arch_dir_pos]);
+	len = strlen(rel_path);
+	#endif
+	
+	TABLE_add_symbol(arch_table, rel_path, len, (SYMBOL **)(void *)&sym, &ind);
+	sym->pos = get_pos();
 
-  file = fopen(path, "r");
-  if (file == NULL)
-    THROW("Cannot open file '&1'", path);
+	file = fopen(path, "r");
+	if (file == NULL)
+		THROW("Cannot open file '&1'", path);
 
-  fstat(fileno(file), &info);
+	fstat(fileno(file), &info);
 
-  if (S_ISDIR(info.st_mode))
-  {
-  	sym->pos = -1;
-  	sym->len = 0;
+	if (S_ISDIR(info.st_mode))
+	{
+		sym->pos = -1;
+		sym->len = 0;
 		fclose(file);
 		if (ARCH_verbose)
 			printf("Adding directory %s", rel_path);
-  }
-  else
-  {
+	}
+	else
+	{
 		sym->len = info.st_size;
 
 		len = sym->len;

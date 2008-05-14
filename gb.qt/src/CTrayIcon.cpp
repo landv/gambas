@@ -204,7 +204,8 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 
   if (!WIDGET)
   {
-    QtXEmbedClient *wid = new QtXEmbedClient(true);
+    QtXEmbedClient *wid = new QtXEmbedClient();
+    wid->setFocusPolicy(QWidget::NoFocus);
 
     THIS->widget = wid;
     wid->installEventFilter(&CTrayIcon::manager);

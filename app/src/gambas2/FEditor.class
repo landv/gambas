@@ -1348,6 +1348,66 @@ CATCH
 
 END
 
+STATIC FUNCTION ReadLocalSymbolType(aSym AS String[], iIndex AS Integer, sSymbol AS String, hSymbol AS CSymbolInfo) AS String
+
+  DIM sType AS String
+  DIM sWait AS String
+  DIM sSym AS String
+
+  DO
+  
+    IF UCase(aSym[iIndex]) = UCase(sSymbol) THEN
+
+      hSymbol.Name = aSym[iIndex]
+
+      INC iIndex
+    
+      DO
+        IF aSym[iIndex] = "AS" THEN BREAK
+        INC iIndex
+      LOOP
+
+      INC iIndex
+      IF aSym[iIndex] = "NEW" THEN INC iIndex
+    
+      sType = aSym[iIndex]
+      IF $cType.Exist(sType) THEN
+        IF (iIndex + 2) < aSym.Count THEN
+          IF aSym[iIndex + 1] = "[" THEN 'AND aSym[iIndex + 2] = "]" THEN
+            hSymbol.Type = sType & "[]"
+            RETURN TRUE
+          ENDIF
+        ENDIF
+        sType = $cType[sType]
+      ENDIF
+      hSymbol.Type = sType
+      RETURN TRUE
+    ENDIF
+    
+    DO
+      INC iIndex
+      sSym = aSym[iIndex] 
+      IF sWait THEN
+        IF sSym = sWait THEN
+          sWait = ""
+        ENDIF
+      ELSE IF sSym = "(" THEN 
+        sWait = ")"
+      ELSE IF sSym = "[" THEN
+        sWait = "]"
+      ELSE IF aSym[iIndex] = "," THEN 
+        BREAK
+      ENDIF
+    LOOP
+  
+    INC iIndex
+    
+  LOOP
+
+CATCH
+
+END
+
 
 PRIVATE FUNCTION GetSymbolType(sSymbol AS String, OPTIONAL bPoint AS Boolean) AS String
 
@@ -1385,18 +1445,17 @@ PRIVATE FUNCTION GetSymbolType(sSymbol AS String, OPTIONAL bPoint AS Boolean) AS
       ENDIF
       IF aSym.Count >= 4 THEN
         IF aSym[0] = "DIM" THEN
-          sType = ReadSymbolType(aSym, 1, sSymbol)
-          IF sType THEN
+          IF ReadLocalSymbolType(aSym, 1, sSymbol, $hVirtualSymbol) THEN
             WITH $hVirtualSymbol
-              .Name = aSym[1]
+              '.Name = aSym[1]
               .Class = Name
               .Kind = "v"
               .LineNumber = iLine + 1
               .NotPublic = TRUE
-              .Type = sType
+              '.Type = sType
             END WITH
             $hSymbol = $hVirtualSymbol
-            RETURN sType
+            RETURN $hVirtualSymbol.Type
           ENDIF
         ENDIF
       ENDIF

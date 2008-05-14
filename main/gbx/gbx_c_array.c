@@ -626,8 +626,11 @@ BEGIN_METHOD(CARRAY_insert, GB_OBJECT array; GB_INTEGER pos)
 
   int pos = VARGOPT(pos, -1);
   CARRAY *array = (CARRAY *)VARG(array);
-  int count = ARRAY_count(array->data);
+  int count;
   void *data;
+
+	if (GB_CheckObject(array))
+		return;
 
   if (check_not_multi(THIS))
   {
@@ -635,6 +638,8 @@ BEGIN_METHOD(CARRAY_insert, GB_OBJECT array; GB_INTEGER pos)
     return;
 	}
 
+  count = ARRAY_count(array->data);
+  
   if (count > 0)
   {
     if (pos < 0)

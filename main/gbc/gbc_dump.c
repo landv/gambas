@@ -451,8 +451,12 @@ PUBLIC void CLASS_exit_export(void)
     fclose(_flist);
     fclose(_finfo);
     chdir(FILE_get_dir(COMP_project));
-    unlink(".list"); rename(".list#", ".list");
-    unlink(".info"); rename(".info#", ".info");
+    unlink(".list"); 
+    rename(".list#", ".list");
+    FILE_set_owner(".list", COMP_project);
+    unlink(".info"); 
+    rename(".info#", ".info");
+    FILE_set_owner(".info", COMP_project);
   }
   else
   {
