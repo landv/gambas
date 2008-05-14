@@ -13,6 +13,7 @@ public:
 	int getBorder() { return getFrameBorder(); }
 	bool stretch();
 	gPicture* picture() { return _picture; }
+	bool isAutoResize() { return _autoresize; }
 
 	void setForeground(long vl);
 	void setBackground(long vl);
@@ -20,6 +21,7 @@ public:
 	void setBorder(int vl) { setFrameBorder(vl); }
 	void setStretch(bool vl);
 	void setPicture(gPicture *pic);
+	void setAutoResize(bool);
 
 //"Methods"
 	void resize(long w,long h);
@@ -27,6 +29,7 @@ public:
 //"Private"
 	void redraw();
   gPicture *_picture;
+  bool _autoresize;
 };
 
 #endif

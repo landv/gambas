@@ -40,6 +40,7 @@
 MyPictureBox::MyPictureBox(QWidget *parent)
 : QLabel(parent)
 {
+//	_autoresize = false;
 }
 
 void MyPictureBox::updateBackground()
@@ -47,10 +48,11 @@ void MyPictureBox::updateBackground()
 	if (pixmap() && pixmap()->hasAlpha())
 	{
 		clearWFlags(Qt::WNoAutoErase);
-		update();
 	}
 	else
+	{
 		setWFlags(Qt::WNoAutoErase);
+	}
 }
 
 void MyPictureBox::setPalette(const QPalette &pal)
@@ -59,7 +61,51 @@ void MyPictureBox::setPalette(const QPalette &pal)
 	repaint();
 }
 
+/*void MyPictureBox::setAutoResize(bool v)
+{
+	_autoresize = v;
+	updateSize();
+}
 
+void MyPictureBox::updateSize()
+{
+	QPixmap *p;
+	
+	if (hasScaledContents() || !_autoresize)
+		return;
+		
+	p = pixmap();
+	if (p && !p->isNull())
+	{
+		qDebug("resize %d %d", p->width() + frameWidth() * 2, p->height() + frameWidth() * 2);
+		resize(p->width() + frameWidth() * 2, p->height() + frameWidth() * 2);
+	}
+}*/
+
+void MyPictureBox::resizeEvent(QResizeEvent* e)
+{
+	QLabel::resizeEvent(e);
+	updateBackground();
+}
+
+void MyPictureBox::adjustSize()
+{
+	QPixmap *p = pixmap();
+	QRect r;
+	
+	if (p && !p->isNull())
+	{
+		r = contentsRect();
+		resize(p->width() + width() - r.width(), p->height() + height() - r.height());
+	}
+}
+
+void MyPictureBox::frameChanged()
+{
+	QLabel::frameChanged();
+	if (autoResize())
+		adjustSize();
+}
 
 BEGIN_METHOD(CPICTUREBOX_new, GB_OBJECT parent)
 
@@ -91,6 +137,7 @@ BEGIN_PROPERTY(CPICTUREBOX_picture)
   {
     SET_PICTURE(WIDGET->setPixmap, WIDGET->setPicture, &(THIS->picture), PROP(GB_OBJECT));
     WIDGET->updateBackground();
+    //WIDGET->updateSize();
   }
 
 END_PROPERTY
@@ -106,21 +153,15 @@ BEGIN_PROPERTY(CPICTUREBOX_stretch)
 END_PROPERTY
 
 
-/*
-BEGIN_PROPERTY(CPICTUREBOX_border)
+BEGIN_PROPERTY(CPICTUREBOX_auto_resize)
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(QLABEL(_object)->frameStyle() != QFrame::NoFrame);
+    GB.ReturnBoolean(WIDGET->isAutoResize());
   else
-  {
-    if (PROPERTY(char) != 0)
-      QLABEL(_object)->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-    else
-      QLABEL(_object)->setFrameStyle(QFrame::NoFrame);
-  }
+    WIDGET->setAutoResize(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-*/
+
 
 BEGIN_PROPERTY(CPICTUREBOX_alignment)
 
@@ -130,28 +171,6 @@ BEGIN_PROPERTY(CPICTUREBOX_alignment)
     WIDGET->setAlignment(CCONST_alignment(VPROP(GB_INTEGER), ALIGN_TOP_LEFT, true));
 
 END_PROPERTY
-/*
-BEGIN_PROPERTY(CPICTUREBOX_transparent)
-
-  bool trans;
-
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS->transparent);
-  else
-  {
-    trans = PROPERTY(GB_BOOLEAN);
-
-    if (THIS->transparent == trans)
-      return;
-
-    THIS->transparent = trans;
-
-
-
-  }
-
-END_PROPERTY
-*/
 
 
 GB_DESC CPictureBoxDesc[] =
@@ -166,6 +185,7 @@ GB_DESC CPictureBoxDesc[] =
   //GB_PROPERTY("Transparent", "b", CPICTUREBOX_transparent),
   GB_PROPERTY("Border", "i", CWIDGET_border_full),
   GB_PROPERTY("Alignment", "i", CPICTUREBOX_alignment),
+  GB_PROPERTY("AutoResize", "b", CPICTUREBOX_auto_resize),
 
 	PICTUREBOX_DESCRIPTION,
 

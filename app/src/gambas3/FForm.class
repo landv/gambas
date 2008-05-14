@@ -1438,7 +1438,7 @@ Public Sub PasteSelection()
 
   UnSelectAll
 
-  PutSelection(Clipboard.Paste(MMime.FORM))
+  PutSelection(Clipboard.Paste(MMime.FORM), hParent)
 
 End
 

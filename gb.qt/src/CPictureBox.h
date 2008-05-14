@@ -55,9 +55,19 @@ class MyPictureBox : public QLabel
 public:
   MyPictureBox(QWidget *parent);
   void updateBackground();
+  //void setAutoResize(bool);
+  //bool isAutoResize() { return _autoresize; }
+  bool isAutoResize() { return autoResize(); }
+  //void updateSize();
+	virtual void adjustSize();
+	virtual void frameChanged();
   
 protected:
 	virtual void setPalette(const QPalette &);
+	virtual void resizeEvent(QResizeEvent *);
+	
+//private:
+//	bool _autoresize;
 };
 
 #endif

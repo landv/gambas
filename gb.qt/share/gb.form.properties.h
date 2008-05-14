@@ -36,7 +36,7 @@
 
 #define CLABEL_PROPERTIES "*,Padding{Range:0;64},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
 #define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;64},AutoResize,Text,Alignment{Align.*}=TopNormal,Border{Border.*},Transparent"
-#define CPICTUREBOX_PROPERTIES "*,Picture,Stretch,Alignment{Align.*}=TopLeft,Border{Border.*}"
+#define CPICTUREBOX_PROPERTIES "*,Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.*}"
 #define CTEXTBOX_PROPERTIES "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Password,MaxLength,Border=True"
 #define CTEXTAREA_PROPERTIES "*,Text,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"
 #define CTEXTEDIT_PROPERTIES "*,ReadOnly,ScrollBar{Scroll.*}=Both,Border=True"
