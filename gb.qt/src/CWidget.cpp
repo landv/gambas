@@ -461,16 +461,26 @@ BEGIN_PROPERTY(CCONTROL_font)
 
   CFONT *font;
 
+	if (!THIS->font)
+	{
+		THIS->font = CFONT_create(WIDGET->font(), 0, THIS);
+		GB.Ref(THIS->font);
+	}
+
   if (READ_PROPERTY)
-    GB.ReturnObject(CFONT_create(WIDGET->font(), 0, THIS));
+  {
+    GB.ReturnObject(THIS->font);
+  }
   else
   {
     font = (CFONT *)VPROP(GB_OBJECT);
 
-    if (font == 0)
+    if (!font)
       WIDGET->unsetFont();
     else
       WIDGET->setFont(*(font->font));
+    
+    *(((CFONT *)THIS->font)->font) = WIDGET->font();
   }
 
 END_PROPERTY
@@ -1571,6 +1581,7 @@ void CWidget::destroy()
   GB.StoreVariant(NULL, &ob->tag);
   GB.FreeString(&ob->tooltip);
   GB.Unref(POINTER(&ob->cursor));
+  GB.Unref(POINTER(&ob->font));
 
 	CACTION_register(ob, NULL);
   //qDebug(">> CWidget::destroy %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
