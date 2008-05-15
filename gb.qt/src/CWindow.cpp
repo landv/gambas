@@ -264,15 +264,20 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
       client = new QtXEmbedClient;
       //container = new MyContainer(client);
 		  //container->raise();
-      container = client;
-      THIS->embedded = true;
-      THIS->toplevel = false;
-      THIS->xembed = true;
 
       // To be called first!
       QObject::connect(client, SIGNAL(destroyed()), &CWindow::manager, SLOT(destroy()));
-      client->installEventFilter(&CWindow::manager);
-      CWIDGET_new(client, (void *)_object, true);
+      //client->installEventFilter(&CWindow::manager);
+      
+      win = new MyMainWindow(client, name, true);
+			container = new MyContainer(win);
+			container->raise();
+			THIS->embedded = true;
+			THIS->toplevel = false;
+			THIS->xembed = true;
+	
+			CWIDGET_new(win, (void *)_object, true);
+      //CWIDGET_new(client, (void *)_object, true);
     }
     else
     #endif
@@ -359,7 +364,6 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
     //qDebug("XEMBED: EmbedInto %ld", CWINDOW_Embedder);
     XEMBED->embedInto(CWINDOW_Embedder);
     //qDebug("XEMBED: show");
-    //XEMBED->show();
     //define_mask(THIS);
 
     for(;;)
@@ -611,6 +615,8 @@ BEGIN_METHOD_VOID(CWINDOW_show)
   {
 	  CWIDGET_clear_flag(THIS, WF_CLOSED);
     WIDGET->show();
+    if (THIS->xembed)
+    	XEMBED->show();
     post_show_event(THIS);
   }
   else
@@ -1833,6 +1839,9 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
     THIS->h = THIS->container->height();
     //qDebug("THIS->w = %d  THIS->h = %d", THIS->w, THIS->h);
   }
+  
+  if (THIS->xembed)
+  	XEMBED->resize(THIS->w, THIS->h);
 
   //qDebug("resizeEvent %ld %ld isHidden:%s shown:%s ", THIS->w, THIS->h, isHidden() ? "1" : "0", shown ? "1" : "0");
   //qDebug("THIS->h = %ld  THIS->container->height() = %ld  height() = %ld", THIS->h, THIS->container->height(), height());
@@ -2303,7 +2312,7 @@ void CWINDOW_activate(CWIDGET *ob)
 		active = CWidget::getWindow(ob);
 		for(;;)
 		{
-			if (active->toplevel)
+			if (active->toplevel || active->xembed)
 				break;
 			if (GB.CanRaise(active, EVENT_Activate))
 				break;

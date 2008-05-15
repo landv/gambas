@@ -102,9 +102,9 @@ gPlugin::gPlugin(gContainer *parent) : gControl(parent)
 {
 	g_typ=Type_gPlugin;
 	
-	border=gtk_event_box_new();
-	widget=gtk_socket_new();
-	realize(true);
+	border=gtk_socket_new();
+	widget=border;
+	realize(false);
 	
 	onPlug=NULL;
 	onUnplug=NULL;
@@ -123,13 +123,13 @@ long gPlugin::client()
 
 void gPlugin::plug(long id,bool prepared)
 {
-	int bc;
+	//int bc;
 
-	for (bc=0; bc<10; bc++)
-	{
+	//for (bc=0; bc<10; bc++)
+	//{
 		if (!prepared) gtk_socket_steal(GTK_SOCKET(widget),(GdkNativeWindow)id);
 		else gtk_socket_add_id(GTK_SOCKET(widget),(GdkNativeWindow)id);
-	}
+	//}
 }
 
 void gPlugin::discard()
@@ -151,7 +151,7 @@ void gPlugin::discard()
 	color = foreground();
 	gtk_widget_destroy(widget);
 	
-	widget=gtk_socket_new();
+	border=widget=gtk_socket_new();
 	fr=gtk_bin_get_child(GTK_BIN(border));
 	gtk_container_add(GTK_CONTAINER(fr),widget);
 	gtk_widget_show(widget);
