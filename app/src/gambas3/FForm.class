@@ -950,6 +950,7 @@ Public Sub Control_MouseUp()
 
   Dim hCont As Container
   Dim hCtrl As CControl
+  Dim sFocus As String
 
   'PRINT "Control_MouseUp  Mode ="; $iMode
 
@@ -961,8 +962,8 @@ Public Sub Control_MouseUp()
 
     If Last.Mouse = Mouse.Cross Then
       $hCurrent.Control.Mouse = Mouse.Arrow
-      FProperty.FocusOn("Name")
       SelectCurrent(True)
+      sFocus = "Name"
     Endif
 
     FToolBox.SetTool()
@@ -1026,6 +1027,7 @@ Public Sub Control_MouseUp()
   $iMode = MODE_NOTHING
 
   RefreshProperty
+  If sFocus Then FProperty.FocusOn(sFocus)
 
 End
 
@@ -1152,8 +1154,8 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
   $hCurrent = hCtrl
   UnSelectAll
   SelectCurrent(True)
-  FProperty.FocusOn("Name")
   RefreshProperty
+  FProperty.FocusOn("Name")
 
   Return hCtrl
 

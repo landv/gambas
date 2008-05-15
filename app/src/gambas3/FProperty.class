@@ -494,7 +494,7 @@ End
 
 Public Sub FocusOn(sFocus As String)
   
-  $sFocus = sFocus
+  ShowProperty(sFocus)
   
 End
 
@@ -518,7 +518,7 @@ End
 
 
 
-Private Sub ShowProperty()
+Private Sub ShowProperty(Optional sFocus As String)
 
   Dim hProp As CPropertyInfo
   Dim sType As String
@@ -540,8 +540,10 @@ Private Sub ShowProperty()
 
   If $sLast Then HideProperty()
 
-  If $sFocus Then
-    iRow = FindProperty($sFocus)
+  If $sFocus Then sFocus = $sFocus
+
+  If sFocus Then
+    iRow = FindProperty(sFocus)
     If iRow >= 0 Then grdProperty.Row = iRow
   Endif
 

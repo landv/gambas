@@ -1,21 +1,15 @@
 ' Gambas class file
 
-PUBLIC SUB Form_Open()
-  ME.center
-END
+Public Sub Form_Open()
+  Me.center
+End
 
-PUBLIC SUB Form_Resize()
-  label4.Move(0, 0, ME.ClientWidth, 32)
-  webbrowser1.Move(0, 36, ME.ClientWidth, ME.ClientHeight - 70)
-  button2.Move(ME.clientwidth - 88, ME.ClientHeight - 32, 88, 32)
-END
+Public Sub Button2_Click()
+  Me.close
+End
 
-PUBLIC SUB Button2_Click()
-  ME.close
-END
-
-PUBLIC SUB SetPath(sPath AS String)
+Public Sub SetPath(sPath As String)
 
   WebBrowser1.Path = sPath
 
-END
+End

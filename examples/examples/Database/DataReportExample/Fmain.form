@@ -1,10 +1,10 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(47.6667,23.3333,40,44)
+  MoveScaled(47.6667,23.1667,46,49)
   Text = ("Data Report Example")
   Icon = Picture["pic/empty.png"]
-  Border = Window.Fixed
+  Resizable = False
   { TextBox1 TextBox ginput
     Name = "TextBox1"
     MoveScaled(10,5,9,4)
@@ -14,7 +14,7 @@
   }
   { TextBox2 TextBox ginput
     Name = "TextBox2"
-    MoveScaled(10,10,28,4)
+    MoveScaled(10,10,35,4)
     Tag = "2"
     Text = ("")
     MaxLength = 40
@@ -31,40 +31,40 @@
   }
   { Button1 Button gbtn
     Name = "Button1"
-    MoveScaled(1,39,12,4)
+    MoveScaled(1,43,14,5)
     Tag = "1"
     Text = ("&Screen")
     Picture = Picture["pic/looknfeel.png"]
   }
   { Button2 Button gbtn
     Name = "Button2"
-    MoveScaled(14,39,12,4)
+    MoveScaled(16,43,14,5)
     Tag = "2"
     Text = ("&Printer")
     Picture = Picture["pic/kjobviewer.png"]
   }
   { Label3 Label
-    MoveScaled(2,34,35,4)
+    MoveScaled(2,39,43,4)
     Foreground = &H0000FF&
     Text = ("Esc - Exit")
     Alignment = Align.Right
   }
   { Button3 Button gbtn
     Name = "Button3"
-    MoveScaled(27,39,12,4)
+    MoveScaled(31,43,14,5)
     Tag = "3"
     Text = ("&About")
     Picture = Picture["pic/ksmiletris.png"]
   }
   { Label4 Label
-    MoveScaled(0,0,40,4)
+    MoveScaled(0,0,46,4)
     Font = Font["16,Bold,Underline"]
     Background = &HD6D6D6&
     Text = ("  Data Report Example ")
     Alignment = Align.Right
   }
   { GridView1 GridView
-    MoveScaled(2,15,36,18)
+    MoveScaled(1,15,44,23)
     ToolTip = ("Click to Edit")
     Mode = Select.Single
     Header = GridView.Horizontal

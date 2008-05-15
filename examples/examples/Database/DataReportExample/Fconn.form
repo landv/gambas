@@ -4,7 +4,7 @@
   MoveScaled(42,29.6667,33,31)
   Text = ("New Connection")
   Icon = Picture["pic/empty.png"]
-  Border = Window.Fixed
+  Resizable = False
   { Label1 Label
     MoveScaled(0,0,33,4)
     Font = Font["16,Bold,Underline"]
@@ -48,7 +48,7 @@
   }
   { Button1 Button gbtn
     Name = "Button1"
-    MoveScaled(1,26,14,4)
+    MoveScaled(2,25,14,5)
     Tag = "1"
     ToolTip = ("Connect!")
     Text = ("C&onnect!")
@@ -56,7 +56,7 @@
   }
   { Button2 Button gbtn
     Name = "Button2"
-    MoveScaled(17,26,14,4)
+    MoveScaled(17,25,14,5)
     Tag = "2"
     ToolTip = ("Cancel")
     Text = ("&Cancel")

@@ -1,12 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(25.3333,22,53,27)
+  MoveScaled(25.1667,22,56,30)
   Text = ("About Program")
-  Border = Window.Fixed
+  Resizable = False
   { svwAuthor ScrollView
-    MoveScaled(1,5,51,16)
-    Border = True
+    MoveScaled(1,5,54,18)
     ScrollBar = Scroll.None
     { TextLabel1 TextLabel
       MoveScaled(2,64,41,29)
@@ -17,12 +16,12 @@
       Text = ("<h2 align=center>Licence</h1>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 1, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
     }
     { TextLabel3 TextLabel
-      MoveScaled(3,58.3333,40,4)
+      MoveScaled(3,58.1667,40,4)
       Text = ("<h2 align=center>Authors</h2>\n")
       Alignment = Align.Center
     }
     { lblversion TextLabel
-      MoveScaled(2,14.3333,40,4)
+      MoveScaled(2,14.1667,40,4)
       Text = ("\n")
       Alignment = Align.Center
     }
@@ -40,13 +39,13 @@
     Delay = 30
   }
   { Button1 Button
-    MoveScaled(39,22,13,4)
+    MoveScaled(40,24,15,5)
     Text = ("&Close")
     Picture = Picture["pic/button_cance.png"]
     Cancel = True
   }
   { Label1 Label
-    MoveScaled(0,0,53,4)
+    MoveScaled(0,0,56,4)
     Font = Font["16,Bold,Underline"]
     Background = &HD6D6D6&
     Text = ("  About ")
