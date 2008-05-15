@@ -174,17 +174,19 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.#.
 # akdengi <kazancas@mail.ru>, 2007.
 # akdengi <kazancas@mandriva.ru>, 2008.
+# akdengi <kazancas@gmail.com>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "POT-Creation-Date: 2002-11-01 04:27+0100\n"
-"PO-Revision-Date: 2008-03-08 23:56+0400\n"
-"Last-Translator: akdengi <kazancas@mandriva.ru>\n"
+"PO-Revision-Date: 2008-05-16 00:07+0500\n"
+"Last-Translator: akdengi <kazancas@gmail.com>\n"
 "Language-Team:  <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: CComponentBox.class:85 FPropertyProject.class:1613
 msgid "Beta version"
@@ -467,6 +469,17 @@ msgid ""
 "MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General "
 "Public License for more details.</p>\n"
 msgstr ""
+"<h2 align=center>Лицензия</h2>\n"
+"\n"
+"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/"
+"OR modify it under the terms of the GNU General Public License as published "
+"by the Free Software Foundation ; either version 2, or (at your option) any "
+"later version.</p>\n"
+"\n"
+"<p align=center>This program is distributed in the hope that it will be "
+"useful but WITHOUT ANY WARRANTY; without even the implied warranty of  "
+"MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General "
+"Public License for more details.</p>\n"
 
 #: FAbout.class:256
 msgid "<h2 align=center>Authors</h2>\n"
@@ -1460,6 +1473,9 @@ msgid ""
 "\n"
 "Please install them to be able to do the translation."
 msgstr ""
+"Инструменты перевода GNU не установлены в вашей системе.\n"
+"\n"
+"Установите их, чтобы иметь возможность перевода."
 
 #: FMain.class:1042
 msgid "Do you really want to update all forms?"
@@ -1474,8 +1490,7 @@ msgid "Unable to update all forms."
 msgstr "Невозможно обновить все формы"
 
 #: FMain.class:1216
-msgid ""
-"All backup or generated files will be removed from the project directory."
+msgid "All backup or generated files will be removed from the project directory."
 msgstr ""
 "Все резервные копии или сгенерированные файлы будут удалены из директории "
 "проекта"
@@ -1959,8 +1974,7 @@ msgstr "Пожалуйста выберите группу пакета"
 
 #: FMakeInstall.class:324
 msgid "Please choose the menu location for each target distribution."
-msgstr ""
-"Пожалуйста выберите расположение меню для каждого целевого дистрибутива"
+msgstr "Пожалуйста выберите расположение меню для каждого целевого дистрибутива"
 
 #: FMakeInstall.class:326
 msgid "Please choose a menu location."
@@ -1968,7 +1982,7 @@ msgstr "Пожалуйста выберите расположение меню"
 
 #: FMakeInstall.class:345
 msgid "The package cannot be stored inside the project directory."
-msgstr ""
+msgstr "Пакет не может быть сохранен внутри директории проекта."
 
 #: FMakeInstall.class:360
 msgid "Initial release"
@@ -2564,7 +2578,7 @@ msgstr "Щелкните по форме или объекту для измен
 
 #: FPropertyProject.class:104
 msgid "Not translatable"
-msgstr ""
+msgstr "Не переводимо"
 
 #: FPropertyProject.class:251
 msgid "Snapping value is incorrect."
@@ -3020,7 +3034,7 @@ msgstr "Эстонский (Эстония)"
 
 #: Language.module:41
 msgid "Basque (Basque country)"
-msgstr ""
+msgstr "Баскский (Страна Басков)"
 
 #: Language.module:43
 msgid "Farsi (Iran)"
@@ -3328,7 +3342,7 @@ msgstr "Не могу открыть файл."
 
 #: Project.module:1190
 msgid "File not found!"
-msgstr ""
+msgstr "Файл не найден!"
 
 #: Project.module:1305
 msgid "in form definition"
@@ -3372,7 +3386,7 @@ msgstr "Делаем исполняемый модуль..."
 
 #: Project.module:1882
 msgid "Cannot make executable."
-msgstr ""
+msgstr "Невозможно создать исполняемый файл."
 
 #: Project.module:2127
 msgid "Some components are missing: &1"
@@ -3439,8 +3453,7 @@ msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Не ASCII-символы запрещены для имени проекта"
 
 #: Project.module:2931
-msgid ""
-"The following characters are forbidden in a project name: ? * / \\ SPACE"
+msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "В имени проекта нельзя использовать символы: ? * / \\ SPACE"
 
 #: Project.module:2941
@@ -3451,8 +3464,7 @@ msgstr "Директория проекта уже существует"
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
-msgstr ""
-"Директория проекта не может быть создана так как есть файл с таким именем"
+msgstr "Директория проекта не может быть создана так как есть файл с таким именем"
 
 #: Project.module:2986
 msgid "Create source package"
@@ -3489,3 +3501,4 @@ msgstr "изменено"
 #: Save.module:38
 msgid "Cannot save file !"
 msgstr "Не могу сохранить файл !"
+
