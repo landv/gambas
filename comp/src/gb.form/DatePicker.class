@@ -12,7 +12,7 @@ Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "30,4"
 Public Const _DrawWith As String = "DatePicker"
 
-Private $hObserver As Observer
+'Private $hObserver As Observer
 
 Private $hDraw As DrawingArea
 Private $hForm As form
@@ -70,7 +70,7 @@ Public Sub _New()
   Me.Begin = ThisDay
   Me.Value = Now()
   Me.Alignment = Align.Center
-  $hObserver = New Observer(Me.Window) As "OBS"
+'  $hObserver = New Observer(Me.Window) As "OBS"
 End
 
 Public Sub Draw_Draw()
@@ -81,10 +81,11 @@ Public Sub Draw_Draw()
 End
 
 Public Sub Draw_Enter()
-  Draw.Begin($hDraw)
-  Draw.Style.Button(0, -5, 54, Me.Height + 50, True)
-  Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
-  Draw.End()
+$hDraw.Refresh
+  ' Draw.Begin($hDraw)
+  ' Draw.Style.Button(0, -5, 54, Me.Height + 50, True)
+  ' Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
+  ' Draw.End()
 End
 
 Public Sub Draw_Leave()
@@ -105,6 +106,7 @@ Public Sub LstForm_DeACtivate()
 End
 
 Public Sub LstForm_Show()
+OBS_Move()
   Draw_Enter
 End
 
@@ -113,7 +115,7 @@ Public Sub LstForm_Hide()
 End
 
 Public Sub hTimer_Timer()
-  'hTimer.Stop
+  hTimer.Stop
   Try $hForm.Close
   isActivate = False
 End 
@@ -231,6 +233,7 @@ End
 Public Sub DateChooser_Change()
  Display_Text()
 End
+
 
 Public Sub OBS_Move()
    $hdatechooser.Font = Me.Font
