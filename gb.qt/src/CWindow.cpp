@@ -615,8 +615,10 @@ BEGIN_METHOD_VOID(CWINDOW_show)
   {
 	  CWIDGET_clear_flag(THIS, WF_CLOSED);
     WIDGET->show();
+    #ifndef NO_X_WINDOW
     if (THIS->xembed)
     	XEMBED->show();
+    #endif
     post_show_event(THIS);
   }
   else
@@ -1840,8 +1842,10 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
     //qDebug("THIS->w = %d  THIS->h = %d", THIS->w, THIS->h);
   }
   
+  #ifndef NO_X_WINDOW
   if (THIS->xembed)
   	XEMBED->resize(THIS->w, THIS->h);
+  #endif
 
   //qDebug("resizeEvent %ld %ld isHidden:%s shown:%s ", THIS->w, THIS->h, isHidden() ? "1" : "0", shown ? "1" : "0");
   //qDebug("THIS->h = %ld  THIS->container->height() = %ld  height() = %ld", THIS->h, THIS->container->height(), height());
