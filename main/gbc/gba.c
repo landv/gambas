@@ -227,13 +227,13 @@ int main(int argc, char **argv)
 
       if (dir == NULL)
       {
-        fprintf(stderr, "gba: Warning: Cannot open dir: %s\n", path);
+        fprintf(stderr, "gba: warning: Cannot open dir: %s\n", path);
         goto _NEXT_PATH;
       }
 
       if (chdir(path) != 0)
       {
-        fprintf(stderr, "gba: Warning: Cannot change dir: %s\n", path);
+        fprintf(stderr, "gba: warning: Cannot change dir: %s\n", path);
         goto _NEXT_PATH;
       }
 
@@ -260,14 +260,14 @@ int main(int argc, char **argv)
         //if (strcmp(file_name, ARCH_project_name) == 0)
         //  continue;
 
-        //if ((len >= 8) && (strncmp(file_name, "Makefile", 8) == 0))
-        //  continue;
+        if ((len > 5) && (strncmp(file_name, "core.", 5) == 0))
+          continue;
 
         file = FILE_cat(path, file_name, NULL);
 
         if (stat(file_name, &info))
         {
-          fprintf(stderr, "gba: Warning: Cannot stat file: %s\n", file);
+          fprintf(stderr, "gba: warning: Cannot stat file: %s\n", file);
           continue;
         }
 

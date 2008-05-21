@@ -189,6 +189,7 @@ void gMainWindow::initialize()
 	_background = NULL;
 	_style = NULL;
 	_next_timer = 0;
+	_xembed = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -244,7 +245,9 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	
 	windows = g_list_append(windows, (gpointer)this);
 	
-	if (plug)
+	_xembed = plug != 0;
+	
+	if (_xembed)
 		border = gtk_plug_new(plug);
 	else
 	{
@@ -418,7 +421,7 @@ void gMainWindow::setVisible(bool vl)
 		if (!opened)
 			return;
 		
-		if (isTopLevel())
+		if (isTopLevel() && !_xembed)
 		{
 			group = _current_group;
 			if (!group)

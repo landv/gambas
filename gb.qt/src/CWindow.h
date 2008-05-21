@@ -104,7 +104,7 @@ extern bool CWINDOW_Embedded;
 #define THIS ((CWINDOW *)_object)
 #define WIDGET ((QWidget *)(((CWIDGET *)_object)->widget))
 #define WINDOW ((MyMainWindow *)WIDGET)
-#define XEMBED ((QtXEmbedClient *)WIDGET)
+#define XEMBED ((QtXEmbedClient *)(WIDGET->parent()))
 
 #endif
 

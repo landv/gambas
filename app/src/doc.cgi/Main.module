@@ -701,6 +701,10 @@ Private Function Encode(sStr As String) As String
       Else If sStr = "--" Then
         $sRes = $sRes & "<hr>"
       Else
+        If Left(sStr, 4) = "<hr>" Then
+          $sRes &= "<hr>"
+          sStr = Mid$(sStr, 5)
+        Endif
         $sRes = $sRes & EncodeHTML(sStr) & "\n"
       Endif
       Continue
@@ -1170,8 +1174,6 @@ Private Sub PrintTitle(sTitle As String)
     Print $sPath
   Endif
   
-  $sTitle = sTitle
-
 End
 
 
@@ -1272,6 +1274,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   Dim iPos As Integer
   Dim sLang As String
   Dim rPage As Result
+
+  $sTitle = sTitle
 
   Print "Content-type: text/html;charset=UTF-8"
   Print "Content-language: "; Replace(System.Language, "_", "-")
@@ -1720,6 +1724,7 @@ Private Function MakePageWithoutHeader(rPage As Result) As String
   Output To #hFile
 
   $cGotSpecial = New Collection
+  $sTitle = rPage!sTitle
 
   bPrint = False
 

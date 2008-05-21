@@ -64,7 +64,8 @@ typedef
     void *_reserved4;
     void *_reserved5;
     void *_reserved6;
-    int _reserved7;
+    void *_reserved7;
+    int _reserved8;
     }
   QT_WIDGET;
 

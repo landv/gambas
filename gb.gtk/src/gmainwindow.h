@@ -122,6 +122,7 @@ public:
 	unsigned _not_spontaneous : 1;
 	unsigned _skip_taskbar : 1;
 	unsigned _masked : 1;
+	unsigned _xembed : 1;
 };
 
 #endif

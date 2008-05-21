@@ -481,10 +481,14 @@ END_PROPERTY
 BEGIN_METHOD(CCOMBOBOX_add, GB_STRING item; GB_INTEGER pos)
 
 	int index;
+	int pos;
 
   COMBOBOX->blockSignals(true);
   index = COMBOBOX->currentItem();
-  COMBOBOX->insertItem(QSTRING_ARG(item), VARGOPT(pos, -1));
+  pos = VARGOPT(pos, -1);
+  if (pos < 0 || pos >= COMBOBOX->count())
+  	pos = -1;
+  COMBOBOX->insertItem(QSTRING_ARG(item), pos);
   if (THIS->sorted)
     COMBOBOX->listBox()->sort();
   COMBOBOX->setCurrentItem(index);

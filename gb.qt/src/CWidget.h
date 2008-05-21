@@ -56,6 +56,7 @@ typedef
     char *tooltip;
     char *name;
     void *cursor;
+    void *font;
     CWIDGET *next;
     CWIDGET *prev;
     int level;
