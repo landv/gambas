@@ -1,0 +1,86 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,106,58)
+  Text = ("")
+  Icon = Picture["barcode.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { Panel1 Panel
+    MoveScaled(1,1,83,6)
+    { txtBarcode TextBox
+      MoveScaled(0,3,22,3)
+      Text = ("")
+    }
+    { txtPosX TextBox
+      MoveScaled(24,3,7,3)
+      Text = ("")
+    }
+    { txtPosY TextBox
+      MoveScaled(32,3,7,3)
+      Text = ("")
+    }
+    { txtHeight TextBox
+      MoveScaled(40,3,7,3)
+      Text = ("")
+    }
+    { txtWidth TextBox
+      MoveScaled(48,3,7,3)
+      Text = ("")
+    }
+    { Label1 Label
+      MoveScaled(0,0,10,2)
+      Text = ("Barcode")
+    }
+    { Label2 Label
+      MoveScaled(24,0,5,2)
+      Text = ("PosX")
+    }
+    { Label3 Label
+      MoveScaled(32,0,6,2)
+      Text = ("PosY")
+    }
+    { Label4 Label
+      MoveScaled(40,0,8,2)
+      Text = ("Height")
+    }
+    { Label5 Label
+      MoveScaled(48,0,8,2)
+      Text = ("Width")
+    }
+    { rbutPrinter RadioButton
+      MoveScaled(59,3,20,3)
+      Text = ("Size for printer")
+    }
+    { rbutScreen RadioButton
+      MoveScaled(59,0,20,3)
+      Text = ("Size for screen")
+      Value = True
+    }
+  }
+  { DrawingArea1 DrawingArea
+    MoveScaled(1,8,104,44)
+    Background = Color.TextBackground
+    Expand = True
+    Cached = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,53,69,4)
+    Spacing = 8
+    { btnRun Button
+      MoveScaled(0,0,17,4)
+      Text = ("&Refresh Barcode")
+      Default = True
+    }
+    { btnPrint Button
+      MoveScaled(18,0,17,4)
+      Text = ("&Print Barcode")
+    }
+    { btnExit Button
+      MoveScaled(36,0,9,4)
+      Text = ("E&xit")
+      Cancel = True
+    }
+  }
+}

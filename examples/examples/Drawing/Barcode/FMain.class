@@ -1,0 +1,171 @@
+' Gambas class file
+
+PUBLIC bcHeight AS Integer
+PUBLIC barThickness AS Integer
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+PUBLIC SUB SizeForScreen()
+    'set up typical defaults for barcode size on screen
+    txtPosX.Text = "60"
+    txtPosY.text = "8"
+    txtHeight.Text = "150"
+    txtWidth.Text = "5"
+END
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+PUBLIC SUB SizeForPrinter()
+    'set up typical defaults for barcode size on printer
+    txtPosX.Text = "500"
+    txtPosY.text = "400"
+    txtHeight.Text = "250"
+    txtWidth.Text = "7"
+END
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+PUBLIC SUB ChkInput()
+  
+  ' make sure only valid characters
+  SELECT Key.Code
+    CASE Key.BackSpace, Key.Tab, Key.Delete, Key.Enter, Key.Return, Key.Escape
+    DEFAULT 
+      IF Key.Text AND IF InStr("0123456789", Key.Text) = 0 THEN STOP EVENT
+  END SELECT
+  
+END
+'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+PUBLIC SUB Form_Open()
+   'DrawingArea1.Cached = TRUE
+   txtBarcode.SetFocus
+   SizeForScreen
+   txtBarcode.Text = "8711577011208" 'sample barcode (so what's it for then?)
+   txtBarcode.Select
+END
+'-------------------------------------------------------------------
+PUBLIC SUB btnExit_Click()
+  
+  FMain.Close
+END
+
+PRIVATE SUB DrawBarCode(OPTIONAL bPrinter AS Boolean)
+
+  IF NOT bPrinter THEN
+  
+    'DrawingArea1.Refresh
+    'Draw.Begin(DrawingArea1)
+    modCrBcode.PrintBarcode(txtBarcode.Text, Val(txtPosX.text), Val(txtPosY.text), Val(txtHeight.text), Val(txtWidth.text), TRUE)
+    'Draw.End()
+  
+  ELSE  
+
+    Draw.Begin(printer)
+    modCrBcode.PrintBarcode(txtBarcode.Text, Val(txtPosX.text), Val(txtPosY.text), Val(txtHeight.text), Val(txtWidth.text), FALSE)
+    Draw.End()
+
+  ENDIF 
+  
+END
+
+
+PUBLIC SUB btnRun_Click()
+  
+  IF Len(txtBarcode.Text) <> 13 THEN 
+    Message.Error("Please enter a valid 13 digit EAN-13 number")
+  ELSE 
+    IF Val(txtPosX.Text) = 0 THEN 
+      IF rbutScreen THEN 
+        txtPosX.Text = "40"
+      ELSE 
+        txtPosX.Text = "500"
+      ENDIF 
+    ENDIF 
+    IF Val(txtPosY.Text) = 0 THEN 
+      IF rbutScreen THEN 
+        txtPosY.Text = "0"
+      ELSE 
+        txtPosY.Text = "300"
+      ENDIF 
+    ENDIF 
+    IF Val(txtHeight.Text) = 0 THEN 
+      IF rbutScreen THEN
+        txtHeight.Text = "150"
+      ELSE 
+        txtHeight.Text = "250"
+      ENDIF 
+    ENDIF 
+    IF Val(txtWidth.Text) = 0 THEN 
+      IF rbutScreen THEN
+        txtWidth.Text = "5"
+      ELSE 
+        txtWidth.Text = "7"
+      ENDIF 
+    ENDIF 
+
+    'DrawingArea1.Refresh
+    DrawingArea1.Clear
+    Draw.Begin(DrawingArea1)
+    DrawBarCode
+    Draw.End
+
+  ENDIF 
+  
+END
+'-------------------------------------------------------------------
+PUBLIC SUB rbutPrinter_Click()
+  SizeForPrinter
+END
+'-------------------------------------------------------------------
+PUBLIC SUB rbutScreen_Click()
+  SizeForScreen
+END
+'-------------------------------------------------------------------
+PUBLIC SUB txtPosX_KeyPress()
+  ChkInput
+END
+'-------------------------------------------------------------------
+PUBLIC SUB txtBarcode_KeyPress()
+  ChkInput
+END
+'-------------------------------------------------------------------
+PUBLIC SUB txtPosY_KeyPress()
+  ChkInput
+END
+'-------------------------------------------------------------------
+PUBLIC SUB txtHeight_KeyPress()
+  ChkInput
+END
+'-------------------------------------------------------------------
+PUBLIC SUB txtWidth_KeyPress()
+  ChkInput
+END
+'-------------------------------------------------------------------
+
+' PUBLIC SUB Form_Resize()
+' 
+'   DrawBarCode
+' 
+' END
+
+PUBLIC SUB btnPrint_Click()
+
+  DrawBarCode(TRUE)
+
+END
+
+PUBLIC SUB DrawingArea1_Draw()
+
+  DrawBarCode
+
+END
+
+PUBLIC SUB Form_Resize()
+
+  Draw.Begin(DrawingArea1)
+  'DrawingArea1.Clear
+  Draw.FillStyle = Fill.Solid
+  Draw.LineStyle = Line.None
+  Draw.FillColor = DrawingArea1.Background
+  Draw.Rect(0, 0, Draw.W, Draw.H)
+  Draw.LineStyle = Line.Solid
+  DrawBarCode
+  Draw.End
+
+END
