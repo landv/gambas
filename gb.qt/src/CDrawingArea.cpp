@@ -117,13 +117,17 @@ void MyDrawingArea::setFrozen(bool f)
 #if 1
 void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
-  QPainter paint( this );
-  QRect r;
-
   //QFrame::paintEvent(event);
 
-  if (!_background)
+  if (_background)
   {
+		QFrame::paintEvent(event);
+  }
+  else
+  {
+		QPainter paint( this );
+		QRect r;
+
     r = event->rect().intersect(frameRect());
     if (r.isValid())
     {
@@ -216,15 +220,6 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 }
 #endif
 
-/*
-void MyDrawingArea::backgroundPixmapChange(const QPixmap &)
-{
-  if (!lock)
-    update();
-}
-*/
-
-
 void MyDrawingArea::setBackground()
 {
   if (_background)
@@ -253,10 +248,10 @@ void MyDrawingArea::setBackground()
 
 void MyDrawingArea::refreshBackground()
 {
-	QPainter p;
-	p.begin(_background, this);
-	drawFrame(&p);
-	p.end();
+	//QPainter p;
+	//p.begin(_background, this);
+	//drawFrame(&p);
+	//p.end();
 	#ifndef NO_X_WINDOW
   XClearWindow(x11AppDisplay(), winId());
   #endif
@@ -272,6 +267,7 @@ void MyDrawingArea::clearBackground()
     p.end();
 
     setBackground();
+    refreshBackground();
   }
 }
 
@@ -306,6 +302,7 @@ bool MyDrawingArea::doResize(int w, int h)
     _background = p;
 
     setBackground();
+    refreshBackground();
   }
   
   return false;
@@ -353,28 +350,6 @@ void MyDrawingArea::setPalette(const QPalette &pal)
 	repaint();
 }
 
-
-/*
-void MyDrawingArea::setTransparent(bool trans)
-{
-  if (trans == transparent)
-    return;
-
-  if (trans)
-  {
-    setWFlags(WRepaintNoErase | WResizeNoErase | WPaintClever);
-    setBackgroundMode(NoBackground);
-  }
-  else
-  {
-    clearWFlags(WRepaintNoErase | WResizeNoErase | WPaintClever);
-    setBackgroundMode(PaletteBackground);
-  }
-
-  transparent = trans;
-  update();
-}
-*/
 
 /***************************************************************************
 
@@ -427,13 +402,18 @@ END_METHOD
 BEGIN_PROPERTY(CDRAWINGAREA_background)
 
   CCONTROL_background(_object, _param);
-  WIDGET->setBackground();
 
   if (!READ_PROPERTY)
-  {
-    //WIDGET->setBackgroundMode(Qt::NoBackground);
     WIDGET->clearBackground();
-  }
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CDRAWINGAREA_border)
+
+  CWIDGET_border_full(_object, _param);
+
+  if (!READ_PROPERTY)
+    WIDGET->clearBackground();
 
 END_PROPERTY
 
@@ -474,7 +454,7 @@ GB_DESC CDrawingAreaDesc[] =
   GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
   GB_PROPERTY("Merge", "b", CDRAWINGAREA_merge),
   
-  GB_PROPERTY("Border", "i", CWIDGET_border_full),
+  GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
   GB_PROPERTY("Background", "i", CDRAWINGAREA_background),
   GB_PROPERTY("BackColor", "i", CDRAWINGAREA_background),
   
