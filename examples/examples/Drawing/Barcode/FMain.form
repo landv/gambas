@@ -8,7 +8,7 @@
   Spacing = 8
   Padding = 8
   { Panel1 Panel
-    MoveScaled(1,1,83,6)
+    MoveScaled(1,1,103,6)
     { txtBarcode TextBox
       MoveScaled(0,3,22,3)
       Text = ("")
@@ -64,6 +64,7 @@
     Background = Color.TextBackground
     Expand = True
     Cached = True
+    Border = Border.Sunken
   }
   { HBox1 HBox
     MoveScaled(1,53,69,4)
@@ -77,8 +78,12 @@
       MoveScaled(18,0,17,4)
       Text = ("&Print Barcode")
     }
+    { btnAbout Button
+      MoveScaled(38,0,11,4)
+      Text = ("About...")
+    }
     { btnExit Button
-      MoveScaled(36,0,9,4)
+      MoveScaled(57,0,9,4)
       Text = ("E&xit")
       Cancel = True
     }

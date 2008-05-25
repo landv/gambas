@@ -26,6 +26,7 @@
 
 #include "gb_common.h"
 #include "gb_common_case.h"
+#include "gb_common_buffer.h"
 #include "gb_error.h"
 #include "gb_alloc.h"
 
@@ -212,6 +213,7 @@ void *GAMBAS_Api[] =
 
   (void *)GB_SystemCharset,
   (void *)LOCAL_get_lang,
+  (void *)GB_SystemDomainName,
 
   (void *)GB_ArrayNew,
   (void *)GB_ArrayCount,
@@ -1537,6 +1539,30 @@ bool GB_ConvString(char **result, const char *str, int len, const char *src, con
 char *GB_SystemCharset(void)
 {
   return LOCAL_encoding;
+}
+
+char *GB_SystemDomainName(void)
+{
+	char host[256], domain[256];
+	
+	if (gethostname(host, sizeof(host) - 1))
+		return "";
+		
+	if (getdomainname(domain, sizeof(domain) - 1))
+		return "";
+	
+	if ((strlen(host) + strlen(domain)) > COMMON_BUF_MAX)
+		return "";
+	
+	*COMMON_buffer = 0;
+	if (*domain)
+	{
+		strcpy(COMMON_buffer, domain);
+		strcat(COMMON_buffer, ".");
+	}
+	strcat(COMMON_buffer, host);
+	
+	return COMMON_buffer;
 }
 
 

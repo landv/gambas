@@ -24,6 +24,7 @@ Kevin Read <obsidian@berlios.de>
 Thu Aug 16 2001 */
 
 #include "gb_common.h"
+#include "main.h"
 
 #include <glib.h>
 #include <sys/socket.h>
@@ -109,15 +110,25 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
   }
 
   /* Now we need to know our hostname */
+  // BM: HELO command needs a FQDN according to the RFC
 
-  if (gethostname ((char *)libsmtp_temp_buffer, sizeof(libsmtp_temp_buffer)))
+  /*if (gethostname ((char *)libsmtp_temp_buffer, sizeof(libsmtp_temp_buffer)))
+  {
+    libsmtp_session->ErrorCode = LIBSMTP_WHATSMYHOSTNAME;
+    close (libsmtp_session->socket);
+    libsmtp_session->socket=0;
+    return LIBSMTP_WHATSMYHOSTNAME;
+  }*/
+  
+  strcpy(libsmtp_temp_buffer, GB.System.DomainName());
+  if (!*libsmtp_temp_buffer)
   {
     libsmtp_session->ErrorCode = LIBSMTP_WHATSMYHOSTNAME;
     close (libsmtp_session->socket);
     libsmtp_session->socket=0;
     return LIBSMTP_WHATSMYHOSTNAME;
   }
-
+  
   /* We enter the hello stage now */
   libsmtp_session->Stage = LIBSMTP_HELLO_STAGE;
 
