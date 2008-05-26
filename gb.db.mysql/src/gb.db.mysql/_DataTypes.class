@@ -31,6 +31,8 @@ Public Const {Time} As String = "TIME" 'Range: '-838:59:59' to '838:59:59', Form
 Public Const TinyBlob As String = "TINYBLOB" 'Max: 255 (2^8 – 1) bytes
 Public Const MediumBlob As String = "MEDIUMBLOB" 'Max: 16,777,215 (2^24 – 1) bytes
 Public Const LongBlob As String = "LONGBLOB" 'Max: 4,294,967,295 or 4GB (2^32 – 1) bytes
+'Null value
+Public Const {Null} As String = "NULL" 'Null
 'End of MySQL Const Data Types
 
 'DataTypes that requieres arguments

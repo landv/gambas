@@ -23,6 +23,8 @@ Public Procedure Add(Field As String, DataType As String, Optional AceptNull? As
         $sTmp &= " DEFAULT '0'"
       Case "CURRENT_TIMESTAMP"
         $sTmp &= " DEFAULT CURRENT_TIMESTAMP"
+       Case _DataTypes.Null
+        $sTmp &= _DataTypes.Null
       Default
         $sTmp &= " DEFAULT '" & DefaultValue & "'"
     End Select
