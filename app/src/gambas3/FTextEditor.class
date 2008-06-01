@@ -30,7 +30,7 @@ Public Sub _new(sPath As String)
 
 End
 
-Public Sub Form_Open()
+Public Sub Load()
   
   Dim sExt As String = LCase(File.Ext(Name))
   

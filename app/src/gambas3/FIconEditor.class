@@ -109,7 +109,7 @@ Public Sub _new(sPath As String)
   
   $iScale = 1  
   For Each iScale In $aZoom
-    If ($hImage.Width * iScale) > (Project.Workspace.ClientWidth * 0.75) OR ($hImage.Height * iScale) > (Project.Workspace.ClientHeight * 0.75) Then Break
+    If ($hImage.Width * iScale) > (Project.Workspace.ClientWidth * 0.75) Or ($hImage.Height * iScale) > (Project.Workspace.ClientHeight * 0.75) Then Break
     $iScale = iScale
   Next
 
@@ -127,16 +127,16 @@ Private Sub SetReadOnly()
 
   Dim hCtrl As Control  
 
-  $bReadOnly = Project.ReadOnly OR Project.Running OR Stat(Path).Type = gb.Link
+  $bReadOnly = Project.ReadOnly Or Project.Running Or Stat(Path).Type = gb.Link
 
   For Each hCtrl In panToolbar.Children
     If hCtrl.Name = "tlbMove" Then Continue
-    hCtrl.Visible = NOT $bReadOnly
+    hCtrl.Visible = Not $bReadOnly
   Next
 
 End
 
-Public Sub Form_Open()
+Public Sub Load()
 
   dwgPreview.Resize($hImage.W + 8, $hImage.H + 8)
   panPreview.Dimension = dwgPreview.W + 8
@@ -161,7 +161,7 @@ Public Sub dwgIcon_Draw()
 
   Dim hZoom As Image
 
-  If NOT $hImage Then Return
+  If Not $hImage Then Return
 
   Draw.LineStyle = Line.None
   'Draw.FillStyle = Fill.CrossDiagonal
@@ -210,7 +210,7 @@ Public Sub dwgPaste_Draw()
   Dim W As Integer
   Dim hTemp As Image
 
-  If NOT $hPaste Then Return
+  If Not $hPaste Then Return
 
   Draw.FillX = Draw.FillX - $XS * $iScale
   Draw.FillY = Draw.FillY - $YS * $iScale
@@ -277,11 +277,11 @@ End
 
 Private Sub RefreshCoord(X As Integer, Y As Integer)
 
-  If X <> $XD OR Y <> $YD Then
+  If X <> $XD Or Y <> $YD Then
     $XD = X
     $YD = Y
     'DrawTitle
-    If $XD <> COORD_HIDE AND $YD <> COORD_HIDE Then
+    If $XD <> COORD_HIDE And $YD <> COORD_HIDE Then
       lblCoord.Text = $XD & ":" & $YD
     Else 
       lblCoord.Text = ""
@@ -317,7 +317,7 @@ Public Function Save() As Boolean
 
   If Project.ReadOnly Then Return
   If $bReadOnly Then Return
-  If NOT $bModify Then Return
+  If Not $bModify Then Return
 
   'PRINT "Picture not saved"
 
@@ -418,7 +418,7 @@ Public Sub dwgIcon_MouseMove()
 
     RefreshCoord(X \ $iScale, Y \ $iScale)
 
-    If NOT (Mouse.Left OR Mouse.Right) Then Return
+    If Not (Mouse.Left Or Mouse.Right) Then Return
 
     DrawGhost
 
@@ -437,8 +437,8 @@ Public Sub dwgIcon_MouseMove()
         svwIcon.Scroll($X - Mouse.ScreenX, $Y - Mouse.ScreenY)
 
       Case "pen"
-        If X <> $X OR Y <> $Y Then
-          If $X < 0 AND $Y < 0 Then
+        If X <> $X Or Y <> $Y Then
+          If $X < 0 And $Y < 0 Then
             DrawPoint(X, Y, $iColor)
           Else
             DrawLine($X, $Y, X, Y, $iColor)
@@ -448,7 +448,7 @@ Public Sub dwgIcon_MouseMove()
         Endif
 
       Case "line", "rect", "circle", "select"
-        If X <> $X2 OR Y <> $Y2 Then
+        If X <> $X2 Or Y <> $Y2 Then
           $X2 = X
           $Y2 = Y
           If $sTool = "select" Then
@@ -487,7 +487,7 @@ Public Sub dwgIcon_MouseUp()
         DrawEllipse(Min($X, $X2), Min($Y, $Y2), Abs($X - $X2) + 1, Abs($Y - $Y2) + 1, $iColor)
 
       Case "select"
-        If $X2 <> $X OR $Y2 <> $Y Then
+        If $X2 <> $X Or $Y2 <> $Y Then
           $X = Max(0, Min($hImage.Width - 1, $X))
           $Y = Max(0, Min($hImage.Height - 1, $Y))
           $X2 = Max(0, Min($hImage.Width - 1, $X2))
@@ -552,7 +552,7 @@ Private Sub RefreshImage(X As Integer, Y As Integer, W As Integer, H As Integer)
   H = H * $iScale
 
   dwgIcon.Refresh(X - 1, Y - 1, W + 2, H + 2)
-  If NOT $bNoPreview Then dwgPreview.Refresh(X - 1 + 4, Y - 1 + 4, W + 2, H + 2)
+  If Not $bNoPreview Then dwgPreview.Refresh(X - 1 + 4, Y - 1 + 4, W + 2, H + 2)
 
 End
 
@@ -560,7 +560,7 @@ End
 Private Sub RefreshAllImage()
 
   dwgIcon.Refresh(svwIcon.ScrollX, svwIcon.ScrollY, svwIcon.ClientW, svwIcon.ClientH)
-  If NOT $bNoPreview Then dwgPreview.Refresh
+  If Not $bNoPreview Then dwgPreview.Refresh
 
 End
 
@@ -568,10 +568,10 @@ End
 
 Public Sub Modify(Optional bReset As Boolean)
 
-  If Project.ReadOnly OR $bReadOnly Then Return
+  If Project.ReadOnly Or $bReadOnly Then Return
   If $bModify <> bReset Then Return
 
-  $bModify = NOT bReset
+  $bModify = Not bReset
   DrawTitle
   If $bModify Then Inc Project.TimeStamp
 
@@ -598,7 +598,7 @@ End
 
 Private Sub SetPixelAlt(X As Integer, Y As Integer, C As Integer, C2 As Integer)
 
-  If (X + Y) AND 1 Then
+  If (X + Y) And 1 Then
     C = C2
   Endif 
   
@@ -653,7 +653,7 @@ Private Sub DrawLine(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer,
 
     DrawPoint(X, Y, C)
 
-    If X = X2 AND Y = Y2 Then Break
+    If X = X2 And Y = Y2 Then Break
 
     bCalc = False
 
@@ -799,13 +799,13 @@ Private Sub DrawGhost(Optional bNoBegin As Boolean)
 
   'WITH FIconTool
 
-    If $sTool = "select" AND NOT $bSelect Then Return
+    If $sTool = "select" And Not $bSelect Then Return
 
     iS2 = $iScale \ 2
     iSH = $iScale
     iWH = iSH * 2 + 1
 
-    If NOT bNoBegin Then Draw.Begin(dwgIcon)
+    If Not bNoBegin Then Draw.Begin(dwgIcon)
 
     Select Case $sTool
 
@@ -838,7 +838,7 @@ Private Sub DrawGhost(Optional bNoBegin As Boolean)
         Draw.ForeColor = Color.White
         Draw.Rect(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
         If $iMode = 0 Then
-          If Abs($X - $X2) > 1 AND Abs($Y - $Y2) > 1 Then
+          If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
             Draw.Rect((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
           Endif
         Endif
@@ -852,16 +852,16 @@ Private Sub DrawGhost(Optional bNoBegin As Boolean)
         Draw.ForeColor = Color.White
         Draw.Ellipse(Min($X, $X2) * $iScale, Min($Y, $Y2) * $iScale, (Abs($X - $X2) + 1) * $iScale + 1, (Abs($Y - $Y2) + 1) * $iScale + 1)
         If $iMode = 0 Then
-          If Abs($X - $X2) > 1 AND Abs($Y - $Y2) > 1 Then
+          If Abs($X - $X2) > 1 And Abs($Y - $Y2) > 1 Then
             Draw.Ellipse((Min($X, $X2) + 1) * $iScale, (Min($Y, $Y2) + 1) * $iScale, (Abs($X - $X2) - 1) * $iScale + 1, (Abs($Y - $Y2) - 1) * $iScale + 1)
           Endif
         Endif
 
     End Select
 
-    If NOT bNoBegin Then
+    If Not bNoBegin Then
       Draw.End
-      $bGhost = NOT $bGhost
+      $bGhost = Not $bGhost
     Endif
 
   'END WITH
@@ -873,7 +873,7 @@ Private Sub BeginUndo()
 
   If $iBeginUndo = 0 Then
     $hUndo[$iUndo] = $hImage.Copy()
-    $iUndo = ($iUndo + 1) MOD MAX_UNDO
+    $iUndo = ($iUndo + 1) Mod MAX_UNDO
   Endif
   Inc $iBeginUndo
 
@@ -970,7 +970,7 @@ End
 
 Public Sub HideSelection()
 
-  If NOT dwgPaste.Visible Then Return
+  If Not dwgPaste.Visible Then Return
 
   If $bPrivate Then
     DoPaste
@@ -1021,7 +1021,7 @@ Private Sub FloodFill(X As Integer, Y As Integer, C As Integer, iMode As Integer
   'END WITH
 
   CS = $hImage[X, Y]
-  If CS = C OR CS = C2 Then Return
+  If CS = C Or CS = C2 Then Return
 
   Inc Application.Busy
 
@@ -1124,10 +1124,10 @@ End
 
 Public Sub RefreshPaste()
 
-  If NOT $hPaste Then Return
+  If Not $hPaste Then Return
 
   dwgPaste.Move($XS * $iScale, $YS * $iScale, $hPaste.Width * $iScale, $hPaste.Height * $iScale)
-  If NOT dwgPaste.Visible Then
+  If Not dwgPaste.Visible Then
     dwgPaste.Show
   Else
     dwgPaste.Refresh
@@ -1214,7 +1214,7 @@ Public Sub DoPaste()
 
   Dim bTrans As Boolean
 
-  If NOT dwgPaste.Visible Then
+  If Not dwgPaste.Visible Then
     ShowPaste(True)
     $bPrivate = False
     Return
@@ -1244,12 +1244,12 @@ Public Sub dwgPaste_MouseMove()
 
   RefreshCoord(Mouse.X \ $iScale + $XS, Mouse.Y \ $iScale + $YS)
   
-  If NOT Mouse.Left Then Return
+  If Not Mouse.Left Then Return
 
   XP = (Mouse.ScreenX - $X - dwgIcon.ScreenX) \ $iScale
   YP = (Mouse.ScreenY - $Y - dwgIcon.ScreenY) \ $iScale
 
-  If XP = $XS AND YP = $YS Then Return
+  If XP = $XS And YP = $YS Then Return
 
   $XS = XP
   $YS = YP
@@ -1402,7 +1402,7 @@ End
 Public Sub Form_Close() 
 
   If $bModify Then
-    If NOT Project.AboutToQuit Then
+    If Not Project.AboutToQuit Then
       Select Case Message.Question(("This image has been modified.\nDo you want to save it ?"), ("Save"), ("Close"), ("Cancel"))
         Case 1
           Save
@@ -1422,7 +1422,7 @@ Public Sub ZoomIn()
   Dim iPos As Integer
 
   iPos = $aZoom.Find($iScale)
-  If iPos < 0 OR iPos >= ($aZoom.Count - 1) Then Return
+  If iPos < 0 Or iPos >= ($aZoom.Count - 1) Then Return
   $iScale = $aZoom[iPos + 1]
   RefreshZoom
 
@@ -1524,7 +1524,7 @@ Public Sub dwgColor_Draw()
   Dim iColor As Integer
   
   iColor = Last.Tag
-  If iColor >= 0 AND iColor < $cColor.Count Then  
+  If iColor >= 0 And iColor < $cColor.Count Then  
     iColor = $cColor[iColor]
   Else
     iColor = -1
@@ -1802,7 +1802,7 @@ End
 
 Public Sub SetTool(hTool As ToolButton)
 
-  If NOT hTool Then Return
+  If Not hTool Then Return
 
   ' IF hTool = $hTool THEN
   '   $hTool.Value = TRUE

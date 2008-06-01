@@ -1167,9 +1167,12 @@ Public Function LoadFile(sPath As String) As Object
       End Select
       
     Endif
-
+    
     Files[sPath] = hForm
-    If hForm Then hForm.Icon = GetFileIcon(sPath, 16)
+    If hForm Then 
+      hForm.Load
+      hForm.Icon = GetFileIcon(sPath, 16)
+    Endif
 
     Dec Application.Busy
   
@@ -1239,6 +1242,10 @@ Public Sub ShowFile(hForm As Form)
 '       Workspace.ActiveWindow = hForm
 
   End Select 
+  
+Catch
+
+  FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
   
 End
 
@@ -3605,40 +3612,40 @@ Public Sub CleanUp()
 End
 
 
-Public Sub SetFormIcon(hForm As FForm)
-'
-'   DIM hPict AS Picture
-'   DIM eRap AS Float
-'
-'   'hForm.Raise
-'   hPict = hForm.Grab()
-'   hForm.Refresh
-'   eRap = hPict.Width / hPict.Height
-'   IF eRap > 4 THEN
-'     eRap = 4
-'     hPict = hPict.Copy(0, 0, hPict.Height * eRap, hPict.Height)
-'   ELSE IF eRap < 0.5 THEN
-'     eRap = 0.5
-'     hPict = hPict.Copy(0, 0, hPict.Width, hPict.Width / eRap)
-'   ENDIF
-'   IF eRap > 1 THEN
-'     hPict = hPict.Image.Stretch(32 * eRap, 32).Picture
-'   ELSE
-'     hPict = hPict.Image.Stretch(32, 32 / eRap).Picture
-'   ENDIF
-'
-'   Draw.Begin(hPict)
-'   Draw.Foreground = &H808080&
-'   Draw.Rect(0, 0, hPict.Width, hPict.Height)
-'   Draw.End
-'
-'   ProjectTree[Project.Dir &/ hForm.Name & ".form"].Picture = hPict
-'
-' CATCH
-'
-'   PRINT Error.Text
-'
-End
+' Public Sub SetFormIcon(hForm As FForm)
+' '
+' '   DIM hPict AS Picture
+' '   DIM eRap AS Float
+' '
+' '   'hForm.Raise
+' '   hPict = hForm.Grab()
+' '   hForm.Refresh
+' '   eRap = hPict.Width / hPict.Height
+' '   IF eRap > 4 THEN
+' '     eRap = 4
+' '     hPict = hPict.Copy(0, 0, hPict.Height * eRap, hPict.Height)
+' '   ELSE IF eRap < 0.5 THEN
+' '     eRap = 0.5
+' '     hPict = hPict.Copy(0, 0, hPict.Width, hPict.Width / eRap)
+' '   ENDIF
+' '   IF eRap > 1 THEN
+' '     hPict = hPict.Image.Stretch(32 * eRap, 32).Picture
+' '   ELSE
+' '     hPict = hPict.Image.Stretch(32, 32 / eRap).Picture
+' '   ENDIF
+' '
+' '   Draw.Begin(hPict)
+' '   Draw.Foreground = &H808080&
+' '   Draw.Rect(0, 0, hPict.Width, hPict.Height)
+' '   Draw.End
+' '
+' '   ProjectTree[Project.Dir &/ hForm.Name & ".form"].Picture = hPict
+' '
+' ' CATCH
+' '
+' '   PRINT Error.Text
+' '
+' End
 
 Public Function CheckProgram(sProg As String) As Boolean
 

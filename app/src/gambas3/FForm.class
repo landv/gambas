@@ -446,8 +446,6 @@ Public Function Save(Optional bForce As Boolean) As Boolean
 
   File.Save(Path, $sSave)
 
-  Project.SetFormIcon(Me)
-
   'OPEN Path & ".test" FOR CREATE AS #hFic ' y a un truc bizarre avec CREATE !
   'PRINT #hFic, $sSave
   'CLOSE #hFic
@@ -1087,10 +1085,11 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
 
   ' If the component is not loaded, then return null
   If Not CComponent.Classes.Exist(sClass) Then
-    Error.Raise("Component missing")
+    FGambas.Error("Component missing")
+    hCtrl = New CControl(sName, "DrawingArea", hParent, Me)
+  Else
+    hCtrl = New CControl(sName, sClass, hParent, Me)
   Endif
-
-  hCtrl = New CControl(sName, sClass, hParent, Me)
 
   Control[sName] = hCtrl
 
@@ -1290,22 +1289,62 @@ Private Sub DrawRectSelect(W As Integer, H As Integer)
 
   If W = $W And H = $H Then Return
 
-  Draw.Begin(Me)
-  Draw.Invert = True
-  Draw.ForeColor = Color.White
-  Draw.LineWidth = 1
-  Draw.LineStyle = Line.Dot
+  If W <> 0 And H <> 0 Then
+  
+    $W = W
+    $H = H
 
-  X = $MX - Me.ScreenX
-  Y = $MY - Me.ScreenY
+    X = $MX - panBorder.ScreenX
+    Y = $MY - panBorder.ScreenY
+    
+    If W < 0 Then
+      X += W
+      W = - W
+    Endif
+    
+    If H < 0 Then
+      Y += H
+      H = - H
+    Endif
 
-  If $W <> 0 And $H <> 0 Then Draw.Rect(X, Y, $W, $H)
-  If W <> 0 And H <> 0 Then Draw.Rect(X, Y, W, H)
+    panSelectN.Move(X, Y, W, 2)
+    panSelectS.Move(X, Y + H - 2, W, 2)
+    panSelectW.Move(X, Y, 2, H)
+    panSelectE.Move(X + W - 2, Y, 2, H)
+    panSelectN.Raise
+    panSelectS.Raise
+    panSelectW.Raise
+    panSelectE.Raise
+    panSelectN.Show
+    panSelectS.Show
+    panSelectW.Show
+    panSelectE.Show
 
-  Draw.End
+  Else
+  
+    panSelectN.Hide
+    panSelectS.Hide
+    panSelectW.Hide
+    panSelectE.Hide
+  
+  Endif
 
-  $W = W
-  $H = H
+  ' Draw.Begin(Me)
+  ' Draw.Invert = True
+  ' Draw.ForeColor = Color.White
+  ' Draw.LineWidth = 1
+  ' Draw.LineStyle = Line.Dot
+  ' 
+  ' X = $MX - Me.ScreenX
+  ' Y = $MY - Me.ScreenY
+  ' 
+  ' If $W <> 0 And $H <> 0 Then Draw.Rect(X, Y, $W, $H)
+  ' If W <> 0 And H <> 0 Then Draw.Rect(X, Y, W, H)
+  ' 
+  ' Draw.End
+  ' 
+  ' $W = W
+  ' $H = H
 
 End
 
@@ -2223,18 +2262,13 @@ Public Sub OnProjectDebug()
 
 End
 
-
-
-Public Sub Form_Open()
-
-  'IF $bActivate THEN RETURN
+Public Sub Load()
+  
   Reload
   SetReadOnly
-
-  Project.SetFormIcon(Me)
-  '$bActivate = TRUE
-
+  
 End
+
 
 Public Function FindControlFromType(sType As String) As String[]
   

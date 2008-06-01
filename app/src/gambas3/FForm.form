@@ -493,8 +493,32 @@
       }
     }
     { panBorder DrawingArea
-      MoveScaled(21,12,24,24)
+      MoveScaled(22,12,24,24)
       Background = Color.Background
+      { panSelectN Panel
+        MoveScaled(10,6,1,1)
+        Visible = False
+        Background = Color.Foreground
+        Ignore = True
+      }
+      { panSelectS Panel
+        MoveScaled(10,8,1,1)
+        Visible = False
+        Background = Color.Foreground
+        Ignore = True
+      }
+      { panSelectW Panel
+        MoveScaled(8,6,1,1)
+        Visible = False
+        Background = Color.Foreground
+        Ignore = True
+      }
+      { panSelectE Panel
+        MoveScaled(8,8,1,1)
+        Visible = False
+        Background = Color.Foreground
+        Ignore = True
+      }
     }
   }
 }
