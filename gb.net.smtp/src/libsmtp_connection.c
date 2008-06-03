@@ -128,7 +128,7 @@ int libsmtp_connect (char *libsmtp_server, unsigned int libsmtp_port, unsigned i
     libsmtp_session->socket=0;
     return LIBSMTP_WHATSMYHOSTNAME;
   }
-  
+
   /* We enter the hello stage now */
   libsmtp_session->Stage = LIBSMTP_HELLO_STAGE;
 

@@ -244,7 +244,8 @@ static int decode_mime(char *mime, int *type, int *subtype, int *encoding, int *
 }
 
 
-static int add_part(CSMTPCLIENT *_object, char *mime, char *name)
+#if 0
+static int old_add_part(CSMTPCLIENT *_object, char *mime, char *name, int length)
 {
 	struct libsmtp_part_struct *part;
 	struct libsmtp_part_struct *parent_part;
@@ -255,9 +256,9 @@ static int add_part(CSMTPCLIENT *_object, char *mime, char *name)
 	if (!THIS->main)
 	{
 		if (THIS->alternative)
-			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_ALTERNATIVE, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", THIS->session);
+			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_ALTERNATIVE, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
 		else
-			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_MIXED, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", THIS->session);
+			THIS->main = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_MIXED, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
 		THIS->main->Tag = -1;
 		THIS->parent = -1;
 	}
@@ -278,7 +279,7 @@ static int add_part(CSMTPCLIENT *_object, char *mime, char *name)
 		name = buffer;
 	}
 
-  part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, THIS->session);
+  part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, -1, THIS->session);
   if (!part)
   {
     GB.Error("Cannot add part: &1", libsmtp_strerr(THIS->session));
@@ -293,7 +294,156 @@ static int add_part(CSMTPCLIENT *_object, char *mime, char *name)
 	*((struct libsmtp_part_struct **)GB.Add(&THIS->parts)) = part;
 	return id;
 }
+#endif
 
+static bool begin_session(CSMTPCLIENT *_object)
+{
+	int npart;
+	CSMTPPART *p;
+	struct libsmtp_part_struct *main_part;
+	struct libsmtp_part_struct *part;
+	int parent;
+	struct libsmtp_part_struct *parent_part;
+	int i;
+	int type, subtype, encoding, charset;
+	char buffer[24];
+	char *name;
+	
+	if (THIS->session)
+		return TRUE;
+		
+	#ifdef DEBUG_ME
+	fprintf(stderr, "begin_session\n");	
+	#endif
+	
+	THIS->session = libsmtp_session_initialize();
+	
+	npart = GB.Count(THIS->parts);
+	if (npart == 0)
+	{
+		#ifdef DEBUG_ME
+		fprintf(stderr, "Add void part\n");	
+		#endif	
+		p = (CSMTPPART *)GB.Add(&THIS->parts);
+		GB.NewString(&p->data, "\n", 1);
+		npart = 1;
+	}
+	
+	if (npart == 1)
+	{
+		p = &THIS->parts[0];
+		
+		if (decode_mime(p->mime, &type, &subtype, &encoding, &charset))
+			return TRUE;
+	
+		name = p->name;
+		if (!name || !*name)
+			name = "MIME part";
+			
+		parent_part = NULL;
+	
+		part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, -1, THIS->session);
+		if (!part)
+		{
+			GB.Error("Cannot add part: &1", libsmtp_strerr(THIS->session));
+			return TRUE;    
+		}
+		
+		part->Tag = 0;
+		#ifdef DEBUG_ME
+		fprintf(stderr, "part = %p  parent_part = %p  Tag = 0\n", part, parent_part);
+		#endif
+		p->part = part;
+	}
+	else
+	{
+		// Check mimetype
+		
+		for (i = 0; i < npart; i++)
+		{
+			if (decode_mime(THIS->parts[i].mime, &type, &subtype, &encoding, &charset))
+				return TRUE;
+		}
+	
+		if (THIS->alternative)
+			main_part = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_ALTERNATIVE, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
+		else
+			main_part = libsmtp_part_new(NULL, LIBSMTP_MIME_MULTIPART, LIBSMTP_MIME_SUB_MIXED, LIBSMTP_ENC_7BIT, LIBSMTP_CHARSET_NOCHARSET, "MIME main part", -1, THIS->session);
+	
+		#ifdef DEBUG_ME
+		fprintf(stderr, "main part = %p  alternative = %d\n", main_part, THIS->alternative);	
+		#endif
+		
+		main_part->Tag = -1;
+		parent = -1;
+		
+		for (i = 0; i < npart; i++)
+		{
+			p = &THIS->parts[i];
+			
+			parent_part = main_part;
+		
+			decode_mime(p->mime, &type, &subtype, &encoding, &charset);
+		
+			name = p->name;
+			if (!name || !*name)
+			{
+				sprintf(buffer, "MIME part #%d", i + 1);
+				name = buffer;
+			}
+		
+			part = libsmtp_part_new(parent_part, type, subtype, encoding, charset, name, -1, THIS->session);
+			if (!part)
+			{
+				GB.Error("Cannot add part: &1", libsmtp_strerr(THIS->session));
+				return TRUE;    
+			}
+			
+			part->Tag = i;
+			#ifdef DEBUG_ME
+			fprintf(stderr, "part = %p  parent_part = %p  Tag = %d\n", part, parent_part, i);
+			#endif
+			p->part = part;
+		}
+	}
+	
+	return FALSE;
+}
+
+static void free_parts(CSMTPCLIENT *_object)
+{
+	int i;
+	CSMTPPART *part;
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "free_parts\n");	
+	#endif
+	
+	for (i = 0; i < GB.Count(THIS->parts); i++)
+	{
+		part = &THIS->parts[i];
+		GB.FreeString(&part->name);
+		GB.FreeString(&part->mime);
+		GB.FreeString(&part->data);
+	}
+
+	GB.FreeArray(&THIS->parts);
+	GB.NewArray(&THIS->parts, sizeof(CSMTPPART), 0);
+}
+
+static void end_session(CSMTPCLIENT *_object)
+{
+	if (!THIS->session)
+		return;
+	
+	#ifdef DEBUG_ME
+	fprintf(stderr, "end_session\n");	
+	#endif
+	
+	libsmtp_close(THIS->session);
+	libsmtp_free(THIS->session);
+	THIS->session = NULL;
+}
 
 
 BEGIN_METHOD_VOID(CSMTPCLIENT_new)
@@ -305,19 +455,15 @@ BEGIN_METHOD_VOID(CSMTPCLIENT_new)
 	GB.Array.New(&THIS->bcc, GB_T_STRING, 0);
 	GB.Ref(THIS->bcc);
 
-	GB.NewArray(&THIS->parts, sizeof(void *), 0);
-	GB.NewArray(&THIS->data, sizeof(char *), 0);
-
-	THIS->session = libsmtp_session_initialize();
+	GB.NewArray(&THIS->parts, sizeof(CSMTPPART), 0);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CSMTPCLIENT_free)
 
-	int i;
-
-	libsmtp_free(THIS->session);
+	end_session(THIS);
+	free_parts(THIS);
 
 	GB.FreeString(&THIS->host);
 	GB.FreeString(&THIS->from);
@@ -329,10 +475,6 @@ BEGIN_METHOD_VOID(CSMTPCLIENT_free)
 
 	GB.FreeArray(&THIS->parts);
 
-	for (i = 0; i < GB.Count(THIS->data); i++)
-		GB.FreeString(&THIS->data[i]);
-	GB.FreeArray(&THIS->data);
-
 	GB.FreeString(&_tmp);
 
 END_METHOD
@@ -340,8 +482,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CSMTPCLIENT_send)
 
-  struct libsmtp_session_struct	*session = THIS->session;
+  struct libsmtp_session_struct	*session;
   int i;
+  const char *error;
   const char *where;
   char *addr;
   char buf[8];
@@ -352,6 +495,14 @@ BEGIN_METHOD_VOID(CSMTPCLIENT_send)
   	GB.Error("The From property must be set");
   	return;
 	}
+
+	if (begin_session(THIS))
+	{
+		end_session(THIS);
+		return;
+	}
+		
+	session = THIS->session;
 
   libsmtp_set_environment(addr, THIS->subject, 0, session);
 
@@ -366,50 +517,69 @@ BEGIN_METHOD_VOID(CSMTPCLIENT_send)
 
 	//if (libsmtp_body_send_raw((char *)test, strlen(test), session)) goto __ERROR;
 
-	#ifdef DEBUG_ME
-	printf("**** Send parts\n");
-	#endif
-
-	for (;;)
+	if (GB.Count(THIS->parts))
 	{
 		#ifdef DEBUG_ME
-		printf(">>>> libsmtp_part_next\n");
+		fprintf(stderr, "**** Send parts\n");
 		#endif
-	  if (libsmtp_part_next(session))
-	  {
-	  	if (libsmtp_errno(session))
-		  {
-		  	where = "reading next part";
-	  		goto __ERROR;
+	
+		for (;;)
+		{
+			#ifdef DEBUG_ME
+			fprintf(stderr, ">>>> libsmtp_part_next\n");
+			#endif
+			if (libsmtp_part_next(session))
+			{
+				if (libsmtp_errno(session))
+				{
+					where = "reading next part";
+					goto __ERROR;
+				}
+				else
+					break;
+			}
+			#ifdef DEBUG_ME
+			fprintf(stderr, "<<<< libsmtp_part_next\n");
+			#endif
+	
+			i = libsmtp_part_query(session)->Tag;
+			#ifdef DEBUG_ME
+			fprintf(stderr, "**** part = %p  Tag = %d\n", libsmtp_part_query(session), i);
+			#endif
+			if (THIS->parts[i].data)
+			{
+				if (libsmtp_part_send(THIS->parts[i].data, GB.StringLength(THIS->parts[i].data), session))
+				{
+					where = "sending part";
+					goto __ERROR;
+				}
 			}
 			else
-				break;
-		}
-		#ifdef DEBUG_ME
-		printf("<<<< libsmtp_part_next\n");
-		#endif
-
-	  i = libsmtp_part_query(session)->Tag;
-	  #ifdef DEBUG_ME
-	  printf("**** part = %p  Tag = %d\n", libsmtp_part_query(session), i);
-	  #endif
-	  if (libsmtp_part_send(THIS->data[i], GB.StringLength(THIS->data[i]), session))
-	  {
-	  	where = "sending part";
-	  	goto __ERROR;
+			{
+				if (libsmtp_part_send("", 0, session))
+				{
+					where = "sending part";
+					goto __ERROR;
+				}
+			}
 		}
 	}
 
   if (libsmtp_body_end(session)) { where = "ending dialog"; goto __ERROR; }
   if (libsmtp_quit(session)) { where = "closing connection"; goto __ERROR; }
 
+	end_session(THIS);
+	free_parts(THIS);
 	return;
 
 __ERROR:
 
 	sprintf(buf, "%d", session->LastResponseCode);
-	GB.Error("&1 while &2 (SMTP error code #&3)", libsmtp_strerr(session), where, buf);
-	libsmtp_close(session);
+	error = libsmtp_strerr(session);
+	//if (!error || !*error)
+	//	error = "Unknown error";
+	GB.Error("&1 while &2 (SMTP error code #&3)", error, where, buf);
+	end_session(THIS);
 
 END_METHOD
 
@@ -448,32 +618,19 @@ IMPLEMENT_RECIPIENT(to);
 IMPLEMENT_RECIPIENT(cc);
 IMPLEMENT_RECIPIENT(bcc);
 
+
 BEGIN_METHOD(CSMTPCLIENT_add, GB_STRING data; GB_STRING mime; GB_STRING name)
 
-	char *mime = MISSING(mime) ? 0 : GB.ToZeroString(ARG(mime));
-	char *name = MISSING(name) ? 0 : GB.ToZeroString(ARG(name));
-
-	if (add_part(THIS, mime, name) < 0)
-		return;
-
-	GB.StoreString(ARG(data), (char **)GB.Add(&THIS->data));
-
+	CSMTPPART *part = (CSMTPPART *)GB.Add(&THIS->parts);
+	
+	if (!MISSING(name))
+		GB.StoreString(ARG(name), &part->name);
+	if (!MISSING(mime))
+		GB.StoreString(ARG(mime), &part->mime);
+	GB.StoreString(ARG(data), &part->data);
+	
 END_METHOD
 
-/*
-BEGIN_METHOD_VOID(CSMTPCLIENT_begin_alternative)
-
-	THIS->parent = add_part(THIS, "multipart/alternative", NULL);
-	GB.Add(&THIS->data);
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CSMTPCLIENT_end_alternative)
-
-	THIS->parent = -1;
-
-END_METHOD
-*/
 
 BEGIN_PROPERTY(CSMTPCLIENT_alternative)
 
@@ -485,9 +642,14 @@ BEGIN_PROPERTY(CSMTPCLIENT_alternative)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CSMTPCLIENT_count)
+
+	GB.ReturnInteger(GB.Count(THIS->parts));
+
+END_PROPERTY
+
 GB_DESC CSmtpClientDesc[] =
 {
-
   GB_DECLARE("SmtpClient", sizeof(CSMTPCLIENT)),
 
   GB_METHOD("_new", NULL, CSMTPCLIENT_new, NULL),
@@ -501,11 +663,10 @@ GB_DESC CSmtpClientDesc[] =
   GB_PROPERTY_READ("Cc", "String[]", CSMTPCLIENT_cc),
   GB_PROPERTY_READ("Bcc", "String[]", CSMTPCLIENT_bcc),
 
-  //GB_METHOD("BeginAlternative", NULL, CSMTPCLIENT_begin_alternative, NULL),
   GB_PROPERTY("Alternative", "b", CSMTPCLIENT_alternative),
   GB_METHOD("Add", NULL, CSMTPCLIENT_add, "(Data)s[(MimeType)s(Name)s]"),
-  //GB_METHOD("EndAlternative", NULL, CSMTPCLIENT_end_alternative, NULL),
-
+  GB_PROPERTY_READ("Count", "i", CSMTPCLIENT_count),
+ 
   GB_METHOD("Send", NULL, CSMTPCLIENT_send, NULL),
 
   GB_CONSTANT("_Properties", "s", "Host,Port"),
