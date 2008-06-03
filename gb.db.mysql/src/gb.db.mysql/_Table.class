@@ -67,7 +67,7 @@ Public Procedure Insert(Table As String, Fields As String[], Values As String[])
   If Upper(Fields[0]) = "ALL" Then
     modMain.$Query &= " VALUES ("
   Else
-    modMain.$Query &= " (" & modMain.ArrayToString(Fields, False) & ") VALUES ("
+    modMain.$Query &= " (" & modMain.ArrayToString(Fields, True) & ") VALUES ("
   Endif
   'If the Value is string type, we need to use the Apostrophe caracter
   For iCounter = 0 To Values.Count - 1
