@@ -76,7 +76,7 @@ PRIVATE SUB Root_Write(sRoot AS String)
 
   IF sRoot = $sRoot THEN RETURN
   $sRoot = sRoot
-  RefreshView
+  RefreshView(sRoot)
 
 END
 
@@ -250,11 +250,9 @@ PRIVATE SUB Current_Write(sDir AS String)
 END
 
 
-PRIVATE SUB RefreshView()
+PRIVATE SUB RefreshView(OPTIONAL sDir AS String)
 
-  DIM sDir AS String
-
-  sDir = Current_Read()
+  IF NOT sDir THEN sDir = Current_Read()
   ClearView
   Current_Write(sDir)  
 
