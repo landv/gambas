@@ -175,15 +175,17 @@ public:
 	
   void removeParent() { pr = NULL; }
 	void initSignals();
+	void borderSignals();
 	void widgetSignals();
 	void connectParent();
+	void setParent(gContainer *parent) { pr = parent; }
 	void initAll(gContainer *pr);
 	void realize(bool make_frame = false);
 	void updateGeometry();
 	
 	bool noInputMethod() { return no_input_method; }
 	
-	void updateBorder();
+	virtual void updateBorder();
 	int getFrameBorder() { return frame_border; }
 	void setFrameBorder(int border);
 	int getFramePadding() { return frame_padding; }

@@ -49,6 +49,7 @@ public:
   void setToolBox(bool vl);
 	virtual void setVisible(bool vl);
 	virtual void setRealBackground(gColor vl);
+	virtual void reparent(gContainer *newpr, int x, int y);
 
 	virtual int clientWidth();
 	virtual int clientHeight();
@@ -64,7 +65,6 @@ public:
 	virtual void move(int x, int y);
 	virtual void resize(int w, int h);
 	bool close();
-	virtual void reparent(gContainer *newpr, int x, int y);
 
 //"Signals"
 	void (*onOpen)(gMainWindow *sender);

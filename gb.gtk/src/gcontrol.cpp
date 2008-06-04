@@ -211,7 +211,7 @@ void gControl::initAll(gContainer *parent)
 	have_cursor = false;
 	use_base = false;
 	mous=-1;
-	pr=parent;
+	pr = parent;
 	_name=NULL;
 	visible = false;
 	_locked = 0;
@@ -1124,7 +1124,8 @@ static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *con
 
 static void cb_size_allocate(GtkWidget *wid, GdkEventExpose *e, gContainer *container)
 {
-	container->performArrange();
+	if (!container->isTopLevel())
+		container->performArrange();
 }
 
 
@@ -1195,7 +1196,7 @@ void gControl::realize(bool make_frame)
   if (frame)
 		g_signal_connect_after(G_OBJECT(frame), "expose-event", G_CALLBACK(cb_frame_expose), (gpointer)this);
 		
-	if (isContainer() && widget != border && !isTopLevel())
+	if (isContainer() && widget != border)
 		g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 }
 
@@ -1413,11 +1414,9 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 			gtk_widget_reparent(border, newpr->getContainer());
 			oldpr->remove(this);
 			oldpr->performArrange();
-			newpr->insert(this);
-			move(x, y);
 		}
-		else		
-			newpr->insert(this, x, y);
+		
+		newpr->insert(this, x, y);
 	}
 }
 
