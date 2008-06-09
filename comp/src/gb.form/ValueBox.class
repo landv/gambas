@@ -544,7 +544,7 @@ Public Sub LstForm_Hide()
 End
 
 Public Sub hTimer_Timer()
-Print "aa"
+'Print "aa"
   hTimer.Stop
   Try $hForm.Close
   isActivate = False
@@ -567,4 +567,10 @@ Public Sub OBS_Move()
     Else 
       $hForm.Move($hButton.ScreenX + $hButton.Width - $iWidthForm, $hButton.ScreenY - $hForm.Height)
     Endif
+End
+
+Public Sub LstForm_KeyPress() 'Hides the date form and returns the selected value
+
+  If Key.Code = Key.Esc Then DateChooser_Activate()
+
 End

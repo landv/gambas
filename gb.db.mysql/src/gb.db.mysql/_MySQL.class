@@ -15,6 +15,7 @@ Private $Index As _Index
 Private $Field As _Field
 Private $View As _View
 Private $User As _User
+Private $Routines As _Routines
 
 Property Engine As String
 Property Charset As String
@@ -26,6 +27,7 @@ Property Read Table As _Table
 Property Read Field As _Field
 Property Read View As _View
 Property Read User As _User
+Property Read Routines As _Routines
 Property Confirm As Boolean
 
 Private Function Engine_Read() As String
@@ -163,5 +165,12 @@ Public Function CBool(Value As Variant) As Integer
     Default
       Error.Raise("Invalid value")
   End Select
+
+End
+
+Private Function Routines_Read() As _Routines
+
+  $Routines = New _Routines
+  Return $Routines
 
 End

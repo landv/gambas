@@ -30,7 +30,8 @@ End
 
 Public Function Info(View As String) As String
 
-  modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE VIEW " & DB.Quote(View))
-  Return modMain.$hResult["Create View"]
+  ' modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE VIEW " & DB.Quote(View))
+  ' Return modMain.$hResult["Create View"]
+  Return modMain.$Connection.Exec("SHOW CREATE VIEW " & DB.Quote(View))!"Create View"
 
 End

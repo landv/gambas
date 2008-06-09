@@ -40,7 +40,7 @@ Public Procedure Dump(Optional File As String)
 
   Dim sTmp As String
 
-  sTmp = "mysqldump -u " & modMain.$Connection.User & " -h " & modMain.$Connection.Host
+  sTmp = "mysqldump --force --no-autocommit --routines -u " & modMain.$Connection.User & " -h " & modMain.$Connection.Host
   If modMain.$Connection.Port Then sTmp &= " -P " & modMain.$Connection.Port
   sTmp &= " --password='" & modMain.$Connection.Password & "' -B " & modMain.$Connection.Name
   If File Then
@@ -54,7 +54,8 @@ End
 
 Public Function Info(DataBase As String) As String
 
-  modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE DATABASE " & DB.Quote(DataBase))
-  Return modMain.$hResult["Create Database"]
+  ' modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE DATABASE " & DB.Quote(DataBase))
+  ' Return modMain.$hResult["Create Database"]
+  Return modMain.$Connection.Exec("SHOW CREATE DATABASE " & DB.Quote(DataBase))!"Create Database"
 
 End

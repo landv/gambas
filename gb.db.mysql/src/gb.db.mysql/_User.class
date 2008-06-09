@@ -37,3 +37,18 @@ Public Procedure Grant(Privileges As String[], User As String, Password As Strin
   modMain.RunQuery(modMain.$Query)
 
 End
+
+Public Function Info(User As String) As String
+
+  Dim sDefinition As String
+
+  modMain.$hResult = modMain.$Connection.Exec("SELECT * FROM mysql.user_info WHERE User = '" & User & "'")
+  If Not modMain.$hResult.Available Then Return ("User: ") & User & (" does not have any info to show.")
+  sDefinition &= "User:        " & modMain.$hResult!User & GB.NewLine
+  sDefinition &= "Name:        " & modMain.$hResult!Full_name & GB.NewLine
+  sDefinition &= "Description: " & modMain.$hResult!Description & GB.NewLine
+  sDefinition &= "Email:       " & modMain.$hResult!Email & GB.NewLine
+  sDefinition &= "Contact:     " & modMain.$hResult!Contact_information
+  Return sDefinition
+
+End

@@ -54,8 +54,9 @@ End
 
 Public Function Info(Table As String) As String
 
-  modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE TABLE " & DB.Quote(Table))
-  Return modMain.$hResult["Create Table"]
+  ' modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE TABLE " & DB.Quote(Table))
+  ' Return modMain.$hResult["Create Table"]
+  Return modMain.$Connection.Exec("SHOW CREATE TABLE " & DB.Quote(Table))!"Create Table"
 
 End
 

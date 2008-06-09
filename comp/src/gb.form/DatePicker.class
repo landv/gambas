@@ -243,3 +243,9 @@ Public Sub OBS_Move()
       $hForm.Move($hDraw.ScreenX + $hDraw.Width - $iWidthForm, $hDraw.ScreenY - $hForm.Height)
     Endif
 End
+
+Public Sub LstForm_KeyPress() 'Hides the date form and returns the selected value
+
+  If Key.Code = Key.Esc Then DateChooser_Activate()
+
+End
