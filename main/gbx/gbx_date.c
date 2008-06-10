@@ -634,7 +634,7 @@ void DATE_add(VALUE *date, int period, int val)
   int64_t fix_date;
   int64_t new_time;
   int64_t new_date;
-  DATE_SERIAL *ds;
+  DATE_SERIAL ds;
   int y, m, d;
 
   switch(period)
@@ -666,16 +666,16 @@ void DATE_add(VALUE *date, int period, int val)
       break;
   }
 
-  ds = DATE_split(date);
+  ds = *DATE_split(date);
 
   switch(period)
   {
     case DP_WEEKDAY:
       add_date = (val / 5) * 7;
-      ds->weekday += val % 5;
-      if (ds->weekday > 5)
+      ds.weekday += val % 5;
+      if (ds.weekday > 5)
         add_date += 2;
-      else if (ds->weekday < 1)
+      else if (ds.weekday < 1)
         add_date -= 2;
       add_date += val % 5;
       goto __ADD_DATE_TIME;
@@ -685,18 +685,18 @@ void DATE_add(VALUE *date, int period, int val)
       /* continue; */
 
     case DP_MONTH:
-      y = ((ds->year * 12) + (ds->month - 1) + val) / 12;
-      m = (ds->month - 1) + val;
+      y = ((ds.year * 12) + (ds.month - 1) + val) / 12;
+      m = (ds.month - 1) + val;
       m = ((m < 0) ? (m % 12) + 12 : (m % 12)) + 1;
       d = days_in_months[date_is_leap_year(y)][m];
-      d = ds->day > d ? d : ds->day;
-      ds->day = d;
-      ds->month = m;
-      ds->year = y;
+      d = ds.day > d ? d : ds.day;
+      ds.day = d;
+      ds.month = m;
+      ds.year = y;
       goto __MAKE_DATE;
 
     case DP_YEAR:
-      ds->year += val;
+      ds.year += val;
       goto __MAKE_DATE;
 
     default:
@@ -730,7 +730,7 @@ __ADD_DATE_TIME:
 
 __MAKE_DATE:
 
-  if (DATE_make(ds, date))
+  if (DATE_make(&ds, date))
     THROW(E_DATE);
   return;
 }

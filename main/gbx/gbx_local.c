@@ -1135,7 +1135,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 }
 
 
-boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
+boolean LOCAL_format_date(DATE_SERIAL *date_serial, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
 {
   char c;
   bool esc;
@@ -1143,6 +1143,7 @@ boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int 
   int pos_ampm = -1;
   struct tm date_tm;
   char real_hour = 0;
+  DATE_SERIAL date = *date_serial;
 
   char token;
   int token_count;
@@ -1156,9 +1157,9 @@ boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int 
 
     case LF_STANDARD:
     case LF_GENERAL_DATE:
-      if (date->year == 0)
+      if (date.year == 0)
         fmt = local_current->long_time;
-      else if (date->hour == 0 && date->min == 0 && date->sec == 0)
+      else if (date.hour == 0 && date.min == 0 && date.sec == 0)
         fmt = local_current->short_date;
       else
         fmt = local_current->general_date;
@@ -1211,11 +1212,11 @@ boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int 
     if (strncasecmp(&fmt[pos], "am/pm", 5) == 0)
     {
       pos_ampm = pos;
-      real_hour = date->hour;
-      if (date->hour >= 12)
-        date->hour -= 12;
-      if (date->hour == 0)
-      	date->hour = 12;
+      real_hour = date.hour;
+      if (date.hour >= 12)
+        date.hour -= 12;
+      if (date.hour == 0)
+      	date.hour = 12;
       break;
     }
   }
@@ -1244,8 +1245,8 @@ boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int 
     {
       /* passage en struct tm */
 
-      date_tm.tm_sec = date->sec;
-      date_tm.tm_min = date->min;
+      date_tm.tm_sec = date.sec;
+      date_tm.tm_min = date.min;
       date_tm.tm_hour = real_hour;
       date_tm.tm_mday = 1;
       date_tm.tm_mon = 0;
@@ -1261,7 +1262,7 @@ boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int 
     {
       if (c != token)
       {
-        add_date_token(date, &token, token_count);
+        add_date_token(&date, &token, token_count);
         if (token == 'h' && c == 'm')
           c = 'n';
 
@@ -1273,7 +1274,7 @@ boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int 
     }
     else
     {
-      add_date_token(date, &token, token_count);
+      add_date_token(&date, &token, token_count);
       if (esc)
       	put_char(c);
       else if (c == '/')
@@ -1285,7 +1286,7 @@ boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int 
     }
   }
 
-  add_date_token(date, &token, token_count);
+  add_date_token(&date, &token, token_count);
 
   /* on retourne le r�ultat */
 
