@@ -236,6 +236,8 @@ void gMainWindow::initWindow()
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_POINTER_MOTION_MASK);*/
 
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
+
+	have_cursor = parent() == 0 && !_xembed;
 }
 
 gMainWindow::gMainWindow(int plug) : gContainer(NULL)
@@ -250,10 +252,7 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	if (_xembed)
 		border = gtk_plug_new(plug);
 	else
-	{
 		border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-		have_cursor = true;
-	}
 	
 	widget = gtk_layout_new(0,0);
 	
@@ -892,21 +891,29 @@ bool gMainWindow::close()
 void gMainWindow::reparent(gContainer *newpr, int x, int y)
 {
 	GtkWidget *new_border;
-	bool again = false;
+	int w, h;
 	
-	//fprintf(stderr, "reparent: %p (%p -> %p)\n", this, parent(), newpr);
-
-
+	if (_xembed)
+		return;
+	
 	if (!parent() && newpr)
 	{
 		gtk_window_remove_accel_group(GTK_WINDOW(topLevel()->border), accel);
+		
 		new_border = gtk_event_box_new();
 		gtk_widget_reparent(widget, new_border);
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
 		border = new_border;
-		again = true;
+		
+		setParent(newpr);
+		connectParent();
+		borderSignals();
+		initWindow();	
+		
+		move(x, y);
+		gtk_widget_set_size_request(border, width(), height());
 	}
 	else if (parent() && !newpr)
 	{
@@ -918,16 +925,21 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		gtk_widget_destroy(border);
 		_no_delete = false;
 		border = new_border;
-		again = true;
-	}
-	
-	gControl::reparent(newpr, x, y);
-	
-	if (again)
-	{
+		
+		parent()->remove(this);
+		parent()->performArrange();
+		setParent(NULL);
 		initWindow();	
-		initSignals();
+		borderSignals();
+		
+		move(x, y);
+		w = width();
+		h = height();
+		bufW = bufH = -1;
+		resize(w, h);
 	}
+	else
+		gControl::reparent(newpr, x, y);	
 }
 
 

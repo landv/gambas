@@ -915,6 +915,7 @@ typedef
     struct {
       char *(*Charset)(void);
       char *(*Language)(void);
+      char *(*DomainName)(void);
       int *(*IsRightToLeft)(void);
       }
     System;

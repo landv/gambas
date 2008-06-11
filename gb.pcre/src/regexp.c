@@ -116,71 +116,53 @@ END_METHOD
 
 BEGIN_METHOD(CREGEXP_compile, GB_STRING pattern; GB_INTEGER coptions)
 
-     char *tmp = NULL;
+	THIS->copts = VARGOPT(coptions, 0);
 
-     if (MISSING(coptions)) {
-       THIS->copts = 0;
-     } else {
-       THIS->copts = VARG(coptions);
-     }
-
-if (THIS->pattern) {
-  GB.FreeString(&THIS->pattern);
-}
-GB.NewString(&tmp, STRING(pattern), 0);
-     THIS->pattern = tmp;
-     CALL_METHOD_VOID(CREGEXP_private_compile);
+	GB.FreeString(&THIS->pattern);
+	GB.NewString(&THIS->pattern, STRING(pattern), LENGTH(pattern));
+	CALL_METHOD_VOID(CREGEXP_private_compile);
 
 END_METHOD
 
 BEGIN_METHOD(CREGEXP_exec, GB_STRING subject; GB_INTEGER eoptions)
 
-     if (MISSING(eoptions)) {
-       THIS->eopts = 0;
-     } else {
-       THIS->eopts = VARG(eoptions);
-     }
-     char *tmp = NULL;
-if (THIS->subject) {
-  GB.FreeString(&THIS->subject);
-}
-       GB.NewString(&tmp, STRING(subject), 0);
-       THIS->subject = tmp;
-
-       CALL_METHOD_VOID(CREGEXP_private_exec);
+	THIS->eopts = VARGOPT(eoptions, 0);
+	
+	GB.FreeString(&THIS->subject);
+	GB.NewString(&THIS->subject, STRING(subject), LENGTH(subject));
+	CALL_METHOD_VOID(CREGEXP_private_exec);
 
 END_METHOD
 
 BEGIN_METHOD(CREGEXP_new, GB_STRING subject; GB_STRING pattern; GB_INTEGER coptions; GB_INTEGER eoptions)
 
-     GB.NewArray((void *) &(THIS->smcache), sizeof(*(THIS->smcache)), 0); // smcache is where i keep track of what to free later
-     THIS->compiled = 0;
-     THIS->ovector = NULL;
-     THIS->rc = 0;
+	GB.NewArray((void *) &(THIS->smcache), sizeof(*(THIS->smcache)), 0); // smcache is where i keep track of what to free later
+	THIS->compiled = 0;
+	THIS->ovector = NULL;
+	THIS->rc = 0;
 
-     int *ovector = NULL;
-     // fprintf(stderr, "debug 11a\n");
-     GB.Alloc((void *) &ovector, sizeof(int) * 99);
-       THIS->ovector = ovector;
+	int *ovector = NULL;
+	// fprintf(stderr, "debug 11a\n");
+	GB.Alloc((void *) &ovector, sizeof(int) * 99);
+		THIS->ovector = ovector;
 
-     // fprintf(stderr, "debug 1\n");
-     if (MISSING(pattern)) { // the user didn't provide a pattern.
-       RETURN_SELF();
-       return;
-     }
+	// fprintf(stderr, "debug 1\n");
+	if (MISSING(pattern)) { // the user didn't provide a pattern.
+		return;
+	}
 
-     // fprintf(stderr, "debug 2\n");
-     if (MISSING(coptions)) { // the user didn't provide any execute options.
-       THIS->copts = 0;
-     } else {
-       THIS->copts = VARG(coptions);
-     }
+	// fprintf(stderr, "debug 2\n");
+	if (MISSING(coptions)) { // the user didn't provide any execute options.
+		THIS->copts = 0;
+	} else {
+		THIS->copts = VARG(coptions);
+	}
 
      char *tmp = NULL;
 if (THIS->pattern) {
   GB.FreeString(&THIS->pattern);
 }
-     GB.NewString(&tmp, STRING(pattern), 0);
+     GB.NewString(&tmp, STRING(pattern), LENGTH(pattern));
      THIS->pattern = tmp;
 
      // fprintf(stderr, "debug 3\n");
@@ -195,7 +177,6 @@ if (THIS->pattern) {
 
      // fprintf(stderr, "debug 5\n");
      if (MISSING(subject)) { // the user didn't specify any subject text.
-       RETURN_SELF();
        return;
      }
 
@@ -210,7 +191,7 @@ if (THIS->pattern) {
 if (THIS->subject) {
   GB.FreeString(&THIS->subject);
 }
-       GB.NewString(&tmp, STRING(subject), 0);
+       GB.NewString(&tmp, STRING(subject), LENGTH(subject));
        THIS->subject = tmp;
 
      // fprintf(stderr, "debug 7\n");
@@ -218,7 +199,6 @@ if (THIS->subject) {
 // fprintf(stderr, "Subject contains %s\n", THIS->subject);
      CALL_METHOD_VOID(CREGEXP_private_exec);
      // fprintf(stderr, "debug 8\n");
-     RETURN_SELF();
      // fprintf(stderr, "debug 9\n");
      return;
      // fprintf(stderr, "debug 10\n");

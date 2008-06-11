@@ -6,6 +6,72 @@
   Icon = Picture["icon:/small/terminal"]
   Persistent = True
   Arrangement = Arrange.Vertical
+  { mnuEditor Menu
+    Text = ("")
+    Visible = False
+    { mnuUndo Menu btnUndo
+      Name = "mnuUndo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu btnRedo
+      Name = "mnuRedo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { Menu1 Menu
+      Text = ("")
+    }
+    { mnuCut Menu btnCut
+      Name = "mnuCut"
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu btnCopy
+      Name = "mnuCopy"
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu btnPaste
+      Name = "mnuPaste"
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuClear Menu btnClear
+      Name = "mnuClear"
+      Text = ("Clear")
+      Picture = Picture["icon:/small/clear"]
+      Shortcut = "Ctrl+L"
+    }
+    { Menu2 Menu
+      Text = ("")
+    }
+    { mnuFind Menu
+      Text = ("Find")
+      Picture = Picture["icon:/small/find"]
+      Toggle = True
+      Shortcut = "Ctrl+F"
+    }
+    { mnuNext Menu btnNext
+      Name = "mnuNext"
+      Text = ("Find next")
+      Picture = Picture["icon:/small/down"]
+      Visible = False
+      Shortcut = "F3"
+    }
+    { mnuPrev Menu btnPrev
+      Name = "mnuPrev"
+      Text = ("Find previous")
+      Picture = Picture["icon:/small/up"]
+      Visible = False
+      Shortcut = "Shift+F3"
+    }
+  }
   { ToolBar1 ToolBar
     MoveScaled(1,1,90,4)
     { btnUndock ToolButton
@@ -57,7 +123,7 @@
         Toggle = True
       }
       { sepFind Panel
-        MoveScaled(4,0,2,4)
+        MoveScaled(4,0,1,4)
       }
       { txtFind TextBox
         MoveScaled(5,0,12,4)
@@ -88,7 +154,7 @@
         Toggle = True
       }
       { sepCharset Separator
-        MoveScaled(29,0,3,4)
+        MoveScaled(29,0,1,4)
       }
       { chkCharset CheckBox
         MoveScaled(32,0,28,4)

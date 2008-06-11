@@ -43,7 +43,7 @@ const char *libsmtp_strerr_strings_fatal[] = {
   "Connection to mailserver failed",
   "Unable to read from socket, fatal", /* 4 */
   "Mailserver didn't greet correctly conforming to RFC, we might not be welcome",
-  "Can't find our hostname",
+  "Can't find hostname or domainname",
   "Unable to send to socket", /* 7 */
   "Server won't accept sender",
   "Server rejected mail!!",

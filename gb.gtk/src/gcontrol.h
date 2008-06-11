@@ -175,8 +175,10 @@ public:
 	
   void removeParent() { pr = NULL; }
 	void initSignals();
+	void borderSignals();
 	void widgetSignals();
 	void connectParent();
+	void setParent(gContainer *parent) { pr = parent; }
 	void initAll(gContainer *pr);
 	void realize(bool make_frame = false);
 	void updateGeometry();
@@ -200,7 +202,7 @@ public:
 	static void freeDragBuffer();*/
 	static GList* controlList();
 	static void cleanRemovedControls();
-
+	
 private:
 	gContainer *pr;
 	char *_name;

@@ -3051,6 +3051,8 @@ Private Function GetClasses() As String
   'sComp = $aPath[1]
   'hComp = CComponent.All[sComp]
   'hComp.Load()
+  
+  If Not $hComp Then Return "<h2>" & Subst(("This component does not exist in version &1."), $sVersion) & "</h2>"
 
   sRes = "<div class=\"black\"><font size=\"-2\"><b>" & ("Classes") & "</b></font></div>\n"
 

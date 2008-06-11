@@ -32,6 +32,15 @@
 
 typedef
 	struct {
+		char *name;
+		char *mime;
+		char *data;
+		struct libsmtp_part_struct *part;
+		}
+	CSMTPPART;
+	
+typedef
+	struct {
 		GB_BASE ob;
 		struct libsmtp_session_struct *session;
 	  char *host;
@@ -41,10 +50,7 @@ typedef
 	  GB_ARRAY cc;
 	  GB_ARRAY bcc;
 	  char *subject;
-		struct libsmtp_part_struct *main;
-		int parent;
-		struct libsmtp_part_struct **parts;
-		char **data;
+	  CSMTPPART *parts;
 		bool alternative;
 	  }
 	CSMTPCLIENT;

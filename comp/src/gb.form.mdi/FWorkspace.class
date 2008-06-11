@@ -314,8 +314,8 @@ Public Sub Activate(Optional hWindow As Window)
       End With
       
       If hOld And If hOld <> hWin Then 
-        If $iNoWait = 0 Then Wait
         $bNoClose = True
+        'If $iNoWait = 0 Then Wait
         'DEBUG $bNoClose
         hOld.Window.Hide
         $bNoClose = False

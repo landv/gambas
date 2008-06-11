@@ -462,8 +462,8 @@ BEGIN_METHOD(CDRAW_circle, GB_INTEGER x; GB_INTEGER y; GB_INTEGER radius; GB_FLO
 	if (radius <= 0)
 		return;
 		
-	x = VARG(x) - radius;
-	y = VARG(y) - radius;
+	x = VARG(x) - radius + 1;
+	y = VARG(y) - radius + 1;
 	w = radius * 2 - 1;
 	h = radius * 2 - 1;
 		
