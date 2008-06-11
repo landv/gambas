@@ -329,7 +329,35 @@ PUBLIC SUB btnFind_Click()
   btnNext.Visible = btnFind.Value
   btnPrev.Visible = btnFind.Value
   btnCase.Visible = btnFind.Value
+  mnuPrev.Visible = btnFind.Value
+  mnuNext.Visible = btnFind.Value
   txtFind.Font = Font["0"]
+  mnuFind.Value = btnFind.Value
   IF btnFind.Value THEN txtFind.SetFocus
 
+END
+
+PUBLIC SUB mnuFind_Click()
+  
+  btnFind.Value = mnuFind.Value
+  
+END
+
+
+PUBLIC SUB edtOutput_Menu()
+
+  mnuEditor.Popup
+
+END
+
+PUBLIC SUB btnUndo_Click()
+  
+  edtOutput.Undo
+  
+END
+
+PUBLIC SUB btnRedo_Click()
+  
+  edtOutput.Redo
+  
 END

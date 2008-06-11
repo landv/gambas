@@ -308,6 +308,7 @@ PUBLIC FUNCTION Open(sDir AS String) AS Boolean
   Positions.Clear
 
   FMain.OnProjectChange
+  FOpenProject.OnUpdateRecent
   FFind.Hide
   FFind.ReadConfig
   'FFind.OnProjectChange
@@ -3879,10 +3880,14 @@ PUBLIC SUB GetRecentFiles(OPTIONAL bSort AS Boolean) AS String[]
   
   DIM aList AS String[]
   
-  IF NOT bSort THEN RETURN Recent
-  
   aList = Recent.Copy()
-  RETURN aList.Sort()
+
+  IF aList.Count THEN
+    IF aList[0] = Project.Dir THEN aList.Remove(0)
+    IF bSort THEN aList.Sort()
+  ENDIF
+  
+  RETURN aList
   
 END
 
