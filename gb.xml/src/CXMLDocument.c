@@ -108,10 +108,13 @@ END_METHOD
 
 BEGIN_METHOD (CXMLDocument_Open,GB_STRING FileName;)
 
+	const char *path;
 
 	free_document(THIS);
 
-	THIS->doc=xmlParseFile(GB.ToZeroString(ARG(FileName)));
+	path = GB.RealFileName(STRING(FileName), LENGTH(FileName));
+
+	THIS->doc=xmlParseFile(path);
 	if (!THIS->doc)
 	{
 		GB.Error("Unable to parse XML file");
