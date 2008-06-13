@@ -198,7 +198,7 @@ BEGIN_METHOD(CFTPCLIENT_Get,GB_STRING TargetHost;)
 			GB.Error("Still active");
 			return;
 		}
-		THIS_FILE=fopen(STRING(TargetHost),"w");
+		THIS_FILE=fopen(GB.ToZeroString(ARG(TargetHost)),"w");
 		if (!THIS_FILE)
 		{
 			GB.Error("Unable to open file for writing");
@@ -230,7 +230,7 @@ BEGIN_METHOD(CFTPCLIENT_Put,GB_STRING SourceFile;)
 		return;
 	}
 	
-	THIS_FILE=fopen(STRING(SourceFile),"r");
+	THIS_FILE=fopen(GB.ToZeroString(ARG(SourceFile)),"r");
 	if (!THIS_FILE)
 	{
 		GB.Error("Unable to open file for reading");
