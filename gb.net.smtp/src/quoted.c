@@ -174,10 +174,9 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_le
     }
 
     /* If we have more than 2K of data, we send it */
-    if (libsmtp_int_outbytes >= 2048)
+    if (libsmtp_int_outbytes > 2048)
     {
-      libsmtp_int_ogroup[libsmtp_int_outbytes]='\0';
-      if (libsmtp_int_send_body (libsmtp_int_ogroup, libsmtp_int_outbytes, libsmtp_session))
+      if (libsmtp_int_send_body (libsmtp_int_ogroup, 2048, libsmtp_session))
         return LIBSMTP_ERRORSENDFATAL;
 
       #ifdef LIBSMTP_DEBUG
@@ -185,16 +184,16 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_le
       #endif
 
       /* We reset the pointer into our outbuffer, too */
-      libsmtp_int_outbytes=0;
+      libsmtp_int_outbytes -= 2048;
+      memcpy(libsmtp_int_ogroup, &libsmtp_int_ogroup[2048], libsmtp_int_outbytes);
     }
   }
 
-  /* We send the rest of the data out anyway. It is better to send a linebreak
-     here so the next pack won't go over 72 characters a line */
-
-	libsmtp_int_ogroup[libsmtp_int_outbytes++]='\r';
+  /* We send the rest of the data out anyway. */
+   
+	/*libsmtp_int_ogroup[libsmtp_int_outbytes++]='\r';
 	libsmtp_int_ogroup[libsmtp_int_outbytes++]='\n';
-	libsmtp_int_ogroup[libsmtp_int_outbytes]='\0';
+	libsmtp_int_ogroup[libsmtp_int_outbytes]='\0';*/
 	
 	if (libsmtp_int_send_body (libsmtp_int_ogroup, libsmtp_int_outbytes, libsmtp_session))
 		return LIBSMTP_ERRORSENDFATAL;

@@ -168,7 +168,7 @@ int libsmtp_int_send_body (char *libsmtp_send_string, unsigned int libsmtp_int_l
     printf ("DEBUG in body send : %s\n", libsmtp_send_string);
   #endif
 
-  libsmtp_int_bytes=send (libsmtp_session->socket, libsmtp_send_string, strlen(libsmtp_send_string), 0);
+  libsmtp_int_bytes=send (libsmtp_session->socket, libsmtp_send_string, libsmtp_int_length, 0);
   if (libsmtp_int_bytes<0)
   {
     libsmtp_session->ErrorCode=LIBSMTP_ERRORSENDFATAL;
