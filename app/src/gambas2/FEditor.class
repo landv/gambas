@@ -786,9 +786,11 @@ PUBLIC SUB Editors_KeyPress()
     IF Key.Shift THEN
       IF NOT Editor.ReadOnly THEN
         Editor.Paste
+        STOP EVENT
       ENDIF 
     ELSE IF Key.Control THEN
       Editor.Copy
+      STOP EVENT
     ENDIF 
     
   ELSE IF Key.Code = Key.Delete THEN
@@ -796,6 +798,7 @@ PUBLIC SUB Editors_KeyPress()
     IF Key.Shift THEN
       IF NOT Editor.ReadOnly THEN
         Editor.Cut
+        STOP EVENT
       ENDIF 
     ENDIF 
 
