@@ -83,10 +83,10 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_le
       break;
 
       /* We need to encode 61 */
-      case 61:
+      case '=':
         strcpy(libsmtp_int_obuffer, "=3D");
       break;
-
+      
       /* Newlines need special observation */
       case '\n':
 
@@ -101,14 +101,12 @@ int libsmtp_int_send_quoted (char *libsmtp_int_data, unsigned int libsmtp_int_le
            which we have already dealt with above. All values above 126 needs
            to be encoded as well */
         if ((libsmtp_int_char < 33) || (libsmtp_int_char > 126 ))
-        {
           sprintf (libsmtp_int_obuffer, "=%02X", libsmtp_int_char);
-        }
-        else
-        {
-          /* The rest can go unencoded */
+        else if (libsmtp_int_char == '.' && libsmtp_int_width == 0)
+        	strcpy(libsmtp_int_obuffer, "=2E");
+        else /* The rest can go unencoded */
           libsmtp_int_obuffer[0]=0;
-        }
+          
       break;
     }
 
