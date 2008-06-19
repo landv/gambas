@@ -124,6 +124,8 @@ void gDraw::initGC()
 	}
 
 	setTransparent(true);
+	setBackground(COLOR_DEFAULT);
+	setForeground(COLOR_DEFAULT);
 }
 
 void gDraw::connect(gControl *wid)
@@ -145,7 +147,7 @@ void gDraw::connect(gControl *wid)
 		_default_bg = gDesktop::bgColor();
 	if (_default_fg == COLOR_DEFAULT)
 		_default_fg = gDesktop::fgColor();
-	
+		
 	stl=gtk_style_copy(wid->widget->style);
 	stl=gtk_style_attach(stl,wid->widget->window);
 

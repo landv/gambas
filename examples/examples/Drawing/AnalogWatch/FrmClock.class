@@ -59,7 +59,9 @@ PUBLIC SUB DrawClock()
   DIM iNow AS Float
   DIM eScale AS Float
   DIM eTrans AS Float
-  
+  DIM sTime AS String
+  DIM WT, HT AS Integer
+
   eScale = Min(dwgArea.Width / W, dwgArea.Height / H)
 
   IF dwgArea.Width > dwgArea.Height THEN 
@@ -83,13 +85,21 @@ PUBLIC SUB DrawClock()
   ' Width = CFloat(LengthSeconds) / 10  'Calculate width dynamically, so that we resize with form resizing
   ' Draw.LineWidth = Width * eScale 'LineWidth does not use the transformation matrix
   ' Draw.Ellipse(0.05 * LengthSeconds + (W / 2 - LengthSeconds), 0.05 * LengthSeconds + (H / 2 - LengthSeconds), 0.95 * LengthSeconds * 2, 0.95 * LengthSeconds * 2)
-  
+
   Draw.FillStyle = Fill.Solid
   Draw.LineStyle = Line.None
   Draw.FillColor = &HDCDCDC&    'Light gray color
   Draw.Ellipse(0, 0, W, H)
   Draw.FillColor = Draw.Background
   Draw.Ellipse(W * 0.05, H * 0.05, W * 0.9, H * 0.9)
+
+  sTime = Format(dNow, "hh:nn:ss")
+  Draw.Font.Bold = TRUE
+  Draw.Font.Size = 60 * eScale
+  Draw.ForeColor = Color.Black
+  WT = Draw.TextWidth("MM:MM:MM") / eScale
+  HT = Draw.TextHeight("M") / eScale
+  Draw.Text(sTime, (W - WT) / 2, (H / 3 - HT) / 2, WT, HT, Align.Center)
   
   Draw.LineStyle = Line.Solid
   Draw.FillColor = Color.Black

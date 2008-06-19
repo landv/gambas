@@ -78,6 +78,9 @@ void MyDrawingArea::setAllowFocus(bool f)
 void MyDrawingArea::setMerge(bool m)
 {
   _merge = m;
+  if (_frozen)
+  	return;
+  	
   if (_merge)
     clearWFlags(Qt::WPaintClever);
   else
@@ -269,6 +272,8 @@ void MyDrawingArea::clearBackground()
     setBackground();
     refreshBackground();
   }
+  else // widgets flags may have changed when called from CDRAWINGAREA_background() for example
+  	setBackground();
 }
 
 
