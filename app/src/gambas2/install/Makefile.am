@@ -34,9 +34,9 @@ install-exec-local:
 	  chmod a-x $(prefix)/$(GBCONTROL_path)/$(PACKAGE)/*.png; \
 	 fi \
 	else \
-	 echo "Installing $(PACKAGE).gambas file in $(bindir)..."; \
-	 $(INSTALL) -d $(prefix)/$(bindir); \
-	 $(INSTALL) $(PACKAGE).gambas $(prefix)/$(bindir); \
+	 echo "Installing $(PACKAGE).gambas file in $(sbindir)..."; \
+	 $(INSTALL) -d $(sbindir); \
+	 $(INSTALL) $(PACKAGE).gambas $(sbindir); \
 	fi)
 
 uninstall-local:
@@ -49,7 +49,7 @@ uninstall-local:
 	 rm -rf $(prefix)/$(GBCONTROL_path)/$(PACKAGE); \
 	else \
 	 echo "Removing $(PACKAGE).gambas file..." \
-	 rm $(prefix)/$(bindir)/$(PACKAGE).gambas; \
+	 rm $(sbindir)/$(PACKAGE).gambas; \
 	fi)
 
 dist-hook:
