@@ -311,6 +311,10 @@ User
 r
 _User
 
+Routines
+r
+_Routines
+
 Confirm
 p
 b
@@ -319,6 +323,21 @@ CBool
 m
 i
 (Value)v
+#_Routines
+
+CA
+Add
+m
+
+(Routine)s(Type)i(Statement)s[(Parameters)String[];(Return)s]
+Delete
+m
+
+(Routine)s(Type)i(IfExists)b
+Info
+m
+s
+(Routine)s(Type)i
 #_Table
 
 CA
@@ -361,6 +380,10 @@ Grant
 m
 
 (Privileges)String[];(User)s(Password)s(Host)s(DataBase)s
+Info
+m
+s
+(User)s
 #_View
 
 CA
