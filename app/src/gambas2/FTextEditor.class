@@ -240,7 +240,10 @@ PUBLIC SUB Editors_Menu()
 END
 
 PUBLIC SUB Editors_GotFocus()
+  
   Editor = LAST 
+  mnuEditor.Enabled = TRUE
+  
 END
 
 PUBLIC SUB mnuSave_Click()
@@ -681,3 +684,9 @@ PUBLIC SUB mnuVerticalSplit_Click()
 
 END
 
+
+PUBLIC SUB Editors_LostFocus()
+
+  mnuEditor.Enabled = FALSE
+
+END

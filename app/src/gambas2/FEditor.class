@@ -2273,7 +2273,10 @@ PUBLIC SUB Form_Activate()
 END
 
 PUBLIC SUB Editors_GotFocus()
+  
   Editor = LAST 
+  mnuEditor.Enabled = TRUE
+  
 END
 
 PUBLIC SUB Editors_MouseUp()
@@ -2608,5 +2611,11 @@ END
 PUBLIC SUB mnuLastPosition_Click()
 
   Project.LastPosition
+
+END
+
+PUBLIC SUB Editors_LostFocus()
+
+  mnuEditor.Enabled = FALSE
 
 END
