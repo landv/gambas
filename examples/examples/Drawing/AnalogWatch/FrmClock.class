@@ -6,67 +6,69 @@
 '***********V1.0: 22-July-2003***************************************
 '***********V1.1: 24-July-2003  Optimized by Benoit himself ;)*****
 
-PRIVATE $iLast AS Integer
-PRIVATE $dNow AS Date
+Private $iLast As Integer
+Private $dNow As Date
 
 ' Fixed coordinate system
 ' We use the transformation matrix for scaling
-PRIVATE CONST W AS Integer = 1024
-PRIVATE CONST H AS Integer = 1024
+Private Const W As Integer = 1024
+Private Const H As Integer = 1024
 
-PUBLIC SUB TimerClk_Timer()
+Public Sub TimerClk_Timer()
 
-  IF Second(Now) = $iLast THEN RETURN
+  If Second(Now) = $iLast Then Return
   $dNow = Now
 
   dwgArea.Refresh
 
-END
+End
 
 
-PUBLIC SUB ResizeDrawArea()
+Public Sub ResizeDrawArea()
 
   'One must use ME.ClientW and ME.CLientH, as Me.Width and ME.Height are
   ' the size of the window WITH its borders !
   'DEBUG ME.ClientW;; ME.ClientH
-  DwgArea.Resize(ME.ClientW, ME.ClientH)
+  DwgArea.Resize(Me.ClientW, Me.ClientH)
   
-END
+End
 
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
   ResizeDrawArea    'Resize the drawing area to match the form
   DwgArea.Refresh
   'TimerClk.Enabled = FALSE
   'TimerClk.Enabled = TRUE
 
-END
+End
 
 
-PUBLIC SUB DrawClock()
+Public Sub DrawClock()
 
   '***********Main Routine that updates the clock**************
-  DIM X1 AS Integer
-  DIM Y1 AS Integer
-  DIM X2 AS Integer
-  DIM Y2 AS Integer
-  DIM LengthSeconds AS Integer
-  DIM angle AS Float
-  DIM Hour12 AS Float
-  DIM Width AS Float
-  DIM dNow AS Date
-  DIM iNow AS Float
-  DIM eScale AS Float
-  DIM eTrans AS Float
+  Dim X1 As Integer
+  Dim Y1 As Integer
+  Dim X2 As Integer
+  Dim Y2 As Integer
+  Dim LengthSeconds As Integer
+  Dim angle As Float
+  Dim Hour12 As Float
+  Dim Width As Float
+  Dim dNow As Date
+  Dim iNow As Float
+  Dim eScale As Float
+  Dim eTrans As Float
+  Dim sTime As String
+  Dim WT, HT As Integer
   
   eScale = Min(dwgArea.Width / W, dwgArea.Height / H)
 
-  IF dwgArea.Width > dwgArea.Height THEN 
+  If dwgArea.Width > dwgArea.Height Then 
     Draw.Translate((dwgArea.Width - dwgArea.Height) / 2, 0)
-  ELSE
+  Else
     Draw.Translate(0, (dwgArea.Height - dwgArea.Width) / 2)
-  ENDIF 
+  Endif 
   
   Draw.Scale(eScale, eScale)
 
@@ -91,6 +93,14 @@ PUBLIC SUB DrawClock()
   Draw.FillColor = Draw.Background
   Draw.Ellipse(W * 0.05, H * 0.05, W * 0.9, H * 0.9)
   
+  sTime = Format(dNow, "hh:nn:ss")
+  Draw.Font.Bold = True
+  Draw.Font.Size = 60 * eScale
+  Draw.ForeColor = Color.Black
+  WT = Draw.TextWidth("MM:MM:MM") / eScale
+  HT = Draw.TextHeight("M") / eScale
+  Draw.Text(sTime, (W - WT) / 2, (H / 3 - HT) / 2, WT, HT, Align.Center)
+
   Draw.LineStyle = Line.Solid
   Draw.FillColor = Color.Black
   
@@ -122,7 +132,7 @@ PUBLIC SUB DrawClock()
   Width = CFloat(LengthSeconds) / 8
   Draw.LineWidth = 1
   Hour12 = CFloat(Time(dNow)) * 24
-  IF hour12 > 12 THEN hour12 = hour12 - 12     'Adjust 24h format to 12h format
+  If hour12 > 12 Then hour12 = hour12 - 12     'Adjust 24h format to 12h format
   'hour12 = hour12 + CFloat(Minute(dNow)) / 60  'Makes the hours arm move smoothly from hour to hour
   angle = CFloat(hour12) / 12 * 2 * Pi
   X1 = W / 2
@@ -142,19 +152,19 @@ _FRAME:
   
   'Draw.End
   
-END
+End
 
 
-PUBLIC SUB DrawFrame()
+Public Sub DrawFrame()
 
-  DIM X2 AS Float
-  DIM Y2 AS Float
-  DIM X1 AS Float
-  DIM Y1 AS Float
-  DIM i AS Integer
-  DIM angle AS Float
-  DIM length AS Integer
-  DIM eScale AS Float
+  Dim X2 As Float
+  Dim Y2 As Float
+  Dim X1 As Float
+  Dim Y1 As Float
+  Dim i As Integer
+  Dim angle As Float
+  Dim length As Integer
+  Dim eScale As Float
   
   eScale = Min(dwgArea.Width / W, dwgArea.Height / H)
 
@@ -164,7 +174,7 @@ PUBLIC SUB DrawFrame()
 
   Draw.Forecolor = Color.Black
   Draw.LineWidth = 5 '* eScale
-  FOR i = 0 TO 11
+  For i = 0 To 11
   'Draw Big 12 Ticks
   'This would have really been very easy if everything had fixed dimensions.
   angle = CFloat(i) / 12 * 2 * Pi
@@ -173,11 +183,11 @@ PUBLIC SUB DrawFrame()
   X2 = W / 2 + length * Sin(angle) + 0.5
   Y2 = H / 2 - length * Cos(angle) + 0.5
   Draw.Line(X1, Y1, X2, Y2)
-  NEXT
+  Next
 
   Draw.Forecolor = Color.Black
   Draw.LineWidth = 0
-  FOR i = 0 TO 59
+  For i = 0 To 59
   'Draw small 60 Ticks
   angle = CFloat(i) / 60 * 2 * Pi
   X1 = W / 2 + 0.9 * length * Sin(angle) + 0.5
@@ -185,42 +195,42 @@ PUBLIC SUB DrawFrame()
   X2 = W / 2 + length * Sin(angle) + 0.5
   Y2 = H / 2 - length * Cos(angle) + 0.5
   Draw.Line(X1, Y1, X2, Y2)
-  NEXT
+  Next
   
-END
+End
 
 
-PUBLIC SUB MenuAbout_Click()
+Public Sub MenuAbout_Click()
 
-  DIM AboutMessage AS String
+  Dim AboutMessage As String
   AboutMessage = "Analog Clock Example Program for Gambas\nWritten by: Ahmad Kamal <eng_ak@Link.Net>"
   
   Message.info(AboutMessage)
 
-END
+End
 
 
-PUBLIC SUB MenuExit_Click()
+Public Sub MenuExit_Click()
 
-  ME.Close  
+  Me.Close  
 
-END
+End
 
 
-PUBLIC SUB DwgArea_Menu()
+Public Sub DwgArea_Menu()
 
   MenuPopUp.popup
 
-END
+End
 
-PUBLIC SUB DwgArea_Draw()
+Public Sub DwgArea_Draw()
 
   DrawClock
 
-END
+End
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   TimerClk_Timer
 
-END
+End

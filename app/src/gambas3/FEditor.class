@@ -805,9 +805,11 @@ Public Sub Editors_KeyPress()
     If Key.Shift Then
       If Not Editor.ReadOnly Then
         Editor.Paste
+        Stop Event
       Endif 
     Else If Key.Control Then
       Editor.Copy
+      Stop Event
     Endif 
     
   Else If Key.Code = Key.Delete Then
@@ -815,6 +817,7 @@ Public Sub Editors_KeyPress()
     If Key.Shift Then
       If Not Editor.ReadOnly Then
         Editor.Cut
+        Stop Event
       Endif 
     Endif 
 
@@ -2304,7 +2307,10 @@ Public Sub Form_Activate()
 End
 
 Public Sub Editors_GotFocus()
+  
   Editor = Last 
+  mnuEditor.Enabled = True
+  
 End
 
 Public Sub Editors_MouseUp()
@@ -2674,4 +2680,10 @@ Public Sub SetFoldedProc(aFold As Integer[])
     Editor.Lines[iLine].Expanded = False
   Next
   
+End
+
+Public Sub Editors_LostFocus()
+
+  mnuEditor.Enabled = False
+
 End

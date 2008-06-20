@@ -496,8 +496,8 @@ msgstr ""
 #: FCommit.class:286 FCreateFile.class:820 FFontChooser.class:80
 #: FGotoLine.class:57 FList.class:167 FMain.class:2410
 #: FMakeExecutable.class:146 FMenu.class:1075 FNewTranslation.class:64
-#: FOpenProject.class:402 FPropertyProject.class:244 FSelectIcon.class:266
-#: FText.class:101 Project.module:2606
+#: FOpenProject.class:403 FPropertyProject.class:244 FSelectIcon.class:266
+#: FText.class:101 Project.module:2607
 msgid "OK"
 msgstr "OK"
 
@@ -578,11 +578,11 @@ msgid "Free"
 msgstr "Libre"
 
 #: FColorChooser.class:203 FCommit.class:292 FConflict.class:191
-#: FCreateFile.class:826 FDebugInfo.class:342 FEditor.class:2086
+#: FCreateFile.class:826 FDebugInfo.class:342 FEditor.class:2089
 #: FFindList.class:159 FFind.class:115 FFontChooser.class:86 FForm.class:2630
 #: FGotoLine.class:63 FIconEditor.class:1387 FList.class:107 FMain.class:202
 #: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1081
-#: FNewTranslation.class:70 FOpenProject.class:408 FPropertyProject.class:1150
+#: FNewTranslation.class:70 FOpenProject.class:409 FPropertyProject.class:1150
 #: FSave.class:125 FSelectIcon.class:271 FTextEditor.class:588 FText.class:107
 #: FTranslate.class:551 Project.module:278
 msgid "Cancel"
@@ -620,37 +620,38 @@ msgstr "Mot de passe"
 msgid "Changes description"
 msgstr "Description des modifications"
 
-#: FCommit.class:208 FConflict.class:327 FEditor.class:2832 FForm.class:3096
-#: FIconEditor.class:2161 FOutput.class:396 FTextEditor.class:769
+#: FCommit.class:208 FConflict.class:327 FEditor.class:2835 FForm.class:3096
+#: FIconEditor.class:2161 FOutput.class:444 FTextEditor.class:769
 msgid "Cut"
 msgstr "Couper"
 
-#: FCommit.class:215 FConflict.class:334 FEditor.class:2838 FForm.class:3103
-#: FIconEditor.class:2170 FOutput.class:403 FTextEditor.class:775
+#: FCommit.class:215 FConflict.class:334 FEditor.class:2841 FForm.class:3103
+#: FIconEditor.class:2170 FOutput.class:451 FTextEditor.class:775
 msgid "Copy"
 msgstr "Copier"
 
-#: FCommit.class:222 FConflict.class:341 FEditor.class:2844 FForm.class:3110
-#: FIconEditor.class:2179 FOutput.class:410 FTextEditor.class:781
+#: FCommit.class:222 FConflict.class:341 FEditor.class:2847 FForm.class:3110
+#: FIconEditor.class:2179 FOutput.class:458 FTextEditor.class:781
 msgid "Paste"
 msgstr "Coller"
 
-#: FCommit.class:229 FConflict.class:348 FEditor.class:2816 FForm.class:3332
-#: FIconEditor.class:2143 FOption.class:1075 FTextEditor.class:753
+#: FCommit.class:229 FConflict.class:348 FEditor.class:2819 FForm.class:3332
+#: FIconEditor.class:2143 FOption.class:1075 FOutput.class:426
+#: FTextEditor.class:753
 msgid "Undo"
 msgstr "Annuler"
 
-#: FCommit.class:236 FConflict.class:355 FEditor.class:2822 FForm.class:3341
-#: FTextEditor.class:759
+#: FCommit.class:236 FConflict.class:355 FEditor.class:2825 FForm.class:3341
+#: FOutput.class:433 FTextEditor.class:759
 msgid "Redo"
 msgstr "Rétablir"
 
-#: FCommit.class:243 FConflict.class:362 FEditor.class:3015
+#: FCommit.class:243 FConflict.class:362 FEditor.class:3018
 #: FTextEditor.class:923
 msgid "Indent"
 msgstr "Indenter"
 
-#: FCommit.class:250 FConflict.class:369 FEditor.class:3022
+#: FCommit.class:250 FConflict.class:369 FEditor.class:3025
 #: FTextEditor.class:930
 msgid "Unindent"
 msgstr "Désindenter"
@@ -700,7 +701,7 @@ msgstr ""
 "Le fichier a été modifié.\n"
 "Désirez-vous réellement ouvrir un autre fichier ?"
 
-#: FConflict.class:254 FOpenProject.class:319 Project.module:278
+#: FConflict.class:254 FOpenProject.class:320 Project.module:278
 msgid "Open"
 msgstr "Ouvrir"
 
@@ -781,7 +782,7 @@ msgstr "Module"
 msgid "Class"
 msgstr "Classe"
 
-#: FCreateFile.class:585 FEditor.class:2968 FForm.class:3012 FInfo.class:84
+#: FCreateFile.class:585 FEditor.class:2971 FForm.class:3012 FInfo.class:84
 msgid "Form"
 msgstr "Formulaire"
 
@@ -1023,6 +1024,7 @@ msgid "Do you want to clear the expression list ?"
 msgstr "Désirez-vous effacer la liste des expressions ?"
 
 #: FDebugInfo.class:342 FIconEditor.class:1387 FList.class:107
+#: FOutput.class:465
 msgid "Clear"
 msgstr "Effacer"
 
@@ -1082,7 +1084,7 @@ msgstr "Supprimer tous les points d'arrêts"
 msgid "Stack backtrace"
 msgstr "État de la pile"
 
-#: FEditor.class:2086 FIconEditor.class:2026 FTextEditor.class:588
+#: FEditor.class:2089 FIconEditor.class:2026 FTextEditor.class:588
 msgid ""
 "The file has been modified.\n"
 "\n"
@@ -1092,92 +1094,92 @@ msgstr ""
 "\n"
 "Toutes les modifications seront perdues."
 
-#: FEditor.class:2086 FForm.class:2630 FIconEditor.class:2026
+#: FEditor.class:2089 FForm.class:2630 FIconEditor.class:2026
 #: FTextEditor.class:588 FTranslate.class:645
 msgid "Reload"
 msgstr "Recharger"
 
-#: FEditor.class:2408
+#: FEditor.class:2411
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
-#: FEditor.class:2760
+#: FEditor.class:2763
 msgid "Go to"
 msgstr "Aller à"
 
-#: FEditor.class:2764 FTextEditor.class:744
+#: FEditor.class:2767 FTextEditor.class:744
 msgid "Go to line..."
 msgstr "Aller à la ligne..."
 
-#: FEditor.class:2769
+#: FEditor.class:2772
 msgid "Find definition"
 msgstr "Trouver la définition"
 
-#: FEditor.class:2775
+#: FEditor.class:2778
 msgid "Go back"
 msgstr "Revenir en arrière"
 
-#: FEditor.class:2781
+#: FEditor.class:2784
 msgid "Open form"
 msgstr "Ouvrir le formulaire"
 
-#: FEditor.class:2792
+#: FEditor.class:2795
 msgid "Run &until current line"
 msgstr "Exécuter &jusqu'à la ligne courante"
 
-#: FEditor.class:2799
+#: FEditor.class:2802
 msgid "Toggle &breakpoint"
 msgstr "Basculer un &point d'arrêt"
 
-#: FEditor.class:2807
+#: FEditor.class:2810
 msgid "&Watch expression..."
 msgstr "&Voir une expression..."
 
-#: FEditor.class:2854 FTextEditor.class:791
+#: FEditor.class:2857 FTextEditor.class:791
 msgid "Select &All"
 msgstr "&Tout sélectionner"
 
-#: FEditor.class:2863
+#: FEditor.class:2866
 msgid "Comment"
 msgstr "Mettre en commentaire"
 
-#: FEditor.class:2869
+#: FEditor.class:2872
 msgid "Uncomment"
 msgstr "Retirer les commentaires"
 
-#: FEditor.class:2879 FTextEditor.class:800
+#: FEditor.class:2882 FTextEditor.class:800
 msgid "Find..."
 msgstr "Rechercher..."
 
-#: FEditor.class:2885 FTextEditor.class:806
+#: FEditor.class:2888 FTextEditor.class:806
 msgid "Replace..."
 msgstr "Remplacer..."
 
-#: FEditor.class:2892 FTextEditor.class:813
+#: FEditor.class:2895 FTextEditor.class:813
 msgid "Find Next"
 msgstr "Suivant"
 
-#: FEditor.class:2899 FTextEditor.class:820
+#: FEditor.class:2902 FTextEditor.class:820
 msgid "Find Previous"
 msgstr "Précédent"
 
-#: FEditor.class:2909 FTextEditor.class:830
+#: FEditor.class:2912 FTextEditor.class:830
 msgid "View"
 msgstr "Affichage"
 
-#: FEditor.class:2912 FTextEditor.class:833
+#: FEditor.class:2915 FTextEditor.class:833
 msgid "No split"
 msgstr "Affichage complet"
 
-#: FEditor.class:2918 FTextEditor.class:839
+#: FEditor.class:2921 FTextEditor.class:839
 msgid "Horizontal split"
 msgstr "Séparation horizontale"
 
-#: FEditor.class:2924 FTextEditor.class:845
+#: FEditor.class:2927 FTextEditor.class:845
 msgid "Vertical split"
 msgstr "Séparation verticale"
 
-#: FEditor.class:2940 FForm.class:3242 FIconEditor.class:1406
+#: FEditor.class:2943 FForm.class:3242 FIconEditor.class:1406
 #: FTextEditor.class:856
 msgid "Save"
 msgstr "Enregistrer"
@@ -1214,15 +1216,15 @@ msgstr "La chaîne de caractères recherchée à été remplacée une fois."
 msgid "Search string replaced &1 times."
 msgstr "La chaîne de caractères a été remplacée &1 fois."
 
-#: FFind.class:635 FOutput.class:421
+#: FFind.class:635 FOutput.class:475
 msgid "Find"
 msgstr "Rechercher"
 
-#: FFind.class:642 FOutput.class:441
+#: FFind.class:642 FOutput.class:483
 msgid "Find next"
 msgstr "Poursuivre la recherche"
 
-#: FFind.class:650 FOutput.class:449
+#: FFind.class:650 FOutput.class:491
 msgid "Find previous"
 msgstr "Recherche en arrière"
 
@@ -1246,7 +1248,7 @@ msgstr "Rechercher dans tout le fichier"
 msgid "Search in project"
 msgstr "Rechercher dans tout le projet"
 
-#: FFind.class:733 FOutput.class:457
+#: FFind.class:733 FOutput.class:587
 msgid "Case sensitive"
 msgstr "Tenir compte de la casse"
 
@@ -1577,15 +1579,15 @@ msgstr "&1 : &2"
 msgid "Gambas project"
 msgstr "Projet Gambas"
 
-#: FInfo.class:65 Project.module:1036
+#: FInfo.class:65 Project.module:1037
 msgid "Modules"
 msgstr "Modules"
 
-#: FInfo.class:66 Project.module:1037
+#: FInfo.class:66 Project.module:1038
 msgid "Classes"
 msgstr "Classes"
 
-#: FInfo.class:67 Project.module:1039
+#: FInfo.class:67 Project.module:1040
 msgid "Forms"
 msgstr "Formulaires"
 
@@ -1978,7 +1980,7 @@ msgstr "Ouvrir un projet"
 msgid "Save project"
 msgstr "Enregistrer le projet"
 
-#: FMain.class:2081 Project.module:1685
+#: FMain.class:2081 Project.module:1686
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
@@ -2010,7 +2012,7 @@ msgstr "Générer l'exécutable"
 msgid "Make installation package"
 msgstr "Créer un paquetage d'installation"
 
-#: FMain.class:2154 FSelectIcon.class:214 Project.module:1035
+#: FMain.class:2154 FSelectIcon.class:214 Project.module:1036
 msgid "Project"
 msgstr "Projet"
 
@@ -2123,7 +2125,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr "Il n'y aucune information de changement pour cette version."
 
 #: FMakeInstall.class:278 FPropertyProject.class:1150 FSave.class:118
-#: Project.module:2225
+#: Project.module:2226
 msgid "Continue"
 msgstr "Continuer"
 
@@ -2381,23 +2383,23 @@ msgstr "Cliquez sur Insérer pour ajouter un nouveau menu."
 msgid "New translation"
 msgstr "Nouvelle traduction"
 
-#: FOpenProject.class:305
+#: FOpenProject.class:306
 msgid "Select a project"
 msgstr "Sélectionnez un projet"
 
-#: FOpenProject.class:358
+#: FOpenProject.class:359
 msgid "Recent"
 msgstr "Récent"
 
-#: FOpenProject.class:367 FWelcome.class:525
+#: FOpenProject.class:368 FWelcome.class:525
 msgid "Sort by path"
 msgstr "Trier dans l'ordre des chemins"
 
-#: FOpenProject.class:376 FWelcome.class:49
+#: FOpenProject.class:377 FWelcome.class:49
 msgid "Examples"
 msgstr "Exemples"
 
-#: FOpenProject.class:392
+#: FOpenProject.class:393
 msgid "Open in another window"
 msgstr "Ouvrir dans une nouvelle fenêtre"
 
@@ -2642,23 +2644,23 @@ msgstr ""
 "l'expression, puis appuyez sur RETURN.\n"
 "\n"
 
-#: FOutput.class:363
+#: FOutput.class:415
 msgid "Console - Gambas"
 msgstr "-"
 
-#: FOutput.class:373
+#: FOutput.class:503
 msgid "Undock console"
 msgstr "Console flottante"
 
-#: FOutput.class:381
+#: FOutput.class:511
 msgid "Keep above"
 msgstr "Conserver au premier plan"
 
-#: FOutput.class:389
+#: FOutput.class:519
 msgid "Clear console"
 msgstr "Effacer la console"
 
-#: FOutput.class:470
+#: FOutput.class:600
 msgid "Use system charset"
 msgstr "Utiliser le jeu de caractères du système"
 
@@ -3436,6 +3438,14 @@ msgstr "'rpmbuild' a retourné le code d'erreur suivant :"
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' a retourné le code d'erreur suivant:"
 
+#: .project:1
+msgid "Gambas 3"
+msgstr "-"
+
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
+msgstr "Environnement de développement intégré pour Gambas"
+
 #: Project.module:124
 msgid "Automation"
 msgstr "Automatisation"
@@ -3516,56 +3526,56 @@ msgstr "Ouvrir malgré tout"
 msgid "Do not open"
 msgstr "Ne pas ouvrir"
 
-#: Project.module:333
+#: Project.module:334
 msgid "This project is read-only."
 msgstr "Le projet est en lecture seule."
 
-#: Project.module:341
+#: Project.module:342
 msgid "Cannot open project file :\n"
 msgstr "Impossible d'ouvrir le projet :\n"
 
-#: Project.module:887
+#: Project.module:888
 msgid "The following classes have circular inheritance:"
 msgstr "Les classes suivantes ont un héritage circulaire :"
 
-#: Project.module:1041
+#: Project.module:1042
 msgid "Data"
 msgstr "Données"
 
-#: Project.module:1066
+#: Project.module:1067
 msgid "read-only"
 msgstr "lecture seule"
 
-#: Project.module:1068
+#: Project.module:1069
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr ""
 "VERSION EN COURS DE DÉVELOPPEMENT, UTILISEZ-LA À VOS RISQUES ET PÉRILS ! :-)"
 
-#: Project.module:1135
+#: Project.module:1136
 msgid "Loading &1..."
 msgstr "Chargement de &1..."
 
-#: Project.module:1186
+#: Project.module:1187
 msgid "Cannot open file."
 msgstr "Impossible d'ouvrir le fichier."
 
-#: Project.module:1259
+#: Project.module:1260
 msgid "File not found!"
 msgstr "Fichier introuvable !"
 
-#: Project.module:1360
+#: Project.module:1361
 msgid "Cannot compile the project."
 msgstr "Impossible de compiler le projet."
 
-#: Project.module:1380
+#: Project.module:1381
 msgid "in form definition"
 msgstr "dans la définition du formulaire"
 
-#: Project.module:1384
+#: Project.module:1385
 msgid "at line &1 in &2"
 msgstr "à la ligne &1 dans &2"
 
-#: Project.module:1536
+#: Project.module:1537
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
@@ -3573,83 +3583,83 @@ msgstr ""
 "Certains fichiers sources du projet sont en conflit.\n"
 "Veuillez résoudre ces conflits pour pouvoir compiler le projet."
 
-#: Project.module:1540
+#: Project.module:1541
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
-#: Project.module:1552
+#: Project.module:1553
 msgid "Nothing to do."
 msgstr "Rien à faire."
 
-#: Project.module:1691
+#: Project.module:1692
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
-#: Project.module:1704
+#: Project.module:1705
 msgid "Unable to save the project."
 msgstr "Impossible d'enregistrer le projet."
 
-#: Project.module:1717
+#: Project.module:1718
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
-#: Project.module:1758
+#: Project.module:1759
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
-#: Project.module:1777
+#: Project.module:1778
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: Project.module:1931
+#: Project.module:1932
 msgid "Making executable..."
 msgstr "Génération de l'exécutable..."
 
-#: Project.module:1973
+#: Project.module:1974
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
-#: Project.module:2224
+#: Project.module:2225
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés: &1"
 
-#: Project.module:2398
+#: Project.module:2399
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
-#: Project.module:2430
+#: Project.module:2431
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
-#: Project.module:2511
+#: Project.module:2512
 msgid "Unable to install component."
 msgstr "Impossible d'installer le composant."
 
-#: Project.module:2549
+#: Project.module:2550
 msgid "Unable to uninstall component."
 msgstr "Impossible de désinstaller le composant."
 
-#: Project.module:2684
+#: Project.module:2685
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
-#: Project.module:2703
+#: Project.module:2704
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: Project.module:2730
+#: Project.module:2731
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:2734
+#: Project.module:2735
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
-#: Project.module:2738
+#: Project.module:2739
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: Project.module:2768
+#: Project.module:2769
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
@@ -3657,34 +3667,34 @@ msgstr ""
 "Un nom de classe doit commencer par une lettre ou un caractère '_', et être "
 "suivi par des lettres ou des chiffres. "
 
-#: Project.module:2929
+#: Project.module:2930
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer '&1'"
 
-#: Project.module:3048
+#: Project.module:3049
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
-#: Project.module:3056
+#: Project.module:3057
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
-#: Project.module:3059
+#: Project.module:3060
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: Project.module:3060
+#: Project.module:3061
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ "
 "ESPACE"
 
-#: Project.module:3070
+#: Project.module:3071
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:3072
+#: Project.module:3073
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
@@ -3692,44 +3702,38 @@ msgstr ""
 "Le répertoire du projet ne peut être créé car un fichier avec le même nom "
 "existe déjà."
 
-#: Project.module:3115
+#: Project.module:3116
 msgid "Create source package"
 msgstr "Générer un package des sources du projet"
 
-#: Project.module:3116
+#: Project.module:3117
 msgid "Source packages"
 msgstr "Paquetages sources"
 
-#: Project.module:3362
+#: Project.module:3363
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:3374
+#: Project.module:3375
 msgid "Linking a directory is forbidden."
 msgstr "Créer un lien sur un répertoire est interdit."
 
-#: Project.module:3404
+#: Project.module:3405
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
-#: Project.module:3416
+#: Project.module:3417
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:3460
+#: Project.module:3461
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:3987
+#: Project.module:3992
 msgid "modified"
 msgstr "modifié"
 
 #: Save.module:38
 msgid "Cannot save file !"
 msgstr "Impossible d'enregistrer le fichier !"
-
-#~ msgid "Gambas 3"
-#~ msgstr "-"
-
-#~ msgid "Integrated Development Environment for Gambas"
-#~ msgstr "Environnement de développement intégré pour Gambas"

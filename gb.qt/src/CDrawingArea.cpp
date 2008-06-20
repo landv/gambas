@@ -269,6 +269,8 @@ void MyDrawingArea::clearBackground()
     setBackground();
     refreshBackground();
   }
+  else // widgets flags may have changed when called from CDRAWINGAREA_background() for example
+  	setBackground();
 }
 
 

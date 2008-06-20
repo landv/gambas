@@ -361,3 +361,15 @@ Public Sub btnRedo_Click()
   edtOutput.Redo
   
 End
+
+Public Sub edtOutput_GotFocus()
+
+  mnuEditor.Enabled = True
+
+End
+
+Public Sub edtOutput_LostFocus()
+
+  mnuEditor.Enabled = False
+
+End

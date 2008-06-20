@@ -157,6 +157,8 @@ void gDraw::initGC()
 	}
 
 	setTransparent(true);
+	setBackground(COLOR_DEFAULT);
+	setForeground(COLOR_DEFAULT);
 }
 
 void gDraw::connect(gControl *wid)

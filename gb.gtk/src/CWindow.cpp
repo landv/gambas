@@ -332,7 +332,7 @@ BEGIN_METHOD_VOID(CFORM_main)
 END_METHOD
 
 
-BEGIN_METHOD(CFORM_load, GB_OBJECT parent;GB_BOOLEAN Plug;)
+/*BEGIN_METHOD(CFORM_load, GB_OBJECT parent;GB_BOOLEAN Plug;)
 
 	void *Par=NULL;
 	bool Plg=false;
@@ -344,8 +344,19 @@ BEGIN_METHOD(CFORM_load, GB_OBJECT parent;GB_BOOLEAN Plug;)
 	GB.Push(1, GB_T_OBJECT,Par);
 	GB.AutoCreate(GB.GetClass(NULL),npar);
 
-END_METHOD
+END_METHOD*/
 
+BEGIN_METHOD(CFORM_load, GB_OBJECT parent)
+
+  if (!MISSING(parent))
+  {
+    GB.Push(1, GB_T_OBJECT, VARG(parent));
+    //qDebug("CFORM_load + parent");
+  }
+
+  GB.AutoCreate(GB.GetClass(NULL), MISSING(parent) ? 0 : 1);
+
+END_METHOD
 
 
 BEGIN_METHOD_VOID(CWINDOW_next)

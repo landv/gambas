@@ -998,7 +998,7 @@ End
 
 Public Sub panProperty_Arrange()
 
-  lblName.Move(4, (panProperty.H - lblName.H) \ 2)
+  lblName.Move(4, (panProperty.H - lblName.H) \ 2, panProperty.ClientW - btnLock.W, panProperty.ClientH)
   btnLock.Move(panProperty.W - btnLock.W - 4, (panProperty.H - btnLock.H) \ 2)
 
 End

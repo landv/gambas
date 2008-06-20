@@ -500,7 +500,7 @@ BEGIN_METHOD(CHTTPCLIENT_Get,GB_STRING TargetHost;)
 			GB.Error("Still active");
 			return;
 		}
-		THIS_FILE=fopen(STRING(TargetHost),"w");
+		THIS_FILE=fopen(GB.ToZeroString(ARG(TargetHost)),"w");
 		if (!THIS_FILE)
 		{
 			GB.Error("Unable to open file for writing");
@@ -527,7 +527,7 @@ BEGIN_METHOD(CHTTPCLIENT_Post,GB_STRING sContentType;GB_STRING sData;GB_STRING T
 			GB.Error("Still active");
 			return;
 		}
-		THIS_FILE=fopen(STRING(TargetHost),"w");
+		THIS_FILE=fopen(GB.ToZeroString(ARG(TargetHost)),"w");
 		if (!THIS_FILE)
 		{
 			GB.Error("Unable to open file for writing");
@@ -535,7 +535,7 @@ BEGIN_METHOD(CHTTPCLIENT_Post,GB_STRING sContentType;GB_STRING sData;GB_STRING T
 		}
 	}
 
-	switch(http_post (THIS,STRING(sContentType),STRING(sData),LENGTH(sData)) )
+	switch(http_post (THIS,GB.ToZeroString(ARG(sContentType)),STRING(sData),LENGTH(sData)) )
 	{
 		case 1:
 			GB.Error("Still active");

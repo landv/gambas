@@ -1,85 +1,85 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,85,84)
+  MoveScaled(0,2,85,86)
   Text = ("Project properties")
   Icon = Picture["icon:/small/properties"]
   Persistent = True
   Resizable = False
   { btnOK Button
-    MoveScaled(53,79,15,4)
+    MoveScaled(53,81,15,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(69,79,15,4)
+    MoveScaled(69,81,15,4)
     Text = ("Cancel")
     Cancel = True
   }
   { tabProject TabStrip
-    MoveScaled(1,1,83,77)
+    MoveScaled(1,1,83,79)
     Count = 7
     Index = 0
     Text = ("General")
     { Label3 Label
-      MoveScaled(1,22,79,4)
+      MoveScaled(1,24,79,4)
       Font = Font["Bold"]
       Text = ("Description")
     }
     { txtTitle TextBox
-      MoveScaled(1,18,80,4)
+      MoveScaled(1,20,80,4)
       Text = ("")
     }
     { Label12 Label
-      MoveScaled(1,14,79,4)
+      MoveScaled(1,16,79,4)
       Font = Font["Bold"]
       Text = ("Title")
     }
     { txtDesc TextArea
-      MoveScaled(1,26,80,20)
+      MoveScaled(1,28,80,20)
       Text = ("")
       Wrap = True
     }
     { Label11 Label
-      MoveScaled(1,46,80,4)
+      MoveScaled(1,48,80,4)
       Font = Font["Bold"]
       Text = ("Author(s)")
     }
     { txtAuthor TextArea
-      MoveScaled(1,50,80,20)
+      MoveScaled(1,52,80,20)
       Text = ("")
       Wrap = True
     }
     { Panel1 Panel
-      MoveScaled(1,0,80,14)
+      MoveScaled(1,0,80,15)
       { btnIcon ToolButton
-        MoveScaled(67,1,13,13)
+        MoveScaled(66,1,14,14)
         Text = ("")
         Border = True
       }
       { HBox1 HBox
-        MoveScaled(0,10,66,4)
+        MoveScaled(0,11,65,4)
         Spacing = 8
         { txtMajor SpinBox
-          MoveScaled(0,0,8,4)
+          MoveScaled(0,0,9,4)
           MaxValue = 9999
         }
         { txtMinor SpinBox
-          MoveScaled(9,0,8,4)
+          MoveScaled(10,0,9,4)
           MaxValue = 9999
         }
         { txtRelease SpinBox
-          MoveScaled(18,0,11,4)
+          MoveScaled(20,0,12,4)
           MaxValue = 999999
         }
         { Label10 Label
-          MoveScaled(30,0,13,4)
+          MoveScaled(34,0,13,4)
           Visible = False
           Text = ("Version")
         }
       }
       { txtName TextLabel
-        MoveScaled(0,1,66,8)
+        MoveScaled(0,1,65,9)
         Padding = 2
         Text = ("")
         Alignment = Align.Left
@@ -232,13 +232,13 @@
         Text = ("Tab size")
       }
       { txtTabSize SpinBox
-        MoveScaled(43,0,7,4)
+        MoveScaled(43,0,8,4)
         MinValue = 1
         MaxValue = 16
         Value = 2
       }
       { Label5 Label
-        MoveScaled(51,0,22,4)
+        MoveScaled(52,0,22,4)
         Text = ("space(s)")
       }
     }
@@ -254,10 +254,10 @@
       Text = ("Show only components used in project")
     }
     { lstComponent ListContainer
-      MoveScaled(1,5,80,60)
+      MoveScaled(1,5,80,62)
     }
     { HBox14 HBox
-      MoveScaled(1,66,80,4)
+      MoveScaled(1,68,80,4)
       { btnHelp Button
         MoveScaled(0,0,35,4)
         Text = ("About &component...")
@@ -276,7 +276,7 @@
     Index = 3
     Text = ("Environment")
     { VBox1 VBox
-      MoveScaled(1,1,80,69)
+      MoveScaled(1,1,80,71)
       Spacing = 8
       { VBox2 VBox
         MoveScaled(2,1,47,8)
@@ -346,42 +346,43 @@
     Index = 4
     Text = ("Versioning")
     { panVersioning Panel
-      MoveScaled(1,1,80,64)
-      { txtVerCtrlChange TextArea
-        MoveScaled(0,4,80,60)
-        Font = Font["Monospace"]
-        Text = ("")
-        ReadOnly = True
-      }
+      MoveScaled(1,1,80,72)
       { Label4 Label
         MoveScaled(0,0,75,4)
         Font = Font["Bold"]
         Text = ("Changes since last commit")
       }
-    }
-    { HBox15 HBox
-      MoveScaled(1,66,80,4)
-      Spacing = 8
-      { btnUpdate Button
-        MoveScaled(0,0,18,4)
-        Text = ("&Update")
-        Picture = Picture["icon:/small/refresh"]
+      { txtVerCtrlChange TextArea
+        MoveScaled(0,4,80,62)
+        Font = Font["Monospace"]
+        Expand = True
+        Text = ("")
+        ReadOnly = True
       }
-      { btnRevert Button
-        MoveScaled(20,0,18,4)
-        Text = ("&Revert...")
-        Picture = Picture["icon:/small/undo"]
-      }
-      { btnCommit Button
-        MoveScaled(39,0,18,4)
-        Text = ("&Commit...")
-        Picture = Picture["icon:/small/ok"]
+      { HBox15 HBox
+        MoveScaled(0,67,80,4)
+        Spacing = 8
+        { btnUpdate Button
+          MoveScaled(0,0,18,4)
+          Text = ("&Update")
+          Picture = Picture["icon:/small/refresh"]
+        }
+        { btnRevert Button
+          MoveScaled(20,0,18,4)
+          Text = ("&Revert...")
+          Picture = Picture["icon:/small/undo"]
+        }
+        { btnCommit Button
+          MoveScaled(39,0,18,4)
+          Text = ("&Commit...")
+          Picture = Picture["icon:/small/ok"]
+        }
       }
     }
     Index = 5
     Text = ("Provides")
     { tvwControl GridView
-      MoveScaled(1,1,80,69)
+      MoveScaled(1,1,80,71)
       Grid = False
       Header = GridView.Horizontal
       Scrollbar = Scroll.Vertical
@@ -459,7 +460,7 @@
       }
     }
     { HBox4 HBox
-      MoveScaled(1,25,80,45)
+      MoveScaled(1,25,80,47)
       Spacing = 8
       { VBox4 VBox
         MoveScaled(1,1,56,35)

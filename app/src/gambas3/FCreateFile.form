@@ -155,14 +155,14 @@
           Text = ("Options")
         }
         { panImageOption Panel
-          MoveScaled(0,11,31,15)
+          MoveScaled(0,11,32,15)
           Tag = "image"
           { Label7 Label
             MoveScaled(1,0,12,4)
             Text = ("Width")
           }
           { txtWidth SpinBox
-            MoveScaled(13,0,8,4)
+            MoveScaled(13,0,9,4)
             MinValue = 1
             MaxValue = 1024
             Step = 8
@@ -173,14 +173,14 @@
             Text = ("Height")
           }
           { txtHeight SpinBox
-            MoveScaled(13,5,8,4)
+            MoveScaled(13,5,9,4)
             MinValue = 1
             MaxValue = 1024
             Step = 8
             Value = 8
           }
           { btnLinked ToggleButton
-            MoveScaled(26,0,3,9)
+            MoveScaled(27,0,3,9)
             Text = ("")
             Picture = Picture["img/32/linked.png"]
             Value = True
@@ -190,17 +190,17 @@
             Text = ("Type")
           }
           { cmbImageType ComboBox
-            MoveScaled(13,10,16,4)
+            MoveScaled(13,10,17,4)
             Text = ("")
             ReadOnly = True
             List = [("PNG"), ("XPM"), ("GIF")]
           }
           { Label13 Label
-            MoveScaled(22,0,4,4)
+            MoveScaled(23,0,4,4)
             Text = ("px")
           }
           { Label14 Label
-            MoveScaled(22,5,4,4)
+            MoveScaled(23,5,4,4)
             Text = ("px")
           }
         }

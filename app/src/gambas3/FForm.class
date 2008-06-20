@@ -2364,8 +2364,8 @@ Public Sub UpdateBorder()
     
     panBorder.Refresh
       
-    panRight.Move(panBorder.W - 4, Max(0, ((.Height + H) - panRight.Height) / 2))
-    panDown.Move(Max(0, (.Width - panDown.Width + 4) / 2), panBorder.H + H - 4)
+    panRight.Move(panBorder.W - panRight.W / 2, Max(0, ((.Height + H) - panRight.Height) / 2))
+    panDown.Move(Max(0, (.Width - panDown.Width + panDown.H / 2) / 2), panBorder.H + H - panDown.H / 2)
     panRightDown.Move(panRight.X, panDown.Y)
     
     'panBorder.Lower
