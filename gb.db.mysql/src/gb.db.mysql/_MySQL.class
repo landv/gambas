@@ -28,7 +28,7 @@ Property Read Field As _Field
 Property Read View As _View
 Property Read User As _User
 Property Read Routines As _Routines
-Property Confirm As Boolean
+' Property Confirm As Boolean
 
 Private Function Engine_Read() As String
 
@@ -129,17 +129,17 @@ Private Function Field_Read() As _Field
 
 End
 
-Private Function Confirm_Read() As Boolean
-
-  Return modMain.$Confirm
-
-End
-
-Private Sub Confirm_Write(Value As Boolean)
-
-  modMain.$Confirm = Value
-
-End
+' Private Function Confirm_Read() As Boolean
+' 
+'   Return modMain.$Confirm
+' 
+' End
+' 
+' Private Sub Confirm_Write(Value As Boolean)
+' 
+'   modMain.$Confirm = Value
+' 
+' End
 
 Private Function View_Read() As _View
 

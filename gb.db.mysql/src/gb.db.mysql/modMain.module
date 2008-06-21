@@ -7,7 +7,7 @@ Public $Index As New String[]
 Public $ForeignKey As New String[]
 Public $PrimaryKey As String
 Public $Connection As New Connection
-Public $Confirm As Boolean = False
+' Public $Confirm As Boolean = False
 Public $Process As Process
 Public $hResult As Result
 
@@ -37,11 +37,11 @@ End
 
 Public Procedure RunQuery(Query As String)
 
-  If $Confirm Then
-    If Message.Question(("Do you really want to execute the following statement?") & GB.NewLine & Query, ("&Yes"), ("&No")) = 1 Then $Connection.Exec(Query)
-  Else
+  ' If $Confirm Then
+  '   If Message.Question(("Do you really want to execute the following statement?") & GB.NewLine & Query, ("&Yes"), ("&No")) = 1 Then $Connection.Exec(Query)
+  ' Else
     $Connection.Exec(Query)
-  Endif
+  ' Endif
   Catch
     Error.Raise(Error.Text)
 
