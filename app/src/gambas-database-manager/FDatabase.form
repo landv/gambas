@@ -1,52 +1,43 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(40.75,35.125,51.625,23.125)
-  'Move(326,281,413,185)
+  MoveScaled(40.6667,35,51.5,23)
   Text = ("")
-  Border = Window.Fixed
+  Resizable = False
   { lblTitle Label
     MoveScaled(1,1,44,6)
-    'Move(8,8,352,48)
     Font = Font["16,Bold"]
     Text = ("")
   }
   { Image1 PictureBox
     MoveScaled(45,1,6,6)
-    'Move(360,8,48,48)
     Picture = Picture["img/32/database.png"]
     Stretch = True
   }
   { Label1 Label
-    MoveScaled(1,9,13,3)
-    'Move(8,72,104,24)
+    MoveScaled(1,9,13,4)
     Text = ("Server")
   }
   { txtServer TextBox
-    MoveScaled(17,9,34,3)
-    'Move(136,72,272,24)
+    MoveScaled(17,9,34,4)
     Text = ("")
     ReadOnly = True
   }
   { Label2 Label
-    MoveScaled(1,13,13,3)
-    'Move(8,104,104,24)
+    MoveScaled(1,13,13,4)
     Text = ("Name")
   }
   { txtName TextBox
-    MoveScaled(17,13,34,3)
-    'Move(136,104,272,24)
+    MoveScaled(17,13,34,4)
     Text = ("")
   }
   { btnOK Button
-    MoveScaled(28,19,11,3)
-    'Move(224,152,88,24)
+    MoveScaled(28,19,11,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(40,19,11,3)
-    'Move(320,152,88,24)
+    MoveScaled(40,19,11,4)
     Text = ("Cancel")
     Cancel = True
   }

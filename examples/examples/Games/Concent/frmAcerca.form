@@ -1,20 +1,20 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
-{ frmAcerca Form
-  Move(357,160,400,205)
+{ Form Form
+  MoveScaled(59.5,26.6667,66.6667,34.1667)
   Text = ("")
-  Border = Window.Fixed
+  Resizable = False
   { Label1 Label
-    Move(8,16,392,144)
-    Text = ("Concéntrese Geográfico v 0.3\n\nProgramado para Gambas por:\nJairo Alonso Badillo Bedoya - jbadbe@gmail.com\nPublicado bajo los términos de la licencia GPL\nViva Colombia!!!!!\nVisite http://www.linuxeam.tk -Una comunidad Linux")
+    MoveScaled(1.3333,2.6667,65.3333,24)
+    Text = ("Conc\xC3\xA9ntrese Geogr\xC3\xA1fico v 0.3\n\nProgramado para Gambas por:\nJairo Alonso Badillo Bedoya - jbadbe@gmail.com\nPublicado bajo los t\xC3\xA9rminos de la licencia GPL\nViva Colombia!!!!!\nVisite http://www.linuxeam.tk -Una comunidad Linux")
     Alignment = Align.Center
   }
   { Button1 Button
-    Move(152,168,104,24)
+    MoveScaled(25.3333,28,17.3333,4)
     Text = ("&Aceptar")
   }
   { PictureBox1 PictureBox
-    Move(48,24,40,24)
+    MoveScaled(8,4,6.6667,4)
     Expand = True
     Picture = Picture["imagenes/colombia.gif"]
   }

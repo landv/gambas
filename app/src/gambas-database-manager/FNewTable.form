@@ -1,9 +1,9 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(17,25.1429,44,22)
+  MoveScaled(17,25,44,22)
   Text = ("")
-  Border = Window.Fixed
+  Resizable = False
   { lblTitle Label
     MoveScaled(1,1,36,5)
     Font = Font["16,Bold"]
@@ -15,34 +15,34 @@
     Stretch = True
   }
   { txtName TextBox
-    MoveScaled(12,8,31,3)
+    MoveScaled(12,8,31,4)
     Text = ("")
   }
   { lblType Label
-    MoveScaled(12,12,31,3)
+    MoveScaled(12,12,31,4)
     Text = ("")
     Border = Border.Raised
   }
   { btnOK Button
-    MoveScaled(16,18,13,3)
+    MoveScaled(16,18,13,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(30,18,13,3)
+    MoveScaled(30,18,13,4)
     Text = ("Cancel")
     Cancel = True
   }
   { Label1 Label
-    MoveScaled(1,8,10,3)
+    MoveScaled(1,8,10,4)
     Text = ("Name")
   }
   { Label2 Label
-    MoveScaled(1,12,9,3)
+    MoveScaled(1,12,9,4)
     Text = ("Type")
   }
   { cmbType ComboBox
-    MoveScaled(12,12,31,3)
+    MoveScaled(12,12,31,4)
     Enabled = False
     Text = (" ")
     ReadOnly = True

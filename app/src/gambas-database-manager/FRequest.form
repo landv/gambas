@@ -1,7 +1,7 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(14,21,77.5714,67)
+  MoveScaled(14,21,77.5,67)
   Text = ("")
   Icon = Picture["img/16/sql.png"]
   Arrangement = Arrange.Vertical
@@ -11,33 +11,33 @@
     { VBox1 VBox
       MoveScaled(4,5,64,24)
       { HPanel1 HPanel
-        MoveScaled(6,2,19,3)
+        MoveScaled(6,2,19,4)
         { btnRun ToolButton
-          MoveScaled(0,0,3,3)
+          MoveScaled(0,0,4,4)
           ToolTip = ("Run")
           Text = ("")
           Picture = Picture["icon:/small/play"]
         }
         { btnNew ToolButton
-          MoveScaled(3,0,3,3)
+          MoveScaled(3,0,4,4)
           ToolTip = ("New request")
           Text = ("")
           Picture = Picture["icon:/small/clear"]
         }
         { btnLoad ToolButton
-          MoveScaled(6,0,3,3)
+          MoveScaled(6,0,4,4)
           ToolTip = ("Load request")
           Text = ("")
           Picture = Picture["icon:/small/open"]
         }
         { btnSave ToolButton
-          MoveScaled(9,0,3,3)
+          MoveScaled(9,0,4,4)
           ToolTip = ("Save request")
           Text = ("")
           Picture = Picture["icon:/small/save"]
         }
         { btnFind ToolButton
-          MoveScaled(12,0,3,3)
+          MoveScaled(12,0,4,4)
           Visible = False
           ToolTip = ("Find")
           Text = ("")
@@ -68,27 +68,27 @@
         MoveScaled(2,5,60,21)
         Visible = False
         { HBox1 HBox
-          MoveScaled(16,3,38,3)
+          MoveScaled(16,3,38,4)
           { btnSaveData ToolButton
-            MoveScaled(0,0,3,3)
+            MoveScaled(0,0,4,4)
             ToolTip = ("Export data")
             Text = ("")
             Picture = Picture["icon:/small/save"]
           }
           { btnCopyData ToolButton
-            MoveScaled(3,0,3,3)
+            MoveScaled(3,0,4,4)
             ToolTip = ("Copy data in clipboard")
             Text = ("")
             Picture = Picture["icon:/small/copy"]
           }
           { lblCount Label
-            MoveScaled(8,0,26,3)
+            MoveScaled(8,0,26,4)
             Expand = True
             Text = ("")
             Alignment = Align.Right
           }
           { Panel2 Panel
-            MoveScaled(35,0,1,3)
+            MoveScaled(35,0,2,4)
           }
         }
         { tbvData GridView

@@ -1,68 +1,56 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(50,34.125,43,30)
-  'Move(400,273,344,240)
+  MoveScaled(50,34,43,30)
   Text = ("")
-  Border = Window.Fixed
+  Resizable = False
   { Image1 PictureBox
     MoveScaled(36,1,6,6)
-    'Move(288,8,48,48)
     Picture = Picture["img/32/users.png"]
     Stretch = True
   }
   { lblTitle Label
     MoveScaled(1,1,33,5)
-    'Move(8,8,264,40)
     Font = Font["16,Bold"]
     Text = ("")
   }
   { Label1 Label
-    MoveScaled(2,8,15,3)
-    'Move(16,64,120,24)
+    MoveScaled(2,8,15,4)
     Text = ("Server")
   }
   { txtServer TextBox
-    MoveScaled(18,8,24,3)
-    'Move(144,64,192,24)
+    MoveScaled(18,8,24,4)
     Text = ("")
     ReadOnly = True
   }
   { Label2 Label
-    MoveScaled(2,12,15,3)
-    'Move(16,96,120,24)
+    MoveScaled(2,12,15,4)
     Text = ("Name")
   }
   { txtName TextBox
-    MoveScaled(18,12,24,3)
-    'Move(144,96,192,24)
+    MoveScaled(18,12,24,4)
     Text = ("")
   }
   { Label3 Label
-    MoveScaled(2,16,15,3)
-    'Move(16,128,120,24)
+    MoveScaled(2,16,15,4)
     Text = ("Password")
   }
   { txtPassword TextBox
-    MoveScaled(18,16,24,3)
-    'Move(144,128,192,24)
+    MoveScaled(18,16,24,4)
     Text = ("")
     Password = True
   }
   { chkAdmin CheckBox
-    MoveScaled(2,21,38,3)
-    'Move(16,168,304,24)
+    MoveScaled(2,21,38,4)
     Text = ("This user is a database administrator")
   }
   { btnOK Button
-    MoveScaled(19,26,11,3)
-    'Move(152,208,88,24)
+    MoveScaled(19,26,11,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(31,26,11,3)
-    'Move(248,208,88,24)
+    MoveScaled(31,26,11,4)
     Text = ("Cancel")
     Cancel = True
   }

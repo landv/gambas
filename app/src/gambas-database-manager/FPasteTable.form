@@ -1,119 +1,97 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(40.25,18,50,51.125)
-  'Move(322,144,400,409)
+  MoveScaled(40.1667,18,50,51)
   Text = ("Duplicate table")
-  Border = Window.Fixed
+  Resizable = False
   { Label1 Label
-    MoveScaled(1,7,48,3)
-    'Move(8,56,384,24)
+    MoveScaled(1,7,48,4)
     Font = Font["Bold"]
     Text = ("Source")
   }
   { Label3 Label
-    MoveScaled(2,29,14,3)
-    'Move(16,232,112,24)
+    MoveScaled(2,29,14,4)
     Text = ("Name")
   }
   { txtName TextBox
-    MoveScaled(17,29,32,3)
-    'Move(136,232,256,24)
+    MoveScaled(17,29,32,4)
     Text = ("")
   }
   { optCopyData RadioButton
-    MoveScaled(2,37,47,3)
-    'Move(16,296,376,24)
+    MoveScaled(2,37,47,4)
     Text = ("Copy structure &and data")
   }
   { optCopyDef RadioButton
-    MoveScaled(2,34,47,3)
-    'Move(16,272,376,24)
+    MoveScaled(2,34,47,4)
     Text = ("Copy &structure only")
     Value = True
   }
   { lblTitle Label
     MoveScaled(1,1,41,5)
-    'Move(8,8,328,40)
     Font = Font["16,Bold"]
     Text = ("Duplicate table")
   }
   { imgIcon PictureBox
     MoveScaled(43,1,6,6)
-    'Move(344,8,48,48)
     Picture = Picture["img/32/table-copy.png"]
     Stretch = True
   }
   { btnOK Button
-    MoveScaled(20,47,14,3)
-    'Move(160,376,112,24)
+    MoveScaled(20,47,14,4)
     Text = ("Duplicate")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(35,47,14,3)
-    'Move(280,376,112,24)
+    MoveScaled(35,47,14,4)
     Text = ("Close")
     Cancel = True
   }
   { Label2 Label
-    MoveScaled(1,20,48,3)
-    'Move(8,160,384,24)
+    MoveScaled(1,20,48,4)
     Font = Font["Bold"]
     Text = ("Destination")
   }
   { pgbPaste ProgressBar
-    MoveScaled(1,42,48,3)
-    'Move(8,336,384,24)
+    MoveScaled(1,42,48,4)
   }
   { Label4 Label
-    MoveScaled(2,10,14,3)
-    'Move(16,80,112,24)
+    MoveScaled(2,10,14,4)
     Text = ("Connection")
   }
   { Label5 Label
-    MoveScaled(2,13,14,3)
-    'Move(16,104,112,24)
+    MoveScaled(2,13,14,4)
     Text = ("Database")
   }
   { lblSrcServer Label
-    MoveScaled(17,10,32,3)
-    'Move(136,80,256,24)
+    MoveScaled(17,10,32,4)
     Text = ("")
   }
   { lblSrcDatabase Label
-    MoveScaled(17,13,32,3)
-    'Move(136,104,256,24)
+    MoveScaled(17,13,32,4)
     Text = ("")
   }
   { Label6 Label
-    MoveScaled(2,23,14,3)
-    'Move(16,184,112,24)
+    MoveScaled(2,23,14,4)
     Text = ("Connection")
   }
   { lblDstServer Label
-    MoveScaled(17,23,32,3)
-    'Move(136,184,256,24)
+    MoveScaled(17,23,32,4)
     Text = ("")
   }
   { Label7 Label
-    MoveScaled(2,16,14,3)
-    'Move(16,128,112,24)
+    MoveScaled(2,16,14,4)
     Text = ("Table")
   }
   { lblSrcTable Label
-    MoveScaled(17,16,32,3)
-    'Move(136,128,256,24)
+    MoveScaled(17,16,32,4)
     Text = ("")
   }
   { Label8 Label
-    MoveScaled(2,26,14,3)
-    'Move(16,208,112,24)
+    MoveScaled(2,26,14,4)
     Text = ("Database")
   }
   { lblDstDatabase Label
-    MoveScaled(17,26,32,3)
-    'Move(136,208,256,24)
+    MoveScaled(17,26,32,4)
     Text = ("")
   }
 }

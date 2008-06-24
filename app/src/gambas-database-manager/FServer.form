@@ -1,10 +1,10 @@
-# Gambas Form File 2.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(43.7143,26.4286,43,31.1429)
+  MoveScaled(43.6667,26.1667,43,31)
   Text = ("New connection")
   Icon = Picture["img/16/host.png"]
-  Border = Window.Fixed
+  Resizable = False
   { lblTitle Label
     MoveScaled(1,1,32,5)
     Font = Font["16,Bold"]
@@ -16,55 +16,55 @@
     Stretch = True
   }
   { Label1 Label
-    MoveScaled(2,9,15,3)
+    MoveScaled(2,9,15,4)
     Text = ("Type")
   }
   { txtHost TextBox
-    MoveScaled(18,13,24,3)
+    MoveScaled(18,13,24,4)
     Text = ("")
   }
   { btnPath Button
-    MoveScaled(28,17,14,3)
+    MoveScaled(28,17,14,4)
     Visible = False
     Text = ("Choose...")
   }
   { panIdent Panel
     MoveScaled(2,17,40,8)
     { Label3 Label
-      MoveScaled(0,0,14,3)
+      MoveScaled(0,0,14,4)
       Text = ("User")
     }
     { Label4 Label
-      MoveScaled(0,4,14,3)
+      MoveScaled(0,4,14,4)
       Text = ("Password")
     }
     { txtUser TextBox
-      MoveScaled(16,0,24,3)
+      MoveScaled(16,0,24,4)
       Text = ("")
     }
     { txtPassword TextBox
-      MoveScaled(16,4,24,3)
+      MoveScaled(16,4,24,4)
       Text = ("")
       Password = True
     }
   }
   { btnOK Button
-    MoveScaled(17,27,12,3)
+    MoveScaled(17,27,12,4)
     Text = ("OK")
     Default = True
   }
   { cmbType ComboBox
-    MoveScaled(18,9,24,3)
+    MoveScaled(18,9,24,4)
     Text = (" ")
     List = [("postgresql"), ("mysql"), ("sqlite"), ("sqlite2"), ("sqlite3"), ("odbc")]
   }
   { btnCancel Button
-    MoveScaled(30,27,12,3)
+    MoveScaled(30,27,12,4)
     Text = ("Cancel")
     Cancel = True
   }
   { lblHost Label
-    MoveScaled(2,13,15,3)
+    MoveScaled(2,13,15,4)
     Text = ("Host")
   }
 }

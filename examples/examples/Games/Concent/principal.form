@@ -5,7 +5,7 @@
   Mouse = Mouse.Pointing
   Text = ("Enjoy Open Source!")
   Picture = Picture["imagenes/tierra3.jpg"]
-  Border = Window.Fixed
+  Resizable = False
   { mnuConfiguracion Menu
     Text = ("&Configuraci\xC3\xB3n")
     { mnuConfiguracionNuevoJuego Menu
@@ -66,7 +66,7 @@
   }
   { Button49 Button grupobotones
     Name = "Button49"
-    MoveScaled(2,67.3333,6.3333,6.3333)
+    MoveScaled(2,67.1667,6.1667,6.1667)
     Visible = False
     Tag = "48"
     Text = ("")
@@ -74,7 +74,7 @@
   }
   { Button50 Button grupobotones
     Name = "Button50"
-    MoveScaled(9,67.3333,6.3333,6.3333)
+    MoveScaled(9,67.1667,6.1667,6.1667)
     Visible = False
     Tag = "49"
     Text = ("")
@@ -82,7 +82,7 @@
   }
   { Button51 Button grupobotones
     Name = "Button51"
-    MoveScaled(16,67.3333,6.3333,6.3333)
+    MoveScaled(16,67.1667,6.1667,6.1667)
     Visible = False
     Tag = "50"
     Text = ("")
@@ -90,7 +90,7 @@
   }
   { Button52 Button grupobotones
     Name = "Button52"
-    MoveScaled(22.6667,67.3333,6.3333,6.3333)
+    MoveScaled(22.6667,67.1667,6.1667,6.1667)
     Visible = False
     Tag = "51"
     Text = ("")
@@ -98,7 +98,7 @@
   }
   { Button53 Button grupobotones
     Name = "Button53"
-    MoveScaled(29.6667,67.3333,6.3333,6.3333)
+    MoveScaled(29.6667,67.1667,6.1667,6.1667)
     Visible = False
     Tag = "52"
     Text = ("")
@@ -106,7 +106,7 @@
   }
   { Button54 Button grupobotones
     Name = "Button54"
-    MoveScaled(36.3333,67.3333,6.3333,6.3333)
+    MoveScaled(36.1667,67.1667,6.1667,6.1667)
     Visible = False
     Tag = "53"
     Text = ("")
@@ -114,7 +114,7 @@
   }
   { Button55 Button grupobotones
     Name = "Button55"
-    MoveScaled(2,74,6.3333,6.3333)
+    MoveScaled(2,74,6.1667,6.1667)
     Visible = False
     Tag = "54"
     Text = ("")
@@ -122,7 +122,7 @@
   }
   { Button56 Button grupobotones
     Name = "Button56"
-    MoveScaled(9,74,6.3333,6.3333)
+    MoveScaled(9,74,6.1667,6.1667)
     Visible = False
     Tag = "55"
     Text = ("")
@@ -130,7 +130,7 @@
   }
   { Button57 Button grupobotones
     Name = "Button57"
-    MoveScaled(16,74,6.3333,6.3333)
+    MoveScaled(16,74,6.1667,6.1667)
     Visible = False
     Tag = "56"
     Text = ("")
@@ -138,7 +138,7 @@
   }
   { Button58 Button grupobotones
     Name = "Button58"
-    MoveScaled(22.6667,74,6.3333,6.3333)
+    MoveScaled(22.6667,74,6.1667,6.1667)
     Visible = False
     Tag = "57"
     Text = ("")
@@ -146,7 +146,7 @@
   }
   { Button59 Button grupobotones
     Name = "Button59"
-    MoveScaled(29.6667,74,6.3333,6.3333)
+    MoveScaled(29.6667,74,6.1667,6.1667)
     Visible = False
     Tag = "58"
     Text = ("")
@@ -154,7 +154,7 @@
   }
   { Button60 Button grupobotones
     Name = "Button60"
-    MoveScaled(36.3333,74,6.3333,6.3333)
+    MoveScaled(36.1667,74,6.1667,6.1667)
     Visible = False
     Tag = "59"
     Text = ("")
@@ -162,7 +162,7 @@
   }
   { Button61 Button grupobotones
     Name = "Button61"
-    MoveScaled(2,81,6.3333,6.3333)
+    MoveScaled(2,81,6.1667,6.1667)
     Visible = False
     Tag = "60"
     Text = ("")
@@ -170,7 +170,7 @@
   }
   { Button62 Button grupobotones
     Name = "Button62"
-    MoveScaled(9,81,6.3333,6.3333)
+    MoveScaled(9,81,6.1667,6.1667)
     Visible = False
     Tag = "61"
     Text = ("")
@@ -178,7 +178,7 @@
   }
   { Button63 Button grupobotones
     Name = "Button63"
-    MoveScaled(16,81,6.3333,6.3333)
+    MoveScaled(16,81,6.1667,6.1667)
     Visible = False
     Tag = "62"
     Text = ("")
@@ -186,21 +186,21 @@
   }
   { Button64 Button grupobotones
     Name = "Button64"
-    MoveScaled(22.6667,81,6.3333,6.3333)
+    MoveScaled(22.6667,81,6.1667,6.1667)
     Visible = False
     Tag = "63"
     Text = ("")
     Picture = Picture["imagenes/inter.jpg"]
   }
   { Label1 Label
-    MoveScaled(1,1,12.3333,3.3333)
+    MoveScaled(1,1,12.1667,3.1667)
     Background = &H000000&
     Foreground = &HFFFFFF&
     Text = ("Jugadas: ")
     Alignment = Align.Left
   }
   { Label2 Label
-    MoveScaled(1,4.3333,12.3333,3.3333)
+    MoveScaled(1,4.1667,12.1667,3.1667)
     Background = &H000000&
     Foreground = &HFFFFFF&
     Text = ("Tiempo: ")
@@ -223,14 +223,14 @@
     #Y = 344
   }
   { lblTiempo Label
-    MoveScaled(12.3333,4.3333,4.3333,3.3333)
+    MoveScaled(12.1667,4.1667,4.1667,3.1667)
     Background = &H000000&
     Foreground = &HFFFFFF&
     Text = ("0")
     Alignment = Align.Right
   }
   { lblJugadas Label
-    MoveScaled(12.3333,1,4.3333,3.3333)
+    MoveScaled(12.1667,1,4.1667,3.1667)
     Background = &H000000&
     Foreground = &HFFFFFF&
     Text = ("0")

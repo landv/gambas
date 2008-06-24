@@ -4,9 +4,9 @@
   MoveScaled(0,0,72,51)
   Background = &HFFEFBF&
   Text = ("Example to make a Bar Chart")
-  Border = Window.Fixed
+  Resizable = False
   { bg PictureBox
-    MoveScaled(1,1,70.1667,43.3333)
+    MoveScaled(1,1,70.1667,43.1667)
     Background = &HFFFFFF&
     Border = Border.Plain
   }
@@ -20,7 +20,7 @@
     Text = ("&Close")
   }
   { btnAbout Button
-    MoveScaled(39.8333,45,15,5)
+    MoveScaled(39.6667,45,15,5)
     Text = ("&About")
     Picture = Picture["graph.png"]
   }

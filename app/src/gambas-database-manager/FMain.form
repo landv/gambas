@@ -1,8 +1,7 @@
-# Gambas Form File 1.0
+# Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(9,24.375,72,63)
-  'Move(72,195,576,504)
+  MoveScaled(9,24.1667,72,63)
   Text = ("Gambas Database Manager")
   Icon = Picture["img/logo/logo-32.png"]
   Arrangement = Arrange.Fill
@@ -215,16 +214,13 @@
   }
   { splBase HSplit
     MoveScaled(1,1,69,55)
-    'Move(8,8,552,440)
     { tvwBase TreeView
       MoveScaled(4,5,22,42)
-      'Move(32,40,176,336)
       Sorted = True
       ScrollBar = Scroll.Vertical
     }
     { wrkBase Workspace
       MoveScaled(29,5,37,45)
-      'Move(232,40,296,360)
     }
   }
 }

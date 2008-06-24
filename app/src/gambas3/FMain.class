@@ -628,7 +628,8 @@ End
 
 Public Sub mnuDatabaseManager_Click()
 
-  Project.RunTool("gambas" & System.Version & "-database-manager")
+  'Project.RunTool("gambas" & System.Version & "-database-manager")
+  Project.RunTool("gambas-database-manager")
 
 End
 
