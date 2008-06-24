@@ -92,8 +92,14 @@
         Text = ("")
         Picture = Picture["icon:/small/unindent"]
       }
+      { tbtClear ToolButton
+        MoveScaled(28,0,4,4)
+        ToolTip = ("Clean up")
+        Text = ("")
+        Picture = Picture["icon:/16/clear"]
+      }
       { Panel2 Panel
-        MoveScaled(29,0,8,4)
+        MoveScaled(44,-1,8,4)
         Expand = True
       }
       { lblCursor Label
