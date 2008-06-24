@@ -744,7 +744,7 @@ void TRANS_return(void)
   if (FUNCTION_is_procedure(JOB->func))
   {
     if (!(PATTERN_is_newline(*JOB->current) || PATTERN_is_end(*JOB->current)))
-      THROW("Cannot return a value in a procedure");
+      THROW("Return value datatype not specified in function declaration");
   }
 
   if (PATTERN_is_newline(*JOB->current) || PATTERN_is_end(*JOB->current))
