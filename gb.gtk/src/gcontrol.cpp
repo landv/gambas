@@ -210,7 +210,7 @@ void gControl::initAll(gContainer *parent)
 	fg_set = false;
 	have_cursor = false;
 	use_base = false;
-	mous=-1;
+	mous = -1;
 	pr = parent;
 	_name=NULL;
 	visible = false;
@@ -1053,8 +1053,8 @@ void gControl::connectParent()
   }
   
 	// BM: Widget has been created, so we can set its cursor if application is busy
-	if (gApplication::isBusy())
-    setMouse(-1);		
+	if (gApplication::isBusy() && mustUpdateCursor())
+    setMouse(mouse());		
 }
 
 GList* gControl::controlList()

@@ -344,7 +344,8 @@ static void cb_click(GtkComboBox *widget,gComboBox *data)
 			gtk_entry_set_text(GTK_ENTRY(data->entry), text);
 	}
 	
-	data->emit(SIGNAL(data->onClick));
+	if (!data->_no_click)
+		data->emit(SIGNAL(data->onClick));
 }
 
 gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
@@ -355,6 +356,7 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	onClick = NULL;
 	onActivate = NULL;
 	
+	_no_click = false;
 	sort = false;
 	entry = NULL;
 	
@@ -547,7 +549,9 @@ void gComboBox::setSorted(bool vl)
 
 void gComboBox::setText(const char *vl)
 {
+	_no_click = true;
 	setIndex(find(vl));
+	_no_click = false;
 	if (entry)
 		gTextBox::setText(vl);
 }

@@ -236,7 +236,7 @@ void gMainWindow::initWindow()
 
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
 
-	have_cursor = parent() == 0 && !_xembed;
+	have_cursor = true; //parent() == 0 && !_xembed;
 }
 
 gMainWindow::gMainWindow(int plug) : gContainer(NULL)

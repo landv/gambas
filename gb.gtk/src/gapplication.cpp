@@ -402,7 +402,7 @@ void gApplication::setBusy(bool b)
   {
     control = (gControl *)iter->data;
     
-    if (control->mouse() != -1 || control->have_cursor)
+    if (control->mustUpdateCursor())
     	control->setMouse(control->mouse());
     
     iter = g_list_next(iter);
