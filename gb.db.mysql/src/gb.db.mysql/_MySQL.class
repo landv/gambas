@@ -174,3 +174,9 @@ Private Function Routines_Read() As _Routines
   Return $Routines
 
 End
+
+Public Function CurrentTimestamp() As String
+
+  Return modMain.$Connection.Exec("SELECT CURRENT_TIMESTAMP")!CURRENT_TIMESTAMP
+
+End
