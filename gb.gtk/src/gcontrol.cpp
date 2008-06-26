@@ -819,11 +819,15 @@ void gControl::setFocus()
 	
 	if (win->isVisible())
 	{
+		//fprintf(stderr, "setFocus now %s\n", name());
 		//if (isVisible() && bufW > 0 && bufH > 0)
 		gtk_widget_grab_focus(widget);
 	}
 	else
+	{
+		//fprintf(stderr, "setFocus later %s\n", name());
 		win->focus = this;
+	}
 }
 
 bool gControl::hasFocus()

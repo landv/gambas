@@ -258,6 +258,8 @@ static gboolean sg_scroll(GtkWidget *widget,GdkEventScroll *event,gControl *data
 
 static gboolean sg_focus_In(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
+	//fprintf(stderr, "sg_focus_in: %s\n", data->name());
+
 	if (!gApplication::allEvents()) return false;
 
 	gMainWindow::setActiveWindow(data);
@@ -271,13 +273,16 @@ static gboolean sg_focus_In(GtkWidget *widget,GdkEventFocus *event,gControl *dat
 
 static gboolean sg_focus_Out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
+	//fprintf(stderr, "sg_focus_out: %s\n", data->name());
+	
 	if (!gApplication::allEvents()) return false;
 	
 	if (data->onFocusEvent) data->onFocusEvent(data,gEvent_FocusOut);
 	
 	gKey::setActiveControl(NULL);
-	gDesktop::setActiveControl(NULL);
-	gMainWindow::setActiveWindow(NULL);
+	//gDesktop::setActiveControl(NULL);
+	
+	//gMainWindow::setActiveWindow(NULL);
 	
 	return false;
 }

@@ -184,18 +184,15 @@ static void unload_class(CLASS *class)
 }
 
 
-void CLASS_exit(void)
+void CLASS_exit(bool silent)
 {
   int n, nc, nb;
   //CLASS_SYMBOL *csym;
   CLASS *class, *next;
-  bool in_error;
 
   #if DEBUG_LOAD
   fprintf(stderr, "\n------------------- CLASS_exit -------------------\n\n");
   #endif
-
-	in_error = ERROR_info.code > 0;
 
   #if DEBUG_LOAD
   fprintf(stderr, "Freeing auto-creatable objects...\n");
@@ -262,13 +259,13 @@ void CLASS_exit(void)
 
   if (n < nc)
   {
-    if (!in_error)
+    if (!silent)
       fprintf(stderr, "WARNING: circular references detected\n");
     for (class = _classes; class; class = class->next)
     {
       if (!CLASS_is_native(class) && class->state && !class->exit)
       {
-        if (!in_error)
+        if (!silent)
           fprintf(stderr, "%s (%d)\n", class->name, class->count);
         OBJECT_release(class, NULL);
         class->exit = TRUE;

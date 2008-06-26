@@ -195,24 +195,31 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
 
 static void post_show_event(void *_object)
 {
-	//qDebug("post_show_event");
   //qDebug("> post_show_event %s %p", GB.GetClassName(THIS), THIS);
-  if (THIS->shown)
-    return;
+  if (!THIS->shown)
+  {
+		//qDebug("EVENT_Open: %s %p %d", GB.GetClassName(THIS), THIS);
+	
+		GB.Raise(THIS, EVENT_Open, 0);
+		if (CWIDGET_test_flag(THIS, WF_CLOSED))
+			return;
+		// a move event is generated just after for real windows
+		//if (!THIS->toplevel)
+			GB.Raise(THIS, EVENT_Move, 0);
+		GB.Raise(THIS, EVENT_Resize, 0);
+		THIS->shown = true;
+		//qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
+		//qDebug("< post_show_event %p", THIS);
+		//GB.Unref(&_object);
+	}
 
-	//qDebug("EVENT_Open: %s %p %d", GB.GetClassName(THIS), THIS);
-
-  GB.Raise(THIS, EVENT_Open, 0);
-  if (CWIDGET_test_flag(THIS, WF_CLOSED))
-  	return;
-  // a move event is generated just after for real windows
-	//if (!THIS->toplevel)
-    GB.Raise(THIS, EVENT_Move, 0);
-  GB.Raise(THIS, EVENT_Resize, 0);
-  THIS->shown = true;
-  //qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
-  //qDebug("< post_show_event %p", THIS);
-  //GB.Unref(&_object);
+	if (THIS->focus)
+	{
+		//qDebug("post_show_event: setFocus (%s %p)", GB.GetClassName(THIS->focus), THIS->focus);
+		THIS->focus->widget->setFocus();
+		GB.Unref(POINTER(&THIS->focus));
+		THIS->focus = NULL;
+	}	
 }
 
 /*static void post_hide_event(void *_object)
@@ -2442,13 +2449,6 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
       
       if (THIS->shown)
       {
-				if (THIS->focus)
-				{
-					THIS->focus->widget->setFocus();
-					GB.Unref(POINTER(&THIS->focus));
-					THIS->focus = NULL;
-				}
-	
 				GB.Raise(THIS, EVENT_Show, 0);
 				if (!e->spontaneous())
 					CACTION_raise(THIS);

@@ -66,6 +66,8 @@ static void cb_hide (GtkWidget *widget, gMainWindow *data)
 {
 	data->emit(SIGNAL(data->onHide));
 	data->_not_spontaneous = false;
+	if (data == gDesktop::activeWindow())
+		gMainWindow::setActiveWindow(NULL);
 }
 
 static gboolean win_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
@@ -444,20 +446,24 @@ void gMainWindow::setVisible(bool vl)
 			parent()->performArrange();
 		}
 		
-		if (!focus)
+		/*if (!focus)
 		{
 			focus = findFirstFocus();
 			//fprintf(stderr, "findFirstFocus: %s\n", focus ? focus->name() : NULL); 
-		}
+		}*/
 		
 		if (focus)
 		{
+			//fprintf(stderr, "focus = %s\n", focus->name());
 			focus->setFocus();
 			focus = 0;
 		}
 	}
 	else
 	{
+		if (this == _active)
+			focus = gDesktop::activeControl();
+			
 		_not_spontaneous = visible;
 		gControl::setVisible(false);
 	}

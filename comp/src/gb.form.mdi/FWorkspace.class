@@ -305,7 +305,13 @@ PUBLIC SUB Activate(OPTIONAL hWindow AS Window)
       WITH $hCurrent.Window
         .Show
         .Raise
-        .SetFocus
+        ' DEBUG "ActiveControl: "; Application.ActiveControl
+        ' IF Application.ActiveControl THEN 
+        '   DEBUG Application.ActiveControl.Window;; $hCurrent.Window
+        ' ENDIF
+        IF NOT Application.ActiveControl OR IF Application.ActiveControl.Window <> $hCurrent.Window THEN
+          .SetFocus
+        ENDIF
       END WITH
       
       IF hOld AND IF hOld <> hWin THEN 

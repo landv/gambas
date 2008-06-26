@@ -99,13 +99,13 @@ static void my_exit(int ret)
 }
 
 
-static void main_exit()
+static void main_exit(bool silent)
 {
   SUBR_exit();
   OBJECT_exit();
   DEBUG_exit();
   WATCH_exit();
-  CLASS_exit();
+  CLASS_exit(silent);
   COMPONENT_exit();
   EXTERN_exit();
   PROJECT_exit();
@@ -225,12 +225,12 @@ int main(int argc, char **argv)
   		{
 				if (ERROR_info.code && ERROR_info.code != E_ABORT)
 					ERROR_print_at(stderr, TRUE, TRUE);
-				main_exit();
+				main_exit(TRUE);
 				_exit(1);
   		}
   		END_TRY
   		
-  		main_exit();
+  		main_exit(FALSE);
   		_exit(0);	
   	}
   	
@@ -321,14 +321,14 @@ int main(int argc, char **argv)
     	if (!_welcome)
     		DEBUG.Main(TRUE);
       DEBUG.Main(TRUE);
-      main_exit();
+      main_exit(TRUE);
       _exit(0);
 		}
 		else
 		{
 	    if (ERROR_info.code && ERROR_info.code != E_ABORT)
     		ERROR_print();
-    	main_exit();
+    	main_exit(FALSE);
     	_exit(1);
 		}
   }
@@ -368,13 +368,13 @@ int main(int argc, char **argv)
 			if (EXEC_debug)
 			{
 				DEBUG.Main(TRUE);
-				main_exit();
+				main_exit(TRUE);
 				_exit(0);
 			}
 			else
 			{
 				ERROR_print();
-				main_exit();
+				main_exit(TRUE);
 				_exit(1);
 			}
     }
@@ -382,7 +382,7 @@ int main(int argc, char **argv)
   END_TRY
 
   ERROR_info.code = 0;
-  main_exit();
+  main_exit(FALSE);
 
   if (MEMORY_count)
     fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
