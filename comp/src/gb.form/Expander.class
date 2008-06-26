@@ -1,87 +1,87 @@
 ' Gambas class file
 
-EXPORT 
+Export 
 
-INHERITS UserContainer
+Inherits UserContainer
 
-PUBLIC CONST _Properties AS String = "*,Text,TextFont,Animated,Hidden"
-PUBLIC CONST _DefaultEvent AS String = "Click"
+Public Const _Properties As String = "*,Text,TextFont,Animated,Hidden"
+Public Const _DefaultEvent As String = "Show"
 
-EVENT Show
-EVENT Hide
+Event Show
+Event Hide
 
-PROPERTY Hidden AS Boolean
-PROPERTY Text AS String
-PROPERTY TextFont AS Font
-PROPERTY Animated AS Boolean
+Property Hidden As Boolean
+Property Text As String
+Property TextFont As Font
+Property Animated As Boolean
 
-PRIVATE frmExpander AS FExpander
+Private frmExpander As FExpander
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  frmExpander = NEW FExpander(ME)
-  ME._Container = frmExpander.GetContainer()
+  frmExpander = New FExpander(Me)
+  Me._Container = frmExpander.GetContainer()
   
-END
+End
 
-PUBLIC SUB _Show()
+Public Sub _Show()
   
-  RAISE Show
+  Raise Show
   
-END
+End
 
-PUBLIC SUB _Hide()
+Public Sub _Hide()
   
-  RAISE Hide
+  Raise Hide
   
-END
+End
 
 
-PRIVATE FUNCTION Hidden_Read() AS Boolean
+Private Function Hidden_Read() As Boolean
 
-  RETURN frmExpander.GetHidden()
+  Return frmExpander.GetHidden()
 
-END
+End
 
-PRIVATE SUB Hidden_Write(Value AS Boolean)
+Private Sub Hidden_Write(Value As Boolean)
 
   frmExpander.SetHidden(Value)
 
-END
+End
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN frmExpander.GetText()
+  Return frmExpander.GetText()
 
-END
+End
 
-PRIVATE SUB Text_Write(Value AS String)
+Private Sub Text_Write(Value As String)
 
   frmExpander.SetText(Value)
 
-END
+End
 
-PRIVATE FUNCTION TextFont_Read() AS Font
+Private Function TextFont_Read() As Font
 
-  RETURN frmExpander.GetFont()
+  Return frmExpander.GetFont()
 
-END
+End
 
-PRIVATE SUB TextFont_Write(Value AS Font)
+Private Sub TextFont_Write(Value As Font)
 
   frmExpander.SetFont(Value)
 
-END
+End
 
-PRIVATE FUNCTION Animated_Read() AS Boolean
+Private Function Animated_Read() As Boolean
 
-  RETURN frmExpander.GetAnimated()
+  Return frmExpander.GetAnimated()
   
-END
+End
 
-PRIVATE SUB Animated_Write(Value AS Boolean)
+Private Sub Animated_Write(Value As Boolean)
 
   frmExpander.SetAnimated(Value)
 
 
-END
+End

@@ -310,7 +310,9 @@ Public Sub Activate(Optional hWindow As Window)
       With $hCurrent.Window
         .Show
         .Raise
-        .SetFocus
+        If Not Application.ActiveControl Or If Application.ActiveControl.Window <> $hCurrent.Window Then
+          .SetFocus
+        Endif
       End With
       
       If hOld And If hOld <> hWin Then 

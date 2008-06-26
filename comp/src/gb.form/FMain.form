@@ -6,11 +6,15 @@
   Icon = Picture["icon:/small/gambas"]
   Spacing = 8
   Padding = 8
-  { DatePicker1 DatePicker
-    MoveScaled(26,8,30,4)
+  { TextBox1 TextBox
+    MoveScaled(22,25,24,3)
+    Text = ("TextBox1")
+  }
+  { Label1 Label
+    MoveScaled(19,5,32,7)
+    Text = ("Just press the Tab key.\nA message should appear")
   }
   { ValueBox1 ValueBox
-    MoveScaled(27,19,30,4)
-    Type = ValueBox.Date
+    MoveScaled(19,16,30,4)
   }
 }

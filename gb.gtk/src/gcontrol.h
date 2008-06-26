@@ -182,6 +182,7 @@ public:
 	void initAll(gContainer *pr);
 	void realize(bool make_frame = false);
 	void updateGeometry();
+	bool mustUpdateCursor() { return mouse() != -1 || have_cursor; }
 	
 	bool noInputMethod() { return no_input_method; }
 	

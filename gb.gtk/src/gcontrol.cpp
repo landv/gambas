@@ -1053,8 +1053,8 @@ void gControl::connectParent()
   }
   
 	// BM: Widget has been created, so we can set its cursor if application is busy
-	if (gApplication::isBusy())
-    setMouse(-1);		
+	if (gApplication::isBusy() && mustUpdateCursor())
+    setMouse(mouse());		
 }
 
 GList* gControl::controlList()

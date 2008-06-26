@@ -44,6 +44,7 @@ public:
 	bool sort;
 	GtkCellRenderer *cell;
 	virtual int minimumHeight();
+	bool _no_click;
 };
 
 #endif

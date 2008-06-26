@@ -175,6 +175,8 @@ Private Sub InitUser()
   Dim iInd As Integer
   Dim hPict As Picture
   Dim W, H As Integer
+  Dim nTask As Integer
+  Dim bTrans As Boolean
   
   hFile = Open "support.txt" 
   
@@ -188,7 +190,8 @@ Private Sub InitUser()
     hUser = New CUser
     hUser.Name = Trim(Mid$(sLine, iPos + 1))
     hUser.Score = CInt(Left$(sLine, iPos - 1))
-    iGray = Int(Rnd(0, 128))
+    'iGray = Int(Rnd(0, 128))
+    iGray = 64
     hUser.Color = Color.RGB(iGray, iGray, iGray)
     $aUser.Add(hUser)
     
@@ -212,22 +215,25 @@ Private Sub InitUser()
       
       Line Input #hFile, sLine ' Mail
       Line Input #hFile, sLine ' country
-      
+
+      nTask = 0
+      bTrans = False
       Do
         Line Input #hFile, sLine
         sLine = Trim(sLine)
         If Not sLine Then Break
-        If InStr(sLine, "translation") = 0 Then Break
+        Inc nTask
+        If InStr(sLine, "translation") = 0 Then bTrans = True
       Loop
       
-      If sLine Then
-        hUser.Score = 10
-        hUser.Color = Color.HSV(Int(Rnd(36)) * 10, Int(Rnd(128, 256)), 255)
-        hUser.Bold = True
-      Else
-        hUser.Score = 5
+      If nTask = 1 And If bTrans Then
+        hUser.Score = 6
         iGray = Int(Rnd(64, 128))
         hUser.Color = Color.RGB(&H95 * iGray / 128, &HC1 * iGray / 128, &HE6 * iGray / 128)
+        hUser.Bold = True
+      Else
+        hUser.Score = 12
+        hUser.Color = Color.HSV(Int(Rnd(36)) * 10, Int(Rnd(192, 256)), 255)
         hUser.Bold = True
       Endif
       
@@ -253,11 +259,15 @@ Private Sub InitUser()
       Draw.Begin(hPict)
       Draw.Font.Bold = .Bold
       Draw.Font.Size = GetFontSize(hUser)
-      'Draw.ForeColor = Color.White
-      'Draw.Text(.Name, 0, 0, W, H)
-      'Draw.Text(.Name, 2, 0, W, H)
-      'Draw.Text(.Name, 0, 2, W, H)
-      'Draw.Text(.Name, 2, 2, W, H)
+      
+      ' If .Bold Then
+      '   Draw.ForeColor = Color.Black
+      '   Draw.Text(.Name, 0, 0, W, H)
+      '   Draw.Text(.Name, 2, 0, W, H)
+      '   Draw.Text(.Name, 0, 2, W, H)
+      '   Draw.Text(.Name, 2, 2, W, H)
+      ' Endif
+      
       Draw.ForeColor = .Color 'Color.Black
       Draw.Text(.Name, 0, 0, W, H)
       Draw.End
@@ -348,11 +358,15 @@ Private Sub DrawText(iIndex As Integer) As Boolean
       H = Draw.TextHeight(.Name)
       X = .XD 'dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP
       Y = .YD 'dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP
-      'Draw.ForeColor = Color.White
-      'Draw.Text(.Name, X + 1, Y + 1, W, H)
-      'Draw.Text(.Name, X + 1, Y - 1, W, H)
-      'Draw.Text(.Name, X - 1, Y + 1, W, H)
-      'Draw.Text(.Name, X - 1, Y - 1, W, H)
+      
+      ' If .Bold Then
+      '   Draw.ForeColor = Color.Black
+      '   Draw.Text(.Name, X + 1, Y + 1, W, H)
+      '   Draw.Text(.Name, X + 1, Y - 1, W, H)
+      '   Draw.Text(.Name, X - 1, Y + 1, W, H)
+      '   Draw.Text(.Name, X - 1, Y - 1, W, H)
+      ' Endif
+      
       eBlend = (iStep - NSTEP) / (9 * NSTEP)
       Draw.ForeColor = Color.Mix(.Color, Color.White, eBlend)
       'Draw.ForeColor = Color.RGB(Color[.Color].Red + (&HFF - Color[.Color].Red) * eBlend, Color[.Color].Green + (&HFF - Color[.Color].Green) * eBlend, Color[.Color].Blue + (&HFF - Color[.Color].Blue) * eBlend)

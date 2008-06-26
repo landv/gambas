@@ -28,6 +28,7 @@
 
 #include "widgets.h"
 #include "widgets_private.h"
+#include "gb.form.font.h"
 
 #ifndef GAMBAS_DIRECTFB
 #ifdef GDK_WINDOWING_X11
@@ -264,9 +265,8 @@ int gDesktop::scale()
 			
 		fm = pango_context_get_metrics (ct,ft,lng);
 		
-		//val = (pango_font_metrics_get_ascent(fm) + pango_font_metrics_get_descent(fm)) / PANGO_SCALE;
-		val = pango_font_metrics_get_ascent(fm) / PANGO_SCALE;
-		val = (val + 1) / 2;
+		val = 1 + (pango_font_metrics_get_ascent(fm) + pango_font_metrics_get_descent(fm)) / PANGO_SCALE;
+		val = GET_DESKTOP_SCALE(val);
 		
 		pango_font_metrics_unref(fm);
 		g_object_unref(G_OBJECT(ct));

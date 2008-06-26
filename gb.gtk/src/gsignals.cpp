@@ -277,7 +277,7 @@ static gboolean sg_focus_Out(GtkWidget *widget,GdkEventFocus *event,gControl *da
 	
 	gKey::setActiveControl(NULL);
 	gDesktop::setActiveControl(NULL);
-	gMainWindow::setActiveWindow(NULL);
+	//gMainWindow::setActiveWindow(NULL);
 	
 	return false;
 }
