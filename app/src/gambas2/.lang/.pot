@@ -250,7 +250,7 @@ msgid ""
 msgstr ""
 
 #: Design.module:341 FAbout.class:302 FColorChooser.class:197
-#: FCommit.class:300 FCreateFile.class:822 FFontChooser.class:80
+#: FCommit.class:286 FCreateFile.class:822 FFontChooser.class:80
 #: FGotoLine.class:56 FList.class:167 FMain.class:2395
 #: FMakeExecutable.class:146 FMenu.class:1072 FNewTranslation.class:64
 #: FOpenProject.class:403 FProjectEnv.class:325 FPropertyProject.class:243
@@ -333,9 +333,9 @@ msgstr ""
 msgid "Free"
 msgstr ""
 
-#: FColorChooser.class:203 FCommit.class:306 FConflict.class:192
+#: FColorChooser.class:203 FCommit.class:292 FConflict.class:192
 #: FCreateFile.class:828 FDebugInfo.class:344 FEditor.class:2055
-#: FFindList.class:159 FFind.class:115 FFontChooser.class:86 FForm.class:2509
+#: FFindList.class:159 FFind.class:115 FFontChooser.class:86 FForm.class:2510
 #: FGotoLine.class:62 FIconEditor.class:1387 FList.class:107 FMain.class:203
 #: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1078
 #: FNewTranslation.class:70 FOpenProject.class:409 FProjectEnv.class:331
@@ -357,64 +357,60 @@ msgstr ""
 msgid "The project could not be committed."
 msgstr ""
 
-#: FCommit.class:154
+#: FCommit.class:147
 msgid "Project commit"
 msgstr ""
 
-#: FCommit.class:163
+#: FCommit.class:156
 msgid "Authentification"
 msgstr ""
 
-#: FCommit.class:172
+#: FCommit.class:165
 msgid "User"
 msgstr ""
 
-#: FCommit.class:188
+#: FCommit.class:181
 msgid "Password"
 msgstr ""
 
-#: FCommit.class:202
+#: FCommit.class:195
 msgid "Changes description"
 msgstr ""
 
-#: FCommit.class:215 FConflict.class:328 FEditor.class:2776 FForm.class:2919
+#: FCommit.class:208 FConflict.class:328 FEditor.class:2776 FForm.class:2920
 #: FIconEditor.class:2161 FOutput.class:444 FTextEditor.class:778
 msgid "Cut"
 msgstr ""
 
-#: FCommit.class:222 FConflict.class:335 FEditor.class:2782 FForm.class:2926
+#: FCommit.class:215 FConflict.class:335 FEditor.class:2782 FForm.class:2927
 #: FIconEditor.class:2170 FOutput.class:451 FTextEditor.class:784
 msgid "Copy"
 msgstr ""
 
-#: FCommit.class:229 FConflict.class:342 FEditor.class:2788 FForm.class:2933
+#: FCommit.class:222 FConflict.class:342 FEditor.class:2788 FForm.class:2934
 #: FIconEditor.class:2179 FOutput.class:458 FTextEditor.class:790
 msgid "Paste"
 msgstr ""
 
-#: FCommit.class:236 FConflict.class:349 FEditor.class:2760 FForm.class:3155
+#: FCommit.class:229 FConflict.class:349 FEditor.class:2760 FForm.class:3156
 #: FIconEditor.class:2143 FOption.class:872 FOutput.class:426
 #: FTextEditor.class:762
 msgid "Undo"
 msgstr ""
 
-#: FCommit.class:243 FConflict.class:356 FEditor.class:2766 FForm.class:3164
+#: FCommit.class:236 FConflict.class:356 FEditor.class:2766 FForm.class:3165
 #: FOutput.class:433 FTextEditor.class:768
 msgid "Redo"
 msgstr ""
 
-#: FCommit.class:250 FConflict.class:363 FEditor.class:2959
+#: FCommit.class:243 FConflict.class:363 FEditor.class:2959
 #: FTextEditor.class:932
 msgid "Indent"
 msgstr ""
 
-#: FCommit.class:257 FConflict.class:370 FEditor.class:2966
+#: FCommit.class:250 FConflict.class:370 FEditor.class:2966
 #: FTextEditor.class:939
 msgid "Unindent"
-msgstr ""
-
-#: FCommit.class:264
-msgid "Clean up"
 msgstr ""
 
 #: FConflict.class:25
@@ -541,7 +537,7 @@ msgstr ""
 msgid "Class"
 msgstr ""
 
-#: FCreateFile.class:587 FEditor.class:2912 FForm.class:2840 FInfo.class:84
+#: FCreateFile.class:587 FEditor.class:2912 FForm.class:2841 FInfo.class:84
 msgid "Form"
 msgstr ""
 
@@ -844,7 +840,7 @@ msgid ""
 "All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2055 FForm.class:2509 FIconEditor.class:2026
+#: FEditor.class:2055 FForm.class:2510 FIconEditor.class:2026
 #: FTextEditor.class:591 FTranslate.class:642
 msgid "Reload"
 msgstr ""
@@ -929,7 +925,7 @@ msgstr ""
 msgid "Vertical split"
 msgstr ""
 
-#: FEditor.class:2884 FForm.class:3065 FIconEditor.class:1406
+#: FEditor.class:2884 FForm.class:3066 FIconEditor.class:1406
 #: FTextEditor.class:865
 msgid "Save"
 msgstr ""
@@ -1022,170 +1018,170 @@ msgstr ""
 msgid "Bad form file"
 msgstr ""
 
-#: FForm.class:2509
+#: FForm.class:2510
 msgid ""
 "The form has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FForm.class:2844 FIconEditor.class:2249
+#: FForm.class:2845 FIconEditor.class:2249
 msgid "Select"
 msgstr ""
 
-#: FForm.class:2849
+#: FForm.class:2850
 msgid "Event"
 msgstr ""
 
-#: FForm.class:2856
+#: FForm.class:2857
 msgid "Open code"
 msgstr ""
 
-#: FForm.class:2867
+#: FForm.class:2868
 msgid "Move tab"
 msgstr ""
 
-#: FForm.class:2872
+#: FForm.class:2873
 msgid "&First"
 msgstr ""
 
-#: FForm.class:2879 FTips.class:220
+#: FForm.class:2880 FTips.class:220
 msgid "&Previous"
 msgstr ""
 
-#: FForm.class:2886 FMenu.class:808 FTips.class:226
+#: FForm.class:2887 FMenu.class:808 FTips.class:226
 msgid "&Next"
 msgstr ""
 
-#: FForm.class:2893
+#: FForm.class:2894
 msgid "&Last"
 msgstr ""
 
-#: FForm.class:2904
+#: FForm.class:2905
 msgid "Select all"
 msgstr ""
 
-#: FForm.class:2909
+#: FForm.class:2910
 msgid "Unselect all"
 msgstr ""
 
-#: FForm.class:2940 FMain.class:203 FTranslate.class:548
+#: FForm.class:2941 FMain.class:203 FTranslate.class:548
 msgid "Delete"
 msgstr ""
 
-#: FForm.class:2950
+#: FForm.class:2951
 msgid "Arrangement"
 msgstr ""
 
-#: FForm.class:2954
+#: FForm.class:2955
 msgid "Bring to foreground"
 msgstr ""
 
-#: FForm.class:2961
+#: FForm.class:2962
 msgid "Send to background"
 msgstr ""
 
-#: FForm.class:2972
+#: FForm.class:2973
 msgid "Horizontal"
 msgstr ""
 
-#: FForm.class:2979
+#: FForm.class:2980
 msgid "Rows"
 msgstr ""
 
-#: FForm.class:2986
+#: FForm.class:2987
 msgid "Vertical"
 msgstr ""
 
-#: FForm.class:2993
+#: FForm.class:2994
 msgid "Columns"
 msgstr ""
 
-#: FForm.class:3000
+#: FForm.class:3001
 msgid "Alignment"
 msgstr ""
 
-#: FForm.class:3004
+#: FForm.class:3005
 msgid "Align to &left"
 msgstr ""
 
-#: FForm.class:3010
+#: FForm.class:3011
 msgid "Align to &right"
 msgstr ""
 
-#: FForm.class:3016
+#: FForm.class:3017
 msgid "Align to &top"
 msgstr ""
 
-#: FForm.class:3022
+#: FForm.class:3023
 msgid "Align to &bottom"
 msgstr ""
 
-#: FForm.class:3032
+#: FForm.class:3033
 msgid "Same &width"
 msgstr ""
 
-#: FForm.class:3038
+#: FForm.class:3039
 msgid "Same &height"
 msgstr ""
 
-#: FForm.class:3049
+#: FForm.class:3050
 msgid "Menu editor..."
 msgstr ""
 
-#: FForm.class:3100
+#: FForm.class:3101
 msgid "Code"
 msgstr ""
 
-#: FForm.class:3108
+#: FForm.class:3109
 msgid "Lock form"
 msgstr ""
 
-#: FForm.class:3171 FMenu.class:26
+#: FForm.class:3172 FMenu.class:26
 msgid "Menu editor"
 msgstr ""
 
-#: FForm.class:3179
+#: FForm.class:3180
 msgid "Toggle grid"
 msgstr ""
 
-#: FForm.class:3209
+#: FForm.class:3210
 msgid "Align to top"
 msgstr ""
 
-#: FForm.class:3217
+#: FForm.class:3218
 msgid "Align to bottom"
 msgstr ""
 
-#: FForm.class:3225
+#: FForm.class:3226
 msgid "Align to left"
 msgstr ""
 
-#: FForm.class:3233
+#: FForm.class:3234
 msgid "Align to right"
 msgstr ""
 
-#: FForm.class:3241
+#: FForm.class:3242
 msgid "Same width"
 msgstr ""
 
-#: FForm.class:3249
+#: FForm.class:3250
 msgid "Same height"
 msgstr ""
 
-#: FForm.class:3294
+#: FForm.class:3295
 msgid "Move tab first"
 msgstr ""
 
-#: FForm.class:3302
+#: FForm.class:3303
 msgid "Move tab left"
 msgstr ""
 
-#: FForm.class:3310
+#: FForm.class:3311
 msgid "Move tab right"
 msgstr ""
 
-#: FForm.class:3318
+#: FForm.class:3319
 msgid "Move tab last"
 msgstr ""
 
@@ -3116,6 +3112,14 @@ msgstr ""
 
 #: Package.module:1110
 msgid "'tar' has returned the following error code:"
+msgstr ""
+
+#: .project:1
+msgid "Gambas 2"
+msgstr ""
+
+#: .project:2
+msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
 #: Project.module:121
