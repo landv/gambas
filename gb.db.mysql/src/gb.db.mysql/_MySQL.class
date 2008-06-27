@@ -175,8 +175,9 @@ Private Function Routines_Read() As _Routines
 
 End
 
-Public Function CurrentTimestamp() As String
+Public Function CurrentTimestamp(Optional {Format} As String) As String
 
-  Return modMain.$Connection.Exec("SELECT CURRENT_TIMESTAMP")!CURRENT_TIMESTAMP
+  If Not {Format} Then {Format} = "yyyy-mm-dd hh:nn:ss"
+  Return Format(modMain.$Connection.Exec("SELECT CURRENT_TIMESTAMP()")!CURRENT_TIMESTAMP, {Format})
 
 End
