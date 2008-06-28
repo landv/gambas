@@ -178,6 +178,6 @@ End
 Public Function CurrentTimestamp(Optional {Format} As String) As String
 
   If Not {Format} Then {Format} = "yyyy-mm-dd hh:nn:ss"
-  Return Format(modMain.$Connection.Exec("SELECT CURRENT_TIMESTAMP()")!CURRENT_TIMESTAMP, {Format})
+  Return Format(modMain.$Connection.Exec("SELECT CURRENT_TIMESTAMP")!CURRENT_TIMESTAMP, {Format})
 
 End
