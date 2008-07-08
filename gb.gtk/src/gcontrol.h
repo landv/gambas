@@ -83,6 +83,7 @@ public:
 
 	virtual gFont *font();
 	virtual void setFont(gFont *ft);
+	bool ownFont() { return fnt != 0; }
 	
 	int scrollX();
 	int scrollY();

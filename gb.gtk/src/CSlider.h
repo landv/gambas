@@ -40,28 +40,24 @@ extern GB_DESC CScrollBarDesc[];
 #else
 
 #define THIS    ((CSLIDER *)_object)
-#define SLIDER  ((gSlider*)THIS->widget)
-#define SBAR ((gScrollBar *)THIS->widget)
+#define SLIDER  ((gSlider*)THIS->ob.widget)
+#define SBAR ((gScrollBar *)THIS->ob.widget)
 
 #endif
 
-typedef  struct
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
+typedef  
+	struct
+	{
+		CWIDGET ob;
+	}  
+	CSLIDER;
 
-}  CSLIDER;
-
-typedef  struct
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-
-}  CSCROLLBAR;
-
-
+typedef  
+	struct
+	{
+		CWIDGET ob;
+	}  
+	CSCROLLBAR;
 
 
 #endif

@@ -39,18 +39,15 @@ extern GB_DESC CSpinBoxDesc[];
 #else
 
 #define THIS    ((CSPINBOX *)_object)
-#define SPINBOX  ((gSpinBox*)THIS->widget)
+#define SPINBOX  ((gSpinBox*)THIS->ob.widget)
 
 #endif
 
-typedef  struct
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-
-}  CSPINBOX;
-
-
+typedef  
+	struct
+	{
+		CWIDGET ob;
+	}  
+	CSPINBOX;
 
 #endif

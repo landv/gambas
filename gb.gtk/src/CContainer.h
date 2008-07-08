@@ -46,11 +46,11 @@ extern GB_DESC CUserContainerDesc[];
 
 #define THIS ((CCONTAINER *)_object)
 #define THIS_UC ((CUSERCONTROL *)_object)
-#define WIDGET ((gContainer*)THIS->widget)
-#define PANEL ((gPanel *)(THIS->widget))
+#define WIDGET ((gContainer*)THIS->ob.widget)
+#define PANEL ((gPanel *)(THIS->ob.widget))
 
 #define THIS_CONT (THIS_UC->container)
-#define WIDGET_CONT (THIS_UC->container->widget)
+#define WIDGET_CONT ((gContainer *)THIS_UC->container->ob.widget)
 
 #endif
 
@@ -58,9 +58,7 @@ extern GB_DESC CUserContainerDesc[];
 typedef 
   struct
   {
-		GB_BASE ob;
-		gContainer *widget;
-		GB_VARIANT_VALUE tag;
+  	CWIDGET ob;
   }  
   CCONTAINER;
 

@@ -37,6 +37,7 @@
 typedef
 	struct {
 		gDraw *dr;
+		CFONT *font;
 		}
 	GB_DRAW_EXTRA;
 
@@ -68,11 +69,12 @@ static int begin(GB_DRAW *d)
 	
 	init();
 	EXTRA(d)->dr = dr = new gDraw();
+	EXTRA(d)->font = NULL;
 	
 	if (GB.Is(d->device, CLASS_Window))
-		dr->connect(((CWINDOW *)d->device)->widget);
+		dr->connect(((CWINDOW *)d->device)->ob.widget);
 	else if (GB.Is(d->device, CLASS_DrawingArea))
-		dr->connect(((CDRAWINGAREA *)d->device)->widget);
+		dr->connect(((CDRAWINGAREA *)d->device)->ob.widget);
 	else if (GB.Is(d->device, CLASS_Picture))
 	{
 		gPicture *pic = ((CPICTURE*)d->device)->picture;
@@ -93,6 +95,8 @@ static int begin(GB_DRAW *d)
 static void end(GB_DRAW *d)
 {
 	gDraw *dr = DR(d);
+	GB.Unref(POINTER(&(EXTRA(d)->font)));
+	EXTRA(d)->font = NULL;
 	delete dr;
 }
 
@@ -127,12 +131,19 @@ static void apply_font(gFont *font, void *object = 0)
 
 static GB_FONT get_font(GB_DRAW *d)
 {
-	return CFONT_create(DR(d)->font(), apply_font);
+	if (!EXTRA(d)->font)
+	{
+		EXTRA(d)->font = CFONT_create(DR(d)->font()->copy(), apply_font);
+		GB.Ref(EXTRA(d)->font);
+	}
+		
+	return (GB_FONT)EXTRA(d)->font;
 }
 
 static void set_font(GB_DRAW *d, GB_FONT font)
 {
-	apply_font(((CFONT*)font)->font);
+	if (font)
+		apply_font(((CFONT*)font)->font);
 }
 
 static int is_inverted(GB_DRAW *d)

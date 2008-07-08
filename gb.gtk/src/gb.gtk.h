@@ -58,4 +58,13 @@ typedef
 	}  
 	GTK_INTERFACE;
 
+typedef
+	struct {
+	  GB_BASE ob;
+	  void *widget;
+		GB_VARIANT_VALUE tag;
+		void *font;
+	}
+	GTK_CONTROL;
+
 #endif

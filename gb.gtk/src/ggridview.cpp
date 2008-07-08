@@ -1520,8 +1520,7 @@ gPicture *gGridView::itemPicture(int row, int col)
 
 gFont *gGridView::itemFont(int row, int col)
 {
-	gFont *f = render->getFieldFont(col, row);
-	return f ? f : font();
+	return render->getFieldFont(col, row);
 }
 
 bool gGridView::itemSelected(int row,int col)

@@ -37,9 +37,7 @@
 typedef  
 	struct
 	{
-		GB_BASE ob;
-		gControl *widget;
-		GB_VARIANT_VALUE tag;
+		CWIDGET ob;
 		int ret;
 		unsigned embed : 1;
 	}  
@@ -61,7 +59,7 @@ extern CWINDOW *CWINDOW_Active;
 #else
 
 #define THIS ((CWINDOW *)_object)
-#define WINDOW ((gMainWindow*)(THIS->widget))
+#define WINDOW ((gMainWindow*)THIS->ob.widget)
   
 #endif
 

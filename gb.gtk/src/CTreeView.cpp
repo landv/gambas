@@ -200,9 +200,7 @@ static void cb_remove(gTreeView *sender, char *key)
 
 static void create_control(CTREEVIEW *_object, void *parent, bool list)
 {
-	CCONTAINER *cont = (CCONTAINER*)GetContainer((CWIDGET*)parent);
-
-	InitControl(new gTreeView(cont->widget, list), (CWIDGET*)THIS);
+	InitControl(new gTreeView(CONTAINER(parent), list), (CWIDGET*)THIS);
 
 	WIDGET->onSelect = raise_select;
 	WIDGET->onActivate = raise_activate;

@@ -47,21 +47,22 @@ extern GB_DESC CPluginDesc[];
 
 #endif
 
+typedef  
+	struct
+	{
+	  GB_BASE ob;
+	  gControl *widget;
+		GB_VARIANT_VALUE tag;
+		void *font;
+	}  
+	CWIDGET;
 
 typedef  struct
 {
   GB_BASE ob;
   gControl *widget;
 	GB_VARIANT_VALUE tag;
-
-}  CWIDGET;
-
-typedef  struct
-{
-  GB_BASE ob;
-  gControl *widget;
-	GB_VARIANT_VALUE tag;
-
+	void *font;
 }  CPLUGIN;
 
 

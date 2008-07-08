@@ -44,17 +44,15 @@ extern GB_DESC CTextEditFormatDesc[];*/
 #else
 
 #define THIS ((CTEXTAREA *)_object)
-#define TEXTAREA ((gTextArea *)((CWIDGET *)_object)->widget)
-#define WIDGET ((gTextArea *)((CWIDGET *)_object)->widget)
+#define TEXTAREA ((gTextArea *)THIS->ob.widget)
+#define WIDGET ((gTextArea *)THIS->ob.widget)
 
 #endif
 
 typedef  
 	struct 
 	{
-		GB_BASE ob;
-		gControl *widget;
-		GB_VARIANT_VALUE tag;
+		CWIDGET ob;
 	}
 	CTEXTAREA;
 

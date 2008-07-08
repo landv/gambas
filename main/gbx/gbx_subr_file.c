@@ -499,9 +499,10 @@ void SUBR_dir()
   {
     if (!LOCAL_is_UTF8)
     {
-     // TODO: If STRING_conv fails, there are memory leaks.
-      STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, "UTF-8", TRUE);
-      STRING_ref(str);
+      if (STRING_conv(&str, pattern, len_pattern, LOCAL_encoding, "UTF-8", FALSE))
+	      STRING_new(&str, pattern, len_pattern);
+	    else
+      	STRING_ref(str);
     }
     else
       STRING_new(&str, pattern, len_pattern);
@@ -529,8 +530,10 @@ static void found_file(const char *path)
 
   if (!LOCAL_is_UTF8)
   {
-    STRING_conv(&str, path, len, LOCAL_encoding, "UTF-8", TRUE);
-    STRING_ref(str);
+    if (STRING_conv(&str, path, len, LOCAL_encoding, "UTF-8", FALSE))
+	    STRING_new(&str, path, len);
+	  else
+  	  STRING_ref(str);
   }
   else
     STRING_new(&str, path, len);

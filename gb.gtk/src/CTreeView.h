@@ -49,14 +49,14 @@ extern GB_DESC CColumnViewDesc[];
 #else
 
 #define THIS ((CTREEVIEW *)_object)
-#define WIDGET ((gTreeView*)THIS->widget.widget)
+#define WIDGET ((gTreeView*)THIS->ob.widget)
 
 #endif
 
 typedef 
   struct 
   {
-    CWIDGET widget;
+    CWIDGET ob;
     char *item;
     char *save;
     int compare;

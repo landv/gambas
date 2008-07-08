@@ -227,7 +227,10 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEWITEM_picture)
 
 	if (READ_PROPERTY)
-		GB.ReturnObject(GRIDVIEW->itemPicture(THIS->row, THIS->col));
+	{
+		gPicture *pic = GRIDVIEW->itemPicture(THIS->row, THIS->col);
+		GB.ReturnObject(pic ? pic->getTagValue() : 0);
+	}
 	else
 	{
 		CPICTURE *pict = (CPICTURE *)VPROP(GB_OBJECT);
@@ -239,10 +242,21 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEWITEM_font)
 
 	if (READ_PROPERTY)
-		GB.ReturnObject(GRIDVIEW->itemFont(THIS->row, THIS->col));
+	{
+		gFont *f = GRIDVIEW->itemFont(THIS->row, THIS->col);
+		if (!f)
+		{
+			CFONT *font = CFONT_create(GRIDVIEW->font()->copy());
+			GRIDVIEW->setItemFont(THIS->row, THIS->col, font->font);
+			f = GRIDVIEW->itemFont(THIS->row, THIS->col);
+		}
+		
+		GB.ReturnObject(f ? f->getTagValue() : 0);
+	}
 	else
 	{
 		CFONT *font = (CFONT *)VPROP(GB_OBJECT);
+		//fprintf(stderr, "%s\n", font ? font->font->toString() : 0);
 		GRIDVIEW->setItemFont(THIS->row, THIS->col, font ? font->font : 0);
 	}
 

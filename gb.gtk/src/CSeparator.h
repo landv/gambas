@@ -38,20 +38,17 @@ extern GB_DESC CSeparatorDesc[];
 #else
 
 #define THIS ((CSEPARATOR *)_object)
-#define SEPARATOR ((gSeparator*)THIS->widget)
+#define SEPARATOR ((gSeparator*)THIS->ob.widget)
 
 #define CSEPARATOR_PROPERTIES CWIDGET_PROPERTIES 
 
-
-
 #endif 
 
-typedef  struct 
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-
-}  CSEPARATOR;
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+	}  
+	CSEPARATOR;
 
 #endif

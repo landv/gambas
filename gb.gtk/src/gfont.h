@@ -3,7 +3,7 @@
 
 #include "gshare.h"
 
-class gFont : gShare
+class gFont : public gShare
 {
 public:
 	gFont();

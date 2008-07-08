@@ -35,7 +35,7 @@ DECLARE_EVENT(EVENT_Resize);
 
 static void send_event(CSPLITTER *_object)
 {
-	if (!THIS->widget)
+	if (!WIDGET)
 		return;
 	GB.Raise(THIS, EVENT_Resize, 0);
 	THIS->event = FALSE;

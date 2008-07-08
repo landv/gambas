@@ -795,11 +795,13 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 	ya = gt_from_alignment(data->alignment, true);
 	
 	g_object_set(G_OBJECT(txt),
-		"font-desc", sf->style->font_desc,
+		/*"font-desc", data->font ? data->font->desc() : sf->style->font_desc,*/
 		"xalign", xa,
 		"yalign", ya,
-		(void *)NULL);
+		NULL);
 		
+	gt_set_cell_renderer_text_from_font(txt, data->font ? data->font : view->font());
+	
 	if (sel)
 	{
 		st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);

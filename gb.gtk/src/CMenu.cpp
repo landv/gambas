@@ -106,12 +106,12 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 	
 	if (GB.Is(parent,CLASS_Window))
 	{
-		if ( !((CWINDOW*)parent)->widget )
+		if (!((CWINDOW*)parent)->ob.widget)
 		{
 			GB.Error("Invalid window");
 			return;
 		}
-		THIS->widget=new gMenu( (gMainWindow*)((CWINDOW*)parent)->widget,hidden);
+		THIS->widget=new gMenu( (gMainWindow*)((CWINDOW*)parent)->ob.widget,hidden);
 		MENU->hFree=(void*)THIS;
 		MENU->onFinish=cb_finish;
 		MENU->onShow=cb_show;

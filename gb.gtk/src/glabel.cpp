@@ -297,12 +297,9 @@ void gLabel::setAlignment(int al)
 
 void gLabel::setFont(gFont *ft)
 {
-	PangoFontDescription *desc = pango_context_get_font_description(ft->ct);
-
-	pango_layout_set_font_description(layout,desc);
-	pango_layout_context_changed(layout);
-	
 	gControl::setFont(ft);
+	
+	gt_set_layout_from_font(layout, font());
 	
 	updateSize();
   refresh();

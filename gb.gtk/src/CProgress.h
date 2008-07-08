@@ -38,19 +38,18 @@ extern GB_DESC CProgressDesc[];
 #else
 
 #define THIS    ((CPROGRESS *)_object)
-#define PB  ((gProgressBar *)THIS->widget)
+#define PB  ((gProgressBar *)THIS->ob.widget)
 
 
 #define CPROGRESS_PROPERTIES CWIDGET_PROPERTIES ",Label"
 
 #endif
 
-typedef  struct 
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-
-}  CPROGRESS;
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+	}  
+	CPROGRESS;
 
 #endif

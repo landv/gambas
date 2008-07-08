@@ -42,31 +42,25 @@ extern GB_DESC CMovieBoxDesc[];
 
 #define THIS ((CPICTUREBOX *)_object)
 #define MTHIS ((CMOVIEBOX *)_object)
-#define PBOX ((gPictureBox*)THIS->widget)
-#define MBOX ((gMovieBox*)MTHIS->widget)
+#define PBOX ((gPictureBox*)THIS->ob.widget)
+#define MBOX ((gMovieBox*)MTHIS->ob.widget)
 
 #endif
 
-typedef  struct 
-{
-	GB_BASE ob;
-	gControl *widget;
-	GB_VARIANT_VALUE tag;
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+		CPICTURE *picture;
+	} 
+	CPICTUREBOX;
 
-	CPICTURE *picture;
-
-} CPICTUREBOX;
-
-typedef  struct 
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-	
-	char *path;
-
-} CMOVIEBOX;
-
-
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+		char *path;
+	} 
+	CMOVIEBOX;
 
 #endif

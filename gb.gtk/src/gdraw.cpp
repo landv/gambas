@@ -136,7 +136,7 @@ void gDraw::connect(gControl *wid)
 	clear();
 	reset();
 	
-	ft = new gFont(wid->widget); 
+	ft = wid->font()->copy(); //ft = new gFont(wid->widget); 
 	
 	_width = wid->width();
 	_height = wid->height();
@@ -948,7 +948,8 @@ gFont* gDraw::font()
 
 void gDraw::setFont(gFont *f)
 {
-  gFont::set(&ft, f->copy());
+	//if (f != ft)
+	  gFont::set(&ft, f->copy());
 }
 
 
@@ -1058,6 +1059,8 @@ void gDraw::drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align)
 		if (drm) gdk_draw_rectangle (drm, gcm, true, x + OffX, y + OffY, tw, th);	
 		setForeground(buf);
 	}
+	
+	gt_set_layout_from_font(ly, font());
 	
 	gdk_draw_layout(dr, gc, x + OffX, y + OffY, ly);
 	
