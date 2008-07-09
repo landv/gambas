@@ -2696,6 +2696,8 @@ PRIVATE FUNCTION RenameOneFile(sDir AS String, sName AS String, sNewName AS Stri
   DIM sPath AS String
   DIM hForm AS Object
   DIM sNewPath AS String
+  DIM sNewFormPath AS String
+  DIM aRename AS NEW Object[]
 
   sPath = sDir &/ sName
   IF sExt THEN sPath = sPath & "." & sExt
@@ -2720,13 +2722,28 @@ PRIVATE FUNCTION RenameOneFile(sDir AS String, sName AS String, sNewName AS Stri
     TRY KILL sDir &/ ".gambas" &/ UCase(sName)
   ENDIF
 
+  FOR EACH hForm IN Files
+    IF hForm.Path = sPath OR IF hForm.Path LIKE (sPath &/ "*") THEN aRename.Add(hForm)
+  NEXT
+
+  FOR EACH hForm IN aRename
+  
+    Files[hForm.Path] = NULL
+    IF hForm.Path = sPath THEN
+      hForm.Rename(sNewName, sNewPath)
+      Files[sNewPath] = hForm
+    ELSE 
+      sNewFormPath = sNewPath &/ Mid$(hForm.Path, Len(sPath) + 1)
+      hForm.Rename(hForm.Name, sNewFormPath)
+      Files[sNewFormPath] = hForm
+    ENDIF
+  
+  NEXT
+
   hForm = Files[sPath]
   IF hForm THEN
-    hForm.Rename(sNewName, sNewPath)
-    Files[sPath] = NULL
-    Files[sNewPath] = hForm
   ENDIF
-
+  
   RETURN sNewPath
 
 END
@@ -2781,8 +2798,10 @@ PUBLIC SUB RefreshKey(sKey AS String, OPTIONAL sOld AS String)
   ENDIF
 
   AddFile(File.Dir(sKey), File.Name(sKey), TRUE)
-  
-  IF IsDir(sKey) THEN AddDir(sKey)
+  'IF IsDir(sKey) THEN 
+  '  AddDir(sKey)
+  'ELSE
+  'ENDIF
   
 END
 

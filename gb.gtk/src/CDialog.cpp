@@ -191,22 +191,23 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDIALOG_font)
 
-	CFONT *Ft;
+	CFONT *ft;
 	
 	if (READ_PROPERTY)
 	{
     gFont *font = gDialog::font();
-    //font->ref();
-    Ft = CFONT_create(font);
-    //font->unref();
-    GB.ReturnObject(Ft);
+    if (font)
+    	ft = CFONT_create(font);
+    else
+    	ft = NULL;
+    	
+    GB.ReturnObject(ft);
 		return;
 	}
 	
-	Ft=(CFONT*)VPROP(GB_OBJECT);
-	if (!Ft) return;
-	if (!Ft->font) return;
-	gDialog::setFont(Ft->font);
+	ft=(CFONT*)VPROP(GB_OBJECT);
+	if (ft && ft->font)
+		gDialog::setFont(ft->font);
 
 END_PROPERTY
 
