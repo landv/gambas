@@ -72,6 +72,7 @@ extern CFILE *CFILE_err;
 
 CFILE *CFILE_create(STREAM *stream, int mode);
 void CFILE_init(void);
+void CFILE_exit(void);
 void CFILE_init_watch(void);
 
 #endif

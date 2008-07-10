@@ -96,19 +96,19 @@ static STREAM *get_default(intptr_t val)
       if (_default_in)
         stream = CSTREAM_stream(((CSTREAM_NODE *)_default_in)->stream);
       else
-        stream = CSTREAM_stream(&CFILE_in);
+        stream = CSTREAM_stream(CFILE_in);
       break;
     case 1:
       if (_default_out)
         stream = CSTREAM_stream(((CSTREAM_NODE *)_default_out)->stream);
       else
-        stream = CSTREAM_stream(&CFILE_out);
+        stream = CSTREAM_stream(CFILE_out);
       break;
     case 2:
     	if (_default_err)
         stream = CSTREAM_stream(((CSTREAM_NODE *)_default_err)->stream);
 			else
-      	stream = CSTREAM_stream(&CFILE_err);
+      	stream = CSTREAM_stream(CFILE_err);
       break;
     default:
       memory_stream.common.type = &STREAM_memory;
