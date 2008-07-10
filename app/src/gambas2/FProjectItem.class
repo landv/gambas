@@ -20,7 +20,7 @@ PUBLIC SUB SetPath(sPath AS String)
       sInfo &= "<b>" & ("Author(s)") & " :</b> " & .Authors.Join(", ") & "<br>"
     ENDIF 
     sInfo &= Replace(sPath, System.User.Home, "~")
-    txtInfo.Text = sInfo
+    txtInfo.Text = "<font color=\"#404040\">" & sInfo & "</font>"
   END WITH
   
   ME.Tag = sPath

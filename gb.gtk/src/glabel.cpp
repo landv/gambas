@@ -139,6 +139,8 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	realize(true);
 
 	g_signal_connect_after(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+	
+	gt_set_layout_from_font(layout, font());	
 	setAlignment(ALIGN_NORMAL);
 }
 

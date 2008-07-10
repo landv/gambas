@@ -337,7 +337,7 @@ GB_DESC CPrinterDesc[] =
   GB_CONSTANT("Color", "i", QPrinter::Color),
   GB_CONSTANT("Black", "i", QPrinter::GrayScale),
 
-	GB_INTERFACE("Draw", &DRAW_Interface),
+	GB_INTERFACE("StaticDraw", &DRAW_Interface),
 
   GB_END_DECLARE
 };

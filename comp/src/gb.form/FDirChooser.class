@@ -15,6 +15,7 @@ PRIVATE $aFilter AS String[]
 PRIVATE $bFile AS Boolean
 PRIVATE $aBookmark AS Array
 PRIVATE $iMaxWidth AS Integer
+STATIC PRIVATE $aHistory AS NEW String[]
 
 CLASS Settings
 
@@ -48,7 +49,7 @@ END
 
 PUBLIC SUB cmbDir_Click()
 
-  'cmbDir_Activate
+  'cmbDir_Change
 
 END
 
@@ -57,14 +58,17 @@ PUBLIC SUB dvwChoose_Click()
 
   IF fvwChoose.Visible THEN fvwChoose.Dir = dvwChoose.Current
 
+  AddToHistory(dvwChoose.Current)
+  Object.Lock(cmbDir)
   cmbDir.Text = dvwChoose.Current
+  Object.Unlock(cmbDir)
 
-  IF $sActivate THEN
-    IF $sActivate = dvwChoose.Current THEN
-      IF cmbDir.Find($sActivate) = 0 THEN cmbDir.Add($sActivate)
-    ENDIF
-    $sActivate = ""
-  ENDIF
+  ' IF $sActivate THEN
+  '   IF $sActivate = dvwChoose.Current THEN
+  '     IF cmbDir.Find($sActivate) = 0 THEN cmbDir.Add($sActivate)
+  '   ENDIF
+  '   $sActivate = ""
+  ' ENDIF
 
   IF txtFile.Visible AND IF txtFile.ReadOnly THEN
     txtFile.Text = ""
@@ -114,6 +118,24 @@ PUBLIC SUB btnParent_Click()
   dvwChoose.Current = File.Dir(dvwChoose.Current)
 
 END
+
+PRIVATE SUB AddToHistory(sDir AS String)
+  
+  DIM iInd AS Integer
+  
+  iInd = $aHistory.Find(sDir)
+  IF iInd >= 0 THEN $aHistory.Remove(iInd)
+  $aHistory.Add(sDir)
+  WHILE $aHistory.Count > 16
+    $aHistory.Remove(0)
+  WEND
+
+  Object.Lock(cmbDir)
+  cmbDir.List = $aHistory  
+  Object.Unlock(cmbDir)
+  
+END
+
 
 PUBLIC SUB SetDir(sDir AS String)
 

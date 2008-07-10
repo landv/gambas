@@ -58,9 +58,15 @@ bool DRAW_begin(void *device)
 	
 	klass = GB.GetClass(device);
 	if (klass == GB.FindClass("Class"))
+	{
 		klass = device;
+		desc = (GB_DRAW_DESC *)GB.GetClassInterface(klass, "StaticDraw");
+	}
+	else
+	{
+		desc = (GB_DRAW_DESC *)GB.GetClassInterface(klass, "Draw");
+	}
  
-	desc = (GB_DRAW_DESC *)GB.GetClassInterface(klass, "Draw");
 	if (!desc)
 	{
 		GB.Error("Not a drawable object");
