@@ -97,4 +97,14 @@ void gt_pixbuf_make_gray(GdkPixbuf *pixbuf);
 GdkBitmap *gt_make_text_mask(GdkDrawable *dr, int w, int h, PangoLayout *ly, int x, int y);
 
 // Enable/disable warning messages
+
 void gt_disable_warnings(bool disable);
+
+// Initialize a GtkCellRendererText from a font
+
+void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font);
+
+// Initialize a PangoLayout from a font
+
+void gt_set_layout_from_font(PangoLayout *layout, gFont *font);
+

@@ -38,20 +38,17 @@ extern GB_DESC CDrawingAreaDesc[];
 #else
 
 #define THIS    ((CDRAWINGAREA *)_object)
-#define DRAWING ((gDrawingArea*)((CWIDGET *)_object)->widget)
+#define DRAWING ((gDrawingArea*)THIS->ob.widget)
 
 #endif
 
-typedef  struct 
-{
-    GB_BASE ob;
-    gControl *widget;
-    GB_VARIANT_VALUE tag;
-
-    bool merge;
-
-
-} CDRAWINGAREA;
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+	  bool merge;
+	} 
+	CDRAWINGAREA;
 
 
 

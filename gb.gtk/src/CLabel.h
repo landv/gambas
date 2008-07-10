@@ -39,16 +39,14 @@ extern GB_DESC CTextLabelDesc[];
 #else
 
 #define THIS ((CLABEL *)_object)
-#define WIDGET ((gLabel*)THIS->widget)
+#define WIDGET ((gLabel*)THIS->ob.widget)
 
 #endif
 
 typedef  
 	struct
 	{
-		GB_BASE ob;
-		gControl *widget;
-		GB_VARIANT_VALUE tag;
+		CWIDGET ob;
 	}
 	CLABEL;
 

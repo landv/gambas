@@ -210,7 +210,7 @@ void gControl::initAll(gContainer *parent)
 	fg_set = false;
 	have_cursor = false;
 	use_base = false;
-	mous=-1;
+	mous = -1;
 	pr = parent;
 	_name=NULL;
 	visible = false;
@@ -617,7 +617,11 @@ gFont* gControl::font()
 
 void gControl::setFont(gFont *ft)
 {
-	gFont::set(&fnt, ft->copy());
+	if (ft)
+		gFont::set(&fnt, ft->copy());
+	else
+		gFont::assign(&fnt);
+		
 	gtk_widget_modify_font(widget, fnt ? fnt->desc() : NULL);
 	resize();
 }
@@ -819,11 +823,15 @@ void gControl::setFocus()
 	
 	if (win->isVisible())
 	{
+		//fprintf(stderr, "setFocus now %s\n", name());
 		//if (isVisible() && bufW > 0 && bufH > 0)
 		gtk_widget_grab_focus(widget);
 	}
 	else
+	{
+		//fprintf(stderr, "setFocus later %s\n", name());
 		win->focus = this;
+	}
 }
 
 bool gControl::hasFocus()

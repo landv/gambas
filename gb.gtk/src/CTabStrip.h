@@ -38,19 +38,16 @@ extern GB_DESC CTabChildrenDesc[];
 
 
 #define THIS ((CTABSTRIP*)_object)
-#define TABSTRIP ((gTabStrip*)THIS->widget)
+#define TABSTRIP ((gTabStrip*)THIS->ob.widget)
 
 #endif
 
-typedef  struct
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-	
-	long index;
-
-}  CTABSTRIP;
-
+typedef  
+	struct
+	{
+		CWIDGET ob;
+		int index;
+	}  
+	CTABSTRIP;
 
 #endif

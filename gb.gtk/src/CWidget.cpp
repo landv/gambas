@@ -251,7 +251,9 @@ void DeleteControl(gControl *control)
 	
 	if (widget) 
 	{ 
-		widget->widget=NULL;
+	  GB.Unref(POINTER(&widget->font));
+	  widget->font = NULL;
+		widget->widget = NULL;
 		GB.Unref(POINTER(&widget));
 	}	
 }
@@ -404,7 +406,35 @@ BEGIN_PROPERTY(CWIDGET_h)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CCONTROL_font)
 
+	if (!THIS->font)
+	{
+		THIS->font = CFONT_create(CONTROL->font()->copy(), 0, THIS);
+		GB.Ref(THIS->font);
+	}
+	
+	if (READ_PROPERTY)
+	{
+    GB.ReturnObject(THIS->font);
+	}
+	else
+	{
+    CFONT *font = (CFONT *)VPROP(GB_OBJECT);
+    if (font)
+    {
+    	CONTROL->setFont(font->font);
+			if (font != THIS->font)
+			{
+				GB.Unref(POINTER(&THIS->font));
+				THIS->font = NULL;
+			}
+    }
+	}
+
+END_PROPERTY
+
+#if 0
 BEGIN_PROPERTY(CCONTROL_font)
 
   CFONT *font;
@@ -420,7 +450,7 @@ BEGIN_PROPERTY(CCONTROL_font)
   }
 
 END_PROPERTY
-
+#endif
 
 BEGIN_PROPERTY(CWIDGET_design)
 
@@ -545,7 +575,7 @@ BEGIN_METHOD(CWIDGET_reparent, GB_OBJECT parent; GB_INTEGER x; GB_INTEGER y)
 	
 	//if (!CONTROL->parent()) { GB.Error("Unable to reparent a top level window"); return; }
 	
-	CONTROL->reparent((gContainer*)parent->widget, x, y);
+	CONTROL->reparent((gContainer*)parent->ob.widget, x, y);
 
 END_METHOD
 

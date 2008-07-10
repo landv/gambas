@@ -15,6 +15,7 @@ public:
   
   void ref() { nref++; if (tag) tag->ref(); fprintf(stderr, "gShare::ref: %p (%d)\n", this, nref); }
   void unref() { nref--; fprintf(stderr, "gShare::unref: %p (%d)\n", this, nref); if (nref <= 0) delete this; else if (tag) tag->unref(); }
+  int refCount() { return nref; }
   
   void setTag(gTag *t) { tag = t; for (int i = 0; i < (nref - 1); i++) tag->ref(); }
   gTag *getTag() { return tag; }
@@ -43,6 +44,7 @@ public:
   
   void ref() { nref++; if (tag) tag->ref(); }
   void unref() { nref--; if (nref <= 0) delete this; else if (tag) tag->unref(); }
+  int refCount() { return nref; }
   
   void setTag(gTag *t) { tag = t; for (int i = 0; i < (nref - 1); i++) tag->ref(); }
   gTag *getTag() { return tag; }

@@ -31,10 +31,35 @@
 #include <math.h>
 #include "CFont.h"
 #include "gdesktop.h"
+#include "ggambastag.h"
 
 #include "gb.form.font.h"
 
 CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
+{
+	CFONT *fnt;
+	
+	if (font && font->getTag())
+		return (CFONT *)font->getTagValue();
+	
+	GB.New((void **)POINTER(&fnt), GB.FindClass("Font"), 0, 0);
+	
+	if (font)
+	{
+		fnt->font->unref();
+		fnt->font = font;
+		font->setTag(new gGambasTag((void *)fnt));
+	}
+	
+  fnt->func = func;
+  fnt->object = object;
+  if (object)
+    GB.Ref(object);
+	
+	return fnt;
+}
+
+/*CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 {
   CFONT *_object;
 
@@ -48,9 +73,14 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
   THIS->object = object;
   if (object)
     GB.Ref(object);
+    
+  if (font)
+  {
+		font->setTag(new gGambasTag((void *)_object));
+  }
 
   return THIS;
-}
+}*/
 
 
 BEGIN_METHOD(CFONT_new, GB_STRING font)
@@ -106,6 +136,8 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
     {
       // THIS->control->widget->setFont(*f); - Not needed anymore
       // TODO Make a Gambas API to call SetProperty faster
+  
+  		//fprintf(stderr, "applying font to (%s %p)\n", GB.GetClassName(THIS->object), THIS->object);
   
       GB_FUNCTION func;
   
@@ -216,7 +248,7 @@ BEGIN_METHOD(CFONT_get, GB_STRING str)
 	 
   fnt = new gFont(GB.ToZeroString(ARG(str)));
 	font = CFONT_create(fnt);
-	gFont::assign(&fnt);
+	//gFont::assign(&fnt);
 	
 	GB.ReturnObject(font);
   

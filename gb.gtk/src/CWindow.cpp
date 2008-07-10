@@ -184,7 +184,7 @@ static bool gb_raise_window_Close(gMainWindow *sender)
 	if (!_ob) return false;
 	if (GB.Raise((void*)_ob,EVENT_Close,0)) return true;
 
-  if (MAIN_Window && sender == MAIN_Window->widget)
+  if (MAIN_Window && sender == MAIN_Window->ob.widget)
   {
     if (closeAll())
       return true;
@@ -263,7 +263,7 @@ static void cb_deactivate(gMainWindow *sender)
 BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 
 	GB_CLASS CLASS_container;
-	CWIDGET *parent=NULL;
+	CWIDGET *parent = NULL;
 	int plug = 0;
 
 	if (!MISSING(parent) && VARG(parent))
@@ -282,10 +282,12 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 		THIS->embed=true;
 	}
 
-	if (!parent) THIS->widget=new gMainWindow(plug);
-	else         THIS->widget=new gMainWindow((gContainer *)parent->widget);
+	if (!parent) 
+		THIS->ob.widget = new gMainWindow(plug);
+	else
+		THIS->ob.widget = new gMainWindow((gContainer *)parent->widget);
 
-	InitControl(THIS->widget,(CWIDGET*)THIS);
+	InitControl(THIS->ob.widget, (CWIDGET*)THIS);
 	
 	WINDOW->onOpen = gb_raise_window_Open;
 	WINDOW->onShow = gb_raise_window_Show;
@@ -327,7 +329,7 @@ BEGIN_METHOD_VOID(CFORM_main)
 	CWINDOW *form;
 
 	form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
-	form->widget->show();
+	form->ob.widget->show();
 
 END_METHOD
 

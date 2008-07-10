@@ -40,17 +40,16 @@ extern GB_DESC CVSplitDesc[];
 #else
 
 #define THIS ((CSPLITTER *)_object)
-#define WIDGET ((gSplitter *)((CWIDGET *)_object)->widget)
+#define WIDGET ((gSplitter *)THIS->ob.widget)
 
 #endif
 
-typedef  struct
-{
-  GB_BASE ob;
-  gControl *widget;
-	GB_VARIANT_VALUE tag;
-	bool event;
-}  
-CSPLITTER;
+typedef  
+	struct
+	{
+		CWIDGET ob;
+		bool event;
+	}
+	CSPLITTER;
 
 #endif

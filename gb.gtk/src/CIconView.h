@@ -36,16 +36,14 @@ extern GB_DESC CIconViewDesc[];
 #else
 
 #define THIS ((CICONVIEW *)_object)
-#define WIDGET ((gIconView*)THIS->widget)
+#define WIDGET ((gIconView*)THIS->ob.widget)
 
 #endif
 
 typedef 
 	struct 
 	{
-		GB_BASE ob;
-		gIconView *widget;
-		GB_VARIANT_VALUE tag;
+		CWIDGET ob;
 		char *item;
 		char *save;	
 		int compare;

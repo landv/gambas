@@ -83,6 +83,7 @@ public:
 
 	virtual gFont *font();
 	virtual void setFont(gFont *ft);
+	bool ownFont() { return fnt != 0; }
 	
 	int scrollX();
 	int scrollY();
@@ -203,7 +204,7 @@ public:
 	static void freeDragBuffer();*/
 	static GList* controlList();
 	static void cleanRemovedControls();
-	
+
 private:
 	gContainer *pr;
 	char *_name;

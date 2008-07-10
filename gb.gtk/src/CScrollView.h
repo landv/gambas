@@ -39,17 +39,15 @@ extern GB_DESC CScrollViewDesc[];
 #else
 
 #define THIS    ((CSCROLLVIEW *)_object)
-#define SCROLLVIEW  ((gScrollView *)THIS->widget)
+#define SCROLLVIEW  ((gScrollView *)THIS->ob.widget)
 
 #endif
 
-typedef  struct
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-
-}  CSCROLLVIEW;
-
+typedef  
+	struct
+	{
+		CWIDGET ob;
+	}  
+	CSCROLLVIEW;
 
 #endif

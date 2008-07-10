@@ -1385,3 +1385,43 @@ void gt_disable_warnings(bool disable)
 		g_log_set_default_handler(old_handler, NULL);
 	fprintf(stderr, "enable warnings\n");
 }
+
+void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
+{
+	g_object_set(G_OBJECT(cell),
+		"font-desc", font->desc(),
+		"underline", font->underline() ? PANGO_UNDERLINE_SINGLE : PANGO_UNDERLINE_NONE,
+		"strikethrough", font->strikeOut(),
+		NULL);	
+}
+
+void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
+{
+	PangoFontDescription *desc;
+	PangoAttrList *attrs;
+	PangoAttribute *attr;
+	
+	desc = pango_context_get_font_description(font->ct);
+
+	pango_layout_set_font_description(layout, desc);
+	
+	attrs = pango_attr_list_new();
+	
+	if (font->underline())
+	{
+		attr = pango_attr_underline_new(PANGO_UNDERLINE_SINGLE);
+		pango_attr_list_insert(attrs, attr);
+	}
+	
+	if (font->strikeOut())
+	{
+		attr = pango_attr_strikethrough_new(true);
+		pango_attr_list_insert(attrs, attr);
+	}
+	
+	pango_layout_set_attributes(layout, attrs);
+	pango_attr_list_unref(attrs);
+	
+	pango_layout_context_changed(layout);
+	
+}

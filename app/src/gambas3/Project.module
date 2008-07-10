@@ -2780,6 +2780,8 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   Dim sPath As String
   Dim hForm As Object
   Dim sNewPath As String
+  Dim sNewFormPath As String
+  Dim aRename As New Object[]
 
   sPath = sDir &/ sName
   If sExt Then sPath = sPath & "." & sExt
@@ -2804,13 +2806,28 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
     Try Kill sDir &/ ".gambas" &/ UCase(sName)
   Endif
 
+  For Each hForm In Files
+    If hForm.Path = sPath Or If hForm.Path Like (sPath &/ "*") Then aRename.Add(hForm)
+  Next
+
+  For Each hForm In aRename
+  
+    Files[hForm.Path] = Null
+    If hForm.Path = sPath Then
+      hForm.Rename(sNewName, sNewPath)
+      Files[sNewPath] = hForm
+    Else 
+      sNewFormPath = sNewPath &/ Mid$(hForm.Path, Len(sPath) + 1)
+      hForm.Rename(hForm.Name, sNewFormPath)
+      Files[sNewFormPath] = hForm
+    Endif
+  
+  Next
+
   hForm = Files[sPath]
   If hForm Then
-    hForm.Rename(sNewName, sNewPath)
-    Files[sPath] = Null
-    Files[sNewPath] = hForm
   Endif
-
+  
   Return sNewPath
 
 End

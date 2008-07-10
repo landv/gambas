@@ -287,7 +287,7 @@ void my_quit (void)
 	if (win)
 	{
 		while (gtk_events_pending ()) gtk_main_iteration();
-		if (win->widget) ((gMainWindow*)win->widget)->destroy();
+		if (win->ob.widget) ((gMainWindow*)win->ob.widget)->destroy();
 		while (gtk_events_pending ()) gtk_main_iteration();
 	}
 

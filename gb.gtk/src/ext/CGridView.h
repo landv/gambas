@@ -47,10 +47,7 @@ extern GB_DESC CGridViewDesc[];
 typedef 
 	struct 
 	{
-		GB_BASE ob;
-		gControl *widget;
-		GB_VARIANT_VALUE tag;
-	
+		GTK_CONTROL control;	
 		int row;
 		int col;
 		gTableData *data;

@@ -37,20 +37,18 @@ extern GB_DESC CListBoxDesc[];
 extern GB_DESC CListBoxItemDesc[];
 #else
 
-
 #define THIS   ((CLISTBOX *)_object)
-#define LISTBOX ((gListBox *)THIS->widget)
+#define LISTBOX ((gListBox *)THIS->ob.widget)
 
 #endif
 
 
-typedef  struct 
-{
-	GB_BASE ob;
-	gControl *widget;
-	GB_VARIANT_VALUE tag;
-	int index;
-
-} CLISTBOX;
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+		int index;
+	} 
+	CLISTBOX;
 
 #endif

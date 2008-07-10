@@ -44,17 +44,16 @@ extern GB_DESC CToolButtonDesc[];
 #else
 
 #define THIS ((CBUTTON *)_object)
-#define BUTTON ((gButton*)THIS->widget)
+#define BUTTON ((gButton*)THIS->ob.widget)
 
 #endif 
 
-typedef  struct 
-{
-	GB_BASE ob;
-	gControl *widget;
-	GB_VARIANT_VALUE tag;
-	int f_value;
-
-}  CBUTTON;
+typedef  
+	struct
+	{
+		CWIDGET ob;
+		int f_value;
+	}  
+	CBUTTON;
 
 #endif

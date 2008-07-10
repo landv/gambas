@@ -43,29 +43,24 @@ extern GB_DESC CComboBoxItemDesc[];
 #else
 
 #define THIS ((CTEXTBOX *)_object)
-#define TEXTBOX ((gTextBox *)((CWIDGET *)_object)->widget)
-#define COMBOBOX ((gComboBox *)((CWIDGET *)_object)->widget)
+#define TEXTBOX ((gTextBox *)THIS->ob.widget)
+#define COMBOBOX ((gComboBox *)THIS->ob.widget)
 
 #endif
 
-typedef  struct 
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+	} 
+	CTEXTBOX;
 
-} CTEXTBOX;
-
- 
-typedef struct 
-{
-    GB_BASE ob;
-    gControl *widget;
-	GB_VARIANT_VALUE tag;
-	
-	long index;
-
-}  CCOMBOBOX;
- 
+typedef  
+	struct 
+	{
+		CWIDGET ob;
+		int index;
+	} 
+	CCOMBOBOX;
 
 #endif

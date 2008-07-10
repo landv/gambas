@@ -44,17 +44,15 @@ extern GB_DESC CGridViewDesc[];
 #else
 
 #define THIS ((CGRIDVIEW *)_object)
-#define GRIDVIEW ((gGridView*)THIS->widget)
-#define WIDGET ((gGridView*)THIS->widget)
+#define GRIDVIEW ((gGridView*)THIS->ob.widget)
+#define WIDGET ((gGridView*)THIS->ob.widget)
 
 #endif
 
 typedef 
 	struct 
 	{
-		GB_BASE ob;
-		gControl *widget;
-		GB_VARIANT_VALUE tag;
+		CWIDGET ob;
 		int row;
 		int col;
 		gTableData *data;

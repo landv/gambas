@@ -1775,7 +1775,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 			val = row[4];
 
 			/* (BM) seems there is a bug in mysql */
-			if (info->type == GB_T_DATE && strlen(val) >= 5 && strncmp(val, "00000", 5) == 0)
+			if (info->type == GB_T_DATE && val && strlen(val) >= 5 && strncmp(val, "00000", 5) == 0)
 				val = NULL;
 
 			if (val && *val)
