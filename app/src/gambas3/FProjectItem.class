@@ -16,11 +16,11 @@ Public Sub SetPath(sPath As String)
     Endif
     'lblName.Text = "<b><font size=\"+1\"" & sTitle & " (" & .Version & ")</font></b>"
     lblName.Text = sTitle & " (" & .Version & ")"
-    If .Authors AND If .Authors.Count Then 
+    If .Authors And If .Authors.Count Then 
       sInfo &= "<b>" & ("Author(s)") & " :</b> " & .Authors.Join(", ") & "<br>"
     Endif 
     sInfo &= Replace(sPath, System.User.Home, "~")
-    txtInfo.Text = sInfo
+    txtInfo.Text = "<font color=\"#404040\">" & sInfo & "</font>"
   End With
   
   Me.Tag = sPath

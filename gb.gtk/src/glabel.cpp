@@ -137,7 +137,8 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	layout = gtk_widget_create_pango_layout(widget, "");
 	
 	realize(true);
-
+	gt_set_layout_from_font(layout, font());
+	
 	g_signal_connect_after(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	setAlignment(ALIGN_NORMAL);
 }

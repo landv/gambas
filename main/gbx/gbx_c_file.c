@@ -49,7 +49,7 @@
 #include "gbx_c_file.h"
 
 
-CFILE CFILE_in, CFILE_out, CFILE_err;
+CFILE *CFILE_in, *CFILE_out, *CFILE_err;
 
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Write);
@@ -58,18 +58,6 @@ static GB_FUNCTION read_func;
 
 static char _buffer[16];
 
-static void init(CFILE *_object, FILE *file)
-{
-	CLEAR(THIS);
-
-  THIS->ob.ob.class = CLASS_File;
-  THIS->ob.ob.ref = 1;
-
-  THIS->ob.stream.type = &STREAM_buffer;
-  THIS->ob.stream.buffer.file = file;
-  THIS->ob.stream.buffer.size = 0;
-  THIS->ob.stream.common.buffer = NULL;
-}
 
 static void callback_read(int fd, int type, CFILE *file)
 {
@@ -77,34 +65,10 @@ static void callback_read(int fd, int type, CFILE *file)
   GB_Raise(file, EVENT_Read, 0);
 }
 
+
 static void callback_write(int fd, int type, CFILE *file)
 {
   GB_Raise(file, EVENT_Write, 0);
-}
-
-
-void CFILE_init(void)
-{
-  init(&CFILE_in, stdin);
-  init(&CFILE_out, stdout);
-  init(&CFILE_err, stderr);
-}
-
-void CFILE_exit(void)
-{
-	STREAM_release(&CFILE_in.ob.stream);
-	STREAM_release(&CFILE_out.ob.stream);
-	STREAM_release(&CFILE_err.ob.stream);
-}
-
-void CFILE_init_watch(void)
-{
-  if (GB_GetFunction(&read_func, PROJECT_class, "Application_Read", "", "") == 0)
-  {
-    //fprintf(stderr, "watch stdin\n");
-    GB_Attach(&CFILE_in, PROJECT_class, "Application");
-    GB_Watch(STDIN_FILENO, GB_WATCH_READ, (void *)callback_read, (intptr_t)&CFILE_in);
-  }
 }
 
 
@@ -140,6 +104,48 @@ CFILE *CFILE_create(STREAM *stream, int mode)
 }
 
 
+static CFILE *create_default_stream(FILE *file, int mode)
+{
+	CFILE *ob;
+  STREAM stream;
+  
+  stream.type = &STREAM_buffer;
+  stream.buffer.size = 0;
+  stream.buffer.file = file;
+  stream.buffer.is_term = isatty(fileno(file));
+  ob = CFILE_create(&stream, mode);
+  GB_Ref(ob);
+  return ob;
+}
+
+void CFILE_init(void)
+{
+  STREAM stream;
+  
+  CFILE_in = create_default_stream(stdin, ST_READ);
+  CFILE_out = create_default_stream(stdout, ST_WRITE);
+  CFILE_err = create_default_stream(stderr, ST_WRITE);
+}
+
+void CFILE_exit(void)
+{
+	GB_Unref(POINTER(&CFILE_in));
+	GB_Unref(POINTER(&CFILE_out));
+	GB_Unref(POINTER(&CFILE_err));
+}
+
+void CFILE_init_watch(void)
+{
+  if (GB_GetFunction(&read_func, PROJECT_class, "Application_Read", "", "") == 0)
+  {
+    //fprintf(stderr, "watch stdin\n");
+    GB_Attach(CFILE_in, PROJECT_class, "Application");
+    CFILE_in->watch_fd = STDIN_FILENO;
+    GB_Watch(STDIN_FILENO, GB_WATCH_READ, (void *)callback_read, (intptr_t)CFILE_in);
+  }
+}
+
+
 BEGIN_METHOD_VOID(CFILE_free)
 
   STREAM_close(&THIS->ob.stream);
@@ -151,21 +157,21 @@ END_METHOD
 
 BEGIN_PROPERTY(CFILE_get_in)
 
-  GB_ReturnObject(&CFILE_in);
+  GB_ReturnObject(CFILE_in);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CFILE_get_out)
 
-  GB_ReturnObject(&CFILE_out);
+  GB_ReturnObject(CFILE_out);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CFILE_get_err)
 
-  GB_ReturnObject(&CFILE_err);
+  GB_ReturnObject(CFILE_err);
 
 END_PROPERTY
 
