@@ -436,11 +436,11 @@ msgstr ""
 "значение: &1"
 
 #: Design.module:341 FAbout.class:302 FColorChooser.class:197
-#: FCommit.class:286 FCreateFile.class:822 FFontChooser.class:80
+#: FCommit.class:300 FCreateFile.class:822 FFontChooser.class:80
 #: FGotoLine.class:56 FList.class:167 FMain.class:2395
 #: FMakeExecutable.class:146 FMenu.class:1072 FNewTranslation.class:64
-#: FOpenProject.class:402 FProjectEnv.class:325 FPropertyProject.class:243
-#: FSelectIcon.class:266 FText.class:101 Project.module:2522
+#: FOpenProject.class:403 FProjectEnv.class:325 FPropertyProject.class:243
+#: FSelectIcon.class:266 FText.class:101 Project.module:2523
 msgid "OK"
 msgstr "OK"
 
@@ -534,14 +534,14 @@ msgstr "Система"
 msgid "Free"
 msgstr "Свободно"
 
-#: FColorChooser.class:203 FCommit.class:292 FConflict.class:192
-#: FCreateFile.class:828 FDebugInfo.class:344 FEditor.class:2052
-#: FFindList.class:159 FFind.class:115 FFontChooser.class:86 FForm.class:2509
+#: FColorChooser.class:203 FCommit.class:306 FConflict.class:192
+#: FCreateFile.class:828 FDebugInfo.class:344 FEditor.class:2055
+#: FFindList.class:159 FFind.class:115 FFontChooser.class:86 FForm.class:2510
 #: FGotoLine.class:62 FIconEditor.class:1387 FList.class:107 FMain.class:203
 #: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1078
-#: FNewTranslation.class:70 FOpenProject.class:408 FProjectEnv.class:331
+#: FNewTranslation.class:70 FOpenProject.class:409 FProjectEnv.class:331
 #: FPropertyProject.class:1149 FSave.class:125 FSelectIcon.class:271
-#: FTextEditor.class:588 FText.class:107 FTranslate.class:548
+#: FTextEditor.class:591 FText.class:107 FTranslate.class:548
 #: Project.module:267
 msgid "Cancel"
 msgstr "Отмена"
@@ -558,60 +558,66 @@ msgstr "Пожалуйста введите версионное имя поль
 msgid "The project could not be committed."
 msgstr "Проект не может быть передан"
 
-#: FCommit.class:147
+#: FCommit.class:154
 msgid "Project commit"
 msgstr "Проект передан"
 
-#: FCommit.class:156
+#: FCommit.class:163
 msgid "Authentification"
 msgstr "Аутентификация"
 
-#: FCommit.class:165
+#: FCommit.class:172
 msgid "User"
 msgstr "Пользователь"
 
-#: FCommit.class:181
+#: FCommit.class:188
 msgid "Password"
 msgstr "Пароль"
 
-#: FCommit.class:195
+#: FCommit.class:202
 msgid "Changes description"
 msgstr "Смена описания"
 
-#: FCommit.class:208 FConflict.class:328 FEditor.class:2764 FForm.class:2919
-#: FIconEditor.class:2161 FOutput.class:396 FTextEditor.class:769
+#: FCommit.class:215 FConflict.class:328 FEditor.class:2776 FForm.class:2920
+#: FIconEditor.class:2161 FOutput.class:444 FTextEditor.class:778
 msgid "Cut"
 msgstr "Вырезать"
 
-#: FCommit.class:215 FConflict.class:335 FEditor.class:2770 FForm.class:2926
-#: FIconEditor.class:2170 FOutput.class:403 FTextEditor.class:775
+#: FCommit.class:222 FConflict.class:335 FEditor.class:2782 FForm.class:2927
+#: FIconEditor.class:2170 FOutput.class:451 FTextEditor.class:784
 msgid "Copy"
 msgstr "Копировать"
 
-#: FCommit.class:222 FConflict.class:342 FEditor.class:2776 FForm.class:2933
-#: FIconEditor.class:2179 FOutput.class:410 FTextEditor.class:781
+#: FCommit.class:229 FConflict.class:342 FEditor.class:2788 FForm.class:2934
+#: FIconEditor.class:2179 FOutput.class:458 FTextEditor.class:790
 msgid "Paste"
 msgstr "Вставить"
 
-#: FCommit.class:229 FConflict.class:349 FEditor.class:2748 FForm.class:3155
-#: FIconEditor.class:2143 FOption.class:872 FTextEditor.class:753
+#: FCommit.class:236 FConflict.class:349 FEditor.class:2760 FForm.class:3156
+#: FIconEditor.class:2143 FOption.class:872 FOutput.class:426
+#: FTextEditor.class:762
 msgid "Undo"
 msgstr "Отменить"
 
-#: FCommit.class:236 FConflict.class:356 FEditor.class:2754 FForm.class:3164
-#: FTextEditor.class:759
+#: FCommit.class:243 FConflict.class:356 FEditor.class:2766 FForm.class:3165
+#: FOutput.class:433 FTextEditor.class:768
 msgid "Redo"
 msgstr "Вернуть"
 
-#: FCommit.class:243 FConflict.class:363 FEditor.class:2947
-#: FTextEditor.class:923
+#: FCommit.class:250 FConflict.class:363 FEditor.class:2959
+#: FTextEditor.class:932
 msgid "Indent"
 msgstr "Отступ"
 
-#: FCommit.class:250 FConflict.class:370 FEditor.class:2954
-#: FTextEditor.class:930
+#: FCommit.class:257 FConflict.class:370 FEditor.class:2966
+#: FTextEditor.class:939
 msgid "Unindent"
 msgstr "Отменить отступ"
+
+#: FCommit.class:264
+#, fuzzy
+msgid "Clean up"
+msgstr "&Очистка"
 
 #: FConflict.class:25
 msgid ""
@@ -660,7 +666,7 @@ msgstr ""
 "Изображение было изменено.\n"
 "Вы хотите его сохранить ?"
 
-#: FConflict.class:255 FOpenProject.class:319 Project.module:267
+#: FConflict.class:255 FOpenProject.class:320 Project.module:267
 msgid "Open"
 msgstr "Открыть"
 
@@ -750,7 +756,7 @@ msgstr "Модуль"
 msgid "Class"
 msgstr "Класс"
 
-#: FCreateFile.class:587 FEditor.class:2900 FForm.class:2840 FInfo.class:84
+#: FCreateFile.class:587 FEditor.class:2912 FForm.class:2841 FInfo.class:84
 msgid "Form"
 msgstr "Форма"
 
@@ -993,6 +999,7 @@ msgid "Do you want to clear the expression list ?"
 msgstr "Вы действительно хотите очистить список выражений?"
 
 #: FDebugInfo.class:344 FIconEditor.class:1387 FList.class:107
+#: FOutput.class:465
 msgid "Clear"
 msgstr "Стереть"
 
@@ -1052,7 +1059,7 @@ msgstr "Удалить все точки останова"
 msgid "Stack backtrace"
 msgstr "последовательность команд стека "
 
-#: FEditor.class:2052 FIconEditor.class:2026 FTextEditor.class:588
+#: FEditor.class:2055 FIconEditor.class:2026 FTextEditor.class:591
 msgid ""
 "The file has been modified.\n"
 "\n"
@@ -1062,97 +1069,97 @@ msgstr ""
 "\n"
 "Все Ваши изменения будут потеряны."
 
-#: FEditor.class:2052 FForm.class:2509 FIconEditor.class:2026
-#: FTextEditor.class:588 FTranslate.class:642
+#: FEditor.class:2055 FForm.class:2510 FIconEditor.class:2026
+#: FTextEditor.class:591 FTranslate.class:642
 msgid "Reload"
 msgstr "Обновить"
 
-#: FEditor.class:2370
+#: FEditor.class:2376
 msgid "(Declarations)"
 msgstr "(Объявление)"
 
-#: FEditor.class:2692
+#: FEditor.class:2704
 msgid "Go to"
 msgstr "Идти"
 
-#: FEditor.class:2696 FTextEditor.class:744
+#: FEditor.class:2708 FTextEditor.class:753
 msgid "Go to line..."
 msgstr "Идти к строке..."
 
-#: FEditor.class:2701
+#: FEditor.class:2713
 #, fuzzy
 msgid "Find definition"
 msgstr "в описании формы"
 
-#: FEditor.class:2707
+#: FEditor.class:2719
 msgid "Go back"
 msgstr ""
 
-#: FEditor.class:2713
+#: FEditor.class:2725
 msgid "Open form"
 msgstr "Открыть из"
 
-#: FEditor.class:2724
+#: FEditor.class:2736
 msgid "Run &until current line"
 msgstr "Старт &до текущей строки"
 
-#: FEditor.class:2731
+#: FEditor.class:2743
 msgid "Toggle &breakpoint"
 msgstr "Контрольная &точка"
 
-#: FEditor.class:2739
+#: FEditor.class:2751
 msgid "&Watch expression..."
 msgstr "&Следить за выражением..."
 
-#: FEditor.class:2786 FTextEditor.class:791
+#: FEditor.class:2798 FTextEditor.class:800
 msgid "Select &All"
 msgstr "Выбрать &Все"
 
-#: FEditor.class:2795
+#: FEditor.class:2807
 msgid "Comment"
 msgstr "Комментарий"
 
-#: FEditor.class:2801
+#: FEditor.class:2813
 msgid "Uncomment"
 msgstr "Раскомментировать"
 
-#: FEditor.class:2811 FTextEditor.class:800
+#: FEditor.class:2823 FTextEditor.class:809
 msgid "Find..."
 msgstr "Найти..."
 
-#: FEditor.class:2817 FTextEditor.class:806
+#: FEditor.class:2829 FTextEditor.class:815
 msgid "Replace..."
 msgstr "Замена..."
 
-#: FEditor.class:2824 FTextEditor.class:813
+#: FEditor.class:2836 FTextEditor.class:822
 msgid "Find Next"
 msgstr "Найти Далее"
 
-#: FEditor.class:2831 FTextEditor.class:820
+#: FEditor.class:2843 FTextEditor.class:829
 msgid "Find Previous"
 msgstr "Найти Предыдущее"
 
-#: FEditor.class:2841 FTextEditor.class:830
+#: FEditor.class:2853 FTextEditor.class:839
 #, fuzzy
 msgid "View"
 msgstr "&Просмотр"
 
-#: FEditor.class:2844 FTextEditor.class:833
+#: FEditor.class:2856 FTextEditor.class:842
 msgid "No split"
 msgstr ""
 
-#: FEditor.class:2850 FTextEditor.class:839
+#: FEditor.class:2862 FTextEditor.class:848
 #, fuzzy
 msgid "Horizontal split"
 msgstr "Поворот по горизонтали"
 
-#: FEditor.class:2856 FTextEditor.class:845
+#: FEditor.class:2868 FTextEditor.class:854
 #, fuzzy
 msgid "Vertical split"
 msgstr "Поворот по вертикали"
 
-#: FEditor.class:2872 FForm.class:3065 FIconEditor.class:1406
-#: FTextEditor.class:856
+#: FEditor.class:2884 FForm.class:3066 FIconEditor.class:1406
+#: FTextEditor.class:865
 msgid "Save"
 msgstr "Сохранить"
 
@@ -1164,8 +1171,8 @@ msgstr "Строка"
 msgid "Column"
 msgstr "Колонка"
 
-#: FFindList.class:197
-msgid "Find list"
+#: FFindList.class:197 FFind.class:659
+msgid "Search list"
 msgstr "Список поиска"
 
 #: FFind.class:115
@@ -1188,21 +1195,17 @@ msgstr "Поиск замененной строки."
 msgid "Search string replaced &1 times."
 msgstr "Искомая строка заменена &1 раз."
 
-#: FFind.class:636 FOutput.class:421
+#: FFind.class:636 FOutput.class:475
 msgid "Find"
 msgstr "Найти"
 
-#: FFind.class:643 FOutput.class:442
+#: FFind.class:643 FOutput.class:483
 msgid "Find next"
 msgstr "Найти следующее"
 
-#: FFind.class:651 FOutput.class:450
+#: FFind.class:651 FOutput.class:491
 msgid "Find previous"
 msgstr "Найти предыдущее"
-
-#: FFind.class:659
-msgid "Search list"
-msgstr "Список поиска"
 
 #: FFind.class:682
 msgid "Replace all"
@@ -1220,7 +1223,7 @@ msgstr "Поиск в файле"
 msgid "Search in project"
 msgstr "Поиск в проекте"
 
-#: FFind.class:734 FOutput.class:458
+#: FFind.class:734 FOutput.class:588
 msgid "Case sensitive"
 msgstr "Чуствительный к регистру"
 
@@ -1244,7 +1247,7 @@ msgstr "Выбор шрифта"
 msgid "Bad form file"
 msgstr "Плохой файл формы"
 
-#: FForm.class:2509
+#: FForm.class:2510
 msgid ""
 "The form has been modified.\n"
 "\n"
@@ -1254,163 +1257,163 @@ msgstr ""
 "\n"
 "Все ваши изменения будут потеряны."
 
-#: FForm.class:2844 FIconEditor.class:2249
+#: FForm.class:2845 FIconEditor.class:2249
 msgid "Select"
 msgstr "Выбор"
 
-#: FForm.class:2849
+#: FForm.class:2850
 msgid "Event"
 msgstr "Событие"
 
-#: FForm.class:2856
+#: FForm.class:2857
 msgid "Open code"
 msgstr "Открыть код"
 
-#: FForm.class:2867
+#: FForm.class:2868
 msgid "Move tab"
 msgstr "Переместить вкладку"
 
-#: FForm.class:2872
+#: FForm.class:2873
 msgid "&First"
 msgstr "&Первый"
 
-#: FForm.class:2879 FTips.class:220
+#: FForm.class:2880 FTips.class:220
 msgid "&Previous"
 msgstr "&Назад"
 
-#: FForm.class:2886 FMenu.class:808 FTips.class:226
+#: FForm.class:2887 FMenu.class:808 FTips.class:226
 msgid "&Next"
 msgstr "&Далее"
 
-#: FForm.class:2893
+#: FForm.class:2894
 msgid "&Last"
 msgstr "&Последний"
 
-#: FForm.class:2904
+#: FForm.class:2905
 msgid "Select all"
 msgstr "Выбрать все"
 
-#: FForm.class:2909
+#: FForm.class:2910
 msgid "Unselect all"
 msgstr "Отменить выбор всего"
 
-#: FForm.class:2940 FMain.class:203 FTranslate.class:548
+#: FForm.class:2941 FMain.class:203 FTranslate.class:548
 msgid "Delete"
 msgstr "Удалить"
 
-#: FForm.class:2950
+#: FForm.class:2951
 msgid "Arrangement"
 msgstr "Выравнивание"
 
-#: FForm.class:2954
+#: FForm.class:2955
 msgid "Bring to foreground"
 msgstr "На передний план"
 
-#: FForm.class:2961
+#: FForm.class:2962
 msgid "Send to background"
 msgstr "На задний план"
 
-#: FForm.class:2972
+#: FForm.class:2973
 msgid "Horizontal"
 msgstr "Вправо"
 
-#: FForm.class:2979
+#: FForm.class:2980
 msgid "Rows"
 msgstr "Строки"
 
-#: FForm.class:2986
+#: FForm.class:2987
 msgid "Vertical"
 msgstr "Вниз"
 
-#: FForm.class:2993
+#: FForm.class:2994
 msgid "Columns"
 msgstr "Колонки"
 
-#: FForm.class:3000
+#: FForm.class:3001
 msgid "Alignment"
 msgstr "Выравнивание"
 
-#: FForm.class:3004
+#: FForm.class:3005
 msgid "Align to &left"
 msgstr "Выровнять в&лево"
 
-#: FForm.class:3010
+#: FForm.class:3011
 msgid "Align to &right"
 msgstr "Выровнять в&право"
 
-#: FForm.class:3016
+#: FForm.class:3017
 msgid "Align to &top"
 msgstr "Выровнять вв&ерх"
 
-#: FForm.class:3022
+#: FForm.class:3023
 msgid "Align to &bottom"
 msgstr "Выровлять &вниз"
 
-#: FForm.class:3032
+#: FForm.class:3033
 msgid "Same &width"
 msgstr "Та же &ширина"
 
-#: FForm.class:3038
+#: FForm.class:3039
 msgid "Same &height"
 msgstr "Та же &высота"
 
-#: FForm.class:3049
+#: FForm.class:3050
 msgid "Menu editor..."
 msgstr "Редактор меню..."
 
-#: FForm.class:3100
+#: FForm.class:3101
 msgid "Code"
 msgstr "Код"
 
-#: FForm.class:3108
+#: FForm.class:3109
 msgid "Lock form"
 msgstr "Заблокировать форму"
 
-#: FForm.class:3171 FMenu.class:26
+#: FForm.class:3172 FMenu.class:26
 msgid "Menu editor"
 msgstr "Редактор меню"
 
-#: FForm.class:3179
+#: FForm.class:3180
 msgid "Toggle grid"
 msgstr "Переключить сетку"
 
-#: FForm.class:3209
+#: FForm.class:3210
 msgid "Align to top"
 msgstr "Разместить сверху"
 
-#: FForm.class:3217
+#: FForm.class:3218
 msgid "Align to bottom"
 msgstr "Разместить снизу"
 
-#: FForm.class:3225
+#: FForm.class:3226
 msgid "Align to left"
 msgstr "Разместить слева"
 
-#: FForm.class:3233
+#: FForm.class:3234
 msgid "Align to right"
 msgstr "Разместить справа"
 
-#: FForm.class:3241
+#: FForm.class:3242
 msgid "Same width"
 msgstr "Единая ширина"
 
-#: FForm.class:3249
+#: FForm.class:3250
 msgid "Same height"
 msgstr "Единая высота"
 
-#: FForm.class:3294
+#: FForm.class:3295
 msgid "Move tab first"
 msgstr "Переместить вкладку в начало"
 
-#: FForm.class:3302
+#: FForm.class:3303
 msgid "Move tab left"
 msgstr "Переместить вкладку влево"
 
-#: FForm.class:3310
+#: FForm.class:3311
 msgid "Move tab right"
 msgstr "Переместить вкладку вправо"
 
-#: FForm.class:3318
+#: FForm.class:3319
 msgid "Move tab last"
 msgstr "Переместить вкладку в конец"
 
@@ -1547,15 +1550,15 @@ msgstr "&1 K"
 msgid "Gambas project"
 msgstr "Gambas проект"
 
-#: FInfo.class:65 Project.module:1011
+#: FInfo.class:65 Project.module:1012
 msgid "Modules"
 msgstr "Модули"
 
-#: FInfo.class:66 Project.module:1012
+#: FInfo.class:66 Project.module:1013
 msgid "Classes"
 msgstr "Классы"
 
-#: FInfo.class:67 Project.module:1014
+#: FInfo.class:67 Project.module:1015
 msgid "Forms"
 msgstr "Формы"
 
@@ -1948,7 +1951,7 @@ msgstr "Открыть проект"
 msgid "Save project"
 msgstr "Сохранить проект"
 
-#: FMain.class:2064 Project.module:1638
+#: FMain.class:2064 Project.module:1639
 msgid "Save project as"
 msgstr "Сохранить проект как"
 
@@ -2093,7 +2096,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr "Нет записей в Журнале изменений для этого релиза"
 
 #: FMakeInstall.class:278 FPropertyProject.class:1149 FSave.class:118
-#: FTranslate.class:680 Project.module:2173
+#: FTranslate.class:680 Project.module:2174
 msgid "Continue"
 msgstr "Продолжить"
 
@@ -2350,23 +2353,23 @@ msgstr "Щелкните по Вставить для добавления но�
 msgid "New translation"
 msgstr "Новый перевод"
 
-#: FOpenProject.class:305
+#: FOpenProject.class:306
 msgid "Select a project"
 msgstr "Выбрать проект"
 
-#: FOpenProject.class:358
+#: FOpenProject.class:359
 msgid "Recent"
 msgstr "Недавнее"
 
-#: FOpenProject.class:367 FWelcome.class:526
+#: FOpenProject.class:368 FWelcome.class:526
 msgid "Sort by path"
 msgstr "Сортировка по путям"
 
-#: FOpenProject.class:376 FWelcome.class:49
+#: FOpenProject.class:377 FWelcome.class:49
 msgid "Examples"
 msgstr "Примеры"
 
-#: FOpenProject.class:392
+#: FOpenProject.class:393
 msgid "Open in another window"
 msgstr "Открыть другое окно"
 
@@ -2650,23 +2653,23 @@ msgstr ""
 "само выражение и нажмите Ввод.\n"
 "\n"
 
-#: FOutput.class:363
+#: FOutput.class:415
 msgid "Console - Gambas"
 msgstr "Консоль - Gambas"
 
-#: FOutput.class:373
+#: FOutput.class:503
 msgid "Undock console"
 msgstr "Разблокирование консоли"
 
-#: FOutput.class:381
+#: FOutput.class:511
 msgid "Keep above"
 msgstr "Следуй вышесказанному"
 
-#: FOutput.class:389
+#: FOutput.class:519
 msgid "Clear console"
 msgstr "Очистка консоли"
 
-#: FOutput.class:471
+#: FOutput.class:601
 msgid "Use system charset"
 msgstr "Использование системной раскладки"
 
@@ -3456,129 +3459,129 @@ msgstr "Открыть просле всех"
 msgid "Do not open"
 msgstr "Не открывать"
 
-#: Project.module:322
+#: Project.module:323
 msgid "This project is read-only."
 msgstr "Этот проект только для чтения."
 
-#: Project.module:330
+#: Project.module:331
 msgid "Cannot open project file :\n"
 msgstr "Не могу открыть проект :\n"
 
-#: Project.module:864
+#: Project.module:865
 msgid "The following classes have circular inheritance:"
 msgstr "Следующие классы имеют наследственность друг от друга"
 
-#: Project.module:1016
+#: Project.module:1017
 msgid "Data"
 msgstr "Данные"
 
-#: Project.module:1039
+#: Project.module:1040
 msgid "read-only"
 msgstr "Только для чтения"
 
-#: Project.module:1105
+#: Project.module:1106
 msgid "Loading &1..."
 msgstr "Загружаю &1.."
 
-#: Project.module:1153
+#: Project.module:1154
 msgid "Cannot open file."
 msgstr "Не могу открыть файл."
 
-#: Project.module:1222
+#: Project.module:1223
 msgid "File not found!"
 msgstr "Файл не найден!"
 
-#: Project.module:1335
+#: Project.module:1336
 msgid "in form definition"
 msgstr "в описании формы"
 
-#: Project.module:1339
+#: Project.module:1340
 msgid "at line &1 in &2"
 msgstr "в строке &1 в &2"
 
-#: Project.module:1489
+#: Project.module:1490
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
 msgstr ""
 
-#: Project.module:1493
+#: Project.module:1494
 msgid "Compiling project"
 msgstr "Компилировать проект"
 
-#: Project.module:1505
+#: Project.module:1506
 msgid "Nothing to do."
 msgstr "Ничего не делать."
 
-#: Project.module:1644
+#: Project.module:1645
 msgid "This project already exists."
 msgstr "Этот проект уже существует."
 
-#: Project.module:1657
+#: Project.module:1658
 msgid "Unable to save the project."
 msgstr "Невозможно сохранить проект"
 
-#: Project.module:1670
+#: Project.module:1671
 msgid "File already exists."
 msgstr "Такой файл уже есть."
 
-#: Project.module:1711
+#: Project.module:1712
 msgid "Cannot copy template file."
 msgstr "Не могу копировать шаблон."
 
-#: Project.module:1730
+#: Project.module:1731
 msgid "Directory already exists."
 msgstr "Каталог уже существует."
 
-#: Project.module:1884
+#: Project.module:1885
 msgid "Making executable..."
 msgstr "Делаем исполняемый модуль..."
 
-#: Project.module:1926
+#: Project.module:1927
 msgid "Cannot make executable."
 msgstr "Невозможно создать исполняемый файл."
 
-#: Project.module:2172
+#: Project.module:2173
 msgid "Some components are missing: &1"
 msgstr "Некоторые компоненты отсутствуют: &1"
 
-#: Project.module:2314
+#: Project.module:2315
 msgid "Cannot write project file."
 msgstr "Не могу записать файл проекта."
 
-#: Project.module:2346
+#: Project.module:2347
 msgid "Unable to create desktop shortcut."
 msgstr "Невозможно создать ярлык рабочего стола"
 
-#: Project.module:2427
+#: Project.module:2428
 msgid "Unable to install component."
 msgstr "Невозможно инсталировать компонент"
 
-#: Project.module:2465
+#: Project.module:2466
 msgid "Unable to uninstall component."
 msgstr "Невозможно деинсталировать компонент"
 
-#: Project.module:2600
+#: Project.module:2601
 msgid "The directory will be removed at the next commit."
 msgstr "Директория будет удалена при следующем обращении"
 
-#: Project.module:2619
+#: Project.module:2620
 msgid "You must define a startup class or form!"
 msgstr "Вы должны определить стартовые класс или форму!"
 
-#: Project.module:2646
+#: Project.module:2647
 msgid "Please type a name."
 msgstr "Укажите имя."
 
-#: Project.module:2650
+#: Project.module:2651
 msgid "This name contains a forbidden character:"
 msgstr "Это имя содержит запрещенные символы"
 
-#: Project.module:2654
+#: Project.module:2655
 msgid "This name is already used. Choose another one."
 msgstr "Это имя уже используется. Выберите другое."
 
-#: Project.module:2684
+#: Project.module:2685
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
@@ -3586,73 +3589,76 @@ msgstr ""
 "Имя класса должно начинаться с буквы или подчеркивания с последующей буквой "
 "или цифрой"
 
-#: Project.module:2845
+#: Project.module:2865
 msgid "Unable to rename '&1'"
 msgstr "Не могу переименовать '&1'"
 
-#: Project.module:2964
+#: Project.module:2984
 msgid "Please type a project name."
 msgstr "Укажите имя проекта."
 
-#: Project.module:2972
+#: Project.module:2992
 msgid "The project name cannot begin with a dot."
 msgstr "Имя проекта не может начинаться с точки"
 
-#: Project.module:2975
+#: Project.module:2995
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Не ASCII-символы запрещены для имени проекта"
 
-#: Project.module:2976
+#: Project.module:2996
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "В имени проекта нельзя использовать символы: ? * / \\ SPACE"
 
-#: Project.module:2986
+#: Project.module:3006
 msgid "The project directory already exists."
 msgstr "Директория проекта уже существует"
 
-#: Project.module:2988
+#: Project.module:3008
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
 msgstr ""
 "Директория проекта не может быть создана так как есть файл с таким именем"
 
-#: Project.module:3031
+#: Project.module:3051
 msgid "Create source package"
 msgstr "Создать пакет исходников"
 
-#: Project.module:3032
+#: Project.module:3052
 msgid "Source packages"
 msgstr "Исходныепакеты"
 
-#: Project.module:3275
+#: Project.module:3295
 msgid "Cannot copy file &1."
 msgstr "Не могу копировать файл &1."
 
-#: Project.module:3287
+#: Project.module:3307
 msgid "Linking a directory is forbidden."
 msgstr "Ссылка на директорию запрещена"
 
-#: Project.module:3317
+#: Project.module:3337
 msgid "Cannot create link &1."
 msgstr "Не могу создать ссылку &1."
 
-#: Project.module:3329
+#: Project.module:3349
 msgid "Cannot move a directory inside itself."
 msgstr "Невозможно переместить директорию из себя"
 
-#: Project.module:3373
+#: Project.module:3393
 msgid "Cannot move file &1."
 msgstr "Не могу переместить файл &1."
 
-#: Project.module:3900
+#: Project.module:3924
 msgid "modified"
 msgstr "изменено"
 
 #: Save.module:38
 msgid "Cannot save file !"
 msgstr "Не могу сохранить файл !"
+
+#~ msgid "Find list"
+#~ msgstr "Список поиска"
 
 #~ msgid "ERROR"
 #~ msgstr "ОШИБКА"

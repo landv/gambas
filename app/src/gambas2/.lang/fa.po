@@ -515,11 +515,11 @@ msgid ""
 msgstr ""
 
 #: Design.module:341 FAbout.class:302 FColorChooser.class:197
-#: FCommit.class:155 FCreateFile.class:820 FFontChooser.class:80
-#: FGotoLine.class:57 FList.class:167 FMain.class:2581
-#: FMakeExecutable.class:146 FMenu.class:1070 FNewTranslation.class:64
-#: FOpenProject.class:402 FProjectEnv.class:325 FPropertyProject.class:243
-#: FSelectIcon.class:266 FText.class:100 Project.module:2486
+#: FCommit.class:300 FCreateFile.class:822 FFontChooser.class:80
+#: FGotoLine.class:56 FList.class:167 FMain.class:2395
+#: FMakeExecutable.class:146 FMenu.class:1072 FNewTranslation.class:64
+#: FOpenProject.class:403 FProjectEnv.class:325 FPropertyProject.class:243
+#: FSelectIcon.class:266 FText.class:101 Project.module:2523
 msgid "OK"
 msgstr "تائید"
 
@@ -601,15 +601,15 @@ msgstr "سیستم"
 msgid "Free"
 msgstr ""
 
-#: FColorChooser.class:203 FCommit.class:161 FCreateFile.class:826
-#: FDebugInfo.class:342 FEditor.class:1943 FFindList.class:159 FFind.class:115
-#: FFontChooser.class:86 FForm.class:2509 FGotoLine.class:63
-#: FIconEditor.class:1387 FList.class:107 FMain.class:197
-#: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1076
-#: FNewTranslation.class:70 FOpenProject.class:408 FProjectEnv.class:331
+#: FColorChooser.class:203 FCommit.class:306 FConflict.class:192
+#: FCreateFile.class:828 FDebugInfo.class:344 FEditor.class:2055
+#: FFindList.class:159 FFind.class:115 FFontChooser.class:86 FForm.class:2510
+#: FGotoLine.class:62 FIconEditor.class:1387 FList.class:107 FMain.class:203
+#: FMakeExecutable.class:152 FMakeInstall.class:278 FMenu.class:1078
+#: FNewTranslation.class:70 FOpenProject.class:409 FProjectEnv.class:331
 #: FPropertyProject.class:1149 FSave.class:125 FSelectIcon.class:271
-#: FTextEditor.class:527 FText.class:106 FTranslate.class:548
-#: Project.module:264
+#: FTextEditor.class:591 FText.class:107 FTranslate.class:548
+#: Project.module:267
 msgid "Cancel"
 msgstr "لغو"
 
@@ -617,33 +617,160 @@ msgstr "لغو"
 msgid "This line and the following will be ignored"
 msgstr ""
 
-#: FCommit.class:35
+#: FCommit.class:36
 msgid "Please enter the versioning user name"
 msgstr ""
 
-#: FCommit.class:51
+#: FCommit.class:52
 msgid "The project could not be committed."
 msgstr ""
 
-#: FCommit.class:87
+#: FCommit.class:154
 msgid "Project commit"
 msgstr ""
 
-#: FCommit.class:96
+#: FCommit.class:163
 msgid "Authentification"
 msgstr ""
 
-#: FCommit.class:105
+#: FCommit.class:172
 msgid "User"
 msgstr ""
 
-#: FCommit.class:121
+#: FCommit.class:188
 msgid "Password"
 msgstr ""
 
-#: FCommit.class:135
+#: FCommit.class:202
 msgid "Changes description"
 msgstr ""
+
+#: FCommit.class:215 FConflict.class:328 FEditor.class:2776 FForm.class:2920
+#: FIconEditor.class:2161 FOutput.class:444 FTextEditor.class:778
+msgid "Cut"
+msgstr "بریدن"
+
+#: FCommit.class:222 FConflict.class:335 FEditor.class:2782 FForm.class:2927
+#: FIconEditor.class:2170 FOutput.class:451 FTextEditor.class:784
+msgid "Copy"
+msgstr "کپی"
+
+#: FCommit.class:229 FConflict.class:342 FEditor.class:2788 FForm.class:2934
+#: FIconEditor.class:2179 FOutput.class:458 FTextEditor.class:790
+msgid "Paste"
+msgstr "چسباندن"
+
+#: FCommit.class:236 FConflict.class:349 FEditor.class:2760 FForm.class:3156
+#: FIconEditor.class:2143 FOption.class:872 FOutput.class:426
+#: FTextEditor.class:762
+msgid "Undo"
+msgstr "بازگشت"
+
+#: FCommit.class:243 FConflict.class:356 FEditor.class:2766 FForm.class:3165
+#: FOutput.class:433 FTextEditor.class:768
+msgid "Redo"
+msgstr "دوباره"
+
+#: FCommit.class:250 FConflict.class:363 FEditor.class:2959
+#: FTextEditor.class:932
+msgid "Indent"
+msgstr "فرورفتگی"
+
+#: FCommit.class:257 FConflict.class:370 FEditor.class:2966
+#: FTextEditor.class:939
+msgid "Unindent"
+msgstr "بدون فرورفتگی"
+
+#: FCommit.class:264
+#, fuzzy
+msgid "Clean up"
+msgstr "پاک کردن"
+
+#: FConflict.class:25
+msgid ""
+"This file is in conflict with the revision #&1.\n"
+"You must resolve the conflict in order to use the file."
+msgstr ""
+
+#: FConflict.class:25 FMain.class:1943
+msgid "&Edit"
+msgstr "&ویرایش"
+
+#: FConflict.class:25 FFindList.class:167 FIconEditor.class:1406
+#: FInfo.class:399 FMakeInstall.class:229 FOption.class:1162 FTips.class:232
+msgid "Close"
+msgstr "بستن"
+
+#: FConflict.class:135
+#, fuzzy
+msgid "Version conflict"
+msgstr "نگارش"
+
+#: FConflict.class:192
+#, fuzzy
+msgid ""
+"The file has been modified.\n"
+"Do you really want to close the dialog?"
+msgstr ""
+"این تصویر دستکاری شده است.\n"
+"مایل به ذخیره آن می باشید ؟"
+
+#: FConflict.class:220
+msgid "Some conflicts are not yet resolved."
+msgstr ""
+
+#: FConflict.class:226
+msgid "Unable to resolve the conflict."
+msgstr ""
+
+#: FConflict.class:255
+#, fuzzy
+msgid ""
+"The file has been modified.\n"
+"Do you really want to open another file?"
+msgstr ""
+"این تصویر دستکاری شده است.\n"
+"مایل به ذخیره آن می باشید ؟"
+
+#: FConflict.class:255 FOpenProject.class:320 Project.module:267
+msgid "Open"
+msgstr ""
+
+#: FConflict.class:263
+#, fuzzy
+msgid "Conflict files"
+msgstr "فایل های Picture"
+
+#: FConflict.class:395 FCreateFile.class:625 FFindList.class:50
+msgid "Text"
+msgstr "متن"
+
+#: FConflict.class:404 FCreateFile.class:606
+msgid "Image"
+msgstr ""
+
+#: FConflict.class:413 FInfo.class:376
+msgid "Details"
+msgstr ""
+
+#: FConflict.class:422
+msgid "Resolve conflict with"
+msgstr ""
+
+#: FConflict.class:439 FInfo.class:235
+#, fuzzy
+msgid "Information"
+msgstr "تعیین هویت"
+
+#: FConflict.class:457
+#, fuzzy
+msgid "&Save"
+msgstr "ذخیره"
+
+#: FConflict.class:463
+#, fuzzy
+msgid "Sol&ve"
+msgstr "ذخیره"
 
 #: FCreateFile.class:66
 msgid "Gambas modules"
@@ -665,6 +792,11 @@ msgstr "فایل های Picture"
 msgid "HTML files"
 msgstr ""
 
+#: FCreateFile.class:66
+#, fuzzy
+msgid "CSS files"
+msgstr "همه فایل ها"
+
 #: FCreateFile.class:79
 msgid "(No parent)"
 msgstr ""
@@ -673,103 +805,96 @@ msgstr ""
 msgid "Cannot add file."
 msgstr ""
 
-#: FCreateFile.class:507
+#: FCreateFile.class:509
 msgid "New file"
 msgstr ""
 
-#: FCreateFile.class:522 FMain.class:2085
+#: FCreateFile.class:524 FMain.class:1887
 msgid "New"
 msgstr "جدید"
 
-#: FCreateFile.class:547 FMain.class:1278
+#: FCreateFile.class:549 FInfo.class:76
 msgid "Module"
 msgstr "پیمانه"
 
-#: FCreateFile.class:566 FFindList.class:45 FMain.class:1282
+#: FCreateFile.class:568 FFindList.class:45 FInfo.class:80
 #: FPropertyProject.class:837
 msgid "Class"
 msgstr "کلاس"
 
-#: FCreateFile.class:585 FEditor.class:2653 FForm.class:2840 FMain.class:1286
+#: FCreateFile.class:587 FEditor.class:2912 FForm.class:2841 FInfo.class:84
 msgid "Form"
 msgstr "فرم"
 
-#: FCreateFile.class:604
-msgid "Image"
-msgstr ""
-
-#: FCreateFile.class:623 FFindList.class:50
-msgid "Text"
-msgstr "متن"
-
-#: FCreateFile.class:642 FMain.class:1295
+#: FCreateFile.class:644 FInfo.class:93
 msgid "HTML file"
 msgstr ""
 
-#: FCreateFile.class:661
+#: FCreateFile.class:663
 msgid "Style sheet"
 msgstr ""
 
-#: FCreateFile.class:674 FCreateProject.class:631 FDebugInfo.class:18
-#: FMenu.class:869
+#: FCreateFile.class:676 FCreateProject.class:631 FDebugInfo.class:20
+#: FMenu.class:871
 msgid "Name"
 msgstr "-"
 
-#: FCreateFile.class:685 FCreateProject.class:526 FMakeExecutable.class:98
+#: FCreateFile.class:687 FCreateProject.class:526 FMakeExecutable.class:98
 #: FOption.class:724 FPropertyProject.class:1555
 msgid "Options"
 msgstr "تنظیمات"
 
-#: FCreateFile.class:694
+#: FCreateFile.class:696
 msgid "Width"
 msgstr ""
 
-#: FCreateFile.class:707
+#: FCreateFile.class:709
 msgid "Height"
 msgstr ""
 
-#: FCreateFile.class:727 FCreateProject.class:355 FPropertyProject.class:839
+#: FCreateFile.class:729 FCreateProject.class:355 FInfo.class:301
+#: FPropertyProject.class:839
 msgid "Type"
 msgstr "نوع"
 
-#: FCreateFile.class:734
+#: FCreateFile.class:736
 msgid "PNG"
 msgstr ""
 
-#: FCreateFile.class:734
+#: FCreateFile.class:736
 msgid "XPM"
 msgstr ""
 
-#: FCreateFile.class:734
+#: FCreateFile.class:736
 msgid "GIF"
 msgstr ""
 
-#: FCreateFile.class:739
+#: FCreateFile.class:741
 msgid "px"
 msgstr ""
 
-#: FCreateFile.class:754
+#: FCreateFile.class:756
 msgid "Dialog box management"
 msgstr ""
 
-#: FCreateFile.class:764
+#: FCreateFile.class:766
 msgid "Parent class"
 msgstr ""
 
-#: FCreateFile.class:775
+#: FCreateFile.class:777
 msgid "Exported"
 msgstr ""
 
-#: FCreateFile.class:785
+#: FCreateFile.class:787
 #, fuzzy
 msgid "Automatic extension"
 msgstr "کامل سازی خودکار"
 
-#: FCreateFile.class:792
+#: FCreateFile.class:794
 msgid "Existing"
 msgstr "موجودی"
 
-#: FCreateFile.class:804
+#: FCreateFile.class:806
 msgid "Create a symbolic link"
 msgstr ""
 
@@ -789,7 +914,7 @@ msgstr ""
 msgid "The project has been successfully created."
 msgstr ""
 
-#: FCreateProject.class:324 FMain.class:2227
+#: FCreateProject.class:324 FMain.class:2040
 msgid "New project"
 msgstr "پروژه جدید"
 
@@ -896,7 +1021,7 @@ msgstr ""
 msgid "Index"
 msgstr ""
 
-#: FDebugExpr.class:385 FDebugInfo.class:19 FProjectEnv.class:59
+#: FDebugExpr.class:385 FDebugInfo.class:21 FProjectEnv.class:59
 #: FPropertyProject.class:126
 msgid "Value"
 msgstr "مقدار"
@@ -913,87 +1038,88 @@ msgstr ""
 msgid "Show hidden symbols"
 msgstr ""
 
-#: FDebugInfo.class:32
+#: FDebugInfo.class:34
 msgid "Expression"
 msgstr "عبارت"
 
-#: FDebugInfo.class:69
+#: FDebugInfo.class:71
 msgid "native code"
 msgstr ""
 
-#: FDebugInfo.class:139
+#: FDebugInfo.class:141
 msgid "Static variables"
 msgstr ""
 
-#: FDebugInfo.class:141
+#: FDebugInfo.class:143
 msgid "Dynamic variables"
 msgstr ""
 
-#: FDebugInfo.class:342
+#: FDebugInfo.class:344
 msgid "Do you want to clear the expression list ?"
 msgstr "آیا می خواهید لیست عبارات را پاک کنید ؟"
 
-#: FDebugInfo.class:342 FIconEditor.class:1387 FList.class:107
+#: FDebugInfo.class:344 FIconEditor.class:1387 FList.class:107
+#: FOutput.class:465
 msgid "Clear"
 msgstr "پاک کردن"
 
-#: FDebugInfo.class:660 FMain.class:2516
+#: FDebugInfo.class:662 FMain.class:2330
 msgid "Debug"
 msgstr "اشکال زدایی"
 
-#: FDebugInfo.class:675 FMain.class:2362
+#: FDebugInfo.class:677 FMain.class:2175
 msgid "Console"
 msgstr "کنسول"
 
-#: FDebugInfo.class:684
+#: FDebugInfo.class:686
 msgid "Local variables"
 msgstr ""
 
-#: FDebugInfo.class:696
+#: FDebugInfo.class:698
 msgid "Sort local variables"
 msgstr ""
 
-#: FDebugInfo.class:699
+#: FDebugInfo.class:701
 msgid "Current object"
 msgstr ""
 
-#: FDebugInfo.class:716
+#: FDebugInfo.class:718
 msgid "Sort object variables"
 msgstr ""
 
-#: FDebugInfo.class:726
+#: FDebugInfo.class:728
 msgid "Watch"
 msgstr "تماشا"
 
-#: FDebugInfo.class:734
+#: FDebugInfo.class:736
 msgid "Remove all expressions"
 msgstr "حذف نمام عبارات"
 
-#: FDebugInfo.class:741
+#: FDebugInfo.class:743
 msgid "Remove current expression"
 msgstr "حذف عبارت جاری"
 
-#: FDebugInfo.class:748
+#: FDebugInfo.class:750
 msgid "Add expression"
 msgstr "اضافه کردن عبارت"
 
-#: FDebugInfo.class:770 FOption.class:1061
+#: FDebugInfo.class:772 FOption.class:1061
 msgid "Breakpoints"
 msgstr "-"
 
-#: FDebugInfo.class:784
+#: FDebugInfo.class:786
 msgid "Remove current breakpoint"
 msgstr "حذف breakpoint جاری"
 
-#: FDebugInfo.class:791
+#: FDebugInfo.class:793
 msgid "Remove all breakpoints"
 msgstr "حذف تمام breakpoint ها"
 
-#: FDebugInfo.class:823
+#: FDebugInfo.class:825
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:1943 FIconEditor.class:2026 FTextEditor.class:527
+#: FEditor.class:2055 FIconEditor.class:2026 FTextEditor.class:591
 msgid ""
 "The file has been modified.\n"
 "\n"
@@ -1003,103 +1129,98 @@ msgstr ""
 "\n"
 "تمام تغییرات شما از بین خواهد رفت."
 
-#: FEditor.class:1943 FForm.class:2509 FIconEditor.class:2026
-#: FTextEditor.class:527 FTranslate.class:642
+#: FEditor.class:2055 FForm.class:2510 FIconEditor.class:2026
+#: FTextEditor.class:591 FTranslate.class:642
 msgid "Reload"
 msgstr "بارگذاری مجدد"
 
-#: FEditor.class:2252
+#: FEditor.class:2376
 msgid "(Declarations)"
 msgstr ""
 
-#: FEditor.class:2479
+#: FEditor.class:2704
 msgid "Go to"
 msgstr "برو به"
 
-#: FEditor.class:2483 FTextEditor.class:597
+#: FEditor.class:2708 FTextEditor.class:753
 msgid "Go to line..."
 msgstr "برو به خط..."
 
-#: FEditor.class:2488
+#: FEditor.class:2713
+msgid "Find definition"
+msgstr ""
+
+#: FEditor.class:2719
+msgid "Go back"
+msgstr ""
+
+#: FEditor.class:2725
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:2499
+#: FEditor.class:2736
 msgid "Run &until current line"
 msgstr "اجرا &تا خط جاری"
 
-#: FEditor.class:2506
+#: FEditor.class:2743
 msgid "Toggle &breakpoint"
 msgstr "-"
 
-#: FEditor.class:2514
+#: FEditor.class:2751
 msgid "&Watch expression..."
 msgstr "مشاهده &عبارت..."
 
-#: FEditor.class:2523 FForm.class:3155 FIconEditor.class:2143
-#: FOption.class:872 FTextEditor.class:606
-msgid "Undo"
-msgstr "بازگشت"
-
-#: FEditor.class:2529 FForm.class:3164 FTextEditor.class:612
-msgid "Redo"
-msgstr "دوباره"
-
-#: FEditor.class:2539 FForm.class:2919 FIconEditor.class:2161
-#: FOutput.class:291 FTextEditor.class:622
-msgid "Cut"
-msgstr "بریدن"
-
-#: FEditor.class:2545 FForm.class:2926 FIconEditor.class:2170
-#: FOutput.class:298 FTextEditor.class:628
-msgid "Copy"
-msgstr "کپی"
-
-#: FEditor.class:2551 FForm.class:2933 FIconEditor.class:2179
-#: FOutput.class:305 FTextEditor.class:634
-msgid "Paste"
-msgstr "چسباندن"
-
-#: FEditor.class:2561 FTextEditor.class:644
+#: FEditor.class:2798 FTextEditor.class:800
 msgid "Select &All"
 msgstr "انتخاب &همه"
 
-#: FEditor.class:2570
+#: FEditor.class:2807
 msgid "Comment"
 msgstr "توضیح"
 
-#: FEditor.class:2576
+#: FEditor.class:2813
 msgid "Uncomment"
 msgstr "بدون توضیح"
 
-#: FEditor.class:2586 FTextEditor.class:653
+#: FEditor.class:2823 FTextEditor.class:809
 msgid "Find..."
 msgstr "یافتن..."
 
-#: FEditor.class:2592 FTextEditor.class:659
+#: FEditor.class:2829 FTextEditor.class:815
 msgid "Replace..."
 msgstr ""
 
-#: FEditor.class:2599 FTextEditor.class:666
+#: FEditor.class:2836 FTextEditor.class:822
 msgid "Find Next"
 msgstr "یافتن بعدی"
 
-#: FEditor.class:2606 FTextEditor.class:673
+#: FEditor.class:2843 FTextEditor.class:829
 msgid "Find Previous"
 msgstr "یافتن قبلی"
 
-#: FEditor.class:2621 FForm.class:3065 FIconEditor.class:1406
-#: FTextEditor.class:683
+#: FEditor.class:2853 FTextEditor.class:839
+#, fuzzy
+msgid "View"
+msgstr "&نمایش"
+
+#: FEditor.class:2856 FTextEditor.class:842
+msgid "No split"
+msgstr ""
+
+#: FEditor.class:2862 FTextEditor.class:848
+#, fuzzy
+msgid "Horizontal split"
+msgstr "معکوس افقی"
+
+#: FEditor.class:2868 FTextEditor.class:854
+#, fuzzy
+msgid "Vertical split"
+msgstr "معکوس عمودی"
+
+#: FEditor.class:2884 FForm.class:3066 FIconEditor.class:1406
+#: FTextEditor.class:865
 msgid "Save"
 msgstr "ذخیره"
-
-#: FEditor.class:2700 FTextEditor.class:750
-msgid "Indent"
-msgstr "فرورفتگی"
-
-#: FEditor.class:2707 FTextEditor.class:757
-msgid "Unindent"
-msgstr "بدون فرورفتگی"
 
 #: FFindList.class:47 FIconEditor.class:2269 FOption.class:832
 msgid "Line"
@@ -1109,14 +1230,9 @@ msgstr "خط"
 msgid "Column"
 msgstr ""
 
-#: FFindList.class:167 FIconEditor.class:1406 FMakeInstall.class:229
-#: FOption.class:1162 FTips.class:232
-msgid "Close"
-msgstr "بستن"
-
-#: FFindList.class:197
-msgid "Find list"
-msgstr "یافتن لیست"
+#: FFindList.class:197 FFind.class:659
+msgid "Search list"
+msgstr "جستجو لیست"
 
 #: FFind.class:115
 msgid "Are you sure to want to replace all?"
@@ -1138,21 +1254,17 @@ msgstr "رشته جستجو شده یک بار جایگزین شد."
 msgid "Search string replaced &1 times."
 msgstr "رشته جستجو شده &1 بار جایگزین شد."
 
-#: FFind.class:636
+#: FFind.class:636 FOutput.class:475
 msgid "Find"
 msgstr "یافتن"
 
-#: FFind.class:643
+#: FFind.class:643 FOutput.class:483
 msgid "Find next"
 msgstr "یافتن بعدی"
 
-#: FFind.class:651
+#: FFind.class:651 FOutput.class:491
 msgid "Find previous"
 msgstr "یافتن قبلی"
-
-#: FFind.class:659
-msgid "Search list"
-msgstr "جستجو لیست"
 
 #: FFind.class:682
 msgid "Replace all"
@@ -1170,7 +1282,7 @@ msgstr "جستجو در فایل"
 msgid "Search in project"
 msgstr "جستجو در پروژه"
 
-#: FFind.class:734
+#: FFind.class:734 FOutput.class:588
 msgid "Case sensitive"
 msgstr "حساسیت موردی"
 
@@ -1194,7 +1306,7 @@ msgstr "انتخاب قلم"
 msgid "Bad form file"
 msgstr "فرم فایل مناسب نمی باشد."
 
-#: FForm.class:2509
+#: FForm.class:2510
 msgid ""
 "The form has been modified.\n"
 "\n"
@@ -1204,167 +1316,167 @@ msgstr ""
 "\n"
 "تمام تغییرات شما از بین خواهد رفت."
 
-#: FForm.class:2844 FIconEditor.class:2249
+#: FForm.class:2845 FIconEditor.class:2249
 msgid "Select"
 msgstr "انتخاب"
 
-#: FForm.class:2849
+#: FForm.class:2850
 msgid "Event"
 msgstr "رویداد"
 
-#: FForm.class:2856
+#: FForm.class:2857
 msgid "Open code"
 msgstr ""
 
-#: FForm.class:2867
+#: FForm.class:2868
 msgid "Move tab"
 msgstr ""
 
-#: FForm.class:2872
+#: FForm.class:2873
 msgid "&First"
 msgstr ""
 
-#: FForm.class:2879 FTips.class:220
+#: FForm.class:2880 FTips.class:220
 msgid "&Previous"
 msgstr "&قبلی"
 
-#: FForm.class:2886 FMenu.class:806 FTips.class:226
+#: FForm.class:2887 FMenu.class:808 FTips.class:226
 msgid "&Next"
 msgstr "&بعدی"
 
-#: FForm.class:2893
+#: FForm.class:2894
 msgid "&Last"
 msgstr ""
 
-#: FForm.class:2904
+#: FForm.class:2905
 msgid "Select all"
 msgstr "انتخاب همه"
 
-#: FForm.class:2909
+#: FForm.class:2910
 msgid "Unselect all"
 msgstr "در آوردن از حالت انتخاب"
 
-#: FForm.class:2940 FMain.class:197 FTranslate.class:548
+#: FForm.class:2941 FMain.class:203 FTranslate.class:548
 msgid "Delete"
 msgstr "حذف"
 
-#: FForm.class:2950
+#: FForm.class:2951
 msgid "Arrangement"
 msgstr "چیدمان"
 
-#: FForm.class:2954
+#: FForm.class:2955
 msgid "Bring to foreground"
 msgstr "ارسال به پس زمینه"
 
-#: FForm.class:2961
+#: FForm.class:2962
 msgid "Send to background"
 msgstr "ارسال به پیش زمینه"
 
-#: FForm.class:2972
+#: FForm.class:2973
 msgid "Horizontal"
 msgstr "افقی"
 
-#: FForm.class:2979
+#: FForm.class:2980
 msgid "Rows"
 msgstr "سطر ها"
 
-#: FForm.class:2986
+#: FForm.class:2987
 msgid "Vertical"
 msgstr "عمودی"
 
-#: FForm.class:2993
+#: FForm.class:2994
 msgid "Columns"
 msgstr "ستون ها"
 
-#: FForm.class:3000
+#: FForm.class:3001
 msgid "Alignment"
 msgstr "تراز بندی"
 
-#: FForm.class:3004
+#: FForm.class:3005
 msgid "Align to &left"
 msgstr "تراز به &چپ"
 
-#: FForm.class:3010
+#: FForm.class:3011
 msgid "Align to &right"
 msgstr "تراز به &راست"
 
-#: FForm.class:3016
+#: FForm.class:3017
 msgid "Align to &top"
 msgstr "تراز به &بالا"
 
-#: FForm.class:3022
+#: FForm.class:3023
 msgid "Align to &bottom"
 msgstr "تراز به &پایین"
 
-#: FForm.class:3032
+#: FForm.class:3033
 msgid "Same &width"
 msgstr "هم &پهنا"
 
-#: FForm.class:3038
+#: FForm.class:3039
 msgid "Same &height"
 msgstr "هم &ارتفاع"
 
-#: FForm.class:3049
+#: FForm.class:3050
 msgid "Menu editor..."
 msgstr "ویرایشگر منو..."
 
-#: FForm.class:3100
+#: FForm.class:3101
 msgid "Code"
 msgstr "کد"
 
-#: FForm.class:3108
+#: FForm.class:3109
 msgid "Lock form"
 msgstr ""
 
-#: FForm.class:3171 FMenu.class:26
+#: FForm.class:3172 FMenu.class:26
 msgid "Menu editor"
 msgstr "ویرایشگر منو"
 
-#: FForm.class:3179
+#: FForm.class:3180
 msgid "Toggle grid"
 msgstr "grid چرخشی"
 
-#: FForm.class:3209
+#: FForm.class:3210
 msgid "Align to top"
 msgstr "تراز به بالا"
 
-#: FForm.class:3217
+#: FForm.class:3218
 msgid "Align to bottom"
 msgstr "تراز به پایین"
 
-#: FForm.class:3225
+#: FForm.class:3226
 msgid "Align to left"
 msgstr "تراز به چپ"
 
-#: FForm.class:3233
+#: FForm.class:3234
 msgid "Align to right"
 msgstr "تراز به راست"
 
-#: FForm.class:3241
+#: FForm.class:3242
 msgid "Same width"
 msgstr "هم پهنا"
 
-#: FForm.class:3249
+#: FForm.class:3250
 msgid "Same height"
 msgstr "هم ارتفاع"
 
-#: FForm.class:3294
+#: FForm.class:3295
 msgid "Move tab first"
 msgstr ""
 
-#: FForm.class:3302
+#: FForm.class:3303
 msgid "Move tab left"
 msgstr ""
 
-#: FForm.class:3310
+#: FForm.class:3311
 msgid "Move tab right"
 msgstr ""
 
-#: FForm.class:3318
+#: FForm.class:3319
 msgid "Move tab last"
 msgstr ""
 
-#: FFormStack.class:269 FMain.class:2539
+#: FFormStack.class:269 FMain.class:2353
 msgid "Hierarchy"
 msgstr "سلسله مراتب"
 
@@ -1488,6 +1600,77 @@ msgstr "جا به جایی رنگها"
 msgid "Pick a color"
 msgstr "انتخاب رنگ"
 
+#: FInfo.class:9
+#, fuzzy
+msgid "&1: &2"
+msgstr "-"
+
+#: FInfo.class:64
+msgid "Gambas project"
+msgstr ""
+
+#: FInfo.class:65 Project.module:1012
+msgid "Modules"
+msgstr "پیمانه"
+
+#: FInfo.class:66 Project.module:1013
+msgid "Classes"
+msgstr "کلاس ها"
+
+#: FInfo.class:67 Project.module:1015
+msgid "Forms"
+msgstr "فرم ها"
+
+#: FInfo.class:69
+msgid "Directory"
+msgstr "پوشه"
+
+#: FInfo.class:88 FMenu.class:989
+msgid "Picture"
+msgstr "-"
+
+#: FInfo.class:90
+msgid "Text file"
+msgstr ""
+
+#: FInfo.class:96
+msgid "CSS file"
+msgstr ""
+
+#: FInfo.class:99
+msgid "XML file"
+msgstr ""
+
+#: FInfo.class:103
+msgid "ChangeLog"
+msgstr ""
+
+#: FInfo.class:106
+msgid "File"
+msgstr ""
+
+#: FInfo.class:128
+msgid "&1 K, &2 line(s)"
+msgstr ""
+
+#: FInfo.class:130
+msgid "&1 K"
+msgstr "-"
+
+#: FInfo.class:279
+#, fuzzy
+msgid "Link to"
+msgstr "با تشکر از"
+
+#: FInfo.class:319 FSelectIcon.class:235
+msgid "Size"
+msgstr "اندازه"
+
+#: FInfo.class:337
+#, fuzzy
+msgid "Last modified"
+msgstr "اصلاح شده"
+
 #: FList.class:107
 msgid "Do you want to clear the value list ?"
 msgstr "آیا می خواهید لیست مقادیر را پاک کنید ؟"
@@ -1496,472 +1679,428 @@ msgstr "آیا می خواهید لیست مقادیر را پاک کنید ؟"
 msgid "Edit list property"
 msgstr "ویرایش خصوصیت لیست"
 
-#: FList.class:179 FMenu.class:811 FProjectEnv.class:248
+#: FList.class:179 FMenu.class:813 FProjectEnv.class:248
 #: FPropertyProject.class:1803
 msgid "&Insert"
 msgstr "&درج"
 
-#: FList.class:197 FMenu.class:816 FTranslate.class:1411
+#: FList.class:197 FMenu.class:818 FTranslate.class:1411
 msgid "&Delete"
 msgstr "&حذف"
 
-#: FMain.class:197
+#: FMain.class:203
 msgid "Do you really want to delete this directory ?"
 msgstr "آیا از حذف این پوشه اطمینان دارید ؟"
 
-#: FMain.class:208
+#: FMain.class:214
 msgid "Do you really want to delete this file ?"
 msgstr "آیا از حذف این فایل اطمینان دارید ؟"
 
-#: FMain.class:216
+#: FMain.class:222
 msgid "Cannot delete file or directory"
 msgstr "فایل یا پوشه را نمی توان حذف کرد"
 
-#: FMain.class:344
+#: FMain.class:350
 msgid "&Clear history"
 msgstr "&پاک کردن تاریخچه"
 
-#: FMain.class:350
+#: FMain.class:356
 msgid "&Sort by path"
 msgstr ""
 
-#: FMain.class:542
+#: FMain.class:549
 msgid "New folder"
 msgstr ""
 
-#: FMain.class:610
+#: FMain.class:617
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
 "Please install them to be able to do the translation."
 msgstr ""
 
-#: FMain.class:1042
+#: FMain.class:1026
 msgid "Do you really want to update all forms?"
 msgstr ""
 
-#: FMain.class:1042
+#: FMain.class:1026
 msgid "Update"
 msgstr ""
 
-#: FMain.class:1057
+#: FMain.class:1041
 msgid "Unable to update all forms."
 msgstr ""
 
-#: FMain.class:1216
+#: FMain.class:1200
 msgid ""
 "All backup or generated files will be removed from the project directory."
 msgstr ""
 
-#: FMain.class:1216
+#: FMain.class:1200
 msgid "Clean"
 msgstr ""
 
-#: FMain.class:1269
-msgid "Gambas project"
-msgstr ""
-
-#: FMain.class:1271
-msgid "Directory"
-msgstr "پوشه"
-
-#: FMain.class:1290 FMenu.class:987
-msgid "Picture"
-msgstr "-"
-
-#: FMain.class:1292
-msgid "Text file"
-msgstr ""
-
-#: FMain.class:1298
-msgid "CSS file"
-msgstr ""
-
-#: FMain.class:1301
-msgid "XML file"
-msgstr ""
-
-#: FMain.class:1304
-msgid "File"
-msgstr ""
-
-#: FMain.class:1322
-msgid "&1 K, &2 line(s)"
-msgstr ""
-
-#: FMain.class:1324
-msgid "&1 K"
-msgstr "-"
-
-#: FMain.class:1345
-msgid "ERROR"
-msgstr ""
-
-#: FMain.class:1734
+#: FMain.class:1536
 msgid "&File"
 msgstr "&پرونده"
 
-#: FMain.class:1738
+#: FMain.class:1540
 msgid "&New project..."
 msgstr "&پروژه جدید..."
 
-#: FMain.class:1745
+#: FMain.class:1547
 msgid "&Open project..."
 msgstr "&باز کردن پروژه..."
 
-#: FMain.class:1751
+#: FMain.class:1553
 msgid "Open &recent"
 msgstr "باز کردن &آخرین ها"
 
-#: FMain.class:1759
+#: FMain.class:1561
 msgid "Open &example"
 msgstr "باز کردن &مثال"
 
-#: FMain.class:1772
+#: FMain.class:1574
 msgid "&Save project"
 msgstr ""
 
-#: FMain.class:1779
+#: FMain.class:1581
 msgid "Save project &as..."
 msgstr ""
 
-#: FMain.class:1789
+#: FMain.class:1591
 msgid "&Quit"
 msgstr "&خروج"
 
-#: FMain.class:1796
+#: FMain.class:1598
 msgid "&Project"
 msgstr "&پروژه"
 
-#: FMain.class:1800
+#: FMain.class:1602
 msgid "&Compile"
 msgstr "&کامپایل"
 
-#: FMain.class:1807
+#: FMain.class:1609
 msgid "Compile &All"
 msgstr "کامپایل &همه"
 
-#: FMain.class:1818
+#: FMain.class:1620
 msgid "&Translate..."
 msgstr "&ترجمه..."
 
-#: FMain.class:1828
+#: FMain.class:1630
 msgid "Make"
 msgstr ""
 
-#: FMain.class:1832
+#: FMain.class:1634
 msgid "E&xecutable..."
 msgstr ""
 
-#: FMain.class:1839
+#: FMain.class:1641
 msgid "&Source archive..."
 msgstr ""
 
-#: FMain.class:1846
+#: FMain.class:1648
 msgid "&Installation package..."
 msgstr ""
 
-#: FMain.class:1857
+#: FMain.class:1659
 msgid "&Clean up"
 msgstr ""
 
-#: FMain.class:1863
+#: FMain.class:1665
 msgid "&Refresh"
 msgstr "&بازسازی"
 
-#: FMain.class:1873
+#: FMain.class:1675
 msgid "&Properties..."
 msgstr "&خصوصیات..."
 
-#: FMain.class:1880
+#: FMain.class:1682
 msgid "&Debug"
 msgstr "&اشکال زدایی"
 
-#: FMain.class:1884
+#: FMain.class:1686
 msgid "&Run"
 msgstr "&اجرا"
 
-#: FMain.class:1895
+#: FMain.class:1697
 msgid "&Pause"
 msgstr "&ایست"
 
-#: FMain.class:1902
+#: FMain.class:1704
 msgid "&Stop"
 msgstr "&توقف"
 
-#: FMain.class:1909
+#: FMain.class:1711
 msgid "St&ep"
 msgstr ""
 
-#: FMain.class:1916
+#: FMain.class:1718
 msgid "&Forward"
 msgstr "&به طرف جلو"
 
-#: FMain.class:1923
+#: FMain.class:1725
 msgid "Finis&h"
 msgstr ""
 
-#: FMain.class:1930
+#: FMain.class:1732
 msgid "Run &until"
 msgstr "اچرا &تا"
 
-#: FMain.class:1941
+#: FMain.class:1743
 msgid "&Toggle breakpoint"
 msgstr "-"
 
-#: FMain.class:1948
+#: FMain.class:1750
 msgid "Clear &all breakpoints"
 msgstr ""
 
-#: FMain.class:1957
+#: FMain.class:1759
 msgid "&Watch expression"
 msgstr "مشاهده &عبارت"
 
-#: FMain.class:1962
+#: FMain.class:1764
 msgid "Close all &debug windows"
 msgstr ""
 
-#: FMain.class:1967
+#: FMain.class:1769
 msgid "&View"
 msgstr "&نمایش"
 
-#: FMain.class:1971
+#: FMain.class:1773
 msgid "Pro&ject"
 msgstr "پرو&ژه"
 
-#: FMain.class:1980
+#: FMain.class:1782
 msgid "&Properties"
 msgstr "&خصوصیات"
 
-#: FMain.class:1988
+#: FMain.class:1790
 msgid "&Toolbox"
 msgstr "&جعبه ابزار"
 
-#: FMain.class:1996
+#: FMain.class:1798
 msgid "&Console"
 msgstr "&کنسول"
 
-#: FMain.class:2007
+#: FMain.class:1809
 msgid "Close &all windows"
 msgstr "بستن &تمام پنجره ها"
 
-#: FMain.class:2013
+#: FMain.class:1815
 msgid "&Tools"
 msgstr "&ابزار"
 
-#: FMain.class:2016
+#: FMain.class:1818
 msgid "&Find && replace"
 msgstr ""
 
-#: FMain.class:2026
+#: FMain.class:1828
 msgid "&Browse project..."
 msgstr ""
 
-#: FMain.class:2031
+#: FMain.class:1833
 msgid "&Update all forms"
 msgstr ""
 
-#: FMain.class:2036
+#: FMain.class:1838
 msgid "&Database manager..."
 msgstr "&مدیر پایگاه داده"
 
-#: FMain.class:2046
+#: FMain.class:1848
 msgid "&Preferences..."
 msgstr ""
 
-#: FMain.class:2054
+#: FMain.class:1856
 msgid "&?"
 msgstr "&راهنما"
 
-#: FMain.class:2058
+#: FMain.class:1860
 msgid "&Help browser"
 msgstr "&کاوشگر راهنما"
 
-#: FMain.class:2064
+#: FMain.class:1866
 msgid "&Tips of the day"
 msgstr "&نکته روز"
 
-#: FMain.class:2073
+#: FMain.class:1875
 msgid "&About Gambas..."
 msgstr "درباره گامباس"
 
-#: FMain.class:2080
+#: FMain.class:1882
 msgid "Popup"
 msgstr ""
 
-#: FMain.class:2088
+#: FMain.class:1890
 msgid "&Directory"
 msgstr ""
 
-#: FMain.class:2098
+#: FMain.class:1900
 msgid "&Module..."
 msgstr ""
 
-#: FMain.class:2105
+#: FMain.class:1907
 msgid "&Class..."
 msgstr ""
 
-#: FMain.class:2112
+#: FMain.class:1914
 msgid "&Form..."
 msgstr ""
 
-#: FMain.class:2123
+#: FMain.class:1925
 msgid "&Image..."
 msgstr ""
 
-#: FMain.class:2130
+#: FMain.class:1932
 msgid "&Other..."
 msgstr ""
 
-#: FMain.class:2141
-msgid "&Edit"
-msgstr "&ویرایش"
-
-#: FMain.class:2147
+#: FMain.class:1949
 msgid "Edit &form"
 msgstr "ویرایش &فرم"
 
-#: FMain.class:2152
+#: FMain.class:1954
 msgid "Edit &class"
 msgstr "ویرایش &کلاس"
 
-#: FMain.class:2157
+#: FMain.class:1959
 msgid "Edit with"
 msgstr ""
 
-#: FMain.class:2169
+#: FMain.class:1971
 msgid "&Cut"
 msgstr "&بریدن"
 
-#: FMain.class:2175
+#: FMain.class:1977
 msgid "&Copy"
 msgstr "&کپی"
 
-#: FMain.class:2181
+#: FMain.class:1983
 msgid "&Paste"
 msgstr "&چسباندن"
 
-#: FMain.class:2187
+#: FMain.class:1989
 msgid "&Rename..."
 msgstr "&تغییر نام..."
 
-#: FMain.class:2193
+#: FMain.class:1995
 msgid "&Delete..."
 msgstr "&حذف..."
 
-#: FMain.class:2203
+#: FMain.class:2005
 msgid "Copy file pat&h"
 msgstr "کپی &مسیر فایل"
 
-#: FMain.class:2212
+#: FMain.class:2014
 msgid "&Startup class"
 msgstr "&کلاس شروع شونده"
 
-#: FMain.class:2235
+#: FMain.class:2048
 msgid "Open project"
 msgstr "باز کردن پروژه"
 
-#: FMain.class:2243
+#: FMain.class:2056
 msgid "Save project"
 msgstr "ذخیره پروژه"
 
-#: FMain.class:2251 Project.module:1603
+#: FMain.class:2064 Project.module:1639
 msgid "Save project as"
 msgstr ""
 
-#: FMain.class:2259 FPropertyProject.class:50
+#: FMain.class:2072 FPropertyProject.class:50
 msgid "Project properties"
 msgstr "خصوصیات پروژه"
 
-#: FMain.class:2267
+#: FMain.class:2080
 msgid "Refresh project"
 msgstr "بازسازی پروژه"
 
-#: FMain.class:2275 FOption.class:499
+#: FMain.class:2088 FOption.class:499
 msgid "Preferences"
 msgstr "ترجیحات"
 
-#: FMain.class:2288
+#: FMain.class:2101
 msgid "Translate"
 msgstr "ترجمه"
 
-#: FMain.class:2296
+#: FMain.class:2109
 msgid "Make source archive"
 msgstr "ساخت منبع آرشیو"
 
-#: FMain.class:2304 FMakeExecutable.class:81
+#: FMain.class:2117 FMakeExecutable.class:81
 msgid "Make executable"
 msgstr "ساخت اجرایی"
 
-#: FMain.class:2312 FMakeInstall.class:796
+#: FMain.class:2125 FMakeInstall.class:796
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.class:2324 FSelectIcon.class:214
+#: FMain.class:2137 FSelectIcon.class:214
 msgid "Project"
 msgstr "پروژه"
 
-#: FMain.class:2334
+#: FMain.class:2147
 msgid "Properties sheet"
 msgstr "برگه خصوصیات"
 
-#: FMain.class:2344
+#: FMain.class:2157
 msgid "Form hierarchy"
 msgstr ""
 
-#: FMain.class:2353
+#: FMain.class:2166
 msgid "Toolbox"
 msgstr "جعبه ابزار"
 
-#: FMain.class:2371
+#: FMain.class:2184
 msgid "Find & replace"
 msgstr "یافتن و جایگزینی"
 
-#: FMain.class:2384
+#: FMain.class:2197
 msgid "Compile"
 msgstr "کامپایل"
 
-#: FMain.class:2392
+#: FMain.class:2205
 msgid "Compile all"
 msgstr "کامپایل همه"
 
-#: FMain.class:2400
+#: FMain.class:2213
 msgid "Run"
 msgstr "اجرا"
 
-#: FMain.class:2408
+#: FMain.class:2221
 msgid "Pause"
 msgstr "ایست"
 
-#: FMain.class:2416
+#: FMain.class:2229
 msgid "Stop"
 msgstr "توقف"
 
-#: FMain.class:2424
+#: FMain.class:2237
 msgid "Step"
 msgstr "مرحله"
 
-#: FMain.class:2432
+#: FMain.class:2245
 msgid "Forward"
 msgstr "به طرف جلو"
 
-#: FMain.class:2440
+#: FMain.class:2253
 msgid "Finish current function"
 msgstr ""
 
-#: FMain.class:2449
+#: FMain.class:2262
 msgid "Run until current line"
 msgstr "اجرا تا خط جاری"
 
-#: FMain.class:2457
+#: FMain.class:2270
 msgid "Toggle breakpoint"
 msgstr "-"
 
-#: FMain.class:2467
+#: FMain.class:2280
 msgid "Watch expression"
 msgstr "مشاهده عبارت"
 
-#: FMain.class:2525 FProperty.class:905
+#: FMain.class:2339 FProperty.class:961
 msgid "Properties"
 msgstr "خصوصیات"
 
@@ -2010,7 +2149,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr ""
 
 #: FMakeInstall.class:278 FPropertyProject.class:1149 FSave.class:118
-#: FTranslate.class:680 Project.module:2137
+#: FTranslate.class:680 Project.module:2174
 msgid "Continue"
 msgstr "ادامه"
 
@@ -2204,55 +2343,55 @@ msgstr "نام گروه مناسب نیست!"
 msgid "This menu is too deep !"
 msgstr "این منو خیلی طولانی است !"
 
-#: FMenu.class:885 FPropertyProject.class:841
+#: FMenu.class:887 FPropertyProject.class:841
 msgid "Group"
 msgstr "گروه"
 
-#: FMenu.class:901
+#: FMenu.class:903
 msgid "Caption"
 msgstr "عنوان"
 
-#: FMenu.class:917
+#: FMenu.class:919
 msgid "Action"
 msgstr "عملکرد"
 
-#: FMenu.class:933
+#: FMenu.class:935
 msgid "Tag"
 msgstr ""
 
-#: FMenu.class:949
+#: FMenu.class:951
 msgid "Shortcut"
 msgstr "میان بر"
 
-#: FMenu.class:959
+#: FMenu.class:961
 msgid "CTRL"
 msgstr "-"
 
-#: FMenu.class:964
+#: FMenu.class:966
 msgid "SHIFT"
 msgstr "-"
 
-#: FMenu.class:969
+#: FMenu.class:971
 msgid "ALT"
 msgstr "-"
 
-#: FMenu.class:1032
+#: FMenu.class:1034
 msgid "Visible"
 msgstr "مرئی"
 
-#: FMenu.class:1037
+#: FMenu.class:1039
 msgid "Enabled"
 msgstr "فعال"
 
-#: FMenu.class:1042
+#: FMenu.class:1044
 msgid "Toggle"
 msgstr "چرخشی"
 
-#: FMenu.class:1047
+#: FMenu.class:1049
 msgid "Checked"
 msgstr "انتخاب شونده"
 
-#: FMenu.class:1054
+#: FMenu.class:1056
 msgid "Click on Insert to add a new menu."
 msgstr "بر روی درج برای اضافه کردن منو جدید کلیک کنید."
 
@@ -2260,27 +2399,23 @@ msgstr "بر روی درج برای اضافه کردن منو جدید کلیک
 msgid "New translation"
 msgstr ""
 
-#: FOpenProject.class:305
+#: FOpenProject.class:306
 msgid "Select a project"
 msgstr "انتخاب پروژه"
 
-#: FOpenProject.class:319 Project.module:264
-msgid "Open"
-msgstr ""
-
-#: FOpenProject.class:358
+#: FOpenProject.class:359
 msgid "Recent"
 msgstr ""
 
-#: FOpenProject.class:367 FWelcome.class:526
+#: FOpenProject.class:368 FWelcome.class:526
 msgid "Sort by path"
 msgstr ""
 
-#: FOpenProject.class:376 FWelcome.class:49
+#: FOpenProject.class:377 FWelcome.class:49
 msgid "Examples"
 msgstr "مثال ها"
 
-#: FOpenProject.class:392
+#: FOpenProject.class:393
 msgid "Open in another window"
 msgstr ""
 
@@ -2316,19 +2451,19 @@ msgstr ""
 msgid "Select a theme"
 msgstr "انتخاب یک theme"
 
-#: FOption.class:161
+#: FOption.class:160
 msgid "Gambas highlight theme files"
 msgstr ""
 
-#: FOption.class:162
+#: FOption.class:161
 msgid "Export a theme file"
 msgstr ""
 
-#: FOption.class:283
+#: FOption.class:275
 msgid "Select a theme file"
 msgstr ""
 
-#: FOption.class:313
+#: FOption.class:305
 msgid "You need to restart the application to see your changes."
 msgstr "شما نیاز به اجرا مجدد برنامه برای مشاهده تغییرات دارید."
 
@@ -2336,106 +2471,106 @@ msgstr "شما نیاز به اجرا مجدد برنامه برای مشاهد�
 msgid "General"
 msgstr "عمومی"
 
-#: FOption.class:516
+#: FOption.class:519
+msgid "Icon theme"
+msgstr "تم icon ها"
+
+#: FOption.class:527
 msgid "Desktop"
 msgstr ""
 
-#: FOption.class:522
+#: FOption.class:527
+msgid "Gnome"
+msgstr ""
+
+#: FOption.class:527
+msgid "KDE"
+msgstr ""
+
+#: FOption.class:537
+msgid "Browser"
+msgstr ""
+
+#: FOption.class:545 FPropertyProject.class:57
+msgid "(Default)"
+msgstr ""
+
+#: FOption.class:545
+msgid "Konqueror"
+msgstr ""
+
+#: FOption.class:545
+msgid "Firefox"
+msgstr ""
+
+#: FOption.class:545
+msgid "Epiphany"
+msgstr ""
+
+#: FOption.class:545
+msgid "SeaMonkey"
+msgstr ""
+
+#: FOption.class:545
+msgid "Opera"
+msgstr ""
+
+#: FOption.class:558
 msgid "Interface"
 msgstr ""
 
-#: FOption.class:531
+#: FOption.class:567
 msgid "Show tooltips"
 msgstr "نمایش tooltip هال"
 
-#: FOption.class:538 FPropertyProject.class:1618
+#: FOption.class:574 FPropertyProject.class:1618
 msgid "No"
 msgstr ""
 
-#: FOption.class:538 FPropertyProject.class:1618
+#: FOption.class:574 FPropertyProject.class:1618
 msgid "Yes"
 msgstr ""
 
-#: FOption.class:548
-msgid "Show project information balloons"
-msgstr ""
-
-#: FOption.class:565
+#: FOption.class:584
 msgid "Show message bar"
 msgstr ""
 
-#: FOption.class:582
+#: FOption.class:601
 msgid "Font size"
 msgstr "اندازه قلم"
 
-#: FOption.class:590
+#: FOption.class:609
 #, fuzzy
 msgid "Normal size"
 msgstr "متن معمولی"
 
-#: FOption.class:590
+#: FOption.class:609
 #, fuzzy
 msgid "Small size"
 msgstr "اندازه سربرگ"
 
-#: FOption.class:600
+#: FOption.class:619
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.class:618
+#: FOption.class:637
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:635 FWelcome.class:47
+#: FOption.class:654 FWelcome.class:47
 msgid "Recent projects"
 msgstr "آخرین پروژه ها"
 
-#: FOption.class:648
+#: FOption.class:667
 msgid "Max."
 msgstr ""
 
-#: FOption.class:658
+#: FOption.class:677
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:675
-msgid "Icon theme"
-msgstr "تم icon ها"
-
-#: FOption.class:683
-msgid "Gnome"
-msgstr ""
-
-#: FOption.class:683
-msgid "KDE"
-msgstr ""
-
-#: FOption.class:693
-msgid "Browser"
-msgstr ""
-
-#: FOption.class:701 FPropertyProject.class:57
-msgid "(Default)"
-msgstr ""
-
-#: FOption.class:701
-msgid "Konqueror"
-msgstr ""
-
-#: FOption.class:701
-msgid "Firefox"
-msgstr ""
-
-#: FOption.class:701
-msgid "Epiphany"
-msgstr ""
-
-#: FOption.class:701
-msgid "SeaMonkey"
-msgstr ""
-
-#: FOption.class:701
-msgid "Opera"
+#: FOption.class:694
+msgid "Display property help"
 msgstr ""
 
 #: FOption.class:705
@@ -2474,7 +2609,7 @@ msgstr "برجسته کردن خط جاری"
 msgid "Procedure separation"
 msgstr "جداکننده پردازه ها"
 
-#: FOption.class:832 FProperty.class:601
+#: FOption.class:832 FProperty.class:634
 msgid "None"
 msgstr "هیچ"
 
@@ -2562,23 +2697,23 @@ msgid ""
 "\n"
 msgstr ""
 
-#: FOutput.class:258
+#: FOutput.class:415
 msgid "Console - Gambas"
 msgstr "کنسول - گامباس"
 
-#: FOutput.class:268
+#: FOutput.class:503
 msgid "Undock console"
 msgstr ""
 
-#: FOutput.class:276
+#: FOutput.class:511
 msgid "Keep above"
 msgstr ""
 
-#: FOutput.class:284
+#: FOutput.class:519
 msgid "Clear console"
 msgstr ""
 
-#: FOutput.class:317
+#: FOutput.class:601
 msgid "Use system charset"
 msgstr ""
 
@@ -2606,23 +2741,36 @@ msgstr ""
 msgid "Author(s)"
 msgstr ""
 
-#: FProperty.class:319
+#: FProperty.class:329
 msgid "Forbidden characters in control name."
 msgstr "کاراکترهای ممنوعه در نام کنترل های می باشد."
 
-#: FProperty.class:324
+#: FProperty.class:334
 msgid "This name is already in use."
 msgstr "این نام استفاده شده است."
 
-#: FProperty.class:334
+#: FProperty.class:344
 msgid "Forbidden characters in control group."
 msgstr "کاراکترهای ممنوعه در گروه کنترل ها می باشد."
 
-#: FProperty.class:392
+#: FProperty.class:402
 msgid "Incorrect property value."
 msgstr "مقدار خصوصیت صحیح نیست."
 
-#: FProperty.class:915
+#: FProperty.class:510
+msgid "The name of the control."
+msgstr ""
+
+#: FProperty.class:521
+msgid "The event group that the control belongs to."
+msgstr ""
+
+#: FProperty.class:534
+msgid ""
+"If the form and controls dimensions must follow the size of the default font."
+msgstr ""
+
+#: FProperty.class:971
 msgid "Click on a form or a control to modify its properties..."
 msgstr "بر روی یک فرم یا کنترل برای اصلاح خصوصیات آن کلیک کنید..."
 
@@ -2812,15 +2960,11 @@ msgstr "انتخاب picture"
 msgid "Stock"
 msgstr "موجودی"
 
-#: FSelectIcon.class:235
-msgid "Size"
-msgstr "اندازه"
-
-#: FText.class:85
+#: FText.class:77
 msgid "Edit text property"
 msgstr "ویرایش خصوصیت متن"
 
-#: FText.class:89
+#: FText.class:96
 msgid "Use a fixed font"
 msgstr "استفاده از یک فونت معین"
 
@@ -3205,6 +3349,10 @@ msgstr "Traditional chinese (تایوان)"
 msgid "Unknown"
 msgstr "ناشناس"
 
+#: MHelp.module:235
+msgid "No help found."
+msgstr ""
+
 #: Package.module:50
 msgid "'&1' is not installed on your system."
 msgstr ""
@@ -3318,11 +3466,11 @@ msgstr ""
 msgid "Controls"
 msgstr ""
 
-#: Project.module:256
+#: Project.module:258
 msgid "This project does not exist."
 msgstr "این پروژه موجود نیست."
 
-#: Project.module:264
+#: Project.module:267
 msgid ""
 "This is a Gambas 1.0 project.\n"
 "\n"
@@ -3330,182 +3478,180 @@ msgid ""
 msgstr ""
 
 #: Project.module:273
+msgid "This is not a Gambas 2 project."
+msgstr ""
+
+#: Project.module:279
 msgid ""
 "This project seems to be already opened.\n"
 "\n"
 "Opening the same project twice can lead to data loss."
 msgstr ""
 
-#: Project.module:273
+#: Project.module:279
 msgid "Open after all"
 msgstr "باز کردن بعد از همه"
 
-#: Project.module:273
+#: Project.module:279
 msgid "Do not open"
 msgstr "باز نکن"
 
-#: Project.module:316
+#: Project.module:323
 msgid "This project is read-only."
 msgstr "این پروژه فقط خواندنی می باشد"
 
-#: Project.module:324
+#: Project.module:331
 msgid "Cannot open project file :\n"
 msgstr "فایل های پروژه باز نمی شود: \n"
 
-#: Project.module:835
+#: Project.module:865
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: Project.module:982
-msgid "Modules"
-msgstr "پیمانه"
-
-#: Project.module:983
-msgid "Classes"
-msgstr "کلاس ها"
-
-#: Project.module:985
-msgid "Forms"
-msgstr "فرم ها"
-
-#: Project.module:987
+#: Project.module:1017
 msgid "Data"
 msgstr "داده"
 
-#: Project.module:1010
+#: Project.module:1040
 #, fuzzy
 msgid "read-only"
 msgstr "فقط خواندنی"
 
-#: Project.module:1074
+#: Project.module:1106
 msgid "Loading &1..."
 msgstr ""
 
-#: Project.module:1122
+#: Project.module:1154
 msgid "Cannot open file."
 msgstr "فایل باز نمی شود."
 
-#: Project.module:1191
+#: Project.module:1223
 msgid "File not found!"
 msgstr ""
 
-#: Project.module:1306
+#: Project.module:1336
 msgid "in form definition"
 msgstr ""
 
-#: Project.module:1310
+#: Project.module:1340
 msgid "at line &1 in &2"
 msgstr "در خط &1 در &2"
 
-#: Project.module:1458
+#: Project.module:1490
+msgid ""
+"Some project source files are in conflict.\n"
+"Please solve them if you want to compile the project."
+msgstr ""
+
+#: Project.module:1494
 msgid "Compiling project"
 msgstr "کامپایل پروژه"
 
-#: Project.module:1470
+#: Project.module:1506
 msgid "Nothing to do."
 msgstr "کاری برای انجام نیست."
 
-#: Project.module:1609
+#: Project.module:1645
 msgid "This project already exists."
 msgstr "این پروژه در حال حاضر موجود است."
 
-#: Project.module:1622
+#: Project.module:1658
 msgid "Unable to save the project."
 msgstr ""
 
-#: Project.module:1635
+#: Project.module:1671
 msgid "File already exists."
 msgstr "فایل در حال حاضر موجود می باشد."
 
-#: Project.module:1676
+#: Project.module:1712
 msgid "Cannot copy template file."
 msgstr "فایل قالب کپی نمی شود."
 
-#: Project.module:1695
+#: Project.module:1731
 msgid "Directory already exists."
 msgstr "پوشه در حال حاضر موجود می باشد"
 
-#: Project.module:1849
+#: Project.module:1885
 msgid "Making executable..."
 msgstr "ساخت اجرایی..."
 
-#: Project.module:1891
+#: Project.module:1927
 #, fuzzy
 msgid "Cannot make executable."
 msgstr "ساخت اجرایی"
 
-#: Project.module:2136
+#: Project.module:2173
 msgid "Some components are missing: &1"
 msgstr "بعضی از کامپوننت ها موجود نیستند : &1"
 
-#: Project.module:2278
+#: Project.module:2315
 msgid "Cannot write project file."
 msgstr "فایل های پروژه نوشته نمی شوند."
 
-#: Project.module:2310
+#: Project.module:2347
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:2391
+#: Project.module:2428
 msgid "Unable to install component."
 msgstr ""
 
-#: Project.module:2429
+#: Project.module:2466
 msgid "Unable to uninstall component."
 msgstr ""
 
-#: Project.module:2564
+#: Project.module:2601
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:2583
+#: Project.module:2620
 msgid "You must define a startup class or form!"
 msgstr "شما باید یک کلاس یا یک فرم شروع شونده تعریف کنید."
 
-#: Project.module:2610
+#: Project.module:2647
 msgid "Please type a name."
 msgstr "لطفاً یک نام را تایپ کنید."
 
-#: Project.module:2614
+#: Project.module:2651
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:2618
+#: Project.module:2655
 msgid "This name is already used. Choose another one."
 msgstr "در حال حاضر این نام استفاده شده است.نام دیگری انتخاب کنید."
 
-#: Project.module:2648
+#: Project.module:2685
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
 msgstr ""
 
-#: Project.module:2809
+#: Project.module:2865
 msgid "Unable to rename '&1'"
 msgstr "ناتوان در تغییر نام '&1'"
 
-#: Project.module:2928
+#: Project.module:2984
 msgid "Please type a project name."
 msgstr "لطفاً یک نام پروژه را وارد کنید."
 
-#: Project.module:2936
+#: Project.module:2992
 msgid "The project name cannot begin with a dot."
 msgstr "نام پروژه نمی تواند با یک نقطه شروع شود."
 
-#: Project.module:2939
+#: Project.module:2995
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "کاراکترهای غیر اسکی در نام پروژه ممنوع می باشند."
 
-#: Project.module:2940
+#: Project.module:2996
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "وجود این کاراکترها در نام پروژه ممنوع می باشد : ? * / \\ SPACE"
 
-#: Project.module:2950
+#: Project.module:3006
 msgid "The project directory already exists."
 msgstr "پوشه پروژه در حال حاضر موجود می باشد."
 
-#: Project.module:2952
+#: Project.module:3008
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
@@ -3513,38 +3659,41 @@ msgstr ""
 "پوشه پروژه نمی تواند ساخته شود زیرا یک فایل با همان نام در حال حاضر موجود می "
 "باشد."
 
-#: Project.module:2995
+#: Project.module:3051
 msgid "Create source package"
 msgstr "ساخت بسته منبع"
 
-#: Project.module:2996
+#: Project.module:3052
 msgid "Source packages"
 msgstr "بسته منبع"
 
-#: Project.module:3239
+#: Project.module:3295
 msgid "Cannot copy file &1."
 msgstr "فایل &1 را کپی نمی شود."
 
-#: Project.module:3251
+#: Project.module:3307
 msgid "Linking a directory is forbidden."
 msgstr ""
 
-#: Project.module:3281
+#: Project.module:3337
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:3293
+#: Project.module:3349
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:3337
+#: Project.module:3393
 msgid "Cannot move file &1."
 msgstr "فایل &1 جا به جا نمی شود."
 
-#: Project.module:3861
+#: Project.module:3924
 msgid "modified"
 msgstr "اصلاح شده"
 
 #: Save.module:38
 msgid "Cannot save file !"
 msgstr "فایل ذخیره نمی شود."
+
+#~ msgid "Find list"
+#~ msgstr "یافتن لیست"
