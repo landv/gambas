@@ -368,7 +368,8 @@ EXTERN CLASS *CLASS_SubCollection;
 /* class.c */
 
 void CLASS_init(void);
-void CLASS_exit(bool silent);
+void CLASS_clean_up(bool silent);
+void CLASS_exit(void);
 
 CLASS *CLASS_get(const char *name);
 int CLASS_count(void);

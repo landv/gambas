@@ -184,11 +184,11 @@ static void unload_class(CLASS *class)
 }
 
 
-void CLASS_exit(bool silent)
+void CLASS_clean_up(bool silent)
 {
   int n, nc, nb;
   //CLASS_SYMBOL *csym;
-  CLASS *class, *next;
+  CLASS *class;
 
   #if DEBUG_LOAD
   fprintf(stderr, "\n------------------- CLASS_exit -------------------\n\n");
@@ -198,8 +198,8 @@ void CLASS_exit(bool silent)
   fprintf(stderr, "Freeing auto-creatable objects...\n");
   #endif
 
-  /* On compte le nombre de classes �lib�er */
-  /* On lib�e les instances automatiques */
+  // Count how many classes should be freed
+  // And free automatic instances
 
   nc = 0;
 
@@ -225,7 +225,7 @@ void CLASS_exit(bool silent)
   fprintf(stderr, "Freeing classes with no instance...\n");
   #endif
 
-  /* On ne lib�e que les classes n'ayant aucun objet instanci�*/
+  // Free classes having no instance
 
   n = 0;
   while (n < nc)
@@ -254,8 +254,8 @@ void CLASS_exit(bool silent)
   fprintf(stderr, "Freeing other classes...\n");
   #endif
 
-  /* On force la lib�ation de ce qui reste, tant pis */
-  /* ERROR_info.code != 0 if we are exiting just after an error */
+	// Remaining objects are circular references
+	// Everything is forced to be freed
 
   if (n < nc)
   {
@@ -281,7 +281,13 @@ void CLASS_exit(bool silent)
 
   for (class = _classes; class; class = class->next)
     exit_class(class, TRUE);
+}
 
+
+void CLASS_exit()
+{
+  CLASS *class, *next;
+  
   #if DEBUG_LOAD
   fprintf(stderr, "Unloading classes...\n");
   #endif
