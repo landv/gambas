@@ -49,6 +49,8 @@ Public Sub _init()
 
   Name["gl_ES"] = ("Galician (Spain)")
 
+  Name["he"] = ("Hebrew (Israel)")
+
   Name["hu"] = ("Hungarian (Hungary)")
 
   Name["hr"] = ("Croatian (Croatia)")
@@ -100,7 +102,7 @@ Public Sub Find(Optional sLang As String) As String
   Dim iPos As Integer
   Dim sOrg As String
 
-  If NOT sLang Then sLang = System.Language
+  If Not sLang Then sLang = System.Language
 
   sOrg = sLang
 

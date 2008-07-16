@@ -109,6 +109,7 @@ static CFILE *create_default_stream(FILE *file, int mode)
 	CFILE *ob;
   STREAM stream;
   
+  CLEAR(&stream);
   stream.type = &STREAM_buffer;
   stream.buffer.size = 0;
   stream.buffer.file = file;
@@ -120,8 +121,6 @@ static CFILE *create_default_stream(FILE *file, int mode)
 
 void CFILE_init(void)
 {
-  STREAM stream;
-  
   CFILE_in = create_default_stream(stdin, ST_READ);
   CFILE_out = create_default_stream(stdout, ST_WRITE);
   CFILE_err = create_default_stream(stderr, ST_WRITE);

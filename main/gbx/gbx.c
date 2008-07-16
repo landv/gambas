@@ -101,13 +101,13 @@ static void my_exit(int ret)
 
 static void main_exit(bool silent)
 {
-  SUBR_exit();
   OBJECT_exit();
+	CLASS_clean_up(silent);
+  SUBR_exit();
   DEBUG_exit();
   CFILE_exit();
   WATCH_exit();
-  CFILE_exit();
-  CLASS_exit(silent);
+  CLASS_exit();
   COMPONENT_exit();
   EXTERN_exit();
   PROJECT_exit();
