@@ -56,7 +56,7 @@ Public Sub Form_Open()
   chkSortRecent.Value = Settings["/FWelcome/SortRecent", False]
   FillRecent
 
-  lblVersion.Text = Project.Version 'Subst(("version &1"), Project.Version)
+  lblVersion.Text = Project.Version
   lblVersion.Move(lblGambas.X + lblGambas.Font.Width(lblGambas.Text) + 4, lblGambas.Y)
 
   If Project.GetRecentFiles().Count Then

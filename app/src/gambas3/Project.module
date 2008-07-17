@@ -214,6 +214,9 @@ Private Sub InitVersion()
   aVer.Remove(aVer.Max)
   Version = aVer.Join(".")
   
+  sVer = VersionControl.GetVersion(Application.Path)
+  If sVer Then Version &= " (r" & sVer & ")"
+  
 Catch 
 
   Version = "?"
