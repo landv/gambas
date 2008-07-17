@@ -42,6 +42,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/time.h>
 #include <dirent.h>
 
@@ -69,7 +70,6 @@
 
 #include "gb_arch_temp.h"
 
-
 static char _root[MAX_PATH + 1] = { 0 };
 static char _lib_path[MAX_PATH + 1];
 static char _info_path[MAX_PATH + 1];
@@ -80,6 +80,7 @@ static FILE *out_list;
 static bool _verbose = FALSE;
 static bool _format = FALSE;
 static bool _nopreload = FALSE;
+static bool _root_set = FALSE;
 
 static void analyze(const char *comp, bool include);
 
@@ -551,6 +552,38 @@ static void analyze(const char *comp, bool include)
   STR_free(name);
 }
 
+static void run_myself(const char *path, const char *name)
+{
+	const char *argv[10];
+	int n = 0;
+	pid_t pid;
+	int status;
+	
+	argv[n++] = path;
+	if (_verbose)
+		argv[n++] = "-v";
+	if (_nopreload)
+		argv[n++] = "-p";
+	if (_root_set)
+	{
+		argv[n++] = "-r";
+		argv[n++] = _root;
+	}
+	argv[n++] = name;
+	argv[n] = NULL;
+	
+	pid = fork();
+	switch (pid)
+	{
+		case 0:
+		  execv(path, (char **)argv);
+		case -1:
+	    error(FALSE, "Cannot run sub-process: %s", strerror(errno));
+	    break;
+	  default:
+	  	waitpid(pid, &status, 0);
+	}
+}
 
 int main(int argc, char **argv)
 {
@@ -594,6 +627,7 @@ int main(int argc, char **argv)
 
       case 'r':
         strncpy(_root, optarg, MAX_PATH);
+        _root_set = TRUE;
         break;
 
       case 'h':
@@ -654,8 +688,9 @@ int main(int argc, char **argv)
       if (strcmp(FILE_get_ext(name), "component"))
         continue;
       name = FILE_get_basename(name);
-      puts(name);
-      analyze(name, FALSE);
+      /*puts(name);
+      analyze(name, FALSE);*/
+			run_myself(argv[0], name);
     }
 
     closedir(dir);
