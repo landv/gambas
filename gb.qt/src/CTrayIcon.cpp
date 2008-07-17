@@ -135,6 +135,7 @@ END_METHOD
 static void define_mask(CTRAYICON *_object)
 {
   QPixmap *p;
+  XSizeHints hints;
 
   if (!WIDGET)
     return;
@@ -149,10 +150,17 @@ static void define_mask(CTRAYICON *_object)
     WIDGET->setMask(*(p->mask()));
 
   WIDGET->setErasePixmap(*p);
+  //WIDGET->setPaletteBackgroundColor(QColor(255, 0, 0));
   WIDGET->resize(p->width(), p->height());
 
   if (!THIS->icon)
     delete p;
+ 
+  // Needed, otherwise the icon does not appear in Gnome of XFCE notification area!
+	hints.flags = PMinSize;
+	hints.min_width = WIDGET->width();
+	hints.min_height = WIDGET->height();
+  XSetWMNormalHints(WIDGET->x11Display(), WIDGET->winId(), &hints);
 }
 
 
@@ -206,15 +214,17 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
   {
     QtXEmbedClient *wid = new QtXEmbedClient();
     wid->setFocusPolicy(QWidget::NoFocus);
-
-    THIS->widget = wid;
     wid->installEventFilter(&CTrayIcon::manager);
 
+    THIS->widget = wid;
+    
     QObject::connect(WIDGET, SIGNAL(embedded()), &CTrayIcon::manager, SLOT(embedded()));
     //QObject::connect(WIDGET, SIGNAL(containerClosed()), &CTrayIcon::manager, SLOT(closed()));
     QObject::connect(WIDGET, SIGNAL(error(int)), &CTrayIcon::manager, SLOT(error()));
 
-    //qDebug("XEMBED: EmbedState: %d", CWINDOW_EmbedState);
+    define_mask(THIS);
+    define_tooltip(THIS);
+    
     X11_window_dock(WIDGET->winId());
 
     _state = EMBED_WAIT;
@@ -225,16 +235,15 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
         break;
       usleep(10000);
     }
-
+    
     if (_state != EMBED_OK)
     {
       GB.Error("Embedding has failed");
+      destroy_widget(THIS);
       return;
 		}
 
-    WIDGET->show();
-    define_mask(THIS);
-    define_tooltip(THIS);
+    wid->show();
   }
 
 END_METHOD

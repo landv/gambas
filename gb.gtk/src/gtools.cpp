@@ -1392,7 +1392,7 @@ void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
 		"font-desc", font->desc(),
 		"underline", font->underline() ? PANGO_UNDERLINE_SINGLE : PANGO_UNDERLINE_NONE,
 		"strikethrough", font->strikeOut(),
-		NULL);	
+		(void *)NULL);	
 }
 
 void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
