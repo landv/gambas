@@ -640,14 +640,27 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
   if (lp > ls)
     goto __FOUND;
 
-  ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
-
   if (is < 0)
-    is = ls - is;
+    is += ls;
   else if (is == 0)
     is = right ? ls : 1;
-  else if (is > ls)
-    goto __FOUND;
+  
+  ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
+
+  if (is > ls)
+  {
+  	if (!right)
+    	goto __FOUND;
+    else
+    	is = ls;
+  }
+  else if (is < lp)
+  {
+  	if (right)
+    	goto __FOUND;
+    else if (is < 1)
+    	is = 1;
+  }
 
   is--;
 

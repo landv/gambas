@@ -808,16 +808,21 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 
   CMENU *item = OBJECT(CMENU);
 
-  if (CMENU_is_popup(item))
+  if (CMENU_is_popup(item) && !item->exec)
   {
     QPopupMenu *popup = QPOPUPMENU(item);
 
     if (popup)
     {
+    	item->exec = true;
+    	CMenu::enableAccel(item, true);
+    	
     	if (MISSING(x) || MISSING(y))
       	popup->exec(QCursor::pos());
 			else
       	popup->exec(QPoint(VARG(x), VARG(y)));
+      	
+      item->exec = false;
       
       qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput, 0);
 		}
@@ -950,6 +955,10 @@ void CMenu::hidden(void)
 
 void CMenu::enableAccel(CMENU *item, bool enable)
 {
+	// Do not disable shortcuts when a menu is executed
+	if (item->exec && !enable)
+		return;
+
 	//if (((QString)(*item->accel)).latin1())
 	//	qDebug("CMenu::enableAccel: %p %s '%s'", item, enable ? "1" : "0", ((QString)(*item->accel)).latin1());
 

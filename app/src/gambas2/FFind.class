@@ -216,8 +216,8 @@ END
 
 PUBLIC SUB cmbFind_KeyPress()
 
-  IF Key.Code = Key.Escape THEN ME.Hide
-  IF Key.Code = Key["F"] AND Key.Control THEN ME.Hide
+  'IF Key.Code = Key.Escape THEN ME.Hide
+  'IF Key.Code = Key["F"] AND Key.Control THEN ME.Hide
 
 END
 
@@ -573,5 +573,14 @@ PUBLIC SUB Cancel()
   
   $bStop = TRUE
   $bCanceled = TRUE
+  
+END
+
+PUBLIC SUB HandleEscape() AS Boolean
+  
+  IF Application.ActiveControl = cmbFind OR IF Application.ActiveControl = cmbReplace THEN 
+    ME.Hide
+    RETURN TRUE
+  ENDIF
   
 END

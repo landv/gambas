@@ -118,6 +118,7 @@ static void get_selection(QTextEdit *wid, int *start, int *length)
 MyTextEdit::MyTextEdit(QWidget *parent, const char *name)
   : QTextEdit( parent, name )
 {
+	setMargin(0);
   viewport()->setMouseTracking(true);
 }
 

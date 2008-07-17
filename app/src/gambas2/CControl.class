@@ -14,6 +14,7 @@ PUBLIC Kind AS String
 PUBLIC Virtual AS Boolean
 PUBLIC Unknown AS Boolean
 PUBLIC Tag AS Variant
+PUBLIC DrawWith AS String
 
 'STATIC PUBLIC Properties AS NEW Collection
 'STATIC PUBLIC PropertiesInOrder AS NEW Collection
@@ -69,8 +70,8 @@ PRIVATE FUNCTION CreateControl(sName AS String, sClass AS String, hParent AS Obj
 
   bExist = CComponent.Classes.Exist(sClass)
   IF bExist THEN
-    sDrawWith = CComponent.Classes[sClass].DrawWith
-    IF sDrawWith THEN sClass = sDrawWith
+    DrawWith = CComponent.Classes[sClass].DrawWith
+    IF DrawWith THEN sClass = DrawWith
   ENDIF
 
   SELECT CASE LCase(sClass)
@@ -700,7 +701,10 @@ END
 
 PUBLIC SUB UpdateName()
   
-  SELECT CASE Kind
+  SELECT CASE Object.Type(Control)
+
+    CASE "TextBox", "TextArea"
+      IF DrawWith THEN Control.Text = Name
 
     CASE "TreeView", "ListView", "ColumnView", "IconView"
       Control["A"].Text = Name

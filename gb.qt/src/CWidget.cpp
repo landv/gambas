@@ -1659,7 +1659,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			GB.Ref(control);
 			GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
 		}
-
+		
 		CWINDOW_activate(control);
     //GB.Raise(control, EVENT_GotFocus, 0);
   }

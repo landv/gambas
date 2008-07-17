@@ -12,6 +12,8 @@ PRIVATE $bInTreeView AS Boolean
 PRIVATE $bInRename AS Boolean
 PRIVATE $sKeyInfo AS String
 
+PUBLIC NoEscapeKey AS Boolean
+
 PUBLIC SUB _new()
 
   'DEBUG ME
@@ -69,6 +71,8 @@ PUBLIC SUB Form_Open()
   tabProperty_Click
   
   mnuOpenExample.Tag = "."
+  
+  TRY Project.ActiveForm.SetFocus
 
 END
 
@@ -1283,7 +1287,10 @@ PUBLIC SUB tvwProject_Enter()
 END
 
 PUBLIC SUB HidePanels()
-  
+
+  IF FOutput.HandleEscape() THEN RETURN
+  IF FFind.HandleEscape() THEN RETURN
+    
   Action["find"].Value = FALSE
   Action["console"].Value = FALSE
   Balloon.Hide
@@ -1294,7 +1301,7 @@ END
 PUBLIC SUB Form_KeyPress()
   
   IF Key.Code = Key.Escape THEN HidePanels
-  
+    
 END
 
 PUBLIC SUB ActivatePropertyTab()
