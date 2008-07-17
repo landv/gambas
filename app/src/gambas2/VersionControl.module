@@ -254,3 +254,15 @@ PUBLIC SUB HasConflict() AS Boolean
   ENDIF  
  
 END
+
+PUBLIC SUB GetVersion(sDir AS String) AS String
+  
+  DIM sRes AS String
+  
+  IF Exist(sDir &/ ".svn") THEN
+    SHELL "cd " & Quote.Shell(sDir) & "; LC_ALL=C svn info" TO sRes
+    TRY sRes = Scan(sRes, "*\nRevision: *\n*")[1]
+    RETURN sRes
+  ENDIF
+  
+END
