@@ -1095,18 +1095,7 @@ void CLASS_load_without_init(CLASS *class)
   {
     desc = class->table[i].desc;
 
-    switch (desc->gambas.val4)
-    {
-      case CD_PROPERTY_ID: desc->gambas.name = "p"; break;
-      case CD_VARIABLE_ID: desc->gambas.name = "v"; break;
-      case CD_METHOD_ID: desc->gambas.name = "m"; break;
-      case CD_STATIC_PROPERTY_ID: desc->gambas.name = "P"; break;
-      case CD_STATIC_VARIABLE_ID: desc->gambas.name = "V"; break;
-      case CD_STATIC_METHOD_ID: desc->gambas.name = "M"; break;
-      case CD_CONSTANT_ID: desc->gambas.name = "C"; break;
-      case CD_EVENT_ID: desc->gambas.name = ":"; break;
-      case CD_EXTERN_ID: desc->gambas.name = "X"; break;
-    }
+		desc->gambas.name = CLASS_DESC_get_type_name(desc);
 
     conv_type(class, &desc->gambas.type);
 

@@ -175,6 +175,7 @@ typedef
 #define CLASS_DESC_get_type(d) (*(d)->gambas.name)
 #define CLASS_DESC_SELF (-1)
 
-PUBLIC const char *CLASS_DESC_get_signature(CLASS_DESC *cd);
+const char *CLASS_DESC_get_signature(CLASS_DESC *cd);
+const char *CLASS_DESC_get_type_name(CLASS_DESC *desc);
 
 #endif

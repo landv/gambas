@@ -772,6 +772,24 @@ CLASS *CLASS_replace_global(const char *name)
 }
 
 
+const char *CLASS_DESC_get_type_name(CLASS_DESC *desc)
+{
+	switch (desc->gambas.val4)
+	{
+		case CD_PROPERTY_ID: return "p";
+		case CD_VARIABLE_ID: return "v";
+		case CD_METHOD_ID: return "m";
+		case CD_STATIC_PROPERTY_ID: return "P";
+		case CD_STATIC_VARIABLE_ID: return "V";
+		case CD_STATIC_METHOD_ID: return "M";
+		case CD_CONSTANT_ID: return "C";
+		case CD_EVENT_ID: return ":";
+		case CD_EXTERN_ID: return "X";
+		default: return "?";
+	}
+}
+
+
 void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *first)
 {
   static const char *nonher[] = { "_new", "_free", "_init", "_exit", NULL };
@@ -781,6 +799,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
   const char *name;
   const char **pnonher;
   CLASS *parent;
+  char type;
   
 	#if DEBUG_DESC
   fprintf(stderr, "\n---- %s\n", class->name);
@@ -811,9 +830,15 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
     for (j = 0; j < n_desc; j++)
     {
       if (CLASS_is_native(class))
+      {
         name = &(desc[j].gambas.name[1]);
+        type = CLASS_DESC_get_type(&desc[j]);
+      }
       else
+      {
         name = desc[j].gambas.name;
+        type = *CLASS_DESC_get_type_name(&desc[j]);
+      }
 
 			// A inherited symbol has two or more entries in the table. Only the first one
 			// will be used, and so it must point at the new description, not the inherited one.
@@ -824,14 +849,17 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 				if (ind != NO_SYMBOL)
 				{
 					#if DEBUG_DESC
-					fprintf(stderr, "%s: [%d] %p -> %p\n", name, ind, class->table[ind].desc, &desc[j]);
+					fprintf(stderr, "%s: [%d] (%p %d) := (%p %d)\n", name, ind, class->table[ind].desc, class->table[ind].desc? class->table[ind].desc->gambas.val1 : 0, &desc[j], desc[j].gambas.val1);
 					#endif
 					class->table[ind].desc = &desc[j];
 					class->table[ind].sort = 0;
 					class->table[ind].name = ".";
 					class->table[ind].len = 1;
-					if (!desc[j].gambas.val1 && index(CD_CALL_SOMETHING_LIST, CLASS_DESC_get_type(&desc[j])) != NULL)
+					if (!desc[j].gambas.val1 && index(CD_CALL_SOMETHING_LIST, type) != NULL)
 					{
+						#if DEBUG_DESC
+						fprintf(stderr, "'%s' gambas.val1: %d -> %d\n", desc[j].gambas.name, desc[j].gambas.val1, class->parent->table[ind].desc->gambas.val1);
+						#endif
 						desc[j].gambas.val1 = class->parent->table[ind].desc->gambas.val1;
 					}
 				}

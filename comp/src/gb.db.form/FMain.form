@@ -21,6 +21,7 @@
     { DataBrowser1 DataBrowser
       MoveScaled(2,2,59,18)
       Expand = True
+      Control = False
       Columns = ["id", "active", "firstname", "salary"]
       Orientation = Align.Top
     }
@@ -99,6 +100,7 @@
         }
         { DataControl7 DataControl
           MoveScaled(1,31,42,3)
+          Expand = True
           Field = "comment"
         }
       }
