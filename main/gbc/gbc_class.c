@@ -573,7 +573,6 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 }
 
 
-
 static void reorder_decl(CLASS *class, VARIABLE *tvar, const char *desc)
 {
   int count;
@@ -609,14 +608,13 @@ static void reorder_decl(CLASS *class, VARIABLE *tvar, const char *desc)
         pos += var->size;
 
         if (JOB->verbose)
-          printf(" %s", TABLE_get_symbol_name(class->table, var->index));
+          printf(" %s (%d) ", TABLE_get_symbol_name(class->table, var->index), var->pos);
       }
     }
 
     if (JOB->verbose)
       printf("\n");
   }
-
 }
 
 

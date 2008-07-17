@@ -1,30 +1,30 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserControl
+Export
+Inherits UserControl
 
 'PROPERTY Border AS Integer "<Border>"
-PROPERTY Columns AS String[]
-PROPERTY Control AS Boolean
-PROPERTY READ GridView AS GridView
-PROPERTY Header AS Boolean
-PROPERTY Orientation AS Integer
+Property Columns As String[]
+Property Control As Boolean
+Property Read GridView As GridView
+Property Header As Boolean
+Property Orientation As Integer
 
-PUBLIC CONST _Properties AS String = "*,Control=True,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
+Public Const _Properties As String = "*,Control=True,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
 
-PRIVATE $hForm AS FBrowser
+Private $hForm As FBrowser
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  $hForm = NEW FBrowser(ME)
+  $hForm = New FBrowser(Me)
   
-END
+End
 
-PUBLIC SUB Refresh()
+Public Sub Refresh()
   
   $hForm.Update
   
-END
+End
 
 
 ' PRIVATE FUNCTION Border_Read() AS Integer
@@ -39,57 +39,57 @@ END
 '   
 ' END
 
-PRIVATE FUNCTION Columns_Read() AS String[]
+Private Function Columns_Read() As String[]
   
-  RETURN $hForm.DataView.Columns
+  Return $hForm.DataView.Columns
   
-END
+End
 
-PRIVATE SUB Columns_Write(aCol AS String[])
+Private Sub Columns_Write(aCol As String[])
 
   $hForm.DataView.Columns = aCol  
   
-END
+End
 
-PRIVATE FUNCTION Control_Read() AS Boolean
+Private Function Control_Read() As Boolean
   
-  RETURN $hForm.Panel.Visible
+  Return $hForm.Panel.Visible
   
-END
+End
 
-PRIVATE SUB Control_Write(bVisible AS Boolean)
+Private Sub Control_Write(bVisible As Boolean)
   
   $hForm.Panel.Visible = bVisible
   
-END
+End
 
-PRIVATE FUNCTION GridView_Read() AS GridView
+Private Function GridView_Read() As GridView
   
-  RETURN $hForm.DataView.GridView
+  Return $hForm.DataView.GridView
   
-END
+End
 
 
-PRIVATE FUNCTION Header_Read() AS Boolean
+Private Function Header_Read() As Boolean
   
-  RETURN $hForm.DataView.Header <> GridView.None
+  Return $hForm.DataView.Header <> GridView.None
   
-END
+End
 
-PRIVATE SUB Header_Write(bHeader AS Boolean)
+Private Sub Header_Write(bHeader As Boolean)
   
   $hForm.DataView.Header = If(bHeader, GridView.Horizontal, GridView.None)
   
-END
+End
 
-PRIVATE FUNCTION Orientation_Read() AS Integer
+Private Function Orientation_Read() As Integer
 
-  RETURN $hForm.GetOrientation()  
+  Return $hForm.GetOrientation()  
 
-END
+End
 
-PRIVATE SUB Orientation_Write(Value AS Integer)
+Private Sub Orientation_Write(Value As Integer)
 
   $hForm.SetOrientation(Value)
 
-END
+End

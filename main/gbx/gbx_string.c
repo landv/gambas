@@ -770,14 +770,27 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
   if (lp > ls)
     return 0;
 
-	ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
+  if (is < 0)
+    is += ls;
+  else if (is == 0)
+    is = right ? ls : 1;
+  
+  ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
 
-	if (is < 0)
-		is = ls - is;
-	else if (is == 0)
-		is = right ? ls : 1;
-	else if (is > ls)
-		return 0;
+  if (is > ls)
+  {
+  	if (!right)
+    	return 0;
+    else
+    	is = ls;
+  }
+  else if (is < lp)
+  {
+  	if (right)
+    	return 0;
+    else if (is < 1)
+    	is = 1;
+  }
 
 	is--;
 

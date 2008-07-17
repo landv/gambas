@@ -266,34 +266,36 @@ Private Sub Search(bBack As Boolean)
   
     Do
       If iCol Then
-        sLine = edtOutput.Lines[iLine].Text
+        sLine = edtOutput.Lines[iLine]
         If bCase Then sLine = String.UCase(sLine)
         iPos = String.RInStr(sLine, sFind, iCol)
         If iPos Then
           Dec iPos
+          'edtOutput.SetFocus
           edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
           Return
         Endif
       Endif
-      If iLine = iStart And If bLoop Then Return
+      If iLine = iStart And If bLoop Then Goto NOT_FOUND
       Dec iLine
       If iLine < 0 Then iLine = edtOutput.Lines.Count - 1
-      iCol = edtOutput.Lines[iLine].Length
+      iCol = String.Len(edtOutput.Lines[iLine])
       bLoop = True
     Loop
 
   Else
   
     Do
-      sLine = edtOutput.Lines[iLine].Text
+      sLine = edtOutput.Lines[iLine]
       If bCase Then sLine = String.UCase(sLine)
       iPos = String.InStr(sLine, sFind, iCol + 1)
       If iPos Then
         Dec iPos
+        'edtOutput.SetFocus
         edtOutput.Select(iLine, iPos, iLine, iPos + String.Len(sFind))
         Return
       Endif
-      If iLine = iStart And If bLoop Then Return
+      If iLine = iStart And If bLoop Then Goto NOT_FOUND
       Inc iLine
       If iLine >= edtOutput.Lines.Count Then iLine = 0
       iCol = 0
@@ -301,6 +303,10 @@ Private Sub Search(bBack As Boolean)
     Loop
     
   Endif
+  
+NOT_FOUND:
+
+  Balloon.Warning(("Search string cannot be found."), txtFind)
   
 End
 
@@ -312,7 +318,12 @@ End
 
 Public Sub btnNext_Click()
 
-  Search(False)
+  If Not txtFind.Text Then
+    btnFind.Value = True
+    txtFind.SetFocus
+  Else
+    Search(False)
+  Endif
 
 End
 
@@ -329,8 +340,8 @@ Public Sub btnFind_Click()
   btnNext.Visible = btnFind.Value
   btnPrev.Visible = btnFind.Value
   btnCase.Visible = btnFind.Value
-  mnuPrev.Visible = btnFind.Value
-  mnuNext.Visible = btnFind.Value
+  'mnuPrev.Visible = btnFind.Value
+  'mnuNext.Visible = btnFind.Value
   txtFind.Font = Font["0"]
   mnuFind.Value = btnFind.Value
   If btnFind.Value Then txtFind.SetFocus
@@ -365,11 +376,34 @@ End
 Public Sub edtOutput_GotFocus()
 
   mnuEditor.Enabled = True
-
+  btnFind.Value = False
+  
 End
 
 Public Sub edtOutput_LostFocus()
 
   mnuEditor.Enabled = False
 
+End
+
+Public Sub txtFind_KeyPress()
+
+  If Key.Code = Key.F3 
+    If Key.Normal Then 
+      btnNext_Click
+    Else If Key.Shift Then 
+      btnPrev_Click
+    Endif
+    Stop Event 
+  Endif
+
+End
+
+Public Sub HandleEscape() As Boolean
+  
+  If Application.ActiveControl = txtFind Then 
+    btnFind.Value = False
+    Return True
+  Endif
+  
 End

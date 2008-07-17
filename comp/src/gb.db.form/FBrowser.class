@@ -1,15 +1,15 @@
 ' Gambas class file
 
-PUBLIC Panel AS Panel
-PUBLIC DataView AS DataView
+Public Panel As Panel
+Public DataView As DataView
 
-PRIVATE $hSrc AS DataSource
+Private $hSrc As DataSource
 'PRIVATE $iIndex AS Integer
-PRIVATE $bLock AS Boolean
-PRIVATE $iOrientation AS Integer
-PRIVATE $W AS Integer
+Private $bLock As Boolean
+Private $iOrientation As Integer
+Private $W As Integer
 
-PUBLIC SUB _new()
+Public Sub _new()
   
   Panel = panBrowser
   DataView = dvwBrowser
@@ -18,67 +18,67 @@ PUBLIC SUB _new()
   SetOrientation(Align.Bottom)
   Update
   
-END
+End
 
 
-PUBLIC SUB btnPrev_Click()
+Public Sub btnPrev_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)
   'IF NOT hSrc THEN RETURN
-  IF $hSrc.MovePrevious() THEN RETURN
+  If $hSrc.MovePrevious() Then Return
   dvwBrowser.MovePrevious
   'DEC $iIndex
 
-END
+End
 
-PUBLIC SUB btnFirst_Click()
+Public Sub btnFirst_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)
   'IF NOT hSrc THEN RETURN
-  IF $hSrc.MoveFirst() THEN RETURN
+  If $hSrc.MoveFirst() Then Return
   dvwBrowser.MoveFirst
   '$iIndex = 0
 
-END
+End
 
-PUBLIC SUB btnNext_Click()
+Public Sub btnNext_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)  
   'IF NOT hSrc THEN RETURN
-  IF $hSrc.MoveNext() THEN RETURN
+  If $hSrc.MoveNext() Then Return
   dvwBrowser.MoveNext
   'INC $iIndex
 
-END
+End
 
-PUBLIC SUB btnLast_Click()
+Public Sub btnLast_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)
   'IF NOT hSrc THEN RETURN
-  IF $hSrc.MoveLast() THEN RETURN
+  If $hSrc.MoveLast() Then Return
   dvwBrowser.MoveLast
   '$iIndex = dvwBrowser.Count - 1
 
-END
+End
 
-PUBLIC SUB btnSave_Click()
+Public Sub btnSave_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)  
   'IF NOT hSrc THEN RETURN
   $hSrc.Save
 
-END
+End
 
-PUBLIC SUB Update()
+Public Sub Update()
 
-  DIM bEnabled AS Boolean  
-  DIM bVisible AS Boolean
+  Dim bEnabled As Boolean  
+  Dim bVisible As Boolean
   
-  $hSrc = Common.GetSource(ME)
-  IF $hSrc THEN
-    bEnabled = TRUE '$hSrc.Index >= 0
-    bVisible = NOT $hSrc.ReadOnly
-  ENDIF
+  $hSrc = Common.GetSource(Me)
+  If $hSrc Then
+    bEnabled = True '$hSrc.Index >= 0
+    bVisible = Not $hSrc.ReadOnly
+  Endif
 
   btnFirst.Enabled = bEnabled
   btnNext.Enabled = bEnabled
@@ -95,19 +95,19 @@ PUBLIC SUB Update()
   
   dvwBrowser.Refresh
   
-  IF $hSrc AND IF NOT bVisible THEN btnFirst_Click
+  If $hSrc And If Not bVisible Then btnFirst_Click
   
-END
+End
 
-PUBLIC SUB btnReload_Click()
+Public Sub btnReload_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)  
   'IF NOT hSrc THEN RETURN
   $hSrc.Cancel
 
-END
+End
 
-PUBLIC SUB btnNew_Click()
+Public Sub btnNew_Click()
 
   'DIM hSrc AS DataSource = Common.GetSource(ME)  
   'IF NOT hSrc THEN RETURN
@@ -115,65 +115,65 @@ PUBLIC SUB btnNew_Click()
   dvwBrowser.Create
   '$iIndex = -1
 
-END
+End
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  dvwBrowser.Visible = ME.Height > 48
-  panBrowser.Expand = NOT dvwBrowser.Visible
+  dvwBrowser.Visible = Me.Height > 48
+  panBrowser.Expand = Not dvwBrowser.Visible
 
-END
+End
 
-PUBLIC SUB dvwBrowser_Activate()
+Public Sub dvwBrowser_Activate()
 
-  IF $hSrc.MoveTo(dvwBrowser.Index) THEN
+  If $hSrc.MoveTo(dvwBrowser.Index) Then
     dvwBrowser.MoveTo($hSrc.Index)
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB btnRemove_Click()
+Public Sub btnRemove_Click()
 
   $hSrc.Remove
   dvwBrowser.Remove
 
-END
+End
 
-PUBLIC SUB GetOrientation() AS Integer
+Public Sub GetOrientation() As Integer
   
-  RETURN $iOrientation
+  Return $iOrientation
   
-END
+End
 
-PUBLIC SUB SetOrientation(iOrientation AS Integer)
+Public Sub SetOrientation(iOrientation As Integer)
   
-  IF $iOrientation = iOrientation THEN RETURN 
+  If $iOrientation = iOrientation Then Return 
   
-  SELECT CASE iOrientation
-    CASE Align.Top
-      ME.Arrangement = Arrange.Vertical
+  Select Case iOrientation
+    Case Align.Top
+      Me.Arrangement = Arrange.Vertical
       panBrowser.Next = dvwBrowser
       panBrowser.Arrangement = Arrange.Horizontal
       panBrowser.H = $W
-    CASE Align.Bottom
-      ME.Arrangement = Arrange.Vertical
+    Case Align.Bottom
+      Me.Arrangement = Arrange.Vertical
       panBrowser.Previous = dvwBrowser
       panBrowser.Arrangement = Arrange.Horizontal
       panBrowser.H = $W
-    CASE Align.Left
-      ME.Arrangement = Arrange.Horizontal
+    Case Align.Left
+      Me.Arrangement = Arrange.Horizontal
       panBrowser.Next = dvwBrowser
       panBrowser.Arrangement = Arrange.Vertical
       panBrowser.W = $W
-    CASE Align.Right
-      ME.Arrangement = Arrange.Horizontal
+    Case Align.Right
+      Me.Arrangement = Arrange.Horizontal
       panBrowser.Previous = dvwBrowser
       panBrowser.Arrangement = Arrange.Vertical
       panBrowser.W = $W
-    DEFAULT 
-      RETURN
-  END SELECT
+    Default 
+      Return
+  End Select
   
   $iOrientation = iOrientation
   
-END
+End

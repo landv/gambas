@@ -69,6 +69,8 @@ Public Sub Form_Open()
   
   mnuOpenExample.Tag = "."
 
+  Try Project.ActiveForm.SetFocus
+
 End
 
 
@@ -1285,6 +1287,9 @@ Public Sub tvwProject_Enter()
 End
 
 Public Sub HidePanels()
+  
+  If FOutput.HandleEscape() Then Return
+  If FFind.HandleEscape() Then Return
   
   Action["find"].Value = False
   Action["console"].Value = False

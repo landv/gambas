@@ -195,7 +195,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 
   #ifdef DEBUG
   NSection++;
-  printf("Section #%d %s %08lX %d %d\n", NSection + 1, sec_name, (int)(current - (char *)Class->data), one, section_size);
+  fprintf(stderr, "Section #%d %s %08lX %d %d\n", NSection + 1, sec_name, (int)(current - (char *)Class->data), one, section_size);
   #endif
 
   *section += section_size + sizeof(int);
@@ -575,12 +575,19 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 
   /* Computes variable position. Really needed for 64 bits, but ctype must be converted anyway... */
   
+  #ifdef DEBUG
+  fprintf(stderr, "Compute variable position for %s\n", class->name);
+  #endif
+  
 	pos = 0;
 	for (i = 0; i < class->load->n_stat; i++)
 	{
 		var = &class->load->stat[i];
 		conv_ctype(&var->type);
 		var->pos = pos;
+		#ifdef DEBUG
+		fprintf(stderr, "Static #%d: %d\n", i, var->pos);
+		#endif
 		pos += sizeof_ctype(class, var->type);
 	}
 	info->s_static = pos;
@@ -591,6 +598,9 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 		var = &class->load->dyn[i];
 		conv_ctype(&var->type);
 		var->pos = pos;
+		#ifdef DEBUG
+		fprintf(stderr, "Dynamic #%d: %d\n", i, var->pos);
+		#endif
 		pos += sizeof_ctype(class, var->type);
 	}
 	info->s_dynamic = pos;
@@ -678,7 +688,7 @@ void CLASS_load_without_init(CLASS *class)
     return;
 
   #if DEBUG_LOAD
-    printf("Loading class %s (%p)...\n", class->name, class);
+    fprintf(stderr, "Loading class %s (%p)...\n", class->name, class);
   #endif
 
   #ifdef DEBUG
@@ -811,18 +821,7 @@ void CLASS_load_without_init(CLASS *class)
   {
     desc = class->table[i].desc;
 
-    switch (desc->gambas.val4)
-    {
-      case CD_PROPERTY_ID: desc->gambas.name = "p"; break;
-      case CD_VARIABLE_ID: desc->gambas.name = "v"; break;
-      case CD_METHOD_ID: desc->gambas.name = "m"; break;
-      case CD_STATIC_PROPERTY_ID: desc->gambas.name = "P"; break;
-      case CD_STATIC_VARIABLE_ID: desc->gambas.name = "V"; break;
-      case CD_STATIC_METHOD_ID: desc->gambas.name = "M"; break;
-      case CD_CONSTANT_ID: desc->gambas.name = "C"; break;
-      case CD_EVENT_ID: desc->gambas.name = ":"; break;
-      case CD_EXTERN_ID: desc->gambas.name = "X"; break;
-    }
+		desc->gambas.name = CLASS_DESC_get_type_name(desc);
 
     conv_type(class, &desc->gambas.type);
 

@@ -214,18 +214,18 @@ Public Sub cmbReplace_Activate()
 
 End
 
-Public Sub cmbFind_KeyPress()
-
-  If Key.Code = Key.Escape Then Me.Hide
-  If Key.Code = Key["F"] And Key.Control Then Me.Hide
-
-End
-
-Public Sub cmbReplace_KeyPress()
-
-  cmbFind_KeyPress
-
-End
+' Public Sub cmbFind_KeyPress()
+' 
+'   If Key.Code = Key.Escape Then Me.Hide
+'   If Key.Code = Key["F"] And Key.Control Then Me.Hide
+' 
+' End
+' 
+' Public Sub cmbReplace_KeyPress()
+' 
+'   cmbFind_KeyPress
+' 
+' End
 
 Private Sub GetOptions(hForm As Object)
 
@@ -574,4 +574,13 @@ Public Sub Cancel()
   $bStop = True
   $bCanceled = True
   
+End
+
+Public Sub HandleEscape() As Boolean
+
+  If Application.ActiveControl = cmbFind Or If Application.ActiveControl = cmbReplace Then
+    Me.Hide
+    Return True
+  Endif
+
 End

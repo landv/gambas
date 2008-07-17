@@ -1301,7 +1301,7 @@ bool GEditor::event(QEvent *e)
 		else
     	ensureVisible(x * charWidth, vy * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
 		center = false;
-    return true;
+    return false;
   }
   /*else if (e->type() == QEvent::KeyPress)
   {
@@ -1341,6 +1341,7 @@ void GEditor::blinkTimerTimeout()
 void GEditor::focusInEvent(QFocusEvent *e)
 {
   startBlink();
+	QApplication::postEvent(this, new QEvent(EVENT_ENSURE_VISIBLE));
   QGridView::focusInEvent(e);
 }
 
