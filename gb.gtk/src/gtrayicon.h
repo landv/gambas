@@ -44,17 +44,20 @@ public:
 	static int count() { return g_list_length(trayicons); }
 	static gTrayIcon *get(int index) { return (gTrayIcon *)g_list_nth_data(trayicons, index); }
 	static void exit();	
+	static gPicture *defaultIcon();
 
 //"Private"
 	GtkWidget *plug;
+	GtkWidget *icon;
 	gPicture *_icon;
 	char *buftext;
 	bool onHide;
-	GdkPixbuf *getIcon();
+	gPicture *getIcon() { return _icon ? _icon : defaultIcon(); }
 	void updateMask();
 	void updateTooltip();
 	
 	static GList *trayicons;
+	static gPicture *_default_icon;
 };
 
 #endif

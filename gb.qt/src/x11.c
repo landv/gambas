@@ -290,6 +290,7 @@ PUBLIC void X11_window_dock(Window window)
   XSync(_display, 0);
 }
 
+
 PUBLIC void X11_window_startup(Window window, int x, int y, int w, int h)
 {
   XSizeHints s;

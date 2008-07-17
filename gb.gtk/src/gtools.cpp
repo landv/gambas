@@ -1158,13 +1158,13 @@ void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_retu
 	{
 		if (gdk_pixbuf_get_has_alpha (pixbuf))
 		{
-		*mask_return = gdk_pixmap_new (gdk_screen_get_root_window (screen),
-						gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height (pixbuf), 1);
-	
-		gdk_pixbuf_render_threshold_alpha (pixbuf, *mask_return,
-								0, 0, 0, 0,
-								gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height (pixbuf),
-								alpha_threshold);
+			*mask_return = gdk_pixmap_new (gdk_screen_get_root_window (screen),
+							gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height (pixbuf), 1);
+		
+			gdk_pixbuf_render_threshold_alpha (pixbuf, *mask_return,
+									0, 0, 0, 0,
+									gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height (pixbuf),
+									alpha_threshold);
 		}
 		else
 			*mask_return = NULL;
@@ -1275,7 +1275,7 @@ void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
 		"font-desc", font->desc(),
 		"underline", font->underline() ? PANGO_UNDERLINE_SINGLE : PANGO_UNDERLINE_NONE,
 		"strikethrough", font->strikeOut(),
-		NULL);	
+		(void *)NULL);	
 }
 
 void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
