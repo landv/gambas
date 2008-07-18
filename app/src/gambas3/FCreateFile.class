@@ -13,7 +13,7 @@ Public Sub Run(sPath As String, sDir As String, sType As String)
   $sPath = sPath
   $sDir = sDir
   $sType = sType
-  If NOT Me.ShowModal() Then Return
+  If Not Me.ShowModal() Then Return
   
 End
 
@@ -32,14 +32,14 @@ Public Sub lstType_Click()
   
   sPrefix = lstType.Current.Tag
   For Each hChild In panOption.Children
-    If NOT hChild.Tag Then Continue
+    If Not hChild.Tag Then Continue
     hChild.Visible = Split(hChild.Tag, ",").Exist(sPrefix)
-    bOpt = bOpt OR hChild.Visible
+    bOpt = bOpt Or hChild.Visible
   Next
   
   lblOption.Visible = bOpt
   
-  If NOT $bDoNotSetName Then   
+  If Not $bDoNotSetName Then   
     sPrefix = UCase(Left(sPrefix)) & Mid(sPrefix, 2)
     Object.Lock(txtName)
     txtName.Text = Project.GetNewName(sPrefix)
@@ -67,7 +67,7 @@ Public Sub Form_Open()
   
   panForm.Visible = Project.AllowForm()
   
-  If NOT $sType Then $sType = "module"
+  If Not $sType Then $sType = "module"
   For Each hCtrl In lstType.Children
     If hCtrl.Tag = $sType Then 
       lstType.Select(hCtrl)
@@ -154,7 +154,7 @@ Private Sub CreateFile() As Boolean
       If chkExt.Value Then
         If sType = "image" Then 
           sName = File.SetExt(sName, LCase(cmbImageType.Text))
-        Else If sType = "html" OR sType = "css" Then
+        Else If sType = "html" Or sType = "css" Then
           sName = File.SetExt(sName, sType)
         Endif
       Endif
@@ -217,7 +217,7 @@ Private Sub CreateFile() As Boolean
               "  MoveScaled(0, 0, 64, 64)\n"
       
       If chkDialog.Value Then
-        sTemp &= "  Border = Window.Fixed\n"
+        'sTemp &= "  Border = Window.Fixed\n"
         sTemp &= "{ HBox1 HBox\n"
                  "  MoveScaled(1,60,62,3)\n"
                  "  Spacing = 8\n"
@@ -292,7 +292,7 @@ Private Sub ImportDependencies(sName As String, sOrig As String, bLink As Boolea
   hIn = Open sForm
   hOut = Open Temp$("form") For Create 
   
-  While NOT Eof(hIn)
+  While Not Eof(hIn)
   
     Line Input #hIn, sLine
     
@@ -300,17 +300,17 @@ Private Sub ImportDependencies(sName As String, sOrig As String, bLink As Boolea
     If iPos = 0 Then Goto NEXT_LINE
     
     sImg = Scan(sLine, "*Picture\\[\"*\"]")[1]
-    If sImg LIKE "icon:/*" Then Goto NEXT_LINE
+    If sImg Like "icon:/*" Then Goto NEXT_LINE
     
     sImportDir = Project.Dir &/ "import"
-    If NOT Exist(sImportDir) Then Project.InsertDirectory(sImportDir)
+    If Not Exist(sImportDir) Then Project.InsertDirectory(sImportDir)
     sImportDir &/= sName
-    If NOT Exist(sImportDir) Then Project.InsertDirectory(sImportDir)
+    If Not Exist(sImportDir) Then Project.InsertDirectory(sImportDir)
     
     sDestImg = sImportDir &/ File.Name(sImg)
     
     If Exist(sOrig &/ sImg) Then
-      If NOT Exist(sDestImg) Then
+      If Not Exist(sDestImg) Then
         Project.InsertFile(File.Name(sDestImg), File.Dir(sDestImg), sOrig &/ sImg, True, bLink)
       Endif
       sLine = Left(sLine, iPos + 7) & Chr$(34) & "import" &/ sName &/ File.Name(sDestImg) & Chr$(34) & "]"    
@@ -405,7 +405,7 @@ End
 Public Sub tabFile_Click()
 
   If tabFile.Index = 1 Then 
-    If NOT $bInit Then 
+    If Not $bInit Then 
       Settings.Read(fchExisting)
       $bInit = True
     Endif

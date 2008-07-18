@@ -87,3 +87,9 @@ Public Procedure Insert(Table As String, Fields As String[], Values As String[])
   modMain.RunQuery(modMain.$Query)
 
 End
+
+Public Procedure Rename(Table As String, NewTable As String)
+
+  modMain.RunQuery("RENAME TABLE " & DB.Quote(Table) & " TO " & DB.Quote(NewTable))
+
+End
