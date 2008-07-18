@@ -214,18 +214,18 @@ PUBLIC SUB cmbReplace_Activate()
 
 END
 
-PUBLIC SUB cmbFind_KeyPress()
-
-  'IF Key.Code = Key.Escape THEN ME.Hide
-  'IF Key.Code = Key["F"] AND Key.Control THEN ME.Hide
-
-END
-
-PUBLIC SUB cmbReplace_KeyPress()
-
-  cmbFind_KeyPress
-
-END
+' PUBLIC SUB cmbFind_KeyPress()
+' 
+'   'IF Key.Code = Key.Escape THEN ME.Hide
+'   'IF Key.Code = Key["F"] AND Key.Control THEN ME.Hide
+' 
+' END
+' 
+' PUBLIC SUB cmbReplace_KeyPress()
+' 
+'   cmbFind_KeyPress
+' 
+' END
 
 PRIVATE SUB GetOptions(hForm AS Object)
 

@@ -706,8 +706,14 @@ PUBLIC SUB UpdateName()
     CASE "TextBox", "TextArea"
       IF DrawWith THEN Control.Text = Name
 
+    CASE "TextEdit", "Editor"
+      Control.Text = Name
+
     CASE "TreeView", "ListView", "ColumnView", "IconView"
       Control["A"].Text = Name
+      
+    CASE "GridView", "TableView"
+      Control[0, 0].Text = Name
 
     CASE "ListBox"
       Control[0].Text = Name
@@ -727,7 +733,12 @@ PUBLIC SUB UpdateName()
       
     CASE ELSE
 
-      IF Unknown THEN Control.Refresh
+      IF Unknown THEN 
+        IF NOT IsMultiContainer() THEN
+          TRY Control.Text = Name
+        ENDIF
+        Control.Refresh
+      ENDIF
 
   END SELECT
   
