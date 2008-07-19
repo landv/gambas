@@ -532,6 +532,7 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
   DIM sName AS String
   DIM sLine AS String
   DIM iPos AS Integer
+  DIM sSign AS String
 
   'PRINT "ScanClass "; hModule.Name
   'DEBUG "> "; hModule.Name
@@ -661,8 +662,12 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
         NEXT
 
         'iEnd = iInd
-        TRY .Signature = "#" & Mid$(hEditor.Lines[iLine], Highlight.Positions[iStart] + 1)
-        
+        TRY sSign = Trim(Mid$(Trim(hEditor.Lines[iLine]), Highlight.Positions[iStart] + 2, -1))
+        IF NOT ERROR THEN
+          iPos = RInStr(sSign, ")")
+          sSign = Trim(Left$(sSign, iPos - 1))
+          .Signature = "#" & sSign
+        ENDIF
         
         'FOR iInd = iStart TO iEnd
         '  .Signature = .Signature & aSym[iInd] & " "

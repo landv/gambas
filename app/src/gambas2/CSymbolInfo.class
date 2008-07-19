@@ -85,13 +85,96 @@ PRIVATE SUB NextArg()
   INC $iArg  
   
   IF $iArg = $iShowArg THEN 
-    $sArgBefore = "<b>"
-    $sArgAfter = "</b>"
+    $sArgBefore = "<u>"
+    $sArgAfter = "</u>"
   ELSE 
     $sArgBefore = ""
     $sArgAfter = ""
   ENDIF
 
+END
+
+
+PRIVATE SUB MakeArgBold(sCode AS String, iShowArg AS Integer) AS String
+  
+  DIM sCar AS String
+  DIM iInd AS Integer
+  DIM aWait AS NEW String[]
+  DIM bString AS Boolean
+  DIM sSign AS String
+  DIM bOptional AS Boolean
+  
+  IF iShowArg < 0 THEN RETURN sCode
+  
+  $iArg = -1
+  $iShowArg = iShowArg
+  NextArg
+  sSign = $sArgBefore
+
+  DO
+    
+    INC iInd
+    IF iInd > Len(sCode) THEN BREAK
+    
+    sCar = Mid$(sCode, iInd, 1)
+
+    IF bString THEN
+      sSign &= sCar
+      IF sCar = "\\" THEN
+        INC iInd
+        IF iInd > Len(sCode) THEN BREAK
+        sSign &= Mid$(sCode, iInd, 1)
+      ENDIF
+      CONTINUE
+    ENDIF
+    
+    IF sCar = Chr$(34) THEN
+      sSign &= sCar
+      bString = NOT bString
+      CONTINUE
+    ENDIF
+    
+    IF sCar = "(" THEN
+      sSign &= sCar
+      aWait.Push(")")
+    ELSE IF sCar = "[" THEN
+      sSign &= sCar
+      aWait.Push("]")
+    ELSE IF aWait.Count THEN
+      sSign &= sCar
+      IF sCar = aWait[aWait.Max] THEN
+        aWait.Pop
+      ENDIF
+    ELSE IF Mid$(sCode, iInd, 9) = "OPTIONAL " THEN
+      iInd += 7
+      IF NOT bOptional THEN 
+        sSign &= " ["
+      ENDIF
+      bOptional = TRUE
+    ELSE IF sCar = "," THEN
+      sSign &= $sArgAfter 
+      IF Mid$(sCode, iInd, 11) = ", OPTIONAL " THEN
+        IF NOT bOptional THEN 
+          sSign &= " ["
+          bOptional = TRUE
+        ENDIF 
+        iInd += 9
+      ENDIF
+      sSign &= sCar
+      NextArg
+      sSign &= $sArgBefore
+    ELSE
+      sSign &= sCar
+    ENDIF
+    
+  LOOP
+  
+  IF bOptional THEN
+    sSign &= $sArgAfter & " ]"
+  ENDIF
+  
+  RETURN sSign  
+  
 END
 
 
@@ -106,118 +189,122 @@ PUBLIC FUNCTION GetSignature(OPTIONAL iShowArg AS Integer = -1) AS String
   DIM sSign AS String
 
   sSign = Signature
+  
   IF Left$(sSign) = "#" THEN
-    RETURN Mid$(sSign, 2)
-  ENDIF
-
-  bFirst = TRUE
   
-  $iArg = -1
-  $iShowArg = iShowArg
-  NextArg
+    sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
+  
+  ELSE
 
-  DO
-
-    INC iInd
-
-    IF iInd > Len(sSign) THEN BREAK
-
-
-    sCar = Mid$(sSign, iInd, 1)
-
-    IF sCar = "'" OR sCar = "(" THEN
-
-      IF sCar = "'" THEN
-        iPos = InStr(sSign, "'", iInd + 1)
-      ELSE
-        iPos = InStr(sSign, ")", iInd + 1)
-      ENDIF
-
-      IF iPos = 0 THEN BREAK
-
-      IF bFirst THEN
-        bFirst = FALSE
-      ELSE
-        sRes &= $sArgAfter & ", "
-        NextArg
-      ENDIF
-
-      sRes &= $sArgBefore & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " AS "
-
-      iInd = iPos
-      bName = TRUE
-
-      CONTINUE
-
-    ENDIF
-
-    IF sCar = "<" THEN
-
-      iPos = InStr(sSign, ">", iInd + 1)
-      IF iPos = 0 THEN BREAK
-      iInd = iPos
-      CONTINUE
-
-    ENDIF
-
-    IF sCar = "[" THEN
-
-      sRes &= $sArgAfter & " ["
-      $sArgAfter = ""
-      CONTINUE
-
-    ENDIF
-
-    IF sCar = "]" THEN
-
-      sRes &= $sArgAfter & " ] "
-      $sArgAfter = ""
-      CONTINUE
-
-    ENDIF
-
-    IF NOT bName THEN
-
-      IF bFirst THEN
-        bFirst = FALSE
-      ELSE
-        sRes &= $sArgAfter & ", "
-        NextArg
-      ENDIF
-
-      sRes &= $sArgBefore & "? AS " 
-      bName = FALSE
-
-    ENDIF
+    bFirst = TRUE
     
-    'IF iInd = Len(sSign) THEN
-    IF sCar = "." THEN
-      sRes &= $sArgAfter & ", " 
-      NextArg
-      IF $iArg >= $iShowArg THEN sRes &= "<b>"
-      sRes &= "..."
-      IF $iArg >= $iShowArg THEN sRes &= "</b>"
-      CONTINUE
-    ENDIF
-    'ENDIF
-
-    IF (sCar >= "A" AND sCar <= "Z") OR sCar = "." THEN
-
-      iPos = InStr(sSign, ";", iInd)
-      IF iPos = 0 THEN iPos = Len(sSign) + 1
-
-      sRes &= Mid$(sSign, iInd, iPos - iInd)
-
-      iInd = iPos
-      CONTINUE
-
-    ENDIF
-
-    sRes &= GetType(sCar)
-
-  LOOP
+    $iArg = -1
+    $iShowArg = iShowArg
+    NextArg
   
-  sRes &= $sArgAfter
+    DO
+  
+      INC iInd
+  
+      IF iInd > Len(sSign) THEN BREAK
+  
+      sCar = Mid$(sSign, iInd, 1)
+  
+      IF sCar = "'" OR sCar = "(" THEN
+  
+        IF sCar = "'" THEN
+          iPos = InStr(sSign, "'", iInd + 1)
+        ELSE
+          iPos = InStr(sSign, ")", iInd + 1)
+        ENDIF
+  
+        IF iPos = 0 THEN BREAK
+  
+        IF bFirst THEN
+          bFirst = FALSE
+        ELSE
+          sRes &= $sArgAfter & ", "
+          NextArg
+        ENDIF
+  
+        sRes &= $sArgBefore & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " AS "
+  
+        iInd = iPos
+        bName = TRUE
+  
+        CONTINUE
+  
+      ENDIF
+  
+      IF sCar = "<" THEN
+  
+        iPos = InStr(sSign, ">", iInd + 1)
+        IF iPos = 0 THEN BREAK
+        iInd = iPos
+        CONTINUE
+  
+      ENDIF
+  
+      IF sCar = "[" THEN
+  
+        sRes &= $sArgAfter & " ["
+        $sArgAfter = ""
+        CONTINUE
+  
+      ENDIF
+  
+      IF sCar = "]" THEN
+  
+        sRes &= $sArgAfter & " ] "
+        $sArgAfter = ""
+        CONTINUE
+  
+      ENDIF
+  
+      IF NOT bName THEN
+  
+        IF bFirst THEN
+          bFirst = FALSE
+        ELSE
+          sRes &= $sArgAfter & ", "
+          NextArg
+        ENDIF
+  
+        sRes &= $sArgBefore & "? AS " 
+        bName = FALSE
+  
+      ENDIF
+      
+      'IF iInd = Len(sSign) THEN
+      IF sCar = "." THEN
+        sRes &= $sArgAfter & ", " 
+        NextArg
+        IF $iArg >= $iShowArg THEN sRes &= "<b>"
+        sRes &= "..."
+        IF $iArg >= $iShowArg THEN sRes &= "</b>"
+        CONTINUE
+      ENDIF
+      'ENDIF
+  
+      IF (sCar >= "A" AND sCar <= "Z") OR sCar = "." THEN
+  
+        iPos = InStr(sSign, ";", iInd)
+        IF iPos = 0 THEN iPos = Len(sSign) + 1
+  
+        sRes &= Mid$(sSign, iInd, iPos - iInd)
+  
+        iInd = iPos
+        CONTINUE
+  
+      ENDIF
+  
+      sRes &= GetType(sCar)
+  
+    LOOP
+    
+    sRes &= $sArgAfter
+    
+  ENDIF
 
   IF Name = "_get" OR Name = "_put" THEN
     sRes = "[ " & sRes & " ]"
