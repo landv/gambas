@@ -119,7 +119,7 @@ PRIVATE SUB GetIcon(sPath AS String, iSize AS Integer) AS picture
   IF sIcon THEN RETURN Picture["icon:/" & CStr(iSize) &/ sIcon]
 
   IF $aImgExt.Find(File.Ext(sPath)) < 0 THEN RETURN
-  IF Stat(sPath).Size > 8192 THEN RETURN Picture["icon:/" & iSize & "/image"]
+  IF Stat(sPath).Size > 65536 THEN RETURN Picture["icon:/" & iSize & "/image"]
   
   hImage = Image.Load(sPath)
   IF NOT (hImage.Width = iSize AND hImage.Height = iSize) THEN 

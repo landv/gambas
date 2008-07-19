@@ -565,9 +565,14 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 		if (!func_id)
 			continue;
 		
+		if (!OBJECT_is_valid(parent))
+		{
+			OBJECT_detach(object);
+			continue;
+		}
+		
 		EXEC_dup(nparam);
 		result = raise_event(parent, object, func_id, nparam);
-		
 		if (result)
 			goto __RETURN;
 	}
@@ -580,7 +585,7 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 		func_id = get_event_func_id(OBJECT_event(object)->event, event_id);
 		if (func_id)
 		{
-			if (parent->class->check && (*parent->class->check)(parent))
+			if (!OBJECT_is_valid(parent))
 				OBJECT_detach(object);
 			else
 			{
@@ -605,6 +610,12 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 		func_id = get_event_func_id(obs->event, event_id);
 		if (!func_id)
 			continue;
+		
+		if (!OBJECT_is_valid(parent))
+		{
+			OBJECT_detach(object);
+			continue;
+		}
 		
 		EXEC_dup(nparam);
 		result = raise_event(parent, object, func_id, nparam);

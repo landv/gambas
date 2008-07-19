@@ -67,8 +67,7 @@ void OBJECT_exit(void);
 void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, int nparam);
 void OBJECT_create_native(void **object, CLASS *class, VALUE *param);
 
-bool OBJECT_is_valid(void *object);
-
+#define OBJECT_is_valid(_object) ((_object) && !(((OBJECT *)_object)->class->check && (*((OBJECT *)_object)->class->check)(_object)))
 #define OBJECT_has_events(_object) ((_object) && (((OBJECT *)_object)->class->n_event != 0))
 
 OBJECT *OBJECT_parent(void *object);

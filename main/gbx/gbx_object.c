@@ -395,15 +395,6 @@ bool OBJECT_is_locked(OBJECT *object)
 }
 
 
-bool OBJECT_is_valid(void *object)
-{
-  if (object == NULL)
-    return FALSE;
-
-   return !(*((OBJECT *)object)->class->check)(object);
-}
-
-
 OBJECT *OBJECT_parent(void *object)
 {
 	//if (!OBJECT_has_events(object))
