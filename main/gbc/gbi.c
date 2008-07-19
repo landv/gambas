@@ -472,7 +472,7 @@ static void preload(char **argv, char *lib)
   putenv(buf);
   putenv("GB_PRELOAD=1");
 
-  execv(argv[0], argv);
+  execvp(argv[0], argv);
 #endif
 }
 
@@ -576,10 +576,10 @@ static void run_myself(const char *path, const char *name)
 	switch (pid)
 	{
 		case 0:
-		  execv(path, (char **)argv);
+		  execvp(path, (char **)argv);
 		case -1:
 	    error(FALSE, "Cannot run sub-process: %s", strerror(errno));
-	    break;
+	    exit(1);
 	  default:
 	  	waitpid(pid, &status, 0);
 	}
