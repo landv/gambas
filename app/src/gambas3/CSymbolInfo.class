@@ -152,7 +152,7 @@ Private Sub MakeArgBold(sCode As String, iShowArg As Integer) As String
         sSign &= " ["
       Endif
       bOptional = True
-    Else If sCar = "," Then
+    Else If Mid$(sCode, iInd, 2) = ", " Then
       sSign &= $sArgAfter 
       If Mid$(sCode, iInd, 11) = ", OPTIONAL " Then
         If Not bOptional Then 
@@ -161,9 +161,16 @@ Private Sub MakeArgBold(sCode As String, iShowArg As Integer) As String
         Endif 
         iInd += 9
       Endif
-      sSign &= sCar
+      sSign &= ", "
       NextArg
       sSign &= $sArgBefore
+    Else If Mid$(sCode, iInd, 3) = "..." Then 
+      If $iShowArg > $iArg Then
+        sSign &= "<u>...</u>"
+      Else 
+        sSign &= "..."
+      Endif 
+      iInd += 2
     Else
       sSign &= sCar
     Endif
@@ -172,11 +179,14 @@ Private Sub MakeArgBold(sCode As String, iShowArg As Integer) As String
   
   If bOptional Then
     sSign &= $sArgAfter & " ]"
+  Else 
+    sSign &= $sArgAfter
   Endif
   
   Return sSign  
   
 End
+
 
 Public Function GetSignature(Optional iShowArg As Integer = -1) As String
 
@@ -275,16 +285,14 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   
       Endif
       
-      'IF iInd = Len(sSign) THEN
       If sCar = "." Then
         sRes &= $sArgAfter & ", " 
         NextArg
-        If $iArg >= $iShowArg Then sRes &= "<b>"
-        sRes &= "..."
-        If $iArg >= $iShowArg Then sRes &= "</b>"
+        If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "<u>"
+        sRes &= $sArgBefore & "..."
+        If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "</u>"
         Continue
       Endif
-      'ENDIF
   
       If (sCar >= "A" And sCar <= "Z") Or sCar = "." Then
   
@@ -307,9 +315,9 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   Endif
 
   If Name = "_get" Or Name = "_put" Then
-    sRes = "[ " & sRes & " ]"
+    sRes = "<b>[</b> " & sRes & " <b>]</b>"
   Else
-    sRes = "( " & sRes & " )"
+    sRes = "<b>(</b> " & sRes & " <b>)</b>"
   Endif
   
   If Type Then sRes &= " AS " & GetType(Type)

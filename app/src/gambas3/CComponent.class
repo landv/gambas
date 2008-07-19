@@ -763,10 +763,10 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         Next
 
         'iEnd = iInd
-        Try sSign = Trim(Mid$(Trim(hEditor.Lines[iLine].Text), Highlight.Positions[iStart] + 2, -1))
+        Try sSign = Trim(Mid$(Trim(hEditor.Lines[iLine].Text), Highlight.Positions[iStart] + 2))
         If Not Error Then
           iPos = RInStr(sSign, ")")
-          sSign = Trim(Left$(sSign, iPos - 1))
+          If iPos Then sSign = Trim(Left$(sSign, iPos - 1))
           .Signature = "#" & sSign
         Endif
         
