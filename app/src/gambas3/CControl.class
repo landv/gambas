@@ -708,8 +708,14 @@ Public Sub UpdateName()
     Case "TextBox", "TextArea"
       If DrawWith Then Control.Text = Name
 
+    Case "TextEdit", "Editor"
+      Control.Text = Name
+
     Case "TreeView", "ListView", "ColumnView", "IconView"
       Control["A"].Text = Name
+      
+    Case "GridView", "TableView"
+      Control[0, 0].Text = Name
 
     Case "ListBox"
       Control[0].Text = Name
@@ -729,12 +735,16 @@ Public Sub UpdateName()
       
     Case Else
 
-      If Unknown Then Control.Refresh
+      If Unknown Then 
+        If Not IsMultiContainer() Then
+          Try Control.Text = Name
+        Endif
+        Control.Refresh
+      Endif
 
   End Select
   
 End
-
 
 
 Public Function Rename(sNewName As String) As Boolean

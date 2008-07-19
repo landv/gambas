@@ -76,6 +76,7 @@ Public Sub _new()
     [cmbOutput, "/QuietExternalCommands", 0],
     [cmbMessage, "/ShowMessages", 1],
     [cmbIntegratedHelp, "/PropertyHelp", 1],
+    [cmbMinimize, "/MinimizeOnRun", 0],
     [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0]]
   
   $bNoChange = True
@@ -373,6 +374,12 @@ Public Sub cmbIntegratedHelp_Click()
   
 End
 
+Public Sub cmbMinimize_Click()
+
+  Settings["/MinimizeOnRun"] = cmbIntegratedHelp.Index = 1
+  
+End
+
 Public Sub dwgStyle_Draw()
   
   Dim hDraw As DrawingArea = Last
@@ -451,23 +458,24 @@ Private Sub UpdateStyle()
   RefreshEditor
   
 End
+
 Public Sub mnuBold_Click()
   
-  Inc mnuBold.Checked
+  mnuBold.Checked = Not mnuBold.Checked
   UpdateStyle
   
 End
 
 Public Sub mnuItalic_Click()
   
-  Inc mnuItalic.Checked
+  mnuItalic.Checked = Not mnuItalic.Checked
   UpdateStyle
   
 End
 
 Public Sub mnuUnderline_Click()
   
-  Inc mnuUnderline.Checked
+  mnuUnderline.Checked = Not mnuUnderline.Checked
   UpdateStyle
   
 End

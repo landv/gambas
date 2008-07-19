@@ -83,6 +83,15 @@ typedef
   TRANS_FUNC;
 
 typedef
+	struct {
+    int index;
+    int nfield;
+    TRANS_PARAM field[MAX_STRUCT_FIELD];
+		}
+	PACKED
+	TRANS_STRUCTURE;
+
+typedef
   struct {
     int index;
     TYPE type;

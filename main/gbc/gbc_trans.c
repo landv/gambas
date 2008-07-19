@@ -52,7 +52,7 @@ void TRANS_reset(void)
 }
 
 
-boolean TRANS_newline(void)
+bool TRANS_newline(void)
 {
   if (PATTERN_is_newline(*JOB->current))
   {

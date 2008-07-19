@@ -555,7 +555,7 @@ static bool header_function(TRANS_FUNC *func)
   if (is_static) TYPE_set_flag(&func->type, TF_STATIC);
   if (is_public) TYPE_set_flag(&func->type, TF_PUBLIC);
 
-  /* On v�ifie les m�hodes sp�iales */
+  // Check special methods
 
   sym = TABLE_get_symbol(JOB->class->table, func->index);
 
@@ -617,7 +617,7 @@ static bool header_function(TRANS_FUNC *func)
   /* on saute le corps de la fonction */
 
   if (!PATTERN_is_newline(*(JOB->current)))
-    THROW("Syntax error after function declaration");
+    THROW("Syntax error at function declaration");
 
   func->line = PATTERN_index(*(JOB->current)) + 1; /* � commence �la ligne suivante ! */
   func->start = JOB->current + 1;
@@ -651,6 +651,75 @@ static bool header_function(TRANS_FUNC *func)
   return TRUE;
 }
 
+#if 0
+static bool header_structure(TRANS_STRUCTURE *structure)
+{
+	TRANS_PARAM *field;
+  TRANS_DECL ttyp;
+	
+  if (!PATTERN_is(*JOB->current, RS_STRUCT))
+  	return FALSE;
+  	
+  JOB->current++;
+  
+  if (!PATTERN_is_identifier(*JOB->current))
+  	THROW("Syntax error. STRUCT needs an identifier");
+
+  structure->index = PATTERN_index(*JOB->current);
+  JOB->current++;
+	
+  if (!TRANS_newline())
+    THROW("Syntax error at structure declaration");
+	
+	structure->nfield = 0;
+	
+	for(;;)
+	{
+		do
+		{
+	    if (PATTERN_is_end(*JOB->current) || PATTERN_is_command(*JOB->current))
+  	    THROW("Missing END STRUCT");
+		}
+		while (TRANS_newline());
+		
+		if (PATTERN_is(*JOB->current, RS_END) && PATTERN_is(JOB->current[1], RS_STRUCT))
+		{
+  	  if (structure->nfield == 0)
+  	  	THROW("Syntax error. A structure must have one field at least.");
+  	  	
+			JOB->current += 2;
+	    
+	    if (!TRANS_newline())
+  	  	THROW("Syntax error. End of line expected.");
+  	  	
+  	  break;
+		}
+		
+		if (structure->nfield >= MAX_STRUCT_FIELD)
+			THROW("Too many fields in structure declaration.");
+    
+    field = &structure->field[structure->nfield];
+    
+    if (!PATTERN_is_identifier(*JOB->current))
+      THROW("Syntax error. The &1 field is not a valid identifier", TRANS_get_num_desc(structure->nfield + 1));
+
+    field->index = PATTERN_index(*JOB->current);
+    JOB->current++;
+
+    if (!TRANS_type(TT_NOTHING, &ttyp))
+      THROW("Syntax error. Invalid type description of &1 field", TRANS_get_num_desc(structure->nfield + 1));
+
+    field->type = ttyp.type;
+    
+    if (!TRANS_newline())
+    	THROW("Syntax error. End of line expected.");
+    
+		structure->nfield++;
+	}
+	
+	return TRUE;
+}
+#endif
 
 static bool header_inherits(void)
 {
@@ -744,6 +813,7 @@ PUBLIC void HEADER_do(void)
     TRANS_EVENT event;
     TRANS_EXTERN ext;
     TRANS_PROPERTY prop;
+    TRANS_STRUCTURE structure;
     } trans;
 
   TRANS_reset();
@@ -787,6 +857,12 @@ PUBLIC void HEADER_do(void)
       CLASS_add_declaration(JOB->class, &trans.decl);
       continue;
     }
+    
+    /*if (header_structure(&trans.structure))
+    {
+    	//CLASS_add_structure(JOB->class, &trans.structure);
+    	continue;
+    }*/
 
     if (header_class(&trans.decl))
     {

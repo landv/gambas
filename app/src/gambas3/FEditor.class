@@ -17,6 +17,7 @@ Private $bToolbar As Boolean
 Private $iLastLine As Integer
 Private $hSymbol As CSymbolInfo
 Private $bCheckSignature As Boolean
+Private $iArgSignature As Integer
 Private $iPosSignature As Integer
 Private $bCompletion As Boolean
 Private $bCleanOnSave As Boolean
@@ -1881,7 +1882,6 @@ Private Sub HideCompletion()
 
 End
 
-
 Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) As CSymbolInfo
 
   Dim iInd As Integer
@@ -1892,6 +1892,7 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
   Dim hClass As CClassInfo
 
   $hSymbol = Null
+  $iArgSignature = 0
 
   For iInd = aExpr.Count - 1 To 0 Step -1
 
@@ -1912,6 +1913,8 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
       Continue
     Else If sPattern = "(" Or sPattern = "[" Then
       Break
+    Else If sPattern = "," Then 
+      Inc $iArgSignature
     Endif
 
   Next
@@ -1956,7 +1959,6 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
   Return $hSymbol
 
 End
-
 
 Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As CSymbolInfo
 
@@ -2028,7 +2030,7 @@ Private Sub CheckSignature(Optional sText As String)
 
     If hSymbol Then
       If LCase(hSymbol.Kind) = "m" Then
-        frmSignature.Open($iPosSignature, hSymbol, Not sText)
+        frmSignature.Open($iPosSignature, hSymbol, $iArgSignature, Not sText)
         If frmCompletion.Visible Then frmCompletion.Raise
       Endif
       Return

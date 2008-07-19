@@ -340,6 +340,11 @@ Private Sub AfterStop()
 
   Project.SetMessage(("OK"))
 
+  If Settings["/MinimizeOnRun"] Then
+    FMain.Minimized = False
+    FMain.Show
+  Endif
+
   FMain.ActivateCurrentWindow
 
   'IF Project.ActiveForm THEN
@@ -644,6 +649,10 @@ Private Sub Start(sCmd As String)
   If Project.Compile() Then Return
 
   Clear
+
+  If Settings["/MinimizeOnRun"] Then
+    FMain.Minimized = True
+  Endif
 
   'PRINT "EXEC "; "gbx -gs " & File.Dir(Project.Path) & " -- " & Project.Arguments
 

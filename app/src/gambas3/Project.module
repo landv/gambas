@@ -4009,7 +4009,7 @@ Public Sub DrawTitle(hForm As Object)
   Dim sTitle As String
 
   sTitle = File.Name(hForm.Path)
-  If hForm.IsModified() Then sTitle &= " [" & ("modified") & "]"
+  If hForm.IsModified() Then sTitle &= " [*]" & Left(("modified"), 0)
   If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
   hForm.Title = sTitle '& " - " & Project.Name
 

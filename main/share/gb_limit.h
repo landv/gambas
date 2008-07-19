@@ -97,5 +97,8 @@
 /* Maximum length of an error message */
 #define MAX_ERROR_MSG       511
 
+/* Maximum number of fields in a structure */
+#define MAX_STRUCT_FIELD    255
+
 #endif
 

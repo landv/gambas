@@ -572,6 +572,46 @@ Static Private Sub MakeInheritance(hModule As Object, cSymbol As Collection, sPa
 End
 
 
+' Static Private Sub ConvertSignature(sCode As String) As String
+'   
+'   Dim iInd As Integer
+'   Dim aSym As String[]
+'   Dim sSign As Integer
+'   Dim bOptional As Boolean
+'   Dim sType As String
+'   
+'   aSym = Highlight.Analyze("Sub Func(" & sCode & ")")
+'   
+'   aSym.Remove(0, 3)
+'   aSym.Remove(aSym.Max)
+'   
+'   Do
+'   
+'     If aSym[iInd] = "OPTIONAL" Then
+'       sSign &= "["
+'       bOptional = True
+'     Endif
+'     sSign &= "(" & aSym[iInd] & ")"
+'     Inc iInd
+'     If aSym[iInd] <> "AS" Then Break
+'     Inc iInd
+'     sType = FEditor.ReadSymbolType(aSym, iInd)
+'     If Len(sType) > 1 Then sType &= ";"
+'     sSign &= sType
+'     
+'     Do
+'     Loop
+'   
+'   Loop
+'   
+'   If bOptional Then sSign &= "]"
+' 
+' Finally
+' 
+'   Return sSign
+' 
+' End
+
 
 
 Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boolean, Optional bCanInherit As Boolean = True)
@@ -593,6 +633,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim sName As String
   Dim sLine As String
   Dim iPos As Integer
+  Dim sSign As String
 
   'PRINT "ScanClass "; hModule.Name
   'DEBUG "> "; hModule.Name
@@ -722,8 +763,12 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         Next
 
         'iEnd = iInd
-        Try .Signature = "#" & Mid$(hEditor.Lines[iLine].Text, Highlight.Positions[iStart] + 1)
-        
+        Try sSign = Trim(Mid$(Trim(hEditor.Lines[iLine].Text), Highlight.Positions[iStart] + 2, -1))
+        If Not Error Then
+          iPos = RInStr(sSign, ")")
+          sSign = Trim(Left$(sSign, iPos - 1))
+          .Signature = "#" & sSign
+        Endif
         
         'FOR iInd = iStart TO iEnd
         '  .Signature = .Signature & aSym[iInd] & " "

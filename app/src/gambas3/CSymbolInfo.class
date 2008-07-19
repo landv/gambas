@@ -12,6 +12,11 @@ Public Component As String
 Public NotPublic As Boolean
 Public LineNumber As Integer
 
+Private $sArgBefore As String
+Private $sArgAfter As String
+Private $iArg As Integer
+Private $iShowArg As Integer
+
 Static Public Sub _init()
 
   $cTypeName["b"] = "Boolean"
@@ -33,7 +38,7 @@ End
 Public Function IsHidden() As Boolean
 
   If Left(Name) = "_" Then Return True
-  Return InStr(Name, "_") > 0 AND Kind <> "C"
+  Return InStr(Name, "_") > 0 And Kind <> "C"
 
 End
 
@@ -77,7 +82,103 @@ Public Function GetIcon() As String
 End
 
 
-Public Function GetSignature(Optional bBalise As Boolean) As String
+Private Sub NextArg()
+  
+  Inc $iArg  
+  
+  If $iArg = $iShowArg Then 
+    $sArgBefore = "<u>"
+    $sArgAfter = "</u>"
+  Else 
+    $sArgBefore = ""
+    $sArgAfter = ""
+  Endif
+
+End
+
+Private Sub MakeArgBold(sCode As String, iShowArg As Integer) As String
+  
+  Dim sCar As String
+  Dim iInd As Integer
+  Dim aWait As New String[]
+  Dim bString As Boolean
+  Dim sSign As String
+  Dim bOptional As Boolean
+  
+  If iShowArg < 0 Then Return sCode
+  
+  $iArg = -1
+  $iShowArg = iShowArg
+  NextArg
+  sSign = $sArgBefore
+
+  Do
+    
+    Inc iInd
+    If iInd > Len(sCode) Then Break
+    
+    sCar = Mid$(sCode, iInd, 1)
+
+    If bString Then
+      sSign &= sCar
+      If sCar = "\\" Then
+        Inc iInd
+        If iInd > Len(sCode) Then Break
+        sSign &= Mid$(sCode, iInd, 1)
+      Endif
+      Continue
+    Endif
+    
+    If sCar = Chr$(34) Then
+      sSign &= sCar
+      bString = Not bString
+      Continue
+    Endif
+    
+    If sCar = "(" Then
+      sSign &= sCar
+      aWait.Push(")")
+    Else If sCar = "[" Then
+      sSign &= sCar
+      aWait.Push("]")
+    Else If aWait.Count Then
+      sSign &= sCar
+      If sCar = aWait[aWait.Max] Then
+        aWait.Pop
+      Endif
+    Else If Mid$(sCode, iInd, 9) = "OPTIONAL " Then
+      iInd += 7
+      If Not bOptional Then 
+        sSign &= " ["
+      Endif
+      bOptional = True
+    Else If sCar = "," Then
+      sSign &= $sArgAfter 
+      If Mid$(sCode, iInd, 11) = ", OPTIONAL " Then
+        If Not bOptional Then 
+          sSign &= " ["
+          bOptional = True
+        Endif 
+        iInd += 9
+      Endif
+      sSign &= sCar
+      NextArg
+      sSign &= $sArgBefore
+    Else
+      sSign &= sCar
+    Endif
+    
+  Loop
+  
+  If bOptional Then
+    sSign &= $sArgAfter & " ]"
+  Endif
+  
+  Return sSign  
+  
+End
+
+Public Function GetSignature(Optional iShowArg As Integer = -1) As String
 
   Dim iInd As Integer
   Dim sRes As String
@@ -87,120 +188,131 @@ Public Function GetSignature(Optional bBalise As Boolean) As String
   Dim bFirst As Boolean
   Dim sSign As String
 
-  Dim sBold As String
-  Dim sNoBold As String
-
   sSign = Signature
+  
   If Left$(sSign) = "#" Then
-    Return Mid$(sSign, 2)
-  Endif
+  
+    sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
+  
+  Else
 
-  If bBalise Then
-    sBold = "<b>"
-    sNoBold = "</b>"
-  Endif
-
-  bFirst = True
-
-  Do
-
-    Inc iInd
-
-    If iInd > Len(sSign) Then Break
-
-    sCar = Mid$(sSign, iInd, 1)
-
-    If sCar = "'" OR sCar = "(" Then
-
-      If sCar = "'" Then
-        iPos = InStr(sSign, "'", iInd + 1)
-      Else
-        iPos = InStr(sSign, ")", iInd + 1)
-      Endif
-
-      If iPos = 0 Then Break
-
-      If bFirst Then
-        bFirst = False
-      Else
-        sRes = sRes & sBold & "," & sNoBold & " "
-      Endif
-
-      sRes = sRes & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " " & sBold & "AS" & sNoBold & " "
-
-      iInd = iPos
-      bName = True
-
-      Continue
-
-    Endif
-
-    If sCar = "<" Then
-
-      iPos = InStr(sSign, ">", iInd + 1)
-      If iPos = 0 Then Break
-      iInd = iPos
-      Continue
-
-    Endif
-
-    If sCar = "[" Then
-
-      sRes = sRes & " " & sBold & "[" & sNoBold
-      Continue
-
-    Endif
-
-    If sCar = "]" Then
-
-      sRes = sRes & " " & sBold & "] " & sNoBold
-      Continue
-
-    Endif
-
-    If NOT bName Then
-
-      If bFirst Then
-        bFirst = False
-      Else
-        sRes = sRes & sBold & "," & sNoBold & " "
-      Endif
-
-      sRes = sRes & sBold & "? AS " & sNoBold
-      bName = False
-
-    Endif
+    bFirst = True
     
-    'IF iInd = Len(sSign) THEN
-    If sCar = "." Then
-      sRes = sRes & ", ..."
-      Continue
-    Endif
-    'ENDIF
+    $iArg = -1
+    $iShowArg = iShowArg
+    NextArg
+  
+    Do
+  
+      Inc iInd
+  
+      If iInd > Len(sSign) Then Break
+  
+      sCar = Mid$(sSign, iInd, 1)
+  
+      If sCar = "'" Or sCar = "(" Then
+  
+        If sCar = "'" Then
+          iPos = InStr(sSign, "'", iInd + 1)
+        Else
+          iPos = InStr(sSign, ")", iInd + 1)
+        Endif
+  
+        If iPos = 0 Then Break
+  
+        If bFirst Then
+          bFirst = False
+        Else
+          sRes &= $sArgAfter & ", "
+          NextArg
+        Endif
+  
+        sRes &= $sArgBefore & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " AS "
+  
+        iInd = iPos
+        bName = True
+  
+        Continue
+  
+      Endif
+  
+      If sCar = "<" Then
+  
+        iPos = InStr(sSign, ">", iInd + 1)
+        If iPos = 0 Then Break
+        iInd = iPos
+        Continue
+  
+      Endif
+  
+      If sCar = "[" Then
+  
+        sRes &= $sArgAfter & " ["
+        $sArgAfter = ""
+        Continue
+  
+      Endif
+  
+      If sCar = "]" Then
+  
+        sRes &= $sArgAfter & " ] "
+        $sArgAfter = ""
+        Continue
+  
+      Endif
+  
+      If Not bName Then
+  
+        If bFirst Then
+          bFirst = False
+        Else
+          sRes &= $sArgAfter & ", "
+          NextArg
+        Endif
+  
+        sRes &= $sArgBefore & "? AS " 
+        bName = False
+  
+      Endif
+      
+      'IF iInd = Len(sSign) THEN
+      If sCar = "." Then
+        sRes &= $sArgAfter & ", " 
+        NextArg
+        If $iArg >= $iShowArg Then sRes &= "<b>"
+        sRes &= "..."
+        If $iArg >= $iShowArg Then sRes &= "</b>"
+        Continue
+      Endif
+      'ENDIF
+  
+      If (sCar >= "A" And sCar <= "Z") Or sCar = "." Then
+  
+        iPos = InStr(sSign, ";", iInd)
+        If iPos = 0 Then iPos = Len(sSign) + 1
+  
+        sRes &= Mid$(sSign, iInd, iPos - iInd)
+  
+        iInd = iPos
+        Continue
+  
+      Endif
+  
+      sRes &= GetType(sCar)
+  
+    Loop
+    
+    sRes &= $sArgAfter
+    
+  Endif
 
-    If (sCar >= "A" AND sCar <= "Z") OR sCar = "." Then
-
-      iPos = InStr(sSign, ";", iInd)
-      If iPos = 0 Then iPos = Len(sSign) + 1
-
-      sRes = sRes & Mid$(sSign, iInd, iPos - iInd)
-
-      iInd = iPos
-      Continue
-
-    Endif
-
-    sRes = sRes & GetType(sCar, bBalise)
-
-  Loop
-
-  If Name = "_get" OR Name = "_put" Then
+  If Name = "_get" Or Name = "_put" Then
     sRes = "[ " & sRes & " ]"
   Else
     sRes = "( " & sRes & " )"
   Endif
   
-  If Type Then sRes = sRes & " AS " & GetType(Type, bBalise)
+  If Type Then sRes &= " AS " & GetType(Type)
 
   Return sRes
 
@@ -239,7 +351,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
   Endif
   
   If InStr(":m", LCase(Kind)) Then 
-    sDesc &= " " & GetSignature(False)
+    sDesc &= " " & GetSignature()
   Else
     If Type Then sDesc &= " AS " & GetType(Type, False)
   Endif
@@ -249,7 +361,7 @@ Public Function GetDescription(Optional bBalise As Boolean) As String
 End
 
 
-Static Private Function GetType(sType As String, bBalise As Boolean) As String
+Static Private Function GetType(sType As String, Optional bBalise As Boolean) As String
 
   If Len(sType) = 1 Then
     sType = $cTypeName[sType]
@@ -296,7 +408,7 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
 
     sCar = Mid$(sSign, iInd, 1)
 
-    If sCar = "'" OR sCar = "(" Then
+    If sCar = "'" Or sCar = "(" Then
 
       If sCar = "'" Then
         iPos = InStr(sSign, "'", iInd + 1)
@@ -344,7 +456,7 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
 
     Endif
 
-    If NOT bName Then
+    If Not bName Then
 
       If bFirst Then
         bFirst = False
@@ -357,7 +469,7 @@ Static Public Function TransformSignature(sSign As String, bBalise As Boolean) A
 
     Endif
 
-    If sCar >= "A" AND sCar <= "Z" Then
+    If sCar >= "A" And sCar <= "Z" Then
 
       iPos = InStr(sSign, ";", iInd)
       If iPos = 0 Then iPos = Len(sSign) + 1
