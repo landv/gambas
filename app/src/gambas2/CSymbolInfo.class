@@ -12,6 +12,11 @@ PUBLIC Component AS String
 PUBLIC NotPublic AS Boolean
 PUBLIC LineNumber AS Integer
 
+PRIVATE $sArgBefore AS String
+PRIVATE $sArgAfter AS String
+PRIVATE $iArg AS Integer
+PRIVATE $iShowArg AS Integer
+
 STATIC PUBLIC SUB _init()
 
   $cTypeName["b"] = "Boolean"
@@ -75,8 +80,22 @@ PUBLIC FUNCTION GetIcon() AS String
 
 END
 
+PRIVATE SUB NextArg()
+  
+  INC $iArg  
+  
+  IF $iArg = $iShowArg THEN 
+    $sArgBefore = "<b>"
+    $sArgAfter = "</b>"
+  ELSE 
+    $sArgBefore = ""
+    $sArgAfter = ""
+  ENDIF
 
-PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
+END
+
+
+PUBLIC FUNCTION GetSignature(OPTIONAL iShowArg AS Integer = -1) AS String
 
   DIM iInd AS Integer
   DIM sRes AS String
@@ -86,26 +105,23 @@ PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
   DIM bFirst AS Boolean
   DIM sSign AS String
 
-  DIM sBold AS String
-  DIM sNoBold AS String
-
   sSign = Signature
   IF Left$(sSign) = "#" THEN
     RETURN Mid$(sSign, 2)
   ENDIF
 
-  IF bBalise THEN
-    sBold = "<b>"
-    sNoBold = "</b>"
-  ENDIF
-
   bFirst = TRUE
+  
+  $iArg = -1
+  $iShowArg = iShowArg
+  NextArg
 
   DO
 
     INC iInd
 
     IF iInd > Len(sSign) THEN BREAK
+
 
     sCar = Mid$(sSign, iInd, 1)
 
@@ -122,10 +138,11 @@ PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
       IF bFirst THEN
         bFirst = FALSE
       ELSE
-        sRes = sRes & sBold & "," & sNoBold & " "
+        sRes &= $sArgAfter & ", "
+        NextArg
       ENDIF
 
-      sRes = sRes & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " " & sBold & "AS" & sNoBold & " "
+      sRes &= $sArgBefore & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " AS "
 
       iInd = iPos
       bName = TRUE
@@ -145,14 +162,16 @@ PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
 
     IF sCar = "[" THEN
 
-      sRes = sRes & " " & sBold & "[" & sNoBold
+      sRes &= $sArgAfter & " ["
+      $sArgAfter = ""
       CONTINUE
 
     ENDIF
 
     IF sCar = "]" THEN
 
-      sRes = sRes & " " & sBold & "] " & sNoBold
+      sRes &= $sArgAfter & " ] "
+      $sArgAfter = ""
       CONTINUE
 
     ENDIF
@@ -162,17 +181,22 @@ PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
       IF bFirst THEN
         bFirst = FALSE
       ELSE
-        sRes = sRes & sBold & "," & sNoBold & " "
+        sRes &= $sArgAfter & ", "
+        NextArg
       ENDIF
 
-      sRes = sRes & sBold & "? AS " & sNoBold
+      sRes &= $sArgBefore & "? AS " 
       bName = FALSE
 
     ENDIF
     
     'IF iInd = Len(sSign) THEN
     IF sCar = "." THEN
-      sRes = sRes & ", ..."
+      sRes &= $sArgAfter & ", " 
+      NextArg
+      IF $iArg >= $iShowArg THEN sRes &= "<b>"
+      sRes &= "..."
+      IF $iArg >= $iShowArg THEN sRes &= "</b>"
       CONTINUE
     ENDIF
     'ENDIF
@@ -182,16 +206,18 @@ PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
       iPos = InStr(sSign, ";", iInd)
       IF iPos = 0 THEN iPos = Len(sSign) + 1
 
-      sRes = sRes & Mid$(sSign, iInd, iPos - iInd)
+      sRes &= Mid$(sSign, iInd, iPos - iInd)
 
       iInd = iPos
       CONTINUE
 
     ENDIF
 
-    sRes = sRes & GetType(sCar, bBalise)
+    sRes &= GetType(sCar)
 
   LOOP
+  
+  sRes &= $sArgAfter
 
   IF Name = "_get" OR Name = "_put" THEN
     sRes = "[ " & sRes & " ]"
@@ -199,7 +225,7 @@ PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
     sRes = "( " & sRes & " )"
   ENDIF
   
-  IF Type THEN sRes = sRes & " AS " & GetType(Type, bBalise)
+  IF Type THEN sRes &= " AS " & GetType(Type)
 
   RETURN sRes
 
@@ -238,7 +264,7 @@ PUBLIC FUNCTION GetDescription(OPTIONAL bBalise AS Boolean) AS String
   ENDIF
   
   IF InStr(":m", LCase(Kind)) THEN 
-    sDesc &= " " & GetSignature(FALSE)
+    sDesc &= " " & GetSignature()
   ELSE
     IF Type THEN sDesc &= " AS " & GetType(Type, FALSE)
   ENDIF
@@ -248,7 +274,7 @@ PUBLIC FUNCTION GetDescription(OPTIONAL bBalise AS Boolean) AS String
 END
 
 
-STATIC PRIVATE FUNCTION GetType(sType AS String, bBalise AS Boolean) AS String
+STATIC PRIVATE FUNCTION GetType(sType AS String, OPTIONAL bBalise AS Boolean) AS String
 
   IF Len(sType) = 1 THEN
     sType = $cTypeName[sType]

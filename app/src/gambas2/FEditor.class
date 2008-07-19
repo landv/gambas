@@ -16,6 +16,7 @@ PRIVATE $bToolbar AS Boolean
 PRIVATE $iLastLine AS Integer
 PRIVATE $hSymbol AS CSymbolInfo
 PRIVATE $bCheckSignature AS Boolean
+PRIVATE $iArgSignature AS Integer
 PRIVATE $iPosSignature AS Integer
 PRIVATE $bCompletion AS Boolean
 PRIVATE $bCleanOnSave AS Boolean
@@ -1860,6 +1861,7 @@ PRIVATE FUNCTION GetExpressionSignature(aExpr AS String[], aType AS Integer[]) A
   DIM hClass AS CClassInfo
 
   $hSymbol = NULL
+  $iArgSignature = 0
 
   FOR iInd = aExpr.Count - 1 TO 0 STEP -1
 
@@ -1880,6 +1882,8 @@ PRIVATE FUNCTION GetExpressionSignature(aExpr AS String[], aType AS Integer[]) A
       CONTINUE
     ELSE IF sPattern = "(" OR sPattern = "[" THEN
       BREAK
+    ELSE IF sPattern = "," THEN 
+      INC $iArgSignature
     ENDIF
 
   NEXT
@@ -1996,7 +2000,7 @@ PRIVATE SUB CheckSignature(OPTIONAL sText AS String)
 
     IF hSymbol THEN
       IF LCase(hSymbol.Kind) = "m" THEN
-        frmSignature.Open($iPosSignature, hSymbol, NOT sText)
+        frmSignature.Open($iPosSignature, hSymbol, $iArgSignature, NOT sText)
         IF frmCompletion.Visible THEN frmCompletion.Raise
       ENDIF
       RETURN
