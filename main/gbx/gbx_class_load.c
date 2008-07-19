@@ -821,7 +821,7 @@ void CLASS_load_without_init(CLASS *class)
   {
     desc = class->table[i].desc;
 
-		desc->gambas.name = CLASS_DESC_get_type_name(desc);
+		desc->gambas.name = (char *)CLASS_DESC_get_type_name(desc);
 
     conv_type(class, &desc->gambas.type);
 
