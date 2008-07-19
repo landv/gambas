@@ -662,10 +662,10 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
         NEXT
 
         'iEnd = iInd
-        TRY sSign = Trim(Mid$(Trim(hEditor.Lines[iLine]), Highlight.Positions[iStart] + 2, -1))
+        TRY sSign = Trim(Mid$(Trim(hEditor.Lines[iLine]), Highlight.Positions[iStart] + 2))
         IF NOT ERROR THEN
           iPos = RInStr(sSign, ")")
-          sSign = Trim(Left$(sSign, iPos - 1))
+          IF iPos THEN sSign = Trim(Left$(sSign, iPos - 1))
           .Signature = "#" & sSign
         ENDIF
         

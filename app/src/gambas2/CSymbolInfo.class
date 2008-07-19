@@ -151,7 +151,7 @@ PRIVATE SUB MakeArgBold(sCode AS String, iShowArg AS Integer) AS String
         sSign &= " ["
       ENDIF
       bOptional = TRUE
-    ELSE IF sCar = "," THEN
+    ELSE IF Mid$(sCode, iInd, 2) = ", " THEN
       sSign &= $sArgAfter 
       IF Mid$(sCode, iInd, 11) = ", OPTIONAL " THEN
         IF NOT bOptional THEN 
@@ -160,9 +160,16 @@ PRIVATE SUB MakeArgBold(sCode AS String, iShowArg AS Integer) AS String
         ENDIF 
         iInd += 9
       ENDIF
-      sSign &= sCar
+      sSign &= ", "
       NextArg
       sSign &= $sArgBefore
+    ELSE IF Mid$(sCode, iInd, 3) = "..." THEN 
+      IF $iShowArg > $iArg THEN
+        sSign &= "<u>...</u>"
+      ELSE 
+        sSign &= "..."
+      ENDIF 
+      iInd += 2
     ELSE
       sSign &= sCar
     ENDIF
@@ -171,6 +178,8 @@ PRIVATE SUB MakeArgBold(sCode AS String, iShowArg AS Integer) AS String
   
   IF bOptional THEN
     sSign &= $sArgAfter & " ]"
+  ELSE 
+    sSign &= $sArgAfter
   ENDIF
   
   RETURN sSign  
@@ -275,16 +284,14 @@ PUBLIC FUNCTION GetSignature(OPTIONAL iShowArg AS Integer = -1) AS String
   
       ENDIF
       
-      'IF iInd = Len(sSign) THEN
       IF sCar = "." THEN
         sRes &= $sArgAfter & ", " 
         NextArg
-        IF $iArg >= $iShowArg THEN sRes &= "<b>"
-        sRes &= "..."
-        IF $iArg >= $iShowArg THEN sRes &= "</b>"
+        IF $iShowArg >= 0 AND IF $iShowArg > $iArg THEN sRes &= "<u>"
+        sRes &= $sArgBefore & "..."
+        IF $iShowArg >= 0 AND IF $iShowArg > $iArg THEN sRes &= "</u>"
         CONTINUE
       ENDIF
-      'ENDIF
   
       IF (sCar >= "A" AND sCar <= "Z") OR sCar = "." THEN
   
@@ -307,9 +314,9 @@ PUBLIC FUNCTION GetSignature(OPTIONAL iShowArg AS Integer = -1) AS String
   ENDIF
 
   IF Name = "_get" OR Name = "_put" THEN
-    sRes = "[ " & sRes & " ]"
+    sRes = "<b>[</b> " & sRes & " <b>]</b>"
   ELSE
-    sRes = "( " & sRes & " )"
+    sRes = "<b>(</b> " & sRes & " <b>)</b>"
   ENDIF
   
   IF Type THEN sRes &= " AS " & GetType(Type)
