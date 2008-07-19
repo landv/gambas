@@ -1091,7 +1091,7 @@ PRIVATE SUB StoreSelection()
   WITH Editor
     $iStartLine = .Selection.StartLine
     $iEndLine = .Selection.EndLine
-    IF Editor.Column > 0 OR NOT .Selected THEN INC $iEndLine
+    IF .Selection.EndColumn > 0 OR NOT .Selected THEN INC $iEndLine
   END WITH
 
 END
