@@ -217,7 +217,7 @@ Private Sub CreateFile() As Boolean
               "  MoveScaled(0, 0, 64, 64)\n"
       
       If chkDialog.Value Then
-        'sTemp &= "  Border = Window.Fixed\n"
+        sTemp &= "  Resizable = False\n"
         sTemp &= "{ HBox1 HBox\n"
                  "  MoveScaled(1,60,62,3)\n"
                  "  Spacing = 8\n"
@@ -237,8 +237,6 @@ Private Sub CreateFile() As Boolean
                  "    Cancel = True\n"
                  "  }\n"
                  "}\n"
-      Else
-        sTemp &= "  Border = Window.Resizable\n"
       Endif
       
       sTemp &= "}\n"
