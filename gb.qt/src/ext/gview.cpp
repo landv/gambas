@@ -423,10 +423,10 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 }
 #endif
 
-static void make_blend(QPixmap &pix, QColor start, QColor end) //, bool loop = false)
+static void make_blend(QPixmap &pix, QColor start, QColor end, int height) //, bool loop = false)
 {
 	double r, g, b, dr, dg, db;
-	int n = pix.height() * 3 / 4;
+	int n = height * 3 / 4;
 	int i;
 	QPainter p;
 
@@ -545,7 +545,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
   {
   	if (getFlag(BlendedProcedureLimits))
   	{
-			make_blend(pattern, styles[GLine::Line].color, color);
+			make_blend(pattern, styles[GLine::Line].color, color, cellHeight());
   		p.drawTiledPixmap(0, 0, cache->width(), cache->height(), pattern);
 		}
 		else
