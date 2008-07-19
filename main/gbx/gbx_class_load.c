@@ -364,198 +364,7 @@ static void check_version(int loaded)
 
 #define RELOCATE(_ptr) (_ptr = (char *)&class->string[(int)(intptr_t)(_ptr)])
 
-#if 0
-#ifdef OS_64BITS
-	#define GET_SECTION(_store, _type, _name, _section, _swap) \
-  	_store = (_type_32 *)get_section(_name, _section, sizeof(_type_32), _swap)
-#else
-	#define GET_SECTION(_store, _type, _name, _section, _swap) \
-  	_store = (_type *)get_section(_name, _section, sizeof(_type), _swap)
-#endif
 
-#define _GET_SECTION_DESC(_store) GET_SECTION(_store, CLASS_DESC, "description", &section, "l*")
-#define _GET_SECTION_CONST(_store) GET_SECTION(_store, CLASS_CONST, "constant", &section, "l*")
-#define _GET_SECTION_REF(_store) GET_SECTION(_store, CLASS_REF, "reference", &section, "l")
-#define _GET_SECTION_UNKNOWN(_store) GET_SECTION(_store, CLASS_UNKNOWN, "unknown", &section, "l")
-#define _GET_SECTION_STATIC(_store) GET_SECTION(_store, CLASS_VAR, "static", &section, "tl")
-#define _GET_SECTION_DYNAMIC(_store) GET_SECTION(_store, CLASS_VAR, "dynamic", &section, "tl")
-#define _GET_SECTION_EVENT(_store) GET_SECTION(_store, CLASS_EVENT, "events", &section, "ls2l2")
-#define _GET_SECTION_EXTERN(_store) GET_SECTION(_store, CLASS_EXTERN, "extern", &section, "ls2l3")
-#define _GET_SECTION_FUNCTION(_store) GET_SECTION(_store, FUNCTION, "function", &section, "lb4s4l4")
-#define _GET_SECTION_LOCAL(_store) GET_SECTION(_store, CLASS_LOCAL, "local", &section, "l")
-#define _GET_SECTION_ARRAY(_store) GET_SECTION(_store, CLASS_ARRAY_P, "array", &section, "l")
-#define _GET_SECTION_GLOBAL(_store) GET_SECTION(_store, GLOBAL_SYMBOL, "global", &section, "s2ltl")
-
-#define _GET_SECTION_INFO(_store) _store = (CLASS_INFO *)get_section("info", &section, sizeof(CLASS_INFO), "s2l2")
-#define _GET_SECTION_CODE(_store) _store = (ushort *)get_section("code", &section, sizeof(ushort), "s")
-
-#ifdef OS_64BITS
-
-#define _MOVE(_dst, _src, _field, _type) _dst->_field = (_type)_src->_field
-
-#define _BEGIN(_type, _section, _field) \
-  short i; \
-  _type##_32 *src; \
-  _type *store, *dst; \
-  _GET_SECTION_##_section(&src); \
-  ALLOC(POINTER(&dst), sizeof(_type) * _count); \
-  store = dst; \
-  for (i = 0; i < _count; i++) \
-  {
-  
-#define _END \
-  src++; dst++; \
-  } \
-  return store;
-
-static CLASS_DESC *_get_section_desc(void)
-{
-	_BEGIN(CLASS_DESC, DESC)
-	{
-    _MOVE(&dst->gambas, &src->gambas, name, void *);
-    _MOVE(&dst->gambas, &src->gambas, type, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val1, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val2, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val3, intptr_t);
-    _MOVE(&dst->gambas, &src->gambas, val4, intptr_t);
-  }
-  _END
-}
-
-static CLASS_CONST *_get_section_const(void)
-{
-	_BEGIN(CLASS_CONST, CONST)
-	{
-		dst->type = src->type;
-		if (src->type == T_STRING || src->type == T_CSTRING)
-		{
-			_MOVE(&dst->_string, &src->_string, addr, char *);
-			_MOVE(&dst->_string, &src->_string, len, int);
-		}
-		else
-			dst->_long.value = src->_long.value;
-	}
-  _END
-}
-
-static CLASS_REF *_get_section_ref(void)
-{
-	_BEGIN(CLASS_REF, REF)
-	{
-		*dst = *src;
-	}
-  _END
-}
-
-static CLASS_UNKNOWN *_get_section_unknown(void)
-{
-	_BEGIN(CLASS_UNKNOWN, UNKNOWN)
-	{
-		*dst = *src;
-	}
-  _END
-}
-
-static CLASS_EVENT *_get_section_event(void)
-{
-	_BEGIN(CLASS_EVENT, EVENT)
-	{
-    _MOVE(dst, src, type, TYPE);
-    _MOVE(dst, src, n_param, short);
-    _MOVE(dst, src, param, CLASS_PARAM *);
-    _MOVE(dst, src, name, char *);
-	}
-	_END
-}
-
-static CLASS_EVENT *_get_section_extern(void)
-{
-	_BEGIN(CLASS_EXTERN, EXTERN)
-	{
-    _MOVE(dst, src, type, TYPE);
-    _MOVE(dst, src, n_param, short);
-    dst->loaded = FALSE;
-    dst->_reserver = 0;
-    _MOVE(dst, src, param, CLASS_PARAM *);
-    _MOVE(dst, src, alias, char *);
-    _MOVE(dst, src, library, char *);
-	}
-	_END
-}
-
-static FUNCTION *_get_section_function(void)
-{
-	_BEGIN(FUNCTION, FUNCTION)
-	{
-  	_MOVE(dst, src, type, TYPE);
-  	_MOVE(dst, src, n_param, char);
-    _MOVE(dst, src, npmin, char);
-    _MOVE(dst, src, vararg, char);
-    _MOVE(dst, src, _reserved, char);
-    _MOVE(dst, src, n_local, short);
-    _MOVE(dst, src, n_ctrl, short);
-    _MOVE(dst, src, stack_usage, short);
-    _MOVE(dst, src, error, short);
-    _MOVE(dst, src, code, ushort *);
-    _MOVE(dst, src, param, CLASS_PARAM *);
-    _MOVE(dst, src, local, CLASS_LOCAL *);
-    _MOVE(dst, src, debug, FUNC_DEBUG *);
-	}
-	_END
-}
-
-static CLASS_LOCAL *_get_section_local(void)
-{
-	_BEGIN(CLASS_LOCAL, LOCAL)
-	{
-		*dst = *src;
-	}
-	_END
-}
-
-static CLASS_ARRAY_P *_get_section_array(void)
-{
-	_BEGIN(CLASS_ARRAY_P, ARRAY)
-	{
-		*dst = *src;
-	}
-	_END
-}
-
-#define GET_SECTION_INFO _GET_SECTION_INFO
-#define GET_SECTION_DESC(_store) _store = _get_section_desc()
-#define GET_SECTION_CONST(_store) _store = _get_section_const()
-#define GET_SECTION_REF(_store) _store = _get_section_ref()
-#define GET_SECTION_UNKNOWN(_store) _store = _get_section_unknown()
-#define GET_SECTION_STATIC(_store) _store = (CLASS_VAR *)_GET_SECTION_STATIC(_store)
-#define GET_SECTION_DYNAMIC(_store) _store = (CLASS_VAR *)_GET_SECTION_DYNAMIC(_store)
-#define GET_SECTION_EVENT(_store) _store = _get_section_event()
-#define GET_SECTION_EXTERN(_store) _store = _get_section_extern()
-#define GET_SECTION_FUNCTION(_store) _store = _get_section_function()
-#define GET_SECTION_LOCAL(_store) _store = get_section_local()
-#define GET_SECTION_ARRAY(_store) _store = get_section_array()
-#define GET_SECTION_CODE _GET_SECTION_CODE
-
-#else
-
-#define GET_SECTION_INFO _GET_SECTION_INFO
-#define GET_SECTION_DESC _GET_SECTION_DESC
-#define GET_SECTION_CONST _GET_SECTION_CONST
-#define GET_SECTION_REF _GET_SECTION_REF
-#define GET_SECTION_UNKNOWN _GET_SECTION_UNKNOWN
-#define GET_SECTION_STATIC _GET_SECTION_STATIC
-#define GET_SECTION_DYNAMIC _GET_SECTION_DYNAMIC
-#define GET_SECTION_EVENT _GET_SECTION_EVENT
-#define GET_SECTION_EXTERN _GET_SECTION_EXTERN
-#define GET_SECTION_FUNCTION _GET_SECTION_FUNCTION
-#define GET_SECTION_LOCAL _GET_SECTION_LOCAL
-#define GET_SECTION_ARRAY _GET_SECTION_ARRAY
-#define GET_SECTION_CODE _GET_SECTION_CODE
-
-#endif
-#endif
-
-#ifdef OS_64BITS
 static int sizeof_ctype(CLASS *class, CTYPE ctype)
 {
 	size_t size;
@@ -566,7 +375,6 @@ static int sizeof_ctype(CLASS *class, CTYPE ctype)
 	size = ARRAY_get_size((ARRAY_DESC *)class->load->array[ctype.value]);
   return (size + 3) & ~3;
 }
-#endif
 
 static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfirst)
 {
@@ -816,8 +624,6 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     }
   }
 
-  #ifdef OS_64BITS
-  
   /* Computes variable position again */
   
 	{
@@ -842,7 +648,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
 		}
 		info->s_dynamic = pos;
 	}
-  #endif
+
 
   /* String relocation */
 
