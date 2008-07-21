@@ -98,7 +98,7 @@ typedef
 typedef
   struct {
     GB_CLASS klass;
-    int ref;
+    intptr_t ref;
     }
   GB_BASE;
 
