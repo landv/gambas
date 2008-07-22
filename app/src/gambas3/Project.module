@@ -1259,7 +1259,8 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer) As Object
 
   If InStr(sPath, "/") = 0 Then sPath = FindPath(sPath)
 
-  If Not Exist(sPath) Then
+  Try Stat(sPath, True)
+  If Error Then
     FGambas.Warning(("File not found!") & "\n" & sPath)
     Project.Refresh
     Return

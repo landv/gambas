@@ -32,7 +32,7 @@
 typedef
   struct {
     CLASS *class;
-    int ref;
+    intptr_t ref;
     }
   OBJECT;
 
