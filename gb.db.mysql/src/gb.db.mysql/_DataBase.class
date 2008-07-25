@@ -11,7 +11,7 @@ End
 
 Public Procedure Modify(DataBase As String, Optional Charset As String, Optional Collation As String)
 
-  modMain.$Query = "ALTER DATABASE " & DB.Quote(DataBase)
+  modMain.$Query = "ALTER DATABASE `" & DataBase & "`"
   If Charset Then modMain.$Query &= " DEFAULT CHARACTER SET = " & Charset
   If Collation Then modMain.$Query &= " DEFAULT COLLATE " & Collation
   modMain.RunQuery(modMain.$Query)
@@ -22,14 +22,14 @@ Public Procedure Delete(DataBase As String, IfExists As Boolean)
 
   modMain.$Query = "DROP DATABASE "
   If IfExists Then modMain.$Query &= "IF EXISTS "
-  modMain.$Query &= DB.Quote(DataBase)
+  modMain.$Query &= "`" & DataBase & "`"
   modMain.RunQuery(modMain.$Query)
 
 End
 
 Public Procedure Add(DataBase As String, Optional Charset As String, Optional Collation As String)
 
-  modMain.$Query = "CREATE DATABASE " & DB.Quote(DataBase)
+  modMain.$Query = "CREATE DATABASE `" & DataBase & "`"
   If Charset Then modMain.$Query &= " DEFAULT CHARACTER SET = " & Charset
   If Collation Then modMain.$Query &= " DEFAULT COLLATE " & Collation
   modMain.RunQuery(modMain.$Query)
@@ -56,6 +56,6 @@ Public Function Info(DataBase As String) As String
 
   ' modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE DATABASE " & DB.Quote(DataBase))
   ' Return modMain.$hResult["Create Database"]
-  Return modMain.$Connection.Exec("SHOW CREATE DATABASE " & DB.Quote(DataBase))!"Create Database"
+  Return modMain.$Connection.Exec("SHOW CREATE DATABASE `" & DataBase & "`")!"Create Database"
 
 End

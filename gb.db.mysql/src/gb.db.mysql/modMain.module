@@ -25,7 +25,7 @@ Public Function ArrayToString(Array As String[], Quote As Boolean) As String
 
   For iCounter = 0 To Array.Count - 1
     If Quote Then
-      Tmp &= DB.Quote(Array[iCounter]) & ", "
+      Tmp &= "`" & (Array[iCounter]) & "`, "
     Else
       Tmp &= Array[iCounter] & ", "
     Endif
@@ -37,11 +37,7 @@ End
 
 Public Procedure RunQuery(Query As String)
 
-  ' If $Confirm Then
-  '   If Message.Question(("Do you really want to execute the following statement?") & GB.NewLine & Query, ("&Yes"), ("&No")) = 1 Then $Connection.Exec(Query)
-  ' Else
-    $Connection.Exec(Query)
-  ' Endif
+  $Connection.Exec(Query)
   Catch
     Error.Raise(Error.Text)
 

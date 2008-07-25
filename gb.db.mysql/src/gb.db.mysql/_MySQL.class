@@ -28,7 +28,6 @@ Property Read Field As _Field
 Property Read View As _View
 Property Read User As _User
 Property Read Routines As _Routines
-' Property Confirm As Boolean
 
 Private Function Engine_Read() As String
 
@@ -129,18 +128,6 @@ Private Function Field_Read() As _Field
 
 End
 
-' Private Function Confirm_Read() As Boolean
-' 
-'   Return modMain.$Confirm
-' 
-' End
-' 
-' Private Sub Confirm_Write(Value As Boolean)
-' 
-'   modMain.$Confirm = Value
-' 
-' End
-
 Private Function View_Read() As _View
 
   $View = New _View
@@ -179,5 +166,11 @@ Public Function CurrentTimestamp(Optional {Format} As String) As String
 
   If Not {Format} Then {Format} = "yyyy-mm-dd hh:nn:ss"
   Return Format(modMain.$Connection.Exec("SELECT CURRENT_TIMESTAMP")!CURRENT_TIMESTAMP, {Format})
+
+End
+
+Public Function Quote(Value As Variant) As String
+
+  Return "`" & Value & "`"
 
 End

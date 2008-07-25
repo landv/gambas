@@ -8,7 +8,7 @@ Public Procedure Add(Routine As String, Type As Integer, Statement As String, Op
   modMain.$Query = "CREATE "
   If Type = 1 Then modMain.$Query &= "FUNCTION "
   If Type = 2 Then modMain.$Query &= "PROCEDURE "
-  modMain.$Query &= DB.Quote(Routine) & "("
+  modMain.$Query &= "`" & Routine & "`("
   If Parameters Then modMain.$Query &= modMain.ArrayToString(Parameters, False)
   modMain.$Query &= ") "
   If {Return} Then modMain.$Query &= ") RETURNS " & {Return} & " "
@@ -23,14 +23,14 @@ Public Procedure Delete(Routine As String, Type As Integer, IfExists As Boolean)
   If Type = 1 Then modMain.$Query &= "FUNCTION "
   If Type = 2 Then modMain.$Query &= "PROCEDURE "
   If IfExists Then modMain.$Query &= "IF EXISTS "
-  modMain.$Query &= DB.Quote(Routine)
+  modMain.$Query &= "`" & Routine & "`"
   modMain.RunQuery(modMain.$Query)
 
 End
 
 Public Function Info(Routine As String, Type As Integer) As String
 
-  If Type = 1 Then Return modMain.$Connection.Exec("SHOW CREATE FUNCTION " & DB.Quote(Routine))!"Create Function"
-  If Type = 2 Then Return modMain.$Connection.Exec("SHOW CREATE PROCEDURE " & DB.Quote(Routine))!"Create Procedure"
+  If Type = 1 Then Return modMain.$Connection.Exec("SHOW CREATE FUNCTION `" & Routine & "`")!"Create Function"
+  If Type = 2 Then Return modMain.$Connection.Exec("SHOW CREATE PROCEDURE `" & Routine & "`")!"Create Procedure"
 
 End

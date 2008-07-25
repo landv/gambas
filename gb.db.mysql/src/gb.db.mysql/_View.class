@@ -14,7 +14,7 @@ Public Procedure Add(View As String, Statement As String, Optional {Replace} As 
   'TODO: Quote the Statement parameter
   modMain.$Query = "CREATE"
   If {Replace} Then modMain.$Query &= " OR REPLACE"
-  modMain.$Query &= " VIEW " & DB.Quote(View) & " AS " & Statement
+  modMain.$Query &= " VIEW `" & View & "` AS " & Statement
   modMain.RunQuery(modMain.$Query)
 
 End
@@ -30,8 +30,6 @@ End
 
 Public Function Info(View As String) As String
 
-  ' modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE VIEW " & DB.Quote(View))
-  ' Return modMain.$hResult["Create View"]
-  Return modMain.$Connection.Exec("SHOW CREATE VIEW " & DB.Quote(View))!"Create View"
+  Return modMain.$Connection.Exec("SHOW CREATE VIEW `" & View & "`")!"Create View"
 
 End

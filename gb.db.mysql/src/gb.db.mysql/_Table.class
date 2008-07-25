@@ -7,7 +7,7 @@ Public Procedure Modify(Table As String, Action As String, Optional Symbol As St
 
   Action = Upper(Action)
   If (Not ((Action = "DROP") Or (Action = "ADD") Or (Action = "MODIFY") Or (Action = "CHANGE"))) Then Error.Raise("Invalid Action")
-  modMain.$Query = "ALTER TABLE " & DB.Quote(Table) & " " & Action & " " & DB.Quote(Symbol)
+  modMain.$Query = "ALTER TABLE `" & Table & "` " & Action & " `" & Symbol & "`"
   If Definition Then modMain.$Query &= " " & Definition
   modMain.RunQuery(modMain.$Query)
 
@@ -16,7 +16,7 @@ End
 Public Procedure Add(Table As String, Optional Engine As String, Optional Charset As String)
 
   'Construc the table statement
-  modMain.$Query = "CREATE TABLE " & DB.Quote(Table) & " ("
+  modMain.$Query = "CREATE TABLE `" & Table & "` ("
   modMain.$Query &= modMain.ArrayToString(modMain.$FieldDefinition, False)
   If modMain.$PrimaryKey Then modMain.$Query &= modMain.$PrimaryKey
   If modMain.$Index.Count Then modMain.$Query &= ", " & modMain.ArrayToString(modMain.$Index, False)
@@ -47,16 +47,14 @@ End
 
 Public Procedure LoadData(Table As String, File As String)
 
-  modMain.$Query = "LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE " & DB.Quote(Table)
+  modMain.$Query = "LOAD DATA LOCAL INFILE '" & File & "' INTO TABLE `" & Table & "`"
   modMain.RunQuery(modMain.$Query)
 
 End
 
 Public Function Info(Table As String) As String
 
-  ' modMain.$hResult = modMain.$Connection.Exec("SHOW CREATE TABLE " & DB.Quote(Table))
-  ' Return modMain.$hResult["Create Table"]
-  Return modMain.$Connection.Exec("SHOW CREATE TABLE " & DB.Quote(Table))!"Create Table"
+  Return modMain.$Connection.Exec("SHOW CREATE TABLE `" & Table & "`")!"Create Table"
 
 End
 
@@ -64,7 +62,7 @@ Public Procedure Insert(Table As String, Fields As String[], Values As String[])
 
   Dim iCounter As Integer
 
-  modMain.$Query = "INSERT INTO " & DB.Quote(Table)
+  modMain.$Query = "INSERT INTO `" & Table & "`"
   If Upper(Fields[0]) = "ALL" Then
     modMain.$Query &= " VALUES ("
   Else
@@ -90,6 +88,6 @@ End
 
 Public Procedure Rename(Table As String, NewTable As String)
 
-  modMain.RunQuery("RENAME TABLE " & DB.Quote(Table) & " TO " & DB.Quote(NewTable))
+  modMain.RunQuery("RENAME TABLE `" & Table & "` TO `" & NewTable & "`")
 
 End
