@@ -871,7 +871,8 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
   
   AddLog("")
   
-  sOutput = DConv(Replace($sOutput, "\r", ""))
+  sOutput = Replace($sOutput, "\r", "")
+  TRY sOutput = DConv(sOutput)
 
   TRY KILL $sHome &/ ".rpmmacros"
 
