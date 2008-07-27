@@ -179,15 +179,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "POT-Creation-Date: 2002-11-01 04:27+0100\n"
-"PO-Revision-Date: 2008-05-16 00:07+0500\n"
+"PO-Revision-Date: 2008-07-27 13:43+0400\n"
 "Last-Translator: akdengi <kazancas@gmail.com>\n"
 "Language-Team:  <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: CComponentBox.class:85 FPropertyProject.class:1601
 msgid "Beta version"
@@ -624,6 +623,8 @@ msgid ""
 "This file is in conflict with the revision #&1.\n"
 "You must resolve the conflict in order to use the file."
 msgstr ""
+"Этот файл конфликтует с ревизией #&1.\n"
+"Вы должны разрешить конфликт перед использованием файла."
 
 #: FConflict.class:25 FMain.class:1943
 msgid "&Edit"
@@ -650,7 +651,7 @@ msgstr ""
 
 #: FConflict.class:220
 msgid "Some conflicts are not yet resolved."
-msgstr ""
+msgstr "Часть конфликтов не может быть разрешена."
 
 #: FConflict.class:226
 #, fuzzy
@@ -685,11 +686,11 @@ msgstr "Изображение"
 
 #: FConflict.class:413 FInfo.class:376
 msgid "Details"
-msgstr ""
+msgstr "Детали"
 
 #: FConflict.class:422
 msgid "Resolve conflict with"
-msgstr ""
+msgstr "Разрешение конфликта с"
 
 #: FConflict.class:439 FInfo.class:235
 #, fuzzy
@@ -1093,7 +1094,7 @@ msgstr "в описании формы"
 
 #: FEditor.class:2719
 msgid "Go back"
-msgstr ""
+msgstr "Назад"
 
 #: FEditor.class:2725
 msgid "Open form"
@@ -1146,7 +1147,7 @@ msgstr "&Просмотр"
 
 #: FEditor.class:2856 FTextEditor.class:842
 msgid "No split"
-msgstr ""
+msgstr "Не разбивать"
 
 #: FEditor.class:2862 FTextEditor.class:848
 #, fuzzy
@@ -1677,8 +1678,7 @@ msgid "Unable to update all forms."
 msgstr "Невозможно обновить все формы"
 
 #: FMain.class:1200
-msgid ""
-"All backup or generated files will be removed from the project directory."
+msgid "All backup or generated files will be removed from the project directory."
 msgstr ""
 "Все резервные копии или сгенерированные файлы будут удалены из директории "
 "проекта"
@@ -2118,8 +2118,7 @@ msgstr "Пожалуйста выберите группу пакета"
 
 #: FMakeInstall.class:324
 msgid "Please choose the menu location for each target distribution."
-msgstr ""
-"Пожалуйста выберите расположение меню для каждого целевого дистрибутива"
+msgstr "Пожалуйста выберите расположение меню для каждого целевого дистрибутива"
 
 #: FMakeInstall.class:326
 msgid "Please choose a menu location."
@@ -2523,7 +2522,7 @@ msgstr "\"Тихие\" внешние команды"
 
 #: FOption.class:694
 msgid "Display property help"
-msgstr ""
+msgstr "Отобразить помощь о свойствах"
 
 #: FOption.class:705
 msgid "Editor"
@@ -2715,16 +2714,15 @@ msgstr "Неверный тип значения."
 
 #: FProperty.class:510
 msgid "The name of the control."
-msgstr ""
+msgstr "Имя элемента управления"
 
 #: FProperty.class:521
 msgid "The event group that the control belongs to."
-msgstr ""
+msgstr "Группа событий, относящаяся к элементу управления"
 
 #: FProperty.class:534
-msgid ""
-"If the form and controls dimensions must follow the size of the default font."
-msgstr ""
+msgid "If the form and controls dimensions must follow the size of the default font."
+msgstr "Если размер формы и элементов управления должны соответствовать размеру шрифта по умолчанию."
 
 #: FProperty.class:971
 msgid "Click on a form or a control to modify its properties..."
@@ -3308,7 +3306,7 @@ msgstr "Неопределено"
 
 #: MHelp.module:235
 msgid "No help found."
-msgstr ""
+msgstr "Справка не найдена"
 
 #: Package.module:50
 msgid "'&1' is not installed on your system."
@@ -3504,6 +3502,8 @@ msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
 msgstr ""
+"Часть исходных файлов проекта конфликтует.\n"
+"Пожалуйста исправьте это, если вы хотите скомпилировать проект."
 
 #: Project.module:1494
 msgid "Compiling project"
@@ -3606,8 +3606,7 @@ msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Не ASCII-символы запрещены для имени проекта"
 
 #: Project.module:2996
-msgid ""
-"The following characters are forbidden in a project name: ? * / \\ SPACE"
+msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "В имени проекта нельзя использовать символы: ? * / \\ SPACE"
 
 #: Project.module:3006
@@ -3618,8 +3617,7 @@ msgstr "Директория проекта уже существует"
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
-msgstr ""
-"Директория проекта не может быть создана так как есть файл с таким именем"
+msgstr "Директория проекта не может быть создана так как есть файл с таким именем"
 
 #: Project.module:3051
 msgid "Create source package"
@@ -3657,11 +3655,3 @@ msgstr "изменено"
 msgid "Cannot save file !"
 msgstr "Не могу сохранить файл !"
 
-#~ msgid "Find list"
-#~ msgstr "Список поиска"
-
-#~ msgid "ERROR"
-#~ msgstr "ОШИБКА"
-
-#~ msgid "Show project information balloons"
-#~ msgstr "Показывать всплыв. сообщения информации проекта"
