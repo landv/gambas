@@ -156,14 +156,15 @@ static INLINE CLASS *OBJECT_class(void *object)
 #define OBJECT_ref(_object) \
 { \
   if (_object) \
-    ((OBJECT *)(void *)(_object))->ref++; \
+    ((OBJECT *)(_object))->ref++; \
 }
 
+#if 0
 #define OBJECT_unref(_pobject) \
 { \
   if (*(_pobject) && --(*((OBJECT **)(void *)(_pobject)))->ref <= 0) \
   { \
-    CLASS_free((void **)(_pobject)); \
+    CLASS_free((void **)(void *)(_pobject)); \
   } \
 }
 
@@ -172,11 +173,30 @@ static INLINE CLASS *OBJECT_class(void *object)
   if (*(_pobject)) \
     --(*((OBJECT **)(void *)(_pobject)))->ref; \
 }
+#endif
+
+#define OBJECT_unref(_object) \
+{ \
+  if (_object) \
+  { \
+  	if ((--((OBJECT *)(_object))->ref) <= 0) \
+  	{ \
+			CLASS_free(_object); \
+			_object = NULL; \
+		} \
+	} \
+}
+
+#define OBJECT_unref_keep(_object) \
+{ \
+  if (_object) \
+  	--((OBJECT *)(_object))->ref; \
+}
 
 
 #define OBJECT_REF(_ob, _where) OBJECT_ref(_ob)
-#define OBJECT_UNREF(_ob, _where) OBJECT_unref(((void **)(void *)_ob))
-#define OBJECT_UNREF_KEEP(_ob, _where) OBJECT_unref_keep(((void **)(void *)_ob))
+#define OBJECT_UNREF(_ob, _where) OBJECT_unref(_ob)
+#define OBJECT_UNREF_KEEP(_ob, _where) OBJECT_unref_keep(_ob)
 
 #endif /* DEBUG_REF */
 

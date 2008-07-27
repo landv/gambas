@@ -261,16 +261,6 @@ void PROPAGATE()
 {
   ERROR_CONTEXT *err;
 
-  /*
-  if (_must_free_index)
-  {
-    for (i = 0; i < _must_free_index; i++)
-      OBJECT_UNREF(&_must_free[i], "PROPAGATE");
-
-    _must_free_index = 0;
-  }
-  */
-
   if (_current == NULL)
     ERROR_panic("Cannot propagate error. No error handler.");
 

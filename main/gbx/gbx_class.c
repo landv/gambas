@@ -206,7 +206,7 @@ void CLASS_clean_up(bool silent)
   for (class = _classes; class; class = class->next)
   {
     if (class->instance)
-      OBJECT_UNREF(&class->instance, "CLASS_exit");
+      OBJECT_UNREF(class->instance, "CLASS_exit");
     if (!CLASS_is_native(class) && class->state)
     {
       /*printf("Must free: %s\n", class->name);*/
@@ -597,12 +597,10 @@ const char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 }
 
 
-void CLASS_free(void **pobject)
+void CLASS_free(void *object)
 {
-	void *object = *pobject;
   CLASS *class = OBJECT_class(object);
 
-	*pobject = NULL;
   ((OBJECT *)object)->ref = 1; /* Prevents anybody from freeing the object ! */
   //fprintf(stderr, "CLASS_free: %s %p\n", class->name, object);
   EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
@@ -640,7 +638,8 @@ void CLASS_unref(void **pobject, boolean can_free)
   if ((--(object->ref) <= 0) && can_free)
   {
     fprintf(stderr, "FREE %p !\n", object);
-    CLASS_free(pobject);
+    CLASS_free(object);
+    *pobject = NULL;
   }
 }
 #endif
@@ -912,6 +911,9 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static)
 {
+	//size_dynamic = ALIGN_SIZE(size_dynamic);
+	//size_static = ALIGN_SIZE(size_static);
+
   if (class->parent)
   {
     if (all)
@@ -1005,7 +1007,7 @@ void *CLASS_auto_create(CLASS *class, int nparam)
       return ob;
     }
 
-    OBJECT_UNREF(&class->instance, "CLASS_auto_create");
+    OBJECT_UNREF(class->instance, "CLASS_auto_create");
     class->instance = NULL;
   }
 

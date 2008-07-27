@@ -144,7 +144,7 @@ void UNBORROW(VALUE *value)
 
 	if (TYPE_is_object(type))
 	{
-		OBJECT_UNREF_KEEP(&value->_object.object, "UNBORROW");
+		OBJECT_UNREF_KEEP(value->_object.object, "UNBORROW");
 		return;
 	}
 	
@@ -154,11 +154,11 @@ __VARIANT:
 	if (value->_variant.vtype == T_STRING)
 		STRING_unref_keep((char **)value->_variant.value);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF_KEEP((void **)value->_variant.value, "UNBORROW");
+		OBJECT_UNREF_KEEP(*((void **)value->_variant.value), "UNBORROW");
 	return;
 
 __FUNCTION:
-	OBJECT_UNREF_KEEP(&value->_function.object, "UNBORROW");
+	OBJECT_UNREF_KEEP(value->_function.object, "UNBORROW");
 	return;
 
 __STRING:
@@ -180,7 +180,7 @@ void RELEASE(VALUE *value)
 
 	if (TYPE_is_object(type))
 	{
-		OBJECT_UNREF(&value->_object.object, "RELEASE");
+		OBJECT_UNREF(value->_object.object, "RELEASE");
 		return;
 	}
 	
@@ -190,11 +190,11 @@ __VARIANT:
 	if (value->_variant.vtype == T_STRING)
 		STRING_unref((char **)value->_variant.value);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF(value->_variant.value, "RELEASE");
+		OBJECT_UNREF(*((void **)value->_variant.value), "RELEASE");
 	return;
 
 __FUNCTION:
-	OBJECT_UNREF(&value->_function.object, "RELEASE");
+	OBJECT_UNREF(value->_function.object, "RELEASE");
 	return;
 
 __ARRAY:
@@ -227,7 +227,7 @@ void RELEASE_many(VALUE *value, int n)
 	
 		if (TYPE_is_object(type))
 		{
-			OBJECT_UNREF(&value->_object.object, "RELEASE");
+			OBJECT_UNREF(value->_object.object, "RELEASE");
 			continue;
 		}
 		
@@ -237,11 +237,11 @@ void RELEASE_many(VALUE *value, int n)
 		if (value->_variant.vtype == T_STRING)
 			STRING_unref((char **)value->_variant.value);
 		else if (TYPE_is_object(value->_variant.vtype))
-			OBJECT_UNREF(value->_variant.value, "RELEASE");
+			OBJECT_UNREF(*((void **)value->_variant.value), "RELEASE");
 		continue;
 	
 	__FUNCTION:
-		OBJECT_UNREF(&value->_function.object, "RELEASE");
+		OBJECT_UNREF(value->_function.object, "RELEASE");
 		continue;
 	
 	__ARRAY:
@@ -600,7 +600,7 @@ void EXEC_leave(bool drop) //bool keep_ret_value)
 	RELEASE_MANY(SP, n);
 
 	/* On lib�e l'objet reserv�dans EXEC_enter() */
-	OBJECT_UNREF(&OP, "EXEC_leave");
+	OBJECT_UNREF(OP, "EXEC_leave");
 
 	/* restitution du contexte */
 
@@ -621,7 +621,7 @@ void EXEC_leave(bool drop) //bool keep_ret_value)
 		if (SP[-1].type == T_FUNCTION)
 		{
 			SP--;
-			OBJECT_UNREF(&SP->_function.object, "EXEC_leave");
+			OBJECT_UNREF(SP->_function.object, "EXEC_leave");
 		}
 		/*output = PCODE_is_output(*PC);*/
 	}
@@ -839,7 +839,7 @@ bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 
 	/*OBJECT_REF(object, "EXEC_call_native"); N'est plus n�essaire ! */
 	(*exec)(object, (void *)param);
-	/*OBJECT_UNREF(&object, "EXEC_call_native");*/
+	/*OBJECT_UNREF(object, "EXEC_call_native");*/
 
 	GAMBAS_ReturnType = save;
 	if (GAMBAS_Error)
@@ -864,7 +864,7 @@ void EXEC_native(void)
 	VALUE *value;
 	TYPE *sign;
 	bool error;
-	void *free;
+	void *free = NULL;
 	int n;
 	VALUE ret;
 
@@ -1013,7 +1013,7 @@ void EXEC_native(void)
 	}
 
 	if (use_stack)
-		OBJECT_UNREF(&free, "EXEC_native (FUNCTION)");
+		OBJECT_UNREF(free, "EXEC_native (FUNCTION)");
 
 	if (error)
 		PROPAGATE();
@@ -1053,7 +1053,7 @@ __FUNCTION:
 		EXEC_special(SPEC_UNKNOWN, val->_function.class, val->_function.object, 0, FALSE);
 
 		object = val->_function.object;
-		OBJECT_UNREF(&object, "EXEC_object (FUNCTION)");
+		OBJECT_UNREF(object, "EXEC_object (FUNCTION)");
 
 		SP--;
 		//*val = *SP;
@@ -1352,7 +1352,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 	CATCH
 	{
 		// _free() methods should not be called, but we must
-		OBJECT_UNREF(&object, "EXEC_new");
+		OBJECT_UNREF(object, "EXEC_new");
 		PROPAGATE();
 //     SP--; /* class */
 //     SP->type = T_NULL;
@@ -1447,7 +1447,7 @@ void EXEC_new(void)
 	CATCH
 	{
 		// _free() methods should not be called, but we must
-		OBJECT_UNREF(&object, "EXEC_new");
+		OBJECT_UNREF(object, "EXEC_new");
 		//(*class->free)(class, object);
 		SP--; /* class */
 		SP->type = T_NULL;
@@ -1462,7 +1462,7 @@ void EXEC_new(void)
 		On remet ce nombre �0 maintenant que l'objet est pr�.
 		Mais on ne le d�ruit pas ! */
 
-	/* OBJECT_UNREF(&object, "EXEC_new"); */
+	/* OBJECT_UNREF(object, "EXEC_new"); */
 }
 
 #if 0

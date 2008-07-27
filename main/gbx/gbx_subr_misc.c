@@ -169,11 +169,11 @@ void SUBR_exec(void)
 
     if (!ret)
     {
-      OBJECT_UNREF(&process, "subr_exec");
+      OBJECT_UNREF(process, "subr_exec");
     }
     else if (!process->to_string)
     {
-      OBJECT_UNREF_KEEP(&process, "subr_exec");
+      OBJECT_UNREF_KEEP(process, "subr_exec");
     }
   }
 
@@ -188,7 +188,7 @@ void SUBR_exec(void)
 
       STRING_unref_keep(&process->result);
       process->result = NULL;
-      OBJECT_UNREF(&process, "subr_exec");
+      OBJECT_UNREF(process, "subr_exec");
     }
     else
     {
@@ -241,9 +241,9 @@ _FREE:
   EVAL.Free((void **)(void *)&eval);
 
   VALUE_to_string(RETURN, &expr, &len);
-	STREAM_write(CSTREAM_stream(&CFILE_out), expr, len);
-	STREAM_write_eol(CSTREAM_stream(&CFILE_out));
-	STREAM_flush(CSTREAM_stream(&CFILE_out));
+	STREAM_write(CSTREAM_stream(CFILE_out), expr, len);
+	STREAM_write_eol(CSTREAM_stream(CFILE_out));
+	STREAM_flush(CSTREAM_stream(CFILE_out));
 }
 
 void SUBR_eval(void)

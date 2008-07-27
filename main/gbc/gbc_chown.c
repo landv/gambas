@@ -20,6 +20,8 @@
 
 ***************************************************************************/
 
+#define __GBC_CHOWN_C
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>

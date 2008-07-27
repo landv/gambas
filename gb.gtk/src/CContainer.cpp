@@ -66,17 +66,24 @@ BEGIN_METHOD_VOID(CCONTAINER_next)
 
 	gContainer *cont = WIDGET->proxy() ? WIDGET->proxy() : WIDGET;
 	int *ct;
+	CWIDGET *child;
 	
 	ct = (int *)GB.GetEnum();
 	
-	if (*ct >= cont->childCount()) 
-	{ 
-		GB.StopEnum(); 
-		return; 
+	for(;;)
+	{
+		if (*ct >= cont->childCount()) 
+		{ 
+			GB.StopEnum(); 
+			return; 
+		}
+		child = get_child(cont, *ct);
+		(*ct)++;
+		if (child)
+			break;
 	}
 	
-	GB.ReturnObject(get_child(cont, *ct));
-	(*ct)++;
+	GB.ReturnObject(child);
 	
 END_METHOD
 

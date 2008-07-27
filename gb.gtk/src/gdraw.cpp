@@ -869,6 +869,15 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 	}
 }
 
+static void my_gdk_gc_set_tile(GdkGC *gc, GdkPixmap *pixmap)
+{
+  XGCValues xvalues;
+	
+	xvalues.tile = pixmap ? GDK_PIXMAP_XID(pixmap) : None;
+
+  XChangeGC (GDK_GC_XDISPLAY (gc), GDK_GC_XGC (gc), GCTile, &xvalues);
+}
+
 void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 {
 	GdkPixmap *pixmap;
@@ -878,6 +887,8 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 	int sh = pic->height();
 	GdkGCValues val;
 
+	if (!pic || pic->isVoid()) return;
+	
 	if (!sw || !sh )
 		return;
 	
@@ -892,17 +903,43 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 		
 	pixmap = pic->getPixmap();
 	
+	{
+		int yPos, xPos, drawH, drawW, yOff, xOff;
+		yPos = y;
+		yOff = sy;
+		while( yPos < y + h ) {
+				drawH = sh - yOff;    // Cropping first row
+				if ( yPos + drawH > y + h )        // Cropping last row
+						drawH = y + h - yPos;
+				xPos = x;
+				xOff = sx;
+				while( xPos < x + w ) {
+						drawW = sw - xOff; // Cropping first column
+						if ( xPos + drawW > x + w )    // Cropping last column
+								drawW = x + w - xPos;
+						picture(pic, xPos, yPos, drawW, drawH, xOff, yOff, drawW, drawH);
+						xPos += drawW;
+						xOff = 0;
+				}
+				yPos += drawH;
+				yOff = 0;
+		}
+	}
+
+	#if 0	
+	//gdk_draw_drawable(dr, gc, pixmap, sx, sy, x, y, sw, sh);
+	
 	gdk_gc_get_values(gc, &val);
 	
-	gdk_gc_set_tile(gc, pixmap);
-	gdk_gc_offset(gc, x-sx, y-sy);
 	gdk_gc_set_fill(gc, GDK_TILED);
+	my_gdk_gc_set_tile(gc, pixmap);
+	gdk_gc_offset(gc, x-sx, y-sy);
 	
 	gdk_draw_rectangle(dr, gc, true, x, y, w, h);
 	
+	//my_gdk_gc_set_tile(gc, NULL);
 	gdk_gc_set_fill(gc, GDK_SOLID);
 	gdk_gc_offset(gc, val.ts_x_origin, val.ts_y_origin);
-	gdk_gc_set_tile(gc, NULL);
 	
 	if (drm)
 	{
@@ -933,6 +970,7 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 		val.foreground.pixel = (foreground() & 0xFF) ? 0 : 1;
 		gdk_gc_set_values(gcm, &val, GDK_GC_FOREGROUND);			
 	}
+	#endif
 }
 
 /****************************************************************************************

@@ -267,6 +267,7 @@ void InitControl(gControl *control, CWIDGET *widget)
 	
 	widget->widget = control;
 	control->hFree=(void*)widget;
+	//fprintf(stderr, "InitControl: %p %p\n", control, widget);
 	
 	name = GB.GetLastEventName();
 	if (!name)

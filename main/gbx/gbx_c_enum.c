@@ -46,7 +46,7 @@ PUBLIC CENUM *CENUM_create(void *enum_object)
   CENUM *_object;
   
   OBJECT_new((void **)(void *)&_object, CLASS_Enum, NULL, NULL);
-  OBJECT_UNREF_KEEP(&_object, "CENUM_create");
+  OBJECT_UNREF_KEEP(_object, "CENUM_create");
   
   THIS->enum_object = enum_object;
   GB_Ref(enum_object);

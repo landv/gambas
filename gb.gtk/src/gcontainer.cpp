@@ -378,6 +378,8 @@ int gContainer::clientHeight()
 
 void gContainer::insert(gControl *child)
 {
+	//fprintf(stderr, "gContainer::insert: %p: %p %s\n", this, child, child->name());
+
 	if (!gtk_widget_get_parent(child->border))
 		gtk_layout_put(GTK_LAYOUT(getContainer()), child->border, 0, 0);
 		
@@ -390,6 +392,8 @@ void gContainer::insert(gControl *child)
 
 void gContainer::remove(gControl *child)
 {
+	//fprintf(stderr, "gContainer::remove: %p: %p\n", this, child);
+	
 	ch_list = g_list_remove(ch_list, child);
 	updateFocusChain();
 }

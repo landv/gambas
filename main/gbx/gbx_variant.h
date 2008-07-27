@@ -52,7 +52,7 @@ static INLINE void VARIANT_free(VARIANT *var)
   }
   else if (TYPE_is_object(var->type))
   {
-    OBJECT_UNREF((void **)var->value, "VARIANT_free");
+    OBJECT_UNREF(*((void **)var->value), "VARIANT_free");
   }
 }
 

@@ -68,7 +68,7 @@ extern CFILE *CFILE_err;
 #define THIS_STAT ((CSTAT *)_object)
 #endif
 
-#define CSTREAM_stream(_cstream) (&((CSTREAM *)(void *)_cstream)->stream)
+#define CSTREAM_stream(_cstream) (&((CSTREAM *)(void *)(_cstream))->stream)
 
 CFILE *CFILE_create(STREAM *stream, int mode);
 void CFILE_init(void);

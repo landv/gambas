@@ -20,4 +20,9 @@
 
 ***************************************************************************/
 
+#ifndef __GBC_CHOWN_H
+#define __GBC_CHOWN_H
+
 void FILE_set_owner(const char *path, const char *template);
+
+#endif

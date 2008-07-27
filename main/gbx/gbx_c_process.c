@@ -242,7 +242,7 @@ static void stop_process(CPROCESS *process)
 
   stop_process_after(process);
 
-  OBJECT_UNREF(&process, "stop_process"); /* Le processus ne tourne plus */
+  OBJECT_UNREF(process, "stop_process"); /* Le processus ne tourne plus */
 
   if (!RunningProcessList)
     exit_child();
@@ -621,7 +621,7 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
   init_process(process);
   run_process(process, mode, cmd);
 
-  OBJECT_UNREF_KEEP(&process, "CPROCESS_create");
+  OBJECT_UNREF_KEEP(process, "CPROCESS_create");
 
   /*printf("** CPROCESS_create >>>> \n");*/
 
@@ -673,7 +673,7 @@ void CPROCESS_wait_for(CPROCESS *process)
     else if (ret == process->out)
       callback_write(process->out, GB_WATCH_READ, process);
   }
-  OBJECT_UNREF(&process, "CPROCESS_wait_for");
+  OBJECT_UNREF(process, "CPROCESS_wait_for");
 
   #if 0
   {

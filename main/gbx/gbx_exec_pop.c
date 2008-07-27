@@ -225,7 +225,7 @@ _POP_PROPERTY_2:
 _FIN:
 
   RELEASE(&SP[-2]);
-  OBJECT_UNREF(&object, "EXEC_pop_unknown");
+  OBJECT_UNREF(object, "EXEC_pop_unknown");
   SP -= 2;
   PC++;
 }

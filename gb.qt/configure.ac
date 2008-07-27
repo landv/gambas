@@ -24,7 +24,7 @@ GB_COMPONENT(
   QT,
   [QT component],
   [src],
-  [GB_FIND(qptrlist.h X11/Xlib.h, /usr/local/lib /usr/local /opt /usr/lib /usr/X11 /usr/X11R6 /usr/pkg /usr, include qt*/include qt/*/include)],
+  [GB_FIND(qptrlist.h X11/Xlib.h, /usr/local/lib /usr/local /opt /usr/lib /usr/X11 /usr/X11R6 /usr/pkg /usr, qt*/include qt/*/include include)],
   [GB_FIND(libqt-mt.$SHLIBEXT, /usr/local /opt /usr/X11 /usr/X11R6 /usr/pkg /usr, lib qt*/lib qt/*/lib, libqt-mt.so.3)],
   [$CXX_LIB $THREAD_LIB $X_LIBS -lqt-mt],
   [$X_INC $THREAD_INC])

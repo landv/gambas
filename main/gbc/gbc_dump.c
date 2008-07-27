@@ -36,6 +36,7 @@
 #include "gbc_compile.h"
 #include "gb_code.h"
 #include "gb_file.h"
+#include "gbc_chown.h"
 
 
 static FILE *_flist = NULL;

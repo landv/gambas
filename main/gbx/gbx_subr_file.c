@@ -441,7 +441,7 @@ void SUBR_stat(void)
   FILE_stat(path, &info, follow);
 
   OBJECT_new((void **)(void *)&cstat, CLASS_Stat, NULL, NULL);
-  OBJECT_UNREF_KEEP(&cstat, "SUBR_stat");
+  OBJECT_UNREF_KEEP(cstat, "SUBR_stat");
   cstat->info = info;
   STRING_new(&cstat->path, path, 0);
 
@@ -741,7 +741,7 @@ void SUBR_inp_out(void)
   {
     stream = pop_stream(where);
     if (stream)
-      OBJECT_UNREF(&stream, "SUBR_inp_out");
+      OBJECT_UNREF(stream, "SUBR_inp_out");
     return;
   }
 
@@ -764,7 +764,7 @@ static void free_list(void **list)
     stream = pop_stream(list);
     if (!stream)
       return;
-    OBJECT_UNREF(&stream, "free_list");
+    OBJECT_UNREF(stream, "free_list");
   }
 }
 
