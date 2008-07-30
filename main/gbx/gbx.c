@@ -190,6 +190,7 @@ int main(int argc, char **argv)
         printf(
           "\n"
           "GAMBAS Interpreter version " VERSION " " __DATE__ " " __TIME__ "\n"
+          "Compiled with gcc " __VERSION__ "\n"
           COPYRIGHT
           "Usage: gbx" GAMBAS_VERSION_STRING " [options] [<project file>] -- ...\n"
           "       gbx" GAMBAS_VERSION_STRING " -e <expression>\n\n"

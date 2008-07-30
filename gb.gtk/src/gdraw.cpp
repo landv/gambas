@@ -869,15 +869,6 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 	}
 }
 
-static void my_gdk_gc_set_tile(GdkGC *gc, GdkPixmap *pixmap)
-{
-  XGCValues xvalues;
-	
-	xvalues.tile = pixmap ? GDK_PIXMAP_XID(pixmap) : None;
-
-  XChangeGC (GDK_GC_XDISPLAY (gc), GDK_GC_XGC (gc), GCTile, &xvalues);
-}
-
 void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 {
 	GdkPixmap *pixmap;
@@ -907,13 +898,15 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 		int yPos, xPos, drawH, drawW, yOff, xOff;
 		yPos = y;
 		yOff = sy;
-		while( yPos < y + h ) {
+		while( yPos < y + h ) 
+		{
 				drawH = sh - yOff;    // Cropping first row
 				if ( yPos + drawH > y + h )        // Cropping last row
 						drawH = y + h - yPos;
 				xPos = x;
 				xOff = sx;
-				while( xPos < x + w ) {
+				while( xPos < x + w ) 
+				{
 						drawW = sw - xOff; // Cropping first column
 						if ( xPos + drawW > x + w )    // Cropping last column
 								drawW = x + w - xPos;

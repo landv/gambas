@@ -109,6 +109,7 @@ static CFILE *create_default_stream(FILE *file, int mode)
 	CFILE *ob;
   STREAM stream;
   
+  CLEAR(&stream);
   stream.type = &STREAM_buffer;
   stream.buffer.size = 0;
   stream.buffer.file = file;

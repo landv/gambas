@@ -137,7 +137,8 @@ typedef
 #define Min(a, b) ({ int _a = (a), _b = (b); _a < _b ? _a : _b; })
 #define MinMax(v, a, b) ({ int _v = (v), _a = (a), _b = (b); _v < _a ? _a : (_v > _b ? _b : _v); })
 
-#define COPYRIGHT "(c) 2000-2007 Benoit Minisini\n\n" \
+#define COPYRIGHT \
+  "(c) 2000-2007 Benoit Minisini\n\n" \
   "This program is free software; you can redistribute it and/or \n" \
   "modify it under the terms of the GNU General Public License as \n" \
   "published by the Free Software Foundation; either version 2, or \n" \
