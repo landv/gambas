@@ -159,6 +159,15 @@ BEGIN_PROPERTY(CWINDOW_mouse)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CWINDOW_tracking)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->tracking);
+	else
+		THIS->tracking = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CWINDOW_cursor)
 
 	if (READ_PROPERTY)
@@ -228,6 +237,7 @@ GB_DESC CWindow[] =
   GB_PROPERTY("Framerate", "i", CWINDOW_framerate),
   GB_PROPERTY("Text", "s", CWINDOW_text),
   GB_PROPERTY("Title", "s", CWINDOW_text),
+  GB_PROPERTY("Tracking", "b", CWINDOW_tracking),
   GB_PROPERTY("Caption", "s", CWINDOW_text),
   GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
   GB_PROPERTY("Border", "i", CWINDOW_border),
@@ -414,8 +424,8 @@ void myWin::MouseMotionEvent(SDL_MouseMotionEvent *mouseEvent)
 	CMOUSE_info.relx = mouseEvent->xrel;
 	CMOUSE_info.rely = mouseEvent->yrel;
 
-	// do not raise event if no mouse button are pressed/released
-	if (!mouseEvent->state)
+	// do not raise event if no mouse button are pressed/released && tracking is not set
+	if ((!mouseEvent->state) && (!(((CWINDOW *)hWindow)->tracking)))
 		return;
 
 	CMOUSE_info.valid = true;

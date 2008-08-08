@@ -58,6 +58,7 @@ typedef
 		GB_BASE ob;
 		myWin *id;
 		bool openGL;
+		bool tracking;
 		// framerate control
 		Uint32 FPSLimit; // duration of a frame, if 0 -> no framerate limit
 		Uint32 lastTime;
