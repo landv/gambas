@@ -788,8 +788,20 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 	GdkColor color;
 	GtkStyle *st;
 	char *markup = data->markup;
-	char *buf =data->text;
+	char *buf = data->text;
+	int padding = data->padding;
 	double xa, ya;
+
+	if (padding < 1)
+		padding = 1;
+
+	rect->x += padding;
+	rect->y += padding;
+	rect->width -= padding * 2;
+	rect->height -= padding * 2;
+	
+	if (rect->width < 1 || rect->height < 1)
+		return;
 
 	xa = gt_from_alignment(data->alignment, false);
 	ya = gt_from_alignment(data->alignment, true);
@@ -839,10 +851,10 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 	
 	if (data->picture)
 	{
-		if (buf && *buf)
+		if ((markup && *markup) || (buf && *buf))
 		{
-			xa = 1 - xa;
-			ya = 1 - ya;
+			xa = 0;
+			ya = 0.5;
 		}
 		g_object_set(G_OBJECT(pix),
 			"pixbuf", data->picture->getPixbuf(),

@@ -228,7 +228,9 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
   if (!pix.isNull())
   {
     if (txt.length() == 0)
-      p->drawPixmap(x + (w - pix.width()) / 2, y + (h - pix.height() ) / 2, pix);
+    {
+      DRAW_aligned_pixmap(p, pix, x, y, w, h, _alignment);
+    }
     else
     {
       p->drawPixmap(x + 2, y + (h - pix.height() ) / 2, pix);

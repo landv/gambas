@@ -1022,8 +1022,8 @@ double gt_from_alignment(int align, bool vertical)
 	{
 		switch(align & 0xF0)
 		{
-			case 1: return 0.0;
-			case 2: return 1.0;
+			case 0x10: return 0.0;
+			case 0x20: return 1.0;
 			default: return 0.5;
 		}
 	}
