@@ -140,7 +140,7 @@ void UNBORROW(VALUE *value)
 
 	if (TYPE_is_object(type))
 	{
-		OBJECT_UNREF_KEEP(&value->_object.object, "UNBORROW");
+		OBJECT_UNREF_KEEP(value->_object.object, "UNBORROW");
 		return;
 	}
 	
@@ -150,11 +150,11 @@ __VARIANT:
 	if (value->_variant.vtype == T_STRING)
 		STRING_unref_keep((char **)value->_variant.value);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF_KEEP((void **)value->_variant.value, "UNBORROW");
+		OBJECT_UNREF_KEEP(*((void **)value->_variant.value), "UNBORROW");
 	return;
 
 __FUNCTION:
-	OBJECT_UNREF_KEEP(&value->_function.object, "UNBORROW");
+	OBJECT_UNREF_KEEP(value->_function.object, "UNBORROW");
 	return;
 
 __STRING:
@@ -178,11 +178,11 @@ __VARIANT:
 	if (value->_variant.vtype == T_STRING)
 		STRING_unref((char **)value->_variant.value);
 	else if (TYPE_is_object(value->_variant.vtype))
-		OBJECT_UNREF(value->_variant.value, "RELEASE");
+		OBJECT_UNREF(*((void **)value->_variant.value), "RELEASE");
 	return;
 
 __FUNCTION:
-	OBJECT_UNREF(&value->_function.object, "RELEASE");
+	OBJECT_UNREF(value->_function.object, "RELEASE");
 	return;
 
 __ARRAY:
@@ -215,7 +215,7 @@ void RELEASE_many(VALUE *value, int n)
 	
 		if (TYPE_is_object(type))
 		{
-			OBJECT_UNREF(&value->_object.object, "RELEASE");
+			OBJECT_UNREF(value->_object.object, "RELEASE");
 			continue;
 		}
 		
@@ -225,11 +225,11 @@ void RELEASE_many(VALUE *value, int n)
 		if (value->_variant.vtype == T_STRING)
 			STRING_unref((char **)value->_variant.value);
 		else if (TYPE_is_object(value->_variant.vtype))
-			OBJECT_UNREF(value->_variant.value, "RELEASE");
+			OBJECT_UNREF(*((void **)value->_variant.value), "RELEASE");
 		continue;
 	
 	__FUNCTION:
-		OBJECT_UNREF(&value->_function.object, "RELEASE");
+		OBJECT_UNREF(value->_function.object, "RELEASE");
 		continue;
 	
 	__ARRAY:
@@ -709,7 +709,7 @@ void EXEC_leave(bool drop)
 	RELEASE_MANY(SP, n);
 	SP -= nparam;
 	SP += nb;
-	OBJECT_UNREF(&OP, "EXEC_leave");
+	OBJECT_UNREF(OP, "EXEC_leave");
 	SP -= nb;
 	STACK_pop_frame(&EXEC_current);
 	PC += nbyref + 1;
@@ -720,7 +720,7 @@ __LEAVE_NORMAL:
 	n = nparam + (SP - PP);
 	RELEASE_MANY(SP, n);
 
-	OBJECT_UNREF(&OP, "EXEC_leave");
+	OBJECT_UNREF(OP, "EXEC_leave");
 	STACK_pop_frame(&EXEC_current);
 
 __RETURN_VALUE:
@@ -731,7 +731,7 @@ __RETURN_VALUE:
 		if (SP[-1].type == T_FUNCTION)
 		{
 			SP--;
-			OBJECT_UNREF(&SP->_function.object, "EXEC_leave");
+			OBJECT_UNREF(SP->_function.object, "EXEC_leave");
 		}
 	}
 	else
@@ -1046,7 +1046,7 @@ void EXEC_native_quick(void)
 		}
 	}
 
-	OBJECT_UNREF(&free_later, "EXEC_native (FUNCTION)");
+	OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
 
 	#if DEBUG_STACK
 	printf("| << EXEC_native: %s (%p)\n", desc->name, &desc);
@@ -1215,7 +1215,7 @@ void EXEC_native(void)
 	}
 
 	if (use_stack)
-		OBJECT_UNREF(&free_later, "EXEC_native (FUNCTION)");
+		OBJECT_UNREF(free_later, "EXEC_native (FUNCTION)");
 
 	if (error)
 		PROPAGATE();
@@ -1255,7 +1255,7 @@ __FUNCTION:
 		EXEC_special(SPEC_UNKNOWN, val->_function.class, val->_function.object, 0, FALSE);
 
 		object = val->_function.object;
-		OBJECT_UNREF(&object, "EXEC_object (FUNCTION)");
+		OBJECT_UNREF(object, "EXEC_object (FUNCTION)");
 
 		SP--;
 		//*val = *SP;
@@ -1554,7 +1554,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 	CATCH
 	{
 		// _free() methods should not be called, but we must
-		OBJECT_UNREF(&object, "EXEC_new");
+		OBJECT_UNREF(object, "EXEC_new");
 		PROPAGATE();
 //     SP--; /* class */
 //     SP->type = T_NULL;
@@ -1649,7 +1649,7 @@ void EXEC_new(void)
 	CATCH
 	{
 		// _free() methods should not be called, but we must
-		OBJECT_UNREF(&object, "EXEC_new");
+		OBJECT_UNREF(object, "EXEC_new");
 		//(*class->free)(class, object);
 		SP--; /* class */
 		SP->type = T_NULL;

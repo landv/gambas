@@ -93,7 +93,7 @@ void ARRAY_free_data(void *data, ARRAY_DESC *desc)
   {
     for (i = 0; i < size; i++)
     {
-      OBJECT_unref((void **)array);
+      OBJECT_unref(*((void **)array));
       array += sizeof(void *);
     }
   }

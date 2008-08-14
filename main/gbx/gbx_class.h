@@ -413,7 +413,7 @@ CLASS *CLASS_check_global(char *name);
 
 void CLASS_ref(void *object);
 void CLASS_unref(void **pobject, boolean can_free);
-void CLASS_free(void **pobject);
+void CLASS_free(void *object);
 void CLASS_release(CLASS *class, char *data);
 
 int CLASS_get_inheritance(CLASS *class, CLASS **her);

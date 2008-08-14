@@ -188,7 +188,7 @@ static void release_one(CARRAY *_object, int i)
       break;
 
     case T_OBJECT:
-      OBJECT_unref(&(((void **)(THIS->data))[i]));
+      OBJECT_UNREF(((void **)(THIS->data))[i], "release_one");
       break;
 
     case T_VARIANT:
@@ -217,7 +217,7 @@ static void release(CARRAY *_object, int start, int end)
 
     case T_OBJECT:
       for (i = start; i < end; i++)
-        OBJECT_unref(&((void **)(THIS->data))[i]);
+        OBJECT_UNREF(((void **)(THIS->data))[i], "release");
       break;
 
     case T_VARIANT:

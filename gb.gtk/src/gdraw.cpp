@@ -933,8 +933,9 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 	int sy = -fillY();
 	int sw = pic->width();
 	int sh = pic->height();
-	GdkGCValues val;
 
+	if (!pic || pic->isVoid()) return;
+	
 	if (!sw || !sh )
 		return;
 	
@@ -949,46 +950,29 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 		
 	pixmap = pic->getPixmap();
 	
-	gdk_gc_get_values(gc, &val);
-	
-	gdk_gc_set_tile(gc, pixmap);
-	gdk_gc_offset(gc, x-sx, y-sy);
-	gdk_gc_set_fill(gc, GDK_TILED);
-	
-	gdk_draw_rectangle(dr, gc, true, x, y, w, h);
-	
-	gdk_gc_set_fill(gc, GDK_SOLID);
-	gdk_gc_offset(gc, val.ts_x_origin, val.ts_y_origin);
-	gdk_gc_set_tile(gc, NULL);
-	
-	if (drm)
 	{
-		GdkBitmap *mask = pic->getMask();
-		GdkGCValues val;
-		val.foreground.pixel = 1;
-		gdk_gc_set_values(gcm, &val, GDK_GC_FOREGROUND);
-		
-		if (mask)
+		int yPos, xPos, drawH, drawW, yOff, xOff;
+		yPos = y;
+		yOff = sy;
+		while( yPos < y + h ) 
 		{
-			gdk_gc_get_values(gcm, &val);
-			
-			gdk_gc_set_tile(gcm, mask);
-			gdk_gc_offset(gcm, x-sx, y-sy);
-			gdk_gc_set_fill(gcm, GDK_TILED);
-			
-			gdk_draw_rectangle(drm, gcm, true, x, y, w, h);
-			
-			gdk_gc_set_fill(gcm, GDK_SOLID);
-			gdk_gc_offset(gcm, val.ts_x_origin, val.ts_y_origin);
-			gdk_gc_set_tile(gcm, NULL);
+				drawH = sh - yOff;    // Cropping first row
+				if ( yPos + drawH > y + h )        // Cropping last row
+						drawH = y + h - yPos;
+				xPos = x;
+				xOff = sx;
+				while( xPos < x + w ) 
+				{
+						drawW = sw - xOff; // Cropping first column
+						if ( xPos + drawW > x + w )    // Cropping last column
+								drawW = x + w - xPos;
+						picture(pic, xPos, yPos, drawW, drawH, xOff, yOff, drawW, drawH);
+						xPos += drawW;
+						xOff = 0;
+				}
+				yPos += drawH;
+				yOff = 0;
 		}
-		else
-		{
-			gdk_draw_rectangle(drm, gcm, true, x, y, w, h);	
-		}
-		
-		val.foreground.pixel = (foreground() & 0xFF) ? 0 : 1;
-		gdk_gc_set_values(gcm, &val, GDK_GC_FOREGROUND);			
 	}
 }
 

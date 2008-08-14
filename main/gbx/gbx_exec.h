@@ -211,7 +211,7 @@ do { \
 	TYPE type = _v->type; \
 	if (TYPE_is_object(type)) \
 	{ \
-		OBJECT_UNREF(&_v->_object.object, "RELEASE"); \
+		OBJECT_UNREF(_v->_object.object, "RELEASE"); \
 	} \
 	else if (type == T_STRING) \
 		STRING_unref(&_v->_string.addr); \

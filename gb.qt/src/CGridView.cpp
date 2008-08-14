@@ -228,7 +228,9 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
   if (!pix.isNull())
   {
     if (txt.length() == 0)
-      p->drawPixmap(x + (w - pix.width()) / 2, y + (h - pix.height() ) / 2, pix);
+    {
+      DRAW_aligned_pixmap(p, pix, x, y, w, h, _alignment);
+    }
     else
     {
       p->drawPixmap(x + 2, y + (h - pix.height() ) / 2, pix);
@@ -270,6 +272,8 @@ QSize MyTableItem::sizeHint() const
   QString t = item->text();
   QFontMetrics fm = d->font ? QFontMetrics(*(d->font->font)) : table()->fontMetrics();
 
+	padding = QMAX(1, d->padding) * 2;
+  
   if (!pix.isNull() )
   {
 	  s = pix.size();
@@ -277,22 +281,23 @@ QSize MyTableItem::sizeHint() const
 	  x = pix.width() + 2;
 	}
 
-	padding = QMAX(1, d->padding) * 2;
-  
-  if ( !wordWrap() && t.find( '\n' ) == -1 )
-  {
-  	s = QSize(s.width() + fm.width(t) + 10,
-		          QMAX( s.height(), fm.height() ) ).expandedTo( strutSize );
-	}
-	else
+	if (t.length())
 	{
-		QRect r = fm.boundingRect(0, 0, table()->columnWidth( col() ) - padding, 0,
-							   wordWrap() ? (alignment() | WordBreak) : alignment(),
-							   t );
-		r.setWidth( QMAX( r.width() + 10, table()->columnWidth(col())));
-
-  	s = QSize( r.width(), QMAX( s.height(), r.height() ) ).expandedTo( strutSize );
-  }
+		if ( !wordWrap() && t.find( '\n' ) == -1 )
+		{
+			s = QSize(s.width() + fm.width(t) + 10,
+								QMAX( s.height(), fm.height() ) ).expandedTo( strutSize );
+		}
+		else
+		{
+			QRect r = fm.boundingRect(0, 0, table()->columnWidth( col() ) - padding, 0,
+									wordWrap() ? (alignment() | WordBreak) : alignment(),
+									t );
+			r.setWidth( QMAX( r.width() + 10, table()->columnWidth(col())));
+	
+			s = QSize( r.width(), QMAX( s.height(), r.height() ) ).expandedTo( strutSize );
+		}
+	}
   
 	s.setWidth(s.width() + padding);
 	s.setHeight(s.height() + padding);

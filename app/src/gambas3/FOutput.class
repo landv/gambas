@@ -266,7 +266,7 @@ Private Sub Search(bBack As Boolean)
   
     Do
       If iCol Then
-        sLine = edtOutput.Lines[iLine]
+        sLine = edtOutput.Lines[iLine].Text
         If bCase Then sLine = String.UCase(sLine)
         iPos = String.RInStr(sLine, sFind, iCol)
         If iPos Then
@@ -279,14 +279,14 @@ Private Sub Search(bBack As Boolean)
       If iLine = iStart And If bLoop Then Goto NOT_FOUND
       Dec iLine
       If iLine < 0 Then iLine = edtOutput.Lines.Count - 1
-      iCol = String.Len(edtOutput.Lines[iLine])
+      iCol = edtOutput.Lines[iLine].Length
       bLoop = True
     Loop
 
   Else
   
     Do
-      sLine = edtOutput.Lines[iLine]
+      sLine = edtOutput.Lines[iLine].Text
       If bCase Then sLine = String.UCase(sLine)
       iPos = String.InStr(sLine, sFind, iCol + 1)
       If iPos Then

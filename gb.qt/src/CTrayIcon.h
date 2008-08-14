@@ -27,7 +27,9 @@
 
 #include <qobject.h>
 #include <qwidget.h>
+#include <qevent.h>
 
+#include "qtxembed.h"
 #include "CPicture.h"
 
 #ifndef __CTRAYICON_CPP
@@ -42,12 +44,22 @@ extern GB_DESC CTrayIconsDesc[];
 
 void CTRAYICON_close_all(void);
 
-class QtXEmbedClient;
+class MyTrayIcon: public QtXEmbedClient
+{
+public:
+	MyTrayIcon();
+	QPixmap icon() const { return _icon; }
+	void setIcon(QPixmap &icon);
+protected:
+	virtual void paintEvent(QPaintEvent *);
+private:
+	QPixmap _icon;
+};
 
 typedef
   struct {
     GB_BASE ob;
-    QtXEmbedClient *widget;
+    MyTrayIcon *widget;
     GB_VARIANT_VALUE tag;
     CPICTURE *icon;
     char *tooltip;

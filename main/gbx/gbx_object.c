@@ -118,7 +118,7 @@ void OBJECT_detach(OBJECT *ob)
       fprintf(stderr, "OBJECT_detach : Detach (%s %p) from (%s %p)\n",
         ob->class->name, ob, parent->class->name, parent);
     #endif
-    OBJECT_UNREF(&parent, "OBJECT_detach");
+    OBJECT_UNREF(parent, "OBJECT_detach");
   }  
 }
 
@@ -137,7 +137,7 @@ static void remove_observers(OBJECT *ob)
   	#if DEBUG_EVENT
   	fprintf(stderr, "Remove observer %p\n", obs);
   	#endif
-  	OBJECT_UNREF(&obs, "remove_observers");
+  	OBJECT_UNREF(obs, "remove_observers");
   	obs = next;  	
 	}
   
@@ -271,7 +271,7 @@ static void release(CLASS *class, OBJECT *ob)
       STRING_unref((char **)&data[var->pos]);
     else if (var->type.id == T_OBJECT)
     {
-      OBJECT_unref((void **)&data[var->pos]);
+      OBJECT_UNREF(*((void **)&data[var->pos]), "release");
     }
     else if (var->type.id == T_VARIANT)
       VARIANT_free((VARIANT *)&data[var->pos]);
@@ -329,12 +329,12 @@ void OBJECT_create(void **object, CLASS *class, const char *name, void *parent, 
 		OBJECT_lock(ob, TRUE);
     EXEC_special_inheritance(SPEC_NEW, class, ob, nparam, TRUE);
 		OBJECT_lock(ob, FALSE);
-    OBJECT_UNREF_KEEP(&ob, "OBJECT_create");
+    OBJECT_UNREF_KEEP(ob, "OBJECT_create");
   }
   CATCH
   {
     *object = NULL;
-    OBJECT_UNREF_KEEP(&ob, "OBJECT_create");
+    OBJECT_UNREF_KEEP(ob, "OBJECT_create");
     PROPAGATE();
   }
   END_TRY
@@ -363,7 +363,7 @@ void OBJECT_create_native(void **object, CLASS *class, VALUE *param)
       break;
   }
 
-  OBJECT_UNREF_KEEP(object, "OBJECT_create");
+  OBJECT_UNREF_KEEP(*object, "OBJECT_create");
 }
 
 void OBJECT_lock(OBJECT *object, bool block)

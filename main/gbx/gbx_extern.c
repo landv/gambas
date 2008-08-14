@@ -239,13 +239,20 @@ void EXTERN_call(void)
   ffi_type *types[nparam];
   ffi_type *rtype;
   void *args[nparam];
-  int rvalue[4];
   TYPE *sign;
   VALUE *value;
   char *tmp = NULL;
   char *next_tmp;
   void *func;
   int i, t;
+  union {
+  	int _integer;
+  	float _single;
+  	double _float;
+  	char * _string;
+  	int64_t _long;
+  	}
+  	rvalue;
 
   if (nparam < ext->n_param)
     THROW(E_NEPARAM);
@@ -332,7 +339,7 @@ void EXTERN_call(void)
 	if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, nparam,	rtype, types) != FFI_OK)
 		ERROR_panic("ffi_prep_cif has failed");
   
-	ffi_call(&cif, func, rvalue, args);
+	ffi_call(&cif, func, &rvalue, args);
 
   switch (ext->type)
   {
@@ -340,23 +347,28 @@ void EXTERN_call(void)
     case T_BYTE:
     case T_SHORT:
     case T_INTEGER:
-      GB_ReturnInteger(*(int *)POINTER(rvalue));
+      //GB_ReturnInteger(*(int *)POINTER(rvalue));
+      GB_ReturnInteger(rvalue._integer);
       break;
     
     case T_LONG:
-      GB_ReturnLong(*(int64_t *)POINTER(rvalue));
+      //GB_ReturnLong(*(int64_t *)POINTER(rvalue));
+      GB_ReturnLong(rvalue._long);
       break;
     
     case T_SINGLE:
-      GB_ReturnFloat(*(float *)POINTER(rvalue));
+      //GB_ReturnFloat(*(float *)POINTER(rvalue));
+      GB_ReturnFloat(rvalue._single);
       break;
       
     case T_FLOAT:
-      GB_ReturnFloat(*(double *)POINTER(rvalue));
+      //GB_ReturnFloat(*(double *)POINTER(rvalue));
+      GB_ReturnFloat(rvalue._float);
       break;
       
     case T_STRING:
-      GB_ReturnConstString(*(char **)POINTER(rvalue), 0);
+      //GB_ReturnConstString(*(char **)POINTER(rvalue), 0);
+      GB_ReturnConstString(rvalue._string, 0);
       break;
     
     default:

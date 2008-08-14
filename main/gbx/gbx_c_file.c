@@ -78,7 +78,7 @@ CFILE *CFILE_create(STREAM *stream, int mode)
   CFILE *file;
 
   OBJECT_new((void **)(void *)&file, CLASS_File, NULL, NULL);
-  OBJECT_UNREF_KEEP(&file, "CFILE_new");
+  OBJECT_UNREF_KEEP(file, "CFILE_new");
 
   if (stream)
   {

@@ -34,8 +34,6 @@
   #include <qeventloop.h>
 #endif
 
-#include "qtxembed.h"
-
 #include "gambas.h"
 #include "main.h"
 #include "x11.h"
@@ -65,6 +63,30 @@ static int _state;
 static QList<CTRAYICON> _list;
 
 #include "gb.form.trayicon.h"
+
+/** MyTrayIcon ***********************************************************/
+
+MyTrayIcon::MyTrayIcon() : QtXEmbedClient()
+{
+	setBackgroundMode(X11ParentRelative);
+	_icon = QPixmap(_default_trayicon);
+}
+
+void MyTrayIcon::setIcon(QPixmap &icon)
+{ 
+	if (icon.isNull())
+		_icon = QPixmap(_default_trayicon);
+	else
+		_icon = icon; 
+	update();
+}
+
+void MyTrayIcon::paintEvent(QPaintEvent *e)
+{
+	QPainter p(this);
+	p.drawPixmap((width() - _icon.width()) / 2, (height() - _icon.height()) / 2, _icon);
+}
+
 
 static CTRAYICON *find_object(const QObject *o)
 {
@@ -145,11 +167,11 @@ static void define_mask(CTRAYICON *_object)
   else
     p = new QPixmap(_default_trayicon);
 
-  WIDGET->clearMask();
+  /*WIDGET->clearMask();
   if (p->hasAlpha())
-    WIDGET->setMask(*(p->mask()));
+    WIDGET->setMask(*(p->mask()));*/
 
-  WIDGET->setErasePixmap(*p);
+  WIDGET->setIcon(*p);
   //WIDGET->setPaletteBackgroundColor(QColor(255, 0, 0));
   WIDGET->resize(p->width(), p->height());
 
@@ -212,7 +234,7 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 
   if (!WIDGET)
   {
-    QtXEmbedClient *wid = new QtXEmbedClient();
+    MyTrayIcon *wid = new MyTrayIcon();
     wid->setFocusPolicy(QWidget::NoFocus);
     wid->installEventFilter(&CTrayIcon::manager);
 
@@ -458,7 +480,7 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
   _object = find_object(widget);
 
   if (!_object)
-    goto _STANDARD;
+		goto _STANDARD;
 
   original = event->spontaneous();
 
@@ -562,10 +584,11 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
   }
 
 _DESIGN:
-_STANDARD:
 
 	if (!find_object(widget))
 		return true;
+
+_STANDARD:
 		
   return QObject::eventFilter(widget, event);    // standard event processing
 }

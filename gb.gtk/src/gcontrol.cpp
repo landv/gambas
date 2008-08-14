@@ -232,9 +232,10 @@ void gControl::initAll(gContainer *parent)
 	onDrop=NULL;
 	onEnterLeave=NULL;
 
-	controls = g_list_append(controls,this);
-	
 	frame = border = widget = 0;
+	hFree = NULL;
+	
+	controls = g_list_append(controls,this);
 }
 
 gControl::gControl()

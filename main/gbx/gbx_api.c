@@ -630,7 +630,7 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 __RETURN:
 	
 	RELEASE_MANY(SP, nparam);
-	OBJECT_UNREF(&object, "GB_Raise");	
+	OBJECT_UNREF(object, "GB_Raise");	
 	return result;
 }
 
@@ -870,7 +870,7 @@ void GB_Unref(void **object)
   #endif
 
   if (*object)
-    OBJECT_UNREF(object, "GB_Unref");
+    OBJECT_UNREF(*object, "GB_Unref");
 
   #if TRACE_MEMORY
   CP = save;
@@ -889,11 +889,11 @@ void GB_UnrefKeep(void **object, int delete)
   {
     if (delete)
     {
-      OBJECT_UNREF(object, "GB_UnrefKeep");
+      OBJECT_UNREF(*object, "GB_UnrefKeep");
     }
     else
     {
-      OBJECT_UNREF_KEEP(object, "GB_UnrefKeep");
+      OBJECT_UNREF_KEEP(*object, "GB_UnrefKeep");
     }
   }
 
@@ -1337,7 +1337,7 @@ int GB_New(void **object, void *class, const char *name, void *parent)
   else
   {
     OBJECT_new(object, class, name, parent);
-    OBJECT_UNREF_KEEP(object, "GB_New");
+    OBJECT_UNREF_KEEP(*object, "GB_New");
   }
 
   return FALSE;

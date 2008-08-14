@@ -138,6 +138,15 @@ AC_DEFUN([GB_INIT],
   
   AC_REPLACE_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw)
 
+  dnl ---- Support for colorgcc
+
+  AC_PATH_PROG(COLORGCC, colorgcc)
+
+  if test x"$COLORGCC" != x; then
+    CC="colorgcc"
+    CXX="colorgcc"
+  fi
+
   dnl ---- Support for ccache
 
   AC_PATH_PROG(CCACHE, ccache)
@@ -818,9 +827,7 @@ AC_DEFUN([GB_COMPONENT_SEARCH],
 ## GB_FIND_QT_MOC
 ## Find QT moc compiler
 ##
-##   $1 = Files to search
-##   $2 = Directories
-##   $3 = Sub-directories patterns
+##   $1 = QT version
 ##
 ##   Returns a path list in $gb_val
 ## ---------------------------------------------------------------------------
@@ -828,9 +835,14 @@ AC_DEFUN([GB_COMPONENT_SEARCH],
 AC_DEFUN([GB_FIND_QT_MOC],
 [
   gb_path_qt_moc=no
+  if test x$1 = x; then
+    gb_qt_version=3
+  else
+    gb_qt_version=$1
+  fi
   
   AC_ARG_WITH(moc,
-    [  --with-moc      where the QT moc compiler is located. ],
+    [  --with-moc      The path to the QT moc compiler. ],
     [  gb_path_qt_moc="$withval" ])
 
   AC_MSG_CHECKING(for QT meta-object compiler)
@@ -839,7 +851,20 @@ AC_DEFUN([GB_FIND_QT_MOC],
 
     gb_val=""
     if test "$gb_path_qt_moc" = no; then
-      GB_FIND(moc, $QTDIR /usr /usr/lib/qt* /usr/local/lib/qt* /usr/local/qt* /usr/share/qt* /usr/qt/* /usr/pkg /usr/pkg/qt* , bin)
+      
+      for gb_dir in $QTDIR /usr/lib/qt$gb_qt_version /usr/lib/qt/$gb_qt_version /usr/local/lib/qt$gb_qt_version /usr/local/lib/qt/$gb_qt_version /usr/local/qt$gb_qt_version /usr/local/qt/$gb_qt_version /usr/share/qt$gb_qt_version /usr/qt/$gb_qt_version /usr/pkg/qt$gb_qt_version /usr/pkg /usr; do
+      
+        gb_dir=$gb_dir/bin
+      	
+        if test -r "$gb_dir/moc"; then
+          if test "x`$gb_dir/moc -v 2>&1 | grep " $gb_qt_version\."`" != x; then
+            gb_val=$gb_dir/moc
+            break
+          fi
+        fi
+      
+      done
+      
       gb_path_qt_moc=$gb_val
     fi
     
@@ -848,12 +873,12 @@ AC_DEFUN([GB_FIND_QT_MOC],
 
   AC_MSG_RESULT([$gb_cv_path_qt_moc])
   
-  if test "$gb_cv_path_qt_moc" = no; then
+  if test x"$gb_cv_path_qt_moc" = x; then
     AC_MSG_WARN([QT moc compiler not found. Try --with-moc option.])
     MOC=""
     touch DISABLED
   else
-    MOC=$gb_cv_path_qt_moc/moc
+    MOC=$gb_cv_path_qt_moc
   fi
   
   AC_SUBST(MOC)

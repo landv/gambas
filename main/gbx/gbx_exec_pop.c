@@ -227,7 +227,7 @@ _POP_PROPERTY_2:
 _FIN:
 
   RELEASE(&SP[-2]);
-  OBJECT_UNREF(&object, "EXEC_pop_unknown");
+  OBJECT_UNREF(object, "EXEC_pop_unknown");
   SP -= 2;
   PC++;
 }
@@ -332,7 +332,7 @@ __POP_QUICK_ARRAY:
 		
 		SP = val + 1;
 		RELEASE_MANY(SP, 2);
-		//OBJECT_UNREF(&object, "EXEC_push_array");
+		//OBJECT_UNREF(object, "EXEC_push_array");
 	}
 	else // CQA_COLLECTION
 	{

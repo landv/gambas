@@ -1072,3 +1072,29 @@ QPainter *DRAW_get_current()
 	return d ? DP(d) : NULL;
 }
 
+void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, int h, int align)
+{
+	int xp, yp;
+	
+	if (pix.isNull() || pix.width() == 0 || pix.height() == 0)
+		return;
+	
+	xp = x;
+  switch(qApp->horizontalAlignment(align))
+  {
+  	case Qt::AlignRight: xp += w - pix.width(); break;
+  	case Qt::AlignHCenter: xp += (w - pix.width()) / 2; break;
+  	default: break;
+  }
+  
+  yp = y;
+  switch(align & Qt::AlignVertical_Mask)
+  {
+    case Qt::AlignBottom: yp += h - pix.height(); break;
+    case Qt::AlignVCenter: yp += (h - pix.height()) / 2; break;
+    default: break;
+  }
+	
+	p->drawPixmap(xp, yp, pix);
+}
+

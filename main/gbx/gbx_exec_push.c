@@ -200,7 +200,7 @@ _PUSH_GENERIC:
 
       if (object)
       {
-        OBJECT_UNREF(&object, "EXEC_push_unknown");
+        OBJECT_UNREF(object, "EXEC_push_unknown");
         object = NULL;
       }
 
@@ -215,7 +215,7 @@ _PUSH_GENERIC:
 
       if (object)
       {
-        OBJECT_UNREF(&object, "EXEC_push_unknown");
+        OBJECT_UNREF(object, "EXEC_push_unknown");
         object = NULL;
       }
 
@@ -313,7 +313,7 @@ _PUSH_STATIC_METHOD:
 
   if (object)
   {
-    OBJECT_UNREF(&object, "EXEC_push_unknown");
+    OBJECT_UNREF(object, "EXEC_push_unknown");
     object = NULL;
   }
 
@@ -356,7 +356,7 @@ _PUSH_EXTERN:
 
   if (object)
   {
-    OBJECT_UNREF(&object, "EXEC_push_unknown");
+    OBJECT_UNREF(object, "EXEC_push_unknown");
     object = NULL;
   }
 
@@ -406,7 +406,7 @@ _FIN_DEFINED_NO_BORROW:
   /* sp[-1] contenait l'objet et a ���ras� Il faut donc le d���encer
      nous-m�e. Sauf si c'est un appel de m�hode statique (cf. plus haut) */
 
-  OBJECT_UNREF(&object, "EXEC_push_unknown");
+  OBJECT_UNREF(object, "EXEC_push_unknown");
 
 _FIN:
 
@@ -516,7 +516,7 @@ __PUSH_QUICK_ARRAY:
 	//COPY_VALUE(SP, &TEMP);
 	//PUSH();
 	
-	OBJECT_UNREF(&object, "EXEC_push_array");
+	OBJECT_UNREF(object, "EXEC_push_array");
 	return;
 
 __PUSH_ARRAY:
@@ -531,7 +531,7 @@ __PUSH_ARRAY_2:
 	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
 		THROW(E_NARRAY, class->name);
 
-	OBJECT_UNREF(&object, "EXEC_push_array");
+	OBJECT_UNREF(object, "EXEC_push_array");
 	SP--;
 	//SP[-1] = SP[0];
 	VALUE_copy(&SP[-1], &SP[0]);

@@ -543,7 +543,7 @@ __OBJECT:
     if (type == T_BOOLEAN)
     {
       test = (value->_object.object != NULL);
-      OBJECT_UNREF(&value->_object.object, "VALUE_convert");
+      OBJECT_UNREF(value->_object.object, "VALUE_convert");
       value->_boolean.value = test ? -1 : 0;
       goto __TYPE;
     }
@@ -724,7 +724,7 @@ __OBJECT:
   VALUE_conv(value, type);
 
   OBJECT_REF(value->_object.object, "VALUE_write");
-  OBJECT_UNREF(((void **)addr), "VALUE_write");
+  OBJECT_UNREF(*((void **)addr), "VALUE_write");
   *((void **)addr) = value->_object.object;
   return;
 
@@ -733,7 +733,7 @@ __CLASS:
   VALUE_conv(value, type);
 
   OBJECT_REF(value->_class.class, "VALUE_write");
-  OBJECT_UNREF(((void **)addr), "VALUE_write");
+  OBJECT_UNREF(*((void **)addr), "VALUE_write");
   *((void **)addr) = value->_class.class;
   return;
 
@@ -890,7 +890,7 @@ void VALUE_free(void *addr, TYPE type)
   }
   else if (TYPE_is_object(type))
   {
-    OBJECT_unref((void **)addr);
+		OBJECT_UNREF(*((void **)addr), "VALUE_free");
     *((void **)addr) = NULL;
   }
   else if (type == T_VARIANT)
