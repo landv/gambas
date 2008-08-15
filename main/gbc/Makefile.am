@@ -1,9 +1,12 @@
 INCLUDES = -I$(top_srcdir)/share @INCLTDL@
 
 bin_PROGRAMS = gbc2 gba2 gbi2
+noinst_LTLIBRARIES = libgbcopt.la
 
-gbc2_LDADD = @MATH_LIB@
+gbc2_LDADD = libgbcopt.la @MATH_LIB@
 gbc2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+
+libgbcopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
 gbi2_LDADD = @LIBLTDL@
 gbi2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
@@ -19,7 +22,7 @@ gbc2_SOURCES = \
  gbc_output.h gbc_trans.h \
  gbc_reserved.c \
  gbc_compile.c \
- gb_table.c gbc_type.c gb_buffer.c \
+ gbc_type.c gb_buffer.c \
  gbc_dump.c gbc_class.c gbc_code.c gbc_trans.c gbc_header.c gbc_trans_code.c \
  gbc_trans_expr.c gbc_trans_tree.c gbc_trans_ctrl.c gbc_trans_subr.c \
  gbc_output.c gbc_pcode.c \
@@ -50,6 +53,4 @@ gbi2_SOURCES= \
  gb_common.c \
  gbi.c
 
-gbc2-gb_table.o: gb_table.c
-	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbc2_CFLAGS) -O2 $(CFLAGS) -MT gbc2-gb_table.o -MD -MP -MF "$(DEPDIR)/gbc2-gb_table.Tpo" -c -o gbc2-gb_table.o `test -f 'gb_table.c' || echo '$(srcdir)/'`gb_table.c; then mv -f "$(DEPDIR)/gbc2-gb_table.Tpo" "$(DEPDIR)/gbc2-gb_table.Po"; else rm -f "$(DEPDIR)/gbc2-gb_table.Tpo"; exit 1; fi
-
+libgbcopt_la_SOURCES = gb_table.c

@@ -1,10 +1,13 @@
 INCLUDES = -I$(top_srcdir)/share @INTL_INC@ @CONV_INC@ @GBX_THREAD_INC@ @INCLTDL@ @FFI_INC@
 
 bin_PROGRAMS = gbx2
+noinst_LTLIBRARIES = libgbxopt.la
 gblib_LTLIBRARIES = gb.la
 
-gbx2_LDADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @TTY_LIB@ @FFI_LIB@
+gbx2_LDADD = libgbxopt.la @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @TTY_LIB@ @FFI_LIB@
 gbx2_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+
+libgbxopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
 gb_la_LIBADD = @MATH_LIB@ @INTL_LIB@ @CONV_LIB@ @GETTEXT_LIB@ @DL_LIB@ @GBX_THREAD_LIB@ @TTY_LIB@ @FFI_LIB@
 gb_la_LDFLAGS = -module @LD_FLAGS@ @FFI_LDFLAGS@
@@ -23,7 +26,7 @@ gbx2_SOURCES = \
  gbx_type.h gbx_type.c \
  gbx_value.h gbx_value.c \
  gbx_subst.h gbx_subst.c \
- gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_loop.c \
+ gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c \
  gbx_class_desc.h gbx_class.h gbx_class_init.c gbx_class.c gbx_class_native.c \
  gbx_class_load.c gbx_class_load.h \
  gbx_event.h gbx_event.c \
@@ -68,6 +71,8 @@ gbx2_SOURCES = \
  gbx_c_timer.h gbx_c_timer.c \
  gbx_c_quote.h gbx_c_quote.c
 
+libgbxopt_la_SOURCES = gbx_exec_loop.c
+
 gb_la_SOURCES = \
  gbx_info.h \
  gbx_local.h gbx_compare.h gbx_date.h \
@@ -85,7 +90,4 @@ gb_la_SOURCES = \
  gbx_c_timer.h gbx_c_timer.c \
  gbx_c_quote.h gbx_c_quote.c \
  gbx_class_info.c
-
-gbx2-gbx_exec_loop.o: gbx_exec_loop.c
-	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gbx2_CFLAGS) -O3 $(CFLAGS) -MT gbx2-gbx_exec_loop.o -MD -MP -MF "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo" -c -o gbx2-gbx_exec_loop.o `test -f 'gbx_exec_loop.c' || echo '$(srcdir)/'`gbx_exec_loop.c; then mv -f "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo" "$(DEPDIR)/gbx2-gbx_exec_loop.Po"; else rm -f "$(DEPDIR)/gbx2-gbx_exec_loop.Tpo"; exit 1; fi
 

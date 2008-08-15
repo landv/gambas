@@ -132,27 +132,6 @@ static INLINE CLASS *OBJECT_class(void *object)
 
 #else /* DEBUG_REF */
 
-/*
-#define OBJECT_ref(_object) \
-{ \
-  if (_object) \
-    CLASS_ref((void *)(_object)); \
-}
-
-#define OBJECT_unref(_pobject) \
-{ \
-  if (*(_pobject)) \
-    CLASS_unref((void **)(_pobject), TRUE); \
-}
-
-#define OBJECT_unref_keep(_pobject) \
-{ \
-  if (*(_pobject)) \
-    CLASS_unref((void **)(_pobject), FALSE); \
-}
-*/
-
-
 #define OBJECT_ref(_object) \
 { \
   if (_object) \

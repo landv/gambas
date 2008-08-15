@@ -876,7 +876,6 @@ void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
 	int sy = -fillY();
 	int sw = pic->width();
 	int sh = pic->height();
-	GdkGCValues val;
 
 	if (!pic || pic->isVoid()) return;
 	

@@ -214,15 +214,12 @@ AC_DEFUN([GB_INIT],
     AM_CXXFLAGS="$AM_CXXFLAGS -g"
   fi
 
-dnl  # gambas_flag="-O2 -fstrength-reduce -frerun-loop-opt -fexpensive-optimizations -fschedule-insns2 -funroll-loops"
-dnl  # gambas_flags="$gambas_flags -fno-strict-aliasing -falign-loops=2 -falign-jumps=2"
-dnl  # gambas_flags="$gambas_flags -falign-functions=2 -ffast-math"
-dnl  # gambas_flags="$gambas_flags -fomit-frame-pointer"
-
   if test "x$gambas_optimization" = "xyes"; then
+    AM_CFLAGS_OPT="$AM_CFLAGS -O3"
     AM_CFLAGS="$AM_CFLAGS -Os"
     AM_CXXFLAGS="$AM_CXXFLAGS -Os -fno-omit-frame-pointer"
   else
+    AM_CFLAGS_OPT="$AM_CFLAGS -O0"
     AM_CFLAGS="$AM_CFLAGS -O0"
     AM_CXXFLAGS="$AM_CXXFLAGS -O0"
   fi
@@ -231,6 +228,7 @@ dnl  # gambas_flags="$gambas_flags -fomit-frame-pointer"
   CXXFLAGS=""
   
   AC_SUBST(AM_CFLAGS)
+  AC_SUBST(AM_CFLAGS_OPT)
   AC_SUBST(AM_CXXFLAGS)
   
   rm -f DISABLED
