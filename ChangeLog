@@ -1,4 +1,171 @@
 -------------------------------------------------------------------------------
+ gambas2-2.8 - 15 Aug 2008
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Compiles optimized files in a clean way, so that ./configure
+  --disable-optimization effectively disables optimizations on these files.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Disable the console popup menu when the console editor loses the
+  focus, so that the menu shortcuts do not interfer with the main editor
+  shortcuts.
+* BUG: Shift+Delete now works correctly in the editor. It does not cut an
+  extra character anymore.
+* BUG: Disable editor popup-menu as soon as it loses focus. That prevents
+  conflicts between shortcuts.
+* BUG: Correctly refresh the form editor title when the form is locked.
+* BUG: Renaming a directory in the project tree now works correctly.
+* BUG: Fix the title of the search list window.
+* BUG: Enhance and fix the behaviour of the ESCAPE key.
+* BUG: Renamed controls like DataControl are correctly refreshed inside the
+  form editor.
+* BUG: GridView, TableView, TextEdit and Editor are correctly refreshed in
+  the form editor when they are renamed.
+* BUG: The signature deals correctly with methods having a variable number
+  of arguments.
+* BUG: Commenting and uncommenting now do not forget the last line if the
+  text was selected from bottom to top.
+* BUG: Do not abort if you try to open a dead symbolic link.
+* BUG: When making a package, ignore the charset translation errors while
+  printing the commands output.
+* NEW: Added a ToolButton in FCommit to clear the editor contents.
+* NEW: Spanish and French translations updated.
+* NEW: Russian translation updated.
+* NEW: Arabic translation updated.
+* NEW: Add support for DESTDIR variable in autotools packages.
+  See http://www.gnu.org/prep/standards/html_node/DESTDIR.html
+* NEW: Draw project details in gray.
+* NEW: Support for hebrew translations.
+* NEW: Display subversion revision in the About dialog.
+* NEW: Support for macedonian and albanian translations.
+* NEW: Enhance the behaviour of the console text search.
+* NEW: Replaced the '[Modified]' text in the title of a modified form or
+  class by a star.
+* NEW: The signature popup displays the current argument underlined.
+* NEW: Support for the Khmer language.
+
+[EXAMPLES]
+* NEW: The AnalogWatch example now displays the time.
+
+[INTERPRETER]
+* BUG: Dir() and RDir() do not leak memory anymore when there is a charset
+  conversion error during the directory parsing.
+* BUG: Fix the management of standard input, standard output and standard
+  error streams.
+* BUG: Do not free the classes before the _free() special methods are
+  executed.
+* BUG: RInStr() third argument is now correctly taken into account in all
+  cases.
+* BUG: Fix a bug in inheritance with classes written in Gambas overriding
+  symbols whose name begins with 'P', 'R' or 'M'.
+* BUG: The order of class variables in memory is the same as in class
+  declaration both in 32 bits and 64 bits mode. This is needed if you want
+  to use class as data structures sent to an extern function.
+* BUG: Observers don't raise events anymore if their parent is invalid,
+  like other objects do.
+* BUG: Fix base object structure size when compiling with gcc 4.3 on a 64
+  bits system.
+* BUG: Fix the interpreter for gcc 4.3.
+* BUG: Fix the initialization of standard input/output streams.
+* NEW: Do not warn against circular references when the program aborts
+  because of an error.
+* NEW: Prints the gcc version used for compiling the interpreter when
+  running 'gbx2 -h'.
+
+[COMPILER]
+* BUG: Fix a compilation warning on FILE_set_chown.
+* NEW: The error message displayed when you try to return a value in a
+  procedure is more explicit now.
+
+[INFORMER]
+* BUG: The informer now can be run without argument from anywhere.
+* NEW: When creating all information files in one shot, child processes are
+  used instead of loading all components in the same process.
+
+[GB.DB.FORM]
+* BUG: Define the default size of DataControl and DataCombo controls.
+
+[GB.DB.MYSQL]
+* BUG: Fix a possible crash when reading information on a date field.
+
+[GB.DRAW]
+* BUG: Draw.Begin() now correctly raises an error if the device is a static
+  class that is not drawable. This bug was fixed by using "Draw" for the
+  interface name of drawable objects and "StaticDraw" for the interface
+  name of drawable classes like Printer.
+
+[GB.FORM]
+* BUG: Fix the Expander default event so that clicking twice on it in the
+  form editor does not crash the IDE.
+* NEW: File dialogs now remember the last used directories in the directory
+  combo-box.
+* NEW: FileView now display image preview if the image size is up to 64 Kb.
+* NEW: The ListContainer refreshes itself before raising the Click event.
+
+[GB.FORM.MDI]
+* BUG: When a MDI child window is activated, the focus is set on it unless
+  one of its child control already has the focus.
+
+[GB.GTK]
+* BUG: The Form.Load() method works correctly now.
+* BUG: Draw.Begin() and DrawingArea Draw event correctly initialize the
+  background and foreground colors now.
+* BUG: Fix Application.Busy when forms are embedded.
+* BUG: ComboBox does not raise the Click event anymore when its Text
+  property changes.
+* BUG: Fix the management of Window Activate and Deactivate events.
+* BUG: Fix the management of GotFocus and LostFocus events.
+* BUG: SetFocus is correctly honored when used inside the Open event
+  handler of an embedded form.
+* BUG: Redesigned the management of Font properties.
+* BUG: GridView item Font property works correctly now.
+* BUG: Font Underline and StrikeOut properties were implemented for Label
+  controls, Button controls, GridView cells, and the Draw class.
+* BUG: Fix the management of the Dialog.Font property.
+* BUG: Fix the fake transparency of tray icons.
+* BUG: Initialize correctly the gControl class.
+* BUG: Draw.Tile now works correctly.
+* BUG: Fix the vertical alignment management.
+* BUG: The alignment of a GridView cell with a picture only is correct now.
+
+[GB.NET.CURL]
+* BUG: Fix some bad uses of interpreter API.
+
+[GB.NET.SMTP]
+* BUG: Fix some bugs in quoted-printable encoding and the sending of body
+  data.
+* BUG: Apparently, a point at the beginning of a quoted-printable line is
+  not allowed. So encode the point in that specific case.
+
+[GB.QT]
+* BUG: DrawingArea whose Background property has been changed does not
+  flicker anymore.
+* BUG: SetFocus is correctly honored when used inside the Open event
+  handler of an embedded form.
+* BUG: GridView.Clear now correctly refreshes the GridView.
+* BUG: Wow! Finally fix TrayIcons so that they are visible inside Gnome and
+  XFCE notification area.
+* BUG: Menu shortcuts are automatically enabled when the menu is shown.
+* BUG: Choose the right moc executable when both QT3 and QT4 are installed
+  on the system.
+* BUG: Fix the system tray icons for KDE 3.5.10. :-)
+* BUG: The alignment of a GridView cell with a picture only is correct now.
+
+[GB.QT.EXT]
+* BUG: Uses "StaticDraw" to specify the drawing interface of the Printer
+  class.
+* BUG: Blended procedure separation is now correctly refreshed when the
+  font size changes.
+* NEW: When the focus is set on an Editor, the cursor is ensured to be
+  visible.
+
+[GB.SDL]
+* BUG: Removed linking against libGL, as libSDL is already linked with
+  it. This fixed gbi segfault on Laurent Carlier's box.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.7.0 - 11 Jun 2008
 -------------------------------------------------------------------------------
 
