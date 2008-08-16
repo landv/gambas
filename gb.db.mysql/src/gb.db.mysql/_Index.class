@@ -3,19 +3,20 @@
 Export
 Create Static
 
-Public Procedure Add(Index As String, Columns As String[], Optional Table As String)
+Public Procedure Add(Index As String, Columns As String[], Optional Table As String, Optional Database As String)
 
   If Table Then
-    modMain.$Query = "CREATE INDEX `" & Index & "` ON `" & Table & "` (" & modMain.ArrayToString(Columns, True) & ")"
-    modMain.RunQuery(modMain.$Query)
+    If Not Database Then Database = modMain.$Connection.Name
+    modMain.RunQuery("CREATE INDEX `" & Index & "` ON `" & DataBase & "`.`" & Table & "` (" & modMain.ArrayToString(Columns, True) & ")")
   Else
     modMain.$Index.Add("INDEX `" & Index & "` (" & modMain.ArrayToString(Columns, True) & ")")
   Endif  
 
 End
 
-Public Procedure Delete(Table As String, Index As String)
+Public Procedure Delete(Table As String, Index As String, Optional Database As String)
 
-  modMain.RunQuery("DROP INDEX `" & Index & "` ON `" & Table & "`")
+  If Not Database Then Database = modMain.$Connection.Name
+  modMain.RunQuery("DROP INDEX `" & Index & "` ON `" & DataBase & "`.`" & Table & "`")
 
 End

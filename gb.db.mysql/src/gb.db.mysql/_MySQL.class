@@ -3,8 +3,7 @@
 Export
 Create Static
 
-Private $hResultQuery As Result
-Private $Engine As String = "InnoDB" 'Engines: InnoDB, MyISAM, Memory, Merge, Archive, Federated, NDB, CSV, Blackhole, Example
+Private $Engine As String = "InnoDB"
 Private $Charset As String = "utf8"
 Private $Collation As String = "utf8_general_ci"
 Private $sTmp As String
@@ -15,7 +14,13 @@ Private $Index As _Index
 Private $Field As _Field
 Private $View As _View
 Private $User As _User
+Private $Trigger As _Trigger
 Private $Routines As _Routines
+Private $asEngines As New String[]
+Private $asCollations As New String[]
+Private $asCharsets As New String[]
+Private $asDatabases As New String[]
+Private $asUsers As New String[]
 
 Property Engine As String
 Property Charset As String
@@ -27,7 +32,13 @@ Property Read Table As _Table
 Property Read Field As _Field
 Property Read View As _View
 Property Read User As _User
+Property Read Trigger As _Trigger
 Property Read Routines As _Routines
+Property Read Collations As String[]
+Property Read Engines As String[]
+Property Read Charsets As String[]
+Property Read Databases As String[]
+Property Read Users As String[]
 
 Private Function Engine_Read() As String
 
@@ -48,16 +59,8 @@ Private Function Charset_Read() As String
 End
 
 Private Sub Charset_Write(Value As String) 'Validate if the Char Set is valid
-   
-  Dim iCounter As Integer
-  Dim csCharsets As New Collection
 
-  $hResultQuery = modMain.$Connection.Exec("SELECT CHARACTER_SET_NAME FROM information_schema.CHARACTER_SETS")
-  For iCounter = 0 To $hResultQuery.Count - 1
-    csCharsets[iCounter] = $hResultQuery["CHARACTER_SET_NAME"]
-    $hResultQuery.MoveNext()
-  Next
-  For Each $sTmp In csCharsets
+  For Each $sTmp In $asCharsets
     If $sTmp = Value Then
       $Charset = Value
       Return
@@ -75,15 +78,7 @@ End
 
 Private Sub Collation_Write(Value As String)
 
-  Dim iCounter As Integer
-  Dim csCharsets As New Collection
-
-  $hResultQuery = modMain.$Connection.Exec("SELECT COLLATION_NAME FROM information_schema.COLLATIONS")
-  For iCounter = 0 To $hResultQuery.Count - 1
-    csCharsets[iCounter] = $hResultQuery["COLLATION_NAME"]
-    $hResultQuery.MoveNext()
-  Next
-  For Each $sTmp In csCharsets
+  For Each $sTmp In $asCollations
     If $sTmp = Value Then
       $Collation = Value
       Return
@@ -144,14 +139,12 @@ End
 
 Public Function CBool(Value As Variant) As Integer
 
-  Select (Value)
-    Case -1, "T"
-      Return 1
-    Case 0
-      Return 0
-    Default
-      Error.Raise("Invalid value")
-  End Select
+  'These types are synonyms for TINYINT(1). A value of zero is considered false. Non-zero values are considered true
+  If Value = 0 Then
+    Return 0 'False
+  Else
+    Return 1 'True
+  Endif
 
 End
 
@@ -172,5 +165,67 @@ End
 Public Function Quote(Value As Variant) As String
 
   Return "`" & Value & "`"
+
+End
+
+Private Function Collations_Read() As String[]
+
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `COLLATION_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `COLLATION_NAME`")
+  For Each modMain.$hResult
+    $asCollations.Add(modMain.$hResult["COLLATION_NAME"])
+    modMain.$hResult.MoveNext()
+  Next
+  Return $asCollations
+
+End
+
+Private Function Engines_Read() As String[]
+
+  modMain.$hResult = modMain.$Connection.Exec("SHOW ENGINES")
+  For Each modMain.$hResult
+    $asEngines.Add(modMain.$hResult["Engine"])
+    modMain.$hResult.MoveNext()
+  Next
+  Return $asEngines
+
+End
+
+Private Function Charsets_Read() As String[]
+
+  modMain.$hResult = modMain.$Connection.Exec("SELECT DISTINCT `CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `CHARACTER_SET_NAME`")
+  For Each modMain.$hResult
+    $asCharsets.Add(modMain.$hResult["CHARACTER_SET_NAME"])
+    modMain.$hResult.MoveNext()
+  Next
+  Return $asCharsets
+
+End
+
+Private Function Trigger_Read() As _Trigger
+
+  $Trigger = New _Trigger
+  Return $Trigger
+
+End
+
+Private Function Databases_Read() As String[]
+
+  modMain.$hResult = modMain.$Connection.Exec("SHOW DATABASES")
+  For Each modMain.$hResult
+    $asDatabases.Add(modMain.$hResult["Database"])
+    modMain.$hResult.MoveNext()
+  Next
+  Return $asDatabases
+
+End
+
+Private Function Users_Read() As String[]
+
+  modMain.$hResult = modMain.$Connection.Exec("SELECT DISTINCT `User` FROM `mysql`.`user`")
+  For Each modMain.$hResult
+    $asUsers.Add(modMain.$hResult["User"])
+    modMain.$hResult.MoveNext()
+  Next
+  Return $asUsers
 
 End

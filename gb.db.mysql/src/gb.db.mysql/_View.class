@@ -11,6 +11,7 @@ End
 
 Public Procedure Add(View As String, Statement As String, Optional {Replace} As Boolean)
 
+  If Not {Replace} Then {Replace} = False
   'TODO: Quote the Statement parameter
   modMain.$Query = "CREATE"
   If {Replace} Then modMain.$Query &= " OR REPLACE"
@@ -19,8 +20,9 @@ Public Procedure Add(View As String, Statement As String, Optional {Replace} As 
 
 End
 
-Public Procedure Delete(Views As String[], IfExists As Boolean)
+Public Procedure Delete(Views As String[], Optional IfExists As Boolean)
 
+  If Not IfExists Then IfExists = False
   modMain.$Query = "DROP VIEW "
   If IfExists Then modMain.$Query &= "IF EXISTS "
   modMain.$Query &= modMain.ArrayToString(Views, True)
@@ -28,8 +30,9 @@ Public Procedure Delete(Views As String[], IfExists As Boolean)
 
 End
 
-Public Function Info(View As String) As String
+Public Function Info(View As String, Optional Database As String) As String
 
-  Return modMain.$Connection.Exec("SHOW CREATE VIEW `" & View & "`")!"Create View"
+  If Not Database Then Database = modMain.$Connection.Name
+  Return modMain.$Connection.Exec("SHOW CREATE VIEW `" & Database & "`.`" & View & "`")!"Create View"
 
 End

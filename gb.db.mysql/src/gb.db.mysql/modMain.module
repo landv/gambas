@@ -1,13 +1,11 @@
 ' Gambas module file
 
 Public $Query As String
-Public $NotNULL As Boolean = True
 Public $FieldDefinition As New String[]
 Public $Index As New String[]
 Public $ForeignKey As New String[]
 Public $PrimaryKey As String
 Public $Connection As New Connection
-' Public $Confirm As Boolean = False
 Public $Process As Process
 Public $hResult As Result
 
@@ -46,15 +44,18 @@ End
 Public Sub Main()
 
   ' Dim hCon As New Connection
+  ' Dim asText As New String[]
   ' 
+  ' DB.Debug = True
   ' hCon.Type = "mysql"
   ' hCon.Port = "3306"
   ' hCon.Host = "localhost"
   ' hCon.User = "root"
-  ' hCon.Password = "l1nux"
-  ' hCon.Name = "mysql"
+  ' hCon.Password = "david123"
+  ' hCon.Name = "TMP"
   ' hCon.Open()
   ' 
-  ' Print hCon.MySQL.CurrentTimestamp()
+  ' hCon.MySQL.Routines.Delete("BorraVista", True)
+  ' hCon.MySQL.Routines.Add("BorraVista", "BEGIN DECLARE David INT; END;")
 
 End

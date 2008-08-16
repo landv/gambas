@@ -3,34 +3,55 @@
 Export
 Create Static
 
-Public Procedure Add(Routine As String, Type As Integer, Statement As String, Optional Parameters As String[], Optional {Return} As String)
+Public Procedure Add(Routine As String, Statement As String, Optional Parameters As String[], Optional Returns As String, Optional Database As String)
 
+  If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "CREATE "
-  If Type = 1 Then modMain.$Query &= "FUNCTION "
-  If Type = 2 Then modMain.$Query &= "PROCEDURE "
-  modMain.$Query &= "`" & Routine & "`("
+  If Returns Then
+    modMain.$Query &= "FUNCTION "
+  Else
+    modMain.$Query &= "PROCEDURE "
+  Endif
+  modMain.$Query &= "`" & Database & "`.`" & Routine & "`("
   If Parameters Then modMain.$Query &= modMain.ArrayToString(Parameters, False)
   modMain.$Query &= ") "
-  If {Return} Then modMain.$Query &= ") RETURNS " & {Return} & " "
+  If Returns Then modMain.$Query &= "RETURNS " & Returns & " "
   modMain.$Query &= Statement
   modMain.RunQuery(modMain.$Query)
 
 End
 
-Public Procedure Delete(Routine As String, Type As Integer, IfExists As Boolean)
+Public Procedure Delete(Routine As String, Optional IfExists As Boolean, Optional Database As String)
 
+  If Not Database Then Database = modMain.$Connection.Name
+  If Not IfExists Then IfExists = False
   modMain.$Query = "DROP "
-  If Type = 1 Then modMain.$Query &= "FUNCTION "
-  If Type = 2 Then modMain.$Query &= "PROCEDURE "
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `TYPE` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")
+  If Not modMain.$hResult.Available Then Return
+  Select (modMain.$hResult!TYPE)
+    Case "FUNCTION"
+      modMain.$Query &= "FUNCTION "
+    Case "PROCEDURE"
+      modMain.$Query &= "PROCEDURE "
+    Default
+  End Select
   If IfExists Then modMain.$Query &= "IF EXISTS "
-  modMain.$Query &= "`" & Routine & "`"
+  modMain.$Query &= "`" & Database & "`.`" & Routine & "`"
   modMain.RunQuery(modMain.$Query)
 
 End
 
-Public Function Info(Routine As String, Type As Integer) As String
+Public Function Info(Routine As String, Optional Database As String) As String
 
-  If Type = 1 Then Return modMain.$Connection.Exec("SHOW CREATE FUNCTION `" & Routine & "`")!"Create Function"
-  If Type = 2 Then Return modMain.$Connection.Exec("SHOW CREATE PROCEDURE `" & Routine & "`")!"Create Procedure"
+  If Not Database Then Database = modMain.$Connection.Name
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `TYPE` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")
+  If Not modMain.$hResult.Available Then Return
+  Select (modMain.$hResult!TYPE)
+    Case "FUNCTION"
+      Return modMain.$Connection.Exec("SHOW CREATE FUNCTION `" & Database & "`.`" & Routine & "`")!"Create Function"
+    Case "PROCEDURE"
+      Return modMain.$Connection.Exec("SHOW CREATE PROCEDURE `" & Database & "`.`" & Routine & "`")!"Create Procedure"
+    Default
+  End Select
 
 End
