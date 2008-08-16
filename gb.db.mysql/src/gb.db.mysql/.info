@@ -22,11 +22,19 @@ m
 Modify
 m
 
-(DataBase)s[(Charset)s(Collation)s]
+[(DataBase)s(Charset)s(Collation)s]
+Charset
+m
+s
+[(DataBase)s]
+Collation
+m
+s
+[(DataBase)s]
 Delete
 m
 
-(DataBase)s(IfExists)b
+[(DataBase)s(IfExists)b]
 Add
 m
 
@@ -34,11 +42,15 @@ m
 Dump
 m
 
-[(File)s]
+[(DataBase)s(Tables)String[];(File)s(Options)String[];(Replace)b]
+Tables
+m
+String[]
+[(DataBase)s]
 Info
 m
 s
-(DataBase)s
+[(DataBase)s]
 #_DataTypes
 
 CA
@@ -256,18 +268,26 @@ m
 Info
 m
 s
-(Table)s(Field)s
+(Table)s(Field)s[(Database)s]
+Definition
+m
+s
+(Table)s(Field)s[(Database)s]
+Rename
+m
+
+(Table)s(Field)s(NewField)s[(Database)s]
 #_Index
 
 CA
 Add
 m
 
-(Index)s(Columns)String[];[(Table)s]
+(Index)s(Columns)String[];[(Table)s(Database)s]
 Delete
 m
 
-(Table)s(Index)s
+(Table)s(Index)s[(Database)s]
 #_MySQL
 
 CA
@@ -311,9 +331,33 @@ User
 r
 _User
 
+Trigger
+r
+_Trigger
+
 Routines
 r
 _Routines
+
+Collations
+r
+String[]
+
+Engines
+r
+String[]
+
+Charsets
+r
+String[]
+
+Databases
+r
+String[]
+
+Users
+r
+String[]
 
 CBool
 m
@@ -333,15 +377,15 @@ CA
 Add
 m
 
-(Routine)s(Type)i(Statement)s[(Parameters)String[];(Return)s]
+(Routine)s(Statement)s[(Parameters)String[];(Returns)s(Database)s]
 Delete
 m
 
-(Routine)s(Type)i(IfExists)b
+(Routine)s[(IfExists)b(Database)s]
 Info
 m
 s
-(Routine)s(Type)i
+(Routine)s[(Database)s]
 #_Table
 
 CA
@@ -353,10 +397,18 @@ Add
 m
 
 (Table)s[(Engine)s(Charset)s]
+Engine
+m
+s
+(Table)s[(Database)s]
+Charset
+m
+s
+(Table)s[(Database)s]
 Delete
 m
 
-(Tables)String[];(IfExists)b
+(Tables)String[];[(IfExists)b]
 LoadData
 m
 
@@ -369,10 +421,73 @@ Insert
 m
 
 (Table)s(Fields)String[];(Values)String[];
+Fields
+m
+String[]
+(Table)s[(Database)s]
 Rename
 m
 
 (Table)s(NewTable)s
+Collation
+m
+s
+(Table)s[(Database)s]
+Truncate
+m
+
+(Table)s[(Database)s]
+#_Trigger
+
+CA
+Modify
+m
+
+(Table)s(Action)s[(Symbol)s(Definition)s]
+Add
+m
+
+(Table)s[(Engine)s(Charset)s]
+Engine
+m
+s
+(Table)s[(Database)s]
+Charset
+m
+s
+(Table)s[(Database)s]
+Delete
+m
+
+(Tables)String[];[(IfExists)b]
+LoadData
+m
+
+(Table)s(File)s
+Info
+m
+s
+(Table)s
+Insert
+m
+
+(Table)s(Fields)String[];(Values)String[];
+Fields
+m
+String[]
+(Table)s[(Database)s]
+Rename
+m
+
+(Table)s(NewTable)s
+Collation
+m
+s
+(Table)s[(Database)s]
+Truncate
+m
+
+(Table)s[(Database)s]
 #_User
 
 CA
@@ -387,7 +502,7 @@ m
 Grant
 m
 
-(Privileges)String[];(User)s(Password)s(Host)s(DataBase)s
+(Privileges)String[];(User)s(Password)s(Host)s[(DataBase)s]
 Info
 m
 s
@@ -395,7 +510,7 @@ s
 Revoke
 m
 
-(Privileges)String[];(User)s(Host)s(DataBase)s
+(Privileges)String[];(User)s(Host)s[(DataBase)s]
 Rename
 m
 
@@ -418,8 +533,8 @@ m
 Delete
 m
 
-(Views)String[];(IfExists)b
+(Views)String[];[(IfExists)b]
 Info
 m
 s
-(View)s
+(View)s[(Database)s]
