@@ -48,16 +48,20 @@ public:
 
 //"Private"
 	GtkWidget *plug;
-	GtkWidget *icon;
 	gPicture *_icon;
 	char *buftext;
 	bool onHide;
 	gPicture *getIcon() { return _icon ? _icon : defaultIcon(); }
 	void updateMask();
 	void updateTooltip();
+	void cleanUp();
 	
 	static GList *trayicons;
 	static gPicture *_default_icon;
+
+private:
+
+	GtkStyle *_style;
 };
 
 #endif
