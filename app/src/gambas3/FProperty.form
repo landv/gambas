@@ -32,41 +32,45 @@
       Toggle = True
     }
   }
-  { grdProperty GridView
-    MoveScaled(26,24,30,16)
-    Visible = False
+  { Panel1 Panel
+    MoveScaled(3,23,56,21)
     Expand = True
-    Scrollbar = Scroll.Vertical
-    Border = False
-  }
-  { cmbProperty ComboBox
-    MoveScaled(6,28,16,4)
-    Visible = False
-    Ignore = True
-    Text = ("")
-    ReadOnly = True
-  }
-  { spnProperty SpinBox
-    MoveScaled(6,33,14,4)
-    Visible = False
-    Ignore = True
-  }
-  { txtProperty TextBox
-    MoveScaled(4,38,16,3)
-    Visible = False
-    Ignore = True
-    Text = ("")
-    Border = False
-  }
-  { btnProperty Button
-    MoveScaled(20,38,3,3)
-    Visible = False
-    Ignore = True
-    Text = ("")
-    Picture = Picture["img/16/points.png"]
+    Arrangement = Arrange.Fill
+    { cmbProperty ComboBox
+      MoveScaled(2,4,16,4)
+      Visible = False
+      Ignore = True
+      Text = ("")
+      ReadOnly = True
+    }
+    { grdProperty GridView
+      MoveScaled(22,0,30,16)
+      Visible = False
+      Scrollbar = Scroll.Vertical
+      Border = False
+    }
+    { spnProperty SpinBox
+      MoveScaled(2,9,14,4)
+      Visible = False
+      Ignore = True
+    }
+    { txtProperty TextBox
+      MoveScaled(0,14,16,3)
+      Visible = False
+      Ignore = True
+      Text = ("")
+      Border = False
+    }
+    { btnProperty Button
+      MoveScaled(16,14,3,3)
+      Visible = False
+      Ignore = True
+      Text = ("")
+      Picture = Picture["img/16/points.png"]
+    }
   }
   { spnHelp SidePanel
-    MoveScaled(33,44,24,13)
+    MoveScaled(11,45,24,13)
     Arrangement = Arrange.Fill
     Orientation = Align.Bottom
     Border = True
