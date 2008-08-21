@@ -8,7 +8,7 @@ Private $Charset As String = "utf8"
 Private $Collation As String = "utf8_general_ci"
 Private $sTmp As String
 Private $DataTypes As _DataTypes
-Private $DataBase As _DataBase
+Private $Database As _Database
 Private $Table As _Table
 Private $Index As _Index
 Private $Field As _Field
@@ -26,7 +26,7 @@ Property Engine As String
 Property Charset As String
 Property Collation As String
 Property Read DataTypes As _DataTypes
-Property Read DataBase As _DataBase
+Property Read Database As _Database
 Property Read Index As _Index
 Property Read Table As _Table
 Property Read Field As _Field
@@ -95,10 +95,10 @@ Private Function DataTypes_Read() As _DataTypes
 
 End
 
-Private Function DataBase_Read() As _DataBase
+Private Function Database_Read() As _Database
 
-  $DataBase = New _DataBase
-  Return $DataBase
+  $Database = New _Database
+  Return $Database
 
 End
 

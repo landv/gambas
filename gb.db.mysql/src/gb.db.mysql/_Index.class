@@ -7,7 +7,7 @@ Public Procedure Add(Index As String, Columns As String[], Optional Table As Str
 
   If Table Then
     If Not Database Then Database = modMain.$Connection.Name
-    modMain.RunQuery("CREATE INDEX `" & Index & "` ON `" & DataBase & "`.`" & Table & "` (" & modMain.ArrayToString(Columns, True) & ")")
+    modMain.RunQuery("CREATE INDEX `" & Index & "` ON `" & Database & "`.`" & Table & "` (" & modMain.ArrayToString(Columns, True) & ")")
   Else
     modMain.$Index.Add("INDEX `" & Index & "` (" & modMain.ArrayToString(Columns, True) & ")")
   Endif  
@@ -17,6 +17,6 @@ End
 Public Procedure Delete(Table As String, Index As String, Optional Database As String)
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.RunQuery("DROP INDEX `" & Index & "` ON `" & DataBase & "`.`" & Table & "`")
+  modMain.RunQuery("DROP INDEX `" & Index & "` ON `" & Database & "`.`" & Table & "`")
 
 End

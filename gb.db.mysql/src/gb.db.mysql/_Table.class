@@ -115,21 +115,21 @@ Public Function Fields(Table As String, Optional Database As String) As String[]
 
 End
 
-Public Function Charset(Table As String, Optional DataBase As String) As String
+Public Function Charset(Table As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
   Return modMain.$Connection.Exec("SELECT `a`.`CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` `a`, `information_schema`.`TABLES` `b` WHERE `b`.`TABLE_SCHEMA` = '" & Database & "' AND `b`.`TABLE_NAME` = '" & Table & "' AND `a`.`COLLATION_NAME` = `b`.`TABLE_COLLATION`")!CHARACTER_SET_NAME
 
 End
 
-Public Function Collation(Table As String, Optional DataBase As String) As String
+Public Function Collation(Table As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
   Return modMain.$Connection.Exec("SELECT `TABLE_COLLATION` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'")!TABLE_COLLATION
 
 End
 
-Public Function Engine(Table As String, Optional DataBase As String) As String
+Public Function Engine(Table As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
   Return modMain.$Connection.Exec("SELECT `ENGINE` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'")!ENGINE

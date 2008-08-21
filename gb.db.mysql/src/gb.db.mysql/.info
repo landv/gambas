@@ -440,54 +440,18 @@ m
 #_Trigger
 
 CA
-Modify
-m
-
-(Table)s(Action)s[(Symbol)s(Definition)s]
 Add
 m
 
-(Table)s[(Engine)s(Charset)s]
-Engine
-m
-s
-(Table)s[(Database)s]
-Charset
-m
-s
-(Table)s[(Database)s]
+(Trigger)s(Table)s(Time)s(Event)s(Statement)s[(Database)s]
 Delete
 m
 
-(Tables)String[];[(IfExists)b]
-LoadData
-m
-
-(Table)s(File)s
+(Trigger)s(IfExists)b[(Database)s]
 Info
 m
 s
-(Table)s
-Insert
-m
-
-(Table)s(Fields)String[];(Values)String[];
-Fields
-m
-String[]
-(Table)s[(Database)s]
-Rename
-m
-
-(Table)s(NewTable)s
-Collation
-m
-s
-(Table)s[(Database)s]
-Truncate
-m
-
-(Table)s[(Database)s]
+(Trigger)s[(Database)s]
 #_User
 
 CA

@@ -16,17 +16,17 @@ Public Procedure Add(Trigger As String, Table As String, {Time} As String, {Even
 
 End
 
-Public Procedure Delete(Trigger As String, IfExists As Boolean, Optional DataBase As String)
+Public Procedure Delete(Trigger As String, IfExists As Boolean, Optional Database As String)
 
   If Not Database Then Database = modMain.$Connection.Name
   modMain.$Query = "DROP TRIGGER "
   If IfExists Then modMain.$Query &= "IF EXISTS "
-  modMain.$Query &= "`" & DataBase & "`.`" & Trigger & "`"
+  modMain.$Query &= "`" & Database & "`.`" & Trigger & "`"
   modMain.RunQuery(modMain.$Query)
 
 End
 
-Public Function Info(Trigger As String, Optional DataBase As String) As String
+Public Function Info(Trigger As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
   Return modMain.$Connection.Exec("SELECT `ACTION_STATEMENT` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "' AND `TRIGGER_NAME` = '" & Trigger & "'")!ACTION_STATEMENT

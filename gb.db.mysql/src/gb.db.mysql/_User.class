@@ -20,7 +20,7 @@ Public Procedure Add(User As String, Password As String, Host As String)
 
 End
 
-Public Procedure Grant(Privileges As String[], User As String, Password As String, Host As String, Optional DataBase As String)
+Public Procedure Grant(Privileges As String[], User As String, Password As String, Host As String, Optional Database As String)
 
   If Not Database Then Database = modMain.$Connection.Name
   If Upper(Privileges[0]) = "ALL" Then
@@ -28,7 +28,7 @@ Public Procedure Grant(Privileges As String[], User As String, Password As Strin
   Else
     modMain.$Query = "GRANT " & modMain.ArrayToString(Privileges, False)
   Endif
-  modMain.$Query &= " ON " & DataBase & ".* TO '" & User & "'@'" & Host & "' IDENTIFIED BY '" & Password & "'"
+  modMain.$Query &= " ON " & Database & ".* TO '" & User & "'@'" & Host & "' IDENTIFIED BY '" & Password & "'"
   modMain.RunQuery(modMain.$Query)
 
 End
@@ -51,7 +51,7 @@ Public Function Info(User As String) As String
 
 End
 
-Public Procedure Revoke(Privileges As String[], User As String, Host As String, Optional DataBase As String)
+Public Procedure Revoke(Privileges As String[], User As String, Host As String, Optional Database As String)
 
   If Not Database Then Database = modMain.$Connection.Name
   If Upper(Privileges[0]) = "ALL" Then
@@ -59,7 +59,7 @@ Public Procedure Revoke(Privileges As String[], User As String, Host As String, 
   Else
     modMain.$Query = "REVOKE " & modMain.ArrayToString(Privileges, False)
   Endif
-  modMain.$Query &= " ON " & DataBase & ".* FROM '" & User & "'@'" & Host & "'"
+  modMain.$Query &= " ON " & Database & ".* FROM '" & User & "'@'" & Host & "'"
   modMain.RunQuery(modMain.$Query)
 
 End
