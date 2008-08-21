@@ -100,6 +100,20 @@ static void hide_menu(CMENU *item)
   CWIDGET_clear_flag(item, WF_VISIBLE);
 }
 
+static void update_accel(CMENU *item)
+{
+	if (!item->accel->isEmpty()) // And so not a top level menu
+	{
+		if (item->enabled && !item->noshortcut && item->parent->enabled)
+		{
+			QString s = *item->accel;
+			//qDebug("set shortcut '%s' to menu '%s' / parent %p", s.latin1(), item->text, item->parent);
+			item->container->setAccel(*(item->accel), item->id);
+		}
+		else
+			item->container->setAccel(QKeySequence(), item->id);
+	}
+}
 
 static void show_menu(CMENU *item)
 {
@@ -177,15 +191,14 @@ static void show_menu(CMENU *item)
   //if (pos < 0)
   //  item->pos = item->container->indexOf(item->id);
 
-  item->pos = pos;
-  if (!item->noshortcut)
-  	item->container->setAccel(*(item->accel), item->id);
-  item->container->setItemEnabled(item->id, item->enabled);
-  item->container->setItemChecked(item->id, item->checked);
+	item->pos = pos;
+	item->container->setItemEnabled(item->id, item->enabled);
+	item->container->setItemChecked(item->id, item->checked);
+	update_accel(item);
 
-  if (CMENU_is_top(item))
-  {
-    if (item->container->count() == 1)
+	if (CMENU_is_top(item))
+	{
+		if (item->container->count() == 1)
 		{
 			((QMenuBar *)item->container)->show();
 			((MyMainWindow *)item->toplevel)->configure();
@@ -301,7 +314,6 @@ static void unregister_menu(CMENU *_object)
 
 
 
-/*BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN visible)*/
 BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
   CMENU *item = OBJECT(CMENU);
@@ -553,6 +565,7 @@ BEGIN_PROPERTY(CMENUITEM_enabled)
     else
     {
       enabled = VPROP(GB_BOOLEAN);
+      item->enabled = enabled;
       ((QMenuBar *)item->container)->setItemEnabled(item->id, enabled);
       //qDebug("setItemEnabled");
 		}
@@ -564,14 +577,14 @@ BEGIN_PROPERTY(CMENUITEM_enabled)
     else
     {
       enabled = VPROP(GB_BOOLEAN);
-      ((QPopupMenu *)item->container)->setItemEnabled(item->id, enabled);
       item->enabled = enabled;
+      ((QPopupMenu *)item->container)->setItemEnabled(item->id, enabled);
     }
   }
 
 	if (!READ_PROPERTY)
 	{
-		//qDebug("CMENUITEM_enabled: %p %s '%s'", item, enabled ? "1" : "0", ((QString)(*item->accel)).latin1());
+		//qDebug("CMENUITEM_enabled: %s %s '%s'", item->widget.name, enabled ? "1" : "0", ((QString)(*item->accel)).latin1());
   	CMenu::enableAccel(item, enabled);
 	}
 
@@ -684,8 +697,7 @@ BEGIN_PROPERTY(CMENU_shortcut)
   {
     delete item->accel;
     item->accel = new QKeySequence(QSTRING_PROP());
-    if (!item->noshortcut)
-    	parent->setAccel(*(item->accel), item->id);
+    update_accel(item);
   }
 
 END_PROPERTY
@@ -959,15 +971,8 @@ void CMenu::enableAccel(CMENU *item, bool enable)
 	if (item->exec && !enable)
 		return;
 
-	//if (((QString)(*item->accel)).latin1())
-	//	qDebug("CMenu::enableAccel: %p %s '%s'", item, enable ? "1" : "0", ((QString)(*item->accel)).latin1());
-
-	if (enable)
-  	item->container->setAccel(*(item->accel), item->id);
-	else
-  	item->container->setAccel(QKeySequence(), item->id);
-  	
 	item->noshortcut = !enable;
+	update_accel(item);
 
 	if (item->children)
 	{
