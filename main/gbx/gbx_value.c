@@ -951,19 +951,27 @@ __BOOLEAN:
   return;
 
 __BYTE:
+
+  *len = sprintf(COMMON_buffer, "%d", (unsigned char)value->_integer.value);
+  *addr = COMMON_buffer;
+  return;
+
 __SHORT:
+
+  *len = sprintf(COMMON_buffer, "%d", (short)value->_integer.value);
+  *addr = COMMON_buffer;
+  return;
+
 __INTEGER:
 
   *len = sprintf(COMMON_buffer, "%d", value->_integer.value);
   *addr = COMMON_buffer;
-
   return;
 
 __LONG:
 
   *len = sprintf(COMMON_buffer, "%" PRId64, value->_long.value);
   *addr = COMMON_buffer;
-
   return;
 
 __DATE:

@@ -79,23 +79,23 @@ void SUBR_bit(void)
 
 __BCLR:
 
-	val &= ~(1 << bit);
+	val &= ~(1ULL << bit);
 	goto __END;
 
 __BSET:
 
-	val |= (1 << bit);
+	val |= (1ULL << bit);
 	goto __END;
 
 __BTST:
 
 	RETURN->type = T_BOOLEAN;
-  val = (val & (1 << bit)) ? (-1) : 0;
+  val = (val & (1ULL << bit)) ? (-1) : 0;
   goto __END;
 
 __BCHG:
 
-	val ^= (1 << bit);
+	val ^= (1ULL << bit);
   goto __END;
 
 __ASL:
