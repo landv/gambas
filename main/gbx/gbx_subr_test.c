@@ -51,6 +51,7 @@ void SUBR_bit(void)
   int bit;
   TYPE type;
   int n;
+  int mask;
 
   SUBR_ENTER_PARAM(2);
 
@@ -58,10 +59,10 @@ void SUBR_bit(void)
 
   switch (type)
   {
-    case T_BYTE: n = 8; break;
-    case T_SHORT: n = 16; break;
-    case T_INTEGER: n = 32; break;
-    default: n = 64; type = T_LONG; break;
+    case T_BYTE: n = 8; mask = 0xFF; break;
+    case T_SHORT: n = 16; mask = 0xFFFF; break;
+    case T_INTEGER: n = 32; mask = -1; break;
+    default: n = 64; type = T_LONG; mask = -1; break;
   }
 
   VALUE_conv(PARAM, T_LONG);
@@ -165,7 +166,7 @@ __END:
   if (type == T_LONG)
     RETURN->_long.value = val;
   else
-    RETURN->_integer.value = val;
+    RETURN->_integer.value = val & mask;
 
   SUBR_LEAVE();
 }
