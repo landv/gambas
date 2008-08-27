@@ -166,7 +166,7 @@ __END:
   if (type == T_LONG)
     RETURN->_long.value = val;
   else
-    RETURN->_integer.value = val & mask;
+    RETURN->_integer.value = (int)val & mask;
 
   SUBR_LEAVE();
 }
