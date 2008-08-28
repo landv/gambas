@@ -36,3 +36,10 @@ Public Function Info(View As String, Optional Database As String) As String
   Return modMain.$Connection.Exec("SHOW CREATE VIEW `" & Database & "`.`" & View & "`")!"Create View"
 
 End
+
+Public Function Definition(View As String, Optional Database As String) As String
+
+  If Not Database Then Database = modMain.$Connection.Name
+  Return modMain.$Connection.Exec("SELECT `VIEW_DEFINITION` FROM `information_schema`.`VIEWS` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & View & "'")!"VIEW_DEFINITION"
+
+End

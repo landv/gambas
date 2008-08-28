@@ -22,35 +22,35 @@ m
 Modify
 m
 
-[(DataBase)s(Charset)s(Collation)s]
+[(Database)s(Charset)s(Collation)s]
 Charset
 m
 s
-[(DataBase)s]
+[(Database)s]
 Collation
 m
 s
-[(DataBase)s]
+[(Database)s]
 Delete
 m
 
-[(DataBase)s(IfExists)b]
+[(Database)s(IfExists)b]
 Add
 m
 
-(DataBase)s[(Charset)s(Collation)s]
+(Database)s[(Charset)s(Collation)s]
 Dump
 m
 
-[(DataBase)s(Tables)String[];(File)s(Options)String[];(Replace)b]
+[(Database)s(Tables)String[];(File)s(Options)String[];(Replace)b]
 Tables
 m
 String[]
-[(DataBase)s]
+[(Database)s]
 Info
 m
 s
-[(DataBase)s]
+[(Database)s]
 #_DataTypes
 
 CA
@@ -307,9 +307,9 @@ DataTypes
 r
 _DataTypes
 
-DataBase
+Database
 r
-_DataBase
+_Database
 
 Index
 r
@@ -466,7 +466,7 @@ m
 Grant
 m
 
-(Privileges)String[];(User)s(Password)s(Host)s[(DataBase)s]
+(Privileges)String[];(User)s(Password)s(Host)s[(Database)s]
 Info
 m
 s
@@ -474,7 +474,7 @@ s
 Revoke
 m
 
-(Privileges)String[];(User)s(Host)s[(DataBase)s]
+(Privileges)String[];(User)s(Host)s[(Database)s]
 Rename
 m
 

@@ -234,3 +234,10 @@ Private Function Users_Read() As String[]
   Return $asUsers
 
 End
+
+Public Procedure Use(Database As String)
+
+  modMain.$Connection.Exec("USE " & Database)
+  modMain.$Connection.Name = Database
+
+End
