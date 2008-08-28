@@ -2,6 +2,7 @@
 
 Public Path As String
 Public ChangeLog As String
+Public ExtraTest As String
 
 Private RPMBUILD_PROG As String
 Private DKPG_PROG As String
@@ -140,6 +141,16 @@ Public Function Make() As Boolean
   File.Save(sPath, ChangeLog)
   Project.RefreshKey(sPath)
   If bAdd Then VersionControl.AddFile(sPath)
+  
+  sPath = Project.Dir &/ ".extratest"
+  bAdd = Not Exist(sPath)
+  If Len(ExtraTest) > 0 Then
+    AddLog(("Saving extra tests settings."))
+    File.Save(sPath, ExtraTest)
+    If bAdd Then VersionControl.AddFile(sPath)
+  Else
+    If Not bAdd Then VersionControl.RemoveFile(sPath)
+  Endif
   
   AddLog(("The packages have been successfully created.") & "\n")
 
@@ -1141,6 +1152,7 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   Shell "cp -r " & Project.Dir & " " & sBuildDir &/ Project.Name Wait 
   sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))
   sFile = Replace(sFile, "$(PACKAGE_VERSION)", $sVersion)
+  sFile = Replace(sFile, "$(EXTRA_TEST)", ExtraTest)
   File.Save(sBuildDir &/ "acinclude.m4", sFile)
   sFile = Replace(File.Load("install/Makefile.am"), "$(VERSION)", CStr(System.Version))  
   sFile = Replace(sFile, "$(COMPILE_FLAGS)", sCmd)

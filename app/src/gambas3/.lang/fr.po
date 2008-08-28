@@ -497,7 +497,7 @@ msgstr ""
 #: FGotoLine.class:57 FList.class:167 FMain.class:2416
 #: FMakeExecutable.class:146 FMenu.class:1075 FNewTranslation.class:64
 #: FOpenProject.class:403 FPropertyProject.class:244 FSelectIcon.class:266
-#: FText.class:101 Project.module:2610
+#: FText.class:101 Project.module:2611
 msgid "OK"
 msgstr "OK"
 
@@ -1984,7 +1984,7 @@ msgstr "Ouvrir un projet"
 msgid "Save project"
 msgstr "Enregistrer le projet"
 
-#: FMain.class:2087 Project.module:1689
+#: FMain.class:2087 Project.module:1690
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
@@ -2012,7 +2012,7 @@ msgstr "Générer une archive des sources"
 msgid "Make executable"
 msgstr "Générer l'exécutable"
 
-#: FMain.class:2148 FMakeInstall.class:796
+#: FMain.class:2148 FMakeInstall.class:806
 msgid "Make installation package"
 msgstr "Créer un paquetage d'installation"
 
@@ -2080,7 +2080,7 @@ msgstr "Basculer un point d'arrêt"
 msgid "Watch expression"
 msgstr "Surveiller des expressions"
 
-#: FMain.class:2361 FProperty.class:1046
+#: FMain.class:2361 FProperty.class:1047
 msgid "Properties"
 msgstr "Propriétés"
 
@@ -2129,7 +2129,7 @@ msgid "There is no CHANGELOG entry for this release."
 msgstr "Il n'y aucune information de changement pour cette version."
 
 #: FMakeInstall.class:278 FPropertyProject.class:1150 FSave.class:118
-#: Project.module:2229
+#: Project.module:2230
 msgid "Continue"
 msgstr "Continuer"
 
@@ -2141,165 +2141,177 @@ msgstr "Veuillez saisir la première entrée du CHANGELOG."
 msgid "Please choose at least one target distribution."
 msgstr "Veuillez sélectionner au moins une distribution cible."
 
-#: FMakeInstall.class:313
+#: FMakeInstall.class:315
 msgid "Please choose the package group for each target distribution."
 msgstr ""
 "Veuillez sélectionner un groupe de paquetage pour chaque distribution cible."
 
-#: FMakeInstall.class:315
+#: FMakeInstall.class:317
 msgid "Please choose a package group."
 msgstr "Veuillez sélectionner un groupe de paquetage."
 
-#: FMakeInstall.class:324
+#: FMakeInstall.class:326
 msgid "Please choose the menu location for each target distribution."
 msgstr ""
 "Veuillez sélectionner un emplacement de menu pour chaque distribution cible."
 
-#: FMakeInstall.class:326
+#: FMakeInstall.class:328
 msgid "Please choose a menu location."
 msgstr "Veuillez sélectionner un emplacement de menu."
 
-#: FMakeInstall.class:345
+#: FMakeInstall.class:347
 msgid "The package cannot be stored inside the project directory."
 msgstr "Le paquetage ne peut être créé à l'intérieur du répertoire du projet."
 
-#: FMakeInstall.class:360
+#: FMakeInstall.class:362
 msgid "Initial release"
 msgstr "Version initiale"
 
-#: FMakeInstall.class:593
+#: FMakeInstall.class:595
 msgid "Menus"
 msgstr "Menus"
 
-#: FMakeInstall.class:661
+#: FMakeInstall.class:663
 msgid "Groups"
 msgstr "Groupes"
 
-#: FMakeInstall.class:809
+#: FMakeInstall.class:819
 msgid "Package information"
 msgstr "Information sur le paquetage"
 
-#: FMakeInstall.class:815
+#: FMakeInstall.class:825
 msgid "Package name"
 msgstr "Nom du paquetage"
 
-#: FMakeInstall.class:832
+#: FMakeInstall.class:842
 msgid "Prefix package name with the vendor name"
 msgstr "Prefixer le nom du paquetage avec le nom du vendeur"
 
-#: FMakeInstall.class:837
+#: FMakeInstall.class:847
 msgid "Insert release number in package version"
 msgstr "Insérer le numéro de révision dans la version du paquetage"
 
-#: FMakeInstall.class:845
+#: FMakeInstall.class:855
 msgid "Maintainer information"
 msgstr "Informations sur le mainteneur"
 
-#: FMakeInstall.class:855
+#: FMakeInstall.class:865
 msgid "Your name"
 msgstr "Votre nom"
 
-#: FMakeInstall.class:871
+#: FMakeInstall.class:881
 msgid "Your e-mail address"
 msgstr "Votre adresse e-mail"
 
-#: FMakeInstall.class:887
+#: FMakeInstall.class:897
 msgid "Vendor name"
 msgstr "Nom du vendeur"
 
-#: FMakeInstall.class:900 FPropertyProject.class:1492
+#: FMakeInstall.class:910 FPropertyProject.class:1492
 msgid "Description"
 msgstr "Description"
 
-#: FMakeInstall.class:914
+#: FMakeInstall.class:924
 msgid "Licence"
 msgstr "License"
 
-#: FMakeInstall.class:921
+#: FMakeInstall.class:931
 msgid "General Public Licence"
 msgstr "-"
 
-#: FMakeInstall.class:921
+#: FMakeInstall.class:931
 msgid "Freeware"
 msgstr "-"
 
-#: FMakeInstall.class:921
+#: FMakeInstall.class:931
 msgid "Public Domain"
 msgstr "-"
 
-#: FMakeInstall.class:921
+#: FMakeInstall.class:931
 msgid "Lesser General Public Licence"
 msgstr "-"
 
-#: FMakeInstall.class:921
+#: FMakeInstall.class:931
 msgid "Other Licence(s)"
 msgstr "-"
 
-#: FMakeInstall.class:921
+#: FMakeInstall.class:931
 msgid "Non-free Licence"
 msgstr "-"
 
-#: FMakeInstall.class:925
+#: FMakeInstall.class:935
 msgid "Changelog"
 msgstr "-"
 
-#: FMakeInstall.class:930
+#: FMakeInstall.class:940
 msgid "Please enter the changes of your project."
 msgstr "Veuillez décrire les modifications apportées à votre projet."
 
-#: FMakeInstall.class:954
+#: FMakeInstall.class:964
 msgid "Target distribution"
 msgstr "Distribution cible"
 
-#: FMakeInstall.class:977
+#: FMakeInstall.class:987
 msgid "Debian"
 msgstr "-"
 
-#: FMakeInstall.class:997
+#: FMakeInstall.class:1007
 msgid "Fedora"
 msgstr "-"
 
-#: FMakeInstall.class:1017
+#: FMakeInstall.class:1027
 msgid "Mandriva Linux"
 msgstr "-"
 
-#: FMakeInstall.class:1037
+#: FMakeInstall.class:1047
 msgid "OpenSUSE"
 msgstr "-"
 
-#: FMakeInstall.class:1057
+#: FMakeInstall.class:1067
 msgid "Slackware"
 msgstr "-"
 
-#: FMakeInstall.class:1077
+#: FMakeInstall.class:1087
 msgid "Ubuntu"
 msgstr "-"
 
-#: FMakeInstall.class:1097
+#: FMakeInstall.class:1107
 msgid "Autotools"
 msgstr "-"
 
-#: FMakeInstall.class:1102
+#: FMakeInstall.class:1112
 msgid "Package group"
 msgstr "Groupe de paquetage"
 
-#: FMakeInstall.class:1123
+#: FMakeInstall.class:1133
 msgid "Menu entry"
 msgstr "Entrée de menu"
 
-#: FMakeInstall.class:1146
+#: FMakeInstall.class:1156
 msgid "Categories"
 msgstr "Catégories"
 
-#: FMakeInstall.class:1156
+#: FMakeInstall.class:1166
+#, fuzzy
+msgid "Add extra checks"
+msgstr "Ajouter une expression"
+
+#: FMakeInstall.class:1170
+msgid ""
+"Add extra checks during the configure process.\n"
+"<p><b>Leave this blank if you don't need it, or if you don't know anything "
+"about configure scripts.</b>"
+msgstr ""
+
+#: FMakeInstall.class:1179
 msgid "Destination directory"
 msgstr "Répertoire de destination"
 
-#: FMakeInstall.class:1164
+#: FMakeInstall.class:1187
 msgid "Create package"
 msgstr "Création du paquetage"
 
-#: FMakeInstall.class:1169
+#: FMakeInstall.class:1192
 msgid ""
 "All needed information have been collected. You can now create the "
 "installation packages for your application...\n"
@@ -2707,12 +2719,12 @@ msgstr ""
 "Si les dimensions du formulaire et des contrôles doivent suivre la taille de "
 "la police par défaut."
 
-#: FProperty.class:1056
+#: FProperty.class:1057
 msgid "Click on a form or a control to modify its properties..."
 msgstr ""
 "Cliquez sur un formulaire ou un contrôle pour modifier ses propriétés..."
 
-#: FProperty.class:1074
+#: FProperty.class:1075
 msgid "Lock property"
 msgstr "Verrouiller la propriété"
 
@@ -3259,82 +3271,86 @@ msgid "Japanese (Japan)"
 msgstr "Japonais (Japon)"
 
 #: Language.module:66
+msgid "Khmer (Cambodia)"
+msgstr ""
+
+#: Language.module:68
 msgid "Korean (Korea)"
 msgstr "Coréen (Corée)"
 
-#: Language.module:68
+#: Language.module:70
 msgid "Macedonian (Republic of Macedonia)"
 msgstr "Macédonien (République de Macédoine)"
 
-#: Language.module:70
+#: Language.module:72
 msgid "Dutch (Netherlands)"
 msgstr "Hollandais (Pays-bas)"
 
-#: Language.module:71
+#: Language.module:73
 msgid "Dutch (Belgium)"
 msgstr "Hollandais (Belgique)"
 
-#: Language.module:73
+#: Language.module:75
 msgid "Norwegian (Norway)"
 msgstr "Norvégien (Norvège)"
 
-#: Language.module:75
+#: Language.module:77
 msgid "Punjabi (India)"
 msgstr "Punjabi (Inde)"
 
-#: Language.module:77
+#: Language.module:79
 msgid "Polish (Poland)"
 msgstr "Polonais (Pologne)"
 
-#: Language.module:79
+#: Language.module:81
 msgid "Portuguese (Portugal)"
 msgstr "Portugais (Portugal)"
 
-#: Language.module:80
+#: Language.module:82
 msgid "Portuguese (Brazil)"
 msgstr "Portugais (Brésil)"
 
-#: Language.module:82
+#: Language.module:84
 msgid "Russian (Russia)"
 msgstr "Russe (Russie)"
 
-#: Language.module:84
+#: Language.module:86
 msgid "Slovenian (Slovenia)"
 msgstr "Slovénien (Slovénie)"
 
-#: Language.module:86
+#: Language.module:88
 msgid "Albanian (Albania)"
 msgstr "Albanais (Albanie)"
 
-#: Language.module:88
+#: Language.module:90
 msgid "Serbian (Serbia & Montenegro)"
 msgstr "Serbe (Serbie & Montenegro)"
 
-#: Language.module:90
+#: Language.module:92
 msgid "Swedish (Sweden)"
 msgstr "Suèdois (Suède)"
 
-#: Language.module:92
+#: Language.module:94
 msgid "Turkish (Turkey)"
 msgstr "Turque (Turquie)"
 
-#: Language.module:94
+#: Language.module:96
 msgid "Vietnamese (Vietnam)"
 msgstr "Vietnamien (Viet-nâm)"
 
-#: Language.module:96
+#: Language.module:98
 msgid "Wallon (Belgium)"
 msgstr "Wallon (Belgique)"
 
-#: Language.module:98
+#: Language.module:100
 msgid "Simplified chinese (China)"
 msgstr "Chinois simplifié (Chine)"
 
-#: Language.module:99
+#: Language.module:101
 msgid "Traditional chinese (Taiwan)"
 msgstr "Chinois traditionnel (Taiwan)"
 
-#: Language.module:146
+#: Language.module:148
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -3450,11 +3466,11 @@ msgstr "Création du paquetage des sources."
 msgid "Creating .spec file."
 msgstr "Creation du fichier .spec."
 
-#: Package.module:882
+#: Package.module:883
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' a retourné le code d'erreur suivant :"
 
-#: Package.module:1110
+#: Package.module:1111
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' a retourné le code d'erreur suivant:"
 
@@ -3579,23 +3595,23 @@ msgstr "Chargement de &1..."
 msgid "Cannot open file."
 msgstr "Impossible d'ouvrir le fichier."
 
-#: Project.module:1263
+#: Project.module:1264
 msgid "File not found!"
 msgstr "Fichier introuvable !"
 
-#: Project.module:1364
+#: Project.module:1365
 msgid "Cannot compile the project."
 msgstr "Impossible de compiler le projet."
 
-#: Project.module:1384
+#: Project.module:1385
 msgid "in form definition"
 msgstr "dans la définition du formulaire"
 
-#: Project.module:1388
+#: Project.module:1389
 msgid "at line &1 in &2"
 msgstr "à la ligne &1 dans &2"
 
-#: Project.module:1540
+#: Project.module:1541
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
@@ -3603,83 +3619,83 @@ msgstr ""
 "Certains fichiers sources du projet sont en conflit.\n"
 "Veuillez résoudre ces conflits pour pouvoir compiler le projet."
 
-#: Project.module:1544
+#: Project.module:1545
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
-#: Project.module:1556
+#: Project.module:1557
 msgid "Nothing to do."
 msgstr "Rien à faire."
 
-#: Project.module:1695
+#: Project.module:1696
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
-#: Project.module:1708
+#: Project.module:1709
 msgid "Unable to save the project."
 msgstr "Impossible d'enregistrer le projet."
 
-#: Project.module:1721
+#: Project.module:1722
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
-#: Project.module:1762
+#: Project.module:1763
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
-#: Project.module:1781
+#: Project.module:1782
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: Project.module:1935
+#: Project.module:1936
 msgid "Making executable..."
 msgstr "Génération de l'exécutable..."
 
-#: Project.module:1977
+#: Project.module:1978
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
-#: Project.module:2228
+#: Project.module:2229
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés: &1"
 
-#: Project.module:2402
+#: Project.module:2403
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
-#: Project.module:2434
+#: Project.module:2435
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
-#: Project.module:2515
+#: Project.module:2516
 msgid "Unable to install component."
 msgstr "Impossible d'installer le composant."
 
-#: Project.module:2553
+#: Project.module:2554
 msgid "Unable to uninstall component."
 msgstr "Impossible de désinstaller le composant."
 
-#: Project.module:2688
+#: Project.module:2689
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
-#: Project.module:2707
+#: Project.module:2708
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: Project.module:2734
+#: Project.module:2735
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:2738
+#: Project.module:2739
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
-#: Project.module:2742
+#: Project.module:2743
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: Project.module:2772
+#: Project.module:2773
 msgid ""
 "A class name must begin with a letter or an underscore, followed by any "
 "letter or digit."
@@ -3687,34 +3703,34 @@ msgstr ""
 "Un nom de classe doit commencer par une lettre ou un caractère '_', et être "
 "suivi par des lettres ou des chiffres. "
 
-#: Project.module:2950
+#: Project.module:2951
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer '&1'"
 
-#: Project.module:3069
+#: Project.module:3070
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
-#: Project.module:3077
+#: Project.module:3078
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
-#: Project.module:3080
+#: Project.module:3081
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: Project.module:3081
+#: Project.module:3082
 msgid ""
 "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ "
 "ESPACE"
 
-#: Project.module:3091
+#: Project.module:3092
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:3093
+#: Project.module:3094
 msgid ""
 "The project directory cannot be created because a file with the same name "
 "already exists."
@@ -3722,35 +3738,35 @@ msgstr ""
 "Le répertoire du projet ne peut être créé car un fichier avec le même nom "
 "existe déjà."
 
-#: Project.module:3136
+#: Project.module:3137
 msgid "Create source package"
 msgstr "Générer un package des sources du projet"
 
-#: Project.module:3137
+#: Project.module:3138
 msgid "Source packages"
 msgstr "Paquetages sources"
 
-#: Project.module:3383
+#: Project.module:3384
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:3395
+#: Project.module:3396
 msgid "Linking a directory is forbidden."
 msgstr "Créer un lien sur un répertoire est interdit."
 
-#: Project.module:3425
+#: Project.module:3426
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
-#: Project.module:3437
+#: Project.module:3438
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:3481
+#: Project.module:3482
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:4012
+#: Project.module:4013
 msgid "modified"
 msgstr "modifié"
 

@@ -14,7 +14,7 @@ Private Sub MakeChangeLog() As String
   aLine = Split(txtChange.Text, "\n")
   For Each sLine In aLine
     sLine = Trim(sLine)
-    If NOT sLine Then Continue
+    If Not sLine Then Continue
     If Left(sLine) <> "-" Then sLine = "- " & sLine
     sChangeLog &= sLine & "\n"
   Next
@@ -54,6 +54,7 @@ Public Sub Form_Open()
   txtDescribe.Text = Project.Description
 
   Try txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
+  Try txtTests.Text = File.Load(Project.Dir &/ ".extratest")
 
   chkPrefix.Value = Project.Prefix
   chkUseRelease.Value = Project.UseRelease
@@ -88,8 +89,8 @@ Private Sub UpdatePackageName()
   If Project.CreateComponent Then
 
     sVendor = String.LCase(Trim(txtVendor.Text))
-    If NOT sVendor Then sVendor = "gb"
-    If LCase(Project.Name) LIKE sVendor & ".*" Then 
+    If Not sVendor Then sVendor = "gb"
+    If LCase(Project.Name) Like sVendor & ".*" Then 
       sVendor = ""
     Else 
       sVendor &= "-"
@@ -100,7 +101,7 @@ Private Sub UpdatePackageName()
 
     If chkPrefix.Value Then
       sVendor = String.LCase(Trim(txtVendor.Text))
-      If NOT sVendor Then sVendor = "gambas"
+      If Not sVendor Then sVendor = "gambas"
       sText = sVendor & "-" & LCase(Project.Name)
     Else
       sText = LCase(Project.Name)
@@ -131,7 +132,7 @@ Private Sub GetSystemControls() As Object[]
 
   For Each hCont In panSystem.Children
     For Each hCtrl In hCont.Children
-      If hCtrl IS CheckBox Then
+      If hCtrl Is CheckBox Then
         aObject.Add(hCtrl)
       Endif
     Next
@@ -163,16 +164,16 @@ Private Sub InitSystemControls()
     
     hPanel = Null
     For Each hCtrl In hCont.Children
-      If hCtrl IS ToolButton Then
+      If hCtrl Is ToolButton Then
         hTool = hCtrl
-      Else If hCtrl IS CheckBox Then 
+      Else If hCtrl Is CheckBox Then 
         hCheckBox = hCtrl
-      Else If hCtrl IS Panel Then 
+      Else If hCtrl Is Panel Then 
         hPanel = hCtrl
       Endif 
     Next
     
-    If NOT hPanel Then 
+    If Not hPanel Then 
     
       hPanel = New Panel(hCont)
       hPanel.Border = Border.Plain
@@ -192,8 +193,8 @@ Private Sub InitSystemControls()
 
     Endif
 
-    hCheckBox.Enabled = NOT sMsg
-    If NOT hCheckBox.Enabled Then hCheckBox.Value = False
+    hCheckBox.Enabled = Not sMsg
+    If Not hCheckBox.Enabled Then hCheckBox.Value = False
 
     hTool.Design = True
     hTool.Enabled = hCheckBox.Value
@@ -215,7 +216,7 @@ Private Sub InitSystems()
   Dim hCheck As CheckBox
 
   For Each hCtrl In GetSystemControls()
-    hCtrl.Value = hCtrl.Enabled AND Project.Systems.Find(hCtrl.Parent.Tag) >= 0
+    hCtrl.Value = hCtrl.Enabled And Project.Systems.Find(hCtrl.Parent.Tag) >= 0
   Next
 
 End
@@ -238,7 +239,7 @@ Private Function CheckSys(cCol As Collection) As Boolean
 
   For Each sSys In Project.Systems
     If sSys = "autotools" Then Continue
-    If NOT cCol.Exist(sSys) Then Return True
+    If Not cCol.Exist(sSys) Then Return True
   Next
 
 End
@@ -258,12 +259,12 @@ Public Sub wizInstall_BeforeChange()
       Project.Vendor = Trim(txtVendor.Text)
       Project.License = Trim(txtLicense.Text)
 
-      If NOT Project.Maintainer Then
+      If Not Project.Maintainer Then
         Message.Warning(("Please enter your name."))
         Stop Event
         Return
       Endif
-      If NOT Project.Address Then
+      If Not Project.Address Then
         Message.Warning(("Please enter your e-mail address."))
         Stop Event
         Return
@@ -274,14 +275,14 @@ Public Sub wizInstall_BeforeChange()
       Project.UseRelease = chkUseRelease.Value
 
     Case 1
-      If NOT Trim(txtChange.Text) Then 
+      If Not Trim(txtChange.Text) Then 
         If Message.Warning(("There is no CHANGELOG entry for this release."), ("Continue"), ("Cancel")) = 2 Then 
           Stop Event
           Return 
         Endif
       Endif
       Package.ChangeLog = MakeChangeLog()
-      If NOT Package.ChangeLog Then
+      If Not Package.ChangeLog Then
         Message.Warning(("Please enter the first CHANGELOG entry."))
         Stop Event
         Return
@@ -296,14 +297,17 @@ Public Sub wizInstall_BeforeChange()
         Stop Event
         Return
       Endif
-      If Project.Systems.Count = 1 AND If Project.Systems[0] = "autotools" Then 
+      If Project.Systems.Count = 1 And If Project.Systems[0] = "autotools" Then 
         wizInstall[3].Enabled = False
         wizInstall[4].Enabled = False
       Else
         wizInstall[3].Enabled = True
         wizInstall[4].Enabled = True
       Endif
-      If Project.CreateComponent
+     If Project.Systems.Count = 1 And If Project.Systems[0] <> "autotools" Then 
+        wizInstall[5].Enabled = True
+     Endif
+     If Project.CreateComponent
         wizInstall[4].Enabled = False
       Endif
 
@@ -338,10 +342,13 @@ Public Sub wizInstall_BeforeChange()
       '   STOP EVENT
       '   RETURN
       ' ENDIF
-      
+    
     Case 5
+      Package.ExtraTest = txtTests.Text
+    
+    Case 6
       Package.Path = dchInstall.SelectedPath
-      If Package.Path = Project.Dir OR If Package.Path LIKE Project.Dir &/ "/*" Then 
+      If Package.Path = Project.Dir Or If Package.Path Like Project.Dir &/ "/*" Then 
         Message.Warning(("The package cannot be stored inside the project directory."))
         Stop Event 
         Return 
@@ -357,7 +364,7 @@ Public Sub wizInstall_Change()
 
     Case 1
       lblChangeDate.Text = Package.GetChangeDate()
-      If NOT txtChangeLog.Text Then txtChange.Text = ("Initial release")
+      If Not txtChangeLog.Text Then txtChange.Text = ("Initial release")
       txtChange.SetFocus
       
     Case 3
@@ -392,7 +399,7 @@ Private Function GetSystemNames(Optional bRemoveSystemWithoutMenu As Boolean) As
   Dim aSys As New String[]
 
   For Each hCtrl In GetSystemControls()
-    If bRemoveSystemWithoutMenu AND If hCtrl.Parent.Tag = "autotools" Then Continue
+    If bRemoveSystemWithoutMenu And If hCtrl.Parent.Tag = "autotools" Then Continue
     If hCtrl.Value Then aSys.Add(hCtrl.Text)
   Next
 
@@ -428,7 +435,7 @@ End
 Public Sub AddLog(sText As String, Optional bNoNewLine As Boolean)
 
   txtLog.Insert(sText)
-  If NOT bNoNewLine Then txtLog.Insert("\n")
+  If Not bNoNewLine Then txtLog.Insert("\n")
   Wait
 
 End
@@ -501,11 +508,11 @@ Private Sub FillTreeWith(hTree As TreeView, sTitle As String, sIcon As String, s
 
   Open sFile As #hFile
 
-  While NOT Eof(hFile)
+  While Not Eof(hFile)
 
     Line Input #hFile, sLig
     sLig = RTrim(sLig)
-    If NOT sLig Then Continue
+    If Not sLig Then Continue
 
     If bCat Then
       iPos = InStr(sLig, "#")
@@ -524,7 +531,7 @@ Private Sub FillTreeWith(hTree As TreeView, sTitle As String, sIcon As String, s
       
       For Each sElt In Split(Trim(sLig), "/")
         sKey &/= sElt
-        If NOT hTree.Exist(sKey) Then
+        If Not hTree.Exist(sKey) Then
           hTree.Add(sKey, File.Name(sKey),, sParent).Expanded = True
           hTree[sParent].Expanded = True
         Endif
@@ -566,7 +573,7 @@ Private Sub FillTreeWith(hTree As TreeView, sTitle As String, sIcon As String, s
     
     If bCat Then
       sAdd = FindCategoriesFromMenu(sKey)
-      If sAdd AND If sCat Then sCat &= ";"
+      If sAdd And If sCat Then sCat &= ";"
       $cCatCache[sKey] = sCat & sAdd
     Endif 
     
@@ -601,7 +608,7 @@ Private Sub AddCategory(sAdd As String)
   Dim sCat As String
   
   For Each sCat In Split(sAll, ";").Sort()
-    If NOT sCat Then Continue 
+    If Not sCat Then Continue 
     If aCat.Exist(sCat) Then Continue 
     aCat.Add(sCat)
   Next
@@ -617,7 +624,7 @@ Private Sub RemoveCategory(sAdd As String)
   Dim sCat As String
   
   For Each sCat In Split(cmbCategories.Text, ";").Sort()
-    If NOT sCat Then Continue 
+    If Not sCat Then Continue 
     If aRemove.Exist(sCat) Then Continue 
     aCat.Add(sCat)
   Next

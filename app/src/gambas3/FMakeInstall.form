@@ -7,10 +7,10 @@
   Arrangement = Arrange.Fill
   Padding = 8
   { wizInstall Wizard
-    MoveScaled(1,1,76,80)
+    MoveScaled(0,0,77,80)
     Arrangement = Arrange.Vertical
     Spacing = 8
-    Count = 7
+    Count = 8
     ShowIndex = True
     Border = False
     Index = 0
@@ -308,21 +308,32 @@
       Sorted = True
     }
     Index = 5
+    Text = ("Add extra tests")
+    { TextLabel4 TextLabel
+      MoveScaled(2,1,66,12)
+      Text = ("Add extra tests during the configure process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about configure scripts.</b>")
+    }
+    { txtTests TextArea
+      MoveScaled(1,15,71,49)
+      Expand = True
+      Text = ("")
+    }
+    Index = 6
     Text = ("Destination directory")
     { dchInstall DirChooser
-      MoveScaled(1,1,72,58)
+      MoveScaled(0,0,72,58)
       Expand = True
       ShowBookmark = True
     }
-    Index = 6
+    Index = 7
     Text = ("Create package")
-    { TextLabel9 TextLabel
-      MoveScaled(1,2,67,17)
+    { TextLabel3 TextLabel
+      MoveScaled(2,2,67,17)
       AutoResize = True
       Text = ("All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
     }
     { txtLog TextArea
-      MoveScaled(1,20,68,33)
+      MoveScaled(1,21,68,33)
       Font = Font["Monospace"]
       Expand = True
       Text = ("")
