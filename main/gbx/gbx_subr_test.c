@@ -45,6 +45,8 @@ void SUBR_bit(void)
     &&__ERROR, &&__BCLR, &&__BSET, &&__BTST, &&__BCHG, &&__ASL, &&__ASR, &&__ROL,
     &&__ROR, &&__LSL, &&__LSR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR
     };
+    
+	static int nbits[6] = { 0, 0, 8, 16, 32, 64 };
 
   int64_t val;
   uint64_t uval;
@@ -52,21 +54,23 @@ void SUBR_bit(void)
   TYPE type;
   int n;
   int mask;
+  bool variant;
 
   SUBR_ENTER_PARAM(2);
 
   type = PARAM->type;
 
-  switch (type)
-  {
-    case T_BYTE: n = 8; mask = 0xFF; break;
-    case T_SHORT: n = 16; mask = 0xFFFF; break;
-    case T_INTEGER: n = 32; mask = -1; break;
-    default: n = 64; type = T_LONG; mask = -1; break;
-  }
-
+	variant = TYPE_is_variant(type);
+	if (variant)
+		type = PARAM->_variant.vtype;
+	
+	if (type <= T_BOOLEAN || type > T_LONG)
+	  THROW(E_TYPE, "Number", TYPE_get_name(type));
+	
   VALUE_conv(PARAM, T_LONG);
   val = PARAM->_long.value;
+
+	n = nbits[type];
 
   VALUE_conv(&PARAM[1], T_INTEGER);
   bit = PARAM[1]._integer.value;
@@ -91,8 +95,8 @@ __BSET:
 __BTST:
 
 	RETURN->type = T_BOOLEAN;
-  val = (val & (1ULL << bit)) ? (-1) : 0;
-  goto __END;
+	RETURN->_boolean.value = (val & (1ULL << bit)) ? (-1) : 0;
+  goto __LEAVE;
 
 __BCHG:
 
@@ -101,61 +105,147 @@ __BCHG:
 
 __ASL:
 
-	if (type == T_LONG)
-		val <<= bit;
-	else
-		val = ((int)val << bit);
-  goto __END;
+	{
+	  static void *asl_jump[6] = { &&__ERROR, &&__ERROR, &&__ASL_BYTE, &&__ASL_SHORT, &&__ASL_INTEGER, &&__ASL_LONG };
 
+		goto *asl_jump[type];
+
+	__ASL_BYTE:
+		val = ((unsigned char)val << bit);
+		goto __END_BYTE;
+
+	__ASL_SHORT:
+		val = (((short)val << bit) & 0x7FFF) | (((short)val) & 0x8000);
+		goto __END_SHORT;
+
+	__ASL_INTEGER:
+		val = (((int)val << bit) & 0x7FFFFFFF) | (((int)val) & 0x80000000);
+		goto __END_INTEGER;
+
+	__ASL_LONG:
+		val = ((val << bit) & 0x7FFFFFFFFFFFFFFFLL) | (val & 0x8000000000000000LL);
+		goto __END_LONG;
+	}
+	
 __ASR:
 
-	if (type == T_LONG)
-		val >>= bit;
-	else
-		val = ((int)val >> bit);
-	goto __END;
+	{
+	  static void *asr_jump[6] = { &&__ERROR, &&__ERROR, &&__ASR_BYTE, &&__ASR_SHORT, &&__ASR_INTEGER, &&__ASR_LONG };
 
+		goto *asr_jump[type];
+
+	__ASR_BYTE:
+		val = ((unsigned char)val >> bit);
+		goto __END_BYTE;
+
+	__ASR_SHORT:
+		val = (((short)val >> bit) & 0x7FFF) | (((short)val) & 0x8000);
+		goto __END_SHORT;
+
+	__ASR_INTEGER:
+		val = (((int)val >> bit) & 0x7FFFFFFF) | (((int)val) & 0x80000000);
+		goto __END_INTEGER;
+
+	__ASR_LONG:
+		val = ((val >> bit) & 0x7FFFFFFFFFFFFFFFLL) | (val & 0x8000000000000000LL);
+		goto __END_LONG;
+	}
+	
 __ROL:
 
-	val = (val << bit) | (val >> (n - bit));
-	goto __END;
+	{
+	  static void *rol_jump[6] = { &&__ERROR, &&__ERROR, &&__ROL_BYTE, &&__ROL_SHORT, &&__ROL_INTEGER, &&__ROL_LONG };
+	  
+	  goto *rol_jump[type];
+	  
+	__ROL_BYTE:
+		val = (val << bit) | (val >> (8 - bit));
+		goto __END_BYTE;
+	
+	__ROL_SHORT:
+		val = ((ushort)val << bit) | ((ushort)val >> (16 - bit));
+		goto __END_SHORT;
+	
+	__ROL_INTEGER:
+		val = ((uint)val << bit) | ((uint)val >> (32 - bit));
+		goto __END_INTEGER;
+	
+	__ROL_LONG:
+		val = ((uint64_t)val << bit) | ((uint64_t)val >> (64 - bit));
+		goto __END_LONG;
+	}
 
 __ROR:
 
-	val = (val >> bit) | (val << (n - bit));
-	goto __END;
+	{
+	  static void *ror_jump[6] = { &&__ERROR, &&__ERROR, &&__ROR_BYTE, &&__ROR_SHORT, &&__ROR_INTEGER, &&__ROR_LONG };
+	  
+	  goto *ror_jump[type];
+	  
+	__ROR_BYTE:
+		val = (val >> bit) | (val << (8 - bit));
+		goto __END_BYTE;
+	
+	__ROR_SHORT:
+		val = ((ushort)val >> bit) | ((ushort)val << (16 - bit));
+		goto __END_SHORT;
+	
+	__ROR_INTEGER:
+		val = ((uint)val >> bit) | ((uint)val << (32 - bit));
+		goto __END_INTEGER;
+	
+	__ROR_LONG:
+		val = ((uint64_t)val >> bit) | ((uint64_t)val << (64 - bit));
+		goto __END_LONG;
+	}
 
 __LSL:
 
-	if (type == T_LONG)
 	{
-		uval = (uint64_t)val;
-		uval <<= bit;
-		val = (int64_t)uval;
-	}
-	else
-	{
-		uval = (unsigned int)val;
-		uval <<= bit;
-		val = (int)uval;
-	}
-	goto __END;
+	  static void *lsl_jump[6] = { &&__ERROR, &&__ERROR, &&__LSL_BYTE, &&__LSL_SHORT, &&__LSL_INTEGER, &&__LSL_LONG };
 
+		goto *lsl_jump[type];
+
+	__LSL_BYTE:
+		val = ((unsigned char)val << bit);
+		goto __END_BYTE;
+
+	__LSL_SHORT:
+		val = ((unsigned short)val << bit);
+		goto __END_SHORT;
+
+	__LSL_INTEGER:
+		val = ((unsigned int)val << bit);
+		goto __END_INTEGER;
+
+	__LSL_LONG:
+		val = ((uint64_t)val << bit);
+		goto __END_LONG;
+	}
+	
 __LSR:
 
-	if (type == T_LONG)
 	{
-		uval = (uint64_t)val;
-		uval >>= bit;
-		val = (int64_t)uval;
+	  static void *lsr_jump[6] = { &&__ERROR, &&__ERROR, &&__LSR_BYTE, &&__LSR_SHORT, &&__LSR_INTEGER, &&__LSR_LONG };
+
+		goto *lsr_jump[type];
+
+	__LSR_BYTE:
+		val = ((unsigned char)val >> bit);
+		goto __END_BYTE;
+
+	__LSR_SHORT:
+		val = ((unsigned short)val >> bit);
+		goto __END_SHORT;
+
+	__LSR_INTEGER:
+		val = ((unsigned int)val >> bit);
+		goto __END_INTEGER;
+
+	__LSR_LONG:
+		val = ((uint64_t)val >> bit);
+		goto __END_LONG;
 	}
-	else
-	{
-		uval = (unsigned int)val;
-		uval >>= bit;
-		val = (int)uval;
-	}
-	goto __END;
 
 __ERROR:
 
@@ -163,10 +253,34 @@ __ERROR:
 
 __END:
 
-  if (type == T_LONG)
-    RETURN->_long.value = val;
-  else
-    RETURN->_integer.value = (int)val & mask;
+	{
+  	static void *end_jump[6] = { &&__ERROR, &&__ERROR, &&__END_BYTE, &&__END_SHORT, &&__END_INTEGER, &&__END_LONG };
+  	
+  	goto *end_jump[type];
+  	
+	__END_BYTE:
+		RETURN->_integer.value = (unsigned int)val & 0xFF;
+		goto __END_VARIANT;
+  	
+	__END_SHORT:
+		RETURN->_integer.value = (int)val & 0xFFFF;
+		goto __END_VARIANT;
+	
+	__END_INTEGER:
+		RETURN->_integer.value = (int)val;
+		goto __END_VARIANT;
+  	
+	__END_LONG:
+		RETURN->_long.value = val;
+		goto __END_VARIANT;
+	}
+	
+__END_VARIANT:
+
+	if (variant)
+		VALUE_conv(RETURN, T_VARIANT);
+
+__LEAVE:
 
   SUBR_LEAVE();
 }
