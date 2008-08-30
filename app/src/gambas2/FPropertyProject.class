@@ -72,8 +72,7 @@ PUBLIC SUB Form_Open()
     cmbComponent.Index = If(.CreateComponent, 0, 1)
     cmbComponentState.Index = .ComponentState
     $sIcon = .Icon
-    btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, 56).Picture
-    btnIcon.ToolTip = .Icon
+    UpdateIcon
     txtTabSize.Value = .TabSize
     cmbStackSize.Index = 0
     IF .Stack THEN cmbStackSize.Text = .Stack & " K"
@@ -600,7 +599,7 @@ PUBLIC SUB btnIcon_Click()
   IF NOT sIcon THEN RETURN
 
   $sIcon = sIcon
-  btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, 56).Picture
+  UpdateIcon
   
 END
 
@@ -1337,4 +1336,11 @@ PUBLIC SUB cmbTranslate_Click()
     cmbDefaultLanguage.Enabled = FALSE
   ENDIF
 
+END
+
+PRIVATE SUB UpdateIcon()
+  
+  btnIcon.Picture = Project.StretchIcon(Project.Dir &/ $sIcon, btnIcon.Width - 16).Picture
+  btnIcon.ToolTip = $sIcon
+  
 END
