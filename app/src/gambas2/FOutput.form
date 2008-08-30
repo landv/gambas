@@ -6,8 +6,9 @@
   Icon = Picture["icon:/small/terminal"]
   Persistent = True
   Arrangement = Arrange.Vertical
-  { mnuEditor Menu
+  { mnuOutput Menu
     Text = ("")
+    Enabled = False
     Visible = False
     { mnuUndo Menu btnUndo
       Name = "mnuUndo"
@@ -110,6 +111,7 @@
       }
       { sepFind Separator
         MoveScaled(4,0,1,3)
+        Visible = False
       }
       { txtFind TextBox
         MoveScaled(5,0,12,3)

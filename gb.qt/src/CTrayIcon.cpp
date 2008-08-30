@@ -183,6 +183,8 @@ static void define_mask(CTRAYICON *_object)
 	hints.min_width = WIDGET->width();
 	hints.min_height = WIDGET->height();
   XSetWMNormalHints(WIDGET->x11Display(), WIDGET->winId(), &hints);
+  
+  WIDGET->update();
 }
 
 

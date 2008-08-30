@@ -362,31 +362,16 @@ gPicture *gTrayIcon::defaultIcon()
 	return _default_icon;
 }
 
-void gTrayIcon::updateMask()
+void gTrayIcon::refresh()
 {
-/*
-	gPicture *pic;
-	GdkBitmap *mask;
-	
-	if (!plug || !plug->window)
-		return;
-	
-	pic = getIcon();
-	mask = pic->getMask();
-	
-	XShapeCombineMask(GDK_WINDOW_XDISPLAY(plug->window), GDK_WINDOW_XID(plug->window), ShapeBounding, 
-		(width() - pic->width()) / 2,
-		(height() - pic->height()) / 2,
-		mask ? GDK_PIXMAP_XID(mask) : None, ShapeSet);
-*/
+	if (plug)
+		gtk_widget_queue_draw(plug);
 }
 
 void gTrayIcon::setPicture(gPicture *picture)
 {
 	gPicture::assign(&_icon, picture);
-
-  if (plug)
-  	updateMask();
+	refresh();
 }
 
 char* gTrayIcon::toolTip()
@@ -472,7 +457,7 @@ void gTrayIcon::setVisible(bool vl)
 			//XSetWindowBackgroundPixmap(gdk_display, win, ParentRelative);
 			
 			updateTooltip();
-			updateMask();
+			refresh();
 		}
 		
 	}
@@ -544,7 +529,7 @@ gTrayIcon::~gTrayIcon()
 }
 
 
-void gTrayIcon::updateMask()
+void gTrayIcon::refresh()
 {
 	stub("no-X11/gTrayIcon class");
 }

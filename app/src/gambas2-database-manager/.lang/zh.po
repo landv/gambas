@@ -80,926 +80,871 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: CConnection.class:213
-msgid "Cannot open table."
-msgstr ""
-
-#: CConnection.class:239
-msgid "Table already exists."
-msgstr "表己存在."
-
-#: CConnection.class:255
-msgid "Cannot create table '&1'."
-msgstr "无法创建表'&1'."
-
-#: CConnection.class:276
-msgid "Cannot delete table '&1'."
-msgstr "无法删除表'&1'."
-
-#: CServer.class:140
-msgid "Cannot create user."
-msgstr "无法创建用户."
-
-#: CServer.class:158
-msgid "Cannot delete user."
-msgstr "无法删除用户."
-
-#: CServer.class:186
-msgid "Cannot edit user."
-msgstr "无法编辑用户."
-
-#: CServer.class:204
-msgid "Cannot create database."
-msgstr "无法创建数据库."
-
-#: CServer.class:224
-msgid "Cannot delete database."
-msgstr "无法删除数据库."
-
-#: CTableViewEditor.class:108
-msgid "This field cannot be void."
-msgstr "此字段不能无效."
-
-#: FAbout.class:27 FMain.class:1313
-msgid "About..."
-msgstr "关于..."
-
-#: FAbout.class:32
-#, fuzzy
-msgid ""
-"<h1 align=center>Gambas Database<br>Manager</h1>\n"
-"\n"
-"<b>(c) Benoît Minisini 2007</b><br><br>\n"
-"\n"
-"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/"
-"OR modify it under the terms of the GNU General Public License as published "
-"by the Free Software Foundation ; either version 2, or (at your option) any "
-"later version.</p>\n"
-"\n"
-"<p align=center>This program is distributed in the hope that it will be "
-"useful but WITHOUT ANY WARRANTY; without even the implied warranty of  "
-"MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General "
-"Public License for more details.</p>\n"
-msgstr ""
-"<h2 align=center>许可协议</h1>\n"
-"\n"
-"<p align=center>此程为免费软件;作为免费软件基金发表的免费软件,你可以在遵守GNU"
-"通用公共许可协议的前题下分发和/或修改它 ; 可以是版本 1, 也可以是任何其它版本"
-"(随你喜欢).</p>\n"
-"\n"
-"<p align=center>分发此软件的止的是希望它对你有用,但没有任何质量保证;请查看GNU"
-"通用公共许可协议以获得更多信息</p>\n"
-
-#: FAbout.class:38 FDatabase.class:153 FNewTable.class:108 FPassword.class:86
-#: FServer.class:148 FUser.class:189
-msgid "OK"
-msgstr "确定"
-
-#: FCode.class:55
-msgid "Please enter a module name."
-msgstr "请输入模块名."
-
-#: FCode.class:67
-msgid "Please enter a procedure name."
-msgstr "请输入进程名."
-
-#: FCode.class:149
-msgid "Cannot generate Gambas code."
-msgstr "无法生成Gambas代码."
-
-#: FCode.class:149
-msgid "Server: &1"
-msgstr "服务器:&1"
-
-#: FCode.class:149
-msgid "Database: &1"
-msgstr "数据库:&1"
-
-#: FCode.class:276
-msgid "Generate Gambas code"
-msgstr "生成Gambas代码"
-
-#: FCode.class:286
-msgid ""
-"This dialog allows you to generate a <b>Gambas</b> procedure that will "
-"initialize the structure of your database."
-msgstr "此对话框允许你生成一个<b>Gambas</b>进程以初始化你的数据库结构."
-
-#: FCode.class:308 FPasteDatabase.class:341 FPasteTable.class:315
-msgid "Database"
-msgstr "数据库"
-
-#: FCode.class:313 FDatabase.class:132 FUser.class:152
-msgid "Server"
-msgstr "服务器"
-
-#: FCode.class:328 FDatabase.class:143 FNewTable.class:120
-#: FPasteDatabase.class:281 FPasteTable.class:255 FTable.class:57
-#: FUser.class:163
-msgid "Name"
-msgstr "名称"
-
-#: FCode.class:333
-msgid "Module"
-msgstr "模块"
-
-#: FCode.class:343
-msgid "Procedure"
-msgstr "进程"
-
-#: FCode.class:353
-msgid "Update at database close."
-msgstr "关闭数据库时更新"
-
-#: FCode.class:358
-msgid "Generate"
-msgstr "生成"
-
-#: FCode.class:363 FImport.class:566 FPasteDatabase.class:320
-#: FPasteTable.class:294
-msgid "Close"
-msgstr "关闭"
-
-#: FCode.class:381
-msgid "Project"
-msgstr "工程"
-
-#: FDatabase.class:58
-msgid "Create database"
-msgstr "创建数据库"
-
-#: FDatabase.class:80
-msgid "Please type a database name."
-msgstr "请输入一个数据库名."
-
-#: FDatabase.class:159 FData.class:520 FImport.class:30 FMain.class:553
-#: FNewTable.class:114 FServer.class:160 FTable.class:779 FUser.class:195
-msgid "Cancel"
-msgstr "取消"
-
-#: FData.class:152
-msgid "Cannot read table data."
-msgstr "无法读表中数据."
-
-#: FData.class:231
-msgid "Cannot write table data."
-msgstr "无法写入数据到表."
-
-#: FData.class:417 FTable.class:644
-msgid "Incorrect value."
-msgstr "错误的值."
-
-#: FData.class:520
-msgid ""
-"The data of table '&1' have been modified.\n"
-"Do you want to save it ?"
-msgstr ""
-"表'&1'的数据己修改.\n"
-"是否保存?"
-
-#: FData.class:520 FTable.class:1099
-msgid "Save"
-msgstr "保存"
-
-#: FData.class:520 FTable.class:1099
-msgid "Do not save"
-msgstr "别保存"
-
-#: FData.class:584
-msgid "Save data"
-msgstr "保存数据"
-
-#: FData.class:592
-msgid "Reload data"
-msgstr "重载数据"
-
-#: FData.class:599
-msgid "New record"
-msgstr "新建记录"
-
-#: FData.class:606
-msgid "Delete record"
-msgstr "删除记录"
-
-#: FImport.class:33
-msgid "Import"
-msgstr ""
-
-#: FImport.class:117
-msgid "(Automatic key)"
-msgstr ""
-
-#: FImport.class:230
-#, fuzzy
-msgid "Field_&1"
-msgstr "字段"
-
-#: FImport.class:309 FTable.class:93
-msgid "Field"
-msgstr "字段"
-
-#: FImport.class:337
-msgid "Not enough values"
-msgstr ""
-
-#: FImport.class:339
-msgid "Too many values"
-msgstr ""
-
-#: FImport.class:358
-msgid "Cancelled by user"
-msgstr ""
-
-#: FImport.class:367
-msgid "No record imported."
-msgstr ""
-
-#: FImport.class:369
-msgid "One record imported."
-msgstr ""
-
-#: FImport.class:371
-msgid "&1 records imported."
-msgstr ""
-
-#: FImport.class:424
-msgid "Import CSV file"
-msgstr ""
-
-#: FImport.class:443
-msgid "Options"
-msgstr ""
-
-#: FImport.class:448 FPasteDatabase.class:276 FPasteTable.class:250
-msgid "Source"
-msgstr "源"
-
-#: FImport.class:460
-msgid "Charset"
-msgstr ""
-
-#: FImport.class:465
-msgid "End of line"
-msgstr ""
-
-#: FImport.class:470
-msgid "Delimiter character"
-msgstr ""
-
-#: FImport.class:475
-msgid "Enclose character"
-msgstr ""
-
-#: FImport.class:480
-msgid "Strip useless white spaces"
-msgstr ""
-
-#: FImport.class:486 FPasteDatabase.class:327 FPasteTable.class:301
-msgid "Destination"
-msgstr "目标"
-
-#: FImport.class:491 FPasteTable.class:340
-msgid "Table"
-msgstr "表"
-
-#: FImport.class:496
-msgid "The first line contains field names"
-msgstr ""
-
-#: FImport.class:501
-msgid "Key field"
-msgstr ""
-
-#: FImport.class:507
-#, fuzzy
-msgid "Tab"
-msgstr "表"
-
-#: FImport.class:507
-#, fuzzy
-msgid "Space"
-msgstr "保存"
-
-#: FImport.class:507
-msgid ","
-msgstr ""
-
-#: FImport.class:507
-msgid ";"
-msgstr ""
-
-#: FImport.class:507
-msgid ":"
-msgstr ""
-
-#: FImport.class:513
-msgid "'"
-msgstr ""
-
-#: FImport.class:513
-msgid "\""
-msgstr ""
-
-#: FImport.class:531
-msgid "UTF-8"
-msgstr ""
-
-#: FImport.class:531
-msgid "ISO 8859-1"
-msgstr ""
-
-#: FImport.class:531
-msgid "ISO 8859-15"
-msgstr ""
-
-#: FImport.class:531
-msgid "WINDOWS-1252"
-msgstr ""
-
-#: FImport.class:538
-#, fuzzy
-msgid "Unix"
-msgstr "唯一的"
-
-#: FImport.class:538
-msgid "Windows"
-msgstr ""
-
-#: FImport.class:538
-msgid "Mac"
-msgstr ""
-
-#: FImport.class:541
-msgid "Messages"
-msgstr ""
-
-#: FImport.class:547
-msgid "Preview"
-msgstr ""
-
-#: FMain.class:155
-msgid "Cannot connect to server"
-msgstr "无法连接到服务器"
-
-#: FMain.class:273
-msgid "Cannot connect to database"
-msgstr "无法连接到数据库."
-
-#: FMain.class:374
-msgid "Users"
-msgstr "用户"
-
-#: FMain.class:392
-msgid "Cannot connect to database '&1'"
-msgstr "无法连接到数据库'&1'"
-
-#: FMain.class:480
-msgid "&Use encoding (&1)"
-msgstr "(&U)使用编码(&1)"
-
-#: FMain.class:553
-msgid "Do you really want to delete the user '&1' ?"
-msgstr "你真的想删除用户'&1'吗?"
-
-#: FMain.class:553
-msgid "Delete"
-msgstr "删除"
-
-#: FMain.class:572
-msgid ""
-"Do you really want to remove the following server ?\n"
-"\n"
-"&1"
-msgstr ""
-"你真的想删除以下的服务器吗?\n"
-"\n"
-"&1"
-
-#: FMain.class:572
-msgid "Remove"
-msgstr "删除"
-
-#: FMain.class:589
-msgid ""
-"Do you really want to delete the database '&1' ?\n"
-"\n"
-"BE CAREFUL ! All your data will be lost."
-msgstr ""
-"你真的想删除数据库'&1'吗?\n"
-"\n"
-"小心,你所有的数据将丢失."
-
-#: FMain.class:635
-msgid "Select the CSV file to import"
-msgstr ""
-
-#: FMain.class:636 FRequest.class:305
-msgid "CSV files"
-msgstr ""
-
-#: FMain.class:636 FRequest.class:177
-msgid "All files"
-msgstr "所有文件"
-
-#: FMain.class:648
-msgid "Do you really want to delete the table '&1' ?"
-msgstr "你真的想删除表'&1'吗?"
-
-#: FMain.class:681
-msgid "Cannot refresh connection."
-msgstr "无法刷新连接."
-
-#: FMain.class:701
-msgid "Cannot close database."
-msgstr "无法关闭数据库."
-
-#: FMain.class:814
-msgid "Do you really want to remove all servers ?"
-msgstr "你真的想删除所有的服务器吗?"
-
-#: FMain.class:814
-msgid "Remove all"
-msgstr "全部删除"
-
-#: FMain.class:1053 FPassword.class:58
-msgid "Gambas Database Manager"
-msgstr "Gambas数据库管理器"
-
-#: FMain.class:1058
-msgid "&Server"
-msgstr "(&S)服务器"
-
-#: FMain.class:1061
-msgid "&New server..."
-msgstr "(&N)新建服务器..."
-
-#: FMain.class:1067
-msgid "&Scan database servers"
-msgstr "(&S)扫描数据库服务器"
-
-#: FMain.class:1076
-msgid "&Close all"
-msgstr "(&C)全部关闭"
-
-#: FMain.class:1080
-msgid "Re&move all servers"
-msgstr "(&M)删除所有服务器"
-
-#: FMain.class:1089
-msgid "&Database component debugging"
-msgstr ""
-
-#: FMain.class:1097
-msgid "&Quit"
-msgstr "(&Q)退出"
-
-#: FMain.class:1108
-msgid "&Open"
-msgstr "(&O)打开"
-
-#: FMain.class:1113
-msgid "&Create database..."
-msgstr "(&C)创建数据库..."
-
-#: FMain.class:1119
-msgid "&Paste database..."
-msgstr "(&P)粘帖数据库..."
-
-#: FMain.class:1124
-msgid "&Create user..."
-msgstr "(&C)创建用户..."
-
-#: FMain.class:1133
-msgid "&Close"
-msgstr "(&C)关闭"
-
-#: FMain.class:1138
-msgid "&Remove"
-msgstr "(&R)删除"
-
-#: FMain.class:1149
-msgid "&Create..."
-msgstr "(&C)创建..."
-
-#: FMain.class:1154
-msgid "&Paste..."
-msgstr "(&P)粘帖"
-
-#: FMain.class:1168
-msgid "&Create table..."
-msgstr "创建数据库"
-
-#: FMain.class:1174
-msgid "&Paste table..."
-msgstr "(&P)粘帖表..."
-
-#: FMain.class:1179
-msgid "&SQL request..."
-msgstr "(&S)SQL请求"
-
-#: FMain.class:1184
-msgid "&Import CSV file..."
-msgstr ""
-
-#: FMain.class:1193
-msgid "&Make Gambas code..."
-msgstr "(&M)制作Gambas代码"
-
-#: FMain.class:1198
+#: FMain.class:1208
 msgid "-"
 msgstr "-"
 
-#: FMain.class:1202
-msgid "Show system tables"
-msgstr "显示系统表"
+#: FImport.class:531
+msgid ","
+msgstr "，"
 
-#: FMain.class:1210
-msgid "&Copy"
-msgstr "(&C)复制"
+#: FImport.class:531
+msgid ";"
+msgstr "；"
 
-#: FMain.class:1215
-msgid "&Delete"
-msgstr "(&D)删除"
+#: FImport.class:531
+msgid ":"
+msgstr "："
 
-#: FMain.class:1224
-msgid "&Refresh"
-msgstr "(&R)刷新"
+#: FImport.class:537
+msgid "'"
+msgstr "‘"
 
-#: FMain.class:1245
-msgid "&Edit..."
-msgstr "(&E)编辑..."
+#: FImport.class:537
+msgid "\""
+msgstr "“"
 
-#: FMain.class:1280
-msgid "&Rename..."
-msgstr "(&R)重命名..."
-
-#: FMain.class:1310
+#: FMain.class:1320
 msgid "&?"
 msgstr "(&?)帮助"
-
-#: FNewTable.class:28 FTable.class:1258
-msgid "Rename table"
-msgstr "重命名表"
-
-#: FNewTable.class:31
-msgid "Create table"
-msgstr "创建表"
-
-#: FNewTable.class:47 FPasteTable.class:58
-msgid "Please enter a table name."
-msgstr "请输入一个表名."
-
-#: FNewTable.class:125 FServer.class:107 FTable.class:62
-msgid "Type"
-msgstr "类型"
-
-#: FPassword.class:20
-msgid "Please enter at least eight characters."
-msgstr ""
-
-#: FPassword.class:69
-msgid "Please enter the key string used for crypting database passwords."
-msgstr ""
-
-#: FPassword.class:81
-msgid "Continue"
-msgstr ""
-
-#: FPassword.class:92
-msgid "Quit"
-msgstr ""
-
-#: FPasteDatabase.class:70
-msgid "Please enter a database name."
-msgstr "请输入数据库名."
-
-#: FPasteDatabase.class:142
-msgid "Cannot copy database."
-msgstr "无法复制数据库."
-
-#: FPasteDatabase.class:270
-msgid "Duplicate database"
-msgstr "克隆数据库"
-
-#: FPasteDatabase.class:291 FPasteTable.class:265
-msgid "Copy structure &and data"
-msgstr "(&A)复制结构和数据"
-
-#: FPasteDatabase.class:296 FPasteTable.class:270
-msgid "Copy &structure only"
-msgstr "(&S)只复制结构"
-
-#: FPasteDatabase.class:314 FPasteTable.class:288
-msgid "Duplicate"
-msgstr "克隆"
-
-#: FPasteDatabase.class:336 FPasteTable.class:310
-msgid "Connection"
-msgstr "连接"
-
-#: FPasteTable.class:244
-msgid "Duplicate table"
-msgstr "克隆表"
-
-#: FRequest.class:40 FTable.class:1265
-msgid "SQL request"
-msgstr "SQL请求"
-
-#: FRequest.class:61
-msgid "No records."
-msgstr "无记录."
-
-#: FRequest.class:110
-msgid "One record"
-msgstr "一条记录"
 
 #: FRequest.class:112
 msgid "&1 records"
 msgstr "&1条记录"
 
-#: FRequest.class:125
-msgid "Cannot exec request."
-msgstr "无法执行请求."
+#: FImport.class:393
+msgid "&1 records imported."
+msgstr "导出&1条记录。"
 
-#: FRequest.class:151
-msgid "Enter your request..."
-msgstr "输入你的请求..."
+#: FAbout.class:29 FMain.class:1323
+msgid "About..."
+msgstr "关于..."
 
-#: FRequest.class:177
-msgid "SQL script files"
-msgstr "SQL脚本文件"
+#: FMain.class:636 FRequest.class:177
+msgid "All files"
+msgstr "所有文件"
 
-#: FRequest.class:186
-msgid "Cannot load SQL script file."
-msgstr "无法加载SQL脚本文件."
-
-#: FRequest.class:204
-msgid "Cannot save SQL script file."
-msgstr "无法保存SQL脚本文件."
-
-#: FRequest.class:322
-msgid "Cannot export data."
-msgstr "无法导出数据."
-
-#: FRequest.class:385
-msgid "Run"
-msgstr "运行"
-
-#: FRequest.class:392
-msgid "New request"
-msgstr "新建请求"
-
-#: FRequest.class:399
-msgid "Load request"
-msgstr ""
-
-#: FRequest.class:406
-msgid "Save request"
-msgstr ""
-
-#: FRequest.class:414
-msgid "Find"
-msgstr "查找"
-
-#: FRequest.class:453
-msgid "Export data"
-msgstr "导出数据"
-
-#: FRequest.class:460
-msgid "Copy data in clipboard"
-msgstr "将数据复制到剪贴板"
-
-#: FServer.class:40
-msgid "Path"
-msgstr ""
-
-#: FServer.class:42
-msgid "Host"
-msgstr "主机"
-
-#: FServer.class:51
-#, fuzzy
-msgid "Select a &1 database"
-msgstr "克隆数据库"
-
-#: FServer.class:89
-msgid "New connection"
-msgstr "新建连接"
-
-#: FServer.class:96
-msgid "New server"
-msgstr "新建服务器"
-
-#: FServer.class:118
-msgid "Choose..."
-msgstr ""
-
-#: FServer.class:126
-msgid "User"
-msgstr "用户"
-
-#: FServer.class:131 FUser.class:173
-msgid "Password"
-msgstr "密码"
-
-#: FServer.class:155
-msgid "postgresql"
-msgstr ""
-
-#: FServer.class:155
-msgid "mysql"
-msgstr ""
-
-#: FServer.class:155
-msgid "sqlite"
-msgstr ""
-
-#: FServer.class:155
-msgid "sqlite2"
-msgstr ""
-
-#: FServer.class:155
-msgid "sqlite3"
-msgstr ""
-
-#: FServer.class:155
-msgid "odbc"
-msgstr ""
-
-#: FTable.class:67
-msgid "Length"
-msgstr "长度"
-
-#: FTable.class:72
-msgid "Default value"
-msgstr "默认值"
-
-#: FTable.class:83
-msgid "Index"
-msgstr "索引"
-
-#: FTable.class:88
-msgid "Unique"
-msgstr "唯一的"
-
-#: FTable.class:135
-msgid "modified"
-msgstr "修改过"
-
-#: FTable.class:280
-msgid "You must define a primary key."
-msgstr "你必须定义主键."
-
-#: FTable.class:363
-msgid "Cannot write table."
-msgstr "无法写入到表."
-
-#: FTable.class:438
-msgid "unlimited"
-msgstr "无限制的"
-
-#: FTable.class:456
-msgid "Integer"
-msgstr "整型"
-
-#: FTable.class:458
-msgid "Long"
-msgstr ""
-
-#: FTable.class:460
-msgid "Float"
-msgstr "浮点型"
-
-#: FTable.class:462
-msgid "Date"
-msgstr "日期"
-
-#: FTable.class:464
-msgid "Boolean"
-msgstr "布尔值"
-
-#: FTable.class:466
-msgid "String"
-msgstr "字符串"
-
-#: FTable.class:468
-msgid "Serial"
+#: FImport.class:121
+msgid "(Automatic key)"
 msgstr ""
 
 #: FTable.class:470
 msgid "Blob"
 msgstr ""
 
-#: FTable.class:589
-msgid "This name already exists."
-msgstr "此名己存存在."
+#: FTable.class:464
+msgid "Boolean"
+msgstr "布尔型"
 
-#: FTable.class:614
-msgid "Please enter a number."
-msgstr "请输入一个数字."
+#: FNewTable.class:116 FServer.class:162 FTable.class:779 FUser.class:197
+msgid "Cancel"
+msgstr "取消"
 
-#: FTable.class:619
-msgid "The length must be greater than 1 and lower than 255."
-msgstr "长度必须大于1并小于255."
+#: FImport.class:380
+msgid "Cancelled by user"
+msgstr "被用户取消"
 
-#: FTable.class:708
-msgid "This field is used in an index."
-msgstr ""
+#: FMain.class:701
+msgid "Cannot close database."
+msgstr "无法关闭数据库。"
 
-#: FTable.class:779
-msgid "Do you really want to reload the table definition ?"
-msgstr "你真的想重加载表的定义吗"
+#: FMain.class:273
+msgid "Cannot connect to database"
+msgstr "无法连接到数据库。"
 
-#: FTable.class:779
-msgid "Reload"
-msgstr "重载"
+#: FMain.class:392
+msgid "Cannot connect to database '&1'"
+msgstr "无法连接到数据库'&1'"
 
-#: FTable.class:1099
-msgid ""
-"The table '&1' has been modified.\n"
-"Do you want to save it ?"
-msgstr ""
-"表'&1'己修改.\n"
-"是否保存? "
+#: FMain.class:155
+msgid "Cannot connect to server"
+msgstr "无法连接到服务器"
 
-#: FTable.class:1151
-msgid "This table name is already in use."
-msgstr "此表名己被使用."
+#: FPasteDatabase.class:142
+msgid "Cannot copy database."
+msgstr "无法复制数据库。"
 
-#: FTable.class:1244
-msgid "Save table"
-msgstr "保存表"
+#: CServer.class:204
+msgid "Cannot create database."
+msgstr "无法创建数据库。"
 
-#: FTable.class:1251
-msgid "Reload table"
-msgstr "重载表"
+#: CConnection.class:255
+msgid "Cannot create table '&1'."
+msgstr "无法创建表'&1'。"
 
-#: FTable.class:1276
-msgid "Fields"
-msgstr "字段"
+#: CServer.class:140
+msgid "Cannot create user."
+msgstr "无法创建用户。"
 
-#: FTable.class:1281
-msgid "Move field up"
-msgstr "上移字段"
+#: CServer.class:224
+msgid "Cannot delete database."
+msgstr "无法删除数据库。"
 
-#: FTable.class:1288
-msgid "Move field down"
-msgstr "下移字段"
+#: CConnection.class:276
+msgid "Cannot delete table '&1'."
+msgstr "无法删除表'&1'。"
 
-#: FTable.class:1295
-msgid "Toggle primary key"
-msgstr "使用主键"
+#: CServer.class:158
+msgid "Cannot delete user."
+msgstr "无法删除用户。"
 
-#: FTable.class:1302
-msgid "Delete field"
-msgstr "删除字段"
+#: CServer.class:186
+msgid "Cannot edit user."
+msgstr "无法编辑用户。"
 
-#: FTable.class:1309
-msgid "New field"
-msgstr "新建字段"
+#: FRequest.class:125
+msgid "Cannot exec request."
+msgstr "无法执行请求。"
 
-#: FTable.class:1320
-msgid "Indexes"
-msgstr "索引"
+#: FRequest.class:322
+msgid "Cannot export data."
+msgstr "无法导出数据。"
 
-#: FTable.class:1325
-msgid "New index"
-msgstr "新建索引"
+#: FCode.class:149
+msgid "Cannot generate Gambas code."
+msgstr "无法生成Gambas代码。"
 
-#: FTable.class:1332
-msgid "New index field"
-msgstr "新建索引字段"
+#: FRequest.class:186
+msgid "Cannot load SQL script file."
+msgstr "无法加载SQL脚本文件。"
 
-#: FTable.class:1339
-msgid "Delete index field"
-msgstr "删除索引字段"
+#: CConnection.class:213
+msgid "Cannot open table."
+msgstr "无法打开表。"
 
-#: FTable.class:1364
-msgid "Data"
-msgstr "数据"
+#: FData.class:152
+msgid "Cannot read table data."
+msgstr "无法读表中数据。"
 
-#: FUser.class:50
-msgid "Edit user"
-msgstr "编辑用户"
+#: FMain.class:681
+msgid "Cannot refresh connection."
+msgstr "无法刷新连接。"
+
+#: FRequest.class:204
+msgid "Cannot save SQL script file."
+msgstr "无法保存SQL脚本文件。"
+
+#: FTable.class:363
+msgid "Cannot write table."
+msgstr "无法写入到表。"
+
+#: FData.class:231
+msgid "Cannot write table data."
+msgstr "无法写入数据到表。"
+
+#: FImport.class:484
+msgid "Charset"
+msgstr "字符集"
+
+#: FServer.class:120
+msgid "Choose..."
+msgstr "选择..."
+
+#: FPasteTable.class:298
+msgid "Close"
+msgstr "关闭"
+
+#: FMain.class:1143
+msgid "&Close"
+msgstr "(&C)关闭"
+
+#: FMain.class:1086
+msgid "&Close all"
+msgstr "(&C)全部关闭"
+
+#: FPasteDatabase.class:338 FPasteTable.class:314
+msgid "Connection"
+msgstr "连接"
+
+#: FPassword.class:83
+msgid "Continue"
+msgstr "继续"
+
+#: FMain.class:1220
+msgid "&Copy"
+msgstr "(&C)复制"
+
+#: FRequest.class:462
+msgid "Copy data in clipboard"
+msgstr "将数据复制到剪贴板"
+
+#: FPasteDatabase.class:293 FPasteTable.class:269
+msgid "Copy structure &and data"
+msgstr "(&A)复制结构和数据"
+
+#: FPasteDatabase.class:298 FPasteTable.class:274
+msgid "Copy &structure only"
+msgstr "(&S)只复制结构"
+
+#: FMain.class:1159
+msgid "&Create..."
+msgstr "(&C)创建..."
+
+#: FMain.class:1123
+msgid "&Create database..."
+msgstr "(&C)创建数据库..."
+
+#: FDatabase.class:58
+msgid "Create database"
+msgstr "创建数据库"
+
+#: FMain.class:1178
+msgid "&Create table..."
+msgstr "创建数据库"
+
+#: FNewTable.class:31
+msgid "Create table"
+msgstr "创建表"
+
+#: FMain.class:1134
+msgid "&Create user..."
+msgstr "(&C)创建用户..."
 
 #: FUser.class:61
 msgid "Create user"
 msgstr "创建用户"
 
-#: FUser.class:84
-msgid "Please type a user name."
-msgstr "请输入一个用户名."
+#: FMain.class:636 FRequest.class:305
+msgid "CSV files"
+msgstr "CSV文件"
 
-#: FUser.class:184
-msgid "This user is a database administrator"
-msgstr "此用户是数据库管理员"
+#: FTable.class:1366
+msgid "Data"
+msgstr "数据"
+
+#: FCode.class:310 FPasteDatabase.class:343 FPasteTable.class:319
+msgid "Database"
+msgstr "数据库"
+
+#: FCode.class:149
+msgid "Database: &1"
+msgstr "数据库:&1"
+
+#: FMain.class:1099
+msgid "&Database component debugging"
+msgstr "(&D)数据库组件调试"
+
+#: FTable.class:462
+msgid "Date"
+msgstr "日期"
+
+#: FTable.class:72
+msgid "Default value"
+msgstr "默认值"
+
+#: FMain.class:553
+msgid "Delete"
+msgstr "删除"
+
+#: FMain.class:1225
+msgid "&Delete"
+msgstr "(&D)删除"
+
+#: FTable.class:1304
+msgid "Delete field"
+msgstr "删除字段"
+
+#: FTable.class:1341
+msgid "Delete index field"
+msgstr "删除索引字段"
+
+#: FData.class:609
+msgid "Delete record"
+msgstr "删除记录"
+
+#: FImport.class:494
+msgid "Delimiter character"
+msgstr "定界符"
+
+#: FImport.class:510 FPasteDatabase.class:329 FPasteTable.class:305
+msgid "Destination"
+msgstr "目标"
+
+#: FData.class:520 FTable.class:1099
+msgid "Do not save"
+msgstr "别保存"
+
+#: FMain.class:589
+msgid "Do you really want to delete the database '&1' ?\n\nBE CAREFUL ! All your data will be lost."
+msgstr "你真的想删除数据库'&1'吗?\n\n小心,你所有的数据将丢失."
+
+#: FMain.class:648
+msgid "Do you really want to delete the table '&1' ?"
+msgstr "你真的想删除表'&1'吗?"
+
+#: FMain.class:553
+msgid "Do you really want to delete the user '&1' ?"
+msgstr "你真的想删除用户'&1'吗?"
+
+#: FTable.class:779
+msgid "Do you really want to reload the table definition ?"
+msgstr "你真的想重加载表的定义吗"
+
+#: FMain.class:822
+msgid "Do you really want to remove all servers ?"
+msgstr "你真的想删除所有的服务器吗?"
+
+#: FMain.class:572
+msgid "Do you really want to remove the following server ?\n\n&1"
+msgstr "你真的想删除以下的服务器吗?\n\n&1"
+
+#: FPasteDatabase.class:316 FPasteTable.class:292
+msgid "Duplicate"
+msgstr "克隆"
+
+#: FPasteDatabase.class:272
+msgid "Duplicate database"
+msgstr "克隆数据库"
+
+#: FPasteTable.class:248
+msgid "Duplicate table"
+msgstr "克隆表"
+
+#: FMain.class:1255
+msgid "&Edit..."
+msgstr "(&E)编辑..."
+
+#: FUser.class:50
+msgid "Edit user"
+msgstr "编辑用户"
+
+#: FImport.class:499
+msgid "Enclose character"
+msgstr "附寄符"
+
+#: FImport.class:489
+msgid "End of line"
+msgstr "行结束"
+
+#: FRequest.class:151
+msgid "Enter your request..."
+msgstr "输入你的请求..."
+
+#: FRequest.class:455
+msgid "Export data"
+msgstr "导出数据"
+
+#: FImport.class:331 FTable.class:93
+msgid "Field"
+msgstr "字段"
+
+#: FImport.class:252
+msgid "Field_&1"
+msgstr "字段_&1"
+
+#: FTable.class:1278
+msgid "Fields"
+msgstr "字段"
+
+#: FRequest.class:416
+msgid "Find"
+msgstr "查找"
+
+#: FTable.class:460
+msgid "Float"
+msgstr "浮点型"
 
 #: .project:1
 msgid "Gambas database manager"
 msgstr "Gambas数据库管理器"
 
-#~ msgid "(c) Benoît Minisini"
-#~ msgstr "(c) Benoît Minisini"
+#: FMain.class:1063 FPassword.class:60
+msgid "Gambas Database Manager"
+msgstr "Gambas数据库管理器"
 
-#~ msgid "<h2 align=center>Authors</h2>\n"
-#~ msgstr "<h2 align=center>作者</h2>\n"
+#: FCode.class:360
+msgid "Generate"
+msgstr "生成"
+
+#: FCode.class:278
+msgid "Generate Gambas code"
+msgstr "生成Gambas代码"
+
+#: FAbout.class:34
+msgid "<h1 align=center>Gambas Database<br>Manager</h1>\n\n<b>(c) Benoît Minisini 2007</b><br><br>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgstr "<h1 align=center>Gambas数据库<br>管理器</h1>\n\n<b>(c) Benoît Minisini 2007</b><br><br>\n\n<p align=center>该软件是自由软件；你可以再次分发它，并且/或者在自由软件基金会发布的《GNU公共许可协议》条款下修改它；可以使用版本号2，也可以由你指定任一个更新的版本号。</p>\n\n<p align=center>发布本软件是希望它能有用，而且不需要任何授权；甚至不需要为了某种目的而出售或安装的隐含授权。更多细节请阅读《GNU公共许可协议》。</p>\n"
+
+#: FServer.class:42
+msgid "Host"
+msgstr "主机"
+
+#: FImport.class:37
+msgid "Import"
+msgstr "导入"
+
+#: FMain.class:1194
+msgid "&Import CSV file..."
+msgstr "(&I)导入CSV文件..."
+
+#: FImport.class:448
+msgid "Import CSV file"
+msgstr "导入CSV文件"
+
+#: FData.class:417 FTable.class:644
+msgid "Incorrect value."
+msgstr "错误的值."
+
+#: FTable.class:83
+msgid "Index"
+msgstr "索引"
+
+#: FTable.class:1322
+msgid "Indexes"
+msgstr "索引"
+
+#: FTable.class:456
+msgid "Integer"
+msgstr "整型"
+
+#: FImport.class:555
+msgid "ISO 8859-1"
+msgstr "-"
+
+#: FImport.class:555
+msgid "ISO 8859-15"
+msgstr "-"
+
+#: FImport.class:525
+msgid "Key field"
+msgstr ""
+
+#: FTable.class:67
+msgid "Length"
+msgstr "长度"
+
+#: FRequest.class:401
+msgid "Load request"
+msgstr "加载请求"
+
+#: FTable.class:458
+msgid "Long"
+msgstr "长整型"
+
+#: FImport.class:562
+msgid "Mac"
+msgstr "-"
+
+#: FMain.class:1203
+msgid "&Make Gambas code..."
+msgstr "(&M)制作Gambas代码"
+
+#: FImport.class:574
+msgid "Messages"
+msgstr "消息"
+
+#: FTable.class:135
+msgid "modified"
+msgstr "修改过"
+
+#: FCode.class:335
+msgid "Module"
+msgstr "模块"
+
+#: FTable.class:1290
+msgid "Move field down"
+msgstr "下移字段"
+
+#: FTable.class:1283
+msgid "Move field up"
+msgstr "上移字段"
+
+#: FServer.class:157
+msgid "mysql"
+msgstr "-"
+
+#: FUser.class:165
+msgid "Name"
+msgstr "名称"
+
+#: FServer.class:91
+msgid "New connection"
+msgstr "新建连接"
+
+#: FTable.class:1311
+msgid "New field"
+msgstr "新建字段"
+
+#: FTable.class:1327
+msgid "New index"
+msgstr "新建索引"
+
+#: FTable.class:1334
+msgid "New index field"
+msgstr "新建索引字段"
+
+#: FData.class:602
+msgid "New record"
+msgstr "新建记录"
+
+#: FRequest.class:394
+msgid "New request"
+msgstr "新建请求"
+
+#: FMain.class:1071
+msgid "&New server..."
+msgstr "(&N)新建服务器..."
+
+#: FServer.class:98
+msgid "New server"
+msgstr "新建服务器"
+
+#: FImport.class:389
+msgid "No record imported."
+msgstr "无导入记录。"
+
+#: FRequest.class:61
+msgid "No records."
+msgstr "无记录."
+
+#: FImport.class:359
+msgid "Not enough values"
+msgstr ""
+
+#: FServer.class:157
+msgid "odbc"
+msgstr "-"
+
+#: FServer.class:150 FUser.class:191
+msgid "OK"
+msgstr "确定"
+
+#: FRequest.class:110
+msgid "One record"
+msgstr "一条记录"
+
+#: FImport.class:391
+msgid "One record imported."
+msgstr "导入一条记录。"
+
+#: FMain.class:1118
+msgid "&Open"
+msgstr "(&O)打开"
+
+#: FImport.class:467
+msgid "Options"
+msgstr "设置"
+
+#: FServer.class:133 FUser.class:175
+msgid "Password"
+msgstr "密码"
+
+#: FMain.class:1164
+msgid "&Paste..."
+msgstr "(&P)粘帖"
+
+#: FMain.class:1129
+msgid "&Paste database..."
+msgstr "(&P)粘帖数据库..."
+
+#: FMain.class:1184
+msgid "&Paste table..."
+msgstr "(&P)粘帖表..."
+
+#: FServer.class:40
+msgid "Path"
+msgstr "路径"
+
+#: FPasteDatabase.class:70
+msgid "Please enter a database name."
+msgstr "请输入数据库名."
+
+#: FCode.class:55
+msgid "Please enter a module name."
+msgstr "请输入模块名."
+
+#: FTable.class:614
+msgid "Please enter a number."
+msgstr "请输入一个数字."
+
+#: FCode.class:67
+msgid "Please enter a procedure name."
+msgstr "请输入进程名."
+
+#: FNewTable.class:47 FPasteTable.class:58
+msgid "Please enter a table name."
+msgstr "请输入一个表名."
+
+#: FPassword.class:20
+msgid "Please enter at least eight characters."
+msgstr "请输入至少8个字符。"
+
+#: FPassword.class:71
+msgid "Please enter the key string used for crypting database passwords."
+msgstr "请输入加密数据库口令的密匙字符串。"
+
+#: FDatabase.class:80
+msgid "Please type a database name."
+msgstr "请输入一个数据库名."
+
+#: FUser.class:84
+msgid "Please type a user name."
+msgstr "请输入一个用户名."
+
+#: FServer.class:157
+msgid "postgresql"
+msgstr "-"
+
+#: FImport.class:565
+msgid "Preview"
+msgstr "预览"
+
+#: FCode.class:345
+msgid "Procedure"
+msgstr "进程"
+
+#: FCode.class:383
+msgid "Project"
+msgstr "工程"
+
+#: FPassword.class:94
+msgid "Quit"
+msgstr "退出"
+
+#: FMain.class:1107
+msgid "&Quit"
+msgstr "(&Q)退出"
+
+#: FMain.class:1234
+msgid "&Refresh"
+msgstr "(&R)刷新"
+
+#: FTable.class:779
+msgid "Reload"
+msgstr "重载"
+
+#: FData.class:595
+msgid "Reload data"
+msgstr "重载数据"
+
+#: FTable.class:1253
+msgid "Reload table"
+msgstr "重载表"
+
+#: FMain.class:572
+msgid "Remove"
+msgstr "删除"
+
+#: FMain.class:1148
+msgid "&Remove"
+msgstr "(&R)删除"
+
+#: FMain.class:822
+msgid "Remove all"
+msgstr "全部删除"
+
+#: FMain.class:1090
+msgid "Re&move all servers"
+msgstr "(&M)删除所有服务器"
+
+#: FMain.class:1290
+msgid "&Rename..."
+msgstr "(&R)重命名..."
+
+#: FNewTable.class:28 FTable.class:1260
+msgid "Rename table"
+msgstr "重命名表"
+
+#: FRequest.class:387
+msgid "Run"
+msgstr "运行"
+
+#: FData.class:520 FTable.class:1099
+msgid "Save"
+msgstr "保存"
+
+#: FData.class:587
+msgid "Save data"
+msgstr "保存数据"
+
+#: FRequest.class:408
+msgid "Save request"
+msgstr "保存请求"
+
+#: FTable.class:1246
+msgid "Save table"
+msgstr "保存表"
+
+#: FMain.class:1077
+msgid "&Scan database servers"
+msgstr "(&S)扫描数据库服务器"
+
+#: FServer.class:51
+msgid "Select a &1 database"
+msgstr "选择&1数据库"
+
+#: FMain.class:635
+msgid "Select the CSV file to import"
+msgstr "选择导入的CSV文件"
+
+#: FTable.class:468
+msgid "Serial"
+msgstr ""
+
+#: FCode.class:315 FDatabase.class:134 FUser.class:154
+msgid "Server"
+msgstr "服务器"
+
+#: FMain.class:1068
+msgid "&Server"
+msgstr "(&S)服务器"
+
+#: FCode.class:149
+msgid "Server: &1"
+msgstr "服务器:&1"
+
+#: FMain.class:1212
+msgid "Show system tables"
+msgstr "显示系统表"
+
+#: FImport.class:472 FPasteDatabase.class:278 FPasteTable.class:254
+msgid "Source"
+msgstr "源"
+
+#: FImport.class:531
+msgid "Space"
+msgstr "空"
+
+#: FServer.class:157
+msgid "sqlite"
+msgstr "-"
+
+#: FServer.class:157
+msgid "sqlite2"
+msgstr "-"
+
+#: FServer.class:157
+msgid "sqlite3"
+msgstr "-"
+
+#: FMain.class:1189
+msgid "&SQL request..."
+msgstr "(&S)SQL请求"
+
+#: FRequest.class:40 FTable.class:1267
+msgid "SQL request"
+msgstr "SQL请求"
+
+#: FRequest.class:177
+msgid "SQL script files"
+msgstr "SQL脚本文件"
+
+#: FTable.class:466
+msgid "String"
+msgstr "字符串"
+
+#: FImport.class:504
+msgid "Strip useless white spaces"
+msgstr ""
+
+#: FImport.class:531
+msgid "Tab"
+msgstr ""
+
+#: FImport.class:515 FPasteTable.class:344
+msgid "Table"
+msgstr "表"
+
+#: FPasteTable.class:132
+msgid "Table already exists"
+msgstr "表己存在"
+
+#: CConnection.class:239
+msgid "Table already exists."
+msgstr "表己存在。"
+
+#: FData.class:520
+msgid "The data of table '&1' have been modified.\nDo you want to save it ?"
+msgstr "表'&1'的数据己修改.\n是否保存?"
+
+#: FImport.class:520
+msgid "The first line contains field names"
+msgstr "第一行容纳字段名"
+
+#: FTable.class:619
+msgid "The length must be greater than 1 and lower than 255."
+msgstr "长度必须大于1并小于255."
+
+#: FTable.class:1099
+msgid "The table '&1' has been modified.\nDo you want to save it ?"
+msgstr "表'&1'己修改.\n是否保存? "
+
+#: FCode.class:288
+msgid "This dialog allows you to generate a <b>Gambas</b> procedure that will initialize the structure of your database."
+msgstr "此对话框允许你生成一个<b>Gambas</b>进程以初始化你的数据库结构."
+
+#: CTableViewEditor.class:108
+msgid "This field cannot be void."
+msgstr "此字段不能无效."
+
+#: FTable.class:708
+msgid "This field is used in an index."
+msgstr "该字段用于索引。"
+
+#: FTable.class:589
+msgid "This name already exists."
+msgstr "此名己存存在."
+
+#: FTable.class:1151
+msgid "This table name is already in use."
+msgstr "此表名己被使用."
+
+#: FUser.class:186
+msgid "This user is a database administrator"
+msgstr "此用户是数据库管理员"
+
+#: FTable.class:1297
+msgid "Toggle primary key"
+msgstr "使用主键"
+
+#: FImport.class:361
+msgid "Too many values"
+msgstr ""
+
+#: FNewTable.class:127 FServer.class:109 FTable.class:62
+msgid "Type"
+msgstr "类型"
+
+#: FTable.class:88
+msgid "Unique"
+msgstr "唯一的"
+
+#: FImport.class:562
+msgid "Unix"
+msgstr "-"
+
+#: FTable.class:438
+msgid "unlimited"
+msgstr "无限制的"
+
+#: FCode.class:355
+msgid "Update at database close."
+msgstr "关闭数据库时更新"
+
+#: FMain.class:480
+msgid "&Use encoding (&1)"
+msgstr "(&U)使用编码(&1)"
+
+#: FServer.class:128
+msgid "User"
+msgstr "用户"
+
+#: FMain.class:374
+msgid "Users"
+msgstr "用户"
+
+#: FImport.class:555
+msgid "UTF-8"
+msgstr "-"
+
+#: FImport.class:562
+msgid "Windows"
+msgstr ""
+
+#: FImport.class:555
+msgid "WINDOWS-1252"
+msgstr "-"
+
+#: FTable.class:280
+msgid "You must define a primary key."
+msgstr "你必须定义主键."
+

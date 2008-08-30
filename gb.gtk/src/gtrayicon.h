@@ -52,7 +52,7 @@ public:
 	char *buftext;
 	bool onHide;
 	gPicture *getIcon() { return _icon ? _icon : defaultIcon(); }
-	void updateMask();
+	void refresh();
 	void updateTooltip();
 	void cleanUp();
 	

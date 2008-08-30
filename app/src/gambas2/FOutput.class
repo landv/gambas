@@ -358,7 +358,7 @@ END
 
 PUBLIC SUB edtOutput_Menu()
 
-  mnuEditor.Popup
+  mnuOutput.Popup
 
 END
 
@@ -376,14 +376,14 @@ END
 
 PUBLIC SUB edtOutput_GotFocus()
 
-  mnuEditor.Enabled = TRUE
+  mnuOutput.Enabled = TRUE
   btnFind.Value = FALSE
 
 END
 
 PUBLIC SUB edtOutput_LostFocus()
 
-  mnuEditor.Enabled = FALSE
+  mnuOutput.Enabled = FALSE
 
 END
 

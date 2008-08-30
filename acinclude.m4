@@ -257,8 +257,8 @@ AC_DEFUN([GB_THREAD],
     *)
       THREAD_LIB="-lpthread"
       THREAD_INC="-D_REENTRANT"
-      GBX_THREAD_LIB=""
-      GBX_THREAD_INC=""
+      GBX_THREAD_LIB="-lpthread"
+      GBX_THREAD_INC="-D_REENTRANT"
       ;;
   esac
 
