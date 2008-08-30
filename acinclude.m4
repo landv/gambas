@@ -201,7 +201,7 @@ AC_DEFUN([GB_INIT],
     gambas_optimization=yes
   )
 
-  AM_CONDITIONAL(OPTIMIZE, test "$gambas_optimization" = yes)
+#  AM_CONDITIONAL(OPTIMIZE, test "$gambas_optimization" = yes)
 
   AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value -fsigned-char"
   AM_CXXFLAGS="$AM_CXXFLAGS -pipe -Wall -fno-exceptions -Wno-unused-value -fsigned-char"
@@ -268,8 +268,8 @@ AC_DEFUN([GB_THREAD],
     *)
       THREAD_LIB="-lpthread"
       THREAD_INC="-D_REENTRANT"
-      GBX_THREAD_LIB=""
-      GBX_THREAD_INC=""
+      GBX_THREAD_LIB="-lpthread"
+      GBX_THREAD_INC="-D_REENTRANT"
       ;;
   esac
 
