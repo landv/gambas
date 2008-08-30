@@ -1,7 +1,7 @@
 #######################################################################################
 ##
 ##   The following macros are specific to Gambas.
-##   Some of them are made by me (B. Minisini)
+##   Some of them are made by me (Benoit Minisini)
 ##   Feel free to use these macros as you need !
 ##
 ##   The remaining contents are a copy of libtool.m4.
@@ -18,9 +18,9 @@
 
 AC_DEFUN([GB_INIT_AUTOMAKE],
 [
-  AM_INIT_AUTOMAKE($1, 2.8.1)
+  AM_INIT_AUTOMAKE($1, 2.8.2)
   AM_CONFIG_HEADER(config.h)
-  AC_DEFINE(GAMBAS_FULL_VERSION, 0x02080001, [Full Gambas version])
+  AC_DEFINE(GAMBAS_FULL_VERSION, 0x02080002, [Full Gambas version])
   AC_DEFINE(GAMBAS_PCODE_VERSION, 0x02000000, [Gambas bytecode version])
 ])
 
@@ -149,7 +149,7 @@ AC_DEFUN([GB_INIT],
     CXX="ccache $CXX"
   fi
 
-  dnl ---- Checks for libraries
+  dnl ---- Checks for standard libraries
 
   AC_CHECK_LIB(m, main, echo -n)
   AC_CHECK_LIB(z, main, echo -n)
@@ -163,20 +163,27 @@ AC_DEFUN([GB_INIT],
 
   AC_SUBST(CXX_LIB)
 
-  dnl ---- Check for system
+  dnl ---- Check for system type
+  
   GB_SYSTEM()
+  
   dnl ---- Check for shared library extension
+  
   GB_SHARED_LIBRARY_EXT()
+  
   dnl ---- Check for threading
+  
   GB_THREAD()
+  
   dnl ---- Check for mathematic libraries
+  
   GB_MATH()
+  
   dnl ---- Check for gettext lib
+  
   GB_GETTEXT()
-  dnl ---- Check for gambas include
-  dnl GB_INCLUDE(gambas.h)
 
-  dnl ---- Other options
+  dnl ---- debug option
 
   AC_ARG_ENABLE(
     debug,
@@ -186,6 +193,8 @@ AC_DEFUN([GB_INIT],
   )
 
   AM_CONDITIONAL(DEBUG, test "$gambas_debug" = yes)
+
+  dnl ---- optimization option
 
   AC_ARG_ENABLE(
     optimization,
@@ -199,6 +208,8 @@ AC_DEFUN([GB_INIT],
   AM_CFLAGS="$AM_CFLAGS -pipe -Wall -Wno-unused-value -fsigned-char"
   AM_CXXFLAGS="$AM_CXXFLAGS -pipe -Wall -fno-exceptions -Wno-unused-value -fsigned-char"
 
+  dnl ---- Check for gcc visibility flag
+  
   have_gcc_visibility=no
   AX_CFLAGS_GCC_OPTION([-fvisibility=hidden],,
   [
@@ -209,11 +220,15 @@ AC_DEFUN([GB_INIT],
     AC_DEFINE(HAVE_GCC_VISIBILITY, 1, [Whether gcc supports -fvisibility=hidden])
   fi
 
+  dnl ---- Debug flags
+  
   if test "$gambas_debug" = "yes"; then
     AM_CFLAGS="$AM_CFLAGS -g"
     AM_CXXFLAGS="$AM_CXXFLAGS -g"
   fi
 
+  dnl ---- Optimization flags
+  
   if test "x$gambas_optimization" = "xyes"; then
     AM_CFLAGS_OPT="$AM_CFLAGS -O3"
     AM_CFLAGS="$AM_CFLAGS -Os"
@@ -313,14 +328,17 @@ AC_DEFUN([GB_SYSTEM],
       ;;
     *-*-freebsd* )
       SYSTEM=FREEBSD
+      AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_FREEBSD, 1, [Target system is FreeBSD])
       ;;
     *-*-netbsd* )
       SYSTEM=NETBSD
+      AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_NETBSD, 1, [Target system is NetBSD])
       ;;
     *-*-openbsd* )
       SYSTEM=OPENBSD
+      AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_OPENBSD, 1, [Target system is OpenBSD])
       ;;
     *-*-cygwin* )
@@ -329,6 +347,7 @@ AC_DEFUN([GB_SYSTEM],
       ;;
     *-*-darwin* | *-*-rhapsody* )
       SYSTEM=MACOSX
+      AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
       AC_DEFINE(OS_MACOSX, 1, [Target system is MacOS X])
       ;;
     *-*-solaris* )
