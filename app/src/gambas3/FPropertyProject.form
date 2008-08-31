@@ -27,11 +27,11 @@
       Text = ("Description")
     }
     { txtTitle TextBox
-      MoveScaled(1,20,80,4)
+      MoveScaled(18,19,63,4)
       Text = ("")
     }
     { Label12 Label
-      MoveScaled(1,16,79,4)
+      MoveScaled(1,19,16,4)
       Font = Font["Bold"]
       Text = ("Title")
     }
@@ -51,39 +51,39 @@
       Wrap = True
     }
     { Panel1 Panel
-      MoveScaled(1,0,80,15)
+      MoveScaled(1,0,80,12)
       { btnIcon ToolButton
-        MoveScaled(66,1,14,14)
+        MoveScaled(68,1,12,11)
         Text = ("")
         Border = True
       }
-      { HBox1 HBox
-        MoveScaled(0,11,65,4)
-        Spacing = 8
-        { txtMajor SpinBox
-          MoveScaled(0,0,9,4)
-          MaxValue = 9999
-        }
-        { txtMinor SpinBox
-          MoveScaled(10,0,9,4)
-          MaxValue = 9999
-        }
-        { txtRelease SpinBox
-          MoveScaled(20,0,12,4)
-          MaxValue = 999999
-        }
-        { Label10 Label
-          MoveScaled(34,0,13,4)
-          Visible = False
-          Text = ("Version")
-        }
-      }
       { txtName TextLabel
-        MoveScaled(0,1,65,9)
+        MoveScaled(0,1,67,11)
         Padding = 2
         Text = ("")
         Alignment = Align.Left
         Border = Border.Sunken
+      }
+    }
+    { HBox1 HBox
+      MoveScaled(1,14,80,4)
+      Spacing = 8
+      { Label10 Label
+        MoveScaled(0,0,16,4)
+        Font = Font["Bold"]
+        Text = ("Version")
+      }
+      { txtMajor SpinBox
+        MoveScaled(17,0,9,4)
+        MaxValue = 9999
+      }
+      { txtMinor SpinBox
+        MoveScaled(27,0,9,4)
+        MaxValue = 9999
+      }
+      { txtRelease SpinBox
+        MoveScaled(37,0,12,4)
+        MaxValue = 999999
       }
     }
     Index = 1

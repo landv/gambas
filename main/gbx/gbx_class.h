@@ -260,7 +260,7 @@ typedef
     CLASS_EVENT *event;               /*  44  event description */
 
 		int _reserved1;                   /*  48  */
-    int _reserved2;                   /*  52  quick array put method */
+    struct _CLASS *array_type;        /*  52  datatype of the contents if this class is an array class of objects */
     
     int (*check)();                   /*  56  method for checking that an object is valid */
 
@@ -436,7 +436,7 @@ CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index);
 
 int CLASS_can_be_used_like_an_array(CLASS *class);
 
-//void CLASS_create_array_class(CLASS *class);
+void CLASS_create_array_class(CLASS *class);
 
 /* class_init.c */
 

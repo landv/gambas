@@ -10,6 +10,7 @@ Private Const TYPE_CLASS As Integer = 2
 Private Const TYPE_SYMBOL As Integer = 3
 
 Private Const BULLET As String = ""
+Private Const ARROW As String = "<b>&gt;</b>" ' ► 
 'PRIVATE CONST BRK AS String = "<p>"
 
 Private $hConn As New Connection
@@ -102,7 +103,7 @@ Public Sub Main()
 
   $eTime = Timer
 
-  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "ca", "ar", "fa", "vi", "ja", "ru", "zh", "zh_TW", "eo"]
+  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "ar", "fa", "vi", "ja", "ru", "zh", "zh_TW", "eo"]
 
   $sRoot = File.Dir(File.Dir(Application.Path)) 'Application.Env["DOCUMENT_ROOT"]
   If Not Exist($sRoot &/ ".htaccess") Then $sRoot = User.Home &/ "www/help"
@@ -263,7 +264,7 @@ Private Sub OpenDatabase()
 
   $sUri = $sPath
   If $sLang <> DEFAULT_LANG Then $sUri = AddParam($sUri, $sLang)
-  If $sVersion <> "2.0" Then 
+  If $sVersion = "3.0" Then 
     $sUri = AddParam($sUri, "v3")
   Endif
 
@@ -1213,6 +1214,8 @@ Private Sub PrintPath()
   Dim aElt As String[]
 
   If $bView Then Return
+  
+  'If Not $sPath Or If $sPath = "/" Then Return
 
   If System.RightToLeft Then   
     Print "<div class=\"path\" dir=\"rtl\">";
@@ -1220,14 +1223,14 @@ Private Sub PrintPath()
     Print "<div class=\"path\">";
   Endif
     
-  Print "&nbsp;<a href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
-  Print "<img class=\"flag\" valign=\"middle\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\">";
+  Print "<a href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
+  Print "<img class=\"flag\" align=\"top\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\">&nbsp;";
   'PRINT GetImage("lang/" & $sLang, "class=\"flag\" alt=\"" & ("Home") & "\"");
   Print "</a>";
   
   If $sPath And If $sPath <> "/" Then
   
-    Print "&nbsp;/&nbsp;";
+    Print ARROW; "&nbsp;";
     
     sPath = "/"
     aElt = Split(File.Dir($sPath), "/")
@@ -1239,13 +1242,13 @@ Private Sub PrintPath()
       Else 
         Print sElt;
       Endif
-      Print "&nbsp;/&nbsp;";
+      Print "&nbsp;"; ARROW; "&nbsp;";
     Next
     Print File.Name($sPath);
     
   Endif
 
-  Print "&nbsp;</div>"
+  Print "</div>"
   
 End
 
@@ -1262,7 +1265,7 @@ Private Sub PrintVersion()
       If Right(sElt) = "&" Or Right(sElt) = "?" Then sElt = Left$(sElt, -1)
       Print "<a href=\"/help" &/ sElt; "\">-&gt;&nbsp;2.0</a>";
     Else
-      Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">&rarr;&nbsp;3.0</a>";
+      Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">-&gt;&nbsp;3.0</a>";
     Endif
     Print "</div>"
   Endif
@@ -1293,6 +1296,9 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   Print "<link rel=\"stylesheet\" href=\"/style.css\">"
   MakeTitle(sTitle)
   Print "</head>"
+  
+  Print "<body>"
+  
   'IF System.RightToLeft THEN 
   '  PRINT "<body dir=\"rtl\">"
   'ELSE 
@@ -1303,18 +1309,51 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
   'PRINT "<p>&nbsp;<p>&nbsp;<p>"
   'IF NOT $bWget THEN PRINT "<div style=\"height: 16px;\"></div>"
-
+  
   If Not $bShow Then
 
-    Print "<table class=\"none\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">"
-    If System.RightToLeft Then 
-      Print "<tr><td align=\"right\">"
-    Else
-      Print "<tr><td align=\"left\">"
-    Endif
-    'PRINT "<font size=\"-1\">"
+    'Print "<table class=\"none\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">"
+
+    If Not $bWget Then
+    
+      'Print "<tr valign=\"top\" height=\"24\">"
+    
+      'If System.RightToLeft Then 
+      '  Print "<p align=\"right\">"
+      'Else
+      '  Print "<p align=\"left\">"
+      'Endif
+      
+      Print "<div class=\"lang\">"
+      
+      For Each sLang In $aLang
+        If sLang = $sLang Then Continue
+        If $bAdmin Then
+          Print "<a href=\"/admin" &/ $sPath;
+        Else
+          Print "<a href=\"/help" &/ $sPath;
+        Endif
+        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\" hspace=\"2\"");
+        Print "</a>"
+      Next
+      
+      Print "</div>"
+      'Print "</td></tr>"
   
+    Endif
+
     PrintPath
+    'Print "<div style=\"height:2px;\"></div>"
+    Print "<div class=\"pathlimit\">&nbsp;</div>"
+    
+    'If System.RightToLeft Then 
+    '  'Print "<tr><td align=\"right\">"
+    '  Print "<p align=\"right\">"
+    'Else
+    '  'Print "<tr><td align=\"left\">"
+    '  Print "<p align=\"left\">"
+    'Endif
+    'PRINT "<font size=\"-1\">"
   
     If $bHelp Then
   
@@ -1391,26 +1430,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   
       PrintVersion
       ' PRINT "</font>"
-      Print "&nbsp;</td>"
+      Print "&nbsp;"
       
-      If System.RightToLeft Then
-        Print "<td align=\"left\">"
-      Else    
-        Print "<td align=\"right\">"
-      Endif
-  
-      For Each sLang In $aLang
-        If sLang = $sLang Then Continue
-        If $bAdmin Then
-          Print "<a href=\"/admin" &/ $sPath;
-        Else
-          Print "<a href=\"/help" &/ $sPath;
-        Endif
-        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"");
-        Print "</a>&nbsp;"
-        '"<img class=\"flag\" align=\"top\" src=\"/img/lang/"; sLang; ".png\" alt=\"" & sLang & "\">"; "</a>&nbsp;&nbsp;"
-      Next
-  
       'IF $sUser THEN
       '  PRINT $sUser
       'ELSE
@@ -1419,7 +1440,7 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   
     Endif
   
-    Print "</td></tr></table>"
+    'Print "</tr></table>"
     
   Else 
   
@@ -1430,7 +1451,7 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
   If Not $bShow And ($bHelp Or $bEdit Or $bHistory) Then
 
-    Print "<table class=\"tabheader\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr>"
+    Print "<table class=\"tabheader frame\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr>"
 
     PrintTab(("Documentation"), Not ($bComment Or $bHistory), "taboffl", GetUncommentPath($sPath))
     If (Not $bNew Or $bComment) And Not $bImage Then
@@ -1443,14 +1464,14 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
     Print "<td class=\"tabnone\">&nbsp;</td>"
     Print "</tr></table>"
 
-    Print "<div class=\"tab\">"
+    Print "<div class=\"tab frame\">"
 
   Else
 
     If $bShow Then 
-      Print "<div>"
+      Print "<div class=\"frame\">"
     Else 
-      Print "<div class=\"notab\">"
+      Print "<div class=\"notab frame\">"
     Endif
 
   Endif

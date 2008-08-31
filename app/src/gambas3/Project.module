@@ -2077,6 +2077,10 @@ Public Sub ReadProject()
   VersionProgram = ""
   Stack = 0
   StackTrace = False
+  Maintainer = ""
+  Vendor = ""
+  Address = ""
+  License = ""
 
   While Not Eof(hFic)
 

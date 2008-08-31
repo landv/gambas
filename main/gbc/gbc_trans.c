@@ -313,8 +313,8 @@ int TRANS_get_class(PATTERN pattern)
 bool TRANS_type(int mode, TRANS_DECL *result)
 {
   PATTERN *look = JOB->current;
-  short id = 0;
-  int value = -1L;
+  short id;
+  int value;
   int flag = 0;
 
   /* Ne pas remplir la structure de z�os */
@@ -351,50 +351,49 @@ bool TRANS_type(int mode, TRANS_DECL *result)
     }
   }
 
-  if (PATTERN_is_type(*look))
-  {
-    id = RES_get_type(PATTERN_index(*look));
-
-    if (PATTERN_is(look[1], RS_LSQR))
-    {
-      value = CLASS_get_array_class(JOB->class, id);
-      id = T_OBJECT;
-
-      if (!PATTERN_is(look[2], RS_RSQR))
-      {
-        if (mode & TT_CAN_NEW)
-        {
-          if (TYPE_get_id(result->type) == T_ARRAY)
-            THROW("Cannot mix NEW and array declaration");
-
-          result->is_new = TRUE;
-          result->init = look;
-        }
-        else
-          THROW("Syntax error");
-      }
-
-      while (!PATTERN_is_newline(*look))
-        look++;
-    }
-    else
-    {
-      if (id == T_OBJECT)
-        value = (-1);
-      look++;
-    }
-  }
-  else if (PATTERN_is_class(*look))
-  {
+  if (!PATTERN_is_type(*look) && !PATTERN_is_class(*look))
+    THROW(E_UNEXPECTED, READ_get_pattern(look));
+    
+	if (PATTERN_is_type(*look))
+	{
+		id = RES_get_type(PATTERN_index(*look));
+		value = -1;
+	}
+	else
+	{
     id = T_OBJECT;
     value = TRANS_get_class(*look);
-    look++;
-  }
-  else
-    THROW(E_UNEXPECTED, READ_get_pattern(look));
+	}
+	
+	if (PATTERN_is(look[1], RS_LSQR))
+	{
+		value = CLASS_get_array_class(JOB->class, id, value);
+		id = T_OBJECT;
 
-  /*look = trans_square(look, mode, result);*/
+		if (!PATTERN_is(look[2], RS_RSQR))
+		{
+			if (mode & TT_CAN_NEW)
+			{
+				if (TYPE_get_id(result->type) == T_ARRAY)
+					THROW("Cannot mix NEW and array declaration");
 
+				result->is_new = TRUE;
+				result->init = look;
+			}
+			else
+				THROW("Syntax error");
+		}
+
+		while (!PATTERN_is_newline(*look))
+			look++;
+	}
+	else
+	{
+		//if (id == T_OBJECT)
+		//	value = (-1);
+		look++;
+	}
+  
   if (id == T_VOID)
     return FALSE;
 

@@ -36,7 +36,7 @@
 #include "gbx_type.h"
 
 
-char *TYPE_joker;
+void *TYPE_joker = NULL;
 
 const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0, 0 };
 
@@ -291,7 +291,7 @@ TYPE TYPE_from_string(const char **ptype)
 
 			if (*start == '*')
 			{
-				strcpy(COMMON_buffer, TYPE_joker);
+				strcpy(COMMON_buffer, ((CLASS *)TYPE_joker)->name);
 				start++;
 				if (type > start)
 					strncat(COMMON_buffer, start, type - start);

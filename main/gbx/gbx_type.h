@@ -72,7 +72,7 @@ typedef
 
 
 #ifndef __GBX_TYPE_C
-EXTERN char *TYPE_joker;
+EXTERN void *TYPE_joker;
 EXTERN const size_t TYPE_sizeof_memory_tab[];
 #endif
 

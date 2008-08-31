@@ -313,14 +313,18 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
     type = T_STRING;
   else if (klass == CLASS_VariantArray)
     type = T_VARIANT;
-	else if (klass == CLASS_ObjectArray)
-		type = T_OBJECT;
 	else if (klass == CLASS_PointerArray)
 		type = T_POINTER;
+	else if (klass == CLASS_ObjectArray)
+		type = T_OBJECT;
 	else
 	{
-		GB_Error("Bad array type");
-		return;
+		type = (TYPE)klass->array_type;
+		if (!type)
+		{
+			GB_Error("Bad array type");
+			return;
+		}
 	}
 
   //printf("CARRAY_new: type = %d nsize = %d\n", type, nsize);
@@ -1365,18 +1369,21 @@ GB_DESC NATIVE_ObjectArray[] =
   GB_END_DECLARE
 };
 
-#if 0
 #ifndef GBX_INFO
+
+// Beware: if this declaration is modified, the ARRAY_TEMPLATE_NDESC constant must be modified accordingly.
+
 GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 {
-  GB_DECLARE("*[]", sizeof(CARRAY)), GB_INHERITS("Object[]"),
+  GB_DECLARE("*[]", sizeof(CARRAY)), GB_INHERITS("Array"),
 
-  //GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
+  GB_METHOD("_new", NULL, CARRAY_new, "[(Size)i.]"),
 
   GB_METHOD("Add", NULL, CARRAY_object_add, "(Value)*;[(Index)i.]"),
   GB_METHOD("Push", NULL, CARRAY_object_push, "(Value)*;"),
   GB_METHOD("_put", NULL, CARRAY_object_put, "(Value)*;(Index)i."),
   GB_METHOD("Find", "i", CARRAY_object_find, "(Value)*;"),
+  GB_METHOD("Exist", "b", CARRAY_object_exist, "(Value)*;"),
 
   GB_METHOD("Pop", "*", CARRAY_pop, NULL),
   GB_METHOD("_get", "*", CARRAY_get, "(Index)i."),
@@ -1388,11 +1395,10 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
   GB_METHOD("Extract", "*[]", CARRAY_extract, "(Start)i[(Length)i]"),
   GB_METHOD("Delete", "*[]", CARRAY_extract, "(Start)i[(Length)i]"),
   GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)*[(Start)i(Length)i]"),
-  //GB_METHOD("Sort", "Object[]", CARRAY_sort, "[(Mode)i]"),
+  GB_METHOD("Sort", "*[]", CARRAY_sort, "[(Mode)i]"),
 
   GB_END_DECLARE
 };
-#endif
 #endif
 
 GB_DESC NATIVE_VariantArray[] =

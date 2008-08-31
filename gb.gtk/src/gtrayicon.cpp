@@ -172,10 +172,7 @@ static bool  tray_enterleave(GtkWidget *widget, GdkEventCrossing *e,gTrayIcon *d
 
 static void tray_destroy (GtkWidget *object,gTrayIcon *data)
 {
-	//if (data->onHide) { data->onHide=false; return; }
-	//if (data->onDestroy) data->onDestroy(data);
-	data->plug = NULL;
-	//delete data;
+	data->cleanUp();
 }
 
 static gboolean tray_event(GtkWidget *widget, GdkEvent *event,gTrayIcon *data)
@@ -296,7 +293,7 @@ static gboolean cb_expose(GtkWidget *widget, GdkEventExpose *e, gTrayIcon *data)
 			GDK_RGB_DITHER_NORMAL,
 			0, 0);
 	
-	return false;
+	return true;
 }
 
 
@@ -308,9 +305,10 @@ gPicture *gTrayIcon::_default_icon = NULL;
 gTrayIcon::gTrayIcon()
 {
 	plug = NULL;
-	icon = NULL;
+	//icon = NULL;
 	buftext = NULL;
 	_icon = NULL;
+	_style = NULL;
 
 	//onHide=false;
 	onMousePress=NULL;
@@ -347,6 +345,9 @@ gTrayIcon::~gTrayIcon()
 		_default_icon = NULL;
 	}
 
+	if (_style)
+		g_object_unref(_style);
+
 	if (onDestroy) (*onDestroy)(this);
 }
 
@@ -361,32 +362,16 @@ gPicture *gTrayIcon::defaultIcon()
 	return _default_icon;
 }
 
-void gTrayIcon::updateMask()
+void gTrayIcon::refresh()
 {
-	gPicture *pic;
-	GdkBitmap *mask;
-	
-	if (!plug || !plug->window)
-		return;
-	
-	pic = getIcon();
-	mask = pic->getMask();
-	
-	XShapeCombineMask(GDK_WINDOW_XDISPLAY(plug->window), GDK_WINDOW_XID(plug->window), ShapeBounding, 
-		(width() - pic->width()) / 2,
-		(height() - pic->height()) / 2,
-		mask ? GDK_PIXMAP_XID(mask) : None, ShapeSet);
+	if (plug)
+		gtk_widget_queue_draw(plug);
 }
 
 void gTrayIcon::setPicture(gPicture *picture)
 {
 	gPicture::assign(&_icon, picture);
-
-  if (plug)
-  {
-  	//gtk_image_set_from_pixbuf(GTK_IMAGE(icon), getIcon()->getPixbuf());
-  	updateMask();
-  }
+	refresh();
 }
 
 char* gTrayIcon::toolTip()
@@ -416,20 +401,37 @@ bool gTrayIcon::isVisible()
 	return (bool)plug;
 }
 
+void gTrayIcon::cleanUp()
+{
+	if (plug)
+	{
+		plug = NULL;
+		g_object_unref(_style);
+		_style = NULL;
+	}
+}
+
 void gTrayIcon::setVisible(bool vl)
 {
 	if (vl)
 	{
 		Window win;
+		gPicture *pic;
 	
 		if (!plug)
 		{
 			plug = gtk_plug_new(0);
-			icon = gtk_image_new();
-			gtk_container_add(GTK_CONTAINER(plug),icon);
-			gtk_widget_realize (plug);
-			gtk_widget_set_app_paintable(plug, true);
-	
+			gtk_widget_set_double_buffered(plug, FALSE);	
+			
+			_style = gtk_style_copy(GTK_WIDGET(plug)->style);
+			_style->bg_pixmap[GTK_STATE_NORMAL] = (GdkPixmap*)GDK_PARENT_RELATIVE;
+			gtk_widget_set_style(GTK_WIDGET(plug), _style);
+			
+			pic = getIcon();
+			gtk_widget_set_size_request(plug, pic->width(), pic->height());
+			
+			//gtk_widget_realize (plug);
+
 			gtk_widget_show_all(plug);
 	
 			gtk_widget_add_events(plug, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
@@ -445,22 +447,25 @@ void gTrayIcon::setVisible(bool vl)
 			g_signal_connect(G_OBJECT(plug),"leave-notify-event",G_CALLBACK(tray_enterleave),(gpointer)this);
 			g_signal_connect(G_OBJECT(plug),"popup-menu",G_CALLBACK(cb_menu),(gpointer)this);
 			g_signal_connect(G_OBJECT(plug),"scroll-event",G_CALLBACK(cb_scroll),(gpointer)this);
-			g_signal_connect(G_OBJECT(icon),"expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+			g_signal_connect(G_OBJECT(plug),"expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 			
 			win = gtk_plug_get_id(GTK_PLUG(plug));
+			
 			XTray_RequestDock(gdk_display, win);
-			//XSetWindowBackgroundPixmap(GDK_WINDOW_XDISPLAY(plug->window), GDK_WINDOW_XID(plug->window), None);
+			
+			//gdk_window_set_back_pixmap(plug->window, (GdkPixmap *)GDK_PARENT_RELATIVE, FALSE);
+			//XSetWindowBackgroundPixmap(gdk_display, win, ParentRelative);
+			
 			updateTooltip();
-			updateMask();
+			refresh();
 		}
+		
 	}
 	else
 	{
 		if (plug)
 		{
-			//onHide=true;
 			gtk_widget_destroy(plug);
-			//plug=NULL;
 		}
 	}
 }
@@ -524,7 +529,7 @@ gTrayIcon::~gTrayIcon()
 }
 
 
-void gTrayIcon::updateMask()
+void gTrayIcon::refresh()
 {
 	stub("no-X11/gTrayIcon class");
 }

@@ -190,15 +190,16 @@ typedef
     VARIABLE *dyn;            /* dynamic variables */
     CONSTANT *constant;       /* constants */
     CLASS_REF *class;         /* classes */
-    int *unknown;            /* unknown symbols */
+    int *unknown;             /* unknown symbols */
     FUNCTION *function;       /* functions */
-    int size_stat;           /* static variables total size */
-    int size_dyn;            /* dynamic variables total size */
+    int size_stat;            /* static variables total size */
+    int size_dyn;             /* dynamic variables total size */
     EVENT *event;             /* events */
     PROPERTY *prop;           /* properties */
     EXTFUNC *ext_func;        /* extern functions */
     CLASS_ARRAY *array;       /* array definitions */
     CLASS_STRUCT *structure;  /* structs definitions */
+    char **names;             /* when some symbols must be created like object arrays */
     }
   CLASS;
 
@@ -226,7 +227,7 @@ bool CLASS_exist_class(CLASS *class, int index);
 int CLASS_add_unknown(CLASS *class, int index);
 int CLASS_add_array(CLASS *class, TRANS_ARRAY *array);
 
-int CLASS_get_array_class(CLASS *class, int type);
+int CLASS_get_array_class(CLASS *class, int type, int value);
 
 void FUNCTION_add_pos_line(void);
 char *FUNCTION_get_fake_name(int func);

@@ -78,24 +78,20 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
     printf("Registering native class %s (%p)...\n", class->name, class);
   #endif
 
-  /* Initialisation de la classe */
-  /*
-  init = (void (*)())gambas->kind;
-  if (init != NULL) (*init)();
-  */
-
   if (gambas->type != GB_VERSION)
     return NULL;
 
   class->load = NULL;
   class->data = NULL;
   class->component = COMPONENT_current;
+  
   #if DEBUG_COMP
   if (class->component)
     fprintf(stderr, "class %s -> component %s\n", class->name, class->component->name);
   else
     fprintf(stderr, "class %s -> no component\n", class->name);
   #endif
+  
   class->is_virtual = *class->name == '.';
 
   size_dynamic = gambas->val1;
@@ -104,7 +100,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   class->n_event = 0;
   nsign = 0;
 
-  /* D�ompte du nombre de descriptions, transformations, et d�ompte des signatures */
+  /* Read the class global information at the beginning of the description */
 
   desc = (CLASS_DESC *)&gambas[1];
 
@@ -131,19 +127,8 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
         class->no_create = TRUE;
         break;
 
-      /*case (int)GB_HOOK_NEW_ID:
-        class->new = desc->hook.func;
-        SET_IF_NULL(class->new, DO_ERROR);
-        break;
-
-      case (int)GB_HOOK_FREE_ID:
-        class->free = desc->hook.func;
-        SET_IF_NULL(class->new, DO_ERROR);
-        break;*/
-
       case (intptr_t)GB_HOOK_CHECK_ID:
         class->check = (int (*)())(desc->hook.func);
-        //SET_IF_NULL(class->check, CLASS_return_zero);
         break;
         
       default:
@@ -153,24 +138,11 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   }
 
 	/* If there is a parent class, and if the size is zero, then inherits the size */
+	
 	if (class->parent && size_dynamic == 0)
 		size_dynamic = class->parent->size;
 
-  /* Si la classe n'a pas de parent et si elle n'a pas d�ini certains hooks */
-
-  //SET_IF_NULL(class->new, (void (*)())OBJECT_new);
-  //SET_IF_NULL(class->free, (void (*)())OBJECT_free);
-  //SET_IF_NULL(class->check, (int (*)())CLASS_return_zero);
-
-  /* On transforme les DO_ERROR en NULL */
-
-  //if (class->new == DO_ERROR)
-  //  class->new = NULL;
-
-  //if (class->free == DO_ERROR)
-  //  class->free = NULL;
-
-  /* calcul du nombre de descriptions */
+  /* Compute the number of symbol description */
 
   for(desc = start, n_desc = 0; desc->gambas.name != NULL; desc++, n_desc++);
 
@@ -296,20 +268,23 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
     }
   }
 
-  /* Tri */
+  /* Sort the class description */
 
   CLASS_sort(class);
 
-  /* Fonctions sp�iales */
+  /* Search for special methods */
 
   CLASS_search_special(class);
 
-  /* Fonction d'initialisation statique */
+  /* Class is loaded */
 
   class->state = CS_LOADED;
+  
+  /* Run the static initializer */
+
   EXEC_public(class, NULL, "_init", 0);
 
-  /* La classe est pr�e */
+  /* Class is ready */
 
   class->state = CS_READY;
 

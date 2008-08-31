@@ -1126,12 +1126,15 @@ CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index)
 }
 
 
-#if 0
 void CLASS_create_array_class(CLASS *class)
 {
+	void *save = TYPE_joker;
+	char *name_joker;
 	GB_DESC *desc;
-	char *save = TYPE_joker;
-	STRING_new(&TYPE_joker, class->name, strlen(class->name) - 2);
+	
+	STRING_new(&name_joker, class->name, strlen(class->name) - 2);
+
+	TYPE_joker = class->array_type = CLASS_find_global(name_joker);
 
 	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC, "CLASS_create_array_class");
 	memcpy(desc, NATIVE_TemplateArray, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC);
@@ -1143,7 +1146,6 @@ void CLASS_create_array_class(CLASS *class)
 
 	class->data = (char *)desc;
 
-	STRING_free(&TYPE_joker);
+	STRING_free(&name_joker);
 	TYPE_joker = save;
 }
-#endif

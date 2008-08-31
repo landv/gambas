@@ -1046,26 +1046,12 @@ static void output_debug_method()
 
 static void output_debug_filename(void)
 {
-  char path[MAX_PATH + 1];
+  char *path;
   int n;
 
   begin_section("Debug file name", 1);
 
-  if (JOB->name[0] == '/')
-  {
-
-    strcpy(path, JOB->name);
-  }
-  else
-  {
-    getcwd(path, MAX_PATH);
-    n = strlen(path);
-
-    if (path[n - 1] != '/')
-      strcpy(&path[n], "/");
-
-    strcat(&path[n], JOB->name);
-  }
+  path = (char *)FILE_get_name(JOB->name);
 
   n = strlen(path);
   write_buffer(path, n);

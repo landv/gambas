@@ -438,8 +438,11 @@ PUBLIC void TRANS_new(void)
 
   if (PATTERN_is_class(*JOB->current))
   {
-    index = PATTERN_index(*JOB->current);
-    CODE_push_class(CLASS_add_class(JOB->class, index));
+    index = CLASS_add_class(JOB->class, PATTERN_index(*JOB->current));
+    if (PATTERN_is(JOB->current[1], RS_LSQR))
+    	index = CLASS_get_array_class(JOB->class, T_OBJECT, index);
+   	
+   	CODE_push_class(index);
     nparam = 1;
   }
   else if (PATTERN_is_type(*JOB->current))
@@ -448,7 +451,7 @@ PUBLIC void TRANS_new(void)
       THROW("Cannot instanciate native types");
 
     //CODE_push_number(RES_get_type(PATTERN_index(*JOB->current)));
-    CODE_push_class(CLASS_get_array_class(JOB->class, RES_get_type(PATTERN_index(*JOB->current))));
+    CODE_push_class(CLASS_get_array_class(JOB->class, RES_get_type(PATTERN_index(*JOB->current)), -1));
     nparam = 1;
   }
   else if (PATTERN_is(*JOB->current, RS_LBRA))

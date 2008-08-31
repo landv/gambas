@@ -954,7 +954,6 @@ void CLASS_load_without_init(CLASS *class)
 
 void CLASS_load_real(CLASS *class)
 {
-#if 0
 	char *name = class->name;
 	int len = strlen(name);
 
@@ -963,7 +962,6 @@ void CLASS_load_real(CLASS *class)
 		CLASS_create_array_class(class);
 		return;
 	}
-#endif
 
   CLASS_load_without_init(class);
   class->state = CS_READY;
