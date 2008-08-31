@@ -111,7 +111,7 @@ gTreeCell::~gTreeCell()
   setPicture(NULL);
 }
 
-void gTreeCell::setText(char *vl)
+void gTreeCell::setText(const char *vl)
 {
   if (_text)
     g_free(_text);
@@ -195,10 +195,10 @@ void gTreeRow::remove()
 	delete cell;
 }
 
-long gTreeRow::children()
+int gTreeRow::children()
 {
 	GtkTreeIter iter;
-	long ct=1;
+	int ct=1;
 	
 	if (!gtk_tree_model_iter_children(GTK_TREE_MODEL(tree->store),&iter,dataiter)) return 0;
 	
@@ -263,15 +263,15 @@ void gTreeRow::setExpanded()
 
 bool gTreeRow::isExpanded()
 {
-	GtkTreePath *path;
-	bool real = false;
-	
-	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree->store),dataiter);
-	if (path)
-	{
-		real = gtk_tree_view_row_expanded(GTK_TREE_VIEW(tree->widget),path);
-		gtk_tree_path_free(path);
-	}
+// 	GtkTreePath *path;
+// 	bool real = false;
+// 	
+// 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree->store),dataiter);
+// 	if (path)
+// 	{
+// 		real = gtk_tree_view_row_expanded(GTK_TREE_VIEW(tree->widget),path);
+// 		gtk_tree_path_free(path);
+// 	}
 	
 	//fprintf(stderr, "isExpanded: %s: %d (%d)\n", _key, _expanded, real);
 	
@@ -623,7 +623,7 @@ static gint tree_compare(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gT
 	
 	//fprintf(stderr, "ka = '%s' kb = '%s'\n", ka, kb);
 	
-	if (tree->view->onCompare)
+	if (tree->view && tree->view->onCompare)
 		def = tree->view->onCompare(tree->view, ka, kb, &comp);
 	
 	if (def)
@@ -655,16 +655,38 @@ void gTree::showExpanders()
 	_expander = true;
 }
 
+void gTree::lock()
+{
+	if (view) view->lock();
+}
+
+void gTree::unlock()
+{
+	if (view) view->unlock();
+}
+
 
 gTree::gTree(gTreeView *v)
 {
+	onRemove = NULL;
+	
 	datakey = g_hash_table_new((GHashFunc)g_str_hash,(GEqualFunc)gTree_equal);
 	
 	store = gtk_tree_store_new(1, G_TYPE_POINTER); //, G_TYPE_BOOLEAN);
-	widget = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
-	g_object_unref(G_OBJECT(store));
 	
-	view = v;
+	if (v)
+	{
+		widget = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+		g_object_unref(G_OBJECT(store));
+		
+		view = v;
+	}
+	else
+	{
+		view = NULL;
+		widget = NULL;
+	}
+	
 	_editable = false;
 	_resizable = false;
 	_auto_resize = false;
@@ -676,29 +698,32 @@ gTree::gTree(gTreeView *v)
 	_sort_dirty = false;
 	_expander = false;
 	
-	#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 12
-	gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(widget), false);
-	#else
-	GtkTreeViewColumn *column = gtk_tree_view_column_new();
-	//gtk_tree_view_column_pack_start(column,rgraph,false);
-	//gtk_tree_view_column_pack_start(column,rtext,true);
-	//gtk_tree_view_column_set_cell_data_func(column,rgraph,(GtkTreeCellDataFunc)tree_cell_graph,(gpointer)this,NULL);
-	//gtk_tree_view_column_set_cell_data_func(column,rtext,(GtkTreeCellDataFunc)tree_cell_text,(gpointer)this,NULL);
-	gtk_tree_view_column_set_visible(column, false);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(widget), column);
-	gtk_tree_view_set_expander_column(GTK_TREE_VIEW(widget), column);
-	#endif
-		
-	rgraph = gtk_cell_renderer_pixbuf_new();
-	g_object_ref_sink(rgraph);
-	rtext = gtk_cell_renderer_text_new();
-	g_object_ref_sink(rtext);
-
-	g_signal_connect(G_OBJECT(rtext), "edited", G_CALLBACK(cb_tree_edited), (gpointer)this);
-	g_signal_connect(G_OBJECT(rtext), "editing-started", G_CALLBACK(cb_tree_started), (gpointer)this);
-	g_signal_connect(G_OBJECT(rtext), "editing-canceled", G_CALLBACK(cb_tree_canceled), (gpointer)this);
-	//addColumn();
-	setAutoResize(true);
+	if (view)
+	{
+		#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 12
+		gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(widget), false);
+		#else
+		GtkTreeViewColumn *column = gtk_tree_view_column_new();
+		//gtk_tree_view_column_pack_start(column,rgraph,false);
+		//gtk_tree_view_column_pack_start(column,rtext,true);
+		//gtk_tree_view_column_set_cell_data_func(column,rgraph,(GtkTreeCellDataFunc)tree_cell_graph,(gpointer)this,NULL);
+		//gtk_tree_view_column_set_cell_data_func(column,rtext,(GtkTreeCellDataFunc)tree_cell_text,(gpointer)this,NULL);
+		gtk_tree_view_column_set_visible(column, false);
+		gtk_tree_view_append_column(GTK_TREE_VIEW(widget), column);
+		gtk_tree_view_set_expander_column(GTK_TREE_VIEW(widget), column);
+		#endif
+			
+		rgraph = gtk_cell_renderer_pixbuf_new();
+		g_object_ref_sink(rgraph);
+		rtext = gtk_cell_renderer_text_new();
+		g_object_ref_sink(rtext);
+	
+		g_signal_connect(G_OBJECT(rtext), "edited", G_CALLBACK(cb_tree_edited), (gpointer)this);
+		g_signal_connect(G_OBJECT(rtext), "editing-started", G_CALLBACK(cb_tree_started), (gpointer)this);
+		g_signal_connect(G_OBJECT(rtext), "editing-canceled", G_CALLBACK(cb_tree_canceled), (gpointer)this);
+		//addColumn();
+		setAutoResize(true);
+	}
 }
 
 gTree::~gTree()
@@ -713,7 +738,8 @@ void gTree::clear()
 {
 	char *key;
 	
-	view->lock();
+	lock();
+	
 	while ((key = firstRow()))
     removeRow(key);
   for (int i = 0; i < columnCount(); i++)
@@ -721,7 +747,8 @@ void gTree::clear()
   	setColumnWidth(i, 16);
   	setColumnWidth(i, -1);
   }
-  view->unlock();
+  
+  unlock();
 }
 
 void gTree::clear(char *parent)
@@ -733,14 +760,14 @@ void gTree::clear(char *parent)
 	if (!row)
 		return;
 		
-	view->lock();
+	lock();
 	while((child = row->child()))
 		removeRow(child);
-	view->unlock();
+	unlock();
 }
 
 
-long gTree::visibleWidth()
+int gTree::visibleWidth()
 {
 	GdkRectangle rect;
 	gint w,h;
@@ -750,7 +777,7 @@ long gTree::visibleWidth()
     return w;
 }
 
-long gTree::visibleHeight()
+int gTree::visibleHeight()
 {
 	GdkRectangle rect;
 	gint w,h;
@@ -882,7 +909,6 @@ void gTree::setRowEditable(char *key, bool vl)
 
 int gTree::rowCount()
 {
-	if (!widget) return 0;
 	return g_hash_table_size(datakey);
 }
 
@@ -892,7 +918,6 @@ bool gTree::removeRow(char *key)
 	gTreeRow *row;
 	char *child;
 	
-	if (!widget) return false;
 	if (!key || !*key)  return false;
 
 	row=(gTreeRow*)g_hash_table_lookup(datakey, (gconstpointer)key);
@@ -926,7 +951,6 @@ gTreeRow* gTree::addRow(char *key,char *parent,char *after)
 	gTreeRow *row,*par,*aft=NULL;
 	char *buf;
 
-	if (!widget) return NULL;
 	if (!key)  return NULL;
 	
 	if (g_hash_table_lookup (datakey,(gconstpointer)key)) return NULL;
@@ -964,7 +988,7 @@ gTreeRow* gTree::addRow(char *key,char *parent,char *after)
 	return row;
 }
 
-void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *md,GtkTreeIter *iter,gTree *Tr)
+static void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *md,GtkTreeIter *iter,gTree *Tr)
 {
 	gTreeRow *row=NULL;
 	gTreeCell *data;
@@ -997,7 +1021,7 @@ void tree_cell_text(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *m
 		(void *)NULL);
 }
 
-void tree_cell_graph(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *md,GtkTreeIter *iter,gTree *Tr)
+static void tree_cell_graph(GtkTreeViewColumn *col,GtkCellRenderer *cell,GtkTreeModel *md,GtkTreeIter *iter,gTree *Tr)
 {
 	gTreeRow *row=NULL;
 	gTreeCell *data;
@@ -1032,19 +1056,22 @@ void gTree::addColumn()
 	
 	g_hash_table_foreach(datakey,(GHFunc)gTree_addColumn,NULL);
 	
-	column = gtk_tree_view_column_new();
-	
-	gtk_tree_view_column_pack_start(column,rgraph,false);
-	gtk_tree_view_column_pack_start(column,rtext,true);
-	gtk_tree_view_column_set_cell_data_func(column,rgraph,(GtkTreeCellDataFunc)tree_cell_graph,(gpointer)this,NULL);
-	gtk_tree_view_column_set_cell_data_func(column,rtext,(GtkTreeCellDataFunc)tree_cell_text,(gpointer)this,NULL);
-	
-	gtk_tree_view_column_set_resizable(column, isResizable());
-	gtk_tree_view_column_set_sizing(column, isAutoResize() ? GTK_TREE_VIEW_COLUMN_AUTOSIZE : GTK_TREE_VIEW_COLUMN_FIXED);
+	if (view)
+	{
+		column = gtk_tree_view_column_new();
 		
-	gtk_tree_view_append_column(GTK_TREE_VIEW(widget),column);
-	g_signal_connect(G_OBJECT(column), "clicked", G_CALLBACK(cb_column_clicked), (gpointer)this);	
-	updateSort();
+		gtk_tree_view_column_pack_start(column,rgraph,false);
+		gtk_tree_view_column_pack_start(column,rtext,true);
+		gtk_tree_view_column_set_cell_data_func(column,rgraph,(GtkTreeCellDataFunc)tree_cell_graph,(gpointer)this,NULL);
+		gtk_tree_view_column_set_cell_data_func(column,rtext,(GtkTreeCellDataFunc)tree_cell_text,(gpointer)this,NULL);
+		
+		gtk_tree_view_column_set_resizable(column, isResizable());
+		gtk_tree_view_column_set_sizing(column, isAutoResize() ? GTK_TREE_VIEW_COLUMN_AUTOSIZE : GTK_TREE_VIEW_COLUMN_FIXED);
+			
+		gtk_tree_view_append_column(GTK_TREE_VIEW(widget),column);
+		g_signal_connect(G_OBJECT(column), "clicked", G_CALLBACK(cb_column_clicked), (gpointer)this);	
+		updateSort();
+	}
 }
 
 static void gTree_removeColumn(char *key,gTreeRow *value,gpointer data)
@@ -1055,21 +1082,26 @@ static void gTree_removeColumn(char *key,gTreeRow *value,gpointer data)
 void gTree::removeColumn()
 {
 	GtkTreeViewColumn *column;
-	long vl;
+	int vl;
 	
 	if (!(vl=columnCount()) ) return;
 	g_hash_table_foreach(datakey,(GHFunc)gTree_removeColumn,NULL);
 	
-	//column=gtk_tree_view_get_column(GTK_TREE_VIEW(widget),vl-1);
-	column = gt_tree_view_find_column(GTK_TREE_VIEW(widget), vl-1);
-	gtk_tree_view_remove_column(GTK_TREE_VIEW(widget),column);
-	updateSort();
+	if (view)
+	{
+		//column=gtk_tree_view_get_column(GTK_TREE_VIEW(widget),vl-1);
+		column = gt_tree_view_find_column(GTK_TREE_VIEW(widget), vl-1);
+		gtk_tree_view_remove_column(GTK_TREE_VIEW(widget),column);
+		updateSort();
+	}
 }
 
 int gTree::columnCount()
 {
 	GList *cols;
-	long ret;
+	int ret;
+	
+	if (!view) return 1;
 	
 	if (!widget) return 0;
 	cols=gtk_tree_view_get_columns(GTK_TREE_VIEW(widget));
@@ -1272,24 +1304,27 @@ void gTree::updateSort()
 	int i;
 	bool s;
 	
-	if (_sort_column >= columnCount())
-		_sort_column = 0;
-	
-	for (i = 0; i < columnCount(); i++)
+	if (view)
 	{
-		GtkTreeViewColumn *col = gt_tree_view_find_column(GTK_TREE_VIEW(widget), i);
-		if (!_sorted)
+		if (_sort_column >= columnCount())
+			_sort_column = 0;
+		
+		for (i = 0; i < columnCount(); i++)
 		{
-			gtk_tree_view_column_set_sort_indicator(col, false);
-			gtk_tree_view_column_set_clickable(col, false);
-			continue;
-		}
-		gtk_tree_view_column_set_clickable(col, true);		
-		s = i == _sort_column;
-		gtk_tree_view_column_set_sort_indicator(col, s);
-		if (s)
-			gtk_tree_view_column_set_sort_order(col, _ascending ? GTK_SORT_ASCENDING : GTK_SORT_DESCENDING);
-	}	
+			GtkTreeViewColumn *col = gt_tree_view_find_column(GTK_TREE_VIEW(widget), i);
+			if (!_sorted)
+			{
+				gtk_tree_view_column_set_sort_indicator(col, false);
+				gtk_tree_view_column_set_clickable(col, false);
+				continue;
+			}
+			gtk_tree_view_column_set_clickable(col, true);		
+			s = i == _sort_column;
+			gtk_tree_view_column_set_sort_indicator(col, s);
+			if (s)
+				gtk_tree_view_column_set_sort_order(col, _ascending ? GTK_SORT_ASCENDING : GTK_SORT_DESCENDING);
+		}	
+	}
 	
 	sortLater();
 }
@@ -1302,7 +1337,7 @@ static gboolean tree_sort_later(gTree *tree)
 
 void gTree::sortLater()
 {
-	if (_sort_dirty)
+	if (!isSorted() || _sort_dirty)
 		return;
 		
 	_sort_dirty = true;

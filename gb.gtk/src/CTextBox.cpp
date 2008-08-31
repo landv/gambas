@@ -319,7 +319,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CCOMBOBOX_sorted)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(COMBOBOX->sorted()); return; }
+	if (READ_PROPERTY) { GB.ReturnBoolean(COMBOBOX->isSorted()); return; }
 	COMBOBOX->setSorted(VPROP(GB_BOOLEAN));
 
 END_METHOD

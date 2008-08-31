@@ -2,11 +2,13 @@
 #define __GCOMBOBOX_H
 
 #include "gtextbox.h"
+#include "gtree.h"
 
 class gComboBox : public gTextBox
 {
 public:
 	gComboBox(gContainer *parent);
+	~gComboBox();
 
 	int count();
 	int index();
@@ -14,7 +16,7 @@ public:
 	virtual int length();
 	//char** list();
 	virtual bool isReadOnly();
-	bool sorted();
+	bool isSorted();
 	virtual char *text();
 
 	void setIndex(int vl);
@@ -45,6 +47,14 @@ public:
 	GtkCellRenderer *cell;
 	virtual int minimumHeight();
 	bool _no_click;
+	gTree *tree;
+	bool _model_dirty;
+	int _last_key;
+	
+	void updateModel();
+	void updateSort();
+	char *indexToKey(int index);
+	char* find(GtkTreePath *path) { return tree->pathToKey(path, false); }
 };
 
 #endif

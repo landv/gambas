@@ -97,7 +97,7 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	g_typ=Type_gTreeView;
 	use_base = true;
 
-	tree=new gTree(this);
+	tree = new gTree(this);
 	tree->addColumn();
 	tree->setHeaders(false);
 	tree->onRemove = cb_remove;
@@ -221,7 +221,7 @@ char* gTreeView::itemText(char *key)
 	return itemText(key, 0);
 }
 
-void gTreeView::setItemText(char *key, char *vl)
+void gTreeView::setItemText(char *key, const char *vl)
 {
 	setItemText(key, 0, vl);
 }
@@ -431,7 +431,7 @@ char *gTreeView::itemText(char *key, int col)
 	return cell->text();
 }
 
-void gTreeView::setItemText(char *key, int col, char *text)
+void gTreeView::setItemText(char *key, int col, const char *text)
 {
 	gTreeRow *row;
 	gTreeCell *cell;

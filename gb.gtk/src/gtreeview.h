@@ -23,7 +23,7 @@ public:
 	
 	void      setItemExpanded(char *key, bool vl);
 	void      setItemSelected(char *key, bool vl);
-	void      setItemText(char *key,char *vl);
+	void      setItemText(char *key, const char *vl);
 	void      setItemPicture(char *key, gPicture *vl);
 	
 	int       mode();
@@ -65,7 +65,7 @@ public:
 	void setColumnCount(int ncol);
 	char* columnText(int col);
 	void setColumnText(int col, char *title);
-	void setItemText(char *key, int col, char *text);
+	void setItemText(char *key, int col, const char *text);
 	char* itemText(char *key, int col); 
 	int columnAlignment(int col) { return tree->columnAlignment(col); }
 	void setColumnAlignment(int col, int a) { tree->setColumnAlignment(col, a); }
