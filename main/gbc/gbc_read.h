@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  read.h
+  gbc_read.h
 
   Lexical parser
 
@@ -22,13 +22,13 @@
 
 ***************************************************************************/
 
-#ifndef _READ_H
-#define _READ_H
+#ifndef __GBC_READ_H
+#define __GBC_READ_H
 
 #include "gbc_read_common.h"
 
 void READ_do(void);
-PUBLIC void READ_dump_pattern(PATTERN *pattern);
-PUBLIC char *READ_get_pattern(PATTERN *pattern);
+void READ_dump_pattern(PATTERN *pattern);
+char *READ_get_pattern(PATTERN *pattern);
 
 #endif

@@ -404,7 +404,7 @@ int CLASS_add_constant(CLASS *class, TRANS_DECL *decl)
 }
 
 
-int CLASS_add_class(CLASS *class, int index)
+static int add_class(CLASS *class, int index, bool used, bool exported)
 {
 	int num;
 	CLASS_REF *desc;
@@ -423,26 +423,33 @@ int CLASS_add_class(CLASS *class, int index)
 		sym->class = num + 1;
 
 		if (JOB->verbose)
-			printf("Adding class %.*s\n", sym->symbol.len, sym->symbol.name);
+			printf("Adding class %.*s %s%s\n", sym->symbol.len, sym->symbol.name, used ? "" : "Unused ", exported ? "Exported" : "");
+		
+		JOB->class->class[num].exported = exported;
 	}
 
-	JOB->class->class[num].used = TRUE;
-	JOB->class->class[num].exported = FALSE;
+	JOB->class->class[num].used = used;
 	return num;
+}
+
+int CLASS_add_class(CLASS *class, int index)
+{
+	return add_class(class, index, TRUE, FALSE);
 }
 
 int CLASS_add_class_unused(CLASS *class, int index)
 {
-	int num = CLASS_add_class(class, index);
-	JOB->class->class[num].used = FALSE;
-	return num;
+	return add_class(class, index, FALSE, FALSE);
+}
+
+int CLASS_add_class_exported_unused(CLASS *class, int index)
+{
+	return add_class(class, index, FALSE, TRUE);
 }
 
 int CLASS_add_class_exported(CLASS *class, int index)
 {
-	int num = CLASS_add_class(class, index);
-	JOB->class->class[num].exported = TRUE;
-	return num;
+	return add_class(class, index, TRUE, TRUE);
 }
 
 
@@ -483,7 +490,7 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 		{
 			if (!TABLE_find_symbol(class->table, names[type], strlen(names[type]), NULL, &index))
 				index = CLASS_add_symbol(class, names[type]);
-			index = CLASS_add_class(class, index);
+			index = CLASS_add_class_exported(class, index);
 			_array_class[type] = index;
 			//printf("%s -> %ld\n", name[type], index);
 		}
@@ -501,10 +508,12 @@ int CLASS_get_array_class(CLASS *class, int type, int value)
 		{
 			char *name_alloc = CLASS_add_name(class, name, len + 2);
 			TABLE_add_symbol(class->table, name_alloc, len + 2, NULL, &index);
-			index = CLASS_add_class(class, index);
 		}
+		
+		if (class->class[value].exported)
+			index = CLASS_add_class_exported(JOB->class, index);
 		else
-			index = CLASS_get_symbol(class, index)->class - 1;
+			index =  CLASS_add_class(JOB->class, index);
 	}
 
 	return index;

@@ -373,6 +373,9 @@ CLASS *CLASS_find(const char *name)
   //if (CP && CP->component && CP->component->archive)
   if (!_global && !ARCHIVE_get_current(&arch))
   {
+  	if (strcmp(name, "String[][]") == 0)
+  		BREAKPOINT();
+  		
     TABLE_add_symbol(arch->classes, name, len, (SYMBOL **)(void *)&csym, NULL);
     #if DEBUG_LOAD || DEBUG_COMP
       fprintf(stderr, "Not found -> creating new one in %s\n", arch->name ? arch->name : "main");
@@ -1132,6 +1135,8 @@ void CLASS_create_array_class(CLASS *class)
 	char *name_joker;
 	GB_DESC *desc;
 	
+	fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
+
 	STRING_new(&name_joker, class->name, strlen(class->name) - 2);
 
 	TYPE_joker = class->array_type = CLASS_find_global(name_joker);
@@ -1139,8 +1144,6 @@ void CLASS_create_array_class(CLASS *class)
 	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC, "CLASS_create_array_class");
 	memcpy(desc, NATIVE_TemplateArray, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC);
 	((CLASS_DESC_GAMBAS *)desc)->name = class->name;
-
-	fprintf(stderr, "CLASS_create_array_class: %s\n", class->name);
 
 	CLASS_register_class(desc, class);
 

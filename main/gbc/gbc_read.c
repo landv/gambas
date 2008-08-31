@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  read.c
+  gbc_read.c
 
   Lexical parser
 
@@ -22,7 +22,7 @@
 
 ***************************************************************************/
 
-#define _READ_C
+#define __GBC_READ_C
 
 #include <stdlib.h>
 #include <string.h>
@@ -46,7 +46,7 @@
 #include "gbc_read.h"
 
 
-//#define DEBUG
+#define DEBUG
 
 static boolean is_init = FALSE;
 static COMPILE *comp;
@@ -118,7 +118,7 @@ static void READ_exit(void)
       break;
 
     if (TABLE_find_symbol(JOB->class->table, p, p2 - p, NULL, &index))
-      CLASS_add_class_unused(JOB->class, index);
+      CLASS_add_class_exported_unused(JOB->class, index);
 
     p = p2 + 1;
   }
@@ -499,7 +499,7 @@ END:
 static void add_identifier(bool no_res)
 {
   unsigned char car;
-  char *start;
+  const char *start;
   int len;
   int index;
   int type;
@@ -511,29 +511,8 @@ static void add_identifier(bool no_res)
   boolean is_type;
   boolean last_func, last_declare, last_type;
   
-	type = RT_IDENTIFIER;
-
-  start = (char *)source_ptr;
-  len = 1;
-
-  for(;;)
-  {
-    source_ptr++;
-    car = get_char();
-    if (!ident_car[car])
-      break;
-    len++;
-  }
-
   last_pattern = get_last_pattern();
-
-  if (no_res)
-  {
-    if (get_char() == '}')
-      source_ptr++;
-    goto IDENTIFIER;
-  }
-
+  
   if (PATTERN_is_reserved(last_pattern))
   {
     flag = RES_get_ident_flag(PATTERN_index(last_pattern));
@@ -549,21 +528,55 @@ static void add_identifier(bool no_res)
     not_first = last_func = last_declare = last_type = FALSE;
   }
 
-  /*
-  if (not_first != (PATTERN_is(last_pattern, RS_PT) || PATTERN_is(last_pattern, RS_EXCL)))
-    printf("not_first = %d\n", not_first);
-  if (last_func != (PATTERN_is(last_pattern, RS_PROCEDURE) || PATTERN_is(last_pattern, RS_SUB) 
-              || PATTERN_is(last_pattern, RS_FUNCTION)))
-    printf("last_func = %d\n", last_func);
-  if (last_declare != (PATTERN_is(last_pattern, RS_PUBLIC) || PATTERN_is(last_pattern, RS_PRIVATE)
-                 || PATTERN_is(last_pattern, RS_DIM) || PATTERN_is(last_pattern, RS_PROPERTY)
-                 || PATTERN_is(last_pattern, RS_READ) || PATTERN_is(last_pattern, RS_INHERITS)))
-    printf("last_declare = %d\n", last_declare);
-  if (last_type != (PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_NEW) 
-              || PATTERN_is(last_pattern, RS_IS) || PATTERN_is(last_pattern, RS_INHERITS)))
-    printf("last_type = %d\n", last_type);
-  */
-  
+	type = RT_IDENTIFIER;
+
+  start = source_ptr;
+  len = 1;
+
+	if (last_type)
+	{
+		for(;;)
+		{
+			source_ptr++;
+			len++;
+			car = get_char();
+			if (ident_car[car])
+				continue;
+			if (car == '[')
+			{
+				car = get_char_offset(1);
+				if (car == ']')
+				{
+					source_ptr++;
+					len++;
+			  	TABLE_add_symbol(comp->class->table, start, len - 2, NULL, NULL);
+					continue;
+				}
+			}
+			
+			len--;
+			break;
+		}
+	}
+	else
+	{
+		for(;;)
+		{
+			source_ptr++;
+			car = get_char();
+			if (!ident_car[car])
+				break;
+			len++;
+		}
+	}
+
+  if (no_res)
+  {
+    if (get_char() == '}')
+      source_ptr++;
+    goto IDENTIFIER;
+  }
+
   car = get_char();
 
   //can_be_reserved = !not_first && TABLE_find_symbol(COMP_res_table, &comp->source[start], len, NULL, &index);
@@ -638,7 +651,7 @@ IDENTIFIER:
   {
     start--;
     len++;
-    *start = ':';
+    *((char *)start) = ':';
   }
 
 	if (PATTERN_is(last_pattern, RS_EXCL))

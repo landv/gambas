@@ -428,31 +428,7 @@ static void add_identifier(bool no_res)
   boolean is_type;
   boolean last_func, last_declare, last_type;
 
-	type = RT_IDENTIFIER;
-
-  start = source_ptr;
-  len = 1;
-
-  for(;;)
-  {
-    source_ptr++;
-    car = get_char();
-    if (!ident_car[car])
-      break;
-    len++;
-  }
-
   last_pattern = get_last_pattern();
-
-  if (no_res)
-  {
-    if (!EVAL->analyze)
-    {
-      if (get_char() == '}')
-        source_ptr++;
-    }
-    goto IDENTIFIER;
-  }
 
   if (PATTERN_is_reserved(last_pattern))
   {
@@ -467,6 +443,58 @@ static void add_identifier(bool no_res)
   {
     flag = 0;
     not_first = last_func = last_declare = last_type = FALSE;
+  }
+
+	type = RT_IDENTIFIER;
+
+  start = source_ptr;
+  len = 1;
+
+	if (last_type)
+	{
+		for(;;)
+		{
+			source_ptr++;
+			len++;
+			car = get_char();
+			if (ident_car[car])
+				continue;
+			if (car == '[')
+			{
+				car = get_char_offset(1);
+				if (car == ']')
+				{
+					source_ptr++;
+					len++;
+			  	TABLE_add_symbol(EVAL->table, start, len - 2, NULL, NULL);
+					continue;
+				}
+			}
+			
+			len--;
+			break;
+		}
+	}
+	else
+	{
+		for(;;)
+		{
+			source_ptr++;
+			car = get_char();
+			if (!ident_car[car])
+				break;
+			len++;
+		}
+	}
+
+  if (no_res)
+  {
+    if (!EVAL->analyze)
+    {
+      if (get_char() == '}')
+        source_ptr++;
+    }
+    goto IDENTIFIER;
   }
 
   car = get_char();

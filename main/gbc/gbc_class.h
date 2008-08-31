@@ -223,6 +223,7 @@ int CLASS_add_constant(CLASS *class, TRANS_DECL *decl);
 int CLASS_add_class(CLASS *class, int index);
 int CLASS_add_class_unused(CLASS *class, int index);
 int CLASS_add_class_exported(CLASS *class, int index);
+int CLASS_add_class_exported_unused(CLASS *class, int index);
 bool CLASS_exist_class(CLASS *class, int index);
 int CLASS_add_unknown(CLASS *class, int index);
 int CLASS_add_array(CLASS *class, TRANS_ARRAY *array);

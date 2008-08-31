@@ -309,6 +309,9 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
   _descent = (mode & GB_COMP_DESCENT) != 0;
   mode &= GB_COMP_TYPE_MASK;
 
+	if (type >= T_OBJECT)
+		return (COMPARE_FUNC)COMPARE_object;
+
   switch(type)
   {
     case T_INTEGER:
@@ -341,9 +344,6 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
         case GB_COMP_TEXT: return (COMPARE_FUNC)compare_string_text;
         default: return (COMPARE_FUNC)compare_string_binary;
       }
-
-    case T_OBJECT:
-      return (COMPARE_FUNC)COMPARE_object;
 
     default:
       return (COMPARE_FUNC)compare_nothing;

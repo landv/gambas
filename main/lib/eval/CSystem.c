@@ -34,7 +34,6 @@ BEGIN_PROPERTY(CSYSTEM_keywords)
 	COMP_INFO *info;
 	SUBR_INFO *subr;
 	char *str;
-	int i;
 
 	if (!_keywords)
 	{

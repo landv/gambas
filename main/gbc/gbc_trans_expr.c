@@ -231,16 +231,6 @@ static void trans_identifier(int index, boolean first, boolean point, PATTERN ne
 __CLASS:
 
 	trans_class(index);
-
-	/*
-  if (CLASS_exist_class(JOB->class, index))
-    CODE_push_class(CLASS_add_class(JOB->class, index));
-  else
-  {
-    name = TABLE_get_symbol_name(JOB->class->table, index);
-    THROW("Unknown identifier: &1", name);
-  }
-  */
 }
 
 

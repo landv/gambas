@@ -302,9 +302,37 @@ static PATTERN *trans_square(PATTERN *look, int mode, TRANS_DECL *result)
 int TRANS_get_class(PATTERN pattern)
 {
   int index = PATTERN_index(pattern);
+  int index_array;
 
   if (!CLASS_exist_class(JOB->class, index))
+  {
+		// Maybe a compound class?
+		
+		CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
+		int i;
+		char c;
+		
+		fprintf(stderr, "TRANS_get_class: %.*s\n", sym->symbol.len, sym->symbol.name);
+		
+		for (i = sym->symbol.len - 1; i >= 0; i--)
+		{
+			c = sym->symbol.name[i];
+			if (c == '[')
+			{
+				fprintf(stderr, "TRANS_get_class: find %.*s\n", i, sym->symbol.name);
+  			if (TABLE_find_symbol(JOB->class->table, sym->symbol.name, i, NULL, &index_array))
+  			{
+  				index_array = TRANS_get_class(PATTERN_make(RT_CLASS, index_array));
+  				if (JOB->class->class[index_array].exported)
+						return CLASS_add_class_exported(JOB->class, index);
+  				else
+						return CLASS_add_class(JOB->class, index);
+				}
+			}
+		}
+		
     THROW("Unknown identifier: &1", TABLE_get_symbol_name(JOB->class->table, index));
+	}
 
   return CLASS_add_class(JOB->class, index);
 }
@@ -317,9 +345,7 @@ bool TRANS_type(int mode, TRANS_DECL *result)
   int value;
   int flag = 0;
 
-  /* Ne pas remplir la structure de z�os */
-
-  /* Attention ! Probl�e du tableau d'objet ! */
+  /* Do not fill the structure with zeros */
 
   TYPE_clear(&result->type);
   result->is_new = FALSE;

@@ -1394,7 +1394,7 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
   GB_METHOD("Copy", "*[]", CARRAY_copy, "[(Start)i(Length)i]"),
   GB_METHOD("Extract", "*[]", CARRAY_extract, "(Start)i[(Length)i]"),
   GB_METHOD("Delete", "*[]", CARRAY_extract, "(Start)i[(Length)i]"),
-  GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)*[(Start)i(Length)i]"),
+  GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)*;[(Start)i(Length)i]"),
   GB_METHOD("Sort", "*[]", CARRAY_sort, "[(Mode)i]"),
 
   GB_END_DECLARE
