@@ -240,6 +240,12 @@ void COMPILE_init(void)
   	
   FILE_set_owner(name, COMP_project);
 
+	// Adds a separator to make the difference between classes from components 
+	// (they must be searched in the global symbol table) and classes from the
+	// project (they must be searched in the project symbol table)
+	
+  BUFFER_add(&COMP_classes, "-\n", 2);
+  
   dir = opendir(FILE_get_dir(COMP_project));
   if (dir)
   {

@@ -25,7 +25,7 @@ Static Private $cLibRef As New Collection
 
 Private $cValue As New Collection
 
-Private $hHandle[8] As Panel
+Private $aPanel As Panel[8]
 
 'PRIVATE CONST PAN_H AS Integer = 6
 'PRIVATE CONST PAN_W AS Integer = 6
@@ -819,8 +819,8 @@ Public Sub UnSelect(hForm As FForm, Optional bDoNotRemove As Boolean)
   If Not Selected Then Return
 
   For iInd = 0 To 7
-    $hHandle[iInd].Delete
-    $hHandle[iInd] = Null
+    $aPanel[iInd].Delete
+    $aPanel[iInd] = Null
   Next
 
   Try Control.ToolTip = ""
@@ -847,7 +847,7 @@ Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bM
   hPanel.Mouse = iMouse
   hPanel.Tag = "#" & sTag
 
-  $hHandle[iIndex] = hPanel
+  $aPanel[iIndex] = hPanel
   MovePanel(iIndex)
 
   hPanel.Border = Border.Plain
@@ -868,7 +868,7 @@ Private Sub MovePanel(iPanel As Integer)
   Dim hPanel As Panel
 
   hCtrl = Control
-  hPanel = $hHandle[iPanel]
+  hPanel = $aPanel[iPanel]
   hPanel.Raise
 
   Select Case Mid$(hPanel.Tag, 2)

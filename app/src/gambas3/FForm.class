@@ -2348,8 +2348,8 @@ Public Sub UpdateBorder()
     Else
 
       H = lblTitle.Font.Height("X") + 8 '+ 4
-      btnCloseWindow.W = H - 4
-      btnMaxWindow.W = H - 4
+      btnCloseWindow.W = 18 'H - 4
+      btnMaxWindow.W = 17 'H - 4
       imgIcon.W = H - 4
       panBorder.Move(0, H, .Width + 4, .Height + 2)
       $bBorder = True

@@ -108,7 +108,11 @@ static void READ_exit(void)
 {
   char *p, *p2;
   int index;
+  int len;
+  bool local;
 
+
+	local = FALSE;
   p = COMP_classes;
 
   for(;;)
@@ -117,9 +121,23 @@ static void READ_exit(void)
     if (p2 == p)
       break;
 
-    if (TABLE_find_symbol(JOB->class->table, p, p2 - p, NULL, &index))
-      CLASS_add_class_exported_unused(JOB->class, index);
-
+		len = p2 - p;
+		
+		if (len == 1 && *p == '-')
+		{
+			local = TRUE;
+		}
+		else
+		{
+			if (TABLE_find_symbol(JOB->class->table, p, len, NULL, &index))
+			{
+				if (local)
+					CLASS_add_class_unused(JOB->class, index);
+				else
+					CLASS_add_class_exported_unused(JOB->class, index);
+			}
+		}
+		
     p = p2 + 1;
   }
 
