@@ -257,7 +257,7 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 	{
 		for (int i = 0; i < ncol; i++)
 		{
-			fprintf(stderr, "callback: [%d] %s: %s\n", i, cols[i], reslt[i]);
+			//fprintf(stderr, "callback: [%d] %s: %s\n", i, cols[i], reslt[i]);
 			if (reslt[i] == NULL)
 			{
 				r->records[sz][i].set_isNull(r->record_header[i].type);
