@@ -39,6 +39,7 @@ Property Read Engines As String[]
 Property Read Charsets As String[]
 Property Read Databases As String[]
 Property Read Users As String[]
+Property Read Query As String
 
 Private Function Engine_Read() As String
 
@@ -239,5 +240,11 @@ Public Procedure Use(Database As String)
 
   modMain.$Connection.Exec("USE " & Database)
   modMain.$Connection.Name = Database
+
+End
+
+Private Function Query_Read() As String
+
+  Return modMain.$Query
 
 End

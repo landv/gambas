@@ -20,3 +20,11 @@ Public Procedure Delete(Table As String, Index As String, Optional Database As S
   modMain.RunQuery("DROP INDEX `" & Index & "` ON `" & Database & "`.`" & Table & "`")
 
 End
+
+Public Procedure PrimaryKey(Table As String, Columns As String[], Optional Database As String)
+
+  If Not Database Then Database = modMain.$Connection.Name
+  Try modMain.RunQuery("ALTER TABLE `" & Database & "`.`" & Table & "` DROP PRIMARY KEY")
+  modMain.RunQuery("ALTER TABLE `" & Database & "`.`" & Table & "` ADD PRIMARY KEY (" & modMain.ArrayToString(Columns, True) & ")")
+
+End

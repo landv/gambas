@@ -55,3 +55,10 @@ Public Function Info(Routine As String, Optional Database As String) As String
   End Select
 
 End
+
+Public Function Definition(Routine As String, Optional Database As String) As String
+
+  If Not Database Then Database = modMain.$Connection.Name
+  Return modMain.$Connection.Exec("SELECT `body` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")["body"].Data
+
+End

@@ -79,11 +79,37 @@ Public Function Tables(Optional Database As String) As String[]
   Dim asTables As New String[]
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SHOW TABLES FROM `" & Database & "`")
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'BASE TABLE'")
   For Each modMain.$hResult
-    asTables.Add(modMain.$hResult["Tables_in_" & Database])
+    asTables.Add(modMain.$hResult!TABLE_NAME)
   Next
   Return asTables
+
+End
+
+Public Function Views(Optional Database As String) As String[]
+
+  Dim asViews As New String[]
+
+  If Not Database Then Database = modMain.$Connection.Name
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'VIEW'")
+  For Each modMain.$hResult
+    asViews.Add(modMain.$hResult!TABLE_NAME)
+  Next
+  Return asViews
+
+End
+
+Public Function Triggers(Optional Database As String) As String[]
+
+  Dim asTriggers As New String[]
+
+  If Not Database Then Database = modMain.$Connection.Name
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `TRIGGER_NAME` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "'")
+  For Each modMain.$hResult
+    asTriggers.Add(modMain.$hResult!TRIGGER_NAME)
+  Next
+  Return asTriggers
 
 End
 

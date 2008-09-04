@@ -82,6 +82,6 @@ End
 Public Procedure Rename(Table As String, Field As String, NewField As String, Optional Database As String)
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$Connection.Exec("ALTER TABLE `" & Database & "`.`" & Table & "` CHANGE COLUMN `" & Field & "` `" & NewField & "` " & Definition(Database, Table, Field))
+  modMain.$Connection.Exec("ALTER TABLE `" & Database & "`.`" & Table & "` CHANGE COLUMN `" & Field & "` `" & NewField & "` " & Definition(Table, Field, Database))
 
 End

@@ -35,9 +35,10 @@ End
 
 Public Procedure RunQuery(Query As String)
 
+  modMain.$Query = Query
   $Connection.Exec(Query)
   Catch
-    Error.Raise(Error.Text)
+    Error.Raise("MySQL: " & Error.Text)
 
 End
 

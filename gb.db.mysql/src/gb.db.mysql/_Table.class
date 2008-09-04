@@ -10,7 +10,7 @@ Public Procedure Modify(Table As String, Action As String, Optional Symbol As St
   Select (Action)
     Case "DROP"
       modMain.$Query &= Action & " COLUMN `" & Symbol & "`"
-    Case "ADD", "MODIFY", "CHANGE"
+    Case "ADD", "MODIFY", "CHANGE", "ALTER"
       modMain.$Query &= Action & " COLUMN `" & Symbol & "` " & Definition
     Case "CHARACTER SET"
       modMain.$Query &= "CONVERT TO CHARACTER SET " & Definition
