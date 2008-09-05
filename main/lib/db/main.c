@@ -54,6 +54,7 @@ static char *_query = NULL;
 static bool _debug = FALSE;
 static const char *_try_another = NULL;
 
+DB_DATABASE *DB_CurrentDatabase = NULL;
 
 int DB_CheckNameWith(const char *name, const char *msg, const char *more)
 {
@@ -484,6 +485,11 @@ char *DB_QuoteString(const char *str, int len, char quote)
 	return res;
 }
 
+DB_DATABASE *DB_GetCurrent()
+{
+	return DB_CurrentDatabase;
+}
+
 GB_DESC *GB_CLASSES [] EXPORT =
 {
   CIndexDesc,
@@ -507,26 +513,27 @@ GB_DESC *GB_CLASSES [] EXPORT =
 
 void *GB_DB_1[] EXPORT = {
 
-  (void *)1,
+	(void *)1,
 
-  (void *)DB_Register,
-  (void *)DB_Format,
-  (void *)DB_FormatVariant,
-  (void *)DB_IsDebug,
-  (void *)DB_TryAnother,
-  (void *)DB_SubstString,
-  (void *)DB_QuoteString,
+	(void *)DB_Register,
+	(void *)DB_Format,
+	(void *)DB_FormatVariant,
+	(void *)DB_IsDebug,
+	(void *)DB_TryAnother,
+	(void *)DB_SubstString,
+	(void *)DB_QuoteString,
+	(void *)DB_GetCurrent,
 
-  (void *)q_init,
-  (void *)q_add,
-  (void *)q_add_length,
-  (void *)q_get,
-  (void *)q_steal,
-  (void *)q_length,
+	(void *)q_init,
+	(void *)q_add,
+	(void *)q_add_length,
+	(void *)q_get,
+	(void *)q_steal,
+	(void *)q_length,
 
-  (void *)DB_FindStringArray,
+	(void *)DB_FindStringArray,
 
-  NULL
+	NULL
 };
 
 

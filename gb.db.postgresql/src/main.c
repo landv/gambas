@@ -155,7 +155,10 @@ static void quote_blob(const char *data, int len, DB_FORMAT_CALLBACK add)
 {
 	int i;
 	unsigned char c;
-	//char buffer[8];
+	char buffer[8];
+	
+	if (DB.GetCurrentDatabase()->version >= 80200)
+		(*add)("E", 1);
 
 	(*add)("'", 1);
 	for (i = 0; i < len; i++)
@@ -167,11 +170,11 @@ static void quote_blob(const char *data, int len, DB_FORMAT_CALLBACK add)
 			(*add)("''", 2);
 		else if (c == 0)
 			(*add)("\\\\000", 5);
-		/*else if (c < 32 || c == 127)
+		else if (c < 32 || c == 127)
 		{
 			int n = sprintf(buffer, "\\\\%03o", c);
 			(*add)(buffer, n);
-		}*/
+		}
 		else
 			(*add)((const char *)&c, 1);
 	}

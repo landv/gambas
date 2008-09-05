@@ -33,6 +33,7 @@
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+extern DB_DATABASE *DB_CurrentDatabase;
 #endif
 
 #define MAX_DRIVER 8

@@ -114,6 +114,8 @@ static bool load_buffer(CRESULT *_object, int vpos)
 
   /* if THIS->count < 0, that's mean that the driver couldn't determine it */
 
+	DB_CurrentDatabase = &THIS->conn->db;
+
   if (THIS->count >= 0 && (vpos < 0 || vpos >= THIS->count || THIS->info.nfield == 0))
   {
 		/* Andrea Bortolan's changes for the ODBC modules*/
@@ -598,6 +600,8 @@ BEGIN_METHOD_VOID(CRESULT_update)
 
   if (check_available(THIS))
     return;
+
+	DB_CurrentDatabase = &THIS->conn->db;
 
   q_init();
 
