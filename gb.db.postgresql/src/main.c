@@ -174,9 +174,9 @@ static void quote_blob(const char *data, int len, DB_FORMAT_CALLBACK add)
 		{
 			buffer[0] = '\\';
 			buffer[1] = '\\';
-			buffer[2] = '0' + (c >> 6);
-			buffer[3] = '0' + (c >> 3) & 0x7;
-			buffer[4] = '0' + c & 0x7;
+			buffer[2] = '0' + ((c >> 6) & 0x7);
+			buffer[3] = '0' + ((c >> 3) & 0x7);
+			buffer[4] = '0' + (c & 0x7);
 			(*add)(buffer, 5);
 		}
 		else
