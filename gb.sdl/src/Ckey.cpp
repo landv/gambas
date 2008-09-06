@@ -45,8 +45,8 @@ CKEY_INFO CKEY_info = { 0 };
 
 BEGIN_METHOD(CKEY_get, GB_STRING key)
 
-  char *str = GB.ToZeroString(ARG(key));
-  GB.ReturnInteger(XStringToKeysym(str));
+	char *str = GB.ToZeroString(ARG(key));
+	GB.ReturnInteger(XStringToKeysym(str));
 
 END_METHOD
 

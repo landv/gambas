@@ -34,7 +34,6 @@ BEGIN_PROPERTY(CDESKTOP_width)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(CDESKTOP_height)
 
 	GB.ReturnInteger(SDLapp->DesktopHeight());

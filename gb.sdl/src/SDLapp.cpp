@@ -207,62 +207,7 @@ Display *SDLapplication::X11appDisplay()
 
 	return (display);
 }
-#if 0
-long SDLapplication::GetExtents()
-{
-	long RetData = 0;
 
-	XEvent xevent;
-	XEvent notifyXevent;
-	Window windowId;
-	Atom type_ret;
-	int format_ret;
-	unsigned long nitems_ret, unused;
-	unsigned char *data_ret;
-
-	LockX11();
-	Atom AtomReqExtents = XInternAtom(SDLapp->X11appDisplay(), "_NET_REQUEST_FRAME_EXTENTS", false);
-	Atom AtomFraExtents = XInternAtom(SDLapp->X11appDisplay(), "_NET_FRAME_EXTENTS", false);
-
-	if ((AtomReqExtents == None) || (AtomFraExtents == None))
-		std::cout << "Frame extents : something goes wrong" << std::endl;
-
-	windowId = X11appRootWin();
-	xevent.xclient.type = ClientMessage;
-	xevent.xclient.message_type = AtomReqExtents;
-	xevent.xclient.display = X11appDisplay();
-	xevent.xclient.window = windowId;
-	xevent.xclient.format = 32;
-	xevent.xclient.data.l[0] = 0;
-	xevent.xclient.data.l[1] = 0;
-	xevent.xclient.data.l[2] = 0;
-	xevent.xclient.data.l[3] = 0;
-	xevent.xclient.data.l[4] = 0;
-
-	XSendEvent (X11appDisplay(), X11appRootWin(), False,
-		(SubstructureRedirectMask | SubstructureNotifyMask),
-		&xevent);
-
-	XIfEvent(X11appDisplay(), &notifyXevent,
-		property_notify_predicate, (XPointer) &windowId);
-
-	if (XGetWindowProperty(X11appDisplay(), CurrentWin(), AtomFraExtents, 0l,
-		sizeof (unsigned long) * 4, False, XA_CARDINAL, &type_ret,
-		&format_ret, &nitems_ret, &unused, &data_ret) == Success)
-	{
-		RetData = data_ret[1];
-		XFree(data_ret);
-	}
-	else
-		std::cout << "Unable to get FrameExtents !" << std::endl;	
-
-	UnlockX11();
-
-	std::cout << RetData << std::endl;
-
-	return RetData;
-}
-#endif
 void SDLapplication::LockX11()
 {
 	SDLapplication::LockX11Count++;
@@ -286,45 +231,3 @@ void SDLapplication::UnlockX11()
 	SDLapplication::LockX11Count = 0;
 	info.info.x11.unlock_func();
 }
-
-void SDLapplication::process_cmdline( int* argcptr, char ** argv )
-{
-#if 0
-	int argc = *argcptr;
-	int i, j;
-
-	j = 1;
-	for ( i=1; i<argc; i++ )
-	{
-		if ( argv[i] && *argv[i] != '-' )
-		{
-			argv[j++] = argv[i];
-			continue;
-		}
-
-		std::string arg = argv[i];
-		std::string s;
-
-	if ( arg == "-qdevel" || arg == "-qdebug") {
-	    // obsolete argument
-	} else if ( arg.find( "-style=", 0, FALSE ) != -1 ) {
-	    s = arg.right( arg.length() - 7 );
-	} else if ( qstrcmp(arg,"-style") == 0 && i < argc-1 ) {
-	    s = argv[++i];
-	    s = s.lower();
-	} else if ( qstrcmp(arg, "-reverse") == 0 ) {
-	    setReverseLayout( TRUE );
-	} else if ( qstrcmp(arg, "-widgetcount") == 0 ) {
-	    widgetCount = TRUE;;
-	} else {
-	    argv[j++] = argv[i];
-	}
-
-	}
-
-		argv[j] = 0;
-		*argcptr = j;
-	}
-#endif
-}
-

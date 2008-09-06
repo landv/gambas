@@ -41,7 +41,7 @@
 
 // internal texture status values
 #define TEXTURE_OK		(0)
-#define TEXTURE_TO_RELOAD	(1<<0)
+#define TEXTURE_TO_LOAD		(1)
 
 /*
    Surface and texture definitions

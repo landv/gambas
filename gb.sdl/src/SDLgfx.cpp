@@ -30,11 +30,6 @@
 #include <iostream>
 #include <math.h>
 
-// texture status values
-#define TEXTURE_OK		(0)
-#define TEXTURE_TO_RELOAD	(1<<0)
-#define TEX_TO_REDEFINE 	(1<<1)
-
 // for ellipses
 #define PI 3.14159265359
 
@@ -283,76 +278,6 @@ SDLgfx::SDLgfx(SDLsurface *surface)
 	hWindowDraw = false;
 	hContextDefined = false;
 	resetGfx();
-
-	/* Does the surface already got a context (a Pbuffer is already defined ?) */
-	if (hContext)
-		return;
-
-	/* we define the pixel buffer if needed */
-	int scrnum;
-	GLXFBConfig *fbconfig;
-	XVisualInfo *visinfo;
-	int nitems;
-	Display *disp = SDLapp->X11appDisplay();
-
-	int attrib[] = 
-	{
-		GLX_DOUBLEBUFFER,  False,
-		GLX_RED_SIZE,      1,
-		GLX_GREEN_SIZE,    1,
-		GLX_BLUE_SIZE,     1,
-		GLX_RENDER_TYPE,   GLX_RGBA_BIT,
-		GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT | GLX_WINDOW_BIT,
-		None
-	};
-
-	int pbufAttrib[] = 
-	{
-		GLX_PBUFFER_WIDTH,   hSurface->w,
-		GLX_PBUFFER_HEIGHT,  hSurface->h,
-		GLX_LARGEST_PBUFFER, False,
-		None
-	};
-
-	SDLapp->LockX11();
-
-	scrnum = DefaultScreen(disp);
-	fbconfig = glXChooseFBConfig(disp, scrnum, attrib, &nitems);
-
-	if (!fbconfig)
-	{
-        	SDLcore::RaiseError("SDLgfx: error, couldn't get fbconfig");
-        	return;
-	}
-
-	hPbuffer = glXCreatePbuffer(disp, fbconfig[0], pbufAttrib);
-	visinfo = glXGetVisualFromFBConfig(disp, fbconfig[0] );
-
-	if (!visinfo )
-	{
-        	SDLcore::RaiseError("SDLgfx: error, couldn't get an RGBA, double-buffered visual");
-		return;
-	}
-
-	if (!SDLcore::GetWindow())
-	{
-        	SDLcore::RaiseError("SDLgfx: window not defined, will be fixed later !");
-		return;
-	}
-
-	hContext = glXCreateContext(disp, visinfo, SDLcore::GetWindow()->hSurfaceInfo->Ctx, GL_TRUE);
-
-	if (!hContext )
-	{
-		SDLcore::RaiseError("SDLgfx: error, Call to glXCreateContext failed!");
-		return;
-	}
-
-	XFree(fbconfig);
-	XFree(visinfo);
-	hContextDefined = true;
-
-	SDLapp->UnlockX11();
 }
 
 SDLgfx::~SDLgfx()
@@ -375,7 +300,7 @@ void SDLgfx::resetGfx(void)
 	hLine = SDL::SolidLine;
 	hLineWidth = 1;
 	hFill = SDL::NoFill;
-	hTextureStatus = TEXTURE_TO_RELOAD;
+	hTextureStatus = TEXTURE_TO_LOAD;
 }
 
 void SDLgfx::SetLineStyle(int style)
@@ -415,7 +340,7 @@ void SDLgfx::Clear(void)
 	}
 
 	hBackColor = myColor;
-	hTextureStatus = TEXTURE_TO_RELOAD;
+	hTextureStatus = TEXTURE_TO_LOAD;
 }
 
 void SDLgfx::DrawPixel(int x, int y)
@@ -428,7 +353,7 @@ void SDLgfx::DrawPixel(int x, int y)
 	glVertex2i(x, y);
 	glEnd();
 
-	hTextureStatus = TEXTURE_TO_RELOAD;
+	hTextureStatus = TEXTURE_TO_LOAD;
 }
 
 void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
@@ -455,7 +380,7 @@ void SDLgfx::DrawLine(int x1, int y1, int x2, int y2)
 		glPopAttrib();
 	}
 
-	hTextureStatus = TEXTURE_TO_RELOAD;
+	hTextureStatus = TEXTURE_TO_LOAD;
 }
 
 void SDLgfx::DrawRect(int x, int y, int w, int h)
@@ -617,13 +542,13 @@ void SDLgfx::ManageTexture()
 	if (!hTexture)
 	{
 		glGenTextures(1, &hTexture);
-		hTextureStatus = TEXTURE_TO_RELOAD;
+		hTextureStatus = TEXTURE_TO_LOAD;
 	}
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, hTexture);
 
-	if (hTextureStatus & TEXTURE_TO_RELOAD)
+	if (hTextureStatus & TEXTURE_TO_LOAD)
 	{
 		#ifdef DEBUGGFX
 		std::cout << "Loading texture " << hTextureIndex << std::endl;

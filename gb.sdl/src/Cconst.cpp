@@ -45,7 +45,6 @@ GB_DESC CLine[] =
   GB_END_DECLARE
 };
 
-
 GB_DESC CFill[] =
 {
   GB_DECLARE("Fill", 0), GB_VIRTUAL_CLASS(),

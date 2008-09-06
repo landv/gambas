@@ -29,7 +29,7 @@
 #include "SDL_h.h"
 #include "SDLsurface.h"
 
-#include <X11/Xlib.h> // needed with xorg 7.0, already included with xorg 7.1 in Xcursor.h
+#include <X11/Xlib.h>
 #include <X11/Xcursor/Xcursor.h>
 
 class SDLcursor

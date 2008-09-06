@@ -42,7 +42,6 @@ public:
 	Window X11appRootWin(void );
 	Window CurrentWin(void );
 	Display* X11appDisplay(void );
-//	long GetExtents(void );
 
 	virtual void ManageError(const char* ) = 0;
 	// needed if calling X11 funcs !
@@ -50,8 +49,6 @@ public:
 	void UnlockX11(void );
 
 private:
-	void process_cmdline( int* argcptr, char ** argv );
-
 	// datas
 	static int AppCount;
 	static int LockX11Count;

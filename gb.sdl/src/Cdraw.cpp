@@ -157,7 +157,8 @@ BEGIN_METHOD(CDRAW_image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGE
 
 	CIMAGE *image = (CIMAGE *) VARG(image);
 
-	if (!image) return;
+	if (!image)
+		return;
 
 	GFX->Blit(IMAGEID(image), VARG(x), VARG(y), VARGOPT(srcx,0), VARGOPT(srcy,0),
 		VARGOPT(srcw,-1), VARGOPT(srch,-1), VARGOPT(width,-1), VARGOPT(height,-1));
