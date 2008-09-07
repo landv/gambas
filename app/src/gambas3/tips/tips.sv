@@ -125,6 +125,15 @@ IF Len(MyString) = 0 THEN ...</pre>
 IF NOT MyString THEN ...</pre>
 
 
+[TRANSLATE]
+
+<p>Gambastillämpningar är helt och hållet översättningsbara, förutsatt att du
+talar om vilka strängar som skall översättas.</p>
+<p>För att markera att en sträng är översättningsbar, så sätt den bara inom parantester:<p>
+
+<pre>PRINT ("Överstätt mig")
+PRINT "Men inte mig!"</pre>
+
 [EVENT]
 
 <p>Varje kontroll och varje objekt, som kan ge avbrott, har en
