@@ -983,6 +983,10 @@ BEGIN_METHOD_VOID(CARRAY_print)
 
 END_METHOD
 
+#else
+
+#include "gbx_c_array.h"
+
 #endif /* #ifndef GBX_INFO */
 
 
@@ -1369,8 +1373,6 @@ GB_DESC NATIVE_ObjectArray[] =
   GB_END_DECLARE
 };
 
-#ifndef GBX_INFO
-
 // Beware: if this declaration is modified, the ARRAY_TEMPLATE_NDESC constant must be modified accordingly.
 
 GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
@@ -1399,7 +1401,6 @@ GB_DESC NATIVE_TemplateArray[ARRAY_TEMPLATE_NDESC] =
 
   GB_END_DECLARE
 };
-#endif
 
 GB_DESC NATIVE_VariantArray[] =
 {

@@ -6,7 +6,7 @@
   Icon = Picture["icon:/small/image"]
   Arrangement = Arrange.Vertical
   { panToolbar Panel
-    MoveScaled(0,1,80,12)
+    MoveScaled(0,1,84,12)
     Arrangement = Arrange.Row
     AutoResize = True
     { tlbIcon ToolBar
@@ -75,7 +75,7 @@
       }
     }
     { tlbMove ToolBar
-      MoveScaled(26,1,31,4)
+      MoveScaled(26,1,32,4)
       { lblCoord Label
         MoveScaled(0,0,9,4)
         Text = ("")
@@ -86,13 +86,13 @@
         MoveScaled(10,0,2,4)
       }
       { cmbZoom ComboBox
-        MoveScaled(11,0,7,4)
+        MoveScaled(12,0,8,4)
         Text = ("")
         ReadOnly = True
       }
       { ToolButton3 ToolButton btnTool
         Name = "ToolButton3"
-        MoveScaled(18,0,4,4)
+        MoveScaled(20,0,4,4)
         Tag = "zoom-in"
         ToolTip = ("Zoom in")
         Text = ("")
@@ -100,7 +100,7 @@
       }
       { ToolButton17 ToolButton btnTool
         Name = "ToolButton17"
-        MoveScaled(21,0,4,4)
+        MoveScaled(23,0,4,4)
         Tag = "zoom-out"
         ToolTip = ("Zoom out")
         Text = ("")
@@ -108,7 +108,7 @@
       }
       { btnMove ToolButton btnTool
         Name = "btnMove"
-        MoveScaled(24,0,4,4)
+        MoveScaled(26,0,4,4)
         Tag = "move"
         ToolTip = ("Scroll")
         Text = ("")
@@ -117,7 +117,7 @@
       }
     }
     { tlbTool ToolBar
-      MoveScaled(55,1,25,4)
+      MoveScaled(58,1,25,4)
       { btnSelect ToolButton btnTool
         Name = "btnSelect"
         MoveScaled(0,0,4,4)

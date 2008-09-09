@@ -34,6 +34,26 @@ Static Public Sub _init()
 
 End
 
+Public Sub Copy(sType As String, sNewType As String) As CSymbolInfo
+  
+  Dim hSym As New CSymbolInfo
+  
+  With hSym
+    .Name = Name
+    .Type = Replace(Type, sType, sNewType)
+    .Kind = Kind
+    .Signature = Replace(Signature, sType, sNewType)
+    .Value = Value
+    .Class = Class
+    .Component = Component
+    .NotPublic = NotPublic
+    .LineNumber = 0
+  End With
+  
+  Return hSym
+  
+End
+
 
 Public Function IsHidden() As Boolean
 

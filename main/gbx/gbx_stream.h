@@ -58,7 +58,9 @@ typedef
     unsigned eof : 1;
     unsigned no_fionread : 1;
     unsigned no_lseek : 1;
-    unsigned _reserved : 10;
+    unsigned is_term : 1;
+    unsigned is_device : 1;
+    unsigned _reserved : 9;
     }
   PACKED
   STREAM_COMMON;
@@ -77,9 +79,8 @@ typedef
     STREAM_COMMON common;
     int64_t size;
     int fd;
-    unsigned is_term : 1;
     unsigned is_device : 1;
-    unsigned _reserved : 30;
+    unsigned _reserved : 31;
     }
   PACKED
   STREAM_DIRECT;
@@ -89,8 +90,6 @@ typedef
     STREAM_COMMON common;
     int64_t size;
     FILE *file;
-    unsigned is_term : 1;
-    unsigned _reserved : 31;
     }
   PACKED
   STREAM_BUFFER;

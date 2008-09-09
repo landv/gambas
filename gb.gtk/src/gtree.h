@@ -44,7 +44,7 @@ public:
 	char *text() { return _text; }
 	gPicture *picture() { return _picture; }
 	
-	void setText(char *vl);
+	void setText(const char *vl);
 	void setPicture(gPicture *vl);
 	
 private:
@@ -65,7 +65,7 @@ public:
 	void  add();
 	void  remove();
 	void  update();
-	long  children();
+	int  children();
 	char *key() { return _key; }
 	
 	void setExpanded();
@@ -128,8 +128,8 @@ public:
 	~gTree();
 	
 	//General
-	long visibleWidth();
-	long visibleHeight();
+	int visibleWidth();
+	int visibleHeight();
 	char* cursor();
 	void  setCursor(char *vl);
 	void selectAll();
@@ -191,6 +191,9 @@ public:
 	void sortLater();
 	void sort();
 	void updateSort();
+	
+	void lock();
+	void unlock();
 };
 
 class gIcon;

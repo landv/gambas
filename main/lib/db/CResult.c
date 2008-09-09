@@ -38,92 +38,94 @@ static void set_blob(CBLOB *_object, char *data, int length);
 
 static GB_SUBCOLLECTION_DESC _fields_desc =
 {
-  ".ResultFields",
-  (void *)CRESULTFIELD_get,
-  (void *)CRESULTFIELD_exist,
-  (void *)NULL,
-  (void *)CRESULTFIELD_release
+	".ResultFields",
+	(void *)CRESULTFIELD_get,
+	(void *)CRESULTFIELD_exist,
+	(void *)NULL,
+	(void *)CRESULTFIELD_release
 };
 
 
 static int check_result(CRESULT *_object)
 {
-  return (THIS->conn->db.handle == NULL);
+	return (THIS->conn->db.handle == NULL);
 }
 
 static bool check_available(CRESULT *_object)
 {
-  if (!THIS->available)
-  {
-    GB.Error("Result is not available");
-    return TRUE;
-  }
-  else
-    return FALSE;
+	if (!THIS->available)
+	{
+		GB.Error("Result is not available");
+		return TRUE;
+	}
+	else
+		return FALSE;
 }
 
 
 static void init_buffer(CRESULT *_object)
 {
-  int i;
+	int i;
 
-  if (THIS->info.nfield == 0)
-    return;
+	if (THIS->info.nfield == 0)
+		return;
 
-  GB.Alloc(POINTER(&THIS->buffer), sizeof(GB_VARIANT_VALUE) * THIS->info.nfield);
-  BARRAY_create(&THIS->changed, THIS->info.nfield);
+	GB.Alloc(POINTER(&THIS->buffer), sizeof(GB_VARIANT_VALUE) * THIS->info.nfield);
+	BARRAY_create(&THIS->changed, THIS->info.nfield);
 	BARRAY_clear_all(THIS->changed, THIS->info.nfield);
 
-  for (i = 0; i < THIS->info.nfield; i++)
-    THIS->buffer[i].type = GB_T_NULL;
+	for (i = 0; i < THIS->info.nfield; i++)
+		THIS->buffer[i].type = GB_T_NULL;
 }
 
 static void void_buffer(CRESULT *_object)
 {
-  int i;
+	int i;
 
 	//fprintf(stderr, "void_buffer\n");
 
-  if (THIS->info.nfield == 0)
-    return;
+	if (THIS->info.nfield == 0)
+		return;
 
-  for (i = 0; i < THIS->info.nfield; i++)
-    GB.StoreVariant(NULL, &THIS->buffer[i]);
-    
+	for (i = 0; i < THIS->info.nfield; i++)
+		GB.StoreVariant(NULL, &THIS->buffer[i]);
+		
 	BARRAY_clear_all(THIS->changed, THIS->info.nfield);
 }
 
 
 static void release_buffer(CRESULT *_object)
 {
-  if (THIS->buffer)
-  {
-    void_buffer(THIS);
-    GB.Free(POINTER(&THIS->buffer));
-    BARRAY_delete(&THIS->changed);
-  }
+	if (THIS->buffer)
+	{
+		void_buffer(THIS);
+		GB.Free(POINTER(&THIS->buffer));
+		BARRAY_delete(&THIS->changed);
+	}
 }
 
 
 static bool load_buffer(CRESULT *_object, int vpos)
 {
-  int i, ind;
-  int pos;
+	int i, ind;
+	int pos;
 
 	//fprintf(stderr, "load_buffer: %ld -> %d\n", THIS->pos, vpos);
 
-  /* if THIS->count < 0, that's mean that the driver couldn't determine it */
+	/* if THIS->count < 0, that's mean that the driver couldn't determine it */
 
-  if (THIS->count >= 0 && (vpos < 0 || vpos >= THIS->count || THIS->info.nfield == 0))
-  {
+	DB_CurrentDatabase = &THIS->conn->db;
+
+	if (THIS->count >= 0 && (vpos < 0 || vpos >= THIS->count || THIS->info.nfield == 0))
+	{
 		/* Andrea Bortolan's changes for the ODBC modules*/
 
 		/* ODBC does return the number of rows affected by the query when execute a insert,apdate or delete query,
-			 for all others case it returns -1 even if the query was execute without errors        	*/
+			for all others case it returns -1 even if the query was execute without errors        	*/
 		/* Here the check for this case -1 means that the query was executed correctly
-			 so get the result. 									*/
+			so get the result. 									*/
 		/* If the pos (the result row) does not exist because pos is > of the rows available than the ODBC module
-			 will rise an Error ODBC_END_OF_DATA that must be catched by the application */
+			will rise an Error ODBC_END_OF_DATA that must be catched by the application */
 
 		#if 0
 		if (THIS->count == -1)
@@ -139,80 +141,80 @@ static bool load_buffer(CRESULT *_object, int vpos)
 		/* End of Andrea's changes */
 		#endif
 
-  	{
+		{
 			THIS->pos = -1;
 			THIS->available = FALSE;
 			return TRUE;
 		}
-  }
-  else
-  {
-    if (THIS->handle && vpos != THIS->pos)
-    {
-      pos = DELETE_MAP_virtual_to_real(THIS->dmap, vpos);
+	}
+	else
+	{
+		if (THIS->handle && vpos != THIS->pos)
+		{
+			pos = DELETE_MAP_virtual_to_real(THIS->dmap, vpos);
 
-      //fprintf(stderr, "Loading real %ld\n", pos);
+			//fprintf(stderr, "Result %p: Loading real %ld\n", THIS, pos);
 
-      void_buffer(THIS);
+			void_buffer(THIS);
 
-      THIS->driver->Result.Fill(&THIS->conn->db, THIS->handle, pos, THIS->buffer,
-        (pos > 0) && (pos == (DELETE_MAP_virtual_to_real(THIS->dmap, THIS->pos) + 1)));
+			THIS->driver->Result.Fill(&THIS->conn->db, THIS->handle, pos, THIS->buffer,
+				(pos > 0) && (pos == (DELETE_MAP_virtual_to_real(THIS->dmap, THIS->pos) + 1)));
 
-      if (THIS->mode == RESULT_EDIT)
-      {
-        q_init();
+			if (THIS->mode == RESULT_EDIT)
+			{
+				q_init();
 
-        for (i = 0; i < THIS->info.nindex; i++)
-        {
-          ind = THIS->info.index[i];
-          if (i > 0) q_add(" AND ");
-          q_add(THIS->info.field[ind].name);
-          if (THIS->buffer[ind].type == GB_T_NULL)
-            q_add(" IS NULL");
-          else
-          {
-            q_add(" = ");
-       	    DB_FormatVariant(THIS->driver, &THIS->buffer[ind], q_add_length);
-          }
-        }
+				for (i = 0; i < THIS->info.nindex; i++)
+				{
+					ind = THIS->info.index[i];
+					if (i > 0) q_add(" AND ");
+					q_add(THIS->info.field[ind].name);
+					if (THIS->buffer[ind].type == GB_T_NULL)
+						q_add(" IS NULL");
+					else
+					{
+						q_add(" = ");
+						DB_FormatVariant(THIS->driver, &THIS->buffer[ind], q_add_length);
+					}
+				}
 
-        GB.FreeString(&THIS->edit);
-        THIS->edit = q_steal();
-      }
-    }
+				GB.FreeString(&THIS->edit);
+				THIS->edit = q_steal();
+			}
+		}
 
-    THIS->pos = vpos;
-    THIS->available = TRUE;
-    return FALSE;
-  }
+		THIS->pos = vpos;
+		THIS->available = TRUE;
+		return FALSE;
+	}
 }
 
 
 static void reload_buffer(CRESULT *_object)
 {
-  int pos = THIS->pos;
-  THIS->pos = -1;
-  load_buffer(THIS, pos);
+	int pos = THIS->pos;
+	THIS->pos = -1;
+	load_buffer(THIS, pos);
 }
 
 
 static void table_release(DB_INFO *info)
 {
-  int i;
+	int i;
 
-  if (info->table)
-    GB.FreeString(&info->table);
+	if (info->table)
+		GB.FreeString(&info->table);
 
-  if (info->field)
-  {
-    for (i = 0; i < info->nfield; i++)
-      GB.FreeString(&info->field[i].name);
+	if (info->field)
+	{
+		for (i = 0; i < info->nfield; i++)
+			GB.FreeString(&info->field[i].name);
 
-    GB.Free(POINTER(&info->field));
-  }
+		GB.Free(POINTER(&info->field));
+	}
 
-  if (info->index)
-    GB.Free(POINTER(&info->index));
+	if (info->index)
+		GB.Free(POINTER(&info->index));
 }
 
 
@@ -223,7 +225,7 @@ static GB_TYPE get_field_type(CRESULT *_object, int field)
 	if (THIS->info.field)
 		type = THIS->info.field[field].type;
 	else
-    type = THIS->driver->Result.Field.Type(THIS->handle, field);
+		type = THIS->driver->Result.Field.Type(THIS->handle, field);
 
 	//fprintf(stderr, "get_field_type: %d -> %ld\n", field, type);
 	return type;
@@ -232,98 +234,98 @@ static GB_TYPE get_field_type(CRESULT *_object, int field)
 
 CRESULT *DB_MakeResult(CCONNECTION *conn, int mode, char *table_temp, char *query)
 {
-  CRESULT *_object;
-  DB_RESULT res;
-  char *duplicate;
-  char *token;
-  const char *error = NULL;
-  char *arg;
-  char *table;
+	CRESULT *_object;
+	DB_RESULT res;
+	char *duplicate;
+	char *token;
+	const char *error = NULL;
+	char *arg;
+	char *table;
 
-  switch (mode)
-  {
-    case RESULT_FIND:
+	switch (mode)
+	{
+		case RESULT_FIND:
 
-      if (conn->driver->Exec(&conn->db, query, &res, "Query failed: &1"))
-        return NULL;
+			if (conn->driver->Exec(&conn->db, query, &res, "Query failed: &1"))
+				return NULL;
 
-      break;
+			break;
 
-    case RESULT_CREATE:
+		case RESULT_CREATE:
 
-      res = NULL;
-      break;
+			res = NULL;
+			break;
 
-    case RESULT_EDIT:
+		case RESULT_EDIT:
 
-      if (conn->driver->Exec(&conn->db, query, &res, "Query failed: &1"))
-        return NULL;
+			if (conn->driver->Exec(&conn->db, query, &res, "Query failed: &1"))
+				return NULL;
 
-      break;
+			break;
 
-    case RESULT_DELETE:
+		case RESULT_DELETE:
 
-      conn->driver->Exec(&conn->db, query, &res, "Query failed: &1");
-      return NULL;
+			conn->driver->Exec(&conn->db, query, &res, "Query failed: &1");
+			return NULL;
 	}
 
-  GB.New(POINTER(&_object), GB.FindClass("Result"), NULL, NULL);
+	GB.New(POINTER(&_object), GB.FindClass("Result"), NULL, NULL);
 
-  THIS->conn = conn;
-  GB.Ref(conn);
+	THIS->conn = conn;
+	GB.Ref(conn);
 
-  THIS->driver = conn->driver;
-  THIS->available = FALSE;
-  THIS->mode = mode;
-  THIS->handle = res;
-  THIS->pos = -1;
-  THIS->dmap = NULL;
+	THIS->driver = conn->driver;
+	THIS->available = FALSE;
+	THIS->mode = mode;
+	THIS->handle = res;
+	THIS->pos = -1;
+	THIS->dmap = NULL;
 
 	// table must be copied because it can be a temporary string!
 	GB.NewString(&table, table_temp, 0);
 
-  switch (mode)
-  {
-    case RESULT_FIND:
+	switch (mode)
+	{
+		case RESULT_FIND:
 
-      THIS->driver->Result.Init(THIS->handle, &THIS->info, &THIS->count);
-      break;
+			THIS->driver->Result.Init(THIS->handle, &THIS->info, &THIS->count);
+			break;
 
-    case RESULT_CREATE:
+		case RESULT_CREATE:
 
-      if (THIS->driver->Table.Init(&conn->db, table, &THIS->info))
-        goto ERROR;
+			if (THIS->driver->Table.Init(&conn->db, table, &THIS->info))
+				goto ERROR;
 
-      THIS->count = 1;
-      break;
+			THIS->count = 1;
+			break;
 
-    case RESULT_EDIT:
+		case RESULT_EDIT:
 
-      THIS->driver->Result.Init(THIS->handle, &THIS->info, &THIS->count);
+			THIS->driver->Result.Init(THIS->handle, &THIS->info, &THIS->count);
 
-      if (THIS->driver->Table.Init(&conn->db, table, &THIS->info))
-        goto ERROR;
+			if (THIS->driver->Table.Init(&conn->db, table, &THIS->info))
+				goto ERROR;
 
-      if (THIS->driver->Table.Index(&conn->db, table, &THIS->info))
-      {
-        error = "Table '&1' has no primary key";
-        arg = table;
-        goto ERROR;
-      }
+			if (THIS->driver->Table.Index(&conn->db, table, &THIS->info))
+			{
+				error = "Table '&1' has no primary key";
+				arg = table;
+				goto ERROR;
+			}
 
-      break;
-  }
+			break;
+	}
 
-  init_buffer(THIS);
-  load_buffer(THIS, 0);
+	init_buffer(THIS);
+	load_buffer(THIS, 0);
 
-  GB.FreeString(&table);
-  return THIS;
+	GB.FreeString(&table);
+	return THIS;
 
 ERROR:
 
-  if (!error)
-  {
+	if (!error)
+	{
 		if (strchr(table, (int)',') == NULL)
 		{
 			arg = table;
@@ -349,65 +351,65 @@ ERROR:
 	}
 
 	GB.Free(POINTER(&_object));
-  GB.Error(error, arg);
-  GB.FreeString(&table);
+	GB.Error(error, arg);
+	GB.FreeString(&table);
 
-  return NULL;
+	return NULL;
 }
 
 
 BEGIN_METHOD_VOID(CRESULT_free)
 
-  release_buffer(THIS);
+	release_buffer(THIS);
 
-  if (THIS->mode != RESULT_CREATE)
-    THIS->driver->Result.Release(THIS->handle, &THIS->info);
+	if (THIS->mode != RESULT_CREATE)
+		THIS->driver->Result.Release(THIS->handle, &THIS->info);
 
-  if (THIS->mode != RESULT_FIND)
-    table_release(&THIS->info);
+	if (THIS->mode != RESULT_FIND)
+		table_release(&THIS->info);
 
-  if (THIS->edit)
-    GB.FreeString(&THIS->edit);
+	if (THIS->edit)
+		GB.FreeString(&THIS->edit);
 
-  DELETE_MAP_free(&THIS->dmap);
+	DELETE_MAP_free(&THIS->dmap);
 
-  GB.Unref(POINTER(&THIS->conn));
-  GB.Unref(POINTER(&THIS->fields));
+	GB.Unref(POINTER(&THIS->conn));
+	GB.Unref(POINTER(&THIS->fields));
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CRESULT_count)
 
-  GB.ReturnInteger(THIS->count);
+	GB.ReturnInteger(THIS->count);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CRESULT_max)
 
-  GB.ReturnInteger(THIS->count - 1);
+	GB.ReturnInteger(THIS->count - 1);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CRESULT_index)
 
-  GB.ReturnInteger(THIS->pos);
+	GB.ReturnInteger(THIS->pos);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CRESULT_available)
 
-  GB.ReturnBoolean(THIS->available);
+	GB.ReturnBoolean(THIS->available);
 
 END_PROPERTY
 
 
 static void check_blob(CRESULT *_object, int field)
 {
-  GB_VARIANT val;
+	GB_VARIANT val;
 
 	//fprintf(stderr, "check_blob: %d\n", field);
 
@@ -423,43 +425,43 @@ static void check_blob(CRESULT *_object, int field)
 
 BEGIN_METHOD(CRESULT_get, GB_STRING field)
 
-  int index;
-  GB_TYPE type;
+	int index;
+	GB_TYPE type;
 
-  if (check_available(THIS))
-    return;
+	if (check_available(THIS))
+		return;
 
-  index = CRESULTFIELD_find(THIS, GB.ToZeroString(ARG(field)), TRUE);
-  if (index < 0)
-    return;
+	index = CRESULTFIELD_find(THIS, GB.ToZeroString(ARG(field)), TRUE);
+	if (index < 0)
+		return;
 
 	type = get_field_type(THIS, index);
 
 	if (type == DB_T_BLOB)
 		check_blob(THIS, index);
 
-  GB.ReturnPtr(GB_T_VARIANT, &THIS->buffer[index]);
+	GB.ReturnPtr(GB_T_VARIANT, &THIS->buffer[index]);
 
 END_METHOD
 
 
 BEGIN_METHOD(CRESULT_put, GB_VARIANT value; GB_STRING field)
 
-  int index;
-  GB_TYPE type;
+	int index;
+	GB_TYPE type;
 
-  if (check_available(THIS))
-    return;
+	if (check_available(THIS))
+		return;
 
-  if (THIS->mode == RESULT_FIND)
-  {
-    GB.Error("Result is read-only");
-    return;
-  }
+	if (THIS->mode == RESULT_FIND)
+	{
+		GB.Error("Result is read-only");
+		return;
+	}
 
-  index = CRESULTFIELD_find(THIS, GB.ToZeroString(ARG(field)), TRUE);
-  if (index < 0)
-    return;
+	index = CRESULTFIELD_find(THIS, GB.ToZeroString(ARG(field)), TRUE);
+	if (index < 0)
+		return;
 
 	type = get_field_type(THIS, index);
 
@@ -482,8 +484,8 @@ BEGIN_METHOD(CRESULT_put, GB_VARIANT value; GB_STRING field)
 		{
 			GB_STRING *str = (GB_STRING *)(void *)ARG(value);
 
-	    if (GB.Conv((GB_VALUE *)(void *)ARG(value), GB_T_STRING))
-  	    return;
+			if (GB.Conv((GB_VALUE *)(void *)ARG(value), GB_T_STRING))
+				return;
 
 			set_blob((CBLOB *)THIS->buffer[index]._object.value, str->value.addr + str->value.start, str->value.len);
 		}
@@ -492,19 +494,19 @@ BEGIN_METHOD(CRESULT_put, GB_VARIANT value; GB_STRING field)
 		return;
 	}
 
-  if (VARG(value).type != GB_T_NULL && VARG(value).type != type)
-  /*{
-    GB.Error("Type mismatch");
-    return;
-  }*/
-  {
-    if (GB.Conv((GB_VALUE *)(void *)ARG(value), THIS->info.field[index].type))
-      return;
+	if (VARG(value).type != GB_T_NULL && VARG(value).type != type)
+	/*{
+		GB.Error("Type mismatch");
+		return;
+	}*/
+	{
+		if (GB.Conv((GB_VALUE *)(void *)ARG(value), THIS->info.field[index].type))
+			return;
 
-    GB.Conv((GB_VALUE *)(void *)ARG(value), GB_T_VARIANT);
-  }
+		GB.Conv((GB_VALUE *)(void *)ARG(value), GB_T_VARIANT);
+	}
 
-  GB.StoreVariant(ARG(value), &THIS->buffer[index]);
+	GB.StoreVariant(ARG(value), &THIS->buffer[index]);
 	BARRAY_set(THIS->changed, index);
 
 END_METHOD
@@ -512,104 +514,106 @@ END_METHOD
 #if 0
 BEGIN_METHOD(CRESULT_copy, GB_OBJECT result)
 
-  CRESULT *result = (CRESULT *)VARG(result);
-  int index;
+	CRESULT *result = (CRESULT *)VARG(result);
+	int index;
 
-  if (THIS->mode == RESULT_FIND)
-  {
-    GB.Error("Result is read-only");
-    return;
-  }
+	if (THIS->mode == RESULT_FIND)
+	{
+		GB.Error("Result is read-only");
+		return;
+	}
 
-  for (index = 0; index <
+	for (index = 0; index <
 
-  index = find_field(THIS, GB.ToZeroString(ARG(field)));
-  if (index < 0)
-    return;
+	index = find_field(THIS, GB.ToZeroString(ARG(field)));
+	if (index < 0)
+		return;
 
-  if (VARG(value).type != GB_T_NULL && VARG(value).type != THIS->info.types[index])
-  /*{
-    GB.Error("Type mismatch");
-    return;
-  }*/
-  {
-    if (GB.Conv((GB_VALUE *)ARG(value), THIS->info.types[index]))
-      return;
+	if (VARG(value).type != GB_T_NULL && VARG(value).type != THIS->info.types[index])
+	/*{
+		GB.Error("Type mismatch");
+		return;
+	}*/
+	{
+		if (GB.Conv((GB_VALUE *)ARG(value), THIS->info.types[index]))
+			return;
 
-    GB.Conv((GB_VALUE *)ARG(value), GB_T_VARIANT);
-  }
+		GB.Conv((GB_VALUE *)ARG(value), GB_T_VARIANT);
+	}
 
-  GB.StoreVariant(ARG(value), &THIS->buffer[index]);
+	GB.StoreVariant(ARG(value), &THIS->buffer[index]);
 
 END_METHOD
 #endif
 
 BEGIN_METHOD_VOID(CRESULT_move_first)
 
-  GB.ReturnBoolean(load_buffer(THIS, 0));
+	GB.ReturnBoolean(load_buffer(THIS, 0));
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CRESULT_move_last)
 
-  GB.ReturnBoolean(load_buffer(THIS, THIS->count - 1));
+	GB.ReturnBoolean(load_buffer(THIS, THIS->count - 1));
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CRESULT_move_previous)
 
-  GB.ReturnBoolean(load_buffer(THIS, THIS->pos - 1));
+	GB.ReturnBoolean(load_buffer(THIS, THIS->pos - 1));
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CRESULT_move_next)
 
-  GB.ReturnBoolean(load_buffer(THIS, THIS->pos + 1));
+	GB.ReturnBoolean(load_buffer(THIS, THIS->pos + 1));
 
 END_METHOD
 
 
 BEGIN_METHOD(CRESULT_move_to, GB_INTEGER pos)
 
-  GB.ReturnBoolean(load_buffer(THIS, VARG(pos)));
+	GB.ReturnBoolean(load_buffer(THIS, VARG(pos)));
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CRESULT_next)
 
-  int *pos = (int *)GB.GetEnum();
+	int *pos = (int *)GB.GetEnum();
 
-  if (!load_buffer(THIS, *pos))
-    (*pos)++;
-  else
-    GB.StopEnum();
+	if (!load_buffer(THIS, *pos))
+		(*pos)++;
+	else
+		GB.StopEnum();
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CRESULT_update)
 
-  int i;
-  bool comma;
-  DB_INFO *info = &THIS->info;
+	int i;
+	bool comma;
+	DB_INFO *info = &THIS->info;
 
-  if (check_available(THIS))
-    return;
+	if (check_available(THIS))
+		return;
 
-  q_init();
+	DB_CurrentDatabase = &THIS->conn->db;
 
-  switch(THIS->mode)
-  {
-    case RESULT_CREATE:
+	q_init();
 
-      q_add("INSERT INTO ");
-      q_add(THIS->driver->GetQuote());
-      q_add(info->table);
-      q_add(THIS->driver->GetQuote());
-      q_add(" ( ");
+	switch(THIS->mode)
+	{
+		case RESULT_CREATE:
+
+			q_add("INSERT INTO ");
+			q_add(THIS->driver->GetQuote());
+			q_add(info->table);
+			q_add(THIS->driver->GetQuote());
+			q_add(" ( ");
 			
 			comma = FALSE;
 			for (i = 0; i < info->nfield; i++)
@@ -632,7 +636,7 @@ BEGIN_METHOD_VOID(CRESULT_update)
 				q_add(THIS->driver->GetQuote());
 			}
 
-      q_add(" ) VALUES ( ");
+			q_add(" ) VALUES ( ");
 
 			comma = FALSE;
 			for (i = 0; i < info->nfield; i++)
@@ -651,47 +655,47 @@ BEGIN_METHOD_VOID(CRESULT_update)
 				DB_FormatVariant(THIS->driver, &THIS->buffer[0], q_add_length);
 			}
 
-      q_add(" )");
+			q_add(" )");
 
-      if (!THIS->driver->Exec(&THIS->conn->db, q_get(), NULL, "Cannot create record: &1"))
-        void_buffer(THIS);
+			if (!THIS->driver->Exec(&THIS->conn->db, q_get(), NULL, "Cannot create record: &1"))
+				void_buffer(THIS);
 
-      break;
+			break;
 
-    case RESULT_EDIT:
+		case RESULT_EDIT:
 
-      q_add("UPDATE ");
-      q_add(THIS->driver->GetQuote());
-      q_add(info->table);
-      q_add(THIS->driver->GetQuote());
-      q_add(" SET ");
+			q_add("UPDATE ");
+			q_add(THIS->driver->GetQuote());
+			q_add(info->table);
+			q_add(THIS->driver->GetQuote());
+			q_add(" SET ");
 
-      comma = FALSE;
-      for (i = 0; i < info->nfield; i++)
-      {
+			comma = FALSE;
+			for (i = 0; i < info->nfield; i++)
+			{
 				if (!BARRAY_test(THIS->changed, i))
 					continue;
-        if (comma) q_add(", ");
-        q_add(THIS->driver->GetQuote());
-		    q_add(THIS->info.field[i].name);
-    	  q_add(THIS->driver->GetQuote());
-        q_add(" = ");
-       	DB_FormatVariant(THIS->driver, &THIS->buffer[i], q_add_length);
-       	comma = TRUE;
-      }
+				if (comma) q_add(", ");
+				q_add(THIS->driver->GetQuote());
+				q_add(THIS->info.field[i].name);
+				q_add(THIS->driver->GetQuote());
+				q_add(" = ");
+				DB_FormatVariant(THIS->driver, &THIS->buffer[i], q_add_length);
+				comma = TRUE;
+			}
 
-      q_add(" WHERE ");
-      q_add(THIS->edit);
+			q_add(" WHERE ");
+			q_add(THIS->edit);
 
-      THIS->driver->Exec(&THIS->conn->db, q_get(), NULL, "Cannot modify record: &1");
+			THIS->driver->Exec(&THIS->conn->db, q_get(), NULL, "Cannot modify record: &1");
 
-      break;
+			break;
 
-    default:
+		default:
 
-      GB.Error("Result is read-only");
-      break;
-  }
+			GB.Error("Result is read-only");
+			break;
+	}
 
 	BARRAY_clear_all(THIS->changed, THIS->info.nfield);
 
@@ -700,37 +704,37 @@ END_METHOD
 
 BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 
-  DB_INFO *info = &THIS->info;
-  int *pos;
+	DB_INFO *info = &THIS->info;
+	int *pos;
 
-  if (check_available(THIS))
-    return;
+	if (check_available(THIS))
+		return;
 
-  q_init();
+	q_init();
 
-  switch(THIS->mode)
-  {
-    case RESULT_CREATE:
+	switch(THIS->mode)
+	{
+		case RESULT_CREATE:
 
-      void_buffer(THIS);
-      break;
+			void_buffer(THIS);
+			break;
 
-    case RESULT_EDIT:
+		case RESULT_EDIT:
 
-      q_add("DELETE FROM ");
-      q_add(THIS->driver->GetQuote());
-      q_add(info->table);
-      q_add(THIS->driver->GetQuote());
-      q_add(" WHERE ");
-      q_add(THIS->edit);
+			q_add("DELETE FROM ");
+			q_add(THIS->driver->GetQuote());
+			q_add(info->table);
+			q_add(THIS->driver->GetQuote());
+			q_add(" WHERE ");
+			q_add(THIS->edit);
 
-      THIS->driver->Exec(&THIS->conn->db, q_get(), NULL, "Cannot delete record: &1");
+			THIS->driver->Exec(&THIS->conn->db, q_get(), NULL, "Cannot delete record: &1");
 
 			if (!VARGOPT(keep, FALSE))
 			{
-      	DELETE_MAP_add(&THIS->dmap, THIS->pos);
-      	THIS->count--;
-      	reload_buffer(THIS);
+				DELETE_MAP_add(&THIS->dmap, THIS->pos);
+				THIS->count--;
+				reload_buffer(THIS);
 
 				GB.ListEnum(THIS);
 				while (!GB.NextEnum())
@@ -741,13 +745,13 @@ BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 				}
 			}
 
-      break;
+			break;
 
-    default:
+		default:
 
-      GB.Error("Result is read-only");
-      break;
-  }
+			GB.Error("Result is read-only");
+			break;
+	}
 
 END_METHOD
 
@@ -756,67 +760,67 @@ END_METHOD
 
 BEGIN_PROPERTY(CRESULT_fields)
 
-  GB.SubCollection.New(&THIS->fields, &_fields_desc, THIS);
-  GB.ReturnObject(THIS->fields);
+	GB.SubCollection.New(&THIS->fields, &_fields_desc, THIS);
+	GB.ReturnObject(THIS->fields);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CRESULT_connection)
 
-  GB.ReturnObject(THIS->conn);
+	GB.ReturnObject(THIS->conn);
 
 END_PROPERTY
 
 
 GB_DESC CResultDesc[] =
 {
-  GB_DECLARE("Result", sizeof(CRESULT)), GB_NOT_CREATABLE(),
+	GB_DECLARE("Result", sizeof(CRESULT)), GB_NOT_CREATABLE(),
 
-  GB_HOOK_CHECK(check_result),
+	GB_HOOK_CHECK(check_result),
 
-  GB_METHOD("_free", NULL, CRESULT_free, NULL),
+	GB_METHOD("_free", NULL, CRESULT_free, NULL),
 
-  GB_PROPERTY_READ("Count", "i", CRESULT_count),
-  GB_PROPERTY_READ("Length", "i", CRESULT_count),
-  GB_PROPERTY_READ("Available", "b", CRESULT_available),
-  GB_PROPERTY_READ("Index", "i", CRESULT_index),
-  GB_PROPERTY_READ("Max", "i", CRESULT_max),
+	GB_PROPERTY_READ("Count", "i", CRESULT_count),
+	GB_PROPERTY_READ("Length", "i", CRESULT_count),
+	GB_PROPERTY_READ("Available", "b", CRESULT_available),
+	GB_PROPERTY_READ("Index", "i", CRESULT_index),
+	GB_PROPERTY_READ("Max", "i", CRESULT_max),
 
-  GB_METHOD("_get", "v", CRESULT_get, "(Field)s"),
-  GB_METHOD("_put", NULL, CRESULT_put, "(Value)v(Field)s"),
-  GB_METHOD("_next", NULL, CRESULT_next, NULL),
+	GB_METHOD("_get", "v", CRESULT_get, "(Field)s"),
+	GB_METHOD("_put", NULL, CRESULT_put, "(Value)v(Field)s"),
+	GB_METHOD("_next", NULL, CRESULT_next, NULL),
 
-  GB_METHOD("MoveFirst", "b", CRESULT_move_first, NULL),
-  GB_METHOD("MoveLast", "b", CRESULT_move_last, NULL),
-  GB_METHOD("MovePrevious", "b", CRESULT_move_previous, NULL),
-  GB_METHOD("MoveNext", "b", CRESULT_move_next, NULL),
-  GB_METHOD("MoveTo", "b", CRESULT_move_to, "(Index)i"),
+	GB_METHOD("MoveFirst", "b", CRESULT_move_first, NULL),
+	GB_METHOD("MoveLast", "b", CRESULT_move_last, NULL),
+	GB_METHOD("MovePrevious", "b", CRESULT_move_previous, NULL),
+	GB_METHOD("MoveNext", "b", CRESULT_move_next, NULL),
+	GB_METHOD("MoveTo", "b", CRESULT_move_to, "(Index)i"),
 
-  GB_METHOD("Update", NULL, CRESULT_update, NULL),
-  GB_METHOD("Delete", NULL, CRESULT_delete, "[(Keep)b]"),
+	GB_METHOD("Update", NULL, CRESULT_update, NULL),
+	GB_METHOD("Delete", NULL, CRESULT_delete, "[(Keep)b]"),
 
-  GB_PROPERTY_READ("Fields", ".ResultFields", CRESULT_fields),
-  GB_PROPERTY_READ("Connection", "Connection", CRESULT_connection),
+	GB_PROPERTY_READ("Fields", ".ResultFields", CRESULT_fields),
+	GB_PROPERTY_READ("Connection", "Connection", CRESULT_connection),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 /** Blob *******************************************************************/
 
 /*static int check_blob(CBLOB *_object)
 {
-  return check_result(BLOB->result) || (BLOB->result->pos != BLOB->pos);
+	return check_result(BLOB->result) || (BLOB->result->pos != BLOB->pos);
 }*/
 
 static CBLOB *make_blob(CRESULT *result, int field)
 {
 	CBLOB *_object;
 
-  GB.New(POINTER(&_object), CLASS_Blob, NULL, NULL);
+	GB.New(POINTER(&_object), CLASS_Blob, NULL, NULL);
 
-  //BLOB->result = result;
-  //GB.Ref(result);
+	//BLOB->result = result;
+	//GB.Ref(result);
 
 	//BLOB->field = field;
 	//BLOB->pos = result->pos;
@@ -892,19 +896,19 @@ END_PROPERTY
 
 GB_DESC CBlobDesc[] =
 {
-  GB_DECLARE("Blob", sizeof(CBLOB)), GB_NOT_CREATABLE(),
+	GB_DECLARE("Blob", sizeof(CBLOB)), GB_NOT_CREATABLE(),
 
-  //GB_HOOK_CHECK(check_blob),
+	//GB_HOOK_CHECK(check_blob),
 
-  GB_STATIC_METHOD("_init", NULL, CBLOB_init, NULL),
-  GB_METHOD("_free", NULL, CBLOB_free, NULL),
+	GB_STATIC_METHOD("_init", NULL, CBLOB_init, NULL),
+	GB_METHOD("_free", NULL, CBLOB_free, NULL),
 
-  //GB_PROPERTY_READ("Result", "Result", CBLOB_result),
-  GB_PROPERTY("Data", "s", CBLOB_data),
-  GB_PROPERTY_READ("Length", "i", CBLOB_length),
-  //GB_METHOD("_unknown", "v", CBLOB_unknown, "v"),
+	//GB_PROPERTY_READ("Result", "Result", CBLOB_result),
+	GB_PROPERTY("Data", "s", CBLOB_data),
+	GB_PROPERTY_READ("Length", "i", CBLOB_length),
+	//GB_METHOD("_unknown", "v", CBLOB_unknown, "v"),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 

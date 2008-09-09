@@ -355,7 +355,10 @@ void gPicture::setTransparent(bool vl)
 		else
 		{
 			if (mask)
+			{
 				g_object_unref(G_OBJECT(mask));
+				mask = 0;
+			}
 		}
 	}
 }
@@ -895,7 +898,7 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
   else
     ret->img = gdk_pixbuf_scale_simple(image, w, h, GDK_INTERP_NEAREST);
 
-  g_object_unref(G_OBJECT(image));
+  //g_object_unref(G_OBJECT(image));
   
   ret->_width = w;
   ret->_height = h;

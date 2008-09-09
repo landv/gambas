@@ -41,6 +41,35 @@ Public Sub _new(sName As String, Optional sParent As String)
 
 End
 
+Public Sub CopyFrom(hClass As CClassInfo, sType As String, sNewType As String) 
+
+  Dim hSym As CSymbolInfo
+  Dim hCopySym As CSymbolInfo
+
+  With hClass
+  
+    Parent = .Parent
+    Symbols = New Collection(gb.Text)
+    
+    For Each hSym In .Symbols
+      hCopySym = hSym.Copy(sType, sNewType)
+      hCopySym.Class = Name
+      Symbols[hSym.Name] = hCopySym
+    Next
+    
+    Creatable = .Creatable
+    AutoCreatable = .AutoCreatable
+    Component = .Component
+    ParentComponent = .ParentComponent
+    
+    If .Properties Then
+      Error "Warning: cannot use "; hClass.Name; " as template class"
+      Return
+    Endif
+  
+  End With  
+  
+End
 
 
 Public Sub InitControl(hWin As Form)
@@ -101,14 +130,14 @@ Public Sub InitControl(hWin As Form)
   'ENDIF
 
   aCont = CComponent.All[Component].Containers
-  Container = aCont.Find(Name) >= 0 OR Name = "Form" OR Name = "Menu"
+  Container = aCont.Find(Name) >= 0 Or Name = "Form" Or Name = "Menu"
   Form = Name = "Form"
 
-  MultiContainer = CComponent.All[Component].MultiContainers.Find(Name) >= 0 OR Name = "TabStrip"
+  MultiContainer = CComponent.All[Component].MultiContainers.Find(Name) >= 0 Or Name = "TabStrip"
 
   hSym = Symbols["_Properties"]
   If hSym Then
-    If hSym.Class = Name AND If hSym.Component = Component Then
+    If hSym.Class = Name And If hSym.Component = Component Then
       sProp = hSym.Value
     Else 
       sProp = "*"
@@ -177,7 +206,7 @@ Public Sub InitControl(hWin As Form)
 
       If Component Then
         'PRINT "? "; Component; ": "; Name; "."; sProp
-        If NOT CComponent.Classes[Component &/ Name].Symbols[sProp] Then
+        If Not CComponent.Classes[Component &/ Name].Symbols[sProp] Then
           Error Component; ": "; Name; "."; sProp; " declared but not implemented"
           Continue
         Endif
@@ -268,7 +297,7 @@ End
 Public Function Inherits(sClass As String) As Boolean
 
   If {Parent} = sClass Then Return True
-  If NOT Parent Then Return False
+  If Not Parent Then Return False
   Return CComponent.Classes[ParentComponent &/ Parent].Inherits(sClass)
 
 End

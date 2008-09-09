@@ -114,7 +114,10 @@ static int my_sqlite3_exec(
         if( rc==SQLITE_ROW ){
           azVals = &azCols[nCol];
           for(i=0; i<nCol; i++){
-            azVals[i] = (char *)sqlite3_column_blob(pStmt, i);
+          	if (sqlite3_column_type(pStmt, i) == SQLITE_BLOB)
+            	azVals[i] = (char *)sqlite3_column_blob(pStmt, i);
+						else
+            	azVals[i] = (char *)sqlite3_column_text(pStmt, i);
           }
         }
         if( xCallback(pArg, nCol, azVals, azCols, pStmt) ){
@@ -842,10 +845,12 @@ void SqliteDataset::close()
 void SqliteDataset::cancel()
 {
 	if ((ds_state == dsInsert) || (ds_state == dsEdit))
+	{
 		if (result.record_header.size())
 			ds_state = dsSelect;
 		else
 			ds_state = dsInactive;
+	}
 }
 
 

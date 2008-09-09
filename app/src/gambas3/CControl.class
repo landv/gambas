@@ -63,6 +63,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   Dim hPict As Picture
   Dim bExist As Boolean
   Dim bVirtual As Boolean
+  Dim hWindow As Window
   'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
@@ -191,6 +192,13 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
     Case "-", "drawingarea", "vbox", "hbox", "vpanel", "hpanel", "vsplit", "hsplit", "embedder"
       hCtrl = New DrawingArea(hParent)
       hCtrl.Merge = True
+
+    Case "workspace"
+      hCtrl = New Workspace(hParent)
+      hWindow = New Window
+      hWindow.Title = sName
+      hWindow.Background = Color.Mix(Color.Foreground, Color.Background)
+      hCtrl.Add(hWindow)
 
     Case Else
 
@@ -732,6 +740,9 @@ Public Sub UpdateName()
 
     Case "DrawingArea"
       Control.Refresh
+      
+    Case "Workspace"
+      Control.ActiveWindow.Title = Name
       
     Case Else
 

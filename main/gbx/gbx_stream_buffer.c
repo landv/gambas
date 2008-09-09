@@ -72,7 +72,6 @@ static int stream_open(STREAM *stream, const char *path, int mode)
   }
 
   stream->buffer.size = info.st_size;
-  stream->buffer.is_term = isatty(fileno(file));
 
   FD = file;
   return FALSE;

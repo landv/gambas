@@ -363,6 +363,28 @@ Public Sub CalcSortKey()
 
 End
 
+Static Private Sub CreateClass(sClass As String, sParent As String, sComp As String) As CClassInfo
+
+  Dim hClass As CClassInfo
+  Dim hComp As CComponent
+  
+  hClass = New CClassInfo(sClass, sParent)
+
+  Classes[sComp &/ sClass] = hClass
+  Classes[sClass] = hClass
+  hClass.Component = sComp
+
+  hComp = All[sComp]
+  If hComp Then  
+    If hComp.Type Then Classes[hComp.Type &/ sClass] = hClass
+    If sClass <> "." Then hComp.ClassList.Add(sClass)
+  End If
+  
+  Return hClass
+  
+End
+
+
 Public Sub Load()
 
   Dim hFic As File
@@ -457,17 +479,11 @@ Public Sub Load()
           Continue
         Endif
 
-        hClass = New CClassInfo(sClass, sParent)
-
-        Classes[Key &/ sClass] = hClass
-        If Type Then Classes[Type &/ sClass] = hClass
-        Classes[sClass] = hClass
-        If sClass <> "." Then ClassList.Add(sClass)
+        hClass = CreateClass(sClass, sParent, Key)
 
         Line Input #hFic, sLig
         hClass.Creatable = InStr(sLig, "C")
         hClass.AutoCreatable = InStr(sLig, "A")
-        hClass.Component = Key
 
         Continue
 
@@ -873,7 +889,7 @@ Static Private Sub MustScan(hEditor As FEditor) As Boolean
   
 End
 
-Static Public Function GetClassSymbols(sClass As String, Optional bInProject As Boolean) As Collection
+Static Public Function GetClassSymbols(sClass As String) As Collection
 
   Dim hClass As CClassInfo
   Dim sName As String
@@ -905,6 +921,14 @@ Static Public Function GetClassSymbols(sClass As String, Optional bInProject As 
     If hClass Then
       Return hClass.Symbols
     Else
+      If Right(sClass, 2) = "[]" Then
+        'GetClassSymbols(Left(sClass, -2))
+        hClass = CreateClass(sClass, "", "*")
+        hClass.CopyFrom(CComponent.Classes["*[]"], "*", Left(sClass, -2))
+        Return hClass.Symbols
+      Else        
+        Print sClass & " ??"
+      Endif
       Return
     Endif
   Endif

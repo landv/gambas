@@ -1370,14 +1370,14 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
   If aSym[iIndex] = "NEW" Then Inc iIndex
 
   sType = aSym[iIndex]
-  If $cType.Exist(sType) Then
-    If (iIndex + 2) < aSym.Count Then
-      If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
-        Return sType & "[]"
-      Endif
+
+  If (iIndex + 2) < aSym.Count Then
+    If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
+      If $cType.Exist(sType) Then sType = $cType[sType]
+      Return sType & "[]"
     Endif
-    sType = $cType[sType]
   Endif
+
   Return sType
 
 Catch
@@ -1407,15 +1407,15 @@ Static Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, sSymbol
       If aSym[iIndex] = "NEW" Then Inc iIndex
     
       sType = aSym[iIndex]
-      If $cType.Exist(sType) Then
-        If (iIndex + 2) < aSym.Count Then
-          If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
-            hSymbol.Type = sType & "[]"
-            Return True
-          Endif
+
+      If (iIndex + 2) < aSym.Count Then
+        If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
+          If $cType.Exist(sType) Then sType = $cType[sType]
+          hSymbol.Type = sType & "[]"
+          Return True
         Endif
-        sType = $cType[sType]
       Endif
+
       hSymbol.Type = sType
       Return True
     Endif
@@ -1491,6 +1491,7 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
               '.Type = sType
             End With
             $hSymbol = $hVirtualSymbol
+            'Debug $hVirtualSymbol.Name;; "->";; $hVirtualSymbol.Type
             Return $hVirtualSymbol.Type
           Endif
         Endif

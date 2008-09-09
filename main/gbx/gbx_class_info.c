@@ -28,6 +28,7 @@
 #include "gb_alloc.h"
 #include "gb_error.h"
 #include "gb_limit.h"
+#include "gbx_c_array.h"
 #include "gambas.h"
 
 static GB_DESC NATIVE_GambasLanguage[] =
@@ -321,6 +322,7 @@ EXTERN GB_DESC NATIVE_DateArray[];
 EXTERN GB_DESC NATIVE_StringArray[];
 EXTERN GB_DESC NATIVE_ObjectArray[];
 EXTERN GB_DESC NATIVE_VariantArray[];
+EXTERN GB_DESC NATIVE_TemplateArray[];
 EXTERN GB_DESC NATIVE_LongArray[];
 EXTERN GB_DESC NATIVE_PointerArray[];
 EXTERN GB_DESC NATIVE_SubCollection[];
@@ -367,6 +369,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NATIVE_StringArray,
   NATIVE_ObjectArray,
   NATIVE_VariantArray,
+  NATIVE_TemplateArray,
   NATIVE_LongArray,
   NATIVE_PointerArray,
   NATIVE_SubCollection,

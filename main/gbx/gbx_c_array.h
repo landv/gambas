@@ -25,6 +25,8 @@
 #ifndef __GBX_C_ARRAY_H
 #define __GBX_C_ARRAY_H
 
+#ifndef GBX_INFO
+
 #include "gambas.h"
 
 #include "gbx_variant.h"
@@ -62,8 +64,6 @@ extern GB_DESC NATIVE_TemplateArray[];
 
 #endif
 
-#define ARRAY_TEMPLATE_NDESC 18
-
 void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, const char *esc, bool many_esc);
 void CARRAY_reverse(void *_object, void *_param);
 void CARRAY_get_value(CARRAY *_object, int index, VALUE *value);
@@ -83,5 +83,9 @@ void *CARRAY_out_of_bound();
  	__data; \
 })
 
+
+#endif  // #ifndef __GBX_CLASS_INFO_C 
+
+#define ARRAY_TEMPLATE_NDESC 18
 
 #endif

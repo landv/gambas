@@ -36,7 +36,7 @@
       AutoResize = True
       Spacing = 8
       { Label5 Label
-        MoveScaled(0,0,12,4)
+        MoveScaled(0,0,16,4)
         Font = Font["Bold"]
         Text = ("Link to")
       }
@@ -55,7 +55,7 @@
       AutoResize = True
       Spacing = 8
       { Label1 Label
-        MoveScaled(0,0,12,4)
+        MoveScaled(0,0,16,4)
         Font = Font["Bold"]
         Text = ("Type")
       }
@@ -70,7 +70,7 @@
       AutoResize = True
       Spacing = 8
       { Label2 Label
-        MoveScaled(0,0,12,4)
+        MoveScaled(0,0,16,4)
         Font = Font["Bold"]
         Text = ("Size")
       }
@@ -85,12 +85,12 @@
       AutoResize = True
       Spacing = 8
       { Label3 Label
-        MoveScaled(0,0,12,4)
+        MoveScaled(0,0,16,4)
         Font = Font["Bold"]
         Text = ("Last modified")
       }
       { lblTime Label
-        MoveScaled(16,0,16,4)
+        MoveScaled(18,0,16,4)
         Expand = True
         Text = ("")
       }
@@ -99,7 +99,7 @@
       MoveScaled(1,17,35,4)
       Spacing = 8
       { Label6 Label
-        MoveScaled(0,0,12,4)
+        MoveScaled(0,0,16,4)
         Font = Font["Bold"]
         Text = ("Directory")
       }
@@ -117,11 +117,13 @@
       MoveScaled(1,21,35,4)
       Expand = True
       Spacing = 8
-      { Label4 Label
-        MoveScaled(0,0,12,4)
-        Font = Font["Bold"]
-        Text = ("Details")
-        Alignment = Align.TopNormal
+      { VBox2 VBox
+        MoveScaled(0,0,16,4)
+        { Label4 Label
+          MoveScaled(0,0,12,4)
+          Font = Font["Bold"]
+          Text = ("Details")
+        }
       }
       { lblInfo TextLabel
         MoveScaled(18,0,14,4)

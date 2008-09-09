@@ -31,313 +31,17 @@
 #include "gmainwindow.h"
 #include "gcombobox.h"
 
-#define STORE_LIST ((GtkListStore*)gtk_combo_box_get_model(GTK_COMBO_BOX(widget)))
-
-/**************************************************************************
-
-gStoreList
-
-***************************************************************************/
-
-int gStoreList_Count(GtkListStore *store)
-{
-	GtkTreeIter iter;
-	int len=1;
-	
-	if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter)) return 0;
-	
-	while ( gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter) ) len++;
-
-	return len;
-}
-
-int gStoreList_Iter(GtkListStore *store,GtkTreeIter *iter,int ind)
-{
-	int len=0;
-	
-	if (ind<0) return -1;
-	if (ind>=gStoreList_Count(store)) return -1;
-	
-	if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),iter)) return -1;
-	while (len<ind)
-	{
-		len++;
-		gtk_tree_model_iter_next(GTK_TREE_MODEL(store),iter);
-	}
-	
-	return 0;
-}
-
-void gStoreList_setItemSelected(GtkListStore *store,GtkTreeSelection *sel,int ind,bool vl)
-{
-	GtkTreeIter iter;
-	
-	if ( gStoreList_Iter(store,&iter,ind) ) return;
-	
-	if (vl) gtk_tree_selection_select_iter(sel,&iter);
-	else	gtk_tree_selection_unselect_iter(sel,&iter);
-}
-
-bool gStoreList_itemSelected(GtkTreeSelection *sel,int ind)
-{
-	GtkTreePath *path;
-	GList *lst;
-	GList *el;
-	gint *indices;
-	bool ret=false;
-	
-	if (!sel) return false;
-	
-	lst=gtk_tree_selection_get_selected_rows(sel,NULL);
-	if (!lst) return false;
-	el=g_list_first(lst);
-	while (el)
-	{
-		path=(GtkTreePath*)el->data;
-		indices=gtk_tree_path_get_indices(path);
-		if (indices[0]==ind) ret=true;
-		g_free(path);
-		el=g_list_next(el);
-	}
-	g_list_free(lst);
-	
-	return ret;
-}
-
-void gStoreList_Clear(GtkListStore *store)
-{
-	GtkTreeIter iter;
- 
-	while(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter))
-		 gtk_list_store_remove(store,&iter);
-}
-
-char* gStoreList_itemText(GtkListStore *store,int ind)
-{
-	GtkTreeIter iter;
-	char *ret=NULL;
-
-	if (gStoreList_Iter(store,&iter,ind)) return NULL;
-	gtk_tree_model_get (GTK_TREE_MODEL(store),&iter,0,&ret,-1);
-	return ret;
-}
-
-void gStoreList_setItemText(GtkListStore *store,int ind, const char *txt)
-{
-	GtkTreeIter iter;
-
-	if (!txt) txt = "";
-	if (gStoreList_Iter(store,&iter,ind)) return;
-	gtk_list_store_set (store,&iter,0,txt,-1);
-}
-
-
-int gStoreList_Find(GtkListStore *store, const char *ptr)
-{
-	int len=0;
-	char *buf;
-	GtkTreeIter iter;
-
-	if ( !gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter) ) return -1;
-	
-	while (1)
-	{
-		gtk_tree_model_get (GTK_TREE_MODEL(store),&iter,0,&buf,-1);
-		if (!strcmp(buf,ptr))
-		{
-			g_free(buf);
-			return len;
-		}
-		len++;
-		g_free(buf);
-		if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter)) break;
-	}
-	
-	return -1;
-}
-
-void gStoreList_Remove(GtkListStore *store,int pos)
-{
-	GtkTreeIter iter;
-
-	if (pos<0) return;
-	if (pos>=gStoreList_Count(store)) return;
-	
-	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter);
-	while (pos--) gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter);
-	gtk_list_store_remove(store,&iter);
-}
-
-char** gStoreList_ArrayList(GtkListStore *store)
-{
-	char **ret;
-	gchar *buf;
-	GtkTreeIter iter;
-	int bucle,len=2;
-	
-	ret=NULL;
-	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter)) return NULL;
-	
-	while ( gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter) ) len++;
-	
-	ret=(char**)g_malloc(sizeof(char*)*len);
-	for (bucle=0;bucle<len;bucle++) ret[bucle]=NULL;
-	
-	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter);
-	
-	len=0;
-	do 
-	{
-		gtk_tree_model_get (GTK_TREE_MODEL(store),&iter,0,&buf,-1);
-		
-		if (!buf)
-		{
-			ret[len]=(char*)g_malloc(sizeof(char));
-			ret[len][0]=0;
-		}
-		else
-		{
-			ret[len]=(char*)g_malloc(sizeof(char)*(1+strlen(buf)));
-			if (ret[len]) strcpy(ret[len],buf);
-			g_free(buf);
-		}
-		if (gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter)) strcat(*ret,"\n");
-		else break;
-		len++;
-		
-	} while ( true );
-
-	return ret;
-	
-	
-}
-
-void gStoreList_List(GtkListStore *store,char **ret)
-{
-	gchar *buf;
-	GtkTreeIter iter;
-	int bucle,len=0;
-	
-	*ret=NULL;
-	if(!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter)) return;
-	
-	do 
-	{
-		gtk_tree_model_get (GTK_TREE_MODEL(store),&iter,0,&buf,-1);
-		len+=strlen(buf)+1;
-		g_free(buf);
-		
-	} while ( gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter) );
-	
-	*ret=(char*)g_malloc(sizeof(char)*len);
-	for (bucle=0;bucle<len;bucle++) (*ret)[bucle]=0;
-	
-	gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter);
-	
-	do 
-	{
-		gtk_tree_model_get (GTK_TREE_MODEL(store),&iter,0,&buf,-1);
-		strcat(*ret,buf);
-		g_free(buf);
-		
-		if (gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter)) strcat(*ret,"\n");
-		else break;
-		
-	} while ( true );
-	
-	
-}
-
-void gStoreList_setArrayList(GtkListStore *store,char **vl)
-{
-	int bucle;
-	int len=gStoreList_Count(store);
-	GtkTreeIter iter;
- 
-	while(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter))
-		 gtk_list_store_remove(store,&iter);
-
-	if (!vl) return;
-
-	bucle=0;
-	len=0;
-	while (vl[len]) 
-	{
-		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter, 0, vl[len], -1);
-		len++;
-	}
-
-}
-
-void gStoreList_setList(GtkListStore *store,char *vl)
-{
-	gchar **split;
-	int bucle;
-	//int len=gStoreList_Count(store);
-	GtkTreeIter iter;
- 
-	while(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter))
-		 gtk_list_store_remove(store,&iter);
-
-	bucle=0;
-	if (vl) 
-	{
-		split=g_strsplit(vl,"\n",0);
-		while (split[bucle])
-		{
-			gtk_list_store_append (store, &iter);
-			gtk_list_store_set (store, &iter, 0, split[bucle++], -1);
-		}
-		g_strfreev(split);
-	}
-
-}
-
-void gStoreList_sortData(GtkListStore *store)
-{
-	GtkTreeIter iter,it2;
-	char *buf1=NULL,*buf2=NULL;
-
-	if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter)) return;
-	while (true)
-	{
-		it2=iter;
-		if (buf1) { g_free(buf1); buf1=NULL; }
-		gtk_tree_model_get (GTK_TREE_MODEL(store),&iter,0,&buf1,-1);
-		if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&it2)) break;
-		while (true)
-		{
-			if (buf2) { g_free(buf2); buf2=NULL; }
-			gtk_tree_model_get (GTK_TREE_MODEL(store),&it2,0,&buf2,-1);
-			
-			if (strcmp (buf1,buf2)>0 )
-			{
-				gtk_list_store_set (store, &iter, 0, buf2, -1);
-				gtk_list_store_set (store, &it2, 0, buf1, -1);
-				g_free(buf1);
-				buf1=g_strdup(buf2);
-			}
-			
-			if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&it2)) break;
-		}
-		gtk_tree_model_iter_next(GTK_TREE_MODEL(store),&iter);
-	}
-	
-	if (buf1) g_free(buf1);
-	if (buf2) g_free(buf2);
-
-}
-
 /**************************************************************************
 	
 	gComboBox
 	
 **************************************************************************/
 
+static bool _style_init = FALSE;
+
 static void cb_click(GtkComboBox *widget,gComboBox *data)
 {
-	if (!data->isReadOnly() && data->count())
+	if (!data->isReadOnly() && !data->locked() && data->count())
 	{
 		char *text = data->itemText(data->index());
 		if (text)
@@ -348,34 +52,108 @@ static void cb_click(GtkComboBox *widget,gComboBox *data)
 		data->emit(SIGNAL(data->onClick));
 }
 
+/*static int pathToIndex(GtkTreePath *path)
+{
+	gint *indices;
+	
+	if (!path) 
+		return -1;
+	
+	indices = gtk_tree_path_get_indices(path);
+	return indices[0];
+}*/
+
+static GtkTreePath *indexToPath(int index)
+{
+	char buffer[16];
+	sprintf(buffer, "%d", index);
+	return gtk_tree_path_new_from_string(buffer);
+}
+
+static void combo_cell_text(GtkComboBox *combo, GtkCellRenderer *cell, GtkTreeModel *md, GtkTreeIter *iter, gTree *tr)
+{
+	gTreeRow *row = NULL;
+	gTreeCell *data;
+	const char *buf = "";
+	char *key;
+
+	key = tr->iterToKey(iter);
+	if (key)
+		row = (gTreeRow*)g_hash_table_lookup(tr->datakey, (gpointer)key);
+	
+	if (row)
+	{
+		data = row->get(0);
+		if (data)
+		{
+			if (data->text()) 
+				buf	=	data->text();
+		}
+	}
+
+	g_object_set(G_OBJECT(cell),
+		"text", buf,
+		(void *)NULL);
+}
+
+
+char *gComboBox::indexToKey(int index)
+{
+	char *key;
+	GtkTreePath *path = indexToPath(index);
+	key = find(path);
+	gtk_tree_path_free(path);
+	return key;	
+}
+
 gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 {
-	GtkListStore *store;
-
+	/*if (!_style_init)
+	{
+		gtk_rc_parse_string(
+			"style \"gambas-default-combo-box-style\" {\n"
+			"  GtkComboBox::appears-as-list = 1\n"
+			"}\n"
+			"class \"GtkComboBox\" style : gtk \"gambas-default-combo-box-style\"\n"
+			);
+		_style_init = TRUE;
+	}*/
+	
 	onChange = NULL;
 	onClick = NULL;
 	onActivate = NULL;
 	
 	_no_click = false;
+	_last_key = 0;
+	_model_dirty = false;
 	sort = false;
 	entry = NULL;
 	
-	g_typ=Type_gComboBox;
-	store=gtk_list_store_new (1, G_TYPE_STRING);
-	border=gtk_event_box_new();
-	widget=gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
-	g_object_unref (store);
+	g_typ = Type_gComboBox;
+	
+	tree = new gTree(NULL);
+	tree->addColumn();
+	tree->setHeaders(false);
+	
+	border = gtk_event_box_new();
+	widget = gtk_combo_box_new_with_model(GTK_TREE_MODEL(tree->store));
 	
 	cell = gtk_cell_renderer_text_new ();
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), cell, true);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
+	//gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
 	g_object_set(cell, "ypad", 0, (void *)NULL);
-
+	gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
+	
 	realize(false);
 	
 	g_signal_connect(G_OBJECT(widget), "changed", G_CALLBACK(cb_click), (gpointer)this);
 	
 	setReadOnly(false);
+}
+
+gComboBox::~gComboBox()
+{
+	g_object_unref(G_OBJECT(tree->store));
 }
 
 void gComboBox::popup()
@@ -400,40 +178,30 @@ void gComboBox::setRealForeground(gColor color)
 
 int gComboBox::count()
 {
-	return gStoreList_Count(STORE_LIST);
-
+	return tree->rowCount();
 }
 
 int gComboBox::index()
 {
-	GtkTreeModel *store;
-	GtkTreeIter iter;
-	
-	store = gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
-	if (!gtk_tree_model_get_iter_first(store,&iter)) return 0;
-
+	updateModel();
 	return gtk_combo_box_get_active (GTK_COMBO_BOX(widget));
 }
 
 char* gComboBox::itemText(int ind)
 {
-	GtkTreeModel *store;
-	GtkTreeIter iter;
-	char *ret=NULL;
-	int len=0;
+	gTreeRow *row;
+	gTreeCell *cell;
 	
-	if (ind<0) return NULL;
-	if (ind>=count()) return NULL;
+	updateModel();
 	
-	store = gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
-	gtk_tree_model_get_iter_first(store,&iter);
-	while (len<ind)
-	{
-		len++;
-		gtk_tree_model_iter_next(store,&iter);
-	}
-	gtk_tree_model_get (GTK_TREE_MODEL(store),&iter,0,&ret,-1);
-	return gt_free_later(ret);
+	char *key = indexToKey(ind);
+	
+	if (!key) return NULL;
+	row = tree->getRow(key);
+	if (!row) return NULL;
+	cell = row->get(0);
+	if (!cell) return NULL;
+	return cell->text();
 }
 
 int gComboBox::length()
@@ -452,15 +220,9 @@ int gComboBox::length()
 		return gTextBox::length();
 }
 
-// char** gComboBox::list()
-// {
-// 	return gStoreList_ArrayList(STORE_LIST);
-// }
-
-
-bool gComboBox::sorted()
+bool gComboBox::isSorted()
 {
-	return sort;
+	return tree->isSorted();
 }
 
 char* gComboBox::text()
@@ -478,33 +240,27 @@ void gComboBox::setIndex(int vl)
 	else if (vl >= count()) 
 		return;
 		
-	gtk_combo_box_set_active(GTK_COMBO_BOX(widget),vl);
+	updateModel();
+	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), vl);
 }
 
-void gComboBox::setItemText(int ind, const char *txt)
+void gComboBox::setItemText(int ind, const char *text)
 {
-	int buf;
+	gTreeRow *row;
+	gTreeCell *cell;
 	
-	if (ind<0) return;
-	if (ind>=count()) return;
-	buf=index();
-	add(txt,ind);
-	remove(ind+1);
-	setIndex(buf);
-	if (sort) gStoreList_sortData(STORE_LIST);
+	char *key = indexToKey(ind);
+	
+	if (!key) return;
+	row = tree->getRow(key);
+	if (!row) return;
+	cell = row->get(0);
+	if (!cell) return;
+	
+	cell->setText(text);
+	
+	updateSort();
 }
-
-// void gComboBox::setList(char **vl)
-// {
-// 	GtkTreeIter iter;
-// 
-// 	gStoreList_setArrayList(STORE_LIST,vl);
-// 	
-// 	if (sort) gStoreList_sortData(STORE_LIST);
-// 	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(STORE_LIST),&iter))
-// 		gtk_combo_box_set_active_iter(GTK_COMBO_BOX(widget),&iter);
-// 
-// }
 
 void gComboBox::setReadOnly(bool vl)
 {
@@ -543,70 +299,101 @@ void gComboBox::setReadOnly(bool vl)
 
 void gComboBox::setSorted(bool vl)
 {
-	sort=vl;
-	if (sort) gStoreList_sortData(STORE_LIST);
+	tree->setSorted(vl);
 }
 
 void gComboBox::setText(const char *vl)
 {
-	_no_click = true;
+	lock();
 	setIndex(find(vl));
-	_no_click = false;
+	unlock();
 	if (entry)
 		gTextBox::setText(vl);
 }
 
-void gComboBox::add(const char *vl,int pos)
+static gboolean combo_set_model_and_sort(gComboBox *combo)
 {
-	GtkTreeIter iter,curr;
-	GtkListStore *store;
-	bool set=false;
-	int ind;
+	gtk_combo_box_set_model(GTK_COMBO_BOX(combo->widget), GTK_TREE_MODEL(combo->tree->store));
+	if (combo->isSorted())
+		combo->tree->sort();
+	combo->_model_dirty = false;
+	return FALSE;
+}
 
+void gComboBox::updateModel()
+{
+	if (_model_dirty)
+		combo_set_model_and_sort(this);
+}
+
+void gComboBox::updateSort()
+{
+	if (_model_dirty)
+		return;
+		
+	_model_dirty = true;
+	gtk_combo_box_set_model(GTK_COMBO_BOX(widget), NULL);
+	g_timeout_add(0, (GSourceFunc)combo_set_model_and_sort, this);
+}
+
+void gComboBox::add(const char *text, int pos)
+{
+	//GtkTreeModel *model;
+	gTreeRow *row;
+	gTreeCell *cell;
+	
+	char key[16];
+	char *after;
+	
+	_last_key++;
+	sprintf(key, "%d", _last_key);
+	
 	if (pos < 0 || pos > count())
-		pos = count();
-	
-	ind = index();
-	
-	if (!vl) 
-		vl = "";
-	
-	store = (GtkListStore*)gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
-	
-	if (!gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store),&iter))
-	{
-		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter,0,vl, -1);
-		gtk_combo_box_set_active_iter(GTK_COMBO_BOX(widget),&iter);
-	}
+		after = NULL;
 	else
+		after = indexToKey(pos);
+
+	//g_signal_lookup("rowGTK_TYPE_COMBO_BOX);
+
+	row = tree->addRow(key, NULL, after);
+	if (row) 
 	{
-		set=gtk_combo_box_get_active_iter(GTK_COMBO_BOX(widget),&curr);
-		gtk_list_store_insert(store,&iter,pos);
-		gtk_list_store_set (store, &iter,0,vl, -1);
-		if (set) gtk_combo_box_set_active_iter(GTK_COMBO_BOX(widget),&curr); 
-		if (sort) gStoreList_sortData(STORE_LIST);
+		cell = row->get(0);
+		if (cell)
+		{
+			cell->setText(text);
+			updateSort();
+		}
 	}
-	
-	setIndex(ind);
+
+	//gtk_combo_box_set_model(GTK_COMBO_BOX(widget), model);
 }
 
 void gComboBox::clear()
 {
-	gStoreList_Clear(STORE_LIST);
-	gTextBox::clear();
-	setIndex(-1);
+	lock();
+	tree->clear();
+	unlock();
 }
 
-int gComboBox::find(const char *ptr)
+int gComboBox::find(const char *text)
 {
-	return gStoreList_Find(STORE_LIST, ptr);
+	int i;
+	
+	for (i = 0; i < count(); i++)
+	{
+		if (!strcmp(itemText(i), text))
+			return i;
+	}
+	
+	return -1;
 }
 
 void gComboBox::remove(int pos)
 {
-	gStoreList_Remove(STORE_LIST,pos);
-	if (sort) gStoreList_sortData(STORE_LIST);
+	updateModel();
+	tree->removeRow(indexToKey(pos));
+	updateSort();
 }
 
 void gComboBox::resize(int w, int h)

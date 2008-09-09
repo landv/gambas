@@ -102,7 +102,7 @@ static void hide_menu(CMENU *item)
 
 static void update_accel(CMENU *item)
 {
-	if (!item->accel->isEmpty()) // And so not a top level menu
+	if (!item->accel->isEmpty() && item->parent)
 	{
 		if (item->enabled && !item->noshortcut && item->parent->enabled)
 		{
@@ -676,7 +676,7 @@ BEGIN_PROPERTY(CMENU_shortcut)
   CMENU *item = OBJECT(CMENU);
   QPopupMenu *parent;
 
-  if (CMENU_is_popup(item))
+  if (CMENU_is_popup(item) || CMENU_is_top(item))
   {
     if (READ_PROPERTY)
       GB.ReturnNull();

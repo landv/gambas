@@ -169,17 +169,13 @@ _OPEN:
   stream->common.no_fionread = FALSE;
   stream->common.no_lseek = FALSE;
 
-  /*if (((mode & ST_BIG) && !EXEC_big_endian)
-      || ((mode & ST_LITTLE) && EXEC_big_endian))
-    stream->common.flag.swap = TRUE;*/
-
   if ((*(stream->type->open))(stream, path, mode, NULL))
   {
     stream->type = NULL;
     THROW_SYSTEM(errno, path);
   }
 
-  //stream->common.flag.closed = FALSE;
+  stream->common.is_term = isatty(STREAM_handle(stream));
 }
 
 
@@ -294,7 +290,10 @@ char STREAM_getchar(STREAM *stream)
 
 void STREAM_read_max(STREAM *stream, void *addr, int len)
 {
+	bool is_term = stream->common.is_term;
+	bool err;
   STREAM_eff_read = 0;
+  int flags, handle;
 
   if (!stream->type)
     THROW(E_CLOSED);
@@ -302,7 +301,21 @@ void STREAM_read_max(STREAM *stream, void *addr, int len)
   if (stream->common.buffer)
   	read_buffer(stream, &addr, &len);
   
-  if ((*(stream->type->read))(stream, addr, len))
+  if (is_term)
+  {
+  	handle = STREAM_handle(stream);
+  	flags = fcntl(handle, F_GETFL);
+    fcntl(handle, F_SETFL, flags | O_NONBLOCK);
+	}
+  	
+  err = (*(stream->type->read))(stream, addr, len);
+  
+  if (is_term)
+  {
+    fcntl(handle, F_SETFL, flags);
+	}
+
+  if (err)
   {
     switch(errno)
     {
@@ -384,18 +397,18 @@ void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 
 static void input(STREAM *stream, char **addr, boolean line)
 {
-  int len = 0;
-  int start;
-  unsigned char c, lc = 0;
-  void *test;
-  bool eol;
-  char *buffer;
-  short buffer_len;
-  short buffer_pos;
+	int len = 0;
+	int start;
+	unsigned char c, lc = 0;
+	void *test;
+	bool eol;
+	char *buffer;
+	short buffer_len;
+	short buffer_pos;
 	
-  *addr = NULL;
+	*addr = NULL;
 
-  stream->common.eof = FALSE;
+	stream->common.eof = FALSE;
 	
 	if (!line)
 		test = &&__TEST_INPUT;
@@ -429,10 +442,10 @@ static void input(STREAM *stream, char **addr, boolean line)
 
 	start = buffer_pos;
 	
-  for(;;)
-  {
-  	if (buffer_pos == buffer_len)
-  	{
+	for(;;)
+	{
+		if (buffer_pos == buffer_len)
+		{
 			if (len)
 			{
 				//add_string(addr, &len_str, stream->common.buffer + start, len);
@@ -443,22 +456,22 @@ static void input(STREAM *stream, char **addr, boolean line)
 			stream->common.buffer = buffer;
 			stream->common.buffer_pos = buffer_pos;
 			stream->common.buffer_len = buffer_len;
-  		
-  		STREAM_read_max(stream, buffer, STREAM_BUFFER_SIZE);
-  		
-  		buffer_pos = 0;
-  		buffer_len = STREAM_eff_read;
-  		
-  		if (!buffer_len)
-  		{
-	    	stream->common.eof = TRUE;
-  			break;
-  		}
-  		
-  		start = 0;
-  	}
-    
-    c = buffer[buffer_pos++]; //STREAM_getchar(stream);
+			
+			STREAM_read_max(stream, buffer, STREAM_BUFFER_SIZE);
+			
+			buffer_pos = 0;
+			buffer_len = STREAM_eff_read;
+			
+			if (!buffer_len)
+			{
+				stream->common.eof = TRUE;
+				break;
+			}
+			
+			start = 0;
+		}
+		
+		c = buffer[buffer_pos++]; //STREAM_getchar(stream);
 
 		goto *test;
 
@@ -493,34 +506,34 @@ static void input(STREAM *stream, char **addr, boolean line)
 		if (eol)
 			break;
 
-    len++;
-    //COMMON_buffer[len++] = c;
+		len++;
+		//COMMON_buffer[len++] = c;
 
 		// Optimized eof
 		
 		/*
-    if (STREAM_eof(stream))
-    {
-      stream->common.eof = TRUE;
-      break;
-    }
-    */
-    /*if ((*eof_func)(stream))
-    {
-    	stream->common.eof = TRUE;
-    	break;
-    }*/
-  }
+		if (STREAM_eof(stream))
+		{
+			stream->common.eof = TRUE;
+			break;
+		}
+		*/
+		/*if ((*eof_func)(stream))
+		{
+			stream->common.eof = TRUE;
+			break;
+		}*/
+	}
 
-  if (len > 0)
-    //add_string(addr, &len_str, stream->common.buffer + start, len);
-    STRING_add(addr, buffer + start, len);
+	if (len > 0)
+		//add_string(addr, &len_str, stream->common.buffer + start, len);
+		STRING_add(addr, buffer + start, len);
 
-  STRING_extend_end(addr);
-  
-  stream->common.buffer = buffer;
-  stream->common.buffer_pos = buffer_pos;
-  stream->common.buffer_len = buffer_len;
+	STRING_extend_end(addr);
+	
+	stream->common.buffer = buffer;
+	stream->common.buffer_pos = buffer_pos;
+	stream->common.buffer_len = buffer_len;
 }
 
 
