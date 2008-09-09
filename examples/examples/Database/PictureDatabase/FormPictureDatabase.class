@@ -78,7 +78,7 @@ PUBLIC SUB Form_Open()
   'ModuleDatabase.OpenDatabase("mysql", "", Application.Name, "root", "")
   '
   ' Use somthing like this for a PostgreSQL database
-  'ModuleDatabase.OpenDatabase("postgresql", "localhost", Application.Name, "timothy", "password")
+  'ModuleDatabase.OpenDatabase("postgresql", "", Application.Name, "postgres", "")
   ' 
   ' Display the database content
   ModuleDatabase.Select()

@@ -49,11 +49,9 @@ void SUBR_bit(void)
 	static int nbits[6] = { 0, 0, 8, 16, 32, 64 };
 
   int64_t val;
-  uint64_t uval;
   int bit;
   TYPE type;
   int n;
-  int mask;
   bool variant;
 
   SUBR_ENTER_PARAM(2);

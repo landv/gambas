@@ -88,7 +88,7 @@ static void quote_string(const char *data, int len, DB_FORMAT_CALLBACK add)
 {
 	int i;
 	unsigned char c;
-	//char buffer[8];
+	char buffer[8];
 
 	(*add)("'", 1);
 	for (i = 0; i < len; i++)
@@ -98,11 +98,15 @@ static void quote_string(const char *data, int len, DB_FORMAT_CALLBACK add)
 			(*add)("\\\\", 2);
 		else if (c == '\'')
 			(*add)("''", 2);
-		/*else if (c < 32 || c == 127)
+		else if (c < 32 || c > 127)
 		{
-			int n = sprintf(buffer, "\\\\%03o", c);
-			(*add)(buffer, n);
-		}*/
+			buffer[0] = '\\';
+			buffer[1] = '\\';
+			buffer[2] = '0' + ((c >> 6) & 0x7);
+			buffer[3] = '0' + ((c >> 3) & 0x7);
+			buffer[4] = '0' + (c & 0x7);
+			(*add)(buffer, 5);
+		}
 		else
 			(*add)((const char *)&c, 1);
 	}
