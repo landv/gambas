@@ -288,9 +288,7 @@ void Adv_user_CLEAR(Adv_user *user)
 {
 	if (user->user) GB.FreeString(&user->user);
 	if (user->pwd)  GB.FreeString(&user->pwd);
-	if (user->userpwd) GB.Free((void**)POINTER(&user->userpwd));
-	user->user=NULL;
-	user->pwd=NULL;
+	if (user->userpwd) GB.FreeString(&user->userpwd);
 }
 
 
@@ -299,7 +297,6 @@ void Adv_user_SET(Adv_user *user,CURL *curl)
 	#ifdef LACKS_AUTH
 	return;
 	#else
-	int len=2;
 	
 	if (user->auth==CURLAUTH_NONE)
 	{
@@ -308,15 +305,10 @@ void Adv_user_SET(Adv_user *user,CURL *curl)
 		return;
 	}
 	
-
-	if (user->user) len += strlen(user->user);
-	if (user->auth) len += strlen(user->pwd);
-	if (user->userpwd) GB.Free((void**)POINTER(&user->userpwd));
-	GB.Alloc ((void**)POINTER(&user->userpwd),len);
-	user->userpwd[0]=0;
-	if (user->user) strcat (user->userpwd,user->user);
-	strcat (user->userpwd,":");
-	if (user->pwd) strcat (user->userpwd,user->pwd);
+	GB.FreeString(&user->userpwd);
+	GB.AddString(&user->userpwd, user->user, 0);
+	GB.AddString(&user->userpwd, ":", 1);
+	GB.AddString(&user->userpwd, user->pwd, 0);
 
 	curl_easy_setopt(curl,CURLOPT_USERPWD,user->userpwd);
 	curl_easy_setopt(curl,CURLOPT_HTTPAUTH,user->auth);
