@@ -445,17 +445,17 @@ END_PROPERTY
 BEGIN_PROPERTY(CCURL_tag)
 
 	if (READ_PROPERTY)
-  	{
 		GB.ReturnPtr(GB_T_VARIANT, &THIS->tag);
-		return;
-	}
-	GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
+	else
+		GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_new)
 
+	#if DEBUG
 	fprintf(stderr, "CCURL_new: %p\n", THIS);
+	#endif
 
 	curlData *data=NULL;
 	
@@ -477,7 +477,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_free)
 	
+	#if DEBUG
 	fprintf(stderr, "CCURL_free: %p\n", THIS);
+	#endif
 	
 	char *tmp=THIS_URL;
 	
