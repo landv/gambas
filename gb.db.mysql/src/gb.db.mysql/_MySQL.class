@@ -238,7 +238,7 @@ End
 
 Public Procedure Use(Database As String)
 
-  modMain.$Connection.Exec("USE " & Database)
+  modMain.$Connection.Exec("USE `" & Database & "`")
   modMain.$Connection.Name = Database
 
 End

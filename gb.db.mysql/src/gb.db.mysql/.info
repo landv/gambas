@@ -51,6 +51,14 @@ Info
 m
 s
 [(Database)s]
+Views
+m
+String[]
+[(Database)s]
+Triggers
+m
+String[]
+[(Database)s]
 #_DataTypes
 
 CA
@@ -288,6 +296,10 @@ Delete
 m
 
 (Table)s(Index)s[(Database)s]
+PrimaryKey
+m
+
+(Table)s(Columns)String[];[(Database)s]
 #_MySQL
 
 CA
@@ -359,6 +371,10 @@ Users
 r
 String[]
 
+Query
+r
+s
+
 CBool
 m
 i
@@ -387,6 +403,10 @@ m
 
 (Routine)s[(IfExists)b(Database)s]
 Info
+m
+s
+(Routine)s[(Database)s]
+Definition
 m
 s
 (Routine)s[(Database)s]

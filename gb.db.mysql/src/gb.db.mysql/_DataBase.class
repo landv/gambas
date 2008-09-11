@@ -113,6 +113,19 @@ Public Function Triggers(Optional Database As String) As String[]
 
 End
 
+Public Function Routines(Optional Database As String) As String[]
+
+  Dim asRoutines As New String[]
+
+  If Not Database Then Database = modMain.$Connection.Name
+  modMain.$hResult = modMain.$Connection.Exec("SELECT `name` FROM `mysql`.`proc` WHERE `db` = '" & Database & "'")
+  For Each modMain.$hResult
+    asRoutines.Add(modMain.$hResult!name)
+  Next
+  Return asRoutines
+
+End
+
 Public Function Charset(Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
