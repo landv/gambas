@@ -502,10 +502,18 @@ __PUSH_QUICK_ARRAY:
 	else /* CQA_COLLECTION */
 	{
 		VALUE_conv_string(&val[1]);
+		//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
 		GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
+		
+		if (GAMBAS_Error)
+		{
+			OBJECT_UNREF(object, "EXEC_push_array");
+			PROPAGATE();
+		}
 		
 		RELEASE(&val[1]);
 		SP = val;
+		
 		PUSH();
 	}
 	
@@ -524,9 +532,6 @@ __PUSH_ARRAY:
 	EXEC_object(val, &class, &object, &defined);
 	
 __PUSH_ARRAY_2:
-	/*RELEASE(SP);*/
-
-	/* Ex�ution de la m�hode sp�iale _get */
 
 	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
 		THROW(E_NARRAY, class->name);

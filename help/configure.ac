@@ -1,7 +1,7 @@
 dnl ---- configure.ac for documentation
 
 AC_INIT(configure.ac)
-GB_INIT(help)
+GB_INIT_SHORT(help)
 
 dnl ---- Create makefiles
 

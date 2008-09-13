@@ -677,8 +677,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
     If aSym.Count = 0 Then Continue
-    'aSym.Insert(["", "", ""])
-
+    
     If aSym.Count = 2 Then
       If bCanInherit Then
         If aSym[0] = "INHERITS" Then
@@ -908,6 +907,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   'ENDIF
 
   hClass = CComponent.Classes[sClass]
+
   If hClass Then
     If hClass.Component <> Project.Name Then
       Return hClass.Symbols

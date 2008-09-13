@@ -449,10 +449,10 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
 End
 
 
-Private Function GetImage(sImg As String, Optional sAdd As String) As String
+Private Function GetImage(sImg As String, Optional sAdd As String, Optional sAlign As String = "center") As String
 
   If sAdd Then sAdd = " " & sAdd
-  Return "<img" & sAdd & " border=\"0\" src=\"/img/" & sImg & ".png\" align=\"center\">"
+  Return "<img" & sAdd & " border=\"0\" src=\"/img/" & sImg & ".png\" align=\"" & sAlign & "\">"
 
 End
 
@@ -1329,12 +1329,12 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       For Each sLang In $aLang
         If sLang = $sLang Then Continue
         If $bAdmin Then
-          Print "<a href=\"/admin" &/ $sPath;
+          Print "<a clas=\"flag\" href=\"/admin" &/ $sPath;
         Else
-          Print "<a href=\"/help" &/ $sPath;
+          Print "<a class=\"flag\" href=\"/help" &/ $sPath;
         Endif
-        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\" hspace=\"2\"");
-        Print "</a>"
+        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"", "top"); "&nbsp;";
+        Print "</a>";
       Next
       
       Print "</div>"
@@ -3531,6 +3531,20 @@ Catch
 
 End
 
+Private Sub ClassHasEvents() As Boolean
+  
+  Dim hSym As CSymbolInfo
+
+  If Not $hClass Then Return
+  
+  For Each hSym In $hClass.Symbols
+    If hSym.IsHidden() Then Continue
+    If InStr(":eE", hSym.Kind) Then Return True
+  Next
+  
+End
+
+
 Private Function GetSyntax() As String
 
   If $hSym Then Return GetSymbolSyntax($hSym)
@@ -3601,9 +3615,12 @@ Private Function GetSymbolSyntax(hSym As CSymbolInfo) As String
 
       sName = GetClassVariableName(hSym.Class)
 
-      sSyntax = sSyntax & Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n\n"
-      sSyntax = sSyntax & sName & " " & Keyword("=") & " " & Keyword("NEW") & " " & GetType(hSym.Class)
-      sSyntax = sSyntax & " " & Keyword("(") & GetSignature(hSym.Signature) & Keyword(")")
+      sSyntax &= Keyword("DIM") & " " & sName & " " & Keyword("AS") & " " & GetType(hSym.Class) & "\n\n"
+      sSyntax &= sName & " " & Keyword("=") & " " & Keyword("NEW") & " " & GetType(hSym.Class)
+      sSyntax &= " " & Keyword("(") & GetSignature(hSym.Signature) & Keyword(")")
+      If ClassHasEvents() Then
+        sSyntax &= " <b>[</b> " & Keyword("AS") & " \"<i>event name</i>\" <b>]</b>"
+      Endif
 
     Case Else
 

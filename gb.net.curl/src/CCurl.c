@@ -49,7 +49,7 @@ DECLARE_EVENT (CURL_READ);
  in this class.
  ******************************************************/
 CURLM *CCURL_multicurl;
-int CCURL_pipe[]={-1,-1};
+int CCURL_pipe[2]={-1,-1};
 
 /******************************************************
  Events from this class
@@ -187,16 +187,30 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 	switch ( ErrCode )
 	{
 		case CURLE_OK:
-			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+			if (!THIS->mode) 
+			{
+				#if DEBUG
+				fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
+				#endif
+				curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+			}
 			THIS_STATUS=0;
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_finished,(long)THIS);
+			CCURL_stop(THIS);
 			break;
-        	default:
-			if (!THIS->mode) curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+		default:
+			if (!THIS->mode) 
+			{
+				#if DEBUG
+				fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
+				#endif
+				curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+			}
 			THIS_STATUS=-1*(1000+ErrCode);
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_error,(long)THIS);
+			CCURL_stop(THIS);
 			break;
 	}
 
@@ -227,7 +241,13 @@ void CCURL_stop(void *_object)
 	
 	if (THIS_CURL)
 	{
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
+		#endif
 		curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_easycleanup(%p)\n", THIS, THIS_CURL);
+		#endif
 		curl_easy_cleanup(THIS_CURL);
 		THIS_CURL=NULL;
 	}
@@ -329,7 +349,7 @@ BEGIN_PROPERTY( CCURL_Mode )
 	
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("Mode property can not be changed while working");
+		GB.Error ("Async property can not be changed while working");
 		return;
   	}
 	
@@ -425,15 +445,17 @@ END_PROPERTY
 BEGIN_PROPERTY(CCURL_tag)
 
 	if (READ_PROPERTY)
-  	{
 		GB.ReturnPtr(GB_T_VARIANT, &THIS->tag);
-		return;
-	}
-	GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
+	else
+		GB.StoreVariant(PROP(GB_VARIANT), (void *)&THIS->tag);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_new)
+
+	#if DEBUG
+	fprintf(stderr, "CCURL_new: %p\n", THIS);
+	#endif
 
 	curlData *data=NULL;
 	
@@ -455,11 +477,21 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_free)
 	
+	#if DEBUG
+	fprintf(stderr, "CCURL_free: %p\n", THIS);
+	#endif
+	
 	char *tmp=THIS_URL;
 	
 	if (tmp) GB.Free(POINTER(&tmp));
 	if (THIS_FILE) fclose(THIS_FILE);
-	if (THIS_CURL) curl_easy_cleanup(THIS_CURL);
+	if (THIS_CURL) 
+	{
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_easy_cleanup(%p)\n", THIS, THIS_CURL);
+		#endif
+		curl_easy_cleanup(THIS_CURL);
+	}
 	Adv_user_CLEAR  (&THIS->user);
 	Adv_proxy_CLEAR(&THIS->proxy.proxy);
 	tmp=THIS_PROTOCOL;
@@ -469,12 +501,18 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_init)
 
+	#if DEBUG
+	fprintf(stderr, "-- curl_multi_init()\n");
+	#endif
 	CCURL_multicurl=curl_multi_init();
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CCURL_exit)
 
+	#if DEBUG
+	fprintf(stderr, "-- curl_multi_cleanup()\n");
+	#endif
 	curl_multi_cleanup(CCURL_multicurl);
 
 END_METHOD

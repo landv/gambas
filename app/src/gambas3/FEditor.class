@@ -27,7 +27,7 @@ Static Private $hVirtualSymbol As New CSymbolInfo
 Static Private $bPublic As Boolean
 Static Private $bStatic As Boolean
 Static Private $sName As String
-Static Private $cType As New Collection
+Static Private $cType As New Collection(gb.Text)
 
 Private $iStartLine As Integer
 Private $iEndLine As Integer
@@ -1370,10 +1370,10 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
   If aSym[iIndex] = "NEW" Then Inc iIndex
 
   sType = aSym[iIndex]
-
+  If $cType.Exist(sType) Then sType = $cType[sType]
+  
   If (iIndex + 2) < aSym.Count Then
     If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
-      If $cType.Exist(sType) Then sType = $cType[sType]
       Return sType & "[]"
     Endif
   Endif
@@ -1407,10 +1407,10 @@ Static Function ReadLocalSymbolType(aSym As String[], iIndex As Integer, sSymbol
       If aSym[iIndex] = "NEW" Then Inc iIndex
     
       sType = aSym[iIndex]
+      If $cType.Exist(sType) Then sType = $cType[sType]
 
       If (iIndex + 2) < aSym.Count Then
         If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
-          If $cType.Exist(sType) Then sType = $cType[sType]
           hSymbol.Type = sType & "[]"
           Return True
         Endif

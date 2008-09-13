@@ -38,7 +38,6 @@
 #include "CFtpClient.h"
 #include "CProxy.h"
 
-
 /*****************************************************
  CURLM : a pointer to use curl_multi interface,
  allowing asynchrnous work without using threads
@@ -116,11 +115,17 @@ void ftp_initialize_curl_handle(void *_object)
 			CCURL_stop(_object);
 			ftp_reset(_object);
 			THIS_CURL=curl_easy_init();
+			#if DEBUG
+			fprintf(stderr, "-- [%p] curl_easy_init() -> %p\n", THIS, THIS_CURL);
+			#endif
 		}
 	}
 	else
 	{
 		THIS_CURL=curl_easy_init();
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_easy_init() -> %p\n", THIS, THIS_CURL);
+		#endif
 	}
 
 	if (THIS->mode)
@@ -156,6 +161,9 @@ int ftp_get (void *_object)
 	
 	if (!THIS->mode)
 	{
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
+		#endif
 		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
 		return 0;
@@ -180,6 +188,9 @@ int ftp_put (void *_object)
 	
 	if (!THIS->mode)
 	{
+		#if DEBUG
+		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
+		#endif
 		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
 		return 0;
@@ -284,7 +295,6 @@ GB_DESC CFtpClientDesc[] =
 
   GB_INHERITS("Curl"),
 
-
   GB_METHOD("_new", NULL, CFTPCLIENT_new, NULL),
   GB_METHOD("_free", NULL, CFTPCLIENT_free, NULL),
 
@@ -294,7 +304,6 @@ GB_DESC CFtpClientDesc[] =
   
   GB_CONSTANT("_Properties", "s", FTP_PROPERTIES),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
-
   
   GB_END_DECLARE
 };

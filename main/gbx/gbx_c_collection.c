@@ -61,7 +61,7 @@ static void collection_free(CCOLLECTION *col)
 
 static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
 {
-  if (!key || !*key)
+  if (len == 0)
   {
     GB_Error("Void key");
     return NULL;
@@ -76,7 +76,7 @@ static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
 
 static void *collection_add_key(CCOLLECTION *col, const char *key, int len)
 {
-  if (!key || !*key)
+  if (len == 0)
   {
     GB_Error("Void key");
     return NULL;
@@ -94,7 +94,7 @@ static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
   void *value;
   HASH_NODE *last;
 
-  if (!key || !*key)
+  if (len == 0)
   {
     GB_Error("Void key");
     return;
