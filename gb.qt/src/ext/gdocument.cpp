@@ -678,6 +678,7 @@ void GDocument::clearUndo()
 {
   undoList.clear();
   redoList.clear();
+  undoLevel = 0;
 }
 
 void GDocument::addUndo(GCommand *c)
@@ -709,12 +710,18 @@ void GDocument::addUndo(GCommand *c)
 
 void GDocument::begin()
 {
+	if (undoLevel == 0)
+		textHasChanged = false;
+	undoLevel++;
   addUndo(new GBeginCommand());
 }
 
 void GDocument::end()
 {
+	undoLevel--;
   addUndo(new GEndCommand());
+  if (undoLevel == 0 && textHasChanged)
+  	emitTextChanged();
 }
 
 void GDocument::addRedo(GCommand * c)
@@ -1157,6 +1164,12 @@ void GDocument::setHighlightMode(int mode, GHighlightCallback cb)
 
 void GDocument::emitTextChanged()
 {
+	if (undoLevel > 0)
+	{
+		textHasChanged = true;
+		return;
+	}
+		
 	FOR_EACH_VIEW(v)
 		v->docTextChanged();
 }

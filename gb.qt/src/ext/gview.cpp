@@ -258,7 +258,8 @@ void GEditor::updateCache()
 
 int GEditor::lineWidth(int y) const
 {
-	return margin + fm.width(doc->lines.at(y)->s.getString());
+	// Add 2 so that we see the cursor at end of line
+	return margin + fm.width(doc->lines.at(y)->s.getString()) + 2;
 }
 
 int GEditor::lineWidth(int y, int len) const
@@ -613,7 +614,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
         x1 = lineWidth(y1, x1);
 
       if (row < y2)
-        x2 = cellWidth() + margin + 1;
+        x2 = cellWidth() + 1;
 			else
         //x2 *= charWidth;
         x2 = lineWidth(y2, x2);
@@ -1098,7 +1099,6 @@ void GEditor::tab(bool back)
     {
       doc->insert(yy, 0, ins);
       doc->colorize(yy);
-      //if (r->s.stripWhiteSpace().length())
     }
   }
   else

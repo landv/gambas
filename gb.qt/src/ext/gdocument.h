@@ -84,6 +84,8 @@ private:
 
   GArray<GCommand> undoList;
   GArray<GCommand> redoList;
+  int undoLevel;
+  bool textHasChanged;
   int highlightMode;
   GHighlightCallback highlightCallback;
   uint oldCount;
