@@ -20,6 +20,7 @@ PRIVATE $sCategories AS String      ' Categories list
 PRIVATE $sHome AS String            ' Home user directory
 PRIVATE $sVersion AS String
 PRIVATE $sDescription AS String
+PRIVATE $sSavePath AS String
 
 PRIVATE CONST MIN_VERSION AS String = "1.9.48"
 PRIVATE CONST MAX_VERSION AS String = "2.90"
@@ -91,6 +92,9 @@ PRIVATE SUB InitMake(sSys AS String)
   ELSE 
     $sPrefix = "" 
   ENDIF
+  
+  TRY MKDIR $sSavePath
+  Path = $sSavePath &/ sSys
 
   $sName = Project.Name
 
@@ -126,6 +130,7 @@ PUBLIC FUNCTION Make() AS Boolean
   TRY MOVE sMacro TO sMacro & ".save"
   TRY KILL sMacro
 
+  $sSavePath = Path
   FOR EACH sSys IN Project.Systems
     IF MakePackage(sSys) THEN RETURN TRUE
   NEXT

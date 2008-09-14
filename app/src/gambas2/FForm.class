@@ -352,7 +352,7 @@ PRIVATE SUB FromString(sData AS String, OPTIONAL hParent AS CControl)
         ENDIF
 
         IF hCtrl.SetProperty(sProperty, vValue) THEN
-          PRINT "Error: "; hCtrl.Kind; "."; sProperty; " = "; sValue
+          PRINT "Unable to do: "; hCtrl.Kind; "."; sProperty; " = "; sValue
         ENDIF
 
       ELSE IF Left$(sLine, 5) = "Move(" THEN

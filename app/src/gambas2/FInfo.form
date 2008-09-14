@@ -1,11 +1,10 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(0,0,66,36)
+  MoveScaled(0,0,59,36)
   Text = ("Information")
   Icon = Picture["icon:/small/info"]
   Persistent = True
-  Border = Window.Fixed
   Arrangement = Arrange.Vertical
   Padding = 8
   { panInfo Panel
@@ -37,12 +36,12 @@
       AutoResize = True
       Spacing = 8
       { Label5 Label
-        MoveScaled(0,0,12,3)
+        MoveScaled(0,0,16,3)
         Font = Font["Bold"]
         Text = ("Link to")
       }
       { lblLink TextBox
-        MoveScaled(14,0,18,3)
+        MoveScaled(17,0,18,3)
         Background = Color.Background
         Foreground = Color.Foreground
         Expand = True
@@ -56,12 +55,12 @@
       AutoResize = True
       Spacing = 8
       { Label1 Label
-        MoveScaled(0,0,12,3)
+        MoveScaled(0,0,16,3)
         Font = Font["Bold"]
         Text = ("Type")
       }
       { lblType Label
-        MoveScaled(16,0,16,3)
+        MoveScaled(17,0,16,3)
         Expand = True
         Text = ("")
       }
@@ -71,12 +70,12 @@
       AutoResize = True
       Spacing = 8
       { Label2 Label
-        MoveScaled(0,0,12,3)
+        MoveScaled(0,0,16,3)
         Font = Font["Bold"]
         Text = ("Size")
       }
       { lblSize Label
-        MoveScaled(16,0,16,3)
+        MoveScaled(17,0,16,3)
         Expand = True
         Text = ("")
       }
@@ -86,12 +85,12 @@
       AutoResize = True
       Spacing = 8
       { Label3 Label
-        MoveScaled(0,0,12,3)
+        MoveScaled(0,0,16,3)
         Font = Font["Bold"]
         Text = ("Last modified")
       }
       { lblTime Label
-        MoveScaled(16,0,16,3)
+        MoveScaled(17,0,16,3)
         Expand = True
         Text = ("")
       }
@@ -100,12 +99,12 @@
       MoveScaled(1,13,35,3)
       Spacing = 8
       { Label6 Label
-        MoveScaled(0,0,12,3)
+        MoveScaled(0,0,16,3)
         Font = Font["Bold"]
         Text = ("Directory")
       }
       { lblDir TextBox
-        MoveScaled(15,0,18,3)
+        MoveScaled(17,0,18,3)
         Background = Color.Background
         Foreground = Color.Foreground
         Expand = True
@@ -115,14 +114,16 @@
       }
     }
     { HBox6 HBox
-      MoveScaled(1,18,35,3)
+      MoveScaled(1,17,35,4)
       Expand = True
       Spacing = 8
-      { Label4 Label
-        MoveScaled(0,0,12,3)
-        Font = Font["Bold"]
-        Text = ("Details")
-        Alignment = Align.TopNormal
+      { VBox2 VBox
+        MoveScaled(0,0,16,4)
+        { Label4 Label
+          MoveScaled(0,0,12,3)
+          Font = Font["Bold"]
+          Text = ("Details")
+        }
       }
       { lblInfo TextLabel
         MoveScaled(18,0,14,3)

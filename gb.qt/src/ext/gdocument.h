@@ -86,8 +86,6 @@ private:
   GArray<GCommand> redoList;
   int highlightMode;
   GHighlightCallback highlightCallback;
-  int maxLength;
-  int oldMaxLength;
   uint oldCount;
   bool readOnly;
   bool blockUndo;
@@ -135,8 +133,6 @@ public:
   void setTabWidth(int tw) { tabWidth = tw; }
   int getTabWidth() const { return tabWidth; }
 
-  int getMaxLineLength() const { return maxLength; }
-
   GString getLine(int y) const;
   void setLine(int y, GString & str);
 
@@ -174,6 +170,12 @@ public:
   void eraseSelection();
 
   void emitTextChanged();
+  
+private:
+
+	void updateLineWidth(int y);
+	void insertLine(int y);
+	void removeLine(int y);
 };
 
 #endif

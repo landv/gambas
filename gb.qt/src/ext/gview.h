@@ -54,7 +54,9 @@ private:
   static const QEvent::Type EVENT_ENSURE_VISIBLE = QT_EVENT_FIRST;
 
   GDocument *doc;
-  int charWidth;
+  //int charWidth;
+  QFontMetrics fm;
+  int largestLine;
   int x, y, xx;
   int nx, ny;
   bool cursor;
@@ -77,13 +79,21 @@ private:
   int numLines() { return doc->numLines(); }
   void startBlink();
   void stopBlink();
-  void updateLength();
   void updateLine(int y) { updateCell(y, 0); }
-  void updateMargin();
   bool updateCursor();
   //void updatePattern();
 
-  void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax);
+  int lineWidth(int y) const;
+  int lineWidth(int y, int len) const;
+  void updateWidth(int y);
+  void updateMargin();
+  void updateHeight();
+  void updateCache();
+  
+  void lineInserted(int y);
+  void lineRemoved(int y);
+
+  void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int row);
 
 	void docTextChanged();
 	void redrawContents();
@@ -168,9 +178,10 @@ public:
   void setFlag(int f, bool v);
 
   int getLineHeight() const { return cellHeight(); }
-  int getCharWidth() const { return charWidth; }
+  int getCharWidth() const;
   void cursorToPos(int y, int x, int *px, int *py);
   int posToLine(int py);
+  int posToColumn(int y, int px) const;
   void posToCursor(int px, int py, int *y, int *x);
 	int lastVisibleRow(int y) { return rowAt(y + visibleHeight() - 1); }
 	int lastVisibleRow() { return lastVisibleRow(contentsY()); }

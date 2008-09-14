@@ -170,7 +170,6 @@ public:
 
 void GDocument::init()
 {
-  maxLength = 0;
   selector = NULL;
   baptismLimit = 0;
 }
@@ -178,7 +177,6 @@ void GDocument::init()
 GDocument::GDocument()
 {
   oldCount = 0;
-  oldMaxLength = 0;
   blockUndo = false;
   tabWidth = 2;
   readOnly = false;
@@ -294,6 +292,23 @@ int GDocument::getIndent(int y, bool *empty)
   return i;
 }
 
+void GDocument::updateLineWidth(int y)
+{
+	FOR_EACH_VIEW(v)
+	{
+		v->updateWidth(y);
+	}
+}
+
+void GDocument::insertLine(int y)
+{
+	lines.insert(y, new GLine());
+	lines.at(y)->modified = lines.at(y)->changed = true;
+	if (baptismLimit > y)
+		baptismLimit++;
+	FOR_EACH_VIEW(v) { v->lineInserted(y); }
+}
+
 void GDocument::insert(int y, int x, const GString & text)
 {
   int pos = 0;
@@ -320,8 +335,7 @@ void GDocument::insert(int y, int x, const GString & text)
 	while (y >= (int)lines.count())
 	{
 		yy = (int)lines.count();
-    lines.insert(yy, new GLine());
-    lines.at(yy)->modified = lines.at(yy)->changed = true;
+		insertLine(yy);
 	}
 
   for(;;)
@@ -337,7 +351,8 @@ void GDocument::insert(int y, int x, const GString & text)
       l->s.insert(x, text.mid(pos, pos2 - pos));
       l->modified = l->changed = true;
 
-      maxLength = GMAX(maxLength, (int)l->s.length());
+      //maxLength = GMAX(maxLength, (int)l->s.length());
+      updateLineWidth(y);
 
       FOR_EACH_VIEW(v)
       {
@@ -359,6 +374,7 @@ void GDocument::insert(int y, int x, const GString & text)
 
       l->s.remove(x, rest.length());
       l->modified = l->changed = true;
+      updateLineWidth(y);
     }
 
     FOR_EACH_VIEW(v)
@@ -368,12 +384,9 @@ void GDocument::insert(int y, int x, const GString & text)
     }
 
     y++;
-
-    lines.insert(y, new GLine());
-    lines.at(y)->modified = lines.at(y)->changed = true;
-    if (baptismLimit > y)
-    	baptismLimit++;
-
+		
+		insertLine(y);
+    
     n = -1;
     x = 0;
 
@@ -384,7 +397,8 @@ void GDocument::insert(int y, int x, const GString & text)
     l->s.insert(x, rest);
     l->modified = l->changed = true;
 
-    maxLength = GMAX(maxLength, (int)l->s.length());
+    //maxLength = GMAX(maxLength, (int)l->s.length());
+    updateLineWidth(y);
   }
 
   updateViews(ys, n);
@@ -400,6 +414,14 @@ void GDocument::insert(int y, int x, const GString & text)
 	{
 		v->cursorGoto(v->ny, v->nx, FALSE);
 	}
+}
+
+void GDocument::removeLine(int y)
+{
+	lines.remove(y);
+	if (baptismLimit > y)
+		baptismLimit--;
+	FOR_EACH_VIEW(v) { v->lineRemoved(y); }
 }
 
 void GDocument::remove(int y1, int x1, int y2, int x2)
@@ -424,6 +446,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 
       l->s.remove(x1, x2 - x1);
       l->modified = l->changed = true;
+      updateLineWidth(y1);
 
       FOR_EACH_VIEW(v)
       {
@@ -443,7 +466,8 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
     l->modified = l->changed = true;
     l->state = 0; // force highlighting of next line.
 
-    maxLength = GMAX(maxLength, (int)l->s.length());
+    //maxLength = GMAX(maxLength, (int)l->s.length());
+    updateLineWidth(y);
 
     for (y = y1 + 1; y < y2; y++)
       text += lines.at(y)->s + '\n';
@@ -451,10 +475,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 
     for (y = y1 + 1; y <= y2; y++)
     {
-      lines.remove(y1 + 1);
-
-			if (baptismLimit > (y1 + 1))
-				baptismLimit--;
+    	removeLine(y1 + 1);
 		}
 
 
@@ -524,16 +545,16 @@ void GDocument::updateViews(int row, int count)
     FOR_EACH_VIEW(v)
     {
       v->setNumRows(oldCount);
-      v->updateLength();
+      v->updateHeight();
     }
   }
 
-  if (maxLength != oldMaxLength)
+  /*if (maxLength != oldMaxLength)
   {
     oldMaxLength = maxLength;
     FOR_EACH_VIEW(v)
       v->updateLength();
-  }
+  }*/
 
   if (row < 0)
   {
@@ -564,7 +585,7 @@ void GDocument::updateViews(int row, int count)
     FOR_EACH_VIEW(v)
     {
       v->setNumRows(oldCount);
-      v->updateLength();
+      v->updateHeight();
     }
   }
 
@@ -1061,7 +1082,8 @@ void GDocument::colorize(int y)
 						addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
 					end();
 			    
-			    maxLength = GMAX(maxLength, (int)l->s.length());
+			    //maxLength = GMAX(maxLength, (int)l->s.length());
+					updateLineWidth(y);
 				}
 			}
 			else
