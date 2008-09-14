@@ -467,7 +467,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
     l->state = 0; // force highlighting of next line.
 
     //maxLength = GMAX(maxLength, (int)l->s.length());
-    updateLineWidth(y);
+    updateLineWidth(y1);
 
     for (y = y1 + 1; y < y2; y++)
       text += lines.at(y)->s + '\n';
@@ -477,7 +477,6 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
     {
     	removeLine(y1 + 1);
 		}
-
 
     FOR_EACH_VIEW(v)
     {

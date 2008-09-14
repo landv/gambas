@@ -92,6 +92,7 @@ private:
   
   void lineInserted(int y);
   void lineRemoved(int y);
+  int findLargestLine();
 
   void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int row);
 

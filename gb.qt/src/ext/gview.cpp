@@ -236,6 +236,7 @@ void GEditor::setDocument(GDocument *d)
     doc = new GDocument;
 
   doc->subscribe(this);
+  findLargestLine();
   //connect(doc, SIGNAL(textChanged()), this, SLOT(docTextChanged()));
 }
 
@@ -288,10 +289,31 @@ int GEditor::posToColumn(int y, int px) const
 	return len;
 }
 
+int GEditor::findLargestLine()
+{
+	int w, mw = 0;
+	
+	//qDebug("search largest line...");
+	
+	for (int y = 0; y < doc->numLines(); y++)
+	{
+		w = lineWidth(y);
+		if (w > mw)
+		{
+			mw = w;
+			largestLine = y;
+		}
+	}
+	
+	return mw;
+}
 
 void GEditor::updateWidth(int y)
 {
 	int w;
+	
+	if (largestLine < 0 || largestLine >= numLines())
+		findLargestLine();
 	
 	if (y < 0)
 	{
@@ -312,21 +334,7 @@ void GEditor::updateWidth(int y)
 		}
 		else if (w < cellWidth() && y == largestLine)
 		{
-			int mw = 0;
-			
-			//qDebug("search largest line...");
-			
-			for (y = 0; y < doc->numLines(); y++)
-			{
-				w = lineWidth(y);
-				if (w > mw)
-				{
-					mw = w;
-					largestLine = y;
-				}
-			}
-			
-			w = mw;
+			w = findLargestLine();
 			goto UPDATE_WIDTH;
 		}
 	}
@@ -1423,7 +1431,7 @@ void GEditor::resizeEvent(QResizeEvent *e)
 
 bool GEditor::event(QEvent *e)
 {
-	int charWidth = getCharWidth();
+	//int charWidth = getCharWidth();
   
   if (e->type() == EVENT_ENSURE_VISIBLE)
   {
