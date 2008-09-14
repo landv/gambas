@@ -736,13 +736,15 @@ bool GDocument::undo()
 {
   int nest;
 
-  if (undoList.isEmpty() || isReadOnly())
+  if (undoList.isEmpty() || isReadOnly() || blockUndo)
     return true;
 
   blockUndo = true;
   nest = 0;
 
   //qDebug("BEGIN UNDO");
+
+	begin();
 
   do
   {
@@ -760,7 +762,9 @@ bool GDocument::undo()
 
   //qDebug("END UNDO");
 
+	end();
   blockUndo = false;
+  
   return false;
 }
 
@@ -768,12 +772,12 @@ bool GDocument::redo()
 {
   int nest;
 
-  if (redoList.isEmpty() || isReadOnly())
+  if (redoList.isEmpty() || isReadOnly() || blockUndo)
     return true;
 
   blockUndo = true;
-
   nest = 0;
+  begin();
 
   do
   {
@@ -790,8 +794,10 @@ bool GDocument::redo()
     undoList.append(c);
   }
   while (nest);
-
+	
+	end();
   blockUndo = false;
+  
   return false;
 }
 

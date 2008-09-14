@@ -1991,7 +1991,7 @@ static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
   return
     do_query(db, "Unable to delete index: &1", NULL,
-      "drop index `&1`", 1, index);
+      "drop index `&1` on `&2`", 1, index, table);
 }
 
 /*****************************************************************************

@@ -119,7 +119,6 @@ PUBLIC SUB Open(sMode AS String, OPTIONAL sClass AS String, OPTIONAL bStatic AS 
   ENDIF
 
   iX = hEditor.X + hEditor.ToPosX(0) + hEditor.Font.Width(sText)
-  DEBUG sMode;; "'"; sText; "' -> "; iX
 
   iX = Max(0, Min(iX, ME.Parent.Window.ClientW - ME.Width))
 
