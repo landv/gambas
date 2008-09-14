@@ -916,7 +916,6 @@ void GEditor::cursorRight(bool shift, bool ctrl)
     cursorGoto(y, x + 1, shift);
 }
 
-
 void GEditor::cursorUp(bool shift, bool ctrl)
 {
 	if (!ctrl)
@@ -1002,7 +1001,7 @@ void GEditor::newLine()
   cursorGoto(doc->yAfter, doc->xAfter, false);
 }
 
-void GEditor::del()
+void GEditor::del(bool ctrl)
 {
   if (doc->hasSelection())
   {
@@ -1016,10 +1015,18 @@ void GEditor::del()
       doc->remove(y, x, y + 1, 0);
   }
   else
-    doc->remove(y, x, y, x + 1);
+  {
+		if (ctrl && x < lineLength(y))
+		{
+			int nx = doc->wordRight(y, x);
+			doc->remove(y, x, y, nx);
+		}
+		else
+    	doc->remove(y, x, y, x + 1);
+	}
 }
 
-void GEditor::backspace()
+void GEditor::backspace(bool ctrl)
 {
 	int indent;
 	int yy;
@@ -1045,12 +1052,20 @@ void GEditor::backspace()
 				break;
 		}
 		cursorGoto(y, indent, true);
-		del();
+		del(false);
   }
   else
   {
-  	if (cursorGoto(y, x - 1, false))
-	    del();
+  	if (ctrl && x > 0)
+  	{
+			int nx = doc->wordLeft(y, x);
+			doc->remove(y, nx, y, x);
+  	}
+  	else
+  	{
+  		if (cursorGoto(y, x - 1, false))
+		    del(false);
+		}
 	}
 }
 
@@ -1250,9 +1265,9 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Key_End:
 				cursorEnd(shift, ctrl); return;
 			case Key_Backspace:
-				backspace(); return;
+				backspace(ctrl); return;
 			case Key_Delete:
-				del(); return;
+				del(ctrl); return;
 			case Key_Prior:
 				cursorPageUp(shift); return;
 			case Key_Next:

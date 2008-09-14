@@ -161,8 +161,8 @@ public:
   void cursorHome(bool shift, bool ctrl);
   void cursorEnd(bool shift, bool ctrl);
   void newLine();
-  void backspace();
-  void del();
+  void backspace(bool ctrl);
+  void del(bool ctrl);
   void copy(bool mouse);
   void copy() { copy(false); }
   void cut();
