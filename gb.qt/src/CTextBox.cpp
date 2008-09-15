@@ -467,7 +467,7 @@ END_METHOD
 BEGIN_PROPERTY(CCOMBOBOX_item_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(COMBOBOX->text(THIS->index));
+    GB.ReturnNewZeroString(TO_UTF8(COMBOBOX->text(THIS->index)));
   else
   {
     COMBOBOX->blockSignals(true);
