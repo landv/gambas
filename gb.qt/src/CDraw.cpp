@@ -209,7 +209,7 @@ static void end(GB_DRAW *d)
   {
     if (DPM(d))
     {
-      ((CPICTURE *)device)->pixmap->setMask(*(EXTRA(d)->mask));
+      ((CPICTURE *)device)->pixmap->setMask(*(EXTRA(d)->mask)); // ???
       delete DPM(d);
       delete EXTRA(d)->mask;
     }

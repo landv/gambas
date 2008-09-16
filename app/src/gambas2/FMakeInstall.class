@@ -71,6 +71,8 @@ PUBLIC SUB Form_Open()
     chkPrefix.Value = TRUE
     chkPrefix.Enabled = FALSE
   ENDIF 
+  
+  chkCreateDir.Value = Project.CreateEachDirectory
 
 END
 
@@ -724,5 +726,11 @@ END
 PUBLIC SUB chkUseRelease_Click()
 
   UpdatePackageName
+
+END
+
+PUBLIC SUB chkCreateDir_Click()
+
+  Project.CreateEachDirectory = chkCreateDir.Value
 
 END

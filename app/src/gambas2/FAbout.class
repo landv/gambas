@@ -25,6 +25,7 @@ PUBLIC SUB Form_Open()
   GetSupport
 
   txtGift.X = 0
+  lblMessage.Text = "© 2000-" & Year(Now) & " Benoît Minisini"
 '   panGift.ClientW
 '   sText = Trim(File.Load("support.txt"))
 '   txtGift.Text = "<b>" & ("Thanks to") & "</b>..." & Replace("\n" & sText, "\n", String$(8, "&nbsp;"))

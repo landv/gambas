@@ -177,7 +177,10 @@ static CPICTURE *get_picture(const char *path, int len)
 			//if (img)
 			//	fprintf(stderr, "CREATE_PICTURE_FROM_IMAGE: %p (%d %d)\n", img, img->width(), img->height());
 			//if (pict)
-			//	fprintf(stderr, "CREATE_PICTURE_FROM_IMAGE: -> %p (%d %d)\n", pict, pict->pixmap->width(), pict->pixmap->height());
+			//{
+			//	fprintf(stderr, "get_picture: %.*s", len, path);
+			//	fprintf(stderr, ": -> %p %dx%d alpha=%d mask=%d\n", pict, pict->pixmap->width(), pict->pixmap->height(), pict->pixmap->hasAlphaChannel(), pict->pixmap->mask() ? 1 : 0);
+			//}
 		}
 
     INSERT_INTO_CACHE(key, pict);

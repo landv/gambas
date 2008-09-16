@@ -41,6 +41,7 @@ PUBLIC Maintainer AS String
 PUBLIC Address AS String
 PUBLIC Vendor AS String
 PUBLIC License AS String
+PUBLIC CreateEachDirectory AS Boolean
 
 PUBLIC TabSize AS Integer
 PUBLIC Version AS String
@@ -494,6 +495,18 @@ PRIVATE SUB AddEmblem(hPict AS Picture, sEmblem AS String) AS Picture
   
 END
 
+PRIVATE SUB AddLinkEmblem(hPict AS Picture) AS Picture
+  
+  DIM hImage AS NEW Image(hPict.Width + 1, hPict.Height + 1, TRUE)
+  
+  hImage.Fill(Color.Transparent)
+  hImage.Draw(hPict.Image, 1, 0)
+  hImage.Draw(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
+  RETURN hImage.Picture
+  
+END
+
+
 
 PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
   
@@ -607,9 +620,7 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
     IF bConflict THEN hPict = AddEmblem(hPict, "icon:/32/warning")
 
     IF bLink THEN 
-      Draw.Begin(hPict)
-      Draw.Picture(Picture["img/16/link.png"], 0, hPict.Height - 16)
-      Draw.End
+      hPict = AddLinkEmblem(hPict)
     ENDIF
 
   ELSE
@@ -638,9 +649,7 @@ PUBLIC SUB GetFileIcon(sPath AS String, OPTIONAL iSize AS Integer) AS Picture
       ENDIF      
 
       IF bLink THEN 
-        Draw.Begin(hPict)
-        Draw.Picture(Picture["img/16/link.png"], 0, hPict.Height - 16)
-        Draw.End
+        hPict = AddLinkEmblem(hPict)
       ENDIF
       
       IF NOT bNoStartup THEN Picture[sKey] = hPict
@@ -2032,6 +2041,7 @@ PUBLIC SUB ReadProject()
   Vendor = ""
   Address = ""
   License = ""
+  CreateEachDirectory = FALSE
 
   WHILE NOT Eof(hFic)
 
@@ -2171,6 +2181,9 @@ PUBLIC SUB ReadProject()
       CASE "stack"
         Stack = Val(sVal)
         
+      CASE "createeachdirectory"
+        CreateEachDirectory = Val(sVal) <> 0
+        
     END SELECT
 
   WEND
@@ -2263,6 +2276,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   IF License THEN PRINT #hFic, "License="; License
   IF Prefix THEN PRINT #hFic, "Prefix=1"
   IF UseRelease THEN PRINT #hFic, "UseRelease=1"
+  IF CreateEachDirectory THEN PRINT #hFic, "CreateEachDirectory=1"
 
   IF Systems.Count THEN
 

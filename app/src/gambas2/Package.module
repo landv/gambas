@@ -93,8 +93,14 @@ PRIVATE SUB InitMake(sSys AS String)
     $sPrefix = "" 
   ENDIF
   
-  TRY MKDIR $sSavePath
-  Path = $sSavePath &/ sSys
+  IF Project.CreateEachDirectory THEN
+    Path = $sSavePath &/ sSys
+    TRY MKDIR $sSavePath
+    TRY MKDIR Path
+  ELSE 
+    Path = $sSavePath
+    TRY MKDIR Path
+  ENDIF
 
   $sName = Project.Name
 
