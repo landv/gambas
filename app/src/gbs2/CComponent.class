@@ -4,7 +4,6 @@ STATIC PUBLIC All AS NEW Collection
 STATIC PRIVATE $iKey AS Integer
 STATIC PUBLIC WhoImplement AS NEW Collection
 
-
 PUBLIC Key AS String
 PUBLIC Name AS String
 
@@ -135,8 +134,6 @@ STATIC PRIVATE SUB GetWhoImplement()
   DIM s AS String
   DIM hComp AS CComponent
 
-
-
   FOR EACH hComp IN CComponent.All
   
     FOR EACH s IN hComp.Implement
@@ -156,8 +153,6 @@ STATIC PUBLIC SUB Exit()
 
 END
 
-
-
 PUBLIC SUB CalcSortKey()
 
   DIM sComp AS String
@@ -172,6 +167,7 @@ PUBLIC SUB CalcSortKey()
 
       FOR EACH sComp IN Require
         hComp = All[sComp]
+        IF NOT hComp THEN ERROR "gbs2: warning: cannot find component "; sComp; " required by "; ME.Name
         IF hComp <> ME THEN hComp.CalcSortKey
       NEXT
   
