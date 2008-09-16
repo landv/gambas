@@ -340,7 +340,7 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
     sRes = "<b>(</b> " & sRes & " <b>)</b>"
   Endif
   
-  If Type Then sRes &= " AS " & GetType(Type)
+  If Type Then sRes &= " " & If(Settings["/Editor/KeywordsUseUpperCase"], "AS", "As") & " " & GetType(Type)
 
   Return sRes
 

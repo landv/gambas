@@ -1,125 +1,124 @@
 ' Gambas class file
 
-STATIC PUBLIC All AS NEW Collection
-STATIC PRIVATE $iKey AS Integer
-STATIC PUBLIC WhoImplement AS NEW Collection
+Static Public All As New Collection
+Static Private $iKey As Integer
+Static Public WhoImplement As New Collection
 
+Public Key As String
+Public Name As String
 
-PUBLIC Key AS String
-PUBLIC Name AS String
+Public Require As New String[]
+Public Exclude As New String[]
+Public Implement As New String[]
+Public Need As New String[]
+Public SortKey As Integer
 
-PUBLIC Require AS NEW String[]
-PUBLIC Exclude AS NEW String[]
-PUBLIC Implement AS NEW String[]
-PUBLIC Need AS NEW String[]
-PUBLIC SortKey AS Integer
-
-STATIC PRIVATE SUB InitComponent(sFile AS String, bUser AS Boolean)
+Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   
-  DIM hComponent AS CComponent
-  DIM hFic AS File
-  DIM sInfo AS String
-  DIM sLig AS String
-  DIM sKey AS String
+  Dim hComponent As CComponent
+  Dim hFic As File
+  Dim sInfo As String
+  Dim sLig As String
+  Dim sKey As String
 
-  DIM iPos AS Integer
+  Dim iPos As Integer
   
-  DIM sLib AS String
-  DIM iKey AS Integer
-  DIM sGroup AS String
+  Dim sLib As String
+  Dim iKey As Integer
+  Dim sGroup As String
 
-  IF bUser THEN
-    OPEN Component.UserPath &/ sFile AS #hFic
-  ELSE
-    OPEN Component.Path &/ sFile AS #hFic
-  ENDIF
+  If bUser Then
+    Open Component.UserPath &/ sFile As #hFic
+  Else
+    Open Component.Path &/ sFile As #hFic
+  Endif
 
-  LINE INPUT #hFic, sLig
+  Line Input #hFic, sLig
   sLig = Trim(sLig)
 
-  IF sLig = "[Component]" THEN
+  If sLig = "[Component]" Then
 
-    hComponent = NEW CComponent
+    hComponent = New CComponent
     hComponent.Key = File.BaseName(sFile)
     hComponent.Name = hComponent.Key '$cName[hComponent.Key]
 
-    WHILE NOT Eof(hFic)
+    While Not Eof(hFic)
 
-      LINE INPUT #hFic, sLig
+      Line Input #hFic, sLig
       sLig = Trim(sLig)
 
-      IF NOT sLig THEN CONTINUE
-      IF Left(sLig) = ";" OR Left(sLig) = "'" THEN CONTINUE
+      If Not sLig Then Continue
+      If Left(sLig) = ";" Or Left(sLig) = "'" Then Continue
 
-      IF sLig = "[Component]" THEN BREAK
+      If sLig = "[Component]" Then Break
 
-      IF Left(sLig) = "[" AND IF Right(sLig) = "]" THEN
+      If Left(sLig) = "[" And If Right(sLig) = "]" Then
         sGroup = Mid$(sLig, 2, -1)
-        CONTINUE
-      ENDIF
+        Continue
+      Endif
 
       iPos = InStr(sLig, "=")
-      IF iPos = 0 THEN CONTINUE
+      If iPos = 0 Then Continue
 
       sKey = Left$(sLig, iPos - 1)
       sLig = Mid$(sLig, iPos + 1)
 
-      WITH hComponent
+      With hComponent
 
-        IF sKey = "Key" THEN
+        If sKey = "Key" Then
           .Key = sLig
-        ELSE IF sKey = "Name" THEN 
-        ELSE IF sKey = "Require" OR sKey = "Requires" THEN
+        Else If sKey = "Name" Then 
+        Else If sKey = "Require" Or sKey = "Requires" Then
           .Require = Split(LCase(sLig))
-        ELSE IF sKey = "Exclude" OR sKey = "Excludes" THEN
+        Else If sKey = "Exclude" Or sKey = "Excludes" Then
           .Exclude = Split(LCase(sLig))
-        ELSE IF sKey = "Implement" OR sKey = "Implements" THEN
+        Else If sKey = "Implement" Or sKey = "Implements" Then
           .Implement = Split(LCase(sLig))
-        ELSE IF sKey = "Need" OR sKey = "Needs" THEN
+        Else If sKey = "Need" Or sKey = "Needs" Then
           .Need = Split(LCase(sLig))
         ' ELSE IF sKey = "Alpha" THEN
         '   .State = UNSTABLE
         ' ELSE IF sKey = "State" THEN 
         '   .State = CInt(sLig)
-        ENDIF
+        Endif
 
-      END WITH
+      End With
 
-    WEND
+    Wend
 
     'hComponent.User = bUser
   
-    IF hComponent.Key THEN
+    If hComponent.Key Then
       All[hComponent.Key] = hComponent
-    ENDIF
+    Endif
 
-  ENDIF
+  Endif
 
-  CLOSE #hFic
+  Close #hFic
   
-CATCH 
+Catch 
 
-  DEBUG "Unable to read component file:";; sFile
+  Debug "Unable to read component file:";; sFile
   
-END
+End
 
 
-STATIC PUBLIC SUB _init()
+Static Public Sub _init()
 
-  DIM aComp AS String[]
-  DIM sFile AS String
+  Dim aComp As String[]
+  Dim sFile As String
 
   aComp = Dir(Component.Path, "*.component").Sort()
-  FOR EACH sFile IN aComp
-    InitComponent(sFile, FALSE)
-  NEXT
+  For Each sFile In aComp
+    InitComponent(sFile, False)
+  Next
 
-  IF Exist(Component.UserPath) THEN
+  If Exist(Component.UserPath) Then
     aComp = Dir(Component.UserPath, "*.component").Sort()
-    FOR EACH sFile IN aComp
-      InitComponent(sFile, TRUE)
-    NEXT
-  ENDIF
+    For Each sFile In aComp
+      InitComponent(sFile, True)
+    Next
+  Endif
   
   SortComponents
   
@@ -127,95 +126,92 @@ STATIC PUBLIC SUB _init()
   WhoImplement["form"] = ["gb.gui"]
   GetWhoImplement
 'PRINT "ok"
-END
+End
 
-STATIC PRIVATE SUB GetWhoImplement()
+Static Private Sub GetWhoImplement()
 
-  DIM sComp AS String
-  DIM s AS String
-  DIM hComp AS CComponent
+  Dim sComp As String
+  Dim s As String
+  Dim hComp As CComponent
 
-
-
-  FOR EACH hComp IN CComponent.All
+  For Each hComp In CComponent.All
   
-    FOR EACH s IN hComp.Implement
+    For Each s In hComp.Implement
     
-      IF WhoImplement[s] = NULL THEN WhoImplement[s] = NEW String[]
-      IF NOT WhoImplement[s].Exist(hComp.Name) THEN WhoImplement[s].Add(hComp.Name)
+      If WhoImplement[s] = Null Then WhoImplement[s] = New String[]
+      If Not WhoImplement[s].Exist(hComp.Name) Then WhoImplement[s].Add(hComp.Name)
       
-    NEXT 
+    Next 
     
-  NEXT
+  Next
 
-END
+End
 
-STATIC PUBLIC SUB Exit()
+Static Public Sub Exit()
 
-  All = NULL
+  All = Null
 
-END
+End
 
+Public Sub CalcSortKey()
 
-
-PUBLIC SUB CalcSortKey()
-
-  DIM sComp AS String
-  DIM sNeed AS String
-  DIM hComp AS CComponent
+  Dim sComp As String
+  Dim sNeed As String
+  Dim hComp As CComponent
 
   'DEBUG ">>>";; Key
 
-  IF SortKey = 0 THEN 
+  If SortKey = 0 Then 
 
-    IF Require.Count OR IF Need.Count THEN
+    If Require.Count Or If Need.Count Then
 
-      FOR EACH sComp IN Require
+      For Each sComp In Require
         hComp = All[sComp]
-        IF hComp <> ME THEN hComp.CalcSortKey
-      NEXT
+        If Not hComp Then Error "gbs3: warning: cannot find component "; sComp; " required by "; Me.Name
+        If hComp <> Me Then hComp.CalcSortKey
+      Next
   
-      FOR EACH sNeed IN Need
-        FOR EACH hComp IN All
-          IF hComp.Implement.Find(sNeed) >= 0 THEN
+      For Each sNeed In Need
+        For Each hComp In All
+          If hComp.Implement.Find(sNeed) >= 0 Then
             hComp.CalcSortKey
-          ENDIF
-        NEXT
-      NEXT
+          Endif
+        Next
+      Next
 
-    ENDIF
+    Endif
     
-    INC $iKey
+    Inc $iKey
     SortKey = $iKey
 
-  ENDIF
+  Endif
   
   'DEBUG "<<<";; Key;; "=";; SortKey
 
-END
+End
 
-STATIC PRIVATE SUB SortComponents()
+Static Private Sub SortComponents()
 
-  DIM iMax AS Integer
-  DIM hComponent AS CComponent
-  DIM cNewAll AS NEW Collection
-  DIM iInd AS Integer
+  Dim iMax As Integer
+  Dim hComponent As CComponent
+  Dim cNewAll As New Collection
+  Dim iInd As Integer
 
-  FOR EACH hComponent IN All
+  For Each hComponent In All
     hComponent.CalcSortKey
     iMax = Max(iMax, hComponent.SortKey)
     'PRINT hComponent.Key;; hComponent.SortKey
-  NEXT
+  Next
 
-  FOR iInd = 1 TO iMax
-    FOR EACH hComponent IN All
-      IF hComponent.SortKey = iInd THEN
+  For iInd = 1 To iMax
+    For Each hComponent In All
+      If hComponent.SortKey = iInd Then
         cNewAll.Add(hComponent, hComponent.Key)
         'DEBUG hComponent.Key;; hComponent.SortKey
-      ENDIF
-    NEXT
-  NEXT
+      Endif
+    Next
+  Next
 
   All = cNewAll
 
-END
+End

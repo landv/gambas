@@ -1858,7 +1858,7 @@ Private Sub CheckCompletion(sMode As String)
       sWord = GetIdentifier(sLine, Editor.Column - 1)
       If Right(sLine) <> "." And If Len(sLine) > Len(sWord) And If Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." Then
         iPos = Editor.Column
-        Editor.Goto(Editor.Line, Editor.Column - Len(sWord) - 2)
+        Editor.Goto(Editor.Line, Editor.Column - String.Len(sWord) - 2)
         CheckCompletion(".")
         frmCompletion.SetText(sWord)
         Editor.Goto(Editor.Line, iPos)

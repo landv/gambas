@@ -320,8 +320,12 @@
     }
     Index = 6
     Text = ("Destination directory")
+    { chkCreateDir CheckBox
+      MoveScaled(0,0,69,4)
+      Text = ("Create directories for each distribution")
+    }
     { dchInstall DirChooser
-      MoveScaled(0,0,72,58)
+      MoveScaled(1,8,72,58)
       Expand = True
       ShowBookmark = True
     }

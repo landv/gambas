@@ -42,6 +42,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dim iLeft As Integer
   Dim iPos As Integer
   Dim hCont As Container
+  Dim sText As String
 
   hEditor = GetEditor()
 
@@ -106,13 +107,18 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     lvwComp.Item.EnsureVisible
   Endif 
 
-  iX = hEditor.X + hEditor.CursorX - iLeft * hEditor.Font.Width("X")
-
-  If sMode = "<" Then 'Key.Code = Key.Backspace THEN
-    iX = iX - hEditor.Font.Width(String.Mid$(hEditor.Lines[hEditor.Line].Text, hEditor.Column, 1))
+  If sMode = "<" Then
+    sText = String.Left(hEditor.Lines[hEditor.Line], hEditor.Column - iLeft - 1)
   Else
-    iX = iX + hEditor.Font.Width(Key.Text)
+    sText = String.Left(hEditor.Lines[hEditor.Line], hEditor.Column - iLeft) 
+    If Key.Code = Key.BackSpace Then 
+      sText &= "."
+    Else 
+      sText &= Key.Text
+    Endif
   Endif
+
+  iX = hEditor.X + hEditor.ToPosX(0) + hEditor.Font.Width(sText)
 
   iX = Max(0, Min(iX, Me.Parent.Window.ClientW - Me.Width))
 

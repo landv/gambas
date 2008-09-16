@@ -207,10 +207,10 @@ Private Sub OpenDatabase()
 
   If Not $sUri Then
 
-    $sUri = "/edit/comp/gb/pointer[]/_put"
-    $sPath = "/comp/gb/pointer[]/_put"
+    $sUri = "/help/changes"
+    $sPath = "/changes"
     $sLang = DEFAULT_LANG
-    'DB.Debug = TRUE
+    DB.Debug = True
     '$sRoot = "/var/www/html"
 
   Else
@@ -655,7 +655,7 @@ Private Sub LeaveSection()
 End
 
 
-Private Function Encode(sStr As String) As String
+Private Function Encode(sText As String) As String
 
   Dim iPos As Integer
   Dim iPos2 As Integer
@@ -675,12 +675,22 @@ Private Function Encode(sStr As String) As String
   Dim iLevel As Integer
   Dim iLevelLen As Integer
   Dim bList As Boolean
+  Dim sStr As String
+  Dim iInTable As Integer
+  
+  Dim bTitleIndex As Boolean
+  Dim bUseThisTitleForIndex As Boolean
+  Dim sTitleIndex As String
+  Dim sTitleIndexStamp As String
+  Dim iTitleIndex As Integer
+  Dim iTitleIndexStart As Integer
+  Dim iTitleLevel As Integer
 
   $sRes = ""
   $aSection = New String[]
   EnterSection("")
 
-  For Each sStr In Split(RTrim(sStr), "\n")
+  For Each sStr In Split(RTrim(sText), "\n")
 
     If Left$(sStr) = "{" And If Len(sStr) >= 2 Then
 
@@ -800,7 +810,7 @@ Private Function Encode(sStr As String) As String
         Select Case sStr
 
           Case "classes"
-            $sRes = $sRes & GetClasses()
+            $sRes &= GetClasses()
             Continue
 
           Case "no-classes"
@@ -808,11 +818,11 @@ Private Function Encode(sStr As String) As String
             Continue
 
           Case "symbols"
-            $sRes = $sRes & GetSymbols()
+            $sRes &= GetSymbols()
             Continue
 
           Case "components"
-            $sRes = $sRes & GetComponents()
+            $sRes &= GetComponents()
             Continue
 
           Case "redirect"
@@ -825,7 +835,13 @@ Private Function Encode(sStr As String) As String
 
           ' @index /path prefix
           Case "index"
-            $sRes = $sRes & GetIndex2(sArg)
+            $sRes &= GetIndex2(sArg)
+            Continue
+            
+          Case "title-index"
+            sTitleIndexStamp = "{" & Format(Int(Rnd(1000000)), "000000") & "}"
+            $sRes &= sTitleIndexStamp
+            bTitleIndex = True
             Continue
 
           ' @list /path +-number
@@ -841,13 +857,13 @@ Private Function Encode(sStr As String) As String
           Case "syntax"
             If $hSym Then
               EnterSection("syntax")
-              $sRes = $sRes & GetSyntax()
+              $sRes &= GetSyntax()
               LeaveSection()
             Endif
             Continue
           
           Case "version"
-            $sRes = $sRes & GetVersion()
+            $sRes &= GetVersion()
             Continue
           
           Case "only-in"
@@ -884,7 +900,16 @@ Private Function Encode(sStr As String) As String
         sStr = LTrim(Mid$(sStr, iPos))
         If Len(sStr) Then
           'DEC iPos
-          $sRes = $sRes & "<h" & iPos & ">"
+          If bTitleIndex And If $aSection.Count = 1 And If iInTable = 0 Then
+            Inc iTitleIndex
+            iTitleLevel = iPos - 1
+            $sRes &= "<a name=\"t" & iTitleIndex & "\"></a>"
+            bUseThisTitleForIndex = True
+          Else
+            bUseThisTitleForIndex = False
+          Endif
+          $sRes &= "<h" & iPos & ">"
+          iTitleIndexStart = Len($sRes)
           sTitle = "</h" & iPos & ">"
         Endif
 
@@ -896,6 +921,7 @@ Private Function Encode(sStr As String) As String
         bHeader = True
         $sRes = $sRes & "<tr><th>\n"
         $bWhite = False
+        Inc iInTable
         Continue
 
       Else If Len(sStr) <= 2 Then
@@ -908,6 +934,7 @@ Private Function Encode(sStr As String) As String
             $sRes = $sRes & "</td></tr>\n"
           Endif
           $sRes = $sRes & "</table>\n"
+          Dec iInTable
           Continue
         Else If sStr = "[]" Then
           bHeader = False
@@ -1071,13 +1098,24 @@ Private Function Encode(sStr As String) As String
 
     Next
 
-    $sRes = $sRes & sTitle & "\n"
+    If sTitle Then
+      If bUseThisTitleForIndex Then
+        sTitleIndex &= String$(iTitleLevel, "&nbsp;&nbsp;") & "<a href=\"#t" & iTitleIndex & "\">" & Mid$($sRes, iTitleIndexStart + 1, Len($sRes) - iTitleIndexStart) & "</a><br>\n"
+      Endif
+      $sRes &= sTitle 
+    Endif
+    $sRes &= "\n"
 
   Next
 
   While $aSection.Count
     LeaveSection()
   Wend
+  
+  If bTitleIndex Then
+    sTitleIndex = "<h2>" & ("Index") & "</h2>\n<p>" & sTitleIndex
+    $sRes = Replace($sRes, sTitleIndexStamp, sTitleIndex)
+  Endif
 
   While Right$($sRes) = "\n"
     $sRes = Left$($sRes, -1)
@@ -1223,7 +1261,7 @@ Private Sub PrintPath()
     Print "<div class=\"path\">";
   Endif
     
-  Print "<a href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
+  Print "<a class=\"flag\" href=\"/help" & AddParam($sLangSuff, $sShowSuff) & "\">";
   Print "<img class=\"flag\" align=\"top\" src=\"/img/lang/"; $sLang; ".png\" alt=\"" & ("Home") & "\">&nbsp;";
   'PRINT GetImage("lang/" & $sLang, "class=\"flag\" alt=\"" & ("Home") & "\"");
   Print "</a>";
@@ -1244,11 +1282,11 @@ Private Sub PrintPath()
       Endif
       Print "&nbsp;"; ARROW; "&nbsp;";
     Next
-    Print File.Name($sPath);
+    Print File.Name($sPath); "&nbsp;";
     
   Endif
 
-  Print "</div>"
+  Print "</div>";
   
 End
 
@@ -1259,15 +1297,15 @@ Private Sub PrintVersion()
   If $bWget Then Return
   
   If $sUri Like "/comp*" Then
-    Print "<div class=\"path\">";
+    Print "<div class=\"path\">&nbsp;&nbsp;";
     If $sVersion = "3.0" Then
       sElt = Replace($sUri, "v3", "")
       If Right(sElt) = "&" Or Right(sElt) = "?" Then sElt = Left$(sElt, -1)
-      Print "<a href=\"/help" &/ sElt; "\">-&gt;&nbsp;2.0</a>";
+      Print "<a href=\"/help" &/ sElt; "\">[2.0]</a>";
     Else
-      Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">-&gt;&nbsp;3.0</a>";
+      Print "<a href=\"/help" &/ AddParam($sUri, "v3"); "\">[3.0]</a>";
     Endif
-    Print "</div>"
+    Print "</div>";
   Endif
   
 End
@@ -1324,27 +1362,36 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       '  Print "<p align=\"left\">"
       'Endif
       
-      Print "<div class=\"lang\">"
-      
+      Print "<div class=\"lang\">"; 
+      Print "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td>";
+      PrintPath
+      PrintVersion
+      Print "</td><td align=\"right\">";
+
       For Each sLang In $aLang
         If sLang = $sLang Then Continue
+        Print "&nbsp;";
         If $bAdmin Then
-          Print "<a clas=\"flag\" href=\"/admin" &/ $sPath;
+          Print "<a class=\"flag\" href=\"/admin" &/ $sPath;
         Else
           Print "<a class=\"flag\" href=\"/help" &/ $sPath;
         Endif
-        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"", "top"); "&nbsp;";
+        Print "?"; sLang; "\">"; GetImage("lang/" & sLang, "class=\"flag\" alt=\"" & sLang & "\"", "top");
         Print "</a>";
       Next
       
-      Print "</div>"
-      'Print "</td></tr>"
+      'Print "&nbsp;&nbsp;";
+
+      Print "</td></tr></table></div>";
+      
+    Else
+      
+      PrintPath
   
     Endif
 
-    PrintPath
     'Print "<div style=\"height:2px;\"></div>"
-    Print "<div class=\"pathlimit\">&nbsp;</div>"
+    'Print "<div class=\"pathlimit\">&nbsp;</div>";
     
     'If System.RightToLeft Then 
     '  'Print "<tr><td align=\"right\">"
@@ -1360,21 +1407,23 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       rPage = DB.Exec("SELECT sPath FROM page WHERE sPath < &1 ORDER BY sPath DESC LIMIT 2", $sPath)
       If rPage.Available And If IsCommentPath(rPage!sPath) Then rPage.MoveNext
       If rPage.Available Then
-        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Previous") & "</a>&nbsp;"
+        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Previous") & "</a>";
       Else
-        Print ("Previous") & "&nbsp;"
+        Print ("Previous");
       Endif
+      Print "&nbsp;&nbsp;";
   
       rPage = DB.Exec("SELECT sPath FROM page WHERE sPath > &1 ORDER BY sPath LIMIT 2", $sPath)
       If rPage.Available And If IsCommentPath(rPage!sPath) Then rPage.MoveNext
       If rPage.Available Then
-        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Next") & "</a>&nbsp;"
+        Print "<a href=\"/help" &/ rPage!sPath & $sLangSuff & "\">" & ("Next") & "</a>";
       Else
-        Print ("Next") & "&nbsp;"
+        Print ("Next");
       Endif
+      Print "&nbsp;&nbsp;";
   
     Endif
-  
+
     If Not $bWget Then
   
       If True Then '$sUser
@@ -1382,12 +1431,12 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
         If $bAdmin Or $bFind Then
         Else If $bEdit Or $bRename Then
           If $bNew Then
-            Print "<a href=\"/help" &/ GetUncommentPath($sPath) & $sLangSuff & "\">"
+            Print "<a href=\"/help" &/ GetUncommentPath($sPath) & $sLangSuff & "\">";
           Else
-            Print "<a href=\"/help" &/ $sPath & $sLangSuff & "\">"
+            Print "<a href=\"/help" &/ $sPath & $sLangSuff & "\">";
           Endif
-          Print ("Cancel")
-          Print "</a>&nbsp;"
+          Print ("Cancel");
+          Print "</a>&nbsp;&nbsp;";
         Else
           Print "<a href=\"/edit" &/ $sPath & $sLangSuff & "\">";
           If sTitle Then
@@ -1395,27 +1444,27 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
           Else
             Print ("Create");
           Endif
-          Print "</a>&nbsp;"
+          Print "</a>&nbsp;&nbsp;";
           If sTitle And $sPath <> "/" And Not $bComment Then
             Print "<a href=\"/rename" &/ $sPath & $sLangSuff & "\">";
             Print ("Rename");
-            Print "</a>&nbsp;"
+            Print "</a>&nbsp;&nbsp;";
           Endif
           If sTitle And Not $bImage Then
             Print "<a href=\"/edit" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "undo\">";
             Print ("Undo");
-            Print "</a>&nbsp;"
+            Print "</a>&nbsp;&nbsp;";
           Endif
           If Not ($bComment Or $bNew) Then
             Print "<a href=\"/help" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "refresh\">";
             Print ("Refresh");
-            Print "</a>&nbsp;"
+            Print "</a>&nbsp;&nbsp;";
           Endif
         Endif
   
         If $bHelp Then
-          Print "<a href=\"/help/search" & $sLangSuff & "\">"; ("Search"); "</a>&nbsp;"          
-          Print "<a href=\"/admin" & $sLangSuff & "\">"; ("Administration"); "</a>&nbsp;"
+          Print "<a href=\"/help/search" & $sLangSuff & "\">"; ("Search"); "</a>&nbsp;&nbsp;";
+          Print "<a href=\"/admin" & $sLangSuff & "\">"; ("Administration"); "</a>&nbsp;&nbsp;";
         Endif
   
       Else
@@ -1423,15 +1472,11 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
         If Not ($bComment Or $bNew) Then
           Print "<a href=\"/help" &/ $sPath & $sLangSuff & IIf($sLangSuff, "&", "?") & "refresh\">";
           Print ("Refresh");
-          Print "</a>&nbsp;"
+          Print "</a>&nbsp;&nbsp;";
         Endif
   
       Endif
   
-      PrintVersion
-      ' PRINT "</font>"
-      Print "&nbsp;"
-      
       'IF $sUser THEN
       '  PRINT $sUser
       'ELSE
@@ -1442,12 +1487,16 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   
     'Print "</tr></table>"
     
-  Else 
+  Else If Not $bView Then
   
+    Print "<div class=\"lang\">";
     PrintPath
     PrintVersion
+    Print "</div>";
     
   Endif
+
+  Print
 
   If Not $bShow And ($bHelp Or $bEdit Or $bHistory) Then
 
@@ -1539,21 +1588,23 @@ End
 Private Function GetRealPath(sPath As String) As String
 
   Dim rPage As Result
+  Dim iInd As Integer
 
-RETRY:
+  For iInd = 1 To 10
 
-  rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
-
-  If rPage.Available And If Left$(rPage!sTitle) = "@" Then
-    sPath = GetAbsolutePath(sPath, Mid$(rPage!sTitle, 2))
-    Goto RETRY
-  Endif
+    rPage = DB.Find("page", "sPath = &1 AND sLang = &2", sPath, DEFAULT_LANG)
+  
+    If rPage.Available And If Left$(rPage!sTitle) = "@" Then
+      sPath = GetAbsolutePath(sPath, Mid$(rPage!sTitle, 2))
+    Else
+      Break
+    Endif
+  
+  Next
 
   Return sPath
 
 End
-
-
 
 Private Function FindPage(sPath As String, Optional bNoLink As Boolean) As Result
 
@@ -3241,7 +3292,8 @@ Private Function GetLastChanges() As String
   Dim sRes As String
   Dim bOdd As Boolean
 
-  rPage = DB.Find("page", "sLang = &1 ORDER BY dDate DESC LIMIT 100", $sLang)
+  'rPage = DB.Find("page", "sLang = &1 ORDER BY dDate DESC LIMIT 100", $sLang)
+  rPage = DB.Exec("SELECT sPath,dDate,sUser FROM page WHERE sLang = &1 ORDER BY dDate DESC LIMIT 100", $sLang)
 
   sRes = "<table class=\"table\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\">\n"
   sRes &= "<tr><th>" & ("Date") & "</th><th>" & ("User") & "</th><th>" & ("Page") & "</th></tr>\n"

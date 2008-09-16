@@ -41,6 +41,7 @@ Public Maintainer As String
 Public Address As String
 Public Vendor As String
 Public License As String
+PUBLIC CreateEachDirectory AS Boolean
 
 Public TabSize As Integer
 Public Version As String
@@ -515,6 +516,18 @@ Private Sub AddEmblem(hPict As Picture, sEmblem As String) As Picture
   
 End
 
+PRIVATE SUB AddLinkEmblem(hPict AS Picture) AS Picture
+  
+  DIM hImage AS NEW Image(hPict.Width + 1, hPict.Height + 1, TRUE)
+  
+  hImage.Fill(Color.Transparent)
+  hImage.Draw(hPict.Image, 1, 0)
+  hImage.Draw(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
+  RETURN hImage.Picture
+  
+END
+
+
 
 Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   
@@ -628,9 +641,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If bConflict Then hPict = AddEmblem(hPict, "icon:/32/warning")
 
     If bLink Then 
-      Draw.Begin(hPict)
-      Draw.Picture(Picture["img/16/link.png"], 0, hPict.Height - 16)
-      Draw.End
+      hPict = AddLinkEmblem(hPict)
     Endif
 
   Else
@@ -659,9 +670,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       Endif      
 
       If bLink Then 
-        Draw.Begin(hPict)
-        Draw.Picture(Picture["img/16/link.png"], 0, hPict.Height - 16)
-        Draw.End
+        hPict = AddLinkEmblem(hPict)
       Endif
       
       If Not bNoStartup Then Picture[sKey] = hPict
@@ -1950,7 +1959,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   
     sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Quote.Shell(ExecPath) & " " & Quote.Shell(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1" 
     Shell sExec Wait
-  
+    IF Process.LastValue THEN Error.Raise(Trim(File.Load(OUTPUT_FILE)))
     'SetMessage(("OK"))
     
     If Not VersionProgram Then Inc ReleaseVersion
@@ -2081,6 +2090,7 @@ Public Sub ReadProject()
   Vendor = ""
   Address = ""
   License = ""
+  CreateEachDirectory = FALSE
 
   While Not Eof(hFic)
 
@@ -2222,6 +2232,8 @@ Public Sub ReadProject()
         
       Case "stacktrace"
         StackTrace = Val(sVal) <> 0
+      CASE "createeachdirectory"
+        CreateEachDirectory = Val(sVal) <> 0
         
     End Select
 
@@ -2320,6 +2332,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If License Then Print #hFic, "License="; License
   If Prefix Then Print #hFic, "Prefix=1"
   If UseRelease Then Print #hFic, "UseRelease=1"
+  IF CreateEachDirectory THEN PRINT #hFic, "CreateEachDirectory=1"
 
   If Systems.Count Then
 

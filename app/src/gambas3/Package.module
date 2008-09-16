@@ -21,6 +21,7 @@ Private $sCategories As String      ' Categories list
 Private $sHome As String            ' Home user directory
 Private $sVersion As String
 Private $sDescription As String
+PRIVATE $sSavePath AS String
 
 Private Const MIN_VERSION As String = "1.9.48"
 Private Const MAX_VERSION As String = "2.90"
@@ -93,6 +94,15 @@ Private Sub InitMake(sSys As String)
     $sPrefix = "" 
   Endif
 
+  IF Project.CreateEachDirectory THEN
+    Path = $sSavePath &/ sSys
+    TRY MKDIR $sSavePath
+    TRY MKDIR Path
+  ELSE 
+    Path = $sSavePath
+    TRY MKDIR Path
+  ENDIF
+
   $sName = Project.Name
 
   $sPackageName = $sPrefix & String.LCase($sName)
@@ -127,6 +137,7 @@ Public Function Make() As Boolean
   Try Move sMacro To sMacro & ".save"
   Try Kill sMacro
 
+  $sSavePath = Path
   For Each sSys In Project.Systems
     If MakePackage(sSys) Then Return True
   Next

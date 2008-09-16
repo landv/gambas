@@ -73,6 +73,8 @@ Public Sub Form_Open()
     chkPrefix.Enabled = False
   Endif 
 
+  chkCreateDir.Value = Project.CreateEachDirectory
+
 End
 
 Public Sub wizInstall_Cancel()
@@ -731,5 +733,11 @@ End
 Public Sub chkUseRelease_Click()
 
   UpdatePackageName
+
+End
+
+Public Sub chkCreateDir_Click()
+
+  Project.CreateEachDirectory = chkCreateDir.Value
 
 End

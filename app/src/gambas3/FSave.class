@@ -18,7 +18,7 @@ Public Sub _new(bQuit As Boolean)
 
   For Each hFile In Project.Files
     If hFile.IsModified() Then
-      hPict = Picture["img/16/" & File.Ext(hFile.Path) & ".png"]
+      hPict = Project.GetFileIcon(hFile.Path)
       lvwFile.Add(hFile.Path, File.Name(hFile.Path), hPict).Selected = True
     Endif
   Next
