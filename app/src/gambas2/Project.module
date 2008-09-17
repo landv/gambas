@@ -45,6 +45,7 @@ PUBLIC CreateEachDirectory AS Boolean
 
 PUBLIC TabSize AS Integer
 PUBLIC Version AS String
+PUBLIC FullVersion AS String
 PUBLIC ExecPath AS String
 PUBLIC Language AS String
 PUBLIC CreateComponent AS Boolean
@@ -201,19 +202,22 @@ PUBLIC SUB Main()
   
 END
 
-
 PRIVATE SUB InitVersion()
 
   DIM sVer AS String
   DIM aVer AS String[]
 
   SHELL "gbx" & System.Version & " -V" TO sVer
-  aVer = Split(Trim(Mid$(sVer, InStr(sVer, "-") + 1)), ".")
+  FullVersion = Trim(Mid$(sVer, InStr(sVer, "-") + 1))
+  aVer = Split(FullVersion, ".")
   aVer.Remove(aVer.Max)
   Version = aVer.Join(".")
   
   sVer = VersionControl.GetVersion(Application.Path)
-  IF sVer THEN Version &= " (r" & sVer & ")"
+  IF sVer THEN 
+    Version &= " (r" & sVer & ")"
+    FullVersion &= " (r" & sVer & ")"
+  ENDIF
 
 CATCH 
 
@@ -2234,6 +2238,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   hFic = OPEN Path & ".tmp" FOR CREATE
 
   PRINT #hFic, PROJECT_MAGIC
+  PRINT #hFic, "# Compiled with Gambas "; FullVersion
   'PRINT #hFic, "Project="; Name
 
   IF Title THEN PRINT #hFic, "Title="; Title

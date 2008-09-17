@@ -318,7 +318,7 @@ void GEditor::updateWidth(int y)
 	
 	if (y < 0)
 	{
-		w = QMAX(visibleWidth(), lineWidth(largestLine));
+		w = lineWidth(largestLine);
 		goto UPDATE_WIDTH;
 	}
 	else
@@ -344,6 +344,7 @@ void GEditor::updateWidth(int y)
 	
 UPDATE_WIDTH:
 	
+	w = QMAX(visibleWidth(), w);
 	if (w != cellWidth())
 	{
 		setCellWidth(w);
