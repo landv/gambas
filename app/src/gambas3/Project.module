@@ -41,10 +41,11 @@ Public Maintainer As String
 Public Address As String
 Public Vendor As String
 Public License As String
-PUBLIC CreateEachDirectory AS Boolean
+Public CreateEachDirectory As Boolean
 
 Public TabSize As Integer
 Public Version As String
+Public FullVersion As String
 Public ExecPath As String
 Public Language As String
 Public CreateComponent As Boolean
@@ -211,13 +212,17 @@ Private Sub InitVersion()
   Dim aVer As String[]
 
   Shell "gbx" & System.Version & " -V" To sVer
-  aVer = Split(Trim(Mid$(sVer, InStr(sVer, "-") + 1)), ".")
+  FullVersion = Trim(Mid$(sVer, InStr(sVer, "-") + 1))
+  aVer = Split(FullVersion, ".")
   aVer.Remove(aVer.Max)
   Version = aVer.Join(".")
   
   sVer = VersionControl.GetVersion(Application.Path)
-  If sVer Then Version &= " (r" & sVer & ")"
-  
+  If sVer Then 
+    Version &= " (r" & sVer & ")"
+    FullVersion &= " (r" & sVer & ")"
+  Endif
+
 Catch 
 
   Version = "?"
@@ -516,16 +521,16 @@ Private Sub AddEmblem(hPict As Picture, sEmblem As String) As Picture
   
 End
 
-PRIVATE SUB AddLinkEmblem(hPict AS Picture) AS Picture
+Private Sub AddLinkEmblem(hPict As Picture) As Picture
   
-  DIM hImage AS NEW Image(hPict.Width + 1, hPict.Height + 1, TRUE)
+  Dim hImage As New Image(hPict.Width + 1, hPict.Height + 1, True)
   
   hImage.Fill(Color.Transparent)
   hImage.Draw(hPict.Image, 1, 0)
   hImage.Draw(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
-  RETURN hImage.Picture
+  Return hImage.Picture
   
-END
+End
 
 
 
@@ -1959,7 +1964,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   
     sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Quote.Shell(ExecPath) & " " & Quote.Shell(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1" 
     Shell sExec Wait
-    IF Process.LastValue THEN Error.Raise(Trim(File.Load(OUTPUT_FILE)))
+    If Process.LastValue Then Error.Raise(Trim(File.Load(OUTPUT_FILE)))
     'SetMessage(("OK"))
     
     If Not VersionProgram Then Inc ReleaseVersion
@@ -2090,7 +2095,7 @@ Public Sub ReadProject()
   Vendor = ""
   Address = ""
   License = ""
-  CreateEachDirectory = FALSE
+  CreateEachDirectory = False
 
   While Not Eof(hFic)
 
@@ -2232,7 +2237,7 @@ Public Sub ReadProject()
         
       Case "stacktrace"
         StackTrace = Val(sVal) <> 0
-      CASE "createeachdirectory"
+      Case "createeachdirectory"
         CreateEachDirectory = Val(sVal) <> 0
         
     End Select
@@ -2289,6 +2294,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   hFic = Open sPath & ".tmp" For Create
 
   Print #hFic, PROJECT_MAGIC
+  Print #hFic, "# Compiled with Gambas "; FullVersion
   'PRINT #hFic, "Project="; Name
 
   If Title Then Print #hFic, "Title="; Title
@@ -2332,7 +2338,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If License Then Print #hFic, "License="; License
   If Prefix Then Print #hFic, "Prefix=1"
   If UseRelease Then Print #hFic, "UseRelease=1"
-  IF CreateEachDirectory THEN PRINT #hFic, "CreateEachDirectory=1"
+  If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
 
   If Systems.Count Then
 

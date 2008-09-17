@@ -108,9 +108,9 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Endif 
 
   If sMode = "<" Then
-    sText = String.Left(hEditor.Lines[hEditor.Line], hEditor.Column - iLeft - 1)
+    sText = String.Left(hEditor.Lines[hEditor.Line].Text, hEditor.Column - iLeft - 1)
   Else
-    sText = String.Left(hEditor.Lines[hEditor.Line], hEditor.Column - iLeft) 
+    sText = String.Left(hEditor.Lines[hEditor.Line].Text, hEditor.Column - iLeft) 
     If Key.Code = Key.BackSpace Then 
       sText &= "."
     Else 
