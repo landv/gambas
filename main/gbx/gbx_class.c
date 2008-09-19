@@ -336,7 +336,7 @@ CLASS *CLASS_look(const char *name, int len)
   if (TABLE_find_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, &index))
   {
     #if DEBUG_COMP
-    fprintf(stderr, " -> %ld in global\n", index);
+    fprintf(stderr, " -> %d in global\n", index);
     #endif
     return csym->class;
   }
@@ -750,8 +750,15 @@ CLASS *CLASS_replace_global(const char *name)
 
     ALLOC(&new_name, len + 2, "CLASS_replace_global");
     snprintf(new_name, len+2, ">%s", name);
+    //*new_name = '>';
+    //strcpy(&new_name[1], name);
+    
     new_class = CLASS_replace_global(new_name);
     FREE(&new_name, "CLASS_replace_global");
+
+		#if DEBUG_COMP
+		fprintf(stderr, "CLASS_replace_global: '%s' -> '%s'\n", name, new_name);
+		#endif
 
     new_name = (char *)new_class->name;
 

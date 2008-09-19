@@ -436,6 +436,24 @@ static void query_get_param(int index, char **str, int *len, char quote)
   }
 }
 
+/* Manage connection lost */
+
+static bool handle_connection_lost(MYSQL *conn, int *retry)
+{
+	int errcode = mysql_errno(conn);
+	
+	if ((errcode == CR_SERVER_GONE_ERROR || errcode == CR_SERVER_LOST) && *retry < 3)
+	{
+		if (DB.IsDebug())
+			fprintf(stderr, "gb.db.mysql: %s. Try again...\n", mysql_error(conn));
+		(*retry)++;
+		usleep(10000 << (*retry));
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
 /* Internal function to run a query */
 
 static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
@@ -466,23 +484,19 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
   if (DB.IsDebug())
     fprintf(stderr, "gb.db.mysql: %p: %s\n", conn, query);
 
-__RETRY:
-
-  mysql_query(conn, query);
+	do
+	{
+  	mysql_query(conn, query);
+  }
+  while (handle_connection_lost(conn, &retry));
+  
  	errcode = mysql_errno(conn);
  	
- 	if ((errcode == CR_SERVER_GONE_ERROR || errcode == CR_SERVER_LOST) && retry < 3)
- 	{
-	  if (DB.IsDebug())
-	  	fprintf(stderr, "gb.db.mysql: %s. Try again...\n", mysql_error(conn));
- 		retry++;
- 		usleep(10000);
- 		goto __RETRY;
- 	}
-  	  
  	if (errcode)
  	{
     ret = TRUE;
+    if (DB.IsDebug())
+    	fprintf(stderr, "gb.db.mysql: Error %d: %s\n", errcode, mysql_error(conn));
     if (error)
     	GB.Error(error, mysql_error(conn));
   }
@@ -2046,8 +2060,14 @@ static int database_exist(DB_DATABASE *db, const char *name)
   MYSQL *conn = (MYSQL *)db->handle;
   MYSQL_RES *res;
   int exist;
+  int retry = 0;
 
-  res = mysql_list_dbs(conn, name);
+	do
+	{
+  	res = mysql_list_dbs(conn, name);
+	}
+	while (handle_connection_lost(conn, &retry));
+	
   if (!res)
   {
 		db->error = mysql_errno(conn);	
@@ -2082,9 +2102,16 @@ static int database_list(DB_DATABASE *db, char ***databases)
   MYSQL *conn = (MYSQL *)db->handle;
   MYSQL_RES *res;
   MYSQL_ROW row;
+  int retry = 0;
 
-  res = mysql_list_dbs(conn, 0);
-  if (!res){
+	do 
+	{
+  	res = mysql_list_dbs(conn, 0);
+	}
+	while (handle_connection_lost(conn, &retry));
+	
+  if (!res)
+  {
   	db->error = mysql_errno(conn);
      GB.Error("Unable to get databases: &1", mysql_error(conn));
      return -1;

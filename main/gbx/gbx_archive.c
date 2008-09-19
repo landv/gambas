@@ -88,6 +88,10 @@ static void load_exported_class(ARCHIVE *arch)
 
   /* COMPONENT_current is set => it will look in the archive */
 
+	#if DEBUG_COMP
+		fprintf(stderr, "load_exported_class: %s\n", arch->name);
+	#endif
+
 	if (!FILE_exist(".list"))
 		return;
 

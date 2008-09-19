@@ -364,7 +364,7 @@ PUBLIC SUB tvwBase_Expand()
         IF sErr THEN
           DEC Application.Busy
           tvwBase[sParent].Expanded = FALSE
-          Message.Error(("Cannot connect to database") & "\n\n" & sErr)
+          Message.Error(("Cannot connect to server") & "\n\n" & sErr)
           RETURN
         ENDIF
 

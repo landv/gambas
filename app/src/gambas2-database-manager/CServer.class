@@ -120,6 +120,7 @@ PUBLIC FUNCTION Exec() AS String
 
 CATCH
 
+  Handle.Close
   RETURN Conv$(Error.Text, System.Charset, Desktop.Charset)
 
 END
