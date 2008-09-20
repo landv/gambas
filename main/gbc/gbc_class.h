@@ -234,6 +234,5 @@ PUBLIC void CLASS_check_properties(CLASS *class);
 
 PUBLIC void CLASS_dump(void);
 PUBLIC void CLASS_export(void);
-PUBLIC void CLASS_exit_export(void);
 
 #endif

@@ -221,6 +221,7 @@ static void get_arguments(int argc, char **argv)
 
 static void compile_file(const char *file)
 {
+	int i;
   time_t time_src, time_form, time_pot, time_output;
 
   COMPILE_begin(file, main_trans);
@@ -255,7 +256,12 @@ static void compile_file(const char *file)
   //JOB->class_file = main_class_file;
 
   if (JOB->verbose)
-    puts(JOB->name);
+  {
+  	putchar('\n');
+  	for (i = 1; i <= 9; i++)
+  		printf("--------");
+  	printf("\nCompiling %s...\n", FILE_get_name(JOB->name));
+	}
 
   COMPILE_load();
   FORM_do(main_public);
@@ -275,6 +281,7 @@ static void compile_file(const char *file)
   #endif
 
   OUTPUT_do(main_swap);
+  CLASS_export();
 
 _FIN:
   COMPILE_end();
@@ -370,6 +377,17 @@ int main(int argc, char **argv)
   TRY
   {
     COMPILE_init();
+
+		// Remove information files if we are compiling everything
+		
+		if (main_compile_all)
+		{
+			if (main_verbose)
+				puts("Removing .info and .list files");
+			chdir(FILE_get_dir(COMP_project));
+			unlink(".info");
+			unlink(".list");
+		}
 
     init_files(FILE_get_dir(COMP_project));
 

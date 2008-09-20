@@ -164,7 +164,7 @@ void COMPILE_init(void)
 	else
 		COMP_info_user_path = NULL;
 		
-  /* Classes du projet */
+  // Project classes
 
   BUFFER_create(&COMP_classes);
 
@@ -266,9 +266,6 @@ void COMPILE_load(void)
 
 void COMPILE_end(void)
 {
-  if (JOB->all && JOB->class->exported)
-    CLASS_export();
-
   CLASS_delete(&JOB->class);
   BUFFER_delete(&JOB->source);
   FREE(&JOB->pattern, "COMPILE_end");
@@ -282,8 +279,6 @@ void COMPILE_end(void)
 
 void COMPILE_exit(void)
 {
-	if (JOB->all)
-  	CLASS_exit_export();
   RESERVED_exit();
   BUFFER_delete(&COMP_classes);
   STR_free(COMP_project);
