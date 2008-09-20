@@ -791,22 +791,19 @@ STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String, OPTIONAL bInProject AS 
   '  IF sClass <> "." THEN RETURN
   'ENDIF
 
-  hClass = CComponent.Classes[sClass]
-  IF hClass THEN
-    IF hClass.Component <> Project.Name THEN
-      RETURN hClass.Symbols
-    ENDIF
-  ENDIF
-
   aClass = Project.GetClasses()
   iFind = aClass.Find(sClass, gb.Text)
 
   IF iFind < 0 THEN
+
+    hClass = CComponent.Classes[sClass]
     IF hClass THEN
-      RETURN hClass.Symbols
-    ELSE
-      RETURN
+      IF hClass.Component <> Project.Name THEN
+        RETURN hClass.Symbols
+      ENDIF
     ENDIF
+
+    RETURN
   ENDIF
 
   sClass = aClass[iFind]
