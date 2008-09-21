@@ -577,10 +577,11 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	if (getFlag(ShowCurrentLine) && row == y)
 		b = styles[GLine::Line].color;
 
-	color = calc_color(a, b, styles[GLine::Background].color);
-	cache->fill(color);
-
 	QPainter p(cache);
+	
+	color = calc_color(a, b, styles[GLine::Background].color);
+	p.fillRect(0, 0, visibleWidth(), cellHeight(), color);
+	
 	p.setFont(painter->font());
 	//p.translate(-ur.left(), 0);
 
@@ -694,7 +695,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 
 	//if (cache->width() < visibleWidth())
 	//	qDebug("cache->width() = %d < visibleWidth() = %d", cache->width(), visibleWidth());
-	painter->drawPixmap(ur.left(), 0, *cache, 0, 0, cache->width(), cache->height());
+	painter->drawPixmap(ur.left(), 0, *cache, 0, 0, visibleWidth(), cellHeight());
 }
 
 
