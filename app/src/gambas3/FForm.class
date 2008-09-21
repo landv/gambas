@@ -7,7 +7,7 @@ Public Type As String
 Public Master As CControl
 Public Selection As New Collection
 Public Control As New Collection(gb.Text)
-Public Menus As New Object[]
+Public Menus As New CControl[]
 
 Public Container As Container
 
@@ -478,9 +478,9 @@ Public Sub AddLine(Optional sLig As String)
 End
 
 
-Public Function GetChildren(sName As String) As Object[]
+Public Function GetChildren(sName As String) As CControl[]
 
-  Dim cList As New Object[]
+  Dim aList As New CControl[]
   Dim hCtrl As CControl
   Dim hCChild As CControl
   Dim hChild As Control
@@ -495,13 +495,13 @@ Public Function GetChildren(sName As String) As Object[]
   If hCtrl.Kind = "Form" Then
 
     For Each hCChild In Me.Menus
-      cList.Add(hCChild)
+      aList.Add(hCChild)
     Next
     'cList.Insert(Menus)
 
     For Each hChild In hCtrl.Control.Children
       If Not hChild.Tag Then Continue
-      If Control.Exist(hChild.Tag) Then cList.Add(Control[hChild.Tag])
+      If Control.Exist(hChild.Tag) Then aList.Add(Control[hChild.Tag])
     Next
 
   'ELSE IF hCtrl.Kind = "TabStrip" THEN
@@ -513,7 +513,7 @@ Public Function GetChildren(sName As String) As Object[]
 
       For Each hChild In hTab[iTab].Children
         If Not hChild.Tag Then Continue
-        If Control.Exist(hChild.Tag) Then cList.Add(Control[hChild.Tag])
+        If Control.Exist(hChild.Tag) Then aList.Add(Control[hChild.Tag])
       Next
 
     Next
@@ -521,19 +521,19 @@ Public Function GetChildren(sName As String) As Object[]
   Else If hCtrl.Kind = "Menu" Then
 
     For Each hMenu In hCtrl.Control.Children
-      cList.Add(Control[hMenu.Tag])
+      aList.Add(Control[hMenu.Tag])
     Next
 
   Else
 
     For Each hChild In hCtrl.Control.Children
       If Not hChild.Tag Then Continue
-      If Control.Exist(hChild.Tag) Then cList.Add(Control[hChild.Tag])
+      If Control.Exist(hChild.Tag) Then aList.Add(Control[hChild.Tag])
     Next
 
   Endif
 
-  Return cList
+  Return aList
 
 End
 
@@ -948,6 +948,7 @@ Public Sub Control_MouseUp()
 
   Dim hCont As Container
   Dim hCtrl As CControl
+  Dim hPrevious As CControl
   Dim sFocus As String
 
   'PRINT "Control_MouseUp  Mode ="; $iMode
@@ -999,9 +1000,19 @@ Public Sub Control_MouseUp()
 
       Else If $hCurrent.Selected Then
 
-        If Master <> $hCurrent Or Selection.Count = 1 Then
-          UnselectCurrent
+        If Selection.Count > 1 And If Master = $hCurrent Then 
+          For Each hCtrl In Selection
+            If hCtrl = $hCurrent Then Break
+            hPrevious = hCtrl
+          Next
+          If Not hPrevious Then 
+            For Each hPrevious In Selection
+            Next
+          Endif
+          hPrevious.Select(Me, True)
         Endif
+
+        UnselectCurrent
 
       Else
 
@@ -1351,7 +1362,7 @@ End
 Private Sub KillSelection()
   
   Dim hCtrl As CControl
-  Dim cCopy As New Object[]
+  Dim cCopy As New CControl[]
   Dim hParent As CControl
 
   If Selection.Count Then
@@ -1589,7 +1600,7 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bRe
   Dim hCtrl As Control
   Dim hCCtrl As CControl
   Dim hCont As Container
-  Dim aCtrl As New Object[]
+  Dim aCtrl As New Control[]
   Dim hTab As Object
 
   If hParent Then
@@ -2297,31 +2308,67 @@ Private Sub MoveSelection(DX As Integer, DY As Integer, Optional bFree As Boolea
   
 End
 
+Private Sub ResizeSelection(DW As Integer, DH As Integer, Optional bFree As Boolean)
+
+  Dim hCtrl As CControl
+  Dim W, H As Integer
+
+  If $bReadOnly Then Return
+  
+  For Each hCtrl In Selection
+    W = hCtrl.Control.W + DW
+    H = hCtrl.Control.H + DH
+    If W < 1 Or If H < 1 Then Return
+  Next
+
+  For Each hCtrl In Selection
+    hCtrl.Resize(hCtrl.Control.W + DW, hCtrl.Control.H + DH, bFree)
+  Next
+  
+End
 
 Public Sub Form_KeyPress()
 
   Dim D As Integer
   Dim bFree As Boolean
   
-  If Key.Normal Then
-    D = Desktop.Scale
-    bFree = False
-  Else If Key.Shift And Not Key.Control Then
+  If Key.Shift Then
     D = 1
     bFree = True
   Else
-    Return
+    D = Desktop.Scale
+    bFree = False
   Endif 
 
   Select Key.Code
     Case Key.Up
-      MoveSelection(0, - D, bFree)
+      If Key.Control Then 
+        ResizeSelection(0, - D, bFree)
+      Else
+        MoveSelection(0, - D, bFree)
+      Endif
+      Stop Event
     Case Key.Down
-      MoveSelection(0, D, bFree)
+      If Key.Control Then 
+        ResizeSelection(0, D, bFree)
+      Else
+        MoveSelection(0, D, bFree)
+      Endif
+      Stop Event
     Case Key.Left
-      MoveSelection(- D, 0, bFree)
+      If Key.Control Then 
+        ResizeSelection(- D, 0, bFree)
+      Else
+        MoveSelection(- D, 0, bFree)
+      Endif
+      Stop Event
     Case Key.Right
-      MoveSelection(D, 0, bFree)        
+      If Key.Control Then 
+        ResizeSelection(D, 0, bFree)        
+      Else
+        MoveSelection(D, 0, bFree)
+      Endif
+      Stop Event
   End Select
 
 End
@@ -2794,8 +2841,8 @@ Private Sub MoveTab(hCtrl As CControl, iWhere As Integer)
   Dim hTabStrip As Object = hCtrl.Control
   Dim iIndex As Integer
   Dim hChild As Control
-  Dim aChildSrc As New Object[]
-  Dim aChildDest As New Object[]
+  Dim aChildSrc As New Control[]
+  Dim aChildDest As New Control[]
   
   Select Case iWhere
     Case MOVE_FIRST

@@ -303,7 +303,13 @@ TYPE TYPE_from_string(const char **ptype)
 			}
 
       *ptype = (char *)type + 1;
-      return (TYPE)CLASS_find_global(NULL);
+      
+      // Template classes search their symbols locally first
+      
+      if (TYPE_joker)
+      	return (TYPE)CLASS_find(NULL);
+      else
+      	return (TYPE)CLASS_find_global(NULL);
   }
 }
 

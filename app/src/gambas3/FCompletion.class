@@ -39,7 +39,6 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dim hEditor As Editor
   Dim iX As Integer
   Dim iY As Integer
-  Dim iLeft As Integer
   Dim iPos As Integer
   Dim hCont As Container
   Dim sText As String
@@ -56,7 +55,6 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   
   Select $sMode
     Case "."
-      '$sText = FEditor.GetIdentifier(hEditor.Lines[hEditor.Line], $iCol)
       $sText = ""
       If Len(sClass) = 1 Then 
         Dec Application.Busy
@@ -69,14 +67,15 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     Case "A"
       $sText = sClass
       $iLen = Len(sClass)
-      iLeft = $iLen
       $iCol -= Len(sClass)
       FillWithIdent(sClass)
     Case "_"
+      $sText = "_"
+      $iLen = 1
+      Dec $iCol
       FillWithSpecial()
     Case "<"
       $sText = sClass
-      iLeft = Len(sClass)
       iPos = InStr(sClass, "_")
       If iPos Then 
         $iLen = iPos
@@ -107,15 +106,10 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     lvwComp.Item.EnsureVisible
   Endif 
 
-  If sMode = "<" Then
-    sText = String.Left(hEditor.Lines[hEditor.Line].Text, hEditor.Column - iLeft - 1)
-  Else
-    sText = String.Left(hEditor.Lines[hEditor.Line].Text, hEditor.Column - iLeft) 
-    If Key.Code = Key.BackSpace Then 
-      sText &= "."
-    Else 
-      sText &= Key.Text
-    Endif
+  sText = String.Left(hEditor.Lines[hEditor.Line].Text, $iCol)
+  
+  If InStr(" .", sMode) And If Key.Code <> Key.Backspace Then 
+    sText &= Key.Text
   Endif
 
   iX = hEditor.X + hEditor.ToPosX(0) + hEditor.Font.Width(sText)
@@ -144,6 +138,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dec Application.Busy
 
 End
+
 
 Public Sub SetText(sText As String)
   

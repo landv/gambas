@@ -734,8 +734,8 @@ void GDocument::begin()
 
 void GDocument::end()
 {
+	undoLevel--;
   addUndo(new GEndCommand());
-  undoLevel--;
 	if (undoLevel == 0 && textHasChanged)
   	emitTextChanged();
 }
@@ -752,7 +752,7 @@ bool GDocument::undo()
 {
   int nest;
 
-  if (undoList.isEmpty() || isReadOnly())
+  if (undoList.isEmpty() || isReadOnly() || blockUndo)
     return true;
 
   blockUndo = true;
@@ -786,7 +786,7 @@ bool GDocument::redo()
 {
   int nest;
 
-  if (redoList.isEmpty() || isReadOnly())
+  if (redoList.isEmpty() || isReadOnly() || blockUndo)
     return true;
 
   blockUndo = true;
@@ -1060,6 +1060,7 @@ void GDocument::colorize(int y)
   uint state;
   int tag;
   int nupd = 0;
+  bool changed = false;
 
   if (highlightMode == None)
     return;
@@ -1097,8 +1098,6 @@ void GDocument::colorize(int y)
 			(*highlightCallback)(views.first(), state, tag, l->s, &l->highlight, proc);
 			l->proc = proc;
 
-			if (l->baptized)
-			{
 				if (old != l->s)
 				{
 					begin();
@@ -1109,12 +1108,12 @@ void GDocument::colorize(int y)
 			    
 			    //maxLength = GMAX(maxLength, (int)l->s.length());
 			    updateLineWidth(y);
+				//qDebug("colorize: %d has changed: '%s' -> '%s'", y, old.utf8(), l->s.utf8());
+				l->changed = true;
+				changed = true;
 				}
 			}
 			else
-				l->baptized = true;
-		}
-		else
 		{
 			GB.FreeArray(&l->highlight);
 			l->proc = false;
@@ -1139,6 +1138,9 @@ void GDocument::colorize(int y)
 			lines.at(y)->modified = true;
 	}
 
+	if (changed)
+		emitTextChanged();
+	
 	if (nupd >= 1)
 		updateViews(y - nupd + 1, nupd);
 }

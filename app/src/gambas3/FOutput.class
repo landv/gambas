@@ -72,14 +72,10 @@ Public Sub edtOutput_KeyPress()
   Dim sText As String
   Dim iPos As Integer
   Dim sVal As String
+  Dim bSemiColon As Boolean
 
   If Key.Code = Key.Enter Or Key.Code = Key.Return Then
 
-    'TRY sText = SConv$(edtOutput.Text)
-
-    'iPos = RInStr(sText, "\n", edtOutput.Pos)
-    'sText = Mid$(sText, iPos + 1, edtOutput.Pos - iPos)
-    
     sText = edtOutput.Lines[edtOutput.Line].Text
     If chkCharset.Value Then
       Try sText = SConv$(sText)
@@ -87,15 +83,12 @@ Public Sub edtOutput_KeyPress()
 
     If Design.IsRunning() Then
 
-      'IF $iPos > iPos THEN sText = Mid$(sText, $iPos - iPos + 1)
-      
       If $iLine = edtOutput.Line Then
         sText = Mid$(sText, $iCol + 1)
       Endif
 
       edtOutput.Insert("\n")
       Design.Send(sText & "\n")
-      'Key.Cancel = TRUE
       Stop Event
 
     Else If Left$(sText) = "?" Then
@@ -111,10 +104,16 @@ Public Sub edtOutput_KeyPress()
 
       Else
 
+        If Right(sText) = ";" Then 
+          sText = Left$(sText, -1)
+          bSemiColon = True
+        Endif
+
         Try sVal = Str(Eval(sText & "\n"))
         If Error Then sVal = Error.Text
-        Insert("\n" & DConv$(sVal) & "\n")
-        'Key.Cancel = TRUE
+        sVal = "\n" & DConv$(sVal)
+        If Not bSemiColon Then sVal &= "\n"
+        Insert(sVal)
         Stop Event
 
       Endif
@@ -129,9 +128,8 @@ Public Sub edtOutput_KeyPress()
 
     If Key.Code = Key["L"] Then
       Clear
-    'ELSE IF Code = Key["C"] THEN
-    '  Project.DebugForm.Stop
-    '  RETURN FALSE
+    Else If Key.Code = Key["G"] Then 
+      edtOutput.Print(Chr$(7))
     Endif
 
   Endif

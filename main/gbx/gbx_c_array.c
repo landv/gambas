@@ -181,23 +181,12 @@ void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam)
 
 static void release_one(CARRAY *_object, int i)
 {
-  switch(THIS->type)
-  {
-    case T_STRING:
-      STRING_unref(&(((char **)(THIS->data))[i]));
-      break;
-
-    case T_OBJECT:
-      OBJECT_UNREF(((void **)(THIS->data))[i], "release_one");
-      break;
-
-    case T_VARIANT:
-      VARIANT_free(&(((VARIANT *)(THIS->data))[i]));
-      break;
-
-    default:
-      break;
-  }
+	if (THIS->type == T_STRING)
+		STRING_unref(&(((char **)(THIS->data))[i]));
+	else if (THIS->type == T_VARIANT)
+		VARIANT_free(&(((VARIANT *)(THIS->data))[i]));
+	else if (TYPE_is_object(THIS->type))
+		OBJECT_UNREF(((void **)(THIS->data))[i], "release_one");
 }
 
 
@@ -208,26 +197,21 @@ static void release(CARRAY *_object, int start, int end)
   if (end < 0)
     end = ARRAY_count(THIS->data);
 
-  switch(THIS->type)
-  {
-    case T_STRING:
-      for (i = start; i < end; i++)
-        STRING_unref(&((char **)(THIS->data))[i]);
-      break;
-
-    case T_OBJECT:
-      for (i = start; i < end; i++)
-        OBJECT_UNREF(((void **)(THIS->data))[i], "release");
-      break;
-
-    case T_VARIANT:
-      for (i = start; i < end; i++)
-        VARIANT_free(&((VARIANT *)(THIS->data))[i]);
-      break;
-
-    default:
-      break;
-  }
+	if (THIS->type == T_STRING)
+	{
+		for (i = start; i < end; i++)
+			STRING_unref(&((char **)(THIS->data))[i]);
+	}
+	else if (THIS->type == T_VARIANT)
+	{
+		for (i = start; i < end; i++)
+			VARIANT_free(&((VARIANT *)(THIS->data))[i]);
+	}
+	else if (TYPE_is_object(THIS->type))
+	{
+		for (i = start; i < end; i++)
+			OBJECT_UNREF(((void **)(THIS->data))[i], "release");
+	}
 }
 
 
@@ -238,26 +222,21 @@ static void borrow(CARRAY *_object, int start, int end)
   if (end < 0)
     end = ARRAY_count(THIS->data);
 
-  switch(THIS->type)
-  {
-    case T_STRING:
-      for (i = start; i < end; i++)
-        STRING_ref(((char **)(THIS->data))[i]);
-      break;
-
-    case T_OBJECT:
-      for (i = start; i < end; i++)
-        OBJECT_ref(((void **)(THIS->data))[i]);
-      break;
-
-    case T_VARIANT:
-      for (i = start; i < end; i++)
-        VARIANT_keep(&((VARIANT *)(THIS->data))[i]);
-      break;
-
-    default:
-      break;
-  }
+	if (THIS->type == T_STRING)
+	{
+		for (i = start; i < end; i++)
+			STRING_ref(((char **)(THIS->data))[i]);
+	}
+	else if (THIS->type == T_VARIANT)
+	{
+		for (i = start; i < end; i++)
+			VARIANT_keep(&((VARIANT *)(THIS->data))[i]);
+	}
+	else if (TYPE_is_object(THIS->type))
+	{
+		for (i = start; i < end; i++)
+			OBJECT_ref(((void **)(THIS->data))[i]);
+	}
 }
 
 

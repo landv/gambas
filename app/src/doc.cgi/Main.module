@@ -564,7 +564,7 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
         $bExample = True
         $sRes &= "<h3>" & ("Examples") & "</h3>\n"
       Endif
-      $sRes &= "<pre class=\"example\">"
+      $sRes &= "<div class=\"example\">"
       $bVerbatim = True
       ' IF NOT sParam THEN sParam = ("Example")
       ' $sRes &= "<div class=\"gray\"><font size=\"-2\"><b>" & sParam & "</b></font></div>\n"
@@ -572,7 +572,7 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
       $bNoWiki = True
 
     Case "code"
-      $sRes &= "<pre class=\"example\">"
+      $sRes &= "<div class=\"example\">"
 
     Case "seealso"
       '$sRes &= "<p><table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\">\n"
@@ -619,12 +619,12 @@ Private Sub LeaveSection()
       $sRes = RTrim($sRes) & "</pre><p>\n"
 
     Case "example"
-      $sRes = RTrim($sRes) & "</pre>\n"
+      $sRes = RTrim($sRes) & "</div>\n"
       $bVerbatim = False
       $bNoWiki = False
 
     Case "code"
-      $sRes = RTrim($sRes) & "</pre></div>\n"
+      $sRes = RTrim($sRes) & "</div>\n"
 
     Case "error"
       $sRes &= "</td></tr>\n"
@@ -716,7 +716,12 @@ Private Function Encode(sText As String) As String
           $sRes &= "<hr>"
           sStr = Mid$(sStr, 5)
         Endif
-        $sRes = $sRes & EncodeHTML(sStr) & "\n"
+        sStr = EncodeHTML(sStr)
+        iPos = Len(sStr) - Len(LTrim(sStr))
+        If iPos > 0 Then
+          sStr = String$(iPos, "&nbsp;") & Mid$(sStr, iPos + 1)
+        Endif
+        $sRes &= sStr & "<br>\n"
       Endif
       Continue
 
@@ -1644,7 +1649,7 @@ Private Sub PrintExample(sExample As String)
 
   If Not $bExample Then
     $bExample = True
-    Print "<h3>" & ("Example") & "</h3>"
+    Print "<h3>" & ("Examples") & "</h3>"
   Endif
 
   Print "<pre class=\"example\">"; RTrim(sExample); "</pre><p>"

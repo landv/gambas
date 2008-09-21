@@ -125,9 +125,9 @@ Public Sub chkPrefix_Click()
 
 End
 
-Private Sub GetSystemControls() As Object[]
+Private Sub GetSystemControls() As Control[]
   
-  Dim aObject As New Object[]
+  Dim aObject As New Control[]
   Dim hCtrl As Control
   Dim hCont As Container
   Dim hCheck As CheckBox
@@ -146,7 +146,6 @@ End
 
 Private Sub InitSystemControls()
   
-  Dim aObject As New Object[]
   Dim hCtrl As Control
   Dim hCont As Container
   Dim sMsg As String

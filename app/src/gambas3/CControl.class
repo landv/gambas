@@ -660,15 +660,15 @@ End
 
 Public Sub Delete()
 
-  Dim cChildren As Object[]
+  Dim aChildren As CControl[]
   Dim hChild As CControl
   Dim hForm As FForm
 
   hForm = Object.Parent(Control)
-  cChildren = hForm.GetChildren(Name)
-  If cChildren Then
+  aChildren = hForm.GetChildren(Name)
+  If aChildren Then
 
-    For Each hChild In cChildren
+    For Each hChild In aChildren
       hChild.Delete
     Next
 

@@ -59,7 +59,6 @@ private:
 	static QPixmap *cache;
 	static QPixmap *breakpoint;
 	static int count;
-	static const QEvent::Type EVENT_ENSURE_VISIBLE = QT_EVENT_FIRST;
 
 	GDocument *doc;
 	QFontMetrics fm;
@@ -73,6 +72,8 @@ private:
 	int margin;
 	int lineNumberLength;
 	bool center;
+  bool flashed;
+  bool painting;
 	
 	int lastx;
 	bool left;
@@ -119,6 +120,9 @@ private slots:
 	void scrollTimerTimeout();
 	void baptizeVisible();
 	void baptizeVisible(int x, int y);
+	void unflash();
+	void docTextChangedLater();
+	void ensureCursorVisible();
 
 protected:
 
@@ -132,7 +136,6 @@ protected:
 	virtual void resizeEvent(QResizeEvent *e);
 	virtual void focusInEvent(QFocusEvent *);
 	virtual void focusOutEvent(QFocusEvent *);
-	virtual bool event(QEvent *e);
 	virtual void imStartEvent(QIMEvent *e);
 	virtual void imComposeEvent(QIMEvent *e);
 	virtual void imEndEvent(QIMEvent *e);
@@ -202,8 +205,7 @@ public:
 	virtual void setNumRows(int);
 
 	void checkMatching();
-	
-	void ensureCursorVisible();
+	void flash();
 	
 	void foldClear() { fold.clear(); }
 	void foldLine(int row, bool no_refresh = false);

@@ -318,7 +318,10 @@ CLASS *CLASS_look(const char *name, int len)
 	int index;
 
   #if DEBUG_COMP
-  fprintf(stderr, "CLASS_look: %s (%d)\n", name, _global);
+  fprintf(stderr, "CLASS_look: %s in %s\n", name, _global ? "global" : "local");
+  
+  if (_global && (!strcmp(name, "CControl[]") || !strcmp(name, "CControl")))
+  	BREAKPOINT();
   #endif
 
   //if (CP && CP->component && CP->component->archive)
@@ -336,7 +339,7 @@ CLASS *CLASS_look(const char *name, int len)
   if (TABLE_find_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, &index))
   {
     #if DEBUG_COMP
-    fprintf(stderr, " -> %ld in global\n", index);
+    fprintf(stderr, " -> %d in global\n", index);
     #endif
     return csym->class;
   }
@@ -356,6 +359,7 @@ CLASS *CLASS_find(const char *name)
   int index;
   int len;
   ARCHIVE *arch = NULL;
+  bool global;
 
   if (name == NULL)
     name = COMMON_buffer;
@@ -373,9 +377,7 @@ CLASS *CLASS_find(const char *name)
   //if (CP && CP->component && CP->component->archive)
   if (!_global && !ARCHIVE_get_current(&arch))
   {
-  	if (strcmp(name, "String[][]") == 0)
-  		BREAKPOINT();
-  		
+  	global = FALSE;
     TABLE_add_symbol(arch->classes, name, len, (SYMBOL **)(void *)&csym, NULL);
     #if DEBUG_LOAD || DEBUG_COMP
       fprintf(stderr, "Not found -> creating new one in %s\n", arch->name ? arch->name : "main");
@@ -383,38 +385,43 @@ CLASS *CLASS_find(const char *name)
   }
   else
   {
+  	global = TRUE;
     TABLE_add_symbol(&_global_table, name, len, (SYMBOL **)(void *)&csym, &index);
     #if DEBUG_LOAD || DEBUG_COMP
       fprintf(stderr, "Not found -> creating new one in global\n");
     #endif
   }
 
-  ALLOC_ZERO(&csym->class, Max(128, sizeof(CLASS)), "CLASS_find");
+  ALLOC_ZERO(&class, Max(128, sizeof(CLASS)), "CLASS_find");
+  csym->class = class;
   /*csym->class->id = index;*/
-  csym->class->state = CS_NULL;
-  csym->class->count = 0;
-  csym->class->ref = 1;
-  csym->class->next = _classes;
-  _classes = csym->class;
+  class->state = CS_NULL;
+  class->count = 0;
+  class->ref = 1;
+  
+  class->next = _classes;
+  _classes = class;
 
-  ALLOC(&csym->class->name, len + 1, "CLASS_find");
-  strcpy((char *)csym->class->name, name);
+  ALLOC(&class->name, len + 1, "CLASS_find");
+  strcpy((char *)class->name, name);
 
-  csym->sym.name = csym->class->name;
+  csym->sym.name = class->name;
 
-  csym->class->free_name = TRUE;
+  class->free_name = TRUE;
 
+	// The first class must be the Class class!
   if (_first == NULL)
-    _first = csym->class;
-
-  csym->class->class = _first;
+    _first = class;
+  class->class = _first;
+  
+  class->global = global;
 
   #if DEBUG_LOAD
   if (!strcmp(name, "BugModule"))
   	fprintf(stderr, "New class %s %p !\n", name, csym->class);
   #endif
 
-  return csym->class;
+  return class;
 }
 
 int CLASS_count(void)
@@ -617,20 +624,20 @@ void CLASS_ref(void *object)
 {
   ((OBJECT *)object)->ref++;
 
-  fprintf(stderr, "%s: ref(%s %p) -> %ld\n",
+  fprintf(stderr, "%s: ref(%s %p) -> %d\n",
     DEBUG_get_current_position(),
     OBJECT_class(object)->name, object, ((OBJECT *)object)->ref);
   fflush(stdout);
 }
 
-void CLASS_unref(void **pobject, boolean can_free)
+bool CLASS_unref(void *ob, boolean can_free)
 {
-  OBJECT *object = *((OBJECT **)pobject);
-
+	OBJECT *object = (OBJECT *)ob;
+	
   if (object->ref <= 0)
-    fprintf(stderr, "*** %p REF = %ld !\n", object, object->ref);
+    fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
 
-  fprintf(stderr, "%s: unref(%s %p) -> %ld\n",
+  fprintf(stderr, "%s: unref(%s %p) -> %d\n",
     DEBUG_get_current_position(),
     OBJECT_class(object)->name, object, object->ref - 1);
   fflush(stdout);
@@ -641,8 +648,11 @@ void CLASS_unref(void **pobject, boolean can_free)
   if ((--(object->ref) <= 0) && can_free)
   {
     fprintf(stderr, "FREE %p !\n", object);
-    CLASS_free(pobject);
+    CLASS_free(object);
+    return TRUE;
   }
+  
+  return FALSE;
 }
 #endif
 
@@ -1139,7 +1149,7 @@ void CLASS_create_array_class(CLASS *class)
 
 	STRING_new(&name_joker, class->name, strlen(class->name) - 2);
 
-	TYPE_joker = class->array_type = CLASS_find_global(name_joker);
+	TYPE_joker = class->array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
 
 	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC, "CLASS_create_array_class");
 	memcpy(desc, NATIVE_TemplateArray, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC);

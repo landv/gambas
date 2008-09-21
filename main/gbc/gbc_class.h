@@ -240,8 +240,7 @@ void CLASS_check_properties(CLASS *class);
 
 /* gbc_dump.c */
 
-void CLASS_dump(void);
-void CLASS_export(void);
-void CLASS_exit_export(void);
+PUBLIC void CLASS_dump(void);
+PUBLIC void CLASS_export(void);
 
 #endif

@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Static Private $hForm As FForm
-Static Private $cMenu As New Object[]
+Static Private $aMenu As New CMenu[]
 
 Private $iLevel As Integer
 Private $cName As New Collection
@@ -79,7 +79,7 @@ Private Sub CreateMenu(hCCtrl As CControl)
     
   End With
 
-  $cMenu.Add(hCMenu)
+  $aMenu.Add(hCMenu)
   $cName[hCMenu.Name] = True
 
   $iLevel = $iLevel + 1
@@ -99,7 +99,7 @@ Private Sub DrawMenu(iInd As Integer)
   
   $bFreeze = True
 
-  With $cMenu[iInd]
+  With $aMenu[iInd]
 
     sElt = String$(.Level, "···") & .Caption
     If .Shortcut Then
@@ -122,7 +122,7 @@ Private Sub LoadAllMenu()
 
   $bFreeze = True
 
-  $cMenu.Clear
+  $aMenu.Clear
   $cName.Clear
 
   For Each hCtrl In $hForm.Menus
@@ -133,7 +133,7 @@ Private Sub LoadAllMenu()
 
   lstMenu.Clear
 
-  For iInd = 0 To $cMenu.Count - 1
+  For iInd = 0 To $aMenu.Count - 1
     lstMenu.Add("")
     DrawMenu(iInd)
   Next  
@@ -169,7 +169,7 @@ Static Private Sub SaveAllMenu()
   hCtrl = $hForm.Control[$hForm.Name]
   iLevel = -1
 
-  For Each hCMenu In $cMenu
+  For Each hCMenu In $aMenu
   
     With hCMenu
   
@@ -241,9 +241,9 @@ Private Sub WriteMenu() As Boolean
 
   iInd = $iCurrent
 
-  If iInd < 0 Or iInd >= $cMenu.Count Then Return 
+  If iInd < 0 Or iInd >= $aMenu.Count Then Return 
 
-  With $cMenu[iInd]
+  With $aMenu[iInd]
 
     sName = Trim(txtName.Text)
 
@@ -306,9 +306,9 @@ Private Sub ReadMenu()
   
   iInd = $iCurrent
 
-  If iInd >= 0 And iInd < $cMenu.Count Then
+  If iInd >= 0 And iInd < $aMenu.Count Then
   
-    With $cMenu[iInd]
+    With $aMenu[iInd]
     
       txtName.Text = .Name
       txtCaption.Text = .Caption
@@ -350,8 +350,8 @@ End
 Private Sub DeleteMenu(iInd As Integer)
 
   lstMenu.Remove(iInd)
-  $cName.Remove($cMenu[iInd].Name)
-  $cMenu.Remove(iInd)
+  $cName.Remove($aMenu[iInd].Name)
+  $aMenu.Remove(iInd)
 
 End
 
@@ -398,13 +398,13 @@ Public Sub btnInsert_Click()
   hCMenu.Caption = hCMenu.Name
   'hCMenu.Caption = hCMenu.Name
   If lstMenu.Index > 0 Then
-    hCMenu.Level = $cMenu[$iCurrent - 1].Level
+    hCMenu.Level = $aMenu[$iCurrent - 1].Level
   Endif
 
   $cName[hCMenu.Name] = True
   'hCMenu.Caption = hCMenu.Name
 
-  $cMenu.Add(hCMenu, $iCurrent)
+  $aMenu.Add(hCMenu, $iCurrent)
   lstMenu.Add("", $iCurrent)
 
   ReadMenu
@@ -446,7 +446,7 @@ Public Sub btnRight_Click()
   For iInd = 0 To lstMenu.Count - 2
 
     If lstMenu[iInd].Selected Then
-      With $cMenu[iInd]
+      With $aMenu[iInd]
         .Level = .Level + 1
       End With
       DrawMenu(iInd)
@@ -469,7 +469,7 @@ Public Sub btnLeft_Click()
   For iInd = 0 To lstMenu.Count - 2
 
     If lstMenu[iInd].Selected Then
-      With $cMenu[iInd]
+      With $aMenu[iInd]
         .Level = Max(.Level - 1, 0)
       End With
       DrawMenu(iInd)
@@ -525,9 +525,9 @@ Private Function CheckMenu() As Boolean
 
   iLastLevel = -1
 
-  For iInd = 0 To $cMenu.Count - 1
+  For iInd = 0 To $aMenu.Count - 1
 
-    If $cMenu[iInd].Level - iLastLevel > 1 Then
+    If $aMenu[iInd].Level - iLastLevel > 1 Then
       lstMenu.Index = -1
       lstMenu.Index = iInd
       lstMenu[lstMenu.Index].Selected = True
@@ -535,7 +535,7 @@ Private Function CheckMenu() As Boolean
       Return True
     Endif
     
-    iLastLevel = $cMenu[iInd].Level
+    iLastLevel = $aMenu[iInd].Level
   
   Next
 
@@ -567,7 +567,7 @@ Public Sub btnNext_Click()
 
   Dim iIndex As Integer
 
-  If $iCurrent < $cMenu.Count Then
+  If $iCurrent < $aMenu.Count Then
     iIndex = lstMenu.Index
     lstMenu.Index = -1
     lstMenu.Index = iIndex + 1
@@ -602,9 +602,9 @@ Public Sub btnUp_Click()
       lstMenu.Remove(iInd + 1)
       lstMenu[iInd - 1].Selected = True
 
-      hCMenu = $cMenu[iInd - 1]
-      $cMenu[iInd - 1] = $cMenu[iInd]
-      $cMenu[iInd] = hCMenu
+      hCMenu = $aMenu[iInd - 1]
+      $aMenu[iInd - 1] = $aMenu[iInd]
+      $aMenu[iInd] = hCMenu
 
     End If
 
@@ -643,9 +643,9 @@ Public Sub btnDown_Click()
       lstMenu.Add(sItem, iInd + 1)
       lstMenu[iInd + 1].Selected = True
 
-      hCMenu = $cMenu[iInd]
-      $cMenu[iInd] = $cMenu[iInd + 1]
-      $cMenu[iInd + 1] = hCMenu
+      hCMenu = $aMenu[iInd]
+      $aMenu[iInd] = $aMenu[iInd + 1]
+      $aMenu[iInd + 1] = hCMenu
 
     End If
 
@@ -716,5 +716,14 @@ Public Sub lstMenu_MouseDown()
       lstMenu[iInd].Selected = False
     Next
   Endif
+
+End
+
+Public Sub btnShortcut_Click()
+
+  chkCtrl.Value = False
+  chkShift.Value = False
+  chkAlt.Value = False
+  cmbShortcut.Index = 0  
 
 End

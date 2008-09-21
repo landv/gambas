@@ -153,8 +153,7 @@ typedef
 #  define BREAKPOINT()	{ raise (SIGTRAP); }
 #endif	/* __i386__ */
 
-
-#define COPYRIGHT "(c) 2000-2007 Benoit Minisini\n\n" \
+#define COPYRIGHT "(c) 2000-2008 Benoit Minisini\n\n" \
   "This program is free software; you can redistribute it and/or \n" \
   "modify it under the terms of the GNU General Public License as \n" \
   "published by the Free Software Foundation; either version 2, or \n" \

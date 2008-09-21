@@ -312,14 +312,14 @@ int TRANS_get_class(PATTERN pattern)
 		int i;
 		char c;
 		
-		fprintf(stderr, "TRANS_get_class: %.*s\n", sym->symbol.len, sym->symbol.name);
+		//fprintf(stderr, "TRANS_get_class: %.*s\n", sym->symbol.len, sym->symbol.name);
 		
 		for (i = sym->symbol.len - 1; i >= 0; i--)
 		{
 			c = sym->symbol.name[i];
 			if (c == '[')
 			{
-				fprintf(stderr, "TRANS_get_class: find %.*s\n", i, sym->symbol.name);
+				//fprintf(stderr, "TRANS_get_class: find %.*s\n", i, sym->symbol.name);
   			if (TABLE_find_symbol(JOB->class->table, sym->symbol.name, i, NULL, &index_array))
   			{
   				index_array = TRANS_get_class(PATTERN_make(RT_CLASS, index_array));

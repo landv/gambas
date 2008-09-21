@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Private $aFound As New Object[]
+Private $aFound As New Variant[][]
 Private $hFont As Font
 Private $eAngle As Float
 
@@ -18,7 +18,7 @@ Public Sub AddFound(sName As String, iLine As Integer, iCol As Integer, iLen As 
     If $aFound[$aFound.Max][0] = $aFound[$aFound.Max - 1][0] Then
       $aFound[$aFound.Max][5] = $aFound[$aFound.Max - 1][5]
     Else
-      $aFound[$aFound.Max][5] = NOT $aFound[$aFound.Max - 1][5]
+      $aFound[$aFound.Max][5] = Not $aFound[$aFound.Max - 1][5]
     Endif
   Endif
   tvwFind.Rows.Count = $aFound.Count
@@ -75,7 +75,7 @@ Public Sub tvwFind_Data(Row As Integer, Column As Integer)
           .Text = ""
         Endif
       Else If Column = 1 Then
-        If $aFound[Row - 1][0] = $aFound[Row][0] AND $aFound[Row - 1][1] = $aFound[Row][1] Then 
+        If $aFound[Row - 1][0] = $aFound[Row][0] And $aFound[Row - 1][1] = $aFound[Row][1] Then 
           .Text = "-"
         Endif
       Endif
@@ -102,7 +102,7 @@ Public Sub tvwFind_Select()
   aFind = $aFound[tvwFind.Row]
   
   sPath = Project.FindPath(aFind[0])
-  If NOT sPath Then Return
+  If Not sPath Then Return
   
   Project.OpenFile(sPath)
 

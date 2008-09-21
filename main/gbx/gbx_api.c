@@ -722,6 +722,7 @@ _NOT_FOUND:
   return 1;
 }
 
+
 void *GB_GetClassInterface(void *_class, const char *_name)
 {
   CLASS_DESC *desc;
@@ -751,6 +752,7 @@ void *GB_GetClassInterface(void *_class, const char *_name)
 __NOT_FOUND:
 	return NULL;
 }
+
 
 GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 {

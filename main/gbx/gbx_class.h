@@ -250,7 +250,8 @@ typedef
     unsigned quick_array : 2;         /*      array accessor optimization type */
     unsigned is_stream : 1;           /*  30  If the class inherits stream */
     
-    unsigned _reserved : 16;          /*  32  */
+		unsigned global : 1;              /*      If the class is in the global table */ 
+    unsigned _reserved : 15;          /*  32  */
 
     short n_desc;                     /*  34  number of descriptions */
     short n_event;                    /*  36  number of events */
@@ -412,7 +413,7 @@ CLASS *CLASS_find_global(const char *name);
 CLASS *CLASS_check_global(char *name);
 
 void CLASS_ref(void *object);
-void CLASS_unref(void **pobject, boolean can_free);
+bool CLASS_unref(void *object, boolean can_free);
 void CLASS_free(void *object);
 void CLASS_release(CLASS *class, char *data);
 
