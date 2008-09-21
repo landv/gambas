@@ -143,7 +143,7 @@ END
 
 PUBLIC SUB mnuImmediately_Click()
 
-  INC mnuImmediately.Checked
+  mnuImmediately.Checked = NOT mnuImmediately.Checked
   Editor1.Flags[Editor.HighlightCurrent] = mnuImmediately.Checked
   Editor2.Flags[Editor.HighlightCurrent] = mnuImmediately.Checked
 

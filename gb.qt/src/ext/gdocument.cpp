@@ -504,7 +504,7 @@ void GDocument::setText(const GString & text)
 
   readOnly = false;
   blockUndo = true;
-
+  
   clear();
   insert(0, 0, text);
   colorize(0);
@@ -1047,7 +1047,8 @@ void GDocument::colorize(int y)
   uint state;
   int tag;
   int nupd = 0;
-
+  bool changed = false;
+  
   if (highlightMode == None)
     return;
 
@@ -1084,22 +1085,20 @@ void GDocument::colorize(int y)
 			(*highlightCallback)(views.first(), state, tag, l->s, &l->highlight, proc);
 			l->proc = proc;
 
-			if (l->baptized)
+			if (old != l->s)
 			{
-				if (old != l->s)
-				{
-					begin();
-					addUndo(new GDeleteCommand(y, 0, y, old.length(), old));
-					if (l->s.length())
-						addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
-					end();
-			    
-			    //maxLength = GMAX(maxLength, (int)l->s.length());
-					updateLineWidth(y);
-				}
+				begin();
+				addUndo(new GDeleteCommand(y, 0, y, old.length(), old));
+				if (l->s.length())
+					addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
+				end();
+				
+				//maxLength = GMAX(maxLength, (int)l->s.length());
+				updateLineWidth(y);
+				//qDebug("colorize: %d has changed: '%s' -> '%s'", y, old.utf8(), l->s.utf8());
+				l->changed = true;
+				changed = true;
 			}
-			else
-				l->baptized = true;
 		}
 		else
 		{
@@ -1123,6 +1122,9 @@ void GDocument::colorize(int y)
 			lines.at(y)->modified = true;
 	}
 
+	if (changed)
+		emitTextChanged();
+	
 	if (nupd >= 1)
 		updateViews(y - nupd + 1, nupd);
 }
@@ -1175,9 +1177,12 @@ void GDocument::emitTextChanged()
 		textHasChanged = true;
 		return;
 	}
-		
+	
+	//qDebug("emitTextChanged");
+	
 	FOR_EACH_VIEW(v)
+	{
 		v->docTextChanged();
+	}
 }
-
 

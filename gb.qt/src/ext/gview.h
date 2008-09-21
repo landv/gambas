@@ -51,7 +51,6 @@ private:
   static QPixmap *cache;
   static QPixmap *breakpoint;
   static int count;
-  static const QEvent::Type EVENT_ENSURE_VISIBLE = QT_EVENT_FIRST;
 
   GDocument *doc;
   //int charWidth;
@@ -67,6 +66,7 @@ private:
   int lineNumberLength;
   bool center;
   bool flashed;
+  bool painting;
   
   int lastx;
   bool left;
@@ -97,8 +97,9 @@ private:
 
   void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int row);
 
-	void docTextChanged();
 	void redrawContents();
+	
+	void docTextChanged();
 	
 private slots:
 
@@ -107,6 +108,8 @@ private slots:
 	void baptizeVisible();
 	void baptizeVisible(int x, int y);
 	void unflash();
+	void docTextChangedLater();
+	void ensureCursorVisible();
 
 protected:
 
@@ -120,7 +123,6 @@ protected:
   virtual void resizeEvent(QResizeEvent *e);
   virtual void focusInEvent(QFocusEvent *);
   virtual void focusOutEvent(QFocusEvent *);
-  virtual bool event(QEvent *e);
 	virtual void imStartEvent(QIMEvent *e);
 	virtual void imComposeEvent(QIMEvent *e);
 	virtual void imEndEvent(QIMEvent *e);

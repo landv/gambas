@@ -172,12 +172,13 @@ public:
   void eraseSelection();
 
   void emitTextChanged();
-  
+
 private:
 
 	void updateLineWidth(int y);
 	void insertLine(int y);
 	void removeLine(int y);
+  void emitTextChangedLater();
 };
 
 #endif

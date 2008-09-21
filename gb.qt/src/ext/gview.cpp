@@ -181,6 +181,7 @@ GEditor::GEditor(QWidget *parent) : QGridView(parent, 0, WNoAutoErase), fm(font(
 	setDocument(NULL);
 	largestLine = 0;
 	flashed = false;
+	painting = false;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -688,7 +689,9 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	}*/
 	else
 	{
+		painting = true;
 		doc->colorize(row);
+		painting = false;
 		paintText(p, l, margin, fm.ascent(), xmin, lmax, row);
 	}
 
@@ -896,7 +899,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
 	cursorToPos(y, x, &px, &py);
 	if (px < margin || px >= (visibleWidth() - 2) || py < 0 || py >= (visibleHeight() - cellHeight() - 1))
-		QApplication::postEvent(this, new QEvent(EVENT_ENSURE_VISIBLE));
+		QTimer::singleShot(0, this, SLOT(ensureCursorVisible()));
 
 	return change;
 }
@@ -1459,36 +1462,16 @@ void GEditor::resizeEvent(QResizeEvent *e)
 	updateWidth(-1);
 }
 
-bool GEditor::event(QEvent *e)
+void GEditor::ensureCursorVisible()
 {
-	//int charWidth = getCharWidth();
-	
-	if (e->type() == EVENT_ENSURE_VISIBLE)
-	{
-		//qDebug("ensureVisible: %d %d (%d)", x, y, center);
-		if (center)
-			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
-			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
-		else
-			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
-			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
-		center = false;
-		return false;
-	}
-	/*else if (e->type() == QEvent::KeyPress)
-	{
-		QKeyEvent *ke = (QKeyEvent *)e;
-		if (ke->key() == Key_Tab || ke->key() == Key_BackTab)
-		{
-			keyPressEvent(ke);
-			if (ke->isAccepted())
-				return TRUE;
-		}
-	}*/
-
-	return QGridView::event(e);
+	if (center)
+		//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
+		ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
+	else
+		//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
+		ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
+	center = false;
 }
-
 
 void GEditor::startBlink()
 {
@@ -1513,7 +1496,7 @@ void GEditor::blinkTimerTimeout()
 void GEditor::focusInEvent(QFocusEvent *e)
 {
 	startBlink();
-	QApplication::postEvent(this, new QEvent(EVENT_ENSURE_VISIBLE));
+	ensureCursorVisible();
 	QGridView::focusInEvent(e);
 }
 
@@ -1621,9 +1604,17 @@ void GEditor::updateMargin()
 	}
 }
 
-void GEditor::docTextChanged()
+void GEditor::docTextChangedLater()
 {
 	emit textChanged();
+}
+
+void GEditor::docTextChanged()
+{
+	if (painting)
+		QTimer::singleShot(0, this, SLOT(docTextChangedLater()));
+	else
+		docTextChangedLater();
 }
 
 
