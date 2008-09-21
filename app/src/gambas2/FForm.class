@@ -923,6 +923,7 @@ PUBLIC SUB Control_MouseUp()
 
   DIM hCont AS Container
   DIM hCtrl AS CControl
+  DIM hPrevious AS CControl
 
   'PRINT "Control_MouseUp  Mode ="; $iMode
 
@@ -971,10 +972,20 @@ PUBLIC SUB Control_MouseUp()
         UnselectAll
 
       ELSE IF $hCurrent.Selected THEN
-
-        IF Master <> $hCurrent OR Selection.Count = 1 THEN
-          UnselectCurrent
+      
+        IF Selection.Count > 1 AND IF Master = $hCurrent THEN 
+          FOR EACH hCtrl IN Selection
+            IF hCtrl = $hCurrent THEN BREAK
+            hPrevious = hCtrl
+          NEXT
+          IF NOT hPrevious THEN 
+            FOR EACH hPrevious IN Selection
+            NEXT
+          ENDIF
+          hPrevious.Select(ME, TRUE)
         ENDIF
+
+        UnselectCurrent
 
       ELSE
 
@@ -1004,6 +1015,7 @@ END
 
 PUBLIC SUB Control_Menu()
 
+  DEBUG
   CreateMenu
   mnuForm.Popup
 
@@ -2176,30 +2188,68 @@ PRIVATE SUB MoveSelection(DX AS Integer, DY AS Integer, OPTIONAL bFree AS Boolea
 END
 
 
+PRIVATE SUB ResizeSelection(DW AS Integer, DH AS Integer, OPTIONAL bFree AS Boolean)
+
+  DIM hCtrl AS CControl
+  DIM W, H AS Integer
+
+  IF $bReadOnly THEN RETURN
+  
+  FOR EACH hCtrl IN Selection
+    W = hCtrl.Control.W + DW
+    H = hCtrl.Control.H + DH
+    IF W < 1 OR IF H < 1 THEN RETURN
+  NEXT
+
+  FOR EACH hCtrl IN Selection
+    hCtrl.Resize(hCtrl.Control.W + DW, hCtrl.Control.H + DH, bFree)
+  NEXT
+  
+END
+
+
 PUBLIC SUB Form_KeyPress()
 
   DIM D AS Integer
   DIM bFree AS Boolean
   
-  IF Key.Normal THEN
-    D = Desktop.Scale
-    bFree = FALSE
-  ELSE IF Key.Shift AND NOT Key.Control THEN
+  IF Key.Shift THEN
     D = 1
     bFree = TRUE
   ELSE
-    RETURN
+    D = Desktop.Scale
+    bFree = FALSE
   ENDIF 
 
   SELECT Key.Code
     CASE Key.Up
-      MoveSelection(0, - D, bFree)
+      IF Key.Control THEN 
+        ResizeSelection(0, - D, bFree)
+      ELSE
+        MoveSelection(0, - D, bFree)
+      ENDIF
+      STOP EVENT
     CASE Key.Down
-      MoveSelection(0, D, bFree)
+      IF Key.Control THEN 
+        ResizeSelection(0, D, bFree)
+      ELSE
+        MoveSelection(0, D, bFree)
+      ENDIF
+      STOP EVENT
     CASE Key.Left
-      MoveSelection(- D, 0, bFree)
+      IF Key.Control THEN 
+        ResizeSelection(- D, 0, bFree)
+      ELSE
+        MoveSelection(- D, 0, bFree)
+      ENDIF
+      STOP EVENT
     CASE Key.Right
-      MoveSelection(D, 0, bFree)        
+      IF Key.Control THEN 
+        ResizeSelection(D, 0, bFree)        
+      ELSE
+        MoveSelection(D, 0, bFree)
+      ENDIF
+      STOP EVENT
   END SELECT
 
 END

@@ -718,3 +718,12 @@ PUBLIC SUB lstMenu_MouseDown()
   ENDIF
 
 END
+
+PUBLIC SUB btnShortcut_Click()
+
+  chkCtrl.Value = FALSE
+  chkShift.Value = FALSE
+  chkAlt.Value = FALSE
+  cmbShortcut.Index = 0
+
+END

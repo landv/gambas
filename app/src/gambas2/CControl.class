@@ -959,6 +959,8 @@ PUBLIC SUB Resize(W AS Integer, H AS Integer, OPTIONAL bFree AS Boolean)
     'W = Grid(W, Desktop.Scale)
     'H = Grid(H, Desktop.Scale)
   ENDIF
+  
+  IF W < 1 OR IF H < 1 THEN RETURN
 
   Control.Resize(W, H)
   'IF Parent THEN Arrange(Parent.Control, FALSE)

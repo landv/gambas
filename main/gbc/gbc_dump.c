@@ -573,6 +573,9 @@ PUBLIC void CLASS_export(void)
 	
 	fr = fopen(".info", "r");
 	
+	if (!fr && !class->exported)
+		return;
+	
 	line = read_line(fr, &len);
 
 	for(;;)

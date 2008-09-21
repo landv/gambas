@@ -784,17 +784,14 @@ STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String, OPTIONAL bInProject AS 
   DIM hModule AS Object
   DIM cSymbol AS Collection
   DIM hSymbol AS CSymbolInfo
-  DIM iFind AS Integer
-  DIM aClass AS String[]
 
   'IF Len(sClass) <= 1 THEN
   '  IF sClass <> "." THEN RETURN
   'ENDIF
 
-  aClass = Project.GetClasses()
-  iFind = aClass.Find(sClass, gb.Text)
+  sPath = Project.FindPath(sClass)
 
-  IF iFind < 0 THEN
+  IF NOT sPath THEN
 
     hClass = CComponent.Classes[sClass]
     IF hClass THEN
@@ -806,7 +803,7 @@ STATIC PUBLIC FUNCTION GetClassSymbols(sClass AS String, OPTIONAL bInProject AS 
     RETURN
   ENDIF
 
-  sClass = aClass[iFind]
+  sClass = File.BaseName(sPath)
 
   sPath = Project.Dir &/ sClass & ".module"
   IF Exist(sPath) THEN hPModule = Project.LoadFile(sPath)

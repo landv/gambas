@@ -1815,16 +1815,17 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   {
     QKeyEvent *kevent = (QKeyEvent *)event;
 
+// 		qDebug("QKeyEvent: %s (%s %s) (%s %s) %s%sTL:%d -> %d %s",
+// 			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
+// 			widget->className(), widget->name(), GB.GetClassName(control), control->name,
+// 			real ? "R " : "", original ? "O " : "",
+// 			((QWidget *)widget)->isTopLevel(),  
+// 			kevent->key(), (char *)kevent->text().latin1());
+
     #if QT_VERSION <= 0x030005
     if (!real || !original)
       goto _DESIGN;
     #endif
-
-// 		qDebug("QKeyEvent: %s (%s %p) (%s %p) TL:%d -> %d %s",
-// 			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
-// 			widget->className(), widget, GB.GetClassName(control), control,
-// 			((QWidget *)widget)->isTopLevel(),  
-// 			kevent->key(), (char *)kevent->text().latin1());
 
     event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
 

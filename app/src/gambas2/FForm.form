@@ -118,25 +118,23 @@
         Action = ".arrange-horizontal"
         Text = ("Horizontal")
         Picture = Picture["img/16/arrange-h.png"]
-        Shortcut = "Ctrl+Right"
+        Shortcut = "Ctrl+Alt+H"
       }
       { mnuArrangeLeftRight Menu
         Action = ".arrange-row"
         Text = ("Rows")
         Picture = Picture["img/16/arrange-lr.png"]
-        Shortcut = "Ctrl+Shift+Right"
       }
       { mnuArrangeVer Menu
         Action = ".arrange-vertical"
         Text = ("Vertical")
         Picture = Picture["img/16/arrange-v.png"]
-        Shortcut = "Ctrl+Down"
+        Shortcut = "Ctrl+Alt+V"
       }
       { mnuArrangeTopBottom Menu
         Action = ".arrange-column"
         Text = ("Columns")
         Picture = Picture["img/16/arrange-tb.png"]
-        Shortcut = "Ctrl+Shift+Down"
       }
     }
     { mnuAlign Menu
@@ -199,7 +197,7 @@
     }
   }
   { Panel1 Panel
-    MoveScaled(1,1,62,14)
+    MoveScaled(1,2,62,14)
     Arrangement = Arrange.LeftRight
     AutoResize = True
     { tlbForm ToolBar

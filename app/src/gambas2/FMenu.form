@@ -148,7 +148,7 @@
               Text = ("CTRL")
             }
             { chkShift CheckBox
-              MoveScaled(8,0,8,3)
+              MoveScaled(8,0,9,3)
               Text = ("SHIFT")
             }
             { chkAlt CheckBox
@@ -156,10 +156,15 @@
               Text = ("ALT")
             }
             { cmbShortcut ComboBox
-              MoveScaled(24,0,13,3)
+              MoveScaled(24,0,9,3)
               Expand = True
               Text = ("")
               ReadOnly = True
+            }
+            { btnShortcut Button
+              MoveScaled(34,0,3,3)
+              Text = ("")
+              Picture = Picture["icon:/small/clear"]
             }
           }
         }

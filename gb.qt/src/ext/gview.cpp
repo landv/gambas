@@ -247,7 +247,7 @@ int GEditor::getCharWidth() const
 
 void GEditor::updateCache()
 {
-	if (cache->width() < visibleWidth() || cache->height() != cellHeight())
+	if (cache->width() < visibleWidth() || cache->height() < cellHeight())
 	{
 		int nw = QMAX(cache->width(), visibleWidth());
 		int nh = cellHeight(); //QMAX(cache->height(), cellHeight());
