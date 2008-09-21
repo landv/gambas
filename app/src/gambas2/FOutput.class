@@ -72,6 +72,7 @@ PUBLIC SUB edtOutput_KeyPress()
   DIM sText AS String
   DIM iPos AS Integer
   DIM sVal AS String
+  DIM bSemiColon AS Boolean
 
   IF Key.Code = Key.Enter OR Key.Code = Key.Return THEN
 
@@ -111,9 +112,16 @@ PUBLIC SUB edtOutput_KeyPress()
 
       ELSE
 
+        IF Right(sText) = ";" THEN 
+          sText = Left$(sText, -1)
+          bSemiColon = TRUE
+        ENDIF
+
         TRY sVal = Str(Eval(sText & "\n"))
         IF ERROR THEN sVal = Error.Text
-        Insert("\n" & DConv$(sVal) & "\n")
+        sVal = "\n" & DConv$(sVal)
+        IF NOT bSemiColon THEN sVal &= "\n"
+        Insert(sVal)
         'Key.Cancel = TRUE
         STOP EVENT
 
@@ -129,6 +137,8 @@ PUBLIC SUB edtOutput_KeyPress()
 
     IF Key.Code = Key["L"] THEN
       Clear
+    ELSE IF Key.Code = Key["G"] THEN 
+      edtOutput.Print(Chr$(7))
     'ELSE IF Code = Key["C"] THEN
     '  Project.DebugForm.Stop
     '  RETURN FALSE

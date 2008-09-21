@@ -245,6 +245,14 @@ BEGIN_METHOD(CEDITORDOC_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 				WIDGET->cursorGoto(line, DOC->lineLength(line), false);
 				WIDGET->insert("\n");
 			}
+			else if (code == 12) // CTRL+L
+			{
+				DOC->clear();
+			}
+			else if (code == 7)
+			{
+				WIDGET->flash();
+			}
 			else
 			{
 				QString tmp;

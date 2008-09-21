@@ -66,6 +66,7 @@ private:
   int margin;
   int lineNumberLength;
   bool center;
+  bool flashed;
   
   int lastx;
   bool left;
@@ -99,14 +100,13 @@ private:
 	void docTextChanged();
 	void redrawContents();
 	
-	//static void updateBreakpoint(uint bg, uint fg);
-
 private slots:
 
   void blinkTimerTimeout();
   void scrollTimerTimeout();
 	void baptizeVisible();
 	void baptizeVisible(int x, int y);
+	void unflash();
 
 protected:
 
@@ -190,6 +190,7 @@ public:
 	virtual void setNumRows(int);
 
   void checkMatching();
+	void flash();
   
 signals:
 

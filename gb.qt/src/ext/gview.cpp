@@ -180,6 +180,7 @@ GEditor::GEditor(QWidget *parent) : QGridView(parent, 0, WNoAutoErase), fm(font(
 	center = false;
 	setDocument(NULL);
 	largestLine = 0;
+	flashed = false;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -212,6 +213,8 @@ GEditor::~GEditor()
 	{
 		delete cache;
 		delete breakpoint;
+		cache = 0;
+		breakpoint = 0;
 	}
 }
 
@@ -553,7 +556,10 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 
 	if (row >= numLines())
 	{
-		painter->fillRect(0/*ur.left()*/, 0/*ur.top()*/, ur.width(), ur.height(), styles[GLine::Background].color);
+		/*QColor color = styles[GLine::Background].color;
+		if (flashed)
+			color = QColor(QRgb(color.rgb() ^ 0x00FFFFFF));
+		painter->fillRect(0, 0, ur.width(), ur.height(), styles[GLine::Background].color);*/
 		return;
 	}
 
@@ -690,6 +696,13 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	if (cursor && row == y)
 		//p.fillRect(QMIN((int)l->s.length(), x) * charWidth + margin, 0, 1, cellHeight(), styles[GLine::Normal].color);
 		p.fillRect(lineWidth(row, QMIN((int)l->s.length(), x)), 0, 1, cellHeight(), styles[GLine::Normal].color);
+
+	// Flash
+	if (flashed)
+	{
+		p.setRasterOp(XorROP);
+		p.fillRect(0, 0, visibleWidth(), cellHeight(), Qt::white);
+	}
 
 	p.end();
 
@@ -1657,36 +1670,20 @@ void GEditor::lineRemoved(int y)
 		largestLine--;
 }
 
-#if 0
-void GEditor::updateBreakpoint(uint bg, uint fg)
+void GEditor::flash()
 {
-	static uint pm_bg = 0;
-	static uint pm_fg = 0;
-	static char xpm1[12];
-	static char xpm2[12];
-	
-	bg &= 0xFFFFFF;
-	fg &= 0xFFFFFF;
-	
-	if (bg != pm_bg || fg != pm_fg)
-	{
-		pm_bg = bg;
-		pm_fg = fg;
+	if (flashed)
+		return;
 		
-		//::sprintf((char *)&breakpoint_xpm[2][5], "%06X", (uint)pm_bg.rgb());
-		//::sprintf(&breakpoint_xpm[3][5], "%06X", (uint)pm_fg.rgb());
-		
-		::sprintf(xpm1, ". c #%06X", (uint)qRgb((qRed(fg) + qRed(bg)) >> 1, (qGreen(fg) + qGreen(bg)) >> 1, (qBlue(fg) + qBlue(bg)) >> 1) & 0xFFFFFF);
-		::sprintf(xpm2, "+ c #%06X", fg);
-		
-		//qDebug("xpm1: '%s' xpm2: '%s'", xpm1, xpm2);
-		
-		breakpoint_xpm[2] = xpm1;
-		breakpoint_xpm[3] = xpm2;
-		
-		delete breakpoint;
-		breakpoint = new QPixmap(breakpoint_xpm);
-	}
+	flashed = true;
+	setPaletteBackgroundColor(QColor(QRgb(styles[GLine::Background].color.rgb() ^ 0xFFFFFF)));
+	redrawContents();
+	QTimer::singleShot(50, this, SLOT(unflash()));
 }
-#endif
 
+void GEditor::unflash()
+{
+	flashed = false;
+	setPaletteBackgroundColor(styles[GLine::Background].color);
+	redrawContents();
+}
