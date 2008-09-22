@@ -80,69 +80,6 @@ static QColor defaultColors[GLine::NUM_STATE] =
 	Qt::red
 };
 
-#if 0
-static int xPosToCursorPos( const QString &s, const QFontMetrics &fm,
-					int xPos, int width, int align )
-{
-	int i = 0;
-	int	  dist;
-	int tabDist;
-
-	if ( s.isEmpty() )
-		return 0;
-	if ( xPos > width )
-		xPos = width;
-	if ( xPos <= 0 )
-		return 0;
-
-	dist    = -fm.leftBearing( s[0] );
-
-	if ( align == Qt::AlignCenter || align == Qt::AlignHCenter )
-		dist = ( width - textWidthWithTabs( fm, s, 0, s.length(), align ) ) / 2;
-	else if ( align == Qt::AlignRight )
-		dist = width - textWidthWithTabs( fm, s, 0, s.length(), align );
-
-	int     distBeforeLastTab = dist;
-	tabDist = tabStopDist(fm);
-	while ( (uint)i < s.length() && dist < xPos ) 
-	{
-		if ( s[i] == '\t' && align == Qt::AlignLeft ) 
-		{
-			distBeforeLastTab = dist;
-			dist = (dist/tabDist + 1) * tabDist;
-		} 
-		else 
-		{
-			dist += fm.width( s[i] );
-		}
-		i++;
-	}
-	
-	if ( dist > xPos ) 
-	{
-		if ( dist > width ) 
-		{
-			i--;
-		} 
-		else 
-		{
-			if ( s[i-1] == '\t' && align == Qt::AlignLeft ) // dist equals a tab stop position
-			{
-				if ( xPos - distBeforeLastTab < (dist - distBeforeLastTab)/2 )
-					i--;
-			} 
-			else
-			{
-				if ( fm.width(s[i-1])/2 < dist-xPos )
-					i--;
-			}
-		}
-	}
-	
-	return i;
-}
-#endif
-
 /**---- GEditor -----------------------------------------------------------*/
 
 QPixmap *GEditor::cache = 0;
@@ -318,7 +255,10 @@ void GEditor::updateWidth(int y)
 	int w;
 	
 	if (largestLine < 0 || largestLine >= numLines())
+	{
 		findLargestLine();
+		y = -1;
+	}
 	
 	if (y < 0)
 	{
@@ -587,7 +527,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	QPainter p(cache);
 	
 	color = calc_color(a, b, styles[GLine::Background].color);
-	p.fillRect(0, 0, visibleWidth(), cellHeight(), color);
+	p.fillRect(0, 0, cellWidth(), cellHeight(), color);
 	
 	p.setFont(painter->font());
 	//p.translate(-ur.left(), 0);
@@ -711,7 +651,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 
 	//if (cache->width() < visibleWidth())
 	//	qDebug("cache->width() = %d < visibleWidth() = %d", cache->width(), visibleWidth());
-	painter->drawPixmap(ur.left(), 0, *cache, 0, 0, visibleWidth(), cellHeight());
+	painter->drawPixmap(ur.left(), 0, *cache, 0, 0, cellWidth(), cellHeight());
 }
 
 
@@ -832,7 +772,6 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 {
 	bool setxx;
 	bool change = false;
-	int px, py;
 
 	if (!mark)
 	{
@@ -871,35 +810,38 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 	else if (nx > lineLength(ny))
 		nx = lineLength(ny);
 
-	if (mark)
-	{
-		if (!doc->hasSelection(this))
-			doc->startSelection(this, y, x);
-		doc->endSelection(ny, nx);
-	}
-
 	if (ny != y && getFlag(HighlightCurrent))
 		doc->colorize(y);
 
 	if (y != ny || x != nx)
 	{
 		updateLine(y);
+		updateLine(ny);
+		
+		if (mark)
+		{
+			if (!doc->hasSelection(this))
+				doc->startSelection(this, y, x);
+		}
+		
 		y = ny;
 		x = nx;
 		if (setxx)
 			xx = x;
-		updateLine(y);
 		cursor = hasFocus();
 		change = true;
+
+		ensureCursorVisible();
+		
+		if (mark)
+			doc->endSelection(y, x);
 
 		emit cursorMoved();
 	}
 
 	checkMatching();
 
-	cursorToPos(y, x, &px, &py);
-	if (px < margin || px >= (visibleWidth() - 2) || py < 0 || py >= (visibleHeight() - cellHeight() - 1))
-		QTimer::singleShot(0, this, SLOT(ensureCursorVisible()));
+		//QTimer::singleShot(30, this, SLOT(ensureCursorVisible()));
 
 	return change;
 }
@@ -1192,7 +1134,9 @@ void GEditor::paste(bool mouse)
 			text[i] = ' ';
 	}
 
+	doc->begin();
 	insert(text);
+	doc->end();
 }
 
 void GEditor::undo()
@@ -1322,7 +1266,7 @@ __IGNORE:
 }
 
 
-int GEditor::posToLine(int py)
+int GEditor::posToLine(int py) const
 {
 	int ny;
 
@@ -1335,7 +1279,7 @@ int GEditor::posToLine(int py)
 	return ny;
 }
 
-void GEditor::posToCursor(int px, int py, int *y, int *x)
+void GEditor::posToCursor(int px, int py, int *y, int *x) const
 {
 	int nx, ny;
 
@@ -1349,7 +1293,7 @@ void GEditor::posToCursor(int px, int py, int *y, int *x)
 	*x = nx;
 }
 
-void GEditor::cursorToPos(int y, int x, int *px, int *py)
+void GEditor::cursorToPos(int y, int x, int *px, int *py) const
 {
 	int npx, npy;
 
@@ -1406,11 +1350,14 @@ void GEditor::mouseMoveEvent(QMouseEvent *e)
 		}
 		
 		if (!scrollTimer->isActive())
+		{
+			stopBlink();
 			scrollTimer->start(25, false);
+		}
 	}
 
 	lastx = e->pos().x();
-	left = updateCursor();  
+	left = updateCursor();
 }
 
 void GEditor::mouseDoubleClickEvent(QMouseEvent *e)
@@ -1443,6 +1390,7 @@ void GEditor::mouseReleaseEvent(QMouseEvent *e)
 	if (scrollTimer->isActive())
 	{
 		scrollTimer->stop();
+		startBlink();
 		copy(true);
 		return;
 	}
@@ -1462,14 +1410,29 @@ void GEditor::resizeEvent(QResizeEvent *e)
 	updateWidth(-1);
 }
 
+bool GEditor::isCursorVisible() const
+{
+	int px, py;
+	
+	cursorToPos(y, x, &px, &py);
+	
+	return !(px < margin || px >= (visibleWidth() - 2) || py < 0 || py >= (visibleHeight() - cellHeight() - 1));
+}
+
 void GEditor::ensureCursorVisible()
 {
-	if (center)
-		//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
-		ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
-	else
-		//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
-		ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
+	if (!isUpdatesEnabled())
+		return;
+	
+	if (!isCursorVisible())
+	{
+		if (center)
+			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
+			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
+		else
+			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
+			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
+	}
 	center = false;
 }
 

@@ -76,11 +76,12 @@ private:
   int flags;
   QPixmap pattern;
 
-  int lineLength(int y) { return doc->lineLength(y); }
-  int numLines() { return doc->numLines(); }
+  int lineLength(int y) const { return doc->lineLength(y); }
+  int numLines() const { return doc->numLines(); }
   void startBlink();
   void stopBlink();
   void updateLine(int y) { updateCell(y, 0); }
+  void repaintLine(int y) { repaintCell(y, 0, FALSE); }
   bool updateCursor();
   //void updatePattern();
 
@@ -100,7 +101,9 @@ private:
 	void redrawContents();
 	
 	void docTextChanged();
-	
+
+	bool isCursorVisible() const;
+
 private slots:
 
   void blinkTimerTimeout();
@@ -182,12 +185,12 @@ public:
 
   int getLineHeight() const { return cellHeight(); }
   int getCharWidth() const;
-  void cursorToPos(int y, int x, int *px, int *py);
-  int posToLine(int py);
+  void cursorToPos(int y, int x, int *px, int *py) const;
+  int posToLine(int py) const;
   int posToColumn(int y, int px) const;
-  void posToCursor(int px, int py, int *y, int *x);
-	int lastVisibleRow(int y) { return rowAt(y + visibleHeight() - 1); }
-	int lastVisibleRow() { return lastVisibleRow(contentsY()); }
+  void posToCursor(int px, int py, int *y, int *x) const;
+	int lastVisibleRow(int y) const { return rowAt(y + visibleHeight() - 1); }
+	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
 
 	virtual void setNumRows(int);
 

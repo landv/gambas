@@ -436,6 +436,12 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
   if (readOnly)
     return;
 
+	FOR_EACH_VIEW(v)
+	{
+		v->nx = v->x;
+		v->ny = v->y;
+	}
+
   l = lines.at(y1);
 
   if (y1 == y2)
@@ -450,8 +456,8 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 
       FOR_EACH_VIEW(v)
       {
-        if (v->y == y1 && v->x > x1)
-          v->x = GMAX(x1, v->x - (x2 - x1));
+        if (v->ny == y1 && v->nx > x1)
+          v->nx = GMAX(x1, v->nx - (x2 - x1));
       }
 
       updateViews(y1);
@@ -480,14 +486,14 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 
     FOR_EACH_VIEW(v)
     {
-      if (v->y > y1)
+      if (v->ny > y1)
       {
-        v->y = GMAX(y1, v->y - (y2 - y1));
-        if (v->y == y1)
-          v->x = x1;
+        v->ny = GMAX(y1, v->ny - (y2 - y1));
+        if (v->ny == y1)
+          v->nx = x1;
       }
-      else if (v->y == y1 && v->x > x1)
-        v->x = x1;
+      else if (v->ny == y1 && v->nx > x1)
+        v->nx = x1;
     }
 
     updateViews(y1, -1);
@@ -496,6 +502,11 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
   addUndo(new GDeleteCommand(y1, x1, y2, x2, text));
 
   emitTextChanged();
+
+	FOR_EACH_VIEW(v)
+	{
+		v->cursorGoto(v->ny, v->nx, FALSE);
+	}
 }
 
 void GDocument::setText(const GString & text)

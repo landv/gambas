@@ -141,8 +141,8 @@ public:
   bool getLineFlag(int y, int f) const;
   void setLineFlag(int y, int f, bool b);
 
-  int lineLength(int y) { return lines.at(y)->s.length(); }
-  int numLines() { return lines.count(); }
+  int lineLength(int y) const { return lines.at(y)->s.length(); }
+  int numLines() const { return lines.count(); }
 
   void insert(int y, int x, const GString & str);
   void remove(int y, int x, int y2, int x2);
