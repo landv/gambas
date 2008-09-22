@@ -219,6 +219,8 @@ int GEditor::posToColumn(int y, int px) const
 	if (len == 0)
 		return 0;
 	
+	px += contentsX();
+	
 	lw = 0;
 	for (i = 0; i < len; i++)
 	{
