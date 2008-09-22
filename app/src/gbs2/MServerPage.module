@@ -2,18 +2,33 @@
 
 PRIVATE $hOut AS File
 PRIVATE $bFirst AS Boolean
+PRIVATE $bLastPrint AS Boolean
+PRIVATE $iLenPrint AS Integer
 
 PRIVATE SUB PrintHTML(sStr AS String)
 
   IF Len(sStr) THEN 
-    IF Right(sStr) = "\n" THEN
-      PRINT #$hOut, "PRINT "; Quote(Left(sStr, -1))
-    ELSE
-      PRINT #$hOut, "PRINT "; Quote(sStr); ";"
+    $iLenPrint += Len(sStr)
+    IF $iLenPrint > 32000 THEN $bLastPrint = FALSE
+    IF NOT $bLastPrint THEN 
+      $iLenPrint = Len(sStr)
+      PRINT #$hOut "PRINT ";
+    ELSE 
+      PRINT #$hOut, " ";
     ENDIF
+    PRINT #$hOut, Quote(sStr);
+    $bLastPrint = TRUE
   ENDIF
   
 END
+
+PRIVATE SUB PrintSemiColon()
+  
+  IF $bLastPrint THEN PRINT #$hOut, ";"
+  $bLastPrint = FALSE
+  
+END
+
 
 
 PUBLIC SUB Make(sPath AS String) AS String
@@ -73,6 +88,8 @@ PUBLIC SUB Make(sPath AS String) AS String
         ENDIF
       LOOP
 
+      PrintSemiColon
+      
       IF Mid$(sData, iPos, 3) = "<%=" THEN 
         IF (iPos2 - iPos - 3) > 0 THEN
           PRINT #$hOut, "PRINT HTML(Str("; Trim(Mid$(sData, iPos + 3, iPos2 - iPos - 3)); "));"
@@ -80,9 +97,18 @@ PUBLIC SUB Make(sPath AS String) AS String
       ELSE 
         PRINT #$hOut, Trim(Mid$(sData, iPos + 2, iPos2 - iPos - 2))
       ENDIF
-      
+
       iPos = iPos2 + 1
+    
+    ELSE IF Mid$(sData, iPos, 3) = "<--" THEN
+    
+      ' Search for closing "-->"
+      iPos2 = InStr(sData, "-->", iPos + 3)
       
+      PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 3))
+      
+      iPos = iPos2 + 2
+
     ELSE 
       
       ' Search for closing ">" by jumping markup syntax
@@ -109,6 +135,7 @@ PUBLIC SUB Make(sPath AS String) AS String
   
   LOOP
   
+  PrintSemiColon
   PRINT #$hOut, "END"
   
   CLOSE #$hOut
