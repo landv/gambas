@@ -95,7 +95,7 @@ PUBLIC SUB End()
     OUTPUT TO DEFAULT 
     
     $hFile = OPEN Temp$("response") FOR READ 
-    AddHeader("Content-Length", Lof($hFile))
+    AddHeader("Content-length", Lof($hFile))
     
     PRINT $sHeader
   

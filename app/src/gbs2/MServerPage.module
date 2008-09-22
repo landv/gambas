@@ -45,6 +45,7 @@ PUBLIC SUB Make(sPath AS String) AS String
   PRINT #$hOut, "USE \"gb.web\""
   
   PRINT #$hOut, "PUBLIC SUB Main()\n"
+    "  Response.Buffered = TRUE\n"
     "  Response.Begin\n"
     "  _PrintPage()\n"
     "  Response.End\n"
