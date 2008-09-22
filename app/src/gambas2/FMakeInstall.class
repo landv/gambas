@@ -372,7 +372,7 @@ PUBLIC SUB wizInstall_Change()
       cmbMenu.Visible = cmbMenu.Count > 1
       
     CASE 5
-      dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath"]
+      dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath", System.User.Home]
 
   END SELECT
 
