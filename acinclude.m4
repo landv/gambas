@@ -18,9 +18,9 @@
 
 AC_DEFUN([GB_INIT_AUTOMAKE],
 [
-  AM_INIT_AUTOMAKE($1, 2.8.2)
+  AM_INIT_AUTOMAKE($1, 2.9.0)
   AM_CONFIG_HEADER(config.h)
-  AC_DEFINE(GAMBAS_FULL_VERSION, 0x02080002, [Full Gambas version])
+  AC_DEFINE(GAMBAS_FULL_VERSION, 0x02090000, [Full Gambas version])
   AC_DEFINE(GAMBAS_PCODE_VERSION, 0x02000000, [Gambas bytecode version])
 ])
 
@@ -78,6 +78,8 @@ AC_DEFUN([GB_INIT_SHORT],
   gbdatadir=$datadir/gambas$GAMBAS_VERSION
   AC_SUBST(gbdatadir)
   
+  AC_PROG_INSTALL
+  AC_PROG_LN_S
 ])
 
 AC_DEFUN([GB_LIBTOOL],
@@ -108,8 +110,6 @@ AC_DEFUN([GB_INIT],
   AC_PROG_CC
   AC_PROG_CPP
   AC_PROG_CXX
-  AC_PROG_INSTALL
-  AC_PROG_LN_S
   AC_PROG_MAKE_SET
 
   dnl ---- Checks for header files.

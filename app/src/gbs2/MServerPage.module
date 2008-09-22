@@ -1,0 +1,118 @@
+' Gambas module file
+
+PRIVATE $hOut AS File
+PRIVATE $bFirst AS Boolean
+
+PRIVATE SUB PrintHTML(sStr AS String)
+
+  IF Len(sStr) THEN 
+    IF Right(sStr) = "\n" THEN
+      PRINT #$hOut, "PRINT "; Quote(Left(sStr, -1))
+    ELSE
+      PRINT #$hOut, "PRINT "; Quote(sStr); ";"
+    ENDIF
+  ENDIF
+  
+END
+
+
+PUBLIC SUB Make(sPath AS String) AS String
+
+  DIM sData AS String = File.Load(sPath)
+  DIM iPos AS Integer
+  DIM iPos2 AS Integer
+  DIM sCar AS String
+  DIM sWait AS String
+    
+  sPath = Temp$("gs")
+  $hOut = OPEN sPath FOR CREATE 
+  
+  PRINT #$hOut, "USE \"gb.web\""
+  
+  PRINT #$hOut, "PUBLIC SUB Main()\n"
+    "  Response.Begin\n"
+    "  _PrintPage()\n"
+    "  Response.End\n"
+    "END"
+  
+  PRINT #$hOut, "\nPRIVATE SUB _PrintPage()"
+  
+  IF sData LIKE "#!/*" THEN 
+    iPos = InStr(sData, "\n")
+    IF iPos = 0 THEN iPos = Len(sData)
+  ENDIF
+  
+  DO
+    
+    iPos2 = InStr(sData, "<", iPos + 1)
+    IF iPos2 = 0 THEN 
+      PrintHTML(Mid$(sData, iPos + 1))
+      BREAK 
+    ELSE
+      PrintHTML(Mid$(sData, iPos + 1, iPos2 - iPos - 1))
+      iPos = iPos2
+    ENDIF
+    
+    IF Mid$(sData, iPos, 2) = "<%" THEN 
+      
+      ' Search for closing "%>" by jumping Gambas syntax
+      DO
+        INC iPos2
+        IF iPos2 > Len(sData) THEN BREAK
+        sCar = Mid$(sData, iPos2, 1)
+        IF sWait THEN 
+          IF sCar = "\\" THEN 
+            INC iPos2
+          ELSE IF sCar = sWait THEN 
+            sWait = ""
+          ENDIF
+        ELSE IF sCar = Chr$(34) THEN 
+          sWait = Chr$(34)
+        ELSE IF Mid$(sData, iPos2, 2) = "%>" THEN 
+          BREAK
+        ENDIF
+      LOOP
+
+      IF Mid$(sData, iPos, 3) = "<%=" THEN 
+        IF (iPos2 - iPos - 3) > 0 THEN
+          PRINT #$hOut, "PRINT HTML(Str("; Trim(Mid$(sData, iPos + 3, iPos2 - iPos - 3)); "));"
+        ENDIF
+      ELSE 
+        PRINT #$hOut, Trim(Mid$(sData, iPos + 2, iPos2 - iPos - 2))
+      ENDIF
+      
+      iPos = iPos2 + 1
+      
+    ELSE 
+      
+      ' Search for closing ">" by jumping markup syntax
+      DO
+        INC iPos2
+        IF iPos2 > Len(sData) THEN BREAK
+        sCar = Mid$(sData, iPos2, 1)
+        IF sWait THEN 
+          IF sCar = sWait THEN sWait = ""
+        ELSE IF sCar = ">" THEN 
+          BREAK
+        ELSE IF sCar = Chr$(34) THEN 
+          sWait = Chr$(34)
+        ELSE IF sCar = "'" THEN 
+          sWait = "'"
+        ENDIF
+      LOOP
+      
+      PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 1))
+      
+      iPos = iPos2
+    
+    ENDIF
+  
+  LOOP
+  
+  PRINT #$hOut, "END"
+  
+  CLOSE #$hOut
+  RETURN sPath
+  
+END
+
