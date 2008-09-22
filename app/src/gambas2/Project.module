@@ -3468,6 +3468,7 @@ PUBLIC SUB MakeInstall()
   IF FMakeInstall.ShowModal() THEN RETURN 
   
   Project.ReleaseVersion = iRelease
+  Project.WriteProject
 
 END
 

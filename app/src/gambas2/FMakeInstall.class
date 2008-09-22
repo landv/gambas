@@ -348,6 +348,7 @@ PUBLIC SUB wizInstall_BeforeChange()
         STOP EVENT 
         RETURN 
       ENDIF
+      Settings["/FMakeInstall/PackagePath"] = Package.Path
 
   END SELECT
   
@@ -369,6 +370,9 @@ PUBLIC SUB wizInstall_Change()
     CASE 4
       InitMenuTree
       cmbMenu.Visible = cmbMenu.Count > 1
+      
+    CASE 5
+      dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath"]
 
   END SELECT
 
