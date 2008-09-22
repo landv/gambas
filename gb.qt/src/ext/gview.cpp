@@ -815,8 +815,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
 	if (y != ny || x != nx)
 	{
-		updateLine(y);
-		updateLine(ny);
+		int oy = y;
 		
 		if (mark)
 		{
@@ -831,6 +830,9 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		cursor = hasFocus();
 		change = true;
 
+		repaintLine(oy);
+		repaintLine(y);
+		
 		ensureCursorVisible();
 		
 		if (mark)
