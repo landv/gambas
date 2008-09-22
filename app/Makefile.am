@@ -15,12 +15,16 @@ install-exec-local:
 	
 	@echo "Installing the scripter..."
 	@ln -s gbs$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION) || true
+	@ln -s gbw$(GAMBAS_VERSION).gambas $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION) || true
 	@if test x"$(XDG_UTILS)" != x; then \
-		echo "Registering Gambas script mimetype"; \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/icons; \
-		cp -f $(srcdir)/mime/application-x-gambasscript.png $(DESTDIR)$(gbdatadir)/icons; \
+		cp -f $(srcdir)/mime/application-x-gambas*.png $(DESTDIR)$(gbdatadir)/icons; \
+		echo "Registering Gambas script mimetype"; \
 		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasscript.png application-x-gambasscript; \
 		xdg-mime install $(srcdir)/mime/application-x-gambasscript.xml; \
+		echo "Registering Gambas server page mimetype"; \
+		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
+		xdg-mime install $(srcdir)/mime/application-x-gambasserverpage.xml; \
 	fi
 
 uninstall-local:

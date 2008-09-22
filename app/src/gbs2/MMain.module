@@ -67,7 +67,7 @@ PUBLIC SUB Main()
   
     'If the extension is ".gw", then we have a server page to compile!
   
-    IF LCase(File.Ext($sPath)) = "gw" THEN 
+    IF File.Name(Application.Args[0]) = "gbw2" THEN 
       IF $bVerbose THEN PRINT "gbs2: compiling server page"
       $sPath = MServerPage.Make($sPath)
     ENDIF
