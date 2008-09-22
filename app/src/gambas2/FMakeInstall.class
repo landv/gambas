@@ -78,7 +78,7 @@ END
 
 PUBLIC SUB wizInstall_Cancel()
 
-  ME.Close  
+  ME.Close
 
 END
 
@@ -230,7 +230,7 @@ PUBLIC SUB wizInstall_Close()
   
   IF Message.Warning(("The packages have been successfully created."), ("Close"), ("Retry")) = 2 THEN RETURN
   
-  ME.Close
+  ME.Close(TRUE)
 
 END
 

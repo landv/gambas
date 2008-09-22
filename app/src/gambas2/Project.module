@@ -2246,7 +2246,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   IF Stack THEN PRINT #hFic, "Stack="; Stack
   IF Icon THEN PRINT #hFic, "Icon="; Icon
 
-  PRINT #hFic, "Version="; CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
+  PRINT #hFic, "Version="; MajorVersion; "."; MinorVersion; "."; ReleaseVersion
   IF VersionProgram THEN PRINT #hFic, "VersionProgram="; VersionProgram
 
   FOR EACH hComp IN CComponent.All
@@ -3462,8 +3462,12 @@ END
 
 PUBLIC SUB MakeInstall()
 
+  DIM iRelease AS Integer = Project.ReleaseVersion
+
   IF MakeExecutable(TRUE, TRUE) THEN RETURN
-  FMakeInstall.ShowModal
+  IF FMakeInstall.ShowModal() THEN RETURN 
+  
+  Project.ReleaseVersion = iRelease
 
 END
 

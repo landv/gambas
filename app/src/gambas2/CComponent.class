@@ -25,6 +25,7 @@ PUBLIC ClassList AS NEW String[]
 PUBLIC State AS Integer
 PUBLIC SortKey AS Integer
 PUBLIC User AS Boolean
+PUBLIC Version AS String
 
 STATIC PRIVATE $cName AS Collection
 STATIC PUBLIC Features AS NEW Collection
@@ -194,6 +195,8 @@ STATIC PRIVATE SUB InitComponent(sFile AS String, bUser AS Boolean)
           .State = UNSTABLE
         ELSE IF sKey = "State" THEN 
           .State = CInt(sLig)
+        ELSE IF sKey = "Version" THEN 
+          .Version = sLig
         ENDIF
 
       END WITH

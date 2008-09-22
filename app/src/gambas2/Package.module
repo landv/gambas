@@ -80,6 +80,16 @@ PRIVATE SUB RemoveEmptyLines(sText AS String) AS String
   
 END
 
+PRIVATE SUB GetVersion() AS String
+
+  DIM sVer AS String
+  
+  sVer = Project.MajorVersion & "." & Project.MinorVersion
+  IF Project.UseRelease THEN sVer &= "." & Project.ReleaseVersion
+  RETURN sVer
+  
+END
+
 
 PRIVATE SUB InitMake(sSys AS String)
   
@@ -113,8 +123,7 @@ PRIVATE SUB InitMake(sSys AS String)
   $sCategories = Project.Categories[sSys]
   IF $sCategories THEN $sCategories &= ";"
 
-  $sVersion = Project.MajorVersion & "." & Project.MinorVersion
-  IF Project.UseRelease THEN $sVersion &= "." & Project.ReleaseVersion
+  $sVersion = GetVersion()
   
   $sDescription = RemoveEmptyLines(Project.Description)
 
@@ -166,7 +175,7 @@ PUBLIC FUNCTION GetChangeDate() AS String
   sDate = Format$(Now, "ddd mmm dd yyyy") & " " & Project.Maintainer & " "
   IF Project.Address THEN sDate = sDate & "<" & Project.Address & "> "
   'sDate = sDate & Subst("&1.&2-&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
-  sDate &= $sVersion
+  sDate &= GetVersion()
   System.Language = sLang
   RETURN sDate
 
@@ -185,6 +194,13 @@ PRIVATE FUNCTION IsConsoleProject() AS Boolean
 
 END
 
+PRIVATE SUB ComponentToPackageName(sComp AS String) AS String
+  
+  RETURN "gambas" & System.Version & "-" & Replace(sComp, ".", "-")
+  
+END
+
+
 PRIVATE FUNCTION GetDependencies() AS String[]
   
   DIM aDep AS NEW String[]
@@ -192,10 +208,34 @@ PRIVATE FUNCTION GetDependencies() AS String[]
   
   FOR EACH sComp IN Project.Libraries
     IF sComp = "gb.debug" OR IF sComp = "gb.eval" THEN CONTINUE 
-    aDep.Add("gambas" & System.Version & "-" & Replace(sComp, ".", "-"))
+    aDep.Add(sComp)
   NEXT
   
   RETURN aDep
+  
+END
+
+PRIVATE FUNCTION GetComponentMinMaxVersion(sLib AS String) AS String[]
+  
+  DIM hComponent AS CComponent
+  DIM aMinVersion AS String[]
+  DIM aMaxVersion AS String[]
+  
+  hComponent = CComponent.All[sLib]
+
+  IF NOT hComponent.Version THEN RETURN [MIN_VERSION, MAX_VERSION]
+
+  aMinVersion = Split(hComponent.Version, ".")
+  aMinVersion[0] = CStr(CInt(aMinVersion[0]) - 1)
+  aMinVersion[1] = "90"
+  aMinVersion[2] = "1"
+
+  aMaxVersion = Split(hComponent.Version, ".")
+  'aMaxVersion[0] = CStr(CInt(aVersion[0]) - 1)
+  aMaxVersion[1] = "90"
+  aMaxVersion[2] = "0"
+  
+  RETURN [aMinVersion.Join("."), aMaxVersion.Join(".")]
   
 END
 
@@ -285,6 +325,7 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   DIM sPackagePath AS String
   DIM aLine AS String[]
   DIM n AS Integer
+  DIM aVer AS String[]
       
   INC Application.Busy
   
@@ -407,7 +448,9 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
   PRINT #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
   FOR EACH sLib IN GetDependencies()
-    PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
+    aVer = GetComponentMinMaxVersion(sLib)
+    sLib = ComponentToPackageName(sLib)
+    PRINT #hFile, ", "; sLib; " (>= "; aVer[0]; "), "; sLib; " (<< "; aVer[1]; ")";
   NEXT 
   PRINT #hFile
   PRINT #hFile, "Standards-Version: 3.7.2"
@@ -417,7 +460,9 @@ PRIVATE FUNCTION MakeDebPackage(sSys AS String)
   PRINT #hFile, "Depends: gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
   IF NOT Project.CreateComponent THEN
       FOR EACH sLib IN GetDependencies()
-        PRINT #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
+        aVer = GetComponentMinMaxVersion(sLib)
+        sLib = ComponentToPackageName(sLib)
+        PRINT #hFile, ", "; sLib; " (>= "; aVer[0]; "), "; sLib; " (<< "; aVer[1]; ")";
       NEXT 
   ENDIF 
   PRINT #hFile
@@ -551,6 +596,7 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
   DIM sRelease AS String
   DIM sLib AS String
   DIM sMacro AS String
+  DIM aVer AS String[]
 
   INC Application.Busy
 
@@ -646,8 +692,10 @@ PRIVATE FUNCTION MakeRpmPackage(sSys AS String)
   IF NOT Project.CreateComponent THEN 
   
     FOR EACH sLib IN GetDependencies()
-      PRINT #hFile, ","; sLib; " >= "; MIN_VERSION;
-      PRINT #hFile, ","; sLib; " < "; MAX_VERSION;
+      aVer = GetComponentMinMaxVersion(sLib)
+      sLib = ComponentToPackageName(sLib)
+      PRINT #hFile, ","; sLib; " >= "; aVer[0];
+      PRINT #hFile, ","; sLib; " < "; aVer[1];
     NEXT
   
   ENDIF
@@ -973,6 +1021,7 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
   DIM sLib AS String
   DIM sPackage AS String
   DIM sFile AS String 
+  DIM aVer AS String[]
       
   INC Application.Busy
 
@@ -1094,8 +1143,10 @@ PRIVATE SUB MakeTgzPackage(sSys AS String)
   IF NOT Project.CreateComponent THEN
 
     FOR EACH sLib IN GetDependencies()
-      PRINT #hFile, sLib; " >= "; MIN_VERSION
-      PRINT #hFile, sLib; " < "; MAX_VERSION
+      aVer = GetComponentMinMaxVersion(sLib)
+      sLib = ComponentToPackageName(sLib)
+      PRINT #hFile, sLib; " >= "; aVer[0]
+      PRINT #hFile, sLib; " < "; aVer[1]
     NEXT
     
   ENDIF

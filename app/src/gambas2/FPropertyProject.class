@@ -775,6 +775,7 @@ PRIVATE SUB WriteComponent() AS Boolean
   
   PRINT #hFile, "[Component]"
   PRINT #hFile, "Key="; Project.Name
+  PRINT #hFile, "Version="; Project.MajorVersion; "."; Project.MinorVersion; "."; Project.ReleaseVersion
   IF cmbComponentState.Index THEN PRINT #hFile, "State="; cmbComponentState.Index
   IF Project.Authors THEN PRINT #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
   IF GetForm() THEN PRINT #hFile, "Type="; GetForm()
