@@ -77,6 +77,9 @@ AC_DEFUN([GB_INIT_SHORT],
   AC_SUBST(gblibdir)
   gbdatadir=$datadir/gambas$GAMBAS_VERSION
   AC_SUBST(gbdatadir)
+
+  AC_PROG_INSTALL
+  AC_PROG_LN_S
 ])
 
 AC_DEFUN([GB_LIBTOOL],
@@ -106,8 +109,6 @@ AC_DEFUN([GB_INIT],
   AC_PROG_CC
   AC_PROG_CPP
   AC_PROG_CXX
-  AC_PROG_INSTALL
-  AC_PROG_LN_S
   AC_PROG_MAKE_SET
 
   dnl ---- Checks for header files.
