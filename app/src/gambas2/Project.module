@@ -1860,10 +1860,10 @@ PRIVATE SUB GetVersion()
   aVer = Split(Trim(sVer), ".")
   iMajor = aVer[0]
   iMinor = aVer[1]
-  TRY iRelease = aVer[2]
   MajorVersion = iMajor
   MinorVersion = iMinor
-  IF iRelease THEN ReleaseVersion = iRelease
+  TRY iRelease = aVer[2]
+  IF NOT ERROR THEN ReleaseVersion = iRelease
 
 CATCH 
 
@@ -2246,6 +2246,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   IF Stack THEN PRINT #hFic, "Stack="; Stack
   IF Icon THEN PRINT #hFic, "Icon="; Icon
 
+  GetVersion()
   PRINT #hFic, "Version="; MajorVersion; "."; MinorVersion; "."; ReleaseVersion
   IF VersionProgram THEN PRINT #hFic, "VersionProgram="; VersionProgram
 
