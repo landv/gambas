@@ -28,8 +28,8 @@ PUBLIC SUB Main()
   $sPath = ParseArgs()
   
   IF IsNull($sPath) THEN 
-    ERROR "gbs2: No script file specified"
-    ERROR "Type 'gbs2 --help' for more information."
+    ERROR "gbs: No script file specified"
+    ERROR "Type 'gbs"; System.Version; " --help' for more information."
     Application.Return = 1
     RETURN 
   ENDIF
@@ -37,7 +37,7 @@ PUBLIC SUB Main()
   IF NOT Exist($sPath) THEN 
     $sPath = Application.Dir &/ $sPath
     IF NOT Exist($sPath) THEN 
-      ERROR "gbs2: Script file does not exist: " & Application.Args[1]
+      ERROR "gbs: Script file does not exist: " & Application.Args[1]
       Application.Return = 1
       RETURN 
     ENDIF
@@ -56,19 +56,21 @@ PUBLIC SUB Main()
   ELSE  
     
     'Verify if the project was compiled
-    IF NOT Exist(sCacheDir &/ $sMd5) THEN bCompile = TRUE
-
-    'Verify the cache file
-    bCompile = NOT IsValid(sCacheDir &/ $sMd5 & ".info") 
+    IF NOT Exist(sCacheDir &/ $sMd5) THEN 
+      bCompile = TRUE
+    ELSE
+      'Verify the cache file
+      bCompile = NOT IsValid(sCacheDir &/ $sMd5 & ".info") 
+    ENDIF
     
   ENDIF
   
   IF bCompile THEN 
   
-    'If the extension is ".gw", then we have a server page to compile!
+    'If we are run as 'gbw2', then we have a server page to compile!
   
     IF File.Name(Application.Args[0]) = "gbw2" THEN 
-      IF $bVerbose THEN PRINT "gbs2: compiling server page"
+      IF $bVerbose THEN PRINT "gbs: compiling server page"
       $sPath = MServerPage.Make($sPath)
       IF $bVerbose THEN 
         PRINT String$(20, "-")
@@ -150,7 +152,7 @@ PRIVATE SUB MakeVirtualProject()
   DIM i AS Integer
   $sPrjPath = Temp("project") 
 
-  IF $bVerbose THEN PRINT "gbs2: create project"
+  IF $bVerbose THEN PRINT "gbs: create project"
   
   'Make the Virtual directory
   TRY MKDIR $sPrjPath
@@ -220,7 +222,7 @@ PRIVATE SUB GenerateFiles(Path AS String)
   'Check if this file is already included: if true not include it
   IF $aIncFiles.Exist(Path) THEN RETURN 
       
-  IF $bVerbose THEN PRINT "gbs2: process file: "; Path
+  IF $bVerbose THEN PRINT "gbs: process file: "; Path
 
   'Increment Recursion level index
   INC $iLevel
@@ -244,7 +246,7 @@ PRIVATE SUB GenerateFiles(Path AS String)
     IF aSym.Count = 2 AND IF aSym[0] = "INCLUDE" AND IF Highlight.Types[1] = Highlight.String THEN 
       sPath = Mid$(aSym[1], 2, -1) 'Trim(Scan(sLine, "INCLUDE *")[0])
       IF NOT Exist(sPath) THEN sPath = $sMainScriptPath &/ sPath
-      IF $bVerbose THEN PRINT "gbs2: include script file: " & sPath
+      IF $bVerbose THEN PRINT "gbs: include script file: " & sPath
       
       GenerateFiles(sPath)
       CONTINUE 
@@ -266,7 +268,7 @@ PRIVATE SUB GenerateFiles(Path AS String)
         CompileError(Path, iLine, "Class name missing")
         CONTINUE
       ENDIF
-      IF $bVerbose THEN PRINT "gbs2: create class: "; sClass
+      IF $bVerbose THEN PRINT "gbs: create class: "; sClass
       $hOutClass = OPEN $sPrjPath &/ sClass & ".class" FOR WRITE CREATE
       bInClass = TRUE
       CONTINUE       
@@ -278,7 +280,7 @@ PRIVATE SUB GenerateFiles(Path AS String)
       FOR iInd = 1 TO aSym.Max STEP 2
         IF Highlight.Types[iInd] <> Highlight.String THEN CompileError(Path, iLine, "Syntax error")
         s = Mid$(aSym[iInd], 2, -1)
-        IF $bVerbose THEN PRINT "gbs2: use component: "; s
+        IF $bVerbose THEN PRINT "gbs: use component: "; s
         '$aComponents.Add(Trim(s))
         IF NOT CComponent.All.Exist(s) THEN CompileError(Path, iLine, Subst("Unknown component: &1", s))
         $cComponents[CComponent.All[s].SortKey] = s
@@ -293,7 +295,7 @@ PRIVATE SUB GenerateFiles(Path AS String)
     
     'Control if the user have not done a Main Sub itself
     IF aSym.Count = 4 AND IF (aSym[0] = "SUB" OR aSym[0] = "PROCEDURE") AND IF aSym[1] = "Main" AND IF aSym[2] = "(" AND IF aSym[3] = ")" THEN 
-      IF $bVerbose THEN PRINT "gbs2: Main procedure already defined"
+      IF $bVerbose THEN PRINT "gbs: Main procedure already defined"
       bAutoMain = FALSE
     ENDIF
     
@@ -318,7 +320,7 @@ PRIVATE SUB GenerateFiles(Path AS String)
   'With the Buffer content.. if we are not in an include file
   'In this case the free code is forgotten
   IF bAutoMain AND NOT IsNull(sCodeBuf) AND $iLevel = 1 THEN 
-    IF $bVerbose THEN PRINT "gbs2: Main procedure not defined, create it"
+    IF $bVerbose THEN PRINT "gbs: Main procedure not defined, create it"
     PRINT #$hOutFile, "PUBLIC SUB Main()"
     PRINT #$hOutFile, sCodeBuf
     PRINT #$hOutFile, "END"
@@ -336,20 +338,16 @@ PUBLIC FUNCTION IsValid(sPath AS String) AS Boolean
   
   DIM aFileInfo AS String[]
   DIM i AS Integer
-  DIM bUnChanged AS Boolean = TRUE
   
   IF NOT Exist(sPath) THEN RETURN FALSE
   
   aFileInfo = Split(File.Load(sPath), "\n")
   
   FOR i = 0 TO aFileInfo.Max STEP 2
-  
-    IF Stat(aFileInfo[i]).LastModified > CDate(aFileInfo[i + 1]) THEN bUnChanged = FALSE
-  
+    IF Stat(aFileInfo[i]).LastModified > CDate(aFileInfo[i + 1]) THEN RETURN FALSE
   NEXT
-  'PRINT IIf(bUnChanged, "Les Dates Colles", "Les dates ne colle pas")
   
-  RETURN bUnChanged
+  RETURN TRUE
 
  CATCH
    RETURN FALSE
