@@ -271,8 +271,8 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	initialize();
 	g_typ = Type_gMainWindow;
 	
-	border=gtk_event_box_new();
-	widget=gtk_layout_new(0,0);
+	border = gtk_event_box_new();
+	widget = gtk_layout_new(0,0);
 	
 	realize(false);
 	
@@ -438,7 +438,6 @@ void gMainWindow::setVisible(bool vl)
 			if (!_title || !*_title)
 				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
 			gtk_window_present(GTK_WINDOW(border));
-			drawMask();
 		}
 		else 
 		{
@@ -446,6 +445,7 @@ void gMainWindow::setVisible(bool vl)
 			parent()->performArrange();
 		}
 		
+		drawMask();
 		/*if (!focus)
 		{
 			focus = findFirstFocus();
@@ -756,6 +756,8 @@ void gMainWindow::drawMask()
 	
 	if (back)
 	{
+		gtk_widget_realize(border);
+		gtk_widget_realize(widget);
 		gdk_window_set_back_pixmap(border->window, back, FALSE);
 		gdk_window_set_back_pixmap(GTK_LAYOUT(widget)->bin_window, back, FALSE);
 		gdk_window_clear(border->window);
