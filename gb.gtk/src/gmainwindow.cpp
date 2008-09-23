@@ -215,6 +215,7 @@ void gMainWindow::initWindow()
 		g_signal_connect(G_OBJECT(border),"show",G_CALLBACK(cb_show),(gpointer)this);
 		g_signal_connect(G_OBJECT(border),"hide",G_CALLBACK(cb_hide),(gpointer)this);
 		//g_signal_connect_after(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_configure), (gpointer)this);
+		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	}
 	else
 	{
