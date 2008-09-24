@@ -54,7 +54,8 @@ End
 Public Function Info(Table As String, Field As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SELECT `COLUMN_KEY`, `COLUMN_NAME`, `COLUMN_TYPE`, `IS_NULLABLE`, `COLUMN_DEFAULT`, `EXTRA`, `COLUMN_COMMENT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & Table & "' AND `TABLE_SCHEMA` = '" & Database & "' AND `COLUMN_NAME` = '" & Field & "'")
+  modMain.$Query = "SELECT `COLUMN_KEY`, `COLUMN_NAME`, `COLUMN_TYPE`, `IS_NULLABLE`, `COLUMN_DEFAULT`, `EXTRA`, `COLUMN_COMMENT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & Table & "' AND `TABLE_SCHEMA` = '" & Database & "' AND `COLUMN_NAME` = '" & Field & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   $sTmp &= "Field:   " & modMain.$hResult!COLUMN_NAME & GB.NewLine
   $sTmp &= "Type:    " & modMain.$hResult!COLUMN_TYPE & GB.NewLine
   $sTmp &= "Null:    " & modMain.$hResult!IS_NULLABLE & GB.NewLine
@@ -69,7 +70,8 @@ End
 Public Function Definition(Table As String, Field As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SELECT `COLUMN_TYPE`, `IS_NULLABLE`, `COLUMN_DEFAULT`, `EXTRA`, `COLUMN_COMMENT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & Table & "' AND `TABLE_SCHEMA` = '" & Database & "' AND `COLUMN_NAME` = '" & Field & "'")
+  modMain.$Query = "SELECT `COLUMN_TYPE`, `IS_NULLABLE`, `COLUMN_DEFAULT`, `EXTRA`, `COLUMN_COMMENT` FROM `information_schema`.`COLUMNS` WHERE `TABLE_NAME` = '" & Table & "' AND `TABLE_SCHEMA` = '" & Database & "' AND `COLUMN_NAME` = '" & Field & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   $sTmp = modMain.$hResult!COLUMN_TYPE
   If modMain.$hResult!IS_NULLABLE = "NO" Then $sTmp &= " NOT NULL"
   If modMain.$hResult!COLUMN_DEFAULT Then $sTmp &= " DEFAULT " & modMain.$hResult!COLUMN_DEFAULT
@@ -82,6 +84,7 @@ End
 Public Procedure Rename(Table As String, Field As String, NewField As String, Optional Database As String)
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$Connection.Exec("ALTER TABLE `" & Database & "`.`" & Table & "` CHANGE COLUMN `" & Field & "` `" & NewField & "` " & Definition(Table, Field, Database))
+  modMain.$Query = "ALTER TABLE `" & Database & "`.`" & Table & "` CHANGE COLUMN `" & Field & "` `" & NewField & "` " & Definition(Table, Field, Database)
+  modMain.$Connection.Exec(modMain.$Query)
 
 End

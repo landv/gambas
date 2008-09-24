@@ -29,7 +29,8 @@ End
 Public Function Info(Trigger As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SELECT `ACTION_STATEMENT` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "' AND `TRIGGER_NAME` = '" & Trigger & "'")!ACTION_STATEMENT
+  modMain.$Query = "SELECT `ACTION_STATEMENT` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "' AND `TRIGGER_NAME` = '" & Trigger & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!ACTION_STATEMENT
 
 End
 

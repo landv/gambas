@@ -70,7 +70,8 @@ End
 Public Function Info(Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SHOW CREATE DATABASE `" & Database & "`")!"Create Database"
+  modMain.$Query = "SHOW CREATE DATABASE `" & Database & "`"
+  Return modMain.$Connection.Exec(modMain.$Query)!"Create Database"
 
 End
 
@@ -79,7 +80,8 @@ Public Function Tables(Optional Database As String) As String[]
   Dim asTables As New String[]
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'BASE TABLE'")
+  modMain.$Query = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'BASE TABLE'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     asTables.Add(modMain.$hResult!TABLE_NAME)
   Next
@@ -92,7 +94,8 @@ Public Function Views(Optional Database As String) As String[]
   Dim asViews As New String[]
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'VIEW'")
+  modMain.$Query = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND TABLE_TYPE = 'VIEW'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     asViews.Add(modMain.$hResult!TABLE_NAME)
   Next
@@ -105,7 +108,8 @@ Public Function Triggers(Optional Database As String) As String[]
   Dim asTriggers As New String[]
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SELECT `TRIGGER_NAME` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "'")
+  modMain.$Query = "SELECT `TRIGGER_NAME` FROM `information_schema`.`TRIGGERS` WHERE `TRIGGER_SCHEMA` = '" & Database & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     asTriggers.Add(modMain.$hResult!TRIGGER_NAME)
   Next
@@ -118,7 +122,8 @@ Public Function Routines(Optional Database As String) As String[]
   Dim asRoutines As New String[]
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SELECT `name` FROM `mysql`.`proc` WHERE `db` = '" & Database & "'")
+  modMain.$Query = "SELECT `name` FROM `mysql`.`proc` WHERE `db` = '" & Database & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     asRoutines.Add(modMain.$hResult!name)
   Next
@@ -129,14 +134,16 @@ End
 Public Function Charset(Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SELECT `DEFAULT_CHARACTER_SET_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'")!DEFAULT_CHARACTER_SET_NAME
+  modMain.$Query = "SELECT `DEFAULT_CHARACTER_SET_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!DEFAULT_CHARACTER_SET_NAME
 
 End
 
 Public Function Collation(Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SELECT `DEFAULT_COLLATION_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'")!DEFAULT_COLLATION_NAME
+  modMain.$Query = "SELECT `DEFAULT_COLLATION_NAME` FROM `information_schema`.`SCHEMATA` WHERE `SCHEMA_NAME` = '" & Database & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!DEFAULT_COLLATION_NAME
 
 End
 

@@ -64,7 +64,8 @@ End
 
 Public Function Info(Table As String) As String
 
-  Return modMain.$Connection.Exec("SHOW CREATE TABLE `" & Table & "`")!"Create Table"
+  modMain.$Query = "SHOW CREATE TABLE `" & Table & "`"
+  Return modMain.$Connection.Exec(modMain.$Query)!"Create Table"
 
 End
 
@@ -107,7 +108,8 @@ Public Function Fields(Table As String, Optional Database As String) As String[]
   Dim asFields As New String[]
 
   If Not Database Then Database = modMain.$Connection.Name
-  modMain.$hResult = modMain.$Connection.Exec("SHOW COLUMNS FROM `" & Database & "`.`" & Table & "`")
+  modMain.$Query = "SHOW COLUMNS FROM `" & Database & "`.`" & Table & "`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     asFields.Add(modMain.$hResult!Field)
   Next
@@ -118,21 +120,24 @@ End
 Public Function Charset(Table As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SELECT `a`.`CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` `a`, `information_schema`.`TABLES` `b` WHERE `b`.`TABLE_SCHEMA` = '" & Database & "' AND `b`.`TABLE_NAME` = '" & Table & "' AND `a`.`COLLATION_NAME` = `b`.`TABLE_COLLATION`")!CHARACTER_SET_NAME
+  modMain.$Query = "SELECT `a`.`CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` `a`, `information_schema`.`TABLES` `b` WHERE `b`.`TABLE_SCHEMA` = '" & Database & "' AND `b`.`TABLE_NAME` = '" & Table & "' AND `a`.`COLLATION_NAME` = `b`.`TABLE_COLLATION`"
+  Return modMain.$Connection.Exec(modMain.$Query)!CHARACTER_SET_NAME
 
 End
 
 Public Function Collation(Table As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SELECT `TABLE_COLLATION` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'")!TABLE_COLLATION
+  modMain.$Query = "SELECT `TABLE_COLLATION` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!TABLE_COLLATION
 
 End
 
 Public Function Engine(Table As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SELECT `ENGINE` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'")!ENGINE
+  modMain.$Query = "SELECT `ENGINE` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = '" & Database & "' AND `TABLE_NAME` = '" & Table & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)!ENGINE
 
 End
 

@@ -48,9 +48,11 @@ Public Function Info(Routine As String, Optional Database As String) As String
   If Not modMain.$hResult.Available Then Return
   Select (modMain.$hResult!TYPE)
     Case "FUNCTION"
-      Return modMain.$Connection.Exec("SHOW CREATE FUNCTION `" & Database & "`.`" & Routine & "`")!"Create Function"
+      modMain.$Query = "SHOW CREATE FUNCTION `" & Database & "`.`" & Routine & "`"
+      Return modMain.$Connection.Exec(modMain.$Query)!"Create Function"
     Case "PROCEDURE"
-      Return modMain.$Connection.Exec("SHOW CREATE PROCEDURE `" & Database & "`.`" & Routine & "`")!"Create Procedure"
+      modMain.$Query = "SHOW CREATE PROCEDURE `" & Database & "`.`" & Routine & "`"
+      Return modMain.$Connection.Exec(modMain.$Query)!"Create Procedure"
     Default
   End Select
 
@@ -59,6 +61,7 @@ End
 Public Function Definition(Routine As String, Optional Database As String) As String
 
   If Not Database Then Database = modMain.$Connection.Name
-  Return modMain.$Connection.Exec("SELECT `body` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'")["body"].Data
+  modMain.$Query = "SELECT `body` FROM `mysql`.`proc` WHERE `db` = '" & Database & "' AND `name` = '" & Routine & "'"
+  Return modMain.$Connection.Exec(modMain.$Query)["body"].Data
 
 End

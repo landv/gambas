@@ -159,7 +159,8 @@ End
 Public Function CurrentTimestamp(Optional {Format} As String) As String
 
   If Not {Format} Then {Format} = "yyyy-mm-dd hh:nn:ss"
-  Return Format(modMain.$Connection.Exec("SELECT CURRENT_TIMESTAMP")!CURRENT_TIMESTAMP, {Format})
+  modMain.$Query = "SELECT CURRENT_TIMESTAMP"
+  Return Format(modMain.$Connection.Exec(modMain.$Query)!CURRENT_TIMESTAMP, {Format})
 
 End
 
@@ -172,7 +173,8 @@ End
 Private Function Collations_Read() As String[]
 
   $asCollations.Clear()
-  modMain.$hResult = modMain.$Connection.Exec("SELECT `COLLATION_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `COLLATION_NAME`")
+  modMain.$Query = "SELECT `COLLATION_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `COLLATION_NAME`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asCollations.Add(modMain.$hResult["COLLATION_NAME"])
     modMain.$hResult.MoveNext()
@@ -184,7 +186,8 @@ End
 Private Function Engines_Read() As String[]
 
   $asEngines.Clear()
-  modMain.$hResult = modMain.$Connection.Exec("SHOW ENGINES")
+  modMain.$Query = "SHOW ENGINES"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asEngines.Add(modMain.$hResult["Engine"])
     modMain.$hResult.MoveNext()
@@ -196,7 +199,8 @@ End
 Private Function Charsets_Read() As String[]
 
   $asCharsets.Clear()
-  modMain.$hResult = modMain.$Connection.Exec("SELECT DISTINCT `CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `CHARACTER_SET_NAME`")
+  modMain.$Query = "SELECT DISTINCT `CHARACTER_SET_NAME` FROM `information_schema`.`COLLATIONS` ORDER BY `CHARACTER_SET_NAME`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asCharsets.Add(modMain.$hResult["CHARACTER_SET_NAME"])
     modMain.$hResult.MoveNext()
@@ -215,7 +219,8 @@ End
 Private Function Databases_Read() As String[]
 
   $asDatabases.Clear()
-  modMain.$hResult = modMain.$Connection.Exec("SHOW DATABASES")
+  modMain.$Query = "SHOW DATABASES"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asDatabases.Add(modMain.$hResult["Database"])
     modMain.$hResult.MoveNext()
@@ -227,7 +232,8 @@ End
 Private Function Users_Read() As String[]
 
   $asUsers.Clear()
-  modMain.$hResult = modMain.$Connection.Exec("SELECT DISTINCT `User` FROM `mysql`.`user`")
+  modMain.$Query = "SELECT DISTINCT `User` FROM `mysql`.`user`"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   For Each modMain.$hResult
     $asUsers.Add(modMain.$hResult["User"])
     modMain.$hResult.MoveNext()
@@ -238,7 +244,8 @@ End
 
 Public Procedure Use(Database As String)
 
-  modMain.$Connection.Exec("USE `" & Database & "`")
+  modMain.$Query = "USE `" & Database & "`"
+  modMain.$Connection.Exec(modMain.$Query)
   modMain.$Connection.Name = Database
 
 End

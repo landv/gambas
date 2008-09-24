@@ -16,7 +16,8 @@ End
 
 Public Procedure Add(User As String, Password As String, Host As String)
 
-  modMain.$Connection.Exec("CREATE USER '" & User & "'@'" & Host & "' IDENTIFIED BY '" & Password & "'")
+  modMain.$Query = "CREATE USER '" & User & "'@'" & Host & "' IDENTIFIED BY '" & Password & "'"
+  modMain.$Connection.Exec(modMain.$Query)
 
 End
 
@@ -38,10 +39,12 @@ Public Function Info(User As String) As String
   Dim sDefinition As String
 
   'Validate if mysql.user_info exists
-  modMain.$hResult = modMain.$Connection.Exec("SELECT * FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = 'mysql' AND `TABLE_NAME` = 'user_info'")
+  modMain.$Query = "SELECT * FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA` = 'mysql' AND `TABLE_NAME` = 'user_info'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   If Not modMain.$hResult.Available Then Return ""
 
-  modMain.$hResult = modMain.$Connection.Exec("SELECT * FROM `mysql`.`user_info` WHERE `User` = '" & User & "'")
+  modMain.$Query = "SELECT * FROM `mysql`.`user_info` WHERE `User` = '" & User & "'"
+  modMain.$hResult = modMain.$Connection.Exec(modMain.$Query)
   sDefinition &= "User:        " & modMain.$hResult!User & GB.NewLine
   sDefinition &= "Name:        " & modMain.$hResult!Full_name & GB.NewLine
   sDefinition &= "Description: " & modMain.$hResult!Description & GB.NewLine
