@@ -595,7 +595,7 @@ PUBLIC SUB UpdateConsoleAction(bDebug AS Boolean)
   
   'DIM bVal AS Boolean
 
-  HideDebug(NOT bDebug)
+  'HideDebug(NOT bDebug)
 
   'bVal = Action["console"].Value
   panDebug.Action = If(FOutput.Parent, "console", "")

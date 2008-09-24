@@ -577,7 +577,7 @@ PUBLIC SUB UpdateView()
       FOutput.Show
       'DEBUG FOutput.X;; FOutput.Y
       'Action["console"].Visible = TRUE
-      IF NOT Project.Running THEN FMain.ShowDebug(FALSE)
+      'IF NOT Project.Running THEN FMain.ShowDebug(FALSE)
     ENDIF
     'FOutput.Stacking = If(Project.Running, Window.Above, Window.Normal)
   ENDIF
@@ -607,7 +607,7 @@ PUBLIC SUB UpdateView()
       FOutput.Show
       'Action["console"].Value = TRUE
       'Action["console"].Visible = FALSE
-      IF bVisible THEN FMain.ShowDebug(TRUE)
+      'IF bVisible THEN FMain.ShowDebug(TRUE)
     ENDIF
     tabDebug.Index = TAB_CONSOLE
     FOutput.SetFocus

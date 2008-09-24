@@ -221,11 +221,11 @@ int GEditor::posToColumn(int y, int px) const
 	
 	px += contentsX();
 	
-	lw = 0;
+	lw = lineWidth(y, 0);
 	for (i = 0; i < len; i++)
 	{
 		lw2 = lineWidth(y, i + 1);
-		if (px < ((lw + lw2) / 2))
+		if (px <= ((lw + lw2) / 2))
 			return i;
 		lw = lw2;
 	}

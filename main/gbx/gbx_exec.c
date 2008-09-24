@@ -763,7 +763,9 @@ void EXEC_function_loop()
 									STACK_pop_frame(&EXEC_current);
 							}
 							while (SP > TP)
+							{
 								POP();
+							}
 							PC = TC;
 							ERROR_unlock();
 						}
