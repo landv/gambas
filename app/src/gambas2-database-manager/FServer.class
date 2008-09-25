@@ -17,7 +17,7 @@ PUBLIC SUB btnOK_Click()
 
   DIM hServer AS CServer
 
-  hServer = NEW CServer(Trim(LCase(cmbType.Text)), Trim(txtHost.Text), Trim(txtUser.Text), Trim(txtPassword.Text))
+  hServer = NEW CServer(Trim(LCase(cmbType.Text)), Trim(txtHost.Text), Trim(txtUser.Text), Trim(txtPassword.Text), Trim(txtDatabase.Text))
 
   ME.Close(TRUE)
 
@@ -60,7 +60,8 @@ END
 PUBLIC SUB Form_Open()
 
  IF txtUser.Text = "" THEN txtUser.Text = System.User.Name
- cmbType_Click()
+ 'cmbType_Click()
+ cmbType.Index = 0
 
 END
 

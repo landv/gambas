@@ -7,13 +7,14 @@ PUBLIC Name AS String
 PUBLIC Key AS String
 PUBLIC Handle AS Connection
 PUBLIC WasOpened AS Boolean
+PUBLIC Single AS Boolean
 
 PUBLIC Databases AS String[]
 PUBLIC Users AS String[]
 
 PRIVATE $cAdmin AS Collection
 
-PUBLIC SUB _new(sType AS String, OPTIONAL sHost AS String, OPTIONAL sUser AS String, OPTIONAL sPassword AS String)
+PUBLIC SUB _new(sType AS String, OPTIONAL sHost AS String, OPTIONAL sUser AS String, OPTIONAL sPassword AS String, OPTIONAL sDatabase AS String)
 
   Handle = NEW Connection
 
@@ -22,7 +23,7 @@ PUBLIC SUB _new(sType AS String, OPTIONAL sHost AS String, OPTIONAL sUser AS Str
     .Type = sType
     .Login = sUser
     .Password = sPassword
-    '.Name = sDatabase
+    .Name = sDatabase
   END WITH
 
   IF sHost THEN
@@ -34,8 +35,13 @@ PUBLIC SUB _new(sType AS String, OPTIONAL sHost AS String, OPTIONAL sUser AS Str
   IF sUser THEN
     Name = sUser & "@" & Name
   ENDIF
+  
+  IF sDatabase THEN 
+    Name &= ":" & sDatabase
+    Single = TRUE
+  ENDIF
 
-  Name = Name & " (" & sType & ")"
+  Name &= " (" & sType & ")" 
 
   'INC $iKey
   Key = Replace(Name, "/", Chr$(9)) 'CStr($iKey)
@@ -78,11 +84,14 @@ PRIVATE SUB RefreshDatabase()
 
   Databases = NEW String[]
 
-  FOR EACH hDatabase IN Handle.Databases
-    Databases.Add(hDatabase.Name)
-  NEXT
-
-  Databases.Sort
+  IF Single THEN 
+    Databases.Add(Handle.Name)
+  ELSE
+    FOR EACH hDatabase IN Handle.Databases
+      Databases.Add(hDatabase.Name)
+    NEXT
+    Databases.Sort
+  ENDIF
 
 END
 
@@ -90,19 +99,30 @@ END
 PRIVATE SUB RefreshUser()
 
   DIM hUser AS DatabaseUser
+  DIM bAdmin AS Boolean
 
   Users = NEW String[]
   $cAdmin = NEW Collection
 
-  FOR EACH hUser IN Handle.Users
-    Users.Add(hUser.Name)
-    IF hUser.Administrator THEN
-      $cAdmin[hUser.Name] = TRUE
-    ENDIF
-  NEXT
+  IF Single THEN
+  
+    Users.Add(Handle.User)
+    TRY bAdmin = Handle.Users[Handle.User].Administrator
+    $cAdmin[Handle.User] = TRUE
+  
+  ELSE
 
-  Users.Sort
-
+    FOR EACH hUser IN Handle.Users
+      Users.Add(hUser.Name)
+      IF hUser.Administrator THEN
+        $cAdmin[hUser.Name] = TRUE
+      ENDIF
+    NEXT
+  
+    Users.Sort
+    
+  ENDIF
+  
 END
 
 
@@ -128,6 +148,8 @@ END
 
 PUBLIC FUNCTION CreateUser(sUser AS String, bAdmin AS Boolean, sPassword AS String) AS Boolean
 
+  IF Single THEN RETURN
+
   Handle.Open
   Handle.Users.Add(sUser, sPassword, bAdmin)
   RefreshUser
@@ -145,6 +167,8 @@ END
 
 
 PUBLIC FUNCTION DeleteUser(sUser AS String) AS Boolean
+
+  IF Single THEN RETURN
 
   Handle.Open
   Handle.Users.Remove(sUser)
@@ -170,6 +194,8 @@ END
 
 
 PUBLIC FUNCTION EditUser(sUser AS String, sNewPassword AS String) AS Boolean
+
+  IF Single THEN RETURN
 
   Handle.Open
   Handle.Users[sUser].Password = sNewPassword

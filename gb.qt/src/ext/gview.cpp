@@ -1128,6 +1128,8 @@ void GEditor::paste(bool mouse)
 	QString tab;
 
 	text = QApplication::clipboard()->text(subType, mouse ? QClipboard::Selection : QClipboard::Clipboard);
+	if (text.length() == 0)
+		return;
 
 	tab.fill(' ', doc->getTabWidth());
 	text.replace("\t", tab);

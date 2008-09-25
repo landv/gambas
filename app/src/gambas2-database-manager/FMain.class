@@ -75,6 +75,7 @@ PRIVATE SUB LoadServer() AS Boolean
   DIM sHost AS String
   DIM sUser AS String
   DIM sPassword AS String
+  DIM sDatabase AS String
   DIM sKey AS String
 
   $sCryptKey = FPassword.Run()
@@ -99,8 +100,9 @@ PRIVATE SUB LoadServer() AS Boolean
     sHost = Settings[sKey &/ "Host"]
     sUser = Settings[sKey &/ "User"]
     sPassword = Crypt(FromHexaString(Settings[sKey &/ "Password"]))
+    sDatabase = Settings[sKey &/ "Database"]
 
-    hServer = NEW CServer(sType, sHost, sUser, sPassword)
+    hServer = NEW CServer(sType, sHost, sUser, sPassword, sDatabase)
 
   NEXT
 
@@ -116,6 +118,7 @@ PRIVATE SUB SaveServer()
   IF NOT $sCryptKey THEN RETURN
 
   'Config.WriteInteger("/Connection/Count", CServer.All.Count)
+  Settings.Clear("/Connection")
   Settings["/Connection/Count"] = CServer.All.Count
 
   FOR EACH hServer IN CServer.All
@@ -133,9 +136,12 @@ PRIVATE SUB SaveServer()
       Settings[sKey &/ "Host"] = .Host
       Settings[sKey &/ "User"] = .Login
       Settings[sKey &/ "Password"] = ToHexaString(Crypt(.Password))
+      Settings[sKey &/ "Database"] = .Name
     END WITH
 
   NEXT
+  
+  Settings.Save
 
 END
 
@@ -371,7 +377,7 @@ PUBLIC SUB tvwBase_Expand()
         tvwBase[sParent].Picture = Picture["img/16/host-open.png"]
 
         sKey = "G" & hServer.Key
-        tvwBase.Add(sKey, ("Users"), Picture["img/16/users.png"], sParent)
+        IF NOT hServer.Single THEN tvwBase.Add(sKey, ("Users"), Picture["img/16/users.png"], sParent)
         tvwBase.Add(sKey & "/", "",, sKey)
 
         RefreshDatabase(sKey)
@@ -410,6 +416,7 @@ PUBLIC SUB mnuNew_Click()
 
   IF FServer.Run() THEN RETURN
   RefreshServer
+  SaveServer
 
 END
 
@@ -446,11 +453,11 @@ PUBLIC SUB tvwBase_Menu()
 
       bVisible = tvwBase["S" & $hServer.Key].Expanded
       mnuRefreshServer.Visible = NOT tvwBase.Exist("S" & $hServer.Key & "/")
-      mnuCreateDatabase.Visible = bVisible
-      mnuCreateUser.Visible = bVisible
+      mnuCreateDatabase.Visible = bVisible AND NOT $hServer.Single
+      mnuCreateUser.Visible = bVisible AND NOT $hServer.Single
       mnuOpenConnection.Visible = NOT bVisible
 
-      mnuPasteDatabase2.Visible = bVisible AND Clipboard.Format = "text/x-gambas-database"
+      mnuPasteDatabase2.Visible = bVisible AND NOT $hServer.Single AND Clipboard.Format = "text/x-gambas-database"
 
       mnuServer.Popup
 
@@ -573,6 +580,7 @@ PUBLIC SUB mnuCloseServer_Click()
 
   CServer.Remove($hServer)
   RefreshServer
+  SaveServer
 
 END
 
