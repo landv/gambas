@@ -1,0 +1,57 @@
+# Gambas Form File 2.0
+
+{ Form Form
+  MoveScaled(0,0,50,40)
+  Text = ("Paste special")
+  Icon = Picture["icon:/small/paste"]
+  Border = Window.Fixed
+  Spacing = 8
+  Padding = 8
+  { lstFormat ListBox
+    MoveScaled(1,5,48,15)
+  }
+  { Panel2 Panel
+    MoveScaled(1,21,48,12)
+    Arrangement = Arrange.Vertical
+    { radPasteNormal RadioButton
+      MoveScaled(0,0,40,3)
+      Text = ("Paste normally")
+      Value = True
+    }
+    { radPasteComment RadioButton
+      MoveScaled(0,3,40,3)
+      Text = ("Paste with comments")
+    }
+    { radPastePrint RadioButton
+      MoveScaled(0,6,40,3)
+      Text = ("Paste with PRINT")
+    }
+    { radPasteString RadioButton
+      MoveScaled(0,9,40,3)
+      Text = ("Paste as quoted string")
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,36,48,3)
+    Spacing = 8
+    { Panel1 Panel
+      MoveScaled(1,0,4,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(15,0,14,3)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(30,0,14,3)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+  { Label1 Label
+    MoveScaled(1,1,48,3)
+    Font = Font["Bold"]
+    Text = ("Clipboard contents")
+  }
+}

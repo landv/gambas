@@ -6,3 +6,27 @@ PUBLIC CONST FILE AS String = "text/x-gambas-file"
 PUBLIC CONST URI AS String = "text/uri-list"
 PUBLIC CONST DATA AS String = "text/x-gambas-data"
 
+PRIVATE $cFormat AS NEW Collection
+
+PUBLIC SUB _init()
+  
+  $cFormat["text/plain"] = ("Plain text")
+  $cFormat["text/html"] = ("HTML text")
+  $cFormat[FORM] = ("Gambas form data")
+  $cFormat[FILE] = ("Gambas project file path")
+  $cFormat[URI] = ("URI list")
+  
+END
+
+PUBLIC SUB GetName(sFormat AS String) AS String
+  
+  DIM sName AS String = $cFormat[sFormat]
+  
+  IF sName THEN 
+    RETURN sName
+  ELSE
+    RETURN ("Unknown format") & " (" & sFormat & ")"
+  ENDIF
+  
+END
+

@@ -1231,6 +1231,13 @@ PUBLIC SUB mnuPaste_Click()
 
 END
 
+PUBLIC SUB mnuPasteSpecial_Click()
+  
+  IF Clipboard.Type = Clipboard.None THEN RETURN
+  FPasteSpecial.Run(Editor)
+  
+END
+
 PUBLIC SUB mnuUndo_Click()
 
   HideCompletion

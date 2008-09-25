@@ -402,7 +402,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 		}
 
 		pos += len;
-		x  = nx; //+= len * charWidth;
+		x = nx; //+= len * charWidth;
 	}
 
 	if (pos < (int)l->s.length() && pos < (xmin + lmax))
@@ -511,9 +511,9 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	//xmin = (ur.left() - margin) / charWidth;
 	//if (xmin < 0)
 	//	xmin = 0;
-	xmin = posToColumn(row, ur.left());
+	xmin = posToColumn(row, 0);
 	//lmax = 2 + visibleWidth() / charWidth;
-	lmax = 2 + posToColumn(row, ur.left() + visibleWidth()) - xmin;
+	lmax = 2 + posToColumn(row, visibleWidth()) - xmin;
 	
 	//if (row == 0)
 	//	qDebug("%d: %d %d %d %d (%d %d)", row, ur.left(), ur.top(), ur.width(), ur.height(), xmin, lmax);
