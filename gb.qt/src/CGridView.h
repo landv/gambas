@@ -160,7 +160,7 @@ public:
   int findSelection(int row);
   
   void moveItem(int srow, int scol, int drow, int dcol) { _item->move(srow, scol, drow, dcol); }
-
+  
 public slots:
 
   virtual void setNumCols(int);
