@@ -71,17 +71,31 @@ static void *CLASS_UserControl = NULL;
 static bool has_action(void *control)
 {
 	if (GB.Is(control, GB.FindClass("Menu")))
-		return ((CMENU *)(control))->widget->action();
+	{
+		gMenu *menu = ((CMENU *)(control))->widget;
+		return menu ? menu->action() : false;
+	}
 	else
-		return ((CWIDGET *)(control))->widget->action();
+	{
+		gControl *control = ((CWIDGET *)(control))->widget;
+		return control ? control->action() : false;
+	}
 }
 
 static void set_action(void *control, bool v)
 {
 	if (GB.Is(control, GB.FindClass("Menu")))
-		((CMENU *)(control))->widget->setAction(v);
+	{
+		gMenu *menu = ((CMENU *)(control))->widget;
+		if (menu)
+			menu->setAction(v);
+	}
 	else
-		((CWIDGET *)(control))->widget->setAction(v);
+	{
+		gControl *control = ((CWIDGET *)(control))->widget;
+		if (control)
+			control->setAction(v);
+	}
 }
 
 #define HAS_ACTION(_control) has_action(_control)

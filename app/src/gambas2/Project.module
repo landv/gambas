@@ -408,6 +408,8 @@ PRIVATE FUNCTION CloseProject() AS Boolean
   
     INC Application.Busy
   
+    Design.WriteBreakpoints
+
     Config.Clear("/OpenFile")
     Workspace.Lock
     FOR EACH hForm IN Workspace.Children
@@ -424,7 +426,6 @@ PRIVATE FUNCTION CloseProject() AS Boolean
     Workspace.Unlock
     Config["/OpenFile/Count"] = nOpen
   
-    Design.WriteBreakpoints
     FFind.WriteConfig
     TRY Config = NULL
   

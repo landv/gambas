@@ -248,7 +248,7 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 
 int CCONTROL_check(void *object)
 {
-  return QWIDGET(object) == NULL;
+  return QWIDGET(object) == NULL || CWIDGET_test_flag(object, WF_DELETED);
 }
 
 

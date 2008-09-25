@@ -1122,6 +1122,7 @@ PUBLIC SUB Form_Close()
     STOP EVENT
   ELSE IF frmData THEN
     frmData.Close
+    frmData = NULL
   ENDIF
 
 END
