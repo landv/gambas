@@ -320,8 +320,7 @@ CWIDGET *GetContainer(CWIDGET *control)
 
 int CWIDGET_check(void *_object)
 {
-	if (!CONTROL) return true;
-  	return false;
+	return (!CONTROL || CONTROL->isDestroyed());
 }
 
 /*************************************************************************************

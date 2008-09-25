@@ -168,6 +168,7 @@ void gPlugin::discard()
 CREATION AND DESTRUCTION
 
 ******************************************************************/
+
 void gControl::cleanRemovedControls()
 {
 	GList *iter;

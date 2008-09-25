@@ -192,15 +192,11 @@ static bool gb_raise_window_Close(gMainWindow *sender)
     if (closeAll())
       return true;
     if (!sender->isPersistent())
+    {
     	deleteAll();
+    	MAIN_Window = NULL;
+		}
   }
-
-	// BM: isn't it already done?
-	/*if (sender->isPersistent()) 
-	{
-		sender->hide();
-		return true;
-	}*/
 
 	if (_ob->embed)
 	{
@@ -304,7 +300,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 
 	if ( (!MAIN_Window) && (!parent)) 
 	{
-		MAIN_Window=THIS;
+		MAIN_Window = THIS;
 		//fprintf(stderr, "MAIN_Window = %p\n", MAIN_Window);
 	}
 

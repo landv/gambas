@@ -427,8 +427,6 @@ static void my_lang(char *lang,int rtl)
 	}
 }
 
-int cande=0;
-
 void do_iteration(bool do_not_block)
 {
 	struct timespec mywait;

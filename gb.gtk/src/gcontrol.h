@@ -22,11 +22,12 @@ public:
 	bool isContainer() { return (g_typ & 0x100) != 0; }
 	bool isWindow();
 	bool isTopLevel() { return pr == NULL; }
+	bool isDestroyed() { return _destroyed; }
 	
 	gMainWindow *window();
 	gMainWindow *topLevel();
 	
-	gContainer *parent() { return pr; }
+	gContainer *parent() const { return pr; }
 	gCursor* cursor();
 	bool design();
 	virtual bool enabled();
