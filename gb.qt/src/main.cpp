@@ -427,7 +427,7 @@ static bool must_quit(void)
   return CWindow::count == 0 && CWatch::count == 0 && in_event_loop;
 }
 
-void MAIN_check_quit(void)
+static void check_quit_now(intptr_t param)
 {
   if (must_quit())
   {
@@ -437,6 +437,10 @@ void MAIN_check_quit(void)
 		#endif
     qApp->exit();
   }
+}
+void MAIN_check_quit(void)
+{
+	GB.Post((GB_POST_FUNC)check_quit_now, 0);
 }
 
 void MAIN_update_scale(void)

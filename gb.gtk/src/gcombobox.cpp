@@ -244,6 +244,12 @@ void gComboBox::setIndex(int vl)
 	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), vl);
 }
 
+void gComboBox::checkIndex()
+{
+	if (index() < 0)
+		setIndex(0);
+}
+
 void gComboBox::setItemText(int ind, const char *text)
 {
 	gTreeRow *row;
@@ -260,6 +266,8 @@ void gComboBox::setItemText(int ind, const char *text)
 	cell->setText(text);
 	
 	updateSort();
+	
+	checkIndex();
 }
 
 void gComboBox::setReadOnly(bool vl)
@@ -363,6 +371,7 @@ void gComboBox::add(const char *text, int pos)
 		{
 			cell->setText(text);
 			updateSort();
+			checkIndex();
 		}
 	}
 

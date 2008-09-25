@@ -263,7 +263,10 @@ PUBLIC SUB RefreshDatabase(sParent AS String)
   WHILE Left$(sParent) <> "S"
     tvwBase.MoveTo(sParent)
     tvwBase.MoveParent
-    IF NOT tvwBase.Available THEN RETURN
+    IF NOT tvwBase.Available THEN 
+      DEC Application.Busy
+      RETURN
+    ENDIF
     sParent = tvwBase.Item.Key
   WEND
 
@@ -376,11 +379,13 @@ PUBLIC SUB tvwBase_Expand()
 
         tvwBase[sParent].Picture = Picture["img/16/host-open.png"]
 
-        sKey = "G" & hServer.Key
-        IF NOT hServer.Single THEN tvwBase.Add(sKey, ("Users"), Picture["img/16/users.png"], sParent)
-        tvwBase.Add(sKey & "/", "",, sKey)
+        IF NOT hServer.Single THEN 
+          sKey = "G" & hServer.Key
+          tvwBase.Add(sKey, ("Users"), Picture["img/16/users.png"], sParent)
+          tvwBase.Add(sKey & "/", "",, sKey)
+        ENDIF
 
-        RefreshDatabase(sKey)
+        RefreshDatabase(sParent)
 
       CASE "G"
 

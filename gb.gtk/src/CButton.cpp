@@ -37,11 +37,13 @@ DECLARE_EVENT(EVENT_Click);
 
 void gb_raise_button_Click(gControl *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
+	CWIDGET *ob = GetObject(sender);
 	
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Click,0);
-	CACTION_raise(_ob);
+	if (!ob) return;
+	GB.Ref(ob);
+	GB.Raise((void*)ob,EVENT_Click,0);
+	CACTION_raise(ob);
+	GB.Unref(POINTER(&ob));
 }
 
 /***************************************************************

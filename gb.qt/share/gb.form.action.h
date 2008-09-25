@@ -55,6 +55,9 @@ void CACTION_register(void *control, const char *key)
 	//qDebug("CACTION_register: (%s %p) %s", GB.GetClassName(control), control, key);
 	//fprintf(stderr, "CACTION_register: (%s %p %p) %s\n", GB.GetClassName(control), control, ((CWIDGET *)control)->widget, key);
 	
+	if (GB.CheckObject(control))
+		return;
+	
 	if ((!key || !*key) && !HAS_ACTION(control)) 
 		//&& !GB.Is(control, CLASS_UserControl) && !GB.Is(control, CLASS_UserContainer))
 		return;
@@ -72,6 +75,9 @@ void CACTION_register(void *control, const char *key)
 
 void CACTION_raise(void *control)
 {
+	if (GB.CheckObject(control))
+		return;
+	
 	init_action();
 
 	//qDebug("CACTION_raise: (%s %p)", GB.GetClassName(THIS), THIS);
@@ -85,6 +91,9 @@ void CACTION_raise(void *control)
 
 void CACTION_get(void *control)
 {
+	if (GB.CheckObject(control))
+		return;
+	
 	init_action();
 
 	GB.Push(1, GB_T_OBJECT, control);

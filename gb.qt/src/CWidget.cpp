@@ -266,7 +266,7 @@ void CWIDGET_destroy(CWIDGET *object)
   if (CWIDGET_test_flag(object, WF_DELETED))
     return;
 
-  //qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
+  //qDebug("CWIDGET_destroy: (%s %s) ref: %d", GB.GetClassName(object), object->name, object->ob.ref);
 
   if (!CWIDGET_destroy_list)
     CWIDGET_destroy_list = object;

@@ -55,6 +55,7 @@ public:
 	void updateSort();
 	char *indexToKey(int index);
 	char* find(GtkTreePath *path) { return tree->pathToKey(path, false); }
+	void checkIndex();
 };
 
 #endif

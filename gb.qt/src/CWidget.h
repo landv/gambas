@@ -149,8 +149,10 @@ DECLARE_PROPERTY(CCONTROL_action);
   if (ob == NULL) \
     return; \
 \
+	GB.Ref(ob); \
   GB.Raise(ob, _event, 0); \
   CACTION_raise(ob); \
+  GB.Unref(POINTER(&ob)); \
 }
 
 
