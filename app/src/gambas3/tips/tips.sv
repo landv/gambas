@@ -131,7 +131,7 @@ IF NOT MyString THEN ...</pre>
 talar om vilka strängar som skall översättas.</p>
 <p>För att markera att en sträng är översättningsbar, så sätt den bara inom parantester:<p>
 
-<pre>PRINT ("Överstätt mig")
+<pre>PRINT ("Översätt mig")
 PRINT "Men inte mig!"</pre>
 
 [EVENT]
