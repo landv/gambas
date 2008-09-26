@@ -97,6 +97,7 @@ private:
   int findLargestLine();
 
   void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int row);
+  void paintDottedSpaces(QPainter &p, int row, int ps, int ls);
 
 	void redrawContents();
 	

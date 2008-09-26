@@ -225,7 +225,7 @@ int GEditor::posToColumn(int y, int px) const
 	for (i = 0; i < len; i++)
 	{
 		lw2 = lineWidth(y, i + 1);
-		if (px <= ((lw + lw2) / 2))
+		if (px <= ((lw + lw2) >> 1))
 			return i;
 		lw = lw2;
 	}
@@ -329,6 +329,32 @@ void GEditor::fontChange(const QFont &oldFont)
 	updateContents();
 }
 
+static int find_last_non_space(const QString &s)
+{
+	int i;
+	
+	for (i = s.length() - 1; i >= 0; i--)
+	{
+		if (s[i].unicode() > 32)
+			return i;
+	}
+	
+	return -1;
+}
+
+void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
+{
+	QPointArray pa;
+	int i, y;
+	
+	y = fm.ascent();
+	for (i = 0; i < ls; i++)
+		pa.putPoints(i, 1, lineWidth(row, ps + i) + 1, y);
+				
+	p.drawPoints(pa);
+}
+
+
 void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int row)
 {
 	int i;
@@ -337,9 +363,12 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	GHighlightStyle *st;
 	bool italic = false;
 	int nx;
+	int ps;
 
 	pos = 0;
 	p.setFont(font());
+
+	ps = find_last_non_space(l->s.getString()) + 1;
 
 	for (i = 0; i < GB.Count(l->highlight); i++)
 	{
@@ -385,17 +414,24 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 				p.drawText(x, y, sd);
 			}*/
 
-			if (st->italic != italic)
-			{
-				italic = st->italic;
-				p.setFont(italic ? italicFont : font());
-			}
-
 			p.setPen(styles[style].color);
-			p.drawText(x, y, sd);
+			
+			if (ps >= 0 && pos >= ps)
+			{
+				paintDottedSpaces(p, row, pos, sd.length());
+			}
+			else
+			{
+				if (st->italic != italic)
+				{
+					italic = st->italic;
+					p.setFont(italic ? italicFont : font());
+				}
 
-			if (st->bold)
-				p.drawText(x + 1, y, sd);
+				p.drawText(x, y, sd);
+				if (st->bold)
+					p.drawText(x + 1, y, sd);
+			}
 
 			if (st->underline)
 				p.drawLine(x, y + 2, nx - 1, y + 2);
@@ -409,6 +445,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	{
 		p.setPen(styles[GLine::Normal].color);
 		p.drawText(x, y, l->s.mid(pos).getString());
+		paintDottedSpaces(p, row, pos, l->s.length() - pos);
 	}
 }
 
@@ -492,6 +529,7 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	int x1, y1, x2, y2;
 	QColor color, a, b, c;
 	int xmin, lmax;
+	int i;
 
 	ur = cellGeometry(row, 0);
 	contentsToViewport(ur.x(), ur.y(), x1, y1);
@@ -618,25 +656,32 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	}
 
 	// Line text
-	if (doc->getHighlightMode() == GDocument::None || (l->modified && row == y && !getFlag(HighlightCurrent)))
+	if (l->s.length())
 	{
-		p.setPen(styles[GLine::Normal].color);
-		//p.drawText(margin + xmin * charWidth, fm.ascent(), l->s.getString().mid(xmin, lmax));
-		p.drawText(lineWidth(row, xmin), fm.ascent(), l->s.getString().mid(xmin, lmax));
+		if (doc->getHighlightMode() == GDocument::None || (l->modified && row == y && !getFlag(HighlightCurrent)))
+		{
+			p.setPen(styles[GLine::Normal].color);
+			//p.drawText(margin + xmin * charWidth, fm.ascent(), l->s.getString().mid(xmin, lmax));
+			p.drawText(lineWidth(row, xmin), fm.ascent(), l->s.getString().mid(xmin, lmax));
+		
+			i = find_last_non_space(l->s.getString()) + 1;
+			if (i >= 0 && i < (xmin + lmax))
+				paintDottedSpaces(p, row, i, QMIN(xmin + lmax, (int)l->s.length()) - i);
+		}
+		/*else if (l->flag)
+		{
+			p.setPen(styles[GLine::Background].color);
+			p.drawText(margin, fm.ascent(), l->s.getString().mid(xmin, lmax));
+		}*/
+		else
+		{
+			painting = true;
+			doc->colorize(row);
+			painting = false;
+			paintText(p, l, margin, fm.ascent(), xmin, lmax, row);
+		}
 	}
-	/*else if (l->flag)
-	{
-		p.setPen(styles[GLine::Background].color);
-		p.drawText(margin, fm.ascent(), l->s.getString().mid(xmin, lmax));
-	}*/
-	else
-	{
-		painting = true;
-		doc->colorize(row);
-		painting = false;
-		paintText(p, l, margin, fm.ascent(), xmin, lmax, row);
-	}
-
+	
 	// Text cursor
 	if (cursor && row == y)
 		//p.fillRect(QMIN((int)l->s.length(), x) * charWidth + margin, 0, 1, cellHeight(), styles[GLine::Normal].color);
@@ -829,12 +874,16 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		x = nx;
 		if (setxx)
 			xx = x;
-		cursor = hasFocus();
+		
+		if (hasFocus())
+			startBlink();
+		else
+			repaintLine(y);
+			
+		repaintLine(oy);
+		
 		change = true;
 
-		repaintLine(oy);
-		repaintLine(y);
-		
 		ensureCursorVisible();
 		
 		if (mark)
@@ -1446,14 +1495,14 @@ void GEditor::startBlink()
 {
 	blinkTimer->start(QApplication::cursorFlashTime() / 2, false);
 	cursor = true;
-	updateLine(y);
+	repaintLine(y);
 }
 
 void GEditor::stopBlink()
 {
 	blinkTimer->stop();
 	cursor = false;
-	updateLine(y);
+	repaintLine(y);
 }
 
 void GEditor::blinkTimerTimeout()
