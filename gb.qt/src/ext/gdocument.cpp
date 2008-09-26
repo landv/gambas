@@ -582,7 +582,7 @@ void GDocument::updateViews(int row, int count)
   {
     for (i = row; i < (uint)(row + count); i++)
     {
-        v->repaintLine(i);
+        v->updateLine(i);
     }
   }
 

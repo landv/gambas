@@ -83,7 +83,6 @@ private:
   void updateLine(int y) { updateCell(y, 0); }
   void repaintLine(int y) { repaintCell(y, 0, FALSE); }
   bool updateCursor();
-  //void updatePattern();
 
   int lineWidth(int y) const;
   int lineWidth(int y, int len) const;

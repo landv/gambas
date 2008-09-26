@@ -28,6 +28,7 @@
 #include <qpixmap.h>
 #include <qregexp.h>
 #include <qapplication.h>
+#include <qeventloop.h>
 #include <qdragobject.h>
 #include <qpopupmenu.h>
 #include <qtimer.h>
@@ -804,7 +805,7 @@ __OK:
 
 	if (by != ym || bx != x1m || bx2 != x2m)
 	{
-		if (ym >= 0)
+		if (ym >= 0 && ym != by)
 			updateLine(ym);
 		ym = by;
 		x1m = bx;
@@ -875,14 +876,16 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		if (setxx)
 			xx = x;
 		
+		updateLine(oy);
+		
 		if (hasFocus())
 			startBlink();
 		else
-			repaintLine(y);
+			updateLine(y);
 			
-		repaintLine(oy);
-		
 		change = true;
+
+		checkMatching();
 
 		ensureCursorVisible();
 		
@@ -891,8 +894,6 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
 		emit cursorMoved();
 	}
-
-	checkMatching();
 
 		//QTimer::singleShot(30, this, SLOT(ensureCursorVisible()));
 
@@ -1481,6 +1482,8 @@ void GEditor::ensureCursorVisible()
 	
 	if (!isCursorVisible())
 	{
+		qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+	
 		if (center)
 			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
 			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
@@ -1495,14 +1498,14 @@ void GEditor::startBlink()
 {
 	blinkTimer->start(QApplication::cursorFlashTime() / 2, false);
 	cursor = true;
-	repaintLine(y);
+	updateLine(y);
 }
 
 void GEditor::stopBlink()
 {
 	blinkTimer->stop();
 	cursor = false;
-	repaintLine(y);
+	updateLine(y);
 }
 
 void GEditor::blinkTimerTimeout()
