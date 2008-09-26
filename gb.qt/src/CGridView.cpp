@@ -426,6 +426,7 @@ void MyTable::setNumCols(int newCols)
 {
   int i;
   int col = numCols();
+  bool b;
 
   if (newCols < 0)
     return;
@@ -433,22 +434,10 @@ void MyTable::setNumCols(int newCols)
   _cols = newCols;
   _item->invalidate();
 
-  /*
-  if (_items)
-  {
-    delete[] _items;
-    _items = (MyTableItem **)0;
-  }
-
-  if (_cols > 0)
-  {
-    _items = new (MyTableItem *)[_cols];
-    for (i = 0; i < _cols; i++)
-      _items[i] = new MyTableItem(this);
-  }
-  */
-
+  b = signalsBlocked();
+  blockSignals(true);
   QTable::setNumCols(newCols);
+  blockSignals(b);
 
 	_last_col_width = 0;
 
@@ -469,33 +458,19 @@ void MyTable::setNumCols(int newCols)
 
 void MyTable::setNumRows(int newRows)
 {
-  //int i;
-  //int row = numRows();
-
-  //bool r = verticalHeader()->isResizeEnabled();
-
-  //setLeftMargin(fontMetrics().width(QString::number(newRows) + "W"));
-  //verticalHeader()->setResizeEnabled(false);
+	bool b;
 
   if (newRows < 0)
     return;
 
   _rows = newRows;
   _item->invalidate();
+  
+  b = signalsBlocked();
+  blockSignals(true);
   QTable::setNumRows(newRows);
+  blockSignals(false);
 
-  //verticalHeader()->setResizeEnabled(r);
-
-  /*if (newRows > row)
-  {
-    bool upd = verticalHeader()->isUpdatesEnabled();
-    verticalHeader()->setUpdatesEnabled(false);
-
-    for (i = row; i < newRows; i++)
-      verticalHeader()->setLabel(i, QString::number(i + 1));
-
-    verticalHeader()->setUpdatesEnabled(upd);
-  }*/
   clearSelection();
   emit currentChanged(-1, -1); 
 }
