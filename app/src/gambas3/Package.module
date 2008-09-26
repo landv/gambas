@@ -21,7 +21,7 @@ Private $sCategories As String      ' Categories list
 Private $sHome As String            ' Home user directory
 Private $sVersion As String
 Private $sDescription As String
-PRIVATE $sSavePath AS String
+Private $sSavePath As String
 
 Private Const MIN_VERSION As String = "1.9.48"
 Private Const MAX_VERSION As String = "2.90"
@@ -81,6 +81,15 @@ Private Sub RemoveEmptyLines(sText As String) As String
   
 End
 
+Private Sub GetVersion() As String
+
+  Dim sVer As String
+        
+  sVer = Project.MajorVersion & "." & Project.MinorVersion
+  If Project.UseRelease Then sVer &= "." & Project.ReleaseVersion
+  Return sVer
+        
+End  
 
 Private Sub InitMake(sSys As String)
   
@@ -94,14 +103,14 @@ Private Sub InitMake(sSys As String)
     $sPrefix = "" 
   Endif
 
-  IF Project.CreateEachDirectory THEN
+  If Project.CreateEachDirectory Then
     Path = $sSavePath &/ sSys
-    TRY MKDIR $sSavePath
-    TRY MKDIR Path
-  ELSE 
+    Try Mkdir $sSavePath
+    Try Mkdir Path
+  Else 
     Path = $sSavePath
-    TRY MKDIR Path
-  ENDIF
+    Try Mkdir Path
+  Endif
 
   $sName = Project.Name
 
@@ -114,8 +123,7 @@ Private Sub InitMake(sSys As String)
   $sCategories = Project.Categories[sSys]
   If $sCategories Then $sCategories &= ";"
 
-  $sVersion = Project.MajorVersion & "." & Project.MinorVersion
-  If Project.UseRelease Then $sVersion &= "." & Project.ReleaseVersion
+  $sVersion = GetVersion()
   
   $sDescription = RemoveEmptyLines(Project.Description)
 
@@ -177,7 +185,7 @@ Public Function GetChangeDate() As String
   sDate = Format$(Now, "ddd mmm dd yyyy") & " " & Project.Maintainer & " "
   If Project.Address Then sDate = sDate & "<" & Project.Address & "> "
   'sDate = sDate & Subst("&1.&2-&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
-  sDate &= $sVersion
+  sDate &= GetVersion()
   System.Language = sLang
   Return sDate
 
@@ -196,6 +204,12 @@ Private Function IsConsoleProject() As Boolean
 
 End
 
+Private Sub ComponentToPackageName(sComp As String) As String
+      
+  Return "gambas" & System.Version & "-" & Replace(sComp, ".", "-")
+
+End
+
 Private Function GetDependencies() As String[]
   
   Dim aDep As New String[]
@@ -203,13 +217,36 @@ Private Function GetDependencies() As String[]
   
   For Each sComp In Project.Libraries
     If sComp = "gb.debug" Or If sComp = "gb.eval" Then Continue 
-    aDep.Add("gambas" & System.Version & "-" & Replace(sComp, ".", "-"))
+    aDep.Add(sComp)
   Next
   
   Return aDep
   
 End
 
+ Private Function GetComponentMinMaxVersion(sLib As String) As String[]
+        
+  Dim hComponent As CComponent
+  Dim aMinVersion As String[]
+  Dim aMaxVersion As String[]
+  
+  hComponent = CComponent.All[sLib]
+       
+  If Not hComponent.Version Then Return [MIN_VERSION, MAX_VERSION]
+       
+  aMinVersion = Split(hComponent.Version, ".")
+  aMinVersion[0] = CStr(CInt(aMinVersion[0]) - 1)
+  aMinVersion[1] = "90"
+  aMinVersion[2] = "1"
+  
+  aMaxVersion = Split(hComponent.Version, ".")
+  'aMaxVersion[0] = CStr(CInt(aVersion[0]) - 1)
+  aMaxVersion[1] = "90"
+  aMaxVersion[2] = "0"
+  
+  Return [aMinVersion.Join("."), aMaxVersion.Join(".")]
+
+End
 
 Private Sub PrintOnlyShowIn(hFile As File, sCategories As String)
   
@@ -296,6 +333,7 @@ Private Function MakeDebPackage(sSys As String)
   Dim sPackagePath As String
   Dim aLine As String[]
   Dim n As Integer
+  Dim aVer As String[]
       
   Inc Application.Busy
   
@@ -418,7 +456,9 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
   Print #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas2-dev (>= "; MIN_VERSION; "), gambas2-dev (<< "; MAX_VERSION; ")";
   For Each sLib In GetDependencies()
-    Print #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
+    aVer = GetComponentMinMaxVersion(sLib)
+    sLib = ComponentToPackageName(sLib)
+    Print #hFile, ", "; sLib; " (>= "; aVer[0]; "), "; sLib; " (<< "; aVer[1]; ")";
   Next 
   Print #hFile
   Print #hFile, "Standards-Version: 3.7.2"
@@ -428,7 +468,9 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Depends: gambas2-runtime (>= "; MIN_VERSION; "), gambas2-runtime (<< "; MAX_VERSION; ")";
   If Not Project.CreateComponent Then
       For Each sLib In GetDependencies()
-        Print #hFile, ", "; sLib; " (>= "; MIN_VERSION; "), "; sLib; " (<< "; MAX_VERSION; ")";
+        aVer = GetComponentMinMaxVersion(sLib)
+        sLib = ComponentToPackageName(sLib)
+        Print #hFile, ", "; sLib; " (>= "; aVer[0]; "), "; sLib; " (<< "; aVer[1]; ")";
       Next 
   Endif 
   Print #hFile
@@ -562,6 +604,7 @@ Private Function MakeRpmPackage(sSys As String)
   Dim sRelease As String
   Dim sLib As String
   Dim sMacro As String
+  Dim aVer As String[]
 
   Inc Application.Busy
 
@@ -657,8 +700,10 @@ Private Function MakeRpmPackage(sSys As String)
   If Not Project.CreateComponent Then 
   
     For Each sLib In GetDependencies()
-      Print #hFile, ","; sLib; " >= "; MIN_VERSION;
-      Print #hFile, ","; sLib; " < "; MAX_VERSION;
+      aVer = GetComponentMinMaxVersion(sLib)
+      sLib = ComponentToPackageName(sLib)
+      Print #hFile, ","; sLib; " >= "; aVer[0];
+      Print #hFile, ","; sLib; " < "; aVer[1];
     Next
   
   Endif
@@ -984,6 +1029,7 @@ Private Sub MakeTgzPackage(sSys As String)
   Dim sLib As String
   Dim sPackage As String
   Dim sFile As String 
+  Dim aVer As String[]
       
   Inc Application.Busy
 
@@ -1105,8 +1151,10 @@ Private Sub MakeTgzPackage(sSys As String)
   If Not Project.CreateComponent Then
 
     For Each sLib In GetDependencies()
-      Print #hFile, sLib; " >= "; MIN_VERSION
-      Print #hFile, sLib; " < "; MAX_VERSION
+      aVer = GetComponentMinMaxVersion(sLib)
+      sLib = ComponentToPackageName(sLib)
+      Print #hFile, sLib; " >= "; aVer[0]
+      Print #hFile, sLib; " < "; aVer[1]
     Next
     
   Endif

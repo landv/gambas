@@ -129,7 +129,7 @@ static void paste(QMimeSource *data, const char *fmt)
     }
 
     QTextDrag::decode(data, text, subtype);
-    GB.ReturnNewZeroString(text.latin1());
+    GB.ReturnNewZeroString(TO_UTF8(text));
   }
   else if (QImageDrag::canDecode(data))
   {

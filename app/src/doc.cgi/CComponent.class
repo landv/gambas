@@ -1,47 +1,47 @@
 ' Gambas class file
 
-STATIC PUBLIC All AS NEW Collection
-STATIC PUBLIC Classes AS Collection
+Static Public All As New Collection
+Static Public Classes As Collection
 
-PUBLIC Name AS String
-PUBLIC Key AS String
-PUBLIC Description AS String
-PUBLIC Authors AS String[]
-PUBLIC Controls AS NEW String[]
-PUBLIC Containers AS NEW String[]
-PUBLIC MultiContainers AS NEW String[]
-PUBLIC Virtuals AS NEW String[]
-PUBLIC Loaded AS Boolean
-PUBLIC ClassList AS NEW String[]
-PUBLIC Alpha AS Boolean
-PUBLIC SortKey AS Integer
-PUBLIC Groups AS NEW Collection
-PUBLIC Type AS String
+Public Name As String
+Public Key As String
+Public Description As String
+Public Authors As String[]
+Public Controls As New String[]
+Public Containers As New String[]
+Public MultiContainers As New String[]
+Public Virtuals As New String[]
+Public Loaded As Boolean
+Public ClassList As New String[]
+Public Alpha As Boolean
+Public SortKey As Integer
+Public Groups As New Collection
+Public Type As String
 
-PUBLIC Require AS NEW String[]
-PUBLIC Exclude AS NEW String[]
-PUBLIC Implement AS NEW String[]
-PUBLIC Need AS NEW String[]
+Public Require As New String[]
+Public Exclude As New String[]
+Public Implement As New String[]
+Public Need As New String[]
 
-PUBLIC DoNotWrite AS NEW Collection
-PUBLIC AlwaysRead AS NEW Collection
-PUBLIC Translate AS NEW Collection
+Public DoNotWrite As New Collection
+Public AlwaysRead As New Collection
+Public Translate As New Collection
 
-PRIVATE $sShortLang AS String
-PRIVATE $cClass AS NEW Collection(gb.Text)
-PRIVATE $aInit AS String[]
-PRIVATE $bLoaded AS Boolean
+Private $sShortLang As String
+Private $cClass As New Collection(gb.Text)
+Private $aInit As String[]
+Private $bLoaded As Boolean
 
-STATIC PRIVATE $cImplement AS NEW Collection
-STATIC PRIVATE $cRescue AS NEW Collection
+Static Private $cImplement As New Collection
+Static Private $cRescue As New Collection
 
-STATIC PUBLIC SUB Init()
+Static Public Sub Init()
   
-  DIM sComp AS String
-  DIM aComp AS String[]
-  DIM iPos AS Integer
+  Dim sComp As String
+  Dim aComp As String[]
+  Dim iPos As Integer
 
-  Classes = NEW Collection(gb.Text)
+  Classes = New Collection(gb.Text)
   
   $cImplement.Clear
   
@@ -53,23 +53,23 @@ STATIC PUBLIC SUB Init()
   ' IF NOT sPath THEN sPath = System.Path &/ "share/gambas" & System.Version & "/info"
 
   aComp = Dir(Main.InfoFilePath, "*.component")
-  FOR iPos = 0 TO aComp.Max
+  For iPos = 0 To aComp.Max
     aComp[iPos] = File.BaseName(aComp[iPos])
-  NEXT
+  Next
   aComp.Sort
 
-  FOR EACH sComp IN aComp
-    All[sComp] = NEW CComponent(sComp)
-  NEXT
+  For Each sComp In aComp
+    All[sComp] = New CComponent(sComp)
+  Next
   
-END
+End
 
-STATIC PUBLIC SUB Exit()
+Static Public Sub Exit()
 
-  All = NULL
-  Classes = NULL
+  All = Null
+  Classes = Null
 
-END
+End
 
 
 ' STATIC PRIVATE SUB SortComponents()
@@ -122,54 +122,54 @@ END
 ' 
 ' END
 
-PRIVATE SUB CalcShortLang()
+Private Sub CalcShortLang()
 
-  DIM sLang AS String
-  DIM iPos AS Integer
+  Dim sLang As String
+  Dim iPos As Integer
 
   sLang = System.Language
   iPos = InStr(sLang, "_")
-  IF iPos THEN
+  If iPos Then
     $sShortLang = Left$(sLang, iPos - 1)
-  ELSE
+  Else
     $sShortLang = sLang
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE SUB InsertList(cCol AS Collection, sList AS String)
+Private Sub InsertList(cCol As Collection, sList As String)
 
-  DIM sElt AS String
+  Dim sElt As String
 
-  FOR EACH sElt IN Split(sList)
-    IF Left(sElt) = "!" THEN
-      cCol[Mid$(sElt, 2)] = FALSE
-    ELSE
-      cCol[sElt] = TRUE
-    ENDIF
-  NEXT
+  For Each sElt In Split(sList)
+    If Left(sElt) = "!" Then
+      cCol[Mid$(sElt, 2)] = False
+    Else
+      cCol[sElt] = True
+    Endif
+  Next
 
-END
+End
 
 
-PUBLIC SUB _new(sName AS String)
+Public Sub _new(sName As String)
 
-  DIM sPath AS String
-  DIM hFile AS File
-  DIM sLine AS String
-  DIM iPos AS Integer
-  DIM sKey AS String
-  DIM sLang AS String
-  DIM sGroup AS String
-  DIM aCtrl AS String[]
-  DIM sElt AS String
-  DIM sType AS String
+  Dim sPath As String
+  Dim hFile As File
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim sLang As String
+  Dim sGroup As String
+  Dim aCtrl As String[]
+  Dim sElt As String
+  Dim sType As String
 
   sPath = Main.InfoFilePath &/ sName & ".component"
-  hFile = OPEN sPath FOR INPUT
+  hFile = Open sPath For Input
 
-  LINE INPUT #hFile, sLine
-  IF sLine <> "[Component]" THEN Error.Raise("Not a component file: " & sPath)
+  Line Input #hFile, sLine
+  If sLine <> "[Component]" Then Error.Raise("Not a component file: " & sPath)
 
   CalcShortLang
 
@@ -178,209 +178,209 @@ PUBLIC SUB _new(sName AS String)
   '  IF sLine = "[Component]" THEN BREAK
   'WEND
 
-  IF Eof(hFile) THEN SEEK #hFile, 0
+  If Eof(hFile) Then Seek #hFile, 0
 
-  WHILE NOT Eof(hFile)
+  While Not Eof(hFile)
 
-    LINE INPUT #hFile, sLine
+    Line Input #hFile, sLine
     sLine = Trim(sLine)
-    IF NOT sLine THEN CONTINUE
-    IF Left(sLine) = ";" OR Left(sLine) = "'" THEN CONTINUE
+    If Not sLine Then Continue
+    If Left(sLine) = ";" Or Left(sLine) = "'" Then Continue
 
-    IF Left(sLine) = "[" THEN
+    If Left(sLine) = "[" Then
       sGroup = Mid$(sLine, 2, -1)
-      IF sGroup = "Component" THEN BREAK
-      CONTINUE
-    ENDIF
+      If sGroup = "Component" Then Break
+      Continue
+    Endif
 
     iPos = InStr(sLine, "=")
-    IF iPos = 0 THEN CONTINUE
+    If iPos = 0 Then Continue
 
     sKey = Left$(sLine, iPos - 1)
     sLine = Mid$(sLine, iPos + 1)
 
     iPos = RInStr(sKey, "[")
-    IF iPos THEN
+    If iPos Then
       sLang = Mid$(sKey, iPos + 1, -1)
-      IF sLang <> System.Language AND IF sLang <> $sShortLang THEN CONTINUE
+      If sLang <> System.Language And If sLang <> $sShortLang Then Continue
       sKey = Left$(sKey, iPos - 1)
-    ENDIF
+    Endif
 
     Name = sName
     Key = sName
     Type = "*"
 
-    SELECT CASE sKey
-      CASE "Name", "Description"
+    Select Case sKey
+      Case "Name", "Description"
         Description = sLine
-      CASE "Author", "Authors"
+      Case "Author", "Authors"
         Authors = Split(sLine)
-      CASE "Implement", "Implements"
+      Case "Implement", "Implements"
         Implement = Split(sLine)
-      CASE "Need", "Needs"
+      Case "Need", "Needs"
         Need = Split(sLine)
       ' CASE "Type"
       '   Type = sLine
       '   IF NOT Info.Forms.Exist(Type) THEN Info.Forms[Type] = NEW FormInfo(Type)
-      CASE "Group"
+      Case "Group"
         sGroup = sLine
-      CASE "Init"
+      Case "Init"
         $aInit = Split(sLine)
-      CASE "Control", "Controls"
+      Case "Control", "Controls"
         aCtrl = Split(sLine)
         Controls.Insert(aCtrl)
         Groups[sGroup] = aCtrl
-      CASE "Container", "Containers"
+      Case "Container", "Containers"
         Containers.Insert(Split(sLine))
-      CASE "MultiContainer", "MultiContainers"
+      Case "MultiContainer", "MultiContainers"
         MultiContainers.Insert(Split(sLine))
-      CASE "Virtual", "Virtuals"
+      Case "Virtual", "Virtuals"
         Virtuals.Insert(Split(sLine))
-      CASE "Require", "Requires"
+      Case "Require", "Requires"
         Require = Split(sLine)
-      CASE "Exclude", "Excludes"
+      Case "Exclude", "Excludes"
         Exclude = Split(sLine)
-      CASE "Alpha"
+      Case "Alpha"
         Alpha = sLine <> "0"
-      CASE "DoNotWrite"
+      Case "DoNotWrite"
         InsertList(DoNotWrite, sLine)
-      CASE "AlwaysRead"
+      Case "AlwaysRead"
         InsertList(AlwaysRead, sLine)
-      CASE "Translate"
+      Case "Translate"
         InsertList(Translate, sLine)
-    END SELECT
+    End Select
 
-  WEND
+  Wend
 
-  CLOSE #hFile
+  Close #hFile
 
-END
+End
 
-PUBLIC SUB Load()
+Public Sub Load()
 
-  DIM hFile AS File
-  DIM sPath AS String
-  DIM sLine AS String
-  DIM sKey AS String
-  DIM sClass AS String
-  DIM sParent AS String
-  DIM hClass AS CClassInfo
-  DIM sSymbol AS String
-  DIM hSym AS CSymbolInfo
-  DIM hForm AS Object
-  DIM bAgain AS Boolean
-  DIM bJumpNextClass AS Boolean
-  DIM sElt AS String
+  Dim hFile As File
+  Dim sPath As String
+  Dim sLine As String
+  Dim sKey As String
+  Dim sClass As String
+  Dim sParent As String
+  Dim hClass As CClassInfo
+  Dim sSymbol As String
+  Dim hSym As CSymbolInfo
+  Dim hForm As Object
+  Dim bAgain As Boolean
+  Dim bJumpNextClass As Boolean
+  Dim sElt As String
 
-  IF $bLoaded THEN RETURN
+  If $bLoaded Then Return
 
   'DEBUG "Loading "; Name
 
-  ClassList = NEW String[]
+  ClassList = New String[]
 
-  IF Name <> "gb" THEN All["gb"].Load()
+  If Name <> "gb" Then All["gb"].Load()
   
-  FOR EACH sElt IN Require
+  For Each sElt In Require
     All[sElt].Load()
-  NEXT
+  Next
 
-  FOR EACH sElt IN Need
-    IF $cImplement.Exist(sElt) THEN CONTINUE
-    IF $cRescue.Exist(sElt) THEN 
+  For Each sElt In Need
+    If $cImplement.Exist(sElt) Then Continue
+    If $cRescue.Exist(sElt) Then 
       All[$cRescue[sElt]].Load()
-    ELSE 
+    Else 
       Error.Raise("No rescue for " & sElt)
-    ENDIF 
-  NEXT
+    Endif 
+  Next
 
-  FOR EACH sElt IN Implement
+  For Each sElt In Implement
     $cImplement[sElt] = Name
-  NEXT
+  Next
 
 
   sPath = Main.InfoFilePath &/ Name & ".info"
   ' Patch, as gb.qte and gb.qte.ext are unloadable at the moment
-  IF NOT Exist(sPath) AND IF Name LIKE "gb.qte*" THEN 
+  If Not Exist(sPath) And If Name Like "gb.qte*" Then 
     sPath = Main.InfoFilePath &/ Replace(Name, ".qte", ".qt") & ".info"
-  ENDIF
-  OPEN sPath FOR READ AS #hFile
+  Endif
+  Open sPath For Read As #hFile
 
-  REPEAT
+  Repeat
 
-    bAgain = FALSE
-    SEEK #hFile, 0
+    bAgain = False
+    Seek #hFile, 0
 
-    WHILE NOT Eof(hFile)
-      LINE INPUT #hFile, sLine
+    While Not Eof(hFile)
+      Line Input #hFile, sLine
 
-      IF Left$(sLine) = "#" THEN
+      If Left$(sLine) = "#" Then
 
         sClass = Mid$(sLine, 2)
 
         bJumpNextClass = $cClass.Exist(sClass)
-        IF bJumpNextClass THEN CONTINUE
+        If bJumpNextClass Then Continue
 
         'IF sClass = "Dialog" THEN STOP
 
-        LINE INPUT #hFile, sParent
-        IF NOT sParent THEN
-          IF CComponent.Classes.Exist(sClass) THEN
+        Line Input #hFile, sParent
+        If Not sParent Then
+          If CComponent.Classes.Exist(sClass) Then
             sParent = sClass
-          ENDIF
-        ENDIF
+          Endif
+        Endif
 
-        IF sParent AND IF NOT CComponent.Classes.Exist(sParent) THEN
-          bAgain = TRUE
-          bJumpNextClass = TRUE
-          CONTINUE
-        ENDIF
+        If sParent And If Not CComponent.Classes.Exist(sParent) Then
+          bAgain = True
+          bJumpNextClass = True
+          Continue
+        Endif
 
-        hClass = NEW CClassInfo(sClass, sParent)
+        hClass = New CClassInfo(sClass, sParent)
 
         CComponent.Classes[sClass] = hClass
         $cClass[sClass] = hClass
 
-        IF sClass <> "." THEN ClassList.Add(sClass)
+        If sClass <> "." Then ClassList.Add(sClass)
 
-        LINE INPUT #hFile, sLine
+        Line Input #hFile, sLine
         hClass.Creatable = InStr(sLine, "C")
         hClass.AutoCreatable = InStr(sLine, "A")
         hClass.Component = Name
 
-        CONTINUE
+        Continue
 
-      ENDIF
+      Endif
 
-      IF bJumpNextClass THEN CONTINUE
+      If bJumpNextClass Then Continue
 
       sSymbol = sLine
-      hSym = NEW CSymbolInfo
+      hSym = New CSymbolInfo
       hClass.Symbols[sSymbol] = hSym
 
       hSym.Name = sSymbol
       hSym.Class = sClass
       hSym.Component = Name
-      LINE INPUT #hFile, hSym.Kind
-      LINE INPUT #hFile, hSym.Type
-      IF hSym.Kind = "C" THEN
-        LINE INPUT #hFile, hSym.Value
-      ELSE
-        LINE INPUT #hFile, hSym.Signature
-      ENDIF
-      IF Left$(hSym.Kind) = "p" THEN
+      Line Input #hFile, hSym.Kind
+      Line Input #hFile, hSym.Type
+      If hSym.Kind = "C" Then
+        Line Input #hFile, hSym.Value
+      Else
+        Line Input #hFile, hSym.Signature
+      Endif
+      If Left$(hSym.Kind) = "p" Then
         ' Compatibility
-        IF Left$(hSym.Type, 2) = "i<" THEN
+        If Left$(hSym.Type, 2) = "i<" Then
           'hSym.Signature = Mid$(hSym.Type, 3, -1)
           hSym.Type = "i"
-        ENDIF
+        Endif
         ' Properties are now described in "_Properties"
-      ENDIF
+      Endif
       'hSym.Hidden = InStr(sSymbol, "_")
       'hSym.Static = UCase(hSym.Kind) = hSym.Kind AND hSym.Kind <> ":"
 
-    WEND
+    Wend
 
-  UNTIL NOT bAgain
+  Until Not bAgain
 
   'PRINT "Initializing controls..."
 
@@ -406,21 +406,21 @@ PUBLIC SUB Load()
   ' 
   ' TRY hForm.Delete
 
-  CLOSE #hFile
+  Close #hFile
 
   ClassList.Sort
 
-  $bLoaded = TRUE
+  $bLoaded = True
 
 'CATCH
 
   'Error.Propagate
 
-END
+End
 
-PUBLIC FUNCTION _get(Class AS String) AS CClassInfo
+Public Function _get(Class As String) As CClassInfo
 
-  RETURN $cClass[Class]
+  Return $cClass[Class]
 
-END
+End
 

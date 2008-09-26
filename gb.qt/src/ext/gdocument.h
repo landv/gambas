@@ -142,8 +142,8 @@ public:
 	bool getLineFlag(int y, int f) const;
 	void setLineFlag(int y, int f, bool b);
 
-	int lineLength(int y) { return lines.at(y)->s.length(); }
-	int numLines() { return lines.count(); }
+	int lineLength(int y) const { return lines.at(y)->s.length(); }
+	int numLines() const { return lines.count(); }
 	
 	bool hasLimit(int y) { colorize(y); return lines.at(y)->proc; }
 	int getNextLimit(int y);

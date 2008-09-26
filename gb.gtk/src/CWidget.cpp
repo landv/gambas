@@ -71,17 +71,31 @@ static void *CLASS_UserControl = NULL;
 static bool has_action(void *control)
 {
 	if (GB.Is(control, GB.FindClass("Menu")))
-		return ((CMENU *)(control))->widget->action();
+	{
+		gMenu *menu = ((CMENU *)(control))->widget;
+		return menu ? menu->action() : false;
+	}
 	else
-		return ((CWIDGET *)(control))->widget->action();
+	{
+		gControl *ctrl = ((CWIDGET *)(control))->widget;
+		return ctrl ? ctrl->action() : false;
+	}
 }
 
 static void set_action(void *control, bool v)
 {
 	if (GB.Is(control, GB.FindClass("Menu")))
-		((CMENU *)(control))->widget->setAction(v);
+	{
+		gMenu *menu = ((CMENU *)(control))->widget;
+		if (menu)
+			menu->setAction(v);
+	}
 	else
-		((CWIDGET *)(control))->widget->setAction(v);
+	{
+		gControl *ctrl = ((CWIDGET *)(control))->widget;
+		if (ctrl)
+			ctrl->setAction(v);
+	}
 }
 
 #define HAS_ACTION(_control) has_action(_control)
@@ -267,6 +281,7 @@ void InitControl(gControl *control, CWIDGET *widget)
 	
 	widget->widget = control;
 	control->hFree=(void*)widget;
+	//fprintf(stderr, "InitControl: %p %p\n", control, widget);
 	
 	name = GB.GetLastEventName();
 	if (!name)
@@ -305,8 +320,7 @@ CWIDGET *GetContainer(CWIDGET *control)
 
 int CWIDGET_check(void *_object)
 {
-	if (!CONTROL) return true;
-  	return false;
+	return (!CONTROL || CONTROL->isDestroyed());
 }
 
 /*************************************************************************************

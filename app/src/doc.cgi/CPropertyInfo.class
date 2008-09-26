@@ -1,78 +1,78 @@
 ' Gambas class file
 
-PUBLIC CONST EVENT_NAME AS String = "(Group)"
+Public Const EVENT_NAME As String = "(Group)"
 
-STATIC PRIVATE $cRedirect AS NEW Collection
-STATIC PRIVATE $cTranslate AS NEW Collection
-
-
-PUBLIC Name AS String
-PUBLIC Type AS String
-PUBLIC DefaultValue AS Variant
-PUBLIC Coord AS Boolean
-PUBLIC Required AS Boolean
-PUBLIC Exclude AS Boolean
-PUBLIC Hidden AS Boolean
-PUBLIC DoNotApply AS Boolean
-PUBLIC AlwaysRead AS Boolean
-PUBLIC Virtual AS Boolean
-PUBLIC Translate AS Boolean
-
-PUBLIC ConstantClass AS String
-PUBLIC ConstantList AS Collection
+Static Private $cRedirect As New Collection
+Static Private $cTranslate As New Collection
 
 
-STATIC PUBLIC SUB _init()
+Public Name As String
+Public Type As String
+Public DefaultValue As Variant
+Public Coord As Boolean
+Public Required As Boolean
+Public Exclude As Boolean
+Public Hidden As Boolean
+Public DoNotApply As Boolean
+Public AlwaysRead As Boolean
+Public Virtual As Boolean
+Public Translate As Boolean
 
-  $cRedirect["*.Visible"] = TRUE
-  $cRedirect["*.Enabled"] = TRUE
-  $cRedirect["*.Tag"] = TRUE
-  $cRedirect["*.Password"] = TRUE
-  $cRedirect["*.Mouse"] = TRUE
-  $cRedirect["*.ToolTip"] = TRUE
+Public ConstantClass As String
+Public ConstantList As Collection
 
-  $cRedirect["*.List"] = TRUE
 
-  $cRedirect["*.Arrangement"] = TRUE
+Static Public Sub _init()
 
-  $cRedirect["Form.Persistent"] = TRUE
-  $cRedirect["Form.Border"] = TRUE
-  $cRedirect["Form.Text"] = TRUE
-  $cRedirect["Form.Icon"] = TRUE
-  $cRedirect["Form.State"] = TRUE
-  $cRedirect["Form.Mask"] = TRUE
-  $cRedirect["Form.TopOnly"] = TRUE
-  $cRedirect["Form.SkipTaskbar"] = TRUE
+  $cRedirect["*.Visible"] = True
+  $cRedirect["*.Enabled"] = True
+  $cRedirect["*.Tag"] = True
+  $cRedirect["*.Password"] = True
+  $cRedirect["*.Mouse"] = True
+  $cRedirect["*.ToolTip"] = True
+
+  $cRedirect["*.List"] = True
+
+  $cRedirect["*.Arrangement"] = True
+
+  $cRedirect["Form.Persistent"] = True
+  $cRedirect["Form.Border"] = True
+  $cRedirect["Form.Text"] = True
+  $cRedirect["Form.Icon"] = True
+  $cRedirect["Form.State"] = True
+  $cRedirect["Form.Mask"] = True
+  $cRedirect["Form.TopOnly"] = True
+  $cRedirect["Form.SkipTaskbar"] = True
 
   'Nein!
   '$cRedirect["Button.Default"] = TRUE
   '$cRedirect["Button.Cancel"] = TRUE
 
-  $cRedirect["Menu.Visible"] = FALSE
-  $cRedirect["Menu.Enabled"] = TRUE
-  $cRedirect["Menu.Shortcut"] = TRUE
+  $cRedirect["Menu.Visible"] = False
+  $cRedirect["Menu.Enabled"] = True
+  $cRedirect["Menu.Shortcut"] = True
 
-  $cRedirect["DrawingArea.Cached"] = TRUE
+  $cRedirect["DrawingArea.Cached"] = True
 
-  $cTranslate["Text"] = TRUE
-  $cTranslate["Title"] = TRUE
-  $cTranslate["List"] = TRUE
-  $cTranslate["Caption"] = TRUE
-  $cTranslate["ToolTip"] = TRUE
+  $cTranslate["Text"] = True
+  $cTranslate["Title"] = True
+  $cTranslate["List"] = True
+  $cTranslate["Caption"] = True
+  $cTranslate["ToolTip"] = True
 
-END
+End
 
 
-PUBLIC SUB _new(sComponent AS String, sClass AS String, sName AS String, hCtrl AS Object, OPTIONAL bVirtual AS Boolean, OPTIONAL bDoNotApply AS Boolean, OPTIONAL sDefVal AS String)
+Public Sub _new(sComponent As String, sClass As String, sName As String, hCtrl As Object, Optional bVirtual As Boolean, Optional bDoNotApply As Boolean, Optional sDefVal As String)
 
-  DIM iPos AS Integer
-  DIM sType AS String
-  DIM sList AS String
-  DIM cList AS String[]
-  DIM hSym AS CSymbolInfo
+  Dim iPos As Integer
+  Dim sType As String
+  Dim sList As String
+  Dim cList As String[]
+  Dim hSym As CSymbolInfo
   'DIM sDefVal AS String
-  DIM bError AS Boolean
-  DIM sSign AS String
+  Dim bError As Boolean
+  Dim sSign As String
 
   'iPos = Instr(sName, "=")
   'IF iPos THEN
@@ -84,99 +84,99 @@ PUBLIC SUB _new(sComponent AS String, sClass AS String, sName AS String, hCtrl A
 
   Name = sName
 
-  IF Name = EVENT_NAME THEN
+  If Name = EVENT_NAME Then
     Type = "s"
-    Virtual = TRUE
-    Exclude = TRUE
-    DoNotApply = TRUE
-    RETURN
-  ENDIF
+    Virtual = True
+    Exclude = True
+    DoNotApply = True
+    Return
+  Endif
 
-  IF sComponent THEN
-    TRY hSym = CComponent.Classes[sComponent &/ sClass].Symbols[sName]
+  If sComponent Then
+    Try hSym = CComponent.Classes[sComponent &/ sClass].Symbols[sName]
     Type = hSym.Type
     sSign = hSym.Signature
-  ELSE
-    IF Name = "X" Or Name = "Y" THEN
+  Else
+    If Name = "X" Or Name = "Y" Then
       Type = "i"
-    ENDIF
-  ENDIF
+    Endif
+  Endif
   'sClass = hSym.Class
 
-  IF Len(Type) = 1 THEN
-    IF Name = "Visible" THEN
-      DefaultValue = TRUE
-    ELSE IF Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height" Or Name = "Text" THEN
-      Required = TRUE
-    ELSE IF Name = "Tag" THEN
+  If Len(Type) = 1 Then
+    If Name = "Visible" Then
+      DefaultValue = True
+    Else If Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height" Or Name = "Text" Then
+      Required = True
+    Else If Name = "Tag" Then
       Type = "s"
-    ELSE IF Name = "List" THEN
+    Else If Name = "List" Then
       Type = "List"
-    ELSE IF hCtrl THEN
-      TRY DefaultValue = Object.GetProperty(hCtrl, Name)
-    ELSE
-      PRINT sClass; "."; sName; " DefaultValue ?"
-    ENDIF
+    Else If hCtrl Then
+      Try DefaultValue = Object.GetProperty(hCtrl, Name)
+    Else
+      Print sClass; "."; sName; " DefaultValue ?"
+    Endif
   'ELSE IF Type = "Font" THEN
   '  DefaultValue = "" 'Object.GetProperty(hCtrl, Name).ToString()
-  ELSE
-    DefaultValue = NULL
-  ENDIF
+  Else
+    DefaultValue = Null
+  Endif
 
-  IF sDefVal THEN
-    SELECT CASE Type
-      CASE "i"
+  If sDefVal Then
+    Select Case Type
+      Case "i"
         DefaultValue = CInt(sDefVal)
-      CASE "e"
+      Case "e"
         DefaultValue = CFloat(sDefVal)
-      CASE "b"
+      Case "b"
         DefaultValue = LCase(sDefVal) <> "false"
-      CASE "s"
+      Case "s"
         DefaultValue = sDefVal
-    END SELECT
-  ENDIF
+    End Select
+  Endif
 
-  IF Type = "i" THEN
+  If Type = "i" Then
 
-    IF Name = "Background" Or Name = "Foreground" Or InStr(Name, "Color") > 0 THEN
+    If Name = "Background" Or Name = "Foreground" Or InStr(Name, "Color") > 0 Then
 
       Type = "Color"
       'DefaultValue = NULL
       'AlwaysRead = TRUE
 
-    ELSE IF sSign THEN
+    Else If sSign Then
 
       Type = "Constant"
 
-      ConstantList = NEW Collection
+      ConstantList = New Collection
 
       cList = Split(hSym.Signature)
       ConstantClass = cList[0]
       cList.Remove(0)
 
-      IF cList.Count THEN
+      If cList.Count Then
 
-        FOR EACH sList IN cList
+        For Each sList In cList
 
           hSym = CComponent.Classes[ConstantClass].Symbols[sList]
           ' Maybe the constant declared in the property don't really exist
-          TRY ConstantList[CStr(hSym.Value)] = sList
+          Try ConstantList[CStr(hSym.Value)] = sList
 
-        NEXT
+        Next
 
-      ELSE
+      Else
 
-        FOR EACH hSym IN CComponent.Classes[ConstantClass].Symbols
+        For Each hSym In CComponent.Classes[ConstantClass].Symbols
 
-          IF hSym.Kind = "C" THEN
-            IF Not hSym.IsHidden() THEN
+          If hSym.Kind = "C" Then
+            If Not hSym.IsHidden() Then
               ConstantList[CStr(hSym.Value)] = hSym.Name
-            ENDIF
-          ENDIF
+            Endif
+          Endif
 
-        NEXT
+        Next
 
-      ENDIF
+      Endif
 
       sList = ConstantList[CStr(DefaultValue)]
       'PRINT sClass & "." & sName; " : "; ConstantClass & "." & sList; " = "; DefaultValue; TypeOf(DefaultValue)
@@ -190,60 +190,60 @@ PUBLIC SUB _new(sComponent AS String, sClass AS String, sName AS String, hCtrl A
       'NEXT
       'PRINT
 
-    ENDIF
+    Endif
 
-  ELSE IF Type = "s" THEN
+  Else If Type = "s" Then
 
-    IF InStr(Name, "Path") THEN
+    If InStr(Name, "Path") Then
 
       Type = "Path"
 
-    ENDIF
+    Endif
 
-  ENDIF
+  Endif
 
   Coord = Name = "X" Or Name = "Y" Or Name = "Width" Or Name = "Height"
 
   'AlwaysRead = Name = "Font"
 
-  IF bDoNotApply THEN
-    DoNotApply = TRUE
-  ELSE IF $cRedirect.Exist(sClass & "." & Name) THEN
+  If bDoNotApply Then
+    DoNotApply = True
+  Else If $cRedirect.Exist(sClass & "." & Name) Then
     DoNotApply = $cRedirect[sClass & "." & Name]
-  ELSE IF $cRedirect.Exist("*." & Name) THEN
+  Else If $cRedirect.Exist("*." & Name) Then
     DoNotApply = $cRedirect["*." & Name]
-  ENDIF
+  Endif
 
   'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
 
-  SELECT CASE sClass
+  Select Case sClass
 
-    CASE "RadioButton"
+    Case "RadioButton"
       AlwaysRead = Name = "Value"
 
-    CASE "Button"
+    Case "Button"
       AlwaysRead = Name = "Default" Or Name = "Cancel"
 
-    CASE "TabStrip"
+    Case "TabStrip"
       Exclude = Name = "Text" Or Name = "Index" Or Name = "Picture"
       Hidden = Name = "Index"
 
-    CASE "ProgressBar"
+    Case "ProgressBar"
       AlwaysRead = Name = "Value" Or Name = "Max"
 
-  END SELECT
+  End Select
 
   Translate = $cTranslate.Exist(Name)
 
   Virtual = bVirtual
 
-CATCH
+Catch
 
-  PRINT sComponent; ": "; sClass; "."; sName; ": "; Error.Text
+  Print sComponent; ": "; sClass; "."; sName; ": "; Error.Text
   'hSym = CComponent.Classes["System"].Symbols["Language"]
 
   Type = "s"
-  DoNotApply = TRUE
-  DefaultValue = NULL
+  DoNotApply = True
+  DefaultValue = Null
 
-END
+End

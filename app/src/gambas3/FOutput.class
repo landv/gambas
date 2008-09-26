@@ -29,7 +29,8 @@ Public Sub Clear()
 
   If Not $bWelcome Then
 
-    edtOutput.Insert(("Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"))
+    edtOutput.Text = ("Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n")
+    edtOutput.Goto(edtOutput.Lines.Count, 0)
     $iCol = edtOutput.Column
     $iLine = edtOutput.Line
 

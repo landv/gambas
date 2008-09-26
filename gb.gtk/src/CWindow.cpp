@@ -88,12 +88,14 @@ static void gb_raise_window_Open(gMainWindow *sender)
 
 static void gb_raise_window_Show(gMainWindow *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
+	CWIDGET *ob = GetObject(sender);
 
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Show,0);
+	if (!ob) return;
+	GB.Ref(ob);
+	GB.Raise((void*)ob,EVENT_Show,0);
 	if (!sender->spontaneous())
-		CACTION_raise(_ob);
+		CACTION_raise(ob);
+	GB.Unref(POINTER(&ob));
 }
 
 static void gb_post_window_Show(gMainWindow *sender)
@@ -103,12 +105,14 @@ static void gb_post_window_Show(gMainWindow *sender)
 
 static void gb_raise_window_Hide(gMainWindow *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
+	CWIDGET *ob=GetObject(sender);
 
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Hide,0);
+	if (!ob) return;
+	GB.Ref(ob);
+	GB.Raise((void*)ob,EVENT_Hide,0);
 	if (!sender->spontaneous())
-		CACTION_raise(_ob);
+		CACTION_raise(ob);
+	GB.Unref(POINTER(&ob));
 }
 
 static void gb_raise_window_Move(gMainWindow *sender)
@@ -189,15 +193,11 @@ static bool gb_raise_window_Close(gMainWindow *sender)
     if (closeAll())
       return true;
     if (!sender->isPersistent())
+    {
     	deleteAll();
+    	MAIN_Window = NULL;
+		}
   }
-
-	// BM: isn't it already done?
-	/*if (sender->isPersistent()) 
-	{
-		sender->hide();
-		return true;
-	}*/
 
 	if (_ob->embed)
 	{
@@ -301,7 +301,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 
 	if ( (!MAIN_Window) && (!parent)) 
 	{
-		MAIN_Window=THIS;
+		MAIN_Window = THIS;
 		//fprintf(stderr, "MAIN_Window = %p\n", MAIN_Window);
 	}
 

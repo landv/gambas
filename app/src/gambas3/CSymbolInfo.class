@@ -230,7 +230,6 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
     
     $iArg = -1
     $iShowArg = iShowArg
-    NextArg
   
     Do
   
@@ -252,6 +251,7 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   
         If bFirst Then
           bFirst = False
+          NextArg
         Else
           sRes &= $sArgAfter & ", "
           NextArg

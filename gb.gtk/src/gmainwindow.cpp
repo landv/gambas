@@ -216,17 +216,18 @@ void gMainWindow::initWindow()
 		g_signal_connect(G_OBJECT(border),"show",G_CALLBACK(cb_show),(gpointer)this);
 		g_signal_connect(G_OBJECT(border),"hide",G_CALLBACK(cb_hide),(gpointer)this);
 		//g_signal_connect_after(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_configure), (gpointer)this);
+		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	}
 	else
 	{
-		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
-		
 		//g_signal_connect(G_OBJECT(border),"size-request",G_CALLBACK(cb_realize),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "show",G_CALLBACK(cb_show),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "hide",G_CALLBACK(cb_hide),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "configure-event",G_CALLBACK(cb_configure),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "delete-event",G_CALLBACK(win_close),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "window-state-event",G_CALLBACK(win_frame),(gpointer)this);
+		
+		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	}
 	
@@ -239,7 +240,7 @@ void gMainWindow::initWindow()
 
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
 
-	have_cursor = parent() == 0 && !_xembed;
+	have_cursor = true; //parent() == 0 && !_xembed;
 }
 
 gMainWindow::gMainWindow(int plug) : gContainer(NULL)
@@ -272,8 +273,8 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	initialize();
 	g_typ = Type_gMainWindow;
 	
-	border=gtk_event_box_new();
-	widget=gtk_layout_new(0,0);
+	border = gtk_event_box_new();
+	widget = gtk_layout_new(0,0);
 	
 	realize(false);
 	
@@ -445,7 +446,6 @@ void gMainWindow::setVisible(bool vl)
 				gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 			
 			gtk_window_present(GTK_WINDOW(border));
-			drawMask();
 		}
 		else 
 		{
@@ -453,6 +453,7 @@ void gMainWindow::setVisible(bool vl)
 			parent()->performArrange();
 		}
 		
+		drawMask();
 		/*if (!focus)
 		{
 			focus = findFirstFocus();
@@ -461,6 +462,7 @@ void gMainWindow::setVisible(bool vl)
 		
 		if (focus)
 		{
+			//fprintf(stderr, "focus = %s\n", focus->name());
 			focus->setFocus();
 			focus = 0;
 		}
@@ -757,6 +759,8 @@ void gMainWindow::drawMask()
 	
 	if (back)
 	{
+		gtk_widget_realize(border);
+		gtk_widget_realize(widget);
 		gdk_window_set_back_pixmap(border->window, back, FALSE);
 		gdk_window_set_back_pixmap(GTK_LAYOUT(widget)->bin_window, back, FALSE);
 		gdk_window_clear(border->window);

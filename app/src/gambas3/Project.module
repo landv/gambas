@@ -421,6 +421,8 @@ Private Function CloseProject() As Boolean
   
     Inc Application.Busy
   
+    Design.WriteBreakpoints
+
     Config.Clear("/OpenFile")
     Workspace.Lock
     For Each hForm In Workspace.Children
@@ -445,7 +447,6 @@ Private Function CloseProject() As Boolean
     Workspace.Unlock
     Config["/OpenFile/Count"] = nOpen
   
-    Design.WriteBreakpoints
     FFind.WriteConfig
     Try Config = Null
   
@@ -1905,13 +1906,17 @@ Private Sub GetVersion()
   If Not VersionProgram Then Return
   
   Shell VersionProgram To sVer
+  
   aVer = Split(Trim(sVer), ".")
+  
   iMajor = aVer[0]
   iMinor = aVer[1]
-  Try iRelease = aVer[2]
+  
   MajorVersion = iMajor
   MinorVersion = iMinor
-  If iRelease Then ReleaseVersion = iRelease
+  
+  Try iRelease = aVer[2]
+  If Not Error Then ReleaseVersion = iRelease
 
 Catch 
 
@@ -2303,6 +2308,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If StackTrace Then Print #hFic, "StackTrace=1"
   If Icon Then Print #hFic, "Icon="; Icon
 
+  GetVersion()
   Print #hFic, "Version="; CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
   If VersionProgram Then Print #hFic, "VersionProgram="; VersionProgram
 
@@ -3546,11 +3552,17 @@ End
 
 
 Public Sub MakeInstall()
-
+  
+  Dim iRelease As Integer = Project.ReleaseVersion
+  
   If MakeExecutable(True, True) Then Return
-  FMakeInstall.ShowModal
-
+  If FMakeInstall.ShowModal() Then Return
+  
+  Project.ReleaseVersion = iRelease
+  Project.WriteProject
+  
 End
+
 
 Public Sub InitMove(hForm As Form)
 

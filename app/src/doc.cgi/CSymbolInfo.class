@@ -1,18 +1,18 @@
 ' Gambas class file
 
-STATIC PRIVATE $cTypeName AS NEW Collection
+Static Private $cTypeName As New Collection
 
-PUBLIC Name AS String
-PUBLIC Type AS String
-PUBLIC Kind AS String
-PUBLIC Signature AS String
-PUBLIC Value AS String
-PUBLIC Class AS String
-PUBLIC Component AS String
-PUBLIC NotPublic AS Boolean
-PUBLIC LineNumber AS Integer
+Public Name As String
+Public Type As String
+Public Kind As String
+Public Signature As String
+Public Value As String
+Public Class As String
+Public Component As String
+Public NotPublic As Boolean
+Public LineNumber As Integer
 
-STATIC PUBLIC SUB _init()
+Static Public Sub _init()
 
   $cTypeName["b"] = "Boolean"
   $cTypeName["c"] = "Byte"
@@ -27,202 +27,202 @@ STATIC PUBLIC SUB _init()
   $cTypeName["o"] = "Object"
   $cTypeName["p"] = "Pointer"
 
-END
+End
 
-STATIC PUBLIC FUNCTION GetNativeType(sType AS String) AS String
+Static Public Function GetNativeType(sType As String) As String
 
-  RETURN $cTypeName[sType]
+  Return $cTypeName[sType]
 
-END
-
-
-
-PUBLIC FUNCTION IsHidden() AS Boolean
-
-  IF Left(Name) = "_" THEN RETURN TRUE
-  RETURN InStr(Name, "_") > 0 AND Kind <> "C"
-
-END
+End
 
 
-PUBLIC FUNCTION IsStatic() AS Boolean
 
-  RETURN UCase(Kind) = Kind AND Kind <> ":"
+Public Function IsHidden() As Boolean
 
-END
+  If Left(Name) = "_" Then Return True
+  Return InStr(Name, "_") > 0 And Kind <> "C"
+
+End
 
 
-PUBLIC FUNCTION GetIcon() AS String
+Public Function IsStatic() As Boolean
 
-  DIM bStatic AS Boolean
-  DIM sIcon AS String
+  Return UCase(Kind) = Kind And Kind <> ":"
+
+End
+
+
+Public Function GetIcon() As String
+
+  Dim bStatic As Boolean
+  Dim sIcon As String
 
   bStatic = UCase(Kind) = Kind
 
-  SELECT CASE LCase(Kind)
+  Select Case LCase(Kind)
 
-    CASE "r"
+    Case "r"
       sIcon = "img/16" &/ If(bStatic, "s-property-ro.png", "property-ro.png")
-    CASE "p"
+    Case "p"
       sIcon = "img/16" &/ If(bStatic, "s-property.png", "property.png")
-    CASE "v"
+    Case "v"
       sIcon = "img/16" &/ If(bStatic, "s-variable.png", "variable.png")
-    CASE "c"
+    Case "c"
       sIcon = "img/16/constant.png"
-    CASE ":"
+    Case ":"
       sIcon = "img/16/event.png"
-    CASE "t"
+    Case "t"
       sIcon = "img/16/control.png"
-    CASE "m"
+    Case "m"
       sIcon = "img/16" &/ If(bStatic, "s-method.png", "method.png")
 
-  END SELECT
+  End Select
 
-  RETURN sIcon
+  Return sIcon
 
-END
+End
 
 
-PRIVATE FUNCTION GetType(sType AS String, bBalise AS Boolean) AS String
+Private Function GetType(sType As String, bBalise As Boolean) As String
 
-  IF Len(sType) = 1 THEN
+  If Len(sType) = 1 Then
     sType = $cTypeName[sType]
-  ELSE IF Left$(sType) = "." THEN
+  Else If Left$(sType) = "." Then
     sType = "Object"
-  ENDIF
+  Endif
 
-  IF bBalise THEN
-    RETURN "<B>" & sType & "</B>"
-  ELSE
-    RETURN sType
-  ENDIF
+  If bBalise Then
+    Return "<B>" & sType & "</B>"
+  Else
+    Return sType
+  Endif
 
-END
+End
 
 
-PUBLIC FUNCTION GetSignature(OPTIONAL bBalise AS Boolean) AS String
+Public Function GetSignature(Optional bBalise As Boolean) As String
 
-  DIM iInd AS Integer
-  DIM sRes AS String
-  DIM sCar AS String
-  DIM iPos AS Integer
-  DIM bName AS Boolean
-  DIM bFirst AS Boolean
-  DIM sSign AS String
+  Dim iInd As Integer
+  Dim sRes As String
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim bName As Boolean
+  Dim bFirst As Boolean
+  Dim sSign As String
 
-  DIM sBold AS String
-  DIM sNoBold AS String
+  Dim sBold As String
+  Dim sNoBold As String
 
   sSign = Signature
-  IF Left$(sSign) = "#" THEN
-    RETURN Mid$(sSign, 2)
-  ENDIF
+  If Left$(sSign) = "#" Then
+    Return Mid$(sSign, 2)
+  Endif
 
-  IF bBalise THEN
+  If bBalise Then
     sBold = "<B>"
     sNoBold = "</B>"
-  ENDIF
+  Endif
 
-  bFirst = TRUE
+  bFirst = True
 
-  DO
+  Do
 
     iInd = iInd + 1
 
-    IF iInd > Len(sSign) THEN BREAK
+    If iInd > Len(sSign) Then Break
 
     sCar = Mid$(sSign, iInd, 1)
 
-    IF sCar = "'" OR sCar = "(" THEN
+    If sCar = "'" Or sCar = "(" Then
 
-      IF sCar = "'" THEN
+      If sCar = "'" Then
         iPos = InStr(sSign, "'", iInd + 1)
-      ELSE
+      Else
         iPos = InStr(sSign, ")", iInd + 1)
-      ENDIF
+      Endif
 
-      IF iPos = 0 THEN BREAK
+      If iPos = 0 Then Break
 
-      IF bFirst THEN
-        bFirst = FALSE
-      ELSE
+      If bFirst Then
+        bFirst = False
+      Else
         sRes = sRes & sBold & "," & sNoBold & " "
-      ENDIF
+      Endif
 
       sRes = sRes & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " " & sBold & "AS" & sNoBold & " "
 
       iInd = iPos
-      bName = TRUE
+      bName = True
 
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF sCar = "<" THEN
+    If sCar = "<" Then
 
       iPos = InStr(sSign, ">", iInd + 1)
-      IF iPos = 0 THEN BREAK
+      If iPos = 0 Then Break
       iInd = iPos
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF sCar = "[" THEN
+    If sCar = "[" Then
 
       sRes = sRes & " " & sBold & "[" & sNoBold
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF sCar = "]" THEN
+    If sCar = "]" Then
 
       sRes = sRes & " " & sBold & "] " & sNoBold
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
-    IF NOT bName THEN
+    If Not bName Then
 
-      IF bFirst THEN
-        bFirst = FALSE
-      ELSE
+      If bFirst Then
+        bFirst = False
+      Else
         sRes = sRes & sBold & "," & sNoBold & " "
-      ENDIF
+      Endif
 
       sRes = sRes & sBold & "? AS " & sNoBold
-      bName = FALSE
+      bName = False
 
-    ENDIF
-    IF iInd = Len(sSign) THEN
-      IF sCar = "." THEN
+    Endif
+    If iInd = Len(sSign) Then
+      If sCar = "." Then
         sRes = sRes & ", ..."
-        CONTINUE
-      ENDIF
-    ENDIF
+        Continue
+      Endif
+    Endif
 
-    IF (sCar >= "A" AND sCar <= "Z") OR sCar = "." THEN
+    If (sCar >= "A" And sCar <= "Z") Or sCar = "." Then
 
       iPos = InStr(sSign, ";", iInd)
-      IF iPos = 0 THEN iPos = Len(sSign) + 1
+      If iPos = 0 Then iPos = Len(sSign) + 1
 
       sRes = sRes & Mid$(sSign, iInd, iPos - iInd)
 
       iInd = iPos
-      CONTINUE
+      Continue
 
-    ENDIF
+    Endif
 
     sRes = sRes & GetType(sCar, bBalise)
 
-  LOOP
+  Loop
 
-  IF Name = "_get" OR Name = "_put" THEN
+  If Name = "_get" Or Name = "_put" Then
     sRes = "[ " & sRes & " ]"
-  ELSE
+  Else
     sRes = "( " & sRes & " )"
-  ENDIF
-  IF Type THEN sRes = sRes & " AS " & GetType(Type, bBalise)
+  Endif
+  If Type Then sRes = sRes & " AS " & GetType(Type, bBalise)
 
-  RETURN sRes
+  Return sRes
 
-END
+End

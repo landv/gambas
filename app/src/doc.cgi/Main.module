@@ -573,6 +573,8 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
 
     Case "code"
       $sRes &= "<div class=\"example\">"
+      $bVerbatim = True
+      $bNoWiki = True
 
     Case "seealso"
       '$sRes &= "<p><table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"6\" cellspacing=\"0\">\n"
@@ -625,6 +627,8 @@ Private Sub LeaveSection()
 
     Case "code"
       $sRes = RTrim($sRes) & "</div>\n"
+      $bVerbatim = False
+      $bNoWiki = False
 
     Case "error"
       $sRes &= "</td></tr>\n"
@@ -721,6 +725,7 @@ Private Function Encode(sText As String) As String
         If iPos > 0 Then
           sStr = String$(iPos, "&nbsp;") & Mid$(sStr, iPos + 1)
         Endif
+        sStr = Replace(sStr, "  ", "&nbsp;&nbsp;")
         $sRes &= sStr & "<br>\n"
       Endif
       Continue
@@ -2210,7 +2215,7 @@ Private Function AutoLink(sStr As String) As String
       sRes &= sStr & "\n"
       Continue
     Else If Left(sStr) = "{" Then
-      If LCase(Mid$(sStr, 2)) = "example" Or If Mid$(sStr, 2) Like "syntax*" Then
+      If LCase(Mid$(sStr, 2)) = "example" Or If LCase(Mid$(sStr, 2)) = "code" Or If Mid$(sStr, 2) Like "syntax*" Then
         Inc iLevelBrace
         sWait = "}"
       Endif

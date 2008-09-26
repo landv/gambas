@@ -90,6 +90,7 @@ private:
 	void startBlink();
 	void stopBlink();
 	void updateLine(int y) { updateCell(realToView(y), 0); }
+	void repaintLine(int y) { repaintCell(y, 0, FALSE); }
 	bool updateCursor();
 
 	int lineWidth(int y) const;
@@ -111,6 +112,7 @@ private:
 	int viewToReal(int row) const;
 	int realToView(int row) const;
 	int checkCursor(int y);
+	bool isCursorVisible() const;	
 	
 	//static void updateBreakpoint(uint bg, uint fg);
 

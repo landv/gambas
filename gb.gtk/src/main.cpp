@@ -83,10 +83,10 @@ static void my_error(int code,char *error,char *where);
 static void my_quit (void);
 static void my_main(int *argc, char **argv);
 static void my_timer(GB_TIMER *timer,bool on);
-static void my_wait(long duration);
+static void my_wait(int duration);
 static void my_post(void);
 static int my_loop();
-static void my_watch(int fd, int type, void *callback, long param);
+static void my_watch(int fd, int type, void *callback, intptr_t param);
 bool post_Check=false;
 
 
@@ -387,12 +387,12 @@ static int my_loop()
   return 0;
 }
 
-static void my_wait(long duration)
+static void my_wait(int duration)
 {
 	do_iteration(true);
 }
 
-static void my_watch(int fd, int type, void *callback, long param)
+static void my_watch(int fd, int type, void *callback, intptr_t param)
 {
 	CWatcher::Add(fd,type,callback,param);
 }
@@ -414,7 +414,7 @@ static void my_error(int code,char *error,char *where)
 
 static void my_lang(char *lang,int rtl)
 {
-	long bucle,ct;
+	int bucle, ct;
 	gControl *iter;
 
 	if (rtl==1)
@@ -430,8 +430,6 @@ static void my_lang(char *lang,int rtl)
 			((gContainer*)iter)->performArrange();
 	}
 }
-
-int cande=0;
 
 void do_iteration(bool do_not_block)
 {

@@ -1,0 +1,129 @@
+' Gambas class file
+
+Static Private $aFormat As String[]
+
+Private $hEditor As Editor
+
+
+
+Public Sub Run(hEditor As Editor) As Boolean
+
+  $hEditor = hEditor
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim sFormat As String
+
+  sFormat = $aFormat[lstFormat.Index]
+  'TRY sFormat = Clipboard.Paste(sFormat & ";charset=UTF-8")
+  'IF ERROR THEN sFormat = Clipboard.Paste(sFormat)
+  sFormat = Clipboard.Paste(sFormat)
+
+  If radPasteNormal.Value Then 
+    $hEditor.Insert(sFormat)
+  Else If radPastePrint.Value Then 
+    PastePrint(sFormat)
+  Else If radPasteComment.Value Then 
+    PasteComment(sFormat)
+  Else If radPasteString.Value Then 
+    $hEditor.Insert(Quote(sFormat))
+  Endif
+
+  Me.Close(True)
+  
+Catch 
+
+  Message.Error(("Unable to paste text.") & "\n\n" & Error.Text)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim aFormat As String[]
+  Dim iInd, iPos As Integer
+  
+  aFormat = Clipboard.Formats
+  
+  For iInd = 0 To aFormat.Max
+    iPos = InStr(aFormat[iInd], ";")
+    If iPos Then aFormat[iInd] = Trim(Left$(aFormat[iInd], iPos - 1))
+  Next
+
+  iInd = 0
+  Do
+    If iInd = aFormat.Max Then Break
+    If aFormat[iInd] = aFormat[iInd + 1] Then 
+      aFormat.Remove(iInd)
+    Else 
+      Inc iInd
+    Endif
+  Loop
+
+  $aFormat = aFormat.Copy()
+
+  For iInd = 0 To aFormat.Max
+    aFormat[iInd] = MMime.GetName(aFormat[iInd])
+  Next
+
+  lstFormat.List = aFormat
+  lstFormat.Index = 0
+
+End
+
+
+Public Sub PastePrint(sText As String)
+  
+  Dim sLine As String
+  Dim sIndent As String
+  
+  sText = Trim(sText)
+  If Not sText Then Return
+  
+  sLine = $hEditor.Lines[$hEditor.Line].Text
+  sIndent = Space$(Len(sLine) - Len(LTrim(sLine)))
+  
+  $hEditor.Begin
+  $hEditor.Goto($hEditor.Line, 0)
+  
+  For Each sText In Split(sText, "\n")
+    If sText Then
+      $hEditor.Insert(sIndent & "PRINT " & Quote(sText) & "\n")
+    Else 
+      $hEditor.Insert(sIndent & "PRINT\n")
+    Endif
+  Next
+  $hEditor.End
+  
+End
+
+Public Sub PasteComment(sText As String)
+  
+  Dim sLine As String
+  Dim sIndent As String
+  
+  sText = Trim(sText)
+  If Not sText Then Return
+  
+  sLine = $hEditor.Lines[$hEditor.Line].Text
+  sIndent = Space$(Len(sLine) - Len(LTrim(sLine)))
+  
+  $hEditor.Begin
+  $hEditor.Goto($hEditor.Line, 0)
+  
+  For Each sText In Split(sText, "\n")
+    $hEditor.Insert(sIndent & "' " & sText & "\n")
+  Next
+  $hEditor.End
+  
+End
+

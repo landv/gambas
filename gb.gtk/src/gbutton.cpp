@@ -129,7 +129,7 @@ static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 		rect.width -= rpix.width;
 		rect.x += rpix.width;
 	}
-		
+	
 	gt_set_cell_renderer_text_from_font((GtkCellRendererText *)data->rendtxt, data->font());
 	g_object_set(G_OBJECT(data->rendtxt),"sensitive",true, (void *)NULL);
 	

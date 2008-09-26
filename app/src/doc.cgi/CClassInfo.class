@@ -1,43 +1,43 @@
 ' Gambas class file
 
-PUBLIC Name AS String
-PUBLIC Parent AS String
-PUBLIC Symbols AS Collection
-PUBLIC Creatable AS Boolean
-PUBLIC AutoCreatable AS Boolean
-PUBLIC Component AS String
-PUBLIC ParentComponent AS String
+Public Name As String
+Public Parent As String
+Public Symbols As Collection
+Public Creatable As Boolean
+Public AutoCreatable As Boolean
+Public Component As String
+Public ParentComponent As String
 
-PUBLIC DefaultEvent AS String
-PUBLIC Events AS String[]
+Public DefaultEvent As String
+Public Events As String[]
 
-PUBLIC PropertyList AS String[]
-PUBLIC Properties AS Collection
-PUBLIC Virtual AS Boolean
-PUBLIC DrawWith AS String
-PUBLIC Container AS Boolean
-PUBLIC MultiContainer AS Boolean
+Public PropertyList As String[]
+Public Properties As Collection
+Public Virtual As Boolean
+Public DrawWith As String
+Public Container As Boolean
+Public MultiContainer As Boolean
 
-PUBLIC SUB _new(sName AS String, sParent AS String)
+Public Sub _new(sName As String, sParent As String)
 
-  DIM hSym AS CSymbolInfo
+  Dim hSym As CSymbolInfo
 
   Name = sName
   {Parent} = sParent
-  Symbols = NEW Collection(gb.Text)
+  Symbols = New Collection(gb.Text)
 
-  IF {Parent} THEN
+  If {Parent} Then
   ParentComponent = CComponent.Classes[sParent].Component
-    IF ParentComponent THEN
-      FOR EACH hSym IN CComponent.Classes[sParent].Symbols
+    If ParentComponent Then
+      For Each hSym In CComponent.Classes[sParent].Symbols
         Symbols[hSym.Name] = hSym
-      NEXT
-    ELSE
+      Next
+    Else
       Parent = ""
-    ENDIF
-  ENDIF
+    Endif
+  Endif
 
-END
+End
 
 ' PUBLIC FUNCTION _get(Symbol AS String) AS SymbolInfo
 ' 
@@ -47,11 +47,11 @@ END
 
 
 
-PUBLIC FUNCTION IsVirtual() AS Boolean
+Public Function IsVirtual() As Boolean
 
-  RETURN Left$(Name) = "."
+  Return Left$(Name) = "."
 
-END
+End
 
 
 ' PUBLIC SUB BecomeControl(hForm AS Object)
@@ -209,26 +209,26 @@ END
 ' END
 
 
-PUBLIC FUNCTION Inherits(sClass AS String) AS Boolean
+Public Function Inherits(sClass As String) As Boolean
 
-  IF {Parent} = sClass THEN RETURN TRUE
-  IF NOT Parent THEN RETURN FALSE
-  RETURN CComponent.All[ParentComponent][Parent].Inherits(sClass)
+  If {Parent} = sClass Then Return True
+  If Not Parent Then Return False
+  Return CComponent.All[ParentComponent][Parent].Inherits(sClass)
 
-END
+End
 
-PUBLIC FUNCTION GetProperties() AS Collection
+Public Function GetProperties() As Collection
 
-  IF Properties THEN
-    IF Properties.Count THEN
-      RETURN Properties
-    ENDIF
-  ENDIF
+  If Properties Then
+    If Properties.Count Then
+      Return Properties
+    Endif
+  Endif
 
-  IF {Parent} THEN
-    RETURN CComponent.All[ParentComponent][{Parent}].GetProperties()
-  ENDIF
+  If {Parent} Then
+    Return CComponent.All[ParentComponent][{Parent}].GetProperties()
+  Endif
 
-END
+End
 
 

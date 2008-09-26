@@ -214,25 +214,25 @@ Private Sub CreateFile() As Boolean
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
               "{ " & sName & " Form\n" &   
-              "  MoveScaled(0, 0, 64, 64)\n"
+              "  MoveScaled(0, 0, 68, 64)\n"
       
       If chkDialog.Value Then
         sTemp &= "  Resizable = False\n"
         sTemp &= "{ HBox1 HBox\n"
-                 "  MoveScaled(1,60,62,3)\n"
+                 "  MoveScaled(1,59,66,4)\n"
                  "  Spacing = 8\n"
                  "  { Panel1 Panel\n"
-                 "    MoveScaled(3,0,3,3)\n"
+                 "    MoveScaled(4,0,4,4)\n"
                  "    'Move(24,0,24,24)\n"
                  "    Expand = True\n"
                  "  }\n"
                  "  { btnOK Button\n"
-                 "    MoveScaled(33,0,14,3)\n"
+                 "    MoveScaled(31,0,16,4)\n"
                  "    Text = (\"OK\")\n"
                  "    Default = True\n"
                  "  }\n"
                  "  { btnCancel Button\n"
-                 "    MoveScaled(48,0,14,3)\n"
+                 "    MoveScaled(48,0,16,4)\n"
                  "    Text = (\"Cancel\")\n"
                  "    Cancel = True\n"
                  "  }\n"

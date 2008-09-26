@@ -18,7 +18,6 @@ Private $bVerbose As Boolean
 
 Public Sub Main()
 
-  'DIM sTmpOut AS String = Temp()
   Dim s As Integer
   Dim sCacheDir As String = File.Dir(File.Dir(Temp$())) &/ "script-cache"
   Dim sRes As String
@@ -29,8 +28,8 @@ Public Sub Main()
   $sPath = ParseArgs()
   
   If IsNull($sPath) Then 
-    Error "gbs3: No script file specified"
-    Error "Type 'gbs3 --help' for more information."
+    Error "gbs: No script file specified"
+    Error "Type 'gbs"; System.Version; " --help' for more information."
     Application.Return = 1
     Return 
   Endif
@@ -38,7 +37,7 @@ Public Sub Main()
   If Not Exist($sPath) Then 
     $sPath = Application.Dir &/ $sPath
     If Not Exist($sPath) Then 
-      Error "gbs3: Script file does not exist: " & Application.Args[1]
+      Error "gbs: Script file does not exist: " & Application.Args[1]
       Application.Return = 1
       Return 
     Endif
@@ -57,14 +56,29 @@ Public Sub Main()
   Else  
     
     'Verify if the project was compiled
-    If Not Exist(sCacheDir &/ $sMd5) Then bCompile = True
-
-    'Verify the cache file
-    bCompile = Not IsValid(sCacheDir &/ $sMd5 & ".info") 
+    If Not Exist(sCacheDir &/ $sMd5) Then 
+      bCompile = True
+    Else
+      'Verify the cache file
+      bCompile = Not IsValid(sCacheDir &/ $sMd5 & ".info") 
+    Endif
     
   Endif
   
   If bCompile Then 
+  
+    'If we are run as 'gbw2', then we have a server page to compile!
+  
+    If File.Name(Application.Args[0]) = "gbw2" Then 
+      If $bVerbose Then Print "gbs: compiling server page"
+      $sPath = MServerPage.Make($sPath)
+      If $bVerbose Then 
+        Print String$(20, "-")
+        Print File.Load($sPath)
+        Print String$(20, "-")
+      Endif 
+    Endif
+  
     'If not we Make and Compile it
     MakeVirtualProject
     
@@ -74,6 +88,7 @@ Public Sub Main()
     
     If sRes <> "OK\n" Then 
       Error sRes
+      Print File.Load($sPrjPath &/ "MMain.module")
       Application.Return = 1
       Return 
     Endif
@@ -137,7 +152,7 @@ Private Sub MakeVirtualProject()
   Dim i As Integer
   $sPrjPath = Temp("project") 
 
-  If $bVerbose Then Print "gbs3: create project"
+  If $bVerbose Then Print "gbs: create project"
   
   'Make the Virtual directory
   Try Mkdir $sPrjPath
@@ -148,8 +163,9 @@ Private Sub MakeVirtualProject()
   
   'Open a Main module
   $hOutFile = Open $sPrjPath &/ "MMain.module" For Write Create 
-  
+  Print #$hOutFile, "' Gambas module file\n"
   'Fill it and create class as need
+  $iLevel = 0
   GenerateFiles($sPath)
   
   'Complete the components list
@@ -206,7 +222,7 @@ Private Sub GenerateFiles(Path As String)
   'Check if this file is already included: if true not include it
   If $aIncFiles.Exist(Path) Then Return 
       
-  If $bVerbose Then Print "gbs3: process file: "; Path
+  If $bVerbose Then Print "gbs: process file: "; Path
 
   'Increment Recursion level index
   Inc $iLevel
@@ -230,7 +246,7 @@ Private Sub GenerateFiles(Path As String)
     If aSym.Count = 2 And If aSym[0] = "INCLUDE" And If Highlight.Types[1] = Highlight.String Then 
       sPath = Mid$(aSym[1], 2, -1) 'Trim(Scan(sLine, "INCLUDE *")[0])
       If Not Exist(sPath) Then sPath = $sMainScriptPath &/ sPath
-      If $bVerbose Then Print "gbs3: include script file: " & sPath
+      If $bVerbose Then Print "gbs: include script file: " & sPath
       
       GenerateFiles(sPath)
       Continue 
@@ -252,7 +268,7 @@ Private Sub GenerateFiles(Path As String)
         CompileError(Path, iLine, "Class name missing")
         Continue
       Endif
-      If $bVerbose Then Print "gbs3: create class: "; sClass
+      If $bVerbose Then Print "gbs: create class: "; sClass
       $hOutClass = Open $sPrjPath &/ sClass & ".class" For Write Create
       bInClass = True
       Continue       
@@ -264,7 +280,7 @@ Private Sub GenerateFiles(Path As String)
       For iInd = 1 To aSym.Max Step 2
         If Highlight.Types[iInd] <> Highlight.String Then CompileError(Path, iLine, "Syntax error")
         s = Mid$(aSym[iInd], 2, -1)
-        If $bVerbose Then Print "gbs3: use component: "; s
+        If $bVerbose Then Print "gbs: use component: "; s
         '$aComponents.Add(Trim(s))
         If Not CComponent.All.Exist(s) Then CompileError(Path, iLine, Subst("Unknown component: &1", s))
         $cComponents[CComponent.All[s].SortKey] = s
@@ -279,7 +295,7 @@ Private Sub GenerateFiles(Path As String)
     
     'Control if the user have not done a Main Sub itself
     If aSym.Count = 4 And If (aSym[0] = "SUB" Or aSym[0] = "PROCEDURE") And If aSym[1] = "Main" And If aSym[2] = "(" And If aSym[3] = ")" Then 
-      If $bVerbose Then Print "gbs3: Main procedure already defined"
+      If $bVerbose Then Print "gbs: Main procedure already defined"
       bAutoMain = False
     Endif
     
@@ -289,7 +305,7 @@ Private Sub GenerateFiles(Path As String)
     Else 
       sCodeBuf &= sLine & "\n"
       'if END detected then write to module file
-      If sLine Like "END*" Then 
+      If aSym.Count = 1 And If aSym[0] = "END" Then 
         Print #$hOutFile, sCodeBuf
         sCodeBuf = Null
       Endif
@@ -304,7 +320,7 @@ Private Sub GenerateFiles(Path As String)
   'With the Buffer content.. if we are not in an include file
   'In this case the free code is forgotten
   If bAutoMain And Not IsNull(sCodeBuf) And $iLevel = 1 Then 
-    If $bVerbose Then Print "gbs3: Main procedure not defined, create it"
+    If $bVerbose Then Print "gbs: Main procedure not defined, create it"
     Print #$hOutFile, "PUBLIC SUB Main()"
     Print #$hOutFile, sCodeBuf
     Print #$hOutFile, "END"
@@ -322,20 +338,16 @@ Public Function IsValid(sPath As String) As Boolean
   
   Dim aFileInfo As String[]
   Dim i As Integer
-  Dim bUnChanged As Boolean = True
   
   If Not Exist(sPath) Then Return False
   
   aFileInfo = Split(File.Load(sPath), "\n")
   
   For i = 0 To aFileInfo.Max Step 2
-  
-    If Stat(aFileInfo[i]).LastModified > CDate(aFileInfo[i + 1]) Then bUnChanged = False
-  
+    If Stat(aFileInfo[i]).LastModified > CDate(aFileInfo[i + 1]) Then Return False
   Next
-  'PRINT IIf(bUnChanged, "Les Dates Colles", "Les dates ne colle pas")
   
-  Return bUnChanged
+  Return True
 
  Catch
    Return False
