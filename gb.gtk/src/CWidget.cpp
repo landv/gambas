@@ -77,8 +77,8 @@ static bool has_action(void *control)
 	}
 	else
 	{
-		gControl *control = ((CWIDGET *)(control))->widget;
-		return control ? control->action() : false;
+		gControl *ctrl = ((CWIDGET *)(control))->widget;
+		return ctrl ? ctrl->action() : false;
 	}
 }
 
@@ -92,9 +92,9 @@ static void set_action(void *control, bool v)
 	}
 	else
 	{
-		gControl *control = ((CWIDGET *)(control))->widget;
-		if (control)
-			control->setAction(v);
+		gControl *ctrl = ((CWIDGET *)(control))->widget;
+		if (ctrl)
+			ctrl->setAction(v);
 	}
 }
 
