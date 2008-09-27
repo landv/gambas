@@ -606,7 +606,7 @@ PRIVATE SUB SaveOne(hCtrl AS CControl)
       NEXT
 
       FOR EACH hChild IN hCtrl.Control.Children
-        'PRINT "SaveOne? "; Object.Type(hChild);; hChild.Tag; " "; Control[hChild.Tag]
+        IF NOT Object.IsValid(hChild) THEN CONTINUE ' Selection handles
         SaveOne(Control[hChild.Tag])
       NEXT
 
@@ -1511,6 +1511,10 @@ PRIVATE SUB ArrangeContainer(hParent AS Container, iArr AS Integer, OPTIONAL bRe
     ELSE ' Multicontainer
       hTab = hParent
       FOR EACH hCtrl IN hTab[iIndex].Children
+        IF NOT Object.IsValid(hCtrl) THEN 
+          DEBUG hCtrl
+          STOP
+        ENDIF
         IF NOT hCtrl.Tag THEN CONTINUE
         IF Control.Exist(hCtrl.Tag) THEN aCtrl.Add(hCtrl)
       NEXT

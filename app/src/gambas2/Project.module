@@ -2342,31 +2342,88 @@ CATCH
 
 END
 
+PRIVATE FUNCTION SearchPathConfig(sXdgConfigHome AS String, sXdgConfigDirs AS String) AS String
+  
+  IF Exist(sXdgConfigHome & "/user-dirs.dirs") THEN ' Devrait exister
+    RETURN sXdgConfigHome & "/user-dirs.dirs"
+  ELSE IF Exist(sXdgConfigDirs & "/user-dirs.defaults") THEN ' Sinon l'un
+    RETURN sXdgConfigDirs & "/user-dirs.defaults"
+  ELSE IF Exist(sXdgConfigDirs & "/user-dirs.dirs") THEN ' Ou l'autre
+    RETURN sXdgConfigDirs & "/user-dirs.dirs"
+  ENDIF
+  
+END
+
+PRIVATE FUNCTION SearchPathVariable(sFileConfig AS String, sDirectory AS String) AS String
+
+  DIM hFile AS File
+  DIM sLine AS String
+  DIM iPos AS Integer
+  DIM aLine AS String[]
+  
+  hFile = OPEN sFileConfig FOR INPUT
+  WHILE NOT Eof(hFile)
+    LINE INPUT #hFile, sLine
+    sLine = Trim(sLine)
+    IF NOT sLine THEN CONTINUE
+    IF Left(sLine) = "#" THEN CONTINUE
+    IF sLine LIKE (sDirectory & "*") THEN BREAK
+    sLine = ""
+  WEND
+  
+  aLine = Scan(sLine, sDirectory & "=*")
+  IF aLine.Count THEN
+    sLine = aLine[0]
+    IF Left(sLine) = Chr$(34) THEN sLine = Mid$(sLine, 2, -1)
+    IF sLine LIKE "$HOME/*" THEN sLine = Replace(sLine, "$HOME", System.User.Home)
+    RETURN sLine
+  ENDIF
+
+END
+
+PUBLIC SUB GetDesktopPath() AS String
+
+  DIM hFile AS File
+  DIM sLine, sDir, sXdgConfigHome, sXdgConfigDirs, sFileConfig AS String
+  
+  sXdgConfigHome = Application.Env["XDG_CONFIG_HOME"] ' $XDG_CONFIG_HOME définie ?
+  IF NOT sXdgConfigHome THEN sXdgConfigHome = User.Home & "/.config" ' Sinon val. par défaut
+  
+  sXdgConfigDirs = Application.Env["XDG_CONFIG_DIRS"] ' $XDG_CONFIG_DIRS définie ?
+  IF NOT sXdgConfigDirs THEN sXdgConfigDirs = "/etc/xdg" ' Sinon val. par défaut
+  
+  sFileConfig = SearchPathConfig(sXdgConfigHome, sXdgConfigDirs)
+  sDir = SearchPathVariable(sFileConfig, "XDG_DESKTOP_DIR") 
+  
+  RETURN sDir
+  
+END
+
 
 PUBLIC SUB MakeShortcut(OPTIONAL bForce AS Boolean)
   
+  DIM sDesktopPath AS String
   DIM sPath AS String
   DIM sShortcut AS String
   
   IF NOT CreateShortcut THEN RETURN 
   
-  sPath = "~/Desktop" &/ Name & ".desktop"
+  sDesktopPath = GetDesktopPath() &/ Name & ".desktop"
   
   IF NOT bForce THEN 
-    IF NOT Exist(sPath) THEN RETURN
+    IF NOT Exist(sDesktopPath) THEN RETURN
   ENDIF
   
   sShortcut = File.Load("shortcut.desktop")
   sShortcut = Replace(sShortcut, "$(NAME)", If(Title, Title, Name))
   sShortcut = Replace(sShortcut, "$(EXEC)", ExecPath)
   
-  sPath = ""
   IF Icon AND IF Exist(Project.Dir &/ Icon) THEN
     sPath = Project.Dir &/ Icon
   ENDIF
   sShortcut = Replace(sShortcut, "$(ICON)", sPath)
 
-  File.Save("~/Desktop" &/ Name & ".desktop", sShortcut)
+  File.Save(sDesktopPath, sShortcut)
 
 CATCH 
 

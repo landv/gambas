@@ -147,9 +147,9 @@ PUBLIC SUB RefreshToolbar(OPTIONAL bForce AS Boolean)
     hToolBar.Delete
   NEXT
   
+  $cToolBar.Clear
   tabTool.Count = 1
 
-  $cToolBar.Clear
   $sToolBar = ""
 
   'AddTool(SELECT_TOOL)
@@ -288,7 +288,7 @@ END
 
 PUBLIC SUB SetTool()
 
-  IF NOT $sToolBar THEN RETURN
+  IF NOT $sToolBar THEN RETURN 
   $cToolBar[$sToolBar].SetTool()
 
 END

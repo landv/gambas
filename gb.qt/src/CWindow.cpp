@@ -72,6 +72,8 @@ DECLARE_EVENT(EVENT_Hide);
 DECLARE_EVENT(EVENT_Title);
 DECLARE_EVENT(EVENT_Icon);
 
+DECLARE_METHOD(CWINDOW_show);
+
 CWINDOW *CWINDOW_Main = 0;
 CWINDOW *CWINDOW_Current = 0;
 CWINDOW *CWINDOW_LastActive = 0;
@@ -193,26 +195,31 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
   }
 }
 
-static void post_show_event(void *_object)
+static bool emit_open_event(void *_object)
 {
-  //qDebug("> post_show_event %s %p", GB.GetClassName(THIS), THIS);
   if (!THIS->shown)
   {
-		//qDebug("EVENT_Open: %s %p %d", GB.GetClassName(THIS), THIS);
-	
+  	//qDebug("emit_open_event");
+  	CWIDGET_clear_flag(THIS, WF_CLOSED);
 		GB.Raise(THIS, EVENT_Open, 0);
 		if (CWIDGET_test_flag(THIS, WF_CLOSED))
-			return;
+			return true;
 		// a move event is generated just after for real windows
 		//if (!THIS->toplevel)
-			GB.Raise(THIS, EVENT_Move, 0);
+		GB.Raise(THIS, EVENT_Move, 0);
 		GB.Raise(THIS, EVENT_Resize, 0);
 		THIS->shown = true;
 		//qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
 		//qDebug("< post_show_event %p", THIS);
 		//GB.Unref(&_object);
 	}
+	
+	return false;
+}
 
+static void post_show_event(void *_object)
+{
+  //qDebug("> post_show_event %s %p", GB.GetClassName(THIS), THIS);
 	if (THIS->focus)
 	{
 		//qDebug("post_show_event: setFocus (%s %p)", GB.GetClassName(THIS->focus), THIS->focus);
@@ -221,14 +228,6 @@ static void post_show_event(void *_object)
 		THIS->focus = NULL;
 	}	
 }
-
-/*static void post_hide_event(void *_object)
-{
-  qDebug("Hide: %s %d", GB.GetClassName(THIS), !WINDOW->isHidden());
-	GB.Raise(THIS, EVENT_Hide, 0);
-	CACTION_raise(THIS);
-  GB.Unref(&_object);
-}*/
 
 
 
@@ -247,8 +246,8 @@ static void show_later(CWINDOW *_object)
   //qDebug("show_later %s %p: hidden = %d", GB.GetClassName(THIS), THIS, THIS->hidden);
   if (!THIS->hidden && WIDGET)
   {
-  	//qDebug("show");
-    WIDGET->show();
+  	if (!emit_open_event(THIS))
+    	WIDGET->show();
 	}
   GB.Unref(POINTER(&_object));
 }
@@ -419,7 +418,8 @@ BEGIN_METHOD_VOID(CFORM_main)
 
   //GB.New(POINTER(&form), GB.GetClass(NULL), NULL, NULL);
 
-  ((MyMainWindow *)form->widget.widget)->showActivate();
+	CWINDOW_show(form, NULL);
+  //((MyMainWindow *)form->widget.widget)->showActivate();
 
 END_METHOD
 
@@ -621,6 +621,8 @@ BEGIN_METHOD_VOID(CWINDOW_show)
   if (!THIS->toplevel)
   {
 	  CWIDGET_clear_flag(THIS, WF_CLOSED);
+	  if (emit_open_event(THIS))
+	  	return;
     WIDGET->show();
     #ifndef NO_X_WINDOW
     if (THIS->xembed)
@@ -633,6 +635,8 @@ BEGIN_METHOD_VOID(CWINDOW_show)
     //if (CWINDOW_Current)
     //  WINDOW->showModal(); //GB.Error("A modal window is already displayed");
     //else
+	  if (emit_open_event(THIS))
+	  	return;
     WINDOW->showActivate();
   }
 
@@ -655,8 +659,11 @@ BEGIN_METHOD_VOID(CWINDOW_show_modal)
 
   THIS->ret = 0;
 
-  if (THIS->toplevel)
-    WINDOW->showModal();
+	if (!emit_open_event(THIS))
+	{
+	  if (THIS->toplevel)
+  	  WINDOW->showModal();
+	}
   //qDebug("CWINDOW_show_modal: ret = %d", THIS->ret);
   GB.ReturnInteger(THIS->ret);
 
@@ -881,6 +888,26 @@ BEGIN_PROPERTY(CWINDOW_state)
 END_PROPERTY
 #endif
 
+static void show_window_state(void *_object)
+{
+	THIS->stateChange = false;
+	
+	if (WINDOW)
+	{
+		//qDebug("show_window_state: %d", WINDOW->windowState());
+		if (WINDOW->windowState() & Qt::WindowMinimized)
+			WINDOW->showMinimized();
+		else if (WINDOW->windowState() & Qt::WindowFullScreen)
+			WINDOW->showFullScreen();
+		else if (WINDOW->windowState() & Qt::WindowMaximized)
+			WINDOW->showMaximized();
+		else
+			WINDOW->showNormal();
+	}
+	
+	GB.Unref(POINTER(&_object));
+}
+
 static void manage_window_state(void *_object, void *_param, Qt::WindowState state)
 {
   if (!THIS->toplevel)
@@ -898,6 +925,13 @@ static void manage_window_state(void *_object, void *_param, Qt::WindowState sta
 	      WINDOW->setWindowState(WINDOW->windowState() | state);
     	else
 	      WINDOW->setWindowState(WINDOW->windowState() & ~state);
+			
+			if (WINDOW->isVisible() && !THIS->stateChange)
+			{
+				THIS->stateChange = true;
+				GB.Ref(THIS);
+				GB.Post((GB_POST_FUNC)show_window_state, (intptr_t)THIS);
+			}
 		}
   }
 }
@@ -1522,11 +1556,13 @@ void MyMainWindow::showActivate()
 
   initProperties();
 
-  if (!THIS->shown)
+  if (!isVisible())
   {
     //GB.Raise(THIS, EVENT_Open, 0);
 
     //X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
+
+		//qDebug("not visible! %d", windowState());
 
 		if (windowState() & Qt::WindowMinimized)
 			showMinimized();
@@ -1562,7 +1598,7 @@ void MyMainWindow::showActivate()
 			//qDebug("_activate set #2");
     }
     
-    if (!isVisible())
+    /*if (!isVisible())
     {
       show();
       if (getTool())
@@ -1573,10 +1609,10 @@ void MyMainWindow::showActivate()
 			}
     }
     else
-    {
+    {*/
 			raise();
 			setActiveWindow();
-    }
+    //}
 
   }
 
@@ -1631,24 +1667,15 @@ void MyMainWindow::showModal(void)
 	
   CWIDGET_clear_flag(THIS, WF_CLOSED); // Normaly done in showActivate()
   
-  // If we done that now, the form is not arranged!
-  //CWIDGET_set_flag(THIS, WF_IN_SHOW);
-	//post_show_event(THIS);
-  //CWIDGET_clear_flag(THIS, WF_IN_SHOW);
-
-	if (!CWIDGET_test_flag(THIS, WF_CLOSED))
-	{
-		//qDebug("showModal: %p", THIS);
-  	show();
-		afterShow();
-  	
-	  THIS->loopLevel++;
-		CWINDOW_Current = THIS;
-		THIS->enterLoop = true;
-		//qDebug("enterLoop: %p\n", THIS);
-		qApp->eventLoop()->enterLoop();
-		CWINDOW_Current = save;
-	}
+	show();
+	afterShow();
+	
+	THIS->loopLevel++;
+	CWINDOW_Current = THIS;
+	THIS->enterLoop = true;
+	//qDebug("enterLoop: %p\n", THIS);
+	qApp->eventLoop()->enterLoop();
+	CWINDOW_Current = save;
 	
   if (persistent)
   {
@@ -2447,14 +2474,9 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 
       post_show_event(THIS);
       
-      if (THIS->shown)
-      {
-				GB.Raise(THIS, EVENT_Show, 0);
-				if (!e->spontaneous())
-					CACTION_raise(THIS);
-			}
-			else
-				return true;
+			GB.Raise(THIS, EVENT_Show, 0);
+			if (!e->spontaneous())
+				CACTION_raise(THIS);
     }
     else if (e->type() == QEvent::Hide) // && !e->spontaneous())
     {

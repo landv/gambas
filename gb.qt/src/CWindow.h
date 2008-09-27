@@ -73,6 +73,7 @@ typedef
     unsigned minsize : 1;
     unsigned title : 1;
     unsigned enterLoop : 1;
+    unsigned stateChange : 1;
     }
   CWINDOW;
 
