@@ -42,7 +42,7 @@ Private Function AddToolBar(sToolBar As String, sType As String) As FToolBar
 
   Dim hToolBar As FToolBar
 
-  If NOT $cToolBar.Exist(sToolBar) Then
+  If Not $cToolBar.Exist(sToolBar) Then
 
     If $cToolBar.Count Then Inc tabTool.Count
     tabTool.Index = tabTool.Count - 1
@@ -51,7 +51,7 @@ Private Function AddToolBar(sToolBar As String, sType As String) As FToolBar
     hToolBar = New FToolBar(sToolBar, sType, tabTool) As "ToolBar"
     $cToolBar[sToolBar] = hToolBar
 
-    If NOT $sToolbar Then $sToolbar = sToolBar
+    If Not $sToolbar Then $sToolbar = sToolBar
 
   Endif
 
@@ -131,7 +131,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
   Endif
 
-  If NOT bForce Then
+  If Not bForce Then
     If $sLastLib Then
       If sNewLib = $sLastLib Then Return
     Endif
@@ -147,9 +147,9 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
     hToolBar.Delete
   Next
   
+  $cToolBar.Clear
   tabTool.Count = 1
 
-  $cToolBar.Clear
   $sToolBar = ""
 
   'AddTool(SELECT_TOOL)
@@ -163,7 +163,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
       With hComp
 
-        If .Key <> "gb" AND If Project.Libraries.Find(.Key) < 0 Then Continue
+        If .Key <> "gb" And If Project.Libraries.Find(.Key) < 0 Then Continue
 
         sGroup = "?"
         For Each sCtrl In .Controls
@@ -198,7 +198,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
       With hComp
 
-        If .Key <> "gb" AND If Project.Libraries.Find(.Key) < 0 Then Continue
+        If .Key <> "gb" And If Project.Libraries.Find(.Key) < 0 Then Continue
 
         sGroup = "?"
         For Each sCtrl In .Controls
@@ -213,7 +213,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
               Break
             Endif
           Next
-          If NOT bExist Then $cToolBar[sGroup].Add(sCtrl, hComp.Key)
+          If Not bExist Then $cToolBar[sGroup].Add(sCtrl, hComp.Key)
         Next
 
       End With
@@ -261,7 +261,7 @@ End
 
 Private Sub SelectToolBar(sToolBar As String)
 
-  If NOT $cToolBar.Exist(sToolBar) Then Return
+  If Not $cToolBar.Exist(sToolBar) Then Return
   $sLastToolBar = $sToolBar
   $sToolBar = sToolBar
   SetTool
@@ -280,7 +280,7 @@ End
 
 Public Function GetTool() As String
 
-  If NOT $sToolBar Then Return
+  If Not $sToolBar Then Return
   Return $cToolBar[$sToolBar].GetTool()
 
 End
@@ -288,7 +288,7 @@ End
 
 Public Sub SetTool()
 
-  If NOT $sToolBar Then Return
+  If Not $sToolBar Then Return
   $cToolBar[$sToolBar].SetTool()
 
 End

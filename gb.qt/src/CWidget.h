@@ -232,8 +232,9 @@ public:
 
   static void add(QObject *, void *, bool no_filter);
   static CWIDGET *get(QObject *);
-  static CWIDGET *getReal(QObject *);
+  static CWIDGET *getReal(QObject *o) { return dict[o]; }
   static CWIDGET *getDesign(QObject *);
+  static CWIDGET *getValid(CWIDGET *ob) { return (ob && !CWIDGET_test_flag(ob, WF_DELETED)) ? ob : NULL; }
 
   static QWidget *getContainerWidget(CCONTAINER *object);
 

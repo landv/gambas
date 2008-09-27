@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,84)
+  MoveScaled(0,0,75,84)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -32,20 +32,20 @@
     }
   }
   { TabStrip1 TabStrip
-    MoveScaled(1,1,66,77)
+    MoveScaled(1,1,73,77)
     Padding = 8
     Count = 3
     Index = 0
     Text = ("General")
     { HBox11 HBox
-      MoveScaled(2,61,62,4)
+      MoveScaled(2,61,69,4)
       Spacing = 8
       { Label12 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Icon theme")
       }
       { cmbIconTheme ComboBox
-        MoveScaled(44,0,17,4)
+        MoveScaled(48,0,17,4)
         Expand = True
         Text = ("")
         ReadOnly = True
@@ -53,14 +53,14 @@
       }
     }
     { HBox12 HBox
-      MoveScaled(2,66,62,4)
+      MoveScaled(2,66,69,4)
       Spacing = 8
       { Label13 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Browser")
       }
       { cmbBrowser ComboBox
-        MoveScaled(44,0,17,4)
+        MoveScaled(48,0,17,4)
         Expand = True
         Text = ("")
         ReadOnly = True
@@ -68,7 +68,7 @@
       }
     }
     { Label25 Label
-      MoveScaled(1,56,63,4)
+      MoveScaled(1,56,70,4)
       Font = Font["Bold"]
       Text = ("Desktop")
     }
@@ -78,42 +78,42 @@
       Text = ("Interface")
     }
     { HBox3 HBox
-      MoveScaled(2,6,62,4)
+      MoveScaled(2,6,69,4)
       Spacing = 8
       { Label10 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Show tooltips")
       }
       { cmbTooltip ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox5 HBox
-      MoveScaled(2,11,62,4)
+      MoveScaled(2,11,69,4)
       Spacing = 8
       { Label30 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Show message bar")
       }
       { cmbMessage ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox6 HBox
-      MoveScaled(2,16,62,4)
+      MoveScaled(2,16,69,4)
       Spacing = 8
       { Label11 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Font size")
       }
       { cmbGlobalFont ComboBox
-        MoveScaled(44,0,17,4)
+        MoveScaled(48,0,17,4)
         Expand = True
         Text = ("")
         ReadOnly = True
@@ -121,14 +121,14 @@
       }
     }
     { HBox7 HBox
-      MoveScaled(2,26,62,4)
+      MoveScaled(2,26,69,4)
       Spacing = 8
       { Label1 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Toolbox size")
       }
       { cmbToolbox ComboBox
-        MoveScaled(44,0,17,4)
+        MoveScaled(48,0,17,4)
         Expand = True
         Text = ("")
         ReadOnly = True
@@ -136,75 +136,75 @@
       }
     }
     { HBox8 HBox
-      MoveScaled(2,31,62,4)
+      MoveScaled(2,31,69,4)
       Spacing = 8
       { Label2 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Sort properties")
       }
       { cmbSortProperty ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox9 HBox
-      MoveScaled(2,36,62,4)
+      MoveScaled(2,36,69,4)
       Spacing = 8
       { Label14 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Recent projects")
       }
       { txtRecent SpinBox
-        MoveScaled(44,0,8,4)
+        MoveScaled(48,0,8,4)
         MinValue = 4
         MaxValue = 64
         Step = 4
       }
       { Label15 Label
-        MoveScaled(53,0,9,4)
+        MoveScaled(57,0,9,4)
         Expand = True
         Text = ("Max.")
       }
     }
     { HBox10 HBox
-      MoveScaled(2,41,62,4)
+      MoveScaled(2,41,69,4)
       Spacing = 8
       { Label16 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Quiet external commands")
       }
       { cmbOutput ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox13 HBox
-      MoveScaled(2,46,62,4)
+      MoveScaled(2,46,69,4)
       Spacing = 8
       { Label32 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Display property help")
       }
       { cmbIntegratedHelp ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox19 HBox
-      MoveScaled(2,21,62,4)
+      MoveScaled(2,21,69,4)
       Spacing = 8
       { Label19 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Tabstrip font size")
       }
       { cmbTabStripFont ComboBox
-        MoveScaled(44,0,17,4)
+        MoveScaled(48,0,17,4)
         Expand = True
         Text = ("")
         ReadOnly = True
@@ -212,14 +212,14 @@
       }
     }
     { HBox21 HBox
-      MoveScaled(2,51,62,4)
+      MoveScaled(2,51,69,4)
       Spacing = 8
       { Label21 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Minimize at runtime")
       }
       { cmbMinimize ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
@@ -233,7 +233,7 @@
       Text = ("Font")
     }
     { fntEditor FontChooser
-      MoveScaled(2,5,62,19)
+      MoveScaled(2,5,69,19)
       ShowStyle = False
       ShowPreview = False
       ShowLabel = False
@@ -244,89 +244,89 @@
       Text = ("Options")
     }
     { HBox2 HBox
-      MoveScaled(2,31,62,4)
+      MoveScaled(2,31,69,4)
       Spacing = 8
       { Label4 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Automatic completion")
       }
       { cmbCompletion ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox14 HBox
-      MoveScaled(2,61,62,4)
+      MoveScaled(2,61,69,4)
       Spacing = 8
       { Label40 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Default tab size")
       }
       { txtTabSize SpinBox
-        MoveScaled(44,0,8,4)
+        MoveScaled(48,0,8,4)
         MinValue = 1
         MaxValue = 16
         Value = 2
       }
       { Label3 Label
-        MoveScaled(53,0,9,4)
+        MoveScaled(57,0,9,4)
         Expand = True
         Text = ("spaces")
       }
     }
     { HBox15 HBox
-      MoveScaled(2,51,62,4)
+      MoveScaled(2,51,69,4)
       Spacing = 8
       { Label8 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Show line numbers")
       }
       { cmbLineNumber ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox16 HBox
-      MoveScaled(2,46,62,4)
+      MoveScaled(2,46,69,4)
       Spacing = 8
       { Label7 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Highlight modified lines")
       }
       { cmbShowChange ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox17 HBox
-      MoveScaled(2,41,62,4)
+      MoveScaled(2,41,69,4)
       Spacing = 8
       { Label6 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Highlight current line")
       }
       { cmbShowCurrent ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox18 HBox
-      MoveScaled(2,36,62,4)
+      MoveScaled(2,36,69,4)
       Spacing = 8
       { Label5 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Procedure separation")
       }
       { cmbProcLimit ComboBox
-        MoveScaled(44,0,18,4)
+        MoveScaled(48,0,18,4)
         Expand = True
         Text = ("")
         ReadOnly = True
@@ -334,28 +334,28 @@
       }
     }
     { HBox4 HBox
-      MoveScaled(2,56,62,4)
+      MoveScaled(2,56,69,4)
       Spacing = 8
       { Label17 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Fold procedures by default")
       }
       { cmbFoldProc ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
       }
     }
     { HBox20 HBox
-      MoveScaled(2,66,62,4)
+      MoveScaled(2,66,69,4)
       Spacing = 8
       { Label20 Label
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,47,4)
         Text = ("Keywords in upper case")
       }
       { cmbUpperCaseKeywords ComboBox
-        MoveScaled(44,0,10,4)
+        MoveScaled(48,0,10,4)
         Text = ("")
         ReadOnly = True
         List = [("No"), ("Yes")]
@@ -364,7 +364,7 @@
     Index = 2
     Text = ("Theme")
     { VBox1 VBox
-      MoveScaled(1,2,63,68)
+      MoveScaled(1,2,70,68)
       Spacing = 8
       { HBox1 HBox
         MoveScaled(1,1,48,4)
@@ -409,7 +409,7 @@
     Index = 0
   }
   { btnClose Button
-    MoveScaled(52,79,15,4)
+    MoveScaled(59,79,15,4)
     Text = ("Close")
     Cancel = True
   }

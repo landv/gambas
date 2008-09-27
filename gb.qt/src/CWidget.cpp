@@ -1355,7 +1355,6 @@ void CWidget::add(QObject *o, void *object, bool no_filter)
 }
 
 
-
 CWIDGET *CWidget::get(QObject *o)
 {
   CWIDGET *ob;
@@ -1373,11 +1372,6 @@ CWIDGET *CWidget::get(QObject *o)
   }
 
   return NULL;
-}
-
-CWIDGET *CWidget::getReal(QObject *o)
-{
-  return dict[o];
 }
 
 
@@ -1550,11 +1544,12 @@ void CWidget::destroy()
 {
   QWidget *w = (QWidget *)sender();
   CWIDGET *ob = CWidget::get(w);
-  QEvent e(EVENT_DESTROY);
 
   if (ob == NULL)
     return;
 
+  QEvent e(EVENT_DESTROY);
+  
   //qDebug(">> CWidget::destroy %p (%p) :%p:%ld", ob, ob->widget, ob->ob.klass, ob->ob.ref);
 
   //w->blockSignals(TRUE);
