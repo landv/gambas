@@ -48,6 +48,64 @@ Public Sub RunXdgUtil(sProg As String, aArg As String[])
   
 End
 
+Private Function SearchPathConfig(sXdgConfigHome As String, sXdgConfigDirs As String) As String
+  
+  If Exist(sXdgConfigHome & "/user-dirs.dirs") Then ' Devrait exister
+    Return sXdgConfigHome & "/user-dirs.dirs"
+  Else If Exist(sXdgConfigDirs & "/user-dirs.defaults") Then ' Sinon l'un
+    Return sXdgConfigDirs & "/user-dirs.defaults"
+  Else If Exist(sXdgConfigDirs & "/user-dirs.dirs") Then ' Ou l'autre
+    Return sXdgConfigDirs & "/user-dirs.dirs"
+  Endif
+  
+End
+
+Private Function SearchPathVariable(sFileConfig As String, sDirectory As String) As String
+
+  Dim hFile As File
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim aLine As String[]
+  
+  hFile = Open sFileConfig For Input
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    If Left(sLine) = "#" Then Continue
+    If sLine Like (sDirectory & "*") Then Break
+    sLine = ""
+  Wend
+  
+  aLine = Scan(sLine, sDirectory & "=*")
+  If aLine.Count Then
+    sLine = aLine[0]
+    If Left(sLine) = Chr$(34) Then sLine = Mid$(sLine, 2, -1)
+    If sLine Like "$HOME/*" Then sLine = Replace(sLine, "$HOME", System.User.Home)
+    Return sLine
+  Endif
+
+End
+
+Public Sub GetDesktopPath() As String
+
+  Dim hFile As File
+  Dim sLine, sDir, sXdgConfigHome, sXdgConfigDirs, sFileConfig As String
+  
+  sXdgConfigHome = Application.Env["XDG_CONFIG_HOME"] ' $XDG_CONFIG_HOME définie ?
+  If Not sXdgConfigHome Then sXdgConfigHome = User.Home & "/.config" ' Sinon val. par défaut
+  
+  sXdgConfigDirs = Application.Env["XDG_CONFIG_DIRS"] ' $XDG_CONFIG_DIRS définie ?
+  If Not sXdgConfigDirs Then sXdgConfigDirs = "/etc/xdg" ' Sinon val. par défaut
+  
+  sFileConfig = SearchPathConfig(sXdgConfigHome, sXdgConfigDirs)
+  sDir = SearchPathVariable(sFileConfig, "XDG_DESKTOP_DIR") 
+  
+  Return sDir
+  
+End
+
+
 Public Sub Main()
 
   ' Dim hWindow As DesktopWindow

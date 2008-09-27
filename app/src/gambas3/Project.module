@@ -2436,15 +2436,16 @@ End
 
 Public Sub MakeShortcut(Optional bForce As Boolean)
   
+  Dim sDesktopPath As String
   Dim sPath As String
   Dim sShortcut As String
   
   If Not CreateShortcut Then Return 
   
-  sPath = "~/Desktop" &/ Name & ".desktop"
+  sDesktopPath = Desktop.Path &/ Name & ".desktop"
   
   If Not bForce Then 
-    If Not Exist(sPath) Then Return
+    If Not Exist(sDesktopPath) Then Return
   Endif
   
   sShortcut = File.Load("shortcut.desktop")
@@ -2457,7 +2458,7 @@ Public Sub MakeShortcut(Optional bForce As Boolean)
   Endif
   sShortcut = Replace(sShortcut, "$(ICON)", sPath)
 
-  File.Save("~/Desktop" &/ Name & ".desktop", sShortcut)
+  File.Save(sDesktopPath, sShortcut)
 
 Catch 
 

@@ -19,6 +19,7 @@ Static Property Read W As Integer
 Static Property Read H As Integer
 Static Property {Watch} As Boolean
 Static Property Read Passwords As _DesktopPasswords
+Static Property Read Path As String
 
 Static Private $sDesktop As String
 Static Private $cDesktop As Collection
@@ -357,5 +358,12 @@ End
 Static Private Function Passwords_Read() As _DesktopPasswords
 
   Return _DesktopPasswords
+
+End
+
+
+Static Private Function Path_Read() As String
+
+  Return Main.GetDesktopPath()
 
 End

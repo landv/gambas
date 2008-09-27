@@ -90,7 +90,7 @@ private:
 	void startBlink();
 	void stopBlink();
 	void updateLine(int y) { updateCell(realToView(y), 0); }
-	void repaintLine(int y) { repaintCell(y, 0, FALSE); }
+	//void repaintLine(int y) { repaintCell(y, 0, FALSE); }
 	bool updateCursor();
 
 	int lineWidth(int y) const;
@@ -105,7 +105,8 @@ private:
 	int findLargestLine();
 
 	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row);
-
+	void paintDottedSpaces(QPainter &p, int row, int ps, int ls);
+	
 	void docTextChanged();
 	void redrawContents();
 	

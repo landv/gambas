@@ -598,10 +598,7 @@ void GDocument::updateViews(int row, int count)
   {
     for (i = row; i < (uint)(row + count); i++)
     {
-      if (i >= lines.count())
-        v->repaintCell(i, 0);
-      else
-        v->updateLine(i);
+	    v->updateLine(i);
     }
   }
 
