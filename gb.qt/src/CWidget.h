@@ -94,6 +94,7 @@ enum {
 extern GB_DESC CControlDesc[];
 extern CWIDGET *CWIDGET_destroy_list;
 extern CWIDGET *CWIDGET_destroy_last;
+extern CWIDGET *CWIDGET_destroy_current;
 
 extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Container;
@@ -232,8 +233,9 @@ public:
 
   static void add(QObject *, void *, bool no_filter);
   static CWIDGET *get(QObject *);
-  static CWIDGET *getReal(QObject *);
+  static CWIDGET *getReal(QObject *o) { return dict[o]; }
   static CWIDGET *getDesign(QObject *);
+  static CWIDGET *getValid(CWIDGET *ob) { return (ob && !CWIDGET_test_flag(ob, WF_DELETED)) ? ob : NULL; }
 
   static QWidget *getContainerWidget(CCONTAINER *object);
 

@@ -54,6 +54,7 @@
 
 CWIDGET *CWIDGET_destroy_list = 0;
 CWIDGET *CWIDGET_destroy_last = 0;
+CWIDGET *CWIDGET_destroy_current = 0;
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
@@ -284,6 +285,7 @@ void CWIDGET_destroy(CWIDGET *object)
 
   object->widget->hide();
   //GB.Ref(object);
+  //CWidget::remove(object->widget);
 }
 
 
@@ -1370,7 +1372,7 @@ CWIDGET *CWidget::get(QObject *o)
   while (o)
   {
     ob = dict[o];
-    if (ob != NULL)
+		if (ob)
       return ob;
 
     o = o->parent();
@@ -1380,15 +1382,9 @@ CWIDGET *CWidget::get(QObject *o)
   return NULL;
 }
 
-CWIDGET *CWidget::getReal(QObject *o)
-{
-  return dict[o];
-}
-
-
 CWIDGET *CWidget::getDesign(QObject *o)
 {
-  CWIDGET *ob;
+  CWIDGET *ob = NULL;
 
 	if (!o->isWidgetType())
 		return NULL;
@@ -1409,18 +1405,25 @@ CWIDGET *CWidget::getDesign(QObject *o)
   	return NULL;
 
  	if (!CWIDGET_test_flag(ob, WF_DESIGN))
-	  return ob;
+ 		goto __FIND;
 
   while (o)
   {
     ob = dict[o];
     if (ob && CWIDGET_test_flag(ob, WF_DESIGN_LEADER))
-    	return ob;
+    	goto __FIND;
 
     o = o->parent();
   }
-
+  
   return NULL;
+
+__FIND:
+
+	if (ob)
+		return ob;
+	else
+		return NULL;
 }
 
 /*
@@ -1555,11 +1558,12 @@ void CWidget::destroy()
 {
   QWidget *w = (QWidget *)sender();
   CWIDGET *ob = CWidget::get(w);
-  QEvent e(EVENT_DESTROY);
 
-  if (ob == NULL)
+  if (!ob)
     return;
 
+  QEvent e(EVENT_DESTROY);
+  
   //qDebug(">> CWidget::destroy %p (%p) :%p:%ld", ob, ob->widget, ob->ob.klass, ob->ob.ref);
 
   //w->blockSignals(TRUE);

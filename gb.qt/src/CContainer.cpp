@@ -80,7 +80,7 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define IS_DESIGN(_object) (CWIDGET_test_flag(_object, WF_DESIGN) && CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
 #define IS_WIDGET_VISIBLE(_widget) (_widget)->isVisible()
 
-#define CAN_ARRANGE(_object) (IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object)))
+#define CAN_ARRANGE(_object) ((_object) && (IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object))))
 
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
 	_x = (_widget)->contentsRect().x(); \
@@ -104,7 +104,7 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define RESET_CHILDREN_LIST() list->first()
 #define GET_NEXT_CHILD_WIDGET() get_widget(list)
 
-#define GET_OBJECT_FROM_WIDGET(_widget) CWidget::get(_widget)
+#define GET_OBJECT_FROM_WIDGET(_widget) CWidget::getValid(CWidget::get(_widget))
 
 #define RAISE_ARRANGE_EVENT(_object) \
 { \
@@ -315,7 +315,7 @@ BEGIN_METHOD_VOID(CCONTAINER_children_next)
 
     ENUM(int) = index + 1;
 
-    widget = CWidget::getReal(list->at(index));
+    widget = CWidget::getValid(CWidget::getReal(list->at(index)));
     if (widget)
     {
       GB.ReturnObject(widget);
@@ -337,7 +337,7 @@ BEGIN_METHOD(CCONTAINER_children_get, GB_INTEGER index)
 		i = 0;
 		for(i = 0; i < (int)list->count(); i++)
 		{
-			widget = CWidget::getReal(list->at(i));
+			widget = CWidget::getValid(CWidget::getReal(list->at(i)));
 			if (!widget)
 				continue;
 			if (index == 0)
@@ -375,7 +375,7 @@ BEGIN_PROPERTY(CCONTAINER_children_count)
     if (!ob)
       break;
     list->next();
-    if (ob->isWidgetType() && CWidget::getReal(ob))
+    if (ob->isWidgetType() && CWidget::getValid(CWidget::getReal(ob)))
     	n++;
   }
 

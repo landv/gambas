@@ -206,8 +206,6 @@ static bool emit_open_event(void *_object)
 			return true;
 		// a move event is generated just after for real windows
 		//if (!THIS->toplevel)
-		GB.Raise(THIS, EVENT_Move, 0);
-		GB.Raise(THIS, EVENT_Resize, 0);
 		THIS->shown = true;
 		//qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
 		//qDebug("< post_show_event %p", THIS);
@@ -220,6 +218,9 @@ static bool emit_open_event(void *_object)
 static void post_show_event(void *_object)
 {
   //qDebug("> post_show_event %s %p", GB.GetClassName(THIS), THIS);
+	GB.Raise(THIS, EVENT_Move, 0);
+	GB.Raise(THIS, EVENT_Resize, 0);
+	
 	if (THIS->focus)
 	{
 		//qDebug("post_show_event: setFocus (%s %p)", GB.GetClassName(THIS->focus), THIS->focus);
@@ -247,7 +248,9 @@ static void show_later(CWINDOW *_object)
   if (!THIS->hidden && WIDGET)
   {
   	if (!emit_open_event(THIS))
+  	{
     	WIDGET->show();
+		}
 	}
   GB.Unref(POINTER(&_object));
 }
@@ -1807,6 +1810,8 @@ void MyMainWindow::paintUnclip(bool on)
 void MyMainWindow::moveEvent(QMoveEvent *e)
 {
   CWIDGET *_object = CWidget::getReal(this);
+  if (!THIS)
+  	return;
 
   //qDebug("Move: (%s %p) %d %d", GB.GetClassName(THIS), THIS, e->pos().x(), e->pos().y());
 
@@ -1856,6 +1861,8 @@ static void post_resize_event(CWINDOW *_object)
 void MyMainWindow::resizeEvent(QResizeEvent *e)
 {
   CWINDOW *_object = (CWINDOW *)CWidget::getReal(this);
+  if (!THIS)
+  	return;
   //int w, h;
 
   //qDebug("Resize");
@@ -1901,6 +1908,9 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
 void MyMainWindow::keyPressEvent(QKeyEvent *e)
 {
   CWINDOW *_object = (CWINDOW *)CWidget::getReal(this);
+  if (!THIS)
+  	return;
+  	
   QPushButton *test = 0;
   CWIDGET *ob;
   bool cancel;
@@ -2017,6 +2027,9 @@ static void deleteAll()
 void MyMainWindow::closeEvent(QCloseEvent *e)
 {
   CWINDOW *_object = (CWINDOW *)CWidget::get(this);
+  if (!THIS)
+  	return;
+  	
   bool cancel = false;
   bool modal;
 
@@ -2282,7 +2295,10 @@ void MyMainWindow::configure()
 void MyMainWindow::hide(void)
 {
   CWIDGET *_object = CWidget::get(this);
-  THIS->hidden = TRUE;
+  
+  if (THIS)
+  	THIS->hidden = TRUE;
+  	
   QMainWindow::hide();
 }
 
