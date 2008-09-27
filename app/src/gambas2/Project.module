@@ -47,6 +47,7 @@ PUBLIC TabSize AS Integer
 PUBLIC Version AS String
 PUBLIC FullVersion AS String
 PUBLIC ExecPath AS String
+PUBLIC SourcePath AS String
 PUBLIC Language AS String
 PUBLIC CreateComponent AS Boolean
 PUBLIC ComponentState AS Integer
@@ -2032,6 +2033,7 @@ PUBLIC SUB ReadProject()
   Prefix = FALSE
   UseRelease = FALSE
   ExecPath = Project.Dir &/ Project.Name & ".gambas"
+  SourcePath = ""
   CreateComponent = FALSE
   ComponentState = CComponent.STABLE
   CreateShortcut = FALSE
@@ -2179,6 +2181,9 @@ PUBLIC SUB ReadProject()
 
       CASE "execpath"
         ExecPath = sVal
+    
+      CASE "sourcepath"
+        SourcePath = sVal
         
       CASE "stack"
         Stack = Val(sVal)
@@ -2273,6 +2278,7 @@ PUBLIC SUB WriteProject(OPTIONAL bComponentDoNotChange AS Boolean, OPTIONAL bMak
   IF ExecPath <> (Project.Dir &/ Project.Name & ".gambas") THEN
     PRINT #hFic, "ExecPath="; ExecPath
   ENDIF
+  IF SourcePath THEN PRINT #hFic, "SourcePath="; SourcePath
 
   IF Maintainer THEN PRINT #hFic, "Maintainer="; Maintainer
   IF Vendor THEN PRINT #hFic, "Vendor="; Vendor
@@ -3130,11 +3136,20 @@ END
 
 PUBLIC SUB MakePackage()
 
-  Dialog.Path = User.Home &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
+  DIM sDir AS String = SourcePath
+  
+  IF NOT sDir THEN sDir = System.User.Home
+  
+  Dialog.Path = sDir &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
   Dialog.Title = ("Create source package")
   Dialog.Filter = ["*.tar.gz", ("Source packages")] '& " (*.tar.gz)", ("All files") & " (*)"]
 
   IF Dialog.SaveFile() THEN RETURN
+
+  IF File.Dir(Dialog.Path) <> System.User.Home THEN 
+    SourcePath = File.Dir(Dialog.Path)
+    Project.WriteProject
+  ENDIF
 
   MakeSourcePackageTo(Dialog.Path)
 
