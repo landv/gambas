@@ -197,19 +197,19 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
 
 static bool emit_open_event(void *_object)
 {
+  if (THIS->opening)
+    return true;
+  
   if (!THIS->shown)
   {
   	//qDebug("emit_open_event");
   	CWIDGET_clear_flag(THIS, WF_CLOSED);
+  	THIS->opening = true;
 		GB.Raise(THIS, EVENT_Open, 0);
+  	THIS->opening = false;
 		if (CWIDGET_test_flag(THIS, WF_CLOSED))
 			return true;
-		// a move event is generated just after for real windows
-		//if (!THIS->toplevel)
 		THIS->shown = true;
-		//qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
-		//qDebug("< post_show_event %p", THIS);
-		//GB.Unref(&_object);
 	}
 	
 	return false;
@@ -522,7 +522,7 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 
 	//qDebug("do_close: (%s %p) %d %d", GB.GetClassName(THIS), THIS, CWIDGET_test_flag(THIS, WF_IN_CLOSE), CWIDGET_test_flag(THIS, WF_CLOSED));
 
-  if (CWIDGET_test_flag(THIS, WF_IN_CLOSE) || CWIDGET_test_flag(THIS, WF_CLOSED)) // || WIDGET->isHidden())
+  if (THIS->closing || CWIDGET_test_flag(THIS, WF_CLOSED)) // || WIDGET->isHidden())
     return false;
 
   if (!THIS->toplevel)
@@ -530,9 +530,9 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 		//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
   	if (THIS->shown)
   	{
-    	CWIDGET_set_flag(THIS, WF_IN_CLOSE);
+    	THIS->closing = true;
     	closed = !GB.Raise(THIS, EVENT_Close, 0);
-    	CWIDGET_clear_flag(THIS, WF_IN_CLOSE);
+    	THIS->closing = false;
 		}
 		else
 			closed = true;
@@ -621,11 +621,11 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWINDOW_show)
 
+	if (emit_open_event(THIS))
+		return;
+  
   if (!THIS->toplevel)
   {
-	  CWIDGET_clear_flag(THIS, WF_CLOSED);
-	  if (emit_open_event(THIS))
-	  	return;
     WIDGET->show();
     #ifndef NO_X_WINDOW
     if (THIS->xembed)
@@ -635,11 +635,6 @@ BEGIN_METHOD_VOID(CWINDOW_show)
   }
   else
   {
-    //if (CWINDOW_Current)
-    //  WINDOW->showModal(); //GB.Error("A modal window is already displayed");
-    //else
-	  if (emit_open_event(THIS))
-	  	return;
     WINDOW->showActivate();
   }
 
@@ -1525,12 +1520,6 @@ void MyMainWindow::showActivate()
 
   //qDebug(">> Show %d %d %d %d", x(), y(), width(), height());
 
-  if (CWIDGET_test_flag(THIS, WF_IN_CLOSE) || CWIDGET_test_flag(THIS, WF_IN_SHOW))
-  {
-    //qDebug("Showing form during a close event !");
-    return;
-  }
-
 	// Reparent the window if, for example, there is an already modal window displayed
 	
 	parent = CWINDOW_Current;
@@ -1551,8 +1540,6 @@ void MyMainWindow::showActivate()
   //qDebug("showActivate %p", _object);
 
   CWIDGET_clear_flag(THIS, WF_CLOSED);
-
-  CWIDGET_set_flag(THIS, WF_IN_SHOW);
 
 	if (!THIS->title && border != BorderNone)
 		setCaption(GB.Application.Title());
@@ -1601,27 +1588,11 @@ void MyMainWindow::showActivate()
 			//qDebug("_activate set #2");
     }
     
-    /*if (!isVisible())
-    {
-      show();
-      if (getTool())
-      {
-	      qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
-				usleep(50000);
-      	setActiveWindow();
-			}
-    }
-    else
-    {*/
-			raise();
-			setActiveWindow();
-    //}
-
+		raise();
+		setActiveWindow();
   }
 
 	afterShow();
-
-  CWIDGET_clear_flag(THIS, WF_IN_SHOW);
 }
 
 void MyMainWindow::showModal(void)
@@ -1634,9 +1605,6 @@ void MyMainWindow::showModal(void)
   CWINDOW *save = CWINDOW_Current;
   QPoint p = pos();
 
-  if (CWIDGET_test_flag(THIS, WF_IN_CLOSE) || CWIDGET_test_flag(THIS, WF_IN_SHOW))
-    return;
-  
   if (isModal())
     return;
 
@@ -2056,9 +2024,9 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	if (THIS->shown)
 	{
 		//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
-		CWIDGET_set_flag(_object, WF_IN_CLOSE);
+		THIS->closing = true;
 		cancel = GB.Raise(_object, EVENT_Close, 0);
-		CWIDGET_clear_flag(_object, WF_IN_CLOSE);
+		THIS->closing = false;
 	}
 
   if (!cancel && THIS == CWINDOW_Main)

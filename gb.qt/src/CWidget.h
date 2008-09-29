@@ -78,13 +78,11 @@ enum {
   WF_DESIGN           = (1 << 0),
   WF_DESIGN_LEADER    = (1 << 1),
   WF_PERSISTENT       = (1 << 2),
-  WF_IN_SHOW          = (1 << 3),
-  WF_IN_CLOSE         = (1 << 4),
-  WF_CLOSED           = (1 << 5),
-  WF_DELETED          = (1 << 6),
-  WF_VISIBLE					= (1 << 7),  // Only for menus
-  WF_ACTION           = (1 << 8),  // Has an action
-  WF_SCROLLVIEW				= (1 << 9)   // Inherits QScrollView
+  WF_CLOSED           = (1 << 3),
+  WF_DELETED          = (1 << 4),
+  WF_VISIBLE					= (1 << 5),  // Only for menus
+  WF_ACTION           = (1 << 6),  // Has an action
+  WF_SCROLLVIEW				= (1 << 7)   // Inherits QScrollView
   };
 
 
