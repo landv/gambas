@@ -57,6 +57,29 @@ STATIC PUBLIC SUB _init()
 END
 
 
+STATIC PUBLIC SUB GetIcon(sClass AS String, sComp AS String, OPTIONAL iSize AS Integer) AS Picture
+  
+  DIM hPict AS Picture
+  DIM sPath AS String
+  
+  IF sComp THEN 
+    sPath = "share/gambas" & System.Version &/ "control" &/ sComp &/ LCase(sClass) & ".png"
+    'DEBUG File.Dir(File.Dir(Component.UserPath)) &/ "share/control" &/ sComp &/ LCase(sControl) & ".png"
+    TRY hPict = Picture.Load(File.Dir(File.Dir(Component.UserPath)) &/ sPath)
+    IF NOT hPict THEN TRY hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
+  ENDIF
+  IF NOT hPict THEN TRY hPict = Picture["img/control" &/ LCase(sClass) & ".png"]
+  IF NOT hPict THEN TRY hPict = Picture["img/control/unknown.png"]
+
+  IF iSize THEN
+    IF hPict.Width <> iSize THEN hPict = hPict.Image.Stretch(iSize, iSize).Picture
+  ENDIF
+
+  RETURN hPict
+  
+END
+
+
 PRIVATE FUNCTION CreateControl(sName AS String, sClass AS String, hParent AS Object) AS Object
 
   DIM hCtrl AS Object
@@ -64,13 +87,15 @@ PRIVATE FUNCTION CreateControl(sName AS String, sClass AS String, hParent AS Obj
   DIM bExist AS Boolean
   DIM bVirtual AS Boolean
   DIM sDrawWith AS String
+  DIM hClass AS CClassInfo
   'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
 
-  bExist = CComponent.Classes.Exist(sClass)
+  hClass = CComponent.Classes[sClass]
+  bExist = hClass <> NULL
   IF bExist THEN
-    DrawWith = CComponent.Classes[sClass].DrawWith
+    DrawWith = hClass.DrawWith
     IF DrawWith THEN sClass = DrawWith
   ENDIF
 
@@ -196,14 +221,15 @@ PRIVATE FUNCTION CreateControl(sName AS String, sClass AS String, hParent AS Obj
     CASE ELSE
 
       IF bExist THEN
-        bVirtual = CComponent.Classes[sClass].VirtualControl
+        bVirtual = hClass.VirtualControl
       ENDIF
 
       IF bVirtual THEN
 
         IF Len(sName) THEN
           hCtrl = NEW Button(hParent)
-          hCtrl.Picture = Picture["img/control" &/ LCase(sClass) & ".png"]
+          hPict = GetIcon(sClass, hClass.Component, Desktop.Scale * 4)
+          hCtrl.Picture = hPict
           hCtrl.Design = TRUE
         ELSE
           hCtrl = NEW (sClass) ' Timer(hParent)

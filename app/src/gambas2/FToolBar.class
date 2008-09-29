@@ -49,14 +49,7 @@ PUBLIC SUB Add(sControl AS String, OPTIONAL sComp AS String)
   hCtrl.ToolTip = sControl
   hCtrl.Design = TRUE
 
-  IF sComp THEN 
-    sPath = "share/gambas" & System.Version &/ "control" &/ sComp &/ LCase(sControl) & ".png"
-    'DEBUG File.Dir(File.Dir(Component.UserPath)) &/ "share/control" &/ sComp &/ LCase(sControl) & ".png"
-    TRY hPict = Picture.Load(File.Dir(File.Dir(Component.UserPath)) &/ sPath)
-    IF NOT hPict THEN TRY hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
-  ENDIF
-  IF NOT hPict THEN TRY hPict = Picture["img/control" &/ LCase(sControl) & ".png"]
-  IF NOT hPict THEN TRY hPict = Picture["img/control/unknown.png"]
+  hPict = CControl.GetIcon(sControl, sComp)
   IF hPict THEN
     Picture[".control" &/ LCase(sControl)] = hPict
     IF hPict.Width <> $iSize THEN hPict = hPict.Image.Stretch($iSize, $iSize).Picture
