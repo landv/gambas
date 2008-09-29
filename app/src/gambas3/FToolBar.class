@@ -39,7 +39,6 @@ Public Sub Add(sControl As String, Optional sComp As String)
 
   Dim hCtrl As ToolButton
   Dim hPict As Picture
-  Dim sPath As String
 
   hCtrl = New ToolButton(panTool) As "btnControl"
   hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
@@ -49,14 +48,7 @@ Public Sub Add(sControl As String, Optional sComp As String)
   hCtrl.ToolTip = sControl
   hCtrl.Design = True
 
-  If sComp Then 
-    sPath = "share/gambas" & System.Version &/ "control" &/ sComp &/ LCase(sControl) & ".png"
-    'DEBUG File.Dir(File.Dir(Component.UserPath)) &/ "share/control" &/ sComp &/ LCase(sControl) & ".png"
-    Try hPict = Picture.Load(File.Dir(File.Dir(Component.UserPath)) &/ sPath)
-    If Not hPict Then Try hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
-  Endif
-  If Not hPict Then Try hPict = Picture["img/control" &/ LCase(sControl) & ".png"]
-  If Not hPict Then Try hPict = Picture["img/control/unknown.png"]
+  hPict = CControl.GetIcon(sControl, sComp)
   If hPict Then
     Picture[".control" &/ LCase(sControl)] = hPict
     If hPict.Width <> $iSize Then hPict = hPict.Image.Stretch($iSize, $iSize).Picture

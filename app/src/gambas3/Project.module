@@ -47,6 +47,7 @@ Public TabSize As Integer
 Public Version As String
 Public FullVersion As String
 Public ExecPath As String
+Public SourcePath As String
 Public Language As String
 Public CreateComponent As Boolean
 Public ComponentState As Integer
@@ -141,7 +142,6 @@ End
 Public Sub Main()
 
   Dim sPath As String
-  Dim hGambas As FGambas
   Dim iTest As Integer
   
   'Application.Font = Font["Sans,8"]
@@ -160,7 +160,6 @@ Public Sub Main()
   LoadRecent
 
   FMain.Load 
-  FGambas.Load
 
   If Application.Args.Count >= 2 Then
     sPath = Application.Args[1]
@@ -2088,6 +2087,7 @@ Public Sub ReadProject()
   Prefix = False
   UseRelease = False
   ExecPath = Project.Dir &/ Project.Name & ".gambas"
+  SourcePath = ""
   CreateComponent = False
   ComponentState = CComponent.STABLE
   CreateShortcut = False
@@ -2237,6 +2237,9 @@ Public Sub ReadProject()
       Case "execpath"
         ExecPath = sVal
         
+      Case "sourcepath"
+        SourcePath = sVal
+        
       Case "stack"
         Stack = Val(sVal)
         
@@ -2337,6 +2340,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If ExecPath <> (Project.Dir &/ Project.Name & ".gambas") Then
     Print #hFic, "ExecPath="; ExecPath
   Endif
+  If SourcePath Then Print #hFic, "SourcePath="; SourcePath
 
   If Maintainer Then Print #hFic, "Maintainer="; Maintainer
   If Vendor Then Print #hFic, "Vendor="; Vendor
@@ -3160,20 +3164,26 @@ Public Sub MakeSourcePackageTo(sPath As String)
 
 End
 
-
 Public Sub MakePackage()
 
-  Dialog.Path = User.Home &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
+  Dim sDir As String = SourcePath
+  
+  If Not sDir Then sDir = System.User.Home
+  
+  Dialog.Path = sDir &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
   Dialog.Title = ("Create source package")
   Dialog.Filter = ["*.tar.gz", ("Source packages")] '& " (*.tar.gz)", ("All files") & " (*)"]
 
   If Dialog.SaveFile() Then Return
 
+  If File.Dir(Dialog.Path) <> System.User.Home Then 
+    SourcePath = File.Dir(Dialog.Path)
+    Project.WriteProject
+  Endif
+
   MakeSourcePackageTo(Dialog.Path)
 
 End
-
-
 
 Public Sub RefreshForm()
 

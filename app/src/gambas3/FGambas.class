@@ -60,87 +60,61 @@ Private $bHide As Boolean
 
 
 Public Sub Animate(sAnim As String, Optional sMsg As String)
-
-  If NOT Me.Visible Then Return
-
-  If sMsg Then  
-    $sAnim = $cAnim[sAnim]
-    $bHide = True
-    Warning(sMsg)
-  Else
-    $sAnim &= $cAnim[sAnim]
-  Endif
-  $iWait = 0
-
-  'ME.Raise
-
-End
-
-
-Public Sub timAnim_Timer()
-
-  Dim iPos As Integer
-  Dim iCmd As Integer
-  Dim eRnd As Float
-
-  If $iWait > 0 Then
-    Dec $iWait
-    Return
-  Endif
-
-  If NOT $sAnim Then
-    If $bHide Then 
-      'Balloon.Hide
-      $bHide = False
-    Endif
-    eRnd = Rnd
-    If eRnd < 0.02 Then
-      $sAnim = $cAnim["Blink"]
-    Else If eRnd < 0.04 Then
-      $sAnim = $cAnim["Blink2"]
-    Else
-      Return
-    Endif
-  Endif
-
-  iPos = InStr($sAnim, ",")
-  If iPos = 0 Then iPos = Len($sAnim) + 1
-  iCmd = Val(Left$($sAnim, iPos - 1))
-  $sAnim = Mid$($sAnim, iPos + 1)
-
-  If iCmd < 0 Then
-    $iWait = Abs(iCmd) - 1
-    Return
-  Endif
-
-  Me.Picture = $hPict[iCmd]
-
-End
-
-Public Sub Form_MouseDown()
-
-  $MX = Mouse.ScreenX - Me.X
-  $MY = Mouse.ScreenY - Me.Y
-
-End
-
-Public Sub Form_MouseMove()
-
-  'Balloon.Hide
-  Me.Move(Mouse.ScreenX - $MX, Mouse.ScreenY - $MY)
-  
-End
-
-Public Sub Form_Hide()
-
-  timAnim.Enabled = False
-
-End
-
-Public Sub Form_Show()
-
-  timAnim.Enabled = True
-
+' 
+'   If Not Me.Visible Then Return
+' 
+'   If sMsg Then  
+'     $sAnim = $cAnim[sAnim]
+'     $bHide = True
+'     Warning(sMsg)
+'   Else
+'     $sAnim &= $cAnim[sAnim]
+'   Endif
+'   $iWait = 0
+' 
+'   'ME.Raise
+' 
+' End
+' 
+' 
+' Public Sub timAnim_Timer()
+' 
+'   Dim iPos As Integer
+'   Dim iCmd As Integer
+'   Dim eRnd As Float
+' 
+'   If $iWait > 0 Then
+'     Dec $iWait
+'     Return
+'   Endif
+' 
+'   If Not $sAnim Then
+'     If $bHide Then 
+'       'Balloon.Hide
+'       $bHide = False
+'     Endif
+'     eRnd = Rnd
+'     If eRnd < 0.02 Then
+'       $sAnim = $cAnim["Blink"]
+'     Else If eRnd < 0.04 Then
+'       $sAnim = $cAnim["Blink2"]
+'     Else
+'       Return
+'     Endif
+'   Endif
+' 
+'   iPos = InStr($sAnim, ",")
+'   If iPos = 0 Then iPos = Len($sAnim) + 1
+'   iCmd = Val(Left$($sAnim, iPos - 1))
+'   $sAnim = Mid$($sAnim, iPos + 1)
+' 
+'   If iCmd < 0 Then
+'     $iWait = Abs(iCmd) - 1
+'     Return
+'   Endif
+' 
+'   Me.Picture = $hPict[iCmd]
+' 
 End
 
 Public Sub Warning(sMsg As String)

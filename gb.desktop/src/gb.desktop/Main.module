@@ -123,9 +123,17 @@ Public Sub Main()
   ' Next
 
   'Desktop.Passwords["Test"] = "barbapapa"
-  Print Desktop.Passwords["Test"] 
+  'Print Desktop.Passwords["Test"] 
+  
+  Dim hDesktopWatcher As DesktopWatcher 
+  
+  hDesktopWatcher = New DesktopWatcher As "Desktop"
+  
+  Form2.Show
   
 End
+
+
 
 Public Sub Desktop_Change(Window As Integer, Atom As Integer)
   

@@ -3,11 +3,12 @@
 Export
 Create Static
 
-Property Read StackingOrder As Integer[]
+Property Read Count As Integer
 
 Static Private $aWin As Integer[]
-Static Private $aStacking As Integer[]
 Static Private $cWin As Collection
+
+
 
 Public Sub _new()
   
@@ -17,15 +18,25 @@ End
 
 Public Sub Refresh()
   
-  $aWin = _Desktop.GetWindowProperty(Atom["_NET_CLIENT_LIST"])
-  $aStacking = _Desktop.GetWindowProperty(Atom["_NET_CLIENT_LIST_STACKING"])
+  '$aWin = _Desktop.GetWindowProperty(Atom["_NET_CLIENT_LIST"])
+  $aWin = _Desktop.GetWindowProperty(Atom["_NET_CLIENT_LIST_STACKING"])
+  If Not $aWin Then $aWin = New Integer[]
   $cWin = Null
   
 End
 
-Public Sub _get(Window As Integer) As DesktopWindow
+Public Sub _get(Index As Integer) As DesktopWindow
+  
+  Return FromHandle($aWin[Index])
+  
+End
+
+
+Public Sub FromHandle(Window As Integer) As DesktopWindow
   
   Dim hWin As DesktopWindow
+  
+  If $aWin.Find(Window) < 0 Then Return
   
   If Not $cWin Then $cWin = New Collection
   hWin = $cWin[Window]
@@ -50,14 +61,20 @@ Public Sub _next() As DesktopWindow
     Return 
   Endif
   
-  hWin = _get($aWin[Enum.Index])
+  hWin = _get(Enum.Index)
   Inc Enum.Index
   Return hWin
   
 End
 
-Private Function StackingOrder_Read() As Integer[]
+' Private Function StackingOrder_Read() As Integer[]
+' 
+'   Return $aStacking.Copy()
+' 
+' End
 
-  Return $aStacking.Copy()
+Private Function Count_Read() As Integer
+
+  Return $aWin.Count
 
 End

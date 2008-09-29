@@ -12,12 +12,12 @@ Static Property Count As Integer
 Static Property Current As Integer
 Static Property Read Windows As _DesktopWindows
 Static Property ActiveWindow As Integer
+Static Property Read RootWindow As Integer
 Static Property Showing As Boolean
 Static Property Read Width As Integer
 Static Property Read Height As Integer
 Static Property Read W As Integer
 Static Property Read H As Integer
-Static Property {Watch} As Boolean
 Static Property Read Passwords As _DesktopPasswords
 Static Property Read Path As String
 
@@ -332,29 +332,6 @@ Static Private Function H_Read() As Integer
 
 End
 
-Static Private Function Watch_Read() As Boolean
-
-  Return $hWatch  
-
-End
-
-Static Private Sub Watch_Write(Value As Boolean)
-
-  If Value Then
-    $hWatch = New _DesktopWatcher As "DesktopWatcher"
-  Else
-    $hWatch = Null
-  Endif
-
-End
-
-Public Sub DesktopWatcher_Change(Window As Integer, {Property} As Integer)
-  
-  If {Property} = Atom["_NET_CLIENT_LIST"] Then
-  Endif
-  
-End
-
 Static Private Function Passwords_Read() As _DesktopPasswords
 
   Return _DesktopPasswords
@@ -365,5 +342,11 @@ End
 Static Private Function Path_Read() As String
 
   Return Main.GetDesktopPath()
+
+End
+
+Static Private Function RootWindow_Read() As Integer
+
+  Return _Desktop.RootWindow
 
 End

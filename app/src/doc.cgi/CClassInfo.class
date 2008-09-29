@@ -49,7 +49,7 @@ End
 
 Public Function IsVirtual() As Boolean
 
-  Return Left$(Name) = "."
+  Return Left$(Name) = "." Or Left$(Name) = "_"
 
 End
 

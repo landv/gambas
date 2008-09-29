@@ -25,6 +25,10 @@ ActiveWindow
 P
 i
 
+RootWindow
+R
+i
+
 Showing
 P
 b
@@ -44,10 +48,6 @@ i
 H
 R
 i
-
-Watch
-P
-b
 
 Passwords
 R
@@ -81,10 +81,6 @@ _get
 M
 _DesktopVirtual
 (Index)i
-DesktopWatcher_Change
-m
-
-(Window)i(Property)i
 #DesktopFile
 
 C
@@ -156,6 +152,69 @@ Save
 m
 
 
+#DesktopWatcher
+
+C
+_Properties
+C
+s
+RootWindow
+_DefaultEvent
+C
+s
+ActiveWindow
+RootWindow
+p
+b
+
+:Windows
+:
+
+
+:Change
+:
+
+
+:Count
+:
+
+
+:ActiveWindow
+:
+
+
+:Geometry
+:
+
+
+:WindowGeometry
+:
+
+(Window)DesktopWindow;
+:WindowState
+:
+
+(Window)DesktopWindow;
+:WindowName
+:
+
+(Window)DesktopWindow;
+:WindowIcon
+:
+
+(Window)DesktopWindow;
+_new
+m
+
+[(RootWindow)b]
+DesktopWatcher_Change
+m
+
+(Window)i(Property)i
+DesktopWatcher_Window
+m
+
+(Window)i(X)i(Y)i(Width)i(Height)i
 #DesktopWindow
 
 C
@@ -194,6 +253,30 @@ Integer[]
 Id
 r
 i
+
+Icon
+r
+Image
+
+Minimized
+p
+b
+
+Maximized
+p
+b
+
+FullScreen
+p
+b
+
+SkipTaskbar
+p
+b
+
+Sticky
+p
+b
 
 _new
 m
@@ -307,9 +390,9 @@ m
 #_DesktopWindows
 
 CA
-StackingOrder
+Count
 r
-Integer[]
+i
 
 _new
 m
@@ -320,6 +403,10 @@ m
 
 
 _get
+m
+DesktopWindow
+(Index)i
+FromHandle
 m
 DesktopWindow
 (Window)i

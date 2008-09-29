@@ -1,0 +1,93 @@
+' Gambas class file
+
+Export
+
+Public Const _Properties As String = "RootWindow"
+Public Const _DefaultEvent As String = "ActiveWindow"
+
+Property RootWindow As Boolean
+
+Event Windows
+Event Change
+Event Count
+Event ActiveWindow
+Event Geometry
+Event WindowGeometry(Window As DesktopWindow)
+Event WindowState(Window As DesktopWindow)
+Event WindowName(Window As DesktopWindow)
+Event WindowIcon(Window As DesktopWindow)
+
+Private $hWatcher As _DesktopWatcher
+Private $bRootWindow As Boolean
+
+Public Sub _new(Optional RootWindow As Boolean)
+  
+  $bRootWindow = RootWindow
+  $hWatcher = New _DesktopWatcher(If(RootWindow, _Desktop.RootWindow, 0)) As "DesktopWatcher"
+  
+End
+
+Public Sub DesktopWatcher_Change(Window As Integer, {Property} As Integer)
+  
+  Dim hWin As DesktopWindow 
+
+  If Window = _Desktop.RootWindow Then
+  
+    Select Case {Property}
+      Case Atom["_NET_CLIENT_LIST_STACKING"]
+        _DesktopWindows.Refresh
+        Raise Windows
+      Case Atom["_NET_CURRENT_DESKTOP"]
+        Raise Change
+      Case Atom["_NET_NUMBER_OF_DESKTOPS"]
+        Raise Count
+      Case Atom["_NET_ACTIVE_WINDOW"]
+        Raise ActiveWindow
+      Case Atom["_NET_DESKTOP_GEOMETRY"]
+        Raise Geometry
+    End Select
+  'Print "DesktopWatcher: Window = ";; Window;; " Property = ";; _Desktop.GetAtomName({Property})
+
+  Else  
+  
+    hWin = Desktop.Windows[Window]
+    If hWin Then
+      If {Property} = Atom["_NET_WM_STATE"] Then
+        Raise WindowState(hWin)
+      Else If {Property} = Atom["WM_STATE"] Then
+        Raise WindowState(hWin)
+      Else If {Property} = Atom["_NET_WM_NAME"] Or If {Property} = Atom["_NET_WM_VISIBLE_NAME"] Then
+        Raise WindowName(hWin)
+      Else If {Property} = Atom["_NET_WM_ICON"] Then
+        Raise WindowIcon(hWin)
+      Endif
+    Endif
+    
+  Endif
+  
+End
+
+Public Sub DesktopWatcher_Window(Window As Integer, X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  
+  Dim hWin As DesktopWindow = Desktop.Windows[Window]
+  
+  If hWin Then
+    hWin.Refresh
+    Raise WindowGeometry(hWin)
+  Endif
+  
+End
+
+Private Function RootWindow_Read() As Boolean
+
+  Return $bRootWindow
+
+End
+
+Private Sub RootWindow_Write(Value As Boolean)
+
+  If Value = $bRootWindow Then Return
+  $bRootWindow = Value
+  $hWatcher = New _DesktopWatcher(If($bRootWindow, _Desktop.RootWindow, 0)) As "DesktopWatcher"
+
+End

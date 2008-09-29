@@ -11,6 +11,13 @@ Property Read VisibleName As String
 Property Desktop As Integer
 Property Read State As Integer[]
 Property Read Id As Integer
+Property Read Icon As Image
+
+Property Minimized As Boolean
+Property Maximized As Boolean
+Property FullScreen As Boolean
+Property SkipTaskbar As Boolean
+Property Sticky As Boolean
 
 Private $iId As Integer
 Private $aDim As Integer[]
@@ -143,3 +150,108 @@ Private Function Id_Read() As Integer
   Return $iId  
 
 End
+
+Private Function Icon_Read() As Image
+
+  Dim aIcon As Integer[]
+
+  aIcon = _Desktop.GetWindowProperty(Atom["_NET_WM_ICON"], $iId)
+  If aIcon Then Return _Desktop.MakeIcon(aIcon) 
+
+End
+
+Private Function Minimized_Read() As Boolean
+
+  Dim aProp As Integer[]
+
+  aProp = _Desktop.GetWindowProperty(Atom["WM_STATE"], $iId)
+  If aProp And If aProp[0] = 3 Then Return True
+
+End
+
+Private Sub Minimized_Write(Value As Boolean)
+
+  _Desktop.MinimizeWindow($iId, Value)
+
+End
+
+Private Function Maximized_Read() As Boolean
+
+  Dim aState As Integer[] = Me.State
+
+  If aState Then
+    Return aState.Find(Atom["_NET_WM_STATE_MAXIMIZED_VERT"]) >= 0 And aState.Find(Atom["_NET_WM_STATE_MAXIMIZED_HORZ"]) >= 0
+  Endif
+
+End
+
+Private Sub Maximized_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_MAXIMIZED_VERT", "_NET_WM_STATE_MAXIMIZED_HORZ")
+  Else
+    ClearState("_NET_WM_STATE_MAXIMIZED_VERT", "_NET_WM_STATE_MAXIMIZED_HORZ")
+  Endif
+  
+End
+
+Private Function FullScreen_Read() As Boolean
+
+  Dim aState As Integer[] = Me.State
+
+  If aState Then
+    Return aState.Find(Atom["_NET_WM_STATE_FULLSCREEN"]) >= 0 
+  Endif
+
+End
+
+Private Sub FullScreen_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_FULLSCREEN")
+  Else
+    ClearState("_NET_WM_STATE_FULLSCREEN")
+  Endif
+
+End
+
+Private Function SkipTaskbar_Read() As Boolean
+
+  Dim aState As Integer[] = Me.State
+
+  If aState Then
+    Return aState.Find(Atom["_NET_WM_STATE_SKIP_TASKBAR"]) >= 0 
+  Endif  
+
+End
+
+Private Sub SkipTaskbar_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_SKIP_TASKBAR")
+  Else
+    ClearState("_NET_WM_STATE_SKIP_TASKBAR")
+  Endif
+
+End
+
+Private Function Sticky_Read() As Boolean
+
+  Dim aState As Integer[] = Me.State
+
+  If aState Then
+    Return aState.Find(Atom["_NET_WM_STATE_STICKY"]) >= 0 
+  Endif  
+
+End
+
+Private Sub Sticky_Write(Value As Boolean)
+
+  If Value Then
+    SetState("_NET_WM_STATE_STICKY")
+  Else
+    ClearState("_NET_WM_STATE_STICKY")
+  Endif
+
+End
+

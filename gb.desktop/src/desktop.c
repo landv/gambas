@@ -478,6 +478,23 @@ BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data)
 
 END_METHOD
 
+BEGIN_METHOD(CDESKTOP_minimize_window, GB_INTEGER window; GB_BOOLEAN minimized)
+
+	if (VARG(minimized))
+	{
+		int state = IconicState;
+		
+		X11_send_client_message(X11_root, VARG(window),
+			X11_intern_atom("WM_CHANGE_STATE", TRUE),
+			(char *)&state, 32, 1);
+	}
+	else
+	{
+		XMapWindow(X11_display, VARG(window));
+	}
+
+END_METHOD
+
 GB_DESC CDesktopDesc[] =
 {
   GB_DECLARE("_Desktop", 0), GB_VIRTUAL_CLASS(),
@@ -501,6 +518,7 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_METHOD("WatchWindow", NULL, CDESKTOP_watch_window, "(Window)i(Watch)b"),
   GB_STATIC_METHOD("GetWindowGeometry", "Integer[]", CDESKTOP_get_window_geometry, "(Window)i"),
   GB_STATIC_METHOD("MakeIcon", "Image", CDESKTOP_make_icon, "(Data)Array;"),
+  GB_STATIC_METHOD("MinimizeWindow", NULL, CDESKTOP_minimize_window, "(Window)i(Minimized)b"),
   
   GB_END_DECLARE
 };

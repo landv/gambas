@@ -3510,7 +3510,7 @@ Private Function GetSymbols() As String
     sRes = sRes & BULLET & ("This class can be used like an object by creating an hidden instance on demand.") & sBreak
   Endif
 
-  If $hClass.Symbols.Exist("_new") And $hClass.Creatable Then
+  If $hClass.Symbols.Exist("_new") And If $hClass.Creatable And If Not $hClass.IsVirtual() Then
     sRes = sRes & BULLET & Subst(("This class is &1."), GetSymbolLink($hClass.Symbols["_new"], ("creatable"))) & sBreak
   Else
     If Not bDynamic Then

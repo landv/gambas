@@ -56,6 +56,29 @@ Static Public Sub _init()
 
 End
 
+Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As Integer) As Picture
+  
+  Dim hPict As Picture
+  Dim sPath As String
+  
+  If sComp Then 
+    sPath = "share/gambas" & System.Version &/ "control" &/ sComp &/ LCase(sClass) & ".png"
+    'DEBUG File.Dir(File.Dir(Component.UserPath)) &/ "share/control" &/ sComp &/ LCase(sControl) & ".png"
+    Try hPict = Picture.Load(File.Dir(File.Dir(Component.UserPath)) &/ sPath)
+    If Not hPict Then Try hPict = Picture.Load(File.Dir(File.Dir(Component.Path)) &/ sPath)
+  Endif
+  If Not hPict Then Try hPict = Picture["img/control" &/ LCase(sClass) & ".png"]
+  If Not hPict Then Try hPict = Picture["img/control/unknown.png"]
+
+  If iSize Then
+    If hPict.Width <> iSize Then hPict = hPict.Image.Stretch(iSize, iSize).Picture
+  Endif
+
+  Return hPict
+  
+End
+
+
 
 Private Function CreateControl(sName As String, sClass As String, hParent As Object) As Object
 
@@ -64,13 +87,15 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   Dim bExist As Boolean
   Dim bVirtual As Boolean
   Dim hWindow As Window
+  Dim hClass As CClassInfo
   'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
 
-  bExist = CComponent.Classes.Exist(sClass)
+  hClass = CComponent.Classes[sClass]
+  bExist = hClass <> Null
   If bExist Then
-    DrawWith = CComponent.Classes[sClass].DrawWith
+    DrawWith = hClass.DrawWith
     If DrawWith Then sClass = DrawWith
   Endif
 
@@ -203,14 +228,15 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
     Case Else
 
       If bExist Then
-        bVirtual = CComponent.Classes[sClass].VirtualControl
+        bVirtual = hClass.VirtualControl
       Endif
 
       If bVirtual Then
 
         If Len(sName) Then
           hCtrl = New Button(hParent)
-          hCtrl.Picture = Picture["img/control" &/ LCase(sClass) & ".png"]
+          hPict = GetIcon(sClass, hClass.Component, Desktop.Scale * 7) 'Picture["img/control" &/ LCase(sClass) & ".png"]
+          hCtrl.Picture = hPict
           hCtrl.Design = True
         Else
           hCtrl = New (sClass) ' Timer(hParent)
@@ -302,7 +328,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
         'PRINT sName; " is virtual"
         hCtrl = CreateControl(sName, sClass, Parent.Control)
         'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
-        iDim = (40 + Desktop.Scale - 1) Div Desktop.Scale
+        iDim = 8 '(40 + Desktop.Scale - 1) Div Desktop.Scale
         hCtrl.ResizeScaled(iDim, iDim)
 
       Else

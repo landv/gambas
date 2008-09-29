@@ -74,6 +74,8 @@ typedef
     unsigned title : 1;
     unsigned enterLoop : 1;
     unsigned stateChange : 1;
+    unsigned opening : 1;
+    unsigned closing : 1;
     }
   CWINDOW;
 

@@ -1,0 +1,35 @@
+' Gambas class file
+
+Private $hDesktopWatcher As DesktopWatcher
+
+Public Sub DesktopWatcher_Windows()
+
+  Dim hWin As DesktopWindow
+  
+  Debug "WindowChange: ";
+  For Each hWin In Desktop.Windows
+    'Print Desktop.Windows[iWin].Name
+    Print #File.Err, hWin.Id;;
+  Next
+  Print #File.Err
+  
+End
+
+Public Sub DesktopWatcher_Geometry()
+
+  Debug Desktop.Width;; Desktop.Height
+
+End
+
+Public Sub Form_Open()
+
+  $hDesktopWatcher = New DesktopWatcher As "DesktopWatcher"
+  Form1.Show
+
+End
+
+Public Sub Button1_Click()
+
+  Print Desktop.Windows[Form1.Handle].Minimized
+
+End

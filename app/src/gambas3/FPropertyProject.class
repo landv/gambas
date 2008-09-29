@@ -836,9 +836,9 @@ Public Sub InitComponent()
 
   tvwControl.Columns.Count = 4
   tvwControl.Columns[0].Text = ("Class")
-  tvwControl.Columns[0].Width = Desktop.Scale * 24
+  tvwControl.Columns[0].Width = Desktop.Scale * 36
   tvwControl.Columns[1].Text = ("Type")
-  tvwControl.Columns[1].Width = Desktop.Scale * 14
+  tvwControl.Columns[1].Width = Desktop.Scale * 24
   tvwControl.Columns[2].Text = ("Group")
 
   CExportInfo.Reset
@@ -856,7 +856,7 @@ Public Sub InitComponent()
   CExportInfo.Sort
   
   tvwControl.Rows.Count = CExportInfo.List.Count
-  tvwControl.Rows.Height = Desktop.Scale * 4
+  tvwControl.Rows.Height = Desktop.Scale * 5
 
   ReadComponent
   

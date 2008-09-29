@@ -929,7 +929,8 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
         hClass.CopyFrom(CComponent.Classes["*[]"], "*", Left(sClass, -2))
         Return hClass.Symbols
       Else        
-        Print sClass & " ??"
+        Debug sClass & " ??"
+        Print Error.Backtrace.Join("\n")
       Endif
       Return
     Endif
