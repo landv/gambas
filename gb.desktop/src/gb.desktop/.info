@@ -246,10 +246,6 @@ Desktop
 p
 i
 
-State
-r
-Integer[]
-
 Id
 r
 i
@@ -290,30 +286,14 @@ Close
 m
 
 
-MoveResize
-m
-
-(X)i(Y)i(Width)i(Height)i
 Move
 m
 
-(X)i(Y)i
+(X)i(Y)i[(Width)i(Height)i]
 Resize
 m
 
 (Width)i(Height)i
-SetState
-m
-
-(State)s[(State2)s]
-ClearState
-m
-
-(State)s[(State2)s]
-ToggleState
-m
-
-(State)s[(State2)s]
 #_DesktopPasswords
 
 CA

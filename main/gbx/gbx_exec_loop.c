@@ -1469,7 +1469,7 @@ _ADD_QUICK:
 
 	{
 		static void *_aq_jump[] = {
-			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_FLOAT, &&__AQ_FLOAT, &&__AQ_DATE
+			NULL, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_FLOAT, &&__AQ_FLOAT, &&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING
 			};
 	
 		TYPE NO_WARNING(type);
@@ -1490,7 +1490,7 @@ _ADD_QUICK:
 		type = P1->type;
 		value = GET_XXX();
 	
-		if (TYPE_is_number_date(type))
+		if (type <= T_CSTRING)
 			goto *_aq_jump[type];
 	
 		THROW(E_TYPE, "Number", TYPE_get_name(type));
@@ -1521,6 +1521,7 @@ _ADD_QUICK:
 		VALUE_conv(P1, T_FLOAT);
 	
 	__AQ_FLOAT:
+	__AQ_STRING:
 	
 		P1->_float.value += (double)value;
 		goto *jump_end;

@@ -9,7 +9,7 @@ Property Read Height As Integer
 Property Read Name As String
 Property Read VisibleName As String
 Property Desktop As Integer
-Property Read State As Integer[]
+'Property Read State As Integer[]
 Property Read Id As Integer
 Property Read Icon As Image
 
@@ -76,15 +76,13 @@ Public Sub Close()
   
 End
 
-Public Sub MoveResize(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+Public Sub Move(X As Integer, Y As Integer, Optional Width As Integer, Optional Height As Integer)
   
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10111100000000, X, Y, Width, Height], $iId)
-  
-End
-
-Public Sub Move(X As Integer, Y As Integer)
-  
-  _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10001100000000, X, Y], $iId)
+  If Width > 0 And Height > 0 Then
+    _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10111100000000, X, Y, Width, Height], $iId)
+  Else
+    _Desktop.SendClientMessageToRootWindow(Atom["_NET_MOVERESIZE_WINDOW"], [&X10001100000000, X, Y], $iId)
+  Endif
   
 End
 
@@ -121,25 +119,25 @@ Private Sub Desktop_Write(Value As Integer)
 
 End
 
-Private Function State_Read() As Integer[]
+Private Function GetState() As Integer[]
 
   Return _Desktop.GetWindowProperty(Atom["_NET_WM_STATE"], $iId)
 
 End
 
-Public Sub SetState(State As String, Optional State2 As String)
+Private Sub SetState(State As String, Optional State2 As String)
   
   _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_ADD"], Atom[State], Atom[State2], 2], $iId)
   
 End
 
-Public Sub ClearState(State As String, Optional State2 As String)
+Private Sub ClearState(State As String, Optional State2 As String)
   
   _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_REMOVE"], Atom[State], Atom[State2], 2], $iId)
   
 End
 
-Public Sub ToggleState(State As String, Optional State2 As String)
+Private Sub ToggleState(State As String, Optional State2 As String)
   
   _Desktop.SendClientMessageToRootWindow(Atom["_NET_WM_STATE"], [Atom["_NET_WM_STATE_TOGGLE"], Atom[State], Atom[State2], 2], $iId)
   
@@ -177,7 +175,7 @@ End
 
 Private Function Maximized_Read() As Boolean
 
-  Dim aState As Integer[] = Me.State
+  Dim aState As Integer[] = GetState()
 
   If aState Then
     Return aState.Find(Atom["_NET_WM_STATE_MAXIMIZED_VERT"]) >= 0 And aState.Find(Atom["_NET_WM_STATE_MAXIMIZED_HORZ"]) >= 0
@@ -197,7 +195,7 @@ End
 
 Private Function FullScreen_Read() As Boolean
 
-  Dim aState As Integer[] = Me.State
+  Dim aState As Integer[] = GetState()
 
   If aState Then
     Return aState.Find(Atom["_NET_WM_STATE_FULLSCREEN"]) >= 0 
@@ -217,7 +215,7 @@ End
 
 Private Function SkipTaskbar_Read() As Boolean
 
-  Dim aState As Integer[] = Me.State
+  Dim aState As Integer[] = GetState()
 
   If aState Then
     Return aState.Find(Atom["_NET_WM_STATE_SKIP_TASKBAR"]) >= 0 
@@ -237,7 +235,7 @@ End
 
 Private Function Sticky_Read() As Boolean
 
-  Dim aState As Integer[] = Me.State
+  Dim aState As Integer[] = GetState()
 
   If aState Then
     Return aState.Find(Atom["_NET_WM_STATE_STICKY"]) >= 0 

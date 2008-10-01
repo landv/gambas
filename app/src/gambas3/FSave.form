@@ -1,32 +1,32 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(18,23,56,40)
+  MoveScaled(18,23,73,46)
   Text = ("Save modified files")
   Icon = Picture["img/16/quit.png"]
   Resizable = False
   { btnSave Button
-    MoveScaled(38,10,17,4)
+    MoveScaled(1,41,17,4)
     Text = ("&All")
     Picture = Picture["icon:/small/save"]
   }
   { btnQuit Button
-    MoveScaled(38,30,17,4)
+    MoveScaled(37,41,17,4)
     Enabled = False
     Text = ("Continue")
     Picture = Picture["icon:/small/play"]
     Default = True
   }
   { btnCancel Button
-    MoveScaled(38,35,17,4)
+    MoveScaled(55,41,17,4)
     Text = ("Cancel")
     Picture = Picture["icon:/small/close"]
     Cancel = True
   }
   { Panel1 Panel
-    MoveScaled(1,1,54,9)
+    MoveScaled(1,1,71,8)
     { TextLabel1 TextLabel
-      MoveScaled(7,0,45,6)
+      MoveScaled(7,0,62,6)
       Font = Font["Bold,+1"]
       Text = ("These files have been modified.\nDo&nbsp;you want to save them?")
       Alignment = Align.Normal
@@ -38,11 +38,11 @@
     }
   }
   { lvwFile ListView
-    MoveScaled(1,10,36,29)
+    MoveScaled(1,9,71,30)
     Mode = Select.Multiple
   }
   { btnIgnore Button
-    MoveScaled(38,15,17,4)
+    MoveScaled(19,41,17,4)
     Text = ("&None")
     Picture = Picture["icon:/small/cancel"]
   }
