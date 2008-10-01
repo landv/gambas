@@ -285,7 +285,7 @@ __END:
 void SUBR_add_quick(int value)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__DATE, &&__STRING, &&__STRING
     };
 
   TYPE type;
@@ -304,7 +304,7 @@ __VARIANT:
 
   type = P1->type;
 
-  if (TYPE_is_number_date(type))
+  if (type <= T_CSTRING)
     goto *jump[type];
 
   THROW(E_TYPE, "Number", TYPE_get_name(type));
@@ -327,6 +327,7 @@ __LONG:
   goto *jump_end;
 
 __DATE:
+__STRING:
 
   VALUE_conv(P1, T_FLOAT);
 
