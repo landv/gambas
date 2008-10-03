@@ -243,7 +243,7 @@ int CSerialPort_stream_handle(GB_STREAM *stream)
 }
 int CSerialPort_stream_close(GB_STREAM *stream)
 {
-	void *_object=((void**)stream->_free)[0];
+	void *_object = STREAM_TO_SERIALPORT(stream);
 
 	if (!_object) return -1;	
 	
@@ -258,7 +258,7 @@ int CSerialPort_stream_close(GB_STREAM *stream)
 }
 int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	void *_object=((void**)stream->_free)[0];
+	void *_object = STREAM_TO_SERIALPORT(stream);
 	int bytes;
 
 	*len=0;
@@ -270,7 +270,7 @@ int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 }
 int CSerialPort_stream_eof(GB_STREAM *stream)
 {
-	void *_object=((void**)stream->_free)[0];
+	void *_object = STREAM_TO_SERIALPORT(stream);
 	int bytes;
 
 	if (!_object) return -1;
@@ -282,9 +282,9 @@ int CSerialPort_stream_eof(GB_STREAM *stream)
 
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object=((void**)stream->_free)[0];
-  	int npos=-1;
-  	int NoBlock=0;
+	void *_object = STREAM_TO_SERIALPORT(stream);
+	int npos=-1;
+	int NoBlock=0;
 	int bytes;
 
   	if (!_object) return -1;
@@ -301,7 +301,7 @@ int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object=((void**)stream->_free)[0];
+	void *_object = STREAM_TO_SERIALPORT(stream);
 	int npos=-1;
 	int NoBlock=0;
 
@@ -621,8 +621,6 @@ END_PROPERTY
  *************************************************/
 BEGIN_METHOD_VOID(CSERIALPORT_new)
 
-	((void**)THIS->stream._free)[0]=_object;
-	THIS->stream.desc=NULL;
 	THIS->Port=0;
 	THIS->iStatus=0;
 	THIS->sPort=NULL;
@@ -656,6 +654,8 @@ END_METHOD
  *************************************************/
 BEGIN_METHOD_VOID(CSERIALPORT_Open)
 
+	void *stream;
+
 	if (THIS->iStatus)
 	{
 		GB.Error("Port is already opened.");
@@ -685,6 +685,8 @@ BEGIN_METHOD_VOID(CSERIALPORT_Open)
 	THIS->stream.desc=&SerialStream;
 	THIS->iStatus=1;
 
+	stream = &THIS->stream;
+	STREAM_TO_SERIALPORT(stream) = THIS;
 
 END_METHOD
 
@@ -730,13 +732,13 @@ GB_DESC CSerialPortDesc[] =
   GB_METHOD("Open", NULL, CSERIALPORT_Open, NULL),
   //GB_METHOD("Close", NULL, CSERIALPORT_Close, NULL),
 
-  GB_PROPERTY("FlowControl","i<SerialPort,Hardware,Software,Both,None>",CSERIALPORT_FlowControl),
+  GB_PROPERTY("FlowControl","i",CSERIALPORT_FlowControl),
   GB_PROPERTY("PortName", "s", CSERIALPORT_Port),
-  GB_PROPERTY("Parity", "i<SerialPort,None,Even,Odd>", CSERIALPORT_Parity),
+  GB_PROPERTY("Parity", "i", CSERIALPORT_Parity),
   GB_PROPERTY("Speed", "i", CSERIALPORT_Speed),
   
-  GB_PROPERTY("DataBits", "i<SerialPort,Bits8,Bits7,Bits6,Bits5>", CSERIALPORT_DataBits),
-  GB_PROPERTY("StopBits", "i<SerialPort,Bits1,Bits2>", CSERIALPORT_StopBits),
+  GB_PROPERTY("DataBits", "i", CSERIALPORT_DataBits),
+  GB_PROPERTY("StopBits", "i", CSERIALPORT_StopBits),
   GB_PROPERTY("DTR", "b", CSERIALPORT_DTR),
   GB_PROPERTY("RTS", "b", CSERIALPORT_RTS),
   GB_PROPERTY_READ("Status", "i", CSERIALPORT_Status),
@@ -745,7 +747,7 @@ GB_DESC CSerialPortDesc[] =
   GB_PROPERTY_READ("DCD", "b", CSERIALPORT_DCD),
   GB_PROPERTY_READ("RNG", "b", CSERIALPORT_RNG),
   
-  GB_CONSTANT("_Properties", "s", "FlowControl=1,PortName,Parity=0,Speed=19200,DataBits=8,StopBits=1"),
+  GB_CONSTANT("_Properties", "s", "FlowControl{SerialPort.None;Hardware;Software;Both}=Hardware,PortName,Parity{SerialPort.None;Even;Odd}=None,Speed=19200,DataBits{SerialPort.Bits5;Bits6;Bits7;Bits8}=Bits8,StopBits{SerialPort.Bits1;Bits2}=Bits1"),
   GB_CONSTANT("_DefaultEvent", "s", "Read"),
 
   GB_END_DECLARE

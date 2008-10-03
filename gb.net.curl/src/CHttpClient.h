@@ -67,6 +67,6 @@ void http_parse_header(CHTTPCLIENT *mythis);
 void http_reset(void *_object);
 void http_stop(void *_object);
 
-#define HTTP_PROPERTIES "URL=127.0.0.1:80,User,Password,Auth=0,Async=TRUE,Timeout=0,CookiesFile,UpdateCookies=FALSE,UserAgent=Gambas gb.net.curl HTTP/1.0"
+#define HTTP_PROPERTIES "URL=127.0.0.1:80,User,Password,Auth=0,Async=TRUE,Timeout=0,CookiesFile,UpdateCookies=FALSE,UserAgent=Gambas (gb.net.curl) HTTP/1.0"
 
 #endif

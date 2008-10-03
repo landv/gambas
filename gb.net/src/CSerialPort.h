@@ -58,27 +58,36 @@ typedef struct
 
 } serialsignal;
 
+typedef
+	struct {
+		GB_STREAM_BASE base;
+		void *me;
+	}
+	SERIALPORT_STREAM;
+
 typedef  struct
 {
-    GB_BASE ob;
+	GB_BASE ob;
 	GB_STREAM stream;
-    int Port;
-    int iStatus;
-    char *sPort;
-    int Parity;
-    int Speed;
-    int DataBits;
-    int StopBits;
-    int iFlow;
-    serialevent e_DTR;
-    serialevent e_DSR;
-    serialevent e_RTS;
-    serialevent e_CTS;
-    serialevent e_DCD;
-    serialevent e_RNG;
-    serialsignal ser_status;
-    struct termios oldtio;
+	int Port;
+	int iStatus;
+	char *sPort;
+	int Parity;
+	int Speed;
+	int DataBits;
+	int StopBits;
+	int iFlow;
+	serialevent e_DTR;
+	serialevent e_DSR;
+	serialevent e_RTS;
+	serialevent e_CTS;
+	serialevent e_DCD;
+	serialevent e_RNG;
+	serialsignal ser_status;
+	struct termios oldtio;
 }  CSERIALPORT;
+
+#define STREAM_TO_SERIALPORT(_stream) ((SERIALPORT_STREAM *)(_stream))->me
 
 void CSerialPort_CallBack(long lParam);
 void CSerialPort_AssignCallBack(long t_obj,int t_port);
