@@ -26,6 +26,7 @@
 
 #include "gambas.h"
 #include "gbcurl.h"
+#include "CCurl.h"
 #include "CProxy.h"
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -38,59 +39,34 @@ extern GB_STREAM_DESC HttpStream;
 
 #else
 
-#define THIS            ((CHTTPCLIENT *)_object)
-#define THIS_STATUS     ((curlData*)((void**)THIS->stream._free)[0])->status
-#define THIS_CURL       ((curlData*)((void**)THIS->stream._free)[0])->curl
-#define THIS_URL        ((curlData*)((void**)THIS->stream._free)[0])->url
-#define THIS_FILE       ((curlData*)((void**)THIS->stream._free)[0])->file
-#define THIS_PROTOCOL   ((curlData*)((void**)THIS->stream._free)[0])->protocol
+#define THIS_HTTP ((CHTTPCLIENT *)_object)
 
 #endif
 
-typedef  struct
-{
-	GB_BASE    ob;
-	GB_STREAM  stream;
-	CPROXY     proxy;
-	Adv_user   user;
-	int        len_data;
-	char       *buf_data;
-	GB_VARIANT_VALUE tag;
-	int mode; // 0 -> Async, sync
-	long TimeOut;
-	
-	int auth;
-
-	char *cookiesfile;
-	int updatecookies;
-
-	char *sContentType;
-	char *sPostData;
-	int iMethod; // 0->Get, 1->Post
-	
-	char *sUserAgent;
-
-	char **buf_header;
-	int len_header;
-
-	int   ReturnCode;
-	char *ReturnString;
-}  CHTTPCLIENT;
+typedef
+	struct {
+		CCURL curl;
+		int auth;
+		char *cookiesfile;
+		int updatecookies;
+		char *sContentType;
+		char *sPostData;
+		char *sUserAgent;
+		char **buf_header;
+		int len_header;
+		int ReturnCode;
+		char *ReturnString;
+		}
+	CHTTPCLIENT;
 
 
-/*****/
 int http_find_info (CURL *curlfind);
-/*****/
 int http_header_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
 int http_write_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
-/*****/
 void http_parse_header(CHTTPCLIENT *mythis);
-/*****/
 void http_reset(void *_object);
 void http_stop(void *_object);
-/*****/
-//
 
+#define HTTP_PROPERTIES "URL=127.0.0.1:80,User,Password,Auth=0,Async=TRUE,Timeout=0,CookiesFile,UpdateCookies=FALSE,UserAgent=Gambas gb.net.curl HTTP/1.0"
 
-#define HTTP_PROPERTIES "URL=127.0.0.1:80,User,Password,Auth=0,Async=TRUE,TimeOut=0,CookiesFile,UpdateCookies=FALSE,UserAgent=Gambas Http/1.0"
 #endif

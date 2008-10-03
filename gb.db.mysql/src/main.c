@@ -368,7 +368,7 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
               break;
           }
           if (date.year < 100)
-              date.year=+1900;
+              date.year += 1900;
         break;
       }
 

@@ -25,6 +25,7 @@
 #define __CCURL_H
 
 #include "gambas.h"
+#include "gb_common.h"
 #include "gbcurl.h"
 #include "CProxy.h"
 #include <curl/curl.h>
@@ -34,45 +35,53 @@
 
 #ifndef __CCURL_C
 
-
 extern GB_DESC CCurlDesc[];
 extern GB_STREAM_DESC CurlStream;
 
-#else
-
-#define THIS            ((CCURL *)_object)
-#define THIS_STATUS     ((curlData*)((void**)THIS->stream._free)[0])->status
-#define THIS_CURL       ((curlData*)((void**)THIS->stream._free)[0])->curl
-#define THIS_URL        ((curlData*)((void**)THIS->stream._free)[0])->url
-#define THIS_FILE       ((curlData*)((void**)THIS->stream._free)[0])->file
-#define THIS_PROTOCOL   ((curlData*)((void**)THIS->stream._free)[0])->protocol
-
 #endif
 
-typedef  struct
-{
-	int *parent_status;
-	Adv_proxy proxy;
-}  
-CPROXY;
+#define THIS            ((CCURL *)_object)
+#define THIS_STATUS     THIS->status
+#define THIS_CURL       THIS->curl
+#define THIS_URL        THIS->url
+#define THIS_FILE       THIS->file
+#define THIS_PROTOCOL   THIS->protocol
 
-typedef  struct
-{
-	GB_BASE    ob;
-	GB_STREAM  stream;
-	CPROXY     proxy;
-	Adv_user   user;
-	int        len_data;
-	char       *buf_data;
-	GB_VARIANT_VALUE tag;
-	int mode; // 0 -> Async, sync
-	long TimeOut;
+typedef
+	struct {
+		int *parent_status;
+		Adv_proxy proxy;
+	}
+	CPROXY;
 
-	int iMethod; // 0->Get, 1->Put
+typedef  
+	struct {
+		GB_BASE ob;
+		GB_STREAM stream;
+		int   status;
+		CURL* curl;
+		char* url;
+		FILE* file;
+		char* protocol;
+		CPROXY proxy;
+		Adv_user user;
+		int len_data;
+		char *buf_data;
+		GB_VARIANT_VALUE tag;
+		bool async;
+		int TimeOut;
+		int iMethod; // 0->Get, 1->Put
+	}
+	CCURL;
 
-	int   ReturnCode;
-	char *ReturnString;
-}  CCURL;
+typedef
+	struct {
+		GB_STREAM_BASE stream;
+		CCURL *me;
+		}
+	CCURL_STREAM;
+
+#define STREAM_TO_OBJECT(_stream) (((CCURL_STREAM *)_stream)->me)
 
 void CCURL_stop(void *_object);
 
@@ -88,15 +97,16 @@ int  CCURL_stream_flush (GB_STREAM *stream);
 int  CCURL_stream_close (GB_STREAM *stream);
 int  CCURL_stream_handle(GB_STREAM *stream);
 
-void CCURL_raise_finished (long lParam);
-void CCURL_raise_error    (long lParam);
-void CCURL_raise_connect  (long lParam);
-void CCURL_raise_read     (long lParam);
+void CCURL_raise_finished (intptr_t lParam);
+void CCURL_raise_error    (intptr_t lParam);
+void CCURL_raise_connect  (intptr_t lParam);
+void CCURL_raise_read     (intptr_t lParam);
 
 void CCURL_init_post(void);
-void CCURL_post_curl(long data);
+void CCURL_post_curl(intptr_t data);
 
 void CCURL_Manage_ErrCode(void *_object,long ErrCode);
 
+void CCURL_init_stream(void *_object);
 
 #endif

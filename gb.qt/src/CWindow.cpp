@@ -525,14 +525,14 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
   if (THIS->closing || CWIDGET_test_flag(THIS, WF_CLOSED)) // || WIDGET->isHidden())
     return false;
 
+	THIS->closing = true;
+	
   if (!THIS->toplevel)
   {
 		//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
   	if (THIS->shown)
   	{
-    	THIS->closing = true;
     	closed = !GB.Raise(THIS, EVENT_Close, 0);
-    	THIS->closing = false;
 		}
 		else
 			closed = true;
@@ -568,6 +568,8 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 		}
   }
 
+	THIS->closing = false;
+	
   #if 0
 	if (closed || destroyed) 
 	{
@@ -2021,13 +2023,10 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
     goto IGNORE;
   }
 
+	THIS->closing = true;
+	
 	if (THIS->shown)
-	{
-		//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
-		THIS->closing = true;
 		cancel = GB.Raise(_object, EVENT_Close, 0);
-		THIS->closing = false;
-	}
 
   if (!cancel && THIS == CWINDOW_Main)
   {
@@ -2035,6 +2034,8 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
       cancel = true;
   }
 
+	THIS->closing = false;
+	
 	if (cancel)
 		goto IGNORE;
 

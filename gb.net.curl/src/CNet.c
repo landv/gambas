@@ -35,11 +35,15 @@
  ***************************************************************/
 GB_DESC CNetDesc[] =
 {
-
   GB_DECLARE("Net", 0), GB_VIRTUAL_CLASS(),
 
-  GB_CONSTANT ("Asynchronous","i",0),
-  GB_CONSTANT ("Synchronous","i",1),
+	// Net states used by curl
+  GB_CONSTANT("Inactive", "i", 0),
+  GB_CONSTANT("ReceivingData","i",4),
+  GB_CONSTANT("Connecting", "i", 6),
+
+  GB_CONSTANT ("Asynchronous","i",1),
+  GB_CONSTANT ("Synchronous","i",0),
   /* net-curl proxies */
   GB_CONSTANT ("ProxyHTTP","i",CURLPROXY_HTTP),
   GB_CONSTANT ("ProxySocks5","i",CURLPROXY_SOCKS5),
@@ -123,7 +127,6 @@ GB_DESC CNetDesc[] =
   GB_CONSTANT ("LDAPInvalidURL","i",CURLGB(CURLE_LDAP_INVALID_URL)),
   GB_CONSTANT ("FileSizeExceeded","i",CURLGB(CURLE_FILESIZE_EXCEEDED)),
   #endif
-
 
   GB_END_DECLARE
 };

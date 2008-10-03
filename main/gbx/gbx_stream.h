@@ -56,8 +56,10 @@ typedef
     unsigned no_fionread : 1;
     unsigned no_lseek : 1;
     unsigned _reserved : 10;
+    #if __WORDSIZE == 64
+    int _pad;
+    #endif
     }
-  PACKED
   STREAM_COMMON;
 
 

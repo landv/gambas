@@ -44,7 +44,6 @@
  in this class. Here also a pipe will be stablished
  to link with Gambas watching interface
  ******************************************************/
-extern GB_STREAM_DESC CurlStream;
 extern CURLM *CCURL_multicurl;
 /*******************************************************************
 ####################################################################
@@ -85,7 +84,7 @@ int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 		THIS->len_data+=nmemb;
 	}
 
-	if (!THIS->mode)
+	if (THIS->async)
 	{
 		GB.Ref(THIS);
 		GB.Post(CCURL_raise_read,(long)THIS);
@@ -96,14 +95,13 @@ int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 
 void ftp_reset(CFTPCLIENT *mythis)
 {
-
-	if (mythis->buf_data)
+	if (mythis->curl.buf_data)
 	{
-		GB.Free((void**)POINTER(&mythis->buf_data));
-		mythis->buf_data=NULL;
+		GB.Free((void**)POINTER(&mythis->curl.buf_data));
+		mythis->curl.buf_data=NULL;
 	}
 	
-	mythis->len_data=0;
+	mythis->curl.len_data=0;
 }
 
 void ftp_initialize_curl_handle(void *_object)
@@ -128,7 +126,7 @@ void ftp_initialize_curl_handle(void *_object)
 		#endif
 	}
 
-	if (THIS->mode)
+	if (!THIS->async)
 	{
 		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
 		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
@@ -141,9 +139,10 @@ void ftp_initialize_curl_handle(void *_object)
 	Adv_user_SET  (&THIS->user, THIS_CURL);
 	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
 
-	ftp_reset(THIS);
+	ftp_reset(THIS_FTP);
 	THIS_STATUS=6;
-	THIS->stream.desc=&CurlStream;
+	
+	CCURL_init_stream(THIS);
 }
 
 
@@ -159,7 +158,7 @@ int ftp_get (void *_object)
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA     , _object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD        , 0);
 	
-	if (!THIS->mode)
+	if (THIS->async)
 	{
 		#if DEBUG
 		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
@@ -186,7 +185,7 @@ int ftp_put (void *_object)
 	curl_easy_setopt(THIS_CURL, CURLOPT_UPLOAD       , 1);
 	
 	
-	if (!THIS->mode)
+	if (THIS->async)
 	{
 		#if DEBUG
 		fprintf(stderr, "-- [%p] curl_multi_add_handle(%p)\n", THIS, THIS_CURL);
@@ -279,7 +278,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CFTPCLIENT_free)
 
-	ftp_reset(THIS);
+	ftp_reset(THIS_FTP);
 	GB.Free(POINTER(&THIS->stream._free[0]));
 
 END_METHOD

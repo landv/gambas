@@ -26,6 +26,7 @@
 
 #include "gambas.h"
 #include "gbcurl.h"
+#include "CCurl.h"
 #include "CProxy.h"
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -38,46 +39,23 @@ extern GB_STREAM_DESC FtpStream;
 
 #else
 
-#define THIS            ((CFTPCLIENT *)_object)
-#define THIS_STATUS     ((curlData*)((void**)THIS->stream._free)[0])->status
-#define THIS_CURL       ((curlData*)((void**)THIS->stream._free)[0])->curl
-#define THIS_URL        ((curlData*)((void**)THIS->stream._free)[0])->url
-#define THIS_FILE       ((curlData*)((void**)THIS->stream._free)[0])->file
-#define THIS_PROTOCOL   ((curlData*)((void**)THIS->stream._free)[0])->protocol
+#define THIS_FTP            ((CFTPCLIENT *)_object)
 
 #endif
 
-typedef  struct
-{
-	GB_BASE    ob;
-	GB_STREAM  stream;
-	CPROXY     proxy;
-	Adv_user   user;
-	int        len_data;
-	char       *buf_data;
-	GB_VARIANT_VALUE tag;
-	int mode; // 0 -> Async, sync
-	long TimeOut;
-	
-	int iMethod; // 0->Get, 1->Put
+typedef
+	struct {
+		CCURL curl;
+	}
+	CFTPCLIENT;
 
-
-}  CFTPCLIENT;
-
-
-/*****/
 int ftp_find_info (CURL *curlfind);
-/*****/
 int ftp_header_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
 int ftp_write_curl(void *buffer, size_t size, size_t nmemb, void *c_handle);
-/*****/
 void ftp_parse_header(CFTPCLIENT *mythis);
-/*****/
 void ftp_reset(CFTPCLIENT *mythis);
 void ftp_stop(void *_object);
-/*****/
-//
 
+#define FTP_PROPERTIES "URL=127.0.0.1:21,Async=TRUE,Timeout=0,User,Password"
 
-#define FTP_PROPERTIES "URL=127.0.0.1:21,Async=TRUE,TimeOut=0,User,Password"
 #endif

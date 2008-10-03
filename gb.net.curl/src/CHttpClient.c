@@ -45,7 +45,6 @@
  in this class. Here also a pipe will be stablished
  to link with Gambas watching interface
  ******************************************************/
-extern GB_STREAM_DESC CurlStream;
 extern CURLM *CCURL_multicurl;
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -67,8 +66,8 @@ void http_parse_header(CHTTPCLIENT *mythis)
 	if (!mythis->buf_header)
 		return;
 
-	len=strlen(mythis->buf_header[0]);
-        buf=mythis->buf_header[0];
+	buf = mythis->buf_header[0];
+	len = strlen(buf);
 
 	for (myloop=4;myloop<len;myloop++)
 	{
@@ -110,7 +109,7 @@ void http_parse_header(CHTTPCLIENT *mythis)
 		}
 	}
 
-	GB.Alloc((void**)POINTER(&mythis->ReturnString),(nposend+1)*sizeof(char));
+	GB.Alloc(POINTER(&mythis->ReturnString),(nposend+1)*sizeof(char));
 	mythis->ReturnString[nposend]=0;
 	for (myloop=npos;myloop<(nposend+npos);myloop++)
 		mythis->ReturnString[myloop-npos]=buf[myloop];
@@ -119,22 +118,21 @@ void http_parse_header(CHTTPCLIENT *mythis)
 
 int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
-
-	if (!THIS->len_header)
+	if (!THIS_HTTP->len_header)
 	{
-		GB.Alloc((void**)POINTER(&THIS->buf_header),sizeof(char*));
-		GB.Alloc((void**)&THIS->buf_header[0],nmemb+1);
+		GB.Alloc((void**)POINTER(&THIS_HTTP->buf_header),sizeof(char*));
+		GB.Alloc((void**)&THIS_HTTP->buf_header[0],nmemb+1);
 	}
 	else
 	{
-		GB.Realloc((void**)POINTER(&THIS->buf_header),sizeof(char*)*(1+THIS->len_header));
-		GB.Alloc((void**)&(THIS->buf_header[THIS->len_header]),nmemb+1);
-		THIS->buf_header[THIS->len_header][nmemb]=0;
+		GB.Realloc((void**)POINTER(&THIS_HTTP->buf_header),sizeof(char*)*(1+THIS_HTTP->len_header));
+		GB.Alloc((void**)&(THIS_HTTP->buf_header[THIS_HTTP->len_header]),nmemb+1);
+		THIS_HTTP->buf_header[THIS_HTTP->len_header][nmemb]=0;
 	}
-	strncpy(THIS->buf_header[THIS->len_header],buffer,nmemb);
-	THIS->len_header++;
+	strncpy(THIS_HTTP->buf_header[THIS_HTTP->len_header],buffer,nmemb);
+	THIS_HTTP->len_header++;
 
-	if ( (THIS_STATUS==6) && (!THIS->mode) )
+	if ( (THIS_STATUS==6) && THIS->async )
 	{
 		THIS_STATUS=4;
 		GB.Ref(THIS);
@@ -149,7 +147,7 @@ int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 {
 
-	if (!THIS->ReturnCode) http_parse_header(THIS);
+	if (!THIS_HTTP->ReturnCode) http_parse_header(THIS_HTTP);
 
 	if (THIS_FILE)
 	{
@@ -165,7 +163,7 @@ int http_write_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 		THIS->len_data+=nmemb;
 	}
 
-	if (!THIS->mode)
+	if (THIS->async)
 	{
 		GB.Ref(THIS);
 		GB.Post(CCURL_raise_read,(long)THIS);
@@ -191,22 +189,22 @@ void http_initialize_curl_handle(void *_object)
 		
 	}
 	
-	if (THIS->mode)
+	if (!THIS->async)
 	{
 		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
 		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->TimeOut);
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
-	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT,THIS->sUserAgent);
+	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT,THIS_HTTP->sUserAgent);
 	curl_easy_setopt(THIS_CURL, CURLOPT_HEADERFUNCTION, http_header_curl);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION, http_write_curl);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA, _object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEHEADER, _object);
-	curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEFILE, THIS->cookiesfile);
+	curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEFILE, THIS_HTTP->cookiesfile);
 	
-	if (THIS->updatecookies)
-		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, THIS->cookiesfile);
+	if (THIS_HTTP->updatecookies)
+		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, THIS_HTTP->cookiesfile);
 	else
 		curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEJAR, NULL);
 
@@ -214,16 +212,16 @@ void http_initialize_curl_handle(void *_object)
 	Adv_user_SET  (&THIS->user, THIS_CURL);
 	curl_easy_setopt(THIS_CURL, CURLOPT_URL,THIS_URL);
 
-	THIS->ReturnCode=0;
-	if (THIS->ReturnString)
+	THIS_HTTP->ReturnCode=0;
+	if (THIS_HTTP->ReturnString)
 	{
-		GB.Free((void**)POINTER(&THIS->ReturnString));
-		THIS->ReturnString=NULL;
+		GB.Free((void**)POINTER(&THIS_HTTP->ReturnString));
+		THIS_HTTP->ReturnString=NULL;
 	}
 	http_reset(_object);
 	THIS_STATUS=6;
-	THIS->stream.desc=&CurlStream;
-	THIS->stream._reserved=0;
+	
+	CCURL_init_stream(THIS);
 }
 
 /*************************************************
@@ -237,7 +235,7 @@ int http_get (void *_object)
 	http_initialize_curl_handle(_object);
 	curl_easy_setopt(THIS_CURL,CURLOPT_HTTPGET,1);
 	
-	if (!THIS->mode)
+	if (THIS->async)
 	{
 		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
@@ -267,21 +265,21 @@ int http_post (void *_object,char *sContent,char *sData,int lendata)
 	http_initialize_curl_handle(_object);
 
 	mylen=strlen(sContent) + strlen("Content-Type: ") + 1;
-	GB.Alloc((void*)&THIS->sContentType,mylen);
-	GB.Alloc((void*)&THIS->sPostData,lendata+1);
-	strncpy(THIS->sPostData,sData,lendata);
-	THIS->sContentType[0]=0;
-	strcpy(THIS->sContentType,"Content-Type: ");
-	strcat(THIS->sContentType,sContent);
+	GB.Alloc((void*)&THIS_HTTP->sContentType,mylen);
+	GB.Alloc((void*)&THIS_HTTP->sPostData,lendata+1);
+	strncpy(THIS_HTTP->sPostData,sData,lendata);
+	THIS_HTTP->sContentType[0]=0;
+	strcpy(THIS_HTTP->sContentType,"Content-Type: ");
+	strcat(THIS_HTTP->sContentType,sContent);
 
 	THIS->iMethod=1;
-	headers=curl_slist_append(headers,THIS->sContentType );
-	curl_easy_setopt(THIS_CURL,CURLOPT_POSTFIELDS,THIS->sPostData);
+	headers=curl_slist_append(headers,THIS_HTTP->sContentType );
+	curl_easy_setopt(THIS_CURL,CURLOPT_POSTFIELDS,THIS_HTTP->sPostData);
 	curl_easy_setopt(THIS_CURL,CURLOPT_POSTFIELDSIZE,lendata);
 	curl_easy_setopt(THIS_CURL,CURLOPT_HTTPHEADER,headers);
 
 
-	if (!THIS->mode)
+	if (THIS->async)
 	{
 		curl_multi_add_handle(CCURL_multicurl,THIS_CURL);
 		CCURL_init_post();
@@ -307,7 +305,7 @@ BEGIN_PROPERTY ( CHttpClient_UpdateCookies )
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnBoolean(THIS->updatecookies);
+		GB.ReturnBoolean(THIS_HTTP->updatecookies);
 		return;
 	}
 
@@ -318,9 +316,9 @@ BEGIN_PROPERTY ( CHttpClient_UpdateCookies )
   	}
 
 	if (VPROP(GB_BOOLEAN))
-		THIS->updatecookies=1;
+		THIS_HTTP->updatecookies=1;
 	else
-		THIS->updatecookies=0;
+		THIS_HTTP->updatecookies=0;
 
 END_PROPERTY
 
@@ -328,7 +326,7 @@ BEGIN_PROPERTY ( CHttpClient_CookiesFile )
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(THIS->cookiesfile,0);
+		GB.ReturnNewString(THIS_HTTP->cookiesfile,0);
 		return;
 	}
 
@@ -338,16 +336,16 @@ BEGIN_PROPERTY ( CHttpClient_CookiesFile )
 		return;
   	}
 
-	if (THIS->cookiesfile)
+	if (THIS_HTTP->cookiesfile)
 	{
-		GB.Free((void**)POINTER(&THIS->cookiesfile));
-		THIS->cookiesfile=NULL;
+		GB.Free((void**)POINTER(&THIS_HTTP->cookiesfile));
+		THIS_HTTP->cookiesfile=NULL;
 	}
 	if ( strlen(GB.ToZeroString(PROP(GB_STRING))) )
 	{
-		GB.Alloc( (void**)POINTER(&THIS->cookiesfile), \
+		GB.Alloc( (void**)POINTER(&THIS_HTTP->cookiesfile), \
 		          (strlen(GB.ToZeroString(PROP(GB_STRING)))+1)*sizeof(char));
-		strcpy(THIS->cookiesfile,GB.ToZeroString(PROP(GB_STRING)));
+		strcpy(THIS_HTTP->cookiesfile,GB.ToZeroString(PROP(GB_STRING)));
 	}
 
 END_PROPERTY
@@ -360,7 +358,7 @@ BEGIN_PROPERTY (CHttpClient_Auth)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnInteger(THIS->auth);
+		GB.ReturnInteger(THIS_HTTP->auth);
 		return;
 	}
 
@@ -373,7 +371,7 @@ BEGIN_PROPERTY (CHttpClient_Auth)
 	if (Adv_user_SETAUTH (&THIS->user,VPROP(GB_INTEGER)) )
 		GB.Error ("Unknown authentication method");
 	else
-		THIS->auth=VPROP(GB_INTEGER);
+		THIS_HTTP->auth=VPROP(GB_INTEGER);
 
 
 END_PROPERTY
@@ -384,7 +382,7 @@ BEGIN_PROPERTY ( CHttpClient_UserAgent )
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnString(THIS->sUserAgent);
+		GB.ReturnString(THIS_HTTP->sUserAgent);
 		return;
 	}
 
@@ -393,7 +391,7 @@ BEGIN_PROPERTY ( CHttpClient_UserAgent )
 		GB.Error ("UserAgent property can not be changed while working");
 		return;
   	}
-	GB.StoreString(PROP(GB_STRING), &THIS->sUserAgent);
+	GB.StoreString(PROP(GB_STRING), &THIS_HTTP->sUserAgent);
 
 
 END_PROPERTY
@@ -403,7 +401,7 @@ END_PROPERTY
  *********************************************/
 BEGIN_PROPERTY ( CHttpClient_ReturnCode )
 
-	GB.ReturnInteger(THIS->ReturnCode);
+	GB.ReturnInteger(THIS_HTTP->ReturnCode);
 
 END_PROPERTY
 /*********************************************
@@ -411,7 +409,7 @@ END_PROPERTY
  *********************************************/
 BEGIN_PROPERTY ( CHttpClient_ReturnString )
 
-	GB.ReturnNewString(THIS->ReturnString,0);
+	GB.ReturnNewZeroString(THIS_HTTP->ReturnString);
 
 END_PROPERTY
 
@@ -426,12 +424,12 @@ BEGIN_PROPERTY ( CHttpClient_Headers )
 
 	if ( (THIS_STATUS==4) || (THIS_STATUS==0) )
 	{
-		if (THIS->len_header)
+		if (THIS_HTTP->len_header)
 		{
-			GB.Array.New(&retval,GB_T_STRING,THIS->len_header);
-			for (myloop=0;myloop<THIS->len_header;myloop++)
+			GB.Array.New(&retval,GB_T_STRING,THIS_HTTP->len_header);
+			for (myloop=0;myloop<THIS_HTTP->len_header;myloop++)
 			{
-			  GB.NewString(&element,THIS->buf_header[myloop],strlen(THIS->buf_header[myloop]));
+			  GB.NewString(&element,THIS_HTTP->buf_header[myloop],strlen(THIS_HTTP->buf_header[myloop]));
 			  *((char **)GB.Array.Get(retval,myloop)) = element;
 			}
 			GB.ReturnObject ( retval );
@@ -456,7 +454,7 @@ BEGIN_METHOD_VOID(CHTTPCLIENT_new)
 	GB.Alloc((void**)POINTER(&tmp),sizeof(char)*(1+strlen("http://127.0.0.1:80")));
 	strcpy(tmp,"http://127.0.0.1:80");
 	THIS_URL=tmp;
-	GB.NewString(&THIS->sUserAgent,"Gambas Http/1.0",0);
+	GB.NewString(&THIS_HTTP->sUserAgent,"Gambas Http/1.0",0);
 	
 	
 	tmp=NULL;
@@ -475,11 +473,9 @@ BEGIN_METHOD_VOID(CHTTPCLIENT_free)
 
 	http_reset(THIS);
 	
-	if (THIS->sUserAgent) GB.FreeString(&THIS->sUserAgent);
-	if (THIS->cookiesfile)	GB.Free((void**)POINTER(&THIS->cookiesfile));
-	if (THIS->ReturnString) GB.Free((void**)POINTER(&THIS->ReturnString));
-
-	GB.Free(POINTER(&THIS->stream._free[0]));	
+	if (THIS_HTTP->sUserAgent) GB.FreeString(&THIS_HTTP->sUserAgent);
+	if (THIS_HTTP->cookiesfile)	GB.Free((void**)POINTER(&THIS_HTTP->cookiesfile));
+	if (THIS_HTTP->ReturnString) GB.Free((void**)POINTER(&THIS_HTTP->ReturnString));
 
 END_METHOD
 
@@ -562,25 +558,25 @@ void http_reset(void *_object)
 		GB.Free((void**)POINTER(&THIS->buf_data));
 		THIS->buf_data=NULL;
 	}
-	if (THIS->buf_header)
+	if (THIS_HTTP->buf_header)
 	{
-		for (myloop=0;myloop < THIS->len_header;myloop++)
-			GB.Free((void**)&THIS->buf_header[myloop]);
-		GB.Free((void**)POINTER(&THIS->buf_header));
-		THIS->buf_header=NULL;
+		for (myloop=0;myloop < THIS_HTTP->len_header;myloop++)
+			GB.Free((void**)&THIS_HTTP->buf_header[myloop]);
+		GB.Free((void**)POINTER(&THIS_HTTP->buf_header));
+		THIS_HTTP->buf_header=NULL;
 	}
-	if (THIS->sContentType)
+	if (THIS_HTTP->sContentType)
 	{
-		GB.Free((void**)POINTER(&THIS->sContentType));
-		THIS->sContentType=NULL;
+		GB.Free((void**)POINTER(&THIS_HTTP->sContentType));
+		THIS_HTTP->sContentType=NULL;
 	}
-	if (THIS->sPostData)
+	if (THIS_HTTP->sPostData)
 	{
-		GB.Free((void**)POINTER(&THIS->sPostData));
-		THIS->sPostData =NULL;
+		GB.Free((void**)POINTER(&THIS_HTTP->sPostData));
+		THIS_HTTP->sPostData =NULL;
 	}
 	THIS->len_data=0;
-	THIS->len_header=0;
+	THIS_HTTP->len_header=0;
 }
 
 

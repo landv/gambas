@@ -672,9 +672,16 @@ typedef
   GB_STREAM_DESC;
 
 typedef
+  struct {
+    GB_STREAM_DESC *desc;
+    intptr_t _reserved;
+    }
+  GB_STREAM_BASE;
+
+typedef
   struct GB_STREAM {
     GB_STREAM_DESC *desc;
-    int _reserved;
+    intptr_t _reserved;
     int _free[6];
     }
   GB_STREAM;
