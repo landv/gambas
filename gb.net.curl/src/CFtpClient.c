@@ -279,7 +279,6 @@ END_METHOD
 BEGIN_METHOD_VOID(CFTPCLIENT_free)
 
 	ftp_reset(THIS_FTP);
-	GB.Free(POINTER(&THIS->stream._free[0]));
 
 END_METHOD
 

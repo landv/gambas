@@ -366,7 +366,7 @@ BEGIN_PROPERTY ( CSERIALPORT_DTR )
   
 	if (!THIS->iStatus )
 	{
-		GB.Error ("Port is Closed.");
+		GB.Error ("Port is closed");
 		return;
 	}
 	ioctl(THIS->Port,TIOCMGET,&ist);
@@ -400,7 +400,7 @@ BEGIN_PROPERTY ( CSERIALPORT_RTS )
   
   	if (!THIS->iStatus )
 	{
-		GB.Error ("Port is Closed.");
+		GB.Error ("Port is closed");
 		return;
 	}
 	ioctl(THIS->Port,TIOCMGET,&ist);
@@ -473,7 +473,7 @@ BEGIN_PROPERTY ( CSERIALPORT_Port )
 	}
   	if ( THIS->iStatus )
 	{
-		GB.Error("Current port must be closed first.");
+		GB.Error("Current port must be closed first");
 		return;
 	}
 	GB.StoreString(PROP(GB_STRING), &THIS->sPort);
@@ -493,12 +493,12 @@ BEGIN_PROPERTY ( CSERIALPORT_FlowControl )
 	}
   	if ( THIS->iStatus )
 	{
-		GB.Error("Current port must be closed first.");
+		GB.Error("Current port must be closed first");
 		return;
 	}
 	if ( (VPROP(GB_INTEGER)<0) || (VPROP(GB_INTEGER)>3) )
 	{
-		GB.Error("Invalid flow control value.");
+		GB.Error("Invalid flow control value");
 		return;
 	}
 	THIS->iFlow=VPROP(GB_INTEGER);
@@ -520,7 +520,7 @@ BEGIN_PROPERTY ( CSERIALPORT_Parity )
   else
   {
   	if ( THIS->iStatus )
-		GB.Error("Current port must be closed first.");
+		GB.Error("Current port must be closed first");
 	else
 	{
           parity = VPROP(GB_INTEGER);
@@ -560,11 +560,11 @@ BEGIN_PROPERTY ( CSERIALPORT_Speed )
 		GB.ReturnInteger(THIS->Speed);
 		return;
 	}
-  	if ( THIS->iStatus ){ GB.Error("Current port must be closed first.");return; }
+  	if ( THIS->iStatus ){ GB.Error("Current port must be closed first");return; }
 	if ( !VPROP(GB_INTEGER) ) myok=0;
 	if ( ConvertBaudRate(VPROP(GB_INTEGER)) == -1) myok=0;
 	if (!myok)
-		GB.Error("Invalid speed value.");
+		GB.Error("Invalid speed value");
 	else
 		THIS->Speed=VPROP(GB_INTEGER);
 
@@ -583,10 +583,10 @@ BEGIN_PROPERTY ( CSERIALPORT_DataBits )
 		GB.ReturnInteger(THIS->DataBits);
 		return;
 	}
-  	if ( THIS->iStatus ) { GB.Error("Current port must be closed first."); return; }
+  	if ( THIS->iStatus ) { GB.Error("Current port must be closed first"); return; }
 	if ( ConvertDataBits(VPROP(GB_INTEGER)) == -1) myok=0;
 	if (!myok)
-		GB.Error("Invalid data bits value.");
+		GB.Error("Invalid data bits value");
 	else
 		THIS->DataBits=VPROP(GB_INTEGER);
 
@@ -605,10 +605,10 @@ BEGIN_PROPERTY ( CSERIALPORT_StopBits )
 		GB.ReturnInteger(THIS->StopBits);
 		return;
 	}
-  	if ( THIS->iStatus ){GB.Error("Current port must be closed first.");return;}
+  	if ( THIS->iStatus ){GB.Error("Current port must be closed first");return;}
 	if ( ConvertStopBits(VPROP(GB_INTEGER)) == -1) myok=0;
 	if (!myok)
-		GB.Error("Invalid stop bits value.");
+		GB.Error("Invalid stop bits value");
 	else
 		THIS->StopBits=VPROP(GB_INTEGER);
 
@@ -655,16 +655,18 @@ END_METHOD
 BEGIN_METHOD_VOID(CSERIALPORT_Open)
 
 	void *stream;
+	int err;
+	char buffer[8];
 
 	if (THIS->iStatus)
 	{
-		GB.Error("Port is already opened.");
+		GB.Error("Port is already opened");
 		return;
 	}
-	if(OpenSerialPort(&THIS->Port,THIS->iFlow,&THIS->oldtio,THIS->sPort, \
-	                  THIS->Speed,THIS->Parity,THIS->DataBits,THIS->StopBits))
+	if ((err = OpenSerialPort(&THIS->Port, THIS->iFlow, &THIS->oldtio, THIS->sPort, THIS->Speed, THIS->Parity, THIS->DataBits, THIS->StopBits)))
 	{
-		GB.Error("Error opening serial port.");
+		sprintf(buffer, "#%d", err);
+		GB.Error("Cannot open serial port (&1)", buffer);
 		return;
 	}
 	THIS->e_DTR.nevent=0;
