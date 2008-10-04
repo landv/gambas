@@ -1508,7 +1508,7 @@ void GEditor::ensureCursorVisible()
 	
 	if (!isCursorVisible())
 	{
-		qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+		qApp->sendPostedEvents(viewport(), QEvent::Paint);
 		
 		if (center)
 			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
