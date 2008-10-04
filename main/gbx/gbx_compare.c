@@ -195,8 +195,7 @@ int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool th
   char *charset;
   wchar_t *t1 = NULL;
   wchar_t *t2 = NULL;
-  int i, len , diff;
-  wchar_t wc1, wc2;
+  int i;
   
   if (l1 < 0)
   	l1 = s1 ? strlen(s1) : 0;
@@ -219,39 +218,22 @@ int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool th
 	if (STRING_conv((char **)(void *)&t1, s1, l1, "UTF-8", charset, throw)
 		  || STRING_conv((char **)(void *)&t2, s2, l2, "UTF-8", charset, throw))
 	{
-		diff = nocase ? TABLE_compare_ignore_case(s1, l1, s2, l2) : TABLE_compare(s1, l1, s2, l2);
-		return diff;
+		//fprintf(stderr, "warning: cannot convert UTF-8 string to %s for locale-aware comparison\n", charset);
+		return nocase ? TABLE_compare_ignore_case(s1, l1, s2, l2) : TABLE_compare(s1, l1, s2, l2);
 	}
 	
 	l1 = STRING_length((char *)t1) / sizeof(wchar_t);
 	l2 = STRING_length((char *)t2) / sizeof(wchar_t);
 	
-	len = Min(l1, l2);
-	
 	if (nocase)
 	{
-		for (i = 0; i < len; i++)
-		{
-			wc1 = towlower(t1[i]);
-			wc2 = towlower(t2[i]);
-			if (wc1 > wc2) return 1;
-			if (wc1 < wc2) return -1;
-		}
+		for (i = 0; i < l1; i++)
+			t1[i] = towlower(t1[i]);
+		for (i = 0; i < l2; i++)
+			t2[i] = towlower(t2[i]);
 	}
-	else
-	{
-		for (i = 0; i < len; i++)
-		{
-			wc1 = t1[i];
-			wc2 = t2[i];
-			if (wc1 > wc2) return 1;
-			if (wc1 < wc2) return -1;
-		}
-	}
-
-  diff =  l1 - l2;
-  	
-  return (diff < 0) ? (-1) : (diff > 0) ? 1 : 0;
+	
+	return wcscoll(t1, t2);
 }
 
 static int compare_string_lang(char **pa, char **pb)
