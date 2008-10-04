@@ -74,14 +74,7 @@ typedef
 	}
 	CCURL;
 
-typedef
-	struct {
-		GB_STREAM_BASE stream;
-		CCURL *me;
-		}
-	CCURL_STREAM;
-
-#define STREAM_TO_OBJECT(_stream) (((CCURL_STREAM *)_stream)->me)
+#define STREAM_TO_OBJECT(_stream) (_stream->tag)
 
 void CCURL_stop(void *_object);
 

@@ -243,7 +243,7 @@ int CSerialPort_stream_handle(GB_STREAM *stream)
 }
 int CSerialPort_stream_close(GB_STREAM *stream)
 {
-	void *_object = STREAM_TO_SERIALPORT(stream);
+	void *_object = stream->tag;
 
 	if (!_object) return -1;	
 	
@@ -258,7 +258,7 @@ int CSerialPort_stream_close(GB_STREAM *stream)
 }
 int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	void *_object = STREAM_TO_SERIALPORT(stream);
+	void *_object = stream->tag;
 	int bytes;
 
 	*len=0;
@@ -270,7 +270,7 @@ int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 }
 int CSerialPort_stream_eof(GB_STREAM *stream)
 {
-	void *_object = STREAM_TO_SERIALPORT(stream);
+	void *_object = stream->tag;
 	int bytes;
 
 	if (!_object) return -1;
@@ -282,7 +282,7 @@ int CSerialPort_stream_eof(GB_STREAM *stream)
 
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object = STREAM_TO_SERIALPORT(stream);
+	void *_object = stream->tag;
 	int npos=-1;
 	int NoBlock=0;
 	int bytes;
@@ -301,7 +301,7 @@ int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 
 int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object = STREAM_TO_SERIALPORT(stream);
+	void *_object = stream->tag;
 	int npos=-1;
 	int NoBlock=0;
 
@@ -641,7 +641,7 @@ BEGIN_METHOD_VOID(CSERIALPORT_free)
 	if (THIS->iStatus)
 	{
 		CSerialPort_FreeCallBack((long)THIS);
-		GB.Stream.Init(&THIS->stream,-1);
+		//GB.Stream.Init(&THIS->stream,-1);
 		CloseSerialPort(THIS->Port,&THIS->oldtio);
 		THIS->iStatus=0;
 	}
@@ -687,8 +687,7 @@ BEGIN_METHOD_VOID(CSERIALPORT_Open)
 	THIS->stream.desc=&SerialStream;
 	THIS->iStatus=1;
 
-	stream = &THIS->stream;
-	STREAM_TO_SERIALPORT(stream) = THIS;
+	THIS->stream.tag = THIS;
 
 END_METHOD
 

@@ -682,7 +682,12 @@ typedef
   struct GB_STREAM {
     GB_STREAM_DESC *desc;
     intptr_t _reserved;
-    int _free[6];
+    void *tag;
+    #if __WORDSIZE == 64
+    int _free[4];
+    #else
+    int _free[5];
+    #endif
     }
   GB_STREAM;
 

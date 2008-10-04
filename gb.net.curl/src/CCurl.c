@@ -206,11 +206,8 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 
 void CCURL_init_stream(void *_object)
 {
-	void *stream;
 	THIS->stream.desc = &CurlStream;
-	
-	stream = &((CCURL *)_object)->stream;
-	((CCURL_STREAM *)stream)->me = THIS;
+	THIS->stream.tag = THIS;
 }
 
 /***************************************************************

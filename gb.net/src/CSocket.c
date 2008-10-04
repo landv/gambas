@@ -304,7 +304,7 @@ int CSocket_stream_handle(GB_STREAM *stream)
 }
 int CSocket_stream_close(GB_STREAM *stream)
 {
-  void *_object=((void**)stream->_free)[0];
+  void *_object = stream->tag;
 
   if (!THIS ) return -1;
 
@@ -326,7 +326,7 @@ int CSocket_stream_close(GB_STREAM *stream)
 }
 int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	void *_object=((void**)stream->_free)[0];
+  void *_object = stream->tag;
 	int bytes;
 
 	*len=0;
@@ -343,7 +343,7 @@ int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 }
 int CSocket_stream_eof(GB_STREAM *stream)
 {
-	void *_object=((void**)stream->_free)[0];
+  void *_object = stream->tag;
 	int bytes;
 
 	if (!THIS) return -1;
@@ -360,9 +360,9 @@ int CSocket_stream_eof(GB_STREAM *stream)
 
 int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object=((void**)stream->_free)[0];
-  	int npos=-1;
-  	int NoBlock=0;
+  void *_object = stream->tag;
+	int npos=-1;
+	int NoBlock=0;
 	int bytes;
 
 	if (!THIS) return -1;
@@ -392,7 +392,7 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 
 int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object=((void**)stream->_free)[0];
+  void *_object = stream->tag;
 	int npos=-1;
 	int NoBlock=0;
 
@@ -735,10 +735,8 @@ END_PROPERTY
  ****************************************************/
 BEGIN_METHOD_VOID(CSOCKET_new)
 
-  
-  ((void**)THIS->stream._free)[0]=_object;	
-  THIS->iUsePort=80;
-
+  THIS->stream.tag = THIS;
+  THIS->iUsePort = 80;
 
 END_METHOD
 
@@ -786,7 +784,7 @@ BEGIN_METHOD_VOID(CSOCKET_Peek)
 
   if (THIS->iStatus != 7) /* if socket is not connected we can't receive anything */
   {
-      GB.Error("Socket is not active. Connect it first.");
+      GB.Error("Socket is not active. Connect it first");
       return;
   }
 
@@ -844,8 +842,8 @@ BEGIN_METHOD(CSOCKET_Connect,GB_STRING HostOrPath;GB_INTEGER Port;)
   {
     case 1: GB.Error("Socket is already connected"); return;
     case 2: GB.Error("Invalid path length"); return;
-    case 8: GB.Error("Port value out of range."); return;
-    case 9: GB.Error("Invalid host name."); return;
+    case 8: GB.Error("Port value out of range"); return;
+    case 9: GB.Error("Invalid host name"); return;
   }
 
 END_METHOD

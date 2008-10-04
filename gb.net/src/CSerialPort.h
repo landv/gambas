@@ -58,13 +58,6 @@ typedef struct
 
 } serialsignal;
 
-typedef
-	struct {
-		GB_STREAM_BASE base;
-		void *me;
-	}
-	SERIALPORT_STREAM;
-
 typedef  struct
 {
 	GB_BASE ob;
@@ -86,8 +79,6 @@ typedef  struct
 	serialsignal ser_status;
 	struct termios oldtio;
 }  CSERIALPORT;
-
-#define STREAM_TO_SERIALPORT(_stream) ((SERIALPORT_STREAM *)(_stream))->me
 
 void CSerialPort_CallBack(long lParam);
 void CSerialPort_AssignCallBack(long t_obj,int t_port);
