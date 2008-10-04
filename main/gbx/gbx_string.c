@@ -444,16 +444,69 @@ void STRING_unref_keep(char **ptr)
 
 /* The get_param argument index starts at 1, not 0! */
 
+#define INDEX_AT     0
+#define INDEX_IGNORE (-1)
+#define INDEX_ERROR  (-2)
+
+static int get_param_index(const char *str, int len, uint *pos, int *len_pattern)
+{
+	uint i;
+	int index;
+	bool err;
+	uchar d;
+	
+	i = *pos + 1;
+	d = str[i];
+	if (d == '&')
+	{
+		index = INDEX_AT;
+	}
+	else if (d >= '1' && d <= '9')
+	{
+		index = d - '0';
+	}
+	else if (d == '{')
+	{
+		err = FALSE;
+		index = 0;
+		for(;;)
+		{
+			i++;
+			if (i >= len)
+				break;
+			d = str[i];
+			if (d == '}')
+				break;
+			if (d >= '0' && d <= '9')
+				index = index * 10 + d - '0';
+			else
+				err = TRUE;
+		}
+		if (err || index < 1 || index >= 64)
+			index = INDEX_ERROR;
+	}
+	else
+	{
+		index = INDEX_IGNORE;
+	}
+	
+	if (len_pattern)
+		*len_pattern = i - *pos + 1;
+		
+	*pos = i;
+	return index;
+}
+
 char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 {
 	uint i;
-	uchar c, d;
-	int np;
+	uchar c;
+	int np, lenp;
 	int len_subst;
 	char *subst;
 	char *ps;
-	char *p[9];
-	int lp[9];
+	char *p[64];
+	int lp[64];
 
   if (!str)
     return NULL;
@@ -470,7 +523,28 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 		c = str[i];
 		if (c == '&')
 		{
-			i++;
+			np = get_param_index(str, len, &i, &lenp);
+			len_subst -= lenp;
+			
+			switch (np)
+			{
+				case INDEX_AT:
+					len_subst++;
+					break;
+				case INDEX_IGNORE:
+					len_subst += lenp;
+					break;
+				case INDEX_ERROR:
+					break;
+				default:
+					np--;
+					(*get_param)(np + 1, &p[np], &lp[np]);
+					if (lp[np] < 0)
+						lp[np] = strlen(p[np]);
+					len_subst += lp[np];
+			}
+			
+			/*i++;
 			d = str[i];
 			if (d == '&')
 				len_subst--;
@@ -481,7 +555,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
       	if (lp[np] < 0)
       		lp[np] = strlen(p[np]);
       	len_subst += lp[np] - 2;
-			}
+			}*/
 		}
 	}
 	
@@ -493,7 +567,24 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 		c = str[i];
 		if (c == '&')
 		{
-			i++;
+			np = get_param_index(str, len, &i, &lenp);
+			switch (np)
+			{
+				case INDEX_AT:
+					*ps++ = '&';
+					break;
+				case INDEX_IGNORE:
+					*ps++ = '&';
+					*ps++ = str[i];
+					break;
+				case INDEX_ERROR:
+					break;
+				default:
+					np--;
+					memcpy(ps, p[np], lp[np]);
+					ps += lp[np];
+			}
+			/*i++;
 			d = str[i];
 			if (d == '&')
 				*ps++ = '&';
@@ -507,7 +598,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 			{
 				*ps++ = '&';
 				*ps++ = d;
-			}
+			}*/
 		}
 		else
 			*ps++ = c;
@@ -521,7 +612,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 {
 	uint i;
-	uchar c, d;
+	uchar c;
 	int np;
 
   if (!str)
@@ -537,6 +628,22 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 		c = str[i];
 		if (c == '&')
 		{
+			np = get_param_index(str, len, &i, NULL);
+			switch (np)
+			{
+				case INDEX_AT:
+					SUBST_add_char('&');
+					break;
+				case INDEX_IGNORE:
+					SUBST_add_char('&');
+					SUBST_add_char(str[i]);
+					break;
+				case INDEX_ERROR:
+					break;
+				default:
+					(*add_param)(np);
+			}
+			/*
 			i++;
 			d = str[i];
 			if (d == '&')
@@ -548,11 +655,31 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 				np = d - '0';
 				(*add_param)(np);
 			}
+			else if (d == '{')
+			{
+				np = 0;
+				err = FALSE;
+				for(;;)
+				{
+					i++;
+					if (i >= len)
+						break;
+					d = str[i];
+					if (d == '}')
+						break;
+					if (d >= '0' && d <= '9')
+						np = np * 10 + d - '0';
+					else
+						err = TRUE;
+				}
+				if (!err && np >= 1 && np <= 64)
+					(*add_param)(np);
+			}
 			else
 			{
 				SUBST_add_char('&');
 				SUBST_add_char(d);
-			}
+			}*/
 		}
 		else
 			SUBST_add_char(c);
