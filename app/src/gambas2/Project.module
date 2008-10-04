@@ -1823,6 +1823,8 @@ PUBLIC SUB Activate(hForm AS Object)
   Action["replace"].Visible = bEditor OR bTextEditor
   'Action["replace-all"].Visible = bEditor OR bTextEditor
   
+  TRY ActiveForm.SetFocus
+  
 END
 
 PUBLIC SUB Deactivate(hForm AS Object)
