@@ -195,7 +195,7 @@ int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool th
   char *charset;
   wchar_t *t1 = NULL;
   wchar_t *t2 = NULL;
-  int i;
+  int i, cmp;
   
   if (l1 < 0)
   	l1 = s1 ? strlen(s1) : 0;
@@ -217,10 +217,7 @@ int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool th
 
 	if (STRING_conv((char **)(void *)&t1, s1, l1, "UTF-8", charset, throw)
 		  || STRING_conv((char **)(void *)&t2, s2, l2, "UTF-8", charset, throw))
-	{
-		//fprintf(stderr, "warning: cannot convert UTF-8 string to %s for locale-aware comparison\n", charset);
-		return nocase ? TABLE_compare_ignore_case(s1, l1, s2, l2) : TABLE_compare(s1, l1, s2, l2);
-	}
+		goto __FAILED;
 	
 	l1 = STRING_length((char *)t1) / sizeof(wchar_t);
 	l2 = STRING_length((char *)t2) / sizeof(wchar_t);
@@ -233,7 +230,14 @@ int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool th
 			t2[i] = towlower(t2[i]);
 	}
 	
-	return wcscoll(t1, t2);
+	errno = 0;
+	cmp = wcscoll(t1, t2);
+	if (!errno)
+		return cmp;
+		
+__FAILED:
+	
+	return nocase ? TABLE_compare_ignore_case(s1, l1, s2, l2) : TABLE_compare(s1, l1, s2, l2);
 }
 
 static int compare_string_lang(char **pa, char **pb)
