@@ -43,6 +43,9 @@
 #include "main.h"
 #include "gview.h"
 
+#include <X11/Xlib.h>
+#undef None
+
 #if 0
 static const char *breakpoint_xpm[] = 
 {
@@ -1482,7 +1485,7 @@ void GEditor::ensureCursorVisible()
 	
 	if (!isCursorVisible())
 	{
-		qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+		qApp->sendPostedEvents(viewport(), QEvent::Paint);
 	
 		if (center)
 			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
