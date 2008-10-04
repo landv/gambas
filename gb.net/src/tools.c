@@ -399,16 +399,19 @@ int OpenSerialPort(int *fd,int iflow,struct termios *oldtio,char *sName,int nBau
 	newtio.c_cflag=  Of_Bits | Of_Stop | Of_Par | CLOCAL | CREAD | HUPCL | HardFlow;
 
 	if ( Of_Par & PARENB )
-		newtio.c_iflag=INPCK | ISTRIP;
+		newtio.c_iflag |= INPCK; // Why stripping the eight bit when parity is enabled?? | ISTRIP;
 	else
-		newtio.c_iflag=IGNPAR;
+		newtio.c_iflag |= IGNPAR;
 
 	newtio.c_iflag |= SoftFlow;
+	
 	newtio.c_oflag=0;
+	
 	newtio.c_cc[VMIN]=1;
 	newtio.c_cc[VTIME]=1;
 	newtio.c_cc[VSTART]=17; //DC1;
 	newtio.c_cc[VSTOP]=19;  //DC3;
+	
 	cfsetispeed(&newtio,Of_Baud);
 	cfsetospeed(&newtio,Of_Baud);
 	tcflush(*fd,TCIFLUSH);
@@ -419,7 +422,6 @@ int OpenSerialPort(int *fd,int iflow,struct termios *oldtio,char *sName,int nBau
 	}
 
 	return 0;
-
 }
 
 

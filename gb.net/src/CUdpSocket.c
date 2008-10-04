@@ -118,7 +118,7 @@ int CUdpSocket_stream_handle(GB_STREAM *stream)
 }
 int CUdpSocket_stream_close(GB_STREAM *stream)
 {
-	void *_object=((void**)stream->_free)[0];
+	void *_object = stream->tag;
 
 	if ( !_object ) return -1;
 	stream->desc=NULL;
@@ -139,7 +139,7 @@ int CUdpSocket_stream_close(GB_STREAM *stream)
 }
 int CUdpSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	void *_object=((void**)stream->_free)[0];
+	void *_object = stream->tag;
 	int bytes;
 
 	if ( !_object ) return -1;
@@ -152,9 +152,10 @@ int CUdpSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 	*len=bytes;
 	return 0;
 }
+
 int CUdpSocket_stream_eof(GB_STREAM *stream)
 {
-	void *_object=((void**)stream->_free)[0];
+	void *_object = stream->tag;
 	int bytes;
 
 	if ( !_object ) return -1;
@@ -171,8 +172,8 @@ int CUdpSocket_stream_eof(GB_STREAM *stream)
 
 int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object=((void**)stream->_free)[0];
-    	int retval;
+	void *_object = stream->tag;
+	int retval;
 	int bytes=0;
 	int NoBlock=0;
 	unsigned int rem_host_len;
@@ -207,8 +208,8 @@ int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 
 int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object=((void**)stream->_free)[0];
-    	int retval;
+	void *_object = stream->tag;
+	int retval;
 	int NoBlock=0;
 	struct sockaddr_in remhost;
 	struct in_addr rem_ip;
@@ -362,7 +363,7 @@ END_PROPERTY
  *************************************************/
 BEGIN_METHOD(CUDPSOCKET_new,GB_INTEGER Port;)
 
-	((void**)THIS->stream._free)[0]=_object;
+	THIS->stream.tag = _object;
 	if (MISSING (Port) ) return;
 	dgram_start(THIS,VARG(Port));
 
@@ -444,7 +445,7 @@ BEGIN_METHOD (CUDPSOCKET_Bind,GB_INTEGER Port;)
 			GB.Error("Already working");
 			return;
 		case 8:
-			GB.Error("Port value is not valid.");
+			GB.Error("Port value is not valid");
 			return;
 	}
 

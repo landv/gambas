@@ -83,26 +83,20 @@ int CCURL_stream_write(GB_STREAM *stream, char *buffer, int len){return -1;}
 
 int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)
 {
-	void *_object;
-	char *tmp;
-	curlData *data=(curlData*)((void**)stream->_free)[0];	
+	void *_object = STREAM_TO_OBJECT(stream);
 	
-	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
-	_object=(void*)tmp;
-	*len=0;
+	*len = 0;
 
-	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
-	*len=THIS->len_data;
+	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) 
+		return -1;
+		
+	*len = THIS->len_data;
 	return 0;
 }
+
 int CCURL_stream_eof(GB_STREAM *stream)
 {
-	void *_object;
-	char *tmp;
-	curlData *data=(curlData*)((void**)stream->_free)[0];	
-	
-	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
-	_object=(void*)tmp;
+	void *_object = STREAM_TO_OBJECT(stream);
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (!THIS->len_data) return -1;
@@ -111,12 +105,7 @@ int CCURL_stream_eof(GB_STREAM *stream)
 
 int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 {
-	void *_object;
-	char *tmp;
-	curlData *data=(curlData*)((void**)stream->_free)[0];	
-	
-	curl_easy_getinfo(data->curl,CURLINFO_PRIVATE,&tmp);
-	_object=(void*)tmp;
+	void *_object = STREAM_TO_OBJECT(stream);
 	
 	if ((THIS_STATUS !=4 ) && (THIS_STATUS != 0)) return -1;
 	if (THIS->len_data < len) return -1;
@@ -146,28 +135,28 @@ int CCURL_stream_read(GB_STREAM *stream, char *buffer, int len)
 	POSTED FUNCTIONS TO RAISE EVENTS
 ####################################################################
 ********************************************************************/
-void CCURL_raise_finished(long lParam)
+void CCURL_raise_finished(intptr_t lParam)
 {
 	void *mythis;
 	mythis=(void*)lParam;
 	GB.Raise(mythis,CURL_FINISHED,0);
 	GB.Unref(&mythis);
 }
-void CCURL_raise_error(long lParam)
+void CCURL_raise_error(intptr_t lParam)
 {
 	void *mythis;
 	mythis=(void*)lParam;
 	GB.Raise(mythis,CURL_ERROR,0);
 	GB.Unref(&mythis);
 }
-void CCURL_raise_connect(long lParam)
+void CCURL_raise_connect(intptr_t lParam)
 {
 	void *mythis;
 	mythis=(void*)lParam;
 	GB.Raise(mythis,CURL_CONNECT,0);
 	GB.Unref(&mythis);
 }
-void CCURL_raise_read(long lParam)
+void CCURL_raise_read(intptr_t lParam)
 {
 	void *mythis;
 	mythis=(void*)lParam;
@@ -187,7 +176,7 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 	switch ( ErrCode )
 	{
 		case CURLE_OK:
-			if (!THIS->mode) 
+			if (THIS->async) 
 			{
 				#if DEBUG
 				fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
@@ -200,7 +189,7 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 			CCURL_stop(THIS);
 			break;
 		default:
-			if (!THIS->mode) 
+			if (THIS->async) 
 			{
 				#if DEBUG
 				fprintf(stderr, "-- [%p] curl_multi_remove_handle(%p)\n", THIS, THIS_CURL);
@@ -213,7 +202,12 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 			CCURL_stop(THIS);
 			break;
 	}
+}
 
+void CCURL_init_stream(void *_object)
+{
+	THIS->stream.desc = &CurlStream;
+	THIS->stream.tag = THIS;
 }
 
 /***************************************************************
@@ -254,11 +248,6 @@ void CCURL_stop(void *_object)
 
 	THIS_STATUS=0;
 	stop_post();
-	
-/*	GB.Watch (CCURL_pipe[0] ,GB_WATCH_NONE,CCURL_post_curl,0);
-	close(CCURL_pipe[0]);
-	close(CCURL_pipe[1]);
-	CCURL_pipe[0]=-1;*/
 }
 
 void CCURL_init_post(void)
@@ -271,7 +260,7 @@ void CCURL_init_post(void)
 	write(CCURL_pipe[1],"1",sizeof(char));
 }
 
-void CCURL_post_curl(long data)
+void CCURL_post_curl(intptr_t data)
 {
 	CURLMsg *Msg;
 	int nread;
@@ -326,7 +315,7 @@ BEGIN_PROPERTY ( CCURL_sUser )
 
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("User property can not be changed while working");
+		GB.Error ("User property is read-only while working");
 		return;
   	}
 	
@@ -339,21 +328,21 @@ BEGIN_PROPERTY ( CCURL_sUser )
 END_PROPERTY
 
 
-BEGIN_PROPERTY( CCURL_Mode )
+BEGIN_PROPERTY( CCURL_Async )
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnBoolean(!THIS->mode);
+		GB.ReturnBoolean(THIS->async);
 		return;
 	}
 	
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("Async property can not be changed while working");
+		GB.Error ("Async property is read-only while working");
 		return;
   	}
 	
-	THIS->mode=!VPROP(GB_BOOLEAN);
+	THIS->async = VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 
@@ -367,7 +356,7 @@ BEGIN_PROPERTY( CCURL_TimeOut )
 	
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("TimeOut property can not be changed while working");
+		GB.Error ("Timeout property is read-only while working");
 		return;
   	}
 	
@@ -389,7 +378,7 @@ BEGIN_PROPERTY ( CCURL_Password )
 
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("User property can not be changed while working");
+		GB.Error ("User property is read-only while working");
 		return;
   	}
 
@@ -426,7 +415,7 @@ BEGIN_PROPERTY ( CCURL_URL )
 
 	if (THIS_STATUS > 0)
 	{
-		GB.Error ("URL property can not be changed while working");
+		GB.Error ("URL property is read-only while working");
 		return;
   	}
 
@@ -457,10 +446,10 @@ BEGIN_METHOD_VOID(CCURL_new)
 	fprintf(stderr, "CCURL_new: %p\n", THIS);
 	#endif
 
-	curlData *data=NULL;
+	/*curlData *data=NULL;
 	
 	GB.Alloc(POINTER(&data),sizeof(curlData));
-	((void**)THIS->stream._free)[0]=(void*)data;
+	((void**)THIS->stream._free)[0]=(void*)data;*/
 
 	THIS->stream.desc=NULL;
 	THIS_CURL=NULL;
@@ -554,8 +543,8 @@ GB_DESC CCurlDesc[] =
   GB_PROPERTY("User","s",CCURL_sUser),
   GB_PROPERTY("Password","s",CCURL_Password),  
   GB_PROPERTY("Tag", "v", CCURL_tag),
-  GB_PROPERTY("Async","b",CCURL_Mode),
-  GB_PROPERTY("TimeOut","i",CCURL_TimeOut),
+  GB_PROPERTY("Async","b",CCURL_Async),
+  GB_PROPERTY("Timeout","i",CCURL_TimeOut),
   GB_PROPERTY_SELF("Proxy",".CurlProxy"),
   GB_PROPERTY_READ("Status","i",CCURL_Status),
 

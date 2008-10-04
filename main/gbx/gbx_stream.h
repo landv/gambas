@@ -60,7 +60,7 @@ typedef
     unsigned no_lseek : 1;
     unsigned is_term : 1;
     unsigned is_device : 1;
-    unsigned _reserved : 9;
+    unsigned _reserved : 8;
     }
   PACKED
   STREAM_COMMON;

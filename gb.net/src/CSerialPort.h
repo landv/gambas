@@ -60,24 +60,24 @@ typedef struct
 
 typedef  struct
 {
-    GB_BASE ob;
+	GB_BASE ob;
 	GB_STREAM stream;
-    int Port;
-    int iStatus;
-    char *sPort;
-    int Parity;
-    int Speed;
-    int DataBits;
-    int StopBits;
-    int iFlow;
-    serialevent e_DTR;
-    serialevent e_DSR;
-    serialevent e_RTS;
-    serialevent e_CTS;
-    serialevent e_DCD;
-    serialevent e_RNG;
-    serialsignal ser_status;
-    struct termios oldtio;
+	int Port;
+	int iStatus;
+	char *sPort;
+	int Parity;
+	int Speed;
+	int DataBits;
+	int StopBits;
+	int iFlow;
+	serialevent e_DTR;
+	serialevent e_DSR;
+	serialevent e_RTS;
+	serialevent e_CTS;
+	serialevent e_DCD;
+	serialevent e_RNG;
+	serialsignal ser_status;
+	struct termios oldtio;
 }  CSERIALPORT;
 
 void CSerialPort_CallBack(long lParam);

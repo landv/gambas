@@ -256,7 +256,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
   pid_t pid;
   char **argv;
   CARRAY *array;
-  int n;
+  int i, n;
   sigset_t sig, old;
 
   /* for terminal */
@@ -298,6 +298,12 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
     ALLOC(&argv, sizeof(*argv) * (n + 1), "run_process");
     memcpy(argv, array->data, sizeof(*argv) * n);
     argv[n] = NULL;
+
+    for (i = 0; i < n; i++)
+    {
+    	if (!argv[i])
+    		argv[i] = "";
+		}
 
     #ifdef DEBUG_ME
     {

@@ -46,14 +46,14 @@ typedef struct
 	int auth;
 } Adv_user;
 
-typedef struct 
+/*typedef struct 
 {
 	int   status;
 	CURL* curl;
 	char* url;
 	FILE* file;
 	char* protocol;
-} curlData;
+} curlData;*/
 
 
 void Adv_correct_url(char **buf,char *protocol);
