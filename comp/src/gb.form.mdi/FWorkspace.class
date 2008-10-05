@@ -285,7 +285,7 @@ PUBLIC SUB Activate(OPTIONAL hWindow AS Window)
     ENDIF
   
     hWin = $aWindow[tabWorkspace.Index]
-    IF NOT Object.IsValid(hWin) THEN RETURN
+    IF NOT Object.IsValid(hWin.Window) THEN RETURN
     
     hOld = $hCurrent
     $hCurrent = hWin
