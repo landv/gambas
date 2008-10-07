@@ -121,17 +121,18 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 			//g_debug("gMainWindow: cb_configure: %d", event->send_event);
 			data->performArrange();
 			if (data->onResize) data->onResize(data);*/
-			if (data->_resized || data->parent())
+			
+			//if (data->_resized || data->parent())
 			{
 				data->_resized = false;
 				resize_later(data);
 			}
-			else
-			{
-				//resize_later(data);
-				if (!data->_next_timer)
-					data->_next_timer = g_timeout_add(50, (GSourceFunc)resize_later, data);
-			}
+			//else
+			//{
+			//	//resize_later(data);
+			//	if (!data->_next_timer)
+			//		data->_next_timer = g_timeout_add(50, (GSourceFunc)resize_later, data);
+			//}
 		}
 	}
 	

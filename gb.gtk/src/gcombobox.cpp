@@ -165,7 +165,7 @@ void gComboBox::setRealBackground(gColor color)
 {
 	gControl::setRealBackground(color);
 	if (entry) 
-		set_gdk_base_color(entry,color);
+		set_gdk_base_color(entry, color);
 }
 
 

@@ -301,9 +301,12 @@ GdkPixmap *gPicture::getPixmap()
   if (!pic && img)
   {
     //render_pixbuf(this, img);
+    // Normally, if pic is null, mask should be null too
+    if (mask)
+    	g_object_unref(G_OBJECT(mask));
     gt_pixbuf_render_pixmap_and_mask(img, &pic, &mask, 128);
-    g_object_ref(pic);
-    g_object_ref(mask);
+    //g_object_ref(pic);
+    //g_object_ref(mask);
    }
    
   _type = SERVER;
@@ -526,19 +529,17 @@ void gPicture::clear()
   _width = 0;
   _height = 0;
   _type = VOID;
+  
   if (pic)
-  {
   	g_object_unref(G_OBJECT(pic));
-  	pic = NULL;
-  }
 	if (img) 
-	{
 		g_object_unref(G_OBJECT(img));
-		img = NULL;
-	}
+	if (mask)
+		g_object_unref(mask);
 	
   pic = 0;
   img = 0;
+  mask = 0;
 }
 
 void gPicture::resize(int w, int h)

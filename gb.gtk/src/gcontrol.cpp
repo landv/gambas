@@ -1132,7 +1132,7 @@ static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *con
 	return false;
 }
 
-static void cb_size_allocate(GtkWidget *wid, GdkEventExpose *e, gContainer *container)
+static void cb_size_allocate(GtkWidget *wid, GtkAllocation *a, gContainer *container)
 {
 	if (!container->isTopLevel())
 		container->performArrange();

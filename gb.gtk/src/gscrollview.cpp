@@ -30,9 +30,14 @@
 #include "widgets_private.h"
 #include "gscrollview.h"
 
-void gSV_scroll(GtkAdjustment *Adj,gScrollView *data)
+static void cb_scroll(GtkAdjustment *Adj,gScrollView *data)
 {
 	if (data->onScroll) data->onScroll(data);
+}
+
+static void cb_inside_resize(GtkWidget *wid, GtkAllocation *a, gScrollView *data)
+{
+	data->performArrange();
 }
 
 gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
@@ -63,9 +68,11 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	setBorder(true);
 	
 	Adj=gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(_scroll));
-	g_signal_connect(G_OBJECT(Adj),"value-changed",G_CALLBACK(gSV_scroll),this);
+	g_signal_connect(G_OBJECT(Adj),"value-changed",G_CALLBACK(cb_scroll),this);
 	Adj=gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(_scroll));
-	g_signal_connect(G_OBJECT(Adj),"value-changed",G_CALLBACK(gSV_scroll),this);
+	g_signal_connect(G_OBJECT(Adj),"value-changed",G_CALLBACK(cb_scroll),this);
+	g_signal_connect(G_OBJECT(viewport), "size-allocate", G_CALLBACK(cb_inside_resize), (gpointer)this);
+	//g_signal_connect(G_OBJECT(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(_scroll))), "show", G_CALLBACK(cb_update_viewport), (gpointer)this);
 }
 
 
@@ -85,35 +92,34 @@ void gScrollView::setBorder(bool vl)
 
 void gScrollView::updateSize()
 {
-	int bucle;
-	int minX=0,maxX=0,minY=0,maxY=0;
+	int i, p;
+	int ww, hh;
 	gControl *ch;
 	
-	for (bucle=0;bucle<childCount();bucle++)
+	ww = hh = 0;
+	
+	for (i = 0; i < childCount(); i++)
 	{
-		ch = child(bucle);
+		ch = child(i);
 		if (!ch->isVisible()) continue;
-		if (ch->left()<0)
-			if (ch->left()<minX)
-				minX=ch->left();
-				
-		if ( (ch->width()+ch->left())>maxX )
-			maxX=ch->width()+ch->left();
+		
+		p = ch->left() + ch->width();
+		if (p > ww)
+			ww = p;
 			
-		if (ch->top()<0)
-			if (ch->top()<minY)
-				minY=ch->top();
-				
-		if ( (ch->height()+ch->top())>maxY )
-			maxY=ch->height()+ch->top();
+		p = ch->top() + ch->height();
+		if (p > hh)
+			hh = p;
 	}
 	
-	_mw = maxX-minX;
-	if (_mw < viewport->allocation.width)
-		_mw = viewport->allocation.width;
-	_mh = maxY-minY;
-	if (_mh < viewport->allocation.height)
-		_mh = viewport->allocation.height;
+	_mw = ww;
+	ww = width() - getFrameWidth();
+	if (_mw < ww)
+		_mw = ww;
+	_mh = hh;
+	hh = height() - getFrameWidth();
+	if (_mh < hh)
+		_mh = hh;
 	
 	gtk_widget_set_size_request(widget, _mw, _mh);
 }
@@ -158,3 +164,4 @@ void gScrollView::ensureVisible(int x, int y, int w, int h)
 	
 	scroll(arg.scrollX, arg.scrollY);
 }
+
