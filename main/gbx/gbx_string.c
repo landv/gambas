@@ -31,6 +31,7 @@
 #include "gbx_value.h"
 #include "gbx_debug.h"
 #include "gbx_local.h"
+#include "gbx_exec.h"
 
 #include <unistd.h>
 #include <pwd.h>
@@ -481,6 +482,7 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
   size_t out_len;
   size_t ret;
   int errcode = 0;
+  bool unicode;
 
   *result = NULL;
 
@@ -490,8 +492,18 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
   if (len == 0)
     return errcode;
 
-  if (!dst || *dst == 0)
-    dst = "ASCII";
+	if (dst == SC_UNICODE)
+	{
+		dst = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
+		unicode = TRUE;
+	}
+	else
+	{
+		unicode = FALSE;
+
+		if (!dst || *dst == 0)
+			dst = "ASCII";
+	}
 
   if (!src || *src == 0)
     src = "ASCII";
@@ -534,7 +546,8 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 	
 		iconv_close(handle);
 	
-		//STRING_add(result, "\0\0\0", sizeof(wchar_t) - 1);
+		if (unicode)
+			STRING_add(result, "\0\0\0", sizeof(wchar_t) - 1);
 	
 		STRING_extend_end(result);
 	

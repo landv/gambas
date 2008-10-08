@@ -39,6 +39,8 @@ typedef
   PACKED
   STRING;
 
+#define SC_UNICODE ((char *)-1)
+
 void STRING_init(void);
 void STRING_exit(void);
 
@@ -66,7 +68,6 @@ char *STRING_subst(const char *string, int len, SUBST_FUNC get_param);
 int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw);
 char *STRING_conv_file_name(const char *name, int len);
 char *STRING_conv_to_UTF8(const char *name, int len);
-
 
 #define STRING_from_ptr(_ptr) ((STRING *)((_ptr) - offsetof(STRING, data)))
 #define STRING_length(_ptr) ((_ptr) == NULL ? 0 : STRING_from_ptr(_ptr)->len)

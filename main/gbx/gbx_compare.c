@@ -192,10 +192,10 @@ IMPLEMENT_COMPARE_STRING(text, strcasecmp)
 
 int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool throw)
 {
-  char *charset;
   wchar_t *t1 = NULL;
   wchar_t *t2 = NULL;
   int i, cmp;
+  int lt1, lt2;
   
   if (l1 < 0)
   	l1 = s1 ? strlen(s1) : 0;
@@ -213,20 +213,18 @@ int COMPARE_string_lang(char *s1, int l1, char *s2, int l2, bool nocase, bool th
 	else if (l2 == 0)
 		return 1;
 
-	charset = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
-
-	if (STRING_conv((char **)(void *)&t1, s1, l1, "UTF-8", charset, throw)
-		  || STRING_conv((char **)(void *)&t2, s2, l2, "UTF-8", charset, throw))
+	if (STRING_conv((char **)(void *)&t1, s1, l1, "UTF-8", SC_UNICODE, throw)
+		  || STRING_conv((char **)(void *)&t2, s2, l2, "UTF-8", SC_UNICODE, throw))
 		goto __FAILED;
 	
-	l1 = STRING_length((char *)t1) / sizeof(wchar_t);
-	l2 = STRING_length((char *)t2) / sizeof(wchar_t);
+	lt1 = STRING_length((char *)t1) / sizeof(wchar_t);
+	lt2 = STRING_length((char *)t2) / sizeof(wchar_t);
 	
 	if (nocase)
 	{
-		for (i = 0; i < l1; i++)
+		for (i = 0; i < lt1; i++)
 			t1[i] = towlower(t1[i]);
-		for (i = 0; i < l2; i++)
+		for (i = 0; i < lt2; i++)
 			t2[i] = towlower(t2[i]);
 	}
 	

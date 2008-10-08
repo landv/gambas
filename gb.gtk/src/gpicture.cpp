@@ -300,13 +300,10 @@ GdkPixmap *gPicture::getPixmap()
   
   if (!pic && img)
   {
-    //render_pixbuf(this, img);
     // Normally, if pic is null, mask should be null too
     if (mask)
     	g_object_unref(G_OBJECT(mask));
     gt_pixbuf_render_pixmap_and_mask(img, &pic, &mask, 128);
-    //g_object_ref(pic);
-    //g_object_ref(mask);
    }
    
   _type = SERVER;

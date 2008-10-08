@@ -72,7 +72,6 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	Adj=gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(_scroll));
 	g_signal_connect(G_OBJECT(Adj),"value-changed",G_CALLBACK(cb_scroll),this);
 	g_signal_connect(G_OBJECT(viewport), "size-allocate", G_CALLBACK(cb_inside_resize), (gpointer)this);
-	//g_signal_connect(G_OBJECT(gtk_scrolled_window_get_hscrollbar(GTK_SCROLLED_WINDOW(_scroll))), "show", G_CALLBACK(cb_update_viewport), (gpointer)this);
 }
 
 
