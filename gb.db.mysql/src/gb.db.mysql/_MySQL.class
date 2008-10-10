@@ -164,6 +164,13 @@ Public Function CurrentTimestamp(Optional {Format} As String) As String
 
 End
 
+Public Function CurrentUser() As String
+
+  modMain.$Query = "SELECT CURRENT_USER"
+  Return modMain.$Connection.Exec(modMain.$Query)!CURRENT_USER
+
+End
+
 Public Function Quote(Value As Variant) As String
 
   Return "`" & Value & "`"
