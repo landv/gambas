@@ -200,10 +200,11 @@ static bool emit_open_event(void *_object)
   if (THIS->opening)
     return true;
   
+	CWIDGET_clear_flag(THIS, WF_CLOSED);
+	
   if (!THIS->shown)
   {
   	//qDebug("emit_open_event");
-  	CWIDGET_clear_flag(THIS, WF_CLOSED);
   	THIS->opening = true;
 		GB.Raise(THIS, EVENT_Open, 0);
   	THIS->opening = false;
@@ -1541,7 +1542,7 @@ void MyMainWindow::showActivate()
 
   //qDebug("showActivate %p", _object);
 
-  CWIDGET_clear_flag(THIS, WF_CLOSED);
+  //CWIDGET_clear_flag(THIS, WF_CLOSED);
 
 	if (!THIS->title && border != BorderNone)
 		setCaption(GB.Application.Title());
@@ -1638,7 +1639,7 @@ void MyMainWindow::showModal(void)
 
 	THIS->enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
-  CWIDGET_clear_flag(THIS, WF_CLOSED); // Normaly done in showActivate()
+  //CWIDGET_clear_flag(THIS, WF_CLOSED); // Normaly done in showActivate()
   
 	show();
 	afterShow();

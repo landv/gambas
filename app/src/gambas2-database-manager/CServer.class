@@ -107,8 +107,8 @@ PRIVATE SUB RefreshUser()
   IF Single THEN
   
     Users.Add(Handle.User)
-    TRY bAdmin = Handle.Users[Handle.User].Administrator
-    $cAdmin[Handle.User] = TRUE
+    'TRY bAdmin = Handle.Users[Handle.User].Administrator
+    $cAdmin[Handle.User] = FALSE
   
   ELSE
 
@@ -129,12 +129,12 @@ END
 
 PUBLIC FUNCTION Exec() AS String
 
-  Handle.Open
+  IF NOT Single THEN Handle.Open
 
   RefreshDatabase
   RefreshUser
 
-  Handle.Close
+  IF NOT Single THEN Handle.Close
 
   WasOpened = TRUE
 
