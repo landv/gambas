@@ -385,7 +385,7 @@ static int my_loop()
 
 static void my_wait(int duration)
 {
-	do_iteration(true);
+	do_iteration(true, true);
 }
 
 static void my_watch(int fd, int type, void *callback, intptr_t param)
@@ -427,7 +427,7 @@ static void my_lang(char *lang,int rtl)
 	}
 }
 
-void do_iteration(bool do_not_block)
+void do_iteration(bool do_not_block, bool do_not_sleep)
 {
 	struct timespec mywait;
 
@@ -435,7 +435,7 @@ void do_iteration(bool do_not_block)
 	{
 		if (gtk_events_pending ())
 			gtk_main_iteration_do (false);
-		else
+		else if (!do_not_sleep)
 		{
 			mywait.tv_sec=0;
 			mywait.tv_nsec=100000;
