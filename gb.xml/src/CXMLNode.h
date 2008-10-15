@@ -41,13 +41,13 @@ extern GB_DESC CXmlNodeDesc[];
 
 #endif
 
-typedef struct 
-{
-    GB_BASE ob;
-    xmlNode *node;
-    xmlDoc *parent;
-    int orig;
-    
-}  CXMLNODE;
+typedef 
+	struct 
+	{
+		GB_BASE ob;
+		xmlNode *node;
+		struct _CXMLDOCUMENT *doc;
+	}
+	CXMLNODE;
 
 #endif
