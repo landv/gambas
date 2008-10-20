@@ -810,7 +810,7 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 		/*"font-desc", data->font ? data->font->desc() : sf->style->font_desc,*/
 		"xalign", xa,
 		"yalign", ya,
-		NULL);
+		(void *)NULL);
 		
 	gt_set_cell_renderer_text_from_font(txt, data->font ? data->font : view->font());
 	
@@ -1037,70 +1037,62 @@ void gTableRender::setColumnSize(int position,int value)
 
 }
 
+#define CHECK_COORD(_col, _row) if ((_col) < 0 || (_row) < 0 || (_col) >= columnCount() || (_row) > rowCount()) return
+
 void gTableRender::clearField (int col,int row)
 {
-	if (col<0) return;
-	if (col>=columnCount()) return;
-	if (row<0) return;
-	if (row>=rowCount()) return;
-
+	CHECK_COORD(col, row);
 	gTable::clearField(col,row);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldText (int col,int row, const char* value)
 {
-	if (col<0) return;
-	if (col>=columnCount()) return;
-	if (row<0) return;
-	if (row>=rowCount()) return;
-
+	CHECK_COORD(col, row);
 	gTable::setFieldText(col,row,value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldRichText (int col,int row, const char* value)
 {
-	if (col<0) return;
-	if (col>=columnCount()) return;
-	if (row<0) return;
-	if (row>=rowCount()) return;
-
+	CHECK_COORD(col, row);
 	gTable::setFieldRichText(col,row,value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldFg (int col,int row,gColor value)
 {
-	if (col<0) return;
-	if (col>=columnCount()) return;
-	if (row<0) return;
-	if (row>=rowCount()) return;
-
+	CHECK_COORD(col, row);
 	gTable::setFieldFg(col,row,value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldBg (int col,int row,gColor value)
 {
-	if (col<0) return;
-	if (col>=columnCount()) return;
-	if (row<0) return;
-	if (row>=rowCount()) return;
-
+	CHECK_COORD(col, row);
 	gTable::setFieldBg(col,row,value);
 	queryUpdate(row,col);
 }
 
 void gTableRender::setFieldPadding(int col,int row,int value)
 {
-	if (col<0) return;
-	if (col>=columnCount()) return;
-	if (row<0) return;
-	if (row>=rowCount()) return;
-
+	CHECK_COORD(col, row);
 	gTable::setFieldPadding(col,row,value);
 	queryUpdate(row,col);
+}
+
+void gTableRender::setFieldPicture(int col, int row, gPicture *value)
+{
+	CHECK_COORD(col, row);
+	gTable::setFieldPicture(col, row, value);
+	queryUpdate(row, col);
+}
+
+void gTableRender::setFieldFont(int col, int row, gFont *value)
+{
+	CHECK_COORD(col, row);
+	gTable::setFieldFont(col, row, value);
+	queryUpdate(row, col);
 }
 
 void gTableRender::setFieldSelected(int col,int row,bool value)
