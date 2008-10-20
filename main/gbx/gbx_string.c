@@ -505,8 +505,15 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 			dst = "ASCII";
 	}
 
-  if (!src || *src == 0)
-    src = "ASCII";
+	if (src == SC_UNICODE)
+	{
+		src = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
+	}
+	else
+	{
+  	if (!src || *src == 0)
+	    src = "ASCII";
+	}
 
   handle = iconv_open(dst, src);
   if (handle == (iconv_t)(-1))

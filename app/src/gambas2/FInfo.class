@@ -35,6 +35,7 @@ PRIVATE SUB GetInfo(sPath AS String)
   DIM sOutput AS String
   DIM sName AS String
   DIM hPict AS Picture
+  DIM sFile AS String
   
   IF Left(sPath) = "$" THEN sPath = Project.Dir
   IF NOT sPath THEN sPath = Project.Dir
@@ -68,8 +69,13 @@ PRIVATE SUB GetInfo(sPath AS String)
       ELSE 
         sType = ("Directory")
       ENDIF
-      SHELL "(cd " & Quote.Shell(sPath) & "; du -k | tail -n1" & ")" TO sSize
-      iSize = Val(sSize)
+      iSize = 0
+      FOR EACH sFile IN RDir(sPath)
+        iSize += Stat(sPath &/ sFile).Size
+      NEXT
+      iSize = (iSize + 1023) \ 1024
+      'SHELL "(cd " & Quote.Shell(sPath) & "; du -k | tail -n1" & ")" TO sSize
+      'iSize = Val(sSize)
     ELSE
       SELECT CASE File.Ext(sPath)
         CASE "module"
