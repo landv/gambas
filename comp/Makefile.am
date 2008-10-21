@@ -33,7 +33,7 @@ install-exec-local:
 	  chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.info; \
 	  $(INSTALL) .list $(DESTDIR)$(gbdatadir)/info/$$p.list; \
 	  chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.list; \
-	  done)
+	  done; true)
 
 uninstall-local:
 	@(cd $(srcdir)/src; for p in *; do \
