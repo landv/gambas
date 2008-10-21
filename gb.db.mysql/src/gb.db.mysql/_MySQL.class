@@ -262,3 +262,10 @@ Private Function Query_Read() As String
   Return modMain.$Query
 
 End
+
+Public Function Id() As String
+
+  modMain.$Query = "SELECT CONNECTION_ID()"
+  Return modMain.$Connection.Exec(modMain.$Query)["CONNECTION_ID()"]
+
+End
