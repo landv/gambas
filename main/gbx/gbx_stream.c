@@ -225,6 +225,7 @@ static void read_buffer(STREAM *stream, void **addr, int *len)
 		memcpy(*addr, stream->common.buffer + stream->common.buffer_pos, l);
 		*addr = (char *)*addr + l;
 		*len -= l;
+		STREAM_eff_read += l;
 		stream->common.buffer_pos += l;
 	}
 }
@@ -301,33 +302,36 @@ void STREAM_read_max(STREAM *stream, void *addr, int len)
 	if (stream->common.buffer)
 		read_buffer(stream, &addr, &len);
 	
-	if (is_term)
+	if (len > 0)
 	{
-		handle = STREAM_handle(stream);
-		flags = fcntl(handle, F_GETFL);
-		fcntl(handle, F_SETFL, flags | O_NONBLOCK);
-		
-		err = (*(stream->type->read))(stream, addr, len);
-		
-		fcntl(handle, F_SETFL, flags);
-	}
-	else
-	{
-		err = (*(stream->type->read))(stream, addr, len);
-	}
-	
-
-	if (err)
-	{
-		switch(errno)
+		if (is_term)
 		{
-			case 0:
-			case EAGAIN:
-				break;
-			case EIO:
-				break; //THROW(E_READ);
-			default:
-				THROW_SYSTEM(errno, NULL);
+			handle = STREAM_handle(stream);
+			flags = fcntl(handle, F_GETFL);
+			fcntl(handle, F_SETFL, flags | O_NONBLOCK);
+			
+			err = (*(stream->type->read))(stream, addr, len);
+			
+			fcntl(handle, F_SETFL, flags);
+		}
+		else
+		{
+			err = (*(stream->type->read))(stream, addr, len);
+		}
+		
+	
+		if (err)
+		{
+			switch(errno)
+			{
+				case 0:
+				case EAGAIN:
+					break;
+				case EIO:
+					break; //THROW(E_READ);
+				default:
+					THROW_SYSTEM(errno, NULL);
+			}
 		}
 	}
 }

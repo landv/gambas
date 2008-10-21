@@ -47,7 +47,7 @@ Public Sub lstType_Click()
     Object.Unlock(txtName)
   Endif 
   
-  iFilter = ["module", "class", "form", "image", "html"].Find(LCase(sPrefix))
+  iFilter = ["module", "class", "form", "image", "html", "text"].Find(LCase(sPrefix))
   $iFilter = iFilter
   
   txtName.SetFocus

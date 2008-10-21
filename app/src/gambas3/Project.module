@@ -695,7 +695,10 @@ Public Sub GetParentClass(sPath As String) As String
   
   If Left(sPath) <> "/" Then sPath = FindPath(sPath)
   
-  hFile = Open sPath For Input
+  Try hFile = Open sPath For Input
+  ' Possible, if sPath is a broken symbolic link  
+  If Error Then Return
+
   While Not Eof(hFile)
     Line Input #hFile, sLine
     sLine = Trim(sLine)
@@ -1724,6 +1727,35 @@ Catch
 
 End
 
+Private Sub MakeRelativeLink(sLink As String, sPath As String) As String
+  
+  Dim aPath As String[]
+  Dim aLink As String[]
+  Dim iInd As Integer
+  Dim iMax As Integer
+
+  aPath = Split(File.Dir(sPath), "/")
+  aLink = Split(sLink, "/")
+
+  iMax = Min(aPath.Max, aLink.Max)
+  For iInd = 0 To iMax
+    If aPath[iInd] <> aLink[iInd] Then Break
+  Next
+
+  If iInd <= iMax And (aPath.Count - iInd) <= 4 Then
+
+    sLink = String$(aPath.Count - iInd, "../")
+    While iInd < aLink.Count
+      sLink = sLink &/ aLink[iInd]
+      Inc iInd
+    Wend
+
+  Endif
+
+  Return sLink
+  
+End
+
 
 
 Public Sub Insert(sName As String, sType As String, Optional sTemplate As String, Optional bNoRefresh As Boolean, Optional bNoOpen As Boolean, Optional bLink As Boolean)
@@ -1738,6 +1770,7 @@ Public Sub Insert(sName As String, sType As String, Optional sTemplate As String
   Endif
 
   If bLink Then
+    sTemplate = MakeRelativeLink(sTemplate, sPath)
     Link sTemplate To sPath ' swapped
   Else If Left(sTemplate) = "/" Then
     Try Copy sTemplate To sPath
@@ -1769,6 +1802,7 @@ Public Sub InsertFile(sName As String, sDir As String, Optional sTemplate As Str
 
     'SHELL "cp " & Quote(sTemplate) & " " & Quote(sPath) WAIT
     If bLink Then
+      sTemplate = MakeRelativeLink(sTemplate, sPath)
       Try Link sTemplate To sPath ' swapped
     Else
       Try Copy sTemplate To sPath
