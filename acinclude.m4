@@ -139,31 +139,6 @@ AC_DEFUN([GB_INIT],
   
   AC_REPLACE_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw)
 
-  dnl ---- Support for colorgcc
-
-  AC_PATH_PROG(COLORGCC, colorgcc)
-
-  if test x"$COLORGCC" != x; then
-    
-    CC="colorgcc"
-    CXX="colorgcc"
-  
-  fi
-  
-  dnl ---- Support for ccache
-  
-  AC_PATH_PROG(CCACHE, ccache)
-
-  if test x"$CCACHE" != x; then
-    if test x"$COLORGCC" != x; then
-      CC="colorgcc"
-      CXX="colorgcc"
-    else
-      CC="ccache $CC"
-      CXX="ccache $CXX"
-    fi
-  fi
-
   dnl ---- Checks for libraries
 
   AC_CHECK_LIB(m, main, echo -n)
@@ -197,6 +172,45 @@ AC_DEFUN([GB_INIT],
   dnl ---- Check for gettext lib
   
   GB_GETTEXT()
+
+  dnl ---- Support for colorgcc
+  dnl ---- WARNING: libtool does not support colorgcc!
+
+  dnl AC_PATH_PROG(COLORGCC, colorgcc)
+
+  if test x"$COLORGCC" != x; then
+    if test "$gambas_colorgcc" = "yes"; then
+      CC="colorgcc"
+      CXX="g++"
+    fi
+  fi
+  
+  dnl ---- Support for ccache
+  
+  AC_ARG_ENABLE(
+    ccache,
+    [  --enable-ccache                use ccache if present (default: yes)],
+    gambas_ccache=$enableval,
+    gambas_ccache=yes
+  )
+
+  AC_PATH_PROG(CCACHE, ccache)
+
+  if test "$gambas_colorgcc" = "yes"; then
+    if test x"$CCACHE" != x; then
+      
+      CC="ccache $CC"
+      CXX="ccache $CXX"
+      
+      if test x"$COLORGCC" != x; then
+        if test "$gambas_colorgcc" = "yes"; then
+          CC="colorgcc"
+          CXX="colorgcc"
+        fi
+      fi
+    
+    fi
+  fi
 
   dnl ---- debug option
 

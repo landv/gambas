@@ -37,6 +37,6 @@
 extern GB_INTERFACE GB;
 #endif
 
-void do_iteration(bool do_not_block);
+void do_iteration(bool do_not_block, bool do_not_sleep = false);
 #endif
 

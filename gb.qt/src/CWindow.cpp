@@ -216,16 +216,16 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
 
 static bool emit_open_event(void *_object)
 {
-  if (THIS->opening)
-    return true;
-  
-  if (!THIS->shown)
-  {
-  	//qDebug("emit_open_event");
-  	CWIDGET_clear_flag(THIS, WF_CLOSED);
-  	THIS->opening = true;
+	if (THIS->opening)
+		return true;
+	
+	CWIDGET_clear_flag(THIS, WF_CLOSED);
+	if (!THIS->shown)
+	{
+		//qDebug("emit_open_event");
+		THIS->opening = true;
 		GB.Raise(THIS, EVENT_Open, 0);
-  	THIS->opening = false;
+		THIS->opening = false;
 		if (CWIDGET_test_flag(THIS, WF_CLOSED))
 			return true;
 		THIS->shown = true;
@@ -1604,7 +1604,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 
   //qDebug("showActivate %p", _object);
 
-  CWIDGET_clear_flag(THIS, WF_CLOSED);
+  //CWIDGET_clear_flag(THIS, WF_CLOSED);
 
 	if (!THIS->title && _border)
 		setCaption(GB.Application.Title());
@@ -1699,7 +1699,7 @@ void MyMainWindow::showModal(void)
 
 	THIS->enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
-  CWIDGET_clear_flag(THIS, WF_CLOSED); // Normaly done in showActivate()
+  //CWIDGET_clear_flag(THIS, WF_CLOSED); // Normaly done in showActivate()
   
 	show();
 	afterShow();

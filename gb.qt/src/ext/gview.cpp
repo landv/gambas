@@ -1473,6 +1473,7 @@ void GEditor::mouseReleaseEvent(QMouseEvent *e)
 	if (scrollTimer->isActive())
 	{
 		scrollTimer->stop();
+		startBlink();
 		copy(true);
 		return;
 	}

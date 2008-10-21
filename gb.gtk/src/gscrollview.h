@@ -22,11 +22,11 @@ public:
 
 //"Private"
 	virtual void performArrange();
+  void updateSize();
 	
 private:
   GtkWidget *_scroll;
 	GtkWidget *viewport;
-  void updateSize();
   int _mw, _mh;
 };
 

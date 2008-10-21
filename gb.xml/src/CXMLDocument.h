@@ -40,18 +40,16 @@ extern GB_DESC CXmlDocumentDesc[];
 
 #endif
 
-typedef struct 
-{
-    GB_BASE ob;
-    xmlDoc *doc; 
-    CXMLNODE *node;
-    void **children;
-    int nchildren;
-    
-}  CXMLDOCUMENT;
+typedef 
+	struct _CXMLDOCUMENT
+	{
+		GB_BASE ob;
+		xmlDoc *doc; 
+	}  
+	CXMLDOCUMENT;
 
-void Doc_AddChild(void *_object,CXMLNODE *chd);
-void Doc_RemoveChild(void *_object,CXMLNODE *chd);
+CXMLNODE *XML_CreateNode(CXMLDOCUMENT *doc, xmlNode *node);
+void XML_InitDocument(CXMLDOCUMENT *_object, xmlDoc *doc, const char *err);
 
 #endif
 

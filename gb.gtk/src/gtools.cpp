@@ -1300,7 +1300,8 @@ void gt_pixbuf_make_alpha(GdkPixbuf *pixbuf, gColor color)
 		p[0] = rgb_src.r * 255.0 + 0.5;
 		p[1] = rgb_src.g * 255.0 + 0.5;
 		p[2] = rgb_src.b * 255.0 + 0.5;
-		p[3] = 0xFF ^ (uchar)(rgb_src.a * 255.0 + 0.5);
+		//p[3] = 0xFF ^ (uchar)(rgb_src.a * 255.0 + 0.5);
+		p[3] = rgb_src.a * 255.0 + 0.5;
 	}
 }
 

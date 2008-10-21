@@ -33,69 +33,40 @@
 #include "main.h"
 #include "CXMLDocument.h"
 
-
-void free_document(CXMLDOCUMENT *test)
+CXMLNODE *XML_CreateNode(CXMLDOCUMENT *doc, xmlNode *node)
 {
-
-	int bucle;
-
-	if (test->nchildren)
-	{
-		for (bucle=0;bucle<test->nchildren;bucle++)
-			((CXMLNODE*)test->children[bucle])->parent=NULL;
-
-		GB.Free(POINTER(&test->children));
-		test->nchildren=0;
-	}
-
-	if (test->doc)
-	{
-		xmlFreeDoc(test->doc);
-		test->doc=NULL;
-	}
-
-	if (test->node)
-	{
-		GB.Unref(POINTER(&test->node));
-	}
-
-
+	CXMLNODE *p;
+	
+	if (!node)
+		return NULL;
+	
+	GB.New(POINTER(&p), GB.FindClass("XmlNode"), NULL, NULL);
+	p->node = node;
+	p->doc = doc;
+	GB.Ref(doc);
+	return p;
 }
 
-void Doc_AddChild(void *_object,CXMLNODE *chd)
+static void free_document(CXMLDOCUMENT *_object)
 {
-	THIS->nchildren++;
-
-	if (!THIS->children)
-		GB.Alloc(POINTER(&THIS->children),sizeof(CXMLNODE*));
-	else
-		GB.Realloc(POINTER(&THIS->children),THIS->nchildren*sizeof(CXMLNODE*));
-
-	// BM: BUG?
-	chd->parent=THIS->doc;
-	THIS->children[THIS->nchildren-1]=chd;
+	if (THIS->doc)
+	{
+		xmlFreeDoc(THIS->doc);
+		THIS->doc = NULL;
+	}
 }
 
-void Doc_RemoveChild(void *_object,CXMLNODE *chd)
+
+void XML_InitDocument(CXMLDOCUMENT *_object, xmlDoc *doc, const char *err)
 {
-	int myloop,myloop2;
-
-	for (myloop=0; myloop<THIS->nchildren; myloop++)
+	if (!doc)
 	{
-		if (THIS->children[myloop] == chd )
-		{
-			THIS->nchildren--;
-			for (myloop2=myloop;myloop2<THIS->nchildren;myloop2++)
-				THIS->children[myloop2]=THIS->children[myloop2+1];
-
-			if (!THIS->nchildren)
-				GB.Free(POINTER(&THIS->children));
-			else
-				GB.Realloc(POINTER(&THIS->children),THIS->nchildren*sizeof(CXMLNODE*));
-
-			return;
-		}
+		GB.Error(err ? err : "Unable to parse XML file");
+		return;
 	}
+	
+	free_document(THIS);
+	THIS->doc = doc;
 }
 
 
@@ -110,59 +81,20 @@ BEGIN_METHOD (CXMLDocument_Open,GB_STRING FileName;)
 
 	const char *path;
 
-	free_document(THIS);
-
 	path = GB.RealFileName(STRING(FileName), LENGTH(FileName));
-
-	THIS->doc=xmlParseFile(path);
-	if (!THIS->doc)
-	{
-		GB.Error("Unable to parse XML file");
-		return;
-	}
-
-	GB.New(POINTER(&THIS->node),GB.FindClass("XmlNode"),NULL,NULL);
-	THIS->node->node=xmlDocGetRootElement(THIS->doc);
-	Doc_AddChild(THIS,THIS->node);
-	GB.Ref((void*)THIS->node);
+	XML_InitDocument(THIS, xmlParseFile(path), NULL);
 
 END_METHOD
 
 BEGIN_METHOD (CXMLDocument_FromString,GB_STRING Data;)
 
-
-	free_document(THIS);
-
-	THIS->doc=xmlParseDoc((xmlChar *)GB.ToZeroString(ARG(Data)));
-	if (!THIS->doc)
-	{
-		GB.Error("Unable to parse XML data");
-		return;
-	}
-
-	GB.New(POINTER(&THIS->node),GB.FindClass("XmlNode"),NULL,NULL);
-	THIS->node->node=xmlDocGetRootElement(THIS->doc);
-	Doc_AddChild(THIS,THIS->node);
-	GB.Ref((void*)THIS->node);
+	XML_InitDocument(THIS, xmlParseDoc((xmlChar *)GB.ToZeroString(ARG(Data))), NULL);
 
 END_METHOD
 
 BEGIN_METHOD (CXMLDocument_HtmlFromString,GB_STRING Data;)
 
-
-	free_document(THIS);
-
-	THIS->doc=htmlParseDoc((xmlChar *)GB.ToZeroString(ARG(Data)),NULL);
-	if (!THIS->doc)
-	{
-		GB.Error("Unable to parse XML data");
-		return;
-	}
-
-	GB.New(POINTER(&THIS->node),GB.FindClass("XmlNode"),NULL,NULL);
-	THIS->node->node=xmlDocGetRootElement(THIS->doc);
-	Doc_AddChild(THIS,THIS->node);
-	GB.Ref((void*)THIS->node);
+	XML_InitDocument(THIS, htmlParseDoc((xmlChar *)GB.ToZeroString(ARG(Data)),NULL), NULL);
 
 END_METHOD
 
@@ -180,13 +112,13 @@ BEGIN_METHOD (CXMLDocument_Write,GB_STRING FileName; GB_STRING Encoding;)
 	if (MISSING(Encoding))
 		enc="UTF-8";
 	else
-		enc=GB.ToZeroString(ARG(FileName));
+		enc=GB.ToZeroString(ARG(Encoding));
 
 	xmlSaveFormatFileEnc(GB.ToZeroString(ARG(FileName)), THIS->doc,enc , 1);
 
 END_METHOD
 
-BEGIN_METHOD (CXMLDocument_ToString,GB_STRING Encoding;)
+BEGIN_METHOD(CXMLDocument_ToString, GB_STRING Encoding)
 
 	xmlChar *mem;
 	int size;
@@ -201,7 +133,7 @@ END_METHOD
 
 BEGIN_PROPERTY (CXMLDocument_Root)
 
-	GB.ReturnObject(THIS->node);
+	GB.ReturnObject(XML_CreateNode(THIS, xmlDocGetRootElement(THIS->doc)));
 
 END_PROPERTY
 

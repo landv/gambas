@@ -22,8 +22,6 @@
 
 ***************************************************************************/
 
-
-
 #define __CXMLNODE_C
 
 #include <stdio.h>
@@ -32,82 +30,55 @@
 #include "CXMLDocument.h"
 #include "CXMLNode.h"
 
-int CXMLNode_check(void *_object)
+/*int CXMLNode_check(void *_object)
 {
 	return !THIS->parent;
-}
+}*/
 
 
 BEGIN_PROPERTY(CXMLNode_Next)
 
-	CXMLNODE *nd=NULL;
-
-	if (!THIS->node->next) return;
-
-	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
-	nd->node=THIS->node->next;
-
-	Doc_AddChild(THIS->parent,nd);
-
-	GB.ReturnObject(nd);
+	if (!THIS->node->next)
+		GB.ReturnNull();
+	else
+		GB.ReturnObject(XML_CreateNode(THIS->doc, THIS->node->next));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CXMLNode_Prev)
 
-	CXMLNODE *nd=NULL;
-
-	if (!THIS->node->prev) return;
-
-	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
-	nd->node=THIS->node->prev;
-
-	Doc_AddChild(THIS->parent,nd);
-
-	GB.ReturnObject(nd);
-
+	if (!THIS->node->prev)
+		GB.ReturnNull();
+	else
+		GB.ReturnObject(XML_CreateNode(THIS->doc, THIS->node->prev));
+	
 END_PROPERTY
 
 BEGIN_PROPERTY(CXMLNode_Parent)
 
-	CXMLNODE *nd=NULL;
-
-	if (!THIS->node->parent) return;
-
-	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
-	nd->node=THIS->node->parent;
-
-	Doc_AddChild(THIS->parent,nd);
-
-	GB.ReturnObject(nd);
-
+	if (!THIS->node->parent)
+		GB.ReturnNull();
+	else
+		GB.ReturnObject(XML_CreateNode(THIS->doc, THIS->node->parent));
+	
 END_PROPERTY
 
-BEGIN_PROPERTY(CXMLNode_Children)
-
-	RETURN_SELF();
-
-END_PROPERTY
 
 BEGIN_PROPERTY(CXMLNode_Name)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnNewString((const char *)THIS->node->name,0);
-		return;
-	}
-
-	xmlNodeSetName(THIS->node, (const xmlChar *)GB.ToZeroString(PROP(GB_STRING)));
+	else
+		xmlNodeSetName(THIS->node, (const xmlChar *)GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CXMLNode_Value)
 
 	if (READ_PROPERTY)
-	{
 		GB.ReturnNewString((const char *)xmlNodeGetContent(THIS->node),0);
-		return;
-	}
+	else
+		fprintf(stderr, "*NOT IMPLEMENTED*");
 
 END_PROPERTY
 
@@ -162,14 +133,13 @@ END_METHOD
 ***************************************************************/
 BEGIN_METHOD(CXmlNode_c_get,GB_INTEGER Element)
 
-	CXMLNODE *nd;
 	int nval=0;
 	int nMax;
 	xmlNode *ch;
 
-	nMax=VARG(Element);
+	nMax = VARG(Element);
 
-	ch=THIS->node->children;
+	ch = THIS->node->children;
 
 	if (!ch)
 	{
@@ -189,11 +159,7 @@ BEGIN_METHOD(CXmlNode_c_get,GB_INTEGER Element)
 		return;
 	}
 
-	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
-	nd->node=ch;
-	Doc_AddChild(THIS->parent,nd);
-
-	GB.ReturnObject(nd);
+	GB.ReturnObject(XML_CreateNode(THIS->doc, ch));
 
 END_METHOD
 
@@ -203,13 +169,11 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CXmlNode_a_next)
 
-	CXMLNODE *nd;
 	xmlNodePtr attr;
 	int bucle;
 	long *wenum;
 
 	wenum=(long*)GB.GetEnum();
-
 
 	attr=(xmlNodePtr)THIS->node->properties;
 
@@ -231,14 +195,7 @@ BEGIN_METHOD_VOID(CXmlNode_a_next)
 
 	(*wenum)++;
 
-	GB.New(POINTER(&nd),GB.FindClass("XmlNode"),NULL,NULL);
-	nd->node=attr;
-
-	Doc_AddChild(THIS->parent,nd);
-
-	GB.ReturnObject(nd);
-
-
+	GB.ReturnObject(XML_CreateNode(THIS->doc, attr));
 
 END_METHOD
 
@@ -262,8 +219,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CXMLNode_Free)
 
-	if (THIS->parent) Doc_AddChild(THIS->parent,THIS);
-
+	GB.Unref(POINTER(&THIS->doc));
 
 END_METHOD
 
@@ -271,7 +227,7 @@ GB_DESC CXmlNodeChildrenDesc[] =
 {
 	GB_DECLARE(".XmlNodeChildren", 0), GB_VIRTUAL_CLASS(),
 
-        GB_METHOD("_get", "XmlNode",CXmlNode_c_get, "(Element)i"),
+	GB_METHOD("_get", "XmlNode",CXmlNode_c_get, "(Element)i"),
 	GB_PROPERTY_READ("Count", "i", CXmlNode_c_count),
 
 	GB_END_DECLARE
@@ -283,7 +239,7 @@ GB_DESC CXmlNodeAttributesDesc[] =
 	GB_DECLARE(".XmlNodeAttributes", 0), GB_VIRTUAL_CLASS(),
 
 	GB_METHOD("_next", "XmlNode", CXmlNode_a_next, NULL),
-        GB_PROPERTY_READ("Count", "i", CXmlNode_a_count),
+	GB_PROPERTY_READ("Count", "i", CXmlNode_a_count),
 
 	GB_END_DECLARE
 };
@@ -296,7 +252,7 @@ GB_DESC CXmlNodeDesc[] =
   GB_DECLARE("XmlNode", sizeof(CXMLNODE)), GB_NOT_CREATABLE(),
 
   GB_NOT_CREATABLE(),
-  GB_HOOK_CHECK(CXMLNode_check),
+  //GB_HOOK_CHECK(CXMLNode_check),
 
   GB_CONSTANT("ElementNode", "i", XML_ELEMENT_NODE),
   GB_CONSTANT("AttributeNode", "i", XML_ATTRIBUTE_NODE),
@@ -320,16 +276,14 @@ GB_DESC CXmlNodeDesc[] =
   GB_CONSTANT("XIncludeEnd", "i", XML_XINCLUDE_END),
   GB_CONSTANT("DocbDocumentNode", "i", XML_DOCB_DOCUMENT_NODE),
 
-
   GB_PROPERTY("Name","s",CXMLNode_Name),
   GB_PROPERTY("Value","s",CXMLNode_Value),
 
   GB_PROPERTY_READ("Parent","XmlNode",CXMLNode_Parent),
   GB_PROPERTY_READ("Next","XmlNode",CXMLNode_Next),
   GB_PROPERTY_READ("Previous","XmlNode",CXMLNode_Prev),
-  GB_PROPERTY_READ("Children",".XmlNodeChildren",CXMLNode_Children),
-  GB_PROPERTY_READ("Attributes",".XmlNodeAttributes",CXMLNode_Children),
-
+  GB_PROPERTY_SELF("Children",".XmlNodeChildren"),
+  GB_PROPERTY_SELF("Attributes",".XmlNodeAttributes"),
 
   GB_METHOD("NewAttribute",NULL,CXMLNode_AddAttr,"(Name)s(Value)s"),
   GB_METHOD("NewElement",NULL,CXMLNode_AddElement,"(Name)s(Value)s"),

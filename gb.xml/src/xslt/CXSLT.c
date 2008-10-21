@@ -37,22 +37,6 @@
 #include "../CXMLNode.h"
 
 
-void Doc_AddChild(void *_object,CXMLNODE *chd)
-{
-	CXMLDOCUMENT* mythis=(CXMLDOCUMENT*)_object;
-
-	mythis->nchildren++;
-	
-	if (!mythis->children)
-		GB.Alloc(POINTER(&mythis->children),sizeof(CXMLNODE*));
-	else
-		GB.Realloc(POINTER(&mythis->children),mythis->nchildren*sizeof(CXMLNODE*));	
-
-	chd->parent=_object;
-	mythis->children[mythis->nchildren-1]=chd;
-}
-
-
 BEGIN_METHOD(CXSLT_Transform,GB_OBJECT Document;GB_OBJECT StyleSheet;)
 
 	CXMLDOCUMENT *doc;
@@ -85,23 +69,15 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT Document;GB_OBJECT StyleSheet;)
 	}
 	
 	GB.New(POINTER(&out),GB.FindClass("XmlDocument"),NULL,NULL);
-	out->doc=xsltApplyStylesheet(sheet, doc->doc, NULL);
-	GB.New(POINTER(&out->node),GB.FindClass("XmlNode"),NULL,NULL);
+	
+	XML_InitDocument(out, xsltApplyStylesheet(sheet, doc->doc, NULL), "Unable to apply style sheet");
 	
 	if (!out->doc)
 	{
 		GB.Unref(POINTER(&out));
-		GB.Error("Unable to apply Style Sheet");
 		return;
 	}
 	
-	out->node->node=xmlDocGetRootElement(out->doc);
-	Doc_AddChild(out,out->node);
-	GB.Ref((void*)out->node);
-	GB.ReturnObject((void*)out);
-	//xsltFreeStylesheet(sheet);
-
-
 END_METHOD
 
 

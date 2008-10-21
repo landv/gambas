@@ -40,6 +40,8 @@ typedef
   PACKED
   STRING;
 
+#define SC_UNICODE ((char *)-1)
+
 void STRING_init(void);
 void STRING_exit(void);
 

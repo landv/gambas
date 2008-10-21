@@ -37,8 +37,6 @@
 	
 **************************************************************************/
 
-static bool _style_init = FALSE;
-
 static void cb_click(GtkComboBox *widget,gComboBox *data)
 {
 	if (!data->isReadOnly() && !data->locked() && data->count())

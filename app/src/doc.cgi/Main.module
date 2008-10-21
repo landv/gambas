@@ -720,13 +720,17 @@ Private Function Encode(sText As String) As String
           $sRes &= "<hr>"
           sStr = Mid$(sStr, 5)
         Endif
-        sStr = EncodeHTML(sStr)
-        iPos = Len(sStr) - Len(LTrim(sStr))
-        If iPos > 0 Then
-          sStr = String$(iPos, "&nbsp;") & Mid$(sStr, iPos + 1)
+        If $bExample Then
+          sStr = EncodeHTML(sStr)
+          iPos = Len(sStr) - Len(LTrim(sStr))
+          If iPos > 0 Then
+            sStr = String$(iPos, "&nbsp;") & Mid$(sStr, iPos + 1)
+          Endif
+          sStr = Replace(sStr, "  ", "&nbsp;&nbsp;")
+          $sRes &= sStr & "<br>\n"
+        Else
+          $sRes &= sStr & "\n"
         Endif
-        sStr = Replace(sStr, "  ", "&nbsp;&nbsp;")
-        $sRes &= sStr & "<br>\n"
       Endif
       Continue
 
@@ -1345,7 +1349,11 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
   MakeTitle(sTitle)
   Print "</head>"
   
-  Print "<body>"
+  If $bView Then
+    Print "<body class=\"view\">"
+  Else
+    Print "<body>"
+  Endif
   
   'IF System.RightToLeft THEN 
   '  PRINT "<body dir=\"rtl\">"

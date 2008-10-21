@@ -1066,7 +1066,7 @@ void EXEC_native(void)
 	VALUE *value;
 	TYPE *sign;
 	bool error;
-	void *free_later;
+	void * NO_WARNING(free_later);
 	int n;
 	VALUE ret;
 

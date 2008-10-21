@@ -1,24 +1,24 @@
 /***************************************************************************
 
-  String.c
+	String.c
 
-  The String management routines
+	The String management routines
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -34,6 +34,7 @@
 #include "gbx_debug.h"
 #include "gbx_local.h"
 #include "gbx_project.h"
+#include "gbx_exec.h"
 
 #include <unistd.h>
 #include <pwd.h>
@@ -72,7 +73,7 @@ static int _index = 0;
 //static HASH_TABLE *_intern = NULL;
 
 /****************************************************************************
- 
+
 	String pool management
 
 ****************************************************************************/
@@ -142,9 +143,9 @@ static STRING *realloc_string(STRING *str, int new_len)
 	int size;
 	int new_size;
 	
-  if (new_len == str->len)
-    return str;
-    
+	if (new_len == str->len)
+		return str;
+		
 	size = REAL_SIZE(str->len + 1 + sizeof(STRING));
 	new_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
 	
@@ -192,76 +193,76 @@ static void clear_pool(void)
 }
 
 /****************************************************************************
- 
+
 	String routines
 
 ****************************************************************************/
 
 void STRING_new(char **ptr, const char *src, int len)
 {
-  STRING *str;
+	STRING *str;
 
-  if (len <= 0 && src != NULL)
-    len = strlen(src);
+	if (len <= 0 && src != NULL)
+		len = strlen(src);
 
-  if (len <= 0)
-  {
-    *ptr = NULL;
-    return;
-  }
+	if (len <= 0)
+	{
+		*ptr = NULL;
+		return;
+	}
 
-  //ALLOC(&str, REAL_SIZE(len + 1 + sizeof(STRING)), "STRING_new");
-  str = alloc_string(len);
+	//ALLOC(&str, REAL_SIZE(len + 1 + sizeof(STRING)), "STRING_new");
+	str = alloc_string(len);
 
-  if (src)
-    memcpy(str->data, src, len);
+	if (src)
+		memcpy(str->data, src, len);
 
-  str->data[len] = 0;
+	str->data[len] = 0;
 
-  *ptr = str->data;
+	*ptr = str->data;
 
-  #ifdef DEBUG_ME
-  DEBUG_where();
-  fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", *ptr, len, src);
-  fflush(stderr);
-  #endif
+	#ifdef DEBUG_ME
+	DEBUG_where();
+	fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", *ptr, len, src);
+	fflush(stderr);
+	#endif
 }
 
 #define post_free STRING_free_later
 
 void STRING_free_later(char *ptr)
 {
-  /*if (NLast >= MAX_LAST_STRING)
-    THROW(E_STRING);*/
+	/*if (NLast >= MAX_LAST_STRING)
+		THROW(E_STRING);*/
 
-  #ifdef DEBUG_ME
-  if (STRING_last[_index])
-  {
-    DEBUG_where();
-    fprintf(stderr, "STRING_free_later: release temp: %p '%s'\n", STRING_last[_index], STRING_last[_index]);
-    fflush(stderr);
-  }
-  #endif
+	#ifdef DEBUG_ME
+	if (STRING_last[_index])
+	{
+		DEBUG_where();
+		fprintf(stderr, "STRING_free_later: release temp: %p '%s'\n", STRING_last[_index], STRING_last[_index]);
+		fflush(stderr);
+	}
+	#endif
 
-  STRING_unref(&STRING_last[_index]);
+	STRING_unref(&STRING_last[_index]);
 
-  #ifdef DEBUG_ME
-  fprintf(stderr, "STRING_free_later: post temp: %p '%s'\n", ptr, ptr);
-  fflush(stderr);
-  #endif
+	#ifdef DEBUG_ME
+	fprintf(stderr, "STRING_free_later: post temp: %p '%s'\n", ptr, ptr);
+	fflush(stderr);
+	#endif
 
-  STRING_last[_index] = ptr;
+	STRING_last[_index] = ptr;
 
-  _index++;
+	_index++;
 
-  if (_index >= STRING_last_count)
-    _index = 0;
+	if (_index >= STRING_last_count)
+		_index = 0;
 }
 
 
 int STRING_get_free_index(void)
 {
-  return _index;
+	return _index;
 }
 
 
@@ -273,25 +274,25 @@ int STRING_get_free_index(void)
 
 void STRING_exit(void)
 {
-  int i;
+	int i;
 
-  for (i = 0; i < STRING_last_count; i++)
-  {
-    /*if (STRING_last[i])
-      printf("release temp %p '%s'\n", STRING_last[i], STRING_last[i]);*/
-    STRING_unref(&STRING_last[i]);
-    STRING_last[i] = NULL;
-  }
-  
-  _index = 0;
-  
-  clear_pool();
+	for (i = 0; i < STRING_last_count; i++)
+	{
+		/*if (STRING_last[i])
+			printf("release temp %p '%s'\n", STRING_last[i], STRING_last[i]);*/
+		STRING_unref(&STRING_last[i]);
+		STRING_last[i] = NULL;
+	}
+	
+	_index = 0;
+	
+	clear_pool();
 }
 
 
 void STRING_extend(char **ptr, int new_len)
 {
-  STRING *str;
+	STRING *str;
 
 	if (!*ptr)
 		str = alloc_string(new_len);
@@ -304,142 +305,142 @@ void STRING_extend(char **ptr, int new_len)
 
 void STRING_extend_end(char **ptr)
 {
-  if (*ptr)
-  {
-    (*ptr)[STRING_length(*ptr)] = 0;
-    post_free(*ptr);
-  }
+	if (*ptr)
+	{
+		(*ptr)[STRING_length(*ptr)] = 0;
+		post_free(*ptr);
+	}
 }
 
 
 void STRING_copy_from_value_temp(char **ptr, VALUE *value)
 {
-  if (value->_string.len == 0)
-    *ptr = NULL;
-  else if (value->type == T_STRING && value->_string.start == 0 && value->_string.len == STRING_length(value->_string.addr))
-    *ptr = value->_string.addr;
-  else
-    STRING_new_temp(ptr, &value->_string.addr[value->_string.start], value->_string.len);
+	if (value->_string.len == 0)
+		*ptr = NULL;
+	else if (value->type == T_STRING && value->_string.start == 0 && value->_string.len == STRING_length(value->_string.addr))
+		*ptr = value->_string.addr;
+	else
+		STRING_new_temp(ptr, &value->_string.addr[value->_string.start], value->_string.len);
 }
 
 
 /* Attention ! Contrairement �STRING_new, STRING_new_temp_value cr� des
-   cha�es temporaires.
+	cha�es temporaires.
 */
 
 void STRING_new_temp_value(VALUE *value, const char *src, int len)
 {
-  STRING_new_temp(&(value->_string.addr), src, len);
+	STRING_new_temp(&(value->_string.addr), src, len);
 
-  value->_string.len = STRING_length(value->_string.addr);
-  value->_string.start = 0;
-  value->type = T_STRING;
+	value->_string.len = STRING_length(value->_string.addr);
+	value->_string.start = 0;
+	value->type = T_STRING;
 }
 
 
 void STRING_new_constant_value(VALUE *value, const char *src, int len)
 {
-  value->_string.addr = (char *)src;
-  value->_string.len = ((len < 0) ? strlen(src) : len);
-  value->_string.start = 0;
-  value->type = T_CSTRING;
+	value->_string.addr = (char *)src;
+	value->_string.len = ((len < 0) ? strlen(src) : len);
+	value->_string.start = 0;
+	value->type = T_CSTRING;
 }
 
 
 void STRING_void_value(VALUE *value)
 {
-  value->type = T_CSTRING;
-  value->_string.addr = NULL;
-  value->_string.start = 0;
-  value->_string.len = 0;
+	value->type = T_CSTRING;
+	value->_string.addr = NULL;
+	value->_string.start = 0;
+	value->_string.len = 0;
 }
 
 
 void STRING_char_value(VALUE *value, uchar car)
 {
-  value->type = T_CSTRING;
-  value->_string.addr = (char *)&_char_string[(int)car * 2];
-  value->_string.start = 0;
-  value->_string.len = 1;
+	value->type = T_CSTRING;
+	value->_string.addr = (char *)&_char_string[(int)car * 2];
+	value->_string.start = 0;
+	value->_string.len = 1;
 }
 
 #if DEBUG_STRING
 
 void STRING_free(char **ptr)
 {
-  if (*ptr == NULL)
-    return;
+	if (*ptr == NULL)
+		return;
 
-  #ifdef DEBUG_ME
-  DEBUG_where();
-  fprintf(stderr, "STRING_free: %p %p\n", *ptr, ptr);
-  fflush(stderr);
-  #endif
+	#ifdef DEBUG_ME
+	DEBUG_where();
+	fprintf(stderr, "STRING_free: %p %p\n", *ptr, ptr);
+	fflush(stderr);
+	#endif
 
-  STRING_free_real(*ptr);
-  *ptr = NULL;
+	STRING_free_real(*ptr);
+	*ptr = NULL;
 
-  #ifdef DEBUG_ME
-  printf("OK\n");
-  #endif
+	#ifdef DEBUG_ME
+	printf("OK\n");
+	#endif
 }
 
 void STRING_ref(char *ptr)
 {
-  STRING *str;
+	STRING *str;
 
-  if (ptr == NULL)
-    return;
+	if (ptr == NULL)
+		return;
 
-  str = STRING_from_ptr(ptr);
+	str = STRING_from_ptr(ptr);
 
-  #ifdef DEBUG_ME
-  DEBUG_where();
-  fprintf(stderr, "STRING_ref: %p ( %ld -> %ld )\n", ptr, str->ref, str->ref + 1);
-  if (str->ref < 0 || str->ref > 10000)
-    fprintf(stderr, "*** BAD\n");
-  fflush(stderr);
-  #endif
+	#ifdef DEBUG_ME
+	DEBUG_where();
+	fprintf(stderr, "STRING_ref: %p ( %ld -> %ld )\n", ptr, str->ref, str->ref + 1);
+	if (str->ref < 0 || str->ref > 10000)
+		fprintf(stderr, "*** BAD\n");
+	fflush(stderr);
+	#endif
 
-  str->ref++;
+	str->ref++;
 }
 
 
 void STRING_unref(char **ptr)
 {
-  STRING *str;
+	STRING *str;
 
-  if (*ptr == NULL)
-    return;
+	if (*ptr == NULL)
+		return;
 
-  str = STRING_from_ptr(*ptr);
+	str = STRING_from_ptr(*ptr);
 
-  #ifdef DEBUG_ME
-  DEBUG_where();
-  fprintf(stderr, "STRING_unref: %p ( %ld -> %ld )\n", *ptr, str->ref, str->ref - 1);
-  if (str->ref < 1 || str->ref > 10000)
-    fprintf(stderr, "*** BAD\n");
-  fflush(stderr);
-  #endif
+	#ifdef DEBUG_ME
+	DEBUG_where();
+	fprintf(stderr, "STRING_unref: %p ( %ld -> %ld )\n", *ptr, str->ref, str->ref - 1);
+	if (str->ref < 1 || str->ref > 10000)
+		fprintf(stderr, "*** BAD\n");
+	fflush(stderr);
+	#endif
 
-  if ((--str->ref) <= 0)
-    STRING_free(ptr);
+	if ((--str->ref) <= 0)
+		STRING_free(ptr);
 }
 
 #endif
 
 void STRING_unref_keep(char **ptr)
 {
-  STRING *str;
+	STRING *str;
 
-  if (*ptr == NULL)
-    return;
+	if (*ptr == NULL)
+		return;
 
-  str = STRING_from_ptr(*ptr);
-  if (str->ref > 1)
-    str->ref--;
-  else
-    post_free(*ptr);
+	str = STRING_from_ptr(*ptr);
+	if (str->ref > 1)
+		str->ref--;
+	else
+		post_free(*ptr);
 }
 
 /* The get_param argument index starts at 1, not 0! */
@@ -508,11 +509,11 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 	char *p[64];
 	int lp[64];
 
-  if (!str)
-    return NULL;
+	if (!str)
+		return NULL;
 
-  if (len <= 0)
-    len = strlen(str);
+	if (len <= 0)
+		len = strlen(str);
 
 	// Calculate the length
 	
@@ -551,10 +552,10 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 			else if (d >= '1' && d <= '9')
 			{
 				np = d - '1';
-      	(*get_param)(np + 1, &p[np], &lp[np]);
-      	if (lp[np] < 0)
-      		lp[np] = strlen(p[np]);
-      	len_subst += lp[np] - 2;
+				(*get_param)(np + 1, &p[np], &lp[np]);
+				if (lp[np] < 0)
+					lp[np] = strlen(p[np]);
+				len_subst += lp[np] - 2;
 			}*/
 		}
 	}
@@ -591,8 +592,8 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 			else if (d >= '1' && d <= '9')
 			{
 				np = d - '1';
-      	memcpy(ps, p[np], lp[np]);
-      	ps += lp[np];
+				memcpy(ps, p[np], lp[np]);
+				ps += lp[np];
 			}
 			else
 			{
@@ -615,11 +616,11 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 	uchar c;
 	int np;
 
-  if (!str)
-    return NULL;
+	if (!str)
+		return NULL;
 
-  if (len <= 0)
-    len = strlen(str);
+	if (len <= 0)
+		len = strlen(str);
 
 	SUBST_init();
 	
@@ -692,33 +693,33 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 
 void STRING_add(char **ptr, const char *src, int len)
 {
-  int old_len;
+	int old_len;
 
-  if (len <= 0 && src != NULL)
-    len = strlen(src);
+	if (len <= 0 && src != NULL)
+		len = strlen(src);
 
-  if (len <= 0)
-    return;
+	if (len <= 0)
+		return;
 
-  old_len = STRING_length(*ptr);
+	old_len = STRING_length(*ptr);
 
-  STRING_extend(ptr, old_len + len);
-  memcpy(&((*ptr)[old_len]), src, len);
-  (*ptr)[old_len + len] = 0;
+	STRING_extend(ptr, old_len + len);
+	memcpy(&((*ptr)[old_len]), src, len);
+	(*ptr)[old_len + len] = 0;
 }
 
 
 void STRING_add_char(char **ptr, char c)
 {
-  int len = STRING_length(*ptr);
-  char *p;
+	int len = STRING_length(*ptr);
+	char *p;
 
 	//if (!(len & (SIZE_INC - 1)))
-  STRING_extend(ptr, len + 1);
-  //else
-  //STRING_from_ptr(*ptr)->len++;
-  	
-  p = *ptr + len;
+	STRING_extend(ptr, len + 1);
+	//else
+	//STRING_from_ptr(*ptr)->len++;
+		
+	p = *ptr + len;
 	p[0] = c;
 	p[1] = 0;
 }
@@ -726,39 +727,57 @@ void STRING_add_char(char **ptr, char c)
 
 int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw)
 {
-  iconv_t handle;
-  bool err;
-  const char *in;
-  char *out;
-  size_t in_len;
-  size_t out_len;
-  size_t ret;
-  int errcode = 0;
+	iconv_t handle;
+	bool err;
+	const char *in;
+	char *out;
+	size_t in_len;
+	size_t out_len;
+	size_t ret;
+	int errcode = 0;
+	bool unicode;
 
-  *result = NULL;
+	*result = NULL;
 
-  in = str;
-  in_len = len;
+	in = str;
+	in_len = len;
 
-  if (len == 0)
-    return errcode;
+	if (len == 0)
+		return errcode;
 
-  if (!dst || *dst == 0)
-    dst = "ASCII";
+	if (dst == SC_UNICODE)
+	{
+		dst = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
+		unicode = TRUE;
+	}
+	else
+	{
+		unicode = FALSE;
 
-  if (!src || *src == 0)
-    src = "ASCII";
+		if (!dst || *dst == 0)
+			dst = "ASCII";
+	}
 
-  handle = iconv_open(dst, src);
-  if (handle == (iconv_t)(-1))
-  {
-    if (errno == EINVAL)
-    	errcode = E_UCONV;
+	if (src == SC_UNICODE)
+	{
+		src = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
+	}
+	else
+	{
+		if (!src || *src == 0)
+			src = "ASCII";
+	}
+
+	handle = iconv_open(dst, src);
+	if (handle == (iconv_t)(-1))
+	{
+		if (errno == EINVAL)
+			errcode = E_UCONV;
 		else
 			errcode = E_CONV;
-  }
-  else
-  {
+	}
+	else
+	{
 		err = FALSE;
 	
 		for(;;)
@@ -787,7 +806,8 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 	
 		iconv_close(handle);
 	
-		//STRING_add(result, "\0\0\0", sizeof(wchar_t) - 1);
+		if (unicode)
+			STRING_add(result, "\0\0\0", sizeof(wchar_t) - 1);
 	
 		STRING_extend_end(result);
 	
@@ -804,54 +824,54 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 
 char *STRING_conv_to_UTF8(const char *name, int len)
 {
-  char *result = NULL;
+	char *result = NULL;
 
-  if (!name)
-    return "";
+	if (!name)
+		return "";
 
-  if (LOCAL_is_UTF8)
-  {
-    if (len <= 0)
-      result = (char *)name;
-    else
-      STRING_new_temp(&result, name, len);
-  }
-  else
-  {
-    if (len <= 0)
-      len = strlen(name);
+	if (LOCAL_is_UTF8)
+	{
+		if (len <= 0)
+			result = (char *)name;
+		else
+			STRING_new_temp(&result, name, len);
+	}
+	else
+	{
+		if (len <= 0)
+			len = strlen(name);
 
-    STRING_conv(&result, name, len, LOCAL_encoding, "UTF-8", TRUE);
-  }
+		STRING_conv(&result, name, len, LOCAL_encoding, "UTF-8", TRUE);
+	}
 
-  if (result)
-    return result;
-  else
-    return "";
+	if (result)
+		return result;
+	else
+		return "";
 }
 
 
 char *STRING_conv_file_name(const char *name, int len)
 {
-  char *result = NULL;
-  int pos;
-  struct passwd *info;
-  char *dir;
-  char *user;
+	char *result = NULL;
+	int pos;
+	struct passwd *info;
+	char *dir;
+	char *user;
 
-  if (!name)
-    return "";
+	if (!name)
+		return "";
 
-  if (len <= 0)
-    len = strlen(name);
+	if (len <= 0)
+		len = strlen(name);
 
-  if (len > 0 && *name == '~')
-  {
-  	for (pos = 0; pos < len; pos++)
-  	{
-  		if (name[pos] == '/')
-  			break;
-  	}
+	if (len > 0 && *name == '~')
+	{
+		for (pos = 0; pos < len; pos++)
+		{
+			if (name[pos] == '/')
+				break;
+		}
 
 		if (pos <= 1)
 			dir = PROJECT_get_home();
@@ -874,50 +894,50 @@ char *STRING_conv_file_name(const char *name, int len)
 			len = STRING_length(name);
 			post_free(user);
 		}
-  }
+	}
 
-  if (LOCAL_is_UTF8)
-    STRING_new_temp(&result, name, len);
-  else
-    STRING_conv(&result, name, len, "UTF-8", LOCAL_encoding, TRUE);
+	if (LOCAL_is_UTF8)
+		STRING_new_temp(&result, name, len);
+	else
+		STRING_conv(&result, name, len, "UTF-8", LOCAL_encoding, TRUE);
 
 	//fprintf(stderr, "STRING_conv_file_name: %s\n", result);
 
-  if (result)
-    return result;
-  else
-    return "";
+	if (result)
+		return result;
+	else
+		return "";
 }
 
 
 int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase)
 {
-  int pos, ip;
+	int pos, ip;
 
-  if (lp > ls)
-    return 0;
+	if (lp > ls)
+		return 0;
 
-  if (is < 0)
-    is += ls;
-  else if (is == 0)
-    is = right ? ls : 1;
-  
-  ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
+	if (is < 0)
+		is += ls;
+	else if (is == 0)
+		is = right ? ls : 1;
+	
+	ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
 
-  if (is > ls)
-  {
-  	if (!right)
-    	return 0;
-    else
-    	is = ls;
-  }
-  else if (is < lp)
-  {
-  	if (right)
-    	return 0;
-    else if (is < 1)
-    	is = 1;
-  }
+	if (is > ls)
+	{
+		if (!right)
+			return 0;
+		else
+			is = ls;
+	}
+	else if (is < lp)
+	{
+		if (right)
+			return 0;
+		else if (is < 1)
+			is = 1;
+	}
 
 	is--;
 
@@ -1049,7 +1069,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 
 __FOUND:
 
-  return pos;
+	return pos;
 }
 
 

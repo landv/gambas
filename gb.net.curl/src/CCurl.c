@@ -183,10 +183,10 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 				#endif
 				curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			}
-			THIS_STATUS=0;
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_finished,(long)THIS);
 			CCURL_stop(THIS);
+			THIS_STATUS = 0;
 			break;
 		default:
 			if (THIS->async) 
@@ -196,10 +196,10 @@ void CCURL_Manage_ErrCode(void *_object,long ErrCode)
 				#endif
 				curl_multi_remove_handle(CCURL_multicurl,THIS_CURL);
 			}
-			THIS_STATUS=-1*(1000+ErrCode);
 			GB.Ref(THIS);
 			GB.Post(CCURL_raise_error,(long)THIS);
 			CCURL_stop(THIS);
+			THIS_STATUS = -1*(1000+ErrCode);
 			break;
 	}
 }
@@ -246,8 +246,8 @@ void CCURL_stop(void *_object)
 		THIS_CURL=NULL;
 	}
 
-	THIS_STATUS=0;
 	stop_post();
+	THIS_STATUS = 0;
 }
 
 void CCURL_init_post(void)

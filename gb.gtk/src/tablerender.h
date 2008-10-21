@@ -149,6 +149,8 @@ public:
 	void          setFieldPadding   (int col,int row,int value);
 	//void          setFieldYPad      (int col,int row,int value);
 	void          setFieldSelected  (int col,int row,bool value);
+	void setFieldPicture(int col, int row, gPicture *value);
+	void setFieldFont(int col, int row, gFont *value);
 };
 
 #endif

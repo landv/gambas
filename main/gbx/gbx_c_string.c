@@ -257,20 +257,17 @@ END_METHOD
 
 static void convert_string(char *str, int len, bool upper)
 {
-  char *charset;
   char *temp = NULL;
   int i, l;
   wchar_t *wtemp;
 
   if (len > 0)
   {
-    charset = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
+    STRING_conv(&temp, str, len, "UTF-8", SC_UNICODE, TRUE);
 
-    STRING_conv(&temp, str, len, "UTF-8", charset, TRUE);
-
-    l = STRING_length(temp) / sizeof(wchar_t);
     wtemp = (wchar_t *)temp;
-
+    l = wcslen(wtemp);
+    
     if (upper)
     {
       for (i = 0; i < l; i++)
@@ -282,7 +279,7 @@ static void convert_string(char *str, int len, bool upper)
         wtemp[i] = towlower(wtemp[i]);
     }
 
-    STRING_conv(&temp, temp, l * sizeof(wchar_t), charset, "UTF-8", TRUE);
+    STRING_conv(&temp, temp, l * sizeof(wchar_t), SC_UNICODE, "UTF-8", TRUE);
   }
 
   GB_ReturnString(temp);
