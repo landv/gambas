@@ -1,387 +1,387 @@
 ' Gambas module file
 
-EXPORT 
+Export 
 'CREATE 
 
-PRIVATE $sId AS String
-PRIVATE $sPath AS String
-PRIVATE $cVal AS Collection
-PRIVATE $bModify AS Boolean
-PRIVATE $eTimeout AS Float = 1
-PRIVATE $eStartup AS Float
+Private $sId As String
+Private $sPath As String
+Private $cVal As Collection
+Private $bModify As Boolean
+Private $eTimeout As Float = 1
+Private $eStartup As Float
 
-PROPERTY Id AS String
-PROPERTY Timeout AS Float
+Property Id As String
+Property Timeout As Float
 
-PRIVATE SUB WriteLength(iLen AS Integer)
+Private Sub WriteLength(iLen As Integer)
   
-  DIM iByte AS Byte
-  DIM iShort AS Short
+  Dim iByte As Byte
+  Dim iShort As Short
   
-  IF iLen < &H80 THEN 
+  If iLen < &H80 Then 
     iByte = iLen
-    WRITE iByte 
-  ELSE IF iLen < &H4000 THEN
-    iByte = Lsr(iLen, 8) OR &H80
-    WRITE iByte
-    iByte = iLen AND &HFF
-    WRITE iByte 
-  ELSE
-    iByte = Lsr(iLen, 24) OR &HC0
-    WRITE iByte
-    iByte = Lsr(iLen, 16) AND &HFF
-    WRITE iByte 
-    iByte = Lsr(iLen, 8) AND &HFF
-    WRITE iByte 
-    iByte = iLen AND &HFF
-    WRITE iByte 
-  ENDIF
+    Write iByte 
+  Else If iLen < &H4000 Then
+    iByte = Lsr(iLen, 8) Or &H80
+    Write iByte
+    iByte = iLen And &HFF
+    Write iByte 
+  Else
+    iByte = Lsr(iLen, 24) Or &HC0
+    Write iByte
+    iByte = Lsr(iLen, 16) And &HFF
+    Write iByte 
+    iByte = Lsr(iLen, 8) And &HFF
+    Write iByte 
+    iByte = iLen And &HFF
+    Write iByte 
+  Endif
   
-END
+End
 
-PRIVATE SUB ReadLength() AS Integer
+Private Sub ReadLength() As Integer
   
-  DIM iByte AS Byte
-  DIM iLen AS Integer
+  Dim iByte As Byte
+  Dim iLen As Integer
   
-  READ iByte
+  Read iByte
   
-  SELECT CASE Lsr(iByte, 6)
+  Select Case Lsr(iByte, 6)
   
-    CASE 0, 1
-      RETURN iByte
+    Case 0, 1
+      Return iByte
     
-    CASE 2
-      iByte = iByte AND &H3F
+    Case 2
+      iByte = iByte And &H3F
       iLen = Lsl(CInt(iByte), 8)
-      READ iByte
+      Read iByte
       iLen += iByte
   
-    CASE 3
-      iByte = iByte AND &H3F
+    Case 3
+      iByte = iByte And &H3F
       iLen = Lsl(CLong(iByte), 32)
-      READ iByte
+      Read iByte
       iLen += Lsl(CLong(iByte), 16)
-      READ iByte
+      Read iByte
       iLen += Lsl(CLong(iByte), 8)
-      READ iByte
+      Read iByte
       iLen += iByte
   
-  END SELECT
+  End Select
   
-  RETURN iLen
+  Return iLen
     
-END
+End
 
-PRIVATE SUB WriteValue(vVal AS Variant)
+Private Sub WriteValue(vVal As Variant)
   
-  DIM vElt AS Variant
-  DIM iType AS Byte
+  Dim vElt As Variant
+  Dim iType As Byte
   
-  IF IsObject(vVal) THEN 
-    IF vVal IS Collection THEN 
+  If IsObject(vVal) Then 
+    If vVal Is Collection Then 
       'Main.Log("WriteValue: Collection")
-      PRINT "C";
+      Print "C";
       'Main.Log("WriteValue: " & vVal.Count)
       WriteLength(vVal.Count)
-      FOR EACH vElt IN vVal
+      For Each vElt In vVal
       'Main.Log("WriteValue: Key = '" & CStr(vVal.Key) & "' Value = '" & CStr(vElt) & "'")
-        WRITE CStr(vVal.Key)
+        Write CStr(vVal.Key)
         WriteValue(vElt)
-      NEXT 
-    ELSE IF vVal IS Array THEN 
-      PRINT "A";
+      Next 
+    Else If vVal Is Array Then 
+      Print "A";
       iType = vVal.Type
-      WRITE iType
+      Write iType
       WriteLength(vVal.Count)
-      FOR EACH vElt IN vVal
+      For Each vElt In vVal
         WriteValue(vElt)
-      NEXT 
-    ELSE 
+      Next 
+    Else 
       Error.Raise("Unserializable datatype")
-    ENDIF
-  ELSE 
+    Endif
+  Else 
     iType = TypeOf(vVal)
     'WRITE iType
-    WRITE vVal
-  ENDIF
+    Write vVal
+  Endif
   
-END
+End
 
-PRIVATE SUB SaveSession()
+Private Sub SaveSession()
   
-  DIM hFile AS File
+  Dim hFile As File
 
   'PRINT "<h2>Save session</h2>"
   'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
   
-  IF NOT $sId THEN RETURN 
+  If Not $sId Then Return 
   'Startup time is always modified
-  IF NOT $bModify THEN 
+  If Not $bModify Then 
   
-    hFile = OPEN $sPath FOR WRITE 
-    OUTPUT TO #hFile
+    hFile = Open $sPath For Write 
+    Output To #hFile
     WriteValue(CFloat(Now))
     
-  ELSE
+  Else
   
-    hFile = OPEN $sPath FOR CREATE 
-    OUTPUT TO #hFile
+    hFile = Open $sPath For Create 
+    Output To #hFile
     
     'WriteValue(1) ' Version number
     WriteValue(CFloat(Now))
     WriteValue($eTimeout)
     WriteValue($cVal)
     
-  ENDIF
+  Endif
     
-  CLOSE #hFile
-  OUTPUT TO DEFAULT 
+  Close #hFile
+  Output To Default 
   
   'PRINT "<p>"; Stat($sPath).Size
   
-END
+End
 
-PRIVATE SUB ReadValue() AS Variant
+Private Sub ReadValue() As Variant
   
-  DIM bBoolean AS Boolean
-  DIM iByte AS Byte
-  DIM iShort AS Short
-  DIM iInt AS Integer
-  DIM iLong AS Long
-  DIM sStr AS String
-  DIM dDate AS Date
-  DIM gSingle AS Single
-  DIM fFloat AS Float
-  DIM hCol AS Collection
-  DIM aArr AS Array
-  DIM iLen AS Integer
-  DIM vVal AS Variant
+  Dim bBoolean As Boolean
+  Dim iByte As Byte
+  Dim iShort As Short
+  Dim iInt As Integer
+  Dim iLong As Long
+  Dim sStr As String
+  Dim dDate As Date
+  Dim gSingle As Single
+  Dim fFloat As Float
+  Dim hCol As Collection
+  Dim aArr As Object
+  Dim iLen As Integer
+  Dim vVal As Variant
   
-  READ iByte
+  Read iByte
 
-  SELECT CASE iByte
-    CASE gb.Boolean
-      READ bBoolean
-      RETURN bBoolean
-    CASE gb.Byte
-      READ iByte
-      RETURN iByte
-    CASE gb.Short
-      READ iShort
-      RETURN iShort
-    CASE gb.Integer
-      READ iInt
-      RETURN iInt
-    CASE gb.Long
-      READ iLong
-      RETURN iLong
-    CASE gb.Single
-      READ gSingle
-      RETURN gSingle
-    CASE gb.Float
-      READ fFloat
-      RETURN fFloat
-    CASE gb.Date
-      READ dDate
-      RETURN dDate
-    CASE gb.String
-      READ sStr
-      RETURN sStr
-    CASE Asc("C")
+  Select Case iByte
+    Case gb.Boolean
+      Read bBoolean
+      Return bBoolean
+    Case gb.Byte
+      Read iByte
+      Return iByte
+    Case gb.Short
+      Read iShort
+      Return iShort
+    Case gb.Integer
+      Read iInt
+      Return iInt
+    Case gb.Long
+      Read iLong
+      Return iLong
+    Case gb.Single
+      Read gSingle
+      Return gSingle
+    Case gb.Float
+      Read fFloat
+      Return fFloat
+    Case gb.Date
+      Read dDate
+      Return dDate
+    Case gb.String
+      Read sStr
+      Return sStr
+    Case Asc("C")
       'Main.Log("ReadValue: Collection")
-      hCol = NEW Collection
+      hCol = New Collection
       iLen = ReadLength()
       'Main.Log("ReadValue: " & iLen)
-      FOR iInt = 1 TO iLen
-        READ sStr
+      For iInt = 1 To iLen
+        Read sStr
         vVal = ReadValue()
         'Main.Log("ReadValue: Key = '" & sStr & "' Value = '" & CStr(vVal) & "'")
         hCol[sStr] = vVal
-      NEXT
-      RETURN hCol
-    CASE Asc("A")
-      READ iByte
+      Next
+      Return hCol
+    Case Asc("A")
+      Read iByte
       iLen = ReadLength()
       sStr = ["Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date", "String", "String", "Variant", "", "", "", "", "Object"][iByte]
-      aArr = NEW (sStr & "[]", iLen)
-      FOR iInt = 0 TO iLen - 1
+      aArr = New (sStr & "[]", iLen)
+      For iInt = 0 To iLen - 1
         aArr[iInt] = ReadValue()
-      NEXT
-      RETURN aArr
-  END SELECT  
+      Next
+      Return aArr
+  End Select  
   
-END
+End
 
-PRIVATE SUB CheckSession() AS Boolean
+Private Sub CheckSession() As Boolean
   
   'Main.Log("TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
-  RETURN (CFloat(Now) - $eStartup) >= $eTimeout
+  Return (CFloat(Now) - $eStartup) >= $eTimeout
   
-END
+End
 
 
-PRIVATE SUB LoadSession()
+Private Sub LoadSession()
   
-  DIM hFile AS File
+  Dim hFile As File
 
   'Main.Log("LoadSession: #1 '" & $sPath & "'")
 
-  IF NOT Exist($sPath) THEN GOTO _ABANDON
+  If Not Exist($sPath) Then Goto _ABANDON
   
   'Main.Log("LoadSession: #2")
   
-  hFile = OPEN $sPath
-  INPUT FROM #hFile
+  hFile = Open $sPath
+  Input From #hFile
 
   'IF ReadValue() = 1 THEN GOTO _ABANDON
   $eStartup = ReadValue()
   $eTimeout = ReadValue() 
-  IF CheckSession() THEN 
+  If CheckSession() Then 
     'Main.Log("* TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
-    GOTO _ABANDON
-  ENDIF
+    Goto _ABANDON
+  Endif
   
   'Main.Log("LoadSession: #3")
   
   $cVal = ReadValue()
-  $bModify = FALSE
-  CLOSE #hFile
-  INPUT FROM DEFAULT 
-  RETURN  
+  $bModify = False
+  Close #hFile
+  Input From Default 
+  Return  
 
-CATCH
+Catch
 
-  'Main.Log(Error.Where & ": " & Error.Text)
+  Print Error.Where & ": " & Error.Text
 
 _ABANDON:
 
   'Main.Log("LoadSession: #4")
 
-  IF hFile THEN
-    CLOSE #hFile
-    INPUT FROM DEFAULT 
-  ENDIF
+  If hFile Then
+    Close #hFile
+    Input From Default 
+  Endif
   
-  TRY KILL $sPath
+  Try Kill $sPath
   $sId = ""
   
-END
+End
 
-PRIVATE SUB GetPath(OPTIONAL sId AS String) AS String
+Private Sub GetPath(Optional sId As String) As String
   
-  RETURN "/tmp/gambas." & System.User.Id &/ "session" &/ sId 
+  Return "/tmp/gambas." & System.User.Id &/ "session" &/ sId 
   
-END
+End
 
 
-PRIVATE SUB CreateSession()
+Private Sub CreateSession()
   
-  DIM iInd AS Integer
-  DIM sPrefix AS String
+  Dim iInd As Integer
+  Dim sPrefix As String
   
   sPrefix = "/tmp/gambas." & System.User.Id
   
-  REPEAT 
+  Repeat 
     $sId = ""
-    FOR iInd = 1 TO 8
+    For iInd = 1 To 8
       $sId &= Hex$(Int(Rnd(65536)), 4)
-    NEXT
+    Next
     $sId &= "@" & CGI["REMOTE_ADDR"]
     '$sId = "TEST"
     $sPath = GetPath($sId) 'sPrefix &/ "session" &/ $sId  
-  UNTIL NOT Exist($sPath)
+  Until Not Exist($sPath)
   
   
   'TRY MKDIR $sPrefix
-  TRY MKDIR GetPath() 'sPrefix &/ "session"
+  Try Mkdir GetPath() 'sPrefix &/ "session"
   
   Response.SetCookie("SESSION", $sId, "", File.Dir(CGI["SCRIPT_NAME"]))
   
-  $cVal = NEW Collection
+  $cVal = New Collection
   $eStartup = Now
   
-END
+End
 
-PRIVATE SUB SelectSession()
+Private Sub SelectSession()
   
   $sPath = GetPath($sId) '"/tmp/gambas." & System.User.Id &/ "session" &/ $sId
   
   LoadSession
 
-END
+End
 
 
-PUBLIC SUB _init()
+Public Sub _init()
   
   $sId = Request.Cookies["SESSION"]
-  '$sId = "730F73BCFC5D5028577C375C9115CD2F"
-  IF NOT $sId THEN RETURN
+  '$sId = "9E2496B3AB6DDED93ABE6F0CF6E071B3@"
+  If Not $sId Then Return
   
   SelectSession
   
 'CATCH 
 '  CGI.Error(Error.Where & ": " & Error.Text)
 
-END
+End
 
-PUBLIC SUB _exit()
+Public Sub _exit()
   
   SaveSession
   
-END
+End
 
 
-PUBLIC SUB Abandon()
+Public Sub Abandon()
   
   'Main.Log("Abandon")  
   
-  IF NOT $sId THEN RETURN
-  TRY KILL $sPath
+  If Not $sId Then Return
+  Try Kill $sPath
   Response.RemoveCookie("SESSION", $sId, "", File.Dir(CGI["SCRIPT_NAME"]))
   $sId = ""
   $sPath = ""
-  $cVal = NULL
+  $cVal = Null
   
-END
+End
 
-PUBLIC SUB _get(Key AS String) AS Variant
+Public Sub _get(Key As String) As Variant
   
-  IF $cVal THEN RETURN $cVal[Key]
+  If $cVal Then Return $cVal[Key]
   
-END
+End
 
-PUBLIC SUB _put(Value AS Variant, Key AS String)
+Public Sub _put(Value As Variant, Key As String)
 
-  IF NOT $cVal THEN CreateSession
+  If Not $cVal Then CreateSession
   $cVal[Key] = Value
-  $bModify = TRUE
+  $bModify = True
     
-END
+End
 
-PRIVATE FUNCTION Id_Read() AS String
+Private Function Id_Read() As String
 
-  RETURN $sId  
+  Return $sId  
 
-END
+End
 
 
-PRIVATE SUB Id_Write(Value AS String)
+Private Sub Id_Write(Value As String)
 
   Abandon
   $sId = Value
   SelectSession    
 
-END
+End
 
-PRIVATE FUNCTION Timeout_Read() AS Float
+Private Function Timeout_Read() As Float
 
-  RETURN Int($eTimeout * 86400 + 0.5)
+  Return Int($eTimeout * 86400 + 0.5)
 
-END
+End
 
-PRIVATE SUB Timeout_Write(Value AS Float)
+Private Sub Timeout_Write(Value As Float)
 
   $eTimeout = Value / 86400
 
-END
+End

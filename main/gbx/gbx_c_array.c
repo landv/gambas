@@ -917,7 +917,7 @@ BEGIN_METHOD(CARRAY_bounds_get, GB_INTEGER index)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CARRAY_print)
+/*BEGIN_METHOD_VOID(CARRAY_print)
 
   int dim[MAX_ARRAY_DIM] = { 0 };
   char *data = THIS->data;
@@ -960,7 +960,7 @@ BEGIN_METHOD_VOID(CARRAY_print)
     data += TYPE_sizeof_memory(THIS->type);
   }
 
-END_METHOD
+END_METHOD*/
 
 #else
 
@@ -998,7 +998,7 @@ GB_DESC NATIVE_Array[] =
   GB_METHOD("Resize", NULL, CARRAY_resize, "(Size)i"),
   GB_METHOD("Reverse", NULL, CARRAY_reverse, NULL),
 
-  GB_METHOD("_print", NULL, CARRAY_print, NULL),
+  //GB_METHOD("_print", NULL, CARRAY_print, NULL),
   //GB_METHOD("FromString", "i", CARRAY_from_string, "(String)s[(Separator)s(Escape)s]"),
   //GB_METHOD("Sort", NULL, CARRAY_sort, "[(Compare)i]"),
   //GB_METHOD("Find", "i", CARRAY_find, "(Value)s[(Compare)i]"),

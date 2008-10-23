@@ -76,6 +76,7 @@ Public Sub Form_Open()
     txtTabSize.Value = .TabSize
     cmbStackSize.Index = 0
     If .Stack Then cmbStackSize.Text = .Stack & " K"
+    cmbStackTrace.Index = If(.StackTrace, 0, 1)
     txtVersionProg.Text = .VersionProgram
     'chkVersion.Value = NOT IsNull(.VersionProgram)
 
@@ -185,6 +186,7 @@ Private Function DoApply() As Boolean
     Else
       .Stack = Val(Left(cmbStackSize.Text, -1))
     Endif
+    .StackTrace = cmbStackTrace.Index = 0
 
     If .ControlPublic <> (cmbControlPublic.Index = 0) Or If .ModulePublic <> (cmbModulePublic.Index = 0) Then
       Project.ResetScan

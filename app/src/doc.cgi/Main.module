@@ -720,7 +720,7 @@ Private Function Encode(sText As String) As String
           $sRes &= "<hr>"
           sStr = Mid$(sStr, 5)
         Endif
-        If $bExample Then
+        If $sSection = "example" Or If $sSection = "code" Then
           sStr = EncodeHTML(sStr)
           iPos = Len(sStr) - Len(LTrim(sStr))
           If iPos > 0 Then

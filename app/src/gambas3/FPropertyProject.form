@@ -1,23 +1,23 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,85,86)
+  MoveScaled(0,2,85,88)
   Text = ("Project properties")
   Icon = Picture["icon:/small/properties"]
   Persistent = True
   Resizable = False
   { btnOK Button
-    MoveScaled(53,81,15,4)
+    MoveScaled(53,83,15,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(69,81,15,4)
+    MoveScaled(69,83,15,4)
     Text = ("Cancel")
     Cancel = True
   }
   { tabProject TabStrip
-    MoveScaled(1,1,83,79)
+    MoveScaled(1,1,83,81)
     Count = 7
     Index = 0
     Text = ("General")
@@ -36,17 +36,17 @@
       Text = ("Title")
     }
     { txtDesc TextArea
-      MoveScaled(1,28,80,20)
+      MoveScaled(1,28,80,21)
       Text = ("")
       Wrap = True
     }
     { Label11 Label
-      MoveScaled(1,48,80,4)
+      MoveScaled(1,49,80,4)
       Font = Font["Bold"]
       Text = ("Author(s)")
     }
     { txtAuthor TextArea
-      MoveScaled(1,52,80,20)
+      MoveScaled(1,53,80,21)
       Text = ("")
       Wrap = True
     }
@@ -104,7 +104,7 @@
       Text = ("Execution")
     }
     { Label16 Label
-      MoveScaled(1,56,79,4)
+      MoveScaled(1,60,79,4)
       Font = Font["Bold"]
       Text = ("Component")
     }
@@ -114,7 +114,7 @@
       Text = ("Translation")
     }
     { HBox5 HBox
-      MoveScaled(2,66,79,4)
+      MoveScaled(2,70,79,4)
       Spacing = 8
       { Label26 Label
         MoveScaled(0,0,42,4)
@@ -129,7 +129,7 @@
       }
     }
     { HBox6 HBox
-      MoveScaled(2,61,79,4)
+      MoveScaled(2,65,79,4)
       Spacing = 8
       { Label25 Label
         MoveScaled(0,0,42,4)
@@ -242,6 +242,20 @@
         Text = ("space(s)")
       }
     }
+    { HBox16 HBox
+      MoveScaled(2,55,79,4)
+      Spacing = 8
+      { Label6 Label
+        MoveScaled(0,0,42,4)
+        Text = ("Dump stack on error")
+      }
+      { cmbStackTrace ComboBox
+        MoveScaled(43,0,10,4)
+        Text = ("")
+        ReadOnly = True
+        List = [("Yes"), ("No")]
+      }
+    }
     Index = 2
     Text = ("Components")
     { chkShowBeta CheckBox
@@ -254,10 +268,10 @@
       Text = ("Show only components used in project")
     }
     { lstComponent ListContainer
-      MoveScaled(1,5,80,62)
+      MoveScaled(1,5,80,65)
     }
     { HBox14 HBox
-      MoveScaled(1,68,80,4)
+      MoveScaled(1,71,80,4)
       { btnHelp Button
         MoveScaled(0,0,35,4)
         Text = ("About &component...")
@@ -276,7 +290,7 @@
     Index = 3
     Text = ("Environment")
     { VBox1 VBox
-      MoveScaled(1,1,80,71)
+      MoveScaled(1,1,80,74)
       Spacing = 8
       { VBox2 VBox
         MoveScaled(2,1,47,8)
@@ -346,21 +360,21 @@
     Index = 4
     Text = ("Versioning")
     { panVersioning Panel
-      MoveScaled(1,1,80,72)
+      MoveScaled(1,1,80,75)
       { Label4 Label
         MoveScaled(0,0,75,4)
         Font = Font["Bold"]
         Text = ("Changes since last commit")
       }
       { txtVerCtrlChange TextArea
-        MoveScaled(0,4,80,62)
+        MoveScaled(0,4,80,65)
         Font = Font["Monospace"]
         Expand = True
         Text = ("")
         ReadOnly = True
       }
       { HBox15 HBox
-        MoveScaled(0,67,80,4)
+        MoveScaled(0,70,80,4)
         Spacing = 8
         { btnUpdate Button
           MoveScaled(0,0,18,4)
@@ -382,7 +396,7 @@
     Index = 5
     Text = ("Provides")
     { tvwControl GridView
-      MoveScaled(1,1,80,71)
+      MoveScaled(1,1,80,74)
       Grid = False
       Header = GridView.Horizontal
       Scrollbar = Scroll.Vertical
@@ -460,7 +474,7 @@
       }
     }
     { HBox4 HBox
-      MoveScaled(1,25,80,47)
+      MoveScaled(1,25,80,50)
       Spacing = 8
       { VBox4 VBox
         MoveScaled(1,1,56,35)

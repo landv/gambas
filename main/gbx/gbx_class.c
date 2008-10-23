@@ -1145,7 +1145,7 @@ void CLASS_create_array_class(CLASS *class)
 	char *name_joker;
 	GB_DESC *desc;
 	
-	fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
+	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
 
 	STRING_new(&name_joker, class->name, strlen(class->name) - 2);
 

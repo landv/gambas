@@ -1,6 +1,6 @@
 ' Gambas module file
 
-PUBLIC SUB Main()
+Public Sub Main()
   
   ' Session["login"] = "cartable"
   ' Session["password"] = "test"
@@ -8,15 +8,21 @@ PUBLIC SUB Main()
   ' Session["age"] = 34
   ' Session["taille"] = 1.72
   ' Session["liste"] = ["bleu", "blanc", "rouge"]
-  
-END
 
-PUBLIC SUB Log(sMsg AS String)
+  'Print Session["liste"].Join(" ")
   
-  DIM hFile AS File
+  Session.Id = "C9FDEB40ADF2203502B959BC6039BBB4@"
+  'Session["liste"] = ["bleu", "blanc", "rouge"]
+  Print Session["liste"].Join(" ")
+ 
+End
+
+Public Sub Log(sMsg As String)
   
-  hFile = OPEN "/tmp/session.log" FOR APPEND 
-  PRINT #hFile, sMsg
-  CLOSE #hFile
+  Dim hFile As File
   
-END
+  hFile = Open "/tmp/session.log" For Append 
+  Print #hFile, sMsg
+  Close #hFile
+  
+End
