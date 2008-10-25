@@ -269,3 +269,10 @@ Public Function Id() As String
   Return modMain.$Connection.Exec(modMain.$Query)["CONNECTION_ID()"]
 
 End
+
+Public Function LastInsertId() As String
+
+  modMain.$Query = "SELECT LAST_INSERT_ID()"
+  Return modMain.$Connection.Exec(modMain.$Query)["LAST_INSERT_ID()"]
+
+End
