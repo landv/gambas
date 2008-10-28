@@ -57,13 +57,15 @@ typedef
 	}  
 	CWIDGET;
 
-typedef  struct
-{
-  GB_BASE ob;
-  gControl *widget;
-	GB_VARIANT_VALUE tag;
-	void *font;
-}  CPLUGIN;
+typedef
+	struct
+	{
+		GB_BASE ob;
+		gPlugin *widget;
+		GB_VARIANT_VALUE tag;
+		void *font;
+	}
+	CPLUGIN;
 
 
 void InitControl(gControl *control, CWIDGET *widget);

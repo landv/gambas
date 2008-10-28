@@ -263,7 +263,8 @@ static void convert_string(char *str, int len, bool upper)
 
   if (len > 0)
   {
-    STRING_conv(&temp, str, len, "UTF-8", SC_UNICODE, TRUE);
+    if (STRING_conv(&temp, str, len, "UTF-8", SC_UNICODE, FALSE))
+    	goto __ERROR;
 
     wtemp = (wchar_t *)temp;
     l = wcslen(wtemp);
@@ -279,10 +280,16 @@ static void convert_string(char *str, int len, bool upper)
         wtemp[i] = towlower(wtemp[i]);
     }
 
-    STRING_conv(&temp, temp, l * sizeof(wchar_t), SC_UNICODE, "UTF-8", TRUE);
+    if (STRING_conv(&temp, temp, l * sizeof(wchar_t), SC_UNICODE, "UTF-8", FALSE))
+    	goto __ERROR;
   }
 
   GB_ReturnString(temp);
+  return;
+  
+__ERROR:
+
+	GB_ReturnNewString(str, len);
 }
 
 

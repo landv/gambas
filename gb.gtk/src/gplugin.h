@@ -5,7 +5,7 @@ class gPlugin : public gControl
 {
 public:
 	gPlugin(gContainer *parent);
-	void plug(long id,bool prepared=true);
+	void plug(int id, bool prepared = false);
 	void discard();
 //"Properties"
 	int client();
@@ -16,7 +16,7 @@ public:
 //"Signals"
 	void (*onPlug)(gControl *sender);
 	void (*onUnplug)(gControl *sender);
-
+	void (*onError)(gControl *sender);
 };
 
 #endif
