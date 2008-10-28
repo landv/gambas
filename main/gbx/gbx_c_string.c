@@ -289,7 +289,6 @@ static void convert_string(char *str, int len, bool upper)
   
 __ERROR:
 
-	STRING_free(&temp);
 	GB_ReturnNewString(str, len);
 }
 
