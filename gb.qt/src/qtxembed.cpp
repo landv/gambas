@@ -820,7 +820,7 @@ WId QtXEmbedClient::containerWinId() const
     arguments are passed on to QWidget.
 */
 QtXEmbedContainer::QtXEmbedContainer(QWidget *parent, const char *name)
-    : QWidget(parent, name), client(0), focusProxy(0), clientIsXEmbed(false)
+    : QWidget(parent, name), client(0), focusProxy(0), clientIsXEmbed(false), xgrab(false)
 {
     XSetErrorHandler(x11ErrorHandler);
     initXEmbedAtoms(x11Display());

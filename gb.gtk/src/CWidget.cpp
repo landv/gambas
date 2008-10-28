@@ -122,6 +122,14 @@ void gb_plug_raise_unplugged(gControl *sender)
 	GB.Raise((void*)_ob,EVENT_Unplugged,0);
 }
 
+void gb_plug_raise_error(gControl *sender)
+{
+	CWIDGET *_ob=GetObject(sender);
+	
+	if (!_ob) return;
+	GB.Raise((void*)_ob,EVENT_PlugError,0);
+}
+
 // static void raise_menu(void *_object)
 // {
 // 	GB.Raise(THIS, EVENT_Menu, 0);
@@ -332,40 +340,29 @@ Embedder
 BEGIN_METHOD(CPLUGIN_new, GB_OBJECT parent)
 
 	InitControl(new gPlugin(CONTAINER(VARG(parent))), (CWIDGET*)_object);
-	((gPlugin*)((CPLUGIN*)_object)->widget)->onPlug=gb_plug_raise_plugged;
-	((gPlugin*)((CPLUGIN*)_object)->widget)->onUnplug=gb_plug_raise_unplugged;
+	PLUGIN->onPlug = gb_plug_raise_plugged;
+	PLUGIN->onUnplug = gb_plug_raise_unplugged;
+	PLUGIN->onError = gb_plug_raise_error;
 
 END_METHOD
 
 BEGIN_PROPERTY(CPLUGIN_client)
 
-	GB.ReturnPointer((void *)((gPlugin*)((CPLUGIN*)_object)->widget)->client() );
+	GB.ReturnPointer((void *)PLUGIN->client());
 
 END_PROPERTY
 
 BEGIN_METHOD(CPLUGIN_embed, GB_POINTER id; GB_BOOLEAN prepared)
 
-	((gPlugin*)((CPLUGIN*)_object)->widget)->plug(VARG(id), VARGOPT(prepared, TRUE));
+	PLUGIN->plug(VARG(id), VARGOPT(prepared, FALSE));
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CPLUGIN_discard)
 
-	((gPlugin*)((CPLUGIN*)_object)->widget)->discard();
+	PLUGIN->discard();
 
 END_METHOD
-
-// BEGIN_PROPERTY(CPLUGIN_border)
-// 
-//   	if (READ_PROPERTY) 
-// 	{
-//   		GB.ReturnInteger(((gPlugin*)((CPLUGIN*)_object)->widget)->getBorder());
-// 		return;
-//    	}
-// 	
-// 	((gPlugin*)((CPLUGIN*)_object)->widget)->setBorder(VPROP(GB_INTEGER));
-// 
-// END_PROPERTY
 
 
 /**************************************************************************************
@@ -902,11 +899,10 @@ GB_DESC CPluginDesc[] =
   GB_METHOD("Discard", 0, CPLUGIN_discard, 0),
   
   GB_PROPERTY_READ("Client", "p", CPLUGIN_client),
-  //GB_PROPERTY("Border", "i<Border>", CPLUGIN_border),
   
   GB_EVENT("Embed", 0, 0, &EVENT_Plugged),
   GB_EVENT("Close", 0, 0, &EVENT_Unplugged),
-  GB_EVENT("Error", 0, 0, &EVENT_PlugError), /* TODO */
+  GB_EVENT("Error", 0, 0, &EVENT_PlugError),
   
   EMBEDDER_DESCRIPTION,
   

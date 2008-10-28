@@ -60,7 +60,7 @@ typedef
 typedef  struct
 {
   GB_BASE ob;
-  gControl *widget;
+  gPlugin *widget;
 	GB_VARIANT_VALUE tag;
 	void *font;
 }  CPLUGIN;

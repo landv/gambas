@@ -16,7 +16,7 @@ public:
 //"Signals"
 	void (*onPlug)(gControl *sender);
 	void (*onUnplug)(gControl *sender);
-
+	void (*onError)(gControl *sender);
 };
 
 #endif

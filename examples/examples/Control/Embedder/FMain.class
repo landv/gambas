@@ -29,6 +29,7 @@ END
 
 PUBLIC SUB embEmbedder_Embed()
 
+  PRINT "Embed event"
   btnEmbed.Enabled = FALSE
   btnDiscard.Enabled = TRUE
 
@@ -43,6 +44,7 @@ END
 
 PUBLIC SUB embEmbedder_Close()
 
+  PRINT "Close event"
   btnEmbed.Enabled = TRUE
   btnDiscard.Enabled = FALSE
 

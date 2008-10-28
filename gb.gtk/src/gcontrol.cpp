@@ -26,6 +26,8 @@
 
 ***************************************************************************/
 
+#include <unistd.h>
+
 #ifndef GAMBAS_DIRECTFB
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
@@ -117,19 +119,38 @@ gPlugin::gPlugin(gContainer *parent) : gControl(parent)
 
 long gPlugin::client()
 {
-	GdkNativeWindow win=gtk_socket_get_id(GTK_SOCKET(widget));
-	return (long)win;
+	//GdkNativeWindow win = gtk_socket_get_id(GTK_SOCKET(widget));
+	//return (long)win;
+	GdkWindow *win = GTK_SOCKET(widget)->plug_window;
+	if (!win)
+		return 0;
+	else
+		return (long)GDK_WINDOW_XID(win);
 }
 
-void gPlugin::plug(long id,bool prepared)
+void gPlugin::plug(long id, bool prepared)
 {
-	//int bc;
+	void (*func)(gControl *);
+	int i;
 
-	//for (bc=0; bc<10; bc++)
-	//{
-		if (!prepared) gtk_socket_steal(GTK_SOCKET(widget),(GdkNativeWindow)id);
-		else gtk_socket_add_id(GTK_SOCKET(widget),(GdkNativeWindow)id);
-	//}
+	func = onPlug;
+	onPlug = NULL;
+
+	for (i = 1; i >= 0; i--)
+	{
+		if (i == 0)
+			onPlug = func;
+			
+		if (!prepared) 
+			gtk_socket_steal(GTK_SOCKET(widget), (GdkNativeWindow)id);
+		else 
+			gtk_socket_add_id(GTK_SOCKET(widget), (GdkNativeWindow)id);
+	}
+	
+	if (client())
+    XAddToSaveSet(gdk_display, client());
+	else
+		emit(SIGNAL(onError));
 }
 
 void gPlugin::discard()
@@ -138,24 +159,14 @@ void gPlugin::discard()
 	stub("DIRECTFB/gPlugin:discard()");
 	#else
 	#ifdef GDK_WINDOWING_X11
-	GtkWidget *fr;
-	gColor color;
 	
-	GdkNativeWindow win=gtk_socket_get_id(GTK_SOCKET(widget));
-	GdkDisplay* dsp=gdk_display_get_default();
+	//gColor color;
 	
-	if (!win) return;
+	if (!client()) return;
 	
-	XReparentWindow(GDK_DISPLAY_XDISPLAY(dsp),win,GDK_ROOT_WINDOW(), 0, 0);
+  XRemoveFromSaveSet(gdk_display, client());
+	XReparentWindow(gdk_display, client(), GDK_ROOT_WINDOW(), 0, 0);
 	
-	color = foreground();
-	gtk_widget_destroy(widget);
-	
-	border=widget=gtk_socket_new();
-	fr=gtk_bin_get_child(GTK_BIN(border));
-	gtk_container_add(GTK_CONTAINER(fr),widget);
-	gtk_widget_show(widget);
-	setForeground(color);
 	#else
 	stub("no-X11/gPlugin:discard()");
 	#endif
