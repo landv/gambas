@@ -5,7 +5,7 @@ class gPlugin : public gControl
 {
 public:
 	gPlugin(gContainer *parent);
-	void plug(long id,bool prepared=true);
+	void plug(long id, bool prepared = false);
 	void discard();
 //"Properties"
 	long client();
