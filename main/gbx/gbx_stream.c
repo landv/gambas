@@ -289,7 +289,7 @@ char STREAM_getchar(STREAM *stream)
 }
 
 
-void STREAM_read_max(STREAM *stream, void *addr, int len)
+static void STREAM_read_max(STREAM *stream, void *addr, int len)
 {
 	bool is_term = stream->common.is_term;
 	bool err;
@@ -400,6 +400,42 @@ void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 	}
 }
 
+static void fill_buffer(STREAM *stream, char *addr)
+{
+	bool err;
+	STREAM_eff_read = 0;
+	int flags, fd;
+
+	fd = STREAM_handle(stream);
+	
+	err = (*(stream->type->read))(stream, addr, 1);
+	if (!err)
+	{
+		flags = fcntl(fd, F_GETFL);
+		if ((flags & O_NONBLOCK) == 0)
+			fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+		
+		err = (*(stream->type->read))(stream, addr + 1, STREAM_BUFFER_SIZE - 1);
+		
+		if ((flags & O_NONBLOCK) == 0)
+			fcntl(fd, F_SETFL, flags);
+	}
+
+	if (err)
+	{
+		switch(errno)
+		{
+			case 0:
+			case EAGAIN:
+				break;
+			case EIO:
+				break; //THROW(E_READ);
+			default:
+				THROW_SYSTEM(errno, NULL);
+		}
+	}
+}
+
 
 static void input(STREAM *stream, char **addr, boolean line)
 {
@@ -428,7 +464,7 @@ static void input(STREAM *stream, char **addr, boolean line)
 		}
 	}
 
-	if (STREAM_eof(stream))
+	if (!STREAM_is_blocking(stream) && STREAM_eof(stream))
 		THROW(E_EOF);
 		
 	buffer = stream->common.buffer;
@@ -463,7 +499,8 @@ static void input(STREAM *stream, char **addr, boolean line)
 			stream->common.buffer_pos = buffer_pos;
 			stream->common.buffer_len = buffer_len;
 			
-			STREAM_read_max(stream, buffer, STREAM_BUFFER_SIZE);
+			fill_buffer(stream, buffer);
+			//STREAM_read_max(stream, buffer, STREAM_BUFFER_SIZE);
 			
 			buffer_pos = 0;
 			buffer_len = STREAM_eff_read;
@@ -513,22 +550,6 @@ static void input(STREAM *stream, char **addr, boolean line)
 			break;
 
 		len++;
-		//COMMON_buffer[len++] = c;
-
-		// Optimized eof
-		
-		/*
-		if (STREAM_eof(stream))
-		{
-			stream->common.eof = TRUE;
-			break;
-		}
-		*/
-		/*if ((*eof_func)(stream))
-		{
-			stream->common.eof = TRUE;
-			break;
-		}*/
 	}
 
 	if (len > 0)
@@ -1066,4 +1087,25 @@ int STREAM_write_direct(int fd, char *buffer, int len)
 }
 
 
+void STREAM_blocking(STREAM *stream, bool block)
+{
+	int fd = STREAM_handle(stream);
+	
+	if (fd < 0)
+		return;
+	
+	if (block)
+		fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
+	else
+		fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+}
 
+bool STREAM_is_blocking(STREAM *stream)
+{
+	int fd = STREAM_handle(stream);
+	
+	if (fd < 0)
+		return TRUE;
+		
+	return (fcntl(fd, F_GETFL) & O_NONBLOCK) == 0;
+}

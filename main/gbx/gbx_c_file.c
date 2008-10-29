@@ -688,6 +688,15 @@ BEGIN_PROPERTY(CSTREAM_eof)
   GB_ReturnBoolean(CSTREAM_stream(THIS_STREAM)->common.eof);
   
 END_PROPERTY
+
+BEGIN_PROPERTY(CSTREAM_blocking)
+
+	if (READ_PROPERTY)
+		GB_ReturnBoolean(STREAM_is_blocking(CSTREAM_stream(THIS_STREAM)));
+	else
+		STREAM_blocking(CSTREAM_stream(THIS_STREAM), VPROP(GB_BOOLEAN));
+
+END_PROPERTY
 		
 #endif
 
@@ -702,6 +711,7 @@ GB_DESC NATIVE_Stream[] =
   GB_PROPERTY("EndOfLine", "i", CSTREAM_eol),
   GB_METHOD("Close", NULL, CSTREAM_close, NULL),
   GB_PROPERTY_READ("EndOfFile", "b", CSTREAM_eof),
+  GB_PROPERTY("Blocking", "b", CSTREAM_blocking),
 
   GB_END_DECLARE
 };

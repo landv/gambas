@@ -231,4 +231,7 @@ void STREAM_lock(STREAM *stream);
 
 #define STREAM_is_closed(_stream) ((_stream)->type == NULL)
 
+void STREAM_blocking(STREAM *stream, bool block);
+bool STREAM_is_blocking(STREAM *stream);
+
 #endif

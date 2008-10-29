@@ -1597,10 +1597,10 @@ void MyMainWindow::showActivate(QWidget *transient)
 		doReparent(newParentWidget, getWFlags(), pos());
 	}
 
-	/*#ifndef NO_X_WINDOW
-	if (THIS != CWINDOW_Main)
-		X11_set_transient_for(winId(), QWIDGET(CWINDOW_Main)->winId());
-	#endif*/
+	#ifndef NO_X_WINDOW
+	if (newParentWidget && getTool())
+		X11_set_transient_for(winId(), newParentWidget->winId());
+	#endif
 
   //qDebug("showActivate %p", _object);
 

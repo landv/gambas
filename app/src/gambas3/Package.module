@@ -274,9 +274,9 @@ Private Sub RunCommand(sCmd As String, Optional sDir As String)
   $sOutput = ""
   $bEnd = False
   If sDir Then
-    Shell "(cd " & SConv(Quote.Shell(sDir)) & ";" & sCmd & ") 2>&1" For Read 'TO sOutput
+    Shell "(cd " & SConv(Quote.Shell(sDir)) & ";" & sCmd & ") 2>&1" For Read As "Process"
   Else
-    Shell sCmd & " 2>&1" For Read 
+    Shell sCmd & " 2>&1" For Read As "Process"
   Endif
   Repeat
     Sleep 0.01 
@@ -357,8 +357,7 @@ Private Function MakeDebPackage(sSys As String)
   ' Rename the source archive project directory to the package name
   'TRY MOVE Path &/ (sPrefix & Subst("&1", Project.Name)) TO sPackagePath
   Try Kill sArch
-  Try Shell "cp -Rf " & sPackagePath & " " & sPackagePath & ".orig"
-  
+  Try Shell "cp -Rf " & sPackagePath & " " & sPackagePath & ".orig" Wait
 
   Try Mkdir sPackagePath &/ "debian"
 
@@ -535,9 +534,8 @@ Private Function MakeDebPackage(sSys As String)
 
   AddLog(("Creating package..."))
   sCmd = "cd " & Quote.Shell(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
-  Shell sCmd Wait For Read
+  Shell sCmd Wait
   If Process.LastValue > 2 Then Error.Raise(("'dpkg-buildpackage' has failed."))
-
 
   Try Shell "rm -Rf " & Quote.Shell(sPackagePath) Wait
   Try Shell "rm -f " & Quote.Shell(Path) &/ "*.dsc.asc" Wait 
@@ -930,7 +928,7 @@ Private Function MakeRpmPackage(sSys As String)
     'sTemp = Temp$
   $sOutput = ""
   $bEnd = False
-  Shell sCmd & " 2>&1" Wait For Read 'TO sOutput
+  Shell sCmd & " 2>&1" Wait For Read As "Process" 'TO sOutput
     ' REPEAT
     '   SLEEP 0.01
     '   WAIT

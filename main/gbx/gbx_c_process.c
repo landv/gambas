@@ -610,8 +610,8 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
 
 	/*printf("** CPROCESS_create <<<< \n");*/
 
-	if (!name || !*name)
-		name = "Process";
+	//if (!name || !*name)
+	//	name = "Process";
 
 	OBJECT_new((void **)(void *)&process, CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
 
@@ -620,6 +620,9 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
 
 	OBJECT_UNREF_KEEP(process, "CPROCESS_create");
 
+	if (!name || !*name)
+		STREAM_blocking(CSTREAM_stream(process), TRUE);
+	
 	/*printf("** CPROCESS_create >>>> \n");*/
 
 	return process;

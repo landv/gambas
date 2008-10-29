@@ -33,7 +33,7 @@ End
 Private Sub Run(sCmd As String, Optional sRemove As String)
 
   $bEnd = False
-  Shell sCmd & " 2>&1" For Read 'TO sOutput
+  Shell sCmd & " 2>&1" For Read As "Process" 'TO sOutput
   
   If sRemove Then sCmd = Replace(sCmd, sRemove, "")
   

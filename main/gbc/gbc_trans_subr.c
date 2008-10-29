@@ -541,7 +541,7 @@ static void trans_exec_shell(bool shell)
 {
   int mode = TS_EXEC_NONE;
   bool wait;
-  bool as = FALSE;
+  bool as = TRUE;
 
   /* programme �ex�uter */
   TRANS_expression(FALSE);
@@ -563,7 +563,6 @@ static void trans_exec_shell(bool shell)
       if (TRANS_is(RS_OUTPUT))
         mode |= TS_EXEC_WRITE;
     }
-    as = TRUE;
   }
   else if (TRANS_is(RS_TO))
   {
@@ -573,6 +572,9 @@ static void trans_exec_shell(bool shell)
     mode = TS_EXEC_STRING;
     wait = TRUE;
   }
+  
+  if (wait)
+  	as = FALSE;
 
   CODE_push_boolean(wait);
   CODE_push_number(mode);
