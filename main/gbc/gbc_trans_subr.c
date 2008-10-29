@@ -543,7 +543,6 @@ static void trans_exec_shell(bool shell)
   bool wait;
   bool as = TRUE;
 
-  /* programme �ex�uter */
   TRANS_expression(FALSE);
 
   wait = TRANS_is(RS_WAIT);
@@ -571,11 +570,9 @@ static void trans_exec_shell(bool shell)
 
     mode = TS_EXEC_STRING;
     wait = TRUE;
+    as = FALSE;
   }
   
-  if (wait)
-  	as = FALSE;
-
   CODE_push_boolean(wait);
   CODE_push_number(mode);
 
