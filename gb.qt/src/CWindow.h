@@ -193,10 +193,8 @@ public:
   #else
   int getType(void);
   void setType(int type);
+  bool isToolbar(void);
   #endif
-  
-  bool getTool(void) { return testWFlags(WStyle_Tool); }
-  void setTool(bool);
   
   void setSizeGrip(bool);
   void moveSizeGrip();

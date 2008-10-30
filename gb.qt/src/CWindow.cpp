@@ -1135,7 +1135,7 @@ END_PROPERTY
 
 #endif //------------------------------------------------------------------------------------------
 
-
+#if 0
 BEGIN_PROPERTY(CWINDOW_tool)
 
   if (!THIS->toplevel)
@@ -1160,7 +1160,7 @@ BEGIN_PROPERTY(CWINDOW_tool)
   }
 
 END_PROPERTY
-
+#endif
 
 BEGIN_METHOD_VOID(CWINDOW_center)
 
@@ -1598,7 +1598,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 	}
 
 	#ifndef NO_X_WINDOW
-	if (newParentWidget && getTool())
+	if (newParentWidget && isToolbar())
 		X11_set_transient_for(winId(), newParentWidget->winId());
 	#endif
 
@@ -1626,7 +1626,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			show();
 
-		if (getTool())
+		if (isToolbar())
 		{
 			qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
 			usleep(50000);
@@ -1721,6 +1721,12 @@ void MyMainWindow::showModal(void)
 }
 
 
+bool MyMainWindow::isToolbar(void)
+{
+	return getType() == _NET_WM_WINDOW_TYPE_UTILITY;
+}
+
+/*
 void MyMainWindow::setTool(bool t)
 {
   WFlags f = getWFlags();
@@ -1732,6 +1738,7 @@ void MyMainWindow::setTool(bool t)
 
  	doReparent(CWINDOW_Main ? (MyMainWindow *)QWIDGET(CWINDOW_Main) : 0, f, pos());
 }
+*/
 
 void MyMainWindow::moveSizeGrip()
 {
