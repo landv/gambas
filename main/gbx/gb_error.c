@@ -86,7 +86,7 @@ static const char *_message[64] =
   /* 39 E_EOF */ "End of file",
   /* 40 E_FORMAT */ "Bad format string",
   /* 41 E_DYNAMIC */ ".'&1.&2' is not static",
-  /* 42 E_SYSTEM */ ".System error. &1",
+  /* 42 E_SYSTEM */ ".System error #&1: &2",
   /* 43 E_ACCESS */ "Access forbidden",
   /* 44 E_TOOLONG */ "File name is too long",
   /* 45 E_NEXIST */ "File or directory does not exist", /* &1 */
@@ -346,6 +346,8 @@ void THROW(int code, ...)
 
 void THROW_SYSTEM(int err, const char *path)
 {
+	char buf[6];
+	
   switch(err)
   {
     case ENOENT:
@@ -373,7 +375,8 @@ void THROW_SYSTEM(int err, const char *path)
       THROW(E_EXIST, path);
 
     default:
-      THROW(E_SYSTEM, strerror(err));
+    	sprintf(buf, "%d", err);
+      THROW(E_SYSTEM, buf, strerror(err));
   }
 }
 

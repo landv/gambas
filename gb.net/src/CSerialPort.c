@@ -239,7 +239,8 @@ int CSerialPort_stream_flush(GB_STREAM *stream)
 }
 int CSerialPort_stream_handle(GB_STREAM *stream)
 {
-	return 0; /* OK */
+	void *_object = stream->tag;
+	return THIS->Port; /* OK */
 }
 int CSerialPort_stream_close(GB_STREAM *stream)
 {
@@ -654,7 +655,6 @@ END_METHOD
  *************************************************/
 BEGIN_METHOD_VOID(CSERIALPORT_Open)
 
-	void *stream;
 	int err;
 	char buffer[8];
 

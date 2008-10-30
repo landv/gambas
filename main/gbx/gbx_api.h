@@ -155,7 +155,8 @@ void GB_NewArray(void *pdata, int size, int count);
 int GB_CountArray(void *data);
 void *GB_Add(void *pdata);
 
-void GB_StreamInit(GB_STREAM *, int fd);
+//void GB_StreamInit(GB_STREAM *, int fd);
+void GB_StreamSetBytesRead(GB_STREAM *, int);
 
 int GB_tolower(int c);
 int GB_toupper(int c);

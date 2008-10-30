@@ -50,9 +50,7 @@ static int stream_open(STREAM *stream, const char *path, int mode, CPROCESS *pro
   FDR = process->out;
   FDW = process->in;
 
-  if (FDR >= 0)
-    fcntl(FDR, F_SETFL, fcntl(FDR, F_GETFL) | O_NONBLOCK);
-
+	STREAM_blocking(stream, FALSE);
   return FALSE;
 }
 

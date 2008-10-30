@@ -238,7 +238,7 @@ void *GAMBAS_Api[] =
   (void *)GB_HashTableGet,
   (void *)GB_HashTableEnum,
 
-  (void *)GB_StreamInit,
+  (void *)GB_StreamSetBytesRead,
 
   (void *)GB_ImageCreate,
   (void *)GB_ImageInfo,
@@ -1599,12 +1599,17 @@ int GB_IsRightToLeft(void)
 }
 
 
-void GB_StreamInit(GB_STREAM *stream, int fd)
+/*void GB_StreamInit(GB_STREAM *stream, int fd)
 {
   STREAM *s = (STREAM *)stream;
 
   s->type = &STREAM_direct;
   s->direct.fd = fd;
+}*/
+
+void GB_StreamSetBytesRead(GB_STREAM *stream, int length)
+{
+	STREAM_eff_read = length;
 }
 
 int GB_tolower(int c)

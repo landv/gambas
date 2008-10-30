@@ -49,6 +49,7 @@
 #include "gbx_regexp.h"
 #include "gbx_api.h"
 #include "gbx_string.h"
+#include "gbx_watch.h"
 
 #include "gbx_stream.h"
 
@@ -176,6 +177,7 @@ _OPEN:
 	}
 
 	stream->common.is_term = isatty(STREAM_handle(stream));
+	stream->common.is_file = !stream->common.is_term && !stream->common.is_device;
 }
 
 
@@ -403,19 +405,23 @@ void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 static void fill_buffer(STREAM *stream, char *addr)
 {
 	bool err;
-	STREAM_eff_read = 0;
 	int flags, fd;
 
+	STREAM_eff_read = 0;
 	fd = STREAM_handle(stream);
 	
-	err = (*(stream->type->read))(stream, addr, 1);
-	if (!err)
+	if (stream->common.is_file)
+		err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
+	else
 	{
+		//printf("WATCH_process(%d, -1)\n", fd); fflush(stdout);
+		WATCH_process(fd, -1);
 		flags = fcntl(fd, F_GETFL);
 		if ((flags & O_NONBLOCK) == 0)
 			fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 		
-		err = (*(stream->type->read))(stream, addr + 1, STREAM_BUFFER_SIZE - 1);
+		//printf("read\n"); fflush(stdout);
+		err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
 		
 		if ((flags & O_NONBLOCK) == 0)
 			fcntl(fd, F_SETFL, flags);
@@ -427,6 +433,7 @@ static void fill_buffer(STREAM *stream, char *addr)
 		{
 			case 0:
 			case EAGAIN:
+			case EINPROGRESS:
 				break;
 			case EIO:
 				break; //THROW(E_READ);
@@ -465,7 +472,10 @@ static void input(STREAM *stream, char **addr, boolean line)
 	}
 
 	if (!STREAM_is_blocking(stream) && STREAM_eof(stream))
+	{
+		//printf("EOF!\n"); fflush(stdout);
 		THROW(E_EOF);
+	}
 		
 	buffer = stream->common.buffer;
 	buffer_len = stream->common.buffer_len;
@@ -499,16 +509,33 @@ static void input(STREAM *stream, char **addr, boolean line)
 			stream->common.buffer_pos = buffer_pos;
 			stream->common.buffer_len = buffer_len;
 			
+			//printf("fill_buffer: (is_file = %d)\n", stream->common.is_file); fflush(stdout);
+			
 			fill_buffer(stream, buffer);
 			//STREAM_read_max(stream, buffer, STREAM_BUFFER_SIZE);
 			
 			buffer_pos = 0;
 			buffer_len = STREAM_eff_read;
 			
+			#if 0
+			printf("-> %d: ", buffer_len);
+			{
+				int i;
+				for (i = 0; i < buffer_len; i++)
+				{
+					printf("%02X ", buffer[i]);
+				}
+				putchar('\n');
+			}
+			#endif
+			
 			if (!buffer_len)
 			{
-				stream->common.eof = TRUE;
-				break;
+				if (stream->common.is_file)
+				{
+					stream->common.eof = TRUE;
+					break;
+				}
 			}
 			
 			start = 0;

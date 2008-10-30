@@ -963,7 +963,7 @@ typedef
     HashTable;
 
     struct {
-      void (*Init)(GB_STREAM *, int fd);
+      void (*SetBytesRead)(GB_STREAM *stream, int length);
       }
     Stream;
 
