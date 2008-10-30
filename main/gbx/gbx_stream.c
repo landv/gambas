@@ -169,6 +169,7 @@ _OPEN:
 	stream->common.buffer_len = 0;
 	stream->common.no_fionread = FALSE;
 	stream->common.no_lseek = FALSE;
+	stream->common.is_device = FALSE;
 
 	if ((*(stream->type->open))(stream, path, mode, NULL))
 	{

@@ -193,8 +193,9 @@ public:
   #else
   int getType(void);
   void setType(int type);
-  bool isToolbar(void);
   #endif
+  
+  bool isToolbar(void);
   
   void setSizeGrip(bool);
   void moveSizeGrip();

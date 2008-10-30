@@ -471,13 +471,9 @@ void EXEC_enter(void)
 		}
 	}
 
-	/* save context */
+	/* save context & check stack*/
 
-	STACK_push_frame(&EXEC_current);
-
-	/* check stack */
-
-	STACK_check(func->stack_usage);
+	STACK_push_frame(&EXEC_current, func->stack_usage);
 
 	/* enter function */
 
@@ -574,13 +570,9 @@ void EXEC_enter_quick(void)
 		printf(" | >> %s\n", func->debug->name);
 	#endif
 
-	/* save context */
+	/* save context & check stack */
 
-	STACK_push_frame(&EXEC_current);
-
-	/* check stack */
-
-	STACK_check(func->stack_usage);
+	STACK_push_frame(&EXEC_current, func->stack_usage);
 
 	/* enter function */
 
@@ -766,7 +758,7 @@ __RETURN_VALUE:
 void EXEC_function_real()
 {
 	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
-	STACK_push_frame(&EXEC_current);
+	STACK_push_frame(&EXEC_current, 0);
 
 	PC = NULL;
 

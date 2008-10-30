@@ -73,10 +73,13 @@ void STACK_check(int need)
 }
 #endif
 
-void STACK_push_frame(STACK_CONTEXT *context)
+void STACK_push_frame(STACK_CONTEXT *context, int need)
 {
-  if (((char *)SP + sizeof(STACK_CONTEXT) * 2) >= (char *)STACK_frame)
-    THROW(E_STACK);
+	if ((char *)(SP + need + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) 
+		THROW(E_STACK);
+  
+  //if (((char *)SP + sizeof(STACK_CONTEXT) * 2) >= (char *)STACK_frame)
+  //  THROW(E_STACK);
 
   STACK_frame--;
   

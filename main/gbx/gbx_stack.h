@@ -67,7 +67,7 @@ void STACK_check(int need);
 
 #endif
 
-void STACK_push_frame(STACK_CONTEXT *context);
+void STACK_push_frame(STACK_CONTEXT *context, int check);
 void STACK_pop_frame(STACK_CONTEXT *context);
 bool STACK_has_error_handler(void);
 STACK_CONTEXT *STACK_get_frame(int frame);

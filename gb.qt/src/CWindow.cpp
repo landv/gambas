@@ -1723,7 +1723,11 @@ void MyMainWindow::showModal(void)
 
 bool MyMainWindow::isToolbar(void)
 {
+	#ifdef NO_X_WINDOW
+	return false;
+	#else
 	return getType() == _NET_WM_WINDOW_TYPE_UTILITY;
+	#endif
 }
 
 /*

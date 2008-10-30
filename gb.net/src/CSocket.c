@@ -268,8 +268,6 @@ void CSocket_CallBack(int t_sock,int type,long lParam)
 
 	GB.Ref(_object);
 	GB.Post(CSocket_post_data_available,(intptr_t)THIS);
-
-
 }
 
 

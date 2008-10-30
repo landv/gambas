@@ -42,9 +42,7 @@ static EXPRESSION *EVAL;
 
 static void EVAL_enter()
 {
-  STACK_push_frame(&EXEC_current);
-
-  STACK_check(EVAL->func.stack_usage);
+  STACK_push_frame(&EXEC_current, EVAL->func.stack_usage);
 
   BP = SP;
   PP = SP;
@@ -65,7 +63,7 @@ static void EVAL_enter()
 static void EVAL_exec()
 {
 	// We need to push a void frame, because EXEC_leave looks at *PC to know if a return value is expected
-	STACK_push_frame(&EXEC_current);
+	STACK_push_frame(&EXEC_current, 0);
 
 	PC = NULL;
 
