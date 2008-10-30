@@ -1,4 +1,228 @@
 -------------------------------------------------------------------------------
+ gambas2-2.9 - 30 Oct 2008
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Some bugs fixes coming from Gentoo.
+* BUG: Rename the "SDL_SOUND" autoconf package name as "SDLSOUND".
+* BUG: Fix acinclude.m4 for the help directory configuration.
+* BUG: Do not abort installation if a component written in gambas cannot
+  be installed.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: The save file dialog now correctly displays unsaved file icons.
+* BUG: Fixes relative to non fixed-size fonts support.
+* BUG: Fix the drawing of symbolic link overlay icon.
+* BUG: Fix the horizontal position of the automatic completion.
+* BUG: Look in project classes before component classes in automatic
+  completion.
+* BUG: Do not increment version release if the packager wizard is
+  cancelled.
+* BUG: The default directory where packages are stored is the home
+  directory now.
+* BUG: Fix the signature display routine that sometimes underlined
+  incorrectly.
+* BUG: Use version program at each project configuration write.
+* BUG: Fix the tooltip of the console find button.
+* BUG: Undocking the console does not hide the breakpoint tab anymore.
+* BUG: Use freedesktop standard to get the desktop path now. The routine
+  was provided by Roland Pierret, and adapted by me.
+* BUG: Virtual control icons are searched in Gambas control directories.
+* BUG: Set the focus on the form when it becomes active.
+* BUG: Print the real size of directory contents when getting information
+  on a project directory.
+* NEW: The packager now creates a package inside its own sub-directory.
+  The name of this sub-directory is the package kind: "mandriva" for a
+  Mandriva rpm, "ubuntu" for an Ubuntu deb, and so on.
+* NEW: Editors can use non fixed-size fonts.
+* NEW: Add a checkbox to tell the packager if it should create the
+  packages in their own distribution-specific directories.
+* NEW: Write Gambas version in .project files.
+* NEW: A button that clears the shortcut in the menu editor.
+* NEW: The main selected control is unselectable in the form editor now.
+* NEW: Selected controls can be resized by pressing CTRL and an arrow key.
+* NEW: Some form editor shortcuts have been changed to not conflict with
+  the previous feature.
+* NEW: When evaluating expression in the console, a semi-colon at the end
+  of the expression prevents the end newline to be printed, like in the
+  PRINT instruction.
+* NEW: CTRL+G in the console makes it flash.
+* NEW: Store the component version inside the .component files for
+  component projects.
+* NEW: Package dependencies on component use the previous version stored
+  in the .component file if it is available. Otherwise the current Gambas
+  interpreter version is used.
+* NEW: Store the component version inside the .component files for
+  component projects.
+* NEW: The packager wizard remembers the last directory used for storing
+  packages.
+* NEW: A "paste special" function in the code editor, that allows to
+  insert plain text or HTML text from the clipboard, and can comment it,
+  quote it as a Gambas string, or transform it into PRINT instructions.
+* NEW: Update of Swedish translations
+* NEW: The directory where source package is done is remembered, by
+  project.
+* NEW: Update of tips.sv
+
+[DATABASE MANAGER]
+* BUG: Do not keep the connection open when reading the database list is
+  impossible.
+* BUG: Fix the management of connections with a specified database.
+* BUG: Some fix related to the now immediate invalidity of deleted forms.
+* NEW: Allows to open a connection on a specific database. This is useful
+  if you are not allowed to connect to the default database of a server
+  and cannot get the list of all databases.
+* NEW: Do no connect to the database when opening a server having its
+  database specified.
+
+[INTERPRETER]
+* BUG: Handle additions between a small integer constant and a string 
+  correctly, by converting the string to a floating point number.
+* BUG: Void arguments does not trim argument list anymore in the EXEC
+  instruction.
+* BUG: Fix locale-aware string comparisons, i.e. string comparisons that
+  use the gb.Language constant.
+* BUG: Correctly check if a locale-aware comparison fails, and does a
+  binary comparison instead.
+* BUG: Fix a possible crash in String.UCase() and String.LCase().
+* BUG: Silently ignore conversion errors inside String.Upper() and
+  String.Lower() methods.
+* NEW: Update copyright year in gb_common.h header file.
+* NEW: Make a dedicated tag field in the internal Gambas stream structure.
+  That makes the code in components cleaner.
+
+[COMPILER]
+* BUG: Manage .list and .info files incrementally, so that they are up to
+  date even when the project is not fully compiled.
+* BUG: Float and Single constants are correctly written in the .info file.
+
+[SCRIPTER]
+* BUG: Use gb.eval to analyze script instead of hand-made parsing.
+* BUG: Print a warning message when a component requirement is not found
+  instead of halting.
+* BUG: Support for HTML comments in server pages.
+* NEW: New option -v to be verbose.
+* NEW: New option -c to ignore cache contents.
+* NEW: Support for gambas server pages!
+* NEW: Server page are now run by a program named 'gbw2', which is just a
+  symbolic link to 'gbs2'.
+* NEW: Server page mime information.
+* NEW: The server pages are bufferized, otherwise you cannot use the
+  Response object inside the page.
+
+[GB.DB]
+* NEW: Add an API that allows a driver function to get the current
+  database when it does not get it from its arguments.
+
+[GB.DB.MYSQL]
+* BUG: Fix the drop index driver function.
+* NEW: Automatically retries the query when the connection with the server
+  is lost while retrieving the database list.
+
+[GB.DB.POSTGRESQL]
+* BUG: Fix blob support for some encodings, and when PostgreSQL version is
+  greater or equal than 8.2.
+* BUG: Quote non-ASCII characters in strings the same way than with blobs.
+
+[GB.DB.SQLITE3]
+* BUG: Field values are not truncated anymore.
+
+[GB.FORM.MDI]
+* BUG: Do not try to activate a deleted window that is now invalid.
+
+[GB.GTK]
+* BUG: Speeds up the combo-box control as much as I can. Slowness seems to
+  be a GTK+ feature. :-/
+* BUG: Fix the use of the gambas part in the TreeView class.
+* BUG: Window.Picture property now works correctly when the window is
+  embedded inside a container.
+* BUG: Embedded windows having a background picture are now correctly
+  updated when they are resized.
+* BUG: Correctly handle a form close or destroy during an event handler.
+* BUG: The combo-box behaves now like the qt one. Its first item is always
+  selected at startup.
+* BUG: Fix a variable misnaming.
+* BUG: Fix the arrangement of ScrollView container.
+* BUG: Fix the memory leak in the Picture class.
+* BUG: Remove the Window resize event compression.
+* BUG: Gridview cells are correctly refreshed now when their Picture or
+  Font property change.
+* BUG: Fix the Embedder Plug & Discard methods.
+* NEW: Now deleted forms become immediately invalid.
+
+[GB.NET]
+* BUG: Setting SerialPort parity should not strip the eigth bit of data
+  bytes.
+* BUG: Fix SerialPort error messages.
+* BUG: Fix some error messages.
+* NEW: Use the new tag field from the Gambas stream structure.
+
+[GB.NET.CURL]
+* BUG: Successive calls to the Get() or Put() methods should not make the
+  interpreter crash at exit anymore.
+* BUG: Remove some debugging messages.
+* BUG: The component was redesigned to fix a crash in stream methods is
+  synchronous mode.
+* BUG: Some 64-bits fixes.
+* BUG: The Status property is correctly set after an error now.
+* NEW: Use the new tag field from the Gambas stream structure.
+
+[GB.QT]
+* BUG: Fix crash when setting a shortcut on a top-level menu.
+* BUG: The ComboBox.Item.Text property now correctly returns UTF-8 text.
+* BUG: Clipboard.Paste() now returns an UTF-8 string.
+* BUG: Correctly handle a form close or destroy during an event handler.
+* BUG: Checking if the application must quit is deferred, so that closing
+  a form and opening another one keeps the application running.
+* BUG: Block events when setting the number of rows and columns in
+  GridView. That prevents some bad crashes.
+* BUG: The window events management was redesigned, mainly by copying the
+  behaviour of gb.gtk. The Open event is now raised before the window is
+  shown.
+* BUG: Setting the Minimized, Maximized and FullScreen Window properties
+  during the Open event now works as expected.
+* BUG: The initial Move and Resize events of a window are not raised
+  immediately after the Open event, but delayed. Otherwise sometimes some
+  widgets are not correctly layouted.
+* BUG: The Container.Children property does not return invalid controls
+  anymore.
+* BUG: Showing a window during an Open or Close event, and closing a
+  window during the Close event now do nothing.
+* BUG: WAIT does not take 100% CPU anymore.
+* BUG: Fix an uninitialized variable in the QtXEmbedContainer class.
+* NEW: Now deleted forms become immediately invalid.
+
+[GB.QT.EXT]
+* BUG: Fix the conversion of mouse horizontal position to cursor position
+  in the Editor control.
+* BUG: In Editor, the line width must not be smaller than the visible
+  width.
+* BUG: Many fixes in Editor drawing routine.
+* BUG: In Editor, Undo and Redo now should always work correctly when a
+  line is rewritten.
+* BUG: Fix conversion from cursor position to text column in Editor.
+* BUG: Don't paste in Editor if there is nothing to paste.
+* BUG: In Editor, do not call the event loop when scrolling. That can
+  lead to infinite recursion.
+* NEW: The editor now support non fixed-size fonts.
+* NEW: In Editor, CTRL+BACKSPACE deletes the left word now.
+* NEW: In Editor, CTRL+DELETE deletes the right word now.
+* NEW: The Editor is cleared now when it prints a CTRL+L character.
+* NEW: The Editor flashes now when it prints a CTRL+G character.
+* NEW: In Editor, when a line is rewritten, the Change event is always
+  emitted.
+* NEW: In Editor, show trailing spaces at end of lines with dots.
+* OPT: Indention, unindentation, and everything that acts between a
+  Begin() and End() commands only emit the Change event once.
+  Consequently, these actions are not slow anymore.
+* OPT: Optimize undo and redo the same way as ident and unindent.
+
+[GB.XML]
+* BUG: The management of XML nodes was incorrect, and so was redesigned.
+
+
+
+-------------------------------------------------------------------------------
  gambas2-2.8.2 - 30 Aug 2008
 -------------------------------------------------------------------------------
 
