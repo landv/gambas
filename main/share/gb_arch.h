@@ -80,6 +80,7 @@ typedef
 typedef
   struct {
     ARCH_SYMBOL *sym;
+    int index;
     int pos;
     int len;
     }

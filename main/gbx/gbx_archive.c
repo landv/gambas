@@ -51,10 +51,9 @@ ARCHIVE *ARCHIVE_main = NULL;
 static ARCHIVE *_archive_list = NULL;
 
 static char *arch_pattern = NULL;
-static char *arch_path = NULL;
-static int arch_len_path;
 static int arch_index = 0;
 static ARCH *arch_dir = NULL;
+static char *arch_prefix = NULL;
 
 
 ARCHIVE *ARCHIVE_create(const char *name)
@@ -211,7 +210,7 @@ void ARCHIVE_exit(void)
     ARCHIVE_delete(ARCHIVE_main);
 
   STRING_free(&arch_pattern);
-  STRING_free(&arch_path);
+  STRING_free(&arch_prefix);
 }
 
 
@@ -259,6 +258,7 @@ bool ARCHIVE_get(ARCHIVE *arch, const char *path, int len_path, ARCHIVE_FIND *fi
   find->sym = f.sym;
   find->pos = f.pos;
   find->len = f.len;
+  find->index = f.index;
   find->arch = arch;
 
   return FALSE;
@@ -321,7 +321,9 @@ bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
 
 void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern)
 {
+  ARCHIVE_FIND find;
 	char abs_path[MAX_PATH];
+	int abs_len;
 
   if (pattern == NULL)
     pattern = "*";
@@ -332,23 +334,39 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern)
     return;
   }
 
-	ARCH_get_absolute_path(path, strlen(path), abs_path, &arch_len_path);
-
-  if (arch_len_path && abs_path[arch_len_path - 1] != '/')
+  if (ARCHIVE_get(arch, path, 0, &find))
   {
-  	abs_path[arch_len_path] = '/';
-  	arch_len_path++;
-	}
-
+  	arch_dir = NULL;
+  	return;
+  }
+  
+  arch_dir = arch->arch;
+  arch_index = 0;
+	
   STRING_free(&arch_pattern);
   STRING_new(&arch_pattern, pattern, 0);
 
-  STRING_free(&arch_path);
-  if (arch_len_path)
-  	STRING_new(&arch_path, abs_path, arch_len_path);
+	if (arch_dir->header.version == 2)
+	{
+		if (find.index)
+			abs_len = sprintf(abs_path, "/%d:", find.index);
+		else
+			abs_len = 0;
+	}
+	else
+	{
+		ARCH_get_absolute_path(path, strlen(path), abs_path, &abs_len);
+	
+		if (abs_len && abs_path[abs_len - 1] != '/')
+		{
+			abs_path[abs_len] = '/';
+			abs_len++;
+		}
+	}
 
-  arch_index = 0;
-  arch_dir = arch->arch;
+	STRING_free(&arch_prefix);
+	if (abs_len)
+		STRING_new(&arch_prefix, abs_path, abs_len);
 }
 
 
@@ -357,12 +375,15 @@ bool ARCHIVE_dir_next(char **name, int *len, int attr)
   SYMBOL *sym;
   char *s = NULL;
   int l = 0;
+  int lenp;
 
   /*if (arch_fd < 0)
     return FILE_dir_next(name, len);*/
 
   if (!arch_dir)
     return TRUE;
+
+	lenp = STRING_length(arch_prefix);
 
   for(;;)
   {
@@ -380,14 +401,22 @@ bool ARCHIVE_dir_next(char **name, int *len, int attr)
 		if (attr == GB_STAT_DIRECTORY && (((ARCH_SYMBOL *)sym)->pos >= 0))
 			continue;
 
-		if (sym->len < arch_len_path)
+		if (sym->len < lenp)
 			continue;
 
-		if (strncmp(sym->name, arch_path, arch_len_path))
-			continue;
+		if (lenp)
+		{
+			if (strncmp(sym->name, arch_prefix, lenp))
+				continue;
+		}
+		else // special case: root directory when header.version == 2 
+		{
+			if (!strncmp(sym->name, "/", 1))
+				continue;
+		}
 
-		s = sym->name + arch_len_path;
-		l = sym->len - arch_len_path;
+		s = sym->name + lenp;
+		l = sym->len - lenp;
 
 		if (l < 0)
 			continue;

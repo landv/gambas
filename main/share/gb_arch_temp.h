@@ -292,6 +292,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
   find->sym = sym;
   find->pos = sym->pos;
   find->len = sym->len;
+  find->index = ind;
 
   return FALSE;
 }
