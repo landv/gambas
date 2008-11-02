@@ -9,6 +9,7 @@ Private $cVal As Collection
 Private $bModify As Boolean
 Private $eTimeout As Float = 1
 Private $eStartup As Float
+Private $hLock As File
 
 Property Id As String
 Property Timeout As Float
@@ -80,12 +81,11 @@ Private Sub WriteValue(vVal As Variant)
   
   If IsObject(vVal) Then 
     If vVal Is Collection Then 
-      'Main.Log("WriteValue: Collection")
+      'Main.Log("WriteValue: Collection (" & vVal.Count & ")")
       Print "C";
-      'Main.Log("WriteValue: " & vVal.Count)
       WriteLength(vVal.Count)
       For Each vElt In vVal
-      'Main.Log("WriteValue: Key = '" & CStr(vVal.Key) & "' Value = '" & CStr(vElt) & "'")
+        'Main.Log("WriteValue: Key = '" & CStr(vVal.Key) & "' Value = '" & CStr(vElt) & "'")
         Write CStr(vVal.Key)
         WriteValue(vElt)
       Next 
@@ -108,37 +108,76 @@ Private Sub WriteValue(vVal As Variant)
   
 End
 
+Private Sub LockSession() As File
+  
+  Dim iInd As Integer
+  
+  For iInd = 1 To 10
+    Try $hLock = Lock $sPath & ".lock"
+    If Not Error Then Break
+    Sleep 0.1
+  Next
+  
+End
+
+Private Sub UnlockSession()
+  
+  Try Unlock #$hLock
+  
+End
+
+
 Private Sub SaveSession()
   
   Dim hFile As File
+  Dim hLock As File
+  Dim sTemp As String
 
   'PRINT "<h2>Save session</h2>"
   'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
   
   If Not $sId Then Return 
+
+  sTemp = Temp$()
+
   'Startup time is always modified
   If Not $bModify Then 
   
+    LockSession
+    
+    Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
     hFile = Open $sPath For Write 
-    Output To #hFile
-    WriteValue(CFloat(Now))
+    Write #hFile, CFloat(Now)
+    Close #hFile
+    
+    UnlockSession
     
   Else
   
-    hFile = Open $sPath For Create 
+    Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
+    hFile = Open sTemp For Write Create 
+
+    Write #hFile, CFloat(Now)
+    Write #hFile, $eTimeout
+
     Output To #hFile
-    
-    'WriteValue(1) ' Version number
-    WriteValue(CFloat(Now))
-    WriteValue($eTimeout)
     WriteValue($cVal)
+    Output To Default
+    
+    Close #hFile
+    
+    LockSession
+    Try Kill $sPath
+    Move sTemp To $sPath
+    UnlockSession
     
   Endif
     
-  Close #hFile
-  Output To Default 
-  
-  'PRINT "<p>"; Stat($sPath).Size
+  If Exist($sPath) Then
+    Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
+  Else
+    Main.Log("SaveSession: " & $sPath & " NOT FOUND!")
+  Endif
   
 End
 
@@ -204,9 +243,11 @@ Private Sub ReadValue() As Variant
       Read iByte
       iLen = ReadLength()
       sStr = ["Boolean", "Byte", "Short", "Integer", "Long", "Single", "Float", "Date", "String", "String", "Variant", "", "", "", "", "Object"][iByte]
+      'Main.Log("ReadValue: " & sStr & "[" & iLen & "]")
       aArr = New (sStr & "[]", iLen)
       For iInt = 0 To iLen - 1
         aArr[iInt] = ReadValue()
+        'Main.Log("ReadValue: [" & iInt & "] = " & CStr(aArr[iInt]))
       Next
       Return aArr
   End Select  
@@ -231,12 +272,13 @@ Private Sub LoadSession()
   
   'Main.Log("LoadSession: #2")
   
+  LockSession
   hFile = Open $sPath
   Input From #hFile
 
   'IF ReadValue() = 1 THEN GOTO _ABANDON
-  $eStartup = ReadValue()
-  $eTimeout = ReadValue() 
+  Read $eStartup
+  Read $eTimeout
   If CheckSession() Then 
     'Main.Log("* TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
     Goto _ABANDON
@@ -247,12 +289,15 @@ Private Sub LoadSession()
   $cVal = ReadValue()
   $bModify = False
   Close #hFile
-  Input From Default 
+  Input From Default
+  UnlockSession
   Return  
 
 Catch
 
-  Print Error.Where & ": " & Error.Text
+  Try File.Save(File.Dir($sPath) &/ "session.error", Error.Where & ": " & Error.Text & "\n")
+  Try Kill $sPath & ".error"
+  Try Copy $sPath To $sPath & ".error"
 
 _ABANDON:
 
@@ -261,9 +306,11 @@ _ABANDON:
   If hFile Then
     Close #hFile
     Input From Default 
+    UnlockSession
   Endif
   
   Try Kill $sPath
+  Try Kill $sPath & ".lock"
   $sId = ""
   
 End
@@ -338,6 +385,7 @@ Public Sub Abandon()
   
   If Not $sId Then Return
   Try Kill $sPath
+  Try Kill $sPath & ".lock"
   Response.RemoveCookie("SESSION", $sId, "", File.Dir(CGI["SCRIPT_NAME"]))
   $sId = ""
   $sPath = ""
@@ -385,3 +433,16 @@ Private Sub Timeout_Write(Value As Float)
   $eTimeout = Value / 86400
 
 End
+
+Public Sub Save()
+  
+  SaveSession
+  
+End
+
+Public Sub Load()
+
+  LoadSession
+  
+End
+

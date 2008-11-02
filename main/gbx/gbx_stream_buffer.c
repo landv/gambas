@@ -71,8 +71,6 @@ static int stream_open(STREAM *stream, const char *path, int mode)
     return TRUE;
   }
 
-  stream->buffer.size = info.st_size;
-
   FD = file;
   return FALSE;
 }
@@ -197,7 +195,15 @@ static int stream_eof(STREAM *stream)
 
 static int stream_lof(STREAM *stream, int64_t *len)
 {
-  *len = stream->buffer.size;
+	struct stat info;
+	
+	if (stream->common.is_device)
+		return TRUE;
+		
+	if (fstat(fileno(FD), &info) < 0)
+		return TRUE;
+	
+	*len = info.st_size;
   return FALSE;
 }
 

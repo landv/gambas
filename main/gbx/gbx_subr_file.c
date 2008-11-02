@@ -79,7 +79,7 @@ static CSTREAM *pop_stream(void **list)
 
   stream = ((CSTREAM_NODE *)*list)->stream;
   slot = *list;
-  *list = ((CSTREAM_NODE *)*list)->next;
+  *list = slot->next;
   FREE(&slot, "pop_stream");
 
   return stream;

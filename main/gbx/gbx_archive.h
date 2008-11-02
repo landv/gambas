@@ -47,6 +47,7 @@ typedef
   struct {
     ARCHIVE *arch;
     ARCH_SYMBOL *sym;
+    int index;
     int pos;
     int len;
     }

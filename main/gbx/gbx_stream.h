@@ -80,8 +80,6 @@ typedef
     STREAM_COMMON common;
     int64_t size;
     int fd;
-    unsigned is_device : 1;
-    unsigned _reserved : 31;
     }
   PACKED
   STREAM_DIRECT;
@@ -89,7 +87,6 @@ typedef
 typedef
   struct {
     STREAM_COMMON common;
-    int64_t size;
     FILE *file;
     }
   PACKED

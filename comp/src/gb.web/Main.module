@@ -11,9 +11,15 @@ Public Sub Main()
 
   'Print Session["liste"].Join(" ")
   
-  Session.Id = "C9FDEB40ADF2203502B959BC6039BBB4@"
-  'Session["liste"] = ["bleu", "blanc", "rouge"]
-  Print Session["liste"].Join(" ")
+  Dim iInd As Integer
+  
+  Session.Id = "session.test" '"C9FDEB40ADF2203502B959BC6039BBB4@"
+  
+  For iInd = 1 To 1000
+    Session.Load
+    Print iInd;; Session["result"].Count
+    Session.Save
+  Next
  
 End
 

@@ -259,8 +259,8 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
 		return FALSE;
 	}
 
-  if (arch->header.version == 2)
-  {
+  //if (arch->header.version == 2)
+  //{
 		char *p;
 		char tpath2[MAX_PATH];
 	
@@ -280,9 +280,9 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
 		}
 		
   	SYMBOL_find(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);
-	}
-	else
-  	SYMBOL_find_old(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);
+	//}
+	//else
+  //	SYMBOL_find_old(arch->symbol, arch->header.n_symbol, sizeof(ARCH_SYMBOL), TF_NORMAL, tpath, len_tpath, 0, &ind);
 	
   if (ind == NO_SYMBOL)
     return TRUE;
@@ -292,6 +292,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
   find->sym = sym;
   find->pos = sym->pos;
   find->len = sym->len;
+  find->index = ind;
 
   return FALSE;
 }
