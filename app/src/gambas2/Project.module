@@ -2352,13 +2352,21 @@ END
 
 PRIVATE FUNCTION SearchPathConfig(sXdgConfigHome AS String, sXdgConfigDirs AS String) AS String
   
-  IF Exist(sXdgConfigHome & "/user-dirs.dirs") THEN ' Devrait exister
-    RETURN sXdgConfigHome & "/user-dirs.dirs"
-  ELSE IF Exist(sXdgConfigDirs & "/user-dirs.defaults") THEN ' Sinon l'un
-    RETURN sXdgConfigDirs & "/user-dirs.defaults"
-  ELSE IF Exist(sXdgConfigDirs & "/user-dirs.dirs") THEN ' Ou l'autre
-    RETURN sXdgConfigDirs & "/user-dirs.dirs"
-  ENDIF
+  DIM sDir AS String
+  
+  FOR EACH sDir IN Split(sXdgConfigHome, ":")
+    IF Exist(sDir &/ "user-dirs.dirs") THEN ' Devrait exister
+      RETURN sDir &/ "user-dirs.dirs"
+    ENDIF
+  NEXT
+
+  FOR EACH sDir IN Split(sXdgConfigDirs, ":")
+    IF Exist(sDir &/ "user-dirs.defaults") THEN ' Sinon l'un
+      RETURN sDir &/ "user-dirs.defaults"
+    ELSE IF Exist(sDir &/ "user-dirs.dirs") THEN ' Ou l'autre
+      RETURN sDir &/ "user-dirs.dirs"
+    ENDIF
+  NEXT
   
 END
 
@@ -2401,7 +2409,11 @@ PUBLIC SUB GetDesktopPath() AS String
   IF NOT sXdgConfigDirs THEN sXdgConfigDirs = "/etc/xdg" ' Sinon val. par défaut
   
   sFileConfig = SearchPathConfig(sXdgConfigHome, sXdgConfigDirs)
-  sDir = SearchPathVariable(sFileConfig, "XDG_DESKTOP_DIR") 
+  IF sFileConfig THEN
+    sDir = SearchPathVariable(sFileConfig, "XDG_DESKTOP_DIR") 
+  ELSE 
+    sDir = System.User.Home &/ "Desktop"
+  ENDIF
   
   RETURN sDir
   
