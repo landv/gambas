@@ -145,7 +145,7 @@ Private Sub SaveSession()
   
     LockSession
     
-    Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
+    'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
     hFile = Open $sPath For Write 
     Write #hFile, CFloat(Now)
     Close #hFile
@@ -154,7 +154,7 @@ Private Sub SaveSession()
     
   Else
   
-    Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
+    'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
     hFile = Open sTemp For Write Create 
 
     Write #hFile, CFloat(Now)
@@ -173,11 +173,11 @@ Private Sub SaveSession()
     
   Endif
     
-  If Exist($sPath) Then
-    Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
-  Else
-    Main.Log("SaveSession: " & $sPath & " NOT FOUND!")
-  Endif
+  ' If Exist($sPath) Then
+  '   Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
+  ' Else
+  '   Main.Log("SaveSession: " & $sPath & " NOT FOUND!")
+  ' Endif
   
 End
 
@@ -295,9 +295,10 @@ Private Sub LoadSession()
 
 Catch
 
-  Try File.Save(File.Dir($sPath) &/ "session.error", Error.Where & ": " & Error.Text & "\n")
-  Try Kill $sPath & ".error"
-  Try Copy $sPath To $sPath & ".error"
+  Main.Log("LoadSession: " & $sId & ": " & Error.Where & ": " & Error.Text)
+  'Try File.Save(File.Dir($sPath) &/ "session.error", Error.Where & ": " & Error.Text & "\n")
+  'Try Kill $sPath & ".error"
+  'Try Copy $sPath To $sPath & ".error"
 
 _ABANDON:
 

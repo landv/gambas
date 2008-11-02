@@ -50,13 +50,21 @@ End
 
 Private Function SearchPathConfig(sXdgConfigHome As String, sXdgConfigDirs As String) As String
   
-  If Exist(sXdgConfigHome & "/user-dirs.dirs") Then ' Devrait exister
-    Return sXdgConfigHome & "/user-dirs.dirs"
-  Else If Exist(sXdgConfigDirs & "/user-dirs.defaults") Then ' Sinon l'un
-    Return sXdgConfigDirs & "/user-dirs.defaults"
-  Else If Exist(sXdgConfigDirs & "/user-dirs.dirs") Then ' Ou l'autre
-    Return sXdgConfigDirs & "/user-dirs.dirs"
-  Endif
+  Dim sDir As String
+  
+  For Each sDir In Split(sXdgConfigHome, ":")
+    If Exist(sDir &/ "user-dirs.dirs") Then ' Devrait exister
+      Return sDir &/ "user-dirs.dirs"
+    Endif
+  Next
+
+  For Each sDir In Split(sXdgConfigDirs, ":")
+    If Exist(sDir &/ "user-dirs.defaults") Then ' Sinon l'un
+      Return sDir &/ "user-dirs.defaults"
+    Else If Exist(sDir &/ "user-dirs.dirs") Then ' Ou l'autre
+      Return sDir &/ "user-dirs.dirs"
+    Endif
+  Next
   
 End
 
@@ -99,7 +107,11 @@ Public Sub GetDesktopPath() As String
   If Not sXdgConfigDirs Then sXdgConfigDirs = "/etc/xdg" ' Sinon val. par défaut
   
   sFileConfig = SearchPathConfig(sXdgConfigHome, sXdgConfigDirs)
-  sDir = SearchPathVariable(sFileConfig, "XDG_DESKTOP_DIR") 
+  If sFileConfig Then
+    sDir = SearchPathVariable(sFileConfig, "XDG_DESKTOP_DIR") 
+  Else 
+    sDir = System.User.Home &/ "Desktop"
+  Endif
   
   Return sDir
   
@@ -108,28 +120,7 @@ End
 
 Public Sub Main()
 
-  ' Dim hWindow As DesktopWindow
-  ' 
-  ' For Each hWindow In Desktop.Windows
-  '   Print Hex$(hWindow.Id);; hWindow.VisibleName
-  ' Next
-
-  ' Dim iInd As Integer
-  ' 
-  ' For iInd = 0 To Desktop.Count - 1
-  '   With Desktop[iInd]
-  '     Print .Name;; .X;; .Y;; .Width;; .Height
-  '   End With
-  ' Next
-
-  'Desktop.Passwords["Test"] = "barbapapa"
-  'Print Desktop.Passwords["Test"] 
-  
-  Dim hDesktopWatcher As DesktopWatcher 
-  
-  hDesktopWatcher = New DesktopWatcher As "Desktop"
-  
-  Form2.Show
+  Print Desktop.Path
   
 End
 
