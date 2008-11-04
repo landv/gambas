@@ -1,8 +1,8 @@
 ' Gambas module file
 
-PRIVATE $hConn AS NEW Connection
+Private $hConn As New Connection
 
-PUBLIC SUB Main()
+Public Sub Main()
 
   $hConn.Type = "mysql"
   $hConn.User = "root"
@@ -15,4 +15,4 @@ PUBLIC SUB Main()
 
   FMain.Show
 
-END
+End

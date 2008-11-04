@@ -239,6 +239,8 @@ void *GAMBAS_Api[] =
   (void *)GB_HashTableEnum,
 
   (void *)GB_StreamSetBytesRead,
+  (void *)GB_StreamSetSwapping,
+  (void *)GB_StreamBlock,
 
   (void *)GB_ImageCreate,
   (void *)GB_ImageInfo,
@@ -1318,8 +1320,7 @@ void GB_StoreVariant(GB_VARIANT *src, void *dst)
 }
 
 
-
-void GB_Watch(int fd, int flag, void *callback, int param)
+void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 {
   HOOK_DEFAULT(watch, WATCH_watch)(fd, flag, callback, param);
 }
@@ -1610,6 +1611,18 @@ int GB_IsRightToLeft(void)
 void GB_StreamSetBytesRead(GB_STREAM *stream, int length)
 {
 	STREAM_eff_read = length;
+}
+
+void GB_StreamSetSwapping(GB_STREAM *stream, int swap)
+{
+	((STREAM *)stream)->common.swap = swap;
+}
+
+int GB_StreamBlock(GB_STREAM *stream, int block)
+{
+	int old = STREAM_is_blocking(stream);
+	STREAM_blocking(stream, block);
+	return old;
 }
 
 int GB_tolower(int c)

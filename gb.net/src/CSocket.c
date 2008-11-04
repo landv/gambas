@@ -143,7 +143,7 @@ void CSocket_CallBackFromDns(void *_object)
 	if (errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
 		THIS->iStatus=6;
-		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(long)THIS);
+		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
 	}
 	else
 	{
@@ -174,7 +174,7 @@ void CSocket_CallBackFromDns(void *_object)
 /*******************************************************************
  This CallBack is used while waiting to finish a connection process
  ******************************************************************/
-void CSocket_CallBackConnecting(int t_sock,int type,long lParam)
+void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam)
 {
 	struct sockaddr_in myhost;
 	int mylen;
@@ -213,10 +213,11 @@ void CSocket_CallBackConnecting(int t_sock,int type,long lParam)
 	GB.FreeString( &THIS->sLocalHostIP);
 	GB.NewString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr),0);
 
-	GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(long)THIS);
-	GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)THIS);
+	GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(intptr_t)THIS);
+	GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(intptr_t)THIS);
 
 	THIS->stream.desc=&SocketStream;
+	GB.Stream.SetSwapping(&THIS->stream, htons(1234) != 1234);
 	GB.Ref(THIS);
 	GB.Post(CSocket_post_connected,(intptr_t)THIS);
 
@@ -226,7 +227,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,long lParam)
 /*******************************************************************
  This CallBack is used while socket is connected to remote host
  ******************************************************************/
-void CSocket_CallBack(int t_sock,int type,long lParam)
+void CSocket_CallBack(int t_sock,int type,intptr_t lParam)
 {
 	char buf[1];
 	struct pollfd mypoll;
@@ -292,15 +293,18 @@ void CSocket_stream_internal_error(void *_object,int ncode)
 int CSocket_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
 int CSocket_stream_seek(GB_STREAM *stream, int64_t pos, int whence){return -1;}
 int CSocket_stream_tell(GB_STREAM *stream, int64_t *pos){return -1;}
+
 int CSocket_stream_flush(GB_STREAM *stream)
 {
 	return 0; /* OK */
 }
+
 int CSocket_stream_handle(GB_STREAM *stream)
 {
 	void *_object = stream->tag;
 	return THIS->Socket;
 }
+
 int CSocket_stream_close(GB_STREAM *stream)
 {
   void *_object = stream->tag;
@@ -445,7 +449,7 @@ int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
  	{
 		THIS->iStatus=7;
 		//ioctl(THIS->Socket,FIONBIO,&NoBlock);
-		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)THIS);
+		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(intptr_t)THIS);
 		THIS->stream.desc=&SocketStream;
 		// $BM
 		if (THIS->Host) GB.FreeString(&THIS->Host);
@@ -865,11 +869,7 @@ END_METHOD
 
 GB_DESC CSocketDesc[] =
 {
-
-  GB_DECLARE("Socket", sizeof(CSOCKET)),
-
-  GB_INHERITS("Stream"),
-
+  GB_DECLARE("Socket", sizeof(CSOCKET)), GB_INHERITS("Stream"),
 
   GB_EVENT("Error", NULL, NULL, &SocketError),
   GB_EVENT("Read", NULL, NULL, &Socket_Read),

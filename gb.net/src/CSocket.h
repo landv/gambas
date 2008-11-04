@@ -45,8 +45,8 @@ extern GB_STREAM_DESC SocketStream;
 
 #endif
 
-void CSocket_CallBack(int t_sock,int type,long lParam);
-void CSocket_CallBackConnecting(int t_sock,int type,long lParam);
+void CSocket_CallBack(int t_sock,int type,intptr_t lParam);
+void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam);
 
 typedef  struct
 {

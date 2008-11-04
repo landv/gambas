@@ -1,33 +1,33 @@
 ' Gambas class file
 
-EXPORT
+Export
 
-INHERITS UserContainer
+Inherits UserContainer
 
-PUBLIC CONST _Properties AS String = "*,-Arrangement,-Padding,-Spacing,Action,Hidden,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True"
-PUBLIC CONST _Arrangement AS Integer = 3
-PUBLIC CONST _DefaultSize AS String = "36,3"
+Public Const _Properties As String = "*,-Arrangement,-Padding,-Spacing,Action,Hidden,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True"
+Public Const _Arrangement As Integer = 3
+Public Const _DefaultSize As String = "36,3"
 
-PUBLIC CONST Horizontal AS Integer = 0
-PUBLIC CONST Vertical AS Integer = 1
+Public Const Horizontal As Integer = 0
+Public Const Vertical As Integer = 1
 
 'PROPERTY READ Arrangement AS Integer
 'PROPERTY READ AutoResize AS Boolean
 'PROPERTY Design AS Boolean
-PROPERTY Hidden AS Boolean
+'Property Hidden As Boolean
 'PROPERTY Action AS String
-PROPERTY Orientation AS Integer
-PROPERTY AutoResize AS Boolean
+Property Orientation As Integer
+Property AutoResize As Boolean
 
-PRIVATE $hForm AS FToolBar
+Private $hForm As FToolBar
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  $hForm = NEW FToolBar(ME)
-  ME._Container = $hForm.GetContainer()
-  SUPER.AutoResize = TRUE
+  $hForm = New FToolBar(Me)
+  Me._Container = $hForm.GetContainer()
+  Super.AutoResize = True
   
-END
+End
 
 ' PRIVATE FUNCTION Arrangement_Read() AS Integer
 ' 
@@ -54,50 +54,50 @@ END
 '   
 ' END
 
-PRIVATE FUNCTION Hidden_Read() AS Boolean
+Private Function Hidden_Read() As Boolean
 
-  RETURN $hForm.IsHidden()  
+  Return $hForm.IsHidden()  
 
-END
+End
 
-PRIVATE SUB Hidden_Write(Value AS Boolean)
+Private Sub Hidden_Write(Value As Boolean)
 
     $hForm.SetHidden(Value)
 
-END
+End
 
-PRIVATE FUNCTION Action_Read() AS String
+Private Function Action_Read() As String
 
-  RETURN Action.Get(ME)  
+  Return Action.Get(Me)  
 
-END
+End
 
-PRIVATE SUB Action_Write(Value AS String)
+Private Sub Action_Write(Value As String)
 
-  Action.Register(ME, Value)
+  Action.Register(Me, Value)
 
-END
+End
 
-PRIVATE FUNCTION Orientation_Read() AS Integer
+Private Function Orientation_Read() As Integer
 
-  RETURN If($hForm.IsVertical(), 1, 0)
+  Return If($hForm.IsVertical(), 1, 0)
 
-END
+End
 
-PRIVATE SUB Orientation_Write(Value AS Integer)
+Private Sub Orientation_Write(Value As Integer)
 
   $hForm.SetVertical(Value)
 
-END
+End
 
-PRIVATE FUNCTION AutoResize_Read() AS Boolean
+Private Function AutoResize_Read() As Boolean
 
-  RETURN $hForm.IsAutoResize()
+  Return $hForm.IsAutoResize()
 
-END
+End
 
-PRIVATE SUB AutoResize_Write(Value AS Boolean)
+Private Sub AutoResize_Write(Value As Boolean)
 
   $hForm.SetAutoResize(Value)
 
-END
+End

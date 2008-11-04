@@ -47,7 +47,7 @@ Private Function GetToolBarWidth() As Integer
   
     For Each hCtrl In panToolBar.Children
       If hCtrl.Visible Then 
-        If hCtrl.Expand Then Return GetFreeWidth() - dwgHandle.Height
+        If hCtrl.Expand Then Return GetFreeWidth() '- dwgHandle.Height
         W += hCtrl.H
       Endif
     Next
@@ -56,7 +56,7 @@ Private Function GetToolBarWidth() As Integer
   
     For Each hCtrl In panToolBar.Children
       If hCtrl.Visible Then 
-        If hCtrl.Expand Then Return GetFreeWidth() - dwgHandle.Width
+        If hCtrl.Expand Then Return GetFreeWidth() '- dwgHandle.Width
         W += hCtrl.W
       Endif
     Next
@@ -176,35 +176,38 @@ Private Sub Update()
     XP = 0
   Else 
     XH = 0
-    XP = 8
+    XP = 0 '8
   Endif 
   
   If Not $bVertical Then
   
     If Me.Parent.Design Then
     
-      'DEBUG
-      dwgHandle.Move(XH, 0, 4, Me.H)
-      panToolBar.Move(XP, 0, Me.W - 4, Me.H)
+      'dwgHandle.Move(XH, 0, 4, Me.H)
+      'panToolBar.Move(XP, 0, Me.W - 4, Me.H)
+      panToolBar.Move(XP, 0, Me.W, Me.H)
     
     Else If $bHidden Then
     
       panToolBar.Hide
-      dwgHandle.Move(0, 0, 8, GetToolBarHeight())
-      Me.Parent.Resize(8, dwgHandle.H)
+      'dwgHandle.Move(0, 0, 8, GetToolBarHeight())
+      'Me.Parent.Resize(8, dwgHandle.H)
     
     Else
     
       panToolBar.Show
       
       If $bAutoResize Then
-        W = Max(8, Min(GetToolBarWidth() + dwgHandle.W, GetFreeWidth()))
+        'W = Max(8, Min(GetToolBarWidth() + dwgHandle.W, GetFreeWidth()))
+        W = Max(8, Min(GetToolBarWidth(), GetFreeWidth()))
       Else 
-        W = Max(8, GetToolBarWidth() + dwgHandle.W)
+        'W = Max(8, GetToolBarWidth() + dwgHandle.W)
+        W = Max(8, GetToolBarWidth())
       Endif
       
-      panToolBar.Move(XP, 0, W - 8)
-      dwgHandle.Move(XH, 0, 8, panToolBar.H)
+      'panToolBar.Move(XP, 0, W - 8)
+      'dwgHandle.Move(XH, 0, 8, panToolBar.H)
+      panToolBar.Move(XP, 0, W)
     
       If $bAutoResize Then
         Me.Parent.Resize(W, Max(GetToolBarHeight(), panToolBar.H))
@@ -219,28 +222,31 @@ Private Sub Update()
     If Me.Parent.Design Then
     
       'DEBUG
-      dwgHandle.Move(0, XH, Me.W, 8)
-      panToolBar.Move(0, XP, Me.W, Me.H - 8)
+      'dwgHandle.Move(0, XH, Me.W, 8)
+      'panToolBar.Move(0, XP, Me.W, Me.H - 8)
+      panToolBar.Move(0, XP, Me.W, Me.H)
     
     Else If $bHidden Then
     
       panToolBar.Hide
-      dwgHandle.Move(0, 0, GetToolBarHeight(), 8)
-      Me.Parent.Resize(dwgHandle.W, 8)
+      'dwgHandle.Move(0, 0, GetToolBarHeight(), 8)
+      'Me.Parent.Resize(dwgHandle.W, 8)
     
     Else
     
       panToolBar.Show
 
       If $bAutoResize Then
-        W = Max(Min(GetToolBarWidth() + dwgHandle.H, GetFreeWidth()), 8)
+        'W = Max(Min(GetToolBarWidth() + dwgHandle.H, GetFreeWidth()), 8)
+        W = Max(Min(GetToolBarWidth(), GetFreeWidth()), 8)
       Else 
-        W = Max(GetToolBarWidth() + dwgHandle.H, 8)
+        'W = Max(GetToolBarWidth() + dwgHandle.H, 8)
+        W = Max(GetToolBarWidth(), 8)
       Endif
 
-      panToolBar.Move(0, XP, panToolBar.W, W - 8)
-      'DEBUG "ME.H = "; ME.H; " ME.Parent.H = "; ME.Parent.H; "  ME.Parent.Parent.H = "; ME.Parent.Parent.H; "  panToolBar.H = "; panToolBar.H
-      dwgHandle.Move(0, XH, panToolBar.W, 8)
+      ' panToolBar.Move(0, XP, panToolBar.W, W - 8)
+      ' dwgHandle.Move(0, XH, panToolBar.W, 8)
+      panToolBar.Move(0, XP, panToolBar.W, W)
     
       If $bAutoResize Then
         Me.Parent.Resize(Max(GetToolBarHeight(), panToolBar.W), W)

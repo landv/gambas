@@ -98,7 +98,7 @@ void GB_StoreString(GB_STRING *src, char **dst);
 void GB_StoreObject(GB_OBJECT *object, void **dst);
 void GB_StoreVariant(GB_VARIANT *src, void *dst);
 
-void GB_Watch(int fd, int flag, void *callback, int param);
+void GB_Watch(int fd, int flag, void *callback, intptr_t param);
 
 int GB_New(void **object, void *class_name, const char *name, void *parent);
 int GB_CheckObject(void *object);
@@ -155,8 +155,9 @@ void GB_NewArray(void *pdata, int size, int count);
 int GB_CountArray(void *data);
 void *GB_Add(void *pdata);
 
-//void GB_StreamInit(GB_STREAM *, int fd);
 void GB_StreamSetBytesRead(GB_STREAM *, int);
+void GB_StreamSetSwapping(GB_STREAM *, int);
+int GB_StreamBlock(GB_STREAM *, int);
 
 int GB_tolower(int c);
 int GB_toupper(int c);

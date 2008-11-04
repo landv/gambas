@@ -37,21 +37,24 @@ extern GB_STREAM_DESC UdpSocketStream;
 
 #endif
 
-
-typedef	struct
-{
-	GB_BASE ob;
-	GB_STREAM stream;
-	int Socket;
-	int iStatus;
-	int iPort;
-	char *shost;
-	int   sport;
-	char *thost;
-	int   tport;
-	int broadcast;
-
-} CUDPSOCKET;
+typedef	
+	struct
+	{
+		GB_BASE ob;
+		GB_STREAM stream;
+		int Socket;
+		int iStatus;
+		int iPort;
+		char *shost;
+		int sport;
+		char *thost;
+		int tport;
+		int broadcast;
+		char *buffer;
+		int buffer_pos;
+		int buffer_len;
+	} 
+	CUDPSOCKET;
 
 int CUdpSocket_stream_read(GB_STREAM *stream, char *buffer, int len);
 int CUdpSocket_stream_write(GB_STREAM *stream, char *buffer, int len);
@@ -64,6 +67,4 @@ int CUdpSocket_stream_flush(GB_STREAM *stream);
 int CUdpSocket_stream_close(GB_STREAM *stream);
 int CUdpSocket_stream_handle(GB_STREAM *stream);
 
-       
-    
 #endif

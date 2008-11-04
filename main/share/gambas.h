@@ -885,7 +885,7 @@ typedef
     void (*MakeDateFromTime)(int, int, GB_DATE *);
     int (*GetTime)(double *, int);
 
-    void (*Watch)(int, int, void *, int);
+    void (*Watch)(int, int, void *, intptr_t);
 
     GB_VALUE *(*Eval)(void *, void *);
 
@@ -964,6 +964,8 @@ typedef
 
     struct {
       void (*SetBytesRead)(GB_STREAM *stream, int length);
+      void (*SetSwapping)(GB_STREAM *stream, int swap);
+      int (*Block)(GB_STREAM *stream, int block);
       }
     Stream;
 
