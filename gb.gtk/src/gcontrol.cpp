@@ -1267,7 +1267,13 @@ int gControl::getFrameWidth()
 			return 2;
   }
   
-  return 0;
+  switch (frame_border)
+  {
+    case BORDER_NONE: p = 0; break;
+    case BORDER_PLAIN: p = 1; break;
+    default: p = 2; break; // TODO: Use style
+  }
+  return p;
 }
 
 void gControl::setFrameBorder(int border)
@@ -1301,7 +1307,7 @@ gColor gControl::realBackground()
 {
 	if (bg_set)
 		return use_base ? get_gdk_base_color(widget) : get_gdk_bg_color(widget);
-	else if (!isWindow())
+	else if (pr)
 		return pr->realBackground();
 	else
 		return COLOR_DEFAULT;
@@ -1338,9 +1344,8 @@ void gControl::setBackground(gColor color)
 	
 	if (!bg_set)
 	{
-		if (isWindow())
-			return;
-		color = pr->realBackground();
+		if (pr)
+			color = pr->realBackground();
 	}
 			
 	setRealBackground(color);
@@ -1350,7 +1355,7 @@ gColor gControl::realForeground()
 {
 	if (fg_set)
 		return use_base ? get_gdk_text_color(widget) : get_gdk_fg_color(widget);
-	else if (!isWindow())
+	else if (pr)
 		return pr->realForeground();
 	else
 		return COLOR_DEFAULT;
@@ -1387,9 +1392,8 @@ void gControl::setForeground(gColor color)
 	
 	if (!fg_set)
 	{
-		if (isWindow())
-			return;
-		color = pr->realForeground();
+		if (pr)
+			color = pr->realForeground();
 	}
 	
 	setRealForeground(color);

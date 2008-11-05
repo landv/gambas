@@ -55,8 +55,8 @@ public:
 
 	virtual void setVisible(bool vl);
 
-	gContainer *proxy() { return _proxy; }
-	void setProxy(gContainer *proxy) { if (proxy != this) _proxy = proxy; }
+	gContainer *proxy() { return _proxy ? _proxy : this; }
+	void setProxy(gContainer *proxy) { if (proxy != this) _proxy = proxy; else _proxy = 0; }
 
 //"Signals"
 	void (*onArrange)(gContainer *sender);

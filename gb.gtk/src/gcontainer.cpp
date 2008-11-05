@@ -288,6 +288,9 @@ int gContainer::clientX()
 // 	}
 
 	gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
+	if (cont == widget)
+		xc += getFrameWidth();
+	
 	return xc; //+ getFrameWidth();
 }
 
@@ -307,13 +310,9 @@ int gContainer::clientY()
 // 	}
 
 	gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
+	if (cont == widget)
+		yc += getFrameWidth();
 	
-	/*if (getClass() == Type_gTabStrip && y < 16)
-	fprintf(stderr, "clientY: cont = %p border = %p x = %d y = %d\n",
-		cont, border, x, y);
-	if (y & 0xFFFF0000)
-		G_BREAKPOINT();*/
-
 	return yc; // + getFrameWidth();
 }
 
