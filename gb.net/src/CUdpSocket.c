@@ -294,7 +294,7 @@ static int dgram_start(CUDPSOCKET *mythis,int myport)
 
 	mythis->iStatus=1;
 	ioctl(mythis->Socket,FIONBIO,&NoBlock);
-	GB.Watch (mythis->Socket,GB_WATCH_WRITE,(void *)CUdpSocket_CallBack,(long)mythis);
+	GB.Watch (mythis->Socket,GB_WATCH_READ,(void *)CUdpSocket_CallBack,(long)mythis);
 	mythis->stream.desc=&UdpSocketStream;
 	return 0;
 }
