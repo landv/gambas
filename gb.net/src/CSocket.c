@@ -143,7 +143,7 @@ void CSocket_CallBackFromDns(void *_object)
 	if (errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
 		THIS->iStatus=6;
-		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
+		GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
 	}
 	else
 	{
@@ -213,8 +213,8 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam)
 	GB.FreeString( &THIS->sLocalHostIP);
 	GB.NewString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr),0);
 
-	GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(intptr_t)THIS);
-	GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(intptr_t)THIS);
+	//GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(intptr_t)THIS);
+	GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBack,(intptr_t)THIS);
 
 	THIS->stream.desc=&SocketStream;
 	GB.Stream.SetSwapping(&THIS->stream, htons(1234) != 1234);
