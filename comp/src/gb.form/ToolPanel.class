@@ -101,6 +101,8 @@ PRIVATE SUB Index_Write(iIndex AS Integer)
   $iCurrent = iIndex
 
   MoveToolbar(ME.Visible)
+  
+  'DEBUG ME._Container
 
 END
 
@@ -112,6 +114,8 @@ PRIVATE SUB MoveToolbar(OPTIONAL bAnim AS Boolean)
   DIM iInd AS Integer
   DIM iRest AS Integer
   DIM bCurrent AS Boolean
+
+  'DEBUG $hPanel.ClientX;; $hPanel.ClientY;; $hPanel.ClientW;; $hPanel.ClientH
 
   Y = $hPanel.ClientY
 
@@ -146,6 +150,7 @@ PRIVATE SUB MoveToolbar(OPTIONAL bAnim AS Boolean)
 
     'hToolBar.Move($hPanel.ClientX, Y, $hPanel.ClientW, YY - Y)
     hToolBar.Move($hPanel.ClientX, Y, $hPanel.ClientW, YY - Y)
+    'DEBUG hToolbar.Text; ": "; hToolbar.X;; hToolbar.Y;; hToolbar.W;; hToolbar.H
     Y = YY
 
   NEXT

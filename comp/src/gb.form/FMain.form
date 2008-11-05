@@ -1,14 +1,36 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(12.1429,12.1429,87,65)
+  Move(97,97,792,520)
+  #(Scaled) = False
   Text = ("")
   Icon = Picture["icon:/24/gambas"]
-  Arrangement = Arrange.Fill
+  Arrangement = Arrange.Horizontal
   Spacing = 8
   Padding = 8
+  { ToolPanel1 ToolPanel
+    Move(8,8,136,304)
+    Background = &HFFFF3F&
+    Arrangement = Arrange.Vertical
+    Count = 3
+    Border = True
+    Index = 0
+    Text = ("Toolbar 0")
+    Index = 1
+    Text = ("Toolbar 1")
+    { Label1 Label
+      Move(8,8,168,48)
+      Font = Font["Bold,+6"]
+      Text = ("Label1")
+      Transparent = True
+    }
+    Index = 2
+    Text = ("Toolbar 2")
+    Index = 0
+  }
   { FileChooser1 FileChooser
-    MoveScaled(7,9,68,36)
+    Move(152,8,616,392)
+    Expand = True
     ShowBookmark = True
   }
 }

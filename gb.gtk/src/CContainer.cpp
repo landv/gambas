@@ -64,7 +64,7 @@ static CWIDGET *get_child(gContainer *container, int index)
 
 BEGIN_METHOD_VOID(CCONTAINER_next)
 
-	gContainer *cont = WIDGET->proxy() ? WIDGET->proxy() : WIDGET;
+	gContainer *cont = WIDGET->proxy();
 	int *ct;
 	CWIDGET *child;
 	
@@ -90,7 +90,7 @@ END_METHOD
 
 BEGIN_METHOD(CCONTAINER_get, GB_INTEGER index)
 
-	gContainer *cont = WIDGET->proxy() ? WIDGET->proxy() : WIDGET;	
+	gContainer *cont = WIDGET->proxy();	
 	int ct = VARG(index);
 	
 	if (ct < 0 || ct >= cont->childCount()) 
@@ -106,7 +106,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CCONTAINER_count)
 
-	gContainer *cont = WIDGET->proxy() ? WIDGET->proxy() : WIDGET;
+	gContainer *cont = WIDGET->proxy();
 	GB.ReturnInteger(cont->childCount());
 
 END_PROPERTY
@@ -285,8 +285,8 @@ BEGIN_PROPERTY(CUSERCONTROL_container)
 		return;
 	}
 	
-	THIS_UC->container = ct;
-	WIDGET->setProxy(WIDGET_CONT);
+	THIS_UC->container = (CCONTAINER *)GetObject(((gContainer *)ct->ob.widget)->proxy());
+	WIDGET->setProxy(WIDGET_CONT->proxy());
 	WIDGET_CONT->performArrange();
 
 END_PROPERTY
