@@ -661,9 +661,9 @@ void SUBR_replace(void)
 				if (ls <= 0)
 					break;
 			}
+	    
+	    SUBST_add(ps, ls);
     }
-
-    SUBST_add(ps, ls);
   }
 
   RETURN->type = T_STRING;
