@@ -609,34 +609,58 @@ void SUBR_replace(void)
     nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_TEXT;
 
   SUBST_init();
-
-  if (ls)
+  
+  if (ls > 0 && lp > 0)
   {
-    is = 0;
+		is = 0;
+	
+  	if (lp == lr)
+  	{
+  		STRING_new(&SUBST_buffer, ps, ls);
+  		ps = SUBST_buffer;
+  		
+			for(;;)
+			{
+				pos = STRING_search(ps, ls, pp, lp, 1, FALSE, nocase);
+				if (pos == 0)
+					break;
 
-    if (lp)
-    {
-      for(;;)
-      {
-        pos = STRING_search(ps, ls, pp, lp, 1, FALSE, nocase);
-        if (pos == 0)
-          break;
+				pos--;
+				
+				memcpy(&ps[pos], pr, lr);
 
-        pos--;
+				pos += lp;
 
-        if (pos > 0)
-          SUBST_add(ps, pos);
+				ps += pos;
+				ls -= pos;
 
-        SUBST_add(pr, lr);
+				if (ls <= 0)
+					break;
+			}
+  	}
+  	else
+  	{
+			for(;;)
+			{
+				pos = STRING_search(ps, ls, pp, lp, 1, FALSE, nocase);
+				if (pos == 0)
+					break;
 
-        pos += lp;
+				pos--;
 
-        ps += pos;
-        ls -= pos;
+				if (pos > 0)
+					SUBST_add(ps, pos);
 
-        if (ls <= 0)
-          break;
-      }
+				SUBST_add(pr, lr);
+
+				pos += lp;
+
+				ps += pos;
+				ls -= pos;
+
+				if (ls <= 0)
+					break;
+			}
     }
 
     SUBST_add(ps, ls);
