@@ -276,3 +276,10 @@ Public Function LastInsertId() As String
   Return modMain.$Connection.Exec(modMain.$Query)["LAST_INSERT_ID()"]
 
 End
+
+Public Function Password(Password As String) As String
+
+  modMain.$Query = "SELECT PASSWORD('" & Password & "') AS `Pass`"
+  Return modMain.$Connection.Exec(modMain.$Query)!Pass
+
+End
