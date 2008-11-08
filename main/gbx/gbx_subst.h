@@ -39,8 +39,8 @@ typedef
 typedef
   void (*SUBST_ADD_FUNC)(int);
 
-void SUBST_init(void);
-void SUBST_init_max(int max);
+void SUBST_init(int len, int inc);
+void SUBST_init_ext(int len, int inc);
 void SUBST_add(const char *src, int len);
 void SUBST_exit(void);
 void SUBST_dump_temp(void);
@@ -51,5 +51,8 @@ void SUBST_dump_temp(void);
   	SUBST_dump_temp(); \
   SUBST_temp[SUBST_ntemp++]= (_c); \
 }
+
+#define SUBST_init() SUBST_init_ext(0, 0)
+#define SUBST_init_max(_max) SUBST_init_ext((_max), 0)
 
 #endif

@@ -36,8 +36,10 @@ char *SUBST_buffer = NULL;
 char SUBST_temp[SUBST_TEMP_SIZE];
 int SUBST_ntemp;
 
-static bool _prealloc;
-static char *_prealloc_ptr;
+static int _inc = 0;
+static int _len = 0;
+static int _max = 0;
+static char *_ptr;
 
 void SUBST_dump_temp(void)
 {
@@ -50,26 +52,26 @@ void SUBST_dump_temp(void)
 	}
 }
 
-void SUBST_init(void)
+void SUBST_init_ext(int len, int inc)
 {
-  SUBST_buffer = NULL;
+	if (inc == 0)
+		inc = 32;
+	if (len == 0)
+		len = inc;
+		
+	STRING_new(&SUBST_buffer, NULL, len);
+	_inc = inc;
+	_max = len;
+	_len = 0;
+	_ptr = SUBST_buffer;
   SUBST_ntemp = 0;
-  _prealloc = FALSE;
-}
-
-void SUBST_init_max(int max)
-{
-  SUBST_ntemp = 0;
-	STRING_new(&SUBST_buffer, NULL, max);
-	_prealloc = TRUE;
-	_prealloc_ptr = SUBST_buffer;
 }
 
 // len == 0 est possible ! On peut vouloir ajouter une chaîne vide.
 
 void SUBST_add(const char *src, int len)
 {
-  int old_len;
+  int pos;
 
 	if (!src)
 		return;
@@ -82,28 +84,36 @@ void SUBST_add(const char *src, int len)
 
 	SUBST_dump_temp();
 
-	if (_prealloc)
+	_len += len;
+
+	if (_len >= _max)
 	{
-		memcpy(_prealloc_ptr, src, len);
-		_prealloc_ptr += len;
+		pos = (_len - _max) * 4;
+		if (pos < _inc)
+			pos = _inc;
+		else
+		{
+			_inc = (pos + 31) & ~31;
+			if (_inc > 1024)
+				_inc = 1024;
+		}
+		
+		_max += pos;
+		
+		//fprintf(stderr, "STRING_extend: %d\n", _max - STRING_length(SUBST_buffer));
+		pos = _ptr - SUBST_buffer;
+		STRING_extend(&SUBST_buffer, _max);
+		_ptr = &SUBST_buffer[pos];
 	}
-	else
-	{
-		old_len = STRING_length(SUBST_buffer);
-	
-		STRING_extend(&SUBST_buffer, old_len + len);
-		memcpy(&SUBST_buffer[old_len], src, len);
-	}
+
+	memcpy(_ptr, src, len);
+	_ptr += len;
 }
 
 
 void SUBST_exit(void)
 {
 	SUBST_dump_temp();
-	if (_prealloc)
-	{
-		STRING_extend(&SUBST_buffer, _prealloc_ptr - SUBST_buffer);
-		_prealloc = FALSE;
-	}
+	STRING_extend(&SUBST_buffer, _len);
   STRING_extend_end(&SUBST_buffer);
 }
