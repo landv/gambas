@@ -32,6 +32,7 @@ public:
 
 //"Private"
 	void updateSize(bool noresize = false);
+	void updateLayout();
 	PangoLayout *layout;
 	int align,lay_x,lay_y;
 	unsigned markup : 1;

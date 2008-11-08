@@ -32,12 +32,6 @@ Public Sub Form_Open()
   panBox.W = lblMessage.W
   panBox.Arrangement = Arrange.Vertical
   
-  'Me.Border = Window.Resizable
-  'Me.Border = Window.Normal
-  'Me.Resizable = True
-  Me.Resize(btnOK.Parent.X + btnOK.W + Me.Padding, txtValue.Parent.Y + txtValue.Y + txtValue.H + Me.Padding)
-  'Me.Border = Window.Fixed
-
   txtValue.SelectAll
   txtValue.SetFocus
 
@@ -53,5 +47,11 @@ Public Sub btnOK_Click()
 
   $sValue = txtValue.Text
   Me.Close(True)
+
+End
+
+Public Sub Form_Arrange()
+
+  Me.Resize(btnOK.Parent.X + btnOK.W + Me.Padding, txtValue.Parent.Y + txtValue.Y + txtValue.H + Me.Padding)
 
 End

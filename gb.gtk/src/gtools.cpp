@@ -1396,7 +1396,7 @@ void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
 		(void *)NULL);	
 }
 
-void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
+static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add)
 {
 	PangoFontDescription *desc;
 	PangoAttrList *attrs;
@@ -1406,7 +1406,17 @@ void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
 
 	pango_layout_set_font_description(layout, desc);
 	
-	attrs = pango_attr_list_new();
+	if (add)
+	{
+		attrs = pango_layout_get_attributes(layout);
+		if (!attrs)
+		{
+			attrs = pango_attr_list_new();
+			add = false;
+		}
+	}
+	else
+		attrs = pango_attr_list_new();
 	
 	if (font->underline())
 	{
@@ -1421,8 +1431,21 @@ void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
 	}
 	
 	pango_layout_set_attributes(layout, attrs);
-	pango_attr_list_unref(attrs);
+	
+	if (!add)
+		pango_attr_list_unref(attrs);
 	
 	pango_layout_context_changed(layout);
 	
 }
+
+void gt_set_layout_from_font(PangoLayout *layout, gFont *font)
+{
+	set_layout_from_font(layout, font, false);
+}
+
+void gt_add_layout_from_font(PangoLayout *layout, gFont *font)
+{
+	set_layout_from_font(layout, font, true);
+}
+
