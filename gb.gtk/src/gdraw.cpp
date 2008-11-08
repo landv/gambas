@@ -1090,7 +1090,7 @@ void gDraw::drawLayout(PangoLayout *ly, int x, int y, int w, int h, int align)
 		setForeground(buf);
 	}
 	
-	gt_set_layout_from_font(ly, font());
+	gt_add_layout_from_font(ly, font());
 	
 	gdk_draw_layout(dr, gc, x + OffX, y + OffY, ly);
 	

@@ -106,4 +106,5 @@ void gt_set_cell_renderer_text_from_font(GtkCellRendererText *cell, gFont *font)
 // Initialize a PangoLayout from a font
 
 void gt_set_layout_from_font(PangoLayout *layout, gFont *font);
+void gt_add_layout_from_font(PangoLayout *layout, gFont *font);
 

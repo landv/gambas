@@ -140,7 +140,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 
 	g_signal_connect_after(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 	
-	gt_set_layout_from_font(layout, font());	
+	updateLayout();
 	setAlignment(ALIGN_NORMAL);
 }
 
@@ -148,6 +148,32 @@ gLabel::~gLabel()
 {
 	if (textdata) g_free(textdata);
 	g_object_unref(G_OBJECT(layout));
+}
+
+void gLabel::updateLayout()
+{
+	char *bpango;
+	
+	if (!textdata) 
+		pango_layout_set_text(layout,"",-1);
+	else
+	{
+		if (markup)
+		{
+			bpango = gt_html_to_pango_string(textdata, -1, false);
+			if (!bpango)
+				pango_layout_set_text(layout,"",-1);
+			else
+			{
+				pango_layout_set_markup(layout,bpango,-1);
+				g_free(bpango);
+			}
+		}
+		else
+			pango_layout_set_text(layout,textdata,-1);
+	}
+	
+	gt_add_layout_from_font(layout, font());
 }
 
 void gLabel::updateSize(bool noresize)
@@ -178,7 +204,7 @@ void gLabel::updateSize(bool noresize)
 	pango_layout_get_pixel_size(layout, &w, &h);
 	//fprintf(stderr, "gLabel::updateSize: %s (%d %d) -> (%d %d)\n", name(), width(), height(), w + fw * 2, h + fw * 2);
 	_locked = true;
-	resize(w + fw * 2, h + fw * 2);	
+	resize(width(), h + fw * 2);	
 	_locked = false;
 }
 
@@ -225,8 +251,6 @@ char *gLabel::text()
 
 void gLabel::setText(char *vl)
 {
-	char *bpango;
-
 	g_free(textdata);
 	
 	if (vl)
@@ -234,25 +258,7 @@ void gLabel::setText(char *vl)
 	else
 		textdata = 0;
 
-	if (!textdata) 
-		pango_layout_set_text(layout,"",-1);
-	else
-	{
-		if (markup)
-		{
-			bpango = gt_html_to_pango_string(textdata, -1, false);
-			if (!bpango)
-				pango_layout_set_text(layout,"",-1);
-			else
-			{
-				pango_layout_set_markup(layout,bpango,-1);
-				g_free(bpango);
-			}
-		}
-		else
-			pango_layout_set_text(layout,textdata,-1);
-	}
-		
+	updateLayout();
 	updateSize();
 	refresh();
 }
@@ -300,9 +306,7 @@ void gLabel::setAlignment(int al)
 void gLabel::setFont(gFont *ft)
 {
 	gControl::setFont(ft);
-	
-	gt_set_layout_from_font(layout, font());
-	
+	updateLayout();
 	updateSize();
   refresh();
 }

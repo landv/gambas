@@ -32,14 +32,21 @@ PUBLIC SUB Form_Open()
   panBox.W = lblMessage.W
   panBox.Arrangement = Arrange.Vertical
   
-  ME.Border = Window.Resizable
-  ME.Resize(btnOK.Parent.X + btnOK.W + ME.Padding, txtValue.Parent.Y + txtValue.Y + txtValue.H + ME.Padding)
-  ME.Border = Window.Fixed
+  'ME.Border = Window.Resizable
+  'ME.Border = Window.Fixed
 
   txtValue.SelectAll
   txtValue.SetFocus
 
 END
+
+PUBLIC SUB Form_Arrange()
+  
+  ME.Resize(btnOK.Parent.X + btnOK.W + ME.Padding, Max(btnCancel.Parent.Y + btnCancel.Y + btnCancel.H, txtValue.Parent.Y + txtValue.Y + txtValue.H) + ME.Padding)
+  
+END
+
+
 
 PUBLIC SUB btnCancel_Click()
 
