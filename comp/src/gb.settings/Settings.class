@@ -12,6 +12,8 @@ Private $sTitle As String
 Private $cSlot As Collection
 Private $bModify As Boolean
 
+Property Read Keys As _SettingsKeys
+
 Private Sub Load()
   
   Dim hFile As File
@@ -70,7 +72,7 @@ Public Sub _new(Optional Path As String, Optional Title As String)
   Dim sPath As String
   Dim sElt As String
 
-  If Left(Path) <> "/" Then 
+  If Left(Path) <> "/" And If Left(Path) <> "~" Then 
     If Not Path Then
       Path = Settings.Path &/ Application.Name & ".conf"
     Else 
@@ -416,4 +418,13 @@ Public Sub Reload()
   
   Load
   
+End
+
+
+Private Function Keys_Read() As _SettingsKeys
+
+  _SettingsKeys._Slot = $cSlot
+  _SettingsKeys._Parent = ""
+  Return _SettingsKeys
+
 End

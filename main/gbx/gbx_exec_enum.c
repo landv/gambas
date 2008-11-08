@@ -37,6 +37,8 @@ void EXEC_enum_first(PCODE code)
   CLASS *class;
   boolean defined;
   VALUE *local;
+  CENUM *old = EXEC_enum;
+  CENUM *cenum;
 
   local = &BP[code & 0xFF];
 
@@ -45,15 +47,17 @@ void EXEC_enum_first(PCODE code)
 	if (!object && class->auto_create && !class->enum_static)
 		object = EXEC_auto_create(class, FALSE);
 
-  EXEC_enum = CENUM_create(object ? (void *)object : (void *)class);
+  cenum = CENUM_create(object ? (void *)object : (void *)class);
 
   local++;
   RELEASE(local);
-  local->_object.class = OBJECT_class(EXEC_enum);
-  local->_object.object = EXEC_enum;
-  OBJECT_REF(EXEC_enum, "EXEC_enum_first");
+  local->_object.class = OBJECT_class(cenum);
+  local->_object.object = cenum;
+  OBJECT_REF(cenum, "EXEC_enum_first");
 
+ 	EXEC_enum = cenum;
   EXEC_special(SPEC_FIRST, class, object, 0, TRUE);
+	EXEC_enum = old;
 }
 
 
@@ -61,25 +65,32 @@ bool EXEC_enum_next(PCODE code)
 {
   OBJECT *object;
   CLASS *class;
-  boolean defined;
+  bool defined;
   VALUE *local;
   bool drop = (code & 0xFF);
+  bool err;
+  CENUM *old = EXEC_enum;
+  CENUM *cenum;
 
   local = &BP[PC[-1] & 0xFF];
 
   EXEC_object(local, &class, &object, &defined);
-  EXEC_enum = (CENUM *)local[1]._object.object;
+  cenum = (CENUM *)local[1]._object.object;
 
-  if (!EXEC_enum->stop)
+  if (!cenum->stop)
   {
-    if (EXEC_special(SPEC_NEXT, class, object, 0, FALSE))
+  	EXEC_enum = cenum;
+    err = EXEC_special(SPEC_NEXT, class, object, 0, FALSE);
+   	EXEC_enum = old;
+    if (err)
       THROW(E_ENUM);
-    if (!defined && !drop && !EXEC_enum->stop)
+    
+    if (!defined && !drop && !cenum->stop)
     	VALUE_conv(&SP[-1], T_VARIANT);
   }
 
-  if (drop || EXEC_enum->stop)
+  if (drop || cenum->stop)
     POP();
-
-  return EXEC_enum->stop;
+	
+  return cenum->stop;
 }

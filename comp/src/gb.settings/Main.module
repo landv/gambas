@@ -3,10 +3,15 @@
 Public Sub Main()
 
   Dim hSettings As Settings
+  Dim sKey As String
 
-  hSettings = New Settings("~/.config/gambas/gb.form.conf")
+  hSettings = New Settings("~/.config/gambas3/gb.form.conf")
 
   Print hSettings["/Bookmarks/Count", 0]
+
+  For Each sKey In hSettings.Keys["Bookmarks"]
+    Print sKey
+  Next
 
   'PRINT hSettings["/test/Array"].Join(" ")
  ' hSettings["PROJECTLANG"] = "toto"
