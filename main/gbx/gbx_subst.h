@@ -40,6 +40,7 @@ typedef
   void (*SUBST_ADD_FUNC)(int);
 
 void SUBST_init(void);
+void SUBST_init_max(int max);
 void SUBST_add(const char *src, int len);
 void SUBST_exit(void);
 void SUBST_dump_temp(void);

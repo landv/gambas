@@ -614,7 +614,10 @@ void SUBR_replace(void)
   {
 		is = 0;
 	
-  	if (lp == lr)
+		if (lp >= lr)
+			SUBST_init_max(ls);
+	
+/*  	if (lp == lr)
   	{
   		STRING_new(&SUBST_buffer, ps, ls);
   		ps = SUBST_buffer;
@@ -638,7 +641,7 @@ void SUBR_replace(void)
 					break;
 			}
   	}
-  	else
+  	else*/
   	{
 			for(;;)
 			{
@@ -666,12 +669,12 @@ void SUBR_replace(void)
     }
   }
 
+  SUBST_exit();
+
   RETURN->type = T_STRING;
   RETURN->_string.addr = SUBST_buffer;
   RETURN->_string.start = 0;
   RETURN->_string.len = STRING_length(RETURN->_string.addr);
-
-  SUBST_exit();
 
   SUBR_LEAVE();
 }

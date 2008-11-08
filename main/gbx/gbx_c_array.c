@@ -767,11 +767,10 @@ BEGIN_METHOD(CARRAY_string_join, GB_STRING sep; GB_STRING esc)
   char *esc = "";
   int lesc = 0;
   char escl, escr;
-  char *res = NULL;
   int i;
   char **data = (char **)THIS->data;
 	char *p, *p2;
-	int l;
+	int l, max;
 	
   if (!MISSING(sep))
   {
@@ -793,16 +792,29 @@ BEGIN_METHOD(CARRAY_string_join, GB_STRING sep; GB_STRING esc)
 		}
 	}
 
+	if (!lesc)
+	{
+		max = 0;
+		for (i = 0; i < ARRAY_count(data); i++)
+			max += STRING_length(data[i]) + lsep;
+		if (ARRAY_count(data))
+			max -= lsep;
+		
+		SUBST_init_max(max);
+	}
+	else
+		SUBST_init();
+  
   for (i = 0; i < ARRAY_count(data); i++)
   {
 		p = data[i];
 		l = STRING_length(data[i]);
     
     if (i)
-      STRING_add(&res, sep, lsep);
+      SUBST_add(sep, lsep);
 		if (lesc)
 		{
-			STRING_add(&res, &escl, 1);
+			SUBST_add(&escl, 1);
 			if (l)
 			{
 				for(;;)
@@ -810,28 +822,27 @@ BEGIN_METHOD(CARRAY_string_join, GB_STRING sep; GB_STRING esc)
 					p2 = index(p, escr);
 					if (p2)
 					{
-						STRING_add(&res, p, p2 - p + 1);
-						STRING_add(&res, &escr, 1);
+						SUBST_add(p, p2 - p + 1);
+						SUBST_add(&escr, 1);
 						p = p2 + 1;
 					}
 					else
 					{
-						STRING_add(&res, p, l + data[i] - p);
+						SUBST_add(p, l + data[i] - p);
 						break;
 					}
 				}
 			}
-			STRING_add(&res, &escr, 1);
+			SUBST_add(&escr, 1);
 		}
 		else if (l)
-    	STRING_add(&res, p, l);
+    	SUBST_add(p, l);
   }
 
-  if (res)
-  {
-    STRING_extend_end(&res);
-    GB_ReturnString(res);
-  }
+	SUBST_exit();
+
+  if (SUBST_buffer)
+    GB_ReturnString(SUBST_buffer);
   else
     GB_ReturnNull();
 

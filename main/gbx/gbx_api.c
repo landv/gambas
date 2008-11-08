@@ -1620,8 +1620,9 @@ void GB_StreamSetSwapping(GB_STREAM *stream, int swap)
 
 int GB_StreamBlock(GB_STREAM *stream, int block)
 {
-	int old = STREAM_is_blocking(stream);
-	STREAM_blocking(stream, block);
+	STREAM *st = (STREAM *)stream;
+	int old = STREAM_is_blocking(st);
+	STREAM_blocking(st, block);
 	return old;
 }
 
