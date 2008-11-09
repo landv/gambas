@@ -90,6 +90,9 @@ static void quote_string(const char *data, int len, DB_FORMAT_CALLBACK add)
 	unsigned char c;
 	char buffer[8];
 
+	if (DB.GetCurrentDatabase()->version >= 80200)
+		(*add)("E", 1);
+
 	(*add)("'", 1);
 	for (i = 0; i < len; i++)
 	{
