@@ -86,21 +86,21 @@
 '
 '''
 
-PUBLIC CONST ThumbSize AS Integer = 36
-PUBLIC ResultPictures AS Result
+Public Const ThumbSize As Integer = 36
+Public ResultPictures As Result
 
-PRIVATE databaseConnection AS NEW Connection
-PRIVATE tempFile AS String
+Private databaseConnection As New Connection
+Private tempFile As String
 
-PUBLIC SUB _init()
+Public Sub _init()
   tempFile = Temp() & ".png"
-END
+End
 
 ' Opens the pictures database. If the database or table does not
 ' exist then they are created.
-PUBLIC SUB OpenDatabase(DBType AS String, DBHost AS String, DBName AS String, UserName AS String, UserPassword AS String)
-  DIM pictureTable AS Table
-  DIM errorMessageHeader AS String
+Public Sub OpenDatabase(DBType As String, DBHost As String, DBName As String, UserName As String, UserPassword As String)
+  Dim pictureTable As Table
+  Dim errorMessageHeader As String
   ' If you wnat to see the commands sent to the
   ' database then uncommant this line
   ' DB.Debug = TRUE
@@ -113,34 +113,34 @@ PUBLIC SUB OpenDatabase(DBType AS String, DBHost AS String, DBName AS String, Us
   databaseConnection.Password = UserPassword
   databaseConnection.Port = ""
   ' Open the connection
-  TRY databaseConnection.Open()
-  IF ERROR THEN
+  Try databaseConnection.Open()
+  If Error Then
     errorMessageHeader = "Could not open database connection " & DBHost
     Error.Raise(Error.Text)
-  END IF
+  End If
   ' Check if the server connection has a database with the
   ' required database name.
-  IF NOT databaseConnection.Databases.Exist(DBName) THEN
-    PRINT "Database not found. Creating new database"
+  If Not databaseConnection.Databases.Exist(DBName) Then
+    Print "Database not found. Creating new database"
     ' Create a new database
     databaseConnection.Databases.Add(DBName)
     ' I found I needed this with a SQLite database
     ' (but not with a MySQL database)
-    WAIT 0.5
-  END IF
+    Wait 0.5
+  End If
   ' Close the server connection
   databaseConnection.Close()
   ' Open a connection to the database
   databaseConnection.Host = DBHost
   databaseConnection.Name = DBName
-  TRY databaseConnection.Open()
-  IF ERROR THEN
+  Try databaseConnection.Open()
+  If Error Then
     errorMessageHeader = "Could not open database " & DBName & " on " & DBHost
     Error.Raise(Error.Text)
-  END IF
+  End If
   ' Check if the database has a pictures table
-  IF NOT databaseConnection.Tables.Exist("pictures") THEN
-    PRINT "Database tables not found. Creating new pictures table"
+  If Not databaseConnection.Tables.Exist("pictures") Then
+    Print "Database tables not found. Creating new pictures table"
     ' Add a picture table to the database
     pictureTable = databaseConnection.Tables.Add("pictures")
     pictureTable.Fields.Add("id", db.Serial) '             id          field as autoinc integer
@@ -149,64 +149,67 @@ PUBLIC SUB OpenDatabase(DBType AS String, DBHost AS String, DBName AS String, Us
     pictureTable.Fields.Add("description", db.String, 0) ' description field as unlimited string
     pictureTable.PrimaryKey = ["id"]
     pictureTable.Update()
-  END IF
-CATCH
-  IF errorMessageHeader = "" THEN
+  End If
+Catch
+  If errorMessageHeader = "" Then
     errorMessageHeader = "Database connection error: " & DBName & " on " & DBHost
-  END IF
+  End If
   Error.Raise("<b>" & errorMessageHeader & "</b><hr>Error:<br>" & DConv(Error.Text))
-END
+End
 
-PUBLIC SUB Add(ImagePath AS String)
-  DIM img AS Image
-  DIM newPicture AS Result
-  DIM pictureData AS String
-  DIM scale AS Float
+Public Sub Add(ImagePath As String)
+  Dim img As Image
+  Dim newPicture As Result
+  Dim pictureData As String
+  Dim scale As Float
+  Dim eTime As Float
   newPicture = databaseConnection.Create("pictures")
   ' Save temp image as png file
   img = Image.Load(ImagePath)
   img.Save(tempFile)
   newPicture["image"] = File.Load(tempFile)
   ' Create image thumb
-  IF img.Width > thumbSize OR img.Height > thumbSize THEN 
+  If img.Width > thumbSize Or img.Height > thumbSize Then 
     ' Calc factor to scale isotropic
     scale = Min(ThumbSize / img.Width, ThumbSize / img.Height)
-    img = img.Stretch(img.Width * scale, img.Height * scale, TRUE)
+    img = img.Stretch(img.Width * scale, img.Height * scale, True)
     img.Save(tempFile)
-  END IF
+  End If
   newPicture["thumb"] = File.Load(tempFile)
   ' Add description and update
   newPicture["description"] = "Image " & File.BaseName(ImagePath) & "  added: " & Format(Now, "dddd, dd mmmm yyyy hh:nn:ss")
+  eTime = Timer
   newPicture.Update()
-  IF Exist(tempFile) THEN KILL tempFile
-CATCH
+  Print "Done in "; Format(Timer - eTime, "#.###"); " s"
+  If Exist(tempFile) Then Kill tempFile
+Catch
   Error.Raise("<b>Add database record error</b><hr>Error:<br>" & DConv(Error.Text))
-END
+End
 
-PUBLIC SUB Select()
+Public Sub Select()
   ResultPictures = databaseConnection.Edit("pictures")
-CATCH
+Catch
   Error.Raise("<b>Select database records error</b><hr>Error:<br>" & DConv(Error.Text))
-END
+End
 
-PUBLIC SUB Update(Row AS Integer, Description AS String)
+Public Sub Update(Row As Integer, Description As String)
   ResultPictures.MoveTo(Row)
   ResultPictures["description"] = Conv(Description, Desktop.Charset, databaseConnection.Charset)
   ResultPictures.Update()
-CATCH
+Catch
   Error.Raise("<b>Update database record error</b><hr>Error:<br>" & DConv(Error.Text))
-END
+End
 
-PUBLIC SUB Delete(Row AS Integer)
+Public Sub Delete(Row As Integer)
   ResultPictures.MoveTo(Row)
   ResultPictures.Delete()
-CATCH
+Catch
   Error.Raise("<b>Delete database record error</b><hr>Error:<br>" & DConv(Error.Text))
-END
+End
 
-PUBLIC SUB CloseDatabase()
-  TRY databaseConnection.Close()
-  IF ERROR THEN PRINT "Error closing database"
-END
+Public Sub CloseDatabase()
+  Try databaseConnection.Close()
+  If Error Then Print "Error closing database"
+End
 
 ''' End of ModuleDatabase '''

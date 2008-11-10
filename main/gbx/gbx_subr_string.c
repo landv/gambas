@@ -608,10 +608,7 @@ void SUBR_replace(void)
   if (NPARAM == 4)
     nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_TEXT;
 
-	if (lp >= lr)
-		SUBST_init_max(ls);
-	else
-  	SUBST_init_ext(ls, (lr - lp) * 16);
+	STRING_start_len(ls);
   
   if (ls > 0 && lp > 0)
   {
@@ -626,9 +623,9 @@ void SUBR_replace(void)
 			pos--;
 
 			if (pos > 0)
-				SUBST_add(ps, pos);
+				STRING_make(ps, pos);
 
-			SUBST_add(pr, lr);
+			STRING_make(pr, lr);
 
 			pos += lp;
 
@@ -639,13 +636,11 @@ void SUBR_replace(void)
 				break;
 		}
 		
-		SUBST_add(ps, ls);
+		STRING_make(ps, ls);
   }
 
-  SUBST_exit();
-
   RETURN->type = T_STRING;
-  RETURN->_string.addr = SUBST_buffer;
+  RETURN->_string.addr = STRING_end_temp();
   RETURN->_string.start = 0;
   RETURN->_string.len = STRING_length(RETURN->_string.addr);
 

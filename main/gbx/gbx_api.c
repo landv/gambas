@@ -159,7 +159,7 @@ void *GAMBAS_Api[] =
   
   (void *)STRING_subst,
   (void *)STRING_subst_add,
-  (void *)SUBST_add,
+  (void *)STRING_make,
   (void *)GB_ConvString,
   (void *)STRING_conv_file_name,
   (void *)GB_RealFileName,
@@ -247,6 +247,10 @@ void *GAMBAS_Api[] =
   (void *)GB_ImageConvert,
   (void *)GB_PictureCreate,
   (void *)GB_PictureInfo,
+  
+  (void *)STRING_start_len,
+  (void *)STRING_end,
+  (void *)STRING_make,
 
   NULL
 };

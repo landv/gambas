@@ -766,7 +766,7 @@ BEGIN_METHOD(CARRAY_string_join, GB_STRING sep; GB_STRING esc)
   int lsep = 1;
   char *esc = "";
   int lesc = 0;
-  char escl, escr;
+  char escl, NO_WARNING(escr);
   int i;
   char **data = (char **)THIS->data;
 	char *p, *p2;
@@ -800,10 +800,10 @@ BEGIN_METHOD(CARRAY_string_join, GB_STRING sep; GB_STRING esc)
 		if (ARRAY_count(data))
 			max -= lsep;
 		
-		SUBST_init_max(max);
+		STRING_start_len(max);
 	}
 	else
-		SUBST_init();
+		STRING_start();
   
   for (i = 0; i < ARRAY_count(data); i++)
   {
@@ -811,10 +811,10 @@ BEGIN_METHOD(CARRAY_string_join, GB_STRING sep; GB_STRING esc)
 		l = STRING_length(data[i]);
     
     if (i)
-      SUBST_add(sep, lsep);
+      STRING_make(sep, lsep);
 		if (lesc)
 		{
-			SUBST_add(&escl, 1);
+			STRING_make(&escl, 1);
 			if (l)
 			{
 				for(;;)
@@ -822,29 +822,24 @@ BEGIN_METHOD(CARRAY_string_join, GB_STRING sep; GB_STRING esc)
 					p2 = index(p, escr);
 					if (p2)
 					{
-						SUBST_add(p, p2 - p + 1);
-						SUBST_add(&escr, 1);
+						STRING_make(p, p2 - p + 1);
+						STRING_make_char(escr);
 						p = p2 + 1;
 					}
 					else
 					{
-						SUBST_add(p, l + data[i] - p);
+						STRING_make(p, l + data[i] - p);
 						break;
 					}
 				}
 			}
-			SUBST_add(&escr, 1);
+			STRING_make_char(escr);
 		}
 		else if (l)
-    	SUBST_add(p, l);
+    	STRING_make(p, l);
   }
 
-	SUBST_exit();
-
-  if (SUBST_buffer)
-    GB_ReturnString(SUBST_buffer);
-  else
-    GB_ReturnNull();
+	GB_ReturnString(STRING_end_temp());
 
 END_METHOD
 

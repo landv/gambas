@@ -26,7 +26,6 @@
 #define __STRING_H
 
 #include "gbx_value.h"
-#include "gbx_subst.h"
 #include "gbx_debug.h"
 #include "gb_common_string.h"
 
@@ -40,7 +39,32 @@ typedef
   PACKED
   STRING;
 
+typedef
+  void (*SUBST_FUNC)(int, char **, int *);
+
+typedef
+  void (*SUBST_ADD_FUNC)(int);
+
+#define STRING_MAKE_TEMP 32
+
+typedef
+	struct
+	{
+		char *buffer;
+		char *ptr;
+		int inc;
+		int len;
+		int max;
+		char temp[STRING_MAKE_TEMP];
+		int ntemp;
+	}
+	STRING_MAKE;
+
 #define SC_UNICODE ((char *)-1)
+
+#ifndef __STRING_C
+extern STRING_MAKE STRING_make_buffer;
+#endif
 
 void STRING_init(void);
 void STRING_exit(void);
@@ -65,16 +89,11 @@ void STRING_new_constant_value(VALUE *value, const char *src, int len);
 void STRING_char_value(VALUE *value, uchar car);
 void STRING_void_value(VALUE *value);
 
-/*int STRING_comp_value(VALUE *str1, VALUE *str2);
-int STRING_comp_value_equality(VALUE *str1, VALUE *str2);
-int STRING_comp_value_ignore_case(VALUE *str1, VALUE *str2);*/
-
 char *STRING_subst(const char *str, int len, SUBST_FUNC get_param);
 char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param);
 int STRING_conv(char **result, const char *str, int len, const char *src, const char *dst, bool throw);
 char *STRING_conv_file_name(const char *name, int len);
 char *STRING_conv_to_UTF8(const char *name, int len);
-
 
 #define STRING_from_ptr(_ptr) ((STRING *)((_ptr) - offsetof(STRING, data)))
 #define STRING_length(_ptr) ((_ptr) == NULL ? 0 : STRING_from_ptr(_ptr)->len)
@@ -126,5 +145,19 @@ void STRING_unref(char **ptr);
 void STRING_unref_keep(char **ptr);
 
 int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool right, bool nocase);
+
+void STRING_start_len(int len);
+#define STRING_start() STRING_start_len(0)
+char *STRING_end();
+char *STRING_end_temp();
+void STRING_make(const char *src, int len);
+void STRING_make_dump();
+
+#define STRING_make_char(_c) \
+{ \
+	if (STRING_make_buffer.ntemp == STRING_MAKE_TEMP) \
+		STRING_make_dump(); \
+	STRING_make_buffer.temp[STRING_make_buffer.ntemp++] = (_c); \
+}
 
 #endif

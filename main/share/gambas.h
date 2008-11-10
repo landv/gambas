@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gambas.h
+	gambas.h
 
-  Copyright (c) 2000-2007 Benoit Minisini <gambas@freesurf.fr>
+	Copyright (c) 2000-2007 Benoit Minisini <gambas@freesurf.fr>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -86,13 +86,13 @@
 /* This type represents a Gambas datatype identifier */
 
 typedef
-  intptr_t GB_TYPE;
+	intptr_t GB_TYPE;
 
 
 /* This opaque type represents a Gambas class identifier */
 
 typedef
-  void *GB_CLASS;
+	void *GB_CLASS;
 
 
 /* This structure represents the base of every Gambas object.
@@ -101,183 +101,183 @@ typedef
 */
 
 typedef
-  struct {
-    GB_CLASS klass;
-    intptr_t ref;
-    }
-  GB_BASE;
+	struct {
+		GB_CLASS klass;
+		intptr_t ref;
+		}
+	GB_BASE;
 
 
 /* Gambas VARIANT datatype definition */
 
 typedef
-  union {
-    GB_TYPE type;
+	union {
+		GB_TYPE type;
 		intptr_t _reserved[3];
-    struct { GB_TYPE type; int value; } PACKED _boolean;
-    struct { GB_TYPE type; int value; } PACKED _byte;
-    struct { GB_TYPE type; int value; } PACKED _short;
-    struct { GB_TYPE type; int value; } PACKED _integer;
-    struct { GB_TYPE type; int64_t value; } PACKED _long;
-    struct { GB_TYPE type; double value; } PACKED _single;
-    struct { GB_TYPE type; double value; } PACKED _float;
-    struct { GB_TYPE type; int date; int time; } PACKED _date;
-    struct { GB_TYPE type; char *value; } PACKED _string;
-    struct { GB_TYPE type; void *value; } PACKED _object;
-    }
-  GB_VARIANT_VALUE;
+		struct { GB_TYPE type; int value; } PACKED _boolean;
+		struct { GB_TYPE type; int value; } PACKED _byte;
+		struct { GB_TYPE type; int value; } PACKED _short;
+		struct { GB_TYPE type; int value; } PACKED _integer;
+		struct { GB_TYPE type; int64_t value; } PACKED _long;
+		struct { GB_TYPE type; double value; } PACKED _single;
+		struct { GB_TYPE type; double value; } PACKED _float;
+		struct { GB_TYPE type; int date; int time; } PACKED _date;
+		struct { GB_TYPE type; char *value; } PACKED _string;
+		struct { GB_TYPE type; void *value; } PACKED _object;
+		}
+	GB_VARIANT_VALUE;
 
 
 typedef
-  struct {
-    GB_TYPE type;
-    GB_VARIANT_VALUE value;
-    }
-  GB_VARIANT;
+	struct {
+		GB_TYPE type;
+		GB_VARIANT_VALUE value;
+		}
+	GB_VARIANT;
 
 
 /* Gambas STRING datatype definition */
 
 typedef
-  struct {
-    GB_TYPE type;
-    struct {
-      char *addr;
-      int start;
-      int len;
-      } value;
-    #if __WORDSIZE == 64
+	struct {
+		GB_TYPE type;
+		struct {
+			char *addr;
+			int start;
+			int len;
+			} value;
+		#if __WORDSIZE == 64
 		intptr_t _reserved;
 		#endif
-    }
-  PACKED
-  GB_STRING;
+		}
+	PACKED
+	GB_STRING;
 
 
 /* Gambas INTEGER datatype definition */
 
 typedef
-  struct {
-    GB_TYPE type;
-    int value;
-    #if __WORDSIZE == 64
-    int _pad;
-    #endif
+	struct {
+		GB_TYPE type;
+		int value;
+		#if __WORDSIZE == 64
+		int _pad;
+		#endif
 		intptr_t _reserved[2];
-    }
-  PACKED
-  GB_INTEGER;
+		}
+	PACKED
+	GB_INTEGER;
 
 
 /* Gambas INTEGER datatype definition */
 
 typedef
-  struct {
-    GB_TYPE type;
-    int64_t value;
-    #if __WORDSIZE == 64
-    intptr_t _reserved[2];
-    #else
-    int _reserved;
-    #endif
-    }
-  PACKED
-  GB_LONG;
+	struct {
+		GB_TYPE type;
+		int64_t value;
+		#if __WORDSIZE == 64
+		intptr_t _reserved[2];
+		#else
+		int _reserved;
+		#endif
+		}
+	PACKED
+	GB_LONG;
 
 
 /* Gambas POINTER datatype definition */
 
 typedef
-  struct {
-    GB_TYPE type;
-    intptr_t value;
-    intptr_t _reserved[2];
-    }
-  PACKED
-  GB_POINTER;
+	struct {
+		GB_TYPE type;
+		intptr_t value;
+		intptr_t _reserved[2];
+		}
+	PACKED
+	GB_POINTER;
 
 
 /* Gambas BOOLEAN datatype definition */
 
 typedef
-  struct {
-    GB_TYPE type;
-    int value;
-    #if __WORDSIZE == 64
-    int _pad;
-    #endif
+	struct {
+		GB_TYPE type;
+		int value;
+		#if __WORDSIZE == 64
+		int _pad;
+		#endif
 		intptr_t _reserved[2];
-    }
-  PACKED
-  GB_BOOLEAN;
+		}
+	PACKED
+	GB_BOOLEAN;
 
 
 /* Gambas FLOAT datatype definition */
 
 typedef
-  struct {
-    GB_TYPE type;
-    double value;
-    #if __WORDSIZE == 64
-    intptr_t _reserved[2];
-    #else
-    int _pad;
-    #endif
-    }
-  PACKED
-  GB_FLOAT;
+	struct {
+		GB_TYPE type;
+		double value;
+		#if __WORDSIZE == 64
+		intptr_t _reserved[2];
+		#else
+		int _pad;
+		#endif
+		}
+	PACKED
+	GB_FLOAT;
 
 
 /* Gambas DATE datatype definition */
 
 typedef
-  struct {
-    int date;
-    int time;
-    }
-  GB_DATE_VALUE;
+	struct {
+		int date;
+		int time;
+		}
+	GB_DATE_VALUE;
 
 typedef
-  struct {
-    GB_TYPE type;
-    GB_DATE_VALUE value;
-    #if __WORDSIZE == 64
-    intptr_t _reserved[2];
-    #else
-    int _reserved;
-    #endif
-    }
-  PACKED
-  GB_DATE;
+	struct {
+		GB_TYPE type;
+		GB_DATE_VALUE value;
+		#if __WORDSIZE == 64
+		intptr_t _reserved[2];
+		#else
+		int _reserved;
+		#endif
+		}
+	PACKED
+	GB_DATE;
 
 
 /* Gambas OBJECT datatype definition */
 
 typedef
-  struct {
-    GB_TYPE type;
-    void *value;
-    intptr_t _reserved[2];
-    }
-  PACKED
-  GB_OBJECT;
+	struct {
+		GB_TYPE type;
+		void *value;
+		intptr_t _reserved[2];
+		}
+	PACKED
+	GB_OBJECT;
 
 
 /* Gambas common value definition */
 
 typedef
-  union {
-    GB_TYPE type;
-    GB_BOOLEAN _boolean;
-    GB_INTEGER _integer;
-    GB_LONG _long;
-    GB_FLOAT _float;
-    GB_DATE _date;
-    GB_STRING _string;
-    GB_OBJECT _object;
-    GB_VARIANT _variant;
-    }
-  GB_VALUE;
+	union {
+		GB_TYPE type;
+		GB_BOOLEAN _boolean;
+		GB_INTEGER _integer;
+		GB_LONG _long;
+		GB_FLOAT _float;
+		GB_DATE _date;
+		GB_STRING _string;
+		GB_OBJECT _object;
+		GB_VARIANT _variant;
+		}
+	GB_VALUE;
 
 
 /* Predefined errors constants */
@@ -290,7 +290,7 @@ typedef
 /* Gambas description start macro */
 
 #define GB_DECLARE(name, size) \
-  { name, (intptr_t)GB_VERSION, (intptr_t)size }
+	{ name, (intptr_t)GB_VERSION, (intptr_t)size }
 
 
 /* Gambas description end macro */
@@ -343,54 +343,54 @@ typedef
 /* Symbol description macros */
 
 #define GB_CONSTANT(symbol, type, value) \
-  { "C" symbol, (intptr_t)type, (intptr_t)value }
+	{ "C" symbol, (intptr_t)type, (intptr_t)value }
 
 #define GB_PROPERTY(symbol, type, proc) \
-  { "p" symbol, (intptr_t)type, (intptr_t)proc }
+	{ "p" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_PROPERTY_READ(symbol, type, proc) \
-  { "r" symbol, (intptr_t)type, (intptr_t)proc }
+	{ "r" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_PROPERTY_SELF(symbol, type) \
-  { "r" symbol, (intptr_t)type, (intptr_t)(-1) }
+	{ "r" symbol, (intptr_t)type, (intptr_t)(-1) }
 
 #define GB_METHOD(symbol, type, exec, signature) \
-  { "m" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
+	{ "m" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
 
 #define GB_EVENT(symbol, type, signature, id) \
-  { "::" symbol, (intptr_t)type, (intptr_t)id, (intptr_t)signature }
+	{ "::" symbol, (intptr_t)type, (intptr_t)id, (intptr_t)signature }
 
 #define GB_STATIC_PROPERTY(symbol, type, proc) \
-  { "P" symbol, (intptr_t)type, (intptr_t)proc }
+	{ "P" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_STATIC_PROPERTY_READ(symbol, type, proc) \
-  { "R" symbol, (intptr_t)type, (intptr_t)proc }
+	{ "R" symbol, (intptr_t)type, (intptr_t)proc }
 
 #define GB_STATIC_PROPERTY_SELF(symbol, type) \
-  { "R" symbol, (intptr_t)type, (-1) }
+	{ "R" symbol, (intptr_t)type, (-1) }
 
 #define GB_STATIC_METHOD(symbol, type, exec, signature) \
-  { "M" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
+	{ "M" symbol, (intptr_t)type, (intptr_t)exec, (intptr_t)signature }
 
 #define GB_INHERITS(symbol) \
-  { GB_INHERITS_ID, (intptr_t)symbol }
-  
+	{ GB_INHERITS_ID, (intptr_t)symbol }
+	
 #define GB_INTERFACE(symbol, pointer) \
-  { "C_@" symbol, (intptr_t)"p", (intptr_t)pointer } 
+	{ "C_@" symbol, (intptr_t)"p", (intptr_t)pointer } 
 
 
 /* Method implementation begin macro */
 
 #define BEGIN_METHOD(_name, par) \
 typedef \
-  struct { \
-    par; \
-    } \
-    _##_name; \
+	struct { \
+		par; \
+		} \
+		_##_name; \
 \
 void _name(void *_object, void *_param) \
 { \
- _##_name *_p = (_##_name *)_param;
+_##_name *_p = (_##_name *)_param;
 
 
 /* Parameter-less Method implementation begin macro */
@@ -487,27 +487,27 @@ void _name(void *_object, void *_param) {
 /* Structure used for describing a class */
 
 typedef
-  struct {
-    const char *name;
-    intptr_t val1;
-    intptr_t val2;
-    intptr_t val3;
-    intptr_t val4;
-    intptr_t val5;
-    }
-  GB_DESC;
+	struct {
+		const char *name;
+		intptr_t val1;
+		intptr_t val2;
+		intptr_t val3;
+		intptr_t val4;
+		intptr_t val5;
+		}
+	GB_DESC;
 
 
 /* Type of a method implementation function */
 
 typedef
-  void GB_METHOD_FUNC(void *, void *);
+	void GB_METHOD_FUNC(void *, void *);
 
 
 /* Type of a property implementation function */
 
 typedef
-  void GB_PROPERTY_FUNC(void *, void *);
+	void GB_PROPERTY_FUNC(void *, void *);
 
 
 /* Macro for declaring a method implementation function */
@@ -553,19 +553,19 @@ typedef
 /* Type of a watch callback function */
 
 typedef
-  void (*GB_WATCH_CALLBACK)(int, int, intptr_t);
+	void (*GB_WATCH_CALLBACK)(int, int, intptr_t);
 
 
 /* Type of the GB.SubstString() callback */
 
 typedef
-  void (*GB_SUBST_CALLBACK)(int, char **, int *);
+	void (*GB_SUBST_CALLBACK)(int, char **, int *);
 
 
 /* Type of the GB.SubstStringAdd() callback */
 
 typedef
-  void (*GB_SUBST_ADD_CALLBACK)(int);
+	void (*GB_SUBST_ADD_CALLBACK)(int);
 
 
 /* Type of a posted function */
@@ -577,27 +577,27 @@ typedef
 /* A structure for the components of a date */
 
 typedef
-  struct {
-    short year;
-    short month;
-    short day;
-    short hour;
-    short min;
-    short sec;
-    short weekday;
-    short msec;
-    }
-  GB_DATE_SERIAL;
+	struct {
+		short year;
+		short month;
+		short day;
+		short hour;
+		short min;
+		short sec;
+		short weekday;
+		short msec;
+		}
+	GB_DATE_SERIAL;
 
 
 /* Opaque type of a Gambas interpreted or native function */
 
 typedef
-  struct {
-    void *object;
-    void *desc;
-    }
-  GB_FUNCTION;
+	struct {
+		void *object;
+		void *desc;
+		}
+	GB_FUNCTION;
 
 #define GB_FUNCTION_IS_VALID(_func) ((_func)->desc)
 
@@ -605,19 +605,19 @@ typedef
 /* Opaque type of a Gambas Array */
 
 typedef
-  void *GB_ARRAY;
+	void *GB_ARRAY;
 
 
 /* Opaque type of a Gambas Collection */
 
 typedef
-  void *GB_COLLECTION;
+	void *GB_COLLECTION;
 
 
 /* opaque type of an hash table */
 
 typedef
-  void *GB_HASHTABLE;
+	void *GB_HASHTABLE;
 
 
 /* constants used by image data format */
@@ -639,7 +639,7 @@ typedef
 /* opaque type of a Gambas image */
 
 typedef
-  void *GB_IMAGE;
+	void *GB_IMAGE;
 
 
 /* information about an image */
@@ -657,7 +657,7 @@ typedef
 /* opaque type of a Gambas picture */
 
 typedef
-  void *GB_PICTURE;
+	void *GB_PICTURE;
 
 
 /* information about a picture */
@@ -669,7 +669,7 @@ typedef
 /* hash table enumeration function */
 
 typedef
-  void (*GB_HASHTABLE_ENUM_FUNC)(void *);
+	void (*GB_HASHTABLE_ENUM_FUNC)(void *);
 
 
 /* opaque type for a Stream object */
@@ -677,42 +677,42 @@ typedef
 struct GB_STREAM;
 
 typedef
-  struct {
-    int (*open)(struct GB_STREAM *stream, const char *path, int mode, void *data);
-    int (*close)(struct GB_STREAM *stream);
-    int (*read)(struct GB_STREAM *stream, char *buffer, int len);
-    int (*getchar)(struct GB_STREAM *stream, char *buffer);
-    int (*write)(struct GB_STREAM *stream, char *buffer, int len);
-    int (*seek)(struct GB_STREAM *stream, int64_t pos, int whence);
-    int (*tell)(struct GB_STREAM *stream, int64_t *pos);
-    int (*flush)(struct GB_STREAM *stream);
-    int (*eof)(struct GB_STREAM *stream);
-    int (*lof)(struct GB_STREAM *stream, int64_t *len);
-    int (*handle)(struct GB_STREAM *stream);
-    }
-  GB_STREAM_DESC;
+	struct {
+		int (*open)(struct GB_STREAM *stream, const char *path, int mode, void *data);
+		int (*close)(struct GB_STREAM *stream);
+		int (*read)(struct GB_STREAM *stream, char *buffer, int len);
+		int (*getchar)(struct GB_STREAM *stream, char *buffer);
+		int (*write)(struct GB_STREAM *stream, char *buffer, int len);
+		int (*seek)(struct GB_STREAM *stream, int64_t pos, int whence);
+		int (*tell)(struct GB_STREAM *stream, int64_t *pos);
+		int (*flush)(struct GB_STREAM *stream);
+		int (*eof)(struct GB_STREAM *stream);
+		int (*lof)(struct GB_STREAM *stream, int64_t *len);
+		int (*handle)(struct GB_STREAM *stream);
+		}
+	GB_STREAM_DESC;
 
 typedef
-  struct {
-    GB_STREAM_DESC *desc;
-    intptr_t _reserved;
-    int64_t _reserved2;
-    }
-  GB_STREAM_BASE;
+	struct {
+		GB_STREAM_DESC *desc;
+		intptr_t _reserved;
+		int64_t _reserved2;
+		}
+	GB_STREAM_BASE;
 
 typedef
-  struct GB_STREAM {
-    GB_STREAM_DESC *desc;
-    intptr_t _reserved;
-    int64_t _reserved2;
-    void *tag;
-    #if __WORDSIZE == 64
-    int _free[4];
-    #else
-    int _free[5];
-    #endif
-    }
-  GB_STREAM;
+	struct GB_STREAM {
+		GB_STREAM_DESC *desc;
+		intptr_t _reserved;
+		int64_t _reserved2;
+		void *tag;
+		#if __WORDSIZE == 64
+		int _free[4];
+		#else
+		int _free[5];
+		#endif
+		}
+	GB_STREAM;
 
 
 /* Constants used by the GB.NumberFromString() API function */
@@ -735,268 +735,273 @@ typedef
 /* Opaque type for a SubCollection object */
 
 typedef
-  void *GB_SUBCOLLECTION;
+	void *GB_SUBCOLLECTION;
 
 
 /* SubCollection description */
 
 typedef
-  struct {
-    char *klass;
-    void *(*get)(void *, const char *);
-    int (*exist)(void *, const char *);
-    void (*list)(void *, char ***);
-    void (*release)(void *, void *);
-  }
-  GB_SUBCOLLECTION_DESC;
+	struct {
+		char *klass;
+		void *(*get)(void *, const char *);
+		int (*exist)(void *, const char *);
+		void (*list)(void *, char ***);
+		void (*release)(void *, void *);
+	}
+	GB_SUBCOLLECTION_DESC;
 
 
 /* Timer object */
 
 typedef
-  struct {
-    GB_BASE object;
-    intptr_t id;
-    intptr_t tag;
-    int delay;
-    }
-  GB_TIMER;
+	struct {
+		GB_BASE object;
+		intptr_t id;
+		intptr_t tag;
+		int delay;
+		}
+	GB_TIMER;
 
 
 /* A macro for preventing gcc from warning about breaks in the
    strict aliasing rules */
-   
+	
 #define POINTER(_pointer) (void **)(void *)_pointer
-
 
 /* Gambas Application Programming Interface */
 
 typedef
-  struct {
-    intptr_t version;
+	struct {
+		intptr_t version;
 
-    int (*GetInterface)(const char *, int, void *);
+		int (*GetInterface)(const char *, int, void *);
 
-    void *(*Hook)(int, void *);
+		void *(*Hook)(int, void *);
 
-    int (*LoadComponent)(const char *);
-    int (*ExistComponent)(const char *);
-    char *(*CurrentComponent)(void);
-    int (*GetComponentInfo)(const char *, void **);
+		int (*LoadComponent)(const char *);
+		int (*ExistComponent)(const char *);
+		char *(*CurrentComponent)(void);
+		int (*GetComponentInfo)(const char *, void **);
 
-    void (*Push)(int, ...);
-    int (*GetFunction)(GB_FUNCTION *, void *, const char *, const char *, const char *);
-    GB_VALUE *(*Call)(GB_FUNCTION *, int, int);
-    void *(*GetClassInterface)(GB_CLASS, const char *);
+		void (*Push)(int, ...);
+		int (*GetFunction)(GB_FUNCTION *, void *, const char *, const char *, const char *);
+		GB_VALUE *(*Call)(GB_FUNCTION *, int, int);
+		void *(*GetClassInterface)(GB_CLASS, const char *);
 
 		int (*Loop)(int);
-    void (*Post)(void (*)(), intptr_t);
-    void (*Post2)(void (*)(), intptr_t, intptr_t);
-    int (*Raise)(void *, int, int, ...);
-    void (*RaiseLater)(void *, int);
-    void (*CheckPost)(void);
-    int (*CanRaise)(void *, int);
-    int (*GetEvent)(GB_CLASS, const char *);
-    char *(*GetLastEventName)();
-    void (*RaiseTimer)(void *);
-    int (*Stopped)(void);
-    void (*Signal)(int, void *);
+		void (*Post)(void (*)(), intptr_t);
+		void (*Post2)(void (*)(), intptr_t, intptr_t);
+		int (*Raise)(void *, int, int, ...);
+		void (*RaiseLater)(void *, int);
+		void (*CheckPost)(void);
+		int (*CanRaise)(void *, int);
+		int (*GetEvent)(GB_CLASS, const char *);
+		char *(*GetLastEventName)();
+		void (*RaiseTimer)(void *);
+		int (*Stopped)(void);
+		void (*Signal)(int, void *);
 
-    int (*NParam)(void);
-    int (*Conv)(GB_VALUE *, GB_TYPE);
-    char *(*GetUnknown)(void);
-    int (*IsProperty)(void);
+		int (*NParam)(void);
+		int (*Conv)(GB_VALUE *, GB_TYPE);
+		char *(*GetUnknown)(void);
+		int (*IsProperty)(void);
 
-    void (*Error)(const char *, ...);
-    void (*Propagate)(void);
+		void (*Error)(const char *, ...);
+		void (*Propagate)(void);
 
-    GB_CLASS (*GetClass)(void *);
-    char *(*GetClassName)(void *);
-    int (*ExistClass)(const char *);
-    GB_CLASS (*FindClass)(const char *);
-    int (*ExistClassLocal)(const char *);
-    GB_CLASS (*FindClassLocal)(const char *);
-    int (*Is)(void *, GB_CLASS);
-    void (*Ref)(void *);
-    void (*Unref)(void **);
-    void (*UnrefKeep)(void **, int);
-    void (*Detach)(void *);
-    void (*Attach)(void *, void *, const char *);
-    void *(*Parent)(void *);
-    int (*New)(void **, GB_CLASS, char *, void *);
-    void *(*AutoCreate)(GB_CLASS, int);
-    int (*CheckObject)(void *);
+		GB_CLASS (*GetClass)(void *);
+		char *(*GetClassName)(void *);
+		int (*ExistClass)(const char *);
+		GB_CLASS (*FindClass)(const char *);
+		int (*ExistClassLocal)(const char *);
+		GB_CLASS (*FindClassLocal)(const char *);
+		int (*Is)(void *, GB_CLASS);
+		void (*Ref)(void *);
+		void (*Unref)(void **);
+		void (*UnrefKeep)(void **, int);
+		void (*Detach)(void *);
+		void (*Attach)(void *, void *, const char *);
+		void *(*Parent)(void *);
+		int (*New)(void **, GB_CLASS, char *, void *);
+		void *(*AutoCreate)(GB_CLASS, int);
+		int (*CheckObject)(void *);
 
-    void *(*GetEnum)();
-    void (*StopEnum)();
-    void (*ListEnum)(void *);
-    int (*NextEnum)();
-    void (*StopAllEnum)(void *);
+		void *(*GetEnum)();
+		void (*StopEnum)();
+		void (*ListEnum)(void *);
+		int (*NextEnum)();
+		void (*StopAllEnum)(void *);
 
-    void (*Return)(GB_TYPE, ...);
-    void (*ReturnInteger)(int);
-    void (*ReturnLong)(int64_t);
-    void (*ReturnPointer)(void *);
-    void (*ReturnBoolean)(int);
-    void (*ReturnDate)(GB_DATE *);
-    void (*ReturnObject)(void *);
-    void (*ReturnNull)(void);
-    void (*ReturnFloat)(double);
-    void (*ReturnPtr)(GB_TYPE, void *);
-    void (*ReturnSelf)(void *);
+		void (*Return)(GB_TYPE, ...);
+		void (*ReturnInteger)(int);
+		void (*ReturnLong)(int64_t);
+		void (*ReturnPointer)(void *);
+		void (*ReturnBoolean)(int);
+		void (*ReturnDate)(GB_DATE *);
+		void (*ReturnObject)(void *);
+		void (*ReturnNull)(void);
+		void (*ReturnFloat)(double);
+		void (*ReturnPtr)(GB_TYPE, void *);
+		void (*ReturnSelf)(void *);
 
-    void (*ReturnString)(char *);
-    void (*ReturnConstString)(const char *, int);
-    void (*ReturnConstZeroString)(const char *);
-    void (*ReturnNewString)(const char *, int);
-    void (*ReturnNewZeroString)(const char *);
+		void (*ReturnString)(char *);
+		void (*ReturnConstString)(const char *, int);
+		void (*ReturnConstZeroString)(const char *);
+		void (*ReturnNewString)(const char *, int);
+		void (*ReturnNewZeroString)(const char *);
 
-    void (*NewString)(char **, const char *, int);
-    void (*TempString)(char **, const char *, int);
-    void (*FreeString)(char **);
-    void (*ExtendString)(char **, int);
-    void (*AddString)(char **, const char *, int);
-    int (*StringLength)(char *);
-    char *(*ToZeroString)(GB_STRING *);
-    int (*MatchString)(const char *, int, const char *, int);
-    int (*NumberFromString)(int, const char *, int, GB_VALUE *);
-    int (*NumberToString)(int, double, const char *, char **, int *);
-    char *(*Translate)(const char *);
+		void (*NewString)(char **, const char *, int);
+		void (*TempString)(char **, const char *, int);
+		void (*FreeString)(char **);
+		void (*ExtendString)(char **, int);
+		void (*AddString)(char **, const char *, int);
+		int (*StringLength)(char *);
+		char *(*ToZeroString)(GB_STRING *);
+		int (*MatchString)(const char *, int, const char *, int);
+		int (*NumberFromString)(int, const char *, int, GB_VALUE *);
+		int (*NumberToString)(int, double, const char *, char **, int *);
+		char *(*Translate)(const char *);
 
-    char *(*SubstString)(const char *, int, GB_SUBST_CALLBACK);
-    char *(*SubstStringAdd)(const char *, int, GB_SUBST_ADD_CALLBACK);
-    void (*SubstAdd)(const char *, int);
-    int (*ConvString)(char **, const char *, int, const char *, const char *);
-    char *(*FileName)(char *, int);
-    char *(*RealFileName)(char *, int);
+		char *(*SubstString)(const char *, int, GB_SUBST_CALLBACK);
+		char *(*SubstStringAdd)(const char *, int, GB_SUBST_ADD_CALLBACK);
+		void (*SubstAddCallback)(const char *, int);
+		int (*ConvString)(char **, const char *, int, const char *, const char *);
+		char *(*FileName)(char *, int);
+		char *(*RealFileName)(char *, int);
 
-    int (*LoadFile)(const char *, int, char **, int *);
-    void (*ReleaseFile)(char **, int);
-    int (*ExistFile)(char *);
-    char *(*GetTempDir)(void);
+		int (*LoadFile)(const char *, int, char **, int *);
+		void (*ReleaseFile)(char **, int);
+		int (*ExistFile)(char *);
+		char *(*GetTempDir)(void);
 
-    void (*Store)(GB_TYPE, GB_VALUE *, void *);
-    void (*StoreString)(GB_STRING *, char **);
-    void (*StoreObject)(GB_OBJECT *, void **);
-    void (*StoreVariant)(GB_VARIANT *, void *);
+		void (*Store)(GB_TYPE, GB_VALUE *, void *);
+		void (*StoreString)(GB_STRING *, char **);
+		void (*StoreObject)(GB_OBJECT *, void **);
+		void (*StoreVariant)(GB_VARIANT *, void *);
 
-    GB_DATE_SERIAL *(*SplitDate)(GB_DATE *);
-    int (*MakeDate)(GB_DATE_SERIAL *, GB_DATE *);
-    void (*MakeDateFromTime)(int, int, GB_DATE *);
-    int (*GetTime)(double *, int);
+		GB_DATE_SERIAL *(*SplitDate)(GB_DATE *);
+		int (*MakeDate)(GB_DATE_SERIAL *, GB_DATE *);
+		void (*MakeDateFromTime)(int, int, GB_DATE *);
+		int (*GetTime)(double *, int);
 
-    void (*Watch)(int, int, void *, intptr_t);
+		void (*Watch)(int, int, void *, intptr_t);
 
-    GB_VALUE *(*Eval)(void *, void *);
+		GB_VALUE *(*Eval)(void *, void *);
 
-    void (*Alloc)(void **, int);
-    void (*Free)(void **);
-    void (*Realloc)(void **, int);
+		void (*Alloc)(void **, int);
+		void (*Free)(void **);
+		void (*Realloc)(void **, int);
 
-    void (*NewArray)(void *, int, int);
-    void (*FreeArray)(void *);
-    int (*Count)(void *);
-    void *(*Add)(void *);
-    void *(*Insert)(void *, int, int);
-    void (*Remove)(void *, int, int);
+		void (*NewArray)(void *, int, int);
+		void (*FreeArray)(void *);
+		int (*Count)(void *);
+		void *(*Add)(void *);
+		void *(*Insert)(void *, int, int);
+		void (*Remove)(void *, int, int);
 
-    void (*PrintData)(GB_TYPE, void *);
-    void (*PrintString)(char *, int);
+		void (*PrintData)(GB_TYPE, void *);
+		void (*PrintString)(char *, int);
 
-    struct {
-      void (*New)(GB_SUBCOLLECTION *, GB_SUBCOLLECTION_DESC *, void *);
-      void (*Add)(void *, const char *, int, void *);
-      void (*Remove)(void *, const char *, int);
-      void *(*Get)(void *, const char *, int);
-      void *(*Container)(void *);
-      }
-    SubCollection;
+		struct {
+			void (*New)(GB_SUBCOLLECTION *, GB_SUBCOLLECTION_DESC *, void *);
+			void (*Add)(void *, const char *, int, void *);
+			void (*Remove)(void *, const char *, int);
+			void *(*Get)(void *, const char *, int);
+			void *(*Container)(void *);
+			}
+		SubCollection;
 
-    int (*ToLower)(int);
-    int (*ToUpper)(int);
-    int (*StrCaseCmp)(const char *, const char *);
-    int (*StrNCaseCmp)(const char *, const char *, int);
+		int (*ToLower)(int);
+		int (*ToUpper)(int);
+		int (*StrCaseCmp)(const char *, const char *);
+		int (*StrNCaseCmp)(const char *, const char *, int);
 
-    struct {
-      char *(*Name)(void);
-      char *(*Title)(void);
-      char *(*Version)(void);
-      char *(*Path)(void);
-      char *(*Startup)(void);
-      }
-    Application;
+		struct {
+			char *(*Name)(void);
+			char *(*Title)(void);
+			char *(*Version)(void);
+			char *(*Path)(void);
+			char *(*Startup)(void);
+			}
+		Application;
 
-    struct {
-      char *(*Charset)(void);
-      char *(*Language)(void);
-      char *(*DomainName)(void);
-      int *(*IsRightToLeft)(void);
-      }
-    System;
+		struct {
+			char *(*Charset)(void);
+			char *(*Language)(void);
+			char *(*DomainName)(void);
+			int *(*IsRightToLeft)(void);
+			}
+		System;
 
-    struct {
-      void (*New)(GB_ARRAY *, GB_TYPE, int);
-      int (*Count)(GB_ARRAY);
-      void *(*Add)(GB_ARRAY);
-      void *(*Get)(GB_ARRAY, int);
-      GB_TYPE (*Type)(GB_ARRAY);
-      }
-    Array;
+		struct {
+			void (*New)(GB_ARRAY *, GB_TYPE, int);
+			int (*Count)(GB_ARRAY);
+			void *(*Add)(GB_ARRAY);
+			void *(*Get)(GB_ARRAY, int);
+			GB_TYPE (*Type)(GB_ARRAY);
+			}
+		Array;
 
-    struct {
-      void (*New)(GB_COLLECTION *, int);
-      int (*Count)(GB_COLLECTION);
-      void (*Set)(GB_COLLECTION, const char *, int, GB_VARIANT *);
-      int (*Get)(GB_COLLECTION, const char *, int, GB_VARIANT *);
-      }
-    Collection;
+		struct {
+			void (*New)(GB_COLLECTION *, int);
+			int (*Count)(GB_COLLECTION);
+			void (*Set)(GB_COLLECTION, const char *, int, GB_VARIANT *);
+			int (*Get)(GB_COLLECTION, const char *, int, GB_VARIANT *);
+			}
+		Collection;
 
-    struct {
-      void (*New)(GB_HASHTABLE *, int);
-      void (*Free)(GB_HASHTABLE *);
-      int (*Count)(GB_HASHTABLE);
-      void (*Add)(GB_HASHTABLE, const char *, int, void *);
-      void (*Remove)(GB_HASHTABLE, const char *, int);
-      int (*Get)(GB_HASHTABLE, const char *, int, void **);
-      void (*Enum)(GB_HASHTABLE, GB_HASHTABLE_ENUM_FUNC);
-      }
-    HashTable;
+		struct {
+			void (*New)(GB_HASHTABLE *, int);
+			void (*Free)(GB_HASHTABLE *);
+			int (*Count)(GB_HASHTABLE);
+			void (*Add)(GB_HASHTABLE, const char *, int, void *);
+			void (*Remove)(GB_HASHTABLE, const char *, int);
+			int (*Get)(GB_HASHTABLE, const char *, int, void **);
+			void (*Enum)(GB_HASHTABLE, GB_HASHTABLE_ENUM_FUNC);
+			}
+		HashTable;
 
-    struct {
-      void (*SetBytesRead)(GB_STREAM *stream, int length);
-      void (*SetSwapping)(GB_STREAM *stream, int swap);
-      int (*Block)(GB_STREAM *stream, int block);
-      }
-    Stream;
+		struct {
+			void (*SetBytesRead)(GB_STREAM *stream, int length);
+			void (*SetSwapping)(GB_STREAM *stream, int swap);
+			int (*Block)(GB_STREAM *stream, int block);
+			}
+		Stream;
 
 		struct {
 			int (*Create)(GB_IMAGE *image, void *data, int width, int height, int format);
 			void (*Info)(GB_IMAGE image, GB_IMAGE_INFO *info);
 			void (*Convert)(void *dst, int dst_format, void *src, int src_format, int w, int h);
-      }
+			}
 		Image;
 
 		struct {
 			int (*Create)(GB_PICTURE *pict, void *data, int width, int height, int format);
 			void (*Info)(GB_PICTURE pict, GB_PICTURE_INFO *info);
-      }
+			}
 		Picture;
-
-    }
-  GB_INTERFACE;
+		
+		struct {
+			void (*Start)(int length);
+			char *(*End)();
+			void (*Add)(const char *src, int len);
+			}
+		String;
+		}
+	GB_INTERFACE;
 
 
 /*
 
   Special methods that can be declared in a class
 
-    _get        array reading operator
-    _put        array writing operator
-    _new        constructor
-    _free       destructor
-    _next       next iteration of an enumeration
-    _call       called when the object or the class is used as a function
-    _unknown    called when the name of the property or method is unknown
+  _get        array reading operator
+  _put        array writing operator
+  _new        constructor
+  _free       destructor
+  _next       next iteration of an enumeration
+  _call       called when the object or the class is used as a function
+  _unknown    called when the name of the property or method is unknown
 
 */
 
@@ -1004,24 +1009,25 @@ typedef
 
   Syntax of a method or event signature
 
-    Gambas datatype      String representation
+  Gambas datatype      String representation
 
-      BOOLEAN              b
-      INTEGER              i
-      LONG                 l
-      FLOAT                f
-      DATE                 d
-      STRING               s
-      VARIANT              v
-      OBJECT               o
-      Any class            ClassName;
+  BOOLEAN              b
+  INTEGER              i
+  LONG                 l
+  FLOAT                f
+  DATE                 d
+  STRING               s
+  VARIANT              v
+  OBJECT               o
+  Any class            ClassName;
 
 */
 
 #ifndef NO_GAMBAS_CASE_REPLACEMENT
 
 /* Replacements for case unsensitive comparisons.
-   They ensure that case comparison does not use current locale
+   They ensure that case comparison does not use current locale,
+   otherwise Turkish speakers will have problems!
 */
 
 #include <string.h>

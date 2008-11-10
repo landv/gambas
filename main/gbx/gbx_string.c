@@ -70,6 +70,9 @@ static const char _char_string[512] =
 
 static int _index = 0;
 
+STRING_MAKE STRING_make_buffer;
+#define _make STRING_make_buffer
+
 //static HASH_TABLE *_intern = NULL;
 
 /****************************************************************************
@@ -81,8 +84,10 @@ static int _index = 0;
 #define SIZE_INC 16
 #define REAL_SIZE(_len) (((_len) + (SIZE_INC - 1)) & ~(SIZE_INC - 1))
 
-#define POOL_SIZE  8
+#define POOL_SIZE  16
 #define POOL_MAX   32
+
+#define POOL_MAX_LEN   (POOL_SIZE * SIZE_INC)
 
 static STRING *_pool[POOL_SIZE] = { 0 };
 static int _pool_count[POOL_SIZE] = { 0 };
@@ -156,6 +161,10 @@ static STRING *realloc_string(STRING *str, int new_len)
 			STRING_free_real(str->data);
 			return NULL;
 		}
+		else if (size > POOL_MAX_LEN && new_size > POOL_MAX_LEN)
+		{
+			REALLOC(&str, new_size, "realloc_string");
+		}
 		else
 		{
 			STRING *nstr = alloc_string(new_len);
@@ -227,8 +236,6 @@ void STRING_new(char **ptr, const char *src, int len)
 	fflush(stderr);
 	#endif
 }
-
-#define post_free STRING_free_later
 
 void STRING_free_later(char *ptr)
 {
@@ -308,7 +315,7 @@ void STRING_extend_end(char **ptr)
 	if (*ptr)
 	{
 		(*ptr)[STRING_length(*ptr)] = 0;
-		post_free(*ptr);
+		STRING_free_later(*ptr);
 	}
 }
 
@@ -440,7 +447,7 @@ void STRING_unref_keep(char **ptr)
 	if (str->ref > 1)
 		str->ref--;
 	else
-		post_free(*ptr);
+		STRING_free_later(*ptr);
 }
 
 /* The get_param argument index starts at 1, not 0! */
@@ -544,19 +551,6 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 						lp[np] = strlen(p[np]);
 					len_subst += lp[np];
 			}
-			
-			/*i++;
-			d = str[i];
-			if (d == '&')
-				len_subst--;
-			else if (d >= '1' && d <= '9')
-			{
-				np = d - '1';
-				(*get_param)(np + 1, &p[np], &lp[np]);
-				if (lp[np] < 0)
-					lp[np] = strlen(p[np]);
-				len_subst += lp[np] - 2;
-			}*/
 		}
 	}
 	
@@ -585,35 +579,20 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 					memcpy(ps, p[np], lp[np]);
 					ps += lp[np];
 			}
-			/*i++;
-			d = str[i];
-			if (d == '&')
-				*ps++ = '&';
-			else if (d >= '1' && d <= '9')
-			{
-				np = d - '1';
-				memcpy(ps, p[np], lp[np]);
-				ps += lp[np];
-			}
-			else
-			{
-				*ps++ = '&';
-				*ps++ = d;
-			}*/
 		}
 		else
 			*ps++ = c;
 	}
 	
 	*ps = 0;
-	post_free(subst);
+	STRING_free_later(subst);
 	return subst;
 }
 
 char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 {
 	uint i;
-	uchar c;
+	char c;
 	int np;
 
 	if (!str)
@@ -622,7 +601,7 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 	if (len <= 0)
 		len = strlen(str);
 
-	SUBST_init();
+	STRING_start_len(len);
 	
 	for (i = 0; i < len; i++)
 	{
@@ -633,61 +612,23 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 			switch (np)
 			{
 				case INDEX_AT:
-					SUBST_add_char('&');
+					STRING_make_char('&');
 					break;
 				case INDEX_IGNORE:
-					SUBST_add_char('&');
-					SUBST_add_char(str[i]);
+					STRING_make_char('&');
+					STRING_make_char(str[i]);
 					break;
 				case INDEX_ERROR:
 					break;
 				default:
 					(*add_param)(np);
 			}
-			/*
-			i++;
-			d = str[i];
-			if (d == '&')
-			{
-				SUBST_add_char('&');
-			}
-			else if (d >= '1' && d <= '9')
-			{
-				np = d - '0';
-				(*add_param)(np);
-			}
-			else if (d == '{')
-			{
-				np = 0;
-				err = FALSE;
-				for(;;)
-				{
-					i++;
-					if (i >= len)
-						break;
-					d = str[i];
-					if (d == '}')
-						break;
-					if (d >= '0' && d <= '9')
-						np = np * 10 + d - '0';
-					else
-						err = TRUE;
-				}
-				if (!err && np >= 1 && np <= 64)
-					(*add_param)(np);
-			}
-			else
-			{
-				SUBST_add_char('&');
-				SUBST_add_char(d);
-			}*/
 		}
 		else
-			SUBST_add_char(c);
+			STRING_make_char(c);
 	}
 	
-	SUBST_exit();
-	return SUBST_buffer;
+	return STRING_end_temp();
 }
 
 
@@ -892,7 +833,7 @@ char *STRING_conv_file_name(const char *name, int len)
 				STRING_add(&user, &name[pos], len - pos);
 			name = user;
 			len = STRING_length(name);
-			post_free(user);
+			STRING_free_later(user);
 		}
 	}
 
@@ -1072,6 +1013,97 @@ __FOUND:
 	return pos;
 }
 
+void STRING_start_len(int len)
+{
+	_make.inc = 32;
+	
+	if (len == 0)
+		len = 32;
+		
+	STRING_new(&_make.buffer, NULL, len);
+	
+	_make.max = len;
+	_make.len = 0;
+	_make.ptr = _make.buffer;
+	_make.ntemp = 0;
+}
+
+void STRING_make_dump()
+{
+	int n = _make.ntemp;
+	_make.ntemp = 0;
+	STRING_make(_make.temp, n);
+}
+
+// len == 0 est possible ! On peut vouloir ajouter une chaîne vide.
+
+void STRING_make(const char *src, int len)
+{
+  int pos;
+
+	if (!src)
+		return;
+
+	if (len < 0)
+		len = strlen(src);
+
+  if (len <= 0)
+    return;
+    
+	if (_make.ntemp)
+		STRING_make_dump();
+
+	_make.len += len;
+
+	if (_make.len >= _make.max)
+	{
+		pos = (_make.len - _make.max) * 4;
+		if (pos < _make.inc)
+			pos = _make.inc;
+		else
+		{
+			_make.inc = (pos + 31) & ~31;
+			if (_make.inc > 1024)
+				_make.inc = 1024;
+		}
+		
+		_make.max += pos;
+		
+		//fprintf(stderr, "STRING_extend: %d\n", _max - STRING_length(SUBST_buffer));
+		pos = _make.ptr - _make.buffer;
+		STRING_extend(&_make.buffer, _make.max);
+		_make.ptr = _make.buffer + pos;
+	}
+
+	memcpy(_make.ptr, src, len);
+	_make.ptr += len;
+}
+
+char *STRING_end()
+{
+	if (_make.ntemp)
+		STRING_make_dump();
+	
+	if (_make.len)
+	{
+		STRING_extend(&_make.buffer, _make.len);
+		_make.buffer[_make.len] = 0;
+	}
+	else
+		STRING_free(&_make.buffer);
+	
+	return _make.buffer;
+}
+
+char *STRING_end_temp()
+{
+	STRING_end();
+	
+	if (_make.buffer)
+		STRING_free_later(_make.buffer);
+	
+	return _make.buffer;
+}
 
 #include "gb_common_string_temp.h"
 

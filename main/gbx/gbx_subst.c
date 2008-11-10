@@ -52,15 +52,15 @@ void SUBST_dump_temp(void)
 	}
 }
 
-void SUBST_init_ext(int len, int inc)
+void SUBST_init_ext(int len)
 {
-	if (inc == 0)
-		inc = 32;
+	_inc = 32;
+	
 	if (len == 0)
-		len = inc;
+		len = _inc;
 		
 	STRING_new(&SUBST_buffer, NULL, len);
-	_inc = inc;
+	
 	_max = len;
 	_len = 0;
 	_ptr = SUBST_buffer;
@@ -116,4 +116,13 @@ void SUBST_exit(void)
 	SUBST_dump_temp();
 	STRING_extend(&SUBST_buffer, _len);
   STRING_extend_end(&SUBST_buffer);
+}
+
+char *SUBST_get(void)
+{
+	SUBST_dump_temp();
+	STRING_extend(&SUBST_buffer, _len);
+	if (SUBST_buffer)
+		SUBST_buffer[_len] = 0;
+	return SUBST_buffer;
 }

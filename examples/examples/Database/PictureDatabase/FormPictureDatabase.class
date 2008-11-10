@@ -58,11 +58,11 @@
 '
 '''
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  'DB.Debug = TRUE
+  'DB.Debug = True
 
-  ME.Center()
+  Me.Center()
   Dialog.Path = User.Home
   GridViewImages.Columns.Count = 2
   GridViewImages.Columns[0].Text = "Thumb"
@@ -83,130 +83,130 @@ PUBLIC SUB Form_Open()
   ' Display the database content
   ModuleDatabase.Select()
   DisplayImages()
-CATCH
-  PanelButtons.Enabled = FALSE
+Catch
+  PanelButtons.Enabled = False
   Message.Warning(ERROR.Text)
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
   ModuleDatabase.CloseDatabase()
-END
+End
 
 '''
 ''' Buttons
 '''
 
-PUBLIC SUB ToolButtonAdd_Click()
-  Dialog.Filter = FileFilter(TRUE)
+Public Sub ToolButtonAdd_Click()
+  Dialog.Filter = FileFilter(True)
   Dialog.Title = "Add image to database"
-  IF Dialog.OpenFile() THEN RETURN 
+  If Dialog.OpenFile() Then Return 
   ModuleDatabase.Add(Dialog.Path)
   ModuleDatabase.Select()
   DisplayImages()
-CATCH
+Catch
   Message.Warning(ERROR.Text)
-END
+End
 
-PUBLIC SUB ToolButtonRemove_Click()
-  DIM m AS String
-  IF GridViewImages.Row >= 0 THEN
+Public Sub ToolButtonRemove_Click()
+  Dim m As String
+  If GridViewImages.Row >= 0 Then
     m = "Are you sure you want to delete image " & (GridViewImages.Row + 1)
     m &= " from the database:\n\n" & TextAreaDescription.Text
-    IF Message.Question(m, "Delete", "Cancel") = 1 THEN 
+    If Message.Question(m, "Delete", "Cancel") = 1 Then 
       ModuleDatabase.Delete(GridViewImages.Row)
       ModuleDatabase.Select()
       DisplayImages()
-    END IF
-  END IF
-CATCH
+    End If
+  End If
+Catch
   Message.Warning(ERROR.Text)
-END
+End
 
-PUBLIC SUB ToolButtonExport_Click()
-  Dialog.Filter = FileFilter(FALSE)
+Public Sub ToolButtonExport_Click()
+  Dialog.Filter = FileFilter(False)
   Dialog.Title = "Save image from database"
-  IF Dialog.SaveFile() THEN RETURN 
+  If Dialog.SaveFile() Then Return 
   PictureBoxImage.Picture.Save(Dialog.Path)
-CATCH
+Catch
   Message.Warning("Error saving image:\n\n" & ERROR.Text)
-END
+End
 
-PUBLIC SUB ToolButtonUpdate_Click()
+Public Sub ToolButtonUpdate_Click()
   ModuleDatabase.Update(GridViewImages.Row, TextAreaDescription.Text)
   GridViewImages[GridViewImages.Row, 1].Text = TextAreaDescription.Text
-CATCH
+Catch
   Message.Warning(ERROR.Text)
-END
+End
 
 '''
 ''' GridView events
 '''
 
-PUBLIC SUB GridViewImages_Click()
-  IF GridViewImages.Row >= 0 THEN 
+Public Sub GridViewImages_Click()
+  If GridViewImages.Row >= 0 Then 
     ShowImage(GridViewImages.Row)
-  END IF
-END
+  End If
+End
 
 '''
 ''' Functions
 '''
 
-PRIVATE SUB DisplayImages()
-  DIM i AS Integer
-  DIM tempFile AS String
-  DIM tempPicture AS String
+Private Sub DisplayImages()
+  Dim i As Integer
+  Dim tempFile As String
+  Dim tempPicture As String
   GridViewImages.Clear()
   GridViewImages.Rows.Count = ModuleDatabase.ResultPictures.Count
-  IF ModuleDatabase.ResultPictures.Count > 0 THEN 
+  If ModuleDatabase.ResultPictures.Count > 0 Then 
     tempFile = Temp() & ".png"
-    FOR EACH ModuleDatabase.ResultPictures
+    For Each ModuleDatabase.ResultPictures
       i = ModuleDatabase.ResultPictures.Index
       tempPicture = ModuleDatabase.ResultPictures["thumb"].Data
-      IF tempPicture THEN 
+      If tempPicture Then 
         File.Save(tempFile, tempPicture)
         GridViewImages[i, 0].Picture = Picture.Load(tempFile)
-      END IF
+      End If
       GridViewImages[i, 1].Text = ModuleDatabase.ResultPictures["description"]
-    NEXT 
+    Next 
     GridViewImages.Row = 0
     ShowImage(0)
-  ELSE 
+  Else 
     TextAreaDescription.Text = ""
-    PictureBoxImage.Picture = NULL  
+    PictureBoxImage.Picture = Null  
     PictureBoxImage.Resize(1, 1)
-  END IF
-  IF Exist(tempFile) THEN KILL tempFile
+  End If
+  If Exist(tempFile) Then Kill tempFile
   GridViewImages.Rows.Height = ModuleDatabase.ThumbSize
   ToolButtonRemove.Enabled = (GridViewImages.Rows.Count > 0)
   ToolButtonExport.Enabled = ToolButtonRemove.Enabled 
   ToolButtonUpdate.Enabled = ToolButtonRemove.Enabled 
-END
+End
 
-PRIVATE SUB ShowImage(Row AS Integer)
-  DIM tempFile AS String
-  DIM tempPicture AS String
+Private Sub ShowImage(Row As Integer)
+  Dim tempFile As String
+  Dim tempPicture As String
   tempFile = Temp() & ".png"
   ModuleDatabase.ResultPictures.MoveTo(Row)
   TextAreaDescription.Text = ModuleDatabase.ResultPictures["description"]
   tempPicture = ModuleDatabase.ResultPictures["image"].Data
-  IF tempFile THEN 
+  If tempFile Then 
     File.Save(tempFile, tempPicture)
     PictureBoxImage.Picture = Picture.Load(tempFile)  
     PictureBoxImage.Resize(PictureBoxImage.Picture.Width, PictureBoxImage.Picture.Height)
-  ELSE 
-     PictureBoxImage.Picture = NULL
-  END IF
-  IF Exist(tempFile) THEN KILL tempFile
-END
+  Else 
+     PictureBoxImage.Picture = Null
+  End If
+  If Exist(tempFile) Then Kill tempFile
+End
 
 ' Filter for our user file open dialog. All image types supported by Gambas
-PRIVATE FUNCTION FileFilter(OPTIONAL All AS Boolean = FALSE) AS String[]
-  DIM filter AS NEW String[]
-  IF All THEN 
+Private Function FileFilter(Optional All As Boolean = False) As String[]
+  Dim filter As New String[]
+  If All Then 
     filter.Add("*.png *.jpeg *.jpg *.bmp *.gif *.xpm")
     filter.Add("All Graphics")
-  END IF
+  End If
   filter.Add("*.png")
   filter.Add("Portable Network Graphics")
   filter.Add("*.jpeg *.jpg")
@@ -217,11 +217,11 @@ PRIVATE FUNCTION FileFilter(OPTIONAL All AS Boolean = FALSE) AS String[]
   filter.Add("Graphics Interchange Format")
   filter.Add("*.xpm")
   filter.Add("X PixMap")
-  IF All THEN
+  If All Then
     filter.Add("*") 
     filter.Add("All Files")
-  END IF
-  RETURN filter
-END
+  End If
+  Return filter
+End
 
 ''' End of class FormPictureDatabase '''

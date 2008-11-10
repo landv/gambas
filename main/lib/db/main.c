@@ -51,6 +51,11 @@ GB_INTERFACE GB EXPORT;
 static DB_DRIVER *_drivers[MAX_DRIVER];
 static int _drivers_count = 0;
 static char *_query = NULL;
+
+#define TEMP_MAX 64
+static char _temp[TEMP_MAX];
+static int _temp_len;
+
 static bool _debug = FALSE;
 static const char *_try_another = NULL;
 
@@ -340,7 +345,7 @@ static void mq_add_param(int index)
   if (index < 1 || index > query_narg)
     return;
 
-  DB_Format(query_driver, &query_arg[index - 1], (DB_FORMAT_CALLBACK)GB.SubstAdd);
+  DB_Format(query_driver, &query_arg[index - 1], (DB_FORMAT_CALLBACK)GB.SubstAddCallback);
 }
 
 char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB_VALUE *arg)
@@ -370,30 +375,54 @@ void q_init(void)
 {
   GB.FreeString(&_query);
   _query = NULL;
+  _temp_len = 0;
+}
+
+static void q_dump_temp(void)
+{
+	if (!_temp_len)
+		return;
+		
+	GB.AddString(&_query, _temp, _temp_len);
+	_temp_len = 0;
+}
+
+void q_add_length(const char *str, int len)
+{
+  if (!str)
+  	return;
+	
+	if ((_temp_len + len) > TEMP_MAX)
+    q_dump_temp();
+	
+	if (len > TEMP_MAX)
+    GB.AddString(&_query, str, len);
+	else
+	{
+		memcpy(&_temp[_temp_len], str, len);
+		_temp_len += len;
+	}
 }
 
 void q_add(const char *str)
 {
   if (str)
-    GB.AddString(&_query, str, 0);
-}
-
-void q_add_length(const char *str, int len)
-{
-  if (str)
-    GB.AddString(&_query, str, len);
+    q_add_length(str, strlen(str));
 }
 
 char *q_get(void)
 {
-  return _query;
+	q_dump_temp();
+	return _query;
 }
 
 char *q_steal(void)
 {
-  char *query = _query;
-  _query = NULL;
-  return query;
+	char *s;
+	q_dump_temp();
+	s = _query;
+	_query = NULL;
+  return s;
 }
 
 int q_length(void)

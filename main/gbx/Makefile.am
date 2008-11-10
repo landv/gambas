@@ -22,7 +22,6 @@ gbx3_SOURCES = \
  gb_table.c \
  gbx_type.h gbx_type.c \
  gbx_value.h gbx_value.c \
- gbx_subst.h gbx_subst.c \
  gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_loop.c \
  gbx_class_desc.h gbx_class.h gbx_class_init.c gbx_class.c gbx_class_native.c \
  gbx_class_load.c gbx_class_load.h \
