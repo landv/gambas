@@ -91,6 +91,7 @@ public:
 	void emitOpen();
 	void remap();
 	bool doClose();
+	void afterShow();
 
 	GtkWindowGroup *group;
 	GtkAccelGroup *accel;
@@ -121,6 +122,7 @@ public:
 	unsigned _skip_taskbar : 1;
 	unsigned _masked : 1;
 	unsigned _xembed : 1;
+	unsigned _activate : 1;
 };
 
 #endif

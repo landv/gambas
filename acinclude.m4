@@ -513,7 +513,7 @@ cd $gb_save
 
 ## ---------------------------------------------------------------------------
 ## GB_COMPONENT
-## Component detection macro
+## Component detection macro that searches for files
 ##
 ##   $1 = Component key in lower case (ex: postgresql)
 ##   $2 = Component key in upper case (ex: POSTGRESQL)
@@ -563,7 +563,7 @@ AC_DEFUN([GB_COMPONENT],
     ])
 
     AC_MSG_RESULT([$gb_cv_header_$1])
-
+    
     if test "$gb_cv_header_$1" = "no"; then
       for gb_result in $gb_file_list; do
         AC_MSG_WARN([Unable to find file: $gb_result])
@@ -590,8 +590,6 @@ AC_DEFUN([GB_COMPONENT],
     else
       have_inc_$1="yes"
     fi
-
-    AC_SUBST($2_INC)
 
     ## Checking for libraries
 
@@ -660,22 +658,27 @@ dnl    fi
     
   fi
   
+  $2_LDFLAGS=""
+  
   if test "$have_$1" = "no" || test -e DISABLED; then
-
+  
+    $2_INC=""
     $2_LIB=""
     $2_DIR=""
-    $2_PATH=""
     if test x"$9" = x; then
       AC_MSG_WARN([*** $3 is disabled])
     else
       AC_MSG_NOTICE([$9])
     fi
-
+    
   fi
-
+  
+  AC_SUBST($2_INC)
   AC_SUBST($2_LIB)
+  AC_SUBST($2_LDFLAGS)
   AC_SUBST($2_DIR)
   AC_SUBST($2_PATH)
+  
 ])
 
 

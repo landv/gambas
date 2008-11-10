@@ -28,6 +28,7 @@
 
 #include <ctype.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "widgets.h"
 #include "widgets_private.h"
@@ -53,6 +54,7 @@ static gboolean win_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWind
 static void cb_show (GtkWidget *widget, gMainWindow *data)
 {
 	//fprintf(stderr, "cb_show: %p\n", data);
+	//data->afterShow();
 	data->emitOpen();
 	if (data->opened)
 	{
@@ -139,9 +141,16 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 	return false;
 }
 
-static void cb_open(GtkWidget *widget, GdkEvent *e, gMainWindow *data)
+static gboolean cb_open(GtkWidget *widget, GdkEvent *e, gMainWindow *data)
 {
 	data->emitOpen();
+	return FALSE;
+}
+
+static gboolean cb_map(GtkWidget *widget, GdkEvent *e, gMainWindow *data)
+{
+	data->afterShow();
+	return FALSE;
 }
 
 static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gMainWindow *data)
@@ -192,6 +201,7 @@ void gMainWindow::initialize()
 	_style = NULL;
 	_next_timer = 0;
 	_xembed = false;
+	_activate = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -226,6 +236,7 @@ void gMainWindow::initWindow()
 		g_signal_connect(G_OBJECT(border), "configure-event",G_CALLBACK(cb_configure),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "delete-event",G_CALLBACK(win_close),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "window-state-event",G_CALLBACK(win_frame),(gpointer)this);
+		g_signal_connect_after(G_OBJECT(border), "map-event", G_CALLBACK(cb_map), (gpointer)this);
 		
 		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
@@ -412,6 +423,15 @@ void gMainWindow::emitOpen()
 	}
 }
 
+void gMainWindow::afterShow()
+{
+	if (_activate)
+	{
+		gtk_window_present(GTK_WINDOW(border));
+		_activate = false;
+	}
+}
+
 void gMainWindow::setVisible(bool vl)
 {
 	GtkWindowGroup *group;
@@ -448,18 +468,15 @@ void gMainWindow::setVisible(bool vl)
 		}
 		
 		drawMask();
-		/*if (!focus)
-		{
-			focus = findFirstFocus();
-			//fprintf(stderr, "findFirstFocus: %s\n", focus ? focus->name() : NULL); 
-		}*/
 		
 		if (focus)
 		{
-			//fprintf(stderr, "focus = %s\n", focus->name());
 			focus->setFocus();
 			focus = 0;
 		}
+		
+		if (skipTaskBar())
+			_activate = true;
 	}
 	else
 	{

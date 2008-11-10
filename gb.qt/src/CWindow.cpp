@@ -1566,12 +1566,14 @@ void MyMainWindow::showActivate()
 		else
 			show();
 
-		if (getTool())
+		if (getTool() || THIS->skipTaskbar)
 		{
 			qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
 			usleep(50000);
 			setActiveWindow();
 		}
+		else
+			setActiveWindow();
 
     //THIS->shown = true;
     //qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));

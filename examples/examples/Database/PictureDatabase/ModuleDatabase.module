@@ -162,6 +162,7 @@ PUBLIC SUB Add(ImagePath AS String)
   DIM newPicture AS Result
   DIM pictureData AS String
   DIM scale AS Float
+  DIM eTime AS Float
   newPicture = databaseConnection.Create("pictures")
   ' Save temp image as png file
   img = Image.Load(ImagePath)
@@ -177,7 +178,9 @@ PUBLIC SUB Add(ImagePath AS String)
   newPicture["thumb"] = File.Load(tempFile)
   ' Add description and update
   newPicture["description"] = "Image " & File.BaseName(ImagePath) & "  added: " & Format(Now, "dddd, dd mmmm yyyy hh:nn:ss")
+  eTime = Timer
   newPicture.Update()
+  PRINT "Done in "; Format(Timer - eTime, "#.###"); " s"
   IF Exist(tempFile) THEN KILL tempFile
 CATCH
   Error.Raise("<b>Add database record error</b><hr>Error:<br>" & DConv(Error.Text))
