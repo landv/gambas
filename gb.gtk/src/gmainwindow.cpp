@@ -192,6 +192,7 @@ void gMainWindow::initialize()
 	_style = NULL;
 	_next_timer = 0;
 	_xembed = false;
+	_activate = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -412,6 +413,15 @@ void gMainWindow::emitOpen()
 	}
 }
 
+void gMainWindow::afterShow()
+{
+	if (_activate)
+	{
+		gtk_window_present(GTK_WINDOW(border));
+		_activate = false;
+	}
+}
+
 void gMainWindow::setVisible(bool vl)
 {
 	GtkWindowGroup *group;
@@ -454,11 +464,6 @@ void gMainWindow::setVisible(bool vl)
 		}
 		
 		drawMask();
-		/*if (!focus)
-		{
-			focus = findFirstFocus();
-			//fprintf(stderr, "findFirstFocus: %s\n", focus ? focus->name() : NULL); 
-		}*/
 		
 		if (focus)
 		{
@@ -466,6 +471,9 @@ void gMainWindow::setVisible(bool vl)
 			focus->setFocus();
 			focus = 0;
 		}
+		
+		if (skipTaskBar())
+			_activate = true;
 	}
 	else
 	{
