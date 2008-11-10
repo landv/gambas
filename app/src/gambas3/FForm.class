@@ -1825,6 +1825,8 @@ Private Sub CreateMenu()
     
   Endif
 
+  mnuStartup.Checked = Project.Startup = File.BaseName(Path)
+
   RefreshMenu
 
 End
@@ -2948,5 +2950,13 @@ Public Sub mnuChange_Click()
   SelectionChange
   RefreshProperty
   FFormStack.RefreshAll
+  
+End
+
+Public Sub mnuStartup_Click()
+  
+  If mnuStartup.Checked Then Return
+  mnuStartup.Checked = True
+  Project.DefineStartup(Path)
   
 End
