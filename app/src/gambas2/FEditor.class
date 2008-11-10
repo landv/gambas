@@ -519,6 +519,7 @@ PRIVATE SUB CreateMenu()
 
   mnuGoto.Visible = cFunc.count > 0
   mnuSepGoto.Visible = cFunc.count > 0
+  mnuStartup.Checked = Project.Startup = File.BaseName(Path)
 
   UpdateMenu
 
@@ -2629,4 +2630,12 @@ PUBLIC SUB Editors_LostFocus()
 
   mnuEditor.Enabled = FALSE
 
+END
+
+PUBLIC SUB mnuStartup_Click()
+  
+  IF mnuStartup.Checked THEN RETURN
+  mnuStartup.Checked = TRUE
+  Project.DefineStartup(Path)
+  
 END

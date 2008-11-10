@@ -1,7 +1,7 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(4.1429,12,113,80)
+  MoveScaled(4.125,12,113,80)
   Background = Color.Background
   Text = ("")
   Persistent = True
@@ -29,6 +29,10 @@
       Text = ("Open form")
       Picture = Picture["img/16/form.png"]
       Shortcut = "Ctrl+W"
+    }
+    { mnuStartup Menu
+      Text = ("&Startup class")
+      Picture = Picture["icon:/small/play"]
     }
     { mnuSepGoto Menu
       Text = ("")

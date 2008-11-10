@@ -1704,6 +1704,8 @@ PRIVATE SUB CreateMenu()
   ENDIF
 
   RefreshMenu
+  
+  mnuStartup.Checked = Project.Startup = File.BaseName(Path)
 
 END
 
@@ -2787,4 +2789,13 @@ PUBLIC SUB SelectControl(sControl AS String)
   Control[sControl].Select(ME, TRUE)
   RefreshProperty
 
+END
+
+
+PUBLIC SUB mnuStartup_Click()
+  
+  IF mnuStartup.Checked THEN RETURN
+  mnuStartup.Checked = TRUE
+  Project.DefineStartup(Path)
+  
 END

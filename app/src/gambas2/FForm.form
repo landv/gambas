@@ -24,6 +24,10 @@
       Picture = Picture["img/16/class.png"]
       Shortcut = "Ctrl+W"
     }
+    { mnuStartup Menu
+      Text = ("&Startup class")
+      Picture = Picture["icon:/small/play"]
+    }
     { Menu3 Menu
       Text = ("")
     }
@@ -478,12 +482,12 @@
             Text = ("")
           }
           { btnMaxWindow PictureBox
-            MoveScaled(37,0,2.4286,2)
+            MoveScaled(37,0,2,2)
             Picture = Picture["img/16/max-window.png"]
             Alignment = Align.Center
           }
           { btnCloseWindow PictureBox
-            MoveScaled(39,0,2.4286,2)
+            MoveScaled(40,0,2.375,2)
             Picture = Picture["img/16/close-window.png"]
             Alignment = Align.Center
           }
