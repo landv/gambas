@@ -222,6 +222,8 @@ static bool emit_open_event(void *_object)
 	CWIDGET_clear_flag(THIS, WF_CLOSED);
 	if (!THIS->shown)
 	{
+		THIS->minw = THIS->w;
+		THIS->minh = THIS->h;
 		//qDebug("emit_open_event");
 		THIS->opening = true;
 		GB.Raise(THIS, EVENT_Open, 0);
@@ -1103,7 +1105,9 @@ BEGIN_PROPERTY(CWINDOW_skip_taskbar)
   manage_window_property(_object, _param, X11_atom_net_wm_state_skip_taskbar);
 
   if (!READ_PROPERTY)
+  {
     THIS->skipTaskbar = VPROP(GB_BOOLEAN);
+	}
 
 END_PROPERTY
 
@@ -1539,8 +1543,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
 {
   if (_activate)
   {
-	  //CWINDOW *ob = (CWINDOW *)CWidget::get(this);
-  	//qDebug("_activate: %s %p", GB.GetClassName(ob), ob);
+	  CWINDOW *ob = (CWINDOW *)CWidget::get(this);
     setActiveWindow();
     raise();
     setFocus();
@@ -1617,6 +1620,8 @@ void MyMainWindow::showActivate(QWidget *transient)
 
     //X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
 
+    _activate = true;
+    
 		if (windowState() & Qt::WindowMinimized)
 			showMinimized();
 		else if (windowState() & Qt::WindowFullScreen)
@@ -1626,7 +1631,8 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			show();
 
-		if (isToolbar())
+    
+		if (isToolbar() || THIS->skipTaskbar)
 		{
 			qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
 			usleep(50000);
@@ -1689,11 +1695,7 @@ void MyMainWindow::showModal(void)
 
   if (_resizable && _border)
   {
-  	if (!THIS->minsize)
-  	{
-			setMinimumSize(width(), height());
-			THIS->minsize = true;
-		}
+		setMinimumSize(THIS->minw, THIS->minh);
     setSizeGrip(true);
 	}
 
@@ -2298,6 +2300,7 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
   QPixmap p;
  	#ifndef NO_X_WINDOW
   bool saveProp = false;
+  bool active = qApp->activeWindow() == this;
  	#endif
 
   hasIcon = icon() != 0;
@@ -2338,10 +2341,16 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
 			else
 				initProperties();
 		}
+		if (active)
+		{
+			qDebug("doReparent: setActiveWindow");
+			setActiveWindow();
+		}
 	#endif
 
   if (hasIcon)
     setIcon(p);
+    
   //qDebug("new parent = %p", parentWidget());
 }
 
