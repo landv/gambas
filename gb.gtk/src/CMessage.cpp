@@ -30,7 +30,6 @@
 #include "CMessage.h"
 
 static int _global_lock = 0;
-static bool _title_set = false;
 
 typedef
 	struct { 
@@ -46,6 +45,7 @@ static void show_message_box(int type, MSG_PARAM *_p)
 	char *msg = GB.ToZeroString(ARG(msg));
 	char *btn1, *btn2, *btn3;
 	int ret;
+	char *title;
 	
 	btn1 = MISSING(btn1) ? NULL : GB.ToZeroString(ARG(btn1));
 	btn2 = (type == 0 || MISSING(btn2)) ? NULL : GB.ToZeroString(ARG(btn2));
@@ -58,8 +58,10 @@ static void show_message_box(int type, MSG_PARAM *_p)
   }
 	
   _global_lock++;
-  if (!_title_set) 
-  	gMessage::setTitle(GB.Application.Title());
+	
+	title = gMessage::title();
+	if (!title)
+		title = GB.Application.Title();
 	
 	switch (type)
 	{
@@ -71,6 +73,8 @@ static void show_message_box(int type, MSG_PARAM *_p)
 		default: ret = 0;
 	}
   	
+	gMessage::setTitle(NULL);
+  
   GB.ReturnInteger(ret);
   
   _global_lock--;
@@ -103,12 +107,22 @@ BEGIN_METHOD(CMESSAGE_error, GB_STRING msg; GB_STRING btn1; GB_STRING btn2; GB_S
 	 
 END_METHOD
 
+
 BEGIN_METHOD(CMESSAGE_delete, GB_STRING msg; GB_STRING btn1; GB_STRING btn2; GB_STRING btn3)
 	
 	show_message_box(4, (MSG_PARAM *)_p);
 
 END_METHOD
 
+
+BEGIN_PROPERTY(CMESSAGE_title)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(gMessage::title());
+	else
+		gMessage::setTitle(GB.ToZeroString(PROP(GB_STRING)));
+
+END_PROPERTY
 
 GB_DESC CMessageDesc[] =
 {
@@ -120,6 +134,7 @@ GB_DESC CMessageDesc[] =
   GB_STATIC_METHOD("Question", "i", CMESSAGE_question, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
   GB_STATIC_METHOD("Error", "i", CMESSAGE_error, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
   GB_STATIC_METHOD("Delete", "i", CMESSAGE_delete, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+  GB_STATIC_PROPERTY("Title", "s", CMESSAGE_title),
 
   GB_END_DECLARE
 };

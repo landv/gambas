@@ -11,7 +11,8 @@ public:
 	static int showWarning(char *msg,char *btn1,char *btn2,char *btn3);
 
 	static void setTitle(char *title);
-	
+	static char *title();
+		
 	static void exit();
 };
 

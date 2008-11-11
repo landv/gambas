@@ -48,6 +48,7 @@ typedef
   MSG_PARAM;
 
 static int _global_lock = 0;
+static char *_title = NULL;
 
 static int make_message(int type, int nbmax, void *_param)
 {
@@ -62,6 +63,7 @@ static int make_message(int type, int nbmax, void *_param)
   QPoint p;
   QWidget *parent;
   const char *stock = 0;
+  QString title;
 
 	if (_global_lock)
 	{
@@ -137,9 +139,15 @@ static int make_message(int type, int nbmax, void *_param)
       parent = CWINDOW_Main->widget.widget;
   }
   
-  QMessageBox *mb = new QMessageBox(
-    TO_QSTRING(GB.Application.Title()), msg, icon,
-    mbtn[0], mbtn[1], mbtn[2], parent);
+  if (_title && *_title)
+  {
+		title = TO_QSTRING(_title);
+		GB.FreeString(&_title);
+	}
+	else
+  	title = TO_QSTRING(GB.Application.Title());
+  
+  QMessageBox *mb = new QMessageBox(title, msg, icon, mbtn[0], mbtn[1], mbtn[2], parent);
 	
     //, 0, //qApp->activeWindow(),
     //0, true, 0);
@@ -235,11 +243,27 @@ BEGIN_METHOD(CMESSAGE_error, GB_STRING msg; GB_STRING btn1; GB_STRING btn2; GB_S
 END_METHOD
 
 
+BEGIN_METHOD_VOID(CMESSAGE_exit)
+
+	GB.FreeString(&_title);
+
+END_METHOD
+
+
+BEGIN_PROPERTY(CMESSAGE_title)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(_title);
+	else
+		GB.StoreString(PROP(GB_STRING), &_title);
+
+END_PROPERTY
+
 GB_DESC CMessageDesc[] =
 {
   GB_DECLARE("Message", 0), GB_VIRTUAL_CLASS(),
 
-  //GB_STATIC_METHOD("_exit", NULL, CMESSAGE_exit, NULL),
+  GB_STATIC_METHOD("_exit", NULL, CMESSAGE_exit, NULL),
 
   GB_STATIC_METHOD("_call", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
   GB_STATIC_METHOD("Info", "i", CMESSAGE_info, "(Message)s[(Button)s]"),
@@ -247,6 +271,8 @@ GB_DESC CMessageDesc[] =
   GB_STATIC_METHOD("Question", "i", CMESSAGE_question, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
   GB_STATIC_METHOD("Error", "i", CMESSAGE_error, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
   GB_STATIC_METHOD("Delete", "i", CMESSAGE_delete, "(Message)s[(Button1)s(Button2)s(Button3)s]"),
+  
+  GB_STATIC_PROPERTY("Title", "s", CMESSAGE_title),
 
   GB_END_DECLARE
 };

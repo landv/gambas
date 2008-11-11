@@ -80,16 +80,17 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	GtkWidget *msg,*hrz,*label,*img;
 	gint resp;
 	char *buf=NULL;
+	char *title;
 	
   if (bt.bt1) { gMnemonic_correctText(bt.bt1, &buf); bt.bt1 = buf; }
   if (bt.bt2) { gMnemonic_correctText(bt.bt2, &buf); bt.bt2 = buf; }
   if (bt.bt3) { gMnemonic_correctText(bt.bt3, &buf); bt.bt3 = buf; }
 	
-	msg=gtk_dialog_new_with_buttons(GB.Application.Title(),NULL,
+	title = gMessage::title();
+	
+	msg=gtk_dialog_new_with_buttons(title,NULL,
 					(GtkDialogFlags)(GTK_DIALOG_MODAL+GTK_DIALOG_NO_SEPARATOR),
 					bt.bt1,1,bt.bt2,2,bt.bt3,3,NULL);
-					
-	if (MESSAGE_title) gtk_window_set_title(GTK_WINDOW(msg),MESSAGE_title);
 	
 	img=gtk_image_new_from_stock(icon,GTK_ICON_SIZE_DIALOG);
 	label = gtk_label_new ("");
@@ -103,8 +104,8 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 		g_free(buf);
 	}
 	
-	hrz=gtk_hbox_new(FALSE, 8);
-  gtk_container_set_border_width(GTK_CONTAINER(hrz), 8);
+	hrz=gtk_hbox_new(FALSE, 16);
+  gtk_container_set_border_width(GTK_CONTAINER(hrz), 16);
   	
 	gtk_container_add (GTK_CONTAINER(GTK_DIALOG(msg)->vbox),hrz);
 	
@@ -190,6 +191,11 @@ int gMessage::showWarning(char *msg,char *btn1,char *btn2,char *btn3)
 	return custom_dialog(GTK_STOCK_DIALOG_WARNING,GTK_BUTTONS_OK,msg);
 }
 
+char *gMessage::title()
+{
+	return MESSAGE_title;
+}
+
 void gMessage::setTitle(char *title)
 {
 	if (MESSAGE_title)
@@ -198,10 +204,8 @@ void gMessage::setTitle(char *title)
 		MESSAGE_title=NULL;
 	}
 	
-	if (!title) return;
-	
-	MESSAGE_title=(char*)g_malloc( sizeof(char)*(strlen(title)+1) );
-	strcpy(MESSAGE_title,title);
+	if (title && *title)
+		MESSAGE_title = g_strdup(title);
 }
 
 void gMessage::exit()
@@ -414,10 +418,8 @@ void gDialog::setTitle(char *vl)
 		DIALOG_title=NULL;
 	}
 	
-	if (!vl) return;
-	
-	DIALOG_title=(char*)g_malloc( sizeof(char)*(strlen(vl)+1) );
-	strcpy(DIALOG_title,vl);
+	if (vl && *vl)
+		DIALOG_title = g_strdup(vl);
 }
 
 char* gDialog::path()

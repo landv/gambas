@@ -43,8 +43,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CDIALOG_title)
 
-	if (READ_PROPERTY) { GB.ReturnNewString( gDialog::title(),0); return; }
-	gDialog::setTitle(GB.ToZeroString(PROP(GB_STRING)));
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(gDialog::title());
+	else
+		gDialog::setTitle(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
