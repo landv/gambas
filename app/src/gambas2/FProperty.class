@@ -312,7 +312,7 @@ PUBLIC FUNCTION SaveProperty() AS Boolean
   DIM hCtrl AS CControl
   DIM sMsg AS String
 
-  IF NOT $hForm THEN RETURN
+  IF NOT $hForm OR NOT Object.IsValid($hForm) THEN RETURN
   IF $hForm.ReadOnly THEN RETURN
   IF IsNull($hEditor) THEN RETURN FALSE
 

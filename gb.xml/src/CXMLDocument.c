@@ -160,10 +160,8 @@ GB_DESC CXmlDocumentDesc[] =
 	GB_METHOD("HtmlFromString",NULL,CXMLDocument_HtmlFromString,"(Data)s"),
 	GB_METHOD("Write",NULL,CXMLDocument_Write,"(FileName)s[(Encoding)s]"),
 
-	GB_METHOD("Write",NULL,CXMLDocument_Write,"(FileName)s[(Encoding)s]"),
+	//GB_METHOD("Write",NULL,CXMLDocument_Write,"(FileName)s[(Encoding)s]"),
 	GB_METHOD("ToString","s",CXMLDocument_ToString,"[(Encoding)s]"),
-
-
 
 	GB_END_DECLARE
 };
