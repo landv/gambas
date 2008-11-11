@@ -203,15 +203,20 @@ static void add_currency(const char *sym)
 }
 
 
-static void add_zero(int zero, int *before)
+static void add_char(char c, int count, int *before)
 {
-  while (zero > 0)
+  while (count > 0)
   {
-    put_char('0');
-    zero--;
+    put_char(c);
+    count--;
 
     add_thousand_sep(before);
   }
+}
+
+static void add_zero(int count, int *before)
+{
+	add_char('0', count, before);
 }
 
 
@@ -936,13 +941,13 @@ _FORMAT:
 
   /* les chiffres avant la virgule */
 
-  thousand = Max(before_zero, number_exp);
+  thousand = Max(before, Max(before_zero, number_exp));
   thousand_ptr = comma ? &thousand : NULL;
 
   if (number_exp > 0)
   {
-    if (before_zero > number_exp)
-      add_zero(before_zero - number_exp, thousand_ptr);
+  	add_char(' ', before - Max(before_zero, number_exp), thousand_ptr);
+  	add_zero(before_zero - number_exp, thousand_ptr);
 
     add_string(buf_start, Min(number_exp, ndigit), thousand_ptr);
 
@@ -951,8 +956,8 @@ _FORMAT:
   }
   else
   {
-    if (before_zero > 0)
-      add_zero(before_zero, thousand_ptr);
+  	add_char(' ', before - before_zero, thousand_ptr);
+    add_zero(before_zero, thousand_ptr);
   }
 
   /* la virgule */
