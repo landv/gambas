@@ -72,7 +72,7 @@ PRIVATE SUB MoveEditor()
   IF NOT $hEditor THEN RETURN 
   
   X = ME.ScreenX - ME.Window.ScreenX
-  Y = ME.ScreenY - ME.Window.ScreenY
+  Y = ME.ScreenY - ME.Window.ScreenY - ME.Window.ClientY
   'DEBUG $iRow;; $iCol
   WITH ME[$iRow, $iCol]
     X += .X

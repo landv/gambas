@@ -375,12 +375,14 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 	else
 	{
 		array = VPROP(GB_OBJECT);
+		COMBOBOX->lock();
 		COMBOBOX->clear();
 		if (array)
 		{
 			for (i = 0; i < GB.Array.Count(array); i++)
 				COMBOBOX->add(*((char **)GB.Array.Get(array, i)));
 		}
+		COMBOBOX->unlock();
 	}
 
 END_PROPERTY

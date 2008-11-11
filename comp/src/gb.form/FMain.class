@@ -4,11 +4,19 @@
 PUBLIC SUB Form_Open()
 
   PRINT Desktop.Scale
+  TableView1.Rows.Count = 10
+  TableView1.Columns.Count = 2
 
 END
 
 PUBLIC SUB Button1_Click()
 
   InputBox("This is my title")
+
+END
+
+PUBLIC SUB TableView1_Click()
+
+  TableView1.Edit(["a", "b", "c"], TRUE)
 
 END

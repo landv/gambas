@@ -1,15 +1,25 @@
 # Gambas Form File 2.0
 
 { Form Form
-  Move(97,97,336,256)
+  Move(97,97,448,352)
   #(Scaled) = False
   Text = ("")
   Icon = Picture["icon:/24/gambas"]
-  Arrangement = Arrange.Horizontal
+  Arrangement = Arrange.Fill
   Spacing = 8
   Padding = 8
-  { Button1 Button
-    Move(16,32,128,24)
-    Text = ("Button1")
+  { Menu1 Menu
+    Text = ("Menu1")
+  }
+  { TabStrip1 TabStrip
+    Move(24,24,296,224)
+    Arrangement = Arrange.Fill
+    Index = 0
+    Text = ("Tab 0")
+    { TableView1 TableView
+      Move(8,8,272,176)
+      Header = GridView.Both
+    }
+    Index = 0
   }
 }

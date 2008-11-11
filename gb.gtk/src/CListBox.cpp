@@ -217,12 +217,14 @@ BEGIN_PROPERTY(CLISTBOX_list)
 	else
 	{
 		array = VPROP(GB_OBJECT);
+		LISTBOX->lock();
 		LISTBOX->clear();
 		if (array)
 		{
 			for (i = 0; i < GB.Array.Count(array); i++)
 				LISTBOX->add(*((char **)GB.Array.Get(array, i)));
 		}
+		LISTBOX->unlock();
 	}
 
 END_PROPERTY

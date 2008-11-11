@@ -388,10 +388,17 @@ void gComboBox::clear()
 int gComboBox::find(const char *text)
 {
 	int i;
+	char *it;
+	
+	if (!text)
+		text = "";
 	
 	for (i = 0; i < count(); i++)
 	{
-		if (!strcmp(itemText(i), text))
+		it = itemText(i);
+		if (!it)
+		 it = "";
+		if (!strcmp(it, text))
 			return i;
 	}
 	

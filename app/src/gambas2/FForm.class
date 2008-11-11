@@ -631,6 +631,7 @@ PRIVATE SUB SaveOne(hCtrl AS CControl)
         ENDIF
 
         FOR EACH hChild IN hTab[iTab].Children
+          IF NOT Object.IsValid(hChild) THEN CONTINUE ' Selection handles
           SaveOne(Control[hChild.Tag])
         NEXT
 
@@ -648,6 +649,7 @@ PRIVATE SUB SaveOne(hCtrl AS CControl)
     ELSE
 
       FOR EACH hChild IN hCtrl.Control.Children
+        IF NOT Object.IsValid(hChild) THEN CONTINUE ' Selection handles
         SaveOne(Control[hChild.Tag])
       NEXT
 
