@@ -1,2 +1,21 @@
 ' Gambas class file
 
+
+Public Sub TableView1_Click()
+
+  TableView1.Edit
+
+End
+
+Public Sub Form_Open()
+
+  TableView1.Columns.Count = 2
+  TableView1.Rows.Count = 10
+
+End
+
+Public Sub TableView1_Save(Row As Integer, Column As Integer, Value As String)
+
+  TableView1[Row, Column].Text = Value
+
+End

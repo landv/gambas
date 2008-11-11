@@ -1,254 +1,267 @@
 ' Gambas class file
 
-INHERITS GridView
-EXPORT 
+Inherits GridView
+Export 
 
-EVENT Save(Row AS Integer, Column AS Integer, Value AS String)
-EVENT Insert
+Event Save(Row As Integer, Column As Integer, Value As String)
+Event Insert
 
-PRIVATE $hTextBox AS TextBox
-PRIVATE $hComboBox AS ComboBox
-PRIVATE $hEditor AS Object
-PRIVATE $bTextBox AS Boolean
+'Property Read Editor As Control
 
-PRIVATE $iCol AS Integer
-PRIVATE $iRow AS Integer
-PRIVATE $hWatcher AS Watcher
+Private $hTextBox As TextBox
+Private $hComboBox As ComboBox
+Private $hEditor As Object
+Private $bTextBox As Boolean
 
-PUBLIC SUB _new()
+Private $iCol As Integer
+Private $iRow As Integer
+Private $hWatcher As Watcher
+
+Public Sub _new()
   
-  DIM hObs AS Observer
+  Dim hObs As Observer
   
-  hObs = NEW Observer(ME) AS "GridView"
-  $hWatcher = NEW Watcher(ME) AS "GridView"
+  hObs = New Observer(Me) As "GridView"
+  $hWatcher = New Watcher(Me) As "GridView"
   
-  $hComboBox = NEW ComboBox(ME.Window) AS "Editor"
-  $hComboBox.Ignore = TRUE
+  $hComboBox = New ComboBox(Me.Window) As "Editor"
+  $hComboBox.Ignore = True
   $hComboBox.Hide
 
-  $hTextBox = NEW TextBox(ME.Window) AS "Editor"
-  $hTextBox.Ignore = TRUE
-  $hTextBox.Border = FALSE
+  $hTextBox = New TextBox(Me.Window) As "Editor"
+  $hTextBox.Ignore = True
+  $hTextBox.Border = False
   $hTextBox.Hide
 
-END
+End
 
-PRIVATE SUB SaveEditor()
+Private Sub SaveEditor()
   
-  DIM sText AS String = $hEditor.Text
+  Dim sText As String = $hEditor.Text
+  Dim sCurrent As String
   
-  IF sText = ME[$iRow, $iCol].Text THEN RETURN
-  RAISE Save($iRow, $iCol, sText)
-  ME[$iRow, $iCol].Refresh
+  Try sCurrent = Me[$iRow, $iCol].Text 
+  If Error Then Return
   
-END
+  If sText = sCurrent Then Return
+  
+  Raise Save($iRow, $iCol, sText)
+  Me[$iRow, $iCol].Refresh
+  
+End
 
-PUBLIC SUB Save()
+Public Sub Save()
   
   HideEditor
   
-END
+End
 
-PUBLIC SUB Cancel()
+Public Sub Cancel()
   
-  HideEditor(TRUE)
+  HideEditor(True)
   
-END
+End
 
-PRIVATE SUB HideEditor(OPTIONAL bNoSave AS Boolean)
+Private Sub HideEditor(Optional bNoSave As Boolean)
   
-  IF $hEditor THEN
-    IF NOT bNoSave THEN SaveEditor 
+  If $hEditor Then
+    If Not bNoSave Then SaveEditor 
     $hEditor.Hide
-    $hEditor = NULL
-  ENDIF
+    $hEditor = Null
+  Endif
   
-END
+End
 
-PRIVATE SUB MoveEditor()
+Private Sub MoveEditor()
   
-  DIM X, Y AS Integer
+  Dim X, Y As Integer
   
-  IF NOT $hEditor THEN RETURN 
+  If Not $hEditor Then Return 
   
-  X = ME.ScreenX - ME.Window.ScreenX
-  Y = ME.ScreenY - ME.Window.ScreenY
+  X = Me.ScreenX - Me.Window.ScreenX
+  Y = Me.ScreenY - Me.Window.ScreenY
   'DEBUG $iRow;; $iCol
-  WITH ME[$iRow, $iCol]
+  With Me[$iRow, $iCol]
     X += .X
     Y += .Y
     $hEditor.Move(X, Y, .Width, .Height)
-  END WITH
+  End With
   'DEBUG
   $hEditor.Show
   'DEBUG 
   
-END
+End
 
 
-PUBLIC SUB GridView_MouseDown()
+Public Sub GridView_MouseDown()
   
   HideEditor
   
-END
+End
 
 
-PUBLIC SUB GridView_RowResize(Row AS Integer)
+Public Sub GridView_RowResize(Row As Integer)
   
   HideEditor
   
-END
+End
 
 
-PUBLIC SUB GridView_ColumnResize(Column AS Integer)
+Public Sub GridView_ColumnResize(Column As Integer)
   
   HideEditor
   
-END
+End
 
 
-PUBLIC SUB GridView_Scroll()
+Public Sub GridView_Scroll()
   
   HideEditor
   
-END
+End
 
 
-PUBLIC SUB GridView_Resize()
+Public Sub GridView_Resize()
   
   HideEditor
   
-END
+End
 
 
-PUBLIC SUB GridView_Hide()
+Public Sub GridView_Hide()
   
   HideEditor
   
-END
+End
 
 
-PUBLIC SUB GridView_Change()
+Public Sub GridView_Change()
   
   HideEditor
   
-END
+End
 
 
-PUBLIC SUB Edit(OPTIONAL List AS String[], OPTIONAL ReadOnly AS Boolean)
+Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
 
   'DEBUG  
   HideEditor
   
-  $iCol = ME.Column
-  $iRow = ME.Row
+  $iCol = Me.Column
+  $iRow = Me.Row
   
-  IF $iCol < 0 OR $iRow < 0 THEN RETURN
+  If $iCol < 0 Or $iRow < 0 Then Return
   
-  IF List THEN 
+  If List Then 
     $hComboBox.List = List
     $hComboBox.ReadOnly = ReadOnly
     $hEditor = $hComboBox
-    $bTextBox = NOT ReadOnly
-  ELSE 
+    $bTextBox = Not ReadOnly
+  Else 
     $hEditor = $hTextBox
-    $bTextBox = TRUE
-  ENDIF
+    $bTextBox = True
+  Endif
   
-  $hEditor.Text = ME[$iRow, $iCol].Text
-  TRY $hEditor.SelectAll
+  $hEditor.Text = Me[$iRow, $iCol].Text
+  Try $hEditor.SelectAll
   MoveEditor
   $hEditor.SetFocus  
 
-END
+End
 
-PUBLIC SUB Editor_Activate()
+Public Sub Editor_Activate()
   
   SaveEditor
   
-END
+End
 
-PUBLIC SUB Editor_Click()
+Public Sub Editor_Click()
 
   SaveEditor
 
-END
+End
 
-PUBLIC SUB Editor_KeyPress()
+Public Sub Editor_KeyPress()
   
-  SELECT CASE Key.Code
+  Select Case Key.Code
 
-    CASE Key.Escape
-      $hEditor.Text = ME[$iRow, $iCol].Text
-      STOP EVENT
+    Case Key.Escape
+      $hEditor.Text = Me[$iRow, $iCol].Text
+      Stop Event
 
-    CASE Key.Up
-      IF ME.Row > 0 THEN 
-        DEC ME.Row
+    Case Key.Up
+      If Me.Row > 0 Then 
+        Dec Me.Row
         Edit
-        STOP EVENT
-      ENDIF
+        Stop Event
+      Endif
 
-    CASE Key.Down
-      IF ME.Row < (ME.Rows.Count - 1) THEN 
-        INC ME.Row
+    Case Key.Down
+      If Me.Row < (Me.Rows.Count - 1) Then 
+        Inc Me.Row
         Edit
-        STOP EVENT
-      ENDIF
+        Stop Event
+      Endif
 
-    CASE Key.Left
-      IF $bTextBox THEN 
-        IF $hEditor.Pos = 0 THEN
-          IF ME.Column > 0 THEN 
-            DEC ME.Column
+    Case Key.Left
+      If $bTextBox Then 
+        If $hEditor.Pos = 0 Then
+          If Me.Column > 0 Then 
+            Dec Me.Column
             Edit
             $hEditor.Pos = $hEditor.Length
-            STOP EVENT
-          ELSE IF ME.Row > 0 THEN
-            ME.MoveTo(ME.Row - 1, ME.Columns.Count - 1) 
+            Stop Event
+          Else If Me.Row > 0 Then
+            Me.MoveTo(Me.Row - 1, Me.Columns.Count - 1) 
             Edit
             $hEditor.Pos = $hEditor.Length
-            STOP EVENT
-          ENDIF
-        ENDIF 
-      ENDIF
+            Stop Event
+          Endif
+        Endif 
+      Endif
 
-    CASE Key.Right
-      IF $bTextBox THEN 
-        IF $hEditor.Pos = $hEditor.Length THEN
-          IF ME.Column < (ME.Columns.Count - 1) THEN 
-            INC ME.Column
+    Case Key.Right
+      If $bTextBox Then 
+        If $hEditor.Pos = $hEditor.Length Then
+          If Me.Column < (Me.Columns.Count - 1) Then 
+            Inc Me.Column
             Edit
             $hEditor.Pos = 0
-            STOP EVENT
-          ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
-            ME.MoveTo(ME.Row + 1, 0)
+            Stop Event
+          Else If Me.Row < (Me.Rows.Count - 1) Then
+            Me.MoveTo(Me.Row + 1, 0)
             Edit 
             $hEditor.Pos = 0
-            STOP EVENT
-          ENDIF
-        ENDIF 
-      ENDIF
+            Stop Event
+          Endif
+        Endif 
+      Endif
       
-    CASE Key.Enter, Key.Return
-      IF $bTextBox THEN 
-        IF ME.Column < (ME.Columns.Count - 1) THEN 
-          INC ME.Column
+    Case Key.Enter, Key.Return
+      If $bTextBox Then 
+        If Me.Column < (Me.Columns.Count - 1) Then 
+          Inc Me.Column
           Edit
           $hEditor.Pos = 0
-          STOP EVENT
-        ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
-          ME.MoveTo(ME.Row + 1, 0)
+          Stop Event
+        Else If Me.Row < (Me.Rows.Count - 1) Then
+          Me.MoveTo(Me.Row + 1, 0)
           Edit 
           $hEditor.Pos = 0
-          STOP EVENT
-        ELSE 
-          RAISE Insert
-          STOP EVENT
-        ENDIF
-      ENDIF
+          Stop Event
+        Else 
+          Raise Insert
+          Stop Event
+        Endif
+      Endif
 
-  END SELECT 
+  End Select 
   
-END
+End
 
+
+' Private Function Editor_Read() As Control
+' 
+'   Return $hEditor
+' 
+' End

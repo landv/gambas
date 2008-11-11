@@ -406,7 +406,7 @@ Public Sub Load()
 
   If Loaded Then Return
 
-  'DEBUG "Loading: "; Key
+  'Debug "Loading: "; Key
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
 
   ClassList = New String[]
@@ -577,7 +577,9 @@ Static Private Sub MakeInheritance(hModule As Object, cSymbol As Collection, sPa
   
   Dim cClassSymbol As Collection  
   Dim hSymbol As CSymbolInfo
-    
+
+  'Debug hModule.Name;; "->";; sParent;; sComponent
+
   hModule.ParentClass = sParent
   If Not hModule.AutoCreatable Then hModule.AutoCreatable = IsAutoCreatable(hModule.ParentClass)
   cClassSymbol = CComponent.GetClassSymbols(sComponent &/ sParent)
@@ -653,7 +655,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim iPos As Integer
   Dim sSign As String
 
-  'PRINT "ScanClass "; hModule.Name
+  'Debug "ScanClass "; hModule.Name
   'DEBUG "> "; hModule.Name
 
   hEditor = hModule.Editor
@@ -665,13 +667,13 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
   hClass = Classes[hModule.Name]
   
-  If hClass And If hClass.Component = Project.Name And If hClass.Parent Then 
-    hClass = Classes[hClass.Parent]
-  Endif
+  ' If hClass And If hClass.Component = Project.Name And If hClass.Parent Then 
+  '   hClass = Classes[hClass.Parent]
+  ' Endif
   
-  If hClass Then 
-    sParent = hModule.Name
-    MakeInheritance(hModule, cSymbol, sParent, hClass.ParentComponent)
+  If hClass And If hClass.Component <> Project.Name Then
+    'sParent = hModule.Name
+    MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
     bCanInherit = False
   Endif 
   
@@ -907,6 +909,9 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   'IF Len(sClass) <= 1 THEN
   '  IF sClass <> "." THEN RETURN
   'ENDIF
+  
+  'Debug sClass
+  'If sClass = "TableView" Then Stop
 
   hClass = CComponent.Classes[sClass]
 
