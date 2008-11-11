@@ -5,60 +5,17 @@
   Text = ("")
   Arrangement = Arrange.Fill
   Padding = 8
-  { HSplit1 HSplit
-    MoveScaled(2,4,50,38)
-    { ToolPanel1 ToolPanel
-      MoveScaled(2,2,17,30)
-      Background = &HDFDFFF&
-      Arrangement = Arrange.Fill
-      Count = 4
-      Index = 0
-      Text = ("Toolbar 0")
-      Index = 1
-      Text = ("Toolbar 1")
-      { HPanel1 HPanel
-        MoveScaled(1,1,26,18)
-        { ToggleButton1 ToggleButton
-          MoveScaled(0,0,6,6)
-          Text = ("A")
-        }
-        { ToggleButton2 ToggleButton
-          MoveScaled(6,0,6,6)
-          Text = ("B")
-        }
-        { ToggleButton3 ToggleButton
-          MoveScaled(12,0,6,6)
-          Text = ("C")
-        }
-        { ToggleButton4 ToggleButton
-          MoveScaled(18,0,6,6)
-          Text = ("D")
-        }
-        { ToggleButton5 ToggleButton
-          MoveScaled(0,6,6,6)
-          Text = ("E")
-        }
-        { ToggleButton6 ToggleButton
-          MoveScaled(6,6,6,6)
-          Text = ("F")
-        }
-        { ToggleButton7 ToggleButton
-          MoveScaled(12,6,6,6)
-          Text = ("G")
-        }
-        { ToggleButton8 ToggleButton
-          MoveScaled(18,6,6,6)
-          Text = ("H")
-        }
-      }
-      Index = 2
-      Text = ("Toolbar 2")
-      Index = 3
-      Text = ("Toolbar 3")
-      Index = 0
-    }
+  { Menu1 Menu
+    Text = ("Menu1")
+  }
+  { TabStrip1 TabStrip
+    MoveScaled(4,4,48,39)
+    Index = 0
+    Text = ("Tab 0")
     { TableView1 TableView
-      MoveScaled(24,5,23,29)
+      MoveScaled(7,2,23,29)
+      Header = GridView.Vertical
     }
+    Index = 0
   }
 }

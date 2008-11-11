@@ -518,7 +518,7 @@ BEGIN_METHOD_VOID(CTAB_next)
 
     iter->child = child + 1;
 
-    widget = CWidget::getReal(list->at(child));
+    widget = CWidget::getValid(CWidget::getReal(list->at(child)));
     if (widget)
     {
       GB.ReturnObject(widget);
