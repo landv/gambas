@@ -251,6 +251,8 @@ _ADD_BRACE:
 static void analyze_make_array()
 {
   int n = 0;
+  bool checked = FALSE;
+  bool collection = FALSE;
 
 	if (PATTERN_is(*current, RS_RSQR))
 	{
@@ -265,6 +267,24 @@ static void analyze_make_array()
     if (n > MAX_PARAM_OP)
     	THROW("Too many arguments");
     analyze_expr(0, RS_NONE);
+    
+    if (!checked)
+    {
+    	collection = PATTERN_is(*current, RS_COLON);
+    	checked = TRUE;
+    }
+    
+    if (collection)
+    {
+    	if (!PATTERN_is(*current, RS_COLON))
+    		THROW("Missing ':'");
+			current++;
+			n++;
+			if (n > MAX_PARAM_OP)
+				THROW("Too many arguments");
+	    analyze_expr(0, RS_NONE);
+    }
+    
     if (!PATTERN_is(*current, RS_COMMA))
       break;
     current++;
@@ -274,7 +294,7 @@ static void analyze_make_array()
     THROW("Missing ']'");
   current++;
 
-  add_operator(RS_RSQR, n);
+  add_operator(collection ? RS_COLON : RS_RSQR, n);
 }
 
 
@@ -554,13 +574,15 @@ static void analyze_array()
   for(i = 0; i < MAX_ARRAY_DIM; i++)
   {
     analyze_expr(0, RS_NONE);
+    
     if (!PATTERN_is(*current, RS_COMMA))
       break;
+      
     current++;
   }
 
   if (!PATTERN_is(*current, RS_RSQR))
-    THROW("Missing ']'");
+    THROW("Missing comma or ']'");
   current++;
 
   add_operator(RS_LSQR, i + 2);

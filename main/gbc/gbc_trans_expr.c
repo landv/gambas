@@ -281,6 +281,10 @@ static void trans_operation(short op, short nparam, PATTERN previous)
       TRANS_subr(TS_SUBR_ARRAY, nparam);
       break;
 
+    case OP_COLON:
+      TRANS_subr(TS_SUBR_COLLECTION, nparam);
+      break;
+
     case OP_MINUS:
       if (nparam == 1)
         CODE_op(C_NEG, nparam, TRUE);

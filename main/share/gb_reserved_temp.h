@@ -143,7 +143,7 @@ COMP_INFO COMP_res_info[] =
   { "Randomize"                                     },
   { "ByRef"                                         },
 
-  { ":"                                                                   },
+  { ":",            RSF_NONE,               OP_COLON                      },  // Use for the immediate collection syntax
   { ";"                                                                   },
   { ","                                                                   },
   { "..."                                                                 },
@@ -170,7 +170,7 @@ COMP_INFO COMP_res_info[] =
   { "<=",           RSF_OP2S,               OP_LE,        4,    C_LE      },
   { "<>",           RSF_OP2S,               OP_NE,        4,    C_NE      },
   { "[",            RSF_OPP,                OP_LSQR,      12              },
-  { "]",            RSF_NONE,               OP_RSQR                       },
+  { "]",            RSF_NONE,               OP_RSQR                       },  // Use for the immediate array syntax
   { "And",          RSF_OP2SM,              OP_AND,       2,    C_AND     },
   { "Or",           RSF_OP2SM,              OP_OR,        2,    C_OR      },
   { "Not",          RSF_OP1,                OP_NOT,       10,   C_NOT     },
@@ -495,6 +495,7 @@ SUBR_INFO COMP_subr_info[] =
 
   { "VarPtr",            89,  0,  1     },
 
+  { ".Collection",       90,  0,  1, 63 },
   /*
   { "_EventOff",         94,  0,  0     },
   { "_EventOn",          95,  0,  0     },

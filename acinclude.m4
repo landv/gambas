@@ -21,7 +21,7 @@ AC_DEFUN([GB_INIT_AUTOMAKE],
   AM_INIT_AUTOMAKE($1, 2.99.0)
   AM_CONFIG_HEADER(config.h)
   AC_DEFINE(GAMBAS_FULL_VERSION, 0x02990000, [Full Gambas version])
-  AC_DEFINE(GAMBAS_PCODE_VERSION, 0x02990000, [Gambas bytecode version])
+  AC_DEFINE(GAMBAS_PCODE_VERSION, 0x02990001, [Gambas bytecode version])
 ])
 
 ## ---------------------------------------------------------------------------

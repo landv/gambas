@@ -53,10 +53,10 @@ static void trans_subr(int subr, int nparam)
     { ".Print" }, { ".Input" }, { ".Write" }, { ".Read" },  { ".Open" },
     { ".Close" }, { "Seek" }, { ".LineInput" }, { ".Flush" }, { ".Exec" },
     { ".Shell" }, { ".Wait" }, { ".Kill" }, { ".Move" }, { ".Mkdir" },
-    { ".Rmdir" }, { ".Array" }, { ".Copy" }, { ".Link" }, { ".Error" },
-    { ".Lock" }, { ".Unlock" }, { ".InputFrom" }, { ".OutputTo" }, { ".Debug" },
-    { ".Sleep" }, { ".Randomize" }, { ".ErrorTo" },
-    { "Left" }, { "Mid" }
+    { ".Rmdir" }, { ".Array" }, {".Collection" }, { ".Copy" }, { ".Link" }, 
+    { ".Error" }, { ".Lock" }, { ".Unlock" }, { ".InputFrom" }, { ".OutputTo" }, 
+    { ".Debug" }, { ".Sleep" }, { ".Randomize" }, { ".ErrorTo" }, { "Left" }, 
+    { "Mid" }
   };
 
   TRANS_SUBR_INFO *tsi = &subr_info[subr];

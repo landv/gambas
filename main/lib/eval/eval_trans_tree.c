@@ -181,6 +181,8 @@ static void add_subr(PATTERN subr_pattern, short nparam, boolean has_output)
 static void analyze_make_array()
 {
   int n = 0;
+  bool checked = FALSE;
+  bool collection = FALSE;
 
 	if (PATTERN_is(*current, RS_RSQR))
 	{
@@ -195,6 +197,24 @@ static void analyze_make_array()
     if (n > MAX_PARAM_OP)
     	THROW("Too many arguments");
     analyze_expr(0, RS_NONE);
+    
+    if (!checked)
+    {
+    	collection = PATTERN_is(*current, RS_COLON);
+    	checked = TRUE;
+    }
+    
+    if (collection)
+    {
+    	if (!PATTERN_is(*current, RS_COLON))
+    		THROW("Missing ':'");
+			current++;
+			n++;
+			if (n > MAX_PARAM_OP)
+				THROW("Too many arguments");
+	    analyze_expr(0, RS_NONE);
+    }
+    
     if (!PATTERN_is(*current, RS_COMMA))
       break;
     current++;
@@ -204,7 +224,7 @@ static void analyze_make_array()
     THROW("Missing ']'");
   current++;
 
-  add_operator(RS_RSQR, n);
+  add_operator(collection ? RS_COLON : RS_RSQR, n);
 }
 
 

@@ -232,6 +232,7 @@ typedef
 enum
 {
   OP_NONE  ,
+  OP_COLON ,
   OP_EQUAL ,
   OP_NEAR  ,
   OP_LBRA  ,

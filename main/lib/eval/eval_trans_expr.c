@@ -39,6 +39,13 @@
 /*#define DEBUG*/
 
 static int subr_array_index = -1;
+static int subr_collection_index = -1;
+
+static void find_subr(int *index, const char *name)
+{
+	if (*index < 0)
+		TABLE_find_symbol(COMP_subr_table, name, strlen(name), NULL, index);
+}
 
 static short get_nparam(PATTERN *tree, int *index)
 {
@@ -207,10 +214,13 @@ PUBLIC void TRANS_operation(short op, short nparam, boolean output, PATTERN prev
       break;
 
     case OP_RSQR:
-      if (subr_array_index < 0)
-        TABLE_find_symbol(COMP_subr_table, ".Array", 6, NULL, &subr_array_index);
-
+			find_subr(&subr_array_index, ".Array");
       trans_subr(subr_array_index, nparam, FALSE);
+      break;
+
+    case OP_COLON:
+			find_subr(&subr_collection_index, ".Collection");
+      trans_subr(subr_collection_index, nparam, FALSE);
       break;
 
     case OP_LBRA:

@@ -215,6 +215,7 @@ void SUBR_sleep(void);
 void SUBR_exec(void);
 void SUBR_eval(void);
 void SUBR_array(void);
+void SUBR_collection(void);
 void SUBR_debug(void);
 
 void EVAL_string(char *expr);

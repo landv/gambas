@@ -331,4 +331,31 @@ void SUBR_array(void)
 	SUBR_LEAVE();
 }
 
+void SUBR_collection(void)
+{
+	int i;
+	GB_COLLECTION col;
+	char *key;
+	int len;
+	VALUE *vkey, *vval;
+
+	SUBR_ENTER();
+
+	GB_CollectionNew(&col, GB_COMP_BINARY);
+
+	for (i = 0; i < NPARAM; i += 2)
+	{
+		vkey = &PARAM[i];
+		vval = vkey + 1;
+		SUBR_get_string_len(vkey, &key, &len);
+		VALUE_conv(vval, T_VARIANT);
+		GB_CollectionSet(col, key, len, (GB_VARIANT *)vval);
+	}
+
+	RETURN->_object.class = OBJECT_class(col); //CLASS_Array;
+	RETURN->_object.object = col;
+
+	SUBR_LEAVE();
+}
+
 
