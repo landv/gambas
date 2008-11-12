@@ -140,10 +140,10 @@ void CSocket_CallBackFromDns(void *_object)
   	THIS->Server.sin_addr.s_addr =inet_addr(THIS->DnsTool->sHostIP);
   	bzero(&(THIS->Server.sin_zero),8);
 	myval=connect(THIS->Socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
-	if (errno==EINPROGRESS) /* this is the good answer : connect in progress */
+	if (!myval || errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
 		THIS->iStatus=6;
-		GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBackConnecting,(long)THIS);
+		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(long)THIS);
 	}
 	else
 	{
@@ -174,20 +174,14 @@ void CSocket_CallBackFromDns(void *_object)
 /*******************************************************************
  This CallBack is used while waiting to finish a connection process
  ******************************************************************/
-void CSocket_CallBackConnecting(int t_sock,int type,long lParam)
+void CSocket_CallBackConnecting(int t_sock,int type,long param)
 {
 	struct sockaddr_in myhost;
 	int mylen;
-	struct timespec mywait;
-	void *_object;
+	void *_object = (void *)param;
 
-	/*	Just sleeping a little to reduce CPU waste	*/
-	mywait.tv_sec=0;
-	mywait.tv_nsec=1000000;
-	nanosleep(&mywait,NULL);
-
-	_object=(void*)lParam;
-
+	GB.Watch(THIS->Socket, GB_WATCH_NONE, (void *)CSocket_CallBackConnecting, 0);
+	
 	if (THIS->iStatus!=6) return;
 	/****************************************************
 	Checks if Connection was Stablished or there was
@@ -294,14 +288,18 @@ void CSocket_stream_internal_error(void *_object,int ncode)
 int CSocket_stream_open(GB_STREAM *stream, const char *path, int mode, void *data){return -1;}
 int CSocket_stream_seek(GB_STREAM *stream, int64_t pos, int whence){return -1;}
 int CSocket_stream_tell(GB_STREAM *stream, int64_t *pos){return -1;}
+
 int CSocket_stream_flush(GB_STREAM *stream)
 {
 	return 0; /* OK */
 }
+
 int CSocket_stream_handle(GB_STREAM *stream)
 {
-	return 0; /* OK */
+	void *_object = stream->tag;
+	return THIS->Socket;
 }
+
 int CSocket_stream_close(GB_STREAM *stream)
 {
   void *_object = stream->tag;
@@ -324,6 +322,7 @@ int CSocket_stream_close(GB_STREAM *stream)
   if (THIS->OnClose) THIS->OnClose(_object);
   return 0;
 }
+
 int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 {
   void *_object = stream->tag;
@@ -341,6 +340,7 @@ int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 	*len=bytes;
 	return 0;
 }
+
 int CSocket_stream_eof(GB_STREAM *stream)
 {
   void *_object = stream->tag;
