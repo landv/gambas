@@ -52,11 +52,11 @@
 #define MAX_CLIENT_BUFFER_SIZE 65536
 #define UNIXPATHMAX 108
 
-DECLARE_EVENT (SocketError);
-DECLARE_EVENT (Closed);
-DECLARE_EVENT (HostFound);
-DECLARE_EVENT (Socket_Read);
-DECLARE_EVENT (Connected);
+DECLARE_EVENT (EVENT_Error);
+DECLARE_EVENT (EVENT_Close);
+DECLARE_EVENT (EVENT_Found);
+DECLARE_EVENT (EVENT_Read);
+DECLARE_EVENT (EVENT_Ready);
 
 
 GB_STREAM_DESC SocketStream = {
@@ -77,34 +77,35 @@ GB_STREAM_DESC SocketStream = {
 /**********************************
  Routines to call events
  **********************************/
+
 void CSocket_post_error(void *_object)
 {
 
-	GB.Raise(THIS,SocketError,0);
+	GB.Raise(THIS,EVENT_Error,0);
 	GB.Unref(POINTER(&_object));
 }
 
 void CSocket_post_closed(void *_object)
 {
-	GB.Raise(THIS,Closed,0);
+	GB.Raise(THIS,EVENT_Close,0);
 	GB.Unref(POINTER(&_object));
 }
 
 void CSocket_post_hostfound(void *_object)
 {
-	GB.Raise(THIS,HostFound,0);
+	GB.Raise(THIS,EVENT_Found,0);
 	GB.Unref(POINTER(&_object));
 }
 
 void CSocket_post_connected(void *_object)
 {
-	GB.Raise(THIS,Connected,0);
+	GB.Raise(THIS,EVENT_Ready,0);
 	GB.Unref(POINTER(&_object));
 }
 
 void CSocket_post_data_available(void *_object)
 {
-	if (THIS->iStatus==7)	GB.Raise(THIS,Socket_Read,0);
+	if (THIS->iStatus==7)	GB.Raise(THIS,EVENT_Read,0);
 	GB.Unref(POINTER(&_object));
 }
 
@@ -140,10 +141,10 @@ void CSocket_CallBackFromDns(void *_object)
   	THIS->Server.sin_addr.s_addr =inet_addr(THIS->DnsTool->sHostIP);
   	bzero(&(THIS->Server.sin_zero),8);
 	myval=connect(THIS->Socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
-	if (errno==EINPROGRESS) /* this is the good answer : connect in progress */
+	if (!myval || errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
 		THIS->iStatus=6;
-		GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
+		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
 	}
 	else
 	{
@@ -174,25 +175,21 @@ void CSocket_CallBackFromDns(void *_object)
 /*******************************************************************
  This CallBack is used while waiting to finish a connection process
  ******************************************************************/
-void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam)
+void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 {
 	struct sockaddr_in myhost;
 	int mylen;
-	struct timespec mywait;
-	void *_object;
+	void *_object = (void *)param;
 
-	/*	Just sleeping a little to reduce CPU waste	*/
-	mywait.tv_sec=0;
-	mywait.tv_nsec=1000000;
-	nanosleep(&mywait,NULL);
-
-	_object=(void*)lParam;
-
+	GB.Watch(THIS->Socket, GB_WATCH_NONE, (void *)CSocket_CallBackConnecting, 0);
+	
 	if (THIS->iStatus!=6) return;
+	
 	/****************************************************
 	Checks if Connection was Stablished or there was
 	an error trying to connect
 	****************************************************/
+	
 	THIS->iStatus=CheckConnection(THIS->Socket);
 	if (THIS->iStatus == 0)
 	{
@@ -207,6 +204,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam)
 	}
 	if (THIS->iStatus != 7) return;
 	// we obtain local IP and host
+	
 	mylen=sizeof(struct sockaddr);
 	getsockname (THIS->Socket,(struct sockaddr*)&myhost,(socklen_t *)&mylen);
 	THIS->iLocalPort=ntohs(myhost.sin_port);
@@ -218,12 +216,11 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam)
 
 	THIS->stream.desc=&SocketStream;
 	GB.Stream.SetSwapping(&THIS->stream, htons(1234) != 1234);
+	
 	GB.Ref(THIS);
 	GB.Post(CSocket_post_connected,(intptr_t)THIS);
-
-
-
 }
+
 /*******************************************************************
  This CallBack is used while socket is connected to remote host
  ******************************************************************/
@@ -250,9 +247,11 @@ void CSocket_CallBack(int t_sock,int type,intptr_t lParam)
 	numpoll=poll(&mypoll,1,0);
 	if (numpoll<=0) return;
 	/* there's data available */
+	
 	USE_MSG_NOSIGNAL(numpoll=recv(t_sock,(void*)buf,sizeof(char),MSG_PEEK | MSG_NOSIGNAL));
 	if (!numpoll)
 	{ /* socket error, no valid data received */
+		
 		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
 		close(t_sock);
@@ -264,7 +263,7 @@ void CSocket_CallBack(int t_sock,int type,intptr_t lParam)
 	}
 	/******************************************************
 	There's data available to read, so we'll raise event
-	Socket_Read
+	EVENT_Read
 	*******************************************************/
 
 	GB.Ref(_object);
@@ -871,11 +870,11 @@ GB_DESC CSocketDesc[] =
 {
   GB_DECLARE("Socket", sizeof(CSOCKET)), GB_INHERITS("Stream"),
 
-  GB_EVENT("Error", NULL, NULL, &SocketError),
-  GB_EVENT("Read", NULL, NULL, &Socket_Read),
-  GB_EVENT("Ready", NULL, NULL, &Connected),
-  GB_EVENT("Closed", NULL, NULL, &Closed),
-  GB_EVENT("Found", NULL, NULL, &HostFound),
+  GB_EVENT("Error", NULL, NULL, &EVENT_Error),
+  GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+  GB_EVENT("Ready", NULL, NULL, &EVENT_Ready),
+  GB_EVENT("Closed", NULL, NULL, &EVENT_Close),
+  GB_EVENT("Found", NULL, NULL, &EVENT_Found),
 
   GB_STATIC_METHOD ( "_exit" , NULL , CSOCKET_exit , NULL ),
 

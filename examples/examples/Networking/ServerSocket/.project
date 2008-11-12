@@ -1,10 +1,12 @@
 # Gambas Project File 3.0
+# Compiled with Gambas 2.99.0 (r1690)
 Startup=FrmMain
 Icon=serversocket.png
 Version=0.0.43
-Library=gb.gtk
-Library=gb.net
-Library=gb.net.curl
+Component=gb.gui
+Component=gb.net
+Component=gb.net.curl
+Environment="GB_GUI=gb.qt"
 TabSize=2
 Translate=1
 Language=fr
