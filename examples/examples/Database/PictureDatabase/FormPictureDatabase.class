@@ -165,7 +165,7 @@ PRIVATE SUB DisplayImages()
       tempPicture = ModuleDatabase.ResultPictures["thumb"].Data
       IF tempPicture THEN 
         File.Save(tempFile, tempPicture)
-        GridViewImages[i, 0].Picture = Picture.Load(tempFile)
+        TRY GridViewImages[i, 0].Picture = Picture.Load(tempFile)
       END IF
       GridViewImages[i, 1].Text = ModuleDatabase.ResultPictures["description"]
     NEXT 
@@ -192,8 +192,8 @@ PRIVATE SUB ShowImage(Row AS Integer)
   tempPicture = ModuleDatabase.ResultPictures["image"].Data
   IF tempFile THEN 
     File.Save(tempFile, tempPicture)
-    PictureBoxImage.Picture = Picture.Load(tempFile)  
-    PictureBoxImage.Resize(PictureBoxImage.Picture.Width, PictureBoxImage.Picture.Height)
+    TRY PictureBoxImage.Picture = Picture.Load(tempFile)  
+    IF NOT ERROR THEN PictureBoxImage.Resize(PictureBoxImage.Picture.Width, PictureBoxImage.Picture.Height)
   ELSE 
      PictureBoxImage.Picture = NULL
   END IF
