@@ -30,6 +30,8 @@
 
 #include "CEditor.h"
 
+#define MAX_CONSOLE_WIDTH 256
+
 DECLARE_EVENT(EVENT_Change);
 DECLARE_EVENT(EVENT_Cursor);
 DECLARE_EVENT(EVENT_Scroll);
@@ -197,9 +199,10 @@ BEGIN_METHOD(CEDITOR_insert, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 
 END_METHOD
 
-static void print_text(void *_object, const QString &s)
+static void print_text(void *_object, const QString &s, bool esc = false)
 {
   int line, col;
+  uint i, len;
 	
 	WIDGET->getCursor(&line, &col);
 	if (col == 0)
@@ -215,7 +218,33 @@ static void print_text(void *_object, const QString &s)
 // 			end = DOC->lineLength(line);
 // 		DOC->remove(line, col, line, end);
 // 	}
-	WIDGET->insert(s);
+	
+	if (!esc)
+	{
+		i = 0;
+		for (;;)
+		{
+			if (col == MAX_CONSOLE_WIDTH)
+			{
+				WIDGET->insert("\n");
+				col = 0;
+			}
+			len = s.length() - i;
+			if ((col + len) >= MAX_CONSOLE_WIDTH)
+				len = MAX_CONSOLE_WIDTH - col;
+			WIDGET->insert(s.mid(i, len));
+			i += len;	
+			if (i >= s.length())
+				break;
+			col += len;
+		}
+	}
+	else
+	{
+		if (col >= MAX_CONSOLE_WIDTH)
+			WIDGET->insert("\n");
+		WIDGET->insert(s);
+	}
 }
 
 BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
