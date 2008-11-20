@@ -87,7 +87,7 @@
         Action = "exec"
         Text = ("E&xecutable...")
         Picture = Picture["icon:/small/exec"]
-        Shortcut = "Ctrl+Alt+M"
+        Shortcut = "Ctrl+Alt+X"
       }
       { mnuMakePackage Menu
         Action = "archive"
@@ -229,6 +229,10 @@
     }
     { Menu11 Menu
       Text = ("")
+    }
+    { mnuHideMenu Menu
+      Text = ("Hide menubar")
+      Shortcut = "Ctrl+Alt+M"
     }
     { mnuCloseAll Menu
       Text = ("Close &all windows")
@@ -417,11 +421,11 @@
     }
   }
   { panToolbar Panel
-    MoveScaled(0,0,132,4)
+    MoveScaled(0,0,139,4)
     Arrangement = Arrange.Row
     AutoResize = True
     { ToolBar1 ToolBar
-      MoveScaled(0,0,128,4)
+      MoveScaled(0,0,136,4)
       { ToolButton1 ToolButton
         MoveScaled(0,0,4,4)
         ToolTip = ("New project")
@@ -645,6 +649,13 @@
         Text = ("")
         Picture = Picture["icon:/small/wizard"]
       }
+      { btnShowMenu ToolButton
+        MoveScaled(123,0,4,4)
+        Visible = False
+        ToolTip = ("Show menu bar")
+        Text = ("")
+        Picture = Picture["img/16/menu.png"]
+      }
     }
   }
   { Panel1 Panel
@@ -717,13 +728,13 @@
     }
   }
   { timMessage #Timer
-    #X = 576
-    #Y = 84
+    #X = 532
+    #Y = 105
     Delay = 2000
   }
   { timOpen #Timer
-    #X = 582
-    #Y = 162
+    #X = 532
+    #Y = 161
   }
   { panMessage Panel
     MoveScaled(1,77,53,4)

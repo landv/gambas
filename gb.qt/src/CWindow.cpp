@@ -757,58 +757,6 @@ BEGIN_PROPERTY(CWINDOW_text)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_menu_count)
-
-  if (THIS->menu)
-    GB.ReturnInteger(THIS->menu->count());
-  else
-    GB.ReturnInteger(0);
-
-END_PROPERTY
-
-
-BEGIN_METHOD_VOID(CWINDOW_menu_next)
-
-  CWINDOW *window = OBJECT(CWINDOW);
-  unsigned int index;
-
-  if (window->menu == NULL)
-  {
-    GB.StopEnum();
-    return;
-  }
-
-  index = ENUM(int);
-
-  if (index >= window->menu->count())
-  {
-    GB.StopEnum();
-    return;
-  }
-
-  GB.ReturnObject(window->menu->at(index));
-
-  ENUM(int) = index + 1;
-
-END_PROPERTY
-
-
-BEGIN_METHOD(CWINDOW_menu_get, GB_INTEGER index)
-
-  CWINDOW *window = OBJECT(CWINDOW);
-  int index = VARG(index);
-
-  if (window->menu == NULL || index < 0 || index >= (int)window->menu->count())
-  {
-    GB.Error(GB_ERR_BOUND);
-    return;
-  }
-
-  GB.ReturnObject(window->menu->at(index));
-
-END_PROPERTY
-
-
 #if 0
 BEGIN_PROPERTY(CWINDOW_border)
 
@@ -1306,6 +1254,97 @@ BEGIN_PROPERTY(CWINDOW_closed)
 
 END_PROPERTY
 
+/***************************************************************************/
+
+BEGIN_PROPERTY(CWINDOW_menu_count)
+
+  if (THIS->menu)
+    GB.ReturnInteger(THIS->menu->count());
+  else
+    GB.ReturnInteger(0);
+
+END_PROPERTY
+
+
+BEGIN_METHOD_VOID(CWINDOW_menu_next)
+
+  CWINDOW *window = OBJECT(CWINDOW);
+  unsigned int index;
+
+  if (window->menu == NULL)
+  {
+    GB.StopEnum();
+    return;
+  }
+
+  index = ENUM(int);
+
+  if (index >= window->menu->count())
+  {
+    GB.StopEnum();
+    return;
+  }
+
+  GB.ReturnObject(window->menu->at(index));
+
+  ENUM(int) = index + 1;
+
+END_PROPERTY
+
+
+BEGIN_METHOD(CWINDOW_menu_get, GB_INTEGER index)
+
+  CWINDOW *window = OBJECT(CWINDOW);
+  int index = VARG(index);
+
+  if (window->menu == NULL || index < 0 || index >= (int)window->menu->count())
+  {
+    GB.Error(GB_ERR_BOUND);
+    return;
+  }
+
+  GB.ReturnObject(window->menu->at(index));
+
+END_PROPERTY
+
+
+static bool are_menus_visible(void *_object)
+{
+	return !THIS->hideMenus || !WINDOW->menuBar()->isHidden();
+}
+
+
+static void set_menus_visible(void *_object, bool v)
+{
+	THIS->hideMenus = !v;
+	if (!THIS->hideMenus)
+		WINDOW->menuBar()->show();
+	else
+		WINDOW->menuBar()->hide();
+	WINDOW->configure();
+}
+
+BEGIN_PROPERTY(CWINDOW_menu_visible)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(are_menus_visible(THIS));
+	else
+		set_menus_visible(THIS, VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(CWINDOW_menu_show)
+
+	set_menus_visible(THIS, true);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CWINDOW_menu_hide)
+
+	set_menus_visible(THIS, false);
+
+END_METHOD
+
 
 /***************************************************************************/
 
@@ -1316,6 +1355,9 @@ GB_DESC CWindowMenusDesc[] =
   GB_METHOD("_next", "Menu", CWINDOW_menu_next, NULL),
   GB_METHOD("_get", "Menu", CWINDOW_menu_get, "(Index)i"),
   GB_PROPERTY_READ("Count", "i", CWINDOW_menu_count),
+  GB_METHOD("Show", NULL, CWINDOW_menu_show, NULL),
+  GB_METHOD("Hide", NULL, CWINDOW_menu_hide, NULL),
+  GB_PROPERTY("Visible", "b", CWINDOW_menu_visible),
 
   GB_END_DECLARE
 };

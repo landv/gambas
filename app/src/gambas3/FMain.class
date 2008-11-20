@@ -1303,6 +1303,12 @@ Public Sub Form_KeyPress()
   If Key.Code = Key.Escape Then 
     HidePanels
     FProperty.HideProperty
+  Else If Key.Code = Key["M"] And If Key.Control And If Key.Alt Then
+    If Me.Menus.Visible Then
+      mnuHideMenu_Click
+    Else
+      btnShowMenu_Click
+    Endif
   Endif
   
 End
@@ -1392,5 +1398,19 @@ End
 Public Sub mnuTerminal_Click()
 
   Desktop.OpenTerminal(Project.Dir)  
+
+End
+
+Public Sub mnuHideMenu_Click()
+
+  Me.Menus.Hide
+  btnShowMenu.Show
+
+End
+
+Public Sub btnShowMenu_Click()
+
+  Me.Menus.Show
+  btnShowMenu.Hide
 
 End

@@ -78,6 +78,7 @@ typedef
     unsigned stateChange : 1;
     unsigned opening : 1;
     unsigned closing : 1;
+    unsigned hideMenus : 1;
     }
   CWINDOW;
 

@@ -57,15 +57,15 @@ static char *purge(const char *s, int len_s, bool comment, bool string)
 {
   char c;
   uint i;
-  int lc;
+  int lc, ls;
   bool in_comment = FALSE;
   char wait = 0;
   char *r = NULL;
   
-  for (i = 0; i < len_s; i += lc)
+  for (i = 0; i < len_s; i += ls)
   {
     c = s[i];
-    lc = get_char_length((unsigned char)c);
+    ls = lc = get_char_length((unsigned char)c);
 
     switch(wait)
     {
