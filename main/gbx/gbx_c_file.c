@@ -111,7 +111,7 @@ static CFILE *create_default_stream(FILE *file, int mode)
   
   CLEAR(&stream);
   stream.type = &STREAM_buffer;
-  stream.common.is_term = isatty(fileno(file));
+  stream.common.available_now = !isatty(fileno(file));
   stream.buffer.file = file;
   ob = CFILE_create(&stream, mode);
   GB_Ref(ob);

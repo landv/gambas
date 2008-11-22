@@ -78,9 +78,11 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 
 	if (!S_ISREG(info.st_mode))
 	{
-		stream->common.is_device = TRUE;
+		stream->common.available_now = FALSE;
 		fcntl(fd, F_SETFL, O_NONBLOCK);
 	}
+	else
+		stream->common.available_now = TRUE;
 
   FD = fd;
   return FALSE;
@@ -149,7 +151,7 @@ static int stream_lof(STREAM *stream, int64_t *len)
 {
 	struct stat info;
 	
-	if (stream->common.is_device)
+	if (!stream->common.available_now)
 		return TRUE;
 		
 	if (fstat(FD, &info) < 0)

@@ -169,16 +169,12 @@ _OPEN:
 	stream->common.buffer_len = 0;
 	stream->common.no_fionread = FALSE;
 	stream->common.no_lseek = FALSE;
-	stream->common.is_device = FALSE;
 
 	if ((*(stream->type->open))(stream, path, mode, NULL))
 	{
 		stream->type = NULL;
 		THROW_SYSTEM(errno, path);
 	}
-
-	stream->common.is_term = isatty(STREAM_handle(stream));
-	stream->common.is_file = !stream->common.is_term && !stream->common.is_device;
 }
 
 
@@ -294,7 +290,6 @@ char STREAM_getchar(STREAM *stream)
 
 static void STREAM_read_max(STREAM *stream, void *addr, int len)
 {
-	bool is_term = stream->common.is_term;
 	bool err;
 	STREAM_eff_read = 0;
 	int flags, handle;
@@ -307,7 +302,11 @@ static void STREAM_read_max(STREAM *stream, void *addr, int len)
 	
 	if (len > 0)
 	{
-		if (is_term)
+		if (stream->common.available_now)
+		{
+			err = (*(stream->type->read))(stream, addr, len);
+		}
+		else
 		{
 			handle = STREAM_handle(stream);
 			flags = fcntl(handle, F_GETFL);
@@ -317,11 +316,6 @@ static void STREAM_read_max(STREAM *stream, void *addr, int len)
 			
 			fcntl(handle, F_SETFL, flags);
 		}
-		else
-		{
-			err = (*(stream->type->read))(stream, addr, len);
-		}
-		
 	
 		if (err)
 		{
@@ -411,7 +405,7 @@ static void fill_buffer(STREAM *stream, char *addr)
 	STREAM_eff_read = 0;
 	fd = STREAM_handle(stream);
 	
-	if (stream->common.is_file)
+	if (stream->common.available_now)
 		err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
 	else
 	{
@@ -532,7 +526,7 @@ static void input(STREAM *stream, char **addr, boolean line)
 			
 			if (!buffer_len)
 			{
-				if (stream->common.is_file)
+				if (stream->common.available_now)
 				{
 					stream->common.eof = TRUE;
 					break;

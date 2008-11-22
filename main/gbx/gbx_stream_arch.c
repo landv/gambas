@@ -62,6 +62,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
     return TRUE;
   }
 
+	stream->common.available_now = TRUE;
   stream->arch.arch = find.arch;
   stream->arch.size = find.len;
   stream->arch.start = find.pos;

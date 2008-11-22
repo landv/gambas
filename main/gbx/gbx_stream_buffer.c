@@ -71,6 +71,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
     return TRUE;
   }
 
+	stream->common.available_now = TRUE;
   FD = file;
   return FALSE;
 }
@@ -197,8 +198,8 @@ static int stream_lof(STREAM *stream, int64_t *len)
 {
 	struct stat info;
 	
-	if (stream->common.is_device)
-		return TRUE;
+	//if (!stream->common.available_now)
+	//	return TRUE;
 		
 	if (fstat(fileno(FD), &info) < 0)
 		return TRUE;

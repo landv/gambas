@@ -58,10 +58,8 @@ typedef
     unsigned eof : 1;
     unsigned no_fionread : 1;
     unsigned no_lseek : 1;
-    unsigned is_term : 1;
-    unsigned is_device : 1;
-    unsigned is_file : 1;
-    unsigned _reserved : 7;
+    unsigned available_now : 1;
+    unsigned _reserved : 9;
     }
   PACKED
   STREAM_COMMON;

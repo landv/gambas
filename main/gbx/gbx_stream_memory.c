@@ -46,39 +46,12 @@
 
 static int stream_open(STREAM *stream, const char *path, int mode)
 {
-  /*
-  int fd;
-  struct stat info;
-  */
-
-  /*
-  if (path != NULL)
-  {
-    if ((mode & ST_MODE) != ST_READ)
-      return TRUE;
-
-    fd = open(path, O_RDONLY);
-    if (fd < 0)
-      return TRUE;
-
-    if (fstat(fd, &info) < 0)
-      return TRUE;
-    else
-      stream->memory.size = info.st_size;
-
-    stream->memory.addr = mmap(NULL, stream->memory.size, PROT_READ, MAP_static, fd, (off_t)0);
-    close(fd);
-    if (stream->memory.addr == MAP_FAILED)
-      return TRUE;
-  }
-  else
-  */
-  {
-    if (stream->memory.addr == NULL)
-      return TRUE;
-  }
+  if (stream->memory.addr == NULL)
+    return TRUE;
 
   stream->memory.pos = 0;
+
+	stream->common.available_now = TRUE;
 
   return FALSE;
 }
