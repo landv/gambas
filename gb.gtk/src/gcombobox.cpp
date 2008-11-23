@@ -386,7 +386,7 @@ void gComboBox::clear()
 int gComboBox::find(const char *text)
 {
 	int i;
-	char *it;
+	const char *it;
 	
 	if (!text)
 		text = "";

@@ -388,6 +388,8 @@ gMenu::gMenu(gMainWindow *par,bool hidden)
 		gtk_widget_show_all(GTK_WIDGET(par->menuBar));
 		set_gdk_fg_color(GTK_WIDGET(par->menuBar),par->foreground());
 		set_gdk_bg_color(GTK_WIDGET(par->menuBar),par->background());
+	
+		gtk_widget_modify_font(GTK_WIDGET(par->menuBar), par->font()->desc());
 	}
 	
 	//update();
@@ -421,6 +423,8 @@ gMenu::~gMenu()
 		return;
 		
 	//fprintf(stderr, "gMenu::~gMenu: %p (%p) '%s'\n", this, pr, _text);
+	
+	setVisible(false);
 	
 	_destroyed = true;
   

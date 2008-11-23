@@ -98,10 +98,10 @@ static void gb_raise_window_Show(gMainWindow *sender)
 	GB.Unref(POINTER(&ob));
 }
 
-static void gb_post_window_Show(gMainWindow *sender)
+/*static void gb_post_window_Show(gMainWindow *sender)
 {
 	GB.Post( (void (*)())gb_raise_window_Show,(long)sender);
-}
+}*/
 
 static void gb_raise_window_Hide(gMainWindow *sender)
 {
@@ -674,6 +674,26 @@ BEGIN_PROPERTY(CWINDOW_closed)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CWINDOW_menu_visible)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->isMenuBarVisible());
+	else
+		WINDOW->setMenuBarVisible(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(CWINDOW_menu_show)
+
+	WINDOW->setMenuBarVisible(true);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CWINDOW_menu_hide)
+
+	WINDOW->setMenuBarVisible(false);
+
+END_METHOD
 
 
 /***************************************************************************
@@ -689,6 +709,9 @@ GB_DESC CWindowMenusDesc[] =
   GB_METHOD("_next", "Menu", CWINDOW_menu_next, 0),
   GB_METHOD("_get", "Menu", CWINDOW_menu_get, "(Index)i"),
   GB_PROPERTY_READ("Count", "i", CWINDOW_menu_count),
+  GB_METHOD("Show", NULL, CWINDOW_menu_show, NULL),
+  GB_METHOD("Hide", NULL, CWINDOW_menu_hide, NULL),
+  GB_PROPERTY("Visible", "b", CWINDOW_menu_visible),
 
   GB_END_DECLARE
 };

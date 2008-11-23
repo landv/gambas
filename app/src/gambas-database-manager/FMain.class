@@ -1,17 +1,17 @@
 ' Gambas class file
 
-STATIC PUBLIC Workspace AS Workspace
+Static Public Workspace As Workspace
 'STATIC PUBLIC Config AS Config
-STATIC PUBLIC Project AS String
+Static Public Project As String
 
-PRIVATE $sKey AS String
-PRIVATE $hServer AS CServer
-PRIVATE $hConn AS CConnection
-PRIVATE $sName AS String
-PRIVATE $sTable AS String
-PRIVATE $bDefault AS Boolean
+Private $sKey As String
+Private $hServer As CServer
+Private $hConn As CConnection
+Private $sName As String
+Private $sTable As String
+Private $bDefault As Boolean
 
-PRIVATE $sCryptKey AS String
+Private $sCryptKey As String
 
 ' STATIC PUBLIC SUB MoveRandom(hForm AS Window)
 '
@@ -26,34 +26,34 @@ PRIVATE $sCryptKey AS String
 ' END
 
 
-PRIVATE SUB FindLocalServer()
+Private Sub FindLocalServer()
 
-  DIM hServer AS CServer
-  DIM sTemp AS String
+  Dim hServer As CServer
+  Dim sTemp As String
 
   sTemp = Temp$
 
-  SHELL "pgrep postmaster > " & sTemp WAIT
+  Shell "pgrep postmaster > " & sTemp Wait
 
-  IF Stat(sTemp).Size THEN
-    hServer = NEW CServer("postgresql")
-  ENDIF
+  If Stat(sTemp).Size Then
+    hServer = New CServer("postgresql")
+  Endif
 
-  SHELL "pgrep mysqld > " & sTemp WAIT
+  Shell "pgrep mysqld > " & sTemp Wait
 
-  IF Stat(sTemp).Size THEN
-    hServer = NEW CServer("mysql")
-  ENDIF
+  If Stat(sTemp).Size Then
+    hServer = New CServer("mysql")
+  Endif
 
-  IF Exist(Component.Path &/ "lib.gb.db.sqlite.la") THEN
-    hServer = NEW CServer("sqlite")
-  ENDIF
+  If Exist(Component.Path &/ "lib.gb.db.sqlite.la") Then
+    hServer = New CServer("sqlite")
+  Endif
 
-  KILL sTemp
+  Kill sTemp
 
   RefreshServer
 
-END
+End
 
 
 
@@ -66,28 +66,28 @@ END
 '
 ' END
 
-PRIVATE SUB LoadServer() AS Boolean
+Private Sub LoadServer() As Boolean
 
-  DIM hServer AS CServer
-  DIM iNbr AS Integer
-  DIM iInd AS Integer
-  DIM sType AS String
-  DIM sHost AS String
-  DIM sUser AS String
-  DIM sPassword AS String
-  DIM sKey AS String
+  Dim hServer As CServer
+  Dim iNbr As Integer
+  Dim iInd As Integer
+  Dim sType As String
+  Dim sHost As String
+  Dim sUser As String
+  Dim sPassword As String
+  Dim sKey As String
 
   $sCryptKey = FPassword.Run()
-  IF NOT $sCryptKey THEN
-    ME.Close
-    RETURN TRUE
-  ENDIF
-  IF $sCryptKey = "CONT" THEN RETURN
+  If Not $sCryptKey Then
+    Me.Close
+    Return True
+  Endif
+  If $sCryptKey = "CONT" Then Return
 
   'iNbr = Config.ReadInteger("/Connection/Count", 0)
   iNbr = Settings["/Connection/Count", 0]
 
-  FOR iInd = 1 TO iNbr
+  For iInd = 1 To iNbr
 
     sKey = "/Connection/#" & CStr(iInd)
 
@@ -100,27 +100,27 @@ PRIVATE SUB LoadServer() AS Boolean
     sUser = Settings[sKey &/ "User"]
     sPassword = Crypt(FromHexaString(Settings[sKey &/ "Password"]))
 
-    hServer = NEW CServer(sType, sHost, sUser, sPassword)
+    hServer = New CServer(sType, sHost, sUser, sPassword)
 
-  NEXT
+  Next
 
-END
+End
 
 
-PRIVATE SUB SaveServer()
+Private Sub SaveServer()
 
-  DIM hServer AS CServer
-  DIM iInd AS Integer
-  DIM sKey AS String
+  Dim hServer As CServer
+  Dim iInd As Integer
+  Dim sKey As String
 
-  IF NOT $sCryptKey THEN RETURN
+  If Not $sCryptKey Then Return
 
   'Config.WriteInteger("/Connection/Count", CServer.All.Count)
   Settings["/Connection/Count"] = CServer.All.Count
 
-  FOR EACH hServer IN CServer.All
+  For Each hServer In CServer.All
 
-    INC iInd
+    Inc iInd
 
     sKey = "/Connection/#" & CStr(iInd)
 
@@ -128,47 +128,47 @@ PRIVATE SUB SaveServer()
     'Config.WriteString(sKey &/ "Host", hServer.Handle.Host)
     'Config.WriteString(sKey &/ "User", hServer.Handle.Login)
     'Config.WriteString(sKey &/ "Password", hServer.Handle.Password)
-    WITH hServer.Handle
+    With hServer.Handle
       Settings[sKey &/ "Type"] = .Type
       Settings[sKey &/ "Host"] = .Host
       Settings[sKey &/ "User"] = .Login
       Settings[sKey &/ "Password"] = ToHexaString(Crypt(.Password))
-    END WITH
+    End With
 
-  NEXT
+  Next
 
-END
+End
 
 
 
-PRIVATE SUB RefreshServer()
+Private Sub RefreshServer()
 
-  DIM hServer AS CServer
-  DIM sKey AS String
+  Dim hServer As CServer
+  Dim sKey As String
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  FOR EACH hServer IN CServer.All
+  For Each hServer In CServer.All
     sKey = "S" & CServer.All.Key
-    IF NOT tvwBase.Exist(sKey) THEN
+    If Not tvwBase.Exist(sKey) Then
       tvwBase.Add(sKey, hServer.Name, Picture["img/16/host.png"])
       tvwBase.Add(sKey & "/", ("Cannot connect to server"), Picture["img/16/quit.png"], sKey)
-    ENDIF
-  NEXT
+    Endif
+  Next
 
   tvwBase.MoveFirst
-  WHILE tvwBase.Available
-    IF NOT CServer.All.Exist(Mid$(tvwBase.Item.Key, 2)) THEN
+  While tvwBase.Available
+    If Not CServer.All.Exist(Mid$(tvwBase.Item.Key, 2)) Then
       tvwBase.Item.Delete
       tvwBase.MoveFirst
-    ELSE
+    Else
       tvwBase.MoveNext
-    ENDIF
-  WEND
+    Endif
+  Wend
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 ' PUBLIC SUB Form_Resize()
 ' 
@@ -178,24 +178,24 @@ END
 ' 
 ' END
 
-PUBLIC SUB mnuQuit_Click()
+Public Sub mnuQuit_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB Form_Close() 
+Public Sub Form_Close() 
 
   'Config.SaveWindow(ME, "/FMain")
-  Settings.Write(ME)
+  Settings.Write(Me)
   Settings["/FMain/Splitter"] = splBase.Layout
   'Config.SaveSplitterPos(splBase, "FMain", "Splitter")
   SaveServer
 
-  IF CConnection.RemoveAll() THEN 
-    STOP EVENT
-    RETURN
-  ENDIF
+  If CConnection.RemoveAll() Then 
+    Stop Event
+    Return
+  Endif
   
   CServer.RemoveAll
 
@@ -210,105 +210,105 @@ PUBLIC SUB Form_Close()
   '  RETURN TRUE
   'ENDIF
 
-END
+End
 
-PRIVATE SUB RefreshUser(sParent AS String)
+Private Sub RefreshUser(sParent As String)
 
-  DIM hServer AS CServer
-  DIM sName AS String
-  DIM sKey AS String
-  DIM sIcon AS String
+  Dim hServer As CServer
+  Dim sName As String
+  Dim sKey As String
+  Dim sIcon As String
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  IF tvwBase[sParent].Children = 0 THEN
+  If tvwBase[sParent].Children = 0 Then
     tvwBase.MoveParent
     sParent = tvwBase.Item.Key
-  ENDIF
+  Endif
 
   hServer = CServer.All[Split(Mid$(sParent, 2), "/")[0]]
 
   tvwBase[sParent].Clear
 
-  FOR EACH sName IN hServer.Users
+  For Each sName In hServer.Users
     sKey = "U" & hServer.Key &/ sName
-    IF hServer.IsAdmin(sName) THEN
+    If hServer.IsAdmin(sName) Then
       sIcon = "admin.png"
-    ELSE
+    Else
       sIcon = "user.png"
-    ENDIF
+    Endif
     tvwBase.Add(sKey, sName, Picture["img/16" &/ sIcon], sParent)
-  NEXT
+  Next
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PUBLIC SUB RefreshDatabase(sParent AS String)
+Public Sub RefreshDatabase(sParent As String)
 
-  DIM hServer AS CServer
-  DIM sKey AS String
-  DIM sName AS String
-  DIM cKey AS NEW Collection
+  Dim hServer As CServer
+  Dim sKey As String
+  Dim sName As String
+  Dim cKey As New Collection
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  WHILE Left$(sParent) <> "S"
+  While Left$(sParent) <> "S"
     tvwBase.MoveTo(sParent)
     tvwBase.MoveParent
-    IF NOT tvwBase.Available THEN RETURN
+    If Not tvwBase.Available Then Return
     sParent = tvwBase.Item.Key
-  WEND
+  Wend
 
   hServer = CServer.All[Split(Mid$(sParent, 2), "/")[0]]
 
-  FOR EACH sName IN hServer.Databases
+  For Each sName In hServer.Databases
     sKey = "D" & hServer.Key &/ sName
-    cKey[sKey] = TRUE
-    IF NOT tvwBase.Exist(sKey) THEN
+    cKey[sKey] = True
+    If Not tvwBase.Exist(sKey) Then
       tvwBase.Add(sKey, sName, Picture["img/16/database.png"], sParent)
-    ENDIF
-    IF tvwBase[sKey].Children = 0 AND NOT tvwBase[sKey].Expanded THEN
+    Endif
+    If tvwBase[sKey].Children = 0 And Not tvwBase[sKey].Expanded Then
       tvwBase.Add(sKey &/ "/", ("Cannot connect to database"), Picture["img/16/quit.png"], sKey)
-    ENDIF
-  NEXT
+    Endif
+  Next
 
   tvwBase.MoveTo(sParent)
   tvwBase.MoveChild
 
-  WHILE tvwBase.Available
+  While tvwBase.Available
 
-    IF Left$(tvwBase.Item.Key) = "D" THEN
-      IF NOT cKey.Exist(tvwBase.Item.Key) THEN
+    If Left$(tvwBase.Item.Key) = "D" Then
+      If Not cKey.Exist(tvwBase.Item.Key) Then
         tvwBase.Item.Delete
-        CONTINUE
-      ENDIF
-    ENDIF
+        Continue
+      Endif
+    Endif
 
     tvwBase.MoveNext
-  WEND
+  Wend
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PUBLIC SUB RefreshTable(sParent AS String)
+Public Sub RefreshTable(sParent As String)
 
-  DIM hConn AS CConnection
-  DIM sName AS String
-  DIM aKey AS String[]
-  DIM sKey AS String
-  DIM bSystem AS Boolean
+  Dim hConn As CConnection
+  Dim sName As String
+  Dim aKey As String[]
+  Dim sKey As String
+  Dim bSystem As Boolean
 
-  INC Application.Busy
+  Inc Application.Busy
 
-  WHILE Left$(sParent) <> "D"
+  While Left$(sParent) <> "D"
     tvwBase.MoveTo(sParent)
     tvwBase.MoveParent()
     sParent = tvwBase.Item.Key
-  WEND
+  Wend
 
   aKey = Split(Mid$(sParent, 2), "/")
 
@@ -316,57 +316,57 @@ PUBLIC SUB RefreshTable(sParent AS String)
 
   tvwBase[sParent].Clear
 
-  FOR EACH sName IN hConn.Tables
+  For Each sName In hConn.Tables
     sKey = "T" & hConn.Key &/ sName
     tvwBase.Add(sKey, sName, Picture["img/16/table.png"], sParent)
-  NEXT
+  Next
 
-  IF hConn.ShowSystemTables THEN
-    FOR EACH sName IN hConn.SystemTables
+  If hConn.ShowSystemTables Then
+    For Each sName In hConn.SystemTables
       sKey = "T" & hConn.Key &/ sName
       tvwBase.Add(sKey, sName, Picture["img/16/system-table.png"], sParent)
-    NEXT
-  ENDIF
+    Next
+  Endif
 
-  DEC Application.Busy
+  Dec Application.Busy
 
-END
+End
 
 
-PUBLIC SUB tvwBase_Expand()
+Public Sub tvwBase_Expand()
 
-  DIM sKey AS String
-  DIM sParent AS String
-  DIM sChild AS String
-  DIM sErr AS String
-  DIM sName AS String
-  DIM hServer AS CServer
-  DIM hConn AS CConnection
-  DIM aKey AS String[]
-  DIM sRemove AS String
+  Dim sKey As String
+  Dim sParent As String
+  Dim sChild As String
+  Dim sErr As String
+  Dim sName As String
+  Dim hServer As CServer
+  Dim hConn As CConnection
+  Dim aKey As String[]
+  Dim sRemove As String
 
   sParent = tvwBase.Item.Key
   tvwBase.MoveChild
   sChild = tvwBase.Item.Key
 
-  IF Right$(sChild) = "/" THEN
+  If Right$(sChild) = "/" Then
 
-    INC Application.Busy
+    Inc Application.Busy
 
     sRemove = sChild
 
-    SELECT CASE Left$(sParent)
+    Select Case Left$(sParent)
 
-      CASE "S"
+      Case "S"
 
         hServer = CServer.All[Mid$(sParent, 2)]
         sErr = hServer.Exec()
-        IF sErr THEN
-          DEC Application.Busy
-          tvwBase[sParent].Expanded = FALSE
+        If sErr Then
+          Dec Application.Busy
+          tvwBase[sParent].Expanded = False
           Message.Error(("Cannot connect to database") & "\n\n" & sErr)
-          RETURN
-        ENDIF
+          Return
+        Endif
 
         tvwBase[sParent].Picture = Picture["img/16/host-open.png"]
 
@@ -376,85 +376,85 @@ PUBLIC SUB tvwBase_Expand()
 
         RefreshDatabase(sKey)
 
-      CASE "G"
+      Case "G"
 
         RefreshUser(sParent)
 
-      CASE "D"
+      Case "D"
 
         aKey = Split(Mid$(sParent, 2), "/")
         hConn = CConnection.Get(CServer.All[aKey[0]], aKey[1])
 
         sErr = hConn.Open()
-        IF sErr THEN
-          DEC Application.Busy
-          tvwBase[sParent].Expanded = FALSE
+        If sErr Then
+          Dec Application.Busy
+          tvwBase[sParent].Expanded = False
           Message.Error(Subst(("Cannot connect to database '&1'"), hConn.Name) & "\n\n" & sErr)
-          RETURN
-        ENDIF
+          Return
+        Endif
 
         tvwBase[sParent].Picture = Picture["img/16/database-open.png"]
 
         RefreshTable(sParent)
 
-    END SELECT
+    End Select
 
-    TRY tvwBase.Remove(sRemove)
-    DEC Application.Busy
+    Try tvwBase.Remove(sRemove)
+    Dec Application.Busy
 
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB mnuNew_Click()
+Public Sub mnuNew_Click()
 
-  IF FServer.Run() THEN RETURN
+  If FServer.Run() Then Return
   RefreshServer
 
-END
+End
 
-PUBLIC SUB mnuRefresh_Click()
+Public Sub mnuRefresh_Click()
 
   tvwBase.Clear
   CConnection.RemoveAll
 
   RefreshServer
 
-END
+End
 
-PUBLIC SUB tvwBase_Menu()
+Public Sub tvwBase_Menu()
 
-  DIM sKey AS String
-  DIM bEnabled AS Boolean
-  DIM aKey AS String[]
-  DIM bVisible AS Boolean
+  Dim sKey As String
+  Dim bEnabled As Boolean
+  Dim aKey As String[]
+  Dim bVisible As Boolean
 
-  IF NOT tvwBase.Current THEN
+  If Not tvwBase.Current Then
     mnuConnection.Popup
-    RETURN
-  ENDIF
+    Return
+  Endif
 
   sKey = tvwBase.Current.Key
   aKey = Split(Mid$(sKey, 2), "/")
   $sKey = sKey
 
-  SELECT CASE Left$(sKey)
+  Select Case Left$(sKey)
 
-    CASE "S", "G"
+    Case "S", "G"
 
       $hServer = CServer.All[aKey[0]]
 
       bVisible = tvwBase["S" & $hServer.Key].Expanded
-      mnuRefreshServer.Visible = NOT tvwBase.Exist("S" & $hServer.Key & "/")
+      mnuRefreshServer.Visible = Not tvwBase.Exist("S" & $hServer.Key & "/")
       mnuCreateDatabase.Visible = bVisible
       mnuCreateUser.Visible = bVisible
-      mnuOpenConnection.Visible = NOT bVisible
+      mnuOpenConnection.Visible = Not bVisible
 
-      mnuPasteDatabase2.Visible = bVisible AND Clipboard.Format = "text/x-gambas-database"
+      mnuPasteDatabase2.Visible = bVisible And Clipboard.Format = "text/x-gambas-database"
 
       mnuServer.Popup
 
-    CASE "D", "Z"
+    Case "D", "Z"
 
       $hServer = CServer.All[aKey[0]]
       $sName = aKey[1]
@@ -462,49 +462,49 @@ PUBLIC SUB tvwBase_Menu()
       $hConn = CConnection.All[Mid$(sKey, 2)]
 
       mnuOpenDatabase.Visible = IsNull($hConn)
-      mnuCreateTable.Visible = NOT Null?($hConn)
-      mnuRequest.Visible = NOT Null?($hConn)
-      mnuImport.Visible = NOT Null?($hConn)
-      mnuRefreshDatabase.Visible = NOT Null?($hConn)
-      mnuCloseDatabase.Visible = NOT Null?($hConn)
-      mnuMakeCode.Visible = Project AND NOT Null?($hConn)
-      mnuSepEncoding.Visible = NOT Null?($hConn)
-      mnuSepEncoding2.Visible = NOT Null?($hConn)
+      mnuCreateTable.Visible = Not Null?($hConn)
+      mnuRequest.Visible = Not Null?($hConn)
+      mnuImport.Visible = Not Null?($hConn)
+      mnuRefreshDatabase.Visible = Not Null?($hConn)
+      mnuCloseDatabase.Visible = Not Null?($hConn)
+      mnuMakeCode.Visible = Project And Not Null?($hConn)
+      mnuSepEncoding.Visible = Not Null?($hConn)
+      mnuSepEncoding2.Visible = Not Null?($hConn)
       'mnuCopyDatabase.Visible = NOT IsNull($hConn)
 
-      WITH mnuUseDatabaseEncoding
-        .Visible = NOT Null?($hConn)
-        IF NOT IsNull($hConn) THEN
+      With mnuUseDatabaseEncoding
+        .Visible = Not Null?($hConn)
+        If Not IsNull($hConn) Then
           'DEBUG $hConn.Name
           .Checked = $hConn.UseEncoding
           .Text = Subst(("&Use encoding (&1)"), $hConn.Handle.Charset)
-        ENDIF
-      END WITH
+        Endif
+      End With
 
-      WITH mnuShowSystemTables
-        .Visible = NOT Null?($hConn)
-        IF NOT IsNull($hConn) THEN
+      With mnuShowSystemTables
+        .Visible = Not Null?($hConn)
+        If Not IsNull($hConn) Then
           .Checked = $hConn.ShowSystemTables
-        ENDIF
-      END WITH
+        Endif
+      End With
 
       mnuPasteDatabase.Visible = Clipboard.Format = "text/x-gambas-database"
-      mnuPasteTable2.Visible = Clipboard.Format = "text/x-gambas-table" AND NOT IsNull($hConn)
+      mnuPasteTable2.Visible = Clipboard.Format = "text/x-gambas-table" And Not IsNull($hConn)
 
       mnuDatabase.Popup
 
-    CASE "U"
+    Case "U"
 
       $hServer = CServer.All[aKey[0]]
       $sName = aKey[1]
 
-      IF $bDefault THEN
+      If $bDefault Then
         mnuEditUser_Click
-      ELSE
+      Else
         mnuUser.Popup
-      ENDIF
+      Endif
 
-    CASE "T"
+    Case "T"
 
       $hServer = CServer.All[aKey[0]]
       $sName = aKey[1]
@@ -520,187 +520,187 @@ PUBLIC SUB tvwBase_Menu()
 
       mnuPasteTable.Visible = Clipboard.Format = "text/x-gambas-table"
 
-      IF $bDefault THEN
+      If $bDefault Then
         mnuOpenTable_Click
-      ELSE
+      Else
         mnuTable.Popup
-      ENDIF
+      Endif
 
-  END SELECT
+  End Select
 
-  $bDefault = FALSE
+  $bDefault = False
 
-END
+End
 
-PUBLIC SUB mnuCreateUser_Click()
+Public Sub mnuCreateUser_Click()
 
-  IF FUser.Run($hServer) THEN RETURN
-
-  RefreshUser($sKey)
-
-END
-
-PUBLIC SUB mnuEditUser_Click()
-
-  IF FUser.Run($hServer, $sName) THEN RETURN
+  If FUser.Run($hServer) Then Return
 
   RefreshUser($sKey)
 
-END
+End
 
-PUBLIC SUB mnuDeleteUser_Click()
+Public Sub mnuEditUser_Click()
 
-  IF Message.Delete(Subst(("Do you really want to delete the user '&1' ?"), $sName), ("Delete"), ("Cancel")) = 2 THEN RETURN
-
-  IF $hServer.DeleteUser($sName) THEN RETURN
+  If FUser.Run($hServer, $sName) Then Return
 
   RefreshUser($sKey)
 
-END
+End
 
-PUBLIC SUB tvwBase_Activate()
+Public Sub mnuDeleteUser_Click()
 
-  IF tvwBase.Current.Children = 0 THEN
-    $bDefault = TRUE
+  If Message.Delete(Subst(("Do you really want to delete the user '&1' ?"), $sName), ("Delete"), ("Cancel")) = 2 Then Return
+
+  If $hServer.DeleteUser($sName) Then Return
+
+  RefreshUser($sKey)
+
+End
+
+Public Sub tvwBase_Activate()
+
+  If tvwBase.Current.Children = 0 Then
+    $bDefault = True
     tvwBase_Menu
-  ENDIF
+  Endif
 
-END
+End
 
-PUBLIC SUB mnuCloseServer_Click()
+Public Sub mnuCloseServer_Click()
 
-  IF Message.Delete(Subst(("Do you really want to remove the following server ?\n\n&1"), $hServer.Name), ("Remove"), ("Cancel")) = 2 THEN RETURN
+  If Message.Delete(Subst(("Do you really want to remove the following server ?\n\n&1"), $hServer.Name), ("Remove"), ("Cancel")) = 2 Then Return
 
   CServer.Remove($hServer)
   RefreshServer
 
-END
+End
 
-PUBLIC SUB mnuCreateDatabase_Click()
+Public Sub mnuCreateDatabase_Click()
 
-  IF FDatabase.Run($hServer) THEN RETURN
-
-  RefreshDatabase($sKey)
-
-END
-
-PUBLIC SUB mnuDeleteDatabase_Click()
-
-  IF Message.Delete(Subst(("Do you really want to delete the database '&1' ?\n\nBE CAREFUL ! All your data will be lost."), $sName), ("Delete"), ("Cancel")) = 2 THEN RETURN
-
-  IF $hServer.DeleteDatabase($sName) THEN RETURN
+  If FDatabase.Run($hServer) Then Return
 
   RefreshDatabase($sKey)
 
-END
+End
 
-PUBLIC SUB mnuEditTable_Click()
+Public Sub mnuDeleteDatabase_Click()
 
-  $hConn.OpenTable($sTable, FALSE)
+  If Message.Delete(Subst(("Do you really want to delete the database '&1' ?\n\nBE CAREFUL ! All your data will be lost."), $sName), ("Delete"), ("Cancel")) = 2 Then Return
 
-END
+  If $hServer.DeleteDatabase($sName) Then Return
 
-PUBLIC SUB mnuOpenTable_Click()
+  RefreshDatabase($sKey)
 
-  $hConn.OpenTable($sTable, TRUE)
+End
 
-END
+Public Sub mnuEditTable_Click()
 
-PUBLIC SUB mnuAbout_Click()
+  $hConn.OpenTable($sTable, False)
+
+End
+
+Public Sub mnuOpenTable_Click()
+
+  $hConn.OpenTable($sTable, True)
+
+End
+
+Public Sub mnuAbout_Click()
 
   FAbout.Run
 
-END
+End
 
-PUBLIC SUB mnuCreateTable_Click()
+Public Sub mnuCreateTable_Click()
 
-  DIM aType AS String[]
-  DIM sTable AS String
+  Dim aType As String[]
+  Dim sTable As String
 
-  IF $hConn.Handle.Type = "mysql" THEN
+  If $hConn.Handle.Type = "mysql" Then
     'aType = [ "InnoDB", "BDB", "HEAP", "ISAM", "MERGE", "MRG_MYISAM", "MYISAM" ]
     aType = ["MyISAM", "MERGE", "HEAP", "InnoDB", "BDB", "ISAM"]
-  ENDIF
+  Endif
 
-  IF FNewTable.Run("", "InnoDB", aType) THEN RETURN
+  If FNewTable.Run("", "InnoDB", aType) Then Return
 
-  IF $hConn.CreateTable(FNewTable.Name, FNewTable.Type) THEN RETURN
+  If $hConn.CreateTable(FNewTable.Name, FNewTable.Type) Then Return
 
   RefreshTable($sKey)
 
-END
+End
 
-PUBLIC SUB mnuImport_Click()
+Public Sub mnuImport_Click()
   
   Dialog.Title = ("Select the CSV file to import")
   Dialog.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
   Dialog.Path = Settings["/Import/Path"]
-  IF Dialog.OpenFile() THEN RETURN
+  If Dialog.OpenFile() Then Return
   Settings["/Import/Path"] = Dialog.Path
   FImport.Run($hConn, Dialog.Path)
   mnuRefreshDatabase_Click
   
-END
+End
 
 
-PUBLIC SUB mnuDeleteTable_Click()
+Public Sub mnuDeleteTable_Click()
 
-  IF Message.Delete(Subst(("Do you really want to delete the table '&1' ?"), $sTable), ("Delete"), ("Cancel")) <> 1 THEN RETURN
+  If Message.Delete(Subst(("Do you really want to delete the table '&1' ?"), $sTable), ("Delete"), ("Cancel")) <> 1 Then Return
 
-  IF $hConn.DeleteTable($sTable) THEN RETURN
+  If $hConn.DeleteTable($sTable) Then Return
 
   RefreshTable($sKey)
 
-END
+End
 
 
-PUBLIC SUB mnuRefreshDatabase_Click()
+Public Sub mnuRefreshDatabase_Click()
 
   $hConn.RefreshTree
   'RefreshTable($sKey)
 
-END
+End
 
 
-PUBLIC SUB mnuRequest_Click()
+Public Sub mnuRequest_Click()
 
   $hConn.OpenRequest()
 
-END
+End
 
 
-PUBLIC SUB mnuRefreshServer_Click()
+Public Sub mnuRefreshServer_Click()
 
   $hServer.Close
   $hServer.Exec
   tvwBase.Remove("S" & $hServer.Key)
   RefreshServer
 
-CATCH
+Catch
 
   Message(("Cannot refresh connection.") & "\n\n" & Error.Text)
 
-END
+End
 
 
-PUBLIC SUB mnuCloseDatabase_Click()
+Public Sub mnuCloseDatabase_Click()
 
-  IF $hConn.Close() THEN RETURN
+  If $hConn.Close() Then Return
 
-  WITH tvwBase[$sKey]
-    .Expanded = FALSE
+  With tvwBase[$sKey]
+    .Expanded = False
     .Clear()
     .Picture = Picture["img/16/database.png"]
-  END WITH
+  End With
 
   CConnection.Remove($hConn)
   RefreshDatabase("S" & $hServer.Key)
 
-CATCH
+Catch
 
   Message(("Cannot close database.") & "\n\n" & Error.Text)
 
-END
+End
 
 
 ' PUBLIC SUB mnuWindow_Show()
@@ -737,11 +737,11 @@ END
 ' END
 
 
-PUBLIC SUB mnuOneWindow_Click()
+Public Sub mnuOneWindow_Click()
 
-  LAST.Tag.Show
+  Last.Tag.Show
 
-END
+End
 
 
 ' PUBLIC SUB mnuCascade_Click()
@@ -766,7 +766,7 @@ END
 ' END
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   'IF Application.Args.Count = 2 THEN
   '  IF Application.Args[1] = "-debug" THEN
@@ -779,92 +779,92 @@ PUBLIC SUB Form_Open()
   'Config.LoadWindow(ME, "/FMain")
   Workspace = wrkBase
 
-  IF LoadServer() THEN RETURN
+  If LoadServer() Then Return
   RefreshServer
 
-  Settings.Read(ME)
+  Settings.Read(Me)
   'Config.LoadSplitterPos(splBase, "/FMain", "Splitter")
   splBase.Layout = Settings["/FMain/Splitter"]
 
-  IF Application.Args.Count >= 2 THEN
+  If Application.Args.Count >= 2 Then
     Project = Application.Args[1]
-  ENDIF
+  Endif
 
-END
+End
 
 
-PUBLIC SUB mnuUseDatabaseEncoding_Click()
+Public Sub mnuUseDatabaseEncoding_Click()
 
   'DEBUG $hConn.Name
-  mnuUseDatabaseEncoding.Checked = NOT mnuUseDatabaseEncoding.Checked
+  mnuUseDatabaseEncoding.Checked = Not mnuUseDatabaseEncoding.Checked
   $hConn.UseEncoding = mnuUseDatabaseEncoding.Checked
 
-END
+End
 
 
-PUBLIC SUB mnuShowSystemTables_Click()
+Public Sub mnuShowSystemTables_Click()
 
-  LAST.Checked = NOT LAST.Checked
-  $hConn.ShowSystemTables = LAST.Checked
+  Last.Checked = Not Last.Checked
+  $hConn.ShowSystemTables = Last.Checked
   RefreshTable($sKey)
 
-END
+End
 
 
-PUBLIC SUB mnuScan_Click()
+Public Sub mnuScan_Click()
 
   FindLocalServer
 
-END
+End
 
-PUBLIC SUB mnuKillAll_Click()
+Public Sub mnuKillAll_Click()
 
-  IF Message.Delete(("Do you really want to remove all servers ?"), ("Remove all"), ("Cancel")) <> 1 THEN RETURN
+  If Message.Delete(("Do you really want to remove all servers ?"), ("Remove all"), ("Cancel")) <> 1 Then Return
 
   CServer.RemoveAll
   RefreshServer
 
-END
+End
 
-PUBLIC SUB mnuOpenConnection_Click()
+Public Sub mnuOpenConnection_Click()
 
-  tvwBase[$sKey].Expanded = TRUE
+  tvwBase[$sKey].Expanded = True
 
-END
+End
 
-PUBLIC SUB mnuOpenDatabase_Click()
+Public Sub mnuOpenDatabase_Click()
 
-  tvwBase[$sKey].Expanded = TRUE
+  tvwBase[$sKey].Expanded = True
 
-END
+End
 
-PUBLIC SUB mnuPasteDatabase_Click()
+Public Sub mnuPasteDatabase_Click()
 
-  DIM aData AS String[]
+  Dim aData As String[]
 
   aData = Split(Clipboard.Paste("text/x-gambas-database"), "\n")
 
-  WITH FPasteDatabase
+  With FPasteDatabase
     .SrcKey = aData[0]
     .SrcName = aData[1]
     .SrcDatabase = aData[2]
     .DestKey = $hServer.Key
     .DestName = $hServer.Name
-  END WITH
+  End With
 
-  IF NOT FPasteDatabase.ShowModal() THEN RETURN
+  If Not FPasteDatabase.ShowModal() Then Return
 
   RefreshDatabase("S" & $hServer.Key)
 
-END
+End
 
-PUBLIC SUB mnuPasteTable_Click()
+Public Sub mnuPasteTable_Click()
 
-  DIM aData AS String[]
+  Dim aData As String[]
 
   aData = Split(Clipboard.Paste("text/x-gambas-table"), "\n")
 
-  WITH FPasteTable
+  With FPasteTable
     .SrcKey = aData[0]
     .SrcName = aData[1]
     .SrcDatabase = aData[2]
@@ -872,124 +872,130 @@ PUBLIC SUB mnuPasteTable_Click()
     .DestKey = $hServer.Key
     .DestName = $hServer.Name
     .DestDatabase = $sName
-  END WITH
+  End With
 
-  IF NOT FPasteTable.ShowModal() THEN RETURN
+  If Not FPasteTable.ShowModal() Then Return
 
   $hConn.RefreshTree
   'RefreshTable("D" & $hServer.Key &/ $sName)
 
-END
+End
 
-PUBLIC SUB mnuCopyDatabase_Click()
+Public Sub mnuCopyDatabase_Click()
 
-  DIM sData AS String
+  Dim sData As String
 
   sData = $hServer.Key & "\n" & $hServer.Name & "\n" & $sName
 
   Clipboard.Copy(sData, "text/x-gambas-database")
 
-END
+End
 
-PUBLIC SUB mnuCopyTable_Click()
+Public Sub mnuCopyTable_Click()
 
-  DIM sData AS String
+  Dim sData As String
 
   sData = $hServer.Key & "\n" & $hServer.Name & "\n" & $sName & "\n" & $sTable
 
   Clipboard.Copy(sData, "text/x-gambas-table")
 
-END
+End
 
-PUBLIC SUB mnuMakeCode_Click()
+Public Sub mnuMakeCode_Click()
 
-  WITH FCode
+  With FCode
     .Server = $hServer
     .Database = $sName
     .ShowDialog
-  END WITH
+  End With
 
-END
+End
 
 
-STATIC PUBLIC FUNCTION GetProjectIcon(sPath AS String, iSize AS Integer) AS Picture
+Static Public Function GetProjectIcon(sPath As String, iSize As Integer) As Picture
 
-  DIM hFile AS File
-  DIM sLig AS String
-  DIM hImage AS Image
-  DIM hPict AS Picture
+  Dim hFile As File
+  Dim sLig As String
+  Dim hImage As Image
+  Dim hPict As Picture
 
-  OPEN sPath &/ ".project" FOR READ AS #hFile
+  Open sPath &/ ".project" For Read As #hFile
 
-  WHILE NOT Eof(hFile)
-    LINE INPUT #hFile, sLig
-    IF Left$(sLig, 5) = "Icon=" THEN
+  While Not Eof(hFile)
+    Line Input #hFile, sLig
+    If Left$(sLig, 5) = "Icon=" Then
       sPath = sPath &/ Mid$(sLig, 6)
-      TRY hImage = Image.Load(sPath)
-      BREAK
-    ENDIF
-  WEND
+      Try hImage = Image.Load(sPath)
+      Break
+    Endif
+  Wend
 
-  CLOSE #hFile
+  Close #hFile
 
-FINALLY
+Finally
 
-  IF NOT hImage THEN
+  If Not hImage Then
     hImage = Picture["icon:/48/gambas"].Image
-  ENDIF
+  Endif
 
-  RETURN hImage.Stretch(iSize, iSize, TRUE).Picture
+  Return hImage.Stretch(iSize, iSize, True).Picture
 
-END
-
-
-PRIVATE FUNCTION Crypt(sStr AS String) AS String
-
-  DIM iInd AS Integer
-  DIM iPos AS Integer
-  DIM sRes AS String
-
-  FOR iInd = 1 TO Len(sStr)
-    INC iPos
-    IF iPos > Len($sCryptKey) THEN iPos = 1
-    sRes = sRes & Chr$(Asc(sStr, iInd) XOR Asc($sCryptKey, iPos) XOR 13)
-  NEXT
-
-  RETURN sRes
-
-END
+End
 
 
-PRIVATE FUNCTION ToHexaString(sStr AS String) AS String
+Private Function Crypt(sStr As String) As String
 
-  DIM iInd AS Integer
-  DIM sRes AS String
+  Dim iInd As Integer
+  Dim iPos As Integer
+  Dim sRes As String
 
-  FOR iInd = 1 TO Len(sStr)
+  For iInd = 1 To Len(sStr)
+    Inc iPos
+    If iPos > Len($sCryptKey) Then iPos = 1
+    sRes = sRes & Chr$(Asc(sStr, iInd) Xor Asc($sCryptKey, iPos) Xor 13)
+  Next
+
+  Return sRes
+
+End
+
+
+Private Function ToHexaString(sStr As String) As String
+
+  Dim iInd As Integer
+  Dim sRes As String
+
+  For iInd = 1 To Len(sStr)
     sRes = sRes & Hex$(Asc(sStr, iInd), 2)
-  NEXT
+  Next
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
 
-PRIVATE FUNCTION FromHexaString(sStr AS String) AS String
+Private Function FromHexaString(sStr As String) As String
 
-  DIM iInd AS Integer
-  DIM sRes AS String
+  Dim iInd As Integer
+  Dim sRes As String
 
-  FOR iInd = 1 TO Len(sStr) STEP 2
+  For iInd = 1 To Len(sStr) Step 2
     sRes = sRes & Chr$(Val("&H" & Mid$(sStr, iInd, 2)))
-  NEXT
+  Next
 
-  RETURN sRes
+  Return sRes
 
-END
+End
 
-PUBLIC SUB mnuDebug_Click()
+Public Sub mnuDebug_Click()
 
-  INC DB.Debug
+  Inc DB.Debug
   mnuDebug.Checked = DB.Debug
 
-END
+End
+
+' Public Sub Form_KeyPress()
+' 
+'   If Key.Alt And If Key.Code = Key["M"] Then Me.Menus.Visible = Not Me.Menus.Visible
+' 
+' End

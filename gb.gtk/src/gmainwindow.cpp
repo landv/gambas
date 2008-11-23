@@ -193,6 +193,7 @@ void gMainWindow::initialize()
 	_next_timer = 0;
 	_xembed = false;
 	_activate = false;
+	_hideMenus = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -1093,4 +1094,24 @@ void gMainWindow::setType()
 {
 }
 #endif
+
+void gMainWindow::setMenuBarVisible(bool v)
+{
+	_hideMenus = !v;
+	
+	if (!menuBar)
+		return;
+		
+	if (v)
+		gtk_widget_show(GTK_WIDGET(menuBar));
+	else
+		gtk_widget_hide(GTK_WIDGET(menuBar));
+		
+	performArrange();
+}
+
+bool gMainWindow::isMenuBarVisible()
+{
+	return !_hideMenus || (menuBar && GTK_WIDGET_MAPPED(GTK_WIDGET(menuBar)));
+}
 

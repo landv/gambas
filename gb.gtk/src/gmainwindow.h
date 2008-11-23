@@ -59,6 +59,9 @@ public:
 	virtual int clientY();
 	
 	bool spontaneous() { return !_not_spontaneous; }
+	
+	void setMenuBarVisible(bool v);
+	bool isMenuBarVisible();
 
 //"Methods"
 	void center();
@@ -125,6 +128,7 @@ public:
 	unsigned _masked : 1;
 	unsigned _xembed : 1;
 	unsigned _activate : 1;
+	unsigned _hideMenus : 1;
 };
 
 #endif
