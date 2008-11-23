@@ -194,11 +194,13 @@ void STREAM_read(STREAM *stream, void *addr, int len)
 
   if (!stream->type)
     THROW(E_CLOSED);
-    
-  if ((*(stream->type->read))(stream, addr, len))
+
+  while ((*(stream->type->read))(stream, addr, len))
   {
     switch(errno)
     {
+			case EINTR:
+				continue;
       case 0:
       case EAGAIN:
         THROW(E_EOF);
@@ -217,24 +219,32 @@ char STREAM_getchar(STREAM *stream)
   
   if (!stream->type)
     THROW(E_CLOSED);
-    
-  if (stream->type->getchar)
-    ret = (*(stream->type->getchar))(stream, &c);
-  else
-    ret = (*(stream->type->read))(stream, &c, 1);
-  
-  if (ret) 
-  {  
-    switch(errno)
-    {
-      case 0:
-      case EAGAIN:
-        THROW(E_EOF);
-      case EIO:
-        THROW(E_READ);
-      default:
-        THROW_SYSTEM(errno, NULL);
-    }
+	
+	for(;;)
+	{
+		if (stream->type->getchar)
+			ret = (*(stream->type->getchar))(stream, &c);
+		else
+			ret = (*(stream->type->read))(stream, &c, 1);
+		
+		if (!ret)
+			break;
+		
+		if (ret) 
+		{  
+			switch(errno)
+			{
+				case EINTR:
+					continue;
+				case 0:
+				case EAGAIN:
+					THROW(E_EOF);
+				case EIO:
+					THROW(E_READ);
+				default:
+					THROW_SYSTEM(errno, NULL);
+			}
+		}
   }
   
   return c;
@@ -248,15 +258,16 @@ void STREAM_read_max(STREAM *stream, void *addr, int len)
   if (!stream->type)
     THROW(E_CLOSED);
     
-  if ((*(stream->type->read))(stream, addr, len))
+  while ((*(stream->type->read))(stream, addr, len))
   {
     switch(errno)
     {
+    	case EINTR:
+    		continue;
       case 0:
       case EAGAIN:
-        break;
       case EIO:
-        break; //THROW(E_READ);
+        return; //THROW(E_READ);
       default:
         THROW_SYSTEM(errno, NULL);
     }
@@ -269,10 +280,12 @@ void STREAM_write(STREAM *stream, void *addr, int len)
   if (!stream->type)
     THROW(E_CLOSED);
     
-  if ((*(stream->type->write))(stream, addr, len))
+  while ((*(stream->type->write))(stream, addr, len))
   {
     switch(errno)
     {
+    	case EINTR:
+    		continue;
       case EIO:
         THROW(E_WRITE);
       default:
