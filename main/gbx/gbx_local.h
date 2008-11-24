@@ -70,7 +70,7 @@ typedef
     char currency_thousand_sep;
     char group_size;
     char currency_group_size;
-    char currency_flag;
+    unsigned char currency_flag;
     char date_sep;
     char time_sep;
     char _reserved[3];
