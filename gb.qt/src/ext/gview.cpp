@@ -1705,10 +1705,25 @@ bool GEditor::focusNextPrevChild(bool)
 	return false;
 }
 
+static bool is_power_of_ten(int n)
+{
+	for(;;)
+	{
+		if (n % 10)
+			return false;
+		n /= 10;
+		if (n == 1)
+			return true;
+	}
+}
+
 void GEditor::lineInserted(int y)
 {
 	if (largestLine >= y)
 		largestLine++;
+	
+	if (getFlag(ShowLineNumbers) && is_power_of_ten(numLines()))
+		updateMargin();
 }
 
 void GEditor::lineRemoved(int y)
@@ -1717,6 +1732,9 @@ void GEditor::lineRemoved(int y)
 		updateWidth(y);
 	else if (largestLine > y)
 		largestLine--;
+	
+	if (getFlag(ShowLineNumbers) && is_power_of_ten(numLines() + 1))
+		updateMargin();
 }
 
 void GEditor::flash()
