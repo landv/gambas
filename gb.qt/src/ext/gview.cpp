@@ -875,6 +875,8 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		}
 	}
 
+	ny = viewToReal(realToView(ny));
+
 	if (nx < 0)
 		nx = 0;
 	else if (nx > lineLength(ny))
@@ -1504,6 +1506,8 @@ bool GEditor::isCursorVisible() const
 
 void GEditor::ensureCursorVisible()
 {
+	int yy;
+	
 	if (!isUpdatesEnabled())
 		return;
 	
@@ -1511,12 +1515,14 @@ void GEditor::ensureCursorVisible()
 	{
 		qApp->sendPostedEvents(viewport(), QEvent::Paint);
 		
+		yy = realToView(y);
+		
 		if (center)
 			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
-			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
+			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, yy * cellHeight() + cellHeight() / 2, margin + 2, visibleHeight() / 2);
 		else
 			//ensureVisible(x * charWidth, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
-			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, y * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
+			ensureVisible(lineWidth(y, x) + getCharWidth() / 2, yy * cellHeight() + cellHeight() / 2, margin + 2, cellHeight());
 	}
 	center = false;
 }

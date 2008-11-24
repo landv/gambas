@@ -239,10 +239,12 @@ void STREAM_read(STREAM *stream, void *addr, int len)
 	if (stream->common.buffer)
 		read_buffer(stream, &addr, &len);
 	
-	if ((*(stream->type->read))(stream, addr, len))
+	while ((*(stream->type->read))(stream, addr, len))
 	{
 		switch(errno)
 		{
+			case EINTR:
+				break;
 			case 0:
 			case EAGAIN:
 				THROW(E_EOF);
@@ -265,15 +267,20 @@ char STREAM_getchar(STREAM *stream)
 	if (stream->common.buffer && stream->common.buffer_pos < stream->common.buffer_len)
 		return stream->common.buffer[stream->common.buffer_pos++];
 	
-	if (stream->type->getchar)
-		ret = (*(stream->type->getchar))(stream, &c);
-	else
-		ret = (*(stream->type->read))(stream, &c, 1);
-	
-	if (ret) 
-	{  
+	for(;;)
+	{
+		if (stream->type->getchar)
+			ret = (*(stream->type->getchar))(stream, &c);
+		else
+			ret = (*(stream->type->read))(stream, &c, 1);
+			
+		if (!ret)
+			break;
+		
 		switch(errno)
 		{
+			case EINTR:
+				continue;
 			case 0:
 			case EAGAIN:
 				THROW(E_EOF);
@@ -302,30 +309,35 @@ static void STREAM_read_max(STREAM *stream, void *addr, int len)
 	
 	if (len > 0)
 	{
-		if (stream->common.available_now)
+		for(;;)
 		{
-			err = (*(stream->type->read))(stream, addr, len);
-		}
-		else
-		{
-			handle = STREAM_handle(stream);
-			flags = fcntl(handle, F_GETFL);
-			fcntl(handle, F_SETFL, flags | O_NONBLOCK);
-			
-			err = (*(stream->type->read))(stream, addr, len);
-			
-			fcntl(handle, F_SETFL, flags);
-		}
-	
-		if (err)
-		{
+			if (stream->common.available_now)
+			{
+				err = (*(stream->type->read))(stream, addr, len);
+			}
+			else
+			{
+				handle = STREAM_handle(stream);
+				flags = fcntl(handle, F_GETFL);
+				fcntl(handle, F_SETFL, flags | O_NONBLOCK);
+				
+				err = (*(stream->type->read))(stream, addr, len);
+				
+				fcntl(handle, F_SETFL, flags);
+			}
+		
+			if (!err)
+				break;
+				
 			switch(errno)
 			{
+				case EINTR:
+					continue;
 				case 0:
 				case EAGAIN:
-					break;
+					return;
 				case EIO:
-					break; //THROW(E_READ);
+					return; //THROW(E_READ);
 				default:
 					THROW_SYSTEM(errno, NULL);
 			}
@@ -339,10 +351,12 @@ void STREAM_write(STREAM *stream, void *addr, int len)
 	if (!stream->type)
 		THROW(E_CLOSED);
 		
-	if ((*(stream->type->write))(stream, addr, len))
+	while ((*(stream->type->write))(stream, addr, len))
 	{
 		switch(errno)
 		{
+			case EINTR:
+				break;
 			case EIO:
 				THROW(E_WRITE);
 			default:
@@ -405,33 +419,38 @@ static void fill_buffer(STREAM *stream, char *addr)
 	STREAM_eff_read = 0;
 	fd = STREAM_handle(stream);
 	
-	if (stream->common.available_now)
-		err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
-	else
+	for(;;)
 	{
-		//printf("WATCH_process(%d, -1)\n", fd); fflush(stdout);
-		WATCH_process(fd, -1);
-		flags = fcntl(fd, F_GETFL);
-		if ((flags & O_NONBLOCK) == 0)
-			fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-		
-		//printf("read\n"); fflush(stdout);
-		err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
-		
-		if ((flags & O_NONBLOCK) == 0)
-			fcntl(fd, F_SETFL, flags);
-	}
-
-	if (err)
-	{
+		if (stream->common.available_now)
+			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
+		else
+		{
+			//printf("WATCH_process(%d, -1)\n", fd); fflush(stdout);
+			WATCH_process(fd, -1);
+			flags = fcntl(fd, F_GETFL);
+			if ((flags & O_NONBLOCK) == 0)
+				fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+			
+			//printf("read\n"); fflush(stdout);
+			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
+			
+			if ((flags & O_NONBLOCK) == 0)
+				fcntl(fd, F_SETFL, flags);
+		}
+	
+		if (!err)
+			break;
+			
 		switch(errno)
 		{
+			case EINTR:
+				continue;
 			case 0:
 			case EAGAIN:
 			case EINPROGRESS:
-				break;
+				return;
 			case EIO:
-				break; //THROW(E_READ);
+				return; //THROW(E_READ);
 			default:
 				THROW_SYSTEM(errno, NULL);
 		}
