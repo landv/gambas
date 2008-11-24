@@ -1518,11 +1518,11 @@ _ADD_QUICK:
 		goto *jump_end;
 	
 	__AQ_DATE:
-	
+	__AQ_STRING:
+		
 		VALUE_conv(P1, T_FLOAT);
 	
 	__AQ_FLOAT:
-	__AQ_STRING:
 	
 		P1->_float.value += (double)value;
 		goto *jump_end;
