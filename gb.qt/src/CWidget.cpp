@@ -476,11 +476,16 @@ BEGIN_PROPERTY(CCONTROL_font)
     font = (CFONT *)VPROP(GB_OBJECT);
 
     if (!font)
+    {
       WIDGET->unsetFont();
+      GB.Unref(POINTER(&THIS->font));
+      THIS->font = NULL;
+		}
     else
+    {
       WIDGET->setFont(*(font->font));
-    
-    *(((CFONT *)THIS->font)->font) = WIDGET->font();
+			*(((CFONT *)THIS->font)->font) = WIDGET->font();
+		}
   }
 
 END_PROPERTY

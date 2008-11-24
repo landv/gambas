@@ -111,6 +111,47 @@ static bool _currency;
 
 static char *_lang = NULL;
 
+#define add_currency_flag(_flag) (LOCAL_local.currency_flag <<= 1, LOCAL_local.currency_flag |= (_flag))
+#define test_currency_flag(_negative, _space, _before, _intl) (LOCAL_local.currency_flag & (1 << ((_negative) + ((_before) << 2) + ((_intl) << 3))))
+
+static void init_currency_flag(struct lconv *info)
+{
+#ifndef OS_OPENBSD
+  add_currency_flag(info->int_n_cs_precedes); // 7
+  add_currency_flag(info->int_p_cs_precedes); // 6
+  add_currency_flag(info->int_n_sep_by_space); // 5
+  add_currency_flag(info->int_p_sep_by_space); // 4
+#endif
+  add_currency_flag(info->n_cs_precedes); // 3
+  add_currency_flag(info->p_cs_precedes); // 2
+  add_currency_flag(info->n_sep_by_space); // 1
+  add_currency_flag(info->p_sep_by_space); // 0
+}
+
+static bool is_currency_before(bool negative, bool intl)
+{
+	int test = 2;
+	
+	if (intl)
+		test += 4;
+	if (negative)
+		test += 1;
+		
+	return LOCAL_local.currency_flag & (1 << test);
+}
+
+static bool is_currency_space(bool negative, bool intl)
+{
+	int test = 0;
+	
+	if (intl)
+		test += 4;
+	if (negative)
+		test += 1;
+		
+	return LOCAL_local.currency_flag & (1 << test);
+}
+
 static int my_setenv(const char *name, const char *value, char **ptr)
 {
   char *str = NULL;
@@ -461,39 +502,7 @@ static void fill_local_info(void)
   sprintf(LOCAL_local.general_currency, "($#,##0.%.*s)", Min(8, info->frac_digits), "########");
   sprintf(LOCAL_local.intl_currency, "($$#,##0.%.*s)", Min(8, info->int_frac_digits), "########");
 
-  #define _add_flag(_flag) (LOCAL_local.currency_flag <<= 1, LOCAL_local.currency_flag |= (_flag))
-
-  _add_flag(info->n_sep_by_space);
-  _add_flag(info->p_sep_by_space);
-  _add_flag(info->n_cs_precedes);
-  _add_flag(info->p_cs_precedes);
-#if defined(OS_OPENBSD) || defined(OS_CYGWIN)
-	_add_flag(0);
-	_add_flag(0);
-	_add_flag(0);
-	_add_flag(0);
-#else
-  _add_flag(info->int_n_sep_by_space);
-  _add_flag(info->int_p_sep_by_space);
-  _add_flag(info->int_n_cs_precedes);
-  _add_flag(info->int_p_cs_precedes);
-#endif
-	/* Right to left languages */
-
-
-#if 0
-  {
-    char *str;
-    int len;
-    VALUE value;
-
-    DATE_now(&value);
-
-    LOCAL_format_date(DATE_split(&value), LF_USER, "ddd dd mmm yyyy hh:mm:ss AM/PM", 0, &str, &len);
-
-    printf("FORMAT->%s\n", str);
-  }
-#endif
+	init_currency_flag(info);
 }
 
 
@@ -877,19 +886,15 @@ _FORMAT:
 
   add_sign(sign, number_sign, FALSE);
 
-  /* la monnaie (avant) */
+  /* currency (before) */
 
-  if (_currency)
+  if (_currency && is_currency_before(number_sign < 0, intl_currency))
   {
-    int test = (number_sign < 0) + (intl_currency << 1);
-
-    if (local_current->currency_flag & (1 << test))
-    {
-      add_currency(intl_currency ? local_current->intl_currency_symbol : local_current->currency_symbol);
-      if (local_current->currency_flag & (1 << (test + 4)))
-        put_char(' ');
-    }
+		add_currency(intl_currency ? local_current->intl_currency_symbol : local_current->currency_symbol);
+		if (is_currency_space(number_sign < 0, intl_currency))
+			put_char(' ');
   }
+
 
   /* le nombre */
 
@@ -1022,18 +1027,13 @@ _EXPOSANT:
     add_string(buf, n, NULL);
   }
 
-  /* la monnaie (apr�) */
+  /* currency (after) */
 
-  if (_currency)
+  if (_currency && !is_currency_before(number_sign < 0, intl_currency))
   {
-    int test = (number_sign < 0) + (intl_currency << 1);
-
-    if (!(local_current->currency_flag & (1 << test)))
-    {
-      if (local_current->currency_flag & (1 << (test + 4)))
-        put_char(' ');
-      add_currency(intl_currency ? local_current->intl_currency_symbol : local_current->currency_symbol);
-    }
+		if (is_currency_space(number_sign < 0, intl_currency))
+			put_char(' ');
+		add_currency(intl_currency ? local_current->intl_currency_symbol : local_current->currency_symbol);
   }
 
   /* On ignore la parenth�e finale dans le format */

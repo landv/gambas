@@ -1820,6 +1820,7 @@ Private Function MakePageWithoutHeader(rPage As Result) As String
 
   If $iType = TYPE_SYMBOL And If $hSym Then
     Print Encode("@syntax")
+    Print "<p>"
   Endif
 
   Print Encode(rPage!sDesc)

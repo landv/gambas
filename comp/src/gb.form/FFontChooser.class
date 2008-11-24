@@ -15,7 +15,7 @@ Public Preview As Control
 Private $iHeight As Integer
 Private Const NBR_GRADE As Integer = 21
 Private Const FIRST_GRADE As Integer = -4
-Private $hGrade As Object[NBR_GRADE]
+Private $hGrade As Label[NBR_GRADE]
 Private $iWidthSize As Integer
 Private $bNoChange As Boolean
 Private $bNoRefresh As Boolean
@@ -95,7 +95,7 @@ Private Sub RefreshGrade()
     With $hGrade[iInd]
       .Font = hFont
       .Height = H
-      .Text = sGrade & " " & Family
+      .Text = " " & sGrade & " " & Family
       .Tag = FIRST_GRADE + iInd
       If .Tag = Grade Then 
         lstGrade.Select($hGrade[iInd])
@@ -186,12 +186,12 @@ Public Sub SetFont(sFont As String)
 
 End
 
-Public Function GetFont(Optional sGrade As String) As String
+Public Function GetFont(Optional sGrade As String = "*") As String
 
   Dim sFont As String
 
   sFont = Family
-  If sGrade Then
+  If sGrade <> "*" Then
     sFont &= "," & sGrade
   Else
     If Bold Then sFont &= ",Bold"
