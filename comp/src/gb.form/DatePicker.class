@@ -93,6 +93,7 @@ Public Sub Draw_Leave()
 End
 
 Public Sub Draw_MouseDown()
+  If Not Me.Enabled Then Return
   isActivate = True
   $hForm.Show
 End
