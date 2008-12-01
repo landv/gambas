@@ -70,12 +70,12 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT Document;GB_OBJECT StyleSheet;)
 	
 	GB.New(POINTER(&out),GB.FindClass("XmlDocument"),NULL,NULL);
 	
-	XML_InitDocument(out, xsltApplyStylesheet(sheet, doc->doc, NULL), "Unable to apply style sheet");
+	((CXMLDOCUMENT *)out)->doc = xsltApplyStylesheet(sheet, doc->doc, NULL);
 	
 	if (!out->doc)
 	{
 		GB.Unref(POINTER(&out));
-		return;
+		GB.Error("Unable to apply style sheet");
 	}
 	
 END_METHOD
