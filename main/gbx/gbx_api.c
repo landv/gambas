@@ -1588,7 +1588,7 @@ char *GB_SystemDomainName(void)
 		return "";
 	
 	*COMMON_buffer = 0;
-	if (*domain)
+	if (*domain && strcmp(domain, "(none)"))
 	{
 		strcpy(COMMON_buffer, domain);
 		strcat(COMMON_buffer, ".");
