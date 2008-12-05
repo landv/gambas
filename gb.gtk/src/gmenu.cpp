@@ -265,6 +265,7 @@ void gMenu::update()
 		}
 		
 		_oldstyle = _style;
+		updateVisible();
 	}
 	
 	if (_style == MENU)
@@ -349,6 +350,7 @@ void gMenu::initialize()
 	_no_update = false;
 	_destroyed = false;
 	_action = false;
+	_visible = false;
 	
 	sizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	
@@ -391,7 +393,8 @@ gMenu::gMenu(gMainWindow *par,bool hidden)
 	}
 	
 	//update();
-	setText(" ");
+	setText(NULL);
+	setVisible(!hidden);
 }
 
 gMenu::gMenu(gMenu *par, bool hidden)
@@ -410,6 +413,7 @@ gMenu::gMenu(gMenu *par, bool hidden)
 	//_style = SEPARATOR;
 	//update();
 	setText(NULL);
+	setVisible(!hidden);
 }
 
 gMenu::~gMenu()
@@ -497,39 +501,48 @@ void gMenu::setText(const char *text)
 bool gMenu::isVisible()
 {
 	if (!menu) return false;
-	return GTK_WIDGET_VISIBLE(menu);	
+	return _visible;	
 }
 
-void gMenu::setVisible(bool vl)
+void gMenu::updateVisible()
 {
 	GtkContainer *par;
 	GList *chd,*iter;
-
-	if (!menu) return;
+	bool vl = _visible;
+	
+	if (top_level && _style != MENU)
+		vl = false;
+	
 	g_object_set(G_OBJECT(menu),"visible",vl,(void *)NULL);
 	
 	if (top_level && pr)
 	{
-		par=GTK_CONTAINER(((gMainWindow*)pr)->menuBar);
-		if (vl==true)
-		{
-			g_object_set(G_OBJECT(par),"visible",vl,(void *)NULL);
-			return;
-		}
-		chd=gtk_container_get_children(par);
-		iter=g_list_first(chd);
+		vl = false;
+		par = GTK_CONTAINER(((gMainWindow*)pr)->menuBar);
+		chd = gtk_container_get_children(par);
+		iter = g_list_first(chd);
 		while (iter)
 		{
-			if ( GTK_WIDGET_VISIBLE (GTK_WIDGET(iter->data)) )
+			if (GTK_WIDGET_VISIBLE(GTK_WIDGET(iter->data)))
 			{
-				g_list_free(chd);
-				return;
+				vl = true;
+				break;
 			}
-			iter=g_list_next(iter);
+			iter = g_list_next(iter);
 		}
+		
 		g_list_free(chd);
-		g_object_set(G_OBJECT(par),"visible",vl,(void *)NULL);
+		g_object_set(G_OBJECT(par), "visible", vl, (void *)NULL);
 	}
+}
+
+void gMenu::setVisible(bool vl)
+{
+	if (!menu) return;
+	if (vl == _visible) return;
+	
+	_visible = vl;
+	updateVisible();
 }
 
 void gMenu::setPicture(gPicture *pic)

@@ -84,8 +84,10 @@ private:
 	unsigned _destroyed : 1;
 	unsigned top_level : 1;
 	unsigned _action : 1;
+	unsigned _visible : 1;
   
   void update();
+  void updateVisible();
 };
 
 #endif

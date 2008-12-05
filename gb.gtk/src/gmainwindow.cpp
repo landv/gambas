@@ -300,6 +300,7 @@ gMainWindow::~gMainWindow()
 	{
 		emit(SIGNAL(onClose));
 		opened = false;
+		gApplication::exitLoop();
 	}
 	
 	if (_next_timer)
@@ -566,11 +567,7 @@ void gMainWindow::showModal()
 
 	//fprintf(stderr, "showModal: begin %p\n", this);
 
-	do
-	{
-		do_iteration(false);
-	}
-	while (opened);
+	gApplication::enterLoop();
 	
 	//fprintf(stderr, "showModal: end %p\n", this);
 
@@ -890,6 +887,8 @@ bool gMainWindow::doClose()
 		else
 			opened = false;
 		_closing = false;
+		
+		gApplication::exitLoop();
   }
   
   if (!opened) // && !modal())
@@ -977,7 +976,7 @@ int gMainWindow::clientY()
 {
 	GtkRequisition req;
 
-	if (menuBar)
+	if (menuBar && GTK_WIDGET_VISIBLE(GTK_WIDGET(menuBar)))
 	{
 		gtk_widget_size_request(GTK_WIDGET(menuBar), &req);
 		return req.height;
@@ -996,7 +995,7 @@ int gMainWindow::clientHeight()
 	GtkRequisition req;
 	int h = 0;
 
-	if (menuBar)
+	if (menuBar && GTK_WIDGET_VISIBLE(GTK_WIDGET(menuBar)))
 	{
 		gtk_widget_size_request(GTK_WIDGET(menuBar), &req);
 		h = req.height;

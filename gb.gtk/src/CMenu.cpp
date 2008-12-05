@@ -100,9 +100,9 @@ END_METHOD
 BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 	void *parent=VARG(parent);
-	bool hidden=false;
+	bool hidden;
 	
-	if (!MISSING(hidden)) hidden=VARG(hidden);
+	hidden = VARGOPT(hidden, false);
 	
 	if (GB.Is(parent,CLASS_Window))
 	{

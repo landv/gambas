@@ -159,6 +159,7 @@ gTrayIcon
 
 static bool  tray_enterleave(GtkWidget *widget, GdkEventCrossing *e,gTrayIcon *data)
 {
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
 	if (e->type==GDK_ENTER_NOTIFY)
 	{
 		if (data->onEnter) data->onEnter(data);
@@ -178,6 +179,7 @@ static void tray_destroy (GtkWidget *object,gTrayIcon *data)
 static gboolean tray_event(GtkWidget *widget, GdkEvent *event,gTrayIcon *data)
 {
 	if (!gApplication::userEvents()) return false;
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
 	if (event->type==GDK_2BUTTON_PRESS)
 	{
@@ -192,8 +194,8 @@ static gboolean tray_event(GtkWidget *widget, GdkEvent *event,gTrayIcon *data)
 
 static gboolean tray_down (GtkWidget *widget,GdkEventButton *event,gTrayIcon *data)
 {
-
 	if (!gApplication::userEvents()) return false;
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
 	if (data->onMousePress)
 	{
@@ -213,6 +215,7 @@ static gboolean tray_down (GtkWidget *widget,GdkEventButton *event,gTrayIcon *da
 static gboolean tray_up (GtkWidget *widget,GdkEventButton *event,gTrayIcon *data)
 {
 	if (!gApplication::userEvents()) return false;
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
 	if (data->onMouseRelease)
 	{
@@ -228,6 +231,8 @@ static gboolean tray_up (GtkWidget *widget,GdkEventButton *event,gTrayIcon *data
 static gboolean cb_menu(GtkWidget *widget, gTrayIcon *data)
 {
 	if (!gApplication::userEvents()) return false;
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
+	
 	if (data->onMenu)
 		data->onMenu(data);
 	
@@ -237,6 +242,7 @@ static gboolean cb_menu(GtkWidget *widget, gTrayIcon *data)
 static gboolean tray_focus_In(GtkWidget *widget,GdkEventFocus *event,gTrayIcon *data)
 {
 	if (!gApplication::allEvents()) return false;
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
 	if (data->onFocusEnter) data->onFocusEnter(data);
 	return false;
@@ -245,6 +251,7 @@ static gboolean tray_focus_In(GtkWidget *widget,GdkEventFocus *event,gTrayIcon *
 static gboolean tray_focus_Out(GtkWidget *widget,GdkEventFocus *event,gTrayIcon *data)
 {
 	if (!gApplication::allEvents()) return false;
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
 	if (data->onFocusLeave) data->onFocusLeave(data);
 	return false;
@@ -256,6 +263,7 @@ static gboolean cb_scroll(GtkWidget *widget, GdkEventScroll *event, gTrayIcon *d
 	int ort = 0;
 	
 	if (!gApplication::userEvents()) return false;
+	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
 	if (data->onMouseWheel)
 	{
@@ -281,6 +289,7 @@ static gboolean cb_expose(GtkWidget *widget, GdkEventExpose *e, gTrayIcon *data)
 {
 	gPicture *pic = data->getIcon();
 	
+	gdk_window_clear(widget->window);
 	gdk_draw_pixbuf(widget->window,
 			widget->style->black_gc,
 			pic->getPixbuf(),
@@ -309,6 +318,7 @@ gTrayIcon::gTrayIcon()
 	buftext = NULL;
 	_icon = NULL;
 	_style = NULL;
+	_loopLevel = 0;
 
 	//onHide=false;
 	onMousePress=NULL;
@@ -420,6 +430,8 @@ void gTrayIcon::setVisible(bool vl)
 	
 		if (!plug)
 		{
+			_loopLevel = gApplication::loopLevel() + 1;
+			
 			plug = gtk_plug_new(0);
 			gtk_widget_set_double_buffered(plug, FALSE);	
 			
