@@ -313,8 +313,6 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
 
   IF $bList AND IF NOT $bProc THEN hEdit.Goto(0, 0)
   
-  TRY hForm.SavePosition()
-  
   WITH hEdit
     IF .Selected THEN
     
@@ -400,25 +398,29 @@ PRIVATE SUB DoSearch(bBack AS Boolean, bReplace AS Boolean) AS Boolean
 
     IF bBack THEN 
 
-      DEC iLine
       iCol = -1
 
       IF $bProc THEN
       
-        IF iLine < 0 OR IF FEditor.IsProc(hEdit.Lines[iLine]) THEN
+        IF iLine <= 0 OR IF FEditor.IsProc(hEdit.Lines[iLine]) THEN
   
-          WHILE iLine < (hEdit.Lines.Count - 1)
+          INC iLine
+          WHILE iLine < hEdit.Lines.Count
   
-            sLine = hEdit.Lines[iLine + 1]
+            sLine = hEdit.Lines[iLine]
             IF FEditor.IsProc(sLine) THEN BREAK
             INC iLine
   
           WEND
-  
+          
         ENDIF
+        
+        DEC iLine
       
       ELSE 
 
+        DEC iLine
+        
         IF iLine < 0 THEN
   
           IF $bProject THEN
