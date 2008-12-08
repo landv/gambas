@@ -216,8 +216,6 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 {
   CWidget::add(w, _object, no_filter);
 
-  //qDebug("CWIDGET_new: %p: %p", object, w);
-
   THIS->widget = w;
   THIS->level = MAIN_loop_level;
   THIS->next = 0;
@@ -243,7 +241,7 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 		w->show();
 	}
 
-	//WIDGET->setName(THIS->name);
+  //qDebug("CWIDGET_new: (%s %p %s)", GB.GetClassName(THIS), THIS, THIS->name);
 }
 
 
@@ -957,7 +955,7 @@ END_PROPERTY
 
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 {
-	//qDebug("set_color: (%s %p) bg = %06X fg = %06X", GB.GetClassName(THIS), THIS, bg, fg);
+	//qDebug("set_color: (%s %p %s) bg = %06X fg = %06X", GB.GetClassName(THIS), THIS, THIS->name, bg, fg);
 	//if (bg == COLOR_DEFAULT && fg == COLOR_DEFAULT)
 	WIDGET->unsetPalette();
   	
@@ -969,10 +967,12 @@ void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 	
 	THIS->flag.default_bg = bg == COLOR_DEFAULT;
   THIS->flag.default_fg = fg == COLOR_DEFAULT;
+  //qDebug("-> %d %06X %d %06X", THIS->flag.default_bg, WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF, THIS->flag.default_fg, WIDGET->paletteForegroundColor().rgb() & 0xFFFFFF);
 }
 
 int CWIDGET_get_background(CWIDGET *_object)
 {
+	//qDebug("get_background: (%s %p %s) %d %06X", GB.GetClassName(THIS), THIS, THIS->name, THIS->flag.default_bg, WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF);
 	if (THIS->flag.default_bg)
 		return COLOR_DEFAULT;
 	else
@@ -981,10 +981,17 @@ int CWIDGET_get_background(CWIDGET *_object)
 	
 int CWIDGET_get_foreground(CWIDGET *_object)
 {
+	//qDebug("get_foreground: (%s %p %s) %d %06X", GB.GetClassName(THIS), THIS, THIS->name, THIS->flag.default_fg, WIDGET->paletteForegroundColor().rgb() & 0xFFFFFF);
 	if (THIS->flag.default_fg)
 		return COLOR_DEFAULT;
 	else
 		return WIDGET->paletteForegroundColor().rgb() & 0xFFFFFF;
+}
+	
+void CWIDGET_get_color(CWIDGET *_object, int *bg, int *fg)
+{
+	*bg = CWIDGET_get_background(THIS);
+	*fg = CWIDGET_get_foreground(THIS);
 }
 	
 BEGIN_PROPERTY(CCONTROL_background)

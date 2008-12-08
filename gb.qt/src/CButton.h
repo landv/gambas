@@ -72,7 +72,7 @@ public:
   //QSize sizeHint(void) const;
   virtual void fontChange(const QFont &);
   void calcMinimumHeight();
-  virtual void resizeEvent(QResizeEvent *e);
+  //virtual void resizeEvent(QResizeEvent *e);
 
   CWINDOW *top;
 };
@@ -89,7 +89,7 @@ public:
   //QSize sizeHint(void) const;
   virtual void fontChange(const QFont &);
   void calcMinimumHeight();
-  virtual void resizeEvent(QResizeEvent *e);
+  //virtual void resizeEvent(QResizeEvent *e);
 };
 
 

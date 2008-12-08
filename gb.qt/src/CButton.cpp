@@ -123,10 +123,13 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
   QString qtext;
   QIconSet icon;
   int size;
+  int fg, bg;
 
 	size = QMIN(WIDGET_TOOL->width(), WIDGET_TOOL->height()) - 6;
 	if (resize && size == THIS->last_size)
 		return;
+
+	//CWIDGET_get_color((CWIDGET *)THIS, &bg, &fg);
 
   if (text == NULL) // We are changing picture
   {
@@ -157,6 +160,8 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
   }
 
   WIDGET->calcMinimumHeight();
+
+	//CWIDGET_set_color((CWIDGET *)THIS, bg, fg);
 }
 
 
@@ -532,10 +537,12 @@ void MyPushButton::calcMinimumHeight()
 	//qDebug("%p: %s: %d", this, text().latin1(), minimumHeight());
 }
 
+#if 0
 void MyPushButton::resizeEvent(QResizeEvent *e)
 {
 	set_button((CBUTTON *)CWidget::get(this), NULL, true);
 }
+#endif
 
 
 /** class MyToolButton *****************************************************/
@@ -567,10 +574,12 @@ void MyToolButton::calcMinimumHeight()
     setMinimumHeight(0);
 }
 
+#if 0
 void MyToolButton::resizeEvent(QResizeEvent *e)
 {
 	set_tool_button((CBUTTON *)CWidget::get(this), NULL, true);
 }
+#endif
 
 
 /* Class CButton */

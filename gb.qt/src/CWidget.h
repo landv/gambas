@@ -189,6 +189,7 @@ void CWIDGET_iconset(QIconSet &icon, QPixmap &p, int size = 0);
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg);
 int CWIDGET_get_background(CWIDGET *_object);
 int CWIDGET_get_foreground(CWIDGET *_object);
+void CWIDGET_get_color(CWIDGET *_object, int *bg, int *fg);
 
 void CACTION_register(void *control, const char *key);
 void CACTION_raise(void *control);
