@@ -402,7 +402,7 @@ static void my_error(int code,char *error,char *where)
 
 	showstr=g_strconcat("<b>This application has raised an unexpected<br>error and must abort.</b><p>[", scode, "] ", error, ".\n", where, (void *)NULL);
 
-	gMessage::setTitle(GB.Application.Name());
+	gMessage::setTitle(GB.Application.Title());
 	gMessage::showError(showstr,NULL,NULL,NULL);
 
 	g_free(showstr);

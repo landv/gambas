@@ -300,7 +300,8 @@ gMainWindow::~gMainWindow()
 	{
 		emit(SIGNAL(onClose));
 		opened = false;
-		gApplication::exitLoop();
+		if (modal())
+			gApplication::exitLoop();
 	}
 	
 	if (_next_timer)
@@ -574,6 +575,8 @@ void gMainWindow::showModal()
 	g_object_unref(_current_group);
 	_current_group = save_group;	
 	_current = save;
+	
+	gtk_window_set_modal(GTK_WINDOW(border), false);
 	
 	if (!persistent)
 		destroyNow();
@@ -888,7 +891,8 @@ bool gMainWindow::doClose()
 			opened = false;
 		_closing = false;
 		
-		gApplication::exitLoop();
+		if (modal())
+			gApplication::exitLoop();
   }
   
   if (!opened) // && !modal())
