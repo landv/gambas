@@ -658,3 +658,28 @@ void gButton::setStretch(bool vl)
 {
 	_stretch = vl;
 }
+
+void gButton::setForeground(gColor color)
+{
+	gControl::setForeground(color);
+
+	if (rendtxt)
+	{
+		if (color == COLOR_DEFAULT)
+		{
+			g_object_set(G_OBJECT(rendtxt),
+				"foreground-set", FALSE,
+				NULL);
+		}
+		else
+		{
+			GdkColor col;
+			fill_gdk_color(&col, color);
+			g_object_set(G_OBJECT(rendtxt),
+				"foreground-set", TRUE,
+				"foreground-gdk", &col,
+				NULL);
+		}
+	}
+}
+

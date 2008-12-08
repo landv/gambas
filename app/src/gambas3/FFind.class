@@ -400,16 +400,16 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
 
     If bBack Then 
 
-      Dec iLine
       iCol = -1
 
       If $bProc Then
       
-        If iLine < 0 Or If FEditor.IsProc(hEdit.Lines[iLine].Text) Then
+        If iLine <= 0 Or If FEditor.IsProc(hEdit.Lines[iLine].Text) Then
   
-          While iLine < (hEdit.Lines.Count - 1)
+          Inc iLine
+          While iLine < hEdit.Lines.Count
   
-            sLine = hEdit.Lines[iLine + 1].Text
+            sLine = hEdit.Lines[iLine].Text
             If FEditor.IsProc(sLine) Then Break
             Inc iLine
   
@@ -417,8 +417,11 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
   
         Endif
       
+        Dec iLine
+        
       Else 
 
+        Dec iLine
         If iLine < 0 Then
   
           If $bProject Then

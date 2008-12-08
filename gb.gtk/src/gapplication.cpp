@@ -233,6 +233,7 @@ gFont *app_tooltips_font=NULL;
 
 bool gApplication::_busy = false;
 char *gApplication::_title = NULL;
+int gApplication::_loopLevel = 0;
 
 GtkTooltips* gApplication::tipHandle()
 {
@@ -449,3 +450,23 @@ void gApplication::setDefaultTitle(const char *title)
 		g_free(_title);
 	_title = g_strdup(title);
 }
+
+void gApplication::enterLoop()
+{
+	int l = _loopLevel;
+	
+	_loopLevel++;
+	
+	do
+	{
+		do_iteration(false);
+	}
+	while (_loopLevel > l);
+}
+
+void gApplication::exitLoop()
+{
+	if (_loopLevel > 0)
+		_loopLevel--;
+}
+

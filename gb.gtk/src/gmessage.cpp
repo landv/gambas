@@ -33,6 +33,7 @@
 #include "gdialog.h"
 #include "gdesktop.h"
 #include "gmainwindow.h"
+#include "gapplication.h"
 #include "gmessage.h"
 
 static char *MESSAGE_title=NULL;
@@ -49,13 +50,17 @@ static gFont *DIALOG_font=NULL;
 int gDialog_run(GtkDialog *window)
 {
   gMainWindow *active;
+  int ret;
   
 	active = gDesktop::activeWindow();
 	if (active)
     gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(active->border));
 	
 	gtk_window_present(GTK_WINDOW(window));
-	return gtk_dialog_run(window);
+	gApplication::_loopLevel++;
+	ret = gtk_dialog_run(window);
+	gApplication::_loopLevel--;
+	return ret;
 }
 
 

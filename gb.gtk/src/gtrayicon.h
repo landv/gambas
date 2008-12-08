@@ -26,6 +26,7 @@ public:
 	void destroy();
 	void show() { setVisible(true); }
 	void hide() { setVisible(false); }
+	int loopLevel() { return _loopLevel; }
 
 //"Events"
 	void (*onDoubleClick)(gTrayIcon *sender);
@@ -51,6 +52,7 @@ public:
 	gPicture *_icon;
 	char *buftext;
 	bool onHide;
+	int _loopLevel;
 	gPicture *getIcon() { return _icon ? _icon : defaultIcon(); }
 	void refresh();
 	void updateTooltip();

@@ -244,7 +244,7 @@ BEGIN_METHOD (CTRAYICONS_get, GB_INTEGER index)
 		return;
 	}
 
-	GB.ReturnObject(gTrayIcon::get(index));
+	GB.ReturnObject(gTrayIcon::get(index)->hFree);
 
 END_METHOD
 
@@ -259,7 +259,7 @@ BEGIN_METHOD_VOID(CTRAYICONS_next)
 	}
 	else
 	{
-		GB.ReturnObject (gTrayIcon::get(*vl));
+		GB.ReturnObject (gTrayIcon::get(*vl)->hFree);
 		(*vl)++;
 	}
 

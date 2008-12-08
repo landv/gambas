@@ -33,11 +33,15 @@ public:
 	static char *defaultTitle() { return _title; }
 
 	static void setDirty();
+	static int loopLevel() { return _loopLevel; }
+	static void enterLoop();
+	static void exitLoop();
 
 //"Private"
 	static GtkTooltips *tipHandle();
 	static bool _busy;
 	static char *_title;
+	static int _loopLevel;
 };
 
 #endif

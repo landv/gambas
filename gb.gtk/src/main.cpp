@@ -435,6 +435,8 @@ void do_iteration(bool do_not_block, bool do_not_sleep)
 {
 	struct timespec mywait;
 
+	gApplication::_loopLevel++;
+
 	if (do_not_block)
 	{
 		if (gtk_events_pending ())
@@ -449,6 +451,8 @@ void do_iteration(bool do_not_block, bool do_not_sleep)
 	else	
 		gtk_main_iteration_do(true);
 	
+	gApplication::_loopLevel--;
+
 	if (post_Check) { post_Check=false; GB.CheckPost(); }
 	gControl::cleanRemovedControls();
 }
