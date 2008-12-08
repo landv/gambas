@@ -613,8 +613,8 @@ PRIVATE SUB ShowProperty()
     CASE "Position"
 
       hEditor = spnProperty
-      spnProperty.MinValue = -1024
-      spnProperty.MaxValue = 1024
+      spnProperty.MinValue = -4096
+      spnProperty.MaxValue = 4096
       spnProperty.Step = Desktop.Scale
       'spnProperty.Suffix = ""
       
@@ -622,7 +622,7 @@ PRIVATE SUB ShowProperty()
 
       hEditor = spnProperty
       spnProperty.MinValue = 1
-      spnProperty.MaxValue = 1024
+      spnProperty.MaxValue = 4096
       spnProperty.Step = Desktop.Scale
       'spnProperty.Suffix = ""
       
