@@ -207,6 +207,7 @@ MyLabel::MyLabel(QWidget *parent) : QLabel(parent)
 	autoResize = false;
 	transparent = false;
 	locked = false;
+	setIndent(0);
   calcMinimumHeight();
 }
 
