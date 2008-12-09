@@ -250,28 +250,12 @@ int gDesktop::resolution()
 
 int gDesktop::scale()
 {
-	PangoLanguage *lng=NULL;
-	PangoContext* ct=gdk_pango_context_get();
-	GtkStyle *sty=gtk_widget_get_default_style();
-	PangoFontDescription *ft=sty->font_desc;
-	PangoFontMetrics* fm;
-	int val;
+	gFont *ft;
 	
 	if (!_desktop_scale)
 	{
-		if (getenv("LANG")) 
-			lng = pango_language_from_string(getenv("LANG"));
-			
-		fm = pango_context_get_metrics (ct,ft,lng);
-		
-		val = (pango_font_metrics_get_ascent(fm) + pango_font_metrics_get_descent(fm)) / PANGO_SCALE;
-		val = (val + 1) / 2;
-		
-		pango_font_metrics_unref(fm);
-		g_object_unref(G_OBJECT(ct));
-		
-		if (!val) val = 1;
-		_desktop_scale = val;
+		ft = font();
+		_desktop_scale = (ft->ascent() + ft->descent() + 1) / 2;
 	}
 	
 	return _desktop_scale;

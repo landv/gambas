@@ -29,6 +29,7 @@
 #include "widgets.h"
 #include "font-parser.h"
 #include "gdesktop.h"
+#include "gtools.h"
 #include "gb.form.font.h"
 
 #include <math.h>
@@ -143,13 +144,13 @@ void gFont::exit()
   //  fprintf(stderr, "WARNING: %d gFont objects were not freed.\n", _nfont);
 }
 
-long gFont::count()
+int gFont::count()
 {
 	if (!FONT_families) gFont::init();
 	return FONT_n_families;
 }
 
-const char *gFont::familyItem(long pos)
+const char *gFont::familyItem(int pos)
 {
 	if (!FONT_families) gFont::init();
 	if ( (pos<0) || (pos>=FONT_n_families) ) return NULL; 
@@ -192,10 +193,9 @@ void gFont::updateWidget()
 void gFont::realize()
 {
   gShare::gShare();
-	strike=false;
-	uline=false;
+	strike = false;
+	uline = false;
 	_nfont++;  
-	//fprintf(stderr, "new gFont() %p\n", this);
 }
 
 gFont::gFont(GtkWidget *wid)
@@ -269,30 +269,23 @@ gFont::~gFont()
 {
 	g_object_unref(ct);
 	_nfont--;
-  //fprintf(stderr, "delete gFont() %p\n", this);
 }
 
 
-long gFont::ascent()
+int gFont::ascent()
 {
 	PangoFontDescription *desc=pango_context_get_font_description(ct);
 	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
-	long mt;
 	
-	mt=pango_font_metrics_get_ascent(metric)/PANGO_SCALE;
-	
-	return mt;
+	return gt_pango_to_pixel(pango_font_metrics_get_ascent(metric));
 }
 
-long gFont::descent()
+int gFont::descent()
 {
 	PangoFontDescription *desc=pango_context_get_font_description(ct);
 	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
-	long mt;
 	
-	mt=pango_font_metrics_get_descent(metric)/PANGO_SCALE;
-	
-	return mt;
+	return gt_pango_to_pixel(pango_font_metrics_get_descent(metric));
 }
 
 bool gFont::bold()
@@ -427,7 +420,7 @@ int gFont::width(const char *text, int len)
 	pango_layout_get_size(ly,&w,NULL);
 	g_object_unref(G_OBJECT(ly));
 	
-	return w/PANGO_SCALE;
+	return gt_pango_to_pixel(w);
 }
 
 int gFont::height(const char *text, int len)
@@ -435,14 +428,14 @@ int gFont::height(const char *text, int len)
 	PangoLayout *ly;
 	int h;
 	
-	if (!text || !*text) return 0;
+	if (len == 0 || !text || !*text) text = " ";
 	
 	ly=pango_layout_new(ct);
 	pango_layout_set_text(ly,text,len);
 	pango_layout_get_size(ly,NULL,&h);
 	g_object_unref(G_OBJECT(ly));
 	
-	return h/PANGO_SCALE;
+	return gt_pango_to_pixel(h);
 }
 
 int gFont::height()
@@ -539,7 +532,7 @@ char** gFont::styles()
         return 0;
 }
 
-long gFont::resolution()
+int gFont::resolution()
 {
         return 0;
 }
@@ -556,7 +549,7 @@ bool gFont::underline()
 }
 
 
-void gFont::setResolution(long vl)
+void gFont::setResolution(int vl)
 {
 }
 

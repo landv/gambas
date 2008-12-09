@@ -39,8 +39,12 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 {
 	CFONT *fnt;
 	
+	//fprintf(stderr, "CFONT_create: %p\n", font);
+	
 	if (font && font->getTag())
 		return (CFONT *)font->getTagValue();
+	
+	//fprintf(stderr, "create Font\n");
 	
 	GB.New((void **)POINTER(&fnt), GB.FindClass("Font"), 0, 0);
 	
@@ -48,6 +52,7 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 	{
 		fnt->font->unref();
 		fnt->font = font;
+		font->ref();
 		font->setTag(new gGambasTag((void *)fnt));
 	}
 	

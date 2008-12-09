@@ -15,12 +15,12 @@ public:
   
 	static void init();
 	static void exit();
-	static long count();
-	static const char *familyItem(long pos);
+	static int count();
+	static const char *familyItem(int pos);
 
 	gFont *copy();
-	long ascent();
-	long descent();
+	int ascent();
+	int descent();
 	bool fixed();
 	bool scalable();
 	char **styles();
@@ -28,7 +28,7 @@ public:
 	bool bold();
 	bool italic();
 	char* name();
-	long resolution();
+	int resolution();
 	double size();
 	bool strikeOut();
 	bool underline();
@@ -37,7 +37,7 @@ public:
 	void setBold(bool vl);
 	void setItalic(bool vl);
 	void setName(char *nm);
-	void setResolution(long vl);
+	void setResolution(int vl);
 	void setSize(double sz);
 	void setGrade(int grade);
 	void setStrikeOut(bool vl);
