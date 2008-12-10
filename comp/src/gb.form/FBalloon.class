@@ -179,7 +179,9 @@ PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
   ENDIF 
   
   IF NOT ME.Visible THEN 
+    hWin = Application.ActiveWindow
     ME.Show
+    IF hWin THEN hWin.Show
   ELSE  
     Form_Show
     ME.Raise
