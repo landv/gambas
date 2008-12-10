@@ -57,6 +57,7 @@ CPICTURE *CPICTURE_create(gPicture *picture)
 	{
 		pic->picture->unref();
 		pic->picture = picture;
+		picture->getPixmap();
 		picture->setTag(new gGambasTag((void *)pic));
 	}
 	return pic;
