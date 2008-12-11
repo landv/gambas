@@ -316,49 +316,6 @@ BEGIN_METHOD_VOID(CWINDOW_free)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CFORM_new)
-
-	GB.Attach(_object, _object, "Form");
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CFORM_main)
-
-	CWINDOW *form;
-
-	form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
-	form->ob.widget->show();
-
-END_METHOD
-
-
-/*BEGIN_METHOD(CFORM_load, GB_OBJECT parent;GB_BOOLEAN Plug;)
-
-	void *Par=NULL;
-	bool Plg=false;
-	long npar=0;
-
-	if (!MISSING(parent)) { Par=VARG(parent); npar++; }
-	if (!MISSING(Plug)) { Plg=VARG(Plug); npar++; }
-
-	GB.Push(1, GB_T_OBJECT,Par);
-	GB.AutoCreate(GB.GetClass(NULL),npar);
-
-END_METHOD*/
-
-BEGIN_METHOD(CFORM_load, GB_OBJECT parent)
-
-  if (!MISSING(parent))
-  {
-    GB.Push(1, GB_T_OBJECT, VARG(parent));
-    //qDebug("CFORM_load + parent");
-  }
-
-  GB.AutoCreate(GB.GetClass(NULL), MISSING(parent) ? 0 : 1);
-
-END_METHOD
-
 
 BEGIN_METHOD_VOID(CWINDOW_next)
 
@@ -659,6 +616,35 @@ BEGIN_PROPERTY(CWINDOW_closed)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(CFORM_new)
+
+	GB.Attach(_object, _object, "Form");
+
+END_METHOD
+
+
+BEGIN_METHOD_VOID(CFORM_main)
+
+	CWINDOW *form;
+
+	form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
+	if (form->ob.widget->isVisible())
+		CWINDOW_show(form, NULL);
+
+END_METHOD
+
+
+BEGIN_METHOD(CFORM_load, GB_OBJECT parent)
+
+  if (!MISSING(parent))
+  {
+    GB.Push(1, GB_T_OBJECT, VARG(parent));
+    //qDebug("CFORM_load + parent");
+  }
+
+  GB.AutoCreate(GB.GetClass(NULL), MISSING(parent) ? 0 : 1);
+
+END_METHOD
 
 
 /***************************************************************************

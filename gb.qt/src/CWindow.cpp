@@ -213,6 +213,7 @@ static bool emit_open_event(void *_object)
 		THIS->shown = true;
 	}
 	
+ 	THIS->hidden = FALSE;
 	return false;
 }
 
@@ -419,11 +420,8 @@ BEGIN_METHOD_VOID(CFORM_main)
   CWINDOW *form;
 
   form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
-
-  //GB.New(POINTER(&form), GB.GetClass(NULL), NULL, NULL);
-
-	CWINDOW_show(form, NULL);
-  //((MyMainWindow *)form->widget.widget)->showActivate();
+  if (!form->hidden)
+  	CWINDOW_show(form, NULL);
 
 END_METHOD
 
@@ -645,6 +643,8 @@ END_METHOD
 
 
 BEGIN_METHOD_VOID(CWINDOW_hide)
+
+	THIS->hidden = TRUE;
 
   if (THIS->toplevel && WINDOW->testWFlags(Qt::WShowModal))
   {
@@ -2264,15 +2264,17 @@ void MyMainWindow::configure()
 }
 
 
+#if 0
 void MyMainWindow::hide(void)
 {
-  CWIDGET *_object = CWidget::get(this);
+/*  CWIDGET *_object = CWidget::get(this);
   
   if (THIS)
-  	THIS->hidden = TRUE;
+  	THIS->hidden = TRUE;*/
   	
   QMainWindow::hide();
 }
+#endif
 
 void MyMainWindow::setName(const char *name, CWIDGET *control)
 {
