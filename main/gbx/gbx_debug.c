@@ -203,6 +203,7 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
 		{
 			value.type = T_CLASS;
 			value._class.class = class;
+			value._class.super = NULL;
 		}
 		goto __FOUND;
 	}

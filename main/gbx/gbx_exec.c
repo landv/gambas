@@ -1071,6 +1071,13 @@ __CLASS:
 	object = NULL;
 	defined = TRUE;
 
+	if (val == EXEC_super)
+	{
+		EXEC_super = val->_object.super;
+		//*class = (*class)->parent;
+		if (!class)
+			THROW(E_PARENT);
+	}
 	CLASS_load(class);
 	goto __RETURN;
 
