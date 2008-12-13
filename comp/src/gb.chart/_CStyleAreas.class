@@ -9,8 +9,8 @@ End
 
 Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)  
   Dim oSerie As _CSerie
-  Dim cnt As Integer
-  Dim fMaxVal As Float
+
+  Dim fMaxVal, fMinVal As Float
   'DIM itmp AS Float
   Dim i, j As Integer
   Dim f As Float
@@ -32,41 +32,39 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   Select Case $iType
     Case ChartType.Areas, ChartType.AreasSymbols
-      fMaxVal = MTools.GetChartMaxValue(Chart)
+      If Chart.YAxe.AutoScale Then
+        fMaxVal = MTools.GetChartMaxValue(Chart)
+        fMinVal = 0
+      Else
+        fMaxVal = Chart.YAxe.MaxValue
+        fMinVal = Chart.YAxe.MinValue
+      Endif
+
+      
     Case ChartType.AreasStacked
       fMaxVal = MTools.GetChartMaxCumulateValue(Chart)
     Case ChartType.AreasPercent
       fMaxVal = 100
   End Select
   If fMaxVal = 0 Then Return 
-  cnt = draw.TextWidth(fMaxVal & "00")
-  
-  'Get the max width needed for draw the Y labels
-  If Chart.YAxe.Visible Then 
-    YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
-  Else
+
     YHeadersW = CX + iStaticSpace * 2
-  Endif
+
   
   'Set the graph square position value
 
 
-    hRect.Top = CY + iTwoLetterHeight
-    hRect.Bottom = CY + CH - iStaticSpace * 2
+    hRect.Top = CY '+ iTwoLetterHeight
+    hRect.Bottom = CY '+ CH - iStaticSpace * 2
 
   hRect.Left = YHeadersW
   hRect.Right = CX + CW - YHeadersW / 2
   
-  'Draw the background
-  Draw.ForeColor = Color.LightGray
-  Draw.FillColor = Chart.BackColor
-  Draw.FillStyle = Fill.Solid
-  Draw.Rect(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
-  Draw.ForeColor = Color.Black
+
   
   
-  hUnits = MTools.DrawChartAxes(Chart, hRect, 0, fMaxVal)
-  
+  hUnits = MTools.DrawChartAxes(Chart, hRect, fMinVal, fMaxVal)
+  draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
   
   If Chart.Count < 2 Then Return 
   Draw.FillStyle = Fill.Solid
@@ -94,16 +92,16 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
           f = Chart[j][i]
       End Select 
       aroPolygones[j][i * 2] = hRect.Left + (hUnits.X * i)
-      aroPolygones[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y
+      aroPolygones[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal)
     Next
     
 
   Next
   For j = 0 To Chart.CountDataSets - 1
     aroPolygones[J].Add(aroPolygones[J][aroPolygones[J].max - 1])
-    aroPolygones[J].Add(hRect.Bottom)
+    aroPolygones[J].Add(hRect.Bottom + hUnits.Y * fMinVal)
     aroPolygones[J].Add(hRect.Left)
-    aroPolygones[J].Add(hRect.Bottom)
+    aroPolygones[J].Add(hRect.Bottom + hUnits.Y * fMinVal)
   Next
   
   
@@ -127,4 +125,5 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
     Next
   
   Endif
+  Draw.Clip.Enabled = False
 End

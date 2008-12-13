@@ -29,7 +29,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   'draw.Font.Size = 11 * Chart._fProportionnal
   
   Select Case $iType
-    Case ChartType.Lines, ChartType.LinesSymbols
+    Case ChartType.Plots
       If Chart.YAxe.AutoScale Then
         fMaxVal = MTools.GetChartMaxValue(Chart)
         fMinVal = 0
@@ -37,12 +37,6 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
         fMaxVal = Chart.YAxe.MaxValue
         fMinVal = Chart.YAxe.MinValue
       Endif
-      
-      
-    Case ChartType.LinesStacked
-      fMaxVal = MTools.GetChartMaxCumulateValue(Chart)
-    Case ChartType.LinesPercent
-      fMaxVal = 100
   End Select
 
     'Get the max width needed for draw the Y labels
@@ -64,12 +58,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
  If Chart.Count < 2 Then Return 
   Draw.FillStyle = Fill.Solid
   
-  For j = 0 To Chart.CountDataSets - 1
-    ariPolyLine = New Integer[]
-    ariPolyLine.Resize(Chart.Count * 2)
-    aroPolyLines.Add(ariPolyLine)
-    
-  Next  
+  
   
   For i = 0 To Chart.Count - 1
   f = 0
@@ -86,35 +75,18 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
         Case Else
           f = Chart[j][i]
       End Select 
-      aroPolyLines[j][i * 2] = hRect.Left + (hUnits.X * i)
-      aroPolyLines[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal)
+      'aroPolyLines[j][i * 2] = hRect.Left + (hUnits.X * i)
+      'aroPolyLines[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal)
+      Draw.FillColor = Chart.Colors[j]
+      Draw.ForeColor = Color.DarkGray
+      MTools.DrawSymbol(j, hRect.Left + (hUnits.X * i), hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal))
     Next
     
 
   Next
   
-  For i = 0 To aroPolyLines.Max 'TO 0 STEP -1
-  Draw.LineWidth = 2
-  Draw.ForeColor = Chart.Colors[i]
-  Draw.LineStyle = Line.Solid
-    draw.Polyline(aroPolyLines[i])  
-  Next
   
-  If $iType = ChartType.LinesSymbols Then 
-  
-    For i = 0 To aroPolyLines.Max
-    
-      For j = 0 To aroPolyLines[i].Max Step 2
-        Draw.LineWidth = 1
-        Draw.FillColor = Chart.Colors[i]
-        Draw.ForeColor = Color.DarkGray
-        MTools.DrawSymbol(i, aroPolyLines[i][j], aroPolyLines[i][j + 1])
-      
-      Next
-    
-    Next
-  
-  Endif
   
   Draw.Clip.Enabled = False
 End
+' Gambas class file

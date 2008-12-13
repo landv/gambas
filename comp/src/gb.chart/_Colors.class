@@ -35,8 +35,11 @@ Public Function _Get(Index As Integer) As Integer
     
     ariTmp = $ariColors
   Else 
-    If IsNull($ariCustomColors) Or $ariCustomColors.Count = 0 Then Error.Raise(("You must to define the custom color array before"))
-    ariTmp = $ariCustomColors
+    If IsNull($ariCustomColors) Or $ariCustomColors.Count = 0 Then 
+      ariTmp = $ariColors
+    Else
+      ariTmp = $ariCustomColors
+    Endif
   Endif
   
   If Index > ariTmp.Max Then 

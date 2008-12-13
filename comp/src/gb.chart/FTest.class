@@ -18,13 +18,15 @@ Public Sub _new()
 ' Chart[4].Values = [1.0, 8.0, 3.0, 5]
 
   Debug Desktop.Scale
-Chart.XAxe.Arrange = Chart.XAxe.Steps
+'Chart.XAxe.Arrange = Chart.XAxe.Steps
 Chart.Legend.Title = "Legend"
 Chart.Legend.Visible = True
 
-Chart.Title.Visible = True
+'Chart.Title.Visible = True
 Chart.Title.Text = "A Gambas Chart"
 
+Chart.BackColor = Color.LightBackground
+'Chart.YAxe.MinValue = 30
 txtLegend.Text = Chart.Legend.Title
 txtChart.Text = Chart.Title.Text
 
@@ -70,7 +72,7 @@ For Each s In hClass.Symbols
   If hClass[s].Kind <> Class.Constant Then Continue
   
   Select Case hClass[s].Value 
-    Case 0, 10, 20, 30, 40
+    Case 0, 10, 20, 30, 40, 50
       hPicBox = New ToggleButton(ScrollView1) As "MyPicBox"
       hPic = Picture["img" &/ LCase(s) & ".png"]
       Try hPicBox.Picture = hPic
@@ -84,6 +86,10 @@ For Each s In hClass.Symbols
   
   
 Next
+
+spMax.Value = Chart.YAxe.MaxValue
+spMin.Value = Chart.YAxe.MinValue
+spStep.Value = Chart.YAxe.Step
 
 ColorButton1.Color = Chart.BackColor
 'LAST = ScrollView1.Children[1]
@@ -461,4 +467,37 @@ Public Sub CheckBox8_Click()
 
   Chart.Proportionnal = CheckBox8.Value
   DrawingArea1.Refresh
+End
+
+Public Sub CheckBox9_Click()
+
+  Chart.XAxe.Arrange = IIf(Last.Value, Chart.XAxe.Steps, Chart.XAxe.Normal)
+  DrawingArea1.Refresh
+End
+
+Public Sub CheckBox10_Click()
+  Chart.YAxe.AutoScale = True
+  DrawingArea1.Refresh
+
+End
+
+Public Sub spMin_Change()
+
+  Chart.YAxe.MinValue = Last.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub spMax_Change()
+
+    Chart.YAxe.MaxValue = Last.Value
+  DrawingArea1.Refresh
+
+End
+
+Public Sub spStep_Change()
+
+      Chart.YAxe.Step = Last.Value
+  DrawingArea1.Refresh
+
 End

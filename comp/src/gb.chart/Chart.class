@@ -25,7 +25,7 @@ Private $iType As Integer
 Private $iWidth As Integer
 Private $iHeight As Integer
 Private $oHeaders As New _CHeaders
-Private $iBackColor As Integer = Color.LightGray
+Private $iBackColor As Integer = Color.White
 Private $iBorder As Boolean = True
 
 
@@ -55,7 +55,7 @@ Property Style As Integer
 Public Sub _New()
   
   Me.CountDataSets = 1
-  Me.Type = ChartType.Lines
+  Me.Type = ChartType.Columns
   'MTools.ColorList = [color.Blue, color.Yellow, color.Red, color.Green, color.Orange, color.DarkBlue]
 End
 
@@ -111,6 +111,9 @@ Private Sub Type_Write(Value As Integer)
     Case .Bars, .BarsPercent, .BarsStacked
       $oGraphStyle = New _CStyleBar(Value)
       $bLegendSeries = False
+    Case .Plots
+      $oGraphStyle = New _CStylePlot(Value)
+      $bLegendSeries = True
   
   End Select
  End With 
@@ -154,30 +157,30 @@ Public Sub Draw()
   'Draw the Legend and get the graph caneva size
   $oLegend.Draw($bLegendSeries)
   'Draw The Title
-  
+  iTitleHeight = iStaticSpace
   If Not IsNull(Me.Title.Text) And Me.Title.Visible Then 
   
     'Draw.Font.Grade = 4
     Draw.Font = $oTitle.Font
     Draw.Font.Size = $oTitle.Font.Size * _fProportionnal
-    iTitleHeight = Draw.Font.Height() * 1.5
+    iTitleHeight = Draw.Font.Height() * 2
   Endif
 
   iClientWidth = Me.Width - $oLegend._Width - 2 * iStaticSpace
-  iClientHeight = Me.Height - 2 * iStaticSpace - $oLegend._Height - iStaticSpace
+  iClientHeight = Me.Height - $oLegend._Height - 2 * iStaticSpace 
   
   
   Draw.FillColor = color.White
-  If $iBorder Then Draw.Rect(iStaticSpace, iStaticSpace, iClientWidth, iClientHeight)
+  If $iBorder Then Draw.Rect(iStaticSpace, iStaticSpace, iClientWidth - iStaticSpace, iClientHeight - iStaticSpace)
   'Draw.Font.Grade = 4
   
-  $oGraphStyle.Draw(iStaticSpace, iStaticSpace + iTitleHeight, iClientWidth, iClientHeight - iTitleHeight)
+  $oGraphStyle.Draw(iStaticSpace, iTitleHeight, iClientWidth, iClientHeight - iTitleHeight - iStaticSpace)
   
   
   If Not IsNull(Me.Title.Text) And Me.Title.Visible Then 
     Draw.ForeColor = Color.Black
     Draw.Font.Size = Me.Title.Font.Size * _fProportionnal
-    Draw.Text(Me.Title.Text, iStaticSpace, iTitleHeight / 2, iClientWidth, iTitleHeight, Align.Center)
+    Draw.Text(Me.Title.Text, iStaticSpace, iStaticSpace, iClientWidth, iTitleHeight, Align.Center)
   Endif
 End
 

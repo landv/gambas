@@ -43,20 +43,14 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   End Select
   If fMaxVal = 0 Then Return 
   
-  cnt = draw.TextWidth(MTools.GetChartMaxLenLabel(chart))
-  
-  
-  'Get the max width needed for draw the Y labels
-  If Chart.YAxe.Visible Then 
-    YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
-  Else
+
     YHeadersW = CX + iStaticSpace * 2
-  Endif
+
   
   'Set the graph square position value
 
-    hRect.Top = CY + iTwoLetterHeight
-    hRect.Bottom = CY + CH - iStaticSpace * 2
+    hRect.Top = CY '+ iTwoLetterHeight
+    hRect.Bottom = CY + CH '- iStaticSpace * 2
 
   hRect.Left = YHeadersW
   hRect.Right = CX + CW - YHeadersW / 2
@@ -108,5 +102,6 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
         fTabPos += hUnits.x * 2
       Next
   End Select
+  Draw.Clip.Enabled = False
   'MTools.DrawSymbol(5, 15, 15)
 End

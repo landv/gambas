@@ -1,53 +1,53 @@
 ' Gambas class file
 
-EXPORT 
-PRIVATE $oFont AS NEW Font
-PRIVATE $sText AS String
-PRIVATE $bVisible AS Boolean
+Export 
+Private $oFont As New Font
+Private $sText As String
+Private $bVisible As Boolean = False
 
-PROPERTY {Font} AS Font
-PROPERTY Text AS String
-PROPERTY Visible AS Boolean
+Property {Font} As Font
+Property Text As String
+Property Visible As Boolean
 
-PUBLIC SUB _New()
+Public Sub _New()
   
-  $bVisible = TRUE
+  $bVisible = True
   $oFont.Size = 16
   
-END
+End
 
-PRIVATE FUNCTION Font_Read() AS Font
+Private Function Font_Read() As Font
 
-  RETURN $oFont
+  Return $oFont
 
-END
+End
 
-PRIVATE SUB Font_Write(Value AS Font)
+Private Sub Font_Write(Value As Font)
 
   $oFont = Value
 
-END
+End
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN $sText
+  Return $sText
 
-END
+End
 
-PRIVATE SUB Text_Write(Value AS String)
+Private Sub Text_Write(Value As String)
 
   $sText = Value  
 
-END
+End
 
-PRIVATE FUNCTION Visible_Read() AS Boolean
+Private Function Visible_Read() As Boolean
 
-  RETURN $bVisible
+  Return $bVisible
 
-END
+End
 
-PRIVATE SUB Visible_Write(Value AS Boolean)
+Private Sub Visible_Write(Value As Boolean)
 
   $bVisible = Value
 
-END
+End

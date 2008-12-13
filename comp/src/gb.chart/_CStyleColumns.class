@@ -10,8 +10,8 @@ End
 
 Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim oSerie As _CSerie
-  Dim cnt As Integer
-  Dim fMaxVal As Float
+
+  Dim fMaxVal, fMinVal As Float
   Dim itmp As Float
   Dim i, j As Integer
   Dim f As Float
@@ -35,37 +35,36 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   Select Case $iType
     Case ChartType.Columns, ChartType.ColumnsLineCombination
-      fMaxVal = MTools.GetChartMaxValue(Chart)
+      If Chart.YAxe.AutoScale Then
+        fMaxVal = MTools.GetChartMaxValue(Chart)
+        fMinVal = 0
+      Else
+        fMaxVal = Chart.YAxe.MaxValue
+        fMinVal = Chart.YAxe.MinValue
+      Endif
     Case ChartType.ColumnsStacked
       fMaxVal = MTools.GetChartMaxCumulate(Chart)
     Case ChartType.ColumnsPercent
       fMaxVal = 100
   End Select
   If fMaxVal = 0 Then Return 
-  cnt = draw.TextWidth(fMaxVal & "00")
+
     'Get the max width needed for draw the Y labels
-  If Chart.YAxe.Visible Then 
-    YHeadersW = CX + iStaticSpace + cnt + iStaticSpace * 2
-  Else
+
     YHeadersW = CX + iStaticSpace * 2
-  Endif
+
   
   'Set the graph square position value
 
-    hRect.Top = CY + iTwoLetterHeight
-    hRect.Bottom = CY + CH - iStaticSpace * 2
+    hRect.Top = CY '+ iTwoLetterHeight
+    hRect.Bottom = CY + CH '- iStaticSpace * 2
 
   hRect.Left = YHeadersW
   hRect.Right = CX + CW - YHeadersW / 2
-  'Draw the background
-  Draw.ForeColor = Color.LightGray
-  Draw.FillColor = Chart.BackColor
-  Draw.FillStyle = Fill.Solid
-  Draw.Rect(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
-  Draw.ForeColor = Color.Black
+
   
-  hUnits = MTools.DrawChartAxes(Chart, hRect, 0, fMaxVal, Align.Center)
-  
+  hUnits = MTools.DrawChartAxes(Chart, hRect, fMinVal, fMaxVal, Align.Center)
+  draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
   Select Case $iType
     Case ChartType.Columns
       fTabPos = hRect.Left + hUnits.x / 2
@@ -74,7 +73,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
           draw.ForeColor = Color.DarkGray
           Draw.FillStyle = Fill.Solid
           Draw.FillColor = Chart.Colors[i]
-          draw.Rect(fTabPos + i * (hUnits.X - 1), hRect.Bottom, hUnits.X, oSerie[i] * - hUnits.y)
+          draw.Rect(fTabPos + i * (hUnits.X - 1), hRect.Bottom + (fMinVal * hUnits.y), hUnits.X, oSerie[i] * - hUnits.y)
         Next
         fTabPos += i * hUnits.x + hUnits.x
       Next
@@ -107,5 +106,6 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
         fTabPos += hUnits.x * 2
       Next
   End Select
+  Draw.Clip.Enabled = False
   'MTools.DrawSymbol(5, 15, 15)
 End
