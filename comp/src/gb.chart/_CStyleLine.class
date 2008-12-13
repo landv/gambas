@@ -44,22 +44,12 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Endif
   
   'Set the graph square position value
-  If Chart.XAxe.Visible Then 
-    hRect.Top = CY + iTwoLetterHeight
-    hRect.Bottom = CY + CH - iTwoLetterHeight
-  Else
-    hRect.Top = CY + iTwoLetterHeight
-    hRect.Bottom = CY + CH - iStaticSpace * 2
-  Endif
+
+    hRect.Top = CY '+ iTwoLetterHeight
+    hRect.Bottom = CY + CH '- iStaticSpace * 3
   hRect.Left = YHeadersW
   hRect.Right = CX + CW - YHeadersW / 2
   
-  'Draw the background
-  Draw.ForeColor = Color.LightGray
-  Draw.FillColor = Chart.BackColor
-  Draw.FillStyle = Fill.Solid
-  Draw.Rect(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
-  Draw.ForeColor = Color.Black
   
   
   hUnits = MTools.DrawChartAxes(Chart, hRect, 0, fMaxVal)

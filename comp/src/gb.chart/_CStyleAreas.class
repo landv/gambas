@@ -49,13 +49,11 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Endif
   
   'Set the graph square position value
-  If Chart.XAxe.Visible Then 
-    hRect.Top = CY + iTwoLetterHeight
-    hRect.Bottom = CY + CH - iTwoLetterHeight
-  Else
+
+
     hRect.Top = CY + iTwoLetterHeight
     hRect.Bottom = CY + CH - iStaticSpace * 2
-  Endif
+
   hRect.Left = YHeadersW
   hRect.Right = CX + CW - YHeadersW / 2
   

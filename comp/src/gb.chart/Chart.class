@@ -55,7 +55,7 @@ Property Style As Integer
 Public Sub _New()
   
   Me.CountDataSets = 1
-  Me.Type = ChartType.Columns
+  Me.Type = ChartType.Lines
   'MTools.ColorList = [color.Blue, color.Yellow, color.Red, color.Green, color.Orange, color.DarkBlue]
 End
 
@@ -164,7 +164,7 @@ Public Sub Draw()
   Endif
 
   iClientWidth = Me.Width - $oLegend._Width - 2 * iStaticSpace
-  iClientHeight = Me.Height - 2 * iStaticSpace - $oLegend._Height
+  iClientHeight = Me.Height - 2 * iStaticSpace - $oLegend._Height - iStaticSpace
   
   
   Draw.FillColor = color.White

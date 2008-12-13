@@ -1,13 +1,13 @@
 ' Gambas class file
 
-PUBLIC X AS Float
-PUBLIC Y AS Float
-PUBLIC TextW AS Float
+Public X As Float
+Public Y As Float
+Public TextW As Float
+Public Rect As CRect
 
-
-PUBLIC SUB _New(OPTIONAL iX AS Float, OPTIONAL iY AS Float)
+Public Sub _New(Optional iX As Float, Optional iY As Float)
   
   X = iX
   Y = iY
   
-END
+End
