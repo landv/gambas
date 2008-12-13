@@ -55,7 +55,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
 
 
     hRect.Top = CY '+ iTwoLetterHeight
-    hRect.Bottom = CY '+ CH - iStaticSpace * 2
+    hRect.Bottom = CY + CH '- iStaticSpace * 2
 
   hRect.Left = YHeadersW
   hRect.Right = CX + CW - YHeadersW / 2
