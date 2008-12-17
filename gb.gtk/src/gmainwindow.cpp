@@ -202,6 +202,7 @@ void gMainWindow::initialize()
 	_next_timer = 0;
 	_xembed = false;
 	_activate = false;
+	_hidden = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -456,6 +457,7 @@ void gMainWindow::setVisible(bool vl)
 			
 		_not_spontaneous = !visible;
 		visible = true;
+		_hidden = false;
 		
 		if (isTopLevel())
 		{
@@ -486,6 +488,7 @@ void gMainWindow::setVisible(bool vl)
 			focus = gDesktop::activeControl();
 			
 		_not_spontaneous = visible;
+		_hidden = true;
 		gControl::setVisible(false);
 	}
 }

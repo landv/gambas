@@ -379,7 +379,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 
     for(;;)
     {
-      qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+    	MAIN_process_events();
       if (CWINDOW_EmbedState)
         break;
       usleep(10000);
@@ -1568,7 +1568,7 @@ void MyMainWindow::showActivate()
 
 		if (getTool() || THIS->skipTaskbar)
 		{
-			qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+			MAIN_process_events();
 			usleep(50000);
 			setActiveWindow();
 		}

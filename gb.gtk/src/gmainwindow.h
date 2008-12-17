@@ -28,6 +28,7 @@ public:
 	bool isPersistent() { return persistent; }
 	bool isToolBox() { return _toolbox; }
 	bool isClosed() { return !opened; }
+	bool isHidden() { return _hidden; }
 	
 	int controlCount();
 	gControl *getControl(char *name);
@@ -123,6 +124,7 @@ public:
 	unsigned _masked : 1;
 	unsigned _xembed : 1;
 	unsigned _activate : 1;
+	unsigned _hidden : 1;
 };
 
 #endif
