@@ -127,25 +127,9 @@ static bool load_buffer(CRESULT *_object, int vpos)
 		/* If the pos (the result row) does not exist because pos is > of the rows available than the ODBC module
 			will rise an Error ODBC_END_OF_DATA that must be catched by the application */
 
-		#if 0
-		if (THIS->count == -1)
-			{
-				if (THIS->handle && pos != THIS->pos)
-					{
-							THIS->driver->Result.Fill(THIS->handle, pos, THIS->buffer,(pos > 0) && (pos == (THIS->pos + 1)));
-					}
-				THIS->pos = pos;
-					THIS->available = TRUE;
-			}
-			else
-		/* End of Andrea's changes */
-		#endif
-
-		{
-			THIS->pos = -1;
-			THIS->available = FALSE;
-			return TRUE;
-		}
+		THIS->pos = -1;
+		THIS->available = FALSE;
+		return TRUE;
 	}
 	else
 	{
@@ -733,7 +717,8 @@ BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
 			if (!VARGOPT(keep, FALSE))
 			{
 				DELETE_MAP_add(&THIS->dmap, THIS->pos);
-				THIS->count--;
+				if (THIS->count > 0)
+					THIS->count--;
 				reload_buffer(THIS);
 
 				GB.ListEnum(THIS);

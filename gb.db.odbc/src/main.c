@@ -895,6 +895,18 @@ fflush(stderr);
 	return do_query(db, err, (ODBC_RESULT **) result, query,	0);
 }
 
+static int get_num_columns(ODBC_RESULT *result)
+{
+	SQLSMALLINT colsNum = 0;
+	SQLRETURN retcode;
+	
+	retcode = SQLNumResultCols(result->odbcStatHandle, &colsNum);
+	
+	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
+		GB.Error("ODBC error: Unable to get the number of columns");
+	
+	return colsNum;
+}
 
 
 /* Internal function - create the space for the result and bind the column to each field-space allocated */
@@ -911,23 +923,14 @@ fflush(stderr);
 	SQLSMALLINT scale;
 	SQLINTEGER i;
 	SQLINTEGER displaysize;
-	SQLSMALLINT colsNum=0;
 	ODBC_FIELDS *field, *current;
 	SQLINTEGER collen;
 	int nresultcols;
 	//int V_OD_erg=0;
-	SQLRETURN retcode;
 
-
-	retcode=SQLNumResultCols(result->odbcStatHandle, &colsNum);
-	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
-		{
-				GB.Error("ODBC error");
-	}
-				
-	nresultcols = colsNum;
+	
+	nresultcols = get_num_columns(result);
 	result->fields = NULL;
-
 
 	if (result->fields == NULL)
 	{
@@ -1014,43 +1017,24 @@ fflush(stderr);
 static void query_init(DB_RESULT result, DB_INFO * info, int *count)
 {
 
-	//int V_OD_erg=0;
-	SQLRETURN retcode;
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
-	SQLLEN rowsNum=0;
-	SQLSMALLINT colsNum=0;
+	SQLLEN rowsNum = -1;
+	SQLSMALLINT colsNum = 0;
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tquery_init, res %p,res->odbcStatHandle %p\n",res,res->odbcStatHandle);
 fflush(stderr);
 #endif
 
-	retcode = SQLNumResultCols(res->odbcStatHandle, &colsNum);
-	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
-	{
-		GB.Error("ODBC error");
+	colsNum = get_num_columns(res);
+	if (!colsNum)
 		return;
-	}
-				
 
-        if (colsNum == 0 ){
-				
-
-		retcode = SQLRowCount(res->odbcStatHandle, &rowsNum);
-		if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
-		{
-			return;
-		}
-	} else 
-	{
-		rowsNum = -1;
-		
-	}
+	SQLRowCount(res->odbcStatHandle, &rowsNum);
 	
 	*count = rowsNum;
 	info->nfield = colsNum;
 	query_make_result(res);
-
 }
 
 
@@ -1113,7 +1097,6 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	GB_VARIANT value;
 	SQLRETURN retcode2;
 	SQLINTEGER i;
-	SQLSMALLINT colsNum=0;			//Function_exist;
 	ODBC_FIELDS *current;
 	SQLRETURN retcode;
 	int nresultcols;
@@ -1127,15 +1110,7 @@ fflush(stderr);
 #endif
 	
 	
-	retcode=SQLNumResultCols(res->odbcStatHandle, &colsNum);
-
-	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
-		{
-				GB.Error("ODBC Module error");
-		}
-
-
-	nresultcols = colsNum;
+	nresultcols = get_num_columns(res);
 
 	current = res->fields;
 	for (i = 0; i < nresultcols; i++)
@@ -1399,8 +1374,9 @@ fflush(stderr);
 	SQLSMALLINT colsNum;
 	int field;
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
-	colnamelen=32;
-	SQLNumResultCols(res->odbcStatHandle, &colsNum);
+	
+	colnamelen = 32;
+	colsNum = get_num_columns(res);
 
 	for (field = 0; field < colsNum; field++)
 	{
@@ -1409,8 +1385,6 @@ fflush(stderr);
 
 		if (strcmp(name, (char *)colname) == 0)
 		{
-
-
 			return (int) (field);
 		}
 
@@ -1737,7 +1711,6 @@ fflush(stderr);
 	current = fieldstr;
 
 retcode=SQLNumResultCols(statHandle2, &colsNum);
-
 
 	SQLFreeHandle(SQL_HANDLE_STMT, statHandle2);
 
