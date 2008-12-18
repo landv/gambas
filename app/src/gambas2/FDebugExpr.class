@@ -30,8 +30,11 @@ STATIC PUBLIC SUB Add(sExpr AS String, sInfo AS String)
   IF NOT sInfo THEN RETURN
 
   IF NOT $cAll.Exist(sExpr) THEN
-    $cAll[sExpr] = NEW FDebugExpr(sExpr, sInfo)
-    $cAll[sExpr].Show
+    hWin = NEW FDebugExpr(sExpr, sInfo)
+    IF Object.IsValid(hWin) THEN
+      $cAll[sExpr] = hWin 
+      hWin.Show
+    ENDIF
   ELSE 
     hWin = $cAll[sExpr]
     hWin.RefreshInfo(sInfo) 
@@ -277,7 +280,7 @@ PRIVATE SUB Init(sInfo AS String, bNew AS Boolean)
 
   $bArray = Right($sClass, 2) = "[]"
   'aInfoReturn.Add(bInfoArray)
-  $bCollection = $sClass = "Collection"
+  $bCollection = $sClass = "Collection" AND $sExpr <> "Collection"
   'aInfoReturn.Add(bInfoCollection)
 
   $iRowStatic = -1
@@ -353,6 +356,11 @@ PRIVATE SUB Init(sInfo AS String, bNew AS Boolean)
       $aSym = NULL
     ENDIF
     
+  ENDIF
+
+  IF nRow = 0 THEN 
+    ME.Close
+    RETURN 
   ENDIF
 
   IF Left$($sClass) = "." OR IF NOT $sRealClass THEN

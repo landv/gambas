@@ -818,6 +818,11 @@ PUBLIC void DEBUG_main(boolean error)
 		}
 
     len = GB.StringLength(cmd);
+    
+    // A null string command means an I/O error
+    if (len == 0)
+			abort();
+		
     if (len > 0 && cmd[len - 1] == '\n')
     {
       len--;
@@ -832,7 +837,7 @@ PUBLIC void DEBUG_main(boolean error)
     {
       if (last_command == TC_NONE)
         continue;
-
+        
       for (tc = Command; tc->pattern; tc++)
       {
         if (tc->type == last_command)
