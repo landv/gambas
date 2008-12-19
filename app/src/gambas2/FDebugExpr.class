@@ -83,7 +83,10 @@ PUBLIC SUB _new(sExpr AS String, sInfo AS String)
     ME.Enabled = FALSE
     ME.Title = sExpr & " (" & YW_NOT_AVAILABLE & ")"
   ELSE 
-    Init(sInfo, TRUE)
+    IF Init(sInfo, TRUE) THEN 
+      ME.Close
+      RETURN 
+    ENDIF
   ENDIF 
   
   $sLastGood = sExpr
@@ -259,7 +262,7 @@ PUBLIC SUB gvwExpr_Activate()
 
 END
 
-PRIVATE SUB Init(sInfo AS String, bNew AS Boolean)
+PRIVATE SUB Init(sInfo AS String, bNew AS Boolean) AS Boolean
 
   DIM aStatic AS NEW String[]
   DIM aDynamic AS NEW String[]
@@ -358,10 +361,7 @@ PRIVATE SUB Init(sInfo AS String, bNew AS Boolean)
     
   ENDIF
 
-  IF nRow = 0 THEN 
-    ME.Close
-    RETURN 
-  ENDIF
+  IF nRow = 0 THEN RETURN TRUE
 
   IF Left$($sClass) = "." OR IF NOT $sRealClass THEN
     ME.Title = $sExpr & " (" & $sClass & ")"
@@ -591,7 +591,10 @@ END
 
 PUBLIC SUB txtExpr_KeyPress()
 
-  IF Key.Code = Key.Escape THEN txtExpr.Text = $sExpr
+  IF Key.Code = Key.Escape AND IF txtExpr.Text <> $sExpr THEN
+    txtExpr.Text = $sExpr
+    STOP EVENT 
+  ENDIF
 
 END
 
@@ -606,5 +609,11 @@ PUBLIC SUB btnHidden_Click()
 
   $cVal.Clear
   Init($sInfo, FALSE)
+
+END
+
+PUBLIC SUB Form_KeyPress()
+
+  IF Key.Code = Key.Escape THEN ME.Close
 
 END
