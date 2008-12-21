@@ -1796,7 +1796,7 @@ static int field_list(DB_DATABASE * db, const char *table, char ***fields)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE * db, const char *table, const char *field, DB_FIELD * info)
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD * info)
 {
 	const char *query = "PRAGMA table_info('&1')";
 
@@ -1808,6 +1808,8 @@ static int field_info(DB_DATABASE * db, const char *table, const char *field, DB
 	char *_defaultValue = NULL;
 	bool _fieldNotNull = FALSE;
 	int i, n;
+	sqlite3 *db_handle = ((SqliteDatabase *)db->handle)->getHandle();
+	int autoinc;
 
 	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
 	{
@@ -1847,9 +1849,14 @@ static int field_info(DB_DATABASE * db, const char *table, const char *field, DB
 
 	info->name = NULL;
 
-	// [BM] We use INTEGER only when creating the AUTOINCREMENT field.
-
-	if (strcasecmp(_fieldType, "INTEGER") == 0)
+						// This API is not always defined!
+	if (true) //(sqlite3_table_column_metadata(db_handle, NULL, table, field, NULL, NULL, NULL, NULL, &autoinc) != SQLITE_OK)
+	{
+		// [BM] We use INTEGER only when creating the AUTOINCREMENT field.
+		autoinc = strcasecmp(_fieldType, "INTEGER") == 0;
+	}
+	
+	if (autoinc)
 		info->type = DB_T_SERIAL;
 	else
 		info->type = conv_type(GetFieldType(_fieldType, (unsigned int *) &info->length));

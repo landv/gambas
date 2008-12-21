@@ -5,21 +5,11 @@
   #(Scaled) = False
   Text = ("")
   Icon = Picture["icon:/24/gambas"]
-  Arrangement = Arrange.Fill
   Spacing = 8
   Padding = 8
-  { Menu1 Menu
-    Text = ("Menu1")
-  }
-  { TabStrip1 TabStrip
-    Move(24,24,296,224)
-    Arrangement = Arrange.Fill
-    Index = 0
-    Text = ("Tab 0")
-    { TableView1 TableView
-      Move(8,8,272,176)
-      Header = GridView.Both
-    }
-    Index = 0
+  { SidePanel1 SidePanel
+    Move(35,49,168,168)
+    Orientation = Align.Right
+    Border = True
   }
 }
