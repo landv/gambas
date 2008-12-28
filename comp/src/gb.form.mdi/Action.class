@@ -1,0 +1,26 @@
+' Gambas class file
+
+Export
+
+Static Private $aWindows As New Window[]
+
+Static Public Sub Register(Control As Object, Key As String)
+  
+  Dim hWin As Window
+  Dim hObs As Observer
+  
+  Super.Register(Control, Key)
+  
+  If Key Then
+  
+    If Not Control Is Window Then
+      hWin = Control.Window
+      If Not $aWindows.Exist(hWin) Then
+        $aWindows.Add(hWin)
+        hObs = New Observer(hWin) As "Window"
+      Endif
+    Endif
+    
+  Endif
+  
+End

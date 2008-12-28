@@ -228,7 +228,7 @@ typedef
 	struct {
 		TYPE type;
 		CLASS *class;
-		void *super;
+		void *super; // Must be at the same place than VALUE_OBJECT
 		intptr_t _reserved;
 		}
 	PACKED

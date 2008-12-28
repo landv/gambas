@@ -299,7 +299,8 @@ void *GB_Hook(int type, void *hook)
 
   type--;
   old_hook = phook[type];
-  phook[type] = hook;
+  if (hook)
+  	phook[type] = hook;
 
   return old_hook;
 }

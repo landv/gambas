@@ -868,10 +868,6 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
       
       hForm = Files[sKey]
       If hForm Then hForm.Icon = GetFileIcon(sKey, 16)
-      If sParent = KEY_FORM Then 
-        hForm = Files[File.SetExt(sKey, "class")]
-        If hForm Then hForm.Icon = GetFileIcon(sKey, 16)
-      Endif
       
     Endif
 
@@ -1037,6 +1033,8 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   Dim sKey As String
   Dim sKeyReset As String
   Dim sTitle As String
+  Dim hFile As Object
+  Dim sPath As String
 
   '$bDisplayForm = Settings["/DisplayForm"]
 
@@ -1082,7 +1080,17 @@ Private Sub DoRefresh(Optional bReset As Boolean)
 
   DefineStartup(Startup, True)
 
-  'STOP
+  If Not AllowForm() Then 
+    For Each hFile In Files
+      sPath = Files.Key
+      If Not IsClassPath(sPath) Then Continue
+      If Exist(File.SetExt(sPath, "form")) Then
+        Files.Remove(sPath)
+        hFile.Delete
+      Endif
+    Next
+  Endif
+
   sTitle = Name
   If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
   sTitle &= " - " & Application.Title

@@ -252,7 +252,7 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
     _state = EMBED_WAIT;
     for(i = 0; i < 500; i++)
     {
-      qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+      MAIN_process_events();
       if (_state)
         break;
       usleep(10000);

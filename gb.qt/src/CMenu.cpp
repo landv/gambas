@@ -836,7 +836,7 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
       	
       item->exec = false;
       
-      qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput, 0);
+      MAIN_process_events();
 		}
   }
 

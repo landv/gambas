@@ -121,6 +121,7 @@ int MAIN_x11_last_key_code = 0;
 #endif
 
 static bool in_event_loop = false;
+static int _no_destroy = 0;
 static QTranslator *qt = NULL;
 static GB_FUNCTION _application_keypress_func;
 static QWidget *_mouseGrabber = 0;
@@ -250,6 +251,9 @@ bool MyEventLoop::processEvents(ProcessEventsFlags flags)
   ret = QEventLoop::processEvents(flags);
   MAIN_loop_level--;
 
+	if (_no_destroy)
+		return ret;
+
   for(;;)
   {
     ptr = &CWIDGET_destroy_list;
@@ -282,6 +286,12 @@ bool MyEventLoop::processEvents(ProcessEventsFlags flags)
   //return ret;
 }
 
+void MAIN_process_events(void)
+{
+	_no_destroy++;
+	qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput, 0);
+	_no_destroy--;
+}
 
 /** MyApplication **********************************************************/
 

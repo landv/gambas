@@ -672,10 +672,6 @@ _PUSH_CHAR:
 
 _PUSH_ME:
 
-	/*SP->type = T_CLASS;
-	SP->_class.class = (CLASS *)(GET_XX() & 3);*/
-
-	#if 1
   if (GET_XX() & 1)
   {
     if (DEBUG_info->op)
@@ -708,11 +704,19 @@ _PUSH_ME:
 	if (GET_XX() & 2)
 	{
 		// The used class must be in the stack, because it is tested by exec_push && exec_pop
-		SP->_object.class = SP->_object.class->parent;
-  	SP->_object.super = EXEC_super;
+		if (OP)
+		{
+			SP->_object.class = SP->_object.class->parent;
+  		SP->_object.super = EXEC_super;
+		}
+		else
+		{
+			SP->_class.class = SP->_class.class->parent;
+			SP->_class.super = EXEC_super;
+		}
+		
   	EXEC_super = SP;
 	}
-	#endif
 
   PUSH();
   goto _NEXT;

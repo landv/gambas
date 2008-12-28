@@ -1,0 +1,2 @@
+SUBDIRS = @IMAGE_INFO_DIR@
+EXTRA_DIST = reconf gambas.h gb*.h PHP_LICENSE

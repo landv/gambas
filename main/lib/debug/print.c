@@ -273,7 +273,7 @@ __RETURN:
 }
 
 
-PUBLIC void PRINT_value(FILE *where, VALUE *value, bool format)
+void PRINT_value(FILE *where, VALUE *value, bool format)
 {
   char *pval;
   int lpval;
@@ -292,7 +292,7 @@ PUBLIC void PRINT_value(FILE *where, VALUE *value, bool format)
 	}
 }
 
-PUBLIC void PRINT_symbol(FILE *where, const char *sym, int len)
+void PRINT_symbol(FILE *where, const char *sym, int len)
 {
 	GB_VALUE value;
 	
@@ -307,7 +307,7 @@ PUBLIC void PRINT_symbol(FILE *where, const char *sym, int len)
 	print_value((VALUE *)&value);
 }
 
-PUBLIC void PRINT_object(FILE *where, VALUE *value)
+void PRINT_object(FILE *where, VALUE *value)
 {
 	VALUE conv;
 	void *object;
@@ -341,6 +341,7 @@ PUBLIC void PRINT_object(FILE *where, VALUE *value)
 		object = value->_class.class;
 		class = (CLASS *)object;
 		static_class = TRUE;
+		real_class = NULL;
 	}
 	else
 	{
@@ -428,31 +429,32 @@ PUBLIC void PRINT_object(FILE *where, VALUE *value)
 	
 	fprintf(_where, " D:");
 	
-	index = 0;
-	
-	for(;;)
-	{
-		cd = (CLASS_DESC_SYMBOL *)GB_DEBUG.GetNextSortedSymbol(class, &index);
-		if (!cd)
-			break;
-		key = cd->name;
-		if (cd->len == 0 || (cd->len == 1 && key[0] == '.'))
-			continue;
-	
-	  switch(CLASS_DESC_get_type(cd->desc))
+	if (!static_class)
+	{	
+		index = 0;
+		
+		for(;;)
 		{
-			case CD_VARIABLE:
-			case CD_PROPERTY:
-			case CD_PROPERTY_READ:
-				fprintf(_where, " %.*s", cd->len, key);
+			cd = (CLASS_DESC_SYMBOL *)GB_DEBUG.GetNextSortedSymbol(class, &index);
+			if (!cd)
 				break;
+			key = cd->name;
+			if (cd->len == 0 || (cd->len == 1 && key[0] == '.'))
+				continue;
+		
+			switch(CLASS_DESC_get_type(cd->desc))
+			{
+				case CD_VARIABLE:
+				case CD_PROPERTY:
+				case CD_PROPERTY_READ:
+					fprintf(_where, " %.*s", cd->len, key);
+					break;
+			}
 		}
+		
+		if (count > 0)
+			fprintf(_where, " [%d]", count);
 	}
-	
-	if (count > 0 && !static_class)
-		fprintf(_where, " [%d]", count);
 	
 	//fprintf(_where, "\n");
 }
-
-

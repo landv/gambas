@@ -1,11 +1,13 @@
 ' Gambas class file
 
-Export 
+Export
 
 Static Private $aVoid As New Object[]
 Static Private $cControls As New Collection(gb.Text)
 Static Private $cLock As New Collection
 Static Private $iGlobalLock As Integer
+
+'Static Property Read List As String[]
 
 Property Enabled As Boolean
 Property Visible As Boolean
@@ -64,35 +66,6 @@ Static Public Sub Get(Control As Object) As String
   Next
   
 End
- 
-
-Static Public Sub Register(Control As Object, Key As String)
-  
-  Dim iInd As Integer
-  Dim aCtrl As Object[]
-  Dim sOld As String
-  
-  sOld = Get(Control)
-  If sOld = Key Then Return
-  
-  'DEBUG Control;; Key  
-  
-  If sOld Then
-    aCtrl = $cControls[sOld]
-    iInd = aCtrl.Find(Control)
-    aCtrl.Remove(iInd)
-  Endif
-  
-  If Key Then
-    If Not $cControls.Exist(Key) Then
-      $cControls[Key] = New Object[]
-    Endif
-
-    aCtrl = $cControls[Key]
-    aCtrl.Add(Control)
-  Endif
-
-End
 
 Static Private Sub HasHandler(hForm As Object) As Boolean
   
@@ -103,9 +76,8 @@ Static Private Sub HasHandler(hForm As Object) As Boolean
   
 End
 
-Static Private Sub GetActiveWindow(hCtrl As Object) As Window
+Static Private Sub GetHandleWindow(hCtrl As Object) As Window
   
-  Dim hForm As Window = Application.ActiveWindow
   Dim hCtrlWin As Window = hCtrl.Window
   
   'RETURN hForm
@@ -115,6 +87,19 @@ Static Private Sub GetActiveWindow(hCtrl As Object) As Window
     Try hCtrlWin = hCtrlWin.Parent.Window
     If Error Then Break
   Loop
+
+  Return hCtrlWin  
+  
+End
+
+Static Private Sub GetActiveWindow(hCtrl As Object) As Window
+  
+  Dim hForm As Window = Application.ActiveWindow
+  Dim hCtrlWin As Window
+  
+  'RETURN hForm
+  
+  hCtrlWin = GetHandleWindow(hCtrl)
   
   While hForm
     If hForm = hCtrlWin Then Return Application.ActiveWindow  
@@ -123,6 +108,37 @@ Static Private Sub GetActiveWindow(hCtrl As Object) As Window
   Wend 
   
   Return hCtrl.Window
+  
+End
+
+Static Public Sub Register(Control As Object, Key As String)
+  
+  Dim iInd As Integer
+  Dim aCtrl As Object[]
+  Dim sOld As String
+  Dim hWin As Window
+  Dim hObs As Observer
+  Dim sType As String
+  
+  sOld = Get(Control)
+  If sOld = Key Then Return
+  
+  If sOld Then
+    aCtrl = $cControls[sOld]
+    iInd = aCtrl.Find(Control)
+    aCtrl.Remove(iInd)
+  Endif
+  
+  If Key Then
+  
+    If Not $cControls.Exist(Key) Then
+      $cControls[Key] = New Object[]
+    Endif
+
+    aCtrl = $cControls[Key]
+    aCtrl.Add(Control)
+    
+  Endif
   
 End
 
@@ -137,8 +153,6 @@ Static Public Sub UnLock()
   $iGlobalLock = Max(0, $iGlobalLock - 1)
   
 End
-
-
 
 Static Public Sub Raise(Control As Object)
   
@@ -467,3 +481,17 @@ Private Sub Value_Write(Value As Boolean)
   Next
 
 End
+
+' Static Private Function List_Read() As String[]
+' 
+'   Dim aCtrl As Object[]
+'   Dim aList As New String[]
+' 
+'   For Each aCtrl In $cControls
+'     aList.Add($cControls.Key)
+'   Next
+'   
+'   aList.Sort
+'   Return aList
+' 
+' End

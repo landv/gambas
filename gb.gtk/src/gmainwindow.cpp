@@ -194,6 +194,7 @@ void gMainWindow::initialize()
 	_xembed = false;
 	_activate = false;
 	_hideMenus = false;
+	_hidden = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -210,7 +211,7 @@ void gMainWindow::initWindow()
 {
 	//resize(200,150);
 	
-	if (parent())
+	if (!isTopLevel())
 	{
 		g_signal_connect(G_OBJECT(border), "show", G_CALLBACK(cb_show), (gpointer)this);
 		g_signal_connect(G_OBJECT(border), "configure-event", G_CALLBACK(cb_configure), (gpointer)this);
@@ -291,7 +292,7 @@ gMainWindow::~gMainWindow()
 	{
 		emit(SIGNAL(onClose));
 		opened = false;
-		if (modal())
+		if (GTK_IS_WINDOW(border) && modal())
 			gApplication::exitLoop();
 	}
 	
@@ -321,7 +322,7 @@ int gMainWindow::getStacking()
 void gMainWindow::setSticky(bool vl)
 {
 	sticky=vl;
-	if (parent()) return;
+	if (!isTopLevel()) return;
 
 	if (vl) gtk_window_stick(GTK_WINDOW(border));
 	else    gtk_window_unstick(GTK_WINDOW(border));
@@ -330,7 +331,7 @@ void gMainWindow::setSticky(bool vl)
 void gMainWindow::setStacking(int vl)
 {
   stack=vl;
-	if (parent()) return;
+	if (!isTopLevel()) return;
 
 	switch (vl)
 	{
@@ -448,6 +449,7 @@ void gMainWindow::setVisible(bool vl)
 			
 		_not_spontaneous = !visible;
 		visible = true;
+		_hidden = false;
 		
 		if (isTopLevel())
 		{
@@ -484,6 +486,7 @@ void gMainWindow::setVisible(bool vl)
 			focus = gDesktop::activeControl();
 			
 		_not_spontaneous = visible;
+		_hidden = true;
 		gControl::setVisible(false);
 	}
 }
@@ -526,7 +529,7 @@ void gMainWindow::center()
 {
 	int myx,myy;
 	
-	if (parent()) return;
+	if (!isTopLevel()) return;
 	
 	myx=(gDesktop::width()/2)-(width()/2);
 	myy=(gDesktop::height()/2)-(height()/2);
@@ -536,7 +539,7 @@ void gMainWindow::center()
 
 bool gMainWindow::modal()
 {
-	if (parent()) return false;
+	if (!isTopLevel()) return false;
 
 	return gtk_window_get_modal (GTK_WINDOW(border));
 }
@@ -581,7 +584,7 @@ void gMainWindow::showModal()
 
 void gMainWindow::raise()
 {
-	if (parent()) { gControl::raise(); return; }
+	if (!isTopLevel()) { gControl::raise(); return; }
 	gtk_window_present(GTK_WINDOW(border));
 }
 
@@ -592,7 +595,7 @@ const char* gMainWindow::text()
 
 bool gMainWindow::skipTaskBar()
 {
-	if (parent()) 
+	if (!isTopLevel()) 
 		return false;
 	else
 		return _skip_taskbar;
@@ -620,7 +623,7 @@ bool gMainWindow::isResizable()
 
 void gMainWindow::setBorder(bool b)
 {
-  if (parent()) 
+  if (!isTopLevel()) 
   	return;
 	
 	gtk_window_set_decorated(GTK_WINDOW(border), b);
@@ -628,7 +631,7 @@ void gMainWindow::setBorder(bool b)
 
 void gMainWindow::setResizable(bool b)
 {
-  if (parent()) 
+  if (!isTopLevel()) 
   	return;
 	
 	if (b == isResizable())
@@ -647,7 +650,7 @@ void gMainWindow::setResizable(bool b)
 void gMainWindow::setSkipTaskBar(bool b)
 {
 	_skip_taskbar = b;
-	if (parent()) return;
+	if (!isTopLevel()) return;
 	gtk_window_set_skip_taskbar_hint (GTK_WINDOW(border), b);
 }
 
@@ -657,7 +660,7 @@ void gMainWindow::setSkipTaskBar(bool b)
 	GdkPixbuf *buf;
 	gPicture *pic;
 	
-	if (parent()) return NULL;
+	if (!isTopLevel()) return NULL;
 	
 	buf=gtk_window_get_icon(GTK_WINDOW(border));
 	if (!buf) return NULL;
@@ -671,20 +674,20 @@ void gMainWindow::setIcon(gPicture *pic)
 {
   gPicture::assign(&_icon, pic);
 
-	if (parent()) return;
+	if (!isTopLevel()) return;
   gtk_window_set_icon(GTK_WINDOW(border), pic ? pic->getPixbuf() : NULL);
 }
 
 bool gMainWindow::topOnly()
 {
-	if (parent()) return false;
+	if (!isTopLevel()) return false;
 	
 	return top_only;
 }
 
 void gMainWindow::setTopOnly(bool vl)
 {
-	if (parent()) return;
+	if (!isTopLevel()) return;
 
 	gtk_window_set_keep_above (GTK_WINDOW(border),vl);
 	top_only=vl;
@@ -917,7 +920,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 	if (_xembed)
 		return;
 	
-	if (!parent() && newpr)
+	if (isTopLevel() && newpr)
 	{
 		gtk_window_remove_accel_group(GTK_WINDOW(topLevel()->border), accel);
 		
@@ -936,7 +939,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
 	}
-	else if (parent() && !newpr)
+	else if (!isTopLevel() && !newpr)
 	{
 		gtk_window_remove_accel_group(GTK_WINDOW(topLevel()->border), accel);
 		// TODO: test that
@@ -1076,14 +1079,14 @@ void gMainWindow::setActiveWindow(gControl *control)
 #ifdef GDK_WINDOWING_X11
 int gMainWindow::getType()
 {
-	if (parent())
+	if (!isTopLevel())
 		return 0;
 	return X11_get_window_type(handle());
 }
 
 void gMainWindow::setType(int type)
 {
-	if (parent())
+	if (!isTopLevel())
 		return;
 	X11_set_window_type(handle(), type);
 }

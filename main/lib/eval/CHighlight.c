@@ -149,7 +149,7 @@ static int convState(int state)
 static void analyze(const char *src, int len_src)
 {
   GB_ARRAY garray, tarray, parray;
-  int i, n, pos, len, p;
+  int i, n, pos, len, p, upos;
   char *str;
   EVAL_ANALYZE result;
 
@@ -167,6 +167,7 @@ static void analyze(const char *src, int len_src)
   GB.Array.New(&parray, GB_T_INTEGER, n);
 
   pos = 0;
+  upos = 0;
   i = 0;
   for (p = 0; p < result.len; p++)
   {
@@ -174,7 +175,7 @@ static void analyze(const char *src, int len_src)
 
     if (result.color[p].state != EVAL_TYPE_END)
     {
-      GB.NewString(&str, &result.str[pos], len);
+      GB.NewString(&str, &result.str[upos], len);
       *((char **)GB.Array.Get(garray, i)) = str;
       *((int *)GB.Array.Get(tarray, i)) = convState(result.color[p].state);
       *((int *)GB.Array.Get(parray, i)) = pos;
@@ -182,6 +183,9 @@ static void analyze(const char *src, int len_src)
     }
 
     pos += len;
+    
+		while (len--)
+			upos += get_char_length(result.str[upos]);
   }
 
   GB.Unref(&_analyze_symbol);

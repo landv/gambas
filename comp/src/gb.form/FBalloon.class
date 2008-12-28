@@ -1,28 +1,28 @@
 ' Gambas class file
 
-PRIVATE CONST ROUND_SIZE AS Integer = 8
+Private Const ROUND_SIZE As Integer = 8
 
-PRIVATE ARROW_HEIGHT AS Integer
+Private ARROW_HEIGHT As Integer
 
-PRIVATE $hWatcher AS Watcher
-PRIVATE $hWatcher2 AS Watcher
-PRIVATE $hCtrl AS Control
+Private $hWatcher As Watcher
+Private $hWatcher2 As Watcher
+Private $hCtrl As Control
 
-PRIVATE $X AS Integer
-PRIVATE $Y AS Integer
-PRIVATE $DX AS Integer
-PRIVATE $DY AS Integer
-PRIVATE $dShow AS Float
-PRIVATE $sOld AS String
-PRIVATE $bInside AS Boolean
-PRIVATE $iDelay AS Integer = 5000
-PRIVATE $hRound AS Image
+Private $X As Integer
+Private $Y As Integer
+Private $DX As Integer
+Private $DY As Integer
+Private $dShow As Float
+Private $sOld As String
+Private $bInside As Boolean
+Private $iDelay As Integer = 5000
+Private $hRound As Image
 
-PRIVATE SUB DrawRoundRect(X AS Integer, Y AS Integer, W AS Integer, H AS Integer)
+Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer)
 
-  DIM hRound AS Image
+  Dim hRound As Image
   
-  IF NOT $hRound THEN $hRound = Image.Load("img/round.png")
+  If Not $hRound Then $hRound = Image.Load("img/round.png")
   
   hRound = $hRound
   Draw.Image(hRound, X, Y)
@@ -47,43 +47,43 @@ PRIVATE SUB DrawRoundRect(X AS Integer, Y AS Integer, W AS Integer, H AS Integer
   Draw.Line(X, Y + ROUND_SIZE, X, Y + H - ROUND_SIZE - 1)
   Draw.Line(X + W - 1, Y + ROUND_SIZE, X + W - 1, Y + H - ROUND_SIZE - 1)
   
-END
+End
 
-PRIVATE SUB GetTopLevel(hCtrl AS Control) AS Window
+Private Sub GetTopLevel(hCtrl As Control) As Window
   
-  DIM hWin AS Window
+  Dim hWin As Window
 
-  IF NOT hCtrl THEN RETURN  
+  If Not hCtrl Then Return  
   hWin = hCtrl.Window
-  DO
-    IF hWin.TopLevel THEN RETURN hWin
+  Do
+    If hWin.TopLevel Then Return hWin
     hWin = hWin.Parent.Window
-  LOOP
+  Loop
   
-END
+End
 
 
-PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
+Private Sub MakeBorder(Optional W As Integer, H As Integer)
   
-  DIM hPict AS Picture
-  DIM SX, SY, CX, CY AS Integer
-  DIM X, Y, X1, Y1, X2, Y2, X3, Y3, Y4 AS Integer
-  DIM hWin AS Window
-  DIM sNew AS String
+  Dim hPict As Picture
+  Dim SX, SY, CX, CY As Integer
+  Dim X, Y, X1, Y1, X2, Y2, X3, Y3, Y4 As Integer
+  Dim hWin As Window
+  Dim sNew As String
   
   $X = $hCtrl.ScreenX
   $Y = $hCtrl.ScreenY
 
-  IF $DX < 0 THEN
+  If $DX < 0 Then
     SX = $X + $hCtrl.W \ 2
-  ELSE 
+  Else 
     SX = $X + $DX
-  ENDIF 
-  IF $DY < 0 THEN 
+  Endif 
+  If $DY < 0 Then 
     SY = $Y + $hCtrl.H \ 2
-  ELSE 
+  Else 
     SY = $Y + $DY
-  ENDIF
+  Endif
   
   'DEBUG $hCtrl;; "SX =";; SX;; "SY =";; SY
   
@@ -100,14 +100,14 @@ PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
 '     X = Min(Desktop.W - ME.W, SX - ME.W \ 2 + 32)
 '   ENDIF
 ' 
-  IF W <= 0 THEN W = ME.W
-  IF H <= 0 THEN H = ME.H
+  If W <= 0 Then W = Me.W
+  If H <= 0 Then H = Me.H
 
-  IF SX < CX AND SX >= W THEN 
+  If SX < CX And SX >= W Then 
     X = SX - W \ 2 - 32
-  ELSE 
+  Else 
     X = SX - W \ 2 + 32
-  ENDIF
+  Endif
 
   X = Max(4, Min(Desktop.W - W - 4, X))
 
@@ -115,17 +115,17 @@ PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
   
   'DEBUG SY;; CY;; ME.H
   
-  IF (SY >= CY AND SY < (Desktop.H - H)) OR SY < H THEN 
+  If (SY >= CY And SY < (Desktop.H - H)) Or SY < H Then 
     Y1 = 0
     Y4 = ARROW_HEIGHT
     Y2 = Y4 + 1
     Y = SY
-  ELSE 
+  Else 
     Y1 = H - 1
     Y4 = H - ARROW_HEIGHT - 1
     Y2 = Y4 - 1
     Y = SY - H
-  ENDIF
+  Endif
   
   Y = Max(4, Min(Desktop.H - H - 4, Y))
   
@@ -137,19 +137,19 @@ PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
   X3 = X2 + 24
   X1 = SX - X
 
-  ME.Move(X, Y, W, H)
+  Me.Move(X, Y, W, H)
   
-  sNew = ARROW_HEIGHT & " " & ME.W & " " & ME.H & " " & X1 & " " & Y1 & " " & X2 & " " & Y2 & " " & X3 & " " & Y3
-  IF sNew <> $sOld THEN
+  sNew = ARROW_HEIGHT & " " & Me.W & " " & Me.H & " " & X1 & " " & Y1 & " " & X2 & " " & Y2 & " " & X3 & " " & Y3
+  If sNew <> $sOld Then
 
     'DEBUG sNew
     'ME.Hide
 
-    hPict = NEW Picture(ME.W, ME.H, TRUE)
+    hPict = New Picture(Me.W, Me.H, True)
   
     Draw.Begin(hPict)
   
-    DrawRoundRect(0, ARROW_HEIGHT, ME.W, ME.H - ARROW_HEIGHT * 2)
+    DrawRoundRect(0, ARROW_HEIGHT, Me.W, Me.H - ARROW_HEIGHT * 2)
 
     Draw.FillStyle = Fill.Solid
     Draw.LineStyle = Line.None
@@ -172,27 +172,29 @@ PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
   
     Draw.End
   
-    ME.Picture = hPict
+    Me.Picture = hPict
     
     $sOld = sNew
     
-  ENDIF 
+  Endif 
   
-  IF NOT ME.Visible THEN 
-    ME.Show
-  ELSE  
+  If Not Me.Visible Then 
+    hWin = Application.ActiveWindow
+    Me.Show
+    If hWin Then hWin.Show
+  Else  
     Form_Show
-    ME.Raise
-  ENDIF
+    Me.Raise
+  Endif
   
   $dShow = Timer
   
-END
+End
 
-PUBLIC SUB Run(sMsg AS String, hCtrl AS Control, hIcon AS Picture, DX AS Integer, DY AS Integer)
+Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer, DY As Integer)
   
-  DIM X, Y, W, H AS Integer
-  DIM hWin AS Window
+  Dim X, Y, W, H As Integer
+  Dim hWin As Window
   
   'IF hCtrl <> $hCtrl THEN 
   '  DEBUG
@@ -204,7 +206,7 @@ PUBLIC SUB Run(sMsg AS String, hCtrl AS Control, hIcon AS Picture, DX AS Integer
   txtMessage.W = Max(hCtrl.W / 2, 192)
   txtMessage.Text = Replace(sMsg, "\n", "<br>")
   txtMessage.Adjust
-  IF txtMessage.W < 64 THEN txtMessage.W = 64
+  If txtMessage.W < 64 Then txtMessage.W = 64
   'txtMessage.Adjust
   'DEBUG txtMessage.W
 
@@ -214,12 +216,12 @@ PUBLIC SUB Run(sMsg AS String, hCtrl AS Control, hIcon AS Picture, DX AS Integer
   $DY = DY
 
   hWin = GetTopLevel($hCtrl)
-  IF NOT hWin.Modal THEN hWin.Show
+  If Not hWin.Modal Then hWin.Show
   
-  $hWatcher = NEW Watcher(hWin) AS "Watcher"
-  $hWatcher2 = NEW Watcher($hCtrl) AS "Watcher"
+  $hWatcher = New Watcher(hWin) As "Watcher"
+  $hWatcher2 = New Watcher($hCtrl) As "Watcher"
 
-  IF hIcon THEN 
+  If hIcon Then 
     imgIcon.Picture = hIcon
     imgIcon.Resize(hIcon.Width, hIcon.Height)
     imgIcon.Show
@@ -227,43 +229,43 @@ PUBLIC SUB Run(sMsg AS String, hCtrl AS Control, hIcon AS Picture, DX AS Integer
     H = Max(txtMessage.H, imgIcon.H) + 24 + ARROW_HEIGHT * 2
     imgIcon.Move(12, 12 + ARROW_HEIGHT)
     txtMessage.Move(imgIcon.X + imgIcon.W + 8, ARROW_HEIGHT + 12) ', ME.W - 32 - imgIcon.W - 8)
-  ELSE
+  Else
     imgIcon.Hide
     W = txtMessage.W + 24
     H = txtMessage.H + 24 + ARROW_HEIGHT * 2
     txtMessage.Move(12, ARROW_HEIGHT + 12) ', ME.W - 32)
-  ENDIF
+  Endif
 
   MakeBorder(W, H)
   
-END
+End
 
 
-PUBLIC SUB Form_Show()
+Public Sub Form_Show()
 
   'DEBUG
   'timCheck.Enabled = FALSE
   'GetTopLevel($hCtrl).Show
   timCheck.Delay = timCheck.Delay
-  timCheck.Enabled = TRUE
+  timCheck.Enabled = True
 
-END
+End
 
-PUBLIC SUB Form_Hide()
+Public Sub Form_Hide()
 
   'DEBUG
-  timCheck.Enabled = FALSE
-  $hWatcher = NULL
-  $hWatcher2 = NULL
+  timCheck.Enabled = False
+  $hWatcher = Null
+  $hWatcher2 = Null
 
-END
+End
 
-PUBLIC SUB Watcher_Hide()
+Public Sub Watcher_Hide()
   
   'DEBUG
-  ME.Hide
+  Me.Hide
   
-END
+End
 
 ' PUBLIC SUB Form_Deactivate()
 '   
@@ -271,78 +273,78 @@ END
 '   
 ' END
 
-PUBLIC SUB txtMessage_MouseDown()
+Public Sub txtMessage_MouseDown()
 
   'DEBUG 
-  ME.Hide
+  Me.Hide
 
-END
+End
 
-PUBLIC SUB Form_MouseDown()
+Public Sub Form_MouseDown()
 
   'DEBUG 
-  ME.Hide 
+  Me.Hide 
 
-END
+End
 
-PUBLIC SUB Watcher_Move()
+Public Sub Watcher_Move()
   
-  IF Abs($hCtrl.ScreenX - $X) >= 4 OR Abs($hCtrl.ScreenY - $Y) >= 4 THEN
+  If Abs($hCtrl.ScreenX - $X) >= 4 Or Abs($hCtrl.ScreenY - $Y) >= 4 Then
     MakeBorder      
-  ENDIF
+  Endif
   
-END
+End
 
 
-PUBLIC SUB timCheck_Timer()
+Public Sub timCheck_Timer()
 
-  DIM hWin AS Window
+  Dim hWin As Window
 
   'DEBUG
 
-  IF $bInside THEN 
+  If $bInside Then 
     'DEBUG
-    ME.Hide
-    RETURN 
-  ENDIF 
+    Me.Hide
+    Return 
+  Endif 
 
-  IF (Timer - $dShow) > ($iDelay / 1000) THEN 
+  If (Timer - $dShow) > ($iDelay / 1000) Then 
     'DEBUG
-    ME.Hide
-    RETURN 
-  ENDIF
+    Me.Hide
+    Return 
+  Endif
   
   hWin = GetTopLevel($hCtrl)
-  IF NOT hWin.TopOnly THEN
-    IF GetTopLevel(Application.ActiveWindow) <> hWin THEN 
+  If Not hWin.TopOnly Then
+    If GetTopLevel(Application.ActiveWindow) <> hWin Then 
       'DEBUG
-      ME.Hide
-      RETURN
-    ENDIF
-  ENDIF
+      Me.Hide
+      Return
+    Endif
+  Endif
   
-  IF Abs($hCtrl.ScreenX - $X) >= 4 OR Abs($hCtrl.ScreenY - $Y) >= 4 THEN
+  If Abs($hCtrl.ScreenX - $X) >= 4 Or Abs($hCtrl.ScreenY - $Y) >= 4 Then
     MakeBorder      
-  ENDIF
+  Endif
   
-END
+End
 
-PUBLIC SUB GetControl() AS Control
+Public Sub GetControl() As Control
   
-  IF ME.Visible THEN RETURN $hCtrl
+  If Me.Visible Then Return $hCtrl
   
-END
+End
 
 
-PUBLIC SUB GetDelay() AS Integer
+Public Sub GetDelay() As Integer
   
-  RETURN $iDelay
+  Return $iDelay
   
-END
+End
 
-PUBLIC SUB SetDelay(iDelay AS Integer)
+Public Sub SetDelay(iDelay As Integer)
 
   $iDelay = iDelay
   
-END
+End
 

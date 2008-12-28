@@ -393,7 +393,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 
     for(;;)
     {
-      qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+      MAIN_process_events();
       if (CWINDOW_EmbedState)
         break;
       usleep(10000);
@@ -433,7 +433,8 @@ END_METHOD
 BEGIN_METHOD_VOID(CFORM_main)
 
   CWINDOW *form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
-  CWINDOW_show(form, NULL);
+  if (!((MyMainWindow *)form->widget.widget)->isHidden())
+  	CWINDOW_show(form, NULL);
 
 END_METHOD
 
@@ -441,10 +442,7 @@ END_METHOD
 BEGIN_METHOD(CFORM_load, GB_OBJECT parent)
 
   if (!MISSING(parent))
-  {
     GB.Push(1, GB_T_OBJECT, VARG(parent));
-    //qDebug("CFORM_load + parent");
-  }
 
   GB.AutoCreate(GB.GetClass(NULL), MISSING(parent) ? 0 : 1);
 
@@ -551,6 +549,7 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
     if (destroyed || closed)
     {
       CWIDGET_set_flag(THIS, WF_CLOSED);
+		  THIS->shown = FALSE;
     	/*CWIDGET_set_flag(THIS, WF_IN_CLOSE);
 			qApp->sendEvent(WIDGET, new QEvent(EVENT_CLOSE));
     	CWIDGET_clear_flag(THIS, WF_IN_CLOSE);*/
@@ -1676,7 +1675,7 @@ void MyMainWindow::showActivate(QWidget *transient)
     
 		if (isToolbar() || THIS->skipTaskbar)
 		{
-			qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput);
+			MAIN_process_events();
 			usleep(50000);
 			setActiveWindow();
 		}

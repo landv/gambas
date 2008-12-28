@@ -35,6 +35,7 @@ GB_CONFIG_SUBDIRS(crypt, gb.crypt)
 GB_CONFIG_SUBDIRS(opengl, gb.opengl)
 GB_CONFIG_SUBDIRS(corba, gb.corba)
 GB_CONFIG_SUBDIRS(image, gb.image)
+GB_CONFIG_SUBDIRS(imageinfo, gb.image.info)
 GB_CONFIG_SUBDIRS(desktop, gb.desktop)
 
 AC_CONFIG_SUBDIRS(comp)

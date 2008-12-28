@@ -1021,7 +1021,13 @@ Private Sub FloodFill(X As Integer, Y As Integer, C As Integer, iMode As Integer
   'END WITH
 
   CS = $hImage[X, Y]
-  If CS = C Or CS = C2 Then Return
+
+  If $bTrans Then 
+    If Color.Blend(C, CS) = CS Then Return
+    If Color.Blend(C2, CS) = CS Then Return
+  Else
+    If CS = C Or CS = C2 Then Return
+  Endif
 
   Inc Application.Busy
 

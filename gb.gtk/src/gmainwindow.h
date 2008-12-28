@@ -29,6 +29,7 @@ public:
 	int  getStacking();
 	bool isPersistent() { return persistent; }
 	bool isClosed() { return !opened; }
+	bool isHidden() { return _hidden; }
 	
 	int controlCount();
 	gControl *getControl(char *name);
@@ -129,6 +130,7 @@ public:
 	unsigned _xembed : 1;
 	unsigned _activate : 1;
 	unsigned _hideMenus : 1;
+	unsigned _hidden : 1;
 };
 
 #endif
