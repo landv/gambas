@@ -1,1 +1,0 @@
-../../../gb.qt/src/share/CConst_desc.h

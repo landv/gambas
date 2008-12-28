@@ -870,7 +870,7 @@ typedef
 		char *(*RealFileName)(char *, int);
 
 		int (*LoadFile)(const char *, int, char **, int *);
-		void (*ReleaseFile)(char **, int);
+		void (*ReleaseFile)(char *, int);
 		int (*ExistFile)(char *);
 		char *(*GetTempDir)(void);
 

@@ -1,1 +1,0 @@
-../../../gb.qt/src/share/CCheckBox_desc.h

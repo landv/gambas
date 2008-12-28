@@ -126,7 +126,7 @@ const char *CIMAGE_get_format(QString path)
 // 		//p.setAlphaBuffer(true);
 // 	}
 // 
-// 	GB.ReleaseFile(&addr, len);
+// 	GB.ReleaseFile(addr, len);
 //   return ok;
 // }
 // 

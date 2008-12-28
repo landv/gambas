@@ -27,6 +27,7 @@
 
 #include "gambas.h"
 #include "gbx_type.h"
+#include "gbx_stream.h"
 
 int GB_GetInterface(const char *library, int version, void *iface);
 void *GB_Hook(int type, void *hook);
@@ -84,7 +85,8 @@ int GB_ExistClassLocal(const char *name);
 char *GB_ToZeroString(GB_STRING *src);
 
 int GB_LoadFile(const char *path, int lenp, char **addr, int *len);
-void GB_ReleaseFile(char **addr, int len);
+//void GB_ReleaseFile(char **addr, int len);
+#define GB_ReleaseFile STREAM_unmap
 char *GB_GetTempDir(void);
 char *GB_RealFileName(const char *path, int len);
 

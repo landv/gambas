@@ -216,7 +216,7 @@ const QMimeSource* MyMimeSourceFactory::data(const QString& abs_name) const
 
       //qDebug("MimeSource: %s %s", abs_name.latin1(), (const char *)mimetype);
 
-      GB.ReleaseFile(&addr, len);
+      GB.ReleaseFile(addr, len);
     }
   }
 

@@ -175,7 +175,7 @@ BEGIN_PROPERTY(CMOVIEBOX_path)
 	GB.Alloc(POINTER(&MTHIS->path),strlen(name)+1);
 	strcpy(MTHIS->path,name);
 	MBOX->loadMovie(addr,len);
-	GB.ReleaseFile (&addr,len);
+	GB.ReleaseFile(addr,len);
 
 END_PROPERTY
 

@@ -165,7 +165,7 @@ void *GAMBAS_Api[] =
   (void *)GB_RealFileName,
 
   (void *)GB_LoadFile,
-  (void *)GB_ReleaseFile,
+  (void *)STREAM_unmap,
   (void *)FILE_exist,
   (void *)GB_GetTempDir,
 
@@ -1227,13 +1227,14 @@ int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
   TRY
   {
     *addr = 0;
+    *len = 0;
 
     STREAM_map(STRING_conv_file_name(path, lenp), addr, len);
   }
   CATCH
   {
     if (*addr)
-      GB_ReleaseFile(addr, *len);
+      STREAM_unmap(*addr, *len);
 
     GAMBAS_Error = TRUE;
     ret = 1;
@@ -1241,19 +1242,6 @@ int GB_LoadFile(const char *path, int lenp, char **addr, int *len)
   END_TRY
 
   return ret;
-}
-
-void GB_ReleaseFile(char **addr, int len)
-{
-  //fprintf(stderr, "GB_ReleaseFile: ");
-  if (ARCHIVE_check_addr(*addr))
-  {
-    //fprintf(stderr, "free\n");
-    FREE(addr, "GB_ReleaseFile");
-  }
-  //else
-    //fprintf(stderr, "unmap\n");
-
 }
 
 

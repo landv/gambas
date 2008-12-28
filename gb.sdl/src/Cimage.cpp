@@ -89,7 +89,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		image->id = mySurface;
 		GB.ReturnObject(image);
 
-		GB.ReleaseFile(&addr, len);
+		GB.ReleaseFile(addr, len);
 	}
 	else
 		SDLerror::RaiseError("Unable to load image");

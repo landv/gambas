@@ -204,7 +204,7 @@ BEGIN_METHOD(CSOUND_new, GB_STRING file)
 
   THIS->chunk = Mix_LoadWAV_RW(SDL_RWFromMem(addr, len), TRUE);
 
-  GB.ReleaseFile(&addr, len);
+  GB.ReleaseFile(addr, len);
 
   if (!THIS->chunk)
     GB.Error(Mix_GetError());

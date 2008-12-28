@@ -158,7 +158,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 	if (!GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
 	{
 		gPicture *pic = gPicture::fromMemory(addr, len);
-		GB.ReleaseFile(&addr, len);
+		GB.ReleaseFile(addr, len);
 		
 		if (pic)
 		{
@@ -534,7 +534,7 @@ BEGIN_METHOD(CPICTURE_load, GB_STRING path)
 	if (!GB.LoadFile(STRING(path), LENGTH(path), &addr, &len))
 	{
 		gPicture *pic = gPicture::fromMemory(addr, len);
-		GB.ReleaseFile(&addr, len);
+		GB.ReleaseFile(addr, len);
 		
 		if (pic)
 		{

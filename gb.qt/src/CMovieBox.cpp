@@ -41,7 +41,7 @@ static void free_movie(void *_object)
   THIS->ba->resetRawData((const char *)THIS->addr, THIS->len);  
   delete THIS->ba;
   
-  GB.ReleaseFile(&THIS->addr, THIS->len);
+  GB.ReleaseFile(THIS->addr, THIS->len);
   
   GB.StoreString(NULL, &THIS->path);
 }

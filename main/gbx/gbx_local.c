@@ -1432,7 +1432,7 @@ void LOCAL_load_translation(ARCHIVE *arch)
     fclose(file);
   }
 
-  GB_ReleaseFile(&addr, len);
+  GB_ReleaseFile(addr, len);
 
 __ERROR:
 

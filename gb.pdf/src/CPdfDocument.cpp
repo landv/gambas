@@ -303,7 +303,7 @@ static void free_all(void *_object)
 
 	if (THIS->buf)
 	{
-		GB.ReleaseFile(&THIS->buf,THIS->len);
+		GB.ReleaseFile(THIS->buf,THIS->len);
 		THIS->buf=NULL;
 	}
 
@@ -395,7 +395,7 @@ int32_t open_document (void *_object, char *sfile, int32_t lfile)
 
 	if (!test->isOk())
 	{
-		GB.ReleaseFile(&buf,len);
+		GB.ReleaseFile(buf,len);
 		ret=test->getErrorCode();
 		delete test;
 		test=NULL;

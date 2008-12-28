@@ -123,7 +123,7 @@ __LOAD:
 
 	CREATE_IMAGE_FROM_MEMORY(*p, addr, len, ok)
 	
-	GB.ReleaseFile(&addr, len);
+	GB.ReleaseFile(addr, len);
   return ok;
 }
 

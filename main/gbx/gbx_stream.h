@@ -216,7 +216,9 @@ void STREAM_lof(STREAM *stream, int64_t *len);
 bool STREAM_eof(STREAM *stream);
 
 void STREAM_load(const char *path, char **buffer, int *len);
-bool STREAM_map(const char *path, char **buffer, int *len);
+
+bool STREAM_map(const char *path, char **paddr, int *plen);
+void STREAM_unmap(char *addr, int len);
 
 int STREAM_read_direct(int fd, char *buffer, int len);
 int STREAM_write_direct(int fd, char *buffer, int len);

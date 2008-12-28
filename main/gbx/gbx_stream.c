@@ -959,23 +959,44 @@ void STREAM_load(const char *path, char **buffer, int *rlen)
 }
 
 
-bool STREAM_map(const char *path, char **buffer, int *rlen)
+bool STREAM_map(const char *path, char **paddr, int *plen)
 {
 	STREAM stream;
+	int fd;
+  struct stat info;
+	void *addr;
+	size_t len;
 
-	STREAM_open(&stream, path, ST_READ);
-	if (stream.type != &STREAM_arch)
+	STREAM_open(&stream, path, ST_READ + ST_DIRECT);
+	
+	if (stream.type == &STREAM_arch)
 	{
-		STREAM_close(&stream);
-		STREAM_load(path, buffer, rlen);
-		return TRUE;
+		*paddr = (char *)stream.arch.arch->arch->addr + stream.arch.start;
+		*plen = stream.arch.size;
+		return FALSE;
 	}
+	
+	fd = STREAM_handle(&stream);
+	if (fd < 0)
+		return TRUE;
+	
+  if (fstat(fd, &info) < 0)
+    return TRUE;
 
-	//fprintf(stderr, "use mmap: %s\n", path);
-
-	*buffer = (char *)stream.arch.arch->arch->addr + stream.arch.start;
-	*rlen = stream.arch.size;
+  len = info.st_size;
+  addr = mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
+  if (addr == MAP_FAILED)
+    return TRUE;
+	
+	*paddr = addr;
+	*plen = len;
 	return FALSE;
+}
+
+void STREAM_unmap(char *addr, int len)
+{
+  if (addr && len > 0 && ARCHIVE_check_addr(addr))
+  	munmap(addr, len);
 }
 
 

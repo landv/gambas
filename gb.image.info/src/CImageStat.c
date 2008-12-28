@@ -27,52 +27,40 @@
 #include "image.h"
 #include "CImageStat.h"
 
-static int my_mmap(const char *path, char **paddr, int *plen)
-{
-  struct stat info;
-	int fd;
-	void *addr;
-	size_t len;
-	  
-	fd = open(path, O_RDONLY);
-  if (fd < 0)
-  	return -1;
-
-  if (fstat(fd, &info) < 0)
-    return -1;
-
-  len = info.st_size;
-  addr = mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
-  if (addr == MAP_FAILED)
-    return -1;
-	
-	*paddr = addr;
-	*plen = len;
-	return fd;
-}
+// static int my_mmap(const char *path, char **paddr, int *plen)
+// {
+//   struct stat info;
+// 	int fd;
+// 	void *addr;
+// 	size_t len;
+// 	  
+// 	fd = open(path, O_RDONLY);
+//   if (fd < 0)
+//   	return -1;
+// 
+//   if (fstat(fd, &info) < 0)
+//     return -1;
+// 
+//   len = info.st_size;
+//   addr = mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
+//   if (addr == MAP_FAILED)
+//     return -1;
+// 	
+// 	*paddr = addr;
+// 	*plen = len;
+// 	return fd;
+// }
 
 BEGIN_METHOD(CIMAGESTAT_call, GB_STRING path)
 
-	char *path = GB.ToZeroString(ARG(path));
+	char *path = GB.FileName(STRING(path), LENGTH(path));
 	int fd = -1;
 	IMAGE_STREAM stream;
 	IMAGE_INFO info = {0};
 	CIMAGESTAT *stat;
 	
-	if (*path != '/')
-	{
-		if (GB.LoadFile(path, strlen(path), &stream.addr, &stream.len))
-			return;
-	}
-	else
-	{
-		fd = my_mmap(path, &stream.addr, &stream.len); 
-		if (fd < 0)
-		{
-			GB.Error("Cannot load file");
-			return;
-		}
-	}
+	if (GB.LoadFile(path, strlen(path), &stream.addr, &stream.len))
+		return;
 	
 	stream.pos = 0;
 	
@@ -90,8 +78,7 @@ BEGIN_METHOD(CIMAGESTAT_call, GB_STRING path)
 		stat->depth = info.depth;
 	}
 	
-	if (fd >= 0)
-		munmap((void *)stream.addr, (size_t)stream.len);
+	GB.ReleaseFile(stream.addr, stream.len);
 	
 	GB.ReturnObject(stat);
 	

@@ -61,7 +61,7 @@ BEGIN_METHOD(CSVG_load,GB_STRING Path;)
 
 	if (!len) 
 	{
-		GB.ReleaseFile (&addr,len); 
+		GB.ReleaseFile(addr,len); 
 		GB.Error("Invalid format");
 		GB.ReturnNull(); 
 		return; 
@@ -72,7 +72,7 @@ BEGIN_METHOD(CSVG_load,GB_STRING Path;)
 
 	if (!handle) 
 	{ 
-		GB.ReleaseFile (&addr,len);
+		GB.ReleaseFile(addr,len);
 		GB.Error("Unable to create SVG handle"); 
 		GB.ReturnNull();
 		return;
@@ -88,7 +88,7 @@ BEGIN_METHOD(CSVG_load,GB_STRING Path;)
 		{
 			rsvg_handle_free(handle);
 			handle=NULL;
-			GB.ReleaseFile (&addr,len);
+			GB.ReleaseFile(addr,len);
 			GB.Error("Invalid format");
 			GB.ReturnNull();
 			return;		
@@ -96,7 +96,7 @@ BEGIN_METHOD(CSVG_load,GB_STRING Path;)
 		addr+=sck;
 	}
 
-	GB.ReleaseFile (&addr,len);
+	GB.ReleaseFile(addr,len);
 	if (!rsvg_handle_close(handle,NULL))
 	{
 		rsvg_handle_free(handle);

@@ -2,7 +2,7 @@ COMPONENT = gb.qte
 include $(top_srcdir)/component.am
 include $(top_srcdir)/gb.qte.am
 
-SUBDIRS = share ext
+SUBDIRS = ext
 
 INCLUDES = @QTE_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
 

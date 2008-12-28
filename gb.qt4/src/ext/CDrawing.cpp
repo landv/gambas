@@ -161,7 +161,7 @@ BEGIN_METHOD(CDRAWING_load, GB_STRING path)
       //drawing->height = p.boundingRect().height();
     }
 
-    GB.ReleaseFile(&addr, len);
+    GB.ReleaseFile(addr, len);
   }
 
   if (!ok)
