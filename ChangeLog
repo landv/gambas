@@ -1,4 +1,129 @@
 -------------------------------------------------------------------------------
+ gambas2-2.10 - 29 Dec 2008
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: Fix unresolved variables in gb.qt generated Makefiles and possibly
+  somewhere else.
+* NEW: Update libtool to the last version from Mandriva 2009 updates.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Fix the routine that returns the Desktop path.
+* BUG: Fix a possible crash in the property sheet when closing forms.
+* BUG: Fix a crash when saving a form with a tabstrip having a selected
+  child.
+* BUG: Searching backward inside a subroutine should not freeze anymore.
+* BUG: Control and window dimensions can go up to 4096x4096 pixels.
+* BUG: When unchecking GUI components in a project, the edited forms are
+  automatically closed.
+* BUG: Do not use the form icon on form class editors when refreshing the
+  project.
+* BUG: In the icon editor, filling with a transparent color won't enter an
+  infinite loop anymore.
+* BUG: Selecting the "Collection" word while debugging does not crash the
+  IDE anymore.
+* NEW: Popup menu entries in code editor and form editor to define the
+  current class as startup class.
+* NEW: Pressing Escape now closes a debugging window.
+* NEW: Added support for Valencian language, an official tongue in the 
+  Autonomous Community of Valencia, Spain.
+
+[INTERPRETER]
+* BUG: Dir() and RDir() now work correctly on relative paths.
+* BUG: Enumerating something inside a _next() enumerator method now is
+  safe.
+* BUG: Correctly handle interrupted system calls in streams defined
+  outside of the interpreter.
+* BUG: Fix currency formats.
+* BUG: SUPER now works inside overriden static methods.
+* NEW: A domain name '(none)' is ignored when forging the FQDN for
+  components that need it, like gb.net.smtp.
+
+[GB.DB.ODBC]
+* BUG: Handle ODBC drivers that can return the number of records in a
+  query better.
+
+[GB.DB.POSTGRESQL]
+* BUG: Fix string quoting for postgresql >= 8.2.
+* BUG: Fix blob and string quoting.
+* BUG: Detect primary keys even if their name does not end with '_pkey'.
+* BUG: Correctly detect system databases.
+
+[GB.DEBUG]
+* BUG: If there is an I/O error between a debugged process and the IDE, the
+  process is aborted.
+* BUG: Evaluating a class name returns better information now.
+
+[GB.EVAL]
+* BUG: Highlight.Analyze now correctly handles code lines having non ASCII
+  characters inside.
+
+[GB.FORM]
+* BUG: TableView edit field position is now correct when the TableView
+  window has a menu bar.
+* BUG: The Balloon does not take the focus anymore.
+
+[GB.GTK]
+* BUG: UserControl and UserContainer _Container properties are correctly
+  implemented now. Consequently, the gb.form containers start working as
+  expected.
+* BUG: Window.Background and Window.Foreground now work correctly when the
+  window is embedded.
+* BUG: ClientX, ClientY, ClientW and ClientH container properties for
+  Panel now take the frame into account, as in gb.qt.
+* BUG: TextLabel now deals correctly with its Font property.
+* BUG: TextLabel with AutoResize set now resizes the same way as in gb.qt.
+* BUG: Draw.RichText() now deals correctly with the Draw.Font property.
+* BUG: Windows having SkipTaskbar set now get the focus correctly when
+  activated.
+* BUG: Setting ListBox.List and ComboBox.List does not raise the Click
+  event anymore, as in gb.qt.
+* BUG: Searching an item in a ComboBox does not crash anymore.
+* BUG: TrayIcons do not raise events anymore if a modal dialog is shown.
+* BUG: If no toplevel menu is visible, then the window  menubar is hidden.
+* BUG: As in gb.gt, toplevel menus with no text (separators) are hidden.
+* BUG: The TrayIcons _next and _get special methods do not crash anymore.
+* BUG: Buttons color properties now should work as expected.
+* BUG: The error message box now uses the application title, not the
+  application name.
+* BUG: Fix non-modal window event loop management.
+* BUG: Fix a leak in font objects management.
+* BUG: Picture.Load() yet loads an image, but internally converts it to
+  a pixmap. It speeds up following draws based on this picture.
+* BUG: Startup forms hidden at design time are not shown automatically
+  anymore.
+* BUG: Startup forms are visible by default again.
+* BUG: Fix the warning when closing a window.
+
+[GB.NET]
+* BUG: The socket watch callbacks were incorrectly initialized!
+* BUG: Fix the Handle property for Socket, SerialPort and UdpSocket
+  classes.
+* BUG: The Socket Ready event is correctly raised now.
+
+[GB.QT]
+* BUG: Windows having SkipTaskbar set now get the focus correctly when
+  activated.
+* BUG: Remove warning messages when changing control colors.
+* BUG: Disable automatic extra indent of Labels.
+* BUG: Startup forms hidden at design time are not shown automatically
+  anymore.
+* BUG: Don't allow widgets to be destroyed while processing non-input
+  events.
+* NEW: The Editor.Print() method automatically split lines longer than
+  256 characters.
+
+[GB.QT.EXT]
+* BUG: Fix Editor margin width when showing line numbers.
+
+[GB.XML]
+* BUG: Remove a method declared twice.
+
+[GB.XML.XSLT]
+* BUG: The XSLT component works again.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.9 - 30 Oct 2008
 -------------------------------------------------------------------------------
 
@@ -219,7 +344,6 @@
 
 [GB.XML]
 * BUG: The management of XML nodes was incorrect, and so was redesigned.
-
 
 
 -------------------------------------------------------------------------------
