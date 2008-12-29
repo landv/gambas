@@ -792,7 +792,7 @@ PUBLIC SUB Form_Open()
   'Config.LoadWindow(ME, "/FMain")
   Workspace = wrkBase
 
-  IF LoadServer() THEN RETURN
+  IF LoadServer() THEN RETURN  
   RefreshServer
 
   Settings.Read(ME)

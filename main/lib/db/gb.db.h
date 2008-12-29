@@ -216,8 +216,8 @@ typedef
   struct {
     intptr_t version;
     void (*Register)(DB_DRIVER *);
-    void (*Format)(DB_DRIVER *, GB_VALUE *, DB_FORMAT_CALLBACK);
-    void (*FormatVariant)(DB_DRIVER *, GB_VARIANT_VALUE *, DB_FORMAT_CALLBACK);
+    int (*Format)(DB_DRIVER *, GB_VALUE *, DB_FORMAT_CALLBACK);
+    int (*FormatVariant)(DB_DRIVER *, GB_VARIANT_VALUE *, DB_FORMAT_CALLBACK);
     int (*IsDebug)(void);
     void (*TryAnother)(const char *);
     char *(*SubstString)(const char *, int, DB_SUBST_CALLBACK);

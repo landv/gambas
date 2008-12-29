@@ -162,6 +162,7 @@ static DB_DRIVER *DB_GetDriver(const char *type)
 {
   int i;
   char comp[type ? strlen(type) + 8 : 1];
+  char *p;
 
   if (!type)
   {
@@ -171,6 +172,13 @@ static DB_DRIVER *DB_GetDriver(const char *type)
 
   strcpy(comp, "gb.db.");
   strcat(comp, type);
+  
+  p = comp;
+	while (*p)
+	{
+		*p = tolower(*p);
+		p++;
+	}
 
   GB.LoadComponent(comp);
   GB.Error(NULL); // reset the error flag;
@@ -214,7 +222,7 @@ bool DB_Open(DB_DESC *desc, DB_DRIVER **driver, DB_DATABASE *db)
 	}
 }
 
-void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
+int DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 {
   static char buffer[32];
 
@@ -228,75 +236,73 @@ void DB_Format(DB_DRIVER *driver, GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 	if (arg->type == (GB_TYPE)CLASS_Blob)
 	{
 		(*driver->FormatBlob)((DB_BLOB *)(((GB_OBJECT *)arg)->value), add);
-		return;
+		return FALSE;
 	}
 
-  if (!(*driver->Format)(arg, add))
-  {
-    switch (arg->type)
-    {
-      case GB_T_BOOLEAN:
+  if ((*driver->Format)(arg, add))
+  	return FALSE;
+  	
+	switch (arg->type)
+	{
+		case GB_T_BOOLEAN:
 
-        if (VALUE((GB_BOOLEAN *)arg))
-          add("TRUE", 4);
-        else
-          add("FALSE", 5);
+			if (VALUE((GB_BOOLEAN *)arg))
+				add("TRUE", 4);
+			else
+				add("FALSE", 5);
 
-        return;
+			return FALSE;
 
-      case GB_T_BYTE:
-      case GB_T_SHORT:
-      case GB_T_INTEGER:
+		case GB_T_BYTE:
+		case GB_T_SHORT:
+		case GB_T_INTEGER:
 
-        l = sprintf(buffer, "%d", VALUE((GB_INTEGER *)arg));
-        add(buffer, l);
-        return;
+			l = sprintf(buffer, "%d", VALUE((GB_INTEGER *)arg));
+			add(buffer, l);
+			return FALSE;
 
-      case GB_T_LONG:
+		case GB_T_LONG:
 
-        l = sprintf(buffer, "%" PRId64, VALUE((GB_LONG *)arg));
-        add(buffer, l);
-        return;
+			l = sprintf(buffer, "%" PRId64, VALUE((GB_LONG *)arg));
+			add(buffer, l);
+			return FALSE;
 
-      case GB_T_FLOAT:
-        
-        GB.NumberToString(FALSE, VALUE((GB_FLOAT *)arg), NULL, &s, &l);
-        add(s, l);
+		case GB_T_FLOAT:
+			
+			GB.NumberToString(FALSE, VALUE((GB_FLOAT *)arg), NULL, &s, &l);
+			add(s, l);
+			return FALSE;
 
-        return;
+		case GB_T_STRING:
+		case GB_T_CSTRING:
 
-      case GB_T_STRING:
-      case GB_T_CSTRING:
+			s = VALUE((GB_STRING *)arg).addr + VALUE((GB_STRING *)arg).start;
+			l = VALUE((GB_STRING *)arg).len;
 
-        s = VALUE((GB_STRING *)arg).addr + VALUE((GB_STRING *)arg).start;
-        l = VALUE((GB_STRING *)arg).len;
+			add("'", 1);
 
-        add("'", 1);
+			for (i = 0; i < l; i++, s++)
+			{
+				add(s, 1);
+				if (*s == '\'' || *s == '\\')
+					add(s, 1);
+			}
 
-        for (i = 0; i < l; i++, s++)
-        {
-          add(s, 1);
-          if (*s == '\'' || *s == '\\')
-            add(s, 1);
-        }
+			add("'", 1);
+			return FALSE;
 
-        add("'", 1);
-        return;
+		case GB_T_NULL:
 
-      case GB_T_NULL:
+			add("NULL", 4);
+			return FALSE;
 
-        add("NULL", 4);
-        return;
-
-      default:
-      	fprintf(stderr, "gb.db: DB_Format: unsupported datatype: %d\n", (int)arg->type);
-        return;
-    }
-  }
+		default:
+			return TRUE;
+	}
 }
 
 
-void DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBACK add)
+int DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBACK add)
 {
   GB_VALUE value;
 
@@ -325,30 +331,38 @@ void DB_FormatVariant(DB_DRIVER *driver, GB_VARIANT_VALUE *arg, DB_FORMAT_CALLBA
       break;
   }
 
-  DB_Format(driver, &value, add);
+  return DB_Format(driver, &value, add);
 }
 
 
 static int query_narg;
 static GB_VALUE *query_arg;
 static DB_DRIVER *query_driver;
+static int _arg_error;
 
 static void mq_get_param(int index, char **str, int *len)
 {
-  if (index < 1 || index > query_narg)
+  if (index < 1 || index > query_narg || _arg_error)
     return;
 
-  DB_Format(query_driver, &query_arg[index - 1], (DB_FORMAT_CALLBACK)GB.SubstAdd);
+  if (DB_Format(query_driver, &query_arg[index - 1], (DB_FORMAT_CALLBACK)GB.SubstAdd))
+  {
+  	if (!_arg_error)
+  		_arg_error = index;
+  }
+  
 }
 
 char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB_VALUE *arg)
 {
   char *query;
+  char buffer[8];
 
   query_narg = narg;
   query_arg = arg;
   query_driver = driver;
 
+	_arg_error = 0;
 	if (narg == 0)
 		GB.TempString(&query, pattern, len);
 	else
@@ -358,6 +372,20 @@ char *DB_MakeQuery(DB_DRIVER *driver, const char *pattern, int len, int narg, GB
   {
     GB.Error("Void query");
     return NULL;
+  }
+  else if (_arg_error)
+  {
+  	if (_arg_error == 1)
+	  	strcpy(buffer, "first");
+		else if (_arg_error == 2)
+	  	strcpy(buffer, "second");
+		else if (_arg_error == 3)
+			strcpy(buffer, "third");
+		else
+  		sprintf(buffer, "%dth", _arg_error);
+ 		
+ 		GB.Error("Type mismatch in &1 query argument", buffer);
+  	return NULL;
   }
   else
     return query;
