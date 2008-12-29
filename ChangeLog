@@ -1,4 +1,17 @@
 -------------------------------------------------------------------------------
+ gambas2-2.10.1 - 30 Dec 2008
+-------------------------------------------------------------------------------
+
+[DATABASE MANAGER]
+* BUG: Add "firebird" in the list of databases.
+
+[GB.DB]
+* NEW: Database types do not have to be in lowercase anymore.
+* BUG: Correctly raise a "type mismatch" error when a query argument is not
+  translatable to SQL in Exec(), Find() and Edit() methods.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.10 - 29 Dec 2008
 -------------------------------------------------------------------------------
 
