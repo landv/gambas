@@ -468,8 +468,11 @@ BEGIN_METHOD(CCONNECTION_create, GB_STRING table)
 
   CHECK_OPEN();
 
-  /*if (check_table(THIS, table, TRUE))
-    return;*/
+	if (!table || !*table)
+	{
+		GB.Error("Void table name");
+		return;
+	}
 
   result = DB_MakeResult(THIS, RESULT_CREATE, table, NULL);
 
@@ -483,6 +486,12 @@ END_METHOD
 
 static char *get_query(char *prefix, CCONNECTION *_object, char *table, int len_table, char *query, int len_query, GB_VALUE *arg)
 {
+	if (!len_table)
+	{
+		GB.Error("Void table name");
+		return NULL;
+	}
+
   q_init();
 
   q_add(prefix);
@@ -558,9 +567,6 @@ BEGIN_METHOD(CCONNECTION_edit, GB_STRING table; GB_STRING query; GB_VALUE param[
   CHECK_DB();
 
   CHECK_OPEN();
-
-  /*if (check_table(THIS, table, TRUE))
-    return;*/
 
   query = get_query("SELECT * FROM", THIS, STRING(table), LENGTH(table),
     MISSING(query) ? NULL : STRING(query),
