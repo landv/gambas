@@ -461,6 +461,7 @@ BEGIN_METHOD_VOID(CHTTPCLIENT_new)
 	GB.Alloc((void**)POINTER(&tmp),8);
 	strcpy(tmp,"http://");
 	THIS_PROTOCOL=tmp;
+	THIS->async = TRUE;
 
 END_METHOD
 

@@ -272,7 +272,7 @@ BEGIN_METHOD_VOID(CFTPCLIENT_new)
 	strcpy(tmp,"ftp://");
 	THIS_PROTOCOL=tmp;
 	Adv_user_SETAUTH (&THIS->user,CURLAUTH_BASIC);
-
+	THIS->async = TRUE;
 
 END_METHOD
 
