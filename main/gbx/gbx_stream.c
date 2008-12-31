@@ -55,6 +55,19 @@
 
 int STREAM_eff_read;
 
+#if DEBUG_STREAM
+static unsigned char _tag = 0;
+static int _nopen = 0;
+#endif
+
+#if DEBUG_STREAM
+void STREAM_exit(void)
+{
+	if (_nopen)
+		fprintf(stderr, "WARNING: %d streams yet opened\n", _nopen);
+}
+#endif
+
 bool STREAM_in_archive(const char *path)
 {
 	ARCHIVE *arch;
@@ -134,10 +147,17 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 {
 	if (FILE_is_relative(path))
 	{
-		ARCHIVE *arch;
+		ARCHIVE *arch = NULL;
 
-		ARCHIVE_get_current(&arch);
-		if (arch->name || EXEC_arch) // || !FILE_exist_real(path)) - Why that test ?
+		if (strncmp(path, "../", 3) == 0)
+		{
+			arch = EXEC_arch ? ARCHIVE_main : NULL;
+			path += 3;
+		}
+		else
+			ARCHIVE_get_current(&arch);
+		
+		if ((arch && arch->name) || EXEC_arch) // || !FILE_exist_real(path)) - Why that test ?
 		{
 			stream->type = &STREAM_arch;
 			goto _OPEN;
@@ -175,6 +195,13 @@ _OPEN:
 		stream->type = NULL;
 		THROW_SYSTEM(errno, path);
 	}
+	
+	#if DEBUG_STREAM
+	stream->common.tag = _tag;
+	_nopen++;
+	fprintf(stderr, "Open [%d] (%d)\n", _tag, _nopen);
+	_tag++;
+	#endif
 }
 
 
@@ -203,6 +230,11 @@ void STREAM_close(STREAM *stream)
 		stream->type = NULL;
 		
 	STREAM_release(stream);
+
+	#if DEBUG_STREAM
+	_nopen--;
+	fprintf(stderr, "Close [%d] (%d)\n", stream->common.tag, _nopen);
+	#endif
 }
 
 
@@ -966,6 +998,7 @@ bool STREAM_map(const char *path, char **paddr, int *plen)
   struct stat info;
 	void *addr;
 	size_t len;
+	bool ret = TRUE;
 
 	STREAM_open(&stream, path, ST_READ + ST_DIRECT);
 	
@@ -973,30 +1006,38 @@ bool STREAM_map(const char *path, char **paddr, int *plen)
 	{
 		*paddr = (char *)stream.arch.arch->arch->addr + stream.arch.start;
 		*plen = stream.arch.size;
-		return FALSE;
+		ret = FALSE;
+		goto __RETURN;
 	}
 	
 	fd = STREAM_handle(&stream);
 	if (fd < 0)
-		return TRUE;
+		goto __RETURN;
 	
   if (fstat(fd, &info) < 0)
-    return TRUE;
+    goto __RETURN;
 
   len = info.st_size;
   addr = mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
   if (addr == MAP_FAILED)
-    return TRUE;
+    goto __RETURN;
 	
 	*paddr = addr;
 	*plen = len;
-	return FALSE;
+	ret = FALSE;
+	
+__RETURN:
+
+	STREAM_close(&stream);
+	return ret;
 }
 
 void STREAM_unmap(char *addr, int len)
 {
   if (addr && len > 0 && ARCHIVE_check_addr(addr))
+  {
   	munmap(addr, len);
+	}
 }
 
 

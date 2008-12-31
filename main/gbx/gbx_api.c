@@ -535,109 +535,120 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
   if (object == NULL)
     return FALSE;
 
-	OBJECT_REF(object, "GB_Raise");
-
-	arg = nparam < 0;
-	nparam = abs(nparam);
-
-	if (!arg)
+	TRY
 	{
-		va_start(args, nparam);
-		push(nparam, args);
-		va_end(args);
-	}
-
-	result = FALSE;
-
-	// Observers before
+		OBJECT_REF(object, "GB_Raise");
 	
-	LIST_for_each(obs, OBJECT_event(object)->observer)
-	{
-		parent = OBJECT_active_parent(obs);
-		if (!parent)
-			continue;
-		if (obs->after)
+		arg = nparam < 0;
+		nparam = abs(nparam);
+	
+		if (!arg)
 		{
-			after = TRUE;
-			continue;
+			va_start(args, nparam);
+			push(nparam, args);
+			va_end(args);
 		}
-			
-		func_id = get_event_func_id(obs->event, event_id);
-		if (!func_id)
-			continue;
+	
+		result = FALSE;
+	
+		// Observers before
 		
-		if (!OBJECT_is_valid(parent))
+		LIST_for_each(obs, OBJECT_event(object)->observer)
 		{
-			OBJECT_detach(object);
-			continue;
-		}
-		
-		EXEC_dup(nparam);
-		result = raise_event(parent, object, func_id, nparam);
-		
-		if (result)
-			goto __RETURN;
-	}
-			
-	// Parent
-
-	parent = OBJECT_active_parent(object);
-	if (parent)
-	{	
-		func_id = get_event_func_id(OBJECT_event(object)->event, event_id);
-		if (func_id)
-		{
-			#if DEBUG_EVENT
-				class = OBJECT_class(object);
-				printf("GB_Raise(%p, %d, %s)\n", object, event_id, class->event[event_id].name);
-				printf("func_id = %d  parent = (%s %p)\n", func_id, parent->class->name, parent);
-				if (OBJECT_is_locked(parent))
-					printf("parent is locked!\n");
-				fflush(NULL);
-			#endif
-		
-			if (!OBJECT_is_valid(parent))
-				OBJECT_detach(object);
-			else
+			parent = OBJECT_active_parent(obs);
+			if (!parent)
+				continue;
+			if (obs->after)
 			{
-				EXEC_dup(nparam);
-				result = raise_event(parent, object, func_id, nparam);
-				if (result)
-					goto __RETURN;
+				after = TRUE;
+				continue;
+			}
+				
+			func_id = get_event_func_id(obs->event, event_id);
+			if (!func_id)
+				continue;
+			
+			if (!OBJECT_is_valid(parent))
+			{
+				OBJECT_detach(object);
+				continue;
+			}
+			
+			EXEC_dup(nparam);
+			result = raise_event(parent, object, func_id, nparam);
+			
+			if (result)
+				goto __RETURN;
+		}
+				
+		// Parent
+	
+		parent = OBJECT_active_parent(object);
+		if (parent)
+		{	
+			func_id = get_event_func_id(OBJECT_event(object)->event, event_id);
+			if (func_id)
+			{
+				#if DEBUG_EVENT
+					class = OBJECT_class(object);
+					printf("GB_Raise(%p, %d, %s)\n", object, event_id, class->event[event_id].name);
+					printf("func_id = %d  parent = (%s %p)\n", func_id, parent->class->name, parent);
+					if (OBJECT_is_locked(parent))
+						printf("parent is locked!\n");
+					fflush(NULL);
+				#endif
+			
+				if (!OBJECT_is_valid(parent))
+					OBJECT_detach(object);
+				else
+				{
+					EXEC_dup(nparam);
+					result = raise_event(parent, object, func_id, nparam);
+					if (result)
+						goto __RETURN;
+				}
 			}
 		}
-	}
-  	
-	// Observers after
-	
-	LIST_for_each(obs, OBJECT_event(object)->observer)
-	{
-		parent = OBJECT_active_parent(obs);
-		if (!parent)
-			continue;
-		if (!obs->after)
-			continue;
 			
-		func_id = get_event_func_id(obs->event, event_id);
-		if (!func_id)
-			continue;
+		// Observers after
 		
-		if (!OBJECT_is_valid(parent))
+		LIST_for_each(obs, OBJECT_event(object)->observer)
 		{
-			OBJECT_detach(object);
-			continue;
+			parent = OBJECT_active_parent(obs);
+			if (!parent)
+				continue;
+			if (!obs->after)
+				continue;
+				
+			func_id = get_event_func_id(obs->event, event_id);
+			if (!func_id)
+				continue;
+			
+			if (!OBJECT_is_valid(parent))
+			{
+				OBJECT_detach(object);
+				continue;
+			}
+			
+			EXEC_dup(nparam);
+			result = raise_event(parent, object, func_id, nparam);
+			if (result)
+				goto __RETURN;
 		}
-		
-		EXEC_dup(nparam);
-		result = raise_event(parent, object, func_id, nparam);
-		if (result)
-			goto __RETURN;
-	}
 	
 __RETURN:
 	
-	RELEASE_MANY(SP, nparam);
-	OBJECT_UNREF(object, "GB_Raise");	
+		RELEASE_MANY(SP, nparam);
+		OBJECT_UNREF(object, "GB_Raise");	
+	}
+	CATCH
+	{
+		RELEASE_MANY(SP, nparam);
+		OBJECT_UNREF(object, "GB_Raise");	
+		PROPAGATE();
+	}
+	END_TRY
+
 	return result;
 }
 

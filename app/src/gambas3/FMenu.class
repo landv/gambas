@@ -125,7 +125,7 @@ Private Sub LoadAllMenu()
   $aMenu.Clear
   $cName.Clear
 
-  For Each hCtrl In $hForm.Menus
+  For Each hCtrl In $hForm.AllMenus
     'IF hCtrl.Parent.Kind = "Form" THEN
     CreateMenu(hCtrl)
     'ENDIF
@@ -158,13 +158,13 @@ Static Private Sub SaveAllMenu()
   Dim hParent As CControl
   Dim iLevel As Integer
 
-  For Each hCtrl In $hForm.Menus
+  For Each hCtrl In $hForm.AllMenus
     'cDelete.Add(hCtrl)
     hCtrl.Delete
   Next
   
-  If $hForm.Menus.Count Then $hForm.Modify
-  $hForm.Menus.Clear
+  If $hForm.AllMenus.Count Then $hForm.Modify
+  $hForm.AllMenus.Clear
 
   hCtrl = $hForm.Control[$hForm.Name]
   iLevel = -1

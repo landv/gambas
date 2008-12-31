@@ -40,6 +40,7 @@
 #include "gbx_regexp.h"
 #include "gbx_exec.h"
 #include "gbx_class.h"
+#include "gbx_project.h"
 
 #include "gbx_archive.h"
 
@@ -211,12 +212,17 @@ void ARCHIVE_exit(void)
 
 /* ### *parch must be initialized to NULL or a valid archive */
 /* Returns a true archive, never the main archive if we are not running an executable */
-static bool get_current(ARCHIVE **parch)
+static bool get_current(ARCHIVE **parch, const char **path)
 {
   if (*parch)
     return FALSE;
 
-  if (COMPONENT_current && COMPONENT_current->archive)
+	if (strncmp(*path, "../", 3) == 0)
+	{
+    *parch = EXEC_arch ? ARCHIVE_main : NULL;
+		*path += 3;
+	}
+  else if (COMPONENT_current && COMPONENT_current->archive)
     *parch = COMPONENT_current->archive;
   else if (CP && CP->component && CP->component->archive)
     *parch = CP->component->archive;
@@ -240,14 +246,27 @@ bool ARCHIVE_get_current(ARCHIVE **parch)
 }
 
 
-bool ARCHIVE_get(ARCHIVE *arch, const char *path, int len_path, ARCHIVE_FIND *find)
+bool ARCHIVE_get(ARCHIVE *arch, const char *path, ARCHIVE_FIND *find)
 {
   ARCH_FIND f;
+  struct stat buf;
 
-  if (get_current(&arch))
-    return TRUE;
+  if (get_current(&arch, &path))
+  {
+  	// no archive found, we try a lstat
+		chdir(PROJECT_path);
+    if (stat(path, &buf))
+    	return TRUE;
+		
+		find->pos = S_ISDIR(buf.st_mode) ? -1 : 0;
+		find->sym = NULL;
+		find->len = (int)buf.st_size;
+		find->index = -1;
+		find->arch = NULL;
+    return FALSE;
+	}
 
-  if (ARCH_find(arch->arch, path, len_path, &f))
+  if (ARCH_find(arch->arch, path, 0, &f))
     return TRUE;
 
   find->sym = f.sym;
@@ -264,10 +283,10 @@ bool ARCHIVE_exist(ARCHIVE *arch, const char *path)
 {
   ARCHIVE_FIND find;
 
-  if (get_current(&arch))
-    return FALSE;
+  //if (get_current(&arch, &path))
+  //  return FALSE;
 
-  return (!ARCHIVE_get(arch, path, 0, &find));
+  return (!ARCHIVE_get(arch, path, &find));
 }
 
 
@@ -275,7 +294,7 @@ bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path)
 {
   ARCHIVE_FIND find;
 
-	if (ARCHIVE_get(arch, path, 0, &find))
+	if (ARCHIVE_get(arch, path, &find))
 		return FALSE;
 
 	return (find.pos < 0);
@@ -290,7 +309,7 @@ void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
   //if (get_current(&arch))
   //  THROW_SYSTEM(ENOENT, path);
 
-  if (ARCHIVE_get(arch, path, 0, &find))
+  if (ARCHIVE_get(arch, path, &find))
     THROW_SYSTEM(ENOENT, path);
 
   fstat(find.arch->arch->fd, &buf);
@@ -314,28 +333,35 @@ bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len)
 }
 
 
-void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern)
+void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int attr)
 {
   ARCHIVE_FIND find;
-	//char abs_path[MAX_PATH];
 	char abs_path[16];
 	int abs_len;
 
-  if (pattern == NULL)
-    pattern = "*";
-
-  if (get_current(&arch))
+  /*if (get_current(&arch, &path))
   {
     arch_dir = NULL;
     return;
-  }
+  }*/
 
-  if (ARCHIVE_get(arch, path, 0, &find))
+  if (ARCHIVE_get(arch, path, &find))
   {
   	arch_dir = NULL;
   	return;
   }
   
+  if (!find.sym)
+  {
+  	// By calling FILE_dir_first() again, we are sure that next calls to 
+  	// FILE_dir_next() will never call ARCHIVE_dir_next().
+  	FILE_dir_first(FILE_cat(PROJECT_path, path + 3, NULL), pattern, attr);
+  	return;
+  }
+  
+  if (pattern == NULL)
+    pattern = "*";
+
   arch_dir = arch->arch;
   arch_index = 0;
 	

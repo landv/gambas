@@ -10,6 +10,7 @@
     Text = ("")
     Visible = False
     { mnuGotoLine Menu
+      Action = ".goto-line"
       Text = ("Go to line...")
       Shortcut = "Ctrl+G"
     }
@@ -17,11 +18,13 @@
       Text = ("")
     }
     { mnuUndo Menu
+      Action = ".undo"
       Text = ("Undo")
       Picture = Picture["icon:/small/undo"]
       Shortcut = "Ctrl+Z"
     }
     { mnuRedo Menu
+      Action = ".redo"
       Text = ("Redo")
       Picture = Picture["icon:/small/redo"]
       Shortcut = "Ctrl+Y"
@@ -30,16 +33,19 @@
       Text = ("")
     }
     { mnuCut Menu
+      Action = ".cut"
       Text = ("Cut")
       Picture = Picture["icon:/small/cut"]
       Shortcut = "Ctrl+X"
     }
     { mnuCopy Menu
+      Action = ".copy"
       Text = ("Copy")
       Picture = Picture["icon:/small/copy"]
       Shortcut = "Ctrl+C"
     }
     { mnuPaste Menu
+      Action = ".paste"
       Text = ("Paste")
       Picture = Picture["icon:/small/paste"]
       Shortcut = "Ctrl+V"
@@ -48,6 +54,7 @@
       Text = ("")
     }
     { mnuSelectAll Menu
+      Action = ".select-all"
       Text = ("Select &All")
       Shortcut = "Ctrl+A"
     }
@@ -55,11 +62,13 @@
       Text = ("")
     }
     { mnuFind Menu
+      Action = ".find"
       Text = ("Find...")
       Picture = Picture["icon:/small/find"]
       Shortcut = "Ctrl+F"
     }
     { mnuReplace Menu
+      Action = ".replace"
       Text = ("Replace...")
       Picture = Picture["icon:/small/replace"]
       Shortcut = "Ctrl+R"
@@ -82,16 +91,19 @@
     { mnuEditorView Menu
       Text = ("View")
       { mnuNoSplit Menu
+        Action = ".view-nosplit"
         Text = ("No split")
         Picture = Picture["img/16/no-split.png"]
         Shortcut = "Ctrl+B"
       }
       { mnuHorizontalSplit Menu
+        Action = ".view-hsplit"
         Text = ("Horizontal split")
         Picture = Picture["img/16/h-split.png"]
         Shortcut = "Ctrl+H"
       }
       { mnuVerticalSplit Menu
+        Action = ".view-vsplit"
         Text = ("Vertical split")
         Picture = Picture["img/16/v-split.png"]
         Shortcut = "Ctrl+J"
@@ -101,6 +113,7 @@
       Text = ("")
     }
     { mnuSave Menu
+      Action = ".save"
       Text = ("Save")
       Picture = Picture["icon:/small/save"]
       Shortcut = "Ctrl+S"
@@ -112,6 +125,7 @@
       Name = "btnSave"
       MoveScaled(0,0,4,4)
       ToolTip = ("Save")
+      Action = ".save"
       Text = ("")
       Picture = Picture["icon:/small/save"]
     }
@@ -119,6 +133,7 @@
       Name = "btnReload"
       MoveScaled(4,0,4,4)
       ToolTip = ("Reload")
+      Action = ".reload"
       Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
@@ -126,6 +141,7 @@
       Name = "btnCut"
       MoveScaled(8,0,4,4)
       ToolTip = ("Cut")
+      Action = ".cut"
       Text = ("")
       Picture = Picture["icon:/small/cut"]
     }
@@ -133,6 +149,7 @@
       Name = "btnCopy"
       MoveScaled(12,0,4,4)
       ToolTip = ("Copy")
+      Action = ".copy"
       Text = ("")
       Picture = Picture["icon:/small/copy"]
     }
@@ -140,6 +157,7 @@
       Name = "btnPaste"
       MoveScaled(16,0,4,4)
       ToolTip = ("Paste")
+      Action = ".paste"
       Text = ("")
       Picture = Picture["icon:/small/paste"]
     }
@@ -147,6 +165,7 @@
       Name = "btnUndo"
       MoveScaled(20,0,4,4)
       ToolTip = ("Undo")
+      Action = ".undo"
       Text = ("")
       Picture = Picture["icon:/small/undo"]
     }
@@ -154,11 +173,12 @@
       Name = "btnRedo"
       MoveScaled(24,0,4,4)
       ToolTip = ("Redo")
+      Action = ".redo"
       Text = ("")
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(28,0,4,4)
+      MoveScaled(29,0,4,4)
       ToolTip = ("Indent")
       Text = ("")
       Picture = Picture["icon:/small/indent"]
@@ -173,6 +193,7 @@
       Name = "btnNoSplit"
       MoveScaled(36,0,4,4)
       ToolTip = ("No split")
+      Action = ".view-nosplit"
       Text = ("")
       Picture = Picture["img/16/no-split.png"]
     }
@@ -180,6 +201,7 @@
       Name = "btnHorizontalSplit"
       MoveScaled(40,0,4,4)
       ToolTip = ("Horizontal split")
+      Action = ".view-hsplit"
       Text = ("")
       Picture = Picture["img/16/h-split.png"]
     }
@@ -187,6 +209,7 @@
       Name = "btnVerticalSplit"
       MoveScaled(44,0,4,4)
       ToolTip = ("Vertical split")
+      Action = ".view-vsplit"
       Text = ("")
       Picture = Picture["img/16/v-split.png"]
     }

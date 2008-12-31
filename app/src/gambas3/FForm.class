@@ -7,7 +7,7 @@ Public Type As String
 Public Master As CControl
 Public Selection As New Collection
 Public Control As New Collection(gb.Text)
-Public Menus As New CControl[]
+Public AllMenus As New CControl[]
 
 Public Container As Container
 
@@ -58,6 +58,7 @@ Private $iSaveY As Integer
 Private $iSaveLevel As Integer
 Private $bSelectNew As Boolean
 Private $bDoNotArrange As Boolean
+Private $cAction As Collection
 
 Private $hContainer As CControl
 Private $iContX As Integer
@@ -117,7 +118,7 @@ Public Sub Reload()
   
   If Control.Exist(Name) Then 
     Control[Name].Delete
-    Menus.Clear
+    AllMenus.Clear
   Endif
   
   $bLocked = False
@@ -420,10 +421,57 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
 End
 
+Private Sub UnQuoteShorcut(sText As String, Optional bNoAmp As Boolean) As String
+  
+  If Not bNoAmp Then
+    sText = Replace(sText, "&&", Chr$(1))
+    sText = Replace(sText, "&", "")
+    sText = Replace(sText, Chr$(1), "&")
+  Endif
+  
+  sText = Trim(sText)
+  
+  'If Right(sText, 3) = "..." Then sText = Trim(Left(sText, -3))
+  
+  Return sText
+  
+End
+
+
+Private Sub SaveAction()
+  
+  Dim hFile As File
+  Dim cAction As Collection
+  Dim sAction As String
+  Dim aList As String[]
+  Dim sText As String
+
+  If $cAction.Count = 0 Then Return
+  
+  aList = New String[]
+  For Each cAction In $cAction
+    aList.Add($cAction.Key)
+  Next
+  aList.Sort
+
+  Try Mkdir Project.Dir &/ ".action"
+  hFile = Open Project.Dir &/ ".action" &/ LCase(Name) & ".action" For Output Create
+  
+  For Each sAction In aList
+  
+    cAction = $cAction[sAction]
+    sText = UnQuoteShorcut(cAction["Text"])
+    If Not sText Then sText = UnQuoteShorcut(cAction["ToolTip"], True)
+    Print #hFile, sAction, sText, cAction["Shortcut"], cAction["Picture"]
+  
+  Next
+    
+  Close #hFile
+  
+End
+
 
 Public Function Save(Optional bForce As Boolean) As Boolean
-
-  Dim hFic As File
 
   If Project.ReadOnly Then Return
   
@@ -446,9 +494,7 @@ Public Function Save(Optional bForce As Boolean) As Boolean
 
   File.Save(Path, $sSave)
 
-  'OPEN Path & ".test" FOR CREATE AS #hFic ' y a un truc bizarre avec CREATE !
-  'PRINT #hFic, $sSave
-  'CLOSE #hFic
+  SaveAction
 
   $sSave = ""
   $bModify = False
@@ -494,7 +540,7 @@ Public Function GetChildren(sName As String) As CControl[]
 
   If hCtrl.Kind = "Form" Then
 
-    For Each hCChild In Me.Menus
+    For Each hCChild In AllMenus
       aList.Add(hCChild)
     Next
     'cList.Insert(Menus)
@@ -556,6 +602,7 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim sText As String
   Dim sName As String
   Dim sGroup As String
+  Dim sAction As String
 
   'hCtrl = Control[sName]
   'PRINT "SaveOne: hCtrl = "; hCtrl
@@ -577,6 +624,8 @@ Private Sub SaveOne(hCtrl As CControl)
   Else
     cProp = hCtrl.GetEachProperty(0, 0, Not $bScaled)
   Endif
+  
+  hCtrl.AddAction($cAction)
 
   Inc $iSaveLevel
 
@@ -626,7 +675,7 @@ Private Sub SaveOne(hCtrl As CControl)
 
     If hCtrl.Kind = "Form" Then
 
-      For Each hMenuCtrl In Me.Menus
+      For Each hMenuCtrl In AllMenus
         SaveOne(hMenuCtrl)
       Next
 
@@ -1106,7 +1155,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
 
   If sClass = "Menu" Then
     If hParent.Name = Name Then
-      Menus.Add(hCtrl)
+      AllMenus.Add(hCtrl)
     Endif
   Endif
 
@@ -1476,6 +1525,8 @@ Public Sub PasteSelection()
 
   Dim hParent As CControl
 
+  If Not CanPaste() Then Return
+
   If Selection.Count = 1 Then
     hParent = Master
   Else If Selection.Count > 1 Then
@@ -1656,15 +1707,11 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bRe
 
 End
 
-
-
 Public Sub mnuSave_Click()
 
   Save
 
 End
-
-
 
 Private Sub ResetSave()
 
@@ -1674,9 +1721,9 @@ Private Sub ResetSave()
   '$iIndent  = 0
   $iSaveLevel = 0
   $bScaled = Control[Name].GetPropertyDefault(CPropertyInfo.SCALE_NAME)
+  $cAction = New Collection
 
 End
-
 
 Private Function GetEditor() As FEditor
 
@@ -1686,7 +1733,6 @@ Private Function GetEditor() As FEditor
   Return Project.Files[sPath]
 
 End
-
 
 Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
 
@@ -1732,6 +1778,7 @@ End
 Public Sub MenuControl_Click()
 
   'IF NOT LAST THEN STOP
+  Last.Checked = False
   Control_DblClick
 
 End
@@ -1846,7 +1893,7 @@ Sub RefreshMenu()
 
   bOn = Selection.Count >= 2
 
-  Action["paste-form"].Enabled = CanPaste()
+  Action[".paste"].Enabled = CanPaste()
   
   mnuArrange.Visible = Not $bReadOnly
   Action[".save,.refresh,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly
@@ -2608,7 +2655,7 @@ Public Sub Action_Activate(Key As String) As Boolean
       CopySelection
       UnSelectAll
     
-    Case "paste-form"
+    Case ".paste"
       PasteSelection
 
     Case ".cut"

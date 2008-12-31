@@ -23,12 +23,13 @@
       Picture = Picture["icon:/small/wizard"]
     }
     { mnuShowCode Menu
-      Action = ".code"
+      Action = ".code-form"
       Text = ("Open code")
       Picture = Picture["img/16/class.png"]
       Shortcut = "Ctrl+W"
     }
     { mnuStartup Menu
+      Action = ".startup-class"
       Text = ("&Startup class")
       Picture = Picture["icon:/small/play"]
     }
@@ -68,10 +69,12 @@
       Text = ("")
     }
     { mnuSelectAll Menu
+      Action = ".select-all"
       Text = ("Select all")
       Shortcut = "Ctrl+A"
     }
     { mnuUnselectAll Menu
+      Action = ".unselect-all"
       Text = ("Unselect all")
       Shortcut = "Esc"
     }
@@ -91,7 +94,7 @@
       Shortcut = "Ctrl+C"
     }
     { mnuPaste Menu
-      Action = "paste-form"
+      Action = ".paste"
       Text = ("Paste")
       Picture = Picture["icon:/small/paste"]
       Shortcut = "Ctrl+V"
@@ -194,6 +197,7 @@
       Text = ("")
     }
     { mnuReload Menu
+      Action = ".reload"
       Text = ("Reload")
       Picture = Picture["icon:/small/refresh"]
     }
@@ -222,7 +226,7 @@
         Name = "ToolButton11"
         MoveScaled(4,0,4,4)
         ToolTip = ("Reload")
-        Action = ".refresh"
+        Action = ".reload"
         Text = ("")
         Picture = Picture["icon:/small/refresh"]
       }
@@ -230,7 +234,7 @@
         Name = "ToolButton12"
         MoveScaled(8,0,4,4)
         ToolTip = ("Code")
-        Action = ".code"
+        Action = ".code-form"
         Text = ("")
         Picture = Picture["img/16/class.png"]
       }
@@ -262,7 +266,7 @@
         Name = "ToolButton16"
         MoveScaled(24,0,4,4)
         ToolTip = ("Paste")
-        Action = "paste-form"
+        Action = ".paste"
         Text = ("")
         Picture = Picture["icon:/small/paste"]
       }

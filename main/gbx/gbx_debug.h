@@ -45,6 +45,8 @@
 #define DEBUG_EVENT    0
 /* Component management debugging */
 #define DEBUG_COMP     0
+/* Stream opening debugging */
+#define DEBUG_STREAM   0
 
 typedef
 	struct {

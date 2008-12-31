@@ -1378,7 +1378,6 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
   If aSym[iIndex] = "NEW" Then Inc iIndex
 
   sType = aSym[iIndex]
-  If $cType.Exist(sType) Then sType = $cType[sType]
   
   If (iIndex + 2) < aSym.Count Then
     If aSym[iIndex + 1] = "[" Then 'AND aSym[iIndex + 2] = "]" THEN
@@ -1386,6 +1385,7 @@ Static Public Function ReadSymbolType(aSym As String[], iIndex As Integer, Optio
     Endif
   Endif
 
+  If $cType.Exist(sType) Then sType = $cType[sType]
   Return sType
 
 Catch

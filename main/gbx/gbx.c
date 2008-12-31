@@ -101,6 +101,7 @@ static void my_exit(int ret)
 
 static void main_exit(bool silent)
 {
+  STREAM_exit();
   OBJECT_exit();
 	CLASS_clean_up(silent);
   SUBR_exit();

@@ -50,6 +50,7 @@
       Text = ("")
     }
     { mnuQuit Menu
+      Action = "quit"
       Text = ("&Quit")
       Picture = Picture["icon:/small/quit"]
       Shortcut = "Ctrl+Q"
@@ -106,6 +107,7 @@
       Text = ("")
     }
     { mnuClean Menu
+      Action = "clean-up-project"
       Text = ("&Clean up")
       Picture = Picture["icon:/small/clear"]
     }
@@ -182,6 +184,7 @@
       Shortcut = "F9"
     }
     { mnuClearBreakpoints Menu
+      Action = "clear-break"
       Text = ("Clear &all breakpoints")
     }
     { Menu21 Menu
@@ -193,6 +196,7 @@
       Picture = Picture["icon:/small/watch"]
     }
     { mnuClearDebugWindows Menu
+      Action = "close-all-debug"
       Text = ("Close all &debug windows")
     }
   }
@@ -231,10 +235,12 @@
       Text = ("")
     }
     { mnuHideMenu Menu
+      Action = "hide-menubar"
       Text = ("Hide menubar")
       Shortcut = "Ctrl+Alt+M"
     }
     { mnuCloseAll Menu
+      Action = "close-all-window"
       Text = ("Close &all windows")
       Shortcut = "Ctrl+Alt+W"
     }
@@ -242,6 +248,7 @@
   { mnuTool Menu
     Text = ("&Tools")
     { mnuFind Menu
+      Action = "find-replace"
       Text = ("&Find && replace")
       Picture = Picture["icon:/small/find"]
       Shortcut = "Ctrl+F"
@@ -250,25 +257,34 @@
       Text = ("")
     }
     { mnuBrowse Menu
+      Action = "browse-project"
       Text = ("&Browse project...")
       Picture = Picture["icon:/small/view-icon"]
       Shortcut = "Ctrl+Alt+O"
     }
     { mnuTerminal Menu
+      Action = "open-terminal"
       Text = ("&Open a terminal...")
       Picture = Picture["icon:/16/terminal"]
       Shortcut = "Ctrl+Alt+T"
     }
     { mnuUpdateForm Menu
+      Action = "update-all-form"
       Text = ("&Update all forms")
       Picture = Picture["icon:/small/refresh"]
     }
     { mnuDatabaseManager Menu
+      Action = "database-manager"
       Text = ("&Database manager...")
       Picture = Picture["img/16/database-manager.png"]
     }
     { Menu20 Menu
       Text = ("")
+    }
+    { mnuShortcut Menu
+      Action = "shortcut"
+      Text = ("&Shortcuts...")
+      Picture = Picture["icon:/small/shortcut"]
     }
     { mnuPreferences Menu
       Action = "option"
@@ -287,6 +303,7 @@
       Shortcut = "F1"
     }
     { mnuTip Menu
+      Action = "tips"
       Text = ("&Tips of the day")
       Picture = Picture["img/16/tip.png"]
     }
@@ -294,18 +311,19 @@
       Text = ("")
     }
     { mnuAbout Menu
+      Action = "about"
       Text = ("&About Gambas...")
       Picture = Picture["img/logo/new-logo-16.png"]
     }
   }
   { mnuPopup Menu
-    Action = "test"
     Text = ("Popup")
     Enabled = False
     Visible = False
     { Menu17 Menu
       Text = ("New")
       { mnuAddDirectory Menu
+        Action = "new-directory"
         Text = ("&Directory")
         Picture = Picture["icon:/small/directory"]
       }
@@ -314,18 +332,21 @@
       }
       { mnuNewModule Menu mnuNewFile
         Name = "mnuNewModule"
+        Action = "new-module"
         Text = ("&Module...")
         Picture = Picture["img/16/module.png"]
         Tag = "module"
       }
       { mnuNewClass Menu mnuNewFile
         Name = "mnuNewClass"
+        Action = "new-class"
         Text = ("&Class...")
         Picture = Picture["img/16/class.png"]
         Tag = "class"
       }
       { mnuNewForm Menu mnuNewFile
         Name = "mnuNewForm"
+        Action = "new-form"
         Text = ("&Form...")
         Picture = Picture["img/16/form.png"]
         Tag = "form"
@@ -335,12 +356,14 @@
       }
       { mnuNewImage Menu mnuNewFile
         Name = "mnuNewImage"
+        Action = "new-image"
         Text = ("&Image...")
         Picture = Picture["icon:/small/image"]
         Tag = "image"
       }
       { mnuNewFile Menu mnuNewFile
         Name = "mnuNewFile"
+        Action = "new-other"
         Text = ("&Other...")
         Picture = Picture["icon:/small/new"]
         Tag = "text"
@@ -372,34 +395,40 @@
       Text = ("")
     }
     { mnuCut Menu
+      Action = ".cut"
       Text = ("&Cut")
       Picture = Picture["icon:/small/cut"]
       Shortcut = "Ctrl+X"
     }
     { mnuCopy Menu
+      Action = ".copy"
       Text = ("&Copy")
       Picture = Picture["icon:/small/copy"]
       Shortcut = "Ctrl+C"
     }
     { mnuPaste Menu
+      Action = ".paste"
       Text = ("&Paste")
       Picture = Picture["icon:/small/paste"]
       Shortcut = "Ctrl+V"
     }
     { mnuRenameFile Menu
+      Action = "rename"
       Text = ("&Rename...")
       Picture = Picture["img/16/rename.png"]
       Shortcut = "F2"
     }
     { mnuDeleteFile Menu
+      Action = ".delete"
       Text = ("&Delete...")
       Picture = Picture["icon:/small/delete"]
-      Shortcut = "Ctrl+D"
+      Shortcut = "Del"
     }
     { mnuCopyPathSep Menu
       Text = ("")
     }
     { mnuCopyPath Menu
+      Action = "copy-file-path"
       Text = ("Copy file pat&h")
       Shortcut = "Ctrl+Shift+C"
     }
@@ -407,6 +436,7 @@
       Text = ("")
     }
     { mnuStartup Menu
+      Action = "startup-class"
       Text = ("&Startup class")
       Picture = Picture["icon:/small/play"]
     }
@@ -669,7 +699,7 @@
       Action = "project"
       Orientation = Align.Left
       { tvwProject ColumnView
-        MoveScaled(3,2,20,40)
+        MoveScaled(4,2,20,40)
         Drop = True
         Expand = True
         Header = False
@@ -711,7 +741,7 @@
         Index = 0
       }
       { panFrame Panel
-        MoveScaled(5,6,22,32)
+        MoveScaled(5,7,22,32)
         Expand = True
         Arrangement = Arrange.Fill
         Border = Border.Raised
@@ -728,13 +758,13 @@
     }
   }
   { timMessage #Timer
-    #X = 532
-    #Y = 105
+    #X = 564
+    #Y = 60
     Delay = 2000
   }
   { timOpen #Timer
-    #X = 532
-    #Y = 161
+    #X = 564
+    #Y = 114
   }
   { panMessage Panel
     MoveScaled(1,77,53,4)

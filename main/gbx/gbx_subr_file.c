@@ -781,7 +781,7 @@ void SUBR_exit_inp_out(void)
 
 void SUBR_dfree(void)
 {
-  SUBR_ENTER_PARAM(1);;
+  SUBR_ENTER_PARAM(1);
 
   RETURN->type = T_LONG;
   RETURN->_long.value = FILE_free(get_path(PARAM));

@@ -1,0 +1,156 @@
+' Gambas class file
+
+Private $cAction As Collection
+Private $cShortcut As New Collection
+Private $hAction As CAction
+
+Private Sub InitShortcut()
+  
+  Dim iInd As Integer
+  Dim sKey As String
+
+  For iInd = Asc("A") To Asc("Z")
+    sKey = Chr$(iInd)
+    $cShortcut[Key[sKey]] = sKey
+  Next
+
+  For iInd = Asc("0") To Asc("9")
+    sKey = Chr$(iInd)
+    $cShortcut[Key[sKey]] = sKey
+  Next
+
+  For iInd = 1 To 12
+    sKey = "F" & CStr(iInd)
+    $cShortcut[Key[sKey]] = sKey
+  Next
+  
+  For Each sKey In ["Backspace", "Del", "Down", "End", "Enter", "Esc", "Home", "Ins", "Left", "Pause", "PgDown", "PgUp", "Return", "Space", "Right", "Up"]
+    $cShortcut[Key[sKey]] = sKey
+  Next
+
+End
+  
+Public Sub Run(cAction As collection, sAction As String) As Boolean
+
+  $cAction = cAction
+  $hAction = $cAction[sAction]
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  $hAction.Shortcut = txtShortcut.Text
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub txtShortcut_GotFocus()
+
+  txtShortcut.Select
+
+End
+
+Public Sub txtShortcut_LostFocus()
+
+  txtShortcut.Unselect
+
+End
+
+
+Public Sub txtShortcut_KeyPress()
+
+  Dim sShortcut As String
+  Dim sMod As String
+
+  sShortcut = $cShortcut[Key.Code]
+
+  If sShortcut Then
+
+    If sShortcut Like "F[0-9]*" Or If Not Key.Normal Then
+      
+      If Key.Control Then sMod &= "Ctrl+"
+      If Key.Meta Then sMod &= "Meta+"
+      If Key.Alt Then sMod &= "Alt+"
+      If Key.Shift Then sMod &= "Shift+"
+  
+      txtShortcut.Text = sMod & sShortcut
+      
+    Endif
+    
+  Endif
+
+  Stop Event
+
+End
+
+Public Sub Form_Open()
+
+  InitShortcut
+  txtShortcut.Text = $hAction.Shortcut
+  CheckShortcut
+  txtShortcut.SetFocus
+
+End
+
+Public Sub btnClear_Click()
+
+  txtShortcut.Text = ""
+
+End
+
+Private Sub CheckShortcut()
+  
+  Dim hAction As CAction
+  Dim hSame As CAction
+  Dim sShortcut As String = txtShortcut.Text
+  
+  If sShortcut Then
+  
+    For Each hAction In $cAction
+      If hAction = $hAction Then Continue
+      If hAction.Shortcut = sShortcut Then
+        hSame = hAction
+        Break
+      Endif 
+    Next
+    
+  Endif
+  
+  If hSame Then
+    panGood.Hide
+    lblAction.Text = hSame.Text
+    If hSame.Icon Then
+      picAction.Picture = hSame.Icon
+      picAction.Show
+    Else  
+      picAction.Hide
+    Endif
+    panBad.Show
+    btnOK.Enabled = False
+  Else
+    If sShortcut Then
+      lblGood.Text = ("This shortcut is unique.")
+    Else
+      lblGood.Text = ("No shortcut is defined.")
+    Endif
+    panGood.Show
+    panBad.Hide
+    btnOK.Enabled = True
+  Endif
+  
+End
+
+
+Public Sub txtShortcut_Change()
+
+  CheckShortcut
+
+End

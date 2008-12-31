@@ -15,7 +15,7 @@ Property ToolTip As String
 Property Text As String
 Property Picture As Picture
 Property Value As Boolean
-'Property Shortcut As String
+Property Shortcut As String
 'Property Icon As Picture
 
 Private $sKey As String
@@ -295,10 +295,7 @@ Private Function GetControls() As Object[]
   Else If $sKey Then
 
     Try aObj = $cControls[$sKey]
-    If Not aObj Then 
-      Print #File.Err, "Warning: Unknown action: '"; $sKey; "'"
-      Return $aVoid
-    Endif
+    If Not aObj Then Return $aVoid
     
     If Not $hParent Then Return aObj
   
@@ -482,16 +479,25 @@ Private Sub Value_Write(Value As Boolean)
 
 End
 
-' Static Private Function List_Read() As String[]
-' 
-'   Dim aCtrl As Object[]
-'   Dim aList As New String[]
-' 
-'   For Each aCtrl In $cControls
-'     aList.Add($cControls.Key)
-'   Next
-'   
-'   aList.Sort
-'   Return aList
-' 
-' End
+Private Function Shortcut_Read() As String
+
+  Dim hCtrl As Object
+  Dim sShortcut As String
+  
+  For Each hCtrl In GetControls()
+    Try sShortcut = hCtrl.Shortcut
+    If sShortcut Then Return sShortcut
+  Next
+  
+
+End
+
+Private Sub Shortcut_Write(Value As String)
+
+  Dim hCtrl As Object
+  
+  For Each hCtrl In GetControls()
+    Try hCtrl.Shortcut = Value
+  Next  
+
+End

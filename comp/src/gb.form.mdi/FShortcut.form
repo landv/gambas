@@ -1,0 +1,38 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,60,56)
+  Text = ("Configure shortcuts")
+  Icon = Picture["icon:/small/shortcut"]
+  Arrangement = Arrange.Vertical
+  Spacing = 8
+  Padding = 8
+  { gvwShortcut GridView
+    MoveScaled(1,1,56,48)
+    Expand = True
+    Mode = Select.Single
+    Header = GridView.Horizontal
+  }
+  { HBox2 HBox
+    MoveScaled(1,51,58,4)
+    Spacing = 8
+    { btnChange Button
+      MoveScaled(0,0,16,4)
+      Text = ("&Change...")
+    }
+    { Panel1 Panel
+      MoveScaled(17,0,4,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(24,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(41,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

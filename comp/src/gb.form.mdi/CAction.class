@@ -1,0 +1,37 @@
+' Gambas class file
+
+Public Key As String
+Public Text As String
+Public DefaultShortcut As String
+Public Shortcut As String
+Public Icon As Picture
+
+Public Sub _new(sLine As String)
+
+  Dim aLine As String[] = Split(sLine, Chr$(9))
+  Dim sPicture As String
+
+  Key = aLine[0]
+  Text = aLine[1]
+  DefaultShortcut = aLine[2]
+  Shortcut = MShortcut.GetShortcut(Key)
+  If Not Shortcut Then Shortcut = DefaultShortcut
+  
+  sPicture = aLine[3]
+  If Not (sPicture Like "icon:/*") Then sPicture = "../" &/ sPicture
+  Icon = Picture[sPicture]
+  
+End
+
+Public Sub Save()
+  
+  If Shortcut = DefaultShortcut Then
+    MShortcut.SetShortcut(Key, "")
+  Else
+    MShortcut.SetShortcut(Key, Shortcut)
+  Endif
+  
+  Action[Key].Shortcut = Shortcut
+  Action["." & Key].Shortcut = Shortcut
+  
+End

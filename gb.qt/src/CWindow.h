@@ -176,7 +176,6 @@ public:
   MyMainWindow(QWidget *parent, const char *name, bool embedded = false);
   ~MyMainWindow();
 
-	void hide();
   void initProperties();
   void showActivate(QWidget *parent = 0);
   //void activateLater() { _activate = true; }

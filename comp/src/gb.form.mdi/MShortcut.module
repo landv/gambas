@@ -1,0 +1,16 @@
+' Gambas module file
+
+Public Sub SetShortcut(sAction As String, sShortcut As String)
+  
+  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+  Settings["gb.form.mdi/Shortcuts" &/ sAction] = sShortcut
+  
+End
+
+Public Sub GetShortcut(sAction As String) As String
+  
+  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+  Return Settings["gb.form.mdi/Shortcuts" &/ sAction] 
+  
+End
+

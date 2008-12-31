@@ -220,6 +220,7 @@ static bool emit_open_event(void *_object)
 		return true;
 	
 	CWIDGET_clear_flag(THIS, WF_CLOSED);
+	
 	if (!THIS->shown)
 	{
 		THIS->minw = THIS->w;
@@ -233,6 +234,7 @@ static bool emit_open_event(void *_object)
 		THIS->shown = true;
 	}
 	
+	THIS->hidden = false;
 	return false;
 }
 
@@ -433,7 +435,8 @@ END_METHOD
 BEGIN_METHOD_VOID(CFORM_main)
 
   CWINDOW *form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
-  if (!((MyMainWindow *)form->widget.widget)->isHidden())
+  //if (!((MyMainWindow *)form->widget.widget)->isHidden())
+  if (!form->hidden)
   	CWINDOW_show(form, NULL);
 
 END_METHOD
@@ -653,6 +656,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWINDOW_hide)
 
+	THIS->hidden = true;
+
   if (THIS->toplevel && WINDOW->testWFlags(Qt::WShowModal))
   {
     do_close(THIS, 0);
@@ -672,7 +677,6 @@ BEGIN_METHOD_VOID(CWINDOW_show_modal)
 		if (THIS->toplevel)
 			WINDOW->showModal();
 	}
-	
   //qDebug("CWINDOW_show_modal: ret = %d", THIS->ret);
   GB.ReturnInteger(THIS->ret);
 
@@ -2435,13 +2439,6 @@ void MyMainWindow::configure()
 	//qDebug("configure: %p (%d %d %d %d)", THIS, ((QFrame *)(THIS->container))->contentsRect().x(), ((QFrame *)(THIS->container))->contentsRect().y(), ((QFrame *)(THIS->container))->contentsRect().width(), ((QFrame *)(THIS->container))->contentsRect().height());
 }
 
-
-void MyMainWindow::hide(void)
-{
-  CWIDGET *_object = CWidget::get(this);
-  THIS->hidden = TRUE;
-  QMainWindow::hide();
-}
 
 void MyMainWindow::setName(const char *name, CWIDGET *control)
 {

@@ -59,7 +59,12 @@ typedef
     unsigned no_fionread : 1;
     unsigned no_lseek : 1;
     unsigned available_now : 1;
+    #if DEBUG_STREAM
+    unsigned _reserved : 1;
+    unsigned tag : 8;
+    #else
     unsigned _reserved : 9;
+    #endif
     }
   PACKED
   STREAM_COMMON;
@@ -190,8 +195,6 @@ STREAM_CLASS stream = \
 
 #define STREAM_BUFFER_SIZE 256
 
-void STREAM_exit(void);
-
 bool STREAM_in_archive(const char *path);
 //int STREAM_get_readable(int fd, long *len);
 
@@ -231,5 +234,11 @@ void STREAM_lock(STREAM *stream);
 
 void STREAM_blocking(STREAM *stream, bool block);
 bool STREAM_is_blocking(STREAM *stream);
+
+#if DEBUG_STREAM
+void STREAM_exit(void);
+#else
+#define STREAM_exit()
+#endif
 
 #endif

@@ -2,25 +2,114 @@
 
 Export
 
-Static Private $aWindows As New Window[]
+Static Property Read List As String[]
+
+Static Private $cAction As Collection
+Static Private $aWindow As New Window[]
+Static Private $iId As Integer
+Static Private $cId As New Collection
+
+Static Private Sub InitAction()
+  
+  Dim sFile As String
+  Dim hFile As File
+  Dim sAction As String
+  Dim hAction As CAction
+
+  If $cAction Then Return
+
+  'Debug "Loading actions..."
+
+  $cAction = New Collection
+
+  For Each sFile In Dir("../.action")
+    hFile = Open "../.action" &/ sFile
+    While Not Eof(hFile)
+      Line Input #hFile, sAction
+      If Not sAction Then Continue
+      
+      hAction = New CAction(sAction)
+      $cAction[hAction.Key] = hAction
+      
+    Wend
+    Close #hFile
+  Next
+  
+End
+
+Static Public Sub Configure() As Boolean
+
+  InitAction
+  Return FShortcut.Run($cAction)
+
+End
+
+Static Private Function List_Read() As String[]
+
+  Dim aList As New String[]
+  Dim hAction As CAction
+  
+  InitAction
+  
+  For Each hAction In $cAction
+    aList.Add($cAction.Key)
+  Next
+  aList.Sort
+  Return aList
+
+End
 
 Static Public Sub Register(Control As Object, Key As String)
   
-  Dim hWin As Window
+  Dim sShortcut As String
+  Dim sAction As String
   Dim hObs As Observer
+  Dim hWin As Window
   
   Super.Register(Control, Key)
   
   If Key Then
-  
-    If Not Control Is Window Then
+    If Control Is Menu Then
       hWin = Control.Window
-      If Not $aWindows.Exist(hWin) Then
-        $aWindows.Add(hWin)
+      If Not $aWindow.Exist(hWin) Then
+        $aWindow.Add(hWin)
+        Inc $iId
         hObs = New Observer(hWin) As "Window"
       Endif
     Endif
-    
   Endif
+  
+End
+
+Static Private Sub SetShortcut(hMenu As Menu)
+  
+  Dim sShortcut As String
+  
+  If hMenu.Action Then 
+    sShortcut = MShortcut.GetShortcut(hMenu.Action)
+    If sShortcut Then hMenu.Shortcut = sShortcut
+  Endif
+
+  For Each hMenu In hMenu.Children
+    SetShortcut(hMenu)
+  Next
+  
+End
+
+
+Static Public Sub Window_Open()
+  
+  Dim hWin As Window = Last
+  Dim hMenu As Menu
+  
+  For Each hMenu In hWin.Menus
+    SetShortcut(hMenu)
+  Next
+  
+End
+
+Static Public Sub Window_Close()
+  
+  Try $aWindow.Remove($aWindow.Find(Last))
   
 End

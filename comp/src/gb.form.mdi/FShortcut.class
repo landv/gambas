@@ -1,0 +1,82 @@
+' Gambas class file
+
+Private $cAction As Collection
+Private $aAction As String[]
+
+Public Sub Run(cAction As Collection) As Boolean
+  
+  $cAction = cAction
+  Return Not Me.ShowModal() 
+  
+End
+
+Public Sub Form_Open()
+
+  Dim iInd As Integer
+  Dim hAction As CAction
+
+  $aAction = Action.List
+  
+  gvwShortcut.Rows.Count = $aAction.Count
+  gvwShortcut.Columns.Count = 2
+  gvwShortcut.Columns[0].Text = ("Action")
+  gvwShortcut.Columns[1].Text = ("Shortcut")
+  
+  For iInd = 0 To $aAction.Max
+  
+    hAction = $cAction[$aAction[iInd]]
+  
+    gvwShortcut[iInd, 0].Text = hAction.Text
+    gvwShortcut[iInd, 0].Padding = 2
+    gvwShortcut[iInd, 0].Picture = hAction.Icon
+    gvwShortcut[iInd, 1].Text = hAction.Shortcut
+    gvwShortcut[iInd, 1].Padding = 2
+
+  Next
+  
+  gvwShortcut.Columns[0].Width = -1
+  gvwShortcut.Rows.Height = -1
+  gvwShortcut.Rows.Height += 4
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnOK_Click()
+
+  SaveShortcut
+  Me.Close(True)
+
+End
+
+Public Sub btnChange_Click()
+
+  gvwShortcut_Activate
+
+End
+
+Public Sub gvwShortcut_Activate()
+
+  Dim sAction As String = $aAction[gvwShortcut.Row]
+
+  If FShortcutEdit.Run($cAction, sAction) Then Return
+
+  gvwShortcut[gvwShortcut.Row, 1].Text = $cAction[sAction].Shortcut
+  
+End
+
+Private Sub SaveShortcut()
+  
+  Dim hAction As CAction
+  Dim sKey As String
+  
+  For Each hAction In $cAction
+    hAction.Save
+  Next
+  Settings.Save
+  
+End

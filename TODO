@@ -37,6 +37,7 @@ INTERPRETER
 - MOD with floats.
 - Make the error information associated with the current stack frame.
 - Assign() with Eval(), or Object.SetProperty more powerful.
+- Check that a symbol is only overridden with a symbol having the same type! Otherwise that crashes, because of bytecode optimization.
 
 DEVELOPMENT ENVIRONMENT
 

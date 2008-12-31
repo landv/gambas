@@ -207,6 +207,7 @@ void ERROR_propagate()
 	#if DEBUG_ERROR
 	fprintf(stderr, "ERROR_propagate: %d %s\n", ERROR_current->info.code, ERROR_current->info.msg);
 	#endif
+	
 	if (ERROR_current->ret)
 		ERROR_leave(ERROR_current);
   longjmp(ERROR_current->env, 1);

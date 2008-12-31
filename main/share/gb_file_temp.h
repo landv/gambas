@@ -389,12 +389,12 @@ PUBLIC bool FILE_is_dir(const char *path)
 
   if (FILE_is_relative(path))
   {
-  	if (!EXEC_arch)
+  	/*if (!EXEC_arch)
   	{
       chdir(PROJECT_path);
       if (lstat(path, &buf) == 0)
         goto __OK;
-  	}
+  	}*/
 
     return ARCHIVE_is_dir(NULL, path);
 	}
@@ -404,9 +404,9 @@ PUBLIC bool FILE_is_dir(const char *path)
   if (stat(path, &buf))
     return FALSE;
 
-#ifdef PROJECT_EXEC
+/*#ifdef PROJECT_EXEC
 __OK:
-#endif
+#endif*/
 
   return (S_ISDIR(buf.st_mode));
 }
@@ -429,12 +429,12 @@ PUBLIC void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 
   if (FILE_is_relative(path))
   {
-    if (!EXEC_arch)
+    /*if (!EXEC_arch)
     {
       chdir(PROJECT_path);
       if (lstat(path, &buf) == 0)
         goto _OK;
-    }
+    }*/
 
     ARCHIVE_stat(NULL, path, info);
     return;
@@ -448,7 +448,7 @@ PUBLIC void FILE_stat(const char *path, FILE_STAT *info, bool follow)
   if (ret)
     THROW_SYSTEM(errno, path);
 
-_OK:
+//_OK:
 
   if (S_ISREG(buf.st_mode))
     info->type = GB_STAT_FILE;
@@ -476,8 +476,6 @@ _OK:
 
 PUBLIC void FILE_dir_first(const char *path, const char *pattern, int attr)
 {
-  struct stat buf;
-
   dir_exit();
 
   if (!path || *path == 0)
@@ -489,20 +487,19 @@ PUBLIC void FILE_dir_first(const char *path, const char *pattern, int attr)
 
   if (FILE_is_relative(path))
   {
-    if (!EXEC_arch)
+    /*if (!EXEC_arch)
     {
       chdir(PROJECT_path);
       if (lstat(path, &buf) == 0)
         goto _OK;
-    }
+    }*/
 
     file_dir_arch = TRUE;
-    ARCHIVE_dir_first(NULL, path, pattern);
+    ARCHIVE_dir_first(NULL, path, pattern, attr);
     return;
   }
 
-_OK:
-
+  file_dir_arch = FALSE;
   file_dir = opendir(path);
   if (file_dir == NULL)
     THROW_SYSTEM(errno, path);
@@ -754,12 +751,12 @@ PUBLIC bool FILE_access(const char *path, int mode)
     if (mode & (W_OK | X_OK))
       return FALSE;
 
-    if (!EXEC_arch)
+    /*if (!EXEC_arch)
     {
       chdir(PROJECT_path);
       if (access(path, mode) == 0)
         return TRUE;
-    }
+    }*/
 
     return ARCHIVE_exist(NULL, path);
   }
@@ -774,12 +771,12 @@ PUBLIC bool FILE_exist(const char *path)
 
   if (FILE_is_relative(path))
   {
-    if (!EXEC_arch)
+    /*if (!EXEC_arch)
     {
       chdir(PROJECT_path);
       if (lstat(path, &buf) == 0)
         return TRUE;
-    }
+    }*/
 
     return ARCHIVE_exist(NULL, path);
   }
