@@ -96,6 +96,7 @@ enum {
   E_EXTLIB,
   E_EXTSYM,
   E_BYREF,
+  E_OVERRIDE
   };
 
 typedef

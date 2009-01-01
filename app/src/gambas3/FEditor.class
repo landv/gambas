@@ -1,6 +1,5 @@
 ' Gambas class file
 
-Public Name As String
 Public Path As String
 Public Editor As Editor
 Public Scan As Collection
@@ -80,7 +79,7 @@ Public Sub _new(sPath As String)
   $iLastLine = -1
 
   Path = sPath
-  Name = File.BaseName(Path)
+  Me.Name = File.BaseName(Path)
 
   Editor = edtEditor
   edtEditor.Flags[Editor.HighlightBraces] = True
@@ -104,16 +103,10 @@ Public Sub _new(sPath As String)
   DrawTitle
   UpdateMenu
 
-  btnForm.Visible = Project.ExistForm(File.BaseName(Name))
+  btnForm.Visible = Project.ExistForm(Me.Name)
   $bDoNotSavePosition = True
   
 End
-
-Public Sub Load()
-  
-  
-End
-
 
 Public Sub Refresh()
 
@@ -443,7 +436,7 @@ Public Sub Editors_Menu()
   Dim hMenu As Menu
   Dim iInd As Integer
 
-  mnuForm.Visible = Project.ExistForm(File.BaseName(Name))
+  mnuForm.Visible = Project.ExistForm(Me.Name)
   CreateMenu
   mnuEditor.Popup
 
@@ -477,7 +470,7 @@ Private Sub CreateMenu()
 
   mnuGoto.Children.Clear
 
-  cSymbol = CComponent.GetClassSymbols(Name)
+  cSymbol = CComponent.GetClassSymbols(Me.Name)
 
   For Each hSymbol In cSymbol
 
@@ -1070,7 +1063,7 @@ Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean) As Boolean
   If bVal And If Not CanSetBreakpoint(iLine) Then Return True
   
   ' Update debug window
-  FDebugInfo.AddBreakpoint(Name, GetProcAt(iLine), iLine, bVal)
+  FDebugInfo.AddBreakpoint(Me.Name, GetProcAt(iLine), iLine, bVal)
 
   'Editor.Lines.SetFlag(iLine, Editor.Breakpoint, bVal)
   Editor.Lines[iLine].Breakpoint = bVal
@@ -1105,7 +1098,7 @@ Public Function GetBreakpoints() As Integer[]
 
   Loop
 
-  'PRINT Name; ":"; cBreak.Count; " Breakpoint(s)"
+  'PRINT Me.Name; ":"; cBreak.Count; " Breakpoint(s)"
 
   Return cBreak
 
@@ -1114,7 +1107,7 @@ End
 
 Public Sub Rename(sNewName As String, sNewPath As String)
 
-  Name = sNewName
+  Me.Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
   DrawTitle
 
@@ -1289,7 +1282,7 @@ End
 
 Public Sub mnuForm_Click()
 
-  Project.OpenForm(Name)
+  Project.OpenForm(Me.Name)
 
 End
 
@@ -1468,10 +1461,10 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
 
   $bLastStatic = False
 
-  If sSymbol = "ME" Then Return Name
+  If sSymbol = "ME" Then Return Me.Name
 
   If sSymbol = "SUPER" Then
-    CComponent.GetClassSymbols(Name)
+    CComponent.GetClassSymbols(Me.Name)
     Return ParentClass
   Endif
 
@@ -1492,7 +1485,7 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
           If ReadLocalSymbolType(aSym, 1, sSymbol, $hVirtualSymbol) Then
             With $hVirtualSymbol
               '.Name = aSym[1]
-              .Class = Name
+              .Class = Me.Name
               .Kind = "v"
               .LineNumber = iLine + 1
               .NotPublic = True
@@ -1516,7 +1509,7 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
     If sType Then
       With $hVirtualSymbol
         .Name = aSym[0]
-        .Class = Name
+        .Class = Me.Name
         .Kind = "v"
         .LineNumber = iLine + 1
         .NotPublic = True
@@ -1536,14 +1529,14 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
 
   ' Look for private symbols
 
-  Try $hSymbol = CComponent.GetClassSymbols(Name)[sSymbol]
+  Try $hSymbol = CComponent.GetClassSymbols(Me.Name)[sSymbol]
   If Not Error Then
     If $hSymbol Then
       ' A private symbol that is a method cannot be followed by a point
       ' So it must be a static class.
       If Not ($hSymbol.Kind = "m" And bPoint) Then
         ' This must be a private symbol, and so we must ignore inheritance
-        If $hSymbol.Class = Name Then
+        If $hSymbol.Class = Me.Name Then
         '$bLastStatic = $hSymbol.IsStatic()
           Return $hSymbol.Type
         Endif
@@ -2094,6 +2087,10 @@ Public Sub Reload()
 
 End
 
+public sub LoadFile()
+
+end
+
 Public Sub mnuReload_Click()
 
   If IsModified() Then
@@ -2340,7 +2337,7 @@ End
 
 Public Sub Editors_Margin({Line} As Integer)
 
-  Design.SetBreakpoint(Name, {Line}, Not HasBreakpoint({Line}))
+  Design.SetBreakpoint(Me.Name, {Line}, Not HasBreakpoint({Line}))
 
 End
 
@@ -2464,13 +2461,13 @@ Private Sub FillProcCombo()
   $iFirstProcLine = 1000000
 
   {Scan} = Null
-  cSymbol = CComponent.GetClassSymbols(Name)
+  cSymbol = CComponent.GetClassSymbols(Me.Name)
 
   For Each hSymbol In cSymbol
 
     If LCase(hSymbol.Kind) <> "m" Then Continue
     If hSymbol.LineNumber = 0 Then Continue
-    If hSymbol.Class <> Name Then Continue
+    If hSymbol.Class <> Me.Name Then Continue
     aFunc.Add(hSymbol.Name)
 
   Next

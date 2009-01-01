@@ -1473,7 +1473,7 @@ __NOTRANS:
 
 const char *LOCAL_gettext(const char *msgid)
 {
-  const char *tr;
+  const char *tr = msgid;
   ARCHIVE *arch = NULL;
 
   /*
@@ -1495,7 +1495,8 @@ const char *LOCAL_gettext(const char *msgid)
     fprintf(stderr, "dgettext(\"%s\", \"%s\") -> \"%s\"\n", arch->domain, msgid, tr);
     #endif
   }
-  else
+  
+  if (tr == msgid)
   {
     if (!_translation_loaded)
       LOCAL_load_translation(NULL);
@@ -1507,7 +1508,7 @@ const char *LOCAL_gettext(const char *msgid)
 
   /*printf("tr: %s -> %s\n", msgid, tr);*/
 
-  if (tr[0] == '-' && (tr[1] == 0 || (tr[1] == '\n' && tr[2] == 0)))
+  if (tr[0] == 0 || (tr[0] == '-' && (tr[1] == 0 || (tr[1] == '\n' && tr[2] == 0))))
     return msgid;
   else
     return tr;

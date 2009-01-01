@@ -354,7 +354,7 @@ Public Sub Form_Resize()
 
     If $bLogo Then picLogo.Hide
     
-    If tabWorkspace.Orientation = TabStrip.Top Then
+    If tabWorkspace.Orientation = Align.Top Then
     
       H = tabWorkspace.ClientY - 2
       'H = panChild.ScreenY - tabWorkspace.ScreenY
@@ -731,13 +731,13 @@ End
 
 Public Sub GetButtonPosition() As Integer
   
-  Return If($bButtonLeft, Workspace.Left, Workspace.Right)
+  Return If($bButtonLeft, Align.Left, Align.Right)
   
 End
 
 Public Sub SetButtonPosition(iPos As Integer)
   
-  $bButtonLeft = iPos
+  $bButtonLeft = iPos = Align.Left
   Form_Resize
   
 End

@@ -535,8 +535,8 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
   if (object == NULL)
     return FALSE;
 
-	TRY
-	{
+	/*TRY
+	{*/
 		OBJECT_REF(object, "GB_Raise");
 	
 		arg = nparam < 0;
@@ -640,14 +640,14 @@ __RETURN:
 	
 		RELEASE_MANY(SP, nparam);
 		OBJECT_UNREF(object, "GB_Raise");	
-	}
+	/*}
 	CATCH
 	{
 		RELEASE_MANY(SP, nparam);
 		OBJECT_UNREF(object, "GB_Raise");	
 		PROPAGATE();
 	}
-	END_TRY
+	END_TRY*/
 
 	return result;
 }

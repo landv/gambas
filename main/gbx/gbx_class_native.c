@@ -81,6 +81,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   if (gambas->type != GB_VERSION)
     return NULL;
 
+	class->is_native = TRUE;
   class->load = NULL;
   class->data = NULL;
   class->component = COMPONENT_current;

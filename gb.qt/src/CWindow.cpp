@@ -1400,7 +1400,7 @@ GB_DESC CWindowDesc[] =
   GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),
   GB_CONSTANT("Panel", "i", _NET_WM_WINDOW_TYPE_DOCK),
   GB_CONSTANT("Notification", "i", _NET_WM_WINDOW_TYPE_NOTIFICATION),
-  GB_CONSTANT("Drag", "i", _NET_WM_WINDOW_TYPE_DND),
+  //GB_CONSTANT("DragNDrop", "i", _NET_WM_WINDOW_TYPE_DND),
   GB_CONSTANT("Desktop", "i", _NET_WM_WINDOW_TYPE_DESKTOP),
   
 	// Deprecated
@@ -1588,7 +1588,6 @@ void MyMainWindow::showEvent(QShowEvent *e)
 {
   if (_activate)
   {
-	  CWINDOW *ob = (CWINDOW *)CWidget::get(this);
     setActiveWindow();
     raise();
     setFocus();

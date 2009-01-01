@@ -1199,7 +1199,7 @@ Public Function LoadFile(sPath As String) As Object
     
     Files[sPath] = hForm
     If hForm Then 
-      hForm.Load
+      hForm.LoadFile()
       hForm.Icon = GetFileIcon(sPath, 16)
     Endif
 
@@ -1209,10 +1209,10 @@ Public Function LoadFile(sPath As String) As Object
 
   Return hForm
 
-Catch
+'Catch
 
-  Dec Application.Busy
-  FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+'  Dec Application.Busy
+'  FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
 
 End
 

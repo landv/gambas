@@ -302,7 +302,7 @@ End
 ' 
 ' END
 
-Private Sub LoadWindow(hWindow As Window, sKey As String)
+Public Sub ReadWindow(hWindow As Window, sKey As String)
 
   Dim sPos As String
   Dim aPos As Integer[]
@@ -325,7 +325,7 @@ Private Sub LoadWindow(hWindow As Window, sKey As String)
 End
 
 
-Private Sub SaveWindow(hWindow As Window, sKey As String)
+Public Sub WriteWindow(hWindow As Window, sKey As String)
 
   Me[sKey &/ "Geometry"] = [hWindow.X, hWindow.Y, hWindow.Width, hWindow.Height]
 
@@ -347,7 +347,7 @@ Public Sub Read(hObject As Object, Optional sKey As String, Optional vDefault As
 
   If Object.Is(hObject, "Window") Then
     sKey = Object.Type(hObject) &/ sKey
-    LoadWindow(hObject, sKey)
+    ReadWindow(hObject, sKey)
   Else
     If Not sKey Then Try sKey = hObject.Name
     sKey = GetTopLevel(hObject) &/ sKey
@@ -360,7 +360,7 @@ Public Sub Write(hObject As Object, Optional sKey As String)
 
   If Object.Is(hObject, "Window") Then
     sKey = Object.Type(hObject) &/ sKey
-    SaveWindow(hObject, sKey)
+    WriteWindow(hObject, sKey)
   Else 'IF Object.Is(hObject, "SidePanel") THEN
     If Not sKey Then Try sKey = hObject.Name
     sKey = GetTopLevel(hObject) &/ sKey

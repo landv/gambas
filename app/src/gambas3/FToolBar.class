@@ -1,16 +1,14 @@
 ' Gambas class file
 
-Public Const HEIGHT As Integer = 20
-
 Event Change()
 
 Private Const SELECT_TOOL As String = "Select"
 
 Private $iSize As Integer
 
-Public Name As String
-Private Type As String
+Public Key As String
 
+Private $sType As String
 Private $cButton As New Collection
 Private $sTool As String
 Private $bNoEvent As Boolean
@@ -24,10 +22,10 @@ Public Sub _new(sName As String, sType As String)
     $iSize = 32
   Endif
 
-  Name = sName
-  Type = sType
+  Key = sName
+  $sType = sType
   btnTool.Text = sName
-  btnTool.Height = Height
+  btnTool.Height = 20
 
   Add(SELECT_TOOL)
   SetTool

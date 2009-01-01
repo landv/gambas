@@ -1,6 +1,5 @@
 ' Gambas class file
 
-Public Name As String
 Public Path As String
 Public Editor As Editor
 
@@ -25,14 +24,14 @@ Private $hEditor2 As Editor
 Public Sub _new(sPath As String)
 
   Path = sPath
-  Name = File.Name(Path)
+  Me.Name = File.Name(Path)
   Editor = edtEditor
 
 End
 
-Public Sub Load()
+Public Sub LoadFile()
   
-  Dim sExt As String = LCase(File.Ext(Name))
+  Dim sExt As String = LCase(File.Ext(Me.Name))
   
   If $aExt.Find(sExt) >= 0 Then
     With edtEditor
@@ -283,7 +282,7 @@ End
 
 Public Sub Rename(sNewName As String, sNewPath As String)
 
-  Name = sNewName
+  Me.Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName & "." & File.Ext(Path)
   DrawTitle
 

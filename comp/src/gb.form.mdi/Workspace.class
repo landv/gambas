@@ -4,11 +4,8 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Orientation{TabStrip.Top;Bottom},ButtonPosition{Workspace.Right;Left}"
+Public Const _Properties As String = "*,Orientation{Align.Top;Bottom},ButtonPosition{Align.Right;Left}"
 Public Const _DefaultEvent As String = "Activate"
-
-Public Const {Right} As Integer = 0
-Public Const {Left} As Integer = 1
 
 Event Activate
 'EVENT WindowMenu

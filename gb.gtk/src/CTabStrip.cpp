@@ -116,8 +116,10 @@ END_METHOD
 
 BEGIN_PROPERTY(CTABSTRIP_orientation)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(TABSTRIP->orientation()); return; }
-	TABSTRIP->setOrientation(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(TABSTRIP->orientation() ? ALIGN_BOTTOM : ALIGN_TOP);
+	else
+		TABSTRIP->setOrientation(VPROP(GB_BOOLEAN) ? ALIGN_BOTTOM : ALIGN_TOP);
 
 END_PROPERTY
 
@@ -269,9 +271,6 @@ GB_DESC CTabDesc[] =
 GB_DESC CTabStripDesc[] =
 {
   GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
-
-  GB_CONSTANT("Top", "i", 0),
-  GB_CONSTANT("Bottom", "i", 1),
 
   GB_METHOD("_new", 0, CTABSTRIP_new, "(Parent)Container;"),
 

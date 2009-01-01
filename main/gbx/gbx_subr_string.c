@@ -873,3 +873,23 @@ void SUBR_is_chr(void)
 }
 
 
+void SUBR_tr(void)
+{
+	char *str;
+	
+  SUBR_ENTER_PARAM(1);
+  
+  if (SUBR_check_string(PARAM))
+    STRING_void_value(RETURN);
+  else
+  {
+    STRING_new_temp(&str, &PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
+		
+		RETURN->type = T_CSTRING;
+		RETURN->_string.addr = (char *)LOCAL_gettext(str);
+		RETURN->_string.start = 0;
+		RETURN->_string.len = strlen(RETURN->_string.addr);
+  }
+  
+  SUBR_LEAVE();
+}

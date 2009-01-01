@@ -1,6 +1,5 @@
 ' Gambas class file
 
-Public Name As String
 Public Path As String
 
 Property Read ReadOnly As Boolean
@@ -90,7 +89,7 @@ Public Sub _new(sPath As String)
   Dim hCtrl As Control
 
   Path = sPath
-  Name = Mid$(sPath, Len(File.Dir(Project.Path)) + 1)
+  Me.Name = File.Name(sPath) 'Mid$(sPath, Len(File.Dir(Project.Path)) + 1)
 
   $iMaxW = Me.Width
   $iMaxH = Me.Height
@@ -136,7 +135,7 @@ Private Sub SetReadOnly()
 
 End
 
-Public Sub Load()
+Public Sub LoadFile()
 
   dwgPreview.Resize($hImage.W + 8, $hImage.H + 8)
   panPreview.Dimension = dwgPreview.W + 8
@@ -306,7 +305,8 @@ End
 
 Public Sub Rename(sNewName As String, sNewPath As String)
 
-  Name = sNewName
+  ' Incohérent avec l'initialisation de Name dans _new
+  Me.Name = sNewName
   Path = sNewPath 'File.Dir(Path) &/ sNewName '& "." & File.Ext(Path)
   DrawTitle
 

@@ -54,13 +54,13 @@ End
 
 Public Sub txtShortcut_GotFocus()
 
-  txtShortcut.Select
+  'txtShortcut.Select
 
 End
 
 Public Sub txtShortcut_LostFocus()
 
-  txtShortcut.Unselect
+  'txtShortcut.Unselect
 
 End
 
@@ -74,7 +74,7 @@ Public Sub txtShortcut_KeyPress()
 
   If sShortcut Then
 
-    If sShortcut Like "F[0-9]*" Or If Not Key.Normal Then
+    If Len(sShortcut) > 1 Or If Not Key.Normal Then
       
       If Key.Control Then sMod &= "Ctrl+"
       If Key.Meta Then sMod &= "Meta+"
@@ -94,6 +94,9 @@ End
 Public Sub Form_Open()
 
   InitShortcut
+  picAction.Picture = $hAction.Icon
+  If Not $hAction.Icon Then picAction.Hide
+  lblAction.Text = $hAction.Display
   txtShortcut.Text = $hAction.Shortcut
   CheckShortcut
   txtShortcut.SetFocus
@@ -126,12 +129,12 @@ Private Sub CheckShortcut()
   
   If hSame Then
     panGood.Hide
-    lblAction.Text = hSame.Text
+    lblActionSame.Text = hSame.Display
     If hSame.Icon Then
-      picAction.Picture = hSame.Icon
-      picAction.Show
+      picActionSame.Picture = hSame.Icon
+      picActionSame.Show
     Else  
-      picAction.Hide
+      picActionSame.Hide
     Endif
     panBad.Show
     btnOK.Enabled = False

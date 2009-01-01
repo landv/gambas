@@ -2,9 +2,20 @@
 
 Public Key As String
 Public Text As String
+Public Display As String
 Public DefaultShortcut As String
 Public Shortcut As String
 Public Icon As Picture
+
+Private Sub UnquoteShortcut(sStr As String) As String
+  
+  sStr = Replace(sStr, "&&", Chr$(1))
+  sStr = Replace(sStr, "&", "")
+  sStr = Replace(sStr, Chr$(1), "&")
+  
+  Return sStr
+  
+End
 
 Public Sub _new(sLine As String)
 
@@ -12,7 +23,8 @@ Public Sub _new(sLine As String)
   Dim sPicture As String
 
   Key = aLine[0]
-  Text = aLine[1]
+  Text = Tr$(aLine[1])
+  Display = UnquoteShortcut(Text)
   DefaultShortcut = aLine[2]
   Shortcut = MShortcut.GetShortcut(Key)
   If Not Shortcut Then Shortcut = DefaultShortcut
@@ -33,5 +45,11 @@ Public Sub Save()
   
   Action[Key].Shortcut = Shortcut
   Action["." & Key].Shortcut = Shortcut
+  
+End
+
+Public Sub _compare(hAction As CAction) As Integer
+  
+  Return String.Comp(Display, hAction.Display)
   
 End

@@ -1,7 +1,8 @@
 ' Gambas class file
 
+'Private $hSettings As Settings
 Private $cAction As Collection
-Private $aAction As String[]
+Private $aAction As CAction[]
 
 Public Sub Run(cAction As Collection) As Boolean
   
@@ -15,8 +16,15 @@ Public Sub Form_Open()
   Dim iInd As Integer
   Dim hAction As CAction
 
-  $aAction = Action.List
-  
+  '$hSettings = New Settings("gb.form.mdi")
+  Settings.ReadWindow(Me, "gb.form.mdi/FShortcut")
+
+  $aAction = New CAction[]
+  For Each hAction In $cAction
+    $aAction.Add(hAction)
+  Next
+  $aAction.Sort
+
   gvwShortcut.Rows.Count = $aAction.Count
   gvwShortcut.Columns.Count = 2
   gvwShortcut.Columns[0].Text = ("Action")
@@ -24,9 +32,9 @@ Public Sub Form_Open()
   
   For iInd = 0 To $aAction.Max
   
-    hAction = $cAction[$aAction[iInd]]
+    hAction = $aAction[iInd]
   
-    gvwShortcut[iInd, 0].Text = hAction.Text
+    gvwShortcut[iInd, 0].Text = hAction.Display
     gvwShortcut[iInd, 0].Padding = 2
     gvwShortcut[iInd, 0].Picture = hAction.Icon
     gvwShortcut[iInd, 1].Text = hAction.Shortcut
@@ -35,6 +43,7 @@ Public Sub Form_Open()
   Next
   
   gvwShortcut.Columns[0].Width = -1
+  gvwShortcut.Columns[1].Width = -1
   gvwShortcut.Rows.Height = -1
   gvwShortcut.Rows.Height += 4
 
@@ -61,11 +70,11 @@ End
 
 Public Sub gvwShortcut_Activate()
 
-  Dim sAction As String = $aAction[gvwShortcut.Row]
+  Dim hAction As CAction = $aAction[gvwShortcut.Row]
 
-  If FShortcutEdit.Run($cAction, sAction) Then Return
+  If FShortcutEdit.Run($cAction, hAction.Key) Then Return
 
-  gvwShortcut[gvwShortcut.Row, 1].Text = $cAction[sAction].Shortcut
+  gvwShortcut[gvwShortcut.Row, 1].Text = hAction.Shortcut
   
 End
 
@@ -78,5 +87,11 @@ Private Sub SaveShortcut()
     hAction.Save
   Next
   Settings.Save
+  
+End
+
+Public Sub Form_Close()
+
+  Settings.WriteWindow(Me, "gb.form.mdi/FShortcut")
   
 End

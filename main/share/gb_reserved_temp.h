@@ -496,6 +496,9 @@ SUBR_INFO COMP_subr_info[] =
   { "VarPtr",            89,  0,  1     },
 
   { ".Collection",       90,  0,  1, 63 },
+  
+  { "Tr",                91,  0,  1     },
+  { "Tr$",               91,  0,  1     },
   /*
   { "_EventOff",         94,  0,  0     },
   { "_EventOn",          95,  0,  0     },

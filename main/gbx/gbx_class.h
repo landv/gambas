@@ -250,8 +250,9 @@ typedef
     unsigned quick_array : 2;         /*      array accessor optimization type */
     unsigned is_stream : 1;           /*  30  If the class inherits stream */
     
-		unsigned global : 1;              /*      If the class is in the global table */ 
-    unsigned _reserved : 15;          /*  32  */
+		unsigned global : 1;              /*      If the class is in the global table */
+		unsigned is_native : 1;           /*      If the class is native (i.e. written in C/C++) */
+    unsigned _reserved : 14;          /*  32  */
 
     short n_desc;                     /*  34  number of descriptions */
     short n_event;                    /*  36  number of events */
@@ -367,10 +368,9 @@ EXTERN CLASS *CLASS_SubCollection;
 
 #define DO_ERROR ((void (*)()) -1)
 
-#define FUNCTION_is_static(func) ((func)->type & TF_STATIC)
-#define CLASS_is_extern(class) ((class)->load == NULL)
-#define CLASS_is_native CLASS_is_extern
+#define CLASS_is_native(_class) ((_class)->is_native)
 
+#define FUNCTION_is_static(func) ((func)->type & TF_STATIC)
 #define FUNCTION_is_native(_desc) (((uintptr_t)(_desc)->exec >> 16) != 0)
 
 #define FUNC_INIT_STATIC   0

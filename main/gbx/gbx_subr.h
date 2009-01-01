@@ -130,6 +130,7 @@ void SUBR_split(void);
 void SUBR_iconv(void);
 void SUBR_sconv(void);
 void SUBR_is_chr(void);
+void SUBR_tr(void);
 
 /* subr_test.c */
 
