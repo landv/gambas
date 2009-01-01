@@ -78,6 +78,8 @@ BEGIN_METHOD(CXSLT_Transform,GB_OBJECT Document;GB_OBJECT StyleSheet;)
 		GB.Error("Unable to apply style sheet");
 	}
 	
+	GB.ReturnObject(out);
+	
 END_METHOD
 
 
