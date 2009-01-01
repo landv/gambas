@@ -252,7 +252,8 @@ typedef
     
 		unsigned global : 1;              /*      If the class is in the global table */
 		unsigned is_native : 1;           /*      If the class is native (i.e. written in C/C++) */
-    unsigned _reserved : 14;          /*  32  */
+		unsigned error : 1;               /*      Loading or registering the class has failed */
+    unsigned _reserved : 13;          /*  32  */
 
     short n_desc;                     /*  34  number of descriptions */
     short n_event;                    /*  36  number of events */

@@ -360,10 +360,13 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
   {
   	int fd;
   	
-  	fprintf(stderr, "Dumping class file at /tmp/gambas-bad-header.out: %d bytes\n", len_data);
   	fd = open("/tmp/gambas-bad-header.out", O_CREAT | O_WRONLY, 0666);
-  	write(fd, class->data, len_data);
-  	close(fd);
+		if (fd >= 0)
+		{
+			write(fd, class->data, len_data);
+			close(fd);
+			fprintf(stderr, "Bad class file dumped at /tmp/gambas-bad-header.out: %d bytes\n", len_data);
+		}
     THROW(E_CLASS, ClassName, "Bad header", "");
 	}
 	
@@ -684,8 +687,10 @@ void CLASS_load_without_init(CLASS *class)
 
   //size_t alloc = MEMORY_size;
 
-  if (class->state >= CS_LOADED)
-    return;
+	if (class->error)
+		THROW(E_CLASS, class->name, "Loading has already failed", "");
+    
+	class->error = TRUE;
 
   #if DEBUG_LOAD
     fprintf(stderr, "Loading class %s (%p)...\n", class->name, class);
@@ -930,6 +935,7 @@ void CLASS_load_without_init(CLASS *class)
   /* ...and usable ! */
 
   class->state = CS_LOADED;
+	class->error = FALSE;
 
 	/* Init breakpoints */
 

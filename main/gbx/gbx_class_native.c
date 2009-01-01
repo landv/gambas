@@ -80,7 +80,12 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
   if (gambas->type != GB_VERSION)
     return NULL;
+    
+ 	if (class->error)
+ 		THROW(E_CLASS, class->name, "Loading has already failed", "");
 
+	class->error = TRUE;
+	
 	class->is_native = TRUE;
   class->load = NULL;
   class->data = NULL;
@@ -280,6 +285,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
   /* Class is loaded */
 
   class->state = CS_LOADED;
+	class->error = FALSE;
   
   /* Run the static initializer */
 
