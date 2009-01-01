@@ -1,25 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,62)
+  MoveScaled(0,0,106,62)
   Text = ("")
   Arrangement = Arrange.Fill
   Padding = 8
-  { Menu1 Menu
-    Text = ("Menu1")
-  }
-  { TabStrip1 TabStrip
-    MoveScaled(1,1,66,56)
-    Arrangement = Arrange.Fill
-    Padding = 8
-    Count = 2
-    Index = 0
-    Text = ("Tab 0")
-    { FontChooser1 FontChooser
-      MoveScaled(1,1,63,49)
-    }
-    Index = 1
-    Text = ("Tab 1")
-    Index = 0
+  { DirChooser1 DirChooser
+    MoveScaled(5,3,95,52)
+    ShowFile = True
+    ShowBookmark = True
   }
 }

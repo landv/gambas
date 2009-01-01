@@ -1,67 +1,73 @@
 ' Gambas module file
 
 
-SUB GotoNext(hCtrl AS Control, OPTIONAL bSelect AS Boolean)
+Public Sub GotoNext(hCtrl As Control, Optional bSelect As Boolean)
 
-  DIM hTextBox AS TextBox
+  Dim hTextBox As TextBox
 
   hCtrl = hCtrl.Next
-  IF hCtrl AND IF Object.Type(hCtrl) <> "TextBox" THEN
+  If hCtrl And If Object.Type(hCtrl) <> "TextBox" Then
     hCtrl = hCtrl.Next
-  ENDIF
+  Endif
 
-  IF hCtrl THEN
+  If hCtrl Then
     hTextBox = hCtrl
     hCtrl.SetFocus
     hCtrl.Pos = 0
-    IF bSelect THEN hCtrl.SelectAll
-  ENDIF
+    If bSelect Then hCtrl.SelectAll
+  Endif
 
-END
+End
 
 
-SUB GotoPrevious(hCtrl AS Control, OPTIONAL bSelect AS Boolean)
+Public Sub GotoPrevious(hCtrl As Control, Optional bSelect As Boolean)
 
-  DIM hTextBox AS TextBox
+  Dim hTextBox As TextBox
 
   hCtrl = hCtrl.Previous
-  IF hCtrl AND IF Object.Type(hCtrl) <> "TextBox" THEN
+  If hCtrl And If Object.Type(hCtrl) <> "TextBox" Then
     hCtrl = hCtrl.Previous
-  ENDIF
+  Endif
 
-  IF hCtrl THEN
+  If hCtrl Then
     hTextBox = hCtrl
     hCtrl.SetFocus
     hCtrl.Pos = hCtrl.Length
-    IF bSelect THEN hCtrl.SelectAll
-  ENDIF
+    If bSelect Then hCtrl.SelectAll
+  Endif
 
-END
+End
 
-SUB ManageKeyPress(sCar AS String, aTextBox AS Object[])
+Public Sub ManageKeyPress(sCar As String, aTextBox As Object[])
 
-  DIM hLast AS TextBox = LAST
+  Dim hLast As TextBox = Last
 
-  IF Asc(Key.Text) >= 32 AND Asc(Key.Text) < 127 THEN
-    IF NOT IsDigit(Key.Text) THEN
-      IF InStr(sCar, Key.Text) THEN
-        Help.GotoNext(LAST)
-      ENDIF
-      STOP EVENT
-      RETURN
-    ENDIF
-  ELSE IF Key.Code = Key.Home THEN
+  If Asc(Key.Text) >= 32 And Asc(Key.Text) < 127 Then
+    If Not IsDigit(Key.Text) Then
+      If InStr(sCar, Key.Text) Then
+        Help.GotoNext(Last)
+      Endif
+      Stop Event
+      Return
+    Endif
+  Else If Key.Code = Key.Home Then
     aTextBox[0].SelectAll
     aTextBox[0].SetFocus
-    STOP EVENT
-  ELSE IF Key.Code = Key.End THEN
+    Stop Event
+  Else If Key.Code = Key.End Then
     aTextBox[2].SelectAll
     aTextBox[2].SetFocus
-    STOP EVENT
-  ELSE IF Key.Code = Key.Left THEN
-    IF hLast.Pos = 0 THEN GotoPrevious(LAST)
-  ELSE IF Key.Code = Key.Right THEN
-    IF hLast.Pos = hLast.Length THEN GotoNext(LAST)
-  ENDIF
+    Stop Event
+  Else If Key.Code = Key.Left Then
+    If hLast.Pos = 0 Then GotoPrevious(Last)
+  Else If Key.Code = Key.Right Then
+    If hLast.Pos = hLast.Length Then GotoNext(Last)
+  Endif
 
-END
+End
+
+Public Sub CheckFileName(sName As String) As String
+
+  If InStr(sName, "/") Then Return ("The '/' character is forbidden inside file or directory names.")
+  
+End

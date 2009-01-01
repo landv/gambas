@@ -343,9 +343,18 @@ Public Sub TreeView_Rename()
   Dim sKey As String = $hTreeView.Item.Key
   Dim sParent As String
   Dim sNewName As String = $hTreeView.Item.Text
+  Dim sMsg As String
   
   If $hTreeView.MoveParent() Then Return
+  $hTreeView.MoveBack()
+  
   If sNewName = File.Name(sKey) Then Return 
+  
+  sMsg = Help.CheckFileName(sNewName)
+  If sMsg Then
+    Balloon.Warning(sMsg, $hTreeView, $hTreeView.Item.X + Min(32 + Desktop.Scale * 8, $hTreeView.Item.W) / 2, $hTreeView.Item.Y + $hTreeView.Item.H / 2)
+    Return
+  Endif
   
   Move sKey To File.SetName(sKey, sNewName)
   
@@ -365,7 +374,7 @@ Public Sub TreeView_Rename()
   
 Catch 
   
-  $hTreeView[sKey] = File.Name(sKey)
+  $hTreeView[sKey].Text = File.Name(sKey)
   Message.Error(("Cannot rename directory.") & "\n\n" & Error.Text)
   
 End
