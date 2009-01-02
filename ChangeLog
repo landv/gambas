@@ -1,4 +1,29 @@
 -------------------------------------------------------------------------------
+ gambas2-2.10.2 - 02 Jan 2009
+-------------------------------------------------------------------------------
+
+[GB.DB]
+* BUG: Correctly check that table name are not void in Create(), Find(),
+  Edit() and Delete() methods.
+
+[GB.NET.CURL]
+* BUG: HttpClient and FtpClient Async property are now correctly
+  initialized to TRUE.
+
+[GB.QT]
+* BUG: Showing balloons does not freeze the GUI in some case anymore.
+* BUG: Setting the Menu.Shortcut property to NULL now correctly removes
+  the shortcut.
+
+[GB.QT.EXT]
+* BUG: Editor.Print() method now can deal with strings having null
+  character inside.
+
+[GB.XML.XSLT]
+* BUG: XSLT.Transform() now works correctly again.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.10.1 - 30 Dec 2008
 -------------------------------------------------------------------------------
 
