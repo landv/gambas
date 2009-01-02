@@ -171,7 +171,7 @@ Private Sub SetLang(Optional sLang As String) As Boolean
     $bDeleteIfVoid = True
     'SHELL "cp " & Project.Quote(sDir &/ ".pot") & " " & Project.Quote(sPath) WAIT
   Else
-    Try MergeMessage(sPath, Quote.Shell(sPath) & " " & Quote.Shell(sDir &/ ".pot"))
+    Try MergeMessage(sPath, Shell$(sPath) & " " & Shell$(sDir &/ ".pot"))
     If Error Then 
       Debug $sErrMerge
       Copy sDir &/ ".pot" To sPath 
@@ -432,7 +432,7 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
 
     Move $sPath & ".new" To $sPath
 
-    Shell "msgfmt -o " & Quote.Shell(sPathMO) & " " & Quote.Shell($sPath) Wait
+    Shell "msgfmt -o " & Shell$(sPathMO) & " " & Shell$($sPath) Wait
     
     If Not bExistMO Then VersionControl.AddFile(sPathMO)
 
@@ -665,7 +665,7 @@ Public Sub btnExport_Click()
   Settings["/FTranslate/ExportPath"] = File.Dir(Dialog.Path)
 
   SaveTranslate
-  Shell "cp -f " & Quote.Shell(Project.Dir &/ ".lang" &/ $sLang & ".po") & " " & Quote.Shell(Dialog.Path) Wait
+  Shell "cp -f " & Shell$(Project.Dir &/ ".lang" &/ $sLang & ".po") & " " & Shell$(Dialog.Path) Wait
 
 End
 
@@ -1062,7 +1062,7 @@ Private Sub MergeMessage(sPath As String, sOption As String)
 
   sTemp = Temp$
 
-  Shell "msgmerge -o " & Quote.Shell(sPath & ".new") & " " & sOption & " > " & Quote.Shell(sTemp) & " 2>&1" Wait
+  Shell "msgmerge -o " & Shell$(sPath & ".new") & " " & sOption & " > " & Shell$(sTemp) & " 2>&1" Wait
   If Exist(sPath & ".new") Then
     Kill sPath
     Move sPath & ".new" To sPath
@@ -1249,7 +1249,7 @@ Private Sub UpdateStat()
     
     cvwLang.Header = True
     
-    Shell "grep -c \"^msgid\" " & Quote.Shell(Project.Dir &/ ".lang/.pot") To sRes
+    Shell "grep -c \"^msgid\" " & Shell$(Project.Dir &/ ".lang/.pot") To sRes
     nTrans = Val(sRes) - 1 ' Remove the < msgid "" > line
   
     cvwLang.Columns[1].Width = -1

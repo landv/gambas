@@ -1521,7 +1521,7 @@ Public Function GetCompileCommand(bAll As Boolean, bNoDebug As Boolean, bIDE As 
   If ModulePublic Then sExec &= "-m "
   'sExec = sExec & "-c " & Quote(CLASSES_FILE) & " " & Quote(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1"
   If bIDE Then
-    sExec = sExec & Quote.Shell(Project.Dir)
+    sExec = sExec & Shell$(Project.Dir)
     sExec = sExec & " > " & OUTPUT_FILE & " 2>&1"
   Endif
 
@@ -1593,7 +1593,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean) 
       If Localize Then
         CreateLangDirectory
         sPath = sDir &/ ".lang/.pot"
-        Shell "msgcat " & Quote.Shell(sDir) &/ ".lang/*.pot > " & Quote.Shell(sPath) & " 2>/dev/null" Wait
+        Shell "msgcat " & Shell$(sDir) &/ ".lang/*.pot > " & Shell$(sPath) & " 2>/dev/null" Wait
         sTrans = File.Load(sPath)
         iPos = InStr(sTrans, "#,")
         If iPos Then sTrans = Mid$(sTrans, iPos)
@@ -2010,7 +2010,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
     GetVersion()
   
-    sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Quote.Shell(ExecPath) & " " & Quote.Shell(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1" 
+    sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Shell$(ExecPath) & " " & Shell$(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1" 
     Shell sExec Wait
     If Process.LastValue Then Error.Raise(Trim(File.Load(OUTPUT_FILE)))
     'SetMessage(("OK"))
@@ -2019,7 +2019,7 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     WriteProject(True, True)
   
     If RunAfterMakingExec Then 
-      Shell Replace(RunAfterMakingExec, "$(FILE)", Quote.Shell(ExecPath)) Wait
+      Shell Replace(RunAfterMakingExec, "$(FILE)", Shell$(ExecPath)) Wait
     Endif 
   
     bOK = True
@@ -3192,17 +3192,17 @@ Public Sub MakeSourcePackageTo(sPath As String)
     sOpt = "j"
   Endif
 
-  sCmd = "cd " & Quote.Shell(File.Dir(Project.Dir)) & ";"
-  sCmd &= " tar cfvh" & sOpt & " " & Quote.Shell(sPath)
-  sCmd &= " --exclude=" & Quote.Shell(".gambas/*")
-  sCmd &= " --exclude=" & Quote.Shell("*~")
-  sCmd &= " --exclude=" & Quote.Shell("core.*")
-  sCmd &= " --exclude=" & Quote.Shell(".lock")
-  sCmd &= " --exclude=" & Quote.Shell(".lang/*.pot")
-  sCmd &= " --exclude=" & Quote.Shell(".lang/.pot")
-  sCmd &= " --exclude=" & Quote.Shell(".xvpics")
-  sCmd &= " --exclude=" & Quote.Shell(".svn")
-  sCmd &= " " & Quote.Shell(File.Name(Project.Dir)) & " > /dev/null"
+  sCmd = "cd " & Shell$(File.Dir(Project.Dir)) & ";"
+  sCmd &= " tar cfvh" & sOpt & " " & Shell$(sPath)
+  sCmd &= " --exclude=" & Shell$(".gambas/*")
+  sCmd &= " --exclude=" & Shell$("*~")
+  sCmd &= " --exclude=" & Shell$("core.*")
+  sCmd &= " --exclude=" & Shell$(".lock")
+  sCmd &= " --exclude=" & Shell$(".lang/*.pot")
+  sCmd &= " --exclude=" & Shell$(".lang/.pot")
+  sCmd &= " --exclude=" & Shell$(".xvpics")
+  sCmd &= " --exclude=" & Shell$(".svn")
+  sCmd &= " " & Shell$(File.Name(Project.Dir)) & " > /dev/null"
 
   Shell sCmd Wait
 
@@ -3720,7 +3720,7 @@ Public Sub CleanUp()
     sClear &= " -name \"" & aClear[iInd] & "\""
   Next
   
-  Shell "cd " & Quote.Shell(Project.Dir) & "; rm -rf `find . " & sClear & "`" Wait
+  Shell "cd " & Shell$(Project.Dir) & "; rm -rf `find . " & sClear & "`" Wait
   Project.Refresh
 
 End

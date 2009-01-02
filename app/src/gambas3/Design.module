@@ -701,10 +701,10 @@ Private Sub Start(sCmd As String)
   If Project.Environment And If Project.Environment.Count Then 
   
     sExec = Project.Environment.Join(" ")
-    sExec &= " exec " & Quote.Shell(System.Path &/ "bin/gbx" & System.Version) & " -g -f " & Quote.Shell(File.Dir(SConv(Project.Path)))
+    sExec &= " exec " & Shell$(System.Path &/ "bin/gbx" & System.Version) & " -g -f " & Shell$(File.Dir(SConv(Project.Path)))
 
     For Each sArg In Project.Arguments
-      sExec &= " " & Quote.Shell(sArg)
+      sExec &= " " & Shell$(sArg)
     Next
     
     $hProcess = Shell sExec For Read Write As "Process"

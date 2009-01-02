@@ -274,7 +274,7 @@ Private Sub RunCommand(sCmd As String, Optional sDir As String)
   $sOutput = ""
   $bEnd = False
   If sDir Then
-    Shell "(cd " & SConv(Quote.Shell(sDir)) & ";" & sCmd & ") 2>&1" For Read As "Process"
+    Shell "(cd " & SConv(Shell$(sDir)) & ";" & sCmd & ") 2>&1" For Read As "Process"
   Else
     Shell sCmd & " 2>&1" For Read As "Process"
   Endif
@@ -351,7 +351,7 @@ Private Function MakeDebPackage(sSys As String)
   
   Project.MakeSourcePackageTo(sArch)
   
-  sCmd = "cd " & Quote.Shell(sPackagePath &/ "src") & "; tar xzf raw.tar.gz >/dev/null" 
+  sCmd = "cd " & Shell$(sPackagePath &/ "src") & "; tar xzf raw.tar.gz >/dev/null" 
   Shell sCmd Wait 
   
   ' Rename the source archive project directory to the package name
@@ -429,7 +429,7 @@ Private Function MakeDebPackage(sSys As String)
   hFile = Open sPackagePath &/ "debian/dirs" For Create
   If Project.CreateComponent Then
       Print #hFile, "usr/share/gambas"; System.Version; "/info\nusr/lib/gambas"; System.Version 
-      If Exist(Project.Dir &/ "control") Then Print #hFile, "usr/share/gambas"; System.Version; "/control/"; Quote.Shell($sName)
+      If Exist(Project.Dir &/ "control") Then Print #hFile, "usr/share/gambas"; System.Version; "/control/"; Shell$($sName)
   Else 
       Print #hFile, "usr/bin\nusr/share/applications\nusr/share/pixmaps"  
   Endif 
@@ -439,7 +439,7 @@ Private Function MakeDebPackage(sSys As String)
   hFile = Open sPackagePath &/ "debian/install" For Create
   If Project.CreateComponent Then 
       Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/lib/gambas" & System.Version
-      If Exist(Project.Dir &/ "control") Then Print #hFile, "src/"; $sName; "/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Quote.Shell($sName)    
+      If Exist(Project.Dir &/ "control") Then Print #hFile, "src/"; $sName; "/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Shell$($sName)    
   Else 
       Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/bin"
       Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
@@ -510,9 +510,9 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "install: build\n\tdh_testdir\n\tdh_testroot\n\tdh_clean -k\n"
   Print #hFile, "\tdh_installdirs\n" 
   If Project.CreateComponent Then 
-      Print #hFile, "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & $sPackageName & "/usr/lib/gambas" & System.Version & "/" & Quote.Shell($sName) & ".component"
-      Print #hFile, "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Quote.Shell($sName) & ".info " ""
-      Print #hFile, "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Quote.Shell($sName) & ".list"
+      Print #hFile, "\tcp src" &/ $sName & "/.component  $(CURDIR)/debian/" & $sPackageName & "/usr/lib/gambas" & System.Version & "/" & Shell$($sName) & ".component"
+      Print #hFile, "\tcp src" &/ $sName & "/.info  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".info " ""
+      Print #hFile, "\tcp src" &/ $sName & "/.list  $(CURDIR)/debian/" & $sPackageName & "/usr/share/gambas" & System.Version & "/info/" & Shell$($sName) & ".list"
   Endif 
   Print #hFile, "\ttouch install-stamp"
   Print #hFile
@@ -533,12 +533,12 @@ Private Function MakeDebPackage(sSys As String)
   ' Step 4. Build package
 
   AddLog(("Creating package..."))
-  sCmd = "cd " & Quote.Shell(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
+  sCmd = "cd " & Shell$(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
   Shell sCmd Wait
   If Process.LastValue > 2 Then Error.Raise(("'dpkg-buildpackage' has failed."))
 
-  Try Shell "rm -Rf " & Quote.Shell(sPackagePath) Wait
-  Try Shell "rm -f " & Quote.Shell(Path) &/ "*.dsc.asc" Wait 
+  Try Shell "rm -Rf " & Shell$(sPackagePath) Wait
+  Try Shell "rm -f " & Shell$(Path) &/ "*.dsc.asc" Wait 
 
   Dec Application.Busy
 
@@ -652,7 +652,7 @@ Private Function MakeRpmPackage(sSys As String)
   sSrc = $sHome &/ "RPM/SOURCES"
 
   sDir = Project.Dir &/ ".icon"
-  Shell "rm -rf " & Quote.Shell(sDir) Wait
+  Shell "rm -rf " & Shell$(sDir) Wait
   Try Mkdir sDir
 
     ' IF Project.Icon THEN
@@ -669,7 +669,7 @@ Private Function MakeRpmPackage(sSys As String)
   sArch = sSrc &/ Subst("&1-&2.tar.bz2", $sPackageName, $sVersion)
   Project.MakeSourcePackageTo(sArch)
 
-  Shell "rm -rf " & Quote.Shell(sDir) Wait
+  Shell "rm -rf " & Shell$(sDir) Wait
 
   AddLog(("Creating .spec file."))
 
@@ -715,7 +715,7 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "\n%prep"
   Print #hFile, "rm -rf %{buildroot}"
 
-  Print #hFile, "\n%setup -q -n " & Quote.Shell($sName)
+  Print #hFile, "\n%setup -q -n " & Shell$($sName)
 
   If Project.CreateComponent Then
 
@@ -728,16 +728,16 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "\n%install"
      
     Print #hFile, "install -d %{buildroot}/%{_libdir}/gambas"; System.Version
-    Print #hFile, "install -p "; Quote.Shell($sName); ".gambas %{buildroot}/%{_libdir}/gambas" & System.Version; "/"; Quote.Shell($sName); ".gambas"
-    Print #hFile, "install -p .component %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; Quote.Shell($sName); ".component"
+    Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_libdir}/gambas" & System.Version; "/"; Shell$($sName); ".gambas"
+    Print #hFile, "install -p .component %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".component"
 
     Print #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/info"
-    Print #hFile, "install -p .info %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".info"
-    Print #hFile, "install -p .list %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".list"
+    Print #hFile, "install -p .info %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".info"
+    Print #hFile, "install -p .list %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".list"
 
     If Exist(Project.Dir &/ "control") Then 
-      Print #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/control/"; Quote.Shell($sName)
-      Print #hFile, "install -p "; "control/*.png %{buildroot}/%{_datadir}/gambas" & System.Version &/ "control" &/ Quote.Shell($sName)
+      Print #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName)
+      Print #hFile, "install -p "; "control/*.png %{buildroot}/%{_datadir}/gambas" & System.Version &/ "control" &/ Shell$($sName)
     Endif
 
   Else 
@@ -748,9 +748,9 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "\n%install"
   
     Print #hFile, "install -d %{buildroot}/%{_bindir}"
-    Print #hFile, "install -p "; Quote.Shell($sName); ".gambas %{buildroot}/%{_bindir}" &/ Quote.Shell($sName)
+    Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
 
-    sIcon = Quote.Shell($sName) & ".png"
+    sIcon = Shell$($sName) & ".png"
   
     ' NOTE: There are explicit references to /usr/share.
     '       I must find a way to use the rpm macros instead.
@@ -783,7 +783,7 @@ Private Function MakeRpmPackage(sSys As String)
         Else
           Print #hFile, Project.Name
         Endif
-        Print #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+        Print #hFile, "Exec=%{_bindir}/"; Shell$($sName)
         Print #hFile, "Icon="; sIcon
         Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
         Print #hFile, "Type=Application"
@@ -820,7 +820,7 @@ Private Function MakeRpmPackage(sSys As String)
         Else
           Print #hFile, Project.Name
         Endif
-        Print #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+        Print #hFile, "Exec=%{_bindir}/"; Shell$($sName)
         Print #hFile, "Icon="; sIcon
         Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
         Print #hFile, "Type=Application"
@@ -851,7 +851,7 @@ Private Function MakeRpmPackage(sSys As String)
         Else
           Print #hFile, Project.Name
         Endif
-        Print #hFile, "Exec=%{_bindir}/"; Quote.Shell($sName)
+        Print #hFile, "Exec=%{_bindir}/"; Shell$($sName)
         Print #hFile, "Icon="; sIcon
         Print #hFile, "Terminal="; IIf(IsConsoleProject(), "true", "false")
         Print #hFile, "Type=Application"
@@ -872,19 +872,19 @@ Private Function MakeRpmPackage(sSys As String)
   
   If Project.CreateComponent Then
   
-    Print #hFile, "%{_libdir}/gambas"; System.Version; "/"; Quote.Shell($sName); ".gambas"
-    Print #hfile, "%{_libdir}/gambas"; System.Version; "/"; Quote.Shell($sName); ".component"  
+    Print #hFile, "%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".gambas"
+    Print #hfile, "%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".component"  
     
-    Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".info"
-    Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Quote.Shell($sName); ".list"
+    Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".info"
+    Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".list"
 
     If Exist(Project.Dir &/ "control") Then 
-      Print #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Quote.Shell($sName); "/*.png"
+      Print #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName); "/*.png"
     Endif
 
   Else
   
-    Print #hFile, "%{_bindir}" &/ Quote.Shell($sName)
+    Print #hFile, "%{_bindir}" &/ Shell$($sName)
   
     Select Case sSys
   
@@ -922,7 +922,7 @@ Private Function MakeRpmPackage(sSys As String)
   sLang = System.Language
   System.Language = "C"
 
-  sCmd = RPMBUILD_PROG & " -ba " & Quote.Shell($sHome &/ "RPM/SPECS" &/ $sPackageName & ".spec")
+  sCmd = RPMBUILD_PROG & " -ba " & Shell$($sHome &/ "RPM/SPECS" &/ $sPackageName & ".spec")
   AddLog(sCmd)
 
     'sTemp = Temp$
@@ -952,7 +952,7 @@ Private Function MakeRpmPackage(sSys As String)
 
       sPackage = Subst("&1-&2-&3.noarch.rpm", $sPackageName, $sVersion, sRelease)
             ' IF sSys = "debian" THEN
-            '   SHELL "cd " & Quote.Shell(sHome &/ "RPM/RPMS/noarch") & "; fakeroot " & ALIEN_PROG & " --to-deb -k " & Quote.Shell(sPackage) WAIT
+            '   SHELL "cd " & Shell$(sHome &/ "RPM/RPMS/noarch") & "; fakeroot " & ALIEN_PROG & " --to-deb -k " & Shell$(sPackage) WAIT
             '   sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
             '   IF NOT Exist(sHome &/ "RPM/RPMS/noarch" &/ sPackage) THEN Error.Raise("alien command has failed")
             ' ENDIF
@@ -961,7 +961,7 @@ Private Function MakeRpmPackage(sSys As String)
 
       sPackage = Subst("&1-&2-&3.src.rpm", $sPackageName, $sVersion, sRelease)
             ' IF sSys = "debian" THEN
-            '   SHELL "cd " & Quote.Shell(sHome &/ "RPM/SRPMS") & "; fakeroot alien --to-deb -k " & Quote.Shell(sPackage) WAIT
+            '   SHELL "cd " & Shell$(sHome &/ "RPM/SRPMS") & "; fakeroot alien --to-deb -k " & Shell$(sPackage) WAIT
             '   sPackage = sPrefix & Subst("&1_&2.&3-&4_all.deb", LCase(Project.Name), Project.MajorVersion, Project.MinorVersion, sRelease)
             '   IF NOT Exist(sHome &/ "RPM/SRPMS" &/ sPackage) THEN Error.Raise("alien command has failed")
             '   MoveFile(sHome &/ "RPM/SRPMS" &/ sPackage, Path &/ File.BaseName(sPackage) & ".src.deb")
@@ -1079,7 +1079,7 @@ Private Sub MakeTgzPackage(sSys As String)
   
       'COPY Project.Dir &/ Project.Name & ".gambas" TO sBuildDir &/ "/usr/bin" &/ Project.Name
       Copy Project.ExecPath To sBuildDir &/ "/usr/bin" &/ $sName
-      Shell "chmod a+x " & Quote.Shell(sBuildDir &/ "/usr/bin" &/ $sName) Wait
+      Shell "chmod a+x " & Shell$(sBuildDir &/ "/usr/bin" &/ $sName) Wait
       
     ' 3. Copy the icon
   
@@ -1093,7 +1093,7 @@ Private Sub MakeTgzPackage(sSys As String)
   
     ' 4. Make the desktop file
     
-    sIcon = Quote.Shell($sName) & ".png"
+    sIcon = Shell$($sName) & ".png"
   
     hFile = Open sBuildDir &/ "/usr/share/applications/" & $sPackageName & ".desktop" For Create
   
@@ -1168,7 +1168,7 @@ Private Sub MakeTgzPackage(sSys As String)
   ' AddLog(sCmd)
   ' $sOutput = ""
   ' $bEnd = FALSE
-  ' SHELL "(cd " & SConv(Quote.Shell(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ 'TO sOutput
+  ' SHELL "(cd " & SConv(Shell$(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ 'TO sOutput
   ' REPEAT
   '   SLEEP 0.01 
   '   WAIT
@@ -1245,7 +1245,7 @@ Private Sub MakeAutotoolsPackage(sSys As String)
   For Each sCmd In ["aclocal", AUTOCONF_PROG, AUTOMAKE_PROG & " -a", "./configure", "make dist"]
     ' AddLog(sCmd)
     ' $bEnd = FALSE
-    ' SHELL "(cd " & SConv(Quote.Shell(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ
+    ' SHELL "(cd " & SConv(Shell$(sBuildDir)) & ";" & sCmd & ") 2>&1" FOR READ
     ' REPEAT
     '   SLEEP 0.01 
     '   WAIT

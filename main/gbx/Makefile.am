@@ -64,8 +64,7 @@ gbx3_SOURCES = \
  gbx_extern.h gbx_extern.c \
  gbx_print.h gbx_print.c \
  gbx_c_enum.h gbx_c_enum.c \
- gbx_c_timer.h gbx_c_timer.c \
- gbx_c_quote.h gbx_c_quote.c
+ gbx_c_timer.h gbx_c_timer.c
 
 gb_la_SOURCES = \
  gbx_info.h \
@@ -82,7 +81,6 @@ gb_la_SOURCES = \
  gbx_c_subcollection.h gbx_c_subcollection.c \
  gbx_c_enum.h gbx_c_enum.c \
  gbx_c_timer.h gbx_c_timer.c \
- gbx_c_quote.h gbx_c_quote.c \
  gbx_class_info.c
 
 gbx3-gbx_exec_loop.o: gbx_exec_loop.c

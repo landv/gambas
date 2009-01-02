@@ -216,7 +216,7 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
   End Select
   
   If {Dir} Then
-    sCmd = "(cd " & Quote.Shell({Dir}) & "; " & sExec & ")"
+    sCmd = "(cd " & Shell$({Dir}) & "; " & sExec & ")"
   Else
     sCmd = sExec
   Endif

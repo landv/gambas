@@ -23,7 +23,7 @@ Public Sub RunXdgUtil(sProg As String, aArg As String[])
       Try Mkdir sDir
       sCmd = sDir &/ sProg
       Copy "xdg-utils-1.0.2/scripts" &/ sProg To sCmd
-      Shell "chmod a+x " & Quote.Shell(sCmd) Wait
+      Shell "chmod a+x " & Shell$(sCmd) Wait
     Endif
     sCmd = Trim(sCmd)
     $cTool[sProg] = sCmd

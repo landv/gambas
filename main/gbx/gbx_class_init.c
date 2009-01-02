@@ -43,7 +43,6 @@
 #include "gbx_c_string.h"
 #include "gbx_c_enum.h"
 #include "gbx_c_timer.h"
-#include "gbx_c_quote.h"
 
 #include "gbx_class.h"
 
@@ -113,8 +112,6 @@ static CLASS_INIT init_list[] =
   { NATIVE_User, NULL },
   { NATIVE_String, NULL },
   { NATIVE_Timer, NULL },
-  { NATIVE_Quote, NULL },
-  { NATIVE_Unquote, NULL },
   { NATIVE_Observer, &CLASS_Observer },
 
   { NATIVE_ArrayBounds, NULL },

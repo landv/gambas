@@ -154,10 +154,10 @@ void STRING_make(const char *src, int len);
 void STRING_make_dump();
 
 #define STRING_make_char(_c) \
-{ \
+({ \
 	if (STRING_make_buffer.ntemp == STRING_MAKE_TEMP) \
 		STRING_make_dump(); \
 	STRING_make_buffer.temp[STRING_make_buffer.ntemp++] = (_c); \
-}
+})
 
 #endif

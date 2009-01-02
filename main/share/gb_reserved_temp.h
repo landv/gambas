@@ -499,6 +499,16 @@ SUBR_INFO COMP_subr_info[] =
   
   { "Tr",                91,  0,  1     },
   { "Tr$",               91,  0,  1     },
+  
+  { "Quote",             92,  0,  1     },
+  { "Quote$",            92,  0,  1     },
+  { "Shell",             92,  1,  1     },
+  { "Shell$",            92,  1,  1     },
+  { "Html",              92,  2,  1     },
+  { "Html$",             92,  2,  1     },
+  
+  { "Unquote",           93,  0,  1     },
+  { "Unquote$",          93,  0,  1     },
   /*
   { "_EventOff",         94,  0,  0     },
   { "_EventOn",          95,  0,  0     },

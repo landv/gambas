@@ -233,9 +233,9 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
     }
     else
     {
-      p->drawPixmap(x + 2, y + (h - pix.height() ) / 2, pix);
-      x += pix.width() + 4;
-      w -= pix.width() + 4;
+      p->drawPixmap(x, y + (h - pix.height() ) / 2, pix);
+      x += pix.width() + _padding;
+      w -= pix.width() + _padding;
     }
   }
 

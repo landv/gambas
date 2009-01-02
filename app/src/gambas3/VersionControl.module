@@ -66,11 +66,11 @@ End
 Public Sub AddFile(sPath As String)
 
   If $bSVN Then
-    Run("svn add " & Quote.Shell(sPath))
+    Run("svn add " & Shell$(sPath))
   Endif
   If $bCVS Then
     'NB: For CVS file must already exist
-    Run("cvs add " & Quote.Shell(sPath))
+    Run("cvs add " & Shell$(sPath))
   Endif
 
 End
@@ -78,11 +78,11 @@ End
 Public Sub AddDir(sPath As String)
 
   If $bSVN Then
-    Run("svn add " & Quote.Shell(sPath))
+    Run("svn add " & Shell$(sPath))
   Endif
   If $bCVS Then
     'NB: For CVS, directory must already exist
-    Run("cvs add " & Quote.Shell(sPath))
+    Run("cvs add " & Shell$(sPath))
   Endif
 
 End
@@ -92,11 +92,11 @@ End
 Public Sub RemoveFile(sPath As String, Optional bForce As Boolean)
 
   If $bSVN Then
-    Run("svn remove " & IIf(bForce, "--force ", "") & Quote.Shell(sPath))
+    Run("svn remove " & IIf(bForce, "--force ", "") & Shell$(sPath))
   Endif
   If $bCVS Then
     'NB: For CVS do 'cvs remove file' first then delete file
-    Run("cvs remove " & Quote.Shell(sPath))
+    Run("cvs remove " & Shell$(sPath))
   Endif
   
 End
@@ -111,7 +111,7 @@ Public Sub RemoveDir(sPath As String)
   Endif
   If $bCVS Then
     'NB: For CVS do 'cvs remove dirname' first then delete dirname
-    Run("cvs remove " & Quote.Shell(sPath))
+    Run("cvs remove " & Shell$(sPath))
   Endif
 
 End
@@ -121,7 +121,7 @@ End
 Public Sub MoveFile(sOld As String, sNew As String)
 
   If $bSVN Then
-    'SHELL "svn move " & Quote.Shell(sOld) & " " & Quote.Shell(sNew) WAIT
+    'SHELL "svn move " & Shell$(sOld) & " " & Shell$(sNew) WAIT
     AddFile(sNew)
     RemoveFile(sOld, True)
     'RemoveFile(sOld)
@@ -140,11 +140,11 @@ Public Sub MoveDir(sOld As String, sNew As String)
   Dim sDir As String
 
   If $bSVN Then
-    'SHELL "svn move " & Quote.Shell(sOld) & " " & Quote.Shell(sNew) WAIT
+    'SHELL "svn move " & Shell$(sOld) & " " & Shell$(sNew) WAIT
     'AddFile(sNew)
     For Each sDir In RDir(sNew, "*", gb.Directory)
       If File.Name(sDir) <> ".svn" Then Continue
-      Shell "rm -rf " & Quote.Shell(sNew &/ sDir) Wait
+      Shell "rm -rf " & Shell$(sNew &/ sDir) Wait
     Next
     AddFile(sNew)
     RemoveFile(sOld, True)
@@ -164,12 +164,12 @@ Public Sub Status() As String
   Dim sStatus As String
   
   If $bSVN Then 
-    Shell "cd " & Quote.Shell(Project.Dir) & "; svn status -q" To sStatus
+    Shell "cd " & Shell$(Project.Dir) & "; svn status -q" To sStatus
     Return sStatus
   Endif
   
   If $bCVS Then
-    Shell "cd " & Quote.Shell(Project.Dir) & "; cvs status" To sStatus
+    Shell "cd " & Shell$(Project.Dir) & "; cvs status" To sStatus
     Return sStatus
   Endif
   
@@ -185,12 +185,12 @@ Public Sub Commit(sUser As String, sPassword As String, sChange As String) As Bo
     hFile = Open Temp$("commit") For Create 
     Print #hFile, sChange;
     Close #hFile
-    sCmd = "svn commit --username " & Quote.Shell(sUser) 
+    sCmd = "svn commit --username " & Shell$(sUser) 
     If sPassword Then 
-      sPassword = " --password " & Quote.Shell(sPassword)
+      sPassword = " --password " & Shell$(sPassword)
       sCmd &= sPassword
     Endif
-    sCmd &= " --file " & Quote.Shell(Temp$("commit")) & " " & Quote.Shell(Project.Dir)
+    sCmd &= " --file " & Shell$(Temp$("commit")) & " " & Shell$(Project.Dir)
     sCmd &= " --non-interactive"
     Run(sCmd, sPassword)
     Return Process.LastValue
@@ -202,7 +202,7 @@ End
 Public Sub Update() As Boolean
   
   If $bSVN Then 
-    Run("svn update " & Quote.Shell(Project.Dir))
+    Run("svn update " & Shell$(Project.Dir))
     Return Process.LastValue
   Endif
   
@@ -212,7 +212,7 @@ End
 Public Sub Revert() As Boolean
   
   If $bSVN Then 
-    Run("svn -R revert " & Quote.Shell(Project.Dir))
+    Run("svn -R revert " & Shell$(Project.Dir))
     Return Process.LastValue
   Endif
   
@@ -222,7 +222,7 @@ End
 Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As Editor) As Boolean
 
   $hEditor = hEditor
-  Run("cd " & Quote.Shell(sDir) & "; svn checkout " & Quote.Shell(sPath))
+  Run("cd " & Shell$(sDir) & "; svn checkout " & Shell$(sPath))
   $hEditor = Null
   
 End
@@ -239,7 +239,7 @@ End
 Public Sub Resolve(sPath As String) As Boolean
   
   If $bSVN Then 
-    Run("svn resolved " & Quote.Shell(sPath))
+    Run("svn resolved " & Shell$(sPath))
     Return Process.LastValue
   Endif  
   
@@ -261,7 +261,7 @@ Public Sub GetVersion(sDir As String) As String
   Dim sRes As String
   
   If Exist(sDir &/ ".svn") Then
-    Shell "cd " & Quote.Shell(sDir) & "; LC_ALL=C svn info" To sRes
+    Shell "cd " & Shell$(sDir) & "; LC_ALL=C svn info" To sRes
     Try sRes = Scan(sRes, "*\nRevision: *\n*")[1]
     Return sRes
   Endif

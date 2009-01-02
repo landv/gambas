@@ -281,7 +281,19 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("Realloc", "i", NULL, "(Pointer)p(Size)i[(Count)i]"),
   GB_METHOD("StrPtr", "s", NULL, "(Pointer)p"),
   GB_METHOD("VarPtr", "p", NULL, "(Variable)v"),
+  
+  GB_METHOD("Tr", "s", NULL, "(String)s"),
+  GB_METHOD("Tr$", "s", NULL, "(String)s"),
 
+  GB_METHOD("Quote", "s", NULL, "(String)s"),
+  GB_METHOD("Quote$", "s", NULL, "(String)s"),
+  
+  GB_METHOD("Shell", "s", NULL, "(String)s"),
+  GB_METHOD("Shell$", "s", NULL, "(String)s"),
+  
+  GB_METHOD("Html", "s", NULL, "(String)s"),
+  GB_METHOD("Html$", "s", NULL, "(String)s"),
+  
   GB_END_DECLARE
 };
 
@@ -328,8 +340,6 @@ EXTERN GB_DESC NATIVE_PointerArray[];
 EXTERN GB_DESC NATIVE_SubCollection[];
 EXTERN GB_DESC NATIVE_String[];
 EXTERN GB_DESC NATIVE_Timer[];
-EXTERN GB_DESC NATIVE_Quote[];
-EXTERN GB_DESC NATIVE_Unquote[];
 EXTERN GB_DESC NATIVE_Observer[];
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -375,8 +385,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NATIVE_SubCollection,
   NATIVE_String,
   NATIVE_Timer,
-  NATIVE_Quote,
-  NATIVE_Unquote,
   NATIVE_Observer,
   NULL
 };

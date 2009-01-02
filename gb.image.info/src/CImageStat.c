@@ -54,7 +54,6 @@
 BEGIN_METHOD(CIMAGESTAT_call, GB_STRING path)
 
 	char *path = GB.FileName(STRING(path), LENGTH(path));
-	int fd = -1;
 	IMAGE_STREAM stream;
 	IMAGE_INFO info = {0};
 	CIMAGESTAT *stat;
