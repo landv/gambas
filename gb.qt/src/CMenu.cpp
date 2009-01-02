@@ -695,8 +695,12 @@ BEGIN_PROPERTY(CMENU_shortcut)
   }
   else
   {
+  	QString s = QSTRING_PROP();
     delete item->accel;
-    item->accel = new QKeySequence(QSTRING_PROP());
+    if (s.length() == 0)
+    	item->accel = new QKeySequence(" ");
+		else
+    	item->accel = new QKeySequence(s);
     update_accel(item);
   }
 

@@ -187,8 +187,9 @@ BEGIN_METHOD(CEDITORDOC_insert, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 
 END_METHOD
 
-static void print_text(void *_object, const QString &s, bool esc = false)
+static void print_text(void *_object, const char *str, int lstr, bool esc = false)
 {
+	QString s = QString::fromUtf8(str, lstr);
   int line, col;
   uint i, len;
 	
@@ -237,62 +238,64 @@ static void print_text(void *_object, const QString &s, bool esc = false)
 
 BEGIN_METHOD(CEDITORDOC_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 
-	QString s = QSTRING_ARG(str);
-	uint i, j, code;
+	char *str = STRING(str);
+	int len = LENGTH(str);
+	int i, j;
   int line, col;
+  unsigned char c;
 
 	if (!MISSING(y) && !MISSING(x))
 		WIDGET->cursorGoto(VARG(y), VARG(x), false);
 	
 	j = 0;
-	for (i = 0; i < s.length(); i++)
+	for (i = 0; i < len; i++)
 	{
 		//if (s[i].latin1() < 32)
 		//	qDebug("%d", s[i].latin1());
-		code = s[i].unicode();
-		if (code < 32)
+		
+		c = str[i];
+		if (c < 32)
 		{
 			if (i > j)
-				print_text(THIS, s.mid(j, i - j));
+				print_text(THIS, &str[j], i - j);
 				
 			j = i + 1;
 			
  			WIDGET->getCursor(&line, &col);		
 			
-			if (code == '\t')
+			if (c == '\t')
 			{
-				QString spc = "        ";
-				int l = spc.length() - col % spc.length();
-				print_text(THIS, spc.left(l));
+				int l = 8 - col % 8;
+				print_text(THIS, "        ", l);
 			}
-			else if (code == '\r')
+			else if (c == '\r')
 			{
 				WIDGET->cursorGoto(line, 0, false);
 			}
-			else if (code == '\n')
+			else if (c == '\n')
 			{
 				WIDGET->cursorGoto(line, DOC->lineLength(line), false);
 				WIDGET->insert("\n");
 			}
-			else if (code == 12) // CTRL+L
+			else if (c == 12) // CTRL+L
 			{
 				DOC->clear();
 			}
-			else if (code == 7)
+			else if (c == 7)
 			{
 				WIDGET->flash();
 			}
 			else
 			{
 				QString tmp;
-				tmp.sprintf("^%c", code + 64);
-				print_text(THIS, tmp, true);
+				tmp.sprintf("^%c", c + 64);
+				print_text(THIS, tmp, 2, true);
 			}
 		}
 	}
 
 	if (i > j)
-		print_text(THIS, s.mid(j, i - j));
+		print_text(THIS, &str[j], i - j);
 		
 END_METHOD
 
