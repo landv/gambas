@@ -7,6 +7,8 @@ Public DefaultShortcut As String
 Public Shortcut As String
 Public Icon As Picture
 
+Private $sOldShortcut As String
+
 Private Sub UnquoteShortcut(sStr As String) As String
   
   sStr = Replace(sStr, "&&", Chr$(1))
@@ -28,6 +30,7 @@ Public Sub _new(sLine As String)
   DefaultShortcut = aLine[2]
   Shortcut = MShortcut.GetShortcut(Key)
   If Not Shortcut Then Shortcut = DefaultShortcut
+  $sOldShortcut = Shortcut
   
   sPicture = aLine[3]
   If Not (sPicture Like "icon:/*") Then sPicture = "../" &/ sPicture
@@ -37,14 +40,22 @@ End
 
 Public Sub Save()
   
+  Dim hAction As Object
+  
+  If Shortcut = $sOldShortcut Then Return
+  
   If Shortcut = DefaultShortcut Then
     MShortcut.SetShortcut(Key, "")
   Else
     MShortcut.SetShortcut(Key, Shortcut)
   Endif
   
-  Action[Key].Shortcut = Shortcut
+  hAction = Action[Key]
+  
+  hAction.Shortcut = Shortcut
   Action["." & Key].Shortcut = Shortcut
+  
+  $sOldShortcut = Shortcut
   
 End
 

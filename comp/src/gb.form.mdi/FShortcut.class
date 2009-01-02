@@ -61,6 +61,7 @@ End
 
 Public Sub btnOK_Click()
 
+  tvwShortcut.Save
   SaveShortcut
   Me.Close(True)
 
@@ -68,9 +69,12 @@ End
 
 Public Sub tvwShortcut_Select()
 
-  Dim hAction As CAction = $aAction[tvwShortcut.Row]
-
+  Dim hAction As CAction 
+  
   If btnFind.Value Then Return
+  If tvwShortcut.Row < 0 Then Return
+
+  hAction = $aAction[tvwShortcut.Row]
 
   If tvwShortcut.Column = 0 Then tvwShortcut.Column = 1
 
@@ -145,5 +149,22 @@ End
 Public Sub btnFind_LostFocus()
 
   btnFind.Value = False
+
+End
+
+Public Sub btnDefault_Click()
+
+  Dim hAction As CAction
+  Dim iRow As Integer
+
+  If Message.Warning(("You are going back to the default shortcuts."), ("Go back"), ("Cancel")) = 2 Then Return
+  
+  For iRow = 0 To tvwShortcut.Rows.Count - 1
+    hAction = $aAction[iRow]
+    hAction.Shortcut = hAction.DefaultShortcut
+    tvwShortcut[iRow, 1].Text = hAction.Shortcut
+  Next
+
+  SaveShortcut
 
 End

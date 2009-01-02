@@ -482,11 +482,9 @@ End
 Private Function Shortcut_Read() As String
 
   Dim hCtrl As Object
-  Dim sShortcut As String
   
   For Each hCtrl In GetControls()
-    Try sShortcut = hCtrl.Shortcut
-    If sShortcut Then Return sShortcut
+    If hCtrl Is Menu Then Return hCtrl.Shortcut
   Next
   
 
@@ -497,7 +495,7 @@ Private Sub Shortcut_Write(Value As String)
   Dim hCtrl As Object
   
   For Each hCtrl In GetControls()
-    Try hCtrl.Shortcut = Value
+    If hCtrl Is Menu Then hCtrl.Shortcut = Value
   Next  
 
 End

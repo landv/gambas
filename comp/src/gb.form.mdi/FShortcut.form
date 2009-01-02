@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,80,56)
+  MoveScaled(0,0,86,56)
   Text = ("Configure shortcuts")
   Icon = Picture["icon:/small/shortcut"]
   Arrangement = Arrange.Vertical
@@ -14,7 +14,7 @@
     Header = GridView.Horizontal
   }
   { HBox2 HBox
-    MoveScaled(1,51,76,4)
+    MoveScaled(1,51,84,4)
     Spacing = 8
     { btnFind ToggleButton
       MoveScaled(0,0,26,4)
@@ -22,16 +22,21 @@
       Picture = Picture["icon:/small/find"]
     }
     { Panel1 Panel
-      MoveScaled(27,0,4,3)
+      MoveScaled(27,0,2,4)
       Expand = True
     }
+    { btnDefault Button
+      MoveScaled(30,0,19,4)
+      Text = ("Reset")
+      Picture = Picture["icon:/small/undo"]
+    }
     { btnOK Button
-      MoveScaled(32,0,16,4)
+      MoveScaled(50,0,16,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(49,0,16,4)
+      MoveScaled(67,0,16,4)
       Text = ("Cancel")
       Cancel = True
     }
