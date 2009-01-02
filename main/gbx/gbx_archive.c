@@ -212,15 +212,15 @@ void ARCHIVE_exit(void)
 
 /* ### *parch must be initialized to NULL or a valid archive */
 /* Returns a true archive, never the main archive if we are not running an executable */
-static bool get_current(ARCHIVE **parch, const char **path)
+static bool get_current(ARCHIVE **parch, const char **ppath)
 {
   if (*parch)
     return FALSE;
 
-	if (strncmp(*path, "../", 3) == 0)
+	if (strncmp(*ppath, "../", 3) == 0)
 	{
     *parch = EXEC_arch ? ARCHIVE_main : NULL;
-		*path += 3;
+		*ppath += 3;
 	}
   else if (COMPONENT_current && COMPONENT_current->archive)
     *parch = COMPONENT_current->archive;
@@ -246,16 +246,16 @@ bool ARCHIVE_get_current(ARCHIVE **parch)
 }
 
 
-bool ARCHIVE_get(ARCHIVE *arch, const char *path, ARCHIVE_FIND *find)
+bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find)
 {
   ARCH_FIND f;
   struct stat buf;
 
-  if (get_current(&arch, &path))
+  if (get_current(&arch, ppath))
   {
   	// no archive found, we try a lstat
 		chdir(PROJECT_path);
-    if (stat(path, &buf))
+    if (stat(*ppath, &buf))
     	return TRUE;
 		
 		find->pos = S_ISDIR(buf.st_mode) ? -1 : 0;
@@ -266,7 +266,7 @@ bool ARCHIVE_get(ARCHIVE *arch, const char *path, ARCHIVE_FIND *find)
     return FALSE;
 	}
 
-  if (ARCH_find(arch->arch, path, 0, &f))
+  if (ARCH_find(arch->arch, *ppath, 0, &f))
     return TRUE;
 
   find->sym = f.sym;
@@ -286,7 +286,7 @@ bool ARCHIVE_exist(ARCHIVE *arch, const char *path)
   //if (get_current(&arch, &path))
   //  return FALSE;
 
-  return (!ARCHIVE_get(arch, path, &find));
+  return (!ARCHIVE_get(arch, &path, &find));
 }
 
 
@@ -294,7 +294,7 @@ bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path)
 {
   ARCHIVE_FIND find;
 
-	if (ARCHIVE_get(arch, path, &find))
+	if (ARCHIVE_get(arch, &path, &find))
 		return FALSE;
 
 	return (find.pos < 0);
@@ -309,7 +309,7 @@ void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
   //if (get_current(&arch))
   //  THROW_SYSTEM(ENOENT, path);
 
-  if (ARCHIVE_get(arch, path, &find))
+  if (ARCHIVE_get(arch, &path, &find))
     THROW_SYSTEM(ENOENT, path);
 
   fstat(find.arch->arch->fd, &buf);
@@ -345,7 +345,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
     return;
   }*/
 
-  if (ARCHIVE_get(arch, path, &find))
+  if (ARCHIVE_get(arch, &path, &find))
   {
   	arch_dir = NULL;
   	return;
@@ -355,7 +355,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
   {
   	// By calling FILE_dir_first() again, we are sure that next calls to 
   	// FILE_dir_next() will never call ARCHIVE_dir_next().
-  	FILE_dir_first(FILE_cat(PROJECT_path, path + 3, NULL), pattern, attr);
+  	FILE_dir_first(FILE_cat(PROJECT_path, path, NULL), pattern, attr);
   	return;
   }
   

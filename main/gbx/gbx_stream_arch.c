@@ -44,7 +44,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 {
   ARCHIVE_FIND find;
 
-  if (ARCHIVE_get(NULL, path, &find))
+  if (ARCHIVE_get(NULL, &path, &find))
   {
     errno = ENOENT;
     return TRUE;

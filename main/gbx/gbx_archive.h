@@ -67,7 +67,7 @@ PUBLIC ARCHIVE *ARCHIVE_create(const char *name);
 PUBLIC void ARCHIVE_delete(ARCHIVE *arch);
 PUBLIC void ARCHIVE_load(ARCHIVE *arch);
 
-PUBLIC bool ARCHIVE_get(ARCHIVE *arch, const char *path, ARCHIVE_FIND *find);
+PUBLIC bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
 
 PUBLIC bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
 
