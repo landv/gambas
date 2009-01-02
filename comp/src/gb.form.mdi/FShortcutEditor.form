@@ -1,0 +1,29 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,29,9)
+  Text = ("")
+  Arrangement = Arrange.Fill
+  { Panel1 Panel
+    MoveScaled(1,1,26,6)
+    Background = Color.LightBackground
+    Arrangement = Arrange.Horizontal
+    Padding = 2
+    { panSpace Panel
+      MoveScaled(1,1,1,4)
+      Background = Color.TextBackground
+    }
+    { txtShortcut TextBox
+      MoveScaled(3,1,18,4)
+      Expand = True
+      Text = ("")
+      ReadOnly = True
+      Border = False
+    }
+    { btnClear ToolButton
+      MoveScaled(21,1,4,4)
+      Text = ("")
+      Picture = Picture["icon:/small/clear"]
+    }
+  }
+}

@@ -7,30 +7,31 @@
   Arrangement = Arrange.Vertical
   Spacing = 8
   Padding = 8
-  { gvwShortcut GridView
-    MoveScaled(1,1,56,48)
+  { tvwShortcut TableView
+    MoveScaled(1,1,76,47)
     Expand = True
     Mode = Select.Single
     Header = GridView.Horizontal
   }
   { HBox2 HBox
-    MoveScaled(1,51,58,4)
+    MoveScaled(1,51,76,4)
     Spacing = 8
-    { btnChange Button
-      MoveScaled(0,0,16,4)
-      Text = ("&Change...")
+    { btnFind ToggleButton
+      MoveScaled(0,0,26,4)
+      Text = ("Find shortcut")
+      Picture = Picture["icon:/small/find"]
     }
     { Panel1 Panel
-      MoveScaled(17,0,4,3)
+      MoveScaled(27,0,4,3)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(24,0,16,4)
+      MoveScaled(32,0,16,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(41,0,16,4)
+      MoveScaled(49,0,16,4)
       Text = ("Cancel")
       Cancel = True
     }

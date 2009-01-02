@@ -6,7 +6,7 @@ Export
 Event Save(Row As Integer, Column As Integer, Value As String)
 Event Insert
 
-'Property Read Editor As Control
+Property Read Editor As Control
 
 Private $hTextBox As TextBox
 Private $hComboBox As ComboBox
@@ -37,12 +37,14 @@ End
 
 Private Sub SaveEditor()
   
-  Dim sText As String = $hEditor.Text
+  Dim sText As String
   Dim sCurrent As String
   
   Try sCurrent = Me[$iRow, $iCol].Text 
   If Error Then Return
   
+  Try sText = $hEditor.Text
+
   If sText = sCurrent Then Return
   
   Raise Save($iRow, $iCol, sText)
@@ -169,6 +171,33 @@ Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
 
 End
 
+Public Sub EditWith(Editor As Control)
+  
+  HideEditor
+  
+  $iCol = Me.Column
+  $iRow = Me.Row
+  
+  If $iCol < 0 Or $iRow < 0 Then Return
+  
+  $hEditor = Editor
+  $bTextBox = False
+  
+  Try $hEditor.Text = Me[$iRow, $iCol].Text
+  If Error Then
+    $hEditor = Null
+    Error.Raise("The TableView editor must have a Text public property")
+  Endif
+    
+  Try $hEditor.SelectAll
+  MoveEditor
+  Try $hEditor.SetFocus
+  
+  
+
+End
+
+
 Public Sub Editor_Activate()
   
   SaveEditor
@@ -259,9 +288,8 @@ Public Sub Editor_KeyPress()
   
 End
 
+Private Function Editor_Read() As Control
 
-' Private Function Editor_Read() As Control
-' 
-'   Return $hEditor
-' 
-' End
+  Return $hEditor
+
+End

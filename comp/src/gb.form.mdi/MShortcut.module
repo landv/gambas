@@ -1,5 +1,7 @@
 ' Gambas module file
 
+Private $cShortcut As Collection
+
 Public Sub SetShortcut(sAction As String, sShortcut As String)
   
   If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
@@ -11,6 +13,61 @@ Public Sub GetShortcut(sAction As String) As String
   
   If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
   Return Settings["gb.form.mdi/Shortcuts" &/ sAction] 
+  
+End
+
+Private Sub InitShortcut()
+  
+  Dim iInd As Integer
+  Dim sKey As String
+  
+  $cShortcut = New Collection
+
+  For iInd = Asc("A") To Asc("Z")
+    sKey = Chr$(iInd)
+    $cShortcut[Key[sKey]] = sKey
+  Next
+
+  For iInd = Asc("0") To Asc("9")
+    sKey = Chr$(iInd)
+    $cShortcut[Key[sKey]] = sKey
+  Next
+
+  For iInd = 1 To 12
+    sKey = "F" & CStr(iInd)
+    $cShortcut[Key[sKey]] = sKey
+  Next
+  
+  For Each sKey In ["Backspace", "Del", "Down", "End", "Enter", "Esc", "Home", "Ins", "Left", "Pause", "PgDown", "PgUp", "Return", "Space", "Right", "Up"]
+    $cShortcut[Key[sKey]] = sKey
+  Next
+
+End
+
+
+Public Sub FindShortcut() As String
+  
+  Dim sShortcut As String
+  Dim sMod As String
+
+  If Not $cShortcut Then InitShortcut
+  
+  sShortcut = $cShortcut[Key.Code]
+
+  If sShortcut Then
+
+    If Len(sShortcut) > 1 Or If Not Key.Normal Then
+      
+      If Key.Control Then sMod &= "Ctrl+"
+      If Key.Meta Then sMod &= "Meta+"
+      If Key.Alt Then sMod &= "Alt+"
+      If Key.Shift Then sMod &= "Shift+"
+  
+      Return sMod & sShortcut
+      
+    Endif
+    
+  Endif
   
 End
 

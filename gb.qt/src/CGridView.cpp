@@ -212,9 +212,8 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
   {
   	x += _padding;
   	y += _padding;
-  	_padding *= 2;
-  	w -= _padding;
-  	h -= _padding;
+  	w -= _padding * 2;
+  	h -= _padding * 2;
   	
   	if (w < 1 || h < 1)
   		return;
@@ -263,7 +262,6 @@ QSize MyTableItem::sizeHint() const
 {
   QSize strutSize = QApplication::globalStrut();
   QSize s;
-  int x = 0;
   MyTableItem *item = (MyTableItem *)this;
 	MyTableData *d = item->data();
 	int padding;
@@ -272,13 +270,14 @@ QSize MyTableItem::sizeHint() const
   QString t = item->text();
   QFontMetrics fm = d->font ? QFontMetrics(*(d->font->font)) : table()->fontMetrics();
 
-	padding = QMAX(1, d->padding) * 2;
+	padding = QMAX(1, d->padding);
   
   if (!pix.isNull() )
   {
 	  s = pix.size();
-	  s.setWidth( s.width() + 2 );
-	  x = pix.width() + 2;
+	  s.setWidth(s.width());
+	  if (t.length())
+		  s.setWidth(s.width() + padding);
 	}
 
 	if (t.length())
@@ -299,9 +298,9 @@ QSize MyTableItem::sizeHint() const
 		}
 	}
   
-	s.setWidth(s.width() + padding);
-	s.setHeight(s.height() + padding);
-
+	s.setWidth(s.width() + padding * 2);
+	s.setHeight(s.height() + padding * 2);
+  
   return s;
 }
 

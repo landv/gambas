@@ -37,7 +37,6 @@ INTERPRETER
 - MOD with floats.
 - Make the error information associated with the current stack frame.
 - Assign() with Eval(), or Object.SetProperty more powerful.
-- Check that a symbol is only overridden with a symbol having the same type! Otherwise that crashes, because of bytecode optimization.
 
 DEVELOPMENT ENVIRONMENT
 
@@ -53,7 +52,8 @@ DEVELOPMENT ENVIRONMENT
 - Generates an index control->component to suggest components for missing controls.
 - Be able to open a .tar.gz project, and compress it back when the project is closed.
 - Ability to merge projects.
-- A checkbox in the property sheet to make controls public individually
+- A checkbox in the property sheet to make controls public individually.
+- Allow to define the changeable controls of a component.
 
 GUI RELATED STUFF
 
@@ -62,13 +62,11 @@ GUI RELATED STUFF
 - A Settings property everywhere? Mmmfff... At least for ColumnView, GridView.
 - Rewrite the HSplit/VSplit layout, and use a Integer[] or a Float[].
 - A MultiContainer property.
-- Enhance the Action class.
 - Toolbutton should be able to put their text below and beside.
 - TabStrip.TextFont.
 - Standard dialog must remember their size.
 - Form.KeyPreview
 - Control.HasFocus
-- Window.Menus.Hide in gb.gtk
 - GridView.Cell.WordWrap
 
 QT4 COMPONENT

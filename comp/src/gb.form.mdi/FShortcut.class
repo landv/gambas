@@ -3,6 +3,7 @@
 'Private $hSettings As Settings
 Private $cAction As Collection
 Private $aAction As CAction[]
+Private $hEditor As FShortcutEditor
 
 Public Sub Run(cAction As Collection) As Boolean
   
@@ -25,27 +26,30 @@ Public Sub Form_Open()
   Next
   $aAction.Sort
 
-  gvwShortcut.Rows.Count = $aAction.Count
-  gvwShortcut.Columns.Count = 2
-  gvwShortcut.Columns[0].Text = ("Action")
-  gvwShortcut.Columns[1].Text = ("Shortcut")
+  tvwShortcut.Rows.Count = $aAction.Count
+  tvwShortcut.Columns.Count = 2
+  tvwShortcut.Columns[0].Text = ("Action")
+  tvwShortcut.Columns[1].Text = ("Shortcut")
   
   For iInd = 0 To $aAction.Max
   
     hAction = $aAction[iInd]
   
-    gvwShortcut[iInd, 0].Text = hAction.Display
-    gvwShortcut[iInd, 0].Padding = 2
-    gvwShortcut[iInd, 0].Picture = hAction.Icon
-    gvwShortcut[iInd, 1].Text = hAction.Shortcut
-    gvwShortcut[iInd, 1].Padding = 2
+    tvwShortcut[iInd, 0].Text = hAction.Display
+    tvwShortcut[iInd, 0].Padding = 4
+    tvwShortcut[iInd, 0].Picture = hAction.Icon
+    tvwShortcut[iInd, 1].Text = hAction.Shortcut
+    tvwShortcut[iInd, 1].Padding = 4
 
   Next
   
-  gvwShortcut.Columns[0].Width = -1
-  gvwShortcut.Columns[1].Width = -1
-  gvwShortcut.Rows.Height = -1
-  gvwShortcut.Rows.Height += 4
+  tvwShortcut.Columns[0].Width = -1
+  tvwShortcut.Columns[1].Width = -1
+  tvwShortcut.Rows.Height = -1
+
+  $hEditor = New FShortcutEditor(Me)
+  $hEditor.Hide
+  $hEditor.Ignore = True
 
 End
 
@@ -62,21 +66,25 @@ Public Sub btnOK_Click()
 
 End
 
-Public Sub btnChange_Click()
+Public Sub tvwShortcut_Select()
 
-  gvwShortcut_Activate
+  Dim hAction As CAction = $aAction[tvwShortcut.Row]
 
-End
+  If btnFind.Value Then Return
 
-Public Sub gvwShortcut_Activate()
+  If tvwShortcut.Column = 0 Then tvwShortcut.Column = 1
 
-  Dim hAction As CAction = $aAction[gvwShortcut.Row]
-
-  If FShortcutEdit.Run($cAction, hAction.Key) Then Return
-
-  gvwShortcut[gvwShortcut.Row, 1].Text = hAction.Shortcut
+  $hEditor.Define($cAction, hAction)
+  tvwShortcut.EditWith($hEditor)
   
 End
+
+Public Sub tvwShortcut_MouseUp()
+  
+  tvwShortcut_Select
+  
+End
+
 
 Private Sub SaveShortcut()
   
@@ -94,4 +102,48 @@ Public Sub Form_Close()
 
   Settings.WriteWindow(Me, "gb.form.mdi/FShortcut")
   
+End
+
+Public Sub tvwShortcut_Save(Row As Integer, Column As Integer, Value As String)
+
+  If $hEditor.BadShortcut Then Return
+  
+  tvwShortcut[Row, 1].Text = Value
+  $aAction[Row].Shortcut = Value
+
+End
+
+Public Sub btnFind_Click()
+
+  If btnFind.Value Then
+    tvwShortcut.Cancel
+    btnFind.SetFocus
+  Endif
+
+End
+
+Public Sub btnFind_KeyPress()
+
+  Dim sShortcut As String
+  Dim iRow As Integer
+
+  If btnFind.Value Then
+    sShortcut = MShortcut.FindShortcut()
+    If sShortcut Then
+      For iRow = 0 To tvwShortcut.Rows.Count - 1
+        If tvwShortcut[iRow, 1].Text = sShortcut Then
+          tvwShortcut.Row = iRow
+          Break
+        Endif
+      Next
+    Endif
+    Stop Event
+  Endif
+
+End
+
+Public Sub btnFind_LostFocus()
+
+  btnFind.Value = False
+
 End

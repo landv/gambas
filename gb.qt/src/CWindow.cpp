@@ -1638,11 +1638,10 @@ void MyMainWindow::showActivate(QWidget *transient)
 	else
 		newParentWidget = 0;
 		
-	if (parentWidget() != newParentWidget)
-	{
-		//qDebug("reparent (%s %p) to (%s %p) / %d", GB.GetClassName(THIS), THIS, parent ? GB.GetClassName(parent) : "", parent, THIS->toplevel);
+	if (parent != THIS && parentWidget() != newParentWidget)
 		doReparent(newParentWidget, getWFlags(), pos());
-	}
+	else
+		newParentWidget = 0;
 
 	#ifndef NO_X_WINDOW
 	if (newParentWidget && isToolbar())
