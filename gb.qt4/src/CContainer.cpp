@@ -1,24 +1,24 @@
 /***************************************************************************
 
-  CContainer.cpp
+	CContainer.cpp
 
-  The Container class
+	The Container class
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -53,20 +53,20 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
 {
 	QObject *ob;
 	
-  for(;;)
-  {
+	for(;;)
+	{
 		if (index >= list.count())
 			return NULL;
 	
-    ob = list.at(index);
-    index++;
-    
-    if (ob->isWidgetType())
-    {
-      if (!((QWidget *)ob)->isHidden() && !qobject_cast<QSizeGrip *>(ob))
-        return (QWidget *)ob;
-    }
-  }
+		ob = list.at(index);
+		index++;
+		
+		if (ob->isWidgetType())
+		{
+			if (!((QWidget *)ob)->isHidden() && !qobject_cast<QSizeGrip *>(ob))
+				return (QWidget *)ob;
+		}
+	}
 }
 
 static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
@@ -88,7 +88,7 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define IS_DESIGN(_object) (CWIDGET_test_flag(_object, WF_DESIGN) && CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
 #define IS_WIDGET_VISIBLE(_widget) (_widget)->isVisible()
 
-#define CAN_ARRANGE(_object) (IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object)))
+#define CAN_ARRANGE(_object) ((_object) && (IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object))))
 
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
 	_x = (_widget)->contentsRect().x(); \
@@ -105,15 +105,15 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) (_widget)->setGeometry(_x, _y, _w, _h)
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
-  QObjectList list = (_widget)->children(); \
-  int list_index = 0; \
-  if (list.count() == 0) \
-    return;
+	QObjectList list = (_widget)->children(); \
+	int list_index = 0; \
+	if (list.count() == 0) \
+		return;
 
 #define RESET_CHILDREN_LIST() list_index = 0
 #define GET_NEXT_CHILD_WIDGET() get_next_widget(list, list_index)
 
-#define GET_OBJECT_FROM_WIDGET(_widget) CWidget::get(_widget)
+#define GET_OBJECT_FROM_WIDGET(_widget) CWidget::getRealExisting(_widget)
 
 #define RAISE_ARRANGE_EVENT(_object) \
 { \
@@ -183,23 +183,23 @@ void CCONTAINER_get_max_size(void *_object, int *w, int *h)
 #if 0
 static void post_arrange_later(void *_object)
 {
-  if (WIDGET && THIS_ARRANGEMENT->dirty)
-    CCONTAINER_arrange(THIS);
+	if (WIDGET && THIS_ARRANGEMENT->dirty)
+		CCONTAINER_arrange(THIS);
 
-  GB.Unref(&_object);
+	GB.Unref(&_object);
 }
 
 static void arrange_later(QWidget *cont)
 {
-  void *_object = CWidget::get(cont);
+	void *_object = CWidget::get(cont);
 
-  if (THIS_ARRANGEMENT->dirty || THIS_ARRANGEMENT->mode == ARRANGE_NONE)
-    return;
+	if (THIS_ARRANGEMENT->dirty || THIS_ARRANGEMENT->mode == ARRANGE_NONE)
+		return;
 
-  GB.Ref(_object);
-  //qDebug("later: %p: dirty = TRUE", THIS);
-  THIS_ARRANGEMENT->dirty = TRUE;
-  GB.Post((void (*)())post_arrange_later, (intptr_t)THIS);
+	GB.Ref(_object);
+	//qDebug("later: %p: dirty = TRUE", THIS);
+	THIS_ARRANGEMENT->dirty = TRUE;
+	GB.Post((void (*)())post_arrange_later, (intptr_t)THIS);
 }
 #endif
 
@@ -207,12 +207,12 @@ void CCONTAINER_insert_child(void *_object)
 {
 	CWIDGET *parent = CWidget::get(WIDGET->parentWidget());
 	if (parent)
-  	GB.Raise(parent, EVENT_Insert, 1, GB_T_OBJECT, THIS);
+		GB.Raise(parent, EVENT_Insert, 1, GB_T_OBJECT, THIS);
 }
 
 /***************************************************************************
 
-  class MyContainer
+	class MyContainer
 
 ***************************************************************************/
 
@@ -224,66 +224,66 @@ MyContainer::MyContainer(QWidget *parent)
 
 void MyContainer::resizeEvent(QResizeEvent *e)
 {
-  //qDebug("MyContainer::resizeEvent %s %p", GB.GetClassName(CWidget::get(this)), CWidget::get(this));
-  QFrame::resizeEvent(e);
-  arrange_now(this);
+	//qDebug("MyContainer::resizeEvent %s %p", GB.GetClassName(CWidget::get(this)), CWidget::get(this));
+	QFrame::resizeEvent(e);
+	arrange_now(this);
 }
 
 void MyContainer::showEvent(QShowEvent *e)
 {
-  //qDebug("MyContainer::showEvent %p %s", CWidget::get(this), GB.GetClassName(CWidget::get(this)));
-  QFrame::showEvent(e);
-  arrange_now(this);
+	//qDebug("MyContainer::showEvent %p %s", CWidget::get(this), GB.GetClassName(CWidget::get(this)));
+	QFrame::showEvent(e);
+	arrange_now(this);
 }
 
 void MyContainer::childEvent(QChildEvent *e)
 {
-  void *_object = CWidget::get(this);
-  void *child;
-  //qDebug("MyContainer::childEvent %p", CWidget::get(this));
-  
-  QFrame::childEvent(e);
+	//void *_object = CWidget::get(this);
+	void *child;
+	//qDebug("MyContainer::childEvent %p", CWidget::get(this));
+	
+	QFrame::childEvent(e);
 
-  if (!e->child()->isWidgetType())
-    return;
+	if (!e->child()->isWidgetType())
+		return;
 
 	child = CWidget::get((QWidget *)e->child());
 
-  if (e->added())
-  {
-    e->child()->installEventFilter(this);
+	if (e->added())
+	{
+		e->child()->installEventFilter(this);
 		//qApp->sendEvent(WIDGET, new QEvent(EVENT_INSERT));
-    //if (THIS_ARRANGEMENT->user)
-    //	GB.Raise(THIS, EVENT_Insert, 1, GB_T_OBJECT, child);    
-  }
-  else if (e->removed())
-  {
-    e->child()->removeEventFilter(this);
-    //if (THIS_ARRANGEMENT->user)
-    //	GB.Raise(THIS, EVENT_Remove, 1, GB_T_OBJECT, child);
-  }
+		//if (THIS_ARRANGEMENT->user)
+		//	GB.Raise(THIS, EVENT_Insert, 1, GB_T_OBJECT, child);    
+	}
+	else if (e->removed())
+	{
+		e->child()->removeEventFilter(this);
+		//if (THIS_ARRANGEMENT->user)
+		//	GB.Raise(THIS, EVENT_Remove, 1, GB_T_OBJECT, child);
+	}
 
-  arrange_later(this);
+	arrange_later(this);
 }
 
 bool MyContainer::eventFilter(QObject *o, QEvent *e)
 {
-  int type = e->type();
+	int type = e->type();
 
-  if (type == QEvent::Move || type == QEvent::Resize || type == QEvent::Show || type == QEvent::Hide || type == EVENT_EXPAND)
-  {
-  	CWIDGET *ob = CWidget::getReal(o);
-  	if (ob && (type == EVENT_EXPAND || !ob->flag.ignore))
-    	arrange_now(this);
-  }
+	if (type == QEvent::Move || type == QEvent::Resize || type == QEvent::Show || type == QEvent::Hide || type == EVENT_EXPAND)
+	{
+		CWIDGET *ob = CWidget::getReal(o);
+		if (ob && (type == EVENT_EXPAND || !ob->flag.ignore))
+			arrange_now(this);
+	}
 
-  return QObject::eventFilter(o, e);
+	return QObject::eventFilter(o, e);
 }
 
 
 /***************************************************************************
 
-  CContainer
+	CContainer
 
 ***************************************************************************/
 
@@ -302,44 +302,44 @@ static QRect getRect(void *_object)
 
 BEGIN_METHOD_VOID(CCONTAINER_children_next)
 
-  #ifdef DEBUG
-  if (!CONTAINER)
-    qDebug("Null container");
-  #endif
+	#ifdef DEBUG
+	if (!CONTAINER)
+		qDebug("Null container");
+	#endif
 
-  QObjectList list = CONTAINER->children();
-  int index;
-  CWIDGET *widget;
+	QObjectList list = CONTAINER->children();
+	int index;
+	CWIDGET *widget;
 
-  for(;;)
-  {
-    index = ENUM(int);
+	for(;;)
+	{
+		index = ENUM(int);
 
-    if (index >= list.count())
-    {
-      GB.StopEnum();
-      return;
-    }
+		if (index >= list.count())
+		{
+			GB.StopEnum();
+			return;
+		}
 
-    ENUM(int) = index + 1;
+		ENUM(int) = index + 1;
 
-    widget = CWidget::getRealExisting(list.at(index));
-    if (widget)
-    {
-      GB.ReturnObject(widget);
-      return;
-    }
-  }
+		widget = CWidget::getRealExisting(list.at(index));
+		if (widget)
+		{
+			GB.ReturnObject(widget);
+			return;
+		}
+	}
 
 END_METHOD
 
 
 BEGIN_METHOD(CCONTAINER_children_get, GB_INTEGER index)
 
-  QObjectList list = CONTAINER->children();
-  int index = VARG(index);
-  int i;
-  CWIDGET *widget;
+	QObjectList list = CONTAINER->children();
+	int index = VARG(index);
+	int i;
+	CWIDGET *widget;
 
 	if (index >= 0)
 	{
@@ -365,14 +365,14 @@ END_METHOD
 
 BEGIN_PROPERTY(CCONTAINER_children_count)
 
-  QWidget *wid = CONTAINER;
-  QObjectList list;
-  QObject *ob;
-  int n = 0;
-  int i;
+	QWidget *wid = CONTAINER;
+	QObjectList list;
+	QObject *ob;
+	int n = 0;
+	int i;
 
-  if (wid)
-  {
+	if (wid)
+	{
 		list = wid->children();
 	
 		for(i = 0; i < list.count(); i++)
@@ -383,79 +383,79 @@ BEGIN_PROPERTY(CCONTAINER_children_count)
 		}
 	}
 
-  GB.ReturnInteger(n);
+	GB.ReturnInteger(n);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_x)
 
-  #ifdef DEBUG
-  if (!CONTAINER)
-    qDebug("Null container");
-  #endif
+	#ifdef DEBUG
+	if (!CONTAINER)
+		qDebug("Null container");
+	#endif
 
 	QRect r = getRect(THIS); //_CONTAINER);
-  QPoint p(r.x(), r.y());
+	QPoint p(r.x(), r.y());
 
-  GB.ReturnInteger(CONTAINER->mapTo(WIDGET, p).x());
+	GB.ReturnInteger(CONTAINER->mapTo(WIDGET, p).x());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_y)
 
-  #ifdef DEBUG
-  if (!CONTAINER)
-    qDebug("Null container");
-  #endif
+	#ifdef DEBUG
+	if (!CONTAINER)
+		qDebug("Null container");
+	#endif
 
 	QRect r = getRect(THIS); // _CONTAINER);
-  QPoint p(r.x(), r.y());
+	QPoint p(r.x(), r.y());
 
-  GB.ReturnInteger(CONTAINER->mapTo(WIDGET, p).y());
+	GB.ReturnInteger(CONTAINER->mapTo(WIDGET, p).y());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_width)
 
-  #ifdef DEBUG
-  if (!CONTAINER)
-    qDebug("Null container");
-  #endif
+	#ifdef DEBUG
+	if (!CONTAINER)
+		qDebug("Null container");
+	#endif
 
-  GB.ReturnInteger(getRect(THIS).width());
+	GB.ReturnInteger(getRect(THIS).width());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_height)
 
-  #ifdef DEBUG
-  if (!CONTAINER)
-    qDebug("Null container");
-  #endif
+	#ifdef DEBUG
+	if (!CONTAINER)
+		qDebug("Null container");
+	#endif
 
-  GB.ReturnInteger(getRect(THIS).height());
+	GB.ReturnInteger(getRect(THIS).height());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTAINER_arrangement)
 
-  int arr;
+	int arr;
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(THIS_ARRANGEMENT->mode);
-  else
-  {
-    arr = VPROP(GB_INTEGER);
-    if (arr < 0 || arr > 8)
-      return;
-    THIS_ARRANGEMENT->mode = arr;
-    arrange_now(CONTAINER);
-  }
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS_ARRANGEMENT->mode);
+	else
+	{
+		arr = VPROP(GB_INTEGER);
+		if (arr < 0 || arr > 8)
+			return;
+		THIS_ARRANGEMENT->mode = arr;
+		arrange_now(CONTAINER);
+	}
 
 END_PROPERTY
 
@@ -466,7 +466,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_arrangement)
 	if (!READ_PROPERTY)
 	{
 		THIS_USERCONTAINER->save = cont->arrangement;
-	  //qDebug("(%s %p): save = %08X (arrangement %d)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save, val);
+		//qDebug("(%s %p): save = %08X (arrangement %d)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save, val);
 	}
 
 END_PROPERTY
@@ -474,13 +474,13 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTAINER_auto_resize)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS_ARRANGEMENT->autoresize);
-  else
-  {
-    THIS_ARRANGEMENT->autoresize = VPROP(GB_BOOLEAN);
-    arrange_now(CONTAINER);
-  }
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS_ARRANGEMENT->autoresize);
+	else
+	{
+		THIS_ARRANGEMENT->autoresize = VPROP(GB_BOOLEAN);
+		arrange_now(CONTAINER);
+	}
 
 END_PROPERTY
 
@@ -491,7 +491,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_auto_resize)
 	if (!READ_PROPERTY)
 	{
 		THIS_USERCONTAINER->save = cont->arrangement;
-	  //qDebug("(%s %p): save = %08X (autoresize)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
+		//qDebug("(%s %p): save = %08X (autoresize)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
 	}
 
 END_PROPERTY
@@ -499,18 +499,18 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTAINER_padding)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(THIS_ARRANGEMENT->padding);
-  else
-  {
-    int val = VPROP(GB_INTEGER);
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS_ARRANGEMENT->padding);
+	else
+	{
+		int val = VPROP(GB_INTEGER);
 
-    if (val >= 0 && val < 32768)
-    {
-      THIS_ARRANGEMENT->padding = val;
-      arrange_now(CONTAINER);
-    }
-  }
+		if (val >= 0 && val < 32768)
+		{
+			THIS_ARRANGEMENT->padding = val;
+			arrange_now(CONTAINER);
+		}
+	}
 
 END_PROPERTY
 
@@ -521,7 +521,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_padding)
 	if (!READ_PROPERTY)
 	{
 		THIS_USERCONTAINER->save = cont->arrangement;
-	  //qDebug("(%s %p): save = %08X (padding)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
+		//qDebug("(%s %p): save = %08X (padding)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
 	}
 
 END_PROPERTY
@@ -529,18 +529,18 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTAINER_spacing)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(THIS_ARRANGEMENT->spacing);
-  else
-  {
-    int val = VPROP(GB_INTEGER);
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS_ARRANGEMENT->spacing);
+	else
+	{
+		int val = VPROP(GB_INTEGER);
 
-    if (val >= 0 && val < 32768)
-    {
-      THIS_ARRANGEMENT->spacing = val;
-      arrange_now(CONTAINER);
-    }
-  }
+		if (val >= 0 && val < 32768)
+		{
+			THIS_ARRANGEMENT->spacing = val;
+			arrange_now(CONTAINER);
+		}
+	}
 
 END_PROPERTY
 
@@ -551,7 +551,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_spacing)
 	if (!READ_PROPERTY)
 	{
 		THIS_USERCONTAINER->save = cont->arrangement;
-	  //qDebug("(%s %p): save = %08X (spacing)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
+		//qDebug("(%s %p): save = %08X (spacing)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
 	}
 
 END_PROPERTY
@@ -559,13 +559,13 @@ END_PROPERTY
 
 BEGIN_METHOD(CUSERCONTROL_new, GB_OBJECT parent)
 
-  MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
+	MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
 
-  THIS->container = wid;
-  THIS_ARRANGEMENT->mode = ARRANGE_FILL;
-  THIS_ARRANGEMENT->user = true;
+	THIS->container = wid;
+	THIS_ARRANGEMENT->mode = ARRANGE_FILL;
+	THIS_ARRANGEMENT->user = true;
 
-  CWIDGET_new(wid, (void *)_object);
+	CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -646,7 +646,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_design)
 	{
 		CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
 		
-    cont->arrangement = 0;
+		cont->arrangement = 0;
 		THIS_USERCONTAINER->save = cont->arrangement;
 	}
 
@@ -670,74 +670,74 @@ END_METHOD
 
 GB_DESC CChildrenDesc[] =
 {
-  GB_DECLARE(".ContainerChildren", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".ContainerChildren", sizeof(CCONTAINER)), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CCONTAINER_children_next, NULL),
-  GB_METHOD("_get", "Control", CCONTAINER_children_get, "(Index)i"),
-  GB_PROPERTY_READ("Count", "i", CCONTAINER_children_count),
+	GB_METHOD("_next", "Control", CCONTAINER_children_next, NULL),
+	GB_METHOD("_get", "Control", CCONTAINER_children_get, "(Index)i"),
+	GB_PROPERTY_READ("Count", "i", CCONTAINER_children_count),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CContainerDesc[] =
 {
-  GB_DECLARE("Container", sizeof(CCONTAINER)), GB_INHERITS("Control"),
-  GB_NOT_CREATABLE(),
+	GB_DECLARE("Container", sizeof(CCONTAINER)), GB_INHERITS("Control"),
+	GB_NOT_CREATABLE(),
 
-  GB_PROPERTY_SELF("Children", ".ContainerChildren"),
+	GB_PROPERTY_SELF("Children", ".ContainerChildren"),
 
-  GB_PROPERTY_READ("ClientX", "i", CCONTAINER_x),
-  GB_PROPERTY_READ("ClientY", "i", CCONTAINER_y),
-  GB_PROPERTY_READ("ClientW", "i", CCONTAINER_width),
-  GB_PROPERTY_READ("ClientWidth", "i", CCONTAINER_width),
-  GB_PROPERTY_READ("ClientH", "i", CCONTAINER_height),
-  GB_PROPERTY_READ("ClientHeight", "i", CCONTAINER_height),
-  
-  GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
+	GB_PROPERTY_READ("ClientX", "i", CCONTAINER_x),
+	GB_PROPERTY_READ("ClientY", "i", CCONTAINER_y),
+	GB_PROPERTY_READ("ClientW", "i", CCONTAINER_width),
+	GB_PROPERTY_READ("ClientWidth", "i", CCONTAINER_width),
+	GB_PROPERTY_READ("ClientH", "i", CCONTAINER_height),
+	GB_PROPERTY_READ("ClientHeight", "i", CCONTAINER_height),
+	
+	GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
 
-  GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),
-  GB_EVENT("Insert", NULL, "(Control)Control", &EVENT_Insert),
+	GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),
+	GB_EVENT("Insert", NULL, "(Control)Control", &EVENT_Insert),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CUserControlDesc[] =
 {
-  GB_DECLARE("UserControl", sizeof(CCONTAINER)), GB_INHERITS("Container"),
-  GB_NOT_CREATABLE(),
+	GB_DECLARE("UserControl", sizeof(CCONTAINER)), GB_INHERITS("Container"),
+	GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
+	GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
 
-  GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
-  GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
+	GB_PROPERTY("_Container", "Container", CUSERCONTROL_container),
+	GB_PROPERTY("_AutoResize", "b", CCONTAINER_auto_resize),
 
 	USERCONTROL_DESCRIPTION,
 	
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CUserContainerDesc[] =
 {
-  GB_DECLARE("UserContainer", sizeof(CUSERCONTAINER)), GB_INHERITS("Container"),
-  GB_NOT_CREATABLE(),
+	GB_DECLARE("UserContainer", sizeof(CUSERCONTAINER)), GB_INHERITS("Container"),
+	GB_NOT_CREATABLE(),
 
-  GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
+	GB_METHOD("_new", NULL, CUSERCONTROL_new, "(Parent)Container;"),
 
-  //GB_PROPERTY("Container", "Container", CUSERCONTAINER_container),
-  GB_PROPERTY("_Container", "Container", CUSERCONTAINER_container),
+	//GB_PROPERTY("Container", "Container", CUSERCONTAINER_container),
+	GB_PROPERTY("_Container", "Container", CUSERCONTAINER_container),
 
-  GB_PROPERTY("Arrangement", "i", CUSERCONTAINER_arrangement),
-  GB_PROPERTY("AutoResize", "b", CUSERCONTAINER_auto_resize),
-  GB_PROPERTY("Padding", "i", CUSERCONTAINER_padding),
-  GB_PROPERTY("Spacing", "i", CUSERCONTAINER_spacing),
-  
-  GB_PROPERTY("Design", "b", CUSERCONTAINER_design),
+	GB_PROPERTY("Arrangement", "i", CUSERCONTAINER_arrangement),
+	GB_PROPERTY("AutoResize", "b", CUSERCONTAINER_auto_resize),
+	GB_PROPERTY("Padding", "i", CUSERCONTAINER_padding),
+	GB_PROPERTY("Spacing", "i", CUSERCONTAINER_spacing),
+	
+	GB_PROPERTY("Design", "b", CUSERCONTAINER_design),
 
 	USERCONTAINER_DESCRIPTION,
 	
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 

@@ -78,6 +78,10 @@ DRAW_INTERFACE DRAW EXPORT;
 
 static bool _init = FALSE;
 
+static void set_background(GB_DRAW *d, int col);
+static void set_foreground(GB_DRAW *d, int col);
+static void set_fill_color(GB_DRAW *d, int col);
+
 void DRAW_init()
 {
 	if (_init)
@@ -257,8 +261,9 @@ static void end(GB_DRAW *d)
 		{
     	if (wid->isCached())
     	{
+	      wid->setBackground();
 	      wid->refreshBackground();
-	      wid->update();
+	      //wid->update();
 	    }
   
   		wid->drawn--;
@@ -300,8 +305,8 @@ static int get_foreground(GB_DRAW *d)
 static void set_foreground(GB_DRAW *d, int col)
 {
 	QPen pen = DP(d)->pen();
-	EXTRA(d)->fg = col;
 	col = get_color(d, col, false);
+	EXTRA(d)->fg = col;
 	
 	DP(d)->setPen(QPen(QColor(col), pen.width(), pen.style()));
 	
@@ -1119,3 +1124,28 @@ QPainter *DRAW_get_current()
 	return d ? DP(d) : NULL;
 }
 
+void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, int h, int align)
+{
+	int xp, yp;
+	
+	if (pix.isNull() || pix.width() == 0 || pix.height() == 0)
+		return;
+	
+	xp = x;
+  switch(get_horizontal_alignment((Qt::Alignment)align))
+  {
+  	case Qt::AlignRight: xp += w - pix.width(); break;
+  	case Qt::AlignHCenter: xp += (w - pix.width()) / 2; break;
+  	default: break;
+  }
+  
+  yp = y;
+  switch(align & Qt::AlignVertical_Mask)
+  {
+    case Qt::AlignBottom: yp += h - pix.height(); break;
+    case Qt::AlignVCenter: yp += (h - pix.height()) / 2; break;
+    default: break;
+  }
+	
+	p->drawPixmap(xp, yp, pix);
+}

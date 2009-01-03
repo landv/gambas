@@ -126,6 +126,7 @@ static QTranslator *qt = NULL;
 static GB_FUNCTION _application_keypress_func;
 static QWidget *_mouseGrabber = 0;
 static QWidget *_keyboardGrabber = 0;
+static bool _check_quit_posted = false;
 
 #ifndef NO_X_WINDOW
 static void (*_x11_event_filter)(XEvent *) = 0;
@@ -446,11 +447,13 @@ static void unrelease_grab()
 
 static bool must_quit(void)
 {
+	//qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
   return CWindow::count == 0 && CWatch::count == 0 && in_event_loop;
 }
 
 static void check_quit_now(intptr_t param)
 {
+	_check_quit_posted = false;
   if (must_quit())
   {
   	#ifndef NO_X_WINDOW
@@ -462,7 +465,11 @@ static void check_quit_now(intptr_t param)
 }
 void MAIN_check_quit(void)
 {
+	if (_check_quit_posted)
+		return;
+		
 	GB.Post((GB_POST_FUNC)check_quit_now, 0);
+	_check_quit_posted = true;
 }
 
 void MAIN_update_scale(void)

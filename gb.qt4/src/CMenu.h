@@ -62,6 +62,7 @@ typedef
     unsigned deleted : 1;
     unsigned toggle : 1;
     unsigned noshortcut : 1;
+    unsigned exec : 1;
     }
   CMENU;
 

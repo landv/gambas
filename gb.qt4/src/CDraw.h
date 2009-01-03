@@ -43,5 +43,6 @@ void DRAW_begin(void *device);
 void DRAW_end();
 QPainter *DRAW_get_current();
 void DRAW_rich_text(QPainter *p, int x, int y, int w, int h, int align, QString &text, QPainter *p2 = 0);
+void DRAW_aligned_pixmap(QPainter *p, const QPixmap &pix, int x, int y, int w, int h, int align);
 
 #endif

@@ -440,14 +440,18 @@ END_METHOD
 
 BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 
-	if (THIS->menu)
+	if (THIS->menu && !THIS->exec)
 	{
+		THIS->exec = TRUE;
+		CMenu::enableAccel(THIS, true);
+		
 		if (MISSING(x) || MISSING(y))
 			THIS->menu->exec(QCursor::pos());
 		else
 			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
-		
-		qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+			
+		THIS->exec = FALSE;
+		MAIN_process_events();
   }
 
 END_METHOD

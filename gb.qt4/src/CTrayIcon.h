@@ -45,10 +45,22 @@ extern GB_DESC CTrayIconsDesc[];
 
 void CTRAYICON_close_all(void);
 
+class MyTrayIcon: public QX11EmbedWidget
+{
+public:
+	MyTrayIcon();
+	QPixmap icon() const { return _icon; }
+	void setIcon(QPixmap &icon);
+protected:
+	virtual void paintEvent(QPaintEvent *);
+private:
+	QPixmap _icon;
+};
+
 typedef
   struct {
     GB_BASE ob;
-    QX11EmbedWidget *widget;
+    MyTrayIcon *widget;
     GB_VARIANT_VALUE tag;
     CPICTURE *icon;
     char *tooltip;

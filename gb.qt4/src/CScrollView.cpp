@@ -312,7 +312,7 @@ bool MyContents::eventFilter(QObject *o, QEvent *e)
     checkWidget(wid);
     if (!timer)
     {
-	  	QTimer::singleShot(0, this, SLOT(autoResize()));
+	  	QTimer::singleShot(50, this, SLOT(autoResize()));
 	  	timer = true;
 	  }
 	}

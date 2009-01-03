@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gdocument.cpp
+	gdocument.cpp
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -58,143 +58,141 @@ GLine::~GLine()
 class GCommand
 {
 public:
-  enum Type
-  {
-    None, Begin, End, Insert, Delete, Indent, Unindent
-  };
+	enum Type
+	{
+		None, Begin, End, Insert, Delete, Indent, Unindent
+	};
 
-  virtual ~GCommand() { }
-  virtual Type type() { return None; }
-  virtual int nest() { return 0; }
-  virtual void print() { }
-  virtual bool merge(GCommand *) { return false; }
-  virtual void process(GDocument *doc, bool undo) { }
+	virtual ~GCommand() { }
+	virtual Type type() { return None; }
+	virtual int nest() { return 0; }
+	virtual void print() { }
+	virtual bool merge(GCommand *) { return false; }
+	virtual void process(GDocument *doc, bool undo) { }
 };
 
 class GBeginCommand: public GCommand
 {
 public:
-  GBeginCommand() { }
-  Type type() { return Begin; }
-  void print() { qDebug("Begin"); }
-  int nest() { return 1; }
+	GBeginCommand() { }
+	Type type() { return Begin; }
+	void print() { qDebug("Begin"); }
+	int nest() { return 1; }
 };
 
 class GEndCommand: public GCommand
 {
 public:
-  GEndCommand() { }
-  Type type() { return End; }
-  void print() { qDebug("End"); }
-  int nest() { return -1; }
-  bool merge(GCommand *o) { return (o->type() == Begin); }
+	GEndCommand() { }
+	Type type() { return End; }
+	void print() { qDebug("End"); }
+	int nest() { return -1; }
+	bool merge(GCommand *o) { return (o->type() == Begin); }
 };
 
 class GDeleteCommand: public GCommand
 {
 public:
-  int x, y, x2, y2;
-  GString str;
+	int x, y, x2, y2;
+	GString str;
 
-  GDeleteCommand(int y, int x, int y2, int x2, const GString & str)
-  {
-    this->x = x; this->y = y; this->x2 = x2; this->y2 = y2; this->str = str;
-  }
+	GDeleteCommand(int y, int x, int y2, int x2, const GString & str)
+	{
+		this->x = x; this->y = y; this->x2 = x2; this->y2 = y2; this->str = str;
+	}
 
-  Type type() { return Delete; }
-  void print() { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
+	Type type() { return Delete; }
+	void print() { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
 
-  bool merge(GCommand *c)
-  {
-    if (c->type() != type())
-      return false;
+	bool merge(GCommand *c)
+	{
+		if (c->type() != type())
+			return false;
 
-    GDeleteCommand *o = (GDeleteCommand *)c;
+		GDeleteCommand *o = (GDeleteCommand *)c;
 
-    if (x2 != o->x || y2 != o->y)
-      return false;
+		if (x2 != o->x || y2 != o->y)
+			return false;
 
-    o->str.prepend(str);
-    o->x = x;
-    o->y = y;
-    return true;
-  }
+		o->str.prepend(str);
+		o->x = x;
+		o->y = y;
+		return true;
+	}
 
-  void process(GDocument *doc, bool undo)
-  {
-    if (undo)
-      doc->insert(y, x, str);
-    else
-      doc->remove(y, x, y2, x2);
-  }
+	void process(GDocument *doc, bool undo)
+	{
+		if (undo)
+			doc->insert(y, x, str);
+		else
+			doc->remove(y, x, y2, x2);
+	}
 };
 
 class GInsertCommand: public GDeleteCommand
 {
 public:
-  GInsertCommand(int y, int x, int y2, int x2, const GString & str): GDeleteCommand(y, x, y2, x2, str) {}
-  Type type() { return Insert; }
-  void print() { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
+	GInsertCommand(int y, int x, int y2, int x2, const GString & str): GDeleteCommand(y, x, y2, x2, str) {}
+	Type type() { return Insert; }
+	void print() { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
 
-  bool merge(GCommand *c)
-  {
-    if (c->type() != type())
-      return false;
+	bool merge(GCommand *c)
+	{
+		if (c->type() != type())
+			return false;
 
-    if (str.isNewLine(0))
-      return false;
+		if (str.isNewLine(0))
+			return false;
 
-    GInsertCommand *o = (GInsertCommand *)c;
+		GInsertCommand *o = (GInsertCommand *)c;
 
-    if (o->str.length() && o->str.isNewLine(str.length() - 1))
-      return false;
+		if (o->str.length() && o->str.isNewLine(str.length() - 1))
+			return false;
 
-    if (x != o->x2 || y != o->y2)
-      return false;
+		if (x != o->x2 || y != o->y2)
+			return false;
 
-    o->str += str;
-    o->x2 = x2;
-    o->y2 = y2;
-    return true;
-  }
+		o->str += str;
+		o->x2 = x2;
+		o->y2 = y2;
+		return true;
+	}
 
-  void process(GDocument *doc, bool undo)
-  {
-    GDeleteCommand::process(doc, !undo);
-  }
+	void process(GDocument *doc, bool undo)
+	{
+		GDeleteCommand::process(doc, !undo);
+	}
 };
 
 
 /**---- GDocument -----------------------------------------------------------*/
 
 #define FOR_EACH_VIEW(_view) \
-  for (GEditor *_view = views.first(); _view ; _view = views.next())
+	for (GEditor *_view = views.first(); _view ; _view = views.next())
 
 void GDocument::init()
 {
-  maxLength = 0;
-  selector = NULL;
-  baptismLimit = 0;
+	selector = NULL;
+	baptismLimit = 0;
 }
 
 GDocument::GDocument()
 {
-  oldCount = 0;
-  oldMaxLength = 0;
-  blockUndo = false;
-  tabWidth = 2;
-  readOnly = false;
-  highlightMode = None;
-  keywordsUseUpperCase = false;
+	oldCount = 0;
+	blockUndo = false;
+	tabWidth = 2;
+	readOnly = false;
+	highlightMode = None;
+	keywordsUseUpperCase = false;
 
-  //lines = new GArray<GLine>;
-  lines.setAutoDelete(true);
+	//lines = new GArray<GLine>;
+	lines.setAutoDelete(true);
 
-  undoList.setAutoDelete(true);
-  redoList.setAutoDelete(true);
+	undoList.setAutoDelete(true);
+	redoList.setAutoDelete(true);
 
-  clear();
-  //setText(""); //GString("Gambas\nAlmost\nMeans\nBASIC!\n"));
+	clear();
+	//setText(""); //GString("Gambas\nAlmost\nMeans\nBASIC!\n"));
 }
 
 GDocument::~GDocument()
@@ -203,120 +201,137 @@ GDocument::~GDocument()
 
 void GDocument::clear()
 {
-  uint i;
+	uint i;
 
-  clearUndo();
-  lines.clear();
-  lines.append(new GLine);
-  init();
+	clearUndo();
+	lines.clear();
+	lines.append(new GLine);
+	init();
 
-  updateViews();
+	updateViews();
 
-  for (i = 0; i < views.count(); i++)
-  {
-    views.at(i)->cursorGoto(0, 0, false);
-  	views.at(i)->foldClear();
-  }
+	for (i = 0; i < views.count(); i++)
+	{
+		views.at(i)->cursorGoto(0, 0, false);
+		views.at(i)->foldClear();
+	}
 }
 
 
 void GDocument::reset()
 {
-  for (uint i = 0; i < lines.count(); i++)
-    lines.at(i)->changed = false;
+	for (uint i = 0; i < lines.count(); i++)
+		lines.at(i)->changed = false;
 
-  updateViews();
+	updateViews();
 }
 
 
 GString GDocument::getText()
 {
-  GString tmp;
+	GString tmp;
 
-  if (lines.count())
-  {
-    for (uint i = 0; i < lines.count(); i++)
-      colorize(i);
+	if (lines.count())
+	{
+		for (uint i = 0; i < lines.count(); i++)
+			colorize(i);
 
-    for (uint i = 0; i < (lines.count() - 1); i++)
-    {
-      tmp += lines.at(i)->s;
-      tmp += '\n';
+		for (uint i = 0; i < (lines.count() - 1); i++)
+		{
+			tmp += lines.at(i)->s;
+			tmp += '\n';
 		}
 
-    tmp += lines.at(lines.count() - 1)->s;
+		tmp += lines.at(lines.count() - 1)->s;
 
-    updateViews();
-  }
+		updateViews();
+	}
 
-  return tmp;
+	return tmp;
 }
 
 GString GDocument::getSelectedText() const
 {
-  GString tmp;
-  int x1, y1, x2, y2;
+	GString tmp;
+	int x1, y1, x2, y2;
 
-  if (lines.count() && hasSelection())
-  {
-    getSelection(&y1, &x1, &y2, &x2);
-    if (y1 == y2)
-      tmp = lines.at(y1)->s.mid(x1, x2 - x1);
-    else
-    {
-      tmp = lines.at(y1)->s.mid(x1);
-      tmp += '\n';
-      for (int i = y1 + 1; i < y2; i++)
-      {
-        tmp += lines.at(i)->s;
-        tmp += '\n';
+	if (lines.count() && hasSelection())
+	{
+		getSelection(&y1, &x1, &y2, &x2);
+		if (y1 == y2)
+			tmp = lines.at(y1)->s.mid(x1, x2 - x1);
+		else
+		{
+			tmp = lines.at(y1)->s.mid(x1);
+			tmp += '\n';
+			for (int i = y1 + 1; i < y2; i++)
+			{
+				tmp += lines.at(i)->s;
+				tmp += '\n';
 			}
 
-      tmp += lines.at(y2)->s.left(x2);
-    }
-  }
+			tmp += lines.at(y2)->s.left(x2);
+		}
+	}
 
-  return tmp;
+	return tmp;
 }
 
 int GDocument::getIndent(int y, bool *empty)
 {
-  int i;
-  GString s = lines.at(y)->s;
-  bool e = true;
+	int i;
+	GString s = lines.at(y)->s;
+	bool e = true;
 
-  for (i = 0; i < (int)s.length(); i++)
-  {
-    if (!s.isSpace(i))
-    {
-      e = false;
-      break;
-    }
-  }
+	for (i = 0; i < (int)s.length(); i++)
+	{
+		if (!s.isSpace(i))
+		{
+			e = false;
+			break;
+		}
+	}
 
-  if (empty)
-    *empty = e;
+	if (empty)
+		*empty = e;
 
-  return i;
+	return i;
+}
+
+void GDocument::updateLineWidth(int y)
+{
+	FOR_EACH_VIEW(v)
+	{
+		v->updateWidth(y);
+	}
+}
+
+void GDocument::insertLine(int y)
+{
+	lines.insert(y, new GLine());
+	lines.at(y)->modified = lines.at(y)->changed = true;
+	if (baptismLimit > y)
+		baptismLimit++;
+	FOR_EACH_VIEW(v) { v->lineInserted(y); }
 }
 
 void GDocument::insert(int y, int x, const GString & text)
 {
-  int pos = 0;
-  int pos2;
-  int xs = x, ys = y;
-  GLine *l;
-  int n = 1;
-  int nl = 0;
-  GString rest;
-  int yy;
+	int pos = 0;
+	int pos2;
+	int xs = x, ys = y;
+	GLine *l;
+	int n = 1;
+	int nl = 0;
+	GString rest;
+	int yy;
 
-  if (readOnly)
-  {
-    xAfter = x;
-    yAfter = y;
-    return;
-  }
+	if (readOnly)
+	{
+		xAfter = x;
+		yAfter = y;
+		return;
+	}
 
 	FOR_EACH_VIEW(v)
 	{
@@ -327,86 +342,83 @@ void GDocument::insert(int y, int x, const GString & text)
 	while (y >= (int)lines.count())
 	{
 		yy = (int)lines.count();
-    lines.insert(yy, new GLine());
-    nl++;
-    lines.at(yy)->modified = lines.at(yy)->changed = true;
+		insertLine(yy);
+		nl++;
 	}
 
-  for(;;)
-  {
-    pos2 = text.find('\n', pos);
-    if (pos2 < 0)
-      pos2 = text.length();
+	for(;;)
+	{
+		pos2 = text.find('\n', pos);
+		if (pos2 < 0)
+			pos2 = text.length();
 
-    l = lines.at(y);
+		l = lines.at(y);
 
-    if (pos2 > pos)
-    {
-      l->s.insert(x, text.mid(pos, pos2 - pos));
-      l->modified = l->changed = true;
+		if (pos2 > pos)
+		{
+			l->s.insert(x, text.mid(pos, pos2 - pos));
+			l->modified = l->changed = true;
 
-      maxLength = GMAX(maxLength, (int)l->s.length());
+			updateLineWidth(y);
 
-      FOR_EACH_VIEW(v)
-      {
-        if (v->ny == y && v->nx >= x)
-          v->nx += pos2 - pos;
-      }
+			FOR_EACH_VIEW(v)
+			{
+				if (v->ny == y && v->nx >= x)
+					v->nx += pos2 - pos;
+			}
 
-      x += pos2 - pos;
-    }
+			x += pos2 - pos;
+		}
 
-    pos = pos2 + 1;
+		pos = pos2 + 1;
 
-    if (pos > (int)text.length())
-      break;
+		if (pos > (int)text.length())
+			break;
 
-    if (x < (int)l->s.length())
-    {
-      rest = l->s.mid(x);
+		if (x < (int)l->s.length())
+		{
+			rest = l->s.mid(x);
 
-      l->s.remove(x, rest.length());
-      l->modified = l->changed = true;
-    }
+			l->s.remove(x, rest.length());
+			l->modified = l->changed = true;
+			updateLineWidth(y);
+		}
 
-    FOR_EACH_VIEW(v)
-    {
-      if (v->ny >= y)
-        v->ny++;
-    }
+		FOR_EACH_VIEW(v)
+		{
+			if (v->ny >= y)
+				v->ny++;
+		}
 
-    y++;
+		y++;
 
-    lines.insert(y, new GLine());
-    nl++;
-    lines.at(y)->modified = lines.at(y)->changed = true;
-    if (baptismLimit > y)
-    	baptismLimit++;
+		insertLine(y);
+		nl++;
 
-    n = -1;
-    x = 0;
+		n = -1;
+		x = 0;
 
-  }
+	}
 
-  if (n < 0 && rest.length())
-  {
-    l->s.insert(x, rest);
-    l->modified = l->changed = true;
+	if (n < 0 && rest.length())
+	{
+		l->s.insert(x, rest);
+		l->modified = l->changed = true;
 
-    maxLength = GMAX(maxLength, (int)l->s.length());
-  }
+		updateLineWidth(y);
+	}
 
 	FOR_EACH_VIEW(v)
 	{
 		v->foldInsert(ys, nl);
 	}
 	
-  updateViews(ys, n);
+	updateViews(ys, n);
 
-  addUndo(new GInsertCommand(ys, xs, y, x, text));
+	addUndo(new GInsertCommand(ys, xs, y, x, text));
 
-  yAfter = y;
-  xAfter = x;
+	yAfter = y;
+	xAfter = x;
 
 	emitTextChanged();
 
@@ -416,41 +428,56 @@ void GDocument::insert(int y, int x, const GString & text)
 	}
 }
 
+void GDocument::removeLine(int y)
+{
+	lines.remove(y);
+	if (baptismLimit > y)
+		baptismLimit--;
+	FOR_EACH_VIEW(v) { v->lineRemoved(y); }
+}
+
 void GDocument::remove(int y1, int x1, int y2, int x2)
 {
-  GLine *l;
-  GString text, rest;
-  int y;
+	GLine *l;
+	GString text, rest;
+	int y;
 
-  yAfter = y1;
-  xAfter = x1;
+	yAfter = y1;
+	xAfter = x1;
 
-  if (readOnly)
-    return;
-
-  l = lines.at(y1);
-
-  if (y1 == y2)
+	if (readOnly)
+		return;
+	
+	FOR_EACH_VIEW(v)
   {
-    if (x2 >= x1)
-    {
-      text = l->s.mid(x1, x2 - x1);
-
-      l->s.remove(x1, x2 - x1);
-      l->modified = l->changed = true;
-
-      FOR_EACH_VIEW(v)
-      {
-	    	v->foldRemove(y1);
-        if (v->y == y1 && v->x > x1)
-          v->x = GMAX(x1, v->x - (x2 - x1));
-      }
-
-      updateViews(y1);
-    }
+		v->nx = v->x;
+		v->ny = v->y;
   }
-  else
-  {
+	
+	l = lines.at(y1);
+
+	if (y1 == y2)
+	{
+		if (x2 >= x1)
+		{
+			text = l->s.mid(x1, x2 - x1);
+
+			l->s.remove(x1, x2 - x1);
+			l->modified = l->changed = true;
+			updateLineWidth(y1);
+			
+			FOR_EACH_VIEW(v)
+			{
+				v->foldRemove(y1);
+				if (v->ny == y1 && v->nx > x1)
+					v->nx = GMAX(x1, v->nx - (x2 - x1));
+			}
+
+			updateViews(y1);
+		}
+	}
+	else
+	{
 		text = l->s.mid(x1) + '\n';
 		rest = lines.at(y2)->s.left(x2);
 
@@ -458,338 +485,348 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 		l->modified = l->changed = true;
 		l->state = 0; // force highlighting of next line.
 
-    maxLength = GMAX(maxLength, (int)l->s.length());
+		updateLineWidth(y1);
 
-    for (y = y1 + 1; y < y2; y++)
-      text += lines.at(y)->s + '\n';
-    text += rest;
+		for (y = y1 + 1; y < y2; y++)
+			text += lines.at(y)->s + '\n';
+		text += rest;
 
-    for (y = y1 + 1; y <= y2; y++)
-    {
-      lines.remove(y1 + 1);
-
-			if (baptismLimit > (y1 + 1))
-				baptismLimit--;
+		for (y = y1 + 1; y <= y2; y++)
+		{
+			removeLine(y1 + 1);
 		}
 
 
-    FOR_EACH_VIEW(v)
-    {
-    	v->foldRemove(y1 + 1, y2);
-      if (v->y > y1)
-      {
-        v->y = GMAX(y1, v->y - (y2 - y1));
-        if (v->y == y1)
-          v->x = x1;
-      }
-      else if (v->y == y1 && v->x > x1)
-        v->x = x1;
-    }
+		FOR_EACH_VIEW(v)
+		{
+			v->foldRemove(y1 + 1, y2);
+			if (v->ny > y1)
+			{
+				v->ny = GMAX(y1, v->ny - (y2 - y1));
+				if (v->ny == y1)
+					v->nx = x1;
+			}
+			else if (v->ny == y1 && v->nx > x1)
+				v->nx = x1;
+		}
 
-    updateViews(y1, -1);
-  }
+		updateViews(y1, -1);
+	}
 
-  addUndo(new GDeleteCommand(y1, x1, y2, x2, text));
+	addUndo(new GDeleteCommand(y1, x1, y2, x2, text));
 
+	FOR_EACH_VIEW(v)
+	{
+		v->cursorGoto(v->ny, v->nx, false);
+	}
+	
   emitTextChanged();
 }
 
 void GDocument::setText(const GString & text)
 {
-  bool oldReadOnly = readOnly;
+	bool oldReadOnly = readOnly;
 
-  readOnly = false;
-  blockUndo = true;
+	readOnly = false;
+	blockUndo = true;
 
-  clear();
-  insert(0, 0, text);
-  colorize(0);
-  reset();
+	clear();
+	insert(0, 0, text);
+	colorize(0);
+	reset();
 
-  blockUndo = false;
-  readOnly = oldReadOnly;
+	blockUndo = false;
+	readOnly = oldReadOnly;
 
-  FOR_EACH_VIEW(v)
-  {
-    v->cursorGoto(0, 0, false);
-  }
+	FOR_EACH_VIEW(v)
+	{
+		v->cursorGoto(0, 0, false);
+	}
 }
 
 void GDocument::unsubscribe(GEditor *view)
 {
-  //qDebug("unsubscribe %p -> %p", view, this);
-  views.removeRef(view);
+	//qDebug("unsubscribe %p -> %p", view, this);
+	views.removeRef(view);
 	if (views.count() == 0)
 		delete this;
 }
 
 void GDocument::subscribe(GEditor *view)
 {
-  //qDebug("subscribe %p -> %p", view, this);
-  views.removeRef(view);
-  views.append(view);
-  view->setNumRows(lines.count());
-  view->updateContents();
+	//qDebug("subscribe %p -> %p", view, this);
+	views.removeRef(view);
+	views.append(view);
+	view->setNumRows(lines.count());
+	view->updateContents();
 }
 
 void GDocument::updateViews(int row, int count)
 {
-  uint i;
+	uint i;
 
-  if (lines.count() > oldCount)
-  {
-    oldCount = lines.count();
-    FOR_EACH_VIEW(v)
-    {
-      v->setNumRows(oldCount);
-      v->updateLength();
-    }
-  }
+	if (lines.count() > oldCount)
+	{
+		oldCount = lines.count();
+		FOR_EACH_VIEW(v)
+		{
+			v->setNumRows(oldCount);
+			v->updateHeight();
+		}
+	}
 
-  if (maxLength != oldMaxLength)
-  {
-    oldMaxLength = maxLength;
-    FOR_EACH_VIEW(v)
-      v->updateLength();
-  }
+	/*if (maxLength != oldMaxLength)
+	{
+		oldMaxLength = maxLength;
+		FOR_EACH_VIEW(v)
+			v->updateLength();
+	}*/
 
-  if (row < 0)
-  {
-    row = 0;
-    count = oldCount;
-  }
-  else if (count < 0)
-  {
-    count = oldCount - row;
-  }
+	if (row < 0)
+	{
+		row = 0;
+		count = oldCount;
+	}
+	else if (count < 0)
+	{
+		count = oldCount - row;
+	}
 
-  count = GMIN((int)oldCount - row, count);
+	count = GMIN((int)oldCount - row, count);
 
-  FOR_EACH_VIEW(v)
-  {
-    for (i = row; i < (uint)(row + count); i++)
-    {
-      if (i >= lines.count())
-        v->repaintCell(i, 0);
-      else
-        v->updateLine(i);
-    }
-  }
+	FOR_EACH_VIEW(v)
+	{
+		for (i = row; i < (uint)(row + count); i++)
+		{
+			v->updateLine(i);
+		}
+	}
 
-  if (lines.count() < oldCount)
-  {
-    oldCount = lines.count();
-    FOR_EACH_VIEW(v)
-    {
-      v->setNumRows(oldCount);
-      v->updateLength();
-    }
-  }
+	if (lines.count() < oldCount)
+	{
+		oldCount = lines.count();
+		FOR_EACH_VIEW(v)
+		{
+			v->setNumRows(oldCount);
+			v->updateHeight();
+		}
+	}
 
-  FOR_EACH_VIEW(v)
-    v->checkMatching();
+	FOR_EACH_VIEW(v)
+		v->checkMatching();
 }
 
 
 void GDocument::getSelection(int *y1, int *x1, int *y2, int *x2) const
 {
-  if (!selector)
-    return;
+	if (!selector)
+		return;
 
-  if (ys2 > ys || (ys2 == ys && xs2 > xs))
-  {
-    *y1 = ys;
-    *y2 = ys2;
-    if (x1) *x1 = xs;
-    if (x2) *x2 = xs2;
-  }
-  else
-  {
-    *y1 = ys2;
-    *y2 = ys;
-    if (x1) *x1 = xs2;
-    if (x2) *x2 = xs;
-  }
+	if (ys2 > ys || (ys2 == ys && xs2 > xs))
+	{
+		*y1 = ys;
+		*y2 = ys2;
+		if (x1) *x1 = xs;
+		if (x2) *x2 = xs2;
+	}
+	else
+	{
+		*y1 = ys2;
+		*y2 = ys;
+		if (x1) *x1 = xs2;
+		if (x2) *x2 = xs;
+	}
 }
 
 void GDocument::startSelection(GEditor *view, int y, int x)
 {
-  hideSelection();
-  ys = y;
-  xs = x;
-  ys2 = ys;
-  xs2 = xs;
-  selector = view;
-  updateViews(y);
+	hideSelection();
+	ys = y;
+	xs = x;
+	ys2 = ys;
+	xs2 = xs;
+	selector = view;
+	updateViews(y);
 }
 
 void GDocument::endSelection(int y, int x)
 {
-  int y1a, y2a, y1b, y2b;
+	int y1a, y2a, y1b, y2b;
 
-  getSelection(&y1a, NULL, &y2a, NULL);
-  ys2 = y;
-  xs2 = x;
-  getSelection(&y1b, NULL, &y2b, NULL);
+	getSelection(&y1a, NULL, &y2a, NULL);
+	ys2 = y;
+	xs2 = x;
+	getSelection(&y1b, NULL, &y2b, NULL);
 
-  if (y1a == y1b)
-    updateViews(GMIN(y2a, y2b), GMAX(y2a, y2b) - GMIN(y2a, y2b) + 1);
-  else if (y2a == y2b)
-    updateViews(GMIN(y1a, y1b), GMAX(y1a, y1b) - GMIN(y1a, y1b) + 1);
-  else
-    updateViews(GMIN(y1a, y1b), GMAX(y2a, y2b) - GMIN(y1a, y1b) + 1);
+	if (y1a == y1b)
+		updateViews(GMIN(y2a, y2b), GMAX(y2a, y2b) - GMIN(y2a, y2b) + 1);
+	else if (y2a == y2b)
+		updateViews(GMIN(y1a, y1b), GMAX(y1a, y1b) - GMIN(y1a, y1b) + 1);
+	else
+		updateViews(GMIN(y1a, y1b), GMAX(y2a, y2b) - GMIN(y1a, y1b) + 1);
 
-  updateViews(y);
+	updateViews(y);
 }
 
 void GDocument::hideSelection()
 {
-  int y1, y2;
+	int y1, y2;
 
-  if (!selector)
-    return;
+	if (!selector)
+		return;
 
-  getSelection(&y1, NULL, &y2, NULL);
-  selector = NULL;
-  updateViews(y1, y2 - y1 + 1);
+	getSelection(&y1, NULL, &y2, NULL);
+	selector = NULL;
+	updateViews(y1, y2 - y1 + 1);
 }
 
 void GDocument::eraseSelection()
 {
-  int y1, y2, x1, x2;
+	int y1, y2, x1, x2;
 
-  if (!selector)
-    return;
+	if (!selector)
+		return;
 
-  getSelection(&y1, &x1, &y2, &x2);
-  selector = NULL;
-  /*x2--;
-  if (x2 < 0)
-  {
-    y2--;
-    x2 = lines.at(y2)->s.length() - 1;
-  }*/
-  remove(y1, x1, y2, x2);
+	getSelection(&y1, &x1, &y2, &x2);
+	selector = NULL;
+	/*x2--;
+	if (x2 < 0)
+	{
+		y2--;
+		x2 = lines.at(y2)->s.length() - 1;
+	}*/
+	remove(y1, x1, y2, x2);
 }
 
 void GDocument::clearUndo()
 {
-  undoList.clear();
-  redoList.clear();
+	undoList.clear();
+	redoList.clear();
+	undoLevel = 0;
 }
 
 void GDocument::addUndo(GCommand *c)
 {
-  if (blockUndo)
-    return;
+	if (blockUndo)
+		return;
 
-  //qDebug("addUndo");
-  //c->print();
+	//qDebug("addUndo");
+	//c->print();
 
-  if (!undoList.isEmpty())
-  {
-    if (c->merge(undoList.last()))
-    {
-      //qDebug("merge");
-      delete c;
-      return;
-    }
-  }
+	if (!undoList.isEmpty())
+	{
+		if (c->merge(undoList.last()))
+		{
+			//qDebug("merge");
+			delete c;
+			return;
+		}
+	}
 
-  undoList.append(c);
+	undoList.append(c);
 
-  if (!redoList.isEmpty())
-  {
-    redoList.clear();
-    //emit redoAvailable(false);
-  }
+	if (!redoList.isEmpty())
+	{
+		redoList.clear();
+		//emit redoAvailable(false);
+	}
 }
 
 void GDocument::begin()
 {
-  addUndo(new GBeginCommand());
+	if (undoLevel == 0)
+		textHasChanged = false;
+	undoLevel++;  
+	addUndo(new GBeginCommand());
 }
 
 void GDocument::end()
 {
-  addUndo(new GEndCommand());
+	undoLevel--;
+	addUndo(new GEndCommand());
+	if (undoLevel == 0 && textHasChanged)
+		emitTextChanged();
 }
 
 void GDocument::addRedo(GCommand * c)
 {
-  if (blockUndo)
-    return;
+	if (blockUndo)
+		return;
 
-  redoList.append(c);
+	redoList.append(c);
 }
 
 bool GDocument::undo()
 {
-  int nest;
+	int nest;
 
-  if (undoList.isEmpty() || isReadOnly())
-    return true;
+	if (undoList.isEmpty() || isReadOnly() || blockUndo)
+		return true;
 
-  blockUndo = true;
-  nest = 0;
+	blockUndo = true;
+	nest = 0;
+	begin();
 
-  //qDebug("BEGIN UNDO");
+	//qDebug("BEGIN UNDO");
 
-  do
-  {
-    GCommand *c = undoList.take();
-    if (!c)
-      break;
-    //c->print();
-    c->process(this, true);
-    nest += c->nest();
-    //if (d->undoList.isEmpty())
-    //  emit undoAvailable(false);
-    redoList.append(c);
-  }
-  while (nest);
+	do
+	{
+		GCommand *c = undoList.take();
+		if (!c)
+			break;
+		//c->print();
+		c->process(this, true);
+		nest += c->nest();
+		//if (d->undoList.isEmpty())
+		//  emit undoAvailable(false);
+		redoList.append(c);
+	}
+	while (nest);
 
-  //qDebug("END UNDO");
+	//qDebug("END UNDO");
 
-  blockUndo = false;
-  return false;
+	end();
+	blockUndo = false;
+	return false;
 }
 
 bool GDocument::redo()
 {
-  int nest;
+	int nest;
 
-  if (redoList.isEmpty() || isReadOnly())
-    return true;
+	if (redoList.isEmpty() || isReadOnly() || blockUndo)
+		return true;
 
-  blockUndo = true;
+	blockUndo = true;
 
-  nest = 0;
+	nest = 0;
+	begin();
 
-  do
-  {
-    GCommand *c = redoList.take();
-    if (!c)
-      break;
-    c->process(this, false);
-    nest += c->nest();
+	do
+	{
+		GCommand *c = redoList.take();
+		if (!c)
+			break;
+		c->process(this, false);
+		nest += c->nest();
 
-    /*if (d->redoList.isEmpty())
-      emit redoAvailable(false);
-    if (d->undoList.isEmpty())
-      emit undoAvailable(true);*/
-    undoList.append(c);
-  }
-  while (nest);
+		/*if (d->redoList.isEmpty())
+			emit redoAvailable(false);
+		if (d->undoList.isEmpty())
+			emit undoAvailable(true);*/
+		undoList.append(c);
+	}
+	while (nest);
 
-  blockUndo = false;
-  return false;
+	end();
+	blockUndo = false;
+	return false;
 }
 
 int GDocument::wordLeft(int y, int x, bool word)
 {
-  int xw = x;
-  GString s = lines.at(y)->s;
+	int xw = x;
+	GString s = lines.at(y)->s;
 
 	if (!word)
 	{
@@ -819,14 +856,14 @@ int GDocument::wordLeft(int y, int x, bool word)
 		}
 	}
 
-  return xw;
+	return xw;
 }
 
 int GDocument::wordRight(int y, int x, bool word)
 {
-  int xw = x;
-  GString s = lines.at(y)->s;
-  int len = s.length();
+	int xw = x;
+	GString s = lines.at(y)->s;
+	int len = s.length();
 
 	if (xw < len)
 	{
@@ -856,114 +893,114 @@ int GDocument::wordRight(int y, int x, bool word)
 			xw++;
 	}
 	
-  return xw;
+	return xw;
 }
 
 int GDocument::getLength() const
 {
-  uint i, len;
+	uint i, len;
 
-  if (lines.count())
-    return 0;
+	if (lines.count())
+		return 0;
 
-  len = 0;
+	len = 0;
 
-  for (i = 0; i < lines.count(); i++)
-    len += lines.at(i)->s.length() + 1;
+	for (i = 0; i < lines.count(); i++)
+		len += lines.at(i)->s.length() + 1;
 
-  return (len - 1);
+	return (len - 1);
 }
 
 
 GString GDocument::getLine(int y) const
 {
-  GString tmp;
+	GString tmp;
 
-  if (y >= 0 || y < (int)lines.count())
-    tmp = lines.at(y)->s;
+	if (y >= 0 || y < (int)lines.count())
+		tmp = lines.at(y)->s;
 
-  return tmp;
+	return tmp;
 }
 
 void GDocument::setLine(int y, GString & str)
 {
-  if (y < 0 || y >= (int)lines.count())
-    return;
+	if (y < 0 || y >= (int)lines.count())
+		return;
 
 	begin();
 	if (lines.at(y)->s.length())
 		remove(y, 0, y, lines.at(y)->s.length());
 	if (str.length())
 		insert(y, 0, str);
-  end();
-  updateViews(y);
+	end();
+	updateViews(y);
 }
 
 bool GDocument::getLineFlag(int y, int f) const
 {
-  if (y >= 0 || y < (int)lines.count())
-    return lines.at(y)->flag & (1 << f);
-  else
-    return false;
+	if (y >= 0 || y < (int)lines.count())
+		return lines.at(y)->flag & (1 << f);
+	else
+		return false;
 }
 
 void GDocument::setLineFlag(int y, int f, bool b)
 {
-  if (y < 0 || y >= (int)lines.count())
-    return;
+	if (y < 0 || y >= (int)lines.count())
+		return;
 
-  if (b)
-    lines.at(y)->flag |= (1 << f);
-  else
-    lines.at(y)->flag &= ~(1 << f);
+	if (b)
+		lines.at(y)->flag |= (1 << f);
+	else
+		lines.at(y)->flag &= ~(1 << f);
 
-  updateViews(y);
+	updateViews(y);
 }
 
 int GDocument::convState(int state)
 {
-  switch(state)
-  {
-    case EVAL_TYPE_END: return GLine::Normal;
-    case EVAL_TYPE_RESERVED: return GLine::Keyword;
-    case EVAL_TYPE_IDENTIFIER: return GLine::Symbol;
-    case EVAL_TYPE_CLASS: return GLine::Datatype;
-    case EVAL_TYPE_NUMBER: return GLine::Number;
-    case EVAL_TYPE_STRING: return GLine::String;
-    case EVAL_TYPE_SUBR: return GLine::Subr;
-    case EVAL_TYPE_COMMENT: return GLine::Comment;
-    case EVAL_TYPE_OPERATOR: return GLine::Operator;
-    case EVAL_TYPE_DATATYPE: return GLine::Datatype;
-    case EVAL_TYPE_ERROR: return GLine::Error;
-    default: return GLine::Normal;
-  }
+	switch(state)
+	{
+		case EVAL_TYPE_END: return GLine::Normal;
+		case EVAL_TYPE_RESERVED: return GLine::Keyword;
+		case EVAL_TYPE_IDENTIFIER: return GLine::Symbol;
+		case EVAL_TYPE_CLASS: return GLine::Datatype;
+		case EVAL_TYPE_NUMBER: return GLine::Number;
+		case EVAL_TYPE_STRING: return GLine::String;
+		case EVAL_TYPE_SUBR: return GLine::Subr;
+		case EVAL_TYPE_COMMENT: return GLine::Comment;
+		case EVAL_TYPE_OPERATOR: return GLine::Operator;
+		case EVAL_TYPE_DATATYPE: return GLine::Datatype;
+		case EVAL_TYPE_ERROR: return GLine::Error;
+		default: return GLine::Normal;
+	}
 }
 
 void GDocument::highlightGambas(GEditor *editor, uint &state, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
-  const char *src;
-  EVAL_ANALYZE result;
-  int i;
-  uint ls;
+	const char *src;
+	EVAL_ANALYZE result;
+	int i;
+	uint ls;
 
-  ls = s.length();
-  src = (const char *)s.utf8();
+	ls = s.length();
+	src = (const char *)s.utf8();
 
-  EVAL.Analyze(src, strlen(src), &result, TRUE);
+	EVAL.Analyze(src, strlen(src), &result, TRUE);
 
 	GB.NewArray(data, sizeof(GHighlight), result.len);
 
-  for (i = 0; i < result.len; i++)
-  {
-    //qDebug("state = %d -> %d  len = %d", result.color[i].state, QEditor::convState[result.color[i].state], result.color[i].len);
-    (*data)[i].state = convState(result.color[i].state);
-    (*data)[i].len = result.color[i].len;
-  }
+	for (i = 0; i < result.len; i++)
+	{
+		//qDebug("state = %d -> %d  len = %d", result.color[i].state, QEditor::convState[result.color[i].state], result.color[i].len);
+		(*data)[i].state = convState(result.color[i].state);
+		(*data)[i].len = result.color[i].len;
+	}
 
-  s = result.str;
-  GB.FreeString(&result.str);
+	s = result.str;
+	GB.FreeString(&result.str);
 
-  proc = result.proc;
+	proc = result.proc;
 }
 
 #if 0
@@ -999,45 +1036,46 @@ bool GDocument::highlightTest(GEditor *, uint &state, GString &s, GHighlightArra
 		state = nstate;
 	}
 
-  j = -1;
-  data.resize(s.length());
+	j = -1;
+	data.resize(s.length());
 
-  for (i = 0; i < s.length(); i++)
-  {
-  	if (i == 0 || d[i] != data[j].state)
-  	{
-  		j++;
-  		data[j].state = d[i];
-  		data[j].len = 1;
+	for (i = 0; i < s.length(); i++)
+	{
+		if (i == 0 || d[i] != data[j].state)
+		{
+			j++;
+			data[j].state = d[i];
+			data[j].len = 1;
 		}
 		else
 			data[j].len++;
-  }
+	}
 
 	if (j >= 0)
-  	data.resize(j + 1);
+		data.resize(j + 1);
 
-  proc = false;
+	proc = false;
 
-  return false; //qstrcmp((const char *)cs, result.str);
+	return false; //qstrcmp((const char *)cs, result.str);
 }
 #endif
 
 void GDocument::colorize(int y)
 {
-  GLine *l;
-  //bool modif;
-  bool proc;
-  GString old;
-  uint state;
-  int tag;
-  int nupd = 0;
+	GLine *l;
+	//bool modif;
+	bool proc;
+	GString old;
+	uint state;
+	int tag;
+	int nupd = 0;
+	bool changed = false;
 
-  if (highlightMode == None)
-    return;
+	if (highlightMode == None)
+		return;
 
-  if (y < 0)
-    return;
+	if (y < 0)
+		return;
 
 	while (y < numLines())
 	{
@@ -1069,21 +1107,20 @@ void GDocument::colorize(int y)
 			(*highlightCallback)(views.first(), state, tag, l->s, &l->highlight, proc);
 			l->proc = proc;
 
-			if (l->baptized)
+			if (old != l->s)
 			{
-				if (old != l->s)
-				{
-					begin();
-					addUndo(new GDeleteCommand(y, 0, y, old.length(), old));
-					if (l->s.length())
-						addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
-					end();
-			    
-			    maxLength = GMAX(maxLength, (int)l->s.length());
-				}
+				begin();
+				addUndo(new GDeleteCommand(y, 0, y, old.length(), old));
+				if (l->s.length())
+					addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
+				end();
+				
+				//maxLength = GMAX(maxLength, (int)l->s.length());
+				updateLineWidth(y);
+				//qDebug("colorize: %d has changed: '%s' -> '%s'", y, old.utf8(), l->s.utf8());
+				l->changed = true;
+				changed = true;
 			}
-			else
-				l->baptized = true;
 		}
 		else
 		{
@@ -1110,6 +1147,9 @@ void GDocument::colorize(int y)
 			lines.at(y)->modified = true;
 	}
 
+	if (changed)
+		emitTextChanged();
+	
 	if (nupd >= 1)
 		updateViews(y - nupd + 1, nupd);
 }
@@ -1120,7 +1160,7 @@ void GDocument::baptizeUntil(int y)
 	/*bool busy = (y - baptismLimit) > 256;
 
 	if (busy)
-  	qApp->setOverrideCursor(Qt::waitCursor);*/
+		qApp->setOverrideCursor(Qt::waitCursor);*/
 
 	while (baptismLimit <= y)
 	{
@@ -1129,7 +1169,7 @@ void GDocument::baptizeUntil(int y)
 	}
 
 	/*if (busy)
-  	qApp->restoreOverrideCursor();*/
+		qApp->restoreOverrideCursor();*/
 }
 
 void GDocument::setHighlightMode(int mode, GHighlightCallback cb)
@@ -1165,6 +1205,12 @@ void GDocument::setKeywordsUseUpperCase(bool v)
 
 void GDocument::emitTextChanged()
 {
+	if (undoLevel > 0)
+	{
+		textHasChanged = true;
+		return;
+	}
+
 	FOR_EACH_VIEW(v)
 		v->docTextChanged();
 }

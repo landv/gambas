@@ -1,24 +1,24 @@
 /***************************************************************************
 
-  main.cpp
+	main.cpp
 
-  The interface between the QT plug-in and the Gambas interpreter
+	The interface between the QT plug-in and the Gambas interpreter
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -45,7 +45,6 @@
 #include <qwidget.h>
 #include <qevent.h>
 #include <qtextcodec.h>
-#include <qpaintdevice.h>
 #include <qtimer.h>
 
 //Added by qt3to4:
@@ -58,7 +57,10 @@
 #include <QDesktopWidget>
 #include <QX11Info>
 
+#include <QPaintDevice>
+
 #include "gb.qt.h"
+#include "gb.form.font.h"
 
 #include "CFont.h"
 #include "CScreen.h"
@@ -125,10 +127,12 @@ int MAIN_x11_last_key_code = 0;
 #endif
 
 static bool in_event_loop = false;
+static int _no_destroy = 0;
 static QTranslator *qt = NULL;
 static GB_FUNCTION _application_keypress_func;
 static QWidget *_mouseGrabber = 0;
 static QWidget *_keyboardGrabber = 0;
+static bool _check_quit_posted = false;
 
 #ifndef NO_X_WINDOW
 static void (*_x11_event_filter)(XEvent *) = 0;
@@ -138,9 +142,9 @@ static void (*_x11_event_filter)(XEvent *) = 0;
 
 /***************************************************************************
 
-  MyMimeSourceFactory
+	MyMimeSourceFactory
 
-  Create a QMimeSourceFactory to handle files stored in an archive
+	Create a QMimeSourceFactory to handle files stored in an archive
 
 ***************************************************************************/
 
@@ -149,78 +153,78 @@ class MyMimeSourceFactory: public Q3MimeSourceFactory
 {
 public:
 
-  MyMimeSourceFactory();
+	MyMimeSourceFactory();
 
-  virtual const QMimeSource* data(const QString& abs_name) const;
+	virtual const QMimeSource* data(const QString& abs_name) const;
 
 private:
 
-  QMap<QString, QString> extensions;
+	QMap<QString, QString> extensions;
 };
 
 
 MyMimeSourceFactory::MyMimeSourceFactory()
 {
-  extensions.replace("htm", "text/html;charset=UTF-8");
-  extensions.replace("html", "text/html;charset=UTF-8");
-  extensions.replace("txt", "text/plain");
-  extensions.replace("xml", "text/xml;charset=UTF-8");
-  extensions.replace("jpg", "image/jpeg");
-  extensions.replace("png", "image/png");
-  extensions.replace("gif", "image/gif");
+	extensions.replace("htm", "text/html;charset=UTF-8");
+	extensions.replace("html", "text/html;charset=UTF-8");
+	extensions.replace("txt", "text/plain");
+	extensions.replace("xml", "text/xml;charset=UTF-8");
+	extensions.replace("jpg", "image/jpeg");
+	extensions.replace("png", "image/png");
+	extensions.replace("gif", "image/gif");
 }
 
 
 const QMimeSource* MyMimeSourceFactory::data(const QString& abs_name) const
 {
-  char *addr;
-  int len;
-  Q3StoredDrag* sr = 0;
-  char *path;
+	char *addr;
+	int len;
+	Q3StoredDrag* sr = 0;
+	char *path;
 
-  //qDebug("MyMimeSourceFactory::data: %s", (char *)abs_name.latin1());
+	//qDebug("MyMimeSourceFactory::data: %s", (char *)abs_name.latin1());
 
-  path = (char *)abs_name.latin1();
+	path = (char *)abs_name.latin1();
 
-  if (true) //abs_name[0] != '/')
-  {
-    if (GB.LoadFile(path, 0, &addr, &len))
-      GB.Error(NULL);
-    else
-    {
-      QByteArray ba;
-      ba.setRawData((const char *)addr, len);
+	if (true) //abs_name[0] != '/')
+	{
+		if (GB.LoadFile(path, 0, &addr, &len))
+			GB.Error(NULL);
+		else
+		{
+			QByteArray ba;
+			ba.setRawData((const char *)addr, len);
 
-      QFileInfo fi(abs_name);
-      QString e = fi.extension(FALSE);
-      Q3CString mimetype = "text/html"; //"application/octet-stream";
+			QFileInfo fi(abs_name);
+			QString e = fi.extension(FALSE);
+			Q3CString mimetype = "text/html"; //"application/octet-stream";
 
-      const char* imgfmt;
+			const char* imgfmt;
 
-      if ( extensions.contains(e) )
-        mimetype = extensions[e].latin1();
-      else
-      {
-        QBuffer buffer(&ba);
+			if ( extensions.contains(e) )
+				mimetype = extensions[e].latin1();
+			else
+			{
+				QBuffer buffer(&ba);
 
-        buffer.open(QIODevice::ReadOnly);
-        if (( imgfmt = QImageReader::imageFormat( &buffer ) ) )
-          mimetype = Q3CString("image/")+Q3CString(imgfmt).lower();
-        buffer.close();
-      }
+				buffer.open(QIODevice::ReadOnly);
+				if (( imgfmt = QImageReader::imageFormat( &buffer ) ) )
+					mimetype = Q3CString("image/")+Q3CString(imgfmt).lower();
+				buffer.close();
+			}
 
-      sr = new Q3StoredDrag( mimetype );
-      sr->setEncodedData( ba );
+			sr = new Q3StoredDrag( mimetype );
+			sr->setEncodedData( ba );
 
-      ba.resetRawData((const char*)addr, len);
+			ba.resetRawData((const char*)addr, len);
 
-      //qDebug("MimeSource: %s %s", abs_name.latin1(), (const char *)mimetype);
+			//qDebug("MimeSource: %s %s", abs_name.latin1(), (const char *)mimetype);
 
-      GB.ReleaseFile(addr, len);
-    }
-  }
+			GB.ReleaseFile(addr, len);
+		}
+	}
 
-  return sr;
+	return sr;
 }
 
 static MyMimeSourceFactory myMimeSourceFactory;
@@ -229,66 +233,73 @@ static MyMimeSourceFactory myMimeSourceFactory;
 #if 0
 /***************************************************************************
 
-  MyEventLoop
+	MyAbstractEventDispatcher
 
-  Manage window deletion
+	Manage window deletion
 
 ***************************************************************************/
 
-class MyEventLoop : public QEventLoop
+class MyAbstractEventDispatcher : public QAbstractEventDispatcher
 {
 public:
-  MyEventLoop();
-  virtual bool processEvents( ProcessEventsFlags flags );
+	MyAbstractEventDispatcher();
+	virtual bool processEvents(QEventLoop::ProcessEventsFlags flags);
 };
 
-MyEventLoop::MyEventLoop()
-: QEventLoop()
+MyAbstractEventDispatcher::MyAbstractEventDispatcher()
+: QAbstractEventDispatcher()
 {
 }
 
-bool MyEventLoop::processEvents(ProcessEventsFlags flags)
+bool MyAbstractEventDispatcher::processEvents(QEventLoop::ProcessEventsFlags flags)
 {
-  bool ret;
-  CWIDGET **ptr;
-  CWIDGET *ob;
+	bool ret;
+	CWIDGET **ptr;
+	CWIDGET *ob;
 
-  MAIN_loop_level++;
-  ret = QEventLoop::processEvents(flags);
-  MAIN_loop_level--;
+	MAIN_loop_level++;
+	ret = QAbstractEventDispatcher::processEvents(flags);
+	MAIN_loop_level--;
 
-  for(;;)
-  {
-    ptr = &CWIDGET_destroy_list;
-  
-    for(;;)
-    {
-      ob = *ptr;
-      if (!ob)
-        return ret;
-  
-      //if (MAIN_loop_level <= ob->level && !ob->flag.notified)
-      if (!ob->flag.notified)
-      {
-        //qDebug("delete: %s %p", GB.GetClassName(ob), ob);
-        //qDebug(">> delete %p (%p) :%p:%ld", ob, ob->widget, ob->ob.klass, ob->ob.ref);
-        //*ptr = ob->next;
-        delete ob->widget;
-        break;
-        //GB.Unref(POINTER(&ob));
-        //qDebug("   delete %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
-        //qDebug("<< delete %p (%p)", ob, ob->widget);
-      }
-      else
-      {
-        //qDebug("cannot delete: %s %p", GB.GetClassName(ob), ob);
-        ptr = &ob->next;
-      }
-    }
-  }
-  //return ret;
+	for(;;)
+	{
+		ptr = &CWIDGET_destroy_list;
+	
+		for(;;)
+		{
+			ob = *ptr;
+			if (!ob)
+				return ret;
+	
+			//if (MAIN_loop_level <= ob->level && !ob->flag.notified)
+			if (!ob->flag.notified)
+			{
+				//qDebug("delete: %s %p", GB.GetClassName(ob), ob);
+				//qDebug(">> delete %p (%p) :%p:%ld", ob, ob->widget, ob->ob.klass, ob->ob.ref);
+				//*ptr = ob->next;
+				delete ob->widget;
+				break;
+				//GB.Unref(POINTER(&ob));
+				//qDebug("   delete %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
+				//qDebug("<< delete %p (%p)", ob, ob->widget);
+			}
+			else
+			{
+				//qDebug("cannot delete: %s %p", GB.GetClassName(ob), ob);
+				ptr = &ob->next;
+			}
+		}
+	}
+	//return ret;
 }
 #endif
+
+void MAIN_process_events(void)
+{
+	_no_destroy++;
+	qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+	_no_destroy--;
+}
 
 /** MyApplication **********************************************************/
 
@@ -419,18 +430,18 @@ bool MyApplication::x11EventFilter(XEvent *e)
 
 MyTimer::MyTimer(GB_TIMER *t) : QObject(0)
 {
-  timer = t;
+	timer = t;
 	id = startTimer(t->delay);
 }
 
 MyTimer::~MyTimer()
 {
-  killTimer(id);
+	killTimer(id);
 }
 
 void MyTimer::timerEvent(QTimerEvent *e)
 {
-  GB.RaiseTimer(timer);
+	GB.RaiseTimer(timer);
 }
 
 /***************************************************************************/
@@ -480,27 +491,36 @@ static void unrelease_grab()
 
 static bool must_quit(void)
 {
-  return CWindow::count == 0 && CWatch::count == 0 && in_event_loop;
+	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
+	return CWindow::count == 0 && CWatch::count == 0 && in_event_loop;
+}
+
+static void check_quit_now(intptr_t param)
+{
+	_check_quit_posted = false;
+	if (must_quit())
+	{
+		#ifndef NO_X_WINDOW
+			CTRAYICON_close_all();
+			qApp->syncX();
+		#endif
+		qApp->exit();
+	}
 }
 
 void MAIN_check_quit(void)
 {
-  if (must_quit())
-  {
-  	#ifndef NO_X_WINDOW
-    	CTRAYICON_close_all();
-    	qApp->syncX();
-		#endif
-    qApp->exit();
-  }
+	if (_check_quit_posted)
+		return;
+	
+	GB.Post((GB_POST_FUNC)check_quit_now, 0);
+	_check_quit_posted = true;
 }
 
 void MAIN_update_scale(void)
 {
 	QFontMetrics fm(qApp->desktop()->font());
-  MAIN_scale = 1 + fm.height() / 3;
-  //qDebug("logicalDpiY = %d  physicalDpiY = %d", qApp->desktop()->logicalDpiY(), qApp->desktop()->physicalDpiY());
-  //qDebug("%s %d  fm.height() = %d  pixelSize = %d -> %d", qApp->font().family().toAscii().data(), qApp->font().pointSize(), fm.height(), qApp->font().pixelSize(), MAIN_scale);
+	MAIN_scale = GET_DESKTOP_SCALE(fm.height());
 }
 
 static void QT_InitEventLoop(void)
@@ -509,33 +529,33 @@ static void QT_InitEventLoop(void)
 
 static void QT_Init(void)
 {
-  static bool init = false;
-  QFont f;
+	static bool init = false;
+	QFont f;
 
-  if (init)
-    return;
+	if (init)
+		return;
 
 	//qApp->setAttribute(Qt::AA_ImmediateWidgetCreation);
 
 	#ifndef NO_X_WINDOW
-  	X11_init(QX11Info::display(), QX11Info::appRootWindow());
-  #endif
+		X11_init(QX11Info::display(), QX11Info::appRootWindow());
+	#endif
 
-  /*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
-  
-  //Q3MimeSourceFactory::addFactory(&myMimeSourceFactory);
+	/*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
+	
+	//Q3MimeSourceFactory::addFactory(&myMimeSourceFactory);
 
-  MAIN_update_scale();
+	MAIN_update_scale();
 
-  if (GB.GetFunction(&_application_keypress_func, GB.FindClass(GB.Application.Startup()), "Application_KeyPress", "", "") == 0)
-  	MyApplication::setEventFilter(true);
+	if (GB.GetFunction(&_application_keypress_func, GB.FindClass(GB.Application.Startup()), "Application_KeyPress", "", "") == 0)
+		MyApplication::setEventFilter(true);
 
-  qApp->installEventFilter(&CWidget::manager);
+	qApp->installEventFilter(&CWidget::manager);
 
 	//Q3StyleSheet::defaultSheet()->item("tt")->setFontFamily("Monospace");
 	//Q3StyleSheet::defaultSheet()->item("pre")->setFontFamily("Monospace");
 
-  init = true;
+	init = true;
 }
 
 static QString _init_lang;
@@ -543,17 +563,17 @@ static bool _init_rtl;
 
 static void init_lang(QString locale, bool rtl)
 {
-  qt = new QTranslator();
-  qt->load(QString( "qt_") + locale, QString(getenv("QTDIR")) + "/translations");
+	qt = new QTranslator();
+	qt->load(QString( "qt_") + locale, QString(getenv("QTDIR")) + "/translations");
 
-  qApp->installTranslator(qt);
-  if (rtl)
-    qApp->setLayoutDirection(Qt::RightToLeft);
+	qApp->installTranslator(qt);
+	if (rtl)
+		qApp->setLayoutDirection(Qt::RightToLeft);
 }
 
 static void hook_lang(char *lang, int rtl)
 {
-  QString locale(lang);
+	QString locale(lang);
 
 	if (!qApp)
 	{
@@ -564,37 +584,39 @@ static void hook_lang(char *lang, int rtl)
 
 	init_lang(locale, rtl);
 
-  //locale = QTextCodec::locale();
+	//locale = QTextCodec::locale();
 }
 
 static void hook_main(int *argc, char **argv)
 {
-  new MyApplication(*argc, argv);
-  
-  QT_Init();
-  init_lang(_init_lang, _init_rtl);
+	new MyApplication(*argc, argv);
+	
+	QT_Init();
+	init_lang(_init_lang, _init_rtl);
 }
 
 
 static void hook_loop()
 {
-  in_event_loop = true;
+	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 
-  if (!must_quit())
-    qApp->exec();
-  else
-  	MAIN_check_quit();
+	in_event_loop = true;
+
+	if (!must_quit())
+		qApp->exec();
+	else
+		MAIN_check_quit();
 }
 
 
 static void hook_wait(int duration)
 {
-  MAIN_in_wait++;
+	MAIN_in_wait++;
 	if (duration > 0)
 		qApp->processEvents(QEventLoop::AllEvents, duration);
 	else
 		qApp->processEvents(QEventLoop::ExcludeUserInputEvents, duration);
-  MAIN_in_wait--;
+	MAIN_in_wait--;
 }
 
 
@@ -613,35 +635,35 @@ static void hook_timer(GB_TIMER *timer, bool on)
 
 static void hook_watch(int fd, int type, void *callback, intptr_t param)
 {
-  CWatch::watch(fd, type, (GB_WATCH_CALLBACK)callback, param);
+	CWatch::watch(fd, type, (GB_WATCH_CALLBACK)callback, param);
 }
 
 
 static void hook_post(void)
 {
-  static MyPostCheck check;
+	static MyPostCheck check;
 
-  //qDebug("hook_post ?");
+	//qDebug("hook_post ?");
 
-  if (MyPostCheck::in_check)
-    return;
+	if (MyPostCheck::in_check)
+		return;
 
-  //qDebug("hook_post !");
+	//qDebug("hook_post !");
 
-  MyPostCheck::in_check = true;
-  QTimer::singleShot(0, &check, SLOT(check()));
+	MyPostCheck::in_check = true;
+	QTimer::singleShot(0, &check, SLOT(check()));
 }
 
 
 static void hook_quit()
 {
-  QWidgetList list;
-  QWidget *w;
-  int i;
+	QWidgetList list;
+	QWidget *w;
+	int i;
 
-  //qApp->closeAllWindows();
+	//qApp->closeAllWindows();
 
-  list = QApplication::topLevelWidgets();
+	list = QApplication::topLevelWidgets();
 
 	for (i = 0; i < list.count(); i++)
 	{
@@ -654,31 +676,31 @@ static void hook_quit()
 
 static void hook_error(int code, char *error, char *where)
 {
-  QString msg;
+	QString msg;
 
-  qApp->restoreOverrideCursor();
-  while (qApp->activePopupWidget())
-    delete qApp->activePopupWidget();
-  CWatch::stop();
+	qApp->restoreOverrideCursor();
+	while (qApp->activePopupWidget())
+		delete qApp->activePopupWidget();
+	CWatch::stop();
 
-  msg = "<b>This application has raised an unexpected<br>error and must abort.</b><br><br>";
+	msg = "<b>This application has raised an unexpected<br>error and must abort.</b><br><br>";
 	
 	if (code > 0)
 	{
-  	msg = msg + "[%1] %2.<br>%3";
-  	msg = msg.arg(code).arg(error).arg(where);
-  }
-  else
-  {
-  	msg = msg + "%1.<br>%2";
-  	msg = msg.arg(error).arg(where);
-  }
+		msg = msg + "[%1] %2.<br>%3";
+		msg = msg.arg(code).arg(error).arg(where);
+	}
+	else
+	{
+		msg = msg + "%1.<br>%2";
+		msg = msg.arg(error).arg(where);
+	}
 
 	release_grab();
-  QMessageBox::critical(0, TO_QSTRING(GB.Application.Name()), msg);
-  unrelease_grab();
+	QMessageBox::critical(0, TO_QSTRING(GB.Application.Name()), msg);
+	unrelease_grab();
 
-  qApp->exit();
+	qApp->exit();
 }
 
 
@@ -689,10 +711,10 @@ static int hook_image(CIMAGE **pimage, GB_IMAGE_INFO *info) //void **pdata, int 
 
 	if (!image)
 	{
-  	img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+		img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 
 		if (info->data)
-		  GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
+			GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
 
 		GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
 		delete image->image;
@@ -722,8 +744,8 @@ static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info)
 			img = new QImage((uchar *)info->data, info->width, info->height, info->format == GB_IMAGE_BGRA ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 		else
 		{
-	  	img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
-		  GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
+			img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+			GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
 		}
 
 		GB.New(POINTER(&picture), GB.FindClass("Picture"), NULL, NULL);
@@ -746,17 +768,17 @@ static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info)
 
 static void QT_InitWidget(QWidget *widget, void *object)
 {
-  CWIDGET_new(widget, object);
+	CWIDGET_new(widget, object);
 }
 
 static void *QT_GetObject(QWidget *widget)
 {
-  return CWidget::get((QObject *)widget);
+	return CWidget::get((QObject *)widget);
 }
 
 static QWidget *QT_GetContainer(void *object)
 {
-  return QCONTAINER(object);
+	return QCONTAINER(object);
 }
 
 /*static bool QT_IsDestroyed(void *object)
@@ -766,28 +788,28 @@ static QWidget *QT_GetContainer(void *object)
 
 static QPixmap *QT_GetPixmap(CPICTURE *pict)
 {
-  return pict->pixmap;
+	return pict->pixmap;
 }
 
 const char *QT_ToUTF8(const QString &str)
 {
-  static QByteArray buf[UTF8_NBUF];
-  static int cpt = 0;
+	static QByteArray buf[UTF8_NBUF];
+	static int cpt = 0;
 
-  const char *res;
+	const char *res;
 
-  buf[cpt] = str.toUtf8();
-  res = buf[cpt].data();
-  cpt++;
-  if (cpt >= UTF8_NBUF)
-    cpt = 0;
+	buf[cpt] = str.toUtf8();
+	res = buf[cpt].data();
+	cpt++;
+	if (cpt >= UTF8_NBUF)
+		cpt = 0;
 
-  return res;
+	return res;
 }
 
 static void QT_CreateFont(const QFont &f, FONT_FUNC func, void *object)
 {
-  CFONT_create(f, func, object);
+	CFONT_create(f, func, object);
 }
 
 static void *QT_GetDrawInterface()
@@ -799,65 +821,65 @@ extern "C" {
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-  CBorderDesc, CColorDesc, CColorInfoDesc,
-  CAlignDesc, CArrangeDesc, CScrollDesc, CKeyDesc, CLineDesc, CFillDesc, CSelectDesc,
-  CMessageDesc,
-  CPictureDesc, CImageDesc,
-  CFontDesc, CFontsDesc,
-  CMouseDesc, CCursorDesc,
-  CClipboardDesc, CDragDesc,
-  CDesktopDesc, CApplicationTooltipDesc, CApplicationDesc,
-  CControlDesc, CChildrenDesc, CContainerDesc,
-  CUserControlDesc, CUserContainerDesc,
-  CMenuChildrenDesc, CMenuDesc,
-  CLabelDesc, CTextLabelDesc, CPictureBoxDesc, CSeparatorDesc,
-  CButtonDesc, CToggleButtonDesc, CToolButtonDesc,
-  CCheckBoxDesc, CRadioButtonDesc,
-  CTextBoxSelectionDesc, CTextBoxDesc, CComboBoxItemDesc, CComboBoxDesc,
-  CTextAreaSelectionDesc, CTextAreaDesc,
-  CListBoxItemDesc, CListBoxDesc,
-  CListViewItemDesc, CListViewDesc,
-  CTreeViewItemDesc, CTreeViewDesc,
-  CColumnViewItemDesc, CColumnViewColumnDesc, CColumnViewColumnsDesc, CColumnViewDesc,
-  CIconViewItemDesc, CIconViewDesc,
-  CGridItemDesc, CGridRowDesc, CGridColumnDesc, CGridRowsDesc, CGridColumnsDesc, CGridViewDataDesc, CGridViewDesc,
-  CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
-  CHSplitDesc, CVSplitDesc,
-  CTabChildrenDesc, CTabDesc, CTabStripDesc,
-  CScrollViewDesc,
-  CDrawingAreaDesc,
-  CProgressDesc, CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
-  CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
-  CDialogDesc,
-  #ifndef NO_X_WINDOW
-  CEmbedderDesc, CTrayIconDesc, CTrayIconsDesc,
-  #endif
-  CWatcherDesc,
-  NULL
+	CBorderDesc, CColorDesc, CColorInfoDesc,
+	CAlignDesc, CArrangeDesc, CScrollDesc, CKeyDesc, CLineDesc, CFillDesc, CSelectDesc,
+	CMessageDesc,
+	CPictureDesc, CImageDesc,
+	CFontDesc, CFontsDesc,
+	CMouseDesc, CCursorDesc,
+	CClipboardDesc, CDragDesc,
+	CDesktopDesc, CApplicationTooltipDesc, CApplicationDesc,
+	CControlDesc, CChildrenDesc, CContainerDesc,
+	CUserControlDesc, CUserContainerDesc,
+	CMenuChildrenDesc, CMenuDesc,
+	CLabelDesc, CTextLabelDesc, CPictureBoxDesc, CSeparatorDesc,
+	CButtonDesc, CToggleButtonDesc, CToolButtonDesc,
+	CCheckBoxDesc, CRadioButtonDesc,
+	CTextBoxSelectionDesc, CTextBoxDesc, CComboBoxItemDesc, CComboBoxDesc,
+	CTextAreaSelectionDesc, CTextAreaDesc,
+	CListBoxItemDesc, CListBoxDesc,
+	CListViewItemDesc, CListViewDesc,
+	CTreeViewItemDesc, CTreeViewDesc,
+	CColumnViewItemDesc, CColumnViewColumnDesc, CColumnViewColumnsDesc, CColumnViewDesc,
+	CIconViewItemDesc, CIconViewDesc,
+	CGridItemDesc, CGridRowDesc, CGridColumnDesc, CGridRowsDesc, CGridColumnsDesc, CGridViewDataDesc, CGridViewDesc,
+	CFrameDesc, CPanelDesc, CHBoxDesc, CVBoxDesc, CHPanelDesc, CVPanelDesc,
+	CHSplitDesc, CVSplitDesc,
+	CTabChildrenDesc, CTabDesc, CTabStripDesc,
+	CScrollViewDesc,
+	CDrawingAreaDesc,
+	CProgressDesc, CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
+	CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
+	CDialogDesc,
+	#ifndef NO_X_WINDOW
+	CEmbedderDesc, CTrayIconDesc, CTrayIconsDesc,
+	#endif
+	CWatcherDesc,
+	NULL
 };
 
 void *GB_QT4_1[] EXPORT = {
 
-  (void *)1,
+	(void *)1,
 
-  (void *)QT_InitEventLoop,
-  (void *)QT_Init,
-  (void *)QT_InitWidget,
-  (void *)QT_GetObject,
-  (void *)QT_GetContainer,
-  (void *)CWIDGET_border_simple,
-  (void *)CWIDGET_border_full,
-  (void *)CWIDGET_scrollbar,
-  (void *)CCONTROL_font,
-  (void *)QT_CreateFont,
-  //(void *)QT_MimeSourceFactory,
-  (void *)QT_GetPixmap,
-  (void *)QT_ToUTF8,
-  (void *)QT_EventFilter,
-  (void *)QT_Notify,
-  (void *)QT_GetDrawInterface,
-  (void *)CCONST_alignment,
-  NULL
+	(void *)QT_InitEventLoop,
+	(void *)QT_Init,
+	(void *)QT_InitWidget,
+	(void *)QT_GetObject,
+	(void *)QT_GetContainer,
+	(void *)CWIDGET_border_simple,
+	(void *)CWIDGET_border_full,
+	(void *)CWIDGET_scrollbar,
+	(void *)CCONTROL_font,
+	(void *)QT_CreateFont,
+	//(void *)QT_MimeSourceFactory,
+	(void *)QT_GetPixmap,
+	(void *)QT_ToUTF8,
+	(void *)QT_EventFilter,
+	(void *)QT_Notify,
+	(void *)QT_GetDrawInterface,
+	(void *)CCONST_alignment,
+	NULL
 };
 
 #if 0
@@ -865,9 +887,9 @@ void *GB_QT4_1[] EXPORT = {
 static void myMessageHandler(QtMsgType type, const char *msg )
 {
 	if ((::strncmp(msg, "QMultiInputContext::", strlen("QMultiInputContext::")) == 0)
-	    || (::strncmp(msg, "sending IM", strlen("sending IM")) == 0)
-	    || (::strncmp(msg, "receiving IM", strlen("receiving IM")) == 0)
-	    || (::strncmp(msg, "QInputContext: ", strlen("QInputContext: ")) == 0))
+			|| (::strncmp(msg, "sending IM", strlen("sending IM")) == 0)
+			|| (::strncmp(msg, "receiving IM", strlen("receiving IM")) == 0)
+			|| (::strncmp(msg, "QInputContext: ", strlen("QInputContext: ")) == 0))
 		return;
 
 	fprintf(stderr, "%s\n", msg);
@@ -883,39 +905,39 @@ int EXPORT GB_INIT(void)
 {
 	#if 0
 	#if QT_VERSION >= 0x030304
-  qInstallMsgHandler(myMessageHandler);
-  #endif
-  #endif
+	qInstallMsgHandler(myMessageHandler);
+	#endif
+	#endif
 
-  GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
-  GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
-  GB.Hook(GB_HOOK_WAIT, (void *)hook_wait);
-  GB.Hook(GB_HOOK_TIMER, (void *)hook_timer);
-  GB.Hook(GB_HOOK_WATCH, (void *)hook_watch);
-  GB.Hook(GB_HOOK_POST, (void *)hook_post);
-  GB.Hook(GB_HOOK_QUIT, (void *)hook_quit);
-  GB.Hook(GB_HOOK_ERROR, (void *)hook_error);
-  GB.Hook(GB_HOOK_LANG, (void *)hook_lang);
-  GB.Hook(GB_HOOK_IMAGE, (void *)hook_image);
-  GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
+	GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
+	GB.Hook(GB_HOOK_LOOP, (void *)hook_loop);
+	GB.Hook(GB_HOOK_WAIT, (void *)hook_wait);
+	GB.Hook(GB_HOOK_TIMER, (void *)hook_timer);
+	GB.Hook(GB_HOOK_WATCH, (void *)hook_watch);
+	GB.Hook(GB_HOOK_POST, (void *)hook_post);
+	GB.Hook(GB_HOOK_QUIT, (void *)hook_quit);
+	GB.Hook(GB_HOOK_ERROR, (void *)hook_error);
+	GB.Hook(GB_HOOK_LANG, (void *)hook_lang);
+	GB.Hook(GB_HOOK_IMAGE, (void *)hook_image);
+	GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
 
 	GB.LoadComponent("gb.draw");
 	DRAW_init();
-  
-  CLASS_Control = GB.FindClass("Control");
-  CLASS_Container = GB.FindClass("Container");
-  CLASS_UserControl = GB.FindClass("UserControl");
-  CLASS_UserContainer = GB.FindClass("UserContainer");
-  CLASS_Window = GB.FindClass("Window");
-  CLASS_Menu = GB.FindClass("Menu");
-  CLASS_Picture = GB.FindClass("Picture");
-  CLASS_Drawing = GB.FindClass("Drawing");
-  CLASS_DrawingArea = GB.FindClass("DrawingArea");
-  CLASS_Printer = GB.FindClass("Printer");
+	
+	CLASS_Control = GB.FindClass("Control");
+	CLASS_Container = GB.FindClass("Container");
+	CLASS_UserControl = GB.FindClass("UserControl");
+	CLASS_UserContainer = GB.FindClass("UserContainer");
+	CLASS_Window = GB.FindClass("Window");
+	CLASS_Menu = GB.FindClass("Menu");
+	CLASS_Picture = GB.FindClass("Picture");
+	CLASS_Drawing = GB.FindClass("Drawing");
+	CLASS_DrawingArea = GB.FindClass("DrawingArea");
+	CLASS_Printer = GB.FindClass("Printer");
 
-  QT_InitEventLoop();
+	QT_InitEventLoop();
 
-  return TRUE;
+	return TRUE;
 }
 
 void EXPORT GB_EXIT()
@@ -923,8 +945,8 @@ void EXPORT GB_EXIT()
 	#ifndef NO_X_WINDOW
 		X11_exit();
 	#endif
-  //qApp->setStyle("windows");
-  delete qApp;
+	//qApp->setStyle("windows");
+	delete qApp;
 }
 
 #ifndef NO_X_WINDOW
@@ -1006,8 +1028,8 @@ bool MyPostCheck::in_check = false;
 
 void MyPostCheck::check(void)
 {
-  //qDebug("MyPostCheck::check");
-  in_check = false;
-  GB.CheckPost();
+	//qDebug("MyPostCheck::check");
+	in_check = false;
+	GB.CheckPost();
 }
 

@@ -419,14 +419,14 @@ Public Sub Form_Resize()
 
     Endif  
     
-    panWorkspace.BackColor = Color.Background
+    panWorkspace.Background = Color.Background
     panWorkspace.Border = Border.Raised
 
   Else
 
     svwWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     panWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
-    panWorkspace.BackColor = If($iBackground = Color.Default, Color.Mix(Color.Background, Color.Foreground), $iBackground)
+    panWorkspace.Background = If($iBackground = Color.Default, Color.Mix(Color.Background, Color.Foreground), $iBackground)
     panWorkspace.Border = Border.None
 
     If $bLogo Then

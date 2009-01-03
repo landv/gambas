@@ -1,24 +1,24 @@
 /***************************************************************************
 
-  CWidget.h
+	CWidget.h
 
-  The Control class
+	The Control class
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -33,56 +33,56 @@
 #include <qicon.h>
 #include <qpixmap.h>
 #include <QEvent>
+#include <QHash>
 
 /* (!) Reporter les modifications de CWIDGET dans gb.qt.h */
 
 typedef
-  struct CWIDGET {
-    GB_BASE ob;
-    QWidget *widget;
-    struct {
-    	unsigned short f;
-    	unsigned expand : 1;
-    	unsigned ignore : 1;
-    	unsigned notified : 1;
-    	unsigned visible : 1;
-    	unsigned fillBackground : 1;
-    	unsigned _reserved : 11;
-    	} flag;
-    GB_VARIANT_VALUE tag;
-    char *name;
-    void *cursor;
-    //CWIDGET *next;
-    //CWIDGET *prev;
-    int level;
-    int32_t fg;
-    int32_t bg;
-    }
-  CWIDGET;
+	struct CWIDGET {
+		GB_BASE ob;
+		QWidget *widget;
+		struct {
+			unsigned short f;
+			unsigned expand : 1;
+			unsigned ignore : 1;
+			unsigned notified : 1;
+			unsigned visible : 1;
+			unsigned fillBackground : 1;
+			unsigned _reserved : 10;
+			} flag;
+		GB_VARIANT_VALUE tag;
+		char *name;
+		void *cursor;
+		void *font;
+		//CWIDGET *next;
+		//CWIDGET *prev;
+		int level;
+		int fg;
+		int bg;
+		}
+	CWIDGET;
 
 typedef
 	CWIDGET CCONTROL;
 
 typedef
-  struct {
-    CWIDGET widget;
-    QWidget *container;
-    int32_t arrangement;
-    }
-  CCONTAINER;
+	struct {
+		CWIDGET widget;
+		QWidget *container;
+		int arrangement;
+		}
+	CCONTAINER;
 
 enum {
-  WF_DESIGN           = (1 << 0),
-  WF_DESIGN_LEADER    = (1 << 1),
-  WF_PERSISTENT       = (1 << 2),
-  WF_IN_SHOW          = (1 << 3),
-  WF_IN_CLOSE         = (1 << 4),
-  WF_CLOSED           = (1 << 5),
-  WF_DELETED          = (1 << 6),
-  WF_VISIBLE					= (1 << 7),  // Only for menus
-  WF_ACTION           = (1 << 8),  // Has an action
-  WF_SCROLLVIEW				= (1 << 9)   // Inherits QAbstractScrollArea
-  };
+	WF_DESIGN           = (1 << 0),
+	WF_DESIGN_LEADER    = (1 << 1),
+	WF_PERSISTENT       = (1 << 2),
+	WF_CLOSED           = (1 << 3),
+	WF_DELETED          = (1 << 4),
+	WF_VISIBLE          = (1 << 5),  // Only for menus
+	WF_ACTION           = (1 << 6),  // Has an action
+	WF_SCROLLVIEW       = (1 << 7)   // Inherits QScrollView
+	};
 
 
 
@@ -129,23 +129,25 @@ DECLARE_PROPERTY(CCONTROL_action);
 
 #define RAISE_EVENT(_event) \
 { \
-  GET_SENDER(ob); \
+	GET_SENDER(ob); \
 \
-  if (ob == NULL) \
-    return; \
+	if (ob == NULL) \
+		return; \
 \
-  GB.Raise(ob, _event, 0); \
+	GB.Raise(ob, _event, 0); \
 }
 
 #define RAISE_EVENT_ACTION(_event) \
 { \
-  GET_SENDER(ob); \
+	GET_SENDER(ob); \
 \
-  if (ob == NULL) \
-    return; \
+	if (ob == NULL) \
+		return; \
 \
-  GB.Raise(ob, _event, 0); \
-  CACTION_raise(ob); \
+	GB.Ref(ob); \
+	GB.Raise(ob, _event, 0); \
+	CACTION_raise(ob); \
+	GB.Unref(POINTER(&ob)); \
 }
 
 
@@ -181,6 +183,7 @@ void CWIDGET_destroy(CWIDGET *);
 void CWIDGET_update_design(CWIDGET *_object);
 void CWIDGET_iconset(QIcon &icon, QPixmap &p, int size = 0);
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg);
+void CWIDGET_reset_color(CWIDGET *_object);
 int CWIDGET_get_background(CWIDGET *_object);
 int CWIDGET_get_foreground(CWIDGET *_object);
 
@@ -217,46 +220,46 @@ struct CWINDOW;
 
 class CWidget : public QObject
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  static CWidget manager;
+	static CWidget manager;
 
-  static void add(QObject *, void *, bool no_filter);
-  static CWIDGET *get(QObject *);
-  static CWIDGET *getReal(QObject *);
+	static void add(QObject *, void *, bool no_filter);
+	static CWIDGET *get(QObject *);
+	static CWIDGET *getReal(QObject *o) { return dict[o]; }
 	static CWIDGET *getRealExisting(QObject *);
-  static CWIDGET *getDesign(QObject *);
+	static CWIDGET *getDesign(QObject *);
 
-  static QWidget *getContainerWidget(CCONTAINER *object);
+	static QWidget *getContainerWidget(CCONTAINER *object);
 
-  static CWINDOW *getWindow(CWIDGET *object);
-  static CWINDOW *getTopLevel(CWIDGET *object);
+	static CWINDOW *getWindow(CWIDGET *object);
+	static CWINDOW *getTopLevel(CWIDGET *object);
 
-  //static void setName(CWIDGET *, const char *);
-  //static void installFilter(QObject *);
-  //static void removeFilter(QObject *);
+	//static void setName(CWIDGET *, const char *);
+	//static void installFilter(QObject *);
+	//static void removeFilter(QObject *);
 
-  //static const char *getProperties(const void *klass);
-  //static void setProperties(const void *klass, const char *prop);
+	//static const char *getProperties(const void *klass);
+	//static void setProperties(const void *klass, const char *prop);
 
-  static void removeFocusPolicy(QWidget *);
+	static void removeFocusPolicy(QWidget *);
 
 public slots:
 
-  void destroy(void);
+	void destroy(void);
 
 protected:
 
-  bool eventFilter(QObject *, QEvent *);
+	bool eventFilter(QObject *, QEvent *);
 
 private:
 
-  static bool real;
+	static bool real;
 
-  static CWIDGET *enter;
-  static QHash<QObject *, CWIDGET *> dict;
+	static CWIDGET *enter;
+	static QHash<QObject *, CWIDGET *> dict;
 };
 
 #endif

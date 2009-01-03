@@ -57,13 +57,16 @@ typedef
   struct {
     GB_BASE ob;
     QWidget *widget;
-    int32_t flag;
+    unsigned short flag;
+    unsigned short _reserved0;
     GB_VARIANT_VALUE _reserved1;
     char *_reserved2;
-    void *_reserved3;
-    int _reserved4;
-    int32_t _reserved5;
-    int32_t _reserved6;
+    char *_reserved3;
+    void *_reserved4;
+    void *_reserved5;
+    void *_reserved6;
+    void *_reserved7;
+    int _reserved8;
     }
   QT_WIDGET;
 
@@ -71,7 +74,7 @@ typedef
   struct {
     QT_WIDGET widget;
     QWidget *container;
-    int32_t arrangement;
+    int arrangement;
     }
   QT_CONTAINER;
 

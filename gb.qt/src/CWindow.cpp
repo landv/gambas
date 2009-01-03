@@ -369,7 +369,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
     CWindow::dict.insert(_object, OBJECT(const CWINDOW));
     CWindow::count = CWindow::dict.count();
 
-    //qDebug("CWindow::count = %d (%p %s)", CWindow::count, _object, THIS->embedded ? "E" : "W");
+    //qDebug("CWindow::count = %d (%p %s %s)", CWindow::count, _object, THIS->widget.name, THIS->embedded ? "E" : "W");
 
     if (CWINDOW_Main == 0)
     {
@@ -1542,7 +1542,7 @@ static void remove_window_check_quit(CWINDOW *ob)
   //  window_main = NULL;
 
   CWindow::count = CWindow::dict.count();
-  //qDebug("~MyMainWindow: CWindow::count = %d (%p %s)", CWindow::count, ob, ob->embedded ? "E" : "W");
+  //qDebug("~MyMainWindow: CWindow::count = %d (%p %s %s)", CWindow::count, ob, ob->widget.name, ob->embedded ? "E" : "W");
 
   MAIN_check_quit();
 }
@@ -2182,8 +2182,8 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 
   //qDebug("closeEvent");
 
-  if (MAIN_in_wait)
-    goto IGNORE;
+  /*if (MAIN_in_wait)
+    goto IGNORE;*/
 
   //if (CWINDOW_Current && (THIS != CWINDOW_Current))
   if (CWINDOW_Current && (THIS->loopLevel != CWINDOW_Current->loopLevel))

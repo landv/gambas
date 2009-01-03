@@ -1,24 +1,24 @@
 /***************************************************************************
 
-  CWidget.cpp
+	CWidget.cpp
 
-  The Control class
+	The Control class
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -79,31 +79,31 @@ static QMap<int, int> _x11_to_qt_keycode;
 
 static void set_mouse(QWidget *w, int mouse, void *cursor)
 {
-  QObjectList children;
-  QObject *child;
-  int i;
+	QObjectList children;
+	QObject *child;
+	int i;
 
-  if (mouse == CMOUSE_DEFAULT)
-    w->unsetCursor();
-  else if (mouse == CMOUSE_CUSTOM)
-  {
-    if (cursor)
-      w->setCursor(*((CCURSOR *)cursor)->cursor);
-    else
-      w->unsetCursor();
-  }
-  else
-    w->setCursor(QCursor((Qt::CursorShape)mouse));
+	if (mouse == CMOUSE_DEFAULT)
+		w->unsetCursor();
+	else if (mouse == CMOUSE_CUSTOM)
+	{
+		if (cursor)
+			w->setCursor(*((CCURSOR *)cursor)->cursor);
+		else
+			w->unsetCursor();
+	}
+	else
+		w->setCursor(QCursor((Qt::CursorShape)mouse));
 
-  children = w->children();
+	children = w->children();
 
 	for (i = 0; i < children.count(); i++)
-  {
-  	child = children.at(i);
-  	
-    if (child->isWidgetType() && !CWidget::getReal(child))
-      set_mouse((QWidget *)child, CMOUSE_DEFAULT, 0);
-  }
+	{
+		child = children.at(i);
+		
+		if (child->isWidgetType() && !CWidget::getReal(child))
+			set_mouse((QWidget *)child, CMOUSE_DEFAULT, 0);
+	}
 }
 
 static void set_design_object(CWIDGET *_object)
@@ -120,23 +120,23 @@ static void set_design_object(CWIDGET *_object)
 
 static void set_design_recursive(QWidget *w, bool set = false)
 {
-  QObjectList children;
-  int i;
-  QObject *child;
-  CWIDGET *ob = CWidget::getReal(w);
+	QObjectList children;
+	int i;
+	QObject *child;
+	CWIDGET *ob = CWidget::getReal(w);
 
 	if (ob)
 		set_design_object(ob);
 
-  children = w->children();
+	children = w->children();
 
-  for (i = 0; i < children.count(); i++)
-  {
-  	child = children.at(i);
-  	
-    if (child->isWidgetType())
-      set_design_recursive((QWidget *)child, true);
-  }
+	for (i = 0; i < children.count(); i++)
+	{
+		child = children.at(i);
+		
+		if (child->isWidgetType())
+			set_design_recursive((QWidget *)child, true);
+	}
 }
 
 static void set_design(CWIDGET *_object)
@@ -191,6 +191,16 @@ static void set_name(CWIDGET *_object, const char *name)
 		GB.NewString(&THIS->name, name, 0);
 }
 
+static CWIDGET *get_parent_control(CWIDGET *_object)
+{
+	QWidget *parent = WIDGET->parentWidget();
+
+	if (!parent || WIDGET->isWindow())
+		return NULL;
+	else
+		return CWidget::get(parent);
+}
+
 void CWIDGET_update_design(CWIDGET *_object)
 {
 	if (!CWIDGET_test_flag(THIS, WF_DESIGN) && !CWIDGET_test_flag(THIS, WF_DESIGN_LEADER))
@@ -213,16 +223,16 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 {
 	QAbstractScrollArea *sa;
 	
-  CWidget::add(w, _object, no_filter);
+	CWidget::add(w, _object, no_filter);
 
-  //qDebug("CWIDGET_new: %p: %p", object, w);
+	//qDebug("CWIDGET_new: %p: %p", object, w);
 
-  THIS->widget = w;
-  THIS->level = MAIN_loop_level;
+	THIS->widget = w;
+	THIS->level = MAIN_loop_level;
 
-  if (!no_init)
-  {
-    THIS->tag.type = GB_T_NULL;
+	if (!no_init)
+	{
+		THIS->tag.type = GB_T_NULL;
 		CWIDGET_init_name(THIS);	
 	}
 
@@ -230,7 +240,7 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	if (sa)
 	{
 		CWIDGET_set_flag(THIS, WF_SCROLLVIEW);
-    //sa->setFrameStyle(QFrame::LineEditPanel + QFrame::Sunken);
+		//sa->setFrameStyle(QFrame::LineEditPanel + QFrame::Sunken);
 	}
 
 	THIS->bg = COLOR_DEFAULT;
@@ -255,43 +265,42 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 
 int CCONTROL_check(void *object)
 {
-  return QWIDGET(object) == NULL;
+	return QWIDGET(object) == NULL || CWIDGET_test_flag(object, WF_DELETED);
 }
 
 
 QString CWIDGET_Utf8ToQString(GB_STRING *str)
 {
-  return QString::fromUtf8((const char *)(str->value.addr + str->value.start), str->value.len);
+	return QString::fromUtf8((const char *)(str->value.addr + str->value.start), str->value.len);
 }
 
 
 void CWIDGET_destroy(CWIDGET *object)
 {
-  if (!object->widget)
-    return;
+	if (!object->widget)
+		return;
 
-  if (CWIDGET_test_flag(object, WF_DELETED))
-    return;
+	if (CWIDGET_test_flag(object, WF_DELETED))
+		return;
 
-  //qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
+	//qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
 
-  /*if (!CWIDGET_destroy_list)
-    CWIDGET_destroy_list = object;
-  else
-  {
-    CWIDGET_destroy_last->next = object;
-    object->prev = CWIDGET_destroy_last;
-  }
+	/*if (!CWIDGET_destroy_list)
+		CWIDGET_destroy_list = object;
+	else
+	{
+		CWIDGET_destroy_last->next = object;
+		object->prev = CWIDGET_destroy_last;
+	}
 
-  CWIDGET_destroy_last = object;*/
+	CWIDGET_destroy_last = object;*/
 
-  CWIDGET_set_flag(object, WF_DELETED);
+	CWIDGET_set_flag(object, WF_DELETED);
 
-  //qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);
+	//qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);
 
-  object->widget->hide();
-  // delete object->widget;
-  object->widget->deleteLater();
+	object->widget->hide();
+	object->widget->deleteLater();
 }
 
 
@@ -306,9 +315,9 @@ void CWIDGET_destroy(CWIDGET *object)
 #if 0
 static QWidget *get_widget(void *_object)
 {
-  QWidget *w = THIS->widget;
-  //if (w->isVisible() && CWIDGET_test_flag(THIS, WF_PARENT_GEOMETRY))
-  //  w = w->parentWidget();
+	QWidget *w = THIS->widget;
+	//if (w->isVisible() && CWIDGET_test_flag(THIS, WF_PARENT_GEOMETRY))
+	//  w = w->parentWidget();
 
 	if (WIDGET->isA("MyMainWindow"))
 	{
@@ -321,13 +330,13 @@ static QWidget *get_widget(void *_object)
 		}
 	}
 
-  return w;
+	return w;
 }
 
 static QWidget *get_widget_resize(void *_object)
 {
-  QWidget *w = THIS->widget;
-  return w;
+	QWidget *w = THIS->widget;
+	return w;
 }
 #endif
 
@@ -336,50 +345,50 @@ static QWidget *get_widget_resize(void *_object)
 
 static void move_widget(void *_object, int x, int y)
 {
-  QWidget *wid = get_widget(THIS);
+	QWidget *wid = get_widget(THIS);
 
 	if (wid)
-  	wid->move(x, y);
+		wid->move(x, y);
 
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->x = x;
-    ((CWINDOW *)_object)->y = y;
-  }
+	if (GB.Is(THIS, CLASS_Window))
+	{
+		((CWINDOW *)_object)->x = x;
+		((CWINDOW *)_object)->y = y;
+	}
 }
 
 
 static void resize_widget(void *_object, int w, int h)
 {
-  QWidget *wid = get_widget_resize(THIS);
+	QWidget *wid = get_widget_resize(THIS);
 
-  if (w < 0 && h < 0)
-    return;
+	if (w < 0 && h < 0)
+		return;
 
-  if (w < 0)
-    w = wid->width();
+	if (w < 0)
+		w = wid->width();
 
-  if (h < 0)
-    h = wid->height();
+	if (h < 0)
+		h = wid->height();
 
 	if (wid)
-  	wid->resize(qMax(0, w), qMax(0, h));
+		wid->resize(qMax(0, w), qMax(0, h));
 
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    //qDebug("resize_widget: %d %d", w, h);
+	if (GB.Is(THIS, CLASS_Window))
+	{
+		//qDebug("resize_widget: %d %d", w, h);
 
-    ((CWINDOW *)_object)->w = w;
-    ((CWINDOW *)_object)->h = h;
-    // menu bar height is ignored
-    //((CWINDOW *)_object)->container->resize(w, h);
-  }
+		((CWINDOW *)_object)->w = w;
+		((CWINDOW *)_object)->h = h;
+		// menu bar height is ignored
+		//((CWINDOW *)_object)->container->resize(w, h);
+	}
 }
 
 
 static void move_resize_widget(void *_object, int x, int y, int w, int h)
 {
-  QWidget *wid = get_widget(THIS);
+	QWidget *wid = get_widget(THIS);
 
 	if (w < 0)
 		w = wid->width();
@@ -390,194 +399,209 @@ static void move_resize_widget(void *_object, int x, int y, int w, int h)
 	if (wid)
 		wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
 
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->x = x;
-    ((CWINDOW *)_object)->y = y;
-    ((CWINDOW *)_object)->w = w;
-    ((CWINDOW *)_object)->h = h;
-    //((CWINDOW *)_object)->container->resize(w, h);
-  }
+	if (GB.Is(THIS, CLASS_Window))
+	{
+		((CWINDOW *)_object)->x = x;
+		((CWINDOW *)_object)->y = y;
+		((CWINDOW *)_object)->w = w;
+		((CWINDOW *)_object)->h = h;
+		//((CWINDOW *)_object)->container->resize(w, h);
+	}
 }
 
 
 BEGIN_PROPERTY(CCONTROL_x)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(COORD(x));
-  else
-  {
-    move_widget(_object, VPROP(GB_INTEGER), COORD(y));
-    /*if (WIDGET->isWindow())
-      qDebug("X: %d ==> X = %d", PROPERTY(int), WIDGET->x());*/
-  }
+	if (READ_PROPERTY)
+		GB.ReturnInteger(COORD(x));
+	else
+	{
+		move_widget(_object, VPROP(GB_INTEGER), COORD(y));
+		/*if (WIDGET->isWindow())
+			qDebug("X: %d ==> X = %d", PROPERTY(int), WIDGET->x());*/
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_screen_x)
 
-  GB.ReturnInteger(WIDGET->mapToGlobal(QPoint(0, 0)).x());
+	GB.ReturnInteger(WIDGET->mapToGlobal(QPoint(0, 0)).x());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_y)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(COORD(y));
-  else
-    move_widget(_object, COORD(x), VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(COORD(y));
+	else
+		move_widget(_object, COORD(x), VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_screen_y)
 
-  GB.ReturnInteger(WIDGET->mapToGlobal(QPoint(0, 0)).y());
+	GB.ReturnInteger(WIDGET->mapToGlobal(QPoint(0, 0)).y());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_w)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(get_widget_resize(THIS)->width());
-  else
-    resize_widget(_object, VPROP(GB_INTEGER), -1);
+	if (READ_PROPERTY)
+		GB.ReturnInteger(get_widget_resize(THIS)->width());
+	else
+		resize_widget(_object, VPROP(GB_INTEGER), -1);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_h)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(get_widget_resize(THIS)->height());
-  else
-    resize_widget(_object, -1, VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(get_widget_resize(THIS)->height());
+	else
+		resize_widget(_object, -1, VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_font)
 
-  CFONT *font;
+	CFONT *font;
+	
+	if (!THIS->font)
+	{
+		THIS->font = CFONT_create(WIDGET->font(), 0, THIS);
+		GB.Ref(THIS->font);
+	}
 
-  if (READ_PROPERTY)
-    GB.ReturnObject(CFONT_create(WIDGET->font(), 0, THIS));
-  else
-  {
-    font = (CFONT *)VPROP(GB_OBJECT);
+	if (READ_PROPERTY)
+	{
+		GB.ReturnObject(THIS->font);
+	}
+	else
+	{
+		font = (CFONT *)VPROP(GB_OBJECT);
 
-    if (font == 0)
-      WIDGET->setFont(QFont());
-    else
-      WIDGET->setFont(*(font->font));
-  }
+		if (!font)
+		{
+			WIDGET->setFont(QFont());
+			GB.Unref(POINTER(&THIS->font));
+			THIS->font = NULL;
+		}
+		else
+		{
+			WIDGET->setFont(*(font->font));
+			*(((CFONT *)THIS->font)->font) = WIDGET->font();
+		}
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_design)
 
-  if (READ_PROPERTY)
-  {
-    GB.ReturnBoolean(CWIDGET_test_flag(_object, WF_DESIGN) || CWIDGET_test_flag(_object, WF_DESIGN_LEADER));
-    return;
-  }
+	if (READ_PROPERTY)
+	{
+		GB.ReturnBoolean(CWIDGET_test_flag(_object, WF_DESIGN) || CWIDGET_test_flag(_object, WF_DESIGN_LEADER));
+		return;
+	}
 
-  if (VPROP(GB_BOOLEAN))
-  {
-    set_design(THIS);
-  	//CWIDGET_set_flag(THIS, WF_DESIGN);
-  }
-  else if (CWIDGET_test_flag(_object, WF_DESIGN) || CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
-    GB.Error("Cannot reset Design property");
+	if (VPROP(GB_BOOLEAN))
+	{
+		set_design(THIS);
+		//CWIDGET_set_flag(THIS, WF_DESIGN);
+	}
+	else if (CWIDGET_test_flag(_object, WF_DESIGN) || CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
+		GB.Error("Cannot reset Design property");
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_enabled)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(QWIDGET(_object)->isEnabled());
-  else
-    QWIDGET(_object)->setEnabled(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(QWIDGET(_object)->isEnabled());
+	else
+		QWIDGET(_object)->setEnabled(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_expand)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS->flag.expand);
-  else
-  {
-  	THIS->flag.expand = VPROP(GB_BOOLEAN);
-    qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
-  }
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->flag.expand);
+	else
+	{
+		THIS->flag.expand = VPROP(GB_BOOLEAN);
+		qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_ignore)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS->flag.ignore);
-  else
-  {
-  	THIS->flag.ignore = VPROP(GB_BOOLEAN);
-    qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
-  }
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->flag.ignore);
+	else
+	{
+		THIS->flag.ignore = VPROP(GB_BOOLEAN);
+		qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
+	}
 
 END_PROPERTY
 
 
 BEGIN_METHOD(CCONTROL_move, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-  move_resize_widget(_object, VARG(x), VARG(y), VARGOPT(w, -1), VARGOPT(h, -1));
+	move_resize_widget(_object, VARG(x), VARG(y), VARGOPT(w, -1), VARGOPT(h, -1));
 
 END_METHOD
 
 
 BEGIN_METHOD(CCONTROL_resize, GB_INTEGER w; GB_INTEGER h)
 
-  resize_widget(_object, VARG(w), VARG(h));
+	resize_widget(_object, VARG(w), VARG(h));
 
 END_METHOD
 
 
 BEGIN_METHOD(CCONTROL_move_scaled, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 
-  int x, y, w, h;
+	int x, y, w, h;
 
-  x = (int)(VARG(x) * MAIN_scale);
-  y = (int)(VARG(y) * MAIN_scale);
-  w = (int)(MISSING(w) ? -1 : (VARG(w) * MAIN_scale));
-  h = (int)(MISSING(h) ? -1 : (VARG(h) * MAIN_scale));
+	x = (int)(VARG(x) * MAIN_scale);
+	y = (int)(VARG(y) * MAIN_scale);
+	w = (int)(MISSING(w) ? -1 : (VARG(w) * MAIN_scale));
+	h = (int)(MISSING(h) ? -1 : (VARG(h) * MAIN_scale));
 
-  move_resize_widget(_object, x, y, w, h);
+	move_resize_widget(_object, x, y, w, h);
 
 END_METHOD
 
 
 BEGIN_METHOD(CCONTROL_resize_scaled, GB_FLOAT w; GB_FLOAT h)
 
-  int w, h;
+	int w, h;
 
-  w = (int)(VARG(w) * MAIN_scale);
-  h = (int)(VARG(h) * MAIN_scale);
+	w = (int)(VARG(w) * MAIN_scale);
+	h = (int)(VARG(h) * MAIN_scale);
 
-  resize_widget(_object, w , h);
+	resize_widget(_object, w , h);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCONTROL_delete)
 
-  //if (WIDGET)
-  //  qDebug("CWIDGET_delete: %p (%p)", THIS, WIDGET);
+	//if (WIDGET)
+	//  qDebug("CWIDGET_delete: %p (%p)", THIS, WIDGET);
 
-  CWIDGET_destroy(THIS);
+	CWIDGET_destroy(THIS);
 
 END_METHOD
 
@@ -600,10 +624,10 @@ static void set_visible(void *_object, bool v)
 
 BEGIN_PROPERTY(CCONTROL_visible)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(is_visible(THIS));
-  else
-  	set_visible(THIS, VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(is_visible(THIS));
+	else
+		set_visible(THIS, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -624,14 +648,14 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCONTROL_raise)
 
-  QWIDGET(_object)->raise();
+	QWIDGET(_object)->raise();
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCONTROL_lower)
 
-  QWIDGET(_object)->lower();
+	QWIDGET(_object)->lower();
 
 END_METHOD
 
@@ -749,84 +773,84 @@ END_PROPERTY
 
 BEGIN_METHOD(CCONTROL_refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-  int x, y, w, h;
+	int x, y, w, h;
 
-  if (!MISSING(x) && !MISSING(y))
-  {
-    x = VARG(x);
-    y = VARG(y);
-    w = VARGOPT(w, QWIDGET(_object)->width());
-    h = VARGOPT(h, QWIDGET(_object)->height());
-    QWIDGET(_object)->repaint(x, y, w, h);
-  }
-  else
-    QWIDGET(_object)->repaint();
+	if (!MISSING(x) && !MISSING(y))
+	{
+		x = VARG(x);
+		y = VARG(y);
+		w = VARGOPT(w, QWIDGET(_object)->width());
+		h = VARGOPT(h, QWIDGET(_object)->height());
+		QWIDGET(_object)->repaint(x, y, w, h);
+	}
+	else
+		QWIDGET(_object)->repaint();
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCONTROL_set_focus)
 
-  CWINDOW *win = CWidget::getWindow(THIS);
+	CWINDOW *win = CWidget::getWindow(THIS);
 
-  if (QWIDGET(win)->isVisible())
-    WIDGET->setFocus();
-  else if ((CWIDGET *)win != THIS)
-  {
-    GB.Unref(POINTER(&win->focus));
-    win->focus = THIS;
-    GB.Ref(THIS);
-  }
+	if (QWIDGET(win)->isVisible())
+		WIDGET->setFocus();
+	else if ((CWIDGET *)win != THIS)
+	{
+		GB.Unref(POINTER(&win->focus));
+		win->focus = THIS;
+		GB.Ref(THIS);
+	}
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CCONTROL_tag)
 
-  if (READ_PROPERTY)
-    GB.ReturnPtr(GB_T_VARIANT, &OBJECT(CWIDGET)->tag);
-  else
-  {
-    GB.StoreVariant(PROP(GB_VARIANT), (void *)&(OBJECT(CWIDGET)->tag));
-    //printf("Set Tag %p : %i\n", _object, OBJECT(CWIDGET)->tag.type);
-  }
+	if (READ_PROPERTY)
+		GB.ReturnPtr(GB_T_VARIANT, &OBJECT(CWIDGET)->tag);
+	else
+	{
+		GB.StoreVariant(PROP(GB_VARIANT), (void *)&(OBJECT(CWIDGET)->tag));
+		//printf("Set Tag %p : %i\n", _object, OBJECT(CWIDGET)->tag.type);
+	}
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CCONTROL_mouse)
 
-  QWidget *wid = QWIDGET(_object);
-  int shape;
+	QWidget *wid = QWIDGET(_object);
+	int shape;
 
-  if (READ_PROPERTY)
-  {
-    if (wid->testAttribute(Qt::WA_SetCursor))
-    {
-      shape = wid->cursor().shape();
-      if (shape == Qt::BitmapCursor)
-        GB.ReturnInteger(CMOUSE_CUSTOM);
-      else
-        GB.ReturnInteger(shape);
-    }
-    else
-      GB.ReturnInteger(CMOUSE_DEFAULT);
-  }
-  else
-    set_mouse(wid, VPROP(GB_INTEGER), THIS->cursor);
+	if (READ_PROPERTY)
+	{
+		if (wid->testAttribute(Qt::WA_SetCursor))
+		{
+			shape = wid->cursor().shape();
+			if (shape == Qt::BitmapCursor)
+				GB.ReturnInteger(CMOUSE_CUSTOM);
+			else
+				GB.ReturnInteger(shape);
+		}
+		else
+			GB.ReturnInteger(CMOUSE_DEFAULT);
+	}
+	else
+		set_mouse(wid, VPROP(GB_INTEGER), THIS->cursor);
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CCONTROL_cursor)
 
-  if (READ_PROPERTY)
-    GB.ReturnObject(THIS->cursor);
-  else
-  {
-    GB.StoreObject(PROP(GB_OBJECT), &THIS->cursor);
-    set_mouse(WIDGET, CMOUSE_CUSTOM, THIS->cursor);
-  }
+	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->cursor);
+	else
+	{
+		GB.StoreObject(PROP(GB_OBJECT), &THIS->cursor);
+		set_mouse(WIDGET, CMOUSE_CUSTOM, THIS->cursor);
+	}
 
 END_PROPERTY
 
@@ -836,57 +860,57 @@ END_PROPERTY
 /*
 static QColor get_background(CWIDGET *_object, QWidget *wid)
 {
-  QPalette pal(wid->palette());
-  QColorGroup::ColorRole role = (QColorGroup::ColorRole)OBJECT(CWIDGET)->background;
+	QPalette pal(wid->palette());
+	QColorGroup::ColorRole role = (QColorGroup::ColorRole)OBJECT(CWIDGET)->background;
 
-  return pal.color(QPalette::Active, role);
+	return pal.color(QPalette::Active, role);
 }
 
 static void test_color(CWIDGET *_object, QWidget *wid)
 {
-  QColor b, f, bp, fp;
+	QColor b, f, bp, fp;
 
-  if (!wid->ownPalette() || !wid->parentWidget())
-    return;
+	if (!wid->ownPalette() || !wid->parentWidget())
+		return;
 
-  f = wid->paletteForegroundColor();
-  fp = wid->parentWidget()->paletteForegroundColor();
+	f = wid->paletteForegroundColor();
+	fp = wid->parentWidget()->paletteForegroundColor();
 
-  if (f != fp)
-    return;
+	if (f != fp)
+		return;
 
-  b = get_background(_object, wid);
-  bp = get_background(CWidget::get(wid->parentWidget()), wid->parentWidget());
+	b = get_background(_object, wid);
+	bp = get_background(CWidget::get(wid->parentWidget()), wid->parentWidget());
 
-  if (b != bp)
-    return;
+	if (b != bp)
+		return;
 
-  wid->unsetPalette();
+	wid->unsetPalette();
 }
 */
 
 BEGIN_PROPERTY(CWIDGET_background)
 
-  QWidget *wid = QWIDGET(_object);
-  QPalette pal(wid->palette());
-  QColorGroup::ColorRole role = (QColorGroup::ColorRole)OBJECT(CWIDGET)->background;
+	QWidget *wid = QWIDGET(_object);
+	QPalette pal(wid->palette());
+	QColorGroup::ColorRole role = (QColorGroup::ColorRole)OBJECT(CWIDGET)->background;
 
-  //qDebug("bm = %d (%d %d)", wid->backgroundMode(), QWidget::PaletteButton, QWidget::PaletteBase);
+	//qDebug("bm = %d (%d %d)", wid->backgroundMode(), QWidget::PaletteButton, QWidget::PaletteBase);
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(pal.color(QPalette::Active, role).rgb() & 0xFFFFFF);
-  else
-  {
-    pal.setColor(role, QColor((QRgb)VPROP(GB_INTEGER)));
-    wid->setPalette(pal);
-    //test_color((CWIDGET *)_object, wid);
-  }
+	if (READ_PROPERTY)
+		GB.ReturnInteger(pal.color(QPalette::Active, role).rgb() & 0xFFFFFF);
+	else
+	{
+		pal.setColor(role, QColor((QRgb)VPROP(GB_INTEGER)));
+		wid->setPalette(pal);
+		//test_color((CWIDGET *)_object, wid);
+	}
 
 #if 0
-  if (READ_PROPERTY)
-    GB.ReturnInteger((int)(WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF));
-  else
-    WIDGET->setPaletteBackgroundColor(QColor((QRgb)PROPERTY(int)));
+	if (READ_PROPERTY)
+		GB.ReturnInteger((int)(WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF));
+	else
+		WIDGET->setPaletteBackgroundColor(QColor((QRgb)PROPERTY(int)));
 #endif
 
 END_PROPERTY
@@ -894,27 +918,27 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWIDGET_foreground)
 
-  QWidget *wid;
+	QWidget *wid;
 
-  if (GB.Is(_object, GB.FindClass("Container")))
-    wid = ((CCONTAINER *)_object)->container;
-  else
-    wid = QWIDGET(_object);
+	if (GB.Is(_object, GB.FindClass("Container")))
+		wid = ((CCONTAINER *)_object)->container;
+	else
+		wid = QWIDGET(_object);
 
-  if (READ_PROPERTY)
-  {
-    GB.ReturnInteger((int)(wid->paletteForegroundColor().rgb() & 0xFFFFFF));
-    return;
-  }
-  else
-  {
-    QPalette pal(QWIDGET(_object)->palette());
+	if (READ_PROPERTY)
+	{
+		GB.ReturnInteger((int)(wid->paletteForegroundColor().rgb() & 0xFFFFFF));
+		return;
+	}
+	else
+	{
+		QPalette pal(QWIDGET(_object)->palette());
 
-    pal.setColor(QColorGroup::Foreground, QColor((QRgb)VPROP(GB_INTEGER)));
-    pal.setColor(QColorGroup::Text, QColor((QRgb)VPROP(GB_INTEGER)));
-    wid->setPalette(pal);
-    //test_color((CWIDGET *)_object, wid);
-  }
+		pal.setColor(QColorGroup::Foreground, QColor((QRgb)VPROP(GB_INTEGER)));
+		pal.setColor(QColorGroup::Text, QColor((QRgb)VPROP(GB_INTEGER)));
+		wid->setPalette(pal);
+		//test_color((CWIDGET *)_object, wid);
+	}
 
 END_PROPERTY
 #endif
@@ -927,34 +951,88 @@ static QWidget *get_color_widget(QWidget *w)
 		return w;
 }
 
-void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
+int get_real_background(CWIDGET *_object)
 {
+	CWIDGET *parent = get_parent_control(THIS);
+	if (THIS->bg == COLOR_DEFAULT && parent)
+		return get_real_background(parent);
+	else
+		return THIS->bg;
+}
+
+int get_real_foreground(CWIDGET *_object)
+{
+	CWIDGET *parent = get_parent_control(THIS);
+	if (THIS->fg == COLOR_DEFAULT && parent)
+		return get_real_foreground(parent);
+	else
+		return THIS->fg;
+}
+
+void CWIDGET_reset_color(CWIDGET *_object)
+{
+	int fg, bg;
 	QPalette palette;
 	QWidget *w = get_color_widget(WIDGET);
 	
 	//qDebug("set_color: (%s %p) bg = %06X (%d) fg = %06X (%d)", GB.GetClassName(THIS), THIS, bg, w->backgroundRole(), fg, w->foregroundRole());
 	
-	THIS->bg = bg;
-  THIS->fg = fg;
-  
-  if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
-  	w->setPalette(QPalette());
-  else
-  {
+	if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
+	{
+		CWIDGET *parent = get_parent_control(THIS);
+		if (parent)
+			w->setPalette(parent->widget->palette());
+		else
+			w->setPalette(QPalette());
+	}
+	else
+	{
 		palette = w->palette();
+		bg = THIS->bg;
+		fg = THIS->fg;
+		
+		if (bg == COLOR_DEFAULT)
+			bg = get_real_background(THIS);
+	
+		if (fg == COLOR_DEFAULT)
+			fg = get_real_foreground(THIS);
 	
 		if (bg != COLOR_DEFAULT)
+		{
 			palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
+			if (GB.Is(THIS, CLASS_Container))
+			{
+				palette.setColor(QPalette::Window, QColor((QRgb)bg));
+				palette.setColor(QPalette::Base, QColor((QRgb)bg));
+				palette.setColor(QPalette::Button, QColor((QRgb)bg));
+			}
+		}
 		
 		if (fg != COLOR_DEFAULT)
+		{
 			palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
+			if (GB.Is(THIS, CLASS_Container))
+			{
+				palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
+				palette.setColor(QPalette::Text, QColor((QRgb)fg));
+				palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));
+			}
+		}
 			
 		w->setPalette(palette);
 	}	
-  
-  //if (!THIS->flag.fillBackground)
-  w->setAutoFillBackground(THIS->flag.fillBackground || THIS->bg != COLOR_DEFAULT);
+	
+	//if (!THIS->flag.fillBackground)
+	w->setAutoFillBackground(THIS->flag.fillBackground || THIS->bg != COLOR_DEFAULT);
 }
+
+void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
+{
+	THIS->bg = bg;
+	THIS->fg = fg;
+	CWIDGET_reset_color(THIS);
+}
+
 
 int CWIDGET_get_background(CWIDGET *_object)
 {
@@ -984,54 +1062,48 @@ int CWIDGET_get_foreground(CWIDGET *_object)
 	
 BEGIN_PROPERTY(CCONTROL_background)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(CWIDGET_get_background(THIS));
-  else
-  {
-  	int col = VPROP(GB_INTEGER);
-  	if (col != CWIDGET_get_background(THIS))
+	if (READ_PROPERTY)
+		GB.ReturnInteger(CWIDGET_get_background(THIS));
+	else
+	{
+		int col = VPROP(GB_INTEGER);
+		if (col != CWIDGET_get_background(THIS))
 			CWIDGET_set_color(THIS, col, CWIDGET_get_foreground(THIS));
-  }
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_foreground)
 
-  if (READ_PROPERTY)
-    GB.ReturnInteger(CWIDGET_get_foreground(THIS));
-  else
-  {
-  	int col = VPROP(GB_INTEGER);
-  	if (col != CWIDGET_get_foreground(THIS))
+	if (READ_PROPERTY)
+		GB.ReturnInteger(CWIDGET_get_foreground(THIS));
+	else
+	{
+		int col = VPROP(GB_INTEGER);
+		if (col != CWIDGET_get_foreground(THIS))
 			CWIDGET_set_color(THIS, CWIDGET_get_background(THIS), col);
 	}
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(CCONTROL_parent)
 
-  QWidget *parent = QWIDGET(_object)->parentWidget();
-
-  if (!parent || WIDGET->isWindow())
-    GB.ReturnObject(NULL);
-  else
-    GB.ReturnObject(CWidget::get(parent));
+	GB.ReturnObject(get_parent_control(THIS));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_window)
 
-  GB.ReturnObject(CWidget::getWindow(THIS));
+	GB.ReturnObject(CWidget::getWindow(THIS));
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CCONTROL_id)
 
-  GB.ReturnInteger((int)WIDGET->winId());
+	GB.ReturnInteger((int)WIDGET->winId());
 
 END_PROPERTY
 
@@ -1061,19 +1133,19 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_tooltip)
 
-  //QWidget *w;
+	//QWidget *w;
 
-  if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->toolTip()));
-  else
-  {
-    //GB.StoreString(PROP(GB_STRING), &(THIS->tooltip));
-    /*w = WIDGET;
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(WIDGET->toolTip()));
+	else
+	{
+		//GB.StoreString(PROP(GB_STRING), &(THIS->tooltip));
+		/*w = WIDGET;
 		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
 			w = ((QScrollView *)w)->viewport();*/
 		//CWidget::resetTooltip(THIS);
 		WIDGET->setToolTip(QSTRING_PROP());
-  }
+	}
 
 END_PROPERTY
 
@@ -1100,14 +1172,14 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CCONTROL_grab)
 
-  GB.ReturnObject(CPICTURE_grab(QWIDGET(_object)));
+	GB.ReturnObject(CPICTURE_grab(QWIDGET(_object)));
 
 END_METHOD
 
 
 BEGIN_METHOD(CCONTROL_drag, GB_VARIANT data; GB_STRING format)
 
-  CDRAG_drag(OBJECT(CWIDGET), &VARG(data), MISSING(format) ? NULL : ARG(format));
+	CDRAG_drag(OBJECT(CWIDGET), &VARG(data), MISSING(format) ? NULL : ARG(format));
 
 END_METHOD
 
@@ -1135,13 +1207,13 @@ END_METHOD
 
 BEGIN_PROPERTY(CCONTROL_drop)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->acceptDrops());
-  else
-  {
-    WIDGET->setAcceptDrops(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->acceptDrops());
+	else
+	{
+		WIDGET->setAcceptDrops(VPROP(GB_BOOLEAN));
 		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
-    	((QAbstractScrollArea *)WIDGET)->viewport()->setAcceptDrops(VPROP(GB_BOOLEAN));
+			((QAbstractScrollArea *)WIDGET)->viewport()->setAcceptDrops(VPROP(GB_BOOLEAN));
 	}
 
 END_PROPERTY
@@ -1149,81 +1221,81 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWIDGET_border_full)
 
-  QFrame *wid = (QFrame *)QWIDGET(_object);
-  int border, lw;
+	QFrame *wid = (QFrame *)QWIDGET(_object);
+	int border, lw;
 
-  if (READ_PROPERTY)
-  {
-    if (wid->frameStyle() == (QFrame::Box + QFrame::Plain))
-      border = BORDER_PLAIN;
-    else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Sunken))
-      border = BORDER_SUNKEN;
-    else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Raised))
-      border = BORDER_RAISED;
-    else if (wid->frameStyle() == (QFrame::Box + QFrame::Sunken))
-      border = BORDER_ETCHED;
-    else
-      border = BORDER_NONE;
+	if (READ_PROPERTY)
+	{
+		if (wid->frameStyle() == (QFrame::Box + QFrame::Plain))
+			border = BORDER_PLAIN;
+		else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Sunken))
+			border = BORDER_SUNKEN;
+		else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Raised))
+			border = BORDER_RAISED;
+		else if (wid->frameStyle() == (QFrame::Box + QFrame::Sunken))
+			border = BORDER_ETCHED;
+		else
+			border = BORDER_NONE;
 
-    GB.ReturnInteger(border);
-  }
-  else
-  {
-    lw = 1;
+		GB.ReturnInteger(border);
+	}
+	else
+	{
+		lw = 1;
 
-    switch (VPROP(GB_INTEGER))
-    {
-      case BORDER_PLAIN: border = QFrame::Box + QFrame::Plain; break;
-      case BORDER_SUNKEN: border = QFrame::StyledPanel + QFrame::Sunken; lw = 2; break;
-      case BORDER_RAISED: border = QFrame::StyledPanel + QFrame::Raised; lw = 2; break;
-      case BORDER_ETCHED: border = QFrame::Box + QFrame::Sunken; break;
-      default: border = QFrame::NoFrame; break;
-    }
+		switch (VPROP(GB_INTEGER))
+		{
+			case BORDER_PLAIN: border = QFrame::Box + QFrame::Plain; break;
+			case BORDER_SUNKEN: border = QFrame::StyledPanel + QFrame::Sunken; lw = 2; break;
+			case BORDER_RAISED: border = QFrame::StyledPanel + QFrame::Raised; lw = 2; break;
+			case BORDER_ETCHED: border = QFrame::Box + QFrame::Sunken; break;
+			default: border = QFrame::NoFrame; break;
+		}
 
-    wid->setFrameStyle(border);
-    wid->setLineWidth(lw);
-    wid->repaint();
-  }
+		wid->setFrameStyle(border);
+		wid->setLineWidth(lw);
+		wid->repaint();
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CWIDGET_border_simple)
 
-  QFrame *wid = (QFrame *)QWIDGET(_object);
+	QFrame *wid = (QFrame *)QWIDGET(_object);
 
-  if (READ_PROPERTY)
-  {
-    GB.ReturnBoolean(wid->frameStyle() != QFrame::NoFrame);
-  }
-  else
-  {
-    //qDebug("frameStyle = %d", wid->frameStyle());
+	if (READ_PROPERTY)
+	{
+		GB.ReturnBoolean(wid->frameStyle() != QFrame::NoFrame);
+	}
+	else
+	{
+		//qDebug("frameStyle = %d", wid->frameStyle());
 
-    if (VPROP(GB_BOOLEAN))
-    {
-      wid->setFrameStyle(QFrame::StyledPanel + QFrame::Sunken);
-      //wid->setFrameStyle(QFrame::LineEditPanel);
-      //wid->setLineWidth(2);
-    }
-    else
-    {
-      wid->setFrameStyle(QFrame::NoFrame);
-    }
+		if (VPROP(GB_BOOLEAN))
+		{
+			wid->setFrameStyle(QFrame::StyledPanel + QFrame::Sunken);
+			//wid->setFrameStyle(QFrame::LineEditPanel);
+			//wid->setLineWidth(2);
+		}
+		else
+		{
+			wid->setFrameStyle(QFrame::NoFrame);
+		}
 
-    //qDebug("--> %d", wid->frameStyle());
+		//qDebug("--> %d", wid->frameStyle());
 
-    wid->repaint();
-  }
+		wid->repaint();
+	}
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CWIDGET_scrollbar)
 
-  QAbstractScrollArea *wid = qobject_cast<QAbstractScrollArea *>(WIDGET);
-  Q3ScrollView *sw = qobject_cast<Q3ScrollView *>(WIDGET);
-  int scroll;
+	QAbstractScrollArea *wid = qobject_cast<QAbstractScrollArea *>(WIDGET);
+	Q3ScrollView *sw = qobject_cast<Q3ScrollView *>(WIDGET);
+	int scroll;
 
 	if (wid)
 	{
@@ -1281,118 +1353,112 @@ bool haveChildren;
 
 void CWidget::installFilter(QObject *o)
 {
-  QObjectList *children;
-  QObject *child;
+	QObjectList *children;
+	QObject *child;
 
-  children = (QObjectList *)(o->children());
+	children = (QObjectList *)(o->children());
 
-  o->installEventFilter(&manager);
+	o->installEventFilter(&manager);
 
-  if (!children)
-    return;
+	if (!children)
+		return;
 
-  child = children->first();
-  while (child)
-  {
-    if (child->isWidgetType())
-    {
-      haveChildren = true;
-      CWidget::installFilter(child);
-    }
+	child = children->first();
+	while (child)
+	{
+		if (child->isWidgetType())
+		{
+			haveChildren = true;
+			CWidget::installFilter(child);
+		}
 
-    child = children->next();
-  }
+		child = children->next();
+	}
 }
 
 void CWidget::removeFilter(QObject *o)
 {
-  QObjectList *children = (QObjectList *)(o->children());
-  QObject *child;
+	QObjectList *children = (QObjectList *)(o->children());
+	QObject *child;
 
-  if (!o->isWidgetType())
-    return;
+	if (!o->isWidgetType())
+		return;
 
-  o->removeEventFilter(&manager);
+	o->removeEventFilter(&manager);
 
-  if (!children)
-    return;
+	if (!children)
+		return;
 
-  child = children->first();
-  while (child)
-  {
-    CWidget::removeFilter(child);
-    child = children->next();
-  }
+	child = children->first();
+	while (child)
+	{
+		CWidget::removeFilter(child);
+		child = children->next();
+	}
 }
 #endif
 
 void CWidget::removeFocusPolicy(QWidget *w)
 {
-  QObjectList children;
-  int i;
-  QObject *child;
+	QObjectList children;
+	int i;
+	QObject *child;
 
-  w->clearFocus();
-  w->setFocusPolicy(Qt::NoFocus);
+	w->clearFocus();
+	w->setFocusPolicy(Qt::NoFocus);
 
-  children = w->children();
+	children = w->children();
 
-  for (i = 0; i < children.count(); i++)
-  {
-  	child = children.at(i);
-  	
-    if (child->isWidgetType())
-      CWidget::removeFocusPolicy((QWidget *)child);
-  }
+	for (i = 0; i < children.count(); i++)
+	{
+		child = children.at(i);
+		
+		if (child->isWidgetType())
+			CWidget::removeFocusPolicy((QWidget *)child);
+	}
 }
 
 
 void CWidget::add(QObject *o, void *object, bool no_filter)
 {
-  //if (!no_filter)
-  QObject::connect(o, SIGNAL(destroyed()), &manager, SLOT(destroy()));
+	//if (!no_filter)
+	QObject::connect(o, SIGNAL(destroyed()), &manager, SLOT(destroy()));
 
-  dict.insert(o, (CWIDGET *)object);
+	dict.insert(o, (CWIDGET *)object);
 
 	/*
-  if (!no_filter)
-  {
-    haveChildren = false;
-    CWidget::installFilter(o);
-    if (haveChildren)
-      CWIDGET_set_flag(object, WF_NO_EVENT);
-  }
-  */
+	if (!no_filter)
+	{
+		haveChildren = false;
+		CWidget::installFilter(o);
+		if (haveChildren)
+			CWIDGET_set_flag(object, WF_NO_EVENT);
+	}
+	*/
 
-  GB.Ref(object);
+	GB.Ref(object);
 }
 
 
 
 CWIDGET *CWidget::get(QObject *o)
 {
-  CWIDGET *ob;
+	CWIDGET *ob;
 
-  real = true;
+	real = true;
 
-  while (o)
-  {
-    ob = dict[o];
-    if (ob != NULL)
-      return ob;
+	while (o)
+	{
+		ob = dict[o];
+		if (ob != NULL)
+			return ob;
 
-    o = o->parent();
-    real = false;
-  }
+		o = o->parent();
+		real = false;
+	}
 
-  return NULL;
+	return NULL;
 }
-
-CWIDGET *CWidget::getReal(QObject *o)
-{
-  return dict[o];
-}
-
 
 CWIDGET *CWidget::getRealExisting(QObject *o)
 {
@@ -1407,39 +1473,39 @@ CWIDGET *CWidget::getRealExisting(QObject *o)
 
 CWIDGET *CWidget::getDesign(QObject *o)
 {
-  CWIDGET *ob;
+	CWIDGET *ob;
 
 	if (!o->isWidgetType())
 		return NULL;
 
-  real = true;
+	real = true;
 
-  while (o)
-  {
-    ob = dict[o];
-    if (ob)
-    	break;
+	while (o)
+	{
+		ob = dict[o];
+		if (ob)
+			break;
 
-    o = o->parent();
-    real = false;
-  }
+		o = o->parent();
+		real = false;
+	}
 
-  if (!o)
-  	return NULL;
+	if (!o)
+		return NULL;
 
- 	if (!CWIDGET_test_flag(ob, WF_DESIGN))
-	  return ob;
+	if (!CWIDGET_test_flag(ob, WF_DESIGN))
+		return ob;
 
-  while (o)
-  {
-    ob = dict[o];
-    if (ob && CWIDGET_test_flag(ob, WF_DESIGN_LEADER))
-    	return ob;
+	while (o)
+	{
+		ob = dict[o];
+		if (ob && CWIDGET_test_flag(ob, WF_DESIGN_LEADER))
+			return ob;
 
-    o = o->parent();
-  }
+		o = o->parent();
+	}
 
-  return NULL;
+	return NULL;
 }
 
 /*
@@ -1447,62 +1513,62 @@ static void debugObject(void *ob)
 {
 	if (!ob)
 		return;
- 	qDebug("  (%s %p) %s%s", ob ? GB.GetClassName(ob) : "", ob, CWIDGET_test_flag(ob, WF_DESIGN) ? "D" : "", CWIDGET_test_flag(ob, WF_DESIGN_LEADER) ? "L" : "");
+	qDebug("  (%s %p) %s%s", ob ? GB.GetClassName(ob) : "", ob, CWIDGET_test_flag(ob, WF_DESIGN) ? "D" : "", CWIDGET_test_flag(ob, WF_DESIGN_LEADER) ? "L" : "");
 }
 */
 
 #if 0
 static CWIDGET *getDesignDebug(QObject *o)
 {
-  CWIDGET *ob;
+	CWIDGET *ob;
 
 	if (!o->isWidgetType())
 		return NULL;
 
-  while (o)
-  {
-    ob = CWidget::getReal(o);
+	while (o)
+	{
+		ob = CWidget::getReal(o);
 		debugObject(ob);
-    if (ob)
-    	break;
+		if (ob)
+			break;
 
-    o = o->parent();
-  }
+		o = o->parent();
+	}
 
-  if (!o)
-  	return NULL;
+	if (!o)
+		return NULL;
 
- 	if (!CWIDGET_test_flag(ob, WF_DESIGN))
-	  return ob;
+	if (!CWIDGET_test_flag(ob, WF_DESIGN))
+		return ob;
 
-  while (o)
-  {
-    ob = CWidget::getReal(o);
+	while (o)
+	{
+		ob = CWidget::getReal(o);
 		debugObject(ob);
-    if (ob && CWIDGET_test_flag(ob, WF_DESIGN_LEADER))
-    	return ob;
+		if (ob && CWIDGET_test_flag(ob, WF_DESIGN_LEADER))
+			return ob;
 
-    o = o->parent();
-  }
+		o = o->parent();
+	}
 
-  return NULL;
+	return NULL;
 }
 #endif
 
 QWidget *CWidget::getContainerWidget(CCONTAINER *object)
 {
-  if (GB.CheckObject(object))
-    GB.Propagate();
+	if (GB.CheckObject(object))
+		GB.Propagate();
 
-  if (object->container == NULL)
-  {
-    GB.Error("Null container");
-    GB.Propagate();
-  }
+	if (object->container == NULL)
+	{
+		GB.Error("Null container");
+		GB.Propagate();
+	}
 
-  //qDebug("Container = %p", object->container);
+	//qDebug("Container = %p", object->container);
 
-  return (object->container);
+	return (object->container);
 }
 
 CWINDOW *CWidget::getWindow(CWIDGET *ob)
@@ -1542,160 +1608,162 @@ CWINDOW *CWidget::getTopLevel(CWIDGET *ob)
 #if 0
 void CWidget::setName(CWIDGET *object, const char *name)
 {
-  QWidget *w = QWIDGET(object);
-  CTOPLEVEL *top = (CTOPLEVEL *)CWidget::get(w->topLevelWidget());
+	QWidget *w = QWIDGET(object);
+	CTOPLEVEL *top = (CTOPLEVEL *)CWidget::get(w->topLevelWidget());
 
-  if (QWIDGET(top) == w)
-    return;
+	if (QWIDGET(top) == w)
+		return;
 
-  if (w->name() != NULL)
-  {
-    /*qDebug("- %s", w->name());*/
-    top->dict->remove(w->name());
-  }
+	if (w->name() != NULL)
+	{
+		/*qDebug("- %s", w->name());*/
+		top->dict->remove(w->name());
+	}
 
-  if (name != NULL)
-  {
-    top->dict->insert((const char *)name, object);
-    w->setName(name);
-    /*qDebug("+ %s", w->name());*/
-  }
+	if (name != NULL)
+	{
+		top->dict->insert((const char *)name, object);
+		w->setName(name);
+		/*qDebug("+ %s", w->name());*/
+	}
 }
 #endif
 
 void CWidget::destroy()
 {
-  QWidget *w = (QWidget *)sender();
-  CWIDGET *ob = CWidget::get(w);
-  QEvent e(EVENT_DESTROY);
+	QWidget *w = (QWidget *)sender();
+	CWIDGET *ob = CWidget::get(w);
 
-  //qDebug(">> CWidget::destroy (%s %p)", GB.GetClassName(ob), ob);
+	//qDebug(">> CWidget::destroy (%s %p)", GB.GetClassName(ob), ob);
 
-  if (ob == NULL)
-    return;
+	if (ob == NULL)
+		return;
+	
+	QEvent e(EVENT_DESTROY);
 
-  if (enter == ob)
-    enter = NULL;
+	if (enter == ob)
+		enter = NULL;
 
 	set_name(ob, 0);
 
-  dict.remove(w);
-  QWIDGET(ob) = NULL;
+	dict.remove(w);
+	QWIDGET(ob) = NULL;
 
-  GB.StoreVariant(NULL, &ob->tag);
-  GB.Unref(POINTER(&ob->cursor));
-
+	GB.StoreVariant(NULL, &ob->tag);
+	GB.Unref(POINTER(&ob->cursor));
+	GB.Unref(POINTER(&ob->font));
+	
 	CACTION_register(ob, NULL);
-  //qDebug(">> CWidget::destroy %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
-  //if (!CWIDGET_test_flag(ob, WF_NODETACH))
-  GB.Detach(ob);
+	//qDebug(">> CWidget::destroy %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
+	//if (!CWIDGET_test_flag(ob, WF_NODETACH))
+	GB.Detach(ob);
 
-  qApp->sendEvent(w, &e);
-  //qDebug("<< CWidget::destroy %p (%p)", ob, ob->widget);
+	qApp->sendEvent(w, &e);
+	//qDebug("<< CWidget::destroy %p (%p)", ob, ob->widget);
 
-  GB.Unref(POINTER(&ob));
+	GB.Unref(POINTER(&ob));
 }
 
 static void post_dblclick_event(void *control)
 {
-  GB.Raise(control, EVENT_DblClick, 0);
-  GB.Unref(&control);
+	GB.Raise(control, EVENT_DblClick, 0);
+	GB.Unref(&control);
 }
 
 static void post_gotfocus_event(void *_object)
 {
 	if (WIDGET && WIDGET->hasFocus())
-  	GB.Raise(THIS, EVENT_GotFocus, 0);
-  GB.Unref(&_object);
+		GB.Raise(THIS, EVENT_GotFocus, 0);
+	GB.Unref(&_object);
 }
 
 static void post_lostfocus_event(void *control)
 {
-  GB.Raise(control, EVENT_LostFocus, 0);
-  GB.Unref(&control);
+	GB.Raise(control, EVENT_LostFocus, 0);
+	GB.Unref(&control);
 }
 
 
 bool CWidget::eventFilter(QObject *widget, QEvent *event)
 {
-  CWIDGET *control;
-  int event_id;
-  int type = event->type();
-  bool real;
-  bool design;
-  bool original;
-  int state;
-  bool cancel;
-  QPoint p;
+	CWIDGET *control;
+	int event_id;
+	int type = event->type();
+	bool real;
+	bool design;
+	bool original;
+	int state;
+	bool cancel;
+	QPoint p;
 
 	//if (widget->isA("MyMainWindow"))
 	//	getDesignDebug(widget);
 
-  control = CWidget::getDesign(widget);
-  if (!control || GB.Is(control, CLASS_Menu))
-    goto _STANDARD;
+	control = CWidget::getDesign(widget);
+	if (!control || GB.Is(control, CLASS_Menu))
+		goto _STANDARD;
 
-  real = CWidget::real;
-  design = CWIDGET_test_flag(control, WF_DESIGN); // && !GB.Is(control, CLASS_Container);
-  original = event->spontaneous();
+	real = CWidget::real;
+	design = CWIDGET_test_flag(control, WF_DESIGN); // && !GB.Is(control, CLASS_Container);
+	original = event->spontaneous();
 
-  if (type == QEvent::Enter)
-  {
-    if (real)
-      GB.Raise(control, EVENT_Enter, 0);
+	if (type == QEvent::Enter)
+	{
+		if (real)
+			GB.Raise(control, EVENT_Enter, 0);
 	}
-  else if (type == QEvent::Leave)
-  {
-    if (real)
-      GB.Raise(control, EVENT_Leave, 0);
-  }
-  else if (type == QEvent::FocusIn)
-  {
-  	if (GB.CanRaise(control, EVENT_GotFocus))
-  	{
+	else if (type == QEvent::Leave)
+	{
+		if (real)
+			GB.Raise(control, EVENT_Leave, 0);
+	}
+	else if (type == QEvent::FocusIn)
+	{
+		if (GB.CanRaise(control, EVENT_GotFocus))
+		{
 			GB.Ref(control);
 			GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
 		}
 
 		CWINDOW_activate(control);
-    //GB.Raise(control, EVENT_GotFocus, 0);
-  }
-  else if (type == QEvent::FocusOut)
-  {
-  	if (GB.CanRaise(control, EVENT_LostFocus))
-  	{
+		//GB.Raise(control, EVENT_GotFocus, 0);
+	}
+	else if (type == QEvent::FocusOut)
+	{
+		if (GB.CanRaise(control, EVENT_LostFocus))
+		{
 			GB.Ref(control);
 			GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
 		}
-    //GB.Raise(control, EVENT_LostFocus, 0);
-  }
-  else if (type == QEvent::ContextMenu)
-  {
-    // if (real && GB.CanRaise(control, EVENT_Menu))
-    //qDebug("Menu event! %p %d", control, EVENT_Menu);
-    if (GB.CanRaise(control, EVENT_Menu))
-    {
-      ((QContextMenuEvent *)event)->accept();
-      GB.Raise(control, EVENT_Menu, 0);
+		//GB.Raise(control, EVENT_LostFocus, 0);
+	}
+	else if (type == QEvent::ContextMenu)
+	{
+		// if (real && GB.CanRaise(control, EVENT_Menu))
+		//qDebug("Menu event! %p %d", control, EVENT_Menu);
+		if (GB.CanRaise(control, EVENT_Menu))
+		{
+			((QContextMenuEvent *)event)->accept();
+			GB.Raise(control, EVENT_Menu, 0);
 			return true;
-    }
-  }
-  else if ((type == QEvent::MouseButtonPress)
-           || (type == QEvent::MouseButtonRelease)
-           || (type == QEvent::MouseMove))
-  {
-    QMouseEvent *mevent = (QMouseEvent *)event;
+		}
+	}
+	else if ((type == QEvent::MouseButtonPress)
+					|| (type == QEvent::MouseButtonRelease)
+					|| (type == QEvent::MouseMove))
+	{
+		QMouseEvent *mevent = (QMouseEvent *)event;
 
-    if (!original)
-      goto _DESIGN;
+		if (!original)
+			goto _DESIGN;
 
 		/*if (type == QEvent::MouseButtonPress)
 		{
-    	qDebug("mouse event on [%s %p] (%s %p) %s%s%s", widget->className(), widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", 
-    		design ? "DESIGN " : "", original ? "ORIGINAL ": "");
-    	getDesignDebug(widget);
+			qDebug("mouse event on [%s %p] (%s %p) %s%s%s", widget->className(), widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", 
+				design ? "DESIGN " : "", original ? "ORIGINAL ": "");
+			getDesignDebug(widget);
 		}*/
-    
+		
 		if (!real)
 		{
 			CCONTAINER *cont = (CCONTAINER *)CWidget::get(widget);
@@ -1708,7 +1776,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				}
 				else
 				{*/
-    			if (widget != ((QAbstractScrollArea *)QWIDGET(cont))->viewport() && !widget->objectName().isNull())
+					if (widget != ((QAbstractScrollArea *)QWIDGET(cont))->viewport() && !widget->objectName().isNull())
 						goto _STANDARD;					
 				//}
 			}
@@ -1717,105 +1785,105 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		p.setX(mevent->globalX());
 		p.setY(mevent->globalY());
 		p = QWIDGET(control)->mapFromGlobal(p);
-    
-    if (type == QEvent::MouseButtonPress)
-    {
-      //qDebug("MouseDown on %p (%s %p) %s%s", widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "");
+		
+		if (type == QEvent::MouseButtonPress)
+		{
+			//qDebug("MouseDown on %p (%s %p) %s%s", widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "");
 
-      event_id = EVENT_MouseDown;
-      state = mevent->buttons();
-      
-      CMOUSE_info.sx = p.x();
-      CMOUSE_info.sy = p.y();
-      //qDebug("MouseEvent: %d %d", mevent->x(), mevent->y());
-    }
-    else
-    {
-      event_id = (type == QEvent::MouseButtonRelease) ? EVENT_MouseUp : EVENT_MouseMove;
-      state = mevent->buttons();
-    }
+			event_id = EVENT_MouseDown;
+			state = mevent->buttons();
+			
+			CMOUSE_info.sx = p.x();
+			CMOUSE_info.sy = p.y();
+			//qDebug("MouseEvent: %d %d", mevent->x(), mevent->y());
+		}
+		else
+		{
+			event_id = (type == QEvent::MouseButtonRelease) ? EVENT_MouseUp : EVENT_MouseMove;
+			state = mevent->buttons();
+		}
 
-    if (event_id == EVENT_MouseMove && state == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
-		  goto _DESIGN;
+		if (event_id == EVENT_MouseMove && state == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
+			goto _DESIGN;
 
 
 		/* GB.Raise() can free the control, so we must reference it as we may raise two successive events now */
 		GB.Ref(control);
 		cancel = false;
 
-    if (GB.CanRaise(control, event_id))
-    {
-    	if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
-    	{
-    		/*if (widget != ((QScrollView *)QWIDGET(control))->viewport()
-    		    && widget->name(0))
-    		{
-    			qDebug("cancel");
-    			goto _DESIGN;
+		if (GB.CanRaise(control, event_id))
+		{
+			if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
+			{
+				/*if (widget != ((QScrollView *)QWIDGET(control))->viewport()
+						&& widget->name(0))
+				{
+					qDebug("cancel");
+					goto _DESIGN;
 				}*/
-    	}
-    	
-      CMOUSE_clear(true);
-      CMOUSE_info.x = p.x();
-      CMOUSE_info.y = p.y();
-      CMOUSE_info.state = state;
+			}
+			
+			CMOUSE_clear(true);
+			CMOUSE_info.x = p.x();
+			CMOUSE_info.y = p.y();
+			CMOUSE_info.state = state;
 
-      cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
+			cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
 
-      CMOUSE_clear(false);
-      
-      /*if (CDRAG_dragging)
-      	return true;*/
-    }
-    
-    if (!cancel && event_id == EVENT_MouseMove && (state & Qt::MouseButtonMask)  && GB.CanRaise(control, EVENT_MouseDrag)
-    	  && ((abs(p.x() - CMOUSE_info.sx) + abs(p.y() - CMOUSE_info.sy)) > 8)) // QApplication::startDragDistance()))
+			CMOUSE_clear(false);
+			
+			/*if (CDRAG_dragging)
+				return true;*/
+		}
+		
+		if (!cancel && event_id == EVENT_MouseMove && (state & Qt::MouseButtonMask)  && GB.CanRaise(control, EVENT_MouseDrag)
+				&& ((abs(p.x() - CMOUSE_info.sx) + abs(p.y() - CMOUSE_info.sy)) > 8)) // QApplication::startDragDistance()))
 		{		
-    	/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
-    	{
-    		if (widget != ((QScrollView *)QWIDGET(control))->viewport()
-    		    && widget->name(0))
-    		{
-    			goto _DESIGN;
+			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
+			{
+				if (widget != ((QScrollView *)QWIDGET(control))->viewport()
+						&& widget->name(0))
+				{
+					goto _DESIGN;
 				}
-    	}*/
-      
-      CMOUSE_clear(true);
-      CMOUSE_info.x = p.x();
-      CMOUSE_info.y = p.y();
-      CMOUSE_info.state = state;
+			}*/
+			
+			CMOUSE_clear(true);
+			CMOUSE_info.x = p.x();
+			CMOUSE_info.y = p.y();
+			CMOUSE_info.state = state;
 		
 			cancel = GB.Raise(control, EVENT_MouseDrag, 0);
-      
-      CMOUSE_clear(false);
+			
+			CMOUSE_clear(false);
 		}
-  
+	
 		GB.Unref(POINTER(&control));
 		
 		if (cancel)
 			return true;
-  }
-  else if (type == QEvent::MouseButtonDblClick)
-  {
-    if (!original)
-      goto _DESIGN;
+	}
+	else if (type == QEvent::MouseButtonDblClick)
+	{
+		if (!original)
+			goto _DESIGN;
 
-    //GB.Raise(control, EVENT_DblClick, 0);
+		//GB.Raise(control, EVENT_DblClick, 0);
 		if (GB.CanRaise(control, EVENT_DblClick))
 		{
 			GB.Ref(control);
 			GB.Post((void (*)())post_dblclick_event, (intptr_t)control);
 		}
-  }
-  else if ((type == QEvent::KeyPress)
-           || (type == QEvent::KeyRelease))
-  {
-    QKeyEvent *kevent = (QKeyEvent *)event;
+	}
+	else if ((type == QEvent::KeyPress)
+					|| (type == QEvent::KeyRelease))
+	{
+		QKeyEvent *kevent = (QKeyEvent *)event;
 
-    #if QT_VERSION <= 0x030005
-    if (!real || !original)
-      goto _DESIGN;
-    #endif
+		#if QT_VERSION <= 0x030005
+		if (!real || !original)
+			goto _DESIGN;
+		#endif
 
 // 		qDebug("QKeyEvent: %s (%s %p) (%s %p) TL:%d -> %d %s",
 // 			type == QEvent::KeyPress ? "KeyPress" : "KeyRelease",
@@ -1823,23 +1891,23 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 // 			((QWidget *)widget)->isWindow(),  
 // 			kevent->key(), (char *)kevent->text().latin1());
 
-    event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
+		event_id = (type == QEvent::KeyRelease) ? EVENT_KeyRelease : EVENT_KeyPress;
 
-    #if QT_VERSION > 0x030005
-    if (!original && type != QEvent::InputMethod)
-      goto _DESIGN; //_ACCEL;
-    #endif
+		#if QT_VERSION > 0x030005
+		if (!original && type != QEvent::InputMethod)
+			goto _DESIGN; //_ACCEL;
+		#endif
 
-    if (type == QEvent::KeyPress && GB.Is(control, CLASS_Window))
-      goto _DESIGN; //_ACCEL;
-      
-    //qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
+		if (type == QEvent::KeyPress && GB.Is(control, CLASS_Window))
+			goto _DESIGN; //_ACCEL;
+			
+		//qDebug("CWidget::eventFilter: KeyPress on %s %p", GB.GetClassName(control), control);
 
-    if (GB.CanRaise(control, event_id))
-    {
-      CKEY_clear(true);
+		if (GB.CanRaise(control, event_id))
+		{
+			CKEY_clear(true);
 
-      GB.FreeString(&CKEY_info.text);
+			GB.FreeString(&CKEY_info.text);
 			GB.NewString(&CKEY_info.text, TO_UTF8(kevent->text()), 0);
 			CKEY_info.state = kevent->modifiers();
 			CKEY_info.code = kevent->key();
@@ -1858,40 +1926,40 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			}
 			#endif
 			
-      cancel = GB.Raise(control, event_id, 0);
+			cancel = GB.Raise(control, event_id, 0);
 
-      CKEY_clear(false);
+			CKEY_clear(false);
 
-      if (cancel && (type != QEvent::KeyRelease))
-        return true;
-    }
+			if (cancel && (type != QEvent::KeyRelease))
+				return true;
+		}
 
 /*_ACCEL:
 
-    if (event_id == EVENT_KeyPress && CWINDOW_Main && ((QWidget *)widget)->isWindow())
-    {
-      //CWIDGET *top = CWidget::get(((QWidget *)widget)->topLevelWidget());
-      CWIDGET *top = CWidget::get((QWidget *)widget);
+		if (event_id == EVENT_KeyPress && CWINDOW_Main && ((QWidget *)widget)->isWindow())
+		{
+			//CWIDGET *top = CWidget::get(((QWidget *)widget)->topLevelWidget());
+			CWIDGET *top = CWidget::get((QWidget *)widget);
 
-      //qDebug("top = %p", top);
+			//qDebug("top = %p", top);
 
-      if (!CWINDOW_Current && top && top != (CWIDGET *)CWINDOW_Main && QWIDGET(CWINDOW_Main))
-      {
-        //qDebug("post Accel to %p", CWINDOW_Main);
-        //QMAINWINDOW(CWINDOW_Main)->setState(MyMainWindow::StateNormal);
-        qApp->postEvent(QWIDGET(CWINDOW_Main),
-          new QKeyEvent(QEvent::Accel, kevent->key(), kevent->ascii(), kevent->state(), kevent->text(), kevent->isAutoRepeat(), kevent->count()));
-      }
-    }*/
-  }
-  else if (type == QEvent::InputMethod)
-  {
-    QInputMethodEvent *imevent = (QInputMethodEvent *)event;
+			if (!CWINDOW_Current && top && top != (CWIDGET *)CWINDOW_Main && QWIDGET(CWINDOW_Main))
+			{
+				//qDebug("post Accel to %p", CWINDOW_Main);
+				//QMAINWINDOW(CWINDOW_Main)->setState(MyMainWindow::StateNormal);
+				qApp->postEvent(QWIDGET(CWINDOW_Main),
+					new QKeyEvent(QEvent::Accel, kevent->key(), kevent->ascii(), kevent->state(), kevent->text(), kevent->isAutoRepeat(), kevent->count()));
+			}
+		}*/
+	}
+	else if (type == QEvent::InputMethod)
+	{
+		QInputMethodEvent *imevent = (QInputMethodEvent *)event;
 
-    #if QT_VERSION <= 0x030005
-    if (!real || !original)
-      goto _DESIGN;
-    #endif
+		#if QT_VERSION <= 0x030005
+		if (!real || !original)
+			goto _DESIGN;
+		#endif
 
 		if (!imevent->commitString().isEmpty())
 		{
@@ -1920,42 +1988,42 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 					return true;
 			}
 		}
-  }
-  else if (type == QEvent::Wheel)
-  {
-    QWheelEvent *ev = (QWheelEvent *)event;
+	}
+	else if (type == QEvent::Wheel)
+	{
+		QWheelEvent *ev = (QWheelEvent *)event;
 
-    //qDebug("Event on %p %s%s%s", widget,
-    //  real ? "REAL " : "", design ? "DESIGN " : "", child ? "CHILD " : "");
+		//qDebug("Event on %p %s%s%s", widget,
+		//  real ? "REAL " : "", design ? "DESIGN " : "", child ? "CHILD " : "");
 
-    if (!original)
-      goto _DESIGN;
+		if (!original)
+			goto _DESIGN;
 
-    if (GB.CanRaise(control, EVENT_MouseWheel))
-    {
-      // Automatic focus for wheel events
-    	((QWidget *)widget)->setFocus();
-    	
-      p.setX(ev->x());
-      p.setY(ev->y());
+		if (GB.CanRaise(control, EVENT_MouseWheel))
+		{
+			// Automatic focus for wheel events
+			((QWidget *)widget)->setFocus();
+			
+			p.setX(ev->x());
+			p.setY(ev->y());
 
-      p = ((QWidget *)widget)->mapTo(QWIDGET(control), p);
+			p = ((QWidget *)widget)->mapTo(QWIDGET(control), p);
 
-      CMOUSE_clear(true);
-      CMOUSE_info.x = p.x();
-      CMOUSE_info.y = p.y();
-      CMOUSE_info.state = ev->modifiers();
-      CMOUSE_info.orientation = ev->orientation();
-      CMOUSE_info.delta = ev->delta();
+			CMOUSE_clear(true);
+			CMOUSE_info.x = p.x();
+			CMOUSE_info.y = p.y();
+			CMOUSE_info.state = ev->modifiers();
+			CMOUSE_info.orientation = ev->orientation();
+			CMOUSE_info.delta = ev->delta();
 
-      cancel = GB.Raise(control, EVENT_MouseWheel, 0);
+			cancel = GB.Raise(control, EVENT_MouseWheel, 0);
 
-      CMOUSE_clear(false);
-    }
-  }
+			CMOUSE_clear(false);
+		}
+	}
 	else if (type == QEvent::DragEnter)
 	{
-  	//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
+		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		if (CDRAG_drag_enter((QWidget *)widget, control, (QDropEvent *)event))
 		{
 			if (!((QDropEvent *)event)->isAccepted())
@@ -1965,7 +2033,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	}
 	else if (type == QEvent::DragMove)
 	{
-  	//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
+		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		if (CDRAG_drag_move((QWidget *)widget, control, (QDropEvent *)event))
 		{
 			if (!((QDropEvent *)event)->isAccepted())
@@ -1975,55 +2043,55 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	}
 	else if (type == QEvent::Drop)
 	{
-  	//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
+		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event);
 	}
 	else if (type == QEvent::DragLeave)
 	{
 		CDRAG_hide_frame(control);
 	}
-    
-  if (!control || CWIDGET_test_flag(control, WF_DELETED))
-  {
-    QObject::eventFilter(widget, event); 
-    return (type != QEvent::DeferredDelete);
-  }
-  
-  /*if (CCONTROL_check(control))
-  {
-    qDebug("CWidget::eventFilter: %p was destroyed", control);
-    return true;
-  }*/
+		
+	if (!control || CWIDGET_test_flag(control, WF_DELETED))
+	{
+		QObject::eventFilter(widget, event); 
+		return (type != QEvent::DeferredDelete);
+	}
+	
+	/*if (CCONTROL_check(control))
+	{
+		qDebug("CWidget::eventFilter: %p was destroyed", control);
+		return true;
+	}*/
 
 _DESIGN:
 
-  if (design)
-  {
-    if ((type == QEvent::MouseButtonPress)
-        || (type == QEvent::MouseButtonRelease)
-        || (type == QEvent::MouseButtonDblClick)
-        || (type == QEvent::MouseMove)
-        || (type == QEvent::Wheel)
-        || (type == QEvent::ContextMenu)
-        || (type == QEvent::KeyPress)
-        || (type == QEvent::KeyRelease)
-        || (type == QEvent::InputMethod)
-        || (type == QEvent::Shortcut)
-        || (type == QEvent::Enter)
-        || (type == QEvent::Leave)
-        || (type == QEvent::FocusIn)
-        || (type == QEvent::FocusOut)
-        || (type == QEvent::DragEnter)
-        || (type == QEvent::DragMove)
-        || (type == QEvent::DragLeave)
-        || (type == QEvent::Drop)
-        )
-    return true;
-  }
+	if (design)
+	{
+		if ((type == QEvent::MouseButtonPress)
+				|| (type == QEvent::MouseButtonRelease)
+				|| (type == QEvent::MouseButtonDblClick)
+				|| (type == QEvent::MouseMove)
+				|| (type == QEvent::Wheel)
+				|| (type == QEvent::ContextMenu)
+				|| (type == QEvent::KeyPress)
+				|| (type == QEvent::KeyRelease)
+				|| (type == QEvent::InputMethod)
+				|| (type == QEvent::Shortcut)
+				|| (type == QEvent::Enter)
+				|| (type == QEvent::Leave)
+				|| (type == QEvent::FocusIn)
+				|| (type == QEvent::FocusOut)
+				|| (type == QEvent::DragEnter)
+				|| (type == QEvent::DragMove)
+				|| (type == QEvent::DragLeave)
+				|| (type == QEvent::Drop)
+				)
+		return true;
+	}
 
 _STANDARD:
 
-  return QObject::eventFilter(widget, event);    // standard event processing
+	return QObject::eventFilter(widget, event);    // standard event processing
 }
 
 /** Action *****************************************************************/
@@ -2134,9 +2202,7 @@ GB_DESC CControlDesc[] =
 
 	GB_PROPERTY("Font", "Font", CCONTROL_font),
 	GB_PROPERTY("Background", "i", CCONTROL_background),
-	GB_PROPERTY("BackColor", "i", CCONTROL_background),
 	GB_PROPERTY("Foreground", "i", CCONTROL_foreground),
-	GB_PROPERTY("ForeColor", "i", CCONTROL_foreground),
 
 	GB_PROPERTY("Design", "b", CCONTROL_design),
 	GB_PROPERTY("Name", "s", CCONTROL_name),

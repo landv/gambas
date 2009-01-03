@@ -87,6 +87,7 @@ protected:
 
   virtual void resizeEvent(QResizeEvent *);
   virtual void paintEvent(QPaintEvent *);
+  //virtual void drawContents(QPainter *p);
 	virtual void setPalette(const QPalette &);
 
 private:
@@ -96,6 +97,8 @@ private:
   bool _merge;
   bool _focus;
   int _event_mask;
+
+  bool doResize();
 };
 
 #endif

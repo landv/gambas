@@ -223,8 +223,8 @@ BEGIN_PROPERTY(CLISTBOX_list)
 		{
 			for (i = 0; i < GB.Array.Count(array); i++)
 				LISTBOX->add(*((char **)GB.Array.Get(array, i)));
-		LISTBOX->unlock();
 		}
+		LISTBOX->unlock();
 	}
 
 END_PROPERTY

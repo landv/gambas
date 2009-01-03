@@ -71,8 +71,6 @@ public:
   void setAutoResize(bool a) { autoResize = a; calcMinimumHeight(); }
   virtual void setText(const QString &);
   void adjust();
-	bool isTransparent() { return transparent; }
-	void setTransparent(bool transparent);
 	
 protected:
 
@@ -82,7 +80,6 @@ protected:
 private:
 
 	unsigned autoResize : 1;
-	unsigned transparent : 1;
 	unsigned locked : 1;
 };
 

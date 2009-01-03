@@ -79,7 +79,7 @@ void CRadioButton::clicked(bool on)
 
   QList<QRadioButton *> list = parent->findChildren<QRadioButton *>();
   int i;
-  QRadioButton *obj;
+  QRadioButton *obj = 0;
 
   if (on)
   {

@@ -243,10 +243,11 @@ int gDesktop::width()
 
 int gDesktop::resolution()
 {
-	int d_pix=gdk_screen_get_width(gdk_screen_get_default());
-	int d_mm=gdk_screen_get_width_mm(gdk_screen_get_default());
+	/*int d_pix=gdk_screen_get_height(gdk_screen_get_default());
+	int d_mm=gdk_screen_get_height_mm(gdk_screen_get_default());
 	
-	return (int)(d_pix*25.4)/d_mm;
+	return (int)(d_pix*25.4)/d_mm;*/
+	return gdk_screen_get_resolution(gdk_screen_get_default());
 }
 
 int gDesktop::scale()
@@ -267,7 +268,6 @@ int gDesktop::scale()
 		
 		val = 1 + (pango_font_metrics_get_ascent(fm) + pango_font_metrics_get_descent(fm)) / PANGO_SCALE;
 		val = GET_DESKTOP_SCALE(val);
-		
 		pango_font_metrics_unref(fm);
 		g_object_unref(G_OBJECT(ct));
 		

@@ -395,9 +395,9 @@ END_METHOD
 BEGIN_PROPERTY(CTABSTRIP_orientation)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(WIDGET->tabPosition() == QTabWidget::North ? 0 : 1);
+    GB.ReturnInteger(WIDGET->tabPosition() == QTabWidget::North ? ALIGN_TOP : ALIGN_BOTTOM);
   else
-    WIDGET->setTabPosition(VPROP(GB_INTEGER) == 0 ? QTabWidget::North : QTabWidget::South);
+    WIDGET->setTabPosition(VPROP(GB_INTEGER) == ALIGN_BOTTOM ? QTabWidget::South : QTabWidget::North);
 
 END_PROPERTY
 
@@ -711,9 +711,6 @@ GB_DESC CTabDesc[] =
 GB_DESC CTabStripDesc[] =
 {
   GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
-
-  GB_CONSTANT("Top", "i", 0),
-  GB_CONSTANT("Bottom", "i", 1),
 
   GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, CTABSTRIP_free, NULL),

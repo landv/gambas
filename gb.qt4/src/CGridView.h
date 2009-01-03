@@ -155,7 +155,7 @@ public:
   void getCurrentCell(int *row, int *col);
   void updateCurrentCell();
   
-  void clear() { _item->clearAll(); }
+  void clear() { _item->clearAll(); viewport()->update(); }
   
   void unselectRow(int row);
   void selectRow(int row, bool update = true);

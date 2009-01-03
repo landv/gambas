@@ -52,7 +52,7 @@ Public Sub Panel_Enter()
 
   If Object.Type(Last) <> "Panel" Then Return
   $iColor = Last.Foreground
-  Last.BackColor = Color.SelectedBackground '&88D5FF&
+  Last.Background = Color.SelectedBackground '&88D5FF&
   Last.Foreground = Color.SelectedForeground '&88D5FF&
 
 End
@@ -60,7 +60,7 @@ End
 Public Sub Panel_Leave()
 
   If Object.Type(Last) <> "Panel" Then Return
-  Last.BackColor = Last.Parent.Background
+  Last.Background = Last.Parent.Background
   Last.Foreground = $iColor
 
 End

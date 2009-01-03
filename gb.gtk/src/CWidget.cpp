@@ -850,9 +850,7 @@ GB_DESC CWidgetDesc[] =
 
   GB_PROPERTY("Font", "Font", CCONTROL_font),
   GB_PROPERTY("Background", "i", CWIDGET_background),
-  GB_PROPERTY("BackColor", "i", CWIDGET_background),
   GB_PROPERTY("Foreground", "i", CWIDGET_foreground),
-  GB_PROPERTY("ForeColor", "i", CWIDGET_foreground),
 
   GB_PROPERTY("Design", "b", CWIDGET_design),
   GB_PROPERTY("Name", "s", CCONTROL_name),

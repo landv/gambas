@@ -15,7 +15,6 @@ Property ActiveWindow As Window
 Property Read Children As Object[]
 Property Font As Font
 Property Background As Integer
-Property BackColor As Integer
 Property Orientation As Integer
 Property ButtonPosition As Integer
 
@@ -113,18 +112,6 @@ Private Function Background_Read() As Integer
 End
 
 Private Sub Background_Write(Value As Integer)
-
-  hWorkspace.SetBackground(Value)
-
-End
-
-Private Function BackColor_Read() As Integer
-
-  Return hWorkspace.GetBackground()  
-
-End
-
-Private Sub BackColor_Write(Value As Integer)
 
   hWorkspace.SetBackground(Value)
 

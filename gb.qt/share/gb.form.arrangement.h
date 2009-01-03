@@ -240,7 +240,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							break;
 						
 						ob = GET_OBJECT_FROM_WIDGET(wid);
-						if (IS_IGNORE(ob))
+						if (!ob || IS_IGNORE(ob))
 							continue;
 
 						if (ob && IS_EXPAND(ob))
@@ -288,7 +288,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							break;
 
 						ob = GET_OBJECT_FROM_WIDGET(wid);
-						if (IS_IGNORE(ob))
+						if (!ob || IS_IGNORE(ob))
 							continue;
 
 						if (!first)
@@ -364,7 +364,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							break;
 
 						ob = GET_OBJECT_FROM_WIDGET(wid);
-						if (IS_IGNORE(ob))
+						if (!ob || IS_IGNORE(ob))
 							continue;
 
 						if (swap)
@@ -479,7 +479,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							break;
 
 						ob = GET_OBJECT_FROM_WIDGET(wid);
-						if (IS_IGNORE(ob))
+						if (!ob || IS_IGNORE(ob))
 							continue;
 						
 						MOVE_RESIZE_WIDGET(wid, xc, yc, wc, hc);

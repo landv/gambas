@@ -2132,9 +2132,7 @@ GB_DESC CControlDesc[] =
 
 	GB_PROPERTY("Font", "Font", CCONTROL_font),
 	GB_PROPERTY("Background", "i", CCONTROL_background),
-	GB_PROPERTY("BackColor", "i", CCONTROL_background),
 	GB_PROPERTY("Foreground", "i", CCONTROL_foreground),
-	GB_PROPERTY("ForeColor", "i", CCONTROL_foreground),
 
 	GB_PROPERTY("Design", "b", CCONTROL_design),
 	GB_PROPERTY("Name", "s", CCONTROL_name),

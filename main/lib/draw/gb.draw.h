@@ -27,12 +27,12 @@
 #include "gambas.h"
 
 #define GB_DRAW_ALIGN_DEFAULT (-1)
+#define GB_DRAW_COLOR_DEFAULT (-1)
 
 enum {
   GB_DRAW_STATE_NORMAL = 0,
   GB_DRAW_STATE_DISABLED = 1
   };
-	
 
 typedef
 	struct _GB_MATRIX {

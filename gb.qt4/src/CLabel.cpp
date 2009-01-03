@@ -52,7 +52,8 @@ BEGIN_METHOD(CLABEL_new, GB_OBJECT parent)
 
   wid->setTextFormat(Qt::PlainText);
   wid->setAlignment(Qt::AlignLeft | Qt::AlignVCenter); // + Qt::WordBreak);
-
+	THIS->widget.flag.fillBackground = TRUE;
+	
   CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
@@ -65,6 +66,7 @@ BEGIN_METHOD(CTEXTLABEL_new, GB_OBJECT parent)
   wid->setTextFormat(Qt::RichText);
   wid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   wid->setWordWrap(true);
+	THIS->widget.flag.fillBackground = TRUE;
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -132,9 +134,12 @@ END_METHOD
 BEGIN_PROPERTY(CLABEL_transparent)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->isTransparent());
+		GB.ReturnBoolean(!THIS->widget.flag.fillBackground);
 	else
-		WIDGET->setTransparent(VPROP(GB_BOOLEAN));
+	{
+		THIS->widget.flag.fillBackground = !VPROP(GB_BOOLEAN);
+		CWIDGET_reset_color((CWIDGET *)THIS);
+	}
 
 END_PROPERTY
 
@@ -209,8 +214,8 @@ GB_DESC CSeparatorDesc[] =
 MyLabel::MyLabel(QWidget *parent) : QLabel(parent)
 {
 	autoResize = false;
-	transparent = false;
 	locked = false;
+	setIndent(0);
   calcMinimumHeight();
 }
 
@@ -299,15 +304,6 @@ void MyLabel::resizeEvent(QResizeEvent *e)
 void MyLabel::adjust()
 {
 	calcMinimumHeight(true);
-}
-
-void MyLabel::setTransparent(bool t)
-{
-	if (transparent == t)
-		return;
-		
-	transparent = t;
-  //setAutoFillBackground(!t);
 }
 
 #if 0

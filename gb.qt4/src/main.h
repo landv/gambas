@@ -105,6 +105,7 @@ private:
 
 void MAIN_check_quit(void);
 void MAIN_update_scale(void);
+void MAIN_process_events(void);
 
 const char *QT_ToUTF8(const QString &str);
 void QT_RegisterAction(void *object, const char *key, int on);

@@ -69,6 +69,10 @@ DRAW_INTERFACE DRAW EXPORT;
 
 static bool _init = FALSE;
 
+static void set_background(GB_DRAW *d, int col);
+static void set_foreground(GB_DRAW *d, int col);
+static void set_fill_color(GB_DRAW *d, int col);
+
 void DRAW_init()
 {
 	if (_init)
@@ -127,6 +131,7 @@ static QWidget *get_widget(GB_DRAW *d)
 static uint get_color(GB_DRAW *d, int col, bool bg)
 {
 	QWidget *wid = get_widget(d);
+	int ocol = col;
 	
 	if (col == COLOR_DEFAULT)
 	{

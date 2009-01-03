@@ -36,7 +36,7 @@
 extern GB_DESC CPictureBoxDesc[];
 #else
 
-#define WIDGET ((QLabel *)((CWIDGET *)_object)->widget)
+#define WIDGET ((MyPictureBox *)((CWIDGET *)_object)->widget)
 #define THIS ((CPICTUREBOX *)_object)
 
 #endif
@@ -48,17 +48,24 @@ typedef
     }
   CPICTUREBOX;
 
-#if 0
 class MyPictureBox : public QLabel
 {
   Q_OBJECT
 
 public:
   MyPictureBox(QWidget *parent);
-  
+  void updateBackground();
+  void setAutoResize(bool);
+  bool isAutoResize() { return _autoresize; }
+  void updateSize();
+	void adjustSize();
+ 
 protected:
 	virtual void setPalette(const QPalette &);
+	virtual void resizeEvent(QResizeEvent *);
+	
+private:
+	bool _autoresize;
 };
-#endif
 
 #endif
