@@ -84,7 +84,15 @@ bool DRAW_begin(void *device)
 	draw->save = NULL;
 	draw->xform = FALSE;
 	
-	return draw->desc->Begin(draw);
+	if (!draw->desc->Begin(draw))
+	{
+		DRAW->SetBackground(draw, GB_DRAW_COLOR_DEFAULT);
+		DRAW->SetForeground(draw, GB_DRAW_COLOR_DEFAULT);
+		DRAW->Fill.SetColor(draw, GB_DRAW_COLOR_DEFAULT);
+		return FALSE;
+	}
+	else
+		return TRUE;
 }
 
 BEGIN_METHOD(CDRAW_begin, GB_OBJECT device)

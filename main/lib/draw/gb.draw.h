@@ -27,6 +27,7 @@
 #include "gambas.h"
 
 #define GB_DRAW_ALIGN_DEFAULT (-1)
+#define GB_DRAW_COLOR_DEFAULT (-1)
 
 typedef
 	struct _GB_MATRIX {
