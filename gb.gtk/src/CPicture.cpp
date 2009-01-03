@@ -176,7 +176,7 @@ END_METHOD
 
 BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
 
-	switch (IMAGE->save(GB.ToZeroString(ARG(path)), VARGOPT(quality, -1)))
+	switch (IMAGE->save(GB.FileName(STRING(path), LENGTH(path)), VARGOPT(quality, -1)))
 	{
 		case 0: break;
 		case -1: GB.Error("Unknown format"); break;
@@ -550,7 +550,7 @@ END_METHOD
 
 BEGIN_METHOD(CPICTURE_save, GB_STRING path; GB_INTEGER quality)
 
-	switch (PICTURE->save(GB.ToZeroString(ARG(path))), VARGOPT(quality, -1))
+	switch (PICTURE->save(GB.FileName(STRING(path), LENGTH(path)), VARGOPT(quality, -1)))
 	{
 		case 0: break;
 		case -1: GB.Error("Unknown format"); break;
