@@ -170,8 +170,8 @@ void CCONTAINER_get_max_size(void *_object, int *w, int *h)
 	max_w = 0;
 	max_h = 0;
 	get_max_size(THIS);
-	*w = max_w + THIS_ARRANGEMENT->padding;
-	*h = max_h + THIS_ARRANGEMENT->padding;
+	*w = max_w + THIS_ARRANGEMENT->padding + (THIS_ARRANGEMENT->margin ? MAIN_scale : 0);
+	*h = max_h + THIS_ARRANGEMENT->padding + (THIS_ARRANGEMENT->margin ? MAIN_scale : 0);
 	
 	THIS_ARRANGEMENT->locked = locked;
 }

@@ -254,7 +254,7 @@ void ERROR_define(const char *pattern, char *arg[])
 {
   uchar c;
   boolean subst;
-  char *msg;
+  char *msg = NULL;
   int len;
 
 	ERROR_clear();
@@ -278,32 +278,36 @@ void ERROR_define(const char *pattern, char *arg[])
     	pattern++;
     subst = FALSE;
 
-		STRING_new(&msg, NULL, get_message_length(pattern, arg));
-		ERROR_current->info.msg = msg;
-    ERROR_current->info.free = TRUE;
-    
-    for (;;)
+		len = get_message_length(pattern, arg);
+    if (len)
     {
-      c = *pattern++;
-      if (c == 0)
-        break;
-        
-      if (c == '&')
-      {
-      	c = *pattern++;
-      	if (c >= '1' && c <= '4')
-      	{
-      		c -= '1';
-      		len = strlen(arg[c]);
-      		memcpy(msg, arg[c], len);
-      		msg += len;
-      	}
-      }
-      else
-      	*msg++ = c;
-    }
+			STRING_new(&msg, NULL, len);
+			ERROR_current->info.msg = msg;
+    	ERROR_current->info.free = TRUE;
     
-    *msg = 0;
+			for (;;)
+			{
+				c = *pattern++;
+				if (c == 0)
+					break;
+					
+				if (c == '&')
+				{
+					c = *pattern++;
+					if (c >= '1' && c <= '4')
+					{
+						c -= '1';
+						len = strlen(arg[c]);
+						memcpy(msg, arg[c], len);
+						msg += len;
+					}
+				}
+				else
+					*msg++ = c;
+			}
+			
+			*msg = 0;
+		}
   }
   else
   {

@@ -316,12 +316,15 @@ Private Sub InitLibrary()
 
   Dim sLib As String
   Dim hComp As CComponent
+  Dim hSep As Label
   Dim aRemove As New String[]
   Dim sParent As String
   Dim hCompBox As CComponentBox
   Dim aComp As New String[]
   Dim bDark As Boolean
   Dim hOld As ListContainer
+  Dim iUser As Integer
+  Dim bUser As Boolean
 
   If Not $bCanInitLibrary Then Return
 
@@ -332,20 +335,45 @@ Private Sub InitLibrary()
   
   For Each hComp In CComponent.All
     aComp.Add(hComp.Key)
+    If hComp.User Then bUser = True
   Next 
   aComp.Sort
   
   lstComponent.Lock
   CComponentBox.Reset
-  For Each sLib In aComp
-    hComp = CComponent.All[sLib]
-    If $bShowUsed Then
-      If sLib <> "gb" And If Not Project.Libraries.Exist(hComp.Key) Then Continue
+
+  For iUser = 0 To 1
+
+    If bUser Then
+      hSep = New Label(lstComponent)
+      If iUser Then
+        hSep.Text = ("User components")
+      Else
+        hSep.Text = ("Standard components")
+      Endif
+      hSep.Font = Font["Bold,Underline,-1"]
+      hSep.Padding = 4
+      hSep.Height = hSep.Font.Height() + 8
     Endif
-    hCompBox = New CComponentBox(hComp, bDark, lstComponent)
-    bDark = Not bDark
-    $cComp[hComp.Key] = hCompBox 
-    hCompBox.Locked = sLib = "gb" Or $bShowUsed
+
+    For Each sLib In aComp
+      hComp = CComponent.All[sLib]
+      If iUser = 0 Then
+        If hComp.User Then Continue
+      Else
+        If Not hComp.User Then Continue
+      Endif
+      If $bShowUsed Then
+        If sLib <> "gb" And If Not Project.Libraries.Exist(hComp.Key) Then Continue
+      Endif
+      hCompBox = New CComponentBox(hComp, bDark, lstComponent)
+      bDark = Not bDark
+      $cComp[hComp.Key] = hCompBox 
+      hCompBox.Locked = sLib = "gb" Or $bShowUsed
+    Next
+    
+    If Not bUser Then Break
+    
   Next
   
   For Each sLib In Project.Libraries

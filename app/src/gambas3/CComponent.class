@@ -145,9 +145,8 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   Dim sInfo As String
   Dim sLig As String
   Dim sKey As String
-
+  Dim sPath As String
   Dim iPos As Integer
-  
   Dim sLib As String
   Dim iKey As Integer
   Dim sGroup As String
@@ -156,9 +155,15 @@ Static Private Sub InitComponent(sFile As String, bUser As Boolean)
   Dim sChange As String
 
   If bUser Then
-    Open Component.UserPath &/ sFile As #hFic
+    sPath = Component.UserPath &/ sFile 
   Else
-    Open Component.Path &/ sFile As #hFic
+    sPath = Component.Path &/ sFile 
+  Endif
+  
+  Try hFic = Open sPath
+  If Error Then
+    Error "Warning: cannot read "; sPath
+    Return
   Endif
 
   Line Input #hFic, sLig
@@ -314,7 +319,7 @@ Static Public Sub _init()
     aComp = Dir(Component.UserPath, "*.component").Sort()
     For Each sFile In aComp
       If All.Exist(File.BaseName(sFile)) Then 
-        Print "Warning: User component "; File.BaseName(sFile); " is ignored"
+        Error "Warning: User component "; File.BaseName(sFile); " is ignored"
         Continue
       Endif
       InitComponent(sFile, True)
@@ -404,6 +409,7 @@ Public Sub Load()
   Dim bAgain As Boolean
   Dim bNextClass As Boolean
   Dim cClass As New Collection
+  Dim sList As String
 
   If Loaded Then Return
 
@@ -425,13 +431,19 @@ Public Sub Load()
   sPath &/= "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
   
   If Not Exist(sPath) Then
-    Print "Warning: cannot find "; sPath
+    Error "Warning: cannot find "; sPath
     Return
   Endif
 
   ' List of exported classes
 
-  For Each sClass In Split(File.Load(File.SetExt(sPath, "list")), "\n")
+  Try sList = File.Load(File.SetExt(sPath, "list"))
+  If Error Then
+    Error "Warning: cannot read "; File.SetExt(sPath, "list")
+    Return
+  Endif
+
+  For Each sClass In Split(sList, "\n")
     If sClass Then cClass[sClass] = True
   Next
 

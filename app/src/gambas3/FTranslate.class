@@ -413,8 +413,8 @@ Private Sub SaveTranslate(Optional bForce As Boolean)
       Endif
 
       Print #hFic, "#: "; .Item[2]
-      Print #hFic, "msgid "; Quote(.Item[0])
-      Print #hFic, "msgstr "; Quote(sStr)
+      Print #hFic, "msgid "; QuoteTranslation(.Item[0])
+      Print #hFic, "msgstr "; QuoteTranslation(sStr)
       Print #hFic
 
       If sStr Then bTrans = True
@@ -463,7 +463,7 @@ Catch
 End
 
 
-Private Function Quote(sStr As String) As String
+Private Function QuoteTranslation(sStr As String) As String
 
   sStr = Replace(sStr, "\n", "")
   sStr = Replace(sStr, "\\" & Chr$(34), "\n")
@@ -1062,7 +1062,7 @@ Private Sub MergeMessage(sPath As String, sOption As String)
 
   sTemp = Temp$
 
-  Shell "msgmerge --no-wrap -F -o " & Shell$(sPath & ".new") & " " & sOption & " > " & Shell$(sTemp) & " 2>&1" Wait
+  Shell "msgmerge --no-wrap -o " & Shell$(sPath & ".new") & " " & sOption & " > " & Shell$(sTemp) & " 2>&1" Wait
   If Exist(sPath & ".new") Then
     Kill sPath
     Move sPath & ".new" To sPath

@@ -155,6 +155,7 @@ Private Sub SetSelected(Child As Control)
   
   If Child.Parent <> $hScrollView Then Return
   If Not Child.Enabled Then Return
+  If Child Is Label Or If Child Is Separator Then Return
   
   hOld = GetSelected()
   If hOld = Child Then Return 
