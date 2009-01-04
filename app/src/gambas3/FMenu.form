@@ -5,12 +5,12 @@
   Text = ("Menu editor")
   Icon = Picture["img/16/menu.png"]
   Arrangement = Arrange.Vertical
-  Spacing = 16
+  Spacing = True
   Padding = 8
   { VBox4 VBox
     MoveScaled(1,1,80,35)
     Expand = True
-    Spacing = 8
+    Spacing = True
     { lstMenu ListBox
       MoveScaled(0,0,60,30)
       Expand = True
@@ -18,7 +18,7 @@
     }
     { HBox1 HBox
       MoveScaled(0,31,79,4)
-      Spacing = 8
+      Spacing = True
       { btnNext Button
         MoveScaled(0,0,17,4)
         Text = ("&Next")
@@ -63,10 +63,10 @@
   }
   { VBox3 VBox
     MoveScaled(1,37,73,37)
-    Spacing = 8
+    Spacing = True
     { frmMenu HBox
       MoveScaled(0,0,72,37)
-      Spacing = 16
+      Spacing = True
       { VBox2 VBox
         MoveScaled(1,1,57,35)
         Expand = True
@@ -145,7 +145,7 @@
           { HBox3 HBox
             MoveScaled(13,0,42,4)
             Expand = True
-            Spacing = 8
+            Spacing = True
             { chkCtrl CheckBox
               MoveScaled(0,0,9,4)
               Text = ("CTRL")
@@ -181,7 +181,7 @@
           { HBox4 HBox
             MoveScaled(13,0,37,4)
             Expand = True
-            Spacing = 8
+            Spacing = True
             { txtPicture TextBox
               MoveScaled(0,0,27,4)
               Expand = True
@@ -237,7 +237,7 @@
   }
   { HBox2 HBox
     MoveScaled(1,75,55,4)
-    Spacing = 8
+    Spacing = True
     { Panel2 Panel
       MoveScaled(3,0,4,4)
       Expand = True

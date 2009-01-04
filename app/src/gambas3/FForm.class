@@ -304,7 +304,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
           If Left$(sValue, 1) = Chr$(34) Then
             If sProperty = "Name" Then Continue
-            vValue = UnQuote(Mid$(sValue, 2, -1))
+            vValue = Unquote(Mid$(sValue, 2, -1))
             If sClass = "ComboBox" Or sClass = "ListBox" Then 
               If sProperty = "List" Then 
                 vValue = Split(vValue, "\n")
@@ -327,7 +327,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
                 If iPos3 = 0 Or If iPos3 > iPos2 Then Break
                 iPos2 = iPos3 + 1
               Loop
-              aVal.Add(UnQuote(Mid$(sValue, iPos + 1, iPos2 - iPos - 1)))
+              aVal.Add(Unquote(Mid$(sValue, iPos + 1, iPos2 - iPos - 1)))
               iPos = iPos2 + 1
             Loop
             vValue = aVal '.Join("\n")
@@ -459,6 +459,7 @@ Private Sub SaveAction()
   For Each sAction In aList
   
     cAction = $cAction[sAction]
+    If Not cAction.Exist("Menu") Then Continue
     sText = cAction["Text"]
     If Not sText Then sText = cAction["ToolTip"]
     Print #hFile, sAction, sText, cAction["Shortcut"], cAction["Picture"]

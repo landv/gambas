@@ -5,7 +5,7 @@
   Text = ("Select a picture")
   Persistent = True
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { tabIcon TabStrip
     MoveScaled(1,1,69,48)
@@ -24,10 +24,10 @@
     Text = ("Stock")
     { VBox1 VBox
       MoveScaled(1,1,63,42)
-      Spacing = 8
+      Spacing = True
       { HBox2 HBox
         MoveScaled(1,1,42,4)
-        Spacing = 8
+        Spacing = True
         { Label1 Label
           MoveScaled(0,0,6,4)
           AutoResize = True
@@ -50,7 +50,7 @@
   }
   { HBox1 HBox
     MoveScaled(3,52,44,4)
-    Spacing = 8
+    Spacing = True
     { Panel1 Panel
       MoveScaled(7,1,4,3)
       Expand = True

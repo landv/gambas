@@ -5,7 +5,7 @@
   Text = ("Project commit")
   Icon = Picture["icon:/small/ok"]
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { Label3 Label
     MoveScaled(1,1,24,4)
@@ -14,7 +14,7 @@
   }
   { HBox2 HBox
     MoveScaled(1,4,54,4)
-    Spacing = 8
+    Spacing = True
     { Label1 Label
       MoveScaled(0,0,16,4)
       Text = ("User")
@@ -27,7 +27,7 @@
   }
   { HBox3 HBox
     MoveScaled(1,8,54,4)
-    Spacing = 8
+    Spacing = True
     { Label2 Label
       MoveScaled(0,0,16,4)
       Text = ("Password")
@@ -47,7 +47,7 @@
   { VBox1 VBox
     MoveScaled(1,17,78,41)
     Expand = True
-    Spacing = 2
+    Spacing = True
     { HBox4 HBox
       MoveScaled(3,2,69,4)
       { btnCut ToolButton
@@ -117,7 +117,7 @@
   }
   { HBox1 HBox
     MoveScaled(3,60,54,4)
-    Spacing = 8
+    Spacing = True
     { Panel1 Panel
       MoveScaled(3,0,4,4)
       Expand = True

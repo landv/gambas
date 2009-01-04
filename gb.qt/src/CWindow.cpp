@@ -1448,7 +1448,8 @@ GB_DESC CWindowDesc[] =
   GB_PROPERTY("Visible", "b", CWINDOW_visible),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
 	
 	GB_PROPERTY("Type", "i", CWINDOW_type),
@@ -1640,8 +1641,6 @@ void MyMainWindow::showActivate(QWidget *transient)
 		
 	if (parent != THIS && parentWidget() != newParentWidget)
 		doReparent(newParentWidget, getWFlags(), pos());
-	else
-		newParentWidget = 0;
 
 	#ifndef NO_X_WINDOW
 	if (newParentWidget && isToolbar())
@@ -2386,7 +2385,6 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
 		}
 		if (active)
 		{
-			qDebug("doReparent: setActiveWindow");
 			setActiveWindow();
 		}
 	#endif

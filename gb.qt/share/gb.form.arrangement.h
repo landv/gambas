@@ -35,8 +35,9 @@ Datatype of variables that points at the arrangement structure.
 This structure contains all the arrangement flags, and must have (at least)
 the following fields:
 - mode : the arrangement style.
-- spacing : number of pixels that separates children.
+- spacing : if children must be separate by Desktop.Scale
 - padding : number of pixels around the arrangement area.
+- margin : if the arrangement area must have a margin of Desktop.Scale
 - autoresize : if the container must try to fit its contents.
 - locked : if the container is being arranged.
 - user : if the container is a UserControl or a UserContainer.
@@ -108,6 +109,9 @@ Make a function, as this macro is called several times.
 Returns the Gambas object associated with the specified widget, or NULL if there is
 no Gambas object.
 
+#define DESKTOP_SCALE
+Returns the value of Desktop.Scale
+
 #define RAISE_ARRANGE_EVENT(_object)
 Code to raise the Arrange event of containers.
 
@@ -137,6 +141,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
   void *ob;
   bool rtl = IS_RIGHT_TO_LEFT();
   int rtlm = rtl ? -1 : 1;
+  int padding;
 
 	//if (qstrcmp(GB.GetClassName(THIS), "FOutput") == 0)
   if (!CAN_ARRANGE(_object))
@@ -176,6 +181,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 		swap = (arr->mode & 1) == 0;
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
+		padding = arr->padding;
+		if (arr->margin) padding += DESKTOP_SCALE;
 
 		for(i = 0; i < 3; i++)
 		{
@@ -190,10 +197,10 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			//if (hc > GET_WIDGET_H(cont))
 			//	qDebug("hc = %d H = %d ?", hc, GET_WIDGET_H(cont));
 			
-			xc += arr->padding;
-			yc += arr->padding;
-			wc -= arr->padding * 2;
-			hc -= arr->padding * 2;
+			xc += padding;
+			yc += padding;
+			wc -= padding * 2;
+			hc -= padding * 2;
 
 			//qDebug("CCONTAINER_arrange: %p: %s (%d, %d, %d, %d) pad %d spc %d [%d]", THIS, GB.GetClassName(THIS), xc, yc, wc, hc, arr->padding, arr->spacing, i);
 
@@ -512,10 +519,10 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						{
 							if (rtl)
 								//RESIZE_WIDGET(cont, xc - x + arr->padding + wf, GET_WIDGET_H(cont));
-								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : xc - x + arr->padding + wf, dmax + hf + arr->padding * 2);
+								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : xc - x + padding + wf, dmax + hf + padding * 2);
 							else
 								//RESIZE_WIDGET(cont, x + arr->padding + wf, GET_WIDGET_H(cont));
-								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : x + arr->padding + wf, dmax + hf + arr->padding * 2);
+								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : x + padding + wf, dmax + hf + padding * 2);
 						}
 						
 						break;
@@ -531,20 +538,20 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 // 						#endif
 						//RESIZE_WIDGET(cont, GET_WIDGET_W(cont), y + arr->padding + hf);
 						if (dmax > 0)
-							RESIZE_CONTAINER(GET_WIDGET(_object), cont, dmax + wf + arr->padding * 2, has_expand_children ? GET_WIDGET_H(cont) : y + arr->padding + hf);
+							RESIZE_CONTAINER(GET_WIDGET(_object), cont, dmax + wf + padding * 2, has_expand_children ? GET_WIDGET_H(cont) : y + padding + hf);
 						break;
 
 					case ARRANGE_COLUMN:
 						if (rtl)
-							RESIZE_CONTAINER(GET_WIDGET(_object), cont, (wc - x) + w + arr->padding + wf, GET_WIDGET_H(cont));
+							RESIZE_CONTAINER(GET_WIDGET(_object), cont, (wc - x) + w + padding + wf, GET_WIDGET_H(cont));
 						else
-							RESIZE_CONTAINER(GET_WIDGET(_object), cont, x + w + arr->padding + wf, GET_WIDGET_H(cont));
+							RESIZE_CONTAINER(GET_WIDGET(_object), cont, x + w + padding + wf, GET_WIDGET_H(cont));
 						break;
 
 					case ARRANGE_ROW:
 						//if ((y + h + arr->padding + GET_WIDGET_H(cont) - hc - yc) < 16)
 						//	qDebug("y = %d h = %d arr->padding = %d H = %d hc = %d yc = %d -> %d", y, h, arr->padding, GET_WIDGET_H(cont), hc, yc, (y + h + arr->padding + GET_WIDGET_H(cont) - hc - yc));
-						RESIZE_CONTAINER(GET_WIDGET(_object), cont, GET_WIDGET_W(cont), y + h + arr->padding + hf);
+						RESIZE_CONTAINER(GET_WIDGET(_object), cont, GET_WIDGET_W(cont), y + h + padding + hf);
 						break;
 					
 					case ARRANGE_FILL:
@@ -552,7 +559,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 // 						if (strncmp(((gControl *)_object)->name(), "DataControl", 11) == 0)
 // 							fprintf(stderr, "%s: RESIZE_CONTAINER(%p, %p, %d, %d)\n", ((gControl *)_object)->name(), GET_WIDGET(_object), cont, w, h);
 // 						#endif
-						RESIZE_CONTAINER(GET_WIDGET(_object), cont, w + arr->padding * 2, h + arr->padding * 2);
+						RESIZE_CONTAINER(GET_WIDGET(_object), cont, w + padding * 2, h + padding * 2);
 						break;
 				}
 			}

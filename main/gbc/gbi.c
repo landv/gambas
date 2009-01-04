@@ -718,8 +718,7 @@ int main(int argc, char **argv)
 				if (strcmp(FILE_get_ext(name), "component"))
 					continue;
 				name = FILE_get_basename(name);
-				/*puts(name);
-				analyze(name, FALSE);*/
+				puts(name);
 				run_myself(argv[0], name);
 			}
 	

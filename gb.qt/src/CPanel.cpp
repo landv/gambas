@@ -108,8 +108,9 @@ GB_DESC CPanelDesc[] =
   GB_PROPERTY("Border", "i", CWIDGET_border_full),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
 
 	PANEL_DESCRIPTION,
 	
@@ -124,7 +125,8 @@ GB_DESC CHBoxDesc[] =
   GB_METHOD("_new", NULL, CHBOX_new, "(Parent)Container;"),
 
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
 
 	HBOX_DESCRIPTION,
@@ -140,8 +142,9 @@ GB_DESC CVBoxDesc[] =
   GB_METHOD("_new", NULL, CVBOX_new, "(Parent)Container;"),
 
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
-  GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
 
 	VBOX_DESCRIPTION,
 	
@@ -156,7 +159,8 @@ GB_DESC CHPanelDesc[] =
   GB_METHOD("_new", NULL, CHPANEL_new, "(Parent)Container;"),
 
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
 
 	HPANEL_DESCRIPTION,
@@ -172,7 +176,8 @@ GB_DESC CVPanelDesc[] =
   GB_METHOD("_new", NULL, CVPANEL_new, "(Parent)Container;"),
 
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
 
 	VPANEL_DESCRIPTION,

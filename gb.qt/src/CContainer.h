@@ -40,14 +40,15 @@
 
 typedef
   struct {
-    unsigned char mode;
-    unsigned char spacing;
-    unsigned char padding;
-    unsigned autoresize:1;
-    unsigned locked:1;
-    unsigned user:1;
-    unsigned dirty:1;
-    unsigned _reserved:4;
+    unsigned mode : 8;
+    unsigned padding : 8;
+    unsigned spacing : 8;
+    unsigned locked : 1;
+    unsigned user : 1;
+    unsigned dirty : 1;
+    unsigned autoresize : 1;
+    unsigned margin : 1;
+    unsigned _reserved : 3;
     }
   CARRANGEMENT;
 
@@ -64,21 +65,22 @@ typedef
   struct {
     CWIDGET widget;
     QWidget *container;
-    unsigned char mode;
-    unsigned char spacing;
-    unsigned char padding;
-    unsigned autoresize:1;
-    unsigned locked:1;
-    unsigned user:1;
-    unsigned dirty:1;
-    unsigned _reserved:4;
+    unsigned mode : 8;
+    unsigned padding : 8;
+    unsigned spacing : 8;
+    unsigned locked : 1;
+    unsigned user : 1;
+    unsigned dirty : 1;
+    unsigned autoresize : 1;
+    unsigned margin : 1;
+    unsigned _reserved : 3;
     }
   CCONTAINER_ARRANGEMENT;
 
 typedef
 	struct {
 		CCONTAINER parent;
-		int32_t save;
+		int save;
 		}
 	CUSERCONTAINER;
 
@@ -96,6 +98,7 @@ DECLARE_PROPERTY(CCONTAINER_arrangement);
 DECLARE_PROPERTY(CCONTAINER_auto_resize);
 DECLARE_PROPERTY(CCONTAINER_padding);
 DECLARE_PROPERTY(CCONTAINER_spacing);
+DECLARE_PROPERTY(CCONTAINER_margin);
 
 void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);

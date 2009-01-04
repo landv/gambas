@@ -5,7 +5,7 @@
   Text = ("Paste special")
   Icon = Picture["icon:/small/paste"]
   Resizable = False
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { lstFormat ListBox
     MoveScaled(1,5,48,17)
@@ -33,7 +33,7 @@
   }
   { HBox1 HBox
     MoveScaled(1,41,48,4)
-    Spacing = 8
+    Spacing = True
     { Panel1 Panel
       MoveScaled(1,0,4,4)
       Expand = True

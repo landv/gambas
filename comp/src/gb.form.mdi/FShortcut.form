@@ -5,8 +5,8 @@
   Text = ("Configure shortcuts")
   Icon = Picture["icon:/small/shortcut"]
   Arrangement = Arrange.Vertical
-  Spacing = 8
-  Padding = 8
+  Spacing = True
+  Margin = True
   { tvwShortcut TableView
     MoveScaled(1,1,76,47)
     Expand = True
@@ -15,7 +15,7 @@
   }
   { HBox2 HBox
     MoveScaled(1,51,84,4)
-    Spacing = 8
+    Spacing = True
     { btnFind ToggleButton
       MoveScaled(0,0,26,4)
       Text = ("Find shortcut")

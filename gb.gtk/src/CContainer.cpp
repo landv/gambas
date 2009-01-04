@@ -166,8 +166,16 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTAINER_spacing)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->spacing()); return; }
-	WIDGET->setSpacing(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->spacing()); return; }
+	WIDGET->setSpacing(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CCONTAINER_margin)
+
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->margin()); return; }
+	WIDGET->setMargin(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -349,10 +357,23 @@ END_PROPERTY
 BEGIN_PROPERTY(CUSERCONTAINER_spacing)
 	
 	if (READ_PROPERTY)
-		GB.ReturnInteger(WIDGET_CONT->spacing());
+		GB.ReturnBoolean(WIDGET_CONT->spacing());
 	else
 	{
-		WIDGET_CONT->setSpacing(VPROP(GB_INTEGER));
+		WIDGET_CONT->setSpacing(VPROP(GB_BOOLEAN));
+		THIS_UC->save = WIDGET_CONT->fullArrangement();
+	}
+	
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CUSERCONTAINER_margin)
+	
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET_CONT->margin());
+	else
+	{
+		WIDGET_CONT->setMargin(VPROP(GB_BOOLEAN));
 		THIS_UC->save = WIDGET_CONT->fullArrangement();
 	}
 	
@@ -385,7 +406,8 @@ GB_DESC CUserContainerDesc[] =
   GB_PROPERTY("Arrangement", "i", CUSERCONTAINER_arrangement),
   GB_PROPERTY("AutoResize", "b", CUSERCONTAINER_auto_resize),
   GB_PROPERTY("Padding", "i", CUSERCONTAINER_padding),
-  GB_PROPERTY("Spacing", "i", CUSERCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CUSERCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CUSERCONTAINER_margin),
 
 	USERCONTAINER_DESCRIPTION,
 

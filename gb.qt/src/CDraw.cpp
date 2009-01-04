@@ -131,7 +131,6 @@ static QWidget *get_widget(GB_DRAW *d)
 static uint get_color(GB_DRAW *d, int col, bool bg)
 {
 	QWidget *wid = get_widget(d);
-	int ocol = col;
 	
 	if (col == COLOR_DEFAULT)
 	{

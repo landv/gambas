@@ -111,6 +111,8 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 	GB.Raise(_object, EVENT_Arrange, 0); \
 }
 
+#define DESKTOP_SCALE MAIN_scale
+
 //THIS_ARRANGEMENT->dirty = FALSE;
 
 #define FUNCTION_NAME CCONTAINER_arrange
@@ -161,8 +163,8 @@ void CCONTAINER_get_max_size(void *_object, int *w, int *h)
 	max_w = 0;
 	max_h = 0;
 	get_max_size(THIS);
-	*w = max_w + THIS_ARRANGEMENT->padding;
-	*h = max_h + THIS_ARRANGEMENT->padding;
+	*w = max_w + THIS_ARRANGEMENT->padding + THIS_ARRANGEMENT->margin ? MAIN_scale : 0;
+	*h = max_h + THIS_ARRANGEMENT->padding + THIS_ARRANGEMENT->margin ? MAIN_scale : 0;
 	
 	THIS_ARRANGEMENT->locked = locked;
 }
@@ -495,27 +497,26 @@ BEGIN_PROPERTY(CUSERCONTAINER_auto_resize)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CCONTAINER_padding)
+BEGIN_PROPERTY(CCONTAINER_margin)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(THIS_ARRANGEMENT->padding);
+    GB.ReturnBoolean(THIS_ARRANGEMENT->margin);
   else
   {
-    int val = VPROP(GB_INTEGER);
-
-    if (val >= 0 && val < 32768)
-    {
-      THIS_ARRANGEMENT->padding = val;
-      arrange_now(CONTAINER);
-    }
+  	bool val = VPROP(GB_BOOLEAN);
+  	if (val != THIS_ARRANGEMENT->margin)
+  	{
+    	THIS_ARRANGEMENT->margin = val;
+			arrange_now(CONTAINER);
+		}
   }
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CUSERCONTAINER_padding)
+BEGIN_PROPERTY(CUSERCONTAINER_margin)
 
 	CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
-	CCONTAINER_padding(cont, _param);
+	CCONTAINER_margin(cont, _param);
 	if (!READ_PROPERTY)
 	{
 		THIS_USERCONTAINER->save = cont->arrangement;
@@ -528,16 +529,11 @@ END_PROPERTY
 BEGIN_PROPERTY(CCONTAINER_spacing)
 
   if (READ_PROPERTY)
-    GB.ReturnInteger(THIS_ARRANGEMENT->spacing);
+    GB.ReturnBoolean(THIS_ARRANGEMENT->spacing);
   else
   {
-    int val = VPROP(GB_INTEGER);
-
-    if (val >= 0 && val < 32768)
-    {
-      THIS_ARRANGEMENT->spacing = val;
-      arrange_now(CONTAINER);
-    }
+		THIS_ARRANGEMENT->spacing = VPROP(GB_BOOLEAN) ? MAIN_scale : 0;
+		arrange_now(CONTAINER);
   }
 
 END_PROPERTY
@@ -546,6 +542,35 @@ BEGIN_PROPERTY(CUSERCONTAINER_spacing)
 
 	CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
 	CCONTAINER_spacing(cont, _param);
+	if (!READ_PROPERTY)
+	{
+		THIS_USERCONTAINER->save = cont->arrangement;
+	  //qDebug("(%s %p): save = %08X (spacing)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
+	}
+
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CCONTAINER_padding)
+
+  if (READ_PROPERTY)
+    GB.ReturnInteger(THIS_ARRANGEMENT->padding);
+  else
+  {
+  	int val = VPROP(GB_INTEGER);
+  	if (val >= 0 && val < 256)
+  	{
+			THIS_ARRANGEMENT->padding = val;
+			arrange_now(CONTAINER);
+		}
+  }
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CUSERCONTAINER_padding)
+
+	CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
+	CCONTAINER_padding(cont, _param);
 	if (!READ_PROPERTY)
 	{
 		THIS_USERCONTAINER->save = cont->arrangement;
@@ -729,8 +754,9 @@ GB_DESC CUserContainerDesc[] =
 
   GB_PROPERTY("Arrangement", "i", CUSERCONTAINER_arrangement),
   GB_PROPERTY("AutoResize", "b", CUSERCONTAINER_auto_resize),
+  GB_PROPERTY("Margin", "b", CUSERCONTAINER_margin),
+  GB_PROPERTY("Spacing", "b", CUSERCONTAINER_spacing),
   GB_PROPERTY("Padding", "i", CUSERCONTAINER_padding),
-  GB_PROPERTY("Spacing", "i", CUSERCONTAINER_spacing),
   
   GB_PROPERTY("Design", "b", CUSERCONTAINER_design),
 

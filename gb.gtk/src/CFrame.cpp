@@ -119,7 +119,8 @@ GB_DESC CPanelDesc[] =
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
 
   PANEL_DESCRIPTION,
 	
@@ -133,7 +134,8 @@ GB_DESC CHBoxDesc[] =
 
   GB_METHOD("_new", 0, CHBOX_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
 
@@ -149,7 +151,8 @@ GB_DESC CVBoxDesc[] =
 
   GB_METHOD("_new", 0, CVBOX_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
 
@@ -165,7 +168,8 @@ GB_DESC CHPanelDesc[] =
 
   GB_METHOD("_new", 0, CHPANEL_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
 
@@ -181,7 +185,8 @@ GB_DESC CVPanelDesc[] =
 
   GB_METHOD("_new", 0, CVPANEL_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
 

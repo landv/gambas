@@ -76,6 +76,7 @@ DECLARE_PROPERTY(CCONTAINER_arrangement);
 DECLARE_PROPERTY(CCONTAINER_auto_resize);
 DECLARE_PROPERTY(CCONTAINER_padding);
 DECLARE_PROPERTY(CCONTAINER_spacing);
+DECLARE_PROPERTY(CCONTAINER_margin);
 
 void CCONTAINER_cb_arrange(gContainer *sender);
 void CCONTAINER_raise_insert(CCONTAINER *_object, CWIDGET *child);

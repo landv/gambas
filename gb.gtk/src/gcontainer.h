@@ -5,14 +5,15 @@
 
 struct gContainerArrangement
 {
-	unsigned char mode;
-	unsigned char spacing;
-	unsigned char padding;
-	unsigned autoresize:1;
-	unsigned locked:1;
-	unsigned user:1;
-	unsigned dirty:1;
-	unsigned _reserved:4;
+	unsigned mode : 8;
+	unsigned padding : 8;
+	unsigned spacing : 8;
+	unsigned locked : 1;
+	unsigned user : 1;
+	unsigned dirty : 1;
+	unsigned autoresize : 1;
+	unsigned margin : 1;
+	unsigned _reserved : 3;
 }; 
 
 class gContainer : public gControl
@@ -26,7 +27,8 @@ public:
 	bool autoResize();
 	bool isUser() { return arrangement.user; }
 	int padding();
-	int spacing();
+	bool spacing();
+	bool margin();
 	virtual int clientWidth();
 	virtual int clientHeight();
 	virtual int clientX();
@@ -36,7 +38,8 @@ public:
 	void setUser(bool vl);
 	void setAutoResize(bool vl);
 	void setPadding(int vl);
-	void setSpacing(int vl);
+	void setSpacing(bool vl);
+	void setMargin(bool vl);
 
 	virtual int childCount();
 	virtual gControl* child(int index);

@@ -669,7 +669,7 @@ void gButton::setForeground(gColor color)
 		{
 			g_object_set(G_OBJECT(rendtxt),
 				"foreground-set", FALSE,
-				NULL);
+				(char *)NULL);
 		}
 		else
 		{
@@ -678,7 +678,7 @@ void gButton::setForeground(gColor color)
 			g_object_set(G_OBJECT(rendtxt),
 				"foreground-set", TRUE,
 				"foreground-gdk", &col,
-				NULL);
+				(char *)NULL);
 		}
 	}
 }

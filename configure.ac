@@ -1,6 +1,6 @@
 dnl ****************************************************************************
 dnl   global configure.ac
-dnl   (c) Beno� Minisini 2000-2006
+dnl   (c) Benoît Minisini 2000-2009
 dnl ****************************************************************************
 
 dnl ---- Initialization
@@ -37,6 +37,7 @@ GB_CONFIG_SUBDIRS(corba, gb.corba)
 GB_CONFIG_SUBDIRS(image, gb.image)
 GB_CONFIG_SUBDIRS(imageinfo, gb.image.info)
 GB_CONFIG_SUBDIRS(desktop, gb.desktop)
+GB_CONFIG_SUBDIRS(qt4, gb.qt4)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)

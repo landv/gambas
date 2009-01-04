@@ -146,7 +146,8 @@ GB_DESC CScrollViewDesc[] =
   GB_PROPERTY_READ("ScrollWidth", "i", CSCROLLVIEW_scroll_w),
   GB_PROPERTY_READ("ScrollH", "i", CSCROLLVIEW_scroll_h),
   GB_PROPERTY_READ("ScrollHeight", "i", CSCROLLVIEW_scroll_h),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   

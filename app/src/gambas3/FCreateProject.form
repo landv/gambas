@@ -6,13 +6,13 @@
   Icon = Picture["icon:/small/new"]
   Persistent = True
   Arrangement = Arrange.Horizontal
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { wizProject Wizard
     MoveScaled(1,0,84,67)
     Expand = True
     Arrangement = Arrange.Vertical
-    Spacing = 8
+    Spacing = True
     Count = 3
     ShowIndex = True
     Border = False
@@ -21,11 +21,11 @@
     { HBox5 HBox
       MoveScaled(0,0,79,56)
       Expand = True
-      Spacing = 8
+      Spacing = True
       { VBox3 VBox
         MoveScaled(1,1,34,49)
         Expand = True
-        Spacing = 8
+        Spacing = True
         { Label5 Label
           MoveScaled(1,0,25,4)
           Font = Font["Bold"]
@@ -40,7 +40,7 @@
             MoveScaled(0,0,32,6)
             Tag = "GUI"
             Mouse = Mouse.Pointing
-            Spacing = 8
+            Spacing = True
             Padding = 4
             { PictureBox7 PictureBox
               MoveScaled(1,1,5,5)
@@ -58,7 +58,7 @@
             MoveScaled(0,7,32,6)
             Tag = "QT"
             Mouse = Mouse.Pointing
-            Spacing = 8
+            Spacing = True
             Padding = 4
             { PictureBox2 PictureBox
               MoveScaled(1,1,5,5)
@@ -76,7 +76,7 @@
             MoveScaled(0,13,32,6)
             Tag = "GTK"
             Mouse = Mouse.Pointing
-            Spacing = 8
+            Spacing = True
             Padding = 4
             { PictureBox3 PictureBox
               MoveScaled(1,1,5,5)
@@ -94,7 +94,7 @@
             MoveScaled(0,19,32,6)
             Tag = "CONSOLE"
             Mouse = Mouse.Pointing
-            Spacing = 8
+            Spacing = True
             Padding = 4
             { PictureBox4 PictureBox
               MoveScaled(1,1,5,5)
@@ -112,7 +112,7 @@
             MoveScaled(0,25,32,6)
             Tag = "GAME"
             Mouse = Mouse.Pointing
-            Spacing = 8
+            Spacing = True
             Padding = 4
             { PictureBox5 PictureBox
               MoveScaled(1,1,5,5)
@@ -130,7 +130,7 @@
             MoveScaled(0,31,32,6)
             Tag = "WEB"
             Mouse = Mouse.Pointing
-            Spacing = 8
+            Spacing = True
             Padding = 4
             { PictureBox1 PictureBox
               MoveScaled(1,1,5,5)
@@ -152,7 +152,7 @@
             MoveScaled(0,39,32,6)
             Tag = "!SVN"
             Mouse = Mouse.Pointing
-            Spacing = 8
+            Spacing = True
             Padding = 4
             { PictureBox6 PictureBox
               MoveScaled(1,1,5,5)
@@ -171,7 +171,7 @@
       { VBox1 VBox
         MoveScaled(36,1,39,53)
         Expand = True
-        Spacing = 8
+        Spacing = True
         { Label12 Label
           MoveScaled(1,0,25,4)
           Font = Font["Bold"]
@@ -254,7 +254,7 @@
     Text = ("Project information")
     { panIdent VBox
       MoveScaled(0,0,80,16)
-      Spacing = 8
+      Spacing = True
       { Label10 Label
         MoveScaled(0,0,25,4)
         Font = Font["Bold"]
@@ -288,7 +288,7 @@
     { panRepository VBox
       MoveScaled(0,17,81,23)
       Expand = True
-      Spacing = 8
+      Spacing = True
       { Label7 Label
         MoveScaled(0,0,25,4)
         Font = Font["Bold"]

@@ -6,7 +6,7 @@
   Icon = Picture["icon:/small/exec"]
   Persistent = True
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { fchExec FileChooser
     MoveScaled(1,1,68,45)
@@ -16,13 +16,13 @@
   { Expander1 Expander
     MoveScaled(2,47,70,17)
     Arrangement = Arrange.Vertical
-    Spacing = 8
+    Spacing = True
     Text = ("Options")
     TextFont = Font["Bold"]
     Hidden = True
     { HBox2 HBox
       MoveScaled(0,0,68,4)
-      Spacing = 8
+      Spacing = True
       { Label1 Label
         MoveScaled(0,0,24,4)
         AutoResize = True
@@ -49,7 +49,7 @@
   }
   { HBox1 HBox
     MoveScaled(2,65,73,4)
-    Spacing = 8
+    Spacing = True
     { Panel1 Panel
       MoveScaled(30,0,4,3)
       Expand = True

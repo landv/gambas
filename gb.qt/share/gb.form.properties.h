@@ -29,13 +29,13 @@
   "Tag,Mouse{Mouse.Default;Blank;Arrow;Cross;Wait;Text;SizeAll;SizeH;SizeV;SizeN;SizeS;SizeW;" \
   "SizeE;SizeNWSE;SizeNESW;SplitH;SplitV;Pointing}=Default,ToolTip,Drop,Expand,Ignore"
 #define CARRANGEMENT_PROPERTY "Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill}"
-#define CPADDING_PROPERTIES "Spacing{Range:0;64},Padding{Range:0;64}"
+#define CPADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63}"
 #define CARRANGEMENT_PROPERTIES CARRANGEMENT_PROPERTY ",AutoResize," CPADDING_PROPERTIES
 #define CUSERCONTROL_PROPERTIES "*"
 #define CUSERCONTAINER_PROPERTIES "*," CARRANGEMENT_PROPERTIES
 
-#define CLABEL_PROPERTIES "*,Padding{Range:0;64},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
-#define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;64},AutoResize,Text,Alignment{Align.*}=TopNormal,Border{Border.*},Transparent"
+#define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
+#define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=TopNormal,Border{Border.*},Transparent"
 #define CPICTUREBOX_PROPERTIES "*,Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.*}"
 #define CTEXTBOX_PROPERTIES "*,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Password,MaxLength,Border=True"
 #define CTEXTAREA_PROPERTIES "*,Text,ReadOnly,Wrap,Border=True,ScrollBar{Scroll.*}=Both"

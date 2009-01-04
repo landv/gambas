@@ -6,14 +6,14 @@
   Icon = Picture["icon:/small/language"]
   Persistent = True
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { Panel4 Panel
     MoveScaled(1,1,93,6)
     Visible = False
     Background = Color.SelectedBackground
     Arrangement = Arrange.Horizontal
-    Spacing = 8
+    Spacing = True
     Padding = 8
     { PictureBox1 PictureBox
       MoveScaled(1,1,5,5)
@@ -50,10 +50,10 @@
     { VBox1 VBox
       MoveScaled(27,2,78,57)
       Expand = True
-      Spacing = 8
+      Spacing = True
       { HBox3 HBox
         MoveScaled(3,1,74,4)
-        Spacing = 8
+        Spacing = True
         { lblFile Label
           MoveScaled(0,0,12,4)
           Font = Font["Bold"]
@@ -141,7 +141,7 @@
       { VBox2 VBox
         MoveScaled(2,36,71,20)
         Expand = True
-        Spacing = 8
+        Spacing = True
         { lblComment Label
           MoveScaled(2,1,48,4)
           Text = ("")
@@ -170,7 +170,7 @@
     }
     { HBox1 HBox
       MoveScaled(0,1,117,4)
-      Spacing = 8
+      Spacing = True
       { btnNew Button
         MoveScaled(0,0,18,4)
         ToolTip = ("New translation")

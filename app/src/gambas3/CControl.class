@@ -1488,5 +1488,6 @@ Public Sub AddAction(cActionSet As Collection) As Collection
   SetAction(cAction, "ToolTip")
   SetAction(cAction, "Picture")
   SetAction(cAction, "Shortcut")
+  If Kind = "Menu" Then cAction["Menu"] = True
   
 End

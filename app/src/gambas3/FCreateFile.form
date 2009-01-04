@@ -6,13 +6,13 @@
   Icon = Picture["icon:/small/new"]
   Persistent = True
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { tabFile TabStrip
     MoveScaled(1,1,76,58)
     Expand = True
     Arrangement = Arrange.Vertical
-    Spacing = 8
+    Spacing = True
     Padding = 8
     Count = 2
     Index = 0
@@ -20,13 +20,13 @@
     { HBox3 HBox
       MoveScaled(1,1,72,51)
       Expand = True
-      Spacing = 8
+      Spacing = True
       { lstType ListContainer
         MoveScaled(1,1,27,47)
         { panModule HBox
           MoveScaled(0,0,39,6)
           Tag = "module"
-          Spacing = 8
+          Spacing = True
           Padding = 8
           { PictureBox2 PictureBox
             MoveScaled(1,1,4,4)
@@ -42,7 +42,7 @@
         { HBox1 HBox
           MoveScaled(0,6,39,6)
           Tag = "class"
-          Spacing = 8
+          Spacing = True
           Padding = 8
           { PictureBox1 PictureBox
             MoveScaled(1,1,4,4)
@@ -58,7 +58,7 @@
         { panForm HBox
           MoveScaled(0,12,39,6)
           Tag = "form"
-          Spacing = 8
+          Spacing = True
           Padding = 8
           { PictureBox3 PictureBox
             MoveScaled(1,1,4,4)
@@ -74,7 +74,7 @@
         { HBox5 HBox
           MoveScaled(0,18,27,6)
           Tag = "image"
-          Spacing = 8
+          Spacing = True
           Padding = 8
           { PictureBox4 PictureBox
             MoveScaled(1,1,4,4)
@@ -90,7 +90,7 @@
         { HBox4 HBox
           MoveScaled(0,24,39,6)
           Tag = "text"
-          Spacing = 8
+          Spacing = True
           Padding = 8
           { PictureBox5 PictureBox
             MoveScaled(1,1,4,4)
@@ -106,7 +106,7 @@
         { HBox7 HBox
           MoveScaled(0,30,39,6)
           Tag = "html"
-          Spacing = 8
+          Spacing = True
           Padding = 8
           { PictureBox6 PictureBox
             MoveScaled(1,1,4,4)
@@ -122,7 +122,7 @@
         { HBox2 HBox
           MoveScaled(0,37,39,6)
           Tag = "css"
-          Spacing = 8
+          Spacing = True
           Padding = 8
           { PictureBox7 PictureBox
             MoveScaled(1,1,4,4)
@@ -139,7 +139,7 @@
       { panOption VBox
         MoveScaled(29,1,42,48)
         Expand = True
-        Spacing = 8
+        Spacing = True
         { Label9 Label
           MoveScaled(0,0,25,4)
           Font = Font["Bold"]
@@ -257,7 +257,7 @@
   }
   { HBox6 HBox
     MoveScaled(11,60,60,4)
-    Spacing = 8
+    Spacing = True
     { Panel1 Panel
       MoveScaled(11,0,4,4)
       Expand = True

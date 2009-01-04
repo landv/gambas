@@ -6,13 +6,13 @@
   Text = ("Tips of the day")
   Icon = Picture["img/16/tip.png"]
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { Panel1 Panel
     MoveScaled(1,1,75,5)
     Background = Color.SelectedBackground
     Arrangement = Arrange.Horizontal
-    Spacing = 4
+    Spacing = True
     { PictureBox1 PictureBox
       MoveScaled(0,0,5,5)
       Picture = Picture["icon:/24/lamp"]
@@ -35,7 +35,7 @@
     MoveScaled(1,47,76,4)
     Arrangement = Arrange.Horizontal
     AutoResize = True
-    Spacing = 8
+    Spacing = True
     { chkShowTip CheckBox
       MoveScaled(0,0,31,4)
       Expand = True

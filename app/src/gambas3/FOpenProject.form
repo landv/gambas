@@ -6,7 +6,7 @@
   Icon = Picture["icon:/32/open"]
   Persistent = True
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { tabProject TabStrip
     MoveScaled(1,1,96,69)
@@ -52,7 +52,7 @@
     { panRecent Panel
       MoveScaled(1,1,83,60)
       Arrangement = Arrange.Vertical
-      Spacing = 8
+      Spacing = True
       { chkSortRecent CheckBox
         MoveScaled(0,0,24,4)
         Text = ("Sort by path")
@@ -72,7 +72,7 @@
   }
   { HBox1 HBox
     MoveScaled(1,71,87,4)
-    Spacing = 8
+    Spacing = True
     { chkOther CheckBox
       MoveScaled(1,0,43,4)
       Expand = True

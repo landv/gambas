@@ -515,7 +515,8 @@ GB_DESC CScrollViewDesc[] =
 
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
-  GB_PROPERTY("Spacing", "i", CCONTAINER_spacing),
+  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+  GB_PROPERTY("Margin", "b", CCONTAINER_margin),
 
   GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),
 

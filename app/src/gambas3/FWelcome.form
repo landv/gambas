@@ -7,7 +7,7 @@
   Text = ("Welcome to Gambas 3")
   Icon = Picture["img/logo/new-logo-32.png"]
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { panBackground Panel
     MoveScaled(1,1,61,18)
@@ -18,7 +18,7 @@
     { VBox1 VBox
       MoveScaled(1,1,43,16)
       Expand = True
-      Spacing = 4
+      Spacing = True
       { lblGambas Label
         MoveScaled(0,0,32,7)
         Font = Font["Bold,+10"]
@@ -75,7 +75,7 @@
       Background = Color.SelectedBackground
       Expand = True
       Arrangement = Arrange.Vertical
-      Spacing = 4
+      Spacing = True
       Padding = 4
       { lblList Label
         MoveScaled(1,0,24,3)

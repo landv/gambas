@@ -9,7 +9,7 @@
   { wizInstall Wizard
     MoveScaled(1,1,77,80)
     Arrangement = Arrange.Vertical
-    Spacing = 8
+    Spacing = True
     Count = 8
     ShowIndex = True
     Border = False
@@ -49,7 +49,7 @@
     }
     { HBox1 HBox
       MoveScaled(1,22,71,4)
-      Spacing = 8
+      Spacing = True
       { Label1 Label
         MoveScaled(0,0,23,4)
         Text = ("Your name")
@@ -62,7 +62,7 @@
     }
     { HBox2 HBox
       MoveScaled(1,27,70,4)
-      Spacing = 8
+      Spacing = True
       { Label2 Label
         MoveScaled(0,0,23,4)
         Text = ("Your e-mail address")
@@ -75,7 +75,7 @@
     }
     { HBox8 HBox
       MoveScaled(1,32,70,4)
-      Spacing = 8
+      Spacing = True
       { Label3 Label
         MoveScaled(0,0,23,4)
         Text = ("Vendor name")
@@ -140,11 +140,11 @@
     { panSystem VBox
       MoveScaled(0,0,72,65)
       Expand = True
-      Spacing = 4
+      Spacing = True
       { HBox5 HBox
         MoveScaled(1,0,69,9)
         Tag = "debian"
-        Spacing = 8
+        Spacing = True
         Padding = 4
         { ToolButton3 ToolButton
           MoveScaled(0,0,8,8)
@@ -161,7 +161,7 @@
       { HBox6 HBox
         MoveScaled(1,9,69,9)
         Tag = "fedora"
-        Spacing = 8
+        Spacing = True
         Padding = 4
         { ToolButton4 ToolButton
           MoveScaled(0,0,8,8)
@@ -178,7 +178,7 @@
       { HBox3 HBox
         MoveScaled(1,18,69,9)
         Tag = "mandriva"
-        Spacing = 8
+        Spacing = True
         Padding = 4
         { ToolButton2 ToolButton
           MoveScaled(0,0,8,8)
@@ -195,7 +195,7 @@
       { HBox7 HBox
         MoveScaled(1,27,69,9)
         Tag = "suse"
-        Spacing = 8
+        Spacing = True
         Padding = 4
         { ToolButton5 ToolButton
           MoveScaled(0,0,8,8)
@@ -212,7 +212,7 @@
       { HBox4 HBox
         MoveScaled(1,36,69,9)
         Tag = "slackware"
-        Spacing = 8
+        Spacing = True
         Padding = 4
         { ToolButton1 ToolButton
           MoveScaled(0,0,8,8)
@@ -229,7 +229,7 @@
       { HBox9 HBox
         MoveScaled(1,45,69,9)
         Tag = "ubuntu"
-        Spacing = 8
+        Spacing = True
         Padding = 4
         { ToolButton6 ToolButton
           MoveScaled(0,0,8,8)
@@ -246,7 +246,7 @@
       { HBox10 HBox
         MoveScaled(1,55,69,9)
         Tag = "autotools"
-        Spacing = 8
+        Spacing = True
         Padding = 4
         { ToolButton7 ToolButton
           MoveScaled(0,0,8,8)

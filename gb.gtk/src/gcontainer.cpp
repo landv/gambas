@@ -123,6 +123,8 @@ static void resize_container(gControl *cont, int w, int h)
 
 #define RAISE_ARRANGE_EVENT(_object) cb_arrange((gContainer *)_object);
 
+#define DESKTOP_SCALE gDesktop::scale();
+
 #define FUNCTION_NAME arrangeContainer
 
 #include "gb.form.arrangement.h"
@@ -157,6 +159,7 @@ void gContainer::initialize()
 	arrangement.autoresize=false;
 	arrangement.locked=false;
 	arrangement.user=false;
+	arrangement.margin = false;
 }
 
 gContainer::gContainer() 
@@ -241,18 +244,26 @@ void gContainer::setPadding(int vl)
 	}
 }
 
-int gContainer::spacing()
+bool gContainer::spacing()
 {
-	return arrangement.spacing;
+	return arrangement.spacing != 0;
 }
 
-void gContainer::setSpacing(int vl)
+void gContainer::setSpacing(bool vl)
 {
-	if (vl >= 0 && vl <= 255) 
-	{
-		arrangement.spacing=vl;
-		performArrange();
-	}
+	arrangement.spacing = vl ? gDesktop::scale() : 0;
+	performArrange();
+}
+
+bool gContainer::margin()
+{
+	return arrangement.margin;
+}
+
+void gContainer::setMargin(bool vl)
+{
+	arrangement.margin = vl;
+	performArrange();
 }
 
 bool gContainer::autoResize()
