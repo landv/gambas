@@ -257,6 +257,9 @@ Private Sub SetLang(Optional sLang As String) As Boolean
       Inc iIndex
 
       If sMsgStr = "-\\n" Then sMsgStr = "-"
+      
+      'sMsgId = UnQuoteTranslation(sMsgId)
+      'sMsgStr = UnQuoteTranslation(sMsgStr)
 
       cvwTranslate.Add(iIndex, sMsgId)
       If bFuzzy Then
@@ -473,6 +476,22 @@ Private Function QuoteTranslation(sStr As String) As String
   Return Chr$(34) & sStr & Chr$(34)
 
 End
+
+' Private Function QuoteTranslation(sStr As String) As String
+' 
+'   sStr = Replace(sStr, "\n", "")
+'   sStr = Replace(sStr, "\\n", "\n")
+'   Return Quote(sStr)
+' 
+' End
+
+' Private Function UnQuoteTranslation(sStr As String) As String
+' 
+'   sStr = Unquote(sStr)
+'   sStr = Replace(sStr, "\n", "\\n")
+'   Return sStr
+' 
+' End
 
 Public Sub btnSave_Click()
 
@@ -1062,7 +1081,7 @@ Private Sub MergeMessage(sPath As String, sOption As String)
 
   sTemp = Temp$
 
-  Shell "msgmerge --no-wrap -o " & Shell$(sPath & ".new") & " " & sOption & " > " & Shell$(sTemp) & " 2>&1" Wait
+  Shell "msgmerge --no-wrap -F -o " & Shell$(sPath & ".new") & " " & sOption & " > " & Shell$(sTemp) & " 2>&1" Wait
   If Exist(sPath & ".new") Then
     Kill sPath
     Move sPath & ".new" To sPath
