@@ -49,6 +49,7 @@ typedef
     CARRANGEMENT arrangement;
     //unsigned locked : 1;
     }
+	PACKED
   CSCROLLVIEW;
 
 
