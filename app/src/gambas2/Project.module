@@ -1497,6 +1497,17 @@ PRIVATE SUB CreateLangDirectory()
     
 END
 
+PRIVATE SUB CheckExportedClass() AS Boolean
+  
+  IF CreateComponent THEN 
+    IF NOT Exist(Project.Dir &/ ".list") THEN 
+      FGambas.Warning(("This component has no exported class."))
+      RETURN TRUE
+    ENDIF
+  ENDIF
+  
+END
+
 
 
 PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) AS Boolean
@@ -1558,13 +1569,16 @@ PUBLIC FUNCTION Compile(OPTIONAL bAll AS Boolean, OPTIONAL bNoDebug AS Boolean) 
       ENDIF
 
       'SetMessage(("OK"))
-      FGambas.Animate("Happy")
 
     ENDIF
   ENDIF
 
   UnlockIt()
-
+  
+  IF CheckExportedClass() THEN RETURN TRUE
+  
+  FGambas.Animate("Happy")
+  
 END
 
 PRIVATE FUNCTION CheckRunning(OPTIONAL bCompileAll AS Boolean) AS Boolean

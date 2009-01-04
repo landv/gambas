@@ -118,17 +118,22 @@ STATIC PRIVATE SUB InitComponent(sFile AS String, bUser AS Boolean)
   DIM sInfo AS String
   DIM sLig AS String
   DIM sKey AS String
-
+  DIM sPath AS String
   DIM iPos AS Integer
-  
   DIM sLib AS String
   DIM iKey AS Integer
   DIM sGroup AS String
 
   IF bUser THEN
-    OPEN Component.UserPath &/ sFile AS #hFic
+    sPath = Component.UserPath &/ sFile 
   ELSE
-    OPEN Component.Path &/ sFile AS #hFic
+    sPath = Component.Path &/ sFile
+  ENDIF
+
+  TRY hFic = OPEN sPath 
+  IF ERROR THEN 
+    PRINT "Warning: cannot read "; sPath
+    RETURN 
   ENDIF
 
   LINE INPUT #hFic, sLig
@@ -323,6 +328,7 @@ PUBLIC SUB Load()
   DIM bAgain AS Boolean
   DIM bNextClass AS Boolean
   DIM cClass AS NEW Collection
+  DIM sList AS String
 
   IF Loaded THEN RETURN
 
@@ -350,7 +356,13 @@ PUBLIC SUB Load()
 
   ' List of exported classes
 
-  FOR EACH sClass IN Split(File.Load(File.SetExt(sPath, "list")), "\n")
+  TRY sList = File.Load(File.SetExt(sPath, "list"))
+  IF ERROR THEN 
+    PRINT "Warning: cannot read "; File.SetExt(sPath, "list")
+    RETURN
+  ENDIF
+  
+  FOR EACH sClass IN Split(sList, "\n")
     IF sClass THEN cClass[sClass] = TRUE
   NEXT
 
