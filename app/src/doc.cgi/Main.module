@@ -270,7 +270,10 @@ Private Sub OpenDatabase()
 
   ' Suffixe ?show
 
-  If $bShow Then 
+  If $bView Then
+    $sUri = AddParam($sUri, "view")
+    $sShowSuff = "view"
+  Else If $bShow Then 
     $sUri = AddParam($sUri, "show")
     $sShowSuff = "show"
   Endif

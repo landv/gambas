@@ -1078,11 +1078,11 @@ static void output_string(void)
 }
 
 
-PUBLIC const char *OUTPUT_get_file(const char *file)
+PUBLIC char *OUTPUT_get_file(const char *file)
 {
-  const char *output;
+  char *output;
   char *p;
-  const char *dir;
+  char *dir;
   char *name;
 
   dir = STR_copy(FILE_get_dir(file));
@@ -1099,7 +1099,7 @@ PUBLIC const char *OUTPUT_get_file(const char *file)
     *p = toupper(*p);
   }
 
-  output = FILE_cat(dir, ".gambas", NULL);
+  output = (char *)FILE_cat(dir, ".gambas", NULL);
   if (mkdir(output, 0777) == 0)
   	FILE_set_owner(output, COMP_project);
 
@@ -1112,20 +1112,20 @@ PUBLIC const char *OUTPUT_get_file(const char *file)
 }
 
 
-PUBLIC const char *OUTPUT_get_trans_file(const char *file)
+PUBLIC char *OUTPUT_get_trans_file(const char *file)
 {
-  const char *output;
-  const char *dir;
-  const char *name;
+  char *output;
+  char *dir;
+  char *name;
 
   dir = STR_copy(FILE_get_dir(file));
   name = STR_copy(FILE_get_name(file));
 
-  output = FILE_cat(dir, ".lang", NULL);
+  output = (char *)FILE_cat(dir, ".lang", NULL);
   if (mkdir(output, 0777) == 0)
   	FILE_set_owner(output, COMP_project);
 
-  output = FILE_cat(dir, ".lang", name, NULL);
+  output = (char *)FILE_cat(dir, ".lang", name, NULL);
   output = STR_copy(FILE_set_ext(output, "pot"));
 
   STR_free(dir);

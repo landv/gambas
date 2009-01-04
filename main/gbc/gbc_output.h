@@ -45,8 +45,8 @@ typedef
 #define OUTPUT_BUFFER_SIZE 16384
 
 PUBLIC void OUTPUT_do(bool swap);
-PUBLIC const char *OUTPUT_get_file(const char *file);
-PUBLIC const char *OUTPUT_get_trans_file(const char *file);
+PUBLIC char *OUTPUT_get_file(const char *file);
+PUBLIC char *OUTPUT_get_trans_file(const char *file);
 
 #endif
 

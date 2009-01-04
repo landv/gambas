@@ -781,3 +781,287 @@
     }
   }
 }
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action about
+    Text = "&About Gambas..."
+    Shortcut = ""
+    Picture = "img/logo/new-logo-16.png"
+  }
+  { Action archive
+    Text = "&Source archive..."
+    Shortcut = "Ctrl+Alt+A"
+    Picture = "icon:/small/archive"
+  }
+  { Action break
+    Text = "&Toggle breakpoint"
+    Shortcut = "F9"
+    Picture = "icon:/small/flag"
+  }
+  { Action browse-project
+    Text = "&Browse project..."
+    Shortcut = "Ctrl+Alt+O"
+    Picture = "icon:/small/view-icon"
+  }
+  { Action clean-up-project
+    Text = "&Clean up"
+    Shortcut = ""
+    Picture = "icon:/small/clear"
+  }
+  { Action clear-break
+    Text = "Clear &all breakpoints"
+    Shortcut = ""
+  }
+  { Action close-all-debug
+    Text = "Close all &debug windows"
+    Shortcut = ""
+  }
+  { Action close-all-window
+    Text = "Close &all windows"
+    Shortcut = "Ctrl+Alt+W"
+  }
+  { Action compile
+    Text = "&Compile"
+    Shortcut = "F7"
+    Picture = "icon:/small/make"
+  }
+  { Action compile-all
+    Text = "Compile &All"
+    Shortcut = "Alt+F7"
+    Picture = "icon:/small/make-all"
+  }
+  { Action console
+    Text = "&Console"
+    Shortcut = "F11"
+    Picture = "icon:/small/terminal"
+  }
+  { Action control
+    Text = "&Toolbox"
+    Shortcut = "F6"
+    Picture = "icon:/small/tools"
+  }
+  { Action copy
+    Text = "&Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/small/copy"
+  }
+  { Action copy-file-path
+    Text = "Copy file pat&h"
+    Shortcut = "Ctrl+Shift+C"
+  }
+  { Action cut
+    Text = "&Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/small/cut"
+  }
+  { Action database-manager
+    Text = "&Database manager..."
+    Shortcut = ""
+    Picture = "img/16/database-manager.png"
+  }
+  { Action delete
+    Text = "&Delete..."
+    Shortcut = "Del"
+    Picture = "icon:/small/delete"
+  }
+  { Action exec
+    Text = "E&xecutable..."
+    Shortcut = "Ctrl+Alt+X"
+    Picture = "icon:/small/exec"
+  }
+  { Action find
+    Text = "Find & replace"
+    Picture = "icon:/small/find"
+  }
+  { Action find-replace
+    Text = "&Find && replace"
+    Shortcut = "Ctrl+F"
+    Picture = "icon:/small/find"
+  }
+  { Action forward
+    Text = "&Forward"
+    Shortcut = "Shift+F8"
+    Picture = "icon:/small/forward"
+  }
+  { Action help
+    Text = "&Help browser"
+    Shortcut = "F1"
+    Picture = "icon:/small/help"
+  }
+  { Action hide-menubar
+    Text = "Hide menubar"
+    Shortcut = "Ctrl+Alt+M"
+    Picture = "img/16/menu.png"
+  }
+  { Action hierarchy
+    Text = "Form hierarchy"
+    Picture = "icon:/small/layers"
+  }
+  { Action info
+    Text = "&Properties..."
+    Shortcut = "Ctrl+I"
+    Picture = "icon:/small/info"
+  }
+  { Action install
+    Text = "&Installation package..."
+    Shortcut = "Ctrl+Alt+I"
+    Picture = "icon:/small/package"
+  }
+  { Action new-class
+    Text = "&Class..."
+    Shortcut = ""
+    Picture = "img/16/class.png"
+  }
+  { Action new-directory
+    Text = "&Directory"
+    Shortcut = ""
+    Picture = "icon:/small/directory"
+  }
+  { Action new-form
+    Text = "&Form..."
+    Shortcut = ""
+    Picture = "img/16/form.png"
+  }
+  { Action new-image
+    Text = "&Image..."
+    Shortcut = ""
+    Picture = "icon:/small/image"
+  }
+  { Action new-module
+    Text = "&Module..."
+    Shortcut = ""
+    Picture = "img/16/module.png"
+  }
+  { Action new-other
+    Text = "&Other..."
+    Shortcut = ""
+    Picture = "icon:/small/new"
+  }
+  { Action new-project
+    Text = "&New project..."
+    Shortcut = "Ctrl+N"
+    Picture = "icon:/small/new"
+  }
+  { Action open-project
+    Text = "&Open project..."
+    Shortcut = "Ctrl+O"
+    Picture = "icon:/small/open"
+  }
+  { Action open-terminal
+    Text = "&Open a terminal..."
+    Shortcut = "Ctrl+Alt+T"
+    Picture = "icon:/16/terminal"
+  }
+  { Action option
+    Text = "&Preferences..."
+    Shortcut = "Ctrl+Alt+P"
+    Picture = "icon:/small/options"
+  }
+  { Action paste
+    Text = "&Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action pause
+    Text = "&Pause"
+    Shortcut = "Pause"
+    Picture = "icon:/small/pause"
+  }
+  { Action project
+    Text = "Pro&ject"
+    Shortcut = "F10"
+    Picture = "img/16/gambas.png"
+  }
+  { Action project-property
+    Text = "&Properties..."
+    Shortcut = "Ctrl+P"
+    Picture = "icon:/small/properties"
+  }
+  { Action property
+    Text = "&Properties"
+    Shortcut = "F4"
+    Picture = "icon:/small/edit"
+  }
+  { Action quit
+    Text = "&Quit"
+    Shortcut = "Ctrl+Q"
+    Picture = "icon:/small/quit"
+  }
+  { Action refresh-project
+    Text = "&Refresh"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action rename
+    Text = "&Rename..."
+    Shortcut = "F2"
+    Picture = "img/16/rename.png"
+  }
+  { Action return
+    Text = "Finis&h"
+    Shortcut = "Alt+F5"
+    Picture = "icon:/small/top"
+  }
+  { Action save-project
+    Text = "&Save project"
+    Shortcut = "Ctrl+Alt+S"
+    Picture = "icon:/small/save"
+  }
+  { Action save-project-as
+    Text = "Save project &as..."
+    Shortcut = "Ctrl+Shift+Alt+S"
+    Picture = "icon:/small/save-as"
+  }
+  { Action shortcut
+    Text = "&Shortcuts..."
+    Shortcut = ""
+    Picture = "icon:/small/shortcut"
+  }
+  { Action start
+    Text = "&Run"
+    Shortcut = "F5"
+    Picture = "icon:/small/play"
+  }
+  { Action startup-class
+    Text = "&Startup class"
+    Shortcut = ""
+    Picture = "icon:/small/play"
+  }
+  { Action step
+    Text = "St&ep"
+    Shortcut = "F8"
+    Picture = "icon:/small/end"
+  }
+  { Action stop
+    Text = "&Stop"
+    Shortcut = "Alt+Pause"
+    Picture = "icon:/small/stop"
+  }
+  { Action tips
+    Text = "&Tips of the day"
+    Shortcut = ""
+    Picture = "img/16/tip.png"
+  }
+  { Action translate
+    Text = "&Translate..."
+    Shortcut = "Ctrl+T"
+    Picture = "icon:/small/language"
+  }
+  { Action until
+    Text = "Run &until"
+    Shortcut = "Shift+F5"
+    Picture = "icon:/small/last"
+  }
+  { Action update-all-form
+    Text = "&Update all forms"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action watch
+    Text = "&Watch expression"
+    Shortcut = ""
+    Picture = "icon:/small/watch"
+  }
+}

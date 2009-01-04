@@ -235,3 +235,85 @@
     Visible = False
   }
 }
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action copy
+    Text = "Copy"
+    Shortcut = "Ctrl+C"
+    Picture = "icon:/small/copy"
+  }
+  { Action cut
+    Text = "Cut"
+    Shortcut = "Ctrl+X"
+    Picture = "icon:/small/cut"
+  }
+  { Action find
+    Text = "Find..."
+    Shortcut = "Ctrl+F"
+    Picture = "icon:/small/find"
+  }
+  { Action find-next
+    Text = "Find Next"
+    Shortcut = "F3"
+    Picture = "img/16/find-next.png"
+  }
+  { Action find-previous
+    Text = "Find Previous"
+    Shortcut = "Shift+F3"
+    Picture = "img/16/find-previous.png"
+  }
+  { Action goto-line
+    Text = "Go to line..."
+    Shortcut = "Ctrl+G"
+  }
+  { Action paste
+    Text = "Paste"
+    Shortcut = "Ctrl+V"
+    Picture = "icon:/small/paste"
+  }
+  { Action redo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/small/redo"
+  }
+  { Action reload
+    Text = "Reload"
+    Picture = "icon:/small/refresh"
+  }
+  { Action replace
+    Text = "Replace..."
+    Shortcut = "Ctrl+R"
+    Picture = "icon:/small/replace"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
+  { Action select-all
+    Text = "Select &All"
+    Shortcut = "Ctrl+A"
+  }
+  { Action undo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/small/undo"
+  }
+  { Action view-hsplit
+    Text = "Horizontal split"
+    Shortcut = "Ctrl+H"
+    Picture = "img/16/h-split.png"
+  }
+  { Action view-nosplit
+    Text = "No split"
+    Shortcut = "Ctrl+B"
+    Picture = "img/16/no-split.png"
+  }
+  { Action view-vsplit
+    Text = "Vertical split"
+    Shortcut = "Ctrl+J"
+    Picture = "img/16/v-split.png"
+  }
+}

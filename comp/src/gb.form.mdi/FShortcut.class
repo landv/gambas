@@ -22,7 +22,7 @@ Public Sub Form_Open()
 
   $aAction = New CAction[]
   For Each hAction In $cAction
-    $aAction.Add(hAction)
+    If hAction.HasShortcut Then $aAction.Add(hAction)
   Next
   $aAction.Sort
 
@@ -159,6 +159,7 @@ Public Sub btnDefault_Click()
 
   If Message.Warning(("You are going back to the default shortcuts."), ("Go back"), ("Cancel")) = 2 Then Return
   
+  tvwShortcut.Cancel
   For iRow = 0 To tvwShortcut.Rows.Count - 1
     hAction = $aAction[iRow]
     hAction.Shortcut = hAction.DefaultShortcut

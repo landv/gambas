@@ -149,13 +149,10 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 	{
 		ARCHIVE *arch = NULL;
 
-		if (strncmp(path, "../", 3) == 0)
-		{
-			arch = EXEC_arch ? ARCHIVE_main : NULL;
-			path += 3;
-		}
-		else
+		if (strncmp(path, "../", 3))
 			ARCHIVE_get_current(&arch);
+		else if (!EXEC_arch)
+			path += 3;
 		
 		if ((arch && arch->name) || EXEC_arch) // || !FILE_exist_real(path)) - Why that test ?
 		{

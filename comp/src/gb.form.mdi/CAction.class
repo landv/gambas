@@ -6,6 +6,7 @@ Public Display As String
 Public DefaultShortcut As String
 Public Shortcut As String
 Public Icon As Picture
+Public HasShortcut As Boolean
 
 Private $sOldShortcut As String
 
@@ -19,20 +20,20 @@ Private Sub UnquoteShortcut(sStr As String) As String
   
 End
 
-Public Sub _new(sLine As String)
+Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection)
 
-  Dim aLine As String[] = Split(sLine, Chr$(9))
   Dim sPicture As String
 
-  Key = aLine[0]
-  Text = Tr$(aLine[1])
+  Key = sKey
+  Text = Tr$(cSlot["Text"])
   Display = UnquoteShortcut(Text)
-  DefaultShortcut = aLine[2]
+  DefaultShortcut = cSlot["Shortcut"]
+  HasShortcut = bHasShortcut
   Shortcut = MShortcut.GetShortcut(Key)
   If Not Shortcut Then Shortcut = DefaultShortcut
   $sOldShortcut = Shortcut
   
-  sPicture = aLine[3]
+  sPicture = cSlot["Picture"]
   If Not (sPicture Like "icon:/*") Then sPicture = "../" &/ sPicture
   Icon = Picture[sPicture]
   
@@ -42,6 +43,7 @@ Public Sub Save()
   
   Dim hAction As Object
   
+  If Not HasShortcut Then Return
   If Shortcut = $sOldShortcut Then Return
   
   If Shortcut = DefaultShortcut Then

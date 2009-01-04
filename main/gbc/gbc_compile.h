@@ -40,7 +40,7 @@
 
 typedef
   struct {
-    const char *name;                  /* source file name */
+    char *name;                        /* source file name */
     int line;                          /* current line number */
     char *source;                      /* source file contents */
     unsigned verbose : 1;              /* verbose compilation */
@@ -55,15 +55,15 @@ typedef
     unsigned swap : 1;                 /* endianness must be swapped */
     unsigned public_module : 1;        /* modules symbols are by default */
     unsigned _reserved : 22;           /* reserved*/
-    const char *output;                /* output file */
+    char *output;                      /* output file */
     PATTERN *pattern;                  /* lexical analyze */
     int pattern_count;                 /* number of patterns */
     PATTERN *current;                  /* position de traduction courante */
     PATTERN *end;                      /* fin de traduction */
     FUNCTION *func;                    /* fonction en cours de compilation */
     CLASS *class;                      /* classe en cours de compilation */
-    const char *form;                  /* nom du fichier formulaire */
-    const char *tname;                 /* nom du fichier *.pot */
+    char *form;                        /* nom du fichier formulaire */
+    char *tname;                       /* nom du fichier *.pot */
     int default_library;               /* default library name for extern declarations */
     }
   PACKED

@@ -200,16 +200,18 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   hCtrl = hParent
   bFirst = True
 
-  While sData
+  for each sLine in split(sData, "\n")
 
-    iPos = InStr(sData, gb.newLine)
-    If iPos = 0 Then
-      sLine = Trim(sData)
-      sData = ""
-    Else
-      sLine = Trim(Left$(sData, iPos - 1))
-      sData = Mid$(sData, iPos + 1)
-    Endif
+    sLine = trim(sLine)
+
+    'iPos = InStr(sData, gb.newLine)
+    'If iPos = 0 Then
+    '  sLine = Trim(sData)
+    '  sData = ""
+    'Else
+    '  sLine = Trim(Left$(sData, iPos - 1))
+    '  sData = Mid$(sData, iPos + 1)
+    'Endif
 
     'PRINT "> "; sLine
 
@@ -285,6 +287,8 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
       If hCtrl.IsMultiContainer() Then UpdateMultiContainer(hCtrl)
       
       hCtrl = hCtrl.Parent
+      
+      if iLevel = 0 then return
 
     Else
 
@@ -416,7 +420,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
     Endif
 
-  Wend
+  Next
 
 End
 
@@ -453,20 +457,27 @@ Private Sub SaveAction()
   Next
   aList.Sort
 
-  Try Mkdir Project.Dir &/ ".action"
-  hFile = Open Project.Dir &/ ".action" &/ LCase(Me.Name) & ".action" For Output Create
+  'Try Mkdir Project.Dir &/ ".action"
+  'hFile = Open Project.Dir &/ ".action" &/ LCase(Me.Name) & ".action" For Output Create
+  
+  $sSave &= "\n" & Project.ACTION_MAGIC & "\n\n{ Actions\n"
   
   For Each sAction In aList
   
     cAction = $cAction[sAction]
-    If Not cAction.Exist("Menu") Then Continue
+    'If Not cAction.Exist("Menu") Then Continue
     sText = cAction["Text"]
     If Not sText Then sText = cAction["ToolTip"]
-    Print #hFile, sAction, sText, cAction["Shortcut"], cAction["Picture"]
+    
+    $sSave &= "  { Action " & sAction & "\n"
+    $sSave &= "    Text = " & Quote(sText) & "\n"
+    If cAction.Exist("Menu") Then $sSave &= "    Shortcut = " & Quote(cAction["Shortcut"]) & "\n"
+    If cAction["Picture"] Then $sSave &= "    Picture = " & Quote(cAction["Picture"]) & "\n"
+    $sSave &= "  }\n"
   
   Next
     
-  Close #hFile
+  $sSave &= "}\n"
   
 End
 
@@ -491,10 +502,9 @@ Public Function Save(Optional bForce As Boolean) As Boolean
   AddLine()
 
   SaveOne(Control[Me.Name])
+  SaveAction
 
   File.Save(Path, $sSave)
-
-  SaveAction
 
   $sSave = ""
   $bModify = False

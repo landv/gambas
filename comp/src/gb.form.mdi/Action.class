@@ -14,7 +14,11 @@ Static Private Sub InitAction()
   Dim sFile As String
   Dim hFile As File
   Dim sAction As String
+  Dim sLine As String
+  Dim aLine As String[]
   Dim hAction As CAction
+  Dim cSlot As New Collection
+  Dim bHasShortcut As Boolean
 
   If $cAction Then Return
 
@@ -22,15 +26,30 @@ Static Private Sub InitAction()
 
   $cAction = New Collection
 
-  For Each sFile In Dir("../.action")
+  For Each sFile In Dir("../.action", "*.action")
     hFile = Open "../.action" &/ sFile
     While Not Eof(hFile)
-      Line Input #hFile, sAction
-      If Not sAction Then Continue
+      Line Input #hFile, sLine
+      sLine = Trim(sLine)
+      If Not sLine Then Continue
+      If Left(sLine) = "#" Then Continue
       
-      hAction = New CAction(sAction)
-      $cAction[hAction.Key] = hAction
-      
+      If sLine Like "{ Action *" Then
+        cSlot.Clear
+        bHasShortcut = False
+        sAction = Trim(Mid$(sLine, 10))
+      Else If sLine = "}" Then
+        If sAction Then
+          hAction = New CAction(sAction, bHasShortcut, cSlot)
+          $cAction[hAction.Key] = hAction
+          sAction = ""
+        Endif
+      Else
+        aLine = Scan(sLine, "* = *")
+        If aLine.Count <> 2 Then Continue
+        cSlot[aLine[0]] = Unquote(aLine[1])
+        If aLine[0] = "Shortcut" Then bHasShortcut = True
+      Endif
     Wend
     Close #hFile
   Next

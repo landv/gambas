@@ -362,6 +362,7 @@ void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int
   if (pattern == NULL)
     pattern = "*";
 
+	arch = find.arch;
   arch_dir = arch->arch;
   arch_index = 0;
 	

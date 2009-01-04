@@ -365,3 +365,128 @@
     Visible = False
   }
 }
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action break
+    Text = "Toggle &breakpoint"
+    Shortcut = "F9"
+    Picture = "icon:/small/flag"
+  }
+  { Action code-form
+    Text = "Open form"
+    Shortcut = "Ctrl+W"
+    Picture = "img/16/form.png"
+  }
+  { Action comment
+    Text = "Comment"
+    Shortcut = "Ctrl+K"
+    Picture = "img/16/comment.png"
+  }
+  { Action copy
+    Text = "Copy"
+    Picture = "icon:/small/copy"
+  }
+  { Action cut
+    Text = "Cut"
+    Picture = "icon:/small/cut"
+  }
+  { Action find
+    Text = "Find..."
+    Shortcut = "Ctrl+F"
+    Picture = "icon:/small/find"
+  }
+  { Action find-definition
+    Text = "Find definition"
+    Shortcut = "F2"
+    Picture = "img/16/find-definition.png"
+  }
+  { Action find-next
+    Text = "Find Next"
+    Shortcut = "F3"
+    Picture = "icon:/small/down"
+  }
+  { Action find-previous
+    Text = "Find Previous"
+    Shortcut = "Shift+F3"
+    Picture = "icon:/small/up"
+  }
+  { Action go-back
+    Text = "Go back"
+    Shortcut = "Shift+F2"
+    Picture = "icon:/16/left"
+  }
+  { Action goto-line
+    Text = "Go to line..."
+    Shortcut = "Ctrl+G"
+  }
+  { Action paste
+    Text = "Paste"
+    Picture = "icon:/small/paste"
+  }
+  { Action redo
+    Text = "Redo"
+    Shortcut = "Ctrl+Y"
+    Picture = "icon:/small/redo"
+  }
+  { Action reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
+  { Action replace
+    Text = "Replace..."
+    Shortcut = "Ctrl+R"
+    Picture = "icon:/small/replace"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
+  { Action select-all
+    Text = "Select &All"
+    Shortcut = "Ctrl+A"
+  }
+  { Action startup-class
+    Text = "&Startup class"
+    Shortcut = ""
+    Picture = "icon:/small/play"
+  }
+  { Action uncomment
+    Text = "Uncomment"
+    Shortcut = "Ctrl+U"
+    Picture = "img/16/uncomment.png"
+  }
+  { Action undo
+    Text = "Undo"
+    Shortcut = "Ctrl+Z"
+    Picture = "icon:/small/undo"
+  }
+  { Action until
+    Text = "Run &until current line"
+    Shortcut = "Shift+F5"
+    Picture = "icon:/small/last"
+  }
+  { Action view-hsplit
+    Text = "Horizontal split"
+    Shortcut = "Ctrl+H"
+    Picture = "img/16/h-split.png"
+  }
+  { Action view-nosplit
+    Text = "No split"
+    Shortcut = "Ctrl+B"
+    Picture = "img/16/no-split.png"
+  }
+  { Action view-vsplit
+    Text = "Vertical split"
+    Shortcut = "Ctrl+J"
+    Picture = "img/16/v-split.png"
+  }
+  { Action watch
+    Text = "&Watch expression..."
+    Shortcut = ""
+    Picture = "icon:/small/watch"
+  }
+}

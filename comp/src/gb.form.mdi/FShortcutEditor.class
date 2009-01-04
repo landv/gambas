@@ -68,6 +68,7 @@ Private Sub CheckShortcut()
     $bBadShortcut = True
     Balloon.Warning(("This shortcut is already used by the following action:") & "<p><b>" & hSame.Display & "<b>", txtShortcut)
   Else
+    $bBadShortcut = False
     Balloon.Hide
   Endif
   
