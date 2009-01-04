@@ -31,6 +31,8 @@
 #include "gmainwindow.h"
 #include "gcombobox.h"
 
+#include "gb_common.h"
+
 /**************************************************************************
 	
 	gComboBox
@@ -312,11 +314,11 @@ void gComboBox::setSorted(bool vl)
 
 void gComboBox::setText(const char *vl)
 {
+	if (entry)
+		gTextBox::setText(vl);
 	lock();
 	setIndex(find(vl));
 	unlock();
-	if (entry)
-		gTextBox::setText(vl);
 }
 
 static gboolean combo_set_model_and_sort(gComboBox *combo)
@@ -374,7 +376,7 @@ void gComboBox::add(const char *text, int pos)
 			checkIndex();
 		}
 	}
-
+	
 	//gtk_combo_box_set_model(GTK_COMBO_BOX(widget), model);
 }
 

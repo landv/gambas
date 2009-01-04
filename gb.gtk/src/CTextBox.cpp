@@ -382,7 +382,10 @@ BEGIN_PROPERTY(CCOMBOBOX_list)
 			for (i = 0; i < GB.Array.Count(array); i++)
 				COMBOBOX->add(*((char **)GB.Array.Get(array, i)));
 		}
+		COMBOBOX->setIndex(-1);
 		COMBOBOX->unlock();
+		if (array)
+			COMBOBOX->setIndex(0);
 	}
 
 END_PROPERTY

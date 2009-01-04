@@ -313,12 +313,15 @@ PRIVATE SUB InitLibrary()
 
   DIM sLib AS String
   DIM hComp AS CComponent
+  DIM hSep AS Label
   DIM aRemove AS NEW String[]
   DIM sParent AS String
   DIM hCompBox AS CComponentBox
   DIM aComp AS NEW String[]
   DIM bDark AS Boolean
   DIM hOld AS ListContainer
+  DIM iUser AS Integer
+  DIM bUser AS Boolean
 
   IF NOT $bCanInitLibrary THEN RETURN
 
@@ -329,20 +332,46 @@ PRIVATE SUB InitLibrary()
   
   FOR EACH hComp IN CComponent.All
     aComp.Add(hComp.Key)
+    IF hComp.User THEN bUser = TRUE
   NEXT 
   aComp.Sort
   
   lstComponent.Lock
+  
   CComponentBox.Reset
-  FOR EACH sLib IN aComp
-    hComp = CComponent.All[sLib]
-    IF $bShowUsed THEN
-      IF sLib <> "gb" AND IF NOT Project.Libraries.Exist(hComp.Key) THEN CONTINUE
+  
+  FOR iUser = 0 TO 1
+
+    IF bUser THEN
+      hSep = NEW Label(lstComponent)
+      IF iUser THEN
+        hSep.Text = ("User components")
+      ELSE
+        hSep.Text = ("Standard components")
+      ENDIF
+      hSep.Font = Font["Bold,Underline,-1"]
+      hSep.Padding = 4
+      hSep.Height = hSep.Font.Height() + 8
     ENDIF
-    hCompBox = NEW CComponentBox(hComp, bDark, lstComponent)
-    bDark = NOT bDark
-    $cComp[hComp.Key] = hCompBox 
-    hCompBox.Locked = sLib = "gb" OR $bShowUsed
+
+    FOR EACH sLib IN aComp
+      hComp = CComponent.All[sLib]
+      IF iUser = 0 THEN
+        IF hComp.User THEN CONTINUE 
+      ELSE
+        IF NOT hComp.User THEN CONTINUE
+      ENDIF
+      IF $bShowUsed THEN
+        IF sLib <> "gb" AND IF NOT Project.Libraries.Exist(hComp.Key) THEN CONTINUE
+      ENDIF
+      hCompBox = NEW CComponentBox(hComp, bDark, lstComponent)
+      bDark = NOT bDark
+      $cComp[hComp.Key] = hCompBox 
+      hCompBox.Locked = sLib = "gb" OR $bShowUsed
+    NEXT
+    
+    IF NOT bUser THEN BREAK
+    
   NEXT
   
   FOR EACH sLib IN Project.Libraries
@@ -1316,7 +1345,11 @@ END
 
 PUBLIC SUB lstComponent_Click()
 
-  DIM hCurrent AS CComponentBox = lstComponent.Current
+  DIM hCurrent AS CComponentBox
+  
+  TRY hCurrent = lstComponent.Current
+  IF ERROR THEN RETURN 
+  
   IF $hLastComp THEN $hLastComp.Expanded = FALSE
   $hLastComp = hCurrent
   

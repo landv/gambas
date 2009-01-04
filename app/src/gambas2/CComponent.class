@@ -132,7 +132,7 @@ STATIC PRIVATE SUB InitComponent(sFile AS String, bUser AS Boolean)
 
   TRY hFic = OPEN sPath 
   IF ERROR THEN 
-    PRINT "Warning: cannot read "; sPath
+    ERROR "Warning: cannot read "; sPath
     RETURN 
   ENDIF
 
@@ -260,7 +260,7 @@ STATIC PUBLIC SUB _init()
     aComp = Dir(Component.UserPath, "*.component").Sort()
     FOR EACH sFile IN aComp
       IF All.Exist(File.BaseName(sFile)) THEN 
-        PRINT "Warning: User component "; File.BaseName(sFile); " is ignored"
+        ERROR "Warning: User component "; File.BaseName(sFile); " is ignored"
         CONTINUE
       ENDIF
       InitComponent(sFile, TRUE)
@@ -350,7 +350,7 @@ PUBLIC SUB Load()
   sPath &/= "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
   
   IF NOT Exist(sPath) THEN
-    PRINT "Warning: cannot find "; sPath
+    ERROR "Warning: cannot find "; sPath
     RETURN
   ENDIF
 
@@ -358,7 +358,7 @@ PUBLIC SUB Load()
 
   TRY sList = File.Load(File.SetExt(sPath, "list"))
   IF ERROR THEN 
-    PRINT "Warning: cannot read "; File.SetExt(sPath, "list")
+    ERROR "Warning: cannot read "; File.SetExt(sPath, "list")
     RETURN
   ENDIF
   

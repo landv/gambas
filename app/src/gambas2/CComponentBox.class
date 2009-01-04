@@ -35,10 +35,12 @@ END
 
 STATIC PUBLIC SUB ResizeNames(hCont AS Container)
   
+  DIM hCtrl AS Control
   DIM hCompBox AS CComponentBox
   
-  FOR EACH hCompBox IN hCont.Children
-    hCompBox._SetLabelWidth
+  FOR EACH hCtrl IN hCont.Children
+    TRY hCompBox = hCtrl
+    IF NOT ERROR THEN hCompBox._SetLabelWidth
   NEXT
   
 END
