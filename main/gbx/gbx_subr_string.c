@@ -1029,7 +1029,11 @@ void SUBR_unquote(void)
 	
 	SUBR_ENTER_PARAM(1);
 	
-	SUBR_get_string_len(&PARAM[0], &str, &lstr);
+	VALUE_conv_string(&PARAM[0]);
+	
+	str = PARAM->_string.addr + PARAM->_string.start;
+	lstr = PARAM->_string.len;
+	
 	STRING_start_len(lstr);
 	
 	if (lstr >= 2 && str[0] == '"' && str[lstr - 1] == '"')
