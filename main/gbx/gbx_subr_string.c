@@ -879,6 +879,8 @@ void SUBR_tr(void)
 	
 	SUBR_ENTER_PARAM(1);
 	
+	VALUE_conv_string(&PARAM[0]);
+	
 	if (SUBR_check_string(PARAM))
 		STRING_void_value(RETURN);
 	else
@@ -906,7 +908,11 @@ void SUBR_quote(void)
 	
 	SUBR_ENTER_PARAM(1);
 
-	SUBR_get_string_len(&PARAM[0], &str, &lstr);
+	VALUE_conv_string(&PARAM[0]);
+	
+	str = PARAM->_string.addr + PARAM->_string.start;
+	lstr = PARAM->_string.len;
+	
 	STRING_start_len(lstr);
 	
 	goto *jump[EXEC_code & 0x3];
