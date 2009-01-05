@@ -1547,7 +1547,7 @@ void GB_ArrayNew(GB_ARRAY *array, uint type, int size)
     np = 0;
   }
 
-	if (type > T_OBJECT)
+	if (TYPE_is_pure_object(type))
 		class = CLASS_get_array_class((CLASS *)type);
 	else
 	{

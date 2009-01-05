@@ -305,15 +305,24 @@ static TYPE conv_type(TYPE type)
 
 void SUBR_array(void)
 {
-	TYPE type;
+	TYPE type, type2;
 	int i;
 	GB_ARRAY array;
 
 	SUBR_ENTER();
 
 	type = conv_type(PARAM[0].type);
-	if (NPARAM >= 2 && conv_type(PARAM[1].type) != type)
-		type = T_VARIANT;
+	if (NPARAM >= 2)
+	{
+		type2 = conv_type(PARAM[1].type);
+		if (type != type2)
+		{
+			if (TYPE_is_object(type) && TYPE_is_object(type2))
+				type = T_OBJECT;
+			else
+				type = T_VARIANT;
+		}
+	}
 
 	GB_ArrayNew(&array, type, NPARAM);
 
