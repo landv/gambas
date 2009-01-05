@@ -1,22 +1,22 @@
 /***************************************************************************
 
-  gbx_class.h
+	gbx_class.h
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 1, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 1, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ***************************************************************************/
 
@@ -32,281 +32,286 @@
 
 
 typedef
-  int CLASS_ID;
+	int CLASS_ID;
 
 /*
 typedef
-  struct {
-    unsigned char flag;
-    unsigned char id;
-    short value;
-    }
-  PACKED
-  CLASS_TYPE;
+	struct {
+		unsigned char flag;
+		unsigned char id;
+		short value;
+		}
+	PACKED
+	CLASS_TYPE;
 */
 
 typedef
-  struct {
-    CTYPE type;
-    int pos;
-    }
-  PACKED
-  CLASS_VAR;
+	struct {
+		CTYPE type;
+		int pos;
+		}
+	PACKED
+	CLASS_VAR;
 
 typedef
-  struct _CLASS *CLASS_REF;
+	struct _CLASS *CLASS_REF;
 
 typedef
 	char *CLASS_UNKNOWN;
 
 typedef
-  union {
-    int type;
-    struct { int type; double value; } PACKED _float;
-    struct { int type; int value; } PACKED _integer;
-    struct { int type; int64_t value; } PACKED _long;
-    struct { int type; char *addr; int len; } PACKED _string;
-    struct { int type; int val[2]; } PACKED _swap;
-    }
-  PACKED
-  CLASS_CONST;
+	union {
+		int type;
+		struct { int type; double value; } PACKED _float;
+		struct { int type; int value; } PACKED _integer;
+		struct { int type; int64_t value; } PACKED _long;
+		struct { int type; char *addr; int len; } PACKED _string;
+		struct { int type; int val[2]; } PACKED _swap;
+		}
+	PACKED
+	CLASS_CONST;
 
 typedef
-  struct {
-    CTYPE type;
-    }
-  PACKED
-  CLASS_LOCAL;
+	struct {
+		CTYPE type;
+		}
+	PACKED
+	CLASS_LOCAL;
 
 typedef
-  struct {
-    TYPE type;
-    }
-  PACKED
-  CLASS_PARAM;
+	struct {
+		TYPE type;
+		}
+	PACKED
+	CLASS_PARAM;
 
 typedef
-  struct {
-    SYMBOL sym;
-    int value;
-    }
-  LOCAL_SYMBOL;
+	struct {
+		SYMBOL sym;
+		int value;
+		}
+	LOCAL_SYMBOL;
 
 typedef
-  struct {
-    unsigned short line;
-    unsigned short nline;
-    unsigned short *pos;
-    char *name;
-    LOCAL_SYMBOL *local;
-    short n_local;
-    unsigned short _reserved;
-  }
-  PACKED
-  FUNC_DEBUG;
+	struct {
+		unsigned short line;
+		unsigned short nline;
+		unsigned short *pos;
+		char *name;
+		LOCAL_SYMBOL *local;
+		short n_local;
+		unsigned short _reserved;
+	}
+	PACKED
+	FUNC_DEBUG;
 
 typedef
-  struct {
-    TYPE type;
-    char n_param;
-    char npmin;
-    char vararg;
-    char _reserved;
-    short n_local;
-    short n_ctrl;
-    short stack_usage;
-    short error;
-    unsigned short *code;
-    CLASS_PARAM *param;
-    CLASS_LOCAL *local;
-    FUNC_DEBUG *debug;
-    }
-  PACKED
-  FUNCTION;
+	struct {
+		TYPE type;
+		char n_param;
+		char npmin;
+		char vararg;
+		char _reserved;
+		short n_local;
+		short n_ctrl;
+		short stack_usage;
+		short error;
+		unsigned short *code;
+		CLASS_PARAM *param;
+		CLASS_LOCAL *local;
+		FUNC_DEBUG *debug;
+		}
+	PACKED
+	FUNCTION;
 
 typedef
-  struct {
-    TYPE type;
-    short n_param;
-    short _reserved;
-    CLASS_PARAM *param;
-    char *name;
-    }
-  PACKED
-  CLASS_EVENT;
+	struct {
+		TYPE type;
+		short n_param;
+		short _reserved;
+		CLASS_PARAM *param;
+		char *name;
+		}
+	PACKED
+	CLASS_EVENT;
 
 typedef
-  struct {
-    TYPE type;
-    short n_param;
-    unsigned loaded : 1;
-    unsigned _reserved : 15;
-    CLASS_PARAM *param;
-    char *alias;
-    char *library;
-    }
-  PACKED
-  CLASS_EXTERN;
+	struct {
+		TYPE type;
+		short n_param;
+		unsigned loaded : 1;
+		unsigned _reserved : 15;
+		CLASS_PARAM *param;
+		char *alias;
+		char *library;
+		}
+	PACKED
+	CLASS_EXTERN;
 
 typedef
-  struct {
-    uint magic;
-    uint version;
-    uint endian;
-    uint flag;
-    }
-  PACKED
-  CLASS_HEADER;
+	struct {
+		uint magic;
+		uint version;
+		uint endian;
+		uint flag;
+		}
+	PACKED
+	CLASS_HEADER;
 
 typedef
-  struct {
-    short parent;
-    short flag;
-    int s_static;
-    int s_dynamic;
-    }
-  PACKED
-  CLASS_INFO;
+	struct {
+		short parent;
+		short flag;
+		int s_static;
+		int s_dynamic;
+		}
+	PACKED
+	CLASS_INFO;
 
 typedef
-  struct {
-    CTYPE type;
-    int dim[0];
-    }
-  CLASS_ARRAY;
-  
+	struct {
+		CTYPE type;
+		int dim[0];
+		}
+	CLASS_ARRAY;
+	
 typedef
 	CLASS_ARRAY *CLASS_ARRAY_P;
 
 struct _CLASS;
 
 typedef
-  struct {
-    SYMBOL sym;
-    CTYPE ctype;
-    int value;
-    }
-  GLOBAL_SYMBOL;
+	struct {
+		SYMBOL sym;
+		CTYPE ctype;
+		int value;
+		}
+	GLOBAL_SYMBOL;
 
 typedef
-  struct {
-    short n_cst;
-    short n_stat;
-    short n_dyn;
-    short n_func;
+	struct {
+		short n_cst;
+		short n_stat;
+		short n_dyn;
+		short n_func;
 
-    CLASS_CONST *cst;
-    CLASS_VAR *stat;
-    CLASS_VAR *dyn;
-    FUNCTION *func;
-    CLASS_EVENT *event;
-    CLASS_EXTERN *ext;
-    CLASS_ARRAY **array;
+		CLASS_CONST *cst;
+		CLASS_VAR *stat;
+		CLASS_VAR *dyn;
+		FUNCTION *func;
+		CLASS_EVENT *event;
+		CLASS_EXTERN *ext;
+		CLASS_ARRAY **array;
 
-    CLASS_REF *class_ref;
-    char **unknown;
+		CLASS_REF *class_ref;
+		char **unknown;
 
-    GLOBAL_SYMBOL *global;    /* symboles globaux */
-    short n_global;
-    short n_ext;
-    #ifdef OS_64BITS
+		GLOBAL_SYMBOL *global;
+		short n_global;
+		short n_ext;
+		#ifdef OS_64BITS
 		CLASS_DESC *desc;
 		CLASS_PARAM *local;
 		FUNC_DEBUG *debug;
-    #endif
-    }
-  PACKED
-  CLASS_LOAD;
+		#endif
+		}
+	PACKED
+	CLASS_LOAD;
 
 enum
 {
-  CS_NULL = 0,
-  CS_LOADED = 1,
-  CS_READY = 2
+	CS_NULL = 0,
+	CS_LOADED = 1,
+	CS_READY = 2
 };
 
 typedef
-  struct _CLASS {
-    struct _CLASS *class;             /*   4  Points at the 'Class' class ! */
-    int ref;                          /*   8  Reference count */
-    int count;                        /*  12  Number of instanciated objects */
-    struct _CLASS *parent;            /*  16  Inherited class */
-    COMPONENT *component;             /*  20  The component the class belongs to */
-    char *name;                       /*  24  Class name */
-    char *path;                       /*  28  Source file path */
+	struct _CLASS {                     // 32b 64b
+		struct _CLASS *class;             //   4   8  Points at the 'Class' class !
+		int ref;                          //   8  12  Reference count
+		int count;                        //  12  16  Number of instanciated objects
+		struct _CLASS *parent;            //  16  24  Inherited class
+		char *name;                       //  20  32  Class name
 
-    unsigned state : 2;               /*      Initialization state */
-    unsigned debug : 1;               /*      Debugging information ? */
-    unsigned free_name : 1;           /*      Must free the class name */
-    unsigned free_event : 1;          /*      Must free class->event */
-    unsigned in_load : 1;             /*      Class being loaded */
-    unsigned exit : 1;                /*      Marker used by CLASS_exit */
-    unsigned auto_create : 1;         /*      Automatically instanciated */
-    unsigned no_create : 1;           /*      Cannot instanciate this class */
-    unsigned is_virtual : 1;          /*      Virtual class (name beginning with a dot) */
-    unsigned mmapped : 1;             /*      mmap() was used to load the class */
-    unsigned swap : 1;				        /*      class endianness was swapped */
-    unsigned enum_static : 1;         /*      if class enumeration is static */
-    unsigned quick_array : 2;         /*      array accessor optimization type */
-    unsigned is_stream : 1;           /*  30  If the class inherits stream */
-    
-		unsigned global : 1;              /*      If the class is in the global table */
-		unsigned is_native : 1;           /*      If the class is native (i.e. written in C/C++) */
-		unsigned error : 1;               /*      Loading or registering the class has failed */
-    unsigned _reserved : 13;          /*  32  */
+		unsigned state : 2;               //          Initialization state
+		unsigned debug : 1;               //          Debugging information ?
+		unsigned free_name : 1;           //          Must free the class name
+		unsigned free_event : 1;          //          Must free class->event
+		unsigned in_load : 1;             //          Class being loaded
+		unsigned exit : 1;                //          Marker used by CLASS_exit
+		unsigned auto_create : 1;         //          Automatically instanciated
+		unsigned no_create : 1;           //          Cannot instanciate this class
+		unsigned is_virtual : 1;          //          Virtual class (name beginning with a dot)
+		unsigned mmapped : 1;             //          mmap() was used to load the class
+		unsigned swap : 1;                //          class endianness was swapped
+		unsigned enum_static : 1;         //          if class enumeration is static
+		unsigned quick_array : 2;         //          array accessor optimization type
+		unsigned is_stream : 1;           //          If the class inherits stream
+		unsigned global : 1;              //          If the class is in the global table
+		unsigned is_native : 1;           //          If the class is native (i.e. written in C/C++)
+		unsigned error : 1;               //          Loading or registering the class has failed
+		unsigned _reserved : 13;          //  24  36 
 
-    short n_desc;                     /*  34  number of descriptions */
-    short n_event;                    /*  36  number of events */
+		short n_desc;                     //  26  38  number of descriptions
+		short n_event;                    //  28  40  number of events
 
-    CLASS_DESC_SYMBOL *table;         /*  40  class description */
+		CLASS_DESC_SYMBOL *table;         //  32  48  class description
 
-    CLASS_EVENT *event;               /*  44  event description */
+		CLASS_EVENT *event;               //  36  56  event description
 
-		int _reserved1;                   /*  48  */
-    struct _CLASS *array_type;        /*  52  datatype of the contents if this class is an array class of objects */
-    
-    int (*check)();                   /*  56  method for checking that an object is valid */
+		int (*check)();                   //  40  64  method for checking that an object is valid
 
-    short special[16];                /*  88  special functions index (_new, _free, ...) */
+		char *data;                       //  44  72  class file data for loaded class / generated description for native class
+		CLASS_LOAD *load;                 //  48  80  information about loaded class
 
-    uint size_stat;                   /*  92  static class size */
-    uint size;                        /*  96  dynamic class size */
-    uint off_event;                   /* 100  offset of OBJECT_EVENT structure in the object */
+		char *stat;                       //  52  88  static class data
+		TYPE *signature;                  //  56  96  signatures address
+		char *string;                     //  60 104  strings address
 
-    char *data;                       /* 104  class file data for loaded class / generated description for native class */
-    CLASS_LOAD *load;                 /* 108  information about loaded class */
+		uint size_stat;                   //  64 108  static class size
+		uint size;                        //  68 112  dynamic class size
+		uint off_event;                   //  72 116  offset of OBJECT_EVENT structure in the object
+		int _reserved2;                   //  76 120
 
-    char *stat;                       /* 112  static class data */
-    TYPE *signature;                  /* 116  signatures address */
-    char *string;                     /* 120  strings address */
+		short special[12];                // 100 144  special functions index (_new, _free, ...)
 
-    void *instance;                   /* 124  automatically created instance */
-    struct _CLASS *next;              /* 128  next class */
-    }
-  CLASS;
-
-typedef
-  struct {
-    SYMBOL sym;
-    CLASS *class;
-    }
-  PACKED
-  CLASS_SYMBOL;
+		struct _CLASS *array_type;        // 104 152  datatype of the contents if this class is an array class of objects
+		struct _CLASS *array_class;       // 108 160  associated array class if it exists
+		
+		void *instance;                   // 112 168  automatically created instance
+		
+		char *path;                       // 116 176  Source file path
+		COMPONENT *component;             // 120 184 The component the class belongs to
+		
+		struct _CLASS *next;              // 124 192 next class
+		#ifdef OS_64BITS
+		int _reserved3;                   // 128 192
+		#endif
+		}
+	CLASS;
 
 typedef
-  enum {
-    SPEC_NEW,
-    SPEC_FREE,
-    SPEC_GET,
-    SPEC_PUT,
-    SPEC_FIRST,
-    SPEC_NEXT,
-    SPEC_CALL,
-    SPEC_UNKNOWN,
-    SPEC_COMPARE,
-    SPEC_PRINT
-    }
-  CLASS_SPECIAL;
+	struct {
+		SYMBOL sym;
+		CLASS *class;
+		}
+	PACKED
+	CLASS_SYMBOL;
+
+typedef
+	enum {
+		SPEC_NEW,
+		SPEC_FREE,
+		SPEC_GET,
+		SPEC_PUT,
+		SPEC_FIRST,
+		SPEC_NEXT,
+		SPEC_CALL,
+		SPEC_UNKNOWN,
+		SPEC_COMPARE,
+		SPEC_PRINT
+		}
+	CLASS_SPECIAL;
 
 typedef
 	enum {
@@ -317,21 +322,21 @@ typedef
 	CLASS_QUICK_ARRAY;
 
 typedef
-  enum
-  {
-    CF_DEBUG = 1
-  }
-  CLASS_FLAG;
+	enum
+	{
+		CF_DEBUG = 1
+	}
+	CLASS_FLAG;
 
 typedef
-  enum
-  {
-    CI_EXPORTED = 1,
-    CI_AUTOCREATE = 2,
-    CI_OPTIONAL = 4,
-    CI_NOCREATE = 8
-  }
-  CLASS_INFO_FLAG;
+	enum
+	{
+		CI_EXPORTED = 1,
+		CI_AUTOCREATE = 2,
+		CI_OPTIONAL = 4,
+		CI_NOCREATE = 8
+	}
+	CLASS_INFO_FLAG;
 
 #ifndef __GBX_CLASS_INIT_C
 EXTERN CLASS *CLASS_Class;
@@ -439,6 +444,7 @@ CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index);
 int CLASS_can_be_used_like_an_array(CLASS *class);
 
 void CLASS_create_array_class(CLASS *class);
+CLASS *CLASS_get_array_class(CLASS *class);
 
 /* class_init.c */
 
@@ -451,8 +457,8 @@ void CLASS_load_without_init(CLASS *class);
 void CLASS_load_real(CLASS *class);
 #define CLASS_load(_class) \
 { \
-  if ((_class)->state != CS_READY) \
-    CLASS_load_real(_class); \
+	if ((_class)->state != CS_READY) \
+		CLASS_load_real(_class); \
 }
 
 /* class_native.c */

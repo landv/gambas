@@ -1188,6 +1188,7 @@ void CLASS_create_array_class(CLASS *class)
 	STRING_new(&name_joker, class->name, strlen(class->name) - 2);
 
 	TYPE_joker = class->array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
+	class->array_type->array_class = class;
 
 	ALLOC(&desc, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC, "CLASS_create_array_class");
 	memcpy(desc, NATIVE_TemplateArray, sizeof(GB_DESC) * ARRAY_TEMPLATE_NDESC);
@@ -1196,7 +1197,22 @@ void CLASS_create_array_class(CLASS *class)
 	CLASS_register_class(desc, class);
 
 	class->data = (char *)desc;
-
+	
 	STRING_free(&name_joker);
 	TYPE_joker = save;
+}
+
+
+CLASS *CLASS_get_array_class(CLASS *class)
+{
+	if (!class->array_class)
+	{
+		char name[strlen(class->name) + 3];
+		strcpy(name, class->name);
+		strcat(name, "[]");
+		class->array_class = class->global ? CLASS_find_global(name) : CLASS_find(name);
+		CLASS_create_array_class(class->array_class);
+	}
+	
+	return class->array_class;
 }

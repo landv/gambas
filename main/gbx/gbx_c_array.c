@@ -1547,21 +1547,26 @@ void GB_ArrayNew(GB_ARRAY *array, uint type, int size)
     np = 0;
   }
 
-  switch(type)
-  {
-    case GB_T_BOOLEAN: class = CLASS_BooleanArray; break;
-    case GB_T_BYTE: class = CLASS_ByteArray; break;
-    case GB_T_SHORT: class = CLASS_ShortArray; break;
-    case GB_T_INTEGER: class = CLASS_IntegerArray; break;
-    case GB_T_LONG: class = CLASS_LongArray; break;
-    case GB_T_SINGLE: class = CLASS_SingleArray; break;
-    case GB_T_FLOAT: class = CLASS_FloatArray; break;
-    case GB_T_STRING: class = CLASS_StringArray; break;
-    case GB_T_DATE: class = CLASS_DateArray; break;
-    case GB_T_OBJECT: class = CLASS_ObjectArray; break;
-    case GB_T_POINTER: class = CLASS_PointerArray; break;
-    default: class = CLASS_VariantArray; break;
-  }
+	if (type > T_OBJECT)
+		class = CLASS_get_array_class((CLASS *)type);
+	else
+	{
+		switch(type)
+		{
+			case GB_T_BOOLEAN: class = CLASS_BooleanArray; break;
+			case GB_T_BYTE: class = CLASS_ByteArray; break;
+			case GB_T_SHORT: class = CLASS_ShortArray; break;
+			case GB_T_INTEGER: class = CLASS_IntegerArray; break;
+			case GB_T_LONG: class = CLASS_LongArray; break;
+			case GB_T_SINGLE: class = CLASS_SingleArray; break;
+			case GB_T_FLOAT: class = CLASS_FloatArray; break;
+			case GB_T_STRING: class = CLASS_StringArray; break;
+			case GB_T_DATE: class = CLASS_DateArray; break;
+			case GB_T_OBJECT: class = CLASS_ObjectArray; break;
+			case GB_T_POINTER: class = CLASS_PointerArray; break;
+			default: class = CLASS_VariantArray; break;
+		}
+	}
 
   OBJECT_create((void **)array, class, NULL, NULL, np);
 }

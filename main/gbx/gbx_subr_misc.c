@@ -299,8 +299,6 @@ static TYPE conv_type(TYPE type)
 		;*/
 	else if (type == T_CSTRING || type == T_NULL)
 		type = T_STRING;
-	else if (type >= T_OBJECT)
-		type = T_OBJECT;
 
 	return type;
 }
