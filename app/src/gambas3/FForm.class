@@ -200,9 +200,9 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   hCtrl = hParent
   bFirst = True
 
-  for each sLine in split(sData, "\n")
+  For Each sLine In Split(sData, "\n")
 
-    sLine = trim(sLine)
+    sLine = Trim(sLine)
 
     'iPos = InStr(sData, gb.newLine)
     'If iPos = 0 Then
@@ -288,7 +288,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
       
       hCtrl = hCtrl.Parent
       
-      if iLevel = 0 then return
+      If iLevel = 0 Then Return
 
     Else
 
@@ -357,18 +357,26 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
               ' This is an object !
             Endif
             
-            If sClass = "Form" And If sProperty = "Border" Then
+            If sClass = "Form" Then
             
-              Select Case vValue
-                Case "None"
-                  vValue = False
-                Case "Resizable"
-                  vValue = True
-                  hCtrl.SetProperty("Resizable", True)
-                Case "Fixed"
-                  vValue = True
-                  hCtrl.SetProperty("Resizable", False)
-              End Select
+              If sProperty = "Border" Then
+            
+                Select Case vValue
+                  Case "None"
+                    vValue = False
+                  Case "Resizable"
+                    vValue = True
+                    hCtrl.SetProperty("Resizable", True)
+                  Case "Fixed"
+                    vValue = True
+                    hCtrl.SetProperty("Resizable", False)
+                End Select
+                
+              Else If sProperty = "Type" Then
+              
+                If vValue = "Toolbar" Then vValue = "Utility"
+                
+              Endif
             
             Endif
 
@@ -2515,6 +2523,13 @@ Public Sub UpdateTitle()
   Endif
 
   btnMaxWindow.Visible = hCtrl.GetPropertyDefault("Resizable")  
+  
+  If hCtrl.GetPropertyString("Type") = "Utility" Then
+    lblTitle.Font.Grade = -2
+  Else
+    lblTitle.Font.Grade = 0
+  Endif
+  
   UpdateBorder 
   
 End

@@ -188,6 +188,8 @@
   }
   { panToolBar ToolBar
     MoveScaled(0,0,129,4)
+    Key = "editor"
+    Text = ("Editor")
     { btnSave ToolButton mnuSave
       Name = "btnSave"
       MoveScaled(0,0,4,4)
@@ -255,12 +257,14 @@
     { btnIndent ToolButton
       MoveScaled(32,0,4,4)
       ToolTip = ("Indent")
+      Action = ".indent"
       Text = ("")
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
       MoveScaled(36,0,4,4)
       ToolTip = ("Unindent")
+      Action = ".unindent"
       Text = ("")
       Picture = Picture["icon:/small/unindent"]
     }
@@ -304,16 +308,16 @@
       Text = ("")
       Picture = Picture["img/16/v-split.png"]
     }
-    { Panel1 Panel
-      MoveScaled(60,0,2,4)
+    { Separator2 Separator
+      MoveScaled(60,0,1,4)
     }
     { cmbProc ComboBox
       MoveScaled(62,0,36,4)
       Text = ("")
       ReadOnly = True
     }
-    { Panel3 Panel
-      MoveScaled(99,0,2,4)
+    { Separator1 Separator
+      MoveScaled(99,0,1,4)
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
@@ -421,6 +425,10 @@
     Text = "Go to line..."
     Shortcut = "Ctrl+G"
   }
+  { Action indent
+    Text = "Indent"
+    Picture = "icon:/small/indent"
+  }
   { Action paste
     Text = "Paste"
     Picture = "icon:/small/paste"
@@ -463,6 +471,10 @@
     Text = "Undo"
     Shortcut = "Ctrl+Z"
     Picture = "icon:/small/undo"
+  }
+  { Action unindent
+    Text = "Unindent"
+    Picture = "icon:/small/unindent"
   }
   { Action until
     Text = "Run &until current line"

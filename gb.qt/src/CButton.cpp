@@ -135,12 +135,12 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
 		if (THIS->picture)
 		{
 			p = *(THIS->picture->pixmap);
-			if (THIS->stretch)
+			/*if (THIS->stretch)
 			{
 				if (size > 0)
 					CWIDGET_iconset(icon, p, size);
 			}
-			else
+			else*/
 				CWIDGET_iconset(icon, p);
 			WIDGET->setIconSet(icon);
 		}
@@ -156,7 +156,7 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
 		WIDGET->setText(qtext);
   }
 
-  WIDGET->calcMinimumHeight();
+  WIDGET->calcMinimumSize();
 }
 
 
@@ -182,12 +182,12 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
     p = *(THIS->picture->pixmap);
 
     WIDGET_TOOL->setTextLabel(qtext);
- 		if (THIS->stretch)
+ 		/*if (THIS->stretch)
  		{
     	if (size > 0)
 	    	CWIDGET_iconset(icon, p, size);
 	  }
-	  else
+	  else*/
 	    CWIDGET_iconset(icon, p);
 	    	
     WIDGET_TOOL->setIconSet(icon);
@@ -203,7 +203,7 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
   }
 
   CWidget::resetTooltip((CWIDGET *)_object);
-  WIDGET->calcMinimumHeight();
+  WIDGET->calcMinimumSize();
 }
 
 
@@ -381,6 +381,18 @@ BEGIN_PROPERTY(CBUTTON_radio)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CBUTTON_autoresize)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->autoresize);
+	else if (THIS->autoresize != VPROP(GB_BOOLEAN))
+	{
+		THIS->autoresize = VPROP(GB_BOOLEAN);
+		WIDGET->calcMinimumSize();
+	}
+
+END_PROPERTY
+
 #if 0
 BEGIN_PROPERTY(CBUTTON_stretch)
 
@@ -432,7 +444,7 @@ GB_DESC CButtonDesc[] =
   GB_PROPERTY("Default", "b", CBUTTON_default),
   GB_PROPERTY("Cancel", "b", CBUTTON_cancel),
   GB_PROPERTY("Value", "b", CBUTTON_value),
-  //GB_PROPERTY("Stretch", "b", CBUTTON_stretch),
+  GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
 
 	BUTTON_DESCRIPTION,
 
@@ -455,7 +467,7 @@ GB_DESC CToggleButtonDesc[] =
   //GB_PROPERTY("Flat", "b", CBUTTON_flat),
   GB_PROPERTY("Border", "b", CTOGGLEBUTTON_border),
   GB_PROPERTY("Radio", "b", CTOGGLEBUTTON_radio),
-  //GB_PROPERTY("Stretch", "b", CTOGGLEBUTTON_stretch),
+  GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
 
 	TOGGLEBUTTON_DESCRIPTION,
 
@@ -479,6 +491,7 @@ GB_DESC CToolButtonDesc[] =
   GB_PROPERTY("Toggle", "b", CTOOLBUTTON_toggle),
   GB_PROPERTY("Border", "b", CTOOLBUTTON_border),
   GB_PROPERTY("Radio", "b", CTOOLBUTTON_radio),
+  GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
   //GB_PROPERTY("Stretch", "b", CTOOLBUTTON_stretch),
 
 	TOOLBUTTON_DESCRIPTION,
@@ -495,7 +508,7 @@ GB_DESC CToolButtonDesc[] =
 MyPushButton::MyPushButton(QWidget *parent) :
   QPushButton(parent)
 {
-  calcMinimumHeight();
+  calcMinimumSize();
   top = 0;
 }
 
@@ -516,11 +529,13 @@ MyPushButton::~MyPushButton()
 void MyPushButton::fontChange(const QFont &font)
 {
   QWidget::fontChange(font);
-  calcMinimumHeight();
+  calcMinimumSize();
 }
 
-void MyPushButton::calcMinimumHeight()
+void MyPushButton::calcMinimumSize()
 {
+	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
+	
   if (text().length() > 0)
   {
     QFontMetrics fm = fontMetrics();
@@ -528,6 +543,11 @@ void MyPushButton::calcMinimumHeight()
   }
   else
     setMinimumHeight(0);
+
+	if (THIS->autoresize)
+		setMinimumWidth(sizeHint().width());
+	else
+		setMinimumWidth(0);
 
 	//qDebug("%p: %s: %d", this, text().latin1(), minimumHeight());
 }
@@ -543,7 +563,7 @@ void MyPushButton::resizeEvent(QResizeEvent *e)
 MyToolButton::MyToolButton(QWidget *parent) :
   QToolButton(parent)
 {
-  calcMinimumHeight();
+  calcMinimumSize();
 }
 
 MyToolButton::~MyToolButton()
@@ -553,10 +573,10 @@ MyToolButton::~MyToolButton()
 void MyToolButton::fontChange(const QFont &font)
 {
   QToolButton::fontChange(font);
-  calcMinimumHeight();
+  calcMinimumSize();
 }
 
-void MyToolButton::calcMinimumHeight()
+void MyToolButton::calcMinimumSize()
 {
   if (text().length() > 0)
   {

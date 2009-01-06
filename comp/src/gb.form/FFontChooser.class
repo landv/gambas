@@ -15,7 +15,7 @@ Public Preview As Control
 Private $iHeight As Integer
 Private Const NBR_GRADE As Integer = 21
 Private Const FIRST_GRADE As Integer = -4
-Private $hGrade As Label[NBR_GRADE]
+Private $hGrade As TextLabel[NBR_GRADE]
 Private $iWidthSize As Integer
 Private $bNoChange As Boolean
 Private $bNoRefresh As Boolean
@@ -47,7 +47,7 @@ Public Sub _new()
   $bNoRefresh = True
   
   For iInd = 0 To NBR_GRADE - 1
-    $hGrade[iInd] = New Label(lstGrade) 'AS "lblGrade"
+    $hGrade[iInd] = New TextLabel(lstGrade) 'AS "lblGrade"
     'lstGrade.Add($hGrade[iInd])
   Next
   

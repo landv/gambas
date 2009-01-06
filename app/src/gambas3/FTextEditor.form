@@ -121,6 +121,8 @@
   }
   { panToolBar ToolBar
     MoveScaled(0,0,70,4)
+    Key = "text-editor"
+    Text = ("Text editor")
     { btnSave ToolButton mnuSave
       Name = "btnSave"
       MoveScaled(0,0,4,4)
@@ -214,7 +216,7 @@
       Picture = Picture["img/16/v-split.png"]
     }
     { lblEditor Label
-      MoveScaled(48,0,10,4)
+      MoveScaled(51,0,10,4)
       Font = Font["Bold"]
       Expand = True
       Text = ("")

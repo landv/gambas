@@ -267,7 +267,7 @@ int main(int argc, char **argv)
 
         if (stat(file_name, &info))
         {
-          fprintf(stderr, "gba: warning: Cannot stat file: %s\n", file);
+          fprintf(stderr, "gba: warning: cannot stat file: %s\n", file);
           continue;
         }
 

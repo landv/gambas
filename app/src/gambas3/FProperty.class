@@ -324,7 +324,7 @@ Public Function SaveProperty() As Boolean
   Dim hCtrl As CControl
   Dim sMsg As String
 
-  If Not $hForm Then Return
+  If Not $hForm Or If Not Object.IsValid($hForm) Then Return
   If $hForm.ReadOnly Then Return
   If IsNull($hEditor) Then Return False
 

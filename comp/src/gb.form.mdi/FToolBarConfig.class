@@ -1,0 +1,133 @@
+' Gambas class file
+
+Private $hToolbar As ToolBar
+Private $hForm As FToolBar
+Private $aDefault As String[]
+Private $cAction As Collection
+Private $hInside As DrawingArea
+
+Public Sub Run(hToolbar As ToolBar, cActionList As Collection) 
+  
+  Me.Show
+  SetCurrentToolbar(hToolbar, cActionList)
+  
+End
+
+Private Sub SetCurrentToolbar(hToolbar As ToolBar, cActionList As Collection)
+  
+  If $hToolbar Then
+    $hForm.SetConfigureMode(False)
+    $hToolbar = Null
+    $hForm = Null
+    $cAction = Null
+  Endif
+  
+  If Not hToolbar Then Return
+  
+  $hToolbar = hToolbar
+  $hForm = $hToolbar._Container.Parent
+  $cAction = cActionList
+
+  If $hToolbar.Text Then 
+    lblTitle.Text = Subst(("&1 toolbar"), $hToolbar.Text)
+  Else
+    lblTitle.Text = ("Main toolbar")
+  Endif
+  
+  InitAction
+  $hForm.SetConfigureMode(True)
+
+End
+
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Private Sub InitAction()
+  
+  Dim hChild As Control
+  Dim hItem As DrawingArea
+  Dim sAction As String
+  
+  For Each hChild In svwAction.Children
+    hChild.Delete
+  Next
+  
+  'Print $hToolbar.Children.Count;; $hToolbar._Container.Children.Count
+  For Each sAction In $hForm.GetDefaultConfig()
+  
+    If Not $cAction.Exist(sAction) Then Continue
+    
+    hItem = New DrawingArea(svwAction) As "Item"
+    hItem.Tag = sAction
+    hItem.Resize(Desktop.Scale * 32, Desktop.Scale * 5)
+    
+  Next
+  
+End
+
+
+Public Sub Item_Enter()
+  
+  $hInside = Last
+  $hInside.Refresh
+  
+End
+
+Public Sub Item_Leave()
+  
+  $hInside = Null
+  Last.Refresh
+  
+End
+
+
+Public Sub Item_Draw()
+  
+  Dim hItem As DrawingArea = Last
+  Dim hAction As CAction = $cAction[hItem.Tag]
+  
+  If $hInside = hItem Then Draw.Style.Button(0, 0, hItem.W, hItem.H, Not hItem.Enabled)
+  Draw.Picture(hAction.Icon, 4, (hItem.H - hAction.Icon.H) / 2)
+  Draw.Text(hAction.Display, hAction.Icon.W + 8, 0, hItem.W - hAction.Icon.W - 12, hItem.H, Align.Normal)
+  
+End
+
+Public Sub DragAction(hCtrl As Control, sAction As String)
+  
+  Dim hAction As CAction 
+  
+  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+  hAction = $cAction[sAction]
+  
+  $hForm.DragStart(hCtrl.Parent = svwAction)
+  Drag.Icon = hAction.Icon
+  Drag(hCtrl, hAction.Key, "text/gambas-x-action")
+  $hForm.DragEnd(hCtrl.Parent = svwAction)
+  
+End
+
+Public Sub Item_MouseDrag()
+  
+  Dim hItem As DrawingArea = Last
+  
+  DragAction(hItem, hItem.Tag)
+  
+End
+
+Public Sub Form_Close()
+
+  SetCurrentToolbar(Null, Null)
+
+End
+
+
+Public Sub Form_Open()
+
+  Me.Center
+
+End
+

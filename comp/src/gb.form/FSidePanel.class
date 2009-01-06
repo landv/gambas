@@ -246,12 +246,12 @@ Private Sub RefreshArrow()
 
   hPict = Picture[sKey]
   If Not hPict Then 
-    hPict = New Picture(8, 8)
+    hPict = New Picture(12, 12)
     hPict.Fill(Color.White)
     Draw.Begin(hPict)
-    Draw.Style.Arrow(0, 0, 8, 8, iType)
+    Draw.Style.Arrow(0, 0, 12, 12, iType)
     Draw.End
-    hImage = hPict.Image
+    hImage = hPict.Image.Stretch(8, 8, True)
     hImage.MakeTransparent(Color.White) 
     hPict = hImage.Picture
     Picture[sKey] = hPict

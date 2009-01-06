@@ -122,6 +122,8 @@ Public Sub btnFind_Click()
   If btnFind.Value Then
     tvwShortcut.Cancel
     btnFind.SetFocus
+  Else
+    tvwShortcut_Select
   Endif
 
 End

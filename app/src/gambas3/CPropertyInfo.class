@@ -35,9 +35,8 @@ Static Public Sub _init()
   $cRedirect["*.Password"] = True
   $cRedirect["*.Mouse"] = True
   $cRedirect["*.ToolTip"] = True
-
+  $cRedirect["*.Drop"] = True
   $cRedirect["*.List"] = True
-
   $cRedirect["*.Arrangement"] = True
   $cRedirect["*.Padding"] = True
   $cRedirect["*.Spacing"] = True
@@ -46,21 +45,22 @@ Static Public Sub _init()
   $cRedirect["Label.Padding"] = False
   $cRedirect["TextLabel.Padding"] = False
 
+  $cRedirect["Form.Border"] = True
+  $cRedirect["Form.FullScreen"] = True
+  $cRedirect["Form.Icon"] = True
+  $cRedirect["Form.Maximized"] = True
+  $cRedirect["Form.Mask"] = True
+  $cRedirect["Form.Minimized"] = True
+  $cRedirect["Form.Persistent"] = True
+  $cRedirect["Form.Picture"] = True
+  $cRedirect["Form.Resizable"] = True
+  $cRedirect["Form.SkipTaskbar"] = True
+  $cRedirect["Form.Stacking"] = True
+  $cRedirect["Form.Sticky"] = True
+  $cRedirect["Form.Type"] = True
+  $cRedirect["Form.Text"] = True
   $cRedirect["Form.X"] = True
   $cRedirect["Form.Y"] = True
-  $cRedirect["Form.Persistent"] = True
-  $cRedirect["Form.Border"] = True
-  $cRedirect["Form.Text"] = True
-  $cRedirect["Form.Icon"] = True
-  $cRedirect["Form.Minimized"] = True
-  $cRedirect["Form.Maximized"] = True
-  $cRedirect["Form.FullScreen"] = True
-  $cRedirect["Form.Picture"] = True
-  $cRedirect["Form.Mask"] = True
-  $cRedirect["Form.TopOnly"] = True
-  $cRedirect["Form.SkipTaskbar"] = True
-  $cRedirect["Form.ToolBox"] = True
-  $cRedirect["Form.ToolBox"] = True
 
   'Nein!
   '$cRedirect["Button.Default"] = TRUE
@@ -74,7 +74,7 @@ Static Public Sub _init()
   
   $cRedirect["Timer.Enabled"] = True
   
-  $cRedirect["PictureBox.AutoResize"] = True
+  $cRedirect["*.AutoResize"] = True
 
   '$cRedirect["*.Table"] = TRUE
 

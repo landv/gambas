@@ -1394,7 +1394,7 @@ GB_DESC CWindowDesc[] =
   GB_DECLARE("Window", sizeof(CWINDOW)), GB_INHERITS("Container"),
 
   //GB_CONSTANT("Normal", "i", 0),
-  GB_CONSTANT("Toolbar", "i", _NET_WM_WINDOW_TYPE_UTILITY),
+  GB_CONSTANT("Utility", "i", _NET_WM_WINDOW_TYPE_UTILITY),
   GB_CONSTANT("Splash", "i", _NET_WM_WINDOW_TYPE_SPLASH),
   GB_CONSTANT("Popup", "i", _NET_WM_WINDOW_TYPE_POPUP_MENU),
   GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),

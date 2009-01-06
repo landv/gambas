@@ -4,7 +4,7 @@ Export
 
 Inherits UserContainer
 
-Public Const _Properties As String = "*,-Arrangement,-Padding,-Spacing,Action,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True"
+Public Const _Properties As String = "*,-Arrangement,-Padding,-Spacing,Key,Text,Action,Orientation{ToolBar.Horizontal;Vertical},AutoResize=True"
 Public Const _Arrangement As Integer = 3
 Public Const _DefaultSize As String = "36,3"
 
@@ -13,11 +13,13 @@ Public Const Vertical As Integer = 1
 
 'PROPERTY READ Arrangement AS Integer
 'PROPERTY READ AutoResize AS Boolean
-'PROPERTY Design AS Boolean
+Property Design As Boolean
 'Property Hidden As Boolean
 'PROPERTY Action AS String
 Property Orientation As Integer
 Property AutoResize As Boolean
+Property Key As String
+Property Text As String
 
 Private $hForm As FToolBar
 
@@ -41,18 +43,18 @@ End
 ' 
 ' END
 
-' PRIVATE FUNCTION Design_Read() AS Boolean
-' 
-'   RETURN SUPER.Design
-' 
-' END
-' 
-' PRIVATE SUB Design_Write(Value AS Boolean)
-' 
-'   SUPER.Design = Value
-'   IF Value THEN ME.Arrangement = Arrange.None
-'   
-' END
+Private Function Design_Read() As Boolean
+
+  Return Super.Design
+
+End
+
+Private Sub Design_Write(Value As Boolean)
+
+  Super.Design = Value
+  If Value Then $hForm.DesignMode = True
+  
+End
 
 Private Function Hidden_Read() As Boolean
 
@@ -99,5 +101,29 @@ End
 Private Sub AutoResize_Write(Value As Boolean)
 
   $hForm.SetAutoResize(Value)
+
+End
+
+Private Function Key_Read() As String
+
+  Return $hForm.ToolbarKey
+
+End
+
+Private Sub Key_Write(Value As String)
+
+  $hForm.ToolbarKey = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return $hForm.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hForm.Text = Value
 
 End

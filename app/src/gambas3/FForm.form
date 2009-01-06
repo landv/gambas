@@ -213,7 +213,9 @@
     Arrangement = Arrange.LeftRight
     AutoResize = True
     { tlbForm ToolBar
-      MoveScaled(0,1,54,4)
+      MoveScaled(0,1,55,4)
+      Key = "form"
+      Text = ("Form")
       { ToolButton9 ToolButton mnuSave
         Name = "ToolButton9"
         MoveScaled(0,0,4,4)
@@ -283,6 +285,7 @@
         MoveScaled(32,0,4,4)
         Enabled = False
         ToolTip = ("Undo")
+        Action = ".undo"
         Text = ("")
         Picture = Picture["icon:/small/undo"]
       }
@@ -291,6 +294,7 @@
         MoveScaled(36,0,4,4)
         Enabled = False
         ToolTip = ("Redo")
+        Action = ".redo"
         Text = ("")
         Picture = Picture["icon:/small/redo"]
       }
@@ -313,6 +317,8 @@
     }
     { tlbArrange ToolBar
       MoveScaled(1,5,59,4)
+      Key = "arrange"
+      Text = ("Arrangement")
       { ToolButton19 ToolButton
         MoveScaled(0,0,4,4)
         ToolTip = ("Bring to foreground")
@@ -400,6 +406,8 @@
     }
     { tlbTab ToolBar
       MoveScaled(5,9,18,4)
+      Key = "tabstrip"
+      Text = ("Tabstrip")
       Action = ".move-tab"
       { ToolButton3 ToolButton
         MoveScaled(0,0,4,4)
@@ -645,6 +653,10 @@
     Shortcut = "Home"
     Picture = "img/16/raise.png"
   }
+  { Action redo
+    Text = "Redo"
+    Picture = "icon:/small/redo"
+  }
   { Action reload
     Text = "Reload"
     Shortcut = ""
@@ -673,6 +685,10 @@
     Text = "&Startup class"
     Shortcut = ""
     Picture = "icon:/small/play"
+  }
+  { Action undo
+    Text = "Undo"
+    Picture = "icon:/small/undo"
   }
   { Action unselect-all
     Text = "Unselect all"

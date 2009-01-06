@@ -693,6 +693,14 @@ static QWidget *get_next(QWidget *w)
 }
 
 
+static void arrange_parent(CWIDGET *_object)
+{
+	CWIDGET *parent = CWidget::get(WIDGET->parentWidget());
+	if (!parent)
+		return;
+	CCONTAINER_arrange(parent);
+}
+
 BEGIN_PROPERTY(CCONTROL_next)
 
 	if (READ_PROPERTY)
@@ -717,6 +725,7 @@ BEGIN_PROPERTY(CCONTROL_next)
 
 			WIDGET->stackUnder(ob->widget);
 		}
+		arrange_parent(THIS);
 	}
 
 END_PROPERTY
@@ -776,6 +785,7 @@ BEGIN_PROPERTY(CCONTROL_previous)
 					WIDGET->stackUnder(w);
 			}
 		}
+		arrange_parent(THIS);
 	}
 
 END_PROPERTY

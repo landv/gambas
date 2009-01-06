@@ -496,6 +496,7 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
     DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
 
 		DPM(d)->save();
+		
 		if (xform)
 		{
 			DPM(d)->translate(x, y);

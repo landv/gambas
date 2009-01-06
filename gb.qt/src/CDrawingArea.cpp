@@ -458,7 +458,6 @@ GB_DESC CDrawingAreaDesc[] =
   
   GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
   GB_PROPERTY("Background", "i", CDRAWINGAREA_background),
-  GB_PROPERTY("BackColor", "i", CDRAWINGAREA_background),
   
   GB_PROPERTY("Tracking", "b", CDRAWINGAREA_track_mouse),
   GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),

@@ -505,7 +505,7 @@ _DO_NOT_APPLY:
         GetForm().UpdateBorder
       Case "Background"
         GetForm().UpdateSnap
-      Case "Text", "Icon", "Border", "Resizable"
+      Case "Text", "Icon", "Border", "Resizable", "Type"
         GetForm().UpdateTitle
     End Select 
   Endif

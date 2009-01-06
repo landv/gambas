@@ -1,14 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,50,7)
+  MoveScaled(0,0,58,7)
   Text = ("")
   Resizable = False
   { dwgHandle DrawingArea
     MoveScaled(1,1,3,3)
-    Visible = False
   }
   { panToolBar Panel
-    MoveScaled(6,1,39,3)
+    MoveScaled(6,1,51,3)
+  }
+  { panWhere Panel
+    MoveScaled(30,5,3,1)
+    Visible = False
+    Drop = True
   }
 }

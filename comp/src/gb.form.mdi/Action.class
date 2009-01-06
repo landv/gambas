@@ -63,6 +63,14 @@ Static Public Sub Configure() As Boolean
 
 End
 
+Static Public Sub ConfigureToolbar(hToolbar As ToolBar) 
+  
+  InitAction
+  FToolBarConfig.Run(hToolbar, $cAction)
+  
+End
+
+
 Static Private Function List_Read() As String[]
 
   Dim aList As New String[]
