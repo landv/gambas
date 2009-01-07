@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,74,42)
+  MoveScaled(0,0,55,51)
   Text = ("Toolbars configuration")
   Type = Window.Utility
   Arrangement = Arrange.Vertical
@@ -12,27 +12,38 @@
     Font = Font["Bold"]
     Text = ("Main toolbar")
   }
-  { svwAction ScrollView
-    MoveScaled(1,6,48,26)
+  { panAction Panel
+    MoveScaled(1,5,53,30)
+    Drop = True
     Expand = True
-    Arrangement = Arrange.Row
-    Spacing = True
-    Margin = True
+    Arrangement = Arrange.Fill
+    { svwAction ScrollView
+      MoveScaled(0,0,48,26)
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      Margin = True
+      ScrollBar = Scroll.Vertical
+    }
   }
   { HBox2 HBox
-    MoveScaled(1,36,62,4)
+    MoveScaled(1,46,53,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(1,0,2,4)
       Expand = True
     }
-    { btnDefault Button
-      MoveScaled(25,0,19,4)
-      Text = ("Reset")
+    { btnReset Button
+      MoveScaled(3,0,16,4)
+      Text = ("&Reset")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnUndo Button
+      MoveScaled(20,0,16,4)
+      Text = ("&Undo")
       Picture = Picture["icon:/small/undo"]
     }
     { btnClose Button
-      MoveScaled(45,0,16,4)
+      MoveScaled(37,0,16,4)
       Text = ("&Close")
       Default = True
       Cancel = True

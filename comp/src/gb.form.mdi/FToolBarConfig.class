@@ -46,24 +46,42 @@ Public Sub btnClose_Click()
 
 End
 
+Public Sub AddAction(sAction As String)
+  
+  Dim hItem As Control
+
+  'Debug sAction
+
+  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+  
+  hItem = New DrawingArea(svwAction) As "Item"
+  hItem.Tag = sAction
+  hItem.Resize(Desktop.Scale * 32, Desktop.Scale * 5)
+  
+End
+
+
 Private Sub InitAction()
   
-  Dim hChild As Control
+  Dim hCtrl As Control
   Dim hItem As DrawingArea
   Dim sAction As String
   
-  For Each hChild In svwAction.Children
-    hChild.Delete
+  For Each hCtrl In svwAction.Children
+    hCtrl.Delete
   Next
   
+  AddAction("|")
+  
   'Print $hToolbar.Children.Count;; $hToolbar._Container.Children.Count
-  For Each sAction In $hForm.GetDefaultConfig()
+  For Each sAction In $hForm.GetActionList()
   
     If Not $cAction.Exist(sAction) Then Continue
+    hCtrl = $hForm.FindControl(sAction)
+    If Not hCtrl Then Continue
+    If hCtrl.Visible Then Continue
     
-    hItem = New DrawingArea(svwAction) As "Item"
-    hItem.Tag = sAction
-    hItem.Resize(Desktop.Scale * 32, Desktop.Scale * 5)
+    AddAction(sAction)
     
   Next
   
@@ -84,29 +102,97 @@ Public Sub Item_Leave()
   
 End
 
-
 Public Sub Item_Draw()
   
   Dim hItem As DrawingArea = Last
-  Dim hAction As CAction = $cAction[hItem.Tag]
+  Dim hAction As CAction
+  Dim hIcon As Picture
+  Dim sText As String
+  Dim W As Integer
+  
+  If hItem.Tag Then hAction = $cAction[hItem.Tag]
   
   If $hInside = hItem Then Draw.Style.Button(0, 0, hItem.W, hItem.H, Not hItem.Enabled)
-  Draw.Picture(hAction.Icon, 4, (hItem.H - hAction.Icon.H) / 2)
-  Draw.Text(hAction.Display, hAction.Icon.W + 8, 0, hItem.W - hAction.Icon.W - 12, hItem.H, Align.Normal)
+  If hAction Then
+    If hAction.Icon Then 
+      Draw.Picture(hAction.Icon, 4, (hItem.H - hAction.Icon.H) / 2)
+      W = hAction.Icon.W
+    Else
+      W = Stock.GetSize("small")
+    Endif
+    Draw.Text(hAction.Display, W + 8, 0, hItem.W - W - 12, hItem.H, Align.Normal)
+  Else
+    W = Stock.GetSize("small")
+    Draw.Rect(4 + W \ 2 - 2, (hItem.H - W) \ 2, 4, W)
+    Draw.Text(("Separator"), W + 8, 0, hItem.W - W - 12, hItem.H, Align.Normal)
+    'Draw.Style.Separator(8, (hItem.H - W) / 2, W - 4, W, False)
+  Endif
   
 End
 
 Public Sub DragAction(hCtrl As Control, sAction As String)
   
   Dim hAction As CAction 
+  Dim bOutside As Boolean
+  Dim hDest As Control
+  Dim bAnim As Boolean
+
+  If Not sAction Then Return
+
+  bOutside = hCtrl.Parent = svwAction
+  If bOutside Then
+    If sAction <> "|" Then hCtrl.Hide
+  Else
+    hCtrl.Hide
+  Endif
+
+  If sAction Then hAction = $cAction[sAction]
   
-  If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
-  hAction = $cAction[sAction]
+  $hForm.DragStart(bOutside)
+  If hAction Then 
+    Drag.Icon = hAction.Icon
+  Else
+    Drag.Icon = Null
+  Endif
+  Wait
+
+  hDest = Drag(hCtrl, sAction, "text/gambas-x-action")
   
-  $hForm.DragStart(hCtrl.Parent = svwAction)
-  Drag.Icon = hAction.Icon
-  Drag(hCtrl, hAction.Key, "text/gambas-x-action")
-  $hForm.DragEnd(hCtrl.Parent = svwAction)
+  If hDest Then
+  
+    If bOutside Then
+    
+      If hDest = panAction Then
+        hCtrl.Show
+      Else
+        If hCtrl.Tag <> "|" Then hCtrl.Delete
+      Endif
+    
+    Else
+    
+      If hDest = panAction Then
+        If hCtrl.Action Then
+          hCtrl.Hide
+        Else
+          hCtrl.Delete
+        Endif
+        bAnim = True
+      Else
+        If Not hCtrl.Action Then
+          hCtrl.Delete
+        Endif
+      Endif
+    
+    Endif
+    
+  Else
+  
+    hCtrl.Show
+    bAnim = True
+    
+  Endif
+  
+  $hForm.DragEnd(bAnim)
   
 End
 
@@ -114,6 +200,8 @@ Public Sub Item_MouseDrag()
   
   Dim hItem As DrawingArea = Last
   
+  $hInside = Null
+  hItem.Refresh
   DragAction(hItem, hItem.Tag)
   
 End
@@ -131,3 +219,39 @@ Public Sub Form_Open()
 
 End
 
+
+Public Sub panAction_Drag()
+
+  If Drag.Format <> "text/gambas-x-action" Or If Drag.Source.Parent = svwAction Then
+    Stop Event
+    Return
+  Endif
+  
+  Drag.Show(panAction)
+
+End
+
+Public Sub panAction_Drop()
+
+  Dim sAction As String = Drag.Data
+  
+  If sAction <> "|" Then AddAction(sAction)
+
+End
+
+
+Public Sub btnReset_Click()
+
+  If Message.Question(("Do you really want to reset the toolbar?"), ("Reset"), ("Cancel")) = 1 Then
+    $hForm.SaveConfig(True)
+    InitAction
+  Endif
+
+End
+
+Public Sub btnUndo_Click()
+
+  $hForm.LoadConfig
+  InitAction
+
+End

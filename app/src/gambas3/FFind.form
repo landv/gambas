@@ -7,9 +7,10 @@
   Arrangement = Arrange.Vertical
   { Panel1 Panel
     MoveScaled(0,1,32,1.1667)
+    Visible = False
   }
   { panFind HBox
-    MoveScaled(1,2,86,4)
+    MoveScaled(1,4,86,4)
     AutoResize = True
     { btnClose ToolButton
       MoveScaled(0,0,4,4)
@@ -71,6 +72,7 @@
     { ToolBar5 ToolBar
       MoveScaled(55,0,12,4)
       AutoResize = False
+      Text = ("ToolBar5")
       Action = "find-in"
       { ToolButton18 ToolButton
         MoveScaled(0,0,4,4)
@@ -105,6 +107,7 @@
       MoveScaled(71,0,14,4)
       Visible = False
       AutoResize = False
+      Text = ("ToolBar6")
       Action = "find-option"
       { ToolButton21 ToolButton
         MoveScaled(0,0,4,4)
@@ -147,6 +150,10 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action find
+    Text = ""
+    Picture = "$Form"
+  }
   { Action find-all
     Text = "Search list"
     Picture = "img/16/find-list.png"
@@ -158,6 +165,10 @@
   { Action find-comment
     Text = "Search in comments"
     Picture = "img/16/comment.png"
+  }
+  { Action find-in
+    Text = "ToolBar5"
+    Picture = "$ToolBar"
   }
   { Action find-in-module
     Text = "Search in file"
@@ -174,6 +185,10 @@
   { Action find-next
     Text = "Find next"
     Picture = "icon:/small/down"
+  }
+  { Action find-option
+    Text = "ToolBar6"
+    Picture = "$ToolBar"
   }
   { Action find-previous
     Text = "Find previous"

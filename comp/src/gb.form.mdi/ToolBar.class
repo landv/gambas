@@ -112,7 +112,7 @@ End
 
 Private Sub Key_Write(Value As String)
 
-  $hForm.ToolbarKey = Value
+  $hForm.SetKey(Value)
 
 End
 
@@ -124,6 +124,6 @@ End
 
 Private Sub Text_Write(Value As String)
 
-  $hForm.Text = Value
+  $hForm.SetText(Value)
 
 End

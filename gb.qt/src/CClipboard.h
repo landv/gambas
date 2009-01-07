@@ -58,7 +58,7 @@ protected:
 
 
 void CDRAG_clear(bool valid);
-void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt);
+void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt);
 bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e);
 bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e);
 void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e);

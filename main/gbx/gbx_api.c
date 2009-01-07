@@ -532,7 +532,7 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
   if (GAMBAS_DoNotRaiseEvent)
     return FALSE;
 
-  if (object == NULL)
+  if (!OBJECT_is_valid(object))
     return FALSE;
 
 	/*TRY

@@ -251,6 +251,7 @@
       { ToolButton14 ToolButton mnuCut
         Name = "ToolButton14"
         MoveScaled(16,0,4,4)
+        Visible = False
         ToolTip = ("Cut")
         Action = ".cut"
         Text = ("")
@@ -259,6 +260,7 @@
       { ToolButton15 ToolButton mnuCopy
         Name = "ToolButton15"
         MoveScaled(20,0,4,4)
+        Visible = False
         ToolTip = ("Copy")
         Action = ".copy"
         Text = ("")
@@ -267,6 +269,7 @@
       { ToolButton16 ToolButton mnuPaste
         Name = "ToolButton16"
         MoveScaled(24,0,4,4)
+        Visible = False
         ToolTip = ("Paste")
         Action = ".paste"
         Text = ("")
@@ -275,6 +278,7 @@
       { ToolButton1 ToolButton mnuPaste
         Name = "ToolButton1"
         MoveScaled(28,0,4,4)
+        Visible = False
         ToolTip = ("Delete")
         Action = ".delete"
         Text = ("")
@@ -283,6 +287,7 @@
       { ToolButton17 ToolButton mnuUndo
         Name = "ToolButton17"
         MoveScaled(32,0,4,4)
+        Visible = False
         Enabled = False
         ToolTip = ("Undo")
         Action = ".undo"
@@ -292,6 +297,7 @@
       { ToolButton18 ToolButton mnuRedo
         Name = "ToolButton18"
         MoveScaled(36,0,4,4)
+        Visible = False
         Enabled = False
         ToolTip = ("Redo")
         Action = ".redo"
@@ -377,6 +383,7 @@
       }
       { ToolButton25 ToolButton
         MoveScaled(32,0,4,4)
+        Visible = False
         ToolTip = ("Vertical")
         Action = ".arrange-vertical"
         Text = ("")
@@ -384,6 +391,7 @@
       }
       { ToolButton26 ToolButton
         MoveScaled(36,0,4,4)
+        Visible = False
         ToolTip = ("Horizontal")
         Action = ".arrange-horizontal"
         Text = ("")
@@ -391,6 +399,7 @@
       }
       { ToolButton27 ToolButton
         MoveScaled(40,0,4,4)
+        Visible = False
         ToolTip = ("Columns")
         Action = ".arrange-column"
         Text = ("")
@@ -398,6 +407,7 @@
       }
       { ToolButton28 ToolButton
         MoveScaled(44,0,4,4)
+        Visible = False
         ToolTip = ("Rows")
         Action = ".arrange-row"
         Text = ("")
@@ -619,9 +629,9 @@
     Picture = "img/16/menu.png"
   }
   { Action move-tab
-    Text = "Move tab"
+    Text = "Tabstrip"
     Shortcut = ""
-    Picture = "img/16/tabstrip.png"
+    Picture = "$ToolBar"
   }
   { Action move-tab-first
     Text = "&First"
@@ -680,6 +690,7 @@
   { Action select-all
     Text = "Select all"
     Shortcut = "Ctrl+A"
+    Picture = "$Menu"
   }
   { Action startup-class
     Text = "&Startup class"
@@ -693,5 +704,6 @@
   { Action unselect-all
     Text = "Unselect all"
     Shortcut = "Esc"
+    Picture = "$Menu"
   }
 }

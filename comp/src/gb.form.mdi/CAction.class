@@ -23,6 +23,7 @@ End
 Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection)
 
   Dim sPicture As String
+  Dim W As Integer
 
   Key = sKey
   Text = Tr$(cSlot["Text"])
@@ -34,8 +35,13 @@ Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection)
   $sOldShortcut = Shortcut
   
   sPicture = cSlot["Picture"]
-  If Not (sPicture Like "icon:/*") Then sPicture = "../" &/ sPicture
-  Icon = Picture[sPicture]
+  If Left(sPicture) = "$" Then
+    W = Stock.GetSize("small")
+    Try Icon = Picture.Load("control" &/ LCase(Mid$(sPicture, 2)) & ".png").Image.Stretch(W, W).Picture
+  Else
+    If Not (sPicture Like "icon:/*") Then sPicture = "../" &/ sPicture
+    Try Icon = Picture[sPicture]
+  Endif
   
 End
 

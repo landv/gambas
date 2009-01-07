@@ -104,7 +104,7 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define RESET_CHILDREN_LIST() list->first()
 #define GET_NEXT_CHILD_WIDGET() get_widget(list)
 
-#define GET_OBJECT_FROM_WIDGET(_widget) CWidget::getValid(CWidget::get(_widget))
+#define GET_OBJECT_FROM_WIDGET(_widget) CWidget::getValid(CWidget::getReal(_widget))
 
 #define RAISE_ARRANGE_EVENT(_object) \
 { \

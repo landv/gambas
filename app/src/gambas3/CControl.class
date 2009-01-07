@@ -530,7 +530,7 @@ Public Function GetProperty(sProp As String) As Variant
   If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
   Try hProp = CComponent.Classes[Kind].Properties[sProp]
-  If Error Then Stop
+  'If Error Then Stop
   If IsNull(hProp) Then Return
 
   If hProp.AlwaysRead Then
@@ -1469,11 +1469,12 @@ Public Sub AddAction(cActionSet As Collection) As Collection
   Dim sAction As String
   Dim cAction As Collection
   Dim sVal As String
+  Dim sPicture As String
   
   sAction = GetProperty("Action")
   If Not sAction Then Return
   
-  If Not ["Menu", "ToggleButton", "ToolButton"].Exist(Kind) Then Return
+  'If Not ["Menu", "ToggleButton", "ToolButton"].Exist(Kind) Then Return
   
   If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
   
@@ -1486,7 +1487,11 @@ Public Sub AddAction(cActionSet As Collection) As Collection
   cAction["Name"] = sAction
   SetAction(cAction, "Text")
   SetAction(cAction, "ToolTip")
-  SetAction(cAction, "Picture")
+  
+  sPicture = GetPropertyString("Picture")
+  If Not sPicture Then sPicture = "$" & Kind
+  cAction["Picture"] = sPicture
+
   SetAction(cAction, "Shortcut")
   If Kind = "Menu" Then cAction["Menu"] = True
   

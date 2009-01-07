@@ -288,7 +288,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
       
       hCtrl = hCtrl.Parent
       
-      If iLevel = 0 Then Return
+      If iLevel = 0 And If Not hParent Then Return
 
     Else
 

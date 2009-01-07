@@ -42,6 +42,7 @@
 
 CDRAG_INFO CDRAG_info = { 0 };
 bool CDRAG_dragging = false;
+void *CDRAG_destination = 0;
 
 static void *CLASS_Image;
 
@@ -337,10 +338,10 @@ static void show_frame(CWIDGET *control, int x, int y, int w, int h)
 	if (w < 2 || h < 2)
 		return;
 	
-	_frame[0]->setGeometry(x, y, w, 2);
-	_frame[1]->setGeometry(x, y, 2, h);
-	_frame[2]->setGeometry(x + w - 2, y, 2, h);
-	_frame[3]->setGeometry(x, y + h - 2, w, 2);
+	_frame[0]->setGeometry(x, y, w, 1);
+	_frame[1]->setGeometry(x, y, 1, h);
+	_frame[2]->setGeometry(x + w - 1, y, 1, h);
+	_frame[3]->setGeometry(x, y + h - 1, w, 1);
 	
 	for (i = 0; i < 4; i++)
 		_frame[i]->show();
@@ -369,19 +370,20 @@ static void post_exit_drag(intptr_t param)
 	CDRAG_dragging = false;
 }
 
-void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
+void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 {
   QDragObject *drag;
   QCString format;
   CIMAGE *img;
+  void *dest;
 
   if (GB.CheckObject(source))
-    return;
+    return NULL;
 
 	if (CDRAG_dragging)
 	{
 		GB.Error("Undergoing drag");
-		return;
+		return NULL;
 	}
 
   if (data->type == GB_T_STRING)
@@ -429,16 +431,26 @@ void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 
 	CDRAG_dragging = true;
 	
+	GB.Unref(POINTER(&CDRAG_destination));
+	CDRAG_destination = 0;
+	
   drag->drag();
   
   hide_frame(NULL);
   GB.Post((GB_POST_FUNC)post_exit_drag, 0);
 
-  return;
+	if (CDRAG_destination)
+		GB.Unref(POINTER(&CDRAG_destination));
+	
+	dest = CDRAG_destination;
+	CDRAG_destination = 0;
+		
+  return dest;
 
 _BAD_FORMAT:
 
   GB.Error("Bad drag format");
+  return NULL;
 }
 
 
@@ -541,6 +553,8 @@ void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 	
 	CDRAG_clear(true);
 	CDRAG_info.drop = e;
+	CDRAG_destination = control;
+	GB.Ref(CDRAG_destination);
 
 	p = e->pos();
 	p = w->mapTo(QWIDGET(control), p);
@@ -556,7 +570,7 @@ void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 
 BEGIN_METHOD(CDRAG_call, GB_OBJECT source; GB_VARIANT data; GB_STRING format)
 
-  CDRAG_drag((CWIDGET *)VARG(source), &VARG(data), MISSING(format) ? NULL : ARG(format));
+  GB.ReturnObject(CDRAG_drag((CWIDGET *)VARG(source), &VARG(data), MISSING(format) ? NULL : ARG(format)));
 
 END_METHOD
 
@@ -764,7 +778,7 @@ GB_DESC CDragDesc[] =
   GB_STATIC_PROPERTY_READ("Y", "i", CDRAG_y),
   GB_STATIC_PROPERTY_READ("Pending", "b", CDRAG_pending),
 
-  GB_STATIC_METHOD("_call", NULL, CDRAG_call, "(Source)Control;(Data)v[(Format)s]"),
+  GB_STATIC_METHOD("_call", "Control", CDRAG_call, "(Source)Control;(Data)v[(Format)s]"),
   GB_STATIC_METHOD("_exit", NULL, CDRAG_exit, NULL),
   GB_STATIC_METHOD("Show", NULL, CDRAG_show, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
   GB_STATIC_METHOD("Hide", NULL, CDRAG_hide, NULL),

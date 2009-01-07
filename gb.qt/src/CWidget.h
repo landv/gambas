@@ -215,6 +215,7 @@ EVENT_LostFocus,
 EVENT_Menu,
 EVENT_Drag,
 EVENT_DragMove,
+EVENT_DragLeave,
 EVENT_Drop;
 #endif
 

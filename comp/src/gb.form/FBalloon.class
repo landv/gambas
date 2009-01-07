@@ -66,6 +66,7 @@ End
 Private Sub MakeBorder(Optional W As Integer, H As Integer)
   
   Dim hPict As Picture
+  Dim hImage As Image
   Dim SX, SY, CX, CY As Integer
   Dim X, Y, X1, Y1, X2, Y2, X3, Y3, Y4 As Integer
   Dim hWin As Window
@@ -145,10 +146,11 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     'DEBUG sNew
     'ME.Hide
 
-    hPict = New Picture(Me.W, Me.H, True)
+    hPict = New Picture(Me.W, Me.H)
   
     Draw.Begin(hPict)
-  
+    
+    Draw.FillRect(0, 0, Draw.W, Draw.H, Color.White)
     DrawRoundRect(0, ARROW_HEIGHT, Me.W, Me.H - ARROW_HEIGHT * 2)
 
     Draw.FillStyle = Fill.Solid
@@ -171,6 +173,11 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Draw.Line(X1, Y1, X3, Y4)
   
     Draw.End
+    
+    hImage = hPict.Image
+    hImage.Transparent = True
+    hImage.Replace(Color.White, Color.Transparent)
+    hPict = hImage.Picture
   
     Me.Picture = hPict
     
