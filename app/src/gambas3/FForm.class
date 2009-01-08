@@ -2807,6 +2807,8 @@ Public Sub Control_Drag()
     Endif
     Drag.Show(hCtrl.Control)
     Return 
+  Else
+    Stop Event
   Endif
 
 Catch

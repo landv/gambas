@@ -51,6 +51,16 @@ static CPICTURE *_picture = 0;
 static int _picture_x = -1;
 static int _picture_y = -1;
 
+static QDragObject *_current_drag = 0;
+
+CDragManager CDragManager::manager;
+
+void CDragManager::destroy(QObject *o)
+{
+	if (_current_drag == o)
+		_current_drag = 0;
+}
+
 static int get_type(QMimeSource *src)
 {
   if (QTextDrag::canDecode(src))
@@ -370,6 +380,8 @@ static void post_exit_drag(intptr_t param)
 	CDRAG_dragging = false;
 }
 
+extern bool qt_xdnd_handle_badwindow();
+
 void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 {
   QDragObject *drag;
@@ -434,6 +446,18 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 	GB.Unref(POINTER(&CDRAG_destination));
 	CDRAG_destination = 0;
 	
+	if (_current_drag)
+	{
+		//qDebug("_current_drag = %p", _current_drag);
+		//qDebug("qt_xdnd_handle_badwindow = %d", qt_xdnd_handle_badwindow());
+		//qDebug("_current_drag now = %p", _current_drag);
+		qt_xdnd_handle_badwindow(); // Destroys the forgotten DragObject
+	}
+	
+  QObject::connect(drag, SIGNAL(destroyed(QObject *)), &CDragManager::manager, SLOT(destroy(QObject *)));
+	
+	_current_drag = drag;
+	//qDebug("Start drag %p", drag);
   drag->drag();
   
   hide_frame(NULL);

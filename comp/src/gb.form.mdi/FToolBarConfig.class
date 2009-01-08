@@ -55,6 +55,13 @@ Public Sub AddAction(sAction As String)
 
   If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
   
+  For Each hItem In svwAction.Children
+    If hItem.Tag = sAction Then
+      hItem.Show
+      Return
+    Endif
+  Next
+  
   hItem = New DrawingArea(svwAction) As "Item"
   hItem.Tag = sAction
   hItem.Resize(Desktop.Scale * 32, Desktop.Scale * 5)
@@ -160,8 +167,9 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     Drag.Icon = Null
   Endif
 
-  Wait
   hDest = Drag(hCtrl, sAction, "text/gambas-x-action")
+  
+  $hForm.DragEnd(bAnim)
   
   If hDest Then
   
@@ -169,7 +177,9 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     
       If hDest = panAction Then
       Else
-        If hCtrl.Tag <> "|" Then hCtrl.Delete
+        If hCtrl.Tag <> "|" Then 
+          hCtrl.Hide
+        Endif
       Endif
     
     Else
@@ -197,8 +207,6 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     bAnim = True
     
   Endif
-  
-  $hForm.DragEnd(bAnim)
   
 End
 

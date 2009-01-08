@@ -336,7 +336,7 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 		if (QT_EventFilter(e))
 			return true;
 	}
-
+	
 	return QObject::eventFilter(o, e);
 }
 

@@ -43,6 +43,20 @@ extern CDRAG_INFO CDRAG_info;
 extern bool CDRAG_dragging;
 #endif
 
+
+class CDragManager : public QObject
+{
+  Q_OBJECT
+
+public:
+
+  static CDragManager manager;
+
+public slots:
+
+  void destroy(QObject *);
+};
+
 class MyDragFrame: public QWidget
 {
   Q_OBJECT
@@ -55,7 +69,6 @@ protected:
 
 	//virtual paintEvent(QPaintEvent *e);
 };
-
 
 void CDRAG_clear(bool valid);
 void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt);

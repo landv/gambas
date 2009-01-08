@@ -514,10 +514,7 @@ BEGIN_PROPERTY(CCONTROL_enabled)
   if (READ_PROPERTY)
     GB.ReturnBoolean(QWIDGET(_object)->isEnabled());
   else
-  {
-  	THIS->flag.disabled = !VPROP(GB_BOOLEAN);
     QWIDGET(_object)->setEnabled(VPROP(GB_BOOLEAN));
-	}
 
 END_PROPERTY
 
@@ -1143,7 +1140,6 @@ BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 
 	QPoint p(WIDGET->pos());
 	bool show;
-	bool disabled;
 
 	if (!MISSING(x) && !MISSING(y))
 	{
@@ -1155,10 +1151,8 @@ BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 		return;
 
 	show = is_visible(THIS);
-	disabled = THIS->flag.disabled;
 
 	WIDGET->reparent(QCONTAINER(VARG(container)), p, show);
-	WIDGET->setEnabled(!disabled);
 
 END_METHOD
 

@@ -16,6 +16,7 @@ Private $bConfigure As Boolean
 Private $bInside As Boolean
 Private $bPressed As Boolean
 Private $iSeparatorSize As Integer
+Private $sDropAction As String
 
 Private $bInit As Boolean
 
@@ -544,8 +545,6 @@ End
 
 Public Sub Item_Drag()
   
-  Dim hCtrl As Control = Last
-  
   If Not $bConfigure Or If Drag.Format <> "text/gambas-x-action" Then
     HideWhere(True)
     Stop Event
@@ -610,6 +609,7 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   If hCtrl Then
     W = hCtrl.W
     H = hCtrl.H
+    panWhere.Move(hCtrl.X, hCtrl.Y)
   Else
     If $bVertical Then
       W = $iSeparatorSize
@@ -656,6 +656,12 @@ Public Sub Item_DragMove()
   Dim bBefore As Boolean
   Dim bAnim As Boolean
   
+  If Not $bConfigure Or If Drag.Format <> "text/gambas-x-action" Then
+    HideWhere(True)
+    Stop Event
+    Return
+  Endif
+
   If $bVertical Then
   
     bBefore = Drag.Y <= (hCtrl.H \ 2)
@@ -708,6 +714,7 @@ Public Sub Item_MouseDrag()
   ShowWhere(sAction, False, hCtrl)
   hCtrl.Hide
   Unlock()
+  Wait
   
   FToolBarConfig.DragAction(hCtrl, sAction)
   
@@ -722,23 +729,41 @@ End
 
 Public Sub DragStart(bOutside As Boolean)
   
-  '$bLock = True
-  ' If $bVertical Then
-  '   panWhere.W = panToolBar.ClientW - panToolBar.Padding * 2
-  ' Else
-  '   panWhere.H = panToolBar.ClientH - panToolBar.Padding * 2
-  ' Endif
+  $sDropAction = ""
   If bOutside Then
     panWhere.Resize(Desktop.Scale, Desktop.Scale)
     panWhere.Reparent(panToolBar)
   Endif
-  '$bLock = False
   
 End
 
 
 Public Sub DragEnd(bAnim As Boolean)
   
+  Dim hSep As Separator
+  Dim hObs As Observer
+  Dim hCtrl As Control
+  
+  If $sDropAction Then
+  
+    If $sDropAction = "|" Then
+      AddSeparator(panWhere)
+    Else
+      hCtrl = FindControl($sDropAction)
+      If hCtrl Then 
+        panToolBar.Enabled = True
+        'Debug "hCtrl.Enabled = "; hCtrl.Enabled
+        hCtrl.Reparent(panToolBar)
+        'Debug "hCtrl.Enabled = "; hCtrl.Enabled
+        hCtrl.Show
+        hCtrl.Next = panWhere.Next
+        panToolBar.Enabled = False
+      Endif
+    Endif
+    Update
+    
+  Endif
+
   HideWhere(bAnim)
   panWhere.Reparent(Me)
   
@@ -783,26 +808,7 @@ End
 
 Public Sub panWhere_Drop()
   
-  Dim sAction As String = Drag.Data
-  Dim hSep As Separator
-  Dim hObs As Observer
-  Dim hCtrl As Control
-  
-  If sAction = "|" Then
-    AddSeparator(panWhere)
-  Else
-    hCtrl = FindControl(sAction)
-    If hCtrl Then 
-      'panToolBar.Enabled = True
-      'Debug "hCtrl.Enabled = "; hCtrl.Enabled
-      hCtrl.Reparent(panToolBar)
-      'Debug "hCtrl.Enabled = "; hCtrl.Enabled
-      hCtrl.Show
-      hCtrl.Next = panWhere.Next
-      'panToolBar.Enabled = False
-    Endif
-  Endif
-  Update
+  $sDropAction = Drag.Data
   
 End
 
@@ -955,6 +961,7 @@ Public Sub SaveConfig(Optional bReset As Boolean)
   
   If Not ToolbarKey Then Return
   If $bDesign Then Return
+  If Not Object.IsValid(Me.Parent.Parent) Then Return
 
   If Not bReset Then
     aConfig = New String[]
