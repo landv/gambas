@@ -3,30 +3,31 @@
 Private $hToolbar As ToolBar
 Private $hForm As FToolBar
 Private $aDefault As String[]
-Private $cAction As Collection
 Private $hInside As DrawingArea
 
-Public Sub Run(hToolbar As ToolBar, cActionList As Collection) 
+Public Sub Run(hToolbar As ToolBar) 
   
   Me.Show
-  SetCurrentToolbar(hToolbar, cActionList)
+  SetCurrentToolbar(hToolbar)
   
 End
 
-Private Sub SetCurrentToolbar(hToolbar As ToolBar, cActionList As Collection)
+Private Sub SetCurrentToolbar(hToolbar As ToolBar)
+
+  'Debug hToolbar;; "-";; $hToolbar
+  
+  If hToolbar = $hToolbar Then Return
   
   If $hToolbar Then
     $hForm.SetConfigureMode(False)
     $hToolbar = Null
     $hForm = Null
-    $cAction = Null
   Endif
   
   If Not hToolbar Then Return
   
   $hToolbar = hToolbar
   $hForm = $hToolbar._Container.Parent
-  $cAction = cActionList
 
   If $hToolbar.Text Then 
     lblTitle.Text = Subst(("&1 toolbar"), $hToolbar.Text)
@@ -67,23 +68,26 @@ Private Sub InitAction()
   Dim hItem As DrawingArea
   Dim sAction As String
   
-  For Each hCtrl In svwAction.Children
-    hCtrl.Delete
-  Next
+  'For Each hCtrl In svwAction.Children
+  '  hCtrl.Delete
+  'Next
+  svwAction.Children.Clear
+  svwAction.Arrangement = Arrange.None
   
   AddAction("|")
   
   'Print $hToolbar.Children.Count;; $hToolbar._Container.Children.Count
-  For Each sAction In $hForm.GetActionList()
+  For Each sAction In MAction.Toolbars[$hForm.ToolbarKey].List
   
-    If Not $cAction.Exist(sAction) Then Continue
-    hCtrl = $hForm.FindControl(sAction)
+    If Not MAction.Actions.Exist(sAction) Then Continue
+    hCtrl = $hForm.FindControl(sAction, True)
     If Not hCtrl Then Continue
-    If hCtrl.Visible Then Continue
     
     AddAction(sAction)
     
   Next
+  
+  svwAction.Arrangement = Arrange.Vertical
   
 End
 
@@ -110,9 +114,10 @@ Public Sub Item_Draw()
   Dim sText As String
   Dim W As Integer
   
-  If hItem.Tag Then hAction = $cAction[hItem.Tag]
+  If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
   
-  If $hInside = hItem Then Draw.Style.Button(0, 0, hItem.W, hItem.H, Not hItem.Enabled)
+  'If $hInside = hItem Then 
+  Draw.Style.Button(0, 0, hItem.W, hItem.H, Not hItem.Enabled)
   If hAction Then
     If hAction.Icon Then 
       Draw.Picture(hAction.Icon, 4, (hItem.H - hAction.Icon.H) / 2)
@@ -140,13 +145,13 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
   If Not sAction Then Return
 
   bOutside = hCtrl.Parent = svwAction
-  If bOutside Then
-    If sAction <> "|" Then hCtrl.Hide
-  Else
-    hCtrl.Hide
-  Endif
+  ' If bOutside Then
+  '   If sAction <> "|" Then hCtrl.Hide
+  ' Else
+  '   hCtrl.Hide
+  ' Endif
 
-  If sAction Then hAction = $cAction[sAction]
+  If sAction Then hAction = MAction.Actions[sAction]
   
   $hForm.DragStart(bOutside)
   If hAction Then 
@@ -154,8 +159,8 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
   Else
     Drag.Icon = Null
   Endif
-  Wait
 
+  Wait
   hDest = Drag(hCtrl, sAction, "text/gambas-x-action")
   
   If hDest Then
@@ -163,7 +168,6 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     If bOutside Then
     
       If hDest = panAction Then
-        hCtrl.Show
       Else
         If hCtrl.Tag <> "|" Then hCtrl.Delete
       Endif
@@ -172,7 +176,7 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     
       If hDest = panAction Then
         If hCtrl.Action Then
-          hCtrl.Hide
+          $hForm.HideControl(hCtrl)
         Else
           hCtrl.Delete
         Endif
@@ -187,7 +191,9 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     
   Else
   
-    hCtrl.Show
+    If Not bOutside Then
+      hCtrl.Show
+    Endif
     bAnim = True
     
   Endif
@@ -200,21 +206,22 @@ Public Sub Item_MouseDrag()
   
   Dim hItem As DrawingArea = Last
   
-  $hInside = Null
-  hItem.Refresh
+  '$hInside = Null
+  'hItem.Refresh
   DragAction(hItem, hItem.Tag)
   
 End
 
 Public Sub Form_Close()
 
-  SetCurrentToolbar(Null, Null)
+  SetCurrentToolbar(Null)
 
 End
 
 
 Public Sub Form_Open()
 
+  MAction.InitAction
   Me.Center
 
 End

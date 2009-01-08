@@ -360,7 +360,7 @@
   }
   { edtEditor Editor Editors
     Name = "edtEditor"
-    MoveScaled(10,11,40,35)
+    MoveScaled(13,12,40,35)
     Expand = True
   }
   { timProc #Timer
@@ -432,7 +432,6 @@
   { Action goto-line
     Text = "Go to line..."
     Shortcut = "Ctrl+G"
-    Picture = "$Menu"
   }
   { Action indent
     Text = "Indent"
@@ -469,7 +468,6 @@
   { Action select-all
     Text = "Select &All"
     Shortcut = "Ctrl+A"
-    Picture = "$Menu"
   }
   { Action startup-class
     Text = "&Startup class"
@@ -514,5 +512,13 @@
     Text = "&Watch expression..."
     Shortcut = ""
     Picture = "icon:/small/watch"
+  }
+}
+
+{ Toolbars
+  { Toolbar editor
+    Text = "Editor"
+    List = "save,reload,code-form,cut,copy,paste,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
+    Default = "save,reload,code-form,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,|,proc,$HBox1"
   }
 }

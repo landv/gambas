@@ -237,6 +237,7 @@
     { mnuHideMenu Menu
       Action = "hide-menubar"
       Text = ("Hide menubar")
+      Picture = Picture["img/16/menu.png"]
       Shortcut = "Ctrl+Alt+M"
     }
     { mnuCloseAll Menu
@@ -496,6 +497,7 @@
       }
       { ToolButton7 ToolButton
         MoveScaled(20,0,4,4)
+        Visible = False
         ToolTip = ("Refresh project")
         Action = "refresh-project"
         Text = ("")
@@ -509,42 +511,53 @@
         Picture = Picture["icon:/small/options"]
         Toggle = True
       }
+      { ToolButton9 ToolButton
+        MoveScaled(28,0,4,4)
+        Visible = False
+        ToolTip = ("Shortcuts")
+        Action = "shortcut"
+        Text = ("")
+        Picture = Picture["icon:/small/shortcut"]
+      }
       { Separator3 Separator
-        MoveScaled(28,0,1,4)
+        MoveScaled(32,0,1,4)
       }
       { btnTranslate ToolButton
-        MoveScaled(30,0,4,4)
+        MoveScaled(34,0,4,4)
         ToolTip = ("Translate")
         Action = "translate"
         Text = ("")
         Picture = Picture["icon:/small/language"]
       }
       { ToolButton4 ToolButton
-        MoveScaled(34,0,4,4)
+        MoveScaled(38,0,4,4)
+        Visible = False
         ToolTip = ("Make source archive")
         Action = "archive"
         Text = ("")
         Picture = Picture["icon:/small/archive"]
       }
       { ToolButton5 ToolButton
-        MoveScaled(38,0,4,4)
+        MoveScaled(42,0,4,4)
         ToolTip = ("Make executable")
         Action = "exec"
         Text = ("")
         Picture = Picture["icon:/small/exec"]
       }
       { ToolButton14 ToolButton
-        MoveScaled(42,0,4,4)
+        MoveScaled(46,0,4,4)
+        Visible = False
         ToolTip = ("Make installation package")
         Action = "install"
         Text = ("")
         Picture = Picture["icon:/small/package"]
       }
       { Separator2 Separator
-        MoveScaled(46,0,1,4)
+        MoveScaled(50,0,1,4)
       }
       { ToolButton3 ToolButton
-        MoveScaled(49,0,4,4)
+        MoveScaled(53,0,4,4)
+        Visible = False
         ToolTip = ("Project")
         Action = "project"
         Text = ("")
@@ -553,24 +566,17 @@
         Value = True
       }
       { ToolButton8 ToolButton
-        MoveScaled(53,0,4,4)
+        MoveScaled(57,0,4,4)
+        Visible = False
         ToolTip = ("Properties sheet")
         Action = "property"
         Text = ("")
         Picture = Picture["icon:/small/edit"]
         Toggle = True
       }
-      { ToolButton9 ToolButton
-        MoveScaled(57,0,4,4)
-        Visible = False
-        ToolTip = ("Form hierarchy")
-        Action = "hierarchy"
-        Text = ("")
-        Picture = Picture["icon:/small/layers"]
-        Toggle = True
-      }
       { ToolButton10 ToolButton
         MoveScaled(61,0,4,4)
+        Visible = False
         ToolTip = ("Toolbox")
         Action = "control"
         Text = ("")
@@ -579,6 +585,7 @@
       }
       { btnShowConsole ToolButton
         MoveScaled(65,0,4,4)
+        Visible = False
         ToolTip = ("Console")
         Action = "console"
         Text = ("")
@@ -660,21 +667,21 @@
         Text = ("")
         Picture = Picture["icon:/small/last"]
       }
-      { btnBreakpoint ToolButton
+      { btnWatch ToolButton mnuWatch
+        Name = "btnWatch"
         MoveScaled(111,0,4,4)
+        ToolTip = ("Watch expression")
+        Action = "watch"
+        Text = ("")
+        Picture = Picture["icon:/small/watch"]
+      }
+      { btnBreakpoint ToolButton
+        MoveScaled(115,0,4,4)
         ToolTip = ("Toggle breakpoint")
         Action = "break"
         Text = ("")
         Picture = Picture["icon:/small/flag"]
         Toggle = True
-      }
-      { btnWatch ToolButton mnuWatch
-        Name = "btnWatch"
-        MoveScaled(115,0,4,4)
-        ToolTip = ("Watch expression")
-        Action = "watch"
-        Text = ("")
-        Picture = Picture["icon:/small/watch"]
       }
       { ToolButton6 ToolButton
         MoveScaled(119,0,4,4)
@@ -684,7 +691,6 @@
       }
       { btnShowMenu ToolButton
         MoveScaled(123,0,4,4)
-        Visible = False
         ToolTip = ("Show menu bar")
         Action = "hide-menubar"
         Text = ("")
@@ -703,7 +709,7 @@
       Action = "project"
       Orientation = Align.Left
       { tvwProject ColumnView
-        MoveScaled(4,2,20,40)
+        MoveScaled(5,2,20,40)
         Drop = True
         Expand = True
         Header = False
@@ -898,10 +904,6 @@
     Shortcut = "Ctrl+Alt+M"
     Picture = "img/16/menu.png"
   }
-  { Action hierarchy
-    Text = "Form hierarchy"
-    Picture = "icon:/small/layers"
-  }
   { Action info
     Text = "&Properties..."
     Shortcut = "Ctrl+I"
@@ -1066,5 +1068,13 @@
     Text = "&Watch expression"
     Shortcut = ""
     Picture = "icon:/small/watch"
+  }
+}
+
+{ Toolbars
+  { Toolbar main
+    Text = ""
+    List = "new-project,open-project,save-project,save-project-as,project-property,refresh-project,option,shortcut,translate,archive,exec,install,project,property,control,console,find,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,option,|,translate,exec,|,find,|,compile,compile-all,start,pause,stop,step,forward,return,until,watch,break,hide-menubar"
   }
 }

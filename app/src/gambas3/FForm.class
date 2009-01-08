@@ -58,6 +58,7 @@ Private $iSaveLevel As Integer
 Private $bSelectNew As Boolean
 Private $bDoNotArrange As Boolean
 Private $cAction As Collection
+Private $cToolbar As Collection
 
 Private $hContainer As CControl
 Private $iContX As Integer
@@ -453,9 +454,11 @@ Private Sub SaveAction()
   
   Dim hFile As File
   Dim cAction As Collection
+  Dim cToolbar As Collection
   Dim sAction As String
   Dim aList As String[]
   Dim sText As String
+  Dim sKey As String
 
   If $cAction.Count = 0 Then Return
   
@@ -487,8 +490,33 @@ Private Sub SaveAction()
     
   $sSave &= "}\n"
   
-End
+  If $cToolbar.Count = 0 Then Return
 
+  aList = New String[]
+  For Each cToolbar In $cToolbar
+    aList.Add($cToolbar.Key)
+  Next
+  aList.Sort
+
+  $sSave &= "\n{ Toolbars\n"
+  
+  For Each sKey In aList
+  
+    cToolbar = $cToolbar[sKey]
+    sText = cToolbar["Text"]
+    If Not sText Then sText = cToolbar["ToolTip"]
+
+    $sSave &= "  { Toolbar " & sKey & "\n"
+    $sSave &= "    Text = " & Quote(sText) & "\n"
+    $sSave &= "    List = " & Quote(cToolbar["List"]) & "\n"
+    $sSave &= "    Default = " & Quote(cToolbar["Default"]) & "\n"
+    $sSave &= "  }\n"
+    
+  Next
+  
+  $sSave &= "}\n"
+
+End
 
 Public Function Save(Optional bForce As Boolean) As Boolean
 
@@ -742,6 +770,10 @@ Private Sub SaveOne(hCtrl As CControl)
       For Each hChild In hCtrl.Control.Children
         SaveOne(Control[hChild.Tag])
       Next
+      
+      If hCtrl.Kind = "ToolBar" Then
+        hCtrl.AddToolbar($cToolbar, Control)
+      Endif
 
     Endif
 
@@ -1740,6 +1772,7 @@ Private Sub ResetSave()
   $iSaveLevel = 0
   $bScaled = Control[Me.Name].GetPropertyDefault(CPropertyInfo.SCALE_NAME)
   $cAction = New Collection
+  $cToolbar = New Collection
 
 End
 
@@ -1911,7 +1944,7 @@ Sub RefreshMenu()
 
   bOn = Selection.Count >= 2
 
-  Action[".paste"].Enabled = CanPaste()
+  Action[".paste", Me].Enabled = CanPaste()
   
   mnuArrange.Visible = Not $bReadOnly
   Action[".save,.refresh,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly

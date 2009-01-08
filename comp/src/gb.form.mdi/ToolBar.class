@@ -52,7 +52,7 @@ End
 Private Sub Design_Write(Value As Boolean)
 
   Super.Design = Value
-  If Value Then $hForm.DesignMode = True
+  If Value Then $hForm.SetDesign()
   
 End
 

@@ -222,6 +222,9 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hWindow.Title = sName
       hWindow.Background = Color.Mix(Color.Foreground, Color.Background)
       hCtrl.Add(hWindow)
+      
+    Case "toolbar"
+      hCtrl = New ToolBar(hParent)
 
     Case Else
 
@@ -1463,8 +1466,58 @@ Private Sub SetAction(cAction As Collection, sProp As String)
   
 End
 
+Public Sub AddToolbar(cToolbarSet As Collection, cForm As Collection)
+  
+  Dim cToolbar As Collection
+  Dim aConfig As String[]
+  Dim aList As String[]
+  Dim sKey As String
+  Dim hChild As Control
+  Dim hCtrl As CControl
+  Dim sAction As String
+  
+  sKey = GetPropertyString("Key")
+  If Not sKey Then Return
+  
+  If cToolbarSet.Exist(sKey) Then Return
 
-Public Sub AddAction(cActionSet As Collection) As Collection
+  'Debug "Adding toolbar "; sKey
+
+  cToolbar = New Collection
+  cToolbarSet[sKey] = cToolbar
+  SetAction(cToolbar, "Text")
+
+  aConfig = New String[]
+  aList = New String[]
+  
+  For Each hChild In Control.Children
+  
+    hCtrl = cForm[hChild.Tag]
+    If Not hCtrl Then Continue
+
+    sAction = hCtrl.GetPropertyString("Action")
+    
+    If sAction Then
+      If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+      aList.Add(sAction)
+    Else If hCtrl.Kind = "Separator"
+      sAction = "|"
+    Else
+      sAction = "$" & hCtrl.Name
+    Endif
+
+    If Not hCtrl.GetPropertyDefault("Visible") Then Continue
+    aConfig.Add(sAction)
+  
+  Next
+  
+  cToolbar["Default"] = aConfig.Join(",")
+  cToolbar["List"] = aList.Join(",")
+  
+End
+
+
+Public Sub AddAction(cActionSet As Collection)
   
   Dim sAction As String
   Dim cAction As Collection
@@ -1489,8 +1542,12 @@ Public Sub AddAction(cActionSet As Collection) As Collection
   SetAction(cAction, "ToolTip")
   
   sPicture = GetPropertyString("Picture")
-  If Not sPicture Then sPicture = "$" & Kind
-  cAction["Picture"] = sPicture
+  If Not sPicture And If Kind <> "Menu" Then
+    sPicture = "$" & Kind
+    If cAction["Picture"] Then sPicture = ""
+  Endif
+  
+  If sPicture Then cAction["Picture"] = sPicture
 
   SetAction(cAction, "Shortcut")
   If Kind = "Menu" Then cAction["Menu"] = True

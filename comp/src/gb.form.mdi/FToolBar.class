@@ -2,7 +2,7 @@
 
 Public ToolbarKey As String
 'Public ToolbarText As String
-Public DesignMode As Boolean
+Public $bDesign As Boolean
 
 Static Private $cRegister As New Collection
 
@@ -18,14 +18,14 @@ Private $bPressed As Boolean
 Private $iSeparatorSize As Integer
 
 Private $bInit As Boolean
-Private $aDefaultConfig As String[]
-Private $aActionList As String[]
 
 Private Const $bShowHandle As Boolean = True
 Private $iHandleSize As Integer
 
 Private $iLock As Integer
 Private $iArrangement As Integer
+
+Private $aHidden As Control[]
 
 Public Sub _new()
   
@@ -154,7 +154,7 @@ Private Sub SetArrangement()
   
   Dim hToolbar As ToolBar = Me.Parent
   
-  If DesignMode Then Return
+  If $bDesign Then Return
   hToolbar.Arrangement = If($bVertical, Arrange.Column, Arrange.Row)
   hToolBar.Padding = 1
   
@@ -174,6 +174,7 @@ Private Sub Update()
 ' 
 '   $bIgnoreNextUpdate = bSetIgnore
 
+  If $iLock Then Return
   If $bLock Then Return
   $bLock = True
   
@@ -198,7 +199,7 @@ Private Sub Update()
   
   If Not $bVertical Then
   
-    If DesignMode Then
+    If $bDesign Then
     
       If $bShowHandle Then
         dwgHandle.Move(XH, 0, $iHandleSize, Me.H)
@@ -247,7 +248,7 @@ Private Sub Update()
     
   Else 
   
-    If DesignMode Then
+    If $bDesign Then
     
       If $bShowHandle Then
         dwgHandle.Move(0, XH, Me.W, $iHandleSize)
@@ -361,7 +362,7 @@ End
 
 Public Sub dwgHandle_Enter()
 
-  If DesignMode Then Return
+  If $bDesign Then Return
   $bInside = True
   dwgHandle.Background = Color.TextBackground
   dwgHandle.Refresh
@@ -370,7 +371,7 @@ End
 
 Public Sub dwgHandle_Leave()
 
-  If DesignMode Then Return
+  If $bDesign Then Return
   $bInside = False
   dwgHandle.Background = Color.Background
   dwgHandle.Refresh
@@ -379,7 +380,7 @@ End
 
 Public Sub dwgHandle_MouseDown()
 
-  If DesignMode Then Return
+  If $bDesign Then Return
   $bPressed = True
   dwgHandle.Refresh
   'SetHidden(NOT $bHidden)
@@ -389,7 +390,7 @@ End
 
 Public Sub dwgHandle_MouseUp()
 
-  If DesignMode Then Return
+  If $bDesign Then Return
   If $bInside Then 
     $bPressed = False
     dwgHandle.Refresh
@@ -412,40 +413,55 @@ Public Sub SetAutoResize(bAutoResize As Boolean)
   
 End
 
-Private Sub InitDefaultConfig()
+Private Sub InitToolbar()
   
   Dim hCtrl As Control
   Dim hObs As Observer
   Dim sAction As String
+  Dim aList As String[]
+  Dim aReparent As Control[]
   
-  $aDefaultConfig = New String[]
-  $aActionList = New String[]
+  If Not ToolBarKey Then Return
   
+  aList = FindToolbar().DefaultConfig
+  
+  ' Debug panToolBar.Children.Count
+  ' Debug System.Backtrace.Join("\n")
+  
+  aReparent = New Control[]
   For Each hCtrl In panToolBar.Children
-    'Print hCtrl.Name;; hCtrl.Action;; hCtrl.Visible
-    If hCtrl.Action Then
+    'Debug hCtrl.Name;; hCtrl.Action
+    If hCtrl.Action Or If hCtrl Is Separator Then
+      hObs = New Observer(hCtrl) As "Item"
       sAction = hCtrl.Action
-      If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
-      hObs = New Observer(hCtrl) As "Item"
-    Else If hCtrl Is Separator
-      sAction = "|"
-      hObs = New Observer(hCtrl) As "Item"
-    Else
-      sAction = "$" & hCtrl.Name
+      If sAction Then
+        If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+        If Not aList.Exist(sAction) Then aReparent.Add(hCtrl)
+      Endif
     Endif
-    If hCtrl.Visible Then $aDefaultConfig.Add(sAction)
-    If IsAscii(Left(sAction)) Then $aActionList.Add(sAction)
+  Next
+  
+  For Each hCtrl In aReparent
+    hCtrl.Reparent(panHide)
   Next
   
   $bInit = True
   
 End
 
-Public Sub FindControl(sAction As String) As Control
+Public Sub FindControl(sAction As String, Optional bHiddenOnly As Boolean) As Control
 
   Dim hCtrl As Control
   
-  For Each hCtrl In panToolBar.Children
+  If Not bHiddenOnly Then 
+  
+    For Each hCtrl In panToolBar.Children
+      If hCtrl.Action = sAction Or If hCtrl.Action = ("." & sAction) Then Return hCtrl
+    Next
+  
+  Endif
+  
+  For Each hCtrl In panHide.Children
     If hCtrl.Action = sAction Or If hCtrl.Action = ("." & sAction) Then Return hCtrl
   Next
   
@@ -454,8 +470,10 @@ End
 
 Public Sub Form_Open()
 
-  If Not DesignMode Then
-    If Not $bInit Then InitDefaultConfig
+  'Debug panToolBar.Children.Count
+
+  If Not $bDesign Then
+    If Not $bInit Then InitToolbar
     RegisterToolbar
     $iSeparatorSize = GetToolBarHeight() - panToolBar.Padding * 2
     LoadConfig(True)
@@ -475,11 +493,13 @@ End
 '   
 ' End
 
-Public Sub GetActionList() As String[]
+Private Sub FindToolbar() As CToolbar
   
-  Return $aActionList
+  MAction.InitAction
+  Return MAction.Toolbars[ToolbarKey]
   
 End
+
 
 Public Sub SetConfigureMode(bConfigure As Boolean)
 
@@ -494,13 +514,30 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   For Each hChild In panToolBar.Children
     hChild.Drop = $bConfigure
   Next
+  For Each hChild In panHide.Children
+    hChild.Drop = $bConfigure
+  Next
   Me.Drop = $bConfigure
   panToolBar.Enabled = Not $bConfigure
+  'Debug "**** panToolbar.Enabled = "; panToolBar.Enabled
   dwgHandle.Enabled = Not $bConfigure
   
-  If $bConfigure Then 
+  If $bConfigure Then
+    $aHidden = New Control[]
+    For Each hChild In panToolBar.Children
+      If hChild Is Separator Then Continue
+      If Not hChild.Visible Then 
+        $aHidden.Add(hChild)
+        hChild.Show
+      Endif
+    Next
   Else
+    For Each hChild In $aHidden
+      hChild.Hide
+    Next
+    $aHidden = Null
     SaveConfig
+    panToolBar.Refresh
   Endif
   
 End
@@ -523,7 +560,7 @@ Private Sub WaitALittle(iCount As Integer)
   Dim eWait As Float
 
   eTime = Timer
-  Wait
+  'Wait
   eWait = (0.01 / iCount) - (eTime - Timer)
   If eWait > 0 Then Sleep eWait
   
@@ -544,7 +581,7 @@ Private Sub HideWhere(bAnim As Boolean)
   
   panWhere.Border = Border.None
   If bAnim Then
-    For D = D - 1 To 1 Step -1
+    For D = D - 1 To 1 Step -2
       If $bVertical Then
         panWhere.H = D
       Else
@@ -593,7 +630,7 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   
   panWhere.Show
   If bAnim Then
-    For D = 1 To DM - 1
+    For D = 1 To DM - 1 Step 2
     'For D = DM To DM
       If $bVertical Then
         panWhere.H = D
@@ -669,6 +706,7 @@ Public Sub Item_MouseDrag()
   panWhere.Next = hCtrl.Next
   hCtrl.Next = panWhere
   ShowWhere(sAction, False, hCtrl)
+  hCtrl.Hide
   Unlock()
   
   FToolBarConfig.DragAction(hCtrl, sAction)
@@ -721,6 +759,8 @@ Private Sub AddSeparator(Optional hNext As Control)
   Dim hObs As Observer
   Dim W, H As Integer
 
+  Lock()
+  
   hSep = New Separator(panToolBar)
   hSep.Next = hNext
   
@@ -736,6 +776,8 @@ Private Sub AddSeparator(Optional hNext As Control)
   hSep.Drop = True
   hObs = New Observer(hSep) As "Item"
   
+  Unlock()
+  
 End
 
 
@@ -750,8 +792,15 @@ Public Sub panWhere_Drop()
     AddSeparator(panWhere)
   Else
     hCtrl = FindControl(sAction)
-    If hCtrl Then hCtrl.Next = panWhere.Next
-    hCtrl.Show
+    If hCtrl Then 
+      'panToolBar.Enabled = True
+      'Debug "hCtrl.Enabled = "; hCtrl.Enabled
+      hCtrl.Reparent(panToolBar)
+      'Debug "hCtrl.Enabled = "; hCtrl.Enabled
+      hCtrl.Show
+      hCtrl.Next = panWhere.Next
+      'panToolBar.Enabled = False
+    Endif
   Endif
   Update
   
@@ -760,6 +809,7 @@ End
 Public Sub SetText(sText As String)
   
   Me.Text = sText
+  If $bDesign Then Return
   If sText Then
     dwgHandle.ToolTip = Subst$(("Configure &1 toolbar"), sText)
   Else
@@ -825,80 +875,116 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   Dim hCtrl As Control
   Dim aConfig As String[]
   Dim sAction As String
+  Dim iInd As Integer
+  Dim bEnabled As Boolean
+  Dim bVisible As Boolean
   
   If Not ToolbarKey Then Return
+  If $bDesign Then Return
+  
+  'Print Me; ": Loading config for";; ToolbarKey
   
   aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey]
   If Not aConfig Then 
     If bInit Then Return
-    aConfig = $aDefaultConfig
+    aConfig = FindToolbar().DefaultConfig
     If Not aConfig Then Return
   Endif
   
-  For Each hCtrl In panToolBar.Children
-    If hCtrl Is Separator Then 
+  bEnabled = panToolBar.Enabled
+  panToolBar.Enabled = True
+  Lock()
+  
+  iInd = 0
+  While iInd < panToolBar.Children.Count
+    hCtrl = panToolBar.Children[iInd]
+    If hCtrl.Action Then
+      hCtrl.Reparent(panHide)
+    Else If hCtrl Is Separator Then 
       hCtrl.Delete
-    Else If hCtrl.Action Then
-      hCtrl.Hide
+    Else
+      Inc iInd
     Endif
-  Next
-  
+  Wend
+
   For Each sAction In aConfig
-  
+    
+    'Print "Action "; sAction
     If sAction = "|" Then
+      'Print "--> AddSeparator()"
       AddSeparator()
     Else If Left(sAction) = "$" Then
       hCtrl = Me[Mid$(sAction, 2)]
       If hCtrl Then
-        hCtrl.Show
+        'Print "--> Reparent to panToolbar"
+        hCtrl.Reparent(panToolBar)
         hCtrl.Raise
       Endif
     Else
       hCtrl = FindControl(sAction)
       If hCtrl Then
-        hCtrl.Show
+        'Print "--> Reparent to panToolbar"
+        bVisible = hCtrl.Visible
+        hCtrl.Reparent(panToolBar)
         hCtrl.Raise
+        If hCtrl.Visible <> bVisible Then Debug "**** VISIBLE CHANGED FOR "; sAction
       Endif
     Endif
-  
+    
   Next
   
-  For Each hCtrl In panToolBar.Children
-    If hCtrl Is Separator Then Continue
-    If hCtrl.Action Then Continue
-    hCtrl.Show
-    hCtrl.Raise
-  Next
+  ' For Each hCtrl In panToolBar.Children
+  '   If hCtrl Is Separator Then Continue
+  '   If hCtrl.Action Then Continue
+  '   hCtrl.Raise
+  ' Next
   
-  Update
+  panToolBar.Enabled = bEnabled
+  
+  Unlock()
   
 End
 
 Public Sub SaveConfig(Optional bReset As Boolean)
   
   Dim aConfig As String[]
+  Dim aOldConfig As String[]
   Dim hCtrl As Control
   Dim sAction As String
   Dim hForm As FToolBar
   
   If Not ToolbarKey Then Return
+  If $bDesign Then Return
 
   If Not bReset Then
     aConfig = New String[]
     For Each hCtrl In panToolBar.Children
-      If hCtrl.Visible Then
-        If hCtrl.Action Then
-          sAction = hCtrl.Action
-          If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
-          aConfig.Add(sAction)
-        Else If hCtrl Is Separator
-          aConfig.Add("|")
-        Else
-          aConfig.Add("$" & hCtrl.Name)
-        Endif
+      If hCtrl.Action Then
+        sAction = hCtrl.Action
+        If Left(sAction) = "." Then sAction = Mid$(sAction, 2)
+        aConfig.Add(sAction)
+      Else If hCtrl Is Separator
+        aConfig.Add("|")
+      Else If hCtrl.Visible Then
+        aConfig.Add("$" & hCtrl.Name)
       Endif
     Next
-    If aConfig.Join(",") = $aDefaultConfig.Join(",") Then aConfig = Null
+    If aConfig.Join(",") = FindToolbar().DefaultConfig.Join(",") Then aConfig = Null
+  Endif
+  
+  ' Print Me; ": Saving config for "; ToolbarKey; ": ";
+  ' If aConfig Then
+  '   Print aConfig.Join(",")
+  ' Else
+  '   Print "NULL"
+  ' Endif
+  'Print "Default config is ";; FindToolbar().DefaultConfig.Join(",")
+  
+  aOldConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey]
+  
+  If IsNull(aOldConfig) And If IsNull(aConfig) Then Return
+  If aOldConfig And If aConfig Then
+    If aOldConfig.Join(",") = aConfig.Join(",") Then Return
   Endif
   
   Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey] = aConfig
@@ -929,6 +1015,26 @@ Private Sub Unlock()
   Dec $iLock
   If $iLock = 0 Then
     panToolBar.Arrangement = $iArrangement
+    Update
   Endif
+  
+End
+
+Public Sub HideControl(hCtrl As Control)
+  
+  hCtrl.Reparent(panHide)
+  
+End
+
+Public Sub ShowControl(hCtrl As Control)
+  
+  hCtrl.Reparent(panToolBar)
+  
+End
+
+Public Sub SetDesign()
+  
+  $bDesign = True
+  dwgHandle.ToolTip = ""
   
 End

@@ -14,8 +14,6 @@ Private $sKeyInfo As String
 
 Public Sub _new()
 
-  'DEBUG ME
-
   Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
 
@@ -66,6 +64,7 @@ Public Sub Form_Open()
 
   tvwProject_Select
   tabProperty_Click
+  btnShowMenu_Click
   
   mnuOpenExample.Tag = "."
 
@@ -974,6 +973,8 @@ Public Sub Action_Activate(Key As String) As Boolean
       Project.MakeExecutable
     Case "install"
       Project.MakeInstall
+    Case "shortcut"
+      Action.Configure
       
     Case "find-next"
       FFind.FindNext
@@ -1415,8 +1416,5 @@ Public Sub btnShowMenu_Click()
 
 End
 
-Public Sub mnuShortcut_Click()
 
-  Action.Configure
 
-End

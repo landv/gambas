@@ -30,7 +30,7 @@ Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection)
   Display = UnquoteShortcut(Text)
   DefaultShortcut = cSlot["Shortcut"]
   HasShortcut = bHasShortcut
-  Shortcut = MShortcut.GetShortcut(Key)
+  Shortcut = MAction.GetShortcut(Key)
   If Not Shortcut Then Shortcut = DefaultShortcut
   $sOldShortcut = Shortcut
   
@@ -53,9 +53,9 @@ Public Sub Save()
   If Shortcut = $sOldShortcut Then Return
   
   If Shortcut = DefaultShortcut Then
-    MShortcut.SetShortcut(Key, "")
+    MAction.SetShortcut(Key, "")
   Else
-    MShortcut.SetShortcut(Key, Shortcut)
+    MAction.SetShortcut(Key, Shortcut)
   Endif
   
   hAction = Action[Key]

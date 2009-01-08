@@ -1,13 +1,10 @@
 ' Gambas class file
 
-'Private $hSettings As Settings
-Private $cAction As Collection
 Private $aAction As CAction[]
 Private $hEditor As FShortcutEditor
 
-Public Sub Run(cAction As Collection) As Boolean
+Public Sub Run() As Boolean
   
-  $cAction = cAction
   Return Not Me.ShowModal() 
   
 End
@@ -21,7 +18,7 @@ Public Sub Form_Open()
   Settings.ReadWindow(Me, "gb.form.mdi/FShortcut")
 
   $aAction = New CAction[]
-  For Each hAction In $cAction
+  For Each hAction In MAction.Actions
     If hAction.HasShortcut Then $aAction.Add(hAction)
   Next
   $aAction.Sort
@@ -78,7 +75,7 @@ Public Sub tvwShortcut_Select()
 
   If tvwShortcut.Column = 0 Then tvwShortcut.Column = 1
 
-  $hEditor.Define($cAction, hAction)
+  $hEditor.Define(hAction)
   tvwShortcut.EditWith($hEditor)
   
 End
@@ -95,7 +92,7 @@ Private Sub SaveShortcut()
   Dim hAction As CAction
   Dim sKey As String
   
-  For Each hAction In $cAction
+  For Each hAction In MAction.Actions
     hAction.Save
   Next
   Settings.Save
@@ -134,7 +131,7 @@ Public Sub btnFind_KeyPress()
   Dim iRow As Integer
 
   If btnFind.Value Then
-    sShortcut = MShortcut.FindShortcut()
+    sShortcut = MAction.FindShortcut()
     If sShortcut Then
       For iRow = 0 To tvwShortcut.Rows.Count - 1
         If tvwShortcut[iRow, 1].Text = sShortcut Then

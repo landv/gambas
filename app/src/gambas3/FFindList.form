@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,71,50)
+  MoveScaled(0,0,67,18)
   Background = Color.TextBackground
   Text = ("Find list")
   Icon = Picture["img/16/find-list.png"]
@@ -12,7 +12,7 @@
   Spacing = True
   Padding = 4
   { panSearch Panel
-    MoveScaled(2,1,14,41)
+    MoveScaled(1,1,14,15)
     { picSearch PictureBox
       MoveScaled(1,5,8,8)
       Picture = Picture["img/search.png"]
@@ -24,13 +24,13 @@
       Cancel = True
     }
     { timSearch #Timer
-      #X = 21
-      #Y = 140
+      #X = 60
+      #Y = 30
       Delay = 100
     }
   }
   { tvwFind GridView
-    MoveScaled(32,11,36,32)
+    MoveScaled(19,1,47,16)
     Expand = True
     Mode = Select.Single
     Header = GridView.Horizontal

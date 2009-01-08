@@ -260,7 +260,7 @@ QString CWIDGET_Utf8ToQString(GB_STRING *str)
 
 void CWIDGET_destroy(CWIDGET *object)
 {
-  if (!object->widget)
+  if (!object || !object->widget)
     return;
 
   if (CWIDGET_test_flag(object, WF_DELETED))
@@ -514,7 +514,10 @@ BEGIN_PROPERTY(CCONTROL_enabled)
   if (READ_PROPERTY)
     GB.ReturnBoolean(QWIDGET(_object)->isEnabled());
   else
+  {
+  	THIS->flag.disabled = !VPROP(GB_BOOLEAN);
     QWIDGET(_object)->setEnabled(VPROP(GB_BOOLEAN));
+	}
 
 END_PROPERTY
 
@@ -1139,7 +1142,8 @@ END_METHOD
 BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 
 	QPoint p(WIDGET->pos());
-	bool showIt = !WIDGET->isHidden();
+	bool show;
+	bool disabled;
 
 	if (!MISSING(x) && !MISSING(y))
 	{
@@ -1150,7 +1154,11 @@ BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 	if (GB.CheckObject(VARG(container)))
 		return;
 
-	WIDGET->reparent(QCONTAINER(VARG(container)), p, showIt);
+	show = is_visible(THIS);
+	disabled = THIS->flag.disabled;
+
+	WIDGET->reparent(QCONTAINER(VARG(container)), p, show);
+	WIDGET->setEnabled(!disabled);
 
 END_METHOD
 

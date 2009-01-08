@@ -6,7 +6,7 @@
   Text = ("")
   Arrangement = Arrange.Vertical
   { Panel1 Panel
-    MoveScaled(0,1,32,1.1667)
+    MoveScaled(2,1,32,1.1667)
     Visible = False
   }
   { panFind HBox
@@ -72,7 +72,7 @@
     { ToolBar5 ToolBar
       MoveScaled(55,0,12,4)
       AutoResize = False
-      Text = ("ToolBar5")
+      Text = ("")
       Action = "find-in"
       { ToolButton18 ToolButton
         MoveScaled(0,0,4,4)
@@ -107,7 +107,7 @@
       MoveScaled(71,0,14,4)
       Visible = False
       AutoResize = False
-      Text = ("ToolBar6")
+      Text = ("")
       Action = "find-option"
       { ToolButton21 ToolButton
         MoveScaled(0,0,4,4)
@@ -167,7 +167,7 @@
     Picture = "img/16/comment.png"
   }
   { Action find-in
-    Text = "ToolBar5"
+    Text = ""
     Picture = "$ToolBar"
   }
   { Action find-in-module
@@ -187,7 +187,7 @@
     Picture = "icon:/small/down"
   }
   { Action find-option
-    Text = "ToolBar6"
+    Text = ""
     Picture = "$ToolBar"
   }
   { Action find-previous

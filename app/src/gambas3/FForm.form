@@ -631,7 +631,7 @@
   { Action move-tab
     Text = "Tabstrip"
     Shortcut = ""
-    Picture = "$ToolBar"
+    Picture = "img/16/tabstrip.png"
   }
   { Action move-tab-first
     Text = "&First"
@@ -690,7 +690,6 @@
   { Action select-all
     Text = "Select all"
     Shortcut = "Ctrl+A"
-    Picture = "$Menu"
   }
   { Action startup-class
     Text = "&Startup class"
@@ -704,6 +703,23 @@
   { Action unselect-all
     Text = "Unselect all"
     Shortcut = "Esc"
-    Picture = "$Menu"
+  }
+}
+
+{ Toolbars
+  { Toolbar arrange
+    Text = "Arrangement"
+    List = "raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row"
+    Default = "raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height"
+  }
+  { Toolbar form
+    Text = "Form"
+    List = "save,reload,code-form,lock,cut,copy,paste,delete,undo,redo,menu,grid"
+    Default = "save,reload,code-form,lock,menu,grid"
+  }
+  { Toolbar tabstrip
+    Text = "Tabstrip"
+    List = "move-tab-first,move-tab-previous,move-tab-next,move-tab-last"
+    Default = "move-tab-first,move-tab-previous,move-tab-next,move-tab-last"
   }
 }
