@@ -84,6 +84,7 @@ static void load_exported_class(ARCHIVE *arch)
   char *buffer;
   int len;
   char *name;
+  CLASS *class;
 
   /* COMPONENT_current is set => it will look in the archive */
 
@@ -128,10 +129,19 @@ static void load_exported_class(ARCHIVE *arch)
 		{
 			name[len - 1] = 0;
 			if (!CLASS_look_global(name, strlen(name)))
-				CLASS_load(CLASS_find_global(name));
+				class = CLASS_find_global(name);
+			else
+				class = NULL;
 		}
 		else
-    	CLASS_load(CLASS_find_global(name));
+    	class = CLASS_find_global(name);
+		
+		if (class)
+		{
+			class->component = COMPONENT_current;
+			CLASS_load(class);
+		}
+    	
     name = strtok(NULL, "\n");
   }
 

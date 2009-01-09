@@ -131,9 +131,10 @@ static void conv_type_simple(CLASS *class, int *ptype)
 }
 
 
-static void check_version(int loaded)
+static void check_version(CLASS *class, int loaded)
 {
 	static bool warning = FALSE;
+	COMPONENT *comp = class->component;
 	
   int current = GAMBAS_PCODE_VERSION;
 
@@ -142,19 +143,19 @@ static void check_version(int loaded)
     if (loaded == current)
       return;
     
-    if ((COMPONENT_current && COMPONENT_current->warning) || warning)
+    if ((comp && comp->warning) || warning)
     	return;
     
     fprintf(stderr, "WARNING: ");
-    if (COMPONENT_current)
-    	fprintf(stderr, "%s: ", COMPONENT_current->name);
+    if (comp)
+    	fprintf(stderr, "%s: ", comp->name);
     fprintf(stderr, "current bytecode version is ");
     fprintf(stderr, "%X.%X.%X ", current >> 24, (current >> 16) & 0xFF, current & 0xFFFF);
     fprintf(stderr, "and project bytecode version is ");
     fprintf(stderr, "%X.%X.%X. You should recompile your project.\n", loaded >> 24, (loaded >> 16) & 0xFF, loaded & 0xFFFF);
     
-    if (COMPONENT_current)
-    	COMPONENT_current->warning = TRUE;
+    if (comp)
+    	comp->warning = TRUE;
     else
     	warning = TRUE;
     	
@@ -370,7 +371,7 @@ static void load_and_relocate(CLASS *class, int len_data, int *pndesc, int *pfir
     THROW(E_CLASS, ClassName, "Bad header", "");
 	}
 	
-  check_version(header->version);
+  check_version(class, header->version);
 
   class->debug = header->flag & CF_DEBUG;
   
@@ -706,12 +707,13 @@ void CLASS_load_without_init(CLASS *class)
   if (class->in_load)
     THROW(E_CLASS, ClassName, "Circular reference", "");
 
-  if (COMPONENT_current)
-    class->component = COMPONENT_current;
-  else if (CP)
-    class->component = CP->component;
-  else
-    class->component = NULL;
+	if (!class->component)
+	{
+		if (CP)
+			class->component = CP->component;
+		else
+			class->component = NULL;
+	}
 
   save = COMPONENT_current;
   COMPONENT_current = class->component;
