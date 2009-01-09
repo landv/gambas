@@ -66,6 +66,7 @@ END
 PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
   
   DIM hPict AS Picture
+  DIM hImage AS Image
   DIM SX, SY, CX, CY AS Integer
   DIM X, Y, X1, Y1, X2, Y2, X3, Y3, Y4 AS Integer
   DIM hWin AS Window
@@ -145,7 +146,8 @@ PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
     'DEBUG sNew
     'ME.Hide
 
-    hPict = NEW Picture(ME.W, ME.H, TRUE)
+    hPict = NEW Picture(ME.W, ME.H) 'TRUE
+    hPict.Fill(Color.White)
   
     Draw.Begin(hPict)
   
@@ -172,6 +174,11 @@ PRIVATE SUB MakeBorder(OPTIONAL W AS Integer, H AS Integer)
   
     Draw.End
   
+    hImage = hPict.Image
+    hImage.Transparent = TRUE
+    hImage.Replace(Color.White, Color.Transparent)
+    hPict = hImage.Picture
+
     ME.Picture = hPict
     
     $sOld = sNew

@@ -102,7 +102,6 @@ PUBLIC SUB Replace()
   IF NOT cmbFind.Text THEN RETURN
   Store(cmbReplace)
 
-  $bReplaceAll = FALSE
   Search(FALSE, TRUE)
   
 END
@@ -118,6 +117,7 @@ PUBLIC SUB ReplaceAll()
 
   $bReplaceAll = TRUE
   Search(FALSE, TRUE)
+  $bReplaceAll = FALSE
   
 END
 
