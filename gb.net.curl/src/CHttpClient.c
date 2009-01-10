@@ -196,7 +196,8 @@ void http_initialize_curl_handle(void *_object)
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
-	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT,THIS_HTTP->sUserAgent);
+	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT, THIS_HTTP->sUserAgent);
+	curl_easy_setopt(THIS_CURL, CURLOPT_ENCODING, THIS_HTTP->encoding);
 	curl_easy_setopt(THIS_CURL, CURLOPT_HEADERFUNCTION, http_header_curl);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION, http_write_curl);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA, _object);
@@ -396,6 +397,20 @@ BEGIN_PROPERTY ( CHttpClient_UserAgent )
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CHttpClient_Encoding)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS_HTTP->encoding);
+	else
+	{
+		if (THIS_STATUS > 0)
+			GB.Error("Encoding property can not be changed while working");
+		else
+			GB.StoreString(PROP(GB_STRING), &THIS_HTTP->encoding);
+	}
+
+END_PROPERTY
+
 /*********************************************
  Return code received from Http Server
  *********************************************/
@@ -456,7 +471,6 @@ BEGIN_METHOD_VOID(CHTTPCLIENT_new)
 	THIS_URL=tmp;
 	GB.NewString(&THIS_HTTP->sUserAgent,"Gambas Http/1.0",0);
 	
-	
 	tmp=NULL;
 	GB.Alloc((void**)POINTER(&tmp),8);
 	strcpy(tmp,"http://");
@@ -473,9 +487,10 @@ BEGIN_METHOD_VOID(CHTTPCLIENT_free)
 
 	http_reset(THIS);
 	
-	if (THIS_HTTP->sUserAgent) GB.FreeString(&THIS_HTTP->sUserAgent);
-	if (THIS_HTTP->cookiesfile)	GB.Free((void**)POINTER(&THIS_HTTP->cookiesfile));
-	if (THIS_HTTP->ReturnString) GB.Free((void**)POINTER(&THIS_HTTP->ReturnString));
+	GB.FreeString(&THIS_HTTP->sUserAgent);
+	GB.FreeString(&THIS_HTTP->encoding);
+	GB.Free(POINTER(&THIS_HTTP->cookiesfile));
+	GB.Free(POINTER(&THIS_HTTP->ReturnString));
 
 END_METHOD
 
@@ -609,6 +624,7 @@ GB_DESC CHttpClientDesc[] =
   GB_PROPERTY("UpdateCookies", "b",CHttpClient_UpdateCookies),
   GB_PROPERTY("Headers", "String[]", CHttpClient_Headers),
   GB_PROPERTY("UserAgent", "s", CHttpClient_UserAgent),
+  GB_PROPERTY("Encoding", "s", CHttpClient_Encoding),
 
   GB_PROPERTY_READ("Code","i",CHttpClient_ReturnCode),
   GB_PROPERTY_READ("Reason","s",CHttpClient_ReturnString),

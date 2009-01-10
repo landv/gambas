@@ -56,6 +56,7 @@ typedef
 		int len_header;
 		int ReturnCode;
 		char *ReturnString;
+		char *encoding;
 		}
 	CHTTPCLIENT;
 
