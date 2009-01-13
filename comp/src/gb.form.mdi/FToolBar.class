@@ -29,7 +29,7 @@ Private Const $bShowHandle As Boolean = True
 Private $iHandleSize As Integer
 
 Private $iLock As Integer
-Private $iArrangement As Integer
+'Private $iArrangement As Integer
 
 Private $aHidden As Control[]
 
@@ -134,29 +134,6 @@ Private Function GetFreeWidth() As Integer
   
 End
 
-
-' PUBLIC SUB Form_Resize()
-' 
-'   'DEBUG ME.Width
-' 
-'   IF NOT DesignMode THEN
-'     Object.Lock(ME)
-'     panToolBar.Arrangement = Arrange.LeftRight
-'     panToolBar.Padding = 2
-'     panToolBar.AutoResize = TRUE
-'     panToolBar.Move(If(System.RightToLeft, 0, 6), 0, Min(ME.ClientW - 6, GetToolBarWidth()))
-'     'panToolBar.Width = GetToolBarWidth()
-'     ME.Parent.Resize(Max(8, panToolBar.Width) + 6, Max(8, panToolBar.Height))
-'     Object.Unlock(ME)
-'   ELSE
-'     panToolBar.Arrangement = Arrange.None
-'     panToolBar.Move(If(System.RightToLeft, 0, 6), 0, ME.ClientW, ME.ClientH)
-'   ENDIF
-'   
-'   dwgHandle.Move(If(System.RightToLeft, ME.ClientW - 5, 2), 2, 3, ME.ClientH - 4)
-' 
-' END
-
 Private Sub SetArrangement()
   
   Dim hToolbar As ToolBar = Me.Parent
@@ -167,26 +144,17 @@ Private Sub SetArrangement()
   
 End
 
-
 Private Sub Update()
 
   Dim W As Integer
   Dim XH, XP As Integer 
   Dim WH As Integer
 
-'   IF $bIgnoreNextUpdate THEN
-'     $bIgnoreNextUpdate = bSetIgnore
-'     RETURN
-'   ENDIF 
-' 
-'   $bIgnoreNextUpdate = bSetIgnore
-
   If Not Object.IsValid(Me.Parent.Parent) Then Return
   If $iLock Then Return
   If $bLock Then Return
   $bLock = True
   
-  '$bVertical = ME.H > ME.W
   SetArrangement
 
   If System.RightToLeft Then 
@@ -317,24 +285,15 @@ Public Sub Form_Resize()
 End
 
  
-' PUBLIC SUB Container_Arrange()
-'   
-'   DEBUG
-'   Form_Resize
-'   
-' END
-
 Public Sub Container_Resize()
   
-  'IF DesignMode THEN RETURN
   Update
   
 End
 
 
-Public Sub panToolBar_Arrange()
+Public Sub panToolBar_BeforeArrange()
 
-  'IF DesignMode THEN RETURN
   Update
 
 End
@@ -767,13 +726,9 @@ Public Sub DragEnd(bAnim As Boolean)
     Else
       hCtrl = FindControl($sDropAction)
       If hCtrl Then 
-        panToolBar.Enabled = True
-        'Debug "hCtrl.Enabled = "; hCtrl.Enabled
-        hCtrl.Reparent(panToolBar)
-        'Debug "hCtrl.Enabled = "; hCtrl.Enabled
+        ShowControl(hCtrl)
         hCtrl.Show
         hCtrl.Next = panWhere.Next
-        panToolBar.Enabled = False
       Endif
     Endif
     Update
@@ -1124,7 +1079,7 @@ End
 Private Sub Lock()
   
   If $iLock = 0 Then
-    $iArrangement = panToolBar.Arrangement
+    '$iArrangement = panToolBar.Arrangement
     panToolBar.Arrangement = Arrange.None
   Endif
   Inc $iLock
@@ -1136,7 +1091,6 @@ Private Sub Unlock()
   If $iLock <= 0 Then Return
   Dec $iLock
   If $iLock = 0 Then
-    panToolBar.Arrangement = $iArrangement
     Update
   Endif
   
@@ -1144,13 +1098,17 @@ End
 
 Public Sub HideControl(hCtrl As Control)
   
+  panToolBar.Enabled = True
   hCtrl.Reparent(panHide)
+  panToolBar.Enabled = False
   
 End
 
 Public Sub ShowControl(hCtrl As Control)
   
+  panToolBar.Enabled = True
   hCtrl.Reparent(panToolBar)
+  panToolBar.Enabled = False
   
 End
 

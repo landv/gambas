@@ -47,8 +47,8 @@ Public Sub _New()
   hPanel2.Border = Border.Sunken
   $hTextBox = New Label(hPanel2) As "TextBox"
   $hTextBox.Expand = True
-  $hTextBox.BackColor = Color.White
-  $hTextBox.ForeColor = Color.Black
+  $hTextBox.Background = Color.White
+  $hTextBox.Foreground = Color.Black
   $hTextBox.Border = Border.None
   
   hIcon = Picture["icon:/small/calendar"]

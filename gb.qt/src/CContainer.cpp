@@ -43,6 +43,7 @@
 
 DECLARE_EVENT(EVENT_Insert);
 //DECLARE_EVENT(EVENT_Remove);
+DECLARE_EVENT(EVENT_BeforeArrange);
 DECLARE_EVENT(EVENT_Arrange);
 
 static QWidget *get_widget(QObjectList *list)
@@ -109,6 +110,11 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define RAISE_ARRANGE_EVENT(_object) \
 { \
 	GB.Raise(_object, EVENT_Arrange, 0); \
+}
+
+#define RAISE_BEFORE_ARRANGE_EVENT(_object) \
+{ \
+	GB.Raise(_object, EVENT_BeforeArrange, 0); \
 }
 
 #define DESKTOP_SCALE MAIN_scale
@@ -748,6 +754,7 @@ GB_DESC CContainerDesc[] =
 	
 	GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
 
+	GB_EVENT("BeforeArrange", NULL, NULL, &EVENT_BeforeArrange),
 	GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),
 	GB_EVENT("Insert", NULL, "(Control)Control", &EVENT_Insert),
 

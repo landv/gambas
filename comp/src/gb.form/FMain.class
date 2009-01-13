@@ -1,3 +1,15 @@
 ' Gambas class file
 
+Private $hDatePicker As FileView
 
+Public Sub Form_Open()
+
+  $hDatePicker = New FileView(Me)
+
+End
+
+Public Sub FileView1_Click()
+
+  
+
+End

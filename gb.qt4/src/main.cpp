@@ -527,6 +527,8 @@ static void QT_InitEventLoop(void)
 {
 }
 
+extern void qt_x11_set_global_double_buffer(bool);
+
 static void QT_Init(void)
 {
 	static bool init = false;
@@ -551,6 +553,8 @@ static void QT_Init(void)
 		MyApplication::setEventFilter(true);
 
 	qApp->installEventFilter(&CWidget::manager);
+
+	//qt_x11_set_global_double_buffer(false);
 
 	//Q3StyleSheet::defaultSheet()->item("tt")->setFontFamily("Monospace");
 	//Q3StyleSheet::defaultSheet()->item("pre")->setFontFamily("Monospace");

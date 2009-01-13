@@ -318,13 +318,17 @@ Public Function IsModified() As Boolean
 
 End
 
+Public Sub Form_Resize()
+  
+  'HideCompletion
+  'HideSignature
+  
+End
+
 
 Public Sub Form_Arrange()
 
   Dim iToolbarOffset As Integer
-
-  HideCompletion
-  HideSignature
 
   If $bToolbar Then
     panToolBar.Move(0, 0, Me.ClientW)

@@ -307,7 +307,10 @@ void InitControl(gControl *control, CWIDGET *widget)
 	control->onEnterLeave=gb_raise_EnterLeave;
 	
 	if (control->isContainer())
+	{
+		((gContainer *)control)->onBeforeArrange = CCONTAINER_cb_before_arrange;
 		((gContainer *)control)->onArrange = CCONTAINER_cb_arrange;
+	}
 	
 	if (control->parent())
 		CCONTAINER_raise_insert((CCONTAINER *)control->parent()->hFree, widget);

@@ -585,8 +585,7 @@ void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 	CDRAG_info.x = p.x();
 	CDRAG_info.y = p.y();
 
-	GB.Raise(control, EVENT_Drop, 0);
-
+	GB.Raise(CDRAG_destination, EVENT_Drop, 0);
 	CDRAG_clear(false);
 }
 

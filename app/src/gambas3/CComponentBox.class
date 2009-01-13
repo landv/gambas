@@ -64,12 +64,12 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   panName = New HPanel(panVBox) As "panComp"
   
   hVBox = New VBox(panName)
-  hVBox.W = 24
+  hVBox.W = Desktop.Scale * 4
   
   picCheck = New PictureBox(hVBox) As "picCheck"
   picCheck.Alignment = Align.Center
   picCheck.Picture = Picture["img/16/unchecked.png"]
-  picCheck.Resize(24, 24)
+  picCheck.Resize(Desktop.Scale * 4, Desktop.Scale * 4)
   
   txtName = New TextLabel(panName)
   txtName.Padding = 2
@@ -104,8 +104,6 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   If W > $iMaxWidth Then 
     $iMaxWidth = W
   Endif
-  
-  'txtInfo.Text = $sInfo
   
   Expanded_Write(False)
   $bAnim = True
@@ -250,13 +248,13 @@ Private Sub Expanded_Write(Value As Boolean)
     Wend
     Object.Unlock($hWatch)
   Endif
+  
   Me.Height = H
   
 End
 
 Public Sub Watcher_Arrange()
 
-  Object.Lock(Me)
   txtDesc.Adjust
   If panName.H <> txtDesc.H Then
     panName.H = txtDesc.H
@@ -264,6 +262,5 @@ Public Sub Watcher_Arrange()
     Expanded_Write(panInfo.Visible)
     $bAnim = True
   Endif
-  Object.Unlock(Me)
   
 End

@@ -68,6 +68,12 @@ static void cb_arrange(gContainer *sender)
 		(*(sender->onArrange))(sender);
 }
 
+static void cb_before_arrange(gContainer *sender)
+{
+	if (sender->onBeforeArrange)
+		(*(sender->onBeforeArrange))(sender);
+}
+
 static void resize_container(gControl *cont, int w, int h)
 {
 	if (w > 0 && h > 0)
@@ -122,6 +128,7 @@ static void resize_container(gControl *cont, int w, int h)
 #define GET_OBJECT_NAME(_object) (((gControl *)_object)->name())
 
 #define RAISE_ARRANGE_EVENT(_object) cb_arrange((gContainer *)_object);
+#define RAISE_BEFORE_ARRANGE_EVENT(_object) cb_before_arrange((gContainer *)_object);
 
 #define DESKTOP_SCALE gDesktop::scale();
 

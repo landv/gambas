@@ -63,6 +63,7 @@ public:
 
 //"Signals"
 	void (*onArrange)(gContainer *sender);
+	void (*onBeforeArrange)(gContainer *sender);
 	//void (*onInsert)(gContainer *sender, gControl *child);
 
 //"Private"

@@ -79,6 +79,7 @@ DECLARE_PROPERTY(CCONTAINER_spacing);
 DECLARE_PROPERTY(CCONTAINER_margin);
 
 void CCONTAINER_cb_arrange(gContainer *sender);
+void CCONTAINER_cb_before_arrange(gContainer *sender);
 void CCONTAINER_raise_insert(CCONTAINER *_object, CWIDGET *child);
 
 #endif

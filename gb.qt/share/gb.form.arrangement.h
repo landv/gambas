@@ -115,6 +115,9 @@ Returns the value of Desktop.Scale
 #define RAISE_ARRANGE_EVENT(_object)
 Code to raise the Arrange event of containers.
 
+#define RAISE_BEFORE_ARRANGE_EVENT(_object)
+Code to raise the BeforeArrange event of containers.
+
 #define FUNCTION_NAME
 This is the name of the arrangement function
 
@@ -166,8 +169,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	
 	arr->locked = true;
 
-	#ifdef RAISE_ARRANGE_EVENT
-	RAISE_ARRANGE_EVENT(_object);
+	#ifdef RAISE_BEFORE_ARRANGE_EVENT
+	RAISE_BEFORE_ARRANGE_EVENT(_object);
 	#endif
 
 	if (arr->mode != ARRANGE_NONE)
@@ -573,6 +576,10 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		}
 
 	}
+
+	#ifdef RAISE_ARRANGE_EVENT
+	RAISE_ARRANGE_EVENT(_object);
+	#endif
 
 	arr->locked = false;
   //qDebug("%p: dirty = FALSE", THIS);

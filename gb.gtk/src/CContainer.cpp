@@ -38,9 +38,15 @@
 
 ***************************************************************************/
 
+DECLARE_EVENT(EVENT_BeforeArrange);
 DECLARE_EVENT(EVENT_Arrange);
 DECLARE_EVENT(EVENT_Insert);
 
+
+void CCONTAINER_cb_before_arrange(gContainer *sender)
+{
+	GB.Raise(sender->hFree, EVENT_BeforeArrange, 0);
+}
 
 void CCONTAINER_cb_arrange(gContainer *sender)
 {
