@@ -148,7 +148,7 @@ Public Sub ReadConfig()
 
   $bToolBar = Settings["/Editor/Toolbar", True]
   panToolbar.Visible = $bToolbar
-  Form_Resize
+  Form_Arrange
 
   ReadConfigEditor(edtEditor)
   If $hEditor1 Then ReadConfigEditor($hEditor1)
@@ -319,7 +319,7 @@ Public Function IsModified() As Boolean
 End
 
 
-Public Sub Form_Resize()
+Public Sub Form_Arrange()
 
   Dim iToolbarOffset As Integer
 
@@ -327,7 +327,7 @@ Public Sub Form_Resize()
   HideSignature
 
   If $bToolbar Then
-    panToolBar.Move(0, 0, Me.CLientW)
+    panToolBar.Move(0, 0, Me.ClientW)
     iToolbarOffset = panToolBar.H
   Else
     iToolbarOffset = 0
@@ -2626,7 +2626,7 @@ Private Sub SetViewMode(iViewMode As Integer)
   End Select   
   
   Editor.SetFocus
-  Form_Resize
+  Form_Arrange
   Editors_Cursor
   
 End

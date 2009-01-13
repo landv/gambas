@@ -36,6 +36,6 @@ extern GB_DESC CClipboardDesc[];
 extern GB_DESC CDragDesc[];
 #endif
 
-void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format);
+void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format);
 
 #endif

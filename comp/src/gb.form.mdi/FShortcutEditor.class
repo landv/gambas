@@ -6,8 +6,9 @@ Property Read BadShortcut As Boolean
 Private $hAction As CAction
 Private $bBadShortcut As Boolean
 
-Public Sub Define(hAction As CAction)
+Public Sub Define(hAction As CAction) As Boolean
   
+  If $hAction = hAction Then Return True
   $hAction = hAction
 
 End
@@ -38,8 +39,11 @@ Public Sub txtShortcut_KeyPress()
 
   Dim sShortcut As String
   
-  sShortcut = MAction.FindShortcut()
-  If sShortcut Then txtShortcut.Text = sShortcut
+  If Not FShortcut.HandleKey() Then 
+    sShortcut = MAction.FindShortcut()
+    If sShortcut Then txtShortcut.Text = sShortcut
+  Endif
+  
   Stop Event
 
 End

@@ -107,6 +107,7 @@ void MyContents::autoResize(void)
   int ww, hh;
   bool cw, ch;
   bool locked;
+  int i;
   
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
@@ -131,70 +132,72 @@ void MyContents::autoResize(void)
 		//sw->updateScrollBars();
 	}
 
-__AGAIN:
-
-	if (THIS->arrangement.mode)
+	for(i = 0; i < 3; i++)
 	{
-		//findRightBottom();
-		CCONTAINER_get_max_size(THIS, &w, &h);
-		//resize(w, h);
-		//sw->updateScrollBars();
-	}
-	else
-	{
-		w = h = 0;
-		
-		if (right)
-			w = right->x() + right->width();
-		if (bottom)
-			h = bottom->y() + bottom->height();	
-	}
-	
-	if (ww < 0)
-	{
-		ww = sw->viewport()->width();
-		hh = sw->viewport()->height(); //visibleHeight();	
-	}
-	
-	if (w < ww || THIS->arrangement.mode == ARRANGE_VERTICAL || THIS->arrangement.mode == ARRANGE_ROW)
-	{
-		w = ww;
-		cw = true;
-	}
-	else
-		cw = false;
-		
-	if (h < hh || THIS->arrangement.mode == ARRANGE_HORIZONTAL || THIS->arrangement.mode == ARRANGE_COLUMN)
-	{
-		h = hh;
-		ch = true;
-	}
-	else
-		ch = false;
-	
-	if (w != width() || h != height())
-	{
-		resize(w, h);
-		
-		//CCONTAINER_arrange(THIS);
-		
-		//sw->updateScrollBars();
-				
-		if (cw)
-			w = sw->viewport()->width();
-		if (ch)
-			h = sw->viewport()->height();
+		if (THIS->arrangement.mode)
+		{
+			//findRightBottom();
+			CCONTAINER_get_max_size(THIS, &w, &h);
+			//resize(w, h);
+			//sw->updateScrollBars();
+		}
+		else
+		{
+			w = h = 0;
 			
+			if (right)
+				w = right->x() + right->width();
+			if (bottom)
+				h = bottom->y() + bottom->height();	
+		}
+		
+		if (ww < 0)
+		{
+			ww = sw->viewport()->width();
+			hh = sw->viewport()->height(); //visibleHeight();	
+		}
+		
+		if (w < ww || THIS->arrangement.mode == ARRANGE_VERTICAL || THIS->arrangement.mode == ARRANGE_ROW)
+		{
+			w = ww;
+			cw = true;
+		}
+		else
+			cw = false;
+			
+		if (h < hh || THIS->arrangement.mode == ARRANGE_HORIZONTAL || THIS->arrangement.mode == ARRANGE_COLUMN)
+		{
+			h = hh;
+			ch = true;
+		}
+		else
+			ch = false;
+		
 		if (w != width() || h != height())
 		{
 			resize(w, h);
 			
-			//THIS->arrangement.locked = locked;
 			//CCONTAINER_arrange(THIS);
-			//CCONTAINER_arrange(THIS);
-			ww = -1;
-			goto __AGAIN;
+			
+			//sw->updateScrollBars();
+					
+			if (cw)
+				w = sw->viewport()->width();
+			if (ch)
+				h = sw->viewport()->height();
+				
+			if (w != width() || h != height())
+			{
+				resize(w, h);
+				
+				//THIS->arrangement.locked = locked;
+				//CCONTAINER_arrange(THIS);
+				//CCONTAINER_arrange(THIS);
+				ww = -1;
+				continue;
+			}
 		}
+		break;
 	}
 
 	THIS->arrangement.locked = locked;

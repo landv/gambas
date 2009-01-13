@@ -167,6 +167,7 @@ gPicture *gDrag::_icon = NULL;
 int gDrag::_icon_x = 0;
 int gDrag::_icon_y = 0;
 gControl *gDrag::_source = NULL;
+gControl *gDrag::_destination = NULL;
 gControl *gDrag::_dest = NULL;
 int gDrag::_action = 0;
 int gDrag::_type = 0;
@@ -197,6 +198,7 @@ void gDrag::cancel()
 	g_free(_format);
 	_format = NULL;
 	_source = NULL;
+	_destination = NULL;
 	_dest = NULL;
 	_type = Nothing;
 	_x = _y = -1;
@@ -290,7 +292,7 @@ void gDrag::setDropInfo(int type, char *format)
 }
 
 
-void gDrag::setDropData(int action, int x, int y, gControl *source)
+void gDrag::setDropData(int action, int x, int y, gControl *source, gControl *dest)
 {
 	//g_debug("gDrag::setDropData: action = %d x = %d y = %d source = %p\n", action, x, y, source);
 	
@@ -298,6 +300,7 @@ void gDrag::setDropData(int action, int x, int y, gControl *source)
 	_y = y;
 	_action = action;
 	_source = source;
+	_destination = dest;
 	_active = true;
 }
 

@@ -277,7 +277,7 @@ QString CWIDGET_Utf8ToQString(GB_STRING *str)
 
 void CWIDGET_destroy(CWIDGET *object)
 {
-	if (!object->widget)
+	if (!object || !object->widget)
 		return;
 
 	if (CWIDGET_test_flag(object, WF_DELETED))
@@ -1188,7 +1188,7 @@ END_METHOD
 
 BEGIN_METHOD(CCONTROL_drag, GB_VARIANT data; GB_STRING format)
 
-	CDRAG_drag(OBJECT(CWIDGET), &VARG(data), MISSING(format) ? NULL : ARG(format));
+	GB.ReturnObject(CDRAG_drag(OBJECT(CWIDGET), &VARG(data), MISSING(format) ? NULL : ARG(format)));
 
 END_METHOD
 
@@ -2188,7 +2188,7 @@ GB_DESC CControlDesc[] =
 	GB_METHOD("SetFocus", NULL, CCONTROL_set_focus, NULL),
 	GB_METHOD("Refresh", NULL, CCONTROL_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 	GB_METHOD("Grab", "Picture", CCONTROL_grab, NULL),
-	GB_METHOD("Drag", NULL, CCONTROL_drag, "(Data)v[(Format)s]"),
+	GB_METHOD("Drag", "Control", CCONTROL_drag, "(Data)v[(Format)s]"),
 
 	GB_METHOD("Reparent", NULL, CCONTROL_reparent, "(Parent)Container;[(X)i(Y)i]"),
 

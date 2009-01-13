@@ -34,6 +34,7 @@ public:
 	static void cancel();
 	
 	static gControl *getSource() { return _source; }
+	static gControl *getDestination() { return _destination; }
 	static int getAction() { return _action; }
 	
 	static int getType();
@@ -51,7 +52,7 @@ public:
 	
 	// "Private"
 	static void setDropInfo(int type, char *format);
-	static void setDropData(int action, int x, int y, gControl *source);
+	static void setDropData(int action, int x, int y, gControl *source, gControl *dest);
 	static void setDropText(char *text, int len = -1);
 	static void setDropImage(gPicture *image);
 	static void setDropImage(char *buf, int len);
@@ -68,6 +69,7 @@ private:
 	static int _icon_x;
 	static int _icon_y;
 	static gControl *_source;
+	static gControl *_destination;
 	static int _action;
 	static int _type;
 	static gPicture *_picture;

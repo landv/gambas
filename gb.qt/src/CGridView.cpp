@@ -1613,7 +1613,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEW_client_height)
 
   WIDGET->updateScrollBars();
-  GB.ReturnInteger(WIDGET->clipper()->height());
+  GB.ReturnInteger(WIDGET->visibleHeight());
 
 END_PROPERTY
 

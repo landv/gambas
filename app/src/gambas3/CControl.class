@@ -1541,7 +1541,11 @@ Public Sub AddAction(cActionSet As Collection)
   SetAction(cAction, "Text")
   SetAction(cAction, "ToolTip")
   
-  sPicture = GetPropertyString("Picture")
+  If Kind = "Form" Then
+    sPicture = GetPropertyString("Icon")
+  Else
+    sPicture = GetPropertyString("Picture")
+  Endif
   If Not sPicture And If Kind <> "Menu" Then
     sPicture = "$" & Kind
     If cAction["Picture"] Then sPicture = ""

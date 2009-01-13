@@ -239,15 +239,15 @@ GB_DESC CClipboardDesc[] =
 
 ***************************************************************************/
 
-void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
+void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
 {
   if (GB.CheckObject(source))
-    return;
+    return NULL;
 
 	if (gDrag::isActive())
 	{
 		GB.Error("Undergoing drag");
-		return;
+		return NULL;
 	}
 
   if (data->type == GB_T_STRING)
@@ -275,16 +275,17 @@ void CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
   //hide_frame(NULL);
   //GB.Post((GB_POST_FUNC)post_exit_drag, 0);
 
-  return;
+  return GetObject(gDrag::getDestination());
 
 _BAD_FORMAT:
 
   GB.Error("Bad drag format");
+  return NULL;
 }
 
 BEGIN_METHOD(CDRAG_call, GB_OBJECT source; GB_VARIANT data; GB_STRING format)
 
-	CDRAG_drag((CWIDGET *)VARG(source), &VARG(data), MISSING(format) ? NULL : GB.ToZeroString(ARG(format)));
+	GB.ReturnObject(CDRAG_drag((CWIDGET *)VARG(source), &VARG(data), MISSING(format) ? NULL : GB.ToZeroString(ARG(format))));
 
 END_METHOD
 
@@ -534,7 +535,7 @@ GB_DESC CDragDesc[] =
   GB_STATIC_PROPERTY_READ("Y", "i", CDRAG_y),
   GB_STATIC_PROPERTY_READ("Pending", "b", CDRAG_pending),
 
-  GB_STATIC_METHOD("_call", 0, CDRAG_call, "(Source)Control;(Data)v[(Format)s]"),
+  GB_STATIC_METHOD("_call", "Control", CDRAG_call, "(Source)Control;(Data)v[(Format)s]"),
   GB_STATIC_METHOD("_exit", 0, CDRAG_exit, 0),
   GB_STATIC_METHOD("Show", 0, CDRAG_show, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
   GB_STATIC_METHOD("Hide", 0, CDRAG_hide, 0),

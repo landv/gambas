@@ -80,17 +80,27 @@ Private Sub MoveEditor()
   
   If Not $hEditor Then Return 
   
-  X = Me.ScreenX - Me.Window.ScreenX
+  X = Me.ScreenX - Me.Window.ScreenX - Me.Window.ClientX
   Y = Me.ScreenY - Me.Window.ScreenY - Me.Window.ClientY
   'DEBUG $iRow;; $iCol
   With Me[$iRow, $iCol]
     X += .X
     Y += .Y
     $hEditor.Move(X, Y, .Width, .Height)
-  End With
   'DEBUG
-  $hEditor.Show
+  
+    ' Debug .X;; .Y;; .W;; .H;; "/";; Me.ClientW;; Me.ClientH;; "/";; Me.W;; Me.H
+    ' 
+    ' If .X < 0 Or If .Y < 0 Or If (.X + .W) > Me.W Or If (.Y + .H) > Me.H Then
+    '   
+    '   HideEditor
+    '   
+    ' Else
+    
+    $hEditor.Show
+      
   'DEBUG 
+  End With
   
 End
 
@@ -167,7 +177,7 @@ Public Sub Edit(Optional List As String[], Optional ReadOnly As Boolean)
   $hEditor.Text = Me[$iRow, $iCol].Text
   Try $hEditor.SelectAll
   MoveEditor
-  $hEditor.SetFocus  
+  Try $hEditor.SetFocus  
 
 End
 

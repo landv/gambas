@@ -253,10 +253,12 @@ static int compare_string_lang_case(char **pa, char **pb)
 int COMPARE_object(void **a, void **b)
 {
 	bool comp;
-	CLASS *ca = OBJECT_class(*a);
-	CLASS *cb = OBJECT_class(*b);
+	CLASS *ca, *cb;
+	
+	ca = OBJECT_class(*a);
+	cb = OBJECT_class(*b);
 
-	if (ca && ca->special[SPEC_COMPARE] != NO_SYMBOL)
+	if (ca && cb && ca->special[SPEC_COMPARE] != NO_SYMBOL)
 	{
 	  STACK_check(1);
 		SP->_object.class = cb;
@@ -268,7 +270,7 @@ int COMPARE_object(void **a, void **b)
 		SP--;
 		comp = SP->_integer.value;
 	}
-	else if (cb && cb->special[SPEC_COMPARE] != NO_SYMBOL)
+	else if (ca && cb && cb->special[SPEC_COMPARE] != NO_SYMBOL)
 	{
 	  STACK_check(1);
 		SP->_object.class = ca;

@@ -190,8 +190,9 @@ void CSerialPort_AssignCallBack(long t_obj,int t_port)
 	}
 	ser_objwatch[position]=t_obj;
 	ser_portwatch[position]=t_port;
-	GB.Watch (t_port , GB_WATCH_WRITE , (void *)CSerialPort_CallBack,0);
+	GB.Watch (t_port , GB_WATCH_READ , (void *)CSerialPort_CallBack,0);
 }
+
 void CSerialPort_FreeCallBack(long t_obj)
 {
 	int myloop;

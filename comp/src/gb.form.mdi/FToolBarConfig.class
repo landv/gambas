@@ -6,9 +6,10 @@ Private $aDefault As String[]
 Private $hInside As DrawingArea
 
 Public Sub Run(hToolbar As ToolBar) 
-  
-  Me.Show
+
+  Me.Load
   SetCurrentToolbar(hToolbar)
+  Me.Show
   
 End
 
@@ -34,6 +35,8 @@ Private Sub SetCurrentToolbar(hToolbar As ToolBar)
   Else
     lblTitle.Text = ("Main toolbar")
   Endif
+
+  cmbSize.Index = $hForm.GetIconSize()
   
   InitAction
   $hForm.SetConfigureMode(True)
@@ -268,5 +271,11 @@ Public Sub btnUndo_Click()
 
   $hForm.LoadConfig
   InitAction
+
+End
+
+Public Sub cmbSize_Click()
+
+  $hForm.SetIconSize(cmbSize.Index)
 
 End

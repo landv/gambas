@@ -177,6 +177,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     hImage = hPict.Image
     hImage.Transparent = True
     hImage.Replace(Color.White, Color.Transparent)
+    'hImage.MakeTransparent()
     hPict = hImage.Picture
   
     Me.Picture = hPict

@@ -129,4 +129,5 @@ lib/compress/Makefile \
 lib/option/Makefile \
 lib/draw/Makefile \
 lib/gui/Makefile \
+lib/image/Makefile \
 )

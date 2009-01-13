@@ -62,7 +62,7 @@ Public Sub LoadFile()
   
 End
 
-Public Sub Form_Resize()
+Public Sub Form_Arrange()
   
   Dim iToolbarOffset As Integer
   
@@ -660,7 +660,7 @@ Private Sub SetViewMode(iViewMode As Integer)
   End Select   
   
   Editor.SetFocus
-  Form_Resize
+  Form_Arrange
   Editors_Cursor
   
 End

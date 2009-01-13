@@ -111,7 +111,7 @@ Public Sub InitAction()
         sToolbar = Trim(Mid$(sLine, 10))
       Else If sLine = "}" Then
         If sAction Then
-          hAction = New CAction(sAction, bHasShortcut, cSlot)
+          hAction = New CAction(sAction, bHasShortcut, cSlot, Actions[sAction])
           Actions[hAction.Key] = hAction
           sAction = ""
         Else If sToolbar Then

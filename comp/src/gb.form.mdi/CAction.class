@@ -6,6 +6,7 @@ Public Display As String
 Public DefaultShortcut As String
 Public Shortcut As String
 Public Icon As Picture
+Public IconPath As String
 Public HasShortcut As Boolean
 
 Private $sOldShortcut As String
@@ -20,27 +21,46 @@ Private Sub UnquoteShortcut(sStr As String) As String
   
 End
 
-Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection)
+Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hMerge As CAction)
 
   Dim sPicture As String
   Dim W As Integer
 
+  'Debug sKey;; bHasShortcut;; cSlot["Picture"]
+
   Key = sKey
+  
   Text = Tr$(cSlot["Text"])
+  If hMerge And If Not Text Then Text = hMerge.Text
   Display = UnquoteShortcut(Text)
+
   DefaultShortcut = cSlot["Shortcut"]
+  If hMerge And If Not DefaultShortcut Then DefaultShortcut = hMerge.DefaultShortcut
+  
   HasShortcut = bHasShortcut
+  If hMerge And If Not HasShortcut Then HasShortcut = hMerge.HasShortcut
+  
   Shortcut = MAction.GetShortcut(Key)
   If Not Shortcut Then Shortcut = DefaultShortcut
   $sOldShortcut = Shortcut
   
   sPicture = cSlot["Picture"]
+  
   If Left(sPicture) = "$" Then
     W = Stock.GetSize("small")
-    Try Icon = Picture.Load("control" &/ LCase(Mid$(sPicture, 2)) & ".png").Image.Stretch(W, W).Picture
+    IconPath = "control" &/ LCase(Mid$(sPicture, 2)) & ".png"
+    Try Icon = Picture[IconPath].Image.Stretch(W, W).Picture
   Else
     If Not (sPicture Like "icon:/*") Then sPicture = "../" &/ sPicture
-    Try Icon = Picture[sPicture]
+    IconPath = sPicture
+    Try Icon = Picture[IconPath]
+  Endif
+  
+  If hMerge Then
+    If Not sPicture Or If Left(sPicture) = "$" And hMerge.IconPath Then
+      IconPath = hMerge.IconPath
+      Icon = hMerge.Icon
+    Endif
   Endif
   
 End

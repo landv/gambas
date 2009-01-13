@@ -361,7 +361,7 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	}
 	
 	source = gApplication::controlItem(gtk_drag_get_source_widget(context));
-	gDrag::setDropData(action, x, y, source);
+	gDrag::setDropData(action, x, y, source, NULL);
 	
 	context = gDrag::enable(context, data, time);
 	
@@ -413,7 +413,7 @@ gboolean sg_drag_drop(GtkWidget *widget,GdkDragContext *context,gint x,gint y,gu
 	
 	source = gApplication::controlItem(gtk_drag_get_source_widget(context));
 
-	gDrag::setDropData(gDrag::getAction(), x, y, source);
+	gDrag::setDropData(gDrag::getAction(), x, y, source, data);
 	
 	context = gDrag::enable(context, data, time);
 	data->_drag_get_data = true;

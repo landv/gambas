@@ -164,6 +164,12 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	//if (qstrcmp(GB.GetClassName(THIS), "FOutput") == 0)
   //	qDebug("CCONTAINER_arrange: do it!");
 	
+	arr->locked = true;
+
+	#ifdef RAISE_ARRANGE_EVENT
+	RAISE_ARRANGE_EVENT(_object);
+	#endif
+
 	if (arr->mode != ARRANGE_NONE)
 	{
 		// g_debug("arrange: %s (%d %d) (%d %d)", ((gControl *)_object)->name(), ((gContainer *)_object)->width(), ((gContainer *)_object)->height(), ((gContainer *)_object)->clientWidth(), ((gContainer *)_object)->clientHeight());
@@ -176,8 +182,6 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 		//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 		//	fprintf(stderr, "HBox1: child count: %d\n", gtk_count);
-
-		arr->locked = true;
 
 		swap = (arr->mode & 1) == 0;
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
@@ -568,13 +572,9 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 				break;
 		}
 
-		arr->locked = false;
 	}
 
-	#ifdef RAISE_ARRANGE_EVENT
-	RAISE_ARRANGE_EVENT(_object);
-	#endif
-
+	arr->locked = false;
   //qDebug("%p: dirty = FALSE", THIS);
   //arr->dirty = false;
 

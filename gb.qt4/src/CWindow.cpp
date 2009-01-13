@@ -1642,6 +1642,14 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 		//X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
 
+		if (isToolbar() && _resizable)
+		{
+			setMinimumSize(THIS->minw, THIS->minh);
+    	setSizeGrip(true);
+		}
+		else
+			setSizeGrip(false);
+		
 		_activate = true;
 
 		if (windowState() & Qt::WindowMinimized)

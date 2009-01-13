@@ -597,7 +597,7 @@ END_METHOD
 
 static bool is_visible(void *_object)
 {
-	return THIS->flag.visible || !QWIDGET(_object)->isHidden();
+	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
 }
 
 
@@ -1151,8 +1151,11 @@ BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 		return;
 
 	show = is_visible(THIS);
-
-	WIDGET->reparent(QCONTAINER(VARG(container)), p, show);
+	WIDGET->reparent(QCONTAINER(VARG(container)), p, false);
+	if (show)
+		WIDGET->show();
+	else
+		WIDGET->hide();
 
 END_METHOD
 

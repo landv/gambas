@@ -12,8 +12,27 @@
     Font = Font["Bold"]
     Text = ("Main toolbar")
   }
+  { HBox1 HBox
+    MoveScaled(1,5,53,4)
+    { Label1 Label
+      MoveScaled(1,0,10,4)
+      Expand = True
+      Text = ("Icon size")
+    }
+    { cmbSize ComboBox
+      MoveScaled(31,0,22,4)
+      Text = ("")
+      ReadOnly = True
+      List = [("Small"), ("Medium"), ("Large")]
+    }
+  }
+  { Label2 Label
+    MoveScaled(1,10,28,3)
+    Font = Font["Bold"]
+    Text = ("Actions")
+  }
   { panAction Panel
-    MoveScaled(1,5,53,30)
+    MoveScaled(1,15,53,30)
     Drop = True
     Expand = True
     Arrangement = Arrange.Fill
@@ -39,6 +58,7 @@
     }
     { btnUndo Button
       MoveScaled(20,0,16,4)
+      Visible = False
       Text = ("&Undo")
       Picture = Picture["icon:/small/undo"]
     }

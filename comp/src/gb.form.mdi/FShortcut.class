@@ -75,7 +75,8 @@ Public Sub tvwShortcut_Select()
 
   If tvwShortcut.Column = 0 Then tvwShortcut.Column = 1
 
-  $hEditor.Define(hAction)
+  If $hEditor.Define(hAction) Then Return
+
   tvwShortcut.EditWith($hEditor)
   
 End
@@ -166,5 +167,41 @@ Public Sub btnDefault_Click()
   Next
 
   SaveShortcut
+
+End
+
+Public Sub HandleKey() As Boolean
+  
+  Dim iRow As Integer = tvwShortcut.Row
+  
+  Select Case Key.Code
+    Case Key.Up
+      Dec iRow
+    Case Key.Down
+      Inc iRow
+    Case Key.Home
+      iRow = 0
+    Case Key.End
+      iRow = tvwShortcut.Rows.Count - 1
+    Case Key.PageUp
+      iRow -= Max(1, tvwShortcut.ClientH \ tvwShortcut.Rows.H - 1)
+    Case Key.PageDown
+      iRow += Max(1, tvwShortcut.ClientH \ tvwShortcut.Rows.H - 1)
+    Default
+      Return False
+  End Select
+  
+  If iRow >= 0 And If iRow < tvwShortcut.Rows.Count Then
+    tvwShortcut.Row = iRow
+    timAfter.Trigger
+  Endif
+  
+  Return True
+  
+End
+
+Public Sub timAfter_Timer()
+
+  tvwShortcut_Select
 
 End

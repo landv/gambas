@@ -388,6 +388,28 @@ BEGIN_PROPERTY(CCONTAINER_children_count)
 END_PROPERTY
 
 
+BEGIN_METHOD_VOID(CCONTAINER_children_clear)
+
+	QWidget *wid = CONTAINER;
+	QObjectList list;
+	QObject *ob;
+	int i;
+
+	if (!wid)
+		return;
+
+	list = wid->children();
+
+	for(i = 0; i < list.count(); i++)
+	{
+		ob = list.at(i);
+		if (ob->isWidgetType())
+			CWIDGET_destroy(CWidget::getRealExisting(ob));
+	}
+
+END_METHOD
+
+
 BEGIN_PROPERTY(CCONTAINER_x)
 
 	#ifdef DEBUG
@@ -697,6 +719,7 @@ GB_DESC CChildrenDesc[] =
 	GB_METHOD("_next", "Control", CCONTAINER_children_next, NULL),
 	GB_METHOD("_get", "Control", CCONTAINER_children_get, "(Index)i"),
 	GB_PROPERTY_READ("Count", "i", CCONTAINER_children_count),
+	GB_METHOD("Clear", NULL, CCONTAINER_children_clear, NULL),
 
 	GB_END_DECLARE
 };
