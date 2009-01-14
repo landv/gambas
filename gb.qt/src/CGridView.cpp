@@ -358,6 +358,9 @@ void MyTable::setColumnWidth(int col, int width)
     adjustColumn(col);
   else
     QTable::setColumnWidth(col, width);
+    
+	if (col == (numCols() - 1))
+		_last_col_width = columnWidth(numCols() - 1);
 }
 
 /*void MyTable::adjustColumn(int col)
