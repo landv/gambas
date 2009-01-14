@@ -117,7 +117,7 @@ static void resize_container(gControl *cont, int w, int h)
 	gContainer *gtk_control=(gContainer*)_widget; \
 	int gtk_list=0; \
 	int gtk_count = gtk_control->childCount(); \
-	if (!gtk_count) return; 
+	if (!gtk_count) return;
 
 #define RESET_CHILDREN_LIST() gtk_list=0;
 
@@ -155,6 +155,7 @@ void gContainer::initialize()
 	ch_list = NULL;
 	radiogroup = NULL;
 	onArrange = NULL;
+	onBeforeArrange = NULL;
 	_proxy = NULL;
 	_client_w = 0;
 	_client_h = 0;

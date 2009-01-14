@@ -227,6 +227,7 @@ GB_DESC CContainerDesc[] =
 
   GB_METHOD("Find", "Control", CCONTAINER_find, "(X)i(Y)i"),
 
+  GB_EVENT("BeforeArrange", 0, 0, &EVENT_BeforeArrange),
   GB_EVENT("Arrange", 0, 0, &EVENT_Arrange),
   GB_EVENT("Insert", 0, "(Control)Control", &EVENT_Insert),
   

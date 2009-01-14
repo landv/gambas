@@ -181,7 +181,10 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		if (arr->user)
 			cont = (CONTAINER_TYPE)GET_WIDGET(_object);
 
+		// INIT_CHECK_CHILDREN_LIST() can return
+		arr->locked = false;
 		INIT_CHECK_CHILDREN_LIST(cont);
+		arr->locked = true;
 
 		//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 		//	fprintf(stderr, "HBox1: child count: %d\n", gtk_count);
@@ -254,10 +257,11 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							break;
 						
 						ob = GET_OBJECT_FROM_WIDGET(wid);
+						
 						if (!ob || IS_IGNORE(ob))
 							continue;
-
-						if (ob && IS_EXPAND(ob))
+						
+						if (IS_EXPAND(ob))
 							nexp++;
 						else
 							sexp += (swap ? GET_WIDGET_H(wid) : GET_WIDGET_W(wid));

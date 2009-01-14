@@ -107,6 +107,8 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 
 #define GET_OBJECT_FROM_WIDGET(_widget) CWidget::getValid(CWidget::getReal(_widget))
 
+#define GET_OBJECT_NAME(_object) (((CWIDGET *)_object)->name)
+
 #define RAISE_ARRANGE_EVENT(_object) \
 { \
 	GB.Raise(_object, EVENT_Arrange, 0); \
