@@ -1200,7 +1200,8 @@ PRIVATE SUB MakeAutotoolsPackage(sSys AS String)
 
   TRY sCmd = Scan(Project.GetCompileCommand(TRUE, NOT Project.KeepDebugInfo, FALSE), "*/bin/gbc" & System.Version & " *")[1]
 
-  SHELL "cp -r " & Project.Dir & " " & sBuildDir &/ Project.Name WAIT 
+  'TRY MKDIR sBuildDir &/ Project.Name
+  SHELL "cp -r " & Quote.Shell(Project.Dir) & " " & Quote.Shell(sBuildDir &/ Project.Name) WAIT 
   sFile = Replace(File.Load("install/acinclude.m4"), "$(VERSION)", CStr(System.Version))
   sFile = Replace(sFile, "$(PACKAGE_VERSION)", $sVersion)
   File.Save(sBuildDir &/ "acinclude.m4", sFile)
@@ -1254,7 +1255,7 @@ PRIVATE SUB MakeAutotoolsPackage(sSys AS String)
   AddLog(sPackage)
   
   ' Remove build dir
-  SHELL "rm -rf " & sBuildDir WAIT
+  SHELL "rm -rf " & Quote.Shell(sBuildDir) WAIT
   
 END
 
