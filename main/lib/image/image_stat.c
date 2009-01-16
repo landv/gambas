@@ -85,6 +85,53 @@ const char _signature_jp2[12] = {(char)0x00, (char)0x00, (char)0x00, (char)0x0c,
                                      (char)0x0d, (char)0x0a, (char)0x87, (char)0x0a};
 const char _signature_iff[4] = {'F','O','R','M'};
 
+
+static int stream_seek(IMAGE_STREAM *stream, int pos, int whence)
+{
+	switch (whence)
+	{
+		case SEEK_CUR:
+			if ((stream->pos + pos) >= stream->len)
+				return 1;
+			if ((stream->pos + pos) < 0)
+				return 1;
+			stream->pos += pos;
+			return 0;
+		
+		case SEEK_SET:
+			if (pos < 0 || pos >= stream->len)
+				return 1;
+			stream->pos = pos;
+			return 0;
+		
+		default:
+			return 1;
+	}
+}
+
+static int stream_read(IMAGE_STREAM *stream, void *addr, int len)
+{
+	int lmax = stream->len - stream->pos;
+	
+	if (len > lmax)
+		len = lmax;
+		
+	memcpy(addr, stream->addr + stream->pos, len);
+	stream->pos += len;
+	return len;
+}
+
+
+static int stream_getc(IMAGE_STREAM *stream)
+{
+	if (stream->pos >= stream->len)
+		return EOF;
+		
+	return (unsigned char)stream->addr[stream->pos++];
+}
+
+
+
 /* REMEMBER TO ADD MIME-TYPE TO FUNCTION php_image_type_to_mime_type */
 /* PCX must check first 64bytes and byte 0=0x0a and byte2 < 0x06 */
 

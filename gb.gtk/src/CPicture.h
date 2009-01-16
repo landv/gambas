@@ -32,7 +32,6 @@
 #include "gambas.h"
 #include "widgets.h"
 
-
 typedef 
   struct 
   {
@@ -41,19 +40,9 @@ typedef
   } 
   CPICTURE;
 
-typedef 
-  struct 
-  {
-    GB_BASE ob;
-    gPicture *picture;
-  }
-  CIMAGE;
-
-
 #ifndef __CPICTURE_CPP
 
 extern GB_DESC CPictureDesc[];
-extern GB_DESC CImageDesc[];
 
 #else
 
@@ -63,16 +52,11 @@ extern GB_DESC CImageDesc[];
 #define STOCK_PREFIX_LEN 6
 
 #define THIS OBJECT(CPICTURE)
+#define PICTURE (((CPICTURE*)(_object))->picture)
 
 #endif
 
-#define PICTURE (((CPICTURE*)(_object))->picture)
-#define IMAGE (((CIMAGE*)(_object))->picture)
-
-void *GTK_GetImage(GdkPixbuf *buf);
 void *GTK_GetPicture(GdkPixbuf *buf);
-
-CIMAGE *CIMAGE_create(gPicture *picture);
 CPICTURE *CPICTURE_create(gPicture *picture);
 
 #endif

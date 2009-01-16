@@ -57,6 +57,7 @@ public:
 
 	static gPicture *fromNamedIcon(const char *name, int len = -1);
 	static gPicture *fromMemory(char *addr, unsigned int len);
+	static gPicture *fromData(const char *data, int width, int height);
 
 //"Private"
 	GdkPixmap *pic;

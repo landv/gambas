@@ -29,7 +29,9 @@ gb_gtk_la_SOURCES = \
 	CKey.h CKey.cpp \
 	CScreen.h CScreen.cpp \
 	CMessage.h CMessage.cpp CDialog.h CDialog.cpp \
-	CDraw.h CDraw.cpp CPicture.h CPicture.cpp \
+	CDraw.h CDraw.cpp \
+	CImage.h CImage.cpp \
+	CPicture.h CPicture.cpp \
 	CClipboard.h CClipboard.cpp \
 	CMouse.h CMouse.cpp \
 	CWatcher.h CWatcher.cpp \

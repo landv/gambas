@@ -25,21 +25,10 @@
 
 #include "gambas.h"
 #include "gb_common.h"
+#include "gb.image.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 #endif
-
-typedef
-	struct {
-		char *addr;
-		int len;
-		int pos;
-		}
-	IMAGE_STREAM;
-
-int stream_seek(IMAGE_STREAM *stream, int pos, int whence);
-int stream_read(IMAGE_STREAM *stream, void *addr, int len);
-int stream_getc(IMAGE_STREAM *stream);
 
 #endif /* __MAIN_H */

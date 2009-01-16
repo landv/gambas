@@ -45,6 +45,22 @@ typedef
 	GB_MATRIX;
 
 typedef
+	void *GB_PICTURE;
+
+typedef
+	struct {
+		int width;
+		int height;
+	}
+	GB_PICTURE_INFO;
+
+#ifndef __GB_IMAGE_DEFINED
+#define __GB_IMAGE_DEFINED
+typedef
+	void *GB_IMAGE;
+#endif
+	
+typedef
 	void *GB_FONT;
 
 struct GB_DRAW_DESC;
@@ -88,6 +104,8 @@ typedef
 		void (*SetInverted)(GB_DRAW *d, int inverted);
 		int (*IsTransparent)(GB_DRAW *d);
 		void (*SetTransparent)(GB_DRAW *d, int transparent);
+		// Picture properties
+		void (*GetPictureInfo)(GB_DRAW *d, GB_PICTURE picture, GB_PICTURE_INFO *info);
 		// Line properties
 		struct {
 			int (*GetWidth)(GB_DRAW *d);

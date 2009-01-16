@@ -25,60 +25,41 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include "CImage.h"
 #include "CImageStat.h"
+#include "image.h"
 #include "main.h"
 
 GB_INTERFACE GB EXPORT;
 
 
-int stream_seek(IMAGE_STREAM *stream, int pos, int whence)
-{
-	switch (whence)
-	{
-		case SEEK_CUR:
-			if ((stream->pos + pos) >= stream->len)
-				return 1;
-			if ((stream->pos + pos) < 0)
-				return 1;
-			stream->pos += pos;
-			return 0;
-		
-		case SEEK_SET:
-			if (pos < 0 || pos >= stream->len)
-				return 1;
-			stream->pos = pos;
-			return 0;
-		
-		default:
-			return 1;
-	}
-}
-
-int stream_read(IMAGE_STREAM *stream, void *addr, int len)
-{
-	int lmax = stream->len - stream->pos;
-	
-	if (len > lmax)
-		len = lmax;
-		
-	memcpy(addr, stream->addr + stream->pos, len);
-	stream->pos += len;
-	return len;
-}
-
-
-int stream_getc(IMAGE_STREAM *stream)
-{
-	if (stream->pos >= stream->len)
-		return EOF;
-		
-	return (unsigned char)stream->addr[stream->pos++];
-}
-
-
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	CImageDesc,
 	CImageStatDesc,
+  NULL
+};
+
+static GB_IMG *create_image(int width, int height, int format, unsigned char *data)
+{
+	CIMAGE *image;
+	
+  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
+  IMAGE_create_with_data(&image->image, width, height, format, data);
+  return (GB_IMG *)image;
+}
+
+void *GB_IMAGE_1[] EXPORT = 
+{
+	(void *)IMAGE_INTERFACE_VERSION,
+	(void *)create_image,
+	(void *)IMAGE_delete,
+	(void *)IMAGE_take,
+	(void *)IMAGE_check,
+	(void *)IMAGE_convert,
+	(void *)IMAGE_fill,
+	(void *)IMAGE_make_gray,
+	(void *)IMAGE_make_transparent,
   NULL
 };
 

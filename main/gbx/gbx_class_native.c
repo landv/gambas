@@ -164,6 +164,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
     desc = class->table[i].desc;
 
     ptype = (char *)desc->gambas.type;
+    
     type = ptype;
     desc->gambas.type = TYPE_from_string(&ptype);
 

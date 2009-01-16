@@ -62,11 +62,12 @@ public:
 mySDLapp *myApp = NULL;
 static void my_main(int *argc, char **argv);
 static int my_loop(void );
-static int my_image(CIMAGE **pimage, GB_IMAGE_INFO *info);
+//static int my_image(CIMAGE **pimage, GB_IMAGE_INFO *info);
 
 extern "C"
 {
 	GB_INTERFACE GB EXPORT;
+	IMAGE_INTERFACE IMAGE EXPORT;
 
 	GB_DESC *GB_CLASSES[] EXPORT =
 	{
@@ -86,10 +87,11 @@ extern "C"
 
 	int EXPORT GB_INIT(void)
 	{
+		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 
 		GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 		GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
-		GB.Hook(GB_HOOK_IMAGE, (void *)my_image);
+		//GB.Hook(GB_HOOK_IMAGE, (void *)my_image);
 
 		CLASS_Window = GB.FindClass("Window");
 		CLASS_Image = GB.FindClass("Image");
@@ -156,6 +158,7 @@ static int my_loop()
 	return 1;
 }
 
+#if 0
 static int my_image(CIMAGE **pimage, GB_IMAGE_INFO *info)
 {
 	CIMAGE *image = *pimage;
@@ -186,5 +189,6 @@ static int my_image(CIMAGE **pimage, GB_IMAGE_INFO *info)
 
 	return 0;
 }
+#endif
 
 

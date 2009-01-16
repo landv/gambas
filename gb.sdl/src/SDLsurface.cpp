@@ -43,6 +43,26 @@ SDLsurface::SDLsurface()
 	hContext = NULL;
 }
 
+SDLsurface::SDLsurface(char *data, int width, int height)
+{
+	hSurfaceInfo = new SDL_INFO;
+	hTexture = 0;
+	hTextureWidth = 0;
+	hTextureHeight = 0;
+	hContext = NULL;
+	
+	hSurface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * sizeof(int), 
+			0x000000FF, 
+			0x0000FF00, 
+			0x00FF0000, 
+			0xFF000000);
+
+	if (!hSurface)
+		SDLcore::RaiseError(SDL_GetError());
+	else
+		hTextureStatus = TEXTURE_TO_LOAD;
+}
+
 SDLsurface::SDLsurface(const SDLsurface& surf)
 {
 

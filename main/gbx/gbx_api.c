@@ -242,12 +242,6 @@ void *GAMBAS_Api[] =
   (void *)GB_StreamSetSwapping,
   (void *)GB_StreamBlock,
 
-  (void *)GB_ImageCreate,
-  (void *)GB_ImageInfo,
-  (void *)GB_ImageConvert,
-  (void *)GB_PictureCreate,
-  (void *)GB_PictureInfo,
-  
   (void *)STRING_start_len,
   (void *)STRING_end,
   (void *)STRING_make,
@@ -282,6 +276,8 @@ static bool _event_stopped = FALSE;
 
 int GB_GetInterface(const char *name, int version, void *iface)
 {
+	GB_LoadComponent(name);
+	
   if (LIBRARY_get_interface_by_name(name, version, iface))
     ERROR_panic("Cannot find interface of library '%s'", name);
 
@@ -1694,6 +1690,25 @@ const char *GB_CurrentComponent()
   return arch->name ? arch->name : "";
 }
 
+
+void *GB_DebugGetExec(void)
+{
+	return &EXEC_current;
+}
+
+
+int GB_ExistClass(const char *name)
+{
+	return CLASS_look_global(name, strlen(name)) != NULL;
+}
+
+
+int GB_ExistClassLocal(const char *name)
+{
+	return CLASS_look(name, strlen(name)) != NULL;
+}
+
+#if 0
 int GB_ImageCreate(GB_IMAGE *image, void *data, int width, int height, int format)
 {
 	GB_IMAGE_INFO info;
@@ -1756,24 +1771,6 @@ void GB_PictureInfo(GB_PICTURE picture, GB_PICTURE_INFO *info)
 	if (picture)
 		(*EXEC_Hook.picture)(&picture, info);
 }
-
-void *GB_DebugGetExec(void)
-{
-	return &EXEC_current;
-}
-
-
-int GB_ExistClass(const char *name)
-{
-	return CLASS_look_global(name, strlen(name)) != NULL;
-}
-
-
-int GB_ExistClassLocal(const char *name)
-{
-	return CLASS_look(name, strlen(name)) != NULL;
-}
-
 
 void GB_ImageConvert(void *dst, int dst_format, void *src, int src_format, int w, int h)
 {
@@ -1898,3 +1895,4 @@ __210X:
   }
   return;
 }
+#endif

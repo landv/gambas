@@ -31,8 +31,8 @@
 
 typedef
 	struct {
-		GB_BASE ob;
-		SDLsurface *id;
+		GB_IMG img;
+		//SDLsurface *id;
 	}
 	CIMAGE;
 
@@ -40,9 +40,13 @@ typedef
 extern GB_DESC CImage[];
 #else
 
-#define THIS      ((CIMAGE *)_object)
-#define IMAGEID	  ((CIMAGE *)_object)->id
+#define THIS ((CIMAGE *)_object)
+#define THIS_IMAGE (&THIS->img)
+#define IMAGEID	  ((SDLsurface *)GB_IMG_HANDLE(&THIS->img))
 
 #endif /* __CIMAGE_CPP */
+
+SDLsurface *CIMAGE_get(CIMAGE *);
+
 #endif /* __CIMAGE_H */
 

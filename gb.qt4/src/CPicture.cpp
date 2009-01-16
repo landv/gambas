@@ -343,14 +343,13 @@ END_METHOD
 
 BEGIN_PROPERTY(CPICTURE_image)
 
-  CIMAGE *img;
-
-  GB.New(POINTER(&img), GB.FindClass("Image"), NULL, NULL);
-  *(img->image) = THIS->pixmap->toImage();
-  if (!img->image->isNull())
-  	img->image->convertToFormat(QImage::Format_ARGB32);
-
-  GB.ReturnObject(img);
+	QImage *image = new QImage();
+	
+	*image = THIS->pixmap->toImage();
+	if (!image->isNull())
+		image->convertToFormat(QImage::Format_ARGB32);
+	
+	GB.ReturnObject(CIMAGE_create(image));
 
 END_PROPERTY
 

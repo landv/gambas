@@ -34,22 +34,26 @@ class SDLsurface
 public:
 	SDLsurface();
 	SDLsurface(const SDLsurface& surf);
+	SDLsurface(char *data, int width, int height);
 	~SDLsurface();
 
 	void Create(int Width, int Height, int Depth = 0);
 	void LoadFromMem(char* addr, long len);
 
 	int GetWidth(void );
+	int width(void) { return GetWidth(); }
 	int GetHeight(void );
+	int height(void) { return GetHeight(); }
 	int GetDepth(void );
 	void* GetData(void );
+	unsigned char *data(void) { return (unsigned char *)GetData(); }
 
 	void SetAlphaBuffer(bool );
 	void ConvertDepth(int );
 	void Fill(Uint32 color = 0);
 	void Resize(int width, int height);
 
-	bool IsNull(void ) { return (hSurfaceInfo->Surface ? 1: 0); };
+	bool IsNull(void ) { return (hSurfaceInfo->Surface != NULL); };
 private:
 	SDL_INFO *hSurfaceInfo;
 };

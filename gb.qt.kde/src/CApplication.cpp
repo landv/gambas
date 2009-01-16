@@ -584,7 +584,7 @@ static bool call_method(CAPPLICATION *_object, const char *object, const char *n
     else if (type == QT_T_QPIXMAP)
       d << *(GET_OBJECT(arg, CPICTURE)->pixmap);
     else if (type == QT_T_QIMAGE)
-      d << *(GET_OBJECT(arg, CIMAGE)->image);
+      d << *(QT.GetImage(GET_OBJECT(arg, CIMAGE)));
     else if (type == QT_T_QCURSOR)
       d << *(GET_OBJECT(arg, CCURSOR)->cursor);
     else if (type == QT_T_QPOINT)

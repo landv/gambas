@@ -858,7 +858,6 @@ static uint32_t *get_page_data(CPDFDOCUMENT *_object, int32_t x, int32_t y, int3
 
 BEGIN_METHOD(PDFPAGE_image, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	GB_IMAGE img = NULL;
 	uint32_t *data;
 	int32_t x,y, w, h;
 
@@ -869,8 +868,10 @@ BEGIN_METHOD(PDFPAGE_image, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
 
 	data = get_page_data(THIS, x, y, &w, &h, THIS->scale, THIS->rotation);
 	if (!data) { GB.ReturnNull(); return; }
-	GB.Image.Create(&img, data, w, h, GB_IMAGE_RGB);
-	GB.ReturnObject(img);
+	/*GB.Image.Create(&img, data, w, h, GB_IMAGE_RGB);
+	GB.ReturnObject(img);*/
+
+	GB.ReturnObject(IMAGE.Create(w, h, GB_IMAGE_RGB, (unsigned char *)data));
 
 END_METHOD
 
@@ -878,18 +879,19 @@ BEGIN_PROPERTY (PDFPAGE_property_image)
 
 	int32_t w=-1;
 	int32_t h=-1;
-	GB_IMAGE img = NULL;
 	uint32_t *data;
 
 	data = get_page_data(THIS, 0, 0, &w, &h, THIS->scale, THIS->rotation);
 	if (!data) { GB.ReturnNull(); return; }
-	GB.Image.Create(&img, data, w, h, GB_IMAGE_RGB);
-	GB.ReturnObject(img);
+	/*GB.Image.Create(&img, data, w, h, GB_IMAGE_RGB);
+	GB.ReturnObject(img);*/
+
+	GB.ReturnObject(IMAGE.Create(w, h, GB_IMAGE_RGB, (unsigned char *)data));
 
 END_PROPERTY
 
 
-BEGIN_METHOD(PDFPAGE_picture, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+/*BEGIN_METHOD(PDFPAGE_picture, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
 	GB_IMAGE img = NULL;
 	uint32_t *data;
@@ -919,7 +921,7 @@ BEGIN_PROPERTY (PDFPAGE_property_picture)
 	GB.Picture.Create(&img, data, w, h, GB_IMAGE_RGB);
 	GB.ReturnObject(img);
 
-END_PROPERTY
+END_PROPERTY*/
 
 BEGIN_METHOD(PDFPAGE_select, GB_INTEGER X; GB_INTEGER Y; GB_INTEGER W; GB_INTEGER H)
 
@@ -1389,12 +1391,10 @@ GB_DESC PdfPageDesc[]=
 	GB_PROPERTY_READ("H","f",PDFPAGE_height),
 	GB_PROPERTY_READ("Width","f",PDFPAGE_width),
 	GB_PROPERTY_READ("Height","f",PDFPAGE_height),
-	GB_PROPERTY_READ("Picture","Picture",PDFPAGE_property_picture),
 	GB_PROPERTY_READ("Image","Image",PDFPAGE_property_image),
 	GB_PROPERTY_SELF("Result",".PdfResult"),
 
 	GB_METHOD("GetImage","Image",PDFPAGE_image,"[(X)i(Y)i(Width)i(Height)i]"),
-	GB_METHOD("GetPicture","Picture",PDFPAGE_picture,"[(X)i(Y)i(Width)i(Height)i]"),
 	GB_METHOD("Find","b",PDFPAGE_find,"(Text)s[(CaseSensitive)b]"),
 	GB_METHOD("Select","s",PDFPAGE_select,"[(X)i(Y)i(W)i(H)i]"),
 

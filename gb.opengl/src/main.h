@@ -27,6 +27,7 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb.image.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
@@ -35,5 +36,7 @@ extern GB_INTERFACE GB;
 #ifndef WARNING
 #define WARNING(c) printf("WARNING: " c)
 #endif /* WARNING */
+
+int IMAGE_get_pixel_format(GB_IMG *image);
 
 #endif

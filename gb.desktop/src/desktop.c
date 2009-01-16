@@ -463,7 +463,6 @@ END_METHOD
 
 BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data)
 
-	GB_IMAGE image;
 	GB_ARRAY array;
 	int *data;
 	
@@ -473,8 +472,7 @@ BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data)
 	
 	data = (int *)GB.Array.Get(array, 0);
 	
-	GB.Image.Create(&image, &data[2], data[0], data[1], GB_IMAGE_BGRA);
-	GB.ReturnObject(image);
+	GB.ReturnObject(IMAGE.Create(data[0], data[1], GB_IMAGE_BGRA, (unsigned char *)&data[2]));
 
 END_METHOD
 

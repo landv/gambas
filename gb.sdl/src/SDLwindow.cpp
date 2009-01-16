@@ -43,7 +43,7 @@ SDLwindow::SDLwindow(bool openGL)
 	hHeight = 480;
 	hFullScreen = false;
 	hResizable = false;
-	hTitle = "SDL application";
+	hTitle = (char *)"SDL application";
 }
 
 SDLwindow::~SDLwindow()

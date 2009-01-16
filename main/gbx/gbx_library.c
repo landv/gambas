@@ -389,6 +389,7 @@ void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface)
   }
 
   sprintf(&symbol[len], "_%d", version);
+  
   copy_interface((intptr_t *)get_symbol(lib, symbol, TRUE), (intptr_t *)iface);
 }
 

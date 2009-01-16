@@ -29,6 +29,7 @@
 #include "main.h"
 
 GB_INTERFACE GB EXPORT;
+IMAGE_INTERFACE IMAGE EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -39,6 +40,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
+	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);	
   return 0;
 }
 

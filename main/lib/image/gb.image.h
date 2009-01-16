@@ -46,46 +46,78 @@
 
 /* format test functions */
 
-#define GB_IMAGE_IS_TRANSPARENT(_format) ((_format) & 8)
-#define GB_IMAGE_IS_PREMULTIPLIED(_format) ((_format) & 16)
-#define GB_IMAGE_IS_24_BITS(_format) ((_format) & 4)
-#define GB_IMAGE_IS_32_BITS(_format) (((_format) & 4)) == 0)
+#define GB_IMAGE_FMT_IS_24_BITS(_format) ((_format) & 4)
+#define GB_IMAGE_FMT_IS_32_BITS(_format) (((_format) & 4)) == 0)
 
-/* Gambas image type */
+#define GB_IMAGE_FMT_IS_SWAPPED(_format) ((_format) & 1)
+
+#define GB_IMAGE_FMT_IS_TRANSPARENT(_format) ((_format) & 8)
+
+#define GB_IMAGE_FMT_IS_PREMULTIPLIED(_format) ((_format) & 16)
+#define GB_IMAGE_FMT_SET_PREMULTIPLIED(_format) ((_format) | 16)
+#define GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(_format) ((_format) & ~16)
+
+/* Image owner information */
+
+struct GB_IMG;
 
 typedef
 	struct {
-		const char *name;                         // name of the image type
-		void (*free)(void *);                     // free the image
-		void (*begin)(void *);                    // starts to modify the image contents
-		void (*end)(void *);                      // ends modifying the image contents
+		const char *name;
+		void (*free)(struct GB_IMG *img, void *handle); // free owner or temporary handle
+		void (*release)(struct GB_IMG *img, void *handle); // free owner or temporary handle
+		//void (*lock)(void *handle); // lock, before accessing pixels
+		//void (*unlock)(void *handle); // unlock, after accessing pixels
 		}
-	GB_IMAGE_TYPE;
-
+	GB_IMG_OWNER;
+	
 /* Gambas image */
 
 typedef
-	struct {
-		GB_IMAGE_TYPE *type;                      // image type
-		void *param;                              // argument that will be passed to image type functions
+	struct GB_IMG {
+		GB_BASE ob;
 		unsigned char *data;                      // points at the image data
 		int width;                                // image width in pixels
 		int height;                               // image height in pixels
-		int stride;                               // number of bytes by lines
 		int format;                               // image format (RGB, BGR, RGBA...)
+		GB_IMG_OWNER *owner;                      // owner of the data, NULL means gb.image
+		void *owner_handle;                       // handle for the owner
+		GB_IMG_OWNER *temp;                       // owner of the temporary handle that does not own the data
+		void *temp_handle;                        // temporary handle
 		}
-	GB_IMAGE;
+	GB_IMG;
+
+#ifndef __GB_IMAGE_DEFINED
+#define __GB_IMAGE_DEFINED
+typedef
+	void *GB_IMAGE;
+#endif
+	
+/* Pixel color: the color is not premultiplied, and the alpha component is inverted (0 = solid / 255 = transparent) */
+
+typedef
+	unsigned int GB_COLOR;
 
 /* Gambas image component interface */
+
+#define IMAGE_INTERFACE_VERSION 1
 
 typedef
 	struct {
 		intptr_t version;
-		void (*Convert)(GB_IMAGE *src, GB_IMAGE *dst);
-		void (*MakeGray)(GB_IMAGE *img);
-		void (*MakeTransparent)(GB_IMAGE *img);
+		GB_IMG *(*Create)(int width, int height, int format, unsigned char *data);
+		void (*Delete)(GB_IMG *img);
+		void (*Take)(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
+		int (*Check)(GB_IMG *img, GB_IMG_OWNER *temp);
+		void (*Convert)(GB_IMG *img, int format);
+		void (*Fill)(GB_IMG *img, GB_COLOR col);
+		void (*MakeGray)(GB_IMG *img);
+		void (*MakeTransparent)(GB_IMG *img, GB_COLOR color);
 		}
 	IMAGE_INTERFACE;
+
+#define GB_IMG_SIZE(_image) ((_image)->width * (_image)->height * sizeof(int))
+#define GB_IMG_HANDLE(_image) ((_image)->temp_handle)
 
 #endif
 

@@ -172,11 +172,11 @@ void *GB_SubCollectionGet(void *_object, const char *key, int len);
 
 void GB_PrintData(GB_TYPE type, void *addr);
 
-int GB_ImageCreate(GB_IMAGE *image, void *data, int width, int height, int format);
+/*int GB_ImageCreate(GB_IMAGE *image, void *data, int width, int height, int format);
 void GB_ImageInfo(GB_IMAGE image, GB_IMAGE_INFO *info);
 void GB_ImageConvert(void *dst, int dst_format, void *src, int src_format, int w, int h);
 int GB_PictureCreate(GB_PICTURE *picture, void *data, int width, int height, int format);
-void GB_PictureInfo(GB_PICTURE picture, GB_PICTURE_INFO *info);
+void GB_PictureInfo(GB_PICTURE picture, GB_PICTURE_INFO *info);*/
 
 void *GB_DebugGetClass(const char *name);
 void *GB_DebugGetExec(void);

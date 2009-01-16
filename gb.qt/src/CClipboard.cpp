@@ -114,8 +114,6 @@ static void get_formats(QMimeSource *src, GB_ARRAY array)
 
 static void paste(QMimeSource *data, const char *fmt)
 {
-  CIMAGE *img;
-
   if (fmt)
   {
     if (!data->provides(fmt))
@@ -144,10 +142,9 @@ static void paste(QMimeSource *data, const char *fmt)
   }
   else if (QImageDrag::canDecode(data))
   {
-    GB.New(POINTER(&img), GB.FindClass("Image"), 0, 0);
-    QImageDrag::decode(data, *(img->image));
-    img->image->convertDepth(32);
-    GB.ReturnObject(img);
+  	QImage *image = new QImage();
+    QImageDrag::decode(data, *image);
+  	GB.ReturnObject(CIMAGE_create(image));
   }
   else
     GB.ReturnNull();
@@ -233,7 +230,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 
     img = (CIMAGE *)VARG(data)._object.value;
 
-    QApplication::clipboard()->setImage(*(img->image));
+    QApplication::clipboard()->setImage(*CIMAGE_get(img));
   }
   else
     goto _BAD_FORMAT;
@@ -426,7 +423,7 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 
     img = (CIMAGE *)data->_object.value;
 
-    ((QImageDrag *)drag)->setImage(*(img->image));
+    ((QImageDrag *)drag)->setImage(*CIMAGE_get(img));
   }
   else
     goto _BAD_FORMAT;

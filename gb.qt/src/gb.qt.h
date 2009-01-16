@@ -90,6 +90,9 @@ typedef
   void *QT_PICTURE;
 
 typedef
+  void *QT_IMAGE;
+
+typedef
 	struct {
     QPainter *p;
     QPainter *pm;
@@ -115,6 +118,7 @@ typedef
     QT_FONT *(*CreateFont)(const QFont &, QT_FONT_FUNC, void *);
     QMimeSourceFactory *(*MimeSourceFactory)(void);
     QPixmap *(*GetPixmap)(QT_PICTURE);
+    QImage *(*GetImage)(QT_IMAGE);
     const char *(*ToUTF8)(const QString &);
     bool (*EventFilter)(QEvent *);
     bool (*Notify)(void *, bool);

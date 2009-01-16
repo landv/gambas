@@ -47,8 +47,21 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NULL
 };
 
+int IMAGE_get_pixel_format(GB_IMG *image)
+{
+	if ((image->format == GB_IMAGE_RGBA) || (image->format == GB_IMAGE_RGBX))
+		return GL_RGBA;
+	// is it good ?
+	else if ((image->format == GB_IMAGE_BGRA) || (image->format == GB_IMAGE_BGRX))
+		return GL_BGRA;
+	else // BM: what to do then ??
+		return GL_RGBA;
+}
+
 int EXPORT GB_INIT(void)
 {
+	//GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	
   return FALSE;
 }
 

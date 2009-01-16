@@ -356,6 +356,14 @@ static void set_transparent(GB_DRAW *d, int transparent)
 		DPM(d)->setBackgroundMode(transparent ? Qt::TransparentMode : Qt::OpaqueMode);
 }
 
+static void get_picture_info(GB_DRAW *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
+{
+  QPixmap *p = ((CPICTURE *)picture)->pixmap;
+	
+	info->width = p->width();
+	info->height = p->height();
+}
+
 static int get_line_width(GB_DRAW *d)
 {
 	return DP(d)->pen().width();
@@ -527,7 +535,7 @@ static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, in
 static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
-  QImage *img = ((CIMAGE *)image)->image;
+  QImage *img = CIMAGE_get((CIMAGE *)image);
 
   DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, img->width(), img->height());
 	xform = (w != img->width() || h != img->height());
@@ -1061,6 +1069,7 @@ GB_DRAW_DESC DRAW_Interface = {
 	set_inverted,
 	is_transparent,
 	set_transparent,
+	get_picture_info,
 	{
 		get_line_width,
 		set_line_width,

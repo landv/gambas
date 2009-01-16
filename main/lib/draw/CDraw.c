@@ -22,6 +22,7 @@
 
 #define __CDRAW_C
 
+#include "gb.image.h"
 #include "matrix.h"
 #include "main.h"
 #include "CDraw.h"
@@ -705,12 +706,14 @@ BEGIN_METHOD(CDRAW_picture, GB_OBJECT picture; GB_INTEGER x; GB_INTEGER y; GB_IN
 	if (GB.CheckObject(picture))
 		return;
 
-	GB.Picture.Info(picture, &info);
+	DRAW->GetPictureInfo(THIS, picture, &info);
 
 	x = VARGOPT(x, 0);
 	y = VARGOPT(y, 0);
 	w = VARGOPT(w, info.width);
 	h = VARGOPT(h, info.height);
+	w = VARGOPT(w, -1);
+	h = VARGOPT(h, -1);
 
 	if (THIS->xform)
 		MATRIX_map_rect(THIS_MATRIX, &x, &y, &w, &h);
@@ -725,20 +728,18 @@ END_METHOD
 BEGIN_METHOD(CDRAW_image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
 	GB_IMAGE image = VARG(image);
-	GB_PICTURE_INFO info;
 	int x, y, w, h;
+	GB_IMG *info = (GB_IMG *)image;
 
 	CHECK_DEVICE();
 
 	if (GB.CheckObject(image))
 		return;
 
-	GB.Image.Info(image, &info);
-
 	x = VARGOPT(x, 0);
 	y = VARGOPT(y, 0);
-	w = VARGOPT(w, info.width);
-	h = VARGOPT(h, info.height);
+	w = VARGOPT(w, info->width);
+	h = VARGOPT(h, info->height);
 
 	if (THIS->xform)
 		MATRIX_map_rect(THIS_MATRIX, &x, &y, &w, &h);
@@ -762,7 +763,7 @@ static uint blend_color(uint col, uint gray, uint alpha)
 BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTEGER y; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
 	GB_IMAGE image = VARG(image);
-	GB_IMAGE_INFO info;
+	GB_IMG *info = (GB_IMG *)image;
 	int zoom, size, size2;
 	int x, y, sx, sy, sw, sh;
 	int i, j, xr, yr;
@@ -785,17 +786,15 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 		return;
 	}
 	
-	GB.Image.Info(image, &info);
-	
 	x = VARGOPT(x, 0);
 	y = VARGOPT(y, 0);
 
 	sx = VARGOPT(sx, 0);
 	sy = VARGOPT(sy, 0);
-	sw = VARGOPT(sw, info.width);
-	sh = VARGOPT(sh, info.height);
+	sw = VARGOPT(sw, info->width);
+	sh = VARGOPT(sh, info->height);
 
-	DRAW_NORMALIZE(x, y, sw, sh, sx, sy, sw, sh, info.width, info.height);
+	DRAW_NORMALIZE(x, y, sw, sh, sx, sy, sw, sh, info->width, info->height);
 
 	//DRAW->Fill.GetOrigin(THIS, &ox, &oy);
 	
@@ -810,9 +809,10 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 	}
 	else
 	{
+		IMAGE.Convert(info, GB_IMAGE_BGRA);
 		// May have to convert the image data
-		if (info.format != GB_IMAGE_BGRA && info.format != GB_IMAGE_BGRX)
-			GB.Alloc(POINTER(&conv), sw * sizeof(int));
+		//if (info->format != GB_IMAGE_BGRA && info->format != GB_IMAGE_BGRX)
+		//	GB.Alloc(POINTER(&conv), sw * sizeof(int));
 		
 		size = zoom;
 		size2 = size / 2;
@@ -834,13 +834,13 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 		
 		for (j = sy, yr = y; j < (sy + sh); j++, yr += zoom)
 		{
-			data = (uint *)info.data + j * info.width + sx;
+			data = (uint *)info->data + j * info->width + sx;
 			
-			if (conv)
+			/*if (conv)
 			{
 				GB.Image.Convert(conv, GB_IMAGE_BGRA, data, info.format, sw, 1);
 				data = conv;
-			}
+			}*/
 			
 			for (i = sx, xr = x; i < (sx + sw); i++, xr += zoom)
 			{

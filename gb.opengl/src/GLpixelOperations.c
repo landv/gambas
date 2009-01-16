@@ -69,20 +69,9 @@ END_METHOD
 
 BEGIN_METHOD(GLDRAWPIXELS, GB_OBJECT Image)
 
-	GB_IMAGE *image = VARG(Image);
-	GB_IMAGE_INFO info;
-	GLint format = 0;
-
-	GB.Image.Info(image, &info);
-
-	if ((info.format == GB_IMAGE_RGBA) || (info.format == GB_IMAGE_RGBX))
-		format = GL_RGBA;
-
-	// is it good ?
-	if ((info.format == GB_IMAGE_BGRA) || (info.format == GB_IMAGE_BGRX))
-		format = GL_BGRA;
-
-	glDrawPixels(info.width, info.height, format, GL_UNSIGNED_BYTE, info.data);
+	GB_IMG *image = VARG(Image);
+	
+	glDrawPixels(image->width, image->height, IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
 

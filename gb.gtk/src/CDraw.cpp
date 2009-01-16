@@ -31,6 +31,7 @@
 #include "CWindow.h"
 #include "CDrawingArea.h"
 #include "CPicture.h"
+#include "CImage.h"
 #include "CFont.h"
 #include "CDraw.h"
 
@@ -176,6 +177,14 @@ static void set_transparent(GB_DRAW *d, int transparent)
 	DR(d)->setTransparent(transparent);
 }
 
+static void get_picture_info(GB_DRAW *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
+{
+	gPicture *pic = ((CPICTURE *)picture)->picture;
+	
+	info->width = pic->width();
+	info->height = pic->height();
+}
+
 static int get_line_width(GB_DRAW *d)
 {
 	return DR(d)->lineWidth();
@@ -256,7 +265,7 @@ static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, in
 
 static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
-	gPicture *pic = ((CIMAGE *)image)->picture;
+	gPicture *pic = CIMAGE_get((CIMAGE *)image);
 	DR(d)->picture(pic, x, y, w, h, sx, sy, sw, sh);
 }
 
@@ -511,6 +520,7 @@ GB_DRAW_DESC DRAW_Interface = {
 	set_inverted,
 	is_transparent,
 	set_transparent,
+	get_picture_info,
 	{
 		get_line_width,
 		set_line_width,

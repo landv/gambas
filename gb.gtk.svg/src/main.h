@@ -27,9 +27,11 @@
 
 
 #include "gambas.h"
+#include "gb.image.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+extern IMAGE_INTERFACE IMAGE;
 #endif
 
 #endif

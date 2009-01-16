@@ -38,7 +38,7 @@ static CDRAW *draw_current = 0;
 #define THIS (draw_current)
 #define GFX (THIS->graphic)
 #define WINDOWID(object) ((CWINDOW *)object)->id
-#define IMAGEID(object) ((CIMAGE *)object)->id
+#define IMAGEID(object) (CIMAGE_get((CIMAGE *)object))
 
 /**************************************************************************/
 

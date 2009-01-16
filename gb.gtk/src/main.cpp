@@ -32,6 +32,7 @@
 
 #include "gmemory.h"
 #include "main.h"
+#include "gb.image.h"
 #include "gb.gtk.h"
 #include "watcher.h"
 
@@ -43,6 +44,7 @@
 #include "CFont.h"
 #include "CKey.h"
 #include "CPicture.h"
+#include "CImage.h"
 #include "CClipboard.h"
 #include "CMouse.h"
 #include "CMessage.h"
@@ -76,8 +78,6 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
-static int hook_image(CIMAGE **pimage, GB_IMAGE_INFO *info);
-static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info);
 static void my_lang(char *lang,int rtl1);
 static void my_error(int code,char *error,char *where);
 static void my_quit (void);
@@ -97,6 +97,7 @@ int MAIN_scale = 8;
 extern "C"
 {
 	GB_INTERFACE GB EXPORT;
+	IMAGE_INTERFACE IMAGE EXPORT;
 
 	GB_DESC *GB_CLASSES[] EXPORT =
 	{
@@ -226,10 +227,9 @@ extern "C"
 		GB.Hook(GB_HOOK_POST,(void*)my_post);
 		GB.Hook(GB_HOOK_ERROR,(void*)my_error);
 		GB.Hook(GB_HOOK_LANG,(void*)my_lang);
-		GB.Hook(GB_HOOK_IMAGE, (void *)hook_image);
-    GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
 
 		GB.LoadComponent("gb.draw");
+		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 
 		return TRUE;
 	}
@@ -457,6 +457,7 @@ void do_iteration(bool do_not_block, bool do_not_sleep)
 	gControl::cleanRemovedControls();
 }
 
+#if 0
 // BM: New image & picture hook syntax
 // BM: Conversion functions are now in the interpreter API
 
@@ -516,4 +517,4 @@ static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info)
 	return 0;
 }
 
-
+#endif

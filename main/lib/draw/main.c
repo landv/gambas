@@ -29,12 +29,12 @@
 #include <ctype.h>
 
 #include "gb_common.h"
-
 #include "CDraw.h"
 #include "main.h"
 
 
 GB_INTERFACE GB EXPORT;
+IMAGE_INTERFACE IMAGE EXPORT;
 
 GB_DESC *GB_CLASSES [] EXPORT =
 {
@@ -55,6 +55,8 @@ void *GB_DRAW_1[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
+	GB.LoadComponent("gb.image");
+  GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
   return 0;
 }
 

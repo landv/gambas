@@ -1,4 +1,5 @@
 INCLUDES = -I$(top_srcdir)/share @INCLTDL@
+EXTRA_DIST = gb.image.h
 
 gblib_LTLIBRARIES = gb.draw.la
 

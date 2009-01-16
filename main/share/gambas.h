@@ -620,52 +620,6 @@ typedef
 	void *GB_HASHTABLE;
 
 
-/* constants used by image data format */
-
-#define GB_IMAGE_BGRA  0
-#define GB_IMAGE_ARGB  1
-#define GB_IMAGE_RGBA  2
-#define GB_IMAGE_ABGR  3
-#define GB_IMAGE_BGRX  4
-#define GB_IMAGE_XRGB  5
-#define GB_IMAGE_RGBX  6
-#define GB_IMAGE_XBGR  7
-#define GB_IMAGE_BGR   8
-#define GB_IMAGE_RGB   9
-
-#define GB_IMAGE_TRANSPARENT(_format) ((_format) < 4)
-
-
-/* opaque type of a Gambas image */
-
-typedef
-	void *GB_IMAGE;
-
-
-/* information about an image */
-
-typedef
-	struct {
-		int width;
-		int height;
-		int format;
-		void *data;
-		}
-	GB_IMAGE_INFO;
-
-
-/* opaque type of a Gambas picture */
-
-typedef
-	void *GB_PICTURE;
-
-
-/* information about a picture */
-
-typedef
-	GB_IMAGE_INFO GB_PICTURE_INFO;
-
-
 /* hash table enumeration function */
 
 typedef
@@ -968,19 +922,6 @@ typedef
 			}
 		Stream;
 
-		struct {
-			int (*Create)(GB_IMAGE *image, void *data, int width, int height, int format);
-			void (*Info)(GB_IMAGE image, GB_IMAGE_INFO *info);
-			void (*Convert)(void *dst, int dst_format, void *src, int src_format, int w, int h);
-			}
-		Image;
-
-		struct {
-			int (*Create)(GB_PICTURE *pict, void *data, int width, int height, int format);
-			void (*Info)(GB_PICTURE pict, GB_PICTURE_INFO *info);
-			}
-		Picture;
-		
 		struct {
 			void (*Start)(int length);
 			char *(*End)();

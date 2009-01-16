@@ -30,13 +30,16 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb.image.h"
 #include "widgets.h"
 #include "CWidget.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+extern IMAGE_INTERFACE IMAGE;
 #endif
 
 void do_iteration(bool do_not_block, bool do_not_sleep = false);
+
 #endif
 

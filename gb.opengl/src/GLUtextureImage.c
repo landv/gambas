@@ -33,20 +33,10 @@
 
 BEGIN_METHOD(GLUBUILD1DMIPMAPS, GB_OBJECT Image)
 
-	GB_IMAGE *image = VARG(Image);
-	GB_IMAGE_INFO info;
-	GLint format = 0;
+	GB_IMG *image = VARG(Image);
 	int status = 0;
 
-	GB.Image.Info(image, &info);
-
-	if ((info.format == GB_IMAGE_RGBA) || (info.format == GB_IMAGE_RGBX))
-		format = GL_RGBA;
-
-	if ((info.format == GB_IMAGE_BGRA) || (info.format == GB_IMAGE_BGRX))
-		format = GL_BGRA;
-
-	status = gluBuild1DMipmaps(GL_TEXTURE_1D, 4, info.width, format, GL_UNSIGNED_BYTE, info.data);
+	status = gluBuild1DMipmaps(GL_TEXTURE_1D, 4, image->width, IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
 
 	GB.ReturnInteger(status);
 
@@ -54,21 +44,11 @@ END_METHOD
 
 BEGIN_METHOD(GLUBUILD2DMIPMAPS, GB_OBJECT Image)
 
-	GB_IMAGE *image = VARG(Image);
-	GB_IMAGE_INFO info;
-	GLint format = 0;
+	GB_IMG *image = VARG(Image);
 	int status = 0;
 
-	GB.Image.Info(image, &info);
-
-	if ((info.format == GB_IMAGE_RGBA) || (info.format == GB_IMAGE_RGBX))
-		format = GL_RGBA;
-
-	if ((info.format == GB_IMAGE_BGRA) || (info.format == GB_IMAGE_BGRX))
-		format = GL_BGRA;
-
-	status = gluBuild2DMipmaps(GL_TEXTURE_2D, 4, info.width, info.height, format, GL_UNSIGNED_BYTE,
-		info.data);
+	status = gluBuild2DMipmaps(GL_TEXTURE_2D, 4, image->width, image->height, IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE,
+		image->data);
 
 	GB.ReturnInteger(status);
 

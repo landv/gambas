@@ -792,10 +792,10 @@ END_METHOD
 BEGIN_PROPERTY(CWEBCAM_image)
 
 	GB_IMAGE ret=NULL;
-	char *buf;
-	int w,h;
+	unsigned char *buf;
+	int w, h;
 
-	buf=(char*)vd_get_image(DEVICE);
+	buf = (unsigned char*)vd_get_image(DEVICE);
 	if (!buf)
 	{
 		GB.Error("Unable to get image");
@@ -803,39 +803,14 @@ BEGIN_PROPERTY(CWEBCAM_image)
 		return;
 	}
 
-	w=DEVICE->vmmap.width;
-	h=DEVICE->vmmap.height;
+	w = DEVICE->vmmap.width;
+	h = DEVICE->vmmap.height;
 	vd_image_done(DEVICE);
 
-	GB.Image.Create(&ret,(void*)buf,w,h,GB_IMAGE_BGR);
-
-	GB.ReturnObject((void*)ret);
+	GB.ReturnObject(IMAGE.Create(w, h, GB_IMAGE_BGR, buf));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CWEBCAM_picture)
-
-	GB_PICTURE ret=NULL;
-	char *buf;
-	int w,h;
-
-	buf=(char*)vd_get_image(DEVICE);
-	if (!buf)
-	{
-		GB.Error("Unable to get image");
-		GB.ReturnNull();
-		return;
-	}
-
-	w=DEVICE->vmmap.width;
-	h=DEVICE->vmmap.height;
-	vd_image_done(DEVICE);
-
-	GB.Picture.Create(&ret,(void*)buf,w,h,GB_IMAGE_BGR);
-
-	GB.ReturnObject((void*)ret);
-
-END_PROPERTY
 
 BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 
@@ -1209,7 +1184,6 @@ GB_DESC CWebcamDesc[] =
   GB_PROPERTY("Hue","i",CWEBCAM_hue),
 
   GB_PROPERTY("Image","Image",CWEBCAM_image),
-  GB_PROPERTY("Picture","Picture",CWEBCAM_picture),
 
   GB_METHOD("Resize",NULL,CWEBCAM_size,"(Width)i(Height)i"),
   GB_METHOD("Save",NULL,CWEBCAM_save,"(File)s[(Quality)i]"),

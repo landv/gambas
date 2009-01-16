@@ -48,17 +48,6 @@
 #include "CDraw.h"
 #include "CImage.h"
 
-static void create(CIMAGE **pimage)
-{
-  static GB_CLASS class_id = NULL;
-
-  if (!class_id)
-    class_id = GB.FindClass("Image");
-
-  GB.New(POINTER(pimage), class_id, NULL, NULL);
-}
-
-
 const char *CIMAGE_get_format(QString path)
 {
   int pos;
@@ -83,101 +72,83 @@ const char *CIMAGE_get_format(QString path)
     return NULL;
 }
 
-// bool CIMAGE_load_image(QImage &p, char *path, int lenp)
-// {
-//   char *addr;
-//   int len;
-//   bool ok;
-//   char *path_theme;
-//   int pos;
-//   
-//   if (CAPPLICATION_Theme && lenp > 0 && path[0] != '/')
-//   {
-//   	pos = lenp - 1;
-//   	while (pos >= 0)
-//   	{
-//   		if (path[pos] == '.')
-//   			break;
-// 			pos--;
-//   	}
-//   	GB.NewString(&path_theme, path, pos >= 0 ? pos : lenp);
-//   	GB.AddString(&path_theme, "_", 1);
-//   	GB.AddString(&path_theme, CAPPLICATION_Theme, GB.StringLength(CAPPLICATION_Theme));
-//   	if (pos >= 0)
-//   		GB.AddString(&path_theme, &path[pos], lenp - pos);
-// 		ok = !GB.LoadFile(path_theme, GB.StringLength(path_theme), &addr, &len);
-// 		GB.FreeString(&path_theme);
-// 		if (ok)
-// 			goto __LOAD;
-//   }
-// 
-// 	GB.Error(NULL);
-// 	if (GB.LoadFile(path, lenp, &addr, &len))
-// 		return FALSE;
-// 		
-// __LOAD:
-// 		
-// 	ok = p.loadFromData((const uchar *)addr, (uint)len);
-// 	if (ok)
-// 	{
-// 		//create((CIMAGE **)&_object);
-// 
-// 		if (p.depth() < 32)
-// 			p = p.convertDepth(32);
-// 
-// 		//p.setAlphaBuffer(true);
-// 	}
-// 
-// 	GB.ReleaseFile(addr, len);
-//   return ok;
-// }
-// 
-
-
 /*******************************************************************************
 
   Image
 
 *******************************************************************************/
 
+static void free_image(GB_IMG *img, void *image)
+{
+	delete (QImage *)image;
+}
 
-BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
+static GB_IMG_OWNER _image_owner = {
+	"gb.qt",
+	free_image,
+	free_image
+	};
 
-  int w, h;
-
-  THIS->image = new QImage();
-
-	if (!MISSING(w) && !MISSING(h))
+static QImage *check_image(void *_object)
+{
+	QImage *image;
+	
+	if (IMAGE.Check(THIS_IMAGE, &_image_owner))
 	{
-		w = VARG(w);
-		h = VARG(h);
-		if (h <= 0 || w <= 0)
+		if (!THIS_IMAGE->data)
 		{
-			GB.Error("Bad dimension");
-			return;
+			image = new QImage();
 		}
+		else
+		{
+			IMAGE.Convert(THIS_IMAGE, GB_IMAGE_BGRA);
+			image = new QImage(THIS_IMAGE->data, THIS_IMAGE->width, THIS_IMAGE->height, 32, 0, 0, QImage::IgnoreEndian);
+		}
+		image->setAlphaBuffer(true);
+		
+		THIS_IMAGE->temp_handle = image;
+	}
+	
+	return (QImage *)(THIS_IMAGE->temp_handle);
+}
 
-    THIS->image->create(w, h, 32);
-    THIS->image->setAlphaBuffer(VARGOPT(trans, false));
-  }
+static void take_image(CIMAGE *_object, QImage *image)
+{
+	IMAGE.Take(THIS_IMAGE, &_image_owner, image, image->width(), image->height(), image->bits());
+}
 
-END_METHOD
+CIMAGE *CIMAGE_create(QImage *image)
+{
+	CIMAGE *img;
+  static GB_CLASS class_id = NULL;
 
+  if (!class_id)
+    class_id = GB.FindClass("Image");
 
-BEGIN_METHOD_VOID(CIMAGE_free)
+  GB.New(POINTER(&img), class_id, NULL, NULL);
+  
+  if (image)
+  	take_image(img, image);
+	else
+  	take_image(img, new QImage());
+	
+  return img;
+}
 
-  delete THIS->image;
-  THIS->image = 0;
-
-END_METHOD
+QImage *CIMAGE_get(CIMAGE *_object)
+{
+	return check_image(THIS);
+}
 
 
 BEGIN_PROPERTY(CIMAGE_picture)
 
   CPICTURE *pict;
+  
+  check_image(THIS);
 
   GB.New(POINTER(&pict), GB.FindClass("Picture"), NULL, NULL);
-  pict->pixmap->convertFromImage(*(THIS->image));
+  pict->pixmap->convertFromImage(*QIMAGE);
 
   GB.ReturnObject(pict);
 
@@ -186,68 +157,21 @@ END_PROPERTY
 
 BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 
-  if (THIS->image->isNull())
+  check_image(THIS);
+
+  if (QIMAGE->isNull())
   {
-    THIS->image->create(VARG(width), VARG(height), 32);
-    THIS->image->setAlphaBuffer(true);
+    QIMAGE->create(VARG(width), VARG(height), 32);
+    QIMAGE->setAlphaBuffer(true);
+  	take_image(THIS, QIMAGE);
   }
   else
   {
-    QImage img = THIS->image->copy(0, 0, VARG(width), VARG(height));
-    delete THIS->image;
-    THIS->image = new QImage(img);
+    QImage img = QIMAGE->copy(0, 0, VARG(width), VARG(height));
+    take_image(THIS, new QImage(img));
   }
 
 END_METHOD
-
-
-BEGIN_PROPERTY(CIMAGE_width)
-
-  GB.ReturnInteger(THIS->image->width());
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CIMAGE_height)
-
-  GB.ReturnInteger(THIS->image->height());
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CIMAGE_depth)
-
-  //if (READ_PROPERTY)
-    GB.ReturnInteger(THIS->image->depth());
-  /*else
-  {
-    if (!THIS->image->isNull())
-    {
-      int depth = VPROP(GB_INTEGER);
-
-      if (depth != THIS->image->depth())
-      {
-        QImage img = THIS->image->convertDepth(depth);
-        if (!img.isNull())
-        {
-          delete THIS->image;
-          THIS->image = new QImage(img);
-        }
-      }
-    }
-  }*/
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CIMAGE_transparent)
-
-	if (READ_PROPERTY)
-  	GB.ReturnBoolean(THIS->image->hasAlphaBuffer());
-	else
-		THIS->image->setAlphaBuffer(VPROP(GB_BOOLEAN));
-
-END_PROPERTY
 
 
 BEGIN_METHOD(CIMAGE_load, GB_STRING path)
@@ -257,9 +181,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
   if (CPICTURE_load_image(&p, STRING(path), LENGTH(path)))
   {
-	  create(&img);
-  	delete img->image;
-    img->image = p;
+	  img = CIMAGE_create(p);
     GB.ReturnObject(img);
 	}
   else
@@ -280,34 +202,12 @@ BEGIN_METHOD(CIMAGE_save, GB_STRING path; GB_INTEGER quality)
     return;
   }
 
-  ok = THIS->image->save(path, fmt, VARGOPT(quality, -1));
+	check_image(THIS);
+
+  ok = QIMAGE->save(path, fmt, VARGOPT(quality, -1));
 
   if (!ok)
     GB.Error("Unable to save picture");
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CIMAGE_clear)
-
-  delete THIS->image;
-  THIS->image = new QImage();
-
-END_METHOD
-
-
-BEGIN_METHOD(CIMAGE_fill, GB_INTEGER col)
-
-  //bool a;
-  int col = VARG(col);
-
-  //a = THIS->image->hasAlphaBuffer();
-  THIS->image->setAlphaBuffer(false);
-
-  col ^= 0xFF000000;
-  THIS->image->fill(col);
-
-  THIS->image->setAlphaBuffer(true);
 
 END_METHOD
 
@@ -317,22 +217,21 @@ BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h
   CIMAGE *img;
   int x = VARGOPT(x, 0);
   int y = VARGOPT(y, 0);
-  int w = VARGOPT(w, THIS->image->width());
-  int h = VARGOPT(h, THIS->image->height());
+  int w = VARGOPT(w, THIS_IMAGE->width);
+  int h = VARGOPT(h, THIS_IMAGE->height);
+	QImage *copy = new QImage(w, h, 32);
 
-  create(&img);
+	check_image(THIS);
 
-  img->image->create(w, h, 32);
+  QIMAGE->setAlphaBuffer(false);
+  copy->setAlphaBuffer(false);
 
-  bool a = THIS->image->hasAlphaBuffer();
-  THIS->image->setAlphaBuffer(false);
-  img->image->setAlphaBuffer(false);
+  bitBlt(copy, 0, 0, QIMAGE, x, y, w, h);
 
-  bitBlt(img->image, 0, 0, THIS->image, x, y, w, h);
+  QIMAGE->setAlphaBuffer(true);
+  copy->setAlphaBuffer(true);
 
-  THIS->image->setAlphaBuffer(a);
-  img->image->setAlphaBuffer(a);
-
+  img = CIMAGE_create(copy);
   GB.ReturnObject(img);
 
 END_METHOD
@@ -341,23 +240,25 @@ END_METHOD
 BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smooth)
 
   CIMAGE *img;
-  QImage stretch;
+  QImage *stretch;
 
-  create(&img);
+	check_image(THIS);
 
-	if (THIS->image->isNull())
+	if (QIMAGE->isNull())
 	{
-    img->image->create(VARG(width), VARG(height), 32);
-    img->image->setAlphaBuffer(true);
+    stretch = new QImage(VARG(width), VARG(height), 32);
+    stretch->setAlphaBuffer(true);
 	}
 	else
 	{
+		stretch = new QImage();
 		if (VARGOPT(smooth, TRUE))
-			*(img->image) = THIS->image->smoothScale(VARG(width), VARG(height));
+			*stretch = QIMAGE->smoothScale(VARG(width), VARG(height));
 		else
-			*(img->image) = THIS->image->scale(VARG(width), VARG(height));
+			*stretch = QIMAGE->scale(VARG(width), VARG(height));
 	}
 
+  img = CIMAGE_create(stretch);
   GB.ReturnObject(img);
 
 END_METHOD
@@ -365,164 +266,57 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CIMAGE_flip)
 
-  CIMAGE *img;
-
-  create(&img);
-  *(img->image) = THIS->image->mirror(true, false);
-  GB.ReturnObject(img);
+	QImage *mirror = new QImage();
+	
+  check_image(THIS);
+  *mirror = QIMAGE->mirror(true, false);
+	
+  GB.ReturnObject(CIMAGE_create(mirror));
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CIMAGE_mirror)
 
-  CIMAGE *img;
-
-  create(&img);
-  *(img->image) = THIS->image->mirror(false, true);
-  GB.ReturnObject(img);
+	QImage *mirror = new QImage();
+	
+  check_image(THIS);
+  *mirror = QIMAGE->mirror(false, true);
+	
+  GB.ReturnObject(CIMAGE_create(mirror));
 
 END_METHOD
 
 
 BEGIN_METHOD(CIMAGE_rotate, GB_FLOAT angle)
 
-  CIMAGE *img;
+  QImage *rotate = new QImage();
+  
   QWMatrix mat;
-  bool a = THIS->image->hasAlphaBuffer();
-
-  create(&img);
-
+  
+  check_image(THIS);
+  
   mat.rotate(VARG(angle) * -360.0 / 2 / M_PI);
   
-  THIS->image->setAlphaBuffer(true);
-  *(img->image) = THIS->image->xForm(mat);
-  THIS->image->setAlphaBuffer(a);
+  *rotate = QIMAGE->xForm(mat);
   
-  GB.ReturnObject(img);
+  GB.ReturnObject(CIMAGE_create(rotate));
 
 END_METHOD
 
-
-BEGIN_METHOD(CIMAGE_replace, GB_INTEGER src; GB_INTEGER dst; GB_BOOLEAN noteq)
-
-	uint *p;
-  uint i, n, src, dst;
-
-  THIS->image->setAlphaBuffer(true);
-
-  src = VARG(src) ^ 0xFF000000;
-  dst = VARG(dst) ^ 0xFF000000;
-
-	p = (uint *)THIS->image->bits();
-	n = THIS->image->height() * THIS->image->width();
-
-	if (VARGOPT(noteq, false))
-	{
-		for (i = 0; i < n; i++, p++)
-		{
-			if (*p != src)
-				*p = dst;
-		}
-	}
-	else
-	{
-		for (i = 0; i < n; i++,p ++)
-		{
-			if (*p == src)
-				*p = dst;
-		}
-	}
-
-END_METHOD
-
-
-
-/*******************************************************************************
-
-  .ImagePixels
-
-*******************************************************************************/
-
-
-BEGIN_METHOD(CIMAGE_pixels_get, GB_INTEGER x; GB_INTEGER y)
-
-  int col;
-  int x, y;
-  //unsigned char r, g, b, a;
-
-  x = VARG(x);
-  y = VARG(y);
-
-  if (!THIS->image->valid(x, y))
-  {
-    GB.ReturnInteger(-1);
-    return;
-  }
-
-  col = THIS->image->pixel(x, y) ^ 0xFF000000;
-  GB.ReturnInteger(col);
-
-  #if 0
-  a = (col >> 24);
-
-  //qDebug("[%d,%d] = (%d %d %d) / %d", x, y, r, g, b, a);
-
-  if (!THIS->image->hasAlphaBuffer() || a == 255)
-    GB.ReturnInteger( col & 0xFFFFFF);
-  else if (a == 0)
-    GB.ReturnInteger(-1);
-  else
-  {
-    r = col & 0xFF;
-    g = (col >> 8) & 0xFF;
-    b = (col >> 16) & 0xFF;
-
-    r = 255 - ((255 - r) * a) / 255;
-    g = 255 - ((255 - g) * a) / 255;
-    b = 255 - ((255 - b) * a) / 255;
-
-    GB.ReturnInteger(r + (g << 8) + (b << 16));
-  }
-  #endif
-
-END_METHOD
-
-
-BEGIN_METHOD(CIMAGE_pixels_put, GB_INTEGER col; GB_INTEGER x; GB_INTEGER y)
-
-  int x, y;
-  int col;
-
-  x = VARG(x);
-  y = VARG(y);
-
-  if (!THIS->image->valid(x, y))
-    return;
-
-  col = VARG(col) ^ 0xFF000000;
-
-  THIS->image->setPixel(x, y, col);
-
-END_METHOD
-
-BEGIN_PROPERTY(CIMAGE_data)
-
-  GB.ReturnPointer((void *)THIS->image->bits());
-
-END_PROPERTY
 
 BEGIN_METHOD(CIMAGE_draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_INTEGER sx; GB_INTEGER sy; GB_INTEGER sw; GB_INTEGER sh)
 
   int x, y, w, h, sx, sy, sw, sh;
   CIMAGE *image = (CIMAGE *)VARG(img);
-  QImage img;
+  QImage *src, *dst;
   double scale_x, scale_y;
 
   if (GB.CheckObject(image))
     return;
 
-	img = *(image->image);
+	src = check_image(image);
+	dst = check_image(THIS);
 
   x = VARGOPT(x, 0);
   y = VARGOPT(y, 0);
@@ -531,47 +325,27 @@ BEGIN_METHOD(CIMAGE_draw, GB_OBJECT img; GB_INTEGER x; GB_INTEGER y; GB_INTEGER 
 
   sx = VARGOPT(sx, 0);
   sy = VARGOPT(sy, 0);
-  sw = VARGOPT(sw, img.width());
-  sh = VARGOPT(sh, img.height());
+  sw = VARGOPT(sw, src->width());
+  sh = VARGOPT(sh, src->height());
 
-  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, img.width(), img.height());
+  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, src->width(), src->height());
 
 	if (w != sw || h != sh)
 	{
+		QImage tmp;
+		
 		scale_x = (double)w / sw;
 		scale_y = (double)h / sh;
 		
-		img = img.smoothScale((int)(img.width() * scale_x + 0.5), (int)(img.height() * scale_y + 0.5));
+		tmp = src->smoothScale((int)(src->width() * scale_x + 0.5), (int)(src->height() * scale_y + 0.5));
 		sx = (int)(sx * scale_x + 0.5);
 		sy = (int)(sy * scale_y + 0.5);
 		sw = w;
 		sh = h;
+		bitBlt(dst, x, y, &tmp, sx, sy, sw, sh, Qt::AutoColor); 
 	}
-	
-	bitBlt(THIS->image, x, y, &img, sx, sy, sw, sh, Qt::AutoColor); 
-
-END_METHOD
-
-// Fast algorithm not really accurate.
-
-BEGIN_METHOD_VOID(CIMAGE_make_gray)
-
-	QImage *img = THIS->image;
-	
-	uchar *b = img->bits();
-	uchar *g = b + 1;
-	uchar *r = b + 2;
-
-	uchar *end = img->bits() + img->numBytes();
-
-	while (b != end) 
-	{
-		*b = *g = *r = (((*r + *b) >> 1) + *g) >> 1; // (r + b + g) / 3
-
-		b += 4;
-		g += 4;
-		r += 4;
-	}
+	else
+		bitBlt(dst, x, y, src, sx, sy, sw, sh, Qt::AutoColor); 
 
 END_METHOD
 
@@ -648,7 +422,9 @@ static void color_to_alpha(RGB *src, const RGB *color)
 
 BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
 
-	QImage *img = THIS->image;
+	check_image(THIS);
+	
+	QImage *img = QIMAGE;
 	uchar *b = img->bits();
 	uchar *g = b + 1;
 	uchar *r = b + 2;
@@ -657,8 +433,6 @@ BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
 	uint color = VARGOPT(color, 0xFFFFFFL);
 	RGB rgb_color;
 	RGB rgb_src;
-
-	THIS->image->setAlphaBuffer(true);
 
 	rgb_color.b = (color & 0xFF) / 255.0;
 	rgb_color.g = ((color >> 8) & 0xFF) / 255.0;
@@ -693,44 +467,11 @@ GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
-  //GB_STATIC_METHOD("_exit", NULL, CPICTURE_flush, NULL),
-
-  //GB_CONSTANT("None", "i", TYPE_NONE),
-  //GB_CONSTANT("Bitmap", "i", TYPE_PIXMAP),
-  //GB_CONSTANT("Pixmap", "i", TYPE_PIXMAP),
-  //GB_CONSTANT("Vector", "i", TYPE_PICTURE),
-  //GB_CONSTANT("Metafile", "i", TYPE_PICTURE),
-  //GB_CONSTANT("Image", "i", TYPE_IMAGE),
-
-  GB_METHOD("_new", NULL, CIMAGE_new, "[(Width)i(Height)i(Transparent)b]"),
-  GB_METHOD("_free", NULL, CIMAGE_free, NULL),
-
-  GB_METHOD("_get", "i", CIMAGE_pixels_get, "(X)i(Y)i"),
-  GB_METHOD("_put", NULL, CIMAGE_pixels_put, "(Color)i(X)i(Y)i"),
-
-  //GB_STATIC_METHOD("_get", "Picture", CPICTURE_get, "(Path)s"),
-  //GB_STATIC_METHOD("_put", NULL, CPICTURE_put, "(Picture)Picture;(Path)s"),
-  //GB_STATIC_METHOD("Flush", NULL, CPICTURE_flush, NULL),
-
-  //GB_PROPERTY("Type", "i<Picture,None,Pixmap,Image,Metafile>", CPICTURE_type),
-
-  GB_PROPERTY_READ("W", "i", CIMAGE_width),
-  GB_PROPERTY_READ("Width", "i", CIMAGE_width),
-  GB_PROPERTY_READ("H", "i", CIMAGE_height),
-  GB_PROPERTY_READ("Height", "i", CIMAGE_height),
-  GB_PROPERTY_READ("Depth", "i", CIMAGE_depth),
-  GB_PROPERTY("Transparent", "b", CIMAGE_transparent),
-
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
   GB_METHOD("Save", NULL, CIMAGE_save, "(Path)s[(Quality)i]"),
   GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
 
-  GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
-  GB_METHOD("Fill", NULL, CIMAGE_fill, "(Color)i"),
-  GB_METHOD("Replace", NULL, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
-  GB_METHOD("MakeGray", NULL, CIMAGE_make_gray, NULL),
   GB_METHOD("MakeTransparent", NULL, CIMAGE_make_transparent, "[(Color)i]"),
-  //GB_METHOD("Mask", NULL, CPICTURE_mask, "[(Color)i]"),
 
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   GB_METHOD("Stretch", "Image", CIMAGE_stretch, "(Width)i(Height)i[(Smooth)b]"),
@@ -741,11 +482,6 @@ GB_DESC CImageDesc[] =
   GB_METHOD("Draw", NULL, CIMAGE_draw, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(SrcX)i(SrcY)i(SrcWidth)i(SrcHeight)i]"),
 
   GB_PROPERTY_READ("Picture", "Picture", CIMAGE_picture),
-
-  GB_PROPERTY_READ("Data", "p", CIMAGE_data),
-
-  //GB_PROPERTY_SELF("Pixels", ".ImagePixels"),
-  //GB_PROPERTY_SELF("Colors", ".PictureColors"),
 
   GB_END_DECLARE
 };

@@ -33,6 +33,7 @@
 
 #include "CWidget.h"
 #include "CClipboard.h"
+#include "CImage.h"
 #include "CPicture.h"
 
 /***************************************************************************
@@ -167,7 +168,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 			goto _BAD_FORMAT;
 		
 		img = (CIMAGE *)VARG(data)._object.value;
-		gClipboard::setImage(img->picture);
+		gClipboard::setImage(CIMAGE_get(img));
 		return;
 	}
 
@@ -267,7 +268,7 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, char *format)
     if (format && *format)
       goto _BAD_FORMAT;
 
-		gDrag::dragImage(source->widget, ((CIMAGE *)data->_object.value)->picture);
+		gDrag::dragImage(source->widget, CIMAGE_get((CIMAGE *)data->_object.value));
   }
   else
     goto _BAD_FORMAT;

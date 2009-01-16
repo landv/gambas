@@ -116,7 +116,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CSVG_image)
 
-	GB_IMAGE ret=NULL;
+	GB_IMG *image;
 	GdkPixbuf *buf;
 	int w,h;
 	unsigned char *p;
@@ -133,19 +133,24 @@ BEGIN_PROPERTY(CSVG_image)
 	switch(gdk_pixbuf_get_n_channels(buf))
 	{
 		case 3:
-			GB.Image.Create(&ret,(void*)p,w,h,GB_IMAGE_RGB);
+			//GB.Image.Create(&ret,(void*)p,w,h,GB_IMAGE_RGB);
+			image = IMAGE.Create(w, h, GB_IMAGE_RGB, p);
 			break;
 		case 4:
-			GB.Image.Create(&ret,(void*)p,w,h,GB_IMAGE_RGBA);
+			//GB.Image.Create(&ret,(void*)p,w,h,GB_IMAGE_RGBA);
+			image = IMAGE.Create(w, h, GB_IMAGE_RGBA, p);
 			break;
+			
+		default:
+			image = NULL;
 	}
 
 	g_object_unref(G_OBJECT(buf));
-	GB.ReturnObject((void*)ret);
-
-
+	GB.ReturnObject(image);
+	
 END_PROPERTY
 
+#if 0
 BEGIN_PROPERTY(CSVG_picture)
 
 	GB_PICTURE ret=NULL;
@@ -175,8 +180,8 @@ BEGIN_PROPERTY(CSVG_picture)
 	g_object_unref(G_OBJECT(buf));
 	GB.ReturnObject((void*)ret);
 
-
 END_PROPERTY
+#endif
 
 BEGIN_PROPERTY(CSVG_width)
 
@@ -223,7 +228,6 @@ GB_DESC CSVGDesc[] =
   GB_PROPERTY_READ("Width","i",CSVG_width),
   GB_PROPERTY_READ("Height","i",CSVG_height),
   GB_PROPERTY_READ("Image","Image",CSVG_image),
-  GB_PROPERTY_READ("Picture","Picture",CSVG_picture),
 
   GB_PROPERTY("DPI","f",CSVG_dpi),
 

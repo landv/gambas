@@ -188,39 +188,19 @@ END_METHOD
 
 BEGIN_METHOD(GLTEXIMAGE1D, GB_OBJECT Image; GB_INTEGER Level; GB_INTEGER Border)
 
-	GB_IMAGE *image = VARG(Image);
-	GB_IMAGE_INFO info;
-	GLint format = 0;
+	GB_IMG *image = VARG(Image);
 
-	GB.Image.Info(image, &info);
-
-	if ((info.format == GB_IMAGE_RGBA) || (info.format == GB_IMAGE_RGBX))
-		format = GL_RGBA;
-
-	if ((info.format == GB_IMAGE_BGRA) || (info.format == GB_IMAGE_BGRX))
-		format = GL_BGRA;
-
-	glTexImage1D(GL_TEXTURE_1D, VARGOPT(Level, 0), 4, info.width,  VARGOPT(Border, 0),
-		format, GL_UNSIGNED_BYTE, info.data);
+	glTexImage1D(GL_TEXTURE_1D, VARGOPT(Level, 0), 4, image->width,  VARGOPT(Border, 0),
+		IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
 
 BEGIN_METHOD(GLTEXIMAGE2D, GB_OBJECT Image; GB_INTEGER Level; GB_INTEGER Border)
 
-	GB_IMAGE *image = VARG(Image);
-	GB_IMAGE_INFO info;
-	GLint format = 0;
+	GB_IMG *image = VARG(Image);
 
-	GB.Image.Info(image, &info);
-
-	if ((info.format == GB_IMAGE_RGBA) || (info.format == GB_IMAGE_RGBX))
-		format = GL_RGBA;
-
-	if ((info.format == GB_IMAGE_BGRA) || (info.format == GB_IMAGE_BGRX))
-		format = GL_BGRA;
-
-	glTexImage2D(GL_TEXTURE_2D, VARGOPT(Level, 0), 3, info.width, info.height,
-		 VARGOPT(Border, 0), format, GL_UNSIGNED_BYTE, info.data);
+	glTexImage2D(GL_TEXTURE_2D, VARGOPT(Level, 0), 3, image->width, image->height,
+		 VARGOPT(Border, 0), IMAGE_get_pixel_format(image), GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
 

@@ -27,52 +27,73 @@
 
 #include "Cimage.h"
 
-static void create(CIMAGE **pimage)
+static void free_image(GB_IMG *img, void *image)
 {
+	delete (SDLsurface *)image;
+}
+
+static GB_IMG_OWNER _image_owner = {
+	"gb.sdl",
+	free_image,
+	free_image
+	};
+
+SDLsurface *CIMAGE_get(CIMAGE *_object)
+{
+	SDLsurface *image;
+	
+	if (IMAGE.Check(THIS_IMAGE, &_image_owner))
+	{
+		if (!THIS_IMAGE->data)
+		{
+			image = new SDLsurface();
+		}
+		else
+		{
+			IMAGE.Convert(THIS_IMAGE, GB_IMAGE_RGBA);
+			image = new SDLsurface((char *)THIS_IMAGE->data, THIS_IMAGE->width, THIS_IMAGE->height);
+		}
+		image->SetAlphaBuffer(true);
+		
+		THIS_IMAGE->temp_handle = image;
+	}
+	
+	return IMAGEID;
+}
+
+#define check_image CIMAGE_get
+
+static void take_image(CIMAGE *_object, SDLsurface *image)
+{
+	IMAGE.Take(THIS_IMAGE, &_image_owner, image, image->width(), image->height(), image->data());
+}
+
+CIMAGE *CIMAGE_create(SDLsurface *image)
+{
+	CIMAGE *img;
   static GB_CLASS class_id = NULL;
 
   if (!class_id)
     class_id = GB.FindClass("Image");
 
-  GB.New((void **)pimage, class_id, NULL, NULL);
+  GB.New(POINTER(&img), class_id, NULL, NULL);
+  
+  if (image)
+  	take_image(img, image);
+	else
+  	take_image(img, new SDLsurface());
+	
+  return img;
 }
 
+
 /***************************************************************************/
-
-BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
-
-	int w,h;
-	IMAGEID = new SDLsurface();
-
-	if (!MISSING(w) && !MISSING(h))
-	{
-		w = VARG(w);
-		h = VARG(h);
-		if (h <= 0 || w <= 0)
-		{
-			SDLerror::RaiseError("Bad dimension");
-			return;
-		}
-
-		IMAGEID->Create(w, h, 32);
-		IMAGEID->SetAlphaBuffer(VARGOPT(trans, false));
-	}
-
-END_METHOD
-
-BEGIN_METHOD_VOID(CIMAGE_free)
-
-	delete IMAGEID;
-	IMAGEID = NULL;
-
-END_METHOD
 
 BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
 	char *addr;
 	int len;
 	SDLsurface *mySurface = new SDLsurface();
-	CIMAGE *image;
 
 	if (!(GB.LoadFile(STRING(path), LENGTH(path), &addr, &len)))
 	{
@@ -81,13 +102,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		if (mySurface->GetDepth() != 32)
 			mySurface->ConvertDepth(32);
 
-		create (&image);
-
-		if (image->id)
-			delete image->id;
-
-		image->id = mySurface;
-		GB.ReturnObject(image);
+		GB.ReturnObject(CIMAGE_create(mySurface));
 
 		GB.ReleaseFile(addr, len);
 	}
@@ -96,41 +111,14 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CIMAGE_clear)
-
-	IMAGEID->Fill();
-
-END_METHOD
-
-BEGIN_METHOD(CIMAGE_fill, GB_INTEGER color)
-
-	IMAGEID->Fill(VARG(color));
-
-END_METHOD
-
 BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
 
+	check_image(THIS);
+	take_image(THIS, IMAGEID);
 	IMAGEID->Resize(VARG(width), VARG(height));
 
 END_METHOD
 
-BEGIN_PROPERTY(CIMAGE_width)
-
-	GB.ReturnInteger(IMAGEID->GetWidth());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CIMAGE_height)
-
-	GB.ReturnInteger(IMAGEID->GetHeight());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CIMAGE_depth)
-
-	GB.ReturnInteger(IMAGEID->GetDepth());
-
-END_PROPERTY
 
 /***************************************************************************/
 
@@ -138,18 +126,9 @@ GB_DESC CImage[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
 
-  GB_METHOD("_new", NULL, CIMAGE_new, "[(Width)i(Height)i(Transparent)b]"),
-  GB_METHOD("_free", NULL, CIMAGE_free, NULL),
-
   GB_STATIC_METHOD("Load", "Image", CIMAGE_load, "(Path)s"),
 
-  GB_METHOD("Clear", NULL, CIMAGE_clear, NULL),
-  GB_METHOD("Fill", NULL, CIMAGE_fill, "(Color)i"),
   GB_METHOD("Resize", NULL, CIMAGE_resize, "(Width)i(Height)i"),
-
-  GB_PROPERTY_READ("Width", "i", CIMAGE_width),
-  GB_PROPERTY_READ("Height", "i", CIMAGE_height),
-  GB_PROPERTY_READ("Depth", "i", CIMAGE_depth),
 
   GB_END_DECLARE
 };

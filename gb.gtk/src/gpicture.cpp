@@ -328,6 +328,18 @@ gPicture *gPicture::fromMemory(char *addr, unsigned int len)
 		return new gPicture(img);
 }
 
+gPicture *gPicture::fromData(const char *data, int width, int height)
+{
+	GdkPixbuf *pixbuf;
+	
+	if (width <= 0 || height <= 0)
+		return new gPicture();
+	else
+	{
+		pixbuf = gdk_pixbuf_new_from_data((const guchar *)data, GDK_COLORSPACE_RGB, TRUE, 8, width, height, width * sizeof(int), NULL, NULL);
+		return new gPicture(pixbuf);
+	}
+}
 
 int gPicture::depth()
 {

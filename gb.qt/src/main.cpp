@@ -53,6 +53,7 @@
   #include <qeventloop.h>
 #endif
 
+#include "gb.image.h"
 #include "gb.qt.h"
 #include "gb.form.font.h"
 
@@ -110,6 +111,7 @@
 extern "C" {
 
 GB_INTERFACE GB EXPORT;
+IMAGE_INTERFACE IMAGE EXPORT;
 
 }
 
@@ -669,6 +671,7 @@ static void hook_error(int code, char *error, char *where)
 }
 
 
+#if 0
 static int hook_image(CIMAGE **pimage, GB_IMAGE_INFO *info) //void **pdata, int width, int height, int format)
 {
 	CIMAGE *image = *pimage;
@@ -733,6 +736,7 @@ static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info)
 
 	return 0;
 }
+#endif
 
 static void QT_InitWidget(QWidget *widget, void *object)
 {
@@ -797,7 +801,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   CBorderDesc, CColorDesc, CColorInfoDesc,
   CAlignDesc, CArrangeDesc, CScrollDesc, CKeyDesc, CLineDesc, CFillDesc, CSelectDesc,
   CMessageDesc,
-  CPictureDesc, CImageDesc,
+  CImageDesc, CPictureDesc,
   CFontDesc, CFontsDesc,
   CMouseDesc, CCursorDesc,
   CClipboardDesc, CDragDesc,
@@ -847,6 +851,7 @@ void *GB_QT_1[] EXPORT = {
   (void *)QT_CreateFont,
   (void *)QT_MimeSourceFactory,
   (void *)QT_GetPixmap,
+  (void *)CIMAGE_get,
   (void *)QT_ToUTF8,
   (void *)QT_EventFilter,
   (void *)QT_Notify,
@@ -887,10 +892,11 @@ int EXPORT GB_INIT(void)
   GB.Hook(GB_HOOK_QUIT, (void *)hook_quit);
   GB.Hook(GB_HOOK_ERROR, (void *)hook_error);
   GB.Hook(GB_HOOK_LANG, (void *)hook_lang);
-  GB.Hook(GB_HOOK_IMAGE, (void *)hook_image);
-  GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
+  //GB.Hook(GB_HOOK_IMAGE, (void *)hook_image);
+  //GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
 
 	GB.LoadComponent("gb.draw");
+  GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 	DRAW_init();
   
   CLASS_Control = GB.FindClass("Control");

@@ -30,11 +30,11 @@
 #include <qimage.h>
 
 #include "gambas.h"
+#include "gb.image.h"
 
 typedef
   struct {
-    GB_BASE ob;
-    QImage *image;
+    GB_IMG img;
     }
   CIMAGE;
 
@@ -45,9 +45,14 @@ extern GB_DESC CImageDesc[];
 #else
 
 #define THIS OBJECT(CIMAGE)
+#define THIS_IMAGE (&THIS->img)
+#define QIMAGE ((QImage *)THIS_IMAGE->temp_handle)
+#define GET_QIMAGE(_image) ((QImage *)(_image->img.temp_handle))
 
 #endif
 
 const char *CIMAGE_get_format(QString path);
+CIMAGE *CIMAGE_create(QImage *image);
+QImage *CIMAGE_get(CIMAGE *);
 
 #endif

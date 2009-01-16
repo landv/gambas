@@ -24,11 +24,13 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb.image.h"
 #include "gb.draw.h"
 #include "gb_common.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+extern IMAGE_INTERFACE IMAGE;
 #endif
 
 #endif /* __MAIN_H */

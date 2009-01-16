@@ -26,6 +26,7 @@
 #define __MAIN_H
 
 #include "gambas.h"
+#include "gb.image.h"
 
 #include <qobject.h>
 #include <qevent.h>
@@ -36,6 +37,7 @@
 
 #ifndef __MAIN_CPP
 extern "C" GB_INTERFACE GB;
+extern "C" IMAGE_INTERFACE IMAGE;
 extern int MAIN_in_wait;
 extern int MAIN_loop_level;
 extern int MAIN_scale;

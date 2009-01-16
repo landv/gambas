@@ -26,6 +26,14 @@
 #include "main.h"
 
 typedef
+	struct {
+		char *addr;
+		int len;
+		int pos;
+		}
+	IMAGE_STREAM;
+
+typedef
 	enum
 	{
 		IMAGE_FILETYPE_ERROR = -1,
@@ -60,7 +68,7 @@ typedef
 	}
 	IMAGE_INFO;
 
-#ifndef __IMAGE_C
+#ifndef __IMAGE_STAT_C
 extern const char *IMAGE_error;
 #endif
 

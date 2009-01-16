@@ -48,6 +48,7 @@ CMOUSE_INFO CMOUSE_info = { 0 };
 BEGIN_METHOD(CURSOR_new, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y)
 
 	CIMAGE *img = (CIMAGE *)VARG(image);
+	SDLsurface *surface = CIMAGE_get(img);
 
 	THIS->x = VARGOPT(x, -1);
 	THIS->y = VARGOPT(y, -1);
@@ -55,14 +56,14 @@ BEGIN_METHOD(CURSOR_new, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y)
 	if (GB.CheckObject(img))
 		return;
 
-	if (THIS->x < 0 || THIS->x >= img->id->GetWidth())
+	if (THIS->x < 0 || THIS->x >= surface->GetWidth())
 		THIS->x = -1;
 
-	if (THIS->y < 0 || THIS->y >= img->id->GetHeight())
+	if (THIS->y < 0 || THIS->y >= surface->GetHeight())
 		THIS->y = -1;
 
 	THIS->cursor = new SDLcursor();
-	THIS->cursor->SetCursor(img->id, THIS->x, THIS->y);
+	THIS->cursor->SetCursor(surface, THIS->x, THIS->y);
 
 END_METHOD
 

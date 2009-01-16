@@ -339,14 +339,16 @@ END_METHOD
 
 BEGIN_PROPERTY(CPICTURE_image)
 
-  CIMAGE *img;
-
-  GB.New(POINTER(&img), GB.FindClass("Image"), NULL, NULL);
-  *(img->image) = THIS->pixmap->convertToImage();
-  if (!img->image->isNull())
-  	img->image->convertDepth(32);
-
-  GB.ReturnObject(img);
+	QImage *image = new QImage();
+  
+  *image = THIS->pixmap->convertToImage();
+  if (!image->isNull())
+  {
+  	image->convertDepth(32);
+	  image->setAlphaBuffer(true);
+	}
+	
+  GB.ReturnObject(CIMAGE_create(image));
 
 END_PROPERTY
 

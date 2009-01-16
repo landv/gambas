@@ -104,7 +104,6 @@ static void get_formats(const QMimeData *src, GB_ARRAY array)
 
 static void paste(const QMimeData *data, const char *fmt)
 {
-  CIMAGE *img;
   QString format = fmt;
 
 	if (!data->hasFormat(format))
@@ -120,10 +119,12 @@ static void paste(const QMimeData *data, const char *fmt)
 			break;
 		
 		case 2:
-			GB.New(POINTER(&img), GB.FindClass("Image"), 0, 0);
-			*img->image = qvariant_cast<QImage>(data->imageData());
-			img->image->convertToFormat(QImage::Format_ARGB32);
-			GB.ReturnObject(img);
+			{
+				QImage *image = new QImage();
+				*image = qvariant_cast<QImage>(data->imageData());
+				image->convertToFormat(QImage::Format_ARGB32);
+				GB.ReturnObject(CIMAGE_create(image));
+			}
 			break;
 		
 		default:
@@ -207,7 +208,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 
     img = (CIMAGE *)VARG(data)._object.value;
 
-    QApplication::clipboard()->setImage(*(img->image));
+    QApplication::clipboard()->setImage(*CIMAGE_get(img));
   }
   else
     goto _BAD_FORMAT;
@@ -398,7 +399,7 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 
     img = (CIMAGE *)data->_object.value;
 
-		mimeData->setImageData(*(img->image));
+		mimeData->setImageData(*CIMAGE_get(img));
   }
   else
     goto _BAD_FORMAT;
