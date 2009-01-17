@@ -16,4 +16,8 @@ gb_image_la_SOURCES = \
  gb.image.h \
  main.h main.c
 
+image.lo: image.c
+	$(LTCOMPILE) -O3 $(CFLAGS) -MT image.o -MD -MP -MF $(DEPDIR)/image.Tpo -c -o image.o image.c
+	mv -f $(DEPDIR)/image.Tpo $(DEPDIR)/image.Po
+
 

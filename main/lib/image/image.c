@@ -77,6 +77,24 @@ static GB_COLOR to_GB_COLOR(uint col, int format)
 	return col ^ 0xFF000000;
 }
 
+static inline uint BGRA_to_format(uint col, int format)
+{
+	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(format))
+		col = PREMUL(col);
+	if (GB_IMAGE_FMT_IS_SWAPPED(format))
+		col = SWAP(col);
+	return col;
+}
+
+static inline uint BGRA_from_format(uint col, int format)
+{
+	if (GB_IMAGE_FMT_IS_SWAPPED(format))
+		col = SWAP(col);
+	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(format))
+		col = INV_PREMUL(col);
+	return col;
+}
+
 static inline bool is_valid(GB_IMG *img, int x, int y)
 {
 	return !(x >= img->width || y >= img->height || x < 0 || y < 0);
@@ -259,8 +277,6 @@ int IMAGE_size(GB_IMG *img)
 
 void IMAGE_create(GB_IMG *img, int width, int height, int format)
 {
-	int size;
-	
 	if (width <= 0 || height <= 0)
 	{
 		GB_BASE save = img->ob;
@@ -403,10 +419,6 @@ void IMAGE_make_gray(GB_IMG *img)
 	}
 }
 
-void IMAGE_make_transparent(GB_IMG *img, GB_COLOR color)
-{
-}
-
 GB_COLOR IMAGE_get_pixel(GB_IMG *img, int x, int y)
 {
 	uint col;
@@ -454,4 +466,113 @@ void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq)
 		}
 	}
 }
+
+// Comes from the GIMP
+
+typedef
+	struct {
+		float r;
+		float b;
+		float g;
+		float a;
+		}
+	FLOAT_RGB;
+
+static void color_to_alpha(FLOAT_RGB *src, const FLOAT_RGB *color)
+{
+  FLOAT_RGB alpha;
+
+  alpha.a = src->a;
+
+  if (color->r < 0.0001)
+    alpha.r = src->r;
+  else if (src->r > color->r)
+    alpha.r = (src->r - color->r) / (1.0 - color->r);
+  else if (src->r < color->r)
+    alpha.r = (color->r - src->r) / color->r;
+  else alpha.r = 0.0;
+
+  if (color->g < 0.0001)
+    alpha.g = src->g;
+  else if (src->g > color->g)
+    alpha.g = (src->g - color->g) / (1.0 - color->g);
+  else if (src->g < color->g)
+    alpha.g = (color->g - src->g) / (color->g);
+  else alpha.g = 0.0;
+
+  if (color->b < 0.0001)
+    alpha.b = src->b;
+  else if (src->b > color->b)
+    alpha.b = (src->b - color->b) / (1.0 - color->b);
+  else if (src->b < color->b)
+    alpha.b = (color->b - src->b) / (color->b);
+  else alpha.b = 0.0;
+
+  if (alpha.r > alpha.g)
+    {
+      if (alpha.r > alpha.b)
+        {
+          src->a = alpha.r;
+        }
+      else
+        {
+          src->a = alpha.b;
+        }
+    }
+  else if (alpha.g > alpha.b)
+    {
+      src->a = alpha.g;
+    }
+  else
+    {
+      src->a = alpha.b;
+    }
+
+  if (src->a < 0.0001)
+    return;
+
+  src->r = (src->r - color->r) / src->a + color->r;
+  src->g = (src->g - color->g) / src->a + color->g;
+  src->b = (src->b - color->b) / src->a + color->b;
+
+  src->a *= alpha.a;
+}
+
+void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
+{
+	uint *p = (uint *)img->data;
+	uint *pm = (uint *)(img->data + IMAGE_size(img));
+	uint color;
+	FLOAT_RGB rgb_color;
+	FLOAT_RGB rgb_src;
+
+	color = from_GB_COLOR(col, img->format);
+	rgb_color.b = BLUE(color) / 255.0;
+	rgb_color.g = GREEN(color) / 255.0;
+	rgb_color.r = RED(color) / 255.0;
+	rgb_color.a = 1.0;
+
+	while (p != pm) 
+	{
+		color = BGRA_from_format(*p, img->format);
+		rgb_src.b = BLUE(color) / 255.0;
+		rgb_src.g = GREEN(color) / 255.0;
+		rgb_src.r = RED(color) / 255.0;
+		rgb_src.a = ALPHA(color) / 255.0;
+		
+		color_to_alpha(&rgb_src, &rgb_color);
+	
+		color = RGBA(
+			(unsigned char)(255.0 * rgb_src.r + 0.5),
+			(unsigned char)(255.0 * rgb_src.g + 0.5),
+			(unsigned char)(255.0 * rgb_src.b + 0.5),
+			(unsigned char)(255.0 * rgb_src.a + 0.5)
+			);
+	
+		*p = BGRA_to_format(color, img->format);
+		p++;
+	}
+}
+
+
 
