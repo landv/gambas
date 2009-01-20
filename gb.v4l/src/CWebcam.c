@@ -88,6 +88,8 @@ GB_STREAM_DESC VideoStream = {
 	handle: Video_stream_handle
 };
 
+extern 	int gv4l2_debug_mode; // ++
+
 /***********************************************************************************
 
  Camera setup
@@ -143,8 +145,12 @@ int	vd_get_capabilities(video_device_t *vd)
 }
 
 
-int	vd_setup_capture_mode(video_device_t *vd)
+// -- int	vd_setup_capture_mode(video_device_t *vd)
+
+int	vd_setup_capture_mode(CWEBCAM * _object) // ++
 {
+	video_device_t *vd = DEVICE;
+
 	if (!vd_get_capabilities(vd)) return 0;
 
 	// See if we can use mmap (to avoid copying data around)
@@ -174,7 +180,9 @@ int	vd_setup_capture_mode(video_device_t *vd)
 		}
 
 		if (vd->frame_buffer) GB.Free(POINTER(&vd->frame_buffer));
-		GB.Alloc (POINTER(&vd->frame_buffer),vd->buffer_size);
+		if (THIS->frame)      GB.Free(POINTER(&THIS->frame)); // ++
+		GB.Alloc(POINTER(&vd->frame_buffer),vd->buffer_size);
+		GB.Alloc(POINTER(&THIS->frame),vd->height * vd->width * 4); // ++
 		return 1;
 	}
 
@@ -190,6 +198,12 @@ int	vd_setup_capture_mode(video_device_t *vd)
 	vd->vmmap.frame = 0;				// Start at frame 0
 	vd->vmmap.width = vd->width;
 	vd->vmmap.height = vd->height;
+
+	if (THIS->frame)      GB.Free(POINTER(&THIS->frame)); // ++
+	GB.Alloc(&THIS->frame, vd->height * vd->width * 4); // ++
+
+        ioctl(vd->dev, VIDIOCGPICT, &vd->videopict); //++ Recover camera palette
+        vd->vmmap.format = vd->videopict.palette;    //++ Save for future ref
 	return 1;
 }
 
@@ -224,7 +238,7 @@ void put_image_jpeg (char *image, int width, int height, int quality, int frame,
 	struct jpeg_error_mgr jerr;
 	char *line;
 
-	line = malloc (width * 3);
+	GB.Alloc( POINTER(&line) ,width * 3);
 	if (!line)
 		return;
 	cjpeg.err = jpeg_std_error(&jerr);
@@ -254,7 +268,7 @@ void put_image_jpeg (char *image, int width, int height, int quality, int frame,
 	}
 	jpeg_finish_compress (&cjpeg);
 	jpeg_destroy_compress (&cjpeg);
-	free (line);
+	GB.Free( POINTER(&line) );
 
 }
 
@@ -358,33 +372,39 @@ void put_image_ppm (char *image, int width, int height, int binary, int frame,FI
 
 
 
-unsigned char *	vd_get_image(video_device_t *vd)
+//unsigned char *	vd_get_image(video_device_t *vd)
+
+unsigned char *	vd_get_image(CWEBCAM * _object)
 {
 	int	len;
+	video_device_t *vd;
+
+	vd = DEVICE;
 
 	if (vd->use_mmap) {
-
 		if (!vd->capturing) {
 
 			int i;
 			// Queue requests to capture successive frames
 			for (i = 0; i < vd->vmbuf.frames; ++i) {
 				vd->vmmap.frame = i;
-				if (vd_ioctl(vd, VIDIOCMCAPTURE, &vd->vmmap)) return 0;
+				if(vd_ioctl(vd, VIDIOCMCAPTURE, &vd->vmmap))
+					return 0;
 			}
-
 			// And start reading from zero
 			vd->vmmap.frame = 0;
-
 			vd->capturing = 1;
 		}
-
 		// VIDIOCSYNC causes the driver to block until the specified
 		// frame is completely received
 		if (ioctl(vd->dev, VIDIOCSYNC, &vd->vmmap.frame)) return 0;
+		gv4l1_process_image (THIS,vd->frame_buffer + vd->vmbuf.offsets[vd->vmmap.frame]);
+
+		//vd_post_process(vd,vd->frame_buffer + vd->vmbuf.offsets[vd->vmmap.frame]);
+		return THIS->frame;
 
 		// Return the buffer, cause it should contain an image
-		return vd->frame_buffer + vd->vmbuf.offsets[vd->vmmap.frame];
+		//return vd->frame_buffer + vd->vmbuf.offsets[vd->vmmap.frame];
 	}
 
 	// Otherwise, we have to read the right number of bytes
@@ -426,7 +446,8 @@ int fill_buffer(void *_object)
 	char *buf;
 	int w,h;
 
-	buf=(char*)vd_get_image(DEVICE);
+	// -- buf=(char*)vd_get_image(DEVICE);
+	buf=(char*)vd_get_image(THIS); // ++
 	if (!buf) return -1;
 	w=DEVICE->vmmap.width;
 	h=DEVICE->vmmap.height;
@@ -545,108 +566,287 @@ int Video_stream_handle(GB_STREAM *stream)
 ************************************************************************************/
 int CWEBCAM_check(void *_object)
 {
-	if (!DEVICE) return TRUE;
+	//if((!DEVICE)&&(!THIS->is_v4l2)) return TRUE;
+	if(!THIS->device) return TRUE;	// ++ V4L2
   	return FALSE;
 }
 
-BEGIN_PROPERTY(CWEBCAM_bright)
+BEGIN_PROPERTY(CWEBCAM_contrast)
 
-	vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(DEVICE->videopict.brightness);
+	if( !THIS->is_v4l2 ) {
+
+		vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
+		if (READ_PROPERTY)
+		{
+			GB.ReturnInteger(DEVICE->videopict.contrast);
+			return;
+		}
+
+		DEVICE->videopict.contrast=VPROP(GB_INTEGER);
+		vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
 		return;
 	}
-
-	DEVICE->videopict.brightness=VPROP(GB_INTEGER);
-	vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gv4l2_contrast(THIS,-1));
+	else	gv4l2_contrast(THIS,VPROP(GB_INTEGER));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CWEBCAM_contrast)
+BEGIN_PROPERTY(CWEBCAM_contrast_max)
 
-	vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(DEVICE->videopict.contrast);
-		return;
-	}
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->contrast_max);
 
-	DEVICE->videopict.contrast=VPROP(GB_INTEGER);
-	vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_contrast_min)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->contrast_min);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CWEBCAM_colour)
 
-	vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(DEVICE->videopict.colour);
+	if( !THIS->is_v4l2 ) {
+
+		vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
+		if (READ_PROPERTY)
+		{
+			GB.ReturnInteger(DEVICE->videopict.colour);
+			return;
+		}
+	
+		DEVICE->videopict.colour=VPROP(GB_INTEGER);
+		vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
 		return;
 	}
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gv4l2_color(THIS,-1));
+	else	gv4l2_color(THIS,VPROP(GB_INTEGER));
 
-	DEVICE->videopict.colour=VPROP(GB_INTEGER);
-	vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_color_max)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->color_max);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_color_min)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->color_min);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CWEBCAM_whiteness)
 
-	vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(DEVICE->videopict.whiteness>>8);
+	if( !THIS->is_v4l2 ) {
+
+		vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
+		if (READ_PROPERTY)
+		{
+			GB.ReturnInteger(DEVICE->videopict.whiteness>>8);
+			return;
+		}
+	
+		DEVICE->videopict.whiteness=VPROP(GB_INTEGER);
+		vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
 		return;
 	}
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gv4l2_whiteness(THIS,-1));
+	else	gv4l2_whiteness(THIS,VPROP(GB_INTEGER));
 
-	DEVICE->videopict.whiteness=VPROP(GB_INTEGER);
-	vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_whiteness_max)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->whiteness_max);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_whiteness_min)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->whiteness_min);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CWEBCAM_hue)
 
-	vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger(DEVICE->videopict.hue>>8);
+	if( !THIS->is_v4l2 ) {
+
+	        vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
+	        if (READ_PROPERTY)
+	        {
+	                GB.ReturnInteger(DEVICE->videopict.hue>>8);
+	                return;
+	        }
+	
+	        DEVICE->videopict.hue=VPROP(GB_INTEGER);
+	        vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
 		return;
 	}
-
-	DEVICE->videopict.hue=VPROP(GB_INTEGER);
-	vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gv4l2_hue(THIS,-1));
+	else	gv4l2_hue(THIS,VPROP(GB_INTEGER));
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CWEBCAM_hue_max)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->hue_max);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_hue_min)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->hue_min);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_bright)
+
+	if( !THIS->is_v4l2 ) {
+
+		vd_ioctl (DEVICE, VIDIOCGPICT, &DEVICE->videopict);
+		if (READ_PROPERTY)
+		{
+			GB.ReturnInteger(DEVICE->videopict.brightness);
+			return;
+		}
+	
+		DEVICE->videopict.brightness=VPROP(GB_INTEGER);
+		vd_ioctl (DEVICE, VIDIOCSPICT, &DEVICE->videopict);
+		return;
+	}
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gv4l2_brightness(THIS,-1));
+	else	gv4l2_brightness(THIS,VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_bright_max)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->bright_max);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_bright_min)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65535);
+	else	GB.ReturnInteger(THIS->bright_min);
+
+END_PROPERTY
 
 BEGIN_PROPERTY(CWEBCAM_width)
 
-	GB.ReturnInteger(DEVICE->width);
+	if( THIS->is_v4l2 )	// ++
+		GB.ReturnInteger(THIS->fmt.fmt.pix.width);
+	else	GB.ReturnInteger(DEVICE->width);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CWEBCAM_height)
 
-	GB.ReturnInteger(DEVICE->height);
+	if( THIS->is_v4l2 )	// ++
+		GB.ReturnInteger(THIS->fmt.fmt.pix.height);
+	else	GB.ReturnInteger(DEVICE->height);
 
 END_PROPERTY
-
-BEGIN_METHOD (CWEBCAM_new,GB_STRING Device;)
+//
+//=============================================================================
+//
+//	_new( device name)
+//
+//	Default constructor
+//
+BEGIN_METHOD (CWEBCAM_new,GB_STRING Device; GB_INTEGER Compat;)
 
 	int mydev;
 	struct video_tuner vtuner;
 	VIDEO_STREAM *str;
 
-	mydev=open (GB.FileName(STRING(Device),LENGTH(Device)),O_RDWR);
-	if (mydev==-1)
-	{
+	// ++ V4L2
+	//
+	//	Open the device
+	//
+	mydev = gv4l2_open_device(STRING(Device));
+	if( mydev == -1) {
 		GB.Error("Unable to open device");
 		return;
 	}
+	THIS->io = mydev;
+
+	if(MISSING(Compat)) 
+		THIS->is_v4l2 = gv4l2_available( THIS );
+	else
+		switch( VARG(Compat) ) {
+			case gv4l2_V4L:	
+				THIS->is_v4l2 = 0;
+				break;
+			case gv4l2_V4L2:	
+				THIS->is_v4l2 = 1;
+				break;
+			default:
+				close(mydev);
+				GB.Error("Invalid compatibility flag");
+		}
+			
+
+	GB.Alloc(POINTER(&THIS->device),sizeof(char)*(LENGTH(Device)+1)); // ++
+	strcpy(THIS->device,STRING(Device));				  // ++
+
+	if( THIS->is_v4l2 ) {
+		//
+		gv4l2_debug("Device is V4L2!");
+		//
+		//	Initialise the device
+		//
+		if( !gv4l2_init_device(THIS,DEF_WIDTH,DEF_HEIGHT) ) {
+			close(mydev);
+			GB.Error("Unable to initialise the device");
+			return;
+		}
+		//
+		THIS->stream.desc=&VideoStream;
+		str=(VIDEO_STREAM*)POINTER(&THIS->stream);
+		str->handle=(void*)THIS;
+		//
+		gv4l2_start_capture(THIS);        
+		return;
+	}
+
+	gv4l2_debug("Device is V4L!");
+	// mydev=open (GB.FileName(STRING(Device),LENGTH(Device)),O_RDWR);
+	// if (mydev==-1)
+	// {
+	// 	GB.Error("Unable to open device");
+	//	return;
+	//}
+	// -- V4L2
+
 	DEVICE=vd_setup(DEF_WIDTH,DEF_HEIGHT,DEF_DEPTH,mydev);
 
-	if (!vd_setup_capture_mode(DEVICE))
+//--	if (!vd_setup_capture_mode(DEVICE))
+	if (!vd_setup_capture_mode(THIS)) // ++
 	{
 		close(mydev);
 		GB.Free(POINTER(&DEVICE));
@@ -655,8 +855,9 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device;)
 	}
 
 	vd_setup_video_source(DEVICE,IN_DEFAULT,NORM_DEFAULT);
-	GB.Alloc(POINTER(&THIS->device),sizeof(char)*(LENGTH(Device)+1));
-	strcpy(THIS->device,STRING(Device));
+
+	// -- GB.Alloc(POINTER(&THIS->device),sizeof(char)*(LENGTH(Device)+1));
+	// -- strcpy(THIS->device,STRING(Device));
 
 	if (vd_ioctl (DEVICE, VIDIOCGTUNER, &vtuner)) DEVICE->Freq2=1;
 
@@ -665,10 +866,29 @@ BEGIN_METHOD (CWEBCAM_new,GB_STRING Device;)
 	str->handle=(void*)THIS;
 
 END_METHOD
-
+//
+//=============================================================================
+//
+//	_free()
+//
+//	Default destructor
+//
 BEGIN_METHOD_VOID(CWEBCAM_free)
 
-	if (THIS->device) GB.Free(POINTER(&THIS->device));
+	// ++ V4L2
+	if (THIS->device) GB.Free(POINTER(&THIS->device));		// ++
+	if (THIS->frame)  GB.Free(POINTER(&THIS->frame));		// ++
+
+	if( THIS->is_v4l2 ) {
+		gv4l2_stop_capture( THIS );
+		gv4l2_uninit_device( THIS );
+		gv4l2_close_device( THIS->io );
+		return;
+	}
+	
+	// --if (THIS->device) GB.Free(POINTER(&THIS->device));
+	// -- V4L2
+
 	if (THIS->membuf) GB.Free(POINTER(&THIS->membuf));
 
 	if (DEVICE)
@@ -678,6 +898,9 @@ BEGIN_METHOD_VOID(CWEBCAM_free)
 	}
 
 END_METHOD
+//
+//=============================================================================
+//
 
 BEGIN_METHOD(CWEBCAM_size,GB_INTEGER Width; GB_INTEGER Height;)
 
@@ -688,6 +911,13 @@ BEGIN_METHOD(CWEBCAM_size,GB_INTEGER Width; GB_INTEGER Height;)
 	int norm;
 	int channel;
 	int colour,hue,whiteness,contrast,brightness;
+
+	// ++ V4L2
+	if( THIS->is_v4l2 ) {
+		gv4l2_resize( THIS , VARG(Width) , VARG(Height) );
+		return;
+	}
+	// -- V4L2
 
 	if (h<DEVICE->vcap.minheight) h=DEVICE->vcap.minheight;
 	if (h>DEVICE->vcap.maxheight) h=DEVICE->vcap.maxheight;
@@ -718,7 +948,8 @@ BEGIN_METHOD(CWEBCAM_size,GB_INTEGER Width; GB_INTEGER Height;)
 	}
 	DEVICE=vd_setup(w,h,DEF_DEPTH,mydev);
 
-	if (!vd_setup_capture_mode(DEVICE))
+//--	if (!vd_setup_capture_mode(DEVICE))
+	if (!vd_setup_capture_mode(THIS)) // ++
 	{
 		close(mydev);
 		GB.Free(POINTER(&DEVICE));
@@ -742,6 +973,11 @@ END_METHOD
 BEGIN_PROPERTY(CWEBCAM_source)
 
 	long Source=0,Norm=0;
+
+	if( THIS->is_v4l2 ) {
+		gv4l2_debug("'Source' not currently implemented for V4L2");
+		return;
+	}
 
 	if (READ_PROPERTY)
 	{
@@ -788,14 +1024,86 @@ BEGIN_PROPERTY(CWEBCAM_source)
 	vd_setup_video_source(DEVICE,Source,Norm);
 
 END_METHOD
+//
+//=============================================================================
+//
+//	CWEBCAM_debug()
+//
+BEGIN_PROPERTY(CWEBCAM_debug)
 
+	if (READ_PROPERTY)
+	{
+		GB.ReturnInteger( gv4l2_debug_mode );
+		return;
+	}
+	gv4l2_debug_mode = VPROP(GB_INTEGER);
+
+END_PROPERTY
+//
+//=============================================================================
+//
+//	cwebcam_image
+//
+//	Raw "get_image" routine that can be used elsewhere regardless of the
+//	version of V4L2 in play. Necessary refactoring I'm afraid ...
+//
+int cwebcam_image(CWEBCAM * _object)
+{
+	if( THIS->is_v4l2 ) {
+
+		if( !gv4l2_read_frame( THIS )) return 0;
+		THIS->w=THIS->fmt.fmt.pix.width;
+		THIS->h=THIS->fmt.fmt.pix.height;
+	}
+	else
+	{
+		if( !vd_get_image( THIS )) return 0;
+		THIS->w = DEVICE->vmmap.width;
+		THIS->h = DEVICE->vmmap.height;
+		vd_image_done(DEVICE);
+	}
+	return 1;
+}
+//
+//	CWEBCAM_image()
+//
+//	Hopefully you will agree, that not only is the raw _image routine
+//	required, but the resulting code is much nicer .. :)
+//
 BEGIN_PROPERTY(CWEBCAM_image)
 
-	GB_IMAGE ret=NULL;
+	if( !cwebcam_image(THIS) ) {
+		GB.Error("Unable to get image");
+		GB.ReturnNull();
+		return;
+	}
+	GB.ReturnObject(IMAGE.Create(THIS->w,THIS->h,GB_IMAGE_BGR,THIS->frame));
+/*
+	// Ok, this lot has been refactored, sorry
+	// Once I got to "save" it became more efficient ..
+
+	// -- GB_IMAGE ret=NULL;
 	unsigned char *buf;
 	int w, h;
 
-	buf = (unsigned char*)vd_get_image(DEVICE);
+	// ++ V4L2
+	if( THIS->is_v4l2 ) {
+
+		if( !gv4l2_read_frame( THIS ))
+		{
+			GB.Error("Unable to get image");
+			GB.ReturnNull();
+			return;
+		}
+		w=THIS->fmt.fmt.pix.width;
+		h=THIS->fmt.fmt.pix.height;
+		GB.ReturnObject(IMAGE.Create(w, h, GB_IMAGE_BGR, THIS->frame));
+		return;
+	}
+	// -- V4L2
+
+	// -- buf = (unsigned char*)vd_get_image(DEVICE);
+	buf = (unsigned char*)vd_get_image(THIS); // ++
 	if (!buf)
 	{
 		GB.Error("Unable to get image");
@@ -808,9 +1116,9 @@ BEGIN_PROPERTY(CWEBCAM_image)
 	vd_image_done(DEVICE);
 
 	GB.ReturnObject(IMAGE.Create(w, h, GB_IMAGE_BGR, buf));
+*/
 
 END_PROPERTY
-
 
 BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 
@@ -818,10 +1126,10 @@ BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 	char *ext=NULL;
 	long b;
 	FILE *fd;
-	char *buf;
+	// -- char *buf;
 	int format=2;
 	int quality=80;
-	int w,h;
+	// -- int w,h;
 
 	File=GB.FileName(STRING(File),LENGTH(File));
 
@@ -838,19 +1146,6 @@ BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 		if (quality>100) quality=100;
 	}
 
-	/*if (!MISSING(Format))
-	{
-		switch(VARG(Format))
-		{
-			case 1:
-			case 2:
-			case 3: format=VARG(Format); break;
-			default : GB.Error("Unknown format"); return;
-		}
-	}
-	else
-	{*/
-	
 	format = 0;
 	
 	for (b=strlen(File)-1;b>=0;b--)
@@ -866,10 +1161,9 @@ BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 	
 	if (!format)
 	{ 
-		GB.Error("Unknown format"); 
+		GB.Error("Unknown format (jpeg|jpg|png|ppm"); 
 		return; 
 	}
-
 
 	fd=fopen(File, "w");
 	if (!fd)
@@ -877,7 +1171,11 @@ BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 		GB.Error("Unable to open file for writting");
 		return;
 	}
-	buf=(char*)vd_get_image(DEVICE);
+
+/*	V4L2 Refactoring
+
+	// -- buf=(char*)vd_get_image(DEVICE);
+	buf=(char*)vd_get_image(THIS); // ++
 	if (!buf)
 	{
 		fclose(fd);
@@ -894,9 +1192,34 @@ BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 		case 2: put_image_png (buf,w,h,0,fd); break;
 		case 3: put_image_jpeg (buf,w,h,quality,0,fd); break;
 	}
+*/
+
+	//
+	//	V4L2 ++
+	//
+	if( !cwebcam_image(THIS) ) {	
+		fclose(fd);
+		GB.Error("Unable to get image");
+		return;
+	}
+	switch(format)
+	{
+		case 1: 
+			put_image_ppm (THIS->frame,THIS->w,THIS->h,quality,0,fd); 
+			break;
+		case 2: 
+			put_image_png (THIS->frame,THIS->w,THIS->h,0,fd); 
+			break;
+		case 3: 
+			put_image_jpeg(THIS->frame,THIS->w,THIS->h,quality,0,fd); 
+			break;
+	}
+	//
+	//	V4L2 --
+	//
 
 	fclose(fd);
-	vd_image_done(DEVICE);
+	// -- (Ooops!) vd_image_done(DEVICE);
 
 END_METHOD
 
@@ -922,20 +1245,25 @@ void return_array(char *array,long mmax)
 
 BEGIN_PROPERTY(CFEATURES_name)
 
-	return_array(DEVICE->vcap.name,32);
+	if( THIS->is_v4l2 ) 
+		GB.ReturnNewString(THIS->device,strlen(THIS->device));
+	else	return_array(DEVICE->vcap.name,32);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFEATURES_driver)
 
 	struct v4l2_capability vcap;
+	int dev;
 
-	if ( vd_ioctl(DEVICE,VIDIOC_QUERYCAP,&vcap)!=0 )
+	if( THIS->is_v4l2 ) 
+		dev = THIS->io;
+	else	dev = DEVICE->dev;
+	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
 	{
 		GB.ReturnNull();
 		return;
 	}
-
 	return_array((char*)vcap.driver,16);
 
 
@@ -945,7 +1273,13 @@ BEGIN_PROPERTY(CFEATURES_bus)
 
 	struct v4l2_capability vcap;
 
-	if ( vd_ioctl(DEVICE,VIDIOC_QUERYCAP,&vcap)!=0 )
+	int dev;
+
+	if( THIS->is_v4l2 ) 
+		dev = THIS->io;
+	else	dev = DEVICE->dev;
+
+	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
 	{
 		GB.ReturnNull();
 		return;
@@ -956,12 +1290,41 @@ BEGIN_PROPERTY(CFEATURES_bus)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CFEATURES_card)
+
+	struct v4l2_capability vcap;
+
+	int dev;
+
+	if( THIS->is_v4l2 ) {
+		return_array((char*)THIS->cap.card,32);		
+		return;
+	}
+	dev = DEVICE->dev;
+
+	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
+	{
+		GB.ReturnNull();
+		return;
+	}
+	return_array((char*)vcap.driver,16);
+
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(CFEATURES_version)
 
 	char arr[12];
 	struct v4l2_capability vcap;
 
-	if ( vd_ioctl(DEVICE,VIDIOC_QUERYCAP,&vcap)!=0 )
+	int dev;
+
+	if( THIS->is_v4l2 ) 
+		dev = THIS->io;
+	else	dev = DEVICE->dev;
+
+	if ( ioctl(dev,VIDIOC_QUERYCAP,&vcap)!=0 )
 	{
 		GB.ReturnNull();
 		return;
@@ -973,26 +1336,48 @@ BEGIN_PROPERTY(CFEATURES_version)
 
 END_PROPERTY
 
+
+
 BEGIN_PROPERTY(CFEATURES_maxWidth)
 
+	if( THIS->is_v4l2 ) {					// ++ V4L2
+		gv4l2_debug("maxWidth not implemented in V4l2");
+		GB.ReturnInteger(1024);
+		return;						// ++ V4L2
+	}
 	GB.ReturnInteger(DEVICE->vcap.maxwidth);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFEATURES_minWidth)
 
+	if( THIS->is_v4l2 ) {					// ++ V4L2
+		gv4l2_debug("minWidth not implemented in V4l2");
+		GB.ReturnInteger(0);
+		return;						// ++ V4L2
+	}
 	GB.ReturnInteger(DEVICE->vcap.minwidth);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFEATURES_maxHeight)
 
+	if( THIS->is_v4l2 ) {					// ++ V4L2	
+		gv4l2_debug("maxHeight not implemented in V4l2");
+		GB.ReturnInteger(768);
+		return;						// ++ V4L2
+	}
 	GB.ReturnInteger(DEVICE->vcap.maxheight);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CFEATURES_minHeight)
 
+	if( THIS->is_v4l2 ) {					// ++ V4L2
+		gv4l2_debug("minHeight not implemented in V4l2");
+		GB.ReturnInteger(0);
+		return;						// ++ V4L2
+	}
 	GB.ReturnInteger(DEVICE->vcap.minheight);
 
 END_PROPERTY
@@ -1007,7 +1392,12 @@ BEGIN_PROPERTY(CTUNER_name)
 
 	struct video_tuner vtuner;
 	long bucle,mmax=32;
+	char * tuner = "'tuner' not currently implemented on V4L2";
 
+	if( THIS->is_v4l2 ) {
+		GB.ReturnNewString(tuner,strlen(tuner));
+		return;
+	}
 
 	if (vd_ioctl (DEVICE, VIDIOCGTUNER, &vtuner)!=0)
 	{
@@ -1029,6 +1419,11 @@ BEGIN_PROPERTY(CTUNER_signal)
 
 	struct video_tuner vtuner;
 
+	if( THIS->is_v4l2 ) {
+		GB.ReturnInteger(0);
+		return;
+	}
+
 	if (vd_ioctl (DEVICE, VIDIOCGTUNER, &vtuner)!=0)
 	{
 		GB.ReturnInteger(0);
@@ -1042,6 +1437,11 @@ BEGIN_PROPERTY(CTUNER_low)
 
 	struct video_tuner vtuner;
 	struct v4l2_frequency vfreq;
+
+	if( THIS->is_v4l2 ) {
+		GB.ReturnBoolean(0);
+		return;
+	}
 
 	if (DEVICE->Freq2)
 	{
@@ -1073,6 +1473,10 @@ BEGIN_PROPERTY(CTUNER_frequency)
 	struct video_tuner vtuner;
 	struct v4l2_frequency vfreq;
 
+	if( THIS->is_v4l2 ) {
+		GB.ReturnInteger(0);
+		return;
+	}
 
 	if (DEVICE->Freq2)
 	{
@@ -1118,12 +1522,12 @@ GB_DESC CFeaturesDesc[] =
 	GB_PROPERTY_READ("Name","s",CFEATURES_name),
 	GB_PROPERTY_READ("Driver","s",CFEATURES_driver),
 	GB_PROPERTY_READ("Bus","s",CFEATURES_bus),
+	GB_PROPERTY_READ("Card","s",CFEATURES_card),  // ++ V4L2
 	GB_PROPERTY_READ("Version","s",CFEATURES_version),
 	GB_PROPERTY_READ("MaxWidth","i",CFEATURES_maxWidth),
 	GB_PROPERTY_READ("MinWidth","i",CFEATURES_minWidth),
 	GB_PROPERTY_READ("MaxHeight","i",CFEATURES_maxHeight),
 	GB_PROPERTY_READ("MinHeight","i",CFEATURES_minHeight),
-
 
 	GB_END_DECLARE
 };
@@ -1150,10 +1554,6 @@ GB_DESC CWebcamDesc[] =
 
   GB_HOOK_CHECK(CWEBCAM_check),
 
-  //GB_CONSTANT("Jpeg","i",FMT_JPEG),
-  //GB_CONSTANT("Ppm","i",FMT_PPM),
-  //GB_CONSTANT("Png","i",FMT_PNG),
-
   GB_CONSTANT("Hz","i",1),
   GB_CONSTANT("Khz","i",0),
 
@@ -1166,24 +1566,38 @@ GB_DESC CWebcamDesc[] =
   GB_CONSTANT("Composite1","i",1), //IN_COMPOSITE1),
   GB_CONSTANT("Composite2","i",2), //IN_COMPOSITE2),
   GB_CONSTANT("SVideo","i",3), //IN_SVIDEO),
+  GB_CONSTANT("V4L","i",1),		// ++ force V4L1
+  GB_CONSTANT("V4L2","i",2),		// ++ force V4L2
 
-  GB_METHOD("_new",NULL,CWEBCAM_new,"(Device)s"),
+  GB_METHOD("_new",NULL,CWEBCAM_new,"(Device)s[(V4L|V4L2)i]"),
   GB_METHOD("_free",NULL,CWEBCAM_free,NULL),
 
-  GB_PROPERTY_SELF("Tuner",".VideoDeviceTuner"),
   GB_PROPERTY_SELF("Features",".VideoDeviceFeatures"),
+
+  GB_PROPERTY_SELF("Tuner",".VideoDeviceTuner"),
+  GB_PROPERTY("Source","i",CWEBCAM_source),
 
   GB_PROPERTY_READ("Width","i",CWEBCAM_width),
   GB_PROPERTY_READ("Height","i",CWEBCAM_height),
 
-  GB_PROPERTY("Source","i",CWEBCAM_source),
-  GB_PROPERTY("Bright","i",CWEBCAM_bright),
   GB_PROPERTY("Contrast","i",CWEBCAM_contrast),
+  GB_PROPERTY("Contrast_Max","i",CWEBCAM_contrast_max),
+  GB_PROPERTY("Contrast_Min","i",CWEBCAM_contrast_min),
   GB_PROPERTY("Color","i",CWEBCAM_colour),
+  GB_PROPERTY("Color_Max","i",CWEBCAM_color_max),
+  GB_PROPERTY("Color_Min","i",CWEBCAM_color_min),
   GB_PROPERTY("Whiteness","i",CWEBCAM_whiteness),
+  GB_PROPERTY("Whiteness_Max","i",CWEBCAM_whiteness_max),
+  GB_PROPERTY("Whiteness_Min","i",CWEBCAM_whiteness_min),
+  GB_PROPERTY("Bright","i",CWEBCAM_bright),
+  GB_PROPERTY("Bright_Max","i",CWEBCAM_bright_max),
+  GB_PROPERTY("Bright_Min","i",CWEBCAM_bright_min),
   GB_PROPERTY("Hue","i",CWEBCAM_hue),
+  GB_PROPERTY("Hue_Max","i",CWEBCAM_hue_max),
+  GB_PROPERTY("Hue_Min","i",CWEBCAM_hue_min),
 
   GB_PROPERTY("Image","Image",CWEBCAM_image),
+  GB_PROPERTY("Debug","i",CWEBCAM_debug),
 
   GB_METHOD("Resize",NULL,CWEBCAM_size,"(Width)i(Height)i"),
   GB_METHOD("Save",NULL,CWEBCAM_save,"(File)s[(Quality)i]"),

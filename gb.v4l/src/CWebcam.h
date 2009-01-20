@@ -51,7 +51,11 @@ extern GB_STREAM_DESC VideoStream;
 
 #define THIS ((CWEBCAM *)_object)
 #define DEVICE (THIS->dev)
-
+// ++ V4L2
+#define MCLEAR(x) memset (&(x), 0, sizeof (x))
+#define gv4l2_V4L 1
+#define gv4l2_V4L2 2
+// --
 #endif
 
 typedef struct	video_device {
@@ -83,6 +87,15 @@ typedef struct
     void *handle;
 }  VIDEO_STREAM;
 
+// ++ V4L2 
+typedef struct gv4l2_buffer
+{
+        void*   start;
+        size_t  length;
+
+} gv4l2_buffer_t;
+//--
+
 typedef  struct
 {
 	GB_BASE ob;
@@ -93,6 +106,39 @@ typedef  struct
 	unsigned char *membuf;
 	long gotframe;
 	long posframe;
+
+	// ++ YUYV->RGB conversion
+        void*                   frame;		// "current" frame buffer
+	//--
+	// ++ V4L2 
+	//
+	// There is some duplication here but we really don't want to use
+	// the v4l video_device_t structure ...
+	//
+        struct  v4l2_capability cap;
+        struct  v4l2_cropcap    cropcap;
+        struct  v4l2_crop       crop;
+        struct  v4l2_format     fmt;
+        struct  gv4l2_buffer*   buffers;
+	//
+	int			is_v4l2;	// which version is this dev
+        int     		io;		// raw device handle for V2
+        int                     use_mmap;	// is MMAP available
+        int                     buffer_count;	// number of buffers
+	int			w,h;		// "current" dimensions
+	//
+	int			bright_max;
+	int			hue_max;
+	int			contrast_max;
+	int			whiteness_max;
+	int			color_max;
+	//
+	int			bright_min;
+	int			hue_min;
+	int			contrast_min;
+	int			whiteness_min;
+	int			color_min;
+	// --
 
 }  CWEBCAM;
 
@@ -107,5 +153,32 @@ int Video_stream_tell(GB_STREAM *stream, int64_t *pos);
 int Video_stream_flush(GB_STREAM *stream);
 int Video_stream_close(GB_STREAM *stream);
 int Video_stream_handle(GB_STREAM *stream);
+
+
+// ++ YUYV->RGB conversion
+int convert_yuv_to_rgb_buffer(unsigned char *yuv, unsigned char *rgb, unsigned int width, unsigned int height);
+void yuv420p_to_rgb (unsigned char *image, unsigned char *image2, int x, int y, int z);
+// --
+
+// ++ V4L2 
+int 		gv4l2_available(CWEBCAM * _object);
+void 		gv4l2_debug( char *s );
+int 		gv4l2_xioctl( int fd,int request,void * arg);
+int 		gv4l2_open_device( char* name );
+void 		gv4l2_close_device( int id );
+int 		gv4l2_init_device(CWEBCAM * _object , int width , int height );
+int 		gv4l2_start_capture(CWEBCAM * _object);
+int 		gv4l2_stop_capture(CWEBCAM * _object);
+void 		gv4l2_uninit_device(CWEBCAM * _object);
+void 		gv4l1_process_image (CWEBCAM * _object, void *start);
+void 		gv4l2_process_image (CWEBCAM * _object, void *start);
+int 		gv4l2_read_frame( CWEBCAM * _object );
+int 		gv4l2_resize( CWEBCAM * _object , int width , int height );
+int 		gv4l2_hue( CWEBCAM * _object , int hue );
+int 		gv4l2_brightness( CWEBCAM * _object , int hue );
+int 		gv4l2_contrast( CWEBCAM * _object , int value );
+int 		gv4l2_color( CWEBCAM * _object , int value );
+int 		gv4l2_whiteness( CWEBCAM * _object , int value );
+// -- V4L2
 
 #endif
