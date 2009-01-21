@@ -58,7 +58,7 @@ static void get_hsv(int col)
 
 BEGIN_METHOD(CCOLOR_rgb, GB_INTEGER r; GB_INTEGER g; GB_INTEGER b; GB_INTEGER a)
 
-  GB.ReturnInteger(qRgb(VARG(r), VARG(g), VARG(b)) & 0x00FFFFFF | ((VARGOPT(a, 0) & 0xFF) << 24));
+  GB.ReturnInteger((qRgb(VARG(r), VARG(g), VARG(b)) & 0x00FFFFFF) | ((VARGOPT(a, 0) & 0xFF) << 24));
 
 END_METHOD
 
@@ -66,7 +66,7 @@ BEGIN_METHOD(CCOLOR_hsv, GB_INTEGER h; GB_INTEGER s; GB_INTEGER v; GB_INTEGER a)
 
   QColor col(VARG(h), VARG(s), VARG(v), QColor::Hsv);
 
-  GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF | ((VARGOPT(a, 0) & 0xFF) << 24));
+  GB.ReturnInteger(((uint)col.rgb() & 0xFFFFFF) | ((VARGOPT(a, 0) & 0xFF) << 24));
 
 END_METHOD
 
@@ -198,7 +198,7 @@ BEGIN_METHOD(CCOLOR_lighter, GB_INTEGER color)
 
   QColor col(_h, _s / 2, 255 - (255 - _v) / 2, QColor::Hsv);
 
-  GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF | a);
+  GB.ReturnInteger(((uint)col.rgb() & 0xFFFFFF) | a);
 
 END_METHOD
 
@@ -209,7 +209,7 @@ BEGIN_METHOD(CCOLOR_darker, GB_INTEGER color)
 
   QColor col(_h, 255 - (255 - _s) / 2, _v / 2, QColor::Hsv);
 
-  GB.ReturnInteger((uint)col.rgb() & 0xFFFFFF | a);
+  GB.ReturnInteger(((uint)col.rgb() & 0xFFFFFF) | a);
 
 END_METHOD
 
@@ -235,7 +235,7 @@ BEGIN_METHOD(CCOLOR_mix, GB_INTEGER color1; GB_INTEGER color2; GB_FLOAT weight)
 		g = MIX_COLOR(8);
 		b = MIX_COLOR(0);
 		
-		GB.ReturnInteger(qRgb(r, g, b) & 0x00FFFFFF | ((a & 0xFF) << 24));
+		GB.ReturnInteger((qRgb(r, g, b) & 0x00FFFFFF) | ((a & 0xFF) << 24));
 	}
 
 END_METHOD

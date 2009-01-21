@@ -46,5 +46,7 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR color);
 GB_COLOR IMAGE_get_pixel(GB_IMG *img, int x, int y);
 void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col);
 void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq);
+void IMAGE_set_default_format(int format);
+int IMAGE_get_default_format();
 
 #endif

@@ -49,6 +49,8 @@
 #define GB_IMAGE_FMT_IS_24_BITS(_format) ((_format) & 4)
 #define GB_IMAGE_FMT_IS_32_BITS(_format) (((_format) & 4)) == 0)
 
+#define GB_IMAGE_FMT_IS_RGBA(_format) ((_format) & 2)
+
 #define GB_IMAGE_FMT_IS_SWAPPED(_format) ((_format) & 1)
 
 #define GB_IMAGE_FMT_IS_TRANSPARENT(_format) ((_format) & 8)
@@ -110,13 +112,11 @@ typedef
 		void (*Take)(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
 		int (*Check)(GB_IMG *img, GB_IMG_OWNER *temp);
 		void (*Convert)(GB_IMG *img, int format);
-		void (*Fill)(GB_IMG *img, GB_COLOR col);
-		void (*MakeGray)(GB_IMG *img);
-		void (*MakeTransparent)(GB_IMG *img, GB_COLOR color);
+		int (*Size)(GB_IMG *img);
+		void (*SetDefaultFormat)(int format);
 		}
 	IMAGE_INTERFACE;
 
-#define GB_IMG_SIZE(_image) ((_image)->width * (_image)->height * sizeof(int))
 #define GB_IMG_HANDLE(_image) ((_image)->temp_handle)
 
 #endif

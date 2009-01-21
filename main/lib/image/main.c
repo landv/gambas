@@ -57,9 +57,8 @@ void *GB_IMAGE_1[] EXPORT =
 	(void *)IMAGE_take,
 	(void *)IMAGE_check,
 	(void *)IMAGE_convert,
-	(void *)IMAGE_fill,
-	(void *)IMAGE_make_gray,
-	(void *)IMAGE_make_transparent,
+	(void *)IMAGE_size,
+	(void *)IMAGE_set_default_format,
   NULL
 };
 

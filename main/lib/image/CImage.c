@@ -28,7 +28,10 @@
 
 BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_INTEGER format; GB_INTEGER col)
 
-	int format = VARGOPT(format, 0) ? GB_IMAGE_RGBP : GB_IMAGE_RGBA;
+	int format = IMAGE_get_default_format();
+	
+	if (VARGOPT(format, 0))
+		format = GB_IMAGE_FMT_SET_PREMULTIPLIED(format);
 
 	IMAGE_create(THIS_IMAGE, VARGOPT(w, 0), VARGOPT(h, 0), format);
 	

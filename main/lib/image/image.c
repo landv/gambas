@@ -24,9 +24,11 @@
 
 #include "image.h"
 
+static int _default_format = GB_IMAGE_RGBA;
+
 static inline unsigned char *GET_END_POINTER(GB_IMG *image)
 {
-	return &image->data[image->width * image->height * sizeof(int)];
+	return &image->data[IMAGE_size(image)];
 }
 
 static inline uint PREMUL(uint x) 
@@ -58,6 +60,11 @@ static inline uint SWAP(uint p)
 	return RGBA(ALPHA(p), BLUE(p), GREEN(p), RED(p));
 }
 
+static inline uint SWAP_RED_BLUE(uint p)
+{
+	return RGBA(BLUE(p), GREEN(p), RED(p), ALPHA(p));
+}
+
 static uint from_GB_COLOR(GB_COLOR col, int format)
 {
 	col ^= 0xFF000000;
@@ -65,11 +72,15 @@ static uint from_GB_COLOR(GB_COLOR col, int format)
 		col = PREMUL(col);
 	if (GB_IMAGE_FMT_IS_SWAPPED(format))
 		col = SWAP(col);
+	if (GB_IMAGE_FMT_IS_RGBA(format))
+		col = SWAP_RED_BLUE(col);
 	return col;
 }
 
 static GB_COLOR to_GB_COLOR(uint col, int format)
 {
+	if (GB_IMAGE_FMT_IS_RGBA(format))
+		col = SWAP_RED_BLUE(col);
 	if (GB_IMAGE_FMT_IS_SWAPPED(format))
 		col = SWAP(col);
 	if (GB_IMAGE_FMT_IS_PREMULTIPLIED(format))
@@ -99,6 +110,18 @@ static inline bool is_valid(GB_IMG *img, int x, int y)
 {
 	return !(x >= img->width || y >= img->height || x < 0 || y < 0);
 }
+
+static void free_image(GB_IMG *img, void *image)
+{
+	//fprintf(stderr, "free_image: %p %p\n", img, img->data);
+	GB.Free(POINTER(&img->data));
+}
+
+static GB_IMG_OWNER _image_owner = {
+	"gb.image",
+	free_image,
+	free_image
+	};
 
 
 // Only converts to the following formats:
@@ -282,6 +305,7 @@ void IMAGE_create(GB_IMG *img, int width, int height, int format)
 		GB_BASE save = img->ob;
 		CLEAR(img);
 		img->ob = save;
+		img->owner = &_image_owner;
 		return;
 	}
 	
@@ -289,7 +313,7 @@ void IMAGE_create(GB_IMG *img, int width, int height, int format)
 	img->height = height;
 	img->format = format;
 	GB.Alloc(POINTER(&img->data), IMAGE_size(img));
-	img->owner = NULL;
+	img->owner = &_image_owner;
 }
 
 void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsigned char *data)
@@ -310,7 +334,7 @@ int IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp)
 	if (img->temp)
 	{
 		// release it only if it is not the owner
-		if (img->temp != img->owner)
+		if (img->temp != img->owner && img->temp->release)
 			(*img->temp->release)(img, img->temp_handle);
 		img->temp_handle = 0;
 	}
@@ -341,10 +365,8 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 		return;
 	
 	// Release the old owner
-	if (img->owner)
-		(*img->owner->free)(img, img->owner_handle);
-	else
-		GB.Free(POINTER(&img->data));
+	//fprintf(stderr, "releasing image %p owned by %s\n", img, img->owner->name);
+	(*img->owner->free)(img, img->owner_handle);
 	
 	// If we have the temporary handle too, then clean it as it is necessarily the same
 	if (img->temp == img->owner)
@@ -380,42 +402,45 @@ void IMAGE_convert(GB_IMG *img, int format)
 	
 	if (format == img->format)
 		return;
-		
+	
+	//fprintf(stderr, "convert image %p: %d -> %d\n", img, img->format, format);
+	
 	IMAGE_create(&tmp, img->width, img->height, format);
 	convert_image(tmp.data, tmp.format, img->data, img->format, img->width, img->height);
 	IMAGE_delete(img);
 	
+	img->owner = tmp.owner;
 	img->data = tmp.data;
-	img->format = format;
+	img->format = tmp.format;
 }
+
+#define GET_POINTER(_img, _p, _pm) \
+	uint *_p = (uint *)(_img)->data; \
+	uint *_pm = (uint *)GET_END_POINTER(_img);
 
 void IMAGE_fill(GB_IMG *img, GB_COLOR col)
 {
-	uint *d = (uint *)img->data;
-	uint *dm = (uint *)GET_END_POINTER(img);
+	GET_POINTER(img, p, pm);
 	
 	col = from_GB_COLOR(col, img->format);
 	
-	while (d != dm)
-		*d++ = col;	
+	while (p != pm)
+		*p++ = col;	
 }
 
 // GB_IMAGE_RGB[APX] only
 void IMAGE_make_gray(GB_IMG *img)
 {
-	uchar *b = img->data;
-	uchar *g = b + 1;
-	uchar *r = b + 2;
+	GET_POINTER(img, p, pm);
+	uint col;
+	uchar g;
 
-	uchar *end = GET_END_POINTER(img);
-
-	while (b != end) 
+	while (p != pm) 
 	{
-		*b = *g = *r = (((*r + *b) >> 1) + *g) >> 1; // (r + b + g) / 3
-
-		b += 4;
-		g += 4;
-		r += 4;
+		col = BGRA_from_format(*p, img->format);
+		g = (((RED(col) + BLUE(col)) >> 1) + GREEN(col)) >> 1;
+		
+		*p++ = BGRA_to_format(RGBA(g, g, g, ALPHA(col)), img->format);
 	}
 }
 
@@ -440,29 +465,27 @@ void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col)
 
 void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq)
 {
-	uint *p;
-  uint i, n;
+	GET_POINTER(img, p, pm);
 
   src = from_GB_COLOR(src, img->format);
   dst = from_GB_COLOR(dst, img->format);
 
-	p = (uint *)img->data;
-	n = img->width * img->height;
-
 	if (noteq)
 	{
-		for (i = 0; i < n; i++, p++)
+		while (p != pm)
 		{
 			if (*p != src)
 				*p = dst;
+			p++;
 		}
 	}
 	else
 	{
-		for (i = 0; i < n; i++, p++)
+		while (p != pm)
 		{
 			if (*p == src)
 				*p = dst;
+			p++;
 		}
 	}
 }
@@ -575,4 +598,12 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 }
 
 
+void IMAGE_set_default_format(int format)
+{
+	_default_format = GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(format);
+}
 
+int IMAGE_get_default_format()
+{
+	return _default_format;
+}

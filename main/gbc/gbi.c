@@ -66,6 +66,7 @@
 #include "gb_str.h"
 #include "gb_arch.h"
 #include "gb_common_swap.h"
+#include "gb_array.h"
 #include "gambas.h"
 
 #include "gb_arch_temp.h"
@@ -84,6 +85,8 @@ static bool _nopreload = FALSE;
 static bool _root_set = FALSE;
 static bool _analyze = FALSE;
 
+static char **_components = NULL;
+
 static void analyze(const char *comp, bool include);
 
 #ifdef __GNU_LIBRARY__
@@ -97,6 +100,11 @@ static struct option LongOptions[] =
 };
 #endif
 
+
+static int compare_components(char **a, char **b)
+{
+	return strcmp(*a, *b);
+}
 
 static void print(const char *fmt, ...)
 {
@@ -360,6 +368,31 @@ static int sort_desc(const int *a, const int *b)
 	return strcmp(_sort_desc[*a]->name, _sort_desc[*b]->name);
 }
 
+static void analyze_include(char *include_list)
+{
+	char *includes[8];
+	int nincludes;
+	char *include;
+	int i;
+	
+	include_list = STR_copy(include_list);
+	
+	if (_verbose)
+		fprintf(stderr, "Including %s\n", include_list);
+	
+	include = strtok(include_list, ",");
+	while (include && nincludes < 8)
+	{
+		includes[nincludes++] = include;
+		include = strtok(NULL, ",");
+	}
+	
+	for (i = 0; i < nincludes; i++)
+		analyze(includes[i], TRUE);
+		
+	STR_free(include_list);
+}
+
 static bool analyze_native_component(const char *path)
 {
 	lt_dlhandle lib;
@@ -385,11 +418,7 @@ static bool analyze_native_component(const char *path)
 
 	include = lt_dlsym(lib, LIB_INCLUDE);
 	if (include)
-	{
-		if (_verbose)
-			fprintf(stderr, "Including %s\n", *include);
-		analyze(*include, TRUE);
-	}
+		analyze_include(*include);
 
 	desc = lt_dlsym(lib, LIB_CLASS);
 
@@ -492,6 +521,11 @@ static void analyze(const char *comp, bool include)
 
 	name = STR_copy(comp);
 
+	if (_verbose)
+		fprintf(stderr, "%s component %s\n", include ? "Including" : "Analyzing", name);
+	else
+		puts(name);
+	
 	native = find_native_component(name);
 		
 	snprintf(_buffer, sizeof(_buffer), ARCH_PATTERN, _lib_path, name);
@@ -569,6 +603,9 @@ static void run_myself(const char *path, const char *name)
 	pid_t pid;
 	int status;
 	
+	if (_verbose)
+		fprintf(stderr, "Running myself for component %s\n", name);
+	
 	argv[n++] = path;
 	if (_verbose)
 		argv[n++] = "-v";
@@ -602,11 +639,38 @@ static void run_myself(const char *path, const char *name)
 	}
 }
 
-int main(int argc, char **argv)
+static void make_component_list()
 {
 	DIR *dir;
 	struct dirent *dirent;
 	const char *name;
+			
+	dir = opendir(_lib_path);
+	if (dir == NULL)
+		error(TRUE, "Cannot read directory: %s", _lib_path);
+
+	//save_fd = dup(STDOUT_FILENO);
+
+	ARRAY_create(&_components);
+	
+	while ((dirent = readdir(dir)) != NULL)
+	{
+		name = dirent->d_name;
+		if (strcmp(FILE_get_ext(name), "component"))
+			continue;
+		name = FILE_get_basename(name);
+		*((char **)ARRAY_add(&_components)) = STR_copy(name);
+	}
+
+	closedir(dir);
+	
+	qsort(_components, ARRAY_count(_components), sizeof(*_components), (int (*)(const void *, const void *))compare_components);
+}
+
+int main(int argc, char **argv)
+{
+	int i;
+	char *name;
 	int opt;
 	int save_fd;
 	#ifdef __GNU_LIBRARY__
@@ -618,6 +682,8 @@ int main(int argc, char **argv)
 	#else
 	optind = 0;
 	#endif*/
+
+	save_fd = dup(STDOUT_FILENO);
 
 	for(;;)
 	{
@@ -705,24 +771,17 @@ int main(int argc, char **argv)
 				fprintf(stderr, "component path: %s\n", _lib_path);
 				fprintf(stderr, "info path: %s\n", _info_path);
 			}
-	
-			dir = opendir(_lib_path);
-			if (dir == NULL)
-				error(TRUE, "Cannot read directory: %s", _lib_path);
-	
-			save_fd = dup(STDOUT_FILENO);
-	
-			while ((dirent = readdir(dir)) != NULL)
+			
+			make_component_list();
+			
+			for (i = 0; i < ARRAY_count(_components); i++)
 			{
-				name = dirent->d_name;
-				if (strcmp(FILE_get_ext(name), "component"))
-					continue;
-				name = FILE_get_basename(name);
-				puts(name);
+				name = _components[i];
 				run_myself(argv[0], name);
+				STR_free(name);
 			}
-	
-			closedir(dir);
+			
+  		ARRAY_delete(&_components);
 		}
 		else
 		{
@@ -742,7 +801,6 @@ int main(int argc, char **argv)
 			for (ind = optind; ind < argc; ind++)
 			{
 				name = argv[ind];
-				puts(name);
 				//analyze(name, FALSE);
 				run_myself(argv[0], name);
 			}

@@ -1383,8 +1383,10 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       '  Print "<p align=\"left\">"
       'Endif
       
-      Print "<div class=\"lang\">"; 
-      Print "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td>";
+      Print "<div class=\"lang\">";
+      
+      'Print "<div style=\"padding:8px 8px 8px 0px;\">";
+      Print "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding:4px 8px 0px 8px;\"><tr><td>";
       PrintPath
       PrintVersion
       Print "</td><td align=\"right\">";
@@ -1403,7 +1405,14 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
       
       'Print "&nbsp;&nbsp;";
 
-      Print "</td></tr></table></div>";
+      Print "</td></tr></table>";
+      
+      Print "<div class=\"bottom-corner\">";
+      Print "<img src=\"/img/bottom-left-corner.png\" class=\"bottom-left-corner\">"
+      Print "<img src=\"/img/bottom-right-corner.png\" class=\"bottom-right-corner\">"
+      Print "</div>";
+      
+      Print "</div>";
       
     Else
       

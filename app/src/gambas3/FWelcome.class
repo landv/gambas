@@ -241,9 +241,9 @@ Private Sub FillExample()
   iHeight = Desktop.Scale * 3
 
   If Not $hPicture Then 
-    hImage = New Image(16, iHeight, True)
+    hImage = New Image(16, iHeight)
     'hImage.Fill(Color.SelectedBackground)
-    For Y = 0 To iHeight
+    For Y = 0 To iHeight - 1
       C = Color.SelectedBackground
       C = Color.RGB(Color[C].Red, Color[C].Green, Color[C].Blue, Max(0, 320 * Y / iHeight - 64))
       For X = 0 To 15
