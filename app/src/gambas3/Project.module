@@ -514,7 +514,7 @@ Private Sub AddEmblem(hPict As Picture, sEmblem As String) As Picture
   
   hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5, True)
   
-  hImage = New Image(hPict.Width + iSize, hPict.Height, True)
+  hImage = New Image(hPict.Width + iSize, hPict.Height)
   hImage.Fill(Color.Transparent)
   hImage.Draw(hPict.Image, iSize, 0)
   hImage.Draw(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
@@ -524,7 +524,7 @@ End
 
 Private Sub AddLinkEmblem(hPict As Picture) As Picture
   
-  Dim hImage As New Image(hPict.Width + 1, hPict.Height + 1, True)
+  Dim hImage As New Image(hPict.Width + 1, hPict.Height + 1)
   
   hImage.Fill(Color.Transparent)
   hImage.Draw(hPict.Image, 1, 0)
@@ -3647,7 +3647,7 @@ Public Function StretchIcon(sPath As String, Optional iSize As Integer = 48) As 
   Endif
   
   If W < iSize Or H < iSize Then
-    hBackground = New Image(iSize, iSize, True)
+    hBackground = New Image(iSize, iSize)
     hBackground.Fill(Color.Transparent)
     hBackground.Draw(hImage, (iSize - W) / 2, (iSize - H) / 2, W, H)
     hImage = hBackground

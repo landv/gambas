@@ -260,7 +260,7 @@ Private Sub CreateFile() As Boolean
   
     Case "image"
     
-      hImage = New Image(txtWidth.Value, txtHeight.Value, True)
+      hImage = New Image(txtWidth.Value, txtHeight.Value)
       hImage.Fill(Color.Transparent)
       hImage.Save($sDir &/ sName)
 
