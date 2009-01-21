@@ -369,7 +369,7 @@ void MyTable::setColumnWidth(int col, int width)
 	else
 		Q3Table::setColumnWidth(col, width);
 		
-	if (col == (numCols() - 1))
+	if (col == (numCols() - 1) && !_updating_last_column)
 		_last_col_width = columnWidth(numCols() - 1);
 }
 

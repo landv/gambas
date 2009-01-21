@@ -928,6 +928,7 @@ int EXPORT GB_INIT(void)
 
 	GB.LoadComponent("gb.draw");
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+  IMAGE.SetDefaultFormat(GB_IMAGE_BGRA);
 	DRAW_init();
 	
 	CLASS_Control = GB.FindClass("Control");
