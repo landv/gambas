@@ -42,33 +42,30 @@ static void free_image(GB_IMG *img, void *image)
 	((gPicture *)image)->unref();
 }
 
+static void *temp_image(GB_IMG *img)
+{
+	gPicture *image;
+	
+	if (!img->data)
+		image = new gPicture();
+	else
+		image = gPicture::fromData((const char *)img->data, img->width, img->height);
+	
+	image->setTag(new gGambasTag((void *)img));
+	
+	return image;
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.gtk",
 	free_image,
-	free_image
+	free_image,
+	temp_image
 	};
 
 gPicture *CIMAGE_get(CIMAGE *_object)
 {
-	gPicture *image;
-	
-	if (IMAGE.Check(&THIS->img, &_image_owner))
-	{
-		if (!THIS->img.data)
-		{
-			image = new gPicture();
-		}
-		else
-		{
-			IMAGE.Convert(&THIS->img, GB_IMAGE_RGBA);
-			image = gPicture::fromData((const char *)THIS->img.data, THIS->img.width, THIS->img.height);
-		}
-		
-		image->setTag(new gGambasTag((void *)THIS));
-		THIS->img.temp_handle = image;
-	}
-	
-	return PICTURE;
+	return (gPicture *)IMAGE.Check(&THIS->img, &_image_owner, GB_IMAGE_RGBA);
 }
 
 #define check_image CIMAGE_get

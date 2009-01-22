@@ -231,6 +231,10 @@ Public Sub InConflict(sPath As String) As Boolean
   
   If $bSVN Then 
     'IF Exist(sPath & ".mine") THEN RETURN TRUE
+    If Not Exist(sPath) Then
+      Debug sPath; ": does not exist"
+      Return False
+    Endif
     If Dir(File.Dir(sPath), File.Name(sPath) & ".r*").Count Then Return True
   Endif
   

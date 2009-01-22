@@ -32,33 +32,29 @@ static void free_image(GB_IMG *img, void *image)
 	delete (SDLsurface *)image;
 }
 
+static void *temp_image(GB_IMG *img)
+{
+	SDLsurface *image;
+		
+	if (!img->data)
+		image = new SDLsurface();
+	else
+		image = new SDLsurface((char *)img->data, img->width, img->height);
+	image->SetAlphaBuffer(true);
+	
+	return image;
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.sdl",
 	free_image,
-	free_image
+	free_image,
+	temp_image
 	};
 
 SDLsurface *CIMAGE_get(CIMAGE *_object)
 {
-	SDLsurface *image;
-	
-	if (IMAGE.Check(THIS_IMAGE, &_image_owner))
-	{
-		if (!THIS_IMAGE->data)
-		{
-			image = new SDLsurface();
-		}
-		else
-		{
-			IMAGE.Convert(THIS_IMAGE, GB_IMAGE_RGBA);
-			image = new SDLsurface((char *)THIS_IMAGE->data, THIS_IMAGE->width, THIS_IMAGE->height);
-		}
-		image->SetAlphaBuffer(true);
-		
-		THIS_IMAGE->temp_handle = image;
-	}
-	
-	return IMAGEID;
+	return (SDLsurface *)IMAGE.Check(THIS_IMAGE, &_image_owner, GB_IMAGE_RGBA);
 }
 
 #define check_image CIMAGE_get

@@ -65,9 +65,10 @@ struct GB_IMG;
 
 typedef
 	struct {
-		const char *name;
-		void (*free)(struct GB_IMG *img, void *handle); // free owner or temporary handle
-		void (*release)(struct GB_IMG *img, void *handle); // free owner or temporary handle
+		const char *name;                                   // owner name (this is the name of the component)
+		void (*free)(struct GB_IMG *img, void *handle);     // free owner handle
+		void (*release)(struct GB_IMG *img, void *handle);  // free temporary handle
+		void *(*temp)(struct GB_IMG *img);                  // create a temporary handle for an image and returns it
 		//void (*lock)(void *handle); // lock, before accessing pixels
 		//void (*unlock)(void *handle); // unlock, after accessing pixels
 		}
@@ -84,7 +85,7 @@ typedef
 		int format;                               // image format (RGB, BGR, RGBA...)
 		GB_IMG_OWNER *owner;                      // owner of the data, NULL means gb.image
 		void *owner_handle;                       // handle for the owner
-		GB_IMG_OWNER *temp;                       // owner of the temporary handle that does not own the data
+		GB_IMG_OWNER *temp_owner;                 // owner of the temporary handle that does not own the data
 		void *temp_handle;                        // temporary handle
 		}
 	GB_IMG;
@@ -107,12 +108,19 @@ typedef
 typedef
 	struct {
 		intptr_t version;
+		// Create an image
 		GB_IMG *(*Create)(int width, int height, int format, unsigned char *data);
+		// Delete an image - You should never use it, it is called automatically
 		void (*Delete)(GB_IMG *img);
+		// Take image ownership by giving the image handle and information
 		void (*Take)(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
-		int (*Check)(GB_IMG *img, GB_IMG_OWNER *temp);
+		// Create a temporary handle on the image without becoming the owner.
+		void *(*Check)(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format);
+		// Convert an image to the specify format - You should never use it, it is called automatically
 		void (*Convert)(GB_IMG *img, int format);
+		// Return the size of the image data in bytes
 		int (*Size)(GB_IMG *img);
+		// Set the default format used when creating images
 		void (*SetDefaultFormat)(int format);
 		}
 	IMAGE_INTERFACE;

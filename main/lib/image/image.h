@@ -37,7 +37,7 @@ int IMAGE_size(GB_IMG *img);
 void IMAGE_create(GB_IMG *img, int width, int height, int format);
 void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsigned char *data);
 void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
-int IMAGE_check(GB_IMG *img, GB_IMG_OWNER *owner);
+void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format);
 void IMAGE_delete(GB_IMG *img);
 void IMAGE_convert(GB_IMG *img, int format);
 void IMAGE_fill(GB_IMG *img, GB_COLOR col);

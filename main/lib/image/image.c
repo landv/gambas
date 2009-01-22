@@ -322,38 +322,40 @@ void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsi
 	memcpy(img->data, data, IMAGE_size(img));
 }
 
-// Check if a temporary handle is needed, and return 1 if it is
+// Check if a temporary handle is needed, and create it if needed by calling the owner "temp" function
 
-int IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp)
+void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
 {
 	// If we already have the temporary handle, then do nothing
-	if (img->temp == temp)
-		return 0;
+	if (img->temp_owner == temp_owner)
+		return img->temp_handle;
 	
 	// If somebody else has a temporary handle
-	if (img->temp)
+	if (img->temp_owner)
 	{
 		// release it only if it is not the owner
-		if (img->temp != img->owner && img->temp->release)
-			(*img->temp->release)(img, img->temp_handle);
+		if (img->temp_owner != img->owner && img->temp_owner->release)
+			(*img->temp_owner->release)(img, img->temp_handle);
 		img->temp_handle = 0;
 	}
 	
 	// Get the temporary handle
-	img->temp = temp;
+	img->temp_owner = temp_owner;
 	
-	// If we are the owner, we must use our owner handle as temporary handle
-	if (img->owner == temp)
+	if (temp_owner)
 	{
-		img->temp_handle = img->owner_handle;
-		return 0;
+		// If we are the owner, we must use our owner handle as temporary handle
+		if (img->owner == temp_owner)
+			img->temp_handle = img->owner_handle;
+		// If we are not the owner, then we will have to create the temporary handle ourself
+		else
+		{
+			IMAGE_convert(img, format);
+			img->temp_handle = (*img->temp_owner->temp)(img);
+		}
 	}
-	// If we are not the owner, then we will have to create the temporary handle ourself
-	else
-	{
-		img->temp_handle = 0;
-		return 1;
-	}	
+	
+	return img->temp_handle;
 }
 
 // Take ownership of the image
@@ -369,9 +371,9 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 	(*img->owner->free)(img, img->owner_handle);
 	
 	// If we have the temporary handle too, then clean it as it is necessarily the same
-	if (img->temp == img->owner)
+	if (img->temp_owner == img->owner)
 	{
-		img->temp = NULL;
+		img->temp_owner = NULL;
 		img->temp_handle = 0;
 	}
 	
@@ -380,8 +382,8 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 	img->owner_handle = owner_handle;
 	
 	// As we are now the owner, then we must have the temporary handle too
-	IMAGE_check(img, NULL);
-	img->temp = owner;
+	IMAGE_check(img, NULL, 0);
+	img->temp_owner = owner;
 	img->temp_handle = owner_handle;
 	
 	// Initialize the data

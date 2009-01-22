@@ -82,6 +82,19 @@ static void free_image(GB_IMG *img, void *image)
 	delete (QImage *)image;
 }
 
+static void *temp_image(GB_IMG *img)
+{
+	QImage *image;
+
+	if (!img->data)
+		image = new QImage();
+	else
+		image = new QImage((uchar *)img->data, img->width, img->height, QImage::Format_ARGB32);
+	image->setAlphaBuffer(true);
+	
+	return image;
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.qt4",
 	free_image,
@@ -90,25 +103,7 @@ static GB_IMG_OWNER _image_owner = {
 
 QImage *CIMAGE_get(CIMAGE *_object)
 {
-	QImage *image;
-	
-	if (IMAGE.Check(THIS_IMAGE, &_image_owner))
-	{
-		if (!THIS_IMAGE->data)
-		{
-			image = new QImage();
-		}
-		else
-		{
-			IMAGE.Convert(THIS_IMAGE, GB_IMAGE_BGRA);
-			image = new QImage((uchar *)THIS_IMAGE->data, THIS_IMAGE->width, THIS_IMAGE->height, QImage::Format_ARGB32);
-		}
-		image->setAlphaBuffer(true);
-		
-		THIS_IMAGE->temp_handle = image;
-	}
-	
-	return (QImage *)(THIS_IMAGE->temp_handle);
+	return (QImage *)IMAGE.Check(THIS_IMAGE, &_image_owner, GB_IMAGE_BGRA);
 }
 
 #define check_image CIMAGE_get

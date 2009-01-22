@@ -239,6 +239,7 @@ Private Sub LastOpenedFiles()
   Dim hActive As Object
   Dim aFold As Integer[]
 
+  Inc Application.Busy
   RestoringFiles = True
   Workspace.Lock
 
@@ -261,6 +262,10 @@ Private Sub LastOpenedFiles()
   Activate(hActive)
   If hActive Then Workspace.ActiveWindow = hActive
   
+Finally
+  
+  Dec Application.Busy
+
 End
 
 

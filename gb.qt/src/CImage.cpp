@@ -83,33 +83,29 @@ static void free_image(GB_IMG *img, void *image)
 	delete (QImage *)image;
 }
 
+static void *temp_image(GB_IMG *img)
+{
+	QImage *image;
+
+	if (!img->data)
+		image = new QImage();
+	else
+		image = new QImage(img->data, img->width, img->height, 32, 0, 0, QImage::IgnoreEndian);
+	image->setAlphaBuffer(true);
+	
+	return image;
+}
+
 static GB_IMG_OWNER _image_owner = {
 	"gb.qt",
 	free_image,
-	free_image
+	free_image,
+	temp_image,
 	};
 
 static QImage *check_image(void *_object)
 {
-	QImage *image;
-	
-	if (IMAGE.Check(THIS_IMAGE, &_image_owner))
-	{
-		if (!THIS_IMAGE->data)
-		{
-			image = new QImage();
-		}
-		else
-		{
-			IMAGE.Convert(THIS_IMAGE, GB_IMAGE_BGRA);
-			image = new QImage(THIS_IMAGE->data, THIS_IMAGE->width, THIS_IMAGE->height, 32, 0, 0, QImage::IgnoreEndian);
-		}
-		image->setAlphaBuffer(true);
-		
-		THIS_IMAGE->temp_handle = image;
-	}
-	
-	return (QImage *)(THIS_IMAGE->temp_handle);
+	return (QImage *)IMAGE.Check(THIS_IMAGE, &_image_owner, GB_IMAGE_BGRA);
 }
 
 static void take_image(CIMAGE *_object, QImage *image)
