@@ -322,6 +322,24 @@ void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsi
 	memcpy(img->data, data, IMAGE_size(img));
 }
 
+static void IMAGE_convert(GB_IMG *img, int format)
+{
+	uchar *data;
+	
+	if (format == img->format)
+		return;
+	
+	//fprintf(stderr, "convert image %p: %d -> %d\n", img, img->format, format);
+	
+	//IMAGE_create(&tmp, img->width, img->height, format);
+	GB.Alloc(POINTER(&data), IMAGE_size(img));
+	convert_image(data, format, img->data, img->format, img->width, img->height);
+	GB.Free(POINTER(&img->data));
+	
+	img->data = data;
+	img->format = format;
+}
+
 // Check if a temporary handle is needed, and create it if needed by calling the owner "temp" function
 
 void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
@@ -396,24 +414,6 @@ void IMAGE_delete(GB_IMG *img)
 {
 	IMAGE_take(img, NULL, NULL, 0, 0, NULL);
 	img->format = 0;
-}
-
-void IMAGE_convert(GB_IMG *img, int format)
-{
-	GB_IMG tmp;
-	
-	if (format == img->format)
-		return;
-	
-	//fprintf(stderr, "convert image %p: %d -> %d\n", img, img->format, format);
-	
-	IMAGE_create(&tmp, img->width, img->height, format);
-	convert_image(tmp.data, tmp.format, img->data, img->format, img->width, img->height);
-	IMAGE_delete(img);
-	
-	img->owner = tmp.owner;
-	img->data = tmp.data;
-	img->format = tmp.format;
 }
 
 #define GET_POINTER(_img, _p, _pm) \

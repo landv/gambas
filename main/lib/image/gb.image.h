@@ -110,14 +110,10 @@ typedef
 		intptr_t version;
 		// Create an image
 		GB_IMG *(*Create)(int width, int height, int format, unsigned char *data);
-		// Delete an image - You should never use it, it is called automatically
-		void (*Delete)(GB_IMG *img);
 		// Take image ownership by giving the image handle and information
 		void (*Take)(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
 		// Create a temporary handle on the image without becoming the owner.
 		void *(*Check)(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format);
-		// Convert an image to the specify format - You should never use it, it is called automatically
-		void (*Convert)(GB_IMG *img, int format);
 		// Return the size of the image data in bytes
 		int (*Size)(GB_IMG *img);
 		// Set the default format used when creating images
