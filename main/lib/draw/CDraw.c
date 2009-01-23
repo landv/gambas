@@ -809,7 +809,7 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 	}
 	else
 	{
-		IMAGE.Convert(info, GB_IMAGE_BGRA);
+		//IMAGE.Convert(info, GB_IMAGE_BGRA);
 		// May have to convert the image data
 		//if (info->format != GB_IMAGE_BGRA && info->format != GB_IMAGE_BGRX)
 		//	GB.Alloc(POINTER(&conv), sw * sizeof(int));

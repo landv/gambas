@@ -295,7 +295,13 @@ __PREMULTIPLIED:
 
 int IMAGE_size(GB_IMG *img)
 {
-	return img->width * img->height * (GB_IMAGE_FMT_IS_24_BITS(img->format) ? 3 : 4);
+	// -- return img->width * img->height * (GB_IMAGE_FMT_IS_24_BITS(img->format) ? 3 : 4);
+	// 
+	// Problem:: you later go on to use w * h * sizeof(uint) which is *always* "4"
+	//
+	// So .. (!)
+	//
+	return img->width * img->height * 4;
 }
 
 void IMAGE_create(GB_IMG *img, int width, int height, int format)
