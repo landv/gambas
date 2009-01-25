@@ -767,7 +767,6 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 	int zoom, size, size2;
 	int x, y, sx, sy, sw, sh;
 	int i, j, xr, yr;
-	uint *data, *conv = NULL;
 	uint col, col1, col2, last_col;
 	bool border;
 	int fill_style, fill_color;
@@ -823,7 +822,7 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 
 		//last_style = -1;
 		//style = border;
-		last_col = 0xFF000000;
+		last_col = 0;
 		col1 = 0;
 		col2 = 0;
 		a = 0xFF;
@@ -834,23 +833,15 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 		
 		for (j = sy, yr = y; j < (sy + sh); j++, yr += zoom)
 		{
-			data = (uint *)info->data + j * info->width + sx;
-			
-			/*if (conv)
-			{
-				GB.Image.Convert(conv, GB_IMAGE_BGRA, data, info.format, sw, 1);
-				data = conv;
-			}*/
-			
 			for (i = sx, xr = x; i < (sx + sw); i++, xr += zoom)
 			{
-				col = *data++;
+				col = IMAGE.GetPixel(info, i, j);
 				
 				if (col != last_col)
 				{
 					last_col = col;
 					
-					a = col >> 24;
+					a = (col >> 24) ^ 0xFF;
 					col &= 0xFFFFFF;
 					
 					if (a < 0xFF)
@@ -895,9 +886,6 @@ BEGIN_METHOD(CDRAW_zoom, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB_INTE
 				
 			}
 		}
-		
-		if (conv)
-			GB.Free(POINTER(&conv));
 		
 		DRAW->Fill.SetStyle(THIS, fill_style);
 		DRAW->Fill.SetColor(THIS, fill_color);

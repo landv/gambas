@@ -118,6 +118,8 @@ typedef
 		int (*Size)(GB_IMG *img);
 		// Set the default format used when creating images
 		void (*SetDefaultFormat)(int format);
+		// Get the color of a pixel
+		GB_COLOR (*GetPixel)(GB_IMG *img, int x, int y);
 		}
 	IMAGE_INTERFACE;
 
