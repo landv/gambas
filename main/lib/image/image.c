@@ -295,13 +295,7 @@ __PREMULTIPLIED:
 
 int IMAGE_size(GB_IMG *img)
 {
-	// -- return img->width * img->height * (GB_IMAGE_FMT_IS_24_BITS(img->format) ? 3 : 4);
-	// 
-	// Problem:: you later go on to use w * h * sizeof(uint) which is *always* "4"
-	//
-	// So .. (!)
-	//
-	return img->width * img->height * 4;
+	return img->width * img->height * (GB_IMAGE_FMT_IS_24_BITS(img->format) ? 3 : 4);
 }
 
 void IMAGE_create(GB_IMG *img, int width, int height, int format)
@@ -338,12 +332,12 @@ static void IMAGE_convert(GB_IMG *img, int format)
 	//fprintf(stderr, "convert image %p: %d -> %d\n", img, img->format, format);
 	
 	//IMAGE_create(&tmp, img->width, img->height, format);
+	img->format = format;
 	GB.Alloc(POINTER(&data), IMAGE_size(img));
 	convert_image(data, format, img->data, img->format, img->width, img->height);
 	GB.Free(POINTER(&img->data));
 	
 	img->data = data;
-	img->format = format;
 }
 
 // Check if a temporary handle is needed, and create it if needed by calling the owner "temp" function
