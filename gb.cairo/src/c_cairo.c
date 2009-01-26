@@ -222,6 +222,25 @@ BEGIN_METHOD(_method, GB_FLOAT x; GB_FLOAT y) \
 	GB.ReturnBoolean(_api(CNT, VARG(x), VARG(y))); \
 END_METHOD
 
+#define IMPLEMENT_PROPERTY_INTEGER(_property, _get, _set) \
+BEGIN_PROPERTY(_property) \
+	CHECK_CNT(); \
+	if (READ_PROPERTY) \
+		GB.ReturnInteger(_get(CNT)); \
+	else \
+		_set(CNT, VPROP(GB_INTEGER)); \
+END_METHOD
+
+#define IMPLEMENT_PROPERTY_FLOAT(_property, _get, _set) \
+BEGIN_PROPERTY(_property) \
+	CHECK_CNT(); \
+	if (READ_PROPERTY) \
+		GB.ReturnFloat(_get(CNT)); \
+	else \
+		_set(CNT, VPROP(GB_FLOAT)); \
+END_METHOD
+
+
 IMPLEMENT_METHOD(CAIRO_save, cairo_save)
 IMPLEMENT_METHOD(CAIRO_restore, cairo_restore)
 IMPLEMENT_METHOD_PRESERVE(CAIRO_clip, cairo_clip)
@@ -291,46 +310,55 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CAIRO_dash)
 
+	GB_ARRAY array;
+	
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+	{
+		int count = cairo_get_dash_count(CNT);
+		GB.Array.New(POINTER(&array), GB_T_FLOAT, count);
+		cairo_get_dash(CNT, (double *)GB.Array.Get(array, 0), NULL);
+		GB.ReturnObject(array);
+	}
+	else
+	{
+		array = (GB_ARRAY)VPROP(GB_OBJECT);
+		if (!array || GB.Array.Count(array) == 0)
+			cairo_set_dash(CNT, NULL, 0, 0.0);
+		else
+			cairo_set_dash(CNT, (double *)GB.Array.Get(array, 0), GB.Array.Count(array), 0.0);
+	}
+
 END_PROPERTY
 
 BEGIN_PROPERTY(CAIRO_dash_offset)
 
-END_PROPERTY
-
-BEGIN_PROPERTY(CAIRO_fill_rule)
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CAIRO_line_cap)
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CAIRO_line_join)
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CAIRO_line_width)
-
 	CHECK_CNT();
 
 	if (READ_PROPERTY)
-		GB.ReturnFloat(cairo_get_line_width(CNT));
+	{
+		double offset;
+		cairo_get_dash(CNT, NULL, &offset);
+		GB.ReturnFloat(offset);
+	}
 	else
-		cairo_set_line_width(CNT, VPROP(GB_FLOAT));
+	{
+		int count = cairo_get_dash_count(CNT);
+		double dashes[count];
+		cairo_get_dash(CNT, dashes, NULL);
+		cairo_set_dash(CNT, dashes, count, VPROP(GB_FLOAT));
+	}
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CAIRO_miter_limit)
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CAIRO_operator)
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CAIRO_tolerance)
-
-END_PROPERTY
+IMPLEMENT_PROPERTY_INTEGER(CAIRO_fill_rule, cairo_get_fill_rule, cairo_set_fill_rule)
+IMPLEMENT_PROPERTY_INTEGER(CAIRO_line_cap, cairo_get_line_cap, cairo_set_line_cap)
+IMPLEMENT_PROPERTY_INTEGER(CAIRO_line_join, cairo_get_line_join, cairo_set_line_join)
+IMPLEMENT_PROPERTY_FLOAT(CAIRO_line_width, cairo_get_line_width, cairo_set_line_width)
+IMPLEMENT_PROPERTY_FLOAT(CAIRO_miter_limit, cairo_get_miter_limit, cairo_set_miter_limit)
+IMPLEMENT_PROPERTY_INTEGER(CAIRO_operator, cairo_get_operator, cairo_set_operator)
+IMPLEMENT_PROPERTY_FLOAT(CAIRO_tolerance, cairo_get_tolerance, cairo_set_tolerance)
 
 IMPLEMENT_METHOD(CAIRO_new_path, cairo_new_path)
 IMPLEMENT_METHOD(CAIRO_new_sub_path, cairo_new_sub_path)
@@ -427,13 +455,10 @@ BEGIN_METHOD(CAIRO_image_pattern, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_IN
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 	
-	surface = check_image((GB_IMG *)VARG(image));
-	if (!surface)
-	{
-		GB.Error("Null image");
+	if (GB.CheckObject(VARG(image)))
 		return;
-	}
 	
+	surface = check_image((GB_IMG *)VARG(image));
 	pattern = cairo_pattern_create_for_surface(surface);
 	
 	if (!MISSING(x) || !MISSING(y))
@@ -452,11 +477,51 @@ BEGIN_METHOD(CAIRO_image_pattern, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_IN
 	
 END_METHOD
 
+static void handle_color_stop(cairo_pattern_t *pattern, GB_ARRAY colors)
+{
+	GB_ARRAY stop;
+	int i, ncol;
+	double *col;
+	
+	for (i = 0; i < GB.Array.Count(colors); i++)
+	{
+		stop = *((GB_ARRAY *)GB.Array.Get(colors, i));
+		col = (double *)GB.Array.Get(stop, 0);
+		ncol = GB.Array.Count(stop);
+		if (ncol == 4)
+			cairo_pattern_add_color_stop_rgb(pattern, col[0], col[1], col[2], col[3]);
+		else if (ncol == 5)
+			cairo_pattern_add_color_stop_rgba(pattern, col[0], col[1], col[2], col[3], col[4]);
+	}
+}
+
 BEGIN_METHOD(CAIRO_linear_gradient_pattern, GB_FLOAT x0; GB_FLOAT y0; GB_FLOAT x1; GB_FLOAT y1; GB_OBJECT colors)
+
+	cairo_pattern_t *pattern;
+	GB_ARRAY colors;
+	
+	colors = (GB_ARRAY)VARG(colors);
+	if (GB.CheckObject(colors))
+		return;
+		
+	pattern = cairo_pattern_create_linear(VARG(x0), VARG(y0), VARG(x1), VARG(y1));
+	handle_color_stop(pattern, colors);
+	make_pattern(pattern);
 
 END_METHOD
 
 BEGIN_METHOD(CAIRO_radial_gradient_pattern, GB_FLOAT cx0; GB_FLOAT cy0; GB_FLOAT radius0; GB_FLOAT cx1; GB_FLOAT cy1; GB_FLOAT radius1; GB_OBJECT colors)
+
+	cairo_pattern_t *pattern;
+	GB_ARRAY colors;
+	
+	colors = (GB_ARRAY)VARG(colors);
+	if (GB.CheckObject(colors))
+		return;
+		
+	pattern = cairo_pattern_create_radial(VARG(cx0), VARG(cy0), VARG(radius0), VARG(cx1), VARG(cy1), VARG(radius1));
+	handle_color_stop(pattern, colors);
+	make_pattern(pattern);
 
 END_METHOD
 
@@ -514,6 +579,32 @@ GB_DESC CairoDesc[] =
 	GB_CONSTANT("FilterBilinear", "i",             CAIRO_FILTER_BILINEAR),
 	GB_CONSTANT("FilterGaussian", "i",             CAIRO_FILTER_GAUSSIAN),
 
+	GB_CONSTANT("FillRuleWinding", "i",            CAIRO_FILL_RULE_WINDING),
+	GB_CONSTANT("FillRuleEvenOdd", "i",            CAIRO_FILL_RULE_EVEN_ODD),
+
+	GB_CONSTANT("LineCapButt", "i",                CAIRO_LINE_CAP_BUTT),
+	GB_CONSTANT("LineCapRound", "i",               CAIRO_LINE_CAP_ROUND),
+	GB_CONSTANT("LineCapSquare", "i",              CAIRO_LINE_CAP_SQUARE),
+	
+	GB_CONSTANT("LineJoinMiter", "i",              CAIRO_LINE_JOIN_MITER),
+	GB_CONSTANT("LineJoinRound", "i",              CAIRO_LINE_JOIN_ROUND),
+	GB_CONSTANT("LineJoinBevel", "i",              CAIRO_LINE_JOIN_BEVEL),
+	
+	GB_CONSTANT("OperatorClear", "i",              CAIRO_OPERATOR_CLEAR),
+  GB_CONSTANT("OperatorSource", "i",             CAIRO_OPERATOR_SOURCE),
+	GB_CONSTANT("OperatorOver", "i",               CAIRO_OPERATOR_OVER),
+	GB_CONSTANT("OperatorIn", "i",                 CAIRO_OPERATOR_IN),
+	GB_CONSTANT("OperatorOut", "i",                CAIRO_OPERATOR_OUT),
+	GB_CONSTANT("OperatorATop", "i",               CAIRO_OPERATOR_ATOP),
+	GB_CONSTANT("OperatorDest", "i",               CAIRO_OPERATOR_DEST),
+	GB_CONSTANT("OperatorDestOver", "i",           CAIRO_OPERATOR_DEST_OVER),
+	GB_CONSTANT("OperatorDestIn", "i",             CAIRO_OPERATOR_DEST_IN),
+	GB_CONSTANT("OperatorDestOut", "i",            CAIRO_OPERATOR_DEST_OUT),
+	GB_CONSTANT("OperatorDestATop", "i",           CAIRO_OPERATOR_DEST_ATOP),
+	GB_CONSTANT("OperatorXor", "i",                CAIRO_OPERATOR_XOR),
+	GB_CONSTANT("OperatorAdd", "i",                CAIRO_OPERATOR_ADD),
+	GB_CONSTANT("OperatorSaturate", "i",           CAIRO_OPERATOR_SATURATE),
+    
 	GB_STATIC_METHOD("Begin", NULL, CAIRO_begin, "(Device)o"),
 	GB_STATIC_METHOD("End", NULL, CAIRO_end, NULL),
 	
