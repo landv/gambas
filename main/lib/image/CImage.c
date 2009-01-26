@@ -26,7 +26,7 @@
 #include "image.h"
 #include "CImage.h"
 
-BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_INTEGER format; GB_INTEGER col)
+BEGIN_METHOD(CIMAGE_new, GB_INTEGER w; GB_INTEGER h; GB_INTEGER col; GB_INTEGER format)
 
 	int format = IMAGE_get_default_format();
 	
@@ -119,7 +119,7 @@ GB_DESC CImageDesc[] =
 	GB_CONSTANT("Standard", "i", 0),
 	GB_CONSTANT("Premultiplied", "i", 1),
 
-	GB_METHOD("_new", NULL, CIMAGE_new, "[(Width)i(Height)i(Format)i(Color)i]"),
+	GB_METHOD("_new", NULL, CIMAGE_new, "[(Width)i(Height)i(Color)i(Format)i]"),
 	GB_METHOD("_free", NULL, CIMAGE_free, NULL),
 
 	GB_METHOD("_get", "i", CIMAGE_get, "(X)i(Y)i"),

@@ -875,7 +875,7 @@ static void myMessageHandler(QtMsgType type, const char *msg )
 }
 #endif
 
-const char *GB_INCLUDE EXPORT = "gb.draw,gb.image";
+const char *GB_INCLUDE EXPORT = "gb.draw";
 
 int EXPORT GB_INIT(void)
 {

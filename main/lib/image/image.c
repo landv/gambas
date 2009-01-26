@@ -335,15 +335,17 @@ static void IMAGE_convert(GB_IMG *img, int format)
 	img->format = format;
 	GB.Alloc(POINTER(&data), IMAGE_size(img));
 	convert_image(data, format, img->data, img->format, img->width, img->height);
-	GB.Free(POINTER(&img->data));
-	
-	img->data = data;
+	//GB.Free(POINTER(&img->data));
+	IMAGE_take(img, &_image_owner, NULL, img->width, img->height, data);
 }
 
 // Check if a temporary handle is needed, and create it if needed by calling the owner "temp" function
 
 void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
 {
+	if (!img)
+		return NULL;
+		
 	// If we already have the temporary handle, then do nothing
 	if (img->temp_owner == temp_owner)
 		return img->temp_handle;
@@ -358,8 +360,6 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
 	}
 	
 	// Get the temporary handle
-	img->temp_owner = temp_owner;
-	
 	if (temp_owner)
 	{
 		// If we are the owner, we must use our owner handle as temporary handle
@@ -368,10 +368,14 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
 		// If we are not the owner, then we will have to create the temporary handle ourself
 		else
 		{
+			// Conversion can make gb.image the new owner and temporary owner
 			IMAGE_convert(img, format);
-			img->temp_handle = (*img->temp_owner->temp)(img);
+			img->temp_handle = (*temp_owner->temp)(img);
 		}
 	}
+	
+	// Become the temporary owner
+	img->temp_owner = temp_owner;
 	
 	return img->temp_handle;
 }
@@ -380,6 +384,9 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
 
 void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data)
 {
+	if (!img)
+		return;
+		
 	// If we are already the owner with the same handle, then do nothing
 	if (img->owner == owner && img->owner_handle == owner_handle)
 		return;
