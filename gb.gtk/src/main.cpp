@@ -230,6 +230,7 @@ extern "C"
 
 		GB.LoadComponent("gb.draw");
 		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
 
 		return TRUE;
 	}

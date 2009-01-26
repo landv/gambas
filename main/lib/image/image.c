@@ -24,6 +24,8 @@
 
 #include "image.h"
 
+//#define DEBUG_CONVERT
+
 static int _default_format = GB_IMAGE_RGBA;
 
 static inline unsigned char *GET_END_POINTER(GB_IMG *image)
@@ -34,6 +36,12 @@ static inline unsigned char *GET_END_POINTER(GB_IMG *image)
 static inline uint PREMUL(uint x) 
 {
 	uint a = x >> 24;
+	
+	if (a == 0)
+		return 0;
+	else if (a == 0xFF)
+		return x;
+	
 	uint t = (x & 0xff00ff) * a;
 	t = (t + ((t >> 8) & 0xff00ff) + 0x800080) >> 8;
 	t &= 0xff00ff;
@@ -47,12 +55,16 @@ static inline uint PREMUL(uint x)
 
 static inline uint INV_PREMUL(uint p)
 {
+	if (ALPHA(p) == 0)
+		return 0;
+	else if (ALPHA(p) == 0xFF)
+		return p;
+	else
 	return
-		(ALPHA(p) == 0 ? 0 :
 		((ALPHA(p) << 24)
 		| (((255*RED(p))/ ALPHA(p)) << 16)
 		| (((255*GREEN(p)) / ALPHA(p)) << 8)
-		| ((255*BLUE(p)) / ALPHA(p))));
+		| ((255*BLUE(p)) / ALPHA(p)));
 }
 
 static inline uint SWAP(uint p)
@@ -120,7 +132,8 @@ static void free_image(GB_IMG *img, void *image)
 static GB_IMG_OWNER _image_owner = {
 	"gb.image",
 	free_image,
-	free_image
+	free_image,
+	NULL
 	};
 
 
@@ -139,6 +152,10 @@ static void convert_image(uchar *dst, int dst_format, uchar *src, int src_format
 	uint *p, *pm;
 	bool psrc, pdst;
 
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: src_format = %d dst_format = %d\n", src_format, dst_format);
+	#endif
+
 	len = w * h * sizeof(uint);
 	dm = &d[len];
 
@@ -147,6 +164,10 @@ static void convert_image(uchar *dst, int dst_format, uchar *src, int src_format
 
 	pdst = GB_IMAGE_FMT_IS_PREMULTIPLIED(dst_format);
 	dst_format = GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(dst_format);
+
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: after: src_format = %d dst_format = %d\n", src_format, dst_format);
+	#endif
 
   if (dst_format == GB_IMAGE_BGRA || dst_format == GB_IMAGE_BGRX)
   {
@@ -197,11 +218,17 @@ static void convert_image(uchar *dst, int dst_format, uchar *src, int src_format
   
 __0123:         
 
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 0123\n");
+	#endif
   memcpy(dst, src, len);
   goto __PREMULTIPLIED;
 
 __3210:
 
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 3210\n");
+	#endif
   while (d != dm)
   {
     d[0] = s[3];
@@ -214,6 +241,10 @@ __3210:
   goto __PREMULTIPLIED;
 
 __2103:
+
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 2103\n");
+	#endif
 
   while (d != dm)
   {
@@ -228,6 +259,10 @@ __2103:
   
 __1230:
 
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 1230\n");
+	#endif
+	
   while (d != dm)
   {
     d[0] = s[1];
@@ -241,6 +276,10 @@ __1230:
 
 __012X:
 
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 012X\n");
+	#endif
+	
   while (d != dm)
   {
     d[0] = s[0];
@@ -254,6 +293,10 @@ __012X:
 
 __210X:
 
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 210X\n");
+	#endif
+	
   while (d != dm)
   {
     d[0] = s[2];
@@ -275,6 +318,9 @@ __PREMULTIPLIED:
 	
 	if (psrc)
 	{
+		#ifdef DEBUG_CONVERT
+		fprintf(stderr, "convert_image: premultiplied -> normal\n");
+		#endif
 		// convert premultiplied to normal
 		while (p != pm)
 		{
@@ -284,6 +330,9 @@ __PREMULTIPLIED:
 	}
 	else
 	{
+		#ifdef DEBUG_CONVERT
+		fprintf(stderr, "convert_image: normal -> premultiplied\n");
+		#endif
 		// convert normal to premultiplied
 		while (p != pm)
 		{
@@ -314,6 +363,7 @@ void IMAGE_create(GB_IMG *img, int width, int height, int format)
 	img->format = format;
 	GB.Alloc(POINTER(&img->data), IMAGE_size(img));
 	img->owner = &_image_owner;
+	img->owner_handle = img->data;
 }
 
 void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsigned char *data)
@@ -322,21 +372,20 @@ void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsi
 	memcpy(img->data, data, IMAGE_size(img));
 }
 
-static void IMAGE_convert(GB_IMG *img, int format)
+static void IMAGE_convert(GB_IMG *img, int dst_format)
 {
 	uchar *data;
+	int src_format = img->format;
 	
-	if (format == img->format)
+	if (src_format == dst_format)
 		return;
 	
-	//fprintf(stderr, "convert image %p: %d -> %d\n", img, img->format, format);
-	
 	//IMAGE_create(&tmp, img->width, img->height, format);
-	img->format = format;
+	img->format = dst_format;
 	GB.Alloc(POINTER(&data), IMAGE_size(img));
-	convert_image(data, format, img->data, img->format, img->width, img->height);
+	convert_image(data, dst_format, img->data, src_format, img->width, img->height);
 	//GB.Free(POINTER(&img->data));
-	IMAGE_take(img, &_image_owner, NULL, img->width, img->height, data);
+	IMAGE_take(img, &_image_owner, data, img->width, img->height, data);
 }
 
 // Check if a temporary handle is needed, and create it if needed by calling the owner "temp" function

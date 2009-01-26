@@ -176,7 +176,7 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 		if (pic)
 		{
 			image = CIMAGE_create(pic);
-			PICTURE->getPixbuf();
+			pic->getPixbuf();
 			GB.ReturnObject(image);
 			return;
 		}
