@@ -24,7 +24,7 @@
 
 #include "image.h"
 
-#define DEBUG_CONVERT
+//#define DEBUG_CONVERT
 
 static int _default_format = GB_IMAGE_RGBA;
 
