@@ -55,7 +55,7 @@
 
 #ifdef PROJECT_EXEC
 
-//PUBLIC FILE_STAT FILE_stat_info = { 0 };
+//FILE_STAT FILE_stat_info = { 0 };
 
 static DIR *file_dir = NULL;
 static char *file_pattern = NULL;
@@ -124,7 +124,7 @@ static void dir_exit(void)
 }
 
 
-PUBLIC char *FILE_make_temp(int *len, char *pattern)
+char *FILE_make_temp(int *len, char *pattern)
 {
   static int count = 0;
 
@@ -158,13 +158,13 @@ static void remove_temp_file(const char *path)
 	}
 }
 
-PUBLIC void FILE_remove_temp_file(void)
+void FILE_remove_temp_file(void)
 {
   FILE_recursive_dir(FILE_make_temp(NULL, NULL), NULL, remove_temp_file, 0);
   rmdir(FILE_make_temp(NULL, NULL));
 }
 
-PUBLIC void FILE_init(void)
+void FILE_init(void)
 {
 	FILE_remove_temp_file();
   
@@ -174,7 +174,7 @@ PUBLIC void FILE_init(void)
   mkdir(file_buffer, S_IRWXU);
 }
 
-PUBLIC void FILE_exit(void)
+void FILE_exit(void)
 {
 	FILE_remove_temp_file();
   STRING_free(&file_rdir_path);
@@ -200,7 +200,7 @@ PUBLIC void FILE_exit(void)
   _d; \
 })
 
-PUBLIC const char *FILE_cat(const char *path, ...)
+const char *FILE_cat(const char *path, ...)
 {
   char *p;
   va_list args;
@@ -254,13 +254,13 @@ PUBLIC const char *FILE_cat(const char *path, ...)
 }
 
 
-PUBLIC char *FILE_buffer(void)
+char *FILE_buffer(void)
 {
   return file_buffer;
 }
 
 
-PUBLIC int FILE_buffer_length(void)
+int FILE_buffer_length(void)
 {
   if (file_buffer_length < 0)
     file_buffer_length = strlen(file_buffer);
@@ -268,7 +268,7 @@ PUBLIC int FILE_buffer_length(void)
   return file_buffer_length;
 }
 
-PUBLIC const char *FILE_get_dir(const char *path)
+const char *FILE_get_dir(const char *path)
 {
   char *p;
 
@@ -298,7 +298,7 @@ PUBLIC const char *FILE_get_dir(const char *path)
 }
 
 
-PUBLIC const char *FILE_get_name(const char *path)
+const char *FILE_get_name(const char *path)
 {
   const char *p;
 
@@ -310,7 +310,7 @@ PUBLIC const char *FILE_get_name(const char *path)
 }
 
 
-PUBLIC const char *FILE_get_ext(const char *path)
+const char *FILE_get_ext(const char *path)
 {
   const char *p;
 
@@ -326,7 +326,7 @@ PUBLIC const char *FILE_get_ext(const char *path)
 }
 
 
-PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
+const char *FILE_set_ext(const char *path, const char *ext)
 {
   char *p;
 
@@ -363,7 +363,7 @@ PUBLIC const char *FILE_set_ext(const char *path, const char *ext)
 }
 
 
-PUBLIC const char *FILE_get_basename(const char *path)
+const char *FILE_get_basename(const char *path)
 {
   char *p;
 
@@ -381,7 +381,7 @@ PUBLIC const char *FILE_get_basename(const char *path)
   return file_buffer;
 }
 
-PUBLIC bool FILE_is_dir(const char *path)
+bool FILE_is_dir(const char *path)
 {
   struct stat buf;
 
@@ -414,7 +414,7 @@ __OK:
 
 #ifdef PROJECT_EXEC
 
-PUBLIC bool FILE_exist_real(const char *path)
+bool FILE_exist_real(const char *path)
 {
   struct stat buf;
 
@@ -422,7 +422,7 @@ PUBLIC bool FILE_exist_real(const char *path)
   return (stat(path, &buf) == 0);
 }
 
-PUBLIC void FILE_stat(const char *path, FILE_STAT *info, bool follow)
+void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 {
   struct stat buf;
   int ret;
@@ -474,7 +474,7 @@ PUBLIC void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 }
 
 
-PUBLIC void FILE_dir_first(const char *path, const char *pattern, int attr)
+void FILE_dir_first(const char *path, const char *pattern, int attr)
 {
   dir_exit();
 
@@ -509,7 +509,7 @@ PUBLIC void FILE_dir_first(const char *path, const char *pattern, int attr)
 }
 
 
-PUBLIC bool FILE_dir_next(char **path, int *len)
+bool FILE_dir_next(char **path, int *len)
 {
   struct dirent *entry;
   int len_entry;
@@ -572,7 +572,7 @@ PUBLIC bool FILE_dir_next(char **path, int *len)
 }
 
 
-PUBLIC void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr)
+void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr)
 {
   void *list = NULL;
   char *file;
@@ -625,7 +625,7 @@ PUBLIC void FILE_recursive_dir(const char *dir, void (*found)(const char *), voi
 }
 
 
-PUBLIC void FILE_unlink(const char *path)
+void FILE_unlink(const char *path)
 {
   if (FILE_is_relative(path))
     THROW(E_ACCESS);
@@ -635,7 +635,7 @@ PUBLIC void FILE_unlink(const char *path)
 }
 
 
-PUBLIC void FILE_rmdir(const char *path)
+void FILE_rmdir(const char *path)
 {
   if (FILE_is_relative(path))
     THROW(E_ACCESS);
@@ -645,7 +645,7 @@ PUBLIC void FILE_rmdir(const char *path)
 }
 
 
-PUBLIC void FILE_mkdir(const char *path)
+void FILE_mkdir(const char *path)
 {
   if (FILE_is_relative(path))
     THROW(E_ACCESS);
@@ -655,7 +655,7 @@ PUBLIC void FILE_mkdir(const char *path)
 }
 
 
-PUBLIC void FILE_make_path_dir(const char *path)
+void FILE_make_path_dir(const char *path)
 {
   int i;
   char c;
@@ -682,7 +682,7 @@ PUBLIC void FILE_make_path_dir(const char *path)
 }
 
 
-PUBLIC void FILE_rename(const char *src, const char *dst)
+void FILE_rename(const char *src, const char *dst)
 {
   if (FILE_is_relative(src) || FILE_is_relative(dst))
     THROW(E_ACCESS);
@@ -694,7 +694,7 @@ PUBLIC void FILE_rename(const char *src, const char *dst)
     THROW_SYSTEM(errno, dst);
 }
 
-PUBLIC void FILE_copy(const char *src, const char *dst)
+void FILE_copy(const char *src, const char *dst)
 {
   STREAM stream_src;
   STREAM stream_dst;
@@ -744,7 +744,7 @@ PUBLIC void FILE_copy(const char *src, const char *dst)
 }
 
 
-PUBLIC bool FILE_access(const char *path, int mode)
+bool FILE_access(const char *path, int mode)
 {
   if (FILE_is_relative(path))
   {
@@ -765,7 +765,7 @@ PUBLIC bool FILE_access(const char *path, int mode)
 }
 
 
-PUBLIC bool FILE_exist(const char *path)
+bool FILE_exist(const char *path)
 {
 	struct stat buf;
 
@@ -785,7 +785,7 @@ PUBLIC bool FILE_exist(const char *path)
 }
 
 
-PUBLIC void FILE_link(const char *src, const char *dst)
+void FILE_link(const char *src, const char *dst)
 {
   /* src can be relative */
   if (FILE_is_relative(dst))
@@ -798,7 +798,7 @@ PUBLIC void FILE_link(const char *src, const char *dst)
     THROW_SYSTEM(errno, dst);
 }
 
-PUBLIC int64_t FILE_free(const char *path)
+int64_t FILE_free(const char *path)
 {
   struct statfs info;
 
@@ -811,12 +811,12 @@ PUBLIC int64_t FILE_free(const char *path)
 
 #else
 
-PUBLIC bool FILE_exist(const char *path)
+bool FILE_exist(const char *path)
 {
   return (access(path, F_OK) == 0);
 }
 
-PUBLIC time_t FILE_get_time(const char *path)
+time_t FILE_get_time(const char *path)
 {
   struct stat info;
 
@@ -828,7 +828,7 @@ PUBLIC time_t FILE_get_time(const char *path)
 
 #endif
 
-PUBLIC const char *FILE_getcwd(const char *subdir)
+const char *FILE_getcwd(const char *subdir)
 {
   if (getcwd(file_buffer, PATH_MAX) == NULL)
     return NULL;
@@ -842,7 +842,7 @@ PUBLIC const char *FILE_getcwd(const char *subdir)
 }
 
 
-PUBLIC const char *FILE_readlink(const char *link)
+const char *FILE_readlink(const char *link)
 {
   int len = readlink(link, file_buffer, MAX_PATH);
 
@@ -855,7 +855,7 @@ PUBLIC const char *FILE_readlink(const char *link)
 
 }
 
-PUBLIC const char *FILE_find_gambas(void)
+const char *FILE_find_gambas(void)
 {
   const char *path;
 

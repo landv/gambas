@@ -2,7 +2,9 @@
 
   main.c
 
-  (c) 2008 Benoît Minisini <gambas@users.sourceforge.net>
+  gb.image.io component
+
+  (c) 2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,48 +24,25 @@
 
 #define __MAIN_C
 
-#include <unistd.h>
-#include <stdio.h>
-
-#include "CImage.h"
-#include "CImageStat.h"
-#include "image.h"
 #include "main.h"
+#include "c_image.h"
 
 GB_INTERFACE GB EXPORT;
-
+IMAGE_INTERFACE IMAGE EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-	CImageDesc,
-	CImageStatDesc,
-  NULL
-};
-
-static GB_IMG *create_image(int width, int height, int format, unsigned char *data)
-{
-	CIMAGE *image;
-	
-  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
-  IMAGE_create_with_data(&image->image, width, height, format, data);
-  return (GB_IMG *)image;
-}
-
-void *GB_IMAGE_1[] EXPORT = 
-{
-	(void *)IMAGE_INTERFACE_VERSION,
-	(void *)create_image,
-	(void *)IMAGE_take,
-	(void *)IMAGE_check,
-	(void *)IMAGE_size,
-	(void *)IMAGE_set_default_format,
-	(void *)IMAGE_get_pixel,
-	(void *)IMAGE_convert,
+  CImageDesc,
   NULL
 };
 
 int EXPORT GB_INIT(void)
 {
+	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	
+	// Bug in the gdk-pixbuf documentation: the following is mandatory.
+	g_type_init();
+	
 	return FALSE;
 }
 

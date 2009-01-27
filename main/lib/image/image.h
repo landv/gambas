@@ -39,7 +39,7 @@ void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsi
 void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
 void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format);
 void IMAGE_delete(GB_IMG *img);
-//void IMAGE_convert(GB_IMG *img, int format);
+void IMAGE_convert(GB_IMG *img, int format);
 void IMAGE_fill(GB_IMG *img, GB_COLOR col);
 void IMAGE_make_gray(GB_IMG *img);
 void IMAGE_make_transparent(GB_IMG *img, GB_COLOR color);

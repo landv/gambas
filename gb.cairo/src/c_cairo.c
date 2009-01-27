@@ -41,7 +41,7 @@ CAIRO_DRAW *_current = NULL;
 #define CNT (_current->context)
 #define SURFACE (_current->surface)
 
-/***************************************************************************/
+/**** CairoExtents *********************************************************/
 
 #define IMPLEMENT_EXTENTS_PROPERTY(_method, _field) \
 BEGIN_PROPERTY(_method) \
@@ -65,7 +65,7 @@ GB_DESC CairoExtentsDesc[] =
 	GB_END_DECLARE
 };
 
-/***************************************************************************/
+/**** CairoPattern *********************************************************/
 
 BEGIN_METHOD_VOID(CAIRO_PATTERN_free)
 
@@ -84,8 +84,73 @@ GB_DESC CairoPatternDesc[] =
 };
 
 
+/**** CairoMatrix **********************************************************/
 
-/***************************************************************************/
+BEGIN_METHOD(CAIRO_MATRIX_new, GB_OBJECT init)
+
+	GB_ARRAY init = VARGOPT(init, NULL);
+	
+	if (init && GB.Array.Count(init) == 6)
+	{
+		double *m = (double *)GB.Array.Get(init, 0);
+		cairo_matrix_init(&THIS_MATRIX->matrix, m[0], m[1], m[2], m[3], m[4], m[5]);
+	}
+	else
+		cairo_matrix_init_identity(&THIS_MATRIX->matrix);
+
+END_METHOD
+
+BEGIN_METHOD(CAIRO_MATRIX_translate, GB_FLOAT tx; GB_FLOAT ty)
+
+	cairo_matrix_translate(&THIS_MATRIX->matrix, VARG(tx), VARG(ty));
+
+END_METHOD
+
+BEGIN_METHOD(CAIRO_MATRIX_scale, GB_FLOAT sx; GB_FLOAT sy)
+
+	cairo_matrix_translate(&THIS_MATRIX->matrix, VARG(sx), VARG(sy));
+
+END_METHOD
+
+BEGIN_METHOD(CAIRO_MATRIX_rotate, GB_FLOAT angle)
+
+	cairo_matrix_rotate(&THIS_MATRIX->matrix, VARG(angle));
+
+END_METHOD
+
+BEGIN_METHOD_VOID(CAIRO_MATRIX_invert)
+
+	GB.ReturnBoolean(cairo_matrix_invert(&THIS_MATRIX->matrix) != CAIRO_STATUS_SUCCESS);
+
+END_METHOD
+
+BEGIN_METHOD(CAIRO_MATRIX_multiply, GB_OBJECT matrix)
+
+	CAIRO_MATRIX *matrix = (CAIRO_MATRIX *)VARG(matrix);
+	
+	if (GB.CheckObject(matrix))
+		return;
+		
+	cairo_matrix_multiply(&THIS_MATRIX->matrix, &THIS_MATRIX->matrix, &matrix->matrix);
+
+END_METHOD
+
+GB_DESC CairoMatrixDesc[] = 
+{
+	GB_DECLARE("CairoMatrix", sizeof(CAIRO_MATRIX)),
+
+	GB_METHOD("_new", NULL, CAIRO_MATRIX_new, "[(Init)Float[];]"),
+	GB_METHOD("Translate", NULL, CAIRO_MATRIX_translate, "(TX)f(TY)y"),
+	GB_METHOD("Scale", NULL, CAIRO_MATRIX_scale, "(SX)f(SY)y"),
+	GB_METHOD("Rotate", NULL, CAIRO_MATRIX_rotate, "(Angle)f"),
+	GB_METHOD("Invert", "b", CAIRO_MATRIX_invert, NULL),
+	GB_METHOD("Multiply", NULL, CAIRO_MATRIX_multiply, "(Matrix)CairoMatrix;"),	
+
+	GB_END_DECLARE	
+};
+
+
+/**** Cairo ****************************************************************/
 
 static void free_image(GB_IMG *img, void *image)
 {
@@ -525,6 +590,50 @@ BEGIN_METHOD(CAIRO_radial_gradient_pattern, GB_FLOAT cx0; GB_FLOAT cy0; GB_FLOAT
 
 END_METHOD
 
+BEGIN_METHOD(CAIRO_translate, GB_FLOAT tx; GB_FLOAT ty)
+
+	CHECK_CNT();
+	cairo_translate(CNT, VARG(tx), VARG(ty));
+
+END_METHOD
+
+BEGIN_METHOD(CAIRO_scale, GB_FLOAT sx; GB_FLOAT sy)
+
+	CHECK_CNT();
+	cairo_scale(CNT, VARG(sx), VARG(sy));
+
+END_METHOD
+
+BEGIN_METHOD(CAIRO_rotate, GB_FLOAT angle)
+
+	CHECK_CNT();
+	cairo_rotate(CNT, VARG(angle));
+
+END_METHOD
+
+BEGIN_PROPERTY(CAIRO_matrix)
+
+	CAIRO_MATRIX *matrix;
+	
+	CHECK_CNT();
+
+	if (READ_PROPERTY)
+	{
+		GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+		cairo_get_matrix(CNT, &matrix->matrix);
+		GB.ReturnObject(matrix);
+	}
+	else
+	{
+		matrix = (CAIRO_MATRIX *)VPROP(GB_OBJECT);
+		if (!matrix)
+			cairo_identity_matrix(CNT);
+		else
+			cairo_set_matrix(CNT, &matrix->matrix);
+	}
+
+END_PROPERTY
+
 GB_DESC CairoDesc[] = 
 {
 	GB_DECLARE("Cairo", 0), GB_VIRTUAL_CLASS(),
@@ -664,7 +773,10 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("LinearGradient", "CairoPattern", CAIRO_linear_gradient_pattern, "(X0)f(Y0)f(X1)f(Y1)f(Colors)Float[][];"),
 	GB_STATIC_METHOD("RadialGradient", "CairoPattern", CAIRO_radial_gradient_pattern, "(CX0)f(CY0)f(Radius0)f(CX1)f(CY1)f(Radius1)f(Colors)Float[][];"),
 
-	//GB_METHOD("SetSourceRGB", NULL, CAIRO_set_source_rgb, "(Red)f(Green)f(Blue)f[(Alpha)f]"),
+	GB_STATIC_METHOD("Translate", NULL, CAIRO_translate, "(TX)f(TY)f"),
+	GB_STATIC_METHOD("Scale", NULL, CAIRO_translate, "(SX)f(SY)f"),
+	GB_STATIC_METHOD("Rotate", NULL, CAIRO_rotate, "(Angle)f"),
+	GB_STATIC_PROPERTY("Matrix", "CairoMatrix", CAIRO_matrix),
 
 	GB_END_DECLARE	
 };

@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  c_cairo.h
+  main.h
 
-  gb.cairo component
+  gb.image.io component
 
   (c) 2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -22,45 +22,18 @@
 
 ***************************************************************************/
 
-#ifndef __C_CAIRO_H
-#define __C_CAIRO_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
-#include "main.h"
+#include "gambas.h"
+#include "gb.image.h"
+#include "gb_common.h"
 
-#ifndef __C_CAIRO_C
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
-extern GB_DESC CairoExtentsDesc[];
-extern GB_DESC CairoPatternDesc[];
-extern GB_DESC CairoMatrixDesc[];
-extern GB_DESC CairoDesc[];
-
-#else
-
-#define THIS_EXTENTS ((CAIRO_EXTENTS *)_object)
-#define THIS_PATTERN ((CAIRO_PATTERN *)_object)
-#define THIS_MATRIX ((CAIRO_MATRIX *)_object)
-
+#ifndef __MAIN_C
+extern GB_INTERFACE GB;
+extern IMAGE_INTERFACE IMAGE;
 #endif
 
-typedef
-	struct {
-		GB_BASE ob;
-		double x1, y1, x2, y2;
-		}
-	CAIRO_EXTENTS;
-	
-typedef
-	struct {
-		GB_BASE ob;
-		cairo_pattern_t *pattern;
-	}
-	CAIRO_PATTERN;
-
-typedef
-	struct {
-		GB_BASE ob;
-		cairo_matrix_t matrix;
-	}
-	CAIRO_MATRIX;
-
-#endif
+#endif /* __MAIN_H */

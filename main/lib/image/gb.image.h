@@ -120,6 +120,8 @@ typedef
 		void (*SetDefaultFormat)(int format);
 		// Get the color of a pixel
 		GB_COLOR (*GetPixel)(GB_IMG *img, int x, int y);
+		// Converts an image to one of the following formats: BGRA, RGBA, BGRP, RGBP
+		void (*Convert)(GB_IMG *img, int format);
 		}
 	IMAGE_INTERFACE;
 

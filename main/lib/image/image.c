@@ -372,7 +372,7 @@ void IMAGE_create_with_data(GB_IMG *img, int width, int height, int format, unsi
 	memcpy(img->data, data, IMAGE_size(img));
 }
 
-static void IMAGE_convert(GB_IMG *img, int dst_format)
+void IMAGE_convert(GB_IMG *img, int dst_format)
 {
 	uchar *data;
 	int src_format = img->format;

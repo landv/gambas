@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  c_cairo.h
+  c_image.h
 
-  gb.cairo component
+  gb.image.io component
 
   (c) 2009 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -22,45 +22,24 @@
 
 ***************************************************************************/
 
-#ifndef __C_CAIRO_H
-#define __C_CAIRO_H
+#ifndef __C_IMAGE_H
+#define __C_IMAGE_H
 
 #include "main.h"
 
-#ifndef __C_CAIRO_C
+typedef 
+  struct 
+  {
+    GB_IMG img;
+  }
+  CIMAGE;
 
-extern GB_DESC CairoExtentsDesc[];
-extern GB_DESC CairoPatternDesc[];
-extern GB_DESC CairoMatrixDesc[];
-extern GB_DESC CairoDesc[];
-
+#ifndef __C_IMAGE_C
+extern GB_DESC CImageDesc[];
 #else
 
-#define THIS_EXTENTS ((CAIRO_EXTENTS *)_object)
-#define THIS_PATTERN ((CAIRO_PATTERN *)_object)
-#define THIS_MATRIX ((CAIRO_MATRIX *)_object)
+#define THIS ((GB_IMG *)_object)
 
 #endif
 
-typedef
-	struct {
-		GB_BASE ob;
-		double x1, y1, x2, y2;
-		}
-	CAIRO_EXTENTS;
-	
-typedef
-	struct {
-		GB_BASE ob;
-		cairo_pattern_t *pattern;
-	}
-	CAIRO_PATTERN;
-
-typedef
-	struct {
-		GB_BASE ob;
-		cairo_matrix_t matrix;
-	}
-	CAIRO_MATRIX;
-
-#endif
+#endif /* __CIMAGE_H */
