@@ -16,13 +16,13 @@ Public Sub SetConnection(hCon As Connection)
 
 End
 
-Public Function ArrayToString(Array As String[], Quote As Boolean) As String
+Public Function ArrayToString(Array As String[], {Quote} As Boolean) As String
 
   Dim iCounter As Integer
   Dim Tmp As String
 
   For iCounter = 0 To Array.Count - 1
-    If Quote Then
+    If {Quote} Then
       Tmp &= "`" & (Array[iCounter]) & "`, "
     Else
       Tmp &= Array[iCounter] & ", "
