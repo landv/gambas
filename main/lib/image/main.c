@@ -27,6 +27,7 @@
 
 #include "CImage.h"
 #include "CImageStat.h"
+#include "c_color.h"
 #include "image.h"
 #include "main.h"
 
@@ -35,6 +36,8 @@ GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	CColorInfoDesc,
+	CColorDesc,
 	CImageDesc,
 	CImageStatDesc,
   NULL

@@ -1171,6 +1171,7 @@ void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_retu
 	}
 }
 
+#if 0
 void gt_pixbuf_replace_color(GdkPixbuf *pixbuf, gColor src, gColor dst, bool noteq)
 {
 	guint32 *p;
@@ -1199,6 +1200,7 @@ void gt_pixbuf_replace_color(GdkPixbuf *pixbuf, gColor src, gColor dst, bool not
 		}
 	}
 }
+#endif
 
 // Comes from the GIMP
 

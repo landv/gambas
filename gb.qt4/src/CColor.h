@@ -32,6 +32,4 @@ extern GB_DESC CColorDesc[];
 extern GB_DESC CColorInfoDesc[];
 #endif
 
-#define COLOR_DEFAULT (-1)
-
 #endif

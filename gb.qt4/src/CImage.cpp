@@ -97,13 +97,15 @@ static void *temp_image(GB_IMG *img)
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.qt4",
+	GB_IMAGE_BGRA,
 	free_image,
-	free_image
+	free_image,
+	temp_image
 	};
 
 QImage *CIMAGE_get(CIMAGE *_object)
 {
-	return (QImage *)IMAGE.Check(THIS_IMAGE, &_image_owner, GB_IMAGE_BGRA);
+	return (QImage *)IMAGE.Check(THIS_IMAGE, &_image_owner);
 }
 
 #define check_image CIMAGE_get

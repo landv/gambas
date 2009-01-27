@@ -58,6 +58,7 @@ static void *temp_image(GB_IMG *img)
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.gtk",
+	GB_IMAGE_RGBA,
 	free_image,
 	free_image,
 	temp_image
@@ -65,7 +66,7 @@ static GB_IMG_OWNER _image_owner = {
 
 gPicture *CIMAGE_get(CIMAGE *_object)
 {
-	return (gPicture *)IMAGE.Check(&THIS->img, &_image_owner, GB_IMAGE_RGBA);
+	return (gPicture *)IMAGE.Check(&THIS->img, &_image_owner);
 }
 
 #define check_image CIMAGE_get

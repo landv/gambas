@@ -1,10 +1,10 @@
 #ifndef __GCOLOR_H
 #define __GCOLOR_H
 
-typedef
-	unsigned int gColor;
+#include "gb.image.h"
 
-#define COLOR_DEFAULT ((gColor)-1)
+typedef
+	int gColor;
 
 /* Functions implemented in gtools.cpp */
 

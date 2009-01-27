@@ -81,8 +81,8 @@ BEGIN_METHOD(CIMAGE_load, GB_STRING path)
 	
 	switch (gdk_pixbuf_get_n_channels(img))
 	{
-		case 3: format = GB_IMAGE_BGR; break;
-		case 4: format = GB_IMAGE_BGRA; break;
+		case 3: format = GB_IMAGE_RGB; break;
+		case 4: format = GB_IMAGE_RGBA; break;
 		default: GB.Error("Unsupported number of channels"); goto __END;
 	}
 	

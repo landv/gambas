@@ -24,7 +24,7 @@
 
 #include "image.h"
 
-//#define DEBUG_CONVERT
+#define DEBUG_CONVERT
 
 static int _default_format = GB_IMAGE_RGBA;
 
@@ -131,6 +131,7 @@ static void free_image(GB_IMG *img, void *image)
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.image",
+	0,
 	free_image,
 	free_image,
 	NULL
@@ -390,7 +391,7 @@ void IMAGE_convert(GB_IMG *img, int dst_format)
 
 // Check if a temporary handle is needed, and create it if needed by calling the owner "temp" function
 
-void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
+void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner)
 {
 	if (!img)
 		return NULL;
@@ -418,7 +419,7 @@ void *IMAGE_check(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format)
 		else
 		{
 			// Conversion can make gb.image the new owner and temporary owner
-			IMAGE_convert(img, format);
+			IMAGE_convert(img, temp_owner->format);
 			img->temp_handle = (*temp_owner->temp)(img);
 		}
 	}
@@ -456,7 +457,7 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 	img->owner_handle = owner_handle;
 	
 	// As we are now the owner, then we must have the temporary handle too
-	IMAGE_check(img, NULL, 0);
+	IMAGE_check(img, NULL);
 	img->temp_owner = owner;
 	img->temp_handle = owner_handle;
 	
@@ -464,6 +465,8 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 	img->width = width;
 	img->height = height;
 	img->data = data;
+	if (owner && owner->format)
+		img->format = owner->format;
 }
 
 void IMAGE_delete(GB_IMG *img)

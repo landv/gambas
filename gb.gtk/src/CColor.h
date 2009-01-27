@@ -33,8 +33,6 @@
 
 #ifndef __CCOLOR_CPP
 extern GB_DESC CColorDesc[];
-extern GB_DESC CColorInfoDesc[];
 #endif
-
 
 #endif

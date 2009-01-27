@@ -112,7 +112,6 @@ extern "C"
 		CLineDesc,
 		CFillDesc,
 		CColorDesc,
-		CColorInfoDesc,
 		CFontsDesc,
 		CFontDesc,
 		CKeyDesc,

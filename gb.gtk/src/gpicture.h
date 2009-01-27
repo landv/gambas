@@ -50,7 +50,6 @@ public:
 
 	gColor getPixel(int x, int y);
 	void putPixel(int x, int y, gColor col);
-	void replace(gColor src, gColor dst, bool noteq = false);
 	void draw(gPicture *src, int x, int y, int w = -1, int h = -1, int sx = 0, int sy = 0, int sw = -1, int sh = -1);
 	void makeGray();
 	void makeTransparent(gColor color);

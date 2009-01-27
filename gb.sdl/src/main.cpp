@@ -79,7 +79,7 @@ extern "C"
 		CMouse, CCursor,
 		CLine,
 		CFill,
-		CColor, CColorInfo,
+		CColor,
 		CFonts,
 
 		NULL

@@ -98,6 +98,7 @@ static void *temp_image(GB_IMG *img)
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.qt",
+	GB_IMAGE_BGRA,
 	free_image,
 	free_image,
 	temp_image,
@@ -105,7 +106,7 @@ static GB_IMG_OWNER _image_owner = {
 
 static QImage *check_image(void *_object)
 {
-	return (QImage *)IMAGE.Check(THIS_IMAGE, &_image_owner, GB_IMAGE_BGRA);
+	return (QImage *)IMAGE.Check(THIS_IMAGE, &_image_owner);
 }
 
 static void take_image(CIMAGE *_object, QImage *image)

@@ -523,7 +523,7 @@ static void analyze(const char *comp, bool include)
 
 	if (_verbose)
 		fprintf(stderr, "%s component %s\n", include ? "Including" : "Analyzing", name);
-	else
+	else if (!include)
 		puts(name);
 	
 	native = find_native_component(name);

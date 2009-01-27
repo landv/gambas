@@ -65,62 +65,65 @@ GB_DESC CairoExtentsDesc[] =
 	GB_END_DECLARE
 };
 
-/**** CairoPattern *********************************************************/
-
-BEGIN_METHOD_VOID(CAIRO_PATTERN_free)
-
-	cairo_pattern_destroy(THIS_PATTERN->pattern);
-
-END_METHOD
-
-
-GB_DESC CairoPatternDesc[] = 
-{
-	GB_DECLARE("CairoPattern", sizeof(CAIRO_PATTERN)), GB_NOT_CREATABLE(),
-
-	GB_METHOD("_free", NULL, CAIRO_PATTERN_free, NULL),
-
-	GB_END_DECLARE	
-};
-
-
 /**** CairoMatrix **********************************************************/
 
-BEGIN_METHOD(CAIRO_MATRIX_new, GB_OBJECT init)
+BEGIN_METHOD(CAIRO_MATRIX_new, GB_FLOAT xx; GB_FLOAT xy; GB_FLOAT yx; GB_FLOAT yy; GB_FLOAT x0; GB_FLOAT y0)
 
-	GB_ARRAY init = VARGOPT(init, NULL);
+	cairo_matrix_init(&THIS_MATRIX->matrix, 
+		VARGOPT(xx, 1.0),
+		VARGOPT(xy, 0.0),
+		VARGOPT(yx, 0.0),
+		VARGOPT(yy, 1.0),
+		VARGOPT(x0, 0.0),
+		VARGOPT(y0, 0.0));
+		
+END_METHOD
+
+BEGIN_METHOD(CAIRO_MATRIX_call, GB_FLOAT xx; GB_FLOAT xy; GB_FLOAT yx; GB_FLOAT yy; GB_FLOAT x0; GB_FLOAT y0)
+
+	CAIRO_MATRIX *matrix;
 	
-	if (init && GB.Array.Count(init) == 6)
-	{
-		double *m = (double *)GB.Array.Get(init, 0);
-		cairo_matrix_init(&THIS_MATRIX->matrix, m[0], m[1], m[2], m[3], m[4], m[5]);
-	}
-	else
-		cairo_matrix_init_identity(&THIS_MATRIX->matrix);
-
+	GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+	
+	cairo_matrix_init(&matrix->matrix, 
+		VARGOPT(xx, 1.0),
+		VARGOPT(xy, 0.0),
+		VARGOPT(yx, 0.0),
+		VARGOPT(yy, 1.0),
+		VARGOPT(x0, 0.0),
+		VARGOPT(y0, 0.0));
+		
+	GB.ReturnObject(matrix);
+		
 END_METHOD
 
 BEGIN_METHOD(CAIRO_MATRIX_translate, GB_FLOAT tx; GB_FLOAT ty)
 
 	cairo_matrix_translate(&THIS_MATRIX->matrix, VARG(tx), VARG(ty));
+	GB.ReturnObject(THIS_MATRIX);
 
 END_METHOD
 
 BEGIN_METHOD(CAIRO_MATRIX_scale, GB_FLOAT sx; GB_FLOAT sy)
 
-	cairo_matrix_translate(&THIS_MATRIX->matrix, VARG(sx), VARG(sy));
+	cairo_matrix_scale(&THIS_MATRIX->matrix, VARG(sx), VARG(sy));
+	GB.ReturnObject(THIS_MATRIX);
 
 END_METHOD
 
 BEGIN_METHOD(CAIRO_MATRIX_rotate, GB_FLOAT angle)
 
 	cairo_matrix_rotate(&THIS_MATRIX->matrix, VARG(angle));
+	GB.ReturnObject(THIS_MATRIX);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CAIRO_MATRIX_invert)
 
-	GB.ReturnBoolean(cairo_matrix_invert(&THIS_MATRIX->matrix) != CAIRO_STATUS_SUCCESS);
+	if (cairo_matrix_invert(&THIS_MATRIX->matrix) == CAIRO_STATUS_SUCCESS)
+		GB.ReturnObject(THIS_MATRIX);
+	else
+		GB.ReturnNull();
 
 END_METHOD
 
@@ -132,6 +135,7 @@ BEGIN_METHOD(CAIRO_MATRIX_multiply, GB_OBJECT matrix)
 		return;
 		
 	cairo_matrix_multiply(&THIS_MATRIX->matrix, &THIS_MATRIX->matrix, &matrix->matrix);
+	GB.ReturnObject(THIS_MATRIX);
 
 END_METHOD
 
@@ -139,14 +143,69 @@ GB_DESC CairoMatrixDesc[] =
 {
 	GB_DECLARE("CairoMatrix", sizeof(CAIRO_MATRIX)),
 
-	GB_METHOD("_new", NULL, CAIRO_MATRIX_new, "[(Init)Float[];]"),
-	GB_METHOD("Translate", NULL, CAIRO_MATRIX_translate, "(TX)f(TY)y"),
-	GB_METHOD("Scale", NULL, CAIRO_MATRIX_scale, "(SX)f(SY)y"),
-	GB_METHOD("Rotate", NULL, CAIRO_MATRIX_rotate, "(Angle)f"),
-	GB_METHOD("Invert", "b", CAIRO_MATRIX_invert, NULL),
-	GB_METHOD("Multiply", NULL, CAIRO_MATRIX_multiply, "(Matrix)CairoMatrix;"),	
+	GB_METHOD("_new", NULL, CAIRO_MATRIX_new, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
+	GB_STATIC_METHOD("_call", "CairoMatrix", CAIRO_MATRIX_call, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
+	GB_METHOD("Translate", "CairoMatrix", CAIRO_MATRIX_translate, "(TX)f(TY)y"),
+	GB_METHOD("Scale", "CairoMatrix", CAIRO_MATRIX_scale, "(SX)f(SY)f"),
+	GB_METHOD("Rotate", "CairoMatrix", CAIRO_MATRIX_rotate, "(Angle)f"),
+	GB_METHOD("Invert", "CairoMatrix", CAIRO_MATRIX_invert, NULL),
+	GB_METHOD("Multiply", "CairoMatrix", CAIRO_MATRIX_multiply, "(Matrix)CairoMatrix;"),	
 
 	GB_END_DECLARE	
+};
+
+/**** CairoPattern *********************************************************/
+
+BEGIN_METHOD_VOID(CAIRO_PATTERN_free)
+
+	cairo_pattern_destroy(THIS_PATTERN->pattern);
+
+END_METHOD
+
+BEGIN_PROPERTY(CAIRO_PATTERN_filter)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(cairo_pattern_get_filter(THIS_PATTERN->pattern));
+	else
+		cairo_pattern_set_filter(THIS_PATTERN->pattern, VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CAIRO_PATTERN_matrix)
+
+	CAIRO_MATRIX *matrix;
+	
+	if (READ_PROPERTY)
+	{
+		GB.New(POINTER(&matrix), GB.FindClass("CairoMatrix"), NULL, NULL);
+		cairo_pattern_get_matrix(THIS_PATTERN->pattern, &matrix->matrix);
+		GB.ReturnObject(matrix);
+	}
+	else
+	{
+		matrix = (CAIRO_MATRIX *)VPROP(GB_OBJECT);
+		if (!matrix)
+		{
+			cairo_matrix_t m;
+			cairo_matrix_init_identity(&m);
+			cairo_pattern_set_matrix(THIS_PATTERN->pattern, &m);
+		}
+		else
+			cairo_pattern_set_matrix(THIS_PATTERN->pattern, &matrix->matrix);
+	}
+
+END_PROPERTY
+
+GB_DESC CairoPatternDesc[] = 
+{
+	GB_DECLARE("CairoPattern", sizeof(CAIRO_PATTERN)), GB_NOT_CREATABLE(),
+
+	GB_METHOD("_free", NULL, CAIRO_PATTERN_free, NULL),
+	
+	GB_PROPERTY("Filter", "i", CAIRO_PATTERN_filter),
+	GB_PROPERTY("Matrix", "CairoMatrix", CAIRO_PATTERN_matrix),
+
+	GB_END_DECLARE
 };
 
 
@@ -171,6 +230,7 @@ static void *temp_image(GB_IMG *img)
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.cairo",
+	GB_IMAGE_BGRP,
 	free_image,
 	free_image,
 	temp_image
@@ -179,7 +239,7 @@ static GB_IMG_OWNER _image_owner = {
 static cairo_surface_t *check_image(void *img)
 {
 	// TODO: format is endian-dependent
-	return (cairo_surface_t *)IMAGE.Check((GB_IMG *)img, &_image_owner, GB_IMAGE_BGRP);
+	return (cairo_surface_t *)IMAGE.Check((GB_IMG *)img, &_image_owner);
 }
 
 static bool check_device()

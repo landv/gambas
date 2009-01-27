@@ -798,7 +798,7 @@ extern "C" {
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-  CBorderDesc, CColorDesc, CColorInfoDesc,
+  CBorderDesc, CColorDesc,
   CAlignDesc, CArrangeDesc, CScrollDesc, CKeyDesc, CLineDesc, CFillDesc, CSelectDesc,
   CMessageDesc,
   CImageDesc, CPictureDesc,

@@ -13,6 +13,7 @@ gb_image_la_SOURCES = \
  image.h image.c \
  CImage.h CImage.c \
  CImageStat.h CImageStat.c \
+ c_color.h c_color.c \
  gb.image.h \
  main.h main.c
 

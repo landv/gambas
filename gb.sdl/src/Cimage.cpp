@@ -47,6 +47,7 @@ static void *temp_image(GB_IMG *img)
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.sdl",
+	GB_IMAGE_RGBA,
 	free_image,
 	free_image,
 	temp_image
@@ -54,7 +55,7 @@ static GB_IMG_OWNER _image_owner = {
 
 SDLsurface *CIMAGE_get(CIMAGE *_object)
 {
-	return (SDLsurface *)IMAGE.Check(THIS_IMAGE, &_image_owner, GB_IMAGE_RGBA);
+	return (SDLsurface *)IMAGE.Check(THIS_IMAGE, &_image_owner);
 }
 
 #define check_image CIMAGE_get

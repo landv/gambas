@@ -725,14 +725,14 @@ unsigned char *gPicture::data()
 		return gdk_pixbuf_get_pixels(pixbuf);
 }
 
-void gPicture::replace(gColor src, gColor dst, bool noteq)
-{
-	if (_type == VOID)
-		return;
-	
-	gt_pixbuf_replace_color(getPixbuf(), src, dst, noteq);
-	invalidate();
-}
+// void gPicture::replace(gColor src, gColor dst, bool noteq)
+// {
+// 	if (_type == VOID)
+// 		return;
+// 	
+// 	gt_pixbuf_replace_color(getPixbuf(), src, dst, noteq);
+// 	invalidate();
+// }
 
 
 /*void gPicture::fromMemory(char *addr,unsigned int len)

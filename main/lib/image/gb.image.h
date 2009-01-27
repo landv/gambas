@@ -66,6 +66,7 @@ struct GB_IMG;
 typedef
 	struct {
 		const char *name;                                   // owner name (this is the name of the component)
+		int format;                                         // preferred format
 		void (*free)(struct GB_IMG *img, void *handle);     // free owner handle
 		void (*release)(struct GB_IMG *img, void *handle);  // free temporary handle
 		void *(*temp)(struct GB_IMG *img);                  // create a temporary handle for an image and returns it
@@ -113,7 +114,7 @@ typedef
 		// Take image ownership by giving the image handle and information
 		void (*Take)(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width, int height, unsigned char *data);
 		// Create a temporary handle on the image without becoming the owner.
-		void *(*Check)(GB_IMG *img, GB_IMG_OWNER *temp_owner, int format);
+		void *(*Check)(GB_IMG *img, GB_IMG_OWNER *temp_owner);
 		// Return the size of the image data in bytes
 		int (*Size)(GB_IMG *img);
 		// Set the default format used when creating images
@@ -126,6 +127,8 @@ typedef
 	IMAGE_INTERFACE;
 
 #define GB_IMG_HANDLE(_image) ((_image)->temp_handle)
+
+#define COLOR_DEFAULT (-1)
 
 #endif
 

@@ -278,28 +278,12 @@ BEGIN_PROPERTY(CCOLORINFO_value)
 
 END_PROPERTY
 
-GB_DESC CColorInfo[] =
-{
-  GB_DECLARE(".ColorInfo", 0), GB_VIRTUAL_CLASS(),
-
-  GB_STATIC_PROPERTY("Alpha", "i", CCOLORINFO_alpha),
-  GB_STATIC_PROPERTY("Red", "i", CCOLORINFO_red),
-  GB_STATIC_PROPERTY("Green", "i", CCOLORINFO_green),
-  GB_STATIC_PROPERTY("Blue", "i", CCOLORINFO_blue),
-  GB_STATIC_PROPERTY("Hue", "i", CCOLORINFO_hue),
-  GB_STATIC_PROPERTY("Saturation", "i", CCOLORINFO_saturation),
-  GB_STATIC_PROPERTY("Value", "i", CCOLORINFO_value),
-
-  GB_END_DECLARE
-};
-
 GB_DESC CColor[] =
 {
   GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
 
   GB_STATIC_METHOD("RGB", "i", CCOLOR_rgb, "(Red)i(Green)i(Blue)i[(Alpha)i]"),
   GB_STATIC_METHOD("HSV", "i", CCOLOR_hsv, "(Hue)i(Saturation)i(Value)i"),
-  GB_STATIC_METHOD("_get", ".ColorInfo", CCOLOR_get, "(Color)i"),
 
   GB_CONSTANT("Black", "i", 0x000000FF),
   GB_CONSTANT("White", "i", 0xFFFFFFFF),

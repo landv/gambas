@@ -30,7 +30,6 @@
 
 #ifndef __CCOLOR_CPP
 extern GB_DESC CColor[];
-extern GB_DESC CColorInfo[];
 #endif
 
 #endif
