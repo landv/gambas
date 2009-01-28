@@ -709,12 +709,11 @@ PRIVATE SUB Start(sCmd AS String)
   
   ENDIF
 
-  Debug.Start
-
+  TRY Debug.Start
+  
   SetState(STATE_STARTING)
 
   Balloon.Hide
-  
 
   'PRINT "Debug.Start"
   'PRINT "Debug.Start -> OK"
