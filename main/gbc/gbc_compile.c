@@ -116,8 +116,8 @@ static void add_list_file(char *library)
 	*/
   if (!fi)
   {
-	  fprintf(stderr, "Cannot read component list file: %s\n", path);
-  	return;
+	  fprintf(stderr, "warning: cannot read component list file: %s.list\n", library);
+	  return;
   }
 
   for(;;)

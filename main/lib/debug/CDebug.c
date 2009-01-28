@@ -160,7 +160,7 @@ BEGIN_METHOD_VOID(CDEBUG_start)
   if (_started)
     return;
   
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 100; i++)
   {
   	_fdw = open(output_fifo(path), O_WRONLY | O_NONBLOCK);
   	if (_fdw >= 0)

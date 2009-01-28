@@ -263,6 +263,8 @@ BEGIN_METHOD(CAIRO_begin, GB_OBJECT device)
 	if (GB.CheckObject(device))
 		return;
 
+	GB.GetClassInterface(GB.GetClass(device), "Drawable");
+	
 	GB.Alloc(POINTER(&draw), sizeof(CAIRO_DRAW));
 	draw->previous = _current;
 	
@@ -777,7 +779,7 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("Begin", NULL, CAIRO_begin, "(Device)o"),
 	GB_STATIC_METHOD("End", NULL, CAIRO_end, NULL),
 	
-	GB_STATIC_PROPERTY_READ("Status", "s", CAIRO_status),
+	GB_STATIC_PROPERTY_READ("Status", "i", CAIRO_status),
 	GB_STATIC_PROPERTY_READ("Device", "o", CAIRO_device),
 	
 	GB_STATIC_METHOD("Save", NULL, CAIRO_save, NULL),

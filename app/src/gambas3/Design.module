@@ -639,6 +639,7 @@ Private Sub Start(sCmd As String)
   Dim aExec As String[]
   Dim sExec As String
   Dim sArg As String
+  Dim bValgrind As Boolean '= True
 
   If Project.Running Then Return
   
@@ -713,6 +714,11 @@ Private Sub Start(sCmd As String)
 
     aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", File.Dir(SConv(Project.Path)), "--"]
     aExec.Insert(Project.Arguments)
+    
+    If bValgrind Then 
+      aExec.Add("-p", 1)
+      aExec.Insert(["valgrind", "--tool=memcheck", "--num-callers=50"], 0)
+    Endif
 
     $hProcess = Exec aExec For Read Write As "Process"
   
