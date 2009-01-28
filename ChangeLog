@@ -1,4 +1,55 @@
 -------------------------------------------------------------------------------
+ gambas2-2.11 - 28 Jan 2009
+-------------------------------------------------------------------------------
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: A warning is displayed now when a component project has no exported
+  class.
+* BUG: Instead of displaying an error, an unreadable *.component file now
+  just displays a warning.
+* BUG: Print warnings on the standard error output now.
+* BUG: The find balloon message is always displayed in the accurate field
+  now.
+* BUG: The packager now handle spaces in project directory path correctly
+  when creating an autotool package.
+* BUG: A badly named environmental variable does not freeze the IDE anymore.
+* NEW: In the project property dialog, split the component list between
+  standard components and user components.
+
+[INTERPRETER]
+* BUG: The _compare special method now is not called anymore if one of the
+  compared object references is null.
+
+[GB.DEBUG]
+* NEW: Do not block anymore when opening the debug fifo for writing. Try a
+  few times during 0.1 second.
+
+[GB.DRAW]
+* BUG: Correctly initialize color properties of the Draw class at
+  Draw.Begin().
+
+[GB.FORM]
+* BUG: Workaround the ballon corner drawing bugs.
+
+[GB.GTK]
+* BUG: Image.Save() and Picture.Save() now understand the "~" shortcut in
+  path names.
+* BUG: Fix the initialization of editable combo-box when its List property
+  is set.
+* BUG: Remove a static variable not used anymore.
+
+[GB.NET]
+* BUG: Serial port devices are now watched for reading, not for writing. So
+  the callback will not be called permanently.
+
+[GB.QT]
+* BUG: Do not loop indefinitely when arranging the contents of a
+  ScrollView.
+* BUG: The last GridView column should be correctly stretched when its
+  width is explicitely set now.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.10.2 - 02 Jan 2009
 -------------------------------------------------------------------------------
 
