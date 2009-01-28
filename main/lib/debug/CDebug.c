@@ -155,11 +155,25 @@ END_METHOD
 BEGIN_METHOD_VOID(CDEBUG_start) 
   
   char path[MAX_PATH];
+  int i;
   
   if (_started)
     return;
   
-  _fdw = open(output_fifo(path), O_WRONLY);
+  for (i = 0; i < 10; i++)
+  {
+  	_fdw = open(output_fifo(path), O_WRONLY | O_NONBLOCK);
+  	if (_fdw >= 0)
+  		break;
+		usleep(10000);
+	}
+	
+	if (_fdw < 0)
+	{
+		GB.Error("Unable to open fifo");
+		return;
+	}
+	
   _fdr = open(input_fifo(path), O_RDONLY | O_NONBLOCK);
   
   GB.New(POINTER(&_debug_object), GB.FindClass("Debug"), "Debug", NULL);

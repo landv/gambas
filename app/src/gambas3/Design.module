@@ -718,7 +718,7 @@ Private Sub Start(sCmd As String)
   
   Endif
 
-  Debug.Start
+  Try Debug.Start
 
   SetState(STATE_STARTING)
 
