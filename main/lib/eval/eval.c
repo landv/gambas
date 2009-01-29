@@ -73,8 +73,9 @@ PUBLIC GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value)
 
   CLEAR(&EVAL->exec_class);
   /*_class.class = CLASS_class;*/
-  EVAL->exec_class.name = ".Eval";
   EVAL->exec_class.ref = 1;
+  EVAL->exec_class.count = 1;
+  EVAL->exec_class.name = ".Eval";
   EVAL->exec_class.state = CS_READY;
   EVAL->exec_class.load = &EVAL->class_load;
 

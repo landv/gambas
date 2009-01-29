@@ -90,6 +90,7 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
   EVAL_SYMBOL *sym;
   bool debug;
   bool error;
+  int nvar;
   /*HASH_TABLE *hash_table;
   char *name;
   CCOL_ENUM enum_state;*/
@@ -100,26 +101,26 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
   printf("EVAL: %s\n", EVAL->source);
   #endif
 
-  STACK_check(EVAL->nvar);
+	nvar = EVAL->nvar;
 
-  for (i = 0; i < EVAL->nvar; i++)
+  STACK_check(nvar);
+
+  for (i = 0; i < nvar; i++)
   {
-    SP->type = T_VARIANT;
-    SP->_variant.vtype = T_NULL;
+    SP[i].type = T_VARIANT;
+    SP[i]._variant.vtype = T_NULL;
 
     sym = (EVAL_SYMBOL *)TABLE_get_symbol(EVAL->table, EVAL->var[EVAL->nvar - i - 1]);
-    if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)SP))
+    if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)&SP[i]))
     {
       GB_Error("Unknown symbol");
-      /* ?? La pile est elle bien lib�� */
       return TRUE;
     }
-
-    /*VALUE_read(SP, &value, T_VARIANT);*/
-    BORROW(SP);
-
-    SP++;
   }
+  
+  for (i = 0; i < nvar; i++)
+  	BORROW(&SP[i]);
+	SP += nvar;
 
 	debug = EXEC_debug;
 	EXEC_debug = FALSE;

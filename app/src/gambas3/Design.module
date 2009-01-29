@@ -123,7 +123,7 @@ Public Sub Debug_Read(Data As String)
   Dim iLine As Integer
   Dim sVar As String
 
-  'DEBUG Data
+  'Debug Data
   If Not Data Then Return 
   
   If Data = "!" Then 
@@ -493,6 +493,7 @@ End
 
 Private Sub WriteCommand(sCmd As String)
   
+  'Debug "---> "; sCmd
   Debug.Write(sCmd)
   
 End

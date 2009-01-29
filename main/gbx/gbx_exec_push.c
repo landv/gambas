@@ -504,12 +504,10 @@ __PUSH_QUICK_ARRAY:
 		VALUE_conv_string(&val[1]);
 		//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
 		GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
-		
-		if (GAMBAS_Error)
-		{
+		/*{
 			OBJECT_UNREF(object, "EXEC_push_array");
 			PROPAGATE();
-		}
+		}*/
 		
 		RELEASE(&val[1]);
 		SP = val;

@@ -613,7 +613,8 @@ static void command_eval(const char *cmd)
 {
 	static bool init = FALSE;
   EXPRESSION *expr;
-  ERROR_INFO save = { 0 };
+  ERROR_INFO save_error = { 0 };
+  DEBUG_INFO save_debug;
   VALUE *val;
   int start, len;
   FILE *out;
@@ -641,8 +642,8 @@ static void command_eval(const char *cmd)
 	if (*cmd != '!')
 		fprintf(_out, "\t");
 
-  //ERROR_save(&save);
-  GB_DEBUG.SaveError(&save);
+  GB_DEBUG.SaveError(&save_error);
+  save_debug = DEBUG_info;
 
 	start++;
 	EVAL.New(POINTER(&expr), &cmd[start], len - start);
@@ -674,21 +675,17 @@ static void command_eval(const char *cmd)
 		  break;
 	}
 
-  goto __FREE;
+  goto __END;
 
 __ERROR:
-  //fprintf(_out, "%s\n", ERROR_info.msg);
   if (*cmd != '!')
   	fprintf(out, "!");
   GB_DEBUG.PrintError(out, TRUE, FALSE);
 
-__FREE:
+__END:
   EVAL.Free(POINTER(&expr));
-
-  DEBUG_info.cp = NULL;
-
-  //ERROR_restore(&save);
-  GB_DEBUG.RestoreError(&save);
+  DEBUG_info = save_debug; //.cp = NULL;
+  GB_DEBUG.RestoreError(&save_error);
   
  	fprintf(out, "\n");
  	fflush(out);
@@ -697,6 +694,7 @@ __FREE:
 static void command_symbol(const char *cmd)
 {
   int start, len;
+  DEBUG_INFO save_debug = DEBUG_info;
 
 	len = strlen(cmd);
 	for (start = 0; start < len; start++)
@@ -721,6 +719,8 @@ static void command_symbol(const char *cmd)
  	
  	fprintf(_out, "\n");
  	fflush(_out);
+ 	
+ 	DEBUG_info = save_debug;
 }
 
 

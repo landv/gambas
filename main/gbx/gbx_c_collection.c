@@ -62,10 +62,7 @@ static void collection_free(CCOLLECTION *col)
 static void *collection_get_key(CCOLLECTION *col, const char *key, int len)
 {
   if (len == 0)
-  {
-    GB_Error("Void key");
     return NULL;
-  }
 
   if (len <= 0)
     len = strlen(key);
