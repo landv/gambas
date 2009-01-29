@@ -36,8 +36,8 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/videodev.h>
-#include <linux/videodev2.h>
 
+#include "videodev2.h"
 #include "gambas.h"
 
 #ifndef __CWEBCAM_C
