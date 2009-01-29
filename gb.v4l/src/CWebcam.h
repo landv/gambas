@@ -138,6 +138,12 @@ typedef  struct
 	int			contrast_min;
 	int			whiteness_min;
 	int			color_min;
+	//
+	int			bright_def;
+	int			hue_def;
+	int			contrast_def;
+	int			whiteness_def;
+	int			color_def;
 	// --
 
 }  CWEBCAM;

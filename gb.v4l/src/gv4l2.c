@@ -94,7 +94,7 @@ int gv4l2_xioctl( int fd,int request,void * arg)
 //
 //	gv4l2_hue( THIS, value )
 //
-void gv4l2_camera_setup( CWEBCAM * _object , int id , int * min, int * max)
+void gv4l2_camera_setup(CWEBCAM *_object,int id,int *min,int *max,int *def)
 {
 	struct v4l2_queryctrl	query;
 
@@ -103,15 +103,16 @@ void gv4l2_camera_setup( CWEBCAM * _object , int id , int * min, int * max)
 
 	if(gv4l2_xioctl(THIS->io,VIDIOC_QUERYCTRL,&query)==-1)return;
 
-	printf("Name=%s,Min=%d,Max=%d,Value=%d\n",
-		query.name,
-		query.minimum,
-		query.maximum,
-		query.default_value);
-	fflush(stdout);
+	//printf("Name=%s,Min=%d,Max=%d,Value=%d\n",
+	//	query.name,
+	//	query.minimum,
+	//	query.maximum,
+	//	query.default_value);
+	//fflush(stdout);
 
 	*max = query.maximum;
 	*min = query.minimum;
+	*def = query.default_value;
 }
 //
 int gv4l2_camera_get( CWEBCAM * _object , int id , int value )
@@ -137,7 +138,7 @@ int gv4l2_camera_get( CWEBCAM * _object , int id , int value )
 void gv4l2_hue_setup( CWEBCAM * _object )
 {
 	gv4l2_camera_setup( THIS ,
-		V4L2_CID_HUE , &THIS->hue_min , &THIS->hue_max );
+		V4L2_CID_HUE , &THIS->hue_min , &THIS->hue_max ,&THIS->hue_def);
 }
 //
 int gv4l2_hue( CWEBCAM * _object , int value )
@@ -152,7 +153,7 @@ int gv4l2_hue( CWEBCAM * _object , int value )
 void gv4l2_brightness_setup( CWEBCAM * _object )
 {
 	gv4l2_camera_setup( THIS,
-		V4L2_CID_BRIGHTNESS , &THIS->bright_min , &THIS->bright_max );
+		V4L2_CID_BRIGHTNESS , &THIS->bright_min ,&THIS->bright_max,&THIS->bright_def);
 }
 
 int gv4l2_brightness( CWEBCAM * _object , int value )
@@ -167,7 +168,7 @@ int gv4l2_brightness( CWEBCAM * _object , int value )
 void gv4l2_contrast_setup( CWEBCAM * _object )
 {
 	gv4l2_camera_setup( THIS , 
-		V4L2_CID_CONTRAST, &THIS->contrast_min , &THIS->contrast_max);
+		V4L2_CID_CONTRAST, &THIS->contrast_min , &THIS->contrast_max,&THIS->contrast_def);
 }
 
 int gv4l2_contrast( CWEBCAM * _object , int value )
@@ -182,7 +183,7 @@ int gv4l2_contrast( CWEBCAM * _object , int value )
 void gv4l2_color_setup( CWEBCAM * _object )
 {
 	gv4l2_camera_setup( THIS , 
-		V4L2_CID_SATURATION, &THIS->color_min, &THIS->color_max );
+		V4L2_CID_SATURATION, &THIS->color_min, &THIS->color_max,&THIS->color_def );
 }
 
 int gv4l2_color( CWEBCAM * _object , int value )
@@ -197,7 +198,7 @@ int gv4l2_color( CWEBCAM * _object , int value )
 void gv4l2_whiteness_setup( CWEBCAM * _object )
 {
 	gv4l2_camera_setup( THIS , 
-		V4L2_CID_WHITENESS , &THIS->whiteness_min,&THIS->whiteness_max);
+		V4L2_CID_WHITENESS , &THIS->whiteness_min,&THIS->whiteness_max,&THIS->whiteness_def);
 }
 //
 int gv4l2_whiteness( CWEBCAM * _object , int value )
@@ -267,6 +268,7 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 {
         unsigned int min;
 	static unsigned int n_buffers = 0;
+	int save;
 
         if ( gv4l2_xioctl (THIS->io, VIDIOC_QUERYCAP, &THIS->cap) == -1 ) {
 		gv4l2_debug("VIDIOC_QUERYCAP error");
@@ -319,17 +321,32 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
         THIS->fmt.fmt.pix.width       = width;
         THIS->fmt.fmt.pix.height      = height;
         THIS->fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
+	save                          = THIS->fmt.fmt.pix.pixelformat;
 	//
 	//	Camera format should be picked up from VIDIOC_G_FMT above
 	//	FIXME:: do cameras support multiple formats and so we want
 	//	to be able to pick the format??
 	//
+	//	Try the supported formats;
+	//		a. YUYV
+	//		b. YUV420
+	//		c. revert to whatever the camera was set to
+	//
+        THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+        if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
+                gv4l2_debug("VIDIOC_S_FMT, can't set YUYV, trying YUV 420");
+                THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420;
+                if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
+                        gv4l2_debug("VIDIOC_S_FMT, can't set YUV420, defaulting ");
+                        THIS->fmt.fmt.pix.pixelformat = save;
+                }
+        }
         //THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
 
-        if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
-		gv4l2_debug("VIDIOC_S_FMT, unable to set format");
-		return 0;
-	}
+        //if ( gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt) == -1) {
+	//	gv4l2_debug("VIDIOC_S_FMT, unable to set format");
+	//	return 0;
+	//}
         // THIS->fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
         // gv4l2_xioctl ( THIS->io, VIDIOC_S_FMT, &THIS->fmt);
 
@@ -371,7 +388,7 @@ int gv4l2_init_device(CWEBCAM * _object , int width , int height )
 	struct v4l2_requestbuffers req;
 
 	MCLEAR(req);
-	req.count	= 4;
+	req.count	= 2;
 	req.type	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	req.memory 	= V4L2_MEMORY_MMAP;
 

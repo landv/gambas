@@ -608,6 +608,19 @@ BEGIN_PROPERTY(CWEBCAM_contrast_min)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CWEBCAM_contrast_def)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65536/2);
+	else {
+		if(!THIS->contrast_def)
+			GB.ReturnInteger((THIS->contrast_max-THIS->contrast_min)/2);
+		else	GB.ReturnInteger(THIS->contrast_def);
+	}
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(CWEBCAM_colour)
 
 	if( !THIS->is_v4l2 ) {
@@ -642,6 +655,18 @@ BEGIN_PROPERTY(CWEBCAM_color_min)
 	if( !THIS->is_v4l2 )
 		GB.ReturnInteger(65535);
 	else	GB.ReturnInteger(THIS->color_min);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_color_def)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65536/2);
+	else {
+		if(!THIS->color_def)
+			GB.ReturnInteger((THIS->color_max-THIS->color_min)/2);
+		else	GB.ReturnInteger(THIS->color_def);
+	}
 
 END_PROPERTY
 
@@ -682,6 +707,14 @@ BEGIN_PROPERTY(CWEBCAM_whiteness_min)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CWEBCAM_whiteness_def)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65536/2);
+	else	GB.ReturnInteger(THIS->whiteness_def);
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CWEBCAM_hue)
 
 	if( !THIS->is_v4l2 ) {
@@ -719,6 +752,14 @@ BEGIN_PROPERTY(CWEBCAM_hue_min)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CWEBCAM_hue_def)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65536/2);
+	else	GB.ReturnInteger(THIS->hue_def);
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CWEBCAM_bright)
 
 	if( !THIS->is_v4l2 ) {
@@ -753,6 +794,18 @@ BEGIN_PROPERTY(CWEBCAM_bright_min)
 	if( !THIS->is_v4l2 )
 		GB.ReturnInteger(65535);
 	else	GB.ReturnInteger(THIS->bright_min);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CWEBCAM_bright_def)
+
+	if( !THIS->is_v4l2 )
+		GB.ReturnInteger(65536/2);
+	else {
+		if(!THIS->bright_def)
+			GB.ReturnInteger((THIS->bright_max-THIS->bright_min)/2);
+		else	GB.ReturnInteger(THIS->bright_def);
+	}
 
 END_PROPERTY
 
@@ -1581,20 +1634,36 @@ GB_DESC CWebcamDesc[] =
   GB_PROPERTY_READ("Height","i",CWEBCAM_height),
 
   GB_PROPERTY("Contrast","i",CWEBCAM_contrast),
-  GB_PROPERTY("Contrast_Max","i",CWEBCAM_contrast_max),
-  GB_PROPERTY("Contrast_Min","i",CWEBCAM_contrast_min),
+  GB_PROPERTY("ContrastMax","i",CWEBCAM_contrast_max),
+  GB_PROPERTY("ContrastMin","i",CWEBCAM_contrast_min),
+  GB_PROPERTY("ContrastDefault","i",CWEBCAM_contrast_def),
   GB_PROPERTY("Color","i",CWEBCAM_colour),
-  GB_PROPERTY("Color_Max","i",CWEBCAM_color_max),
-  GB_PROPERTY("Color_Min","i",CWEBCAM_color_min),
+  GB_PROPERTY("ColorMax","i",CWEBCAM_color_max),
+  GB_PROPERTY("ColorMin","i",CWEBCAM_color_min),
+  GB_PROPERTY("ColorDefault","i",CWEBCAM_color_def),
   GB_PROPERTY("Whiteness","i",CWEBCAM_whiteness),
-  GB_PROPERTY("Whiteness_Max","i",CWEBCAM_whiteness_max),
-  GB_PROPERTY("Whiteness_Min","i",CWEBCAM_whiteness_min),
+  GB_PROPERTY("WhitenessMax","i",CWEBCAM_whiteness_max),
+  GB_PROPERTY("WhitenessMin","i",CWEBCAM_whiteness_min),
+  GB_PROPERTY("WhitenessDefault","i",CWEBCAM_whiteness_def),
   GB_PROPERTY("Bright","i",CWEBCAM_bright),
-  GB_PROPERTY("Bright_Max","i",CWEBCAM_bright_max),
-  GB_PROPERTY("Bright_Min","i",CWEBCAM_bright_min),
+  GB_PROPERTY("BrightMax","i",CWEBCAM_bright_max),
+  GB_PROPERTY("BrightMin","i",CWEBCAM_bright_min),
+  GB_PROPERTY("BrightDefault","i",CWEBCAM_bright_def),
   GB_PROPERTY("Hue","i",CWEBCAM_hue),
-  GB_PROPERTY("Hue_Max","i",CWEBCAM_hue_max),
-  GB_PROPERTY("Hue_Min","i",CWEBCAM_hue_min),
+  GB_PROPERTY("HueMax","i",CWEBCAM_hue_max),
+  GB_PROPERTY("HueMin","i",CWEBCAM_hue_min),
+  GB_PROPERTY("HueDefault","i",CWEBCAM_hue_def),
+
+  GB_PROPERTY_READ("Name","s",CFEATURES_name),
+  GB_PROPERTY_READ("Driver","s",CFEATURES_driver),
+  GB_PROPERTY_READ("Bus","s",CFEATURES_bus),
+  GB_PROPERTY_READ("Card","s",CFEATURES_card),  // ++ V4L2
+  GB_PROPERTY_READ("Version","s",CFEATURES_version),
+  GB_PROPERTY_READ("MaxWidth","i",CFEATURES_maxWidth),
+  GB_PROPERTY_READ("MinWidth","i",CFEATURES_minWidth),
+  GB_PROPERTY_READ("MaxHeight","i",CFEATURES_maxHeight),
+  GB_PROPERTY_READ("MinHeight","i",CFEATURES_minHeight),
+  //GB_PROPERTY_READ("MaxFrameRate","i",CFEATURES_maxRate),
 
   GB_PROPERTY("Image","Image",CWEBCAM_image),
   GB_PROPERTY("Debug","i",CWEBCAM_debug),
