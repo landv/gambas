@@ -1504,7 +1504,7 @@ _ADD_QUICK:
 	
 	__AQ_BOOLEAN:
 		
-		fprintf(stderr, "Warning: ");
+		fprintf(stderr, "warning: ");
 		DEBUG_where();
 		fprintf(stderr, "ADD QUICK with Boolean\n");
 		
@@ -1512,7 +1512,15 @@ _ADD_QUICK:
 		goto *jump_end;
 	
 	__AQ_BYTE:
+		
+		P1->_integer.value = (unsigned char)(P1->_integer.value + value);
+		goto *jump_end;
+	
 	__AQ_SHORT:
+	
+		P1->_integer.value = (short)(P1->_integer.value + value);
+		goto *jump_end;
+	
 	__AQ_INTEGER:
 	
 		P1->_integer.value += value;
