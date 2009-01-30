@@ -357,19 +357,37 @@ __VARIANT:
   goto __ERROR;
 
 __BOOLEAN:
-__BYTE:
-__SHORT:
-__INTEGER:
+  
+  if (P2->_integer.value == 0)
+    THROW(E_ZERO);
 
-  /*
-  VALUE_conv(P1, type);
-  VALUE_conv(P2, type);
-  */
+  P1->type = T_BOOLEAN;
+  goto __END;
+
+__BYTE:
 
   if (P2->_integer.value == 0)
     THROW(E_ZERO);
 
-  P1->_integer.value SMT_OP P2->_integer.value;
+  P1->_integer.value = (unsigned char)(P1->_integer.value SMT_OP P2->_integer.value);
+  P1->type = T_BYTE;
+  goto __END;
+
+__SHORT:
+
+  if (P2->_integer.value == 0)
+    THROW(E_ZERO);
+
+  P1->_integer.value = (short)(P1->_integer.value SMT_OP P2->_integer.value);
+  P1->type = T_SHORT;
+  goto __END;
+
+__INTEGER:
+
+  if (P2->_integer.value == 0)
+    THROW(E_ZERO);
+
+  P1->_integer.value = P1->_integer.value SMT_OP P2->_integer.value;
   P1->type = T_INTEGER;
   goto __END;
 

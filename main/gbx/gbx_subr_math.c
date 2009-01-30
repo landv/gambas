@@ -52,14 +52,14 @@ static MATH_FUNC_2 MathFunc2[] = {
 
 #define SMT_NAME    SUBR_quo
 #define SMT_TYPE    3
-#define SMT_OP      /=
+#define SMT_OP      /
 
 #include "gbx_subr_math_temp.h"
 
 
 #define SMT_NAME    SUBR_rem
 #define SMT_TYPE    3
-#define SMT_OP      %=
+#define SMT_OP      %
 
 #include "gbx_subr_math_temp.h"
 
@@ -201,7 +201,7 @@ void SUBR_pow(void)
 void SUBR_not(void)
 {
   static void *jump[17] = {
-    &&__VARIANT, &&__BOOLEAN, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
     &&__STRING, &&__STRING, &&__ERROR, &&__ERROR, &&__ERROR, &&__ERROR, &&__NULL,
     &&__OBJECT
     };
@@ -218,6 +218,16 @@ void SUBR_not(void)
 __BOOLEAN:
 
   P1->_integer.value = P1->_integer.value ? 0 : (-1);
+  goto *jump_end;
+
+__BYTE:
+
+  P1->_integer.value = (unsigned char)~P1->_integer.value;
+  goto *jump_end;
+
+__SHORT:
+
+  P1->_integer.value = (short)~P1->_integer.value;
   goto *jump_end;
 
 __INTEGER:
@@ -315,7 +325,15 @@ __BOOLEAN:
   goto *jump_end;
 
 __BYTE:
+  
+  P1->_integer.value = (unsigned char)(P1->_integer.value + value);
+  goto *jump_end;
+
 __SHORT:
+
+  P1->_integer.value = (short)(P1->_integer.value + value);
+  goto *jump_end;
+
 __INTEGER:
 
   P1->_integer.value += value;
@@ -364,9 +382,37 @@ void SUBR_and_(void)
   op = (EXEC_code - C_AND) >> 8;
   goto *jump[type];
 
-__BOOLEAN:
 __BYTE:
+
+  P1->type = type;
+
+  {
+    static void *exec[] = { &&__AND_C, && __OR_C, &&__XOR_C };
+    goto *exec[op];
+
+    __AND_C: P1->_integer.value = (unsigned char)(P1->_integer.value & P2->_integer.value); goto *jump_end;
+    __OR_C: P1->_integer.value = (unsigned char)(P1->_integer.value | P2->_integer.value); goto *jump_end;
+    __XOR_C: P1->_integer.value = (unsigned char)(P1->_integer.value ^ P2->_integer.value); goto *jump_end;
+  }
+
+  goto *jump_end;
+
 __SHORT:
+
+  P1->type = type;
+
+  {
+    static void *exec[] = { &&__AND_H, && __OR_H, &&__XOR_H };
+    goto *exec[op];
+
+    __AND_H: P1->_integer.value = (short)(P1->_integer.value & P2->_integer.value); goto *jump_end;
+    __OR_H: P1->_integer.value = (short)(P1->_integer.value | P2->_integer.value); goto *jump_end;
+    __XOR_H: P1->_integer.value = (short)(P1->_integer.value ^ P2->_integer.value); goto *jump_end;
+  }
+
+  goto *jump_end;
+
+__BOOLEAN:
 __INTEGER:
 
   P1->type = type;
@@ -500,7 +546,7 @@ __END:
 void SUBR_neg_(void)
 {
   static void *jump[] = {
-    &&__VARIANT, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
+    &&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__FLOAT, &&__FLOAT, &&__ERROR
     };
 
   VALUE *P1;
@@ -518,6 +564,31 @@ void SUBR_neg_(void)
 
   goto *jump[type];
 
+__BYTE:
+
+  {
+    static void *exec[] = { &&__NEG_C, &&__ABS_C, &&__INT_C, &&__FIX_C }; //, &&__SGN_I };
+    goto *exec[op];
+
+    __NEG_C: P1->_integer.value = (unsigned char)(-P1->_integer.value); goto *jump_end;
+    __ABS_C: P1->_integer.value = (unsigned char)ABS(P1->_integer.value); goto *jump_end;
+    __INT_C: goto *jump_end;
+    __FIX_C: goto *jump_end;
+  }
+
+__SHORT:
+
+  {
+    static void *exec[] = { &&__NEG_H, &&__ABS_H, &&__INT_H, &&__FIX_H }; //, &&__SGN_I };
+    goto *exec[op];
+
+    __NEG_H: P1->_integer.value = (short)(-P1->_integer.value); goto *jump_end;
+    __ABS_H: P1->_integer.value = (short)ABS(P1->_integer.value); goto *jump_end;
+    __INT_H: goto *jump_end;
+    __FIX_H: goto *jump_end;
+  }
+
+__BOOLEAN:
 __INTEGER:
 
   {
@@ -619,8 +690,44 @@ void SUBR_add_(void)
   goto *jump[type];
 
 __BOOLEAN:
+	
+	P1->type = type;
+
+  {
+    static void *exec[] = { &&__ADD_B, && __SUB_B, &&__MUL_B, &&__FLOAT };
+    goto *exec[op];
+
+    __ADD_B: P1->_integer.value = P1->_integer.value | P2->_integer.value; goto *jump_end;
+    __SUB_B: P1->_integer.value = P1->_integer.value ^ P2->_integer.value; goto *jump_end;
+    __MUL_B: P1->_integer.value = P1->_integer.value & P2->_integer.value; goto *jump_end;
+  }
+
 __BYTE:
+	
+	P1->type = type;
+
+  {
+    static void *exec[] = { &&__ADD_C, && __SUB_C, &&__MUL_C, &&__FLOAT };
+    goto *exec[op];
+
+    __ADD_C: P1->_integer.value = (unsigned char)(P1->_integer.value + P2->_integer.value); goto *jump_end;
+    __SUB_C: P1->_integer.value = (unsigned char)(P1->_integer.value - P2->_integer.value); goto *jump_end;
+    __MUL_C: P1->_integer.value = (unsigned char)(P1->_integer.value * P2->_integer.value); goto *jump_end;
+  }
+
 __SHORT:
+	
+	P1->type = type;
+
+  {
+    static void *exec[] = { &&__ADD_H, && __SUB_H, &&__MUL_H, &&__FLOAT };
+    goto *exec[op];
+
+    __ADD_H: P1->_integer.value = (short)(P1->_integer.value + P2->_integer.value); goto *jump_end;
+    __SUB_H: P1->_integer.value = (short)(P1->_integer.value - P2->_integer.value); goto *jump_end;
+    __MUL_H: P1->_integer.value = (short)(P1->_integer.value * P2->_integer.value); goto *jump_end;
+  }
+
 __INTEGER:
 
 	P1->type = type;
