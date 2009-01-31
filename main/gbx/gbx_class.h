@@ -284,7 +284,7 @@ typedef
 		COMPONENT *component;             // 120 184 The component the class belongs to
 		
 		struct _CLASS *next;              // 124 192 next class
-		#ifdef OS_64BITS
+		#ifndef OS_64BITS
 		int _reserved3;                   // 128 192
 		#endif
 		}

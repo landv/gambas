@@ -888,7 +888,10 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 						parent_type = CLASS_DESC_get_type(cds->desc);
 						
 						if (check_override(parent_type, type))
+						{
+							fprintf(stderr, "type = '%c' parent_type = '%c'\n", type, parent_type);
 							THROW(E_OVERRIDE, parent->name, cds->name, class->name);
+						}
 					}
 					
 					cds = &class->table[ind];
