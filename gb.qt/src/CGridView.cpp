@@ -212,9 +212,8 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
   {
   	x += _padding;
   	y += _padding;
-  	_padding *= 2;
-  	w -= _padding;
-  	h -= _padding;
+  	w -= _padding * 2;
+  	h -= _padding * 2;
   	
   	if (w < 1 || h < 1)
   		return;
@@ -233,9 +232,9 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
     }
     else
     {
-      p->drawPixmap(x + 2, y + (h - pix.height() ) / 2, pix);
-      x += pix.width() + 4;
-      w -= pix.width() + 4;
+      p->drawPixmap(x, y + (h - pix.height() ) / 2, pix);
+      x += pix.width() + _padding;
+      w -= pix.width() + _padding;
     }
   }
 
@@ -263,7 +262,6 @@ QSize MyTableItem::sizeHint() const
 {
   QSize strutSize = QApplication::globalStrut();
   QSize s;
-  int x = 0;
   MyTableItem *item = (MyTableItem *)this;
 	MyTableData *d = item->data();
 	int padding;
@@ -272,33 +270,37 @@ QSize MyTableItem::sizeHint() const
   QString t = item->text();
   QFontMetrics fm = d->font ? QFontMetrics(*(d->font->font)) : table()->fontMetrics();
 
+	padding = QMAX(1, d->padding);
+  
   if (!pix.isNull() )
   {
 	  s = pix.size();
-	  s.setWidth( s.width() + 2 );
-	  x = pix.width() + 2;
+	  s.setWidth(s.width());
+	  if (t.length())
+		  s.setWidth(s.width() + padding);
 	}
 
-	padding = QMAX(1, d->padding) * 2;
-  
-  if ( !wordWrap() && t.find( '\n' ) == -1 )
-  {
-  	s = QSize(s.width() + fm.width(t) + 10,
-		          QMAX( s.height(), fm.height() ) ).expandedTo( strutSize );
-	}
-	else
+	if (t.length())
 	{
-		QRect r = fm.boundingRect(0, 0, table()->columnWidth( col() ) - padding, 0,
-							   wordWrap() ? (alignment() | WordBreak) : alignment(),
-							   t );
-		r.setWidth( QMAX( r.width() + 10, table()->columnWidth(col())));
-
-  	s = QSize( r.width(), QMAX( s.height(), r.height() ) ).expandedTo( strutSize );
-  }
+		if ( !wordWrap() && t.find( '\n' ) == -1 )
+		{
+			s = QSize(s.width() + fm.width(t) + 10,
+								QMAX( s.height(), fm.height() ) ).expandedTo( strutSize );
+		}
+		else
+		{
+			QRect r = fm.boundingRect(0, 0, table()->columnWidth( col() ) - padding, 0,
+									wordWrap() ? (alignment() | WordBreak) : alignment(),
+									t );
+			r.setWidth( QMAX( r.width() + 10, table()->columnWidth(col())));
+	
+			s = QSize( r.width(), QMAX( s.height(), r.height() ) ).expandedTo( strutSize );
+		}
+	}
   
-	s.setWidth(s.width() + padding);
-	s.setHeight(s.height() + padding);
-
+	s.setWidth(s.width() + padding * 2);
+	s.setHeight(s.height() + padding * 2);
+  
   return s;
 }
 
@@ -359,7 +361,7 @@ void MyTable::setColumnWidth(int col, int width)
   else
     QTable::setColumnWidth(col, width);
     
-	if (col == (numCols() - 1))
+	if (col == (numCols() - 1) && !_updating_last_column)
 		_last_col_width = columnWidth(numCols() - 1);
 }
 
@@ -1614,7 +1616,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEW_client_height)
 
   WIDGET->updateScrollBars();
-  GB.ReturnInteger(WIDGET->clipper()->height());
+  GB.ReturnInteger(WIDGET->visibleHeight());
 
 END_PROPERTY
 
