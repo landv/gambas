@@ -791,7 +791,7 @@ void TRANS_for(void)
   CODE_pop_ctrl(current_ctrl->local);*/
 
   if (!PATTERN_is_newline(*JOB->current))
-    THROW(E_UNEXPECTED, JOB->current);
+    THROW(E_UNEXPECTED, READ_get_pattern(JOB->current));
 
   CODE_jump_first(current_ctrl->local);
 
