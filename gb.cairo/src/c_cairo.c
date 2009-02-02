@@ -145,7 +145,7 @@ GB_DESC CairoMatrixDesc[] =
 
 	GB_METHOD("_new", NULL, CAIRO_MATRIX_new, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
 	GB_STATIC_METHOD("_call", "CairoMatrix", CAIRO_MATRIX_call, "[(XX)f(YX)f(XY)f(YY)f(X0)f(Y0)f]"),
-	GB_METHOD("Translate", "CairoMatrix", CAIRO_MATRIX_translate, "(TX)f(TY)y"),
+	GB_METHOD("Translate", "CairoMatrix", CAIRO_MATRIX_translate, "(TX)f(TY)f"),
 	GB_METHOD("Scale", "CairoMatrix", CAIRO_MATRIX_scale, "(SX)f(SY)f"),
 	GB_METHOD("Rotate", "CairoMatrix", CAIRO_MATRIX_rotate, "(Angle)f"),
 	GB_METHOD("Invert", "CairoMatrix", CAIRO_MATRIX_invert, NULL),
@@ -288,18 +288,34 @@ BEGIN_METHOD(CAIRO_begin, GB_OBJECT device)
 
 END_METHOD
 
+static void end_current()
+{
+	CAIRO_DRAW *draw = _current;
+
+	if (!_current)
+		return;
+		
+	_current = draw->previous;
+	
+	GB.Unref(POINTER(&draw->pattern));
+	cairo_destroy(draw->context);
+	GB.Unref(POINTER(&draw->device));
+	GB.Free(POINTER(&draw));
+}
 
 BEGIN_METHOD_VOID(CAIRO_end)
 
-	CAIRO_DRAW *draw = _current;
-
 	if (check_device())
 		return;
+		
+	end_current();
 
-	_current = draw->previous;
-	
-	cairo_destroy(draw->context);
-	GB.Free(POINTER(&draw));
+END_METHOD
+
+BEGIN_METHOD_VOID(CAIRO_exit)
+
+	while	(_current)
+		end_current();
 
 END_METHOD
 
@@ -778,6 +794,7 @@ GB_DESC CairoDesc[] =
     
 	GB_STATIC_METHOD("Begin", NULL, CAIRO_begin, "(Device)o"),
 	GB_STATIC_METHOD("End", NULL, CAIRO_end, NULL),
+	GB_STATIC_METHOD("_exit", NULL, CAIRO_exit, NULL),
 	
 	GB_STATIC_PROPERTY_READ("Status", "i", CAIRO_status),
 	GB_STATIC_PROPERTY_READ("Device", "o", CAIRO_device),

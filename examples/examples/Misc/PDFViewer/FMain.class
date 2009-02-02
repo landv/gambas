@@ -30,189 +30,189 @@
 '
 '***************************************************************************
 
-PUBLIC hPdf AS NEW PdfDocument
-PUBLIC cIndex AS Integer 
-PUBLIC CurrentPage AS Integer 
-PUBLIC CurrentZoom AS Float  
+Public hPdf As New PdfDocument
+Public cIndex As Integer 
+Public CurrentPage As Integer 
+Public CurrentZoom As Float  
 
-PUBLIC SUB BtOpen_Click()
+Public Sub BtOpen_Click()
 
-  IF Dialog.OpenFile(FALSE) THEN RETURN 
+  If Dialog.OpenFile(False) Then Return 
   
   hPdf.Close()
-  TRY hPdf.Open(Dialog.Path)
-  IF ERROR THEN 
+  Try hPdf.Open(Dialog.Path)
+  If Error Then 
     Message.Error(Error.Text)
-    RETURN 
-  END IF
+    Return 
+  End If
 
   CurrentZoom = 1
   CurrentPage = 1
   RenderPage()
-  BtPrev.Enabled = FALSE 
-  IF hPdf.Count > 1 THEN 
-    BtNext.Enabled = TRUE 
-  ELSE 
-    BtNext.Enabled = FALSE 
-  END IF
-  btZoomIn.Enabled = TRUE 
-  btZoomOut.Enabled = TRUE 
-  btRotate.Enabled = TRUE 
-  pBox.Visible = TRUE 
-  TxtFind.Enabled = TRUE 
+  BtPrev.Enabled = False 
+  If hPdf.Count > 1 Then 
+    BtNext.Enabled = True 
+  Else 
+    BtNext.Enabled = False 
+  End If
+  btZoomIn.Enabled = True 
+  btZoomOut.Enabled = True 
+  btRotate.Enabled = True 
+  pBox.Visible = True 
+  TxtFind.Enabled = True 
 
   tvIndex.Clear()
-  IF hPdf.HasIndex THEN 
-    tvIndex.Visible = TRUE 
+  If hPdf.HasIndex Then 
+    tvIndex.Visible = True 
     AddIndex(0, "")
-  ELSE 
-    tvIndex.Visible = FALSE 
-  END IF
+  Else 
+    tvIndex.Visible = False 
+  End If
   
-END
+End
 
-PUBLIC FUNCTION AddIndex(nItem AS Integer, pItem AS String) AS Integer 
+Public Function AddIndex(nItem As Integer, pItem As String) As Integer 
   
-  DIM pR AS String  
+  Dim pR As String  
   
-  DO
+  Do
     tvIndex.Add(nItem & "-" & hPdf.Index.Data.Page, hPdf.Index.Title, "", pItem)
     pR = nItem & "-" & hPdf.Index.Data.Page
-    INC nItem
-    IF hPdf.Index.HasChildren THEN 
+    Inc nItem
+    If hPdf.Index.HasChildren Then 
      hPdf.Index.MoveChild()
      nItem = AddIndex(nItem + 1, pR)
      hPdf.Index.MoveParent()
-    END IF
-  LOOP UNTIL hPdf.Index.MoveNext()
+    End If
+  Loop Until hPdf.Index.MoveNext()
   
-  RETURN nItem
+  Return nItem
   
-END
+End
 
-PUBLIC SUB tvIndex_Click()
+Public Sub tvIndex_Click()
 
   CurrentPage = Mid(tvIndex.Current.Key, InStr(tvIndex.Current.Key, "-") + 1)
-  BtPrev.Enabled = TRUE 
-  BtNext.Enabled = TRUE 
-  IF CurrentPage = 1 THEN BtPrev.Enabled = FALSE 
-  IF CurrentPage = hPdf.Count THEN BtNext.Enabled = FALSE 
+  BtPrev.Enabled = True 
+  BtNext.Enabled = True 
+  If CurrentPage = 1 Then BtPrev.Enabled = False 
+  If CurrentPage = hPdf.Count Then BtNext.Enabled = False 
   RenderPage() 
 
-END
+End
 
-PUBLIC SUB RenderPage()
+Public Sub RenderPage()
   
-  DIM hPic AS Picture 
-  DIM Bc AS Integer 
+  Dim hPic As Picture 
+  Dim Bc As Integer 
   
   hPdf.Zoom = CurrentZoom
   LblInfo.Text = CurrentPage & " " & ("From") & " " & hPdf.Count  
   
   ViewPort.Scroll(0, 0)
-  hPic = hPdf[CurrentPage].GetPicture()
+  hPic = hPdf[CurrentPage].Image.Picture
 
-  IF TxtFind.Text <> "" THEN 
+  If TxtFind.Text <> "" Then 
   
     hPdf[CurrentPage].Find(TxtFind.Text)
     Draw.Begin(hPic)
     Draw.FillColor = Color.Red 
     Draw.FillStyle = Fill.Dense50
-    FOR Bc = 0 TO hPdf[CurrentPage].Result.Count - 1
+    For Bc = 0 To hPdf[CurrentPage].Result.Count - 1
       Draw.Rect(hPdf[CurrentPage].Result[Bc].Left, hPdf[CurrentPage].Result[Bc].Top, hPdf[CurrentPage].Result[Bc].Width, hPdf[CurrentPage].Result[Bc].Height)
-    NEXT 
+    Next 
     Draw.End()
   
-  END IF
+  End If
 
   PBox.Picture = hPic 
   PBox.Resize(hPdf[CurrentPage].Width, hPdf[CurrentPage].Height)
   Form_Resize()
   
-END
+End
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
-  IF CurrentPage = 0 THEN RETURN 
+  If CurrentPage = 0 Then Return 
   pBox.Left = (ViewPort.Width - hPdf[CurrentPage].Width) / 2
 
-END
+End
 
 
-PUBLIC SUB HSplit1_Resize()
+Public Sub HSplit1_Resize()
 
   Form_Resize()  
 
-END
+End
 
-PUBLIC SUB BtNext_Click()
+Public Sub BtNext_Click()
 
-  INC CurrentPage
-  IF CurrentPage = hPdf.Count THEN BtNext.Enabled = FALSE 
-  BtPrev.Enabled = TRUE 
+  Inc CurrentPage
+  If CurrentPage = hPdf.Count Then BtNext.Enabled = False 
+  BtPrev.Enabled = True 
   RenderPage()
 
-END
+End
 
-PUBLIC SUB BtPrev_Click()
+Public Sub BtPrev_Click()
 
-  DEC CurrentPage
-  IF CurrentPage = 1 THEN BtPrev.Enabled = FALSE 
-  BtNext.Enabled = TRUE 
+  Dec CurrentPage
+  If CurrentPage = 1 Then BtPrev.Enabled = False 
+  BtNext.Enabled = True 
   RenderPage()
 
-END
+End
 
-PUBLIC SUB btZoomIn_Click()
+Public Sub btZoomIn_Click()
 
-  IF CurrentZoom < 3 THEN CurrentZoom += 0.1
-  IF CurrentZoom = 3 THEN btZoomIn.Enabled = FALSE 
-  btZoomOut.Enabled = TRUE 
+  If CurrentZoom < 3 Then CurrentZoom += 0.1
+  If CurrentZoom = 3 Then btZoomIn.Enabled = False 
+  btZoomOut.Enabled = True 
   RenderPage()
 
-END
+End
 
-PUBLIC SUB btZoomOut_Click()
+Public Sub btZoomOut_Click()
 
-  IF CurrentZoom > 0.5 THEN CurrentZoom -= 0.1
-  IF CurrentZoom = 0.5 THEN btZoomOut.Enabled = FALSE 
-  btZoomIn.Enabled = TRUE 
+  If CurrentZoom > 0.5 Then CurrentZoom -= 0.1
+  If CurrentZoom = 0.5 Then btZoomOut.Enabled = False 
+  btZoomIn.Enabled = True 
   RenderPage()
 
-END
+End
 
-PUBLIC SUB Form_Close()
+Public Sub Form_Close()
 
   hPdf.Close()
 
-END
+End
 
-PUBLIC SUB Button1_Click()
+Public Sub Button1_Click()
 
   Fabout.ShowDialog()
 
-END
+End
 
-PUBLIC SUB btRotate_Click()
+Public Sub btRotate_Click()
 
-  SELECT CASE hPdf.Orientation
-    CASE PdfDocument.Normal
+  Select Case hPdf.Orientation
+    Case PdfDocument.Normal
       hPdf.Orientation = PdfDocument.Sideways
-    CASE PdfDocument.Sideways
+    Case PdfDocument.Sideways
       hPdf.Orientation = PdfDocument.Inverted 
-    CASE PdfDocument.Inverted
+    Case PdfDocument.Inverted
       hPdf.Orientation = PdfDocument.SidewaysInverted
-    CASE PdfDocument.SidewaysInverted
+    Case PdfDocument.SidewaysInverted
       hPdf.Orientation = PdfDocument.Normal 
-  END SELECT 
+  End Select 
   
   RenderPage()
   
-END
+End
 
-PUBLIC SUB TxtFind_Change()
+Public Sub TxtFind_Change()
 
   RenderPage()
 
-END
+End
 

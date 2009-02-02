@@ -399,7 +399,7 @@ __LONG:
   if (P2->_long.value == 0)
     THROW(E_ZERO);
 
-  P1->_long.value SMT_OP P2->_long.value;
+  P1->_long.value = P1->_long.value SMT_OP P2->_long.value;
   P1->type = T_LONG;
   goto __END;
 

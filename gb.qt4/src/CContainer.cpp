@@ -70,10 +70,29 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
 	}
 }
 
+static void move_widget(QWidget *wid, int x, int y)
+{
+	if (wid->x() != x || wid->y() != y)
+		wid->move(x, y);
+}
+
+static void resize_widget(QWidget *wid, int w, int h)
+{
+	if (wid->width() != w || wid->height() != h)
+		wid->resize(w, h);
+}
+
+static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
+{
+	if (wid->x() != x || wid->y() != y || wid->width() != w || wid->height() != h)
+		wid->setGeometry(x, y, w, h);
+}
+
 static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 {
-	wid->resize(w + wid->width() - cont->width(), h + wid->height() - cont->height());
+	resize_widget(wid, w + wid->width() - cont->width(), h + wid->height() - cont->height());
 }
+
 
 #define WIDGET_TYPE QWidget *
 #define CONTAINER_TYPE QFrame *
@@ -100,10 +119,10 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define GET_WIDGET_Y(_widget) (_widget)->y()
 #define GET_WIDGET_W(_widget) (_widget)->width()
 #define GET_WIDGET_H(_widget) (_widget)->height()
-#define MOVE_WIDGET(_widget, _x, _y) (_widget)->move(_x, _y)
-#define RESIZE_WIDGET(_widget, _w, _h) (_widget)->resize(_w, _h)
+#define MOVE_WIDGET(_widget, _x, _y) move_widget(_widget, x, y)
+#define RESIZE_WIDGET(_widget, _w, _h) resize_widget(_widget, w, h)
 #define RESIZE_CONTAINER(_widget, _cont, _w, _h) resize_container((_widget), (_cont), (_w), (_h))
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) (_widget)->setGeometry(_x, _y, _w, _h)
+#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) move_resize_widget(_widget, _x, _y, _w, _h)
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
 	QObjectList list = (_widget)->children(); \
@@ -132,10 +151,27 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 
 #include "gb.form.arrangement.h"
 
+extern void qt_x11_set_global_double_buffer(bool);
+
+/*void CCONTAINER_arrange(void *_object)
+{
+	static int level = 0;
+	
+	if (!level)
+		qt_x11_set_global_double_buffer(false);
+	
+	level++;
+	CCONTAINER_arrange2(_object);
+	level--;
+
+	if (!level)
+		qt_x11_set_global_double_buffer(true);
+}*/
+
 
 static int max_w, max_h;
 
-static void move_widget(QWidget *wid, int x, int y)
+static void gms_move_widget(QWidget *wid, int x, int y)
 {
 	int w = x + wid->width();
 	int h = y + wid->height();
@@ -144,7 +180,7 @@ static void move_widget(QWidget *wid, int x, int y)
 	if (h > max_h) max_h = h;
 }
 
-static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
+static void gms_move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 {
 	w += x;
 	h += y;
@@ -154,11 +190,11 @@ static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 }
 
 #undef MOVE_WIDGET
-#define MOVE_WIDGET(_widget, _x, _y) move_widget(_widget, _x, _y)
+#define MOVE_WIDGET(_widget, _x, _y) gms_move_widget(_widget, _x, _y)
 #undef RESIZE_WIDGET
 #define RESIZE_WIDGET(_widget, _w, _h) (0)
 #undef MOVE_RESIZE_WIDGET
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) move_resize_widget(_widget, _x, _y, _w, _h)
+#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) gms_move_resize_widget(_widget, _x, _y, _w, _h)
 #undef RAISE_ARRANGE_EVENT
 #define RAISE_ARRANGE_EVENT(_object) (0)
 #undef FUNCTION_NAME

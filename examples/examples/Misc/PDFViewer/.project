@@ -1,14 +1,16 @@
 # Gambas Project File 3.0
+# Compiled with Gambas 2.99.0 (r1814)
 Title=PdfViewer
 Startup=FMain
 Icon=pdf.png
 Version=1.0.0
-Library=gb.gui
-Library=gb.form
-Library=gb.pdf
+Component=gb.image
+Component=gb.gui
+Component=gb.form
+Component=gb.pdf
 Description=A simple PDF Viewer, used as example of gb.pdf capabilities
 Authors=Daniel Campos Fernández <dcamposf@gmail.com>
-Environment="GB_GUI=gb.gtk"
+Environment="GB_GUI=gb.qt"
 TabSize=2
 Translate=1
 Language=en

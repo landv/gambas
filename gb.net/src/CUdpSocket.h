@@ -47,8 +47,10 @@ typedef
 		int iPort;
 		char *shost;
 		int sport;
+		char *spath;
 		char *thost;
 		int tport;
+		char *tpath;
 		int broadcast;
 		char *buffer;
 		int buffer_pos;

@@ -15,6 +15,7 @@ install-exec-local:
 	 ROOT=$DESTDIR; \
         fi
 	
+	@echo
 	@echo "Running the informer again because of dependencies between information files"
 	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix)
 	
