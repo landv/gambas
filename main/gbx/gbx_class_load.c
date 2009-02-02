@@ -298,7 +298,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 				goto __TRANS_NEXT;			
 			
 			__TRANS_POINTER:
-				*((uint64_t *)pa) = *((uint *)p);
+				*((int64_t *)pa) = *((int *)p);
 				pa += sizeof(int64_t);
 				p += sizeof(int);
 				goto __TRANS_NEXT;			
@@ -849,11 +849,13 @@ void CLASS_load_without_init(CLASS *class)
 
       case CD_PROPERTY:
       case CD_STATIC_PROPERTY:
+      case CD_PROPERTY_READ:
+      case CD_STATIC_PROPERTY_READ:
 
         desc->property.read = (void (*)())desc->gambas.val1;
         desc->property.write = (void (*)())desc->gambas.val2;
-        if ((intptr_t)desc->property.write == -1L)
-          desc->gambas.name = *desc->gambas.name == 'p' ? "r" : "R";
+        //if ((intptr_t)desc->property.write == -1L)
+        //  desc->gambas.name = *desc->gambas.name == 'p' ? "r" : "R";
         desc->property.native = FALSE;
 
         break;

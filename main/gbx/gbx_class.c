@@ -131,31 +131,34 @@ static void unload_class(CLASS *class)
 	{
 		#ifdef OS_64BITS
 			
-			FREE(&class->load->desc, "unload_class");
-			FREE(&class->load->cst, "unload_class");
-			FREE(&class->load->class_ref, "unload_class");
-			FREE(&class->load->unknown, "unload_class");
-			FREE(&class->load->event, "unload_class");
-			FREE(&class->load->ext, "unload_class");
-			FREE(&class->load->local, "unload_class");
-			FREE(&class->load->array, "unload_class");
-			
-			if (class->debug)
+			if (class->load)
 			{
-				int i;
-				FUNCTION *func;
+				FREE(&class->load->desc, "unload_class");
+				FREE(&class->load->cst, "unload_class");
+				FREE(&class->load->class_ref, "unload_class");
+				FREE(&class->load->unknown, "unload_class");
+				FREE(&class->load->event, "unload_class");
+				FREE(&class->load->ext, "unload_class");
+				FREE(&class->load->local, "unload_class");
+				FREE(&class->load->array, "unload_class");
 				
-				for (i = 0; i < class->load->n_func; i++)
+				if (class->debug)
 				{
-					func = &class->load->func[i];
-					FREE(&func->debug->local, "unload_class");
+					int i;
+					FUNCTION *func;
+					
+					for (i = 0; i < class->load->n_func; i++)
+					{
+						func = &class->load->func[i];
+						FREE(&func->debug->local, "unload_class");
+					}
+					
+					FREE(&class->load->global, "unload_class");
+					FREE(&class->load->debug, "unload_class");
 				}
 				
-				FREE(&class->load->global, "unload_class");
-				FREE(&class->load->debug, "unload_class");
+				FREE(&class->load->func, "unload_class");
 			}
-			
-			FREE(&class->load->func, "unload_class");
 
 		#endif
 		
@@ -786,10 +789,10 @@ const char *CLASS_DESC_get_type_name(CLASS_DESC *desc)
 {
 	switch (desc->gambas.val4)
 	{
-		case CD_PROPERTY_ID: return "p";
+		case CD_PROPERTY_ID: return desc->gambas.val2 < 0 ? "r" : "p";
 		case CD_VARIABLE_ID: return "v";
 		case CD_METHOD_ID: return "m";
-		case CD_STATIC_PROPERTY_ID: return "P";
+		case CD_STATIC_PROPERTY_ID: return desc->gambas.val2 < 0 ? "R" : "P";
 		case CD_STATIC_VARIABLE_ID: return "V";
 		case CD_STATIC_METHOD_ID: return "M";
 		case CD_CONSTANT_ID: return "C";
