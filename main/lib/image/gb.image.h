@@ -47,7 +47,7 @@
 /* format test functions */
 
 #define GB_IMAGE_FMT_IS_24_BITS(_format) ((_format) & 4)
-#define GB_IMAGE_FMT_IS_32_BITS(_format) (((_format) & 4)) == 0)
+#define GB_IMAGE_FMT_IS_32_BITS(_format) (((_format) & 4) == 0)
 
 #define GB_IMAGE_FMT_IS_RGBA(_format) ((_format) & 2)
 

@@ -668,3 +668,85 @@ int IMAGE_get_default_format()
 {
 	return _default_format;
 }
+
+void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh)
+{
+	// Source and destination must have the same 32 bits format
+	
+	if (!GB_IMAGE_FMT_IS_32_BITS(src->format))
+		return;
+
+	if (dst->format != src->format)
+		return;
+
+	// Parameter correction
+	
+	if ( sw < 0 ) sw = src->width;
+	if ( sh < 0 ) sh = src->height;
+	if ( sx < 0 ) { dx -= sx; sw += sx; sx = 0; }
+	if ( sy < 0 ) { dy -= sy; sh += sy; sy = 0; }
+	if ( dx < 0 ) { sx -= dx; sw += dx; dx = 0; }
+	if ( dy < 0 ) { sy -= dy; sh += dy; dy = 0; }
+	if ( sx + sw > src->width ) sw = src->width - sx;
+	if ( sy + sh > src->height ) sh = src->height - sy;
+	if ( dx + sw > dst->width ) sw = dst->width - dx;
+	if ( dy + sh > dst->height ) sh = dst->height - dy;
+	if ( sw <= 0 || sh <= 0 ) return; // Nothing left to copy
+
+	/*if ( src->hasAlphaBuffer() ) {
+	    QRgb* d = (QRgb*)dst->scanLine(dy) + dx;
+	    QRgb* s = (QRgb*)src->scanLine(sy) + sx;
+	    const int dd = dst->width() - sw;
+	    const int ds = src->width() - sw;
+	    while ( sh-- ) {
+		for ( int t=sw; t--; ) {
+		    unsigned char a = qAlpha(*s);
+		    if ( a == 255 )
+			*d++ = *s++;
+		    else if ( a == 0 )
+			++d,++s; // nothing
+		    else {
+			unsigned char r = ((qRed(*s)-qRed(*d)) * a) / 256 + qRed(*d);
+			unsigned char g = ((qGreen(*s)-qGreen(*d)) * a) / 256 + qGreen(*d);
+			unsigned char b = ((qBlue(*s)-qBlue(*d)) * a) / 256 + qBlue(*d);
+			a = QMAX(qAlpha(*d),a); // alternatives...
+			*d++ = qRgba(r,g,b,a);
+			++s;
+		    }
+		}
+		d += dd;
+		s += ds;
+	    }
+	} else {*/
+	
+	uint *d = (uint *)dst->data + dy * dst->width + dx;
+	uint *s = (uint *)src->data + sy * src->width + sx;
+	
+  if (sw < 64)
+  {
+		// Trust ourselves
+		const int dd = dst->width - sw;
+		const int ds = src->width - sw;
+		int t;
+		while (sh--) 
+		{
+			for (t = sw; t--;)
+				*d++ = *s++;
+			d += dd;
+			s += ds;
+		}
+	} 
+	else 
+	{
+		// Trust libc
+		const int dd = dst->width;
+		const int ds = src->width;
+		const int b = sw * sizeof(uint);
+		while (sh--) 
+		{
+			memcpy(d, s, b);
+			d += dd;
+			s += ds;
+		}
+	}
+}

@@ -112,6 +112,23 @@ BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
 
 END_METHOD
 
+BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+  CIMAGE *image;
+  int x = VARGOPT(x, 0);
+  int y = VARGOPT(y, 0);
+  int w = VARGOPT(w, THIS_IMAGE->width);
+  int h = VARGOPT(h, THIS_IMAGE->height);
+
+  GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
+
+	IMAGE_create(&image->image, w, h, THIS_IMAGE->format);
+  IMAGE_bitblt(&image->image, 0, 0, THIS_IMAGE, x, y, w, h);
+
+  GB.ReturnObject(image);
+
+END_METHOD
+
 GB_DESC CImageDesc[] =
 {
   GB_DECLARE("Image", sizeof(CIMAGE)),
@@ -138,6 +155,8 @@ GB_DESC CImageDesc[] =
   GB_METHOD("MakeGray", NULL, CIMAGE_make_gray, NULL),
   GB_METHOD("MakeTransparent", NULL, CIMAGE_make_transparent, "[(Color)i]"),
   GB_METHOD("Replace", NULL, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
+  
+  GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   
   GB_END_DECLARE
 };

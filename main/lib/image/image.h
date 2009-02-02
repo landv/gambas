@@ -48,5 +48,6 @@ void IMAGE_set_pixel(GB_IMG *img, int x, int y, GB_COLOR col);
 void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq);
 void IMAGE_set_default_format(int format);
 int IMAGE_get_default_format();
+void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh);
 
 #endif

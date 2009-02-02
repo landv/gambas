@@ -53,6 +53,20 @@ IMPLEMENT_EXTENTS_PROPERTY(CAIRO_EXTENTS_y1, y1)
 IMPLEMENT_EXTENTS_PROPERTY(CAIRO_EXTENTS_x2, x2)
 IMPLEMENT_EXTENTS_PROPERTY(CAIRO_EXTENTS_y2, y2)
 
+BEGIN_METHOD(CAIRO_EXTENTS_merge, GB_OBJECT extents)
+
+	CAIRO_EXTENTS *extents = VARG(extents);
+	
+	if (GB.CheckObject(extents))
+		return;
+		
+	if (extents->x1 < THIS_EXTENTS->x1) THIS_EXTENTS->x1 = extents->x1;
+	if (extents->y1 < THIS_EXTENTS->y1) THIS_EXTENTS->y1 = extents->y1;
+	if (extents->x2 > THIS_EXTENTS->x2) THIS_EXTENTS->x2 = extents->x2;
+	if (extents->y2 > THIS_EXTENTS->y2) THIS_EXTENTS->y2 = extents->y2;
+
+END_METHOD
+
 GB_DESC CairoExtentsDesc[] = 
 {
 	GB_DECLARE("CairoExtents", sizeof(CAIRO_EXTENTS)),
@@ -61,6 +75,8 @@ GB_DESC CairoExtentsDesc[] =
 	GB_PROPERTY_READ("Y1", "f", CAIRO_EXTENTS_y1),
 	GB_PROPERTY_READ("X2", "f", CAIRO_EXTENTS_x2),
 	GB_PROPERTY_READ("Y2", "f", CAIRO_EXTENTS_y2),
+	
+	GB_METHOD("Merge", "CairoExtents", CAIRO_EXTENTS_merge, "(Extents)CairoExtents;"),
 	
 	GB_END_DECLARE
 };
@@ -580,6 +596,22 @@ static void make_pattern(cairo_pattern_t *pattern)
 	GB.ReturnObject(pat);
 }
 
+BEGIN_METHOD(CAIRO_color_pattern, GB_INTEGER color)
+
+	cairo_pattern_t *pattern;
+	double r, g, b, a;
+	uint rgba = VARG(color);
+	
+	a = ((rgba >> 24) ^ 0xFF) / 255.0;
+	r = ((rgba >> 16) & 0xFF) / 255.0;
+	g = ((rgba >> 8) & 0xFF) / 255.0;
+	b = (rgba & 0xFF) / 255.0;
+	
+	pattern = cairo_pattern_create_rgba(r, g, b, a);
+	make_pattern(pattern);
+
+END_METHOD
+
 BEGIN_METHOD(CAIRO_solid_pattern, GB_FLOAT r; GB_FLOAT g; GB_FLOAT b; GB_FLOAT a)
 
 	cairo_pattern_t *pattern;
@@ -804,10 +836,10 @@ GB_DESC CairoDesc[] =
 	
 	GB_STATIC_METHOD("Clip", NULL, CAIRO_clip, "[(Preserve)b]"),
 	GB_STATIC_METHOD("ResetClip", NULL, CAIRO_reset_clip, NULL),
-	GB_STATIC_PROPERTY_READ("ClipExtents", "Float[]", CAIRO_clip_extents),
+	GB_STATIC_PROPERTY_READ("ClipExtents", "CairoExtents", CAIRO_clip_extents),
 	
 	GB_STATIC_METHOD("Fill", NULL, CAIRO_fill, "[(Preserve)b]"),
-	GB_STATIC_PROPERTY_READ("FillExtents", "Float[]", CAIRO_fill_extents),
+	GB_STATIC_PROPERTY_READ("FillExtents", "CairoExtents", CAIRO_fill_extents),
 	GB_STATIC_METHOD("InFill", "b", CAIRO_in_fill, "(X)f(Y)f"),
 	
 	GB_STATIC_METHOD("Mask", NULL, CAIRO_mask, "(Pattern)CairoPattern;"),
@@ -815,7 +847,7 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("Paint", NULL, CAIRO_paint, "[(Alpha)f]"),
 
 	GB_STATIC_METHOD("Stroke", NULL, CAIRO_stroke, "[(Preserve)b]"),
-	GB_STATIC_PROPERTY_READ("StrokeExtents", "Float[]", CAIRO_stroke_extents),
+	GB_STATIC_PROPERTY_READ("StrokeExtents", "CairoExtents", CAIRO_stroke_extents),
 	GB_STATIC_METHOD("InStroke", "b", CAIRO_in_stroke, "(X)f(Y)f"),
 
 	GB_STATIC_PROPERTY("Source", "CairoPattern", CAIRO_source),
@@ -845,8 +877,9 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("RelLineTo", NULL, CAIRO_rel_line_to, "(DX)f(DY)f"),
 	GB_STATIC_METHOD("RelMoveTo", NULL, CAIRO_rel_move_to, "(DX)f(DY)f"),
 	
-	GB_STATIC_PROPERTY_READ("PathExtents", "Float[]", CAIRO_path_extents),
+	GB_STATIC_PROPERTY_READ("PathExtents", "CairoExtents", CAIRO_path_extents),
 	
+	GB_STATIC_METHOD("ColorPattern", "CairoPattern", CAIRO_color_pattern, "(Color)i"),
 	GB_STATIC_METHOD("SolidPattern", "CairoPattern", CAIRO_solid_pattern, "(Red)f(Green)f(Blue)f[(Alpha)f]"),
 	GB_STATIC_METHOD("ImagePattern", "CairoPattern", CAIRO_image_pattern, "(Image)Image;[(X)f(Y)f(Extend)i(Filter)i]"),
 	GB_STATIC_METHOD("LinearGradient", "CairoPattern", CAIRO_linear_gradient_pattern, "(X0)f(Y0)f(X1)f(Y1)f(Colors)Float[][];"),
