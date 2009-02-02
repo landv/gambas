@@ -1532,7 +1532,7 @@ void CARRAY_split(CARRAY *_object, const char *str, int lstr, const char *sep, c
 
 /* Gambas API */
 
-void GB_ArrayNew(GB_ARRAY *array, uint type, int size)
+void GB_ArrayNew(GB_ARRAY *array, intptr_t type, int size)
 {
   CLASS *class;
   int np;
