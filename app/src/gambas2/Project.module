@@ -211,7 +211,7 @@ PRIVATE SUB InitVersion()
   SHELL "gbx" & System.Version & " -V" TO sVer
   FullVersion = Trim(Mid$(sVer, InStr(sVer, "-") + 1))
   aVer = Split(FullVersion, ".")
-  aVer.Remove(aVer.Max)
+  IF aVer.Count = 3 THEN aVer.Remove(aVer.Max)
   Version = aVer.Join(".")
   
   sVer = VersionControl.GetVersion(Application.Path)

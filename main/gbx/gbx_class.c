@@ -131,31 +131,34 @@ static void unload_class(CLASS *class)
   {
     #ifdef OS_64BITS
     	
-    	FREE(&class->load->desc, "unload_class");
-    	FREE(&class->load->cst, "unload_class");
-    	FREE(&class->load->class_ref, "unload_class");
-    	FREE(&class->load->unknown, "unload_class");
-    	FREE(&class->load->event, "unload_class");
-    	FREE(&class->load->ext, "unload_class");
-    	FREE(&class->load->local, "unload_class");
-    	FREE(&class->load->array, "unload_class");
-    	
-    	if (class->debug)
+    	if (class->load)
     	{
-    		int i;
-    		FUNCTION *func;
-    		
-				for (i = 0; i < class->load->n_func; i++)
+				FREE(&class->load->desc, "unload_class");
+				FREE(&class->load->cst, "unload_class");
+				FREE(&class->load->class_ref, "unload_class");
+				FREE(&class->load->unknown, "unload_class");
+				FREE(&class->load->event, "unload_class");
+				FREE(&class->load->ext, "unload_class");
+				FREE(&class->load->local, "unload_class");
+				FREE(&class->load->array, "unload_class");
+				
+				if (class->debug)
 				{
-					func = &class->load->func[i];
-					FREE(&func->debug->local, "unload_class");
+					int i;
+					FUNCTION *func;
+					
+					for (i = 0; i < class->load->n_func; i++)
+					{
+						func = &class->load->func[i];
+						FREE(&func->debug->local, "unload_class");
+					}
+					
+					FREE(&class->load->global, "unload_class");
+					FREE(&class->load->debug, "unload_class");
 				}
 				
-				FREE(&class->load->global, "unload_class");
-				FREE(&class->load->debug, "unload_class");
-    	}
-    	
-    	FREE(&class->load->func, "unload_class");
+				FREE(&class->load->func, "unload_class");
+			}
 
     #endif
     

@@ -205,7 +205,7 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 				goto __TRANS_NEXT;			
 			
 			__TRANS_POINTER:
-				*((uint64_t *)pa) = *((uint *)p);
+				*((int64_t *)pa) = *((int *)p);
 				pa += sizeof(int64_t);
 				p += sizeof(int);
 				goto __TRANS_NEXT;			
