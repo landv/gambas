@@ -392,7 +392,7 @@ CLASS *CLASS_find(const char *name)
 		#endif
 	}
 
-	ALLOC_ZERO(&class, Max(128, sizeof(CLASS)), "CLASS_find");
+	ALLOC_ZERO(&class, sizeof(CLASS), "CLASS_find");
 	csym->class = class;
 	/*csym->class->id = index;*/
 	class->state = CS_NULL;
