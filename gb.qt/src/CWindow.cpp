@@ -1843,7 +1843,9 @@ void MyMainWindow::setBorder(bool b, bool force)
 		return;
 	
 	_border = b;
+	#ifndef NO_X_WINDOW
 	X11_set_window_decorated(winId(), _border);
+	#endif
 	
 /*	flags = getWFlags();
 	
