@@ -1841,16 +1841,18 @@ void MyMainWindow::setBorder(bool b, bool force)
 	
 	if (_border == b && !force)
 		return;
-		
+	
 	_border = b;
-	flags = getWFlags();
+	X11_set_window_decorated(winId(), _border);
+	
+/*	flags = getWFlags();
 	
 	if (b)
 		flags |= WType_TopLevel;
 	else
 		flags |= WStyle_Customize | WStyle_NoBorderEx | WType_TopLevel;
 	
-	doReparent(parentWidget(), flags, pos());
+	doReparent(parentWidget(), flags, pos());*/
 }
 
 void MyMainWindow::setResizable(bool b, bool force)

@@ -46,6 +46,8 @@ Atom X11_atom_net_wm_window_type_utility;
 Atom X11_atom_net_wm_desktop;
 Atom X11_atom_net_current_desktop;
 
+Atom X11_atom_motif_wm_hints = None;
+
 static Display *_display;
 static Window _root;
 
@@ -87,6 +89,16 @@ static X11_ATOM _atoms[] =
 	{NULL}
 };
 
+typedef 
+	struct {
+		unsigned long flags;
+		unsigned long functions;
+		unsigned long decorations;
+		long input_mode;
+		unsigned long status;
+	} 
+	MwmHints;
+
 static void init_atoms()
 {
   if (_atom_init)
@@ -104,7 +116,6 @@ static void init_atoms()
 	X11_atom_net_wm_window_type = XInternAtom(_display, "_NET_WM_WINDOW_TYPE", True);
 	X11_atom_net_wm_window_type_normal = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_NORMAL", True);
 	X11_atom_net_wm_window_type_utility = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_UTILITY", True);
-
   _atom_init = TRUE;
 }
 
@@ -512,4 +523,48 @@ void X11_set_window_type(Window window, int type)
 void X11_set_transient_for(Window window, Window parent)
 {
 	XSetTransientForHint(_display, window, parent);
+}
+
+void X11_set_window_decorated(Window window, bool decorated)
+{
+	// Motif structures
+	
+	MwmHints *hints;
+	MwmHints new_hints;
+
+	uchar *data;
+	Atom type;
+	int format;
+	ulong nitems;
+	ulong bytes_after;
+	
+	if (X11_atom_motif_wm_hints == None)
+		X11_atom_motif_wm_hints = XInternAtom(_display, "_MOTIF_WM_HINTS", True);
+
+	XGetWindowProperty (_display, window,
+		X11_atom_motif_wm_hints, 0, sizeof(MwmHints)/sizeof(long),
+		False, AnyPropertyType, &type, &format, &nitems,
+		&bytes_after, &data);
+	
+	if (type == None)
+	{
+		hints = &new_hints;
+		hints->flags = 0;
+		hints->functions = 0;
+		hints->input_mode = 0;
+		hints->status = 0;
+		hints->decorations = 0;
+	}
+	else
+		hints = (MwmHints *)data;
+	
+	hints->flags |= (1 << 1);
+	hints->decorations = decorated ? 1 : 0;	
+	
+	XChangeProperty(_display, window,
+		X11_atom_motif_wm_hints, X11_atom_motif_wm_hints, 32, PropModeReplace,
+		(uchar *)hints, sizeof (MwmHints)/sizeof(long));
+	
+	if (hints != &new_hints)
+		XFree (hints);
 }

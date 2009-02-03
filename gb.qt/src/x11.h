@@ -81,34 +81,35 @@ enum
 	_NET_WM_WINDOW_TYPE_DND
 };
 
-PUBLIC void X11_init(Display *display, Window root);
-PUBLIC void X11_exit();
-PUBLIC void X11_sync(void);
+void X11_init(Display *display, Window root);
+void X11_exit();
+void X11_sync(void);
 
 /* Functions to deal with the _NET_WM_STATE and _NET_WM_TYPE property */
-PUBLIC void X11_window_change_property(Window window, bool visible, Atom property, bool set);
-PUBLIC bool X11_window_has_property(Window window, Atom property);
-PUBLIC void X11_window_save_properties(Window window);
-PUBLIC void X11_window_restore_properties(Window window);
+void X11_window_change_property(Window window, bool visible, Atom property, bool set);
+bool X11_window_has_property(Window window, Atom property);
+void X11_window_save_properties(Window window);
+void X11_window_restore_properties(Window window);
 /* Function to dock a window in the system tray */
-PUBLIC void X11_window_dock(Window window);
+void X11_window_dock(Window window);
 /* Function to define startup position hints for a window being shown */
-PUBLIC void X11_window_startup(Window window, int x, int y, int w, int h);
+void X11_window_startup(Window window, int x, int y, int w, int h);
 /* Functions to search for a specific top-level window */
-PUBLIC void X11_find_windows(Window **window_list, int *count);
-PUBLIC void X11_get_window_title(Window window, char **result, int *length);
-PUBLIC void X11_get_window_class(Window window, char **result, int *length);
-PUBLIC void X11_get_window_role(Window window, char **result, int *length);
+void X11_find_windows(Window **window_list, int *count);
+void X11_get_window_title(Window window, char **result, int *length);
+void X11_get_window_class(Window window, char **result, int *length);
+void X11_get_window_role(Window window, char **result, int *length);
 /* Function to make a tool window */
-PUBLIC void X11_set_window_tool(Window window, int tool, Window parent);
-PUBLIC int X11_get_window_tool(Window window);
-PUBLIC void X11_window_set_desktop(Window window, bool visible, int desktop);
-PUBLIC int X11_window_get_desktop(Window window);
-PUBLIC int X11_get_current_desktop();
+void X11_set_window_tool(Window window, int tool, Window parent);
+int X11_get_window_tool(Window window);
+void X11_window_set_desktop(Window window, bool visible, int desktop);
+int X11_window_get_desktop(Window window);
+int X11_get_current_desktop();
 
-PUBLIC int X11_get_window_type(Window window);
-PUBLIC void X11_set_window_type(Window window, int type);
-PUBLIC void X11_set_transient_for(Window window, Window parent);
+int X11_get_window_type(Window window);
+void X11_set_window_type(Window window, int type);
+void X11_set_transient_for(Window window, Window parent);
+void X11_set_window_decorated(Window window, bool decorated);
 
 #ifdef __cplusplus
 }
