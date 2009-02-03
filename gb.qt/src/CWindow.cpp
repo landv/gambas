@@ -1715,39 +1715,15 @@ void MyMainWindow::setBorder(int b, bool force)
 {
   int f;
 
-  if (force)
-    border = BorderNone;
-  else
+  if (!force)
   {
     if (b == border || b < 0 || b > 2)
       return;
   }
 
-  if (b == BorderNone)
-  {
-    //clearWFlags(Qt::WStyle_NormalBorder);
-    //clearWFlags(Qt::WStyle_DialogBorder);
-    //setWFlags(Qt::WStyle_NoBorderEx);
-    //reparent(parentWidget(), getWFlags(), pos());
-
-    f = WStyle_Customize | WStyle_NoBorderEx | getWFlags(); // & 0xffff0000);
-
-    /*if (f & WStyle_StaysOnTop)
-      f |= WType_Popup;
-    else
-      f &= ~WType_Popup;*/
-
-		f |= WType_TopLevel;
-
-    doReparent(parentWidget(), f, pos());
-
-    border = b;
-    return;
-  }
-
-
-  if (border == BorderNone)
-    doReparent(parentWidget(), WType_TopLevel | (getWFlags() /*& 0xffff0000*/), pos()); //QPoint(0,0) );
+	#ifndef NO_X_WINDOW
+	X11_set_window_decorated(winId(), b != BorderNone);
+	#endif
 
   if (b == BorderFixed)
   {

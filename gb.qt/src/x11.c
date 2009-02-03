@@ -46,6 +46,8 @@ PUBLIC Atom X11_atom_net_wm_window_type_utility;
 PUBLIC Atom X11_atom_net_wm_desktop;
 PUBLIC Atom X11_atom_net_current_desktop;
 
+Atom X11_atom_motif_wm_hints = None;
+
 static Display *_display;
 static Window _root;
 
@@ -57,6 +59,17 @@ typedef
 		Atom atoms[MAX_WINDOW_PROP];
 		}
 	X11_PROPERTY;
+
+
+typedef 
+	struct {
+		unsigned long flags;
+		unsigned long functions;
+		unsigned long decorations;
+		long input_mode;
+		unsigned long status;
+	} 
+	MwmHints;
 
 static X11_PROPERTY _window_prop;
 static X11_PROPERTY _window_save[2];
@@ -435,4 +448,48 @@ PUBLIC int X11_get_current_desktop()
 	XFree(data);
 	
 	return desktop;
+}
+
+void X11_set_window_decorated(Window window, bool decorated)
+{
+	// Motif structures
+	
+	MwmHints *hints;
+	MwmHints new_hints;
+
+	uchar *data;
+	Atom type;
+	int format;
+	ulong nitems;
+	ulong bytes_after;
+	
+	if (X11_atom_motif_wm_hints == None)
+		X11_atom_motif_wm_hints = XInternAtom(_display, "_MOTIF_WM_HINTS", True);
+
+	XGetWindowProperty (_display, window,
+		X11_atom_motif_wm_hints, 0, sizeof(MwmHints)/sizeof(long),
+		False, AnyPropertyType, &type, &format, &nitems,
+		&bytes_after, &data);
+	
+	if (type == None)
+	{
+		hints = &new_hints;
+		hints->flags = 0;
+		hints->functions = 0;
+		hints->input_mode = 0;
+		hints->status = 0;
+		hints->decorations = 0;
+	}
+	else
+		hints = (MwmHints *)data;
+	
+	hints->flags |= (1 << 1);
+	hints->decorations = decorated ? 1 : 0;	
+	
+	XChangeProperty(_display, window,
+		X11_atom_motif_wm_hints, X11_atom_motif_wm_hints, 32, PropModeReplace,
+		(uchar *)hints, sizeof (MwmHints)/sizeof(long));
+	
+	if (hints != &new_hints)
+		XFree (hints);
 }
