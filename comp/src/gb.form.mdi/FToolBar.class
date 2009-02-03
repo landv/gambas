@@ -359,8 +359,8 @@ End
 Public Sub dwgHandle_MouseUp()
 
   If $bDesign Then Return
+  $bPressed = False
   If $bInside Then 
-    $bPressed = False
     dwgHandle.Refresh
     If ToolbarKey Then Action.ConfigureToolbar(Me.Parent)
   Endif
@@ -485,10 +485,10 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
     hChild.Drop = $bConfigure
   Next
   Me.Drop = $bConfigure
-  panToolBar.Enabled = Not $bConfigure
-  'Debug "**** panToolbar.Enabled = "; panToolBar.Enabled
-  dwgHandle.Enabled = Not $bConfigure
   
+  panToolBar.Enabled = Not $bConfigure
+  dwgHandle.Enabled = Not $bConfigure
+
   Lock()
   If $bConfigure Then
     $aHidden = New Control[]
@@ -986,9 +986,10 @@ Public Sub LoadConfig(Optional bInit As Boolean)
       hCtrl = FindControl(sAction)
       If hCtrl Then
         'Print "--> Reparent to panToolbar"
-        bVisible = hCtrl.Visible
+        'bVisible = hCtrl.Visible
         hCtrl.Reparent(panToolBar)
         hCtrl.Raise
+        If bInit Then hCtrl.Show
         'If hCtrl.Visible <> bVisible Then Debug "**** VISIBLE CHANGED FOR "; sAction
       Endif
     Endif
@@ -1127,6 +1128,7 @@ End
 
 Public Sub SetIconSize(iSize As Integer)
 
+  If $iIconSize = iSize Then Return
   $iIconSize = iSize
   SaveConfig
   LoadConfig

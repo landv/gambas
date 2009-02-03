@@ -31,6 +31,12 @@ Public Sub _new()
   
 End
 
+Public Sub Configure()
+  
+  Action.ConfigureToolbar(Me)
+  
+End
+
 ' PRIVATE FUNCTION Arrangement_Read() AS Integer
 ' 
 '   RETURN Arrange.LeftRight

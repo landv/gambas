@@ -9,27 +9,27 @@
   Margin = True
   { lblTitle Label
     MoveScaled(1,1,28,3)
-    Font = Font["Bold"]
+    Font = Font["Bold,+4"]
+    AutoResize = True
     Text = ("Main toolbar")
   }
   { HBox1 HBox
-    MoveScaled(1,5,53,4)
+    MoveScaled(1,9,53,4)
     { Label1 Label
       MoveScaled(1,0,10,4)
-      Expand = True
+      AutoResize = True
       Text = ("Icon size")
+    }
+    { Panel2 Panel
+      MoveScaled(20,0,2,4)
     }
     { cmbSize ComboBox
       MoveScaled(31,0,22,4)
+      Expand = True
       Text = ("")
       ReadOnly = True
       List = [("Small"), ("Medium"), ("Large")]
     }
-  }
-  { Label2 Label
-    MoveScaled(1,10,28,3)
-    Font = Font["Bold"]
-    Text = ("Actions")
   }
   { panAction Panel
     MoveScaled(1,15,53,30)

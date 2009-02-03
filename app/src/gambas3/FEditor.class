@@ -1937,15 +1937,17 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
 
   sType = GetExpressionType(aExpr, aType, False)
   'IF NOT $hSymbol THEN
-  If sPattern = "(" Then
-    If bNew Then
-      Try $hSymbol = CComponent.GetClassSymbols(sType)["_new"]
-    Else
-      Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+  If sType Then
+    If sPattern = "(" Then
+      If bNew Then
+        Try $hSymbol = CComponent.GetClassSymbols(sType)["_new"]
+      Else
+        Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+      Endif
+    Else If sPattern = "[" Then
+      $hSymbol = Null
+      Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
     Endif
-  Else If sPattern = "[" Then
-    $hSymbol = Null
-    Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
   Endif
 
 '   IF $hSymbol THEN

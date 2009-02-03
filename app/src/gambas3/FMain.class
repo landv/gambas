@@ -586,7 +586,8 @@ End
 
 Public Sub UpdateTranslate()
 
-  Action["translate"].Visible = Project.Localize And Not (Project.ReadOnly Or Project.Running)
+  Action["translate"].Visible = Project.Localize And Not Project.ReadOnly
+  Action["translate"].Enabled = Not Project.Running
   'Action["component"].Visible = Project.CreateComponent 'AND NOT (Project.ReadOnly OR Project.Running)
 
 End
@@ -798,16 +799,18 @@ End
 Private Sub UpdateMenu()
 
   Dim bVisible As Boolean
+  Dim bEnabled As Boolean
+  Dim sAction As String
 
-  bVisible = Not (Project.ReadOnly Or Project.Running)
+  bVisible = Not Project.ReadOnly
+  bEnabled = Not Project.Running
 
   UpdateTranslate
 
-  Action["exec"].Visible = bVisible
-  Action["install"].Visible = bVisible
-  Action["compile"].Visible = bVisible
-  Action["compile-all"].Visible = bVisible
-  Action["property"].Visible = bVisible
+  For Each sAction In ["exec", "install", "compile", "compile-all", "property"]
+    Action[sAction].Visible = bVisible
+    Action[sAction].Enabled = bEnabled
+  Next
 
   mnuStartup.Visible = bVisible
   mnuRenameFile.Visible = bVisible
