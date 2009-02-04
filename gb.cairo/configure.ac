@@ -9,7 +9,7 @@ GB_COMPONENT_PKG_CONFIG(
   CAIRO,
   [Cairo component],
   [src],
-  cairo ">= 1.8.0"
+  cairo ">= 1.6.0"
 )
 
 GB_COMPONENT_PKG_CONFIG(
@@ -17,7 +17,7 @@ GB_COMPONENT_PKG_CONFIG(
   CAIRO_FT,
   [FreeType backend for Cairo],
   [src],
-  cairo-ft ">= 1.8.0"
+  cairo-ft ">= 1.6.0"
 )
 
 AC_OUTPUT( Makefile src/Makefile )
