@@ -15,7 +15,7 @@ Public Const _DrawWith As String = "DatePicker"
 'Private $hObserver As Observer
 
 Private $hDraw As DrawingArea
-Private $hForm As form
+Private $hForm As Window
 Private $hTextBox As Label
 Private $hdatechooser As DateChooser
 Private $iWidthForm As Integer
@@ -47,18 +47,19 @@ Public Sub _New()
   hPanel2.Border = Border.Sunken
   $hTextBox = New Label(hPanel2) As "TextBox"
   $hTextBox.Expand = True
-  $hTextBox.Background = Color.White
-  $hTextBox.Foreground = Color.Black
-  $hTextBox.Border = Border.None
+  $hTextBox.Background = Color.TextBackground
+  $hTextBox.Foreground = Color.TextForeground
+  $hTextBox.Border = Border.None 'Border.Sunken
   
   hIcon = Picture["icon:/small/calendar"]
   $hDraw = New DrawingArea(hPanel2) As "Draw"
-  $hDraw.Width = 24
+  $hDraw.Width = Desktop.Scale * 4
   
   $hForm = New Form As "LstForm"
   $hForm.Arrangement = Arrange.Fill
   $hForm.Border = False
-  $hForm.Type = Form.Combo
+  '$hForm.Type = Form.Combo
+  $hForm.SkipTaskbar = True
   $hForm.Persistent = True
   HPanel1 = New Panel($hForm)
   HPanel1.Arrangement = Arrange.Fill
@@ -74,10 +75,14 @@ Public Sub _New()
 End
 
 Public Sub Draw_Draw()
-  Draw.Begin($hDraw)
-  Draw.Style.Button(0, -5, 54, Me.Height + 50, False)
-  Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
-  Draw.End()
+  ' Draw.Begin($hDraw)
+  ' Draw.Style.Button(0, -5, 54, Me.Height + 50, False)
+  ' Draw.Picture(hIcon, (28 - hIcon.Width) / 2, (Me.Height - hIcon.Height - 4) / 2)
+  ' Draw.End()
+  
+  Draw.Style.Button(0, 0, $hDraw.W, $hDraw.Height, False)
+  Draw.Picture(hIcon, ($hDraw.W - hIcon.Width) / 2, ($hDraw.H - hIcon.Height) / 2)
+  
 End
 
 Public Sub Draw_Enter()
@@ -89,7 +94,7 @@ $hDraw.Refresh
 End
 
 Public Sub Draw_Leave()
-  If Not isActivate Then Draw_Draw
+  If Not isActivate Then $hDraw.Refresh
 End
 
 Public Sub Draw_MouseDown()
@@ -102,17 +107,17 @@ Public Sub TextBox_MouseDown()
   Draw_MouseDown
 End
 
-Public Sub LstForm_DeACtivate()
- htimer.Trigger
+Public Sub LstForm_Deactivate()
+  hTimer.Trigger
 End
 
-Public Sub LstForm_Show()
-OBS_Move()
+Public Sub LstForm_Open()
+  OBS_Move()
   Draw_Enter
 End
 
 Public Sub LstForm_Hide()
-  Draw_Draw
+  $hDraw.Refresh
 End
 
 Public Sub hTimer_Timer()
@@ -238,6 +243,7 @@ End
 
 Public Sub OBS_Move()
    $hdatechooser.Font = Me.Font
+   Debug $hDraw.ScreenX;; $hDraw.ScreenY;; $hDraw.H;; $hForm.Height
     If $hDraw.ScreenY + $hDraw.Height + $hForm.Height < Desktop.Height Then 
       $hForm.Move($hDraw.ScreenX + $hDraw.Width - $iWidthForm, $hDraw.ScreenY + $hDraw.Height)
     Else 

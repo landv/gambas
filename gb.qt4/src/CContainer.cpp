@@ -70,20 +70,25 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
 	}
 }
 
+static int _count = 0;
+
 static void move_widget(QWidget *wid, int x, int y)
 {
+	qDebug("%d", ++_count);
 	if (wid->x() != x || wid->y() != y)
 		wid->move(x, y);
 }
 
 static void resize_widget(QWidget *wid, int w, int h)
 {
+	qDebug("%d", ++_count);
 	if (wid->width() != w || wid->height() != h)
 		wid->resize(w, h);
 }
 
 static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 {
+	qDebug("%d", ++_count);
 	if (wid->x() != x || wid->y() != y || wid->width() != w || wid->height() != h)
 		wid->setGeometry(x, y, w, h);
 }
@@ -278,7 +283,7 @@ void MyContainer::showEvent(QShowEvent *e)
 	arrange_now(this);
 }
 
-void MyContainer::childEvent(QChildEvent *e)
+/*void MyContainer::childEvent(QChildEvent *e)
 {
 	//void *_object = CWidget::get(this);
 	void *child;
@@ -293,22 +298,22 @@ void MyContainer::childEvent(QChildEvent *e)
 
 	if (e->added())
 	{
-		e->child()->installEventFilter(this);
+		//e->child()->installEventFilter(this);
 		//qApp->sendEvent(WIDGET, new QEvent(EVENT_INSERT));
 		//if (THIS_ARRANGEMENT->user)
 		//	GB.Raise(THIS, EVENT_Insert, 1, GB_T_OBJECT, child);    
 	}
 	else if (e->removed())
 	{
-		e->child()->removeEventFilter(this);
+		//e->child()->removeEventFilter(this);
 		//if (THIS_ARRANGEMENT->user)
 		//	GB.Raise(THIS, EVENT_Remove, 1, GB_T_OBJECT, child);
 	}
 
 	arrange_later(this);
-}
+}*/
 
-bool MyContainer::eventFilter(QObject *o, QEvent *e)
+/*bool MyContainer::eventFilter(QObject *o, QEvent *e)
 {
 	int type = e->type();
 
@@ -320,7 +325,7 @@ bool MyContainer::eventFilter(QObject *o, QEvent *e)
 	}
 
 	return QObject::eventFilter(o, e);
-}
+}*/
 
 
 /***************************************************************************

@@ -35,9 +35,19 @@ static void cb_scroll(GtkAdjustment *Adj,gScrollView *data)
 	if (data->onScroll) data->onScroll(data);
 }
 
+/*static gboolean arrange_later(gScrollView *data)
+{
+	fprintf(stderr, "arrange_later\n");
+	data->performArrange();
+	data->_timer = 0;
+	return false;
+}*/
+
 static void cb_inside_resize(GtkWidget *wid, GtkAllocation *a, gScrollView *data)
 {
 	data->performArrange();
+	/*if (!data->_timer)
+		data->_timer = g_timeout_add(50, (GSourceFunc)arrange_later, data);*/
 }
 
 gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
@@ -47,6 +57,7 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	g_typ=Type_gScrollView;
 	
 	_mw = _mh = 0;
+	_timer = 0;
 	
 	_scroll = gtk_scrolled_window_new(NULL,NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(_scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);

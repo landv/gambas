@@ -39,8 +39,6 @@
 #define DEBUG_STACK    0
 /* Class loading debugging */
 #define DEBUG_LOAD     0
-/* Error management debugging */
-#define DEBUG_ERROR    0
 /* Event debugging */
 #define DEBUG_EVENT    0
 /* Component management debugging */

@@ -102,6 +102,7 @@ DECLARE_PROPERTY(CCONTAINER_margin);
 
 void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);
+void CCONTAINER_insert_child(void *child);
 
 class MyContainer : public QFrame
 {
@@ -115,9 +116,9 @@ protected:
 
   virtual void frameChanged();
   virtual void resizeEvent(QResizeEvent *);
-  virtual void childEvent(QChildEvent *);
+  //virtual void childEvent(QChildEvent *);
   virtual void showEvent(QShowEvent *);
-  virtual bool eventFilter(QObject *, QEvent *);
+  //virtual bool eventFilter(QObject *, QEvent *);
 };
 
 #endif

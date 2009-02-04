@@ -115,9 +115,9 @@ public:
 protected:
 
   virtual void resizeEvent(QResizeEvent *);
-  virtual void childEvent(QChildEvent *);
+  //virtual void childEvent(QChildEvent *);
   virtual void showEvent(QShowEvent *);
-  virtual bool eventFilter(QObject *, QEvent *);
+  //virtual bool eventFilter(QObject *, QEvent *);
 };
 
 #endif

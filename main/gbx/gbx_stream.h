@@ -59,11 +59,12 @@ typedef
     unsigned no_fionread : 1;
     unsigned no_lseek : 1;
     unsigned available_now : 1;
+		unsigned standard : 1;
     #if DEBUG_STREAM
     unsigned _reserved : 1;
-    unsigned tag : 8;
+    unsigned tag : 7;
     #else
-    unsigned _reserved : 9;
+    unsigned _reserved : 8;
     #endif
     }
   PACKED

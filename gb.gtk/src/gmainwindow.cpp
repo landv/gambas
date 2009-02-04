@@ -54,7 +54,6 @@ static gboolean win_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWind
 
 static void cb_show (GtkWidget *widget, gMainWindow *data)
 {
-	//fprintf(stderr, "cb_show: %p\n", data);
 	data->emitOpen();
 	if (data->opened)
 	{
@@ -387,10 +386,21 @@ void gMainWindow::resize(int w, int h)
 		
 		//gdk_window_enable_synchronized_configure (border->window);
 		
-		if (gtk_window_get_resizable(GTK_WINDOW(border)))
-			gtk_window_resize(GTK_WINDOW(border),w,h);
+		if (w < 1 || h < 1)
+		{
+			if (visible)
+				gtk_widget_hide(border);			
+		}
 		else
-			gtk_widget_set_size_request(border, w, h);
+		{
+			if (gtk_window_get_resizable(GTK_WINDOW(border)))
+				gtk_window_resize(GTK_WINDOW(border),w,h);
+			else
+				gtk_widget_set_size_request(border, w, h);
+				
+			if (visible)
+				gtk_widget_show(border);
+		}
 	}
 	else
 	{
@@ -1027,6 +1037,11 @@ int gMainWindow::clientX()
 	return 0;
 }
 
+int gMainWindow::containerX()
+{
+	return 0;
+}
+
 int gMainWindow::clientY()
 {
 	GtkRequisition req;
@@ -1039,6 +1054,12 @@ int gMainWindow::clientY()
 	
 	return 0;
 }
+
+int gMainWindow::containerY()
+{
+	return 0;
+}
+
 
 int gMainWindow::clientWidth()
 {

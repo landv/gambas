@@ -30,6 +30,8 @@
 
 #include "gb_limit.h"
 
+//#define DEBUG_ERROR 1
+
 enum {
   E_ABORT = -2,
   E_CUSTOM = -1,
@@ -129,12 +131,14 @@ EXTERN bool ERROR_backtrace;
 
 #define ERROR_LEAVE_DONE ((ERROR_CONTEXT *)-1)
 
+#if DEBUG_ERROR
+
 #define TRY \
   { \
 		ERROR_CONTEXT __err_context; \
     { \
      	ERROR_CONTEXT *__err = &__err_context; \
-     	/*fprintf(stderr, "TRY %s\n", __FUNCTION__);*/ \
+     	fprintf(stderr, "TRY %s\n", __FUNCTION__); \
      	ERROR_enter(__err); \
      	__err->ret = setjmp(__err->env); \
      	if (__err->ret == 0)
@@ -142,21 +146,44 @@ EXTERN bool ERROR_backtrace;
 /*#define CATCH \
 	  	fprintf(stderr, "%p == %p ? %d\n", ERROR_current, __err, __err->ret); \
 			if (__err->ret != 0 && (__err->ret = 2))*/
+
 #define CATCH \
-			/*if (__err->ret) fprintf(stderr, "CATCH %p\n", __err); \
-			if (__err->ret)*/ \
+			if (__err->ret) fprintf(stderr, "CATCH %p\n", __err); \
+			if (__err->ret)
+
+#define END_TRY \
+     	fprintf(stderr, "END TRY %s\n", __FUNCTION__); \
+			ERROR_leave(__err); \
+  	} \
+	}
+
+#define PROPAGATE() fprintf(stderr, "PROPAGATE %s\n", __FUNCTION__), ERROR_propagate()
+
+#else /* DEBUG_ERROR */
+
+#define TRY \
+  { \
+		ERROR_CONTEXT __err_context; \
+    { \
+     	ERROR_CONTEXT *__err = &__err_context; \
+     	ERROR_enter(__err); \
+     	__err->ret = setjmp(__err->env); \
+     	if (__err->ret == 0)
+
+#define CATCH \
 			else
 
 #define END_TRY \
 			ERROR_leave(__err); \
-     	/*fprintf(stderr, "END TRY %s\n", __FUNCTION__);*/ \
   	} \
 	}
 
-#define ERROR __err
-
 #define PROPAGATE() ERROR_propagate()
-//#define PROPAGATE() fprintf(stderr, "PROPAGATE %s\n", __FUNCTION__), ERROR_propagate()
+
+#endif
+
+
+#define ERROR __err
 
 const char *ERROR_get(void);
 

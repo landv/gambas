@@ -201,6 +201,14 @@ static CWIDGET *get_parent_control(CWIDGET *_object)
 		return CWidget::get(parent);
 }
 
+static void arrange_parent(CWIDGET *_object)
+{
+	CWIDGET *parent = get_parent_control(THIS); //CWidget::get(WIDGET->parentWidget());
+	if (parent)
+		CCONTAINER_arrange(parent);
+}
+
+
 void CWIDGET_update_design(CWIDGET *_object)
 {
 	if (!CWIDGET_test_flag(THIS, WF_DESIGN) && !CWIDGET_test_flag(THIS, WF_DESIGN_LEADER))
@@ -355,6 +363,8 @@ static void move_widget(void *_object, int x, int y)
 		((CWINDOW *)_object)->x = x;
 		((CWINDOW *)_object)->y = y;
 	}
+	
+	arrange_parent(THIS);
 }
 
 
@@ -383,6 +393,8 @@ static void resize_widget(void *_object, int w, int h)
 		// menu bar height is ignored
 		//((CWINDOW *)_object)->container->resize(w, h);
 	}
+
+	arrange_parent(THIS);
 }
 
 
@@ -407,6 +419,8 @@ static void move_resize_widget(void *_object, int x, int y, int w, int h)
 		((CWINDOW *)_object)->h = h;
 		//((CWINDOW *)_object)->container->resize(w, h);
 	}
+
+	arrange_parent(THIS);
 }
 
 
@@ -537,7 +551,8 @@ BEGIN_PROPERTY(CCONTROL_expand)
 	else
 	{
 		THIS->flag.expand = VPROP(GB_BOOLEAN);
-		qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
+		arrange_parent(THIS);
+		//qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
 	}
 
 END_PROPERTY
@@ -550,7 +565,8 @@ BEGIN_PROPERTY(CCONTROL_ignore)
 	else
 	{
 		THIS->flag.ignore = VPROP(GB_BOOLEAN);
-		qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
+		arrange_parent(THIS);
+		//qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
 	}
 
 END_PROPERTY
@@ -608,7 +624,7 @@ END_METHOD
 
 static bool is_visible(void *_object)
 {
-	return THIS->flag.visible || !QWIDGET(_object)->isHidden();
+	return THIS->flag.visible; //|| !QWIDGET(_object)->isHidden();
 }
 
 
@@ -619,6 +635,8 @@ static void set_visible(void *_object, bool v)
 		QWIDGET(_object)->show();
 	else
 		QWIDGET(_object)->hide();
+	
+	arrange_parent(THIS);
 }
 
 
@@ -689,14 +707,6 @@ static QWidget *get_next(QWidget *w)
 	}
 
 	return (QWidget *)current;
-}
-
-static void arrange_parent(CWIDGET *_object)
-{
-	CWIDGET *parent = CWidget::get(WIDGET->parentWidget());
-	if (!parent)
-		return;
-	CCONTAINER_arrange(parent);
 }
 
 BEGIN_PROPERTY(CCONTROL_next)

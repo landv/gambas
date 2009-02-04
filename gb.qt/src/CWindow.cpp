@@ -271,7 +271,7 @@ static void show_later(CWINDOW *_object)
   if (!THIS->hidden && WIDGET)
   {
   	if (!emit_open_event(THIS))
-    	WIDGET->show();
+    	CWIDGET_set_visible((CWIDGET *)THIS, true);
 	}
   GB.Unref(POINTER(&_object));
 }
@@ -618,7 +618,7 @@ BEGIN_METHOD_VOID(CWINDOW_raise)
   if (!THIS->toplevel)
   {
     if (!WIDGET->isVisible())
-      WIDGET->show();
+      CWIDGET_set_visible((CWIDGET *)THIS, true);
     WIDGET->raise();
   }
   else
@@ -639,7 +639,8 @@ BEGIN_METHOD_VOID(CWINDOW_show)
   
   if (!THIS->toplevel)
   {
-		WIDGET->show();
+		CWIDGET_set_visible((CWIDGET *)THIS, true);
+		//CCONTAINER_arrange(THIS);
     #ifndef NO_X_WINDOW
     if (THIS->xembed)
     	XEMBED->show();
@@ -663,7 +664,10 @@ BEGIN_METHOD_VOID(CWINDOW_hide)
     do_close(THIS, 0);
   }
   else
-  	WINDOW->hide();
+	{
+		CWIDGET_set_visible((CWIDGET *)THIS, false);
+		//CCONTAINER_arrange(THIS);
+	}
 
 END_METHOD
 
@@ -1143,15 +1147,15 @@ END_METHOD
 
 BEGIN_PROPERTY(CWINDOW_visible)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(!WINDOW->isHidden());
-  else
-  {
-    if (VPROP(GB_BOOLEAN))
-      CWINDOW_show(_object, _param);
-    else
-      CWINDOW_hide(_object, _param);
-  }
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(!WINDOW->isHidden());
+	else
+	{
+		if (VPROP(GB_BOOLEAN))
+			CWINDOW_show(_object, _param);
+		else
+			CWINDOW_hide(_object, _param);
+	}
 
 END_PROPERTY
 
@@ -1837,8 +1841,6 @@ void MyMainWindow::setSizeGrip(bool on)
 
 void MyMainWindow::setBorder(bool b, bool force)
 {
-	int flags;
-	
 	if (_border == b && !force)
 		return;
 	
@@ -1846,15 +1848,6 @@ void MyMainWindow::setBorder(bool b, bool force)
 	#ifndef NO_X_WINDOW
 	X11_set_window_decorated(winId(), _border);
 	#endif
-	
-/*	flags = getWFlags();
-	
-	if (b)
-		flags |= WType_TopLevel;
-	else
-		flags |= WStyle_Customize | WStyle_NoBorderEx | WType_TopLevel;
-	
-	doReparent(parentWidget(), flags, pos());*/
 }
 
 void MyMainWindow::setResizable(bool b, bool force)

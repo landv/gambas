@@ -194,10 +194,10 @@ _OPEN:
 	}
 	
 	#if DEBUG_STREAM
+	_tag++;
 	stream->common.tag = _tag;
 	_nopen++;
-	fprintf(stderr, "Open [%d] (%d)\n", _tag, _nopen);
-	_tag++;
+	fprintf(stderr, "Open %p [%d] (%d)\n", stream, _tag, _nopen);
 	#endif
 }
 
@@ -206,6 +206,9 @@ void STREAM_release(STREAM *stream)
 {
 	if (stream->common.buffer)
 	{
+		#if DEBUG_STREAM
+		fprintf(stderr, "Stream %p [%d]: Free buffer\n", stream, stream->common.tag);
+		#endif
 		FREE(&stream->common.buffer, "STREAM_close");
 		stream->common.buffer_pos = 0;
 		stream->common.buffer_len = 0;
@@ -216,6 +219,8 @@ void STREAM_close(STREAM *stream)
 {
 	int fd;
 
+	STREAM_release(stream);
+
 	if (!stream->type)
 		return;
 
@@ -223,14 +228,12 @@ void STREAM_close(STREAM *stream)
 	if (fd >= 0)
 		GB_Watch(fd, GB_WATCH_NONE, NULL, 0);
 
-	if (!(*(stream->type->close))(stream))
+	if (stream->common.standard || !(*(stream->type->close))(stream))
 		stream->type = NULL;
 		
-	STREAM_release(stream);
-
 	#if DEBUG_STREAM
 	_nopen--;
-	fprintf(stderr, "Close [%d] (%d)\n", stream->common.tag, _nopen);
+	fprintf(stderr, "Close %p [%d] (%d)\n", stream, stream->common.tag, _nopen);
 	#endif
 }
 
@@ -526,6 +529,9 @@ static void input(STREAM *stream, char **addr, boolean line)
 		
 	if (!buffer)
 	{
+		#if DEBUG_STREAM
+		fprintf(stderr, "Stream %p [%d]: Alloc buffer\n", stream, stream->common.tag);
+		#endif
 		ALLOC(&buffer, STREAM_BUFFER_SIZE, "input");
 		buffer_pos = 0;
 		buffer_len = 0;

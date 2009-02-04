@@ -23,6 +23,7 @@ public:
 //"Private"
 	virtual void performArrange();
   void updateSize();
+  guint _timer;
 	
 private:
   GtkWidget *_scroll;

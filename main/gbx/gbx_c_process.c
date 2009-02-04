@@ -172,7 +172,9 @@ static void exit_process(CPROCESS *_object)
 		THIS->err = -1;
 	}
 
-	update_stream(THIS);
+	// Why that ? This should be done only at process creation
+	// update_stream(THIS);
+	STREAM_close(&THIS->ob.stream);
 	GB_StoreVariant(NULL, &THIS->tag);
 }
 

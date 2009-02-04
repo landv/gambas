@@ -133,14 +133,29 @@ void ERROR_reset(ERROR_INFO *info)
 		info->free = FALSE;
 	}
 	info->msg = NULL;
-	DEBUG_free_backtrace(&info->backtrace);
-	info->backtrace = NULL;
+	if (info->backtrace)
+	{
+		#if DEBUG_ERROR
+		fprintf(stderr, "ERROR_reset: DEBUG_free_backtrace: <<%p>>\n", info->backtrace);
+		#endif
+		DEBUG_free_backtrace(&info->backtrace);
+		info->backtrace = NULL;
+	}
 }
 
 void ERROR_clear()
 {
 	if (_lock)
+	{
+		#if DEBUG_ERROR
+		fprintf(stderr, "ERROR_clear: (%p) *LOCKED*\n", ERROR_current);
+		#endif
 		return;
+	}
+	
+	#if DEBUG_ERROR
+	fprintf(stderr, "ERROR_clear: (%p)\n", ERROR_current);
+	#endif
 	ERROR_reset(&ERROR_current->info);
 }
 
@@ -156,6 +171,7 @@ void ERROR_enter(ERROR_CONTEXT *err)
   ERROR_current = err;
 
 	#if DEBUG_ERROR
+	fprintf(stderr, "ERROR_enter: (%p)\n", ERROR_current);
 	fprintf(stderr, ">> ERROR_enter");
 	{
 		ERROR_CONTEXT *e = err;
@@ -195,9 +211,14 @@ void ERROR_leave(ERROR_CONTEXT *err)
 	
 	if (ERROR_current)
 	{
+		#if DEBUG_ERROR
+		fprintf(stderr, "ERROR_leave: (%p)\n", ERROR_current);
+		#endif
 		ERROR_reset(&ERROR_current->info);
 		ERROR_current->info = err->info;
 	}
+	else
+		ERROR_reset(&err->info);
 
 	err->prev = ERROR_LEAVE_DONE;
   //ERROR_reset(err);
@@ -327,6 +348,9 @@ void ERROR_define(const char *pattern, char *arg[])
   {
   	//DEBUG_free_backtrace(&ERROR_current->info.backtrace);
   	ERROR_current->info.backtrace = DEBUG_backtrace();
+		#if DEBUG_ERROR
+		fprintf(stderr, "ERROR_define: (%p) DEBUG_backtrace: <<%p>>\n", ERROR_current, ERROR_current->info.backtrace);
+		#endif
   }
   
   #if DEBUG_ERROR
@@ -477,4 +501,7 @@ void ERROR_set_last(void)
 	if (ERROR_last.free)
 		STRING_ref(ERROR_last.msg);
 	ERROR_last.backtrace = DEBUG_copy_backtrace(ERROR_last.backtrace);
+	#if DEBUG_ERROR
+	fprintf(stderr, "ERROR_set_last: DEBUG_copy_backtrace: <<%p>>\n", ERROR_last.backtrace);
+	#endif
 }

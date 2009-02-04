@@ -58,6 +58,8 @@ public:
 	virtual int clientHeight();
 	virtual int clientX();
 	virtual int clientY();
+	virtual int containerX();
+	virtual int containerY();
 	
 	bool spontaneous() { return !_not_spontaneous; }
 	

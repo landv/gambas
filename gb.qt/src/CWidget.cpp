@@ -193,6 +193,24 @@ static void set_name(CWIDGET *_object, const char *name)
 		GB.NewString(&THIS->name, name, 0);
 }
 
+void *CWIDGET_get_parent(void *_object)
+{
+  QWidget *parent = WIDGET->parentWidget();
+
+  if (!parent || (GB.Is(THIS, CLASS_Window) && ((CWINDOW *)_object)->toplevel))
+    return NULL;
+  else
+    return CWidget::get(parent);
+}
+
+static void arrange_parent(CWIDGET *_object)
+{
+	void *parent = CWIDGET_get_parent(THIS);
+	if (!parent)
+		return;
+	CCONTAINER_arrange(parent);
+}
+
 void CWIDGET_update_design(CWIDGET *_object)
 {
 	if (!CWIDGET_test_flag(THIS, WF_DESIGN) && !CWIDGET_test_flag(THIS, WF_DESIGN_LEADER))
@@ -210,6 +228,27 @@ void CWIDGET_init_name(CWIDGET *_object)
 	//qDebug("name: %p: %s", THIS, name);
 	set_name(THIS, name);
 }
+
+static bool is_visible(void *_object)
+{
+	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
+}
+
+
+void CWIDGET_set_visible(CWIDGET *_object, bool v)
+{
+	THIS->flag.visible = v;
+	if (THIS->flag.visible)
+	{
+		QWIDGET(_object)->show();
+		if (GB.Is(THIS, CLASS_Container))
+			CCONTAINER_arrange(THIS);
+	}
+	else
+		QWIDGET(_object)->hide();
+  arrange_parent(THIS);
+}
+
 
 void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool no_init)
 {
@@ -237,10 +276,9 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	THIS->flag.default_fg = true;
 	
 	if (!no_show)
-	{
-		THIS->flag.visible = true;
-		w->show();
-	}
+		CWIDGET_set_visible(THIS, true);
+
+	CCONTAINER_insert_child(THIS);
 
 	//WIDGET->setName(THIS->name);
 }
@@ -338,6 +376,8 @@ static void move_widget(void *_object, int x, int y)
     ((CWINDOW *)_object)->x = x;
     ((CWINDOW *)_object)->y = y;
   }
+  
+  arrange_parent(THIS);
 }
 
 
@@ -366,6 +406,8 @@ static void resize_widget(void *_object, int w, int h)
     // menu bar height is ignored
     //((CWINDOW *)_object)->container->resize(w, h);
   }
+
+  arrange_parent(THIS);
 }
 
 
@@ -397,6 +439,8 @@ static void move_resize_widget(void *_object, int x, int y, int w, int h)
     ((CWINDOW *)_object)->h = h;
     //((CWINDOW *)_object)->container->resize(w, h);
   }
+
+  arrange_parent(THIS);
 }
 
 
@@ -526,7 +570,8 @@ BEGIN_PROPERTY(CCONTROL_expand)
   else
   {
   	THIS->flag.expand = VPROP(GB_BOOLEAN);
-    qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
+	  arrange_parent(THIS);
+    //qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
   }
 
 END_PROPERTY
@@ -539,7 +584,8 @@ BEGIN_PROPERTY(CCONTROL_ignore)
   else
   {
   	THIS->flag.ignore = VPROP(GB_BOOLEAN);
-    qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
+	  arrange_parent(THIS);
+    //qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
   }
 
 END_PROPERTY
@@ -595,42 +641,26 @@ BEGIN_METHOD_VOID(CCONTROL_delete)
 END_METHOD
 
 
-static bool is_visible(void *_object)
-{
-	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
-}
-
-
-static void set_visible(void *_object, bool v)
-{
-	THIS->flag.visible = v;
-	if (THIS->flag.visible)
-		QWIDGET(_object)->show();
-	else
-		QWIDGET(_object)->hide();
-}
-
-
 BEGIN_PROPERTY(CCONTROL_visible)
 
   if (READ_PROPERTY)
     GB.ReturnBoolean(is_visible(THIS));
   else
-  	set_visible(THIS, VPROP(GB_BOOLEAN));
+  	CWIDGET_set_visible(THIS, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_METHOD_VOID(CCONTROL_show)
 
-	set_visible(THIS, true);
+	CWIDGET_set_visible(THIS, true);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCONTROL_hide)
 
-	set_visible(THIS, false);
+	CWIDGET_set_visible(THIS, false);
 
 END_METHOD
 
@@ -692,14 +722,6 @@ static QWidget *get_next(QWidget *w)
 	return (QWidget *)current;
 }
 
-
-static void arrange_parent(CWIDGET *_object)
-{
-	CWIDGET *parent = CWidget::get(WIDGET->parentWidget());
-	if (!parent)
-		return;
-	CCONTAINER_arrange(parent);
-}
 
 BEGIN_PROPERTY(CCONTROL_next)
 
@@ -1036,12 +1058,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_parent)
 
-  QWidget *parent = QWIDGET(_object)->parentWidget();
-
-  if (!parent || WIDGET->isTopLevel())
-    GB.ReturnObject(NULL);
-  else
-    GB.ReturnObject(CWidget::get(parent));
+	GB.ReturnObject(CWIDGET_get_parent(THIS));
 
 END_PROPERTY
 
@@ -1151,11 +1168,10 @@ BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 		return;
 
 	show = is_visible(THIS);
+	CWIDGET_set_visible(THIS, false);
 	WIDGET->reparent(QCONTAINER(VARG(container)), p, false);
-	if (show)
-		WIDGET->show();
-	else
-		WIDGET->hide();
+	CWIDGET_set_visible(THIS, show);
+	CCONTAINER_insert_child(THIS);
 
 END_METHOD
 

@@ -57,7 +57,6 @@ DECLARE_EVENT(EVENT_Write);
 static GB_FUNCTION read_func;
 
 static char _buffer[16];
-static bool _do_not_close = FALSE;
 
 static void callback_read(int fd, int type, CFILE *file)
 {
@@ -112,6 +111,7 @@ static CFILE *create_default_stream(FILE *file, int mode)
   CLEAR(&stream);
   stream.type = &STREAM_buffer;
   stream.common.available_now = !isatty(fileno(file));
+	stream.common.standard = TRUE;
   stream.buffer.file = file;
   ob = CFILE_create(&stream, mode);
   GB_Ref(ob);
@@ -127,11 +127,9 @@ void CFILE_init(void)
 
 void CFILE_exit(void)
 {
-	_do_not_close = TRUE;
 	GB_Unref(POINTER(&CFILE_in));
 	GB_Unref(POINTER(&CFILE_out));
 	GB_Unref(POINTER(&CFILE_err));
-	_do_not_close = FALSE;
 }
 
 void CFILE_init_watch(void)
@@ -148,8 +146,7 @@ void CFILE_init_watch(void)
 
 BEGIN_METHOD_VOID(CFILE_free)
 
-	if (!_do_not_close)
-  	STREAM_close(&THIS->ob.stream);
+	STREAM_close(&THIS->ob.stream);
 
   if (THIS->watch_fd >= 0)
     GB_Watch(THIS->watch_fd, GB_WATCH_NONE, NULL, 0);

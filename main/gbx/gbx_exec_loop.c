@@ -858,13 +858,13 @@ _RETURN:
     VALUE_conv(&SP[-1], FP->type);
     SP--;
     *RP = *SP;
-		ERROR_clear();
+		//ERROR_clear();
     EXEC_leave(FALSE);
   }
   else
   {
     VALUE_default(RP, FP->type);
-		ERROR_clear();
+		//ERROR_clear();
     EXEC_leave(FALSE);
   }
 
@@ -1553,13 +1553,12 @@ _ADD_QUICK:
 
 _TRY:
 
-  //ERROR_clear();
   EP = SP;
   ET = EC;
   EC = PC + (signed short)PC[1] + 2;
 
   #if DEBUG_ERROR
-  printf("TRY %p\n", EC);
+  fprintf(stderr, "exec TRY %p\n", EC);
   #endif
 
   goto _NEXT2;
@@ -1569,7 +1568,7 @@ _TRY:
 _END_TRY:
 
   #if DEBUG_ERROR
-  printf("END TRY %p\n", PC);
+  fprintf(stderr, "exec END TRY %p\n", PC);
   #endif
 
   /* If EP was reset to null, then there was an error */

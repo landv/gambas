@@ -795,7 +795,7 @@ void EXEC_function_loop()
 				if (ERROR->info.code == E_ABORT)
 				{
 					#if DEBUG_ERROR
-					printf("#0 QUIT\n");
+					fprintf(stderr, "#0 QUIT\n");
 					#endif
 					ERROR_lock();
 					while (PC != NULL)
@@ -809,9 +809,9 @@ void EXEC_function_loop()
 				else if (EP != NULL)
 				{
 					#if DEBUG_ERROR
-					printf("#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+					fprintf(stderr, "#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+					fprintf(stderr, "TRY\n");
 					#endif
-
 					ERROR_set_last();
 					
 					while (SP > EP)
@@ -826,7 +826,8 @@ void EXEC_function_loop()
 				else if (EC != NULL)
 				{
 					#if DEBUG_ERROR
-					printf("#2 EC = %p\n", EC);
+					fprintf(stderr, "#2 EC = %p\n", EC);
+					fprintf(stderr, "CATCH\n");
 					#endif
 
 					ERROR_set_last();
@@ -838,7 +839,8 @@ void EXEC_function_loop()
 				else
 				{
 					#if DEBUG_ERROR
-					printf("#3\n");
+					fprintf(stderr, "#3\n");
+					fprintf(stderr, "NOTHING\n");
 					#endif
 
 					ERROR_set_last();
@@ -884,7 +886,7 @@ void EXEC_function_loop()
 						if (EP != NULL)
 						{
 							#if DEBUG_ERROR
-							printf("#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+							fprintf(stderr, "#4 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
 							#endif
 
 							ERROR_lock();
@@ -910,7 +912,7 @@ void EXEC_function_loop()
 
 			#if DEBUG_ERROR
 			if (retry)
-				printf("retry %p\n", PC);
+				fprintf(stderr, "RETRY %p\n", PC);
 			#endif
 		}
 		while (retry);
