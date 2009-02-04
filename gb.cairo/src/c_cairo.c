@@ -773,6 +773,7 @@ GB_DESC CairoDesc[] =
 	GB_CONSTANT("StatusClipNotRepresentable", "i", CAIRO_STATUS_CLIP_NOT_REPRESENTABLE),
 	GB_CONSTANT("StatusTempFileError", "i",        CAIRO_STATUS_TEMP_FILE_ERROR),
 	GB_CONSTANT("StatusInvalidStride", "i",        CAIRO_STATUS_INVALID_STRIDE),
+	#if CAIRO_VERSION_MAJOR > 1 || (CAIRO_VERSION_MAJOR == 1 && CAIRO_VERSION_MINOR >= 8)
 	GB_CONSTANT("StatusFontTypeMismatch", "i",     CAIRO_STATUS_FONT_TYPE_MISMATCH),
 	GB_CONSTANT("StatusUserFontImmutable", "i",    CAIRO_STATUS_USER_FONT_IMMUTABLE),
 	GB_CONSTANT("StatusUserFontError", "i",        CAIRO_STATUS_USER_FONT_ERROR),
@@ -780,6 +781,15 @@ GB_DESC CairoDesc[] =
 	GB_CONSTANT("StatusInvalidClusters", "i",      CAIRO_STATUS_INVALID_CLUSTERS),
 	GB_CONSTANT("StatusInvalidSlant", "i",         CAIRO_STATUS_INVALID_SLANT),
 	GB_CONSTANT("StatusInvalidWeight", "i",        CAIRO_STATUS_INVALID_WEIGHT),
+	#else
+	GB_CONSTANT("StatusFontTypeMismatch", "i",     CAIRO_STATUS_INVALID_STRIDE + 1),
+	GB_CONSTANT("StatusUserFontImmutable", "i",    CAIRO_STATUS_INVALID_STRIDE + 2),
+	GB_CONSTANT("StatusUserFontError", "i",        CAIRO_STATUS_INVALID_STRIDE + 3),
+	GB_CONSTANT("StatusNegativeCount", "i",        CAIRO_STATUS_INVALID_STRIDE + 4),
+	GB_CONSTANT("StatusInvalidClusters", "i",      CAIRO_STATUS_INVALID_STRIDE + 5),
+	GB_CONSTANT("StatusInvalidSlant", "i",         CAIRO_STATUS_INVALID_STRIDE + 6),
+	GB_CONSTANT("StatusInvalidWeight", "i",        CAIRO_STATUS_INVALID_STRIDE + 7),
+	#endif
 	
 	GB_CONSTANT("AntiAliasDefault", "i",           CAIRO_ANTIALIAS_DEFAULT),
 	GB_CONSTANT("AntiAliasNone", "i",              CAIRO_ANTIALIAS_NONE),
