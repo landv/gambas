@@ -143,6 +143,8 @@ static int default_eof(STREAM *stream)
 	return (ilen == 0);
 }
 
+// STREAM_open *MUST* initialize completely the stream structure
+
 void STREAM_open(STREAM *stream, const char *path, int mode)
 {
 	if (FILE_is_relative(path))
@@ -186,6 +188,7 @@ _OPEN:
 	stream->common.buffer_len = 0;
 	stream->common.no_fionread = FALSE;
 	stream->common.no_lseek = FALSE;
+	stream->common.standard = FALSE;
 
 	if ((*(stream->type->open))(stream, path, mode, NULL))
 	{
