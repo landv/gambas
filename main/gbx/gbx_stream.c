@@ -1163,7 +1163,6 @@ int STREAM_read_direct(int fd, char *buffer, int len)
 			if (eff_read <= 0 && errno != EINTR)
 				return TRUE;
 		}
-
 	}
 
 	return FALSE;

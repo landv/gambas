@@ -896,7 +896,7 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_METHOD("RadialGradient", "CairoPattern", CAIRO_radial_gradient_pattern, "(CX0)f(CY0)f(Radius0)f(CX1)f(CY1)f(Radius1)f(Colors)Float[][];"),
 
 	GB_STATIC_METHOD("Translate", NULL, CAIRO_translate, "(TX)f(TY)f"),
-	GB_STATIC_METHOD("Scale", NULL, CAIRO_translate, "(SX)f(SY)f"),
+	GB_STATIC_METHOD("Scale", NULL, CAIRO_scale, "(SX)f(SY)f"),
 	GB_STATIC_METHOD("Rotate", NULL, CAIRO_rotate, "(Angle)f"),
 	GB_STATIC_PROPERTY("Matrix", "CairoMatrix", CAIRO_matrix),
 

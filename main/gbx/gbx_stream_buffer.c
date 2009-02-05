@@ -114,7 +114,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
         errno = 0;
         return TRUE;
       }
-      if (ferror(FD))
+      if (ferror(FD) && errno != EINTR)
         return TRUE;
     }
   }
@@ -153,7 +153,7 @@ static int stream_write(STREAM *stream, char *buffer, int len)
 
     if (eff_write < len_write)
     {
-      if (ferror(FD))
+      if (ferror(FD) && errno != EINTR)
         return TRUE;
     }
 
