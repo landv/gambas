@@ -59,6 +59,7 @@
 #include "gbx_c_application.h"
 
 extern void _exit(int) NORETURN;
+FILE *log_file;
 
 static bool _welcome = FALSE;
 
@@ -95,6 +96,7 @@ static void my_exit(int ret)
   LOCAL_exit();
   COMPONENT_exit();
   EXTERN_exit();
+	fclose(log_file);
   exit(ret);
 }
 
@@ -118,6 +120,7 @@ static void main_exit(bool silent)
   STRING_exit();
   STACK_exit();
   ERROR_exit();
+	fclose(log_file);
 }
 
 
@@ -129,6 +132,11 @@ int main(int argc, char **argv)
   int i, n;
   char *file = ".";
   bool nopreload = FALSE;
+
+ 	//char log_path[256];
+ 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
+	//log_file = freopen(log_path, "w+", stderr);
+ 	//fprintf(stderr, "Fichier log Gambas\n");
 
   MEMORY_init();
   COMMON_init();
@@ -386,8 +394,8 @@ int main(int argc, char **argv)
 
   main_exit(FALSE);
 
-  if (MEMORY_count)
-    fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
+  //if (MEMORY_count)
+  //  fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
 
   MEMORY_exit();
 
