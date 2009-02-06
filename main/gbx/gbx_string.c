@@ -47,6 +47,17 @@
 #define DEBUG_ME
 #endif
 
+/*#ifdef DEBUG_ME
+extern FILE *MEMORY_log;
+#undef stderr
+#define stderr MEMORY_log
+static void print_where()
+{
+	fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
+}
+#define DEBUG_where print_where
+#endif*/
+
 #define STRING_last_count 32
 static char *STRING_last[STRING_last_count] = { 0 };
 
@@ -102,8 +113,10 @@ static STRING *alloc_string(int len)
 	{
 		if (_pool_count[pool])
 		{
-			//fprintf(stderr, "alloc_string: %d bytes from pool %d\n", size, pool);
 			str = _pool[pool];
+			#ifdef DEBUG_ME
+			fprintf(stderr, "alloc_string: %d bytes from pool %d -> %p\n", size, pool, str);
+			#endif
 			_pool[pool] = *((STRING **)str);
 			_pool_count[pool]--;
 			str->len = len;
@@ -132,7 +145,9 @@ void STRING_free_real(char *ptr)
 	{
 		if (_pool_count[pool] < POOL_MAX)		
 		{
-			//fprintf(stderr, "free_string: %d bytes to pool %d\n", size, pool);
+			#ifdef DEBUG_ME
+			fprintf(stderr, "STRING_free_real: (%p) %d bytes to pool %d\n", str, size, pool);
+			#endif
 			*((STRING **)str) = _pool[pool];
 			_pool[pool] = str;
 			_pool_count[pool]++;
@@ -386,10 +401,6 @@ void STRING_free(char **ptr)
 
 	STRING_free_real(*ptr);
 	*ptr = NULL;
-
-	#ifdef DEBUG_ME
-	printf("OK\n");
-	#endif
 }
 
 void STRING_ref(char *ptr)

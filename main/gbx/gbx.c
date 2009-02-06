@@ -117,9 +117,9 @@ static void main_exit(bool silent)
   LOCAL_exit();
   EVENT_exit();
   FILE_exit();
-  STRING_exit();
   STACK_exit();
   ERROR_exit();
+  STRING_exit();
 	//fclose(log_file);
 }
 
@@ -393,9 +393,6 @@ int main(int argc, char **argv)
   END_TRY
 
   main_exit(FALSE);
-
-  //if (MEMORY_count)
-  //  fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
 
   MEMORY_exit();
 
