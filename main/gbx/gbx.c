@@ -96,7 +96,7 @@ static void my_exit(int ret)
   LOCAL_exit();
   COMPONENT_exit();
   EXTERN_exit();
-	fclose(log_file);
+	//fclose(log_file);
   exit(ret);
 }
 
@@ -120,7 +120,7 @@ static void main_exit(bool silent)
   STRING_exit();
   STACK_exit();
   ERROR_exit();
-	fclose(log_file);
+	//fclose(log_file);
 }
 
 
