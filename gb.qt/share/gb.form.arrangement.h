@@ -185,16 +185,13 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			wf = GET_WIDGET_W(cont) - wc;
 			hf = GET_WIDGET_H(cont) - hc;
 			
-			//fprintf(stderr, "cont: %s: %d %d %d %d (%d %d)\n", ((gControl *)_object)->name(), xc, yc, wc, hc, wf, hf);
-			
-			//if (hc > GET_WIDGET_H(cont))
-			//	qDebug("hc = %d H = %d ?", hc, GET_WIDGET_H(cont));
-			
 			xc += arr->padding;
 			yc += arr->padding;
 			wc -= arr->padding * 2;
 			hc -= arr->padding * 2;
 
+			//fprintf(stderr, "cont: %s: %d %d %d %d\n", ((gControl *)_object)->name(), xc, yc, wc, hc);
+			
 			//qDebug("CCONTAINER_arrange: %p: %s (%d, %d, %d, %d) pad %d spc %d [%d]", THIS, GB.GetClassName(THIS), xc, yc, wc, hc, arr->padding, arr->spacing, i);
 
 			//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
@@ -482,6 +479,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						if (IS_IGNORE(ob))
 							continue;
 						
+						//fprintf(stderr, "MOVE_RESIZE_WIDGET: %s: (%d %d) -> (%d %d)\n", ((gControl *)wid)->name(), ((gControl *)wid)->width(), ((gControl *)wid)->height(), wc, hc);
 						MOVE_RESIZE_WIDGET(wid, xc, yc, wc, hc);
 						
 						if (GET_WIDGET_H(wid) > h)
@@ -550,7 +548,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 					case ARRANGE_FILL:
 // 						#ifndef QNAMESPACE_H
 // 						if (strncmp(((gControl *)_object)->name(), "DataControl", 11) == 0)
-// 							fprintf(stderr, "%s: RESIZE_CONTAINER(%p, %p, %d, %d)\n", ((gControl *)_object)->name(), GET_WIDGET(_object), cont, w, h);
+// 							fprintf(stderr, "%s: RESIZE_CONTAINER(%p, %p): (%d,%d) -> (%d,%d)\n", ((gControl *)_object)->name(), GET_WIDGET(_object), cont, ((gControl *)_object)->width(), ((gControl *)_object)->height(), w + arr->padding * 2, h + arr->padding * 2);
 // 						#endif
 						RESIZE_CONTAINER(GET_WIDGET(_object), cont, w + arr->padding * 2, h + arr->padding * 2);
 						break;

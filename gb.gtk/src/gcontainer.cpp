@@ -92,8 +92,8 @@ static void resize_container(gControl *cont, int w, int h)
 // BM: ClientX() & ClientY() are relative to the border.
 // We need X & Y relative to the container widget.
 
-#define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) _x=0; \
-                                                     _y=0; \
+#define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) _x=((gContainer*)_widget)->containerX(); \
+                                                     _y=((gContainer*)_widget)->containerY(); \
                                                      _w=((gContainer*)_widget)->clientWidth(); \
                                                      _h=((gContainer*)_widget)->clientHeight()
 
@@ -277,6 +277,83 @@ int gContainer::clientX()
 	gint xc, yc;
 	GtkWidget *cont = getContainer();
 	
+	if (cont->window && border->window)
+	{
+		gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
+		xc += containerX();
+	}
+	else
+		xc = getFrameWidth();
+		
+	return xc;
+}
+
+int gContainer::containerX()
+{
+	GtkWidget *cont = getContainer();
+	
+	if (cont == widget && widget == frame)
+		return getFrameWidth();
+	else
+		return 0;
+}
+
+int gContainer::clientY()
+{
+	gint xc, yc;
+	GtkWidget *cont = getContainer();
+	
+	if (cont->window && border->window)
+	{
+		gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
+		yc += containerY();
+	}
+	else
+		yc = getFrameWidth();
+		
+	return yc;
+}
+
+#if 0
+int gContainer::clientY()
+{
+	gint xc, yc;
+	GtkWidget *cont = getContainer();
+	
+	if (!cont->window || !border->window || cont == widget)
+		return getFrameWidth();
+	
+// 	if (width() != border->allocation.width || height() != border->allocation.height)
+// 	{
+// 		updateGeometry();
+// 		GtkAllocation a = { x(), y(), width(), height() };
+// 		gtk_widget_size_allocate(widget, &a);
+// 	}
+
+	gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
+	if (cont == widget)
+		yc += getFrameWidth();
+	
+	return yc; // + getFrameWidth();
+}
+#endif
+
+int gContainer::containerY()
+{
+	GtkWidget *cont = getContainer();
+	
+	if (cont == widget && widget == frame)
+		return getFrameWidth();
+	else
+		return 0;
+}
+
+#if 0
+int gContainer::clientX()
+{
+	gint xc, yc;
+	GtkWidget *cont = getContainer();
+	
 	if (!cont->window || !border->window || cont == widget)
 		return getFrameWidth();
 	
@@ -321,6 +398,7 @@ int gContainer::clientY()
 
 	return yc; // + getFrameWidth();
 }
+#endif
 
 int gContainer::clientWidth()
 {
@@ -348,7 +426,7 @@ int gContainer::clientWidth()
 	if (GTK_IS_SCROLLED_WINDOW(border))
 		return (int)gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(border))->page_size;
 	
-	return width() - getFrameWidth() - clientX();
+	return width() - getFrameWidth() * 2;
 }
 
 int gContainer::clientHeight()
@@ -378,7 +456,7 @@ int gContainer::clientHeight()
 	if (GTK_IS_SCROLLED_WINDOW(border))
 		return (int)gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(border))->page_size;
 	
-	return height() - getFrameWidth() - clientY();
+	return height() - getFrameWidth() * 2;
 }
 
 void gContainer::insert(gControl *child)

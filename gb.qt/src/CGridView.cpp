@@ -362,7 +362,7 @@ void MyTable::setColumnWidth(int col, int width)
     QTable::setColumnWidth(col, width);
     
 	if (col == (numCols() - 1) && !_updating_last_column)
-		_last_col_width = columnWidth(numCols() - 1);
+		_last_col_width = width; //columnWidth(numCols() - 1);
 }
 
 /*void MyTable::adjustColumn(int col)
@@ -444,8 +444,6 @@ void MyTable::setNumCols(int newCols)
   QTable::setNumCols(newCols);
   blockSignals(b);
 
-	_last_col_width = 0;
-
   if (newCols > col)
   {
     bool upd = horizontalHeader()->isUpdatesEnabled();
@@ -458,7 +456,10 @@ void MyTable::setNumCols(int newCols)
   }
 
   clearSelection();
-  emit currentChanged(-1, -1); 
+
+	_last_col_width = columnWidth(numCols() - 1);
+
+	emit currentChanged(-1, -1); 
 }
 
 void MyTable::setNumRows(int newRows)

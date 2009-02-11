@@ -1215,11 +1215,11 @@ void  gGridView::getCursor(int *row,int *col)
 
 void  gGridView::setCursor(int row,int col)
 {
-	if (row < 0 || row >= rowCount() || col < 0 || col > columnCount())
-	{
+	if (row < 0 || row >= rowCount())
 		row = -1;
+	
+	if (col < 0 || col >= columnCount())
 		col = -1;
-	}
 	
 	if (row == cursor_row && col == cursor_col)
 		return;
