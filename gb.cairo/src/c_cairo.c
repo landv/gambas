@@ -842,7 +842,7 @@ GB_DESC CairoDesc[] =
 	GB_STATIC_PROPERTY_READ("Device", "o", CAIRO_device),
 	
 	GB_STATIC_METHOD("Save", NULL, CAIRO_save, NULL),
-	GB_STATIC_METHOD("Restore", NULL, CAIRO_save, NULL),
+	GB_STATIC_METHOD("Restore", NULL, CAIRO_restore, NULL),
 	
 	GB_STATIC_METHOD("Clip", NULL, CAIRO_clip, "[(Preserve)b]"),
 	GB_STATIC_METHOD("ResetClip", NULL, CAIRO_reset_clip, NULL),
