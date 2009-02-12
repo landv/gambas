@@ -57,7 +57,8 @@ PUBLIC int MEMORY_size = 0;
 
 static int _id = 0;
 ALLOC *_alloc = NULL;
-extern void DEBUG_where(void);
+extern char *DEBUG_get_current_position(void);
+FILE *MEMORY_log;
 
 #elif OPTIMIZE_MEMORY
 
@@ -70,25 +71,30 @@ int THROW_MEMORY()
 
 PUBLIC void MEMORY_init(void)
 {
-  /*mcheck(NULL);*/
-/*#if DEBUG_MEMORY
-# ifdef __GNU_LIBRARY__
-  mtrace();
-  if (getenv("LD_PRELOAD"))
-    unsetenv("MALLOC_TRACE");
-  mcheck(NULL);
-# endif
-#endif*/
+	#if DEBUG_MEMORY
+	char path[256];
+	sprintf(path, "/tmp/gambas-memory-%d-%d.log", getuid(), getpid());
+	MEMORY_log = fopen(path, "w+");
+	#endif
 }
 
 PUBLIC void MEMORY_exit(void)
 {
 #if DEBUG_MEMORY
-  while (_alloc)
-  {
-    fprintf(stderr, "<%d>\n", _alloc->id);
-    _alloc = _alloc->next;
-  }
+  if (MEMORY_count)
+	{
+		fprintf(MEMORY_log, "\n*************************************************\n");
+		fprintf(MEMORY_log, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
+		while (_alloc)
+		{
+			fprintf(MEMORY_log, "<%d>\n", _alloc->id);
+			_alloc = _alloc->next;
+		}
+	}
+	fclose(MEMORY_log);
+#else
+  if (MEMORY_count)
+    fprintf(stderr, "WARNING: %d allocation(s) non freed.\n", MEMORY_count);
 #endif
 }
 
@@ -120,9 +126,11 @@ PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
   MEMORY_size += size;
 
   #ifndef DO_NOT_PRINT_MEMORY
-  DEBUG_where();
-  fprintf(stderr, "<%d> %s: MEMORY_alloc(%d) -> %p\n", _id, src, (int)size, (char *)alloc + sizeof(ALLOC));
-  fflush(stderr);
+  fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
+  fprintf(MEMORY_log, "<%d> %s: MEMORY_alloc(%d) -> %p\n", _id, src, (int)size, (char *)alloc + sizeof(ALLOC));
+  fflush(MEMORY_log);
+	//if (_id == 1621)
+	//	sleep(60);
   #endif
 }
 #else
@@ -185,9 +193,9 @@ PUBLIC void MEMORY_realloc(void *p_ptr, size_t size, const char *src)
     alloc->next->prev = alloc;
   
   #ifndef DO_NOT_PRINT_MEMORY
-  DEBUG_where();
-  fprintf(stderr, "<%d> %s: MEMORY_realloc(%p, %d) -> %p\n", alloc->id, src, *((void **)p_ptr), (int)size, (char *)alloc + sizeof(ALLOC));
-  fflush(stderr);
+  fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
+	fprintf(MEMORY_log, "<%d> %s: MEMORY_realloc(%p, %d) -> %p\n", alloc->id, src, *((void **)p_ptr), (int)size, (char *)alloc + sizeof(ALLOC));
+  fflush(MEMORY_log);
   #endif
   
   *((void **)p_ptr) = (char *)alloc + sizeof(ALLOC);
@@ -224,9 +232,9 @@ PUBLIC void MEMORY_free(void *p_ptr, const char *src)
     _alloc = alloc->next;
   
   #ifndef DO_NOT_PRINT_MEMORY
-  DEBUG_where();
-  fprintf(stderr, "<%d> %s: MEMORY_free(%p)\n", alloc->id, src, (char *)alloc + sizeof(ALLOC));
-  fflush(stderr);
+  fprintf(MEMORY_log, "%s: ", DEBUG_get_current_position());
+  fprintf(MEMORY_log, "<%d> %s: MEMORY_free(%p)\n", alloc->id, src, (char *)alloc + sizeof(ALLOC));
+  fflush(MEMORY_log);
   #endif
 
   MEMORY_size -= alloc->size;

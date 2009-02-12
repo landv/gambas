@@ -117,6 +117,7 @@ protected:
   virtual void resizeEvent(QResizeEvent *);
   //virtual void childEvent(QChildEvent *);
   virtual void showEvent(QShowEvent *);
+  virtual void hideEvent(QHideEvent *);
   //virtual bool eventFilter(QObject *, QEvent *);
 };
 

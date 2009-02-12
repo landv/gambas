@@ -492,7 +492,6 @@ GB_DESC CToolButtonDesc[] =
   GB_PROPERTY("Border", "b", CTOOLBUTTON_border),
   GB_PROPERTY("Radio", "b", CTOOLBUTTON_radio),
   GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
-  //GB_PROPERTY("Stretch", "b", CTOOLBUTTON_stretch),
 
 	TOOLBUTTON_DESCRIPTION,
 

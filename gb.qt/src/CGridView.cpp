@@ -314,6 +314,7 @@ QTable(0, 0, parent)
   _rows = 0;
   _cols = 0;
   _last_col_width = 0;
+	//qDebug("MyTable: _last_col_width = %d", _last_col_width);
   _no_row = true;
   _no_col = true;
   _updating_last_column = false;
@@ -362,7 +363,10 @@ void MyTable::setColumnWidth(int col, int width)
     QTable::setColumnWidth(col, width);
 	
 	if (col == (numCols() - 1) && !_updating_last_column)
-		_last_col_width = columnWidth(numCols() - 1);
+	{
+		_last_col_width = width; //columnWidth(numCols() - 1);
+		//qDebug("setColumnWidth: _last_col_width = %d", _last_col_width);
+	}
 }
 
 /*void MyTable::adjustColumn(int col)
@@ -444,7 +448,7 @@ void MyTable::setNumCols(int newCols)
   QTable::setNumCols(newCols);
   blockSignals(b);
 
-	_last_col_width = 0;
+	//qDebug("setNumCols: _last_col_width = %d", _last_col_width);
 
   if (newCols > col)
   {
@@ -458,6 +462,9 @@ void MyTable::setNumCols(int newCols)
   }
 
   clearSelection();
+
+	_last_col_width = columnWidth(numCols() - 1);
+
   emit currentChanged(-1, -1); 
 }
 
@@ -665,7 +672,10 @@ void MyTable::updateLastColumn()
 	_updating_last_column = true;
 	
 	if (!_last_col_width)
+	{
 		_last_col_width = columnWidth(n);
+		//qDebug("updateLastColumn: _last_col_width = %d", _last_col_width);
+	}
 	
 	if (((columnPos(n) + _last_col_width) < visibleWidth()) && (columnWidth(n) != visibleWidth() - columnPos(n)))
 		setColumnWidth(n, visibleWidth() - columnPos(n));

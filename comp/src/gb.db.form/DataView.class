@@ -1,134 +1,136 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserControl
+Export
+Inherits UserControl
 
-PUBLIC CONST _Properties AS String = "*,Mode{Select.None;Single;Multi}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
-PUBLIC CONST _DrawWith AS String = "GridView"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multi}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
+Public Const _DrawWith As String = "GridView"
 
-EVENT Activate
+Event Activate
 
-PROPERTY Mode AS Integer 
-PROPERTY Header AS Integer
-PROPERTY Grid AS Boolean
-PROPERTY Highlight AS Boolean
+Property Mode As Integer 
+Property Header As Integer
+Property Grid As Boolean
+Property Highlight As Boolean
 
 'PROPERTY Connection AS Connection
 'PROPERTY Table AS String
 'PROPERTY Filter AS String
-PROPERTY Columns AS String[]
-PROPERTY READ Current AS Variant[]
-PROPERTY READ Count AS Integer
-PROPERTY READ Index AS Integer
-PROPERTY READ GridView AS GridView
+Property Columns As String[]
+Property Read Current As Variant[]
+Property Read Count As Integer
+Property Read Index As Integer
+Property Read GridView As GridView
 
 'PRIVATE $hConn AS Connection
-PRIVATE $hCtrl AS GridView
+Private $hCtrl As GridView
 'PRIVATE $sTable AS String
 'PRIVATE $sFilter AS String
-PRIVATE $hTable AS DataTable
-PRIVATE $aColumns AS String[]
-PRIVATE $bCreate AS Boolean
-PRIVATE $bRefreshColumn AS Boolean
-PRIVATE $bNoActivate AS Boolean
-PRIVATE $iHighlight AS Integer
-PRIVATE $bHighlight AS Boolean
+Private $hTable As DataTable
+Private $aColumns As String[]
+Private $bCreate As Boolean
+Private $bRefreshColumn As Boolean
+Private $bNoActivate As Boolean
+Private $iHighlight As Integer
+Private $bHighlight As Boolean
 
-PUBLIC SUB _new()
+Public Sub _new()
   
-  $hCtrl = NEW GridView(ME) AS "GridView"
+  $hCtrl = New GridView(Me) As "GridView"
   $hCtrl.Header = GridView.Both
   '''$hCtrl.AutoResize = TRUE
   '''$hCtrl.Resizable = FALSE
-  $hCtrl.Grid = FALSE
+  $hCtrl.Grid = False
   Create()
   Refresh
   
-  $bHighlight = TRUE
+  $bHighlight = True
   $iHighlight = Color.LightBackground
   
-END
+End
 
-PRIVATE SUB RefreshColumns()
+Private Sub RefreshColumns()
   
-  DIM iInd AS Integer
-  DIM sTable AS String
+  Dim iInd As Integer
+  Dim sTable As String
   
-  IF Common.CheckDB() THEN RETURN
-  IF NOT $bRefreshColumn THEN RETURN
+  If Common.CheckDB() Then Return
+  If Not $bRefreshColumn Then Return
   
-  $bRefreshColumn = FALSE
+  $bRefreshColumn = False
   
   sTable = $hTable.Name
   
-  IF NOT $aColumns OR IF $aColumns.Count = 0 THEN
+  If Not $aColumns Or If $aColumns.Count = 0 Then
     $aColumns = DataConnection.GetFields(sTable)
-  ENDIF
+  Endif
   
   'Object.Lock($hCtrl)
-  $bNoActivate = TRUE
+  $bNoActivate = True
   $hCtrl.Columns.Count = $aColumns.Count
-  FOR iInd = 0 TO $aColumns.Max
-    WITH DataConnection[sTable, $aColumns[iInd]]
+  For iInd = 0 To $aColumns.Max
+    With DataConnection[sTable, $aColumns[iInd]]
+      'Debug .Name;; $hCtrl.Columns[iInd].Width;; .GetWidth($hCtrl)
       $hCtrl.Columns[iInd].Text = .Name
       $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl)
-    END WITH
-  NEXT
-  $bNoActivate = FALSE
+      'Debug "--> "; $hCtrl.Columns[iInd].Width
+    End With
+  Next
+  $bNoActivate = False
   'Object.Unlock($hCtrl)
   
-  IF $bCreate THEN Create()
+  If $bCreate Then Create()
   
-END
+End
 
 
-PRIVATE SUB Load()
+Private Sub Load()
   
-  DIM hSrc AS DataSource
+  Dim hSrc As DataSource
   
-  IF Common.CheckDB() THEN RETURN
+  If Common.CheckDB() Then Return
   
   'TRY DB.Open
 
   'IF NOT $sTable THEN
-    hSrc = Common.GetSource(ME)
-    IF hSrc THEN
+    hSrc = Common.GetSource(Me)
+    If hSrc Then
       $hTable = hSrc._GetTable()
-    ENDIF
+    Endif
   'ELSE
   '  $hTable = NEW DataTable($sTable, $sFilter)
   'ENDIF
 
-  IF NOT $hTable THEN
+  If Not $hTable Then
     $hCtrl.Rows.Count = 0
-    RETURN
-  ENDIF
+    Return
+  Endif
     
   RefreshColumns
   'Object.Lock($hCtrl)
-  $bNoActivate = TRUE
+  $bNoActivate = True
   $hCtrl.Rows.Count = $hTable.Count
-  $bNoActivate = FALSE
+  $bNoActivate = False
   'Object.Unlock($hCtrl)
   
   $hCtrl.Refresh
 
-  IF hSrc.Index < 0 THEN 
-    $bCreate = TRUE
+  If hSrc.Index < 0 Then 
+    $bCreate = True
     $hCtrl.Rows.UnSelect
-  ELSE
+  Else
     $hCtrl.Row = hSrc.Index
-    $hCtrl.Rows[$hCtrl.Row].Selected = TRUE
-  ENDIF
+    $hCtrl.Rows[$hCtrl.Row].Selected = True
+  Endif
 
-END
+End
 
 
-PUBLIC SUB Refresh()
+Public Sub Refresh()
   
   Load
   
-END
+End
 
 
 
@@ -160,49 +162,49 @@ END
 '   
 ' END
 
-PRIVATE FUNCTION Columns_Read() AS String[]
+Private Function Columns_Read() As String[]
   
-  RETURN $aColumns.Copy()
+  Return $aColumns.Copy()
   
-END
+End
 
-PRIVATE SUB Columns_Write(aCol AS String[])
+Private Sub Columns_Write(aCol As String[])
   
-  IF NOT aCol THEN
-    $aColumns = NULL
-  ELSE
+  If Not aCol Then
+    $aColumns = Null
+  Else
     $aColumns = aCol.Copy()
-  ENDIF
+  Endif
 
-  $bRefreshColumn = TRUE  
+  $bRefreshColumn = True  
   RefreshColumns
   
-END
+End
 
-PUBLIC SUB GridView_Data(Row AS Integer, Column AS Integer)
+Public Sub GridView_Data(Row As Integer, Column As Integer)
   
-  DIM rData AS Result
-  DIM vVal AS Variant
+  Dim rData As Result
+  Dim vVal As Variant
   
   rData = $hTable[Row]
-  IF NOT rData THEN RETURN
-  IF NOT rData.Available THEN RETURN
+  If Not rData Then Return
+  If Not rData.Available Then Return
   
-  IF $aColumns THEN
+  If $aColumns Then
     vVal = rData[$aColumns[Column]]
-  ELSE
+  Else
     vVal = rData[Column]
-  ENDIF
+  Endif
   
-  IF IsBoolean(vVal) THEN 
+  If IsBoolean(vVal) Then 
     $hCtrl.Data.Text = If(vVal, ("True"), ("False"))
-  ELSE
+  Else
     $hCtrl.Data.Text = Str(vVal)
-  ENDIF
+  Endif
   
-  IF $bHighlight AND IF Row AND 1 THEN $hCtrl.Data.Background = $iHighlight
+  If $bHighlight And If Row And 1 Then $hCtrl.Data.Background = $iHighlight
   
-END
+End
 
 ' PUBLIC SUB GridView_Click()
 ' 
@@ -211,39 +213,39 @@ END
 ' END
 
 
-PUBLIC SUB GridView_Change()
+Public Sub GridView_Change()
 
-  IF $bNoActivate THEN RETURN
+  If $bNoActivate Then Return
 
-  $bCreate = FALSE
-  RAISE Activate
+  $bCreate = False
+  Raise Activate
   
-END
+End
 
 
-PRIVATE FUNCTION Mode_Read() AS Integer
+Private Function Mode_Read() As Integer
   
-  RETURN $hCtrl.Mode
+  Return $hCtrl.Mode
   
-END
+End
 
-PRIVATE SUB Mode_Write(iMode AS Integer)
+Private Sub Mode_Write(iMode As Integer)
   
   $hCtrl.Mode = iMode
   
-END
+End
 
-PRIVATE FUNCTION Header_Read() AS Integer
+Private Function Header_Read() As Integer
   
-  RETURN $hCtrl.Header
+  Return $hCtrl.Header
   
-END
+End
 
-PRIVATE SUB Header_Write(iHeader AS Integer)
+Private Sub Header_Write(iHeader As Integer)
   
   $hCtrl.Header = iHeader
   
-END
+End
 
 ' PRIVATE FUNCTION Connection_Read() AS Connection
 ' 
@@ -260,137 +262,137 @@ END
 '   
 ' END
 ' 
-PRIVATE FUNCTION Current_Read() AS Variant[]
+Private Function Current_Read() As Variant[]
   
-  RETURN $hTable.GetKeys($hCtrl.Row)
+  Return $hTable.GetKeys($hCtrl.Row)
   
-END
+End
 
-PUBLIC SUB MoveFirst()
-  
-  TRY $hCtrl.Row = 0
-  $hCtrl.Rows[$hCtrl.Row].Selected = TRUE
-  $bCreate = FALSE
-  
-END
+Public Sub MoveFirst()
 
-PUBLIC SUB MoveLast()
+  Try $hCtrl.Row = 0
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
+  $bCreate = False
+  
+End
+
+Public Sub MoveLast()
   
   $hCtrl.Row = $hCtrl.Rows.Count - 1
-  $hCtrl.Rows[$hCtrl.Row].Selected = TRUE
-  $bCreate = FALSE
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
+  $bCreate = False
   
-END
+End
 
-PUBLIC SUB MoveNext()
+Public Sub MoveNext()
   
-  IF $bCreate THEN
+  If $bCreate Then
     MoveFirst
-    RETURN
-  ENDIF
-  IF $hCtrl.Row >= ($hCtrl.Rows.Count - 1) THEN RETURN
-  IF $hCtrl.Row < 0 THEN RETURN
-  INC $hCtrl.Row
-  $hCtrl.Rows[$hCtrl.Row].Selected = TRUE
+    Return
+  Endif
+  If $hCtrl.Row >= ($hCtrl.Rows.Count - 1) Then Return
+  If $hCtrl.Row < 0 Then Return
+  Inc $hCtrl.Row
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
   
-END
+End
 
-PUBLIC SUB MovePrevious()
+Public Sub MovePrevious()
   
-  IF $bCreate THEN
+  If $bCreate Then
     MoveFirst
-    RETURN
-  ENDIF
-  IF $hCtrl.Row <= 0 THEN RETURN
-  DEC $hCtrl.Row
-  $hCtrl.Rows[$hCtrl.Row].Selected = TRUE
+    Return
+  Endif
+  If $hCtrl.Row <= 0 Then Return
+  Dec $hCtrl.Row
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
   
-END
+End
 
-PUBLIC SUB MoveTo(Index AS Integer)
+Public Sub MoveTo(Index As Integer)
   
-  IF Index = $hCtrl.Row THEN RETURN
+  If Index = $hCtrl.Row Then Return
   $hCtrl.Row = Index
-  $hCtrl.Rows[$hCtrl.Row].Selected = TRUE
+  $hCtrl.Rows[$hCtrl.Row].Selected = True
   
-END
+End
 
 
-PUBLIC SUB Create()
+Public Sub Create()
   
-  $bCreate = TRUE
+  $bCreate = True
   $hCtrl.Rows.UnSelect
   
-END
+End
 
 
-PRIVATE FUNCTION Count_Read() AS Integer
+Private Function Count_Read() As Integer
   
-  RETURN $hCtrl.Rows.Count
+  Return $hCtrl.Rows.Count
   
-END
+End
 
-PRIVATE FUNCTION Index_Read() AS Integer
+Private Function Index_Read() As Integer
 
-  IF $bCreate THEN
-    RETURN -1
-  ELSE  
-    RETURN $hCtrl.Row
-  ENDIF
+  If $bCreate Then
+    Return -1
+  Else  
+    Return $hCtrl.Row
+  Endif
   
-END
+End
 
 
-PUBLIC FUNCTION Remove() AS Boolean
+Public Function Remove() As Boolean
   
   Create()  
   
-END
+End
 
-PRIVATE FUNCTION GridView_Read() AS GridView
+Private Function GridView_Read() As GridView
   
-  RETURN $hCtrl
+  Return $hCtrl
   
-END
+End
 
-PUBLIC SUB GridView_ColumnClick(Column AS Integer)
+Public Sub GridView_ColumnClick(Column As Integer)
   
-  DIM hSrc AS DataSource
+  Dim hSrc As DataSource
   
-  hSrc = Common.GetSource(ME)
-  IF NOT hSrc THEN RETURN
+  hSrc = Common.GetSource(Me)
+  If Not hSrc Then Return
   
-  IF hSrc.Sort <> $aColumns[Column] THEN
+  If hSrc.Sort <> $aColumns[Column] Then
     hSrc.Sort = $aColumns[Column]
-  ELSE
+  Else
     hSrc.Sort = ""
-  ENDIF
+  Endif
   
   $hCtrl.Refresh
 
-END
+End
 
 
-PRIVATE FUNCTION Grid_Read() AS Boolean
+Private Function Grid_Read() As Boolean
 
-  RETURN $hCtrl.Grid
+  Return $hCtrl.Grid
 
-END
+End
 
-PRIVATE SUB Grid_Write(Value AS Boolean)
+Private Sub Grid_Write(Value As Boolean)
 
   $hCtrl.Grid = Value
 
-END
+End
 
-PRIVATE FUNCTION Highlight_Read() AS Boolean
+Private Function Highlight_Read() As Boolean
 
-  RETURN $bHighlight
+  Return $bHighlight
 
-END
+End
 
-PRIVATE SUB Highlight_Write(Value AS Boolean)
+Private Sub Highlight_Write(Value As Boolean)
 
   $bHighlight = Value
 
-END
+End

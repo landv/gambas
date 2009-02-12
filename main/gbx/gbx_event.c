@@ -196,8 +196,11 @@ static void post_event(void *object, int event)
 
 PUBLIC void EVENT_post_event(void *object, int event)
 {
-	if (!GB_CanRaise(object, event))
+	/*if (!GB_CanRaise(object, event))
+	{
+		fprintf(stderr, "EVENT_post_event: cannot raise event\n");
 		return;
+	}*/
 	
 	GB_Ref(object);
 	post((void (*)())post_event, 2, (intptr_t)object, (intptr_t)event);

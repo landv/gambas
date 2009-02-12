@@ -93,7 +93,7 @@ Public Const KEY_PROJECT As String = "$P"
 
 Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789"
 Private Const CLASS_AUTH_FIRST_CAR As String = "abcdefghijklmnopqrstuvwxyz_"
-Private Const FILE_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789-.+_"
+Private Const FILE_FORBIDDEN_CAR As String = "?*/~"
 
 Private Const PROJECT_FILE As String = ".project"
 Private Const STARTUP_FILE As String = ".startup"
@@ -2803,9 +2803,14 @@ Public Function CheckFileName(sName As String, Optional sDir As String) As Strin
 
   If Not sName Then Goto VOID_NAME
 
-  For iInd = 1 To Len(sName)
+  If String.Left$(sName) = "." Then 
+    iInd = 1
+    Goto BAD_CHAR
+  Endif
 
-    If InStr(FILE_AUTH_CAR & "-._+()", LCase(Mid$(sName, iInd, 1))) = 0 Then Goto BAD_CHAR
+  For iInd = 1 To String.Len(sName)
+
+    If InStr(FILE_FORBIDDEN_CAR, String.Mid$(sName, iInd, 1)) Then Goto BAD_CHAR
 
   Next
 
@@ -2821,7 +2826,7 @@ VOID_NAME:
 
 BAD_CHAR:
 
-  Return ("This name contains a forbidden character:") & " [ " & Mid$(sName, iInd, 1) & " ]"
+  Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]"
 
 ALREADY_EXIST:
 

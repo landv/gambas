@@ -48,7 +48,8 @@ typedef
 			unsigned notified : 1;
 			unsigned visible : 1;
 			unsigned fillBackground : 1;
-			unsigned _reserved : 10;
+			unsigned shown : 1; // for containers
+			unsigned _reserved : 9;
 			} flag;
 		GB_VARIANT_VALUE tag;
 		char *name;
@@ -69,7 +70,7 @@ typedef
 	struct {
 		CWIDGET widget;
 		QWidget *container;
-		int arrangement;
+		int32_t arrangement;
 		}
 	CCONTAINER;
 
@@ -186,6 +187,8 @@ void CWIDGET_set_color(CWIDGET *_object, int bg, int fg);
 void CWIDGET_reset_color(CWIDGET *_object);
 int CWIDGET_get_background(CWIDGET *_object);
 int CWIDGET_get_foreground(CWIDGET *_object);
+void *CWIDGET_get_parent(void *_object);
+void CWIDGET_set_visible(CWIDGET *_object, bool v);
 
 void CACTION_register(void *control, const char *key);
 void CACTION_raise(void *control);

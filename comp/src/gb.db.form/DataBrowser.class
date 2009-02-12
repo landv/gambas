@@ -53,13 +53,13 @@ End
 
 Private Function Control_Read() As Boolean
   
-  Return $hForm.Panel.Visible
+  Return $hForm.ButtonPanel.Visible
   
 End
 
 Private Sub Control_Write(bVisible As Boolean)
   
-  $hForm.Panel.Visible = bVisible
+  $hForm.ButtonPanel.Visible = bVisible
   
 End
 

@@ -46,6 +46,10 @@ DECLARE_EVENT(EVENT_Insert);
 DECLARE_EVENT(EVENT_BeforeArrange);
 DECLARE_EVENT(EVENT_Arrange);
 
+#if DEBUG_CONTAINER
+static int _count_move, _count_resize, _count_set_geom;
+#endif
+
 static QWidget *get_widget(QObjectList *list)
 {
 	for(;;)
@@ -65,19 +69,34 @@ static QWidget *get_widget(QObjectList *list)
 static void move_widget(QWidget *wid, int x, int y)
 {
 	if (wid->x() != x || wid->y() != y)
+	{
+		#if DEBUG_CONTAINER
+		_count_move++;
+		#endif
 		wid->move(x, y);
+	}
 }
 
 static void resize_widget(QWidget *wid, int w, int h)
 {
 	if (wid->width() != w || wid->height() != h)
+	{
+		#if DEBUG_CONTAINER
+		_count_resize++;
+		#endif
 		wid->resize(w, h);
+	}
 }
 
 static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 {
 	if (wid->x() != x || wid->y() != y || wid->width() != w || wid->height() != h)
+	{
+		#if DEBUG_CONTAINER
+		_count_set_geom++;
+		#endif
 		wid->setGeometry(x, y, w, h);
+	}
 }
 
 static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
@@ -110,14 +129,14 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define GET_WIDGET_Y(_widget) (_widget)->y()
 #define GET_WIDGET_W(_widget) (_widget)->width()
 #define GET_WIDGET_H(_widget) (_widget)->height()
-/*#define MOVE_WIDGET(_widget, _x, _y) move_widget(_widget, x, y)
+#define MOVE_WIDGET(_widget, _x, _y) move_widget(_widget, x, y)
 #define RESIZE_WIDGET(_widget, _w, _h) resize_widget(_widget, w, h)
 #define RESIZE_CONTAINER(_widget, _cont, _w, _h) resize_container((_widget), (_cont), (_w), (_h))
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) move_resize_widget(_widget, _x, _y, _w, _h)*/
-#define MOVE_WIDGET(_widget, _x, _y) (_widget)->move(_x, _y)
+#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) move_resize_widget(_widget, _x, _y, _w, _h)
+/*#define MOVE_WIDGET(_widget, _x, _y) (_widget)->move(_x, _y)
 #define RESIZE_WIDGET(_widget, _w, _h) (_widget)->resize(_w, _h)
 #define RESIZE_CONTAINER(_widget, _cont, _w, _h) resize_container((_widget), (_cont), (_w), (_h))
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) (_widget)->setGeometry(_x, _y, _w, _h)
+#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) (_widget)->setGeometry(_x, _y, _w, _h)*/
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
 	QObjectList *list = (QObjectList *)(_widget)->children(); \
@@ -145,10 +164,35 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 
 //THIS_ARRANGEMENT->dirty = FALSE;
 
+#if DEBUG_CONTAINER
+#define FUNCTION_NAME CCONTAINER_arrange_real
+#else
 #define FUNCTION_NAME CCONTAINER_arrange
+#endif
 
 #include "gb.form.arrangement.h"
 
+#if DEBUG_CONTAINER
+void CCONTAINER_arrange(void *_object)
+{
+	static int level = 0;
+	
+	if (!level)
+	{
+		_count_move = _count_resize = _count_set_geom = 0;
+	}
+		
+	level++;
+	CCONTAINER_arrange_real(_object);
+	level--;
+
+	if (!level)
+	{
+		if (_count_move || _count_resize || _count_set_geom)
+			qDebug("CCONTAINER_arrange: (%s %s): move = %d  resize = %d  setGeometry = %d", GB.GetClassName(THIS), THIS->widget.name, _count_move, _count_resize, _count_set_geom);
+	}
+}
+#endif
 
 static int max_w, max_h;
 

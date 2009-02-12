@@ -281,7 +281,7 @@ static void show_later(CWINDOW *_object)
 	if (!THIS->hidden && WIDGET)
 	{
 		if (!emit_open_event(THIS))
-			WIDGET->show();
+			CWIDGET_set_visible((CWIDGET *)THIS, true);
 	}
 	GB.Unref(POINTER(&_object));
 }
@@ -377,8 +377,10 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 		CWindow::list.append(THIS);
 		CWindow::count = CWindow::list.count();
 
+		#if DEBUG_WINDOW
 		qDebug("CWindow::count = %d (%p %s %s)", CWindow::count, _object, THIS->widget.name, THIS->embedded ? "E" : "W");
-
+		#endif
+		
 		if (CWINDOW_Main == 0)
 		{
 			//qDebug("CWINDOW_Main -> %p", THIS);
@@ -601,7 +603,7 @@ BEGIN_METHOD_VOID(CWINDOW_raise)
 	if (!THIS->toplevel)
 	{
 		if (!WIDGET->isVisible())
-			WIDGET->show();
+			CWIDGET_set_visible((CWIDGET *)THIS, true);
 		WIDGET->raise();
 	}
 	else
@@ -622,7 +624,7 @@ BEGIN_METHOD_VOID(CWINDOW_show)
 	
 	if (!THIS->toplevel)
 	{
-		WIDGET->show();
+		CWIDGET_set_visible((CWIDGET *)THIS, true);
     #ifndef NO_X_WINDOW
     if (THIS->xembed)
     	XEMBED->show();
@@ -646,7 +648,7 @@ BEGIN_METHOD_VOID(CWINDOW_hide)
 		do_close(THIS, 0);
 	}
 	else
-		WINDOW->hide();
+		CWIDGET_set_visible((CWIDGET *)THIS, false);
 
 END_METHOD
 
@@ -1514,7 +1516,9 @@ static void remove_window_check_quit(CWINDOW *ob)
 	CWindow::list.removeAll(ob);
 
 	CWindow::count = CWindow::list.count();
+	#if DEBUG_WINDOW
 	qDebug("~MyMainWindow: CWindow::count = %d (%p %s %s)", CWindow::count, ob, ob->widget.name, ob->embedded ? "E" : "W");
+	#endif
 
 	MAIN_check_quit();
 }
@@ -2099,7 +2103,9 @@ static bool closeAll()
 	CWINDOW *win;
 	int i;
 
+	#if DEBUG_WINDOW
 	qDebug("CLOSE ALL");
+	#endif
 
 	for (i = 0; i < list.count(); i++)
 	{
@@ -2351,7 +2357,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 		}
 		if (active)
 		{
-			qDebug("doReparent: setActiveWindow");
+			//qDebug("doReparent: setActiveWindow");
 			setActiveWindow();
 		}
 	#endif

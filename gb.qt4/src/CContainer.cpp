@@ -50,6 +50,10 @@ DECLARE_EVENT(EVENT_Insert);
 DECLARE_EVENT(EVENT_BeforeArrange);
 DECLARE_EVENT(EVENT_Arrange);
 
+#if DEBUG_CONTAINER
+static int _count_move, _count_resize, _count_set_geom;
+#endif
+
 static QWidget *get_next_widget(QObjectList &list, int &index)
 {
 	QObject *ob;
@@ -70,27 +74,37 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
 	}
 }
 
-static int _count = 0;
-
 static void move_widget(QWidget *wid, int x, int y)
 {
-	qDebug("%d", ++_count);
 	if (wid->x() != x || wid->y() != y)
+	{
+		#if DEBUG_CONTAINER
+		_count_move++;
+		#endif
 		wid->move(x, y);
+	}
 }
 
 static void resize_widget(QWidget *wid, int w, int h)
 {
-	qDebug("%d", ++_count);
 	if (wid->width() != w || wid->height() != h)
+	{
+		#if DEBUG_CONTAINER
+		_count_resize++;
+		#endif
 		wid->resize(w, h);
+	}
 }
 
 static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 {
-	qDebug("%d", ++_count);
 	if (wid->x() != x || wid->y() != y || wid->width() != w || wid->height() != h)
+	{
+		#if DEBUG_CONTAINER
+		_count_set_geom++;
+		#endif
 		wid->setGeometry(x, y, w, h);
+	}
 }
 
 static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
@@ -113,7 +127,8 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define IS_DESIGN(_object) (CWIDGET_test_flag(_object, WF_DESIGN) && CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
 #define IS_WIDGET_VISIBLE(_widget) (_widget)->isVisible()
 
-#define CAN_ARRANGE(_object) ((_object) && (IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object))))
+#define CAN_ARRANGE(_object) ((_object) && ((CWIDGET *)(_object))->flag.shown)
+//(IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object))))
 
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
 	_x = (_widget)->contentsRect().x(); \
@@ -152,27 +167,36 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 
 #define DESKTOP_SCALE MAIN_scale
 
+#if DEBUG_CONTAINER
+#define FUNCTION_NAME CCONTAINER_arrange_real
+#else
 #define FUNCTION_NAME CCONTAINER_arrange
+#endif
 
 #include "gb.form.arrangement.h"
 
-extern void qt_x11_set_global_double_buffer(bool);
-
-/*void CCONTAINER_arrange(void *_object)
+#if DEBUG_CONTAINER
+void CCONTAINER_arrange(void *_object)
 {
 	static int level = 0;
 	
 	if (!level)
-		qt_x11_set_global_double_buffer(false);
+	{
+		_count_move = _count_resize = _count_set_geom = 0;
+	}
+		
 	
 	level++;
-	CCONTAINER_arrange2(_object);
+	CCONTAINER_arrange_real(_object);
 	level--;
 
 	if (!level)
-		qt_x11_set_global_double_buffer(true);
-}*/
-
+	{
+		if (_count_move || _count_resize || _count_set_geom)
+			qDebug("CCONTAINER_arrange: (%s %s): move = %d  resize = %d  setGeometry = %d", GB.GetClassName(THIS), THIS->widget.name, _count_move, _count_resize, _count_set_geom);
+	}
+}
+#endif
 
 static int max_w, max_h;
 
@@ -278,9 +302,18 @@ void MyContainer::resizeEvent(QResizeEvent *e)
 
 void MyContainer::showEvent(QShowEvent *e)
 {
+	void *_object = CWidget::get(this);
 	//qDebug("MyContainer::showEvent %p %s", CWidget::get(this), GB.GetClassName(CWidget::get(this)));
 	QFrame::showEvent(e);
-	arrange_now(this);
+	THIS->widget.flag.shown = TRUE;
+	CCONTAINER_arrange(THIS);
+}
+
+void MyContainer::hideEvent(QHideEvent *e)
+{
+	void *_object = CWidget::get(this);
+	QFrame::hideEvent(e);
+	THIS->widget.flag.shown = FALSE;
 }
 
 /*void MyContainer::childEvent(QChildEvent *e)
@@ -481,7 +514,7 @@ BEGIN_PROPERTY(CCONTAINER_y)
 
 	QRect r = getRect(THIS); // _CONTAINER);
 	QPoint p(r.x(), r.y());
-
+	
 	GB.ReturnInteger(CONTAINER->mapTo(WIDGET, p).y());
 
 END_PROPERTY

@@ -36,6 +36,7 @@ EXTERN int MEMORY_count;
 #if DEBUG_MEMORY
 
 EXTERN int MEMORY_size;
+EXTERN FILE *MEMORY_log;
 
 #define ALLOC(_ptr, _size, _src)        MEMORY_alloc((void *)_ptr, _size, _src)
 #define ALLOC_ZERO(_ptr, _size, _src)   MEMORY_alloc_zero((void *)_ptr, _size, _src)

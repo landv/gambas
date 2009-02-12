@@ -37,6 +37,7 @@ DECLARE_EVENT(EVENT_Hide);
 
 DECLARE_METHOD(CCONTROL_window);
 DECLARE_METHOD(CCONTROL_name);
+DECLARE_METHOD(CMENU_hide);
 
 static int check_menu(void *_object)
 {
@@ -81,8 +82,6 @@ static void delete_menu(CMENU *_object)
 	if (THIS->deleted)
 		return;
 		
-	//qDebug("delete_menu: THIS = %p", _object);
-		
 	if (THIS->menu)
 	{
 		delete THIS->menu;
@@ -91,9 +90,7 @@ static void delete_menu(CMENU *_object)
 
   CMenu::dict.remove(ACTION);
 
-	//delete ACTION;
 	THIS->widget.widget = 0;
-
 	THIS->deleted = true;
 }
 
@@ -426,13 +423,18 @@ END_METHOD
 BEGIN_METHOD_VOID(CMENU_clear)
 
   int i;
+	CMENU *menu;
 
   if (THIS->menu)
   {
     QList<QAction *> list = THIS->menu->actions();
     
     for (i = 0; i < list.count(); i++)
-    	delete_menu(CMenu::dict[list.at(i)]);
+		{
+			menu = CMenu::dict[list.at(i)];
+			delete ((QAction *)(menu->widget.widget));
+    	delete_menu(menu);
+		}
   }
 
 END_METHOD

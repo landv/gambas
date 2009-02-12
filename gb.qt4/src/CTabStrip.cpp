@@ -151,13 +151,14 @@ void MyTabWidget::setEnabled(bool e)
 
 void MyTabWidget::forceLayout()
 {
-	/*bool b = isVisible();
+	bool b = isVisible();
 	QShowEvent e;
 		
-	setWState(WState_Visible);
+	setAttribute(Qt::WA_WState_Visible, true);
 	qApp->sendEvent(this, &e);
 	if (!b)
-		clearWState(WState_Visible);*/
+		setAttribute(Qt::WA_WState_Visible, false);
+		
 	//qDebug("Y = %d", tabBar()->height());
 }
 

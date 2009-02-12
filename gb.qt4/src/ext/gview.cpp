@@ -593,7 +593,8 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	
 	p.fillRect(0, 0, cellWidth(), cellHeight(), color);
 	
-	p.setFont(painter->font());
+	p.setFont(font());
+	//p.setFont(painter->font());
 	//p.translate(-ur.left(), 0);
 
 	// Procedure separation

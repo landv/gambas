@@ -493,7 +493,9 @@ static void unrelease_grab()
 
 static bool must_quit(void)
 {
+	#if DEBUG_WINDOW
 	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
+	#endif
 	return CWindow::count == 0 && CWatch::count == 0 && in_event_loop;
 }
 
@@ -630,7 +632,7 @@ static void hook_timer(GB_TIMER *timer, bool on)
 {
 	if (timer->id)
 	{
-		delete (MyTimer *)(timer->id);
+		((MyTimer *)(timer->id))->deleteLater();
 		timer->id = 0;
 	}
 	

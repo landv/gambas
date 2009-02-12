@@ -105,6 +105,7 @@ public:
 	int count();
 	gControl *child(int n);
 	void updateColors();
+	void updateFont();
 
 	GtkWidget *fix;
 	GtkWidget *widget;
@@ -141,6 +142,7 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	//gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
 	
 	updateColors();
+	updateFont();
 	
 	g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
 	g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
@@ -177,6 +179,13 @@ void gTabStripPage::updateColors()
 	set_gdk_bg_color(widget, parent->background());
 	//set_gdk_bg_color(fix, parent->background());
 	set_gdk_fg_color(label, parent->foreground());
+}
+
+void gTabStripPage::updateFont()
+{
+	gFont *fnt = parent->font();
+	gtk_widget_modify_font(widget, fnt ? fnt->desc() : NULL);
+	gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
 }
 
 void gTabStripPage::setText(char *text)
@@ -582,4 +591,14 @@ gTabStripPage *gTabStrip::get(int ind)
 		return NULL;
 	else 
 		return (gTabStripPage *)g_ptr_array_index(_pages, ind);
+}
+
+void gTabStrip::setFont(gFont *font)
+{
+	int i;
+	
+	gControl::setFont(font);
+	
+	for (i = 0; i < count(); i++)
+		get(i)->updateFont();	
 }

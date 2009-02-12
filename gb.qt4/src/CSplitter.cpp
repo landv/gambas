@@ -64,9 +64,9 @@ BEGIN_METHOD(CHSPLIT_new, GB_OBJECT parent)
   wid->setOrientation(Qt::Horizontal);
   wid->setOpaqueResize(true);
 
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
@@ -75,13 +75,12 @@ BEGIN_METHOD(CVSPLIT_new, GB_OBJECT parent)
 
   QSplitter *wid = new MySplitter(QCONTAINER(VARG(parent)));
 
-  CWIDGET_new(wid, (void *)_object);
-
   THIS->container = wid;
 
   wid->setOrientation(Qt::Vertical);
   wid->setOpaqueResize(true);
-  wid->show();
+
+  CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 

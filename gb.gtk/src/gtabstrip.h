@@ -36,7 +36,9 @@ public:
 
 	virtual void setRealBackground(gColor color);
 	virtual void setRealForeground(gColor color);
-	
+
+	virtual void setFont(gFont *ft);
+
 //"Events"
 	void (*onClick)(gTabStrip *sender);
 

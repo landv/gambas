@@ -2,26 +2,26 @@
 
 'PRIVATE $hConn AS NEW Connection
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
-  WITH DataBrowser2.GridView
+  With DataBrowser2.GridView
     .Columns[0].Text = "Color"
-  END WITH
+  End With
   
-  WITH DataBrowser1.GridView
+  With DataBrowser1.GridView
     .Columns[0].Text = "Id"
     .Columns[0].Width = 48
     .Columns[1].Text = "Active"
     .Columns[2].Text = "Name"
-  END WITH
+  End With
   
-END
+End
 
-PUBLIC SUB DataControl6_Validate(Value AS Variant)
+Public Sub DataControl6_Validate(Value As Variant)
 
-  IF IsNull(Value) THEN RETURN
-  IF Value < 0 OR Value > 10000 THEN
-    STOP EVENT
-  ENDIF
+  If IsNull(Value) Then Return
+  If Value < 0 Or Value > 10000 Then
+    Stop Event
+  Endif
 
-END
+End

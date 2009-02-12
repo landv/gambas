@@ -71,6 +71,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   Dim X, Y, X1, Y1, X2, Y2, X3, Y3, Y4 As Integer
   Dim hWin As Window
   Dim sNew As String
+  Dim hCtrl As Control
   
   $X = $hCtrl.ScreenX
   $Y = $hCtrl.ScreenY
@@ -185,6 +186,8 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     
   Endif 
   
+  hCtrl = Application.ActiveControl
+  
   If Not Me.Visible Then 
     hWin = Application.ActiveWindow
     Me.Show
@@ -193,6 +196,8 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Form_Show
     Me.Raise
   Endif
+  
+  Try hCtrl.SetFocus
   
   $dShow = Timer
   

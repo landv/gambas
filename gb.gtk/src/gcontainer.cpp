@@ -393,7 +393,7 @@ int gContainer::clientWidth()
 	if (GTK_IS_SCROLLED_WINDOW(border))
 		return (int)gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(border))->page_size;
 	
-	return width() - getFrameWidth() - clientX();
+	return width() - getFrameWidth() * 2;
 }
 
 int gContainer::clientHeight()
@@ -423,7 +423,7 @@ int gContainer::clientHeight()
 	if (GTK_IS_SCROLLED_WINDOW(border))
 		return (int)gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(border))->page_size;
 	
-	return height() - getFrameWidth() - clientY();
+	return height() - getFrameWidth() * 2;
 }
 
 void gContainer::insert(gControl *child)

@@ -59,7 +59,7 @@ typedef
     CPICTURE *picture;
 	  int last_size;
     unsigned radio : 1;
-    unsigned stretch : 1;
+    unsigned autoresize : 1;
     }
   CBUTTON;
 
@@ -71,9 +71,8 @@ public:
 
   MyPushButton(QWidget *parent);
   ~MyPushButton();
-  //QSize sizeHint(void) const;
-  virtual void fontChange(const QFont &);
-  void calcMinimumHeight();
+  virtual void changeEvent(QEvent *e);
+  void calcMinimumSize();
   virtual void resizeEvent(QResizeEvent *e);
 
   CWINDOW *top;
@@ -88,9 +87,8 @@ public:
 
   MyToolButton(QWidget *parent);
   ~MyToolButton();
-  //QSize sizeHint(void) const;
-  virtual void fontChange(const QFont &);
-  void calcMinimumHeight();
+  virtual void changeEvent(QEvent *e);
+  void calcMinimumSize();
   virtual void resizeEvent(QResizeEvent *e);
 };
 

@@ -191,23 +191,23 @@ static void set_name(CWIDGET *_object, const char *name)
 		GB.NewString(&THIS->name, name, 0);
 }
 
-static CWIDGET *get_parent_control(CWIDGET *_object)
+void *CWIDGET_get_parent(void *_object)
 {
-	QWidget *parent = WIDGET->parentWidget();
+  QWidget *parent = WIDGET->parentWidget();
 
-	if (!parent || WIDGET->isWindow())
-		return NULL;
-	else
-		return CWidget::get(parent);
+  if (!parent || (GB.Is(THIS, CLASS_Window) && ((CWINDOW *)_object)->toplevel))
+    return NULL;
+  else
+    return CWidget::get(parent);
 }
 
 static void arrange_parent(CWIDGET *_object)
 {
-	CWIDGET *parent = get_parent_control(THIS); //CWidget::get(WIDGET->parentWidget());
-	if (parent)
-		CCONTAINER_arrange(parent);
+	void *parent = CWIDGET_get_parent(THIS);
+	if (!parent)
+		return;
+	CCONTAINER_arrange(parent);
 }
-
 
 void CWIDGET_update_design(CWIDGET *_object)
 {
@@ -261,13 +261,10 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	//THIS->flag.fillBackground = GB.Is(THIS, CLASS_Container);
 	w->setAutoFillBackground(THIS->flag.fillBackground);
 	
-	CCONTAINER_insert_child(THIS);	
-	
+	CCONTAINER_insert_child(THIS);
+
 	if (!no_show)
-	{
-		THIS->flag.visible = true;
-		w->show();
-	}
+		CWIDGET_set_visible(THIS, true);
 }
 
 
@@ -624,20 +621,24 @@ END_METHOD
 
 static bool is_visible(void *_object)
 {
-	return THIS->flag.visible; //|| !QWIDGET(_object)->isHidden();
+	return THIS->flag.visible; // || !QWIDGET(_object)->isHidden();
 }
 
 
-static void set_visible(void *_object, bool v)
+void CWIDGET_set_visible(CWIDGET *_object, bool v)
 {
 	THIS->flag.visible = v;
 	if (THIS->flag.visible)
+	{
 		QWIDGET(_object)->show();
+		if (GB.Is(THIS, CLASS_Container))
+			CCONTAINER_arrange(THIS);
+	}
 	else
 		QWIDGET(_object)->hide();
-	
-	arrange_parent(THIS);
+  arrange_parent(THIS);
 }
+
 
 
 BEGIN_PROPERTY(CCONTROL_visible)
@@ -645,21 +646,21 @@ BEGIN_PROPERTY(CCONTROL_visible)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(is_visible(THIS));
 	else
-		set_visible(THIS, VPROP(GB_BOOLEAN));
+		CWIDGET_set_visible(THIS, VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 
 BEGIN_METHOD_VOID(CCONTROL_show)
 
-	set_visible(THIS, true);
+	CWIDGET_set_visible(THIS, true);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCONTROL_hide)
 
-	set_visible(THIS, false);
+	CWIDGET_set_visible(THIS, false);
 
 END_METHOD
 
@@ -972,7 +973,7 @@ static QWidget *get_color_widget(QWidget *w)
 
 int get_real_background(CWIDGET *_object)
 {
-	CWIDGET *parent = get_parent_control(THIS);
+	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
 	if (THIS->bg == COLOR_DEFAULT && parent)
 		return get_real_background(parent);
 	else
@@ -981,7 +982,7 @@ int get_real_background(CWIDGET *_object)
 
 int get_real_foreground(CWIDGET *_object)
 {
-	CWIDGET *parent = get_parent_control(THIS);
+	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
 	if (THIS->fg == COLOR_DEFAULT && parent)
 		return get_real_foreground(parent);
 	else
@@ -998,7 +999,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	
 	if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
 	{
-		CWIDGET *parent = get_parent_control(THIS);
+		CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
 		if (parent)
 			w->setPalette(parent->widget->palette());
 		else
@@ -1108,7 +1109,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_parent)
 
-	GB.ReturnObject(get_parent_control(THIS));
+	GB.ReturnObject(CWIDGET_get_parent(THIS));
 
 END_PROPERTY
 
@@ -1206,7 +1207,7 @@ END_METHOD
 BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 
 	QPoint p(WIDGET->pos());
-	bool showIt = !WIDGET->isHidden();
+	bool show;
 
 	if (!MISSING(x) && !MISSING(y))
 	{
@@ -1217,9 +1218,12 @@ BEGIN_METHOD(CCONTROL_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 	if (GB.CheckObject(VARG(container)))
 		return;
 
+	show = is_visible(THIS);
+	CWIDGET_set_visible(THIS, false);
 	WIDGET->setParent(QCONTAINER(VARG(container)));
 	WIDGET->move(p);
-	if (showIt) WIDGET->show();
+	CCONTAINER_insert_child(THIS);
+	CWIDGET_set_visible(THIS, show);
 
 END_METHOD
 

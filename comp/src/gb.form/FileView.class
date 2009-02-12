@@ -38,6 +38,8 @@ Private $iSort As Integer
 Private $bAsc As Boolean = True
 Private $aFilter As String[]
 Private $hPict As Picture
+Private $hRefresh As Timer
+Private $bRefreshTriggered As Boolean
 
 Static Public Sub _init()
   
@@ -84,7 +86,9 @@ Public Sub _new()
     .Resizable = True
   End With
 
-  RefreshView
+  $hRefresh = New Timer As "Refresh"
+
+  RefreshViewLater
   RefreshGrid
 
 End
@@ -199,6 +203,24 @@ Catch
 
 End
 
+Private Sub RefreshViewLater()
+  
+  If $bRefreshTriggered Then Return
+  
+  $bRefreshTriggered = True
+  $hRefresh.Trigger
+  
+End
+
+Public Sub Refresh_Timer()
+  
+  $bRefreshTriggered = False
+  RefreshView
+  
+End
+
+
+
 Public Sub Reload()
   
   RefreshView
@@ -220,7 +242,7 @@ End
 Private Sub Dir_Write(sDir As String)
 
   $sDir = sDir
-  RefreshView
+  RefreshViewLater
 
 End
 
@@ -234,7 +256,7 @@ Private Sub ShowHidden_Write(bShowHidden As Boolean)
 
   If bShowHidden = $bShowHidden Then Return 
   $bShowHidden = bShowHidden
-  RefreshView
+  RefreshViewLater
 
 End
 
@@ -247,7 +269,7 @@ End
 Private Sub ShowDirectory_Write(bShow As Boolean)
 
   $bShowDir = bShow
-  RefreshView
+  RefreshViewLater
 
 End
 
@@ -318,7 +340,7 @@ Private Sub ShowDetailed_Write(bDetailed As Boolean)
 
   Endif
   
-  RefreshView
+  RefreshViewLater
   TakeSelection
 
 End
@@ -474,7 +496,7 @@ End
 Private Sub Filter_Write(aFilter As String[])
 
   $aFilter = aFilter
-  RefreshView
+  RefreshViewLater
 
 End
 
