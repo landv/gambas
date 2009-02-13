@@ -22,6 +22,7 @@
 
 #define __IMAGE_C
 
+#include "c_color.h"
 #include "image.h"
 
 //#define DEBUG_CONVERT
@@ -748,5 +749,26 @@ void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int 
 			d += dd;
 			s += ds;
 		}
+	}
+}
+
+void IMAGE_colorize(GB_IMG *img, GB_COLOR color)
+{
+	GET_POINTER(img, p, pm);
+	uint col;
+	int h, s, v;
+	int r, g, b;
+	int hcol;
+	
+	col = from_GB_COLOR(color, img->format);
+	COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &h, &s, &v);
+	hcol = h;
+
+	while (p != pm) 
+	{
+		col = BGRA_from_format(*p, img->format);
+		COLOR_rgb_to_hsv(RED(col), GREEN(col), BLUE(col), &h, &s, &v);
+		COLOR_hsv_to_rgb(hcol, s, v, &r, &g, &b);
+		*p++ = BGRA_to_format(RGBA(r, g, b, ALPHA(col)), img->format);
 	}
 }

@@ -52,7 +52,7 @@ static uint gt_rgba_to_color(int r, int g, int b, int a)
 	return (uint)(b | (g << 8) | (r << 16) | (a << 24));
 }
 
-static void gt_rgb_to_hsv(int r, int g, int b, int *H, int *S, int *V)
+void COLOR_rgb_to_hsv(int r, int g, int b, int *H, int *S, int *V)
 {
 	float R, G, B;
 	float v, x, f;
@@ -98,7 +98,7 @@ static void gt_rgb_to_hsv_cached(int r, int g, int b, int *H, int *S, int *V)
 		return;
 	}
 
-	gt_rgb_to_hsv(r, g, b, H, S, V);
+	COLOR_rgb_to_hsv(r, g, b, H, S, V);
 
 	old_r = r;
 	old_g = g;
@@ -108,7 +108,7 @@ static void gt_rgb_to_hsv_cached(int r, int g, int b, int *H, int *S, int *V)
 	old_v = *V;
 }
 
-static void gt_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
+void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
 {
 	 double H,S,V;
 	 double var_h, var_i, var_1, var_2, var_3, tmp_r, tmp_g, tmp_b;
@@ -118,9 +118,9 @@ static void gt_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B)
 	else
 		h = h % 360;
 
-	 H=((double)h)/360;
-	 S=((double)s)/255;
-	 V=((double)v)/255;
+	 H = ((double)h) / 360;
+	 S = ((double)s) / 255;
+	 V = ((double)v) / 255;
 
 	if (S == 0)
 	{
@@ -192,7 +192,7 @@ END_METHOD
 BEGIN_METHOD(CCOLOR_hsv, GB_INTEGER h; GB_INTEGER s; GB_INTEGER v; GB_INTEGER a)
 
 	int r, g, b;
-	gt_hsv_to_rgb(VARG(h), VARG(s), VARG(v), &r, &g, &b);
+	COLOR_hsv_to_rgb(VARG(h), VARG(s), VARG(v), &r, &g, &b);
   GB.ReturnInteger(gt_rgba_to_color(r, g, b, VARGOPT(a, 0)));
 
 END_METHOD
@@ -261,8 +261,8 @@ BEGIN_METHOD(CCOLOR_lighter, GB_INTEGER color)
   int r, g, b, a;
   
 	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
-  gt_rgb_to_hsv(r, g, b, &h, &s, &v);
-  gt_hsv_to_rgb(h, s / 2, 255 - (255 - v) / 2, &r, &g, &b);
+  COLOR_rgb_to_hsv(r, g, b, &h, &s, &v);
+  COLOR_hsv_to_rgb(h, s / 2, 255 - (255 - v) / 2, &r, &g, &b);
 
   GB.ReturnInteger(gt_rgba_to_color(r, g, b, a));
   
@@ -274,8 +274,8 @@ BEGIN_METHOD(CCOLOR_darker, GB_INTEGER color)
   int r, g, b, a;
   
 	gt_color_to_rgba(VARG(color), &r, &g, &b, &a);
-  gt_rgb_to_hsv(r, g, b, &h, &s, &v);
-  gt_hsv_to_rgb(h, 255 - (255 - s) / 2, v / 2, &r, &g, &b);
+  COLOR_rgb_to_hsv(r, g, b, &h, &s, &v);
+  COLOR_hsv_to_rgb(h, 255 - (255 - s) / 2, v / 2, &r, &g, &b);
 
   GB.ReturnInteger(gt_rgba_to_color(r, g, b, a));
 

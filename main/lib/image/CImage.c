@@ -112,6 +112,13 @@ BEGIN_METHOD(CIMAGE_make_transparent, GB_INTEGER color)
 
 END_METHOD
 
+BEGIN_METHOD(CIMAGE_colorize, GB_INTEGER color)
+
+	IMAGE_colorize(THIS_IMAGE, VARG(color));
+
+END_METHOD
+
+
 BEGIN_METHOD(CIMAGE_copy, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
   CIMAGE *image;
@@ -155,6 +162,7 @@ GB_DESC CImageDesc[] =
   GB_METHOD("MakeGray", NULL, CIMAGE_make_gray, NULL),
   GB_METHOD("MakeTransparent", NULL, CIMAGE_make_transparent, "[(Color)i]"),
   GB_METHOD("Replace", NULL, CIMAGE_replace, "(OldColor)i(NewColor)i[(NotEqual)b]"),
+  GB_METHOD("Colorize", NULL, CIMAGE_colorize, "(Color)i"),
   
   GB_METHOD("Copy", "Image", CIMAGE_copy, "[(X)i(Y)i(Width)i(Height)i]"),
   

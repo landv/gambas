@@ -41,4 +41,7 @@ typedef
 		}
 	COLOR_INFO;
 
+void COLOR_rgb_to_hsv(int r, int g, int b, int *H, int *S, int *V);
+void COLOR_hsv_to_rgb(int h, int s, int v, int *R, int *G, int *B);
+
 #endif
