@@ -1551,7 +1551,7 @@ void GEditor::blinkTimerTimeout()
 void GEditor::focusInEvent(QFocusEvent *e)
 {
 	startBlink();
-	ensureCursorVisible();
+	//ensureCursorVisible();
 	QGridView::focusInEvent(e);
 }
 

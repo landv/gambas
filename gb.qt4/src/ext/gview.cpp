@@ -1569,7 +1569,7 @@ void GEditor::blinkTimerTimeout()
 void GEditor::focusInEvent(QFocusEvent *e)
 {
 	startBlink();
-	ensureCursorVisible();
+	//ensureCursorVisible();
 	Q3GridView::focusInEvent(e);
 }
 
