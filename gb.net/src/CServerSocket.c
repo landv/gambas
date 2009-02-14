@@ -35,6 +35,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/un.h>
 
 #include "main.h"
 #include "tools.h"
@@ -42,7 +43,6 @@
 #include "CServerSocket.h"
 #include "CSocket.h"
 
-#define UNIXPATHMAX 108
 
 
 DECLARE_EVENT (Connection);
@@ -165,15 +165,6 @@ void CServerSocket_CallBackUnix(int fd,int type,long lParam)
  This property reflects current status of the
  socket (closed, listening...)
  ***************************************************/
-BEGIN_PROPERTY ( CSERVERSOCKET_MaxPathLength )
-
-	GB.ReturnInteger(UNIXPATHMAX);
-
-END_PROPERTY
-/***************************************************
- This property reflects current status of the
- socket (closed, listening...)
- ***************************************************/
 BEGIN_PROPERTY ( CSERVERSOCKET_Status )
 
 	GB.ReturnInteger(THIS->iStatus);
@@ -223,7 +214,7 @@ BEGIN_PROPERTY ( CSERVERSOCKET_Path )
 		return;
 	}
 	tmpstr=GB.ToZeroString ( PROP(GB_STRING) );
-	if ( (strlen(tmpstr)<1) || (strlen(tmpstr)>UNIXPATHMAX) )
+	if ( (strlen(tmpstr)<1) || (strlen(tmpstr)>NET_UNIX_PATH_MAX) )
 	{
 		GB.Error ("Invalid path length");
 		return;
@@ -290,7 +281,7 @@ BEGIN_METHOD(CSERVERSOCKET_new,GB_STRING sPath;GB_INTEGER iMaxConn;)
 	{
 		THIS->iSockType=0;
 		buf=GB.ToZeroString ( (GB_STRING*)STRING(sPath) );
-		if ( (strlen(buf)<1) || (strlen(buf)>UNIXPATHMAX) )
+		if ( (strlen(buf)<1) || (strlen(buf)>NET_UNIX_PATH_MAX) )
 		{
 			GB.Error ("Invalid path length");
 			return;
@@ -586,7 +577,6 @@ END_PROPERTY
 *****************************************************************/
 GB_DESC CServerSocketDesc[] =
 {
-
   GB_DECLARE("ServerSocket", sizeof(CSERVERSOCKET)),
 
   GB_EVENT("Connection", NULL, "(RemoteHostIP)s", &Connection),
@@ -604,7 +594,6 @@ GB_DESC CServerSocketDesc[] =
   GB_PROPERTY("Path","s",CSERVERSOCKET_Path),
   GB_PROPERTY("Port", "i", CSERVERSOCKET_Port),
   GB_PROPERTY_READ("Status","i",CSERVERSOCKET_Status),
-  GB_STATIC_PROPERTY_READ("MaxPathLength","i",CSERVERSOCKET_MaxPathLength),
 
   GB_METHOD("_next", "Socket", CSERVERSOCKET_next, NULL),
   GB_PROPERTY_READ("Count", "i", CSERVERSOCKET_count),

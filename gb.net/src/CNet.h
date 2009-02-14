@@ -26,6 +26,12 @@
 
 #include "gambas.h"
 
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <netinet/in.h>
+
 #ifndef __CNET_C
 
 extern GB_DESC CNetDesc[];
@@ -35,5 +41,17 @@ extern GB_DESC CNetDesc[];
 #define THIS ((CNET *)_object)
 
 #endif
+
+typedef
+	union
+	{	
+		struct sockaddr a;
+		struct sockaddr_in in;
+		struct sockaddr_un un;
+	} NET_ADDRESS;
+
+#define NET_UNIX_PATH_MAX 108
+
+size_t NET_get_address_size(NET_ADDRESS *addr);
 
 #endif

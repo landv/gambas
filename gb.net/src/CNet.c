@@ -30,6 +30,16 @@
 #include "CNet.h"
 
 
+size_t NET_get_address_size(NET_ADDRESS *addr)
+{
+	switch (addr->a.sa_family)
+	{
+		case PF_UNIX: return sizeof(struct sockaddr_un);
+		case PF_INET: return sizeof(struct sockaddr_in);
+		default: return 0;
+	}
+}
+
 void ToIPv4(char *src,char *dst,int leadzero)
 {
 	int myloop;
@@ -115,7 +125,6 @@ END_METHOD
  ***************************************************************/
 GB_DESC CNetDesc[] =
 {
-
   GB_DECLARE("Net", 0), GB_VIRTUAL_CLASS(),
 
   /* IP Formatting */
@@ -141,7 +150,9 @@ GB_DESC CNetDesc[] =
   GB_CONSTANT("Internet", "i", 1),
   GB_CONSTANT("Local", "i", 0),
   GB_CONSTANT("Unix", "i", 0),
-  
+	// Max path length for local sockets
+  GB_CONSTANT("MaxPathLength", "i", NET_UNIX_PATH_MAX),
+
   GB_STATIC_METHOD("Format", "s", CNET_Format, "(IpString)s[(Format)i(LeadZero)b]"),
   
   GB_END_DECLARE

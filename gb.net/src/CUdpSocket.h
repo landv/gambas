@@ -25,6 +25,7 @@
 #define __CUDPSOCKET_H
 
 #include "gambas.h"
+#include "CNet.h"
 
 #ifndef __CUDPSOCKET_C
 
@@ -43,11 +44,9 @@ typedef
 		GB_BASE ob;
 		GB_STREAM stream;
 		int Socket;
+		NET_ADDRESS addr;
 		int iStatus;
 		int iPort;
-		char *shost;
-		int sport;
-		char *spath;
 		char *thost;
 		int tport;
 		char *tpath;
@@ -55,6 +54,8 @@ typedef
 		char *buffer;
 		int buffer_pos;
 		int buffer_len;
+		char *path;
+		int port;
 	} 
 	CUDPSOCKET;
 

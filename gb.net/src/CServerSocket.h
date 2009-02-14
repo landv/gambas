@@ -24,12 +24,8 @@
 #ifndef __CSERVERSOCKET_H
 #define __CSERVERSOCKET_H
 
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include "gambas.h"
+#include "CNet.h"
 
 #ifndef __CSERVERSOCKET_C
 extern GB_DESC CServerSocketDesc[];
