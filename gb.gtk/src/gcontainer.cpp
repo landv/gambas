@@ -107,11 +107,10 @@ static void resize_container(gControl *cont, int w, int h)
 #define GET_WIDGET_Y(_widget)  (((gControl*)_widget)->top())
 #define GET_WIDGET_W(_widget)  (((gControl*)_widget)->width())
 #define GET_WIDGET_H(_widget)  (((gControl*)_widget)->height())
-#define MOVE_WIDGET(_widget, _x, _y)  (((gControl*)_widget)->move( _x, _y))
-#define RESIZE_WIDGET(_widget, _w, _h)  (((gControl*)_widget)->resize( _w, _h))
+#define MOVE_WIDGET(_object, _widget, _x, _y)  (((gControl*)_widget)->move( _x, _y))
+#define RESIZE_WIDGET(_object, _widget, _w, _h)  (((gControl*)_widget)->resize( _w, _h))
+#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) (((gControl*)_widget)->move( _x, _y, _w, _h))
 #define RESIZE_CONTAINER(_widget, _cont, _w, _h)  resize_container((gControl *)(_cont), _w, _h) 
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) (((gControl*)_widget)->move( _x, _y, _w, _h))
-
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
 	gContainer *gtk_control=(gContainer*)_widget; \

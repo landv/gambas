@@ -171,6 +171,7 @@ void gMainWindow::initialize()
 	sticky = false;
 	persistent = false;
 	stack = 0;
+	_type = 0;
 	_mask = false;
 	_masked = false;
 	_resized = false;
@@ -731,6 +732,7 @@ void gMainWindow::remap()
 	if (top_only) { setTopOnly(false); setTopOnly(true); }
 	if (sticky) { setSticky(false); setSticky(true); }
 	if (stack) { setStacking(0); setStacking(stack); }
+	X11_set_window_type(handle(), _type);
 }
 
 void gMainWindow::drawMask()
@@ -1102,7 +1104,7 @@ int gMainWindow::getType()
 {
 	if (!isTopLevel())
 		return 0;
-	return X11_get_window_type(handle());
+	return _type; //X11_get_window_type(handle());
 }
 
 void gMainWindow::setType(int type)
@@ -1110,6 +1112,7 @@ void gMainWindow::setType(int type)
 	if (!isTopLevel())
 		return;
 	X11_set_window_type(handle(), type);
+	_type = type;
 }
 #else
 int gMainWindow::getType()

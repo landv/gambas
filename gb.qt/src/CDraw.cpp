@@ -468,7 +468,7 @@ static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, in
 
     if (p->hasAlpha())
     {
-      DPM(d)->setRasterOp(Qt::OrROP);
+      DPM(d)->setRasterOp(Qt::NotOrROP);
       DPM(d)->drawPixmap(x, y, *(p->mask()), sx, sy, sw, sh);
     }
     else
@@ -497,10 +497,6 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 
   if (DPM(d))
   {
-    QPixmap p;
-
-    p.convertFromImage(*img);
-
     DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
 
 		DPM(d)->save();
@@ -512,13 +508,17 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 			DPM(d)->scale((double)w / img->width(), (double)h / img->height());
 		}
 
-    if (p.hasAlpha())
+    if (img->hasAlphaBuffer())
     {
-      DPM(d)->setRasterOp(Qt::OrROP);
-      DPM(d)->drawPixmap(x, y, *(p.mask()), sx, sy, sw, sh);
+			QBitmap m;
+			m = img->createAlphaMask();
+      DPM(d)->setRasterOp(Qt::NotOrROP);
+      DPM(d)->drawPixmap(x, y, m, sx, sy, sw, sh);
     }
     else
+		{
       DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
+		}
 
 		DPM(d)->restore();
   }

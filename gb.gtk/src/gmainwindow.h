@@ -106,6 +106,7 @@ public:
 	GtkAccelGroup *accel;
 	GtkMenuBar *menuBar;
 	int stack;
+	int _type;
 	gPicture *_icon;
 	gPicture *_picture;
 	char *_title;

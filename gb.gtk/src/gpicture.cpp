@@ -928,6 +928,7 @@ void gPicture::draw(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 
   if (x >= width() || y >= height())
   	return;
+	
 
 	if (_type == SERVER)
 	{
@@ -970,6 +971,12 @@ void gPicture::draw(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 		scale_y = (double)h / sh;
 		offset_x = x - sx * scale_x;
 		offset_y = y - sy * scale_y;
+		
+		if (x < 0)
+			x = 0;
+		
+		if (y < 0)
+			y = 0;
 		
 		if ((x + w) > width())
 			w = width() - x;

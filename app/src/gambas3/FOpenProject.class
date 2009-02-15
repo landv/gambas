@@ -151,7 +151,7 @@ Private Sub FillRecent()
 
   Inc Application.Busy
 
-  panRecent.Arrangement = Arrange.None
+  'panRecent.Arrangement = Arrange.None
   lstRecent.Lock
 
   aRecent = Project.GetRecentFiles(chkSortRecent.Value)
@@ -168,7 +168,7 @@ Private Sub FillRecent()
   
   ' Workaround a scrollview bug that does not show the scrollbars.
   lstRecent.Unlock 
-  panRecent.Arrangement = Arrange.Vertical
+  'panRecent.Arrangement = Arrange.Vertical
   
   Dec Application.Busy
   
@@ -203,6 +203,7 @@ Private Sub FillExample()
   If lstExample.Children.Count Then Return
 
   Inc Application.Busy
+  lstExample.Lock
 
   For Each sExample In Project.GetExamples()
   
@@ -227,7 +228,8 @@ Private Sub FillExample()
   
   Next
 
-  lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
+  'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
+  lstExample.Unlock
 
   Dec Application.Busy
 

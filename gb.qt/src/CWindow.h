@@ -92,9 +92,9 @@ typedef
 #ifndef __CWINDOW_CPP
 
 extern GB_DESC CWindowDesc[];
+extern GB_DESC CWindowTypeDesc[];
 extern GB_DESC CWindowMenusDesc[];
 extern GB_DESC CWindowControlsDesc[];
-//extern GB_DESC CWindowToolBarsDesc[];
 extern GB_DESC CWindowsDesc[];
 extern GB_DESC CFormDesc[];
 
@@ -152,6 +152,7 @@ private:
   bool _activate;
   bool _border;
   bool _resizable;
+	int _type;
 
   void doReparent(QWidget *, WFlags, const QPoint &, bool showIt = false);
 

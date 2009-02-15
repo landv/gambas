@@ -709,22 +709,31 @@ GB_DESC CWindowControlsDesc[] =
   GB_END_DECLARE
 };
 
+GB_DESC CWindowTypeDesc[] =
+{
+  GB_DECLARE("WindowType", 0), GB_VIRTUAL_CLASS(),
+
+  GB_CONSTANT("Normal", "i", _NET_WM_WINDOW_TYPE_NORMAL),
+  GB_CONSTANT("Dock", "i", _NET_WM_WINDOW_TYPE_DOCK),
+  GB_CONSTANT("Toolbar", "i", _NET_WM_WINDOW_TYPE_TOOLBAR),
+  GB_CONSTANT("Menu", "i", _NET_WM_WINDOW_TYPE_MENU),
+  GB_CONSTANT("Utility", "i", _NET_WM_WINDOW_TYPE_UTILITY),
+  GB_CONSTANT("Splash", "i", _NET_WM_WINDOW_TYPE_SPLASH),
+  GB_CONSTANT("Dialog", "i", _NET_WM_WINDOW_TYPE_DIALOG),
+  GB_CONSTANT("DropDownMenu", "i", _NET_WM_WINDOW_TYPE_DROPDOWN_MENU),
+  GB_CONSTANT("PopupMenu", "i", _NET_WM_WINDOW_TYPE_POPUP_MENU),
+  GB_CONSTANT("Tooltip", "i", _NET_WM_WINDOW_TYPE_TOOLTIP),
+  GB_CONSTANT("Notification", "i", _NET_WM_WINDOW_TYPE_NOTIFICATION),
+  GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),
+  GB_CONSTANT("DragAndDrop", "i", _NET_WM_WINDOW_TYPE_DND),
+  GB_CONSTANT("Desktop", "i", _NET_WM_WINDOW_TYPE_DESKTOP),
+
+	GB_END_DECLARE
+};
+
 GB_DESC CWindowDesc[] =
 {
   GB_DECLARE("Window", sizeof(CWINDOW)), GB_INHERITS("Container"),
-
-  GB_CONSTANT("Utility", "i", _NET_WM_WINDOW_TYPE_UTILITY),
-  GB_CONSTANT("Splash", "i", _NET_WM_WINDOW_TYPE_SPLASH),
-  GB_CONSTANT("Popup", "i", _NET_WM_WINDOW_TYPE_POPUP_MENU),
-  GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),
-  GB_CONSTANT("Panel", "i", _NET_WM_WINDOW_TYPE_DOCK),
-  GB_CONSTANT("Notification", "i", _NET_WM_WINDOW_TYPE_NOTIFICATION),
-  //GB_CONSTANT("DragNDrop", "i", _NET_WM_WINDOW_TYPE_DND),
-  GB_CONSTANT("Desktop", "i", _NET_WM_WINDOW_TYPE_DESKTOP),
-  
-  //GB_CONSTANT("None", "i", 0),
-  //GB_CONSTANT("Fixed", "i", 1),
-  //GB_CONSTANT("Resizable", "i", 2),
 
   GB_CONSTANT("Normal", "i", 0),
   GB_CONSTANT("Above", "i", 1),

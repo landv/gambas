@@ -41,7 +41,7 @@ Private Sub DrawRoundRect(X As Integer, Y As Integer, W As Integer, H As Integer
   Draw.Rect(X, Y + ROUND_SIZE, W, H - ROUND_SIZE * 2)
   Draw.Rect(X + ROUND_SIZE, Y + H - ROUND_SIZE, W - ROUND_SIZE * 2, ROUND_SIZE)
   Draw.LineStyle = Line.Solid
-  Draw.ForeColor = &H808070&
+  Draw.ForeColor = &H808080& '&H808070&
   Draw.Line(X + ROUND_SIZE, Y, X + W - ROUND_SIZE - 1, Y)
   Draw.Line(X + ROUND_SIZE, Y + H - 1, X + W - ROUND_SIZE, Y + H - 1)
   Draw.Line(X, Y + ROUND_SIZE, X, Y + H - ROUND_SIZE - 1)
@@ -106,9 +106,9 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   If H <= 0 Then H = Me.H
 
   If SX < CX And SX >= W Then 
-    X = SX - W \ 2 - 32
+    X = SX - W \ 2 - ARROW_HEIGHT
   Else 
-    X = SX - W \ 2 + 32
+    X = SX - W \ 2 + ARROW_HEIGHT
   Endif
 
   X = Max(4, Min(Desktop.W - W - 4, X))
@@ -135,9 +135,16 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
 
   Y3 = Y2
   
-  X2 = W \ 2 - 12
-  X3 = X2 + 24
-  X1 = SX - X
+  X1 = Min(Max(16, SX - X), W - 16)
+  'X2 = W \ 2 - 12
+  'X3 = X2 + 24
+  If X1 < (W \ 2) Then 
+    X2 = X1
+  Else
+    X2 = X1 - ARROW_HEIGHT
+  Endif
+  X2 = Max(X2, 16)
+  X3 = X2 + ARROW_HEIGHT
 
   Me.Move(X, Y, W, H)
   
@@ -157,7 +164,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Draw.FillStyle = Fill.Solid
     Draw.LineStyle = Line.None
     
-    Draw.FillColor = &808070&
+    Draw.FillColor = &H808080& '&808070&
     'DrawInternalRect(0, ARROW_HEIGHT, ME.W, ME.H - ARROW_HEIGHT * 2)
     Draw.Polygon([X1, Y1, X2, Y2, X3, Y3])
 
@@ -169,7 +176,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Draw.Foreground = &FFFFDF&
     Draw.Line(X1, Y1, X2 + 1, Y4)
     Draw.Line(X1, Y1, X3 - 1, Y4)
-    Draw.Foreground = &808070&
+    Draw.Foreground = &H808080& '&808070&
     Draw.Line(X1, Y1, X2, Y4)
     Draw.Line(X1, Y1, X3, Y4)
   
@@ -191,7 +198,12 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   If Not Me.Visible Then 
     hWin = Application.ActiveWindow
     Me.Show
-    If hWin Then hWin.Show
+    ' If hWin Then 
+    '   Debug hWin
+    '   hWin.Show
+    '   Wait
+    '   hWin.Show
+    ' Endif
   Else  
     Form_Show
     Me.Raise
@@ -274,7 +286,7 @@ End
 
 Public Sub Watcher_Hide()
   
-  'DEBUG
+  'Debug
   Me.Hide
   
 End
@@ -287,14 +299,14 @@ End
 
 Public Sub txtMessage_MouseDown()
 
-  'DEBUG 
+  'Debug 
   Me.Hide
 
 End
 
 Public Sub Form_MouseDown()
 
-  'DEBUG 
+  'Debug 
   Me.Hide 
 
 End
@@ -315,13 +327,13 @@ Public Sub timCheck_Timer()
   'DEBUG
 
   If $bInside Then 
-    'DEBUG
+    'Debug
     Me.Hide
     Return 
   Endif 
 
   If (Timer - $dShow) > ($iDelay / 1000) Then 
-    'DEBUG
+    'Debug
     Me.Hide
     Return 
   Endif
@@ -329,14 +341,14 @@ Public Sub timCheck_Timer()
   hWin = GetTopLevel($hCtrl)
   If Not hWin.TopOnly Then
     If GetTopLevel(Application.ActiveWindow) <> hWin Then 
-      'DEBUG
+      'Debug
       Me.Hide
       Return
     Endif
   Endif
   
   If Abs($hCtrl.ScreenX - $X) >= 4 Or Abs($hCtrl.ScreenY - $Y) >= 4 Then
-    MakeBorder      
+    MakeBorder
   Endif
   
 End

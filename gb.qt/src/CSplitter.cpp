@@ -266,8 +266,20 @@ MySplitter::MySplitter(QWidget *parent) :
 
 static void send_event(QT_WIDGET *ob)
 {
+  QObjectList *list;
+  CWIDGET *child;
+  int i;
+  
   if (!ob->widget)
     return;
+
+  list = (QObjectList *)ob->widget->children();
+  for (i = 0; i < (int)list->count(); i++)
+  {
+  	child = CWidget::getReal(list->at(i));
+  	if (child && child->widget && !child->widget->isHidden() && GB.Is(child, CLASS_Container))
+			CCONTAINER_arrange(child);
+  }
 
   GB.Raise(ob, EVENT_Resize, 0);
   ((MySplitter *)ob->widget)->_event = false;

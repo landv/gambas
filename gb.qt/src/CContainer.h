@@ -109,16 +109,12 @@ class MyContainer : public QFrame
   Q_OBJECT
 
 public:
-
   MyContainer(QWidget *);
 
 protected:
 
   virtual void frameChanged();
-  virtual void resizeEvent(QResizeEvent *);
-  //virtual void childEvent(QChildEvent *);
   virtual void showEvent(QShowEvent *);
-  //virtual bool eventFilter(QObject *, QEvent *);
 };
 
 #endif

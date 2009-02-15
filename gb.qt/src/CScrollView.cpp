@@ -77,7 +77,10 @@ void MyScrollView::showEvent(QShowEvent *e)
   
   QScrollView::showEvent(e);
   if (THIS->container)
+	{
+		//qDebug("ShowEvent: %s", THIS->widget.name);
 	  THIS->container->autoResize();
+	}
 }
 
 /***************************************************************************
@@ -108,6 +111,8 @@ void MyContents::autoResize(void)
 	THIS->arrangement.locked = true;
 	ww = hh = -1;
 
+	//qDebug("AutoResize: %s", THIS->widget.name);
+
 	if (THIS->arrangement.mode)
 	{
 		/*ww = sw->visibleWidth();
@@ -122,17 +127,18 @@ void MyContents::autoResize(void)
 		hh = sw->height() - sw->frameWidth() * 2;
 	
 		//qDebug("autoResize: (%d %d) (%d %d)", sw->visibleWidth(), sw->visibleHeight(), ww, hh);
-	
+		//qDebug("AutoResize: %s: resize: %d %d", THIS->widget.name, ww, hh);
 		resize(ww, hh);
 		//sw->updateScrollBars();
 	}
 
-	for(i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++)
 	{
 		if (THIS->arrangement.mode)
 		{
 			//findRightBottom();
 			CCONTAINER_get_max_size(THIS, &w, &h);
+			//qDebug("AutoResize: %s: get_max_size: %d %d", THIS->widget.name, w, h);
 			//resize(w, h);
 			//sw->updateScrollBars();
 		}
@@ -168,12 +174,14 @@ void MyContents::autoResize(void)
 		else
 			ch = false;
 		
+		//qDebug("AutoResize: %s: resize: %d %d -> %d %d ?", THIS->widget.name, width(), height(), w, h);
 		if (w != width() || h != height())
 		{
 			resize(w, h);
 			
 			//CCONTAINER_arrange(THIS);
 			
+			//qDebug("AutoResize: %s: resize & updateScrollBars: %d %d", THIS->widget.name, w, h);
 			sw->updateScrollBars();
 					
 			if (cw)
@@ -183,6 +191,7 @@ void MyContents::autoResize(void)
 				
 			if (w != width() || h != height())
 			{
+				//qDebug("AutoResize: %s: resize again: %d %d", THIS->widget.name, w, h);
 				resize(w, h);
 				
 				//THIS->arrangement.locked = locked;
@@ -196,10 +205,15 @@ void MyContents::autoResize(void)
 	}
 
 	THIS->arrangement.locked = locked;
-	CCONTAINER_arrange(THIS);
+	//CCONTAINER_arrange(THIS);
 	timer = false;
 }
 
+void MyContents::afterArrange()
+{
+	//qDebug("MyContents::afterArrange");
+	checkAutoResizeLater();
+}
 
 void MyContents::findRightBottom(void)
 {
@@ -274,7 +288,7 @@ void MyContents::checkWidget(QWidget *wid)
   }
 
   if (doResize)
-    autoResize();
+    checkAutoResizeLater();
 }
 
 
@@ -289,7 +303,7 @@ void MyContents::childEvent(QChildEvent *e)
   {
     //e->child()->installEventFilter(this);
     checkWidget((QWidget *)e->child());
-    autoResize();
+    //checkAutoResizeLater();
   }
   else if (e->removed())
   {
@@ -297,7 +311,7 @@ void MyContents::childEvent(QChildEvent *e)
     if (e->child() == right || e->child() == bottom)
     {
       findRightBottom();
-      autoResize();
+      //checkAutoResizeLater();
     }
   }
 }
@@ -310,16 +324,20 @@ bool MyContents::eventFilter(QObject *o, QEvent *e)
   if (type == QEvent::Move || type == QEvent::Resize || type == QEvent::Show || type == QEvent::Hide)
   {
     checkWidget(wid);
-    if (!timer)
-    {
-	  	QTimer::singleShot(50, this, SLOT(autoResize()));
-	  	timer = true;
-	  }
+		//checkAutoResizeLater();
 	}
 	
   return MyContainer::eventFilter(o, e);
 }
 
+void MyContents::checkAutoResizeLater()
+{
+	if (timer)
+		return;
+	
+	QTimer::singleShot(0, this, SLOT(autoResize()));
+	timer = true;	
+}
 
 
 

@@ -238,7 +238,7 @@ Private Sub FillExample()
 
   Inc Application.Busy
 
-  iHeight = Desktop.Scale * 3
+  iHeight = Desktop.Scale * 4
 
   If Not $hPicture Then 
     hImage = New Image(16, iHeight)
@@ -270,7 +270,7 @@ Private Sub FillExample()
         .Move(0, Y, 1024, iHeight)
         .Tag = Project.ExampleTitle[sDir]
         .Font = Font["Bold"]
-        .Foreground = Color.TextBackground
+        .Foreground = Color.SelectedBackground
         '.Background = Color.TextBackground
         Y = Y + .H
       End With
@@ -311,21 +311,35 @@ Public Sub dwgExample_Draw()
   
   With hDrawingArea
     Draw.Font = .Font
-
-    'Draw.Foreground = .Foreground
-    'Draw.Line(0, .H / 2 - 2, .W - 1, .H / 2 - 2)
-    Draw.Picture($hPicture, 0, 0, .W, .H)
- 
-    'Draw.FillStyle = Fill.Solid
-    'Draw.LineStyle = Line.None
-    'Draw.FillColor = .Background
-    'Draw.Rect(8, 0, Draw.TextWidth(.Tag) + 8, .H)
-    
-    Draw.Text(.Tag, 8, 0, .W - 8, .H, Align.Normal)
-  
+    'Draw.Line(0, .H / 2 - 1, .W - 1, .H / 2 - 1)
+    'Draw.Transparent = FALSE
+    Draw.Text(.Tag, 4, 0, .W - 16, .H - 4, Align.BottomNormal)
+    Draw.Line(4, .H - 4, .W - 9, .H - 4)
   End With
   
 End
+
+' Public Sub dwgExample_Draw()
+'   
+'   Dim hDrawingArea As DrawingArea = Last
+'   
+'   With hDrawingArea
+'     Draw.Font = .Font
+' 
+'     'Draw.Foreground = .Foreground
+'     'Draw.Line(0, .H / 2 - 2, .W - 1, .H / 2 - 2)
+'     'Draw.Picture($hPicture, 0, 0, .W, .H)
+'  
+'     'Draw.FillStyle = Fill.Solid
+'     'Draw.LineStyle = Line.None
+'     'Draw.FillColor = .Background
+'     'Draw.Rect(8, 0, Draw.TextWidth(.Tag) + 8, .H)
+'     
+'     Draw.Text(.Tag, 8, 0, .W - 8, .H - 2, Align.Normal)
+'   
+'   End With
+'   
+' End
 
 
 Private Sub FillRecent()

@@ -31,6 +31,7 @@ Private $bMouseDown As Boolean
 Public Sub _new()
   
   $hScrollView = New ScrollView(Me) As "ScrollView"
+  $hScrollView.Name = Me.Name & ".ScrollView"
   $hTimer = New Timer As "Child"
   $hTimer.Delay = 80
   With $hScrollView
@@ -311,8 +312,8 @@ End
 
 Public Sub {Lock}()
   
+  If $iLock = 0 Then Me.Arrangement = Arrange.None
   Inc $iLock
-  Me.Arrangement = Arrange.None
   
 End
 

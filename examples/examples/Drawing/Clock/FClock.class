@@ -1,49 +1,65 @@
 ' Gambas class file
 
-PRIVATE picHour AS Image
-PRIVATE picMinute AS Image
-PRIVATE picSecond AS Image
-PRIVATE Clock AS Picture
-PRIVATE Buffer AS Picture
-PRIVATE HE AS Integer
-PRIVATE WI AS Integer
+Private picHour As Image
+Private picMinute As Image
+Private picSecond As Image
+Private Clock As Image
+Private Buffer As Picture
+Private HE As Integer
+Private WI As Integer
 'PRIVATE BackPicture AS String
-PRIVATE $MX AS Integer
-PRIVATE $MY AS Integer
-PRIVATE $hMenu AS menu
+Private $MX As Integer
+Private $MY As Integer
+Private $hMenu As menu
 
 
-PUBLIC SUB DrawTime()
+Public Sub DrawTime()
 
-  DIM tmpImg AS Image
-  DIM hPict AS Picture
-  DIM hTemp AS Picture
+  Dim tmpImg As Image
+  Dim hPict As Picture
+  'Dim hPict As Image
 
   WI = Clock.Width
   HE = Clock.Height
 
-  hPict = Clock.Copy()
+  hPict = Clock.Picture
   Draw.Begin(hPict)
     tmpImg = picHour.Rotate(- Hour(Now) * Pi(2 / 12))
     Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
     tmpImg = picMinute.Rotate(- Minute(Now) * Pi(2 / 60))
     Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
-    hTemp = picSecond.Rotate(- Second(Now) * Pi(2 / 60)).Picture
-    Draw.Picture(hTemp, WI / 2 - hTemp.Width / 2, HE / 2 - hTemp.Height / 2)
+    tmpImg = picSecond.Rotate(- Second(Now) * Pi(2 / 60))
+    Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
   Draw.End
+  
+  Me.Picture = hPict
 
-  ME.Picture = hPict
+  ' 'hPict = New Image(Clock.W, Clock.H, Color.Transparent)
+  ' 'hPict.Draw(Clock, 0, 0)
+  ' hPict = Clock.Copy()
+  ' 'Draw.Begin(hPict)
+  '   tmpImg = picHour.Rotate(- Hour(Now) * Pi(2 / 12))
+  '   hPict.Draw(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+  '   tmpImg = picMinute.Rotate(- Minute(Now) * Pi(2 / 60))
+  '   hPict.Draw(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+  '   tmpImg = picSecond.Rotate(- Second(Now) * Pi(2 / 60))
+  '   hPict.Draw(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+  ' 'Draw.End
+  ' 
+  ' Me.Picture = hPict.Picture
+  'Debug Me.Mask
+  'Me.Mask = Not mnuShowWindow.Value
 
-END
+End
 
-PRIVATE SUB SetClock(iClock AS Integer)
+Private Sub SetClock(iClock As Integer)
 
-  DIM hImage AS Image
-  DIM hBuffer AS Image  
-  DIM hMenu AS Menu
-  DIM X, Y AS Integer
-  DIM iColor AS Integer
-  DIM iGray AS Integer
+  Dim hImage As Image
+  Dim hBuffer As Image  
+  Dim hMenu As Menu
+  Dim X, Y As Integer
+  Dim iColor As Integer
+  Dim iGray As Integer
 
   hImage = Image.Load("img/clock_bg_big" & iClock & ".png")
   
@@ -65,60 +81,60 @@ PRIVATE SUB SetClock(iClock AS Integer)
   ' hBuffer.Draw(hImage, 1, 1)
   ' hImage = hBuffer
   
-  Clock = hImage.Picture
+  Clock = hImage '.Picture
   DrawTime
   
-  FOR EACH hMenu IN mnuPopup.Children
-    IF hMenu.Tag THEN
+  For Each hMenu In mnuPopup.Children
+    If hMenu.Tag Then
       hMenu.Checked = Val(hMenu.Tag) = iClock
-    ENDIF
-  NEXT
+    Endif
+  Next
 
-END
+End
 
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
 
   picMinute = Image.Load("img/arrow_min.png")
   picHour = Image.Load("img/arrow_hour.png")
   picSecond = Image.Load("img/arrow_sec.png")
 
   SetClock(3)
-  Timer1.Enabled = TRUE
+  Timer1.Enabled = True
 
-END
+End
 
-PUBLIC SUB Timer1_Timer()
+Public Sub Timer1_Timer()
 
   DrawTime()
 
-END
+End
 
 
-PUBLIC SUB Form_Menu()
+Public Sub Form_Menu()
 
   mnuPopup.Popup
 
-END
+End
 
-PUBLIC SUB mnuClock_Click()
+Public Sub mnuClock_Click()
 
-  SetClock(Val(LAST.Tag))
+  SetClock(Val(Last.Tag))
 
-END
+End
 
 
-PUBLIC SUB mnuQuit_Click()
+Public Sub mnuQuit_Click()
 
-  ME.Close
+  Me.Close
 
-END
+End
 
-PUBLIC SUB mnuAbout_Click()
+Public Sub mnuAbout_Click()
 
   Message("This exemple was made by Fabien BODARD\nand was optimized by Benoît MINISINI\n\nNote that the 3rd clock is Microsoft copyrighted.\nYou will find it on the future version of windows.")
 
-END
+End
 
 ' PUBLIC SUB daClock_MouseDown()
 ' 
@@ -133,19 +149,19 @@ END
 ' 
 ' END
 
-PUBLIC SUB mnuOntop_Click()
+Public Sub mnuOntop_Click()
 
-  INC mnuOnTop.Checked
-  INC ME.TopOnly
+  mnuOnTop.Checked = Not mnuOntop.Checked
+  Me.TopOnly = Not Me.TopOnly
 
-END
+End
 
 
-PUBLIC SUB mnuShowWindow_Click()
+Public Sub mnuShowWindow_Click()
 
-  INC mnuShowWindow.Checked
+  mnuShowWindow.Checked = Not mnuShowWindow.Checked
   'ME.Border = If(mnuShowWindow.Checked, Window.Fixed, Window.None)
-  INC ME.Mask
-  INC ME.SkipTaskbar
+  Me.Mask = Not Me.Mask
+  Me.SkipTaskbar = Not Me.SkipTaskbar
 
-END
+End

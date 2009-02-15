@@ -146,11 +146,16 @@ static void clear_mask(CWINDOW *_object)
 	{
 		WINDOW->clearMask();
 
-		bool v = !WINDOW->isHidden() && WINDOW->isVisible();
-		WINDOW->setBorder(WINDOW->hasBorder(), true);
-		WINDOW->setResizable(WINDOW->isResizable(), true);
-		if (v)
-			WINDOW->show();
+		#ifndef NO_X_WINDOW
+    bool v = !WINDOW->isHidden() && WINDOW->isVisible();
+    //WINDOW->setBorder(WINDOW->hasBorder(), true);
+    //WINDOW->setResizable(WINDOW->isResizable(), true);
+    if (v)
+		{
+			X11_window_remap(WINDOW->winId());
+			WINDOW->initProperties();
+		}
+		#endif
 	}
 }
 
@@ -1005,9 +1010,7 @@ BEGIN_PROPERTY(CWINDOW_stacking)
 	else
 	{
 		THIS->stacking = p = VPROP(GB_INTEGER);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_above, p == 1);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_stays_on_top, p == 1);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_below, p == 2);
+		WINDOW->initProperties();
 	}
 
 END_PROPERTY
@@ -1029,8 +1032,7 @@ BEGIN_PROPERTY(CWINDOW_top_only)
 	else
 	{
 		THIS->stacking = VPROP(GB_BOOLEAN) ? 1 : 0;
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_above, THIS->stacking == 1);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
+		WINDOW->initProperties();
 	}
 	
 END_PROPERTY
@@ -1355,37 +1357,31 @@ GB_DESC CWindowControlsDesc[] =
 	GB_END_DECLARE
 };
 
-/*
-GB_DESC CWindowToolBarsDesc[] =
+GB_DESC CWindowTypeDesc[] =
 {
-	GB_DECLARE(".Window.ToolBars", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE("WindowType", 0), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("Add", NULL, CWINDOW_toolbar_add, "'Toolbar'Toolbar;"),
-	GB_METHOD("Remove", NULL, CWINDOW_toolbar_remove, "'Toolbar'Toolbar;"),
+  GB_CONSTANT("Normal", "i", _NET_WM_WINDOW_TYPE_NORMAL),
+  GB_CONSTANT("Dock", "i", _NET_WM_WINDOW_TYPE_DOCK),
+  GB_CONSTANT("Toolbar", "i", _NET_WM_WINDOW_TYPE_TOOLBAR),
+  GB_CONSTANT("Menu", "i", _NET_WM_WINDOW_TYPE_MENU),
+  GB_CONSTANT("Utility", "i", _NET_WM_WINDOW_TYPE_UTILITY),
+  GB_CONSTANT("Splash", "i", _NET_WM_WINDOW_TYPE_SPLASH),
+  GB_CONSTANT("Dialog", "i", _NET_WM_WINDOW_TYPE_DIALOG),
+  GB_CONSTANT("DropDownMenu", "i", _NET_WM_WINDOW_TYPE_DROPDOWN_MENU),
+  GB_CONSTANT("PopupMenu", "i", _NET_WM_WINDOW_TYPE_POPUP_MENU),
+  GB_CONSTANT("Tooltip", "i", _NET_WM_WINDOW_TYPE_TOOLTIP),
+  GB_CONSTANT("Notification", "i", _NET_WM_WINDOW_TYPE_NOTIFICATION),
+  GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),
+  GB_CONSTANT("DragAndDrop", "i", _NET_WM_WINDOW_TYPE_DND),
+  GB_CONSTANT("Desktop", "i", _NET_WM_WINDOW_TYPE_DESKTOP),
 
 	GB_END_DECLARE
 };
-*/
-
 
 GB_DESC CWindowDesc[] =
 {
 	GB_DECLARE("Window", sizeof(CWINDOW)), GB_INHERITS("Container"),
-
-	//GB_CONSTANT("Normal", "i", 0),
-	GB_CONSTANT("Utility", "i", _NET_WM_WINDOW_TYPE_UTILITY),
-	GB_CONSTANT("Splash", "i", _NET_WM_WINDOW_TYPE_SPLASH),
-	GB_CONSTANT("Popup", "i", _NET_WM_WINDOW_TYPE_POPUP_MENU),
-	GB_CONSTANT("Combo", "i", _NET_WM_WINDOW_TYPE_COMBO),
-	GB_CONSTANT("Panel", "i", _NET_WM_WINDOW_TYPE_DOCK),
-	GB_CONSTANT("Notification", "i", _NET_WM_WINDOW_TYPE_NOTIFICATION),
-	//GB_CONSTANT("Drag", "i", _NET_WM_WINDOW_TYPE_DND),
-	GB_CONSTANT("Desktop", "i", _NET_WM_WINDOW_TYPE_DESKTOP),
-	
-	// Deprecated
-	//GB_CONSTANT("None", "i", 0),
-	//GB_CONSTANT("Fixed", "i", 1),
-	//GB_CONSTANT("Resizable", "i", 2),
 
 	GB_CONSTANT("Normal", "i", 0),
 	GB_CONSTANT("Above", "i", 1),
@@ -1501,6 +1497,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	//state = StateNormal;
 	mustCenter = false;
 	_deleted = false;
+	_type = _NET_WM_WINDOW_TYPE_NORMAL;
 	
 	setAttribute(Qt::WA_KeyCompression, true);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
@@ -1581,15 +1578,16 @@ void MyMainWindow::showEvent(QShowEvent *e)
 void MyMainWindow::initProperties()
 {
 	#ifndef NO_X_WINDOW
-		CWIDGET *_object = CWidget::get(this);
-	
-		if (!THIS->toplevel)
-			return;
-	
-		CWINDOW_change_property(this, X11_atom_net_wm_state_above, THIS->stacking == 1);
-		CWINDOW_change_property(this, X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
-		CWINDOW_change_property(this, X11_atom_net_wm_state_below, THIS->stacking == 2);
-		CWINDOW_change_property(this, X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
+	CWIDGET *_object = CWidget::get(this);
+
+	if (!THIS->toplevel)
+		return;
+
+	CWINDOW_change_property(this, X11_atom_net_wm_state_above, THIS->stacking == 1);
+	CWINDOW_change_property(this, X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
+	CWINDOW_change_property(this, X11_atom_net_wm_state_below, THIS->stacking == 2);
+	CWINDOW_change_property(this, X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
+	X11_set_window_type(winId(), _type);
 	#endif
 }
 
@@ -1665,7 +1663,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			show();
 
-		if (isToolbar() || THIS->skipTaskbar)
+		if (isToolbar()) //|| THIS->skipTaskbar)
 		{
 			MAIN_process_events();
 			usleep(50000);
@@ -1866,7 +1864,9 @@ int MyMainWindow::getType()
 {
 	if (!isWindow())
 		return 0;
-	return X11_get_window_type(winId());
+	else
+		return _type;
+	//return X11_get_window_type(winId());
 }
 
 void MyMainWindow::setType(int type)
@@ -1874,6 +1874,7 @@ void MyMainWindow::setType(int type)
 	if (!isWindow())
 		return;
 	X11_set_window_type(winId(), type);
+	_type = type;
 }
 #endif
 

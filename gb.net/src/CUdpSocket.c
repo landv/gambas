@@ -95,7 +95,7 @@ static void fill_buffer(CUDPSOCKET *_object)
 	
 	host_len = sizeof(THIS->addr);
 
-block = GB.Stream.Block(&THIS->stream, TRUE);
+	block = GB.Stream.Block(&THIS->stream, TRUE);
 	USE_MSG_NOSIGNAL(ret = recvfrom(THIS->Socket, (void*)buffer, sizeof(char), MSG_PEEK | MSG_NOSIGNAL, (struct sockaddr*)&THIS->addr, &host_len));
 	GB.Stream.Block(&THIS->stream, block);
 	

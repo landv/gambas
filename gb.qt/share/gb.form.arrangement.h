@@ -82,17 +82,17 @@ Returns the width of a widget.
 #define GET_WIDGET_H(_widget)
 Returns the height of a widget.
 
-#define MOVE_WIDGET(_widget, _x, _y)
+#define MOVE_WIDGET(_object, _widget, _x, _y)
 Moves a widget inside its parent.
 
-#define RESIZE_WIDGET(_widget, _w, _h)
+#define RESIZE_WIDGET(_object, _widget, _w, _h)
 Resizes a widget.
 
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h)
+#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h)
 Move & resize a widget simultaneously.
 
-#define RESIZE_CONTAINER(_container, _w, _h)
-Resizes the container widget by resizing the widget itself.
+#define RESIZE_CONTAINER(_object, _w, _h)
+Resizes the container object by resizing the widget itself.
 
 #define INIT_CHECK_CHILDREN_LIST(_widget)
 Initializes the list of children of _widget. Must return if there is no
@@ -336,7 +336,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 								if (w != GET_WIDGET_W(wid) || h != GET_WIDGET_H(wid))
 									redo = true;
 
-								MOVE_RESIZE_WIDGET(wid, x, y, w, h);
+								MOVE_RESIZE_WIDGET(ob, wid, x, y, w, h);
 								y += h;
 							}
 						}
@@ -360,9 +360,9 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 									redo = true;
 
 								if (rtl)
-									MOVE_RESIZE_WIDGET(wid, x - w, y, w, h);
+									MOVE_RESIZE_WIDGET(ob, wid, x - w, y, w, h);
 								else
-									MOVE_RESIZE_WIDGET(wid, x, y, w, h);
+									MOVE_RESIZE_WIDGET(ob, wid, x, y, w, h);
 								x += w * rtlm;
 							}
 						}
@@ -398,12 +398,12 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 								if (IS_EXPAND(ob))
 								{
-									MOVE_RESIZE_WIDGET(wid, x - GET_WIDGET_W(wid), y, GET_WIDGET_W(wid), hc - y);
+									MOVE_RESIZE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y, GET_WIDGET_W(wid), hc - y);
 									y = hc + arr->spacing;
 								}
 								else
 								{
-	   							MOVE_WIDGET(wid, x - GET_WIDGET_W(wid), y);
+	   							MOVE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y);
 									y += GET_WIDGET_H(wid) + arr->spacing;
 								}
 
@@ -421,12 +421,12 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 								if (IS_EXPAND(ob))
 								{
-									MOVE_RESIZE_WIDGET(wid, x, y, GET_WIDGET_W(wid), hc - y);
+									MOVE_RESIZE_WIDGET(ob, wid, x, y, GET_WIDGET_W(wid), hc - y);
 									y = hc + arr->spacing;
 								}
 								else
 								{
-									MOVE_WIDGET(wid, x, y);
+									MOVE_WIDGET(ob, wid, x, y);
 									y += GET_WIDGET_H(wid) + arr->spacing;
 								}
 
@@ -447,12 +447,12 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 								if (IS_EXPAND(ob))
 								{
-									MOVE_RESIZE_WIDGET(wid, xc, y, x - xc, GET_WIDGET_H(wid));
+									MOVE_RESIZE_WIDGET(ob, wid, xc, y, x - xc, GET_WIDGET_H(wid));
 									x = xc - arr->spacing;
 								}
 								else
 								{
-									MOVE_WIDGET(wid, x - GET_WIDGET_W(wid), y);
+									MOVE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y);
 									x -= GET_WIDGET_W(wid) + arr->spacing;
 								}
 
@@ -470,12 +470,12 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 								if (IS_EXPAND(ob))
 								{
-									MOVE_RESIZE_WIDGET(wid, x, y, wc - x, GET_WIDGET_H(wid));
+									MOVE_RESIZE_WIDGET(ob, wid, x, y, wc - x, GET_WIDGET_H(wid));
 									x = wc + arr->spacing;
 								}
 								else
 								{
-									MOVE_WIDGET(wid, x, y);
+									MOVE_WIDGET(ob, wid, x, y);
 									x += GET_WIDGET_W(wid) + arr->spacing;
 								}
 
@@ -500,7 +500,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						if (!ob || IS_IGNORE(ob))
 							continue;
 						
-						MOVE_RESIZE_WIDGET(wid, xc, yc, wc, hc);
+						MOVE_RESIZE_WIDGET(ob, wid, xc, yc, wc, hc);
 						
 						if (GET_WIDGET_H(wid) > h)
 							h = GET_WIDGET_H(wid);
@@ -530,10 +530,10 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						{
 							if (rtl)
 								//RESIZE_WIDGET(cont, xc - x + arr->padding + wf, GET_WIDGET_H(cont));
-								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : xc - x + padding + wf, dmax + hf + padding * 2);
+								RESIZE_CONTAINER(_object, cont, has_expand_children ? GET_WIDGET_W(cont) : xc - x + padding + wf, dmax + hf + padding * 2);
 							else
 								//RESIZE_WIDGET(cont, x + arr->padding + wf, GET_WIDGET_H(cont));
-								RESIZE_CONTAINER(GET_WIDGET(_object), cont, has_expand_children ? GET_WIDGET_W(cont) : x + padding + wf, dmax + hf + padding * 2);
+								RESIZE_CONTAINER(_object, cont, has_expand_children ? GET_WIDGET_W(cont) : x + padding + wf, dmax + hf + padding * 2);
 						}
 						
 						break;
@@ -549,20 +549,20 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 // 						#endif
 						//RESIZE_WIDGET(cont, GET_WIDGET_W(cont), y + arr->padding + hf);
 						if (dmax > 0)
-							RESIZE_CONTAINER(GET_WIDGET(_object), cont, dmax + wf + padding * 2, has_expand_children ? GET_WIDGET_H(cont) : y + padding + hf);
+							RESIZE_CONTAINER(_object, cont, dmax + wf + padding * 2, has_expand_children ? GET_WIDGET_H(cont) : y + padding + hf);
 						break;
 
 					case ARRANGE_COLUMN:
 						if (rtl)
-							RESIZE_CONTAINER(GET_WIDGET(_object), cont, (wc - x) + w + padding + wf, GET_WIDGET_H(cont));
+							RESIZE_CONTAINER(_object, cont, (wc - x) + w + padding + wf, GET_WIDGET_H(cont));
 						else
-							RESIZE_CONTAINER(GET_WIDGET(_object), cont, x + w + padding + wf, GET_WIDGET_H(cont));
+							RESIZE_CONTAINER(_object, cont, x + w + padding + wf, GET_WIDGET_H(cont));
 						break;
 
 					case ARRANGE_ROW:
 						//if ((y + h + arr->padding + GET_WIDGET_H(cont) - hc - yc) < 16)
 						//	qDebug("y = %d h = %d arr->padding = %d H = %d hc = %d yc = %d -> %d", y, h, arr->padding, GET_WIDGET_H(cont), hc, yc, (y + h + arr->padding + GET_WIDGET_H(cont) - hc - yc));
-						RESIZE_CONTAINER(GET_WIDGET(_object), cont, GET_WIDGET_W(cont), y + h + padding + hf);
+						RESIZE_CONTAINER(_object, cont, GET_WIDGET_W(cont), y + h + padding + hf);
 						break;
 					
 					case ARRANGE_FILL:
@@ -570,7 +570,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 // 						if (strncmp(((gControl *)_object)->name(), "DataControl", 11) == 0)
 // 							fprintf(stderr, "%s: RESIZE_CONTAINER(%p, %p, %d, %d)\n", ((gControl *)_object)->name(), GET_WIDGET(_object), cont, w, h);
 // 						#endif
-						RESIZE_CONTAINER(GET_WIDGET(_object), cont, w + padding * 2, h + padding * 2);
+						RESIZE_CONTAINER(_object, cont, w + padding * 2, h + padding * 2);
 						break;
 				}
 			}

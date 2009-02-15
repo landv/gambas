@@ -568,3 +568,10 @@ void X11_set_window_decorated(Window window, bool decorated)
 	if (hints != &new_hints)
 		XFree (hints);
 }
+
+void X11_window_remap(Window window)
+{
+	XWithdrawWindow(_display, window, DefaultScreen(_display));
+	XUnmapWindow(_display, window);
+	XMapWindow(_display, window);
+}

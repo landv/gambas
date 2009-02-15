@@ -419,11 +419,6 @@ CLASS *CLASS_find(const char *name)
 	
 	class->global = global;
 
-	#if DEBUG_LOAD
-	if (!strcmp(name, "BugModule"))
-		fprintf(stderr, "New class %s %p !\n", name, csym->class);
-	#endif
-
 	return class;
 }
 

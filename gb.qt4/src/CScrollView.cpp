@@ -201,7 +201,7 @@ void MyContents::autoResize(void)
 	}
 
 	THIS->arrangement.locked = locked;
-	CCONTAINER_arrange(THIS);
+	//CCONTAINER_arrange(THIS);
 	timer = false;
 }
 
@@ -277,7 +277,7 @@ void MyContents::checkWidget(QWidget *wid)
   }
 
   if (doResize)
-    autoResize();
+    checkAutoResizeLater();
 }
 
 
@@ -290,9 +290,7 @@ void MyContents::childEvent(QChildEvent *e)
 
   if (e->added())
   {
-    //e->child()->installEventFilter(this);
     checkWidget((QWidget *)e->child());
-    autoResize();
   }
   else if (e->removed())
   {
@@ -300,9 +298,14 @@ void MyContents::childEvent(QChildEvent *e)
     if (e->child() == right || e->child() == bottom)
     {
       findRightBottom();
-      autoResize();
     }
   }
+}
+
+void MyContents::afterArrange()
+{
+	//qDebug("MyContents::afterArrange");
+	checkAutoResizeLater();
 }
 
 bool MyContents::eventFilter(QObject *o, QEvent *e)
@@ -313,17 +316,20 @@ bool MyContents::eventFilter(QObject *o, QEvent *e)
   if (type == QEvent::Move || type == QEvent::Resize || type == QEvent::Show || type == QEvent::Hide)
   {
     checkWidget(wid);
-    if (!timer)
-    {
-	  	QTimer::singleShot(50, this, SLOT(autoResize()));
-	  	timer = true;
-	  }
+		//checkAutoResizeLater();
 	}
 	
   return MyContainer::eventFilter(o, e);
 }
 
-
+void MyContents::checkAutoResizeLater()
+{
+	if (timer)
+		return;
+	
+	QTimer::singleShot(0, this, SLOT(autoResize()));
+	timer = true;	
+}
 
 
 /***************************************************************************

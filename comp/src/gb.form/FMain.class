@@ -1,2 +1,20 @@
 ' Gambas class file
 
+' Static Public Sub Main()
+'   
+'   Print Me.ShowModal()
+'   
+' End
+
+
+Public Sub TextBox1_Activate()
+
+  Balloon.Question("Got a problem ? I will try to solve you for free, because I am a good guy.", Last)
+
+End
+
+Public Sub TextBox1_KeyPress()
+
+  If Key.Code = Key.Escape Then Balloon.Hide
+
+End

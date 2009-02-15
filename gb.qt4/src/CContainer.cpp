@@ -74,6 +74,7 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
 	}
 }
 
+#if 0
 static void move_widget(QWidget *wid, int x, int y)
 {
 	if (wid->x() != x || wid->y() != y)
@@ -106,10 +107,12 @@ static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 		wid->setGeometry(x, y, w, h);
 	}
 }
+#endif
 
-static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
+static void resize_container(void *_object, QWidget *cont, int w, int h)
 {
-	resize_widget(wid, w + wid->width() - cont->width(), h + wid->height() - cont->height());
+	QWidget *wid = ((CWIDGET *)_object)->widget;
+	CWIDGET_resize(_object, w + wid->width() - cont->width(), h + wid->height() - cont->height());
 }
 
 
@@ -139,10 +142,10 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 #define GET_WIDGET_Y(_widget) (_widget)->y()
 #define GET_WIDGET_W(_widget) (_widget)->width()
 #define GET_WIDGET_H(_widget) (_widget)->height()
-#define MOVE_WIDGET(_widget, _x, _y) move_widget(_widget, x, y)
-#define RESIZE_WIDGET(_widget, _w, _h) resize_widget(_widget, w, h)
-#define RESIZE_CONTAINER(_widget, _cont, _w, _h) resize_container((_widget), (_cont), (_w), (_h))
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) move_resize_widget(_widget, _x, _y, _w, _h)
+#define MOVE_WIDGET(_object, _widget, _x, _y) CWIDGET_move((_object), (_x), (_y))
+#define RESIZE_WIDGET(_object, _widget, _w, _h) CWIDGET_resize((_object), (_w), (_h))
+#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) CWIDGET_move_resize((_object), (_x), (_y), (_w), (_h))
+#define RESIZE_CONTAINER(_object, _cont, _w, _h) resize_container((_object), (_cont), (_w), (_h))
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
 	QObjectList list = (_widget)->children(); \
@@ -167,36 +170,35 @@ static void resize_container(QWidget *wid, QWidget *cont, int w, int h)
 
 #define DESKTOP_SCALE MAIN_scale
 
-#if DEBUG_CONTAINER
 #define FUNCTION_NAME CCONTAINER_arrange_real
-#else
-#define FUNCTION_NAME CCONTAINER_arrange
-#endif
 
 #include "gb.form.arrangement.h"
 
-#if DEBUG_CONTAINER
 void CCONTAINER_arrange(void *_object)
 {
+	#if DEBUG_CONTAINER
 	static int level = 0;
 	
 	if (!level)
-	{
 		_count_move = _count_resize = _count_set_geom = 0;
-	}
-		
-	
 	level++;
-	CCONTAINER_arrange_real(_object);
-	level--;
+	#endif
 
+	CCONTAINER_arrange_real(_object);
+
+	QWidget *cont = GET_CONTAINER(_object);
+	if (cont->isA("MyContents"))
+		((MyContents *)cont)->afterArrange();
+
+	#if DEBUG_CONTAINER
+	level--;
 	if (!level)
 	{
 		if (_count_move || _count_resize || _count_set_geom)
 			qDebug("CCONTAINER_arrange: (%s %s): move = %d  resize = %d  setGeometry = %d", GB.GetClassName(THIS), THIS->widget.name, _count_move, _count_resize, _count_set_geom);
 	}
+	#endif
 }
-#endif
 
 static int max_w, max_h;
 
@@ -219,17 +221,21 @@ static void gms_move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 }
 
 #undef MOVE_WIDGET
-#define MOVE_WIDGET(_widget, _x, _y) gms_move_widget(_widget, _x, _y)
+#define MOVE_WIDGET(_object, _widget, _x, _y) gms_move_widget(_widget, _x, _y)
 #undef RESIZE_WIDGET
-#define RESIZE_WIDGET(_widget, _w, _h) (0)
+#define RESIZE_WIDGET(_object, _widget, _w, _h) (0)
 #undef MOVE_RESIZE_WIDGET
-#define MOVE_RESIZE_WIDGET(_widget, _x, _y, _w, _h) gms_move_resize_widget(_widget, _x, _y, _w, _h)
+#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) gms_move_resize_widget(_widget, _x, _y, _w, _h)
+#undef RAISE_BEFORE_ARRANGE_EVENT
+#define RAISE_BEFORE_ARRANGE_EVENT(_object) (0)
 #undef RAISE_ARRANGE_EVENT
 #define RAISE_ARRANGE_EVENT(_object) (0)
 #undef FUNCTION_NAME
 #define FUNCTION_NAME get_max_size
-#undef IS_WIDGET_VISIBLE
-#define IS_WIDGET_VISIBLE(_cont) (1)
+#undef RESIZE_CONTAINER
+#define RESIZE_CONTAINER(_object, _cont, _w, _h) (0)
+//#undef IS_WIDGET_VISIBLE
+//#define IS_WIDGET_VISIBLE(_cont) (1)
 
 #include "gb.form.arrangement.h"
 
@@ -292,13 +298,6 @@ MyContainer::MyContainer(QWidget *parent)
 {
 }
 
-
-void MyContainer::resizeEvent(QResizeEvent *e)
-{
-	//qDebug("MyContainer::resizeEvent %s %p", GB.GetClassName(CWidget::get(this)), CWidget::get(this));
-	QFrame::resizeEvent(e);
-	arrange_now(this);
-}
 
 void MyContainer::showEvent(QShowEvent *e)
 {

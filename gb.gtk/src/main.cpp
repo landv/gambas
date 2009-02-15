@@ -144,6 +144,7 @@ extern "C"
 		CTrayIconsDesc,
 		CWindowMenusDesc,
 		CWindowControlsDesc,
+		CWindowTypeDesc,
 		CWindowDesc,
 		CWindowsDesc,
 		CFormDesc,

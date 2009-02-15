@@ -348,78 +348,101 @@ static QWidget *get_widget_resize(void *_object)
 #define get_widget(_object) QWIDGET(_object)
 #define get_widget_resize(_object) QWIDGET(_object)
 
-static void move_widget(void *_object, int x, int y)
+void CWIDGET_move(void *_object, int x, int y)
 {
-	QWidget *wid = get_widget(THIS);
+  QWidget *wid = get_widget(THIS);
 
 	if (wid)
-		wid->move(x, y);
-
-	if (GB.Is(THIS, CLASS_Window))
 	{
-		((CWINDOW *)_object)->x = x;
-		((CWINDOW *)_object)->y = y;
+		if (x == wid->x() && y == wid->y())
+			return;
+
+  	wid->move(x, y);
 	}
-	
-	arrange_parent(THIS);
+
+  if (GB.Is(THIS, CLASS_Window))
+  {
+    ((CWINDOW *)_object)->x = x;
+    ((CWINDOW *)_object)->y = y;
+  }
+  
+  arrange_parent(THIS);
+}
+
+void CWIDGET_resize(void *_object, int w, int h)
+{
+  QWidget *wid = get_widget_resize(THIS);
+
+	if (wid)
+	{
+		if (w < 0 && h < 0)
+			return;
+
+		if (w < 0)
+			w = wid->width();
+
+		if (h < 0)
+			h = wid->height();
+
+		if (w == wid->width() && h == wid->height())
+			return;
+
+  	wid->resize(qMax(0, w), qMax(0, h));
+	}
+
+  if (GB.Is(THIS, CLASS_Window))
+  {
+    //qDebug("CWIDGET_resize: %d %d", w, h);
+
+    ((CWINDOW *)_object)->w = w;
+    ((CWINDOW *)_object)->h = h;
+    // menu bar height is ignored
+    //((CWINDOW *)_object)->container->resize(w, h);
+  }
+
+	if (GB.Is(THIS, CLASS_Container))
+		CCONTAINER_arrange(THIS);
+  arrange_parent(THIS);
 }
 
 
-static void resize_widget(void *_object, int w, int h)
+void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 {
-	QWidget *wid = get_widget_resize(THIS);
-
-	if (w < 0 && h < 0)
-		return;
-
-	if (w < 0)
-		w = wid->width();
-
-	if (h < 0)
-		h = wid->height();
+  QWidget *wid = get_widget(THIS);
 
 	if (wid)
-		wid->resize(qMax(0, w), qMax(0, h));
-
-	if (GB.Is(THIS, CLASS_Window))
 	{
-		//qDebug("resize_widget: %d %d", w, h);
+// 		if (wid->isA("QWorkspaceChild"))
+// 		{
+// 			CWIDGET_move(THIS, x, y);
+// 			CWIDGET_resize(THIS, w, h);
+// 			return;
+// 		}
 
-		((CWINDOW *)_object)->w = w;
-		((CWINDOW *)_object)->h = h;
-		// menu bar height is ignored
-		//((CWINDOW *)_object)->container->resize(w, h);
-	}
+		if (w < 0)
+			w = wid->width();
 
-	arrange_parent(THIS);
-}
+		if (h < 0)
+			h = wid->height();
 
-
-static void move_resize_widget(void *_object, int x, int y, int w, int h)
-{
-	QWidget *wid = get_widget(THIS);
-
-	if (w < 0)
-		w = wid->width();
-
-	if (h < 0)
-		h = wid->height();
-
-	if (wid)
+		if (x == wid->x() && y == wid->y() && w == wid->width() && h == wid->height())
+			return;
 		wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
-
-	if (GB.Is(THIS, CLASS_Window))
-	{
-		((CWINDOW *)_object)->x = x;
-		((CWINDOW *)_object)->y = y;
-		((CWINDOW *)_object)->w = w;
-		((CWINDOW *)_object)->h = h;
-		//((CWINDOW *)_object)->container->resize(w, h);
 	}
 
-	arrange_parent(THIS);
-}
+  if (GB.Is(THIS, CLASS_Window))
+  {
+    ((CWINDOW *)_object)->x = x;
+    ((CWINDOW *)_object)->y = y;
+    ((CWINDOW *)_object)->w = w;
+    ((CWINDOW *)_object)->h = h;
+    //((CWINDOW *)_object)->container->resize(w, h);
+  }
 
+	if (GB.Is(THIS, CLASS_Container))
+		CCONTAINER_arrange(THIS);
+  arrange_parent(THIS);
+}
 
 BEGIN_PROPERTY(CCONTROL_x)
 
@@ -427,7 +450,7 @@ BEGIN_PROPERTY(CCONTROL_x)
 		GB.ReturnInteger(COORD(x));
 	else
 	{
-		move_widget(_object, VPROP(GB_INTEGER), COORD(y));
+		CWIDGET_move(_object, VPROP(GB_INTEGER), COORD(y));
 		/*if (WIDGET->isWindow())
 			qDebug("X: %d ==> X = %d", PROPERTY(int), WIDGET->x());*/
 	}
@@ -447,7 +470,7 @@ BEGIN_PROPERTY(CCONTROL_y)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(COORD(y));
 	else
-		move_widget(_object, COORD(x), VPROP(GB_INTEGER));
+		CWIDGET_move(_object, COORD(x), VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -464,7 +487,7 @@ BEGIN_PROPERTY(CCONTROL_w)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(get_widget_resize(THIS)->width());
 	else
-		resize_widget(_object, VPROP(GB_INTEGER), -1);
+		CWIDGET_resize(_object, VPROP(GB_INTEGER), -1);
 
 END_PROPERTY
 
@@ -474,7 +497,7 @@ BEGIN_PROPERTY(CCONTROL_h)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(get_widget_resize(THIS)->height());
 	else
-		resize_widget(_object, -1, VPROP(GB_INTEGER));
+		CWIDGET_resize(_object, -1, VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -571,14 +594,14 @@ END_PROPERTY
 
 BEGIN_METHOD(CCONTROL_move, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	move_resize_widget(_object, VARG(x), VARG(y), VARGOPT(w, -1), VARGOPT(h, -1));
+	CWIDGET_move_resize(_object, VARG(x), VARG(y), VARGOPT(w, -1), VARGOPT(h, -1));
 
 END_METHOD
 
 
 BEGIN_METHOD(CCONTROL_resize, GB_INTEGER w; GB_INTEGER h)
 
-	resize_widget(_object, VARG(w), VARG(h));
+	CWIDGET_resize(_object, VARG(w), VARG(h));
 
 END_METHOD
 
@@ -592,7 +615,7 @@ BEGIN_METHOD(CCONTROL_move_scaled, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT 
 	w = (int)(MISSING(w) ? -1 : (VARG(w) * MAIN_scale));
 	h = (int)(MISSING(h) ? -1 : (VARG(h) * MAIN_scale));
 
-	move_resize_widget(_object, x, y, w, h);
+	CWIDGET_move_resize(_object, x, y, w, h);
 
 END_METHOD
 
@@ -604,7 +627,7 @@ BEGIN_METHOD(CCONTROL_resize_scaled, GB_FLOAT w; GB_FLOAT h)
 	w = (int)(VARG(w) * MAIN_scale);
 	h = (int)(VARG(h) * MAIN_scale);
 
-	resize_widget(_object, w , h);
+	CWIDGET_resize(_object, w , h);
 
 END_METHOD
 

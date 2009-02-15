@@ -373,10 +373,6 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
                     hCtrl.SetProperty("Resizable", False)
                 End Select
                 
-              Else If sProperty = "Type" Then
-              
-                If vValue = "Toolbar" Then vValue = "Utility"
-                
               Endif
             
             Endif

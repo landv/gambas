@@ -51,7 +51,6 @@ typedef
     CWIDGET widget;
     MyContents *container;
     CARRANGEMENT arrangement;
-    //unsigned locked : 1;
     }
   CSCROLLVIEW;
 
@@ -77,21 +76,18 @@ class MyContents : public MyContainer
   Q_OBJECT
 
 public:
-
   MyContents(MyScrollView *scrollview);
+	void checkAutoResizeLater();
+	void afterArrange();
   
 public slots:
-
   void autoResize(void);
 
 protected:
-
   void childEvent(QChildEvent *);
-
   bool eventFilter(QObject *, QEvent *);
 
 private:
-
   void findRightBottom(void);
   void checkWidget(QWidget *);
 
@@ -106,15 +102,12 @@ class CScrollView : public QObject
   Q_OBJECT
 
 public:
-
   static CScrollView manager;
 
 protected:
-
   bool eventFilter(QObject *, QEvent *);
 
 public slots:
-
   void scrolled(void);
 };
 
