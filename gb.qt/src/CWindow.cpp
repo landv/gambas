@@ -118,11 +118,15 @@ static void clear_mask(CWINDOW *_object)
   if (THIS->masked && THIS->picture)
   {
     WINDOW->clearMask();
-
+		#ifndef NO_X_WINDOW
     bool v = !WINDOW->isHidden() && WINDOW->isVisible();
-    WINDOW->setBorder(WINDOW->getBorder(), true);
     if (v)
-      WINDOW->show();
+		{
+			X11_window_remap(WINDOW->winId());
+			WINDOW->initProperties();
+			//WINDOW->setBorder(WINDOW->getBorder(), true);
+		}
+		#endif
   }
 }
 
@@ -1034,9 +1038,7 @@ BEGIN_PROPERTY(CWINDOW_stacking)
 	else
 	{
 		THIS->stacking = p = VPROP(GB_INTEGER);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_above, p == 1);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_stays_on_top, p == 1);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_below, p == 2);
+		WINDOW->initProperties();
 	}
 
 END_PROPERTY
@@ -1058,8 +1060,7 @@ BEGIN_PROPERTY(CWINDOW_top_only)
 	else
 	{
 		THIS->stacking = VPROP(GB_BOOLEAN) ? 1 : 0;
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_above, THIS->stacking == 1);
-		CWINDOW_change_property(WINDOW, X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
+		WINDOW->initProperties();
 	}
 	
 END_PROPERTY
@@ -1494,15 +1495,16 @@ void MyMainWindow::showEvent(QShowEvent *e)
 void MyMainWindow::initProperties()
 {
 	#ifndef NO_X_WINDOW
-		CWIDGET *_object = CWidget::get(this);
-	
-		if (!THIS->toplevel)
-			return;
-	
-		CWINDOW_change_property(this, X11_atom_net_wm_state_above, THIS->stacking == 1);
-		CWINDOW_change_property(this, X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
-		CWINDOW_change_property(this, X11_atom_net_wm_state_below, THIS->stacking == 2);
-		CWINDOW_change_property(this, X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
+	CWIDGET *_object = CWidget::get(this);
+
+	if (!THIS->toplevel)
+		return;
+
+	CWINDOW_change_property(this, X11_atom_net_wm_state_above, THIS->stacking == 1);
+	CWINDOW_change_property(this, X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
+	CWINDOW_change_property(this, X11_atom_net_wm_state_below, THIS->stacking == 2);
+	CWINDOW_change_property(this, X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
+	X11_set_window_decorated(winId(), border != BorderNone);
   #endif
 }
 

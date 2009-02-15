@@ -3,7 +3,7 @@
 PRIVATE picHour AS Image
 PRIVATE picMinute AS Image
 PRIVATE picSecond AS Image
-PRIVATE Clock AS Picture
+PRIVATE Clock AS Image
 PRIVATE Buffer AS Picture
 PRIVATE HE AS Integer
 PRIVATE WI AS Integer
@@ -22,14 +22,16 @@ PUBLIC SUB DrawTime()
   WI = Clock.Width
   HE = Clock.Height
 
-  hPict = Clock.Copy()
+  hPict = Clock.Picture
   Draw.Begin(hPict)
-    tmpImg = picHour.Rotate(- Hour(Now) * Pi(2 / 12))
-    Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
-    tmpImg = picMinute.Rotate(- Minute(Now) * Pi(2 / 60))
-    Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
-    hTemp = picSecond.Rotate(- Second(Now) * Pi(2 / 60)).Picture
-    Draw.Picture(hTemp, WI / 2 - hTemp.Width / 2, HE / 2 - hTemp.Height / 2)
+  tmpImg = picHour.Rotate(- Hour(Now) * Pi(2 / 12))
+  Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+  tmpImg = picMinute.Rotate(- Minute(Now) * Pi(2 / 60))
+  Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+  tmpImg = picSecond.Rotate(- Second(Now) * Pi(2 / 60))
+  hTemp = tmpImg.Picture
+  'Draw.Image(tmpImg, WI / 2 - tmpImg.Width / 2, HE / 2 - tmpImg.Height / 2)
+  Draw.Picture(hTemp, WI / 2 - hTemp.Width / 2, HE / 2 - hTemp.Height / 2)
   Draw.End
 
   ME.Picture = hPict
@@ -45,7 +47,7 @@ PRIVATE SUB SetClock(iClock AS Integer)
   DIM iColor AS Integer
   DIM iGray AS Integer
 
-  hImage = Image.Load("img/clock_bg_big" & iClock & ".png")
+  Clock = Image.Load("img/clock_bg_big" & iClock & ".png")
   
   ' hBuffer = NEW Image(hImage.Width + 2, hImage.Height + 2, TRUE)
   ' hBuffer.Draw(hImage, 1, 0)
@@ -65,7 +67,6 @@ PRIVATE SUB SetClock(iClock AS Integer)
   ' hBuffer.Draw(hImage, 1, 1)
   ' hImage = hBuffer
   
-  Clock = hImage.Picture
   DrawTime
   
   FOR EACH hMenu IN mnuPopup.Children
@@ -144,7 +145,7 @@ END
 PUBLIC SUB mnuShowWindow_Click()
 
   INC mnuShowWindow.Checked
-  'ME.Border = If(mnuShowWindow.Checked, Window.Fixed, Window.None)
+  'ME.Border = If(mnuShowWindow.Checked, Window.Resizable, Window.None)
   INC ME.Mask
   INC ME.SkipTaskbar
 

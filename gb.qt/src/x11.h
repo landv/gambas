@@ -88,6 +88,7 @@ PUBLIC void X11_window_set_desktop(Window window, bool visible, int desktop);
 PUBLIC int X11_window_get_desktop(Window window);
 PUBLIC int X11_get_current_desktop();
 void X11_set_window_decorated(Window window, bool decorated);
+void X11_window_remap(Window window);
 
 #ifdef __cplusplus
 }

@@ -351,7 +351,7 @@ BEGIN_PROPERTY ( CUDPSOCKET_TargetPort )
 
   if (READ_PROPERTY)
   {
-  	GB.ReturnInteger(THIS->sport);
+  	GB.ReturnInteger(THIS->tport);
 	return;
   }
 
