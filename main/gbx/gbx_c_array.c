@@ -740,7 +740,31 @@ IMPLEMENT_find(byte, GB_INTEGER)*/
 IMPLEMENT_find(long, GB_LONG)
 IMPLEMENT_find(float, GB_FLOAT)
 IMPLEMENT_find(date, GB_DATE)
-IMPLEMENT_find(object, GB_OBJECT)
+
+static int find_object(CARRAY *_object, void *value)
+{
+  int i;
+
+  for (i = 0; i < ARRAY_count(THIS->data); i++)
+  {
+    if (*((void **)get_data(THIS, i)) == value)
+      return i;
+  }
+
+	return (-1);
+}
+
+BEGIN_METHOD(CARRAY_object_find, GB_OBJECT value)
+
+  GB_ReturnInt(find_object(THIS, VARG(value)));
+
+END_METHOD
+
+BEGIN_METHOD(CARRAY_object_exist, GB_OBJECT value)
+
+  GB_ReturnBoolean(find_object(THIS, VARG(value)) >= 0);
+
+END_METHOD
 
 
 BEGIN_METHOD(CARRAY_string_find, GB_STRING value; GB_INTEGER mode)

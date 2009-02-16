@@ -318,6 +318,7 @@ void PRINT_object(FILE *where, VALUE *value)
 	char *key;
 	int len;
 	bool static_class;
+	int access;
 	
 	_where = where;
 	
@@ -369,17 +370,12 @@ void PRINT_object(FILE *where, VALUE *value)
 		
 	fprintf(_where, "%s ", class->name);
 	if (real_class) fprintf(_where, "%s", real_class->name);
-	
-	if (GB.Is(object, GB.FindClass("Array")))
-	{
-		fprintf(_where, " %d", GB.Array.Count(object));
-		return;
-	}
+	fputc(' ', _where);
 	
 	if (GB.Is(object, GB.FindClass("Collection")))
 	{
 		count = GB.Collection.Count(object);
-		fprintf(_where, " %d", count);
+		fprintf(_where, "C [%d]", count);
 		
 		GB_DEBUG.EnumCollection(object, NULL, NULL, NULL);
 		
@@ -395,12 +391,19 @@ void PRINT_object(FILE *where, VALUE *value)
 		return;
 	}
 	
+	access = GB_DEBUG.GetObjectAccessType(object, class, &count);
+	
+	//if (GB.Is(object, GB.FindClass("Array")))
+	if (access == GB_DEBUG_ACCESS_ARRAY)
+	{
+		fprintf(_where, "A [%d]", count);
+		return;
+	}
+	
 	if (!class->is_virtual && real_class)
 		class = real_class;
 	
-	count = GB_DEBUG.CanBeUsedLikeAnArray(object, class);
-	
-	fprintf(_where, " S:");
+	fprintf(_where, "O S:");
 	
 	index = 0;
 	

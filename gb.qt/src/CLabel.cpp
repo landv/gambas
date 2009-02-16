@@ -277,7 +277,8 @@ void MyLabel::calcMinimumHeight(bool adjust, bool noresize)
 		{
 			locked = true;
 			//qDebug("%p: resize(%d, %d)", this, w, h);
-			resize(w, h);
+			//resize(w, h);
+			CWIDGET_resize(ob, w, h);
 			locked = false;
 		}
 	}

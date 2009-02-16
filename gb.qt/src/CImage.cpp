@@ -238,6 +238,7 @@ BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smo
 
   CIMAGE *img;
   QImage *stretch;
+	//static int count = 0;
 
 	check_image(THIS);
 
@@ -249,6 +250,8 @@ BEGIN_METHOD(CIMAGE_stretch, GB_INTEGER width; GB_INTEGER height; GB_BOOLEAN smo
 	else
 	{
 		stretch = new QImage();
+		//count++;
+		//qDebug("CIMAGE_stretch: %d: %p: (%dx%d)->(%dx%d): %d", count, THIS, QIMAGE->width(), QIMAGE->height(), VARG(width), VARG(height), VARGOPT(smooth, TRUE) != 0);
 		if (VARGOPT(smooth, TRUE))
 			*stretch = QIMAGE->smoothScale(VARG(width), VARG(height));
 		else

@@ -65,13 +65,19 @@ static int get_type(const QMimeData *src)
 
 static QString get_format(const QMimeData *src, int i = 0, bool charset = false)
 {
-  QString format = src->formats().at(i);
-
-	if (!charset)
+	QStringList formats = src->formats();
+	QString format;
+	
+	if (i >= 0 && i < formats.count())
 	{
-		int pos = format.indexOf(';');
-		if (pos >= 0)
-			format = format.left(pos);
+		format = formats.at(i);
+
+		if (!charset)
+		{
+			int pos = format.indexOf(';');
+			if (pos >= 0)
+				format = format.left(pos);
+		}
 	}
 
   return format;

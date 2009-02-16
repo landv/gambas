@@ -631,6 +631,8 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 	FLOAT_RGB rgb_color;
 	FLOAT_RGB rgb_src;
 
+	//fprintf(stderr, "IMAGE_make_transparent: %d x %d / %d\n", img->width, img->height, img->format);
+
 	color = from_GB_COLOR(col, img->format);
 	rgb_color.b = BLUE(color) / 255.0;
 	rgb_color.g = GREEN(color) / 255.0;

@@ -110,6 +110,8 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
   Dim sSym As String
   Dim sVal As String
 
+  If Column = 0 Then gvwExpr.Data.Foreground = Color.Lighter(Color.Foreground)
+
   If $bArray Then 
   
     If Column = 0 Then 
@@ -278,25 +280,38 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
 
   $sClass = $aSym[0]
   $sRealClass = $aSym[1]
+  sType = $aSym[2]
   
-  $aSym.Remove(0, 2) ' Remove the class names
-
-  $bArray = Right($sClass, 2) = "[]"
-  'aInfoReturn.Add(bInfoArray)
-  $bCollection = $sClass = "Collection"
-  'aInfoReturn.Add(bInfoCollection)
+  $aSym.Remove(0, 3) ' Remove the class names and the data type
 
   $iRowStatic = -1
   $iRowDynamic = -1
+  
+  If sType = "C" Then
+
+    $bCollection = True
+    $bArray = False
+    nRow = Val(Mid$($aSym[0], 2, -1))
     
+  Else If sType = "A"
+    
+    $bCollection = False
+    $bArray = True
+    nRow = Val(Mid$($aSym[0], 2, -1))
+    
+  Else
+  
+    $bCollection = False
+    $bArray = False
+  
+  Endif
+
   If $bArray Then 
   
-    nRow = Val($aSym[0])
     $aSym = Null
 
   Else If $bCollection Then  
 
-    nRow = Val($aSym[0])  
     $aSym.Remove(0) ' Remove the count 
 
   Else 

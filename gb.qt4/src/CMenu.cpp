@@ -453,7 +453,7 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
 			
 		THIS->exec = FALSE;
-		MAIN_process_events();
+		//MAIN_process_events();
   }
 
 END_METHOD

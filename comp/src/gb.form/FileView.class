@@ -123,9 +123,9 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As picture
   hImage = Image.Load(sPath)
   If Not (hImage.Width = iSize And hImage.Height = iSize) Then 
     If hImage.Width > hImage.Height Then 
-      hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width, True)
+      hImage = hImage.Stretch(iSize, (iSize * hImage.Height) \ hImage.Width, False)
     Else
-      hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize, True)
+      hImage = hImage.Stretch((iSize * hImage.Width) \ hImage.Height, iSize, False)
     Endif
   Endif
   

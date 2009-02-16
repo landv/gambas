@@ -44,6 +44,13 @@ typedef
     }
   DEBUG_INFO;
 
+enum
+{
+	GB_DEBUG_ACCESS_NORMAL = 0,
+	GB_DEBUG_ACCESS_ARRAY = 1,
+	GB_DEBUG_ACCESS_COLLECTION = 2
+};
+	
 typedef
 	struct {
 		void *(*GetExec)(void);
@@ -58,7 +65,7 @@ typedef
 		void (*GetArrayValue)(GB_ARRAY array, int index, GB_VALUE *value);
 		int (*EnumCollection)(GB_COLLECTION col, GB_VARIANT *value, char **key, int *len);
 		void *(*GetNextSortedSymbol)(void *klass, int *index);
-		int (*CanBeUsedLikeAnArray)(void *object, CLASS *klass);
+		int (*GetObjectAccessType)(void *object, CLASS *klass, int *count);
 		}
 	GB_DEBUG_INTERFACE;
 

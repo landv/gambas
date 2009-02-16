@@ -226,16 +226,17 @@ __FOUND:
   return FALSE;
 }
 
-int DEBUG_can_be_used_like_an_array(void *object, CLASS *class)
+int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 {
 	CLASS_DESC *desc;
   char type;
   int index;
+	int access = GB_DEBUG_ACCESS_NORMAL;
 
 	//fprintf(stderr, "DEBUG_can_be_used_like_an_array: %p %s ?\n", object, class->name);
 
 	if (!object)
-		return 0;
+		goto __NORMAL;
 	
 	if (class == CLASS_Class || OBJECT_is_class(object))
 	{
@@ -248,37 +249,46 @@ int DEBUG_can_be_used_like_an_array(void *object, CLASS *class)
   if (index == NO_SYMBOL)
   {
   	//fprintf(stderr, "No _get method\n");
-    return 0;
+		goto __NORMAL;
   }
+
 	desc = class->table[index].desc;
-	if (desc->method.npmin != 1 || desc->method.npmax != 1 || *desc->method.signature != T_INTEGER)
+	if (desc->method.npmin != 1 || desc->method.npmax != 1)
 	{
   	//fprintf(stderr, "No _get(Arg AS Integer) method\n");
-		return 0;
+		goto __NORMAL;
 	}
+
+	if (*desc->method.signature == T_INTEGER)
+		access = GB_DEBUG_ACCESS_ARRAY;
+	//else if (*desc->method.signature == T_STRING)
+	//	access = GB_DEBUG_ACCESS_COLLECTION;
+	else
+		goto __NORMAL;
 	
 	index = CLASS_find_symbol(class, "Count");
 	if (index == NO_SYMBOL)
 	{
   	//fprintf(stderr, "No Count symbol\n");		
-		return 0;
+		goto __NORMAL;
 	}
 		
 	desc = class->table[index].desc;
 	type = CLASS_DESC_get_type(desc);
-	if (type != 'r' && type != 'R')
-	{
-  	//fprintf(stderr, "Count is not a read-only property\n");		
-		return 0;
-	}
 	
+	// The two only possible cases:
+	// A static read-only property, and object == NULL
+	// or a dynamic read-only property, and object != NULL
+	
+	if (!((type == 'r' && object) || (type == 'R' && !object)))
+		goto __NORMAL;
 	
   if (desc->property.native)
   {
     if (EXEC_call_native(desc->property.read, object, desc->property.type, 0))
     {
 	  	//fprintf(stderr, "Count has failed\n");
-    	return 0;
+			goto __NORMAL;
     }
   }
   else
@@ -299,7 +309,11 @@ int DEBUG_can_be_used_like_an_array(void *object, CLASS *class)
   }
 
 	VALUE_conv(&TEMP, GB_T_INTEGER);
-	return TEMP._integer.value;
+	*count = TEMP._integer.value;
+	return access;
+
+__NORMAL:
+	return GB_DEBUG_ACCESS_NORMAL;
 }
 
 

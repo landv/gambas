@@ -349,11 +349,14 @@ End
 Public Sub Form_Resize()
 
   Dim H As Integer
+  Dim HH As Integer
 
   If tabWorkspace.Visible Then
 
     If $bLogo Then picLogo.Hide
     
+    HH = Me.ClientH
+      
     If tabWorkspace.Orientation = Align.Top Then
     
       H = tabWorkspace.ClientY - 2
@@ -366,23 +369,24 @@ Public Sub Form_Resize()
       If $bButtonLeft Then
       
         btnTabClose.Move(0, 1)
-        tabWorkspace.Move(H, 0, Me.ClientW - H, Me.ClientH)
+        tabWorkspace.Move(H, 0, Me.ClientW - H, HH)
         
       Else
       
         btnTabClose.Move(Me.ClientW - H + 1, 1)
-        tabWorkspace.Move(0, 0, Me.ClientW - H, Me.ClientH)
+        tabWorkspace.Move(0, 0, Me.ClientW - H, HH)
+        'tabWorkspace.Move(0, 0, Me.ClientW - H, tabWorkspace.ClientY + 2)
         
       Endif
 
       With tabWorkspace
         If $bShowTitle Then
           panTitle.Move(.X, H, .W + btnTabClose.W, panTitle.H)
-          svwWorkspace.Move(0, panTitle.H + H, .W + H, .H - panTitle.H - H)
-          panWorkspace.Move(0, panTitle.H + H, .W + H, .H - panTitle.H - H)
+          svwWorkspace.Move(0, panTitle.H + H, .W + H, HH - panTitle.H - H)
+          panWorkspace.Move(0, panTitle.H + H, .W + H, HH - panTitle.H - H)
         Else 
-          svwWorkspace.Move(0, H, .W + H, .H - H)
-          panWorkspace.Move(0, H, .W + H, .H - H)
+          svwWorkspace.Move(0, H, .W + H, HH - H)
+          panWorkspace.Move(0, H, .W + H, HH - H)
         Endif 
       End With 
       
