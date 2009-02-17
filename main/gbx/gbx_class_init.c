@@ -155,6 +155,8 @@ void CLASS_init_native(void)
       *init->class = class;
   	class->quick_array = init->array;
   }
+	
+	CLASS_Observer->is_observer = TRUE;
 }
 
 

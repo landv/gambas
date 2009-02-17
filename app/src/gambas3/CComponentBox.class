@@ -25,6 +25,7 @@ Private $sKey As String
 Private $sInfo As String
 Private $hWatch As Observer
 Private $bAnim As Boolean
+Private $iLastW As Integer
 
 Private Sub AddInfo(aInfo As String[], sTitle As String)
 
@@ -75,7 +76,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   txtName.Padding = 2
   txtName.Text = hComp.Key
   txtName.Alignment = Align.TopNormal
-  txtName.AutoResize = True
+  txtName.Adjust 'AutoResize = True
   
   txtDesc = New TextLabel(panName)
   txtDesc.Expand = True
@@ -89,7 +90,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
     Case CComponent.STABLE_NOT_FINISHED
       txtDesc.Text &= " <b>(" & ("Not finished but stable") & ")</b>"
   End Select 
-  txtDesc.Adjust
+  'txtDesc.Adjust
   
   $hWatch = New Observer(Me) As "Watcher"
   
@@ -107,6 +108,8 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   
   Expanded_Write(False)
   $bAnim = True
+  
+  Watcher_Arrange
   
 End
 
@@ -237,7 +240,6 @@ Private Sub Expanded_Write(Value As Boolean)
   Endif
 
   If $bAnim Then  
-    Object.Lock($hWatch)
     While Abs(Me.Height - H) >= 2
       If Me.Height > H Then
         Me.Height -= 2
@@ -246,7 +248,6 @@ Private Sub Expanded_Write(Value As Boolean)
       Endif
       Wait
     Wend
-    Object.Unlock($hWatch)
   Endif
   
   Me.Height = H
@@ -255,7 +256,9 @@ End
 
 Public Sub Watcher_Arrange()
 
+  If txtDesc.W = $iLastW Then Return
   txtDesc.Adjust
+  $iLastW = txtDesc.W
   If panName.H <> txtDesc.H Then
     panName.H = txtDesc.H
     $bAnim = False

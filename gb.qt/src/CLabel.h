@@ -63,7 +63,7 @@ class MyLabel : public QLabel
 public:
 
   MyLabel(QWidget *parent);
-  void calcMinimumHeight(bool adjust = false, bool noresize = false);
+  void calcMinimumHeight(bool adjust = false);
   bool getAutoResize() { return autoResize; }
   void setAutoResize(bool a) { autoResize = a; calcMinimumHeight(); }
   virtual void setText(const QString &);

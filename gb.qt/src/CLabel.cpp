@@ -227,61 +227,46 @@ void MyLabel::setText(const QString &text)
   //qDebug("%s: %d", text.latin1(), isVisible());
 }
 
-void MyLabel::calcMinimumHeight(bool adjust, bool noresize)
+void MyLabel::calcMinimumHeight(bool adjust)
 {
 	void *ob = CWidget::get(this);
-	int w, h, nw, nh;
 
-	if (!adjust && (!autoResize || CWIDGET_test_flag(ob, WF_DESIGN) || text().length() <= 0))
+	if ((!autoResize && !adjust) || CWIDGET_test_flag(ob, WF_DESIGN) || text().length() <= 0)
+		return;
+	
+	//qDebug("calcMinimumHeight: %p %s", ob, ((CWIDGET *)ob)->name);
+	
+	int w, h, nw, nh;
+	int f = frameWidth();
+	QRect br;
+	
+	if (f > 0 && f < 4)
+		f = 4;
+
+	if (textFormat() == Qt::RichText)
 	{
-    setMinimumSize(0, 0);
-    setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+		QSimpleRichText rt(text(), font());
+		w = width() - f * 2;
+		
+		rt.setWidth(w);
+		nh = rt.height();
+		nw = adjust ? rt.widthUsed() : w;
 	}
 	else
 	{
-		int f = frameWidth();
-	  QRect br;
-	  
-		if (f > 0 && f < 4)
-			f = 4;
-
-	  if (textFormat() == Qt::RichText)
-	  {
-			QSimpleRichText rt(text(), font());
-			w = width() - f * 2;
-			
-			rt.setWidth(w);
-			nh = rt.height();
-			nw = adjust ? rt.widthUsed() : w;
-		}
-	  else
-	  {
-		  QFontMetrics fm = fontMetrics();
-  		br = fm.boundingRect(0, 0, QWIDGETSIZE_MAX, QWIDGETSIZE_MAX, alignment(), text());
-  		nw = br.width();
- 			nh = br.height();
-			if (alignment() & Qt::AlignVCenter && (nh + f * 2) < height())
-				nh = height() - f * 2;
-		}
-		
-		w = nw + f * 2;
-		h = nh + f * 2;
-		
-
-		//setMinimumSize(w, h);
-		//setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-		
-		//if (textFormat() != Qt::RichText && h < height())
-		//	h = height();
-		if (!noresize)
-		{
-			locked = true;
-			//qDebug("%p: resize(%d, %d)", this, w, h);
-			//resize(w, h);
-			CWIDGET_resize(ob, w, h);
-			locked = false;
-		}
+		QFontMetrics fm = fontMetrics();
+		br = fm.boundingRect(0, 0, QWIDGETSIZE_MAX, QWIDGETSIZE_MAX, alignment(), text());
+		nw = br.width();
+		nh = br.height();
+		if (alignment() & Qt::AlignVCenter && (nh + f * 2) < height())
+			nh = height() - f * 2;
 	}
+	
+	w = nw + f * 2;
+	h = nh + f * 2;
+	locked = true;
+	CWIDGET_resize(ob, w, h);
+	locked = false;
 }
 
 void MyLabel::frameChanged()
@@ -295,7 +280,7 @@ void MyLabel::resizeEvent(QResizeEvent *e)
 	QLabel::resizeEvent(e);
   
   if (autoResize && !locked && textFormat() == Qt::RichText && e->oldSize().width() != e->size().width())
-  	calcMinimumHeight(false, true);
+  	calcMinimumHeight();
   	
 	if ((alignment() & (AlignLeft|AlignTop) ) != (AlignLeft|AlignTop))
 	{

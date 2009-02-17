@@ -1,28 +1,26 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,76,69)
+  MoveScaled(0,2,69,69)
   Background = Color.TextBackground
   Foreground = Color.TextForeground
   Text = ("Welcome to Gambas 3")
   Icon = Picture["img/logo/new-logo-32.png"]
   Arrangement = Arrange.Vertical
   Spacing = True
-  Padding = 8
+  Margin = True
   { panBackground Panel
-    MoveScaled(1,1,61,18)
+    MoveScaled(1,1,64,19)
     Background = Color.SelectedBackground
     Foreground = Color.Background
-    Expand = True
     Arrangement = Arrange.Horizontal
-    Padding = 8
-    { VBox1 VBox
-      MoveScaled(1,1,43,16)
-      Background = &HAF5EFF&
+    Margin = True
+    { panLeft VBox
+      MoveScaled(1,2,44,16)
       Expand = True
       Spacing = True
       { lblGambas Label
-        MoveScaled(0,0,32,7)
+        MoveScaled(0,0,32,9)
         Font = Font["Bold,+10"]
         Foreground = Color.SelectedForeground
         AutoResize = True
@@ -30,7 +28,7 @@
         Alignment = Align.TopNormal
       }
       { lblVersion Label
-        MoveScaled(29,1,27,5)
+        MoveScaled(30,1,27,5)
         Font = Font["Bold,+6"]
         Background = Color.SelectedBackground
         Foreground = Color.SelectedForeground
@@ -49,23 +47,23 @@
         }
       }
       { lblMessage TextLabel
-        MoveScaled(1,11,38,5)
-        Font = Font["Bold,-1"]
+        MoveScaled(1,11,38,4)
+        Font = Font["Bold"]
         AutoResize = True
         Text = ("This program is published under the GNU General Public Licence.")
       }
     }
     { Panel1 Panel
-      MoveScaled(45,2,14,15)
+      MoveScaled(45,1,19,17)
       { imgGambas PictureBox
-        MoveScaled(0,-1,14,14)
+        MoveScaled(0,-1,18,18)
         Picture = Picture["img/logo/new-logo.png"]
         Stretch = True
       }
     }
   }
   { HBox1 HBox
-    MoveScaled(1,21,66,44)
+    MoveScaled(1,23,66,44)
     Expand = True
     { panButton Panel
       MoveScaled(1,5,35,19)

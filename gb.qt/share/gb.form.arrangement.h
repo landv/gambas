@@ -586,7 +586,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 	#endif
 
 	arr->locked = false;
-  //qDebug("%p: dirty = FALSE", THIS);
+
+	//qDebug("%p: dirty = FALSE", THIS);
   //arr->dirty = false;
 
   //qDebug("CCONTAINER_arrange: END %p", THIS);

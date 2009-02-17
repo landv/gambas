@@ -374,6 +374,13 @@ void OBJECT_lock(OBJECT *object, bool block)
     return;
 
   class = object->class;
+	
+	if (class->is_observer)
+	{
+		COBSERVER_lock((COBSERVER *)object, block);
+		return;
+	}
+	
   if (class->n_event == 0)
     return;
 
@@ -388,8 +395,18 @@ void OBJECT_lock(OBJECT *object, bool block)
 
 bool OBJECT_is_locked(OBJECT *object)
 {
-	if (!OBJECT_has_events(object))
-		return FALSE;
+  CLASS *class;
+
+  if (!object)
+    return FALSE;
+
+  class = object->class;
+	
+	if (class->is_observer)
+		return COBSERVER_is_locked((COBSERVER *)object);
+	
+  if (class->n_event == 0)
+    return FALSE;
 
 	return (((intptr_t)OBJECT_event(object)->parent & 1) != 0);
 }

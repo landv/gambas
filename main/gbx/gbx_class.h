@@ -250,7 +250,8 @@ typedef
 		unsigned global : 1;              //          If the class is in the global table
 		unsigned is_native : 1;           //          If the class is native (i.e. written in C/C++)
 		unsigned error : 1;               //          Loading or registering the class has failed
-		unsigned _reserved : 13;          //  24  36 
+		unsigned is_observer : 1;         //          This is the Observer class
+		unsigned _reserved : 12;          //  24  36 
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events

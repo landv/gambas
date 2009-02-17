@@ -11,7 +11,7 @@ Private btnQuit As CCoolButton
 Private $iRecent As Integer
 Private $aExample As String[]
 Private $bExample As Boolean
-Private $hPicture As Picture
+'Private $hPicture As Picture
 
 Private Const LIST_NONE As Integer = 0
 Private Const LIST_RECENT As Integer = 1
@@ -183,44 +183,6 @@ Public Sub Form_KeyPress()
 
 End
 
-Public Sub Form_Resize()
-
-  Dim hCtrl As Control
-  Dim W As Integer
-  Dim sMsg As String
-
-  'lblBackground.Width = ME.ClientW
-  'imgGambas.X = Max(lblGambas.X + lblGambas.W, ME.ClientW - 24 - imgGambas.Width)
-  'lblMessage.Width = ME.ClientW - panMessage.X * 2
-  'lblMessage.Move(8, lblMessage.Y, panBackground.W - 16, panBackground.H - lblMessage.Y - 8)
-  'panList.Resize(ME.ClientW - panList.X - 8, ME.ClientH - panList.Y - 8)
-  'panTitle.W = panBackground.W - 16
-  'lblMessage.Adjust
-  'panBackground.H = panTitle.H + 16
-  'panTitle.Move(8, 8, panTitle.W, panBackground.H - 16)
-
-  'sMsg = lblMessage.Text
-  'lblMessage.Text = ""
-  'lblMessage.Move(8, lblMessage.Y, panTitle.W - 16, 8)
-  'lblMessage.Text = sMsg
-
-  'imgGambas.Move(panBackground.W - imgGambas.W - 8, 0)
-  'lblList.Move(4, 4, panList.ClientW - 8, 16)
-  'svwExample.Move(4, lblList.Y + lblList.H + 4, panList.ClientW - 8, panList.ClientH - lblList.H - 12)
-  'WITH svwExample
-  '  svwRecent.Move(.X, .Y, .W, .H)
-  'END WITH
-
-'   W = ME.ClientW - 16
-'   btnNew.Resize(W, HEIGHT_BUTTON)
-'   btnOpen.Resize(W, HEIGHT_BUTTON)
-'   btnRecent.Resize(W, HEIGHT_BUTTON)
-'   btnExample.Resize(W, HEIGHT_BUTTON)
-'   btnQuit.Resize(W, HEIGHT_BUTTON)
-
-End
-
-
 Private Sub FillExample()
 
   Dim sLastDir As String
@@ -240,24 +202,26 @@ Private Sub FillExample()
 
   iHeight = Desktop.Scale * 4
 
-  If Not $hPicture Then 
-    hImage = New Image(16, iHeight)
-    'hImage.Fill(Color.SelectedBackground)
-    For Y = 0 To iHeight - 1
-      C = Color.SelectedBackground
-      C = Color.RGB(Color[C].Red, Color[C].Green, Color[C].Blue, Max(0, 320 * Y / iHeight - 64))
-      For X = 0 To 15
-        hImage[X, Y] = C
-        'hImage[X, iHeight - Y - 1] = C
-      Next 
-    Next
-    $hPicture = hImage.Picture
-  Endif
+  ' If Not $hPicture Then 
+  '   hImage = New Image(16, iHeight)
+  '   'hImage.Fill(Color.SelectedBackground)
+  '   For Y = 0 To iHeight - 1
+  '     C = Color.SelectedBackground
+  '     C = Color.RGB(Color[C].Red, Color[C].Green, Color[C].Blue, Max(0, 320 * Y / iHeight - 64))
+  '     For X = 0 To 15
+  '       hImage[X, Y] = C
+  '       'hImage[X, iHeight - Y - 1] = C
+  '     Next 
+  '   Next
+  '   $hPicture = hImage.Picture
+  ' Endif
 
   $aExample = Project.GetExamples()
 
   sLastDir = ""
   Y = 0
+
+  svwExample.Arrangement = Arrange.None
 
   For iInd = 0 To $aExample.Count - 1
     sPath = $aExample[iInd]
@@ -267,7 +231,7 @@ Private Sub FillExample()
       hDrawingArea = New DrawingArea(svwExample) As "dwgExample"
       'hLabel = NEW Label()
       With hDrawingArea
-        .Move(0, Y, 1024, iHeight)
+        .Move(0, Y, 64, iHeight)
         .Tag = Project.ExampleTitle[sDir]
         .Font = Font["Bold"]
         .Foreground = Color.SelectedBackground
@@ -279,6 +243,8 @@ Private Sub FillExample()
     Y = Y + 32
     hButton.Tag = Project.EXAMPLES_DIR &/ sPath
   Next
+
+  svwExample.Arrangement = Arrange.Vertical
 
   $bExample = True
 
@@ -353,7 +319,7 @@ Private Sub FillRecent()
   
   aList = Project.GetRecentFiles(chkSortRecent.Value)
   
-  svwRecent.Hide
+  svwRecent.Arrangement = Arrange.None
   
   For Each hChild In svwRecent.Children
     hChild.Delete
@@ -367,7 +333,7 @@ Private Sub FillRecent()
 
   If aList.Count = 0 Then btnRecent.Enabled = False
   
-  svwRecent.Show
+  svwRecent.Arrangement = Arrange.Vertical
   
   Dec Application.Busy
   
@@ -376,12 +342,6 @@ End
 Public Sub chkSortRecent_Click()
 
   FillRecent  
-
-End
-
-Public Sub panBackground_Arrange()
-
-  panBackground.H = lblMessage.ScreenY - panBackground.ScreenY + lblMessage.H + panBackground.Padding
 
 End
 
@@ -399,5 +359,11 @@ Public Sub lblWebsite_MouseUp()
     Desktop.Open(lblWebsite.Text)
   Endif
   
+End
+
+Public Sub Form_Resize()
+
+  panBackground.H = lblMessage.Y + lblMessage.H + Desktop.Scale * 2
+
 End
 

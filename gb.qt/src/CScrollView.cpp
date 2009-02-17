@@ -104,12 +104,14 @@ void MyContents::autoResize(void)
   int w, h;
   int ww, hh;
   bool cw, ch;
+	int oldw, oldh;
   bool locked;
   int i;
   
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
 	ww = hh = -1;
+	oldw = width(); oldh = height();
 
 	//qDebug("AutoResize: %s", THIS->widget.name);
 
@@ -193,7 +195,6 @@ void MyContents::autoResize(void)
 			{
 				//qDebug("AutoResize: %s: resize again: %d %d", THIS->widget.name, w, h);
 				resize(w, h);
-				
 				//THIS->arrangement.locked = locked;
 				//CCONTAINER_arrange(THIS);
 				//CCONTAINER_arrange(THIS);
@@ -205,8 +206,10 @@ void MyContents::autoResize(void)
 	}
 
 	THIS->arrangement.locked = locked;
-	//CCONTAINER_arrange(THIS);
 	timer = false;
+	
+	if (width() != oldw || height() != oldh)
+		CCONTAINER_arrange(THIS);
 }
 
 void MyContents::afterArrange()

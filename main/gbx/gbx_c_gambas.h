@@ -39,11 +39,15 @@ typedef
 		LIST list;
 		ushort *event;
 		void *object;
-		bool after;
+		unsigned after : 1;
+		unsigned locked : 1;
 	}
 	COBSERVER;
 
 void COBSERVER_attach(COBSERVER *this, void *parent, const char *name);
 void COBSERVER_detach(COBSERVER *this);
+
+#define COBSERVER_lock(_this, _lock) (((COBSERVER *)_this)->locked = (_lock))
+#define COBSERVER_is_locked(_this) (((COBSERVER *)_this)->locked)
 
 #endif

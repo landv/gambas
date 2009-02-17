@@ -521,7 +521,6 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
   va_list args;
   bool arg;
   COBSERVER *obs;
-  bool after = FALSE;
 
   /*MEMORY_check_ptr(object);*/
 
@@ -555,10 +554,7 @@ int GB_Raise(void *object, int event_id, int nparam, ...)
 			if (!parent)
 				continue;
 			if (obs->after)
-			{
-				after = TRUE;
 				continue;
-			}
 				
 			func_id = get_event_func_id(obs->event, event_id);
 			if (!func_id)

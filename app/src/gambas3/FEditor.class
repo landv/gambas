@@ -599,6 +599,8 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
     Endif
   Next
   
+  Editor.Begin
+  
   iLine = Editor.Lines.Count - 1
   iCol = Editor.Lines[iLine].Length
   If iCol Then
@@ -614,6 +616,8 @@ Private Function InsertFunction(sProc As String, sType As String, bPublic As Boo
   Else
     Editor.Insert("\n" & sStatic & sPublic & " SUB " & sProc & "(" & sSign & ")\n\n  \n\nEND\n", iLine, 0)
   Endif
+  
+  Editor.End
   
   Return iLine
   
