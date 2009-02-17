@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,50,46)
+  MoveScaled(0,0,50,50)
   Text = ("Paste special")
   Icon = Picture["icon:/small/paste"]
   Resizable = False
@@ -11,7 +11,7 @@
     MoveScaled(1,5,48,17)
   }
   { Panel2 Panel
-    MoveScaled(1,23,48,16)
+    MoveScaled(1,23,48,20)
     Arrangement = Arrange.Vertical
     { radPasteNormal RadioButton
       MoveScaled(0,0,40,4)
@@ -20,7 +20,7 @@
     }
     { radPasteComment RadioButton
       MoveScaled(0,4,40,4)
-      Text = ("Paste with comments")
+      Text = ("Paste as comments")
     }
     { radPastePrint RadioButton
       MoveScaled(0,8,40,4)
@@ -28,11 +28,15 @@
     }
     { radPasteString RadioButton
       MoveScaled(0,12,40,4)
-      Text = ("Paste as quoted string")
+      Text = ("Paste as string")
+    }
+    { radPasteStringSplit RadioButton
+      MoveScaled(0,16,44,4)
+      Text = ("Paste as multi-line string")
     }
   }
   { HBox1 HBox
-    MoveScaled(1,41,48,4)
+    MoveScaled(1,45,48,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(1,0,4,4)

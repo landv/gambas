@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(4,12,130,80)
+  MoveScaled(4,12,147,80)
   Background = Color.Background
   Text = ("")
   Persistent = True
@@ -187,7 +187,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,129,4)
+    MoveScaled(0,0,144,4)
     Key = "editor"
     Text = ("Editor")
     { btnSave ToolButton mnuSave
@@ -241,10 +241,36 @@
       Text = ("")
       Picture = Picture["icon:/small/paste"]
     }
+    { btnPasteAsString ToolButton
+      MoveScaled(24,0,5,4)
+      Visible = False
+      ToolTip = ("Paste")
+      Action = ".paste-string"
+      AutoResize = True
+      Text = ("Paste as string")
+      Picture = Picture["icon:/small/paste"]
+    }
+    { btnPasteAsStringSplit ToolButton
+      MoveScaled(30,0,5,4)
+      Visible = False
+      ToolTip = ("Paste")
+      Action = ".paste-string-split"
+      AutoResize = True
+      Text = ("Paste as multi-line string")
+      Picture = Picture["icon:/small/paste"]
+    }
+    { btnPasteAsComment ToolButton
+      MoveScaled(35,0,5,4)
+      Visible = False
+      ToolTip = ("Paste")
+      Action = ".paste-comment"
+      AutoResize = True
+      Text = ("Paste as comments")
+      Picture = Picture["icon:/small/paste"]
+    }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(24,0,4,4)
-      Visible = False
+      MoveScaled(40,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Text = ("")
@@ -252,15 +278,14 @@
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(28,0,4,4)
-      Visible = False
+      MoveScaled(44,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Text = ("")
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(32,0,4,4)
+      MoveScaled(48,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
@@ -268,7 +293,7 @@
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(36,0,4,4)
+      MoveScaled(52,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -277,7 +302,7 @@
     }
     { btnComment ToolButton mnuComment
       Name = "btnComment"
-      MoveScaled(40,0,4,4)
+      MoveScaled(56,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
       Text = ("")
@@ -285,7 +310,7 @@
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
-      MoveScaled(44,0,4,4)
+      MoveScaled(60,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
       Text = ("")
@@ -293,7 +318,7 @@
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(48,0,4,4)
+      MoveScaled(64,0,4,4)
       ToolTip = ("No split")
       Action = ".view-nosplit"
       Text = ("")
@@ -301,7 +326,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(52,0,4,4)
+      MoveScaled(68,0,4,4)
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
       Text = ("")
@@ -309,17 +334,17 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(56,0,4,4)
+      MoveScaled(72,0,4,4)
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Text = ("")
       Picture = Picture["img/16/v-split.png"]
     }
     { Separator2 Separator
-      MoveScaled(60,0,1,4)
+      MoveScaled(76,0,1,4)
     }
     { cmbProc ComboBox
-      MoveScaled(62,0,36,4)
+      MoveScaled(78,0,36,4)
       ToolTip = ("Function browser")
       Action = ".proc"
       Text = ("")
@@ -327,7 +352,7 @@
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(101,0,4,4)
+      MoveScaled(115,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
@@ -336,7 +361,7 @@
     }
     { btnLastPosition ToolButton mnuLastPosition
       Name = "btnLastPosition"
-      MoveScaled(105,0,4,4)
+      MoveScaled(119,0,4,4)
       Visible = False
       ToolTip = ("Go back")
       Action = ".go-back"
@@ -344,7 +369,7 @@
       Picture = Picture["icon:/16/left"]
     }
     { HBox1 HBox
-      MoveScaled(111,0,13,4)
+      MoveScaled(125,0,13,4)
       Expand = True
       { Panel2 Panel
         MoveScaled(1,0,4,4)
@@ -441,6 +466,18 @@
     Text = "Paste"
     Picture = "icon:/small/paste"
   }
+  { Action paste-comment
+    Text = "Paste as comments"
+    Picture = "icon:/small/paste"
+  }
+  { Action paste-string
+    Text = "Paste as string"
+    Picture = "icon:/small/paste"
+  }
+  { Action paste-string-split
+    Text = "Paste as multi-line string"
+    Picture = "icon:/small/paste"
+  }
   { Action proc
     Text = "Function browser"
     Picture = "$ComboBox"
@@ -518,7 +555,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,code-form,cut,copy,paste,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
-    Default = "save,reload,code-form,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,|,proc,$HBox1"
+    List = "save,reload,code-form,cut,copy,paste,paste-string,paste-string-split,paste-comment,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
+    Default = "save,reload,code-form,undo,redo,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,|,proc,$HBox1"
   }
 }

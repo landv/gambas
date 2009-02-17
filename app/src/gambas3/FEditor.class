@@ -1268,7 +1268,6 @@ End
 
 Public Sub mnuPasteSpecial_Click()
 
-  If Clipboard.Type = Clipboard.None Then Return
   FPasteSpecial.Run(Editor)
   
 End
@@ -2715,3 +2714,21 @@ Public Sub mnuStartup_Click()
   
 End
 
+
+Public Sub btnPasteAsString_Click()
+
+  FPasteSpecial.Run(Editor, FPasteSpecial.MODE_STRING)
+
+End
+
+Public Sub btnPasteAsStringSplit_Click()
+
+  FPasteSpecial.Run(Editor, FPasteSpecial.MODE_STRING_SPLIT)
+
+End
+
+Public Sub btnPasteAsComment_Click()
+
+  FPasteSpecial.Run(Editor, FPasteSpecial.MODE_COMMENT)  
+
+End

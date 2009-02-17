@@ -2,13 +2,39 @@
 
 Static Private $aFormat As String[]
 
+Public Const MODE_NORMAL As Integer = 0
+Public Const MODE_STRING As Integer = 1
+Public Const MODE_STRING_SPLIT As Integer = 2
+Public Const MODE_COMMENT As Integer = 3
+
 Private $hEditor As Editor
+Private $iMode As Integer
 
+Public Sub Run(hEditor As Editor, Optional iMode As Integer = MODE_NORMAL) As Boolean
 
-
-Public Sub Run(hEditor As Editor) As Boolean
+  Dim sFormat As String
+  
+  If Clipboard.Type = Clipboard.None Then Return True
 
   $hEditor = hEditor
+  $iMode = iMode
+  
+  LoadFormats()
+  If $aFormat.Count = 0 Then Return True
+  
+  If $aFormat.Count = 1 And If iMode Then
+    sFormat = Clipboard.Paste($aFormat[0])
+    Select Case iMode
+      Case MODE_STRING
+        $hEditor.Insert(Quote(sFormat))
+      Case MODE_STRING_SPLIT
+        PasteStringSplit(sFormat)
+      Case MODE_COMMENT
+        PasteComment(sFormat)
+    End Select
+     Return
+  Endif
+  
   Return Not Me.ShowModal()
 
 End
@@ -30,6 +56,8 @@ Public Sub btnOK_Click()
     PasteComment(sFormat)
   Else If radPasteString.Value Then 
     $hEditor.Insert(Quote(sFormat))
+  Else If radPasteStringSplit.Value Then 
+    PasteStringSplit(sFormat)
   Endif
 
   Me.Close(True)
@@ -46,9 +74,8 @@ Public Sub btnCancel_Click()
 
 End
 
-
-Public Sub Form_Open()
-
+Private Sub LoadFormats()
+  
   Dim aFormat As String[]
   Dim iInd, iPos As Integer
   
@@ -69,7 +96,17 @@ Public Sub Form_Open()
     Endif
   Loop
 
-  $aFormat = aFormat.Copy()
+  $aFormat = aFormat
+  
+End
+
+
+Public Sub Form_Open()
+
+  Dim aFormat As String[]
+  Dim iInd As Integer
+  
+  aFormat = $aFormat.Copy()
 
   For iInd = 0 To aFormat.Max
     aFormat[iInd] = MMime.GetName(aFormat[iInd])
@@ -77,6 +114,15 @@ Public Sub Form_Open()
 
   lstFormat.List = aFormat
   lstFormat.Index = 0
+  
+  Select Case $iMode
+    Case MODE_STRING
+      radPasteString.Value = True
+    Case MODE_STRING_SPLIT
+      radPasteStringSplit.Value = True
+    Case MODE_COMMENT   
+      radPasteComment.Value = True
+  End Select
 
 End
 
@@ -127,3 +173,26 @@ Public Sub PasteComment(sText As String)
   
 End
 
+Public Sub PasteStringSplit(sText As String)
+  
+  Dim sLine As String
+  Dim sIndent As String
+  Dim bNext As Boolean
+
+  sLine = $hEditor.Lines[$hEditor.Line].Text
+  sIndent = Space$(Len(sLine) - Len(LTrim(sLine)))
+
+  $hEditor.Begin
+  '$hEditor.Goto($hEditor.Line, 0)
+  
+  For Each sText In Split(sText, "\n")
+    If bNext Then
+      $hEditor.Insert("\n" & sIndent & "  " & Quote(sText))
+    Else
+      $hEditor.Insert(Quote(sText))
+      bNext = True
+    Endif
+  Next
+  $hEditor.End
+  
+End

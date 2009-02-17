@@ -283,6 +283,7 @@ static void send_event(QT_WIDGET *ob)
   		
   GB.Raise(ob, EVENT_Resize, 0);
   ((MySplitter *)ob->widget)->_event = false;
+	GB.Unref(POINTER(&ob));
 }
 
 bool MySplitter::eventFilter(QObject *o, QEvent *e)
@@ -310,7 +311,9 @@ bool MySplitter::eventFilter(QObject *o, QEvent *e)
   else if (e->type() == QEvent::Resize && !_event)
   {
     _event = true;
-    GB.Post((void (*)())send_event, (intptr_t)CWidget::get(this));
+		void *_object = CWidget::get(this);
+		GB.Ref(THIS);
+    GB.Post((void (*)())send_event, (intptr_t)THIS);
   }
 
   return QObject::eventFilter(o, e);
