@@ -240,8 +240,11 @@ static bool emit_open_event(void *_object)
 	
 	if (!THIS->shown)
 	{
-		THIS->minw = THIS->w;
-		THIS->minh = THIS->h;
+		if (!THIS->minw && !THIS->minh)
+		{
+			THIS->minw = THIS->w;
+			THIS->minh = THIS->h;
+		}
 		//qDebug("emit_open_event");
 		THIS->opening = true;
 		GB.Raise(THIS, EVENT_Open, 0);
@@ -2009,7 +2012,8 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
 	{
 		THIS->w = THIS->container->width();
 		THIS->h = THIS->container->height();
-		//qDebug("THIS->w = %d  THIS->h = %d", THIS->w, THIS->h);
+		if (isTopLevel())
+			CCONTAINER_arrange(THIS);
 	}
 
   #ifndef NO_X_WINDOW
