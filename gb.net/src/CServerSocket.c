@@ -547,7 +547,7 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 
  cli_obj->stream.desc=&SocketStream;
  cli_obj->stream._free[0]=(long)cli_obj;
- GB.Watch (cli_obj->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(long)cli_obj);
+ GB.Watch (cli_obj->Socket, GB_WATCH_READ, (void *)CSocket_CallBack,(long)cli_obj);
 
  CServerSocket_NewChild(THIS,cli_obj);
 
