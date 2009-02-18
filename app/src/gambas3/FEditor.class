@@ -103,10 +103,10 @@ Public Sub _new(sPath As String)
   DrawTitle
   UpdateMenu
 
+  btnForm.Visible = Project.ExistForm(Me.Name)
+  
   $bDoNotSavePosition = True
   
-  btnForm.Visible = Project.ExistForm(Me.Name)
-
 End
 
 Public Sub Refresh()
@@ -2732,3 +2732,4 @@ Public Sub btnPasteAsComment_Click()
   FPasteSpecial.Run(Editor, FPasteSpecial.MODE_COMMENT)  
 
 End
+

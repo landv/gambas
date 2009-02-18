@@ -238,13 +238,14 @@
       Visible = False
       ToolTip = ("Paste")
       Action = ".paste"
-      Text = ("")
+      AutoResize = True
+      Text = ("Paste")
       Picture = Picture["icon:/small/paste"]
     }
     { btnPasteAsString ToolButton
       MoveScaled(24,0,5,4)
       Visible = False
-      ToolTip = ("Paste")
+      ToolTip = ("Paste as string")
       Action = ".paste-string"
       AutoResize = True
       Text = ("Paste as string")
@@ -253,7 +254,7 @@
     { btnPasteAsStringSplit ToolButton
       MoveScaled(30,0,5,4)
       Visible = False
-      ToolTip = ("Paste")
+      ToolTip = ("Paste as multi-line string")
       Action = ".paste-string-split"
       AutoResize = True
       Text = ("Paste as multi-line string")
@@ -262,7 +263,7 @@
     { btnPasteAsComment ToolButton
       MoveScaled(35,0,5,4)
       Visible = False
-      ToolTip = ("Paste")
+      ToolTip = ("Paste as comments")
       Action = ".paste-comment"
       AutoResize = True
       Text = ("Paste as comments")

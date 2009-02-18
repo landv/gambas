@@ -23,7 +23,7 @@ Private $bPressed As Boolean
 Private $sDropAction As String
 Private $iIconSize As Integer
 
-Private $bInit As Boolean
+Private $bOpened As Boolean
 
 Private Const $bShowHandle As Boolean = True
 Private $iHandleSize As Integer
@@ -411,9 +411,8 @@ Private Sub InitToolbar()
   
   For Each hCtrl In aReparent
     hCtrl.Reparent(panHide)
+    hCtrl.Show
   Next
-  
-  $bInit = True
   
 End
 
@@ -441,7 +440,8 @@ Public Sub Form_Open()
   'Debug panToolBar.Children.Count
 
   If Not $bDesign Then
-    If Not $bInit Then InitToolbar
+    $bOpened = True
+    InitToolbar
     RegisterToolbar
     LoadConfig(True)
   Endif
@@ -836,6 +836,7 @@ Public Sub SetKey(sKey As String)
   
   UnregisterToolbar
   ToolbarKey = sKey
+  If $bOpened Then InitToolbar
   RegisterToolbar
   
 End
@@ -907,7 +908,6 @@ Private Sub ResizeControl(hCtrl As Control, iDim As Integer)
   Endif
   
 End
-
 
 Public Sub LoadConfig(Optional bInit As Boolean)
   
