@@ -1,6 +1,3 @@
-COMPONENT = gb.db.mysql
-include $(top_srcdir)/component.am
-
 INCLUDES = @MYSQL_INC@
 
 gblib_LTLIBRARIES = gb.db.mysql.la
