@@ -588,6 +588,11 @@ static void analyze(const char *comp, bool include)
 			unlink(path_info);
 			unlink(path_list);
 		}
+		else if (_verbose)
+		{
+			fprintf(stderr, "wrote %s\n", path_info);
+			fprintf(stderr, "wrote %s\n", path_list);
+		}
 
 		STR_free(path_info);
 		STR_free(path_list);
@@ -684,6 +689,8 @@ int main(int argc, char **argv)
 	#endif*/
 
 	save_fd = dup(STDOUT_FILENO);
+
+	_verbose = TRUE;
 
 	for(;;)
 	{
