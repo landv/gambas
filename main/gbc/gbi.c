@@ -380,6 +380,7 @@ static void analyze_include(char *include_list)
 	if (_verbose)
 		fprintf(stderr, "Including %s\n", include_list);
 	
+	nincludes = 0;
 	include = strtok(include_list, ",");
 	while (include && nincludes < 8)
 	{
@@ -690,7 +691,7 @@ int main(int argc, char **argv)
 
 	save_fd = dup(STDOUT_FILENO);
 
-	_verbose = TRUE;
+	//_verbose = TRUE;
 
 	for(;;)
 	{
