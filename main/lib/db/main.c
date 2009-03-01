@@ -427,7 +427,7 @@ char *q_steal(void)
 
 int q_length(void)
 {
-  return GB.StringLength(_query);
+  return GB.StringLength(_query) + _temp_len;
 }
 
 void DB_SetDebug(int debug)

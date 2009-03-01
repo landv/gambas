@@ -381,16 +381,6 @@ BEGIN_PROPERTY(CDRAWINGAREA_cached)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CDRAWINGAREA_track_mouse)
-
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->hasMouseTracking());
-  else
-    WIDGET->setMouseTracking(VPROP(GB_BOOLEAN));
-
-END_PROPERTY
-
-
 DECLARE_METHOD(CCONTROL_background);
 
 
@@ -459,7 +449,7 @@ GB_DESC CDrawingAreaDesc[] =
   GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
   GB_PROPERTY("Background", "i", CDRAWINGAREA_background),
   
-  GB_PROPERTY("Tracking", "b", CDRAWINGAREA_track_mouse),
+  //GB_PROPERTY("Tracking", "b", CDRAWINGAREA_track_mouse),
   GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
   GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
 

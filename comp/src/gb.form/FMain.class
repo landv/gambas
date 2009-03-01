@@ -18,3 +18,9 @@ Public Sub TextBox1_KeyPress()
   If Key.Code = Key.Escape Then Balloon.Hide
 
 End
+
+Public Sub Button1_Click()
+
+  Balloon.Question("Got a problem ? I will try to solve you for free, because I am a good guy." & String$(12, "Gambas already means Basic\n"), Last)
+
+End

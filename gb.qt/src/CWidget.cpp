@@ -1207,6 +1207,31 @@ BEGIN_PROPERTY(CCONTROL_drop)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CCONTROL_tracking)
+
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(THIS->flag.tracking);
+  else
+	{
+		if (VPROP(GB_BOOLEAN) != THIS->flag.tracking)
+		{
+			THIS->flag.tracking = VPROP(GB_BOOLEAN);
+			if (THIS->flag.tracking)
+			{
+				THIS->flag.old_tracking = WIDGET->hasMouseTracking();
+				WIDGET->setMouseTracking(true);
+			}
+			else
+			{
+				WIDGET->setMouseTracking(THIS->flag.old_tracking);
+			}
+		}
+	}
+	
+END_PROPERTY
+
+
+
 
 BEGIN_PROPERTY(CWIDGET_border_full)
 
@@ -2186,6 +2211,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("Design", "b", CCONTROL_design),
 	GB_PROPERTY("Name", "s", CCONTROL_name),
 	GB_PROPERTY("Tag", "v", CCONTROL_tag),
+  GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
 	GB_PROPERTY("Mouse", "i", CCONTROL_mouse),
 	GB_PROPERTY("Cursor", "Cursor", CCONTROL_cursor),
 	GB_PROPERTY("ToolTip", "s", CCONTROL_tooltip),

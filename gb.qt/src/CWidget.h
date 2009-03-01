@@ -50,7 +50,9 @@ typedef
     	unsigned ignore : 1;
     	unsigned notified : 1;
     	unsigned visible : 1;
-    	unsigned _reserved : 10;
+			unsigned tracking : 1;
+			unsigned old_tracking : 1;
+    	unsigned _reserved : 8;
     	} flag;
     GB_VARIANT_VALUE tag;
     char *tooltip;
