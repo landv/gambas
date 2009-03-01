@@ -258,8 +258,15 @@ static void borrow(CARRAY *_object, int start, int end)
 static void clear(CARRAY *_object)
 {
   release(THIS, 0, -1);
-  ARRAY_delete(&THIS->data);
-  ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(THIS->type), 8);
+	if (THIS->dim)
+	{
+		memset(THIS->data, 0, TYPE_sizeof_memory(THIS->type) * ARRAY_count(THIS->data));
+	}
+	else
+	{
+		ARRAY_delete(&THIS->data);
+		ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(THIS->type), 8);
+	}
 }
 
 
