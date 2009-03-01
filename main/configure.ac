@@ -98,9 +98,9 @@ dnl ---- Other options
 
 AC_ARG_ENABLE(
   preloading,
-  [  --enable-preloading            enable preloading (default: yes)],
+  [  --enable-preloading            enable preloading (default: no)],
   gambas_preloading=$enableval,
-  gambas_preloading=yes
+  gambas_preloading=no
 )
 
 if test "$SYSTEM" != "CYGWIN"; then
