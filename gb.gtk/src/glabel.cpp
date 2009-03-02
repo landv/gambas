@@ -176,7 +176,7 @@ void gLabel::updateLayout()
 	gt_add_layout_from_font(layout, font());
 }
 
-void gLabel::updateSize(bool noresize)
+void gLabel::updateSize(bool adjust, bool noresize)
 {
 	gint w, h;
 	int fw;
@@ -198,7 +198,7 @@ void gLabel::updateSize(bool noresize)
 		
 	pango_layout_set_width(layout, w);
 	
-	if (!autoresize || noresize)
+	if ((!autoresize && !adjust) || noresize)
 		return;
 		
 	pango_layout_get_pixel_size(layout, &w, &h);
@@ -210,7 +210,7 @@ void gLabel::updateSize(bool noresize)
 
 void gLabel::adjust()
 {
-	updateSize();
+	updateSize(true);
 }
 
 void gLabel::setAutoResize(bool vl)
@@ -316,6 +316,6 @@ void gLabel::resize(int w, int h)
 	bool update = markup && width() != w;
 	gControl::resize(w, h);
 	if (update)
-		updateSize(true);
+		updateSize(false, true);
 }
 

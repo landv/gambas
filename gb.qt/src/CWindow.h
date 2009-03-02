@@ -59,6 +59,7 @@ typedef
     int y;
     int w;
     int h;
+		int minw, minh;
     unsigned toplevel : 1;
     unsigned embedded : 1;
     unsigned xembed : 1;

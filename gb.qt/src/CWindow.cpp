@@ -208,6 +208,11 @@ static bool emit_open_event(void *_object)
 	
   if (!THIS->shown)
   {
+		if (!THIS->minw && !THIS->minh)
+		{
+			THIS->minw = THIS->w;
+			THIS->minh = THIS->h;
+		}
   	//qDebug("emit_open_event");
   	THIS->opening = true;
 		GB.Raise(THIS, EVENT_Open, 0);
@@ -1556,6 +1561,14 @@ void MyMainWindow::showActivate()
 
 		//qDebug("not visible! %d", windowState());
 
+		if (getTool() && border == BorderResizable)
+		{
+			setMinimumSize(THIS->minw, THIS->minh);
+    	setSizeGrip(true);
+		}
+		else
+			setSizeGrip(false);
+
 		if (windowState() & Qt::WindowMinimized)
 			showMinimized();
 		else if (windowState() & Qt::WindowFullScreen)
@@ -1630,13 +1643,11 @@ void MyMainWindow::showModal(void)
 
   if (border == BorderResizable)
   {
-  	if (!THIS->minsize)
-  	{
-			setMinimumSize(width(), height());
-			THIS->minsize = true;
-		}
+		setMinimumSize(THIS->minw, THIS->minh);
     setSizeGrip(true);
 	}
+	else
+		setSizeGrip(false);
 
 	THIS->enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
