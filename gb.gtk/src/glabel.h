@@ -31,7 +31,7 @@ public:
 	virtual void afterRefresh();
 
 //"Private"
-	void updateSize(bool noresize = false);
+	void updateSize(bool adjust = false, bool noresize = false);
 	void updateLayout();
 	PangoLayout *layout;
 	int align,lay_x,lay_y;
