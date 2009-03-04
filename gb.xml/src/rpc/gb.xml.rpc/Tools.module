@@ -28,7 +28,7 @@ PUBLIC FUNCTION Find(Xml AS XmlReader, Node AS String) AS Boolean
 
     END IF
 
-    IF Not Xml.Eof THEN Xml.Read()
+    IF NOT Xml.Eof THEN Xml.Read()
 
   LOOP
 
@@ -56,11 +56,11 @@ PUBLIC FUNCTION GetParam(Xml AS XmlReader) AS RpcAtom
   DIM sDate AS String
   DIM bAtom AS RpcAtom
 
-  IF Not (Xml.Node.Type = XmlReaderNodetype.Element And Xml.Node.Name = "value") THEN
+  IF NOT (Xml.Node.Type = XmlReaderNodetype.Element AND Xml.Node.Name = "value") THEN
     TRY Xml.Read()
   END IF
 
-  IF Not Find(Xml, "value") THEN RETURN NULL
+  IF NOT Find(Xml, "value") THEN RETURN NULL
 
   DO WHILE TRUE
     TRY Xml.Read()
@@ -82,25 +82,25 @@ PUBLIC FUNCTION GetParam(Xml AS XmlReader) AS RpcAtom
 
     CASE "i4"
       hAtom.Type = XmlRpc.xInteger
-      IF Not FindText(Xml) THEN RETURN NULL
+      IF NOT FindText(Xml) THEN RETURN NULL
       TRY hAtom.Data = CInt(Xml.Node.Value)
       IF ERROR THEN RETURN NULL
 
     CASE "int"
       hAtom.Type = XmlRpc.xInteger
-      IF Not FindText(Xml) THEN RETURN NULL
+      IF NOT FindText(Xml) THEN RETURN NULL
       TRY hAtom.Data = CInt(Xml.Node.Value)
       IF ERROR THEN RETURN NULL
 
     CASE "double"
       hAtom.Type = XmlRpc.xDouble
-      IF Not FindText(Xml) THEN RETURN NULL
+      IF NOT FindText(Xml) THEN RETURN NULL
       TRY hAtom.Data = CFloat(Xml.Node.Value)
       IF ERROR THEN RETURN NULL
 
     CASE "boolean"
       hAtom.Type = XmlRpc.xBoolean
-      IF Not FindText(Xml) THEN RETURN NULL
+      IF NOT FindText(Xml) THEN RETURN NULL
       IF Trim(Xml.Node.Value) = "0" THEN
         hAtom.Data = FALSE
       ELSE IF Trim(Xml.Node.Value) = "1" THEN
@@ -111,7 +111,7 @@ PUBLIC FUNCTION GetParam(Xml AS XmlReader) AS RpcAtom
 
     CASE "string"
       hAtom.Type = XmlRpc.xString
-      IF Not FindText(Xml) THEN
+      IF NOT FindText(Xml) THEN
         hAtom.Data = ""
       ELSE
         hAtom.Data = Xml.Node.Value
@@ -119,13 +119,13 @@ PUBLIC FUNCTION GetParam(Xml AS XmlReader) AS RpcAtom
 
     CASE "base64"
       hAtom.Type = XmlRpc.xBase64
-      IF Not FindText(Xml) THEN RETURN NULL
+      IF NOT FindText(Xml) THEN RETURN NULL
       TRY hAtom.Data = XmlReader.Decode(Xml.Node.Value, "base64")
       IF ERROR THEN RETURN NULL
 
     CASE "dateTime.iso8601"
       hAtom.Type = XmlRpc.xDate
-      IF Not FindText(Xml) THEN RETURN NULL
+      IF NOT FindText(Xml) THEN RETURN NULL
       sDate = Trim(Xml.Node.Value)
       IF Len(sDate) = 8 THEN
         TRY hDate = Date(Left(sDate, 4), Mid(sDate, 5, 2), Mid(sDate, 7, 2))
@@ -190,19 +190,19 @@ PUBLIC FUNCTION GetParam(Xml AS XmlReader) AS RpcAtom
           DO WHILE TRUE
             Xml.Read()
             IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN
-              IF bAtom = NULL Or Name = "" THEN RETURN NULL
-              hAtom.Data.Add(Name, hAtom.Data, hAtom.Type)
+              IF bAtom = NULL OR Name = "" THEN RETURN NULL
+              hAtom.Data.Add(Name, bAtom.Data, bAtom.Type)
               BREAK
             END IF
             IF Xml.Node.Type = XmlReaderNodeType.Element THEN
               SELECT CASE Xml.Node.Name
                 CASE "name"
-                  IF Not FindText(Xml) THEN RETURN NULL
+                  IF NOT FindText(Xml) THEN RETURN NULL
                   Name = Xml.Node.Value
                   ExitNode(Xml)
                 CASE "value"
                   bAtom = GetParam(Xml)
-                  IF Not bAtom THEN RETURN NULL
+                  IF NOT bAtom THEN RETURN NULL
                 DEFAULT
                   RETURN NULL
               END SELECT
@@ -283,7 +283,7 @@ PUBLIC FUNCTION AddValue(Xml AS XmlWriter, Data AS Variant, Type AS Integer) AS 
       Xml.StartElement("array")
       Xml.StartElement("data")
       FOR Bucle = 0 TO xArr.Count - 1
-        IF Not AddValue(Xml, xArr[Bucle], xArr.Datatype(Bucle)) THEN RETURN FALSE
+        IF NOT AddValue(Xml, xArr[Bucle], xArr.Datatype(Bucle)) THEN RETURN FALSE
       NEXT
       Xml.EndElement()
       Xml.EndElement()
@@ -295,7 +295,7 @@ PUBLIC FUNCTION AddValue(Xml AS XmlWriter, Data AS Variant, Type AS Integer) AS 
       FOR Bucle = 0 TO xStr.Count - 1
         Xml.StartElement("member")
         Xml.Element("name", xStr.Key(Bucle))
-        IF Not AddValue(Xml, xStr.Value(Bucle), xStr.Datatype(Bucle)) THEN RETURN FALSE
+        IF NOT AddValue(Xml, xStr.Value(Bucle), xStr.Datatype(Bucle)) THEN RETURN FALSE
         Xml.EndElement()
       NEXT
       Xml.EndElement()
