@@ -863,7 +863,7 @@ Public Sub ShowTool(bShow As Boolean)
   If Not bShow Then $bTool = Not panTool.Hidden
   
   Action["property"].Value = bShow
-  Action["control"].Value = bShow And $bTool
+  'Action["control"].Value = bShow And $bTool
   
 End
 

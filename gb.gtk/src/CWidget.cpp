@@ -785,6 +785,15 @@ BEGIN_PROPERTY(CWIDGET_drop)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CCONTROL_tracking)
+
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(CONTROL->isTracking());
+  else
+		CONTROL->setTracking(VPROP(GB_BOOLEAN));
+	
+END_PROPERTY
+
 
 BEGIN_PROPERTY(CCONTROL_name)
 
@@ -858,6 +867,7 @@ GB_DESC CWidgetDesc[] =
   GB_PROPERTY("Design", "b", CWIDGET_design),
   GB_PROPERTY("Name", "s", CCONTROL_name),
   GB_PROPERTY("Tag", "v", CWIDGET_tag),
+  GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
   GB_PROPERTY("Mouse", "i", CWIDGET_mouse), 
   GB_PROPERTY("Cursor", "Cursor", CWIDGET_cursor),
   GB_PROPERTY("ToolTip", "s", CWIDGET_tooltip),

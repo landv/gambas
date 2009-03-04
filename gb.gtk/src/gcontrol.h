@@ -70,7 +70,7 @@ public:
 	virtual void setWidth(int w);
 	void setPrevious(gControl *prev);
 	void setNext(gControl *next);
-	void setTracking(bool vl) { _tracking = vl; }
+	void setTracking(bool vl);
 	bool isTracking() { return _tracking; }
 
 	gColor background();
@@ -156,6 +156,7 @@ public:
 	unsigned _drag_get_data : 1;  // If we got information on the dragged data
 	unsigned _drag_enter : 1;     // If we have entered the control for drag & drop
 	unsigned _tracking : 1;       // If we are tracking mouse move even if no mouse button is pressed
+	unsigned _old_tracking : 1;   // real value when Tracking is false
 	
 	unsigned bg_set : 1;          // Have a private background
 	unsigned fg_set : 1;          // Have a private foreground

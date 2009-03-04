@@ -54,7 +54,6 @@ typedef
     CWIDGET widget;
     int row;
     int col;
-    bool autoresize;
     }
   CGRIDVIEW;
 
@@ -160,6 +159,9 @@ public:
   int findSelection(int row);
   
   void moveItem(int srow, int scol, int drow, int dcol) { _item->move(srow, scol, drow, dcol); }
+	
+	bool isAutoResize() const { return _autoresize; }
+	void setAutoResize(bool v) { _autoresize = v; updateLastColumn(); }
   
 public slots:
 
@@ -185,6 +187,7 @@ private:
   bool _no_col;
   int _last_col_width;
   bool _updating_last_column;
+	bool _autoresize;
 };
 
 class CGridView : public QObject

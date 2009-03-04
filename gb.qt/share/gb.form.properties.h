@@ -26,7 +26,7 @@
 #define CCONTROL_PROPERTIES \
   "X{Position},Y{Position},Width{Dimension},Height{Dimension},Visible=True,Enabled=True,Font{Font}," \
   "Background{Color}=-1,Foreground{Color}=-1," \
-  "Tag,Mouse{Mouse.Default;Blank;Arrow;Cross;Wait;Text;SizeAll;SizeH;SizeV;SizeN;SizeS;SizeW;" \
+  "Tag,Tracking,Mouse{Mouse.Default;Blank;Arrow;Cross;Wait;Text;SizeAll;SizeH;SizeV;SizeN;SizeS;SizeW;" \
   "SizeE;SizeNWSE;SizeNESW;SplitH;SplitV;Pointing}=Default,ToolTip,Drop,Expand,Ignore"
 #define CARRANGEMENT_PROPERTY "Arrangement{Arrange.None;Horizontal;Vertical;Row;Column;Fill}"
 #define CPADDING_PROPERTIES "Spacing,Margin,Padding{Range:0;63}"
@@ -54,8 +54,7 @@
 #define CCOLUMNVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,Header=True,Resizable=False,AutoResize=True,Border=True,ScrollBar{Scroll.*}=Both"
 #define CICONVIEW_PROPERTIES "*,Mode{Select.*}=Single,Sorted,Editable,GridWidth{Range:0;64}=0,Border=True,ScrollBar{Scroll.*}=Both"
 #define CSCROLLVIEW_PROPERTIES "*," CARRANGEMENT_PROPERTY "," CPADDING_PROPERTIES ",Border=True,ScrollBar{Scroll.*}=Both"
-#define CGRIDVIEW_PROPERTIES "*,Mode{Select.None;Single;Multiple}=None,Grid=True,Header{GridView.None;Vertical;Horizontal;Both}=None" \
-                             ",Scrollbar{Scroll.*}=Both,Border=True,Resizable=True"
+#define CGRIDVIEW_PROPERTIES "*,Mode{Select.None;Single;Multiple}=None,Grid=True,Header{GridView.None;Vertical;Horizontal;Both}=None,Scrollbar{Scroll.*}=Both,Border=True,AutoResize=True,Resizable=True"
 #define CPANEL_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.*}"
 #define CHBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES
 #define CVBOX_PROPERTIES CHBOX_PROPERTIES
