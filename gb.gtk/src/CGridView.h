@@ -44,7 +44,6 @@ extern GB_DESC CGridViewDesc[];
 #else
 
 #define THIS ((CGRIDVIEW *)_object)
-#define GRIDVIEW ((gGridView*)THIS->ob.widget)
 #define WIDGET ((gGridView*)THIS->ob.widget)
 
 #endif

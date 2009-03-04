@@ -228,13 +228,13 @@ BEGIN_PROPERTY(CGRIDVIEWITEM_picture)
 
 	if (READ_PROPERTY)
 	{
-		gPicture *pic = GRIDVIEW->itemPicture(THIS->row, THIS->col);
+		gPicture *pic = WIDGET->itemPicture(THIS->row, THIS->col);
 		GB.ReturnObject(pic ? pic->getTagValue() : 0);
 	}
 	else
 	{
 		CPICTURE *pict = (CPICTURE *)VPROP(GB_OBJECT);
-		GRIDVIEW->setItemPicture(THIS->row, THIS->col, pict ? pict->picture : 0);
+		WIDGET->setItemPicture(THIS->row, THIS->col, pict ? pict->picture : 0);
 	}
 
 END_PROPERTY
@@ -243,12 +243,12 @@ BEGIN_PROPERTY(CGRIDVIEWITEM_font)
 
 	if (READ_PROPERTY)
 	{
-		gFont *f = GRIDVIEW->itemFont(THIS->row, THIS->col);
+		gFont *f = WIDGET->itemFont(THIS->row, THIS->col);
 		if (!f)
 		{
-			CFONT *font = CFONT_create(GRIDVIEW->font()->copy());
-			GRIDVIEW->setItemFont(THIS->row, THIS->col, font->font);
-			f = GRIDVIEW->itemFont(THIS->row, THIS->col);
+			CFONT *font = CFONT_create(WIDGET->font()->copy());
+			WIDGET->setItemFont(THIS->row, THIS->col, font->font);
+			f = WIDGET->itemFont(THIS->row, THIS->col);
 		}
 		
 		GB.ReturnObject(f ? f->getTagValue() : 0);
@@ -257,7 +257,7 @@ BEGIN_PROPERTY(CGRIDVIEWITEM_font)
 	{
 		CFONT *font = (CFONT *)VPROP(GB_OBJECT);
 		//fprintf(stderr, "%s\n", font ? font->font->toString() : 0);
-		GRIDVIEW->setItemFont(THIS->row, THIS->col, font ? font->font : 0);
+		WIDGET->setItemFont(THIS->row, THIS->col, font ? font->font : 0);
 	}
 
 END_PROPERTY
@@ -265,9 +265,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEWITEM_alignment)
 
 	if (READ_PROPERTY) 
-		GB.ReturnInteger(GRIDVIEW->itemAlignment(THIS->row,THIS->col));
+		GB.ReturnInteger(WIDGET->itemAlignment(THIS->row,THIS->col));
 	else
-		GRIDVIEW->setItemAlignment( THIS->row, THIS->col,VPROP(GB_INTEGER) );
+		WIDGET->setItemAlignment( THIS->row, THIS->col,VPROP(GB_INTEGER) );
 
 END_PROPERTY
 
@@ -285,43 +285,43 @@ END_PROPERTY*/
 
 BEGIN_PROPERTY(CGRIDVIEWITEM_x)
 
-	GB.ReturnInteger(GRIDVIEW->itemX(THIS->col));
+	GB.ReturnInteger(WIDGET->itemX(THIS->col));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEWITEM_y)
 
-	GB.ReturnInteger(GRIDVIEW->itemY(THIS->row));
+	GB.ReturnInteger(WIDGET->itemY(THIS->row));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEWITEM_w)
 
-	GB.ReturnInteger(GRIDVIEW->itemW(THIS->col));
+	GB.ReturnInteger(WIDGET->itemW(THIS->col));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEWITEM_h)
 
-	GB.ReturnInteger(GRIDVIEW->itemH(THIS->row));
+	GB.ReturnInteger(WIDGET->itemH(THIS->row));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEWITEM_text)
 
 	if (READ_PROPERTY) 
-		GB.ReturnNewZeroString(GRIDVIEW->itemText(THIS->row,THIS->col)); 
+		GB.ReturnNewZeroString(WIDGET->itemText(THIS->row,THIS->col)); 
 	else
-		GRIDVIEW->setItemText(THIS->row, THIS->col, GB.ToZeroString(PROP(GB_STRING)));
+		WIDGET->setItemText(THIS->row, THIS->col, GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEWITEM_rich_text)
 
 	if (READ_PROPERTY) 
-		GB.ReturnNewZeroString(GRIDVIEW->itemRichText(THIS->row,THIS->col)); 
+		GB.ReturnNewZeroString(WIDGET->itemRichText(THIS->row,THIS->col)); 
 	else
-		GRIDVIEW->setItemRichText(THIS->row, THIS->col, GB.ToZeroString(PROP(GB_STRING)));
+		WIDGET->setItemRichText(THIS->row, THIS->col, GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
 
@@ -329,11 +329,11 @@ BEGIN_PROPERTY(CGRIDVIEWITEM_bg)
 
 	if (READ_PROPERTY) 
 	{ 
-		GB.ReturnInteger(GRIDVIEW->itemBg(THIS->row,THIS->col)); 
+		GB.ReturnInteger(WIDGET->itemBg(THIS->row,THIS->col)); 
 		return; 
 	}
 
-	GRIDVIEW->setItemBg( THIS->row, THIS->col,VPROP(GB_INTEGER) );
+	WIDGET->setItemBg( THIS->row, THIS->col,VPROP(GB_INTEGER) );
 
 END_PROPERTY
 
@@ -341,20 +341,20 @@ BEGIN_PROPERTY(CGRIDVIEWITEM_fg)
 
 	if (READ_PROPERTY) 
 	{ 
-		GB.ReturnInteger(GRIDVIEW->itemFg(THIS->row,THIS->col)); 
+		GB.ReturnInteger(WIDGET->itemFg(THIS->row,THIS->col)); 
 		return; 
 	}
 
-	GRIDVIEW->setItemFg( THIS->row, THIS->col,VPROP(GB_INTEGER) );
+	WIDGET->setItemFg( THIS->row, THIS->col,VPROP(GB_INTEGER) );
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEWITEM_padding)
 
 	if (READ_PROPERTY) 
-		GB.ReturnInteger(GRIDVIEW->itemPadding(THIS->row,THIS->col));
+		GB.ReturnInteger(WIDGET->itemPadding(THIS->row,THIS->col));
 	else
-		GRIDVIEW->setItemPadding( THIS->row, THIS->col,VPROP(GB_INTEGER) );
+		WIDGET->setItemPadding( THIS->row, THIS->col,VPROP(GB_INTEGER) );
 
 END_PROPERTY
 
@@ -362,29 +362,29 @@ END_PROPERTY
 
 	if (READ_PROPERTY) 
 	{ 
-		GB.ReturnBoolean(GRIDVIEW->itemSelected(THIS->row,THIS->col)); 
+		GB.ReturnBoolean(WIDGET->itemSelected(THIS->row,THIS->col)); 
 		return; 
 	}
 
-	GRIDVIEW->setItemSelected( THIS->row, THIS->col,VPROP(GB_BOOLEAN) );
+	WIDGET->setItemSelected( THIS->row, THIS->col,VPROP(GB_BOOLEAN) );
 
 END_PROPERTY*/
 
 BEGIN_METHOD_VOID(CGRIDVIEWITEM_clear)
 
-	GRIDVIEW->clearItem(THIS->row,THIS->col);
+	WIDGET->clearItem(THIS->row,THIS->col);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CGRIDVIEWITEM_refresh)
 
-	GRIDVIEW->queryUpdate(THIS->row,THIS->col);
+	WIDGET->queryUpdate(THIS->row,THIS->col);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CGRIDVIEWITEM_ensure_visible)
 
-	GRIDVIEW->ensureVisible(THIS->row,THIS->col);
+	WIDGET->ensureVisible(THIS->row,THIS->col);
 
 END_METHOD
 
@@ -396,7 +396,7 @@ END_METHOD
 
 BEGIN_METHOD(CGRIDVIEW_columns_get,GB_INTEGER Column;)
 
-	if ( (VARG(Column)<0) || (VARG(Column)>=GRIDVIEW->columnCount() ) )
+	if ( (VARG(Column)<0) || (VARG(Column)>=WIDGET->columnCount() ) )
 	{
 		GB.Error("Bad column index");
  		GB.ReturnNull();
@@ -414,38 +414,38 @@ BEGIN_PROPERTY(CGRIDVIEW_columns_resizable)
 
 	if (READ_PROPERTY) 
 	{ 
-		if (!GRIDVIEW->columnCount())
+		if (!WIDGET->columnCount())
 			GB.ReturnBoolean(true);
 		else
-			GB.ReturnBoolean(GRIDVIEW->columnResizable(0)); 
+			GB.ReturnBoolean(WIDGET->columnResizable(0)); 
 		return; 
 	}
 
-	for (bc=0; bc<GRIDVIEW->columnCount(); bc++)
-		GRIDVIEW->setColumnResizable(bc,VPROP(GB_BOOLEAN));
+	for (bc=0; bc<WIDGET->columnCount(); bc++)
+		WIDGET->setColumnResizable(bc,VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_columns_count)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->columnCount()); return; }
-	GRIDVIEW->setColumnCount(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->columnCount()); return; }
+	WIDGET->setColumnCount(VPROP(GB_INTEGER));
 
-	if ( (GRIDVIEW->rowCount()==0) || (GRIDVIEW->columnCount()==0) )
+	if ( (WIDGET->rowCount()==0) || (WIDGET->columnCount()==0) )
 	{
 		THIS->row=-1;
 		THIS->col=-1;
 		return;
 	}
 
-	if (GRIDVIEW->columnCount()>=THIS->col) THIS->col=GRIDVIEW->columnCount()-1;
+	if (WIDGET->columnCount()>=THIS->col) THIS->col=WIDGET->columnCount()-1;
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_column_width)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->columnWidth(THIS->col)); return; }	
-	GRIDVIEW->setColumnWidth(THIS->col,VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->columnWidth(THIS->col)); return; }	
+	WIDGET->setColumnWidth(THIS->col,VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -453,9 +453,9 @@ BEGIN_PROPERTY(CGRIDCOLS_width)
 
 	int bc;
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->columnWidth(0)); return; }	
-	for (bc=0;bc<GRIDVIEW->columnCount(); bc++)
-		GRIDVIEW->setColumnWidth(bc,VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->columnWidth(0)); return; }	
+	for (bc=0;bc<WIDGET->columnCount(); bc++)
+		WIDGET->setColumnWidth(bc,VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -463,12 +463,12 @@ BEGIN_PROPERTY(CGRIDVIEW_column_resizable)
 
 	if (READ_PROPERTY) 
 	{ 
-		GB.ReturnBoolean(GRIDVIEW->columnResizable(THIS->col)); 
+		GB.ReturnBoolean(WIDGET->columnResizable(THIS->col)); 
 		return;
 
 	}
 
-	GRIDVIEW->setColumnResizable(THIS->col,VPROP(GB_BOOLEAN));
+	WIDGET->setColumnResizable(THIS->col,VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -480,7 +480,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CGRIDCOL_refresh)
 
-	GRIDVIEW->queryUpdate(-1, THIS->col);
+	WIDGET->queryUpdate(-1, THIS->col);
 
 END_METHOD
 
@@ -493,23 +493,23 @@ END_METHOD
 
 BEGIN_PROPERTY(CGRIDVIEW_count)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->rowCount()); return; }
-	GRIDVIEW->setRowCount(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->rowCount()); return; }
+	WIDGET->setRowCount(VPROP(GB_INTEGER));
 	
-	if ( (GRIDVIEW->rowCount()==0) || (GRIDVIEW->columnCount()==0) )
+	if ( (WIDGET->rowCount()==0) || (WIDGET->columnCount()==0) )
 	{
 		THIS->row=-1;
 		THIS->col=-1;
 		return;
 	}
 
-	if (GRIDVIEW->rowCount()>=THIS->row) THIS->row=GRIDVIEW->rowCount()-1;
+	if (WIDGET->rowCount()>=THIS->row) THIS->row=WIDGET->rowCount()-1;
 
 END_PROPERTY
 
 BEGIN_METHOD(CGRIDVIEW_rows_get,GB_INTEGER Row;)
 
-	if ( (VARG(Row)<0) || (VARG(Row)>=GRIDVIEW->rowCount() ) )
+	if ( (VARG(Row)<0) || (VARG(Row)>=WIDGET->rowCount() ) )
 	{
 		GB.Error("Bad row index");
 		GB.ReturnNull();
@@ -525,9 +525,9 @@ BEGIN_PROPERTY(CGRIDROWS_height)
 
 	int bc;
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->rowHeight(0)); return; }	
-	for (bc=0;bc<GRIDVIEW->rowCount(); bc++)
-		GRIDVIEW->setRowHeight(bc,VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->rowHeight(0)); return; }	
+	for (bc=0;bc<WIDGET->rowCount(); bc++)
+		WIDGET->setRowHeight(bc,VPROP(GB_INTEGER));
 
 END_PROPERTY
 
@@ -565,7 +565,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CGRIDROWS_unselect)
 
-	GRIDVIEW->clearSelection();
+	WIDGET->clearSelection();
 
 END_METHOD
 
@@ -574,13 +574,13 @@ BEGIN_METHOD(CGRIDROWS_remove, GB_INTEGER start; GB_INTEGER length)
 	int start = VARG(start);
 	int length = VARGOPT(length, 1);
 
-	if (start < 0 || start >= GRIDVIEW->rowCount() || length <= 0 || (start + length) > GRIDVIEW->rowCount())
+	if (start < 0 || start >= WIDGET->rowCount() || length <= 0 || (start + length) > WIDGET->rowCount())
 	{
 		GB.Error(GB_ERR_ARG);
 		return;
 	}
 	
-	GRIDVIEW->removeRows(start, length);
+	WIDGET->removeRows(start, length);
 	
 END_METHOD
 
@@ -590,13 +590,13 @@ BEGIN_METHOD(CGRIDROWS_insert, GB_INTEGER start; GB_INTEGER length)
 	int start = VARG(start);
 	int length = VARGOPT(length, 1);
 
-	if (start < 0 || length <= 0 || start > GRIDVIEW->rowCount())
+	if (start < 0 || length <= 0 || start > WIDGET->rowCount())
 	{
 		GB.Error(GB_ERR_ARG);
 		return;
 	}
 	
-	GRIDVIEW->insertRows(start, length);
+	WIDGET->insertRows(start, length);
 
 END_METHOD
 
@@ -604,38 +604,38 @@ BEGIN_PROPERTY(CGRIDVIEW_rows_resizable)
 
 	int bc;
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(GRIDVIEW->rowResizable(0)); return; }	
-	for (bc=0;bc<GRIDVIEW->rowCount(); bc++)
-		GRIDVIEW->setRowResizable(bc,VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->rowResizable(0)); return; }	
+	for (bc=0;bc<WIDGET->rowCount(); bc++)
+		WIDGET->setRowResizable(bc,VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_row_height)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->rowHeight(THIS->row)); return; }	
-	GRIDVIEW->setRowHeight(THIS->row,VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->rowHeight(THIS->row)); return; }	
+	WIDGET->setRowHeight(THIS->row,VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_row_resizable)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(GRIDVIEW->rowResizable(THIS->row)); return; }	
-	GRIDVIEW->setRowResizable(THIS->row,VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->rowResizable(THIS->row)); return; }	
+	WIDGET->setRowResizable(THIS->row,VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_row_selected)
 
 	if (READ_PROPERTY) 
-		GB.ReturnBoolean(GRIDVIEW->rowSelected(THIS->row));
+		GB.ReturnBoolean(WIDGET->rowSelected(THIS->row));
 	else
-		GRIDVIEW->setRowSelected(THIS->row,VPROP(GB_BOOLEAN));
+		WIDGET->setRowSelected(THIS->row,VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_METHOD_VOID(CGRIDROW_refresh)
 
-	GRIDVIEW->queryUpdate(THIS->row, -1);
+	WIDGET->queryUpdate(THIS->row, -1);
 
 END_METHOD
 
@@ -647,59 +647,59 @@ END_METHOD
 
 BEGIN_PROPERTY(CGRIDVIEW_scrollbar)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->scrollBar()); return; }
-	GRIDVIEW->setScrollBar(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->scrollBar()); return; }
+	WIDGET->setScrollBar(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_scrollX)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->scrollX()); return; }
-	GRIDVIEW->setScrollX(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->scrollX()); return; }
+	WIDGET->setScrollX(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_scrollY)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->scrollY()); return; }
-	GRIDVIEW->setScrollY(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->scrollY()); return; }
+	WIDGET->setScrollY(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_grid)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(GRIDVIEW->drawGrid()); return; }
-	GRIDVIEW->setDrawGrid(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->drawGrid()); return; }
+	WIDGET->setDrawGrid(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_x)
 
-	GB.ReturnInteger(GRIDVIEW->visibleLeft());
+	GB.ReturnInteger(WIDGET->visibleLeft());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_y)
 
-	GB.ReturnInteger(GRIDVIEW->visibleTop());
+	GB.ReturnInteger(WIDGET->visibleTop());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_width)
 
-	GB.ReturnInteger(GRIDVIEW->visibleWidth());
+	GB.ReturnInteger(WIDGET->visibleWidth());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_client_height)
 
-	GB.ReturnInteger(GRIDVIEW->visibleHeight());
+	GB.ReturnInteger(WIDGET->visibleHeight());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_current)
 	
-	GRIDVIEW->getCursor(&THIS->row, &THIS->col);
+	WIDGET->getCursor(&THIS->row, &THIS->col);
 	
 	if (THIS->row < 0 || THIS->col < 0)
 		GB.ReturnNull(); 
@@ -715,17 +715,17 @@ BEGIN_METHOD(CGRIDVIEW_new, GB_OBJECT parent)
 	THIS->row=-1;
 	THIS->col=-1;
 
-	GRIDVIEW->setDataFunc((void*)raise_data, _object);
-	GRIDVIEW->onActivate = raise_activate;
-	GRIDVIEW->onClick = raise_click;
-	GRIDVIEW->onChange = raise_change;
-	GRIDVIEW->onSelect = raise_select;
-	GRIDVIEW->onRowClick = raise_row_click;
-	GRIDVIEW->onColumnClick = raise_col_click;
-	GRIDVIEW->onFooterClick = raise_foot_click;
-	GRIDVIEW->onScroll = raise_scroll;
-	GRIDVIEW->onRowResize = raise_row_resize;
-	GRIDVIEW->onColumnResize = raise_col_resize;
+	WIDGET->setDataFunc((void*)raise_data, _object);
+	WIDGET->onActivate = raise_activate;
+	WIDGET->onClick = raise_click;
+	WIDGET->onChange = raise_change;
+	WIDGET->onSelect = raise_select;
+	WIDGET->onRowClick = raise_row_click;
+	WIDGET->onColumnClick = raise_col_click;
+	WIDGET->onFooterClick = raise_foot_click;
+	WIDGET->onScroll = raise_scroll;
+	WIDGET->onRowResize = raise_row_resize;
+	WIDGET->onColumnResize = raise_col_resize;
 
 END_METHOD
 
@@ -733,8 +733,8 @@ BEGIN_METHOD(CGRIDVIEW_find, GB_INTEGER X; GB_INTEGER Y;)
 
 	int px,py;
 
-	px=GRIDVIEW->rowAt(VARG(Y));
-	py=GRIDVIEW->columnAt(VARG(X));
+	px=WIDGET->rowAt(VARG(Y));
+	py=WIDGET->columnAt(VARG(X));
 	
 	if ( (px==-1) || (py==-1) ) { GB.ReturnBoolean(true); return; }
 
@@ -747,13 +747,13 @@ END_METHOD
 
 BEGIN_METHOD(CGRIDVIEW_rowat, GB_INTEGER X;)
 
-	GB.ReturnInteger(GRIDVIEW->rowAt(VARG(X)));
+	GB.ReturnInteger(WIDGET->rowAt(VARG(X)));
 
 END_METHOD
 
 BEGIN_METHOD(CGRIDVIEW_colat, GB_INTEGER X;)
 
-	GB.ReturnInteger(GRIDVIEW->columnAt(VARG(X)));
+	GB.ReturnInteger(WIDGET->columnAt(VARG(X)));
 
 END_METHOD
 
@@ -761,22 +761,22 @@ BEGIN_METHOD_VOID(CGRIDVIEW_clear)
 
 	int bx,by;
 
-	for (bx=0; bx<GRIDVIEW->rowCount(); bx++)
-		for (by=0; by<GRIDVIEW->columnCount(); by++)
-			GRIDVIEW->setItemText(by,bx,"");
+	for (bx=0; bx<WIDGET->rowCount(); bx++)
+		for (by=0; by<WIDGET->columnCount(); by++)
+			WIDGET->setItemText(by,bx,"");
 
 END_METHOD
 
 BEGIN_METHOD(CGRIDVIEW_get, GB_INTEGER Key; GB_INTEGER Column;)
 
-	if ( (VARG(Key)<0) || (VARG(Key)>=GRIDVIEW->rowCount()) )
+	if ( (VARG(Key)<0) || (VARG(Key)>=WIDGET->rowCount()) )
 	{
 		GB.Error("Bad row index");
 		GB.ReturnNull();
 		return;
 	}
 
-	if ( (VARG(Column)<0) || (VARG(Column)>=GRIDVIEW->columnCount()) )
+	if ( (VARG(Column)<0) || (VARG(Column)>=WIDGET->columnCount()) )
 	{
 		GB.Error("Bad column index");
 		GB.ReturnNull();
@@ -824,8 +824,8 @@ END_METHOD
 
 BEGIN_PROPERTY(CGRIDVIEW_border)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(GRIDVIEW->getBorder()); return; }
-	GRIDVIEW->setBorder(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->getBorder()); return; }
+	WIDGET->setBorder(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -833,12 +833,21 @@ BEGIN_PROPERTY(CGRIDVIEW_mode)
 
 	int mode;
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->selectionMode()); return; }
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->selectionMode()); return; }
 
 	mode=VPROP(GB_INTEGER);
 	if (mode<0) mode=0;
 	if (mode>2) mode=2;
-	GRIDVIEW->setSelectionMode(mode);
+	WIDGET->setSelectionMode(mode);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CGRIDVIEW_autoresize)
+
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(WIDGET->isAutoResize());
+  else
+		WIDGET->setAutoResize(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -850,15 +859,15 @@ Headers, Footers, and Row Separators
 ****************************************************************************/
 BEGIN_PROPERTY(CGRIDVIEWHEADER_visible)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(GRIDVIEW->headersVisible()); return; }
-	GRIDVIEW->setHeadersVisible(VPROP(GB_INTEGER));
+	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->headersVisible()); return; }
+	WIDGET->setHeadersVisible(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CGRIDVIEW_footer)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(GRIDVIEW->footersVisible()); return; }
-	GRIDVIEW->setFootersVisible(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY) { GB.ReturnBoolean(WIDGET->footersVisible()); return; }
+	WIDGET->setFootersVisible(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -866,10 +875,10 @@ BEGIN_PROPERTY(CGRIDVIEW_column_headertext)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(GRIDVIEW->headerText(THIS->col),0);
+		GB.ReturnNewString(WIDGET->headerText(THIS->col),0);
 		return;
 	}
-	GRIDVIEW->setHeaderText(THIS->col,PROP(GB_STRING)->value.addr);
+	WIDGET->setHeaderText(THIS->col,PROP(GB_STRING)->value.addr);
 
 END_PROPERTY
 
@@ -877,10 +886,10 @@ BEGIN_PROPERTY(CGRIDVIEW_column_footer_text)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(GRIDVIEW->footerText(THIS->col),0);
+		GB.ReturnNewString(WIDGET->footerText(THIS->col),0);
 		return;
 	}
-	GRIDVIEW->setFooterText(THIS->col,PROP(GB_STRING)->value.addr);
+	WIDGET->setFooterText(THIS->col,PROP(GB_STRING)->value.addr);
 
 END_PROPERTY
 
@@ -888,10 +897,10 @@ BEGIN_PROPERTY(CGRIDVIEW_row_text)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnNewString(GRIDVIEW->rowText(THIS->row),0);
+		GB.ReturnNewString(WIDGET->rowText(THIS->row),0);
 		return;
 	}
-	GRIDVIEW->setRowText(THIS->row,PROP(GB_STRING)->value.addr);
+	WIDGET->setRowText(THIS->row,PROP(GB_STRING)->value.addr);
 
 END_PROPERTY
 
@@ -1034,6 +1043,7 @@ GB_DESC CGridViewDesc[] =
   GB_PROPERTY("Mode","i",CGRIDVIEW_mode),
   GB_PROPERTY("ScrollBar", "i", CGRIDVIEW_scrollbar),
   GB_PROPERTY("Grid", "b", CGRIDVIEW_grid),
+  GB_PROPERTY("AutoResize", "b", CGRIDVIEW_autoresize),
   GB_PROPERTY("Resizable","b",CGRIDVIEW_columns_resizable),
   GB_PROPERTY("Header", "i", CGRIDVIEWHEADER_visible),
   //GB_PROPERTY("Footer", "b", CGRIDVIEWFOOTER_visible),

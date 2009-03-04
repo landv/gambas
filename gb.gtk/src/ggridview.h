@@ -36,6 +36,8 @@ public:
 	void    setRowHeight(int index,int vl);
 	void    setDrawGrid(bool vl);
 	void    setBorder(bool vl) { setFrameBorder(vl ? BORDER_SUNKEN : BORDER_NONE); }
+	bool isAutoResize() const { return _autoresize; }
+	void setAutoResize(bool v);
 	
 	void clearSelection() { render->clearSelection(); }
 	void selectRows(int start, int end, bool value = true) { render->selectRows(start, end, value); }
@@ -138,6 +140,7 @@ public:
 	guint scroll_timer;
 	int mouse_pos;
 	bool _updating_last_column;
+	bool _autoresize;
 	
 	void          calculateBars();
 	void updateLateralWidth(int w);

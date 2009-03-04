@@ -751,6 +751,7 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	_last_col_width = 0;
 	scroll_timer = 0;
 	_updating_last_column = false;
+	_autoresize = true;
 
 	border=gtk_event_box_new();
 	widget=gtk_table_new(3,3,FALSE);
@@ -1908,7 +1909,7 @@ void gGridView::updateLastColumn()
 	if (n < 0)
 		return;
 		
-	if (_updating_last_column)
+	if (_updating_last_column || !_autoresize)
 		return;
 		
 	_updating_last_column = true;
@@ -1945,3 +1946,8 @@ void gGridView::stopScrollTimer()
 	}
 }
 
+void gGridView::setAutoResize(bool v)
+{
+	_autoresize = v;
+	updateLastColumn();
+}
