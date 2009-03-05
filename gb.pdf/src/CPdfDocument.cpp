@@ -157,81 +157,64 @@ static void aux_return_unicode_string(Unicode *uni, int32_t  len)
 	GB.FreeString(&ret);
 }
 
+static LinkDest *get_dest(LinkAction *act)
+{
+	switch (act->getKind())
+	{
+		case actionGoTo: return ((LinkGoTo*)act)->getDest();
+		case actionGoToR: return ((LinkGoToR*)act)->getDest();
+		default: return 0;
+	}
+}
+
 static uint32_t aux_get_page_from_action(void *_object, LinkAction *act)
 {
 	// TODO: NamedDest
 
 	Ref pref;	
+	LinkDest *dest = get_dest(act);
+	if (!dest)
+		return 0;
 
-	switch (act->getKind())
+	if (dest->isPageRef())
 	{
-		case actionGoTo:
-			if ( ((LinkGoTo*)act)->getDest()->isPageRef() )
-			{
-				pref=((LinkGoTo*)act)->getDest()->getPageRef();
-				return  THIS->doc->findPage (pref.num,pref.gen);
-			}
-			return ((LinkGoTo*)act)->getDest()->getPageNum();
-		
-		case actionGoToR:
-			if ( ((LinkGoToR*)act)->getDest()->isPageRef() )
-			{
-				pref=((LinkGoToR*)act)->getDest()->getPageRef();
-				return  THIS->doc->findPage (pref.num,pref.gen);
-			}
-			return ((LinkGoToR*)act)->getDest()->getPageNum();
-
-		default:
-			return 0;
+		if (dest->isPageRef() )
+		{
+			pref= dest->getPageRef();
+			return THIS->doc->findPage(pref.num, pref.gen);
+		}
+		else
+			return dest->getPageNum();
 	}
+	else
+		return 0;
 }
 
 static void aux_get_dimensions_from_action(LinkAction *act,int *left, int32_t *right, int32_t *top, int32_t *bottom)
 {
-	switch (act->getKind())
+	LinkDest *dest = get_dest(act);
+	if (!dest)
 	{
-		case actionGoTo:
-			if (left)   *left=(int32_t)((LinkGoTo*)act)->getDest()->getLeft();
-			if (right)  *right=(int32_t)((LinkGoTo*)act)->getDest()->getRight();
-			if (top)    *top=(int32_t)((LinkGoTo*)act)->getDest()->getTop();
-			if (bottom) *bottom=(int32_t)((LinkGoTo*)act)->getDest()->getBottom();
-			return;
-		
-		case actionGoToR:
-			if (left)   *left=(int32_t)((LinkGoToR*)act)->getDest()->getLeft();
-			if (right)  *right=(int32_t)((LinkGoToR*)act)->getDest()->getRight();
-			if (top)    *top=(int32_t)((LinkGoToR*)act)->getDest()->getTop();
-			if (bottom) *bottom=(int32_t)((LinkGoToR*)act)->getDest()->getBottom();
-			return;			
-
-		default:
-			if (left)   *left=0;
-			if (right)  *right=0;
-			if (top)    *top=0;
-			if (bottom) *bottom=0;
-			return;
+		if (left)   *left=0;
+		if (right)  *right=0;
+		if (top)    *top=0;
+		if (bottom) *bottom=0;
+		return;
 	}
+	
+	if (left)   *left=(int32_t)dest->getLeft();
+	if (right)  *right=(int32_t)dest->getRight();
+	if (top)    *top=(int32_t)dest->getTop();
+	if (bottom) *bottom=(int32_t)dest->getBottom();
 }
 
 static double aux_get_zoom_from_action(LinkAction *act)
 {
-	double zoom;
-
-	switch (act->getKind())
-	{
-		case actionGoTo:
-			zoom=((LinkGoTo*)act)->getDest()->getZoom();
-			if (!zoom) zoom=1;		
-
-		case actionGoToR:
-			zoom=((LinkGoToR*)act)->getDest()->getZoom();			
-			if (!zoom) zoom=1;
-
-		default:
-			zoom=1;
-	}
-
-	return zoom;
+	LinkDest *dest = get_dest(act);
+	if (dest)
+		return dest->getZoom();
+	else
+		return 1;
 }
 
 static char* aux_get_target_from_action(LinkAction *act)
@@ -417,8 +400,8 @@ int32_t open_document (void *_object, char *sfile, int32_t lfile)
 	outline=THIS->doc->getOutline();
 	if (outline) THIS->index=outline->getItems();
 	
-	if (THIS->index)
-		if (!THIS->index->getLength()) THIS->index=NULL;
+	//if (THIS->index)
+	//	if (!THIS->index->getLength()) THIS->index=NULL;
 
 	THIS->currindex=0;
 	THIS->currpage=-1;
@@ -642,7 +625,7 @@ PDF document index
 
 BEGIN_PROPERTY(PDFDOCUMENT_has_index)
 
-	GB.ReturnBoolean((bool)THIS->index);
+	GB.ReturnBoolean(THIS->index && THIS->index->getLength());
 
 END_PROPERTY
 
@@ -666,7 +649,7 @@ BEGIN_PROPERTY(PDFINDEX_has_children)
 	OutlineItem *item;
 
 	item = (OutlineItem *)THIS->index->get (THIS->currindex);
-	GB.ReturnBoolean(item->hasKids());
+	GB.ReturnBoolean(item->getKids() && item->getKids()->getLength());
 
 END_PROPERTY
 
@@ -731,7 +714,7 @@ BEGIN_METHOD_VOID(PDFINDEX_child)
 
 	item = (OutlineItem *)THIS->index->get (THIS->currindex);
 
-	if (!item->hasKids()) { GB.ReturnBoolean(true); return; }
+	if (!item->hasKids() || item->getKids()->getLength() == 0) { GB.ReturnBoolean(true); return; }
 
 	if (THIS->pindex)
 	{
