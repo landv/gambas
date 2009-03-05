@@ -1,11 +1,22 @@
 ' Gambas class file
 
-Private $iType As Integer
 
-Public Sub _New(Value As Integer)
+Private $iType As Integer
+Private $oChart As Object
+Public Sub _New(Value As Integer, oChart As Object)
   
   $iType = Value
+  $oChart = oChart
+  
 End
+
+Public Sub _Free()
+  
+  $oChart = Null
+  
+End
+
+
 
 Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)  
   Dim oSerie As _CSerie
@@ -15,7 +26,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim i, j As Integer
   Dim f As Float
   Dim YHeadersW As Integer
-  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * Chart._fProportionnal
+  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * $oChart._fProportionnal
   Dim iTabPos As Integer
   'DIM iXUnit AS Integer
   'DIM iYUnit AS Integer
@@ -23,7 +34,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   'DIM iGraphBottom AS Integer
   'DIM iGraphLeft AS Integer
   Dim iGraphRight As Integer
-  Dim iStaticSpace As Integer = 5 * Chart._fProportionnal
+  Dim iStaticSpace As Integer = 5 * $oChart._fProportionnal
   Dim ariPoligone As New Integer[]
   Dim aroPolygones As New Object[]
   Dim hRect As New CRect
@@ -32,17 +43,17 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   Select Case $iType
     Case ChartType.Areas, ChartType.AreasSymbols
-      If Chart.YAxe.AutoScale Then
-        fMaxVal = MTools.GetChartMaxValue(Chart)
+      If $oChart.YAxe.AutoScale Then
+        fMaxVal = MTools.GetChartMaxValue($oChart)
         fMinVal = 0
       Else
-        fMaxVal = Chart.YAxe.MaxValue
-        fMinVal = Chart.YAxe.MinValue
+        fMaxVal = $oChart.YAxe.MaxValue
+        fMinVal = $oChart.YAxe.MinValue
       Endif
 
       
     Case ChartType.AreasStacked
-      fMaxVal = MTools.GetChartMaxCumulateValue(Chart)
+      fMaxVal = MTools.GetChartMaxCumulateValue($oChart)
     Case ChartType.AreasPercent
       fMaxVal = 100
   End Select
@@ -63,33 +74,33 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
 
   
   
-  hUnits = MTools.DrawChartAxes(Chart, hRect, fMinVal, fMaxVal)
+  hUnits = MTools.DrawChartAxes($oChart, hRect, fMinVal, fMaxVal)
   draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
   
-  If Chart.Count < 2 Then Return 
+  If $oChart.Count < 2 Then Return 
   Draw.FillStyle = Fill.Solid
   
-  For j = 0 To Chart.CountDataSets - 1
+  For j = 0 To $oChart.CountDataSets - 1
     ariPoligone = New Integer[]
-    ariPoligone.Resize(Chart.Count * 2)
+    ariPoligone.Resize($oChart.Count * 2)
     aroPolygones.Add(ariPoligone)
     
   Next  
   
-  For i = 0 To Chart.Count - 1
+  For i = 0 To $oChart.Count - 1
   f = 0
   fMaxVal = 0  
-    For j = 0 To Chart.CountDataSets - 1
-      fMaxVal += Chart[j][i]
+    For j = 0 To $oChart.CountDataSets - 1
+      fMaxVal += $oChart[j][i]
     Next
-    For j = 0 To Chart.CountDataSets - 1
+    For j = 0 To $oChart.CountDataSets - 1
       Select Case $iType
         Case ChartType.AreasPercent
-          f += Chart[j][i] / fMaxVal * 100
+          f += $oChart[j][i] / fMaxVal * 100
         Case ChartType.AreasStacked
-          f += Chart[j][i]
+          f += $oChart[j][i]
         Case Else
-          f = Chart[j][i]
+          f = $oChart[j][i]
       End Select 
       aroPolygones[j][i * 2] = hRect.Left + (hUnits.X * i)
       aroPolygones[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal)
@@ -97,7 +108,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
     
 
   Next
-  For j = 0 To Chart.CountDataSets - 1
+  For j = 0 To $oChart.CountDataSets - 1
     aroPolygones[J].Add(aroPolygones[J][aroPolygones[J].max - 1])
     aroPolygones[J].Add(hRect.Bottom + hUnits.Y * fMinVal)
     aroPolygones[J].Add(hRect.Left)
@@ -106,7 +117,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   
   For i = aroPolygones.Max To 0 Step -1
-  Draw.FillColor = Chart.Colors[i]
+  Draw.FillColor = $oChart.Colors[i]
     draw.Polygon(aroPolygones[i])  
   Next
   
@@ -116,9 +127,9 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
     
       For j = 0 To aroPolyGones[i].Max - 4 Step 2
         Draw.LineWidth = 1
-        Draw.FillColor = Chart.Colors[i]
+        Draw.FillColor = $oChart.Colors[i]
         Draw.ForeColor = Color.DarkGray
-        MTools.DrawSymbol(i, aroPolyGones[i][j], aroPolyGones[i][j + 1])
+        MTools.DrawSymbol($oChart, i, aroPolyGones[i][j], aroPolyGones[i][j + 1])
       
       Next
     

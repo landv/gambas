@@ -13,7 +13,7 @@ Border
 p
 b
 
-BackColor
+Background
 p
 i
 
@@ -225,6 +225,10 @@ Values
 p
 String[]
 
+_New
+m
+
+(oChart)chart;
 Add
 m
 
@@ -271,6 +275,10 @@ i
 _New
 m
 
+(oChart)o
+_Free
+m
+
 
 Draw
 m
@@ -303,18 +311,18 @@ Color
 p
 i
 
-BackColor
+Background
 p
 i
 
 _new
 m
 
-
+(oChart)Chart;
 _SetCount
 m
 
-(Value)i
+(Value)i(oChart)Chart;
 _get
 m
 f

@@ -1,96 +1,103 @@
 ' Gambas class file
 
-EXPORT 
-PRIVATE $arsValues AS NEW String[]
-PROPERTY Count AS Integer
-PROPERTY Values AS String[]
+Export 
+Private $arsValues As New String[]
+Property Count As Integer
+Property Values As String[]
+Private $oChart As chart
 
-PRIVATE FUNCTION Count_Read() AS Integer
-
-  RETURN $arsValues.Count
-
-END
-
-PRIVATE SUB count_Write(Value AS Integer)
-  DIM cnt AS Integer
-  DIM i AS Integer
-  DIM hSeries AS _CSerie
-  IF Value < 1 THEN 
-    Message.Error(("The Values count must be up than 1"))
-    RETURN 
-  ENDIF 
+Public Sub _New(oChart As Chart)
   
-  IF $arsValues.Count < Value THEN 
-    FOR i = 0 TO Value - $arsValues.Count
+  $oChart = oChart
+  
+End
+
+Private Function Count_Read() As Integer
+
+  Return $arsValues.Count
+
+End
+
+Private Sub count_Write(Value As Integer)
+  Dim cnt As Integer
+  Dim i As Integer
+  Dim hSeries As _CSerie
+  If Value < 1 Then 
+    Message.Error(("The Values count must be up than 1"))
+    Return 
+  Endif 
+  
+  If $arsValues.Count < Value Then 
+    For i = 0 To Value - $arsValues.Count
       $arsValues.Add(0)
-    NEXT
-  ELSE IF $arsValues.Count > Value THEN 
+    Next
+  Else If $arsValues.Count > Value Then 
     cnt = $arsValues.Count - Value
     $arsValues.Remove($arsValues - cnt, cnt)
-  ENDIF
+  Endif
   
   
   'Resize all the Series to match with the Labels Count
-  FOR EACH hSeries IN Chart
+  For Each hSeries In Chart
      
-     hSeries._SetCount(Value)
+     hSeries._SetCount(Value, $oChart)
    
-  NEXT 
+  Next 
   
-END
+End
 
-PUBLIC SUB Add(Value AS String)
+Public Sub Add(Value As String)
   'Ajoute la Valeur
   $arsValues.Add(Value)
   'Force L'adaptation des serie
-  ME.Count = $arsValues.Count
+  Me.Count = $arsValues.Count
   
-END
+End
 
-PUBLIC SUB _Put(Index AS Integer, Value AS String[])
+Public Sub _Put(Index As Integer, Value As String[])
   
   $arsValues[Index] = Value
   
-END
+End
 
-PUBLIC SUB _Get(Index AS Integer) AS String
+Public Sub _Get(Index As Integer) As String
   
-  RETURN $arsValues[Index]
+  Return $arsValues[Index]
   
-END
+End
 
 
 
 
-PUBLIC FUNCTION _Next() AS String
-  IF enum.Index = NULL THEN enum.Index = -1
+Public Function _Next() As String
+  If enum.Index = Null Then enum.Index = -1
   
-  IF enum.Index = $arsValues.max THEN 
+  If enum.Index = $arsValues.max Then 
     enum.Stop
-    RETURN 
-  ENDIF
-  INC enum.Index
-  RETURN $arsValues[enum.Index]
+    Return 
+  Endif
+  Inc enum.Index
+  Return $arsValues[enum.Index]
   
-END
+End
 
-PRIVATE FUNCTION Values_Read() AS String[]
+Private Function Values_Read() As String[]
 
-  RETURN $arsValues
+  Return $arsValues
 
-END
+End
 
-PRIVATE SUB Values_Write(Value AS String[])
+Private Sub Values_Write(Value As String[])
 
-  IF Value = NULL THEN 
+  If Value = Null Then 
     Message.Error(("An array can't be NULL"))
-    RETURN 
-  ENDIF 
+    Return 
+  Endif 
   ' IF Value.Count < 1 THEN 
   '   Message.Error((""))
   '   RETURN 
   ' ENDIF 
   
   $arsValues = Value
-  ME.Count = $arsValues.Count
-END
+  Me.Count = $arsValues.Count
+End

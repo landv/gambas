@@ -18,19 +18,19 @@ Private $oTitle As New _CTitle
 'PRIVATE $oColumns AS NEW _Column
 Private $oYAxe As New _CYAxe
 Private $oXAxe As New _CXAxe
-Private $oLegend As New _CLegend
+Private $oLegend As New _CLegend(Me)
 Private $oColors As New _Colors
 Private $iType As Integer
 'PRIVATE $iStyle AS Integer
 Private $iWidth As Integer
 Private $iHeight As Integer
-Private $oHeaders As New _CHeaders
-Private $iBackColor As Integer = Color.White
+Private $oHeaders As New _CHeaders(Me)
+Private $iBackground As Integer = Color.White
 Private $iBorder As Boolean = True
 
 
 Property Border As Boolean
-Property BackColor As Integer
+Property Background As Integer
 
 Property Height As Integer
 Property Width As Integer
@@ -97,22 +97,22 @@ Private Sub Type_Write(Value As Integer)
  Select Case $iType
   
     Case .Columns, .ColumnsStacked, .ColumnsPercent, .ColumnsLineCombination
-      $oGraphStyle = New _CStyleColumns(Value)
+      $oGraphStyle = New _CStyleColumns(Value, Me)
       $bLegendSeries = False
     Case .Pie, .PieRings, .PieOffSet1, .PieOffSet2
-      $oGraphStyle = New _CStylePie(Value)
+      $oGraphStyle = New _CStylePie(Value, Me)
       $bLegendSeries = False
     Case .Lines, .LinesStacked, .LinesPercent, .LinesSymbols
-      $oGraphStyle = New _CStyleLine(Value)
+      $oGraphStyle = New _CStyleLine(Value, Me)
       $bLegendSeries = True
     Case .Areas, .AreasStacked, .AreasPercent, .AreasSymbols
-      $oGraphStyle = New _CStyleAreas(Value)
+      $oGraphStyle = New _CStyleAreas(Value, Me)
       $bLegendSeries = True
     Case .Bars, .BarsPercent, .BarsStacked
-      $oGraphStyle = New _CStyleBar(Value)
+      $oGraphStyle = New _CStyleBar(Value, Me)
       $bLegendSeries = False
     Case .Plots
-      $oGraphStyle = New _CStylePlot(Value)
+      $oGraphStyle = New _CStylePlot(Value, Me)
       $bLegendSeries = True
   
   End Select
@@ -153,7 +153,7 @@ Public Sub Draw()
   
   _fProportionnal = IIf(Me.Width <= Me.Height, Me.Width / (Desktop.Height * 2 / 3), Me.Height / (Desktop.Height * 2 / 3))
   If Not $bProportionnal Then _fProportionnal = 1.0
-  iStaticSpace = 5 * Chart._fProportionnal
+  iStaticSpace = 5 * Me._fProportionnal
   'Draw the Legend and get the graph caneva size
   $oLegend.Draw($bLegendSeries)
   'Draw The Title
@@ -197,7 +197,7 @@ Private Sub CountDataSets_Write(Value As Integer)
   Dim i As Integer
   If $aroSeries.Count < Value Then 
     For i = 0 To (Value - $aroSeries.Count) - 1
-      oSeries = New _CSerie
+      oSeries = New _CSerie(Me)
       $aroSeries.Add(oSeries)
     Next
   Else If $aroSeries.Count > Value Then 
@@ -320,15 +320,15 @@ Private Function XAxe_Read() As _CXAxe
 
 End
 
-Private Function BackColor_Read() As Integer
+Private Function Background_Read() As Integer
 
-  Return $iBackColor  
+  Return $iBackground  
 
 End
 
-Private Sub BackColor_Write(Value As Integer)
+Private Sub Background_Write(Value As Integer)
 
-  $iBackColor = Value
+  $iBackground = Value
 
 End
 

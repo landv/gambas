@@ -1,165 +1,167 @@
 ' Gambas class file
 
-EXPORT ' Gambas class file
+Export ' Gambas class file
 
 
-PRIVATE $aroValues AS NEW Float[]
-PRIVATE $iCount AS Integer
-PRIVATE $sText AS String
-PRIVATE $iLineStyle AS Integer
-PRIVATE $iLineWidth AS Integer
-PRIVATE $iColor AS Integer
-PRIVATE $iBackColor AS Integer
-PRIVATE $iTile AS Picture
+Private $aroValues As New Float[]
+Private $iCount As Integer
+Private $sText As String
+Private $iLineStyle As Integer
+Private $iLineWidth As Integer
+Private $iColor As Integer
+Private $iBackground As Integer
+Private $iTile As Picture
 
-PROPERTY Count AS Integer
-PROPERTY Text AS String
-PROPERTY Values AS Float[]
-PROPERTY LineStyle AS Integer
-PROPERTY LineWidth AS Integer
-PROPERTY Color AS Integer
-PROPERTY BackColor AS Integer
+Property Count As Integer
+Property Text As String
+Property Values As Float[]
+Property LineStyle As Integer
+Property LineWidth As Integer
+Property Color As Integer
+Property Background As Integer
+Private $oChart As Chart
 
 
-PUBLIC SUB _new()
+Public Sub _new(oChart As Chart)
     
+  $oChart = oChart
   '$aroValues.Add(0)
   'ME.Count = 1
-END
+End
 
-PRIVATE FUNCTION Count_Read() AS Integer
+Private Function Count_Read() As Integer
 
-  RETURN $aroValues.Count
+  Return $aroValues.Count
 
-END
+End
 
-PRIVATE SUB count_Write(Value AS Integer)
+Private Sub count_Write(Value As Integer)
 
- Chart.Labels.Count = Value
+ $oChart.Labels.Count = Value
  
-END
+End
 
-PUBLIC SUB _SetCount(Value AS Integer)
-  DIM cnt AS Integer
-  DIM i AS Integer
-
-  IF Value < 1 THEN 
+Public Sub _SetCount(Value As Integer, oChart As chart)
+  Dim cnt As Integer
+  Dim i As Integer
+   $oChart = oChart
+  If Value < 1 Then 
     Message.Error(("The values count must be up than 1"))
-    RETURN 
-  ENDIF 
+    Return 
+  Endif 
   
-  IF $aroValues.Count < Value THEN 
-    FOR i = 0 TO Value - $aroValues.Count
+  If $aroValues.Count < Value Then 
+    For i = 0 To Value - $aroValues.Count
       $aroValues.Add(0)
-    NEXT
-  ELSE IF $aroValues.Count > Value THEN 
+    Next
+  Else If $aroValues.Count > Value Then 
     cnt = $aroValues.Count - Value
     $aroValues.Remove($aroValues.Count - cnt, cnt)
-  ENDIF
+  Endif
   'PRINT aroRows.Count
-END
+End
 
-PUBLIC FUNCTION _get(Index AS Integer) AS Float
+Public Function _get(Index As Integer) As Float
   
-  RETURN $aroValues[index]
+  Return $aroValues[index]
   
-END
+End
 
- PUBLIC SUB _Put(Value AS Integer, Index AS Variant)
+ Public Sub _Put(Value As Integer, Index As Variant)
   'PRINT aroRows.Count
-  IF $aroValues.Max < Index THEN ME.Count += Index - $aroValues.Max
+  If $aroValues.Max < Index Then Me.Count += Index - $aroValues.Max
   $aroValues[Index] = Value
- END
+ End
 
 
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN $sText
+  Return $sText
 
-END
+End
 
 
-PRIVATE SUB Text_Write(Value AS String)
+Private Sub Text_Write(Value As String)
 
   $sText = Value
 
-END
+End
 
 
-PUBLIC FUNCTION _Next() AS Float
-  IF enum.Index = NULL THEN enum.Index = -1
+Public Function _Next() As Float
+  If enum.Index = Null Then enum.Index = -1
   
-  IF enum.Index = $aroValues.max THEN 
+  If enum.Index = $aroValues.max Then 
     enum.Stop
-    RETURN 
-  ENDIF
-  INC enum.Index
-  RETURN $aroValues[enum.Index]
+    Return 
+  Endif
+  Inc enum.Index
+  Return $aroValues[enum.Index]
   
-END
+End
 
-PRIVATE FUNCTION Values_Read() AS Float[]
+Private Function Values_Read() As Float[]
 
-  RETURN $aroValues
+  Return $aroValues
 
-END
+End
 
-PRIVATE SUB Values_Write(Value AS Float[])
+Private Sub Values_Write(Value As Float[])
 
-  IF Value = NULL THEN 
+  If Value = Null Then 
     Message.Error(("An array can't be NULL"))
-    RETURN 
-  ENDIF 
+    Return 
+  Endif 
   $aroValues = Value
-  Chart.Headers.Count = Chart.Headers.Count
+  $oChart.Headers.Count = $oChart.Headers.Count
 
-END
+End
 
-PRIVATE FUNCTION LineStyle_Read() AS Integer
-
-  
-
-END
-
-PRIVATE SUB LineStyle_Write(Value AS Integer)
+Private Function LineStyle_Read() As Integer
 
   
 
-END
+End
 
-PRIVATE FUNCTION LineWidth_Read() AS Integer
-
-  
-
-END
-
-PRIVATE SUB LineWidth_Write(Value AS Integer)
+Private Sub LineStyle_Write(Value As Integer)
 
   
 
-END
+End
 
-PRIVATE FUNCTION Color_Read() AS Integer
-
-  
-
-END
-
-PRIVATE SUB Color_Write(Value AS Integer)
+Private Function LineWidth_Read() As Integer
 
   
 
-END
+End
 
-PRIVATE FUNCTION BackColor_Read() AS Integer
-
-  
-
-END
-
-PRIVATE SUB BackColor_Write(Value AS Integer)
+Private Sub LineWidth_Write(Value As Integer)
 
   
 
-END
+End
+
+Private Function Color_Read() As Integer
+
+  
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  
+
+End
+
+Private Function Background_Read() As Integer
+
+  
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  
+
+End

@@ -1,12 +1,23 @@
 ' Gambas class file
+' Gambas class file
+
 
 Private $iType As Integer
-
-Public Sub _New(Value As Integer)
+Private $oChart As Object
+Public Sub _New(Value As Integer, oChart As Object)
   
   $iType = Value
+  $oChart = oChart
   
 End
+
+Public Sub _Free()
+  
+  $oChart = Null
+  
+End
+
+
 
 Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim oSerie As _CSerie
@@ -16,10 +27,10 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim i, j As Integer
   Dim f As Float
   Dim YHeadersW As Integer
-  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * Chart._fProportionnal
+  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * $oChart._fProportionnal
   Dim fTabPos As Float
   Dim iXUnit As Float
-  Dim iStaticSpace As Integer = 5 * Chart._fProportionnal
+  Dim iStaticSpace As Integer = 5 * $oChart._fProportionnal
   Dim hRect As New CRect
   Dim hUnits As CPoint
   Dim fCumul As Float
@@ -35,15 +46,15 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   Select Case $iType
     Case ChartType.Columns, ChartType.ColumnsLineCombination
-      If Chart.YAxe.AutoScale Then
-        fMaxVal = MTools.GetChartMaxValue(Chart)
+      If $oChart.YAxe.AutoScale Then
+        fMaxVal = MTools.GetChartMaxValue($oChart)
         fMinVal = 0
       Else
-        fMaxVal = Chart.YAxe.MaxValue
-        fMinVal = Chart.YAxe.MinValue
+        fMaxVal = $oChart.YAxe.MaxValue
+        fMinVal = $oChart.YAxe.MinValue
       Endif
     Case ChartType.ColumnsStacked
-      fMaxVal = MTools.GetChartMaxCumulate(Chart)
+      fMaxVal = MTools.GetChartMaxCumulate($oChart)
     Case ChartType.ColumnsPercent
       fMaxVal = 100
   End Select
@@ -63,33 +74,33 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   hRect.Right = CX + CW - YHeadersW / 2
 
   
-  hUnits = MTools.DrawChartAxes(Chart, hRect, fMinVal, fMaxVal, Align.Center)
+  hUnits = MTools.DrawChartAxes($oChart, hRect, fMinVal, fMaxVal, Align.Center)
   draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
   Select Case $iType
     Case ChartType.Columns
       fTabPos = hRect.Left + hUnits.x / 2
-      For Each oSerie In Chart
-        For i = 0 To Chart.Count - 1
+      For Each oSerie In $oChart
+        For i = 0 To $oChart.Count - 1
           draw.ForeColor = Color.DarkGray
           Draw.FillStyle = Fill.Solid
-          Draw.FillColor = Chart.Colors[i]
+          Draw.FillColor = $oChart.Colors[i]
           draw.Rect(fTabPos + i * (hUnits.X - 1), hRect.Bottom + (fMinVal * hUnits.y), hUnits.X, oSerie[i] * - hUnits.y)
         Next
         fTabPos += i * hUnits.x + hUnits.x
       Next
     Case ChartType.ColumnsStacked, ChartType.ColumnsPercent
-      hUnits.X = (hRect.Right - hRect.Left) / (Chart.CountDataSets * 2)
+      hUnits.X = (hRect.Right - hRect.Left) / ($oChart.CountDataSets * 2)
       fTabPos = hRect.Left + hUnits.x / 2
-      For Each oSerie In Chart
+      For Each oSerie In $oChart
         fCumul = hRect.Bottom + 1
         If $iType = ChartType.ColumnsPercent Then 
           fMaxVal = 0
-          For i = 0 To Chart.Count - 1
+          For i = 0 To $oChart.Count - 1
             fMaxVal += oSerie[i]
           Next
         Endif
         If fMaxVal = 0 Then Return 
-        For i = 0 To Chart.Count - 1 
+        For i = 0 To $oChart.Count - 1 
           If $iType = ChartType.ColumnsPercent Then             
             f = ((oSerie[i] / fMaxVal * 100) * - hUnits.y) - 1
           Else 
@@ -97,7 +108,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
           Endif
           draw.ForeColor = Color.DarkGray
           Draw.FillStyle = Fill.Solid
-          Draw.FillColor = Chart.Colors[i]
+          Draw.FillColor = $oChart.Colors[i]
           draw.Rect(fTabPos, fCumul, hUnits.X, f)
           fCumul += f + 1
           

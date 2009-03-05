@@ -25,7 +25,7 @@ Chart.Legend.Visible = True
 'Chart.Title.Visible = True
 Chart.Title.Text = "A Gambas Chart"
 
-Chart.BackColor = Color.LightBackground
+Chart.Background = Color.LightBackground
 'Chart.YAxe.MinValue = 30
 txtLegend.Text = Chart.Legend.Title
 txtChart.Text = Chart.Title.Text
@@ -77,7 +77,7 @@ For Each s In hClass.Symbols
       hPic = Picture["img" &/ LCase(s) & ".png"]
       Try hPicBox.Picture = hPic
       hPicBox.Visible = True
-      hPicBox.BackColor = Color.Black
+      hPicBox.Background = Color.Black
       hPicBox.Resize(hPic.Width, hPic.Height)
       hPicBox.Tag = hClass[s].Value
       hPicBox.Radio = True
@@ -91,7 +91,7 @@ spMax.Value = Chart.YAxe.MaxValue
 spMin.Value = Chart.YAxe.MinValue
 spStep.Value = Chart.YAxe.Step
 
-ColorButton1.Color = Chart.BackColor
+ColorButton1.Color = Chart.Background
 'LAST = ScrollView1.Children[1]
 'MyPicBox_MouseUp
 End
@@ -123,7 +123,7 @@ For Each s In hClass.Symbols
         'IF IsNull(hpic) THEN hpic = NEW Picture(58, 51, TRUE)
       hPicBox.Picture = hPic
       hPicBox.Visible = True
-      hPicBox.BackColor = Color.Black
+      hPicBox.Background = Color.Black
       Try hPicBox.Resize(hPic.Width, hPic.Height)
       hPicBox.Tag = hClass[s].Value
       hPicBox.Radio = True
@@ -325,7 +325,7 @@ Public Sub ColorButton1_Change()
   '   ColorButton1.Color = Dialog.Color
   '   Chart.BackColor = Dialog.Color
   'Endif
-  Chart.BackColor = ColorButton1.Color
+  Chart.Background = ColorButton1.Color
   DrawingArea1.Refresh
 End
 

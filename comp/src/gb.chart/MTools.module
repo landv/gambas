@@ -26,7 +26,7 @@ Public Function GetChartMaxCumulateValue(oChart As Chart) As Float
   fCurMax = 0
   For i = 0 To oChart.Count - 1
     f = 0
-    For Each hSeries In Chart
+    For Each hSeries In oChart
       f += hSeries[i]
     Next
     If fCurMax < f Then fCurMax = f
@@ -40,9 +40,9 @@ Public Function GetChartMaxCumulate(oChart As Chart) As Float
   Dim hSeries As _CSerie
   Dim i As Integer
   
-  For Each hSeries In Chart
+  For Each hSeries In oChart
     f = 0
-    For i = 0 To Chart.Count - 1
+    For i = 0 To oChart.Count - 1
       f += hSeries[i]
     Next
     If fMaxValue < f Then fMaxValue = f
@@ -74,7 +74,7 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
 
   fMultiple = Round(fMaxValue / 100)
   If fMultiple = 0 Then fMultiple = 1
-  If Chart.YAxe.AutoScale Then
+  If oChart.YAxe.AutoScale Then
     If fMaxValue > 1 Then 
       
       If fMaxValue / fMultiple < 10 Then 
@@ -92,14 +92,14 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
       Endif
      Endif
     Else
-      fStep = Chart.YAxe.Step
+      fStep = oChart.YAxe.Step
     Endif
     
 'Endif
 
   'Redefinition de la position basse
-  If Chart.XAxe.Visible Then
-    If Chart.XAxe.Arrange = Chart.XAxe.Steps Then 
+  If oChart.XAxe.Visible Then
+    If oChart.XAxe.Arrange = oChart.XAxe.Steps Then 
       hChartRect.Bottom = hChartRect.Bottom - (iStaticSpace * 2 + Draw.Font.Height())
       hChartRect.Top = hChartRect.Top '+ (iStaticSpace * 2 + Draw.Font.Height())
     Else
@@ -107,19 +107,19 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
       hChartRect.Top = hChartRect.Top '+ (Draw.Font.Height())
     Endif
   Endif
-  draw.Font = Chart.XAxe.Font
-  draw.Font.Size = Chart.XAxe.Font.Size * oChart._fProportionnal
+  draw.Font = oChart.XAxe.Font
+  draw.Font.Size = oChart.XAxe.Font.Size * oChart._fProportionnal
   
   'To manage the last Xaxe label length
   If iAlign = Align.Center Then
 
-    hChartRect.Right -= draw.TextWidth(Chart[Chart.CountDataSets - 1].Text) / 2
+    hChartRect.Right -= draw.TextWidth(oChart[oChart.CountDataSets - 1].Text) / 2
   Else
-    hChartRect.Right -= draw.TextWidth(Chart.Headers.Values[Chart.Headers.Values.Max]) / 2
+    hChartRect.Right -= draw.TextWidth(oChart.Headers.Values[oChart.Headers.Values.Max]) / 2
   Endif
   
   
-  If Chart.YAxe.Visible Then
+  If oChart.YAxe.Visible Then
     cnt = draw.TextWidth(fMaxValue & "0")
     
     hChartRect.Left = hChartRect.Left + iStaticSpace * oChart._fProportionnal + cnt
@@ -127,7 +127,7 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
   
   'Draw the background
   
-  Draw.FillColor = Chart.BackColor
+  Draw.FillColor = oChart.Background
   Draw.FillStyle = Fill.Solid
   Draw.Rect(hChartRect.Left, hChartRect.Top, hChartRect.Right - hChartRect.Left, hChartRect.Bottom - hChartRect.Top + 1)
   Draw.ForeColor = Color.Black
@@ -137,15 +137,15 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
 
   Draw.Line(hChartRect.Left, hChartRect.Top, hChartRect.Left, hChartRect.Bottom)
 'Dessin de l'axe Y
-  Draw.Font = Chart.YAxe.Font
-  Draw.Font.Size = Chart.YAxe.Font.Size * Chart._fProportionnal  
+  Draw.Font = oChart.YAxe.Font
+  Draw.Font.Size = oChart.YAxe.Font.Size * oChart._fProportionnal  
   For f = fMinValue To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Bottom - (fYUnit * f - (fYUnit * fMinValue))
     'Dessine les intervalles Verticaux
-    If Chart.YAxe.ShowIntervalLines Then Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
+    If oChart.YAxe.ShowIntervalLines Then Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
     'Dessine l'étiquette
-    If Chart.YAxe.Visible Then 
+    If oChart.YAxe.Visible Then 
       'Dessine le taquet
 
       Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
@@ -160,30 +160,30 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
   Draw.Line(hChartRect.Left, hChartRect.Bottom, hChartRect.Right, hChartRect.Bottom)
   
   If iAlign = Align.Center Then 
-    fXUnit = ((hChartRect.Right - hChartRect.Left) / (Chart.Count + 1)) / Chart.CountDataSets
+    fXUnit = ((hChartRect.Right - hChartRect.Left) / (oChart.Count + 1)) / oChart.CountDataSets
   Else 
     fXUnit = ((hChartRect.Right - hChartRect.Left) / (oChart.Count - 1))
   Endif
   fTabPos = hChartRect.Left 
   
-  Draw.Font = Chart.XAxe.Font
-  Draw.Font.Size = Chart.XAxe.Font.Size * Chart._fProportionnal
+  Draw.Font = oChart.XAxe.Font
+  Draw.Font.Size = oChart.XAxe.Font.Size * oChart._fProportionnal
   
 
   
   If iAlign = Align.Center Then 
 
   
-  For Each oSerie In Chart
-      fTabPos += fXUnit * (Chart.Count + 1)
+  For Each oSerie In oChart
+      fTabPos += fXUnit * (oChart.Count + 1)
         Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + iStaticSpace)
       If oChart.XAxe.Visible Then 
         
         If bBascule Then iXStep = Draw.Font.Height() / 2
         
-        Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
+        Draw.Text(oSerie.Text, fTabPos - (fXUnit * (oChart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
         
-        If Chart.XAxe.Arrange = Chart.XAxe.Steps Then
+        If oChart.XAxe.Arrange = oChart.XAxe.Steps Then
           bBascule = Not bBascule
         Endif
         
@@ -191,7 +191,7 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
       Endif
   Next
   Else
-  For i = 0 To Chart.Count - 1
+  For i = 0 To oChart.Count - 1
   
      '* '(Chart.Count + 1)
    
@@ -200,8 +200,8 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
     Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
     If oChart.XAxe.Visible Then 
       If bBascule Then iXStep = Draw.Font.Height() / 2
-      Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
-      If Chart.XAxe.Arrange = Chart.XAxe.Steps Then
+      Draw.Text(oChart.Headers[i], fTabPos - Draw.TextWidth(oChart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
+      If oChart.XAxe.Arrange = oChart.XAxe.Steps Then
           bBascule = Not bBascule
       Endif
         
@@ -217,9 +217,9 @@ Endif
 End
 
 
-Public Sub DrawSymbol(iType As Integer, X As Integer, Y As Integer)
+Public Sub DrawSymbol(oChart As Chart, iType As Integer, X As Integer, Y As Integer)
   Dim ariSymbol As Integer[]
-  Dim iStaticSpace As Integer = 10 * Chart._fProportionnal
+  Dim iStaticSpace As Integer = 10 * oChart._fProportionnal
   X -= iStaticSpace / 2
   Y -= iStaticSpace / 2
   Select Case iType
@@ -280,8 +280,8 @@ Endif
 
 
 'Redefinition de la position basse
-  If Chart.XAxe.Visible Then
-    If Chart.XAxe.Arrange = Chart.XAxe.Steps Then 
+  If oChart.XAxe.Visible Then
+    If oChart.XAxe.Arrange = oChart.XAxe.Steps Then 
       hChartRect.Bottom = hChartRect.Bottom - (iStaticSpace * 2 + Draw.Font.Height())
       hChartRect.Top = hChartRect.Top + (iStaticSpace * 2 + Draw.Font.Height())
     Else
@@ -293,15 +293,15 @@ Endif
   Draw.Line(hChartRect.Left, hChartRect.Top, hChartRect.Left, hChartRect.Bottom)
   
   fYUnit = (hChartRect.Right - hChartRect.Left) / (fMaxValue)
-  Draw.Font = Chart.XAxe.Font
-  Draw.Font.Size = Chart.XAxe.Font.Size * Chart._fProportionnal
+  Draw.Font = oChart.XAxe.Font
+  Draw.Font.Size = oChart.XAxe.Font.Size * oChart._fProportionnal
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Left + (fYUnit * f)
     
     'Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
     'Dessine les intervalles Verticaux
-    If Chart.YAxe.ShowIntervalLines Then Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Top)
+    If oChart.YAxe.ShowIntervalLines Then Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Top)
     'Dessine l'étiquette
     'Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
 
@@ -309,10 +309,10 @@ Endif
 
         
 
-    If Chart.XAxe.Visible Then 
+    If oChart.XAxe.Visible Then 
       If bBascule Then iXStep = Draw.Font.Height() 
       Draw.Text(f, fTabPos - Draw.Font.Width(f) / 2, hChartRect.Bottom + iStaticSpace + iXStep)
-      If Chart.XAxe.Arrange = Chart.XAxe.Steps Then
+      If oChart.XAxe.Arrange = oChart.XAxe.Steps Then
           bBascule = Not bBascule
       Endif
       iXStep = 0
@@ -328,29 +328,29 @@ Endif
  Draw.Line(hChartRect.Left, hChartRect.Bottom, hChartRect.Right, hChartRect.Bottom)
  
  If iAlign = Align.Center Then 
-   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (oChart.Count + 1)) / Chart.CountDataSets
+   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (oChart.Count + 1)) / oChart.CountDataSets
  Else 
    fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (oChart.Count - 1))
  Endif
  fTabPos = hChartRect.Bottom
  If iAlign = Align.Center Then 
- Draw.Font = Chart.YAxe.Font
- Draw.Font.Size = Chart.YAxe.Font.Size * Chart._fProportionnal
- For Each oSerie In Chart
+ Draw.Font = oChart.YAxe.Font
+ Draw.Font.Size = oChart.YAxe.Font.Size * oChart._fProportionnal
+ For Each oSerie In oChart
       
-     fTabPos -= fXUnit * (Chart.Count + 1)
+     fTabPos -= fXUnit * (oChart.Count + 1)
        Draw.Line(hChartRect.Left, fTabPos, hChartRect.Left - iStaticSpace, fTabPos)
-     If oChart.YAxe.Visible Then Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (Chart.Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)
+     If oChart.YAxe.Visible Then Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (oChart.Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)
  Next
  Else
- For i = 0 To Chart.Count - 1
+ For i = 0 To oChart.Count - 1
  
     '* '(Chart.Count + 1)
   
    
  
    Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
-   If oChart.YAxe.Visible Then Draw.Text(Chart.Headers[i], fTabPos - Draw.TextWidth(Chart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+   If oChart.YAxe.Visible Then Draw.Text(oChart.Headers[i], fTabPos - Draw.TextWidth(oChart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
    fTabPos += fXUnit
  
  Next

@@ -1,80 +1,90 @@
 ' Gambas class file
 
-PRIVATE $iType AS Integer
 
-PUBLIC SUB _New(Value AS Integer)
+Private $iType As Integer
+Private $oChart As Object
+Public Sub _New(Value As Integer, oChart As Object)
   
-  $iType = Value 
-END
+  $iType = Value
+  $oChart = oChart
+  
+End
 
-PUBLIC SUB Draw(CX AS Integer, CY AS Integer, CW AS Integer, CH AS Integer)
+Public Sub _Free()
   
-  DIM i, J AS Integer
-  DIM s AS String
-  DIM fCumul AS Float
-  DIM fRapport AS Float
-  DIM f AS Float
-  DIM iMaxTextWidth AS Integer
-  DIM fNewPos AS Float
-  DIM fTextPos AS Float
-  DIM fRayon AS Float
-  DIM fMaxRayon AS Float
-  DIM fRayonUnit AS Float
+  $oChart = Null
+  
+End
+
+
+Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
+  
+  Dim i, J As Integer
+  Dim s As String
+  Dim fCumul As Float
+  Dim fRapport As Float
+  Dim f As Float
+  Dim iMaxTextWidth As Integer
+  Dim fNewPos As Float
+  Dim fTextPos As Float
+  Dim fRayon As Float
+  Dim fMaxRayon As Float
+  Dim fRayonUnit As Float
   'Obtenir la valeur cumulée:
-  FOR EACH s IN Chart.Headers
-    IF draw.TextWidth(s) > iMaxTextWidth THEN iMaxTextWidth = draw.TextWidth(s)
-  NEXT
-  IF cw <= ch THEN 
+  For Each s In $oChart.Headers
+    If draw.TextWidth(s) > iMaxTextWidth Then iMaxTextWidth = draw.TextWidth(s)
+  Next
+  If cw <= ch Then 
     fMaxRayon = cw / 2 - iMaxTextWidth
-  ELSE
+  Else
     fMaxRayon = CH / 2 - iMaxTextWidth
-  ENDIF
+  Endif
   
   
   
   
-  fRayonUnit = fMaxRayon / (Chart.CountDataSets + 1)
-  FOR j = 0 TO Chart.CountDataSets - 1
-    IF J = 1 AND $iType <> ChartType.PieRings THEN BREAK 
+  fRayonUnit = fMaxRayon / ($oChart.CountDataSets + 1)
+  For j = 0 To $oChart.CountDataSets - 1
+    If J = 1 And $iType <> ChartType.PieRings Then Break 
     i = 0
     fCumul = 0
-    FOR i = 0 TO Chart.Count - 1
-        fCumul += Chart[j][i]
+    For i = 0 To $oChart.Count - 1
+        fCumul += $oChart[j][i]
         
-    NEXT
+    Next
     fNewPos = 0
     fRapport = 360 / fCumul
     fCumul = Rad(90)
-    fRayon = fRayonUnit * ((Chart.CountDataSets + 1) - J)
+    fRayon = fRayonUnit * (($oChart.CountDataSets + 1) - J)
    
-    FOR i = 0 TO Chart.Count - 1
-    f = Chart[j][i]
+    For i = 0 To $oChart.Count - 1
+    f = $oChart[j][i]
     Draw.Forecolor = color.DarkGray
-    draw.FillColor = Chart.Colors[i]
+    draw.FillColor = $oChart.Colors[i]
     draw.FillStyle = fill.Solid
     fNewPos = fCumul + Rad(f * frapport)
     fTextPos = fCumul + Rad(f * frapport) / 2
     
 
-    IF (i = 0 AND $iType = ChartType.PieOffSet1) OR $iType = ChartType.PieOffSet2 THEN
+    If (i = 0 And $iType = ChartType.PieOffSet1) Or $iType = ChartType.PieOffSet2 Then
        draw.Circle(CX + CW / 2 + (Cos(fTextPos) * 10), CY + Ch / 2 + (Sin(fTextPos - Rad(180)) * 10), fRayon, fCumul, fNewPos)
-     ELSE
+     Else
        draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon, fCumul, fNewPos)
-    ENDIF
+    Endif
     'draw.Text(Chart[i].Label, Cos(fTextPos) * (fRayon) + CX + CW / 2, Sin((fTextPos) - Rad(180)) * (fRayon) + CY + fRayon - draw.Font.Height())
    
     fCumul += Rad(f * frapport)
     
-    NEXT
-    IF $iType = ChartType.PieRings THEN 
-      Draw.FillColor = Draw.Device.BackColor
+    Next
+    If $iType = ChartType.PieRings Then 
+      Draw.FillColor = Draw.Device.Background
       fRayon = fRayonUnit
       draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon)
-    ENDIF
+    Endif
     
     
-  NEXT
+  Next
   
   
   'draw.Text("test", (Cos(Rad(180)) * (fRayon + iMaxTextWidth)) + CX + CW / 2, (Sin(Rad(180)) * (fRayon + iMaxTextWidth)) + CY + fRayon)
-END
+End

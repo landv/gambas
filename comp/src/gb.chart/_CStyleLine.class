@@ -1,11 +1,21 @@
 ' Gambas class file
 
-Private $iType As Integer
 
-Public Sub _New(Value As Integer)
+Private $iType As Integer
+Private $oChart As Object
+Public Sub _New(Value As Integer, oChart As Object)
   
   $iType = Value
+  $oChart = oChart
+  
 End
+
+Public Sub _Free()
+  
+  $oChart = Null
+  
+End
+
 
 
 Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)  
@@ -17,30 +27,30 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim i, j As Integer
   Dim f As Float
   Dim YHeadersW As Integer
-  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * Chart._fProportionnal
+  Dim iTwoLetterHeight As Integer = draw.Font.Height() * 2 * $oChart._fProportionnal
   Dim iTabPos As Integer
   Dim iXUnit As Integer
   Dim iYUnit As Integer
   Dim ariPolyLine As New Integer[]
   Dim aroPolyLines As New Object[]
-  Dim iStaticSpace As Integer = 5 * Chart._fProportionnal
+  Dim iStaticSpace As Integer = 5 * $oChart._fProportionnal
   Dim hRect As New CRect
   Dim hUnits As CPoint
   'draw.Font.Size = 11 * Chart._fProportionnal
   
   Select Case $iType
     Case ChartType.Lines, ChartType.LinesSymbols
-      If Chart.YAxe.AutoScale Then
-        fMaxVal = MTools.GetChartMaxValue(Chart)
+      If $oChart.YAxe.AutoScale Then
+        fMaxVal = MTools.GetChartMaxValue($oChart)
         fMinVal = 0
       Else
-        fMaxVal = Chart.YAxe.MaxValue
-        fMinVal = Chart.YAxe.MinValue
+        fMaxVal = $oChart.YAxe.MaxValue
+        fMinVal = $oChart.YAxe.MinValue
       Endif
       
       
     Case ChartType.LinesStacked
-      fMaxVal = MTools.GetChartMaxCumulateValue(Chart)
+      fMaxVal = MTools.GetChartMaxCumulateValue($oChart)
     Case ChartType.LinesPercent
       fMaxVal = 100
   End Select
@@ -59,32 +69,32 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   
   
-  hUnits = MTools.DrawChartAxes(Chart, hRect, fMinVal, fMaxVal)
+  hUnits = MTools.DrawChartAxes($oChart, hRect, fMinVal, fMaxVal)
   draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
- If Chart.Count < 2 Then Return 
+ If $oChart.Count < 2 Then Return 
   Draw.FillStyle = Fill.Solid
   
-  For j = 0 To Chart.CountDataSets - 1
+  For j = 0 To $oChart.CountDataSets - 1
     ariPolyLine = New Integer[]
-    ariPolyLine.Resize(Chart.Count * 2)
+    ariPolyLine.Resize($oChart.Count * 2)
     aroPolyLines.Add(ariPolyLine)
     
   Next  
   
-  For i = 0 To Chart.Count - 1
+  For i = 0 To $oChart.Count - 1
   f = 0
   fMaxVal = 0  
-    For j = 0 To Chart.CountDataSets - 1
-      fMaxVal += Chart[j][i]
+    For j = 0 To $oChart.CountDataSets - 1
+      fMaxVal += $oChart[j][i]
     Next
-    For j = 0 To Chart.CountDataSets - 1
+    For j = 0 To $oChart.CountDataSets - 1
       Select Case $iType
         Case ChartType.LinesPercent
-          f += Chart[j][i] / fMaxVal * 100
+          f += $oChart[j][i] / fMaxVal * 100
         Case ChartType.LinesStacked
-          f += Chart[j][i]
+          f += $oChart[j][i]
         Case Else
-          f = Chart[j][i]
+          f = $oChart[j][i]
       End Select 
       aroPolyLines[j][i * 2] = hRect.Left + (hUnits.X * i)
       aroPolyLines[j][i * 2 + 1] = hRect.Bottom - f * hUnits.Y + (hUnits.Y * fMinVal)
@@ -95,7 +105,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   For i = 0 To aroPolyLines.Max 'TO 0 STEP -1
   Draw.LineWidth = 2
-  Draw.ForeColor = Chart.Colors[i]
+  Draw.ForeColor = $oChart.Colors[i]
   Draw.LineStyle = Line.Solid
     draw.Polyline(aroPolyLines[i])  
   Next
@@ -106,9 +116,9 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
     
       For j = 0 To aroPolyLines[i].Max Step 2
         Draw.LineWidth = 1
-        Draw.FillColor = Chart.Colors[i]
+        Draw.FillColor = $oChart.Colors[i]
         Draw.ForeColor = Color.DarkGray
-        MTools.DrawSymbol(i, aroPolyLines[i][j], aroPolyLines[i][j + 1])
+        MTools.DrawSymbol($oChart, i, aroPolyLines[i][j], aroPolyLines[i][j + 1])
       
       Next
     
