@@ -4,12 +4,12 @@ Public ColorList As Integer[] = [&hff6f00,
 &h800080, &h666666, &h6B4794, &h290099, &h7da647,
 &he6e64c, &hff9966, &h000080, &hfff0ff, &h00ffff, &h9999ff]
 
-Public Function GetChartMaxValue(oChart As Chart) As Float
+Public Function GetChartMaxValue(sidChart As String) As Float
   Dim hSeries As _CSerie
   Dim f As Float
   Dim fCurMax As Float
   fCurMax = 0
-  For Each hSeries In oChart
+  For Each hSeries In Chart._$ColChart[sidChart]
     For Each f In hSeries
       If fCurMax < f Then fCurMax = f
     Next
@@ -18,15 +18,15 @@ Public Function GetChartMaxValue(oChart As Chart) As Float
   
 End
 
-Public Function GetChartMaxCumulateValue(oChart As Chart) As Float
+Public Function GetChartMaxCumulateValue(sidChart As String) As Float
   Dim hSeries As _CSerie
   Dim f As Float
   Dim fCurMax As Float
   Dim i As Integer
   fCurMax = 0
-  For i = 0 To oChart.Count - 1
+  For i = 0 To Chart._$ColChart[sidChart].Count - 1
     f = 0
-    For Each hSeries In oChart
+    For Each hSeries In Chart._$ColChart[sidChart]
       f += hSeries[i]
     Next
     If fCurMax < f Then fCurMax = f
@@ -34,15 +34,15 @@ Public Function GetChartMaxCumulateValue(oChart As Chart) As Float
   Return fCurMax
 End
 
-Public Function GetChartMaxCumulate(oChart As Chart) As Float
+Public Function GetChartMaxCumulate(sidChart As String) As Float
   
   Dim f, fMaxValue As Float
   Dim hSeries As _CSerie
   Dim i As Integer
   
-  For Each hSeries In oChart
+  For Each hSeries In Chart._$ColChart[sidChart]
     f = 0
-    For i = 0 To oChart.Count - 1
+    For i = 0 To Chart._$ColChart[sidChart].Count - 1
       f += hSeries[i]
     Next
     If fMaxValue < f Then fMaxValue = f
@@ -52,7 +52,7 @@ End
 
 
 
-Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As Float, fMaxValue As Float, Optional iAlign As Integer) As CPoint
+Public Function DrawChartAxes(sidChart As String, hChartRect As CRect, fMinValue As Float, fMaxValue As Float, Optional iAlign As Integer) As CPoint
   Dim fTabPos As Float
   Dim i, iStaticSpace As Integer
   Dim fXUnit, fYUnit As Float
@@ -64,7 +64,7 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
   Dim iXStep, cnt As Integer
   Dim bBascule As Boolean
     'Draw the Y axe
-  iStaticSpace = 5 * oChart._fProportionnal
+  iStaticSpace = 5 * Chart._$ColChart[sidChart]._fProportionnal
 
   
 
@@ -74,7 +74,7 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
 
   fMultiple = Round(fMaxValue / 100)
   If fMultiple = 0 Then fMultiple = 1
-  If oChart.YAxe.AutoScale Then
+  If Chart._$ColChart[sidChart].YAxe.AutoScale Then
     If fMaxValue > 1 Then 
       
       If fMaxValue / fMultiple < 10 Then 
@@ -92,14 +92,14 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
       Endif
      Endif
     Else
-      fStep = oChart.YAxe.Step
+      fStep = Chart._$ColChart[sidChart].YAxe.Step
     Endif
     
 'Endif
 
   'Redefinition de la position basse
-  If oChart.XAxe.Visible Then
-    If oChart.XAxe.Arrange = oChart.XAxe.Steps Then 
+  If Chart._$ColChart[sidChart].XAxe.Visible Then
+    If Chart._$ColChart[sidChart].XAxe.Arrange = Chart._$ColChart[sidChart].XAxe.Steps Then 
       hChartRect.Bottom = hChartRect.Bottom - (iStaticSpace * 2 + Draw.Font.Height())
       hChartRect.Top = hChartRect.Top '+ (iStaticSpace * 2 + Draw.Font.Height())
     Else
@@ -107,27 +107,27 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
       hChartRect.Top = hChartRect.Top '+ (Draw.Font.Height())
     Endif
   Endif
-  draw.Font = oChart.XAxe.Font
-  draw.Font.Size = oChart.XAxe.Font.Size * oChart._fProportionnal
+  draw.Font = Chart._$ColChart[sidChart].XAxe.Font
+  draw.Font.Size = Chart._$ColChart[sidChart].XAxe.Font.Size * Chart._$ColChart[sidChart]._fProportionnal
   
   'To manage the last Xaxe label length
   If iAlign = Align.Center Then
 
-    hChartRect.Right -= draw.TextWidth(oChart[oChart.CountDataSets - 1].Text) / 2
+    hChartRect.Right -= draw.TextWidth(Chart._$ColChart[sidChart][Chart._$ColChart[sidChart].CountDataSets - 1].Text) / 2
   Else
-    hChartRect.Right -= draw.TextWidth(oChart.Headers.Values[oChart.Headers.Values.Max]) / 2
+    hChartRect.Right -= draw.TextWidth(Chart._$ColChart[sidChart].Headers.Values[Chart._$ColChart[sidChart].Headers.Values.Max]) / 2
   Endif
   
   
-  If oChart.YAxe.Visible Then
+  If Chart._$ColChart[sidChart].YAxe.Visible Then
     cnt = draw.TextWidth(fMaxValue & "0")
     
-    hChartRect.Left = hChartRect.Left + iStaticSpace * oChart._fProportionnal + cnt
+    hChartRect.Left = hChartRect.Left + iStaticSpace * Chart._$ColChart[sidChart]._fProportionnal + cnt
   Endif
   
   'Draw the background
   
-  Draw.FillColor = oChart.Background
+  Draw.FillColor = Chart._$ColChart[sidChart].Background
   Draw.FillStyle = Fill.Solid
   Draw.Rect(hChartRect.Left, hChartRect.Top, hChartRect.Right - hChartRect.Left, hChartRect.Bottom - hChartRect.Top + 1)
   Draw.ForeColor = Color.Black
@@ -137,19 +137,19 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
 
   Draw.Line(hChartRect.Left, hChartRect.Top, hChartRect.Left, hChartRect.Bottom)
 'Dessin de l'axe Y
-  Draw.Font = oChart.YAxe.Font
-  Draw.Font.Size = oChart.YAxe.Font.Size * oChart._fProportionnal  
+  Draw.Font = Chart._$ColChart[sidChart].YAxe.Font
+  Draw.Font.Size = Chart._$ColChart[sidChart].YAxe.Font.Size * Chart._$ColChart[sidChart]._fProportionnal  
   For f = fMinValue To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Bottom - (fYUnit * f - (fYUnit * fMinValue))
     'Dessine les intervalles Verticaux
-    If oChart.YAxe.ShowIntervalLines Then Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
+    If Chart._$ColChart[sidChart].YAxe.ShowIntervalLines Then Draw.Line(hChartRect.Left, fTabPos, hChartRect.Right, fTabPos)
     'Dessine l'étiquette
-    If oChart.YAxe.Visible Then 
+    If Chart._$ColChart[sidChart].YAxe.Visible Then 
       'Dessine le taquet
 
       Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
-      Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & " "), fTabPos - Draw.Font.Height() / 2)
+      Draw.Text(f, hChartRect.Left - iStaticSpace * Chart._$ColChart[sidChart]._fProportionnal - Draw.TextWidth(f & " "), fTabPos - Draw.Font.Height() / 2)
     Endif
   Next
   
@@ -160,30 +160,30 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
   Draw.Line(hChartRect.Left, hChartRect.Bottom, hChartRect.Right, hChartRect.Bottom)
   
   If iAlign = Align.Center Then 
-    fXUnit = ((hChartRect.Right - hChartRect.Left) / (oChart.Count + 1)) / oChart.CountDataSets
+    fXUnit = ((hChartRect.Right - hChartRect.Left) / (Chart._$ColChart[sidChart].Count + 1)) / Chart._$ColChart[sidChart].CountDataSets
   Else 
-    fXUnit = ((hChartRect.Right - hChartRect.Left) / (oChart.Count - 1))
+    fXUnit = ((hChartRect.Right - hChartRect.Left) / (Chart._$ColChart[sidChart].Count - 1))
   Endif
   fTabPos = hChartRect.Left 
   
-  Draw.Font = oChart.XAxe.Font
-  Draw.Font.Size = oChart.XAxe.Font.Size * oChart._fProportionnal
+  Draw.Font = Chart._$ColChart[sidChart].XAxe.Font
+  Draw.Font.Size = Chart._$ColChart[sidChart].XAxe.Font.Size * Chart._$ColChart[sidChart]._fProportionnal
   
 
   
   If iAlign = Align.Center Then 
 
   
-  For Each oSerie In oChart
-      fTabPos += fXUnit * (oChart.Count + 1)
+  For Each oSerie In Chart._$ColChart[sidChart]
+      fTabPos += fXUnit * (Chart._$ColChart[sidChart].Count + 1)
         Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + iStaticSpace)
-      If oChart.XAxe.Visible Then 
+      If Chart._$ColChart[sidChart].XAxe.Visible Then 
         
         If bBascule Then iXStep = Draw.Font.Height() / 2
         
-        Draw.Text(oSerie.Text, fTabPos - (fXUnit * (oChart.Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
+        Draw.Text(oSerie.Text, fTabPos - (fXUnit * (Chart._$ColChart[sidChart].Count + 1)) / 2 - Draw.TextWidth(oSerie.Text) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
         
-        If oChart.XAxe.Arrange = oChart.XAxe.Steps Then
+        If Chart._$ColChart[sidChart].XAxe.Arrange = Chart._$ColChart[sidChart].XAxe.Steps Then
           bBascule = Not bBascule
         Endif
         
@@ -191,17 +191,17 @@ Public Function DrawChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As
       Endif
   Next
   Else
-  For i = 0 To oChart.Count - 1
+  For i = 0 To Chart._$ColChart[sidChart].Count - 1
   
      '* '(Chart.Count + 1)
    
     
 
-    Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
-    If oChart.XAxe.Visible Then 
+    Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * Chart._$ColChart[sidChart]._fProportionnal)
+    If Chart._$ColChart[sidChart].XAxe.Visible Then 
       If bBascule Then iXStep = Draw.Font.Height() / 2
-      Draw.Text(oChart.Headers[i], fTabPos - Draw.TextWidth(oChart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
-      If oChart.XAxe.Arrange = oChart.XAxe.Steps Then
+      Draw.Text(Chart._$ColChart[sidChart].Headers[i], fTabPos - Draw.TextWidth(Chart._$ColChart[sidChart].Headers[i]) / 2, hChartRect.Bottom + iStaticSpace + iXStep, Align.Center)
+      If Chart._$ColChart[sidChart].XAxe.Arrange = Chart._$ColChart[sidChart].XAxe.Steps Then
           bBascule = Not bBascule
       Endif
         
@@ -217,9 +217,9 @@ Endif
 End
 
 
-Public Sub DrawSymbol(oChart As Chart, iType As Integer, X As Integer, Y As Integer)
+Public Sub DrawSymbol(sidChart As String, iType As Integer, X As Integer, Y As Integer)
   Dim ariSymbol As Integer[]
-  Dim iStaticSpace As Integer = 10 * oChart._fProportionnal
+  Dim iStaticSpace As Integer = 10 * Chart._$ColChart[sidChart]._fProportionnal
   X -= iStaticSpace / 2
   Y -= iStaticSpace / 2
   Select Case iType
@@ -243,7 +243,7 @@ Public Sub DrawSymbol(oChart As Chart, iType As Integer, X As Integer, Y As Inte
   
 End
 
-Public Function DrawVertChartAxes(oChart As Chart, hChartRect As CRect, fMinValue As Float, fMaxValue As Float, Optional iAlign As Integer) As CPoint
+Public Function DrawVertChartAxes(sidChart As String, hChartRect As CRect, fMinValue As Float, fMaxValue As Float, Optional iAlign As Integer) As CPoint
   Dim fTabPos As Float
   Dim i, iStaticSpace As Integer
   Dim fXUnit, fYUnit As Float
@@ -255,7 +255,7 @@ Public Function DrawVertChartAxes(oChart As Chart, hChartRect As CRect, fMinValu
   Dim iXStep As Integer
   Dim bBascule As Boolean
     'Draw the Y axe
-  iStaticSpace = 5 * oChart._fProportionnal
+  iStaticSpace = 5 * Chart._$ColChart[sidChart]._fProportionnal
 
   
   fMultiple = Round(fMaxValue / 100)
@@ -280,8 +280,8 @@ Endif
 
 
 'Redefinition de la position basse
-  If oChart.XAxe.Visible Then
-    If oChart.XAxe.Arrange = oChart.XAxe.Steps Then 
+  If Chart._$ColChart[sidChart].XAxe.Visible Then
+    If Chart._$ColChart[sidChart].XAxe.Arrange = Chart._$ColChart[sidChart].XAxe.Steps Then 
       hChartRect.Bottom = hChartRect.Bottom - (iStaticSpace * 2 + Draw.Font.Height())
       hChartRect.Top = hChartRect.Top + (iStaticSpace * 2 + Draw.Font.Height())
     Else
@@ -293,15 +293,15 @@ Endif
   Draw.Line(hChartRect.Left, hChartRect.Top, hChartRect.Left, hChartRect.Bottom)
   
   fYUnit = (hChartRect.Right - hChartRect.Left) / (fMaxValue)
-  Draw.Font = oChart.XAxe.Font
-  Draw.Font.Size = oChart.XAxe.Font.Size * oChart._fProportionnal
+  Draw.Font = Chart._$ColChart[sidChart].XAxe.Font
+  Draw.Font.Size = Chart._$ColChart[sidChart].XAxe.Font.Size * Chart._$ColChart[sidChart]._fProportionnal
   For f = 0 To fMaxValue Step fStep 'Round(fMaxValue / 20)
     'Position du taquet
     fTabPos = hChartRect.Left + (fYUnit * f)
     
     'Draw.Line(hChartRect.Left - iStaticSpace, fTabPos, hChartRect.Left, fTabPos)
     'Dessine les intervalles Verticaux
-    If oChart.YAxe.ShowIntervalLines Then Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Top)
+    If Chart._$ColChart[sidChart].YAxe.ShowIntervalLines Then Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Top)
     'Dessine l'étiquette
     'Draw.Text(f, hChartRect.Left - iStaticSpace * oChart._fProportionnal - Draw.TextWidth(f & "  "), fTabPos - Draw.Font.Height() / 2)
 
@@ -309,10 +309,10 @@ Endif
 
         
 
-    If oChart.XAxe.Visible Then 
+    If Chart._$ColChart[sidChart].XAxe.Visible Then 
       If bBascule Then iXStep = Draw.Font.Height() 
       Draw.Text(f, fTabPos - Draw.Font.Width(f) / 2, hChartRect.Bottom + iStaticSpace + iXStep)
-      If oChart.XAxe.Arrange = oChart.XAxe.Steps Then
+      If Chart._$ColChart[sidChart].XAxe.Arrange = Chart._$ColChart[sidChart].XAxe.Steps Then
           bBascule = Not bBascule
       Endif
       iXStep = 0
@@ -328,29 +328,29 @@ Endif
  Draw.Line(hChartRect.Left, hChartRect.Bottom, hChartRect.Right, hChartRect.Bottom)
  
  If iAlign = Align.Center Then 
-   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (oChart.Count + 1)) / oChart.CountDataSets
+   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (Chart._$ColChart[sidChart].Count + 1)) / Chart._$ColChart[sidChart].CountDataSets
  Else 
-   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (oChart.Count - 1))
+   fXUnit = ((hChartRect.Bottom - hChartRect.Top) / (Chart._$ColChart[sidChart].Count - 1))
  Endif
  fTabPos = hChartRect.Bottom
  If iAlign = Align.Center Then 
- Draw.Font = oChart.YAxe.Font
- Draw.Font.Size = oChart.YAxe.Font.Size * oChart._fProportionnal
- For Each oSerie In oChart
+ Draw.Font = Chart._$ColChart[sidChart].YAxe.Font
+ Draw.Font.Size = Chart._$ColChart[sidChart].YAxe.Font.Size * Chart._$ColChart[sidChart]._fProportionnal
+ For Each oSerie In Chart._$ColChart[sidChart]
       
-     fTabPos -= fXUnit * (oChart.Count + 1)
+     fTabPos -= fXUnit * (Chart._$ColChart[sidChart].Count + 1)
        Draw.Line(hChartRect.Left, fTabPos, hChartRect.Left - iStaticSpace, fTabPos)
-     If oChart.YAxe.Visible Then Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (oChart.Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)
+     If Chart._$ColChart[sidChart].YAxe.Visible Then Draw.Text(oSerie.Text, hChartRect.Left - Draw.TextWidth(oSerie.Text) - iStaticSpace, fTabPos + (fXUnit * (Chart._$ColChart[sidChart].Count + 1)) / 2 + Draw.TextHeight(oSerie.Text) / 2)
  Next
  Else
- For i = 0 To oChart.Count - 1
+ For i = 0 To Chart._$ColChart[sidChart].Count - 1
  
     '* '(Chart.Count + 1)
   
    
  
-   Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * oChart._fProportionnal)
-   If oChart.YAxe.Visible Then Draw.Text(oChart.Headers[i], fTabPos - Draw.TextWidth(oChart.Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
+   Draw.Line(fTabPos, hChartRect.Bottom, fTabPos, hChartRect.Bottom + 2 * Chart._$ColChart[sidChart]._fProportionnal)
+   If Chart._$ColChart[sidChart].YAxe.Visible Then Draw.Text(Chart._$ColChart[sidChart].Headers[i], fTabPos - Draw.TextWidth(Chart._$ColChart[sidChart].Headers[i]) / 2, hChartRect.Bottom + iStaticSpace, Align.Center)
    fTabPos += fXUnit
  
  Next
@@ -360,14 +360,14 @@ Endif
 End
 
 
-Public Function GetChartMaxLenLabel(oChart As Chart) As String
+Public Function GetChartMaxLenLabel(sidChart As String) As String
   
   Dim hSeries As _CSerie
   Dim s As String
   Dim sCurMax As String
   
   sCurMax = 0
-  For Each hSeries In oChart
+  For Each hSeries In Chart._$ColChart[sidChart]
     If Len(hSeries.Text) > Len(sCurMax) Then sCurMax = hSeries.Text
   Next
   Return sCurMax

@@ -19,12 +19,12 @@ Property LineStyle As Integer
 Property LineWidth As Integer
 Property Color As Integer
 Property Background As Integer
-Private $oChart As Chart
+Private $sidChart As String
 
 
-Public Sub _new(oChart As Chart)
+Public Sub _new(sidChart As String)
     
-  $oChart = oChart
+  $sidChart = sidChart
   '$aroValues.Add(0)
   'ME.Count = 1
 End
@@ -37,14 +37,14 @@ End
 
 Private Sub count_Write(Value As Integer)
 
- $oChart.Labels.Count = Value
+ Chart._$ColChart[$sidChart].Labels.Count = Value
  
 End
 
-Public Sub _SetCount(Value As Integer, oChart As chart)
+Public Sub _SetCount(Value As Integer, sidChart As String)
   Dim cnt As Integer
   Dim i As Integer
-   $oChart = oChart
+   $sidChart = sidChart
   If Value < 1 Then 
     Message.Error(("The values count must be up than 1"))
     Return 
@@ -114,7 +114,7 @@ Private Sub Values_Write(Value As Float[])
     Return 
   Endif 
   $aroValues = Value
-  $oChart.Headers.Count = $oChart.Headers.Count
+  Chart._$ColChart[$sidChart].Headers.Count = Chart._$ColChart[$sidChart].Headers.Count
 
 End
 

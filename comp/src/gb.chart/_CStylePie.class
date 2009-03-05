@@ -2,21 +2,13 @@
 
 
 Private $iType As Integer
-Private $oChart As Object
-Public Sub _New(Value As Integer, oChart As Object)
+Private $sidChart As String
+Public Sub _New(Value As Integer, sidChart As String)
   
   $iType = Value
-  $oChart = oChart
+  $sidChart = sidChart
   
 End
-
-Public Sub _Free()
-  
-  $oChart = Null
-  
-End
-
-
 Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   Dim i, J As Integer
@@ -31,7 +23,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim fMaxRayon As Float
   Dim fRayonUnit As Float
   'Obtenir la valeur cumulée:
-  For Each s In $oChart.Headers
+  For Each s In Chart._$ColChart[$sidChart].Headers
     If draw.TextWidth(s) > iMaxTextWidth Then iMaxTextWidth = draw.TextWidth(s)
   Next
   If cw <= ch Then 
@@ -43,24 +35,24 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   
   
-  fRayonUnit = fMaxRayon / ($oChart.CountDataSets + 1)
-  For j = 0 To $oChart.CountDataSets - 1
+  fRayonUnit = fMaxRayon / (Chart._$ColChart[$sidChart].CountDataSets + 1)
+  For j = 0 To Chart._$ColChart[$sidChart].CountDataSets - 1
     If J = 1 And $iType <> ChartType.PieRings Then Break 
     i = 0
     fCumul = 0
-    For i = 0 To $oChart.Count - 1
-        fCumul += $oChart[j][i]
+    For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+        fCumul += Chart._$ColChart[$sidChart][j][i]
         
     Next
     fNewPos = 0
     fRapport = 360 / fCumul
     fCumul = Rad(90)
-    fRayon = fRayonUnit * (($oChart.CountDataSets + 1) - J)
+    fRayon = fRayonUnit * ((Chart._$ColChart[$sidChart].CountDataSets + 1) - J)
    
-    For i = 0 To $oChart.Count - 1
-    f = $oChart[j][i]
+    For i = 0 To Chart._$ColChart[$sidChart].Count - 1
+    f = Chart._$ColChart[$sidChart][j][i]
     Draw.Forecolor = color.DarkGray
-    draw.FillColor = $oChart.Colors[i]
+    draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
     draw.FillStyle = fill.Solid
     fNewPos = fCumul + Rad(f * frapport)
     fTextPos = fCumul + Rad(f * frapport) / 2

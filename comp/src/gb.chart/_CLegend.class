@@ -11,7 +11,7 @@ Private $iPosition As Integer = Align.Right 'Me.Right
 Private $sTitle As String
 Private $bVisible As Boolean = False
 Private $oFont As New Font
-Private $oChart As Object
+Private $sidChart As String
 Property {Font} As Font
 
 Property Title As String
@@ -21,16 +21,16 @@ Property Read _Width As Integer
 Property Read _Height As Integer
 
 
-Public Sub _New(oChart As Object)
+Public Sub _New(sidChart As String)
   
   Me.Font.Size = 11
-  $oChart = oChart
+  $sidChart = sidChart
   
 End
 
 Public Sub _Free()
   
-  $oChart = Null
+  
   
 End
 
@@ -79,7 +79,7 @@ Public Sub Draw(bSeries As Boolean)
   Dim SQUARESIZE As Integer
   Dim TitleH As Integer
   'DIM hColumn AS _Column
-  Dim iStaticSpace As Integer = 5 * $oChart._fProportionnal
+  Dim iStaticSpace As Integer = 5 * Chart._$ColChart[$sidChart]._fProportionnal
   Dim arsInt As String[]
   Dim oSerie As _CSerie
   $iWidth = 0
@@ -88,18 +88,18 @@ Public Sub Draw(bSeries As Boolean)
   
   If bSeries Then 
     arsInt = New String[]
-    For Each oSerie In $oChart
+    For Each oSerie In Chart._$ColChart[$sidChart]
       arsInt.Add(oSerie.Text)
     Next
   Else 
-    arsInt = $oChart.Headers.Values
+    arsInt = Chart._$ColChart[$sidChart].Headers.Values
   Endif 
   
   
   If Not $bVisible Then Return 
   
-  w = $oChart.Width
-  h = $oChart.Height
+  w = Chart._$ColChart[$sidChart].Width
+  h = Chart._$ColChart[$sidChart].Height
   'draw.Font = Chart.Font
   'Get the max text length
   For Each s In arsInt
@@ -107,32 +107,32 @@ Public Sub Draw(bSeries As Boolean)
     If i > cnt Then cnt = i
   Next
   draw.Font = $oFont
-  draw.Font.Size = $oFont.Size * $oChart._fProportionnal
+  draw.Font.Size = $oFont.Size * Chart._$ColChart[$sidChart]._fProportionnal
   SQUARESIZE = draw.TextHeight("T")
   
   Select Case $iPosition
     Case Align.Right 'Me.Right
-      If draw.TextWidth($oChart.Legend.Title) > cnt Then cnt = draw.TextWidth($oChart.Legend.Title)
+      If draw.TextWidth(Chart._$ColChart[$sidChart].Legend.Title) > cnt Then cnt = draw.TextWidth(Chart._$ColChart[$sidChart].Legend.Title)
       w = iStaticSpace + SQUARESIZE + iStaticSpace + cnt + iStaticSpace
       
       If $sTitle <> "" Then TitleH = draw.TextHeight($sTitle)
       
       h = TitleH + iStaticSpace + arsInt.Count * (draw.Font.Height() + iStaticSpace)
-      x = $oChart.Width - w - iStaticSpace
-      y = ($oChart.Height - h) / 2
+      x = Chart._$ColChart[$sidChart].Width - w - iStaticSpace
+      y = (Chart._$ColChart[$sidChart].Height - h) / 2
       draw.ForeColor = Color.Black
       Draw.Rect(x, Y, w, h)
-      Draw.Text($oChart.Legend.Title, x + iStaticSpace + (w - cnt) / 2, Y)
-      draw.Font.Size = $oFont.Size * $oChart._fProportionnal
+      Draw.Text(Chart._$ColChart[$sidChart].Legend.Title, x + iStaticSpace + (w - cnt) / 2, Y)
+      draw.Font.Size = $oFont.Size * Chart._$ColChart[$sidChart]._fProportionnal
       cnt = 0
       For i = 0 To arsInt.max
         Draw.FillColor = Chart.Colors[i]
         Draw.FillStyle = Fill.Solid
         
-        If $oChart.Type = ChartType.LinesSymbols Or $oChart.Type = ChartType.AreasSymbols Then
-          MTools.DrawSymbol($oChart, i, x + iStaticSpace + SQUARESIZE / 2, Y + TitleH + iStaticSpace + cnt + SQUARESIZE / 2)
+        If Chart._$ColChart[$sidChart].Type = ChartType.LinesSymbols Or Chart._$ColChart[$sidChart].Type = ChartType.AreasSymbols Then
+          MTools.DrawSymbol($sidChart, i, x + iStaticSpace + SQUARESIZE / 2, Y + TitleH + iStaticSpace + cnt + SQUARESIZE / 2)
         Else
-          MTools.DrawSymbol($oChart, 0, x + iStaticSpace + SQUARESIZE / 2, Y + TitleH + iStaticSpace + cnt + SQUARESIZE / 2)
+          MTools.DrawSymbol($sidChart, 0, x + iStaticSpace + SQUARESIZE / 2, Y + TitleH + iStaticSpace + cnt + SQUARESIZE / 2)
         Endif
         'Draw.Rect(x + iStaticSpace+square, Y + TitleH + iStaticSpace + cnt, SQUARESIZE, SQUARESIZE)
         Draw.Text(arsInt[i], x + iStaticSpace + SQUARESIZE + iStaticSpace, Y + TitleH + iStaticSpace + cnt)
@@ -151,18 +151,18 @@ Public Sub Draw(bSeries As Boolean)
         w += iStaticSpace + SQUARESIZE + 5 + draw.TextWidth(s) + iStaticSpace
       Next
       w += iStaticSpace
-      Draw.Rect(($oChart.Width - w) / 2, $oChart.Height - h - iStaticSpace, w, h)
-      Draw.Text($sTitle, ($oChart.Width - Draw.TextWidth($sTitle)) / 2, $oChart.Height - h)
-      x = ($oChart.Width - w) / 2
-      y = $oChart.Height - h + TitleH + iStaticSpace
+      Draw.Rect((Chart._$ColChart[$sidChart].Width - w) / 2, Chart._$ColChart[$sidChart].Height - h - iStaticSpace, w, h)
+      Draw.Text($sTitle, (Chart._$ColChart[$sidChart].Width - Draw.TextWidth($sTitle)) / 2, Chart._$ColChart[$sidChart].Height - h)
+      x = (Chart._$ColChart[$sidChart].Width - w) / 2
+      y = Chart._$ColChart[$sidChart].Height - h + TitleH + iStaticSpace
       i = 0
-      draw.Font.Size = $oFont.Size * $oChart._fProportionnal
+      draw.Font.Size = $oFont.Size * Chart._$ColChart[$sidChart]._fProportionnal
       For Each s In arsInt
         x += iStaticSpace
-        draw.FillColor = $oChart.Colors[i]
+        draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
         Draw.FillStyle = Fill.Solid
         'draw.Rect(x, y, SQUARESIZE, SQUARESIZE)
-        If $oChart.Type = ChartType.LinesSymbols Or $oChart.Type = ChartType.AreasSymbols Then
+        If Chart._$ColChart[$sidChart].Type = ChartType.LinesSymbols Or Chart._$ColChart[$sidChart].Type = ChartType.AreasSymbols Then
           MTools.DrawSymbol(i, x + SQUARESIZE / 2, Y + SQUARESIZE / 2)
         Else
           MTools.DrawSymbol(0, x + SQUARESIZE / 2, Y + SQUARESIZE / 2)

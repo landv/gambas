@@ -3,7 +3,8 @@
 Export 
 Create Static
 Private $iStyle As Integer = ChartStyle.Default
-
+Static Public _$ColChart As New Collection
+Public Id As String
 Private bFirstColumnAsLabel As Boolean = False
 Public _fProportionnal As Float = 1.0
 Private $bProportionnal As Boolean = True
@@ -18,13 +19,13 @@ Private $oTitle As New _CTitle
 'PRIVATE $oColumns AS NEW _Column
 Private $oYAxe As New _CYAxe
 Private $oXAxe As New _CXAxe
-Private $oLegend As New _CLegend(Me)
+Private $oLegend As _CLegend
 Private $oColors As New _Colors
 Private $iType As Integer
 'PRIVATE $iStyle AS Integer
 Private $iWidth As Integer
 Private $iHeight As Integer
-Private $oHeaders As New _CHeaders(Me)
+Private $oHeaders As _CHeaders
 Private $iBackground As Integer = Color.White
 Private $iBorder As Boolean = True
 
@@ -53,9 +54,13 @@ Property Style As Integer
 
 
 Public Sub _New()
-  
+ 
+  id = Now()
   Me.CountDataSets = 1
   Me.Type = ChartType.Columns
+  _$ColChart.Add(Me, id)
+  $oHeaders = New _CHeaders(id)
+   $oLegend = New _CLegend(id)
   'MTools.ColorList = [color.Blue, color.Yellow, color.Red, color.Green, color.Orange, color.DarkBlue]
 End
 
@@ -97,22 +102,22 @@ Private Sub Type_Write(Value As Integer)
  Select Case $iType
   
     Case .Columns, .ColumnsStacked, .ColumnsPercent, .ColumnsLineCombination
-      $oGraphStyle = New _CStyleColumns(Value, Me)
+      $oGraphStyle = New _CStyleColumns(Value, Me.id)
       $bLegendSeries = False
     Case .Pie, .PieRings, .PieOffSet1, .PieOffSet2
-      $oGraphStyle = New _CStylePie(Value, Me)
+      $oGraphStyle = New _CStylePie(Value, Me.id)
       $bLegendSeries = False
     Case .Lines, .LinesStacked, .LinesPercent, .LinesSymbols
-      $oGraphStyle = New _CStyleLine(Value, Me)
+      $oGraphStyle = New _CStyleLine(Value, Me.id)
       $bLegendSeries = True
     Case .Areas, .AreasStacked, .AreasPercent, .AreasSymbols
-      $oGraphStyle = New _CStyleAreas(Value, Me)
+      $oGraphStyle = New _CStyleAreas(Value, Me.id)
       $bLegendSeries = True
     Case .Bars, .BarsPercent, .BarsStacked
-      $oGraphStyle = New _CStyleBar(Value, Me)
+      $oGraphStyle = New _CStyleBar(Value, Me.id)
       $bLegendSeries = False
     Case .Plots
-      $oGraphStyle = New _CStylePlot(Value, Me)
+      $oGraphStyle = New _CStylePlot(Value, Me.id)
       $bLegendSeries = True
   
   End Select
@@ -197,7 +202,7 @@ Private Sub CountDataSets_Write(Value As Integer)
   Dim i As Integer
   If $aroSeries.Count < Value Then 
     For i = 0 To (Value - $aroSeries.Count) - 1
-      oSeries = New _CSerie(Me)
+      oSeries = New _CSerie(Me.id)
       $aroSeries.Add(oSeries)
     Next
   Else If $aroSeries.Count > Value Then 
@@ -343,3 +348,11 @@ Private Sub Border_Write(Value As Boolean)
   $iBorder = Value
 
 End
+
+Public Sub _Free()
+  
+  '_$ColChart.Remove(Me.id)
+  
+  
+End
+
