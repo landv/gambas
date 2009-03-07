@@ -528,7 +528,7 @@ bool gDialog::saveFile()
 	if (DIALOG_path)
 	{
 		gtk_file_chooser_select_filename ((GtkFileChooser*)msg,DIALOG_path);
-		gtk_file_chooser_set_current_name ((GtkFileChooser*)msg,DIALOG_path);
+		//gtk_file_chooser_set_current_name ((GtkFileChooser*)msg,DIALOG_path);
 	}
 		
 	return gDialog_runFile(msg);
