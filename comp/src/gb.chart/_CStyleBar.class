@@ -37,9 +37,9 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   Select Case $iType
     Case ChartType.Bars
-      fMaxVal = MTools.GetChartMaxValue(Chart._$ColChart[$sidChart])
+      fMaxVal = MTools.GetChartMaxValue($sidChart)
     Case ChartType.BarsStacked
-     fMaxVal = MTools.GetChartMaxCumulate(Chart._$ColChart[$sidChart])
+     fMaxVal = MTools.GetChartMaxCumulate($sidChart)
     Case ChartType.BarsPercent
       fMaxVal = 100
   End Select
@@ -61,7 +61,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   
   
-  hUnits = MTools.DrawVertChartAxes(Chart._$ColChart[$sidChart], hRect, 0, fMaxVal, Align.Center)
+  hUnits = MTools.DrawVertChartAxes($sidChart, hRect, 0, fMaxVal, Align.Center)
   'fTabPos = hRect.Top
   Select Case $iType
     Case ChartType.Bars

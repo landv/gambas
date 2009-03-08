@@ -48,7 +48,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
 
       
     Case ChartType.AreasStacked
-      fMaxVal = MTools.GetChartMaxCumulateValue(Chart._$ColChart[$sidChart])
+      fMaxVal = MTools.GetChartMaxCumulateValue($sidChart)
     Case ChartType.AreasPercent
       fMaxVal = 100
   End Select

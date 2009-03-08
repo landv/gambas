@@ -33,7 +33,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Select Case $iType
     Case ChartType.Lines, ChartType.LinesSymbols
       If Chart._$ColChart[$sidChart].YAxe.AutoScale Then
-        fMaxVal = MTools.GetChartMaxValue(Chart._$ColChart[$sidChart])
+        fMaxVal = MTools.GetChartMaxValue($sidChart)
         fMinVal = 0
       Else
         fMaxVal = Chart._$ColChart[$sidChart].YAxe.MaxValue
@@ -42,7 +42,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
       
       
     Case ChartType.LinesStacked
-      fMaxVal = MTools.GetChartMaxCumulateValue(Chart._$ColChart[$sidChart])
+      fMaxVal = MTools.GetChartMaxCumulateValue($sidChart)
     Case ChartType.LinesPercent
       fMaxVal = 100
   End Select
@@ -61,7 +61,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   
   
   
-  hUnits = MTools.DrawChartAxes(Chart._$ColChart[$sidChart], hRect, fMinVal, fMaxVal)
+  hUnits = MTools.DrawChartAxes($sidChart, hRect, fMinVal, fMaxVal)
   draw.Clip(hRect.Left, hRect.Top, hRect.Right - hRect.Left, hRect.Bottom - hRect.Top)
  If Chart._$ColChart[$sidChart].Count < 2 Then Return 
   Draw.FillStyle = Fill.Solid
@@ -110,7 +110,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
         Draw.LineWidth = 1
         Draw.FillColor = Chart._$ColChart[$sidChart].Colors[i]
         Draw.ForeColor = Color.DarkGray
-        MTools.DrawSymbol(Chart._$ColChart[$sidChart], i, aroPolyLines[i][j], aroPolyLines[i][j + 1])
+        MTools.DrawSymbol($sidChart, i, aroPolyLines[i][j], aroPolyLines[i][j + 1])
       
       Next
     

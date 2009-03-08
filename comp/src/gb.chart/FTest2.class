@@ -13,7 +13,7 @@ Public Sub Form_Open()
   Chart2.Headers.Values = ["tic", "tac", "toe"]
   Chart2[0].Values = [1.0, 2.0, 3.0]
   Chart2[0].Text = "Serie 1"
-  Chart2.Type = ChartType.AreasSymbols
+  Chart2.Type = ChartType.Lines
   Chart2.Legend.Visible = True
     Chart3.Headers.Values = ["tic", "tac", "toe"]
   Chart3[0].Values = [1.0, 2.0, 4.0]
