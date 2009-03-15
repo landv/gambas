@@ -659,9 +659,9 @@ void gButton::setStretch(bool vl)
 	_stretch = vl;
 }
 
-void gButton::setForeground(gColor color)
+void gButton::setRealForeground(gColor color)
 {
-	gControl::setForeground(color);
+	gControl::setRealForeground(color);
 
 	if (rendtxt)
 	{
@@ -669,7 +669,7 @@ void gButton::setForeground(gColor color)
 		{
 			g_object_set(G_OBJECT(rendtxt),
 				"foreground-set", FALSE,
-				(char *)NULL);
+				(void *)NULL);
 		}
 		else
 		{
@@ -678,8 +678,10 @@ void gButton::setForeground(gColor color)
 			g_object_set(G_OBJECT(rendtxt),
 				"foreground-set", TRUE,
 				"foreground-gdk", &col,
-				(char *)NULL);
+				(void *)NULL);
 		}
 	}
+	
+	if (label)
+		set_gdk_fg_color(label, color);
 }
-

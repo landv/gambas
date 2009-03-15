@@ -15,6 +15,7 @@ public:
 
 	static int   winChildCount(gMainWindow *win);
 	static gMenu* winChildMenu(gMainWindow *par,int pos);
+	static void updateFont(gMainWindow *win);
 
 //"Properties"
 	bool checked() { return _checked; }
@@ -42,6 +43,7 @@ public:
 	void setName(char *name);
 	bool action() { return _action; }
 	void setAction(bool v) { _action = v; }
+	void setFont();
 
 //"Methods"
 	void popup();
@@ -70,7 +72,9 @@ public:
 	void initialize();
 	gMenuStyle style() { return _style; }
   void hideSeparators();
-	
+
+	static void embedMenuBar(gMainWindow *win, GtkWidget *border);
+
 private:
 
 	gMenuStyle _style, _oldstyle;

@@ -928,9 +928,13 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 {
 	GtkWidget *new_border;
 	int w, h;
+	gColor fg, bg;
 	
 	if (_xembed)
 		return;
+	
+	bg = background();
+	fg = foreground();
 	
 	if (isTopLevel() && newpr)
 	{
@@ -938,6 +942,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		
 		new_border = gtk_event_box_new();
 		gtk_widget_reparent(widget, new_border);
+		gMenu::embedMenuBar(this, new_border);
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
@@ -947,6 +952,8 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		connectParent();
 		borderSignals();
 		initWindow();	
+		setBackground(bg);
+		setForeground(fg);
 		
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
@@ -957,16 +964,19 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		// TODO: test that
 		new_border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_widget_reparent(widget, new_border);
+		gMenu::embedMenuBar(this, new_border);
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
 		border = new_border;
 		
 		parent()->remove(this);
-		parent()->performArrange();
+		parent()->arrange();
 		setParent(NULL);
 		initWindow();	
 		borderSignals();
+		setBackground(bg);
+		setForeground(fg);
 		
 		move(x, y);
 		w = width();
@@ -1145,3 +1155,8 @@ bool gMainWindow::isMenuBarVisible()
 	return !_hideMenus || (menuBar && GTK_WIDGET_MAPPED(GTK_WIDGET(menuBar)));
 }
 
+void gMainWindow::setFont(gFont *ft)
+{
+	gContainer::setFont(ft);
+	gMenu::updateFont(this);
+}

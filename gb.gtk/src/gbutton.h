@@ -38,7 +38,7 @@ public:
 	void setStretch(bool vl);
 	
 	virtual void setFont(gFont *ft);
-	virtual void setForeground(gColor color);
+	virtual void setRealForeground(gColor color);
 
 //"Method"
 	void animateClick(bool on);

@@ -438,33 +438,14 @@ BEGIN_PROPERTY(CCONTROL_font)
     if (font)
     {
     	CONTROL->setFont(font->font);
-			if (font != THIS->font)
-			{
-				GB.Unref(POINTER(&THIS->font));
-				THIS->font = NULL;
-			}
-    }
+			if (font == THIS->font)
+				return;
+		}
+		GB.Unref(POINTER(&THIS->font));
+		THIS->font = NULL;
 	}
 
 END_PROPERTY
-
-#if 0
-BEGIN_PROPERTY(CCONTROL_font)
-
-  CFONT *font;
-
-  if (READ_PROPERTY)
-  {
-    GB.ReturnObject(CFONT_create(CONTROL->font(), 0, THIS));
-  }
-  else
-  {
-    font = (CFONT *)VPROP(GB_OBJECT);
-    CONTROL->setFont(font ? font->font : 0);
-  }
-
-END_PROPERTY
-#endif
 
 BEGIN_PROPERTY(CWIDGET_design)
 

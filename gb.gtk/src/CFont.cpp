@@ -48,7 +48,7 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 	{
 		fnt->font->unref();
 		fnt->font = font;
-		font->ref();
+		//font->ref();
 		font->setTag(new gGambasTag((void *)fnt));
 	}
 	
@@ -59,30 +59,6 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 	
 	return fnt;
 }
-
-/*CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
-{
-  CFONT *_object;
-
-  GB.New(POINTER(&_object), GB.FindClass("Font"), NULL, NULL);
-  
-  //if (func)
-  //	font = font->copy();
-  
-  gFont::assign(&THIS->font, font);
-  THIS->func = func;
-  THIS->object = object;
-  if (object)
-    GB.Ref(object);
-    
-  if (font)
-  {
-		font->setTag(new gGambasTag((void *)_object));
-  }
-
-  return THIS;
-}*/
-
 
 BEGIN_METHOD(CFONT_new, GB_STRING font)
 

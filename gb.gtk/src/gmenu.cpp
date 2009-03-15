@@ -232,6 +232,7 @@ void gMenu::update()
 				if (!parent->child)
 				{
 					parent->child = (GtkMenu*)gtk_menu_new();
+					parent->setFont();
 					//g_debug("%p: creates a new child menu container in parent %p", this, parent->child);
 					
 					g_signal_connect(G_OBJECT(parent->child), "map", G_CALLBACK(cb_map), (gpointer)parent);
@@ -357,32 +358,24 @@ void gMenu::initialize()
 	menus=g_list_append (menus,(gpointer)this);
 }
 
-gMenu::gMenu(gMainWindow *par,bool hidden)
+void gMenu::embedMenuBar(gMainWindow *par, GtkWidget *border)
 {
-	//gControl *ctTop;
 	GtkVBox *box;
 
-	pr = (gpointer)par;
-  initialize();
-	top_level=true;
-	
-	// BM: embedded windows can have menu bars
-	//ctTop=(gControl*)par;
-	//while (ctTop->pr) ctTop=ctTop->pr;
-	//par=(gMainWindow*)ctTop;
-	
-	accel = par->accel;
-	g_object_ref(accel);
-	
-	if (!par->menuBar)
+	if (par->menuBar)
 	{
-		//g_object_ref(par->widget);
-		//gtk_container_remove(GTK_CONTAINER(par->border),par->widget);
 		box=(GtkVBox*)gtk_vbox_new(false,0);
-		par->menuBar=(GtkMenuBar*)gtk_menu_bar_new();
+		g_object_ref(G_OBJECT(par->menuBar));
+		
+		if (gtk_widget_get_parent(GTK_WIDGET(par->menuBar)))
+			gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(par->menuBar))), GTK_WIDGET(par->menuBar));
+		
 		gtk_box_pack_start(GTK_BOX(box),GTK_WIDGET(par->menuBar),false,true,0);
-		gtk_widget_reparent(par->widget,GTK_WIDGET(box));
-		gtk_container_add(GTK_CONTAINER(par->border),GTK_WIDGET(box));
+
+		g_object_unref(G_OBJECT(par->menuBar));
+		
+		gtk_widget_reparent(par->widget, GTK_WIDGET(box));
+		gtk_container_add(GTK_CONTAINER(border),GTK_WIDGET(box));
 		
 		//gtk_container_add(GTK_CONTAINER(box),par->widget);
 		gtk_widget_show_all(GTK_WIDGET(box));
@@ -391,15 +384,32 @@ gMenu::gMenu(gMainWindow *par,bool hidden)
 		set_gdk_fg_color(GTK_WIDGET(par->menuBar),par->foreground());
 		set_gdk_bg_color(GTK_WIDGET(par->menuBar),par->background());
 	}
+}
+
+gMenu::gMenu(gMainWindow *par,bool hidden)
+{
+	GtkVBox *box;
+
+	pr = (gpointer)par;
+  initialize();
+	top_level=true;
 	
-	//update();
+	accel = par->accel;
+	g_object_ref(accel);
+	
+	if (!par->menuBar)
+	{
+		par->menuBar=(GtkMenuBar*)gtk_menu_bar_new();
+		embedMenuBar(par, par->border);
+	}
+	
 	setText(NULL);
 	setVisible(!hidden);
 }
 
 gMenu::gMenu(gMenu *par, bool hidden)
 {
-	pr=(gpointer)par;
+	pr = (gpointer)par;
 	
 	initialize();
 	sizeGroup=gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
@@ -776,4 +786,39 @@ void gMenu::hideSeparators()
 	
 	if (last_sep && last_ch)
 		last_ch->hide();
+}
+
+void gMenu::setFont()
+{
+	if (child)
+	{
+		gMainWindow *win = window();
+		//fprintf(stderr, "set menu child font\n");
+		gtk_widget_modify_font(GTK_WIDGET(child), win->ownFont() ? win->font()->desc() : NULL);
+	}
+}
+
+
+void gMenu::updateFont(gMainWindow *win)
+{
+	GList *item;
+	gMenu *mn;
+
+	if (win->menuBar)
+	{
+		//fprintf(stderr, "set menu bar font\n");
+		gtk_widget_modify_font(GTK_WIDGET(win->menuBar), win->ownFont() ? win->font()->desc() : NULL);	
+	}
+	
+	if (!menus) 
+		return;
+	
+	item = g_list_first(menus);
+	while (item)
+	{
+		mn = (gMenu*)item->data;
+		if (mn->pr == (void*)win)
+			mn->setFont();
+		item=g_list_next(item);
+	}
 }

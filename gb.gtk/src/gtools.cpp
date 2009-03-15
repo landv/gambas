@@ -49,6 +49,9 @@ Conversion between GDK and long type colors
 #define SCALE(i) ((int)(i * 255.0 / 65535.0 + 0.5))
 #define UNSCALE(d) ((int)(d / 255.0 * 65535.0 + 0.5))
 
+static GtkStateType _color_style_bg[] = { GTK_STATE_INSENSITIVE, GTK_STATE_NORMAL };
+static GtkStateType _color_style_fg[] = { GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STATE_NORMAL };
+
 void fill_gdk_color(GdkColor *gcol,gColor color, GdkColormap *cmap)
 {
 	int r, g, b;
@@ -70,6 +73,32 @@ gColor get_gdk_color(GdkColor *gcol)
 	return gt_rgb_to_color(SCALE(gcol->red), SCALE(gcol->green), SCALE(gcol->blue));
 }
 
+static void set_color(GtkWidget *wid, gColor color, void (*func)(GtkWidget *, GtkStateType, const GdkColor *), bool fg)
+{
+	GdkColor gcol;
+	GdkColor *pcol;
+	int i;
+	GtkStateType st;
+
+	if (color == COLOR_DEFAULT)
+	{
+		pcol = NULL;
+	}
+	else
+	{
+		fill_gdk_color(&gcol, color);
+		pcol = &gcol;
+	}
+	
+	for (i = 0;; i++)
+	{
+		st = fg ? _color_style_fg[i] : _color_style_bg[i];
+		(*func)(wid, st, pcol);
+		if (st == GTK_STATE_NORMAL)
+			break;
+	}
+}
+
 gColor get_gdk_fg_color(GtkWidget *wid)
 {
 	GtkStyle* st;
@@ -80,18 +109,7 @@ gColor get_gdk_fg_color(GtkWidget *wid)
 
 void set_gdk_fg_color(GtkWidget *wid, gColor color)
 {
-	GdkColor gcol;
-
-	if (color == COLOR_DEFAULT)
-	{
-		gtk_widget_modify_fg (wid,GTK_STATE_NORMAL, NULL);
-		return;	
-	}
-
-	if (get_gdk_fg_color(wid)==color) return;
-	
-	fill_gdk_color(&gcol,color);
-	gtk_widget_modify_fg (wid,GTK_STATE_NORMAL,&gcol);	
+	set_color(wid, color, gtk_widget_modify_fg, true);
 }
 
 gColor get_gdk_bg_color(GtkWidget *wid)
@@ -104,21 +122,7 @@ gColor get_gdk_bg_color(GtkWidget *wid)
 
 void set_gdk_bg_color(GtkWidget *wid,gColor color)
 {
-	GdkColor gcol;
-
-	if (color == COLOR_DEFAULT)
-	{
-		gtk_widget_modify_bg(wid,GTK_STATE_NORMAL, NULL);
-		return;	
-	}
-
-	if (get_gdk_bg_color(wid)==color) return;
-	
-	fill_gdk_color(&gcol,color);
-	gtk_widget_modify_bg (wid,GTK_STATE_NORMAL,&gcol);
-	//gtk_widget_modify_bg (wid,GTK_STATE_ACTIVE,&gcol);
-	//gtk_widget_modify_bg (wid,GTK_STATE_PRELIGHT,&gcol);
-	//gtk_widget_modify_bg (wid,GTK_STATE_SELECTED,&gcol);
+	set_color(wid, color, gtk_widget_modify_bg, false);
 }
 
 gColor get_gdk_text_color(GtkWidget *wid)
@@ -131,18 +135,7 @@ gColor get_gdk_text_color(GtkWidget *wid)
 
 void set_gdk_text_color(GtkWidget *wid,gColor color)
 {
-	GdkColor gcol;
-
-	if (color == COLOR_DEFAULT)
-	{
-		gtk_widget_modify_text(wid, GTK_STATE_NORMAL, NULL);
-		return;	
-	}
-
-	if (get_gdk_text_color(wid)==color) return;
-	
-	fill_gdk_color(&gcol,color);
-	gtk_widget_modify_text (wid,GTK_STATE_NORMAL,&gcol);	
+	set_color(wid, color, gtk_widget_modify_text, true);
 }
 
 gColor get_gdk_base_color(GtkWidget *wid)
@@ -155,18 +148,7 @@ gColor get_gdk_base_color(GtkWidget *wid)
 
 void set_gdk_base_color(GtkWidget *wid,gColor color)
 {
-	GdkColor gcol;
-	
-	if (color == COLOR_DEFAULT)
-	{
-		gtk_widget_modify_base(wid, GTK_STATE_NORMAL, NULL);
-		return;	
-	}
-
-	if (get_gdk_base_color(wid)==color) return;
-	
-	fill_gdk_color(&gcol,color);
-	gtk_widget_modify_base (wid,GTK_STATE_NORMAL,&gcol);	
+	set_color(wid, color, gtk_widget_modify_base, false);
 }
 
 void gt_color_to_rgb(gColor color, int *r, int *g, int *b)

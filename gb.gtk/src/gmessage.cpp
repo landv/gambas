@@ -235,6 +235,7 @@ static void gDialog_filters(GtkFileChooser* ch)
 	char *filter;
 	char **patterns;
 	GtkFileFilter *ft;
+	GSList *lft;
 	
 	filters = gDialog::filter(&nfilters);
 	if (!nfilters)
@@ -260,6 +261,13 @@ static void gDialog_filters(GtkFileChooser* ch)
     g_strfreev(patterns);
 	
 		gtk_file_chooser_add_filter(ch, ft);
+	}
+	
+	lft = gtk_file_chooser_list_filters(ch);
+	if (lft)
+	{
+		gtk_file_chooser_set_filter(ch, (GtkFileFilter *)lft->data);
+		g_slist_free(lft);
 	}
 }
 	
@@ -529,7 +537,7 @@ bool gDialog::saveFile()
 	if (DIALOG_path)
 	{
 		gtk_file_chooser_select_filename ((GtkFileChooser*)msg,DIALOG_path);
-		gtk_file_chooser_set_current_name ((GtkFileChooser*)msg,DIALOG_path);
+		//gtk_file_chooser_set_current_name ((GtkFileChooser*)msg,DIALOG_path);
 	}
 		
 	return gDialog_runFile(msg);
