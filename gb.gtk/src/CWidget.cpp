@@ -435,12 +435,11 @@ BEGIN_PROPERTY(CCONTROL_font)
     if (font)
     {
     	CONTROL->setFont(font->font);
-			if (font != THIS->font)
-			{
-				GB.Unref(POINTER(&THIS->font));
-				THIS->font = NULL;
-			}
-    }
+			if (font == THIS->font)
+				return;
+		}
+		GB.Unref(POINTER(&THIS->font));
+		THIS->font = NULL;
 	}
 
 END_PROPERTY

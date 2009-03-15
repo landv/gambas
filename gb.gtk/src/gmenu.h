@@ -70,6 +70,8 @@ public:
 	void initialize();
 	gMenuStyle style() { return _style; }
   void hideSeparators();
+
+	static void embedMenuBar(gMainWindow *win, GtkWidget *border);
 	
 private:
 

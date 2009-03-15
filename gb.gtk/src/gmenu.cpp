@@ -357,10 +357,37 @@ void gMenu::initialize()
 	menus=g_list_append (menus,(gpointer)this);
 }
 
+void gMenu::embedMenuBar(gMainWindow *par, GtkWidget *border)
+{
+	GtkVBox *box;
+
+	if (par->menuBar)
+	{
+		box=(GtkVBox*)gtk_vbox_new(false,0);
+		g_object_ref(G_OBJECT(par->menuBar));
+		
+		if (gtk_widget_get_parent(GTK_WIDGET(par->menuBar)))
+			gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(par->menuBar))), GTK_WIDGET(par->menuBar));
+		
+		gtk_box_pack_start(GTK_BOX(box),GTK_WIDGET(par->menuBar),false,true,0);
+
+		g_object_unref(G_OBJECT(par->menuBar));
+		
+		gtk_widget_reparent(par->widget, GTK_WIDGET(box));
+		gtk_container_add(GTK_CONTAINER(border),GTK_WIDGET(box));
+		
+		//gtk_container_add(GTK_CONTAINER(box),par->widget);
+		gtk_widget_show_all(GTK_WIDGET(box));
+		//g_object_unref(par->widget);
+		gtk_widget_show_all(GTK_WIDGET(par->menuBar));
+		set_gdk_fg_color(GTK_WIDGET(par->menuBar),par->foreground());
+		set_gdk_bg_color(GTK_WIDGET(par->menuBar),par->background());
+	}
+}
+
 gMenu::gMenu(gMainWindow *par,bool hidden)
 {
 	//gControl *ctTop;
-	GtkVBox *box;
 
 	pr = (gpointer)par;
   initialize();
@@ -378,18 +405,8 @@ gMenu::gMenu(gMainWindow *par,bool hidden)
 	{
 		//g_object_ref(par->widget);
 		//gtk_container_remove(GTK_CONTAINER(par->border),par->widget);
-		box=(GtkVBox*)gtk_vbox_new(false,0);
 		par->menuBar=(GtkMenuBar*)gtk_menu_bar_new();
-		gtk_box_pack_start(GTK_BOX(box),GTK_WIDGET(par->menuBar),false,true,0);
-		gtk_widget_reparent(par->widget,GTK_WIDGET(box));
-		gtk_container_add(GTK_CONTAINER(par->border),GTK_WIDGET(box));
-		
-		//gtk_container_add(GTK_CONTAINER(box),par->widget);
-		gtk_widget_show_all(GTK_WIDGET(box));
-		//g_object_unref(par->widget);
-		gtk_widget_show_all(GTK_WIDGET(par->menuBar));
-		set_gdk_fg_color(GTK_WIDGET(par->menuBar),par->foreground());
-		set_gdk_bg_color(GTK_WIDGET(par->menuBar),par->background());
+		embedMenuBar(par, par->border);
 	}
 	
 	//update();

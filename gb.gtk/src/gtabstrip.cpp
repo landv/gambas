@@ -176,9 +176,9 @@ gTabStripPage::~gTabStripPage()
 
 void gTabStripPage::updateColors()
 {
-	set_gdk_bg_color(widget, parent->background());
+	set_gdk_bg_color(widget, parent->realBackground());
 	//set_gdk_bg_color(fix, parent->background());
-	set_gdk_fg_color(label, parent->foreground());
+	set_gdk_fg_color(label, parent->realForeground());
 }
 
 void gTabStripPage::updateFont()

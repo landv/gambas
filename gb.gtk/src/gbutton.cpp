@@ -259,7 +259,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	realize();
 	
 	gtk_button_set_focus_on_click (GTK_BUTTON(widget),true);
-	gtk_widget_add_events(widget, GDK_POINTER_MOTION_MASK);
+	//gtk_widget_add_events(widget, GDK_POINTER_MOTION_MASK);
 	onClick=NULL;
 	
 	if (type == Radio)
@@ -680,7 +680,6 @@ void gButton::setBackground(gColor color)
 			NULL);
 	}
 }
-#endif
 
 void gButton::setForeground(gColor color)
 {
@@ -705,4 +704,32 @@ void gButton::setForeground(gColor color)
 		}
 	}
 }
+#endif
 
+
+void gButton::setRealForeground(gColor color)
+{
+	gControl::setRealForeground(color);
+
+	if (rendtxt)
+	{
+		if (color == COLOR_DEFAULT)
+		{
+			g_object_set(G_OBJECT(rendtxt),
+				"foreground-set", FALSE,
+				(void *)NULL);
+		}
+		else
+		{
+			GdkColor col;
+			fill_gdk_color(&col, color);
+			g_object_set(G_OBJECT(rendtxt),
+				"foreground-set", TRUE,
+				"foreground-gdk", &col,
+				(void *)NULL);
+		}
+	}
+	
+	if (label)
+		set_gdk_fg_color(label, color);
+}

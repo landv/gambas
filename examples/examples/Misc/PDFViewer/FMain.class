@@ -74,15 +74,17 @@ END
 PUBLIC FUNCTION AddIndex(nItem AS Integer, pItem AS String) AS Integer 
   
   DIM pR AS String  
+
+  
   
   DO
     tvIndex.Add(nItem & "-" & hPdf.Index.Data.Page, hPdf.Index.Title, "", pItem)
     pR = nItem & "-" & hPdf.Index.Data.Page
     INC nItem
     IF hPdf.Index.HasChildren THEN 
-     hPdf.Index.MoveChild()
-     nItem = AddIndex(nItem + 1, pR)
-     hPdf.Index.MoveParent()
+      hPdf.Index.MoveChild()
+      nItem = AddIndex(nItem + 1, pR)
+      hPdf.Index.MoveParent()
     END IF
   LOOP UNTIL hPdf.Index.MoveNext()
   
