@@ -96,7 +96,7 @@ Public Sub _new()
   $hForm = New Form As "LstForm"
   $hForm.Arrangement = Arrange.Fill
   $hForm.Border = False
-  $hForm.Type = Form.Combo
+  ' $hForm.Type = Form.Combo
   $hForm.Persistent = True
   
   HPanel = New Panel($hForm)
