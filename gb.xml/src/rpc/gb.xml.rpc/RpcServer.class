@@ -1,3 +1,4 @@
+' Gambas class file
 '***************************************************************************
 ' 
 ' RpcServer.class
@@ -120,7 +121,7 @@ END
 
 PUBLIC SUB Listen(Port AS Integer, MaxConn AS Integer)
 
-  IF Port < 1 Or Port > 65535 THEN
+  IF Port < 1 OR Port > 65535 THEN
     Error.Raise("Invalid port number")
     RETURN
   END IF
@@ -163,7 +164,7 @@ PUBLIC SUB SetReply(Data AS Variant)
   Xml.StartElement("methodResponse")
   Xml.StartElement("params")
   Xml.StartElement("param")
-  IF Not Tools.AddValue(Xml, Data, Methods[CurrIndex].ReturnType) THEN
+  IF NOT Tools.AddValue(Xml, Data, Methods[CurrIndex].ReturnType) THEN
     miniSrv.SetReply(tools.FaultReply(8, "internal server error"))
     Error.Raise("Invalid type conversion")
     RETURN
@@ -190,7 +191,7 @@ PUBLIC SUB miniSrv_ProcessData(Data AS String)
 
   tools.Find(Xml, "methodCall")
   TRY Xml.Read()
-  IF Not tools.Find(Xml, "params") THEN
+  IF NOT tools.Find(Xml, "params") THEN
     miniSrv.SetReply(tools.FaultReply(4, "params field not found"))
     CurrIndex = - 1
     RETURN
@@ -201,7 +202,7 @@ PUBLIC SUB miniSrv_ProcessData(Data AS String)
   DO WHILE TRUE
 
     IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN BREAK
-    IF Not Tools.Find(Xml, "param") THEN BREAK
+    IF NOT Tools.Find(Xml, "param") THEN BREAK
     hP = Tools.GetParam(Xml)
     IF hP = NULL THEN
       miniSrv.SetReply(tools.FaultReply(5, "malformed parameters"))
@@ -241,7 +242,7 @@ PUBLIC SUB miniSrv_ProcessData(Data AS String)
 END
 
 
-PUBLIC FUNCTION miniSrv_GotData(Data AS String) AS Boolean
+PUBLIC SUB miniSrv_GotData(Data AS String)
 
   DIM Xml AS NEW XmlReader
   DIM Bucle AS Integer
@@ -249,23 +250,36 @@ PUBLIC FUNCTION miniSrv_GotData(Data AS String) AS Boolean
   Xml = NEW XmlReader
   Xml.FromString(Data)
 
-  IF Not tools.Find(Xml, "methodCall") THEN RETURN TRUE
+  IF NOT tools.Find(Xml, "methodCall") THEN
+    STOP EVENT
+    RETURN
+  END IF
   TRY Xml.Read()
-  IF Not tools.Find(Xml, "methodName") THEN RETURN TRUE
+  IF NOT tools.Find(Xml, "methodName") THEN
+    STOP EVENT
+    RETURN
+  END IF
   DO WHILE TRUE
     TRY Xml.Read()
-    IF Xml.Node.Type = XmlReaderNodetype.Element THEN RETURN TRUE
-    IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN RETURN TRUE
+    IF Xml.Node.Type = XmlReaderNodetype.Element THEN
+      STOP EVENT
+      RETURN
+    END IF
+    IF Xml.Node.Type = XmlReaderNodeType.EndElement THEN
+      STOP EVENT
+      RETURN
+    END IF
     IF Xml.Node.Type = XmlReaderNodeType.Text THEN
 
       FOR Bucle = 0 TO Methods.Count - 1
         IF Methods[Bucle].methodName = Xml.Node.Value THEN
           CurrIndex = bucle
-          RETURN FALSE
+          RETURN
         END IF
       NEXT
 
-      RETURN TRUE
+      STOP EVENT
+      RETURN
 
     END IF
   LOOP
@@ -341,5 +355,3 @@ PRIVATE SUB System_methodSignature(Data AS String)
     miniSrv.SetReply(tools.FaultReply("2", "Unknown method"))
 
 END
-
-
