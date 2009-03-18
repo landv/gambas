@@ -268,8 +268,6 @@ void gComboBox::setItemText(int ind, const char *text)
 	cell->setText(text);
 	
 	updateSort();
-	
-	checkIndex();
 }
 
 void gComboBox::setReadOnly(bool vl)
@@ -327,6 +325,7 @@ static gboolean combo_set_model_and_sort(gComboBox *combo)
 	if (combo->isSorted())
 		combo->tree->sort();
 	combo->_model_dirty = false;
+	combo->checkIndex();
 	return FALSE;
 }
 
@@ -373,7 +372,6 @@ void gComboBox::add(const char *text, int pos)
 		{
 			cell->setText(text);
 			updateSort();
-			checkIndex();
 		}
 	}
 	
