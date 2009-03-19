@@ -42,6 +42,7 @@ END
 
 PUBLIC SUB cmbDir_Change()
 
+  'DEBUG cmbDir.Text
   $sActivate = cmbDir.Text
   dvwChoose.Current = cmbDir.Text
 

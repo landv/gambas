@@ -31,23 +31,25 @@
 #include "gmainwindow.h"
 #include "gcombobox.h"
 
-#include "gb_common.h"
-
 /**************************************************************************
 	
 	gComboBox
 	
 **************************************************************************/
 
-//static bool _style_init = FALSE;
-
 static void cb_click(GtkComboBox *widget,gComboBox *data)
 {
-	if (!data->isReadOnly() && !data->locked() && data->count())
+	if (data->locked())
+			return;
+	
+	if (!data->isReadOnly() && data->count())
 	{
-		char *text = data->itemText(data->index());
-		if (text)
-			gtk_entry_set_text(GTK_ENTRY(data->entry), text);
+		data->lock();
+		int index = data->index();
+		const char *text = index >= 0 ? data->itemText(index) : "";
+		gtk_entry_set_text(GTK_ENTRY(data->entry), text);
+		data->unlock();
+		data->emit(SIGNAL(data->onChange));
 	}
 	
 	if (!data->_no_click)
@@ -312,11 +314,12 @@ void gComboBox::setSorted(bool vl)
 
 void gComboBox::setText(const char *vl)
 {
-	if (entry)
+	int index = find(vl);
+	
+	if (index >= 0)
+		setIndex(index);
+	else if (entry)
 		gTextBox::setText(vl);
-	lock();
-	setIndex(find(vl));
-	unlock();
 }
 
 static gboolean combo_set_model_and_sort(gComboBox *combo)

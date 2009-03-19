@@ -1068,6 +1068,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		initWindow();	
 		setBackground(bg);
 		setForeground(fg);
+		setFont(font());
 		
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
@@ -1086,11 +1087,13 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		
 		parent()->remove(this);
 		parent()->arrange();
+
 		setParent(NULL);
 		initWindow();	
 		borderSignals();
 		setBackground(bg);
 		setForeground(fg);
+		setFont(font());
 		
 		move(x, y);
 		w = width();
