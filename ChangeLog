@@ -1,4 +1,71 @@
 -------------------------------------------------------------------------------
+ gambas2-2.12 - 19 Mar 2009
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* NEW: Switch to 2.12 version.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: Gambas version should be always displayed correctly in the about and
+  welcome dialogs now.
+* NEW: Japanese translation updated.
+* NEW: Support for Malayalam language.
+* NEW: The toolbox now remembers if it is opened or closed.
+
+[INTERPRETER]
+* BUG: Fix two possible bugs in 64 bits support.
+* BUG: MOD works again with Long values.
+* BUG: Array.Clear() now does not crash anymore on multi-dimensional
+  arrays. It just voids the array contents. Array.Clear() behaviour on
+  single dimensional arrays did not change: it removes all elements from
+  the array.
+
+[GB.DB.SQLITE2]
+* BUG: Fix a compilation warning.
+
+[GB.GTK]
+* BUG: Fix the container arrangement and the ClientX / ClientY properties.
+* BUG: GridView Row and Column properties can be set independently.
+* BUG: The TabStrip.Font property works as expected.
+* BUG: Image.Draw() now works correctly if X or Y are negative.
+* BUG: TextLabel.Adjust() now works as expected.
+* BUG: Dialog.SaveFile() now correctly initializes the file name in the
+  file chooser dialog.
+* BUG: Disabled controls correctly honor the Background property.
+* BUG: The Foreground and Background properties of TabStrip, CheckBox,
+  RadioButton and other Button controls work as expected.
+* BUG: Setting the Font property does not create a memory leak anymore.
+* BUG: The menu bar of a reparented window does not disappear anymore.
+* BUG: Fix the ComboBox.Add() method slowness.
+* BUG: Fix the corruption of the Text property in editable combo-boxes.
+* BUG: Fix again the Font property for non-control classes.
+
+[GB.NET]
+* BUG: UdpSocket.TargetPort returns the accurate value now.
+* BUG: Too many connections on a ServerSocket does not take 100% CPU
+  anymore.
+
+[GB.PDF]
+* BUG: PdfDocument.HasIndex does not return TRUE anymore when there is an
+  index whose length is null.
+* BUG: Fix PdfIndex.HasChildren that sometimes returned TRUE when there was
+  no children.
+* BUG: Fix PdfIndex.MoveChild() accordingly.
+
+[GB.QT]
+* BUG: Borderless windows do not have a border anymore with Metacity.
+* BUG: The Window.Mask property works correctly now.
+* BUG: Draw.Image() and Draw.Picture() now work correctly on transparent
+  pictures.
+* BUG: The minimum size of modal dialog is correctly set again.
+
+[GB.XML.RPC]
+* BUG: RpcStruct.Value() should work as expected now.
+* BUG: Event management was fixed, thanks to Ron.
+* BUG: RcpArray.Copy() now returns an RpcArray object.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.11.1 - 01 Feb 2009
 -------------------------------------------------------------------------------
 
