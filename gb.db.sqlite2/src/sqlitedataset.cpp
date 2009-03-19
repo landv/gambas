@@ -532,8 +532,10 @@ void SqliteDataset::close() {
 
 void SqliteDataset::cancel() {
   if ((ds_state == dsInsert) || (ds_state==dsEdit))
+	{
     if (result.record_header.size()) ds_state = dsSelect;
     else ds_state = dsInactive;
+	}
 }
 
 
