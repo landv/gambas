@@ -62,6 +62,7 @@ PUBLIC SUB Form_Resize()
   ' 
   iWidth = Min(128, grdProperty.ClientWidth \ 2)
   grdProperty.Columns[0].Width = iWidth
+  grdProperty.Columns[1].Width = grdProperty.ClientWidth - iWidth - 4
   ' grdProperty.Columns[1].Width = grdProperty.ClientWidth - iWidth
   ' 'grdProperty.Columns.Width = 100 'ME.ClientWidth / 4
   ' 
