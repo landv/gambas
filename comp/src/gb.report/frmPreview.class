@@ -1,24 +1,24 @@
 ' Gambas class file
 
-STATIC PRIVATE $hReport AS Report 
-PRIVATE colDa AS NEW Object[]
-STATIC PUBLIC SUB Run(hReport AS Report)
+Static Private $hReport As Report 
+Private colDa As New Object[]
+Static Public Sub Run(hReport As Report)
   
-  DIM hFrm AS frmPreview
+  Dim hFrm As frmPreview
   $hReport = hReport
-  hFrm = NEW frmPreview
+  hFrm = New frmPreview
   hfrm.ShowModal
   
-END
+End
 
 
 
-PUBLIC SUB Form_Open()
-DIM da AS NEW DrawingArea(ME)
-DIM pan AS Panel
-DIM PageLabel AS Label
-DIM i AS Integer
-DIM fZoom AS Float = 0.1
+Public Sub Form_Open()
+Dim da As New DrawingArea(Me)
+Dim pan As Panel
+Dim PageLabel As Label
+Dim i As Integer
+Dim fZoom As Float = 0.1
 'da.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fZoom)
 $hReport.Resolution = Desktop.Resolution
 Draw.Begin(da)
@@ -28,106 +28,106 @@ $hReport.layout()
 draw.end
 da.Delete
 lblTotPages.Text = " / " & $hReport.count
-FOR i = 1 TO $hReport.count
-  pan = NEW Panel(ListContainer1)
+For i = 1 To $hReport.count
+  pan = New Panel(ListContainer1)
   
-  da = NEW DrawingArea(pan) AS "daThumbs"
+  da = New DrawingArea(pan) As "daThumbs"
   da.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fZoom)
   pan.Height = da.Height + 10
   da.Move((pan.Width - da.w) / 2, 5)
   da.Show
-  da.BackColor = color.White
-  da.Cached = TRUE
-  PageLabel = NEW Label(da)
-  PageLabel.BackColor = color.LightGray
+  da.BackGround = color.White
+  da.Cached = True
+  PageLabel = New Label(da)
+  PageLabel.BackGround = color.LightGray
   PageLabel.Text = i
   PageLabel.Height = 6
   'PageLabel.Font = font["-1"]
-  PageLabel.AutoResize = TRUE
+  PageLabel.AutoResize = True
   PageLabel.Border = Border.Plain
   draw.Begin(da)
     $hReport.draw(i)
   draw.end
   'da.Tag = i
   'colDa.Add(da)
-NEXT  
+Next  
 ListContainer1.Index = 0
 ListContainer1_Click
-END
+End
 
-PUBLIC SUB daThumbs_MouseUp()
+Public Sub daThumbs_MouseUp()
   
   
   
   
-END
+End
 
 
-PUBLIC SUB ListContainer1_Click()
+Public Sub ListContainer1_Click()
 
-    DIM fZoom AS Float
+    Dim fZoom As Float
   'message("ok")
    fZoom = (ScrollView2.ClientWidth - 20) / MRTools.UnitsToPixels($hReport.Width)
   darep.Resize(MRTools.UnitsToPixels($hReport.Width) * fZoom, MRTools.UnitsToPixels($hReport.Height) * fzoom)
-  darep.Cached = TRUE
-  darep.BackColor = color.White
+  darep.Cached = True
+  darep.BackGround = color.White
   $hReport.Zoom = fZoom
   draw.Begin(darep)
     $hReport.Draw(ListContainer1.Index + 1)
   draw.end
   txtCurPage.Text = ListContainer1.Index + 1
 
-END
+End
 
-PUBLIC SUB txtCurPage_KeyPress()
+Public Sub txtCurPage_KeyPress()
 
-IF key.Code <> key.Return THEN RETURN 
-IF Val(txtCurPage.text) < 1 OR Val(txtCurPage.Text) > ListContainer1.count THEN 
+If key.Code <> key.Return Then Return 
+If Val(txtCurPage.text) < 1 Or Val(txtCurPage.Text) > ListContainer1.count Then 
   
-  Balloon.Error("You must to give a Valid page number.", LAST)
+  Balloon.Error("You must to give a Valid page number.", Last)
   txtCurPage.Text = ListContainer1.Index + 1
-ELSE
+Else
     ListContainer1.Index = Val(txtCurPage.text) - 1
     
-ENDIF
+Endif
 
-CATCH
-END
+Catch
+End
 
 
 
-PUBLIC SUB ToolButton1_Click()
+Public Sub ToolButton1_Click()
 
-IF NOT Printer.Setup() THEN 
+If Not Printer.Setup() Then 
   $hReport.Orientation = Printer.Orientation
   $hReport.Size = Printer.Size
   
   ListContainer1.Clear
   Form_Open
   
-ENDIF
+Endif
 
-END
+End
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
 
   ListContainer1_Click  
 
-END
+End
 
-PUBLIC SUB ToolButton2_Click()
+Public Sub ToolButton2_Click()
 
-  DIM i AS Integer
-  INC Application.Busy
+  Dim i As Integer
+  Inc Application.Busy
   draw.Begin(Printer)
   $hReport.Zoom = 1
   $hReport.Resolution = Printer.Resolution
   $hReport.layout
 
-  FOR i = 1 TO $hReport.count
+  For i = 1 To $hReport.count
     $hReport.Draw(i)
-    IF i < Report.count THEN Printer.NewPage  
-  NEXT
+    If i < Report.count Then Printer.NewPage  
+  Next
   draw.End
-  DEC Application.Busy
-END
+  Dec Application.Busy
+End

@@ -1,273 +1,273 @@
 ' Gambas class file
 
-EXPORT
-CREATE PRIVATE 
+Export
+Create Private 
 'Object Management
 
-STATIC PUBLIC _ObjectFromId AS NEW Collection
-STATIC PUBLIC _iCurPagePos AS Integer
-STATIC PRIVATE $iLastId AS Integer
+Static Public _ObjectFromId As New Collection
+Static Public _iCurPagePos As Integer
+Static Private $iLastId As Integer
 
 
-PRIVATE $iMyId AS Integer
-PRIVATE $iParentId AS Integer
-PRIVATE $iRelPage AS Integer
-PRIVATE $vTag AS Variant
-PRIVATE $fPadding AS Float
+Private $iMyId As Integer
+Private $iParentId As Integer
+Private $iRelPage As Integer
+Private $vTag As Variant
+Private $fPadding As Float
 
 
-PROPERTY READ Id AS Integer
-PROPERTY READ Parent AS ReportContainer
-PROPERTY Tag AS Variant
-PROPERTY Padding AS String
+Property Read Id As Integer
+Property Read Parent As ReportContainer
+Property Tag As Variant
+Property Padding As String
 
 'Object properties
-PRIVATE $fLeft AS Float = 0.0
-PRIVATE $fTop AS Float = 0.0
-PRIVATE $fWidth AS Float = 0.0
-PRIVATE $fHeight AS Float = 0.0
-PRIVATE $sHeightUnit AS String = "cm"
-PRIVATE $sLeftUnit AS String = "cm"
-PRIVATE $sWidthUnit AS String = "cm"
-PRIVATE $sTopUnit AS String = "cm"
-PRIVATE $sPadding AS String = "cm"
-PRIVATE $iForeColor AS Integer = Color.Black
-PRIVATE $iBackColor AS Integer = Color.White
-PRIVATE $iFillColor AS Integer = Color.Black
-PRIVATE $iFillStyle AS Integer = Fill.None
-PRIVATE $iLineWidth AS Integer = 1
-PRIVATE $iLineStyle AS Integer = Line.None
-PRIVATE $iVisible AS Boolean = TRUE
-PRIVATE $hFont AS NEW Font
-PRIVATE $iExpand AS Integer
-PRIVATE $bAutoresize AS Boolean = FALSE
-PRIVATE $bRelativeWidth AS Boolean
-PRIVATE $bRelativeHeight AS Boolean
-PRIVATE $bRelativePadding AS Boolean
+Private $fLeft As Float = 0.0
+Private $fTop As Float = 0.0
+Private $fWidth As Float = 0.0
+Private $fHeight As Float = 0.0
+Private $sHeightUnit As String = "cm"
+Private $sLeftUnit As String = "cm"
+Private $sWidthUnit As String = "cm"
+Private $sTopUnit As String = "cm"
+Private $sPadding As String = "cm"
+Private $iForeColor As Integer = Color.Black
+Private $iBackGround As Integer = Color.White
+Private $iFillColor As Integer = Color.Black
+Private $iFillStyle As Integer = Fill.None
+Private $iLineWidth As Integer = 1
+Private $iLineStyle As Integer = Line.None
+Private $iVisible As Boolean = True
+Private $hFont As New Font
+Private $iExpand As Integer
+Private $bAutoresize As Boolean = False
+Private $bRelativeWidth As Boolean
+Private $bRelativeHeight As Boolean
+Private $bRelativePadding As Boolean
 
-PROPERTY READ _Top AS Float
-PROPERTY READ _Height AS Float
-PROPERTY READ _Width AS Float
-PROPERTY READ _Left AS Float
-PROPERTY READ _Padding AS Float
-PROPERTY READ _RelativeWidth AS Boolean
-PROPERTY READ _RelativeHeight AS Boolean
-PROPERTY READ _RelativePadding AS Boolean
+Property Read _Top As Float
+Property Read _Height As Float
+Property Read _Width As Float
+Property Read _Left As Float
+Property Read _Padding As Float
+Property Read _RelativeWidth As Boolean
+Property Read _RelativeHeight As Boolean
+Property Read _RelativePadding As Boolean
 
-PROPERTY Left AS String
-PROPERTY Top AS String
-PROPERTY Width AS String
-PROPERTY Height AS String
-PROPERTY ForeColor AS Integer
-PROPERTY BackColor AS Integer
-PROPERTY FillColor AS Integer
-PROPERTY FillStyle AS Integer
-PROPERTY LineWidth AS Integer
-PROPERTY LineStyle AS Integer
-PROPERTY Visible AS Boolean
-PROPERTY {Font} AS Font
-PROPERTY Expand AS Integer
-PROPERTY Autoresize AS Boolean
+Property Left As String
+Property Top As String
+Property Width As String
+Property Height As String
+Property ForeColor As Integer
+Property BackGround As Integer
+Property FillColor As Integer
+Property FillStyle As Integer
+Property LineWidth As Integer
+Property LineStyle As Integer
+Property Visible As Boolean
+Property {Font} As Font
+Property Expand As Integer
+Property Autoresize As Boolean
 
 
-PUBLIC SUB _New(OPTIONAL Parent AS ReportContainer = NULL)
+Public Sub _New(Optional Parent As ReportContainer = Null)
   
   $iMyId = $iLastId
-  INC $iLastId
-  IF IsNull(Parent) THEN 
+  Inc $iLastId
+  If IsNull(Parent) Then 
     $iParentId = -1
-  ELSE
+  Else
     $iParentId = Parent.Id
-    Parent._Add(ME)
-  ENDIF
+    Parent._Add(Me)
+  Endif
   
-END
+End
 
-PRIVATE FUNCTION Id_Read() AS Integer
+Private Function Id_Read() As Integer
 
-  RETURN $iMyId
+  Return $iMyId
 
-END
+End
 
-PRIVATE FUNCTION Parent_Read() AS ReportContainer
+Private Function Parent_Read() As ReportContainer
 
-  RETURN ReportControl._ObjectFromId[$iParentId]
+  Return ReportControl._ObjectFromId[$iParentId]
 
-END
+End
 
-PRIVATE FUNCTION Left_Read() AS String
+Private Function Left_Read() As String
 
-  RETURN Units.CmToUnit($fLeft, $sLeftUnit) & " " & $sLeftUnit
+  Return Units.CmToUnit($fLeft, $sLeftUnit) & " " & $sLeftUnit
 
-END
+End
 
-PRIVATE SUB Left_Write(Value AS String)
-  DIM hSizeParse AS TSizeParse
+Private Sub Left_Write(Value As String)
+  Dim hSizeParse As TSizeParse
   hSizeParse = MRTools.ScanValue(value)
-  IF Units.AllowedUnits.Find(hSizeParse.Unit) = -1 THEN error.Raise("Unknown unit")
+  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
   $fLeft = Units.UnitToCm(Value, hSizeParse.Unit)
   $sLeftUnit = hSizeParse.Unit
 
-END
+End
 
-PRIVATE FUNCTION Top_Read() AS String
+Private Function Top_Read() As String
 
-  RETURN Units.CmToUnit($fTop, $sTopUnit) & " " & $sTopUnit
+  Return Units.CmToUnit($fTop, $sTopUnit) & " " & $sTopUnit
 
-END
+End
 
-PRIVATE SUB Top_Write(Value AS String)
-  DIM hSizeParse AS TSizeParse
+Private Sub Top_Write(Value As String)
+  Dim hSizeParse As TSizeParse
   hSizeParse = MRTools.ScanValue(value)
-  IF Units.AllowedUnits.Find(hSizeParse.Unit) = -1 THEN error.Raise("Unknown unit")
+  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
   $fTop = Units.UnitToCm(Value, hSizeParse.Unit)
   $sTopUnit = hSizeParse.Unit
 
-END
+End
 
-PRIVATE FUNCTION Width_Read() AS String
-  IF $sWidthUnit = "%" THEN 
-    RETURN $fWidth & " " & $sWidthUnit
-  ELSE 
-    RETURN Units.CmToUnit($fWidth, $sLeftUnit) & " " & $sWidthUnit
-  ENDIF 
+Private Function Width_Read() As String
+  If $sWidthUnit = "%" Then 
+    Return $fWidth & " " & $sWidthUnit
+  Else 
+    Return Units.CmToUnit($fWidth, $sLeftUnit) & " " & $sWidthUnit
+  Endif 
   
 
-END
+End
 
-PRIVATE SUB Width_Write(Value AS String)
-  DIM hSizeParse AS TSizeParse
+Private Sub Width_Write(Value As String)
+  Dim hSizeParse As TSizeParse
   hSizeParse = MRTools.ScanValue(value)
-  IF Units.AllowedUnits.Find(hSizeParse.Unit) = -1 AND IF hSizeParse.Unit <> "%" THEN error.Raise("Unknown unit")
-  IF hSizeParse.Unit = "%" THEN 
+  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
+  If hSizeParse.Unit = "%" Then 
     $fWidth = hSizeParse.Value
-    $bRelativeWidth = TRUE
-  ELSE
+    $bRelativeWidth = True
+  Else
     $fWidth = Units.UnitToCm(Value, hSizeParse.Unit)
-    $bRelativeWidth = FALSE
-  ENDIF
+    $bRelativeWidth = False
+  Endif
   $sWidthUnit = hSizeParse.Unit
-END
+End
 
-PRIVATE FUNCTION Height_Read() AS String
+Private Function Height_Read() As String
   
-  IF $sHeightUnit = "%" THEN
-    RETURN $fHeight & " " & $sHeightUnit
-  ELSE 
-    RETURN Units.CmToUnit($fHeight, $sHeightUnit) & " " & $sHeightUnit
-  ENDIF
+  If $sHeightUnit = "%" Then
+    Return $fHeight & " " & $sHeightUnit
+  Else 
+    Return Units.CmToUnit($fHeight, $sHeightUnit) & " " & $sHeightUnit
+  Endif
 
-END
+End
 
-PRIVATE SUB Height_Write(Value AS String)
-  DIM hSizeParse AS TSizeParse
+Private Sub Height_Write(Value As String)
+  Dim hSizeParse As TSizeParse
   hSizeParse = MRTools.ScanValue(value)
-  IF Units.AllowedUnits.Find(hSizeParse.Unit) = -1 AND IF hSizeParse.Unit <> "%" THEN error.Raise("Unknown unit")
-  IF hSizeParse.Unit = "%" THEN 
+  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 And If hSizeParse.Unit <> "%" Then error.Raise("Unknown unit")
+  If hSizeParse.Unit = "%" Then 
     $fHeight = hSizeParse.Value
-    $bRelativeHeight = TRUE
-  ELSE 
+    $bRelativeHeight = True
+  Else 
     $fHeight = Units.UnitToCm(Value, hSizeParse.Unit)
-    $bRelativeHeight = FALSE
-  ENDIF
+    $bRelativeHeight = False
+  Endif
   $sHeightUnit = hSizeParse.Unit
   
-END
+End
 
-PRIVATE FUNCTION ForeColor_Read() AS Integer
+Private Function ForeColor_Read() As Integer
 
-  RETURN $iForeColor
+  Return $iForeColor
 
-END
+End
 
-PRIVATE SUB ForeColor_Write(Value AS Integer)
+Private Sub ForeColor_Write(Value As Integer)
 
   $iForeColor = Value
 
-END
+End
 
-PRIVATE FUNCTION BackColor_Read() AS Integer
+Private Function BackGround_Read() As Integer
 
-  RETURN $iBackColor
+  Return $iBackGround
 
-END
+End
 
-PRIVATE SUB BackColor_Write(Value AS Integer)
+Private Sub BackGround_Write(Value As Integer)
 
-  $iBackColor = Value
+  $iBackGround = Value
 
-END
+End
 
-PRIVATE FUNCTION FillColor_Read() AS Integer
+Private Function FillColor_Read() As Integer
 
-  RETURN $iFillColor
+  Return $iFillColor
 
-END
+End
 
-PRIVATE SUB FillColor_Write(Value AS Integer)
+Private Sub FillColor_Write(Value As Integer)
 
   $iFillColor = Value
 
-END
+End
 
-PRIVATE FUNCTION FillStyle_Read() AS Integer
+Private Function FillStyle_Read() As Integer
 
-  RETURN $iFillStyle
+  Return $iFillStyle
 
-END
+End
 
-PRIVATE SUB FillStyle_Write(Value AS Integer)
+Private Sub FillStyle_Write(Value As Integer)
 
   $iFillStyle = Value
 
-END
+End
 
-PRIVATE FUNCTION LineWidth_Read() AS Integer
+Private Function LineWidth_Read() As Integer
 
-  RETURN $iLineWidth
+  Return $iLineWidth
 
-END
+End
 
-PRIVATE SUB LineWidth_Write(Value AS Integer)
+Private Sub LineWidth_Write(Value As Integer)
 
   $iLineWidth = Value
 
-END
+End
 
-PRIVATE FUNCTION LineStyle_Read() AS Integer
+Private Function LineStyle_Read() As Integer
 
-  RETURN $iLineStyle
+  Return $iLineStyle
 
-END
+End
 
-PRIVATE SUB LineStyle_Write(Value AS Integer)
+Private Sub LineStyle_Write(Value As Integer)
 
   $iLineStyle = Value
 
-END
+End
 
-PRIVATE FUNCTION Expand_Read() AS Integer
+Private Function Expand_Read() As Integer
 
-  RETURN $iExpand 
+  Return $iExpand 
 
-END
+End
 
-PRIVATE SUB Expand_Write(Value AS Integer)
+Private Sub Expand_Write(Value As Integer)
 
   $iExpand = Value
 
-END
+End
 
-PUBLIC SUB _GetSizeHints(AvailableW AS Integer, AvailableH AS Integer, TotalWidth AS Integer, TotalHeight AS Integer) AS Integer
+Public Sub _GetSizeHints(AvailableW As Integer, AvailableH As Integer, TotalWidth As Integer, TotalHeight As Integer) As Integer
 
   Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
 
-END
+End
 
 
-PUBLIC SUB _DrawBefore(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+Public Sub _DrawBefore(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
 
-  DIM X1, Y1, X2, Y2 AS Integer
+  Dim X1, Y1, X2, Y2 As Integer
   
   
 
@@ -276,192 +276,192 @@ PUBLIC SUB _DrawBefore(Page AS Integer, X AS Integer, Y AS Integer, hControl AS 
   X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) * MRTools.ReportZoom
   Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) * MRTools.ReportZoom
 
-  IF Report.Debug THEN
+  If Report.Debug Then
 
       Draw.LineStyle = Line.Dot
       Draw.ForeColor = Color.Black
       Draw.FillStyle = fill.None
       Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
 
-  ELSE 
+  Else 
     
-    IF ME.FillStyle = fill.None THEN RETURN 
+    If Me.FillStyle = fill.None Then Return 
     Draw.FillStyle = $iFillStyle
-    Draw.BackColor = $iBackColor
+    Draw.BackGround = $iBackGround
     Draw.ForeColor = $iForeColor
     Draw.FillColor = $iFillColor
     Draw.LineStyle = $iLineStyle 'Line.Solid
     Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
-  ENDIF 
+  Endif 
   
   
   
     
-END
+End
 
-PUBLIC SUB _Draw(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+Public Sub _Draw(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   
 
     
   
-END
+End
 
-PUBLIC SUB _DrawAfter(Page AS Integer, X AS Integer, Y AS Integer, hControl AS TControl, VirtualId AS Integer)
+Public Sub _DrawAfter(Page As Integer, X As Integer, Y As Integer, hControl As TControl, VirtualId As Integer)
   
-  DIM X1, Y1, X2, Y2 AS Integer
+  Dim X1, Y1, X2, Y2 As Integer
 
   X1 = (x + hControl.RealLeft) * MRTools.ReportZoom
   Y1 = (y + hControl.RealTop) * MRTools.ReportZoom
   X2 = (x + hControl.RealLeft + hControl.RealWidth - 1) * MRTools.ReportZoom
   Y2 = (y + hControl.RealTop + hControl.RealHeight - 1) * MRTools.ReportZoom
 
-    IF ME.LineStyle <> Line.None THEN 
+    If Me.LineStyle <> Line.None Then 
       Draw.LineStyle = $iLineStyle
       Draw.LineWidth = $iLineWidth
       Draw.ForeColor = $iForeColor
       draw.FillStyle = Fill.None
 
       Draw.Rect(X1, Y1, X2 - X1 + 2, Y2 - Y1 + 2)
-    ENDIF
+    Endif
   
-END
+End
 
-PRIVATE FUNCTION Visible_Read() AS Boolean
+Private Function Visible_Read() As Boolean
 
-  RETURN $iVisible  
+  Return $iVisible  
 
-END
+End
 
-PRIVATE SUB Visible_Write(Value AS Boolean)
+Private Sub Visible_Write(Value As Boolean)
 
   $iVisible = Value
 
-END
+End
 
-PUBLIC SUB Move(X AS Float, Y AS Float, W AS Float, H AS Float)
+Public Sub Move(X As Float, Y As Float, W As Float, H As Float)
   
   $fLeft = X
   $fTop = Y
   $fWidth = W
   $fHeight = H
   
-END
+End
 
-PRIVATE FUNCTION Tag_Read() AS Variant
+Private Function Tag_Read() As Variant
 
-  RETURN $vTag  
+  Return $vTag  
 
-END
+End
 
-PRIVATE SUB Tag_Write(Value AS Variant)
+Private Sub Tag_Write(Value As Variant)
 
   $vTag = Value
 
-END
+End
 
 
-PRIVATE FUNCTION Font_Read() AS Font
+Private Function Font_Read() As Font
 
-  RETURN $hFont
+  Return $hFont
 
-END
+End
 
-PRIVATE SUB Font_Write(Value AS Font)
+Private Sub Font_Write(Value As Font)
 
   $hFont = Value
 
-END
+End
 
-PRIVATE FUNCTION Padding_Read() AS String
+Private Function Padding_Read() As String
 
-  RETURN Units.CmToUnit($fPadding, $sPadding) & " " & $sPadding
+  Return Units.CmToUnit($fPadding, $sPadding) & " " & $sPadding
   
-END
+End
 
-PRIVATE SUB Padding_Write(Value AS String)
-  DIM hSizeParse AS TSizeParse
-  $bRelativePadding = FALSE
+Private Sub Padding_Write(Value As String)
+  Dim hSizeParse As TSizeParse
+  $bRelativePadding = False
   hSizeParse = MRTools.ScanValue(value)
-  IF Units.AllowedUnits.Find(hSizeParse.Unit) = -1 THEN error.Raise("Unknown unit")
-  IF hSizeParse.Unit = "%" THEN 
+  If Units.AllowedUnits.Find(hSizeParse.Unit) = -1 Then error.Raise("Unknown unit")
+  If hSizeParse.Unit = "%" Then 
     $fPadding = hSizeParse.Value
-    $bRelativePadding = TRUE
-  ELSE 
+    $bRelativePadding = True
+  Else 
     $fPadding = Units.UnitToCm(Value, hSizeParse.Unit)
     $sPadding = hSizeParse.Unit
-    $bRelativePadding = FALSE
-  ENDIF
-END
+    $bRelativePadding = False
+  Endif
+End
 
-PRIVATE FUNCTION _Top_Read() AS Float
+Private Function _Top_Read() As Float
 
-  RETURN $fTop
+  Return $fTop
 
-END
+End
 
-PRIVATE FUNCTION _Height_Read() AS Float
+Private Function _Height_Read() As Float
 
-  RETURN $fHeight
+  Return $fHeight
 
-END
+End
 
-PRIVATE FUNCTION _Width_Read() AS Float
+Private Function _Width_Read() As Float
 
-  RETURN $fWidth
+  Return $fWidth
 
-END
+End
 
-PRIVATE FUNCTION _Left_Read() AS Float
+Private Function _Left_Read() As Float
 
-  RETURN $fLeft
+  Return $fLeft
 
-END
+End
 
-PRIVATE FUNCTION _Padding_Read() AS Float
+Private Function _Padding_Read() As Float
 
-  RETURN $fPadding
+  Return $fPadding
 
-END
+End
 
-PUBLIC SUB _Free()
+Public Sub _Free()
   
   
   
-END
+End
 
-PUBLIC FUNCTION _SetChildGeometry(X AS Float, Y AS Float, W AS Float, H AS Float, ContPage AS Integer) AS Float
+Public Function _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer) As Float
   
   
   
-END
+End
 
 
-PRIVATE FUNCTION Autoresize_Read() AS Boolean
+Private Function Autoresize_Read() As Boolean
 
-  RETURN $bAutoresize  
+  Return $bAutoresize  
 
-END
+End
 
-PRIVATE SUB Autoresize_Write(Value AS Boolean)
+Private Sub Autoresize_Write(Value As Boolean)
 
   $bAutoresize = Value
 
-END
+End
 
-PRIVATE FUNCTION _RelativeWidth_Read() AS Boolean
+Private Function _RelativeWidth_Read() As Boolean
 
-  RETURN $bRelativeWidth
+  Return $bRelativeWidth
 
-END
+End
 
-PRIVATE FUNCTION _RelativeHeight_Read() AS Boolean
+Private Function _RelativeHeight_Read() As Boolean
 
-  RETURN $bRelativeHeight
+  Return $bRelativeHeight
 
-END
+End
 
-PRIVATE FUNCTION _RelativePadding_Read() AS Boolean
+Private Function _RelativePadding_Read() As Boolean
 
-  RETURN $bRelativePadding
+  Return $bRelativePadding
 
-END
+End
