@@ -48,7 +48,7 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 	{
 		fnt->font->unref();
 		fnt->font = font;
-		//font->ref();
+		font->ref();
 		font->setTag(new gGambasTag((void *)fnt));
 	}
 	

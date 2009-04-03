@@ -424,7 +424,7 @@ BEGIN_PROPERTY(CCONTROL_font)
 
 	if (!THIS->font)
 	{
-		THIS->font = CFONT_create(CONTROL->font()->copy(), 0, THIS);
+		THIS->font = CFONT_create(CONTROL->font(), 0, THIS);
 		GB.Ref(THIS->font);
 	}
 	
