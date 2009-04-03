@@ -1,3 +1,4 @@
+' Gambas class file
 '***************************************************************************
 ' 
 ' miniServer.class
@@ -85,7 +86,7 @@ END
 
 PRIVATE FUNCTION FirstTest(Xml AS XmlReader) AS Boolean
 
-  DO WHILE Not Xml.Eof
+  DO WHILE NOT Xml.Eof
 
     TRY Xml.Read()
     IF ERROR THEN RETURN FALSE
@@ -178,7 +179,7 @@ PRIVATE SUB ProcessQuery(hS AS Socket, Buf AS String)
 
   sReply = "OK"
 
-  IF Not FirstTest(Xml) THEN
+  IF NOT FirstTest(Xml) THEN
     sReply = Tools.FaultReply("1", "Malformed XML-RPC document")
   ELSE
     hBol = RAISE GotData(Resul)
@@ -302,7 +303,7 @@ PUBLIC SUB Socket_Read()
 
   IF InStr(hBuffer[Bucle], Chr(13) & Chr(10) & Chr(13) & Chr(10)) > 0 THEN
 
-    IF hLen[Bucle] = - 1 Or hType[Bucle] <> 1 THEN
+    IF hLen[Bucle] = - 1 OR hType[Bucle] <> 1 THEN
       hError(hS, "406 Not Acceptable")
       RemoveSocket(hS)
       RETURN
@@ -325,8 +326,8 @@ PUBLIC SUB Http_Connection(RemoteHost AS String)
 
   hSocket.Add(Http.Accept())
   hBuffer.Add("")
-  hProt.Add( - 1)
-  hLen.Add( - 1)
+  hProt.Add(- 1)
+  hLen.Add(- 1)
   hConn.Add(0)
   hType.Add(0)
 
@@ -346,7 +347,7 @@ END
 
 PUBLIC SUB Listen(Port AS Integer, MaxConn AS Integer)
 
-  IF Not Http THEN
+  IF NOT Http THEN
     Http = NEW ServerSocket AS "Http"
   ELSE
     IF Http.Status <> 0 THEN Http.Close()

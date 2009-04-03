@@ -2357,21 +2357,12 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
   bool hasIcon;
   QPixmap p;
  	#ifndef NO_X_WINDOW
-  bool saveProp = false;
   bool active = qApp->activeWindow() == this;
  	#endif
 
   hasIcon = icon() != 0;
   if (hasIcon)
     p = *icon();
-
- 	#ifndef NO_X_WINDOW
-  if (THIS->toplevel && THIS->shown)
-  {
-  	saveProp = true;
-  	X11_window_save_properties(this->winId());
-	}
-  #endif
 
 	THIS->toplevel = !parent || parent->isTopLevel();
 	THIS->embedded = !THIS->toplevel;
@@ -2392,13 +2383,7 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
   //qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
   
  	#ifndef NO_X_WINDOW
-		if (THIS->toplevel)
-		{
-			if (saveProp)
-				X11_window_restore_properties(this->winId());
-			else
-				initProperties();
-		}
+		initProperties();
 		if (active)
 		{
 			setActiveWindow();

@@ -239,7 +239,7 @@ Private Sub Expanded_Write(Value As Boolean)
 
   Endif
 
-  If $bAnim Then  
+  If False '$bAnim Then  
     While Abs(Me.Height - H) >= 2
       If Me.Height > H Then
         Me.Height -= 2

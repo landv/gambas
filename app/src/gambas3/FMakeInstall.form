@@ -1,16 +1,16 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,112,82)
+  MoveScaled(0,0,92,82)
   Text = ("Make installation package")
   Icon = Picture["icon:/small/package"]
   Arrangement = Arrange.Fill
   Padding = 8
   { wizInstall Wizard
-    MoveScaled(1,1,77,80)
+    MoveScaled(1,1,89,80)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 8
+    Count = 9
     ShowIndex = True
     Border = False
     Index = 0
@@ -308,7 +308,57 @@
       Sorted = True
     }
     Index = 5
-    Text = ("Add extra tests")
+    Text = ("Extra dependencies")
+    { chkDep CheckBox
+      MoveScaled(0,1,55,3)
+      Text = ("Same dependencies for all targets")
+    }
+    { cmbDep ComboBox
+      MoveScaled(0,6,68,4)
+      Text = (" ")
+      ReadOnly = True
+    }
+    { HBox12 HBox
+      MoveScaled(1,15,79,41)
+      Expand = True
+      Spacing = True
+      { tvwDep TableView
+        MoveScaled(7,5,41,29)
+        Expand = True
+        Header = GridView.Horizontal
+      }
+      { HBox11 VBox
+        MoveScaled(53,4,18,34)
+        Spacing = True
+        { btnAddDep Button
+          MoveScaled(0,0,18,4)
+          Text = ("&Add")
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnRemoveDep Button
+          MoveScaled(0,5,18,4)
+          Text = ("&Remove")
+          Picture = Picture["icon:/small/delete"]
+        }
+        { btnUpDep Button
+          MoveScaled(0,10,18,4)
+          Text = ("&Up")
+          Picture = Picture["icon:/small/up"]
+        }
+        { btnDownDep Button
+          MoveScaled(0,15,18,4)
+          Text = ("&Down")
+          Picture = Picture["icon:/small/down"]
+        }
+        { btnClearDep Button
+          MoveScaled(0,20,18,4)
+          Text = ("&Clear")
+          Picture = Picture["icon:/small/trash"]
+        }
+      }
+    }
+    Index = 6
+    Text = ("Extra autoconf tests")
     { TextLabel4 TextLabel
       MoveScaled(2,1,66,12)
       Text = ("Add extra tests during the configure process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about configure scripts.</b>")
@@ -318,7 +368,7 @@
       Expand = True
       Text = ("")
     }
-    Index = 6
+    Index = 7
     Text = ("Destination directory")
     { dchInstall DirChooser
       MoveScaled(1,0,72,58)
@@ -329,7 +379,7 @@
       MoveScaled(1,60,69,4)
       Text = ("Create directories for each distribution")
     }
-    Index = 7
+    Index = 8
     Text = ("Create package")
     { TextLabel3 TextLabel
       MoveScaled(2,2,67,17)

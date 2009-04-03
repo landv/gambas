@@ -34,6 +34,8 @@ Public Icon As String
 Public Systems As String[]
 Public Menus As Collection
 Public Groups As Collection
+Public ExtraDependencies As Collection
+Public SameDependencies As Boolean
 Public Categories As Collection
 Public Prefix As Boolean
 Public UseRelease As Boolean
@@ -320,7 +322,10 @@ Public Function Open(sDir As String) As Boolean
 
   Inc $iNoRefresh
   ReadProject
-  If bSave Then WriteProject(True)
+  If Not ReadOnly Then
+    If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
+    If bSave Then WriteProject(True)
+  Endif
   Dec $iNoRefresh
 
   VersionControl.Refresh
@@ -2134,6 +2139,8 @@ Public Sub ReadProject()
   Menus = New Collection
   Categories = New Collection
   Groups = New Collection
+  ExtraDependencies = New Collection
+  SameDependencies = False
   Prefix = False
   UseRelease = False
   ExecPath = Project.Dir &/ Project.Name & ".gambas"
@@ -2266,6 +2273,14 @@ Public Sub ReadProject()
           Inc iElt
         Next
 
+      Case "extradependencies"
+        iElt = 0
+        For Each sElt In Split(sVal, ",")
+          If iElt >= Systems.Count Then Break
+          ExtraDependencies[Systems[iElt]] = sElt
+          Inc iElt
+        Next
+
       Case "prefix"
         Prefix = Val(sVal)
         
@@ -2299,6 +2314,9 @@ Public Sub ReadProject()
       Case "createeachdirectory"
         CreateEachDirectory = Val(sVal) <> 0
         
+      Case "samedependencies"
+        SameDependencies = Val(sVal) <> 0
+        
     End Select
 
   Wend
@@ -2324,6 +2342,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Dim sLib As String
   Dim sSys As String
   Dim sElt As String
+  Dim aElt As String[]
   Dim sPath As String
   Dim sVal As String
   Dim iKey As Integer
@@ -2423,8 +2442,16 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     Next
     Print #hFic, "Groups="; Mid$(sElt, 2)
 
+    aElt = New String[]
+    For Each sSys In Systems
+      aElt.Add(ExtraDependencies[sSys])
+    Next
+    Print #hFic, "ExtraDependencies="; aElt.Join(",")
+
   Endif
   
+  If SameDependencies Then Print #hFic, "SameDependencies=1"
+
   Close #hFic
 
   Try Kill sPath

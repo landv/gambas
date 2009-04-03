@@ -2,8 +2,17 @@
 
 Private $sMenuSystem As String
 Private $sGroupSystem As String
+Private $sDepSystem As String
 Private $cCatCache As New Collection
 Private $sLastCat As String
+Private $aDep As String[]
+
+Private Const TAB_GROUP As Integer = 3
+Private Const TAB_MENU As Integer = 4
+Private Const TAB_DEP As Integer = 5
+Private Const TAB_TEST As Integer = 6
+Private Const TAB_CREATE As Integer = 7
+
 
 Private Sub MakeChangeLog() As String
 
@@ -74,6 +83,16 @@ Public Sub Form_Open()
   Endif 
 
   chkCreateDir.Value = Project.CreateEachDirectory
+
+  tvwDep.Columns.Count = 3
+  tvwDep.Columns[0].Text = ("Package")
+  tvwDep.Columns[1].Text = ("Min. version")
+  tvwDep.Columns[2].Text = ("Max. version")
+  tvwDep.Columns[0].Width = Desktop.Scale * 32
+  tvwDep.Columns[1].Width = Desktop.Scale * 16
+  tvwDep.Columns[2].Width = Desktop.Scale * 16
+
+  chkDep.Value = Project.SameDependencies
 
 End
 
@@ -298,21 +317,22 @@ Public Sub wizInstall_BeforeChange()
         Stop Event
         Return
       Endif
+      
       If Project.Systems.Count = 1 And If Project.Systems[0] = "autotools" Then 
-        wizInstall[3].Enabled = False
-        wizInstall[4].Enabled = False
+        wizInstall[TAB_GROUP].Enabled = False
+        wizInstall[TAB_MENU].Enabled = False
       Else
-        wizInstall[3].Enabled = True
-        wizInstall[4].Enabled = True
+        wizInstall[TAB_GROUP].Enabled = True
+        wizInstall[TAB_MENU].Enabled = True
       Endif
-     If Project.Systems.Count = 1 And If Project.Systems[0] <> "autotools" Then 
-        wizInstall[5].Enabled = True
-     Endif
-     If Project.CreateComponent
-        wizInstall[4].Enabled = False
+      
+      wizInstall[TAB_TEST].Enabled = Project.Systems.Exist("autotools")
+      
+      If Project.CreateComponent
+        wizInstall[TAB_MENU].Enabled = False
       Endif
 
-    Case 3
+    Case TAB_GROUP
       If CheckSys(Project.Groups) Then
         If cmbGroup.Count > 1 Then
           Message.Warning(("Please choose the package group for each target distribution."))
@@ -323,7 +343,7 @@ Public Sub wizInstall_BeforeChange()
         Return
       Endif
 
-    Case 4
+    Case TAB_MENU
       If CheckSys(Project.Menus) Then
         If cmbMenu.Count > 1 Then
           Message.Warning(("Please choose the menu location for each target distribution."))
@@ -343,11 +363,13 @@ Public Sub wizInstall_BeforeChange()
       '   STOP EVENT
       '   RETURN
       ' ENDIF
+      
+    Case TAB_DEP
     
-    Case 5
+    Case TAB_TEST
       Package.ExtraTest = txtTests.Text
     
-    Case 6
+    Case TAB_CREATE
       Package.Path = dchInstall.SelectedPath
       If Package.Path = Project.Dir Or If Package.Path Like Project.Dir &/ "/*" Then 
         Message.Warning(("The package cannot be stored inside the project directory."))
@@ -360,6 +382,17 @@ Public Sub wizInstall_BeforeChange()
   
 End 
 
+Private Sub UpdateDepCombo()
+
+  If chkDep.Value Then
+    cmbDep.Hide
+    cmbDep.Index = 0
+  Else  
+    cmbDep.Visible = cmbDep.Count > 1 
+  Endif
+  
+End
+
 Public Sub wizInstall_Change()
 
   Select Case wizInstall.Index
@@ -369,15 +402,19 @@ Public Sub wizInstall_Change()
       If Not txtChangeLog.Text Then txtChange.Text = ("Initial release")
       txtChange.SetFocus
       
-    Case 3
+    Case TAB_GROUP
       InitGroupTree
       cmbGroup.Visible = cmbGroup.Count > 1
       
-    Case 4
+    Case TAB_MENU
       InitMenuTree
       cmbMenu.Visible = cmbMenu.Count > 1
     
-    Case 6
+    Case TAB_DEP
+      FillComboWithSystems(cmbDep)
+      UpdateDepCombo
+      
+    Case TAB_CREATE
       dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath", System.User.Home]
       
   End Select
@@ -718,6 +755,17 @@ Public Sub tvwGroup_Collapse()
 
 End
 
+Public Sub cmbDep_Click()
+
+  $sDepSystem = GetSystemFromName(cmbDep.Text)
+
+  $aDep = Split(Project.ExtraDependencies[$sDepSystem], ";")
+  tvwDep.Rows.Count = $aDep.Count
+  'txtGroup.Clear
+  'lstDep.List = Split(Project.ExtraDependencies[$sDepSystem], ",")
+
+End
+
 Public Sub chkDistro_Click()
 
   Dim hCheckBox As CheckBox = Last
@@ -742,5 +790,121 @@ End
 Public Sub chkCreateDir_Click()
 
   Project.CreateEachDirectory = chkCreateDir.Value
+
+End
+
+Public Sub tvwDep_Click()
+
+  tvwDep.Edit
+
+End
+
+Public Sub tvwDep_Data(Row As Integer, Column As Integer)
+
+  Dim aRow As String[] = Split($aDep[Row], ":")
+  Try tvwDep.Data.Text = aRow[Column]
+
+End
+
+Private Sub SaveExtraDependencies()
+  
+  Project.ExtraDependencies[$sDepSystem] = $aDep.Join(";")
+  
+End
+
+
+Public Sub tvwDep_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim aRow As String[]
+  Dim iInd As Integer
+  Dim sCar As String
+  
+  For iInd = 1 To String.Len(Value)
+    sCar = String.Mid$(Value, iInd, 1)
+    If Len(sCar) = 1 Then
+      If Column = 0 And If IsLetter(sCar) Then Continue
+      If IsDigit(sCar) Or If InStr("-.", sCar) Then Continue
+    Endif
+    Balloon.Warning(("Incorrect characters"), tvwDep, tvwDep.Editor.ScreenX - tvwDep.ScreenX + tvwDep.Editor.W / 2, tvwDep.Editor.ScreenY - tvwDep.ScreenY + tvwDep.Editor.H / 2)
+    Stop Event
+    Return
+  Next
+  
+  aRow = Split($aDep[Row], ":")
+  
+  While aRow.Count < 3
+    aRow.Add("")
+  Wend
+  
+  aRow[Column] = Value
+  $aDep[Row] = aRow.Join(":")
+  SaveExtraDependencies
+
+End
+
+Public Sub btnAddDep_Click()
+
+  $aDep.Add("::")
+  SaveExtraDependencies
+  Inc tvwDep.Rows.Count
+  tvwDep.Save
+  tvwDep.MoveTo($aDep.Max, 0)
+  tvwDep.Edit
+
+End
+
+Public Sub tvwDep_Insert()
+
+  btnAddDep.Value = True
+
+End
+
+Public Sub btnRemoveDep_Click()
+
+  $aDep.Remove(tvwDep.Row)
+  SaveExtraDependencies
+  Dec tvwDep.Rows.Count
+
+End
+
+Public Sub btnUpDep_Click()
+
+  If tvwDep.Row >= 1 Then
+    tvwDep.Save
+    Swap $aDep[tvwDep.Row], $aDep[tvwDep.Row - 1]
+    SaveExtraDependencies
+    tvwDep.Refresh
+    Dec tvwDep.Row
+    tvwDep.Edit
+  Endif
+
+End
+
+Public Sub btnDownDep_Click()
+
+  If tvwDep.Row < $aDep.Max Then
+    tvwDep.Save
+    Swap $aDep[tvwDep.Row], $aDep[tvwDep.Row + 1]
+    SaveExtraDependencies
+    tvwDep.Refresh
+    Inc tvwDep.Row
+    tvwDep.Edit
+  Endif
+  
+
+End
+
+Public Sub btnClearDep_Click()
+
+  If Message.Warning(("Do you really want to remove all extra dependencies?"), ("Cancel"), ("Remove")) <> 2 Then Return
+  $aDep.Clear
+  SaveExtraDependencies
+  tvwDep.Rows.Count = 0
+
+End
+
+Public Sub chkDep_Click()
+
+  UpdateDepCombo
 
 End

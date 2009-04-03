@@ -69,6 +69,14 @@ static char *file_rdir_path = NULL;
 static char file_buffer[PATH_MAX + 16];
 static int file_buffer_length;
 
+#ifdef _DIRENT_HAVE_D_TYPE
+#undef _DIRENT_HAVE_D_TYPE
+#endif
+
+#ifdef _DIRENT_HAVE_D_TYPE
+static bool _last_is_dir;
+#endif
+
 #ifdef PROJECT_EXEC
 
 typedef
@@ -514,8 +522,11 @@ bool FILE_dir_next(char **path, int *len)
   struct dirent *entry;
   int len_entry;
   bool ret;
+	#ifdef _DIRENT_HAVE_D_TYPE
+	#else
   struct stat info;
   char *p = file_buffer;
+	#endif
 
   if (file_dir_arch)
   {
@@ -528,6 +539,8 @@ bool FILE_dir_next(char **path, int *len)
   if (file_dir == NULL)
     return TRUE;
 
+	#ifdef _DIRENT_HAVE_D_TYPE
+	#else
   if (file_attr)
   {
     strcpy(p, file_path);
@@ -535,6 +548,7 @@ bool FILE_dir_next(char **path, int *len)
     if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
       *p++ = '/';
   }
+	#endif
 
   for(;;)
   {
@@ -544,16 +558,21 @@ bool FILE_dir_next(char **path, int *len)
       dir_exit();
       return TRUE;
     }
-
+		
     if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0))
       continue;
 
     if (file_attr)
     {
+			#ifdef _DIRENT_HAVE_D_TYPE
+      if ((file_attr == GB_STAT_DIRECTORY) ^ (entry->d_type == DT_DIR))
+        continue;
+			#else
       strcpy(p, entry->d_name);
       stat(file_buffer, &info);
       if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
         continue;
+			#endif
     }
 
     len_entry = strlen(entry->d_name);
@@ -567,20 +586,29 @@ bool FILE_dir_next(char **path, int *len)
 
   *path = entry->d_name;
   *len = len_entry;
+	#ifdef _DIRENT_HAVE_D_TYPE
+	_last_is_dir = entry->d_type == DT_DIR;
+	#endif
 
   return FALSE;
 }
 
+//#undef _DIRENT_HAVE_D_TYPE
 
 void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr)
 {
   void *list = NULL;
+	void *dir_list = NULL;
   char *file;
   int len;
   char *path;
   //struct stat buf;
+	#ifdef _DIRENT_HAVE_D_TYPE
+	#else
   FILE_STAT info;
+	#endif
   char *temp;
+	bool is_dir;
 
   if (!FILE_is_dir(dir))
     return;
@@ -595,8 +623,39 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 	while (!FILE_dir_next(&file, &len))
 	{
 		STRING_new_temp(&temp, file, len);
-		push_path(&list, FILE_cat(file_rdir_path, temp, NULL));
+		path = (char *)FILE_cat(file_rdir_path, temp, NULL);
+		#ifdef _DIRENT_HAVE_D_TYPE
+		is_dir = _last_is_dir;
+		#else
+		FILE_stat(path, &info, FALSE);
+		is_dir = info.type == GB_STAT_DIRECTORY;
+		#endif
+		
+		if (is_dir)
+			push_path(&dir_list, path);
+		else
+			push_path(&list, path);
 	}
+
+  while (dir_list)
+  {
+    path = pop_path(&dir_list);
+		//fprintf(stderr, "%s\n", path);
+
+		TRY
+		{
+			if (found) (*found)(path);
+			FILE_recursive_dir(path, found, afterfound, attr);
+			if (afterfound) (*afterfound)(path);
+		}
+		CATCH
+		{
+			//ERROR_print_at(stdout);
+		}
+		END_TRY
+
+    STRING_free((char **)&path);
+  }
 
   while (list)
   {
@@ -605,13 +664,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 
 		TRY
 		{
-			FILE_stat(path, &info, FALSE);
-
 			if (found) (*found)(path);
-
-			if (info.type == GB_STAT_DIRECTORY)
-				FILE_recursive_dir(path, found, afterfound, attr);
-
 			if (afterfound) (*afterfound)(path);
 		}
 		CATCH

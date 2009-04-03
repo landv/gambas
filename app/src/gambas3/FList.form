@@ -1,49 +1,49 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(19.1667,40,63,41)
+  MoveScaled(19.1667,40,71,41)
   Text = ("Edit list property")
   Resizable = False
   { lstValue ListBox
-    MoveScaled(1,1,44,29)
+    MoveScaled(1,1,52,29)
   }
   { btnOK Button
-    MoveScaled(46,1,16,4)
+    MoveScaled(54,1,16,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(46,6,16,4)
+    MoveScaled(54,6,16,4)
     Text = ("Cancel")
     Cancel = True
   }
   { btnInsert Button
-    MoveScaled(1,36,14,4)
+    MoveScaled(1,36,18,4)
     Text = ("&Insert")
     Picture = Picture["icon:/small/add"]
   }
   { btnUp Button
-    MoveScaled(31,36,4,4)
+    MoveScaled(39,36,4,4)
     Text = ("")
     Picture = Picture["icon:/small/up"]
   }
   { btnDown Button
-    MoveScaled(36,36,4,4)
+    MoveScaled(44,36,4,4)
     Text = ("")
     Picture = Picture["icon:/small/down"]
   }
   { btnDelete Button
-    MoveScaled(16,36,14,4)
+    MoveScaled(20,36,18,4)
     Text = ("&Delete")
     Picture = Picture["icon:/small/delete"]
   }
   { txtValue TextBox
-    MoveScaled(1,31,44,4)
+    MoveScaled(1,31,52,4)
     Enabled = False
     Text = ("")
   }
   { btnClear Button
-    MoveScaled(41,36,4,4)
+    MoveScaled(49,36,4,4)
     Text = ("")
     Picture = Picture["icon:/small/trash"]
   }
