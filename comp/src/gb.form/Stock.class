@@ -18,7 +18,11 @@ Static Private Sub SearchDesktop()
   If Application.Theme Then Return
   
   If Application.Env["KDE_FULL_SESSION"] Then 
-    Application.Theme = "kde"
+    If Application.Env["KDE_SESSION_VERSION"] = "4" Then
+      Application.Theme = "kde4"
+    Else
+      Application.Theme = "kde"
+    Endif
   Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then 
     Application.Theme = "gnome"
   Else 
@@ -29,7 +33,6 @@ Static Private Sub SearchDesktop()
 Catch
   
 End
-
 
 Static Private Sub LoadMap(sMap As String)
   
@@ -44,7 +47,7 @@ Static Private Sub LoadMap(sMap As String)
   While Not Eof(hFile)
     Line Input #hFile, sLig
     sLig = Trim(sLig)
-    If Left(sLig) = "'" Or Left(sLig) = "#" Then Continue
+    If InStr("';#", Left(sLig)) Then Continue
     aMap = Scan(sLig, "* *")
     If aMap.Count >= 2 Then
       cMap[aMap[0]] = aMap[1]
@@ -149,6 +152,53 @@ Static Private Sub InitTheme()
        
       Endif
     
+    Case "kde4"
+  
+      Try Exec ["kde4-config", "--path", "icon"] To sIconPath
+      If sIconPath Then 
+    
+        sIconPath = Trim(sIconPath)
+    
+        'sStyle = "kdeclassic"
+        Try hFile = Open "~/.kde4/share/config/kdeglobals"
+        If Not Error Then
+          While Not Eof(hFile)
+            Line Input #hFile, sLig
+            If sLig = "[Icons]" Then 
+              While Not Eof(hFile)
+                Line Input #hFile, sLig
+                If Left(sLig) = "[" Then Break
+                If sLig Like "Theme=*" Then 
+                  sStyle = Mid$(sLig, 7)
+                  Break
+                Endif 
+              Wend
+              Break
+            Endif 
+          Wend
+          Close #hFile
+        
+          If sStyle Then
+            For Each sPath In Split(sIconPath, ":")
+              AddPath("kde4", sPath &/ sStyle)
+              AddPath("gnome", sPath &/ sStyle)
+            Next
+          Endif 
+          
+        Endif
+        
+        For Each sPath In Split(sIconPath, ":")
+          AddPath("kde4", sPath &/ "oxygen") ' default theme hardcoded in KDE sources
+        Next
+        
+        ' FOR EACH sPath IN Split(sIconPath, ":")
+        '   AddPath("kde", sPath &/ "kdeclassic") ' default theme hardcoded in KDE sources
+        ' NEXT
+        
+        'AddPath("", "stock/qt")
+       
+      Endif
+    
     Case "xfce"
     
       Try hFile = Open "~/.config/xfce4/mcs_settings/gtk.xml"
@@ -176,7 +226,7 @@ Static Private Sub InitTheme()
   AddPath("", "stock/qt")
   AddPath("", "stock/default")
   
-  'DEBUG $aIconPath.Join("\n")
+  'Debug $aIconPath.Join("\n")
   
   $bInit = True
    

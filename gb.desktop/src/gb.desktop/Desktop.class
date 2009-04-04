@@ -201,11 +201,19 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
   
   Dim sExec As String
   Dim sCmd As String
+  Dim bNoDir As Boolean
   
   Select Case GetDesktop()
   
     Case "KDE"
       sExec = "konsole"
+    Case "KDE4"
+      If {Dir} Then
+        sExec = "konsole --workdir " & Shell$({Dir})
+        bNoDir = True
+      Else
+        sExec = "konsole"
+      Endif
     Case "GNOME"
       sExec = "gnome-terminal"
     Case "XFCE"
@@ -215,7 +223,7 @@ Static Public Sub OpenTerminal(Optional {Dir} As String)
   
   End Select
   
-  If {Dir} Then
+  If {Dir} And If Not bNoDir Then
     sCmd = "(cd " & Shell$({Dir}) & "; " & sExec & ")"
   Else
     sCmd = sExec

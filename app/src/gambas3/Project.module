@@ -1914,14 +1914,8 @@ Public Sub Activate(hForm As Object)
   Action["watch"].Visible = bEditor
   Action["until"].Visible = bEditor
 
-  Action["find-comment"].Visible = Not bTextEditor
-  Action["find-string"].Visible = Not bTextEditor
-  Action["find-in"].Visible = bEditor
-  Action["find-previous"].Visible = bEditor Or bTextEditor
-  Action["find-next"].Visible = bEditor Or bTextEditor
-  Action["replace"].Visible = bEditor Or bTextEditor
-  'Action["replace-all"].Visible = bEditor OR bTextEditor
-  
+  FFind.OnProjectActivate()
+
   Try ActiveForm.SetFocus
   
 End

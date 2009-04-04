@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,90,9)
+  MoveScaled(0,0,102,9)
   Action = "find"
   Text = ("")
   Arrangement = Arrange.Vertical
@@ -10,20 +10,15 @@
     Visible = False
   }
   { panFind HBox
-    MoveScaled(1,4,86,4)
+    MoveScaled(1,4,96,4)
     AutoResize = True
     { btnClose ToolButton
       MoveScaled(0,0,4,4)
       Text = ("")
       Picture = Picture["icon:/small/close"]
     }
-    { PictureBox1 PictureBox
-      MoveScaled(3,0,4,4)
-      Visible = False
-      Picture = Picture["icon:/24/find"]
-    }
     { cmbFind ComboBox
-      MoveScaled(6,0,11,4)
+      MoveScaled(5,0,11,4)
       ToolTip = ("Find")
       Expand = True
       Text = ("")
@@ -36,113 +31,106 @@
       Picture = Picture["icon:/small/down"]
     }
     { ToolButton14 ToolButton
-      MoveScaled(20,0,4,4)
+      MoveScaled(21,0,4,4)
       ToolTip = ("Find previous")
       Action = "find-previous"
       Text = ("")
       Picture = Picture["icon:/small/up"]
     }
     { ToolButton1 ToolButton
-      MoveScaled(23,0,4,4)
+      MoveScaled(25,0,4,4)
       ToolTip = ("Search list")
       Action = "find-all"
       Text = ("")
       Picture = Picture["img/16/find-list.png"]
     }
     { cmbReplace ComboBox
-      MoveScaled(26,0,13,4)
+      MoveScaled(29,0,13,4)
       ToolTip = ("Replace")
       Expand = True
       Text = ("")
     }
     { ToolButton16 ToolButton
-      MoveScaled(39,0,4,4)
+      MoveScaled(43,0,4,4)
       ToolTip = ("Replace")
       Action = "replace"
       Text = ("")
       Picture = Picture["icon:/small/replace"]
     }
     { ToolButton17 ToolButton
-      MoveScaled(42,0,4,4)
+      MoveScaled(47,0,4,4)
       ToolTip = ("Replace all")
       Action = "replace-all"
       Text = ("")
       Picture = Picture["img/16/wizard.png"]
     }
-    { ToolBar5 ToolBar
-      MoveScaled(55,0,12,4)
-      AutoResize = False
-      Text = ("")
-      Action = "find-in"
-      { ToolButton18 ToolButton
-        MoveScaled(0,0,4,4)
-        ToolTip = ("Search in procedure")
-        Action = "find-in-sub"
-        Text = ("")
-        Picture = Picture["img/16/procedure.png"]
-        Radio = True
-        Toggle = True
-      }
-      { ToolButton19 ToolButton
-        MoveScaled(3,0,4,4)
-        ToolTip = ("Search in file")
-        Action = "find-in-module"
-        Text = ("")
-        Picture = Picture["img/16/module.png"]
-        Radio = True
-        Toggle = True
-        Value = True
-      }
-      { btnFindInProject ToolButton
-        MoveScaled(6,0,4,4)
-        ToolTip = ("Search in project")
-        Action = "find-in-project"
-        Text = ("")
-        Picture = Picture["img/16/gambas.png"]
-        Radio = True
-        Toggle = True
-      }
+    { sepIn Separator
+      MoveScaled(51,0,1,4)
     }
-    { ToolBar6 ToolBar
-      MoveScaled(71,0,14,4)
-      Visible = False
-      AutoResize = False
+    { ToolButton18 ToolButton
+      MoveScaled(53,0,4,4)
+      ToolTip = ("Search in procedure")
+      Action = "find-in-sub"
       Text = ("")
-      Action = "find-option"
-      { ToolButton21 ToolButton
-        MoveScaled(0,0,4,4)
-        Font = Font["-1"]
-        ToolTip = ("Case sensitive")
-        Action = "find-case"
-        Text = ("")
-        Picture = Picture["img/16/case.png"]
-        Toggle = True
-      }
-      { ToolButton22 ToolButton
-        MoveScaled(3,0,4,4)
-        Font = Font["-1"]
-        ToolTip = ("Word only")
-        Action = "find-word"
-        Text = ("")
-        Picture = Picture["img/16/word.png"]
-        Toggle = True
-      }
-      { ToolButton23 ToolButton
-        MoveScaled(6,0,4,4)
-        ToolTip = ("Search in comments")
-        Action = "find-comment"
-        Text = ("")
-        Picture = Picture["img/16/comment.png"]
-        Toggle = True
-      }
-      { ToolButton2 ToolButton
-        MoveScaled(9,0,4,4)
-        ToolTip = ("Search in strings")
-        Action = "find-string"
-        Text = ("")
-        Picture = Picture["img/16/string.png"]
-        Toggle = True
-      }
+      Picture = Picture["img/16/procedure.png"]
+      Radio = True
+      Toggle = True
+    }
+    { ToolButton19 ToolButton
+      MoveScaled(57,0,4,4)
+      ToolTip = ("Search in file")
+      Action = "find-in-module"
+      Text = ("")
+      Picture = Picture["img/16/module.png"]
+      Radio = True
+      Toggle = True
+      Value = True
+    }
+    { btnFindInProject ToolButton
+      MoveScaled(61,0,4,4)
+      ToolTip = ("Search in project")
+      Action = "find-in-project"
+      Text = ("")
+      Picture = Picture["img/16/gambas.png"]
+      Radio = True
+      Toggle = True
+    }
+    { sepOption Separator
+      MoveScaled(67,0,1,4)
+    }
+    { ToolButton21 ToolButton
+      MoveScaled(69,0,4,4)
+      Font = Font["-1"]
+      ToolTip = ("Case sensitive")
+      Action = "find-case"
+      Text = ("")
+      Picture = Picture["img/16/case.png"]
+      Toggle = True
+    }
+    { ToolButton22 ToolButton
+      MoveScaled(73,0,4,4)
+      Font = Font["-1"]
+      ToolTip = ("Word only")
+      Action = "find-word"
+      Text = ("")
+      Picture = Picture["img/16/word.png"]
+      Toggle = True
+    }
+    { ToolButton23 ToolButton
+      MoveScaled(77,0,4,4)
+      ToolTip = ("Search in comments")
+      Action = "find-comment"
+      Text = ("")
+      Picture = Picture["img/16/comment.png"]
+      Toggle = True
+    }
+    { ToolButton2 ToolButton
+      MoveScaled(81,0,4,4)
+      ToolTip = ("Search in strings")
+      Action = "find-string"
+      Text = ("")
+      Picture = Picture["img/16/string.png"]
+      Toggle = True
     }
   }
 }
@@ -166,10 +154,6 @@
     Text = "Search in comments"
     Picture = "img/16/comment.png"
   }
-  { Action find-in
-    Text = ""
-    Picture = "$ToolBar"
-  }
   { Action find-in-module
     Text = "Search in file"
     Picture = "img/16/module.png"
@@ -185,10 +169,6 @@
   { Action find-next
     Text = "Find next"
     Picture = "icon:/small/down"
-  }
-  { Action find-option
-    Text = ""
-    Picture = "$ToolBar"
   }
   { Action find-previous
     Text = "Find previous"

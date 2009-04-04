@@ -162,10 +162,9 @@ Public Sub Form_Show()
   Dim hEdit As Editor
   Dim sSel As String
 
-  Action["find-action,find-option"].Visible = True
+  'Action["find-action,find-option"].Visible = True
   
-  If Project.ActiveForm Then bVisible = Object.Type(Project.ActiveForm) = "FEditor"
-  Action["find-in"].Visible = bVisible
+  OnProjectActivate
   
   Try hEdit = Project.ActiveForm.Editor
   If hEdit Then 
@@ -186,7 +185,7 @@ End
 
 Public Sub Form_Hide()
 
-  Action["find-action,find-in,find-option"].Visible = False
+  'Action["find-action,find-in,find-option"].Visible = False
   'FFindList.ClearFound
 
   FFindList.Hide
@@ -560,7 +559,7 @@ End
 
 Public Sub Action_Activate(Key As String) As Boolean
   
-  If Key = "find-comment" Or If Key = "find-case" Or If Key = "find-word" Or If Key = "find-string" Or If Key Like "find-in*" Then $iLastTimeStamp = 0
+  If Key = "find-comment" Or If Key = "find-case" Or If Key = "find-word" Or If Key = "find-string" Or If Key Like "find-in-*" Then $iLastTimeStamp = 0
   
   Return True
   
@@ -586,4 +585,25 @@ Public Sub HandleEscape() As Boolean
     Return True
   Endif
 
+End
+
+Public Sub OnProjectActivate()
+  
+  Dim sType As String
+  Dim bEditor As Boolean
+  Dim bTextEditor As Boolean
+  
+  Try sType = Object.Type(Project.ActiveForm)
+  
+  bEditor = sType = "FEditor"
+  bTextEditor = sType = "FTextEditor"
+  
+  Action["find-comment"].Visible = Not bTextEditor
+  Action["find-string"].Visible = Not bTextEditor
+  Action["find-in-*"].Visible = bEditor
+  sepIn.Visible = bEditor
+  Action["find-previous"].Visible = bEditor Or bTextEditor
+  Action["find-next"].Visible = bEditor Or bTextEditor
+  Action["replace"].Visible = bEditor Or bTextEditor
+  
 End
