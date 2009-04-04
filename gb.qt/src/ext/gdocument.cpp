@@ -37,6 +37,7 @@ GLine::GLine()
 {
 	s = "";
 	state = Normal;
+	alternate = false;
 	tag = 0;
 	flag = 0;
 	modified = false;
@@ -971,11 +972,12 @@ int GDocument::convState(int state)
     case EVAL_TYPE_OPERATOR: return GLine::Operator;
     case EVAL_TYPE_DATATYPE: return GLine::Datatype;
     case EVAL_TYPE_ERROR: return GLine::Error;
+		case EVAL_TYPE_ALTERNATE: return GLine::Alternate;
     default: return GLine::Normal;
   }
 }
 
-void GDocument::highlightGambas(GEditor *editor, uint &state, int &tag, GString &s, GHighlightArray *data, bool &proc)
+void GDocument::highlightGambas(GEditor *editor, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
   const char *src;
   EVAL_ANALYZE result;
@@ -993,6 +995,7 @@ void GDocument::highlightGambas(GEditor *editor, uint &state, int &tag, GString 
   {
     //qDebug("state = %d -> %d  len = %d", result.color[i].state, QEditor::convState[result.color[i].state], result.color[i].len);
     (*data)[i].state = convState(result.color[i].state);
+    (*data)[i].alternate = result.color[i].alternate;
     (*data)[i].len = result.color[i].len;
   }
 
@@ -1066,6 +1069,7 @@ void GDocument::colorize(int y)
   bool proc;
   GString old;
   uint state;
+	bool alternate;
   int tag;
   int nupd = 0;
   bool changed = false;
@@ -1091,11 +1095,13 @@ void GDocument::colorize(int y)
 		if (y == 0)
 		{
 			state = GLine::Normal;
+			alternate = false;
 			tag = 0;
 		}
 		else
 		{
 			state = lines.at(y - 1)->state;
+			alternate = lines.at(y - 1)->alternate;
 			tag = lines.at(y - 1)->tag;
 		}
 
@@ -1103,25 +1109,25 @@ void GDocument::colorize(int y)
 		{
 			old = l->s;
 			GB.FreeArray(&l->highlight);
-			(*highlightCallback)(views.first(), state, tag, l->s, &l->highlight, proc);
+			(*highlightCallback)(views.first(), state, alternate, tag, l->s, &l->highlight, proc);
 			l->proc = proc;
 
-				if (old != l->s)
-				{
-					begin();
-					addUndo(new GDeleteCommand(y, 0, y, old.length(), old));
-					if (l->s.length())
-						addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
-					end();
-			    
-			    //maxLength = GMAX(maxLength, (int)l->s.length());
-			    updateLineWidth(y);
-				//qDebug("colorize: %d has changed: '%s' -> '%s'", y, old.utf8(), l->s.utf8());
-				l->changed = true;
-				changed = true;
-				}
+			if (old != l->s)
+			{
+				begin();
+				addUndo(new GDeleteCommand(y, 0, y, old.length(), old));
+				if (l->s.length())
+					addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
+				end();
+				
+				//maxLength = GMAX(maxLength, (int)l->s.length());
+				updateLineWidth(y);
+			//qDebug("colorize: %d has changed: '%s' -> '%s'", y, old.utf8(), l->s.utf8());
+			l->changed = true;
+			changed = true;
 			}
-			else
+		}
+		else
 		{
 			GB.FreeArray(&l->highlight);
 			l->proc = false;
@@ -1139,6 +1145,7 @@ void GDocument::colorize(int y)
 			break;
 
 		l->state = state;
+		l->alternate = alternate;
 		l->tag = tag;
 		
 		y++;

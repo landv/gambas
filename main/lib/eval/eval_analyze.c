@@ -101,8 +101,8 @@ static void get_symbol(PATTERN pattern, const char **symbol, int *len)
 
   *symbol = sym->name;
   *len = sym->len;
-  if (*len > 4096)
-    *len = 4096;
+  if (*len > EVAL_COLOR_MAX_LEN)
+    *len = EVAL_COLOR_MAX_LEN;
     
   if (type == RT_RESERVED && !EVAL->rewrite)
   {
@@ -126,6 +126,7 @@ static void add_data(int state, int len)
   color = &colors[colors_len];
   color->state = state;
   color->len = len;
+	color->alternate = FALSE;
   colors_len++;
 }
 

@@ -29,7 +29,8 @@
 struct GHighlight
 {
 	unsigned state : 4;
-	unsigned len : 12;
+	unsigned alternate : 1;
+	unsigned len : 11;
 };
 
 typedef
@@ -44,7 +45,8 @@ public:
 		Background = 0, Normal, Keyword, Subr,
 		Operator, Symbol, Number, String,
 		Comment, Breakpoint, Current, Datatype,
-		Selection, Highlight, Line, Error,
+		Selection, Highlight, Line, Error, 
+		Alternate,
 		NUM_STATE
 	};
 
@@ -57,12 +59,13 @@ public:
 	GString s;
 	GHighlightArray highlight;
 	unsigned state : 4;
+	unsigned alternate : 1;
 	unsigned modified : 1;
 	unsigned changed : 1;
 	unsigned flag : 2;
 	unsigned proc : 1;
 	unsigned baptized : 1;
-	unsigned _reserved : 6;
+	unsigned _reserved : 5;
 	signed tag : 16;
 
 	GLine();
@@ -73,7 +76,7 @@ class GCommand;
 class GEditor;
 
 typedef
-	void (*GHighlightCallback)(GEditor *master, uint &state, int &tag, GString &s, GHighlightArray *highlight, bool &proc);
+	void (*GHighlightCallback)(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *highlight, bool &proc);
 
 
 class GDocument
@@ -112,7 +115,7 @@ public:
 		Custom = 2
 	};
 
-	static void highlightGambas(GEditor *master, uint &state, int &tag, GString &s, GHighlightArray *data, bool &proc);
+	static void highlightGambas(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc);
 
 	GArray<GLine> lines;
 	GArray<GEditor> views;

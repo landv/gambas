@@ -42,6 +42,7 @@ static int _x1, _y1, _x2, _y2;
 static int _style;
 
 static int _highlight_state = 0;
+static bool _highlight_alternate = false;
 static int _highlight_tag = 0;
 static bool _highlight_show_limit = false;
 static QString _highlight_text = "";
@@ -49,11 +50,12 @@ static GHighlightArray *_highlight_data = NULL;
 
 static QT_PICTURE _breakpoint_picture = 0;
 
-static void highlightCustom(GEditor *master, uint &state, int &tag, GString &s, GHighlightArray *data, bool &proc)
+static void highlightCustom(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
   void *object = QT.GetObject((QWidget *)master);
 
 	_highlight_state = state;
+	_highlight_alternate = alternate;
 	_highlight_tag = tag;
 	_highlight_text = s.getString();
 	_highlight_show_limit = proc;
@@ -64,6 +66,7 @@ static void highlightCustom(GEditor *master, uint &state, int &tag, GString &s, 
 	GB.Raise(object, EVENT_Highlight, 0);
 
 	state = _highlight_state;
+	alternate = _highlight_alternate;
 	tag = _highlight_tag;
 	s = GString(_highlight_text);
 	proc = _highlight_show_limit;
@@ -82,6 +85,15 @@ BEGIN_PROPERTY(CHIGHLIGHT_state)
 		GB.ReturnInteger(_highlight_state);
 	else
 		_highlight_state = VPROP(GB_INTEGER);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CHIGHLIGHT_alternate)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(_highlight_alternate);
+	else
+		_highlight_alternate = VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 
@@ -126,11 +138,12 @@ BEGIN_METHOD(CHIGHLIGHT_add, GB_INTEGER state; GB_INTEGER len)
 	if (len < 1)
 		return;
 
-	if (count < 0 || (*_highlight_data)[count].state != (uint)state)
+	if (count < 0 || (*_highlight_data)[count].state != (uint)state || (*_highlight_data)[count].alternate != _highlight_alternate)
 	{
 		count++;
 		h = (GHighlight *)GB.Add(_highlight_data);
 		h->state = state;
+		h->alternate = _highlight_alternate;
 		h->len = len;
 	}
 	else
@@ -915,11 +928,13 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("Highlight", "i", HIGHLIGHT_HIGHLIGHT),
   GB_CONSTANT("CurrentLine", "i", HIGHLIGHT_LINE),
   GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
+  GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
 
   GB_STATIC_PROPERTY("State", "i", CHIGHLIGHT_state),
   GB_STATIC_PROPERTY("Tag", "i", CHIGHLIGHT_tag),
   GB_STATIC_PROPERTY("ShowLimit", "b", CHIGHLIGHT_show_limit),
   GB_STATIC_PROPERTY("Text", "s", CHIGHLIGHT_text),
+  GB_STATIC_PROPERTY("AlternateState", "b", CHIGHLIGHT_alternate),
   GB_STATIC_METHOD("Add", NULL, CHIGHLIGHT_add, "(State)i[(Count)i]"),
 
   GB_END_DECLARE

@@ -10,6 +10,9 @@ Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css"]
 Private Const STYLE_HTML As Integer = 1
 Private Const STYLE_CSS As Integer = 2
 
+Private Const TAG_HTML As Integer = 0
+Private Const TAG_CODE As Integer = 1
+
 Private $bModify As Boolean
 Private $iStyle As Integer
 
@@ -37,7 +40,7 @@ Public Sub LoadFile()
     With edtEditor
       .Clear
       .Highlight = Highlight.Custom
-      .Flags[Editor.HighlightCurrent] = True
+      .Flags[Editor.HighlightBraces] = True
     End With     
 
     Select Case sExt
@@ -374,6 +377,38 @@ Public Sub mnuReplace_Click()
 
 End
 
+Private Sub AnalyzeCode(sText As String) As String
+  
+  Dim iInd As Integer
+  Dim iPos As Integer
+  Dim iLen As Integer
+  
+  If Not sText Then Return
+  
+  Highlight.Analyze(sText, True)
+  
+  iPos = 0
+  For iInd = 0 To Highlight.Symbols.Max
+    
+    If iPos < Highlight.Positions[iInd] Then 
+      Highlight.Add(Highlight.Normal, Highlight.Positions[iInd] - iPos)
+      iPos = Highlight.Positions[iInd]
+    Endif
+    
+    iLen = String.Len(Highlight.Symbols[iInd])
+    Highlight.Add(Highlight.Types[iInd], iLen)
+    iPos += iLen
+    
+  Next
+
+  If iPos < String.Len(Highlight.TextAfter) Then 
+    Highlight.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
+  Endif
+  
+  Return Highlight.TextAfter
+
+End
+
 
 Public Sub Editors_Highlight()
 
@@ -382,12 +417,16 @@ Public Sub Editors_Highlight()
   Dim iInd As Integer
   Dim J As Integer
   Dim sText As String
+  Dim sTextAfter As String
   Dim sCar As String
   Dim iPos As Integer
   Dim bMarkup As Boolean
   Dim bQuote As Boolean
   Dim bLimit As Boolean
+  Dim bCode As Boolean
   Dim iTag As Integer
+  Dim iCount As Integer
+  Dim iCodeStart As Integer
 
   iState = Highlight.State
   iTag = Highlight.Tag
@@ -399,14 +438,41 @@ Public Sub Editors_Highlight()
   
     Case STYLE_HTML
 
-      bMarkup = iState = Highlight.Keyword
+      If iTag = TAG_HTML Then
+        bMarkup = iState = Highlight.Keyword
+      Else If iTag = TAG_CODE
+        bCode = True
+        iCodeStart = 1
+      Endif
     
       For iInd = 1 To String.Len(sText)
     
         iNextState = iState
         sCar = String.Mid$(sText, iInd, 1)
     
-        If bMarkup Then
+        If bCode Then
+        
+          If bQuote Then
+            If sCar = Chr$(34) Then 
+              bQuote = False
+            Endif
+          Else If sCar = Chr$(34) Then
+            bQuote = True
+          Else If sCar = "'" Then
+            Break
+          Else If String.Mid$(sText, iInd, 2) = "%>" Then
+            bCode = False
+            sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart, iInd - iCodeStart))
+            Highlight.Add(Highlight.Keyword, 2)
+            sTextAfter &= "%>"
+            Inc iInd
+            Highlight.AlternateState = False
+            iState = Highlight.Normal
+            iNextState = Highlight.Normal
+          Endif
+          Continue
+        
+        Else If bMarkup Then
     
           If bQuote Then
             If sCar = Chr$(34) Then 
@@ -430,17 +496,32 @@ Public Sub Editors_Highlight()
           Select Case iState
             Case Highlight.Normal
               If sCar = "<" Then
-                If Mid$(sText, iInd, 4) = "<!--" Then
+                If String.Mid$(sText, iInd, 4) = "<!--" Then
                   iState = Highlight.Comment
                   iNextState = Highlight.Comment
-                Else If Mid$(sText, iInd, 9) = "<![CDATA[" Then
+                Else If String.Mid$(sText, iInd, 9) = "<![CDATA[" Then
                   iState = Highlight.Symbol
                   iNextState = Highlight.Symbol
+                Else If String.Mid$(sText, iInd, 2) = "<%" Then
+                  If String.Mid$(sText, iInd + 2, 1) = "=" Then
+                    iCount = 3
+                  Else 
+                    iCount = 2
+                  Endif
+                  Highlight.AlternateState = True
+                  Highlight.Add(Highlight.Keyword, iCount)
+                  sTextAfter &= String.Mid$(sText, iInd, iCount)
+                  iInd += iCount - 1
+                  iState = Highlight.Normal
+                  iNextState = Highlight.Normal
+                  bCode = True
+                  iCodeStart = iInd + 1
+                  Continue
                 Else
                   iState = Highlight.Keyword
                   iNextState = Highlight.Keyword
                   bMarkup = True
-                  If Mid$(sText, iInd, 5) = "<body" Or If Mid$(sText, iInd, 5) = "<head" Then bLimit = True
+                  If String.Mid$(sText, iInd, 5) = "<body" Or If String.Mid$(sText, iInd, 5) = "<head" Then bLimit = True
                 Endif
               Else If sCar = "&" Then
                 iPos = String.InStr(sText, ";", iInd)
@@ -456,6 +537,7 @@ Public Sub Editors_Highlight()
                   Next
                   If J = iPos Then
                     Highlight.Add(Highlight.Number, iPos - iInd + 1)
+                    sTextAfter &= String.Mid$(sText, iInd, iPos - iInd + 1)
                     iInd = iPos
                     Continue
                   Else
@@ -475,18 +557,27 @@ Public Sub Editors_Highlight()
     
         Endif
     
+        sTextAfter &= sCar
         Highlight.Add(iState)
         iState = iNextState
     
       Next
     
-      If iNextState <> Highlight.Comment And If iNextState <> Highlight.Symbol Then
-        If bMarkup Then 
-          iNextState = Highlight.Keyword
-        Else 
-          iNextState = Highlight.Normal
+      If bCode Then
+        sTextAfter &= AnalyzeCode(String.Mid$(sText, iCodeStart))
+        iTag = TAG_CODE
+      Else
+        iTag = TAG_HTML
+        If iNextState <> Highlight.Comment And If iNextState <> Highlight.Symbol Then
+          If bMarkup Then 
+            iNextState = Highlight.Keyword
+          Else 
+            iNextState = Highlight.Normal
+          Endif
         Endif
       Endif
+      
+      Highlight.Text = sTextAfter
       
     Case STYLE_CSS
     
@@ -613,7 +704,8 @@ Private Sub InitEditor(hEditor As Editor)
   With hEditor
     .View = edtEditor
     .Highlight = edtEditor.Highlight
-    .Flags[Editor.HighlightCurrent] = True
+    .Flags[Editor.HighlightCurrent] = edtEditor.Flags[Editor.HighlightCurrent]
+    .Flags[Editor.HighlightBraces] = edtEditor.Flags[Editor.HighlightBraces]
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
   End With 

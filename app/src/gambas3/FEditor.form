@@ -155,19 +155,19 @@
       { mnuNoSplit Menu
         Action = ".view-nosplit"
         Text = ("No split")
-        Picture = Picture["img/16/no-split.png"]
+        Picture = Picture["icon:/small/view-normal"]
         Shortcut = "Ctrl+B"
       }
       { mnuHorizontalSplit Menu
         Action = ".view-hsplit"
         Text = ("Horizontal split")
-        Picture = Picture["img/16/h-split.png"]
+        Picture = Picture["icon:/small/view-split-h"]
         Shortcut = "Ctrl+H"
       }
       { mnuVerticalSplit Menu
         Action = ".view-vsplit"
         Text = ("Vertical split")
-        Picture = Picture["img/16/v-split.png"]
+        Picture = Picture["icon:/small/view-split-v"]
         Shortcut = "Ctrl+J"
       }
     }
@@ -323,7 +323,7 @@
       ToolTip = ("No split")
       Action = ".view-nosplit"
       Text = ("")
-      Picture = Picture["img/16/no-split.png"]
+      Picture = Picture["icon:/small/view-normal"]
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
@@ -539,7 +539,7 @@
   { Action view-nosplit
     Text = "No split"
     Shortcut = "Ctrl+B"
-    Picture = "img/16/no-split.png"
+    Picture = "icon:/small/view-normal"
   }
   { Action view-vsplit
     Text = "Vertical split"

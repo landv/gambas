@@ -78,7 +78,8 @@ static QColor defaultColors[GLine::NUM_STATE] =
 	QColor(0xC0, 0xC0, 0xFF),
 	QColor(0xFF, 0xFF, 0x00),
 	QColor(0xE8, 0xE8, 0xF8),
-	Qt::red
+	Qt::red,
+	QColor(0xBF, 0xFF, 0xBF)
 };
 
 /**---- GEditor -----------------------------------------------------------*/
@@ -368,11 +369,14 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 {
 	int i;
 	int len, style, pos;
+	bool alternate;
 	QString sd;
 	GHighlightStyle *st;
 	bool italic = false;
 	int nx;
 	int ps;
+	QColor bg;
+	bool draw_bg;
 
 	pos = 0;
 	p.setFont(font());
@@ -391,14 +395,26 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 		if ((pos + len) >= xmin)
 		{
 			style = l->highlight[i].state;
+			alternate = l->highlight[i].alternate;
 			st = &styles[style];
+			draw_bg = false;
+			if (st->background)
+			{
+				draw_bg = true;
+				bg = st->backgroundColor;
+			}
+			else if (alternate)
+			{
+				draw_bg = true;
+				bg = styles[GLine::Alternate].color;
+			}
 			
 			if (style == GLine::Keyword && doc->isKeywordsUseUpperCase())
 				sd = l->s.mid(pos, len).upper().getString();
 			else
 				sd = l->s.mid(pos, len).getString();
 
-			if (st->background)
+			if (draw_bg)
 			{
 				int x1 = x;
 				int x2 = nx;
@@ -409,8 +425,11 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 					xd1 = x1;
 				if (xd2 > x2)
 					xd2 = x2;
-				
-				p.fillRect(x, 0, nx - x, h, st->backgroundColor);
+
+				if (alternate && (i == (GB.Count(l->highlight) - 1)))
+					nx = cellWidth();
+					
+				p.fillRect(x, 0, nx - x, h, bg);
 				
 				if (xd2 > xd1)
 					p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
@@ -513,15 +532,17 @@ static QColor calc_color(QColor ca, QColor cb, QColor cd)
 	}
 }
 
-static void highlight_text(QPainter &p, int x, int y, QString s, QColor color)
+static void highlight_text(QPainter &p, int x, int y, QString s, QColor color, QColor normal)
 {
-	int i, j;
-	
 	p.setPen(color);
 	
-	for (i = -1; i <= 1; i++)
-		for (j = -1; j <= 1; j++)
-			p.drawText(x + i, y + j, s);
+	p.drawText(x - 1, y - 1, s);
+	p.drawText(x + 1, y - 1, s);
+	p.drawText(x - 1, y + 1, s);
+	p.drawText(x + 1, y + 1, s);
+	
+	p.setPen(normal);
+	p.drawText(x, y, s);
 }
 
 void GEditor::paintCell(QPainter * painter, int row, int)
@@ -655,17 +676,6 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 		}
 	}
 	
-	// Highlight braces
-	if (getFlag(HighlightBraces) && realRow == ym && x1m >= 0)
-	{
-		//highlight_text(p, x1m * charWidth + margin, fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-		//highlight_text(p, x2m * charWidth + margin, fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
-		highlight_text(p, lineWidth(ym, x1m), fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-		highlight_text(p, lineWidth(ym, x2m), fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
-		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);
-		p.fillRect(x2m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);*/
-	}
-
 	// Line text
 	if (l->s.length())
 	{
@@ -687,6 +697,13 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 		{
 			paintText(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight(), xs1, xs2, realRow);
 		}
+	}
+
+	// Highlight braces
+	if (getFlag(HighlightBraces) && realRow == ym && x1m >= 0)
+	{
+		highlight_text(p, lineWidth(ym, x1m), fm.ascent() + 1, l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color, styles[GLine::Normal].color);
+		highlight_text(p, lineWidth(ym, x2m), fm.ascent() + 1, l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color, styles[GLine::Normal].color);
 	}
 
 	// Folding symbol

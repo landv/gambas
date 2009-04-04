@@ -32,6 +32,7 @@
 static void *_analyze_symbol = 0;
 static void *_analyze_type = 0;
 static void *_analyze_pos = 0;
+static char *_analyze_text = 0;
 
 static char *_purged_line = NULL;
 
@@ -142,18 +143,19 @@ static int convState(int state)
     case EVAL_TYPE_OPERATOR: return HIGHLIGHT_OPERATOR;
     case EVAL_TYPE_DATATYPE: return HIGHLIGHT_DATATYPE;
     case EVAL_TYPE_ERROR: return HIGHLIGHT_ERROR;
+		case EVAL_TYPE_ALTERNATE: return HIGHLIGHT_ALTERNATE;
     default: return HIGHLIGHT_NORMAL;
   }
 }
 
-static void analyze(const char *src, int len_src)
+static void analyze(const char *src, int len_src, bool rewrite)
 {
   GB_ARRAY garray, tarray, parray;
-  int i, n, pos, len, p, upos;
+  int i, n, pos, len, p, upos, ulen, l;
   char *str;
   EVAL_ANALYZE result;
 
-  EVAL_analyze(src, len_src, &result, FALSE);
+  EVAL_analyze(src, len_src, &result, rewrite);
 
   n = 0;
   for (i = 0; i < result.len; i++)
@@ -173,9 +175,13 @@ static void analyze(const char *src, int len_src)
   {
     len = result.color[p].len;
 
+		ulen = 0;
+		for (l = 0; l < len; l++)
+			ulen += get_char_length(result.str[upos + ulen]);
+		
     if (result.color[p].state != EVAL_TYPE_END)
     {
-      GB.NewString(&str, &result.str[upos], len);
+      GB.NewString(&str, &result.str[upos], ulen);
       *((char **)GB.Array.Get(garray, i)) = str;
       *((int *)GB.Array.Get(tarray, i)) = convState(result.color[p].state);
       *((int *)GB.Array.Get(parray, i)) = pos;
@@ -183,9 +189,7 @@ static void analyze(const char *src, int len_src)
     }
 
     pos += len;
-    
-		while (len--)
-			upos += get_char_length(result.str[upos]);
+    upos += ulen;
   }
 
   GB.Unref(&_analyze_symbol);
@@ -200,7 +204,13 @@ static void analyze(const char *src, int len_src)
   _analyze_pos = parray;
   GB.Ref(parray);
   
-  GB.FreeString(&result.str);  
+	if (rewrite)
+	{
+		GB.FreeString(&_analyze_text);
+		_analyze_text = result.str;
+	}
+	else
+		GB.FreeString(&result.str);  
 }
 
 BEGIN_METHOD_VOID(CHIGHLIGHT_exit)
@@ -208,74 +218,12 @@ BEGIN_METHOD_VOID(CHIGHLIGHT_exit)
   GB.Unref(&_analyze_symbol);
   GB.Unref(&_analyze_type);
   GB.Unref(&_analyze_pos);
+  GB.FreeString(&_analyze_text);
   GB.FreeString(&_purged_line);
 
 END_METHOD
 
 
-#if 0
-BEGIN_PROPERTY(CHIGHLIGHT_state)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(_highlight_state);
-	else
-		_highlight_state = VPROP(GB_INTEGER);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CHIGHLIGHT_tag)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(_highlight_tag);
-	else
-		_highlight_tag = VPROP(GB_INTEGER);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CHIGHLIGHT_show_limit)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(_highlight_show_limit);
-	else
-		_highlight_show_limit = VPROP(GB_BOOLEAN);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CHIGHLIGHT_text)
-
-	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(_highlight_text));
-	else
-		_highlight_text = QSTRING_PROP();
-
-END_PROPERTY
-
-BEGIN_METHOD(CHIGHLIGHT_add, GB_INTEGER state; GB_INTEGER len)
-
-	GHighlight *h;
-
-	if (!_highlight_data)
-		return;
-
-	int count = GB.Count(*_highlight_data) - 1;
-	int state = VARG(state);
-	int len = VARGOPT(len, 1);
-
-	if (len < 1)
-		return;
-
-	if (count < 0 || (*_highlight_data)[count].state != (uint)state)
-	{
-		count++;
-		h = (GHighlight *)GB.Add(_highlight_data);
-		h->state = state;
-		h->len = len;
-	}
-	else
-		(*_highlight_data)[count].len += len;
-
-END_METHOD
-#endif
 
 BEGIN_METHOD(CHIGHLIGHT_purge, GB_STRING text; GB_BOOLEAN comment; GB_BOOLEAN string)
 
@@ -285,16 +233,13 @@ BEGIN_METHOD(CHIGHLIGHT_purge, GB_STRING text; GB_BOOLEAN comment; GB_BOOLEAN st
   if (comment && string)	
   	GB.ReturnNewString(STRING(text), LENGTH(text));
 	else
-	{
   	GB.ReturnString(purge(STRING(text), LENGTH(text), comment, string));
-  	
-  }
 
 END_METHOD
 
-BEGIN_METHOD(CHIGHLIGHT_analyze, GB_STRING text)
+BEGIN_METHOD(CHIGHLIGHT_analyze, GB_STRING text; GB_BOOLEAN rewrite)
 
-  analyze(STRING(text), LENGTH(text));
+  analyze(STRING(text), LENGTH(text), VARGOPT(rewrite, FALSE));
   GB.ReturnObject(_analyze_symbol);
 
 END_METHOD
@@ -317,14 +262,16 @@ BEGIN_PROPERTY(CHIGHLIGHT_analyze_positions)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CHIGHLIGHT_analyze_text)
+
+  GB.ReturnString(_analyze_text);
+
+END_PROPERTY
+
 
 GB_DESC CHighlightDesc[] =
 {
   GB_DECLARE("Highlight", 0), GB_VIRTUAL_CLASS(),
-
-  /*GB_CONSTANT("None", "i", GDocument::None),
-  GB_CONSTANT("Gambas", "i", GDocument::Gambas),
-  GB_CONSTANT("Custom", "i", GDocument::Custom),*/
 
   GB_CONSTANT("Background", "i", HIGHLIGHT_BACKGROUND),
   GB_CONSTANT("Normal", "i", HIGHLIGHT_NORMAL),
@@ -342,19 +289,15 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("Highlight", "i", HIGHLIGHT_HIGHLIGHT),
   GB_CONSTANT("CurrentLine", "i", HIGHLIGHT_LINE),
   GB_CONSTANT("Error", "i", HIGHLIGHT_ERROR),
+  GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
   
   GB_STATIC_METHOD("_exit", NULL, CHIGHLIGHT_exit, NULL),
-  GB_STATIC_METHOD("Analyze", "String[]", CHIGHLIGHT_analyze, "(Code)s"),
+  GB_STATIC_METHOD("Analyze", "String[]", CHIGHLIGHT_analyze, "(Code)s[(Rewrite)b]"),
   GB_STATIC_PROPERTY_READ("Symbols", "String[]", CHIGHLIGHT_analyze_symbols),
   GB_STATIC_PROPERTY_READ("Types", "Integer[]", CHIGHLIGHT_analyze_types),
   GB_STATIC_PROPERTY_READ("Positions", "Integer[]", CHIGHLIGHT_analyze_positions),
+  GB_STATIC_PROPERTY_READ("TextAfter", "s", CHIGHLIGHT_analyze_text),
   GB_STATIC_METHOD("Purge", "s", CHIGHLIGHT_purge, "(Code)s[(Comment)b(String)b]"),
-
-  /*GB_STATIC_PROPERTY("State", "i", CHIGHLIGHT_state),
-  GB_STATIC_PROPERTY("Tag", "i", CHIGHLIGHT_tag),
-  GB_STATIC_PROPERTY("ShowLimit", "b", CHIGHLIGHT_show_limit),
-  GB_STATIC_PROPERTY("Text", "s", CHIGHLIGHT_text),
-  GB_STATIC_METHOD("Add", NULL, CHIGHLIGHT_add, "(State)i[(Count)i]"),*/
 
   GB_END_DECLARE
 };

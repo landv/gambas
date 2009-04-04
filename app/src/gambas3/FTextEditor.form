@@ -93,19 +93,19 @@
       { mnuNoSplit Menu
         Action = ".view-nosplit"
         Text = ("No split")
-        Picture = Picture["img/16/no-split.png"]
+        Picture = Picture["icon:/small/view-normal"]
         Shortcut = "Ctrl+B"
       }
       { mnuHorizontalSplit Menu
         Action = ".view-hsplit"
         Text = ("Horizontal split")
-        Picture = Picture["img/16/h-split.png"]
+        Picture = Picture["icon:/small/view-split-h"]
         Shortcut = "Ctrl+H"
       }
       { mnuVerticalSplit Menu
         Action = ".view-vsplit"
         Text = ("Vertical split")
-        Picture = Picture["img/16/v-split.png"]
+        Picture = Picture["icon:/small/view-split-v"]
         Shortcut = "Ctrl+J"
       }
     }
@@ -197,7 +197,7 @@
       ToolTip = ("No split")
       Action = ".view-nosplit"
       Text = ("")
-      Picture = Picture["img/16/no-split.png"]
+      Picture = Picture["icon:/small/view-normal"]
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
@@ -205,7 +205,7 @@
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
       Text = ("")
-      Picture = Picture["img/16/h-split.png"]
+      Picture = Picture["icon:/small/view-split-h"]
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
@@ -213,7 +213,7 @@
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Text = ("")
-      Picture = Picture["img/16/v-split.png"]
+      Picture = Picture["icon:/small/view-split-v"]
     }
     { lblEditor Label
       MoveScaled(51,0,10,4)
@@ -306,17 +306,17 @@
   { Action view-hsplit
     Text = "Horizontal split"
     Shortcut = "Ctrl+H"
-    Picture = "img/16/h-split.png"
+    Picture = "icon:/small/view-split-h"
   }
   { Action view-nosplit
     Text = "No split"
     Shortcut = "Ctrl+B"
-    Picture = "img/16/no-split.png"
+    Picture = "icon:/small/view-normal"
   }
   { Action view-vsplit
     Text = "Vertical split"
     Shortcut = "Ctrl+J"
-    Picture = "img/16/v-split.png"
+    Picture = "icon:/small/view-split-v"
   }
 }
 
