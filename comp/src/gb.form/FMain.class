@@ -24,3 +24,23 @@ Public Sub Button1_Click()
   Balloon.Question("Got a problem ? I will try to solve you for free, because I am a good guy." & String$(12, "Gambas already means Basic\n"), Last)
 
 End
+
+Public Sub TableView1_Click()
+
+  If TableView1.Column = TableView1.Row Then Return
+  TableView1.Edit
+
+End
+
+Public Sub Form_Open()
+
+  TableView1.Columns.Count = 3
+  TableView1.Rows.Count = 5
+
+End
+
+Public Sub TableView1_Data(Row As Integer, Column As Integer)
+
+  If Row = Column Then TableView1.Data.Background = Color.LightGray
+
+End

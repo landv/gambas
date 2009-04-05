@@ -226,8 +226,6 @@ Static Private Sub InitTheme()
   AddPath("", "stock/qt")
   AddPath("", "stock/default")
   
-  'Debug $aIconPath.Join("\n")
-  
   $bInit = True
    
 End
@@ -267,6 +265,8 @@ Static Public Function _get(Key As String) As Picture
   Dim sTemplate As String
   Dim sFile As String
   Dim sMap As String
+  Dim sImagePath As String
+  
   'IF Right(Key, 4) <> ".png" THEN Key &= ".png"
 
   If Not $bInit Then InitTheme
@@ -302,7 +302,8 @@ Static Public Function _get(Key As String) As Picture
         sTemplate = sPath &/ "&1" &/ sFile
       Endif 
       
-      Try hPict = Picture[Subst(sTemplate, iSize)]
+      sImagePath = Subst(sTemplate, iSize)
+      Try hPict = Picture[sImagePath]
       If hPict Then Return hPict
       
       hImage = Null
