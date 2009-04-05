@@ -5,6 +5,7 @@ EXPORT
 
 EVENT Save(Row AS Integer, Column AS Integer, Value AS String)
 EVENT Insert
+EVENT Click
 
 PRIVATE $hTextBox AS TextBox
 PRIVATE $hComboBox AS ComboBox
@@ -80,6 +81,7 @@ PRIVATE SUB MoveEditor()
     $hEditor.Move(X, Y, .Width, .Height)
   END WITH
   'DEBUG
+  $hEditor.Font = ME.Font
   $hEditor.Show
   'DEBUG 
   
@@ -183,69 +185,89 @@ PUBLIC SUB Editor_KeyPress()
       STOP EVENT
 
     CASE Key.Up
-      IF ME.Row > 0 THEN 
+      WHILE ME.Row > 0
         DEC ME.Row
-        Edit
-        STOP EVENT
-      ENDIF
+        RAISE Click
+        IF $hEditor THEN
+          STOP EVENT
+          BREAK
+        ENDIF
+      WEND
 
     CASE Key.Down
-      IF ME.Row < (ME.Rows.Count - 1) THEN 
+      WHILE ME.Row < (ME.Rows.Count - 1)
         INC ME.Row
-        Edit
-        STOP EVENT
-      ENDIF
+        RAISE Click
+        IF $hEditor THEN
+          STOP EVENT
+          BREAK
+        ENDIF
+      WEND
 
     CASE Key.Left
       IF $bTextBox THEN 
         IF $hEditor.Pos = 0 THEN
-          IF ME.Column > 0 THEN 
-            DEC ME.Column
-            Edit
-            $hEditor.Pos = $hEditor.Length
-            STOP EVENT
-          ELSE IF ME.Row > 0 THEN
-            ME.MoveTo(ME.Row - 1, ME.Columns.Count - 1) 
-            Edit
-            $hEditor.Pos = $hEditor.Length
-            STOP EVENT
-          ENDIF
+          DO
+            IF ME.Column > 0 THEN 
+              DEC ME.Column
+              RAISE Click
+            ELSE IF ME.Row > 0 THEN
+              ME.MoveTo(ME.Row - 1, ME.Columns.Count - 1) 
+              RAISE Click
+            ELSE
+              BREAK
+            ENDIF
+            IF $hEditor THEN
+              $hEditor.Pos = $hEditor.Length
+              STOP EVENT
+              BREAK
+            ENDIF
+          LOOP
         ENDIF 
       ENDIF
 
     CASE Key.Right
       IF $bTextBox THEN 
         IF $hEditor.Pos = $hEditor.Length THEN
-          IF ME.Column < (ME.Columns.Count - 1) THEN 
-            INC ME.Column
-            Edit
-            $hEditor.Pos = 0
-            STOP EVENT
-          ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
-            ME.MoveTo(ME.Row + 1, 0)
-            Edit 
-            $hEditor.Pos = 0
-            STOP EVENT
-          ENDIF
+          DO
+            IF ME.Column < (ME.Columns.Count - 1) THEN 
+              INC ME.Column
+              RAISE Click
+            ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
+              ME.MoveTo(ME.Row + 1, 0)
+              RAISE Click
+            ELSE
+              BREAK
+            ENDIF
+            IF $hEditor THEN
+              $hEditor.Pos = 0
+              STOP EVENT
+              BREAK
+            ENDIF
+          LOOP
         ENDIF 
       ENDIF
       
     CASE Key.Enter, Key.Return
       IF $bTextBox THEN 
-        IF ME.Column < (ME.Columns.Count - 1) THEN 
-          INC ME.Column
-          Edit
-          $hEditor.Pos = 0
-          STOP EVENT
-        ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
-          ME.MoveTo(ME.Row + 1, 0)
-          Edit 
-          $hEditor.Pos = 0
-          STOP EVENT
-        ELSE 
-          RAISE Insert
-          STOP EVENT
-        ENDIF
+        DO
+          IF ME.Column < (ME.Columns.Count - 1) THEN 
+            INC ME.Column
+            RAISE Click
+          ELSE IF ME.Row < (ME.Rows.Count - 1) THEN
+            ME.MoveTo(ME.Row + 1, 0)
+            RAISE Click
+          ELSE 
+            RAISE Insert
+            STOP EVENT
+            BREAK
+          ENDIF
+          IF $hEditor THEN
+            $hEditor.Pos = 0
+            STOP EVENT
+            BREAK
+          ENDIF
+        LOOP
       ENDIF
 
   END SELECT 
