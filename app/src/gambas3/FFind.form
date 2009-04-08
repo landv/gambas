@@ -42,7 +42,7 @@
       ToolTip = ("Search list")
       Action = "find-all"
       Text = ("")
-      Picture = Picture["img/16/find-list.png"]
+      Picture = Picture["icon:/small/zoom-in"]
     }
     { cmbReplace ComboBox
       MoveScaled(29,0,13,4)
@@ -62,7 +62,7 @@
       ToolTip = ("Replace all")
       Action = "replace-all"
       Text = ("")
-      Picture = Picture["img/16/wizard.png"]
+      Picture = Picture["icon:/small/wizard"]
     }
     { sepIn Separator
       MoveScaled(51,0,1,4)
@@ -144,7 +144,7 @@
   }
   { Action find-all
     Text = "Search list"
-    Picture = "img/16/find-list.png"
+    Picture = "icon:/small/zoom-in"
   }
   { Action find-case
     Text = "Case sensitive"
@@ -188,6 +188,6 @@
   }
   { Action replace-all
     Text = "Replace all"
-    Picture = "img/16/wizard.png"
+    Picture = "icon:/small/wizard"
   }
 }

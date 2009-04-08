@@ -36,6 +36,7 @@ Public Menus As Collection
 Public Groups As Collection
 Public ExtraDependencies As Collection
 Public SameDependencies As Boolean
+Public ExtraAutoconfTest As String
 Public Categories As Collection
 Public Prefix As Boolean
 Public UseRelease As Boolean
@@ -2135,6 +2136,7 @@ Public Sub ReadProject()
   Groups = New Collection
   ExtraDependencies = New Collection
   SameDependencies = False
+  ExtraAutoconfTest = ""
   Prefix = False
   UseRelease = False
   ExecPath = Project.Dir &/ Project.Name & ".gambas"
@@ -2232,10 +2234,10 @@ Public Sub ReadProject()
         ModulePublic = Val(sVal) <> 0
 
       Case "description"
-        Description = Replace(sVal, "\\n", "\n")
+        Description = Unquote(sVal)
 
       Case "authors"
-        Authors = Replace(sVal, "\\n", "\n")
+        Authors = Unquote(sVal)
 
       Case "icon"
         Icon = sVal
@@ -2274,6 +2276,9 @@ Public Sub ReadProject()
           ExtraDependencies[Systems[iElt]] = sElt
           Inc iElt
         Next
+        
+      Case "extraautoconftest"
+        ExtraAutoconfTest = Unquote(sVal)
 
       Case "prefix"
         Prefix = Val(sVal)
@@ -2385,8 +2390,8 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     Endif
   Next
 
-  If Description Then Print #hFic, "Description="; Replace(Description, "\n", "\\n")
-  If Authors Then Print #hFic, "Authors="; Replace(Authors, "\n", "\\n")
+  If Description Then Print #hFic, "Description="; Quote(Description)
+  If Authors Then Print #hFic, "Authors="; Quote(Authors)
 
   If Arguments.Count Then Print #hFic, "Arguments="; Quote(Arguments.Join("\n"))
   If Environment.Count Then Print #hFic, "Environment="; Quote(Environment.Join("\n"))
@@ -2442,10 +2447,11 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     Next
     Print #hFic, "ExtraDependencies="; aElt.Join(",")
 
+    If SameDependencies Then Print #hFic, "SameDependencies=1"
+    If ExtraAutoconfTest Then Print #hFic, "ExtraAutoconfTest=" & Quote(ExtraAutoconfTest)
+
   Endif
   
-  If SameDependencies Then Print #hFic, "SameDependencies=1"
-
   Close #hFic
 
   Try Kill sPath

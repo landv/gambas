@@ -691,7 +691,6 @@ void FUNCTION_add_pos_line(void)
 	{
 		pos = ARRAY_add(&JOB->func->pos_line);
 		*pos = CODE_get_current_pos();
-		//printf("line %ld : %d\n", ARRAY_count(JOB->func->pos_line) - 1, *pos);
 	}
 }
 

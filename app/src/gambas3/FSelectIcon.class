@@ -9,8 +9,8 @@ Private $bNoStock As Boolean
 Public Sub Run(sIcon As String, Optional bNoStock As Boolean) As String
   
   $sIcon = sIcon
-  $bNoStock = bNoStock OR NOT Project.IsStockAllowed()
-  If NOT Me.ShowModal() Then Return
+  $bNoStock = bNoStock Or Not Project.IsStockAllowed()
+  If Not Me.ShowModal() Then Return
   Return $sIcon
   
 End
@@ -29,9 +29,9 @@ Public Sub Form_Open()
   
   cmbSize.List = ["small", "medium", "large", "huge", "16", "24", "32", "48", "64", "96", "128"]
   
-  tabIcon[1].Visible = NOT $bNoStock
+  tabIcon[1].Visible = Not $bNoStock
   
-  If $sIcon LIKE "icon:/*" Then 
+  If $sIcon Like "icon:/*" Then 
     $sIcon = Mid$($sIcon, 7)
     iPos = InStr($sIcon, "/")
     icwStock.Clear
@@ -51,7 +51,7 @@ Public Sub Form_Open()
     tabIcon.Index = 0
   Endif
 
-  If NOT $sSize Then SetSize(Settings["FSelectIcon/Size", "32"])
+  If Not $sSize Then SetSize(Settings["FSelectIcon/Size", "32"])
   
   Dec Application.Busy
   
@@ -113,12 +113,12 @@ Private Sub SetSize(sSize As String) As Boolean
   sSize = LCase(sSize)
   Try iSize = CInt(sSize)
   If Error Then 
-    If NOT ["small", "medium", "large", "huge"].Exist(sSize) Then 
+    If Not ["small", "medium", "large", "huge"].Exist(sSize) Then 
       cmbSize.Text = $sSize
       Return True
     Endif
   Else 
-    If iSize < 8 OR iSize > 256 Then 
+    If iSize < 8 Or iSize > 256 Then 
       cmbSize.Text = $sSize
       Return True
     Endif
@@ -146,7 +146,7 @@ Public Sub btnOK_Click()
       
   End Select 
   
-  If NOT $sIcon Then Return
+  If Not $sIcon Then Return
 
   Me.Close(True)
 

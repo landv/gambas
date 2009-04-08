@@ -1,5 +1,5 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 2.99.0 (r1890)
+# Compiled with Gambas 2.99.0 (r1924)
 Title=Gambas 3
 Startup=Project
 StackTrace=1
@@ -16,8 +16,8 @@ Component=gb.form.dialog
 Component=gb.settings
 Component=gb.form.mdi
 Component=gb.qt.ext
-Description=Integrated Development Environment for Gambas
-Authors=Benoît Minisini\nFabien Bodard\nCharlie Reinl\nJosé Luis Redrejo\nRobert Rowe
+Description="Integrated Development Environment for Gambas"
+Authors="Benoît Minisini\nFabien Bodard\nCharlie Reinl\nJosé Luis Redrejo\nRobert Rowe"
 TabSize=2
 Translate=1
 Language=en
@@ -25,8 +25,9 @@ KeepDebugInfo=1
 Maintainer=gambas
 Address=gambas@users.sourceforge.net
 License=General Public Licence
-Systems=slackware
-Menus=Audio Video/Audio Video Editing
-Categories=AudioVideo;AudioVideoEditing
-Groups=Applications
-ExtraDependencies=""
+Systems=mandriva,slackware,autotools
+Menus=Office/Accessories,Audio Video/Audio Video Editing,
+Categories=Office;Utility,AudioVideo;AudioVideoEditing,
+Groups=Accessibility,Applications,
+ExtraDependencies=,,
+ExtraAutoconfTest="## coucou\n"

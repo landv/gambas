@@ -1130,7 +1130,9 @@ Public Sub SetIconSize(iSize As Integer)
 
   If $iIconSize = iSize Then Return
   $iIconSize = iSize
+  Inc Application.Busy
   SaveConfig
   LoadConfig
+  Dec Application.Busy
   
 End

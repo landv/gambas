@@ -537,8 +537,12 @@ static void highlight_text(QPainter &p, int x, int y, QString s, QColor color, Q
 	p.setPen(color);
 	
 	p.drawText(x - 1, y - 1, s);
+	p.drawText(x, y - 1, s);
 	p.drawText(x + 1, y - 1, s);
+	p.drawText(x - 1, y, s);
+	p.drawText(x + 1, y, s);
 	p.drawText(x - 1, y + 1, s);
+	p.drawText(x, y + 1, s);
 	p.drawText(x + 1, y + 1, s);
 	
 	p.setPen(normal);

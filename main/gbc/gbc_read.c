@@ -785,10 +785,10 @@ static void add_string()
           *p = '\t';
         else if (car == 'r')
           *p = '\r';
-				/*else if (car == 'f')
+				else if (car == 'b')
+					*p = '\b';
+				else if (car == 'f')
 					*p = '\f';
-				else if (car == 'v')
-					*p = '\v';*/
         else if (car == '\"' || car == '\'' || car == '\\')
           *p = car;
         else

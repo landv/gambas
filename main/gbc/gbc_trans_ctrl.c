@@ -38,6 +38,16 @@
 /*#define DEBUG*/
 /*#define DEBUG_GOTO*/
 
+#define BEGIN_NO_BREAK \
+{ \
+	bool nobreak = JOB->nobreak; \
+	JOB->nobreak = TRUE;
+
+#define END_NO_BREAK \
+	JOB->nobreak = nobreak; \
+}
+
+
 static int ctrl_level;
 static int ctrl_id;
 static int ctrl_local;
@@ -397,8 +407,12 @@ static void trans_endif(void)
 
 static void trans_else(void)
 {
-  control_add_current_pos();
-  CODE_jump();
+	BEGIN_NO_BREAK
+	{
+		control_add_current_pos();
+		CODE_jump();
+	}
+	END_NO_BREAK
 
   CODE_jump_length(control_get_value(), CODE_get_current_pos());
 
@@ -635,16 +649,20 @@ void TRANS_loop(PATTERN type)
 
 static void trans_select_break(boolean do_not_add_pos)
 {
-  if (current_ctrl->value)
-  {
-    if (!do_not_add_pos)
-    {
-      control_add_current_pos();
-      CODE_jump();
-    }
+	BEGIN_NO_BREAK
+	{
+		if (current_ctrl->value)
+		{
+			if (!do_not_add_pos)
+			{
+				control_add_current_pos();
+				CODE_jump();
+			}
 
-    CODE_jump_length(current_ctrl->value, CODE_get_current_pos());
-  }
+			CODE_jump_length(current_ctrl->value, CODE_get_current_pos());
+		}
+	}
+	END_NO_BREAK
 }
 
 
@@ -668,7 +686,7 @@ void TRANS_case(void)
 
   control_check(RS_SELECT, "CASE without SELECT", "Unexpected CASE");
 
-  trans_select_break(FALSE);
+	trans_select_break(FALSE);
 
   local = current_ctrl->local;
 

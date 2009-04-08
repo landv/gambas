@@ -1,28 +1,5 @@
 ' Gambas module file
 
-Public Sub Main()
-  
-  ' Session["login"] = "cartable"
-  ' Session["password"] = "test"
-  ' Session["date"] = Date(1972, 9, 6)
-  ' Session["age"] = 34
-  ' Session["taille"] = 1.72
-  ' Session["liste"] = ["bleu", "blanc", "rouge"]
-
-  'Print Session["liste"].Join(" ")
-  
-  Dim iInd As Integer
-  
-  Session.Id = "session.test" '"C9FDEB40ADF2203502B959BC6039BBB4@"
-  
-  For iInd = 1 To 1000
-    Session.Load
-    Print iInd;; Session["result"].Count
-    Session.Save
-  Next
- 
-End
-
 Public Sub Log(sMsg As String)
   
   Dim hFile As File
@@ -30,5 +7,15 @@ Public Sub Log(sMsg As String)
   hFile = Open "/tmp/session.log" For Append 
   Print #hFile, sMsg
   Close #hFile
+  
+End
+
+Public Sub Main()
+
+  Dim vVal As Variant
+  
+  'vVal = JSON.Decode(File.Load("~/test.json"))
+  vVal = JSON.Decode("\"bébé\\u0101\"")
+  Print JSON.Encode(vVal)
   
 End

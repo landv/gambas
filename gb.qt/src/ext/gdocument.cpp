@@ -1092,18 +1092,7 @@ void GDocument::colorize(int y)
 		nupd++;
 		//modif = false;
 
-		if (y == 0)
-		{
-			state = GLine::Normal;
-			alternate = false;
-			tag = 0;
-		}
-		else
-		{
-			state = lines.at(y - 1)->state;
-			alternate = lines.at(y - 1)->alternate;
-			tag = lines.at(y - 1)->tag;
-		}
+		getState(y, false, state, tag, alternate);
 
 		if (l->s.length())
 		{
@@ -1243,5 +1232,24 @@ int GDocument::getPreviousLimit(int y)
 			return (-1);
 		if (y == 0 || hasLimit(y))
 			return y;
+	}
+}
+
+void GDocument::getState(int y, bool col, uint &state, int &tag, bool &alternate)
+{
+	if (y == 0)
+	{
+		state = GLine::Normal;
+		alternate = false;
+		tag = 0;
+	}
+	else
+	{
+		if (col)
+			colorize(y - 1);
+		GLine *l = lines.at(y - 1);
+		state = l->state;
+		alternate = l->alternate;
+		tag = l->tag;
 	}
 }

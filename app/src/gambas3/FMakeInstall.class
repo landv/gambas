@@ -11,7 +11,7 @@ Private Const TAB_GROUP As Integer = 3
 Private Const TAB_MENU As Integer = 4
 Private Const TAB_DEP As Integer = 5
 Private Const TAB_TEST As Integer = 6
-Private Const TAB_CREATE As Integer = 7
+Private Const TAB_DIR As Integer = 7
 
 
 Private Sub MakeChangeLog() As String
@@ -63,7 +63,7 @@ Public Sub Form_Open()
   txtDescribe.Text = Project.Description
 
   Try txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
-  Try txtTests.Text = File.Load(Project.Dir &/ ".extratest")
+  txtTests.Text = Project.ExtraAutoconfTest
 
   chkPrefix.Value = Project.Prefix
   chkUseRelease.Value = Project.UseRelease
@@ -367,9 +367,9 @@ Public Sub wizInstall_BeforeChange()
     Case TAB_DEP
     
     Case TAB_TEST
-      Package.ExtraTest = txtTests.Text
+      Project.ExtraAutoconfTest = txtTests.Text
     
-    Case TAB_CREATE
+    Case TAB_DIR
       Package.Path = dchInstall.SelectedPath
       If Package.Path = Project.Dir Or If Package.Path Like Project.Dir &/ "/*" Then 
         Message.Warning(("The package cannot be stored inside the project directory."))
@@ -414,7 +414,7 @@ Public Sub wizInstall_Change()
       FillComboWithSystems(cmbDep)
       UpdateDepCombo
       
-    Case TAB_CREATE
+    Case TAB_DIR
       dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath", System.User.Home]
       
   End Select
@@ -861,6 +861,7 @@ End
 
 Public Sub btnRemoveDep_Click()
 
+  If tvwDep.Row < 0 Then Return
   $aDep.Remove(tvwDep.Row)
   SaveExtraDependencies
   Dec tvwDep.Rows.Count

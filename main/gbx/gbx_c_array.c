@@ -559,6 +559,22 @@ IMPLEMENT_add(string, STRING)
 IMPLEMENT_add(object, OBJECT)
 IMPLEMENT_add(variant, VARIANT)
 
+BEGIN_METHOD(CARRAY_add, GB_VARIANT value; GB_INTEGER index)
+	
+	GB_VALUE *value = (GB_VALUE *)(void *)ARG(value);
+	GB_Conv(value, THIS->type);	
+	add(THIS, value, VARGOPT(index, -1));
+	
+END_METHOD
+
+BEGIN_METHOD(CARRAY_push, GB_VARIANT value)
+
+	GB_VALUE *value = (GB_VALUE *)(void *)ARG(value);
+	GB_Conv(value, THIS->type);	
+	add(THIS, value, -1);
+	
+END_METHOD
+
 
 #define IMPLEMENT_put(_type, _gtype) \
 BEGIN_METHOD(CARRAY_##_type##_put, GB_##_gtype value; GB_INTEGER index) \
@@ -576,6 +592,21 @@ BEGIN_METHOD(CARRAY_##_type##_put, GB_##_gtype value; GB_INTEGER index) \
 	if (!data) return; \
 	GB_Store(GB_T_##_gstore, (GB_VALUE *)(void *)ARG(value), data); \
 	\
+END_METHOD
+
+BEGIN_METHOD(CARRAY_put, GB_VARIANT value; GB_INTEGER index)
+	
+	GB_VALUE *value;
+	void *data;
+	
+	value = (GB_VALUE *)(void *)ARG(value);
+	GB_Conv(value, THIS->type);	
+	
+	data = get_data_multi(THIS, ARG(index), GB_NParam() + 1);
+	if (!data) return;
+	
+	GB_Store(THIS->type, value, data);
+	
 END_METHOD
 
 IMPLEMENT_put(integer, INTEGER)
@@ -1035,10 +1066,18 @@ GB_DESC NATIVE_Array[] =
 	GB_METHOD("Resize", NULL, CARRAY_resize, "(Size)i"),
 	GB_METHOD("Reverse", NULL, CARRAY_reverse, NULL),
 
-	//GB_METHOD("_print", NULL, CARRAY_print, NULL),
-	//GB_METHOD("FromString", "i", CARRAY_from_string, "(String)s[(Separator)s(Escape)s]"),
-	//GB_METHOD("Sort", NULL, CARRAY_sort, "[(Compare)i]"),
-	//GB_METHOD("Find", "i", CARRAY_find, "(Value)s[(Compare)i]"),
+	GB_METHOD("Add", NULL, CARRAY_add, "(Value)v[(Index)i]"),
+	GB_METHOD("Push", NULL, CARRAY_push, "(Value)v"),
+	GB_METHOD("_put", NULL, CARRAY_put, "(Value)v(Index)i."),
+
+	GB_METHOD("Pop", "v", CARRAY_pop, NULL),
+	GB_METHOD("_get", "v", CARRAY_get, "(Index)i."),
+	GB_METHOD("_next", "v", CARRAY_next, NULL),
+
+	GB_METHOD("Copy", "Array", CARRAY_copy, "[(Start)i(Length)i]"),
+	GB_METHOD("Extract", "Array", CARRAY_extract, "(Start)i[(Length)i]"),
+	GB_METHOD("Delete", "Array", CARRAY_extract, "(Start)i[(Length)i]"),
+	GB_METHOD("Fill", NULL, CARRAY_fill, "(Value)v[(Start)i(Length)i]"),
 
 	GB_END_DECLARE
 };

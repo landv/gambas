@@ -149,6 +149,9 @@ public:
 	int numLines() const { return lines.count(); }
 	
 	bool hasLimit(int y) { colorize(y); return lines.at(y)->proc; }
+	
+	void getState(int y, bool colorize, uint &state, int &tag, bool &alternate);
+	
 	int getNextLimit(int y);
 	int getPreviousLimit(int y);
 

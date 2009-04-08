@@ -577,6 +577,20 @@ BEGIN_PROPERTY(CEDITOR_line_limit)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(CEDITOR_line_get_initial_state)
+
+	uint state;
+	int tag;
+	bool alternate;
+	
+	DOC->getState(THIS->line, true, state, tag, alternate);
+	
+	_highlight_state = state;
+	_highlight_tag = tag;
+	_highlight_alternate = alternate;
+
+END_METHOD
+
 BEGIN_PROPERTY(CEDITOR_line_current)
 
 	if (READ_PROPERTY)
@@ -966,6 +980,7 @@ GB_DESC CEditorLineDesc[] =
   GB_PROPERTY("Current", "b", CEDITOR_line_current),
   GB_PROPERTY("Breakpoint", "b", CEDITOR_line_breakpoint),
   GB_PROPERTY_READ("Limit", "b", CEDITOR_line_limit),
+	GB_METHOD("GetInitialState", NULL, CEDITOR_line_get_initial_state, NULL),
 
   GB_END_DECLARE
 };
