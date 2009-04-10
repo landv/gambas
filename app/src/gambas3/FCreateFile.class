@@ -58,14 +58,32 @@ Public Sub Form_Open()
 
   Dim hCtrl As Control
   Dim sParent As String
+  Dim hModule As CModule
+  Dim aFilter As String[]
+  Dim hPanel As Container
 
   $bDoNotSetName = False
   
   Settings.Read(Me)
   
-  fchExisting.Filter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes"), "*.form", ("Gambas forms"), "*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files")]
+  aFilter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes")]
   
-  panForm.Visible = Project.AllowForm()
+  For Each hModule In CModule.All
+  
+    aFilter.Add("*." & hModule.Key)
+    aFilter.Add(hModule.NameFilter)
+  
+  Next
+  
+  aFilter.Insert(["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files")])
+  
+  fchExisting.Filter = aFilter
+  
+  For Each hPanel In lstType.Children
+    If Not hPanel.Tag Then Continue
+    If Not CModule.All.Exist(hPanel.Tag) Then Continue
+    hPanel.Visible = CModule[hPanel.Tag].Used
+  Next
   
   If Not $sType Then $sType = "module"
   For Each hCtrl In lstType.Children
@@ -243,6 +261,10 @@ Private Sub CreateFile() As Boolean
       
       Project.Insert(sName, "form", sTemp)
       
+    Case "webpage"
+
+      Project.Insert(sName, "webpage", "<html>\n<body>\n<%\nPrint \"<h1>Gambas</h1>\";\n%>\n</body>\n</html>\n")
+      
     Case "text"
     
       File.Save($sDir &/ sName, "")
@@ -250,7 +272,7 @@ Private Sub CreateFile() As Boolean
   
     Case "html"
     
-      File.Save($sDir &/ sName, "<html>\n\n</html>\n")
+      File.Save($sDir &/ sName, "<html>\n<body>\n</body>\n</html>\n")
       Project.InsertFile(sName, $sDir)
   
     Case "css"
@@ -367,6 +389,10 @@ Private Sub ImportFile() As Boolean
       ImportDependencies(sName, sTemp, chkLink.Value)
       Project.OpenForm(sName)
           
+    Case "webpage"
+      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
+      Project.Insert(sName, "webpage", sTemp,,, chkLink.Value)
+  
     Default
       sName = Project.GetUniqueName($sDir, sName)
       Project.InsertFile(sName, $sDir, sTemp,, chkLink.Value)

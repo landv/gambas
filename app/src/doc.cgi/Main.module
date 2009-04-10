@@ -1125,6 +1125,8 @@ Private Function Encode(sText As String) As String
 
   Next
 
+BREAK_ALL:
+
   While $aSection.Count
     LeaveSection()
   Wend
@@ -1830,19 +1832,32 @@ Private Function MakePageWithoutHeader(rPage As Result) As String
 
   bPrint = False
 
-  If $iType = TYPE_SYMBOL And If $hSym Then
-    Print Encode("@syntax")
-    Print "<p>"
-  Endif
-
-  Print Encode(rPage!sDesc)
-
-  If $iType = TYPE_COMPONENT And If Not $cGotSpecial.Exist("classes") Then
-    Print "<p>"
-    Print Encode("@classes")
-  Else If $iType = TYPE_CLASS And If Not $cGotSpecial.Exist("symbols") Then
-    Print "<p>"
-    Print Encode("@symbols")
+  If $iType = TYPE_SYMBOL And If Not $hSym Then
+    Print "<h2>"; Subst(("This symbol does not exist in version &1."), $sVersion); "</h2>"
+    $cGotSpecial["syntax"] = True
+  Else If $iType = TYPE_CLASS And If Not $hClass Then
+    Print "<h2>"; Subst(("This class does not exist in version &1."), $sVersion); "</h2>"
+    $cGotSpecial["symbols"] = True
+  Else If $iType = TYPE_COMPONENT And If Not $hComp Then
+    Print "<h2>"; Subst(("This component does not exist in version &1."), $sVersion); "</h2>"
+    $cGotSpecial["classes"] = True
+  Else
+  
+    If $iType = TYPE_SYMBOL Then 'And If $hSym Then
+      Print Encode("@syntax")
+      Print "<p>"
+    Endif
+  
+    Print Encode(rPage!sDesc)
+  
+    If $iType = TYPE_COMPONENT And If Not $cGotSpecial.Exist("classes") Then
+      Print "<p>"
+      Print Encode("@classes")
+    Else If $iType = TYPE_CLASS And If Not $cGotSpecial.Exist("symbols") Then
+      Print "<p>"
+      Print Encode("@symbols")
+    Endif
+  
   Endif
 
   Output To Default
@@ -3155,7 +3170,9 @@ Private Function GetClasses() As String
   'hComp = CComponent.All[sComp]
   'hComp.Load()
   
-  If Not $hComp Then Return "<h2>" & Subst(("This component does not exist in version &1."), $sVersion) & "</h2>"
+  If Not $hComp Then 
+    Return "<h2>" & Subst(("This component does not exist in version &1."), $sVersion) & "</h2>"
+  Endif
 
   sRes = "<div class=\"black\"><font size=\"-2\"><b>" & ("Classes") & "</b></font></div>\n"
 

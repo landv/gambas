@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,140,86)
+  MoveScaled(0,0,134,86)
   Text = ("")
   Icon = Picture["img/logo/new-logo-32.png"]
   Arrangement = Arrange.Vertical
@@ -321,7 +321,7 @@
     Text = ("Popup")
     Enabled = False
     Visible = False
-    { Menu17 Menu
+    { mnuNew Menu
       Text = ("New")
       { mnuAddDirectory Menu
         Action = "new-directory"
@@ -351,6 +351,12 @@
         Text = ("&Form...")
         Picture = Picture["img/16/form.png"]
         Tag = "form"
+      }
+      { mnuNewWebPage Menu mnuNewFile
+        Name = "mnuNewWebPage"
+        Action = "new-webpage"
+        Text = ("&WebPage...")
+        Tag = "webpage"
       }
       { Menu18 Menu
         Text = ("")
@@ -452,11 +458,11 @@
     }
   }
   { panToolbar Panel
-    MoveScaled(0,0,139,4)
+    MoveScaled(0,0,129,4)
     Arrangement = Arrange.Row
     AutoResize = True
     { ToolBar1 ToolBar
-      MoveScaled(0,0,136,4)
+      MoveScaled(0,0,129,4)
       Expand = True
       Key = "main"
       Text = ("")
@@ -942,6 +948,10 @@
     Text = "&New project..."
     Shortcut = "Ctrl+N"
     Picture = "icon:/small/new"
+  }
+  { Action new-webpage
+    Text = "&WebPage..."
+    Shortcut = ""
   }
   { Action open-project
     Text = "&Open project..."

@@ -1,0 +1,63 @@
+' Gambas class file
+
+Static Public All As Collection
+
+Public Key As String
+Public Name As String
+Public NamePlural As String
+Public NameFilter As String
+Public TreeKey As String
+Public Component As String
+Public Used As Boolean
+Public HasFormEditor As Boolean
+
+Static Public Sub _init()
+  
+  Dim hModule As CModule
+  
+  All = New Collection(gb.IgnoreCase)
+  
+  hModule = New CModule("form", ("Form"), ("Forms"), ("Gambas forms"), "$F", True)
+  hModule = New CModule("webpage", ("WebPage"), ("WebPages"), ("Gambas web pages"), "$A", False)
+  
+End
+
+Static Public Sub _get(sKey As String) As CModule
+  
+  Return All[sKey]
+  
+End
+
+Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFilter As String, sTreeKey As String, bHasFormEditor As Boolean)
+  
+  Key = sKey
+  Name = sName
+  NamePlural = sNamePlural
+  NameFilter = sNameFilter
+  TreeKey = sTreeKey
+  HasFormEditor = bHasFormEditor
+  All[sKey] = Me
+  
+End
+
+Static Public Sub InitFromProject()
+  
+  Dim hModule As CModule
+  Dim sComp As String
+  
+  For Each hModule In All
+    hModule.Component = ""
+    hModule.Used = False
+  Next
+  
+  For Each sComp In Project.Libraries
+    With CComponent.All[sComp]
+      If .Type Then 
+        All[.Type].Component = sComp
+        All[.Type].Used = True
+      Endif
+    End With
+  Next
+  
+End
+

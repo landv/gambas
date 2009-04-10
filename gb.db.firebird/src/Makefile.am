@@ -1,3 +1,6 @@
+COMPONENT = gb.db.firebird
+include $(top_srcdir)/component.am
+
 ##INCLUDES = -I./ibpp -I./ibpp/fbheaders
 INCLUDES = -I./ibpp/core
 EXTRA_DIST = ibpp

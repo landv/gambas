@@ -273,6 +273,7 @@ Public Sub mnuPopup_Show()
   Dim bCurrent As Boolean
   Dim bFile As Boolean
   Dim bCanStoreFile As Boolean
+  Dim hMenu As Menu
 
   sCurrent = GetCurrent()
   bCurrent = sCurrent
@@ -316,7 +317,12 @@ Public Sub mnuPopup_Show()
   mnuAddDirectory.Visible = (sCurrent And Not Project.IsClassPath(sCurrent)) Or bCanStoreFile
   mnuNewFile.Visible = mnuAddDirectory.Visible
   mnuNewImage.Visible = mnuAddDirectory.Visible
-  mnuNewForm.Visible = Project.AllowForm()
+  
+  For Each hMenu In mnuNew.Children
+    If Not hMenu.Tag Then Continue
+    If Not CModule.All.Exist(hMenu.Tag) Then Continue
+    hMenu.Visible = CModule[hMenu.Tag].Used
+  Next
 
 End
 

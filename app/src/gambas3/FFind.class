@@ -19,7 +19,7 @@ Private $iLastTimeStamp As Integer
 Private $sLastSearch As String
 Private $bStop As Boolean
 Private $bCanceled As Boolean
-Private $iWait As Integer
+'Private $iWait As Integer
 
 Public Sub Find(Optional bReplace As Boolean)
 
@@ -294,7 +294,9 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
   Dim sLine As String
   Dim iPos As Integer
   Dim sNext As String
+  Dim eLast As Float
 
+  eLast = Timer
   $bStop = False
   $bCanceled = False
   
@@ -491,8 +493,12 @@ Private Sub DoSearch(bBack As Boolean, bReplace As Boolean) As Boolean
     Endif
     
     If $bList Then 
-      Inc $iWait
-      If ($iWait And 63) = 0 Then Wait 0.01
+      If (Timer - eLast) > 0.1 Then 
+        eLast += 0.1
+        Wait 0.01
+      Endif
+      'Inc $iWait
+      'If ($iWait And 255) = 0 Then Wait 0.01
     Endif
 
   Loop

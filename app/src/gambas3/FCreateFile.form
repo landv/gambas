@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,79,66)
+  MoveScaled(0,0,92,74)
   Text = ("New file")
   Icon = Picture["icon:/small/new"]
   Persistent = True
@@ -9,7 +9,7 @@
   Spacing = True
   Padding = 8
   { tabFile TabStrip
-    MoveScaled(1,1,76,58)
+    MoveScaled(1,1,80,63)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
@@ -18,11 +18,11 @@
     Index = 0
     Text = ("New")
     { HBox3 HBox
-      MoveScaled(1,1,72,51)
+      MoveScaled(1,1,77,56)
       Expand = True
       Spacing = True
       { lstType ListContainer
-        MoveScaled(1,1,27,47)
+        MoveScaled(1,1,32,52)
         { panModule HBox
           MoveScaled(0,0,39,6)
           Tag = "module"
@@ -35,7 +35,7 @@
             Alignment = Align.Center
           }
           { Label6 Label
-            MoveScaled(8,1,25,4)
+            MoveScaled(7,1,25,4)
             Text = ("Module")
           }
         }
@@ -71,8 +71,24 @@
             Text = ("Form")
           }
         }
+        { panWebPage HBox
+          MoveScaled(0,18,39,6)
+          Tag = "webpage"
+          Spacing = True
+          Padding = 8
+          { PictureBox8 PictureBox
+            MoveScaled(1,1,4,4)
+            Picture = Picture["icon:/48/html"]
+            Stretch = True
+            Alignment = Align.Center
+          }
+          { Label15 Label
+            MoveScaled(7,1,25,4)
+            Text = ("WebPage")
+          }
+        }
         { HBox5 HBox
-          MoveScaled(0,18,27,6)
+          MoveScaled(0,25,27,6)
           Tag = "image"
           Spacing = True
           Padding = 8
@@ -83,12 +99,12 @@
             Alignment = Align.Center
           }
           { Label3 Label
-            MoveScaled(6,1,16,4)
+            MoveScaled(7,1,16,4)
             Text = ("Image")
           }
         }
         { HBox4 HBox
-          MoveScaled(0,24,39,6)
+          MoveScaled(0,31,39,6)
           Tag = "text"
           Spacing = True
           Padding = 8
@@ -104,7 +120,7 @@
           }
         }
         { HBox7 HBox
-          MoveScaled(0,30,39,6)
+          MoveScaled(0,37,39,6)
           Tag = "html"
           Spacing = True
           Padding = 8
@@ -120,7 +136,7 @@
           }
         }
         { HBox2 HBox
-          MoveScaled(0,37,39,6)
+          MoveScaled(0,44,39,6)
           Tag = "css"
           Spacing = True
           Padding = 8
@@ -137,7 +153,7 @@
         }
       }
       { panOption VBox
-        MoveScaled(29,1,42,48)
+        MoveScaled(34,1,42,52)
         Expand = True
         Spacing = True
         { Label9 Label
@@ -256,7 +272,7 @@
     Index = 0
   }
   { HBox6 HBox
-    MoveScaled(11,60,60,4)
+    MoveScaled(11,67,60,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(11,0,4,4)

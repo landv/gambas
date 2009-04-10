@@ -84,7 +84,7 @@ Public Const MAX_ICON_SIZE As Integer = 8192
 
 Public EXAMPLES_DIR As String
 
-Public ShowAlwaysProperty As Boolean
+'Public ShowAlwaysProperty As Boolean
 
 Private Const IMAGE_DIR As String = "img/16"
 
@@ -101,21 +101,15 @@ Private Const FILE_FORBIDDEN_CAR As String = "?*/~"
 Private Const PROJECT_FILE As String = ".project"
 Private Const STARTUP_FILE As String = ".startup"
 
-Private TMP_FILE As String
 Private OUTPUT_FILE As String
 
 Public Browser As String
 Public ImageEditors As String[] = ["Gimp", "KIconEdit", "KolourPaint", "Krita"]
 Private IMAGE_EXT As String[] = ["jpg", "jpeg", "gif", "bmp", "xpm", "png", "tif", "tiff"]
 
-Private $iFound As Integer
-Private $bDoNotSavePosition As Boolean
 Private $sOldRefreshLibrary As String
 
 Public ExampleTitle As New Collection
-
-Public ComponentFromType As New Collection
-Public FormType As New Collection
 
 Public TimeStamp As Integer
 Public Config As Settings
@@ -125,6 +119,8 @@ Public RestoringFiles As Boolean
 Private $aRefreshAfter As New String[]
 Private $iNoRefresh As Integer
 Private $bDoRefresh As Boolean
+
+Private $hFileImage As Image
 
 Public Sub _init()
   
@@ -151,7 +147,6 @@ Public Sub Main()
   'Application.Font = Font["Sans,8"]
   Application.Theme = Settings["/Theme"]
   
-  TMP_FILE = Temp$() 
   OUTPUT_FILE = Temp$()
   'CLASSES_FILE = Temp$()
 
@@ -544,6 +539,21 @@ Private Sub AddLinkEmblem(hPict As Picture) As Picture
   
 End
 
+Private Sub MakeModuleIcon(sModule As String, Optional iSize As Integer = 16) As Picture
+
+  Dim hImage As Image
+  Dim hImageModule As Image
+
+  If Not $hFileImage Then $hFileImage = Image.Load("icon:/" & iSize & "/file")
+  
+  hImage = $hFileImage.Copy()
+  hImageModule = Image.Load("module" &/ sModule & ".png").Stretch(iSize, iSize)
+  hImage.Draw(hImageModule, 0, 0)
+  Return hImage.Picture
+  
+End
+
+
 
 
 Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
@@ -588,7 +598,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       sExt = File.Ext(sPath)
       Select Case sExt
       
-        Case "form", "class", "module"
+        Case "form", "class", "module", "webpage"
           If File.Dir(sPath) = Project.Dir Then 
             If iSize > 16 Then
               sIcon = "img/32" &/ sExt & ".png"
@@ -734,7 +744,6 @@ End
 
 Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean, Optional bIgnoreInheritance As Boolean) As Boolean
   
-  Dim bAllowForm As Boolean
   Dim bIgnore As Boolean
   Dim sPath As String
   Dim sKey As String
@@ -747,9 +756,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim bDir As Boolean
   Dim sAfter As String
   Dim hForm As Object
+  Dim hModule As CModule
 
-  bAllowForm = AllowForm()
-  
   sPath = sDir &/ sFile
   sKey = sPath
   sParent = sDir
@@ -784,45 +792,44 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
       If sDir = Project.Dir Then
 
-        Select Case sExt
+        If sExt = "module" Or If sExt = "class" Or If CModule.All.Exist(sExt) Then
 
-          Case "form", "class", "module"
+          'sIcon = IMAGE_DIR &/ sExt & ".png"
+          bShow = True
+          bChecked = True
 
-            'sIcon = IMAGE_DIR &/ sExt & ".png"
-            bShow = True
-            bChecked = True
-  
-            If sExt = "form" Then
-              sParent = KEY_FORM
-              If Not bAllowForm Then bIgnore = True
-            Else If sExt = "class" Then
-              sParent = ""
-              If Exist(sDir &/ File.BaseName(sFile) & ".form") Then
-                bIgnore = True
-              Else 
-                'IF sFile = "ReportContainer.class" THEN STOP
-                sParent = FindKey(GetParentClass(sPath))
-                If sParent Then
-                  If File.Ext(sParent) <> "class" Then 
+          If sExt = "class" Then
+            sParent = ""
+            If Exist(sDir &/ File.BaseName(sFile) & ".form") Then
+              bIgnore = True
+            Else 
+              'IF sFile = "ReportContainer.class" THEN STOP
+              sParent = FindKey(GetParentClass(sPath))
+              If sParent Then
+                If File.Ext(sParent) <> "class" Then 
+                  sParent = ""
+                Else If Not ProjectTree.Exist(sParent) Then 
+                  If Not bIgnoreInheritance Then
+                    $aRefreshAfter.Add(sPath)
+                    bIgnore = True
+                  Else 
                     sParent = ""
-                  Else If Not ProjectTree.Exist(sParent) Then 
-                    If Not bIgnoreInheritance Then
-                      $aRefreshAfter.Add(sPath)
-                      bIgnore = True
-                    Else 
-                      sParent = ""
-                    Endif
                   Endif
                 Endif
               Endif
-              If Not sParent Then sParent = KEY_CLASS
-            Else If sExt = "module" Then
-              sParent = KEY_MODULE
             Endif
-  
-            sFile = File.BaseName(sFile)
-            
-        End Select
+            If Not sParent Then sParent = KEY_CLASS
+          Else If sExt = "module" Then
+            sParent = KEY_MODULE
+          Else
+            hModule = CModule[sExt]
+            sParent = hModule.TreeKey
+            If Not hModule.Used Then bIgnore = True
+          Endif
+
+          sFile = File.BaseName(sFile)
+          
+        Endif
 
       Endif
 
@@ -1047,6 +1054,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
   Dim sTitle As String
   Dim hFile As Object
   Dim sPath As String
+  Dim hModule As CModule
 
   '$bDisplayForm = Settings["/DisplayForm"]
 
@@ -1066,9 +1074,13 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     .Add(KEY_PROJECT, ("Project"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_MODULE, ("Modules"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_CLASS, ("Classes"), Picture["icon:/small/directory"], sKey)
-    If AllowForm() Then
-      .Add(KEY_FORM, ("Forms"), Picture["icon:/small/directory"], sKey)
-    Endif
+    
+    For Each hModule In CModule.All
+      If hModule.Used Then
+        .Add(hModule.TreeKey, hModule.NamePlural, Picture["icon:/small/directory"], sKey)
+      Endif
+    Next
+    
     .Add(KEY_MISC, ("Data"), Picture["icon:/small/directory"], sKey)
 
     '$bGetSource = TRUE
@@ -1092,7 +1104,8 @@ Private Sub DoRefresh(Optional bReset As Boolean)
 
   DefineStartup(Startup, True)
 
-  If Not AllowForm() Then 
+  ' $$ TODO
+  If Not HasModule("form") Then 
     For Each hFile In Files
       sPath = Files.Key
       If Not IsClassPath(sPath) Then Continue
@@ -1187,7 +1200,7 @@ Public Function LoadFile(sPath As String) As Object
           hForm = New FEditor(sPath)
   
         Case "form"
-          If AllowForm() Then 
+          If HasModule("form") Then 
             hForm = New FForm(sPath)
           Endif
           
@@ -1904,7 +1917,7 @@ Public Sub Activate(hForm As Object)
     
     sType = Object.Type(ActiveForm)
   
-    FMain.ShowTool(sType = "FForm" Or ShowAlwaysProperty)
+    FMain.ShowTool(sType = "FForm") 'Or ShowAlwaysProperty)
     
   Endif
 
@@ -3322,18 +3335,11 @@ Public Sub RefreshLibrary(Optional bForce As Boolean)
   
     CComponent.Reset
   
-    ComponentFromType.Clear
-    FormType.Clear
-  
     For Each sLib In Libraries
-      'IF NOT CComponent.All.Exist(sLib) THEN CONTINUE
-      With CComponent.All[sLib]
-        .Load
-        If .Type Then 
-          ComponentFromType[.Type] = sLib
-        Endif
-      End With
+      CComponent.All[sLib].Load
     Next
+    
+    CModule.InitFromProject()
     
     FToolBox.RefreshToolbar(bForce)
     FCompletion.RefreshLibrary
@@ -3639,10 +3645,10 @@ Public Sub ResetScan()
 
 End
 
-Public Function AllowForm() As Boolean
-
-  Return ComponentFromType.Exist("Form")
-
+Public Function HasModule(sType As String) As Boolean
+  
+  Return CModule[sType].Used
+  
 End
 
 
@@ -4045,8 +4051,6 @@ Public Sub SavePosition()
   Dim hEditor As FEditor
   Dim sPos As String
 
-  If $bDoNotSavePosition Then Return 
-  
   Try hEditor = ActiveForm
   If Error Then Return
   

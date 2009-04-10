@@ -5,10 +5,11 @@ Public Editor As Editor
 
 Property Read ReadOnly As Boolean
 
-Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css"]
+Static Private $aExt As String[] = ["htm", "html", "xml", "svg", "css", "webpage"]
 
 Private Const STYLE_HTML As Integer = 1
 Private Const STYLE_CSS As Integer = 2
+Private Const STYLE_WEB As Integer = 3
 
 Private Const TAG_HTML As Integer = 0
 Private Const TAG_CODE As Integer = 1
@@ -46,6 +47,8 @@ Public Sub LoadFile()
     Select Case sExt
       Case "css"
         $iStyle = STYLE_CSS
+      Case "webpage"
+        $iStyle = STYLE_WEB
       Case Else 
         $iStyle = STYLE_HTML
     End Select 
@@ -436,7 +439,7 @@ Public Sub Editors_Highlight()
 
   Select Case $iStyle
   
-    Case STYLE_HTML
+    Case STYLE_HTML, STYLE_WEB
 
       If iTag = TAG_HTML Then
         bMarkup = iState = Highlight.Keyword
@@ -502,7 +505,7 @@ Public Sub Editors_Highlight()
                 Else If String.Mid$(sText, iInd, 9) = "<![CDATA[" Then
                   iState = Highlight.Symbol
                   iNextState = Highlight.Symbol
-                Else If String.Mid$(sText, iInd, 2) = "<%" Then
+                Else If $iStyle = STYLE_WEB And If String.Mid$(sText, iInd, 2) = "<%" Then
                   If String.Mid$(sText, iInd + 2, 1) = "=" Then
                     iCount = 3
                   Else 
