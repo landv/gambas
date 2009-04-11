@@ -554,12 +554,8 @@ Private Sub MakeModuleIcon(sModule As String, Optional iSize As Integer) As Pict
   hPict = Picture[sKey]
   If Not hPict Then 
     hImage = $hFileImage.Stretch(iSize, iSize)
-    If iSize = 16 Then
-      hImageModule = Image.Load("img/module" &/ sModule & "-16.png")
-    Else
-      hImageModule = Image.Load("img/module" &/ sModule & ".png").Stretch(iSize, iSize)
-    Endif
-    hImage.Draw(hImageModule, 0, 0)
+    hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
+    hImage.Draw(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
     hPict = hImage.Picture
     Picture[sKey] = hPict
   Endif
