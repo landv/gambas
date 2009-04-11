@@ -539,21 +539,34 @@ Private Sub AddLinkEmblem(hPict As Picture) As Picture
   
 End
 
-Private Sub MakeModuleIcon(sModule As String, Optional iSize As Integer = 16) As Picture
+Private Sub MakeModuleIcon(sModule As String, Optional iSize As Integer) As Picture
 
+  Dim hPict As Picture
   Dim hImage As Image
   Dim hImageModule As Image
+  Dim sKey As String
 
-  If Not $hFileImage Then $hFileImage = Image.Load("icon:/" & iSize & "/file")
+  If Not $hFileImage Then $hFileImage = Picture["icon:/32/file"].Image
   
-  hImage = $hFileImage.Copy()
-  hImageModule = Image.Load("module" &/ sModule & ".png").Stretch(iSize, iSize)
-  hImage.Draw(hImageModule, 0, 0)
-  Return hImage.Picture
+  If iSize = 0 Then iSize = 16
+  
+  sKey = "img/" & sModule & "-" & iSize & ".png"
+  hPict = Picture[sKey]
+  If Not hPict Then 
+    hImage = $hFileImage.Stretch(iSize, iSize)
+    If iSize = 16 Then
+      hImageModule = Image.Load("img/module" &/ sModule & "-16.png")
+    Else
+      hImageModule = Image.Load("img/module" &/ sModule & ".png").Stretch(iSize, iSize)
+    Endif
+    hImage.Draw(hImageModule, 0, 0)
+    hPict = hImage.Picture
+    Picture[sKey] = hPict
+  Endif
+  
+  Return hPict
   
 End
-
-
 
 
 Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
@@ -573,6 +586,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim iDim As Integer
   Dim bConflict As Boolean
   Dim hConflict As Image
+  Dim sModule As String
   
   If iSize Then 
     sPrefix = "icon:/" & iSize
@@ -600,11 +614,8 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       
         Case "form", "class", "module", "webpage"
           If File.Dir(sPath) = Project.Dir Then 
-            If iSize > 16 Then
-              sIcon = "img/32" &/ sExt & ".png"
-            Else
-              sIcon = "img/16" &/ sExt & ".png"
-            Endif
+            sModule = sExt
+            sIcon = sExt & "-" & iSize
             bStartup = File.BaseName(sPath) = Startup And Not bNoStartup
           Endif
         
@@ -684,7 +695,11 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     Try hPict = Picture[sKey]
     If Not hPict Then 
     
-      hPict = Picture[sIcon]
+      If sModule Then
+        hPict = MakeModuleIcon(sModule, iSize)
+      Else
+        hPict = Picture[sIcon]
+      Endif
       If Not hPict Then hPict = Picture[sPrefix &/ "file"]
       If Not hPict Then hPict = Picture["img/16/unknown.png"]
       hPict = hPict.Copy()
