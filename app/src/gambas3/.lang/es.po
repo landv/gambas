@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: FMain.class:1931
+#: FMain.class:1938
 msgid "&?"
 msgstr "&?"
 
@@ -18,11 +18,11 @@ msgstr "&?"
 msgid "&1: &2"
 msgstr "&1: &2"
 
-#: Package.module:61
+#: Package.module:60
 msgid "'&1' and '&2' are missing."
 msgstr "'&1' y '&2' son requeridos."
 
-#: Package.module:52
+#: Package.module:51
 msgid "'&1' is missing."
 msgstr "'&1' es requerido."
 
@@ -42,7 +42,7 @@ msgstr "&1 cadenas (&2 sin traducir) - &3 % terminado"
 msgid "&1 translations were picked up."
 msgstr "&1 traducciones fueron tomadas."
 
-#: CComponent.class:89
+#: CComponent.class:95
 msgid "3D programming with OpenGL"
 msgstr "Programación 3D con OpenGL"
 
@@ -54,7 +54,7 @@ msgstr "Acerca de"
 msgid "About &component..."
 msgstr "Acerca del &componente..."
 
-#: FMain.class:1952
+#: FMain.class:1959
 msgid "&About Gambas..."
 msgstr "&Acerca de Gambas..."
 
@@ -62,7 +62,7 @@ msgstr "&Acerca de Gambas..."
 msgid "About Gambas..."
 msgstr "Acerca de Gambas..."
 
-#: Project.module:2864
+#: Project.module:2915
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "El nombre de una clase debe empezar con una letra o un signo de subrayado, seguido de cualquier letra o dígito."
 
@@ -70,7 +70,7 @@ msgstr "El nombre de una clase debe empezar con una letra o un signo de subrayad
 msgid "Action"
 msgstr "Acción"
 
-#: FPropertyProject.class:2103
+#: FMakeInstall.class:1382 FPropertyProject.class:2103
 msgid "&Add"
 msgstr "&Agregar"
 
@@ -78,13 +78,9 @@ msgstr "&Agregar"
 msgid "Add expression"
 msgstr "Añadir expresión"
 
-#: FMakeInstall.class:1177
-msgid "Add extra tests"
-msgstr "Agregar pruebas extra"
-
-#: FMakeInstall.class:1181
-msgid "Add extra tests during the configure process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about configure scripts.</b>"
-msgstr "Agrega pruebas extra durante el proceso de configuración.\n<p><b>Déjelo en blanco si no lo necesita, o si no sabe sobre scripts de configuración.</b>"
+#: FMakeInstall.class:1416
+msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr "Agregar pruebas extra para el proceso de configuración.\n<p><b>Deje esto en blanco si no lo necesita, o si no conoce nada sobre scripts <i>autoconf</i>.</b>"
 
 #: Language.module:92
 msgid "Albanian (Albania)"
@@ -130,7 +126,7 @@ msgstr "Alinear &arriba"
 msgid "&All"
 msgstr "&Todo"
 
-#: FMain.class:1214
+#: FMain.class:1220
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Todas las copias de seguridad o archivos generados se borrarán en el directorio del proyecto."
 
@@ -138,17 +134,21 @@ msgstr "Todas las copias de seguridad o archivos generados se borrarán en el di
 msgid "All files"
 msgstr "Todos los Archivos"
 
-#: FMakeInstall.class:1208
+#: FMakeInstall.class:1443
 msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
 msgstr "Se ha recogido toda la información. Ya puede crear los paquetes de instalación para su aplicación...\n<p>Pulsa en el botón<b> OK</b> para crear los paquetes.\n<p>Pulsa en el botón <b>Anterior</b> si ha cometido algún error.\n<p>Pulse en el botón <b>Cancelar</b> para cancelar la operación.\n\n"
 
-#: Project.module:1103
+#: Project.module:1133
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr "¡VERSIÓN ALFA, ÚSELA BAJO SU PROPIO RIESGO! :-)"
 
 #: FMenu.class:984
 msgid "ALT"
 msgstr "ALT"
+
+#: MTheme.module:6
+msgid "Alternate background"
+msgstr "Alternar fondo"
 
 #: FOption.class:4
 msgid "Amber"
@@ -158,11 +158,11 @@ msgstr "Ámbar"
 msgid "Amethyst"
 msgstr "Amatista"
 
-#: CComponent.class:71
+#: CComponent.class:77
 msgid "Application debugger helper"
 msgstr "Depurador de aplicaciones"
 
-#: CComponent.class:106
+#: CComponent.class:112
 msgid "Application settings management"
 msgstr "Gestión de configuración de la aplicación"
 
@@ -190,7 +190,7 @@ msgstr "Argumentos"
 msgid "Arrangement"
 msgstr "Alineamiento"
 
-#: Project.module:1420
+#: Project.module:1450
 msgid "at line &1 in &2"
 msgstr "en línea &1 en &2"
 
@@ -210,15 +210,15 @@ msgstr "Autor(es)"
 msgid "Automatic completion"
 msgstr "Autocompletado"
 
-#: FCreateFile.class:783
+#: FCreateFile.class:831
 msgid "Automatic extension"
 msgstr "Extensión automática"
 
-#: Project.module:128
+#: Project.module:127
 msgid "Automation"
 msgstr "Automatización"
 
-#: FMakeInstall.class:1118
+#: FMakeInstall.class:1293
 msgid "Autotools"
 msgstr "Autotools"
 
@@ -246,7 +246,7 @@ msgstr "¡Nombre de grupo incorrecto!"
 msgid "Bad menu name !"
 msgstr "¡Nombre de menú incorrecto!"
 
-#: Project.module:129
+#: Project.module:128
 msgid "Basic"
 msgstr "Básico"
 
@@ -282,7 +282,7 @@ msgstr "Puntos de interrupción"
 msgid "Bring to foreground"
 msgstr "Mandar al frente"
 
-#: FMain.class:1887
+#: FMain.class:1894
 msgid "&Browse project..."
 msgstr "&Buscar projecto..."
 
@@ -302,27 +302,27 @@ msgstr "(c) 2000-2007 Benoît Minisini"
 msgid "Cairo graphic library"
 msgstr "Librería gráfica Cairo"
 
-#: Project.module:292
+#: Project.module:290
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: FCreateFile.class:392
+#: FCreateFile.class:418
 msgid "Cannot add file."
 msgstr "No es posible añadir el archivo."
 
-#: Project.module:1396
+#: Project.module:1426
 msgid "Cannot compile the project."
 msgstr "No es posible compilar el proyecto."
 
-#: Project.module:3481
+#: Project.module:3525
 msgid "Cannot copy file &1."
 msgstr "No es posible copiar el archivo &1."
 
-#: Project.module:1825
+#: Project.module:1855
 msgid "Cannot copy template file."
 msgstr "No es posible copiar el archivo de plantilla."
 
-#: Project.module:3523
+#: Project.module:3567
 msgid "Cannot create link &1."
 msgstr "No es posible crear el enlace &1."
 
@@ -338,23 +338,23 @@ msgstr "No es posible borrar el archivo o el directorio"
 msgid "Cannot import translation file."
 msgstr "No es posible importar el archivo de traducción."
 
-#: Project.module:2046
+#: Project.module:2070
 msgid "Cannot make executable."
 msgstr "No es posible crear ejecutable."
 
-#: Project.module:3535
+#: Project.module:3579
 msgid "Cannot move a directory inside itself."
 msgstr "No es posible mover un directorio dentro de sí mismo."
 
-#: Project.module:3579
+#: Project.module:3623
 msgid "Cannot move file &1."
 msgstr "No es posible mover el archivo &1."
 
-#: Project.module:1283
+#: Project.module:1313
 msgid "Cannot open file."
 msgstr "No es posible abrir el archivo."
 
-#: Project.module:356
+#: Project.module:357
 msgid "Cannot open project file :\n"
 msgstr "No es posible abrir el archivo de proyecto :\n"
 
@@ -374,7 +374,7 @@ msgstr "No es posible guardar la traducción."
 msgid "Cannot write component description file."
 msgstr "No es posible escribir el archivo de descripción del componente."
 
-#: Project.module:2487
+#: Project.module:2538
 msgid "Cannot write project file."
 msgstr "No es posible escribir el archivo de proyecto."
 
@@ -382,7 +382,7 @@ msgstr "No es posible escribir el archivo de proyecto."
 msgid "Caption"
 msgstr "Título"
 
-#: FFind.class:747 FOutput.class:604
+#: FFind.class:760 FOutput.class:604
 msgid "Case sensitive"
 msgstr "Sensible a mayúsculas"
 
@@ -390,7 +390,7 @@ msgstr "Sensible a mayúsculas"
 msgid "Catalan (Catalonia, Spain)"
 msgstr "Catalán (Cataluña, España)"
 
-#: FMakeInstall.class:1167
+#: FMakeInstall.class:1342
 msgid "Categories"
 msgstr "Categorías"
 
@@ -402,7 +402,7 @@ msgstr "Aplicación Web CGI"
 msgid "Change into"
 msgstr "Cambiar en"
 
-#: FMakeInstall.class:946
+#: FMakeInstall.class:1121
 msgid "Changelog"
 msgstr "Changelog"
 
@@ -430,19 +430,19 @@ msgstr "Marcado"
 msgid "Class"
 msgstr "Clase"
 
-#: FMain.class:1986
+#: FMain.class:1993
 msgid "&Class..."
 msgstr "&Clase..."
 
-#: FInfo.class:67 Project.module:1062
+#: FInfo.class:67 Project.module:1087
 msgid "Classes"
 msgstr "Clases"
 
-#: FMain.class:1214
+#: FMain.class:1220
 msgid "Clean"
 msgstr "Limpiar"
 
-#: FMain.class:1706
+#: FMain.class:1713
 msgid "&Clean up"
 msgstr "&Limpiar"
 
@@ -454,11 +454,15 @@ msgstr "Limpiar"
 msgid "Clear"
 msgstr "Limpiar"
 
+#: FMakeInstall.class:1406
+msgid "&Clear"
+msgstr "&Limpiar"
+
 #: FIconEditor.class:2159
 msgid "Clear all"
 msgstr "Limpiar todo"
 
-#: FMain.class:1798
+#: FMain.class:1805
 msgid "Clear &all breakpoints"
 msgstr "Limpiar &todos los puntos de interrupción"
 
@@ -466,7 +470,7 @@ msgstr "Limpiar &todos los puntos de interrupción"
 msgid "Clear console"
 msgstr "Limpiar la consola"
 
-#: FMain.class:354
+#: FMain.class:360
 msgid "&Clear history"
 msgstr "&Limpiar historial"
 
@@ -490,7 +494,7 @@ msgstr "Haga click en Insertar para añadir un menú nuevo."
 msgid "Clipboard contents"
 msgstr "Contenido del portapapeles"
 
-#: FInfo.class:408 FMakeInstall.class:231 FOption.class:1123 FTips.class:232
+#: FInfo.class:408 FMakeInstall.class:250 FOption.class:1123 FTips.class:232
 msgid "Close"
 msgstr "Cerrar"
 
@@ -498,11 +502,11 @@ msgstr "Cerrar"
 msgid "&Close"
 msgstr "&Cerrar"
 
-#: FMain.class:1813
+#: FMain.class:1820
 msgid "Close all &debug windows"
 msgstr "Cerrar todas ventanas del &depurador"
 
-#: FMain.class:1866
+#: FMain.class:1873
 msgid "Close &all windows"
 msgstr "Cerrar &todas las ventanas"
 
@@ -538,23 +542,23 @@ msgstr "&Commit..."
 msgid "Compilation"
 msgstr "Compilación"
 
-#: FMain.class:2295
+#: FMain.class:2309
 msgid "Compile"
 msgstr "Compilar"
 
-#: FMain.class:1648
+#: FMain.class:1655
 msgid "&Compile"
 msgstr "&Compilar"
 
-#: FMain.class:2303
+#: FMain.class:2317
 msgid "Compile all"
 msgstr "Compilar todo"
 
-#: FMain.class:1655
+#: FMain.class:1662
 msgid "Compile &All"
 msgstr "Compilar &todo"
 
-#: Project.module:1576
+#: Project.module:1606
 msgid "Compiling project"
 msgstr "Compilando proyecto"
 
@@ -582,11 +586,11 @@ msgstr "Compresión & descompresión"
 msgid "Conflict files"
 msgstr "Archivos en conflicto"
 
-#: FDebugInfo.class:670 FMain.class:2273
+#: FDebugInfo.class:670 FMain.class:2287
 msgid "Console"
 msgstr "Consola"
 
-#: FMain.class:1847
+#: FMain.class:1854
 msgid "&Console"
 msgstr "&Consola"
 
@@ -594,23 +598,23 @@ msgstr "&Consola"
 msgid "Console - Gambas"
 msgstr "Consola - Gambas"
 
-#: Project.module:2310
+#: Project.module:2351
 msgid "Continue"
 msgstr "Continuar"
 
-#: Project.module:139
+#: Project.module:138
 msgid "Controls"
 msgstr "Controles"
 
-#: FIconEditor.class:2177 FOutput.class:483 FTextEditor.class:788
+#: FIconEditor.class:2177 FOutput.class:483 FTextEditor.class:883
 msgid "Copy"
 msgstr "Copiar"
 
-#: FMain.class:2061
+#: FMain.class:2075
 msgid "&Copy"
 msgstr "&Copiar"
 
-#: FMain.class:2093
+#: FMain.class:2107
 msgid "Copy file pat&h"
 msgstr "Copiar ruta de &archivo"
 
@@ -626,39 +630,39 @@ msgstr "Cliente CORBA"
 msgid "Create a shortcut on the desktop"
 msgstr "Crear un acceso directo en el escritorio"
 
-#: FCreateFile.class:802
+#: FCreateFile.class:850
 msgid "Create a symbolic link"
 msgstr "Crear un enlace simbólico"
 
-#: FMakeInstall.class:1200
+#: FMakeInstall.class:1435
 msgid "Create directories for each distribution"
 msgstr "Crear directorios para cada distribución"
 
-#: FMakeInstall.class:1203
+#: FMakeInstall.class:1438
 msgid "Create package"
 msgstr "Crear paquetes"
 
-#: Project.module:3231
+#: Project.module:3282
 msgid "Create source package"
 msgstr "Crear paquete fuente"
 
-#: Package.module:366
+#: Package.module:402
 msgid "Creating desktop file..."
 msgstr "Creando archivo de escritorio..."
 
-#: Package.module:535
+#: Package.module:574
 msgid "Creating package..."
 msgstr "Creando paquete..."
 
-#: Package.module:290
+#: Package.module:326
 msgid "Creating package for &1."
 msgstr "Creando paquete para &1."
 
-#: Package.module:650
+#: Package.module:689
 msgid "Creating source package."
 msgstr "Creando paquete fuente."
 
-#: Package.module:674
+#: Package.module:713
 msgid "Creating .spec file."
 msgstr "Creando archivo .spec."
 
@@ -682,11 +686,11 @@ msgstr "Línea actual"
 msgid "Current object"
 msgstr "Objeto actual"
 
-#: FIconEditor.class:2168 FOutput.class:476 FTextEditor.class:781
+#: FIconEditor.class:2168 FOutput.class:476 FTextEditor.class:876
 msgid "Cut"
 msgstr "Cortar"
 
-#: FMain.class:2054
+#: FMain.class:2068
 msgid "&Cut"
 msgstr "&Cortar"
 
@@ -698,11 +702,11 @@ msgstr "Checo (República Checa)"
 msgid "Danish (Denmark)"
 msgstr "Danés (Dinamarca)"
 
-#: Project.module:1066
+#: Project.module:1095
 msgid "Data"
 msgstr "Datos"
 
-#: Project.module:130
+#: Project.module:129
 msgid "Database"
 msgstr "Base de datos"
 
@@ -710,11 +714,11 @@ msgstr "Base de datos"
 msgid "Database access"
 msgstr "Acceso a bases de datos"
 
-#: FMain.class:1907
+#: FMain.class:1914
 msgid "&Database manager..."
 msgstr "&Gestor de bases de datos..."
 
-#: CComponent.class:70
+#: CComponent.class:71
 msgid "Data bound controls"
 msgstr "Controles de bases de datos"
 
@@ -722,15 +726,15 @@ msgstr "Controles de bases de datos"
 msgid "Data types"
 msgstr "Tipos de datos"
 
-#: FMakeInstall.class:998
+#: FMakeInstall.class:1173
 msgid "Debian"
 msgstr "Debian"
 
-#: FDebugInfo.class:655 FMain.class:2428
+#: FDebugInfo.class:655 FMain.class:2442
 msgid "Debug"
 msgstr "Depuración"
 
-#: FMain.class:1729
+#: FMain.class:1736
 msgid "&Debug"
 msgstr "&Depuración"
 
@@ -762,7 +766,7 @@ msgstr "Borrar"
 msgid "&Delete"
 msgstr "&Borrar"
 
-#: FMain.class:2082
+#: FMain.class:2096
 msgid "&Delete..."
 msgstr "&Borrar..."
 
@@ -770,7 +774,7 @@ msgstr "&Borrar..."
 msgid "Delete translation"
 msgstr "Borrar traducción"
 
-#: FMakeInstall.class:921 FPropertyProject.class:1532
+#: FMakeInstall.class:1096 FPropertyProject.class:1532
 msgid "Description"
 msgstr "Descripción"
 
@@ -778,11 +782,11 @@ msgstr "Descripción"
 msgid "Desktop"
 msgstr "Escritorio"
 
-#: CComponent.class:72
+#: CComponent.class:78
 msgid "Desktop-neutral routines from Portland project"
 msgstr "Rutinas neutras del proyecto Portland para el Escritorio"
 
-#: FMakeInstall.class:1190
+#: FMakeInstall.class:1425
 msgid "Destination directory"
 msgstr "Directorio destino"
 
@@ -790,7 +794,7 @@ msgstr "Directorio destino"
 msgid "Details"
 msgstr "Detalles"
 
-#: FCreateFile.class:752
+#: FCreateFile.class:800
 msgid "Dialog box management"
 msgstr "Gestión de cuadros de diálogo"
 
@@ -798,11 +802,11 @@ msgstr "Gestión de cuadros de diálogo"
 msgid "Directory"
 msgstr "Directorio"
 
-#: FMain.class:1967
+#: FMain.class:1974
 msgid "&Directory"
 msgstr "&Directorio"
 
-#: Project.module:1844
+#: Project.module:1874
 msgid "Directory already exists."
 msgstr "El directirio ya existe."
 
@@ -810,9 +814,13 @@ msgstr "El directirio ya existe."
 msgid "Display property help"
 msgstr "Mostrar ayuda de propiedades"
 
-#: Project.module:301
+#: Project.module:299
 msgid "Do not open"
 msgstr "No abrir"
+
+#: FMakeInstall.class:1400
+msgid "&Down"
+msgstr "&Abajo"
 
 #: FMain.class:203
 msgid "Do you really want to delete this directory ?"
@@ -830,7 +838,11 @@ msgstr "¿Realmente quiere borrar esta traducción?"
 msgid "Do you really want to reload this translation ?"
 msgstr "¿Realmente quiere recargar esta traducción?"
 
-#: FMain.class:1040
+#: FMakeInstall.class:900
+msgid "Do you really want to remove all extra dependencies?"
+msgstr "¿Realmente quiere remover todas las dependencias extra?"
+
+#: FMain.class:1046
 msgid "Do you really want to update all forms?"
 msgstr "¿Realmente quiere actualizar todos los formularios?"
 
@@ -846,7 +858,7 @@ msgstr "¿Quiere limpiar la imagen?"
 msgid "Do you want to clear the value list ?"
 msgstr "¿Quiere limpiar la lista de valores?"
 
-#: Package.module:538
+#: Package.module:577
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' ha fallado."
 
@@ -854,7 +866,7 @@ msgstr "'dpkg-buildpackage' ha fallado."
 msgid "Draw"
 msgstr "Dibujar"
 
-#: Project.module:131
+#: Project.module:130
 msgid "Drawing"
 msgstr "Dibujo"
 
@@ -874,15 +886,15 @@ msgstr "Flamenco (Holanda)"
 msgid "Dynamic variables"
 msgstr "Variables dinámicas"
 
-#: FConflict.class:25 FMain.class:2025
+#: FConflict.class:25 FMain.class:2039
 msgid "&Edit"
 msgstr "&Editar"
 
-#: FMain.class:2036
+#: FMain.class:2050
 msgid "Edit &class"
 msgstr "Editar &clase"
 
-#: FMain.class:2031
+#: FMain.class:2045
 msgid "Edit &form"
 msgstr "Editar &formulario"
 
@@ -906,7 +918,7 @@ msgstr "Editor"
 msgid "Edit text property"
 msgstr "Editar propiedad de texto"
 
-#: FMain.class:2041
+#: FMain.class:2055
 msgid "Edit with"
 msgstr "Editar con"
 
@@ -942,7 +954,7 @@ msgstr "Inglés (Reino Unido)"
 msgid "English (U.S.A.)"
 msgstr "Inglés (U.S.A.)"
 
-#: CComponent.class:75
+#: CComponent.class:81
 msgid "Enhanced standard dialogs"
 msgstr "Diálogos estándar mejorados"
 
@@ -970,7 +982,7 @@ msgstr "Estonio (Estonia)"
 msgid "Event"
 msgstr "Evento"
 
-#: CComponent.class:115 FPropertyProject.class:2010
+#: CComponent.class:121 FPropertyProject.class:2010
 msgid "Event loop management"
 msgstr "Gestión del bucle de eventos"
 
@@ -986,7 +998,7 @@ msgstr "Ejemplos"
 msgid "Excludes"
 msgstr "Excluir"
 
-#: FMain.class:1680
+#: FMain.class:1687
 msgid "E&xecutable..."
 msgstr "E&jectutable..."
 
@@ -994,7 +1006,7 @@ msgstr "E&jectutable..."
 msgid "Execution"
 msgstr "Ejecución"
 
-#: FCreateFile.class:790
+#: FCreateFile.class:838
 msgid "Existing"
 msgstr "Existente"
 
@@ -1014,7 +1026,7 @@ msgstr "Exportar un archivo de tema"
 msgid "Export a translation"
 msgstr "Exportar una traducción"
 
-#: FCreateFile.class:773
+#: FCreateFile.class:821
 msgid "Exported"
 msgstr "Exportado"
 
@@ -1034,9 +1046,17 @@ msgstr "Exportar a un archivo de traducciones"
 msgid "Expression"
 msgstr "Expresión"
 
-#: CComponent.class:73
+#: CComponent.class:79
 msgid "Expression evaluator"
 msgstr "Evaluador de expresiones"
+
+#: FMakeInstall.class:1412
+msgid "Extra autoconf tests"
+msgstr "Pruebas adicionales de autoconf"
+
+#: FMakeInstall.class:1352
+msgid "Extra dependencies"
+msgstr "Dependencias extra"
 
 #: Language.module:43
 msgid "Farsi (Iran)"
@@ -1046,7 +1066,7 @@ msgstr "Farsi (Irán)"
 msgid "Features"
 msgstr "Características"
 
-#: FMakeInstall.class:1018
+#: FMakeInstall.class:1193
 msgid "Fedora"
 msgstr "Fedora"
 
@@ -1054,15 +1074,15 @@ msgstr "Fedora"
 msgid "File"
 msgstr "Archivo"
 
-#: FMain.class:1581
+#: FMain.class:1588
 msgid "&File"
 msgstr "&Archivo"
 
-#: Project.module:1782
+#: Project.module:1812
 msgid "File already exists."
 msgstr "El archivo ya existe."
 
-#: Project.module:1295
+#: Project.module:1325
 msgid "File not found!"
 msgstr "Archivo no encontrado!"
 
@@ -1074,11 +1094,11 @@ msgstr "Rellenado"
 msgid "Filled with border"
 msgstr "Rellenado con borde"
 
-#: FFind.class:647 FOutput.class:507
+#: FFind.class:666 FOutput.class:507
 msgid "Find"
 msgstr "Encontrar"
 
-#: FEditor.class:2962 FTextEditor.class:816
+#: FEditor.class:2962 FTextEditor.class:911
 msgid "Find..."
 msgstr "Encontrar..."
 
@@ -1094,11 +1114,11 @@ msgstr "Encontrar definición"
 msgid "Find list"
 msgstr "Encontrar lista"
 
-#: FFind.class:654 FOutput.class:588
+#: FFind.class:673 FOutput.class:588
 msgid "Find next"
 msgstr "Encontrar siguiente"
 
-#: FEditor.class:2976 FTextEditor.class:830
+#: FEditor.class:2976 FTextEditor.class:925
 msgid "Find Next"
 msgstr "Encontrar siguiente"
 
@@ -1106,11 +1126,11 @@ msgstr "Encontrar siguiente"
 msgid "Find next untranslated string"
 msgstr "Encontrar la siguiente cadena sin traducir"
 
-#: FFind.class:662 FOutput.class:596
+#: FFind.class:681 FOutput.class:596
 msgid "Find previous"
 msgstr "Encontrar anterior"
 
-#: FEditor.class:2983 FTextEditor.class:837
+#: FEditor.class:2983 FTextEditor.class:932
 msgid "Find Previous"
 msgstr "Encontrar anterior"
 
@@ -1118,25 +1138,29 @@ msgstr "Encontrar anterior"
 msgid "Find previous untranslated string"
 msgstr "Encontrar la cadena sin traducción previa"
 
-#: FMain.class:1876
+#: FMain.class:1883
 msgid "&Find && replace"
 msgstr "&Encontrar && reemplazar"
 
-#: FMain.class:2282
+#: FMain.class:2296
 msgid "Find & replace"
 msgstr "Encontrar & reemplazar"
 
-#: FMain.class:1772
+#: FMain.class:1779
 msgid "Finis&h"
 msgstr "Termina&r"
 
-#: FMain.class:2351
+#: FMain.class:2365
 msgid "Finish current function"
 msgstr "Terminar la función actual"
 
 #: FPropertyProject.class:1654
 msgid "Finished and stable"
 msgstr "Terminado y estable"
+
+#: CComponent.class:70
+msgid "Firebird database driver"
+msgstr "Controlador de base de datos Firebird"
 
 #: FForm.class:3216
 msgid "&First"
@@ -1170,11 +1194,11 @@ msgstr "Caracteres no permitidos en el nombre del control."
 msgid "Foreground color..."
 msgstr "Color de fuente..."
 
-#: FCreateFile.class:583 FEditor.class:3061 FForm.class:3173 FInfo.class:90
+#: FInfo.class:90
 msgid "Form"
 msgstr "Formulario"
 
-#: FMain.class:1994
+#: FMain.class:2001
 msgid "&Form..."
 msgstr "&Formulario..."
 
@@ -1182,15 +1206,15 @@ msgstr "&Formulario..."
 msgid "Form controls are public"
 msgstr "Los controles de formulario son públicos"
 
-#: FInfo.class:68 Project.module:1064
+#: CModule.class:20 FInfo.class:68
 msgid "Forms"
 msgstr "Formularios"
 
-#: FMain.class:2343
+#: FMain.class:2357
 msgid "Forward"
 msgstr "Adelante"
 
-#: FMain.class:1765
+#: FMain.class:1772
 msgid "&Forward"
 msgstr "&Adelante"
 
@@ -1198,7 +1222,7 @@ msgstr "&Adelante"
 msgid "Free"
 msgstr "Libre"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:1117
 msgid "Freeware"
 msgstr "Freeware"
 
@@ -1238,7 +1262,7 @@ msgstr "Gambas Almost Means Basic!"
 msgid "Gambas applications"
 msgstr "Aplicaciones Gambas"
 
-#: FCreateFile.class:66
+#: FCreateFile.class:69
 msgid "Gambas classes"
 msgstr "Clases Gambas"
 
@@ -1246,7 +1270,7 @@ msgstr "Clases Gambas"
 msgid "Gambas form data"
 msgstr "Datos de formularios Gambas"
 
-#: FCreateFile.class:66
+#: CModule.class:20
 msgid "Gambas forms"
 msgstr "Formularios Gambas"
 
@@ -1254,7 +1278,7 @@ msgstr "Formularios Gambas"
 msgid "Gambas highlight theme files"
 msgstr "Archivos de temas de resaltado de Gambas"
 
-#: FCreateFile.class:66
+#: FCreateFile.class:69
 msgid "Gambas modules"
 msgstr "Módulos Gambas"
 
@@ -1266,7 +1290,11 @@ msgstr "Proyecto Gambas"
 msgid "Gambas project file path"
 msgstr "Ruta de archivo del proyecto Gambas"
 
-#: Project.module:132
+#: CModule.class:21
+msgid "Gambas web pages"
+msgstr "Páginas web de Gambas"
+
+#: Project.module:131
 msgid "Games"
 msgstr "Juegos"
 
@@ -1274,7 +1302,7 @@ msgstr "Juegos"
 msgid "General"
 msgstr "General"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:1117
 msgid "General Public Licence"
 msgstr "General Public Licence"
 
@@ -1290,11 +1318,11 @@ msgstr "Alemán (Alemania)"
 msgid "Get version from program"
 msgstr "Obtener versión desde un programa"
 
-#: FCreateFile.class:732
+#: FCreateFile.class:780
 msgid "GIF"
 msgstr "GIF"
 
-#: CComponent.class:90
+#: CComponent.class:96
 msgid "GNU command option parser"
 msgstr "GNU traductor de opciones de comando"
 
@@ -1310,7 +1338,7 @@ msgstr "Ir a"
 msgid "Go to line"
 msgstr "Ir a línea"
 
-#: FEditor.class:2827 FTextEditor.class:753
+#: FEditor.class:2827 FTextEditor.class:848
 msgid "Go to line..."
 msgstr "Ir a línea..."
 
@@ -1318,7 +1346,7 @@ msgstr "Ir a línea..."
 msgid "Graphical application"
 msgstr "Apliación gráfica"
 
-#: CComponent.class:114 FPropertyProject.class:2004
+#: CComponent.class:120 FPropertyProject.class:2004
 msgid "Graphical form management"
 msgstr "Gestión gráfica de formularios"
 
@@ -1330,7 +1358,7 @@ msgstr "Griego (Grecia)"
 msgid "Group"
 msgstr "Grupo"
 
-#: FMakeInstall.class:673
+#: FMakeInstall.class:710
 msgid "Groups"
 msgstr "Grupos"
 
@@ -1338,15 +1366,15 @@ msgstr "Grupos"
 msgid "GTK+ graphical application"
 msgstr "Aplicación gráfica GTK+"
 
-#: CComponent.class:79
+#: CComponent.class:85
 msgid "GTK+ SVG renderer"
 msgstr "Renderizador GTK+ SVG"
 
-#: CComponent.class:77
+#: CComponent.class:83
 msgid "GTK+ toolkit"
 msgstr "Kit de herramientas GTK+"
 
-#: CComponent.class:78
+#: CComponent.class:84
 msgid "GTK+ toolkit extension"
 msgstr "Extensión del kit de herramientas GTK+"
 
@@ -1370,19 +1398,19 @@ msgstr "Relleno con trama"
 msgid "Hebrew (Israel)"
 msgstr "Hebreo (Israel)"
 
-#: FCreateFile.class:705
+#: FCreateFile.class:753
 msgid "Height"
 msgstr "Altura"
 
-#: FMain.class:1935
+#: FMain.class:1942
 msgid "&Help browser"
 msgstr "&Visor de ayuda"
 
-#: FMain.class:1859
+#: FMain.class:1866
 msgid "Hide menubar"
 msgstr "Ocultar la barra de menú"
 
-#: FFormStack.class:286 FMain.class:2450
+#: FFormStack.class:286 FMain.class:2464
 msgid "Hierarchy"
 msgstr "Jerarquía"
 
@@ -1406,15 +1434,15 @@ msgstr "Horizontal"
 msgid "Horizontal flip"
 msgstr "Reflejo horizontal"
 
-#: FEditor.class:3004 FTextEditor.class:858
+#: FEditor.class:3004 FTextEditor.class:953
 msgid "Horizontal split"
 msgstr "División horizontal"
 
-#: FCreateFile.class:640 FInfo.class:99
+#: FCreateFile.class:688 FInfo.class:99
 msgid "HTML file"
 msgstr "Archivo HTML"
 
-#: FCreateFile.class:66
+#: FCreateFile.class:78
 msgid "HTML files"
 msgstr "Archivos HTML"
 
@@ -1442,19 +1470,19 @@ msgstr "Identificación"
 msgid "If the form and controls dimensions must follow the size of the default font."
 msgstr "Si las dimensiones del formulario y los controles deben seguir el tamaño de la fuente por defecto."
 
-#: FConflict.class:403 FCreateFile.class:602
+#: FConflict.class:403 FCreateFile.class:650
 msgid "Image"
 msgstr "Imagen"
 
-#: FMain.class:2006
+#: FMain.class:2020
 msgid "&Image..."
 msgstr "&Imagen..."
 
-#: CComponent.class:82 FPropertyProject.class:2065
+#: CComponent.class:88 FPropertyProject.class:2065
 msgid "Image loading and saving"
 msgstr "Cargado y guardado de imágenes"
 
-#: CComponent.class:81
+#: CComponent.class:87
 msgid "Image management"
 msgstr "Manejo de imágenes"
 
@@ -1486,11 +1514,15 @@ msgstr "Importar un archivo de traducción"
 msgid "Import theme"
 msgstr "Importar tema"
 
+#: FMakeInstall.class:828
+msgid "Incorrect characters"
+msgstr "Caracteres incorrectos"
+
 #: FProperty.class:414
 msgid "Incorrect property value."
 msgstr "Valor incorrecto de la propiedad."
 
-#: FTextEditor.class:953
+#: FTextEditor.class:1048
 msgid "Indent"
 msgstr "Indentar"
 
@@ -1506,19 +1538,19 @@ msgstr "Indonesio (Indonesia)"
 msgid "Information"
 msgstr "Información"
 
-#: CComponent.class:83
+#: CComponent.class:89
 msgid "Information about components"
 msgstr "Información sobre componentes"
 
-#: Project.module:1416
+#: Project.module:1446
 msgid "in form definition"
 msgstr "en la definición del formulario"
 
-#: Package.module:630
+#: Package.module:669
 msgid "Initializing ~/RPM directory."
 msgstr "Inicializando directorio ~/RPM."
 
-#: FMakeInstall.class:369
+#: FMakeInstall.class:402
 msgid "Initial release"
 msgstr "Lanzamiento inicial"
 
@@ -1526,11 +1558,11 @@ msgstr "Lanzamiento inicial"
 msgid "&Insert"
 msgstr "&Insertar"
 
-#: FMakeInstall.class:858
+#: FMakeInstall.class:1033
 msgid "Insert release number in package version"
 msgstr "Insertar número de lanzamiento en la versión del paquete"
 
-#: FMain.class:1694
+#: FMain.class:1701
 msgid "&Installation package..."
 msgstr "&Paquete de instalación..."
 
@@ -1566,11 +1598,11 @@ msgstr "Cursiva"
 msgid "Japanese (Japan)"
 msgstr "Japonés (Japón)"
 
-#: CComponent.class:99
+#: CComponent.class:105
 msgid "KDE integration and scripting"
 msgstr "Scripting e integración con KDE"
 
-#: CComponent.class:100
+#: CComponent.class:106
 msgid "KDE web browser"
 msgstr "Navegador KDE"
 
@@ -1614,11 +1646,11 @@ msgstr "&Último"
 msgid "Last modified"
 msgstr "Última modificación"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:1117
 msgid "Lesser General Public Licence"
 msgstr "Lesser General Public Licence"
 
-#: FMakeInstall.class:935
+#: FMakeInstall.class:1110
 msgid "Licence"
 msgstr "Licencia"
 
@@ -1626,7 +1658,7 @@ msgstr "Licencia"
 msgid "Line"
 msgstr "Línea"
 
-#: Project.module:3493
+#: Project.module:3537
 msgid "Linking a directory is forbidden."
 msgstr "Enlazar un directorio no está permitido."
 
@@ -1634,11 +1666,11 @@ msgstr "Enlazar un directorio no está permitido."
 msgid "Link to"
 msgstr "Vincular a"
 
-#: Project.module:1170
+#: Project.module:1200
 msgid "Loading &1..."
 msgstr "Cargando &1..."
 
-#: CComponent.class:418
+#: CComponent.class:424
 msgid "Loading information on component &1..."
 msgstr "Cargando información en componente &1..."
 
@@ -1658,11 +1690,11 @@ msgstr "Bloquear propiedad"
 msgid "Macedonian (Republic of Macedonia)"
 msgstr "Macedonio (Republica de Macedonia)"
 
-#: FMakeInstall.class:866
+#: FMakeInstall.class:1041
 msgid "Maintainer information"
 msgstr "Información del mantenedor"
 
-#: FMain.class:1676
+#: FMain.class:1683
 msgid "Make"
 msgstr "Crear"
 
@@ -1670,23 +1702,23 @@ msgstr "Crear"
 msgid "Make a gift!"
 msgstr "¡Realice un donativo!"
 
-#: FMain.class:2220 FMakeExecutable.class:81
+#: FMain.class:2234 FMakeExecutable.class:81
 msgid "Make executable"
 msgstr "Crear Ejecutable"
 
-#: FMain.class:2229 FMakeInstall.class:817
+#: FMain.class:2243 FMakeInstall.class:992
 msgid "Make installation package"
 msgstr "Crear paquete de instalación"
 
-#: FMain.class:2212
+#: FMain.class:2226
 msgid "Make source archive"
 msgstr "Crear archivo fuente"
 
-#: Package.module:345
+#: Package.module:381
 msgid "Making build directory."
 msgstr "Creando el directorio de construcción."
 
-#: Project.module:2004
+#: Project.module:2028
 msgid "Making executable..."
 msgstr "Creando ejecutable..."
 
@@ -1694,13 +1726,17 @@ msgstr "Creando ejecutable..."
 msgid "Malayalam (India)"
 msgstr "Malabar (India)"
 
-#: FMakeInstall.class:1038
+#: FMakeInstall.class:1213
 msgid "Mandriva Linux"
 msgstr "Mandriva Linux"
 
 #: FOption.class:829
 msgid "Max."
 msgstr "Máximo."
+
+#: FMakeInstall.class:90
+msgid "Max. version"
+msgstr "Versión Máx."
 
 #: CComponent.class:68
 msgid "MD5/DES crypting"
@@ -1714,11 +1750,11 @@ msgstr "Editor de menú"
 msgid "Menu editor..."
 msgstr "Editor de menú..."
 
-#: FMakeInstall.class:1144
+#: FMakeInstall.class:1319
 msgid "Menu entry"
 msgstr "Entrada al menú"
 
-#: FMakeInstall.class:605
+#: FMakeInstall.class:642
 msgid "Menus"
 msgstr "Menús"
 
@@ -1726,23 +1762,27 @@ msgstr "Menús"
 msgid "Minimize at runtime"
 msgstr "Minimizar en tiempo de ejecución"
 
-#: Project.module:133
+#: FMakeInstall.class:89
+msgid "Min. version"
+msgstr "Versión Mín."
+
+#: Project.module:132
 msgid "Miscellaneous"
 msgstr "Varios"
 
-#: Project.module:4116
+#: Project.module:4158
 msgid "modified"
 msgstr "modificado"
 
-#: FCreateFile.class:545 FInfo.class:82
+#: FCreateFile.class:574 FInfo.class:82
 msgid "Module"
 msgstr "Módulo"
 
-#: FMain.class:1978
+#: FMain.class:1985
 msgid "&Module..."
 msgstr "&Módulo..."
 
-#: FInfo.class:66 Project.module:1061
+#: FInfo.class:66 Project.module:1086
 msgid "Modules"
 msgstr "Módulos"
 
@@ -1750,7 +1790,7 @@ msgstr "Módulos"
 msgid "Module symbols are public by default"
 msgstr "Símbolos en módulos son públicos por defecto"
 
-#: CComponent.class:74
+#: CComponent.class:80
 msgid "More controls for graphical components"
 msgstr "Más controles para componentes gráficos"
 
@@ -1790,11 +1830,15 @@ msgstr "Mover a la parte superior"
 msgid "Move up"
 msgstr "Mover arriba"
 
-#: CComponent.class:76
+#: CComponent.class:82
 msgid "Multi Document Interface"
 msgstr "Interfaz multidocumento"
 
-#: CComponent.class:85
+#: CComponent.class:72
+msgid "MySQL database driver"
+msgstr "Controlador de base de datos MySQL"
+
+#: CComponent.class:91
 msgid "MySQL specific routines"
 msgstr "Rutinas específicas de MySQL"
 
@@ -1806,11 +1850,11 @@ msgstr "Nombre"
 msgid "native code"
 msgstr "código nativo"
 
-#: CComponent.class:87
+#: CComponent.class:93
 msgid "Network high-level protocols management"
 msgstr "Gestión de protocolos de red de alto nivel"
 
-#: CComponent.class:86 Project.module:134
+#: CComponent.class:92 Project.module:133
 msgid "Networking"
 msgstr "Redes"
 
@@ -1818,7 +1862,7 @@ msgstr "Redes"
 msgid "Network programming"
 msgstr "Programación de red"
 
-#: FCreateFile.class:520 FMain.class:1963
+#: FCreateFile.class:549 FMain.class:1970
 msgid "New"
 msgstr "Nuevo"
 
@@ -1826,19 +1870,19 @@ msgstr "Nuevo"
 msgid "&New..."
 msgstr "&Nuevo..."
 
-#: FCreateFile.class:505
+#: FCreateFile.class:534
 msgid "New file"
 msgstr "Nuevo archivo"
 
-#: FMain.class:553
+#: FMain.class:559
 msgid "New folder"
 msgstr "Nueva carpeta"
 
-#: FMain.class:1585
+#: FMain.class:1592
 msgid "&New project..."
 msgstr "&Nuevo proyecto..."
 
-#: FCreateProject.class:324 FMain.class:2132
+#: FCreateProject.class:324 FMain.class:2146
 msgid "New project"
 msgstr "Nuevo proyecto"
 
@@ -1862,7 +1906,7 @@ msgstr "No"
 msgid "No help found."
 msgstr "No se encontró ayuda."
 
-#: Project.module:3172
+#: Project.module:3223
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Caracteres no ASCII no están permitidos en el nombre del proyecto."
 
@@ -1874,11 +1918,11 @@ msgstr "Ninguno"
 msgid "&None"
 msgstr "&Ninguno"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:1117
 msgid "Non-free Licence"
 msgstr "Licencia no gratuita"
 
-#: FCreateFile.class:79
+#: FCreateFile.class:97
 msgid "(No parent)"
 msgstr "(Sin padre)"
 
@@ -1894,7 +1938,7 @@ msgstr "Texto normal"
 msgid "Norwegian (Norway)"
 msgstr "Noruego (noruega)"
 
-#: FEditor.class:2997 FTextEditor.class:851
+#: FEditor.class:2997 FTextEditor.class:946
 msgid "No split"
 msgstr "No dividir"
 
@@ -1906,7 +1950,7 @@ msgstr "no disponible"
 msgid "Not finished but stable"
 msgstr "No terminado pero estable"
 
-#: Project.module:1588
+#: Project.module:1618
 msgid "Nothing to do."
 msgstr "Nada para hacer."
 
@@ -1926,7 +1970,11 @@ msgstr "Números"
 msgid "Obsidian"
 msgstr "Obsidiana"
 
-#: FSelectIcon.class:266 FText.class:101 Project.module:2696
+#: CComponent.class:73
+msgid "ODBC database driver"
+msgstr "Controlador de base de datos ODBC"
+
+#: FSelectIcon.class:266 FText.class:101 Project.module:2747
 msgid "OK"
 msgstr "OK"
 
@@ -1942,15 +1990,15 @@ msgstr "Una traducción fue seleccionada."
 msgid "Opaque"
 msgstr "Opaco"
 
-#: FConflict.class:254 FOpenProject.class:322 Project.module:292
+#: FConflict.class:254 FOpenProject.class:322 Project.module:290
 msgid "Open"
 msgstr "Abrir"
 
-#: Project.module:301
+#: Project.module:299
 msgid "Open after all"
 msgstr "Abrir de todos modos"
 
-#: FMain.class:1894
+#: FMain.class:1901
 msgid "&Open a terminal..."
 msgstr "&Abrir terminal..."
 
@@ -1958,7 +2006,7 @@ msgstr "&Abrir terminal..."
 msgid "Open code"
 msgstr "Abrir código"
 
-#: FMain.class:1606
+#: FMain.class:1613
 msgid "Open &example"
 msgstr "Abrir &ejemplo"
 
@@ -1966,11 +2014,11 @@ msgstr "Abrir &ejemplo"
 msgid "Open form"
 msgstr "Abrir formulario"
 
-#: Project.module:135
+#: Project.module:134
 msgid "OpenGL"
 msgstr "OpenGL"
 
-#: CComponent.class:117 FPropertyProject.class:2022
+#: CComponent.class:123 FPropertyProject.class:2022
 msgid "OpenGL display"
 msgstr "Display OpenGL"
 
@@ -1978,11 +2026,11 @@ msgstr "Display OpenGL"
 msgid "OpenGL programming"
 msgstr "Programación OpenGL"
 
-#: CComponent.class:102
+#: CComponent.class:108
 msgid "OpenGL with QT4 toolkit"
 msgstr "OpenGL con el kit de herramientas QT4"
 
-#: CComponent.class:101
+#: CComponent.class:107
 msgid "OpenGL with QT toolkit"
 msgstr "OpenGL con el kit de herramientas QT"
 
@@ -1990,15 +2038,15 @@ msgstr "OpenGL con el kit de herramientas QT"
 msgid "Open in another window"
 msgstr "Abrir en otra ventana"
 
-#: CComponent.class:84
+#: CComponent.class:90
 msgid "OpenLDAP client"
 msgstr "Cliente OpenLDAP"
 
-#: FMain.class:1592
+#: FMain.class:1599
 msgid "&Open project..."
 msgstr "&Abrir proyecto..."
 
-#: FMain.class:2140
+#: FMain.class:2154
 msgid "Open project"
 msgstr "Abrir proyecto"
 
@@ -2006,11 +2054,11 @@ msgstr "Abrir proyecto"
 msgid "Open project..."
 msgstr "Abrir proyecto..."
 
-#: FMain.class:1598
+#: FMain.class:1605
 msgid "Open &recent"
 msgstr "Abrir &reciente"
 
-#: FMakeInstall.class:1058
+#: FMakeInstall.class:1233
 msgid "OpenSUSE"
 msgstr "OpenSUSE"
 
@@ -2022,27 +2070,31 @@ msgstr "Operadores"
 msgid "Options"
 msgstr "Opciones"
 
-#: FMain.class:2014
+#: FMain.class:2028
 msgid "&Other..."
 msgstr "&Otros..."
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:1117
 msgid "Other Licence(s)"
 msgstr "Otra(s) Licencia(s)"
 
-#: FMakeInstall.class:1123
+#: FMakeInstall.class:88
+msgid "Package"
+msgstr "Paquete"
+
+#: FMakeInstall.class:1298
 msgid "Package group"
 msgstr "Grupo de paquetes"
 
-#: FMakeInstall.class:830
+#: FMakeInstall.class:1005
 msgid "Package information"
 msgstr "Información del paquete"
 
-#: FMakeInstall.class:836
+#: FMakeInstall.class:1011
 msgid "Package name"
 msgstr "Nombre del paquete"
 
-#: FCreateFile.class:762
+#: FCreateFile.class:810
 msgid "Parent class"
 msgstr "Clase padre"
 
@@ -2050,11 +2102,11 @@ msgstr "Clase padre"
 msgid "Password"
 msgstr "Contraseña"
 
-#: FIconEditor.class:2186 FOutput.class:490 FTextEditor.class:795
+#: FIconEditor.class:2186 FOutput.class:490 FTextEditor.class:890
 msgid "Paste"
 msgstr "Pegar"
 
-#: FMain.class:2068
+#: FMain.class:2082
 msgid "&Paste"
 msgstr "&Pegar"
 
@@ -2086,19 +2138,19 @@ msgstr "Pegado especial..."
 msgid "Paste with PRINT"
 msgstr "Pegar con PRINT"
 
-#: FMain.class:2319
+#: FMain.class:2333
 msgid "Pause"
 msgstr "Pausa"
 
-#: FMain.class:1744
+#: FMain.class:1751
 msgid "&Pause"
 msgstr "&Pausa"
 
-#: CComponent.class:92
+#: CComponent.class:98
 msgid "PDF renderer based on Poppler library"
 msgstr "Renderizador PDF basado en la librería Poppler"
 
-#: CComponent.class:91
+#: CComponent.class:97
 msgid "Perl-compatible Regular Expression Matching"
 msgstr "Gestor de expresiones regulares compatible con Perl"
 
@@ -2110,7 +2162,7 @@ msgstr "Seleccione un color"
 msgid "Picture"
 msgstr "Imagen"
 
-#: FCreateFile.class:66 FSelectIcon.class:27
+#: FCreateFile.class:78 FSelectIcon.class:27
 msgid "Picture files"
 msgstr "Archivos de imagen"
 
@@ -2118,23 +2170,23 @@ msgstr "Archivos de imagen"
 msgid "Plain text"
 msgstr "Texto plano"
 
-#: FMakeInstall.class:331
+#: FMakeInstall.class:351
 msgid "Please choose a menu location."
 msgstr "Por favor escoja una ubicación para el menú."
 
-#: FMakeInstall.class:320
+#: FMakeInstall.class:340
 msgid "Please choose a package group."
 msgstr "Por favor escoja un grupo de paquetes."
 
-#: FMakeInstall.class:297
+#: FMakeInstall.class:316
 msgid "Please choose at least one target distribution."
 msgstr "Por favor escoja al menos una distribución de destino."
 
-#: FMakeInstall.class:329
+#: FMakeInstall.class:349
 msgid "Please choose the menu location for each target distribution."
 msgstr "Por favor escoja la ubicación del menú para cada distribución de destino."
 
-#: FMakeInstall.class:318
+#: FMakeInstall.class:338
 msgid "Please choose the package group for each target distribution."
 msgstr "Por favor escoja la ubicación del paquete para cada distribución de destino."
 
@@ -2142,11 +2194,11 @@ msgstr "Por favor escoja la ubicación del paquete para cada distribución de de
 msgid "Please enter a menu name."
 msgstr "Por favor introduzca un nombre de menú."
 
-#: FMakeInstall.class:951
+#: FMakeInstall.class:1126
 msgid "Please enter the changes of your project."
 msgstr "Por favor introduzca los cambios de su proyecto."
 
-#: FMakeInstall.class:287
+#: FMakeInstall.class:306
 msgid "Please enter the first CHANGELOG entry."
 msgstr "Por favor introduzca la primera entrada del archivo CHANGELOG."
 
@@ -2158,23 +2210,23 @@ msgstr "Por favor introduzca la localización del repositorio."
 msgid "Please enter the versioning user name"
 msgstr "Por favor introduzca el nombre de usuario de la versión"
 
-#: FMakeInstall.class:269
+#: FMakeInstall.class:288
 msgid "Please enter your e-mail address."
 msgstr "Por favor introduzca su dirección de correo electrónico."
 
-#: FMakeInstall.class:264
+#: FMakeInstall.class:283
 msgid "Please enter your name."
 msgstr "Por favor introduzca su nombre."
 
-#: Project.module:2825
+#: Project.module:2876
 msgid "Please type a name."
 msgstr "Por favor escriba un nombre."
 
-#: Project.module:3161
+#: Project.module:3212
 msgid "Please type a project name."
 msgstr "Por favor escriba un nombre para el proyecto."
 
-#: FCreateFile.class:732
+#: FCreateFile.class:780
 msgid "PNG"
 msgstr "PNG"
 
@@ -2182,7 +2234,7 @@ msgstr "PNG"
 msgid "Polish (Poland)"
 msgstr "Polaco (Polonia)"
 
-#: FMain.class:1958
+#: FMain.class:1965
 msgid "Popup"
 msgstr "Emergente"
 
@@ -2194,15 +2246,19 @@ msgstr "Portugués (Brasil)"
 msgid "Portuguese (Portugal)"
 msgstr "Portugués (Portugal)"
 
-#: FMain.class:2181 FOption.class:632
+#: CComponent.class:74
+msgid "PostgreSQL database driver"
+msgstr "Controlador de base de datos PostgreSQL"
+
+#: FMain.class:2195 FOption.class:632
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: FMain.class:1923
+#: FMain.class:1930
 msgid "&Preferences..."
 msgstr "&Preferencias..."
 
-#: FMakeInstall.class:853
+#: FMakeInstall.class:1028
 msgid "Prefix package name with the vendor name"
 msgstr "Prefijo del nombre del paquete con el nombre del fabricante"
 
@@ -2210,7 +2266,7 @@ msgstr "Prefijo del nombre del paquete con el nombre del fabricante"
 msgid "&Previous"
 msgstr "&Previo"
 
-#: Project.module:136
+#: Project.module:135
 msgid "Printing"
 msgstr "Impresión"
 
@@ -2218,15 +2274,15 @@ msgstr "Impresión"
 msgid "Procedure separation"
 msgstr "Separación de procedimientos"
 
-#: FMain.class:2242 FSelectIcon.class:214 Project.module:1060
+#: FMain.class:2256 FSelectIcon.class:214 Project.module:1085
 msgid "Project"
 msgstr "Proyecto"
 
-#: FMain.class:1644
+#: FMain.class:1651
 msgid "&Project"
 msgstr "&Proyecto"
 
-#: FMain.class:1822
+#: FMain.class:1829
 msgid "Pro&ject"
 msgstr "Pro&yecto"
 
@@ -2250,7 +2306,7 @@ msgstr "Información del proyecto"
 msgid "Project is translatable"
 msgstr "El proyecto es traducible"
 
-#: FMain.class:2164 FPropertyProject.class:50
+#: FMain.class:2178 FPropertyProject.class:50
 msgid "Project properties"
 msgstr "Propiedades del proyecto"
 
@@ -2262,19 +2318,19 @@ msgstr "Traducción del proyecto"
 msgid "Project type"
 msgstr "Tipo de proyecto"
 
-#: FMain.class:2437 FProperty.class:1051
+#: FMain.class:2451 FProperty.class:1051
 msgid "Properties"
 msgstr "Propiedades"
 
-#: FMain.class:1831
+#: FMain.class:1838
 msgid "&Properties"
 msgstr "&Propiedades"
 
-#: FMain.class:1722
+#: FMain.class:1729
 msgid "&Properties..."
 msgstr "&Propiedades..."
 
-#: FMain.class:2253
+#: FMain.class:2267
 msgid "Properties sheet"
 msgstr "Hoja de propiedades"
 
@@ -2282,7 +2338,7 @@ msgstr "Hoja de propiedades"
 msgid "Provides"
 msgstr "Provee"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:1117
 msgid "Public Domain"
 msgstr "Dominio público"
 
@@ -2290,23 +2346,23 @@ msgstr "Dominio público"
 msgid "Punjabi (India)"
 msgstr "Punjabi (India)"
 
-#: FCreateFile.class:737
+#: FCreateFile.class:785
 msgid "px"
 msgstr "px"
 
-#: CComponent.class:95
+#: CComponent.class:101
 msgid "QT4 toolkit"
 msgstr "Kit de herramientas QT4"
 
-#: CComponent.class:96
+#: CComponent.class:102
 msgid "QT4 toolkit extension"
 msgstr "Kit de herramientas extendido QT4"
 
-#: CComponent.class:97
+#: CComponent.class:103
 msgid "QT/Embedded toolkit"
 msgstr "Kit de herramientas QT/Integrado"
 
-#: CComponent.class:98
+#: CComponent.class:104
 msgid "QT/Embedded toolkit extension"
 msgstr "Extensión del kit de herramientas QT/Integrado"
 
@@ -2314,15 +2370,15 @@ msgstr "Extensión del kit de herramientas QT/Integrado"
 msgid "QT graphical application"
 msgstr "Aplicación gráfica QT"
 
-#: CComponent.class:80
+#: CComponent.class:86
 msgid "QT/GTK+ switcher component"
 msgstr "QT/GTK+ intercambio de componente"
 
-#: CComponent.class:93
+#: CComponent.class:99
 msgid "QT toolkit"
 msgstr "Kit de herramientas QT"
 
-#: CComponent.class:94
+#: CComponent.class:100
 msgid "QT toolkit extension"
 msgstr "Extensión del Kit de herramientas QT"
 
@@ -2342,11 +2398,11 @@ msgstr "Comandos externos ocultos"
 msgid "Quit"
 msgstr "Salir"
 
-#: FMain.class:1637
+#: FMain.class:1644
 msgid "&Quit"
 msgstr "&Salir"
 
-#: Project.module:1101
+#: Project.module:1131
 msgid "read-only"
 msgstr "Sólo lectura"
 
@@ -2362,15 +2418,15 @@ msgstr "Proyectos recientes"
 msgid "Rectangle"
 msgstr "Rectángulo"
 
-#: FOutput.class:465 FTextEditor.class:770
+#: FOutput.class:465 FTextEditor.class:865
 msgid "Redo"
 msgstr "Rehacer"
 
-#: FMain.class:1712
+#: FMain.class:1719
 msgid "&Refresh"
 msgstr "&Refrescar"
 
-#: FMain.class:2173
+#: FMain.class:2187
 msgid "Refresh project"
 msgstr "Refrescar proyecto"
 
@@ -2378,7 +2434,7 @@ msgstr "Refrescar proyecto"
 msgid "Regular expressions"
 msgstr "Expresiones regulares"
 
-#: FTextEditor.class:590 FTranslate.class:664
+#: FTextEditor.class:684 FTranslate.class:664
 msgid "Reload"
 msgstr "Recargar"
 
@@ -2390,7 +2446,11 @@ msgstr "&Recargar"
 msgid "Reload translation"
 msgstr "Recargar traducción"
 
-#: FPropertyProject.class:1879
+#: FMakeInstall.class:900
+msgid "Remove"
+msgstr "Remover"
+
+#: FMakeInstall.class:1388 FPropertyProject.class:1879
 msgid "&Remove"
 msgstr "&Eliminar"
 
@@ -2414,7 +2474,7 @@ msgstr "Eliminar el punto de interrupción actual"
 msgid "Remove current expression"
 msgstr "Eliminar la expresión actual"
 
-#: FMain.class:2075
+#: FMain.class:2089
 msgid "&Rename..."
 msgstr "&Renombrar..."
 
@@ -2422,11 +2482,11 @@ msgstr "&Renombrar..."
 msgid "Replace"
 msgstr "Reemplazar"
 
-#: FEditor.class:2969 FTextEditor.class:823
+#: FEditor.class:2969 FTextEditor.class:918
 msgid "Replace..."
 msgstr "Reemplazar..."
 
-#: FFind.class:693
+#: FFind.class:712
 msgid "Replace all"
 msgstr "Reemplazar todo"
 
@@ -2434,7 +2494,7 @@ msgstr "Reemplazar todo"
 msgid "Replace color"
 msgstr "Reemplazar color"
 
-#: CComponent.class:103
+#: CComponent.class:109
 msgid "Report designer"
 msgstr "Diseñador de reportes"
 
@@ -2454,7 +2514,7 @@ msgstr "&Reiniciar"
 msgid "Resolve conflict with"
 msgstr "Resolver conflicto con"
 
-#: FMakeInstall.class:231
+#: FMakeInstall.class:250
 msgid "Retry"
 msgstr "Reintentar"
 
@@ -2474,7 +2534,7 @@ msgstr "Rotar en sentido antihorario"
 msgid "Rows"
 msgstr "Filas"
 
-#: Package.module:948
+#: Package.module:989
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' ha devuelto el siguiente código de error:"
 
@@ -2482,11 +2542,11 @@ msgstr "'rpmbuild' ha devuelto el siguiente código de error:"
 msgid "Ruby"
 msgstr "Ruby"
 
-#: FMain.class:2311
+#: FMain.class:2325
 msgid "Run"
 msgstr "Ejecutar"
 
-#: FMain.class:1733
+#: FMain.class:1740
 msgid "&Run"
 msgstr "&Ejecutar"
 
@@ -2494,7 +2554,7 @@ msgstr "&Ejecutar"
 msgid "Run this command after"
 msgstr "Correr este comando después"
 
-#: FMain.class:1779
+#: FMain.class:1786
 msgid "Run &until"
 msgstr "Ejecutar &hasta"
 
@@ -2502,13 +2562,17 @@ msgstr "Ejecutar &hasta"
 msgid "Run &until current line"
 msgstr "Ejecutar &hasta la línea actual"
 
-#: FMain.class:2360
+#: FMain.class:2374
 msgid "Run until current line"
 msgstr "Ejecutar hasta la línea actual"
 
 #: Language.module:88
 msgid "Russian (Russia)"
 msgstr "Ruso (Rusia)"
+
+#: FMakeInstall.class:1356
+msgid "Same dependencies for all targets"
+msgstr "Mismas dependencias para todos los paquetes"
 
 #: FForm.class:3606
 msgid "Same height"
@@ -2530,7 +2594,7 @@ msgstr "El mismo a&ncho"
 msgid "Sapphire"
 msgstr "Zafiro"
 
-#: FTextEditor.class:877
+#: FTextEditor.class:972
 msgid "Save"
 msgstr "Guardar"
 
@@ -2542,19 +2606,19 @@ msgstr "&Guardar"
 msgid "Save modified files"
 msgstr "Guardar archivos modificados"
 
-#: FMain.class:1619
+#: FMain.class:1626
 msgid "&Save project"
 msgstr "&Guardar proyecto"
 
-#: FMain.class:2148
+#: FMain.class:2162
 msgid "Save project"
 msgstr "Guardar proyecto"
 
-#: FMain.class:2156 Project.module:1721
+#: FMain.class:2170 Project.module:1751
 msgid "Save project as"
 msgstr "Guardar proyecto como"
 
-#: FMain.class:1626
+#: FMain.class:1633
 msgid "Save project &as..."
 msgstr "Guardar proyecto &como..."
 
@@ -2562,13 +2626,9 @@ msgstr "Guardar proyecto &como..."
 msgid "Save translation"
 msgstr "Guardar traducción"
 
-#: Package.module:157
+#: Package.module:156
 msgid "Saving CHANGELOG file."
 msgstr "Guardando archivo CHANGELOG."
-
-#: Package.module:167
-msgid "Saving extra tests settings."
-msgstr "Guardando configuración de pruebas extra."
 
 #: FIconEditor.class:2243
 msgid "Scroll"
@@ -2578,47 +2638,47 @@ msgstr "Scroll"
 msgid "SDL application"
 msgstr "Aplicación SDL"
 
-#: CComponent.class:104
+#: CComponent.class:110
 msgid "SDL library"
 msgstr "Librería SDL"
 
-#: CComponent.class:105
+#: CComponent.class:111
 msgid "SDL sound & CD-ROM management"
 msgstr "Sonido SDL & gestión de CD-ROM"
 
-#: FFind.class:766
+#: FFind.class:779
 msgid "Search in comments"
 msgstr "Buscar en los comentarios"
 
-#: FFind.class:717
+#: FFind.class:734
 msgid "Search in file"
 msgstr "Buscar en el archivo"
 
-#: FFind.class:707
+#: FFind.class:724
 msgid "Search in procedure"
 msgstr "Buscar en el procedimiento"
 
-#: FFind.class:728
+#: FFind.class:745
 msgid "Search in project"
 msgstr "Buscar en el proyecto"
 
-#: FFind.class:775
+#: FFind.class:788
 msgid "Search in strings"
 msgstr "Buscar en cadenas"
 
-#: FFind.class:670
+#: FFind.class:689
 msgid "Search list"
 msgstr "Buscar lista"
 
-#: FFind.class:389 FOutput.class:308 FTranslate.class:539
+#: FFind.class:390 FOutput.class:308 FTranslate.class:539
 msgid "Search string cannot be found."
 msgstr "La cadena buscada no se encontró."
 
-#: FFind.class:393
+#: FFind.class:394
 msgid "Search string replaced &1 times."
 msgstr "La cadena buscada se reemplazó &1 veces."
 
-#: FFind.class:391
+#: FFind.class:392
 msgid "Search string replaced once."
 msgstr "La cadena se reemplazó una vez."
 
@@ -2638,7 +2698,7 @@ msgstr "Seleccione una fuente"
 msgid "Select all"
 msgstr "Seleccionar todo"
 
-#: FEditor.class:2934 FTextEditor.class:806
+#: FEditor.class:2934 FTextEditor.class:901
 msgid "Select &All"
 msgstr "Seleccionar &Todo"
 
@@ -2682,11 +2742,11 @@ msgstr "SHIFT"
 msgid "Shortcut"
 msgstr "Atajo"
 
-#: FMain.class:2191
+#: FMain.class:2205
 msgid "Shortcuts"
 msgstr "Atajos"
 
-#: FMain.class:1917
+#: FMain.class:1924
 msgid "&Shortcuts..."
 msgstr "&Atajos..."
 
@@ -2702,7 +2762,7 @@ msgstr "Mostrar símboloes ocultos"
 msgid "Show line numbers"
 msgstr "Mostrar números de línea"
 
-#: FMain.class:2386
+#: FMain.class:2400
 msgid "Show menu bar"
 msgstr "Mostrar la barra de menú"
 
@@ -2734,7 +2794,7 @@ msgstr "Chino simplificado (China)"
 msgid "Size"
 msgstr "Tamaño"
 
-#: FMakeInstall.class:1078
+#: FMakeInstall.class:1253
 msgid "Slackware"
 msgstr "Slackware"
 
@@ -2754,7 +2814,7 @@ msgstr "Snapping value is incorrect."
 msgid "Sol&ve"
 msgstr "Resol&ver"
 
-#: Project.module:2309
+#: Project.module:2350
 msgid "Some components are missing: &1"
 msgstr "Faltan algunos componentes: &1"
 
@@ -2762,11 +2822,11 @@ msgstr "Faltan algunos componentes: &1"
 msgid "Some conflicts are not yet resolved."
 msgstr "Algunos conflictos aún no están resueltos."
 
-#: Project.module:1572
+#: Project.module:1602
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "Algunos archivos fuente del proyecto están en conflicto.\nPor favor resuélvalos si quiere compilar el proyecto."
 
-#: FMain.class:360
+#: FMain.class:366
 msgid "&Sort by path"
 msgstr "&Ordenar por ruta"
 
@@ -2786,19 +2846,19 @@ msgstr "Ordenar variables objeto"
 msgid "Sort properties"
 msgstr "Ordenar propiedades"
 
-#: Project.module:137
+#: Project.module:136
 msgid "Sound"
 msgstr "Sonido"
 
-#: FMain.class:1687
+#: FMain.class:1694
 msgid "&Source archive..."
 msgstr "&Archivo fuente..."
 
-#: Project.module:3232
+#: Project.module:3283
 msgid "Source packages"
 msgstr "Paquetes fuente"
 
-#: Package.module:396
+#: Package.module:432
 msgid "Sources are being debianizated."
 msgstr "Se están debianizando los fuentes."
 
@@ -2818,6 +2878,14 @@ msgstr "Español (Argentina)"
 msgid "Spanish (Spain)"
 msgstr "Español (España)"
 
+#: CComponent.class:75
+msgid "SQLite 2 database driver"
+msgstr "Controlador de base de datos SQLite 2"
+
+#: CComponent.class:76
+msgid "SQLite 3 database driver"
+msgstr "Controlador de base de datos SQLite 3"
+
 #: FDebugInfo.class:818
 msgid "Stack backtrace"
 msgstr "Trazado de la pila"
@@ -2830,7 +2898,7 @@ msgstr "Tamaño de la pila"
 msgid "Standard components"
 msgstr "Componentes estándar"
 
-#: FEditor.class:2854 FForm.class:3201 FMain.class:2103
+#: FEditor.class:2854 FForm.class:3201 FMain.class:2117
 msgid "&Startup class"
 msgstr "Clase de &inicio"
 
@@ -2838,15 +2906,15 @@ msgstr "Clase de &inicio"
 msgid "Static variables"
 msgstr "Variables estáticas"
 
-#: FMain.class:2335
+#: FMain.class:2349
 msgid "Step"
 msgstr "Paso"
 
-#: FMain.class:1758
+#: FMain.class:1765
 msgid "St&ep"
 msgstr "Pa&so"
 
-#: CComponent.class:88
+#: CComponent.class:94
 msgid "STMP client"
 msgstr "Cliente SMTP"
 
@@ -2854,11 +2922,11 @@ msgstr "Cliente SMTP"
 msgid "Stock"
 msgstr "Stock"
 
-#: FMain.class:2327
+#: FMain.class:2341
 msgid "Stop"
 msgstr "Parar"
 
-#: FMain.class:1751
+#: FMain.class:1758
 msgid "&Stop"
 msgstr "&Parar"
 
@@ -2866,7 +2934,7 @@ msgstr "&Parar"
 msgid "Strings"
 msgstr "Cadenas"
 
-#: FCreateFile.class:659
+#: FCreateFile.class:707
 msgid "Style sheet"
 msgstr "Hoja de estilo"
 
@@ -2910,19 +2978,19 @@ msgstr "Tamaño de fuente del Tabstrip"
 msgid "Tag"
 msgstr "Tag"
 
-#: FMakeInstall.class:975
+#: FMakeInstall.class:1150
 msgid "Target distribution"
 msgstr "Distribución objetivo"
 
-#: Package.module:1179
+#: Package.module:1222
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' ha devuelto el siguiente código de error:"
 
-#: FConflict.class:394 FCreateFile.class:621 FFindList.class:50
+#: FConflict.class:394 FCreateFile.class:669 FFindList.class:50
 msgid "Text"
 msgstr "Texto"
 
-#: FTextEditor.class:886
+#: FTextEditor.class:981
 msgid "Text editor"
 msgstr "Editor de texto"
 
@@ -2942,7 +3010,7 @@ msgstr "El componente &1 necesita uno de los siguientes componentes:<br>&2."
 msgid "The &1 component needs the &2 component."
 msgstr "El componente &1 necesita el componente &2."
 
-#: Project.module:2774
+#: Project.module:2825
 msgid "The directory will be removed at the next commit."
 msgstr "El directorio se borrará en el próximo commit."
 
@@ -2958,15 +3026,15 @@ msgstr "Los archivos han sido modificados.\n¿Realmente quiere cerrar el dialogo
 msgid "The file has been modified.\nDo you really want to open another file?"
 msgstr "Los archivos han sido modificados.\n¿Realmente quiere abrir otro archivo?"
 
-#: FEditor.class:2107 FIconEditor.class:2032 FTextEditor.class:590
+#: FEditor.class:2107 FIconEditor.class:2032 FTextEditor.class:684
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "El archivo ha sido modificado.\n\nTodos sus cambios se perderán."
 
-#: Project.module:3173
+#: Project.module:3224
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Los siguientes caracteres no están permitidos en el nombre de un proyecto: ? * / \\ ESPACIO"
 
-#: Project.module:910
+#: Project.module:934
 msgid "The following classes have circular inheritance:"
 msgstr "Las siguientes clases tienen herencia circular:"
 
@@ -2974,7 +3042,7 @@ msgstr "Las siguientes clases tienen herencia circular:"
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "El formulario ha sido modificado.\n\nTodos sus cambios se perderán."
 
-#: FMain.class:622
+#: FMain.class:628
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
 msgstr "Las  herramientas de traducción de GNU no están instaladas en su sistema.\n\nPor favor instalelas para poder hacer la traducción."
 
@@ -2990,15 +3058,15 @@ msgstr "El comando 'msgmerge' ha fallado"
 msgid "The name of the control."
 msgstr "El nombre del control."
 
-#: Package.module:315
+#: Package.module:351
 msgid "The package build has failed."
 msgstr "La creación del paquete ha fallado."
 
-#: FMakeInstall.class:353
+#: FMakeInstall.class:375
 msgid "The package cannot be stored inside the project directory."
 msgstr "El paquete no puede ser almacenado dentro del directorio del proyecto."
 
-#: FMakeInstall.class:231 Package.module:174
+#: FMakeInstall.class:250 Package.module:174
 msgid "The packages have been successfully created."
 msgstr "Los paquetes han sido creados con éxito."
 
@@ -3014,11 +3082,11 @@ msgstr "El programa se detuvo inesperadamente\nenviando la señal #&1.\n\nPor fa
 msgid "The project could not be committed."
 msgstr "No se ha podido hacer commit del proyecto."
 
-#: Project.module:3183
+#: Project.module:3234
 msgid "The project directory already exists."
 msgstr "El directorio del proyecto ya existe."
 
-#: Project.module:3185
+#: Project.module:3236
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "La carpeta de proyecto no puede ser creada porque un archivo con el mismo nombre ya existe."
 
@@ -3030,11 +3098,11 @@ msgstr "El proyecto se ha creado con éxito."
 msgid "The project is void. There is nothing to translate."
 msgstr "El proyecto está vacío. No hay nada que traducir."
 
-#: Project.module:3169
+#: Project.module:3220
 msgid "The project name cannot begin with a dot."
 msgstr "El nombre de proyecto no puede comenzar con un punto."
 
-#: FMakeInstall.class:280
+#: FMakeInstall.class:299
 msgid "There is no CHANGELOG entry for this release."
 msgstr "No hay entrada de CHANGELOG para este lanzamiento."
 
@@ -3054,11 +3122,11 @@ msgstr "Este archivo está en conflicto con la revisión #&1.\nUsted debe resolv
 msgid "This image has been modified.\nDo you want to save it ?"
 msgstr "La imagen se ha modificado.\n¿Quiere guardarla?"
 
-#: Project.module:292
+#: Project.module:290
 msgid "This is a Gambas &1 project.\n\nDo you want to open it anyway?"
 msgstr "Este es un proyecto Gambas &1.\n\n¿Quiere abrirlo de cualquier forma?"
 
-#: Project.module:290
+#: Project.module:288
 msgid "This is not a Gambas project."
 msgstr "Este no es un proyecto Gambas."
 
@@ -3070,7 +3138,7 @@ msgstr "Esta línea y las siguientes serán ignoradas"
 msgid "This menu is too deep !"
 msgstr "¡El menú tiene demasiados niveles!"
 
-#: Project.module:2829
+#: Project.module:2880
 msgid "This name contains a forbidden character:"
 msgstr "Este nombre contiene un carácter prohibido:"
 
@@ -3078,7 +3146,7 @@ msgstr "Este nombre contiene un carácter prohibido:"
 msgid "This name is already in use."
 msgstr "Este nombre ya está en uso."
 
-#: Project.module:2833
+#: Project.module:2884
 msgid "This name is already used. Choose another one."
 msgstr "Este nombre ya está en uso. Elija otro."
 
@@ -3086,11 +3154,11 @@ msgstr "Este nombre ya está en uso. Elija otro."
 msgid "This program is published under the GNU General Public Licence."
 msgstr "Este programa está publicado bajo la GNU General Public Licence."
 
-#: Project.module:1727
+#: Project.module:1757
 msgid "This project already exists."
 msgstr "Este proyecto ya existe."
 
-#: Project.module:280
+#: Project.module:278
 msgid "This project does not exist."
 msgstr "Este proyecto no existe."
 
@@ -3098,11 +3166,11 @@ msgstr "Este proyecto no existe."
 msgid "This project is a component"
 msgstr "Este proyecto es un componente"
 
-#: Project.module:348
+#: Project.module:349
 msgid "This project is read-only."
 msgstr "Este proyecto es de sólo lectura."
 
-#: Project.module:301
+#: Project.module:299
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr "Este proyecto parece estar ya abierto.\n\nAbrir el proyecto dos veces puede hacer que se pierdan datos."
 
@@ -3118,7 +3186,7 @@ msgstr "Delgada"
 msgid "Tip of the day"
 msgstr "Consejo del día"
 
-#: FMain.class:1942
+#: FMain.class:1949
 msgid "&Tips of the day"
 msgstr "&Consejos del día"
 
@@ -3134,11 +3202,11 @@ msgstr "Título"
 msgid "Toggle"
 msgstr "Intercambiar"
 
-#: FMain.class:1790
+#: FMain.class:1797
 msgid "&Toggle breakpoint"
 msgstr "&Intercambiar punto de Interrupción"
 
-#: FMain.class:2377
+#: FMain.class:2391
 msgid "Toggle breakpoint"
 msgstr "Intercambiar punto de Interrupción"
 
@@ -3150,11 +3218,11 @@ msgstr "Intercambiar punto de &Interrupción"
 msgid "Toggle grid"
 msgstr "Intercambiar parrilla"
 
-#: FMain.class:2263
+#: FMain.class:2277
 msgid "Toolbox"
 msgstr "Caja de herramientas"
 
-#: FMain.class:1839
+#: FMain.class:1846
 msgid "&Toolbox"
 msgstr "&Caja de herramientas"
 
@@ -3162,7 +3230,7 @@ msgstr "&Caja de herramientas"
 msgid "Toolbox size"
 msgstr "Tamaño de la caja de herramientas"
 
-#: FMain.class:1872
+#: FMain.class:1879
 msgid "&Tools"
 msgstr "&Herramientas"
 
@@ -3170,11 +3238,11 @@ msgstr "&Herramientas"
 msgid "Traditional chinese (Taiwan)"
 msgstr "Chino tradicional (Taiwan)"
 
-#: FMain.class:2203
+#: FMain.class:2217
 msgid "Translate"
 msgstr "Traducir"
 
-#: FMain.class:1666
+#: FMain.class:1673
 msgid "&Translate..."
 msgstr "&Traducir..."
 
@@ -3202,15 +3270,15 @@ msgstr "Turco (Turquía)"
 msgid "Type"
 msgstr "Tipo"
 
-#: FMakeInstall.class:1098
+#: FMakeInstall.class:1273
 msgid "Ubuntu"
 msgstr "Ubuntu"
 
-#: Project.module:2520
+#: Project.module:2571
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible crear un icono en el escritorio."
 
-#: Project.module:2601
+#: Project.module:2652
 msgid "Unable to install component."
 msgstr "Imposible instalar el componente."
 
@@ -3222,7 +3290,7 @@ msgstr "Imposible pegar texto."
 msgid "Unable to read tip of the day !"
 msgstr "¡Imposible leer el consejo del día!"
 
-#: Project.module:3042
+#: Project.module:3093
 msgid "Unable to rename '&1'"
 msgstr "Imposible renombrar el archivo '&1'"
 
@@ -3230,15 +3298,15 @@ msgstr "Imposible renombrar el archivo '&1'"
 msgid "Unable to resolve the conflict."
 msgstr "Imposible resolver el conflicto."
 
-#: Project.module:1740
+#: Project.module:1770
 msgid "Unable to save the project."
 msgstr "Imposible guardar el proyecto."
 
-#: Project.module:2639
+#: Project.module:2690
 msgid "Unable to uninstall component."
 msgstr "Imposible desinstalar el componente."
 
-#: FMain.class:1055
+#: FMain.class:1061
 msgid "Unable to update all forms."
 msgstr "Imposible actulizar todos los formualarios."
 
@@ -3250,7 +3318,7 @@ msgstr "Descomentar"
 msgid "Underline"
 msgstr "Subrayado"
 
-#: FTextEditor.class:763
+#: FTextEditor.class:858
 msgid "Undo"
 msgstr "Deshacer"
 
@@ -3258,7 +3326,7 @@ msgstr "Deshacer"
 msgid "Undock console"
 msgstr "Desbloquear consola"
 
-#: FTextEditor.class:960
+#: FTextEditor.class:1055
 msgid "Unindent"
 msgstr "Desindentar"
 
@@ -3278,7 +3346,11 @@ msgstr "Deseleccionar todo"
 msgid "Untranslated"
 msgstr "Sin traducir"
 
-#: FMain.class:1040
+#: FMakeInstall.class:1394
+msgid "&Up"
+msgstr "&Arriba"
+
+#: FMain.class:1046
 msgid "Update"
 msgstr "Actualizar"
 
@@ -3286,7 +3358,7 @@ msgstr "Actualizar"
 msgid "&Update"
 msgstr "&Actualizar"
 
-#: FMain.class:1901
+#: FMain.class:1908
 msgid "&Update all forms"
 msgstr "&Actualizar todos los formularios"
 
@@ -3322,7 +3394,7 @@ msgstr "Valor"
 msgid "Variable"
 msgstr "Variable"
 
-#: FMakeInstall.class:908
+#: FMakeInstall.class:1083
 msgid "Vendor name"
 msgstr "Nombre del vendedor"
 
@@ -3350,15 +3422,15 @@ msgstr "Vertical"
 msgid "Vertical flip"
 msgstr "Espejo vertical"
 
-#: FEditor.class:3011 FTextEditor.class:865
+#: FEditor.class:3011 FTextEditor.class:960
 msgid "Vertical split"
 msgstr "División vertical"
 
-#: Project.module:138
+#: Project.module:137
 msgid "Video"
 msgstr "Vídeo"
 
-#: CComponent.class:107
+#: CComponent.class:113
 msgid "Video capture"
 msgstr "Captura de vídeo"
 
@@ -3366,11 +3438,11 @@ msgstr "Captura de vídeo"
 msgid "Vietnamese (Vietnam)"
 msgstr "Vietnamita (Vietnam)"
 
-#: FEditor.class:2993 FTextEditor.class:847
+#: FEditor.class:2993 FTextEditor.class:942
 msgid "View"
 msgstr "Vista"
 
-#: FMain.class:1818
+#: FMain.class:1825
 msgid "&View"
 msgstr "&Ver"
 
@@ -3382,7 +3454,7 @@ msgstr "Visible"
 msgid "Visual"
 msgstr "Visual"
 
-#: CComponent.class:108
+#: CComponent.class:114
 msgid "Visual Basic compatibility"
 msgstr "Compatibilidad con Visual Basic"
 
@@ -3398,7 +3470,7 @@ msgstr "Valón (Bélgica)"
 msgid "Watch"
 msgstr "Observar"
 
-#: FMain.class:1807
+#: FMain.class:1814
 msgid "&Watch expression"
 msgstr "&Observar expresión"
 
@@ -3406,13 +3478,25 @@ msgstr "&Observar expresión"
 msgid "&Watch expression..."
 msgstr "&Analizar expresión..."
 
-#: FMain.class:2369
+#: FMain.class:2383
 msgid "Watch expression"
 msgstr "Analizar expresion"
 
-#: CComponent.class:112
+#: CComponent.class:118
 msgid "Web applications tools"
 msgstr "Herramientas de aplicaciones web"
+
+#: CModule.class:21 FCreateFile.class:631
+msgid "WebPage"
+msgstr "WebPage"
+
+#: FMain.class:2009
+msgid "&WebPage..."
+msgstr "&WebPage..."
+
+#: CModule.class:21
+msgid "WebPages"
+msgstr "WebPages"
 
 #: FWelcome.class:400
 msgid "Welcome to Gambas 3"
@@ -3426,11 +3510,11 @@ msgstr "Bienvenido a la consola de Gambas.\nPara evaluar una expresión, escriba
 msgid "Welsh (United Kingdom)"
 msgstr "Galeico (Reino Unido)"
 
-#: FCreateFile.class:692
+#: FCreateFile.class:740
 msgid "Width"
 msgstr "Ancho"
 
-#: FFind.class:757
+#: FFind.class:770
 msgid "Word only"
 msgstr "Solo palabra"
 
@@ -3438,11 +3522,11 @@ msgstr "Solo palabra"
 msgid "XML file"
 msgstr "Archivo XML"
 
-#: CComponent.class:110
+#: CComponent.class:116
 msgid "XML-RPC protocol"
 msgstr "Protocolo XML-RPC"
 
-#: CComponent.class:109
+#: CComponent.class:115
 msgid "XML tools based on libxml"
 msgstr "Herramientas XML basadas en libxml"
 
@@ -3450,11 +3534,11 @@ msgstr "Herramientas XML basadas en libxml"
 msgid "XML / XSLT programming"
 msgstr "Programación XML / XSLT"
 
-#: FCreateFile.class:732
+#: FCreateFile.class:780
 msgid "XPM"
 msgstr "XPM"
 
-#: CComponent.class:111
+#: CComponent.class:117
 msgid "XSLT tools based on libxslt"
 msgstr "Herramientas XSLT basadas en libxslt"
 
@@ -3466,7 +3550,7 @@ msgstr "Sí"
 msgid "You are going to cancel your changes!"
 msgstr "¡Va a cancelar sus cambios!"
 
-#: Project.module:2793
+#: Project.module:2844
 msgid "You must define a startup class or form!"
 msgstr "¡Debe definir una clase o formulario de inicio!"
 
@@ -3474,11 +3558,11 @@ msgstr "¡Debe definir una clase o formulario de inicio!"
 msgid "You need to restart the application to see your changes."
 msgstr "Necesita reiniciar la aplicación para ver los cambios."
 
-#: FMakeInstall.class:892
+#: FMakeInstall.class:1067
 msgid "Your e-mail address"
 msgstr "Su dirección de correo electrónico"
 
-#: FMakeInstall.class:876
+#: FMakeInstall.class:1051
 msgid "Your name"
 msgstr "Su nombre"
 
