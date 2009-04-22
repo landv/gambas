@@ -120,7 +120,7 @@ Private $aRefreshAfter As New String[]
 Private $iNoRefresh As Integer
 Private $bDoRefresh As Boolean
 
-Private $hFileImage As Image
+Private $cImageCache As New Collection
 
 Public Sub _init()
   
@@ -510,57 +510,54 @@ Public Function Close() As Boolean
 End
 
 
-Private Sub AddEmblem(hPict As Picture, sEmblem As String) As Picture
+Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
 
-  Dim hImage As Image
   Dim hEmblem As Image
   Dim iSize As Integer
+  Dim hImage As Image
 
-  iSize = ((hPict.Height \ 2) \ 8) * 8
+  iSize = ((hSource.Height \ 2) \ 8) * 8
   
   hEmblem = Picture[sEmblem].Image.Stretch(iSize * 1.5, iSize * 1.5, True)
   
-  hImage = New Image(hPict.Width + iSize, hPict.Height)
-  hImage.Fill(Color.Transparent)
-  hImage.Draw(hPict.Image, iSize, 0)
+  hImage = New Image(hSource.Width + iSize, hSource.Height, Color.Transparent)
+  hImage.Draw(hSource, iSize, 0)
   hImage.Draw(hEmblem, 0, (hImage.H - hEmblem.H) / 2)
-  Return hImage.Picture
+  Return hImage
   
 End
 
-Private Sub AddLinkEmblem(hPict As Picture) As Picture
+Private Sub AddLinkEmblem(hSource As Image) As Image
   
-  Dim hImage As New Image(hPict.Width + 1, hPict.Height + 1)
+  Dim hImage As New Image(hSource.Width + 1, hSource.Height + 1, Color.Transparent)
   
-  hImage.Fill(Color.Transparent)
-  hImage.Draw(hPict.Image, 1, 0)
+  hImage.Draw(hSource, 1, 0)
   hImage.Draw(Picture["img/16/link.png"].Image, 0, hImage.Height - 16)
-  Return hImage.Picture
+  Return hImage
   
 End
 
-Private Sub MakeModuleIcon(sModule As String, Optional iSize As Integer) As Picture
+Private Sub MakeModuleIcon(sModule As String, Optional iSize As Integer) As Image
 
-  Dim hPict As Picture
   Dim hImage As Image
   Dim hImageModule As Image
   Dim sKey As String
 
-  If Not $hFileImage Then $hFileImage = Picture["icon:/32/file"].Image
+  If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
   
   If iSize = 0 Then iSize = 16
   
-  sKey = "img/" & sModule & "-" & iSize & ".png"
-  hPict = Picture[sKey]
-  If Not hPict Then 
-    hImage = $hFileImage.Stretch(iSize, iSize)
+  sKey = sModule & "-" & iSize & ".png"
+  hImage = $cImageCache[sKey]
+  If Not hImage Then 
+    hImage = $cImageCache["base"]
+    hImage = hImage.Stretch(iSize, iSize)
     hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
     hImage.Draw(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
-    hPict = hImage.Picture
-    Picture[sKey] = hPict
+    $cImageCache[sKey] = hImage
   Endif
   
-  Return hPict
+  Return hImage
   
 End
 
@@ -667,16 +664,18 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
         Endif
       Endif 
       
-      hPict = hImage.Picture
+      'hPict = hImage.Picture
     Else  
-      hPict = Picture[sPrefix &/ "image"].Copy()
+      hImage = Picture[sPrefix &/ "image"].Image
     Endif
 
-    If bConflict Then hPict = AddEmblem(hPict, "icon:/32/warning")
+    If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
 
     If bLink Then 
-      hPict = AddLinkEmblem(hPict)
+      hImage = AddLinkEmblem(hImage)
     Endif
+    
+    hPict = hImage.Picture
 
   Else
 
@@ -692,24 +691,27 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     If Not hPict Then 
     
       If sModule Then
-        hPict = MakeModuleIcon(sModule, iSize)
+        hImage = MakeModuleIcon(sModule, iSize)
       Else
-        hPict = Picture[sIcon]
+        Try hImage = Picture[sIcon].Image
+        If Error Then hImage = Picture[sPrefix &/ "file"].Image
       Endif
-      If Not hPict Then hPict = Picture[sPrefix &/ "file"]
-      If Not hPict Then hPict = Picture["img/16/unknown.png"]
-      hPict = hPict.Copy()
+      'If Not hPict Then hPict = Picture[sPrefix &/ "file"]
+      'If Not hPict Then hPict = Picture["img/16/unknown.png"]
+      'hPict = hPict.Copy()
       
-      If bStartup Then hPict = AddEmblem(hPict, "icon:/32/play")
-      If bConflict Then hPict = AddEmblem(hPict, "icon:/32/warning")
+      If bStartup Then hImage = AddEmblem(hImage, "icon:/32/play")
+      If bConflict Then hImage = AddEmblem(hImage, "icon:/32/warning")
 
       If iSize Then 
-         hPict = hPict.Image.Stretch(hPict.Width * iSize / hPict.Height, iSize, True).Picture
+         hImage = hImage.Stretch(hImage.Width * iSize / hImage.Height, iSize, True)
       Endif      
 
       If bLink Then 
-        hPict = AddLinkEmblem(hPict)
+        hImage = AddLinkEmblem(hImage)
       Endif
+      
+      hPict = hImage.Picture
       
       If Not bNoStartup Then Picture[sKey] = hPict
 
