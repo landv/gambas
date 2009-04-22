@@ -13,3 +13,9 @@ PUBLIC SUB Button1_Click()
   Balloon.Question("Got a problem ? I will try to solve you for free, because I am a good guy." & String$(12, "Gambas already means Basic\n"), LAST)
 
 END
+
+PUBLIC SUB Button2_Click()
+
+  InputBox("Vous allez à Cabourg après-demain pour jouer les justes ? Combien de temps pour s'y rendre ?", "Festival de Cabourg", "2h30")
+
+END
