@@ -205,6 +205,8 @@ void SUBR_format(void)
     else if (TYPE_is_integer(PARAM[1].type))
     {
       fmt_type = PARAM[1]._integer.value;
+			if (fmt_type <= LF_USER || fmt_type >= LF_MAX)
+				THROW(E_ARG);
     }
     else
       THROW(E_TYPE, TYPE_get_name(T_INTEGER), TYPE_get_name(PARAM[1].type));
