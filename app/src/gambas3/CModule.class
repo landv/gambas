@@ -11,16 +11,30 @@ Public Component As String
 Public Used As Boolean
 Public HasFormEditor As Boolean
 
-Static Public Sub _init()
+Static Public Sub Init()
   
+  Dim sModule As String
   Dim hModule As CModule
   
   All = New Collection(gb.IgnoreCase)
   
+  For Each sModule In ["module", "class"]
+    Picture["img/16" &/ sModule & ".png"] = Project.MakeModuleIcon(sModule, 16).Picture
+    Picture["img/32" &/ sModule & ".png"] = Project.MakeModuleIcon(sModule, 32).Picture
+  Next
+  
   hModule = New CModule("form", ("Form"), ("Forms"), ("Gambas forms"), "$F", True)
   hModule = New CModule("webpage", ("WebPage"), ("WebPages"), ("Gambas web pages"), "$A", False)
+  hModule = New CModule("report", ("Report"), ("Reports"), ("Gambas reports"), "$R", False)
   
 End
+
+Static Public Sub Exit()
+  
+  All = Null
+  
+End
+
 
 Static Public Sub _get(sKey As String) As CModule
   
@@ -38,6 +52,9 @@ Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFil
   HasFormEditor = bHasFormEditor
   All[sKey] = Me
   
+  Picture["img/16" &/ sKey & ".png"] = Project.MakeModuleIcon(sKey, 16).Picture
+  Picture["img/32" &/ sKey & ".png"] = Project.MakeModuleIcon(sKey, 32).Picture
+
 End
 
 Static Public Sub InitFromProject()

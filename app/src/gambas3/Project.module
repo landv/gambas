@@ -157,6 +157,7 @@ Public Sub Main()
   RefreshBreakpointPicture
   InitVersion
   LoadRecent
+  CModule.Init
 
   FMain.Load 
 
@@ -505,6 +506,7 @@ Public Function Close() As Boolean
 '   Design.Delete
 '   FProperty.Delete
 
+  CModule.Exit
   CComponent.Exit
 
 End
@@ -537,7 +539,7 @@ Private Sub AddLinkEmblem(hSource As Image) As Image
   
 End
 
-Private Sub MakeModuleIcon(sModule As String, Optional iSize As Integer) As Image
+Public Sub MakeModuleIcon(sModule As String, Optional iSize As Integer) As Image
 
   Dim hImage As Image
   Dim hImageModule As Image

@@ -356,7 +356,15 @@
         Name = "mnuNewWebPage"
         Action = "new-webpage"
         Text = ("&WebPage...")
+        Picture = Picture["img/16/webpage.png"]
         Tag = "webpage"
+      }
+      { mnuNewReport Menu mnuNewFile_OFF
+        Name = "mnuNewReport"
+        Action = "new-report"
+        Text = ("&Report...")
+        Picture = Picture["img/16/report.png"]
+        Tag = "report"
       }
       { Menu18 Menu
         Text = ("")
@@ -949,9 +957,15 @@
     Shortcut = "Ctrl+N"
     Picture = "icon:/small/new"
   }
+  { Action new-report
+    Text = "&Report..."
+    Shortcut = ""
+    Picture = "img/16/report.png"
+  }
   { Action new-webpage
     Text = "&WebPage..."
     Shortcut = ""
+    Picture = "img/16/webpage.png"
   }
   { Action open-project
     Text = "&Open project..."
