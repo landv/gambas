@@ -236,7 +236,7 @@
         Name = "ToolButton12"
         MoveScaled(8,0,4,4)
         ToolTip = ("Code")
-        Action = ".code-form"
+        Action = ".show-class"
         Text = ("")
         Picture = Picture["img/16/class.png"]
       }
@@ -691,6 +691,10 @@
     Text = "Select all"
     Shortcut = "Ctrl+A"
   }
+  { Action show-class
+    Text = "Code"
+    Picture = "img/16/class.png"
+  }
   { Action startup-class
     Text = "&Startup class"
     Shortcut = ""
@@ -714,8 +718,8 @@
   }
   { Toolbar form
     Text = "Form"
-    List = "save,reload,code-form,lock,cut,copy,paste,delete,undo,redo,menu,grid"
-    Default = "save,reload,code-form,lock,menu,grid"
+    List = "save,reload,show-class,lock,cut,copy,paste,delete,undo,redo,menu,grid"
+    Default = "save,reload,show-class,lock,menu,grid"
   }
   { Toolbar tabstrip
     Text = "Tabstrip"

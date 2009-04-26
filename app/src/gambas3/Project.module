@@ -815,9 +815,13 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
           If sExt = "class" Then
             sParent = ""
-            If Exist(sDir &/ File.BaseName(sFile) & ".form") Then
-              bIgnore = True
-            Else 
+            For Each hModule In CModule.All
+              If Exist(sDir &/ File.BaseName(sFile) & "." & hModule.Key) Then
+                bIgnore = True
+                Break
+              Endif          
+            Next
+            If Not bIgnore Then
               'IF sFile = "ReportContainer.class" THEN STOP
               sParent = FindKey(GetParentClass(sPath))
               If sParent Then
@@ -1219,6 +1223,11 @@ Public Function LoadFile(sPath As String) As Object
             hForm = New FForm(sPath)
           Endif
           
+        Case "webpage"
+          If HasModule("webpage") Then
+            hForm = New FTextEditor(sPath, True)
+          Endif
+          
         End Select 
     
     Endif
@@ -1380,11 +1389,11 @@ End
 
 
 
-Public Sub OpenForm(sName As String)
+Public Sub OpenForm(sName As String, Optional sModule As String = "form")
 
   Dim sPath As String
 
-  sPath = Project.Dir &/ sName & ".form"
+  sPath = Project.Dir &/ sName & "." & sModule
   If Exist(sPath) Then OpenFile(sPath)
 
 End
@@ -3386,8 +3395,9 @@ End
 
 Public Function IsFormPath(sPath As String) As Boolean
 
-  If Not IsClassPath(sPath) Then Return
-  Return File.Ext(sPath) = "form"
+  If File.Dir(sPath) <> Project.Dir Then Return
+  If File.Ext(sPath) = "class" Then Return
+  Return Exist(File.SetExt(sPath, "class"))
 
 End
 

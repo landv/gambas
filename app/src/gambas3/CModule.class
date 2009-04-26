@@ -9,7 +9,7 @@ Public NameFilter As String
 Public TreeKey As String
 Public Component As String
 Public Used As Boolean
-Public HasFormEditor As Boolean
+'Public HasFormEditor As Boolean
 
 Static Public Sub Init()
   
@@ -49,7 +49,7 @@ Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFil
   NamePlural = sNamePlural
   NameFilter = sNameFilter
   TreeKey = sTreeKey
-  HasFormEditor = bHasFormEditor
+  'HasFormEditor = bHasFormEditor
   All[sKey] = Me
   
   Picture["img/16" &/ sKey & ".png"] = Project.MakeModuleIcon(sKey, 16).Picture
@@ -77,4 +77,15 @@ Static Public Sub InitFromProject()
   Next
   
 End
+
+Static Public Sub FromTreeKey(sKey As String) As CModule
+  
+  Dim hModule As CModule
+  
+  For Each hModule In All
+    If hModule.TreeKey = sKey Then Return hModule
+  Next
+  
+End
+
 

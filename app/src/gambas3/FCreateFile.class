@@ -264,6 +264,7 @@ Private Sub CreateFile() As Boolean
       
     Case "webpage"
 
+      Project.Insert(sName, "class", "' Gambas class file\n\n", True, True)
       Project.Insert(sName, "webpage", "<html>\n<body>\n<%\nPrint \"<h1>Gambas</h1>\";\n%>\n</body>\n</html>\n")
       
     Case "text"
@@ -392,6 +393,7 @@ Private Sub ImportFile() As Boolean
           
     Case "webpage"
       sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
+      Project.Insert(sName, "class", File.SetExt(sTemp, "class"), True, True, chkLink.Value)
       Project.Insert(sName, "webpage", sTemp,,, chkLink.Value)
   
     Default

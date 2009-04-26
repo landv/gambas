@@ -120,6 +120,7 @@ End
 Public Sub tvwProject_Activate()
 
   Dim sKey As String
+  Dim hModule As CModule
 
   sKey = tvwProject.Key
 
@@ -127,8 +128,9 @@ Public Sub tvwProject_Activate()
     If CanEdit(sKey) Then
       If $bCtrl Then
         tvwProject.MoveParent
-        If tvwProject.Item.Key = Project.KEY_FORM Then
-          sKey = Left(sKey, -5) & ".class"
+        hModule = CModule.FromTreeKey(tvwProject.Item.Key)
+        If hModule Then
+          sKey = File.SetExt(sKey, "class")
         Endif
       Endif
       Project.OpenFile(sKey)
@@ -286,9 +288,7 @@ Public Sub mnuPopup_Show()
   mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent)
   
   mnuEditFile.Visible = CanEdit(sCurrent)
-  mnuEditForm.Visible = mnuEditFile.Visible
   mnuEditClass.Visible = mnuEditFile.Visible
-  'mnuPropertyFile.Enabled = bCurrent OR IsProject($sKey)
 
   mnuStartup.Visible = mnuStartup.Visible And Project.IsClassPath(sCurrent)
   If mnuStartup.Visible Then
@@ -303,12 +303,14 @@ Public Sub mnuPopup_Show()
   mnuPaste.Visible = mnuPaste.Visible And (bFile Or bCanStoreFile)
   mnuPaste.Enabled = Clipboard.Format = MMime.FILE
 
-  If Project.IsFormPath(sCurrent) Then
-    mnuEditFile.Visible = False
-  Else
-    mnuEditForm.Visible = False
-    mnuEditClass.Visible = False
-  Endif
+  ' If Project.IsFormPath(sCurrent) Then
+  '   mnuEditFile.Visible = False
+  ' Else
+  '   mnuEditForm.Visible = False
+  '   mnuEditClass.Visible = False
+  ' Endif
+  
+  mnuEditClass.Visible = Project.IsFormPath(sCurrent)
   
   mnuEditWith.Visible = Project.IsImagePath(sCurrent) And mnuEditFile.Visible
   

@@ -25,17 +25,24 @@ Private VIEWMODE_VERTICAL As Integer = 2
 Private $hEditor1 As Editor
 Private $hEditor2 As Editor
 
-Public Sub _new(sPath As String)
+Public Sub _new(sPath As String, Optional bModule As Boolean)
 
   Path = sPath
-  Me.Name = File.Name(Path)
   Editor = edtEditor
+  
+  If bModule Then
+    btnShowCode.Visible = True
+    Me.Name = File.BaseName(Path)
+  Else
+    btnShowCode.Visible = False
+    Me.Name = File.Name(Path)
+  Endif
 
 End
 
 Public Sub LoadFile()
   
-  Dim sExt As String = LCase(File.Ext(Me.Name))
+  Dim sExt As String = LCase(File.Ext(Path))
   
   If $aExt.Find(sExt) >= 0 Then
     With edtEditor
@@ -784,3 +791,10 @@ Public Sub Editors_LostFocus()
   mnuEditor.Enabled = False
 
 End
+
+Public Sub mnuShowCode_Click()
+
+  Project.OpenFile(Me.Name)
+
+End
+

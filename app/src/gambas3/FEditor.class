@@ -56,6 +56,8 @@ Private $hEditor2 As Editor
 Private $cProc As Collection
 Private $iFirstProcLine As Integer
 
+Private $sModule As String
+
 Public Const IDENT_CAR As String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_$"
 
 Static Public Sub _init()
@@ -75,6 +77,8 @@ Static Public Sub _init()
 End
 
 Public Sub _new(sPath As String)
+
+  Dim hModule As CModule
 
   $iLastLine = -1
 
@@ -103,8 +107,13 @@ Public Sub _new(sPath As String)
   DrawTitle
   UpdateMenu
 
-  btnForm.Visible = Project.ExistForm(Me.Name)
-  
+  For Each hModule In CModule.All
+    If Exist(File.SetExt(Path, hModule.Key)) Then
+      $sModule = hModule.Key
+      btnForm.Visible = True
+    Endif
+  Next
+
   $bDoNotSavePosition = True
   
 End
@@ -1290,7 +1299,7 @@ End
 
 Public Sub mnuForm_Click()
 
-  Project.OpenForm(Me.Name)
+  Project.OpenForm(Me.Name, $sModule)
 
 End
 
@@ -2733,3 +2742,11 @@ Public Sub btnPasteAsComment_Click()
 
 End
 
+Public Sub panToolBar_Configure()
+
+  If $sModule Then
+    btnForm.Picture = Picture["img/16/" & $sModule & ".png"]
+    btnForm.ToolTip = CModule[$sModule].Name
+  Endif  
+
+End

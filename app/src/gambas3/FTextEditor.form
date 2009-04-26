@@ -139,9 +139,17 @@
       Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
+    { btnShowCode ToolButton mnuShowCode
+      Name = "btnShowCode"
+      MoveScaled(8,0,4,4)
+      ToolTip = ("Code")
+      Action = ".show-class"
+      Text = ("")
+      Picture = Picture["img/16/class.png"]
+    }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
-      MoveScaled(8,0,4,4)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Cut")
       Action = ".cut"
       Text = ("")
@@ -149,7 +157,7 @@
     }
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
-      MoveScaled(12,0,4,4)
+      MoveScaled(16,0,4,4)
       ToolTip = ("Copy")
       Action = ".copy"
       Text = ("")
@@ -157,7 +165,7 @@
     }
     { btnPaste ToolButton mnuPaste
       Name = "btnPaste"
-      MoveScaled(16,0,4,4)
+      MoveScaled(20,0,4,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Text = ("")
@@ -165,7 +173,7 @@
     }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(20,0,4,4)
+      MoveScaled(24,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Text = ("")
@@ -173,27 +181,27 @@
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(24,0,4,4)
+      MoveScaled(28,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Text = ("")
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(29,0,4,4)
+      MoveScaled(33,0,4,4)
       ToolTip = ("Indent")
       Text = ("")
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(32,0,4,4)
+      MoveScaled(36,0,4,4)
       ToolTip = ("Unindent")
       Text = ("")
       Picture = Picture["icon:/small/unindent"]
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(36,0,4,4)
+      MoveScaled(40,0,4,4)
       ToolTip = ("No split")
       Action = ".view-nosplit"
       Text = ("")
@@ -201,7 +209,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(40,0,4,4)
+      MoveScaled(44,0,4,4)
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
       Text = ("")
@@ -209,14 +217,14 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(44,0,4,4)
+      MoveScaled(48,0,4,4)
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Text = ("")
       Picture = Picture["icon:/small/view-split-v"]
     }
     { lblEditor Label
-      MoveScaled(51,0,10,4)
+      MoveScaled(52,0,10,4)
       Expand = True
       Text = ("")
       Alignment = Align.Right
@@ -297,6 +305,10 @@
     Text = "Select &All"
     Shortcut = "Ctrl+A"
   }
+  { Action show-class
+    Text = "Code"
+    Picture = "img/16/class.png"
+  }
   { Action undo
     Text = "Undo"
     Shortcut = "Ctrl+Z"
@@ -322,7 +334,7 @@
 { Toolbars
   { Toolbar text-editor
     Text = "Text editor"
-    List = "save,reload,cut,copy,paste,undo,redo,view-nosplit,view-hsplit,view-vsplit"
-    Default = "save,reload,cut,copy,paste,undo,redo,$btnIndent,$btnUnindent,view-nosplit,view-hsplit,view-vsplit,$lblEditor"
+    List = "save,reload,show-class,cut,copy,paste,undo,redo,view-nosplit,view-hsplit,view-vsplit"
+    Default = "save,reload,show-class,cut,copy,paste,undo,redo,$btnIndent,$btnUnindent,view-nosplit,view-hsplit,view-vsplit,$lblEditor"
   }
 }

@@ -210,7 +210,7 @@
       Name = "btnForm"
       MoveScaled(8,0,4,4)
       ToolTip = ("Form")
-      Action = ".code-form"
+      Action = ".show-form"
       Text = ("")
       Picture = Picture["img/16/form.png"]
     }
@@ -506,6 +506,10 @@
     Text = "Select &All"
     Shortcut = "Ctrl+A"
   }
+  { Action show-form
+    Text = "Form"
+    Picture = "img/16/form.png"
+  }
   { Action startup-class
     Text = "&Startup class"
     Shortcut = ""
@@ -555,7 +559,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,code-form,cut,copy,paste,paste-string,paste-string-split,paste-comment,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
-    Default = "save,reload,code-form,undo,redo,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,|,proc,$HBox1"
+    List = "save,reload,show-form,cut,copy,paste,paste-string,paste-string-split,paste-comment,undo,redo,indent,unindent,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,proc,find-definition,go-back"
+    Default = "save,reload,show-form,undo,redo,comment,uncomment,view-nosplit,view-hsplit,view-vsplit,|,proc,$HBox1"
   }
 }
