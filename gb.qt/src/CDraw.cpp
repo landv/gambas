@@ -419,92 +419,117 @@ static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, in
   QPixmap *p = ((CPICTURE *)picture)->pixmap;
 
   DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
-	xform = (w != p->width() || h != p->height());
+	xform = (w != sw || h != sh);
 
-  DP(d)->save();
-  
-  if (xform)
-  {
-	  DP(d)->translate(x, y);
-	  x = y = 0;
-  	DP(d)->scale((double)w / p->width(), (double)h / p->height());
-	}
-
-  DP(d)->drawPixmap(x, y, *p, sx, sy, sw, sh);
-
-  DP(d)->restore();
-
-  if (DPM(d))
-  {
-		DPM(d)->save();
+	if (!xform)
+	{
+		DP(d)->drawPixmap(x, y, *p, sx, sy, sw, sh);
 		
-		if (xform)
+		if (DPM(d))
 		{
-			DPM(d)->translate(x, y);
-			x = y = 0;
-			DPM(d)->scale((double)w / p->width(), (double)h / p->height());
+			if (p->hasAlpha())
+			{
+				bitBlt(EXTRA(d)->mask, x, y, p->mask(), sx, sy, sw, sh, Qt::OrROP);
+			}
+			else
+				DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
 		}
+	}
+	else
+	{
+		if (DPM(d))
+		{
+			QImage img = p->convertToImage();
+			
+			if (sw < p->width() || sh < p->height())
+				img = img.copy(sx, sy, sw, sh);
+			
+			if (w != sw || h != sh)
+				img = img.smoothScale(w, h);
+			
+			DP(d)->drawImage(x, y, img);
 
-    if (p->hasAlpha())
-    {
-      DPM(d)->setRasterOp(Qt::NotOrROP);
-      DPM(d)->drawPixmap(x, y, *(p->mask()), sx, sy, sw, sh);
-    }
-    else
-      DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
-
-    DPM(d)->restore();
-  }
+			if (p->hasAlpha())
+			{
+				QBitmap m;
+				m.convertFromImage(img.createAlphaMask());
+				bitBlt(EXTRA(d)->mask, x, y, &m, 0, 0, w, h, Qt::OrROP);
+			}
+			else
+				DPM(d)->fillRect(x, y, w, h, Qt::color1);
+		}
+		else
+		{
+			DP(d)->save();
+			DP(d)->translate(x, y);
+			x = y = 0;
+			DP(d)->scale((double)w / p->width(), (double)h / p->height());
+			DP(d)->drawPixmap(x, y, *p, sx, sy, sw, sh);
+			DP(d)->restore();
+		}
+	}
 }
 
 static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
-  QImage *img = ((CIMAGE *)image)->image;
+  QImage *p = ((CIMAGE *)image)->image;
 
-  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, img->width(), img->height());
-	xform = (w != img->width() || h != img->height());
+  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
+	xform = (w != sw || h != sh);
 
-  DP(d)->save();
-  
-  if (xform)
-  {
-	  DP(d)->translate(x, y);
-	  x = y = 0;
-  	DP(d)->scale((double)w / img->width(), (double)h / img->height());
+	if (!xform)
+	{
+		DP(d)->drawImage(x, y, *p, sx, sy, sw, sh);
+		
+		if (DPM(d))
+		{
+			if (p->hasAlphaBuffer())
+			{
+				QBitmap m;
+				m.convertFromImage(p->createAlphaMask());
+				bitBlt(EXTRA(d)->mask, x, y, &m, sx, sy, sw, sh, Qt::OrROP);
+			}
+			else
+				DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
+		}
 	}
-
-  if (DPM(d))
-  {
-    DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
-
-		DPM(d)->save();
-		if (xform)
+	else
+	{
+		if (DPM(d))
 		{
-			DPM(d)->translate(x, y);
+			QImage img = *p;
+			
+			if (sw < p->width() || sh < p->height())
+				img = img.copy(sx, sy, sw, sh);
+			
+			if (w != sw || h != sh)
+				img = img.smoothScale(w, h);
+			
+			DP(d)->drawImage(x, y, img);
+
+			if (p->hasAlphaBuffer())
+			{
+				QBitmap m;
+				m.convertFromImage(img.createAlphaMask());
+				bitBlt(EXTRA(d)->mask, x, y, &m, 0, 0, w, h, Qt::OrROP);
+			}
+			else
+				DPM(d)->fillRect(x, y, w, h, Qt::color1);
+		}
+		else
+		{
+			DP(d)->save();
+			DP(d)->translate(x, y);
 			x = y = 0;
-			DPM(d)->scale((double)w / img->width(), (double)h / img->height());
+			DP(d)->scale((double)w / p->width(), (double)h / p->height());
+			DP(d)->drawImage(x, y, *p, sx, sy, sw, sh);
+			DP(d)->restore();
 		}
-
-    if (img->hasAlphaBuffer())
-    {
-			QBitmap m;
-			m = img->createAlphaMask();
-      DPM(d)->setRasterOp(Qt::NotOrROP);
-      DPM(d)->drawPixmap(x, y, m, sx, sy, sw, sh);
-    }
-    else
-		{
-      DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
-		}
-
-		DPM(d)->restore();
-  }
-  else
-    DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
-
-	DP(d)->restore();
+	}
 }
+
+	
 
 static void draw_tiled_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h)
 {

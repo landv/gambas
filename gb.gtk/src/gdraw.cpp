@@ -434,8 +434,8 @@ void gDraw::setForeground(gColor vl)
 
 	if (vl == COLOR_DEFAULT)
 		vl = _default_fg;	
-
-	if ( foreground()==vl) return;
+	
+	//if ( foreground()==vl) return;
 			
 	cmap=gdk_drawable_get_colormap(dr);
 	fill_gdk_color(&gcol, vl, cmap);
@@ -457,7 +457,7 @@ void gDraw::setBackground(gColor vl)
 	if (vl == COLOR_DEFAULT)
 		vl = _default_bg;
 	
-	if ( background()==vl) return;
+	//if ( background()==vl) return;
 		
 	cmap=gdk_drawable_get_colormap(dr);
 	fill_gdk_color(&gcol, vl, cmap);
@@ -785,6 +785,7 @@ Rendering
 void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	GdkBitmap *mask = NULL;
+	bool del = false;
 	
 	if (!pic || pic->isVoid()) return;
 	
@@ -826,8 +827,6 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 	}
   else
   {
-  	bool del = false;
-  	
   	if (w != sw || h != sh)
   	{
   		gPicture *pic2;
@@ -840,8 +839,6 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 		
 		gdk_draw_pixbuf(dr, gc, pic->getPixbuf(), sx, sy, x, y, sw, sh, GDK_RGB_DITHER_MAX, 0, 0);
 		
-		if (del)
-			delete pic;
 	}
 
 	if (drm)
@@ -867,6 +864,9 @@ void gDraw::picture(gPicture *pic, int x, int y, int w, int h, int sx, int sy, i
 		//val.foreground.pixel = (foreground() & 0xFF) ? 0 : 0xFFFFFF;
 		//gdk_gc_set_values(gcm, &val, GDK_GC_FOREGROUND);
 	}
+
+	if (del)
+		delete pic;
 }
 
 void gDraw::tiledPicture(gPicture *pic, int x, int y, int w, int h)
