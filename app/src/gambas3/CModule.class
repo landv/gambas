@@ -11,7 +11,7 @@ Public Component As String
 Public Used As Boolean
 'Public HasFormEditor As Boolean
 
-Static Public Sub Init()
+Static Public Sub _init()
   
   Dim sModule As String
   Dim hModule As CModule
@@ -88,4 +88,20 @@ Static Public Sub FromTreeKey(sKey As String) As CModule
   
 End
 
+
+Static Public Sub IsModulePath(sPath As String) As Boolean
+  
+  Dim sExt As String
+  Dim hModule As CModule
+  
+  If File.Dir(sPath) <> Project.Dir Then Return
+  sExt = File.Ext(sPath)
+  
+  If sExt = "class" Or If sExt = "module" Then Return True
+  
+  For Each hModule In All
+    If hModule.Key = sExt Then Return True
+  Next
+  
+End
 

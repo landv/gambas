@@ -1,6 +1,0 @@
-CLEANFILES = *_moc.cpp
-
-.h_moc.cpp:
-	$(MOC) -o $@ $<
-
-SUFFIXES = .h _moc.cpp

@@ -157,7 +157,7 @@ Public Sub Main()
   RefreshBreakpointPicture
   InitVersion
   LoadRecent
-  CModule.Init
+  'CModule.Init
 
   FMain.Load 
 
@@ -460,6 +460,8 @@ Private Function CloseProject() As Boolean
     Files.Clear
     ActiveForm = Null
   
+    Try Kill Project.Dir &/ ".lock"
+
     Dec Application.Busy
   
   Endif
@@ -469,8 +471,6 @@ Private Function CloseProject() As Boolean
     FFormStack.HideAll
   Endif
   
-  Try Kill Project.Dir &/ ".lock"
-
   Return False
 
 End
@@ -505,6 +505,10 @@ Public Function Close() As Boolean
 '   FIconTool.Delete
 '   Design.Delete
 '   FProperty.Delete
+
+End
+
+Public Sub Exit()
 
   CModule.Exit
   CComponent.Exit
@@ -2771,6 +2775,8 @@ Public Sub DeleteFile(sPath As String)
   Dim hForm As Object
   Dim bLink As Boolean
   Dim bProject As Boolean
+  Dim sName As String
+  Dim hModule As CModule
 
   If Not Exist(sPath) Then Return
   
@@ -2797,20 +2803,20 @@ Public Sub DeleteFile(sPath As String)
   
   If bProject Then
 
+    sName = File.BaseName(sPath)
     sExt = File.Ext(sPath)
-
-    If sExt = "form" Or sExt = "class" Or sExt = "module" Then
-      Try Kill Project.Dir &/ ".gambas" &/ UCase(File.BaseName(sPath))
-      Try Kill Project.Dir &/ ".lang" &/ File.BaseName(sPath) & ".pot"
+    
+    If CModule.IsModulePath(sPath) Then
+      Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
+      Try Kill Project.Dir &/ ".lang" &/ sName & ".pot"
     Endif
 
-    If sExt = "form" Then
-      DeleteFile(File.Dir(sPath) &/ File.BaseName(sPath) & ".class")
-    Else If sExt = "class" Then
-      DeleteFile(File.Dir(sPath) &/ File.BaseName(sPath) & ".form")
-    Endif
+    DeleteFile(File.Dir(sPath) &/ File.BaseName(sPath) & ".class")
+    For Each hModule In CModule.All
+      DeleteFile(File.Dir(sPath) &/ sName & "." & hModule.Key)
+    Next
 
-    If File.BaseName(sPath) = Startup Then
+    If sName = Startup Then
       DefineStartup("")
     Endif
   Endif

@@ -49,6 +49,7 @@ enum {
   LF_LONG_TIME,
   LF_MEDIUM_TIME,
   LF_SHORT_TIME,
+	LF_MAX
   };
 
 #ifndef GBX_INFO

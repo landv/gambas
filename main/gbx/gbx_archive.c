@@ -85,6 +85,8 @@ static void load_exported_class(ARCHIVE *arch)
   int len;
   char *name;
   CLASS *class;
+	CLASS **exported = NULL;
+	int i;
 
   /* COMPONENT_current is set => it will look in the archive */
 
@@ -99,6 +101,8 @@ static void load_exported_class(ARCHIVE *arch)
     fprintf(stderr, ".list file:\n-----------\n\n%s\n----------\n\n", buffer);
   #endif
 
+	ARRAY_create(&exported);
+
   name = strtok(buffer, "\n");
   while (name)
   {
@@ -107,23 +111,7 @@ static void load_exported_class(ARCHIVE *arch)
     #endif
 
     CLASS_check_global(name);
-    name = strtok(NULL, "\n");
-  }
-
-  FREE(&buffer, "load_exported_class");
-
-
-  STREAM_load(".list", &buffer, &len);
-  /* The file must end with a newline !*/
-  buffer[len - 1] = 0;
-
-  name = strtok(buffer, "\n");
-  while (name)
-  {
-    #if DEBUG_COMP
-      fprintf(stderr, "Load %s global\n", name);
-    #endif
-
+		
 		len = strlen(name);
 		if (len > 2 && name[len - 1] == '?')
 		{
@@ -139,12 +127,16 @@ static void load_exported_class(ARCHIVE *arch)
 		if (class)
 		{
 			class->component = COMPONENT_current;
-			CLASS_load(class);
+			*((CLASS **)ARRAY_add(&exported)) = class;
 		}
-    	
+		
     name = strtok(NULL, "\n");
   }
 
+	for (i = 0; i < ARRAY_count(exported); i++)
+		CLASS_load(exported[i]);
+	
+	ARRAY_delete(&exported);
   FREE(&buffer, "load_exported_class");
 }
 

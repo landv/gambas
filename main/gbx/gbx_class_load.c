@@ -715,8 +715,18 @@ void CLASS_load_without_init(CLASS *class)
 			class->component = NULL;
 	}
 
+  #if DEBUG_COMP
+  if (class->component)
+    fprintf(stderr, "class %s -> component %s\n", class->name, class->component->name);
+  else
+    fprintf(stderr, "class %s -> no component\n", class->name);
+  #endif
+
   save = COMPONENT_current;
   COMPONENT_current = class->component;
+	#if DEBUG_LOAD
+		fprintf(stderr, "COMPONENT_current = %s\n", COMPONENT_current ? COMPONENT_current->name : "NULL");
+	#endif
 
   len = strlen(class->name);
 
@@ -747,15 +757,11 @@ void CLASS_load_without_init(CLASS *class)
   }
 
   COMPONENT_current = save;
+	#if DEBUG_LOAD
+		fprintf(stderr, "COMPONENT_current = %s\n", COMPONENT_current ? COMPONENT_current->name : "NULL");
+	#endif
 
   class->in_load = TRUE;
-
-  #if DEBUG_COMP
-  if (class->component)
-    fprintf(stderr, "class %s -> component %s\n", class->name, class->component->name);
-  else
-    fprintf(stderr, "class %s -> no component\n", class->name);
-  #endif
 
 	load_and_relocate(class, len_data, &n_desc, &first);
 

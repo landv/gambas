@@ -911,6 +911,7 @@ End
 
 Public Sub LoadConfig(Optional bInit As Boolean)
   
+  Dim hToolbar As ToolBar = Me.Parent
   Dim hCtrl As Control
   Dim aConfig As String[]
   Dim sAction As String
@@ -941,10 +942,10 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]
   If Not aConfig Then 
     If $iIconSize = ICON_SMALL Then
-      If bInit Then Return
+      If bInit Then Goto RAISE_CONFIGURE
     Endif
     aConfig = FindToolbar().DefaultConfig
-    If Not aConfig Then Return
+    If Not aConfig Then Goto RAISE_CONFIGURE
   Endif
   
   bEnabled = panToolBar.Enabled
@@ -1006,6 +1007,10 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   panToolBar.Show
   
   Unlock()
+
+RAISE_CONFIGURE:  
+  
+  hToolbar._RaiseConfigure
   
 End
 

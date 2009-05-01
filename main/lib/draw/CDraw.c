@@ -189,8 +189,6 @@ END_PROPERTY
 
 static void handle_int_property(void *_param, int (*get)(GB_DRAW *), void (*set)(GB_DRAW *, int))
 {
-	CHECK_DEVICE();
-
 	if (READ_PROPERTY)
 		GB.ReturnInteger((*get)(THIS));
 	else
@@ -199,6 +197,7 @@ static void handle_int_property(void *_param, int (*get)(GB_DRAW *), void (*set)
 
 BEGIN_PROPERTY(CDRAW_background)
 
+	CHECK_DEVICE();
 	handle_int_property(_param, DRAW->GetBackground, DRAW->SetBackground);
 
 END_PROPERTY
@@ -206,6 +205,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAW_foreground)
 
+	CHECK_DEVICE();
 	handle_int_property(_param, DRAW->GetForeground, DRAW->SetForeground);
 
 END_PROPERTY
@@ -313,6 +313,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAW_line_width)
 
+	CHECK_DEVICE();
 	handle_int_property(_param, DRAW->Line.GetWidth, DRAW->Line.SetWidth);
 
 END_PROPERTY
@@ -320,6 +321,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAW_line_style)
 
+	CHECK_DEVICE();
 	handle_int_property(_param, DRAW->Line.GetStyle, DRAW->Line.SetStyle);
 
 END_PROPERTY
@@ -327,6 +329,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAW_fill_color)
 
+	CHECK_DEVICE();
 	handle_int_property(_param, DRAW->Fill.GetColor, DRAW->Fill.SetColor);
 	
 END_PROPERTY
@@ -334,6 +337,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CDRAW_fill_style)
 
+	CHECK_DEVICE();
 	handle_int_property(_param, DRAW->Fill.GetStyle, DRAW->Fill.SetStyle);
 	
 END_PROPERTY

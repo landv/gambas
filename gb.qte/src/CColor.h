@@ -1,1 +1,0 @@
-../../gb.qt/src/CColor.h

@@ -398,7 +398,7 @@ int main(int argc, char **argv)
     
     COMPILE_exit();
     
-    printf("OK\n");
+    puts("OK");
   }
   CATCH
   {

@@ -53,7 +53,7 @@ typedef
     unsigned exported : 1;             /* there are some exported class */
     unsigned all : 1;                  /* compile everything */
     unsigned swap : 1;                 /* endianness must be swapped */
-    unsigned public_module : 1;        /* modules symbols are by default */
+    unsigned public_module : 1;        /* modules symbols are public by default */
     unsigned _reserved : 22;           /* reserved*/
     char *output;                      /* output file */
     PATTERN *pattern;                  /* lexical analyze */

@@ -1,1 +1,0 @@
-../../gb.qt/src/gb.qt.h

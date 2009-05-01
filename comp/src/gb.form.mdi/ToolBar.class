@@ -11,6 +11,8 @@ Public Const _DefaultSize As String = "36,3"
 Public Const Horizontal As Integer = 0
 Public Const Vertical As Integer = 1
 
+Event Configure
+
 'PROPERTY READ Arrangement AS Integer
 'PROPERTY READ AutoResize AS Boolean
 Property Design As Boolean
@@ -132,4 +134,10 @@ Private Sub Text_Write(Value As String)
 
   $hForm.SetText(Value)
 
+End
+
+Public Sub _RaiseConfigure()
+  
+  Raise Configure
+  
 End
