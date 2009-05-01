@@ -28,7 +28,7 @@ Private $iHeight As Integer
 Private $oHeaders As _CHeaders
 Private $iBackground As Integer = Color.White
 Private $iBorder As Boolean = True
-
+Private $bShowLabels As Boolean = False
 
 Property Border As Boolean
 Property Background As Integer
@@ -51,13 +51,15 @@ Property Count As Integer
 Property Proportionnal As Boolean
 Property Read Headers As _CHeaders
 Property Style As Integer
+Property Read Labels As _CLabels
+Property ShowLabels As Boolean
 
 
 Public Sub _New()
  
   id = Now()
   Me.CountDataSets = 1
-  Me.Type = ChartType.Columns
+  Me.Type = ChartType.Pie
   _$ColChart.Add(Me, id)
   $oHeaders = New _CHeaders(id)
    $oLegend = New _CLegend(id)
@@ -356,3 +358,21 @@ Public Sub _Free()
   
 End
 
+
+Private Function Labels_Read() As _CLabels
+
+  
+
+End
+
+Private Function ShowLabels_Read() As Boolean
+
+  Return $bShowLabels
+
+End
+
+Private Sub ShowLabels_Write(Value As Boolean)
+
+  $bShowLabels = Value
+
+End

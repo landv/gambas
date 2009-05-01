@@ -45,7 +45,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
         fMinVal = Chart._$ColChart[$sidChart].YAxe.MinValue
       Endif
     Case ChartType.ColumnsStacked
-      fMaxVal = MTools.GetChartMaxCumulate(Chart._$ColChart[$sidChart])
+      fMaxVal = MTools.GetChartMaxCumulate($sidChart)
     Case ChartType.ColumnsPercent
       fMaxVal = 100
   End Select

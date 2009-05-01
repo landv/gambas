@@ -501,3 +501,10 @@ Public Sub spStep_Change()
   DrawingArea1.Refresh
 
 End
+
+Public Sub CheckBox11_Click()
+
+  Chart.ShowLabels = Last.Value
+  DrawingArea1.Refresh
+
+End

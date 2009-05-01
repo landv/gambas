@@ -101,13 +101,15 @@ Public Sub Draw(bSeries As Boolean)
   w = Chart._$ColChart[$sidChart].Width
   h = Chart._$ColChart[$sidChart].Height
   'draw.Font = Chart.Font
-  'Get the max text length
+  'Get the max text length  
+
+  draw.Font = $oFont
+  draw.Font.Size = $oFont.Size * Chart._$ColChart[$sidChart]._fProportionnal
   For Each s In arsInt
     i = draw.TextWidth(s)
     If i > cnt Then cnt = i
   Next
-  draw.Font = $oFont
-  draw.Font.Size = $oFont.Size * Chart._$ColChart[$sidChart]._fProportionnal
+    Print cnt
   SQUARESIZE = draw.TextHeight("T")
   
   Select Case $iPosition

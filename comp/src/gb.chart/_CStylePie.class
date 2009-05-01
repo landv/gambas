@@ -22,6 +22,7 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
   Dim fRayon As Float
   Dim fMaxRayon As Float
   Dim fRayonUnit As Float
+  Dim tmpX, tmpY As Integer
   'Obtenir la valeur cumulée:
   For Each s In Chart._$ColChart[$sidChart].Headers
     If draw.TextWidth(s) > iMaxTextWidth Then iMaxTextWidth = draw.TextWidth(s)
@@ -63,8 +64,31 @@ Public Sub Draw(CX As Integer, CY As Integer, CW As Integer, CH As Integer)
      Else
        draw.Circle(CX + CW / 2, CY + Ch / 2, fRayon, fCumul, fNewPos)
     Endif
+    tmpX = CX + CW / 2 + Cos(fTextPos) * (fRayon + draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) + (30 * Chart._$ColChart[$sidChart]._fProportionnal)) - draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) / 2
+    tmpY = CY + Ch / 2 + Sin(fTextPos - Rad(180)) * (fRayon + draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) + 30 * Chart._$ColChart[$sidChart]._fProportionnal)
+    
+    '<--Text
+    If Chart._$ColChart[$sidChart].ShowLabels Then 
+      draw.Text(Chart._$ColChart[$sidChart].Headers[i], tmpX, tmpY)
+  
+      'If tmpY < CY + CH / 2 Then 
+        tmpY += draw.TextHeight(Chart._$ColChart[$sidChart].Headers[i]) / 2
+      If tmpX < CX + CW / 2 Then
+        tmpX += draw.TextWidth(Chart._$ColChart[$sidChart].Headers[i]) + 5 * Chart._$ColChart[$sidChart]._fProportionnal
+        draw.Line(tmpX + 10 * Chart._$ColChart[$sidChart]._fProportionnal, tmpY, tmpX, tmpY)
+        tmpX += 10 * Chart._$ColChart[$sidChart]._fProportionnal
+      Else
+        draw.Line(tmpX - 10 * Chart._$ColChart[$sidChart]._fProportionnal, tmpY, tmpX, tmpY)
+        tmpX -= 10 * Chart._$ColChart[$sidChart]._fProportionnal
+      Endif
+
+      draw.Line(CX + CW / 2 + Cos(fTextPos) * (fRayon - 10 * Chart._$ColChart[$sidChart]._fProportionnal), CY + Ch / 2 + Sin(fTextPos - Rad(180)) * (fRayon - 10 * Chart._$ColChart[$sidChart]._fProportionnal), tmpX, tmpY)
+    Endif
+    '-->
+    
+    
     'draw.Text(Chart[i].Label, Cos(fTextPos) * (fRayon) + CX + CW / 2, Sin((fTextPos) - Rad(180)) * (fRayon) + CY + fRayon - draw.Font.Height())
-   
+    
     fCumul += Rad(f * frapport)
     
     Next

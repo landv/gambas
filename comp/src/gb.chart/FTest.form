@@ -4,12 +4,12 @@
   MoveScaled(0,0,111,90)
   Text = ("")
   Arrangement = Arrange.Vertical
-  Spacing = 5
+  Spacing = True
   Padding = 5
   { HBox1 HBox
     MoveScaled(2,2,105,81)
     Expand = True
-    Spacing = 5
+    Spacing = True
     { DrawingArea1 DrawingArea
       MoveScaled(1,4,61,61)
       Background = &HFFFFFF&
@@ -18,7 +18,7 @@
     { TabStrip1 TabStrip
       MoveScaled(63,2,44,79)
       Arrangement = Arrange.Vertical
-      Spacing = 5
+      Spacing = True
       Padding = 5
       Count = 4
       Index = 0
@@ -83,7 +83,7 @@
       { ScrollView1 ScrollView
         MoveScaled(1,5,63,18)
         Arrangement = Arrange.Row
-        Spacing = 10
+        Spacing = True
         Padding = 5
         ScrollBar = Scroll.Horizontal
       }
@@ -94,7 +94,7 @@
       { ScrollView2 ScrollView
         MoveScaled(1,28,63,18)
         Arrangement = Arrange.Row
-        Spacing = 5
+        Spacing = True
         Padding = 5
       }
       Index = 2
@@ -167,7 +167,7 @@
         }
       }
       { Frame2 Frame
-        MoveScaled(3,46,37,23)
+        MoveScaled(3,46,37,26)
         Text = ("Axes")
         { CheckBox3 CheckBox
           MoveScaled(2,3,30,3)
@@ -197,6 +197,11 @@
         { CheckBox9 CheckBox
           MoveScaled(2,8,24,2)
           Text = ("X Steps Arrange")
+        }
+        { CheckBox11 CheckBox
+          MoveScaled(2,22,30,3)
+          Text = ("Show Data labels")
+          Value = CheckBox.True
         }
       }
       Index = 3
