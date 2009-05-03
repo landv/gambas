@@ -30,7 +30,7 @@
 #include "CGLarea.h"
 
 #include <qgl.h>
-#include "gl.h"
+//#include "gl.h"
 
 #include <iostream>
 

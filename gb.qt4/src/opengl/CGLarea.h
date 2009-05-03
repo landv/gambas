@@ -31,7 +31,7 @@
 #include "../gb.qt.h"
 
 #include <qgl.h>
-#include "gl.h"
+//#include "gl.h"
 
 typedef
   struct {

@@ -31,6 +31,7 @@
 //Added by qt3to4:
 #include <QChildEvent>
 #include <QEvent>
+#include <cstdio>
 
 #include "CConst.h"
 #include "CContainer.h"
