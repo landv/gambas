@@ -529,8 +529,6 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
 	}
 }
 
-	
-
 static void draw_tiled_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h)
 {
   QPixmap *p = ((CPICTURE *)picture)->pixmap;

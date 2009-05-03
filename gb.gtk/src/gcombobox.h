@@ -50,12 +50,14 @@ public:
 	gTree *tree;
 	bool _model_dirty;
 	int _last_key;
+	GtkWidget *_button;
 	
 	void updateModel();
 	void updateSort();
 	char *indexToKey(int index);
 	char* find(GtkTreePath *path) { return tree->pathToKey(path, false); }
 	void checkIndex();
+	void updateFocusHandler();
 };
 
 #endif

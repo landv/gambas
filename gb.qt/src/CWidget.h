@@ -93,6 +93,7 @@ extern GB_DESC CControlDesc[];
 extern CWIDGET *CWIDGET_destroy_list;
 extern CWIDGET *CWIDGET_destroy_last;
 extern CWIDGET *CWIDGET_destroy_current;
+extern CWIDGET *CWIDGET_active_control;
 
 extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Container;

@@ -55,6 +55,7 @@
 CWIDGET *CWIDGET_destroy_list = 0;
 CWIDGET *CWIDGET_destroy_last = 0;
 CWIDGET *CWIDGET_destroy_current = 0;
+CWIDGET *CWIDGET_active_control = 0;
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
@@ -1587,6 +1588,9 @@ void CWidget::destroy()
 
   if (enter == ob)
     enter = NULL;
+	
+	if (CWIDGET_active_control == ob)
+		CWIDGET_active_control = NULL;
 
 	set_name(ob, 0);
 
@@ -1628,7 +1632,6 @@ static void post_lostfocus_event(void *control)
   GB.Unref(&control);
 }
 
-
 bool CWidget::eventFilter(QObject *widget, QEvent *event)
 {
   CWIDGET *control;
@@ -1667,8 +1670,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   {
   	if (GB.CanRaise(control, EVENT_GotFocus))
   	{
-			GB.Ref(control);
-			GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
+			if (control != CWIDGET_active_control)
+			{
+				CWIDGET_active_control = control;
+				GB.Ref(control);
+				GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
+			}
 		}
 		
 		CWINDOW_activate(control);
@@ -1678,8 +1685,12 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   {
   	if (GB.CanRaise(control, EVENT_LostFocus))
   	{
-			GB.Ref(control);
-			GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
+			if (control == CWIDGET_active_control)
+			{
+				CWIDGET_active_control = NULL;
+				GB.Ref(control);
+				GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
+			}
 		}
     //GB.Raise(control, EVENT_LostFocus, 0);
   }

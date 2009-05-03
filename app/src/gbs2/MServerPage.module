@@ -60,7 +60,7 @@ PUBLIC SUB Make(sPath AS String) AS String
   
   DO
     
-    iPos2 = InStr(sData, "<", iPos + 1)
+    iPos2 = InStr(sData, "<%", iPos + 1)
     IF iPos2 = 0 THEN 
       PrintHTML(Mid$(sData, iPos + 1))
       BREAK 
@@ -69,7 +69,7 @@ PUBLIC SUB Make(sPath AS String) AS String
       iPos = iPos2
     ENDIF
     
-    IF Mid$(sData, iPos, 2) = "<%" THEN 
+    'IF Mid$(sData, iPos, 2) = "<%" THEN 
       
       ' Search for closing "%>" by jumping Gambas syntax
       DO
@@ -101,38 +101,38 @@ PUBLIC SUB Make(sPath AS String) AS String
 
       iPos = iPos2 + 1
     
-    ELSE IF Mid$(sData, iPos, 3) = "<--" THEN
-    
-      ' Search for closing "-->"
-      iPos2 = InStr(sData, "-->", iPos + 3)
-      
-      PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 3))
-      
-      iPos = iPos2 + 2
-
-    ELSE 
-      
-      ' Search for closing ">" by jumping markup syntax
-      DO
-        INC iPos2
-        IF iPos2 > Len(sData) THEN BREAK
-        sCar = Mid$(sData, iPos2, 1)
-        IF sWait THEN 
-          IF sCar = sWait THEN sWait = ""
-        ELSE IF sCar = ">" THEN 
-          BREAK
-        ELSE IF sCar = Chr$(34) THEN 
-          sWait = Chr$(34)
-        ELSE IF sCar = "'" THEN 
-          sWait = "'"
-        ENDIF
-      LOOP
-      
-      PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 1))
-      
-      iPos = iPos2
-    
-    ENDIF
+    ' ELSE IF Mid$(sData, iPos, 3) = "<--" THEN
+    ' 
+    '   ' Search for closing "-->"
+    '   iPos2 = InStr(sData, "-->", iPos + 3)
+    '   
+    '   PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 3))
+    '   
+    '   iPos = iPos2 + 2
+    ' 
+    ' ELSE 
+    '   
+    '   ' Search for closing ">" by jumping markup syntax
+    '   DO
+    '     INC iPos2
+    '     IF iPos2 > Len(sData) THEN BREAK
+    '     sCar = Mid$(sData, iPos2, 1)
+    '     IF sWait THEN 
+    '       IF sCar = sWait THEN sWait = ""
+    '     ELSE IF sCar = ">" THEN 
+    '       BREAK
+    '     ELSE IF sCar = Chr$(34) THEN 
+    '       sWait = Chr$(34)
+    '     ELSE IF sCar = "'" THEN 
+    '       sWait = "'"
+    '     ENDIF
+    '   LOOP
+    '   
+    '   PrintHTML(Mid$(sData, iPos, iPos2 - iPos + 1))
+    '   
+    '   iPos = iPos2
+    ' 
+    ' ENDIF
   
   LOOP
   
