@@ -676,8 +676,6 @@ static gboolean cb_scroll(GtkWidget *wid, GdkEventScroll *e, gGridView *data)
 	
 	step = gtk_adjustment_get_step_increment(adj);
 	
-	fprintf(stderr, "cb_scroll: %d %p %g\n", e->direction, adj, step);
-	
 	switch (e->direction)
 	{
 		case GDK_SCROLL_UP: data->setScrollY(data->scrollY() - (int)step); break;
