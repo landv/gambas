@@ -185,6 +185,10 @@ int MyTableItem::alignment() const
 void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected )
 {
 	MyTableData *d = data();
+
+	if (!d) // May happen, do not know why!
+		return;
+	
   int w = cr.width();
   int h = cr.height();
   int x = 0;
