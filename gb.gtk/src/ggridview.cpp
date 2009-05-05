@@ -672,14 +672,18 @@ static gboolean cb_scroll(GtkWidget *wid, GdkEventScroll *e, gGridView *data)
 	else
 		adj = gtk_range_get_adjustment(GTK_RANGE(data->hbar));
 	
-	g_object_get(G_OBJECT(adj), "step-increment", &step, (void *)NULL);
+	//g_object_get(G_OBJECT(adj), "step-increment", &step, (void *)NULL);
+	
+	step = gtk_adjustment_get_step_increment(adj);
+	
+	fprintf(stderr, "cb_scroll: %d %p %g\n", e->direction, adj, step);
 	
 	switch (e->direction)
 	{
 		case GDK_SCROLL_UP: data->setScrollY(data->scrollY() - (int)step); break;
 		case GDK_SCROLL_DOWN: data->setScrollY(data->scrollY() + (int)step); break;
 		case GDK_SCROLL_LEFT: data->setScrollX(data->scrollX() - (int)step); break;
-		case GDK_SCROLL_RIGHT:  data->setScrollY(data->scrollX() + (int)step); break;
+		case GDK_SCROLL_RIGHT:  data->setScrollX(data->scrollX() + (int)step); break;
 	}
 	
 	return TRUE;
@@ -969,7 +973,7 @@ void gGridView::calculateBars()
 	if (bh) 
 	{
 		gtk_range_set_range(GTK_RANGE(hbar),0,render->width());
-		gtk_range_set_increments(GTK_RANGE(hbar),render->getColumnSize(0),vw);
+		gtk_range_set_increments(GTK_RANGE(hbar),minColumnWidth(0) * 3,vw);
 		adj=gtk_range_get_adjustment(GTK_RANGE(hbar));
 		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vw,(void *)NULL);
 	}
@@ -977,7 +981,7 @@ void gGridView::calculateBars()
 	if (bv)
 	{
 		gtk_range_set_range(GTK_RANGE(vbar),0,render->height());
-		gtk_range_set_increments(GTK_RANGE(vbar),render->getRowSize(0),vh);
+		gtk_range_set_increments(GTK_RANGE(vbar),minRowHeight(0) * 3,vh);
 		adj=gtk_range_get_adjustment(GTK_RANGE(vbar));
 		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vh,(void *)NULL);
 	}

@@ -933,13 +933,14 @@ void gTableRender::render(GdkRectangle *ar)
 			if ((cpos - offY) >= (ar->y + ar->height))
 				break;
 			
+			cell = getData(by, bx);
+			
 			rect.x=bpos-offX+bufW;
 			rect.y=cpos-offY;
 			rect.width=getColumnSize(bx)-bufW;
 			rect.height=getRowSize(by);
 
 			sel=getFieldSelected(bx,by);
-			cell = getData(by, bx);
 			gdk_gc_set_clip_rectangle(gc, &rect);
 			renderCell(cell, gc, &rect, sel);
 						
