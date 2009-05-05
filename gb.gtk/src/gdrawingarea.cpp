@@ -246,11 +246,13 @@ void gDrawingArea::clear()
 		gdk_gc_set_foreground(gc2,&widget->style->bg[GTK_STATE_NORMAL]);
 		gdk_draw_rectangle(buffer,gc2,true,0,0,width(),height());
 		g_object_unref(G_OBJECT(gc2));
-		//updateCache();
+		drawBorder(buffer);
+		refreshCache();
 		return;
 	}
 	
-	gdk_window_clear(GTK_LAYOUT(widget)->bin_window);
+	//gdk_window_clear(GTK_LAYOUT(widget)->bin_window);
+	refresh();
 }
 
 void gDrawingArea::refreshCache()
