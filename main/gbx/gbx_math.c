@@ -207,10 +207,6 @@ double log2(double x)
 	return log(x) / M_LN2;
 }
 
-#endif
-
-#ifdef OS_OPENBSD
-
 double exp2(double x)
 {
 	return pow(2, x);

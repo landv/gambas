@@ -34,9 +34,6 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <math.h>
-#ifdef OS_FREEBSD
-#include <mathl.h>
-#endif
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>

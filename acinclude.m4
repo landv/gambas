@@ -298,7 +298,7 @@ AC_DEFUN([GB_MATH],
 [
   case "${host}" in
     *-*-freebsd* )
-      MATH_LIB="-lm -lml"
+      MATH_LIB="-lm"
       ;;
     *)
       MATH_LIB="-lm"

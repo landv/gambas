@@ -29,7 +29,6 @@
 #include "gb_alloc.h"
 
 #ifdef __GNU_LIBRARY__
-//#define _GNU_SOURCE already defined before
 #include <getopt.h>
 #endif
 
@@ -48,7 +47,7 @@
 
 #include <dlfcn.h>
 
-#if defined(OS_LINUX) || defined(OS_OPENBSD)
+#if defined(OS_LINUX) || defined(OS_OPENBSD) || defined(OS_FREEBSD)
 	#define lt_dlinit() (0)
 	#define lt_dlhandle void *
 	#define lt_dlopenext(_path) dlopen(_path, RTLD_LAZY)

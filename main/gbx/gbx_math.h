@@ -47,9 +47,6 @@ double rnd(void);
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 double exp10(double x);
 double log2(double x);
-#endif
-
-#ifdef OS_OPENBSD
 double exp2(double x);
 long double log10l(long double x);
 long double fabsl(long double x);
