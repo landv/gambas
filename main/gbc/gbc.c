@@ -40,9 +40,6 @@
 #include <dirent.h>
 
 #include <unistd.h>
-#ifdef __GNU_LIBRARY__
-#include <getopt.h>
-#endif
 
 #include "gb_common.h"
 #include "gb_error.h"
@@ -60,7 +57,7 @@
 #include "gbc_output.h"
 
 
-#ifdef __GNU_LIBRARY__
+#if HAVE_GETOPT_LONG
 static struct option Long_options[] =
 {
   { "debug", 0, NULL, 'g' },
@@ -94,13 +91,13 @@ static void get_arguments(int argc, char **argv)
 {
   const char *dir;
   int opt;
-  #ifdef __GNU_LIBRARY__
+  #if HAVE_GETOPT_LONG
   int index = 0;
   #endif
 
   for(;;)
   {
-    #ifdef __GNU_LIBRARY__
+    #if HAVE_GETOPT_LONG
       opt = getopt_long(argc, argv, "gvaVhtpmsr:", Long_options, &index);
     #else
       opt = getopt(argc, argv, "gvaVhtpmsr:");
@@ -156,7 +153,7 @@ static void get_arguments(int argc, char **argv)
           COPYRIGHT
           "Usage: gbc" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
           "Options:"
-          #ifdef __GNU_LIBRARY__
+          #if HAVE_GETOPT_LONG
           "\n"
           "  -g  --debug                add debugging information\n"
           "  -v  --verbose              verbose output\n"

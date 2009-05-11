@@ -40,6 +40,14 @@
 #include <sqlext.h>
 #include <sqltypes.h>
 
+#ifdef HAVE_SYS_TYPES_H
+#undef HAVE_SYS_TYPES_H
+#endif
+
+#ifdef HAVE_UNISTD_H
+#undef HAVE_UNISTD_H
+#endif
+
 #include "main.h"
 
 
@@ -1100,7 +1108,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	ODBC_FIELDS *current;
 	SQLRETURN retcode;
 	int nresultcols;
-	int displaysize;
+	SQLLEN displaysize;
 	//int V_OD_erg=0;
 	
 #ifdef ODBC_DEBUG_HEADER

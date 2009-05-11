@@ -32,11 +32,6 @@
 
 #include <dlfcn.h>
 
-#ifdef __GNU_LIBRARY__
-//#define _GNU_SOURCE
-#include <getopt.h>
-#endif
-
 #include "gbx_class.h"
 #include "gbx_exec.h"
 #include "gbx_stack.h"

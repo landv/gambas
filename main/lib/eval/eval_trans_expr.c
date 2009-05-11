@@ -68,7 +68,6 @@ static void push_number(int index)
   TRANS_NUMBER number;
   CLASS_CONST cst;
   SYMBOL *sym;
-  GB_VALUE value;
 
   if (TRANS_get_number(index, &number))
     THROW(E_SYNTAX);

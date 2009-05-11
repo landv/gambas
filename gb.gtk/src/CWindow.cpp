@@ -97,10 +97,10 @@ static void gb_raise_window_Show(gMainWindow *sender)
 	GB.Unref(POINTER(&ob));
 }
 
-static void gb_post_window_Show(gMainWindow *sender)
+/*static void gb_post_window_Show(gMainWindow *sender)
 {
 	GB.Post( (void (*)())gb_raise_window_Show,(long)sender);
-}
+}*/
 
 static void gb_raise_window_Hide(gMainWindow *sender)
 {

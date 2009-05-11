@@ -46,6 +46,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD) 
+#include <getopt.h>
+#define HAVE_GETOPT_LONG 1
+#endif
+
 #if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 
   /* Get definition for PATH_MAX */

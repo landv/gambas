@@ -28,10 +28,6 @@
 #include "gb_common.h"
 #include "gb_alloc.h"
 
-#ifdef __GNU_LIBRARY__
-#include <getopt.h>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -83,7 +79,7 @@ static bool _root_set = FALSE;
 
 static void analyze(const char *comp, bool include);
 
-#ifdef __GNU_LIBRARY__
+#if HAVE_GETOPT_LONG
 static struct option LongOptions[] =
 {
   { "version", 0, NULL, 'V' },
@@ -591,7 +587,7 @@ int main(int argc, char **argv)
   const char *name;
   int opt;
   int save_fd;
-  #ifdef __GNU_LIBRARY__
+  #if HAVE_GETOPT_LONG
   int ind = 0;
   #endif
 
@@ -603,7 +599,7 @@ int main(int argc, char **argv)
 
   for(;;)
   {
-    #ifdef __GNU_LIBRARY__
+    #if HAVE_GETOPT_LONG
       opt = getopt_long(argc, argv, "vVhafpr:", LongOptions, &ind);
     #else
       opt = getopt(argc, argv, "vVhafpr:");
@@ -636,7 +632,7 @@ int main(int argc, char **argv)
           COPYRIGHT
           "Usage: gbi" GAMBAS_VERSION_STRING " [options] [components]\n"
           "Options:"
-          #ifdef __GNU_LIBRARY__
+          #if HAVE_GETOPT_LONG
           "\n"
           "  -V  --version              display version\n"
           "  -h  --help                 display this help\n"
@@ -696,7 +692,7 @@ int main(int argc, char **argv)
   }
   else
   {
-  #ifdef __GNU_LIBRARY__
+  #if HAVE_GETOPT_LONG
  	if (!getenv("GB_PRELOAD"))
   	{
 			for (ind = optind; ind < argc; ind++)

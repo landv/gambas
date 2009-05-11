@@ -1808,7 +1808,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	char *_defaultValue = NULL;
 	bool _fieldNotNull = FALSE;
 	int i, n;
-	sqlite3 *db_handle = ((SqliteDatabase *)db->handle)->getHandle();
+	//sqlite3 *db_handle = ((SqliteDatabase *)db->handle)->getHandle();
 	int autoinc;
 
 	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))

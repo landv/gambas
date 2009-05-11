@@ -394,7 +394,7 @@ static void analyze(EVAL_ANALYZE *result)
 static void add_end_pattern(void)
 {
   int index;
-  const char *sym;
+  //const char *sym;
   int len;
 
   len = EVAL->len - (READ_source_ptr - EVAL->source);
