@@ -24,10 +24,8 @@
 
 #define __MAIN_C
 
-#include <bits/wordsize.h>
-
+#include "gb_common.h"
 // Use 64 bits I/O
-#define _FILE_OFFSET_BITS 64
 #if __WORDSIZE == 64
 #define _LARGEFILE64_SOURCE
 #endif
