@@ -1,4 +1,84 @@
 -------------------------------------------------------------------------------
+ gambas2-2.13 - 14 May 2009
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* BUG: FreeBSD patches.
+
+[DEVELOPMENT ENVIRONMENT]
+* BUG: The right column of the property sheet is not too wide anymore.
+* NEW: Support for Hindi language.
+
+[INTERPRETER]
+* BUG: The Atnh() function has been fixed.
+* BUG: Format$() now checks its second argument correctly when it is an
+  integer.
+* BUG: FreeBSD patches.
+
+[COMPILER]
+* BUG: Move some debugging breakpoint instructions so that the debugger
+  breaks at the right line when there is an error during an IF or a CASE
+  instruction.
+* NEW: Support for FreeBSD getopt_long().
+
+[ARCHIVER]
+* NEW: Support for FreeBSD getopt_long().
+
+[INFORMER]
+* NEW: Support for FreeBSD getopt_long().
+
+[SCRIPTER]
+* BUG: The <%...%> markups are now taken into account everywhere inside a
+  server page.
+
+[GB.COMPRESS.ZLIB]
+* BUG: Do not include the Linux specific header <bits/wordsize.h> anymore.
+
+[GB.DB.ODBC]
+* BUG: Removed some compilation warnings.
+
+[GB.DB.SQLITE3]
+* BUG: Fix building with gcc 4.4.0
+* BUG: Removed a compilation warning.
+
+[GB.DRAW]
+* BUG: Some properties of the Draw class didn't correctly check that a
+  drawing device was opened.
+
+[GB.EVAL]
+* BUG: Removed some compilation warnings.
+
+[GB.FORM]
+* BUG: TableView now handle the Return/Enter key by raising the Click
+  event instead of automatically editing the cell, so that non-editable
+  cells are not edited by mistake.
+* BUG: The same fix was applied to the way TableView handles arrow keys.
+* BUG: The TableView editor now has the same font as the master TableView.
+
+[GB.GTK]
+* BUG: Fix Draw.Picture() and Draw.Image() on transparent pictures.
+* BUG: Correctly initialize the foreground and background colors at
+  Draw.Begin().
+* BUG: ComboBox now raises focus events.
+* BUG: DrawingArea.Clear() does not erase the border anymore if the
+  DrawingArea is cached.
+* BUG: Hiding a row or a column does not prevent the mouse wheel to work
+  anymore in the GridView control.
+* BUG: Forgot to remove a debugging message.
+* BUG: Newly opened windows are now correctly shown at the specified
+  position.
+* BUG: Removed a compilation warning.
+
+[GB.QT]
+* BUG: Borderless modal windows do not show any border anymore with
+  Metacity.
+* BUG: Fix Draw.Picture() and Draw.Image() on transparent pictures.
+* BUG: Compound controls like ComboBox should not raise spurious focus
+  events anymore.
+* BUG: Fix a possible crash in GridView repaint.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.12 - 19 Mar 2009
 -------------------------------------------------------------------------------
 
