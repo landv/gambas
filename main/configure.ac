@@ -79,7 +79,7 @@ dnl ---- Should I use libtool to load shared libraries in gbi and gbx ?
 
 if test "$SYSTEM" != "CYGWIN"; then
   AC_DEFINE(DONT_USE_LTDL, 1, [Do not use libtool to load shared libraries])
-  if test "$SYSTEM" != "OPENBSD"; then
+  if test "$SYSTEM" != "OPENBSD" && test "$SYSTEM" != "FREEBSD"; then
     DL_LIB="-ldl"
   else
     DL_LIB=""

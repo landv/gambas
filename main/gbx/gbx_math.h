@@ -50,9 +50,6 @@ double exp10(double x);
 #undef log2
 #endif
 double log2(double x);
-#endif
-
-#if defined(OS_OPENBSD) || defined(OS_CYGWIN)
 double exp2(double x);
 long double log10l(long double x);
 long double fabsl(long double x);

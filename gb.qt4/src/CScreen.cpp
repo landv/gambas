@@ -100,7 +100,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CAPP_active_control)
 
-  GB.ReturnObject(CWidget::get(qApp->focusWidget()));
+  GB.ReturnObject(CWIDGET_active_control);
 
 END_PROPERTY
 

@@ -970,7 +970,7 @@ void gGridView::calculateBars()
 	if (bh) 
 	{
 		gtk_range_set_range(GTK_RANGE(hbar),0,render->width());
-		gtk_range_set_increments(GTK_RANGE(hbar),render->getColumnSize(0),vw);
+		gtk_range_set_increments(GTK_RANGE(hbar),minColumnWidth(0) * 3,vw);
 		adj=gtk_range_get_adjustment(GTK_RANGE(hbar));
 		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vw,(void *)NULL);
 	}
@@ -978,7 +978,7 @@ void gGridView::calculateBars()
 	if (bv)
 	{
 		gtk_range_set_range(GTK_RANGE(vbar),0,render->height());
-		gtk_range_set_increments(GTK_RANGE(vbar),render->getRowSize(0),vh);
+		gtk_range_set_increments(GTK_RANGE(vbar),minRowHeight(0) * 3,vh);
 		adj=gtk_range_get_adjustment(GTK_RANGE(vbar));
 		g_object_set(G_OBJECT(adj),"page-size",(gfloat)vh,(void *)NULL);
 	}

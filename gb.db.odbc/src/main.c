@@ -40,6 +40,14 @@
 #include <sqlext.h>
 #include <sqltypes.h>
 
+#ifdef HAVE_SYS_TYPES_H
+#undef HAVE_SYS_TYPES_H
+#endif
+
+#ifdef HAVE_UNISTD_H
+#undef HAVE_UNISTD_H
+#endif
+
 #include "main.h"
 
 

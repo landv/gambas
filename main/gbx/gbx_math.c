@@ -43,10 +43,6 @@ double log2(double x)
 	return log(x) / M_LN2;
 }
 
-#endif
-
-#if defined(OS_OPENBSD) || defined(OS_CYGWIN)
-
 double exp2(double x)
 {
 	return pow(2, x);
@@ -236,7 +232,7 @@ double rnd(void)
 	val <<= 32;
 	val |= GFSR_random();
 
-	return (double)val / 0xFFFFFFFFFFFFFFFFULL;
+	return (double)val / 18446744073709551616.0; //0xFFFFFFFFFFFFFFFFULL;
 }
 
 

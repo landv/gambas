@@ -100,6 +100,22 @@ static void combo_cell_text(GtkComboBox *combo, GtkCellRenderer *cell, GtkTreeMo
 		(void *)NULL);
 }
 
+static GtkWidget *_button;
+
+static void cb_find_button(GtkWidget *widget, gpointer data)
+{
+	if (GTK_IS_TOGGLE_BUTTON(widget))
+		_button = widget;
+	else if (GTK_IS_CONTAINER(widget))
+		gtk_container_forall(GTK_CONTAINER(widget), cb_find_button, NULL);
+}
+
+static GtkWidget *find_button(GtkWidget *combo)
+{
+	_button = NULL;
+	gtk_container_forall(GTK_CONTAINER(combo), cb_find_button, NULL);
+	return _button;
+}
 
 char *gComboBox::indexToKey(int index)
 {
@@ -122,7 +138,7 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 			);
 		_style_init = TRUE;
 	}*/
-	
+
 	onChange = NULL;
 	onClick = NULL;
 	onActivate = NULL;
@@ -132,6 +148,7 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	_model_dirty = false;
 	sort = false;
 	entry = NULL;
+	_button = NULL;
 	
 	g_typ = Type_gComboBox;
 	
@@ -151,7 +168,9 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	realize(false);
 	
 	g_signal_connect(G_OBJECT(widget), "changed", G_CALLBACK(cb_click), (gpointer)this);
-	
+
+	//button = ((_GtkComboBoxPrivate *)GTK_COMBO_BOX(widget)->priv)->arrow->parent;
+	updateFocusHandler();
 	setReadOnly(false);
 }
 
@@ -169,7 +188,7 @@ void gComboBox::setRealBackground(gColor color)
 {
 	gControl::setRealBackground(color);
 	if (entry) 
-		set_gdk_base_color(entry,color);
+		set_gdk_base_color(entry, color);
 }
 
 
@@ -279,24 +298,25 @@ void gComboBox::setReadOnly(bool vl)
 	
 	if ((!vl) && (!entry) )
 	{		
-		entry = gtk_entry_new();
+		entry = gtk_entry_new ();
+		/* this flag is a hack to tell the entry to fill its allocation. */
+		GTK_ENTRY(entry)->is_cell_renderer = TRUE;
 		gtk_container_add(GTK_CONTAINER(widget), entry);
+		//gtk_widget_set_size_request(entry, width(), height());
+		gtk_widget_show(entry);
+
 		if (count())
 			gTextBox::setText(itemText(index()));
 		
-		//gtk_widget_get_size_request(widget,&x,&y);
-		gtk_widget_set_size_request(entry, width(), height());
-		//set_gdk_base_color(txtentry,background());
-		//set_gdk_text_color(txtentry,foreground());
 		setBackground(background());
 		setForeground(foreground());
 		setFont(font());
 		
 		initEntry();
-		g_signal_connect(G_OBJECT(entry),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
-		g_signal_connect(G_OBJECT(entry),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
-		
-		gtk_widget_show(entry);
+		g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
+		g_signal_connect(G_OBJECT(entry), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
+		g_signal_connect(G_OBJECT(entry), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
+		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	}
 	
 	if ( vl && entry ) 
@@ -305,6 +325,8 @@ void gComboBox::setReadOnly(bool vl)
 		//gtk_container_remove(GTK_CONTAINER(widget), entry);
 		entry = NULL;
 	}
+	
+	updateFocusHandler();
 }
 
 void gComboBox::setSorted(bool vl)
@@ -377,7 +399,7 @@ void gComboBox::add(const char *text, int pos)
 			updateSort();
 		}
 	}
-
+	
 	//gtk_combo_box_set_model(GTK_COMBO_BOX(widget), model);
 }
 
@@ -455,3 +477,34 @@ bool gComboBox::isReadOnly()
 	return entry == NULL;
 }
 
+
+static gboolean button_focus_in(GtkWidget *widget, GdkEventFocus *event, gComboBox *control)
+{	
+	if (control->isReadOnly())
+		return gcb_focus_in(widget, event, control);
+
+	control->setFocus();
+	return false;
+}
+
+static gboolean button_focus_out(GtkWidget *widget, GdkEventFocus *event, gComboBox *control)
+{	
+	if (control->isReadOnly())
+		return gcb_focus_out(widget, event, control);
+	
+	return false;
+}
+
+void gComboBox::updateFocusHandler()
+{
+	GtkWidget *button = find_button(widget);
+	
+	if (button == _button)
+		return;
+	
+	_button = button;
+	//g_signal_connect(G_OBJECT(button), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
+	//g_signal_connect(G_OBJECT(button), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
+	g_signal_connect(G_OBJECT(button), "focus-in-event", G_CALLBACK(button_focus_in), (gpointer)this);
+	g_signal_connect(G_OBJECT(button), "focus-out-event", G_CALLBACK(button_focus_out), (gpointer)this);
+}

@@ -34,9 +34,6 @@
 #define _FILE_OFFSET_BITS 64
 
 #include <math.h>
-#ifdef OS_FREEBSD
-#include <mathl.h>
-#endif
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -48,6 +45,11 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD)
+#include <getopt.h>
+#define HAVE_GETOPT_LONG 1
+#endif
 
 #ifdef OS_CYGWIN
 

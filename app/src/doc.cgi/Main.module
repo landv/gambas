@@ -2659,12 +2659,17 @@ Private Sub RenamePage()
 
 End
 
-Private Sub RenameOnePage(sPath As String, sNewPath As String)
+Private Sub RenameOnePage(sPath As String, sNewPath As String, Optional sPrefix As String)
   
   Dim rPage As Result
   Dim sOld As String
 
-  rPage = DB.Edit("page")
+  If sPrefix Then
+    rPage = DB.Edit("page", "sPath like &1", Replace(sPrefix, "%", "%%") & "%")
+  Else
+    rPage = DB.Edit("page")
+  Endif
+  
   While rPage.Available
 
     If Left$(File.Name(rPage!sPath)) <> ":" Then 
@@ -2724,13 +2729,13 @@ Private Sub DoRenamePage()
 
   Else 
   
-    rPage = DB.Edit("page")
+    rPage = DB.Edit("page", "sPath like &1", Replace($sPath, "%", "%%") & "%")
     While rPage.Available
   
       If Left$(File.Name(rPage!sPath)) <> ":" Then 
   
         If rPage!sPath Like ($sPath & "*") Then
-          RenameOnePage(rPage!sPath, sNewPath & Mid$(rPage!sPath, Len($sPath) + 1))
+          RenameOnePage(rPage!sPath, sNewPath & Mid$(rPage!sPath, Len($sPath) + 1), $sPath)
         Endif
   
       Endif

@@ -28,11 +28,6 @@
 #include "gb_common.h"
 #include "gb_alloc.h"
 
-#ifdef __GNU_LIBRARY__
-//#define _GNU_SOURCE already defined before
-#include <getopt.h>
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -48,7 +43,7 @@
 
 #include <dlfcn.h>
 
-#if defined(OS_LINUX) || defined(OS_OPENBSD)
+#if defined(OS_LINUX) || defined(OS_OPENBSD) || defined(OS_FREEBSD)
 	#define lt_dlinit() (0)
 	#define lt_dlhandle void *
 	#define lt_dlopenext(_path) dlopen(_path, RTLD_LAZY)
@@ -89,7 +84,7 @@ static char **_components = NULL;
 
 static void analyze(const char *comp, bool include);
 
-#ifdef __GNU_LIBRARY__
+#if HAVE_GETOPT_LONG
 static struct option LongOptions[] =
 {
 	{ "version", 0, NULL, 'V' },
@@ -679,7 +674,7 @@ int main(int argc, char **argv)
 	char *name;
 	int opt;
 	int save_fd;
-	#ifdef __GNU_LIBRARY__
+	#if HAVE_GETOPT_LONG
 	int ind = 0;
 	#endif
 
@@ -695,7 +690,7 @@ int main(int argc, char **argv)
 
 	for(;;)
 	{
-		#ifdef __GNU_LIBRARY__
+		#if HAVE_GETOPT_LONG
 			opt = getopt_long(argc, argv, "vVhpar:", LongOptions, &ind);
 		#else
 			opt = getopt(argc, argv, "vVhpar:");
@@ -732,7 +727,7 @@ int main(int argc, char **argv)
 					COPYRIGHT
 					"Usage: gbi" GAMBAS_VERSION_STRING " [options] [components]\n"
 					"Options:"
-					#ifdef __GNU_LIBRARY__
+					#if HAVE_GETOPT_LONG
 					"\n"
 					"  -V  --version              display version\n"
 					"  -h  --help                 display this help\n"
@@ -793,7 +788,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-		#ifdef __GNU_LIBRARY__
+		#if HAVE_GETOPT_LONG
 		if (!getenv("GB_PRELOAD"))
 			{
 				for (ind = optind; ind < argc; ind++)

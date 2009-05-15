@@ -90,6 +90,7 @@ enum {
 #ifndef __CWIDGET_CPP
 
 extern GB_DESC CControlDesc[];
+extern CWIDGET *CWIDGET_active_control;
 
 extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Container;

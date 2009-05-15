@@ -76,6 +76,8 @@ static QMap<int, int> _x11_to_qt_keycode;
 
 /* Control class */
 
+CWIDGET *CWIDGET_active_control = 0;
+
 
 static void set_mouse(QWidget *w, int mouse, void *cursor)
 {
@@ -1690,6 +1692,9 @@ void CWidget::destroy()
 	if (enter == ob)
 		enter = NULL;
 
+	if (CWIDGET_active_control == ob)
+		CWIDGET_active_control = NULL;
+
 	set_name(ob, 0);
 
 	dict.remove(w);
@@ -1763,26 +1768,34 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (real)
 			GB.Raise(control, EVENT_Leave, 0);
 	}
-	else if (type == QEvent::FocusIn)
-	{
-		if (GB.CanRaise(control, EVENT_GotFocus))
-		{
-			GB.Ref(control);
-			GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
+  else if (type == QEvent::FocusIn)
+  {
+  	if (GB.CanRaise(control, EVENT_GotFocus))
+  	{
+			if (control != CWIDGET_active_control)
+			{
+				CWIDGET_active_control = control;
+				GB.Ref(control);
+				GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
+			}
 		}
 
 		CWINDOW_activate(control);
-		//GB.Raise(control, EVENT_GotFocus, 0);
-	}
-	else if (type == QEvent::FocusOut)
-	{
-		if (GB.CanRaise(control, EVENT_LostFocus))
-		{
-			GB.Ref(control);
-			GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
+    //GB.Raise(control, EVENT_GotFocus, 0);
+  }
+  else if (type == QEvent::FocusOut)
+  {
+  	if (GB.CanRaise(control, EVENT_LostFocus))
+  	{
+			if (control == CWIDGET_active_control)
+			{
+				CWIDGET_active_control = NULL;
+				GB.Ref(control);
+				GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
+			}
 		}
-		//GB.Raise(control, EVENT_LostFocus, 0);
-	}
+    //GB.Raise(control, EVENT_LostFocus, 0);
+  }
 	else if (type == QEvent::ContextMenu)
 	{
 		// if (real && GB.CanRaise(control, EVENT_Menu))

@@ -39,10 +39,6 @@
 #include <sys/time.h>
 #include <dirent.h>
 
-#ifdef __GNU_LIBRARY__
-#include <getopt.h>
-#endif
-
 #include "gb_common.h"
 #include "gb_error.h"
 #include "gb_str.h"
@@ -52,7 +48,7 @@
 
 #include "gbc_archive.h"
 
-#ifdef __GNU_LIBRARY__
+#if HAVE_GETOPT_LONG
 static struct option Long_options[] =
 {
   { "version", 0, NULL, 'V' },
@@ -74,13 +70,13 @@ static const char *remove_ext_lang[] = { "pot", "po", NULL };
 static void get_arguments(int argc, char **argv)
 {
   int opt;
-  #ifdef __GNU_LIBRARY__
+  #if HAVE_GETOPT_LONG
   int index = 0;
   #endif
 
   for(;;)
   {
-    #ifdef __GNU_LIBRARY__
+    #if HAVE_GETOPT_LONG
       opt = getopt_long(argc, argv, "vVhso:", Long_options, &index);
     #else
       opt = getopt(argc, argv, "vVhso:");
@@ -113,7 +109,7 @@ static void get_arguments(int argc, char **argv)
           COPYRIGHT
           "Usage: gba" GAMBAS_VERSION_STRING " [options] [<project directory>]\n\n"
           "Options:"
-          #ifdef __GNU_LIBRARY__
+          #if HAVE_GETOPT_LONG
           "\n"
           "  -o  --output=ARCHIVE       archive path [<project directory>/<project name>.gambas]\n"
           "  -v  --verbose              verbose output\n"

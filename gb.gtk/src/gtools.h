@@ -48,8 +48,10 @@ GtkStyle *gt_get_style(const char *name, int type);
 
 gboolean gcb_keypress (GtkWidget *widget, GdkEventKey *event, gControl *data);
 gboolean gcb_keyrelease (GtkWidget *widget, GdkEventKey *event, gControl *data);
-gboolean gcb_button_press(GtkWidget *widget,GdkEventButton *event,gControl *data);
-gboolean gcb_button_release(GtkWidget *widget,GdkEventButton *event,gControl *data);
+gboolean gcb_button_press(GtkWidget *widget, GdkEventButton *event, gControl *data);
+gboolean gcb_button_release(GtkWidget *widget, GdkEventButton *event, gControl *data);
+gboolean gcb_focus_in(GtkWidget *widget, GdkEventFocus *event, gControl *data);
+gboolean gcb_focus_out(GtkWidget *widget, GdkEventFocus *event, gControl *data);
 
 // Where to scroll to ensure that a specific area is visible
 

@@ -256,7 +256,7 @@ static gboolean sg_scroll(GtkWidget *widget,GdkEventScroll *event,gControl *data
 	return false;
 }
 
-static gboolean sg_focus_In(GtkWidget *widget,GdkEventFocus *event,gControl *data)
+gboolean gcb_focus_in(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
 	//fprintf(stderr, "sg_focus_in: %s\n", data->name());
 
@@ -271,7 +271,7 @@ static gboolean sg_focus_In(GtkWidget *widget,GdkEventFocus *event,gControl *dat
 	return false;
 }
 
-static gboolean sg_focus_Out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
+gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 {	
 	//fprintf(stderr, "sg_focus_out: %s\n", data->name());
 	
@@ -492,8 +492,8 @@ void gControl::widgetSignals()
 	
 	g_signal_connect(G_OBJECT(widget),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"focus-in-event",G_CALLBACK(sg_focus_In),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"focus-out-event",G_CALLBACK(sg_focus_Out),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget),"focus-in-event",G_CALLBACK(gcb_focus_in),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget),"focus-out-event",G_CALLBACK(gcb_focus_out),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"event",G_CALLBACK(sg_event),(gpointer)this);
 }
 
