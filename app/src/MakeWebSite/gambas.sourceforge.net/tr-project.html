@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<link rel="stylesheet" href="style.css">
+
+<body>
+
+<table border=0 bordercolor=#43C7FF cellspacing=0 cellpadding=6 width=100%>
+<tr bgcolor=#D0E8FF><td><font size=+2><b>
+Project problems
+</b></font></td></tr></table>
+
+<h3>I have...</h3>
+
+<p>Have you carefully read all <i>tips of the day</i> ?
+
+<p>I suggest you read the 
+<a href="http://gambasdoc.org/help/doc/diffvb">
+Differences From VB</a> page in the Wiki encyclopaedia.
+
+<h3>I want to open a file with the <i>OPEN</i> instruction, and I get
+this error message : "Type mismatch. Wanted File, got Integer instead"</h3>
+
+<p>The <i>OPEN</i> instruction of <i><b>Gambas</b></i> does not work like
+the <i>Visual Basic</i> one. It does not return the file as an integer, but
+as a <i>File</i> object.</p>
+
+<p>Instead of typing :</p>
+
+<pre>  DIM handle AS Integer
+  ...
+  OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>you must type :</p>
+
+<pre>  DIM handle AS File
+  ...
+  OPEN "myfile" FOR READ AS #handle</pre>
+
+<h3>I have defined a public variable in a module, but when I want to use it
+from another module, I get an "undefined identifier" error.</h3>
+
+<p><b><i>Gambas</i></b> works more like <i>Java</i> than like <i>Visual
+Basic</i>.</p>
+
+<p>I mean that a module is exactly like a class, except that all its members
+are static.</p>
+
+<p>So, if you declare a variable in a module named <i>MyModule</i> this
+way&nbsp;:</p>
+
+<pre>  PUBLIC MyVariable AS String</pre>
+
+<p>then to access it, you must use the following syntax&nbsp;:</p>
+
+<pre>  PRINT MyModule.MyVariable</pre>
+
+<p>There are no global public variables like in Visual Basic, because
+I think it is a completely stupid and useless feature. Trust me&nbsp;! ;-)</p>
+
+</body>
+
+</html>

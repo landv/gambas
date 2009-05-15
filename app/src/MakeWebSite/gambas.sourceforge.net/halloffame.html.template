@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <link rel="stylesheet" href="style.css">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+
+<div class="title">
+Hall Of Fame
+</div>
+
+<h3>Developers</h3>
+
+<table border="0" cellspacing="0" cellpadding="6">
+
+  <tr valign="top">
+    <th>Developer</th>
+    <th>Country</th>
+    <th>Working or have worked on...</th>
+    <!--<th>Main characteristic :-)</th>-->
+  </tr>
+
+ $(DEVELOPERS)
+
+</table>
+
+<p>If you are developing anything directly related to <b><i>Gambas</i></b> or its <i>IDE</i>,
+and not on the previous list, or if you find a mistake in this list,
+<a href="mailto:gambas_AT_users_DOT_sourceforge_DOT_net">write me</a>!
+And explain me who you are and what you have done, so that I add you to the Hall Of Fame.</p>
+
+<h3>Translations</h3>
+
+<table border="0" cellspacing="0" cellpadding="6">
+
+  <tr valign="top">
+    <th>Language</th>
+    <th>Translator(s)</th>
+  </tr>
+
+  $(TRANSLATORS)
+  
+</table>
+
+<p>If you want to translate <b><i>Gambas</i></b>,
+<a href="mailto:gambas_AT_users_DOT_sourceforge_DOT_net">write me</a>
+so that I add you on the previous table, and read the <a href="http://gambasdoc.org/help/howto/translate?view">How To</a> carefully.</p>
+
+<p>If you want to work on an already existing translation, contact the
+translators!</p>
+
+</body>
+</html>

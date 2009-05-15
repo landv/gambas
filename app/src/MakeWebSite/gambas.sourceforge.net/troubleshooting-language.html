@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<body>
+
+<h1>Troubleshoothing - <i>Gambas project problems</i></h1>
+
+<p><img src="next.png" align=top>&nbsp;
+<a href="troubleshooting.html">Return to the troubleshooting page</a></p>
+
+<hr color=#43C7FF size=4>
+
+<h3>I built a simple <i><b>Gambas</b></i> application by scrupulously
+following one of the examples. The application compiles, but don't run.
+What's wrong ?</h3>
+
+<p>You must define a startup class in the <i>project properties</i>
+dialog, and this startup class must have a static public method
+named <i>Main</i> without any argument to act as a startup method.</p>
+
+<p>A bug in the development environment prevents it from displaying a
+warning message to the user. It is the reason why nothing happens
+when you run the project.</p>
+
+<hr color=#43C7FF size=4>
+
+<h3>I created a small project with only one form, and I define this form as
+the startup class. When I run the project, nothing happens ! Why ?</h3>
+
+<p>Contrary to <i>Visual Basic</i>, <b><i>Gambas</i></b> form are not
+self-executable. As for any other classes, you must define a static
+public method named <i>Main</i> so that it works. See above for more
+details.</p>
+
+<hr color=#43C7FF size=4>
+
+<h3>I want to open a file with the <i>OPEN</i> instruction, and I get
+this error message : "Type mismatch. Wanted File, got Integer instead"</h3>
+
+<p>The <i>OPEN</i> instruction of <i><b>Gambas</b></i> does not work like
+the <i>Visual Basic</i> one. It does not return the file as an integer, but
+as a <i>File</i> object.</p>
+
+<p>Instead of typing :</p>
+
+<pre>  DIM handle AS Integer
+  ...
+  OPEN "myfile" FOR READ AS #handle</pre>
+
+<p>you must type :</p>
+
+<pre>  DIM handle AS File
+  ...
+  OPEN "myfile" FOR READ AS #handle</pre>
+
+<hr color=#43C7FF size=4>
+
+<h3>When I compile my project, I got an "undefined identifier" error on
+a well known class name that seems absolutely correct.</h3>
+
+<p>For example, with the following code :</p>
+
+<pre>  MyControl.Font = font["Luxi Sans 16"]</pre>
+
+<p>When the compiler encounters an identifier, it assumes reading a class name
+if the identifier begins with a capital letter.</p>
+
+<p>You have two solutions to solve this problem.</p>
+
+<p>First you can change the identifier first letter, like that :</p>
+
+<pre>  MyControl.Font = Font["Luxi Sans 16"]</pre>
+
+<p>Secondly, you can predeclare the identifier as a class, with the <i>CLASS</i>
+keyword. This declaration must be placed at the beginning of the class.</p>
+
+<pre>  CLASS font
+  ...
+  MyControl.Font = font["Luxi Sans 16"]</pre>
+
+<hr color=#43C7FF size=4>
+
+<p><img src="next.png" align=top>&nbsp;
+<a href="troubleshooting.html">Return to the troubleshooting page</a></p>
+
+</body>
+
+</html>
