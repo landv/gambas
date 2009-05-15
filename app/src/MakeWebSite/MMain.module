@@ -1,0 +1,256 @@
+' Gambas module file
+
+Private $cVar As New Collection
+
+Sub InitVar()
+  
+  Dim aStable As String[] = ["2.13.0", "2.12.0", "2.11.1", "2.10.2"]
+  'DIM aDev AS String[] = ["92", "91", "90", "51"]
+  
+  $cVar["STABLE_VERSION"] = aStable[0]
+  $cVar["STABLE_VERSION_1"] = aStable[1]
+  $cVar["STABLE_VERSION_2"] = aStable[2]
+  $cVar["STABLE_VERSION_3"] = aStable[3]
+  
+  $cVar["DEV_VERSION"] = "2.99.0"
+  '$cVar["DEV_VERSION_1"] = "1.9." & aDev[1]
+  '$cVar["DEV_VERSION_2"] = "1.9." & aDev[2]
+  '$cVar["DEV_VERSION_3"] = "1.9." & aDev[3]
+  
+  InitAuthor
+  
+End
+
+Private Sub InitAuthor()
+  
+  Dim hFile As File
+  Dim hAuthor As CAuthor
+  Dim sDev As String
+  Dim sTrans As String
+  Dim bDark As Boolean
+  Dim aCountry As New String[]
+  Dim cCountry As New Collection
+  Dim sCountry As String
+  Dim aAuthor As Object[]
+  Dim iInd As Integer
+  
+  hFile = Open "authors.txt" For Read 
+  
+  While Not Eof(hFile)
+    hAuthor = New CAuthor(hFile)
+  Wend 
+  
+  Close #hFile
+  
+  CAuthor.All.Sort
+  
+  For Each hAuthor In CAuthor.All
+  
+    If hAuthor.Translator Then 
+    
+      For Each sCountry In hAuthor.Translation
+        If Not cCountry.Exist(sCountry) Then
+          cCountry[sCountry] = New Object[]
+          aCountry.Add(sCountry)
+        Endif
+        cCountry[sCountry].Add(hAuthor)
+      Next
+      
+    Endif
+    
+    If hAuthor.Developer Then
+    
+      If bDark Then 
+        sDev &= "<tr valign=\"top\" class=\"dark\">"
+      Else
+        sDev &= "<tr valign=\"top\">"
+      Endif
+      
+      bDark = Not bDark
+    
+      sDev &= "  <td>" & hAuthor.GetLink() & "</td>\n" &
+              "  <td>" & hAuthor.Country & "</td>" &
+              "  <td>"
+              
+      If hAuthor.Works.Count > 1 Then 
+        sDev &= "\n    <li>" & hAuthor.Works.Join(".\n    <li>") & ".\n"
+      Else 
+        sDev &= hAuthor.Works[0] & "."
+      Endif
+      
+      sDev &= "  </td>\n</tr>"
+    
+    Endif
+  
+  Next 
+  
+  $cVar["DEVELOPERS"] = sDev
+  
+  bDark = False
+  aCountry.Sort
+  For Each sCountry In aCountry
+  
+    If bDark Then 
+      sTrans &= "<tr valign=\"top\" class=\"dark\">"
+    Else
+      sTrans &= "<tr valign=\"top\">"
+    Endif
+  
+    bDark = Not bDark
+    
+    sTrans &= "  <td>" & sCountry & "</td>\n"
+    
+    sTrans &= "  <td>\n"
+    aAuthor = cCountry[sCountry]
+    sTrans &= "    " & aAuthor[0].GetLink() & "\n"
+    For iInd = 1 To aAuthor.Max
+      sTrans &= "    <br>" & aAuthor[iInd].GetLink() & "\n"
+    Next 
+    
+    sTrans &= "  </td>\n</tr>\n"
+    
+  Next 
+  
+  $cVar["TRANSLATORS"] = sTrans
+  
+End
+
+
+
+Sub GetNews(sPath As String) As String
+  
+  Dim sNews As String
+  Dim sData As String
+  Dim iPos As Integer
+  Dim aDate As String[]
+  Dim dDate As Date
+  
+  sNews = File.Load("news.html")
+  sData = File.Load(sPath)
+  
+  aDate = Split(File.BaseName(sPath), "-")
+  dDate = Date(aDate[0], aDate[1], Left(aDate[2], 2))
+  
+  sNews = Replace(sNews, "$(DATE)", Format(dDate, "dd mmm yyyy"))
+  
+  iPos = InStr(sData, "\n")
+  
+  sNews = Replace(sNews, "$(TITLE)", Left(sData, iPos - 1))
+  sNews = Replace(sNews, "$(NEWS)", Trim(Mid$(sData, iPos + 1)))
+  
+  Return sNews
+  
+End
+
+
+Sub Expand(sPath As String)
+  
+  Dim sData As String
+  Dim sVar As String
+  Dim iNews As Integer
+  Dim sKey As String
+  Dim sFile As String
+  Dim sSubst As String
+  Dim sDest As String
+  
+  sDest = File.SetExt(sPath, "")
+  sData = File.Load(sPath)
+  
+  For Each sVar In $cVar
+    sData = Replace(sData, "$(" & $cVar.Key & ")", sVar)
+  Next
+  
+  If InStr(sData, "$(HEAD_NEWS)") Then 
+    iNews = 2
+    sKey = "$(HEAD_NEWS)"
+  Else If InStr(sData, "$(NEWS)") Then 
+    iNews = 1024
+    sKey = "$(NEWS)"
+  Endif 
+  
+  If iNews Then 
+    For Each sFile In Dir("news", "*.html").Sort(gb.Descent)
+    
+      sSubst &= GetNews("news" &/ sFile)
+              
+      Dec iNews
+      If iNews <= 0 Then Break 
+    Next
+    
+    sData = Replace(sData, sKey, sSubst)
+    
+  Endif 
+  
+  Try Kill sDest & "~"
+  Try Move sDest To sDest & "~"
+  File.Save(sDest, sData)
+  
+  CAuthor.All.Clear 
+  
+End
+
+
+Sub ReplaceMail(sPath As String)
+  
+  Dim sData As String = File.Load(sPath)
+  Dim iPos, iPos2 As Integer
+  Dim sMail As String
+  Dim sOrig As String
+  Dim bMail As Boolean
+  
+  Do
+    iPos = InStr(sData, "href=\"mailto:", iPos + 1)
+    If iPos = 0 Then Break 
+    iPos2 = InStr(sData, Chr$(34), iPos + 7)
+    If iPos2 = 0 Then Break
+    sMail = Mid$(sData, iPos, iPos2 - iPos + 1)
+    sOrig = sMail
+    sMail = Replace(sMail, "@", "_AT_")
+    sMail = Replace(sMail, ".", "_DOT_")
+    sData = Left(sData, iPos - 1) & sMail & Mid$(sData, iPos2 + 1)
+    iPos += Len(sMail)
+    If sOrig <> sMail Then
+      If Not bMail Then 
+        bMail = True
+        Print sPath
+      Endif
+    Endif
+  Loop
+  
+  Try Kill sPath & "~"
+  Try Move sPath To sPath & "~"
+  File.Save(sPath, sData)
+  
+End
+
+
+
+Public Sub Main()
+
+  Dim sFile As String
+  Dim sDir As String
+  
+  System.Language = "C"
+  
+  InitVar
+  
+  sDir = "~/gambas/html/gambas.sourceforge.net"
+
+  For Each sFile In Dir(sDir, "*.template")
+    Print sFile
+    Expand(sDir &/ sFile)
+  Next
+  
+  For Each sFile In Dir(sDir, "*.html")
+    ReplaceMail(sDir &/ sFile)
+  Next
+
+  MChangeLog.MakeChangeLog(sDir, 2)
+  Try Kill "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
+  Copy "authors.txt" To "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
+  
+  MChangeLog.MakeChangeLog(sDir, 3)
+  Try Kill "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
+  Copy "authors.txt" To "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
+  
+End
