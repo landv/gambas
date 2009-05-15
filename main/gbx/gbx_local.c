@@ -564,7 +564,7 @@ void LOCAL_set_lang(const char *lang)
     COMPONENT_translation_must_be_reloaded();
   }
   else
-    fprintf(stderr, "WARNING: cannot switch to language '%s'. Did you install the corresponding locale?\n", LOCAL_get_lang());
+    fprintf(stderr, "WARNING: cannot switch to language '%s'. Did you install the corresponding locale?\n", lang);
 
 	STRING_free(&_lang);
 	STRING_new(&_lang, lang, 0);

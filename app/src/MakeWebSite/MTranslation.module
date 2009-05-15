@@ -1,0 +1,40 @@
+' Gambas module file
+
+Private $cTr As New Collection
+
+Public Sub Load()
+  
+  $cTr.Clear
+  '{
+  $cTr["Home"] = ("Home")
+  $cTr["Introduction"] = ("Introduction")
+  $cTr["What is Gambas?"] = ("What is Gambas?")
+  $cTr["F. A. Q."] = ("F. A. Q.")
+  $cTr["Download"] = ("Download")
+  $cTr["Readme"] = ("Readme")
+  $cTr["Reporting a problem"] = ("Reporting a problem")
+  $cTr["Resources"] = ("Resources")
+  $cTr["Distributions &amp; O.S."] = ("Distributions &amp; O.S.")
+  $cTr["Links"] = ("Links")
+  $cTr["Mailing lists/Forums"] = ("Mailing lists/Forums")
+  $cTr["Screenshots"] = ("Screenshots")
+  $cTr["Documentation"] = ("Documentation")
+  $cTr["Books"] = ("Books")
+  $cTr["Getting Started"] = ("Getting Started")
+  $cTr["License"] = ("License")
+  $cTr["Wiki Encyclopaedia"] = ("Wiki Encyclopaedia")
+  $cTr["Developer"] = ("Developer")
+  $cTr["Architecture"] = ("Architecture")
+  $cTr["Browse Source Code"] = ("Browse Source Code")
+  $cTr["Hall Of Fame"] = ("Hall Of Fame")
+  $cTr["Road Map"] = ("Road Map")
+  '}
+  
+End
+
+Public Sub _get(sStr As String) As String
+  
+  If $cTr.Exist(sStr) Then Return $cTr[sStr]
+  Return sStr
+  
+End

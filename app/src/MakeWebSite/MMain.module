@@ -1,6 +1,10 @@
 ' Gambas module file
 
 Private $cVar As New Collection
+Private $cTrans As New Collection
+Private $sLang As String
+
+Private $aLanguages As String[] = ["en", "fr"]
 
 Sub InitVar()
   
@@ -223,34 +227,125 @@ Sub ReplaceMail(sPath As String)
   
 End
 
+Private Sub ReplaceLink(sData As String, sAttr As String) As String
+  
+  Dim iPos, iPos2 As Integer
+  Dim sLink As String
+  
+  Do
+    iPos = InStr(sData, sAttr & "=\"", iPos + 1)
+    If iPos = 0 Then Break
+    iPos2 = InStr(sData, "\"", iPos + Len(sAttr) + 2)
+    If iPos2 = 0 Then Break
+    sLink = Mid$(sData, iPos + Len(sAttr) + 2, iPos2 - iPos - Len(sAttr) - 2)
+    If Not sLink Then Continue
+    If sLink Like "http://*" Then Continue
+    If sLink Like "/" Then Continue
+    If sLink Like "*.html" Then Continue
+    sData = Left$(sData, iPos + Len(sAttr) + 1) & ".." &/ sLink & Mid$(sData, iPos2)
+    iPos = iPos2
+  Loop
+  
+  Return sData
+  
+End
+
+
+Private Sub Translate(sSrc As String, sDest As String)
+  
+  Dim sData As String = File.Load(sSrc)
+  Dim iPos, iPos2 As Integer
+  Dim sStr As String
+  
+  Print sDest
+
+  Do
+    iPos = InStr(sData, "{", iPos + 1)
+    If iPos = 0 Then Break
+    iPos2 = InStr(sData, "}", iPos + 1)
+    If iPos2 = 0 Then Break
+    sStr = Mid$(sData, iPos + 1, iPos2 - iPos - 1)
+    If InStr(sStr, "\n") Then Continue
+    $cTrans[sStr] = sStr
+    Print "{"; sStr; "}";
+    sStr = MTranslation[sStr]
+    Print " -> "; sStr
+    sData = Left$(sData, iPos - 1) & sStr & Mid$(sData, iPos2 + 1)
+  Loop
+
+  sData = ReplaceLink(sData, "href")
+  sData = ReplaceLink(sData, "src")
+  sData = Replace(sData, "$(LANG)", $sLang)
+
+  File.Save(sDest, sData)
+  
+End
+
 
 
 Public Sub Main()
 
   Dim sFile As String
   Dim sDir As String
-  
-  System.Language = "C"
+  Dim sLang As String  
+  Dim sTrans As String
+  Dim sData As String
+  Dim iPos, iPos2 As Integer
   
   InitVar
   
-  sDir = "~/gambas/html/gambas.sourceforge.net"
-
+  ' Trick for directly modifying the project html files
+  sDir = Application.Path &/ "gambas.sourceforge.net"
+  
   For Each sFile In Dir(sDir, "*.template")
     Print sFile
     Expand(sDir &/ sFile)
   Next
-  
+    
   For Each sFile In Dir(sDir, "*.html")
     ReplaceMail(sDir &/ sFile)
   Next
 
   MChangeLog.MakeChangeLog(sDir, 2)
+  MChangeLog.MakeChangeLog(sDir, 3)
+
   Try Kill "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
   Copy "authors.txt" To "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
   
-  MChangeLog.MakeChangeLog(sDir, 3)
   Try Kill "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
   Copy "authors.txt" To "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
+
+  For Each sLang In $aLanguages
+
+    $sLang = sLang
+    If sLang = "en" Then
+      System.Language = "C"
+    Else
+      System.Language = sLang
+    Endif
+  
+    Try Mkdir sDir &/ sLang
+    MTranslation.Load
+    For Each sFile In Dir(sDir, "*.html")
+      If sFile = "index.html" Then Continue
+      If sFile Like "changelog*.html" Then
+        Try Kill sDir &/ sLang &/ sFile
+        Copy sDir &/ sFile To sDir &/ sLang &/ sFile
+      Else
+        Translate(sDir &/ sFile, sDir &/ sLang &/ sFile)
+      Endif
+    Next
+  
+  Next
+  
+  For Each sTrans In $cTrans
+    sTrans = Replace(sTrans, "\"", "\\\"")
+    sData &= "  $cTr[\"" & sTrans & "\"] = (\"" & sTrans & "\")\n"
+  Next
+  sFile = File.Load(Application.Path &/ "MTranslation.module")
+  iPos = InStr(sFile, "'{")
+  iPos2 = InStr(sFile, "'}", iPos)
+  sFile = Left$(sFile, iPos - 1) & "'{\n" & sData & "  '}" & Mid$(sFile, iPos2 + 2)
+  File.Save(Application.Path &/ "MTranslation.module", sFile)
   
 End
