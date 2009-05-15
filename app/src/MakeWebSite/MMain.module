@@ -309,11 +309,15 @@ Public Sub Main()
   MChangeLog.MakeChangeLog(sDir, 2)
   MChangeLog.MakeChangeLog(sDir, 3)
 
-  Try Kill "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
-  Copy "authors.txt" To "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
+  If Exist("~/gambas/2.0/trunk") Then
+    Try Kill "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
+    Copy "authors.txt" To "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
+  Endif
   
-  Try Kill "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
-  Copy "authors.txt" To "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
+  If Exist("~/gambas/3.0/trunk") Then
+    Try Kill "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
+    Copy "authors.txt" To "~/gambas/3.0/trunk/app/src/gambas3/authors.txt"
+  Endif
 
   For Each sLang In $aLanguages
 
