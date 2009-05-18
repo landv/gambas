@@ -1653,7 +1653,7 @@ _BYREF:
 	if (PC == FP->code)
 	{
 		PC += GET_XX();
-		goto _NEXT;
+		goto _NEXT2;
 	}
 
 	THROW(E_BYREF);

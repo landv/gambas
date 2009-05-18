@@ -560,7 +560,7 @@ void EXEC_enter_quick(void)
 	CLASS *class = EXEC.class;
 
 	#if DEBUG_STACK
-	printf("\n| >> EXEC_enter(%s, %ld, %d)\n", EXEC.class->name, EXEC.index, EXEC.nparam);
+	printf("\n| >> EXEC_enter_quick(%s, %ld, %d)\n", EXEC.class->name, EXEC.index, EXEC.nparam);
 	print_register();
 	#endif
 
@@ -590,7 +590,7 @@ void EXEC_enter_quick(void)
 		EC = NULL;
 
 	/* reference the object so that it is not destroyed during the function call */
-	OBJECT_REF(OP, "EXEC_enter");
+	OBJECT_REF(OP, "EXEC_enter_quick");
 
 	/* local variables initialization */
 

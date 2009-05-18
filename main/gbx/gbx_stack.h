@@ -27,7 +27,7 @@
 
 #include "gbx_value.h"
 #include "gb_pcode.h"
-
+#include "gbx_debug.h"
 
 typedef
   struct _stack_context {
