@@ -672,7 +672,11 @@ static gboolean cb_scroll(GtkWidget *wid, GdkEventScroll *e, gGridView *data)
 	else
 		adj = gtk_range_get_adjustment(GTK_RANGE(data->hbar));
 	
+	#if GTK_MAJOR_VERSION >= 2 && GTK_MINOR_VERSION >= 14
+	step = gtk_adjustment_get_step_increment(adj);
+	#else
 	g_object_get(G_OBJECT(adj), "step-increment", &step, (void *)NULL);
+	#endif
 	
 	switch (e->direction)
 	{

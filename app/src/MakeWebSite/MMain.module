@@ -175,7 +175,11 @@ Sub Expand(sPath As String)
   If iNews Then 
     For Each sFile In Dir("news", "*.html").Sort(gb.Descent)
     
-      sSubst &= GetNews("news" &/ sFile)
+      If $sLang And If Exist("news" &/ $sLang &/ sFile)
+        sSubst &= GetNews("news" &/ $sLang &/ sFile)
+      Else
+        sSubst &= GetNews("news" &/ sFile)
+      Endif
               
       Dec iNews
       If iNews <= 0 Then Break 
@@ -251,7 +255,7 @@ Private Sub ReplaceLink(sData As String, sAttr As String) As String
 End
 
 
-Private Sub Translate(sSrc As String, sDest As String)
+Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Boolean)
   
   Dim sData As String = File.Load(sSrc)
   Dim iPos, iPos2 As Integer
@@ -259,19 +263,23 @@ Private Sub Translate(sSrc As String, sDest As String)
   
   Print sDest
 
-  Do
-    iPos = InStr(sData, "{", iPos + 1)
-    If iPos = 0 Then Break
-    iPos2 = InStr(sData, "}", iPos + 1)
-    If iPos2 = 0 Then Break
-    sStr = Mid$(sData, iPos + 1, iPos2 - iPos - 1)
-    If InStr(sStr, "\n") Then Continue
-    $cTrans[sStr] = sStr
-    Print "{"; sStr; "}";
-    sStr = MTranslation[sStr]
-    Print " -> "; sStr
-    sData = Left$(sData, iPos - 1) & sStr & Mid$(sData, iPos2 + 1)
-  Loop
+  If Not bNoTrans Then
+
+    Do
+      iPos = InStr(sData, "{", iPos + 1)
+      If iPos = 0 Then Break
+      iPos2 = InStr(sData, "}", iPos + 1)
+      If iPos2 = 0 Then Break
+      sStr = Mid$(sData, iPos + 1, iPos2 - iPos - 1)
+      If InStr(sStr, "\n") Then Continue
+      $cTrans[sStr] = sStr
+      Print "{"; sStr; "}";
+      sStr = MTranslation[sStr]
+      Print " -> "; sStr
+      sData = Left$(sData, iPos - 1) & sStr & Mid$(sData, iPos2 + 1)
+    Loop
+    
+  Endif
 
   sData = ReplaceLink(sData, "href")
   sData = ReplaceLink(sData, "src")
@@ -297,15 +305,11 @@ Public Sub Main()
   ' Trick for directly modifying the project html files
   sDir = Application.Path &/ "gambas.sourceforge.net"
   
-  For Each sFile In Dir(sDir, "*.template")
-    Print sFile
-    Expand(sDir &/ sFile)
-  Next
+  ' For Each sFile In Dir(sDir, "*.template")
+  '   Print sFile
+  '   Expand(sDir &/ sFile)
+  ' Next
     
-  For Each sFile In Dir(sDir, "*.html")
-    ReplaceMail(sDir &/ sFile)
-  Next
-
   MChangeLog.MakeChangeLog(sDir, 2)
   MChangeLog.MakeChangeLog(sDir, 3)
 
@@ -328,16 +332,20 @@ Public Sub Main()
       System.Language = sLang
     Endif
   
+    For Each sFile In Dir(sDir, "*.template")
+      Print sFile
+      Expand(sDir &/ sFile)
+    Next
+    
+    For Each sFile In Dir(sDir, "*.html")
+      ReplaceMail(sDir &/ sFile)
+    Next
+
     Try Mkdir sDir &/ sLang
     MTranslation.Load
     For Each sFile In Dir(sDir, "*.html")
       If sFile = "index.html" Then Continue
-      If sFile Like "changelog*.html" Then
-        Try Kill sDir &/ sLang &/ sFile
-        Copy sDir &/ sFile To sDir &/ sLang &/ sFile
-      Else
-        Translate(sDir &/ sFile, sDir &/ sLang &/ sFile)
-      Endif
+      Translate(sDir &/ sFile, sDir &/ sLang &/ sFile, sFile Like "changelog*.html")
     Next
   
   Next

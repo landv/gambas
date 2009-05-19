@@ -100,6 +100,8 @@ Public Sub MakeChangeLog(sDir As String, iVer As Integer)
   Wend
   Close $hIn
   
+  Print #$hOut, "<br>"
+  
   $hIn = Open User.Home &/ "gambas/" & iVer & ".0/trunk/ChangeLog" For Read
   While Not Eof($hIn)
 
@@ -119,8 +121,7 @@ Public Sub MakeChangeLog(sDir As String, iVer As Integer)
       Line Input #$hIn, sLig
       aElt = Split(sLig, "-")
 
-      Print #$hOut, "<div class=\"space\"></div>\n"
-      Print #$hOut, "<a name=\""; Trim(aElt[1]); "\"></a>"
+      Print #$hOut, "<a style=\"height:4px; font-size:xx-small;\" name=\""; Trim(aElt[1]); "\"></a>"
 
       Print #$hOut, "<div class=\"news-title\">"
       Print #$hOut, "  <img src=\"top-left-corner.png\" class=\"top-left-corner\">"

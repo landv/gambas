@@ -1,19 +1,20 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<link rel="stylesheet" href="style.css">
+
+<head>
+  <link rel="stylesheet" href="style.css">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+</head>
 
 <body>
 
 <div class="title">
-Download
+{Download}
 </div>
 
 <div class="space"></div>
 <div class="warning">
-<font size="4"><b><img src="warning.png" align=center>&nbsp;READ THESE
-<a href="http://gambasdoc.org/help/readme?view">IMPORTANT NOTES</a>
-AND <a href="http://gambasdoc.org/help/install?view">THIS PAGE</a>
-FIRST.</b></font>
+<font size="4"><b>{<img src="warning.png" align=center>&nbsp;READ THESE <a href="http://gambasdoc.org/help/readme?view">IMPORTANT NOTES</a> AND <a href="http://gambasdoc.org/help/install?view">THIS PAGE</a> FIRST.}</b></font>
 </div>
 
 <!--<h3>Development Version Source Packages (<a href="changelog2.html">ChangeLog</a>)</h3>
@@ -21,9 +22,9 @@ FIRST.</b></font>
 <table border="0" bordercolor="#43C7FF" cellspacing="0" cellpadding="6" valign="top">
 
   <tr>
-    <th width="240" align="left">Package</th>
-    <th align="left">Version</th>
-    <th width="100" align="left">Format</th>
+    <th width="240" align="left">{Package}</th>
+    <th align="left">{Version}</th>
+    <th width="100" align="left">{Format}</th>
   </tr>
 
   <tr class="dark">
@@ -52,7 +53,7 @@ FIRST.</b></font>
 
 </table>-->
 
-<h3>Current Developer Snapshots</h3>
+<h3>{Current Developer Snapshots}</h3>
 
 <p>You get them from the Subversion repository. To get a snapshot of the future 3.0 version, do:
 <pre>$ mkdir trunk
@@ -68,14 +69,14 @@ $ ./reconf-all
 </pre>
 <p>Do not forget to install <tt>automake</tt> and <tt>autoconf</tt>, otherwise the <tt>./reconf-all</tt> script will not work.
 
-<h3>Stable Version Source Packages (<a href="changelog2.html">ChangeLog</a>)</h3>
+<h3>{Stable Version Source Packages} (<a href="changelog2.html">{ChangeLog}</a>)</h3>
 
 <table border="0" bordercolor="#43C7FF" cellspacing="0" cellpadding="6" valign="top">
 
   <tr>
-    <th width="240" align="left">Package</th>
-    <th align="left">Version</th>
-    <th width="100" align="left">Format</th>
+    <th width="240" align="left">{Package}</th>
+    <th align="left">{Version}</th>
+    <th width="100" align="left">{Format}</th>
   </tr>
 
   <tr class="dark">
@@ -105,7 +106,7 @@ $ ./reconf-all
 </table>
 
 
-<h3>Gambas presentation</h3>
+<h3>{Gambas Presentation}</h3>
 
 <p>Here is the last presentation I made in Palermo. You can open it with OpenOffice, or use the PDF version
 with the PdfPresentation OpenGL example included in the Gambas sources.</p>
@@ -113,8 +114,8 @@ with the PdfPresentation OpenGL example included in the Gambas sources.</p>
 <table border="0" bordercolor="#43C7FF" cellspacing="0" cellpadding="6" valign="top">
 
   <tr>
-    <th align=left>Presentation</th>
-    <th align=left>Type</th>
+    <th align=left>{Presentation}</th>
+    <th align=left>{Type}</th>
   </tr>
 
   <tr class="dark">
@@ -130,7 +131,7 @@ with the PdfPresentation OpenGL example included in the Gambas sources.</p>
 </table>
 
 
-<h3>Binary Packages</h3>
+<h3>{Binary Packages}</h3>
 
 <p><b>NOTE:</b> I didn't make the following packages, as I do not have the time and
 the knowledge to make them.
@@ -141,9 +142,9 @@ So, if you have problems with them, contact their respective authors!</p>
 <table border=0 bordercolor=#43C7FF cellspacing=0 cellpadding=6 valign=top>
 
   <tr valign="top">
-    <th>Distribution</th>
-    <th>Packages</th>
-    <th>Correctly packaged</th>
+    <th>{Distribution}</th>
+    <th>{Packages}</th>
+    <th>{Correctly packaged}</th>
   </tr>
 
   <tr valign="top">
@@ -282,54 +283,6 @@ So, if you have problems with them, contact their respective authors!</p>
   </tr>
 
 </table>
-
-<!--
-<h3>Documentation (obsolete)</h3>
-
-<p>The (not completely) updated documention is on the
-<a href="http://www.binara.com/gambas-wiki/bin/view/Gambas/WebHome">Wiki Encyclopaedia</a>
-now.</p>
-
-<table border=0 bordercolor=#43C7FF cellspacing=0 cellpadding=6 valign=top>
-
-  <tr>
-    <th width=240 align=left>Package</th>
-    <th align=left>Version</th>
-    <th align=left>Language</th>
-    <th width=100 align=left>Format</th>
-    <th align=left>Size</th>
-  </tr>
-
-  <tr>
-    <td><a href="gambas-language-encyclopaedia-0.57.pdf.tar.gz">
-    <b><i>Gambas</b></i> language encyclopaedia</a></td>
-    <td>0.57</td>
-    <td>English</td>
-    <td>PDF</td>
-    <td>393&nbsp;K</td>
-  </tr>
-
-  <tr>
-    <td><a href="gambas-language-encyclopaedia-0.57.sxw">
-    <b><i>Gambas</b></i> language encyclopaedia</a></td>
-    <td>0.57</td>
-    <td>English</td>
-    <td>OpenOffice</td>
-    <td>44&nbsp;K</td>
-  </tr>
-
-  <tr>
-    <td><a href="gambas-language-encyclopaedia-0.50-es.sxw">
-    <b><i>Gambas</b></i> language encyclopaedia</a></td>
-    <td>0.50</td>
-    <td>Spanish</td>
-    <td>OpenOffice</td>
-    <td>49&nbsp;K</td>
-  </tr>
-
-</table>
-
-<p>-->
 
 </body>
 

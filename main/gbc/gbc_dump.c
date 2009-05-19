@@ -82,19 +82,19 @@ static void dump_type(TYPE type, boolean as)
         printf(",");
       printf("%d", array->dim[i]);
     }
-    printf("] AS ");
+    printf("] As ");
     dump_type(array->type, FALSE);
   }
   else if (id == T_OBJECT && value >= 0)
   {
     if (as)
-      printf(" AS ");
+      printf(" As ");
     dump_name(JOB->class->class[value].index);
   }
   else
   {
     if (as)
-      printf(" AS ");
+      printf(" As ");
     printf("%s", TYPE_get_desc(type));
   }
 }
@@ -104,14 +104,19 @@ static void dump_function(FUNCTION *func)
 {
   int i;
 
+	printf("<%lld> ", func->byref);
+	
   printf("(");
 
   for (i = 0; i < func->nparam; i++)
   {
     if (i > 0) printf(", ");
 
-    if (i == func->npmin)
-      printf("OPTIONAL ");
+    if (i >= func->npmin)
+      printf("Optional ");
+		
+		if (func->byref & (1LL << i))
+			printf("ByRef ");
 
     dump_name(func->param[i].index);
     dump_type(func->param[i].type, TRUE);
@@ -173,8 +178,8 @@ PUBLIC void CLASS_dump(void)
     if (TYPE_is_null(type))
       continue;
 
-    if (TYPE_is_static(type)) printf("STATIC ");
-    if (TYPE_is_public(type)) printf("PUBLIC "); else printf("PRIVATE ");
+    if (TYPE_is_static(type)) printf("Static ");
+    if (TYPE_is_public(type)) printf("Public "); else printf("Private ");
 
     switch(TYPE_get_kind(type))
     {
@@ -187,9 +192,9 @@ PUBLIC void CLASS_dump(void)
       case TK_FUNCTION:
 
         if (TYPE_get_id(type) == T_VOID)
-          printf("PROCEDURE ");
+          printf("Procedure ");
         else
-          printf("FUNCTION ");
+          printf("Function ");
 
         dump_name(i);
         dump_function(&class->function[sym->global.value]);
@@ -198,7 +203,7 @@ PUBLIC void CLASS_dump(void)
 
       case TK_CONST:
 
-        printf("CONST ");
+        printf("Const ");
         dump_name(i);
         dump_type(type, TRUE);
         printf(" = ");
@@ -208,22 +213,22 @@ PUBLIC void CLASS_dump(void)
 
       case TK_PROPERTY:
 
-        printf("PROPERTY ");
+        printf("Property ");
         if (class->prop[sym->global.value].write == NO_SYMBOL)
-          printf("READ ");
+          printf("Read ");
         dump_name(i);
         dump_type(type, TRUE);
         break;
 
       case TK_EVENT:
 
-        printf("EVENT ");
+        printf("Event ");
         dump_name(i);
         break;
 
-      case TK_UNKNOWN: printf("UNKNOWN "); break;
-      case TK_EXTERN: printf("EXTERN "); break;
-      case TK_LABEL: printf("LABEL "); break;
+      case TK_UNKNOWN: printf("Unknown "); break;
+      case TK_EXTERN: printf("Extern "); break;
+      case TK_LABEL: printf("Label "); break;
     }
 
     putchar('\n');
