@@ -244,6 +244,8 @@ Private Sub ReplaceLink(sData As String, sAttr As String) As String
     sLink = Mid$(sData, iPos + Len(sAttr) + 2, iPos2 - iPos - Len(sAttr) - 2)
     If Not sLink Then Continue
     If sLink Like "http://*" Then Continue
+    If sLink Like "https://*" Then Continue
+    If sLink Like "mailto://*" Then Continue
     If sLink Like "/" Then Continue
     If sLink Like "*.html" Then Continue
     sData = Left$(sData, iPos + Len(sAttr) + 1) & ".." &/ sLink & Mid$(sData, iPos2)

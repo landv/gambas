@@ -6,7 +6,6 @@ Public Sub Load()
   
   $cTr.Clear
   '{
-  $cTr["Screenshots"] = ("Screenshots")
   $cTr["Home"] = ("Home")
   $cTr["Introduction"] = ("Introduction")
   $cTr["What is Gambas?"] = ("What is Gambas?")
@@ -18,6 +17,7 @@ Public Sub Load()
   $cTr["Distributions &amp; O.S."] = ("Distributions &amp; O.S.")
   $cTr["Links"] = ("Links")
   $cTr["Mailing lists/Forums"] = ("Mailing lists/Forums")
+  $cTr["Screenshots"] = ("Screenshots")
   $cTr["Documentation"] = ("Documentation")
   $cTr["Books"] = ("Books")
   $cTr["Getting Started"] = ("Getting Started")
@@ -37,7 +37,7 @@ Public Sub Load()
   $cTr["Translations"] = ("Translations")
   $cTr["Language"] = ("Language")
   $cTr["Translator(s)"] = ("Translator(s)")
-  $cTr["<img src=\"warning.png\" align=center>&nbsp;READ THESE <a href=\"http://gambasdoc.org/help/readme?view\">IMPORTANT NOTES</a> AND <a href=\"http://gambasdoc.org/help/install?view\">THIS PAGE</a> FIRST."] = ("<img src=\"warning.png\" align=center>&nbsp;READ THESE <a href=\"http://gambasdoc.org/help/readme?view\">IMPORTANT NOTES</a> AND <a href=\"http://gambasdoc.org/help/install?view\">THIS PAGE</a> FIRST.")
+  $cTr["<img src=\"warning.png\" align=center>&nbsp;READ THESE <a href=\"http://gambasdoc.org/help/readme?view&amp;$(LANG)\">IMPORTANT NOTES</a> AND <a href=\"http://gambasdoc.org/help/install?view&amp;$(LANG)\">THIS PAGE</a> FIRST."] = ("<img src=\"warning.png\" align=center>&nbsp;READ THESE <a href=\"http://gambasdoc.org/help/readme?view&amp;$(LANG)\">IMPORTANT NOTES</a> AND <a href=\"http://gambasdoc.org/help/install?view&amp;$(LANG)\">THIS PAGE</a> FIRST.")
   $cTr["Package"] = ("Package")
   $cTr["Version"] = ("Version")
   $cTr["Format"] = ("Format")
@@ -64,7 +64,6 @@ Public Sub Load()
   $cTr["Older News..."] = ("Older News...")
   $cTr["<b>Note:</b> This page needs a web browser that understands the CSS standard. If you use Internet Explorer 7 (it is just an example), you will see what I mean."] = ("<b>Note:</b> This page needs a web browser that understands the CSS standard. If you use Internet Explorer 7 (it is just an example), you will see what I mean.")
   $cTr["News Archive"] = ("News Archive")
-  $cTr["Mailing lists &amp; Forums"] = ("Mailing lists &amp; Forums")
   '}
   
 End
