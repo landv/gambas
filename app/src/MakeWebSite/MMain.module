@@ -4,7 +4,7 @@ Private $cVar As New Collection
 Private $cTrans As New Collection
 Private $sLang As String
 
-Private $aLanguages As String[] = ["en", "fr"]
+Private $aLanguages As String[] = ["en:C", "fr:fr_FR.UTF-8"]
 
 Sub InitVar()
   
@@ -298,6 +298,7 @@ Public Sub Main()
   Dim sFile As String
   Dim sDir As String
   Dim sLang As String  
+  Dim aLang As String[]
   Dim sTrans As String
   Dim sData As String
   Dim iPos, iPos2 As Integer
@@ -327,12 +328,11 @@ Public Sub Main()
 
   For Each sLang In $aLanguages
 
-    $sLang = sLang
-    If sLang = "en" Then
-      System.Language = "C"
-    Else
-      System.Language = sLang
-    Endif
+    aLang = Split(sLang, ":")
+
+    $sLang = aLang[0]
+    System.Language = aLang[1]
+    sLang = $sLang
   
     For Each sFile In Dir(sDir, "*.template")
       Print sFile

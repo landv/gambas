@@ -10,9 +10,13 @@ Private $bModify As Boolean
 Private $eTimeout As Float = 1
 Private $eStartup As Float
 Private $hLock As File
+Private $sPrefix As String
+Private $bUnique As Boolean
 
 Property Id As String
 Property Timeout As Float
+Property Prefix As String
+Property Unique As Boolean
 
 Private Sub WriteLength(iLen As Integer)
   
@@ -322,6 +326,36 @@ Private Sub GetPath(Optional sId As String) As String
   
 End
 
+Private Sub CheckUnique()
+  
+  Dim hLock As File
+  Dim sPrefix As String
+  Dim aKill As String[]
+  Dim sKill As String
+  
+  If Not $bUnique Then Return
+  
+  Try hLock = Lock GetPath(".unique")
+  If Error Then Return
+  
+  If $sPrefix Then
+    sPrefix = $sPrefix
+  Else
+    sPrefix = CGI["REMOTE_ADDR"]
+  Endif
+  
+  Do
+    aKill = Dir(GetPath(), sPrefix & ":*")
+    If aKill.Count = 0 Then Break
+    For Each sKill In aKill
+      Try Kill GetPath(sKill)
+    Next
+  Loop
+  
+  Unlock #hLock
+  
+End
+
 
 Private Sub CreateSession()
   
@@ -332,17 +366,22 @@ Private Sub CreateSession()
   
   Repeat 
     $sId = ""
-    For iInd = 1 To 8
+    For iInd = 1 To 6
       $sId &= Hex$(Int(Rnd(65536)), 4)
     Next
-    $sId &= "@" & CGI["REMOTE_ADDR"]
+    If $sPrefix Then
+      $sId = $sPrefix & ":" & $sId
+    Else
+      $sId = CGI["REMOTE_ADDR"] & ":" & $sId
+    Endif
     '$sId = "TEST"
     $sPath = GetPath($sId) 'sPrefix &/ "session" &/ $sId  
   Until Not Exist($sPath)
   
-  
   'TRY MKDIR $sPrefix
   Try Mkdir GetPath() 'sPrefix &/ "session"
+  
+  CheckUnique
   
   Response.SetCookie("SESSION", $sId, "", File.Dir(CGI["SCRIPT_NAME"]))
   
@@ -447,3 +486,28 @@ Public Sub Load()
   
 End
 
+
+Private Function Prefix_Read() As String
+
+  Return $sPrefix
+
+End
+
+Private Sub Prefix_Write(Value As String)
+
+  $sPrefix = Value
+
+End
+
+Private Function Unique_Read() As Boolean
+
+  Return $bUnique
+
+End
+
+Private Sub Unique_Write(Value As Boolean)
+
+  $bUnique = Value
+  CheckUnique
+
+End
