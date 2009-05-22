@@ -263,6 +263,7 @@ Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Bool
   Dim iPos, iPos2 As Integer
   Dim sStr As String
   
+  If InStr(sDest, "changelog3") Then Stop
   Print sDest
 
   If Not bNoTrans Then
@@ -314,7 +315,7 @@ Public Sub Main()
   ' Next
     
   MChangeLog.MakeChangeLog(sDir, 2)
-  MChangeLog.MakeChangeLog(sDir, 3)
+  'MChangeLog.MakeChangeLog(sDir, 3)
 
   If Exist("~/gambas/2.0/trunk") Then
     Try Kill "~/gambas/2.0/trunk/app/src/gambas2/authors.txt"
