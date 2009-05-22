@@ -48,7 +48,7 @@ enum {
   TS_MODE_DIRECT = 16,
   TS_MODE_LINE = 32,
   TS_MODE_WATCH = 64,
-  TS_MODE_PIPE = 128
+  TS_MODE_PIPE = 128,
   };
 
 enum {
@@ -56,7 +56,8 @@ enum {
   TS_EXEC_READ = 1,
   TS_EXEC_WRITE = 2,
   TS_EXEC_TERM = 4,
-  TS_EXEC_STRING = 8
+  TS_EXEC_STRING = 8,
+	TS_EXEC_WAIT = 16
   };
 
 enum {

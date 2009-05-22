@@ -82,7 +82,7 @@ PUBLIC void DEBUG_init_breakpoints(CLASS *class);
 
 PUBLIC void DEBUG_break_on_next_line(void);
 
-PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo);
+PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char*fifo_name);
 PUBLIC void DEBUG_exit(void);
 PUBLIC void DEBUG_welcome(void);
 PUBLIC void DEBUG_where(void);

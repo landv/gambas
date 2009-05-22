@@ -249,6 +249,11 @@ int main(int argc, char **argv)
       else if (strcmp(argv[i], "-f") == 0)
       {
         EXEC_fifo = TRUE;
+				if (i < (argc - 1) && *argv[i + 1] && *argv[i + 1] != '-')
+				{
+					EXEC_fifo_name = argv[i + 1];
+					i++;
+				}
       }
       else if (strcmp(argv[i], "-p") == 0)
       {

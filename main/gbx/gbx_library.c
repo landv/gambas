@@ -116,6 +116,7 @@ static void copy_interface(intptr_t *src, intptr_t *dst)
 }
 
 
+#if DO_PRELOADING
 static bool read_line(FILE *fd, char *dir, int max)
 {
   char *p;
@@ -203,6 +204,7 @@ static bool check_preload(const char *lib, char **penv)
 	else
 		return FALSE;
 }
+#endif
 
 void LIBRARY_preload(const char *file, char **argv)
 {

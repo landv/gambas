@@ -79,6 +79,7 @@ Public Sub Form_Open()
     cmbStackTrace.Index = If(.StackTrace, 0, 1)
     txtVersionProg.Text = .VersionProgram
     'chkVersion.Value = NOT IsNull(.VersionProgram)
+    cmbTerminal.Index = If(.UseTerminal, 0, 1)
 
   End With
 
@@ -187,6 +188,7 @@ Private Function DoApply() As Boolean
       .Stack = Val(Left(cmbStackSize.Text, -1))
     Endif
     .StackTrace = cmbStackTrace.Index = 0
+    .UseTerminal = cmbTerminal.Index = 0
 
     If .ControlPublic <> (cmbControlPublic.Index = 0) Or If .ModulePublic <> (cmbModulePublic.Index = 0) Then
       Project.ResetScan

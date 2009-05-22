@@ -130,6 +130,7 @@ static char *output_fifo(char *path)
 BEGIN_METHOD_VOID(CDEBUG_begin)
 
   char path[MAX_PATH];
+	char name[16];
   
   signal(SIGPIPE, SIG_IGN);
   
@@ -148,6 +149,9 @@ BEGIN_METHOD_VOID(CDEBUG_begin)
     GB.Error("Cannot create output fifo in /tmp: &1", strerror(errno));
     return;
   }
+	
+	sprintf(name, "%d", getpid());
+	GB.ReturnNewZeroString(name);
   
 END_METHOD
  
@@ -242,13 +246,13 @@ GB_DESC CDebugDesc[] =
 
   GB_STATIC_METHOD("_exit", NULL, CDEBUG_end, NULL),
   
-  GB_STATIC_METHOD("Begin", NULL, CDEBUG_begin, NULL),
+  GB_STATIC_METHOD("Begin", "s", CDEBUG_begin, NULL),
   GB_STATIC_METHOD("End", NULL, CDEBUG_end, NULL),
   GB_STATIC_METHOD("Start", NULL, CDEBUG_start, NULL),
   GB_STATIC_METHOD("Stop", NULL, CDEBUG_stop, NULL),
 
   GB_STATIC_METHOD("Write", NULL, CDEBUG_write, "(Data)s"),
-  
+	
   GB_EVENT("Read", NULL, "(Data)s", &EVENT_Read),
 
   GB_END_DECLARE

@@ -72,7 +72,7 @@ typedef
 typedef
 	struct {
 		intptr_t version;
-		DEBUG_INFO *(*Init)(GB_DEBUG_INTERFACE *debug, int fifo);
+		DEBUG_INFO *(*Init)(GB_DEBUG_INTERFACE *debug, int fifo, const char *fifo_name);
 		void (*Exit)(void);
 		void (*Welcome)(void);
 		void (*Main)(int error);

@@ -66,6 +66,7 @@ Private $bDispImage As Boolean
 Private $cCompRedirect As Collection
 Private $bSyntax As Boolean
 Private $sTitle As String
+Private $iNoEncode As Integer 
 
 Private $eTime As Float
 
@@ -606,6 +607,9 @@ Private Sub EnterSection(sSection As String, Optional sArg As String)
       
     Case "only"
       $sRes &= "<table class=\"only\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td class=\"only\" width=\"8\" valign=\"top\">" & sParam & "</td><td class=\"only-contents\">"
+      
+    Case "html"
+      Inc $iNoEncode
 
   End Select
 
@@ -654,6 +658,9 @@ Private Sub LeaveSection()
       
     Case "only"
       $sRes &= "</td></tr></table>"
+      
+    Case "html"
+      Dec $iNoEncode
 
   End Select
 
@@ -709,6 +716,11 @@ Private Function Encode(sText As String) As String
       LeaveSection()
       Continue
 
+    Endif
+
+    If $iNoEncode Then
+      $sRes &= sStr & "\n"
+      Continue
     Endif
 
     If $bVerbatim Then
@@ -937,7 +949,7 @@ Private Function Encode(sText As String) As String
         $sRes = $sRes & "<table class=\"table\" border=\"0\" bordercolor=\"#000000\" cellpadding=\"4\" cellspacing=\"0\"" & Trim(Mid$(sStr, 3)) & ">\n"
         bHeader = True
         $sRes = $sRes & "<tr><th>\n"
-        $bWhite = False
+        $bWhite = True
         Inc iInTable
         Continue
 

@@ -63,9 +63,14 @@ typedef void (*sighandler_t) (int);
   #include <limits.h>
   /* sighandler_t is replaced by sig_t */
   #define sighandler_t sig_t
-
   /* modfl is not yet implemented */
   # define modfl(a,b)	modf(a,b)
+
+	typedef unsigned long ulong;
+
+	#if (defined(__amd64__) || defined(__ia64__) || defined(__sparc64__))
+		#define __WORDSIZE 64
+	#endif
 
 #endif
 

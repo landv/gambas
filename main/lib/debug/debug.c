@@ -159,9 +159,11 @@ static boolean calc_position_from_line(CLASS *class, ushort line, FUNCTION **fun
 }
 
 
-PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo)
+PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char *fifo_name)
 {
   char path[MAX_PATH];
+	char name[16];
+	int i;
 
   //if (!EXEC_debug)
   //  return;
@@ -171,11 +173,35 @@ PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo)
 
   if (_fifo)
   {
-    snprintf(path, sizeof(path), "/tmp/gambas.%d/%d.out", getuid(), getppid());
-    _fdr = open(path, O_RDONLY);
+		if (!fifo_name)
+		{
+			sprintf(name, "%d", getppid());
+			fifo_name = name;
+		}
+		
+    snprintf(path, sizeof(path), "/tmp/gambas.%d/%s.out", getuid(), fifo_name);
+		
+		/*for (i = 0; i < 20; i++)
+		{
+			_fdr = open(path, O_RDONLY | O_NONBLOCK);
+			if (_fdr >= 0)
+				break;
+			usleep(10000);
+		}
+		if (_fdr < 0)
+			return NULL;*/
+		
+		_fdr = open(path, O_RDONLY);
+		if (_fdr < 0)
+			return NULL;
 		fcntl(_fdr, F_SETFD, FD_CLOEXEC);
-    snprintf(path, sizeof(path), "/tmp/gambas.%d/%d.in", getuid(), getppid());
-    _fdw = open(path, O_WRONLY);
+    
+		snprintf(path, sizeof(path), "/tmp/gambas.%d/%s.in", getuid(), fifo_name);
+    
+		_fdw = open(path, O_WRONLY);
+		if (_fdw < 0)
+			return NULL;
+		
 		fcntl(_fdw, F_SETFD, FD_CLOEXEC);
 
     _in = fdopen(_fdr, "r");

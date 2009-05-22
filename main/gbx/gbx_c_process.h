@@ -31,6 +31,7 @@
 #include "gambas.h"
 #include "gbx_object.h"
 #include "gbx_c_file.h"
+#include "gbx_c_array.h"
 
 #ifndef __GBX_C_PROCESS_C
 extern GB_DESC NATIVE_Process[];
@@ -66,11 +67,11 @@ enum
   PM_WRITE = 2,
   PM_TERM = 4,
   PM_STRING = 8,
-  PM_SHELL = 128,
-  //PM_IGNORE = 256
+	PM_WAIT = 16,
+  PM_SHELL = 128
 };
 
-CPROCESS *CPROCESS_create(int mode, void *cmd, char *name);
+CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env);
 void CPROCESS_wait_for(CPROCESS *process);
 
 #endif

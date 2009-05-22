@@ -545,6 +545,11 @@ static void trans_exec_shell(bool shell)
 
   TRANS_expression(FALSE);
 
+	if (TRANS_is(RS_WITH))
+		TRANS_expression(FALSE);
+	else
+		CODE_push_null();
+	
   wait = TRANS_is(RS_WAIT);
 
   if (TRANS_is(RS_FOR))
@@ -573,7 +578,7 @@ static void trans_exec_shell(bool shell)
     as = FALSE;
   }
   
-  CODE_push_boolean(wait);
+  if (wait) mode |= TS_EXEC_WAIT;
   CODE_push_number(mode);
 
 	if (as && TRANS_is(RS_AS))
@@ -583,7 +588,7 @@ static void trans_exec_shell(bool shell)
 
   trans_subr(shell ? TS_SUBR_SHELL : TS_SUBR_EXEC, 4);
 
-  if (mode == TS_EXEC_STRING)
+  if (mode & TS_EXEC_STRING)
     TRANS_reference();
   else if (TRANS_in_affectation == 0)
     CODE_drop();

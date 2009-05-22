@@ -250,7 +250,7 @@ static void stop_process(CPROCESS *process)
 		exit_child();
 }
 
-static void run_process(CPROCESS *process, int mode, void *cmd)
+static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 {
 	static const char *shell[] = { "sh", "-c", NULL, NULL };
 
@@ -344,18 +344,17 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
 	if (mode & PM_TERM)
 	{
 		#ifdef OS_OPENBSD
-		if (openpty(&fd_master, &fd_slave, slave, NULL, NULL)<0)
+		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL)<0)
 			THROW_SYSTEM(errno, NULL);
-	#else
+		#else
 		fd_master = getpt();
 		if (fd_master < 0)
 			THROW_SYSTEM(errno, NULL);
 
 		grantpt(fd_master);
 		unlockpt(fd_master);
-
-		slave = ptsname(fd_master);
 		#endif
+		slave = ptsname(fd_master);
 
 		tcgetattr(STDIN_FILENO, &termios_stdin);
 	}
@@ -497,6 +496,18 @@ static void run_process(CPROCESS *process, int mode, void *cmd)
 		// Return to the parent working directory
 		chdir(PROJECT_oldcwd);
 		
+		if (env)
+		{
+			char *str;
+			n = ARRAY_count(env->data);
+			for (i = 0; i < n; i++)
+			{
+				str = ((char **)env->data)[i];
+				if (putenv(str))
+					fprintf(stderr, "warning: cannot set environment string: %s\n", str);
+			}
+		}
+		
 		execvp(argv[0], (char **)argv);
 		//execve(argv[0], (char **)argv, environ);
 		exit(127);
@@ -606,7 +617,7 @@ static void exit_child(void)
 }
 
 
-CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
+CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 {
 	CPROCESS *process;
 
@@ -618,7 +629,7 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name)
 	OBJECT_new((void **)(void *)&process, CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
 
 	init_process(process);
-	run_process(process, mode, cmd);
+	run_process(process, mode, cmd, env);
 
 	OBJECT_UNREF_KEEP(process, "CPROCESS_create");
 

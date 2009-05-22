@@ -28,13 +28,15 @@ Private $bIgnoreNextInfo As Boolean
 
 Private $bConsole As Boolean
 
+Private $sFifo As String
+
 Public BalloonControl As Control
 Public BalloonX As Integer
 Public BalloonY As Integer
 
 Public Sub Init()
  
-  Debug.Begin
+  $sFifo = Debug.Begin()
   SetState(STATE_STOP)
 
 End
@@ -641,6 +643,8 @@ Private Sub Start(sCmd As String)
   Dim sExec As String
   Dim sArg As String
   Dim bValgrind As Boolean '= True
+  Dim iInd As Integer
+  Dim sTitle As String
 
   If Project.Running Then Return
   
@@ -700,31 +704,54 @@ Private Sub Start(sCmd As String)
   FMain.ShowDebug(True)
   FDebugInfo.UpdateView
 
-  If Project.Environment And If Project.Environment.Count Then 
-  
-    sExec = Project.Environment.Join(" ")
-    sExec &= " exec " & Shell$(System.Path &/ "bin/gbx" & System.Version) & " -g -f " & Shell$(File.Dir(SConv(Project.Path)))
+  ' If Project.Environment And If Project.Environment.Count Then 
+  ' 
+  '   sExec = Project.Environment.Join(" ")
+  '   sExec &= " exec " & Shell$(System.Path &/ "bin/gbx" & System.Version) & " -g -f " & Shell$(File.Dir(SConv(Project.Path)))
+  ' 
+  '   For Each sArg In Project.Arguments
+  '     sExec &= " " & Shell$(sArg)
+  '   Next
+  '   
+  '   $hProcess = Shell sExec For Read Write As "Process"
+  ' 
+  ' Else
 
-    For Each sArg In Project.Arguments
-      sExec &= " " & Shell$(sArg)
-    Next
-    
-    $hProcess = Shell sExec For Read Write As "Process"
+  aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo, File.Dir(SConv(Project.Path)), "--"]
+  aExec.Insert(Project.Arguments)
   
-  Else
-
-    aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", File.Dir(SConv(Project.Path)), "--"]
-    aExec.Insert(Project.Arguments)
-    
-    If bValgrind Then 
-      aExec.Add("-p", 1)
-      aExec.Insert(["valgrind", "--tool=memcheck", "--num-callers=50"], 0)
-    Endif
-
-    $hProcess = Exec aExec For Read Write As "Process"
-  
+  If bValgrind Then 
+    aExec.Add("-p", 1)
+    aExec.Insert(["valgrind", "--tool=memcheck", "--num-callers=50"], 0)
   Endif
 
+  'If Project.UseTerminal Then aExec.Insert(["/usr/bin/Terminal", "--hold", "--disable-server", "-x"], 0)
+
+  If Project.UseTerminal Then 
+  
+    sTitle = Project.Name & " (" & ("Output terminal") & ")"
+  
+    Select Case Desktop.Type
+    
+      Case "KDE", "KDE4"
+        aExec.Insert(["konsole", "--nofork", "--caption", sTitle, "-e"], 0)
+        
+      Case "GNOME"        
+        aExec = ["gnome-terminal", "--hide-menubar", "--title=" & sTitle, "-e", aExec.Join(" ")]
+        
+      Case "XFCE"
+        aExec.Insert(["Terminal", "--hide-menubar", "--hide-toolbars", "--title=" & sTitle, "-x"], 0)
+      
+      Default
+        aExec.Insert(["xterm", "-title", sTitle, "-e"], 0)
+    
+    End Select
+  
+    $hProcess = Exec aExec With Project.Environment As "Process"
+  Else
+    $hProcess = Exec aExec With Project.Environment For Read Write As "Process"
+  Endif
+    
   Try Debug.Start
 
   SetState(STATE_STARTING)

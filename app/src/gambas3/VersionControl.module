@@ -202,7 +202,7 @@ End
 Public Sub Update() As Boolean
   
   If $bSVN Then 
-    Run("svn update " & Shell$(Project.Dir))
+    Run("svn update --non-interactive " & Shell$(Project.Dir))
     Return Process.LastValue
   Endif
   

@@ -130,6 +130,7 @@ void SUBR_exec(void)
 	bool ret;
 	bool shell;
 	char *name;
+	CARRAY *env;
 
 	SUBR_ENTER_PARAM(4);
 
@@ -146,11 +147,17 @@ void SUBR_exec(void)
 	if (!cmd)
 		THROW(E_ARG);
 
-	VALUE_conv(&PARAM[1], T_BOOLEAN);
-	wait = PARAM[1]._boolean.value;
-
+	if (VALUE_is_null(&PARAM[1]))
+		env = NULL;
+	else
+	{
+		VALUE_conv(&PARAM[1], (TYPE)CLASS_StringArray);
+		env = (PARAM[1]._object.object);
+	}
+	
 	VALUE_conv(&PARAM[2], T_INTEGER);
 	mode = PARAM[2]._integer.value;
+	wait = mode & PM_WAIT;
 
 	name = SUBR_get_string(&PARAM[3]);
 
@@ -159,11 +166,8 @@ void SUBR_exec(void)
 	if (shell)
 		mode |= PM_SHELL;
 
-	//if (!ret)
-	//	mode |= PM_IGNORE;
-
 	//STRING_ref(name); ## This should not be needed
-	process = CPROCESS_create(mode, cmd, name);
+	process = CPROCESS_create(mode, cmd, name, env);
 	//STRING_unref(&name);
 
 	if (wait)
