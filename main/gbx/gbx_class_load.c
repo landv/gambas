@@ -687,6 +687,9 @@ void CLASS_load_without_init(CLASS *class)
   COMPONENT *save;
 
   //size_t alloc = MEMORY_size;
+	
+	if (class->state >= CS_LOADED)
+		return;
 
 	if (class->error)
 		THROW(E_CLASS, class->name, "Loading has already failed", "");
@@ -979,7 +982,7 @@ void CLASS_load_real(CLASS *class)
 		return;
 	}
 
-  CLASS_load_without_init(class);
+	CLASS_load_without_init(class);
   class->state = CS_READY;
 
   EXEC_public(class, NULL, "_init", 0);

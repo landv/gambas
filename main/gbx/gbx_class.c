@@ -759,7 +759,7 @@ CLASS *CLASS_replace_global(const char *name)
 		len = strlen(name);
 
 		ALLOC(&new_name, len + 2, "CLASS_replace_global");
-		snprintf(new_name, len+2, ">%s", name);
+		snprintf(new_name, len + 2, ">%s", name);
 		new_class = CLASS_replace_global(new_name);
 		FREE(&new_name, "CLASS_replace_global");
 
