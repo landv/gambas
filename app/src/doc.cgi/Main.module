@@ -395,10 +395,10 @@ Private Function GetLink(sPath As String, Optional sMyTitle As String, Optional 
 
   If sClass Then sClass = "class=\"" & sClass & "\" "
 
-  If sPath Like "http://*" Or If sPath Like "mailto:*" Then
+  If sPath Like "http://*" Or If sPath Like "https://*" Or If sPath Like "mailto:*" Then
 
     If Not sMyTitle Then sMyTitle = sPath
-    Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"" & sPath & "\">" & EncodeHTML(sMyTitle) & "</a>"
+    Return "<a " & GetLinkClass(sClass, bLTR, sMyTitle) & "href=\"" & sPath & "\" target=\"_blank\">" & EncodeHTML(sMyTitle) & "</a>"
 
   Else
 

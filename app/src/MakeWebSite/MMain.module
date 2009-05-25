@@ -248,6 +248,7 @@ Private Sub ReplaceLink(sData As String, sAttr As String) As String
     If sLink Like "mailto://*" Then Continue
     If sLink Like "/" Then Continue
     If sLink Like "*.html" Then Continue
+    If Left(sLink) = "#" Then Continue
     sData = Left$(sData, iPos + Len(sAttr) + 1) & ".." &/ sLink & Mid$(sData, iPos2)
     iPos = iPos2
   Loop

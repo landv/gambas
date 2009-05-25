@@ -5,7 +5,7 @@
   Text = ("")
   Resizable = False
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   { HBox3 HBox
     MoveScaled(0,0,86,50)
     Expand = True
@@ -13,7 +13,7 @@
       MoveScaled(2,2,19,47)
       Visible = False
       Arrangement = Arrange.Vertical
-      Spacing = 8
+      Spacing = True
       Orientation = Align.Left
       { lstBookmark ListContainer
         MoveScaled(0,1,15,32)
@@ -35,7 +35,7 @@
     { VBox1 VBox
       MoveScaled(22,2,64,46)
       Expand = True
-      Spacing = 8
+      Spacing = True
       { HBox1 HBox
         MoveScaled(1,2,62,4)
         AutoResize = True
@@ -46,7 +46,8 @@
           Sorted = True
         }
         { Panel1 Panel
-          MoveScaled(37,0,2,4)
+          MoveScaled(37,0,1,4)
+          Visible = False
         }
         { btnParent ToolButton
           MoveScaled(37,0,4,4)

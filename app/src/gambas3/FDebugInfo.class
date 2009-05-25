@@ -82,6 +82,10 @@ Public Sub lstStack_Activate()
   Dim sFile As String
   Dim iLine As Integer
 
+  Design.Command("@" & lstStack.Index)
+  FDebugExpr.RefreshAll
+  RefreshAllWatch
+
   sLoc = lstStack.Current.Text
   If InStr(sLoc, "(") Then Return
 

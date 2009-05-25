@@ -8,6 +8,8 @@ Public Sub ClearFound()
 
   tvwFind.Rows.Count = 0
   $aFound.Clear
+  lblNotFound.Hide
+  tvwFind.Show
   
 End
 
@@ -165,6 +167,10 @@ Public Sub Stop()
   
   timSearch.Stop
   btnCancel.Text = ("Close")
+  If tvwFind.Rows.Count = 0 Then
+    tvwFind.Hide
+    lblNotFound.Show
+  Endif
   FMain.Enabled = True
   
 End

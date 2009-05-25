@@ -14,7 +14,7 @@ Private $iMax As Integer
 Private $iColor As Integer
 Private $bOpened As Boolean
 
-Private BUTTON_H As Integer = Desktop.Scale
+Private BUTTON_H As Integer = Desktop.Scale * 2
 Private BUTTON_W As Integer = 48
 
 
@@ -238,7 +238,7 @@ Private Sub RefreshArrow()
         iType = Align.Left
         'hPict = Picture["img/8/side-left.png"]
       Else
-        sKey = "$align-right"
+        sKey = "$side-right"
         iType = Align.Right
         'hPict = Picture["img/8/side-right.png"]
       Endif
@@ -246,12 +246,12 @@ Private Sub RefreshArrow()
 
   hPict = Picture[sKey]
   If Not hPict Then 
-    hPict = New Picture(12, 12)
+    hPict = New Picture(16, 16)
     hPict.Fill(Color.White)
     Draw.Begin(hPict)
-    Draw.Style.Arrow(0, 0, 12, 12, iType)
+    Draw.Style.Arrow(0, 0, 16, 16, iType)
     Draw.End
-    hImage = hPict.Image.Stretch(8, 8, True)
+    hImage = hPict.Image '.Stretch(8, 8, True)
     hImage.MakeTransparent(Color.White) 
     hPict = hImage.Picture
     Picture[sKey] = hPict

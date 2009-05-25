@@ -645,6 +645,7 @@ Private Sub Start(sCmd As String)
   Dim bValgrind As Boolean '= True
   Dim iInd As Integer
   Dim sTitle As String
+  Dim sProg As String
 
   If Project.Running Then Return
   
@@ -734,30 +735,62 @@ Private Sub Start(sCmd As String)
     Select Case Desktop.Type
     
       Case "KDE", "KDE4"
-        aExec.Insert(["konsole", "--nofork", "--caption", sTitle, "-e"], 0)
+        sProg = "konsole"
         
       Case "GNOME"        
-        aExec = ["gnome-terminal", "--hide-menubar", "--title=" & sTitle, "-e", aExec.Join(" ")]
+        sProg = "gnome-terminal"
         
       Case "XFCE"
-        aExec.Insert(["Terminal", "--hide-menubar", "--hide-toolbars", "--title=" & sTitle, "-x"], 0)
+        sProg = "Terminal"
       
       Default
-        aExec.Insert(["xterm", "-title", sTitle, "-e"], 0)
+        sProg = "xterm"
     
     End Select
+    
+    If Project.CheckProgram(sProg) Then 
+      sProg = "xterm"
+      If Project.CheckProgram(sProg) Then
+        FGambas.Warning(("No terminal emulator found."))
+        sProg = ""
+      Endif
+    Endif
+
+  Endif
+    
+  Select Case sProg
   
+    Case "konsole"
+      aExec.Insert(["konsole", "--nofork", "--caption", sTitle, "--hold", "--name", Project.Name & "-output", "-e"], 0)
+      
+    Case "gnome-terminal"
+      aExec = ["gnome-terminal", "--hide-menubar", "--title=" & sTitle, "-e", aExec.Join(" ")]
+      
+    Case "Terminal"
+      aExec.Insert(["Terminal", "--hide-menubar", "--hide-toolbars", "--title=" & sTitle, "--hold", "-x"], 0)
+    
+    Case "xterm"
+      aExec.Insert(["xterm", "-title", sTitle, "-hold", "-e"], 0)
+      
+  End Select
+  
+  If sProg Then
     $hProcess = Exec aExec With Project.Environment As "Process"
   Else
     $hProcess = Exec aExec With Project.Environment For Read Write As "Process"
-  Endif
-    
+  Endif  
+  
+  SetState(STATE_STARTING)
+  Balloon.Hide
+
   Try Debug.Start
 
-  SetState(STATE_STARTING)
-
-  Balloon.Hide
-  
+  If Error Then 
+    'sArg = Error.Text
+    $hProcess.Kill
+    'FGambas.Error(("Unable to start debugger.") & "\n\n" & sArg)
+    Return
+  Endif
 
   'PRINT "Debug.Start"
   'PRINT "Debug.Start -> OK"

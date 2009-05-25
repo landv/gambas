@@ -50,9 +50,9 @@
 
 /*#define DEBUG_ME*/
 
-PUBLIC DEBUG_INFO DEBUG_info = { 0 };
-PUBLIC GB_DEBUG_INTERFACE *DEBUG_interface;
-PUBLIC char DEBUG_buffer[DEBUG_BUFFER_MAX + 1];
+DEBUG_INFO DEBUG_info = { 0 };
+GB_DEBUG_INTERFACE *DEBUG_interface;
+char DEBUG_buffer[DEBUG_BUFFER_MAX + 1];
 
 static DEBUG_BREAK *Breakpoint;
 static bool Error;
@@ -71,7 +71,7 @@ static bool _fifo;
 #define WARNING(_msg, ...) fprintf(_out, "W\t" _msg "\n", ##__VA_ARGS__)
 #define INFO(_msg, ...) fprintf(_out, "I\t" _msg "\n", ##__VA_ARGS__)
 
-PUBLIC void DEBUG_break_on_next_line(void)
+void DEBUG_break_on_next_line(void)
 {
   DEBUG_info.stop = TRUE;
   DEBUG_info.leave = FALSE;
@@ -159,11 +159,11 @@ static boolean calc_position_from_line(CLASS *class, ushort line, FUNCTION **fun
 }
 
 
-PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char *fifo_name)
+DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char *fifo_name)
 {
   char path[MAX_PATH];
 	char name[16];
-	int i;
+	//int i;
 
   //if (!EXEC_debug)
   //  return;
@@ -232,7 +232,7 @@ PUBLIC DEBUG_INFO *DEBUG_init(GB_DEBUG_INTERFACE *debug, bool fifo, const char *
   return &DEBUG_info;
 }
 
-PUBLIC void DEBUG_exit(void)
+void DEBUG_exit(void)
 {
   GB.FreeArray(&Breakpoint);
 
@@ -382,7 +382,7 @@ static boolean unset_breakpoint(CLASS *class, ushort line)
 }
 
 
-PUBLIC void DEBUG_init_breakpoints(CLASS *class)
+void DEBUG_init_breakpoints(CLASS *class)
 {
   int i;
   DEBUG_BREAK *brk;
@@ -395,6 +395,110 @@ PUBLIC void DEBUG_init_breakpoints(CLASS *class)
 		  //fprintf(stderr, "DEBUG_init_breakpoints: %s\n", class->name);
     	init_breakpoint(brk);
 		}
+  }
+}
+
+static void print_local()
+{
+  int i;
+	FUNCTION *fp;
+  LOCAL_SYMBOL *lp;
+
+	fp = DEBUG_info.fp;
+	
+  if (!fp || !fp->debug)
+  	return;
+  	
+	for (i = 0; i < fp->debug->n_local; i++)
+	{
+		lp = &fp->debug->local[i];
+		fprintf(_out, "%.*s ", lp->sym.len, lp->sym.name);
+	}
+	
+	/*else
+	{
+		cmd++;
+
+		for (i = 0; i < FP->debug->n_local; i++)
+		{
+			lp = &FP->debug->local[i];
+			if (lp->sym.len == strlen(cmd) && strncasecmp(lp->sym.name, cmd, lp->sym.len) == 0)
+			{
+				fprintf(_out, "=");
+				//fprintf(_out, "TUT\n");
+				PRINT_value(_out, &BP[lp->value], TRUE);
+				nl = FALSE;
+				break;
+			}
+		}
+	}*/
+}
+
+
+static void print_symbol(GLOBAL_SYMBOL *gp, bool is_static, bool is_public)
+{
+  if (CTYPE_get_kind(gp->ctype) != TK_VARIABLE && CTYPE_get_kind(gp->ctype) != TK_CONST)
+    return;
+
+  if (CTYPE_is_static(gp->ctype) && !is_static)
+    return;
+
+  if (!CTYPE_is_static(gp->ctype) && is_static)
+    return;
+
+  if (CTYPE_is_public(gp->ctype) && !is_public)
+    return;
+
+  if (!CTYPE_is_public(gp->ctype) && is_public)
+    return;
+
+  fprintf(_out, "%.*s ", gp->sym.len, gp->sym.name);
+}
+
+
+static void print_object()
+{
+  int i;
+  GLOBAL_SYMBOL *gp;
+	CLASS *cp = DEBUG_info.cp;
+	void *op = DEBUG_info.op;
+
+	if (!cp || !cp->load)
+		return;
+
+	fprintf(_out, "S: ");
+
+	for (i = 0; i < cp->load->n_global; i++)
+	{
+		gp = &cp->load->global[i];
+		print_symbol(gp, TRUE, TRUE);
+	}
+
+	fprintf(_out, "s: ");
+
+	for (i = 0; i < cp->load->n_global; i++)
+	{
+		gp = &cp->load->global[i];
+		print_symbol(gp, TRUE, FALSE);
+	}
+
+  if (op)
+  {
+    fprintf(_out, "D: ");
+
+    for (i = 0; i < cp->load->n_global; i++)
+    {
+      gp = &cp->load->global[i];
+      print_symbol(gp, FALSE, TRUE);
+    }
+
+    fprintf(_out, "d: ");
+
+    for (i = 0; i < cp->load->n_global; i++)
+    {
+      gp = &cp->load->global[i];
+      print_symbol(gp, FALSE, FALSE);
+    }
   }
 }
 
@@ -485,7 +589,7 @@ static void command_unset_breakpoint(const char *cmd)
 }
 
 
-PUBLIC void DEBUG_backtrace(FILE *out)
+void DEBUG_backtrace(FILE *out)
 {
   int i;
   STACK_CONTEXT *context;
@@ -516,124 +620,69 @@ PUBLIC void DEBUG_backtrace(FILE *out)
   }
 }
 
-/*static void command_where(const char *cmd)
+static void debug_info()
 {
-	DEBUG_backtrace(_out);
-}*/
-
-static void print_local()
-{
-  int i;
-  LOCAL_SYMBOL *lp;
-
-  if (!FP || !FP->debug)
-  	return;
-  	
-	for (i = 0; i < FP->debug->n_local; i++)
-	{
-		lp = &FP->debug->local[i];
-		fprintf(_out, "%.*s ", lp->sym.len, lp->sym.name);
-	}
-	
-	/*else
-	{
-		cmd++;
-
-		for (i = 0; i < FP->debug->n_local; i++)
-		{
-			lp = &FP->debug->local[i];
-			if (lp->sym.len == strlen(cmd) && strncasecmp(lp->sym.name, cmd, lp->sym.len) == 0)
-			{
-				fprintf(_out, "=");
-				//fprintf(_out, "TUT\n");
-				PRINT_value(_out, &BP[lp->value], TRUE);
-				nl = FALSE;
-				break;
-			}
-		}
-	}*/
-}
-
-
-static void print_symbol(GLOBAL_SYMBOL *gp, bool is_static, bool is_public)
-{
-  if (CTYPE_get_kind(gp->ctype) != TK_VARIABLE && CTYPE_get_kind(gp->ctype) != TK_CONST)
-    return;
-
-  if (CTYPE_is_static(gp->ctype) && !is_static)
-    return;
-
-  if (!CTYPE_is_static(gp->ctype) && is_static)
-    return;
-
-  if (CTYPE_is_public(gp->ctype) && !is_public)
-    return;
-
-  if (!CTYPE_is_public(gp->ctype) && is_public)
-    return;
-
-  fprintf(_out, "%.*s ", gp->sym.len, gp->sym.name);
-}
-
-
-static void print_object()
-{
-  int i;
-  GLOBAL_SYMBOL *gp;
-
-	if (!CP || !CP->load)
-		return;
-
-	fprintf(_out, "S: ");
-
-	for (i = 0; i < CP->load->n_global; i++)
-	{
-		gp = &CP->load->global[i];
-		print_symbol(gp, TRUE, TRUE);
-	}
-
-	fprintf(_out, "s: ");
-
-	for (i = 0; i < CP->load->n_global; i++)
-	{
-		gp = &CP->load->global[i];
-		print_symbol(gp, TRUE, FALSE);
-	}
-
-  if (OP)
-  {
-    fprintf(_out, "D: ");
-
-    for (i = 0; i < CP->load->n_global; i++)
-    {
-      gp = &CP->load->global[i];
-      print_symbol(gp, FALSE, TRUE);
-    }
-
-    fprintf(_out, "d: ");
-
-    for (i = 0; i < CP->load->n_global; i++)
-    {
-      gp = &CP->load->global[i];
-      print_symbol(gp, FALSE, FALSE);
-    }
-  }
-}
-
-
-/*static void command_error(const char *cmd)
-{
+	fprintf(_out, "*\t");
+  
   if (Error)
-  	GB_DEBUG.PrintError(_out, FALSE, TRUE);
-    //ERROR_print_at(stdout);
-  else
-    fprintf(_out, "OK\n");
-}*/
+    GB_DEBUG.PrintError(_out, TRUE, FALSE);
+	
+	fprintf(_out, "\t");
+	
+	DEBUG_backtrace(_out);
+	fprintf(_out, "\t");
+	
+	print_local();
+	fprintf(_out, "\t");
+	
+	print_object();
+	fprintf(_out, "\n");
+}
 
 static void command_frame(const char *cmd)
 {
-}
+	int i;
+	int frame;
+	STACK_CONTEXT *context = NULL;
+	
+	if (cmd) 
+	{
+		frame = atoi(&cmd[1]);
+		//fprintf(_out, "switching to frame %d\n", frame);
+	
+		if (frame > 0)
+		{
+			for (i = 0;; i++)
+			{
+				context = GB_DEBUG.GetStack(i);
+				if (!context)
+					break;
+				if (!context->pc && !context->cp)
+					continue;
+				
+				frame--;
+				if (!frame)
+				{
+					DEBUG_info.bp = context->bp;
+					DEBUG_info.fp = context->fp;
+					DEBUG_info.op = context->op;
+					DEBUG_info.cp = context->cp;
+					break;
+				}
+			}
+		}
+	}
 
+	if (!context)
+	{
+		DEBUG_info.bp = BP;
+		DEBUG_info.fp = FP;
+		DEBUG_info.op = OP;
+		DEBUG_info.cp = CP;
+	}
+
+	debug_info();
+}
 
 static void command_eval(const char *cmd)
 {
@@ -677,10 +726,10 @@ static void command_eval(const char *cmd)
   if (EVAL.Compile(expr))
     goto __ERROR;
 
-  DEBUG_info.bp = BP;
-  DEBUG_info.fp = FP;
-  DEBUG_info.op = OP;
-  DEBUG_info.cp = CP;
+//   DEBUG_info.bp = BP;
+//   DEBUG_info.fp = FP;
+//   DEBUG_info.op = OP;
+//   DEBUG_info.cp = CP;
 
   val = (VALUE *)EVAL.Run(expr, GB_DEBUG.GetValue);
   if (!val)
@@ -735,10 +784,10 @@ static void command_symbol(const char *cmd)
 
 	fprintf(_out, "\t");
 
-  DEBUG_info.bp = BP;
-  DEBUG_info.fp = FP;
-  DEBUG_info.op = OP;
-  DEBUG_info.cp = CP;
+	/*DEBUG_info.bp = BP;
+	DEBUG_info.fp = FP;
+	DEBUG_info.op = OP;
+	DEBUG_info.cp = CP;*/
   
   start++;
   PRINT_symbol(_out, &cmd[start], len - start);
@@ -750,26 +799,7 @@ static void command_symbol(const char *cmd)
 }
 
 
-static void debug_info()
-{
-	fprintf(_out, "*\t");
-  
-  if (Error)
-    GB_DEBUG.PrintError(_out, TRUE, FALSE);
-	
-	fprintf(_out, "\t");
-	
-	DEBUG_backtrace(_out);
-	fprintf(_out, "\t");
-	
-	print_local();
-	fprintf(_out, "\t");
-	
-	print_object();
-	fprintf(_out, "\n");
-}
-
-PUBLIC void DEBUG_main(boolean error)
+void DEBUG_main(boolean error)
 {
   static DEBUG_TYPE last_command = TC_NONE;
 
@@ -812,7 +842,7 @@ PUBLIC void DEBUG_main(boolean error)
   if (_fifo)
     fprintf(_out, "!\n");
 
-	debug_info();
+	command_frame(NULL);
 
   do
   {
@@ -903,13 +933,13 @@ PUBLIC void DEBUG_main(boolean error)
 
 
 
-PUBLIC void DEBUG_breakpoint(int id)
+void DEBUG_breakpoint(int id)
 {
   DEBUG_main(FALSE);
 }
 
 
-PUBLIC const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
+const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 {
   ushort line = 0;
 
@@ -925,19 +955,19 @@ PUBLIC const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 }
 
 
-PUBLIC const char *DEBUG_get_current_position(void)
+const char *DEBUG_get_current_position(void)
 {
   return DEBUG_get_position(CP, FP, PC);
 }
 
 
-PUBLIC void DEBUG_where(void)
+void DEBUG_where(void)
 {
   fprintf(_out ? _out : stderr, "%s: ", DEBUG_get_current_position());
 }
 
 
-PUBLIC void DEBUG_welcome(void)
+void DEBUG_welcome(void)
 {
   if (!_fifo)
     fprintf(_out, DEBUG_WELCOME);

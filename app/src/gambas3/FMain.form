@@ -666,7 +666,7 @@
         ToolTip = ("Finish current function")
         Action = "return"
         Text = ("")
-        Picture = Picture["icon:/small/top"]
+        Picture = Picture["icon:/small/eject"]
       }
       { btnUntil ToolButton mnuUntil
         Name = "btnUntil"
@@ -674,7 +674,7 @@
         ToolTip = ("Run until current line")
         Action = "until"
         Text = ("")
-        Picture = Picture["icon:/small/last"]
+        Picture = Picture["icon:/small/start"]
       }
       { btnWatch ToolButton mnuWatch
         Name = "btnWatch"
@@ -1020,7 +1020,7 @@
   { Action return
     Text = "Finis&h"
     Shortcut = "Alt+F5"
-    Picture = "icon:/small/top"
+    Picture = "icon:/small/eject"
   }
   { Action save-project
     Text = "&Save project"
@@ -1070,7 +1070,7 @@
   { Action until
     Text = "Run &until"
     Shortcut = "Shift+F5"
-    Picture = "icon:/small/last"
+    Picture = "icon:/small/start"
   }
   { Action update-all-form
     Text = "&Update all forms"

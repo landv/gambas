@@ -270,7 +270,10 @@ Private Sub LoadSession()
   
   Dim hFile As File
 
-  'Main.Log("LoadSession: #1 '" & $sPath & "'")
+  ' Main.Log("LoadSession: #1 '" & $sPath & "'")
+  ' Main.Log("System.Language = " & System.Language)
+  ' Main.Log("System.Charset = " & System.Charset)
+  ' Main.Log(System.Backtrace.Join(" "))
 
   If Not Exist($sPath) Then Goto _ABANDON
   

@@ -29,6 +29,15 @@
       Delay = 100
     }
   }
+  { lblNotFound TextLabel
+    MoveScaled(19,1,39,12)
+    Visible = False
+    Font = Font["Bold,+2"]
+    Expand = True
+    Padding = 4
+    Text = ("Search string cannot be found.")
+    Border = Border.Sunken
+  }
   { tvwFind GridView
     MoveScaled(19,1,47,16)
     Expand = True

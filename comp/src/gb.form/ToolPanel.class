@@ -2,269 +2,269 @@
 
 ' Gambas class file 
 
-EXPORT
-INHERITS UserContainer
+Export
+Inherits UserContainer
 
-PUBLIC CONST _Properties AS String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Animated,Border"
+Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Animated,Border"
 
-EVENT Click
+Event Click
 
-PROPERTY Count AS Integer
-PROPERTY Index AS Integer
-PROPERTY Text AS String
-PROPERTY Picture AS Picture
-PROPERTY Animated AS Boolean
-PROPERTY Font AS Font
-PROPERTY TextFont AS Font
-PROPERTY Border AS Boolean
+Property Count As Integer
+Property Index As Integer
+Property Text As String
+Property Picture As Picture
+Property Animated As Boolean
+Property Font As Font
+Property TextFont As Font
+Property Border As Boolean
 
-PRIVATE $hWatcher AS Watcher
-PRIVATE $aToolBar AS NEW Object[]
-PRIVATE $iCurrent AS Integer
-PRIVATE $bAnimate AS Boolean
-PRIVATE $hPanel AS Panel
+Private $hWatcher As Watcher
+Private $aToolBar As New Object[]
+Private $iCurrent As Integer
+Private $bAnimate As Boolean
+Private $hPanel As Panel
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  $hPanel = NEW Panel(ME)
-  $hWatcher = NEW Watcher($hPanel) AS "ToolPanel"
+  $hPanel = New Panel(Me)
+  $hWatcher = New Watcher($hPanel) As "ToolPanel"
 
-  ME._Container = $hPanel
-  ME.Count = 1
-  ME.Index = 0
+  Me._Container = $hPanel
+  Me.Count = 1
+  Me.Index = 0
 
-END
+End
 
-PRIVATE FUNCTION Count_Read() AS Integer
+Private Function Count_Read() As Integer
 
-  RETURN $aToolBar.Count
+  Return $aToolBar.Count
 
-END
+End
 
-PRIVATE SUB Count_Write(iCount AS Integer)
+Private Sub Count_Write(iCount As Integer)
 
-  DIM iInd AS Integer
-  DIM hToolbar AS ToolPanelContainer
-  DIM hCont AS Container
-  DIM hFont AS Font
+  Dim iInd As Integer
+  Dim hToolbar As ToolPanelContainer
+  Dim hCont As Container
+  Dim hFont As Font
 
-  IF iCount < 1 THEN Error.Raise("Bad argument")
-  IF iCount = $aToolbar.Count THEN RETURN
+  If iCount < 1 Then Error.Raise("Bad argument")
+  If iCount = $aToolbar.Count Then Return
 
-  IF iCount < $aToolBar.Count THEN
+  If iCount < $aToolBar.Count Then
 
-    FOR iInd = $aToolBar.Max TO iCount STEP -1
+    For iInd = $aToolBar.Max To iCount Step -1
       hToolbar = $aToolBar[iInd]
-      IF hToolbar._Container.Children.Count THEN Error.Raise("Toolbar is not empty")
-    NEXT
+      If hToolbar._Container.Children.Count Then Error.Raise("ToolPanel container is not empty")
+    Next
 
-    FOR iInd = $aToolBar.Max TO iCount STEP -1
+    For iInd = $aToolBar.Max To iCount Step -1
       $aToolBar[iInd].Delete
-    NEXT
+    Next
 
     $aToolBar.Remove(iCount, -1)
 
-  ELSE
+  Else
 
     'hCont = ME.Container
     'ME.Container = $hPanel
-    TRY hFont = $aToolBar[0].TextFont
+    Try hFont = $aToolBar[0].TextFont
     
-    FOR iInd = $aToolBar.Count TO iCount - 1
-      hToolbar = NEW ToolPanelContainer($hPanel) AS "ToolPanelContainer"
-      hToolbar.Width = ME.Width
+    For iInd = $aToolBar.Count To iCount - 1
+      hToolbar = New ToolPanelContainer($hPanel) As "ToolPanelContainer"
+      hToolbar.Width = Me.Width
       hToolbar.Text = "Toolbar " & CInt(iInd)
       hToolBar.Tag = iInd
       hToolBar.TextFont = hFont
       $aToolBar.Add(hToolbar)
-    NEXT
+    Next
     'ME.Container = hCont
 
     'ME.Index = iCount - 1
     Index_Write(iCount - 1)
 
-  ENDIF
+  Endif
 
-END
+End
 
-PRIVATE FUNCTION Index_Read() AS Integer
+Private Function Index_Read() As Integer
 
-  RETURN $iCurrent
+  Return $iCurrent
 
-END
+End
 
-PRIVATE SUB Index_Write(iIndex AS Integer)
+Private Sub Index_Write(iIndex As Integer)
 
-  IF iIndex < 0 OR iIndex >= $aToolBar.Count THEN Error.Raise("Bad index")
+  If iIndex < 0 Or iIndex >= $aToolBar.Count Then Error.Raise("Bad index")
 
-  ME._Container = $aToolBar[iIndex]
+  Me._Container = $aToolBar[iIndex]
   $iCurrent = iIndex
 
-  MoveToolbar(ME.Visible)
+  MoveToolbar(Me.Visible)
 
-END
+End
 
-PRIVATE SUB MoveToolbar(OPTIONAL bAnim AS Boolean)
+Private Sub MoveToolbar(Optional bAnim As Boolean)
 
-  DIM hToolBar AS ToolPanelContainer
-  DIM Y AS Integer
-  DIM YY AS Integer
-  DIM iInd AS Integer
-  DIM iRest AS Integer
-  DIM bCurrent AS Boolean
+  Dim hToolBar As ToolPanelContainer
+  Dim Y As Integer
+  Dim YY As Integer
+  Dim iInd As Integer
+  Dim iRest As Integer
+  Dim bCurrent As Boolean
 
   Y = $hPanel.ClientY
 
-  FOR iInd = 0 TO $aToolBar.Max
+  For iInd = 0 To $aToolBar.Max
 
     hToolBar = $aToolBar[iInd]
-    IF NOT hToolbar.Visible THEN CONTINUE 
+    If Not hToolbar.Visible Then Continue 
     
     bCurrent = iInd = $iCurrent
-    hToolBar._Container.Visible = TRUE
+    hToolBar._Container.Visible = True
 
-    IF bAnim AND $bAnimate THEN
-      IF ((hToolBar.Y < Y) AND iInd = $aToolBar.Max) OR ((hToolBar.Y > Y) AND bCurrent) THEN
-        FOR YY = hToolBar.Y TO Y STEP 8 * Sgn(Y - hToolBar.Y)
+    If bAnim And $bAnimate Then
+      If ((hToolBar.Y < Y) And iInd = $aToolBar.Max) Or ((hToolBar.Y > Y) And bCurrent) Then
+        For YY = hToolBar.Y To Y Step 8 * Sgn(Y - hToolBar.Y)
           hToolBar.Y = YY
-          WAIT
-        NEXT
-      ENDIF
-    ENDIF
+          Wait
+        Next
+      Endif
+    Endif
 
     'hToolBar.ShowToolBar(bCurrent)
 
-    IF iInd = $iCurrent THEN
+    If iInd = $iCurrent Then
       YY = $hPanel.ClientY + $hPanel.ClientH
-      FOR iRest = iInd + 1 TO $aToolBar.Max
-        IF NOT $aToolBar[iRest].Visible THEN CONTINUE
+      For iRest = iInd + 1 To $aToolBar.Max
+        If Not $aToolBar[iRest].Visible Then Continue
         YY -= $aToolBar[iRest].GetButtonHeight()
-      NEXT
-    ELSE
+      Next
+    Else
       YY = Y + hToolbar.GetButtonHeight()
-    ENDIF
+    Endif
 
     'hToolBar.Move($hPanel.ClientX, Y, $hPanel.ClientW, YY - Y)
     hToolBar.Move($hPanel.ClientX, Y, $hPanel.ClientW, YY - Y)
     Y = YY
 
-  NEXT
+  Next
 
-  FOR iInd = 0 TO $aToolBar.Max
+  For iInd = 0 To $aToolBar.Max
 
     hToolBar = $aToolBar[iInd]
     bCurrent = iInd = $iCurrent
     hToolBar._Container.Visible = bCurrent
 
-  NEXT
+  Next
 
-END
+End
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN $aToolBar[$iCurrent].Text
+  Return $aToolBar[$iCurrent].Text
 
-END
+End
 
-PRIVATE SUB Text_Write(sText AS String)
+Private Sub Text_Write(sText As String)
 
   $aToolBar[$iCurrent].Text = sText
 
-END
+End
 
-PRIVATE FUNCTION Picture_Read() AS Picture
+Private Function Picture_Read() As Picture
 
-  RETURN $aToolBar[$iCurrent].Picture
+  Return $aToolBar[$iCurrent].Picture
 
-END
+End
 
-PRIVATE SUB Picture_Write(hPict AS Picture)
+Private Sub Picture_Write(hPict As Picture)
 
   $aToolBar[$iCurrent].Picture = hPict
 
-END
+End
 
-PUBLIC SUB ToolPanelContainer_Change()
+Public Sub ToolPanelContainer_Change()
 
-  Index_Write(LAST.Tag)
-  RAISE Click
+  Index_Write(Last.Tag)
+  Raise Click
 
-END
+End
 
-PUBLIC SUB ToolPanel_Resize()
+Public Sub ToolPanel_Resize()
 
   MoveToolbar
 
-END
+End
 
-PRIVATE FUNCTION Animated_Read() AS Boolean
+Private Function Animated_Read() As Boolean
 
-  RETURN $bAnimate
+  Return $bAnimate
 
-END
+End
 
-PRIVATE SUB Animated_Write(bAnim AS Boolean)
+Private Sub Animated_Write(bAnim As Boolean)
 
   $bAnimate = bAnim
 
-END
+End
 
-PUBLIC FUNCTION _get(Index AS Integer) AS ToolPanelContainer
+Public Function _get(Index As Integer) As ToolPanelContainer
 
-  IF Index < 0 OR Index >= $aToolBar.Count THEN Error.Raise("Bad index")
-  RETURN $aToolBar[Index]
+  If Index < 0 Or Index >= $aToolBar.Count Then Error.Raise("Bad index")
+  Return $aToolBar[Index]
 
-END
+End
 
-PRIVATE FUNCTION Font_Read() AS Font
+Private Function Font_Read() As Font
 
-  RETURN SUPER.Font
+  Return Super.Font
 
-END
+End
 
-PRIVATE SUB Font_Write(hFont AS Font)
+Private Sub Font_Write(hFont As Font)
 
-  DIM hToolbar AS ToolPanelContainer
+  Dim hToolbar As ToolPanelContainer
 
-  SUPER.Font = hFont
+  Super.Font = hFont
 
-  FOR EACH hToolbar IN $aToolbar
+  For Each hToolbar In $aToolbar
     hToolBar.Text = hToolBar.Text
-  NEXT
+  Next
 
-  MoveToolBar(FALSE)
+  MoveToolBar(False)
 
-END
+End
 
-PRIVATE FUNCTION Border_Read() AS Boolean
+Private Function Border_Read() As Boolean
 
-  RETURN $hPanel.Border <> Border.None
+  Return $hPanel.Border <> Border.None
 
-END
+End
 
-PRIVATE SUB Border_Write(bBorder AS Boolean)
+Private Sub Border_Write(bBorder As Boolean)
 
   $hPanel.Border = If(bBorder, Border.Sunken, Border.None)
-  MoveToolbar(FALSE)
+  MoveToolbar(False)
 
-END
+End
 
-PRIVATE FUNCTION TextFont_Read() AS Font
+Private Function TextFont_Read() As Font
 
-  DIM hToolbar AS ToolPanelContainer = $aToolBar[0]
+  Dim hToolbar As ToolPanelContainer = $aToolBar[0]
 
-  RETURN hToolBar.GetTextFont()
+  Return hToolBar.GetTextFont()
 
-END
+End
 
-PRIVATE SUB TextFont_Write(Value AS Font)
+Private Sub TextFont_Write(Value As Font)
 
-  DIM hToolbar AS ToolPanelContainer
+  Dim hToolbar As ToolPanelContainer
 
-  FOR EACH hToolbar IN $aToolbar
+  For Each hToolbar In $aToolbar
     hToolBar.TextFont = Value
-  NEXT
+  Next
 
-  MoveToolBar(FALSE)
+  MoveToolBar(False)
   
-END
+End
