@@ -246,7 +246,6 @@ void CCURL_stop(void *_object)
 		THIS_CURL=NULL;
 	}
 
-	stop_post();
 	THIS_STATUS = 0;
 }
 
@@ -294,12 +293,6 @@ void CCURL_post_curl(intptr_t data)
 
 	if (!post)
 		stop_post();
-/*	{
-		GB.Watch (CCURL_pipe[0] ,GB_WATCH_NONE,CCURL_post_curl,0);
-		close(CCURL_pipe[0]);
-		close(CCURL_pipe[1]);
-		CCURL_pipe[0]=-1;
-	}*/	
 }
 
 /*********************************************

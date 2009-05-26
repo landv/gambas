@@ -31,7 +31,7 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #ifndef __CCURL_C
 
