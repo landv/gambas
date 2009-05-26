@@ -133,7 +133,7 @@ static void push_class(int index)
   decl.type = TYPE_make(T_STRING, 0, 0);
   decl.index = NO_SYMBOL;
   decl.value = index;
-  CODE_push_class(CLASS_add_constant(JOB->class, &decl));
+  CODE_push_class(CLASS_add_constant(EVAL->class, &decl));
 }
 */
 
@@ -190,7 +190,7 @@ static void trans_subr(int subr, short nparam, boolean output)
 }
 
 
-PUBLIC void TRANS_operation(short op, short nparam, boolean output, PATTERN previous)
+void TRANS_operation(short op, short nparam, boolean output, PATTERN previous)
 {
   COMP_INFO *info = &COMP_res_info[op];
 
@@ -297,14 +297,14 @@ static void trans_expr_from_tree(PATTERN *tree)
       }
       else if (PATTERN_is(pattern, RS_ME))
       {
-        /*if (FUNCTION_is_static(JOB->func))
+        /*if (FUNCTION_is_static(EVAL->func))
           THROW("ME cannot be used in a static function");*/
 
         CODE_push_me(TRUE);
       }
       else if (PATTERN_is(pattern, RS_SUPER))
       {
-        /*if (FUNCTION_is_static(JOB->func))
+        /*if (FUNCTION_is_static(EVAL->func))
           THROW("ME cannot be used in a static function");*/
 
         CODE_push_super(TRUE);
@@ -350,31 +350,31 @@ static void trans_new(void)
   boolean event = FALSE;
   boolean collection = FALSE;
 
-  if (PATTERN_is_identifier(*JOB->current))
+  if (PATTERN_is_identifier(*EVAL->current))
   {
-    index = PATTERN_index(*JOB->current);
-    CODE_push_class(CLASS_add_class(JOB->class, index));
+    index = PATTERN_index(*EVAL->current);
+    CODE_push_class(CLASS_add_class(EVAL->class, index));
     nparam = 1;
   }
-  else if (PATTERN_is_type(*JOB->current))
+  else if (PATTERN_is_type(*EVAL->current))
   {
-    if (PATTERN_is(JOB->current[1], RS_LSQR))
+    if (PATTERN_is(EVAL->current[1], RS_LSQR))
     {
-      CODE_push_number(RES_get_type(PATTERN_index(*JOB->current)));
+      CODE_push_number(RES_get_type(PATTERN_index(*EVAL->current)));
       nparam = 1;
     }
     else
       THROW("Cannot instanciate native types");
   }
 
-  JOB->current++;
+  EVAL->current++;
 
-  if (PATTERN_is(*JOB->current, RS_LSQR))
+  if (PATTERN_is(*EVAL->current, RS_LSQR))
   {
     if (collection)
       THROW("Array declaration is forbidden with typed collection");
 
-    JOB->current++;
+    EVAL->current++;
 
     for (i = 0;; i++)
     {
@@ -384,50 +384,50 @@ static void trans_new(void)
       TRANS_expression(FALSE);
       nparam++;
 
-      if (PATTERN_is(*JOB->current, RS_RSQR))
+      if (PATTERN_is(*EVAL->current, RS_RSQR))
         break;
 
-      if (!PATTERN_is(*JOB->current, RS_COMMA))
+      if (!PATTERN_is(*EVAL->current, RS_COMMA))
         THROW("Comma missing");
 
-      JOB->current++;
+      EVAL->current++;
     }
 
-    JOB->current++;
+    EVAL->current++;
     array = TRUE;
   }
   else
   {
-    if (PATTERN_is(*JOB->current, RS_LBRA))
+    if (PATTERN_is(*EVAL->current, RS_LBRA))
     {
-      JOB->current++;
+      EVAL->current++;
 
       for(;;)
       {
         if (nparam > MAX_PARAM_FUNC)
           THROW("Too many arguments");
 
-        if (PATTERN_is(*JOB->current, RS_AT))
+        if (PATTERN_is(*EVAL->current, RS_AT))
           THROW("NEW cannot have output parameters");
 
         TRANS_expression(FALSE);
         nparam++;
 
-        if (PATTERN_is(*JOB->current, RS_RBRA))
+        if (PATTERN_is(*EVAL->current, RS_RBRA))
           break;
 
-        if (!PATTERN_is(*JOB->current, RS_COMMA))
+        if (!PATTERN_is(*EVAL->current, RS_COMMA))
           THROW("Comma missing");
 
-        JOB->current++;
+        EVAL->current++;
       }
 
-      JOB->current++;
+      EVAL->current++;
     }
 
-    if (PATTERN_is(*JOB->current, RS_AS))
+    if (PATTERN_is(*EVAL->current, RS_AS))
     {
-      JOB->current++;
+      EVAL->current++;
       TRANS_expression(FALSE);
       nparam++;
       event = TRUE;
@@ -446,34 +446,50 @@ static void trans_new(void)
 }
 #endif
 
-PUBLIC void EVAL_translate()
+void TRANS_expression()
 {
   TRANS_tree();
 
   trans_expr_from_tree(EVAL->tree);
 
   ARRAY_delete(&EVAL->tree);
-
-  CODE_return(2);
 }
 
-/*
-PUBLIC void TRANS_reference(void)
+
+void TRANS_reference(void)
 {
-  TRANS_expression(FALSE);
+  TRANS_expression();
 
   if (!CODE_popify_last())
     THROW("Invalid assignment");
 }
-*/
 
-/*
-PUBLIC boolean TRANS_affectation()
+static void trans_operation(short op, short nparam, PATTERN previous)
 {
-  PATTERN *look = JOB->current;
+	COMP_INFO *info = &COMP_res_info[op];
+	CODE_op(info->code, nparam, (info->flag != RSF_OPN));
+}
+
+bool TRANS_affectation(void)
+{
+  /*static TRANS_STATEMENT statement[] = {
+    //{ RS_NEW, TRANS_new },
+    { RS_OPEN, TRANS_open },
+    { RS_SHELL, TRANS_shell },
+    { RS_EXEC, TRANS_exec },
+    { RS_RAISE, TRANS_raise },
+    { RS_PIPE, TRANS_pipe },
+    { RS_LOCK, TRANS_lock },
+    { RS_NONE, NULL }
+  };*/
+
+  //TRANS_STATEMENT *st;
+  PATTERN *look = EVAL->current;
   PATTERN *left, *expr, *after;
   int niv = 0;
-  boolean equal = FALSE;
+  bool equal = FALSE;
+  //bool stat = FALSE;
+  int op;
 
   for(;;)
   {
@@ -489,11 +505,18 @@ PUBLIC boolean TRANS_affectation()
       if (niv > 0)
         niv--;
     }
-    else if (PATTERN_is(*look, RS_EQUAL))
+    else if (niv == 0)
     {
-      if (niv == 0)
+      if (PATTERN_is(*look, RS_EQUAL))
       {
         equal = TRUE;
+        op = RS_NONE;
+        break;
+      }
+      else if (PATTERN_is_reserved(*look) && RES_is_assignment(PATTERN_index(*look)))
+      {
+        equal = TRUE;
+        op = RES_get_assignment_operator(PATTERN_index(*look));
         break;
       }
     }
@@ -504,21 +527,67 @@ PUBLIC boolean TRANS_affectation()
   if (!equal)
     return FALSE;
 
-  left = JOB->current;
+  left = EVAL->current;
   *look++ = PATTERN_make(RT_NEWLINE, 0);
   expr = look;
 
-  Can_new = TRUE;
-  JOB->current = expr;
-  TRANS_expression(FALSE);
+  EVAL->current = expr;
 
-  after = JOB->current;
-  JOB->current = left;
+  /*if (op == RS_NONE && (PATTERN_is_reserved(*EVAL->current)))
+  {
+    if (PATTERN_is(*EVAL->current, RS_NEW))
+    {
+      EVAL->current++;
+      TRANS_in_affectation++;
+      TRANS_new();
+      TRANS_in_affectation--;
+      stat = TRUE;
+    }
+    else
+    {
+      for (st = statement; st->id; st++)
+      {
+        if (PATTERN_is(*EVAL->current, st->id))
+        {
+          EVAL->current++;
+          TRANS_in_affectation++;
+          (*st->func)();
+          TRANS_in_affectation--;
+          stat = TRUE;
+        }
+      }
+    }
+  }*/
 
+  //if (!stat)
+  //{
+    if (op != RS_NONE)
+    {
+      EVAL->current = left;
+      TRANS_expression();
+    }
+
+    EVAL->current = expr;
+    TRANS_expression();
+    after = EVAL->current;
+
+    if (op != RS_NONE)
+			trans_operation(op, 2, NULL_PATTERN);
+  //}
+
+  after = EVAL->current;
+
+  /*if (dup)
+    CODE_dup();*/
+	
+	CODE_dup(); // So that Assign() returns the assigned value
+
+  EVAL->current = left;
   TRANS_reference();
 
-  JOB->current = after;
+  EVAL->current = after;
 
   return TRUE;
 }
-*/
+
+

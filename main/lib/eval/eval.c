@@ -26,7 +26,7 @@
 
 #include "gb_alloc_override.h"
 #include "gb_common.h"
-
+#include "gb_error.h"
 #include "gb_array.h"
 
 #include "eval_trans.h"
@@ -121,7 +121,7 @@ PUBLIC void EVAL_start(EXPRESSION *expr)
   expr->nvar = 0;
 }
 
-PUBLIC bool EVAL_compile(EXPRESSION *expr)
+PUBLIC bool EVAL_compile(EXPRESSION *expr, bool assign)
 {
   bool error = FALSE;
 
@@ -137,7 +137,21 @@ PUBLIC bool EVAL_compile(EXPRESSION *expr)
   TRY
   {
     EVAL_read();
-    EVAL_translate();
+		
+		EVAL->current = EVAL->pattern;
+		
+		if (assign)
+		{
+			if (!TRANS_affectation())
+				TRANS_expression();
+		}
+		else
+			TRANS_expression();
+		
+		if (!PATTERN_is_end(*EVAL->current))
+			THROW(E_SYNTAX);
+		
+		CODE_return(2);
 
     EVAL->stack_usage = CODE_stack_usage;
   }

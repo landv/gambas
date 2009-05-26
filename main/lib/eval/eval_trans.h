@@ -44,30 +44,31 @@ enum {
 */
 
 /*
-PUBLIC void TRANS_reset(void);
-PUBLIC boolean TRANS_newline(void);
-PUBLIC boolean TRANS_type(int flag, TRANS_DECL *result);
-PUBLIC boolean TRANS_check_declaration(void);
-PUBLIC void TRANS_get_constant_value(TRANS_DECL *decl, PATTERN value);
+void TRANS_reset(void);
+boolean TRANS_newline(void);
+boolean TRANS_type(int flag, TRANS_DECL *result);
+boolean TRANS_check_declaration(void);
+void TRANS_get_constant_value(TRANS_DECL *decl, PATTERN value);
 
-PUBLIC void TRANS_want(int reserved);
-PUBLIC boolean TRANS_is(int reserved);
-PUBLIC void TRANS_ignore(int reserved);
+void TRANS_want(int reserved);
+boolean TRANS_is(int reserved);
+void TRANS_ignore(int reserved);
 */
 
-PUBLIC boolean TRANS_get_number(int index, TRANS_NUMBER *result);
+boolean TRANS_get_number(int index, TRANS_NUMBER *result);
 
 /* eval_trans_expr.c */
 
-PUBLIC void EVAL_translate(void);
-PUBLIC void TRANS_operation(short op, short nparam, boolean output, PATTERN previous);
+void TRANS_expression(void);
+bool TRANS_affectation(void);
+void TRANS_operation(short op, short nparam, boolean output, PATTERN previous);
 
 /* eval_trans_tree.c */
 
 #define RS_UNARY (-1)
 
-PUBLIC void TRANS_tree(void);
-/*PUBLIC boolean TRANS_is_statement(TRANS_TREE *tree);*/
+void TRANS_tree(void);
+/*boolean TRANS_is_statement(TRANS_TREE *tree);*/
 
 #endif
 

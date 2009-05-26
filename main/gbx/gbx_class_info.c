@@ -255,6 +255,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
   GB_METHOD("DateDiff", "i", NULL, "(Date1)d(Date2)d(Period)i"),
 
   GB_METHOD("Eval", "v", NULL, "(Expression)s[(Context)Collection;]"),
+  GB_METHOD("Assign", "v", NULL, "(Expression)s[(Context)Collection;]"),
 
   GB_METHOD("Eof", "b", NULL, "[(File)Stream;]"),
   GB_METHOD("Lof", "l", NULL, "[(File)Stream;]"),

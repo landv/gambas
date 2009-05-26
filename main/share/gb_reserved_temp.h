@@ -510,6 +510,8 @@ SUBR_INFO COMP_subr_info[] =
   
   { "Unquote",           93,  0,  1     },
   { "Unquote$",          93,  0,  1     },
+
+  { "Assign",            94,  0,  1,  2 },   /* CODE_ASSIGN */
   /*
   { "_EventOff",         94,  0,  0     },
   { "_EventOn",          95,  0,  0     },

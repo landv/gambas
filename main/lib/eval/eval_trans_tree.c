@@ -654,7 +654,7 @@ PUBLIC void TRANS_tree()
   ARRAY_create(&EVAL->tree);
   /*ARRAY_add(&tree);*/
 
-  current = EVAL->pattern;
+  current = EVAL->current; //EVAL->pattern;
 
   if (PATTERN_is_newline(*current) || PATTERN_is_end(*current))
     THROW(E_SYNTAX);
@@ -663,9 +663,8 @@ PUBLIC void TRANS_tree()
 
   while (PATTERN_is_newline(*current))
     current++;
-
-  if (!PATTERN_is_end(*current))
-    THROW(E_SYNTAX);
+	
+	EVAL->current = current;
 
   #ifdef DEBUG
     printf("\n");

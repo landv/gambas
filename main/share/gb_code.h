@@ -40,6 +40,7 @@ EXTERN short CODE_stack_usage;
 
 void CODE_begin_function(void);
 void CODE_end_function(void);
+bool CODE_popify_last(void);
 
 #else
 

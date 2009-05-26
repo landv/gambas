@@ -170,8 +170,6 @@ static ushort *get_last_code2()
   return &cur_func->code[cur_func->last_code2];
 }
 
-#ifdef PROJECT_COMP
-
 bool CODE_popify_last(void)
 {
   /*
@@ -221,6 +219,8 @@ bool CODE_popify_last(void)
   return FALSE;
 }
 
+
+#ifdef PROJECT_COMP
 
 bool CODE_check_statement_last(void)
 {

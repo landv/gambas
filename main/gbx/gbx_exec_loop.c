@@ -162,7 +162,8 @@ static EXEC_FUNC SubrTable[] =
   SUBR_collection, /* 90 */
   SUBR_tr,         /* 91 */
   SUBR_quote,      /* 92 */
-  SUBR_unquote     /* 93 */
+  SUBR_unquote,    /* 93 */
+	SUBR_eval,       /* 94 */
   /* -> 95 */
 };
 
@@ -328,7 +329,7 @@ void EXEC_loop(void)
     /* 9A Tr$             */  &&_SUBR,
     /* 9B Quote$...       */  &&_SUBR,
     /* 9C Unquote$        */  &&_SUBR,
-    /* 9D                 */  &&_SUBR,
+    /* 9D Assign          */  &&_SUBR,
     /* 9E                 */  &&_SUBR,
     /* 9F                 */  &&_SUBR,
     /* A0 ADD QUICK       */  &&_ADD_QUICK,

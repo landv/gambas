@@ -234,7 +234,7 @@ void EVAL_string(char *expr)
 	
 	EVAL.New((void **)(void *)&eval, expr, len);
 
-	if (EVAL.Compile(eval))
+	if (EVAL.Compile(eval, FALSE))
 		goto _ERROR;
 
 	if (!EVAL.Run(eval, get_value))
@@ -276,7 +276,7 @@ void SUBR_eval(void)
 
 	EVAL.New((void **)(void *)&eval, expr, len);
 
-	if (EVAL.Compile(eval))
+	if (EVAL.Compile(eval, (EXEC_code >> 8) == CODE_ASSIGN))
 		goto _ERROR;
 
 	if (!EVAL.Run(eval, get_value))

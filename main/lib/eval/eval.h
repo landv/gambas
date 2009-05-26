@@ -40,21 +40,21 @@ EXTERN EXPRESSION EVAL_read_expr;
 #endif
 
 
-PUBLIC void EVAL_init(void);
-PUBLIC void EVAL_exit(void);
+void EVAL_init(void);
+void EVAL_exit(void);
 
-PUBLIC void EVAL_new(EXPRESSION **expr, char *src, int len);
-PUBLIC void EVAL_free(EXPRESSION **expr);
-PUBLIC bool EVAL_compile(EXPRESSION *expr);
+void EVAL_new(EXPRESSION **expr, char *src, int len);
+void EVAL_free(EXPRESSION **expr);
+bool EVAL_compile(EXPRESSION *expr, bool assign);
 
-PUBLIC GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value);
-PUBLIC void EVAL_clear(EXPRESSION *expr);
+GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value);
+void EVAL_clear(EXPRESSION *expr);
 
-PUBLIC int EVAL_add_constant(CLASS_CONST *cst);
-PUBLIC int EVAL_add_class(char *name);
-PUBLIC int EVAL_add_unknown(char *name);
-PUBLIC int EVAL_add_variable(int index);
+int EVAL_add_constant(CLASS_CONST *cst);
+int EVAL_add_class(char *name);
+int EVAL_add_unknown(char *name);
+int EVAL_add_variable(int index);
 
-PUBLIC void EVAL_start(EXPRESSION *expr);
+void EVAL_start(EXPRESSION *expr);
 
 #endif

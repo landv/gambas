@@ -108,7 +108,7 @@ typedef
 		int version;
 		void (*Analyze)(const char *src, int len, EVAL_ANALYZE *result, bool rewrite);
 		void (*New)(EVAL_EXPRESSION *expr, const char *src, int len);
-		bool (*Compile)(EVAL_EXPRESSION expr);
+		bool (*Compile)(EVAL_EXPRESSION expr, bool assign);
 		GB_VALUE *(*Run)(EVAL_EXPRESSION expr, EVAL_FUNCTION func);
 		void (*Free)(EVAL_EXPRESSION *expr);
 		}
