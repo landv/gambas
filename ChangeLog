@@ -1,4 +1,26 @@
 -------------------------------------------------------------------------------
+ gambas2-2.13.1 - 26 May 2009
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* NEW: Switch to version 2.13.1.
+
+[INTERPRETER]
+* NEW: Some forgotten FreeBSD patch.
+
+[GB.DB.SQLITE2]
+* BUG: Fix building with gcc 4.4.0.
+
+[GB.GTK]
+* BUG: Do not use gtk_adjustment_get_step_increment() if the GTK+ version
+  is not at least 2.14.
+
+[GB.NET.CURL]
+* BUG: A asynchronous transfer that ends does not stop the other ones
+  anymore.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.13 - 14 May 2009
 -------------------------------------------------------------------------------
 
