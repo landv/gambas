@@ -1095,7 +1095,11 @@ void EXEC_native(void)
 
 			n = desc->npmax - nparam;
 
-			STACK_check(n);
+			if (STACK_check(n))
+			{
+				STACK_RELOCATE(value);
+			}
+			
 			SP += n;
 			nparam = desc->npmax;
 
@@ -1123,7 +1127,11 @@ void EXEC_native(void)
 
 				n = desc->npmax - nparam;
 
-				STACK_check(n);
+				if (STACK_check(n))
+				{
+					STACK_RELOCATE(value);
+				}
+				
 				SP += n;
 				nparam = desc->npmax;
 

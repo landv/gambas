@@ -723,7 +723,7 @@ static void command_eval(const char *cmd)
 	start++;
 	EVAL.New(POINTER(&expr), &cmd[start], len - start);
 
-  if (EVAL.Compile(expr))
+  if (EVAL.Compile(expr, FALSE))
     goto __ERROR;
 
 //   DEBUG_info.bp = BP;

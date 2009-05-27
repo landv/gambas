@@ -54,7 +54,7 @@ Public SourcePath As String
 Public Language As String
 Public CreateComponent As Boolean
 Public ComponentState As Integer
-Public Stack As Integer
+'Public Stack As Integer
 Public StackTrace As Boolean
 Public Authors As String
 Public VersionProgram As String
@@ -2189,7 +2189,7 @@ Public Sub ReadProject()
   RunAfterMakingExec = ""
   Language = ""
   VersionProgram = ""
-  Stack = 0
+  'Stack = 0
   StackTrace = False
   UseTerminal = False
   Maintainer = ""
@@ -2347,8 +2347,8 @@ Public Sub ReadProject()
       Case "sourcepath"
         SourcePath = sVal
         
-      Case "stack"
-        Stack = Val(sVal)
+      'Case "stack"
+      '  Stack = Val(sVal)
         
       Case "stacktrace"
         StackTrace = Val(sVal) <> 0
@@ -2422,7 +2422,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   If Title Then Print #hFic, "Title="; Title
   If Startup Then Print #hFic, "Startup="; Startup
-  If Stack Then Print #hFic, "Stack="; Stack
+  'If Stack Then Print #hFic, "Stack="; Stack
   If StackTrace Then Print #hFic, "StackTrace=1"
   If UseTerminal Then Print #hFic, "UseTerminal=1"
   If Icon Then Print #hFic, "Icon="; Icon

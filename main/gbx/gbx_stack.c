@@ -33,11 +33,15 @@
 
 #include "gbx_stack.h"
 
-size_t STACK_size = 1024 * sizeof(VALUE);
+// The stack grows by 4K slot (8K on 64 bits CPU)
+#define STACK_INC 256 * sizeof(VALUE)
+
+size_t STACK_size = STACK_INC;
 char *STACK_base = NULL;
 char *STACK_limit = NULL;
 STACK_CONTEXT *STACK_frame;
 int STACK_frame_count;
+size_t STACK_relocate = 0;
 
 void STACK_init(void)
 {
@@ -59,7 +63,7 @@ void STACK_exit(void)
 }
 
 #if DEBUG_STACK
-void STACK_check(int need)
+bool STACK_check(int need)
 {
   static VALUE *old = NULL;
 
@@ -68,15 +72,25 @@ void STACK_check(int need)
     printf("STACK = %d bytes\n", ((char *)SP - STACK_base));
     old = SP;
   }
+	
   if ((char *)(SP + need + 8) >= STACK_limit)
-    THROW(E_STACK);
+	{
+    STACK_grow();
+		return TRUE;
+	}
+	else
+		return FALSE;
 }
 #endif
 
 void STACK_push_frame(STACK_CONTEXT *context, int need)
 {
 	if ((char *)(SP + need + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) 
-		THROW(E_STACK);
+	{
+		//fprintf(stderr, "**** STACK_GROW: STACK_push_frame\n");
+		//THROW(E_STACK);
+		STACK_grow();
+	}
   
   //if (((char *)SP + sizeof(STACK_CONTEXT) * 2) >= (char *)STACK_frame)
   //  THROW(E_STACK);
@@ -127,3 +141,74 @@ STACK_CONTEXT *STACK_get_frame(int frame)
 	else
 		return NULL;
 }
+
+static void relocate(STACK_CONTEXT *context)
+{
+	STACK_RELOCATE(context->next);
+	STACK_RELOCATE(context->bp);
+	STACK_RELOCATE(context->pp);
+	STACK_RELOCATE(context->ep);
+	STACK_RELOCATE(context->tp);
+}  
+
+void STACK_grow(void)
+{
+	size_t new_size = STACK_size + STACK_INC;
+	char *new_base;
+	size_t size;
+	STACK_CONTEXT *context;
+	
+	#if DEBUG_STACK
+	fprintf(stderr, "STACK_grow: before SP = %d\n", SP - (VALUE *)STACK_base);
+	fprintf(stderr, "STACK_grow: before STACK_limit = %d\n", (VALUE *)STACK_limit - (VALUE *)STACK_base);
+	fprintf(stderr, "STACK_grow: before STACK_frame = %d\n", (STACK_CONTEXT *)STACK_frame - (STACK_CONTEXT *)STACK_base);
+	#endif
+	
+  ALLOC_ZERO(&new_base, new_size, "STACK_grow");
+	STACK_relocate = new_base - STACK_base;
+
+	// copy the stack data
+	size = (char *)SP - STACK_base;
+	#if DEBUG_STACK
+	fprintf(stderr, "stack size = %d ", size);
+	#endif
+	memcpy(new_base, STACK_base, size);
+
+	// relocate the current context
+	relocate(&EXEC_current);
+	
+	// relocate frames
+	for (context = (STACK_CONTEXT *)STACK_limit; context < (STACK_CONTEXT *)(STACK_base + STACK_size); context++)
+		relocate(context);
+	
+	// copy the frame data
+	size = STACK_base + STACK_size - STACK_limit;
+	#if DEBUG_STACK
+	fprintf(stderr, "frame size = %d\n", size);
+	#endif
+	memcpy(&new_base[new_size - size], STACK_limit, size);
+
+	// update limit
+	//fprintf(stderr, "STACK_grow: limit = %d -> %d\n", STACK_limit - (char *)STACK_base, new_size - size);
+	STACK_limit = &new_base[new_size - size];
+	
+	// free old stack
+	FREE(&STACK_base, "STACK_grow");
+	
+	// update stack pointers
+	STACK_frame = (STACK_CONTEXT *)STACK_limit;
+	STACK_RELOCATE(SP);
+	STACK_RELOCATE(EXEC_super);
+	STACK_base = new_base;
+	STACK_size = new_size;
+	
+	#if DEBUG_STACK
+	fprintf(stderr, "STACK_grow: new size = %d\n", new_size / sizeof(VALUE));
+	
+	fprintf(stderr, "STACK_grow: after SP = %d\n", SP - (VALUE *)STACK_base);	
+	fprintf(stderr, "STACK_grow: after STACK_limit = %d\n", (VALUE *)STACK_limit - (VALUE *)STACK_base);
+	fprintf(stderr, "STACK_grow: after STACK_frame = %d\n", (STACK_CONTEXT *)STACK_frame - (STACK_CONTEXT *)STACK_base);
+	#endif
+}
+
+

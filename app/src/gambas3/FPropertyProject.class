@@ -54,7 +54,7 @@ Public Sub Form_Open()
   ' lblPath.Tooltip = File.Dir(Project.Dir)
   txtName.Text = "<font size=\"+2\"><b>" & Project.Name & "</b></font><br>" & File.Dir(Project.Dir)
 
-  cmbStackSize.List = [("(Default)"), "1 K", "2 K", "4 K", "8 K", "16 K", "32 K", "64 K"]
+  'cmbStackSize.List = [("(Default)"), "1 K", "2 K", "4 K", "8 K", "16 K", "32 K", "64 K"]
   
   cmbComponent_Click
 
@@ -74,8 +74,8 @@ Public Sub Form_Open()
     $sIcon = .Icon
     UpdateIcon
     txtTabSize.Value = .TabSize
-    cmbStackSize.Index = 0
-    If .Stack Then cmbStackSize.Text = .Stack & " K"
+    'cmbStackSize.Index = 0
+    'If .Stack Then cmbStackSize.Text = .Stack & " K"
     cmbStackTrace.Index = If(.StackTrace, 0, 1)
     txtVersionProg.Text = .VersionProgram
     'chkVersion.Value = NOT IsNull(.VersionProgram)
@@ -182,11 +182,11 @@ Private Function DoApply() As Boolean
     .Description = Trim(txtDesc.Text)
     .Authors = Trim(txtAuthor.Text)
     .Icon = $sIcon
-    If cmbStackSize.Index = 0 Then 
-      .Stack = 0
-    Else
-      .Stack = Val(Left(cmbStackSize.Text, -1))
-    Endif
+    'If cmbStackSize.Index = 0 Then 
+    '  .Stack = 0
+    'Else
+    '  .Stack = Val(Left(cmbStackSize.Text, -1))
+    'Endif
     .StackTrace = cmbStackTrace.Index = 0
     .UseTerminal = cmbTerminal.Index = 0
 
