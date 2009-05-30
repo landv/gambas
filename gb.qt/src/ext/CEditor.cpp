@@ -750,6 +750,25 @@ BEGIN_METHOD(CEDITOR_to_pos_x, GB_INTEGER x; GB_INTEGER y)
 
 END_METHOD
 
+BEGIN_METHOD(CEDITOR_pos_to_line, GB_INTEGER y)
+
+  //int line, col;
+  //int px, py;
+
+  //WIDGET->getCursor(&line, &col);
+  GB.ReturnInteger(WIDGET->posToLine(VARG(y)));
+  
+END_METHOD
+
+BEGIN_METHOD(CEDITOR_pos_to_column, GB_INTEGER x; GB_INTEGER y)
+
+  int line, col;
+
+  WIDGET->posToCursor(VARG(x), VARG(y), &line, &col);
+  GB.ReturnInteger(col);
+
+END_METHOD
+
 BEGIN_METHOD(CEDITOR_styles_get, GB_INTEGER style)
 
   _style = VARG(style);
@@ -1076,6 +1095,8 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY_READ("CursorX", "i", CEDITOR_cursor_x),
   GB_PROPERTY_READ("CursorY", "i", CEDITOR_cursor_y),
   GB_METHOD("ToPosX", "i", CEDITOR_to_pos_x, "(Column)i[(Row)i]"),
+  GB_METHOD("PosToLine","i", CEDITOR_pos_to_line, "(Y)i"),
+  GB_METHOD("PosToColumn","i", CEDITOR_pos_to_column, "(X)i(Y)i"),
   GB_PROPERTY_READ("LineHeight", "i", CEDITOR_line_height),
   GB_PROPERTY_READ("CharWidth", "i", CEDITOR_char_width),
 
