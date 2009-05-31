@@ -1,23 +1,16 @@
 # Gambas Form File 2.0
 
 { Form Form
-  Move(97,97,448,352)
-  #(Scaled) = False
+  MoveScaled(13.8571,13.8571,64,50.2857)
   Text = ("")
   Icon = Picture["icon:/24/gambas"]
-  Arrangement = Arrange.Vertical
   Spacing = 8
   Padding = 8
+  { ValueBox1 ValueBox
+    MoveScaled(4,10,24,4)
+  }
   { Button1 Button
-    Move(56,21,112,21)
+    MoveScaled(39,4,16,3)
     Text = ("Button1")
-  }
-  { Button2 Button
-    Move(224,28,112,21)
-    Text = ("Button2")
-  }
-  { ColorChooser1 ColorChooser
-    Move(77,77,294,252)
-    Expand = True
   }
 }

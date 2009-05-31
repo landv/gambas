@@ -249,6 +249,8 @@ PUBLIC SUB TextBox_KeyPress()
   
   'DEBUG
   
+  IF ME.ReadOnly THEN RETURN
+  
   IF Key.Code = Key.Escape THEN 
     SUPER.Text = $sLastGood
     STOP EVENT 
