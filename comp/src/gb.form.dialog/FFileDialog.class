@@ -1,14 +1,17 @@
 ' Gambas class file
 
 Static Public Paths As String[]
+Static Public AutoExt As Boolean
 
 Private $bMulti As Boolean
 Private $bReadOnly As Boolean
+Private $bAutoExt As Boolean
 
 Public Sub OpenFile(bMulti As Boolean) As Boolean
   
   $bMulti = bMulti
   $bReadOnly = True
+  $bAutoExt = False
   Return Not Me.ShowModal()
   
 End
@@ -17,6 +20,7 @@ Public Sub SaveFile() As Boolean
   
   $bMulti = False
   $bReadOnly = False
+  $bAutoExt = True
   Return Not Me.ShowModal()
   
 End
@@ -32,18 +36,52 @@ Public Sub Form_Open()
   fchChoose.Multi = $bMulti
   'fchChoose.Root = "/"
   fchChoose.Filter = Dialog.Filter
-  If Dialog.Path Then 
-    fchChoose.SelectedPath = Dialog.Path
-  Endif
+  If Dialog.Path Then fchChoose.SelectedPath = Dialog.Path
+  chkAutoExt.Visible = $bAutoExt
+  chkAutoExt.Value = AutoExt
 
 End
 
+Private Sub SetExtension(sPath As String) As String
+  
+  Dim aFilter As String[]
+  Dim iInd As Integer
+  Dim sExt As String
+  Dim bGotIt As Boolean
+  
+  aFilter = Dialog.Filter
+  For iInd = 0 To aFilter.Max Step 2
+    Try sExt = Scan(Split(aFilter[iInd], ";")[0], "\\*.*")[0]
+    If Not sExt Then Continue
+    If sExt = "*" Then Continue
+    If sPath Like ("*." & sExt) Then
+      sPath = Left$(sPath, - Len(sExt) - 1)
+      bGotIt = True
+      Break
+    Endif
+  Next
+  
+  If Not bGotIt Then sPath = File.SetExt(sPath, "")
+  
+  Try sExt = Scan(Split(aFilter[fchChoose.FilterIndex * 2], ";")[0], "\\*.*")[0]
+  If sExt Then sPath &= "." & sExt
+  Return sPath
+  
+End
+
+
 Public Sub btnOK_Click()
 
-  Dialog.Path = fchChoose.SelectedPath
+  Dim sExt As String
+  Dim sPath As String
+
+  sPath = fchChoose.SelectedPath
+  Dialog.AutoExt = chkAutoExt.Value
+  If Dialog.AutoExt Then sPath = SetExtension(sPath)
+  Dialog.Path = sPath
   If fchChoose.Multi Then Paths = fchChoose.SelectedPaths
   If Not fchChoose.ReadOnly Then 
-    If Exist(fchChoose.SelectedPath) Then 
+    If Exist(sPath) Then 
       If Message.Warning(("This file already exists.\n\nDo you want to overwrite it?"), ("&Overwrite"), ("Cancel")) = 2 Then Return
     Endif 
   Endif

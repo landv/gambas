@@ -4,16 +4,21 @@
   MoveScaled(0,0,103,73)
   Text = ("")
   Arrangement = Arrange.Vertical
-  Spacing = 8
+  Spacing = True
   Padding = 8
   { fchChoose FileChooser
-    MoveScaled(1,1,64,36)
+    MoveScaled(1,1,75,45)
     Expand = True
     ShowBookmark = True
   }
+  { chkAutoExt CheckBox
+    MoveScaled(2,48,53,4)
+    Visible = False
+    Text = ("Automatic extension")
+  }
   { HBox1 HBox
-    MoveScaled(2,40,63,4)
-    Spacing = 8
+    MoveScaled(2,54,63,4)
+    Spacing = True
     { Panel1 Panel
       MoveScaled(11,0,3,4)
       Expand = True

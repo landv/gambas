@@ -541,7 +541,6 @@ GB_DESC CCurlDesc[] =
   GB_PROPERTY_SELF("Proxy",".CurlProxy"),
   GB_PROPERTY_READ("Status","i",CCURL_Status),
 
-
   GB_END_DECLARE
 };
 

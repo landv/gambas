@@ -591,6 +591,13 @@ BEGIN_METHOD_VOID(CEDITOR_line_get_initial_state)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(CEDITOR_line_refresh)
+
+	DOC->invalidate(THIS->line);
+	WIDGET->updateLine(THIS->line);
+
+END_METHOD
+
 BEGIN_PROPERTY(CEDITOR_line_current)
 
 	if (READ_PROPERTY)
@@ -1000,6 +1007,7 @@ GB_DESC CEditorLineDesc[] =
   GB_PROPERTY("Breakpoint", "b", CEDITOR_line_breakpoint),
   GB_PROPERTY_READ("Limit", "b", CEDITOR_line_limit),
 	GB_METHOD("GetInitialState", NULL, CEDITOR_line_get_initial_state, NULL),
+	GB_METHOD("Refresh", NULL, CEDITOR_line_refresh, NULL),
 
   GB_END_DECLARE
 };

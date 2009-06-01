@@ -218,9 +218,19 @@ End
 
 Public Function GetPath() As String
 
+  Dim sPath As String
+  'Dim sExt As String
+
   If GetMulti() Then Return
 
-  If txtFile.Text Then Return dvwChoose.Current &/ txtFile.Text
+  If txtFile.Text Then 
+    sPath = dvwChoose.Current &/ txtFile.Text
+    ' If chkExt.Value Then 
+    '   Try sExt = Scan(Split($aFilter[cmbFilter.Index], ";,", Chr$(34), True)[0], "\\*.*")[0]
+    '   If sExt Then sPath = File.SetExt(sPath, sExt)
+    ' Endif
+    Return sPath
+  Endif
 
 End
 
@@ -344,7 +354,6 @@ Public Sub GetFilterIndex() As Integer
   Return cmbFilter.Index
   
 End
-
 
 
 Public Function GetFilter() As String[]
@@ -793,3 +802,15 @@ Public Sub Reload()
   btnRefresh_Click
   
 End
+
+' Public Sub ShowAutomaticExtension(bShow As Boolean)
+'   
+'   chkExt.Visible = bShow
+'   
+' End
+' 
+' Public Sub SetAutomaticExtension(bVal As Boolean)
+'   
+'   chkExt.Value = bVal
+'   
+' End

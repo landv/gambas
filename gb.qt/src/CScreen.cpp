@@ -39,6 +39,7 @@
 
 static int screen_busy = 0;
 char *CAPPLICATION_Theme = 0;
+static int _tooltip_delay = 700; // Comes from Qt sources
 
 #if 0
 
@@ -182,6 +183,26 @@ BEGIN_PROPERTY(CAPP_tooltip_font)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CAPP_tooltip_delay)
+
+  if (READ_PROPERTY)
+    GB.ReturnInteger(_tooltip_delay);
+  else
+	{
+		int delay = VPROP(GB_INTEGER);
+		
+		if (delay < 50)
+			delay = 50;
+		else if (delay > 10000)
+			delay = 10000;
+			
+		_tooltip_delay = delay;
+    QToolTip::setWakeUpDelay(_tooltip_delay);
+	}
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(CAPP_main_window)
 
   GB.ReturnObject(CWINDOW_Main);
@@ -247,6 +268,7 @@ GB_DESC CApplicationTooltipDesc[] =
 
   GB_STATIC_PROPERTY("Enabled", "b", CAPP_tooltip_enabled),
   GB_STATIC_PROPERTY("Font", "Font", CAPP_tooltip_font),
+	GB_STATIC_PROPERTY("Delay", "i", CAPP_tooltip_delay),
 
   GB_END_DECLARE
 };

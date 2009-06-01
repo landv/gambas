@@ -234,6 +234,7 @@ gFont *app_tooltips_font=NULL;
 bool gApplication::_busy = false;
 char *gApplication::_title = NULL;
 int gApplication::_loopLevel = 0;
+int gApplication::_tooltip_delay = 500; // GTK+ default
 
 GtkTooltips* gApplication::tipHandle()
 {
@@ -279,6 +280,17 @@ void gApplication::enableTooltips(bool vl)
 		gtk_tooltips_enable(app_tooltips_handle);
 	else
 		gtk_tooltips_disable(app_tooltips_handle);
+}
+
+void gApplication::setToolTipsDelay(int vl)
+{
+	if (vl < 50)
+		vl = 50;
+	else if (vl > 10000)
+		vl = 10000;
+	
+	_tooltip_delay = vl;
+	gtk_tooltips_set_delay(app_tooltips_handle, vl);
 }
 
 void gApplication::suspendEvents(bool vl)

@@ -171,6 +171,7 @@ public:
 	
 	void colorize(int y);
 	void baptizeUntil(int y);
+	void invalidate(int y);
 
 	int getIndent(int y, bool *empty = NULL);
 	int wordLeft(int y, int x, bool word = false);

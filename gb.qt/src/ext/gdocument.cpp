@@ -1062,6 +1062,12 @@ bool GDocument::highlightTest(GEditor *, uint &state, GString &s, GHighlightArra
 }
 #endif
 
+void GDocument::invalidate(int y)
+{
+	if (y >= 0 && y < numLines())
+		lines.at(y)->modified = true;
+}
+
 void GDocument::colorize(int y)
 {
   GLine *l;

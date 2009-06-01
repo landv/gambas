@@ -2,10 +2,11 @@
 
 Public Sub Main()
 
-  Dialog.Title = "Select something"
-  Dialog.Date = Val("6/9/72")
-  Dialog.SelectDate
-  Print Dialog.Date
+  Dialog.Title = "Save document"
+  Dialog.Filter = ["*.tar.gz", "Archive files", "*.png", "PNG files", "*.jpg;*.jpeg", "JPEG files", "*.bmp", "BMP files"]
+  Dialog.AutoExt = True
+  If Dialog.SaveFile() Then Return
+  Print Dialog.Path
   
 End
 

@@ -191,6 +191,15 @@ BEGIN_PROPERTY(CAPP_tooltip_enabled)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CAPP_tooltip_delay)
+
+  if (READ_PROPERTY)
+    GB.ReturnInteger(gApplication::toolTipsDelay());
+  else
+		gApplication::setToolTipsDelay(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
 
 BEGIN_PROPERTY(CAPP_main_window)
 
@@ -237,6 +246,7 @@ GB_DESC CApplicationTooltipDesc[] =
 
   GB_STATIC_PROPERTY("Enabled", "b", CAPP_tooltip_enabled),
   GB_STATIC_PROPERTY("Font", "Font", CAPP_tooltip_font),
+	GB_STATIC_PROPERTY("Delay", "i", CAPP_tooltip_delay),
 
   GB_END_DECLARE
 };

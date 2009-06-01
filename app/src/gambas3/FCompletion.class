@@ -311,7 +311,7 @@ Private Sub FillWithIdent(sWord As String)
   sOrg = sWord
   sWord = UCase(sWord)
   
-  For Each sCar In ["TRUE", "FALSE", "NULL", "LAST", "ME", "SUPER"]
+  For Each sCar In ["True", "False", "Null", "Last", "Me", "Super"]
     If sCar Like (sWord & "*") Then 
       cKey[sCar] = True
       aResult.Add(sCar & " 0")

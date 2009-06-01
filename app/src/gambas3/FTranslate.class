@@ -679,6 +679,7 @@ Public Sub btnExport_Click()
   Dialog.Title = ("Export a translation")
   Dialog.Path = Settings["/FTranslate/ExportPath", System.User.Home] &/ Project.Name & "-" & $sLang & "-" & Project.MajorVersion & "." & Project.MinorVersion & "." & Project.ReleaseVersion & ".po"
   Dialog.Filter = [("Translation files") & " (*.po)"]
+  Dialog.AutoExt = True
   If Dialog.SaveFile() Then Return
 
   Settings["/FTranslate/ExportPath"] = File.Dir(Dialog.Path)

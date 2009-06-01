@@ -127,6 +127,7 @@ Public Sub btnExport_Click()
   Dialog.Path = Settings["/FOption/ThemePath", System.User.Home &/ System.User.Name & ".gambas.theme"]
   Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
   Dialog.Title = ("Export a theme file")
+  Dialog.AutoExt = True
   If Dialog.SaveFile() Then Return
   Settings["/FOption/ThemePath"] = Dialog.Path
   

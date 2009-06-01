@@ -28,6 +28,8 @@ public:
 	static bool toolTips();
 	static gFont* toolTipsFont();
 	static void setToolTipsFont(gFont *ft);
+	static int toolTipsDelay() { return _tooltip_delay; }
+	static void setToolTipsDelay(int v);
 
 	static void setDefaultTitle(const char *title);
 	static char *defaultTitle() { return _title; }
@@ -42,6 +44,7 @@ public:
 	static bool _busy;
 	static char *_title;
 	static int _loopLevel;
+	static int _tooltip_delay;
 };
 
 #endif

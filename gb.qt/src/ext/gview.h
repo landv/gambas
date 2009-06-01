@@ -89,7 +89,6 @@ private:
 	int visibleLines() const;
 	void startBlink();
 	void stopBlink();
-	void updateLine(int y) { updateCell(realToView(y), 0); }
 	//void repaintLine(int y) { repaintCell(y, 0, FALSE); }
 	bool updateCursor();
 
@@ -204,6 +203,7 @@ public:
 	void posToCursor(int px, int py, int *y, int *x) const;
 	int lastVisibleRow(int y) const { return rowAt(y + visibleHeight() - 1); }
 	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
+	void updateLine(int y) { updateCell(realToView(y), 0); }
 
 	virtual void setNumRows(int);
 

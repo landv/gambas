@@ -3305,8 +3305,9 @@ Public Sub MakePackage()
   
   Dialog.Path = sDir &/ Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "") & ".tar.gz"
   Dialog.Title = ("Create source package")
-  Dialog.Filter = ["*.tar.gz", ("Source packages")] '& " (*.tar.gz)", ("All files") & " (*)"]
-
+  Dialog.Filter = ["*.tar.gz", ("Source packages"), "*.tar.bz2", ("Source packages")] '& " (*.tar.gz)", ("All files") & " (*)"]
+  Dialog.AutoExt = True
+  
   If Dialog.SaveFile() Then Return
 
   If File.Dir(Dialog.Path) <> System.User.Home Then 
