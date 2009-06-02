@@ -1071,6 +1071,8 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		setForeground(fg);
 		setFont(font());
 		
+		gMenu::checkMenuBar(this);
+		
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
 	}

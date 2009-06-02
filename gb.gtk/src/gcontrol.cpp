@@ -1344,7 +1344,7 @@ void gControl::setBackground(gColor color)
 	
 	if (!bg_set)
 	{
-		if (pr)
+		if (pr && !use_base)
 			color = pr->realBackground();
 	}
 			
