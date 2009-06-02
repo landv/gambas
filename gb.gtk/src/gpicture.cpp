@@ -522,7 +522,6 @@ gPicture* gPicture::fromNamedIcon(const char *name, int len)
 
 void gPicture::clear()
 {
-  //fprintf(stderr, "gPicture::clear: %p (%d %d) pic = %p img = %p\n", this, _width, _height, pic, img);
   _width = 0;
   _height = 0;
   _type = VOID;
