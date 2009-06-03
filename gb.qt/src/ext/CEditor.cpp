@@ -594,6 +594,7 @@ END_METHOD
 BEGIN_METHOD_VOID(CEDITOR_line_refresh)
 
 	DOC->invalidate(THIS->line);
+	DOC->colorize(THIS->line);
 	WIDGET->updateLine(THIS->line);
 
 END_METHOD
