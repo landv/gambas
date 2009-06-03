@@ -73,7 +73,7 @@ static QMap<int, int> _x11_to_qt_keycode;
 #endif
 
 static bool _focus_change = false;
-static CWIDGET *_new_active_control = 0;
+static CWIDGET *_old_active_control = 0;
 
 /* Control class */
 
@@ -1594,8 +1594,8 @@ void CWidget::destroy()
 	
 	if (CWIDGET_active_control == ob)
 		CWIDGET_active_control = NULL;
-	if (_new_active_control == ob)
-		_new_active_control = NULL;
+	if (_old_active_control == ob)
+		_old_active_control = NULL;
 
 	set_name(ob, 0);
 
@@ -1646,10 +1646,13 @@ static void post_dblclick_event(void *control)
 
 static void post_focus_change(void *)
 {
-	if (_new_active_control != CWIDGET_active_control)
+	if (CWIDGET_active_control != _old_active_control)
 	{
-		GB.Raise(CWIDGET_active_control, EVENT_LostFocus, 0);
-		CWIDGET_active_control = _new_active_control;
+		if (_old_active_control)
+			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
+		
+		_old_active_control = CWIDGET_active_control;
+		
 		if (CWIDGET_active_control)
 			GB.Raise(CWIDGET_active_control, EVENT_GotFocus, 0);
 	}
@@ -1702,7 +1705,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   else if (type == QEvent::FocusIn)
   {
 		//qDebug("FocusIn: %p %s (%p)", control, control->name, CWIDGET_active_control);
-		_new_active_control = control;
+		CWIDGET_active_control = control;
 		handle_focus_change();
 		CWINDOW_activate(control);
     //GB.Raise(control, EVENT_GotFocus, 0);
@@ -1710,7 +1713,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   else if (type == QEvent::FocusOut)
   {
 		//qDebug("FocusOut: %p %s (%p)", control, control->name, CWIDGET_active_control);
-		_new_active_control = NULL;
+		CWIDGET_active_control = NULL;
 		handle_focus_change();
   }
   else if (type == QEvent::ContextMenu)

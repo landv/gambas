@@ -128,10 +128,10 @@ public:
 
 // "Signals"
 	void (*onFinish)(gControl *sender); // Special
-	void (*onFocusEvent)(gControl *sender,long type);
-	bool (*onKeyEvent)(gControl *sender,long type);
-	bool (*onMouseEvent)(gControl *sender,long type);
-	void (*onEnterLeave)(gControl *sender,long type);
+	void (*onFocusEvent)(gControl *sender, int type);
+	bool (*onKeyEvent)(gControl *sender, int type);
+	bool (*onMouseEvent)(gControl *sender, int type);
+	void (*onEnterLeave)(gControl *sender, int type);
 	bool (*onDrag)(gControl *sender);
 	bool (*onDragMove)(gControl *sender);
 	void (*onDrop)(gControl *sender);

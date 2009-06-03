@@ -283,10 +283,11 @@ gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 	if (gDesktop::activeControl() != data)
 		return false;
 
+	gDesktop::setActiveControl(NULL);
+
 	if (data->onFocusEvent) data->onFocusEvent(data,gEvent_FocusOut);
 	
 	gKey::setActiveControl(NULL);
-	gDesktop::setActiveControl(NULL);
 	//gMainWindow::setActiveWindow(NULL);
 	
 	return false;
