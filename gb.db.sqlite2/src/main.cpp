@@ -932,7 +932,7 @@ static int field_index(DB_RESULT result, const char *name, DB_DATABASE *db)
 {
   char *fld;
 
-  fld = strchr(name, (int)FLD_SEP);
+  fld = strchr((char *)name, (int)FLD_SEP);
   if (fld){ //Includes table identity
      fld[0] = '.';
   }
