@@ -28,6 +28,9 @@
 
 #define __CWIDGET_CPP
 
+#include "widgets.h"
+#include "gdesktop.h"
+ 
 #include "CWidget.h"
 #include "CWindow.h"
 #include "CMenu.h"
@@ -63,8 +66,11 @@ DECLARE_EVENT(EVENT_Unplugged);
 DECLARE_EVENT(EVENT_PlugError);
 
 //static void *CLASS_Image = NULL;
-static void *CLASS_UserContainer = NULL;
-static void *CLASS_UserControl = NULL;
+static void *CLASS_UserContainer = 0;
+static void *CLASS_UserControl = 0;
+
+static CWIDGET *_old_active_control = 0;
+static bool _focus_change = false;
 
 /** Action *****************************************************************/
 
@@ -136,7 +142,7 @@ void gb_plug_raise_error(gControl *sender)
 // 	GB.Unref(POINTER(&_object));
 // }
 
-bool gb_raise_MouseEvent(gControl *sender,long type)
+bool gb_raise_MouseEvent(gControl *sender, int type)
 {
 	void *ob = GetObject(sender);
 	
@@ -186,7 +192,7 @@ bool gb_raise_MouseEvent(gControl *sender,long type)
 	return false;
 }
 
-bool gb_raise_KeyEvent(gControl *sender,long type)
+bool gb_raise_KeyEvent(gControl *sender, int type)
 {
 	CWIDGET *_ob=GetObject(sender);
 	
@@ -203,7 +209,7 @@ bool gb_raise_KeyEvent(gControl *sender,long type)
         return false;
 }
 
-void gb_raise_EnterLeave(gControl *sender,long type)
+void gb_raise_EnterLeave(gControl *sender, int type)
 {
 	CWIDGET *_ob=GetObject(sender);
 	
@@ -218,22 +224,36 @@ void gb_raise_EnterLeave(gControl *sender,long type)
 	}
 }
 
-void gb_raise_FocusEvent(gControl *sender,long type)
+static void post_focus_change(void *)
 {
-	CWIDGET *_ob=GetObject(sender);
+	CWIDGET *active = GetObject(gDesktop::activeControl());
 	
-	if (!_ob) return;
-	switch(type)
+	if (active != _old_active_control)
 	{
-		case gEvent_FocusIn:
-			GB.Raise((void*)_ob,EVENT_GotFocus,0);
-			break;
-		case gEvent_FocusOut:
-			GB.Raise((void*)_ob,EVENT_LostFocus,0);
-			break;
+		if (_old_active_control)
+			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
+		
+		_old_active_control = active;
+		
+		if (active)
+			GB.Raise(active, EVENT_GotFocus, 0);
 	}
+	_focus_change = FALSE;
 }
 
+void gb_raise_FocusEvent(gControl *sender, int type)
+{
+	CWIDGET *control = GetObject(sender);
+	
+	if (!control) 
+		return;
+	
+	if (_focus_change)
+		return;
+	
+	_focus_change = TRUE;
+	GB.Post((void (*)())post_focus_change, NULL);
+}
 
 bool gb_raise_Drag(gControl *sender)
 {
@@ -263,21 +283,21 @@ void DeleteControl(gControl *control)
 {
 	CWIDGET *widget = (CWIDGET*)control->hFree;
 	
-	if (widget) 
-	{
-		GB.StoreVariant(NULL, (void *)&widget->tag);
-		CACTION_register(widget, NULL);
-	}
+	if (!widget)
+		return;
+	
+	if (_old_active_control == widget)
+		_old_active_control = NULL;
+	
+	GB.StoreVariant(NULL, (void *)&widget->tag);
+	CACTION_register(widget, NULL);
 	
 	WINDOW_kill((CWINDOW*)widget);
 	
-	if (widget) 
-	{ 
-	  GB.Unref(POINTER(&widget->font));
-	  widget->font = NULL;
-		widget->widget = NULL;
-		GB.Unref(POINTER(&widget));
-	}	
+	GB.Unref(POINTER(&widget->font));
+	widget->font = NULL;
+	widget->widget = NULL;
+	GB.Unref(POINTER(&widget));
 }
 
 

@@ -65,8 +65,6 @@ gCursor::gCursor(gPicture *pic,int px,int py)
 	
 	buf=pic->getPixbuf();
 	cur=gdk_cursor_new_from_pixbuf(dp,buf,x,y);
-	g_object_unref(buf);
-	
 }
 
 gCursor::gCursor(gCursor *cursor)

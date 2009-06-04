@@ -71,7 +71,8 @@ GB_CLASS CLASS_Printer;
 static QMap<int, int> _x11_to_qt_keycode;
 #endif
 
-/* Control class */
+static bool _focus_change = false;
+static CWIDGET *_old_active_control = 0;
 
 
 static void set_mouse(QWidget *w, int mouse, void *cursor)
@@ -1649,6 +1650,8 @@ void CWidget::destroy()
 
 	if (CWIDGET_active_control == ob)
 		CWIDGET_active_control = NULL;
+	if (_old_active_control == ob)
+		_old_active_control = NULL;
 
 	set_name(ob, 0);
 
@@ -1677,17 +1680,28 @@ static void post_dblclick_event(void *control)
   GB.Unref(&control);
 }
 
-static void post_gotfocus_event(void *_object)
+static void post_focus_change(void *)
 {
-	if (WIDGET && WIDGET->hasFocus())
-  	GB.Raise(THIS, EVENT_GotFocus, 0);
-  GB.Unref(&_object);
+	if (CWIDGET_active_control != _old_active_control)
+	{
+		if (_old_active_control)
+			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
+		
+		_old_active_control = CWIDGET_active_control;
+		
+		if (CWIDGET_active_control)
+			GB.Raise(CWIDGET_active_control, EVENT_GotFocus, 0);
+	}
+	_focus_change = FALSE;
 }
 
-static void post_lostfocus_event(void *control)
+static void handle_focus_change()
 {
-  GB.Raise(control, EVENT_LostFocus, 0);
-  GB.Unref(&control);
+	if (_focus_change)
+		return;
+	
+	_focus_change = TRUE;
+	GB.Post((void (*)())post_focus_change, NULL);
 }
 
 
@@ -1728,31 +1742,16 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   }
   else if (type == QEvent::FocusIn)
   {
-  	if (GB.CanRaise(control, EVENT_GotFocus))
-  	{
-			if (control != CWIDGET_active_control)
-			{
-				CWIDGET_active_control = control;
-				GB.Ref(control);
-				GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
-			}
-		}
-
+		//qDebug("FocusIn: %p %s (%p)", control, control->name, CWIDGET_active_control);
+		CWIDGET_active_control = control;
+		handle_focus_change();
 		CWINDOW_activate(control);
-    //GB.Raise(control, EVENT_GotFocus, 0);
   }
   else if (type == QEvent::FocusOut)
   {
-  	if (GB.CanRaise(control, EVENT_LostFocus))
-  	{
-			if (control == CWIDGET_active_control)
-			{
-				CWIDGET_active_control = NULL;
-				GB.Ref(control);
-				GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
-			}
-		}
-    //GB.Raise(control, EVENT_LostFocus, 0);
+		//qDebug("FocusOut: %p %s (%p)", control, control->name, CWIDGET_active_control);
+		CWIDGET_active_control = NULL;
+		handle_focus_change();
   }
   else if (type == QEvent::ContextMenu)
   {

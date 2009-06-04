@@ -74,7 +74,8 @@ public:
   void hideSeparators();
 
 	static void embedMenuBar(gMainWindow *win, GtkWidget *border);
-
+	static void checkMenuBar(gMainWindow *win);
+	
 private:
 
 	gMenuStyle _style, _oldstyle;

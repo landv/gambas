@@ -358,6 +358,35 @@ void gMenu::initialize()
 	menus=g_list_append (menus,(gpointer)this);
 }
 
+void gMenu::checkMenuBar(gMainWindow *win)
+{
+	bool vl;
+	int i;
+	gMenu *menu;
+
+	if (win->menuBar)
+	{
+		vl = false;
+		for (i = 0;; i++)
+		{
+			menu = gMenu::winChildMenu(win, i);
+			if (!menu)
+				break;
+			if (menu->isVisible())
+			{
+				vl = true;
+				break;
+			}
+		}
+		
+		if (vl)
+			gtk_widget_show(GTK_WIDGET(win->menuBar));
+		else
+			gtk_widget_hide(GTK_WIDGET(win->menuBar));
+		//fprintf(stderr, "checkMenuBar: %s %d\n", win->name(), GTK_WIDGET_VISIBLE(GTK_WIDGET(win->menuBar)));
+	}
+}
+
 void gMenu::embedMenuBar(gMainWindow *par, GtkWidget *border)
 {
 	GtkVBox *box;
@@ -377,12 +406,11 @@ void gMenu::embedMenuBar(gMainWindow *par, GtkWidget *border)
 		gtk_widget_reparent(par->widget, GTK_WIDGET(box));
 		gtk_container_add(GTK_CONTAINER(border),GTK_WIDGET(box));
 		
-		//gtk_container_add(GTK_CONTAINER(box),par->widget);
 		gtk_widget_show_all(GTK_WIDGET(box));
-		//g_object_unref(par->widget);
-		gtk_widget_show_all(GTK_WIDGET(par->menuBar));
+		//gtk_widget_show(GTK_WIDGET(par->menuBar));
 		set_gdk_fg_color(GTK_WIDGET(par->menuBar),par->foreground());
 		set_gdk_bg_color(GTK_WIDGET(par->menuBar),par->background());
+		checkMenuBar(par);
 	}
 }
 
@@ -420,8 +448,6 @@ gMenu::gMenu(gMenu *par, bool hidden)
 	accel = par->accel;
 	g_object_ref(accel);
 	
-	//_style = SEPARATOR;
-	//update();
 	setText(NULL);
 	setVisible(!hidden);
 }
@@ -516,8 +542,6 @@ bool gMenu::isVisible()
 
 void gMenu::updateVisible()
 {
-	GtkContainer *par;
-	GList *chd,*iter;
 	bool vl = _visible;
 	
 	if (top_level && _style != MENU)
@@ -526,24 +550,7 @@ void gMenu::updateVisible()
 	g_object_set(G_OBJECT(menu),"visible",vl,(void *)NULL);
 	
 	if (top_level && pr)
-	{
-		vl = false;
-		par = GTK_CONTAINER(((gMainWindow*)pr)->menuBar);
-		chd = gtk_container_get_children(par);
-		iter = g_list_first(chd);
-		while (iter)
-		{
-			if (GTK_WIDGET_VISIBLE(GTK_WIDGET(iter->data)))
-			{
-				vl = true;
-				break;
-			}
-			iter = g_list_next(iter);
-		}
-		
-		g_list_free(chd);
-		g_object_set(G_OBJECT(par), "visible", vl, (void *)NULL);
-	}
+		checkMenuBar((gMainWindow *)pr);
 }
 
 void gMenu::setVisible(bool vl)

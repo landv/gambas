@@ -686,18 +686,14 @@ void gControl::setMouse(int m)
 	
 	if (m == -2)
 	{
-		if (!curs)
+		if (!curs || !curs->cur)
 		{
 			mous = -1;
 			updateCursor(NULL);
 		}
-		if (!curs->cur)
-		{
-			mous = -1;
-			updateCursor(NULL);
-		}
+		else
+			updateCursor(curs->cur);
 		
-		updateCursor(curs->cur);
 		return;	
 	}
 	
@@ -1344,7 +1340,7 @@ void gControl::setBackground(gColor color)
 	
 	if (!bg_set)
 	{
-		if (pr)
+		if (pr && !use_base)
 			color = pr->realBackground();
 	}
 			
