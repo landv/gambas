@@ -2264,18 +2264,14 @@ Public Sub OnProjectDebug()
 
 End
 
-'PUBLIC SUB btnSplit_Click()
-'
-'  IF NOT edtSplit THEN
-'    edtSplit = NEW Editor(vspSplit)
-'    edtSplit.Document = edtEditor.Document
-'     ReadConfigEditor(edtSplit)
-'   ELSE
-'     INC edtSplit.Visible
-'   ENDIF
-' 
-'END
 
+Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+  
+  edtEditor.ShowString(sStr, bIgnoreCase)
+  If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
+  If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
+  
+End
 
 Static Public Function GetIdentifier(sLine As String, iPos As Integer) As String
   
@@ -2615,6 +2611,7 @@ Private Sub SetViewMode(iViewMode As Integer)
     InitEditor($hEditor1)
     $hEditor2 = New Editor(Me) As "Editors"
     InitEditor($hEditor2)
+    FFind.OnNewForm(Me)  
   Endif
 
   Select Case $iViewMode

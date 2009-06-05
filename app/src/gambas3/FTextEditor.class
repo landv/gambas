@@ -374,6 +374,13 @@ Public Sub OnProjectDebug()
 
 End
 
+Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+  
+  edtEditor.ShowString(sStr, bIgnoreCase)
+  If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
+  If $hEditor2 Then $hEditor2.ShowString(sStr, bIgnoreCase)
+  
+End
 
 Public Sub mnuFind_Click()
 
@@ -733,8 +740,9 @@ Private Sub SetViewMode(iViewMode As Integer)
     InitEditor($hEditor1)
     $hEditor2 = New Editor(Me) As "Editors"
     InitEditor($hEditor2)
+    FFind.OnNewForm(Me)
   Endif
-
+  
   Select Case $iViewMode
   
     Case VIEWMODE_NORMAL

@@ -60,6 +60,7 @@ public:
   bool isSpace(uint pos);
   bool isWordChar(uint pos);
 	int find(char c, int index = 0) const;
+	int find(const GString &str, int index = 0, bool cs = true) const;
 	char at(uint pos);
 	GString lower() const;
 	GString upper() const;
@@ -164,6 +165,11 @@ inline GString &GString::prepend(const GString &str)
 inline int GString::find(char c, int index) const
 {
 	return s.find(c, index);
+}
+
+inline int GString::find(const GString &str, int index, bool cs) const
+{
+	return s.find(str.getString(), index, cs);
 }
 
 inline bool GString::isSpace(uint pos)

@@ -175,12 +175,14 @@ Public Sub Form_Show()
     Endif
   Endif
 
+  ShowString(cmbFind.Text)
+
   If $bReplace And If cmbFind.Text Then 
     cmbReplace.SetFocus
   Else
     cmbFind.SetFocus
   Endif
-
+  
 End
 
 Public Sub Form_Hide()
@@ -188,6 +190,7 @@ Public Sub Form_Hide()
   'Action["find-action,find-in,find-option"].Visible = False
   'FFindList.ClearFound
 
+  ShowString()
   FFindList.Hide
   FMain.ActivateCurrentWindow  
 
@@ -565,6 +568,8 @@ End
 
 Public Sub Action_Activate(Key As String) As Boolean
   
+  If Key = "find-case" Then ShowString(cmbFind.Text)
+  
   If Key = "find-comment" Or If Key = "find-case" Or If Key = "find-word" Or If Key = "find-string" Or If Key Like "find-in-*" Then $iLastTimeStamp = 0
   
   Return True
@@ -612,4 +617,29 @@ Public Sub OnProjectActivate()
   Action["find-next"].Visible = bEditor Or bTextEditor
   Action["replace"].Visible = bEditor Or bTextEditor
   
+End
+
+Private Sub ShowString(Optional sStr As String)
+
+  Dim hForm As Object
+  Dim bIgnoreCase As Boolean = Action["find-case"].Value
+  
+  For Each hForm In Project.Files
+    Try hForm.OnShowString(sStr, bIgnoreCase)
+  Next
+  
+End
+
+Public Sub OnNewForm(hForm As Object)
+  
+  Try hForm.OnShowString(cmbFind.Text, Action["find-case"].Value)
+  
+End
+
+
+
+Public Sub cmbFind_Change()
+
+  ShowString(cmbFind.Text)
+
 End

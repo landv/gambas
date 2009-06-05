@@ -123,6 +123,7 @@ GEditor::GEditor(QWidget *parent)
 	largestLine = 0;
 	flashed = false;
 	painting = false;
+	_showStringIgnoreCase = false;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -378,9 +379,27 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	QColor bg;
 	bool draw_bg;
 
-	pos = 0;
 	p.setFont(font());
 
+	if (_showString.length())
+	{
+		pos = 0;
+		bg = styles[GLine::Highlight].color;
+		for(;;)
+		{
+			if (pos >= (int)l->s.length())
+				break;
+			pos = l->s.find(_showString, pos, _showStringIgnoreCase);
+			if (pos < 0)
+				break;
+			ps = lineWidth(row, pos);
+			nx = lineWidth(row, pos + _showString.length());
+			p.fillRect(ps, 0, nx - ps, h, bg);
+			pos += _showString.length();
+		}
+	}
+	
+	pos = 0;
 	ps = find_last_non_space(l->s.getString()) + 1;
 	
 	for (i = 0; i < GB.Count(l->highlight); i++)
@@ -2075,3 +2094,9 @@ void GEditor::foldInsert(int y, int n)
 	}
 }
 
+void GEditor::showString(GString s, bool ignoreCase)
+{
+	_showString = s;
+	_showStringIgnoreCase = ignoreCase;
+	updateContents();
+}

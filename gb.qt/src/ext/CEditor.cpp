@@ -942,6 +942,17 @@ BEGIN_PROPERTY(CEDITOR_keywords_ucase)
 
 END_PROPERTY
 
+BEGIN_METHOD(CEDITOR_show_string, GB_STRING str; GB_BOOLEAN ignoreCase)
+
+	GString s;
+	
+	if (!MISSING(str))
+		s = GString(QSTRING_ARG(str));
+	
+	WIDGET->showString(s, VARGOPT(ignoreCase, false));
+
+END_METHOD
+
 
 /***************************************************************************/
 
@@ -1116,6 +1127,7 @@ GB_DESC CEditorDesc[] =
 
   GB_PROPERTY("Highlight", "i", CEDITOR_highlight),
   GB_PROPERTY("KeywordsUseUpperCase", "b", CEDITOR_keywords_ucase),
+  GB_METHOD("ShowString", NULL, CEDITOR_show_string, "[(String)s(IgnoreCase)b]"),
 
   GB_PROPERTY("TabSize", "i", CEDITOR_tab_length),
   GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),

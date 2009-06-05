@@ -74,6 +74,8 @@ private:
 	bool center;
   bool flashed;
   bool painting;
+	GString _showString;
+	bool _showStringIgnoreCase;
 	
 	int lastx;
 	bool left;
@@ -209,6 +211,7 @@ public:
 
 	void checkMatching();
 	void flash();
+	void showString(GString s, bool ignoreCase);
 	
 	void foldClear() { fold.clear(); }
 	void foldLine(int row, bool no_refresh = false);

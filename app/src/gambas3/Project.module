@@ -1256,6 +1256,8 @@ Public Function LoadFile(sPath As String) As Object
       hForm.LoadFile()
       hForm.Icon = GetFileIcon(sPath, 16)
     Endif
+    
+    FFind.OnNewForm(hForm)
 
     Dec Application.Busy
   
