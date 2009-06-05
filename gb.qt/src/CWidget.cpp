@@ -1646,16 +1646,23 @@ static void post_dblclick_event(void *control)
 
 static void post_focus_change(void *)
 {
-	if (CWIDGET_active_control != _old_active_control)
+	CWIDGET *current;
+	
+	for(;;)
 	{
+		current = CWIDGET_active_control;
+		if (current == _old_active_control)
+			break;
+
 		if (_old_active_control)
 			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
 		
-		_old_active_control = CWIDGET_active_control;
+		_old_active_control = current;
 		
-		if (CWIDGET_active_control)
-			GB.Raise(CWIDGET_active_control, EVENT_GotFocus, 0);
+		if (current)
+			GB.Raise(current, EVENT_GotFocus, 0);
 	}
+	
 	_focus_change = FALSE;
 }
 
