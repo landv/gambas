@@ -226,10 +226,15 @@ void gb_raise_EnterLeave(gControl *sender, int type)
 
 static void post_focus_change(void *)
 {
-	CWIDGET *active = GetObject(gDesktop::activeControl());
+	CWIDGET *active;
 	
-	if (active != _old_active_control)
+	for(;;)
 	{
+		active = GetObject(gDesktop::activeControl());
+	
+		if (active == _old_active_control)
+			break;
+
 		if (_old_active_control)
 			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
 		
@@ -238,6 +243,7 @@ static void post_focus_change(void *)
 		if (active)
 			GB.Raise(active, EVENT_GotFocus, 0);
 	}
+	
 	_focus_change = FALSE;
 }
 
