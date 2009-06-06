@@ -697,7 +697,16 @@ BEGIN_PROPERTY(CSTREAM_blocking)
 		STREAM_blocking(CSTREAM_stream(THIS_STREAM), VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-		
+
+BEGIN_PROPERTY(CSTREAM_tag)
+
+  if (READ_PROPERTY)
+    GB_ReturnPtr(GB_T_VARIANT, &THIS_STREAM->tag);
+  else
+    GB_StoreVariant(PROP(GB_VARIANT), (void *)&(THIS_STREAM->tag));
+
+END_METHOD
+
 #endif
 
 GB_DESC NATIVE_Stream[] =
@@ -712,6 +721,7 @@ GB_DESC NATIVE_Stream[] =
   GB_METHOD("Close", NULL, CSTREAM_close, NULL),
   GB_PROPERTY_READ("EndOfFile", "b", CSTREAM_eof),
   GB_PROPERTY("Blocking", "b", CSTREAM_blocking),
+	GB_PROPERTY("Tag", "v", CSTREAM_tag),
 
   GB_END_DECLARE
 };

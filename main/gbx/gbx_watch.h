@@ -37,14 +37,15 @@ enum {
   WATCH_NONE = 0,
   WATCH_READ = 1,
   WATCH_WRITE = 2,
-  WATCH_READ_WRITE = 3
   };
 
 typedef
   struct {
     int fd;
-    void (*callback)();
-    intptr_t param;
+    void (*callback_read)();
+    void (*callback_write)();
+    intptr_t param_read;
+    intptr_t param_write;
     }
   WATCH_CALLBACK;
 

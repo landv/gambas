@@ -367,8 +367,8 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Close)
 
 	close_server(THIS);
 
-
 END_METHOD
+
 /********************************************************
  Do not accept more connections until Resume is used
  *********************************************************/
@@ -376,15 +376,14 @@ BEGIN_METHOD_VOID(CSERVERSOCKET_Pause)
 
 	THIS->iPause=1;
 
-
 END_METHOD
+
 /********************************************************
  Accept connections again
  *********************************************************/
 BEGIN_METHOD_VOID(CSERVERSOCKET_Resume)
 
 	THIS->iPause=0;
-
 
 END_METHOD
 
@@ -498,54 +497,54 @@ END_METHOD
 /******************************************************************
  To accept a pending connection and delegate it to a Socket object
 *******************************************************************/
+
 BEGIN_METHOD_VOID(CSERVERSOCKET_Accept)
 
- CSOCKET *cli_obj;
- struct sockaddr_in myhost;
- unsigned int mylen;
+	CSOCKET *cli_obj;
+	struct sockaddr_in myhost;
+	unsigned int mylen;
 
- if ( THIS->iStatus != 2){ GB.Error("No connection to accept");return; }
+	if ( THIS->iStatus != 2){ GB.Error("No connection to accept");return; }
 
- GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
- cli_obj->Socket=THIS->Client;
- cli_obj->iStatus=7;
- cli_obj->c_parent=(void*)THIS;
- cli_obj->OnClose=CServerSocket_OnClose;
- THIS->iCurConn++;
- GB.FreeString ( &cli_obj->sRemoteHostIP);
- GB.FreeString ( &cli_obj->sLocalHostIP);
- GB.FreeString ( &cli_obj->sPath);
- cli_obj->iLocalPort=0;
- cli_obj->iPort=0;
- cli_obj->conn_type=0;
- if (THIS->iSockType)
- {
- 	GB.NewString ( &cli_obj->sRemoteHostIP , inet_ntoa(THIS->so_client.in.sin_addr) ,0);
- 	GB.NewString ( &cli_obj->Host, inet_ntoa(THIS->so_client.in.sin_addr) ,0);
-	mylen=sizeof(struct sockaddr);
- 	getsockname (cli_obj->Socket,(struct sockaddr*)&myhost,&mylen);
- 	GB.NewString ( &cli_obj->sLocalHostIP , inet_ntoa(myhost.sin_addr) ,0);
- 	cli_obj->iLocalPort=ntohs(myhost.sin_port);
- 	cli_obj->iPort=ntohs(THIS->so_client.in.sin_port);
-	cli_obj->iUsePort=ntohs(THIS->so_client.in.sin_port);
- }
- else
- {
- 	cli_obj->conn_type=1;
- 	GB.NewString ( &cli_obj->sPath,THIS->sPath,0);
-	GB.NewString ( &cli_obj->Path,THIS->sPath,0);
- }
+	GB.New(POINTER(&cli_obj),GB.FindClass("Socket"),"Socket",NULL);
+	cli_obj->socket=THIS->Client;
+	cli_obj->iStatus=7;
+	cli_obj->c_parent=(void*)THIS;
+	cli_obj->OnClose=CServerSocket_OnClose;
+	THIS->iCurConn++;
+	GB.FreeString ( &cli_obj->sRemoteHostIP);
+	GB.FreeString ( &cli_obj->sLocalHostIP);
+	GB.FreeString ( &cli_obj->sPath);
+	cli_obj->iLocalPort=0;
+	cli_obj->iPort=0;
+	cli_obj->conn_type=0;
+	if (THIS->iSockType)
+	{
+		GB.NewString ( &cli_obj->sRemoteHostIP , inet_ntoa(THIS->so_client.in.sin_addr) ,0);
+		GB.NewString ( &cli_obj->Host, inet_ntoa(THIS->so_client.in.sin_addr) ,0);
+		mylen=sizeof(struct sockaddr);
+		getsockname (cli_obj->socket,(struct sockaddr*)&myhost,&mylen);
+		GB.NewString ( &cli_obj->sLocalHostIP , inet_ntoa(myhost.sin_addr) ,0);
+		cli_obj->iLocalPort=ntohs(myhost.sin_port);
+		cli_obj->iPort=ntohs(THIS->so_client.in.sin_port);
+		cli_obj->iUsePort=ntohs(THIS->so_client.in.sin_port);
+	}
+	else
+	{
+		cli_obj->conn_type=1;
+		GB.NewString ( &cli_obj->sPath,THIS->sPath,0);
+		GB.NewString ( &cli_obj->Path,THIS->sPath,0);
+	}
 
- cli_obj->stream.desc=&SocketStream;
- cli_obj->stream._free[0]=(long)cli_obj;
- GB.Watch (cli_obj->Socket,GB_WATCH_READ,(void *)CSocket_CallBack,(long)cli_obj);
+	CSOCKET_init_connected(cli_obj);
+	//cli_obj->stream._free[0]=(long)cli_obj;
 
- CServerSocket_NewChild(THIS,cli_obj);
+	CServerSocket_NewChild(THIS,cli_obj);
 
- GB.Ref(cli_obj);
- GB.Post(CSocket_post_connected,(long)cli_obj);
- THIS->iStatus=3;
- GB.ReturnObject((void*)cli_obj);
+	GB.Ref(cli_obj);
+	GB.Post(CSocket_post_connected,(long)cli_obj);
+	THIS->iStatus=3;
+	GB.ReturnObject((void*)cli_obj);
 
 END_METHOD
 
@@ -597,7 +596,6 @@ GB_DESC CServerSocketDesc[] =
 
   GB_METHOD("_next", "Socket", CSERVERSOCKET_next, NULL),
   GB_PROPERTY_READ("Count", "i", CSERVERSOCKET_count),
-
 
   GB_CONSTANT("_Properties", "s", "Type=0,Path,Port"),
   GB_CONSTANT("_DefaultEvent", "s", "Connection"),

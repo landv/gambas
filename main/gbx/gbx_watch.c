@@ -259,19 +259,24 @@ void WATCH_exit(void)
 }
 
 
-static void watch_fd(int fd, int flag)
+static void watch_fd(int fd, int flag, bool watch)
 {
   //fprintf(stderr, "watch_fd: %d -> %d\n", fd, flag);
 
-  if (flag & WATCH_READ)
-    FD_SET(fd, &read_fd);
-  else
-    FD_CLR(fd, &read_fd);
-
-  if (flag & WATCH_WRITE)
-    FD_SET(fd, &write_fd);
-  else
-    FD_CLR(fd, &write_fd);
+  if (flag == WATCH_READ)
+	{
+		if (watch)
+			FD_SET(fd, &read_fd);
+		else
+			FD_CLR(fd, &read_fd);
+	}
+	else if (flag == WATCH_WRITE)
+	{
+		if (watch)
+			FD_SET(fd, &write_fd);
+		else
+			FD_CLR(fd, &write_fd);
+	}
 }
 
 
@@ -336,6 +341,8 @@ static void watch_delete_callback(int fd)
 		return;
 		
 	watch_callback[pos].fd = -1;
+	watch_fd(fd, WATCH_READ, FALSE);
+	watch_fd(fd, WATCH_WRITE, FALSE);
 	max_fd = find_max_fd();
 	
 	if (_do_not_really_delete_callback)
@@ -358,17 +365,29 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 		return;
 	}
 
-  watch_fd(fd, type);
-
-  /*HOOK_DEFAULT(watch, watch_fd)(fd, type);*/
-
   if (type == WATCH_NONE)
   	watch_delete_callback(fd);
   else
   {
     wcb = watch_create_callback(fd);
-    wcb->callback = callback;
-    wcb->param = param;
+		if (type == WATCH_READ)
+		{
+			wcb->callback_read = callback;
+			wcb->param_read = param;
+		}
+		else
+		{
+			wcb->callback_write = callback;
+			wcb->param_write = param;
+		}
+		if (!wcb->callback_read && !wcb->callback_write)
+			watch_delete_callback(fd);
+		else
+		{
+			watch_fd(fd, WATCH_READ, wcb->callback_read != NULL);
+			watch_fd(fd, WATCH_WRITE, wcb->callback_write != NULL);
+		}
+		
     //fprintf(stderr, "add watch: %d\n",  watch_find_callback(fd));
   }
 }
@@ -392,10 +411,10 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
     	continue;
     
     if (FD_ISSET(wcb.fd, rfd))
-      (*(wcb.callback))(wcb.fd, WATCH_READ, wcb.param);
+      (*(wcb.callback_read))(wcb.fd, WATCH_READ, wcb.param_read);
 
     if (FD_ISSET(wcb.fd, wfd))
-      (*(wcb.callback))(wcb.fd, WATCH_WRITE, wcb.param);
+      (*(wcb.callback_write))(wcb.fd, WATCH_WRITE, wcb.param_write);
   }
 
 	_do_not_really_delete_callback--;

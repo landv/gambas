@@ -55,11 +55,13 @@
 DECLARE_EVENT (EVENT_Error);
 DECLARE_EVENT (EVENT_Close);
 DECLARE_EVENT (EVENT_Found);
-DECLARE_EVENT (EVENT_Read);
 DECLARE_EVENT (EVENT_Ready);
+DECLARE_EVENT (EVENT_Read);
+DECLARE_EVENT (EVENT_Write);
+// 
 
-
-GB_STREAM_DESC SocketStream = {
+GB_STREAM_DESC SocketStream = 
+{
 	open: CSocket_stream_open,
 	close: CSocket_stream_close,
 	read: CSocket_stream_read,
@@ -134,23 +136,23 @@ void CSocket_CallBackFromDns(void *_object)
 	GB.FreeString (&THIS->sRemoteHostIP);
 	GB.NewString ( &THIS->sRemoteHostIP ,THIS->DnsTool->sHostIP,0);
 	/* Let's turn socket to async mode */
-	//ioctl(THIS->Socket,FIONBIO,&NoBlock);
+	//ioctl(THIS->socket,FIONBIO,&NoBlock);
 	/* Third, we connect the socket */
 	THIS->Server.sin_family=AF_INET;
   	THIS->Server.sin_port=htons(THIS->iPort);
   	THIS->Server.sin_addr.s_addr =inet_addr(THIS->DnsTool->sHostIP);
   	bzero(&(THIS->Server.sin_zero),8);
-	myval=connect(THIS->Socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
+	myval=connect(THIS->socket,(struct sockaddr*)&(THIS->Server), sizeof(struct sockaddr));
 	if (!myval || errno==EINPROGRESS) /* this is the good answer : connect in progress */
 	{
 		THIS->iStatus=6;
-		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
+		GB.Watch (THIS->socket,GB_WATCH_WRITE,(void *)CSocket_CallBackConnecting,(intptr_t)THIS);
 	}
 	else
 	{
-		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
-		close(THIS->Socket);
+		close(THIS->socket);
 		THIS->iStatus=0;
 	}
 	if (THIS->DnsTool)
@@ -172,6 +174,14 @@ void CSocket_CallBackFromDns(void *_object)
 	GB.Post(CSocket_post_hostfound,(intptr_t)THIS);
 }
 
+
+void CSOCKET_init_connected(CSOCKET *_object)
+{
+	GB.Watch(THIS->socket, GB_WATCH_READ, (void *)CSocket_CallBack, (intptr_t)THIS);
+
+	THIS->stream.desc=&SocketStream;
+}
+
 /*******************************************************************
  This CallBack is used while waiting to finish a connection process
  ******************************************************************/
@@ -181,7 +191,7 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	int mylen;
 	void *_object = (void *)param;
 
-	GB.Watch(THIS->Socket, GB_WATCH_NONE, (void *)CSocket_CallBackConnecting, 0);
+	GB.Watch(THIS->socket, GB_WATCH_NONE, (void *)CSocket_CallBackConnecting, 0);
 	
 	if (THIS->iStatus!=6) return;
 	
@@ -190,12 +200,12 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	an error trying to connect
 	****************************************************/
 	
-	THIS->iStatus=CheckConnection(THIS->Socket);
+	THIS->iStatus=CheckConnection(THIS->socket);
 	if (THIS->iStatus == 0)
 	{
-		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
-		close(THIS->Socket);
+		close(THIS->socket);
 		THIS->iStatus=-3;
 		GB.Ref (THIS);
 		GB.Post (CSocket_post_error,(intptr_t)THIS);
@@ -206,15 +216,12 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	// we obtain local IP and host
 	
 	mylen=sizeof(struct sockaddr);
-	getsockname (THIS->Socket,(struct sockaddr*)&myhost,(socklen_t *)&mylen);
+	getsockname (THIS->socket,(struct sockaddr*)&myhost,(socklen_t *)&mylen);
 	THIS->iLocalPort=ntohs(myhost.sin_port);
 	GB.FreeString( &THIS->sLocalHostIP);
 	GB.NewString ( &THIS->sLocalHostIP ,inet_ntoa(myhost.sin_addr),0);
 
-	//GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,(intptr_t)THIS);
-	GB.Watch (THIS->Socket,GB_WATCH_READ,(void *)CSocket_CallBack,(intptr_t)THIS);
-
-	THIS->stream.desc=&SocketStream;
+	CSOCKET_init_connected(THIS);
 	GB.Stream.SetSwapping(&THIS->stream, htons(1234) != 1234);
 	
 	GB.Ref(THIS);
@@ -224,21 +231,28 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 /*******************************************************************
  This CallBack is used while socket is connected to remote host
  ******************************************************************/
-void CSocket_CallBack(int t_sock,int type,intptr_t lParam)
+static void callback_write(int t_sock,int type, CSOCKET *_object)
+{
+	//fprintf(stderr, "callback write %p\n", THIS);
+	THIS->watch_write = FALSE;
+	GB.Watch(THIS->socket, GB_WATCH_WRITE, NULL, 0);
+	GB.Raise(THIS, EVENT_Write, 0);
+}
+
+void CSocket_CallBack(int t_sock,int type, CSOCKET *_object)
 {
 	char buf[1];
 	struct pollfd mypoll;
 	int numpoll;
 	struct timespec mywait;
-	void *_object;
 
+	//fprintf(stderr, "callback read %p\n", THIS);
 	/*	Just sleeping a little to reduce CPU waste	*/
 	mywait.tv_sec=0;
 	mywait.tv_nsec=100000;
 	nanosleep(&mywait,NULL);
-	/* is there data avilable or an error? */
-	_object=(void*)lParam;
 
+	/* is there data available or an error? */
 	if (THIS->iStatus!=7) return;
 
 	mypoll.fd=t_sock;
@@ -252,7 +266,7 @@ void CSocket_CallBack(int t_sock,int type,intptr_t lParam)
 	if (!numpoll)
 	{ /* socket error, no valid data received */
 		
-		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
 		close(t_sock);
 		THIS->iStatus=0;
@@ -266,17 +280,18 @@ void CSocket_CallBack(int t_sock,int type,intptr_t lParam)
 	EVENT_Read
 	*******************************************************/
 
-	GB.Ref(_object);
-	GB.Post(CSocket_post_data_available,(intptr_t)THIS);
+	GB.Raise(THIS, EVENT_Read, 0);
+	//GB.Ref(_object);
+	//GB.Post(CSocket_post_data_available,(intptr_t)THIS);
 }
 
 
 void CSocket_stream_internal_error(void *_object,int ncode)
 {
 	/* fatal socket error handling */
-	GB.Watch (THIS->Socket,GB_WATCH_NONE,(void *)CSocket_CallBack,0);
+	GB.Watch (THIS->socket,GB_WATCH_NONE,(void *)CSocket_CallBack,0);
 	THIS->stream.desc=NULL;
-	close(THIS->Socket);
+	close(THIS->socket);
 	THIS->iStatus = ncode;
 }
 
@@ -301,7 +316,7 @@ int CSocket_stream_flush(GB_STREAM *stream)
 int CSocket_stream_handle(GB_STREAM *stream)
 {
 	void *_object = stream->tag;
-	return THIS->Socket;
+	return THIS->socket;
 }
 
 int CSocket_stream_close(GB_STREAM *stream)
@@ -318,9 +333,9 @@ int CSocket_stream_close(GB_STREAM *stream)
   }
   if (THIS->iStatus > 0) /* if it's not connected, does nothing */
   {
-	GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+	GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 	stream->desc=NULL;
-  	close(THIS->Socket);
+  	close(THIS->socket);
   	THIS->iStatus=0;
   }
   if (THIS->OnClose) THIS->OnClose(_object);
@@ -335,7 +350,7 @@ int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 	*len=0;
 	if (!THIS) return -1;
 
-	if (ioctl(THIS->Socket,FIONREAD,&bytes))
+	if (ioctl(THIS->socket,FIONREAD,&bytes))
 	{
 		CSocket_stream_internal_error(THIS,-4);
 		if (THIS->OnClose) THIS->OnClose(_object);
@@ -352,7 +367,7 @@ int CSocket_stream_eof(GB_STREAM *stream)
 
 	if (!THIS) return -1;
 
-	if (ioctl(THIS->Socket,FIONREAD,&bytes))
+	if (ioctl(THIS->socket,FIONREAD,&bytes))
 	{
 		CSocket_stream_internal_error(THIS,-4);
 		if (THIS->OnClose) THIS->OnClose(_object);
@@ -371,7 +386,7 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 
 	if (!THIS) return -1;
 
-	if (ioctl(THIS->Socket,FIONREAD,&bytes))
+	if (ioctl(THIS->socket,FIONREAD,&bytes))
 	{
 		CSocket_stream_internal_error(THIS,-4);
 		if (THIS->OnClose) THIS->OnClose(_object);
@@ -381,10 +396,10 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 	if (bytes < len)
 		len = bytes;
 
-	//ioctl(THIS->Socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(npos=recv(THIS->Socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
+	//ioctl(THIS->socket,FIONBIO,&NoBlock);
+	USE_MSG_NOSIGNAL(npos=recv(THIS->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
 	//NoBlock++;
-  //ioctl(THIS->Socket,FIONBIO,&NoBlock);
+  //ioctl(THIS->socket,FIONBIO,&NoBlock);
 	
 	GB.Stream.SetBytesRead(stream, npos);
 	
@@ -405,10 +420,18 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 
 	if (!THIS) return -1;
 
-	//ioctl(THIS->Socket,FIONBIO,&NoBlock);
-	USE_MSG_NOSIGNAL(npos=send(THIS->Socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
+	//ioctl(THIS->socket,FIONBIO,&NoBlock);
+	USE_MSG_NOSIGNAL(npos=send(THIS->socket,(void*)buffer,len*sizeof(char),MSG_NOSIGNAL));
 	//NoBlock++;
-	//ioctl(THIS->Socket,FIONBIO,&NoBlock);
+	//ioctl(THIS->socket,FIONBIO,&NoBlock);
+
+	if (GB.CanRaise(THIS, EVENT_Write) && !THIS->watch_write)
+	{
+		//fprintf(stderr, "watch write %p\n", THIS);
+		THIS->watch_write = TRUE;
+		GB.Watch(THIS->socket, GB_WATCH_WRITE, (void *)callback_write, (intptr_t)THIS);
+	}
+	
 	if (npos>=0) return 0;
 	CSocket_stream_internal_error(THIS,-5);
 	if (THIS->OnClose) THIS->OnClose(_object);
@@ -433,7 +456,7 @@ int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
 
 	THIS->UServer.sun_family=AF_UNIX;
 	strcpy(THIS->UServer.sun_path,sPath);
-	if ( (THIS->Socket=socket(AF_UNIX,SOCK_STREAM,0))==-1 )
+	if ( (THIS->socket=socket(AF_UNIX,SOCK_STREAM,0))==-1 )
 	{
 		THIS->iStatus=-2;
 		GB.Ref (THIS);
@@ -444,12 +467,14 @@ int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
  	GB.FreeString(&THIS->sPath);
 	GB.NewString ( &THIS->sPath , THIS->UServer.sun_path ,0);
  	THIS->conn_type=1;
- 	if (connect(THIS->Socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un))==0)
+ 	if (connect(THIS->socket,(struct sockaddr*)&THIS->UServer,sizeof(struct sockaddr_un))==0)
  	{
 		THIS->iStatus=7;
-		//ioctl(THIS->Socket,FIONBIO,&NoBlock);
-		GB.Watch (THIS->Socket,GB_WATCH_WRITE,(void *)CSocket_CallBack,(intptr_t)THIS);
-		THIS->stream.desc=&SocketStream;
+		//ioctl(THIS->socket,FIONBIO,&NoBlock);
+		CSOCKET_init_connected(THIS);
+		/*GB.Watch (THIS->socket,GB_WATCH_READ,(void *)CSocket_CallBack,(intptr_t)THIS);
+		if (GB.CanRaise(THIS, EVENT_Write))
+			GB.Watch(THIS->socket, GB_WATCH_WRITE, (void *)CSocket_CallBackWrite, (intptr_t)THIS);*/
 		// $BM
 		if (THIS->Host) GB.FreeString(&THIS->Host);
 		if (THIS->Path) GB.FreeString(&THIS->Path);
@@ -462,11 +487,11 @@ int CSocket_connect_unix(void *_object,char *sPath,int lenpath)
  	}
 	
 	// Set socket to non-blocking mode, after the connect() call!
-	ioctl(THIS->Socket, FIONBIO, &doNotBlock);
+	ioctl(THIS->socket, FIONBIO, &doNotBlock);
   	
 	/* Error */
 	THIS->stream.desc=NULL;
-	close(THIS->Socket);
+	close(THIS->socket);
 	GB.FreeString(&THIS->sPath);
 	THIS->iStatus=-3;
 
@@ -491,7 +516,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	GB.FreeString(&THIS->sRemoteHostIP);
 	GB.FreeString(&THIS->sLocalHostIP);
 
-	if ( (THIS->Socket=socket(AF_INET,SOCK_STREAM,0))==-1 )
+	if ( (THIS->socket=socket(AF_INET,SOCK_STREAM,0))==-1 )
 	{
 		THIS->iStatus=-2;
 		GB.Ref (THIS);
@@ -500,7 +525,7 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	}
 
 	// Set socket to non-blocking mode
-	ioctl(THIS->Socket, FIONBIO, &doNotBlock);
+	ioctl(THIS->socket, FIONBIO, &doNotBlock);
 
 	THIS->iPort=myport;
 	THIS->conn_type=0;
@@ -554,7 +579,7 @@ int CSocket_peek_data(void *_object,char **buf,int MaxLen)
   int bytes=0;
 
   (*buf)=NULL;
-  nread=ioctl(THIS->Socket,FIONREAD,&bytes); /* Is there anythig to read? */
+  nread=ioctl(THIS->socket,FIONREAD,&bytes); /* Is there anythig to read? */
   if (nread)
   	retval=-1;
   else
@@ -565,10 +590,10 @@ int CSocket_peek_data(void *_object,char **buf,int MaxLen)
 		if (MaxLen >0 ) bytes=MaxLen;
 		GB.Alloc((void**)buf,bytes);
 		(*buf)[0]='\0';
-		//ioctl(THIS->Socket,FIONBIO,&NoBlock);
-		USE_MSG_NOSIGNAL(retval=recv(THIS->Socket,(void*)(*buf),bytes*sizeof(char),MSG_PEEK|MSG_NOSIGNAL));
+		//ioctl(THIS->socket,FIONBIO,&NoBlock);
+		USE_MSG_NOSIGNAL(retval=recv(THIS->socket,(void*)(*buf),bytes*sizeof(char),MSG_PEEK|MSG_NOSIGNAL));
 		//NoBlock++;
-		//ioctl(THIS->Socket,FIONBIO,&NoBlock);
+		//ioctl(THIS->socket,FIONBIO,&NoBlock);
   }
 
   if (retval==-1)
@@ -579,9 +604,9 @@ int CSocket_peek_data(void *_object,char **buf,int MaxLen)
 			GB.Free(POINTER(buf));
 			buf=NULL;
 		}
-		GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
-		close(THIS->Socket);
+		close(THIS->socket);
 		THIS->iStatus=-4;
 		GB.Ref (THIS);
 		CSocket_post_error(_object);
@@ -766,9 +791,9 @@ BEGIN_METHOD_VOID(CSOCKET_free)
   }
   if (THIS->iStatus>0)
   {
-  	GB.Watch (THIS->Socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+  	GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 	THIS->stream.desc=NULL;
-	close(THIS->Socket);
+	close(THIS->socket);
 	if (THIS->OnClose) THIS->OnClose((void*)THIS);
   	THIS->iStatus=0;
 
@@ -871,10 +896,11 @@ GB_DESC CSocketDesc[] =
   GB_DECLARE("Socket", sizeof(CSOCKET)), GB_INHERITS("Stream"),
 
   GB_EVENT("Error", NULL, NULL, &EVENT_Error),
-  GB_EVENT("Read", NULL, NULL, &EVENT_Read),
   GB_EVENT("Ready", NULL, NULL, &EVENT_Ready),
   GB_EVENT("Closed", NULL, NULL, &EVENT_Close),
   GB_EVENT("Found", NULL, NULL, &EVENT_Found),
+  GB_EVENT("Read", NULL, NULL, &EVENT_Read),
+  GB_EVENT("Write", NULL, NULL, &EVENT_Write),
 
   GB_STATIC_METHOD ( "_exit" , NULL , CSOCKET_exit , NULL ),
 
@@ -898,7 +924,3 @@ GB_DESC CSocketDesc[] =
 
   GB_END_DECLARE
 };
-
-
-
-

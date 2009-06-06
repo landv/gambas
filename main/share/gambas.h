@@ -665,6 +665,7 @@ typedef
 		#else
 		int _free[5];
 		#endif
+		GB_VARIANT_VALUE _reserved3;
 		}
 	GB_STREAM;
 

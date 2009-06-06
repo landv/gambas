@@ -1,62 +1,63 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(36,28,50,51)
+  MoveScaled(36,28,63,51)
   Text = ("Server Socket Example")
   Resizable = False
   { Button1 Button
-    MoveScaled(31,1,18,4)
+    MoveScaled(44,1,18,4)
     Text = ("Listen")
   }
   { TextBox1 TextBox
-    MoveScaled(17,6,13,4)
+    MoveScaled(22,6,21,4)
     Text = ("32340")
   }
   { TextArea1 TextArea
-    MoveScaled(1,27,48,23)
+    MoveScaled(1,22,61,28)
     Text = ("")
   }
   { Button2 Button
-    MoveScaled(31,6,18,4)
+    MoveScaled(44,6,18,4)
     Text = ("Close")
   }
   { TextLabel1 TextLabel
     MoveScaled(1,6,15,4)
-    Text = ("Port :")
+    Text = ("Port")
   }
   { CmdWait Button
-    MoveScaled(1,22,16,4)
+    MoveScaled(1,17,16,4)
     Text = ("Wait")
   }
   { Label1 Label
-    MoveScaled(1,16,28,4)
-    Text = ("Maximum number of clients:")
+    MoveScaled(20,17,26,4)
+    Text = ("Max. number of clients")
+    Alignment = Align.Right
   }
   { ComboBox1 ComboBox
-    MoveScaled(30,16,19,4)
+    MoveScaled(47,17,15,4)
     Text = (" ")
     List = [("(no Limit)"), ("1"), ("2"), ("3"), ("4"), ("5"), ("6"), ("7"), ("8"), ("9"), ("10")]
   }
   { TextLabel2 TextLabel
     MoveScaled(1,1,15,4)
-    Text = ("Type :")
+    Text = ("Type")
   }
   { ComboBox2 ComboBox
-    MoveScaled(17,1,13,4)
+    MoveScaled(22,1,21,4)
     Text = (" ")
     ReadOnly = True
     List = [("TCP"), ("UNIX")]
   }
   { TextLabel3 TextLabel
-    MoveScaled(1,11,15,4)
-    Text = ("Path :")
+    MoveScaled(1,11,20,4)
+    Text = ("Path")
   }
   { TxtPath TextBox
-    MoveScaled(17,11,32,4)
+    MoveScaled(22,11,40,4)
     Text = ("")
   }
   { Server #ServerSocket
-    #X = 312
-    #Y = 152
+    #X = 282
+    #Y = 192
   }
 }

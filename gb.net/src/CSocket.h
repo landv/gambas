@@ -25,6 +25,8 @@
 #define __CSOCKET_H
 
 #include "gambas.h"
+#include "gb_common.h"
+
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -45,35 +47,41 @@ extern GB_STREAM_DESC SocketStream;
 
 #endif
 
-void CSocket_CallBack(int t_sock,int type,intptr_t lParam);
+#define SOCKET_BUFFER_SIZE 1024
+
+typedef
+	struct
+	{
+		GB_BASE ob;
+		GB_STREAM stream;
+		int socket;
+		struct sockaddr_in Server;  /* struct for TCP connections  */
+		struct sockaddr_un UServer; /* struct for UNIX connections */
+		int iStatus;
+		int iUsePort;
+		int iPort;
+		int iLocalPort;
+		int conn_type;
+		char *sPath;
+		char *sLocalHostIP;
+		char *sRemoteHostIP;
+		// $BM
+		//char *HostOrPath;
+		char *Host;
+		char *Path;
+		CDNSCLIENT *DnsTool;
+		//
+		void *c_parent;
+		//
+		void (*OnClose)(void *sck);
+		bool watch_write;
+	}  
+	CSOCKET;
+
+void CSocket_CallBack(int t_sock,int type, CSOCKET *_object);
 void CSocket_CallBackConnecting(int t_sock,int type,intptr_t lParam);
 
-typedef  struct
-{
-   GB_BASE ob;
-   GB_STREAM stream;
-   int Socket;
-   struct sockaddr_in Server;  /* struct for TCP connections  */
-   struct sockaddr_un UServer; /* struct for UNIX connections */
-   int iStatus;
-   int iUsePort;
-   int iPort;
-   int iLocalPort;
-   int conn_type;
-   char *sPath;
-   char *sLocalHostIP;
-   char *sRemoteHostIP;
-   // $BM
-   //char *HostOrPath;
-   char *Host;
-   char *Path;
-   CDNSCLIENT *DnsTool;
-   //
-   void *c_parent;
-   //
-   void (*OnClose)(void *sck);
-   //
-}  CSOCKET;
+void CSOCKET_init_connected(CSOCKET *_object);
 
 //
 void CSocket_post_error(void *_object);

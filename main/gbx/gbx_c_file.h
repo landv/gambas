@@ -36,6 +36,7 @@ typedef
   struct {
     OBJECT ob;
     STREAM stream;
+    GB_VARIANT_VALUE tag;
     }
   CSTREAM;
 

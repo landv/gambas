@@ -31,18 +31,28 @@
 
 #include <gtk/gtk.h>
 
-typedef struct
-{
-	void *channel;
-	void *func;
-	void *data;
-	guint id;
-} watchData;
+typedef
+	void (*WATCH_CALLBACK)(int, int, intptr_t);
+
+typedef
+  struct {
+		int fd;
+		GIOChannel *channel;
+    guint id_read;
+    WATCH_CALLBACK callback_read;
+    intptr_t param_read;
+    guint id_write;
+    WATCH_CALLBACK callback_write;
+    intptr_t param_write;
+    }
+  WATCH;
 
 class CWatcher
 {
 public:
-	static void Add(int fd,int type,void *callback,long param);
+	static void init();
+	static void exit();
+	static void Add(int fd, int type, void *callback, intptr_t param);
 	static void Clear();
 	static void Remove(int fd);
 	static int count();

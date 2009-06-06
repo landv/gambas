@@ -231,12 +231,15 @@ extern "C"
 		GB.LoadComponent("gb.draw");
 		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
+		
+		CWatcher::init();
 
 		return TRUE;
 	}
 
 	void EXPORT GB_EXIT()
 	{
+		CWatcher::exit();
 	}
 
 	int EXPORT GB_INFO(const char *key, void **value)
