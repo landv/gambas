@@ -48,6 +48,7 @@ Public Sub Server_Connection(sHost As String)
   End If
   
   Obj = Server.Accept()
+  Obj.Blocking = False
   Client.Add(Obj)
   If Obj.Status = Net.Connected And ComboBox2.Index = 0 Then
     TextArea1.Text = TextArea1.Text & "Connection from " & Obj.RemoteHost & ":" & Obj.RemotePort & " accepted (local port " & Obj.LocalPort & ")" & Chr(13) & Chr(10) 
@@ -61,18 +62,25 @@ Public Sub Socket_Write()
   Dim hSocket As Socket = Last
   Dim iInd As Integer
   
-  Debug hSocket;; hSocket.Tag
+  'Debug hSocket;; hSocket.Tag
   If IsNull(hSocket.Tag) Then Return
   
   iInd = hSocket.Tag[0]
   
-  Inc iInd
-  If iInd > 10000 Then
-    hSocket.Tag = Null
-    Return
-  Endif
-  
-  Print #hSocket, hSocket.Tag[1]; Space$(512)
+  Do
+    Inc iInd
+    If iInd > 1000 Then
+      hSocket.Tag = Null
+      Return
+    Endif
+    
+    Debug iInd
+    Try Print #hSocket, iInd; ":";; hSocket.Tag[1]; Space$(512)
+    If Error Then 
+      Debug Error.Text
+      Break
+    Endif
+  Loop
   
   hSocket.Tag[0] = iInd
 
@@ -93,7 +101,7 @@ Public Sub Socket_Read()
      
     If Last.Status <> Net.Connected Then Return
     Read #Last, sBuf, Lof(Last)
-    TextArea1.Text = TextArea1.Text & "Socket number " & Client.Find(Last) & " --> " & sBuf 
+    TextArea1.Text &= "Socket number " & Client.Find(Last) & " --> " & sBuf & "\n"
     
     Last.Tag = [0, sBuf]
     Socket_Write
@@ -102,13 +110,13 @@ End
 
 Public Sub Socket_Ready()
   
-  TextArea1.Text = TextArea1.Text & "-- Client working --" & Chr(13) & Chr(10)
+  TextArea1.Text &= "-- Client working --\n"
   
 End
 
 Public Sub Socket_Closed()
 
-    TextArea1.Text = TextArea1.Text & "Client  " & Client.Find(Last) & " Closed"
+    TextArea1.Text &= "Client  " & Client.Find(Last) & " Closed\n"
     Client.Remove(Client.Find(Last)) 
 End
 

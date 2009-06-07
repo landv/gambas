@@ -63,7 +63,6 @@ Public Sub MySock_Read()
       Read #MySock, S, -16 'Lof(MySock)
       TextArea1.Pos = TextArea1.Length
       TextArea1.Insert(S)
-      Sleep 0.02
   End If
   
   

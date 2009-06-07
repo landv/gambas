@@ -111,6 +111,26 @@ void CSocket_post_data_available(void *_object)
 	GB.Unref(POINTER(&_object));
 }
 
+static void CSocket_close(CSOCKET *_object)
+{
+  if (THIS->DnsTool)
+  {
+		dns_close_all(THIS->DnsTool);
+		GB.Unref(POINTER(&THIS->DnsTool));
+		THIS->DnsTool=NULL;
+  }
+
+	if (THIS->iStatus > 0) /* if it's not connected, does nothing */
+  {
+		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		THIS->stream.desc=NULL;
+  	close(THIS->socket);
+  	THIS->iStatus = 0;
+  }
+  
+	if (THIS->OnClose) THIS->OnClose(_object);
+}
+
 /**************************************************
  This function is called by DnsClient to inform
   that it has finished its work
@@ -123,13 +143,14 @@ void CSocket_CallBackFromDns(void *_object)
 	if ( THIS->iStatus != 5) return;
 	if ( !THIS->DnsTool->sHostIP)
 	{
-		THIS->iStatus=-6; /* error host not found */
+		/* error host not found */
+		CSocket_stream_internal_error(THIS, -6, TRUE);
+		/*
+		THIS->iStatus=-6;
 		dns_close_all(THIS->DnsTool);
 		GB.Unref(POINTER(&THIS->DnsTool));
 		THIS->DnsTool=NULL;
-		GB.Ref (THIS);
-		GB.Post (CSocket_post_error,(intptr_t)THIS);
-		if (THIS->OnClose) THIS->OnClose(_object);
+		if (THIS->OnClose) THIS->OnClose(_object);*/
 		return;
 	}
 
@@ -163,10 +184,10 @@ void CSocket_CallBackFromDns(void *_object)
   	}
 	if ( THIS->iStatus<=0 )
 	{
+		CSocket_stream_internal_error(THIS, -3, TRUE);
+		/*
 		THIS->iStatus=-3;
-		GB.Ref (THIS);
-		GB.Post (CSocket_post_error,(intptr_t)THIS);
-		if (THIS->OnClose) THIS->OnClose((void*)THIS);
+		if (THIS->OnClose) THIS->OnClose((void*)THIS);*/
 		return;
 	}
 
@@ -178,8 +199,7 @@ void CSocket_CallBackFromDns(void *_object)
 void CSOCKET_init_connected(CSOCKET *_object)
 {
 	GB.Watch(THIS->socket, GB_WATCH_READ, (void *)CSocket_CallBack, (intptr_t)THIS);
-
-	THIS->stream.desc=&SocketStream;
+	THIS->stream.desc = &SocketStream;
 }
 
 /*******************************************************************
@@ -203,13 +223,13 @@ void CSocket_CallBackConnecting(int t_sock,int type,intptr_t param)
 	THIS->iStatus=CheckConnection(THIS->socket);
 	if (THIS->iStatus == 0)
 	{
+		CSocket_stream_internal_error(THIS, -3, TRUE);
+		/*
 		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
 		close(THIS->socket);
 		THIS->iStatus=-3;
-		GB.Ref (THIS);
-		GB.Post (CSocket_post_error,(intptr_t)THIS);
-		if (THIS->OnClose) THIS->OnClose((void*)THIS);
+		if (THIS->OnClose) THIS->OnClose((void*)THIS);*/
 		return;
 	}
 	if (THIS->iStatus != 7) return;
@@ -266,13 +286,17 @@ void CSocket_CallBack(int t_sock,int type, CSOCKET *_object)
 	if (!numpoll)
 	{ /* socket error, no valid data received */
 		
-		GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
+		CSocket_close(THIS);
+		THIS->iStatus = 0;
+		GB.Ref(THIS);
+		GB.Post(CSocket_post_closed, (intptr_t)THIS);
+		/*GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
 		THIS->stream.desc=NULL;
 		close(t_sock);
 		THIS->iStatus=0;
 		GB.Ref(THIS);
 		GB.Post(CSocket_post_closed,(intptr_t)THIS);
-		if (THIS->OnClose) THIS->OnClose((void*)THIS);
+		if (THIS->OnClose) THIS->OnClose((void*)THIS);*/
 		return;
 	}
 	/******************************************************
@@ -286,13 +310,20 @@ void CSocket_CallBack(int t_sock,int type, CSOCKET *_object)
 }
 
 
-void CSocket_stream_internal_error(void *_object,int ncode)
+void CSocket_stream_internal_error(void *_object, int ncode, bool post)
 {
+	CSocket_close(THIS);
 	/* fatal socket error handling */
-	GB.Watch (THIS->socket,GB_WATCH_NONE,(void *)CSocket_CallBack,0);
+	/*GB.Watch (THIS->socket,GB_WATCH_NONE,(void *)CSocket_CallBack,0);
 	THIS->stream.desc=NULL;
-	close(THIS->socket);
+	close(THIS->socket);*/
 	THIS->iStatus = ncode;
+	
+	if (post)
+	{
+		GB.Ref(THIS);
+		GB.Post(CSocket_post_error, (intptr_t)THIS);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -323,22 +354,9 @@ int CSocket_stream_close(GB_STREAM *stream)
 {
   void *_object = stream->tag;
 
-  if (!THIS ) return -1;
+  if (!THIS) return -1;
+	CSocket_close(THIS);
 
-  if (THIS->DnsTool)
-  {
-	dns_close_all(THIS->DnsTool);
-	GB.Unref(POINTER(&THIS->DnsTool));
-	THIS->DnsTool=NULL;
-  }
-  if (THIS->iStatus > 0) /* if it's not connected, does nothing */
-  {
-	GB.Watch (THIS->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
-	stream->desc=NULL;
-  	close(THIS->socket);
-  	THIS->iStatus=0;
-  }
-  if (THIS->OnClose) THIS->OnClose(_object);
   return 0;
 }
 
@@ -352,8 +370,7 @@ int CSocket_stream_lof(GB_STREAM *stream, int64_t *len)
 
 	if (ioctl(THIS->socket,FIONREAD,&bytes))
 	{
-		CSocket_stream_internal_error(THIS,-4);
-		if (THIS->OnClose) THIS->OnClose(_object);
+		CSocket_stream_internal_error(THIS, -4, FALSE);
 		return -1;
 	}
 	*len=bytes;
@@ -369,8 +386,7 @@ int CSocket_stream_eof(GB_STREAM *stream)
 
 	if (ioctl(THIS->socket,FIONREAD,&bytes))
 	{
-		CSocket_stream_internal_error(THIS,-4);
-		if (THIS->OnClose) THIS->OnClose(_object);
+		CSocket_stream_internal_error(THIS, -4, FALSE);
 		return -1;
 	}
 	if (!bytes) return -1;
@@ -388,8 +404,7 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 
 	if (ioctl(THIS->socket,FIONREAD,&bytes))
 	{
-		CSocket_stream_internal_error(THIS,-4);
-		if (THIS->OnClose) THIS->OnClose(_object);
+		CSocket_stream_internal_error(THIS, -4, FALSE);
 		return -1;
 	}
 	//if (bytes < len) return -1;
@@ -405,10 +420,9 @@ int CSocket_stream_read(GB_STREAM *stream, char *buffer, int len)
 	
 	if (npos==len) return 0;
 	
-	if (npos<0)
-		CSocket_stream_internal_error(THIS,-4);
+	if (npos < 0 && errno != EAGAIN)
+		CSocket_stream_internal_error(THIS, -4, FALSE);
 	
-	if (THIS->OnClose) THIS->OnClose(_object);
 	return -1;
 }
 
@@ -425,7 +439,7 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 	//NoBlock++;
 	//ioctl(THIS->socket,FIONBIO,&NoBlock);
 
-	if (npos>=0) 
+	if (npos >= 0 || errno == EAGAIN) 
 	{
 		if (GB.CanRaise(THIS, EVENT_Write) && !THIS->watch_write)
 		{
@@ -433,12 +447,14 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 			THIS->watch_write = TRUE;
 			GB.Watch(THIS->socket, GB_WATCH_WRITE, (void *)callback_write, (intptr_t)THIS);
 		}
-	
-		return 0;
 	}
 	
-	CSocket_stream_internal_error(THIS,-5);
-	if (THIS->OnClose) THIS->OnClose(_object);
+	if (npos >= 0)
+		return 0;
+	
+	if (errno != EAGAIN)
+		CSocket_stream_internal_error(THIS, -5, FALSE);
+	
 	return -1;
 }
 
@@ -787,6 +803,8 @@ END_METHOD
  **************************************************/
 BEGIN_METHOD_VOID(CSOCKET_free)
 
+	CSocket_close(THIS);
+	/*
   if (THIS->DnsTool)
   {
 	dns_close_all(THIS->DnsTool);
@@ -801,7 +819,8 @@ BEGIN_METHOD_VOID(CSOCKET_free)
 	if (THIS->OnClose) THIS->OnClose((void*)THIS);
   	THIS->iStatus=0;
 
-  }
+  }*/
+	
   GB.FreeString(&THIS->sPath);
   GB.FreeString(&THIS->sLocalHostIP);
   GB.FreeString(&THIS->sRemoteHostIP);
