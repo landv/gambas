@@ -33,41 +33,42 @@
 #include "gambas.h"
 #include "watcher.h"
 
-static watchData **watch = NULL;
-static int nwatch = 0;
+static WATCH **watch = NULL;
 
-gboolean watch_adaptor (GIOChannel *source, GIOCondition condition, gpointer param)
+static gboolean watch_adaptor(GIOChannel *source, GIOCondition condition, gpointer param)
 {
-	void (*cb)(int,int,long);
-	watchData *data=(watchData*)param;
+	WATCH *data = (WATCH *)param;
 
 	if (!data) return true;
-	
-	cb=(void(*)(int,int,long))data->func;
-	if (!cb) return true;
 	
 	switch (condition)
 	{
 		case G_IO_IN:
-			cb ( g_io_channel_unix_get_fd(source),GB_WATCH_READ,(long)data->data); break; 
+			(*data->callback_read)(data->fd, GB_WATCH_READ, data->param_read); break; 
 		case G_IO_OUT:
-			cb ( g_io_channel_unix_get_fd(source),GB_WATCH_WRITE,(long)data->data); break; 
-
+			(*data->callback_write)(data->fd, GB_WATCH_WRITE, data->param_write); break; 
 		default: break;
 	}
-		
 
 	return true;
 }
 
+void CWatcher::init()
+{
+	GB.NewArray(POINTER(&watch), sizeof(WATCH *), 0);
+}
+
+void CWatcher::exit()
+{
+	Clear();
+	GB.FreeArray(POINTER(&watch));
+}
+
 void CWatcher::Clear()
 {
-	int fd;
-
-	while (nwatch) 
+	while (count()) 
 	{
-		fd=g_io_channel_unix_get_fd((GIOChannel*)(watch[0]->channel));
-		CWatcher::Add(fd,GB_WATCH_NONE,NULL,0);
+		CWatcher::Add(watch[0]->fd, GB_WATCH_NONE, NULL, 0);
 	}
 }
 
@@ -76,74 +77,78 @@ void CWatcher::Remove(int fd)
 	CWatcher::Add(fd,GB_WATCH_NONE,NULL,0);
 }
 
-void CWatcher::Add(int fd,int type,void *callback,long param)
+void CWatcher::Add(int fd, int type, void *callback, intptr_t param)
 {
-	GIOChannel *channel=NULL;
-	watchData *data;
-	int bc,bc2;
+	WATCH *data = NULL;
+	WATCH **pwatch;
+	int i;
 
-	//fprintf(stderr, "CWatcher::Add(%d, %d, %p, %d)\n", fd, type, callback, param);
-
-	for (bc=0; bc<nwatch; bc++)
+	for (i = 0; i < count(); i++)
 	{
-		if ( g_io_channel_unix_get_fd( (GIOChannel*)(watch[bc]->channel) ) == fd ) break;
+		if (watch[i]->fd == fd)
+		{
+			data = watch[i];
+			break;
+		}
 	}
 	
-	if (bc>=nwatch)
+	if (!data)
 	{
-		if ( type == GB_WATCH_NONE ) return;
-		if (!watch) { nwatch=1; GB.Alloc(POINTER(&watch),sizeof(watchData)); }
-		else        { nwatch++; GB.Realloc(POINTER(&watch),sizeof(watchData)*nwatch); }
-		GB.Alloc (POINTER(&watch[nwatch-1]),sizeof(watchData));
-		data=watch[nwatch-1]; 
-	}
-	else
-	{
-		channel=(GIOChannel*)watch[bc]->channel;
-		// Apparently GLib does not remove the event source from the event loop when the channel is destroyed.
-		g_source_remove(watch[bc]->id);
-		
-		//fprintf(stderr, "g_io_channel_unref(%p)\n", channel);		
-		g_io_channel_unref(channel);
-		
-		if ( type == GB_WATCH_NONE )
-		{
-			GB.Free (POINTER(&watch[bc]));
-			for (bc2=bc+1;bc2<nwatch;bc2++) watch[bc2-1]=watch[bc2];
-			nwatch--;
-			if (!nwatch) { GB.Free(POINTER(&watch)); watch=NULL; }
-			else         { GB.Realloc(POINTER(&watch),sizeof(watchData)*nwatch); }
+		if (type == GB_WATCH_NONE || !callback)
 			return;
-		}
-		data=watch[bc];
+		
+		pwatch = (WATCH **)GB.Add(&watch);
+		GB.Alloc(POINTER(pwatch), sizeof(WATCH));
+		data = *pwatch;
+		data->fd = fd;
+		data->channel_read = data->channel_write = 0;
+		data->callback_read = data->callback_write = 0;
 	}
 
-	channel=g_io_channel_unix_new(fd);
-	//fprintf(stderr, "g_io_channel_unix_new: %p\n", channel);
-	data->channel=(void*)channel;
-	data->func=(void*)callback;
-	data->data=(void*)param;
-	switch (type)
+	if (data->callback_read && (type == GB_WATCH_NONE || type == GB_WATCH_READ))
 	{
-		case GB_WATCH_READ:
-			data->id = g_io_add_watch_full(channel,G_PRIORITY_LOW,G_IO_IN,watch_adaptor,(void*)data,NULL);
-			//fprintf(stderr, "g_io_add_watch: %p G_IO_IN\n", channel);
-			break;
-		case GB_WATCH_WRITE:
-			data->id = g_io_add_watch_full(channel,G_PRIORITY_LOW,G_IO_OUT,watch_adaptor,(void*)data,NULL);
-			//fprintf(stderr, "g_io_add_watch: %p G_IO_OUT\n", channel);
-			break;
-		case GB_WATCH_READ_WRITE:
-			data->id = g_io_add_watch_full(channel,G_PRIORITY_LOW,(GIOCondition)(G_IO_IN | G_IO_OUT),watch_adaptor,(void*)data,NULL); 
-			//fprintf(stderr, "g_io_add_watch: %p G_IO_IN | G_IO_OUT\n", channel);			
-			break;
-		default:
-			data->id = 0;
+		g_source_remove(data->id_read);
+		g_io_channel_unref(data->channel_read);
+		data->callback_read = 0;
+		data->channel_read = 0;
+	}
+	
+	if (data->callback_write && (type == GB_WATCH_NONE || type == GB_WATCH_WRITE))
+	{
+		g_source_remove(data->id_write);
+		g_io_channel_unref(data->channel_write);
+		data->callback_write = 0;
+		data->channel_write = 0;
+	}
+	
+	if (callback)
+	{
+		if (type == GB_WATCH_READ)
+		{
+			data->callback_read = (WATCH_CALLBACK)callback;
+			data->param_read = param;
+			data->channel_read = g_io_channel_unix_new(fd);
+			g_io_channel_set_encoding(data->channel_read, NULL, NULL);
+			data->id_read = g_io_add_watch_full(data->channel_read, G_PRIORITY_LOW, G_IO_IN, watch_adaptor, (void*)data, NULL);
+		}
+		else if (type == GB_WATCH_WRITE)
+		{
+			data->callback_write = (WATCH_CALLBACK)callback;
+			data->param_write = param;
+			data->channel_write = g_io_channel_unix_new(fd);
+			g_io_channel_set_encoding(data->channel_write, NULL, NULL);
+			data->id_write = g_io_add_watch_full(data->channel_write, G_PRIORITY_LOW, G_IO_OUT, watch_adaptor, (void*)data, NULL);
+		}
 	}
 
+	if (!data->callback_read && !data->callback_write)
+	{
+		GB.Free(POINTER(&data));
+		GB.Remove(&watch, i, 1);
+	}
 }
 
 int CWatcher::count()
 {
-	return nwatch;
+	return GB.Count(watch);
 }

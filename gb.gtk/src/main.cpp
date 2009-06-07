@@ -229,12 +229,15 @@ extern "C"
     GB.Hook(GB_HOOK_PICTURE, (void *)hook_picture);
 
 		GB.LoadComponent("gb.draw");
+		
+		CWatcher::init();
 
 		return TRUE;
 	}
 
 	void EXPORT GB_EXIT()
 	{
+		CWatcher::exit();
 	}
 
 	int EXPORT GB_INFO(const char *key, void **value)

@@ -49,12 +49,24 @@ void CWatch::watch(int fd, int type, GB_WATCH_CALLBACK callback, intptr_t param)
 
     case GB_WATCH_READ:
 
-      new CWatch(fd, QSocketNotifier::Read, callback, param);
+			if (callback)
+				new CWatch(fd, QSocketNotifier::Read, callback, param);
+			else
+			{
+				watch = readDict[fd];
+				if (watch) delete watch;
+			}
       break;
 
     case GB_WATCH_WRITE:
 
-      new CWatch(fd, QSocketNotifier::Write, callback, param);
+			if (callback)
+				new CWatch(fd, QSocketNotifier::Write, callback, param);
+			else
+			{
+				watch = writeDict[fd];
+				if (watch) delete watch;
+			}
       break;
 
   }

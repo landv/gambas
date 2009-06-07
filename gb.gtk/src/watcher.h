@@ -29,20 +29,32 @@
 #ifndef __WATCHER_H
 #define __WATCHER_H
 
+#include "gambas.h"
 #include <gtk/gtk.h>
 
-typedef struct
-{
-	void *channel;
-	void *func;
-	void *data;
-	guint id;
-} watchData;
+typedef
+	GB_WATCH_CALLBACK WATCH_CALLBACK;
+
+typedef
+  struct {
+		int fd;
+		GIOChannel *channel_read;
+    guint id_read;
+    WATCH_CALLBACK callback_read;
+    intptr_t param_read;
+		GIOChannel *channel_write;
+    guint id_write;
+    WATCH_CALLBACK callback_write;
+    intptr_t param_write;
+    }
+  WATCH;
 
 class CWatcher
 {
 public:
-	static void Add(int fd,int type,void *callback,long param);
+	static void init();
+	static void exit();
+	static void Add(int fd, int type, void *callback, intptr_t param);
 	static void Clear();
 	static void Remove(int fd);
 	static int count();
