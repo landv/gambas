@@ -148,6 +148,8 @@ _OPEN:
   stream->common.mode = mode;
   stream->common.swap = FALSE;
   stream->common.eol = 0;
+	stream->common.no_fionread = FALSE;
+	stream->common.no_lseek = FALSE;
 
   /*if (((mode & ST_BIG) && !EXEC_big_endian)
       || ((mode & ST_LITTLE) && EXEC_big_endian))
