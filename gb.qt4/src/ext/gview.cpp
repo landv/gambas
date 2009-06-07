@@ -127,6 +127,7 @@ GEditor::GEditor(QWidget *parent)
 	largestLine = 0;
 	flashed = false;
 	painting = false;
+	_showStringIgnoreCase = false;
 	
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -376,15 +377,36 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 {
 	int i;
 	int len, style, pos;
+	bool alternate;
 	QString sd;
 	GHighlightStyle *st;
 	bool italic = false;
 	int nx;
 	int ps;
+	QColor bg;
+	bool draw_bg;
 
-	pos = 0;
 	p.setFont(font());
 
+	if (_showString.length())
+	{
+		pos = 0;
+		bg = styles[GLine::Highlight].color;
+		for(;;)
+		{
+			if (pos >= (int)l->s.length())
+				break;
+			pos = l->s.find(_showString, pos, _showStringIgnoreCase);
+			if (pos < 0)
+				break;
+			ps = lineWidth(row, pos);
+			nx = lineWidth(row, pos + _showString.length());
+			p.fillRect(ps, 0, nx - ps, h, bg);
+			pos += _showString.length();
+		}
+	}
+	
+	pos = 0;
 	ps = find_last_non_space(l->s.getString()) + 1;
 	
 	for (i = 0; i < GB.Count(l->highlight); i++)
@@ -399,14 +421,26 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 		if ((pos + len) >= xmin)
 		{
 			style = l->highlight[i].state;
+			alternate = l->highlight[i].alternate;
 			st = &styles[style];
+			draw_bg = false;
+			if (st->background)
+			{
+				draw_bg = true;
+				bg = st->backgroundColor;
+			}
+			else if (alternate)
+			{
+				draw_bg = true;
+				bg = styles[GLine::Alternate].color;
+			}
 			
 			if (style == GLine::Keyword && doc->isKeywordsUseUpperCase())
 				sd = l->s.mid(pos, len).upper().getString();
 			else
 				sd = l->s.mid(pos, len).getString();
 
-			if (st->background)
+			if (draw_bg)
 			{
 				int x1 = x;
 				int x2 = nx;
@@ -417,15 +451,18 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 					xd1 = x1;
 				if (xd2 > x2)
 					xd2 = x2;
-				
-				p.fillRect(x, 0, nx - x, h, st->backgroundColor);
+
+				if (alternate && (i == (GB.Count(l->highlight) - 1)))
+					nx = cellWidth();
+					
+				p.fillRect(x, 0, nx - x, h, bg);
 				
 				if (xd2 > xd1)
 					p.fillRect(xd1, 0, xd2 - xd1, h, styles[GLine::Selection].color);
 			}
 			
 			p.setPen(st->color);
-
+			
 			if (ps >= 0 && pos >= ps)
 			{
 				paintDottedSpaces(p, row, pos, sd.length());
@@ -446,6 +483,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			if (st->underline)
 				p.drawLine(x, y + 2, nx - 1, y + 2);
 		}
+
 		pos += len;
 		x = nx;
 	}
@@ -2070,3 +2108,9 @@ void GEditor::foldInsert(int y, int n)
 	}
 }
 
+void GEditor::showString(GString s, bool ignoreCase)
+{
+	_showString = s;
+	_showStringIgnoreCase = ignoreCase;
+	updateContents();
+}

@@ -53,4 +53,16 @@ typedef
     }
   CPANEL;
 
+// class MyPanel: public QFrame
+// {
+// 	Q_OBJECT
+// 
+// public:
+// 	MyPanel(QWidget *parent);
+// 	void configure();
+// 	
+// protected:
+// 	virtual void resizeEvent(QResizeEvent *);
+// };
+
 #endif

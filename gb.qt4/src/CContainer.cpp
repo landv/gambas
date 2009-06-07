@@ -33,6 +33,7 @@
 #include <QResizeEvent>
 #include <QChildEvent>
 #include <QFrame>
+#include <QStyleOptionFrame>
 
 #include "gambas.h"
 
@@ -117,7 +118,7 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 
 
 #define WIDGET_TYPE QWidget *
-#define CONTAINER_TYPE QFrame *
+#define CONTAINER_TYPE QWidget *
 #define ARRANGEMENT_TYPE CCONTAINER_ARRANGEMENT *
 
 #define IS_RIGHT_TO_LEFT() qApp->isRightToLeft()
@@ -294,7 +295,7 @@ void CCONTAINER_insert_child(void *_object)
 ***************************************************************************/
 
 MyContainer::MyContainer(QWidget *parent)
-: QFrame(parent)
+: QWidget(parent),_frame(0)
 {
 }
 
@@ -303,7 +304,7 @@ void MyContainer::showEvent(QShowEvent *e)
 {
 	void *_object = CWidget::get(this);
 	//qDebug("MyContainer::showEvent %p %s", CWidget::get(this), GB.GetClassName(CWidget::get(this)));
-	QFrame::showEvent(e);
+	QWidget::showEvent(e);
 	THIS->widget.flag.shown = TRUE;
 	CCONTAINER_arrange(THIS);
 }
@@ -311,8 +312,148 @@ void MyContainer::showEvent(QShowEvent *e)
 void MyContainer::hideEvent(QHideEvent *e)
 {
 	void *_object = CWidget::get(this);
-	QFrame::hideEvent(e);
+	QWidget::hideEvent(e);
 	THIS->widget.flag.shown = FALSE;
+}
+
+void MyContainer::setFrameStyle(int frame)
+{
+	int margin;
+	_frame = frame;
+	
+	if (_frame == BORDER_NONE)
+		margin = 0;
+	else if (_frame == BORDER_PLAIN)
+		margin = 1;
+	else
+		margin = 2;
+	
+	setContentsMargins(margin, margin, margin, margin);
+	update();
+}
+
+void MyContainer::drawFrame(QPainter *p)
+{
+	if (_frame == 0)
+		return;
+	
+	QStyleOptionFrame opt;
+	opt.init(this);
+	opt.rect = QRect(0, 0, width(), height());
+
+	switch (_frame)
+	{
+		case BORDER_PLAIN:
+			qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), 1);
+			break;
+			
+		case BORDER_SUNKEN:
+			opt.lineWidth = 2;
+			opt.midLineWidth = 2;
+			opt.state |= QStyle::State_Sunken;
+			style()->drawPrimitive(QStyle::PE_Frame, &opt, p, this);
+			break;
+			
+		case BORDER_RAISED:
+			opt.lineWidth = 2;
+			opt.midLineWidth = 2;
+			opt.state |= QStyle::State_Raised;
+			style()->drawPrimitive(QStyle::PE_Frame, &opt, p, this);
+			break;
+			
+		case BORDER_ETCHED:
+			qDrawShadeRect(p, opt.rect, opt.palette, true, 1, 0);
+			break;
+			
+		default:
+			break;
+	}
+}
+
+#if 0
+	Q_D(QFrame);
+	QPoint      p1, p2;
+	QStyleOptionFrame opt;
+	opt.init(this);
+	int frameShape  = d->frameStyle & QFrame::Shape_Mask;
+	int frameShadow = d->frameStyle & QFrame::Shadow_Mask;
+
+	int lw = 0;
+	int mlw = 0;
+	opt.rect = frameRect();
+	switch (frameShape) {
+	case QFrame::Box:
+	case QFrame::HLine:
+	case QFrame::VLine:
+	case QFrame::StyledPanel:
+			lw = d->lineWidth;
+			mlw = d->midLineWidth;
+			break;
+	default:
+			// most frame styles do not handle customized line and midline widths
+			// (see updateFrameWidth()).
+			lw = d->frameWidth;
+			break;
+	}
+	opt.lineWidth = lw;
+	opt.midLineWidth = mlw;
+	if (frameShadow == Sunken)
+			opt.state |= QStyle::State_Sunken;
+	else if (frameShadow == Raised)
+			opt.state |= QStyle::State_Raised;
+
+	switch (frameShape) {
+	case Box:
+			if (frameShadow == Plain)
+					qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), lw);
+			else
+					qDrawShadeRect(p, opt.rect, opt.palette, frameShadow == Sunken, lw, mlw);
+			break;
+
+
+	case StyledPanel:
+			style()->drawPrimitive(QStyle::PE_Frame, &opt, p, this);
+			break;
+
+	case Panel:
+			if (frameShadow == Plain)
+					qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), lw);
+			else
+					qDrawShadePanel(p, opt.rect, opt.palette, frameShadow == Sunken, lw);
+			break;
+
+	case WinPanel:
+			if (frameShadow == Plain)
+					qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), lw);
+			else
+					qDrawWinPanel(p, opt.rect, opt.palette, frameShadow == Sunken);
+			break;
+	case HLine:
+	case VLine:
+			if (frameShape == HLine) {
+					p1 = QPoint(opt.rect.x(), opt.rect.height() / 2);
+					p2 = QPoint(opt.rect.x() + opt.rect.width(), p1.y());
+			} else {
+					p1 = QPoint(opt.rect.x()+opt.rect.width() / 2, 0);
+					p2 = QPoint(p1.x(), opt.rect.height());
+			}
+			if (frameShadow == Plain) {
+					QPen oldPen = p->pen();
+					p->setPen(QPen(opt.palette.foreground().color(), lw));
+					p->drawLine(p1, p2);
+					p->setPen(oldPen);
+			} else {
+					qDrawShadeLine(p, p1, p2, opt.palette, frameShadow == Sunken, lw, mlw);
+			}
+			break;
+	}
+}
+#endif
+
+void MyContainer::paintEvent(QPaintEvent *)
+{
+	QPainter paint(this);
+	drawFrame(&paint);
 }
 
 /*void MyContainer::childEvent(QChildEvent *e)
@@ -373,10 +514,7 @@ static QRect getRect(void *_object)
 	if (qobject_cast<MyMainWindow *>(WIDGET))
 		((MyMainWindow *)WIDGET)->configure();
 
-	if (w->inherits("QFrame"))
-		return ((QFrame *)w)->contentsRect();
-	else
-		return QRect(0, 0, w->width(), w->height());
+	return w->contentsRect();
 }
 
 BEGIN_METHOD_VOID(CCONTAINER_children_next)
@@ -542,6 +680,19 @@ BEGIN_PROPERTY(CCONTAINER_height)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CCONTAINER_border)
+
+	MyContainer *w = qobject_cast<MyContainer *>(THIS->container);
+	
+	if (!w)
+		return;
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(w->frameStyle());
+	else
+		w->setFrameStyle(VPROP(GB_INTEGER));
+
+END_PROPERTY
 
 BEGIN_PROPERTY(CCONTAINER_arrangement)
 

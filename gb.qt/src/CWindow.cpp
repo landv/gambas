@@ -2385,9 +2385,7 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
  	#ifndef NO_X_WINDOW
 		initProperties();
 		if (active)
-		{
 			setActiveWindow();
-		}
 	#endif
 
   if (hasIcon)

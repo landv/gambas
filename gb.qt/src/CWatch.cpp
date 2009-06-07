@@ -68,7 +68,6 @@ void CWatch::watch(int fd, int type, GB_WATCH_CALLBACK callback, intptr_t param)
 				if (watch) delete watch;
 			}
       break;
-
   }
 }
 

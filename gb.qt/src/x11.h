@@ -111,6 +111,7 @@ void X11_set_window_type(Window window, int type);
 void X11_set_transient_for(Window window, Window parent);
 void X11_set_window_decorated(Window window, bool decorated);
 void X11_window_remap(Window window);
+void X11_window_activate(Window window);
 
 #ifdef __cplusplus
 }

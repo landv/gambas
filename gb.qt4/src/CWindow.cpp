@@ -44,6 +44,7 @@
 #include <QEventLoop>
 #include <QDesktopWidget>
 #include <QAction>
+#include <QX11Info>
 
 #include "main.h"
 
@@ -217,7 +218,11 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
 		//palette = root->palette();
 		//palette.setBrush(root->backgroundRole(), QBrush(p));
 		//root->setPalette(palette);
-		WINDOW->setBackgroundPixmap(p);
+		//WINDOW->setAutoFillBackground();
+		//WINDOW->setBackgroundPixmap(p);
+		QPalette palette;
+		palette.setBrush(WINDOW->backgroundRole(), QBrush(p));
+		WINDOW->setPalette(palette);
 	}
 	
 
@@ -1571,9 +1576,10 @@ void MyMainWindow::showEvent(QShowEvent *e)
 {
 	if (_activate)
 	{
-		activateWindow();
 		raise();
-		setFocus();
+		//setFocus();
+		activateWindow();
+		X11_window_activate(winId());
 		_activate = false;
 	}
 }
@@ -1670,7 +1676,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		{
 			MAIN_process_events();
 			usleep(50000);
-			setActiveWindow();
+			activateWindow();
 		}
 
 		//THIS->shown = true;
@@ -1692,7 +1698,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		}
 		
 		raise();
-		setActiveWindow();
+		activateWindow();
 	}
 
 	afterShow();
@@ -2323,19 +2329,10 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QIcon icon;
 	#ifndef NO_X_WINDOW
-	bool saveProp = false;
 	bool active = qApp->activeWindow() == this;
 	#endif
 
 	icon = windowIcon();
-
-	#ifndef NO_X_WINDOW
-	if (THIS->toplevel && THIS->shown)
-	{
-		saveProp = true;
-		X11_window_save_properties(this->winId());
-	}
-	#endif
 
 	THIS->toplevel = !parent || parent->isWindow();
 	THIS->embedded = !THIS->toplevel;
@@ -2352,19 +2349,10 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	if (showIt) show();
 	//qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
 	
-	#ifndef NO_X_WINDOW
-		if (THIS->toplevel)
-		{
-			if (saveProp)
-				X11_window_restore_properties(this->winId());
-			else
-				initProperties();
-		}
+ 	#ifndef NO_X_WINDOW
+		initProperties();
 		if (active)
-		{
-			//qDebug("doReparent: setActiveWindow");
-			setActiveWindow();
-		}
+			activateWindow();
 	#endif
 
 	setWindowIcon(icon);

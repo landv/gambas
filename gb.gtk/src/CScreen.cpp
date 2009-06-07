@@ -246,7 +246,7 @@ GB_DESC CApplicationTooltipDesc[] =
 
   GB_STATIC_PROPERTY("Enabled", "b", CAPP_tooltip_enabled),
   GB_STATIC_PROPERTY("Font", "Font", CAPP_tooltip_font),
-	GB_STATIC_PROPERTY("Delay", "i", CAPP_tooltip_delay),
+	//GB_STATIC_PROPERTY("Delay", "i", CAPP_tooltip_delay),
 
   GB_END_DECLARE
 };

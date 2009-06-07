@@ -32,12 +32,12 @@
 #include "CConst.h"
 #include "CPanel.h"
 
-
 BEGIN_METHOD(CPANEL_new, GB_OBJECT parent)
 
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
   THIS->container = wid;
-
+	
+	THIS->widget.flag.fillBackground = true;
   CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
@@ -102,7 +102,7 @@ GB_DESC CPanelDesc[] =
 
   GB_METHOD("_new", NULL, CPANEL_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Border", "i", CWIDGET_border_full),
+  GB_PROPERTY("Border", "i", CCONTAINER_border),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),

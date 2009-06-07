@@ -36,6 +36,8 @@
 //Added by qt3to4:
 #include <QResizeEvent>
 #include <QPixmap>
+#include <QStylePainter>
+#include <QStyleOptionToolButton>
 
 #include "gambas.h"
 
@@ -592,6 +594,17 @@ void MyToolButton::calcMinimumSize()
 void MyToolButton::resizeEvent(QResizeEvent *e)
 {
 	set_tool_button((CBUTTON *)CWidget::get(this), NULL, true);
+}
+
+void MyToolButton::paintEvent(QPaintEvent *)
+{
+	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
+	QStylePainter p(this);
+	QStyleOptionToolButton opt;
+	initStyleOption(&opt);
+	if (THIS->picture)
+		opt.iconSize = THIS->picture->pixmap->size();
+	p.drawComplexControl(QStyle::CC_ToolButton, opt);
 }
 
 

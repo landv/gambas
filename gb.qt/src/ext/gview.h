@@ -72,8 +72,8 @@ private:
 	int margin;
 	int lineNumberLength;
 	bool center;
-  bool flashed;
-  bool painting;
+	bool flashed;
+	bool painting;
 	GString _showString;
 	bool _showStringIgnoreCase;
 	

@@ -190,6 +190,10 @@ int MyTableItem::alignment() const
 void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bool selected )
 {
 	MyTableData *d = data();
+	
+	if (!d) // May happen, do not why!
+		return;
+	
 	int w = cr.width();
 	int h = cr.height();
 	int x = 0;
@@ -325,6 +329,7 @@ Q3Table(0, 0, parent)
 	_no_row = true;
 	_no_col = true;
 	_updating_last_column = false;
+	_autoresize = true;
 	
 	setSelectionMode(NoSelection);
 	setFocusStyle(FollowStyle);
@@ -343,6 +348,27 @@ void MyTable::paintFocus( QPainter *p, const QRect &r )
 {
 	//QTable::paintFocus(p, r);
 }
+
+void MyTable::paintCell(QPainter *p, int row, int col, const QRect &cr, bool selected, const QColorGroup &cg)
+{
+	Q3Table::paintCell(p, row, col, cr, selected, cg);
+	if (showGrid())
+	{
+    QPalette pal = cg;
+    int w = cr.width();
+    int h = cr.height();
+    int x2 = w - 1;
+    int y2 = h - 1;
+		QPen pen(p->pen());
+		//int gridColor =        style()->styleHint(QStyle::SH_Table_GridLineColor, 0, this);
+		//if (gridColor != -1) {
+		p->setPen(pal.mid().color());
+		p->drawLine(x2, 0, x2, y2);
+		p->drawLine(0, y2, x2, y2);
+		p->setPen(pen);
+	}
+}
+
 
 /*QSize MyTable::tableSize() const
 {
@@ -667,7 +693,7 @@ void MyTable::updateLastColumn()
 	if (n < 0)
 		return;
 	
-	if (_updating_last_column)
+	if (_updating_last_column || !_autoresize)
 		return;
 		
 	_updating_last_column = true;
@@ -1261,18 +1287,6 @@ END_METHOD
 
 ***************************************************************************/
 
-static void update_autoresize(CGRIDVIEW *_object)
-{
-	//for (i = 0; i < WIDGET->numCols(); i++)
-	//	WIDGET->setColumnStretchable(i, THIS->autoresize);
-
-	//WIDGET->horizontalHeader()->setResizeEnabled(!THIS->autoresize);
-
-	//WIDGET->horizontalHeader()->setStretchEnabled(true);
-	//if (WIDGET->numCols())
-	//	WIDGET->setColumnStretchable(WIDGET->numCols() - 1, THIS->autoresize);
-}
-
 BEGIN_METHOD(CGRIDCOLS_get, GB_INTEGER col)
 
 	CGridView::checkCol(WIDGET, VARG(col));
@@ -1290,11 +1304,7 @@ BEGIN_PROPERTY(CGRIDCOLS_count)
 	else
 	{
 		if (VPROP(GB_INTEGER) != WIDGET->numCols())
-		{
 			WIDGET->setNumCols(VPROP(GB_INTEGER));
-			update_autoresize(THIS);
-		}
-		//CGridView::fillItems(WIDGET);
 	}
 
 END_PROPERTY
@@ -1342,11 +1352,7 @@ BEGIN_PROPERTY(CGRIDCOLS_resizable)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WIDGET->horizontalHeader()->isResizeEnabled(col));
 	else
-	{
 		WIDGET->horizontalHeader()->setResizeEnabled(VPROP(GB_BOOLEAN), col);
-		//THIS->autoresize = !VPROP(GB_BOOLEAN);
-		//update_autoresize(THIS);
-	}
 
 END_PROPERTY
 
@@ -1412,8 +1418,7 @@ BEGIN_METHOD(CGRIDVIEW_new, GB_OBJECT parent)
 
 	THIS->row = -1;
 	THIS->col = -1;
-	THIS->autoresize = true;
-
+	
 END_METHOD
 
 
@@ -1720,19 +1725,15 @@ BEGIN_METHOD(CGRIDVIEW_find, GB_INTEGER x; GB_INTEGER y)
 END_METHOD
 
 
-#if 0
 BEGIN_PROPERTY(CGRIDVIEW_autoresize)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(THIS->autoresize);
+		GB.ReturnBoolean(WIDGET->isAutoResize());
 	else
-	{
-		THIS->autoresize = VPROP(GB_BOOLEAN);
-		update_autoresize(THIS);
-	}
+		WIDGET->setAutoResize(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-#endif
+
 #if 0
 BEGIN_PROPERTY(CGRIDVIEW_table)
 
@@ -1914,7 +1915,7 @@ GB_DESC CGridViewDesc[] =
 	GB_PROPERTY("ScrollBar", "i", CGRIDVIEW_scrollbars),
 	GB_PROPERTY("Header", "i", CGRIDVIEW_header),
 	GB_PROPERTY("Mode", "i", CGRIDVIEW_mode),
-	//GB_PROPERTY("AutoResize", "b", CGRIDVIEW_autoresize),
+	GB_PROPERTY("AutoResize", "b", CGRIDVIEW_autoresize),
 	GB_PROPERTY("Resizable", "b", CGRIDCOLS_resizable),
 
 	GB_METHOD("RowAt", "i", CGRIDVIEW_row_at, "(Y)i"),

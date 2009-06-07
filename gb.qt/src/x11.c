@@ -575,3 +575,8 @@ void X11_window_remap(Window window)
 	XUnmapWindow(_display, window);
 	XMapWindow(_display, window);
 }
+
+void X11_window_activate(Window window)
+{
+	XSetInputFocus(_display, window, RevertToParent, CurrentTime);
+}

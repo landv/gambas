@@ -64,6 +64,7 @@ BEGIN_METHOD(CLISTBOX_new, GB_OBJECT parent)
   //QObject::connect(wid, SIGNAL(highlighted(int)), &CListBox::manager, SLOT(highlighted(int)));
   QObject::connect(wid, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), &CListBox::manager, SLOT(clicked(QListWidgetItem *)));
 
+	THIS->widget.flag.fillBackground = true;
   CWIDGET_new(wid, (void *)_object);
 
   THIS->last = -1;

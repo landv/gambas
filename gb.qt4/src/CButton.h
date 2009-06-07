@@ -90,6 +90,7 @@ public:
   virtual void changeEvent(QEvent *e);
   void calcMinimumSize();
   virtual void resizeEvent(QResizeEvent *e);
+	virtual void paintEvent(QPaintEvent *e);
 };
 
 

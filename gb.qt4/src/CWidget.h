@@ -49,7 +49,9 @@ typedef
 			unsigned visible : 1;
 			unsigned fillBackground : 1;
 			unsigned shown : 1; // for containers
-			unsigned _reserved : 9;
+			unsigned tracking : 1;
+			unsigned old_tracking : 1;
+			unsigned _reserved : 8;
 			} flag;
 		GB_VARIANT_VALUE tag;
 		char *name;

@@ -488,6 +488,7 @@ static void draw_point(GB_DRAW *d, int x, int y)
 	if (DPM(d)) DPM(d)->drawPoint(x, y);
 }
 
+#if 0
 static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
 	bool xform;
@@ -577,6 +578,127 @@ static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, i
     DP(d)->drawImage(x, y, *img, sx, sy, sw, sh);
 
 	DP(d)->restore();
+}
+#endif
+
+static void draw_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+{
+	bool xform;
+  QPixmap *p = ((CPICTURE *)picture)->pixmap;
+
+  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
+	xform = (w != sw || h != sh);
+
+	if (!xform)
+	{
+		DP(d)->drawPixmap(x, y, *p, sx, sy, sw, sh);
+		
+		if (DPM(d))
+		{
+			if (p->hasAlpha())
+			{
+				//bitBlt(EXTRA(d)->mask, x, y, p->mask(), sx, sy, sw, sh, Qt::OrROP);
+				qDebug("Draw.Picture() not implemented on transparent Picture");
+			}
+			else
+				DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
+		}
+	}
+	else
+	{
+		if (DPM(d))
+		{
+			QImage img = p->convertToImage();
+			
+			if (sw < p->width() || sh < p->height())
+				img = img.copy(sx, sy, sw, sh);
+			
+			if (w != sw || h != sh)
+				img = img.smoothScale(w, h);
+			
+			DP(d)->drawImage(x, y, img);
+
+			if (p->hasAlpha())
+			{
+				QBitmap m;
+				m.convertFromImage(img.createAlphaMask());
+				//bitBlt(EXTRA(d)->mask, x, y, &m, 0, 0, w, h, Qt::OrROP);
+				qDebug("Draw.Picture() not implemented on transparent Picture");
+			}
+			else
+				DPM(d)->fillRect(x, y, w, h, Qt::color1);
+		}
+		else
+		{
+			DP(d)->save();
+			DP(d)->translate(x, y);
+			x = y = 0;
+			DP(d)->scale((double)w / p->width(), (double)h / p->height());
+			DP(d)->drawPixmap(x, y, *p, sx, sy, sw, sh);
+			DP(d)->restore();
+		}
+	}
+}
+
+static void draw_image(GB_DRAW *d, GB_IMAGE image, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+{
+	bool xform;
+  QImage *p = CIMAGE_get((CIMAGE *)image);
+
+  DRAW_NORMALIZE(x, y, w, h, sx, sy, sw, sh, p->width(), p->height());
+	xform = (w != sw || h != sh);
+
+	if (!xform)
+	{
+		DP(d)->drawImage(x, y, *p, sx, sy, sw, sh);
+		
+		if (DPM(d))
+		{
+			if (p->hasAlphaBuffer())
+			{
+				QBitmap m;
+				m.convertFromImage(p->createAlphaMask());
+				//bitBlt(EXTRA(d)->mask, x, y, &m, sx, sy, sw, sh, Qt::OrROP);
+				qDebug("Draw.Image() not implemented on transparent Picture");
+			}
+			else
+				DPM(d)->fillRect(x, y, sw, sh, Qt::color1);
+		}
+	}
+	else
+	{
+		if (DPM(d))
+		{
+			QImage img = *p;
+			
+			if (sw < p->width() || sh < p->height())
+				img = img.copy(sx, sy, sw, sh);
+			
+			if (w != sw || h != sh)
+				img = img.smoothScale(w, h);
+			
+			DP(d)->drawImage(x, y, img);
+
+			if (p->hasAlphaBuffer())
+			{
+				QBitmap m;
+				m.convertFromImage(img.createAlphaMask());
+				//bitBlt(EXTRA(d)->mask, x, y, &m, 0, 0, w, h, Qt::OrROP);
+				qDebug("Draw.Image() not implemented on transparent Picture");
+			}
+			else
+				DPM(d)->fillRect(x, y, w, h, Qt::color1);
+		}
+		else
+		{
+			DP(d)->save();
+			DP(d)->translate(x, y);
+			x = y = 0;
+			DP(d)->scale((double)w / p->width(), (double)h / p->height());
+			DP(d)->drawImage(x, y, *p, sx, sy, sw, sh);
+			DP(d)->restore();
+		}
+	}
 }
 
 static void draw_tiled_picture(GB_DRAW *d, GB_PICTURE picture, int x, int y, int w, int h)

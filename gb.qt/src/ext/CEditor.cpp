@@ -248,7 +248,7 @@ static void print_text(void *_object, const char *str, int lstr, bool esc = fals
 				len = MAX_CONSOLE_WIDTH - col;
 			WIDGET->insert(s.mid(i, len));
 			i += len;	
-			if (i >= s.length())
+			if (i >= (uint)s.length())
 				break;
 			col += len;
 		}

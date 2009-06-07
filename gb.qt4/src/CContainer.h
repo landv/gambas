@@ -99,23 +99,32 @@ DECLARE_PROPERTY(CCONTAINER_auto_resize);
 DECLARE_PROPERTY(CCONTAINER_padding);
 DECLARE_PROPERTY(CCONTAINER_spacing);
 DECLARE_PROPERTY(CCONTAINER_margin);
+DECLARE_PROPERTY(CCONTAINER_border);
 
 void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);
 void CCONTAINER_insert_child(void *_object);
 
-class MyContainer : public QFrame
+class MyContainer : public QWidget
 {
   Q_OBJECT
 
 public:
 
   MyContainer(QWidget *);
+	int frameStyle() const { return _frame; }
+	void setFrameStyle(int frame);
 
 protected:
 
   virtual void showEvent(QShowEvent *);
   virtual void hideEvent(QHideEvent *);
+	virtual void paintEvent(QPaintEvent *);
+
+private:
+
+	void drawFrame(QPainter *);
+	int _frame;
 };
 
 #endif

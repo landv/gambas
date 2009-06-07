@@ -74,7 +74,7 @@ Public Sub Socket_Write()
       Return
     Endif
     
-    Debug iInd
+    'Debug iInd
     Try Print #hSocket, iInd; ":";; hSocket.Tag[1]; Space$(512)
     If Error Then 
       Debug Error.Text

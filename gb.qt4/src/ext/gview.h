@@ -80,6 +80,8 @@ private:
 	bool center;
 	bool flashed;
 	bool painting;
+	GString _showString;
+	bool _showStringIgnoreCase;
 	
 	int lastx;
 	bool left;
@@ -95,8 +97,6 @@ private:
 	int visibleLines() const;
 	void startBlink();
 	void stopBlink();
-	void updateLine(int y) { updateCell(realToView(y), 0); }
-	//void repaintLine(int y) { repaintCell(y, 0, FALSE); }
 	bool updateCursor();
 
 	int lineWidth(int y) const;
@@ -210,11 +210,13 @@ public:
 	void posToCursor(int px, int py, int *y, int *x) const;
 	int lastVisibleRow(int y) const { return rowAt(y + visibleHeight() - 1); }
 	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
+	void updateLine(int y) { updateCell(realToView(y), 0); }
 
 	virtual void setNumRows(int);
 
 	void checkMatching();
 	void flash();
+	void showString(GString s, bool ignoreCase);
 	
 	void foldClear() { fold.clear(); }
 	void foldLine(int row, bool no_refresh = false);

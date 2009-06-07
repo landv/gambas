@@ -60,6 +60,7 @@ public:
   bool isSpace(uint pos);
   bool isWordChar(uint pos);
 	int find(char c, int index = 0) const;
+	int find(const GString &str, int index = 0, bool cs = true) const;
 	char at(uint pos);
 	GString lower() const;
 	GString upper() const;
@@ -126,7 +127,7 @@ inline GString GString::lower() const
 	int i;
 	
 	for (i = 0; i < s.length(); i++)
-		sl[i] = tolower(s[i].toAscii());
+		sl[i] = tolower(s[i].latin1());
 		
 	return GString(sl);
 }
@@ -137,7 +138,7 @@ inline GString GString::upper() const
 	int i;
 	
 	for (i = 0; i < s.length(); i++)
-		sl[i] = toupper(s[i].toAscii());
+		sl[i] = toupper(s[i].latin1());
 		
 	return GString(sl);
 }
@@ -163,7 +164,12 @@ inline GString &GString::prepend(const GString &str)
 
 inline int GString::find(char c, int index) const
 {
-	return s.indexOf(c, index);
+	return s.find(c, index);
+}
+
+inline int GString::find(const GString &str, int index, bool cs) const
+{
+	return s.find(str.getString(), index, cs);
 }
 
 inline bool GString::isSpace(uint pos)
@@ -201,7 +207,7 @@ inline const GString operator+(const GString &s1, const GString &s2)
 
 inline char GString::at(uint pos)
 {
-	return s[pos].toAscii();
+	return s[pos].latin1();
 }
 
 inline const GString operator+(const GString &s1, const char c)

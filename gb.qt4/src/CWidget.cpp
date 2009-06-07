@@ -77,7 +77,8 @@ static QMap<int, int> _x11_to_qt_keycode;
 /* Control class */
 
 CWIDGET *CWIDGET_active_control = 0;
-
+static bool _focus_change = false;
+static CWIDGET *_old_active_control = 0;
 
 static void set_mouse(QWidget *w, int mouse, void *cursor)
 {
@@ -258,10 +259,10 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	
 	//w->setAttribute(Qt::WA_PaintOnScreen, true);
 	
-	w->setPalette(QApplication::palette());
+	CWIDGET_reset_color(THIS); //w->setPalette(QApplication::palette());
 	
 	//THIS->flag.fillBackground = GB.Is(THIS, CLASS_Container);
-	w->setAutoFillBackground(THIS->flag.fillBackground);
+	//w->setAutoFillBackground(THIS->flag.fillBackground);
 	
 	CCONTAINER_insert_child(THIS);
 
@@ -1020,6 +1021,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	QPalette palette;
 	QWidget *w = get_color_widget(WIDGET);
 	
+	//qDebug("reset_color: %s", THIS->name);
 	//qDebug("set_color: (%s %p) bg = %06X (%d) fg = %06X (%d)", GB.GetClassName(THIS), THIS, bg, w->backgroundRole(), fg, w->foregroundRole());
 	
 	if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
@@ -1045,30 +1047,50 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		if (bg != COLOR_DEFAULT)
 		{
 			palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
-			if (GB.Is(THIS, CLASS_Container))
+			/*if (GB.Is(THIS, CLASS_Container))
 			{
 				palette.setColor(QPalette::Window, QColor((QRgb)bg));
 				palette.setColor(QPalette::Base, QColor((QRgb)bg));
 				palette.setColor(QPalette::Button, QColor((QRgb)bg));
-			}
+			}*/
 		}
 		
 		if (fg != COLOR_DEFAULT)
 		{
 			palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
-			if (GB.Is(THIS, CLASS_Container))
+			/*if (GB.Is(THIS, CLASS_Container))
 			{
 				palette.setColor(QPalette::WindowText, QColor((QRgb)fg));
 				palette.setColor(QPalette::Text, QColor((QRgb)fg));
 				palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));
-			}
+			}*/
 		}
 			
 		w->setPalette(palette);
 	}	
 	
-	//if (!THIS->flag.fillBackground)
 	w->setAutoFillBackground(THIS->flag.fillBackground || THIS->bg != COLOR_DEFAULT);
+	//w->setAutoFillBackground(THIS->bg != COLOR_DEFAULT);
+	
+	if (!GB.Is(THIS, CLASS_Container))
+		return;
+	
+	QWidget *container = ((CCONTAINER *)THIS)->container;
+	if (!container)
+		return;
+	
+	QObjectList list = container->children();
+	int i;
+	CWIDGET *widget;
+
+	for(i = 0; i < list.count(); i++)
+	{
+		widget = CWidget::getRealExisting(list.at(i));
+		if (!widget)
+			continue;
+		if (widget->fg == COLOR_DEFAULT || widget->bg == COLOR_DEFAULT)
+			CWIDGET_reset_color(widget);
+	}
 }
 
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
@@ -1264,6 +1286,30 @@ BEGIN_PROPERTY(CCONTROL_drop)
 			((QAbstractScrollArea *)WIDGET)->viewport()->setAcceptDrops(VPROP(GB_BOOLEAN));
 	}
 
+END_PROPERTY
+
+
+BEGIN_PROPERTY(CCONTROL_tracking)
+
+  if (READ_PROPERTY)
+    GB.ReturnBoolean(THIS->flag.tracking);
+  else
+	{
+		if (VPROP(GB_BOOLEAN) != THIS->flag.tracking)
+		{
+			THIS->flag.tracking = VPROP(GB_BOOLEAN);
+			if (THIS->flag.tracking)
+			{
+				THIS->flag.old_tracking = WIDGET->hasMouseTracking();
+				WIDGET->setMouseTracking(true);
+			}
+			else
+			{
+				WIDGET->setMouseTracking(THIS->flag.old_tracking);
+			}
+		}
+	}
+	
 END_PROPERTY
 
 
@@ -1721,17 +1767,35 @@ static void post_dblclick_event(void *control)
 	GB.Unref(&control);
 }
 
-static void post_gotfocus_event(void *_object)
+static void post_focus_change(void *)
 {
-	if (WIDGET && WIDGET->hasFocus())
-		GB.Raise(THIS, EVENT_GotFocus, 0);
-	GB.Unref(&_object);
+	CWIDGET *current;
+	
+	for(;;)
+	{
+		current = CWIDGET_active_control;
+		if (current == _old_active_control)
+			break;
+
+		if (_old_active_control)
+			GB.Raise(_old_active_control, EVENT_LostFocus, 0);
+		
+		_old_active_control = current;
+		
+		if (current)
+			GB.Raise(current, EVENT_GotFocus, 0);
+	}
+	
+	_focus_change = FALSE;
 }
 
-static void post_lostfocus_event(void *control)
+static void handle_focus_change()
 {
-	GB.Raise(control, EVENT_LostFocus, 0);
-	GB.Unref(&control);
+	if (_focus_change)
+		return;
+	
+	_focus_change = TRUE;
+	GB.Post((void (*)())post_focus_change, NULL);
 }
 
 
@@ -1770,31 +1834,16 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	}
   else if (type == QEvent::FocusIn)
   {
-  	if (GB.CanRaise(control, EVENT_GotFocus))
-  	{
-			if (control != CWIDGET_active_control)
-			{
-				CWIDGET_active_control = control;
-				GB.Ref(control);
-				GB.Post((void (*)())post_gotfocus_event, (intptr_t)control);
-			}
-		}
-
+		//qDebug("FocusIn: %p %s (%p)", control, control->name, CWIDGET_active_control);
+		CWIDGET_active_control = control;
+		handle_focus_change();
 		CWINDOW_activate(control);
-    //GB.Raise(control, EVENT_GotFocus, 0);
   }
   else if (type == QEvent::FocusOut)
   {
-  	if (GB.CanRaise(control, EVENT_LostFocus))
-  	{
-			if (control == CWIDGET_active_control)
-			{
-				CWIDGET_active_control = NULL;
-				GB.Ref(control);
-				GB.Post((void (*)())post_lostfocus_event, (intptr_t)control);
-			}
-		}
-    //GB.Raise(control, EVENT_LostFocus, 0);
+		//qDebug("FocusOut: %p %s (%p)", control, control->name, CWIDGET_active_control);
+		CWIDGET_active_control = NULL;
+		handle_focus_change();
   }
 	else if (type == QEvent::ContextMenu)
 	{
@@ -2190,17 +2239,15 @@ void CWIDGET_iconset(QIcon &icon, QPixmap &pixmap, int size)
 	//QPixmap disabled;
 	QPixmap normal;
 
-	img = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
 	if (size > 0)
 	{
+		img = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
 		size = ((size + 1) & ~3);
 		img = img.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-	}
-	
-	if (size <= 0)
-		normal = pixmap;
-	else
 		normal = QPixmap::fromImage(img);
+	}
+	else
+		normal = pixmap;
 		
 	icon = QIcon(normal);
 	
@@ -2266,6 +2313,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("Design", "b", CCONTROL_design),
 	GB_PROPERTY("Name", "s", CCONTROL_name),
 	GB_PROPERTY("Tag", "v", CCONTROL_tag),
+  GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
 	GB_PROPERTY("Mouse", "i", CCONTROL_mouse),
 	GB_PROPERTY("Cursor", "Cursor", CCONTROL_cursor),
 	GB_PROPERTY("ToolTip", "s", CCONTROL_tooltip),

@@ -239,6 +239,7 @@ extern "C"
 
 	void EXPORT GB_EXIT()
 	{
+		CWatcher::exit();
 	}
 
 	int EXPORT GB_INFO(const char *key, void **value)
@@ -386,7 +387,6 @@ static int my_loop()
   
 	CWatcher::Clear();
 	gApplication::exit();
-	CWatcher::exit();
 
   return 0;
 }
