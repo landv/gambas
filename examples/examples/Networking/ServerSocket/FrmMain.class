@@ -72,9 +72,11 @@ Public Sub Socket_Write()
     Return
   Endif
   
-  Print #hSocket, hSocket.Tag[1]
+  Print #hSocket, hSocket.Tag[1]; Space$(512)
   
   hSocket.Tag[0] = iInd
+
+Catch
 
 End
 

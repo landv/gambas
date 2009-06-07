@@ -547,7 +547,6 @@ typedef
 #define GB_WATCH_NONE         0
 #define GB_WATCH_READ         1
 #define GB_WATCH_WRITE        2
-#define GB_WATCH_READ_WRITE   3
 
 
 /* Type of a watch callback function */

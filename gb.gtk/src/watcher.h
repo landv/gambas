@@ -29,18 +29,20 @@
 #ifndef __WATCHER_H
 #define __WATCHER_H
 
+#include "gambas.h"
 #include <gtk/gtk.h>
 
 typedef
-	void (*WATCH_CALLBACK)(int, int, intptr_t);
+	GB_WATCH_CALLBACK WATCH_CALLBACK;
 
 typedef
   struct {
 		int fd;
-		GIOChannel *channel;
+		GIOChannel *channel_read;
     guint id_read;
     WATCH_CALLBACK callback_read;
     intptr_t param_read;
+		GIOChannel *channel_write;
     guint id_write;
     WATCH_CALLBACK callback_write;
     intptr_t param_write;

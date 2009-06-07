@@ -425,14 +425,18 @@ int CSocket_stream_write(GB_STREAM *stream, char *buffer, int len)
 	//NoBlock++;
 	//ioctl(THIS->socket,FIONBIO,&NoBlock);
 
-	if (GB.CanRaise(THIS, EVENT_Write) && !THIS->watch_write)
+	if (npos>=0) 
 	{
-		//fprintf(stderr, "watch write %p\n", THIS);
-		THIS->watch_write = TRUE;
-		GB.Watch(THIS->socket, GB_WATCH_WRITE, (void *)callback_write, (intptr_t)THIS);
+		if (GB.CanRaise(THIS, EVENT_Write) && !THIS->watch_write)
+		{
+			//fprintf(stderr, "watch write %p\n", THIS);
+			THIS->watch_write = TRUE;
+			GB.Watch(THIS->socket, GB_WATCH_WRITE, (void *)callback_write, (intptr_t)THIS);
+		}
+	
+		return 0;
 	}
 	
-	if (npos>=0) return 0;
 	CSocket_stream_internal_error(THIS,-5);
 	if (THIS->OnClose) THIS->OnClose(_object);
 	return -1;
