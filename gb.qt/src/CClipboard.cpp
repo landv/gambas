@@ -34,6 +34,7 @@
 #include <qcstring.h>
 #include <qevent.h>
 #include <qcolor.h>
+#include <qeventloop.h>
 
 #include "CWidget.h"
 #include "CImage.h"
@@ -191,42 +192,53 @@ END_PROPERTY
 BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 
   QCString format;
+	int i;
 
-  if (VARG(data).type == GB_T_STRING)
-  {
-    QTextDrag *drag = new QTextDrag();
+	for (i = 0; i < 10; i++)
+	{
+		if (VARG(data).type == GB_T_STRING)
+		{
+			QString text = TO_QSTRING(VARG(data)._string.value);
+			QTextDrag *drag = new QTextDrag(text);
 
-    if (MISSING(format))
-      format = "plain";
-    else
-    {
-      format = GB.ToZeroString(ARG(format));
-      if (format.left(5) != "text/")
-        goto _BAD_FORMAT;
-      format = format.mid(5);
-      if (format.length() == 0)
-        goto _BAD_FORMAT;
-    }
+			if (MISSING(format))
+				format = "plain";
+			else
+			{
+				format = GB.ToZeroString(ARG(format));
+				if (format.left(5) != "text/")
+					goto _BAD_FORMAT;
+				format = format.mid(5);
+				if (format.length() == 0)
+					goto _BAD_FORMAT;
+			}
 
-    drag->setText(TO_QSTRING(VARG(data)._string.value));
-    drag->setSubtype(format);
+			drag->setSubtype(format);
+			//drag->setText(text);
 
-    QApplication::clipboard()->setData(drag);
-  }
-  else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, CLASS_Image))
-  {
-    CIMAGE *img;
+			QApplication::clipboard()->setData(drag, QClipboard::Clipboard);
+		}
+		else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, CLASS_Image))
+		{
+			CIMAGE *img;
 
-    if (!MISSING(format))
-      goto _BAD_FORMAT;
+			if (!MISSING(format))
+				goto _BAD_FORMAT;
 
-    img = (CIMAGE *)VARG(data)._object.value;
+			img = (CIMAGE *)VARG(data)._object.value;
 
-    QApplication::clipboard()->setImage(*(img->image));
-  }
-  else
-    goto _BAD_FORMAT;
+			QApplication::clipboard()->setImage(*(img->image), QClipboard::Clipboard);
+		}
+		else
+			goto _BAD_FORMAT;
 
+		qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput, 20);
+		if (QApplication::clipboard()->ownsClipboard())
+			break;
+	}
+
+	//qDebug("ownsClipboard: %d", QApplication::clipboard()->ownsClipboard());
+	
   return;
 
 _BAD_FORMAT:
