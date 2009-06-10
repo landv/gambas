@@ -439,6 +439,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 	{
 		/* ### This can call post_show_event() directly, whereas the function is not terminated */
 		//frame->show();
+		//qDebug("post show_later %s %p", GB.GetClassName(THIS), THIS);
 		GB.Ref(THIS);
 		GB.Post((void (*)())show_later, (intptr_t)THIS);
 		//WIDGET->show();
@@ -883,6 +884,7 @@ static void show_window_state(void *_object)
 			WINDOW->showNormal();
 	}
 	
+	//qDebug("show_window_state %s %p", GB.GetClassName(THIS), THIS);
 	GB.Unref(POINTER(&_object));
 }
 
@@ -907,6 +909,7 @@ static void manage_window_state(void *_object, void *_param, Qt::WindowState sta
 			if (WINDOW->isVisible() && !THIS->stateChange)
 			{
 				THIS->stateChange = true;
+				//qDebug("post show_window_state %s %p", GB.GetClassName(THIS), THIS);
 				GB.Ref(THIS);
 				GB.Post((GB_POST_FUNC)show_window_state, (intptr_t)THIS);
 			}		
@@ -1509,6 +1512,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	
 	setAttribute(Qt::WA_KeyCompression, true);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
+	setAttribute(Qt::WA_QuitOnClose, false);
 	setObjectName(name);
 	//setFocusPolicy(ClickFocus);
 

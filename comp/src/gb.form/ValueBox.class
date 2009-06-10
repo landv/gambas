@@ -293,7 +293,7 @@ Public Sub TextBox_KeyPress()
   
   'DEBUG
   
-  If Me.ReadOnly Then Return
+  If Last.ReadOnly Then Return
   
   If Key.Code = Key.Escape Then 
     $hTextBox.Text = $sLastGood

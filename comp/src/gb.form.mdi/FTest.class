@@ -1,2 +1,25 @@
 ' Gambas class file
 
+
+Public Sub Form_Open()
+
+  Clipboard.Copy("Texte à copier poil au menton")
+  'Debug Clipboard.Paste()
+
+  Clipboard.Copy("Texte à copier poil au menton")
+  'Debug Clipboard.Paste()
+
+End
+
+Public Sub Button1_Click()
+
+End
+
+Public Sub Form_Activate()
+
+  Clipboard.Copy("Texte à copier poil au menton")
+  'Debug Clipboard.Paste()
+  Clipboard.Copy("Texte à copier poil au menton")
+  'Debug Clipboard.Paste()
+
+End

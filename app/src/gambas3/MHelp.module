@@ -37,6 +37,17 @@ Private Sub FormatName(sName As String) As String
   
 End
 
+Private Sub GetLanguage() As String
+  
+  Dim sLang As String = System.Language
+  Dim iPos As Integer
+  
+  iPos = InStr(sLang, ".")
+  If iPos Then sLang = Left$(sLang, iPos - 1)
+  Return sLang
+  
+End
+
 
 Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   
@@ -54,9 +65,13 @@ Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   Endif
 
   sLink &/= sName '& ".html"
-  sLink = FormatName(sLink)
+  'sLink = FormatName(sLink)
   
-  Project.OpenWebPage(GetPath(sLink) & ".html")
+  If Exist(GetPath(FormatName(sLink)) & ".html")
+    Project.OpenWebPage(GetPath(FormatName(sLink)) & ".html")
+  Else
+    Project.OpenWebPage("http://gambasdoc.org" &/ sLink & "?v3&" & GetLanguage())
+  Endif
   
 End
 

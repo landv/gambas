@@ -34,11 +34,14 @@
 #include <qcstring.h>
 #include <qevent.h>
 #include <qcolor.h>
+#include <qeventloop.h>
 
 #include "CWidget.h"
 #include "CImage.h"
 #include "CClipboard.h"
 #include "CTreeView.h"
+
+#include "x11.h"
 
 CDRAG_INFO CDRAG_info = { 0 };
 bool CDRAG_dragging = false;
@@ -54,6 +57,8 @@ static int _picture_y = -1;
 static QDragObject *_current_drag = 0;
 
 CDragManager CDragManager::manager;
+
+extern Time qt_x_time;
 
 void CDragManager::destroy(QObject *o)
 {
@@ -166,14 +171,14 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CCLIPBOARD_clear)
 
-  QApplication::clipboard()->clear();
+  QApplication::clipboard()->clear(QClipboard::Clipboard);
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CCLIPBOARD_format)
 
-  GB.ReturnNewZeroString(get_format(QApplication::clipboard()->data()));
+  GB.ReturnNewZeroString(get_format(QApplication::clipboard()->data(QClipboard::Clipboard)));
 
 END_PROPERTY
 
@@ -183,7 +188,7 @@ BEGIN_PROPERTY(CCLIPBOARD_formats)
   GB_ARRAY array;
   
   GB.Array.New(&array, GB_T_STRING, 0);
-  get_formats(QApplication::clipboard()->data(), array);
+  get_formats(QApplication::clipboard()->data(QClipboard::Clipboard), array);
   GB.ReturnObject(array);
 
 END_PROPERTY
@@ -191,7 +196,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCLIPBOARD_type)
 
-  GB.ReturnInteger(get_type(QApplication::clipboard()->data()));
+  GB.ReturnInteger(get_type(QApplication::clipboard()->data(QClipboard::Clipboard)));
 
 END_PROPERTY
 
@@ -199,42 +204,53 @@ END_PROPERTY
 BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 
   QCString format;
+	int i;
 
-  if (VARG(data).type == GB_T_STRING)
-  {
-    QTextDrag *drag = new QTextDrag();
+	for (i = 0; i < 10; i++)
+	{
+		if (VARG(data).type == GB_T_STRING)
+		{
+			QString text = TO_QSTRING(VARG(data)._string.value);
+			QTextDrag *drag = new QTextDrag(text);
 
-    if (MISSING(format))
-      format = "plain";
-    else
-    {
-      format = GB.ToZeroString(ARG(format));
-      if (format.left(5) != "text/")
-        goto _BAD_FORMAT;
-      format = format.mid(5);
-      if (format.length() == 0)
-        goto _BAD_FORMAT;
-    }
+			if (MISSING(format))
+				format = "plain";
+			else
+			{
+				format = GB.ToZeroString(ARG(format));
+				if (format.left(5) != "text/")
+					goto _BAD_FORMAT;
+				format = format.mid(5);
+				if (format.length() == 0)
+					goto _BAD_FORMAT;
+			}
 
-    drag->setText(TO_QSTRING(VARG(data)._string.value));
-    drag->setSubtype(format);
+			drag->setSubtype(format);
+			//drag->setText(text);
 
-    QApplication::clipboard()->setData(drag);
-  }
-  else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, CLASS_Image))
-  {
-    CIMAGE *img;
+			QApplication::clipboard()->setData(drag, QClipboard::Clipboard);
+		}
+		else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data)._object.value, CLASS_Image))
+		{
+			CIMAGE *img;
 
-    if (!MISSING(format))
-      goto _BAD_FORMAT;
+			if (!MISSING(format))
+				goto _BAD_FORMAT;
 
-    img = (CIMAGE *)VARG(data)._object.value;
+			img = (CIMAGE *)VARG(data)._object.value;
 
-    QApplication::clipboard()->setImage(*CIMAGE_get(img));
-  }
-  else
-    goto _BAD_FORMAT;
+			QApplication::clipboard()->setImage(*CIMAGE_get(img), QClipboard::Clipboard);
+		}
+		else
+			goto _BAD_FORMAT;
 
+		qApp->eventLoop()->processEvents(QEventLoop::ExcludeUserInput, 20);
+		if (QApplication::clipboard()->ownsClipboard())
+			break;
+	}
+
+	//qDebug("ownsClipboard: %d", QApplication::clipboard()->ownsClipboard());
+	
   return;
 
 _BAD_FORMAT:
@@ -246,7 +262,7 @@ END_METHOD
 
 BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 
-  paste(QApplication::clipboard()->data(), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
+  paste(QApplication::clipboard()->data(QClipboard::Clipboard), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
 
 END_METHOD
 

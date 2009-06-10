@@ -43,6 +43,8 @@
 #include "CMenu.h"
 #include "CPicture.h"
 
+//#define DEBUG_WINDOW 1
+
 //class MyCentral;
 
 typedef

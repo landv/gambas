@@ -192,7 +192,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
   if (VARG(data).type == GB_T_STRING)
   {
     if (MISSING(format))
-      format = "plain";
+      format = "text/plain";
     else
     {
       format = TO_QSTRING(GB.ToZeroString(ARG(format)));
