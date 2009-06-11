@@ -346,9 +346,7 @@ BEGIN_PROPERTY(CPICTURE_image)
 	QImage *image = new QImage();
 	
 	*image = THIS->pixmap->toImage();
-	if (!image->isNull())
-		image->convertToFormat(QImage::Format_ARGB32);
-	
+
 	GB.ReturnObject(CIMAGE_create(image));
 
 END_PROPERTY

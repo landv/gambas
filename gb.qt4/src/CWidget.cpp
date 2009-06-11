@@ -119,6 +119,7 @@ static void set_design_object(CWIDGET *_object)
 
 	CWidget::removeFocusPolicy(WIDGET);
 	set_mouse(WIDGET, CMOUSE_DEFAULT, 0);
+	//THIS->flag.fillBackground = true;
 }
 
 static void set_design_recursive(QWidget *w, bool set = false)
@@ -1022,7 +1023,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	QWidget *w = get_color_widget(WIDGET);
 	
 	//qDebug("reset_color: %s", THIS->name);
-	//qDebug("set_color: (%s %p) bg = %06X (%d) fg = %06X (%d)", GB.GetClassName(THIS), THIS, bg, w->backgroundRole(), fg, w->foregroundRole());
+	//qDebug("set_color: (%s %p) bg = %08X (%d) fg = %08X (%d)", GB.GetClassName(THIS), THIS, THIS->bg, w->backgroundRole(), THIS->fg, w->foregroundRole());
 	
 	if (THIS->bg == COLOR_DEFAULT && THIS->fg == COLOR_DEFAULT)
 	{
@@ -1034,7 +1035,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	}
 	else
 	{
-		palette = w->palette();
+		palette = QPalette(); //w->palette();
 		bg = THIS->bg;
 		fg = THIS->fg;
 		

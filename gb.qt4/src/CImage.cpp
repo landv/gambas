@@ -90,7 +90,6 @@ static void *temp_image(GB_IMG *img)
 		image = new QImage();
 	else
 		image = new QImage((uchar *)img->data, img->width, img->height, QImage::Format_ARGB32);
-	image->setAlphaBuffer(true);
 	
 	return image;
 }
@@ -126,7 +125,11 @@ CIMAGE *CIMAGE_create(QImage *image)
   GB.New(POINTER(&img), class_id, NULL, NULL);
   
   if (image)
+	{
+		if (!image->isNull() && image->format() != QImage::Format_ARGB32)
+			*image = image->convertToFormat(QImage::Format_ARGB32);
   	take_image(img, image);
+	}
 	else
   	take_image(img, new QImage());
 	

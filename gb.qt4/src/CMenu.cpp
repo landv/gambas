@@ -94,16 +94,21 @@ static void delete_menu(CMENU *_object)
 	THIS->deleted = true;
 }
 
+#if 0
 static void toggle_menu(CMENU *_object)
 {
 	if (CMENU_is_toplevel(THIS))
 		return;
 
-	//qDebug("toggle_menu: %s", THIS->text);
+	qDebug("toggle_menu: %s %d", TO_UTF8(ACTION->text()), ACTION->isChecked());
 
+	//ACTION->setCheckable(true);
 	ACTION->setChecked(!ACTION->isChecked());
+	//ACTION->setCheckable(false);
+	
+	qDebug("--> %d", ACTION->isChecked());
 }
-
+#endif
 
 BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
@@ -288,7 +293,10 @@ BEGIN_PROPERTY(CMENU_toggle)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->toggle);
 	else
+	{
 		THIS->toggle = VPROP(GB_BOOLEAN);
+		ACTION->setCheckable(VPROP(GB_BOOLEAN));
+	}
 
 END_PROPERTY
 
@@ -537,8 +545,8 @@ QHash<QAction *, CMENU *> CMenu::dict;
 
 static void send_click_event(CMENU *_object)
 {
-	if (THIS->toggle)
-		toggle_menu(THIS);
+	//if (THIS->toggle)
+	//	toggle_menu(THIS);
   GB.Raise(THIS, EVENT_Click, 0);
 	CACTION_raise((CWIDGET *)THIS);
   GB.Unref(POINTER(&_object));
@@ -562,15 +570,14 @@ void CMenu::slotTriggered(QAction *action)
 
 void CMenu::slotShown(void)
 {
-	GET_SENDER(menu);
-	hideSeparators((CMENU *)menu);
+  GET_MENU_SENDER(menu);
   GB.Raise(menu, EVENT_Show, 0);
 }
 
 
 void CMenu::slotHidden(void)
 {
-	GET_SENDER(menu);
+  GET_MENU_SENDER(menu);
 
 	if (GB.CanRaise(menu, EVENT_Hide))
 	{

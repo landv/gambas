@@ -450,8 +450,14 @@ Private Function Value_Read() As Boolean
 
   Dim hCtrl As Object
   
+  'Debug $sKey
+  
   For Each hCtrl In GetControls()
-    If IsToggle(hCtrl) Then Return GetToggle(hCtrl)
+    'Debug hCtrl.Name;; Object.Type(hCtrl)
+    If IsToggle(hCtrl) Then 
+      'Debug "-->";; GetToggle(hCtrl)
+      Return GetToggle(hCtrl)
+    Endif
   Next    
 
 End

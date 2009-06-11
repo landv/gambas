@@ -135,7 +135,7 @@ static void clear_mask(CWINDOW *_object)
 
 	THIS->reallyMasked = false;
 	//THIS->container->setPalette(QPalette());
-	CWIDGET_set_color((CWIDGET *)THIS, THIS->widget.bg, THIS->widget.fg);
+	CWIDGET_reset_color((CWIDGET *)THIS);
 
 	if (!THIS->toplevel)
 	{
@@ -167,7 +167,7 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
 	QWidget *root = THIS->container;
 	QPalette palette;
 
-	//qDebug("define_mask: (%s %p)  new_pict = %p  new_mask = %d", GB.GetClassName(THIS), THIS, new_pict, new_mask);
+	qDebug("define_mask: (%s %p)  new_pict = %p  new_mask = %d", GB.GetClassName(THIS), THIS, new_pict, new_mask);
 
 	//if (THIS->embedded)
 	//	return;
@@ -215,12 +215,7 @@ static void define_mask(CWINDOW *_object, CPICTURE *new_pict, bool new_mask)
 			//root->setErasePixmap(p);
 		}
 		
-		//palette = root->palette();
-		//palette.setBrush(root->backgroundRole(), QBrush(p));
-		//root->setPalette(palette);
-		//WINDOW->setAutoFillBackground();
-		//WINDOW->setBackgroundPixmap(p);
-		QPalette palette;
+		palette = WINDOW->palette();
 		palette.setBrush(WINDOW->backgroundRole(), QBrush(p));
 		WINDOW->setPalette(palette);
 	}
@@ -820,10 +815,7 @@ BEGIN_PROPERTY(CWINDOW_picture)
 	if (READ_PROPERTY)
 		GB.ReturnObject(THIS->picture);
 	else
-	{
-		//GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS->picture));
-		define_mask(THIS, (CPICTURE *)VPROP(GB_OBJECT), THIS->masked);;
-	}
+		define_mask(THIS, (CPICTURE *)VPROP(GB_OBJECT), THIS->masked);
 
 END_PROPERTY
 
@@ -1619,7 +1611,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 	CWINDOW *parent;
 	QWidget *newParentWidget;
 
-	//qDebug(">> Show %d %d %d %d", x(), y(), width(), height());
+	//qDebug("showActivate: %s %d", THIS->widget.name, isToolbar());
 
 	// Reparent the window if, for example, there is an already modal window displayed
 	
@@ -1634,8 +1626,8 @@ void MyMainWindow::showActivate(QWidget *transient)
 		
 	if (parent != THIS && parentWidget() != newParentWidget)
 		doReparent(newParentWidget, windowFlags(), pos());
-	else
-		newParentWidget = 0;
+	//else
+	//	newParentWidget = 0;
 
 	#ifndef NO_X_WINDOW
 	if (newParentWidget && isToolbar())
@@ -1713,8 +1705,6 @@ void MyMainWindow::showModal(void)
 	Qt::WindowFlags flags = windowFlags();
 	CWIDGET *_object = CWidget::get(this);
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
-	//QWidget *parent = parentWidget();
-	//QWidget *reparent;
 	CWINDOW *save = CWINDOW_Current;
 	QPoint p = pos();
 	QEventLoop *old;
@@ -1728,15 +1718,9 @@ void MyMainWindow::showModal(void)
 
 	mustCenter = true;
 
-	/*reparent = qApp->activeWindow();
-	if (!reparent && CWINDOW_Main)
-	{
-		reparent = CWINDOW_Main->widget.widget;
-		if (reparent == this)
-			reparent = 0;
-	}
+	if (CWINDOW_Active)
+		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
 
-	doReparent(reparent, windowFlags(), p);*/
 	setWindowModality(Qt::WindowModal);
 
 	if (_resizable && _border)
@@ -1746,8 +1730,6 @@ void MyMainWindow::showModal(void)
 	}
 
 	THIS->enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
-	
-	//CWIDGET_clear_flag(THIS, WF_CLOSED); // Normaly done in showActivate()
 	
 	show();
 	afterShow();
@@ -1766,9 +1748,7 @@ void MyMainWindow::showModal(void)
 	if (persistent)
 	{
 		setSizeGrip(false);
-		//clearWState(WShowModal);
 		setWindowModality(Qt::NonModal);
-		//doReparent(parent, flags, p);
 	}
 }
 

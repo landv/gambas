@@ -47,6 +47,8 @@ extern GB_DESC CMenuChildrenDesc[];
 
 #define CMENU_is_toplevel(_menu) (GB.Is((_menu)->parent, CLASS_Window))
 
+#define GET_MENU_SENDER(_menu) CMENU *_menu = CMenu::dict[((QMenu *)sender())->menuAction()]
+
 #endif
 
 typedef

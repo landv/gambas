@@ -78,6 +78,8 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 	id = WIDGET->stack.count();
 	visible = true; 
   setEnabled(WIDGET->isEnabled());
+	
+	page->setAutoFillBackground(true);
 }	
 
 CTab::~CTab()

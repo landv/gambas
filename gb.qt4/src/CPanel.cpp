@@ -37,7 +37,7 @@ BEGIN_METHOD(CPANEL_new, GB_OBJECT parent)
   MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
   THIS->container = wid;
 	
-	THIS->widget.flag.fillBackground = true;
+	//THIS->widget.flag.fillBackground = true;
   CWIDGET_new(wid, (void *)_object);
 
 END_METHOD

@@ -630,8 +630,6 @@ static void toggle_menu(CMENU *_object)
 	if (!THIS->parent)
 		return;
 
-	//qDebug("toggle_menu: %s", THIS->text);
-
 	cont = (QPopupMenu *)THIS->container;
 	cont->setItemChecked(THIS->id, !cont->isItemChecked(THIS->id));
 	THIS->checked = cont->isItemChecked(THIS->id);

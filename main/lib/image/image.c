@@ -657,8 +657,11 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 			);
 	
 		*p = BGRA_to_format(color, img->format);
+		//fprintf(stderr, "[%d] %08X\n", p - (uint *)img->data, *p);
 		p++;
 	}
+	
+	//fprintf(stderr, "IMAGE_make_transparent: ** DONE **\n");
 }
 
 

@@ -2052,7 +2052,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
       Else 
         Draw.Tile(Picture["img/16/red-arrow-h.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
       Endif
-      Draw.Foreground = Color.Red
+      Draw.Foreground = &HFF8080&
     
     Case "VBox"
 
@@ -2064,7 +2064,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
       Else 
         Draw.Tile(Picture["img/16/red-arrow-v.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
       Endif
-      Draw.Foreground = Color.Red
+      Draw.Foreground = &HFF8080&
     
     Case "HPanel"
     
@@ -2076,7 +2076,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
       Else 
         Draw.Tile(Picture["img/16/red-arrow-r.png"], 4, hCtrl.H / 2 - 4, hCtrl.W - 8, 8)
       Endif
-      Draw.Foreground = Color.Red
+      Draw.Foreground = &HFF8080&
     
     Case "VPanel"
 
@@ -2088,7 +2088,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
       Else 
         Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
       Endif
-      Draw.Foreground = Color.Red
+      Draw.Foreground = &HFF8080&
     
     Case Else 
 
@@ -2102,7 +2102,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
       Else
         Draw.Text(hCtrl.Tag, 4, 4)
       Endif
-      Draw.Foreground = Color.Black
+      Draw.Foreground = &H808080&
       
     End Select
 

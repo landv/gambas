@@ -41,6 +41,12 @@
 #include "CConst.h"
 #include "CLabel.h"
 
+/*#undef CLABEL_PROPERTIES
+#define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent=True"
+#undef CTEXTLABEL_PROPERTIES
+#define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=TopNormal,Border{Border.*},Transparent=True"*/
+
+
 /*#define DEBUG_CBUTTON*/
 
 
@@ -243,7 +249,7 @@ void MyLabel::calcMinimumHeight(bool adjust)
 	//qDebug("calcMinimumHeight: %p %s", ob, ((CWIDGET *)ob)->name);
 	
 	int w, h, nw, nh;
-	int f = frameWidth();
+	int f = frameWidth() + margin();
 	QRect br;
 	
 	if (f > 0 && f < 4)

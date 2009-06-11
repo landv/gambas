@@ -619,7 +619,7 @@ static bool header_function(TRANS_FUNC *func)
   if (!PATTERN_is_newline(*(JOB->current)))
     THROW("Syntax error at function declaration");
 
-  func->line = PATTERN_index(*(JOB->current)) + 1; /* � commence �la ligne suivante ! */
+  func->line = PATTERN_index(*(JOB->current)) + 1;
   func->start = JOB->current + 1;
 
   for(;;)
@@ -627,10 +627,13 @@ static bool header_function(TRANS_FUNC *func)
     pat = *JOB->current;
     if (PATTERN_is_end(pat) || PATTERN_is_command(pat))
     {
-      THROW("Missing END");
+      THROW("Missing End");
     }
 
     if (PATTERN_is_newline(pat))
+		{
+			JOB->line = PATTERN_index(pat) + 1;
+			
       if (PATTERN_is(JOB->current[1], RS_END))
       {
         if (PATTERN_is_newline(JOB->current[2]))
@@ -643,7 +646,15 @@ static bool header_function(TRANS_FUNC *func)
           JOB->current += 3;
           break;
         }
+				else
+				{
+					if (is_proc && PATTERN_is(JOB->current[2], RS_FUNCTION))
+						THROW("End Sub expected");
+					else if (!is_proc && PATTERN_is(JOB->current[2], RS_SUB))
+						THROW("End Function expected");
+				}
       }
+		}
 
     JOB->current++;
   }
@@ -738,7 +749,7 @@ static bool header_inherits(void)
   JOB->current++;
 
   if (!PATTERN_is_class(*JOB->current))
-    THROW("Syntax error. INHERITS needs a class name");
+    THROW("Syntax error. Inherits needs a class name");
 
   if (JOB->class->parent != NO_SYMBOL)
     THROW("Cannot inherit twice");
