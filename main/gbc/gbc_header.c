@@ -663,9 +663,9 @@ static bool header_function(TRANS_FUNC *func)
         }
 				else
 				{
-					if (is_proc && PATTERN_is(JOB->current[3], RS_FUNCTION))
+					if (is_proc && PATTERN_is(JOB->current[2], RS_FUNCTION))
 						THROW("END SUB expected");
-					else if (!is_proc && PATTERN_is(JOB->current[3], RS_SUB))
+					else if (!is_proc && PATTERN_is(JOB->current[2], RS_SUB))
 						THROW("END FUNCTION expected");
 				}
       }
