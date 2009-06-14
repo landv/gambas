@@ -578,6 +578,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     gb_lib_$1=""
     gb_ldflags_$1=""
     have_$1=yes
+    gb_testval=""
         
     pkg-config --silence-errors --exists $5
     if test $? -eq "0"; then
@@ -602,7 +603,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
   if test "$have_$1" = "no"; then
   
-    if test "$4" = "src"; then
+    if test "$4" = "src" && test $gb_in_component_search != "yes"; then
       touch DISABLED
     fi
     AC_MSG_RESULT(no)
@@ -625,12 +626,14 @@ dnl    fi
     $2_LIB=""
     $2_LDFLAGS=""
     $2_DIR=""
-    if test x"$6" = x; then
-      AC_MSG_WARN([*** $3 is disabled])
-    else
-      AC_MSG_NOTICE([$6])
+    if test $gb_in_component_search != "yes"; then
+      if test x"$6" = x; then
+	AC_MSG_WARN([*** $3 is disabled])
+      else
+	AC_MSG_NOTICE([$6])
+      fi
     fi
-    
+
   fi
   
   AC_SUBST($2_INC)
@@ -799,7 +802,7 @@ dnl    fi
     else
       AC_MSG_NOTICE([$9])
     fi
-    
+
   fi
   
   AC_SUBST($2_INC)
@@ -833,6 +836,7 @@ dnl    fi
 
 AC_DEFUN([GB_COMPONENT_SEARCH],
 [
+gb_in_component_search=yes
   GB_COMPONENT_PKG_CONFIG(
     $1,
     $2,
@@ -841,8 +845,8 @@ AC_DEFUN([GB_COMPONENT_SEARCH],
     $5,
     $10
   )
-    
-  if test -z "$2_LIB"; then
+gb_in_component_search=no
+  if test -z "${$2_LIB}"; then
     GB_COMPONENT(
       $1,
       $2,
@@ -855,7 +859,6 @@ AC_DEFUN([GB_COMPONENT_SEARCH],
       $10
     )
   fi
-  
 ])
 
 
