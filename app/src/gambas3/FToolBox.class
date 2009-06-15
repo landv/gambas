@@ -38,9 +38,9 @@ Public Sub Form_Open()
 End
 
 
-Private Function AddToolBar(sToolBar As String, sType As String) As FToolBar
+Private Function AddToolBar(sToolBar As String, sType As String) As FToolPanel
 
-  Dim hToolBar As FToolBar
+  Dim hToolBar As FToolPanel
 
   If Not $cToolBar.Exist(sToolBar) Then
 
@@ -48,7 +48,7 @@ Private Function AddToolBar(sToolBar As String, sType As String) As FToolBar
     tabTool.Index = tabTool.Count - 1
     tabTool.Text = sToolBar
 
-    hToolBar = New FToolBar(sToolBar, sType, tabTool) As "ToolBar"
+    hToolBar = New FToolPanel(sToolBar, sType, tabTool) As "ToolBar"
     $cToolBar[sToolBar] = hToolBar
 
     If Not $sToolbar Then $sToolbar = sToolBar
@@ -107,7 +107,7 @@ End
 
 Public Sub RefreshToolbar(Optional bForce As Boolean)
 
-  Dim hToolBar As FToolBar
+  Dim hToolBar As FToolPanel
   Dim sLib As String
   Dim sCtrl As String
   Dim sNewLib As String

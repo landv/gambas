@@ -167,6 +167,9 @@ Public Sub Main()
     sPath = Application.Args[1]
   Endif
 
+  'FMain.Close
+  'Return
+
   Do
 
     If Not sPath Then sPath = FWelcome.Run()
