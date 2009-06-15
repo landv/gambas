@@ -213,7 +213,7 @@ Public Sub btnSolve_Click()
   btnSave_Click
   
   For iInd = 0 To edtConflict.Lines.Count - 1
-    sText = edtConflict.Lines[iInd]
+    sText = edtConflict.Lines[iInd].Text
     If sText Like "<<<<<<*" Or If sText Like "======*" Or If sText Like ">>>>>>*" Then 
       edtConflict.Goto(iInd, 0)
       Message.Warning(("Some conflicts are not yet resolved."))
