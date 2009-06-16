@@ -67,9 +67,8 @@ static QList<CTRAYICON *> _list;
 
 /** MyTrayIcon ***********************************************************/
 
-MyTrayIcon::MyTrayIcon() : QX11EmbedWidget()
+MyTrayIcon::MyTrayIcon() : SystemTrayIcon()
 {
-	setBackgroundMode(Qt::X11ParentRelative);
 	_icon = QPixmap(_default_trayicon);
 }
 
@@ -84,6 +83,7 @@ void MyTrayIcon::setIcon(QPixmap &icon)
 
 void MyTrayIcon::paintEvent(QPaintEvent *e)
 {
+	SystemTrayIcon::paintEvent(e);
 	QPainter p(this);
 	p.drawPixmap((width() - _icon.width()) / 2, (height() - _icon.height()) / 2, _icon);
 }
@@ -191,7 +191,7 @@ static void define_mask(CTRAYICON *_object)
 	if (!THIS->icon)
 		delete p;
 
-	// Needed, otherwise the icon does not appear in Gnome of XFCE notification area!
+	// Needed, otherwise the icon does not appear in Gnome orf XFCE notification area!
 	hints.flags = PMinSize;
 	hints.min_width = WIDGET->width();
 	hints.min_height = WIDGET->height();
@@ -236,26 +236,24 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CTRAYICON_show)
 
-	int i;
-
 	if (!WIDGET)
 	{
 		MyTrayIcon *wid = new MyTrayIcon();
-		wid->setFocusPolicy(Qt::NoFocus);
+		//wid->setFocusPolicy(Qt::NoFocus);
 		wid->installEventFilter(&CTrayIcon::manager);
 
 		THIS->widget = wid;
 
-		QObject::connect(WIDGET, SIGNAL(embedded()), &CTrayIcon::manager, SLOT(embedded()));
+		//QObject::connect(WIDGET, SIGNAL(embedded()), &CTrayIcon::manager, SLOT(embedded()));
 		//QObject::connect(WIDGET, SIGNAL(containerClosed()), &CTrayIcon::manager, SLOT(closed()));
-		QObject::connect(WIDGET, SIGNAL(error(int)), &CTrayIcon::manager, SLOT(error()));
+		//QObject::connect(WIDGET, SIGNAL(error(QX11EmbedWidget::Error)), &CTrayIcon::manager, SLOT(error()));
 
 		//qDebug("XEMBED: EmbedState: %d", CWINDOW_EmbedState);
 		define_mask(THIS);
 		define_tooltip(THIS);
-		X11_window_dock(WIDGET->winId());
+		//X11_window_dock(WIDGET->winId());
 
-		_state = EMBED_WAIT;
+		/*_state = EMBED_WAIT;
 		for(i = 0; i < 500; i++)
 		{
 			MAIN_process_events();
@@ -269,12 +267,11 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 			GB.Error("Embedding has failed");
 			destroy_widget(THIS);
 			return;
-		}
+		}*/
 
-		WIDGET->show();
+		WIDGET->addToTray();
 		define_mask(THIS);
 		define_tooltip(THIS);
-		wid->show();
 	}
 
 END_METHOD
@@ -483,7 +480,6 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 	int event_id;
 	int type = event->type();
 	bool original;
-	int state;
 	QPoint p;
 
 	_object = find_object(widget);
@@ -530,12 +526,10 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 		if (type == QEvent::MouseButtonPress)
 		{
 			event_id = EVENT_MouseDown;
-			state = mevent->modifiers();
 		}
 		else
 		{
 			event_id = (type == QEvent::MouseButtonRelease) ? EVENT_MouseUp : EVENT_MouseMove;
-			state = mevent->modifiers();
 		}
 
 		if (GB.CanRaise(THIS, event_id))
@@ -548,7 +542,8 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.state = state;
+			CMOUSE_info.button = mevent->buttons();
+			CMOUSE_info.modifier = mevent->modifiers();
 
 			GB.Raise(THIS, event_id, 0);
 
@@ -582,7 +577,8 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.state = ev->modifiers();
+			CMOUSE_info.button = ev->buttons();
+			CMOUSE_info.modifier = ev->modifiers();
 			CMOUSE_info.orientation = ev->orientation();
 			CMOUSE_info.delta = ev->delta();
 

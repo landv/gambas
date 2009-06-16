@@ -25,7 +25,8 @@
 #ifndef __CMOUSE_H
 #define __CMOUSE_H
 
-#include <qcursor.h>
+#include <QCursor>
+#include <QMouseEvent>
 
 #include "gambas.h"
 
@@ -38,7 +39,8 @@ typedef
     int y;
     int sx;
     int sy;
-    int state;
+    Qt::MouseButtons button;
+		Qt::KeyboardModifiers modifier;
     int orientation;
     int delta;
     }

@@ -35,6 +35,17 @@ EXTERN int MEMORY_count;
 
 #if DEBUG_MEMORY
 
+typedef
+  struct ALLOC {
+    int _void;
+    struct ALLOC *next;
+    struct ALLOC *prev;
+    int id;
+    size_t size;
+    }
+  PACKED
+  ALLOC;
+
 EXTERN int MEMORY_size;
 EXTERN FILE *MEMORY_log;
 
@@ -43,6 +54,8 @@ EXTERN FILE *MEMORY_log;
 #define REALLOC(_ptr, _size, _src)      MEMORY_realloc((void *)_ptr, _size, _src)
 #define FREE(_ptr, _src)                MEMORY_free((void *)_ptr, _src)
 #define IFREE(_ptr, _src)               FREE(&(_ptr), _src)
+
+#define GET_ALLOC_ID(_ptr) (((ALLOC *)((char *)(_ptr) - sizeof(ALLOC)))->id)
 
 PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src);
 PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size, const char *src);

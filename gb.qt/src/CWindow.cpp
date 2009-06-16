@@ -233,12 +233,22 @@ static bool emit_open_event(void *_object)
 			THIS->minw = THIS->w;
 			THIS->minh = THIS->h;
 		}
-		//qDebug("emit_open_event");
+		#if DEBUG_WINDOW
+		qDebug("emit_open_event: %s %p", GB.GetClassName(THIS), THIS);
+		#endif
 		THIS->opening = true;
 		GB.Raise(THIS, EVENT_Open, 0);
 		THIS->opening = false;
 		if (CWIDGET_test_flag(THIS, WF_CLOSED))
+		{
+			#if DEBUG_WINDOW
+			qDebug("emit_open_event: %s %p [CANCELED]", GB.GetClassName(THIS), THIS);
+			#endif
 			return true;
+		}
+		#if DEBUG_WINDOW
+		qDebug("%s %p: shown -> 1", GB.GetClassName(THIS), THIS);
+		#endif
 		THIS->shown = true;
 	}
 	
@@ -259,6 +269,36 @@ static void post_show_event(void *_object)
 		GB.Unref(POINTER(&THIS->focus));
 		THIS->focus = NULL;
 	}	
+}
+
+static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0, int y = 0)
+{
+	QPoint p;
+	QWidget *newParentWidget;
+	
+	if (move)
+	{
+		p.setX(x);
+		p.setY(y);
+	}
+	else if (THIS->toplevel)
+  {
+	   p.setX(THIS->x);
+	   p.setY(THIS->y);
+  }
+  else
+    p = WIDGET->pos();
+
+	if (!parent)
+		newParentWidget = 0;
+	else
+	{
+		if (GB.CheckObject(parent))
+			return;
+		newParentWidget = QCONTAINER(parent);
+	}
+
+	WINDOW->doReparent(newParentWidget, p);
 }
 
 
@@ -373,15 +413,14 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
       GB.Error("Too many windows opened");
       return;
     }*/
-
-    CWindow::dict.insert(_object, OBJECT(const CWINDOW));
-    CWindow::count = CWindow::dict.count();
-
-    //qDebug("CWindow::count = %d (%p %s %s)", CWindow::count, _object, THIS->widget.name, THIS->embedded ? "E" : "W");
+		
+		CWindow::insertTopLevel(THIS);
 
     if (CWINDOW_Main == 0)
     {
-      //qDebug("CWINDOW_Main -> %p", THIS);
+			#if DEBUG_WINDOW
+      qDebug("CWINDOW_Main -> %p", THIS);
+			#endif
       CWINDOW_Main = THIS;
     }
   }
@@ -423,7 +462,9 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
   if (THIS->embedded && !THIS->xembed)
   {
     /* ### This can call post_show_event() directly, whereas the function is not terminated */
-    //frame->show();
+		#if DEBUG_WINDOW
+		qDebug("post show_later %s %p", GB.GetClassName(THIS), THIS);
+		#endif
     GB.Ref(THIS);
     GB.Post((void (*)())show_later, (intptr_t)THIS);
     //WIDGET->show();
@@ -452,10 +493,7 @@ END_METHOD
 
 BEGIN_METHOD(CFORM_load, GB_OBJECT parent)
 
-  if (!MISSING(parent))
-    GB.Push(1, GB_T_OBJECT, VARG(parent));
-
-  GB.AutoCreate(GB.GetClass(NULL), MISSING(parent) ? 0 : 1);
+	reparent_window((CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0), VARGOPT(parent, 0), false);
 
 END_METHOD
 
@@ -540,7 +578,9 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 {
   bool closed;
 
-	//qDebug("do_close: (%s %p) %d %d", GB.GetClassName(THIS), THIS, CWIDGET_test_flag(THIS, WF_IN_CLOSE), CWIDGET_test_flag(THIS, WF_CLOSED));
+	#if DEBUG_WINDOW
+	qDebug("do_close: (%s %p) closing=%d closed=%d shown=%d", GB.GetClassName(THIS), THIS, THIS->closing, CWIDGET_test_flag(THIS, WF_CLOSED), THIS->shown);
+	#endif
 
   if (THIS->closing || CWIDGET_test_flag(THIS, WF_CLOSED)) // || WIDGET->isHidden())
     return false;
@@ -560,6 +600,9 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
     if (destroyed || closed)
     {
       CWIDGET_set_flag(THIS, WF_CLOSED);
+			#if DEBUG_WINDOW
+			qDebug("%s %p: shown -> 0", GB.GetClassName(THIS), THIS);
+			#endif
 		  THIS->shown = FALSE;
     	/*CWIDGET_set_flag(THIS, WF_IN_CLOSE);
 			qApp->sendEvent(WIDGET, new QEvent(EVENT_CLOSE));
@@ -577,16 +620,23 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
   {
     if (!THIS->shown)
     {
-    	//qDebug("send close event");
+			#if DEBUG_WINDOW
+    	qDebug("send close event");
+			#endif
       QCloseEvent e;
       QApplication::sendEvent(WINDOW, &e);
       closed = e.isAccepted();
     }
     else
     {
-    	//qDebug("call WINDOW->close()");
+			#if DEBUG_WINDOW
+    	qDebug("call WINDOW->close()");
+			#endif
       closed = WINDOW->close();
 		}
+		#if DEBUG_WINDOW
+		qDebug("--> closed = %d", closed);
+		#endif
   }
 
   #if 0
@@ -1218,37 +1268,9 @@ BEGIN_METHOD_VOID(CWINDOW_control_next)
 
 END_PROPERTY
 
-
 BEGIN_METHOD(CWINDOW_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 
-	QPoint p;
-	void *parent = VARG(container);
-	QWidget *newParentWidget;
-	//bool showIt = !WIDGET->isHidden();
-
-	if (!MISSING(x) && !MISSING(y))
-	{
-		p.setX(VARG(x));
-		p.setY(VARG(y));
-	}
-	else if (THIS->toplevel)
-  {
-	   p.setX(THIS->x);
-	   p.setY(THIS->y);
-  }
-  else
-    p = WIDGET->pos();
-
-	if (!parent)
-		newParentWidget = 0;
-	else
-	{
-		if (GB.CheckObject(parent))
-			return;
-		newParentWidget = QCONTAINER(parent);
-	}
-
-	WINDOW->doReparent(newParentWidget, p);
+	reparent_window(THIS, VARG(container), !MISSING(x) && !MISSING(y), VARG(x), VARG(y));
 
 END_METHOD
 
@@ -1538,26 +1560,15 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	_activate = false;
 }
 
-
-static void remove_window_check_quit(CWINDOW *ob)
-{
-  CWindow::dict.remove(ob);
-
-  //if (ob == window_main)
-  //  window_main = NULL;
-
-  CWindow::count = CWindow::dict.count();
-  //qDebug("~MyMainWindow: CWindow::count = %d (%p %s %s)", CWindow::count, ob, ob->widget.name, ob->embedded ? "E" : "W");
-
-  MAIN_check_quit();
-}
-
-
 MyMainWindow::~MyMainWindow()
 {
   CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 
-  do_close(THIS, 0, true);
+	#if DEBUG_WINDOW
+	qDebug("~MyMainWindow: %s %p", GB.GetClassName(THIS), THIS);
+	#endif
+
+	do_close(THIS, 0, true);
 
 	if (CWINDOW_Active == THIS)
 		CWINDOW_Active = 0;
@@ -1583,7 +1594,7 @@ MyMainWindow::~MyMainWindow()
 	if (THIS->menu)
 		CMenu::unrefChildren(THIS->menu);
 
-	remove_window_check_quit(THIS);
+	CWindow::removeTopLevel(THIS);
 
   //qDebug("~MyMainWindow %p (end)", this);
 }
@@ -2134,7 +2145,9 @@ static bool closeAll()
   CWINDOW *win;
   QPtrDictIterator<CWINDOW> iter(CWindow::dict);
 
-  //qDebug("CLOSE ALL");
+	#if DEBUG_WINDOW
+  qDebug("CLOSE ALL");
+	#endif
 
   for(;;)
   {
@@ -2157,7 +2170,9 @@ static void deleteAll()
   CWINDOW *win;
   QPtrDictIterator<CWINDOW> iter(CWindow::dict);
 
-  //qDebug("DELETE ALL");
+	#if DEBUG_WINDOW
+	qDebug("<<< DELETE ALL");
+	#endif
 
   for(;;)
   {
@@ -2179,6 +2194,10 @@ static void deleteAll()
   }
 
   //qApp->eventLoop()->processEvents(QEventLoop::AllEvents);
+
+	#if DEBUG_WINDOW
+	qDebug("DELETE ALL >>>");
+	#endif
 }
 
 void MyMainWindow::closeEvent(QCloseEvent *e)
@@ -2203,7 +2222,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
   //if (CWINDOW_Current && (THIS != CWINDOW_Current))
   if (CWINDOW_Current && (THIS->loopLevel != CWINDOW_Current->loopLevel))
   {
-  	//qDebug("ignore close event");
+  	qDebug("ignore close event");
     goto IGNORE;
   }
 
@@ -2234,6 +2253,9 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
     if (CWINDOW_Main == THIS)
     {
       deleteAll();
+			#if DEBUG_WINDOW
+			qDebug("CWINDOW_Main -> 0");
+			#endif
       CWINDOW_Main = 0;
     }
 
@@ -2250,7 +2272,9 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
     CWINDOW_LastActive = 0;
     //qDebug("CWINDOW_LastActive = 0");
   }
-	//qDebug("THIS->shown <- false: %p: %s", THIS, GB.GetClassName(THIS));
+	#if DEBUG_WINDOW
+	qDebug("%s %p: shown -> 0", GB.GetClassName(THIS), THIS);
+	#endif
   THIS->shown = FALSE;
   
   //qDebug("THIS->enterLoop = %d", THIS->enterLoop);
@@ -2356,6 +2380,7 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
   CWINDOW *_object = (CWINDOW *)CWidget::get(this);
   bool hasIcon;
   QPixmap p;
+	bool old_toplevel;
  	#ifndef NO_X_WINDOW
   bool active = qApp->activeWindow() == this;
  	#endif
@@ -2364,6 +2389,7 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
   if (hasIcon)
     p = *icon();
 
+	old_toplevel = THIS->toplevel;
 	THIS->toplevel = !parent || parent->isTopLevel();
 	THIS->embedded = !THIS->toplevel;
 
@@ -2374,9 +2400,19 @@ void MyMainWindow::doReparent(QWidget *parent, WFlags f, const QPoint &pos, bool
 			f |= Qt::WGroupLeader;
 		else
 			f &= ~Qt::WGroupLeader;
+		if (!old_toplevel)
+			CWindow::insertTopLevel(THIS);
 	}
 	else	
+	{
 		f &= ~Qt::WType_TopLevel;
+		if (old_toplevel)
+		{
+			THIS->toplevel = true;
+			CWindow::removeTopLevel(THIS);
+			THIS->toplevel = false;
+		}
+	}
 
   reparent(parent, f, pos, showIt);
   move(pos);
@@ -2674,7 +2710,7 @@ void CWindow::destroy(void)
   if (THIS)
   {
     do_close(THIS, 0, true);
-    remove_window_check_quit(THIS);
+    CWindow::removeTopLevel(THIS);
   }
 
   CWINDOW_EmbedState = EMBED_WAIT;
@@ -2682,3 +2718,30 @@ void CWindow::destroy(void)
   CWINDOW_Embedder = 0;
 }
 
+void CWindow::insertTopLevel(CWINDOW *_object)
+{
+	if (!THIS->toplevel)
+		return;
+	
+	dict.insert(_object, OBJECT(const CWINDOW));
+	count = dict.count();
+
+	#if DEBUG_WINDOW
+	qDebug("insertTopLevel: count = %d (%p %s %s)", count, _object, THIS->widget.name, THIS->embedded ? "E" : "W");
+	#endif
+}
+
+void CWindow::removeTopLevel(CWINDOW *_object)
+{
+	if (!THIS->toplevel)
+		return;
+
+  dict.remove(_object);
+  count = dict.count();
+	
+	#if DEBUG_WINDOW
+  qDebug("removeTopLevel: count = %d (%p %s %s)", count, THIS, THIS->widget.name, THIS->embedded ? "E" : "W");
+	#endif
+
+  MAIN_check_quit();
+}

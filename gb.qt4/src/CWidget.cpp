@@ -1076,6 +1076,9 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	if (!GB.Is(THIS, CLASS_Container))
 		return;
 	
+	if (GB.Is(THIS, CLASS_Window))
+		CWINDOW_define_mask((CWINDOW *)THIS);
+	
 	QWidget *container = ((CCONTAINER *)THIS)->container;
 	if (!container)
 		return;
@@ -1808,7 +1811,6 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	bool real;
 	bool design;
 	bool original;
-	int state;
 	bool cancel;
 	QPoint p;
 
@@ -1900,7 +1902,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			//qDebug("MouseDown on %p (%s %p) %s%s", widget, control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "");
 
 			event_id = EVENT_MouseDown;
-			state = mevent->buttons();
+			//state = mevent->buttons();
 			
 			CMOUSE_info.sx = p.x();
 			CMOUSE_info.sy = p.y();
@@ -1909,10 +1911,10 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		else
 		{
 			event_id = (type == QEvent::MouseButtonRelease) ? EVENT_MouseUp : EVENT_MouseMove;
-			state = mevent->buttons();
+			//state = mevent->buttons();
 		}
 
-		if (event_id == EVENT_MouseMove && state == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
+		if (event_id == EVENT_MouseMove && mevent->buttons() == Qt::NoButton && !QWIDGET(control)->hasMouseTracking())
 			goto _DESIGN;
 
 
@@ -1935,7 +1937,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.state = state;
+			CMOUSE_info.button = mevent->buttons();
+			CMOUSE_info.modifier = mevent->modifiers();
 
 			cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
 
@@ -1945,7 +1948,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				return true;*/
 		}
 		
-		if (!cancel && event_id == EVENT_MouseMove && (state & Qt::MouseButtonMask)  && GB.CanRaise(control, EVENT_MouseDrag)
+		if (!cancel && event_id == EVENT_MouseMove && (mevent->buttons() != Qt::NoButton)  && GB.CanRaise(control, EVENT_MouseDrag)
 				&& ((abs(p.x() - CMOUSE_info.sx) + abs(p.y() - CMOUSE_info.sy)) > 8)) // QApplication::startDragDistance()))
 		{		
 			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
@@ -1960,7 +1963,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.state = state;
+			CMOUSE_info.button = mevent->buttons();
+			CMOUSE_info.modifier = mevent->modifiers();
 		
 			cancel = GB.Raise(control, EVENT_MouseDrag, 0);
 			
@@ -2121,7 +2125,8 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();
 			CMOUSE_info.y = p.y();
-			CMOUSE_info.state = ev->modifiers();
+			CMOUSE_info.button = ev->buttons();
+			CMOUSE_info.modifier = ev->modifiers();
 			CMOUSE_info.orientation = ev->orientation();
 			CMOUSE_info.delta = ev->delta();
 

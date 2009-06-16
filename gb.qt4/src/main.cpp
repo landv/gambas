@@ -501,7 +501,6 @@ static bool must_quit(void)
 
 static void check_quit_now(intptr_t param)
 {
-	_check_quit_posted = false;
 	if (must_quit())
 	{
 		#ifndef NO_X_WINDOW
@@ -510,6 +509,8 @@ static void check_quit_now(intptr_t param)
 		#endif
 		qApp->exit();
 	}
+	else
+		_check_quit_posted = false;
 }
 
 void MAIN_check_quit(void)
@@ -606,6 +607,8 @@ static void hook_main(int *argc, char **argv)
 
 static void hook_loop()
 {
+	//qDebug("**** ENTERING EVENT LOOP");
+	
 	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 
 	in_event_loop = true;

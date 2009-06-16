@@ -130,6 +130,9 @@ public:
 	static CWindow manager;
 	static int count;
 
+	static void insertTopLevel(CWINDOW *_object);
+	static void removeTopLevel(CWINDOW *_object);
+
 protected:
 
 	bool eventFilter(QObject *, QEvent *);
@@ -230,6 +233,6 @@ public:
 void CWINDOW_activate(CWIDGET *ob);
 void CWINDOW_set_default_button(CWINDOW *win, QPushButton *button, bool on);
 void CWINDOW_set_cancel_button(CWINDOW *win, QPushButton *button, bool on);
-
+void CWINDOW_define_mask(CWINDOW *_object);
 
 #endif

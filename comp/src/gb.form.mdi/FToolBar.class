@@ -801,6 +801,8 @@ Private Sub RegisterToolbar()
   
   If Not ToolbarKey Then Return
   
+  'Debug ToolbarKey
+
   If Not $cRegister.Exist(ToolbarKey) Then
     $cRegister[ToolbarKey] = New FToolbar[]
   Endif
@@ -819,6 +821,8 @@ Private Sub UnregisterToolbar()
 
   If Not ToolbarKey Then Return
 
+  'Debug ToolbarKey
+
   aSlot = $cRegister[ToolbarKey]
   If aSlot Then
     iInd = aSlot.Find(Me)
@@ -834,10 +838,12 @@ Public Sub SetKey(sKey As String)
   
   If ToolbarKey = sKey Then Return
   
-  UnregisterToolbar
+  If $bOpened Then UnregisterToolbar
   ToolbarKey = sKey
-  If $bOpened Then InitToolbar
-  RegisterToolbar
+  If $bOpened Then 
+    InitToolbar
+    RegisterToolbar
+  Endif
   
 End
 

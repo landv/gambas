@@ -34,6 +34,10 @@
 #include "gbx_c_gambas.h"
 #include "gbx_object.h"
 
+#if DEBUG_REF
+const char *OBJECT_ref_where = 0;
+#endif
+
 static OBJECT *EventObject = NULL;
 
 void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent)
@@ -58,11 +62,17 @@ void OBJECT_alloc(void **ptr, CLASS *class, size_t size)
   ALLOC_ZERO(&object, size, "OBJECT_alloc");
 
   object->class = class;
+	#if DEBUG_REF
+	object->ref = 0;
+	OBJECT_REF(object, "OBJECT_alloc");
+	#else
   object->ref = 1;
+	#endif
 
   class->count++;
 
   *ptr = object;
+	
 }
 
 #if 0

@@ -320,10 +320,8 @@ void X11_window_dock(Window window)
   char buf[256];
   Atom selection_atom;
 
-  buf[0]=0;
-
   xscreen = DefaultScreenOfDisplay(_display);
-  sprintf(buf,"_NET_SYSTEM_TRAY_S%d",XScreenNumberOfScreen(xscreen));
+  sprintf(buf, "_NET_SYSTEM_TRAY_S%d", XScreenNumberOfScreen(xscreen));
   selection_atom = XInternAtom(_display, buf, 0);
 
   XGrabServer(_display);

@@ -232,30 +232,13 @@ static MyMimeSourceFactory myMimeSourceFactory;
 
 ***************************************************************************/
 
-class MyEventLoop : public QEventLoop
+static void destroy_widgets()
 {
-public:
-  MyEventLoop();
-  virtual bool processEvents( ProcessEventsFlags flags );
-};
-
-MyEventLoop::MyEventLoop()
-: QEventLoop()
-{
-}
-
-bool MyEventLoop::processEvents(ProcessEventsFlags flags)
-{
-  bool ret;
   CWIDGET **ptr;
   CWIDGET *ob;
 
-  MAIN_loop_level++;
-  ret = QEventLoop::processEvents(flags);
-  MAIN_loop_level--;
-
 	if (_no_destroy)
-		return ret;
+		return;
 
   for(;;)
   {
@@ -265,7 +248,7 @@ bool MyEventLoop::processEvents(ProcessEventsFlags flags)
     {
       ob = *ptr;
       if (!ob)
-        return ret;
+        return;
   
       //if (MAIN_loop_level <= ob->level && !ob->flag.notified)
       if (!ob->flag.notified)
@@ -287,6 +270,30 @@ bool MyEventLoop::processEvents(ProcessEventsFlags flags)
     }
   }
   //return ret;
+}
+
+class MyEventLoop : public QEventLoop
+{
+public:
+  MyEventLoop();
+  virtual bool processEvents( ProcessEventsFlags flags );
+};
+
+MyEventLoop::MyEventLoop()
+: QEventLoop()
+{
+}
+
+bool MyEventLoop::processEvents(ProcessEventsFlags flags)
+{
+  bool ret;
+
+  MAIN_loop_level++;
+  ret = QEventLoop::processEvents(flags);
+  MAIN_loop_level--;
+
+	destroy_widgets();
+	return ret;
 }
 
 void MAIN_process_events(void)
@@ -449,7 +456,9 @@ static void unrelease_grab()
 
 static bool must_quit(void)
 {
-	//qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
+	#if DEBUG_WINDOW
+	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
+	#endif
   return CWindow::count == 0 && CWatch::count == 0 && in_event_loop;
 }
 
@@ -558,7 +567,11 @@ static void hook_main(int *argc, char **argv)
 
 static void hook_loop()
 {
-  in_event_loop = true;
+	//qDebug("**** ENTERING EVENT LOOP");
+	
+	destroy_widgets();
+
+	in_event_loop = true;
 
   if (!must_quit())
     qApp->exec();

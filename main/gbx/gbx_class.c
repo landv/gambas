@@ -622,9 +622,15 @@ void CLASS_ref(void *object)
 {
 	((OBJECT *)object)->ref++;
 
-	fprintf(stderr, "%s: ref(%s %p) -> %d\n",
+	#if DEBUG_MEMORY
+	fprintf(stderr, "%s: %s: ref(%s <%d>) -> %d\n", OBJECT_ref_where,
+		DEBUG_get_current_position(),
+		OBJECT_class(object)->name, GET_ALLOC_ID(object), ((OBJECT *)object)->ref);
+	#else
+	fprintf(stderr, "%s: %s: ref(%s %p) -> %d\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
 		OBJECT_class(object)->name, object, ((OBJECT *)object)->ref);
+	#endif
 	fflush(stdout);
 }
 
@@ -632,12 +638,21 @@ bool CLASS_unref(void *ob, boolean can_free)
 {
 	OBJECT *object = (OBJECT *)ob;
 	
+	#if DEBUG_MEMORY
+	if (object->ref <= 0)
+		fprintf(stderr, "*** <%d> REF = %d !\n", GET_ALLOC_ID(object), object->ref);
+
+	fprintf(stderr, "%s: %s: unref(%s <%d>) -> %d\n", OBJECT_ref_where,
+		DEBUG_get_current_position(),
+		OBJECT_class(object)->name, GET_ALLOC_ID(object), object->ref - 1);
+	#else
 	if (object->ref <= 0)
 		fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
 
-	fprintf(stderr, "%s: unref(%s %p) -> %d\n",
+	fprintf(stderr, "%s, %s: unref(%s %p) -> %d\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
 		OBJECT_class(object)->name, object, object->ref - 1);
+	#endif
 	fflush(stdout);
 
 	/*if (strcmp(OBJECT_class(object)->name, "Class") == 0)
@@ -645,7 +660,11 @@ bool CLASS_unref(void *ob, boolean can_free)
 
 	if ((--(object->ref) <= 0) && can_free)
 	{
+		#if DEBUG_MEMORY
+		fprintf(stderr, "FREE <%d> !\n", GET_ALLOC_ID(object));
+		#else
 		fprintf(stderr, "FREE %p !\n", object);
+		#endif
 		CLASS_free(object);
 		return TRUE;
 	}
@@ -1044,16 +1063,18 @@ int CLASS_get_inheritance(CLASS *class, CLASS **her)
 	return nher;
 }
 
-
 void *CLASS_auto_create(CLASS *class, int nparam)
 {
 	void *ob = class->instance;
 
+	//fprintf(stderr, ">>> CLASS_auto_create: %s (%p)\n", class->name, ob);
+	
 	if (ob)
 	{
-		if (!class->check || !class->check(ob))
+		if (OBJECT_is_valid(ob))
 		{
 			RELEASE_MANY(SP, nparam);
+			//fprintf(stderr, "<<< CLASS_auto_create: %s (%p): valid=1\n", class->name, ob);
 			return ob;
 		}
 
@@ -1067,40 +1088,10 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 	ob = class->instance;
 	OBJECT_REF(ob, "CLASS_auto_create");
 
+	//fprintf(stderr, "<<< CLASS_auto_create: %s (%p) valid=%d\n", class->name, ob, OBJECT_is_valid(ob));
+	
 	return ob;
 }
-
-
-/*
-CLASS *CLASS_copy(CLASS *class_src, char *prefix)
-{
-	CLASS *class;
-	CLASS save;
-	int len = strlen(prefix) + 1 + strlen(class_src->name) + 1;
-	char *name;
-
-	ALLOC(&name, len, "CLASS_copy");
-	sprintf(name, "%s.%s", prefix, class_src->name);
-
-	class = CLASS_find(name);
-
-	if (!class->ready)
-	{
-		save = *class;
-		*class = *class_src;
-
-		class->name = name;
-		class->ready = TRUE;
-		class->copy = TRUE;
-		class->template = class_src;
-	}
-	else
-		FREE(&name, "CLASS_copy");
-
-	return class;
-}
-*/
-
 
 void CLASS_search_special(CLASS *class)
 {

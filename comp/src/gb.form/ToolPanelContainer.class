@@ -1,97 +1,97 @@
 ' Gambas class file
 
-INHERITS UserControl
+Inherits UserControl
 
-EVENT Change
+Event Change
 
-PROPERTY Text AS String
-PROPERTY TextFont AS Font
-PROPERTY Picture AS Picture
+Property Text As String
+Property TextFont As Font
+Property Picture As Picture
 'PROPERTY Enabled AS Boolean
-PROPERTY Visible AS Boolean
-PROPERTY READ Container AS Container
+Property Visible As Boolean
+Property Read Container As Container
 
-PRIVATE frmContainer AS FToolBar
+Private frmContainer As FToolBar
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  frmContainer = NEW FToolBar(ME)
-  ME._Container = frmContainer.GetContainer()
+  frmContainer = New FToolBar(Me)
+  Me._Container = frmContainer.GetContainer()
   'Object.Attach(frmContainer, ME, "ToolBar")
 
-END
+End
 
 
-PUBLIC FUNCTION GetButtonHeight() AS Integer
+Public Function GetButtonHeight() As Integer
 
-  RETURN frmContainer.GetButtonHeight()
+  Return frmContainer.GetButtonHeight()
 
-END
+End
 
 
-PRIVATE FUNCTION Text_Read() AS String
+Private Function Text_Read() As String
 
-  RETURN frmContainer.GetTitle()
+  Return frmContainer.GetTitle()
 
-END
+End
 
-PRIVATE SUB Text_Write(sText AS String)
+Private Sub Text_Write(sText As String)
 
   frmContainer.SetTitle(sText)
 
-END
+End
 
-PRIVATE FUNCTION Picture_Read() AS Picture
+Private Function Picture_Read() As Picture
 
-  RETURN frmContainer.GetPicture()
+  Return frmContainer.GetPicture()
 
-END
+End
 
-PRIVATE SUB Picture_Write(hPict AS Picture)
+Private Sub Picture_Write(hPict As Picture)
 
   frmContainer.SetPicture(hPict)
 
-END
+End
 
-PUBLIC SUB _Change()
+Public Sub _Change()
 
-  RAISE Change
+  Raise Change
 
-END
+End
 
-PRIVATE FUNCTION Visible_Read() AS Boolean
+Private Function Visible_Read() As Boolean
 
-  RETURN SUPER.Visible  
+  Return Super.Visible  
 
-END
+End
 
-PRIVATE SUB Visible_Write(Value AS Boolean)
+Private Sub Visible_Write(Value As Boolean)
 
-  DIM hToolPanel AS ToolPanel
+  Dim hToolPanel As ToolPanel
   
-  IF Value = SUPER.Visible THEN RETURN
+  If Value = Super.Visible Then Return
   
-  SUPER.Visible = Value
-  hToolPanel = ME.Parent.Parent
+  Super.Visible = Value
+  hToolPanel = Me.Parent.Parent
   hToolPanel.ToolPanel_Resize
 
-END
+End
 
 
-PRIVATE FUNCTION TextFont_Read() AS Font
+Private Function TextFont_Read() As Font
 
-  RETURN frmContainer.GetTextFont()  
+  Return frmContainer.GetTextFont()  
 
-END
+End
 
-PRIVATE SUB TextFont_Write(Value AS Font)
+Private Sub TextFont_Write(Value As Font)
 
   frmContainer.SetTextFont(Value)
 
-END
+End
 
-PRIVATE FUNCTION Container_Read() AS Container
+Private Function Container_Read() As Container
 
-  RETURN frmContainer.GetContainer()  
+  Return frmContainer.GetContainer()  
 
-END
+End

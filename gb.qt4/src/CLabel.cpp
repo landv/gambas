@@ -255,6 +255,8 @@ void MyLabel::calcMinimumHeight(bool adjust)
 	if (f > 0 && f < 4)
 		f = 4;
 
+	//qDebug("calcMinimumHeight: f = %d", f);
+	
 	if (textFormat() == Qt::RichText)
 	{
 		QTextDocument doc;
@@ -265,7 +267,7 @@ void MyLabel::calcMinimumHeight(bool adjust)
 		w = width() - f * 2;
 		
 		doc.setTextWidth(w);
-		nh = doc.size().height();
+		nh = doc.size().height() - 8; // Why (- 8) ?
 		nw = adjust ? doc.idealWidth() : w;
 	}
 	else

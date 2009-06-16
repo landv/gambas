@@ -29,7 +29,8 @@
 #include <qwidget.h>
 //Added by qt3to4:
 #include <QEvent>
-#include <QX11EmbedWidget>
+
+#include "systemtrayicon.h"
 
 #include "CPicture.h"
 
@@ -45,7 +46,7 @@ extern GB_DESC CTrayIconsDesc[];
 
 void CTRAYICON_close_all(void);
 
-class MyTrayIcon: public QX11EmbedWidget
+class MyTrayIcon: public SystemTrayIcon
 {
 public:
 	MyTrayIcon();

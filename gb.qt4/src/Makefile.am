@@ -52,6 +52,7 @@ gb_qt4_la_SOURCES = \
  CMovieBox.h CMovieBox_moc.cpp CMovieBox.cpp \
  CSpinBox.h CSpinBox_moc.cpp CSpinBox.cpp \
  CEmbedder.h CEmbedder_moc.cpp CEmbedder.cpp \
+ systemtrayicon.h systemtrayicon_moc.cpp systemtrayicon.cpp \
  CTrayIcon.h CTrayIcon_moc.cpp CTrayIcon.cpp \
  CSplitter.h CSplitter_moc.cpp CSplitter.cpp \
  CWatcher.h CWatcher_moc.cpp CWatcher.cpp \

@@ -38,7 +38,7 @@
 #include "CMenu.h"
 #include "CPicture.h"
 
-//class MyCentral;
+//#define DEBUG_WINDOW 1
 
 typedef
   struct CWINDOW {
@@ -120,10 +120,12 @@ class CWindow : public QObject
 
 public:
 
-  static QPtrDict<CWINDOW> dict;
-
   static CWindow manager;
   static int count;
+  static QPtrDict<CWINDOW> dict;
+	
+	static void insertTopLevel(CWINDOW *_object);
+	static void removeTopLevel(CWINDOW *_object);
 
 protected:
 
@@ -134,7 +136,7 @@ public slots:
   void error(void);
   void embedded(void);
   void closed(void);
-  void destroy(void);
+  void destroy(void);	
 };
 
 

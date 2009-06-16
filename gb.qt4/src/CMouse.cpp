@@ -226,63 +226,63 @@ END_PROPERTY
 BEGIN_PROPERTY(CMOUSE_button)
 
   CHECK_VALID();
-  GB.ReturnInteger(CMOUSE_info.state & Qt::MouseButtonMask);
+  GB.ReturnInteger((int)CMOUSE_info.button);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_left)
 
   CHECK_VALID();
-  GB.ReturnBoolean(CMOUSE_info.state & Qt::LeftButton);
+  GB.ReturnBoolean(CMOUSE_info.button & Qt::LeftButton);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_right)
 
   CHECK_VALID();
-  GB.ReturnBoolean(CMOUSE_info.state & Qt::RightButton);
+  GB.ReturnBoolean(CMOUSE_info.button & Qt::RightButton);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_middle)
 
   CHECK_VALID();
-  GB.ReturnBoolean(CMOUSE_info.state & Qt::MidButton);
+  GB.ReturnBoolean(CMOUSE_info.button & Qt::MidButton);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_shift)
 
   //CHECK_VALID();
-  GB.ReturnBoolean(CMOUSE_info.state & Qt::ShiftModifier);
+  GB.ReturnBoolean(CMOUSE_info.modifier & Qt::ShiftModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_control)
 
   //CHECK_VALID();
-  GB.ReturnBoolean(CMOUSE_info.state & Qt::ControlModifier);
+  GB.ReturnBoolean(CMOUSE_info.modifier & Qt::ControlModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_alt)
 
   //CHECK_VALID();
-  GB.ReturnBoolean(CMOUSE_info.state & Qt::AltModifier);
+  GB.ReturnBoolean(CMOUSE_info.modifier & Qt::AltModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_meta)
 
   //CHECK_VALID();
-  GB.ReturnBoolean(CMOUSE_info.state & Qt::MetaModifier);
+  GB.ReturnBoolean(CMOUSE_info.modifier & Qt::MetaModifier);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CMOUSE_normal)
 
   //CHECK_VALID();
-  GB.ReturnBoolean((CMOUSE_info.state & Qt::KeyboardModifierMask) == 0);
+  GB.ReturnBoolean(CMOUSE_info.modifier == Qt::NoModifier);
 
 END_PROPERTY
 

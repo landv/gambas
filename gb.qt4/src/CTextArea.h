@@ -38,7 +38,7 @@ extern GB_DESC CTextAreaSelectionDesc[];
 
 #define WIDGET       ((QTextEdit *)((CWIDGET *)_object)->widget)
 #define MYTEXTEDIT   ((MyTextEdit *)((CWIDGET *)_object)->widget)
-#define THIS_AREA    ((CTEXTAREA *)_object)
+#define THIS    ((CTEXTAREA *)_object)
 
 #endif
 

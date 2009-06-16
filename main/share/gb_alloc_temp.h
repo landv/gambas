@@ -42,17 +42,6 @@ PUBLIC int MEMORY_count = 0;
 
 #include "gb_error.h"
 
-typedef
-  struct ALLOC {
-    int _void;
-    struct ALLOC *next;
-    struct ALLOC *prev;
-    int id;
-    size_t size;
-    }
-  PACKED
-  ALLOC;
-
 PUBLIC int MEMORY_size = 0;
 
 static int _id = 0;
