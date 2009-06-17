@@ -51,6 +51,9 @@ typedef
     void (*write)();            /* write property */
     char native;                /* native property ? */
     char _reserved[3];
+		#ifdef OS_64BITS
+		int _reserved2;
+		#endif
     struct _CLASS *class;
     }
   PACKED
@@ -60,8 +63,12 @@ typedef
   struct {
     char *name;
     TYPE type;                  /* variable type */
-    int offset;                /* variable offset */
-    int _reserved;
+    int offset;   	            /* variable offset */
+		#ifdef OS_64BITS
+		int _reserved;
+		#endif
+		intptr_t _reserved2[2];
+    struct _CLASS *class;
     }
   PACKED
   CLASS_DESC_VARIABLE;
@@ -70,12 +77,15 @@ typedef
   struct {
     char *name;
     TYPE type;                  /* type de la valeur de retour */
-    void (*exec)();             /* method */
+    void (*exec)();             /* m�hode */
     TYPE *signature;            /* signature */
     char npmin;                 /* nombre de param�res minimum */
     char npmax;                 /* nombre de param�res maximum dans la signature */
     char npvar;                 /* nombre d'arguments variables ? */
     char native;                /* native method */
+		#ifdef OS_64BITS
+		int _reserved;
+		#endif
     struct _CLASS *class;
     }
   PACKED
@@ -91,6 +101,9 @@ typedef
     char npmax;                 /* nombre de param�res maximum dans la signature */
     char npvar;                 /* nombre d'arguments variables ? */
     char _reserved;
+		#ifdef OS_64BITS
+		int _reserved;
+		#endif
     struct _CLASS *class;
     }
   PACKED
@@ -106,6 +119,9 @@ typedef
     char npmax;                 /* nombre de param�res maximum dans la signature */
     char npvar;                 /* nombre d'arguments variables ? */
     char _reserved;
+		#ifdef OS_64BITS
+		int _reserved;
+		#endif
     struct _CLASS *class;
     }
   PACKED
@@ -123,6 +139,8 @@ typedef
       void *_pointer;
       }
       value;
+		intptr_t _reserved;
+    struct _CLASS *class;
     }
   PACKED
   CLASS_DESC_CONSTANT;

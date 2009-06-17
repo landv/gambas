@@ -42,7 +42,8 @@ typedef
     OBJECT object;
     HASH_TABLE *hash_table;
     HASH_NODE *last;
-    int mode;
+    short mode;
+		char locked;
     }
   CCOLLECTION;
 

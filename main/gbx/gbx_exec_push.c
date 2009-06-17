@@ -262,7 +262,7 @@ _PUSH_STATIC_VARIABLE:
 
 _PUSH_STATIC_VARIABLE_2:
 
-  addr = (char *)class->stat + desc->variable.offset;
+  addr = (char *)desc->variable.class->stat + desc->variable.offset;
   goto _READ_PROPERTY;
 
 
