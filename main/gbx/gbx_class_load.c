@@ -357,9 +357,9 @@ static void check_version(int loaded)
   }
   
   if (loaded > current)
-    THROW(E_CLASS, ClassName, "Version too recent. Please upgrade Gambas.", "");
+    THROW(E_CLASS, ClassName, "Bytecode version too recent. Please upgrade Gambas.", "");
   if (loaded < current)
-    THROW(E_CLASS, ClassName, "Version too old. Please recompile the project.", "");
+    THROW(E_CLASS, ClassName, "Bytecode version too old. Please recompile the project.", "");
 }
 
 #define RELOCATE(_ptr) (_ptr = (char *)&class->string[(int)(intptr_t)(_ptr)])
@@ -809,6 +809,7 @@ void CLASS_load_without_init(CLASS *class)
     var->pos += offset;
   }
 
+	#if 0
 	if (class->parent)
 	{
 		offset = class->parent->size_stat;
@@ -819,6 +820,7 @@ void CLASS_load_without_init(CLASS *class)
 			var->pos += offset;
 		}
 	}
+	#endif
 
   /* Constant conversion & relocation */
 

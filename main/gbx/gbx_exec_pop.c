@@ -184,7 +184,7 @@ _POP_STATIC_VARIABLE:
 
 _POP_STATIC_VARIABLE_2:
 
-  addr = (char *)class->stat + desc->variable.offset;
+  addr = (char *)desc->variable.class->stat + desc->variable.offset;
   VALUE_write(&SP[-2], (void *)addr, desc->variable.type);
   goto _FIN;
 

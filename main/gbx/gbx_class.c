@@ -923,7 +923,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static)
 {
-	char *stat;
+	//char *stat;
 
   if (class->parent)
   {
@@ -946,6 +946,11 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, i
 
   class->size = class->off_event + sizeof(OBJECT_EVENT) + class->n_event * sizeof(ushort);
 
+	class->size_stat = size_static;
+	if (size_static)
+		ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
+	
+	#if 0
 	class->stat = NULL;
 	
 	if (class->parent)
@@ -957,6 +962,7 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, i
 		{
 			if (class->stat)
 			{
+				fprintf(stderr, "CLASS_calc_info: realloc stat: %d -> %d\n", class->parent->size_stat, class->size_stat);
 				REALLOC(&class->stat, class->size_stat, "CLASS_calc_info");
 				memset(&class->stat[class->parent->size_stat], 0, size_static);
 			}
@@ -967,6 +973,7 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, i
 			while (class->parent)
 			{
 				class = class->parent;
+				fprintf(stderr, "CLASS_calc_info: set stat: %s\n", class->name);
 				class->stat = stat;
 			}
 		}
@@ -977,6 +984,7 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, i
 		if (size_static)
 			ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
 	}
+	#endif
 }
 
 
