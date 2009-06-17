@@ -809,6 +809,17 @@ void CLASS_load_without_init(CLASS *class)
     var->pos += offset;
   }
 
+	if (class->parent)
+	{
+		offset = class->parent->size_stat;
+
+		for (i = 0; i < class->load->n_stat; i++)
+		{
+			var = &class->load->stat[i];
+			var->pos += offset;
+		}
+	}
+
   /* Constant conversion & relocation */
 
   for (i = 0; i < class->load->n_cst; i++)

@@ -177,7 +177,7 @@ static void unload_class(CLASS *class)
   if (class->free_event)
     FREE(&class->event, "unload_class");
 
-  if (class->stat)
+  if (class->stat && !class->parent)
     FREE(&class->stat, "unload_class");
 
   if (class->table)
@@ -242,7 +242,9 @@ void CLASS_clean_up(bool silent)
 
       if (class->count == 0 && !CLASS_is_native(class) && class->state && !class->exit)
       {
-        /*printf("Freeing %s\n", class->name);*/
+				#if DEBUG_LOAD
+        fprintf(stderr, "CLASS_clean_up: freeing %s\n", class->name);
+				#endif
         OBJECT_release(class, NULL);
         class->exit = TRUE;
         n++;
@@ -921,8 +923,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static)
 {
-	//size_dynamic = ALIGN_SIZE(size_dynamic);
-	//size_static = ALIGN_SIZE(size_static);
+	char *stat;
 
   if (class->parent)
   {
@@ -945,11 +946,37 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, i
 
   class->size = class->off_event + sizeof(OBJECT_EVENT) + class->n_event * sizeof(ushort);
 
-  class->size_stat = size_static;
-  if (size_static)
-    ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
-  else
-    class->stat = NULL;
+	class->stat = NULL;
+	
+	if (class->parent)
+	{
+		class->stat = class->parent->stat;
+		class->size_stat = size_static + class->parent->size_stat;
+		
+		if (size_static)
+		{
+			if (class->stat)
+			{
+				REALLOC(&class->stat, class->size_stat, "CLASS_calc_info");
+				memset(&class->stat[class->parent->size_stat], 0, size_static);
+			}
+			else
+				ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
+			
+			stat = class->stat;
+			while (class->parent)
+			{
+				class = class->parent;
+				class->stat = stat;
+			}
+		}
+	}
+	else
+	{	
+		class->size_stat = size_static;
+		if (size_static)
+			ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
+	}
 }
 
 

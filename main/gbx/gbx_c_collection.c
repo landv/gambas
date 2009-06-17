@@ -45,18 +45,22 @@ static void collection_free(CCOLLECTION *col)
   VARIANT *value;
   HASH_ENUM iter;
 
-  CLEAR(&iter);
-
+	CLEAR(&iter);
+	col->locked = TRUE;
   for(;;)
   {
     value = HASH_TABLE_next(col->hash_table, &iter);
     if (value == NULL)
       break;
 
-    VARIANT_free(value);
+		//HASH_TABLE_get_last_key(col->hash_table, &key, &len);
+		VARIANT_free(value);
+		value->type = T_NULL;
+		//HASH_TABLE_remove(col->hash_table, key, len);
   }
 
   HASH_TABLE_delete(&col->hash_table);
+	col->locked = FALSE;
 }
 
 
@@ -133,7 +137,8 @@ static void collection_remove_key(CCOLLECTION *col, const char *key, int len)
   //col->hash_table->last = last;
 
   VARIANT_free(value);
-  HASH_TABLE_remove(col->hash_table, key, len);
+	if (!col->locked)
+		HASH_TABLE_remove(col->hash_table, key, len);
 }
 
 
