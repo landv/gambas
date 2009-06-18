@@ -953,6 +953,16 @@ BEGIN_METHOD(CEDITOR_show_string, GB_STRING str; GB_BOOLEAN ignoreCase)
 
 END_METHOD
 
+BEGIN_METHOD(CEDITOR_show_word, GB_INTEGER line; GB_INTEGER col; GB_INTEGER len)
+
+	int line = VARGOPT(line, -1);
+	int col = VARGOPT(col, -1);
+	int len = VARGOPT(len, -1);
+
+	WIDGET->showWord(line, col, len);
+
+END_METHOD
+
 
 /***************************************************************************/
 
@@ -1128,6 +1138,7 @@ GB_DESC CEditorDesc[] =
   GB_PROPERTY("Highlight", "i", CEDITOR_highlight),
   GB_PROPERTY("KeywordsUseUpperCase", "b", CEDITOR_keywords_ucase),
   GB_METHOD("ShowString", NULL, CEDITOR_show_string, "[(String)s(IgnoreCase)b]"),
+  GB_METHOD("ShowWord", NULL, CEDITOR_show_word, "[(Line)i(Column)i(Length)i]"),
 
   GB_PROPERTY("TabSize", "i", CEDITOR_tab_length),
   GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),

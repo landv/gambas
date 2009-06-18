@@ -76,6 +76,7 @@ private:
 	bool painting;
 	GString _showString;
 	bool _showStringIgnoreCase;
+	int _showRow, _showCol, _showLen;
 	
 	int lastx;
 	bool left;
@@ -106,6 +107,7 @@ private:
 	int findLargestLine();
 
 	void paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int x1, int x2, int row);
+	void paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row);
 	void paintDottedSpaces(QPainter &p, int row, int ps, int ls);
 	
 	void docTextChanged();
@@ -212,6 +214,7 @@ public:
 	void checkMatching();
 	void flash();
 	void showString(GString s, bool ignoreCase);
+	void showWord(int y, int x, int len);
 	
 	void foldClear() { fold.clear(); }
 	void foldLine(int row, bool no_refresh = false);

@@ -124,6 +124,9 @@ GEditor::GEditor(QWidget *parent)
 	flashed = false;
 	painting = false;
 	_showStringIgnoreCase = false;
+	_showRow = -1;
+	_showCol = 0;
+	_showLen = 0;
 
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -380,25 +383,6 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	bool draw_bg;
 
 	p.setFont(font());
-
-	if (_showString.length())
-	{
-		pos = 0;
-		bg = styles[GLine::Highlight].color;
-		for(;;)
-		{
-			if (pos >= (int)l->s.length())
-				break;
-			pos = l->s.find(_showString, pos, _showStringIgnoreCase);
-			if (pos < 0)
-				break;
-			ps = lineWidth(row, pos);
-			nx = lineWidth(row, pos + _showString.length());
-			p.fillRect(ps, 0, nx - ps, h, bg);
-			pos += _showString.length();
-		}
-	}
-	
 	pos = 0;
 	ps = find_last_non_space(l->s.getString()) + 1;
 	
@@ -486,6 +470,39 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 		p.setPen(styles[GLine::Normal].color);
 		p.drawText(x, y, l->s.mid(pos).getString());
 		paintDottedSpaces(p, row, pos, l->s.length() - pos);
+	}
+}
+
+void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row)
+{
+	int pos;
+	QString sd;
+	int nx;
+	int ps;
+	QColor bg;
+
+	pos = 0;
+	bg = styles[GLine::Highlight].color;
+	for(;;)
+	{
+		if (pos >= (int)l->s.length())
+			break;
+		pos = l->s.find(_showString, pos, _showStringIgnoreCase);
+		if (pos < 0)
+			break;
+		ps = lineWidth(row, pos);
+		//if (ps > (xmin + lmax))
+		//	break;
+		nx = lineWidth(row, pos + _showString.length());
+		p.fillRect(ps, 0, nx - ps, h, bg);
+		pos += _showString.length();
+	}
+	
+	if (row == _showRow && _showLen > 0 && _showCol >= 0 && _showCol < (int)l->s.length())
+	{
+		ps = lineWidth(row, _showCol);
+		nx = lineWidth(row, QMAX((int)l->s.length(), _showCol + _showLen));
+		p.fillRect(ps, 0, nx - ps, h, bg);
 	}
 }
 
@@ -650,6 +667,10 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 
 	p.translate(-ur.left(), 0);
 
+	// Show string
+	if (highlight && (_showRow == realRow || _showString.length()))
+		paintShowString(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight(), realRow);
+	
 	// Selection background
 	xs1 = 0;
 	xs2 = 0;
@@ -732,9 +753,10 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	// Folding symbol
 	if (margin && l->proc)
 	{
-		p.setPen(styles[GLine::Normal].color);
+		QPalette pal;
+		pal.setColor(QColorGroup::Foreground, styles[GLine::Normal].color);
 		style().drawPrimitive(folded ? QStyle::PE_ArrowRight : QStyle::PE_ArrowDown, &p, 
-			QRect(margin - 12, 0, 12, 12), QApplication::palette().active(), QStyle::Style_Default | QStyle::Style_Enabled);
+			QRect(margin - 12, 0, 12, 12), pal.active(), QStyle::Style_Default | QStyle::Style_Enabled);
 	}
 	
 	// Breakpoint symbol
@@ -2099,4 +2121,12 @@ void GEditor::showString(GString s, bool ignoreCase)
 	_showString = s;
 	_showStringIgnoreCase = ignoreCase;
 	updateContents();
+}
+
+void GEditor::showWord(int y, int x, int len)
+{
+	_showRow = y;
+	_showCol = x;
+	_showLen = len;
+	updateLine(y);
 }
