@@ -104,6 +104,7 @@ extern GB_CLASS CLASS_Picture;
 extern GB_CLASS CLASS_Drawing;
 extern GB_CLASS CLASS_DrawingArea;
 extern GB_CLASS CLASS_Printer;
+extern GB_CLASS CLASS_ScrollView;
 
 #else
 

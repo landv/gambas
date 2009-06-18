@@ -93,6 +93,7 @@ private:
   QWidget *bottom;
   MyScrollView *sw;
   bool timer;
+	bool _mustfind;
 };
 
 class CScrollView : public QObject

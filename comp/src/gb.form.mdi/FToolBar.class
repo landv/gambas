@@ -478,12 +478,12 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   
   $bConfigure = bConfigure
   
-  For Each hChild In panToolBar.Children
-    hChild.Drop = $bConfigure
-  Next
-  For Each hChild In panHide.Children
-    hChild.Drop = $bConfigure
-  Next
+  ' For Each hChild In panToolBar.Children
+  '   hChild.Drop = $bConfigure
+  ' Next
+  ' For Each hChild In panHide.Children
+  '   hChild.Drop = $bConfigure
+  ' Next
   Me.Drop = $bConfigure
   
   panToolBar.Enabled = Not $bConfigure
@@ -518,9 +518,9 @@ Public Sub SetConfigureMode(bConfigure As Boolean)
   
 End
 
-Public Sub Item_Drag()
+Public Sub Form_Drag()
   
-  If Not $bConfigure Or If Drag.Format <> "text/gambas-x-action" Then
+  If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
     HideWhere(True)
     Stop Event
     Return
@@ -624,30 +624,44 @@ Private Sub ShowWhere(sAction As String, bAnim As Boolean, Optional hCtrl As Con
   
 End
 
-Public Sub Item_DragMove()
+Public Sub Form_DragMove()
   
-  Dim hCtrl As Control = Last
+  Dim hCtrl As Control
   Dim D As Integer
   Dim bBefore As Boolean
   Dim bAnim As Boolean
+  Dim X, Y As Integer
   
-  If Not $bConfigure Or If Drag.Format <> "text/gambas-x-action" Then
+  If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
     HideWhere(True)
     Stop Event
     Return
   Endif
 
+  hCtrl = panToolBar.Find(Drag.X - panToolBar.X, Drag.Y - panToolBar.Y)
+  If Not hCtrl Then
+    Stop Event
+    Return
+  Endif
+  
+  If hCtrl = panWhere Then Return
+  
+  X = Drag.X - panToolBar.X - hCtrl.X
+  Y = Drag.Y - panToolBar.Y - hCtrl.Y
+  
   If $bVertical Then
   
-    bBefore = Drag.Y <= (hCtrl.H \ 2)
+    bBefore = Y <= (hCtrl.H \ 2)
     'If Not bBefore And If Drag.Y > ((hCtrl.H * 2) \ 3) Then Return
     
   Else
   
-    bBefore = Drag.X <= (hCtrl.W \ 2)
+    bBefore = X <= (hCtrl.W \ 2)
     'If Not bBefore And If Drag.X > ((hCtrl.W * 2) \ 3) Then Return
     
   Endif
+  
+  'Debug panWhere = hCtrl;; "panWhere.Next = "; panWhere.Next;; "hCtrl.Next = "; hCtrl.Next;; "bBefore = "; bBefore
   
   If bBefore Then
     If panWhere.Next = hCtrl Then Return
@@ -666,7 +680,7 @@ Public Sub Item_DragMove()
     hCtrl.Next = panWhere
   Endif
   
-  ShowWhere(Drag.Data, bAnim)
+  ShowWhere(Drag.Paste(MAction.MIME), bAnim)
   
 End
 
@@ -696,7 +710,7 @@ Public Sub Item_MouseDrag()
 End
 
 
-Public Sub Item_Drop()
+Public Sub Form_Drop()
 
   panWhere_Drop
 
@@ -742,7 +756,7 @@ End
 
 Public Sub panWhere_Drag()
 
-  If Not $bConfigure Or If Drag.Format <> "text/gambas-x-action" Then
+  If Not $bConfigure Or If Drag.Format <> MAction.MIME Then
     Stop Event
     Return
   Endif
@@ -779,7 +793,7 @@ End
 
 Public Sub panWhere_Drop()
   
-  $sDropAction = Drag.Data
+  $sDropAction = Drag.Paste(MAction.MIME)
   
 End
 

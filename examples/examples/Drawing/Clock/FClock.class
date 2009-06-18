@@ -150,7 +150,7 @@ End
 
 Public Sub mnuOntop_Click()
 
-  mnuOnTop.Checked = Not mnuOntop.Checked
+  'mnuOnTop.Checked = Not mnuOntop.Checked
   Me.TopOnly = Not Me.TopOnly
 
 End
@@ -158,7 +158,7 @@ End
 
 Public Sub mnuShowWindow_Click()
 
-  mnuShowWindow.Checked = Not mnuShowWindow.Checked
+  'mnuShowWindow.Checked = Not mnuShowWindow.Checked
   'ME.Border = If(mnuShowWindow.Checked, Window.Fixed, Window.None)
   Me.Mask = Not Me.Mask
   Me.SkipTaskbar = Not Me.SkipTaskbar

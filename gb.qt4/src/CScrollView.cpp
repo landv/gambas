@@ -36,8 +36,10 @@
 
 #include "CConst.h"
 #include "CColor.h"
+
 #include "CScrollView.h"
 
+//#define DEBUG
 
 DECLARE_EVENT(EVENT_Scroll);
 
@@ -98,6 +100,7 @@ MyContents::MyContents(MyScrollView *scrollview)
   sw = scrollview;
   sw->setWidget(this);
   timer = false;
+	_mustfind = false;
 }
 
 void MyContents::autoResize(void)
@@ -132,6 +135,10 @@ void MyContents::autoResize(void)
 	
 		resize(ww, hh);
 		//sw->updateScrollBars();
+	}
+	else if (_mustfind)
+	{
+		findRightBottom();
 	}
 
 	for(i = 0; i < 3; i++)
@@ -204,7 +211,18 @@ void MyContents::autoResize(void)
 
 	THIS->arrangement.locked = locked;
 	if (width() != oldw || height() != oldh)
+	{
+		#ifdef DEBUG
+		if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
+		{
+			CWIDGET *wr = CWidget::get(right);
+			CWIDGET *wb = CWidget::get(bottom);
+			qDebug("MyContents::autoResize: %d %d --> %d %d", oldw, oldh, width(), height());
+			qDebug("right = %s %s bottom = %s %s", wr ? GB.GetClassName(wr) : 0, wr ? wr->name : 0, wb ? GB.GetClassName(wb) : 0, wb ? wb->name : 0);
+		}
+		#endif
 		CCONTAINER_arrange(THIS);
+	}
 	timer = false;
 }
 
@@ -246,6 +264,18 @@ void MyContents::findRightBottom(void)
 			}
     }
   }
+
+	_mustfind = false;
+
+	#ifdef DEBUG
+  CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(sw);
+	if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
+	{
+		CWIDGET *wr = CWidget::get(right);
+		CWIDGET *wb = CWidget::get(bottom);
+		qDebug("MyContents::findRightBottom: right = %s %s bottom = %s %s", wr ? GB.GetClassName(wr) : 0, wr ? wr->name : 0, wb ? GB.GetClassName(wb) : 0, wb ? wb->name : 0);
+	}
+	#endif
 }
 
 
@@ -257,11 +287,22 @@ void MyContents::checkWidget(QWidget *wid)
 	//CCONTAINER_arrange(CWidget::get(sw));
 	
 	if (THIS->arrangement.mode)
+	{
+		checkAutoResizeLater();
 		return;
+	}
 
-  if (wid == right || wid == bottom)
+	#ifdef DEBUG
+	if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
+	{
+		CWIDGET *ob = CWidget::get(wid);
+		qDebug("MyContents::checkWidget: %s %s  %p %p", ob ? GB.GetClassName(ob) : 0, ob ? ob->name : 0, wid, sw);
+	}
+	#endif
+
+	if (wid == right || wid == bottom)
   {
-    findRightBottom();
+    _mustfind = true; //findRightBottom();
     doResize = true;
   }
   else
@@ -297,33 +338,18 @@ void MyContents::childEvent(QChildEvent *e)
   }
   else if (e->removed())
   {
-    //e->child()->removeEventFilter(this);
     if (e->child() == right || e->child() == bottom)
-    {
-      findRightBottom();
-    }
+			_mustfind = true;
+		checkAutoResizeLater();
   }
 }
 
-void MyContents::afterArrange()
-{
-	//qDebug("MyContents::afterArrange");
-	checkAutoResizeLater();
-}
-
-bool MyContents::eventFilter(QObject *o, QEvent *e)
-{
-  int type = e->type();
-  QWidget *wid = (QWidget *)o;
-
-  if (type == QEvent::Move || type == QEvent::Resize || type == QEvent::Show || type == QEvent::Hide)
-  {
-    checkWidget(wid);
-		//checkAutoResizeLater();
-	}
-	
-  return MyContainer::eventFilter(o, e);
-}
+// void MyContents::afterArrange()
+// {
+// 	//qDebug("MyContents::afterArrange");
+// 	_mustfind = true;
+// 	checkAutoResizeLater();
+// }
 
 void MyContents::checkAutoResizeLater()
 {
@@ -334,6 +360,10 @@ void MyContents::checkAutoResizeLater()
 	timer = true;	
 }
 
+void CSCROLLVIEW_arrange(void *_object, CWIDGET *child)
+{
+	THIS->container->checkWidget(child->widget);
+}
 
 /***************************************************************************
 
@@ -351,7 +381,7 @@ BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
   //cont->setBackgroundOrigin(QWidget::AncestorOrigin);
 
   THIS->container = cont;
-  wid->setWidget(THIS->container);
+  //wid->setWidget(THIS->container);
 
   QObject::connect(wid->horizontalScrollBar(), SIGNAL(valueChanged(int)), &CScrollView::manager, SLOT(scrolled()));
   QObject::connect(wid->verticalScrollBar(), SIGNAL(valueChanged(int)), &CScrollView::manager, SLOT(scrolled()));

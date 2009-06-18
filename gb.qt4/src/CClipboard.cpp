@@ -110,8 +110,13 @@ static void get_formats(const QMimeData *src, GB_ARRAY array)
 
 static void paste(const QMimeData *data, const char *fmt)
 {
-  QString format = fmt;
+  QString format;
 
+	if (fmt)
+		format = fmt;
+	else
+		format = get_format(data);
+		
 	if (!data->hasFormat(format))
 	{
 		GB.ReturnNull();
@@ -383,7 +388,7 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 	drag = new QDrag(source->widget);
 	mimeData = new QMimeData();
 
-  if (data->type == GB_T_STRING)
+	if (data->type == GB_T_STRING)
   {
     if (fmt == NULL)
       format = "text/plain";
@@ -424,7 +429,9 @@ void *CDRAG_drag(CWIDGET *source, GB_VARIANT_VALUE *data, GB_STRING *fmt)
 	GB.Unref(POINTER(&CDRAG_destination));
 	CDRAG_destination = 0;
   
+	//qDebug("start drag");
   drag->exec();
+	//qDebug("end drag");
   
   hide_frame(NULL);
   GB.Post((GB_POST_FUNC)post_exit_drag, 0);

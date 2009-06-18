@@ -78,23 +78,23 @@ class MyContents : public MyContainer
 public:
   MyContents(MyScrollView *scrollview);
 	void checkAutoResizeLater();
-	void afterArrange();
+	//void afterArrange();
   
 public slots:
   void autoResize(void);
+  void checkWidget(QWidget *);
 
 protected:
   void childEvent(QChildEvent *);
-  bool eventFilter(QObject *, QEvent *);
 
 private:
   void findRightBottom(void);
-  void checkWidget(QWidget *);
 
   QWidget *right;
   QWidget *bottom;
   MyScrollView *sw;
   bool timer;
+	bool _mustfind;
 };
 
 class CScrollView : public QObject
@@ -110,5 +110,7 @@ protected:
 public slots:
   void scrolled(void);
 };
+
+void CSCROLLVIEW_arrange(void *_object, CWIDGET *child);
 
 #endif

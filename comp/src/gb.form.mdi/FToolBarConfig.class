@@ -170,9 +170,9 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
     Drag.Icon = Null
   Endif
 
-  hDest = Drag(hCtrl, sAction, "text/gambas-x-action")
-  
-  $hForm.DragEnd(bAnim)
+  'Debug "START DRAG";; sAction
+  hDest = Drag(hCtrl, sAction, MAction.MIME)
+  'Debug "END DRAG"
   
   If hDest Then
   
@@ -206,10 +206,13 @@ Public Sub DragAction(hCtrl As Control, sAction As String)
   
     If Not bOutside Then
       hCtrl.Show
+    Else
+      bAnim = True
     Endif
-    bAnim = True
     
   Endif
+  
+  $hForm.DragEnd(bAnim)
   
 End
 
@@ -240,7 +243,7 @@ End
 
 Public Sub panAction_Drag()
 
-  If Drag.Format <> "text/gambas-x-action" Or If Drag.Source.Parent = svwAction Then
+  If Drag.Format <> MAction.MIME Or If Drag.Source.Parent = svwAction Then
     Stop Event
     Return
   Endif
@@ -251,7 +254,7 @@ End
 
 Public Sub panAction_Drop()
 
-  Dim sAction As String = Drag.Data
+  Dim sAction As String = Drag.Paste(MAction.MIME)
   
   If sAction <> "|" Then AddAction(sAction)
 

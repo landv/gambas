@@ -38,6 +38,7 @@
 #include "CColor.h"
 #include "CClipboard.h"
 #include "CMenu.h"
+#include "CScrollView.h"
 
 #include <qnamespace.h>
 #include <qapplication.h>
@@ -69,6 +70,7 @@ GB_CLASS CLASS_Picture;
 GB_CLASS CLASS_Drawing;
 GB_CLASS CLASS_DrawingArea;
 GB_CLASS CLASS_Printer;
+GB_CLASS CLASS_ScrollView;
 
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
@@ -211,6 +213,8 @@ static void arrange_parent(CWIDGET *_object)
 	if (!parent)
 		return;
 	CCONTAINER_arrange(parent);
+	if (GB.Is(parent, CLASS_ScrollView))
+		CSCROLLVIEW_arrange(parent, THIS);
 }
 
 void CWIDGET_update_design(CWIDGET *_object)
@@ -308,7 +312,7 @@ void CWIDGET_destroy(CWIDGET *object)
 
 	//qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);
 
-	object->widget->hide();
+	CWIDGET_set_visible(object, false);
 	object->widget->deleteLater();
 }
 
@@ -1948,7 +1952,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 				return true;*/
 		}
 		
-		if (!cancel && event_id == EVENT_MouseMove && (mevent->buttons() != Qt::NoButton)  && GB.CanRaise(control, EVENT_MouseDrag)
+		if (!cancel && event_id == EVENT_MouseMove && (mevent->buttons() != Qt::NoButton) && GB.CanRaise(control, EVENT_MouseDrag) && !CDRAG_dragging
 				&& ((abs(p.x() - CMOUSE_info.sx) + abs(p.y() - CMOUSE_info.sy)) > 8)) // QApplication::startDragDistance()))
 		{		
 			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))

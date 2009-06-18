@@ -1,10 +1,9 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(80.1667,67,43,43)
+  MoveScaled(80.1429,67,43,43)
   Text = ("")
   Mask = True
-  SkipTaskbar = True
   { mnuPopup Menu
     Text = ("central")
     Visible = False
@@ -34,9 +33,11 @@
     }
     { mnuOntop Menu
       Text = ("Always on top")
+      Toggle = True
     }
     { mnuShowWindow Menu
       Text = ("Show Window")
+      Toggle = True
     }
     { mnu1 Menu
       Text = ("")
@@ -52,7 +53,7 @@
     }
   }
   { Timer1 #Timer
-    #X = 6
-    #Y = 204
+    #X = 126
+    #Y = 203
   }
 }

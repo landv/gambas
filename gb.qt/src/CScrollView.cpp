@@ -96,6 +96,7 @@ MyContents::MyContents(QWidget *parent, MyScrollView *scrollview)
   bottom = 0;
   sw = scrollview;
   timer = false;
+	_mustfind = false;
 }
 
 void MyContents::autoResize(void)
@@ -112,7 +113,7 @@ void MyContents::autoResize(void)
 	THIS->arrangement.locked = true;
 	ww = hh = -1;
 	oldw = width(); oldh = height();
-
+	
 	//qDebug("AutoResize: %s", THIS->widget.name);
 
 	if (THIS->arrangement.mode)
@@ -132,6 +133,11 @@ void MyContents::autoResize(void)
 		//qDebug("AutoResize: %s: resize: %d %d", THIS->widget.name, ww, hh);
 		resize(ww, hh);
 		//sw->updateScrollBars();
+	}
+	else
+	{
+		if (_mustfind)
+			findRightBottom();
 	}
 
 	for (i = 0; i < 3; i++)
@@ -215,6 +221,7 @@ void MyContents::autoResize(void)
 void MyContents::afterArrange()
 {
 	//qDebug("MyContents::afterArrange");
+	_mustfind = true;
 	checkAutoResizeLater();
 }
 
@@ -257,6 +264,7 @@ void MyContents::findRightBottom(void)
   }
   
   delete list;
+	_mustfind = true;
 }
 
 

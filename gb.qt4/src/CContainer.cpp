@@ -187,9 +187,9 @@ void CCONTAINER_arrange(void *_object)
 
 	CCONTAINER_arrange_real(_object);
 
-	QWidget *cont = GET_CONTAINER(_object);
-	if (cont->isA("MyContents"))
-		((MyContents *)cont)->afterArrange();
+	//QWidget *cont = GET_CONTAINER(_object);
+	//if (cont->isA("MyContents"))
+	//	((MyContents *)cont)->afterArrange();
 
 	#if DEBUG_CONTAINER
 	level--;
