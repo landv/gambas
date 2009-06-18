@@ -13,6 +13,7 @@ Private $MY As Integer
 Private $iMax As Integer
 Private $iColor As Integer
 Private $bOpened As Boolean
+Private $hPict As Picture
 
 Private BUTTON_H As Integer = Desktop.Scale
 Private BUTTON_W As Integer = 48
@@ -226,39 +227,40 @@ Private Sub RefreshArrow()
       If $bVisible Xor ($iOrientation = Align.Bottom) Then
         sKey = "$side-top"
         iType = Align.Top
-        hPict = Picture["img/8/side-top.png"]
+        'hPict = Picture["img/8/side-top.png"]
       Else
         sKey = "$side-bottom"
         iType = Align.Bottom
-        hPict = Picture["img/8/side-bottom.png"]
+        'hPict = Picture["img/8/side-bottom.png"]
       Endif
     Case Align.Left, Align.Right
       If $bVisible Xor ($iOrientation = Align.Right) Then
         sKey = "$side-left"
         iType = Align.Left
-        hPict = Picture["img/8/side-left.png"]
+        'hPict = Picture["img/8/side-left.png"]
       Else
         sKey = "$side-right"
         iType = Align.Right
-        hPict = Picture["img/8/side-right.png"]
+        'hPict = Picture["img/8/side-right.png"]
       Endif
   End Select
 
-  ' hPict = Picture[sKey]
-  ' If Not hPict Then 
-  '   hPict = New Picture(16, 16)
-  '   hPict.Fill(Color.White)
-  '   Draw.Begin(hPict)
-  '   Draw.Style.Arrow(0, 0, 16, 16, iType)
-  '   Draw.End
-  '   hImage = hPict.Image.Stretch(8, 8, True)
-  '   hImage.MakeTransparent(Color.White) 
-  '   hPict = hImage.Picture
-  '   Picture[sKey] = hPict
-  ' Endif
+  hPict = Picture[sKey]
+  If Not hPict Then 
+    hPict = New Picture(16, 16)
+    hPict.Fill(Color.White)
+    Draw.Begin(hPict)
+    Draw.Style.Arrow(0, 0, 16, 16, iType)
+    Draw.End
+    hImage = hPict.Image.Stretch(10, 10, True)
+    hImage.MakeTransparent(Color.White) 
+    hPict = hImage.Picture
+    Picture[sKey] = hPict
+  Endif
 
-  btnSide.Picture = hPict
-  btnSide2.Picture = hPict
+  $hPict = hPict  
+  btnSide.Refresh
+  btnSide2.Refresh
 
   If $bVisible And Not $bFixed And Not Me.Parent.Design Then
     panMove.Mouse = If(IsVertical(), Mouse.SplitV, Mouse.SplitH)
@@ -292,9 +294,7 @@ Private Sub RefreshAll()
 End
 
 
-Public Sub btnSide_Click()
-
-  If Me.Parent.Design Then Return
+Private Sub TogglePanel()
 
   If $bVisible Then
 
@@ -315,6 +315,17 @@ Public Sub btnSide_Click()
     GetParent()._Show
 
   Endif
+
+End
+
+Public Sub btnSide_MouseUp()
+
+  If Me.Parent.Design Then Return
+
+  Last.Tag = 1
+  Last.Refresh
+
+  TogglePanel
 
 End
 
@@ -402,7 +413,7 @@ End
 
 Public Sub SetHidden(bHidden As Boolean)
 
-  If bHidden = $bVisible Then btnSide_Click
+  If bHidden = $bVisible Then TogglePanel
 
 End
 
@@ -458,7 +469,7 @@ End
 
 Public Sub panMove_DblClick()
 
-  If $bVisible Then btnSide_Click  
+  If $bVisible Then TogglePanel
 
 End
 
@@ -506,7 +517,7 @@ Public Sub panMove_Enter()
   If $bFixed Then Return
   If Me.Parent.Design Then Return
 
-  panMove.Background = Color.TextBackground
+  panMove.Background = Color.ButtonBackground
   'btnSide.Background = Color.ButtonBackground  
   'btnSide2.Background = Color.ButtonBackground  
 
@@ -517,5 +528,35 @@ Public Sub panMove_Leave()
   panMove.Background = $iColor
   'btnSide.Background = $iColor
   'btnSide2.Background = $iColor
+
+End
+
+Public Sub btnSide_Draw()
+
+  If Last.Tag Then
+    Draw.Style.Button(0, 0, btnSide.W, btnSide.H, Last.Tag = 2)
+  Endif
+  If $hPict Then Draw.Picture($hPict, (Last.W - $hPict.W) / 2, (Last.H - $hPict.H) / 2)
+
+End
+
+Public Sub btnSide_Enter()
+
+  Last.Tag = 1
+  Last.Refresh
+
+End
+
+Public Sub btnSide_Leave()
+
+  Last.Tag = Null
+  Last.Refresh
+
+End
+
+Public Sub btnSide_MouseDown()
+
+  Last.Tag = 2
+  Last.Refresh
 
 End

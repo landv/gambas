@@ -101,8 +101,6 @@ Public Sub _new()
   
   RefreshStyle
   
-  Me.Center
-  
 End
 
 Public Sub Form_KeyPress()
@@ -533,5 +531,11 @@ End
 Public Sub cmbFoldProc_Click()
 
   Settings["/Editor/Fold"] = cmbFoldProc.Index = 1  
+
+End
+
+Public Sub Form_Open()
+
+  Me.Center
 
 End

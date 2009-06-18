@@ -10,18 +10,12 @@
   { panMove DrawingArea
     MoveScaled(2,1,46,4)
     Background = Color.Background
-    { btnSide ToolButton
-      MoveScaled(0,0,12,4)
-      Background = Color.Background
-      Mouse = Mouse.Arrow
-      Text = ("")
+    { btnSide DrawingArea
+      MoveScaled(9,0,6,4)
     }
-    { btnSide2 ToolButton btnSide
+    { btnSide2 DrawingArea btnSide
       Name = "btnSide2"
-      MoveScaled(15,0,12,4)
-      Background = Color.Background
-      Mouse = Mouse.Arrow
-      Text = ("")
+      MoveScaled(19,0,6,4)
     }
   }
 }

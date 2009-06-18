@@ -388,24 +388,6 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 
 	p.setFont(font());
 
-	if (_showString.length())
-	{
-		pos = 0;
-		bg = styles[GLine::Highlight].color;
-		for(;;)
-		{
-			if (pos >= (int)l->s.length())
-				break;
-			pos = l->s.find(_showString, pos, _showStringIgnoreCase);
-			if (pos < 0)
-				break;
-			ps = lineWidth(row, pos);
-			nx = lineWidth(row, pos + _showString.length());
-			p.fillRect(ps, 0, nx - ps, h, bg);
-			pos += _showString.length();
-		}
-	}
-	
 	pos = 0;
 	ps = find_last_non_space(l->s.getString()) + 1;
 	
@@ -493,6 +475,32 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 		p.setPen(styles[GLine::Normal].color);
 		p.drawText(x, y, l->s.mid(pos).getString());
 		paintDottedSpaces(p, row, pos, l->s.length() - pos);
+	}
+}
+
+void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int row)
+{
+	int pos;
+	QString sd;
+	int nx;
+	int ps;
+	QColor bg;
+
+	pos = 0;
+	bg = styles[GLine::Highlight].color;
+	for(;;)
+	{
+		if (pos >= (int)l->s.length())
+			break;
+		pos = l->s.find(_showString, pos, _showStringIgnoreCase);
+		if (pos < 0)
+			break;
+		ps = lineWidth(row, pos);
+		//if (ps > (xmin + lmax))
+		//	break;
+		nx = lineWidth(row, pos + _showString.length());
+		p.fillRect(ps, 0, nx - ps, h, bg);
+		pos += _showString.length();
 	}
 }
 
@@ -652,6 +660,10 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 
 	p.translate(-ur.left(), 0);
 
+	// Search
+	if (highlight && _showString.length())
+		paintShowString(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight(), realRow);
+	
 	// Selection background
 	xs1 = 0;
 	xs2 = 0;
@@ -738,16 +750,17 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	// Folding symbol
 	if (margin && l->proc)
 	{
+		QPalette pal;
 		QStyleOption opt;
 		int w;
 		
+		pal.setColor(QColorGroup::Foreground, styles[GLine::Normal].color);
 		w = qMin(cellHeight(), 12);
 		//opt.rect = QRect(margin - 12, 0, 12, 12);
 		opt.rect = QRect(margin - w, 0, w, cellHeight());
-		opt.palette = palette();
+		opt.palette = pal;
 		opt.state |= QStyle::State_Enabled;
 		
-		p.setPen(styles[GLine::Normal].color);
 		style()->drawPrimitive(folded ? QStyle::PE_IndicatorArrowRight : QStyle::PE_IndicatorArrowDown, &opt, &p);
 	}
 	
@@ -767,8 +780,8 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	// Flash
 	if (flashed)
 	{
-		p.setCompositionMode(QPainter::CompositionMode_Xor);
-		p.fillRect(0, 0, visibleWidth(), cellHeight(), Qt::white);
+		//p.setCompositionMode(QPainter::CompositionMode_Xor);
+		p.fillRect(0, 0, visibleWidth(), cellHeight(), Qt::black);
 	}
 
 	p.end();
