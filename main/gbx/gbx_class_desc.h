@@ -102,7 +102,7 @@ typedef
     char npvar;                 /* nombre d'arguments variables ? */
     char _reserved;
 		#ifdef OS_64BITS
-		int _reserved;
+		int _reserved2;
 		#endif
     struct _CLASS *class;
     }
@@ -120,7 +120,7 @@ typedef
     char npvar;                 /* nombre d'arguments variables ? */
     char _reserved;
 		#ifdef OS_64BITS
-		int _reserved;
+		int _reserved2;
 		#endif
     struct _CLASS *class;
     }
