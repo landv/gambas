@@ -128,6 +128,9 @@ GEditor::GEditor(QWidget *parent)
 	flashed = false;
 	painting = false;
 	_showStringIgnoreCase = false;
+	_showRow = -1;
+	_showCol = 0;
+	_showLen = 0;
 	
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -502,6 +505,13 @@ void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int
 		p.fillRect(ps, 0, nx - ps, h, bg);
 		pos += _showString.length();
 	}
+
+if (row == _showRow && _showLen > 0 && _showCol >= 0 && _showCol < (int)l->s.length())
+	{
+		ps = lineWidth(row, _showCol);
+		nx = lineWidth(row, QMAX((int)l->s.length(), _showCol + _showLen));
+		p.fillRect(ps, 0, nx - ps, h, bg);
+	}
 }
 
 static void make_blend(QPixmap &pix, QColor start, QColor end, int height) //, bool loop = false)
@@ -660,8 +670,8 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 
 	p.translate(-ur.left(), 0);
 
-	// Search
-	if (highlight && _showString.length())
+	// Show string
+	if (highlight && (_showRow == realRow || _showString.length()))
 		paintShowString(p, l, margin, fm.ascent() + 1, xmin, lmax, cellHeight(), realRow);
 	
 	// Selection background
@@ -2126,4 +2136,12 @@ void GEditor::showString(GString s, bool ignoreCase)
 	_showString = s;
 	_showStringIgnoreCase = ignoreCase;
 	updateContents();
+}
+
+void GEditor::showWord(int y, int x, int len)
+{
+	_showRow = y;
+	_showCol = x;
+	_showLen = len;
+	updateLine(y);
 }
