@@ -401,7 +401,7 @@ CLASS *CLASS_find_global(const char *name);
 CLASS *CLASS_check_global(char *name);
 
 void CLASS_ref(void *object);
-void CLASS_unref(void **pobject, boolean can_free);
+bool CLASS_unref(void *object, boolean can_free);
 void CLASS_free(void *object);
 void CLASS_release(CLASS *class, char *data);
 

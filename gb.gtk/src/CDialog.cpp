@@ -197,7 +197,7 @@ BEGIN_PROPERTY(CDIALOG_font)
 	{
     gFont *font = gDialog::font();
     if (font)
-    	ft = CFONT_create(font);
+    	ft = CFONT_create(font->copy());
     else
     	ft = NULL;
     	

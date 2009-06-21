@@ -133,29 +133,6 @@ void gDesktop::setFont(gFont *ft)
   _desktop_scale = 0;
 }
 
-/*gControl* gDesktop::activeControl()
-{
-	gControl *test, *curr=NULL;
-	GList *iter=gControl::controlList();
-
-	if (!iter) return NULL;
-
-	iter=g_list_first(iter);
-	while (iter)
-	{
-		test=(gControl*)iter->data;
-		if (test->hasFocus())
-		{
-			curr=test;
-			break;
-		}
-		iter=iter->next;
-	}
-	
-	return curr;
-	
-}*/
-
 void gDesktop::setActiveControl(gControl *control)
 {
 	_active_control = control;

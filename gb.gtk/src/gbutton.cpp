@@ -58,6 +58,22 @@ static void bt_click(GtkButton *object, gButton *data)
 	data->emit(SIGNAL(data->onClick));
 }
 
+static void cb_released(GtkButton *object, gButton *data)
+{
+	if (data->isTristate())
+	{
+		if (data->inconsistent())
+		{
+			data->setInconsistent(false);
+			data->setValue(false);
+		}
+		else if (!data->value())
+			data->setInconsistent(true);
+	}
+
+	data->emit(SIGNAL(data->onClick));
+}
+
 static bool button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 {
 	GdkGC        *gc;
@@ -189,6 +205,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	_radio = false;
 	_animated = false;
 	_stretch = true;
+	_tristate = false;
 	scaled = false;
 	disable = false;
 	bufText = NULL;
@@ -266,6 +283,9 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(rd_click),(gpointer)this);
 	else
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(bt_click),(gpointer)this);	
+	
+	if (type == Check)
+		g_signal_connect(G_OBJECT(widget), "released", G_CALLBACK(cb_released), (gpointer)this);	
 	
 	//resize(100,30);
 	
@@ -732,4 +752,11 @@ void gButton::setRealForeground(gColor color)
 	
 	if (label)
 		set_gdk_fg_color(label, color);
+}
+
+void gButton::setTristate(bool vl)
+{
+	_tristate = vl;
+	if (!_tristate)
+		setInconsistent(false);
 }

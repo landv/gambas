@@ -55,7 +55,8 @@ typedef
     unsigned eof : 1;
     unsigned no_fionread : 1;
     unsigned no_lseek : 1;
-    unsigned _reserved : 10;
+		unsigned standard : 1;
+    unsigned _reserved : 9;
     #if __WORDSIZE == 64
     int _pad;
     #endif

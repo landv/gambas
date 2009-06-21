@@ -111,6 +111,7 @@ static CFILE *create_default_stream(FILE *file, int mode)
   
   CLEAR(&stream);
   stream.type = &STREAM_buffer;
+	stream.common.standard = TRUE;
   stream.buffer.size = 0;
   stream.buffer.file = file;
   stream.buffer.is_term = isatty(fileno(file));

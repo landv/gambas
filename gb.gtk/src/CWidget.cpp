@@ -448,7 +448,7 @@ BEGIN_PROPERTY(CCONTROL_font)
 
 	if (!THIS->font)
 	{
-		THIS->font = CFONT_create(CONTROL->font(), 0, THIS);
+		THIS->font = CFONT_create(CONTROL->font()->copy(), 0, THIS);
 		GB.Ref(THIS->font);
 	}
 	
@@ -460,13 +460,12 @@ BEGIN_PROPERTY(CCONTROL_font)
 	{
     CFONT *font = (CFONT *)VPROP(GB_OBJECT);
     if (font)
-    {
     	CONTROL->setFont(font->font);
-			if (font == THIS->font)
-				return;
-		}
-		GB.Unref(POINTER(&THIS->font));
-		THIS->font = NULL;
+		else
+			CONTROL->setFont(0);
+		
+		if (THIS->font != font)
+			CONTROL->font()->copyTo(((CFONT *)THIS->font)->font);
 	}
 
 END_PROPERTY

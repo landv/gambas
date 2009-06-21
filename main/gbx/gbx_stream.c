@@ -150,6 +150,7 @@ _OPEN:
   stream->common.eol = 0;
 	stream->common.no_fionread = FALSE;
 	stream->common.no_lseek = FALSE;
+	stream->common.standard = FALSE;
 
   /*if (((mode & ST_BIG) && !EXEC_big_endian)
       || ((mode & ST_LITTLE) && EXEC_big_endian))
@@ -176,7 +177,7 @@ void STREAM_close(STREAM *stream)
   if (fd >= 0)
     GB_Watch(fd, GB_WATCH_NONE, NULL, 0);
 
-  if (!(*(stream->type->close))(stream))
+  if (stream->common.standard || !(*(stream->type->close))(stream))
     stream->type = NULL;
 }
 

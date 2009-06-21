@@ -84,7 +84,6 @@ BEGIN_METHOD_VOID(CSCREEN_grab)
 
 END_METHOD
 
-
 static void set_font(gFont *font, void *object = 0)
 {
   gDesktop::setFont(font);
@@ -99,7 +98,7 @@ static void set_tooltip_font(gFont *font, void *object = 0)
 BEGIN_PROPERTY(CAPP_font)
 
   if (READ_PROPERTY)
-    GB.ReturnObject(CFONT_create(gDesktop::font(), set_font));
+    GB.ReturnObject(CFONT_create(gDesktop::font()->copy(), set_font));
   else if (VPROP(GB_OBJECT))
     set_font(((CFONT*)VPROP(GB_OBJECT))->font);
 
@@ -108,10 +107,8 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CAPP_tooltip_font)
 
-	CFONT *Font;
-	
 	if (READ_PROPERTY)
-    GB.ReturnObject(CFONT_create(gApplication::toolTipsFont(), set_tooltip_font));
+    GB.ReturnObject(CFONT_create(gApplication::toolTipsFont()->copy(), set_tooltip_font));
   else if (VPROP(GB_OBJECT))
   	set_tooltip_font(((CFONT*)VPROP(GB_OBJECT))->font);
   

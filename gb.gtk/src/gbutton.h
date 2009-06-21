@@ -23,7 +23,8 @@ public:
 	bool isRadio();
 	bool enabled();
 	bool inconsistent();
-	bool isStretch() { return _stretch; }
+	bool isStretch() const { return _stretch; }
+	bool isTristate() const { return _tristate; }
 
 	void setEnabled(bool vl);
 	void setBorder(bool vl);
@@ -36,6 +37,7 @@ public:
 	void setRadio(bool vl);
 	void setInconsistent(bool vl);
 	void setStretch(bool vl);
+	void setTristate(bool vl);
 	
 	virtual void setFont(gFont *ft);
 	//virtual void setBackground(gColor color);
@@ -57,6 +59,7 @@ public:
 	int shortcut;
 	unsigned scaled : 1;
 	unsigned disable : 1;
+	unsigned _tristate : 1;
 	unsigned _toggle : 1;
 	unsigned _animated : 1;
 	unsigned _radio : 1;

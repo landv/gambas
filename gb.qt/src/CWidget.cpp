@@ -484,6 +484,8 @@ BEGIN_PROPERTY(CCONTROL_font)
     else
       WIDGET->setFont(*(font->font));
     
+		//qDebug("%s: setFont: %s -> %s", THIS->name, font->font->toString().latin1(), WIDGET->font().toString().latin1());
+		
     *(((CFONT *)THIS->font)->font) = WIDGET->font();
   }
 

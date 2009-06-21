@@ -198,6 +198,8 @@ public:
 	
 	virtual int minimumHeight();
 	
+	void resolveFont(gFont *new_font);
+	
 /*	static gControl* dragWidget();
 	static void setDragWidget(gControl *ct);
 	static char *dragTextBuffer();

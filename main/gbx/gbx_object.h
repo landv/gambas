@@ -100,35 +100,36 @@ static INLINE CLASS *OBJECT_class(void *object)
   } \
 }
 
-#define OBJECT_unref(_pobject) \
+#define OBJECT_unref(_object) \
 { \
-  if (*(_pobject)) \
+  if (_object) \
   { \
-    if (OBJECT_class(*(_pobject)) == (CLASS *)0x23232323) \
+    if (OBJECT_class(_object) == (CLASS *)0x23232323) \
     { \
-      fprintf(stderr, "Already freed! %p\n", *(_pobject)); \
+      fprintf(stderr, "Already freed! %p\n", (_object)); \
       fflush(NULL); \
     } \
-    CLASS_unref((_pobject), TRUE); \
+    if (CLASS_unref((_object), TRUE)) \
+			_object = NULL; \
   } \
 }
 
-#define OBJECT_unref_keep(_pobject) \
+#define OBJECT_unref_keep(_object) \
 { \
-  if (*(_pobject)) \
+  if (_object) \
   { \
-    if (OBJECT_class(*(_pobject)) == (CLASS *)0x23232323) \
+    if (OBJECT_class(_object) == (CLASS *)0x23232323) \
     { \
-      fprintf(stderr, "Already freed! %p\n", *(_pobject)); \
+      fprintf(stderr, "Already freed! %p\n", (_object)); \
       fflush(NULL); \
     } \
-    CLASS_unref((_pobject), FALSE); \
+    CLASS_unref((_object), FALSE); \
   } \
 }
 
 #define OBJECT_REF(_ob, _where) { printf("REF <" _where "> \n"); OBJECT_ref(_ob); }
-#define OBJECT_UNREF(_ob, _where) { printf("UNREF <" _where "> \n"); OBJECT_unref(((void **)(void *)_ob)); }
-#define OBJECT_UNREF_KEEP(_ob, _where) { printf("UNREF_KEEP <" _where "> \n"); OBJECT_unref_keep(((void **)(void *)_ob)); }
+#define OBJECT_UNREF(_ob, _where) { printf("UNREF <" _where "> \n"); OBJECT_unref(_ob); }
+#define OBJECT_UNREF_KEEP(_ob, _where) { printf("UNREF_KEEP <" _where "> \n"); OBJECT_unref_keep(_ob); }
 
 #else /* DEBUG_REF */
 

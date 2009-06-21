@@ -43,7 +43,7 @@ typedef
     HASH_TABLE *hash_table;
     HASH_NODE *last;
 		short mode;
-		bool locked;
+		char locked;
     }
   CCOLLECTION;
 

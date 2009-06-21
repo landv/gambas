@@ -52,7 +52,7 @@ CFONT *CFONT_create(gFont *font, FONT_FUNC func, void *object)
 	{
 		fnt->font->unref();
 		fnt->font = font;
-		font->ref();
+		//font->ref();
 		font->setTag(new gGambasTag((void *)fnt));
 	}
 	
@@ -109,6 +109,12 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 {
   gFont *f = FONT;
   
+	if (!f)
+	{
+		THIS->font = ((CWIDGET *)THIS->object)->widget->font()->copy();
+		f = FONT;
+	}
+	
   if (READ_PROPERTY)
   {
     switch(prop)

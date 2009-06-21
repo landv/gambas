@@ -177,7 +177,7 @@ static void unload_class(CLASS *class)
   if (class->free_event)
     FREE(&class->event, "unload_class");
 
-  if (class->stat && !class->parent)
+  if (class->stat)
     FREE(&class->stat, "unload_class");
 
   if (class->table)
@@ -619,20 +619,20 @@ void CLASS_ref(void *object)
 {
   ((OBJECT *)object)->ref++;
 
-  fprintf(stderr, "%s: ref(%s %p) -> %ld\n",
+  fprintf(stderr, "%s: ref(%s %p) -> %d\n",
     DEBUG_get_current_position(),
     OBJECT_class(object)->name, object, ((OBJECT *)object)->ref);
   fflush(stdout);
 }
 
-void CLASS_unref(void **pobject, boolean can_free)
+bool CLASS_unref(void *ob, boolean can_free)
 {
-  OBJECT *object = *((OBJECT **)pobject);
-
+	OBJECT *object = (OBJECT *)ob;
+	
   if (object->ref <= 0)
-    fprintf(stderr, "*** %p REF = %ld !\n", object, object->ref);
+    fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
 
-  fprintf(stderr, "%s: unref(%s %p) -> %ld\n",
+  fprintf(stderr, "%s: unref(%s %p) -> %d\n",
     DEBUG_get_current_position(),
     OBJECT_class(object)->name, object, object->ref - 1);
   fflush(stdout);
@@ -644,8 +644,10 @@ void CLASS_unref(void **pobject, boolean can_free)
   {
     fprintf(stderr, "FREE %p !\n", object);
     CLASS_free(object);
-    *pobject = NULL;
+		return TRUE;
   }
+	
+	return FALSE;
 }
 #endif
 
@@ -949,42 +951,6 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, i
 	class->size_stat = size_static;
 	if (size_static)
 		ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
-	
-	#if 0
-	class->stat = NULL;
-	
-	if (class->parent)
-	{
-		class->stat = class->parent->stat;
-		class->size_stat = size_static + class->parent->size_stat;
-		
-		if (size_static)
-		{
-			if (class->stat)
-			{
-				fprintf(stderr, "CLASS_calc_info: realloc stat: %d -> %d\n", class->parent->size_stat, class->size_stat);
-				REALLOC(&class->stat, class->size_stat, "CLASS_calc_info");
-				memset(&class->stat[class->parent->size_stat], 0, size_static);
-			}
-			else
-				ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
-			
-			stat = class->stat;
-			while (class->parent)
-			{
-				class = class->parent;
-				fprintf(stderr, "CLASS_calc_info: set stat: %s\n", class->name);
-				class->stat = stat;
-			}
-		}
-	}
-	else
-	{	
-		class->size_stat = size_static;
-		if (size_static)
-			ALLOC_ZERO(&class->stat, class->size_stat, "CLASS_calc_info");
-	}
-	#endif
 }
 
 

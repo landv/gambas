@@ -122,10 +122,10 @@ static void set_font_from_string(CFONT *_object, QString &str)
   {
     list = QStringList::split(",", str);
 
-    f.setBold(false);
-    f.setItalic(false);
-    f.setUnderline(false);
-    f.setStrikeOut(false);
+    //f.setBold(false);
+    //f.setItalic(false);
+    //f.setUnderline(false);
+    //f.setStrikeOut(false);
 
     for (QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     {

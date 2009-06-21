@@ -25,7 +25,7 @@
 #ifndef __GB_ALLOC_H
 #define __GB_ALLOC_H
 
-#define DEBUG_MEMORY 0
+//#define DEBUG_MEMORY 1
 //#define DO_NOT_PRINT_MEMORY
 
 #ifndef __GB_ALLOC_C
