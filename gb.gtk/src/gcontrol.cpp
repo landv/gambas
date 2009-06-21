@@ -187,6 +187,8 @@ void gControl::cleanRemovedControls()
 
 	if (!controls_destroyed) return;
 
+	//fprintf(stderr, "cleanRemovedControls\n");
+
 	for(;;)
 	{
 		iter = g_list_first(controls_destroyed);
@@ -290,7 +292,7 @@ void gControl::destroy()
 		return;
 		
 	hide();
-	//fprintf(stderr, "added to destroy list: %p\n", this);
+	//fprintf(stderr, "added to destroy list: %p %s\n", this, this->name());
 	controls_destroyed=g_list_prepend(controls_destroyed,(gpointer)this);
 	_destroyed = true;
 }

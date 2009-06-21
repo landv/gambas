@@ -34,6 +34,10 @@
 #include "gbx_c_gambas.h"
 #include "gbx_object.h"
 
+#if DEBUG_REF
+const char *OBJECT_ref_where = 0;
+#endif
+
 static OBJECT *EventObject = NULL;
 
 void OBJECT_new(void **ptr, CLASS *class, const char *name, OBJECT *parent)

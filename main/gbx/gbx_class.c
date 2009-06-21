@@ -617,35 +617,54 @@ void CLASS_free(void *object)
 #if DEBUG_REF
 void CLASS_ref(void *object)
 {
-  ((OBJECT *)object)->ref++;
+	((OBJECT *)object)->ref++;
 
-  fprintf(stderr, "%s: ref(%s %p) -> %d\n",
-    DEBUG_get_current_position(),
-    OBJECT_class(object)->name, object, ((OBJECT *)object)->ref);
-  fflush(stdout);
+	#if DEBUG_MEMORY
+	fprintf(stderr, "%s: %s: ref(%s <%d>) -> %d\n", OBJECT_ref_where,
+		DEBUG_get_current_position(),
+		OBJECT_class(object)->name, GET_ALLOC_ID(object), ((OBJECT *)object)->ref);
+	#else
+	fprintf(stderr, "%s: %s: ref(%s %p) -> %d\n", OBJECT_ref_where,
+		DEBUG_get_current_position(),
+		OBJECT_class(object)->name, object, ((OBJECT *)object)->ref);
+	#endif
+	fflush(stdout);
 }
 
 bool CLASS_unref(void *ob, boolean can_free)
 {
 	OBJECT *object = (OBJECT *)ob;
 	
-  if (object->ref <= 0)
-    fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
+	#if DEBUG_MEMORY
+	if (object->ref <= 0)
+		fprintf(stderr, "*** <%d> REF = %d !\n", GET_ALLOC_ID(object), object->ref);
 
-  fprintf(stderr, "%s: unref(%s %p) -> %d\n",
-    DEBUG_get_current_position(),
-    OBJECT_class(object)->name, object, object->ref - 1);
-  fflush(stdout);
+	fprintf(stderr, "%s: %s: unref(%s <%d>) -> %d\n", OBJECT_ref_where,
+		DEBUG_get_current_position(),
+		OBJECT_class(object)->name, GET_ALLOC_ID(object), object->ref - 1);
+	#else
+	if (object->ref <= 0)
+		fprintf(stderr, "*** %p REF = %d !\n", object, object->ref);
 
-  /*if (strcmp(OBJECT_class(object)->name, "Class") == 0)
-    fprintf(stderr, "Class ?\n");*/
+	fprintf(stderr, "%s, %s: unref(%s %p) -> %d\n", OBJECT_ref_where,
+		DEBUG_get_current_position(),
+		OBJECT_class(object)->name, object, object->ref - 1);
+	#endif
+	fflush(stdout);
 
-  if ((--(object->ref) <= 0) && can_free)
-  {
-    fprintf(stderr, "FREE %p !\n", object);
-    CLASS_free(object);
+	/*if (strcmp(OBJECT_class(object)->name, "Class") == 0)
+		fprintf(stderr, "Class ?\n");*/
+
+	if ((--(object->ref) <= 0) && can_free)
+	{
+		#if DEBUG_MEMORY
+		fprintf(stderr, "FREE <%d> !\n", GET_ALLOC_ID(object));
+		#else
+		fprintf(stderr, "FREE %p !\n", object);
+		#endif
+		CLASS_free(object);
 		return TRUE;
-  }
+	}
 	
 	return FALSE;
 }

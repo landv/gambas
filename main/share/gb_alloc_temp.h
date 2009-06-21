@@ -57,18 +57,8 @@ static size_t round_size(size_t size)
 #endif
 
 PUBLIC int MEMORY_count = 0;
-#if DEBUG_MEMORY
-typedef
-  struct ALLOC {
-    int _void;
-    struct ALLOC *next;
-    struct ALLOC *prev;
-    int id;
-    size_t size;
-    }
-  PACKED
-  ALLOC;
 
+#if DEBUG_MEMORY
 PUBLIC int MEMORY_size = 0;
 
 static int _id = 0;

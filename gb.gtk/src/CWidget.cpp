@@ -293,6 +293,8 @@ void DeleteControl(gControl *control)
 	if (!widget)
 		return;
 	
+  GB.Detach(widget);
+
 	if (_old_active_control == widget)
 		_old_active_control = NULL;
 	

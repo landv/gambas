@@ -375,6 +375,8 @@ static bool must_quit(void)
 
 static int my_loop()
 {
+	gControl::cleanRemovedControls();
+
 	while (!must_quit())
 		do_iteration(false);
 

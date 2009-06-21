@@ -87,6 +87,8 @@ static INLINE CLASS *OBJECT_class(void *object)
 
 #if DEBUG_REF
 
+EXTERN const char *OBJECT_ref_where;
+
 #define OBJECT_ref(_object) \
 { \
   if (_object) \
@@ -127,9 +129,9 @@ static INLINE CLASS *OBJECT_class(void *object)
   } \
 }
 
-#define OBJECT_REF(_ob, _where) { printf("REF <" _where "> \n"); OBJECT_ref(_ob); }
-#define OBJECT_UNREF(_ob, _where) { printf("UNREF <" _where "> \n"); OBJECT_unref(_ob); }
-#define OBJECT_UNREF_KEEP(_ob, _where) { printf("UNREF_KEEP <" _where "> \n"); OBJECT_unref_keep(_ob); }
+#define OBJECT_REF(_ob, _where) { OBJECT_ref_where = "REF @" _where; OBJECT_ref(_ob); }
+#define OBJECT_UNREF(_ob, _where) { OBJECT_ref_where = "UNREF @" _where; OBJECT_unref(_ob); }
+#define OBJECT_UNREF_KEEP(_ob, _where) { OBJECT_ref_where = "UNREF_KEEP @" _where; OBJECT_unref_keep(_ob); }
 
 #else /* DEBUG_REF */
 
