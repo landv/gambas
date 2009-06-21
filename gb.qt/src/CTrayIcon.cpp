@@ -239,6 +239,7 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
     MyTrayIcon *wid = new MyTrayIcon();
     wid->setFocusPolicy(QWidget::NoFocus);
     wid->installEventFilter(&CTrayIcon::manager);
+    qApp->removeEventFilter(wid);
 
     THIS->widget = wid;
     
@@ -496,11 +497,14 @@ bool CTrayIcon::eventFilter(QObject *widget, QEvent *event)
   }
   else if (type == QEvent::FocusIn)
   {
-    GB.Raise(THIS, EVENT_GotFocus, 0);
+		CWIDGET_active_control = (CWIDGET *)THIS;
+		CWIDGET_handle_focus_change();
+    //GB.Raise(THIS, EVENT_GotFocus, 0);
   }
   else if (type == QEvent::FocusOut)
   {
-    GB.Raise(THIS, EVENT_LostFocus, 0);
+		CWIDGET_active_control = NULL;
+		CWIDGET_handle_focus_change();
   }
   else if (type == QEvent::ContextMenu)
   {

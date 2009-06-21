@@ -1668,7 +1668,7 @@ static void post_focus_change(void *)
 	_focus_change = FALSE;
 }
 
-static void handle_focus_change()
+void CWIDGET_handle_focus_change()
 {
 	if (_focus_change)
 		return;
@@ -1715,7 +1715,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   {
 		//qDebug("FocusIn: %p %s (%p)", control, control->name, CWIDGET_active_control);
 		CWIDGET_active_control = control;
-		handle_focus_change();
+		CWIDGET_handle_focus_change();
 		CWINDOW_activate(control);
     //GB.Raise(control, EVENT_GotFocus, 0);
   }
@@ -1723,7 +1723,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
   {
 		//qDebug("FocusOut: %p %s (%p)", control, control->name, CWIDGET_active_control);
 		CWIDGET_active_control = NULL;
-		handle_focus_change();
+		CWIDGET_handle_focus_change();
   }
   else if (type == QEvent::ContextMenu)
   {
