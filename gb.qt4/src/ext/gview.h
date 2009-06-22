@@ -147,10 +147,8 @@ protected:
 	virtual void resizeEvent(QResizeEvent *e);
 	virtual void focusInEvent(QFocusEvent *);
 	virtual void focusOutEvent(QFocusEvent *);
-	virtual void imStartEvent(QInputMethodEvent *e);
-	virtual void imComposeEvent(QInputMethodEvent *e);
-	virtual void imEndEvent(QInputMethodEvent *e);
 	virtual bool focusNextPrevChild(bool);
+	virtual void inputMethodEvent(QInputMethodEvent *e);
 
 public:
 
@@ -170,6 +168,8 @@ public:
 	
 	GEditor(QWidget *parent);
 	~GEditor();
+
+	virtual QVariant inputMethodQuery(Qt::InputMethodQuery property) const;
 
 	void setDocument(GDocument *doc);
 	GDocument *getDocument() const { return doc; }

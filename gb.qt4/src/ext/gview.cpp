@@ -107,7 +107,7 @@ GEditor::GEditor(QWidget *parent)
 	setKeyCompression(true);
 	setFocusPolicy(Qt::WheelFocus);
 	setPaletteBackgroundColor(defaultColors[GLine::Background]);
-	setInputMethodEnabled(true);
+	setAttribute(Qt::WA_InputMethodEnabled, true);
 	
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
@@ -1339,14 +1339,14 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 	}
 	else
 	{
-		if (e->text().length()
+		QString t = e->text();
+		if (t.length() && t.at(0).isPrint()
 				&& e->key() != Qt::Key_Return
 				&& e->key() != Qt::Key_Enter
 				&& e->key() != Qt::Key_Delete
-				&& e->key() != Qt::Key_Backspace
-				&& (!e->ascii() || e->ascii() >= 32))
+				&& e->key() != Qt::Key_Backspace)
 		{
-			insert(e->text());
+			insert(t);
 			return;
 		}
 
@@ -1763,19 +1763,107 @@ void GEditor::baptizeVisible(int x, int y)
 	doc->baptizeUntil(lastVisibleRow(y));
 }
 
-
-void GEditor::imStartEvent( QInputMethodEvent *e )
+void GEditor::inputMethodEvent(QInputMethodEvent *e)
 {
-}
+	//qDebug("inputMethodEvent: %s\n", (const char *)e->commitString().toUtf8());
 
-void GEditor::imComposeEvent( QInputMethodEvent *e )
-{
-}
+	if (doc->isReadOnly())
+	{
+		e->ignore();
+		return;
+	}
 
-void GEditor::imEndEvent( QInputMethodEvent *e )
-{
 	insert(e->commitString());
+	
+	/*if (QApplication::keypadNavigationEnabled() && 
+					hasFocus() && !hasEditFocus()
+					&& !e->preeditString().isEmpty()) 
+	{
+		setEditFocus(true);
+		selectAll();        // so text is replaced rather than appended to
+	}*/
+
+	#if 0
+    int priorState = d->undoState;
+    d->removeSelectedText();
+
+    int c = d->cursor; // cursor position after insertion of commit string
+    if (e->replacementStart() <= 0)
+        c += e->commitString().length() + qMin(-e->replacementStart(), e->replacementLength());
+
+    d->cursor += e->replacementStart();
+
+    // insert commit string
+    if (e->replacementLength()) {
+        d->selstart = d->cursor;
+        d->selend = d->selstart + e->replacementLength();
+        d->removeSelectedText();
+    }
+    if (!e->commitString().isEmpty())
+        d->insert(e->commitString());
+
+    d->cursor = c;
+
+    d->textLayout.setPreeditArea(d->cursor, e->preeditString());
+    d->preeditCursor = e->preeditString().length();
+    d->hideCursor = false;
+    QList<QTextLayout::FormatRange> formats;
+    for (int i = 0; i < e->attributes().size(); ++i) {
+        const QInputMethodEvent::Attribute &a = e->attributes().at(i);
+        if (a.type == QInputMethodEvent::Cursor) {
+            d->preeditCursor = a.start;
+            d->hideCursor = !a.length;
+        } else if (a.type == QInputMethodEvent::TextFormat) {
+            QTextCharFormat f = qvariant_cast<QTextFormat>(a.value).toCharFormat();
+            if (f.isValid()) {
+                QTextLayout::FormatRange o;
+                o.start = a.start + d->cursor;
+                o.length = a.length;
+                o.format = f;
+                formats.append(o);
+            }
+        }
+    }
+    d->textLayout.setAdditionalFormats(formats);
+    d->updateTextLayout();
+    update();
+    if (!e->commitString().isEmpty())
+        d->emitCursorPositionChanged();
+    d->finishChange(priorState);
+#ifndef QT_NO_COMPLETER
+    if (!e->commitString().isEmpty())
+        d->complete(Qt::Key_unknown);
+#endif
+	#endif
 }
+
+QVariant GEditor::inputMethodQuery(Qt::InputMethodQuery property) const
+{
+	//qDebug("inputMethodQuery: %d\n", (int)property);
+
+	switch(property) 
+	{
+		case Qt::ImMicroFocus:
+		{
+			int cx, cy, px, py;
+			
+			getCursor(&cy, &cx);
+			cursorToPos(cy, cx, &px, &py);
+			return QRect(px, py, 1, cellHeight());
+		}
+		case Qt::ImFont:
+				return font();
+		case Qt::ImCursorPosition:
+				return QVariant(x);
+		case Qt::ImSurroundingText:
+				return QVariant(doc->getLine(y).getString());
+		case Qt::ImCurrentSelection:
+				return QVariant(doc->getSelectedText().getString());
+		default:
+				return QVariant();
+	}
+}
+
 
 bool GEditor::focusNextPrevChild(bool)
 {
