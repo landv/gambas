@@ -102,10 +102,15 @@ public:
 	void remap();
 	bool doClose();
 	void afterShow();
-
+	void checkMenuBar();
+	int menuBarHeight();
+	void configure();
+	void embedMenuBar(GtkWidget *border);
+	
 	GtkWindowGroup *group;
 	GtkAccelGroup *accel;
 	GtkMenuBar *menuBar;
+	GtkFixed *layout;
 	int stack;
 	int _type;
 	gPicture *_icon;
@@ -133,8 +138,9 @@ public:
 	unsigned _masked : 1;
 	unsigned _xembed : 1;
 	unsigned _activate : 1;
-	unsigned _hideMenus : 1;
 	unsigned _hidden : 1;
+	unsigned _hideMenuBar : 1;
+	unsigned _showMenuBar : 1;
 };
 
 #endif

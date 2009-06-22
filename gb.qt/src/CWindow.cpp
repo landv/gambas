@@ -2222,7 +2222,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
   //if (CWINDOW_Current && (THIS != CWINDOW_Current))
   if (CWINDOW_Current && (THIS->loopLevel != CWINDOW_Current->loopLevel))
   {
-  	qDebug("ignore close event");
+  	//qDebug("ignore close event");
     goto IGNORE;
   }
 

@@ -52,7 +52,6 @@ typedef
 	struct
 	{
 		CWIDGET ob;
-		int f_value;
 	}  
 	CBUTTON;
 

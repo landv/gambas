@@ -55,6 +55,7 @@ public:
 
 	virtual void setBackground(gColor color = COLOR_DEFAULT);
 	virtual void setForeground(gColor color = COLOR_DEFAULT);
+	virtual void setFont(gFont *ft);
 
 	virtual void resize(int w, int h);
 

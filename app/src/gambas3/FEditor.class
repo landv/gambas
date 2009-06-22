@@ -2744,6 +2744,9 @@ Public Sub panToolBar_Configure()
   If $sModule Then
     btnForm.Picture = Picture["img/16/" & $sModule & ".png"]
     btnForm.ToolTip = CModule[$sModule].Name
+    btnForm.Show
+  Else
+    btnForm.Hide
   Endif  
 
 End

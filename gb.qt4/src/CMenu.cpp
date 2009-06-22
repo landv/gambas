@@ -48,27 +48,27 @@ static void refresh_menubar(CMENU *menu)
 {
 	int i;
 	QList<QAction *> list;
+	QAction *action;
 	MyMainWindow *toplevel;
+	CWINDOW *window;
 	QMenuBar *menuBar;
 	
-	if (!GB.Is(menu->parent, CLASS_Window))
+	if (!CMENU_is_toplevel(menu))
 		return;
 	
 	toplevel = (MyMainWindow *)(menu->toplevel);
-	menuBar = ((CWINDOW *)(menu->parent))->menuBar;
+	window = ((CWINDOW *)(menu->parent));
+	menuBar = window->menuBar;
 	list = menuBar->actions();
 	 
 	for (i = 0; i < list.count(); i++)
 	{
-		if (list.at(i)->isVisible())
+		action = list.at(i);
+		if (action->isVisible() && !action->isSeparator())
 			break;
 	}
 	
-	if (i < list.count())
-		menuBar->show();
-	else
-		menuBar->hide();
-	
+	window->hideMenuBar = i == list.count();
 	toplevel->configure();
 }
 
@@ -87,11 +87,34 @@ static void delete_menu(CMENU *_object)
 		delete THIS->menu;
 		THIS->menu = 0;
 	}
+	
+	if (THIS->accel)
+		delete THIS->accel;
 
   CMenu::dict.remove(ACTION);
 
 	THIS->widget.widget = 0;
 	THIS->deleted = true;
+}
+
+static void update_accel(CMENU *_object)
+{
+	if (CMENU_is_toplevel(THIS))
+		return;
+	
+	if (THIS->accel && !THIS->accel->isEmpty())
+	{
+		if (ACTION->isEnabled() && !THIS->noshortcut) // && PARENT_ACTION->isEnabled())
+		{
+			//qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().utf8());
+			ACTION->setShortcut(*(THIS->accel));
+		}
+		else
+		{
+			ACTION->setShortcut(QKeySequence());
+			//qDebug("update_accel: %s: NULL", THIS->widget.name);
+		}
+	}
 }
 
 #if 0
@@ -335,9 +358,16 @@ BEGIN_PROPERTY(CMENU_shortcut)
   }
 
   if (READ_PROPERTY)
-  	GB.ReturnNewZeroString(ACTION->shortcut().toString().toUtf8());
+  	GB.ReturnNewZeroString(THIS->accel ? (const char *)THIS->accel->toString().toUtf8() : NULL);
   else
-  	ACTION->setShortcut(QKeySequence::fromString(QSTRING_PROP()));
+	{
+		if (THIS->accel)
+			delete THIS->accel;
+		THIS->accel = new QKeySequence;
+		*(THIS->accel) = QKeySequence::fromString(QSTRING_PROP());
+		
+		update_accel(THIS);
+	}
 
 END_PROPERTY
 
@@ -589,31 +619,20 @@ void CMenu::slotHidden(void)
 
 void CMenu::enableAccel(CMENU *item, bool enable)
 {
-	//if (((QString)(*item->accel)).latin1())
-	//	qDebug("CMenu::enableAccel: %p %s '%s'", item, enable ? "1" : "0", ((QString)(*item->accel)).latin1());
+	// Do not disable shortcuts when a menu is executed
+	if (item->exec && !enable)
+		return;
 
-	#if 0
-	if (enable)
-  	CONTAINER_CALL(item, setAccel(*(item->accel), item->id))
-	else
-  	CONTAINER_CALL(item, setAccel(QKeySequence(), item->id))
-  	
 	item->noshortcut = !enable;
+	update_accel(item);
 
-	if (item->children)
+	if (item->menu)
 	{
 		int i;
-		/*QListIterator<CMENU> it(*item->children);
-
-		while ((child = it.current()))
-		{
-			++it;
-			CMenu::enableAccel(child, enable);
-		}*/
-		for (i = 0; i < item->children->count(); i++)
-			CMenu::enableAccel(item->children->at(i), enable);
+		
+		for (i = 0; i < item->menu->actions().count(); i++)
+			CMenu::enableAccel(CMenu::dict[item->menu->actions().at(i)], enable);
 	}
-	#endif
 }
 
 

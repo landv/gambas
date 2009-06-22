@@ -198,6 +198,7 @@ public:
 	void drawBorder(GdkDrawable *win = 0);
 	
 	virtual int minimumHeight();
+	void resolveFont(gFont *new_font);
 	
 /*	static gControl* dragWidget();
 	static void setDragWidget(gControl *ct);

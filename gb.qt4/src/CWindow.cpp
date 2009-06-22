@@ -63,6 +63,7 @@
 
 #ifndef NO_X_WINDOW
 #include "x11.h"
+#undef FontChange
 #else
 enum
 {
@@ -430,6 +431,8 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 		GB.Post((void (*)())show_later, (intptr_t)THIS);
 		//WIDGET->show();
 	}
+	
+	THIS->showMenuBar = true;
 
 END_METHOD
 
@@ -1283,17 +1286,13 @@ END_PROPERTY
 
 static bool are_menus_visible(void *_object)
 {
-	return !THIS->hideMenus || !THIS->menuBar->isHidden();
+	return !THIS->hideMenuBar && THIS->showMenuBar;
 }
 
 
 static void set_menus_visible(void *_object, bool v)
 {
-	THIS->hideMenus = !v;
-	if (!THIS->hideMenus)
-		THIS->menuBar->show();
-	else
-		THIS->menuBar->hide();
+	THIS->showMenuBar = v;
 	WINDOW->configure();
 }
 
@@ -1848,64 +1847,6 @@ void MyMainWindow::setType(int type)
 }
 #endif
 
-#if 0
-void MyMainWindow::setBorder(int b, bool force)
-{
-	int f;
-
-	if (force)
-		border = BorderNone;
-	else
-	{
-		if (b == border || b < 0 || b > 2)
-			return;
-	}
-
-	if (b == BorderNone)
-	{
-		//clearWFlags(Qt::WStyle_NormalBorder);
-		//clearWFlags(Qt::WStyle_DialogBorder);
-		//setWFlags(Qt::WStyle_NoBorderEx);
-		//reparent(parentWidget(), getWFlags(), pos());
-
-		f = Qt::WStyle_Customize | Qt::WStyle_NoBorder | getWFlags(); // & 0xffff0000);
-
-		/*if (f & WStyle_StaysOnTop)
-			f |= WType_Popup;
-		else
-			f &= ~WType_Popup;*/
-
-		f |= Qt::WType_TopLevel;
-
-		doReparent(parentWidget(), f, pos());
-
-		border = b;
-		return;
-	}
-
-
-	if (border == BorderNone)
-		doReparent(parentWidget(), Qt::WType_TopLevel | (getWFlags() /*& 0xffff0000*/), pos()); //QPoint(0,0) );
-
-	if (b == BorderFixed)
-	{
-		if (layout())
-			layout()->setResizeMode(QLayout::SetNoConstraint);
-		setMinimumSize(width(), height());
-		setMaximumSize(width(), height());
-	}
-	else
-	{
-		setMinimumSize(0, 0);
-		setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-		if (layout())
-			layout()->setResizeMode(QLayout::SetMinimumSize);
-	}
-
-	border = b;
-}
-#endif
-
 void MyMainWindow::paintUnclip(bool on)
 {
 	setAttribute(Qt::WA_PaintUnclipped, on);
@@ -2146,7 +2087,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	//if (CWINDOW_Current && (THIS != CWINDOW_Current))
 	if (CWINDOW_Current && (THIS->loopLevel != CWINDOW_Current->loopLevel))
 	{
-		qDebug("ignore close event");
+		//qDebug("ignore close event");
 		goto IGNORE;
 	}
 
@@ -2227,73 +2168,6 @@ void MyMainWindow::setPersistent(bool pers)
 	setAttribute(Qt::WA_DeleteOnClose, !pers);
 }
 
-#if 0
-static void set_origin_rec(QWidget *top, QWidget::BackgroundOrigin origin)
-{
-	QObjectList *l = top->queryList("QWidget");
-	QObjectListIt it( *l );
-	QObject *obj;
-
-	while ( (obj = it.current()) != 0 )
-	{
-		++it;
-		((QWidget*)obj)->setBackgroundOrigin(origin);
-	}
-
-	top->setBackgroundOrigin(origin);
-	delete l;
-}
-
-void MyMainWindow::defineMask()
-{
-	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
-	QPixmap *p;
-	QColor c;
-	QWidget *root = WINDOW;
-	//QBitmap b;
-
-	if (!THIS->picture)
-	{
-		if (THIS->masked)
-			clearMask();
-
-		//root->setBackgroundOrigin(QWidget::WidgetOrigin);
-		//root->setPaletteBackgroundColor(THIS->container->paletteBackgroundColor());
-		root->setErasePixmap(0);
-
-		//set_origin_rec(root, QWidget::WidgetOrigin);
-	}
-	else
-	{
-		//set_origin_rec(root, QWidget::AncestorOrigin);
-
-		p = THIS->picture->pixmap;
-
-		if (THIS->masked)
-		{
-			//root->setPaletteBackgroundPixmap(*p);
-			THIS->container->setBackgroundOrigin(QWidget::WindowOrigin);
-			THIS->container->setErasePixmap(*p);
-			if (p->hasAlpha())
-				setMask(*(p->mask()));
-			else
-				clearMask();
-		}
-		else
-		{
-			clearMask();
-			THIS->container->setBackgroundOrigin(QWidget::WidgetOrigin);
-			THIS->container->setErasePixmap(0);
-			//root->setBackgroundOrigin(QWidget::WidgetOrigin);
-			//root->setPaletteBackgroundPixmap(*p);
-			//root->setErasePixmap(0);
-		}
-	}
-
-	//doReparent(parentWidget(), getWFlags(), pos());
-}
-#endif
-
 void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &pos, bool showIt)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
@@ -2365,7 +2239,7 @@ void MyMainWindow::configure()
 	
 	//qDebug("THIS->menuBar = %p  menuBar() = %p", THIS->menuBar, menuBar());
 
-	if (menuBar && !menuBar->isHidden())
+	if (menuBar && THIS->showMenuBar && !THIS->hideMenuBar)
 	{
 		h = menuBar->sizeHint().height();
 		menuBar->setGeometry(0, 0, this->width(), h);
@@ -2373,6 +2247,8 @@ void MyMainWindow::configure()
 	}
 	else
 	{
+		if (menuBar)
+			menuBar->lower();
 		//qDebug("configure: %s (%d %d)", GB.GetClassName(THIS), this->width(), this->height());
 		THIS->container->setGeometry(0, 0, this->width(), this->height());
 		//THIS->container->setGeometry(0, 0, THIS->w, THIS->h);
@@ -2421,6 +2297,14 @@ void MyMainWindow::setGeometry(int x, int y, int w, int h)
 	
 	if (_resizable != save)
 		setResizable(save);
+}
+
+
+void MyMainWindow::changeEvent(QEvent *e)
+{
+	QWidget::changeEvent(e);
+	if (e->type() == QEvent::StyleChange || e->type() == QEvent::FontChange)
+		configure();
 }
 
 

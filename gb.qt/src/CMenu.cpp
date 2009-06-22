@@ -75,6 +75,45 @@ static void set_text(CMENU *item, char *text)
 }
 
 
+static void refresh_menubar(CMENU *item)
+{
+	MyMainWindow *toplevel;
+	CWINDOW *window;
+	QMenuBar *menuBar;
+	bool show = false;
+	
+	if (!CMENU_is_top(item))
+		return;
+	
+	toplevel = (MyMainWindow *)(item->toplevel);
+  window = (CWINDOW *)CWidget::getReal(toplevel);
+	menuBar = ((QMenuBar *)item->container);
+	
+	if (window->menu)
+	{
+		uint i;
+		CMENU *child;
+
+		for (i = 0; i < window->menu->count(); i++)
+		{
+			child = window->menu->at(i);
+			if (CMENU_is_visible(child) && !CMENU_is_separator(child))
+			{
+				show = true;
+				break;
+			}
+		}
+	}
+
+	if (show)
+		menuBar->show();
+	else
+		menuBar->hide();
+	
+	toplevel->configure();
+}
+
+
 static void hide_menu(CMENU *item)
 {
   if (!CWIDGET_test_flag(item, WF_VISIBLE))
@@ -88,16 +127,10 @@ static void hide_menu(CMENU *item)
   //if (index >= 0)
   item->container->removeItem(item->id);
 
-  if (CMENU_is_top(item))
-  {
-    if (item->container->count() == 0)
-    {
-      ((QMenuBar *)item->container)->hide();
-      ((MyMainWindow *)item->toplevel)->configure();
-		}
-  }
-
   CWIDGET_clear_flag(item, WF_VISIBLE);
+
+	if (CMENU_is_top(item))
+		refresh_menubar(item);
 }
 
 static void update_accel(CMENU *item)
@@ -196,20 +229,14 @@ static void show_menu(CMENU *item)
 	item->container->setItemChecked(item->id, item->checked);
 	update_accel(item);
 
-	if (CMENU_is_top(item))
-	{
-		if (item->container->count() == 1)
-		{
-			((QMenuBar *)item->container)->show();
-			((MyMainWindow *)item->toplevel)->configure();
-		}
-	}
-
 #ifdef DEBUG_MENU
   qDebug("show_menu: pos = %d", pos);
 #endif
 
   CWIDGET_set_flag(item, WF_VISIBLE);
+
+	if (CMENU_is_top(item))
+		refresh_menubar(item);
 }
 
 

@@ -82,6 +82,7 @@ static gboolean resize_later(gMainWindow *data)
 	data->bufW = data->_next_w;
 	data->bufH = data->_next_h;
 	data->_next_timer = 0;
+	data->configure();
 	data->performArrange();
 
 	if (data->onResize) 
@@ -179,6 +180,7 @@ void gMainWindow::initialize()
 	_default = NULL;
 	_cancel = NULL;
 	menuBar = NULL;
+	layout = NULL;
 	top_only = false;
 	_icon = NULL;
 	_picture = NULL;
@@ -193,8 +195,9 @@ void gMainWindow::initialize()
 	_next_timer = 0;
 	_xembed = false;
 	_activate = false;
-	_hideMenus = false;
 	_hidden = false;
+	_hideMenuBar = false;
+	_showMenuBar = true;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -943,7 +946,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		
 		new_border = gtk_event_box_new();
 		gtk_widget_reparent(widget, new_border);
-		gMenu::embedMenuBar(this, new_border);
+		embedMenuBar(new_border);
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
@@ -957,7 +960,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		setForeground(fg);
 		setFont(font());
 		
-		gMenu::checkMenuBar(this);
+		checkMenuBar();
 		
 		move(x, y);
 		gtk_widget_set_size_request(border, width(), height());
@@ -968,7 +971,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		// TODO: test that
 		new_border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_widget_reparent(widget, new_border);
-		gMenu::embedMenuBar(this, new_border);
+		embedMenuBar(new_border);
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
@@ -1083,18 +1086,27 @@ int gMainWindow::clientWidth()
 	return width();
 }
 
-int gMainWindow::clientHeight()
+
+int gMainWindow::menuBarHeight()
 {
 	GtkRequisition req;
 	int h = 0;
 
-	if (menuBar && GTK_WIDGET_VISIBLE(GTK_WIDGET(menuBar)))
+	if (menuBar)
 	{
 		gtk_widget_size_request(GTK_WIDGET(menuBar), &req);
 		h = req.height;
 	}
 	
-	return height() - h;
+	return h;
+}
+
+int gMainWindow::clientHeight()
+{
+	if (isMenuBarVisible())
+		return height() - menuBarHeight();
+	else
+		return height();
 }
 
 void gMainWindow::setActiveWindow(gControl *control)
@@ -1140,28 +1152,102 @@ void gMainWindow::setType()
 }
 #endif
 
+void gMainWindow::configure()
+{
+	int h;
+	
+	h = menuBarHeight();
+	
+	if (isMenuBarVisible())
+	{
+		gtk_fixed_move(layout, GTK_WIDGET(menuBar), 0, 0);
+		gtk_widget_set_size_request(GTK_WIDGET(menuBar), width(), h);
+		gtk_fixed_move(layout, widget, 0, h);
+		gtk_widget_set_size_request(widget, width(), height() - h);
+	}
+	else
+	{
+		if (layout)
+		{
+			if (menuBar)
+				gtk_fixed_move(layout, GTK_WIDGET(menuBar), 0, -h);
+			gtk_fixed_move(layout, widget, 0, 0);
+			gtk_widget_set_size_request(widget, width(), height());
+		}
+	}
+}
+
 void gMainWindow::setMenuBarVisible(bool v)
 {
-	_hideMenus = !v;
+	_showMenuBar = v;
 	
 	if (!menuBar)
 		return;
-		
-	if (v)
-		gtk_widget_show(GTK_WIDGET(menuBar));
-	else
-		gtk_widget_hide(GTK_WIDGET(menuBar));
-		
+	
+	configure();
 	performArrange();
 }
 
 bool gMainWindow::isMenuBarVisible()
 {
-	return !_hideMenus || (menuBar && GTK_WIDGET_MAPPED(GTK_WIDGET(menuBar)));
+	return menuBar && !_hideMenuBar && _showMenuBar; //|| (menuBar && GTK_WIDGET_MAPPED(GTK_WIDGET(menuBar)));
 }
 
 void gMainWindow::setFont(gFont *ft)
 {
 	gContainer::setFont(ft);
 	gMenu::updateFont(this);
+}
+
+void gMainWindow::checkMenuBar()
+{
+	int i;
+	gMenu *menu;
+
+	if (menuBar)
+	{
+		_hideMenuBar = true;
+		for (i = 0;; i++)
+		{
+			menu = gMenu::winChildMenu(this, i);
+			if (!menu)
+				break;
+			if (menu->isVisible() && !menu->isSeparator())
+			{
+				_hideMenuBar = false;
+				break;
+			}
+		}
+	}
+		
+	configure();
+}
+
+void gMainWindow::embedMenuBar(GtkWidget *border)
+{
+	if (menuBar)
+	{
+		// layout is automatically destructed ?
+		layout = GTK_FIXED(gtk_fixed_new());
+
+		g_object_ref(G_OBJECT(menuBar));
+		
+		if (gtk_widget_get_parent(GTK_WIDGET(menuBar)))
+			gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(menuBar))), GTK_WIDGET(menuBar));
+	
+		gtk_fixed_put(layout, GTK_WIDGET(menuBar), 0, 0);
+
+		g_object_unref(G_OBJECT(menuBar));
+	
+		gtk_widget_reparent(widget, GTK_WIDGET(layout));
+		gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(layout));
+	
+		gtk_widget_show_all(GTK_WIDGET(layout));
+		//gtk_widget_show(GTK_WIDGET(par->menuBar));
+		set_gdk_fg_color(GTK_WIDGET(menuBar), foreground());
+		set_gdk_bg_color(GTK_WIDGET(menuBar), background());
+		//gtk_widget_modify_font(GTK_WIDGET(menuBar), font()->desc());
+		
+		checkMenuBar();
+	}
 }

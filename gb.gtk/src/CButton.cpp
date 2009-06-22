@@ -70,8 +70,7 @@ END_METHOD
 BEGIN_METHOD(CCHECKBOX_new, GB_OBJECT parent)
 
 	InitControl(new gButton(CONTAINER(VARG(parent)), gButton::Check), (CWIDGET*)THIS);
-	THIS->f_value=0;
-	BUTTON->onClick=gb_raise_button_Click;
+	BUTTON->onClick = gb_raise_button_Click;
 
 END_METHOD
 
@@ -156,13 +155,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCHECKBOX_tristate)
 
-	if (READ_PROPERTY) { GB.ReturnBoolean(THIS->f_value); return; }
-	THIS->f_value=VPROP(GB_BOOLEAN);
-	if (!THIS->f_value  && BUTTON->inconsistent())
-	{
-		BUTTON->setInconsistent(false);
-		BUTTON->setValue(true);	
-	}
+	if (READ_PROPERTY) 
+		GB.ReturnBoolean(BUTTON->isTristate());
+	else
+		BUTTON->setTristate(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -170,15 +166,21 @@ BEGIN_PROPERTY(CCHECKBOX_value)
 
 	if (READ_PROPERTY) 
 	{ 
-		if (THIS->f_value && BUTTON->inconsistent()) { GB.ReturnInteger(1); return; }
-		GB.ReturnInteger( BUTTON->value() ? -1 : 0 );
-		return;
-		
+		if (BUTTON->isTristate() && BUTTON->inconsistent())
+			GB.ReturnInteger(1);
+		else
+			GB.ReturnInteger(BUTTON->value() ? -1 : 0);
 	}
-
-	if (THIS->f_value && (VPROP(GB_INTEGER)==1) ) { BUTTON->setInconsistent(true); return; }
-	BUTTON->setInconsistent(false);
-	BUTTON->setValue(VPROP(GB_INTEGER));
+	else
+	{
+		if (BUTTON->isTristate() && VPROP(GB_INTEGER) == 1) 
+			BUTTON->setInconsistent(true);
+		else
+		{
+			BUTTON->setInconsistent(false);
+			BUTTON->setValue(VPROP(GB_INTEGER));
+		}
+	}
 
 END_PROPERTY
 

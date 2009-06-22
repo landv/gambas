@@ -358,66 +358,9 @@ void gMenu::initialize()
 	menus=g_list_append (menus,(gpointer)this);
 }
 
-void gMenu::checkMenuBar(gMainWindow *win)
-{
-	bool vl;
-	int i;
-	gMenu *menu;
-
-	if (win->menuBar)
-	{
-		vl = false;
-		for (i = 0;; i++)
-		{
-			menu = gMenu::winChildMenu(win, i);
-			if (!menu)
-				break;
-			if (menu->isVisible())
-			{
-				vl = true;
-				break;
-			}
-		}
-		
-		if (vl)
-			gtk_widget_show(GTK_WIDGET(win->menuBar));
-		else
-			gtk_widget_hide(GTK_WIDGET(win->menuBar));
-		//fprintf(stderr, "checkMenuBar: %s %d\n", win->name(), GTK_WIDGET_VISIBLE(GTK_WIDGET(win->menuBar)));
-	}
-}
-
-void gMenu::embedMenuBar(gMainWindow *par, GtkWidget *border)
-{
-	GtkVBox *box;
-
-	if (par->menuBar)
-	{
-		box=(GtkVBox*)gtk_vbox_new(false,0);
-		g_object_ref(G_OBJECT(par->menuBar));
-		
-		if (gtk_widget_get_parent(GTK_WIDGET(par->menuBar)))
-			gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(par->menuBar))), GTK_WIDGET(par->menuBar));
-		
-		gtk_box_pack_start(GTK_BOX(box),GTK_WIDGET(par->menuBar),false,true,0);
-
-		g_object_unref(G_OBJECT(par->menuBar));
-		
-		gtk_widget_reparent(par->widget, GTK_WIDGET(box));
-		gtk_container_add(GTK_CONTAINER(border),GTK_WIDGET(box));
-		
-		gtk_widget_show_all(GTK_WIDGET(box));
-		//gtk_widget_show(GTK_WIDGET(par->menuBar));
-		set_gdk_fg_color(GTK_WIDGET(par->menuBar),par->foreground());
-		set_gdk_bg_color(GTK_WIDGET(par->menuBar),par->background());
-		checkMenuBar(par);
-	}
-}
 
 gMenu::gMenu(gMainWindow *par,bool hidden)
 {
-	GtkVBox *box;
-
 	pr = (gpointer)par;
   initialize();
 	top_level=true;
@@ -428,7 +371,7 @@ gMenu::gMenu(gMainWindow *par,bool hidden)
 	if (!par->menuBar)
 	{
 		par->menuBar=(GtkMenuBar*)gtk_menu_bar_new();
-		embedMenuBar(par, par->border);
+		par->embedMenuBar(par->border);
 	}
 	
 	setText(NULL);
@@ -550,7 +493,7 @@ void gMenu::updateVisible()
 	g_object_set(G_OBJECT(menu),"visible",vl,(void *)NULL);
 	
 	if (top_level && pr)
-		checkMenuBar((gMainWindow *)pr);
+		((gMainWindow *)pr)->checkMenuBar();
 }
 
 void gMenu::setVisible(bool vl)

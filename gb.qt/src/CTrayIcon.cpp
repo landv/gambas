@@ -237,7 +237,8 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
     MyTrayIcon *wid = new MyTrayIcon();
     wid->setFocusPolicy(QWidget::NoFocus);
     wid->installEventFilter(&CTrayIcon::manager);
-
+		qApp->removeEventFilter(wid);
+		
     THIS->widget = wid;
     
     QObject::connect(WIDGET, SIGNAL(embedded()), &CTrayIcon::manager, SLOT(embedded()));

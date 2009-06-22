@@ -628,14 +628,43 @@ gFont* gControl::font()
 }
 
 
+void gControl::resolveFont(gFont *new_font)
+{
+	gFont *font = new gFont();
+	gControl *ctrl = this;
+	
+	font->mergeFrom(new_font);
+
+	for(;;)
+	{
+		if (font->isAllSet())
+			break;
+
+		ctrl = ctrl->parent();
+		if (!ctrl)
+			break;
+
+		if (ctrl->fnt)
+			font->mergeFrom(ctrl->fnt);
+	}
+	
+	gtk_widget_modify_font(widget, font->desc());
+	
+	gFont::set(&fnt, font);
+}
+
 void gControl::setFont(gFont *ft)
 {
 	if (ft)
-		gFont::set(&fnt, ft->copy());
-	else
+	{
+		resolveFont(ft);
+	}
+	else if (fnt)
+	{
 		gFont::assign(&fnt);
-		
-	gtk_widget_modify_font(widget, fnt ? fnt->desc() : NULL);
+		gtk_widget_modify_font(widget, NULL);
+	}
+	
 	resize();
 }
 

@@ -83,7 +83,8 @@ typedef
 		unsigned stateChange : 1;
 		unsigned opening : 1;
 		unsigned closing : 1;
-		unsigned hideMenus : 1;
+		unsigned hideMenuBar : 1;
+		unsigned showMenuBar : 1;
 		}
 	CWINDOW;
 
@@ -175,6 +176,7 @@ protected:
 	virtual void moveEvent(QMoveEvent *);
 	virtual void keyPressEvent(QKeyEvent *);
 	virtual void closeEvent(QCloseEvent *);
+	virtual void changeEvent(QEvent *);
 
 	//bool eventFilter(QObject *, QEvent *);
 

@@ -44,6 +44,7 @@ extern GB_DESC CMenuChildrenDesc[];
 #define THIS  OBJECT(CMENU)
 //#define CONTROL  OBJECT(CWIDGET)
 #define ACTION ((QAction *)((CWIDGET *)_object)->widget)
+#define PARENT_ACTION ((QAction *)((CWIDGET *)(THIS->parent))->widget)
 
 #define CMENU_is_toplevel(_menu) (GB.Is((_menu)->parent, CLASS_Window))
 
@@ -60,6 +61,7 @@ typedef
     //QMenuBar *parentMenuBar;
     QWidget *toplevel;
     QMenu *menu;
+		QKeySequence *accel;
     CPICTURE *picture;
     unsigned deleted : 1;
     unsigned toggle : 1;

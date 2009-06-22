@@ -18,18 +18,19 @@ public:
 	static void updateFont(gMainWindow *win);
 
 //"Properties"
-	bool checked() { return _checked; }
-	bool toggle() { return _toggle; }
+	bool checked() const { return _checked; }
+	bool toggle() const { return _toggle; }
 	bool enabled();
 	gMenu* childMenu(int pos);
 	int childCount();
-	char* shortcut() { return _shortcut; }
-	char* text() { return _text; }
+	char* shortcut() const { return _shortcut; }
+	char* text() const { return _text; }
 	bool isVisible();
-	gPicture* picture() { return _picture; }
+	gPicture* picture() const { return _picture; }
 	gMainWindow* window();
-	char *name() { return _name; }
-	bool topLevel() { return top_level; }
+	char *name() const { return _name; }
+	bool topLevel() const { return top_level; }
+	bool isSeparator() const { return _style == SEPARATOR; }
 
 	void setChecked(bool vl);
 	void setToggle(bool vl);
@@ -41,7 +42,7 @@ public:
 	void hide() { setVisible(false); }
 	void setPicture(gPicture *pic);
 	void setName(char *name);
-	bool action() { return _action; }
+	bool action() const { return _action; }
 	void setAction(bool v) { _action = v; }
 	void setFont();
 
@@ -70,12 +71,9 @@ public:
 	GtkWidget *check;
 	GtkSizeGroup *sizeGroup;
 	void initialize();
-	gMenuStyle style() { return _style; }
+	gMenuStyle style() const { return _style; }
   void hideSeparators();
 
-	static void embedMenuBar(gMainWindow *win, GtkWidget *border);
-	static void checkMenuBar(gMainWindow *win);
-	
 private:
 
 	gMenuStyle _style, _oldstyle;

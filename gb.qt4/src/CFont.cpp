@@ -114,7 +114,7 @@ static void set_font_from_string(CFONT *_object, QString &str)
   QString name, elt, flag;
   double size = 0;
   bool number;
-  QFont f(qApp->font());
+  QFont f;
 
   // (!) Remove this test later, it is for backward compatibility
 
@@ -122,10 +122,10 @@ static void set_font_from_string(CFONT *_object, QString &str)
   {
     list = str.split(",");
 
-    f.setBold(false);
-    f.setItalic(false);
-    f.setUnderline(false);
-    f.setStrikeOut(false);
+    //f.setBold(false);
+    //f.setItalic(false);
+    //f.setUnderline(false);
+    //f.setStrikeOut(false);
 
     for (QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     {

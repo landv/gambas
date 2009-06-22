@@ -61,9 +61,10 @@ int THROW_MEMORY()
 PUBLIC void MEMORY_init(void)
 {
 	#if DEBUG_MEMORY
-	char path[256];
+	/*char path[256];
 	sprintf(path, "/tmp/gambas-memory-%d-%d.log", getuid(), getpid());
-	MEMORY_log = fopen(path, "w+");
+	MEMORY_log = fopen(path, "w+");*/
+	MEMORY_log = stderr;
 	#endif
 }
 

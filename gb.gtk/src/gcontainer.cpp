@@ -583,3 +583,23 @@ void gContainer::updateFocusChain()
 	
 	g_list_free(chain);
 }
+
+void gContainer::setFont(gFont *ft)
+{
+	GList *iter;
+	gControl *child;
+
+	gControl::setFont(ft);
+
+	if (!ch_list) 
+		return;
+	
+	iter = g_list_first(ch_list);
+	while (iter)
+	{
+		child = (gControl *)iter->data;
+		if (!child->bg_set)
+			child->setFont(child->font());
+		iter = iter->next;
+	}	
+}
