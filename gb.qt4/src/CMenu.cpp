@@ -470,8 +470,10 @@ BEGIN_METHOD_VOID(CMENU_clear)
     for (i = 0; i < list.count(); i++)
 		{
 			menu = CMenu::dict[list.at(i)];
+			GB.Ref(menu);
 			delete ((QAction *)(menu->widget.widget));
     	delete_menu(menu);
+			GB.Unref(POINTER(&menu));
 		}
   }
 

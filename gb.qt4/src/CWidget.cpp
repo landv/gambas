@@ -297,22 +297,12 @@ void CWIDGET_destroy(CWIDGET *object)
 		return;
 
 	//qDebug("CWIDGET_destroy: %p (%p) :%p:%ld", object, object->widget, object->ob.klass, object->ob.ref);
-
-	/*if (!CWIDGET_destroy_list)
-		CWIDGET_destroy_list = object;
-	else
-	{
-		CWIDGET_destroy_last->next = object;
-		object->prev = CWIDGET_destroy_last;
-	}
-
-	CWIDGET_destroy_last = object;*/
-
-	CWIDGET_set_flag(object, WF_DELETED);
-
 	//qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(object), object);
 
+
+	CWIDGET_set_flag(object, WF_DELETED);
 	CWIDGET_set_visible(object, false);
+
 	object->widget->deleteLater();
 }
 
@@ -658,6 +648,9 @@ static bool is_visible(void *_object)
 
 void CWIDGET_set_visible(CWIDGET *_object, bool v)
 {
+	// if (v == THIS->flag.visible)
+	//	return;
+	
 	THIS->flag.visible = v;
 	if (THIS->flag.visible)
 	{
@@ -1736,11 +1729,11 @@ void CWidget::destroy()
 	QWidget *w = (QWidget *)sender();
 	CWIDGET *ob = CWidget::get(w);
 
-	//qDebug(">> CWidget::destroy (%s %p)", GB.GetClassName(ob), ob);
-
 	if (ob == NULL)
 		return;
 	
+	//qDebug(">> CWidget::destroy %p (%s %p)", w, GB.GetClassName(ob), ob);
+
 	QEvent e(EVENT_DESTROY);
 
 	if (enter == ob)
@@ -1765,6 +1758,8 @@ void CWidget::destroy()
 
 	qApp->sendEvent(w, &e);
 	//qDebug("<< CWidget::destroy %p (%p)", ob, ob->widget);
+
+	//qDebug("<< CWidget::destroy %p (%s %p)", w, GB.GetClassName(ob), ob);
 
 	GB.Unref(POINTER(&ob));
 }

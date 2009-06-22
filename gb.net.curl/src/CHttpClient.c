@@ -127,8 +127,8 @@ int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 	{
 		GB.Realloc((void**)POINTER(&THIS_HTTP->buf_header),sizeof(char*)*(1+THIS_HTTP->len_header));
 		GB.Alloc((void**)&(THIS_HTTP->buf_header[THIS_HTTP->len_header]),nmemb+1);
-		THIS_HTTP->buf_header[THIS_HTTP->len_header][nmemb]=0;
 	}
+	THIS_HTTP->buf_header[THIS_HTTP->len_header][nmemb]=0;
 	strncpy(THIS_HTTP->buf_header[THIS_HTTP->len_header],buffer,nmemb);
 	THIS_HTTP->len_header++;
 

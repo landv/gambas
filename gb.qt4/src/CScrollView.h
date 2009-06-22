@@ -29,7 +29,7 @@
 //Added by qt3to4:
 #include <QResizeEvent>
 #include <QShowEvent>
-#include <QChildEvent>
+//#include <QChildEvent>
 #include <QScrollArea>
 
 #include "CWidget.h"
@@ -62,6 +62,7 @@ class MyScrollView : public QScrollArea
 public:
 
   MyScrollView(QWidget *);
+	bool _noscroll;
 
 protected:
 

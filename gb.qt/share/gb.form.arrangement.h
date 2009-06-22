@@ -183,6 +183,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 		// INIT_CHECK_CHILDREN_LIST() can return
 		arr->locked = false;
+		if (!cont)
+			return;
 		INIT_CHECK_CHILDREN_LIST(cont);
 		arr->locked = true;
 

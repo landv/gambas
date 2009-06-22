@@ -104,6 +104,7 @@ DECLARE_PROPERTY(CCONTAINER_border);
 void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);
 void CCONTAINER_insert_child(void *_object);
+void CCONTAINER_remove_child(void *_object);
 
 class MyContainer : public QWidget
 {
@@ -112,6 +113,7 @@ class MyContainer : public QWidget
 public:
 
   MyContainer(QWidget *);
+	virtual ~MyContainer();
 	int frameStyle() const { return _frame; }
 	void setFrameStyle(int frame);
 

@@ -959,7 +959,7 @@ void EXPORT GB_EXIT()
 		X11_exit();
 	#endif
 	//qApp->setStyle("windows");
-	delete qApp;
+	//delete qApp;
 }
 
 #ifndef NO_X_WINDOW

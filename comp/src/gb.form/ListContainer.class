@@ -9,6 +9,7 @@ Public Const _DefaultEvent As String = "Click"
 
 Event Click
 Event Activate
+Event Scroll
 
 Property Read Count As Integer
 Property Index As Integer
@@ -85,6 +86,13 @@ Public Sub ScrollView_Insert(Child As Control)
   AttachRec(Child)
   
 End
+
+Public Sub ScrollView_Scroll()
+  
+  Raise Scroll
+  
+End
+
 
 Public Sub Child_Insert(Child As Control)
 
@@ -288,9 +296,10 @@ Public Sub Clear()
   
   Dim hChild As Control
   
-  For Each hChild In $hScrollView.Children
-    hChild.Delete
-  Next
+  'For Each hChild In $hScrollView.Children
+  '  hChild.Delete
+  'Next
+  $hScrollView.Children.Clear
   $hSelected = Null
   Wait
   

@@ -27,7 +27,7 @@
 //Added by qt3to4:
 #include <QShowEvent>
 #include <QResizeEvent>
-#include <QChildEvent>
+//#include <QChildEvent>
 #include <QEvent>
 #include <QScrollArea>
 #include <QScrollBar>
@@ -54,6 +54,7 @@ MyScrollView::MyScrollView(QWidget *parent)
 : QScrollArea(parent)
 {
 	setMouseTracking(false);
+	_noscroll = false;
 }
 
 /*
@@ -112,12 +113,17 @@ void MyContents::autoResize(void)
 	int oldw, oldh;
   bool locked;
   int i;
+	int x, y;
   
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
 	ww = hh = -1;
 	oldw = width(); oldh = height();
 
+	x = sw->horizontalScrollBar()->value();
+	y = sw->verticalScrollBar()->value();
+	sw->_noscroll = true;
+	
 	if (THIS->arrangement.mode)
 	{
 		/*ww = sw->visibleWidth();
@@ -223,6 +229,11 @@ void MyContents::autoResize(void)
 		#endif
 		CCONTAINER_arrange(THIS);
 	}
+	
+	sw->horizontalScrollBar()->setValue(x);
+	sw->verticalScrollBar()->setValue(y);
+	sw->_noscroll = false;
+	
 	timer = false;
 }
 
@@ -293,11 +304,9 @@ void MyContents::checkWidget(QWidget *wid)
 	}
 
 	#ifdef DEBUG
-	if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
-	{
-		CWIDGET *ob = CWidget::get(wid);
-		qDebug("MyContents::checkWidget: %s %s  %p %p", ob ? GB.GetClassName(ob) : 0, ob ? ob->name : 0, wid, sw);
-	}
+	CWIDGET *ob = CWidget::get(wid);
+	qDebug("MyContents::checkWidget: %p: %s %p", wid, GB.GetClassName(ob), ob);
+	qDebug("MyContents::checkWidget: %d %d", wid->x(), wid->y());
 	#endif
 
 	if (wid == right || wid == bottom)
@@ -321,25 +330,34 @@ void MyContents::checkWidget(QWidget *wid)
   }
 
   if (doResize)
-    checkAutoResizeLater();
+		_mustfind = true;
+	
+  checkAutoResizeLater();
 }
-
 
 void MyContents::childEvent(QChildEvent *e)
 {
-  if (!e->child()->isWidgetType())
-    return;
+	MyContainer::childEvent(e);
 
-  MyContainer::childEvent(e);
+	if (!e->child()->isWidgetType())
+		return;
+	if (!CWidget::get(e->child()))
+		return;
 
-  if (e->added())
+	if (e->added())
   {
     checkWidget((QWidget *)e->child());
   }
   else if (e->removed())
   {
     if (e->child() == right || e->child() == bottom)
+		{
+			if (e->child() == right)
+				right = 0;
+			else
+				bottom = 0;
 			_mustfind = true;
+		}
 		checkAutoResizeLater();
   }
 }
@@ -362,7 +380,8 @@ void MyContents::checkAutoResizeLater()
 
 void CSCROLLVIEW_arrange(void *_object, CWIDGET *child)
 {
-	THIS->container->checkWidget(child->widget);
+	if (THIS->container)
+		THIS->container->checkWidget(child->widget);
 }
 
 /***************************************************************************
@@ -594,6 +613,9 @@ static void send_scroll(void *param)
 void CScrollView::scrolled(void)
 {
 	GET_SENDER(_object);
+	
+	if (WIDGET->_noscroll)
+		return;
 
   GB.Ref(THIS);
   GB.Post((void (*)())send_scroll, (intptr_t)THIS);

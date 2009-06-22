@@ -67,10 +67,13 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   hVBox = New VBox(panName)
   hVBox.W = Desktop.Scale * 4
   
+  hSpace = New Panel(hVBox)
+  hSpace.H = 4
+  
   picCheck = New PictureBox(hVBox) As "picCheck"
-  picCheck.Alignment = Align.Center
+  picCheck.Alignment = Align.Top
   picCheck.Picture = Picture["img/16/unchecked.png"]
-  picCheck.Resize(Desktop.Scale * 4, Desktop.Scale * 4)
+  picCheck.Resize(Desktop.Scale * 4, 16)
   
   txtName = New TextLabel(panName)
   txtName.Padding = 2
@@ -116,7 +119,7 @@ End
 Public Sub _SetLabelWidth()
   
   txtName.Width = $iMaxWidth + 16
-  picCheck.H = txtName.H
+  'picCheck.H = txtName.H
   
 End
 
