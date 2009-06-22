@@ -127,8 +127,9 @@ int http_header_curl(void *buffer, size_t size, size_t nmemb, void *_object)
 	{
 		GB.Realloc((void**)POINTER(&THIS_HTTP->buf_header),sizeof(char*)*(1+THIS_HTTP->len_header));
 		GB.Alloc((void**)&(THIS_HTTP->buf_header[THIS_HTTP->len_header]),nmemb+1);
-		THIS_HTTP->buf_header[THIS_HTTP->len_header][nmemb]=0;
 	}
+
+	THIS_HTTP->buf_header[THIS_HTTP->len_header][nmemb]=0;
 	strncpy(THIS_HTTP->buf_header[THIS_HTTP->len_header],buffer,nmemb);
 	THIS_HTTP->len_header++;
 
@@ -197,8 +198,8 @@ void http_initialize_curl_handle(void *_object)
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT,THIS_HTTP->sUserAgent);
-	curl_easy_setopt(THIS_CURL, CURLOPT_HEADERFUNCTION, http_header_curl);
-	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION, http_write_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_HEADERFUNCTION, (curl_write_callback)http_header_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEFUNCTION, (curl_write_callback)http_write_curl);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEDATA, _object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_WRITEHEADER, _object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_COOKIEFILE, THIS_HTTP->cookiesfile);
