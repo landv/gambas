@@ -299,12 +299,6 @@ MyContainer::MyContainer(QWidget *parent)
 {
 }
 
-MyContainer::~MyContainer()
-{
-	void *_object = CWidget::get(this);
-	THIS->container = 0;
-}
-
 void MyContainer::showEvent(QShowEvent *e)
 {
 	void *_object = CWidget::get(this);

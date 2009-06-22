@@ -113,7 +113,6 @@ class MyContainer : public QWidget
 public:
 
   MyContainer(QWidget *);
-	virtual ~MyContainer();
 	int frameStyle() const { return _frame; }
 	void setFrameStyle(int frame);
 
