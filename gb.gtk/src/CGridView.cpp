@@ -115,7 +115,7 @@ static void raise_data(gTableData *fill,int row, int col,void *_object)
 	{
 		THIS->data = fill;
 		GB.Raise(_object,EVENT_Data,2,GB_T_INTEGER,row,GB_T_INTEGER,col);
-		THIS->data=NULL;
+		THIS->data = NULL;
 	}
 }
 

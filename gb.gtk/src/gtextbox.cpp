@@ -86,6 +86,8 @@ char* gTextBox::text()
 
 void gTextBox::setText(const char *vl)
 {
+	if (!vl) vl = "";
+	
 	if (!entry || !strcmp(vl, text()))
 		return;
 		
