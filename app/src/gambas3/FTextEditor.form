@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(9.5714,14,96,71)
+  MoveScaled(9.4286,14,96,71)
   Text = ("")
   Icon = Picture["icon:/small/text"]
   Persistent = True
@@ -64,7 +64,6 @@
       Action = ".find"
       Text = ("Find...")
       Picture = Picture["icon:/small/find"]
-      Shortcut = "Ctrl+F"
     }
     { mnuReplace Menu
       Action = ".replace"
@@ -259,7 +258,7 @@
   }
   { Action find
     Text = "Find..."
-    Shortcut = "Ctrl+F"
+    Shortcut = ""
     Picture = "icon:/small/find"
   }
   { Action find-next

@@ -52,7 +52,6 @@
       Text = ("Toggle &breakpoint")
       Picture = Picture["icon:/small/flag"]
       Toggle = True
-      Shortcut = "F9"
     }
     { mnuWatch Menu
       Action = "watch"
@@ -126,7 +125,6 @@
       Action = ".find"
       Text = ("Find...")
       Picture = Picture["icon:/small/find"]
-      Shortcut = "Ctrl+F"
     }
     { mnuReplace Menu
       Action = ".replace"
@@ -407,7 +405,7 @@
 { Actions
   { Action break
     Text = "Toggle &breakpoint"
-    Shortcut = "F9"
+    Shortcut = ""
     Picture = "icon:/small/flag"
   }
   { Action code-form
@@ -430,7 +428,7 @@
   }
   { Action find
     Text = "Find..."
-    Shortcut = "Ctrl+F"
+    Shortcut = ""
     Picture = "icon:/small/find"
   }
   { Action find-definition

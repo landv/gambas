@@ -711,7 +711,7 @@ static void hook_error(int code, char *error, char *where)
 	QMessageBox::critical(0, TO_QSTRING(GB.Application.Name()), msg);
 	unrelease_grab();
 
-	qApp->exit();
+	//qApp->exit();
 }
 
 #if 0

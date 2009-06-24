@@ -436,25 +436,32 @@ Private Function CloseProject() As Boolean
     Design.WriteBreakpoints
 
     Config.Clear("/OpenFile")
+    For Each hForm In Files 'Workspace.Children
+
+      If Not hForm.Closed Then
+
+        Inc nOpen
+        If hForm = ActiveForm Then Config["/OpenFile/Active"] = nOpen
+  
+        sState = ""
+        Try sState = hForm.GetState()
+  
+        aFold = Null
+        Try aFold = hForm.GetFoldedProc()
+  
+        If sState Then sState = ":" & sState
+        Config["/OpenFile/File[" & CStr(nOpen) & "]"] = Mid$(hForm.Path, Len(Project.Dir) + 2) & sState
+        
+        If aFold Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
+        
+      Endif
+
+    Next
+    
+    CloseAll
     Workspace.Lock
-    For Each hForm In Workspace.Children
-
-      Inc nOpen
-      If hForm = ActiveForm Then Config["/OpenFile/Active"] = nOpen
-
-      sState = ""
-      Try sState = hForm.GetState()
-
-      aFold = Null
-      Try aFold = hForm.GetFoldedProc()
-
-      If sState Then sState = ":" & sState
-      Config["/OpenFile/File[" & CStr(nOpen) & "]"] = Mid$(hForm.Path, Len(Project.Dir) + 2) & sState
-      
-      If aFold Then Config["/OpenFile/Fold[" & CStr(nOpen) & "]"] = aFold
-
+    For Each hForm In Files
       hForm.Delete
-
     Next
     Workspace.Unlock
     Config["/OpenFile/Count"] = nOpen

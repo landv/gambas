@@ -70,8 +70,9 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
     hWin.Reparent(panWorkspace)
   Endif
   
-  hWin.Show ' We must be sure that the Open event is raised
-  hWin.Hide
+  ' We must be sure that the Open event is raised (why ?)
+  'hWin.Show
+  'hWin.Hide
   
   hWindow = New CWindow
   hWindow.Window = hWin

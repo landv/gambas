@@ -36,6 +36,7 @@
 #include <QStyleOptionFrame>
 
 #include "gambas.h"
+#include "gb_common.h"
 
 #include "CWidget.h"
 #include "CWindow.h"
@@ -302,7 +303,6 @@ MyContainer::MyContainer(QWidget *parent)
 void MyContainer::showEvent(QShowEvent *e)
 {
 	void *_object = CWidget::get(this);
-	//qDebug("MyContainer::showEvent %p %s", CWidget::get(this), GB.GetClassName(CWidget::get(this)));
 	QWidget::showEvent(e);
 	THIS->widget.flag.shown = TRUE;
 	CCONTAINER_arrange(THIS);

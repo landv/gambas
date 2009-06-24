@@ -146,7 +146,6 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
   int rtlm = rtl ? -1 : 1;
   int padding;
 
-	//if (qstrcmp(GB.GetClassName(THIS), "FOutput") == 0)
   if (!CAN_ARRANGE(_object))
     return;
     
@@ -214,8 +213,6 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			wc -= padding * 2;
 			hc -= padding * 2;
 
-			//qDebug("CCONTAINER_arrange: %p: %s (%d, %d, %d, %d) pad %d spc %d [%d]", THIS, GB.GetClassName(THIS), xc, yc, wc, hc, arr->padding, arr->spacing, i);
-
 			//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 			//	fprintf(stderr, "#0: %d %d %d %d\n", xc, yc, wc, hc);
 				
@@ -255,6 +252,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 					for(;;)
 					{
 						wid = GET_NEXT_CHILD_WIDGET();
+	
 						if (!wid)
 							break;
 						

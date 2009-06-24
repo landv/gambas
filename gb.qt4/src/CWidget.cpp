@@ -217,6 +217,16 @@ static void arrange_parent(CWIDGET *_object)
 		CSCROLLVIEW_arrange(parent, THIS);
 }
 
+static QWidget *get_viewport(QWidget *w)
+{
+	if (qobject_cast<QAbstractScrollArea *>(w))
+		return ((QAbstractScrollArea *)w)->viewport();
+	else if (qobject_cast<Q3ScrollView *>(w))
+		return ((Q3ScrollView *)w)->viewport();
+	else
+		return 0;
+}
+
 void CWIDGET_update_design(CWIDGET *_object)
 {
 	if (!CWIDGET_test_flag(THIS, WF_DESIGN) && !CWIDGET_test_flag(THIS, WF_DESIGN_LEADER))
@@ -237,7 +247,7 @@ void CWIDGET_init_name(CWIDGET *_object)
 
 void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool no_init)
 {
-	QAbstractScrollArea *sa;
+	//QAbstractScrollArea *sa;
 	
 	CWidget::add(w, _object, no_filter);
 
@@ -252,8 +262,8 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 		CWIDGET_init_name(THIS);	
 	}
 
-	sa = qobject_cast<QAbstractScrollArea *>(w);
-	if (sa)
+	//sa = qobject_cast<QAbstractScrollArea *>(w);
+	if (qobject_cast<QAbstractScrollArea *>(w) || qobject_cast<Q3ScrollView *>(w))
 	{
 		CWIDGET_set_flag(THIS, WF_SCROLLVIEW);
 		//sa->setFrameStyle(QFrame::LineEditPanel + QFrame::Sunken);
@@ -1284,7 +1294,7 @@ BEGIN_PROPERTY(CCONTROL_drop)
 	{
 		WIDGET->setAcceptDrops(VPROP(GB_BOOLEAN));
 		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
-			((QAbstractScrollArea *)WIDGET)->viewport()->setAcceptDrops(VPROP(GB_BOOLEAN));
+			get_viewport(WIDGET)->setAcceptDrops(VPROP(GB_BOOLEAN));
 	}
 
 END_PROPERTY
@@ -1741,6 +1751,9 @@ void CWidget::destroy()
 
 	if (CWIDGET_active_control == ob)
 		CWIDGET_active_control = NULL;
+	
+	if (_old_active_control == ob)
+		_old_active_control = NULL;
 
 	set_name(ob, 0);
 
@@ -1879,16 +1892,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			CCONTAINER *cont = (CCONTAINER *)CWidget::get(widget);
 			if (CWIDGET_test_flag(cont, WF_SCROLLVIEW))
 			{
-				/*if (GB.Is(cont, CLASS_Container)
-				{
-					if (widget != cont->container)
-						goto STANDARD;
-				}
-				else
-				{*/
-					if (widget != ((QAbstractScrollArea *)QWIDGET(cont))->viewport() && !widget->objectName().isNull())
-						goto _STANDARD;					
-				//}
+				//if (widget != ((QAbstractScrollArea *)QWIDGET(cont))->viewport() && !widget->objectName().isNull())
+				if (widget != get_viewport(QWIDGET(cont)) && !widget->objectName().isNull())
+					goto _STANDARD;
 			}
 		}
 		
@@ -1923,15 +1929,15 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 		if (GB.CanRaise(control, event_id))
 		{
-			if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
+			/*if (!design && CWIDGET_test_flag(control, WF_SCROLLVIEW))
 			{
-				/*if (widget != ((QScrollView *)QWIDGET(control))->viewport()
+				if (widget != ((QScrollView *)QWIDGET(control))->viewport()
 						&& widget->name(0))
 				{
 					qDebug("cancel");
 					goto _DESIGN;
-				}*/
-			}
+				}
+			}*/
 			
 			CMOUSE_clear(true);
 			CMOUSE_info.x = p.x();

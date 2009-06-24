@@ -672,6 +672,7 @@ void CTabStrip::currentChanged(int index)
 
 	if (wid != THIS->container)
 	{
+		WIDGET->forceLayout();
 		THIS->container = wid;
 		CCONTAINER_arrange(THIS);
 

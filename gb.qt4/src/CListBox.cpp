@@ -145,7 +145,9 @@ END_METHOD
 BEGIN_METHOD(CLISTBOX_remove, GB_INTEGER pos)
 
   //WIDGET->blockSignals(true);
-  WIDGET->removeItemWidget(WIDGET->item(VARG(pos)));
+	//qDebug("count = %d pos = %d item = %p", WIDGET->count(), VARG(pos), WIDGET->item(VARG(pos)));
+  delete WIDGET->takeItem(VARG(pos));
+	//qDebug("--> count = %d", WIDGET->count());
   //WIDGET->blockSignals(false);
 
 END_METHOD

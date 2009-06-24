@@ -26,6 +26,7 @@
 #include <QMenu>
 
 #include "gambas.h"
+#include "gb_common.h"
 
 #include "CWidget.h"
 #include "CWindow.h"
@@ -38,6 +39,8 @@ DECLARE_EVENT(EVENT_Hide);
 DECLARE_METHOD(CCONTROL_window);
 DECLARE_METHOD(CCONTROL_name);
 DECLARE_METHOD(CMENU_hide);
+
+static void clear_menu(CMENU *_object);
 
 static int check_menu(void *_object)
 {
@@ -81,7 +84,11 @@ static void delete_menu(CMENU *_object)
 {
 	if (THIS->deleted)
 		return;
-		
+	
+	//qDebug("delete_menu: %s %p", THIS->widget.name, THIS);
+	
+	clear_menu(THIS);
+	
 	if (THIS->menu)
 	{
 		delete THIS->menu;
@@ -91,10 +98,38 @@ static void delete_menu(CMENU *_object)
 	if (THIS->accel)
 		delete THIS->accel;
 
-  CMenu::dict.remove(ACTION);
-
-	THIS->widget.widget = 0;
 	THIS->deleted = true;
+
+	QAction *action = ACTION;
+	delete action;
+  CMenu::dict.remove(action);
+
+// 	if (ACTION)
+// 	{
+// 		QAction *action = ACTION;
+// 		THIS->widget.widget = 0;
+// 		delete action;
+// 	}
+}
+
+static void clear_menu(CMENU *_object)
+{
+  int i;
+	CMENU *menu;
+
+  if (THIS->menu)
+  {
+    QList<QAction *> list = THIS->menu->actions();
+    
+    for (i = 0; i < list.count(); i++)
+		{
+			menu = CMenu::dict[list.at(i)];
+			//GB.Ref(menu);
+			//delete ((QAction *)(menu->widget.widget));
+    	delete_menu(menu);
+			//GB.Unref(POINTER(&menu));
+		}
+  }
 }
 
 static void update_accel(CMENU *_object)
@@ -218,6 +253,8 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
   //qDebug("*** CMENU_new %p", _object);
   GB.Ref(THIS);
 
+	//qDebug("CMENU_new: (%s %p)", THIS->widget.name, THIS);
+	
 END_METHOD
 
 
@@ -227,7 +264,7 @@ BEGIN_METHOD_VOID(CMENU_free)
   qDebug("CMENU_free: item = %p '%s' (%d) parent = %p (%d)", item, item->text, item->id, item->parent, item->parent ? item->parent->id : 0);
 #endif
 
-	//qDebug("CMENU_free: (%s %p)", GB.GetClassName(THIS), THIS);
+	//qDebug("CMENU_free: (%s %p)", THIS->widget.name, THIS);
 	
 	delete_menu(THIS);
 
@@ -305,7 +342,10 @@ BEGIN_PROPERTY(CMENU_checked)
 		if (READ_PROPERTY)
 			GB.ReturnBoolean(ACTION->isChecked());
 		else
+		{
+			ACTION->setCheckable(VPROP(GB_BOOLEAN));
 			ACTION->setChecked(VPROP(GB_BOOLEAN));
+		}
 	}
   	
 END_PROPERTY
@@ -460,22 +500,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CMENU_clear)
 
-  int i;
-	CMENU *menu;
-
-  if (THIS->menu)
-  {
-    QList<QAction *> list = THIS->menu->actions();
-    
-    for (i = 0; i < list.count(); i++)
-		{
-			menu = CMenu::dict[list.at(i)];
-			GB.Ref(menu);
-			delete ((QAction *)(menu->widget.widget));
-    	delete_menu(menu);
-			GB.Unref(POINTER(&menu));
-		}
-  }
+	clear_menu(THIS);
 
 END_METHOD
 
@@ -493,6 +518,7 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
 			
 		THIS->exec = FALSE;
+		CMenu::enableAccel(THIS, ACTION->isEnabled());
 		//MAIN_process_events();
   }
 
@@ -592,20 +618,20 @@ static void send_menu_event(CMENU *_object, intptr_t event)
 
 void CMenu::slotTriggered(QAction *action)
 {
+  GET_MENU_SENDER(parent);
   CMENU *menu = CMenu::dict[action];
 
+	if (menu->parent != parent)
+		return;
 	GB.Ref(menu);
 	GB.Post((GB_POST_FUNC)send_click_event, (intptr_t)menu);
 }
-
-
 
 void CMenu::slotShown(void)
 {
   GET_MENU_SENDER(menu);
   GB.Raise(menu, EVENT_Show, 0);
 }
-
 
 void CMenu::slotHidden(void)
 {
@@ -728,8 +754,10 @@ void CMenu::slotDestroyed(void)
   //	unrefChildren(THIS->menu);
 
   #ifdef DEBUG_MENU
-  qDebug("***  CMenu::destroy %p (UNREF)", menu);
+  qDebug("UNREF (%s %p)", THIS->widget.name, THIS);
   #endif
+	
+	THIS->widget.widget = 0;
 
 	unregister_menu(THIS);
   GB.Unref(POINTER(&_object));
