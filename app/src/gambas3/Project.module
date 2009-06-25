@@ -35,7 +35,9 @@ Public Systems As String[]
 Public Menus As Collection
 Public Groups As Collection
 Public ExtraDependencies As Collection
+Public ExtraFiles As Collection
 Public SameDependencies As Boolean
+Public SameFiles As Boolean
 Public ExtraAutoconfTest As String
 Public Categories As Collection
 Public Prefix As Boolean
@@ -2190,7 +2192,9 @@ Public Sub ReadProject()
   Categories = New Collection
   Groups = New Collection
   ExtraDependencies = New Collection
+  ExtraFiles = New Collection
   SameDependencies = False
+  SameFiles = False
   ExtraAutoconfTest = ""
   Prefix = False
   UseRelease = False
@@ -2332,6 +2336,13 @@ Public Sub ReadProject()
           ExtraDependencies[Systems[iElt]] = sElt
           Inc iElt
         Next
+      Case "extrafiles"
+        iElt = 0
+        For Each sElt In Split(sVal, ",")
+          If iElt >= Systems.Count Then Break
+          ExtraFiles[Systems[iElt]] = sElt
+          Inc iElt
+        Next
         
       Case "extraautoconftest"
         ExtraAutoconfTest = Unquote(sVal)
@@ -2374,6 +2385,8 @@ Public Sub ReadProject()
         
       Case "samedependencies"
         SameDependencies = Val(sVal) <> 0
+      Case "samefiles"
+        SameFiles = Val(sVal) <> 0
         
     End Select
 
@@ -2508,6 +2521,13 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     Print #hFic, "ExtraDependencies="; aElt.Join(",")
 
     If SameDependencies Then Print #hFic, "SameDependencies=1"
+ 
+    aElt = New String[]
+    For Each sSys In Systems
+      aElt.Add(ExtraFiles[sSys])
+    Next
+    Print #hFic, "ExtraFiles="; aElt.Join(",")
+    If SameFiles Then Print #hFic, "SameFiles=1"
     If ExtraAutoconfTest Then Print #hFic, "ExtraAutoconfTest=" & Quote(ExtraAutoconfTest)
 
   Endif

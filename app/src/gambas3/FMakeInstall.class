@@ -3,15 +3,18 @@
 Private $sMenuSystem As String
 Private $sGroupSystem As String
 Private $sDepSystem As String
+Private $sFileSystem As String
 Private $cCatCache As New Collection
 Private $sLastCat As String
 Private $aDep As String[]
+Private $aFile As String[]
 
 Private Const TAB_GROUP As Integer = 3
 Private Const TAB_MENU As Integer = 4
 Private Const TAB_DEP As Integer = 5
-Private Const TAB_TEST As Integer = 6
-Private Const TAB_DIR As Integer = 7
+Private Const TAB_FILE As Integer = 6
+Private Const TAB_TEST As Integer = 7
+Private Const TAB_DIR As Integer = 8
 
 
 Private Sub MakeChangeLog() As String
@@ -92,7 +95,14 @@ Public Sub Form_Open()
   tvwDep.Columns[1].Width = Desktop.Scale * 16
   tvwDep.Columns[2].Width = Desktop.Scale * 16
 
+  tvwFile.Columns.Count = 2
+  tvwFile.Columns[0].Text = ("File name")
+  tvwFile.Columns[1].Text = ("Destination directory")
+  tvwFile.Columns[0].Width = Desktop.Scale * 24
+  tvwFile.Columns[1].Width = Desktop.Scale * 40
+ 
   chkDep.Value = Project.SameDependencies
+  chkFile.Value = Project.SameFiles
 
 End
 
@@ -366,6 +376,8 @@ Public Sub wizInstall_BeforeChange()
       
     Case TAB_DEP
     
+    Case TAB_FILE
+    
     Case TAB_TEST
       Project.ExtraAutoconfTest = txtTests.Text
     
@@ -392,6 +404,16 @@ Private Sub UpdateDepCombo()
   Endif
   
 End
+Private Sub UpdateFileCombo()
+
+  If chkFile.Value Then
+    cmbFile.Hide
+    cmbFile.Index = 0
+  Else  
+    cmbFile.Visible = cmbFile.Count > 1 
+  Endif
+  
+End
 
 Public Sub wizInstall_Change()
 
@@ -413,6 +435,10 @@ Public Sub wizInstall_Change()
     Case TAB_DEP
       FillComboWithSystems(cmbDep)
       UpdateDepCombo
+      
+    Case TAB_FILE
+      FillComboWithSystems(cmbFile)
+      UpdateFileCombo
       
     Case TAB_DIR
       dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath", System.User.Home]
@@ -794,7 +820,6 @@ Public Sub chkCreateDir_Click()
 End
 
 Public Sub tvwDep_Click()
-
   tvwDep.Edit
 
 End
@@ -812,13 +837,19 @@ Private Sub SaveExtraDependencies()
   
 End
 
+Private Sub SaveExtraFiles()
+  Project.ExtraFiles[$sFileSystem] = $aFile.Join(";")
+  
+End
+
 
 Public Sub tvwDep_Save(Row As Integer, Column As Integer, Value As String)
 
   Dim aRow As String[]
   Dim iInd As Integer
   Dim sCar As String
-  
+   Print "a", $aDep[Row]
+ 
   For iInd = 1 To String.Len(Value)
     sCar = String.Mid$(Value, iInd, 1)
     If Len(sCar) = 1 Then
@@ -907,5 +938,114 @@ End
 Public Sub chkDep_Click()
 
   UpdateDepCombo
+
+End
+
+Public Sub chkFile_Click()
+
+  UpdateFileCombo
+
+End
+
+Public Sub cmbFile_Click()
+
+   $sFileSystem = GetSystemFromName(cmbFile.Text)
+
+  $aFile = Split(Project.ExtraFiles[$sFileSystem], ";")
+  tvwFile.Rows.Count = $aFile.Count
+ 
+End
+
+Public Sub tvwFile_Insert()
+
+  btnAddFile.Value = True  
+
+End
+
+Public Sub tvwFile_Click()
+    If tvwFile.Column = 0 Then
+      tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
+    Else If tvwFile.Column = 1
+      Dialog.Path = tvwFile.Current.Text
+      If Dialog.SelectDirectory() Then Return
+      tvwFile.Current.Text = Dialog.Path
+      tvwFile_Save(tvwFile.Row, tvwFile.Column, Dialog.Path)
+    Endif
+End
+
+Public Sub tvwFile_Data(Row As Integer, Column As Integer)
+
+  Dim aRow As String[] = Split($aFile[Row], ":")
+  Try tvwFile.Data.Text = aRow[Column]
+
+End
+
+Public Sub btnAddFile_Click()
+
+  $aFile.Add(":")
+  SaveExtraFiles
+  Inc tvwFile.Rows.Count
+  tvwFile.Save
+  tvwFile.MoveTo($aFile.Max, 0)
+  tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File))
+
+End
+
+Public Sub btnRemoveFile_Click()
+
+  If tvwFile.Row < 0 Then Return
+  $aFile.Remove(tvwFile.Row)
+  SaveExtraFiles
+  Dec tvwFile.Rows.Count
+
+End
+
+Public Sub btnUpFile_Click()
+
+  If tvwFile.Row >= 1 Then
+    tvwFile.Save
+    Swap $aFile[tvwFile.Row], $aFile[tvwFile.Row - 1]
+    SaveExtraFiles
+    tvwFile.Refresh
+    Dec tvwFile.Row
+    tvwFile.Edit("", "*[^~]", gb.File)
+  Endif
+
+End
+
+Public Sub btnDownFile_Click()
+
+ If tvwFile.Row < $aFile.Max Then
+    tvwFile.Save
+    Swap $aFile[tvwFile.Row], $aFile[tvwFile.Row + 1]
+    SaveExtraFiles
+    tvwFile.Refresh
+    Inc tvwFile.Row
+    tvwFile.Edit("", "*[^~]", gb.File)
+  Endif
+
+End
+
+Public Sub btnClearFile_Click()
+
+ If Message.Warning(("Do you really want to remove all extra files?"), ("Cancel"), ("Remove")) <> 2 Then Return
+  $aFile.Clear
+  SaveExtraFiles
+  tvwFile.Rows.Count = 0
+
+End
+
+Public Sub tvwFile_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim aRow As String[]
+  aRow = Split($aFile[Row], ":")
+  
+  While aRow.Count < 2
+    aRow.Add("")
+  Wend
+  
+  aRow[Column] = Value
+  $aFile[Row] = aRow.Join(":")
+  SaveExtraFiles
 
 End

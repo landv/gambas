@@ -10,7 +10,7 @@
     MoveScaled(1,1,89,80)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 9
+    Count = 10
     ShowIndex = True
     Border = False
     Index = 0
@@ -358,6 +358,56 @@
       }
     }
     Index = 6
+    Text = ("Extra files")
+    { chkFile CheckBox
+      MoveScaled(0,1,55,3)
+      Text = ("Same files for all targets")
+    }
+    { cmbFile ComboBox
+      MoveScaled(0,6,68,4)
+      Text = (" ")
+      ReadOnly = True
+    }
+    { HBox13 HBox
+      MoveScaled(0,12,79,41)
+      Expand = True
+      Spacing = True
+      { tvwFile TableView
+        MoveScaled(7,5,41,29)
+        Expand = True
+        Header = GridView.Horizontal
+      }
+      { HBox14 VBox
+        MoveScaled(53,4,18,34)
+        Spacing = True
+        { btnAddFile Button
+          MoveScaled(0,0,18,4)
+          Text = ("&Add")
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnRemoveFile Button
+          MoveScaled(0,5,18,4)
+          Text = ("&Remove")
+          Picture = Picture["icon:/small/delete"]
+        }
+        { btnUpFile Button
+          MoveScaled(0,10,18,4)
+          Text = ("&Up")
+          Picture = Picture["icon:/small/up"]
+        }
+        { btnDownFile Button
+          MoveScaled(0,15,18,4)
+          Text = ("&Down")
+          Picture = Picture["icon:/small/down"]
+        }
+        { btnClearFile Button
+          MoveScaled(0,20,18,4)
+          Text = ("&Clear")
+          Picture = Picture["icon:/small/trash"]
+        }
+      }
+    }
+    Index = 7
     Text = ("Extra autoconf tests")
     { TextLabel4 TextLabel
       MoveScaled(2,1,66,12)
@@ -368,7 +418,7 @@
       Expand = True
       Text = ("")
     }
-    Index = 7
+    Index = 8
     Text = ("Destination directory")
     { dchInstall DirChooser
       MoveScaled(1,0,72,58)
@@ -379,7 +429,7 @@
       MoveScaled(1,60,69,4)
       Text = ("Create directories for each distribution")
     }
-    Index = 8
+    Index = 9
     Text = ("Create package")
     { TextLabel3 TextLabel
       MoveScaled(2,2,67,17)
