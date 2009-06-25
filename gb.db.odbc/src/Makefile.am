@@ -1,3 +1,6 @@
+COMPONENT = gb.db.odbc
+include $(top_srcdir)/component.am
+
 INCLUDES = @ODBC_INC@
 
 gblib_LTLIBRARIES = gb.db.odbc.la

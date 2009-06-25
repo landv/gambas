@@ -1,3 +1,6 @@
+COMPONENT = gb.db.sqlite3
+include $(top_srcdir)/component.am
+
 INCLUDES = @SQLITE3_INC@
 
 gblib_LTLIBRARIES = gb.db.sqlite3.la

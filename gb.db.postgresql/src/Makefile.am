@@ -1,3 +1,6 @@
+COMPONENT = gb.db.postgresql
+include $(top_srcdir)/component.am
+
 INCLUDES = @POSTGRESQL_INC@
 
 gblib_LTLIBRARIES = gb.db.postgresql.la
