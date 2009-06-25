@@ -80,6 +80,7 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
   setEnabled(WIDGET->isEnabled());
 	
 	page->setAutoFillBackground(true);
+	page->hide();
 }	
 
 CTab::~CTab()
@@ -672,8 +673,11 @@ void CTabStrip::currentChanged(int index)
 
 	if (wid != THIS->container)
 	{
-		WIDGET->forceLayout();
+		if (THIS->container)
+			THIS->container->hide();
 		THIS->container = wid;
+		wid->show();
+		WIDGET->forceLayout();
 		CCONTAINER_arrange(THIS);
 
 		//if (wid->isVisible() && !THIS->lock)

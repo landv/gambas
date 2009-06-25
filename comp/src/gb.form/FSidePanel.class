@@ -296,6 +296,8 @@ End
 
 Private Sub TogglePanel()
 
+  If Me.Parent.Design Then Return
+
   If $bVisible Then
 
     GetParent()._Hide

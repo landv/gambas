@@ -73,7 +73,7 @@ typedef
 		unsigned skipTaskbar : 1;
 		unsigned masked : 1;
 		unsigned reallyMasked : 1;
-		unsigned shown : 1;
+		unsigned opened : 1;
 		unsigned hidden : 1;
 		unsigned toolbar : 1;
 		unsigned scale : 1;
@@ -165,7 +165,7 @@ private:
 	bool _deleted;
 	int _type;
 
-	void doReparent(QWidget *, Qt::WFlags, const QPoint &, bool showIt = false);
+	void doReparent(QWidget *, Qt::WFlags, const QPoint &);
 
 protected:
 
@@ -196,7 +196,7 @@ public:
 	void showPopup();
 	void afterShow();
 	//bool isModal() { return testWFlags(WShowModal); }
-	void doReparent(QWidget *w, const QPoint &p, bool showIt = false) { doReparent(w, windowFlags(), p, showIt); }
+	void doReparent(QWidget *w, const QPoint &p) { doReparent(w, windowFlags(), p); }
 
 	bool hasBorder(void) { return _border; }
 	void setBorder(bool, bool = false);

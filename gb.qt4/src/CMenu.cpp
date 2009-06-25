@@ -152,6 +152,15 @@ static void update_accel(CMENU *_object)
 	}
 }
 
+static void update_check(CMENU *_object)
+{
+	if (THIS->checked || THIS->toggle)
+	{
+		ACTION->setCheckable(true);
+		ACTION->setChecked(THIS->checked);
+	}
+}
+
 #if 0
 static void toggle_menu(CMENU *_object)
 {
@@ -329,7 +338,6 @@ BEGIN_PROPERTY(CMENU_enabled)
 
 END_PROPERTY
 
-
 BEGIN_PROPERTY(CMENU_checked)
 
 	if (CMENU_is_toplevel(THIS))
@@ -340,11 +348,11 @@ BEGIN_PROPERTY(CMENU_checked)
 	else
 	{
 		if (READ_PROPERTY)
-			GB.ReturnBoolean(ACTION->isChecked());
+			GB.ReturnBoolean(THIS->checked);
 		else
 		{
-			ACTION->setCheckable(VPROP(GB_BOOLEAN));
-			ACTION->setChecked(VPROP(GB_BOOLEAN));
+			THIS->checked = VPROP(GB_BOOLEAN);
+			update_check(THIS);
 		}
 	}
   	
@@ -358,7 +366,7 @@ BEGIN_PROPERTY(CMENU_toggle)
 	else
 	{
 		THIS->toggle = VPROP(GB_BOOLEAN);
-		ACTION->setCheckable(VPROP(GB_BOOLEAN));
+		update_check(THIS);
 	}
 
 END_PROPERTY
@@ -603,8 +611,12 @@ QHash<QAction *, CMENU *> CMenu::dict;
 
 static void send_click_event(CMENU *_object)
 {
-	//if (THIS->toggle)
-	//	toggle_menu(THIS);
+	if (THIS->toggle)
+	{
+		THIS->checked = !THIS->checked;
+		update_check(THIS);
+	}
+	
   GB.Raise(THIS, EVENT_Click, 0);
 	CACTION_raise((CWIDGET *)THIS);
   GB.Unref(POINTER(&_object));

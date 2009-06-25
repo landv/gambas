@@ -305,6 +305,7 @@ void MyContainer::showEvent(QShowEvent *e)
 	void *_object = CWidget::get(this);
 	QWidget::showEvent(e);
 	THIS->widget.flag.shown = TRUE;
+	//qDebug("%s %s %p: SHOWN = 1 (%d %d)", GB.GetClassName(THIS), THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
 	CCONTAINER_arrange(THIS);
 }
 
@@ -313,6 +314,7 @@ void MyContainer::hideEvent(QHideEvent *e)
 	void *_object = CWidget::get(this);
 	QWidget::hideEvent(e);
 	THIS->widget.flag.shown = FALSE;
+	//qDebug("%s %s %p: SHOWN = 0", GB.GetClassName(THIS), THIS->widget.name, THIS);
 }
 
 void MyContainer::setFrameStyle(int frame)

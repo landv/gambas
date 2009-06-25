@@ -191,7 +191,6 @@ BEGIN_METHOD_VOID(CPICTURE_flush)
 
 END_METHOD
 
-
 BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 
   int w, h;
@@ -217,7 +216,7 @@ BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 	}
 	else
 		THIS->pixmap = new QPixmap;
-
+	
 END_METHOD
 
 

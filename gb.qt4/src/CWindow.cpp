@@ -194,7 +194,7 @@ static bool emit_open_event(void *_object)
 	
 	CWIDGET_clear_flag(THIS, WF_CLOSED);
 	
-	if (!THIS->shown)
+	if (!THIS->opened)
 	{
 		if (!THIS->minw && !THIS->minh)
 		{
@@ -214,7 +214,7 @@ static bool emit_open_event(void *_object)
 			#endif
 			return true;
 		}
-		THIS->shown = true;
+		THIS->opened = true;
 	}
 	
 	THIS->hidden = false;
@@ -263,7 +263,10 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 	}
 
 	if (newParentWidget != WINDOW->parentWidget())
+	{
+		//qDebug("reparent_window: -> %s %p", parent ? ((CWIDGET *)parent)->name : "", parent);
 		WINDOW->doReparent(newParentWidget, p);
+	}
 	else
 		CWIDGET_move(THIS, p.x(), p.y());
 }
@@ -428,6 +431,7 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
 		qDebug("post show_later %s %p", GB.GetClassName(THIS), THIS);
 		#endif
 		GB.Ref(THIS);
+		//show_later(THIS);
 		GB.Post((void (*)())show_later, (intptr_t)THIS);
 		//WIDGET->show();
 	}
@@ -457,6 +461,7 @@ END_METHOD
 
 BEGIN_METHOD(CFORM_load, GB_OBJECT parent)
 
+	//qDebug("CFORM_load");
 	reparent_window((CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0), VARGOPT(parent, 0), false);
 
 END_METHOD
@@ -529,8 +534,8 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 
 	if (!THIS->toplevel)
 	{
-		//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
-		if (THIS->shown)
+		//qDebug("THIS->opened = %d: %p: %s", THIS->opened, THIS, GB.GetClassName(THIS));
+		if (THIS->opened)
 		{
 			THIS->closing = true;
 			closed = !GB.Raise(THIS, EVENT_Close, 0);
@@ -542,7 +547,7 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 		if (destroyed || closed)
 		{
 			CWIDGET_set_flag(THIS, WF_CLOSED);
-			THIS->shown = false;
+			THIS->opened = false;
 		}
 
 		if (closed)
@@ -554,7 +559,7 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 	}
 	else
 	{
-		if (!THIS->shown)
+		if (!THIS->opened)
 		{
 			#if DEBUG_WINDOW
 			qDebug("send close event");
@@ -586,7 +591,7 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 			CWINDOW_LastActive = 0;
 			//qDebug("CWINDOW_LastActive = 0");
 		}
-		THIS->shown = FALSE;
+		THIS->opened = FALSE;
 	}
 	#endif
 
@@ -643,6 +648,7 @@ BEGIN_METHOD_VOID(CWINDOW_show)
 	else
 	{
 		WINDOW->showActivate(); //parent ? parent->widget.widget : 0);
+		//THIS->widget.flag.visible = true;
 	}
 
 END_METHOD
@@ -655,6 +661,7 @@ BEGIN_METHOD_VOID(CWINDOW_hide)
 	if (THIS->toplevel && WINDOW->isModal())
 	{
 		do_close(THIS, 0);
+		//THIS->widget.flag.visible = false;
 	}
 	else
 		CWIDGET_set_visible((CWIDGET *)THIS, false);
@@ -669,7 +676,11 @@ BEGIN_METHOD_VOID(CWINDOW_show_modal)
 	if (!emit_open_event(THIS))
 	{
 		if (THIS->toplevel)
+		{
+			//THIS->widget.flag.visible = true;
 			WINDOW->showModal();
+			//THIS->widget.flag.visible = false;
+		}
 	}
 
 	GB.ReturnInteger(THIS->ret);
@@ -1096,33 +1107,6 @@ END_PROPERTY
 #endif //------------------------------------------------------------------------------------------
 
 
-#if 0
-BEGIN_PROPERTY(CWINDOW_tool)
-
-	if (!THIS->toplevel)
-	{
-		if (READ_PROPERTY)
-			GB.ReturnBoolean(FALSE);
-	}
-	else
-	{
-		/*
-		if (READ_PROPERTY)
-			GB.ReturnBoolean(X11_get_window_tool(WINDOW->winId()));
-		else
-		{
-			THIS->toolbar = VPROP(GB_BOOLEAN);
-			X11_set_window_tool(WINDOW->winId(), THIS->toolbar, CWINDOW_Main ? ((MyMainWindow *)QWIDGET(CWINDOW_Main))->winId() : 0);
-		}*/
-		if (READ_PROPERTY)
-			GB.ReturnBoolean(WINDOW->getTool());
-		else
-			WINDOW->setTool(VPROP(GB_BOOLEAN));
-	}
-
-END_PROPERTY
-#endif
-
 BEGIN_METHOD_VOID(CWINDOW_center)
 
 	if (!THIS->toplevel)
@@ -1214,6 +1198,7 @@ END_PROPERTY
 
 BEGIN_METHOD(CWINDOW_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 
+	//qDebug("CWINDOW_reparent");
 	reparent_window(THIS, VARG(container), !MISSING(x) && !MISSING(y), VARG(x), VARG(y));
 
 END_METHOD
@@ -1596,7 +1581,10 @@ void MyMainWindow::showActivate(QWidget *transient)
 		newParentWidget = CWINDOW_Current->widget.widget;
 		
 		if (newParentWidget && parentWidget() != newParentWidget)
+		{
+			//qDebug("showActivate");
 			doReparent(newParentWidget, windowFlags(), pos());
+		}
 	}
 
 	#ifndef NO_X_WINDOW
@@ -1651,8 +1639,8 @@ void MyMainWindow::showActivate(QWidget *transient)
 			activateWindow();
 		}
 
-		//THIS->shown = true;
-		//qDebug("THIS->shown <- true: %p: %s", THIS, GB.GetClassName(THIS));
+		//THIS->opened = true;
+		//qDebug("THIS->opened <- true: %p: %s", THIS, GB.GetClassName(THIS));
 
 		//if (!(THIS->toplevel && THIS->embedded))
 		//	GB.Raise(THIS, EVENT_Move, 0);
@@ -1887,7 +1875,7 @@ void MyMainWindow::moveEvent(QMoveEvent *e)
 
 	//qDebug("moveEvent %ld %ld isHidden:%s shown:%s ", THIS->x, THIS->y, isHidden() ? "1" : "0", shown ? "1" : "0");
 
-	if (THIS->shown)
+	if (THIS->opened)
 		GB.Raise(THIS, EVENT_Move, 0);
 }
 
@@ -1932,7 +1920,7 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
   	//qDebug("resizeEvent %ld %ld isHidden:%s shown:%s ", THIS->w, THIS->h, isHidden() ? "1" : "0", shown ? "1" : "0");
 	//qDebug("THIS->h = %ld  THIS->container->height() = %ld  height() = %ld", THIS->h, THIS->container->height(), height());
 
-	if (THIS->shown)
+	if (THIS->opened)
 	{
 		/*w = THIS->w;
 		h = THIS->h;*/
@@ -2091,9 +2079,9 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 		goto IGNORE;
 	}
 
-	if (THIS->shown)
+	if (THIS->opened)
 	{
-		//qDebug("THIS->shown = %d: %p: %s", THIS->shown, THIS, GB.GetClassName(THIS));
+		//qDebug("THIS->opened = %d: %p: %s", THIS->opened, THIS, GB.GetClassName(THIS));
 		THIS->closing = true;
 		cancel = GB.Raise(_object, EVENT_Close, 0);
 		THIS->closing = false;
@@ -2108,7 +2096,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	if (cancel)
 		goto IGNORE;
 
-	modal = isModal(); //testWFlags(Qt::WShowModal); // && THIS->shown;
+	modal = isModal(); //testWFlags(Qt::WShowModal); // && THIS->opened;
 
 	CWIDGET_set_flag(THIS, WF_CLOSED);
 	//qApp->sendEvent(WIDGET, new QEvent(EVENT_CLOSE));
@@ -2137,8 +2125,8 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 		CWINDOW_LastActive = 0;
 		//qDebug("CWINDOW_LastActive = 0");
 	}
-	//qDebug("THIS->shown <- false: %p: %s", THIS, GB.GetClassName(THIS));
-	THIS->shown = FALSE;
+	//qDebug("THIS->opened <- false: %p: %s", THIS, GB.GetClassName(THIS));
+	THIS->opened = false;
 	
 	//qDebug("THIS->enterLoop = %d", THIS->enterLoop);
 	if (modal && THIS->enterLoop)
@@ -2168,11 +2156,12 @@ void MyMainWindow::setPersistent(bool pers)
 	setAttribute(Qt::WA_DeleteOnClose, !pers);
 }
 
-void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &pos, bool showIt)
+void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &pos)
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QIcon icon;
 	bool old_toplevel;
+	bool hidden;
 	#ifndef NO_X_WINDOW
 	bool active = qApp->activeWindow() == this;
 	#endif
@@ -2200,9 +2189,13 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 		}
 	}
 
+	//qDebug("doReparent: %s %p: visible = %d opened = %d hidden = %d isVisible = %d isHidden = %d shown = %d", 
+	//				THIS->widget.name, THIS, THIS->widget.flag.visible, THIS->opened, THIS->hidden, isVisible(), isHidden(), THIS->widget.flag.shown);
+	//if (!THIS->hidden) showIt = true;
+	//hide();
+	hidden = THIS->hidden;
 	setParent(parent, f);
 	move(pos);
-	if (showIt) show();
 	//qDebug("doReparent: (%s %p) (%d %d) -> (%d %d)", GB.GetClassName(THIS), THIS, pos.x(), pos.y(), WIDGET->x(), WIDGET->y());
 	
  	#ifndef NO_X_WINDOW
@@ -2212,6 +2205,19 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	#endif
 
 	setWindowIcon(icon);
+	
+	//qDebug("--> isVisible = %d isHidden = %d", isVisible(), isHidden());
+	
+	if (THIS->embedded && !THIS->hidden)
+	{
+		#if DEBUG_WINDOW
+		qDebug("post show_later %s %p", GB.GetClassName(THIS), THIS);
+		#endif
+		GB.Ref(THIS);
+		//GB.Post((void (*)())show_later, (intptr_t)THIS);
+		show_later(THIS);
+		//WIDGET->show();
+	}
 	//qDebug("new parent = %p", parentWidget());
 }
 
