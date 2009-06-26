@@ -273,13 +273,32 @@ Private Function GetExtraFiles(sSys As String, sFormat As String) As String
     aFile = Split(sFile, ":")
     aFile.Resize(2)
     
-    sRes &= Subst(sFormat, aFile[0], aFile[1])
+    sRes &= Subst(sFormat, Shell$(aFile[0]), Shell$(aFile[1]), Shell$(Mid$(aFile[0], RInStr(aFile[0], "/") + 1)))
     
   Next
   
   Return sRes
   
 End
+
+Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
+  
+  Dim iIndex As Integer
+  Dim sFile As String
+  Dim aFile As String[]
+  Dim sRes As String
+  
+  If Project.SameFiles Then sSys = Project.Systems[0]
+  
+  For Each sFile In Split(Project.ExtraFiles[sSys], ";")
+    aFile = Split(sFile, ":")
+    aFile.Resize(2)
+   Copy Project.Dir &/ ".hidden" &/ Shell$(aFile[0]) To sBuildDir &/ Shell$(aFile[1]) &/ Shell$(aFile[0])
+    
+  Next
+  
+End
+
 Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
   
   Dim iIndex As Integer
@@ -295,7 +314,7 @@ Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
     aFile = Split(sFile, ":")
     aFile.Resize(2)
     
-    sRes &= Subst(sFormat, aFile[1])
+    sRes &= Subst(sFormat, Shell$(aFile[1]))
     
   Next
   
@@ -526,7 +545,7 @@ Private Function MakeDebPackage(sSys As String)
       Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
       Print #hFile, "debian/"; $sPackageName; ".desktop usr/share/applications"
   Endif
-  Print #hFile, GetExtraFiles(sSys, "\nsrc/" & $sName & "/&1 &2")
+  Print #hFile, GetExtraFiles(sSys, "\nsrc/" & $sName & ".hidden/&1 &2")
   Close #hFile  
  
   'debian/control
@@ -814,7 +833,7 @@ Private Function MakeRpmPackage(sSys As String)
      
     Print #hFile, "\n%install"
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
-    Print #hFile, GetExtraFiles(sSys, "install -p &1 %{buildroot}/&2/&1")
+    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&1")
     Print #hFile, "install -d %{buildroot}/%{_libdir}/gambas"; System.Version
     Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_libdir}/gambas" & System.Version; "/"; Shell$($sName); ".gambas"
     Print #hFile, "install -p .component %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; Shell$($sName); ".component"
@@ -838,8 +857,8 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "install -d %{buildroot}/%{_bindir}"
     Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
     
-    Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}&1")
-    Print #hFile, GetExtraFiles(sSys, "install -p &1 %{buildroot}&2/&1")
+    Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
+    Print #hFile, GetExtraFiles(sSys, "install -p .hidden/&1 %{buildroot}/&2/&3")
     
     sIcon = Shell$($sName) & ".png"
   
@@ -972,12 +991,12 @@ Private Function MakeRpmPackage(sSys As String)
     If Exist(Project.Dir &/ "control") Then 
       Print #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName); "/*.png"
     Endif
-    Print #hFile, GetExtraFiles(sSys, "&2/&1")
+    Print #hFile, GetExtraFiles(sSys, "&2/&3")
 
   Else
   
     Print #hFile, "%{_bindir}" &/ Shell$($sName)
-   Print #hFile, GetExtraFiles(sSys, "&2/&1")
+   Print #hFile, GetExtraFiles(sSys, "&2/&3")
   
     Select Case sSys
   
@@ -1148,7 +1167,7 @@ Private Sub MakeTgzPackage(sSys As String)
     Next
   
   Endif
-  Eval(GetExtraFiles(sSys, "COPY Project.Dir/&1 TO " & sBuildDir & "&2/&1"))
+  CopyExtraFiles(sSys, sBuildDir)
   If Project.CreateComponent Then 
   
     ' 2. Copy the library, the information files and the controls

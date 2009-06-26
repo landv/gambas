@@ -963,8 +963,12 @@ Public Sub tvwFile_Insert()
 End
 
 Public Sub tvwFile_Click()
+  Dim fic As String
     If tvwFile.Column = 0 Then
-      tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
+     fic = FSelectExtraFile.Run(tvwFile.Current.Text)
+     tvwFile.Current.Text = fic
+     tvwFile_Save(tvwFile.Row, tvwFile.Column, fic)
+'       tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
     Else If tvwFile.Column = 1
       Dialog.Path = tvwFile.Current.Text
       If Dialog.SelectDirectory() Then Return
@@ -981,14 +985,15 @@ Public Sub tvwFile_Data(Row As Integer, Column As Integer)
 End
 
 Public Sub btnAddFile_Click()
-
+  Dim fic As String
   $aFile.Add(":")
   SaveExtraFiles
   Inc tvwFile.Rows.Count
   tvwFile.Save
   tvwFile.MoveTo($aFile.Max, 0)
-  tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File))
-
+     fic = FSelectExtraFile.Run("")
+     tvwFile.Current.Text = fic
+     tvwFile_Save(tvwFile.Row, tvwFile.Column, fic)
 End
 
 Public Sub btnRemoveFile_Click()
@@ -1001,6 +1006,7 @@ Public Sub btnRemoveFile_Click()
 End
 
 Public Sub btnUpFile_Click()
+  Dim fic As String
 
   If tvwFile.Row >= 1 Then
     tvwFile.Save
@@ -1008,12 +1014,12 @@ Public Sub btnUpFile_Click()
     SaveExtraFiles
     tvwFile.Refresh
     Dec tvwFile.Row
-    tvwFile.Edit("", "*[^~]", gb.File)
   Endif
 
 End
 
 Public Sub btnDownFile_Click()
+  Dim fic As String
 
  If tvwFile.Row < $aFile.Max Then
     tvwFile.Save
@@ -1021,7 +1027,6 @@ Public Sub btnDownFile_Click()
     SaveExtraFiles
     tvwFile.Refresh
     Inc tvwFile.Row
-    tvwFile.Edit("", "*[^~]", gb.File)
   Endif
 
 End

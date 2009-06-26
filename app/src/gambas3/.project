@@ -1,5 +1,5 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 2.99.0 (r2018)
+# Compiled with Gambas 2.99.0
 Title=Gambas 3
 Startup=Project
 StackTrace=1
@@ -25,9 +25,10 @@ KeepDebugInfo=1
 Maintainer=gambas
 Address=gambas@users.sourceforge.net
 License=General Public Licence
-Systems=mandriva,slackware,autotools
-Menus=Office/Accessories,Audio Video/Audio Video Editing,
-Categories=Office;Utility,AudioVideo;AudioVideoEditing,
-Groups=Accessibility,Applications,
-ExtraDependencies=,,
+Systems=mandriva
+Menus=Office/Accessories
+Categories=Office;Utility
+Groups=Accessibility
+ExtraDependencies=udev:1:5
+ExtraFiles=
 ExtraAutoconfTest="## coucou\n"
