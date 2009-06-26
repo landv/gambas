@@ -1,4 +1,73 @@
 -------------------------------------------------------------------------------
+ gambas2-2.14 - 26 Jun 2009
+-------------------------------------------------------------------------------
+
+[CONFIGURATION]
+* NEW: All database drivers became components so that they can be an
+  explicit project dependency.
+
+[INTERPRETER]
+* NEW: Backport memory debugging routines from Gambas 3.
+* BUG: Fix uninitialized flags in streams, which made INPUT mad on 64 bits
+  systems.
+* BUG: Fix the file watch management routines.
+* BUG: Freeing a collection does not crash anymore if a collection item is
+  removed during the process.
+* BUG: Static variables are correctly inherited now.
+* BUG: Fix compilation on 64 bits systems.
+* BUG: Standard streams are not closed at exit anymore.
+
+[COMPILER]
+* BUG: Unexpected END SUB or END FUNCTION are detected now.
+
+[GB.CORBA]
+* BUG: Fix building with gcc 4.4.0
+
+[GB.DB.SQLITE2]
+* BUG: Fix strchr() casting with next gcc 4.4 release.
+
+[GB.DB.SQLITE3]
+* BUG: Fix strchr() casting with next gcc 4.4 release.
+
+[GB.FORM]
+* BUG: The ValueBox.ReadOnly now works as expected.
+* BUG: DirView now supports an hidden directory as root.
+
+[GB.GTK]
+* BUG: Controls using the base style color (like TextBox, TextArea...) do
+  not take the background color of their parent by default.
+* BUG: Reparenting a top-level window, or putting it inside a Workspace
+  does not show hidden menus anymore.
+* BUG: Fix the Cursor class, and the Control.Cursor property.
+* BUG: Handle focus events the same way as in gb.qt.
+* BUG: Fix focus handling when SetFocus is called inside a GotFocus or
+  LostFocus event handler.
+* BUG: Fix the file watch management routines.
+* BUG: Font management was redesigned. It does not leak memory anymore,
+  and now behaves like in gb.qt.
+* BUG: Tristate CheckBox controls now work as expected.
+* BUG: Destroy pending deleted controls before entering the event loop, to
+  avoid some memory leaks if the event loop is immediately aborted.
+* BUG: Detach destroyed controls from their event listener, as in gb.qt.
+* BUG: Fix a possible crash when setting the TextBox.Text property with a
+  null string.
+
+[GB.NET.CURL]
+* BUG: The first header string was not nul terminated.
+
+[GB.QT]
+* BUG: Fix GotFocus and LostFocus events generation.
+* BUG: Fix focus handling when SetFocus is called inside a GotFocus or
+  LostFocus event handler.
+* BUG: Fix the file watch management routines.
+* BUG: Fix the Clipboard class. Data copied into the clipboard was not
+  visible to other applications in some cases.
+* BUG: Font properties are correctly inherited between containers and
+  children controls.
+* BUG: Showing a tray icon does not eat focus events anymore.
+
+
+-------------------------------------------------------------------------------
  gambas2-2.13.1 - 26 May 2009
 -------------------------------------------------------------------------------
 

@@ -81,7 +81,7 @@ PRIVATE SUB Root_Write(sRoot AS String)
 
 END
 
-PRIVATE SUB AddDir(sDir AS String, sFile AS String, bIgnoreHidden AS Boolean)
+PRIVATE SUB AddDir(sDir AS String, sFile AS String, OPTIONAL bIgnoreHidden AS Boolean)
   
   DIM sParent AS String
   DIM hPict AS Picture
