@@ -52,7 +52,7 @@ PRIVATE SUB ClearView()
 
   $bNoEvent = TRUE
   $hTreeView.Clear
-  AddDir(File.Dir(sRoot), File.Name(sRoot))
+  AddDir(File.Dir(sRoot), File.Name(sRoot), TRUE)
   '$hTreeView.Add(sRoot, sRoot, $hRootPict)
   '$hTreeView.Add(sRoot & "/", "",, sRoot)
 
@@ -81,14 +81,14 @@ PRIVATE SUB Root_Write(sRoot AS String)
 
 END
 
-PRIVATE SUB AddDir(sDir AS String, sFile AS String)
+PRIVATE SUB AddDir(sDir AS String, sFile AS String, bIgnoreHidden AS Boolean)
   
   DIM sParent AS String
   DIM hPict AS Picture
   DIM bNoEdit AS Boolean
   DIM sAfter AS String
   
-  IF NOT $bShowHidden AND IF Left(sFile) = "." THEN RETURN
+  IF NOT $bShowHidden AND IF Left(sFile) = "." AND IF NOT bIgnoreHidden THEN RETURN
   
   sParent = sDir
   IF GetRoot() = (sDir &/ sFile) THEN 
