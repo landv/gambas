@@ -379,9 +379,9 @@ _CANCEL:
 End
 
 
-Public Sub CloseAll()
+Public Sub CloseAllWindows()
 
-  Dim hForm As Object
+  Dim hForm As Window
 
   Workspace.Lock
   For Each hForm In Files
@@ -460,7 +460,7 @@ Private Function CloseProject() As Boolean
 
     Next
     
-    CloseAll
+    CloseAllWindows
     Workspace.Lock
     For Each hForm In Files
       hForm.Delete
@@ -1998,9 +1998,6 @@ Public Sub Deactivate(hForm As Object)
 
 End
 
-
-
-
 Private Sub GetVersion()
   
   Dim sVer As String
@@ -2029,7 +2026,6 @@ Catch
   Debug "Unable to get version from: "; VersionProgram  
   
 End
-
 
 Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bSilent As Boolean) As Boolean
 
@@ -2336,6 +2332,7 @@ Public Sub ReadProject()
           ExtraDependencies[Systems[iElt]] = sElt
           Inc iElt
         Next
+        
       Case "extrafiles"
         iElt = 0
         For Each sElt In Split(sVal, ",")
@@ -2527,7 +2524,9 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
       aElt.Add(ExtraFiles[sSys])
     Next
     Print #hFic, "ExtraFiles="; aElt.Join(",")
+    
     If SameFiles Then Print #hFic, "SameFiles=1"
+    
     If ExtraAutoconfTest Then Print #hFic, "ExtraAutoconfTest=" & Quote(ExtraAutoconfTest)
 
   Endif

@@ -74,6 +74,7 @@ public:
   virtual void changeEvent(QEvent *e);
   void calcMinimumSize();
   virtual void resizeEvent(QResizeEvent *e);
+	//virtual void paintEvent(QPaintEvent *e);
 
   CWINDOW *top;
 };
@@ -90,7 +91,7 @@ public:
   virtual void changeEvent(QEvent *e);
   void calcMinimumSize();
   virtual void resizeEvent(QResizeEvent *e);
-	virtual void paintEvent(QPaintEvent *e);
+	//virtual void paintEvent(QPaintEvent *e);
 };
 
 

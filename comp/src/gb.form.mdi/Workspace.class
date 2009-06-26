@@ -12,7 +12,7 @@ Event Activate
 
 Property ActiveWindow As Window
 'PROPERTY ShowTitle AS Boolean
-Property Read Children As Object[]
+Property Read Children As Window[]
 Property Font As Font
 Property Background As Integer
 Property Orientation As Integer
@@ -69,7 +69,7 @@ Private Sub ActiveWindow_Write(Value As Window)
 
 End
 
-Private Function Children_Read() As Object[]
+Private Function Children_Read() As Window[]
 
   Return hWorkspace.GetWindows()
 

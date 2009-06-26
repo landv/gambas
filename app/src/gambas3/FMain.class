@@ -768,7 +768,7 @@ End
 
 Public Sub mnuCloseAll_Click()
 
-  Project.CloseAll
+  Project.CloseAllWindows
 
 End
 
@@ -1337,7 +1337,7 @@ Public Sub SetMessage(sMsg As String)
   lblMessage.Text = sMsg
   timMessage.Stop
   timMessage.Start
-  Wait
+  'Wait
   
 End
 

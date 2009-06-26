@@ -1,17 +1,17 @@
 ' Gambas class file
 
-PUBLIC Name AS String
-PUBLIC Type AS Integer
-PUBLIC DefaultValue AS Variant
-PUBLIC Length AS Integer
-PUBLIC Key AS Boolean
-PUBLIC OldName AS String
+Public Name As String
+Public Type As Integer
+Public DefaultValue As Variant
+Public Length As Integer
+Public Key As Boolean
+Public OldName As String
 
-PUBLIC SUB _new(OPTIONAL hField AS Field)
+Public Sub _new(Optional hField As Field)
 
-  IF hField THEN
+  If hField Then
   
-    WITH hField
+    With hField
       
       Name = .Name
       OldName = .Name
@@ -21,8 +21,8 @@ PUBLIC SUB _new(OPTIONAL hField AS Field)
       
       Key = hField.Table.PrimaryKey.Find(Name) >= 0
     
-    END WITH
+    End With
     
-  ENDIF
+  Endif
 
-END
+End

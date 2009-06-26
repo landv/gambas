@@ -26,3 +26,9 @@ Public Sub Form_Open()
   fchFile.SelectedPath = Project.Dir &/ ".hidden" &/ $sFic
 End
 
+
+Public Sub fchFile_Activate()
+
+  btnOK.Value = True
+
+End

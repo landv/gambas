@@ -18,7 +18,7 @@ Private $hWatcher As Watcher
 Private $iBackground As Integer = Color.Default
 Private $bNoClose As Boolean
 Private $iLock As Integer
-Private $bLogo As Boolean
+'Private $bLogo As Boolean
 Private $bButtonLeft As Boolean
 
 Public Sub _new()
@@ -26,11 +26,11 @@ Public Sub _new()
   If Not $hTile Then $hTile = Picture["img/hash.png"]
   '$hWatcher = NEW Watcher(panChild) AS "panChild"
   TitleBar = tabWorkspace
-  $bLogo = Application.Name = "gambas" & System.Version
-  If $bLogo Then 
-    picLogo.Picture = Picture.Load("img/logo.png")
-    picLogo.Resize(picLogo.Picture.W, picLogo.Picture.H)
-  Endif
+  '$bLogo = Application.Name = "gambas" & System.Version
+  ' If $bLogo Then 
+  '   picLogo.Picture = Picture.Load("img/logo.png")
+  '   picLogo.Resize(picLogo.Picture.W, picLogo.Picture.H)
+  ' Endif
   
 End
 
@@ -70,8 +70,8 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
     hWin.Reparent(panWorkspace)
   Endif
   
-  ' We must be sure that the Open event is raised (why ?)
-  'hWin.Show
+  ' We must be sure that the Open event is raised! (why should I have to do that?)
+  hWin.Show
   hWin.Hide
   
   hWindow = New CWindow
@@ -131,7 +131,7 @@ Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
   
   Dim iInd As Integer = GetIndex(hWin)
 
-  'DEBUG "REMOVE "; hWin;; hWin.Title;; "["; iInd; "]"
+  'Debug "REMOVE "; hWin;; hWin.Title;; "["; iInd; "]"
   
   If iInd < 0 Then Return
 
@@ -225,7 +225,7 @@ End
 
 Public Sub Watcher_Close()
   
-  'DEBUG LAST.Name;; LAST.Title;; LAST.Closed
+  'Debug Last.Name;; Last.Title;; Last.Closed
   RemoveWindow(Last)
   
 End
@@ -354,7 +354,7 @@ Public Sub Form_Resize()
 
   If tabWorkspace.Visible Then
 
-    If $bLogo Then picLogo.Hide
+    'If $bLogo Then picLogo.Hide
     
     HH = Me.ClientH
       
@@ -434,10 +434,10 @@ Public Sub Form_Resize()
     panWorkspace.Background = If($iBackground = Color.Default, Color.Mix(Color.Background, Color.Foreground), $iBackground)
     panWorkspace.Border = Border.None
 
-    If $bLogo Then
-      picLogo.Move(picLogo.Parent.W - picLogo.W - Desktop.Scale, picLogo.Parent.H - picLogo.H - Desktop.Scale)
-      picLogo.Show
-    Endif
+    ' If $bLogo Then
+    '   picLogo.Move(picLogo.Parent.W - picLogo.W - Desktop.Scale, picLogo.Parent.H - picLogo.H - Desktop.Scale)
+    '   picLogo.Show
+    ' Endif
 
     panWorkspace.Raise
 
@@ -539,9 +539,9 @@ Public Sub Handle_MouseUp()
 
 End
 
-Public Function GetWindows() As Object[]
+Public Function GetWindows() As Window[]
   
-  Dim aWin As New Object[]
+  Dim aWin As New Window[]
   Dim hWindow As CWindow
   
   For Each hWindow In $aWindow
@@ -700,7 +700,7 @@ End
 Public Sub Lock()
   
   Inc $iLock 
-  
+  'Debug $iLock
   If $iLock = 1 Then 
     HideTabStrip
   Endif
@@ -712,7 +712,8 @@ Public Sub UnLock()
   If $iLock <= 0 Then Return
   
   Dec $iLock
-  
+  'Debug $iLock
+
   If $iLock = 0 Then 
     CheckWindow
     Activate

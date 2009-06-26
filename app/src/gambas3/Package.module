@@ -268,7 +268,6 @@ Private Function GetExtraFiles(sSys As String, sFormat As String) As String
   
   If Project.SameFiles Then sSys = Project.Systems[0]
   
-  
   For Each sFile In Split(Project.ExtraFiles[sSys], ";")
     aFile = Split(sFile, ":")
     aFile.Resize(2)
@@ -307,7 +306,6 @@ Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
   Dim sRes As String
   
   If Project.SameFiles Then sSys = Project.Systems[0]
-  
   
   For Each sFile In Split(Project.ExtraFiles[sSys], ";")
     

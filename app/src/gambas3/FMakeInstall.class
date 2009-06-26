@@ -963,18 +963,23 @@ Public Sub tvwFile_Insert()
 End
 
 Public Sub tvwFile_Click()
-  Dim fic As String
-    If tvwFile.Column = 0 Then
-     fic = FSelectExtraFile.Run(tvwFile.Current.Text)
-     tvwFile.Current.Text = fic
-     tvwFile_Save(tvwFile.Row, tvwFile.Column, fic)
-'       tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
-    Else If tvwFile.Column = 1
-      Dialog.Path = tvwFile.Current.Text
-      If Dialog.SelectDirectory() Then Return
-      tvwFile.Current.Text = Dialog.Path
-      tvwFile_Save(tvwFile.Row, tvwFile.Column, Dialog.Path)
+
+  Dim sFic As String
+
+  If tvwFile.Column = 0 Then
+    sFic = FSelectExtraFile.Run(tvwFile.Current.Text)
+    If sFic Then
+      tvwFile.Current.Text = sFic
+      tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
     Endif
+    ' tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
+  Else If tvwFile.Column = 1
+    Dialog.Path = tvwFile.Current.Text
+    If Dialog.SelectDirectory() Then Return
+    tvwFile.Current.Text = Dialog.Path
+    tvwFile_Save(tvwFile.Row, tvwFile.Column, Dialog.Path)
+  Endif
+
 End
 
 Public Sub tvwFile_Data(Row As Integer, Column As Integer)

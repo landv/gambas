@@ -534,7 +534,7 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 
 	if (!THIS->toplevel)
 	{
-		//qDebug("THIS->opened = %d: %p: %s", THIS->opened, THIS, GB.GetClassName(THIS));
+		//qDebug("Close event: %s %p opened = %d", GB.GetClassName(THIS), THIS, THIS->opened);
 		if (THIS->opened)
 		{
 			THIS->closing = true;
@@ -2083,7 +2083,8 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	{
 		//qDebug("THIS->opened = %d: %p: %s", THIS->opened, THIS, GB.GetClassName(THIS));
 		THIS->closing = true;
-		cancel = GB.Raise(_object, EVENT_Close, 0);
+		//qDebug("Close event: %s %p", GB.GetClassName(THIS), THIS);
+		cancel = GB.Raise(THIS, EVENT_Close, 0);
 		THIS->closing = false;
 	}
 
@@ -2208,7 +2209,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	
 	//qDebug("--> isVisible = %d isHidden = %d", isVisible(), isHidden());
 	
-	if (THIS->embedded && !THIS->hidden)
+	/*if (THIS->embedded && !THIS->hidden)
 	{
 		#if DEBUG_WINDOW
 		qDebug("post show_later %s %p", GB.GetClassName(THIS), THIS);
@@ -2217,7 +2218,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 		//GB.Post((void (*)())show_later, (intptr_t)THIS);
 		show_later(THIS);
 		//WIDGET->show();
-	}
+	}*/
 	//qDebug("new parent = %p", parentWidget());
 }
 

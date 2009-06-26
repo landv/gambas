@@ -128,7 +128,7 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
   QIcon icon;
   int size;
 
-	size = qMin(WIDGET_TOOL->width(), WIDGET_TOOL->height()) - 6;
+	size = qMin(WIDGET->width(), WIDGET->height()) - 6;
 	if (resize && size == THIS->last_size)
 		return;
 
@@ -147,6 +147,7 @@ static void set_button(CBUTTON *_object, const char *text, bool resize = false)
 			else*/
 				CWIDGET_iconset(icon, p);
 			WIDGET->setIcon(icon);
+			WIDGET->setIconSize(p.size());
 		}
 		else
 		{
@@ -194,6 +195,7 @@ static void set_tool_button(CBUTTON *_object, const char *text, bool resize = fa
 	    CWIDGET_iconset(icon, p);
 	    	
     WIDGET_TOOL->setIcon(icon);
+		WIDGET->setIconSize(p.size());
     //WIDGET_TOOL->setUsesTextLabel(qtext.length() > 0);
     
 		THIS->last_size = size;
@@ -560,6 +562,17 @@ void MyPushButton::resizeEvent(QResizeEvent *e)
 	set_button((CBUTTON *)CWidget::get(this), NULL, true);
 }
 
+/*void MyPushButton::paintEvent(QPaintEvent *)
+{
+	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
+	QStylePainter p(this);
+	QStyleOptionToolButton opt;
+	initStyleOption(&opt);
+	if (THIS->picture)
+		opt.iconSize = THIS->picture->pixmap->size();
+	p.drawComplexControl(QStyle::CC_PushButton, opt);
+}*/
+
 
 /** class MyToolButton *****************************************************/
 
@@ -596,7 +609,7 @@ void MyToolButton::resizeEvent(QResizeEvent *e)
 	set_tool_button((CBUTTON *)CWidget::get(this), NULL, true);
 }
 
-void MyToolButton::paintEvent(QPaintEvent *)
+/*void MyToolButton::paintEvent(QPaintEvent *)
 {
 	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
 	QStylePainter p(this);
@@ -605,7 +618,7 @@ void MyToolButton::paintEvent(QPaintEvent *)
 	if (THIS->picture)
 		opt.iconSize = THIS->picture->pixmap->size();
 	p.drawComplexControl(QStyle::CC_ToolButton, opt);
-}
+}*/
 
 
 /* Class CButton */

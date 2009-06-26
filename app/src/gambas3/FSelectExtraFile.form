@@ -2,8 +2,15 @@
 
 { Form Form
   MoveScaled(0,0,113,64)
-  Text = ("Select a Extra File")
-  Resizable = False
+  Text = ("Select an extra file")
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { fchFile FileChooser
+    MoveScaled(1,1,110,56)
+    Expand = True
+    ReadOnly = True
+  }
   { HBox1 HBox
     MoveScaled(1,59,66,4)
     Spacing = True
@@ -21,10 +28,5 @@
       Text = ("Cancel")
       Cancel = True
     }
-  }
-  { fchFile FileChooser
-    MoveScaled(1,1,110,56)
-    ShowHidden = True
-    ReadOnly = True
   }
 }
