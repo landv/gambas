@@ -65,10 +65,10 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
 		if (index >= list.count())
 			return NULL;
 	
-		ob = list.at(index);
+		ob = list.at(index); // ob might be null if we are inside the QWidget destructor
 		index++;
 		
-		if (ob->isWidgetType())
+		if (ob && ob->isWidgetType())
 		{
 			if (!((QWidget *)ob)->isHidden() && !qobject_cast<QSizeGrip *>(ob))
 				return (QWidget *)ob;
@@ -132,7 +132,7 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 #define IS_DESIGN(_object) (CWIDGET_test_flag(_object, WF_DESIGN) && CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
 #define IS_WIDGET_VISIBLE(_widget) (_widget)->isVisible()
 
-#define CAN_ARRANGE(_object) ((_object) && ((CWIDGET *)(_object))->flag.shown)
+#define CAN_ARRANGE(_object) ((_object) && ((CWIDGET *)(_object))->flag.shown && !CWIDGET_test_flag(_object, WF_DELETED))
 //(IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object))))
 
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
