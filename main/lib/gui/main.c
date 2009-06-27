@@ -53,7 +53,13 @@ int EXPORT GB_INIT(void)
 	env = getenv("KDE_FULL_SESSION");
 	
 	if (env && !strcmp(env, "true"))
-		comp = "gb.qt";
+	{
+		env = getenv("KDE_SESSION_VERSION");
+		if (env && !strcmp(env, "4"))
+			comp = "gb.qt4";
+		else
+			comp = "gb.qt";
+	}
 	else
 		comp = "gb.gtk";
 		

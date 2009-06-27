@@ -56,6 +56,10 @@ public:
 
   bool eventFilter(QObject *, QEvent *);
   CWIDGET *getControl() { return control; }
+	
+public slots:
+	
+	void destroy();
 
 private:
 

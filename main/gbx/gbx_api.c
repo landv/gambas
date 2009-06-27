@@ -856,6 +856,24 @@ void GB_Error(const char *error, ...)
   GAMBAS_Error = TRUE;
 }
 
+#if DEBUG_REF
+
+#include <execinfo.h>
+
+static void print_stack_backtrace()
+{
+	void *trace[16];
+	char **messages = (char **)NULL;
+	int i, trace_size = 0;
+
+	trace_size = backtrace(trace, 16);
+	messages = backtrace_symbols(trace, trace_size);
+	//printf("[bt] Execution path:\n");
+	for (i=0; i<trace_size; ++i)
+		fprintf(stderr, "[bt] %s\n", messages[i]);
+}
+
+#endif
 
 
 void GB_Ref(void *object)
@@ -866,7 +884,12 @@ void GB_Ref(void *object)
   #endif
 
   if (object)
+	{
+		#if DEBUG_REF
+		print_stack_backtrace();
+		#endif
     OBJECT_REF(object, "GB_Ref");
+	}
 
   #if TRACE_MEMORY
   CP = save;
@@ -882,8 +905,13 @@ void GB_Unref(void **object)
   #endif
 
   if (*object)
+	{
+		#if DEBUG_REF
+		print_stack_backtrace();
+		#endif
     OBJECT_UNREF(*object, "GB_Unref");
-
+	}
+	
   #if TRACE_MEMORY
   CP = save;
   #endif
@@ -899,6 +927,9 @@ void GB_UnrefKeep(void **object, int delete)
 
   if (*object != NULL)
   {
+		#if DEBUG_REF
+		print_stack_backtrace();
+		#endif
     if (delete)
     {
       OBJECT_UNREF(*object, "GB_UnrefKeep");
@@ -918,14 +949,24 @@ void GB_UnrefKeep(void **object, int delete)
 void GB_Detach(void *object)
 {
   if (object)
+	{
+		#if DEBUG_REF
+		print_stack_backtrace();
+		#endif
     OBJECT_detach(object);
+	}
 }
 
 
 void GB_Attach(void *object, void *parent, const char *name)
 {
   if (object)
+	{
+		#if DEBUG_REF
+		print_stack_backtrace();
+		#endif
     OBJECT_attach(object, parent, name);
+	}
 }
 
 

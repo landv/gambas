@@ -83,6 +83,7 @@ CWatcher::CWatcher(CWATCHER *w, CWIDGET *o)
 	widget->installEventFilter(this);
 	if (cont)
 		cont->installEventFilter(this);
+	QObject::connect(widget, SIGNAL(destroyed()), this, SLOT(destroy()));
 }
 
 CWatcher::~CWatcher()
@@ -100,12 +101,6 @@ CWatcher::~CWatcher()
 	}
 }
 
-/*void post_child_event(ChildEvent *e)
-{
-	GB.Raise(e->watcher, e->event, 1, GB_T_OBJECT, e->child);
-	delete e;
-}*/
-
 void send_event(void *watcher, intptr_t event)
 {
 	GB.Raise(watcher, (int)event, 0);
@@ -119,43 +114,20 @@ bool CWatcher::eventFilter(QObject* o, QEvent *e)
 		if (e->type() == QEvent::Move)
 			GB.Raise(watcher, EVENT_Move, 0);
 		else if (e->type() == QEvent::Resize)
-		{
-			//GB.Ref(watcher);
-			//GB.Post2((void (*)())send_event, (intptr_t)watcher, (intptr_t)EVENT_Resize);
 			GB.Raise(watcher, EVENT_Resize, 0);
-		}
 		else if (e->type() == QEvent::Show)
 			GB.Raise(watcher, EVENT_Show, 0);
 		else if (e->type() == QEvent::Hide)
 			GB.Raise(watcher, EVENT_Hide, 0);
 	}
 
-	/*if (e->type() == EVENT_TITLE)
-		GB.Raise(watcher, EVENT_Title, 0);
-	else if (e->type() == EVENT_ICON)
-		GB.Raise(watcher, EVENT_Icon, 0);
-	else if (e->type() == EVENT_CLOSE)
-		GB.Raise(watcher, EVENT_Close, 0);
-	else*/ if (e->type() == EVENT_DESTROY)
-	{
-	  //qDebug("Watcher: EVENT_DESTROY");
-		GB.Unref(POINTER(&control));
-		control = 0;
-	}
-	/*else if (e->type() == QEvent::ChildInserted)
-	{
-		void *child = CWidget::get((QWidget *)(((QChildEvent *)e)->child()));
-		if (child && child != control && GB.CanRaise(watcher, EVENT_Insert))
-			GB.Post((GB_POST_FUNC)post_child_event, (intptr_t)new ChildEvent(EVENT_Insert, watcher, child));
-		//GB.Raise(watcher, EVENT_Insert, 1, GB_T_OBJECT, );
-	}*/
-	
-		//GB.Post((void (*)())post_child_event, (intptr_t)new ChildEvent(EVENT_Insert, watcher, ((QChildEvent *)e)->child()));
-	/*else if (e->type() == QEvent::ChildRemoved)
-		//GB.Post((void (*)())post_child_event, (intptr_t)new ChildEvent(EVENT_Remove, watcher, ((QChildEvent *)e)->child()));
-		post_child_event(new ChildEvent(EVENT_Remove, watcher, ((QChildEvent *)e)->child()));*/
-
 	return false; //return QObject::eventFilter(o, e);
+}
+
+void CWatcher::destroy()
+{
+	GB.Unref(POINTER(&control));
+	control = 0;
 }
 
 /** Watcher class *********************************************************/

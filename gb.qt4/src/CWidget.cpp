@@ -1744,8 +1744,6 @@ void CWidget::destroy()
 	
 	//qDebug(">> CWidget::destroy %p (%s %p)", w, GB.GetClassName(ob), ob);
 
-	QEvent e(EVENT_DESTROY);
-
 	if (enter == ob)
 		enter = NULL;
 
@@ -1768,9 +1766,6 @@ void CWidget::destroy()
 	//qDebug(">> CWidget::destroy %p (%p) :%p:%ld #2", ob, ob->widget, ob->ob.klass, ob->ob.ref);
 	//if (!CWIDGET_test_flag(ob, WF_NODETACH))
 	GB.Detach(ob);
-
-	qApp->sendEvent(w, &e);
-	//qDebug("<< CWidget::destroy %p (%p)", ob, ob->widget);
 
 	//qDebug("<< CWidget::destroy %p (%s %p)", w, GB.GetClassName(ob), ob);
 

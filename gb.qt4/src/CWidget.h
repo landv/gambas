@@ -156,14 +156,13 @@ DECLARE_PROPERTY(CCONTROL_action);
 }
 
 
-#define EVENT_CLOSE (QEvent::User)
+/*#define EVENT_CLOSE (QEvent::User)
 #define EVENT_POST ((QEvent::Type)(QEvent::User + 1))
 #define EVENT_EXPAND ((QEvent::Type)(QEvent::User + 2))
 #define EVENT_TITLE ((QEvent::Type)(QEvent::User + 3))
 #define EVENT_ICON ((QEvent::Type)(QEvent::User + 4))
-#define EVENT_DESTROY ((QEvent::Type)(QEvent::User + 5))
 #define EVENT_INSERT ((QEvent::Type)(QEvent::User + 6))
-#define EVENT_REMOVE ((QEvent::Type)(QEvent::User + 7))
+#define EVENT_REMOVE ((QEvent::Type)(QEvent::User + 7))*/
 
 /*#define ALIGN_MASK (Qt::AlignLeft | Qt::AlignRight | Qt::AlignTop | Qt::AlignBottom | Qt::AlignCenter)
 #define ALIGN_HMASK (Qt::AlignLeft | Qt::AlignRight | Qt::AlignHCenter)
