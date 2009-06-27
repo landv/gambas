@@ -1,11 +1,12 @@
 # Gambas Project File 3.0
+# Compiled with Gambas 2.99.0 (r2045)
 Title=Picture Database Viewer
 Startup=FormPictureDatabase
 Icon=Images/image-x-generic.png
 Version=0.0.2
-Library=gb.gui
-Library=gb.db
-Authors=Timothy Marshal-Nichols\ntimothy.marshal-nichols@ntlworld.com
+Component=gb.gui
+Component=gb.db
+Authors="Timothy Marshal-Nichols\ntimothy.marshal-nichols@ntlworld.com"
 Environment="GB_GUI=gb.qt"
 TabSize=2
 Translate=1
@@ -18,3 +19,5 @@ Systems=slackware
 Menus=Electronics
 Categories=Database;Documentation
 Groups=Development/Tools
+ExtraDependencies=
+ExtraFiles=

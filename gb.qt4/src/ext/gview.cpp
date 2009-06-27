@@ -489,27 +489,31 @@ void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int
 	int ps;
 	QColor bg;
 
-	pos = 0;
 	bg = styles[GLine::Highlight].color;
-	for(;;)
+	
+	if (_showString.length())
 	{
-		if (pos >= (int)l->s.length())
-			break;
-		pos = l->s.find(_showString, pos, _showStringIgnoreCase);
-		if (pos < 0)
-			break;
-		ps = lineWidth(row, pos);
-		//if (ps > (xmin + lmax))
-		//	break;
-		nx = lineWidth(row, pos + _showString.length());
-		p.fillRect(ps, 0, nx - ps, h, bg);
-		pos += _showString.length();
+		pos = 0;
+		for(;;)
+		{
+			if (pos >= (int)l->s.length())
+				break;
+			pos = l->s.find(_showString, pos, _showStringIgnoreCase);
+			if (pos < 0)
+				break;
+			ps = lineWidth(row, pos);
+			//if (ps > (xmin + lmax))
+			//	break;
+			nx = lineWidth(row, pos + _showString.length());
+			p.fillRect(ps, 0, nx - ps, h, bg);
+			pos += _showString.length();
+		}
 	}
 
-if (row == _showRow && _showLen > 0 && _showCol >= 0 && _showCol < (int)l->s.length())
+	if (row == _showRow && _showLen > 0 && _showCol >= 0 && _showCol < (int)l->s.length())
 	{
 		ps = lineWidth(row, _showCol);
-		nx = lineWidth(row, QMAX((int)l->s.length(), _showCol + _showLen));
+		nx = lineWidth(row, QMIN((int)l->s.length(), _showCol + _showLen));
 		p.fillRect(ps, 0, nx - ps, h, bg);
 	}
 }

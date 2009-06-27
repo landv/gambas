@@ -298,19 +298,20 @@ Public Sub Activate(Optional hWindow As Window)
   
     $hCurrent = hWin
     
-    If $hCurrent.Resizable Then
-      $hCurrent.Window.Move(0, 0)
-      MoveHandle
-      svwWorkspace.Raise
-    Else
-      panWorkspace.Raise
-    Endif
     'WITH tabWorkspace
     '  $hCurrent.Move(.X + .ClientX, .Y + .ClientY, .ClientW, .ClientH)
     'END WITH
     
     If $iLock = 0 Then
-
+    
+      If $hCurrent.Resizable Then
+        $hCurrent.Window.Move(0, 0)
+        MoveHandle
+        svwWorkspace.Raise
+      Else
+        panWorkspace.Raise
+      Endif
+      
       With $hCurrent.Window
         .Show
         .Raise
@@ -680,6 +681,7 @@ End
 Private Sub HideTabStrip()
   
   tabWorkspace.Hide
+  panWorkspace.Hide
   btnTabClose.Hide
   panTitle.Visible = $bShowTitle
   Form_Resize  
@@ -689,6 +691,7 @@ End
 
 Private Sub ShowTabStrip()
   
+  panWorkspace.Show
   If $aWindow.Count Then 
     btnTabClose.Show
     tabWorkspace.Show
@@ -700,7 +703,6 @@ End
 Public Sub Lock()
   
   Inc $iLock 
-  'Debug $iLock
   If $iLock = 1 Then 
     HideTabStrip
   Endif
@@ -712,7 +714,6 @@ Public Sub UnLock()
   If $iLock <= 0 Then Return
   
   Dec $iLock
-  'Debug $iLock
 
   If $iLock = 0 Then 
     CheckWindow

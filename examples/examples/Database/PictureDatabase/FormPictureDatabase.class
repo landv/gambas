@@ -189,9 +189,9 @@ Private Sub ShowImage(Row As Integer)
   tempFile = Temp() & ".png"
   ModuleDatabase.ResultPictures.MoveTo(Row)
   TextAreaDescription.Text = ModuleDatabase.ResultPictures["description"]
-  tempPicture = ModuleDatabase.ResultPictures["image"].Data
   If tempFile Then 
-    File.Save(tempFile, tempPicture)
+    'tempPicture = ModuleDatabase.ResultPictures["image"].Data
+    File.Save(tempFile, ModuleDatabase.ResultPictures["image"].Data)
     PictureBoxImage.Picture = Picture.Load(tempFile)  
     PictureBoxImage.Resize(PictureBoxImage.Picture.Width, PictureBoxImage.Picture.Height)
   Else 
