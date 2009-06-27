@@ -1021,16 +1021,14 @@ Public Sub Action_Activate(Key As String) As Boolean
   
 End
 
-Public Sub Form_Activate()
+Public Sub tvwProject_GotFocus()
 
-  'DEBUG
   mnuPopup.Enabled = True
 
 End
 
-Public Sub Form_Deactivate()
+Public Sub tvwProject_LostFocus()
 
-  'DEBUG
   mnuPopup.Enabled = False
 
 End

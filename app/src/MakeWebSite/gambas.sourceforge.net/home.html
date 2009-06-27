@@ -19,7 +19,7 @@
       <img src="top-right-corner.png" class="top-right-corner">
     </div>
     <div style="padding:0px 8px;margin:0px;color:white;">
-      <b>{Last stable version is}<br><a href="download.html"><font size="+1">2.13.1</font></a>
+      <b>{Last stable version is}<br><a href="download.html"><font size="+1">2.14.0</font></a>
       (<a href="changelog2.html"><b>Changelog</b></a>)</b>
     </div>
     <div class="bottom-corner">
@@ -68,13 +68,20 @@
   <img src="top-left-corner.png" class="top-left-corner">
   <img src="top-right-corner.png" class="top-right-corner">
   <div style="height:4px;"></div>
-  <div><b>26 may 2009 - Release of Gambas 2.13.1</b></div>
+  <div><b>27 jun 2009 - Release of Gambas 2.14</b></div>
 </div>
 <div class="news">
 <table class="none" width="100%"><tr><td class="none">
-<p>This release fixes compilation problems with gcc 4.4, FreeBSD and older versions of the GTK+ library.
-It makes simultaneaous asynchronous downloads work correctly in the <tt>gb.net.curl</tt> component.
-<p>See the <a href="changelog2.html">ChangeLog</a> for the details.
+<p>The main changes of this release are:
+<ul>
+  <li>All database drivers became components so that they can be an explicit project dependency.
+  <li>File watch management routines were fixed in the interpreter, in gb.qt and gb.gtk.
+  <li>Static variables are correctly inherited now.
+  <li>Focus and clipboard management in gb.qt were fixed.
+  <li>A lot of gb.gtk bugs was fixed too.
+</ul>
+
+<p>See the <a href="changelog2.html">ChangeLog</a> for the other bug fixes.
 </td></tr></table>
 </div>
 <div class="space"></div>
@@ -82,13 +89,12 @@ It makes simultaneaous asynchronous downloads work correctly in the <tt>gb.net.c
   <img src="top-left-corner.png" class="top-left-corner">
   <img src="top-right-corner.png" class="top-right-corner">
   <div style="height:4px;"></div>
-  <div><b>14 may 2009 - Release of Gambas 2.13</b></div>
+  <div><b>26 may 2009 - Release of Gambas 2.13.1</b></div>
 </div>
 <div class="news">
 <table class="none" width="100%"><tr><td class="none">
-<p>This release fixes some important bugs in the interpreter, in the GTK+ component, and in the 
-transparent picture drawing routines of both GTK+ and QT component.
-<p>It has some patches that makes it compile better on FreeBSD.
+<p>This release fixes compilation problems with gcc 4.4, FreeBSD and older versions of the GTK+ library.
+It makes simultaneaous asynchronous downloads work correctly in the <tt>gb.net.curl</tt> component.
 <p>See the <a href="changelog2.html">ChangeLog</a> for the details.
 </td></tr></table>
 </div>

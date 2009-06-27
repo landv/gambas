@@ -139,7 +139,7 @@ static void update_accel(CMENU *_object)
 	
 	if (THIS->accel && !THIS->accel->isEmpty())
 	{
-		if (ACTION->isEnabled() && !THIS->noshortcut) // && PARENT_ACTION->isEnabled())
+		if (!THIS->disabled && !THIS->noshortcut) // && PARENT_ACTION->isEnabled())
 		{
 			//qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().utf8());
 			ACTION->setShortcut(*(THIS->accel));
@@ -262,6 +262,12 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
   //qDebug("*** CMENU_new %p", _object);
   GB.Ref(THIS);
 
+	if (!CMENU_is_toplevel(THIS))
+	{
+  	CMENU *menu = (CMENU *)(THIS->parent);
+		CMenu::enableAccel(menu, !menu->disabled);
+	}
+
 	//qDebug("CMENU_new: (%s %p)", THIS->widget.name, THIS);
 	
 END_METHOD
@@ -328,12 +334,13 @@ END_PROPERTY
 BEGIN_PROPERTY(CMENU_enabled)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(ACTION->isEnabled());
+		GB.ReturnBoolean(!THIS->disabled);
 	else
 	{
-		ACTION->setEnabled(VPROP(GB_BOOLEAN));
-		//qDebug("CMENUITEM_enabled: %p %s '%s'", item, enabled ? "1" : "0", ((QString)(*item->accel)).latin1());
-  	CMenu::enableAccel(THIS, ACTION->isEnabled());
+		bool b = VPROP(GB_BOOLEAN);
+		THIS->disabled = !b;
+		ACTION->setEnabled(b);
+  	CMenu::enableAccel(THIS, b);
 	}
 
 END_PROPERTY
@@ -526,7 +533,7 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
 			
 		THIS->exec = FALSE;
-		CMenu::enableAccel(THIS, ACTION->isEnabled());
+		CMenu::enableAccel(THIS, !THIS->disabled);
 		//MAIN_process_events();
   }
 
