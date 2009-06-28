@@ -51,25 +51,15 @@ fi
 
 dnl ---- Check for ffi library
 
-GB_COMPONENT_PKG_CONFIG(
+GB_COMPONENT_SEARCH(
   ffi,
   FFI,
   [foreign function interface],
   [],
   libffi,
-  [],
-  [Cannot find libffi support with pkg-config])
-
-if test -z "$FFI_LIB"; then
-  GB_COMPONENT(
-    ffi,
-    FFI,
-    [foreign function interface],
-    [],
-    [GB_FIND(ffi.h, /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
-    [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
-    [-lffi])
-fi
+  [GB_FIND(ffi.h, /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
+  [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
+  [-lffi])
 
 dnl ---- Remove DISABLED file that could have been generated before
 
