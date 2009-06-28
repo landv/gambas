@@ -25,6 +25,7 @@ public:
 	bool inconsistent();
 	bool isStretch() { return _stretch; }
 	bool isTristate() const { return _tristate; }
+	bool isAutoResize() const { return _autoresize; }
 
 	void setEnabled(bool vl);
 	void setBorder(bool vl);
@@ -38,6 +39,7 @@ public:
 	void setInconsistent(bool vl);
 	void setStretch(bool vl);
 	void setTristate(bool vl);
+	void setAutoResize(bool vl);
 	
 	virtual void setFont(gFont *ft);
 	virtual void setRealForeground(gColor color);
@@ -63,10 +65,12 @@ public:
 	unsigned _radio : 1;
 	unsigned _stretch : 1;
 	unsigned _tristate : 1;
+	unsigned _autoresize : 1;
 	
 	bool hasShortcut();
 	void unsetOtherRadioButtons();
 	virtual int minimumHeight();
+	void updateSize();
 	
 	static bool isButton(gControl *control) { return control->getClass() == Type_gButton && ((gButton *)control)->type == Button; }
 };

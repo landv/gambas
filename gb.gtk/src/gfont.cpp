@@ -458,8 +458,7 @@ int gFont::width(const char *text, int len)
 	PangoLayout *ly;
 	int w;
 	
-	if (!text) return 0;
-	if (!strlen(text)) return 0;
+	if (!text || !*text) return 0;
 	
 	ly=pango_layout_new(ct);
 	pango_layout_set_text(ly,text,len);

@@ -139,8 +139,8 @@ Private Sub SetArrangement()
   Dim hToolbar As ToolBar = Me.Parent
   
   If $bDesign Then Return
-  hToolbar.Arrangement = If($bVertical, Arrange.Column, Arrange.Row)
   hToolBar.Padding = 1
+  hToolbar.Arrangement = If($bVertical, Arrange.Column, Arrange.Row)
   
 End
 

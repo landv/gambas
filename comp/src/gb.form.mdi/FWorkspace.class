@@ -681,7 +681,6 @@ End
 Private Sub HideTabStrip()
   
   tabWorkspace.Hide
-  panWorkspace.Hide
   btnTabClose.Hide
   panTitle.Visible = $bShowTitle
   Form_Resize  
@@ -691,7 +690,6 @@ End
 
 Private Sub ShowTabStrip()
   
-  panWorkspace.Show
   If $aWindow.Count Then 
     btnTabClose.Show
     tabWorkspace.Show
@@ -704,6 +702,7 @@ Public Sub Lock()
   
   Inc $iLock 
   If $iLock = 1 Then 
+    panWorkspace.Hide
     HideTabStrip
   Endif
   
@@ -719,6 +718,7 @@ Public Sub UnLock()
     CheckWindow
     Activate
     ShowTabStrip
+    panWorkspace.Show
   Endif
   
 End

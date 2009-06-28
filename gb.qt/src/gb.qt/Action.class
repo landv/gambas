@@ -290,29 +290,42 @@ Private Function GetControls() As Object[]
 
     Next
     
-    Return aObj2
+    aObj = aObj2
 
   Else If $sKey Then
 
     Try aObj = $cControls[$sKey]
     If Not aObj Then Return $aVoid
     
-    If Not $hParent Then Return aObj
+    If $hParent Then 
   
-    aObj2 = New Object[]
-    For Each hCtrl In aObj
-      If Object.Parent(hCtrl) = $hParent Then
-        aObj2.Add(hCtrl)
-      Endif
-    Next
-
-    Return aObj2
+      aObj2 = New Object[]
+      For Each hCtrl In aObj
+        If Object.Parent(hCtrl) = $hParent Then
+          aObj2.Add(hCtrl)
+        Endif
+      Next
+  
+      aObj = aObj2
+      
+    Endif
 
   Else 
 
     Return $aVoid
 
   Endif
+  
+  iInd = 0
+  While iInd < aObj.Count
+    If Object.IsValid(aObj[iInd]) Then
+      Inc iInd
+    Else
+      aObj.Remove(iInd)
+    Endif
+  Wend
+  
+  Return aObj
   
 End
 

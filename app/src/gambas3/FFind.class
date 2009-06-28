@@ -191,8 +191,10 @@ Public Sub Form_Hide()
   'FFindList.ClearFound
 
   ShowString()
-  FFindList.Hide
-  FMain.ActivateCurrentWindow  
+  If Not Project.AboutToQuit Then 
+    FFindList.Hide
+    FMain.ActivateCurrentWindow  
+  Endif
 
 End
 

@@ -404,6 +404,7 @@ Private Sub UpdateDepCombo()
   Endif
   
 End
+
 Private Sub UpdateFileCombo()
 
   If chkFile.Value Then
@@ -962,22 +963,27 @@ Public Sub tvwFile_Insert()
 
 End
 
-Public Sub tvwFile_Click()
+Public Sub tvwFile_DblClick()
 
   Dim sFic As String
 
   If tvwFile.Column = 0 Then
     sFic = FSelectExtraFile.Run(tvwFile.Current.Text)
-    If sFic Then
-      tvwFile.Current.Text = sFic
-      tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
-    Endif
+    If Not sFic Then Return
+
+    'tvwFile.Current.Text = sFic
+    tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
+    tvwFile.Refresh
     ' tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
-  Else If tvwFile.Column = 1
+  Else If tvwFile.Column = 1 Then
+  
     Dialog.Path = tvwFile.Current.Text
     If Dialog.SelectDirectory() Then Return
-    tvwFile.Current.Text = Dialog.Path
+    
+    'tvwFile.Current.Text = Dialog.Path
     tvwFile_Save(tvwFile.Row, tvwFile.Column, Dialog.Path)
+    tvwFile.Refresh
+    
   Endif
 
 End
@@ -990,15 +996,21 @@ Public Sub tvwFile_Data(Row As Integer, Column As Integer)
 End
 
 Public Sub btnAddFile_Click()
-  Dim fic As String
-  $aFile.Add(":")
+
+  Dim sFic As String
+  
+  sFic = FSelectExtraFile.Run("")
+  If Not sFic Then Return
+  
+  $aFile.Add(sFic & ":")
   SaveExtraFiles
   Inc tvwFile.Rows.Count
-  tvwFile.Save
   tvwFile.MoveTo($aFile.Max, 0)
-     fic = FSelectExtraFile.Run("")
-     tvwFile.Current.Text = fic
-     tvwFile_Save(tvwFile.Row, tvwFile.Column, fic)
+  'tvwFile.Refresh
+  'tvwFile.Current.Text = sFic
+  'tvwFile.Save
+  'tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
+  
 End
 
 Public Sub btnRemoveFile_Click()

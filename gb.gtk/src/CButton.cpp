@@ -193,6 +193,15 @@ BEGIN_PROPERTY(CBUTTON_radio)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CBUTTON_autoresize)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(BUTTON->isAutoResize());
+	else
+		BUTTON->setAutoResize(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 GB_DESC CButtonDesc[] =
 {
   GB_DECLARE("Button", sizeof(CBUTTON)), GB_INHERITS("Control"),
@@ -207,6 +216,7 @@ GB_DESC CButtonDesc[] =
   GB_PROPERTY("Default", "b", CBUTTON_default),
   GB_PROPERTY("Cancel", "b", CBUTTON_cancel),
   GB_PROPERTY("Value", "b", CBUTTON_value),
+	GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
 
   GB_EVENT("Click", 0, 0, &EVENT_Click),
 
@@ -227,6 +237,7 @@ GB_DESC CToggleButtonDesc[] =
   GB_PROPERTY("Value", "b", CBUTTON_value),
   GB_PROPERTY("Border", "b", CBUTTON_border),
   GB_PROPERTY("Radio", "b", CBUTTON_radio),
+	GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
 
   GB_EVENT("Click", 0, 0, &EVENT_Click),
 
@@ -290,6 +301,7 @@ GB_DESC CToolButtonDesc[] =
   GB_PROPERTY("Toggle", "b", CTOOLBUTTON_toggle),
   GB_PROPERTY("Border", "b", CBUTTON_border),
   GB_PROPERTY("Radio", "b", CBUTTON_radio),
+	GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
 
   GB_EVENT("Click", 0, 0, &EVENT_Click),
 

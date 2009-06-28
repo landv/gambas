@@ -206,6 +206,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	_animated = false;
 	_stretch = true;
 	_tristate = false;
+	_autoresize = false;
 	scaled = false;
 	disable = false;
 	bufText = NULL;
@@ -351,6 +352,8 @@ void gButton::setFont(gFont *ft)
 	
 	if (label)
 		gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
+	
+	updateSize();
 }
 
 bool gButton::enabled()
@@ -431,6 +434,7 @@ void gButton::setText(const char *st)
 	}
 
  	bufText = g_strdup(st);
+	updateSize();
 	resize();
 	
 	if (!rendtxt)
@@ -709,4 +713,26 @@ void gButton::setTristate(bool vl)
 	_tristate = vl;
 	if (!_tristate)
 		setInconsistent(false);
+}
+
+void gButton::setAutoResize(bool vl)
+{
+	_autoresize = vl;
+	updateSize();
+}
+
+void gButton::updateSize()
+{
+	int mw;
+	
+	if (!_autoresize)
+		return;
+	
+	if (bufText && *bufText)
+		mw = font()->width(bufText, strlen(bufText)) + 8;
+	else
+		mw = 0;
+	
+	if (width() < mw)
+		resize(mw, height());
 }

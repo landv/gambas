@@ -263,7 +263,6 @@ gControl::gControl(gContainer *parent)
 gControl::~gControl()
 {
 	gMainWindow *win = window();
-  //fprintf(stderr, "gControl::~gControl: %p (%p)\n", this, pr);
 	
 	emit(SIGNAL(onFinish));
 	

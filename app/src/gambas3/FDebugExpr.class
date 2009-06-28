@@ -50,7 +50,7 @@ Static Public Sub AddResult(sWindow As String, sValue As String)
   iPos = RInStr(sWindow, "#")
     
   hWin = $cAll[Left(sWindow, iPos - 1)]
-  hWin.SetValue(CInt(Mid(sWindow, iPos + 1)), sValue)
+  If hWin Then hWin.SetValue(CInt(Mid(sWindow, iPos + 1)), sValue)
   
 End
 
