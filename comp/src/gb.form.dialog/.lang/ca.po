@@ -1,14 +1,14 @@
-# Catalan translation of gb.form.dialog ver. 2.0.0
-# Copyright (C) 2000-2008 Benoît Minisini.
+# Catalan translation of gb.form.dialog ver. 2.99.0
+# Copyright (C) 2000-2009 Benoît Minisini.
 # This file is distributed under the same license as gb.form.dialog package.
-# Jordi Sayol <jordisayol@gmail.com>, 2007-2008.
+# Jordi Sayol <jordisayol@gmail.com>, 2007-2009.
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gb.form.dialog 2.0.0\n"
+"Project-Id-Version: gb.form.dialog 2.99.0\n"
 "POT-Creation-Date: 2002-11-01 04:27+0100\n"
-"PO-Revision-Date: 2007-12-31 21:37+0100\n"
+"PO-Revision-Date: 2009-06-28 17:09+0100\n"
 "Last-Translator: Jordi Sayol <jordisayol@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,15 +17,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Poedit-Language: Catalan\n"
 
-#: FDirDialog.class:83 FFileDialog.class:102 FInputDate.class:84
-msgid "OK"
-msgstr "D'acord"
+#: FFileDialog.class:133
+msgid "Automatic extension"
+msgstr "Extensió automàtica"
 
-#: FDirDialog.class:89 FFileDialog.class:47 FInputDate.class:90
+#: FDirDialog.class:89
+#: FFileDialog.class:85
+#: FInputDate.class:90
 msgid "Cancel"
 msgstr "Canceŀla"
 
-#: FFileDialog.class:47
+#: FDirDialog.class:83
+#: FFileDialog.class:147
+#: FInputDate.class:84
+msgid "OK"
+msgstr "D'acord"
+
+#: FFileDialog.class:85
+msgid "&Overwrite"
+msgstr "&Sobreescriu"
+
+#: FFileDialog.class:85
 msgid ""
 "This file already exists.\n"
 "\n"
@@ -35,6 +47,3 @@ msgstr ""
 "\n"
 "El voleu sobreescriure?"
 
-#: FFileDialog.class:47
-msgid "&Overwrite"
-msgstr "&Sobreescriu"
