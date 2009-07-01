@@ -2201,7 +2201,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 	
 	//qDebug("--> isVisible = %d isHidden = %d", isVisible(), isHidden());
 	
-	/*if (THIS->embedded && !THIS->hidden)
+	if (THIS->embedded && !THIS->hidden)
 	{
 		#if DEBUG_WINDOW
 		qDebug("post show_later %s %p", GB.GetClassName(THIS), THIS);
@@ -2210,7 +2210,7 @@ void MyMainWindow::doReparent(QWidget *parent, Qt::WindowFlags f, const QPoint &
 		//GB.Post((void (*)())show_later, (intptr_t)THIS);
 		show_later(THIS);
 		//WIDGET->show();
-	}*/
+	}
 	//qDebug("new parent = %p", parentWidget());
 }
 

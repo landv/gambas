@@ -649,7 +649,8 @@ void CMenu::slotTriggered(QAction *action)
 void CMenu::slotShown(void)
 {
   GET_MENU_SENDER(menu);
-  GB.Raise(menu, EVENT_Show, 0);
+	//if (GB.CanRaise(menu, EVENT_Show))
+		GB.Raise(menu, EVENT_Show, 0);
 }
 
 void CMenu::slotHidden(void)
