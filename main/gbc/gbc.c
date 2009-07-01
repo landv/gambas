@@ -290,7 +290,7 @@ static int compare_path(char **a, char **b)
 	return strcmp(*a, *b);
 }
 
-static void init_files(const char *first)
+static void fill_files(const char *root, bool recursive)
 {
   DIR *dir;
   char *path;
@@ -300,18 +300,8 @@ static void init_files(const char *first)
   struct stat info;
   const char *ext;
 	
-  ARRAY_create(&_files);
-
-  if (*first)
-  {
-    if (chdir(first))
-    {
-			fprintf(stderr, "gbc: cannot switch to directory: %s\n", first);
-			exit(1);
-		}
-  }
-
-	path = STR_copy(FILE_get_current_dir());
+	path = STR_copy(root);
+	
   dir = opendir(path);
 	if (!dir)
 	{
@@ -327,13 +317,18 @@ static void init_files(const char *first)
 
 		file = FILE_cat(path, file_name, NULL);
 
-		if (stat(file_name, &info))
+		if (stat(file, &info))
 		{
 			fprintf(stderr, "gbc: warning: cannot stat file: %s\n", file);
 			continue;
 		}
 
-		if (!S_ISDIR(info.st_mode))
+		if (S_ISDIR(info.st_mode))
+		{
+			if (recursive)
+				fill_files(file, TRUE);
+		}
+		else
 		{
 			ext = FILE_get_ext(file);
 
@@ -345,6 +340,25 @@ static void init_files(const char *first)
 
 	closedir(dir);
 	STR_free(path);
+}
+
+static void init_files(const char *first)
+{
+	bool recursive;
+	
+  ARRAY_create(&_files);
+
+  if (*first)
+  {
+    if (chdir(first))
+    {
+			fprintf(stderr, "gbc: cannot switch to directory: %s\n", first);
+			exit(1);
+		}
+  }
+	
+	recursive = chdir(".src") == 0;
+	fill_files(FILE_get_current_dir(), recursive);
 
 	// Sort paths
 	qsort(_files, ARRAY_count(_files), sizeof(*_files), (int (*)(const void *, const void *))compare_path);

@@ -267,6 +267,7 @@ GB_DESC CClipboardDesc[] =
 MyDragFrame::MyDragFrame(QWidget *parent) : 
   QWidget(parent, Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint)
 {
+	setAutoFillBackground(true);
 	QPalette pal(palette());
 	pal.setColor(QPalette::Window, Qt::black);
 	setPalette(pal);
@@ -456,10 +457,10 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 {
 	bool cancel;
 
-	//qDebug("CDRAG_drag_enter: (%s %p) %d", GB.GetClassName(control), control, w->inherits("QListView"));
+	//qDebug("CDRAG_drag_enter: (%s %p) %p", GB.GetClassName(control), control, qobject_cast<MyListView *>(QWIDGET(control)));
 
 	// Hack for QScrollView
-	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && QWIDGET(control)->inherits("MyListView"))
+	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
 		((MyListView *)QWIDGET(control))->contentsDragEnterEvent((QDragEnterEvent *)e);
 
 	if (!GB.CanRaise(control, EVENT_Drag))
@@ -492,14 +493,10 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e)
 	bool cancel;
 	QPoint p;
 
-	//qDebug("CDRAG_drag_move: widget = %p  control = %p", w, control);
-	//qDebug("CDRAG_drag_move: (%s %p) %d", GB.GetClassName(control), control, w->inherits("QListView"));
-
-	/*if (!e->isAccepted())
-		return true;*/
+	//qDebug("CDRAG_drag_move: (%s %p) %p", GB.GetClassName(control), control, qobject_cast<MyListView *>(QWIDGET(control)));
 
 	// Hack for QScrollView
-	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && QWIDGET(control)->inherits("MyListView"))
+	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
 	{
 		accepted = e->isAccepted();
 		((MyListView *)QWIDGET(control))->contentsDragMoveEvent((QDragMoveEvent *)e);
@@ -546,7 +543,7 @@ void CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e)
 		return;
 
 	// Hack for QScrollView
-	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && QWIDGET(control)->inherits("MyListView"))
+	if (CWIDGET_test_flag(control, WF_SCROLLVIEW) && qobject_cast<MyListView *>(QWIDGET(control)))
 		((MyListView *)QWIDGET(control))->contentsDropEvent((QDragMoveEvent *)e);
 	
 	CDRAG_clear(true);

@@ -1124,14 +1124,14 @@ Public Sub tvwProject_DragMove()
           Else  
             timOpen.Enabled = False
           Endif
-          Drag.Show(tvwProject, .X, .Y, .W, .H)
+          Drag.Show(tvwProject, .X, .Y, Min(.W, tvwProject.W - .X - 4), .H)
           'Drag.Show(tvwProject)
         End With
         Return
       Endif
     Endif
   Else 
-    'DEBUG Drag.Format;; Drag.Data
+    'Debug Drag.Format;; Drag.Data
   Endif
   
   Stop Event
@@ -1161,13 +1161,13 @@ Public Sub tvwProject_MouseDrag()
   
   If Not Mouse.Left Then Return
   
-  sKey = GetCurrent()
-  If Not sKey Then Return
-  'if tvwProject[sKey].Parent.Key
+  If tvwProject.Find(Mouse.StartX, Mouse.StartY) Then Return
+  sKey = tvwProject.Item.Key
   If Project.IsClassPath(sKey) Then Return
   If sKey = Project.KEY_MISC Or sKey = Project.KEY_PROJECT Then Return
   
-  Drag.Icon = tvwProject.Current.Picture
+  Drag.Icon = tvwProject.Item.Picture
+  tvwProject[sKey].Selected = True
   Drag(tvwProject, sKey, MMime.DATA)
   
 End
@@ -1426,3 +1426,9 @@ Public Sub btnShowMenu_Click()
 
 End
 
+
+Public Sub tvwProject_Drag()
+
+  
+
+End

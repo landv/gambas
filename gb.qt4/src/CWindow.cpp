@@ -1613,7 +1613,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 		else
 			setSizeGrip(false);
 		
-		_activate = true;
+		//_activate = true;
 
 		if (windowState() & Qt::WindowMinimized)
 			showMinimized();
@@ -1641,7 +1641,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 	}
 	else
 	{
-		_activate = true;
+		//_activate = true;
 		
 		if (windowState() & Qt::WindowMinimized)
 		{

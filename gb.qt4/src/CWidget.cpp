@@ -262,16 +262,12 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 		CWIDGET_init_name(THIS);	
 	}
 
-	//sa = qobject_cast<QAbstractScrollArea *>(w);
-	if (qobject_cast<QAbstractScrollArea *>(w) || qobject_cast<Q3ScrollView *>(w))
-	{
-		CWIDGET_set_flag(THIS, WF_SCROLLVIEW);
-		//sa->setFrameStyle(QFrame::LineEditPanel + QFrame::Sunken);
-	}
-
 	THIS->bg = COLOR_DEFAULT;
 	THIS->fg = COLOR_DEFAULT;
 	
+	if (qobject_cast<QAbstractScrollArea *>(w) || qobject_cast<Q3ScrollView *>(w))
+		CWIDGET_set_flag(THIS, WF_SCROLLVIEW);
+
 	//w->setAttribute(Qt::WA_PaintOnScreen, true);
 	
 	CWIDGET_reset_color(THIS); //w->setPalette(QApplication::palette());
