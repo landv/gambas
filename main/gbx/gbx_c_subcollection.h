@@ -36,7 +36,7 @@ typedef
     HASH_TABLE *hash_table;
     int mode;
     void *container;
-    GB_SUBCOLLECTION *store;
+    //GB_SUBCOLLECTION *store;
     GB_SUBCOLLECTION_DESC *desc;
     char **list;
     }
