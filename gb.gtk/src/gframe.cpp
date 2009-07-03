@@ -145,6 +145,12 @@ char* gFrame::text()
 	return (char*)gtk_label_get_text(GTK_LABEL(lbl));
 }
 
+void gFrame::updateLabel()
+{
+	GtkWidget *label = gtk_frame_get_label_widget(GTK_FRAME(fr));
+	if (label) gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
+}
+
 void gFrame::setText(char *vl)
 {
 	GtkWidget *lbl;
@@ -164,15 +170,16 @@ void gFrame::setText(char *vl)
 	{
 		lbl=gtk_label_new(vl);
 		gtk_frame_set_label_widget(GTK_FRAME(fr), lbl);
+		updateLabel();
 		gtk_widget_show(lbl);
-		return;
 	}
+	else
+		gtk_label_set_text(GTK_LABEL(lbl), (const gchar*)vl);
 	
-	gtk_label_set_text(GTK_LABEL(lbl), (const gchar*)vl);
 }
 
-// void gFrame::resize(long w,long h)
-// {
-// 	gControl::resize(w,h);
-//   gtk_widget_set_size_request(fr,w,h);
-// }
+void gFrame::setFont(gFont *ft)
+{
+	gControl::setFont(ft);
+	updateLabel();
+}
