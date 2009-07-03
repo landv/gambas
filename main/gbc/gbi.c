@@ -411,7 +411,8 @@ static bool analyze_native_component(const char *path)
   }
   else
   {
-  	warning("cannot find '" LIB_CLASS "' symbol in shared library.");
+		if (_verbose)
+			warning("cannot find '" LIB_CLASS "' symbol in shared library.");
     ret = TRUE;
 	}
 

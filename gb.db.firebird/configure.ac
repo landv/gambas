@@ -11,7 +11,7 @@ GB_COMPONENT(
   [src],
   [],
   [GB_FIND(libfbclient.$SHLIBEXT, /usr/local /opt /usr, lib firebird2*/lib firebird*/lib lib/firebird2* lib/firebird*)],
-  [])
+  [-lfbclient])
  
 AC_OUTPUT( \
 Makefile \
