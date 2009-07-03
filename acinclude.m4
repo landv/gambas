@@ -757,6 +757,7 @@ AC_DEFUN([GB_COMPONENT],
     fi
 
     $2_LIB=""
+    $2_LDFLAGS=""
     $2_PATH=""
 
     for gb_dir in $gb_cv_lib_$1; do
@@ -764,7 +765,7 @@ AC_DEFUN([GB_COMPONENT],
         $2_PATH="$gb_dir/.."
       fi
       if test "$gb_dir" != "/lib"  && test "$gb_dir" != "/lib/"&& test "$gb_dir" != "/usr/lib" && test "$gb_dir" != "/usr/lib/"; then
-        $2_LIB="$$2_LIB -L$gb_dir";
+        $2_LDFLAGS="$$2_LDFLAGS -L$gb_dir";
       fi
     done
 
@@ -777,9 +778,6 @@ AC_DEFUN([GB_COMPONENT],
     have_$1=yes
     $2_DIR=$4
     AC_DEFINE(HAVE_$2_COMPONENT, 1, Have $3)
-dnl    if test "$4" = "src"; then
-dnl      rm -f DISABLED
-dnl    fi
 
   else
   
@@ -789,8 +787,6 @@ dnl    fi
     fi
     
   fi
-  
-  $2_LDFLAGS=""
   
   if test "$have_$1" = "no" || test -e DISABLED; then
   

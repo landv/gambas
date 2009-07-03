@@ -5,7 +5,7 @@ gblib_LTLIBRARIES = gb.sdl.la
 INCLUDES = @SDL_INC@
 
 gb_sdl_la_LIBADD = @SDL_LIB@
-gb_sdl_la_LDFLAGS = -module @LD_FLAGS@
+gb_sdl_la_LDFLAGS = -module @LD_FLAGS@ @SDL_LDFLAGS@
 
 gb_sdl_la_SOURCES = \
  SDL_h.h \

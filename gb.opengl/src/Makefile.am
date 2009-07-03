@@ -5,7 +5,7 @@ gblib_LTLIBRARIES = gb.opengl.la
 INCLUDES = @OPENGL_INC@
 
 gb_opengl_la_LIBADD = @OPENGL_LIB@
-gb_opengl_la_LDFLAGS = -module @LD_FLAGS@
+gb_opengl_la_LDFLAGS = -module @LD_FLAGS@ @OPENGL_LDFLAGS@
 
 gb_opengl_la_SOURCES = \
  main.h main.c gb.gl.h gb.gl.c \

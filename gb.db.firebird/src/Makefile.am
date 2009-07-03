@@ -8,7 +8,7 @@ EXTRA_DIST = ibpp
 gblib_LTLIBRARIES = gb.db.firebird.la
 
 gb_db_firebird_la_LIBADD = @FIREBIRD_LIB@
-gb_db_firebird_la_LDFLAGS = -module @LD_FLAGS@
+gb_db_firebird_la_LDFLAGS = -module @LD_FLAGS@ @FIREBIRD_LDFLAGS@
 
 gb_db_firebird_la_CXXFLAGS = $(AM_CXXFLAGS) -fexceptions
 

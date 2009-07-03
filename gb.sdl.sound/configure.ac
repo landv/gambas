@@ -15,7 +15,7 @@ GB_COMPONENT(
   [src],
   [GB_FIND(SDL_mixer.h SDL_cdrom.h, `sdl-config --prefix`, include/SDL)],
   [GB_FIND(libSDL_mixer.$SHLIBEXT, /usr /usr/local `sdl-config --prefix`, lib)],
-  [$SDL_LIBS -lSDL_mixer],
+  [-lSDL_mixer],
   [$SDL_CFLAGS])
 
 AC_OUTPUT( \

@@ -32,11 +32,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define IBPP_LINUX
-#define IBPP_GCC
-// BM: gcc-4.3 fix
-#include <cstring>
-
 #include "_ibpp.cpp"
 #include "_dpb.cpp"
 #include "_ibs.cpp"

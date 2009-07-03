@@ -5,7 +5,7 @@ gblib_LTLIBRARIES = gb.sdl.sound.la
 INCLUDES = @SDLSOUND_INC@
 
 gb_sdl_sound_la_LIBADD = @SDLSOUND_LIB@
-gb_sdl_sound_la_LDFLAGS = -module @LD_FLAGS@
+gb_sdl_sound_la_LDFLAGS = -module @LD_FLAGS@ @SDLSOUND_LDFLAGS@
 
 gb_sdl_sound_la_SOURCES = \
  main.h main.c \

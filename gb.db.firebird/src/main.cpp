@@ -41,6 +41,7 @@
 #define IBPP_LINUX
 #define IBPP_GCC
 
+#include <ibase.h>
 #include <ibpp.h>
 #include <iberror.h>
 

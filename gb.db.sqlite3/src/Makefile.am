@@ -6,7 +6,7 @@ INCLUDES = @SQLITE3_INC@
 gblib_LTLIBRARIES = gb.db.sqlite3.la
 
 gb_db_sqlite3_la_LIBADD = @SQLITE3_LIB@
-gb_db_sqlite3_la_LDFLAGS = -module @LD_FLAGS@
+gb_db_sqlite3_la_LDFLAGS = -module @LD_FLAGS@ @SQLITE3_LDFLAGS@
 gb_db_sqlite3_la_CXXFLAGS = $(AM_CXXFLAGS) -fexceptions
 
 gb_db_sqlite3_la_SOURCES = \

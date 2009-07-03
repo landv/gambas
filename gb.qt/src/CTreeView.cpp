@@ -909,6 +909,15 @@ BEGIN_PROPERTY(CTREEVIEWITEM_key)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CTREEVIEWITEM_parent_key)
+
+	MyListViewItem *parent = (MyListViewItem *)THIS->item->parent();
+
+  GB.ReturnString(parent ? parent->key : NULL);
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(CTREEVIEWITEM_picture)
 
   if (READ_PROPERTY)
@@ -1574,6 +1583,7 @@ GB_DESC CTreeViewItemDesc[] =
   GB_DECLARE(".TreeViewItem", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
+  GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
   GB_PROPERTY("Selected", "b", CTREEVIEWITEM_selected),
   GB_PROPERTY("Text", "s", CTREEVIEWITEM_text),
@@ -1622,6 +1632,7 @@ GB_DESC CColumnViewItemDesc[] =
   GB_DECLARE(".ColumnViewItem", 0), GB_VIRTUAL_CLASS(),
 
   GB_PROPERTY_READ("Key", "s", CTREEVIEWITEM_key),
+  GB_PROPERTY_READ("ParentKey", "s", CTREEVIEWITEM_parent_key),
   GB_PROPERTY("Picture", "Picture", CTREEVIEWITEM_picture),
   GB_PROPERTY("Selected", "b", CTREEVIEWITEM_selected),
   GB_PROPERTY("Text", "s", CTREEVIEWITEM_text),
