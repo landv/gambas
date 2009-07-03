@@ -8,6 +8,8 @@ Private Const TAB_ME As Integer = 2
 Private Const TAB_WATCH As Integer = 3
 Private Const TAB_BREAK As Integer = 4
 
+Private $cRefresh As New Collection
+
 Public Sub Form_Open()
 
   ReadConfig
@@ -46,6 +48,7 @@ Public Sub Clear()
   cvwObject.Tag = ""
   lstStack.Clear
   cvwWatch.Clear
+  $cRefresh.Clear
 
 End
 
@@ -386,13 +389,6 @@ Public Sub ReadConfig()
 
 End
 
-Public Sub ResetBreakpoints()
-  
-  lstBreak.Clear
-  
-End
-
-
 Public Sub AddBreakpoint(sName As String, sProc As String, iLine As Integer, bOn As Boolean)
   
   Dim sText As String
@@ -484,6 +480,8 @@ Public Sub tabDebug_Click()
       DefineObject
     Case TAB_CONSOLE
       FOutput.SetFocus
+    Case TAB_BREAK
+      timBreakpoint_Timer
   End Select   
 
 End
@@ -619,4 +617,63 @@ Public Sub btnShowME_Click()
 
   Design.Command("#XME\tME")    
 
+End
+
+Public Sub RefreshBreakPoint(sClass As String)
+  
+  $cRefresh[sClass] = sClass
+  If tabDebug.Index = TAB_BREAK Then 
+    timBreakpoint.Stop
+    timBreakpoint.Start
+  Endif
+  'timBreakpoint.Start
+  
+End
+
+Public Sub timBreakpoint_Timer()
+
+  Dim sClass As String
+  Dim iInd As Integer
+  Dim hEditor As FEditor
+  
+  Debug
+  
+  For Each sClass In $cRefresh
+    
+    iInd = 0
+    While iInd < lstBreak.Count
+      If lstBreak[iInd].Text Like (sClass & ".*") Then
+        lstBreak.Remove(iInd)
+      Else
+        Inc iInd
+      Endif
+    Wend
+    
+    hEditor = Project.Files[Project.FindPath(sClass)]
+    For Each iInd In hEditor.GetBreakpoints()
+      lstBreak.Add(sClass & "." & hEditor.GetProcAt(iInd) & "." & CStr(iInd + 1))
+    Next
+    
+  Next
+  
+  $cRefresh.Clear
+  timBreakpoint.Stop
+
+End
+
+Public Sub GetBreakpoints() As String[]
+
+  Dim iInd As Integer
+  Dim aBreak As String[]
+  Dim aBreakPoint As New String[]
+
+  timBreakpoint_Timer
+  
+  For iInd = 0 To lstBreak.Count - 1
+    aBreak = Split(lstBreak[iInd].Text, "*.*.*")
+    aBreakPoint.Add(aBreak[0] & "." & CStr(CInt(aBreak[2]) - 1))
+  Next
+  
+  Return aBreakPoint
+  
 End

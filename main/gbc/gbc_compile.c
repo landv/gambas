@@ -170,8 +170,8 @@ void COMPILE_init(void)
   const char *root;
   FILE *fp;
   char line[256];
-  DIR *dir;
-  struct dirent *dirent;
+  //DIR *dir;
+  //struct dirent *dirent;
   const char *name;
   struct passwd *info;
   FILE *fs;
@@ -245,7 +245,8 @@ void COMPILE_init(void)
 	// project (they must be searched in the project symbol table)
 	
   BUFFER_add(&COMP_classes, "-\n", 2);
-  
+
+	/*
   dir = opendir(FILE_get_dir(COMP_project));
   if (dir)
   {
@@ -268,6 +269,7 @@ void COMPILE_init(void)
   }
 
   BUFFER_add(&COMP_classes, "\n", 1);
+	*/
 }
 
 

@@ -296,6 +296,7 @@ static void fill_files(const char *root, bool recursive)
   char *path;
   struct dirent *dirent;
   char *file_name;
+	const char *name;
   const char *file;
   struct stat info;
   const char *ext;
@@ -334,7 +335,13 @@ static void fill_files(const char *root, bool recursive)
 
 			if ((strcmp(FILE_get_ext(file), "module") == 0)
 					|| (strcmp(FILE_get_ext(file), "class") == 0))
+			{
 			  *((char **)ARRAY_add(&_files)) = STR_copy(file);
+				// Add the class to the list of classes
+        name = FILE_get_basename(file_name);
+        BUFFER_add(&COMP_classes, name, strlen(name));
+        BUFFER_add(&COMP_classes, "\n", 1);
+			}
 		}
 	}
 
@@ -359,9 +366,13 @@ static void init_files(const char *first)
 	
 	recursive = chdir(".src") == 0;
 	fill_files(FILE_get_current_dir(), recursive);
+	if (recursive) chdir("..");
 
 	// Sort paths
 	qsort(_files, ARRAY_count(_files), sizeof(*_files), (int (*)(const void *, const void *))compare_path);
+	
+	// End the list of classes
+  BUFFER_add(&COMP_classes, "\n", 1);
 }
 
 

@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Static Public All As Collection
+Static Public Ext As String[]
 
 Public Key As String
 Public Name As String
@@ -22,6 +23,8 @@ Static Public Sub _init()
     Picture["img/16" &/ sModule & ".png"] = Project.MakeModuleIcon(sModule, 16).Picture
     Picture["img/32" &/ sModule & ".png"] = Project.MakeModuleIcon(sModule, 32).Picture
   Next
+  
+  Ext = ["module", "class"]
   
   hModule = New CModule("form", ("Form"), ("Forms"), ("Gambas forms"), "$F", True)
   hModule = New CModule("webpage", ("WebPage"), ("WebPages"), ("Gambas web pages"), "$A", False)
@@ -54,6 +57,8 @@ Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFil
   
   Picture["img/16" &/ sKey & ".png"] = Project.MakeModuleIcon(sKey, 16).Picture
   Picture["img/32" &/ sKey & ".png"] = Project.MakeModuleIcon(sKey, 32).Picture
+  
+  Ext.Add(sKey)
 
 End
 
@@ -87,21 +92,3 @@ Static Public Sub FromTreeKey(sKey As String) As CModule
   Next
   
 End
-
-
-Static Public Sub IsModulePath(sPath As String) As Boolean
-  
-  Dim sExt As String
-  Dim hModule As CModule
-  
-  If File.Dir(sPath) <> Project.Dir Then Return
-  sExt = File.Ext(sPath)
-  
-  If sExt = "class" Or If sExt = "module" Then Return True
-  
-  For Each hModule In All
-    If hModule.Key = sExt Then Return True
-  Next
-  
-End
-

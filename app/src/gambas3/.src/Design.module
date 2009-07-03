@@ -646,6 +646,7 @@ Private Sub Start(sCmd As String)
   Dim iInd As Integer
   Dim sTitle As String
   Dim sProg As String
+  Dim sBreakpoint As String
 
   If Project.Running Then Return
   
@@ -668,29 +669,33 @@ Private Sub Start(sCmd As String)
 
   ReadDebugSettings()
 
-  FDebugInfo.ResetBreakpoints
-
-  For Each hForm In Project.Files
-    If Project.IsEditor(hForm) Then
-      hEdit = hForm
-
-      For Each iLine In hEdit.GetBreakpoints()
-
-        FDebugInfo.AddBreakpoint(hEdit.Name, hEdit.GetProcAt(iLine), iLine, True)
-        $sCmdStart = $sCmdStart & "+" & hEdit.Name & "." & CStr(iLine + 1) & "\n"
-        '$hProcess.Send(sCmd & "\n")
-
-      Next
-
-    Endif
+  ' FDebugInfo.ResetBreakpoints
+  ' 
+  ' For Each hForm In Project.Files
+  '   If Project.IsEditor(hForm) Then
+  '     hEdit = hForm
+  ' 
+  '     For Each iLine In hEdit.GetBreakpoints()
+  ' 
+  '       FDebugInfo.AddBreakpoint(hEdit.Name, hEdit.GetProcAt(iLine), iLine, True)
+  '       $sCmdStart = $sCmdStart & "+" & hEdit.Name & "." & CStr(iLine + 1) & "\n"
+  '       '$hProcess.Send(sCmd & "\n")
+  ' 
+  '     Next
+  ' 
+  '   Endif
+  ' Next
+  
+  For Each sBreakpoint In FDebugInfo.GetBreakpoints()
+    $sCmdStart &= "+" & sBreakpoint & "\n"
   Next
 
   If $sAddBreakpoint Then
-    $sCmdStart = $sCmdStart & $sAddBreakpoint & "\n"
+    $sCmdStart &= $sAddBreakpoint & "\n"
     $sAddBreakpoint = ""
   Endif
 
-  $sCmdStart = $sCmdStart & sCmd
+  $sCmdStart &= sCmd
   '$sCmdStartRun = sCmd
 
   $bStart = True
@@ -970,6 +975,8 @@ Public Sub SetBreakpoint(sClass As String, iLine As Integer, bOn As Boolean)
   
   Dim hEditor As FEditor
   
+  'Debug sClass; "."; iLine;; bOn
+  
   If $iState = STATE_RUNNING Then Return
 
   ' Update editor
@@ -1004,16 +1011,16 @@ Private Sub SetBreakpointFromString(sKey As String, bOn As Boolean)
 End
 
 
-Public Sub HasBreakpoint(sClass As String, iLine As Integer) As Boolean
-  
-  Dim hEditor As FEditor
-  
-  ' Update editor
-  hEditor = Project.Files[Project.FindPath(sClass)]
-  If Not hEditor Then Return
-  Return hEditor.HasBreakpoint(iLine)
-   
-End
+' Public Sub HasBreakpoint(sClass As String, iLine As Integer) As Boolean
+'   
+'   Dim hEditor As FEditor
+'   
+'   ' Update editor
+'   hEditor = Project.Files[Project.FindPath(sClass)]
+'   If Not hEditor Then Return
+'   Return hEditor.HasBreakpoint(iLine)
+'    
+' End
 
 
 

@@ -576,10 +576,14 @@ int CSocket_connect_socket(void *_object,char *sHost,int lenhost,int myport)
 	THIS->iUsePort=THIS->iPort;
 
 	// $BM
-	if (THIS->Host) GB.FreeString(&THIS->Host);
 	if (THIS->Path) GB.FreeString(&THIS->Path);
 
-	GB.NewString(&THIS->Host,sHost,0);
+	if (sHost != THIS->Host)
+	{
+		if (THIS->Host) GB.FreeString(&THIS->Host);
+		GB.NewString(&THIS->Host,sHost,0);
+	}
+
 	return 0;
 }
 

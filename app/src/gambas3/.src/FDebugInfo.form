@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1667,84,47)
+  MoveScaled(0,2.1429,84,47)
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Fill
@@ -123,6 +123,11 @@
           Expand = True
           Sorted = True
         }
+      }
+      { timBreakpoint #Timer
+        #X = 301
+        #Y = 63
+        Delay = 250
       }
       Index = 0
     }

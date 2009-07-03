@@ -132,23 +132,44 @@ static void clear_menu(CMENU *_object)
   }
 }
 
+static bool is_fully_enabled(CMENU *_object)
+{
+	if (THIS->disabled)
+		return false;
+	
+	if (CMENU_is_toplevel(THIS))
+		return true;
+	
+	return is_fully_enabled((CMENU *)THIS->parent);
+}
+
 static void update_accel(CMENU *_object)
 {
 	if (CMENU_is_toplevel(THIS))
 		return;
 	
-	if (THIS->accel && !THIS->accel->isEmpty())
+	if (THIS->accel && !THIS->accel->isEmpty() && is_fully_enabled(THIS))
 	{
-		if (!THIS->disabled && !THIS->noshortcut) // && PARENT_ACTION->isEnabled())
-		{
-			//qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().utf8());
-			ACTION->setShortcut(*(THIS->accel));
-		}
-		else
-		{
-			ACTION->setShortcut(QKeySequence());
-			//qDebug("update_accel: %s: NULL", THIS->widget.name);
-		}
+		//qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().utf8());
+		ACTION->setShortcut(*(THIS->accel));
+	}
+	else
+	{
+		ACTION->setShortcut(QKeySequence());
+		//qDebug("update_accel: %s: NULL", THIS->widget.name);
+	}
+}
+
+static void update_accel_recursive(CMENU *_object)
+{
+	update_accel(THIS);
+	
+	if (THIS->menu)
+	{
+		int i;
+		
+		for (i = 0; i < THIS->menu->actions().count(); i++)
+			update_accel_recursive(CMenu::dict[THIS->menu->actions().at(i)]);
 	}
 }
 
@@ -158,6 +179,11 @@ static void update_check(CMENU *_object)
 	{
 		ACTION->setCheckable(true);
 		ACTION->setChecked(THIS->checked);
+	}
+	else
+	{
+		ACTION->setCheckable(false);
+		ACTION->setChecked(false);
 	}
 }
 
@@ -262,12 +288,6 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
   //qDebug("*** CMENU_new %p", _object);
   GB.Ref(THIS);
 
-	if (!CMENU_is_toplevel(THIS))
-	{
-  	CMENU *menu = (CMENU *)(THIS->parent);
-		CMenu::enableAccel(menu, !menu->disabled);
-	}
-
 	//qDebug("CMENU_new: (%s %p)", THIS->widget.name, THIS);
 	
 END_METHOD
@@ -340,7 +360,8 @@ BEGIN_PROPERTY(CMENU_enabled)
 		bool b = VPROP(GB_BOOLEAN);
 		THIS->disabled = !b;
 		ACTION->setEnabled(b);
-  	CMenu::enableAccel(THIS, b);
+  	//CMenu::enableAccel(THIS, b && !THIS->noshortcut);
+		update_accel_recursive(THIS);
 	}
 
 END_PROPERTY
@@ -522,18 +543,31 @@ END_METHOD
 
 BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 
+	bool disabled;
+
 	if (THIS->menu && !THIS->exec)
 	{
-		THIS->exec = TRUE;
-		CMenu::enableAccel(THIS, true);
+		THIS->exec = true;
+		//CMenu::enableAccel(THIS, true);
+		disabled = THIS->disabled;
+		if (disabled)
+		{
+			THIS->disabled = false;
+			update_accel_recursive(THIS);
+		}
 		
 		if (MISSING(x) || MISSING(y))
 			THIS->menu->exec(QCursor::pos());
 		else
 			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
 			
-		THIS->exec = FALSE;
-		CMenu::enableAccel(THIS, !THIS->disabled);
+		THIS->exec = false;
+		
+		if (disabled)
+		{
+			THIS->disabled= true;
+			update_accel_recursive(THIS);
+		}
 		//MAIN_process_events();
   }
 
@@ -665,12 +699,16 @@ void CMenu::slotHidden(void)
 }
 
 
-void CMenu::enableAccel(CMENU *item, bool enable)
+#if 0
+void CMenu::enableAccel(CMENU *item, bool enable, bool rec)
 {
 	// Do not disable shortcuts when a menu is executed
 	if (item->exec && !enable)
 		return;
 
+	if (!rec)
+		qDebug("CMenu::enableAccel: %s: %s", item->widget.name, enable ? "ON" : "OFF");
+	
 	item->noshortcut = !enable;
 	update_accel(item);
 
@@ -679,10 +717,10 @@ void CMenu::enableAccel(CMENU *item, bool enable)
 		int i;
 		
 		for (i = 0; i < item->menu->actions().count(); i++)
-			CMenu::enableAccel(CMenu::dict[item->menu->actions().at(i)], enable);
+			CMenu::enableAccel(CMenu::dict[item->menu->actions().at(i)], enable, true);
 	}
 }
-
+#endif
 
 void CMenu::hideSeparators(CMENU *item)
 {

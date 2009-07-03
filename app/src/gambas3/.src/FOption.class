@@ -70,11 +70,9 @@ Public Sub _new()
     [cmbLineNumber, "/Editor/ShowLineNumbers", 0],
     [cmbShowChange, "/Editor/ShowChange", 1],
     [cmbShowCurrent, "/Editor/ShowCurrent", 1],
-    [cmbCompletion, "/Editor/Completion", 1],
     [cmbFoldProc, "/Editor/Fold", 0],
     [txtRecent, "/Recent/Max", Project.DEFAULT_MAX_RECENT],
     [cmbOutput, "/QuietExternalCommands", 0],
-    [cmbMessage, "/ShowMessages", 1],
     [cmbIntegratedHelp, "/PropertyHelp", 1],
     [cmbMinimize, "/MinimizeOnRun", 0],
     [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0]]
@@ -251,12 +249,12 @@ Public Sub cmbShowCurrent_Click()
 
 End
 
-Public Sub cmbCompletion_Click()
-
-  Settings["/Editor/Completion"] = cmbCompletion.Index = 1
-  RefreshEditor
-
-End
+' Public Sub cmbCompletion_Click()
+' 
+'   Settings["/Editor/Completion"] = cmbCompletion.Index = 1
+'   RefreshEditor
+' 
+' End
 
 Public Sub btnImport_Click()
 
@@ -359,12 +357,12 @@ Public Sub btnClose_Click()
 
 End
 
-Public Sub cmbMessage_Click()
-
-  Settings["/ShowMessages"] = cmbMessage.Index
-  FMain.ReadConfig
-
-End
+' Public Sub cmbMessage_Click()
+' 
+'   Settings["/ShowMessages"] = cmbMessage.Index
+'   FMain.ReadConfig
+' 
+' End
 
 Public Sub cmbIntegratedHelp_Click()
 

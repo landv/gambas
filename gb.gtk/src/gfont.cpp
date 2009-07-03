@@ -78,7 +78,13 @@ static void set_font_from_string(gFont *font, const char *str)
 			if (size != 0.0)
 				font->setSize(size);
 			else
+			{
+				font->setBold(false);
+				font->setItalic(false);
+				font->setUnderline(false);
+				font->setStrikeOut(false);
 				font->setName(elt);
+			}
 		}
   }
   

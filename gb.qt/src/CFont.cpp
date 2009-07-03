@@ -122,11 +122,6 @@ static void set_font_from_string(CFONT *_object, QString &str)
   {
     list = QStringList::split(",", str);
 
-    //f.setBold(false);
-    //f.setItalic(false);
-    //f.setUnderline(false);
-    //f.setStrikeOut(false);
-
     for (QStringList::Iterator it = list.begin(); it != list.end(); ++it )
     {
       elt = (*it);
@@ -148,16 +143,16 @@ static void set_font_from_string(CFONT *_object, QString &str)
       }
       else if (number && size > 0.0)
         f.setPointSizeFloat(SIZE_VIRTUAL_TO_REAL(size));
-      else
+      else if (elt.length())
       {
-        if (!name.isEmpty())
-          name += ' ';
-        name += elt;
+				f.setFamily(elt);
+				f.setBold(false);
+				f.setItalic(false);
+				f.setUnderline(false);
+				f.setStrikeOut(false);
       }
     }
 
-    if (name.length())
-      f.setFamily(name);
   }
 
   *(THIS->font) = f;

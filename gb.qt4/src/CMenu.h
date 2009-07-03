@@ -65,7 +65,7 @@ typedef
     CPICTURE *picture;
     unsigned deleted : 1;
     unsigned toggle : 1;
-    unsigned noshortcut : 1;
+    //unsigned noshortcut : 1;
     unsigned exec : 1;
 		unsigned checked : 1;
 		unsigned disabled : 1;
@@ -86,7 +86,7 @@ public:
 	static QHash<QAction *, CMENU *> dict;
 
   //static void unrefChildren(QWidget *wid);
-  static void enableAccel(CMENU *item, bool enable);
+  //static void enableAccel(CMENU *item, bool enable, bool rec = false);
   static void hideSeparators(CMENU *item);
 
 public slots:

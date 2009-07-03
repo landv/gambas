@@ -313,6 +313,7 @@ Public Sub Modify(Optional bReset As Boolean)
     $bModify = True
     Inc Project.TimeStamp
     $cProc = Null
+    FDebugInfo.RefreshBreakpoint(Me.Name)
     
   Endif
 
@@ -415,7 +416,7 @@ Public Sub Form_Deactivate()
 
   HideCompletion
   HideSignature
-  mnuEditor.Enabled = False
+  'mnuEditor.Enabled = False
 
 End
 
@@ -1090,7 +1091,7 @@ Public Sub SetBreakpoint(iLine As Integer, bVal As Boolean) As Boolean
 End
 
 
-Public Sub HasBreakpoint(iLine As Integer) As Boolean
+Private Sub HasBreakpoint(iLine As Integer) As Boolean
   
   Return Editor.Lines[iLine].Breakpoint
   
@@ -1099,7 +1100,7 @@ End
 
 Public Function GetBreakpoints() As Integer[]
 
-  Dim cBreak As New Integer[]
+  Dim aBreak As New Integer[]
   Dim iLine As Integer
 
   Do
@@ -1108,9 +1109,9 @@ Public Function GetBreakpoints() As Integer[]
     If iLine < 0 Then Break
     
     If CanSetBreakpoint(iLine) Then
-      cBreak.Add(iLine)
-    Else 
-      SetBreakpoint(iLine, False)
+      aBreak.Add(iLine)
+    'Else 
+    '  SetBreakpoint(iLine, False)
     Endif
     Inc iLine
 
@@ -1118,7 +1119,7 @@ Public Function GetBreakpoints() As Integer[]
 
   'PRINT Me.Name; ":"; cBreak.Count; " Breakpoint(s)"
 
-  Return cBreak
+  Return aBreak
 
 End
 
@@ -2324,7 +2325,7 @@ End
 
 Public Sub Form_Activate()
 
-  mnuEditor.Enabled = True
+  'mnuEditor.Enabled = True
   RefreshLineInfo(True)
 
 End

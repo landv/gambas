@@ -24,7 +24,10 @@ public:
 	char* text();
 	void setText(char* vl);
 
+	virtual void setFont(gFont *ft);
+
 //"Private"
+	void updateLabel();
   GtkWidget *fr;
 };
 

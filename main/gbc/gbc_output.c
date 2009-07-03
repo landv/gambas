@@ -1082,10 +1082,10 @@ PUBLIC char *OUTPUT_get_file(const char *file)
 {
   char *output;
   char *p;
-  char *dir;
+  //char *dir;
   char *name;
 
-  dir = STR_copy(FILE_get_dir(file));
+  //dir = STR_copy(FILE_get_dir(file));
   name = STR_copy(FILE_get_name(file));
 
   for (p = name; *p; p++)
@@ -1099,13 +1099,13 @@ PUBLIC char *OUTPUT_get_file(const char *file)
     *p = toupper(*p);
   }
 
-  output = (char *)FILE_cat(dir, ".gambas", NULL);
+  output = ".gambas";
   if (mkdir(output, 0777) == 0)
   	FILE_set_owner(output, COMP_project);
 
-  output = STR_copy(FILE_cat(dir, ".gambas", name, NULL));
+  output = STR_copy(FILE_cat(output, name, NULL));
 
-  STR_free(dir);
+  //STR_free(dir);
   STR_free(name);
 
   return output;
@@ -1243,7 +1243,7 @@ PUBLIC void OUTPUT_do(bool swap)
 
   output_init();
 
-  /* La premi�e cha�e est toujours le nom de la classe */
+  // The first string is always the class name
   get_string(JOB->class->name, strlen(JOB->class->name));
 
   name = JOB->output;

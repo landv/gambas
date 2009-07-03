@@ -109,7 +109,7 @@ static void clear_subcollection(CSUBCOLLECTION *_object)
 
 BEGIN_METHOD_VOID(CSUBCOLLECTION_free)
 
-  *THIS->store = NULL;
+  //*THIS->store = NULL;
   free_string_array(&THIS->list);
   
   clear_subcollection(THIS);
@@ -238,7 +238,7 @@ void GB_SubCollectionNew(GB_SUBCOLLECTION *subcollection, GB_SUBCOLLECTION_DESC 
   OBJECT_create_native((void **)(void *)&ob, class, NULL);
 
   ob->container = container;
-  ob->store = subcollection;
+  //ob->store = subcollection;
   //GB_Ref(container);
   ob->desc = desc;
   HASH_TABLE_create(&ob->hash_table, TYPE_sizeof(T_OBJECT), 0);

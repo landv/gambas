@@ -167,6 +167,21 @@ Public Sub btnGift_Click()
 End
 
 
+Private Sub DrawText(sText As String, X As Integer, Y As Integer, W As Integer, H As Integer, iColor As Integer, iShadow As Integer)
+
+  If iShadow <> Color.Default Then  
+    Draw.Foreground = iShadow
+    Draw.Text(sText, X, Y, W, H)
+    Draw.Text(sText, X + 2, Y, W, H)
+    Draw.Text(sText, X, Y + 2, W, H)
+    Draw.Text(sText, X + 2, Y + 2, W, H)
+  Endif
+  Draw.Foreground = iColor
+  Draw.Text(sText, X + 1, Y + 1, W, H)
+  
+End
+
+
 Private Sub InitUser()
   
   Dim hFile As File
@@ -256,22 +271,21 @@ Private Sub InitUser()
       H = Draw.TextHeight(.Name)
       Draw.End
 
-      hPict = New Picture(W, H)
+      hPict = New Picture(W + 2, H + 2)
       hPict.Fill(Color.White)
       Draw.Begin(hPict)
       Draw.Font.Bold = .Bold
       Draw.Font.Size = GetFontSize(hUser)
       
       ' If .Bold Then
-      '   Draw.ForeColor = Color.Black
+      '   Draw.Foreground = Color.Black
       '   Draw.Text(.Name, 0, 0, W, H)
       '   Draw.Text(.Name, 2, 0, W, H)
       '   Draw.Text(.Name, 0, 2, W, H)
       '   Draw.Text(.Name, 2, 2, W, H)
       ' Endif
       
-      Draw.ForeColor = .Color 'Color.Black
-      Draw.Text(.Name, 0, 0, W, H)
+      DrawText(.Name, 0, 0, W, H, Color.Mix(.Color, Color.White, 0.7), Color.Default)
       Draw.End
       .Image = hPict.Image
       .Image.MakeTransparent
@@ -287,13 +301,11 @@ End
 
 Private Sub GetFontSize(hUser As CUser) As Float
   
-  Return 6 + hUser.Score * 0.8
+  Return 8 + hUser.Score
   
 End
 
-
-
-Private Sub DrawText(iIndex As Integer) As Boolean
+Private Sub DisplayText(iIndex As Integer) As Boolean
   
   Dim hUser As CUser
   Dim iInd As Integer
@@ -305,6 +317,8 @@ Private Sub DrawText(iIndex As Integer) As Boolean
   Dim iStep As Integer
   Dim eBlend As Float
   Dim hImage As Image
+  Dim I As Integer
+  Dim eStep As Float
 
   hUser = $aUser[iIndex Mod $aUser.Count]
   With hUser
@@ -324,35 +338,30 @@ Private Sub DrawText(iIndex As Integer) As Boolean
       
     Endif
   
-    If iStep < NSTEP Then
+    If iStep < (NSTEP + 36) Then
   
-      eSize = GetFontSize(hUser) * iStep / NSTEP
-    
-      If eSize >= 1 Then
+      For I = iStep - 36 To iStep Step 6
       
-        ' Draw.Font.Bold = True
-        ' Draw.Font.Size = eSize
-        ' W = Draw.TextWidth(.Name)
-        ' H = Draw.TextHeight(.Name)
-        ' X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP + 0.5
-        ' Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP + 0.5
-        ' Draw.ForeColor = Color.White
-        ' Draw.Text(.Name, X + 1, Y + 1, W, H)
-        ' Draw.Text(.Name, X + 1, Y - 1, W, H)
-        ' Draw.Text(.Name, X - 1, Y + 1, W, H)
-        ' Draw.Text(.Name, X - 1, Y - 1, W, H)
-        ' Draw.ForeColor = .Color 'Color.Black
-        ' Draw.Text(.Name, X, Y, W, H)
-
-        W = .Image.W * iStep / NSTEP + 0.5
-        H = .Image.H * iStep / NSTEP + 0.5
-        X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * iStep / NSTEP + 0.5
-        Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP + 0.5
-        Draw.Image(.Image.Stretch(W, H, True), X, Y)
+        eStep = I / NSTEP
+        If I < 0 Or If I > NSTEP Then Continue
+  
+        eSize = GetFontSize(hUser) * eStep
       
-      Endif
+        If eSize >= 1 Then
+        
+          W = .Image.W * eStep + 0.5
+          H = .Image.H * eStep + 0.5
+          X = dwgAbout.W / 2 + (.XD - dwgAbout.W / 2) * eStep + 0.5
+          Y = dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * eStep + 0.5 
+          Draw.Image(.Image.Stretch(W, H, True), X, Y)
+        
+        Endif
+        
+      Next
+      
+    Endif
     
-    Else If iStep < (10 * NSTEP) Then
+    If iStep >= NSTEP And If iStep < (10 * NSTEP) Then
     
       Draw.Font.Bold = .Bold
       Draw.Font.Size = GetFontSize(hUser)
@@ -362,26 +371,28 @@ Private Sub DrawText(iIndex As Integer) As Boolean
       Y = .YD 'dwgAbout.H / 2 + (.YD - dwgAbout.H / 2) * iStep / NSTEP
       
       ' If .Bold Then
-      '   Draw.ForeColor = Color.Black
+      '   Draw.Foreground = Color.Black
       '   Draw.Text(.Name, X + 1, Y + 1, W, H)
       '   Draw.Text(.Name, X + 1, Y - 1, W, H)
       '   Draw.Text(.Name, X - 1, Y + 1, W, H)
       '   Draw.Text(.Name, X - 1, Y - 1, W, H)
       ' Endif
       
-      eBlend = (iStep - NSTEP) / (9 * NSTEP)
-      Draw.ForeColor = Color.Mix(.Color, Color.White, eBlend)
-      'Draw.ForeColor = Color.RGB(Color[.Color].Red + (&HFF - Color[.Color].Red) * eBlend, Color[.Color].Green + (&HFF - Color[.Color].Green) * eBlend, Color[.Color].Blue + (&HFF - Color[.Color].Blue) * eBlend)
-      Draw.Text(.Name, X, Y, W, H)
+      If iStep >= (NSTEP + 36)
+        eBlend = (iStep - NSTEP - 36) / (9 * NSTEP - 36)
+        DrawText(.Name, X, Y, W, H, Color.Mix(.Color, Color.White, eBlend), Color.Mix(Color.Lighter(Color.Lighter(.Color)), Color.White, eBlend))
+      Else
+        eBlend = 0.7 * (1 - (iStep - NSTEP) / 36)
+        DrawText(.Name, X, Y, W, H, Color.Mix(.Color, Color.White, eBlend), Color.Default)
+      Endif
       
-    Else
+      
+    Else If iStep >= (10 * NSTEP) Then
 
       If iIndex = $iFirst Then Inc $iFirst
 
     Endif
 
-    Inc iStep
-  
   End With
   
 End
@@ -401,7 +412,7 @@ Public Sub timAbout_Timer()
   
   iFirst = $iFirst
   For iInd = 0 To 40 
-    If DrawText(iFirst + iInd) Then Break
+    If DisplayText(iFirst + iInd) Then Break
   Next
   
   Draw.End

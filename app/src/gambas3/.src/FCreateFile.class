@@ -96,7 +96,7 @@ Public Sub Form_Open()
   
   cmbParent.List = Project.GetClassesOnly()
   cmbParent.Add(("(No parent)"), 0)
-  If Project.IsClassPath($sPath) Then
+  If Project.IsSourcePath($sPath) Then
     cmbParent.Text = Project.GetParentClass($sPath)
   Endif
   
@@ -202,7 +202,7 @@ Private Sub CreateFile() As Boolean
     
       sTemp = "' Gambas module file\n\n"
       
-      Project.Insert(sName, sType, sTemp)
+      Project.InsertSource(sName, sType, $sDir, sTemp)
   
     Case "class"
     
@@ -211,7 +211,7 @@ Private Sub CreateFile() As Boolean
       If cmbParent.Index > 0 Then sTemp &= "INHERITS " & cmbParent.Text & "\n"
       sTemp = RTrim(sTemp) & "\n"
       
-      Project.Insert(sName, sType, sTemp)
+      Project.InsertSource(sName, sType, $sDir, sTemp)
   
     Case "form"
     
@@ -229,7 +229,7 @@ Private Sub CreateFile() As Boolean
                  "END\n\n" 
       Endif
       
-      Project.Insert(sName, "class", sTemp, True, True)
+      Project.InsertSource(sName, "class", $sDir, sTemp, True, True)
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
               "{ " & sName & " Form\n" &   
@@ -260,12 +260,12 @@ Private Sub CreateFile() As Boolean
       
       sTemp &= "}\n"
       
-      Project.Insert(sName, "form", sTemp)
+      Project.InsertSource(sName, "form", $sDir, sTemp)
       
     Case "webpage"
 
-      Project.Insert(sName, "class", "' Gambas class file\n\n", True, True)
-      Project.Insert(sName, "webpage", "<html>\n<body>\n<%\nPrint \"<h1>Gambas</h1>\";\n%>\n</body>\n</html>\n")
+      Project.InsertSource(sName, "class", $sDir, "' Gambas class file\n\n", True, True)
+      Project.InsertSource(sName, "webpage", $sDir, "<html>\n<body>\n<%\nPrint \"<h1>Gambas</h1>\";\n%>\n</body>\n</html>\n")
       
     Case "text"
     
@@ -378,23 +378,23 @@ Private Sub ImportFile() As Boolean
   
     Case "module"
       sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.Insert(sName, "module", sTemp,,, chkLink.Value)
+      Project.InsertSource(sName, "module", sTemp,,, chkLink.Value)
   
     Case "class"
       sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.Insert(sName, "class", sTemp,,, chkLink.Value)
+      Project.InsertSource(sName, "class", sTemp,,, chkLink.Value)
   
     Case "form"
       sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.Insert(sName, "class", File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.Insert(sName, "form", sTemp,, True, chkLink.Value)
+      Project.InsertSource(sName, "class", File.SetExt(sTemp, "class"), True, True, chkLink.Value)
+      Project.InsertSource(sName, "form", sTemp,, True, chkLink.Value)
       ImportDependencies(sName, sTemp, chkLink.Value)
       Project.OpenForm(sName)
           
     Case "webpage"
       sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.Insert(sName, "class", File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.Insert(sName, "webpage", sTemp,,, chkLink.Value)
+      Project.InsertSource(sName, "class", File.SetExt(sTemp, "class"), True, True, chkLink.Value)
+      Project.InsertSource(sName, "webpage", sTemp,,, chkLink.Value)
   
     Default
       sName = Project.GetUniqueName($sDir, sName)

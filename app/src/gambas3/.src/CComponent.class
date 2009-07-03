@@ -872,12 +872,12 @@ Static Private Sub GetModule(sClass As String) As Object
 
   Dim sPath As String
   
-  sPath = Project.Dir &/ sClass & ".module"
-  If Exist(sPath) Then Return Project.LoadFile(sPath)
-  sPath = Project.Dir &/ sClass & ".form"
-  If Exist(sPath) Then Return Project.LoadFile(sPath)
-  sPath = Project.Dir &/ sClass & ".class"
-  If Exist(sPath) Then Return Project.LoadFile(sPath)
+  sPath = Project.FindPath(sClass & ".module")
+  If sPath Then Return Project.LoadFile(sPath)
+  sPath = Project.FindPath(sClass & ".form")
+  If sPath Then Return Project.LoadFile(sPath)
+  sPath = Project.FindPath(sClass & ".class")
+  If sPath Then Return Project.LoadFile(sPath)
   
 End
 
@@ -962,12 +962,12 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   Endif
 
   sClass = aClass[iFind]
-
-  sPath = Project.Dir &/ sClass & ".module"
+  
+  sPath = Project.FindPath(sClass & ".module")
   If Exist(sPath) Then hPModule = Project.LoadFile(sPath)
-  sPath = Project.Dir &/ sClass & ".form"
+  sPath = Project.FindPath(sClass & ".form")
   If Exist(sPath) Then hPForm = Project.LoadFile(sPath)
-  sPath = Project.Dir &/ sClass & ".class"
+  sPath = Project.FindPath(sClass & ".class")
   If Exist(sPath) Then hPClass = Project.LoadFile(sPath)
 
   cSymbol = New Collection

@@ -128,9 +128,7 @@ Public Sub tvwProject_Activate()
   If sKey Then
     If CanEdit(sKey) Then
       If $bCtrl Then
-        tvwProject.MoveParent
-        hModule = CModule.FromTreeKey(tvwProject.Item.Key)
-        If hModule Then
+        If File.Ext(sKey) <> "module" Then
           sKey = File.SetExt(sKey, "class")
         Endif
       Endif
@@ -208,7 +206,7 @@ Public Sub mnuDeleteFile_Click()
 
   Else
 
-    If Project.IsClassPath(sPath) Then
+    If Project.IsSourcePath(sPath) Then
       sName = File.BaseName(sPath)
     Else
       sName = File.Name(sPath)
@@ -259,6 +257,9 @@ Private Function GetCurrentDir(Optional sKey As String) As String
   If Not $sKey Then Return Project.Dir
   If $sKey = Project.KEY_MISC Then Return Project.Dir
   If $sKey = Project.KEY_PROJECT Then Return Project.Dir &/ ".hidden"
+  If Project.SourceDir <> Project.Dir
+    If $sKey = Project.KEY_SOURCE Then Return Project.SourceDir
+  Endif
   If Left$($sKey) = "$" Then Return
 
   If IsDir($sKey) Then
@@ -277,56 +278,107 @@ Public Sub mnuPopup_Show()
   Dim bFile As Boolean
   Dim bCanStoreFile As Boolean
   Dim hMenu As Menu
+  Dim sParent As String
 
   sCurrent = GetCurrent()
   bCurrent = sCurrent
 
   UpdateMenu
 
-  'mnuSaveFile.Visible = mnuSave.Visible AND CanEdit(sCurrent)
-  mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent
+  If $sKey = Project.KEY_SOURCE Or If sCurrent Like (Project.SourceDir &/ "*") Then
   
-  mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent)
-  
-  mnuEditFile.Visible = CanEdit(sCurrent)
-  mnuEditClass.Visible = mnuEditFile.Visible
+    mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent And Not Project.Running
+    mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent) And Not Project.Running
 
-  mnuStartup.Visible = mnuStartup.Visible And Project.IsClassPath(sCurrent)
-  If mnuStartup.Visible Then
-    mnuStartup.Checked = (Project.Startup = File.BaseName(sCurrent))
+    mnuEditFile.Visible = mnuEditFile.Visible And CanEdit(sCurrent)
+    mnuEditClass.Visible = mnuEditFile.Visible And Project.IsFormPath(sCurrent)
+  
+    mnuStartup.Visible = mnuEditFile.Visible 
+    If mnuStartup.Visible Then
+      mnuStartup.Checked = (Project.Startup = File.BaseName(sCurrent))
+      mnuStartup.Enabled = Not Project.Running
+    Endif
+    
+    If mnuCut.Visible Then
+    
+      mnuCut.Visible = bCurrent
+      mnuCopy.Hide
+      mnuPaste.Visible = True
+      
+      sParent = tvwProject[$sKey].ParentKey
+      
+      mnuPaste.Enabled = False
+      mnuCut.Enabled = False
+      
+      If Not Project.Running Then
+      
+        If Clipboard.Format = MMime.CLASS Then
+          If IsDir(sParent) Or If Not Project.IsSourcePath(sParent) Then mnuPaste.Enabled = True
+        Endif
+        
+        If IsDir(sParent) Or If Not Project.IsSourcePath(sParent) Then mnuCut.Enabled = True
+        
+      Endif
+      
+    Endif
+  
+    mnuEditWith.Visible = False
+    mnuCopyPath.Visible = mnuCopy.Visible
+  
+    If mnuNew.Visible Then
+      mnuAddDirectory.Visible = Project.Dir <> Project.SourceDir
+    
+      mnuNewFile.Visible = False
+      mnuNewImage.Visible = False
+      mnuNewModule.Visible = True
+      mnuNewClass.Show
+    
+      For Each hMenu In mnuNew.Children
+        If Not hMenu.Tag Then Continue
+        If Not CModule.All.Exist(hMenu.Tag) Then Continue
+        hMenu.Visible = CModule[hMenu.Tag].Used
+      Next
+      
+    Endif
+    
+  Else
+
+    mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent
+    mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent)
+    
+    mnuEditFile.Visible = mnuEditFile.Visible And CanEdit(sCurrent)
+    mnuEditClass.Visible = False
+  
+    mnuStartup.Visible = False
+  
+    bCanStoreFile = $sKey = Project.KEY_MISC Or $sKey = Project.KEY_PROJECT
+    bFile = bCurrent
+    
+    If mnuCut.Visible Then
+      mnuCut.Visible = bFile And Not IsDir($sKey)
+      mnuCopy.Visible = bFile And Not IsDir($sKey)
+      mnuPaste.Visible = bFile Or bCanStoreFile
+      mnuPaste.Enabled = Clipboard.Format = MMime.FILE
+    Endif
+  
+    mnuEditWith.Visible = Project.IsImagePath(sCurrent) And mnuEditFile.Visible
+    mnuCopyPath.Visible = mnuCopy.Visible
+    
+    If mnuNew.Visible Then 
+
+      mnuNewFile.Visible = bFile Or bCanStoreFile
+      mnuNewImage.Visible = mnuNewFile.Visible
+      mnuNewModule.Hide
+      mnuNewClass.Hide
+    
+    For Each hMenu In mnuNew.Children
+      If Not hMenu.Tag Then Continue
+      hMenu.Hide
+    Next
+    
+    Endif
+
   Endif
-
-  bCanStoreFile = $sKey = Project.KEY_MISC Or $sKey = Project.KEY_PROJECT
-  bFile = Not Project.IsClassPath(sCurrent) And bCurrent
-  
-  mnuCut.Visible = mnuCut.Visible And (bFile And Not IsDir($sKey))
-  mnuCopy.Visible = mnuCopy.Visible And (bFile And Not IsDir($sKey))
-  mnuPaste.Visible = mnuPaste.Visible And (bFile Or bCanStoreFile)
-  mnuPaste.Enabled = Clipboard.Format = MMime.FILE
-
-  ' If Project.IsFormPath(sCurrent) Then
-  '   mnuEditFile.Visible = False
-  ' Else
-  '   mnuEditForm.Visible = False
-  '   mnuEditClass.Visible = False
-  ' Endif
-  
-  mnuEditClass.Visible = Project.IsFormPath(sCurrent)
-  
-  mnuEditWith.Visible = Project.IsImagePath(sCurrent) And mnuEditFile.Visible
-  
-  mnuCopyPath.Visible = mnuCopy.Visible
-  
-  mnuAddDirectory.Visible = (sCurrent And Not Project.IsClassPath(sCurrent)) Or bCanStoreFile
-  mnuNewFile.Visible = mnuAddDirectory.Visible
-  mnuNewImage.Visible = mnuAddDirectory.Visible
-  
-  For Each hMenu In mnuNew.Children
-    If Not hMenu.Tag Then Continue
-    If Not CModule.All.Exist(hMenu.Tag) Then Continue
-    hMenu.Visible = CModule[hMenu.Tag].Used
-  Next
-
 End
 
 
@@ -665,11 +717,15 @@ End
 Public Sub mnuCopy_Click()
 
   Dim sPath As String
-
-  'DEBUG 
+  Dim sType As String
 
   sPath = GetCurrent()
-  Clipboard.Copy("C" & sPath, MMime.FILE)
+  If Project.IsSourcePath(sPath) Then
+    sType = MMime.CLASS
+  Else
+    sType = MMime.FILE
+  Endif
+  Clipboard.Copy("C" & sPath, sType)
 
   mnuPopup_Show
 
@@ -694,9 +750,17 @@ End
 Public Sub mnuCut_Click()
 
   Dim sPath As String
+  Dim sType As String
 
   sPath = GetCurrent()
-  Clipboard.Copy("X" & sPath, MMime.FILE)
+  If Project.IsSourcePath(sPath) Then
+    sType = MMime.CLASS
+  Else
+    sType = MMime.FILE
+  Endif
+  Clipboard.Copy("X" & sPath, sType)
+
+  mnuPopup_Show
 
 End
 
@@ -707,21 +771,33 @@ Public Sub mnuPaste_Click()
   Dim sAction As String
   Dim sSrc As String
   Dim sDst As String
+  Dim sType As String
+  Dim bSource As Boolean
 
-  sFile = Clipboard.Paste(MMime.FILE)
+  sDst = GetCurrentDir()
+  bSource = Project.IsSourcePath(sDst)
+  If bSource Then
+    sType = MMime.CLASS
+  Else
+    sType = MMime.FILE
+  Endif
+  
+  sFile = Clipboard.Paste(sType)
+  If Not sFile Then Return
+  
   sAction = Left$(sFile)
   sSrc = Mid$(sFile, 2)
-  sDst = GetCurrentDir() &/ File.Name(sFile)
+  sDst &/= File.Name(sFile)
 
   Select Case sAction
 
     Case "C"
       Project.CopyFile(sSrc, sDst)
       Rename(tvwProject.Key)
-
+      
     Case "X"
       If sSrc = sDst Then Return
-      Project.MoveFile(sSrc, sDst)
+      Project.MoveFile(sSrc, sDst, sType = MMime.CLASS)
       Clipboard.Clear
 
   End Select
@@ -774,6 +850,8 @@ End
 
 Public Sub ReadConfig()
 
+  Dim bShow As Boolean
+
 '   DIM hFont AS Font
 '
 '   IF Settings["/UseSmallFont", FALSE] THEN
@@ -793,7 +871,9 @@ Public Sub ReadConfig()
   panMessage.Height = lblMessage.Font.Height("") + 2
   '$bCanShowBalloon = Settings["/ShowBalloon", TRUE]
   'IF NOT $bCanShowBalloon THEN HideBalloon
-  panMessage.Visible = Settings["/ShowMessages", True]
+  bShow = Settings["/ShowMessages", True]
+  panMessage.Visible = bShow
+  mnuStatusBar.Value = bShow
 
   tabProperty.H = tabProperty.ClientY - 2
 
@@ -828,6 +908,8 @@ Private Sub UpdateMenu()
   mnuPaste.Visible = bVisible
   mnuDeleteFile.Visible = bVisible
   mnuClean.Visible = bVisible
+  mnuNew.Visible = bVisible
+  mnuEditFile.Visible = bVisible
   
   mnuClearDebugWindows.Enabled = Project.Running
 
@@ -1006,6 +1088,7 @@ Public Sub Action_Activate(Key As String) As Boolean
       'FOutput.Toggle(Action["console"].Value)
     
     Case "break"
+      'Debug Action["break"].Value
       hEditor = Project.ActiveForm
       If Not Error Then Design.SetBreakpoint(hEditor.Name, hEditor.Editor.Line, Action["break"].Value)
     Case "watch"
@@ -1023,12 +1106,14 @@ End
 
 Public Sub tvwProject_GotFocus()
 
+  'Debug
   mnuPopup.Enabled = True
 
 End
 
 Public Sub tvwProject_LostFocus()
 
+  'Debug
   mnuPopup.Enabled = False
 
 End
@@ -1111,29 +1196,32 @@ Public Sub tvwProject_DragMove()
 
   Dim sKey As String
 
-  If Drag.Format = MMime.DATA Then 
-    If Not tvwProject.Find(Drag.X, Drag.Y) Then 
-      $sKey = tvwProject.Item.Key
-      If IsDataKey($sKey) Then
-        With tvwProject[$sKey] 
-          If .Children Then 
-            If Not timOpen.Enabled Or $sKey <> $sKeyDrag Then 
-              $sKeyDrag = $sKey
-              timOpen.Enabled = True
-            Endif
-          Else  
-            timOpen.Enabled = False
-          Endif
-          Drag.Show(tvwProject, .X, .Y, Min(.W, tvwProject.W - .X - 4), .H)
-          'Drag.Show(tvwProject)
-        End With
-        Return
+  If Not tvwProject.Find(Drag.X, Drag.Y) Then 
+    $sKey = tvwProject.Item.Key
+    If Drag.Format = MMime.DATA Then 
+      If Not IsDataKey($sKey) Then Goto STOP_EVENT
+    Else If Drag.Format = MMime.CLASS Then
+      If $sKey <> Project.KEY_SOURCE Then
+        If Not Project.IsSourcePath($sKey) Then Goto STOP_EVENT
       Endif
     Endif
-  Else 
-    'Debug Drag.Format;; Drag.Data
+    With tvwProject[$sKey] 
+      If .Children Then 
+        If Not timOpen.Enabled Or $sKey <> $sKeyDrag Then 
+          $sKeyDrag = $sKey
+          timOpen.Enabled = True
+        Endif
+      Else  
+        timOpen.Enabled = False
+      Endif
+      Drag.Show(tvwProject, .X, .Y, Min(.W, tvwProject.W - .X - 4), .H)
+      'Drag.Show(tvwProject)
+    End With
+    Return
   Endif
   
+STOP_EVENT:
+
   Stop Event
 
 End
@@ -1145,11 +1233,15 @@ Public Sub tvwProject_Drop()
   'DEBUG Drag.Format;; Drag.Data
   
   If Drag.Action = Drag.Move Then
-    Project.MoveFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+    Project.MoveFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc), Drag.Format = MMime.CLASS)
   Else If Drag.Action = Drag.Copy Then
-    Project.CopyFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+    If Drag.Format <> MMime.CLASS Then
+      Project.CopyFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+    Endif
   Else If Drag.Action = Drag.Link Then
-    Project.LinkFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+    If Drag.Format <> MMime.CLASS Then
+      Project.LinkFile(sSrc, GetCurrentDir($sKey) &/ File.Name(sSrc))
+    Endif
   Endif
 
 End
@@ -1163,12 +1255,16 @@ Public Sub tvwProject_MouseDrag()
   
   If tvwProject.Find(Mouse.StartX, Mouse.StartY) Then Return
   sKey = tvwProject.Item.Key
-  If Project.IsClassPath(sKey) Then Return
-  If sKey = Project.KEY_MISC Or sKey = Project.KEY_PROJECT Then Return
+  If tvwProject.Key <> sKey Then Return
+  'If Project.IsSourcePath(sKey) Then Return
+  If Left(sKey) = "$" Then Return
+
+  mnuPopup_Show
+  If Not mnuCut.Visible Or If Not mnuCut.Enabled Then Return
   
   Drag.Icon = tvwProject.Item.Picture
   tvwProject[sKey].Selected = True
-  Drag(tvwProject, sKey, MMime.DATA)
+  Drag(tvwProject, sKey, If(Project.IsSourcePath(sKey), MMime.CLASS, MMime.DATA))
   
 End
 
@@ -1430,5 +1526,12 @@ End
 Public Sub tvwProject_Drag()
 
   
+
+End
+
+Public Sub mnuStatusBar_Click()
+
+  Settings["/ShowMessages"] = mnuStatusBar.Value
+  ReadConfig
 
 End

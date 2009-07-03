@@ -28,15 +28,13 @@
 #include "gb_hash.h"
 #include "gbx_object.h"
 
-/* Report changes in the following structure to gambas.h */
-
 typedef
   struct {
     OBJECT object;
     HASH_TABLE *hash_table;
     int mode;
     void *container;
-    GB_SUBCOLLECTION *store;
+    //GB_SUBCOLLECTION *store;
     GB_SUBCOLLECTION_DESC *desc;
     char **list;
     }
