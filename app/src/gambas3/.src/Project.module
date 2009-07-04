@@ -1111,6 +1111,7 @@ End
 Private Sub RefreshSourceCache()
 
   Dim sPath As String
+  Dim hForm As Object
   
   $cSourceDir = New Collection(gb.IgnoreCase)
   
@@ -1118,6 +1119,10 @@ Private Sub RefreshSourceCache()
     If CModule.Ext.Exist(File.Ext(sPath)) Then
       $cSourceDir[File.Name(sPath)] = SourceDir &/ sPath
     Endif
+  Next
+  
+  For Each hForm In Files
+    hForm.Path = $cSourceDir[File.Name(hForm.Path)]
   Next
 
 End
@@ -3732,22 +3737,24 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Move sSrc To sDst
     VersionControl.MoveDir(sSrc, sDst)
   Else
-    Copy sSrc To sDst  
+    Copy sSrc To sDst
     VersionControl.MoveFile(sSrc, sDst)
     Try Kill sSrc
   Endif
 
-  hForm = Files[sSrc]
-  If hForm Then
-    hForm.Rename(File.BaseName(sDst), sDst)
-    Files[sSrc] = Null
-    Files[sDst] = hForm
-  Endif
-  
   If IsSourcePath(sSrc) Then
     If bIsDir Then
+      
       RefreshSourceCache
+
     Else
+      hForm = Files[sSrc]
+      If hForm Then
+        hForm.Rename(File.BaseName(sDst), sDst)
+        Files[sSrc] = Null
+        Files[sDst] = hForm
+      Endif
+  
       $cSourceDir[File.Name(sSrc)] = Null
       $cSourceDir[File.Name(sDst)] = sDst
     Endif

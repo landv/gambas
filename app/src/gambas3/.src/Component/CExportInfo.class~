@@ -1,0 +1,156 @@
+' Gambas class file
+
+Static Public All As New Collection
+Static Public List As New String[]
+
+Static Private $iSortKey As Integer
+
+
+Public Name As String
+Property Group As String
+Property Type As String
+Property Read Icon As Picture
+Public Parent As String
+Public SortKey As Integer
+
+Public Control As Boolean
+Public Virtual As Boolean
+Public Container As Boolean
+Public MultiContainer As Boolean 
+Public Form As Boolean
+
+Private $sGroup As String
+
+Public Sub _new(sName As String)
+  
+  Name = sName
+  All[Name] = Me
+  
+End
+
+Private Function Type_Read() As String
+
+  If Form Then 
+    Return "Form"
+  Else If MultiContainer Then 
+    Return "MultiContainer"
+  Else If Container Then 
+    Return "Container"
+  Else If Virtual Then 
+    Return "Virtual"
+  Else If Control Then 
+    Return "Control"
+  Else 
+    Return "Class"
+  Endif
+
+End
+
+Private Sub Type_Write(Value As String)
+
+  Form = Value = "Form"
+  Virtual = Value = "Virtual"
+  MultiContainer = Value = "MultiContainer"
+  Container = Value = "Container" OR MultiContainer
+  Control = Value = "Control" OR Container OR Virtual
+  If Control Then 
+    If $sGroup = "" Then $sGroup = Type_Read()
+  Else 
+    $sGroup = ""
+  Endif
+
+End
+
+Private Function Icon_Read() As Picture
+
+  Dim sIcon As String
+  Dim hPict As Picture
+
+  Select Case Me.Type
+    Case "Control"
+      sIcon = "img/control/button.png"
+    Case "Virtual"
+      sIcon = "img/control/timer.png"
+    Case "Container"
+      sIcon = "img/control/panel.png"
+    Case "MultiContainer"
+      sIcon = "img/control/tabstrip.png"
+    Case "Form"
+      sIcon = "img/32/form.png"
+    Case Else
+      sIcon = "img/32/class.png"
+  End Select  
+
+  hPict = Picture[sIcon]
+  If hPict.Width <> 24 Then hPict = hPict.Image.Stretch(24, 24).Picture
+
+  Return hPict
+
+End
+
+Private Function Group_Read() As String
+
+  Return $sGroup  
+
+End
+
+Private Sub Group_Write(Value As String)
+
+  If NOT Control Then Return 
+  Value = Trim(Value)
+  If NOT Value Then Return
+  $sGroup = Value
+
+End
+
+Static Private Sub CalcSortKey(sClass As String) As Integer
+  
+  Dim hExportInfo As CExportInfo = All[sClass]
+  Dim sParent As String 
+  
+  If NOT hExportInfo Then Return
+  
+  With hExportInfo
+  
+    If .SortKey = 0 Then
+      If .Parent Then CalcSortKey(.Parent)
+      Inc $iSortKey
+      .SortKey = $iSortKey
+    Endif
+  
+    Return .SortKey
+  
+  End With
+  
+End
+
+Static Public Sub Sort()
+  
+  Dim sClass As String
+  Dim iMax As Integer
+  Dim cSort As New Collection
+  Dim iKey As Integer
+
+  $iSortKey = 0
+  
+  For Each sClass In List
+    iKey = CalcSortKey(sClass)
+    cSort[iKey] = All[sClass]
+    iMax = Max(iMax, iKey)
+  Next
+  
+  List = New String[]
+  
+  For iKey = 1 To iMax
+    List.Add(cSort[iKey].Name)
+  Next
+  
+End
+
+
+Static Public Sub Reset()
+  
+  All = New Collection
+  List = New String[]
+  
+End

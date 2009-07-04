@@ -1,0 +1,1075 @@
+' Gambas class file
+
+Private $sMenuSystem As String
+Private $sGroupSystem As String
+Private $sDepSystem As String
+Private $sFileSystem As String
+Private $cCatCache As New Collection
+Private $sLastCat As String
+Private $aDep As String[]
+Private $aFile As String[]
+
+Private Const TAB_GROUP As Integer = 3
+Private Const TAB_MENU As Integer = 4
+Private Const TAB_DEP As Integer = 5
+Private Const TAB_FILE As Integer = 6
+Private Const TAB_TEST As Integer = 7
+Private Const TAB_DIR As Integer = 8
+
+
+Private Sub MakeChangeLog() As String
+
+  Dim aLine As String[]
+  Dim sLine As String
+  Dim sChangeLog As String
+ 
+  aLine = Split(txtChange.Text, "\n")
+  For Each sLine In aLine
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    If Left(sLine) <> "-" Then sLine = "- " & sLine
+    sChangeLog &= sLine & "\n"
+  Next
+
+  sChangeLog = "* " & Package.GetChangeDate() & "\n" & sChangeLog & "\n"
+
+  sChangeLog &= txtChangeLog.Text
+  Return sChangeLog
+  
+End
+
+Public Sub Form_Open()
+  
+  If Project.Maintainer Then
+    txtName.Text = Project.Maintainer
+  Else 
+    txtName.Text = System.User.Name
+  Endif
+  
+  txtName.SelectAll
+  txtName.SetFocus
+  
+  If Project.Address Then
+    txtMail.Text = Project.Address
+  Else 
+    txtMail.Text = System.User.Name & "@" & System.Host
+  Endif
+  
+  txtVendor.Text = Project.Vendor
+  
+  If Project.License Then
+    txtLicense.Text = Project.License
+  Else 
+    txtLicense.Text = "General Public Licence"
+  Endif
+  
+  txtDescribe.Text = Project.Description
+
+  Try txtChangeLog.Text = File.Load(Project.Dir &/ "CHANGELOG")
+  txtTests.Text = Project.ExtraAutoconfTest
+
+  chkPrefix.Value = Project.Prefix
+  chkUseRelease.Value = Project.UseRelease
+
+  'InitSystemControls
+  InitSystems
+
+  UpdatePackageName
+
+  cmbCategories.List = Split(File.Load("install/categories"), "\n", "", True)
+
+  txtLicense.List = ["General Public Licence", "Freeware", "Public Domain", "Lesser General Public Licence", "Other Licence(s)", "Non-Free Licence"]
+  
+  If Project.CreateComponent Then 
+    chkPrefix.Value = True
+    chkPrefix.Enabled = False
+  Endif 
+
+  chkCreateDir.Value = Project.CreateEachDirectory
+
+  tvwDep.Columns.Count = 3
+  tvwDep.Columns[0].Text = ("Package")
+  tvwDep.Columns[1].Text = ("Min. version")
+  tvwDep.Columns[2].Text = ("Max. version")
+  tvwDep.Columns[0].Width = Desktop.Scale * 32
+  tvwDep.Columns[1].Width = Desktop.Scale * 16
+  tvwDep.Columns[2].Width = Desktop.Scale * 16
+
+  tvwFile.Columns.Count = 2
+  tvwFile.Columns[0].Text = ("File name")
+  tvwFile.Columns[1].Text = ("Destination directory")
+  tvwFile.Columns[0].Width = Desktop.Scale * 24
+  tvwFile.Columns[1].Width = Desktop.Scale * 40
+ 
+  chkDep.Value = Project.SameDependencies
+  chkFile.Value = Project.SameFiles
+
+End
+
+Public Sub wizInstall_Cancel()
+
+  Me.Close  
+
+End
+
+Private Sub UpdatePackageName()
+  
+  Dim sVendor As String
+  Dim sText As String
+
+  If Project.CreateComponent Then
+
+    sVendor = String.LCase(Trim(txtVendor.Text))
+    If Not sVendor Then sVendor = "gb"
+    If LCase(Project.Name) Like sVendor & ".*" Then 
+      sVendor = ""
+    Else 
+      sVendor &= "-"
+    Endif
+    sText = "gambas" & System.Version & "-" & sVendor & Replace(LCase(Project.Name), ".", "-")
+  
+  Else
+
+    If chkPrefix.Value Then
+      sVendor = String.LCase(Trim(txtVendor.Text))
+      If Not sVendor Then sVendor = "gambas"
+      sText = sVendor & "-" & LCase(Project.Name)
+    Else
+      sText = LCase(Project.Name)
+    Endif
+    
+  Endif
+  
+  sText &= Subst("-&1.&2", Project.MajorVersion, Project.MinorVersion)
+  If chkUseRelease.Value Then sText &= "." & Project.ReleaseVersion
+  
+  txtPackage.Text = sText
+  
+End
+
+
+Public Sub chkPrefix_Click()
+
+  UpdatePackageName
+
+End
+
+Private Sub GetSystemControls() As Control[]
+  
+  Dim aObject As New Control[]
+  Dim hCtrl As Control
+  Dim hCont As Container
+  Dim hCheck As CheckBox
+
+  For Each hCont In panSystem.Children
+    For Each hCtrl In hCont.Children
+      If hCtrl Is CheckBox Then
+        aObject.Add(hCtrl)
+      Endif
+    Next
+  Next
+  
+  Return aObject  
+  
+End
+
+Private Sub InitSystemControls()
+  
+  Dim hCtrl As Control
+  Dim hCont As Container
+  Dim sMsg As String
+  Dim hPanel As Panel
+  Dim hPict As PictureBox
+  Dim hLabel As TextLabel
+  Dim hTool As ToolButton
+  Dim hCheckBox As CheckBox
+
+  Inc Application.Busy
+  
+  Package.CheckProgram
+  
+  For Each hCont In panSystem.Children
+  
+    sMsg = Package.CheckSystem(hCont.Tag)
+    
+    hPanel = Null
+    For Each hCtrl In hCont.Children
+      If hCtrl Is ToolButton Then
+        hTool = hCtrl
+      Else If hCtrl Is CheckBox Then 
+        hCheckBox = hCtrl
+      Else If hCtrl Is Panel Then 
+        hPanel = hCtrl
+      Endif 
+    Next
+    
+    If Not hPanel Then 
+    
+      hPanel = New Panel(hCont)
+      hPanel.Border = Border.Plain
+      hPanel.Background = &HFFFFDF& ' Light Yellow
+      hPanel.Arrangement = Arrange.Horizontal
+      hPanel.Spacing = 8
+      hPanel.Padding = 4
+      hPanel.Expand = True
+      
+      hPict = New PictureBox(hPanel)
+      hPict.Picture = Picture["icon:/32/warning"]
+      hPict.Width = 32
+      
+      hLabel = New TextLabel(hPanel)
+      hLabel.Text = sMsg
+      hLabel.Expand = True
+
+    Endif
+
+    hCheckBox.Enabled = Not sMsg
+    If Not hCheckBox.Enabled Then hCheckBox.Value = False
+
+    hTool.Design = True
+    hTool.Enabled = hCheckBox.Value
+    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 2, hTool.Height - 2, True).Picture
+    
+    hPanel.Visible = sMsg
+
+  Next
+  
+  Dec Application.Busy
+  
+End
+
+
+Private Sub InitSystems()
+
+  Dim hCtrl As CheckBox
+  Dim hCont As Container
+  Dim hCheck As CheckBox
+
+  For Each hCtrl In GetSystemControls()
+    hCtrl.Value = hCtrl.Enabled And Project.Systems.Find(hCtrl.Parent.Tag) >= 0
+  Next
+
+End
+
+Public Sub wizInstall_Close()
+
+  Project.WriteProject
+  
+  If Package.Make() Then Return
+  
+  If Message.Warning(("The packages have been successfully created."), ("Close"), ("Retry")) = 2 Then Return
+  
+  Me.Close(True)
+
+End
+
+Private Function CheckSys(cCol As Collection) As Boolean
+
+  Dim sSys As String
+
+  For Each sSys In Project.Systems
+    If sSys = "autotools" Then Continue
+    If Not cCol.Exist(sSys) Then Return True
+  Next
+
+End
+
+
+Public Sub wizInstall_BeforeChange()
+
+  Dim sName As String
+  Dim sDir As String
+  Dim iSize As Integer
+
+  Select Case wizInstall.Index
+
+    Case 0
+      Project.Maintainer = Trim(txtName.Text)
+      Project.Address = Trim(txtMail.Text)
+      Project.Vendor = Trim(txtVendor.Text)
+      Project.License = Trim(txtLicense.Text)
+
+      If Not Project.Maintainer Then
+        Message.Warning(("Please enter your name."))
+        Stop Event
+        Return
+      Endif
+      If Not Project.Address Then
+        Message.Warning(("Please enter your e-mail address."))
+        Stop Event
+        Return
+      Endif
+
+      Project.Description = txtDescribe.Text
+      Project.Prefix = chkPrefix.Value
+      Project.UseRelease = chkUseRelease.Value
+
+    Case 1
+      If Not Trim(txtChange.Text) Then 
+        If Message.Warning(("There is no CHANGELOG entry for this release."), ("Continue"), ("Cancel")) = 2 Then 
+          Stop Event
+          Return 
+        Endif
+      Endif
+      Package.ChangeLog = MakeChangeLog()
+      If Not Package.ChangeLog Then
+        Message.Warning(("Please enter the first CHANGELOG entry."))
+        Stop Event
+        Return
+      Endif
+
+      InitSystemControls      
+
+    Case 2
+      Project.Systems = GetSystems()
+      If Project.Systems.Count = 0 Then
+        Message.Warning(("Please choose at least one target distribution."))
+        Stop Event
+        Return
+      Endif
+      
+      If Project.Systems.Count = 1 And If Project.Systems[0] = "autotools" Then 
+        wizInstall[TAB_GROUP].Enabled = False
+        wizInstall[TAB_MENU].Enabled = False
+      Else
+        wizInstall[TAB_GROUP].Enabled = True
+        wizInstall[TAB_MENU].Enabled = True
+      Endif
+      
+      wizInstall[TAB_TEST].Enabled = Project.Systems.Exist("autotools")
+      
+      If Project.CreateComponent
+        wizInstall[TAB_MENU].Enabled = False
+      Endif
+
+    Case TAB_GROUP
+      If CheckSys(Project.Groups) Then
+        If cmbGroup.Count > 1 Then
+          Message.Warning(("Please choose the package group for each target distribution."))
+        Else 
+          Message.Warning(("Please choose a package group."))
+        Endif
+        Stop Event
+        Return
+      Endif
+
+    Case TAB_MENU
+      If CheckSys(Project.Menus) Then
+        If cmbMenu.Count > 1 Then
+          Message.Warning(("Please choose the menu location for each target distribution."))
+        Else 
+          Message.Warning(("Please choose a menu location."))          
+        Endif 
+        Stop Event
+        Return
+      Endif
+      
+      ' IF CheckSys(Project.Categories) THEN
+      '   IF cmbMenu.Count > 1 THEN
+      '     Message.Warning(("Please choose at least one category for each target distribution."))
+      '   ELSE 
+      '     Message.Warning(("Please choose at least one category."))          
+      '   ENDIF 
+      '   STOP EVENT
+      '   RETURN
+      ' ENDIF
+      
+    Case TAB_DEP
+    
+    Case TAB_FILE
+    
+    Case TAB_TEST
+      Project.ExtraAutoconfTest = txtTests.Text
+    
+    Case TAB_DIR
+      Package.Path = dchInstall.SelectedPath
+      If Package.Path = Project.Dir Or If Package.Path Like Project.Dir &/ "/*" Then 
+        Message.Warning(("The package cannot be stored inside the project directory."))
+        Stop Event 
+        Return 
+      Endif
+      Settings["/FMakeInstall/PackagePath"] = Package.Path
+      
+  End Select
+  
+End 
+
+Private Sub UpdateDepCombo()
+
+  If chkDep.Value Then
+    cmbDep.Hide
+    cmbDep.Index = 0
+  Else  
+    cmbDep.Visible = cmbDep.Count > 1 
+  Endif
+  
+End
+
+Private Sub UpdateFileCombo()
+
+  If chkFile.Value Then
+    cmbFile.Hide
+    cmbFile.Index = 0
+  Else  
+    cmbFile.Visible = cmbFile.Count > 1 
+  Endif
+  
+End
+
+Public Sub wizInstall_Change()
+
+  Select Case wizInstall.Index
+
+    Case 1
+      lblChangeDate.Text = Package.GetChangeDate()
+      If Not txtChangeLog.Text Then txtChange.Text = ("Initial release")
+      txtChange.SetFocus
+      
+    Case TAB_GROUP
+      InitGroupTree
+      cmbGroup.Visible = cmbGroup.Count > 1
+      
+    Case TAB_MENU
+      InitMenuTree
+      cmbMenu.Visible = cmbMenu.Count > 1
+    
+    Case TAB_DEP
+      FillComboWithSystems(cmbDep)
+      UpdateDepCombo
+      
+    Case TAB_FILE
+      FillComboWithSystems(cmbFile)
+      UpdateFileCombo
+      
+    Case TAB_DIR
+      dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath", System.User.Home]
+      
+  End Select
+
+End
+
+Private Function GetSystems() As String[]
+
+  Dim hCtrl As CheckBox
+  Dim aSys As New String[]
+
+  For Each hCtrl In GetSystemControls()
+    If hCtrl.Value Then aSys.Add(hCtrl.Parent.Tag)
+  Next
+
+  Return aSys
+
+End
+
+
+Private Function GetSystemNames(Optional bRemoveSystemWithoutMenu As Boolean) As String[]
+
+  Dim hCtrl As CheckBox
+  Dim aSys As New String[]
+
+  For Each hCtrl In GetSystemControls()
+    If bRemoveSystemWithoutMenu And If hCtrl.Parent.Tag = "autotools" Then Continue
+    If hCtrl.Value Then aSys.Add(hCtrl.Text)
+  Next
+
+  Return aSys
+
+End
+
+
+
+Private Function GetSystemFromName(sName As String) As String
+
+  Dim hCtrl As CheckBox
+
+  For Each hCtrl In GetSystemControls()
+    If hCtrl.Text = sName Then Return hCtrl.Parent.Tag
+  Next
+
+End
+
+
+Public Function GetSystemName(sTag As String) As String
+
+  Dim hCtrl As CheckBox
+
+  For Each hCtrl In GetSystemControls()
+    If hCtrl.Parent.Tag = sTag Then Return hCtrl.Text
+  Next
+
+End
+
+
+
+Public Sub AddLog(sText As String, Optional bNoNewLine As Boolean)
+
+  txtLog.Insert(sText)
+  If Not bNoNewLine Then txtLog.Insert("\n")
+  Wait
+
+End
+
+Private Sub FillComboWithSystems(hCombo As ComboBox)
+
+  Dim sSys As String
+
+  hCombo.Clear
+
+  For Each sSys In GetSystemNames(True)
+    hCombo.Add(sSys)
+  Next
+
+  hCombo.Index = 0
+
+End
+
+
+Private Sub InitMenuTree()
+
+  FillComboWithSystems(cmbMenu)
+
+End
+
+
+Private Sub InitGroupTree()
+
+  FillComboWithSystems(cmbGroup)
+
+End
+
+Private Sub FindCategoriesFromMenu(sMenu As String) As String
+  
+  Dim sCat As String
+  Dim aCat As New String[]
+  
+  sMenu = Replace(sMenu, " ", "")
+  
+  For Each sCat In Split(sMenu, "/")
+    If cmbCategories.Find(sCat) >= 0 Then aCat.Add(sCat)
+  Next
+  
+  Return aCat.Join(";")
+  
+End
+
+
+Private Sub FillTreeWith(hTree As TreeView, sTitle As String, sIcon As String, sFile As String, hTextBox As TextBox, sSelect As String, Optional bCat As Boolean)
+
+  Dim hFile As File
+  Dim sLig As String
+  Dim iLevel As Integer
+  Dim iNewLevel As Integer
+  Dim sParent As String
+  Dim sKey As String
+  Dim iPos As Integer
+  Dim sCat As String
+  Dim sAdd As String
+  Dim sElt As String
+  
+  hTree.Clear
+  hTree.Add("/", sTitle, Picture[sIcon]).Expanded = True
+  sParent = "/"
+  
+  If bCat Then
+    $cCatCache.Clear
+    $sLastCat = ""
+  Endif
+
+  Open sFile As #hFile
+
+  While Not Eof(hFile)
+
+    Line Input #hFile, sLig
+    sLig = RTrim(sLig)
+    If Not sLig Then Continue
+
+    If bCat Then
+      iPos = InStr(sLig, "#")
+      If iPos Then 
+        sCat = Trim(Mid(sLig, iPos + 1))
+        sLig = RTrim(Left(sLig, iPos - 1))
+      Else 
+        sCat = ""
+      Endif  
+    Endif
+
+    If InStr(sLig, "/") Then 
+    
+      sKey = "/"
+      sParent = "/"
+      
+      For Each sElt In Split(Trim(sLig), "/")
+        sKey &/= sElt
+        If Not hTree.Exist(sKey) Then
+          hTree.Add(sKey, File.Name(sKey),, sParent).Expanded = True
+          hTree[sParent].Expanded = True
+        Endif
+        sParent = sKey
+      Next
+      
+      sParent = File.Dir(sLig)
+      If sParent = "" Then sParent = "/"
+      sLig = File.Name(sLig)
+    
+    Else
+
+      iNewLevel = Len(sLig) - Len(LTrim(sLig))
+  
+      If iNewLevel > iLevel Then
+        sParent = sKey
+      Else If iNewLevel < iLevel Then
+        While iLevel > iNewLevel
+          hTree.MoveTo(sParent)
+          If hTree.MoveParent() Then
+            sParent = ""
+          Else
+            sParent = hTree.Item.Key
+          Endif
+          Dec iLevel
+        Wend
+      Endif
+  
+      iLevel = iNewLevel
+
+      If sParent = "" Then sParent = "/"
+      sKey = sParent &/ Trim(sLig)
+  
+      hTree.Add(sKey, Trim(sLig),, sParent)
+      hTree[sParent].Expanded = True
+      'DEBUG sKey
+    
+    Endif
+    
+    If bCat Then
+      sAdd = FindCategoriesFromMenu(sKey)
+      If sAdd And If sCat Then sCat &= ";"
+      $cCatCache[sKey] = sCat & sAdd
+    Endif 
+    
+  Wend
+
+  Close #hFile
+
+  sSelect = "/" &/ sSelect
+  hTextBox.Clear
+  If sSelect Then
+    Try hTree[sSelect].Selected = True
+    Try hTree[sSelect].EnsureVisible
+  Endif
+
+End
+
+
+
+Public Sub cmbMenu_Click()
+
+  $sMenuSystem = GetSystemFromName(cmbMenu.Text)
+
+  cmbCategories.Text = Project.Categories[$sMenuSystem]
+  FillTreeWith(tvwMenu, ("Menus"), "img/16/menu.png", "install/menu" &/ $sMenuSystem, txtMenu, Project.Menus[$sMenuSystem], True)
+
+End
+
+Private Sub AddCategory(sAdd As String)
+  
+  Dim sAll As String = cmbCategories.Text & ";" & sAdd
+  Dim aCat As New String[]
+  Dim sCat As String
+  
+  For Each sCat In Split(sAll, ";").Sort()
+    If Not sCat Then Continue 
+    If aCat.Exist(sCat) Then Continue 
+    aCat.Add(sCat)
+  Next
+  
+  cmbCategories.Text = aCat.Join(";")
+  
+End
+
+Private Sub RemoveCategory(sAdd As String)
+  
+  Dim aRemove As String[] = Split(sAdd, ";")
+  Dim aCat As New String[]
+  Dim sCat As String
+  
+  For Each sCat In Split(cmbCategories.Text, ";").Sort()
+    If Not sCat Then Continue 
+    If aRemove.Exist(sCat) Then Continue 
+    aCat.Add(sCat)
+  Next
+  
+  cmbCategories.Text = aCat.Join(";")
+  
+End
+
+
+
+Public Sub tvwMenu_Select()
+
+  Dim sMenu As String
+
+  If tvwMenu.Item.Children Then Return
+
+  RemoveCategory($sLastCat)
+  $sLastCat = $cCatCache[tvwMenu.Key]
+  AddCategory($sLastCat)
+
+  tvwMenu.MoveCurrent
+  While tvwMenu.Item.Key <> "/"
+    sMenu = tvwMenu.Item.Text &/ sMenu
+    tvwMenu.MoveParent
+  Wend
+
+  txtMenu.Text = sMenu
+  
+  'sSys = GetSystemFromName(cmbMenu.Text)
+  
+  Project.Menus[$sMenuSystem] = sMenu
+  Project.Categories[$sMenuSystem] = cmbCategories.Text
+  
+End
+
+Public Sub cmbGroup_Click()
+
+  $sGroupSystem = GetSystemFromName(cmbGroup.Text)
+
+  txtGroup.Clear
+  FillTreeWith(tvwGroup, ("Groups"), "icon:/small/package", "install/group" &/ $sGroupSystem, txtMenu, Project.Groups[$sGroupSystem])
+
+End
+
+Public Sub tvwGroup_Select()
+
+  Dim sGroup As String
+
+  tvwGroup.MoveCurrent
+  While tvwGroup.Item.Key <> "/"
+    sGroup = tvwGroup.Item.Text &/ sGroup
+    tvwGroup.MoveParent
+  Wend
+
+  txtGroup.Text = sGroup
+  Project.Groups[GetSystemFromName(cmbGroup.Text)] = sGroup
+
+End
+
+Public Sub cmbCategories_LostFocus()
+
+  AddCategory("")
+  Project.Categories[$sMenuSystem] = cmbCategories.Text  
+
+End
+
+Public Sub cmbCategories_Click()
+
+  Dim sCat As String = cmbCategories[cmbCategories.Index].Text
+  
+  cmbCategories.Text = Project.Categories[$sMenuSystem]
+  AddCategory(sCat)  
+  Project.Categories[$sMenuSystem] = cmbCategories.Text  
+
+End
+
+Public Sub tvwMenu_Collapse()
+
+  tvwMenu.Item.Expanded = True  
+
+End
+
+Public Sub tvwGroup_Collapse()
+
+  tvwGroup.Item.Expanded = True    
+
+End
+
+Public Sub cmbDep_Click()
+
+  $sDepSystem = GetSystemFromName(cmbDep.Text)
+
+  $aDep = Split(Project.ExtraDependencies[$sDepSystem], ";")
+  tvwDep.Rows.Count = $aDep.Count
+  'txtGroup.Clear
+  'lstDep.List = Split(Project.ExtraDependencies[$sDepSystem], ",")
+
+End
+
+Public Sub chkDistro_Click()
+
+  Dim hCheckBox As CheckBox = Last
+  Dim hButton As ToolButton = hCheckBox.Previous
+  
+  hButton.Enabled = hCheckBox.Value
+  
+End
+
+Public Sub txtVendor_Change()
+
+  UpdatePackageName  
+
+End
+
+Public Sub chkUseRelease_Click()
+
+  UpdatePackageName
+
+End
+
+Public Sub chkCreateDir_Click()
+
+  Project.CreateEachDirectory = chkCreateDir.Value
+
+End
+
+Public Sub tvwDep_Click()
+
+  tvwDep.Edit
+
+End
+
+Public Sub tvwDep_Data(Row As Integer, Column As Integer)
+
+  Dim aRow As String[] = Split($aDep[Row], ":")
+  Try tvwDep.Data.Text = aRow[Column]
+
+End
+
+Private Sub SaveExtraDependencies()
+  
+  Project.ExtraDependencies[$sDepSystem] = $aDep.Join(";")
+  
+End
+
+Private Sub SaveExtraFiles()
+  
+  Project.ExtraFiles[$sFileSystem] = $aFile.Join(";")
+  
+End
+
+
+Public Sub tvwDep_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim aRow As String[]
+  Dim iInd As Integer
+  Dim sCar As String
+ 
+  For iInd = 1 To String.Len(Value)
+    sCar = String.Mid$(Value, iInd, 1)
+    If Len(sCar) = 1 Then
+      If Column = 0 And If IsLetter(sCar) Then Continue
+      If IsDigit(sCar) Or If InStr("-.", sCar) Then Continue
+    Endif
+    Balloon.Warning(("Incorrect characters"), tvwDep, tvwDep.Editor.ScreenX - tvwDep.ScreenX + tvwDep.Editor.W / 2, tvwDep.Editor.ScreenY - tvwDep.ScreenY + tvwDep.Editor.H / 2)
+    Stop Event
+    Return
+  Next
+  
+  aRow = Split($aDep[Row], ":")
+  
+  While aRow.Count < 3
+    aRow.Add("")
+  Wend
+  
+  aRow[Column] = Value
+  $aDep[Row] = aRow.Join(":")
+  SaveExtraDependencies
+
+End
+
+Public Sub btnAddDep_Click()
+
+  $aDep.Add("::")
+  SaveExtraDependencies
+  Inc tvwDep.Rows.Count
+  tvwDep.Save
+  tvwDep.MoveTo($aDep.Max, 0)
+  tvwDep.Edit
+
+End
+
+Public Sub tvwDep_Insert()
+
+  btnAddDep.Value = True
+
+End
+
+Public Sub btnRemoveDep_Click()
+
+  If tvwDep.Row < 0 Then Return
+  $aDep.Remove(tvwDep.Row)
+  SaveExtraDependencies
+  Dec tvwDep.Rows.Count
+
+End
+
+Public Sub btnUpDep_Click()
+
+  If tvwDep.Row >= 1 Then
+    tvwDep.Save
+    Swap $aDep[tvwDep.Row], $aDep[tvwDep.Row - 1]
+    SaveExtraDependencies
+    tvwDep.Refresh
+    Dec tvwDep.Row
+    tvwDep.Edit
+  Endif
+
+End
+
+Public Sub btnDownDep_Click()
+
+  If tvwDep.Row < $aDep.Max Then
+    tvwDep.Save
+    Swap $aDep[tvwDep.Row], $aDep[tvwDep.Row + 1]
+    SaveExtraDependencies
+    tvwDep.Refresh
+    Inc tvwDep.Row
+    tvwDep.Edit
+  Endif
+  
+
+End
+
+Public Sub btnClearDep_Click()
+
+  If Message.Warning(("Do you really want to remove all extra dependencies?"), ("Cancel"), ("Remove")) <> 2 Then Return
+  $aDep.Clear
+  SaveExtraDependencies
+  tvwDep.Rows.Count = 0
+
+End
+
+Public Sub chkDep_Click()
+
+  UpdateDepCombo
+
+End
+
+Public Sub chkFile_Click()
+
+  UpdateFileCombo
+
+End
+
+Public Sub cmbFile_Click()
+
+   $sFileSystem = GetSystemFromName(cmbFile.Text)
+
+  $aFile = Split(Project.ExtraFiles[$sFileSystem], ";")
+  tvwFile.Rows.Count = $aFile.Count
+ 
+End
+
+Public Sub tvwFile_Insert()
+
+  btnAddFile.Value = True  
+
+End
+
+Public Sub tvwFile_DblClick()
+
+  Dim sFic As String
+
+  If tvwFile.Column = 0 Then
+    sFic = FSelectExtraFile.Run(tvwFile.Current.Text)
+    If Not sFic Then Return
+
+    'tvwFile.Current.Text = sFic
+    tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
+    tvwFile.Refresh
+    ' tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
+  Else If tvwFile.Column = 1 Then
+  
+    Dialog.Title = ("Select the destination directory")
+    Dialog.Path = tvwFile.Current.Text
+    If Dialog.SelectDirectory() Then Return
+    
+    'tvwFile.Current.Text = Dialog.Path
+    tvwFile_Save(tvwFile.Row, tvwFile.Column, Dialog.Path)
+    tvwFile.Refresh
+    
+  Endif
+
+End
+
+Public Sub tvwFile_Data(Row As Integer, Column As Integer)
+
+  Dim aRow As String[] = Split($aFile[Row], ":")
+  Try tvwFile.Data.Text = aRow[Column]
+
+End
+
+Public Sub btnAddFile_Click()
+
+  Dim sFic As String
+  
+  sFic = FSelectExtraFile.Run("")
+  If Not sFic Then Return
+  
+  $aFile.Add(sFic & ":")
+  SaveExtraFiles
+  Inc tvwFile.Rows.Count
+  tvwFile.MoveTo($aFile.Max, 0)
+  'tvwFile.Refresh
+  'tvwFile.Current.Text = sFic
+  'tvwFile.Save
+  'tvwFile_Save(tvwFile.Row, tvwFile.Column, sFic)
+  
+End
+
+Public Sub btnRemoveFile_Click()
+
+  If tvwFile.Row < 0 Then Return
+  $aFile.Remove(tvwFile.Row)
+  SaveExtraFiles
+  Dec tvwFile.Rows.Count
+
+End
+
+Public Sub btnUpFile_Click()
+  Dim fic As String
+
+  If tvwFile.Row >= 1 Then
+    tvwFile.Save
+    Swap $aFile[tvwFile.Row], $aFile[tvwFile.Row - 1]
+    SaveExtraFiles
+    tvwFile.Refresh
+    Dec tvwFile.Row
+  Endif
+
+End
+
+Public Sub btnDownFile_Click()
+  Dim fic As String
+
+ If tvwFile.Row < $aFile.Max Then
+    tvwFile.Save
+    Swap $aFile[tvwFile.Row], $aFile[tvwFile.Row + 1]
+    SaveExtraFiles
+    tvwFile.Refresh
+    Inc tvwFile.Row
+  Endif
+
+End
+
+Public Sub btnClearFile_Click()
+
+ If Message.Warning(("Do you really want to remove all extra files?"), ("Cancel"), ("Remove")) <> 2 Then Return
+  $aFile.Clear
+  SaveExtraFiles
+  tvwFile.Rows.Count = 0
+
+End
+
+Public Sub tvwFile_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim aRow As String[]
+  aRow = Split($aFile[Row], ":")
+  
+  While aRow.Count < 2
+    aRow.Add("")
+  Wend
+  
+  aRow[Column] = Value
+  $aFile[Row] = aRow.Join(":")
+  SaveExtraFiles
+
+End
