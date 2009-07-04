@@ -1108,6 +1108,21 @@ Public Sub RefreshRoot()
   
 End
 
+Private Sub RefreshSourceCache()
+
+  Dim sPath As String
+  
+  $cSourceDir = New Collection(gb.IgnoreCase)
+  
+  For Each sPath In RDir(SourceDir)
+    If CModule.Ext.Exist(File.Ext(sPath)) Then
+      $cSourceDir[File.Name(sPath)] = SourceDir &/ sPath
+    Endif
+  Next
+
+End
+
+
 Private Sub DoRefresh(Optional bReset As Boolean)
 
   Dim sFile As String
@@ -1127,14 +1142,8 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     sKeyReset = ProjectTree.Key
   Endif
   
-  $cSourceDir = New Collection(gb.IgnoreCase)
+  RefreshSourceCache
   
-  For Each sPath In RDir(SourceDir)
-    If CModule.Ext.Exist(File.Ext(sPath)) Then
-      $cSourceDir[File.Name(sPath)] = SourceDir &/ sPath
-    Endif
-  Next
-
   With ProjectTree
 
     .Clear()
@@ -2145,7 +2154,6 @@ Public Function GetClasses(Optional bFullPath As Boolean) As String[]
   Dim aModule As New String[]
   Dim bStop As Boolean
 
-
   For Each sPath In $cSourceDir
   
     sExt = File.Ext(sPath)
@@ -3083,7 +3091,7 @@ Public Sub GetClassesOnly() As String[]
   
   For Each sPath In $cSourceDir
     sFile = File.Name(sPath)
-    If File.Ext(sFile) <> ".class" Then Continue
+    If File.Ext(sFile) <> "class" Then Continue
     If $cSourceDir.Exist(File.SetExt(sFile, "form")) Then Continue
     aClass.Add(File.BaseName(sFile))
   Next
@@ -3100,8 +3108,8 @@ Private Sub RefreshInheritance()
   
   $aRefreshAfter.Clear
   
-  For Each sClass In GetClassesOnly()
-    sKey = $cSourceDir[sClass & ".class"]
+  For Each sKey In $cSourceDir
+    If Not File.Ext(sKey) = "class" Then Continue
     Try ProjectTree[sKey].Delete
     $aRefreshAfter.Add(sKey)
   Next
@@ -3680,14 +3688,20 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
   Dim hForm As Object
   Dim sLink As String
   Dim sDir As String
+  Dim sPath As String
+  Dim aMove As String[]
+  Dim bIsDir As Boolean
 
   If sSrc = sDst Then Return
+  
   If Len(sDst) > Len(sSrc) And If Left(sDst, Len(sSrc)) = sSrc Then
     Message.Error(("Cannot move a directory inside itself."))
     Return
   Endif
 
-  If bOther Then
+  bIsDir = IsDir(sSrc)
+
+  If bOther And If Not bIsDir Then
   
     sDir = File.Dir(sSrc)
     For Each sSrc In Dir(sDir, File.BaseName(sSrc) & ".*")
@@ -3714,7 +3728,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Endif
   End With 
   
-  If IsDir(sSrc) Then
+  If bIsDir Then
     Move sSrc To sDst
     VersionControl.MoveDir(sSrc, sDst)
   Else
@@ -3729,9 +3743,14 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     Files[sSrc] = Null
     Files[sDst] = hForm
   Endif
+  
   If IsSourcePath(sSrc) Then
-    $cSourceDir[File.Name(sSrc)] = Null
-    $cSourceDir[File.Name(sDst)] = sDst
+    If bIsDir Then
+      RefreshSourceCache
+    Else
+      $cSourceDir[File.Name(sSrc)] = Null
+      $cSourceDir[File.Name(sDst)] = sDst
+    Endif
   Endif
 
   RefreshKey(sDst, sSrc)

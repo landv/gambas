@@ -821,6 +821,7 @@ Public Sub chkCreateDir_Click()
 End
 
 Public Sub tvwDep_Click()
+
   tvwDep.Edit
 
 End
@@ -839,6 +840,7 @@ Private Sub SaveExtraDependencies()
 End
 
 Private Sub SaveExtraFiles()
+  
   Project.ExtraFiles[$sFileSystem] = $aFile.Join(";")
   
 End
@@ -849,7 +851,6 @@ Public Sub tvwDep_Save(Row As Integer, Column As Integer, Value As String)
   Dim aRow As String[]
   Dim iInd As Integer
   Dim sCar As String
-   Print "a", $aDep[Row]
  
   For iInd = 1 To String.Len(Value)
     sCar = String.Mid$(Value, iInd, 1)
@@ -930,6 +931,7 @@ End
 Public Sub btnClearDep_Click()
 
   If Message.Warning(("Do you really want to remove all extra dependencies?"), ("Cancel"), ("Remove")) <> 2 Then Return
+  tvwDep.Cancel
   $aDep.Clear
   SaveExtraDependencies
   tvwDep.Rows.Count = 0
@@ -977,6 +979,7 @@ Public Sub tvwFile_DblClick()
     ' tvwFile.Edit(Dir(Project.Dir, "*[^~]", gb.File), True)
   Else If tvwFile.Column = 1 Then
   
+    Dialog.Title = ("Select the destination directory")
     Dialog.Path = tvwFile.Current.Text
     If Dialog.SelectDirectory() Then Return
     
@@ -1038,7 +1041,7 @@ End
 Public Sub btnDownFile_Click()
   Dim fic As String
 
- If tvwFile.Row < $aFile.Max Then
+  If tvwFile.Row < $aFile.Max Then
     tvwFile.Save
     Swap $aFile[tvwFile.Row], $aFile[tvwFile.Row + 1]
     SaveExtraFiles
@@ -1050,7 +1053,8 @@ End
 
 Public Sub btnClearFile_Click()
 
- If Message.Warning(("Do you really want to remove all extra files?"), ("Cancel"), ("Remove")) <> 2 Then Return
+  If Message.Warning(("Do you really want to remove all extra files?"), ("Cancel"), ("Remove")) <> 2 Then Return
+  tvwFile.Cancel
   $aFile.Clear
   SaveExtraFiles
   tvwFile.Rows.Count = 0

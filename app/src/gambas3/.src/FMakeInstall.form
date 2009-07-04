@@ -411,7 +411,8 @@
     Index = 7
     Text = ("Extra autoconf tests")
     { TextLabel4 TextLabel
-      MoveScaled(2,1,66,12)
+      MoveScaled(2,1,66,9)
+      AutoResize = True
       Text = ("Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>")
     }
     { txtTests TextArea
