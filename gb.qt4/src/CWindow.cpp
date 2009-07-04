@@ -1677,7 +1677,7 @@ void MyMainWindow::showModal(void)
 	if (CWINDOW_Active)
 		X11_set_transient_for(winId(), CWINDOW_Active->widget.widget->winId());
 
-	setWindowModality(Qt::WindowModal);
+	setWindowModality(Qt::ApplicationModal);
 
 	if (_resizable && _border)
 	{
