@@ -249,6 +249,7 @@ Private Sub LastOpenedFiles()
   Dim iActive As Integer
   Dim hActive As Object
   Dim aFold As Integer[]
+  Dim sPath As String
 
   Inc Application.Busy
   RestoringFiles = True
@@ -258,8 +259,9 @@ Private Sub LastOpenedFiles()
   iActive = Config["/OpenFile/Active", 0]
   For iInd = 1 To nOpen
     aOpen = Split(Config["/OpenFile/File[" & CStr(iInd) & "]"], ":")
-    If VersionControl.InConflict(Project.Dir &/ aOpen[0]) Then Continue
-    hForm = OpenFile(Project.Dir &/ aOpen[0])
+    sPath = FindPath(aOpen[0])
+    If VersionControl.InConflict(sPath) Then Continue
+    hForm = OpenFile(sPath)
     If Not hForm Then Continue
     If aOpen.Count = 2 Then Try hForm.SetState(aOpen[1])
     aFold = Config["/OpenFile/Fold[" & CStr(iInd) & "]"]
@@ -328,12 +330,17 @@ Public Function Open(sDir As String) As Boolean
   Name = File.Name(sDir)
   Project.Dir = sDir
   SourceDir = sDir &/ ".src"
+
+  VersionControl.Refresh
+
   If Not Exist(SourceDir) Then 
-    Mkdir SourceDir
+    Inc Application.Busy
+    InsertDirectory(SourceDir)
     For Each sFile In Dir(sDir, "*")
       If Not CModule.Ext.Exist(File.Ext(sFile)) Then Continue
-      Move sDir &/ sFile To SourceDir &/ sFile
+      MoveFile(sDir &/ sFile, SourceDir &/ sFile)
     Next
+    Dec Application.Busy
   Endif
 
   Config = New Settings(sDir &/ ".settings")
@@ -345,8 +352,6 @@ Public Function Open(sDir As String) As Boolean
     If bSave Then WriteProject(True)
   Endif
   Dec $iNoRefresh
-
-  VersionControl.Refresh
 
   Inc Project.TimeStamp
 
