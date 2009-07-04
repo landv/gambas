@@ -1115,20 +1115,20 @@ PUBLIC char *OUTPUT_get_file(const char *file)
 PUBLIC char *OUTPUT_get_trans_file(const char *file)
 {
   char *output;
-  char *dir;
+  //char *dir;
   char *name;
 
-  dir = STR_copy(FILE_get_dir(file));
+  //dir = STR_copy(FILE_get_dir(file));
   name = STR_copy(FILE_get_name(file));
 
-  output = (char *)FILE_cat(dir, ".lang", NULL);
+  output = ".lang"; //(char *)FILE_cat(dir, ".lang", NULL);
   if (mkdir(output, 0777) == 0)
   	FILE_set_owner(output, COMP_project);
 
-  output = (char *)FILE_cat(dir, ".lang", name, NULL);
+  output = (char *)FILE_cat(".lang", name, NULL);
   output = STR_copy(FILE_set_ext(output, "pot"));
 
-  STR_free(dir);
+  //STR_free(dir);
   STR_free(name);
 
   return output;
