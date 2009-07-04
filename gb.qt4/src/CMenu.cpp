@@ -47,6 +47,12 @@ static int check_menu(void *_object)
   return THIS->deleted;
 }
 
+static void set_menu_visible(void *_object, bool v)
+{
+	THIS->visible = v;
+	ACTION->setVisible(v);
+}
+
 static void refresh_menubar(CMENU *menu)
 {
 	int i;
@@ -134,13 +140,19 @@ static void clear_menu(CMENU *_object)
 
 static bool is_fully_enabled(CMENU *_object)
 {
-	if (THIS->disabled)
-		return false;
-	
-	if (CMENU_is_toplevel(THIS))
-		return true;
-	
-	return is_fully_enabled((CMENU *)THIS->parent);
+	for(;;)
+	{
+		if (THIS->exec)
+			return true;
+		
+		if (THIS->disabled)
+			return false;
+		
+		if (CMENU_is_toplevel(THIS))
+			return true;
+		
+		_object = (CMENU *)THIS->parent;
+	}
 }
 
 static void update_accel(CMENU *_object)
@@ -150,18 +162,23 @@ static void update_accel(CMENU *_object)
 	
 	if (THIS->accel && !THIS->accel->isEmpty() && is_fully_enabled(THIS))
 	{
-		//qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().utf8());
+		//if (ACTION->text() == "&Cut!")
+		//	qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().utf8());
 		ACTION->setShortcut(*(THIS->accel));
 	}
 	else
 	{
+		//if (ACTION->text() == "&Cut!")
+		//	qDebug("update_accel: %s: NULL", THIS->widget.name);
 		ACTION->setShortcut(QKeySequence());
-		//qDebug("update_accel: %s: NULL", THIS->widget.name);
 	}
 }
 
 static void update_accel_recursive(CMENU *_object)
 {
+	if (THIS->exec)
+		return;
+	
 	update_accel(THIS);
 	
 	if (THIS->menu)
@@ -236,7 +253,6 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
     
 		action = new QAction(menu->menu);
 		action->setSeparator(true);
-		action->setVisible(!VARGOPT(hidden, FALSE));
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
     
     menu->menu->addAction(action);
@@ -256,7 +272,7 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
     
 		action = new QAction(menuBar);
 		action->setSeparator(true);
-		action->setVisible(!VARGOPT(hidden, FALSE));
+		
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
     
     menuBar->addAction(action);
@@ -270,6 +286,7 @@ BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 	
   THIS->widget.widget = (QWidget *)action;
   CMenu::dict.insert(action, THIS);
+	set_menu_visible(THIS, !VARGOPT(hidden, FALSE));
 
 	THIS->parent = parent;
   THIS->widget.tag.type = GB_T_NULL;
@@ -451,10 +468,10 @@ END_PROPERTY
 BEGIN_PROPERTY(CMENU_visible)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(ACTION->isVisible());
+		GB.ReturnBoolean(THIS->visible);
 	else
 	{
-		ACTION->setVisible(VPROP(GB_BOOLEAN));
+		set_menu_visible(THIS, VPROP(GB_BOOLEAN));
 		refresh_menubar(THIS);
 	}
 	
@@ -463,7 +480,7 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CMENU_show)
 
-	ACTION->setVisible(true);
+	set_menu_visible(THIS, true);
 	refresh_menubar(THIS);
 
 END_METHOD
@@ -471,7 +488,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CMENU_hide)
 
-	ACTION->setVisible(false);
+	set_menu_visible(THIS, false);
 	refresh_menubar(THIS);
 
 END_METHOD
@@ -547,27 +564,23 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 
 	if (THIS->menu && !THIS->exec)
 	{
-		THIS->exec = true;
-		//CMenu::enableAccel(THIS, true);
 		disabled = THIS->disabled;
 		if (disabled)
 		{
 			THIS->disabled = false;
 			update_accel_recursive(THIS);
+			THIS->disabled = true;
 		}
 		
+		// The Click event is posted, it does not occur immediately.
+		THIS->exec = true;
 		if (MISSING(x) || MISSING(y))
 			THIS->menu->exec(QCursor::pos());
 		else
 			THIS->menu->exec(QPoint(VARG(x), VARG(y)));
-			
 		THIS->exec = false;
 		
-		if (disabled)
-		{
-			THIS->disabled= true;
-			update_accel_recursive(THIS);
-		}
+		update_accel_recursive(THIS);
 		//MAIN_process_events();
   }
 

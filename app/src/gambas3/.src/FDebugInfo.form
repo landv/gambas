@@ -1,17 +1,16 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1429,84,47)
+  MoveScaled(0,2.1429,112,47)
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Fill
   { splDebug HSplit
-    MoveScaled(1,1,81,45)
+    MoveScaled(1,1,103,45)
     { tabDebug TabStrip
-      MoveScaled(1,2,56,38)
+      MoveScaled(1,2,77,38)
       Expand = True
       Arrangement = Arrange.Vertical
-      Spacing = True
       Padding = 4
       Count = 5
       Index = 0
@@ -52,9 +51,11 @@
           Expand = True
           Text = ("Sort object variables")
         }
-        { btnShowME Button
-          MoveScaled(55,0,4,4)
-          Text = ("")
+        { btnShowME ToolButton
+          MoveScaled(38,0,11,4)
+          ToolTip = ("Display ME")
+          AutoResize = True
+          Text = ("Display ME")
           Picture = Picture["icon:/small/fullscreen"]
         }
       }
@@ -62,32 +63,32 @@
       Text = ("Watch")
       Picture = Picture["icon:/small/watch"]
       { HBox1 HBox
-        MoveScaled(2,2,42,4)
-        { btnKillAllWatch ToolButton
-          MoveScaled(1,0,4,4)
-          ToolTip = ("Remove all expressions")
-          Text = ("")
-          Picture = Picture["icon:/small/trash"]
-        }
-        { btnKillWatch ToolButton
-          MoveScaled(4,0,4,4)
-          ToolTip = ("Remove current expression")
-          Text = ("")
-          Picture = Picture["icon:/small/close"]
-        }
-        { btnWatch ToolButton
-          MoveScaled(7,0,4,4)
-          ToolTip = ("Add expression")
-          Text = ("")
-          Picture = Picture["icon:/small/watch"]
-        }
-        { Panel2 Panel
-          MoveScaled(11,0,2,4)
-        }
+        MoveScaled(2,2,72,4)
         { cmbWatch ComboBox
-          MoveScaled(13,0,27,4)
+          MoveScaled(0,0,27,4)
           Expand = True
           Text = ("")
+        }
+        { btnWatch ToolButton
+          MoveScaled(27,0,10,4)
+          ToolTip = ("Add expression")
+          AutoResize = True
+          Text = ("&Add")
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnKillWatch ToolButton
+          MoveScaled(36,0,11,4)
+          ToolTip = ("Remove current expression")
+          AutoResize = True
+          Text = ("&Remove")
+          Picture = Picture["icon:/small/remove"]
+        }
+        { btnKillAllWatch ToolButton
+          MoveScaled(52,0,13,4)
+          ToolTip = ("Remove all expressions")
+          AutoResize = True
+          Text = ("Remove all")
+          Picture = Picture["icon:/small/trash"]
         }
       }
       { cvwWatch ColumnView
@@ -98,31 +99,27 @@
       Index = 4
       Text = ("Breakpoints")
       Picture = Picture["icon:/small/flag"]
-      { Panel3 Panel
-        MoveScaled(1,1,40,31)
+      { VBox1 HBox
+        MoveScaled(0,0,55,4)
+        { btnRemoveBreak ToolButton
+          MoveScaled(0,0,20,4)
+          ToolTip = ("Remove current breakpoint")
+          AutoResize = True
+          Text = ("Remove current breakpoint")
+          Picture = Picture["icon:/small/cancel"]
+        }
+        { btnClearBreak ToolButton
+          MoveScaled(27,0,12,4)
+          ToolTip = ("Remove all breakpoints")
+          AutoResize = True
+          Text = ("Remove all")
+          Picture = Picture["icon:/small/trash"]
+        }
+      }
+      { lstBreak ListBox
+        MoveScaled(0,5,27,21)
         Expand = True
-        Arrangement = Arrange.Horizontal
-        Spacing = True
-        { VBox1 VBox
-          MoveScaled(1,0,4,13)
-          { btnRemoveBreak ToolButton
-            MoveScaled(0,0,4,4)
-            ToolTip = ("Remove current breakpoint")
-            Text = ("")
-            Picture = Picture["icon:/small/delete"]
-          }
-          { btnClearBreak ToolButton
-            MoveScaled(0,4,4,4)
-            ToolTip = ("Remove all breakpoints")
-            Text = ("")
-            Picture = Picture["icon:/small/trash"]
-          }
-        }
-        { lstBreak ListBox
-          MoveScaled(12,5,27,21)
-          Expand = True
-          Sorted = True
-        }
+        Sorted = True
       }
       { timBreakpoint #Timer
         #X = 301
@@ -132,7 +129,7 @@
       Index = 0
     }
     { panStack VBox
-      MoveScaled(58,1,22,41)
+      MoveScaled(80,2,22,41)
       Visible = False
       Expand = True
       { HBox3 HBox

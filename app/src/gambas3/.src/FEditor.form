@@ -42,21 +42,21 @@
       Text = ("")
     }
     { mnuUntil Menu
-      Action = "until"
       Text = ("Run &until current line")
       Picture = Picture["icon:/small/start"]
+      Visible = False
       Shortcut = "Shift+F5"
     }
     { mnuBreakpoint Menu
-      Action = "break"
       Text = ("Toggle &breakpoint")
       Picture = Picture["icon:/small/flag"]
       Toggle = True
+      Visible = False
     }
     { mnuWatch Menu
-      Action = "watch"
       Text = ("&Watch expression...")
       Picture = Picture["icon:/small/watch"]
+      Visible = False
     }
     { mnuSepWatch Menu
       Text = ("")
@@ -403,11 +403,6 @@
 # Gambas Action File 3.0
 
 { Actions
-  { Action break
-    Text = "Toggle &breakpoint"
-    Shortcut = ""
-    Picture = "icon:/small/flag"
-  }
   { Action code-form
     Text = "Open form"
     Shortcut = "Ctrl+W"
@@ -526,11 +521,6 @@
     Text = "Unindent"
     Picture = "icon:/small/unindent"
   }
-  { Action until
-    Text = "Run &until current line"
-    Shortcut = "Shift+F5"
-    Picture = "icon:/small/start"
-  }
   { Action view-hsplit
     Text = "Horizontal split"
     Shortcut = "Ctrl+H"
@@ -545,11 +535,6 @@
     Text = "Vertical split"
     Shortcut = "Ctrl+J"
     Picture = "icon:/small/view-split-v"
-  }
-  { Action watch
-    Text = "&Watch expression..."
-    Shortcut = ""
-    Picture = "icon:/small/watch"
   }
 }
 

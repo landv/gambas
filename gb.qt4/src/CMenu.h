@@ -69,6 +69,7 @@ typedef
     unsigned exec : 1;
 		unsigned checked : 1;
 		unsigned disabled : 1;
+		unsigned visible : 1;
     }
   CMENU;
 

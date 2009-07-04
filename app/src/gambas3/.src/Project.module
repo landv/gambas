@@ -76,7 +76,7 @@ Public Const PROJECT_MAGIC_2 As String = "# Gambas Project File 2.0"
 Public Const PROJECT_MAGIC As String = "# Gambas Project File 3.0"
 Public Const ACTION_MAGIC As String = "# Gambas Action File 3.0"
 
-Public Const DEFAULT_FONT As String = "Monospace,10"
+Public Const DEFAULT_FONT As String = "Monospace,9"
 
 Public Files As New Collection
 
@@ -836,7 +836,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
         If CModule.Ext.Exist(sExt) Then
 
           'sIcon = IMAGE_DIR &/ sExt & ".png"
-          bShow = True
+          bShow = sDir = SourceDir
           bChecked = True
           
           sParent = ""

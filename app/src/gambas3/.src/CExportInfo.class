@@ -51,8 +51,8 @@ Private Sub Type_Write(Value As String)
   Form = Value = "Form"
   Virtual = Value = "Virtual"
   MultiContainer = Value = "MultiContainer"
-  Container = Value = "Container" OR MultiContainer
-  Control = Value = "Control" OR Container OR Virtual
+  Container = Value = "Container" Or MultiContainer
+  Control = Value = "Control" Or Container Or Virtual
   If Control Then 
     If $sGroup = "" Then $sGroup = Type_Read()
   Else 
@@ -96,9 +96,9 @@ End
 
 Private Sub Group_Write(Value As String)
 
-  If NOT Control Then Return 
+  If Not Control Then Return 
   Value = Trim(Value)
-  If NOT Value Then Return
+  If Not Value Then Return
   $sGroup = Value
 
 End
@@ -108,7 +108,7 @@ Static Private Sub CalcSortKey(sClass As String) As Integer
   Dim hExportInfo As CExportInfo = All[sClass]
   Dim sParent As String 
   
-  If NOT hExportInfo Then Return
+  If Not hExportInfo Then Return
   
   With hExportInfo
   

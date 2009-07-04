@@ -68,15 +68,11 @@ End
 
 Public Sub _new(sExpr As String, sInfo As String)
   
-  Dim aGeom As Integer[]
-  
   $sExpr = sExpr
   $sKey = Replace(sExpr, "/", "|")
   $sInfo = sInfo
   
   'Project.Config.Read(ME, $sKey)
-  aGeom = Project.Config["DebugWindow" &/ $sKey &/ "Geometry"]
-  If aGeom Then Try Me.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
   btnHidden.Value = Project.Config["DebugWindow" &/ $sKey &/ "ShowHidden", False]
   
   If sInfo = YW_DUMMY_INFO Then
@@ -91,17 +87,6 @@ Public Sub _new(sExpr As String, sInfo As String)
   
   $sLastGood = sExpr
   txtExpr.Text = sExpr
-
-  If $sLastExpr Then 
-    If $cAll.Exist($sLastExpr) Then 
-      With $cAll[$sLastExpr]
-        Me.Move(.X + Desktop.Scale * 2, .Y + Desktop.Scale * 2, .W, .H)
-      End With 
-    Endif 
-    $sLastExpr = ""
-  Endif
-  
-  gvwExpr.SetFocus
 
 End 
 
@@ -616,9 +601,33 @@ End
 
 Public Sub Form_Open()
 
+  Dim aGeom As Integer[]
+  
+  aGeom = Project.Config["DebugWindow" &/ $sKey &/ "Geometry"]
+  If aGeom Then Try Me.Move(aGeom[0], aGeom[1], aGeom[2], aGeom[3])
+
+  If $sLastExpr Then 
+    If $cAll.Exist($sLastExpr) Then 
+      With $cAll[$sLastExpr]
+        Me.Move(.X + Desktop.Scale * 2, .Y + Desktop.Scale * 2, .W, .H)
+      End With 
+    Endif 
+    $sLastExpr = ""
+  Endif
+  
+  gvwExpr.SetFocus
+
+  UpdateConfig
   Try gvwExpr.Columns[0].Width = -1
 
 End
+
+Public Sub UpdateConfig()
+  
+  gvwExpr.Font.Grade = - Settings["/GlobalFont", 0]
+
+End
+
 
 Public Sub btnHidden_Click()
 
@@ -632,3 +641,14 @@ Public Sub Form_KeyPress()
   If Key.Code = Key.Escape Then Me.Close
 
 End
+
+Static Public Sub ReadConfig()
+  
+  Dim hWin As FDebugExpr
+
+  For Each hWin In $cAll
+    hWin.UpdateConfig
+  Next
+  
+End
+

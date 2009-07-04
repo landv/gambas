@@ -82,7 +82,7 @@ Public Sub Form_Open()
     cmbTerminal.Index = If(.UseTerminal, 0, 1)
 
   End With
-
+  
   $hCheck = Picture["img/16/checked.png"]
   $hUncheck = Picture["img/16/unchecked.png"]
 
@@ -91,6 +91,9 @@ Public Sub Form_Open()
   $bCanInitLibrary = True
 
   tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
+  If tabProject[VERSION_TAB].Visible Then
+    txtVerCtrlChange.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+  Endif
   tabProject.Index = 0
 
   InitLibrary

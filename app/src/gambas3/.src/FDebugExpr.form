@@ -1,30 +1,30 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,43,43)
+  MoveScaled(0,0,29,30)
   Foreground = &H000000&
   Text = ("")
   Type = WindowType.Utility
   SkipTaskbar = True
   Arrangement = Arrange.Vertical
   { HBox1 HBox
-    MoveScaled(0,1,41,4)
+    MoveScaled(1,1,27,4)
     { txtExpr TextBox
-      MoveScaled(0,0,36,4)
+      MoveScaled(0,0,16,4)
       Font = Font["Bold"]
       Expand = True
       Text = ("")
       Border = False
     }
     { btnHidden ToggleButton
-      MoveScaled(37,0,4,4)
+      MoveScaled(20,0,4,4)
       ToolTip = ("Show hidden symbols")
       Text = ("")
-      Picture = Picture["icon:/small/view-hidden"]
+      Picture = Picture["icon:/small/lamp"]
     }
   }
   { gvwExpr GridView
-    MoveScaled(3,9,31,25)
+    MoveScaled(1,7,21,17)
     Expand = True
     Mode = Select.Single
     Header = GridView.Horizontal
