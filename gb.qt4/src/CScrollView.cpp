@@ -374,7 +374,7 @@ void MyContents::checkAutoResizeLater()
 	if (timer)
 		return;
 	
-	QTimer::singleShot(0, this, SLOT(autoResize()));
+	QTimer::singleShot(0, this, SLOT(autoResize(void)));
 	timer = true;	
 }
 

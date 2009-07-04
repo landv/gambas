@@ -669,7 +669,7 @@ Public Sub GetBreakpoints() As String[]
   
   For iInd = 0 To lstBreak.Count - 1
     aBreak = Split(lstBreak[iInd].Text, "*.*.*")
-    aBreakPoint.Add(aBreak[0] & "." & CStr(CInt(aBreak[2]) - 1))
+    aBreakPoint.Add(aBreak[0] & "." & CStr(CInt(aBreak[2])))
   Next
   
   Return aBreakPoint
