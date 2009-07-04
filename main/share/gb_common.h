@@ -46,12 +46,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef OS_MACOSX
+#define OS_FREEBSD
+#endif
+
 #if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD)
 #include <getopt.h>
 #define HAVE_GETOPT_LONG 1
 #endif
 
-#ifdef OS_CYGWIN
+#if defined(OS_CYGWIN)
 
 typedef void (*sighandler_t) (int);
 

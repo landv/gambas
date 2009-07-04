@@ -22,6 +22,8 @@
 
 #define __CMENU_CPP
 
+#undef QT3_SUPPORT
+
 #include <QMenuBar>
 #include <QMenu>
 
@@ -696,8 +698,7 @@ void CMenu::slotTriggered(QAction *action)
 void CMenu::slotShown(void)
 {
   GET_MENU_SENDER(menu);
-	//if (GB.CanRaise(menu, EVENT_Show))
-		GB.Raise(menu, EVENT_Show, 0);
+	GB.Raise(menu, EVENT_Show, 0);
 }
 
 void CMenu::slotHidden(void)

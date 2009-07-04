@@ -69,8 +69,10 @@ Private Sub HideEditor(Optional bNoSave As Boolean)
   
   If $hEditor Then
     If Not bNoSave Then SaveEditor 
-    $hEditor.Hide
-    $hEditor = Null
+    If $hEditor Then
+      $hEditor.Hide
+      $hEditor = Null
+    Endif
   Endif
   
 End

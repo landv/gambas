@@ -59,34 +59,41 @@ class GCommand
 public:
   enum Type
   {
-    None, Begin, End, Insert, Delete, Indent, Unindent
+    None, Begin, End, Move, Insert, Delete, Indent, Unindent
   };
 
   virtual ~GCommand() { }
-  virtual Type type() { return None; }
-  virtual int nest() { return 0; }
-  virtual void print() { }
-  virtual bool merge(GCommand *) { return false; }
-  virtual void process(GDocument *doc, bool undo) { }
+  virtual Type type() const { return None; }
+  virtual int nest() const { return 0; }
+  virtual void print() const { }
+  virtual bool merge(GCommand *) const { return false; }
+  virtual void process(GDocument *doc, bool undo) const { }
+	virtual bool linked() const { return false; }
 };
 
 class GBeginCommand: public GCommand
 {
 public:
-  GBeginCommand() { }
-  Type type() { return Begin; }
-  void print() { qDebug("Begin"); }
-  int nest() { return 1; }
+	bool _linked;
+	
+  GBeginCommand(bool linked = false) { _linked = linked; }
+  Type type() const { return Begin; }
+  void print() const { qDebug("Begin"); }
+  int nest() const { return 1; }
+	bool linked() const { return _linked; }
 };
 
 class GEndCommand: public GCommand
 {
 public:
-  GEndCommand() { }
-  Type type() { return End; }
-  void print() { qDebug("End"); }
-  int nest() { return -1; }
-  bool merge(GCommand *o) { return (o->type() == Begin); }
+	bool _linked;
+
+  GEndCommand(bool linked = false) { _linked = linked; }
+  Type type() const { return End; }
+  void print() const { qDebug("End"); }
+  int nest() const { return -1; }
+  bool merge(GCommand *o) const { return (o->type() == Begin); }
+	bool linked() const { return _linked; }
 };
 
 class GDeleteCommand: public GCommand
@@ -100,10 +107,10 @@ public:
     this->x = x; this->y = y; this->x2 = x2; this->y2 = y2; this->str = str;
   }
 
-  Type type() { return Delete; }
-  void print() { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
+  Type type() const { return Delete; }
+  void print() const { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
 
-  bool merge(GCommand *c)
+  bool merge(GCommand *c) const
   {
     if (c->type() != type())
       return false;
@@ -119,7 +126,7 @@ public:
     return true;
   }
 
-  void process(GDocument *doc, bool undo)
+  void process(GDocument *doc, bool undo) const 
   {
     if (undo)
       doc->insert(y, x, str);
@@ -132,10 +139,10 @@ class GInsertCommand: public GDeleteCommand
 {
 public:
   GInsertCommand(int y, int x, int y2, int x2, const GString & str): GDeleteCommand(y, x, y2, x2, str) {}
-  Type type() { return Insert; }
-  void print() { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
+  Type type() const { return Insert; }
+  void print() const { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); }
 
-  bool merge(GCommand *c)
+  bool merge(GCommand *c) const
   {
     if (c->type() != type())
       return false;
@@ -157,7 +164,7 @@ public:
     return true;
   }
 
-  void process(GDocument *doc, bool undo)
+  void process(GDocument *doc, bool undo) const
   {
     GDeleteCommand::process(doc, !undo);
   }
@@ -414,9 +421,9 @@ void GDocument::insert(int y, int x, const GString & text)
 		v->foldInsert(ys, nl);
 	}
 	
-  updateViews(ys, n);
-
   addUndo(new GInsertCommand(ys, xs, y, x, text));
+
+  updateViews(ys, n);
 
   yAfter = y;
   xAfter = x;
@@ -711,7 +718,6 @@ void GDocument::addUndo(GCommand *c)
   if (blockUndo)
     return;
 
-  //qDebug("addUndo");
   //c->print();
 
   if (!undoList.isEmpty())
@@ -733,18 +739,18 @@ void GDocument::addUndo(GCommand *c)
   }
 }
 
-void GDocument::begin()
+void GDocument::begin(bool linked)
 {
 	if (undoLevel == 0)
 		textHasChanged = false;
 	undoLevel++;  
-	addUndo(new GBeginCommand());
+	addUndo(new GBeginCommand(linked));
 }
 
-void GDocument::end()
+void GDocument::end(bool linked)
 {
 	undoLevel--;
-  addUndo(new GEndCommand());
+  addUndo(new GEndCommand(linked));
 	if (undoLevel == 0 && textHasChanged)
   	emitTextChanged();
 }
@@ -770,7 +776,7 @@ bool GDocument::undo()
 
   //qDebug("BEGIN UNDO");
 
-  do
+  for(;;)
   {
     GCommand *c = undoList.take();
     if (!c)
@@ -781,8 +787,9 @@ bool GDocument::undo()
     //if (d->undoList.isEmpty())
     //  emit undoAvailable(false);
     redoList.append(c);
+		if (!nest && !c->linked())
+			break;
   }
-  while (nest);
 
   //qDebug("END UNDO");
 
@@ -802,7 +809,7 @@ bool GDocument::redo()
   nest = 0;
   begin();
 
-  do
+  for(;;)
   {
     GCommand *c = redoList.take();
     if (!c)
@@ -815,8 +822,9 @@ bool GDocument::redo()
     if (d->undoList.isEmpty())
       emit undoAvailable(true);*/
     undoList.append(c);
+		if (!nest && !c->linked())
+			break;
   }
-  while (nest);
 
 	end();
   blockUndo = false;
@@ -1109,11 +1117,11 @@ void GDocument::colorize(int y)
 
 			if (old != l->s)
 			{
-				begin();
+				begin(true);
 				addUndo(new GDeleteCommand(y, 0, y, old.length(), old));
 				if (l->s.length())
 					addUndo(new GInsertCommand(y, 0, y, l->s.length(), l->s));
-				end();
+				end(true);
 				
 				//maxLength = GMAX(maxLength, (int)l->s.length());
 				updateLineWidth(y);

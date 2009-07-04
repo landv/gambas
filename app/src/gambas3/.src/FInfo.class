@@ -2,10 +2,11 @@
 
 Private Sub GetCount(sName As String, sExt As String, Optional sSub As String) As String
   
+  Dim sPath As String
   Dim iCount As Integer
   
-  iCount = Dir(Project.Dir, "*." & sExt, gb.File).Count
-  If sSub Then iCount -= Dir(Project.Dir, "*." & sSub, gb.File).Count
+  iCount = Project.GetCount(sExt)
+  If sSub Then iCount -= Project.GetCount(sSub)
   Return Subst(("&1: &2"), sName, iCount) & "<br>"
   
 End
@@ -48,7 +49,7 @@ Private Sub GetInfo(sPath As String)
   lblName.Adjust
   
   lblDir.Text = FormatPath(File.Dir(sPath))
-  lblDir.Pos = 0
+  'lblDir.Pos = 0
   
   With Stat(sPath)
   
@@ -164,7 +165,7 @@ Finally
 
   lblLink.Text = FormatPath(sLink)
   lblLink.Parent.Visible = sLink
-  lblLink.Pos = 0
+  'lblLink.Pos = 0
   lblType.Text = sType
   lblType.Parent.Visible = sType
   lblSize.Text = sSize
@@ -181,9 +182,9 @@ Catch
   
 End
 
-Public Sub Run()
+Public Sub Run(sKey As String)
 
-  GetInfo(Project.ProjectTree.Key)
+  GetInfo(sKey)
   Me.ShowDialog
   
 End
@@ -200,4 +201,3 @@ Public Sub ShowInfo(sPath As String)
   panButton.Hide
   
 End
-

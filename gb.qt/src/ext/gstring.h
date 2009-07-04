@@ -56,12 +56,12 @@ public:
   GString &remove(uint index, uint len);
   GString &prepend(const GString &str);
   GString &insert(uint index, const GString &str);
-  bool isNewLine(uint pos);
-  bool isSpace(uint pos);
-  bool isWordChar(uint pos);
+  bool isNewLine(uint pos) const;
+  bool isSpace(uint pos) const;
+  bool isWordChar(uint pos) const;
 	int find(char c, int index = 0) const;
 	int find(const GString &str, int index = 0, bool cs = true) const;
-	char at(uint pos);
+	char at(uint pos) const;
 	GString lower() const;
 	GString upper() const;
 };
@@ -172,17 +172,17 @@ inline int GString::find(const GString &str, int index, bool cs) const
 	return s.find(str.getString(), index, cs);
 }
 
-inline bool GString::isSpace(uint pos)
+inline bool GString::isSpace(uint pos) const
 {
   return s[pos].isSpace();
 }
 
-inline bool GString::isNewLine(uint pos)
+inline bool GString::isNewLine(uint pos) const
 {
   return s[pos] == '\n';
 }
 
-inline bool GString::isWordChar(uint pos)
+inline bool GString::isWordChar(uint pos) const
 {
 	QChar c = s[pos];
   return c.isLetterOrNumber() || c == '_' || c == '$';
@@ -205,7 +205,7 @@ inline const GString operator+(const GString &s1, const GString &s2)
   return tmp;
 }
 
-inline char GString::at(uint pos)
+inline char GString::at(uint pos) const
 {
 	return s[pos].latin1();
 }

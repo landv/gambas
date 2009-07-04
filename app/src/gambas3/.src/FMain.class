@@ -1098,7 +1098,7 @@ Public Sub Action_Activate(Key As String) As Boolean
       hEditor = Project.ActiveForm
       If Not Error Then hEditor.RunUntil
     Case "info"
-      FInfo.Run
+      FInfo.Run(tvwProject.Key)
 
   End Select 
   

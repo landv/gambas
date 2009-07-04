@@ -160,8 +160,8 @@ public:
 
 	bool undo();
 	bool redo();
-	void begin();
-	void end();
+	void begin(bool linked = false);
+	void end(bool linked = false);
 
 	void setHighlightMode(int mode, GHighlightCallback cb = 0);
 	int getHighlightMode() const { return highlightMode; }

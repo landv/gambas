@@ -1097,9 +1097,11 @@ void GEditor::cursorPageDown(bool mark)
 
 void GEditor::newLine()
 {
+	doc->begin();
 	doc->eraseSelection();
 	doc->insert(y, x, '\n' + doc->lines.at(y)->s.left(QMIN(x, doc->getIndent(y))));
 	cursorGoto(doc->yAfter, doc->xAfter, false);
+	doc->end();
 }
 
 void GEditor::del(bool ctrl)
@@ -1278,9 +1280,7 @@ void GEditor::paste(bool mouse)
 			text[i] = ' ';
 	}
 
-	doc->begin();
 	insert(text);
-	doc->end();
 }
 
 void GEditor::undo()

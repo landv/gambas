@@ -822,7 +822,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
       'IF cDir THEN cDir.Add(sPath)
       bDir = True
       'sIcon = "icon:/small/directory" 'IMAGE_DIR &/ "close.png"
-      bShow = True
+      'bShow = True
 
     Else
 
@@ -4326,5 +4326,17 @@ Public Sub IsExported(sPath As String) As Boolean
     If sLine Like "EXPORT OPTIONAL" Then Return True
     Break
   Wend 
+  
+End
+
+Public Sub GetCount(sType As String) As Integer
+  
+  Dim sPath As String
+  Dim iCount As Integer
+  
+  For Each sPath In $cSourceDir
+    If File.Ext(sPath) = sType Then Inc iCount
+  Next
+  Return iCount
   
 End
