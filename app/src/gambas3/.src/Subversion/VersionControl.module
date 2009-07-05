@@ -271,3 +271,29 @@ Public Sub GetVersion(sDir As String) As String
   Endif
   
 End
+
+Private Sub RemoveFirstLines(sStr As String, iCount As Integer) As String
+  
+  Dim iPos As Integer
+  
+  While iCount
+    iPos = InStr(sStr, "\n", iPos + 1)
+    If iPos = 0 Then Return
+    Dec iCount
+  Wend
+  
+  Return Mid$(sStr, iPos + 1)
+  
+End
+
+
+Public Sub Diff(sPath As String) As String
+  
+  Dim sDiff As String
+  
+  If $bSVN Then
+    Shell "svn diff " & Shell$(sPath) To sDiff
+    Return sDiff
+  Endif
+  
+End

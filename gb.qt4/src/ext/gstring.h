@@ -174,16 +174,22 @@ inline int GString::find(const GString &str, int index, bool cs) const
 
 inline bool GString::isSpace(uint pos) const
 {
+	if (pos >= (uint)s.length())
+		return false;
   return s[pos].isSpace();
 }
 
 inline bool GString::isNewLine(uint pos) const
 {
+	if (pos >= (uint)s.length())
+		return false;
   return s[pos] == '\n';
 }
 
 inline bool GString::isWordChar(uint pos) const
 {
+	if (pos >= (uint)s.length())
+		return false;
 	QChar c = s[pos];
   return c.isLetterOrNumber() || c == '_' || c == '$';
 }
@@ -207,6 +213,8 @@ inline const GString operator+(const GString &s1, const GString &s2)
 
 inline char GString::at(uint pos) const
 {
+	if (pos >= (uint)s.length())
+		return 0;
 	return s[pos].latin1();
 }
 

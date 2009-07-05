@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Private $sPath As String
+
 Private Sub GetCount(sName As String, sExt As String, Optional sSub As String) As String
   
   Dim sPath As String
@@ -184,6 +186,7 @@ End
 
 Public Sub Run(sKey As String)
 
+  $sPath = sKey
   GetInfo(sKey)
   Me.ShowDialog
   
@@ -200,4 +203,37 @@ Public Sub ShowInfo(sPath As String)
   GetInfo(sPath)
   panButton.Hide
   
+End
+
+Public Sub Form_Open()
+
+  tabInfo[1].Visible = VersionControl.Enabled() And Not IsDir($sPath)
+  tabInfo.Index = 0
+  edtChange.Clear
+
+End
+
+Public Sub tabInfo_Click()
+
+  Dim sDiff As String
+
+  If tabInfo.Index = 1 Then
+    If edtChange.Length = 0 Then
+      edtChange.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+      sDiff = VersionControl.Diff($sPath)
+      If Project.IsFormPath($sPath) Then
+        sDiff &= "\n" & VersionControl.Diff(File.SetExt($sPath, "class"))
+      Endif
+      sDiff = Trim(sDiff)
+      If sDiff Then
+        edtChange.Text = sDiff
+        edtChange.Show
+        lblNoChange.Hide
+      Else
+        edtChange.Hide
+        lblNoChange.Show
+      Endif
+    Endif
+  Endif
+
 End

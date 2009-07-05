@@ -842,7 +842,7 @@ void GEditor::checkMatching()
 			{
 				s[i] = c;
 				i++;
-				s[i] = str.at(i);
+				s[i] = (i < len) ? str.at(i) : 0;
 				continue;
 			}
 

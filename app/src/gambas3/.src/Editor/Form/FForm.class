@@ -3046,6 +3046,7 @@ Public Sub mnuChange_Click()
   hParent = Master.Parent
   
   KillSelection
+  UnSelectAll
   $bNoWarning = True
   PutSelection(sStr, hParent)
   $bNoWarning = False

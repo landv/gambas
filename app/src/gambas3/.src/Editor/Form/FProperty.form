@@ -14,7 +14,7 @@
     Text = ("Click on a form or a control to modify its properties...")
   }
   { panProperty Panel
-    MoveScaled(4,16,54,5)
+    MoveScaled(4,16,54,4)
     AutoResize = True
     Border = Border.Sunken
     { lblName TextLabel
@@ -24,7 +24,7 @@
       Alignment = Align.Normal
     }
     { btnLock ToolButton
-      MoveScaled(49,1,4,4)
+      MoveScaled(50,0,4,4)
       ToolTip = ("Lock property")
       Text = ("")
       Picture = Picture["icon:/small/lock"]

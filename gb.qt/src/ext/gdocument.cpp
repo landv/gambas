@@ -147,7 +147,7 @@ public:
     if (c->type() != type())
       return false;
 
-    if (str.isNewLine(0))
+    if (str.length() && str.isNewLine(0))
       return false;
 
     GInsertCommand *o = (GInsertCommand *)c;

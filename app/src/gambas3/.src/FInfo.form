@@ -25,10 +25,7 @@
       Text = ("")
     }
   }
-  { Panel2 Panel
-    MoveScaled(23,7,4,2)
-  }
-  { TabStrip1 TabStrip
+  { tabInfo TabStrip
     MoveScaled(1,8,43,35)
     Expand = True
     Arrangement = Arrange.Fill
@@ -116,11 +113,10 @@
           Text = ("Directory")
           Alignment = Align.TopNormal
         }
-        { lblDir Label
+        { lblDir TextLabel
           MoveScaled(18,0,14,4)
           Expand = True
           Text = ("")
-          Alignment = Align.TopNormal
         }
       }
       { HBox6 HBox
@@ -147,7 +143,12 @@
     Index = 1
     Text = ("Versioning")
     { edtChange Editor
-      MoveScaled(1,2,39,28)
+      MoveScaled(1,1,39,28)
+    }
+    { lblNoChange TextLabel
+      MoveScaled(1,1,36,8)
+      Visible = False
+      Text = ("This file has not been modified since the last commit.")
     }
     Index = 0
   }
