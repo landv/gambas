@@ -4340,3 +4340,26 @@ Public Sub GetCount(sType As String) As Integer
   Return iCount
   
 End
+
+Public Sub UpdateForms()
+  
+  Dim sForm As String
+  Dim hForm As FForm
+  
+  Inc Application.Busy
+  
+  For Each sForm In $cSourceDir
+    If File.Ext(sForm) <> "form" Then Continue
+    hForm = Project.LoadFile(sForm)
+    hForm.Modify
+    hForm.Save
+  Next
+  
+  Dec Application.Busy
+
+Catch 
+  
+  Dec Application.Busy
+  FGambas.Error(("Unable to update all forms.") & "\n\n" & Error.Text)
+  
+End

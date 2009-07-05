@@ -1126,25 +1126,9 @@ End
 
 Public Sub mnuUpdateForm_Click()
 
-  Dim sForm As String
-  Dim hForm As FForm
-  
   If Message.Warning(("Do you really want to update all forms?"), ("Update"), ("Cancel")) <> 1 Then Return
 
-  Inc Application.Busy
-  
-  For Each sForm In Dir(Project.Dir, "*.form")
-    hForm = Project.LoadFile(Project.Dir &/ sForm)
-    hForm.Modify
-    hForm.Save
-  Next
-  
-  Dec Application.Busy
-
-Catch 
-  
-  Dec Application.Busy
-  FGambas.Error(("Unable to update all forms.") & "\n\n" & Error.Text)
+  Project.UpdateForms
 
 End
 
