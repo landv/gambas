@@ -1,86 +1,73 @@
 ' Gambas class file
 
-EXPORT
-INHERITS UserControl
+Export
+Inherits UserControl
 
-EVENT Change
-EVENT Activate
+Event Change
+Event Activate
 
-PUBLIC CONST _Properties AS String = "*,ShowAlpha"
-PUBLIC CONST _DefaultEvent AS String = "Change"
-PUBLIC CONST _DefaultSize AS String = "36,36"
+Public Const _Properties As String = "*,ShowAlpha"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "36,36"
 'PUBLIC CONST _DrawWith AS String = "-"
 
-PROPERTY SelectedColor AS Integer
-PROPERTY Value AS Integer
-PROPERTY ShowAlpha AS Boolean
+Property SelectedColor As Integer
+Property Value As Integer
+Property ShowAlpha As Boolean
 
-PRIVATE frmChooser AS FColorChooser
+Private frmChooser As FColorChooser
 
-PUBLIC SUB _new()
+Public Sub _new()
 
-  frmChooser = NEW FColorChooser(ME) AS "frmChooser"
-  Object.Attach(frmChooser, ME, "frmChooser")
+  frmChooser = New FColorChooser(Me) 'As "frmChooser"
+  'Object.Attach(frmChooser, Me, "frmChooser")
 
-END
+End
 
-PUBLIC SUB frmChooser_Change()
+Public Sub _RaiseChange()
 
-  RAISE Change
+  Raise Change
 
-END
+End
 
-PUBLIC SUB frmChooser_Resize()
+Private Function SelectedColor_Read() As Integer
 
-  LAST.Form_Resize
+  Return frmChooser.GetColor()
 
-END
+End
 
-PUBLIC SUB frmChooser_Open()
-
-  LAST.Form_Open
-
-END
-
-
-PRIVATE FUNCTION SelectedColor_Read() AS Integer
-
-  RETURN frmChooser.GetColor()
-
-END
-
-PRIVATE SUB SelectedColor_Write(iColor AS Integer)
+Private Sub SelectedColor_Write(iColor As Integer)
 
   frmChooser.SetColor(iColor)
 
-END
+End
 
-PUBLIC SUB frmChooser_Confirm()
+Public Sub _RaiseActivate()
 
-  RAISE Activate
+  Raise Activate
 
-END
+End
 
-PRIVATE FUNCTION Value_Read() AS Integer
+Private Function Value_Read() As Integer
 
-  RETURN frmChooser.GetColor()  
+  Return frmChooser.GetColor()  
 
-END
+End
 
-PRIVATE SUB Value_Write(Value AS Integer)
+Private Sub Value_Write(Value As Integer)
 
   frmChooser.SetColor(Value)  
 
-END
+End
 
-PRIVATE FUNCTION ShowAlpha_Read() AS Boolean
+Private Function ShowAlpha_Read() As Boolean
 
-  RETURN frmChooser.GetAlpha()  
+  Return frmChooser.GetAlpha()  
 
-END
+End
 
-PRIVATE SUB ShowAlpha_Write(Value AS Boolean)
+Private Sub ShowAlpha_Write(Value As Boolean)
 
   frmChooser.SetAlpha(Value)
 
-END
+End

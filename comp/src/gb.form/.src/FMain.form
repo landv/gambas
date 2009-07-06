@@ -1,11 +1,17 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,91,64)
+  MoveScaled(0,0,75,63)
   Text = ("")
-  Arrangement = Arrange.Fill
-  Padding = 8
-  { TableView1 TableView
-    MoveScaled(7,7,52,36)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { ColorChooser1 ColorChooser
+    MoveScaled(23,10,44,33)
+    Expand = True
+  }
+  { Button1 Button
+    MoveScaled(6,44,12,4)
+    Text = ("Button1")
   }
 }
