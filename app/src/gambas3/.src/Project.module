@@ -334,6 +334,10 @@ Public Function Open(sDir As String) As Boolean
   VersionControl.Refresh
 
   If Not Exist(SourceDir) Then 
+    If ReadOnly Then
+      Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
+      Return True
+    Endif
     Inc Application.Busy
     InsertDirectory(SourceDir)
     For Each sFile In Dir(sDir, "*")
@@ -3624,6 +3628,25 @@ Public Sub GetUniqueName(sDir As String, sName As String, Optional sSuffix As St
   Wend
   
   Return File.Name(sDest)
+  
+End
+
+Public Sub GetUniqueSourceName(sName As String) As String
+
+  Dim iInd As Integer
+  Dim sNewName As String
+  Dim sExt As String
+  Dim sPath As String
+
+  sNewName = sName
+
+  While $cSourceDir.Exist(sNewName)
+    Inc iInd
+    sExt = File.Ext(sName)
+    sNewName = File.BaseName(sName) & CStr(iInd) & "." & File.Ext(sName)
+  Wend
+  
+  Return sNewName
   
 End
 

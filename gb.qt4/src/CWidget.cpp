@@ -207,14 +207,24 @@ void *CWIDGET_get_parent(void *_object)
     return CWidget::get(parent);
 }
 
+int CCONTROL_check(void *object)
+{
+	return QWIDGET(object) == NULL || CWIDGET_test_flag(object, WF_DELETED);
+}
+
 static void arrange_parent(CWIDGET *_object)
 {
 	void *parent = CWIDGET_get_parent(THIS);
 	if (!parent)
 		return;
+	if (CCONTROL_check(parent))
+		return;
 	CCONTAINER_arrange(parent);
 	if (GB.Is(parent, CLASS_ScrollView))
+	{
+		//qDebug("CSCROLLVIEW_arrange: %p: %p %d", THIS, THIS->widget, CWIDGET_test_flag(THIS, WF_DELETED));
 		CSCROLLVIEW_arrange(parent, THIS);
+	}
 }
 
 static QWidget *get_viewport(QWidget *w)
@@ -251,7 +261,8 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 	
 	CWidget::add(w, _object, no_filter);
 
-	//qDebug("CWIDGET_new: %p: %p", object, w);
+	//QWidget *p = w->parentWidget();
+	//qDebug("CWIDGET_new: %s %p: %p in (%s %p)", GB.GetClassName(THIS), THIS, w, p ? GB.GetClassName(CWidget::get(p)) : "", CWidget::get(p));
 
 	THIS->widget = w;
 	THIS->level = MAIN_loop_level;
@@ -279,12 +290,6 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 
 	if (!no_show)
 		CWIDGET_set_visible(THIS, true);
-}
-
-
-int CCONTROL_check(void *object)
-{
-	return QWIDGET(object) == NULL || CWIDGET_test_flag(object, WF_DELETED);
 }
 
 

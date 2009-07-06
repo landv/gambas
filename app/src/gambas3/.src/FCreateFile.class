@@ -7,6 +7,7 @@ Private $bMouse As Boolean
 Private $bDoNotSetName As Boolean
 Private $bInit As Boolean
 Private $iFilter As Integer 
+Private $aFilterType As String[]
 
 Public Sub Run(sPath As String, sDir As String, sType As String)
   
@@ -47,7 +48,7 @@ Public Sub lstType_Click()
     Object.Unlock(txtName)
   Endif 
   
-  iFilter = ["module", "class", "form", "image", "html", "text"].Find(LCase(sPrefix))
+  iFilter = $aFilterType.Find(LCase(sPrefix))
   $iFilter = iFilter
   
   txtName.SetFocus
@@ -66,17 +67,20 @@ Public Sub Form_Open()
   $bDoNotSetName = False
   
   Settings.Read(Me)
-  
+
+  $aFilterType = ["module", "class"]
   aFilter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes")]
   
   For Each hModule In CModule.All
   
+    $aFilterType.Add(hModule.Key)
     aFilter.Add("*." & hModule.Key)
     aFilter.Add(hModule.NameFilter)
   
   Next
   
-  aFilter.Insert(["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files")])
+  aFilter.Insert(["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files"), "*.css", ("Cascading style sheets")])
+  $aFilterType.Insert(["image", "html", "css", "text"])
   
   fchExisting.Filter = aFilter
   
@@ -361,8 +365,6 @@ Finally
   
 End
 
-
-
 Private Sub ImportFile() As Boolean
   
   Dim sDir As String
@@ -377,24 +379,24 @@ Private Sub ImportFile() As Boolean
   Select Case File.Ext(sTemp)
   
     Case "module"
-      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.InsertSource(sName, "module", sTemp,,, chkLink.Value)
+      sName = File.BaseName(Project.GetUniqueSourceName(sName))
+      Project.InsertSource(sName, "module", $sDir, sTemp,,, chkLink.Value)
   
     Case "class"
-      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.InsertSource(sName, "class", sTemp,,, chkLink.Value)
+      sName = File.BaseName(Project.GetUniqueSourceName(sName))
+      Project.InsertSource(sName, "class", $sDir, sTemp,,, chkLink.Value)
   
     Case "form"
-      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.InsertSource(sName, "class", File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, "form", sTemp,, True, chkLink.Value)
+      sName = File.BaseName(Project.GetUniqueSourceName(sName))
+      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
+      Project.InsertSource(sName, "form", $sDir, sTemp,, True, chkLink.Value)
       ImportDependencies(sName, sTemp, chkLink.Value)
       Project.OpenForm(sName)
           
     Case "webpage"
-      sName = File.BaseName(Project.GetUniqueName(Project.Dir, sName))
-      Project.InsertSource(sName, "class", File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, "webpage", sTemp,,, chkLink.Value)
+      sName = File.BaseName(Project.GetUniqueSourceName(sName))
+      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
+      Project.InsertSource(sName, "webpage", $sDir, sTemp,,, chkLink.Value)
   
     Default
       sName = Project.GetUniqueName($sDir, sName)

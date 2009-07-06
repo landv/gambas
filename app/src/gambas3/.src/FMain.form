@@ -381,6 +381,18 @@
         Picture = Picture["icon:/small/image"]
         Tag = "image"
       }
+      { mnuNewHtml Menu mnuNewFile
+        Name = "mnuNewHtml"
+        Text = ("&HTML file...")
+        Picture = Picture["icon:/small/html"]
+        Tag = "html"
+      }
+      { mnuNewCSS Menu mnuNewFile
+        Name = "mnuNewCSS"
+        Text = ("&Style sheet...")
+        Picture = Picture["icon:/small/html"]
+        Tag = "css"
+      }
       { mnuNewFile Menu mnuNewFile
         Name = "mnuNewFile"
         Action = "new-other"

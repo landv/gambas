@@ -326,18 +326,19 @@ Public Sub mnuPopup_Show()
     mnuCopyPath.Visible = mnuCopy.Visible
   
     If mnuNew.Visible Then
+
       mnuAddDirectory.Visible = Project.Dir <> Project.SourceDir
-    
-      mnuNewFile.Visible = False
-      mnuNewImage.Visible = False
-      mnuNewModule.Visible = True
-      mnuNewClass.Show
     
       For Each hMenu In mnuNew.Children
         If Not hMenu.Tag Then Continue
-        If Not CModule.All.Exist(hMenu.Tag) Then Continue
-        hMenu.Visible = CModule[hMenu.Tag].Used
+        If Not CModule.All.Exist(hMenu.Tag) Then 
+          hMenu.Hide
+        Else
+          hMenu.Visible = CModule[hMenu.Tag].Used
+        Endif
       Next
+      mnuNewClass.Show
+      mnuNewModule.Show
       
     Endif
     
@@ -366,16 +367,19 @@ Public Sub mnuPopup_Show()
     
     If mnuNew.Visible Then 
 
-      mnuNewFile.Visible = bFile Or bCanStoreFile
-      mnuNewImage.Visible = mnuNewFile.Visible
-      mnuNewModule.Hide
+      mnuAddDirectory.Visible = True
+    
+      For Each hMenu In mnuNew.Children
+        If Not hMenu.Tag Then Continue
+        If CModule.All.Exist(hMenu.Tag) Then 
+          hMenu.Hide
+        Else
+          hMenu.Visible = bFile Or bCanStoreFile
+        Endif
+      Next
       mnuNewClass.Hide
-    
-    For Each hMenu In mnuNew.Children
-      If Not hMenu.Tag Then Continue
-      hMenu.Hide
-    Next
-    
+      mnuNewModule.Hide
+      
     Endif
 
   Endif

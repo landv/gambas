@@ -305,7 +305,7 @@ void MyContents::checkWidget(QWidget *wid)
 
 	#ifdef DEBUG
 	CWIDGET *ob = CWidget::get(wid);
-	qDebug("MyContents::checkWidget: %p: %s %p", wid, GB.GetClassName(ob), ob);
+	qDebug("MyContents::checkWidget: %p: %s %p: %s", wid, GB.GetClassName(ob), ob, ob->name);
 	qDebug("MyContents::checkWidget: %d %d", wid->x(), wid->y());
 	#endif
 
@@ -346,10 +346,14 @@ void MyContents::childEvent(QChildEvent *e)
 
 	if (e->added())
   {
-    checkWidget((QWidget *)e->child());
+		//qDebug("childEvent: added: %p: %s %p: %d", e->child(), GB.GetClassName(CWidget::get(e->child())), CWidget::get(e->child()), CWIDGET_test_flag(CWidget::get(e->child()), WF_DELETED));
+    //checkWidget((QWidget *)e->child());
+		_mustfind = true;
+		checkAutoResizeLater();
   }
   else if (e->removed())
   {
+		//qDebug("childEvent: removed: %p: %s %p: %d", e->child(), GB.GetClassName(CWidget::get(e->child())), CWidget::get(e->child()), CWIDGET_test_flag(CWidget::get(e->child()), WF_DELETED));
     if (e->child() == right || e->child() == bottom)
 		{
 			if (e->child() == right)
@@ -381,7 +385,8 @@ void MyContents::checkAutoResizeLater()
 void CSCROLLVIEW_arrange(void *_object, CWIDGET *child)
 {
 	if (THIS->container)
-		THIS->container->checkWidget(child->widget);
+		THIS->container->checkAutoResizeLater();
+		//THIS->container->checkWidget(child->widget);
 }
 
 /***************************************************************************

@@ -1,0 +1,21 @@
+' Gambas class file
+
+Export
+
+Static Public Sub Html()
+  
+  HighlightHTML.Run(Main.STYLE_HTML)
+  
+End
+
+Static Public Sub Css()
+  
+  HighlightHTML.Run(Main.STYLE_Css)
+  
+End
+
+Static Public Sub WebPage()
+  
+  HighlightHTML.Run(Main.STYLE_Web)
+  
+End
