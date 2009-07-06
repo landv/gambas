@@ -144,13 +144,19 @@ Private Sub CreateProject() As Boolean
     Try Rmdir sDir
     
     Mkdir sDir
+    Mkdir sDir &/ ".src"
     
     For Each sPath In Split(GetFile("template/list"), "\n", "", True)
       
       sDest = sPath
       If Left(sDest) = "_" Then sDest = "." & Mid(sDest, 2)
       
-      If InStr(sDest, "/") Then Try Mkdir sDir &/ File.Dir(sDest)
+      If InStr(sDest, "/") Then 
+        Try Mkdir sDir &/ File.Dir(sDest)
+      Else If CModule.Ext.Exist(File.Ext(sDest))
+        sDest = ".src" &/ sDest
+      Endif
+      
       If File.Ext(sPath) = "png" Then 
         Copy "template" &/ File.Name(sPath) To sDir &/ sDest
       Else

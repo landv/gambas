@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(20,29.6667,55,6)
+  MoveScaled(20,29.5714,55,6)
   Text = ("Blinkenlights")
   Icon = Picture["blon.xpm"]
   Arrangement = Arrange.Horizontal
@@ -40,15 +40,15 @@
     Picture = Picture["bloff.xpm"]
     Alignment = Align.Center
   }
+  { Timer1 #Timer
+    #X = 301
+    #Y = 7
+    Enabled = True
+    Delay = 200
+  }
   { l8 PictureBox
     MoveScaled(48,0,7,6)
     Picture = Picture["blon.xpm"]
     Alignment = Align.Center
-  }
-  { Timer1 #Timer
-    #X = 312
-    #Y = 8
-    Enabled = True
-    Delay = 200
   }
 }

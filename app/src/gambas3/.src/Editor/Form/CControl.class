@@ -236,7 +236,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
         If Len(sName) Then
           hCtrl = New Button(hParent)
-          hPict = GetIcon(sClass, hClass.Component, Desktop.Scale * 7) 'Picture["img/control" &/ LCase(sClass) & ".png"]
+          hPict = GetIcon(sClass, hClass.Component, Desktop.Scale * 6) 'Picture["img/control" &/ LCase(sClass) & ".png"]
           hCtrl.Picture = hPict
           hCtrl.Design = True
         Else

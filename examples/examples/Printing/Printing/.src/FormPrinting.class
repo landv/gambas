@@ -67,100 +67,100 @@
 '
 '''
 
-PRIVATE displayImage AS Image
-PRIVATE displayDrawing AS Drawing
-PRIVATE imageTop AS Image
-PRIVATE imageBottom AS Image
+Private displayImage As Image
+Private displayDrawing As Drawing
+Private imageTop As Image
+Private imageBottom As Image
 
 '''
 ''' Form events
 '''
 
-PUBLIC SUB Form_Open()
+Public Sub Form_Open()
   ' Set up image drawing area
-  DrawingAreaImage.BackColor = Color.White
-  DrawingAreaImage.Cached = TRUE
+  DrawingAreaImage.Background = Color.White
+  DrawingAreaImage.Cached = True
   DrawingAreaImage.Resize(128, 128)
   ' Set up drawing (SVG) drawing area
-  DrawingAreaDrawing.BackColor = Color.White
-  DrawingAreaDrawing.Cached = TRUE
+  DrawingAreaDrawing.Background = Color.White
+  DrawingAreaDrawing.Cached = True
   DrawingAreaDrawing.Resize(128, 128)
   ' Set up two images drawing area
-  DrawingAreaTopImage.BackColor = Color.White
-  DrawingAreaTopImage.Cached = TRUE
+  DrawingAreaTopImage.Background = Color.White
+  DrawingAreaTopImage.Cached = True
   DrawingAreaTopImage.Resize(128, 128)
-  DrawingAreaBottomImage.BackColor = Color.White
-  DrawingAreaBottomImage.Cached = TRUE
+  DrawingAreaBottomImage.Background = Color.White
+  DrawingAreaBottomImage.Cached = True
   DrawingAreaBottomImage.Resize(128, 128)
   ' Disable printing
-  ToolButtonPrintImage.Enabled = FALSE
-  ToolButtonPrintDrawing.Enabled = FALSE
-  ToolButtonPrintTwoImgEx1.Enabled = FALSE
-  ToolButtonPrintTwoImgEx2.Enabled = FALSE
+  ToolButtonPrintImage.Enabled = False
+  ToolButtonPrintDrawing.Enabled = False
+  ToolButtonPrintTwoImgEx1.Enabled = False
+  ToolButtonPrintTwoImgEx2.Enabled = False
   ' Load read me text
   TextAreaText.Text = File.Load("ReadMe.txt")
   ' Set default file dialog path
   Dialog.Path = User.Home
-END
+End
 
-PUBLIC SUB Form_Resize()
+Public Sub Form_Resize()
   TextAreaText.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - TextAreaText.Top)
   ScrollViewImage.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - ScrollViewImage.Top)
   ScrollViewDrawing.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - ScrollViewDrawing.Top)
   HSplitTwoImages.Resize(TabStripItems.ClientWidth, TabStripItems.ClientHeight - HSplitTwoImages.Top)
   TextLabelAbout.Resize(TabStripItems.ClientWidth - (2 * TextLabelAbout.Left), TabStripItems.ClientHeight - (2 * TextLabelAbout.Top))
-END
+End
 
 '''
 ''' Text Buttons
 '''
 
 ' Open a text file and show it in the text area
-PUBLIC SUB ToolButtonOpenText_Click()
+Public Sub ToolButtonOpenText_Click()
   ' Show open file dialog
   Dialog.Filter = ["*.txt", "Text Files", "*", "All Files"]
-  IF Dialog.OpenFile() THEN RETURN
+  If Dialog.OpenFile() Then Return
   ' Load text content into text area
-  ToolButtonPrintText.Enabled = FALSE
+  ToolButtonPrintText.Enabled = False
   TextAreaText.Text = File.Load(Dialog.Path)
-  ToolButtonPrintText.Enabled = TRUE
-CATCH
+  ToolButtonPrintText.Enabled = True
+Catch
   Message.Warning("Could not open file:\n\n\t" & Dialog.Path & "\n\n" & ERROR.Text)
-END
+End
 
 ' Show the font dialog and set the font for the text area
-PUBLIC SUB ToolButtonFont_Click()
+Public Sub ToolButtonFont_Click()
   Dialog.Font = TextAreaText.Font
-  IF Dialog.SelectFont() THEN RETURN
+  If Dialog.SelectFont() Then Return
   TextAreaText.Font = Dialog.Font
-END
+End
 
 ' Show the color dialog and set the text color for the text area
-PUBLIC SUB ToolButtonTextColor_Click()
+Public Sub ToolButtonTextColor_Click()
   Dialog.Color = TextAreaText.ForeColor
-  IF Dialog.SelectColor() THEN RETURN
+  If Dialog.SelectColor() Then Return
   TextAreaText.ForeColor = Dialog.Color
-END
+End
 
-PUBLIC SUB CheckBoxWordWrap_Click()
+Public Sub CheckBoxWordWrap_Click()
   TextAreaText.Wrap = CheckBoxWordWrap.Value
-END
+End
 
 ' Call the print method for a text
-PUBLIC SUB ToolButtonPrintText_Click()
+Public Sub ToolButtonPrintText_Click()
   ModulePrintText.PrintText(TextAreaText.Text, TextAreaText.Font, TextAreaText.ForeColor, CheckBoxWordWrap.Value)
-END
+End
 
 '''
 ''' Image buttons
 '''
 
 ' Open a image file and draw it
-PUBLIC SUB ToolButtonOpenImage_Click()
+Public Sub ToolButtonOpenImage_Click()
   ' Show open file dialog
   Dialog.Filter = FileFilter()
-  IF Dialog.OpenFile() THEN RETURN
-  ToolButtonPrintImage.Enabled = FALSE
+  If Dialog.OpenFile() Then Return
+  ToolButtonPrintImage.Enabled = False
   ' Load image
   displayImage = Image.Load(Dialog.path)
   ' Resize drawing area and clear it
@@ -171,26 +171,26 @@ PUBLIC SUB ToolButtonOpenImage_Click()
   Draw.Image(displayImage, 0, 0)
   Draw.End
   ' Only enable printing if we have loaded an image
-  ToolButtonPrintImage.Enabled = TRUE
-CATCH
+  ToolButtonPrintImage.Enabled = True
+Catch
   Message.Warning("Could not open file:\n\n\t" & Dialog.Path & "\n\n" & ERROR.Text)
-END
+End
 
 ' Call the print method for a image
-PUBLIC SUB ToolButtonPrintImage_Click()
+Public Sub ToolButtonPrintImage_Click()
   ModulePrintImage.PrintImage(displayImage, CheckBoxFitImage.Value)
-END
+End
 
 '''
 ''' Drawing Buttons
 '''
 
 ' Open a SVG file and draw it
-PUBLIC SUB ToolButtonOpenDrawing_Click()
+Public Sub ToolButtonOpenDrawing_Click()
   ' Show open file dialog
   Dialog.Filter = ["*.svg", "Scalable Vector Graphics", "*", "All Files"]
-  IF Dialog.OpenFile() THEN RETURN
-  ToolButtonPrintDrawing.Enabled = FALSE
+  If Dialog.OpenFile() Then Return
+  ToolButtonPrintDrawing.Enabled = False
   ' Load svg drawing
   displayDrawing = Drawing.Load(Dialog.Path)
   ' Resize drawing area and clear it
@@ -200,62 +200,62 @@ PUBLIC SUB ToolButtonOpenDrawing_Click()
   Draw.Begin(DrawingAreaDrawing)
   Draw.Drawing(displayDrawing, 0, 0)
   Draw.End
-  ToolButtonPrintDrawing.Enabled = TRUE
-CATCH
+  ToolButtonPrintDrawing.Enabled = True
+Catch
   Message.Warning("Could not open file:\n\n\t" & Dialog.Path & "\n\n" & ERROR.Text)
-END
+End
 
 ' Call the print method for a drawing
-PUBLIC SUB ToolButtonPrintDrawing_Click()
+Public Sub ToolButtonPrintDrawing_Click()
   ModulePrintDrawing.PrintDrawing(displayDrawing, CheckBoxFitDrawing.Value)
-END
+End
 
 '''
 ''' Two Images Tab Buttons
 '''
 
-PUBLIC SUB ToolButtonOpenTwoImages_Click()
+Public Sub ToolButtonOpenTwoImages_Click()
   Dialog.Filter = FileFilter()
-  IF Dialog.OpenFile() THEN RETURN
-  ToolButtonPrintTwoImgEx1.Enabled = FALSE
-  ToolButtonPrintTwoImgEx2.Enabled = FALSE
-  IF LAST.Tag = "Top" THEN
+  If Dialog.OpenFile() Then Return
+  ToolButtonPrintTwoImgEx1.Enabled = False
+  ToolButtonPrintTwoImgEx2.Enabled = False
+  If Last.Tag = "Top" Then
     ' Older versions of Gambas require
     'imageTop = NEW Image
     'imageTop.Load(Dialog.path)
     imageTop = Image.Load(Dialog.path)
     DrawScreenImage(DrawingAreaTopImage, imageTop)
-  ELSE
+  Else
     ' Older versions of Gambas require
     'imageBottom = NEW Image
     'imageBottom.Load(Dialog.path)
     imageBottom = Image.Load(Dialog.path)
     DrawScreenImage(DrawingAreaBottomImage, imageBottom)
-  END IF
+  End If
   ' Only enable printing if we have loaded both images
-  IF imageTop <> NULL AND imageBottom <> NULL THEN
-    ToolButtonPrintTwoImgEx1.Enabled = TRUE
-    ToolButtonPrintTwoImgEx2.Enabled = TRUE
-  END IF
-CATCH
+  If imageTop <> Null And imageBottom <> Null Then
+    ToolButtonPrintTwoImgEx1.Enabled = True
+    ToolButtonPrintTwoImgEx2.Enabled = True
+  End If
+Catch
   Message.Info("Could not open file\n" & Dialog.Path & "\n" & Error.Text)
-END
+End
 
-PUBLIC SUB ToolButtonPrintTwoImgEx1_Click()
+Public Sub ToolButtonPrintTwoImgEx1_Click()
    ModulePrintTwoImages.PrintTwoImages(imageTop, TextAreaTopImage.Text, imageBottom, TextAreaBottomImage.Text)
-END
+End
 
-PUBLIC SUB ToolButtonPrintTwoImgEx2_Click()
+Public Sub ToolButtonPrintTwoImgEx2_Click()
   ModulePrintTwoImgWordWrap.PrintImage(imageTop, TextAreaTopImage.Text, imageBottom, TextAreaBottomImage.Text)
-END
+End
 
 '''
 ''' Functions
 '''
 
 ' This function returns the file formats supported by an image or picture
-PRIVATE FUNCTION FileFilter() AS String[]
-  DIM filter AS NEW String[]
+Private Function FileFilter() As String[]
+  Dim filter As New String[]
   filter.Add("*.png *.jpeg *.jpg *.bmp *.gif *.xpm")
   filter.Add("All Graphics")
   filter.Add("*.png")
@@ -270,15 +270,15 @@ PRIVATE FUNCTION FileFilter() AS String[]
   filter.Add("X PixMap")
   filter.Add("*")
   filter.Add("All Files")
-  RETURN filter
-END
+  Return filter
+End
 
-PRIVATE SUB DrawScreenImage(drawScreen AS DrawingArea, img AS Image)
+Private Sub DrawScreenImage(drawScreen As DrawingArea, img As Image)
   drawScreen.Resize(img.Width, img.Height)
   drawScreen.Clear
   Draw.Begin(drawScreen)
   Draw.Image(img, 0, 0)
   Draw.End
-END
+End
 
 ''' End of class FormPrinting '''
