@@ -1,0 +1,33 @@
+' Gambas module file
+
+Public Sub Run()
+  
+  Dim sText As String
+  Dim iState As Integer
+  
+  sText = Highlight.Text
+  
+  Highlight.ShowLimit = False
+  
+  If Left$(sText, 6) = "Index:" Then
+    iState = Highlight.Keyword
+    Highlight.ShowLimit = True
+  Else If Left(sText, 3) = "===" Then
+    iState = Highlight.Keyword
+  Else If Left(sText, 3) = "+++" Then
+    iState = Highlight.Operator
+  Else If Left(sText, 3) = "---" Then
+    iState = Highlight.Operator
+  Else If Left(sText) = "+" Then
+    iState = Highlight.Number
+  Else If Left(sText) = "-" Then
+    iState = Highlight.String
+  Else If Left(sText) = "@" Then
+    iState = Highlight.Comment
+  Else
+    iState = Highlight.Normal
+  Endif
+
+  Highlight.Add(iState, String.Len(sText))
+  
+End

@@ -2734,7 +2734,7 @@ Public Sub InstallComponent()
   
   sDir = File.Dir(sDir) &/ "control" &/ Name
   
-  For Each sClass In Project.GetClasses(True)
+  For Each sClass In GetClasses(True)
     If Not IsExported(sClass) Then Continue
     sClass = LCase(File.BaseName(sClass))
     sIcon = Project.Dir &/ "control" &/ sClass & ".png"

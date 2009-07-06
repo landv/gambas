@@ -38,6 +38,31 @@ DECLARE_EVENT(EVENT_Scroll);
 DECLARE_EVENT(EVENT_Highlight);
 DECLARE_EVENT(EVENT_Margin);
 
+enum
+{
+	HIGHLIGHT_CUSTOM = GDocument::Custom,
+	HIGHLIGHT_HTML = GDocument::Custom + 1,
+	HIGHLIGHT_CSS = GDocument::Custom + 2,
+	HIGHLIGHT_WEBPAGE = GDocument::Custom + 3,
+	HIGHLIGHT_DIFF = GDocument::Custom + 4
+};
+
+typedef
+	struct {
+		int style;
+		const char *name;
+	}
+	HIGHLIGHT_NAME;
+
+static HIGHLIGHT_NAME _highlight_name[] = {
+	{ HIGHLIGHT_HTML, "_DoHtml" },
+	{ HIGHLIGHT_CSS, "_DoCss" },
+	{ HIGHLIGHT_WEBPAGE, "_DoWebpage" },
+	{ HIGHLIGHT_DIFF, "_DoDiff" },
+	{ HIGHLIGHT_CUSTOM, NULL }
+};
+
+
 static int _x1, _y1, _x2, _y2;
 static int _style;
 
@@ -52,7 +77,7 @@ static QT_PICTURE _breakpoint_picture = 0;
 
 static void highlightCustom(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
-  void *object = QT.GetObject((QWidget *)master);
+  void *_object = QT.GetObject((QWidget *)master);
 
 	_highlight_state = state;
 	_highlight_alternate = alternate;
@@ -63,8 +88,11 @@ static void highlightCustom(GEditor *master, uint &state, bool &alternate, int &
 
 	GB.NewArray(_highlight_data, sizeof(GHighlight), 0);
 
-	GB.Raise(object, EVENT_Highlight, 0);
-
+	if (DOC->getHighlightMode() == GDocument::Custom)
+		GB.Raise(THIS, EVENT_Highlight, 0);
+	else
+		GB.Call(&THIS->highlight, 0, FALSE);
+		
 	state = _highlight_state;
 	alternate = _highlight_alternate;
 	tag = _highlight_tag;
@@ -413,6 +441,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CEDITOR_highlight)
 
+	HIGHLIGHT_NAME *p;
   int mode;
 
   if (READ_PROPERTY)
@@ -420,7 +449,8 @@ BEGIN_PROPERTY(CEDITOR_highlight)
   else
   {
     mode = VPROP(GB_INTEGER);
-    if (mode == GDocument::Gambas)
+    
+		if (mode == GDocument::Gambas)
     {
       if (MAIN_load_eval_component())
       {
@@ -428,6 +458,32 @@ BEGIN_PROPERTY(CEDITOR_highlight)
         return;
       }
     }
+		else if (mode > GDocument::Custom)
+		{
+			if (GB.LoadComponent("gb.eval.highlight"))
+			{
+        GB.Error("Cannot load Gambas custom syntax highlighter component");
+        return;
+			}
+		
+			p = _highlight_name;
+			while (p->name)
+			{
+				if (p->style == mode)
+				{
+					if (GB.GetFunction(&THIS->highlight, GB.FindClass("Highlight"), p->name, "", "") == 0)
+					{
+						p = 0;
+						break;
+					}
+				}
+				p++;
+			}
+			
+			if (p)
+				mode = GDocument::Custom;
+		}
+		
   	DOC->setHighlightMode(mode, highlightCustom);
   }
 
@@ -973,6 +1029,10 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("None", "i", GDocument::None),
   GB_CONSTANT("Gambas", "i", GDocument::Gambas),
   GB_CONSTANT("Custom", "i", GDocument::Custom),
+  GB_CONSTANT("HTML", "i", HIGHLIGHT_HTML),
+  GB_CONSTANT("CSS", "i", HIGHLIGHT_CSS),
+  GB_CONSTANT("WebPage", "i", HIGHLIGHT_WEBPAGE),
+  GB_CONSTANT("Diff", "i", HIGHLIGHT_DIFF),
 
   GB_CONSTANT("Background", "i", HIGHLIGHT_BACKGROUND),
   GB_CONSTANT("Normal", "i", HIGHLIGHT_NORMAL),
@@ -1170,7 +1230,7 @@ GB_DESC CEditorDesc[] =
   GB_EVENT("Margin", NULL, "(LineNumber)i", &EVENT_Margin),
   
   GB_CONSTANT("_DefaultEvent", "s", "KeyPress"),
-  GB_CONSTANT("_Properties", "s", "*,Font{Font:Fixed},Highlight{Highlight.None;Custom;Gambas}=None,ReadOnly=False,TabSize{Range:1;16}=2"),
+  GB_CONSTANT("_Properties", "s", "*,Font{Font:Fixed},Highlight{Highlight.None;Custom;Gambas;HTML;CSS;WebPage;Diff}=None,ReadOnly=False,TabSize{Range:1;16}=2"),
 
   GB_END_DECLARE
 };

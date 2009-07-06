@@ -2,20 +2,26 @@
 
 Export
 
-Static Public Sub Html()
+Static Public Sub _DoHtml()
   
   HighlightHTML.Run(Main.STYLE_HTML)
   
 End
 
-Static Public Sub Css()
+Static Public Sub _DoCss()
   
   HighlightHTML.Run(Main.STYLE_Css)
   
 End
 
-Static Public Sub WebPage()
+Static Public Sub _DoWebPage()
   
   HighlightHTML.Run(Main.STYLE_Web)
+  
+End
+
+Static Public Sub _DoDiff()
+  
+  HighlightDiff.Run
   
 End

@@ -54,6 +54,7 @@ typedef
     QT_WIDGET widget;
     void *view;
     int line;
+		GB_FUNCTION highlight;
     }
   CEDITOR;
 
