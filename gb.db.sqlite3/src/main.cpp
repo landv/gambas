@@ -240,11 +240,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 		default:
 			val->_string.type = GB_T_CSTRING;
 			val->_string.value = (char *)data;
-			/*GB.NewString(&val->_string.value, data, strlen(data)); */
-
-			break;
 	}
-
 }
 
 /* internal function to quote a value stored as a blob */
@@ -1255,7 +1251,7 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 
 		for (i = 0; i < (int) r->records.size(); i++)
 		{
-			if (strcmp(r->records[i][2].get_asString().data(), "INTEGER") == 0)
+			if (strcasecmp(r->records[i][2].get_asString().data(), "INTEGER") == 0)
 			{
 				info->index[0] = i;
 				break;
@@ -1810,6 +1806,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	int i, n;
 	//sqlite3 *db_handle = ((SqliteDatabase *)db->handle)->getHandle();
 	int autoinc;
+	fType type;
 
 	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
 	{
@@ -1856,10 +1853,12 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		autoinc = strcasecmp(_fieldType, "INTEGER") == 0;
 	}
 	
+	type = GetFieldType(_fieldType, (unsigned int *) &info->length);
+
 	if (autoinc)
 		info->type = DB_T_SERIAL;
 	else
-		info->type = conv_type(GetFieldType(_fieldType, (unsigned int *) &info->length));
+		info->type = conv_type(type);
 
 	//fprintf(stderr, "field_info: type = %d  length = %d\n", info->type, info->length);
 
@@ -1870,11 +1869,11 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		def.type = GB_T_VARIANT;
 		def.value._object.type = GB_T_NULL;
 
-		val = _defaultValue;
+		val = DB.UnquoteString(_defaultValue, strlen(_defaultValue), '\'');
 
 		if (val && *val)
 		{
-			conv_data(val, &def.value, (fType) info->type);
+			conv_data(val, &def.value, type);
 			GB.StoreVariant(&def, &info->def);
 		}
 	}

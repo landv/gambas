@@ -513,6 +513,52 @@ char *DB_QuoteString(const char *str, int len, char quote)
 	return res;
 }
 
+char *DB_UnquoteString(const char *str, int len, char quote)
+{
+	char *res, *p, c;
+	int len_res;
+	int i;
+	
+	if (len >= 2 && str[0] == quote && str[len - 1] == quote)
+	{
+		str++;
+		len -= 2;
+	}
+	
+	if (!len)
+		return "";
+	
+	len_res = len;
+	for (i = 0; i < (len - 1); i++)
+	{
+		if ((str[i] == quote && str[i + 1] == quote) || str[i] == '\\')
+		{
+			len_res--;
+			i++;
+		}
+	}
+	
+	GB.TempString(&res, NULL, len_res);
+	
+	p = res;
+	for (i = 0; i < len; i++)
+	{
+		c = str[i];
+		if (c == quote && (i + 1) < len && str[i + 1] == quote)
+			i++;
+		else if (c == '\\' && (i + 1) < len)
+		{
+			c = str[i + 1];
+			i++;
+		}
+
+		*p++ = c;
+	}
+	*p = 0;
+	
+	return res;
+}
+
 DB_DATABASE *DB_GetCurrent()
 {
 	return DB_CurrentDatabase;
@@ -550,6 +596,7 @@ void *GB_DB_1[] EXPORT = {
 	(void *)DB_TryAnother,
 	(void *)DB_SubstString,
 	(void *)DB_QuoteString,
+	(void *)DB_UnquoteString,
 	(void *)DB_GetCurrent,
 
 	(void *)q_init,

@@ -60,10 +60,10 @@ field_value::~field_value()
 
 string field_value::get_asString() const
 {
-	static string tmp;
+	//static string tmp;
 	
-	tmp = str_value;
-	return tmp;
+	//tmp = str_value;
+	return str_value;
 };
 
 char *field_value::get_asBlob() const

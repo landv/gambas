@@ -53,10 +53,7 @@ field_value::~field_value()
 
 string field_value::get_asString() const
 {
-	static string tmp;
-	
-	tmp = str_value;
-	return tmp;
+	return str_value;
 };
 
 bool field_value::get_asBool() const

@@ -1638,6 +1638,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
   char *_defaultValue = NULL;
   bool _fieldNotNull = FALSE;
   int i, n;
+	fType type;
 
   if (do_query(db, "Unable to get fields: &1", &res, query,1, table))
   {
@@ -1670,7 +1671,8 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
   info->name = NULL;
 
-  info->type = conv_type(GetFieldType(_fieldType, (unsigned int*) &info->length));
+	type = GetFieldType(_fieldType, (unsigned int *) &info->length);
+  info->type = conv_type(type);
 
   info->def._object.type = GB_T_NULL;
 
@@ -1683,7 +1685,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
     if (val && *val)
     {
-      conv_data(val, &def.value, GetFieldType(_fieldType, (unsigned int*) &info->length));
+      conv_data(val, &def.value, type);
       GB.StoreVariant(&def, &info->def);
     }
   }

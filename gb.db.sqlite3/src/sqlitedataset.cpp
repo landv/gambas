@@ -38,6 +38,8 @@
 #include "sqlitedataset.h"
 #include <unistd.h>
 
+#include "gambas.h"
+
 
 
 /**************************************************************/
@@ -969,22 +971,21 @@ void SetFieldType(result_set * r, Tables tables)
 }
 
 /* Return fType and length from String field*/
-fType GetFieldType(char *Type, unsigned int *length)
+fType GetFieldType(const char *Type, unsigned int *length)
 {
 
 	char *upper;
 	char *_left, *_right;
 	fType rType;									/* For return */
 	unsigned int rTypeLen = 0;
+	int i;
 
-	upper = Type;
-
-	while (*upper)
-	{
-		*upper = (char) toupper((int) *upper);
-		upper++;
-	}
-
+	GB.NewString(&upper, Type, 0);
+	for (i = 0; i < GB.StringLength(upper); i++)
+		upper[i] = toupper(upper[i]);
+	
+	Type = upper;
+	
 	if (strstr(Type, "CHAR(")			/* note the opening bracket */
 			|| strstr(Type, "CLOB") || strstr(Type, "TEXT")	/* also catches TINYTEXT */
 			|| strstr(Type, "VARCHAR")
@@ -1094,5 +1095,7 @@ fType GetFieldType(char *Type, unsigned int *length)
 	if (length != NULL)
 		*length = rTypeLen;
 
+	GB.FreeString(&upper);
+	
 	return rType;
 }

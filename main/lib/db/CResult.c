@@ -27,6 +27,7 @@
 #include "main.h"
 
 #include "deletemap.h"
+#include "CField.h"
 #include "CResultField.h"
 #include "CResult.h"
 
@@ -96,12 +97,12 @@ static void void_buffer(CRESULT *_object)
 
 static void release_buffer(CRESULT *_object)
 {
-	if (THIS->buffer)
-	{
-		void_buffer(THIS);
-		GB.Free(POINTER(&THIS->buffer));
-		BARRAY_delete(&THIS->changed);
-	}
+	if (!THIS->buffer)
+		return;
+
+	void_buffer(THIS);
+	GB.Free(POINTER(&THIS->buffer));
+	BARRAY_delete(&THIS->changed);
 }
 
 
@@ -192,7 +193,7 @@ static void table_release(DB_INFO *info)
 	if (info->field)
 	{
 		for (i = 0; i < info->nfield; i++)
-			GB.FreeString(&info->field[i].name);
+			CFIELD_free_info(&info->field[i]);
 
 		GB.Free(POINTER(&info->field));
 	}

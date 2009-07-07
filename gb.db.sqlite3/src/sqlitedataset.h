@@ -59,7 +59,7 @@ typedef vector < string > Tables;
 /* Return Field Type from Database */
 void SetFieldType(result_set * r, Tables tables);
 
-fType GetFieldType(char *Type, unsigned int *len);
+fType GetFieldType(const char *Type, unsigned int *len);
 
 /***************** Class SqliteDatabase definition ******************
 
