@@ -26,6 +26,7 @@
 
 #include <QMenuBar>
 #include <QMenu>
+#include <QKeyEvent>
 
 #include "gambas.h"
 #include "gb_common.h"
@@ -563,6 +564,8 @@ END_METHOD
 BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 
 	bool disabled;
+	MyMainWindow *toplevel;
+	CWINDOW *window;
 
 	if (THIS->menu && !THIS->exec)
 	{
@@ -583,7 +586,16 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 		THIS->exec = false;
 		
 		update_accel_recursive(THIS);
-		//MAIN_process_events();
+		
+		// Fix a QT little bug
+		toplevel = (MyMainWindow *)(THIS->toplevel);
+		window = ((CWINDOW *)CWidget::get(toplevel));
+		if (window && window->menuBar)
+		{
+			window->menuBar->setFocus();
+			QKeyEvent e(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
+			qApp->sendEvent(window->menuBar, &e);
+		}
   }
 
 END_METHOD
