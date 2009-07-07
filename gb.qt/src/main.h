@@ -79,6 +79,7 @@ public:
 
   MyTimer(GB_TIMER *timer);
   ~MyTimer();
+	void clearTimer() { timer = 0; }
 
 protected:
 

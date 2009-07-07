@@ -443,7 +443,8 @@ MyTimer::~MyTimer()
 
 void MyTimer::timerEvent(QTimerEvent *e)
 {
-	GB.RaiseTimer(timer);
+	if (timer)
+		GB.RaiseTimer(timer);
 }
 
 /***************************************************************************/
@@ -635,7 +636,9 @@ static void hook_timer(GB_TIMER *timer, bool on)
 {
 	if (timer->id)
 	{
-		((MyTimer *)(timer->id))->deleteLater();
+		MyTimer *t = (MyTimer *)(timer->id);
+		t->clearTimer();
+		t->deleteLater();
 		timer->id = 0;
 	}
 	

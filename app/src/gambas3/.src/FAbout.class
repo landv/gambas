@@ -317,7 +317,7 @@ Private Sub DisplayText(iIndex As Integer) As Boolean
   Dim iStep As Integer
   Dim eBlend As Float
   Dim hImage As Image
-  Dim I As Integer
+  Dim I, V, iShadow As Integer
   Dim eStep As Float
 
   hUser = $aUser[iIndex Mod $aUser.Count]
@@ -380,7 +380,7 @@ Private Sub DisplayText(iIndex As Integer) As Boolean
       
       If iStep >= (NSTEP + 36)
         eBlend = (iStep - NSTEP - 36) / (9 * NSTEP - 36)
-        DrawText(.Name, X, Y, W, H, Color.Mix(.Color, Color.White, eBlend), Color.Mix(Color.Lighter(Color.Lighter(.Color)), Color.White, eBlend))
+        DrawText(.Name, X, Y, W, H, Color.Mix(.Color, Color.White, eBlend), Color.Mix(&HD0D0D0&, Color.White, eBlend))
       Else
         eBlend = 0.7 * (1 - (iStep - NSTEP) / 36)
         DrawText(.Name, X, Y, W, H, Color.Mix(.Color, Color.White, eBlend), Color.Default)
