@@ -222,6 +222,7 @@ typedef
     void (*TryAnother)(const char *);
     char *(*SubstString)(const char *, int, DB_SUBST_CALLBACK);
     char *(*QuoteString)(const char *, int, char);
+    char *(*UnquoteString)(const char *, int, char);
     DB_DATABASE *(*GetCurrentDatabase)();
 
     struct {
