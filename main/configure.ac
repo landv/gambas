@@ -13,8 +13,8 @@ GB_COMPONENT(
   INTL,
   [external internationalization library],
   [],
-  [GB_FIND(libintl.h, /usr/local /usr, include)],
-  [GB_FIND(libintl.$SHLIBEXT, /usr/local /usr /, lib)],
+  [GB_FIND(libintl.h, /opt/local /usr/local /usr, include)],
+  [GB_FIND(libintl.$SHLIBEXT, /opt/local /usr/local /usr /, lib)],
   [-lintl],
   [],
   [This library may be located inside the system C library, so let's go on...])
@@ -26,8 +26,8 @@ GB_COMPONENT(
   CONV,
   [optional external charset conversion library],
   [],
-  [GB_FIND(iconv.h, /usr/local /usr, include)],
-  [GB_FIND(libiconv.$SHLIBEXT, /usr/local /usr, lib)],
+  [GB_FIND(iconv.h, /opt/local /usr/local /usr, include)],
+  [GB_FIND(libiconv.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-liconv],
   [],
   [This library may be located inside the system C library, so let's go on...])
@@ -42,7 +42,7 @@ GB_COMPONENT(
   [external gettext library],
   [],
   [],
-  [GB_FIND(libgettextlib.$SHLIBEXT, /usr/local /usr, lib)],
+  [GB_FIND(libgettextlib.$SHLIBEXT, /opt/local /usr/local /usr, lib)],
   [-lgettextlib],
   [],
   [This library may be located inside the system C library, so let's go on...])
@@ -60,6 +60,17 @@ GB_COMPONENT_SEARCH(
   [GB_FIND(ffi.h, /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
   [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
   [-lffi])
+
+if test -z "$FFI_LIB"; then
+  GB_COMPONENT(
+    ffi,
+    FFI,
+    [foreign function interface],
+    [],
+    [GB_FIND(ffi.h, /opt/local /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
+    [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr, lib)],
+    [-lffi])
+fi
 
 dnl ---- Remove DISABLED file that could have been generated before
 
