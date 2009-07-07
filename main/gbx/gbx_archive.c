@@ -252,6 +252,9 @@ bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find)
 {
   ARCH_FIND f;
   struct stat buf;
+	
+	if (!*ppath || **ppath == 0)
+		return TRUE;
 
   if (get_current(&arch, ppath))
   {
