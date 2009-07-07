@@ -98,6 +98,7 @@ Private Const IMAGE_DIR As String = "img/16"
 Public Const KEY_SOURCE As String = "$S"
 Public Const KEY_MISC As String = "$O"
 Public Const KEY_PROJECT As String = "$P"
+Public Const KEY_DATABASE As String = "$D"
 
 Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789"
 Private Const CLASS_AUTH_FIRST_CAR As String = "abcdefghijklmnopqrstuvwxyz_"
@@ -1167,6 +1168,10 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     '.Add(KEY_MODULE, ("Modules"), Picture["icon:/small/directory"], sKey)
     '.Add(KEY_CLASS, ("Classes"), Picture["icon:/small/directory"], sKey)
     .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/directory"], sKey)
+    
+    If Libraries.Exist("gb.db") Then
+      .Add(KEY_DATABASE, ("Connections"), Picture["icon:/small/directory"], sKey)
+    Endif
     
     ' For Each hModule In CModule.All
     '   If hModule.Used Then

@@ -7,7 +7,6 @@ Public Key As String
 Public Name As String
 Public NamePlural As String
 Public NameFilter As String
-Public TreeKey As String
 Public Component As String
 Public Used As Boolean
 'Public HasFormEditor As Boolean
@@ -26,9 +25,9 @@ Static Public Sub _init()
   
   Ext = ["module", "class"]
   
-  hModule = New CModule("form", ("Form"), ("Forms"), ("Gambas forms"), "$F", True)
-  hModule = New CModule("webpage", ("WebPage"), ("WebPages"), ("Gambas web pages"), "$A", False)
-  hModule = New CModule("report", ("Report"), ("Reports"), ("Gambas reports"), "$R", False)
+  hModule = New CModule("form", ("Form"), ("Forms"), ("Gambas forms"), True)
+  hModule = New CModule("webpage", ("WebPage"), ("WebPages"), ("Gambas web pages"), False)
+  hModule = New CModule("report", ("Report"), ("Reports"), ("Gambas reports"), False)
   
 End
 
@@ -45,13 +44,12 @@ Static Public Sub _get(sKey As String) As CModule
   
 End
 
-Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFilter As String, sTreeKey As String, bHasFormEditor As Boolean)
+Public Sub _new(sKey As String, sName As String, sNamePlural As String, sNameFilter As String, bHasFormEditor As Boolean)
   
   Key = sKey
   Name = sName
   NamePlural = sNamePlural
   NameFilter = sNameFilter
-  TreeKey = sTreeKey
   'HasFormEditor = bHasFormEditor
   All[sKey] = Me
   

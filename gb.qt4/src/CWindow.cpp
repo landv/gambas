@@ -127,6 +127,18 @@ bool CWINDOW_has_property(QWidget *w, Atom property)
 }
 #endif
 
+// Fix a QT little boring visual bug on menubars
+
+void CWINDOW_fix_menubar(CWINDOW *window)
+{
+	if (window && window->menuBar)
+	{
+		window->menuBar->setFocus();
+		QKeyEvent e(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
+		qApp->sendEvent(window->menuBar, &e);
+	}
+}
+
 /*---- Utility routines --------------------------------------------------------------*/
 
 static void clear_mask(CWINDOW *_object)
@@ -1532,6 +1544,8 @@ void MyMainWindow::showEvent(QShowEvent *e)
 		X11_window_activate(winId());
 		_activate = false;
 	}
+	
+	CWINDOW_fix_menubar((CWINDOW *)CWidget::get(this));
 }
 
 void MyMainWindow::initProperties()

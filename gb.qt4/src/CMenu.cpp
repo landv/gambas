@@ -564,8 +564,6 @@ END_METHOD
 BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 
 	bool disabled;
-	MyMainWindow *toplevel;
-	CWINDOW *window;
 
 	if (THIS->menu && !THIS->exec)
 	{
@@ -587,16 +585,9 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 		
 		update_accel_recursive(THIS);
 		
-		// Fix a QT little bug
-		toplevel = (MyMainWindow *)(THIS->toplevel);
-		window = ((CWINDOW *)CWidget::get(toplevel));
-		if (window && window->menuBar)
-		{
-			window->menuBar->setFocus();
-			QKeyEvent e(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
-			qApp->sendEvent(window->menuBar, &e);
-		}
-  }
+		MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);
+		CWINDOW_fix_menubar((CWINDOW *)CWidget::get(toplevel));
+	}
 
 END_METHOD
 
