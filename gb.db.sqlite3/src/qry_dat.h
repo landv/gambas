@@ -36,7 +36,7 @@ using namespace std;
 #include <map>
 #include <vector>
 #include <iostream>
-#include "sqlite.h"
+#include "sqlite3.h"
 
 enum fType
 	{
@@ -54,6 +54,7 @@ enum fType
 		ft_LongDouble,
 		ft_Date,
 		ft_Object,
+		ft_Blob											// BM
 	};
 
 /* Size of Strings for fType */
@@ -70,6 +71,7 @@ class field_value
 	private:
 		fType field_type;
 		string str_value;
+		void *blob_value;
 		bool is_null;
 		int len;
 
@@ -97,6 +99,7 @@ class field_value
 		}
 
 		string get_asString() const;
+		char *get_asBlob() const;
 		bool get_asBool() const;
 		int get_asInteger() const;
 		#if 0
@@ -168,6 +171,7 @@ class field_value
 			switch (fv.get_fType())
 			{
 				case ft_String:
+				case ft_Blob:
 				case ft_WideString:
 				case ft_WChar:
 				case ft_Object:
@@ -229,6 +233,7 @@ class field_value
 		}
 		void set_asString(const char *s, fType type);
 		void set_asString(const string & s, fType type);
+		void set_asBlob(const char *s, int l);	//BM
 		/*void set_asBool(const bool b);
 		void set_asChar(const char c);
 		void set_asShort(const short s);
@@ -273,7 +278,7 @@ typedef query_data::iterator qry_itor;
 
 struct result_set
 	{
-		sqlite *conn;							//NG
+		sqlite3 *conn;							//NG
 		record_prop record_header;
 		query_data records;
 	};

@@ -26,6 +26,7 @@
  *
  **********************************************************************/
 
+
 #include "qry_dat.h"
 
 extern "C" {
@@ -39,6 +40,7 @@ extern GB_INTERFACE GB;
 field_value::field_value()
 {
 	str_value = "";
+	blob_value = NULL;
 	len = 0;
 	field_type = ft_String;
 	is_null = true;
@@ -48,12 +50,37 @@ field_value::field_value()
 //empty destructor
 field_value::~field_value()
 {
+	if (blob_value)
+	{
+		//fprintf(stderr, "free %p\n", blob_value);
+		GB.Free(&blob_value);
+	}
 }
 
 
 string field_value::get_asString() const
 {
+	//static string tmp;
+	
+	//tmp = str_value;
 	return str_value;
+};
+
+char *field_value::get_asBlob() const
+{
+	string tmp;
+
+	switch (field_type)
+	{
+		case ft_Blob:
+			{
+				return (char *)blob_value;
+			}
+		default:
+			{
+				return (char *)get_asString().data();
+			}
+	}
 };
 
 bool field_value::get_asBool() const
@@ -370,7 +397,68 @@ field_value & field_value::operator=(const field_value & fv)
 	if (fv.get_isNull())
 		set_isNull(fv.get_fType());
 	else
-		set_asString(fv.get_asString(), fv.get_field_type());
+	{
+		switch (fv.get_fType())
+		{
+			/*
+			case ft_String:
+				{
+					set_asString(fv.get_asString());
+					break;
+				}
+			case ft_Boolean:
+				{
+					set_asBool(fv.get_asBool());
+					break;
+				}
+			case ft_Char:
+				{
+					set_asChar(fv.get_asChar());
+					break;
+				}
+			case ft_Short:
+				{
+					set_asShort(fv.get_asShort());
+					break;
+				}
+			case ft_UShort:
+				{
+					set_asUShort(fv.get_asUShort());
+					break;
+				}
+			case ft_Long:
+				{
+					set_asLong(fv.get_asLong());
+					break;
+				}
+			case ft_ULong:
+				{
+					set_asULong(fv.get_asULong());
+					break;
+				}
+			case ft_Float:
+			case ft_Double:
+				{
+					set_asDouble(fv.get_asDouble());
+					break;
+				}
+			case ft_Date:
+				{
+					set_asDate(fv.get_asString());
+					break;
+				}*/
+			case ft_Blob:
+				{
+					set_asBlob(fv.get_asBlob(), fv.get_len());
+					break;
+				}
+			default:
+				{
+					set_asString(fv.get_asString(), fv.get_field_type());
+					break;
+				}
+		}
+	}
 		
 	return *this;
 };
@@ -391,6 +479,104 @@ void field_value::set_asString(const string & s, fType type)
 	is_null = s.length() == 0;
 };
 
+#if 0
+void field_value::set_asBool(const bool b)
+{
+	bool_value = b;
+	field_type = ft_Boolean;
+	is_null = false;
+};
+
+void field_value::set_asChar(const char c)
+{
+	char_value = c;
+	field_type = ft_Char;
+	is_null = false;
+};
+
+void field_value::set_asShort(const short s)
+{
+	short_value = s;
+	field_type = ft_Short;
+	is_null = false;
+};
+
+void field_value::set_asUShort(const unsigned short us)
+{
+	ushort_value = us;
+	field_type = ft_UShort;
+	is_null = false;
+};
+
+void field_value::set_asLong(const long l)
+{
+	long_value = l;
+	field_type = ft_Long;
+	is_null = false;
+};
+
+void field_value::set_asInteger(const int i)
+{
+	long_value = (long) i;
+	field_type = ft_Long;
+	is_null = false;
+};
+
+void field_value::set_asULong(const unsigned long ul)
+{
+	long_value = ul;
+	field_type = ft_ULong;
+	is_null = false;
+};
+
+
+
+void field_value::set_asDouble(const double d)
+{
+	double_value = d;
+	field_type = ft_Double;
+	is_null = false;
+};
+
+void field_value::set_asDate(const char *s)
+{																//NG
+	str_value = s;
+	field_type = ft_Date;
+	is_null = false;
+};
+
+void field_value::set_asDate(const string & s)
+{																//NG
+	str_value = s;
+	field_type = ft_Date;
+	is_null = false;
+};
+#endif
+
+void field_value::set_asBlob(const char *data, int l)	// BM
+{
+	//fprintf(stderr, "set_asBlob: (%p %d) [%p %d]\n", blob_value, len, data, l);
+
+	if (blob_value)
+	{
+		GB.Free(&blob_value);
+		blob_value = NULL;
+	}
+
+	if (l)
+	{
+		GB.Alloc(&blob_value, l);
+		::memcpy(blob_value, data, l);
+	}
+
+	//fprintf(stderr, " -> %p\n", blob_value);
+
+	len = l;
+	field_type = ft_Blob;
+	is_null = (l == 0);
+};
+
+
 
 string field_value::gft()
 {
@@ -401,6 +587,11 @@ string field_value::gft()
 		case ft_String:
 			{
 				tmp.assign("string");
+				return tmp;
+			}
+		case ft_Blob:
+			{
+				tmp.assign("blob");
 				return tmp;
 			}
 		case ft_Boolean:

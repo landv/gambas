@@ -2,6 +2,9 @@
 
   main.h
 
+  MySQL driver
+
+  Hacked by Nigel Gerrard from original code by
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
@@ -23,23 +26,25 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-extern "C" {
+extern "C"
+{
 #include "gambas.h"
 #include "gb_common.h"
 #include "../gb.db.h"
 
 #ifndef __MAIN_C
-extern GB_INTERFACE GB;
-extern DB_INTERFACE DB;
+	extern GB_INTERFACE GB;
+	extern DB_INTERFACE DB;
 #endif
 }
 
 #define QUOTE_STRING "'"
 
-#define MAX_PATH 132 /* MAX LENGTH OF FILENAME PATH */
+#define MAX_PATH 132						/* MAX LENGTH OF FILNAME PATH */
 #define TRUE 1
 #define FALSE 0
 
+/* Prototypes Required to allow cpp compilation */
 #include "gb.db.proto.h"
 
 #endif /* __MAIN_H */

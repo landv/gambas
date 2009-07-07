@@ -656,6 +656,7 @@ Public Sub timBreakpoint_Timer()
     Wend
     
     hEditor = Project.Files[Project.FindPath(sClass)]
+    If Not hEditor Then Continue
     For Each iInd In hEditor.GetBreakpoints()
       lstBreak.Add(sClass & "." & hEditor.GetProcAt(iInd) & "." & CStr(iInd + 1))
     Next

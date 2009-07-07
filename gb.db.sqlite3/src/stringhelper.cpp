@@ -28,45 +28,71 @@
 
 #include "stringhelper.h"
 
-str_helper::str_helper() {work_str = "";}
-
-str_helper::str_helper(const char *s){work_str = s;}
-
-string str_helper::get_str() {return work_str;} 
-
-void str_helper::set_str(const char *s) {work_str = s; };
-
-string str_helper::before(string s, bool &is_found) {
-    is_found = false;
-    int pos = work_str.find(s);
-    int idx = pos+s.length();
-    is_found = pos >= 0;
-    if (idx == (int) work_str.length()) 
-      return work_str.substr(0,pos); 
-    else
-      if ((pos >= 0) && (!( (work_str[idx]>48 && work_str[idx]<58) || (work_str[idx]>64 && work_str[idx]<91) || (work_str[idx]>97 && work_str[idx]<123) || work_str[idx]==95 )))
-	return work_str.substr(0,pos); 
-    else //return (string)NULL;
-      { string tmp(""); 
-      return tmp;
-      }
+str_helper::str_helper()
+{
+	work_str = "";
 }
 
-string str_helper::after(string s) {return work_str.substr(work_str.find(s)+s.length(),work_str.length());}
-
-string str_helper::replace(string pattern, string by_what) {
-    bool is_found;
-    string bf = before(pattern,is_found);
-    string aft("");
-    string result("");
-    while (is_found) {
-      aft = after(pattern);
-      result = bf + by_what + aft;
-      work_str.assign(result);
-      bf = before(pattern,is_found);
-    }
-    if (result.length()==0) result = work_str.c_str();
-    return result;
+str_helper::str_helper(const char *s)
+{
+	work_str = s;
 }
 
+string str_helper::get_str()
+{
+	return work_str;
+}
 
+void str_helper::set_str(const char *s)
+{
+	work_str = s;
+};
+
+string str_helper::before(string s, bool & is_found)
+{
+	is_found = false;
+	int pos = work_str.find(s);
+	int idx = pos + s.length();
+
+	is_found = pos >= 0;
+	if (idx == (int) work_str.length())
+		return work_str.substr(0, pos);
+	else
+		if ((pos >= 0)
+				&&
+				(!((work_str[idx] > 48 && work_str[idx] < 58)
+					 || (work_str[idx] > 64 && work_str[idx] < 91)
+					 || (work_str[idx] > 97 && work_str[idx] < 123)
+					 || work_str[idx] == 95)))
+		return work_str.substr(0, pos);
+	else													//return (string)NULL;
+	{
+		string tmp("");
+
+		return tmp;
+	}
+}
+
+string str_helper::after(string s)
+{
+	return work_str.substr(work_str.find(s) + s.length(), work_str.length());
+}
+
+string str_helper::replace(string pattern, string by_what)
+{
+	bool is_found;
+	string bf = before(pattern, is_found);
+	string aft("");
+	string result("");
+
+	while (is_found)
+	{
+		aft = after(pattern);
+		result = bf + by_what + aft;
+		work_str.assign(result);
+		bf = before(pattern, is_found);
+	}
+	if (result.length() == 0)
+		result = work_str.c_str();
+	return result;
+}
