@@ -1,12 +1,14 @@
 ' Gambas class file
 
 Private $sChange As String
+Private $sDiff As String
 
 Private Const DELIM_CHANGE As String = ("This line and the following will be ignored")
 
-Public Sub Run(sChange As String) As Boolean
+Public Sub Run(sChange As String, sDiff As String) As Boolean
 
   $sChange = sChange
+  $sDiff = sDiff
   Return Not Me.ShowModal()
 
 End
@@ -22,6 +24,9 @@ Public Sub Form_Open()
   
   FTextEditor.ReadConfigEditor(edtChange)
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
+  
+  FTextEditor.ReadConfigEditor(edtDiff)
+  edtDiff.Text = $sDiff
   
 End
 

@@ -30,6 +30,7 @@ Private $aEnv As String[]
 Private $cComp As New Collection
 Private $hLastComp As CComponentBox
 Private $bLockComp As Boolean
+Private $sVerCtrlStatus As String
 
 Private Const LIBRARY_TAB As Integer = 2
 Private Const VERSION_TAB As Integer = 4
@@ -92,7 +93,7 @@ Public Sub Form_Open()
 
   tabProject[VERSION_TAB].Visible = VersionControl.Enabled()
   If tabProject[VERSION_TAB].Visible Then
-    txtVerCtrlChange.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
+    FTextEditor.ReadConfigEditor(edtDiff)
   Endif
   tabProject.Index = 0
 
@@ -1149,13 +1150,11 @@ Public Sub tabProject_Click()
   If tabProject.Index = VERSION_TAB Then 
     If VersionControl.Enabled() Then 
       Inc Application.Busy
-      panVersioning.Show
-      txtVerCtrlChange.Text = VersionControl.Status()
-      btnCommit.Enabled = txtVerCtrlChange.Length
+      $sVerCtrlStatus = VersionControl.Status()
+      edtDiff.Text = VersionControl.Diff(Project.Dir)
+      btnCommit.Enabled = Len($sVerCtrlStatus)
       btnRevert.Enabled = btnCommit.Enabled
       Dec Application.Busy
-    Else 
-      panVersioning.Hide
     Endif
   'ELSE IF tabProject.Index = LIBRARY_TAB THEN 
   '  IF NOT lstComponent THEN InitLibrary
@@ -1165,7 +1164,7 @@ End
 
 Public Sub btnCommit_Click()
 
-  If FCommit.Run(txtVerCtrlChange.Text) Then Return
+  If FCommit.Run($sVerCtrlStatus, edtDiff.Text) Then Return
   tabProject_Click
   
 End

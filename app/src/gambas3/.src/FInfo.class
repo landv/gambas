@@ -13,7 +13,6 @@ Private Sub GetCount(sName As String, sExt As String, Optional sSub As String) A
   
 End
 
-
 Private Sub FormatPath(sPath As String) As String
   
   If sPath Like (System.User.Home & "/*") Then   
@@ -23,7 +22,6 @@ Private Sub FormatPath(sPath As String) As String
   Return sPath
   
 End
-
 
 Private Sub GetInfo(sPath As String)
   
@@ -210,7 +208,7 @@ Public Sub Form_Open()
   tabInfo[1].Visible = VersionControl.Enabled() And Not IsDir($sPath)
   tabInfo.Index = 0
   edtChange.Clear
-  MTheme.InitEditor(edtChange)
+  FTextEditor.ReadConfigEditor(edtChange)
 
 End
 

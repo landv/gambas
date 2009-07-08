@@ -373,41 +373,34 @@
     }
     Index = 4
     Text = ("Versioning")
-    { panVersioning Panel
-      MoveScaled(1,1,84,75)
+    { Label4 Label
+      MoveScaled(1,1,75,3)
+      Font = Font["Bold"]
+      Text = ("Changes since last commit")
+    }
+    { edtDiff Editor
+      MoveScaled(4,7,70,55)
       Expand = True
-      Arrangement = Arrange.Vertical
+      Highlight = Highlight.Diff
+      ReadOnly = True
+    }
+    { HBox15 HBox
+      MoveScaled(1,69,84,4)
       Spacing = True
-      { Label4 Label
-        MoveScaled(0,0,75,3)
-        Font = Font["Bold"]
-        Text = ("Changes since last commit")
+      { btnUpdate Button
+        MoveScaled(0,0,20,4)
+        Text = ("&Update")
+        Picture = Picture["icon:/small/refresh"]
       }
-      { txtVerCtrlChange TextArea
-        MoveScaled(0,4,84,62)
-        Font = Font["Monospace"]
-        Expand = True
-        Text = ("")
-        ReadOnly = True
+      { btnRevert Button
+        MoveScaled(21,0,20,4)
+        Text = ("&Revert...")
+        Picture = Picture["icon:/small/undo"]
       }
-      { HBox15 HBox
-        MoveScaled(0,68,84,4)
-        Spacing = True
-        { btnUpdate Button
-          MoveScaled(0,0,20,4)
-          Text = ("&Update")
-          Picture = Picture["icon:/small/refresh"]
-        }
-        { btnRevert Button
-          MoveScaled(21,0,20,4)
-          Text = ("&Revert...")
-          Picture = Picture["icon:/small/undo"]
-        }
-        { btnCommit Button
-          MoveScaled(42,0,20,4)
-          Text = ("&Commit...")
-          Picture = Picture["icon:/small/ok"]
-        }
+      { btnCommit Button
+        MoveScaled(42,0,20,4)
+        Text = ("&Commit...")
+        Picture = Picture["icon:/small/ok"]
       }
     }
     Index = 5

@@ -580,15 +580,17 @@ static QColor calc_color(QColor ca, QColor cb, QColor cd)
 	}
 }
 
-static void highlight_text(QPainter &p, int x, int y, QString s, QColor color)
+static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s, QColor color)
 {
-	int i, j;
+	//int i, j;
 	
 	p.setPen(color);
 	
-	for (i = -1; i <= 1; i++)
+	/*for (i = -1; i <= 1; i++)
 		for (j = -1; j <= 1; j++)
-			p.drawText(x + i, y + j, s);
+			p.drawText(x + i, y + j, s);*/
+		
+	p.drawRect(x, 0, x2 - x - 1, yy - 1);
 }
 
 void GEditor::paintCell(QPainter * painter, int row, int)
@@ -632,9 +634,9 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	folded = l->proc && isFolded(realRow);
 		
 	//xmin = (ur.left() - margin) / charWidth;
-	//if (xmin < 0)
-	//	xmin = 0;
-	xmin = posToColumn(realRow, 0);
+	xmin = posToColumn(realRow, 0) - 1;
+	if (xmin < 0)
+		xmin = 0;
 	//lmax = 2 + visibleWidth() / charWidth;
 	lmax = 2 + posToColumn(realRow, visibleWidth()) - xmin;
 	//if (row == 0)
@@ -732,8 +734,8 @@ void GEditor::paintCell(QPainter * painter, int row, int)
 	{
 		//highlight_text(p, x1m * charWidth + margin, fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
 		//highlight_text(p, x2m * charWidth + margin, fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
-		highlight_text(p, lineWidth(ym, x1m), fm.ascent(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
-		highlight_text(p, lineWidth(ym, x2m), fm.ascent(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
+		highlight_text(p, lineWidth(ym, x1m), fm.ascent(), lineWidth(ym, x1m + 1), cellHeight(), l->s.getString().mid(x1m, 1), styles[GLine::Highlight].color);
+		highlight_text(p, lineWidth(ym, x2m), fm.ascent(), lineWidth(ym, x2m + 1), cellHeight(), l->s.getString().mid(x2m, 1), styles[GLine::Highlight].color);
 		/*p.fillRect(x1m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);
 		p.fillRect(x2m * charWidth + margin, 0, charWidth, cellHeight(), styles[GLine::Highlight].color);*/
 	}
@@ -1627,8 +1629,11 @@ void GEditor::stopBlink()
 
 void GEditor::blinkTimerTimeout()
 {
-	cursor = !cursor;
-	updateLine(y);
+	if (!doc->isReadOnly())
+	{
+		cursor = !cursor;
+		updateLine(y);
+	}
 }
 
 void GEditor::focusInEvent(QFocusEvent *e)
