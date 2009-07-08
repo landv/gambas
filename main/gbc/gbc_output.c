@@ -1078,7 +1078,7 @@ static void output_string(void)
 }
 
 
-PUBLIC char *OUTPUT_get_file(const char *file)
+char *OUTPUT_get_file(const char *file)
 {
   char *output;
   char *p;
@@ -1112,7 +1112,7 @@ PUBLIC char *OUTPUT_get_file(const char *file)
 }
 
 
-PUBLIC char *OUTPUT_get_trans_file(const char *file)
+char *OUTPUT_get_trans_file(const char *file)
 {
   char *output;
   //char *dir;
@@ -1235,7 +1235,7 @@ static void output_finalize(void)
 }
 
 
-PUBLIC void OUTPUT_do(bool swap)
+void OUTPUT_do(bool swap)
 {
   const char *name;
 

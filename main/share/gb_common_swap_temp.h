@@ -25,7 +25,7 @@
 
 ***************************************************************************/
 
-PUBLIC void SWAP_int(int *val)
+void SWAP_int(int *val)
 {
   char *p = (char *)val;
   char t1, t2;
@@ -38,7 +38,7 @@ PUBLIC void SWAP_int(int *val)
   p[2] = t2;
 }
 
-PUBLIC void SWAP_ints(int *val, int n)
+void SWAP_ints(int *val, int n)
 {
 	while (n > 0)
 	{
@@ -50,7 +50,7 @@ PUBLIC void SWAP_ints(int *val, int n)
 
 
 
-PUBLIC void SWAP_short(short *val)
+void SWAP_short(short *val)
 {
   char *p = (char *)val;
   char t;
@@ -61,7 +61,7 @@ PUBLIC void SWAP_short(short *val)
 }
 
 
-PUBLIC void SWAP_double(double *val)
+void SWAP_double(double *val)
 {
   char *p = (char *)val;
   char t;

@@ -121,7 +121,7 @@ static STREAM *get_default(intptr_t val)
   return stream;
 }
 
-static STREAM *get_stream(VALUE *value, boolean can_default)
+static STREAM *get_stream(VALUE *value, bool can_default)
 {
   STREAM *stream;
 

@@ -47,11 +47,11 @@
 
 /*#define DEBUG*/
 
-PUBLIC char *ARCH_project;
-PUBLIC char *ARCH_project_name;
-PUBLIC char *ARCH_output = NULL;
-PUBLIC bool ARCH_verbose = FALSE;
-PUBLIC bool ARCH_swap = FALSE;
+char *ARCH_project;
+char *ARCH_project_name;
+char *ARCH_output = NULL;
+bool ARCH_verbose = FALSE;
+bool ARCH_swap = FALSE;
 
 static int arch_dir_pos;
 static TABLE *arch_table;
@@ -116,13 +116,13 @@ static void make_executable(void)
 }
 
 
-PUBLIC void ARCH_define_output(const char *path)
+void ARCH_define_output(const char *path)
 {
 	STR_free(ARCH_output);
   ARCH_output = STR_copy(path);
 }
 
-PUBLIC void ARCH_define_project(const char *project)
+void ARCH_define_project(const char *project)
 {
   char *name;
   char *dir;
@@ -155,7 +155,7 @@ PUBLIC void ARCH_define_project(const char *project)
 }
 
 
-PUBLIC void ARCH_init(void)
+void ARCH_init(void)
 {
   TABLE_create(&arch_table, sizeof(ARCH_SYMBOL), TF_NORMAL);
 
@@ -228,7 +228,7 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 }
 #endif
 
-PUBLIC void ARCH_exit(void)
+void ARCH_exit(void)
 {
   int i;
   ARCH_SYMBOL *sym;
@@ -286,7 +286,7 @@ PUBLIC void ARCH_exit(void)
 }
 
 
-PUBLIC int ARCH_add_file(const char *path)
+int ARCH_add_file(const char *path)
 {
   char *rel_path;
   ARCH_SYMBOL *sym;

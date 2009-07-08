@@ -28,6 +28,6 @@
 #include "gb_common_buffer_temp.h"
 #include "gb_common_swap_temp.h"
 
-PUBLIC void COMMON_init(void)
+void COMMON_init(void)
 {
 }

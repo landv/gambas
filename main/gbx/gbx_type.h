@@ -101,7 +101,7 @@ const char *TYPE_get_name(TYPE type);
 TYPE TYPE_from_string(const char **ptype);
 const char *TYPE_to_string(TYPE type);
 TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int nparam);
-boolean TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2);
+bool TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2);
 void TYPE_signature_length(const char *sign, char *len_min, char *len_max, char *var);
 
 #endif

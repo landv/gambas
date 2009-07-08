@@ -261,7 +261,7 @@ static void add_zero(int count, int *before)
 }
 
 
-static int search(const char *src, int len, const char *list, int start, boolean not)
+static int search(const char *src, int len, const char *list, int start, bool not)
 {
   int i;
   char c;
@@ -1155,7 +1155,7 @@ static void add_date_token(DATE_SERIAL *date, char *token, int count)
 }
 
 
-boolean LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
+bool LOCAL_format_date(DATE_SERIAL *date, int fmt_type, const char *fmt, int len_fmt, char **str, int *len_str)
 {
   char c;
   bool esc;

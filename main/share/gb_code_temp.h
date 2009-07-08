@@ -423,7 +423,7 @@ void CODE_push_array(short nparam)
 }
 
 
-void CODE_push_global(short global, boolean is_static, boolean is_function)
+void CODE_push_global(short global, bool is_static, bool is_function)
 {
   LAST_CODE;
 
@@ -444,7 +444,7 @@ void CODE_push_global(short global, boolean is_static, boolean is_function)
 
 #ifdef PROJECT_COMP
 
-void CODE_pop_global(short global, boolean is_static)
+void CODE_pop_global(short global, bool is_static)
 {
   LAST_CODE;
 
@@ -694,7 +694,7 @@ void CODE_next(bool drop)
 
 #endif /* PROJECT_COMP */
 
-void CODE_op(short op, short nparam, boolean fixed)
+void CODE_op(short op, short nparam, bool fixed)
 {
   if (op == C_ADD || op == C_SUB)
   {
@@ -809,7 +809,7 @@ void CODE_push_null()
 
 
 /*
-static boolean change_last_call(ushort flag)
+static bool change_last_call(ushort flag)
 {
   ushort *last_code = get_last_code();
 
@@ -994,7 +994,7 @@ void CODE_stop_event(void)
 #endif
 
 
-void CODE_subr(short subr, short nparam, short optype, boolean output, boolean fixed)
+void CODE_subr(short subr, short nparam, short optype, bool output, bool fixed)
 {
   LAST_CODE;
 
@@ -1242,7 +1242,7 @@ void CODE_push_extern(short index)
   write_ZZxx(C_PUSH_EXTERN, index);
 }
 
-void CODE_new(ushort nparam, boolean array, boolean event)
+void CODE_new(ushort nparam, bool array, bool event)
 {
   LAST_CODE;
 

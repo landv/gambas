@@ -229,7 +229,7 @@ void VALUE_convert(VALUE *value, TYPE type)
   char *addr;
   int index;
   CLASS *class;
-  boolean test;
+  bool test;
 
 __CONV:
 

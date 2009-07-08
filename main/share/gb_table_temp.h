@@ -43,7 +43,7 @@
 
 static char _buffer[MAX_SYMBOL_LEN + 1];
 
-PUBLIC int TABLE_compare(const char *s1, int len1, const char *s2, int len2)
+int TABLE_compare(const char *s1, int len1, const char *s2, int len2)
 {
   int i;
   int len = (len1 < len2) ? len1 : len2;
@@ -67,7 +67,7 @@ PUBLIC int TABLE_compare(const char *s1, int len1, const char *s2, int len2)
     return 0;
 }
 
-PUBLIC int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2)
+int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, int len2)
 {
   unsigned int len = (len1 < len2) ? len1 : len2;
   unsigned int i;
@@ -90,7 +90,7 @@ PUBLIC int TABLE_compare_ignore_case(const char *s1, int len1, const char *s2, i
     return 0;
 }
 
-PUBLIC int TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int len2)
+int TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int len2)
 {
   int result;
 
@@ -110,7 +110,7 @@ PUBLIC int TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s
   return 0;
 }
 
-static boolean search(void *symbol, int n_symbol, size_t size, int flag, const char *name, int len, int *index)
+static bool search(void *symbol, int n_symbol, size_t size, int flag, const char *name, int len, int *index)
 {
   int pos, deb, fin;
   SYMBOL *sym;
@@ -223,7 +223,7 @@ static boolean search(void *symbol, int n_symbol, size_t size, int flag, const c
 }
 
 
-PUBLIC boolean SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
+bool SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag,
                            const char *name, int len, const char *prefix, int *result)
 {
   int index;
@@ -255,7 +255,7 @@ PUBLIC boolean SYMBOL_find(void *symbol, int n_symbol, size_t s_symbol, int flag
   }
 }
 
-PUBLIC boolean SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
+bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag,
                                const char *name, int len, const char *prefix, int *result)
 {
   int pos, deb, fin;
@@ -312,7 +312,7 @@ PUBLIC boolean SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int 
   }
 }
 
-PUBLIC const char *TABLE_get_symbol_name(TABLE *table, int index)
+const char *TABLE_get_symbol_name(TABLE *table, int index)
 {
   SYMBOL *sym;
 
@@ -329,7 +329,7 @@ PUBLIC const char *TABLE_get_symbol_name(TABLE *table, int index)
 }
 
 
-PUBLIC const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* suffix)
+const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const char* suffix)
 {
   TABLE_get_symbol_name(table, index);
   strcat(_buffer, suffix);
@@ -337,14 +337,14 @@ PUBLIC const char *TABLE_get_symbol_name_suffix(TABLE *table, int index, const c
 }
 
 
-PUBLIC void TABLE_create_static(TABLE *table, size_t size, TABLE_FLAG flag)
+void TABLE_create_static(TABLE *table, size_t size, TABLE_FLAG flag)
 {
   ARRAY_create_with_size(&table->symbol, Max(size, sizeof(SYMBOL)), 16);
   table->flag = flag;
 }
 
 
-PUBLIC void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag)
+void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag)
 {
   TABLE *table;
 
@@ -355,7 +355,7 @@ PUBLIC void TABLE_create(TABLE **result, size_t size, TABLE_FLAG flag)
 }
 
 
-PUBLIC void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[], TABLE_FLAG flag)
+void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[], TABLE_FLAG flag)
 {
   TABLE *table;
 
@@ -371,13 +371,13 @@ PUBLIC void TABLE_create_from(TABLE **result, size_t size, const char *sym_list[
 }
 
 
-PUBLIC void TABLE_delete_static(TABLE *table)
+void TABLE_delete_static(TABLE *table)
 {
   ARRAY_delete(&table->symbol);
 }
 
 
-PUBLIC void TABLE_delete(TABLE **p_table)
+void TABLE_delete(TABLE **p_table)
 {
   if (*p_table)
   {
@@ -387,16 +387,16 @@ PUBLIC void TABLE_delete(TABLE **p_table)
 }
 
 
-PUBLIC int TABLE_count(TABLE *table)
+int TABLE_count(TABLE *table)
 {
   return ARRAY_count(table->symbol);
 }
 
 
-PUBLIC boolean TABLE_find_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index)
+bool TABLE_find_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index)
 {
   int ind;
-  boolean result;
+  bool result;
   SYMBOL *tsym, *sym;
   int count;
   size_t size;
@@ -426,7 +426,7 @@ PUBLIC boolean TABLE_find_symbol(TABLE *table, const char *name, int len, SYMBOL
 }
 
 
-PUBLIC void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, int sort, SYMBOL **symbol, int *index)
+void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, int sort, SYMBOL **symbol, int *index)
 {
   SYMBOL *sym;
   int count;
@@ -446,11 +446,11 @@ PUBLIC void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, in
 }
 
 
-PUBLIC boolean TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index)
+bool TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL **symbol, int *index)
 {
   int ind;
   int i;
-  boolean result;
+  bool result;
   SYMBOL *sym;
   int count;
   SYMBOL *s1, *s2;
@@ -502,7 +502,7 @@ PUBLIC boolean TABLE_add_symbol(TABLE *table, const char *name, int len, SYMBOL 
 
 
 
-PUBLIC void TABLE_print(TABLE *table, boolean sort)
+void TABLE_print(TABLE *table, bool sort)
 {
   int i;
   SYMBOL *sym;
@@ -540,7 +540,7 @@ PUBLIC void TABLE_print(TABLE *table, boolean sort)
 }
 
 
-PUBLIC void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, SYMBOL **symbol, int *index)
+void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix, SYMBOL **symbol, int *index)
 {
   SYMBOL *sym;
   char *ptr;
@@ -558,7 +558,7 @@ PUBLIC void TABLE_copy_symbol_with_prefix(TABLE *table, int ind_src, char prefix
 }
 
 
-PUBLIC SYMBOL *TABLE_get_symbol_sort(TABLE *table, int index)
+SYMBOL *TABLE_get_symbol_sort(TABLE *table, int index)
 {
   SYMBOL *sym = TABLE_get_symbol(table, index);
 

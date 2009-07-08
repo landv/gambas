@@ -167,7 +167,7 @@ void CLASS_delete(CLASS **class)
 }
 
 
-CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global)
+CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global)
 {
 	CLASS_SYMBOL *sym = CLASS_get_symbol(class, index);
 

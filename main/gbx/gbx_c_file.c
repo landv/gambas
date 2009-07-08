@@ -581,7 +581,7 @@ BEGIN_METHOD(CFILE_load, GB_STRING path)
   int64_t len;
   int rlen;
   char *str;
-  boolean opened = FALSE;
+  bool opened = FALSE;
   //ERROR_INFO save; We suppose it is useless
 
   TRY
@@ -617,7 +617,7 @@ END_METHOD
 BEGIN_METHOD(CFILE_save, GB_STRING path; GB_STRING data)
 
   STREAM stream;
-  boolean opened = FALSE;
+  bool opened = FALSE;
 
   TRY
   {

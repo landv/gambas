@@ -36,13 +36,13 @@
 #include "gb_error.h"
 #include "gb_alloc.h"
 
-PUBLIC int MEMORY_count = 0;
+int MEMORY_count = 0;
 
 #if DEBUG_MEMORY
 
 #include "gb_error.h"
 
-PUBLIC int MEMORY_size = 0;
+int MEMORY_size = 0;
 
 static int _id = 0;
 ALLOC *_alloc = NULL;
@@ -58,7 +58,7 @@ int THROW_MEMORY()
 
 #endif
 
-PUBLIC void MEMORY_init(void)
+void MEMORY_init(void)
 {
 	#if DEBUG_MEMORY
 	/*char path[256];
@@ -68,7 +68,7 @@ PUBLIC void MEMORY_init(void)
 	#endif
 }
 
-PUBLIC void MEMORY_exit(void)
+void MEMORY_exit(void)
 {
 #if DEBUG_MEMORY
   if (MEMORY_count)
@@ -92,7 +92,7 @@ PUBLIC void MEMORY_exit(void)
 #else
 
 #if DEBUG_MEMORY
-PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
+void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
 {
   ALLOC *alloc;
 
@@ -124,7 +124,7 @@ PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src)
   #endif
 }
 #else
-PUBLIC void MEMORY_alloc(void *p_ptr, size_t size)
+void MEMORY_alloc(void *p_ptr, size_t size)
 {
   void *alloc;
 
@@ -140,13 +140,13 @@ PUBLIC void MEMORY_alloc(void *p_ptr, size_t size)
 
 
 #if DEBUG_MEMORY
-PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size, const char *src)
+void MEMORY_alloc_zero(void *p_ptr, size_t size, const char *src)
 {
   MEMORY_alloc(p_ptr, size, src);
   memset(*((void **)p_ptr), 0, size);
 }
 #else
-PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size)
+void MEMORY_alloc_zero(void *p_ptr, size_t size)
 {
   void *alloc;
 
@@ -162,7 +162,7 @@ PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size)
 
 
 #if DEBUG_MEMORY
-PUBLIC void MEMORY_realloc(void *p_ptr, size_t size, const char *src)
+void MEMORY_realloc(void *p_ptr, size_t size, const char *src)
 {
   ALLOC *alloc = (ALLOC *)(*((char **)p_ptr) - sizeof(ALLOC));
   ALLOC *old = alloc;
@@ -191,7 +191,7 @@ PUBLIC void MEMORY_realloc(void *p_ptr, size_t size, const char *src)
   *((void **)p_ptr) = (char *)alloc + sizeof(ALLOC);
 }
 #else
-PUBLIC void MEMORY_realloc(void *p_ptr, size_t size)
+void MEMORY_realloc(void *p_ptr, size_t size)
 {
   void *alloc = *((void **)p_ptr);
 
@@ -206,7 +206,7 @@ PUBLIC void MEMORY_realloc(void *p_ptr, size_t size)
 
 
 #if DEBUG_MEMORY
-PUBLIC void MEMORY_free(void *p_ptr, const char *src)
+void MEMORY_free(void *p_ptr, const char *src)
 {
   ALLOC *alloc = (ALLOC *)(*((char **)p_ptr) - sizeof(ALLOC));
 
@@ -236,7 +236,7 @@ PUBLIC void MEMORY_free(void *p_ptr, const char *src)
   MEMORY_count--;
 }
 #else
-PUBLIC void MEMORY_free(void *p_ptr)
+void MEMORY_free(void *p_ptr)
 {
   void *alloc = *((void **)p_ptr);
 

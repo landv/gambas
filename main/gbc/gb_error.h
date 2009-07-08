@@ -86,21 +86,21 @@ EXTERN ERROR_INFO ERROR_info;
 
 #define ERROR_clear() (ERROR_info.code = 0)
 
-PUBLIC char *ERROR_get(void);
+char *ERROR_get(void);
 
-PUBLIC void ERROR_enter(ERROR_CONTEXT *err);
-PUBLIC void ERROR_leave(ERROR_CONTEXT *err);
+void ERROR_enter(ERROR_CONTEXT *err);
+void ERROR_leave(ERROR_CONTEXT *err);
 
-PUBLIC void ERROR_define(const char *pattern, const char *arg[]);
+void ERROR_define(const char *pattern, const char *arg[]);
 
-PUBLIC void PROPAGATE() NORETURN;
-PUBLIC void THROW(const char *code, ...) NORETURN;
-PUBLIC void THROW_SYSTEM(int err, const char *path);
+void PROPAGATE() NORETURN;
+void THROW(const char *code, ...) NORETURN;
+void THROW_SYSTEM(int err, const char *path);
 
-PUBLIC void ERROR_panic(const char *error, ...) NORETURN;
+void ERROR_panic(const char *error, ...) NORETURN;
 
-PUBLIC void ERROR_print(void);
-PUBLIC void ERROR_print_at(FILE *where);
+void ERROR_print(void);
+void ERROR_print_at(FILE *where);
 
 /*PUBLIC void ERROR_must_free(void *object);*/
 

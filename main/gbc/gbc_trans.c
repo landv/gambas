@@ -119,8 +119,8 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result)
 
   int base = 0;
   char *number = (char *)TABLE_get_symbol_name(JOB->class->table, index);
-  boolean minus = FALSE;
-  boolean is_unsigned = FALSE;
+  bool minus = FALSE;
+  bool is_unsigned = FALSE;
 
   //fprintf(stderr, "TRANS_get_number: '%s'\n", number);
 
@@ -601,7 +601,7 @@ void TRANS_want(int reserved, char *msg)
 }
 
 
-boolean TRANS_is(int reserved)
+bool TRANS_is(int reserved)
 {
   if (PATTERN_is(*JOB->current, reserved))
   {

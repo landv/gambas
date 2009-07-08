@@ -212,7 +212,7 @@ typedef
 void CLASS_create(CLASS **result);
 void CLASS_delete(CLASS **class);
 
-CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, boolean global);
+CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global);
 
 void CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
 void CLASS_add_event(CLASS *class, TRANS_EVENT *decl);
@@ -240,7 +240,7 @@ void CLASS_check_properties(CLASS *class);
 
 /* gbc_dump.c */
 
-PUBLIC void CLASS_dump(void);
-PUBLIC void CLASS_export(void);
+void CLASS_dump(void);
+void CLASS_export(void);
 
 #endif

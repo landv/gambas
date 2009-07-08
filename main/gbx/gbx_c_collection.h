@@ -60,9 +60,9 @@ extern GB_DESC NATIVE_Collection[];
 
 /*PUBLIC void *CCOLLECTION_new(TYPE type);*/
 /*
-PUBLIC void *CCOLLECTION_get_key(CCOLLECTION *col, char *key, int len);
-PUBLIC void *CCOLLECTION_add_key(CCOLLECTION *col, char *key, int len);
-PUBLIC void CCOLLECTION_remove_key(CCOLLECTION *col, char *key, int len);
+void *CCOLLECTION_get_key(CCOLLECTION *col, char *key, int len);
+void *CCOLLECTION_add_key(CCOLLECTION *col, char *key, int len);
+void CCOLLECTION_remove_key(CCOLLECTION *col, char *key, int len);
 */
 
 #endif

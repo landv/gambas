@@ -35,7 +35,7 @@ void STT_NAME(void)
 
   TYPE type;
   VALUE *P1, *P2;
-  boolean result, variant;
+  bool result, variant;
 
   P1 = SP - 2;
   P2 = P1 + 1;
@@ -205,7 +205,7 @@ void STT_NAME(void)
 
   TYPE type, typem;
   VALUE *P1, *P2;
-  boolean result, variant;
+  bool result, variant;
 
   P1 = SP - 2;
   P2 = P1 + 1;

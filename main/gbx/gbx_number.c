@@ -114,7 +114,7 @@ static bool read_integer(int base, int64_t *result, bool read_long)
 }
 
 
-static bool read_float(double *result, boolean local, int c)
+static bool read_float(double *result, bool local, int c)
 {
   LOCAL_INFO *local_info;
   char point;
@@ -123,7 +123,7 @@ static bool read_float(double *result, boolean local, int c)
   double nint;
   double nfrac, n;
   int nexp;
-  boolean nexp_minus;
+  bool nexp_minus;
 
   _can_be_integer = TRUE;
 

@@ -425,7 +425,7 @@ static void analyze_call()
   PATTERN subr_pattern = NULL_PATTERN;
   PATTERN last_pattern = get_last_pattern(1);
   SUBR_INFO *info;
-  boolean optional = TRUE;
+  bool optional = TRUE;
   uint64_t byref = 0;
   PATTERN *save;
 

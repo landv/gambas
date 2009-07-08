@@ -87,15 +87,15 @@ typedef
 #define HASH_TABLE_MAX_SIZE 13845163
 
 
-PUBLIC void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode);
-PUBLIC void HASH_TABLE_delete(HASH_TABLE **hash);
-PUBLIC int HASH_TABLE_size(HASH_TABLE *hash_table);
-PUBLIC void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len);
-PUBLIC void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len);
-PUBLIC void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len);
-PUBLIC void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter);
-PUBLIC void HASH_TABLE_get_key(HASH_TABLE *hash_table, HASH_NODE *node, char **key, int *len);
-PUBLIC bool HASH_TABLE_get_last_key(HASH_TABLE *hash_table, char **key, int *len);
+void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode);
+void HASH_TABLE_delete(HASH_TABLE **hash);
+int HASH_TABLE_size(HASH_TABLE *hash_table);
+void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len);
+void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len);
+void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len);
+void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter);
+void HASH_TABLE_get_key(HASH_TABLE *hash_table, HASH_NODE *node, char **key, int *len);
+bool HASH_TABLE_get_last_key(HASH_TABLE *hash_table, char **key, int *len);
 
 #endif
 

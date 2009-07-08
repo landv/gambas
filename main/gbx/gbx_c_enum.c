@@ -41,7 +41,7 @@
 static CENUM *_enum_list = NULL;
 
 
-PUBLIC CENUM *CENUM_create(void *enum_object)
+CENUM *CENUM_create(void *enum_object)
 {
   CENUM *_object;
   
@@ -60,7 +60,7 @@ PUBLIC CENUM *CENUM_create(void *enum_object)
   return THIS;
 }
 
-PUBLIC CENUM *CENUM_get_next(CENUM *cenum)
+CENUM *CENUM_get_next(CENUM *cenum)
 {
   if (!cenum)
     return _enum_list;
@@ -164,7 +164,7 @@ END_METHOD
 
 #endif
 
-PUBLIC GB_DESC NATIVE_Enum[] =
+GB_DESC NATIVE_Enum[] =
 {
   GB_DECLARE("Enum", sizeof(CENUM)), GB_NOT_CREATABLE(),
 

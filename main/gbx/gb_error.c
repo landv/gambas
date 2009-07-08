@@ -274,7 +274,7 @@ static int get_message_length(const char *pattern, char *arg[])
 void ERROR_define(const char *pattern, char *arg[])
 {
   uchar c;
-  boolean subst;
+  bool subst;
   char *msg = NULL;
   int len;
 

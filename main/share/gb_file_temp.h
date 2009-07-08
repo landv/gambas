@@ -213,8 +213,8 @@ const char *FILE_cat(const char *path, ...)
   char *p;
   va_list args;
   int len;
-  boolean end_slash = FALSE;
-  boolean add_slash = FALSE;
+  bool end_slash = FALSE;
+  bool add_slash = FALSE;
 
   va_start(args, path);
 

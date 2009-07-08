@@ -89,7 +89,7 @@ void SUBR_file(void)
 	char *addr;
 	int len;
 	char *str, *ptr;
-	boolean slash;
+	bool slash;
 
 	SUBR_ENTER();
 
@@ -477,7 +477,7 @@ void SUBR_asc(void)
 
 void SUBR_instr(void)
 {
-	boolean right, nocase = FALSE;
+	bool right, nocase = FALSE;
 	int is, pos;
 	char *ps, *pp;
 	int ls, lp;
@@ -528,7 +528,7 @@ void SUBR_like(void)
 	char *pattern;
 	char *string;
 	int len_pattern, len_string;
-	boolean ret;
+	bool ret;
 
 	SUBR_ENTER_PARAM(2);
 

@@ -97,10 +97,10 @@ EXTERN char *TYPE_name[];
 #define TYPE_compare(_t1, _t2) ((_t1)->t.id == (_t2)->t.id && (_t1)->t.value == (_t2)->t.value)
 
 /*PUBLIC long TYPE_get_class(TYPE type);*/
-PUBLIC TYPE TYPE_make(TYPE_ID id, short value, int flag);
-PUBLIC char *TYPE_get_desc(TYPE type);
-PUBLIC const char *TYPE_get_short_desc(TYPE type);
-PUBLIC size_t TYPE_sizeof(TYPE type);
+TYPE TYPE_make(TYPE_ID id, short value, int flag);
+char *TYPE_get_desc(TYPE type);
+const char *TYPE_get_short_desc(TYPE type);
+size_t TYPE_sizeof(TYPE type);
 
 #endif
 

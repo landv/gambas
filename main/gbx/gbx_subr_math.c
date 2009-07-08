@@ -209,7 +209,7 @@ void SUBR_not(void)
   VALUE *P1;
   void *jump_end;
   TYPE type = EXEC_code & 0x1F;
-  boolean test;
+  bool test;
 
   P1 = SP - 1;
   jump_end = &&__END;

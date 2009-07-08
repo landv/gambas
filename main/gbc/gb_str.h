@@ -27,9 +27,9 @@
 
 #include "gb_alloc.h"
 
-PUBLIC char *STR_copy(const char *str);
-PUBLIC char *STR_cat(const char *str, ...);
-PUBLIC char *STR_add(char *d, const char *s);
+char *STR_copy(const char *str);
+char *STR_cat(const char *str, ...);
+char *STR_add(char *d, const char *s);
 
 #define STR_free(_str) IFREE(_str, "STR_free")
 

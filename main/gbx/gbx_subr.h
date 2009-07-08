@@ -74,7 +74,7 @@ EXTERN int NPARAM;
 void SUBR_leave(int nparam);
 void SUBR_leave_void(int nparam);
 
-boolean SUBR_check_string(VALUE *param);
+bool SUBR_check_string(VALUE *param);
 void SUBR_check_integer(VALUE *param);
 void SUBR_check_float(VALUE *param);
 

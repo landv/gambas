@@ -49,7 +49,7 @@ void EXEC_pop_unknown(void)
   CLASS *class;
   OBJECT *object;
   char *addr;
-  boolean defined;
+  bool defined;
   VALUE *val;
 
   EXEC_object(&SP[-1], &class, &object, &defined);
@@ -243,7 +243,7 @@ void EXEC_pop_array(ushort code)
   int dim[MAX_ARRAY_DIM];
   int i;
   void *data;
-  boolean defined;
+  bool defined;
   VALUE *val;
   VALUE swap;
   ARRAY_DESC *desc;

@@ -32,7 +32,7 @@ typedef
     }
   FORM_PARENT;
 
-PUBLIC void FORM_do(bool ctrl_public);
-PUBLIC char *FORM_get_file(const char *file);
+void FORM_do(bool ctrl_public);
+char *FORM_get_file(const char *file);
 
 #endif

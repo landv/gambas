@@ -288,7 +288,7 @@ void SUBR_min_max(void)
 {
   TYPE type = T_VOID;
   int i;
-  boolean is_max;
+  bool is_max;
 
   SUBR_ENTER();
 

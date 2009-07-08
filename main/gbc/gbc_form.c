@@ -101,7 +101,7 @@ static void print_fmt(const char *before, const char *word, int len, const char 
 	print(after);
 }
 
-static boolean read_line(const char **str, int *len)
+static bool read_line(const char **str, int *len)
 {
 	const char *start;
 	const char *nospace;
@@ -280,7 +280,7 @@ char *FORM_get_file(const char *file)
 
 
 
-static boolean FORM_init(void)
+static bool FORM_init(void)
 {
 	BUFFER_create(&_source);
 	BUFFER_load_file(&_source, JOB->form);
@@ -296,7 +296,7 @@ static void FORM_exit(void)
 }
 
 
-PUBLIC void FORM_do(bool ctrl_public)
+void FORM_do(bool ctrl_public)
 {
 	const char *line;
 	char *word;

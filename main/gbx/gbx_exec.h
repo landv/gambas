@@ -161,10 +161,10 @@ void EXEC_function_loop();
 
 void EXEC_public(CLASS *class, void *object, const char *name, int nparam);
 
-boolean EXEC_spec(int spec, CLASS *class, void *object, int nparam, boolean drop);
+bool EXEC_spec(int spec, CLASS *class, void *object, int nparam, bool drop);
 #define EXEC_special EXEC_spec
 
-void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, boolean drop);
+void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, bool drop);
 
 void EXEC_nop(void);
 void EXEC_ILLEGAL(void);

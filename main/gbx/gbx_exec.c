@@ -1475,7 +1475,7 @@ bool EXEC_spec(int special, CLASS *class, void *object, int nparam, bool drop)
 	not consumed by the child methods.
 */
 
-void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, boolean drop)
+void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int nparam, bool drop)
 {
 	CLASS *her[MAX_INHERITANCE];
 	int npher[MAX_INHERITANCE];
@@ -1582,7 +1582,7 @@ void EXEC_new(void)
 {
 	CLASS *class;
 	int np;
-	boolean event;
+	bool event;
 	void *object;
 	char *name = NULL;
 	char *cname = NULL;

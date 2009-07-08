@@ -32,15 +32,15 @@ EXTERN int COMMON_pos;
 EXTERN char COMMON_buffer[];
 #endif
 
-PUBLIC void COMMON_init(void);
+void COMMON_init(void);
 
-PUBLIC void COMMON_buffer_init(const char *str, int len);
-PUBLIC int COMMON_get_char(void);
-PUBLIC int COMMON_last_char(void);
-PUBLIC int COMMON_look_char(void);
-PUBLIC int COMMON_put_char(char c);
-PUBLIC void COMMON_jump_space(void);
-PUBLIC char *COMMON_get_current(void);
-PUBLIC int COMMON_get_size_left(void);
+void COMMON_buffer_init(const char *str, int len);
+int COMMON_get_char(void);
+int COMMON_last_char(void);
+int COMMON_look_char(void);
+int COMMON_put_char(char c);
+void COMMON_jump_space(void);
+char *COMMON_get_current(void);
+int COMMON_get_size_left(void);
 
 #endif

@@ -340,12 +340,12 @@ int DATE_to_string(char *buffer, VALUE *value)
 }
 
 
-static boolean read_integer(int *number)
+static bool read_integer(int *number)
 {
   int nbr = 0;
   int nbr2;
   int c;
-  //boolean minus = FALSE;
+  //bool minus = FALSE;
 
   c = get_char();
 
@@ -381,7 +381,7 @@ static boolean read_integer(int *number)
 }
 
 
-static boolean read_msec(int *number)
+static bool read_msec(int *number)
 {
   int nbr = 0;
   int nbr2;
@@ -451,14 +451,14 @@ static void set_time(DATE_SERIAL *date, int which, int value)
 }
 
 
-boolean DATE_from_string(const char *str, int len, VALUE *val, boolean local)
+bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 {
   DATE_SERIAL date;
   LOCAL_INFO *info = LOCAL_get(local);
   int nbr, nbr2;
   int c, i;
-  boolean has_date = FALSE;
-  boolean has_time = FALSE;
+  bool has_date = FALSE;
+  bool has_time = FALSE;
 
 	if (!len)
 	{

@@ -101,7 +101,7 @@ static bool trans_stream(int default_stream)
 static void trans_print_debug(void)
 {
   int nparam = 1;
-  boolean semicolon = FALSE;
+  bool semicolon = FALSE;
 
   for(;;)
   {
@@ -243,7 +243,7 @@ void TRANS_input_from()
 
 void TRANS_input(void)
 {
-  boolean stream = TRUE;
+  bool stream = TRUE;
 
   if (TRANS_is(RS_FROM))
   {

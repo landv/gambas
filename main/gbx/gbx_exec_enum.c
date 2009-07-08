@@ -35,7 +35,7 @@ void EXEC_enum_first(PCODE code)
 {
   OBJECT *object;
   CLASS *class;
-  boolean defined;
+  bool defined;
   VALUE *local;
   CENUM *old = EXEC_enum;
   CENUM *cenum;

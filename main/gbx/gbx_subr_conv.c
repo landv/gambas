@@ -41,7 +41,7 @@ void SUBR_is_type(void)
     &&__OBJECT, &&__NUMBER
     };
 
-  boolean test;
+  bool test;
   TYPE type;
 
   SUBR_ENTER_PARAM(1);

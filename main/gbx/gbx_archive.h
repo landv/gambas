@@ -57,29 +57,29 @@ typedef
 EXTERN ARCHIVE *ARCHIVE_main;
 #endif
 
-PUBLIC void ARCHIVE_init(void);
-PUBLIC void ARCHIVE_exit(void);
+void ARCHIVE_init(void);
+void ARCHIVE_exit(void);
 
-PUBLIC void ARCHIVE_create_main(const char *path);
-PUBLIC void ARCHIVE_load_main(void);
+void ARCHIVE_create_main(const char *path);
+void ARCHIVE_load_main(void);
 
-PUBLIC ARCHIVE *ARCHIVE_create(const char *name);
-PUBLIC void ARCHIVE_delete(ARCHIVE *arch);
-PUBLIC void ARCHIVE_load(ARCHIVE *arch);
+ARCHIVE *ARCHIVE_create(const char *name);
+void ARCHIVE_delete(ARCHIVE *arch);
+void ARCHIVE_load(ARCHIVE *arch);
 
-PUBLIC bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
+bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
 
-PUBLIC bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
+bool ARCHIVE_read(ARCHIVE *arch, int pos, void *buffer, int len);
 
-PUBLIC bool ARCHIVE_exist(ARCHIVE *arch, const char *path);
-PUBLIC void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info);
-PUBLIC bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path);
+bool ARCHIVE_exist(ARCHIVE *arch, const char *path);
+void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info);
+bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path);
 
-PUBLIC void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int attr);
-PUBLIC bool ARCHIVE_dir_next(char **name, int *len, int attr);
+void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int attr);
+bool ARCHIVE_dir_next(char **name, int *len, int attr);
 
-PUBLIC bool ARCHIVE_get_current(ARCHIVE **parch);
+bool ARCHIVE_get_current(ARCHIVE **parch);
 
-PUBLIC bool ARCHIVE_check_addr(char *addr);
+bool ARCHIVE_check_addr(char *addr);
 
 #endif

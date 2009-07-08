@@ -87,10 +87,10 @@ typedef
   ARCH_FIND;
 
 
-PUBLIC ARCH *ARCH_open(const char *path);
-PUBLIC void ARCH_close(ARCH *arch);
-PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find);
-PUBLIC bool ARCH_read(ARCH *arch, int pos, void *buffer, int len);
-PUBLIC void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path);
+ARCH *ARCH_open(const char *path);
+void ARCH_close(ARCH *arch);
+bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find);
+bool ARCH_read(ARCH *arch, int pos, void *buffer, int len);
+void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path);
 
 #endif

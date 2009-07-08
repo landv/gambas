@@ -46,7 +46,7 @@ extern GB_DESC NATIVE_Enum[];
 
 #endif
 
-PUBLIC CENUM *CENUM_create(void *object);
-PUBLIC CENUM *CENUM_get_next(CENUM *);
+CENUM *CENUM_create(void *object);
+CENUM *CENUM_get_next(CENUM *);
 
 #endif

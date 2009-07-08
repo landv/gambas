@@ -412,7 +412,7 @@ CLASS *CLASS_find(const char *name);
 
 TABLE *CLASS_get_table(void);
 
-boolean CLASS_inherits(CLASS *class, CLASS *parent);
+bool CLASS_inherits(CLASS *class, CLASS *parent);
 
 CLASS *CLASS_replace_global(const char *name);
 CLASS *CLASS_look_global(const char *name, int len);
@@ -420,7 +420,7 @@ CLASS *CLASS_find_global(const char *name);
 CLASS *CLASS_check_global(char *name);
 
 void CLASS_ref(void *object);
-bool CLASS_unref(void *object, boolean can_free);
+bool CLASS_unref(void *object, bool can_free);
 void CLASS_free(void *object);
 void CLASS_release(CLASS *class, char *data);
 
@@ -434,7 +434,7 @@ void CLASS_sort(CLASS *class);
 void CLASS_inheritance(CLASS *class, CLASS *parent);
 void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *first);
 void CLASS_make_event(CLASS *class, int *first);
-void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static);
+void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static);
 
 void *CLASS_auto_create(CLASS *class, int nparam);
 

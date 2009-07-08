@@ -25,11 +25,11 @@
 #ifndef __GB_COMMON_SWAP_H
 #define __GB_COMMON_SWAP_H
 
-PUBLIC void SWAP_int(int *val);
-PUBLIC void SWAP_ints(int *val, int n);
+void SWAP_int(int *val);
+void SWAP_ints(int *val, int n);
 
-PUBLIC void SWAP_short(short *val);
-PUBLIC void SWAP_double(double *val);
+void SWAP_short(short *val);
+void SWAP_double(double *val);
 
 #define SWAP_int64(_val) SWAP_double((double *)_val)
 

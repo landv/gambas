@@ -33,7 +33,7 @@
 #include "gb_common_buffer_temp.h"
 #include "gb_common_swap_temp.h"
 
-PUBLIC sigjmp_buf CHECK_jump;
+sigjmp_buf CHECK_jump;
 
 static sighandler_t _oldsegv;
 static sighandler_t _oldbus;
@@ -41,7 +41,7 @@ static int _dummy;
 static volatile int _got_error;
 
 
-PUBLIC void COMMON_init(void)
+void COMMON_init(void)
 {
 }
 
@@ -52,25 +52,25 @@ static void signal_error()
   siglongjmp(CHECK_jump, 1);
 }
 
-PUBLIC void CHECK_enter(void)
+void CHECK_enter(void)
 {
   _got_error = FALSE;
   _oldsegv = signal(SIGSEGV, signal_error);
   _oldbus = signal(SIGBUS, signal_error);
 }
 
-PUBLIC void CHECK_leave(void)
+void CHECK_leave(void)
 {
   signal(SIGSEGV, _oldsegv);
   signal(SIGBUS, _oldbus);
 }
 
-PUBLIC bool CHECK_got_error(void)
+bool CHECK_got_error(void)
 {
   return _got_error;
 }
 
-PUBLIC bool CHECK_address(void *ptr, size_t len)
+bool CHECK_address(void *ptr, size_t len)
 {
   offset_t i;
 
@@ -84,7 +84,7 @@ PUBLIC bool CHECK_address(void *ptr, size_t len)
   return _got_error;
 }
 
-PUBLIC bool CHECK_strlen(char *ptr, size_t *len)
+bool CHECK_strlen(char *ptr, size_t *len)
 {
   size_t l = 0;
 

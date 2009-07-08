@@ -48,7 +48,7 @@
 
 //#define DEBUG
 
-static boolean is_init = FALSE;
+static bool is_init = FALSE;
 static COMPILE *comp;
 static const char *source_ptr;
 static int source_length;
@@ -523,11 +523,11 @@ static void add_identifier(bool no_res)
   int type;
   int flag;
   PATTERN last_pattern;
-  boolean not_first;
-  boolean can_be_reserved;
-  boolean can_be_subr;
-  boolean is_type;
-  boolean last_func, last_declare, last_type;
+  bool not_first;
+  bool can_be_reserved;
+  bool can_be_subr;
+  bool is_type;
+  bool last_func, last_declare, last_type;
   
   last_pattern = get_last_pattern();
   

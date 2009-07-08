@@ -43,7 +43,7 @@
 DEBUG_INTERFACE DEBUG;
 DEBUG_INFO *DEBUG_info = NULL;
 
-static boolean calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
+static bool calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
   int i;
   ushort pos = addr - func->code;

@@ -24,7 +24,7 @@
 
 #if SMT_TYPE == 1
 
-PUBLIC void SMT_NAME(void)
+void SMT_NAME(void)
 {
   #ifdef SMT_FLOAT
 
@@ -151,7 +151,7 @@ __END:
 
 #if SMT_TYPE == 2
 
-PUBLIC void SMT_NAME(void)
+void SMT_NAME(void)
 {
 
   #ifdef SMT_FLOAT
@@ -314,7 +314,7 @@ __END:
 
 #if SMT_TYPE == 3
 
-PUBLIC void SMT_NAME(void)
+void SMT_NAME(void)
 {
 
   static void *jump[] = {

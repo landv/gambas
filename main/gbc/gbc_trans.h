@@ -112,112 +112,112 @@ EXTERN int TRANS_in_affectation;
 #endif
 
 
-PUBLIC void TRANS_reset(void);
-PUBLIC boolean TRANS_newline(void);
-/*PUBLIC boolean TRANS_type(boolean check_as, boolean square, boolean array, boolean new, TRANS_DECL *result);*/
-PUBLIC boolean TRANS_type(int flag, TRANS_DECL *result);
-PUBLIC boolean TRANS_get_number(int index, TRANS_NUMBER *result);
-PUBLIC boolean TRANS_check_declaration(void);
-PUBLIC PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current);
+void TRANS_reset(void);
+bool TRANS_newline(void);
+/*PUBLIC bool TRANS_type(bool check_as, bool square, bool array, bool new, TRANS_DECL *result);*/
+bool TRANS_type(int flag, TRANS_DECL *result);
+bool TRANS_get_number(int index, TRANS_NUMBER *result);
+bool TRANS_check_declaration(void);
+PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current);
 
-PUBLIC void TRANS_want(int reserved, char *msg);
-PUBLIC boolean TRANS_is(int reserved);
-PUBLIC void TRANS_ignore(int reserved);
-PUBLIC int TRANS_get_class(PATTERN pattern);
-PUBLIC bool TRANS_is_end_function(bool is_proc, PATTERN *look);
+void TRANS_want(int reserved, char *msg);
+bool TRANS_is(int reserved);
+void TRANS_ignore(int reserved);
+int TRANS_get_class(PATTERN pattern);
+bool TRANS_is_end_function(bool is_proc, PATTERN *look);
 char *TRANS_get_num_desc(int num);
 
 /* trans_code.c */
 
-PUBLIC void TRANS_code(void);
-PUBLIC boolean TRANS_init_var(TRANS_DECL *decl);
-PUBLIC void TRANS_statement(void);
-PUBLIC void TRANS_init_optional(TRANS_PARAM *param);
+void TRANS_code(void);
+bool TRANS_init_var(TRANS_DECL *decl);
+void TRANS_statement(void);
+void TRANS_init_optional(TRANS_PARAM *param);
 
 /* trans_expr.c */
 
-PUBLIC void TRANS_expression(bool check);
-PUBLIC void TRANS_ignore_expression();
-PUBLIC void TRANS_reference(void);
-PUBLIC boolean TRANS_affectation(bool check);
-PUBLIC void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
-PUBLIC void TRANS_new(void);
+void TRANS_expression(bool check);
+void TRANS_ignore_expression();
+void TRANS_reference(void);
+bool TRANS_affectation(bool check);
+void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
+void TRANS_new(void);
 
 /* trans_tree.c */
 
 #define RS_UNARY (-1)
 
-PUBLIC TRANS_TREE *TRANS_tree(bool check_statement);
+TRANS_TREE *TRANS_tree(bool check_statement);
 
 /* trans_ctrl.c */
 
-PUBLIC void TRANS_control_init(void);
-PUBLIC void TRANS_control_exit(void);
+void TRANS_control_init(void);
+void TRANS_control_exit(void);
 
-PUBLIC void TRANS_if(void);
-PUBLIC void TRANS_else(void);
-PUBLIC void TRANS_endif(void);
-PUBLIC void TRANS_goto(void);
-PUBLIC void TRANS_do(PATTERN type);
-PUBLIC void TRANS_loop(PATTERN type);
-PUBLIC void TRANS_select(void);
-PUBLIC void TRANS_case(void);
-PUBLIC void TRANS_default(void);
-PUBLIC void TRANS_end_select(void);
-PUBLIC void TRANS_break(void);
-PUBLIC void TRANS_continue(void);
-PUBLIC void TRANS_return(void);
-PUBLIC void TRANS_for(void);
-PUBLIC void TRANS_for_each(void);
-PUBLIC void TRANS_next(void);
-PUBLIC void TRANS_try(void);
-PUBLIC void TRANS_finally(void);
-PUBLIC void TRANS_catch(void);
-PUBLIC void TRANS_label(void);
-PUBLIC void TRANS_with(void);
-PUBLIC void TRANS_use_with(void);
-PUBLIC void TRANS_end_with(void);
-PUBLIC void TRANS_raise(void);
+void TRANS_if(void);
+void TRANS_else(void);
+void TRANS_endif(void);
+void TRANS_goto(void);
+void TRANS_do(PATTERN type);
+void TRANS_loop(PATTERN type);
+void TRANS_select(void);
+void TRANS_case(void);
+void TRANS_default(void);
+void TRANS_end_select(void);
+void TRANS_break(void);
+void TRANS_continue(void);
+void TRANS_return(void);
+void TRANS_for(void);
+void TRANS_for_each(void);
+void TRANS_next(void);
+void TRANS_try(void);
+void TRANS_finally(void);
+void TRANS_catch(void);
+void TRANS_label(void);
+void TRANS_with(void);
+void TRANS_use_with(void);
+void TRANS_end_with(void);
+void TRANS_raise(void);
 
 /* trans_subr.c */
 
-PUBLIC void TRANS_subr(int subr, int nparam);
+void TRANS_subr(int subr, int nparam);
 
-PUBLIC void TRANS_print(void);
-PUBLIC void TRANS_input(void);
-PUBLIC void TRANS_read(void);
-PUBLIC void TRANS_write(void);
-PUBLIC void TRANS_open(void);
-PUBLIC void TRANS_pipe(void);
-PUBLIC void TRANS_close(void);
-PUBLIC void TRANS_lock(void);
-PUBLIC void TRANS_unlock(void);
-PUBLIC void TRANS_seek(void);
-PUBLIC void TRANS_line_input(void);
-PUBLIC void TRANS_flush(void);
-PUBLIC void TRANS_stop(void);
-PUBLIC void TRANS_quit(void);
-PUBLIC void TRANS_exec(void);
-PUBLIC void TRANS_shell(void);
-PUBLIC void TRANS_wait(void);
-PUBLIC void TRANS_sleep(void);
-PUBLIC void TRANS_kill(void);
-PUBLIC void TRANS_move(void);
-PUBLIC void TRANS_inc(void);
-PUBLIC void TRANS_dec(void);
-PUBLIC void TRANS_swap(void);
-PUBLIC void TRANS_mkdir(void);
-PUBLIC void TRANS_rmdir(void);
-PUBLIC void TRANS_use(void);
-PUBLIC void TRANS_copy(void);
-PUBLIC void TRANS_link(void);
-PUBLIC void TRANS_input_from(void);
-PUBLIC void TRANS_output_to(void);
-PUBLIC void TRANS_debug(void);
-PUBLIC void TRANS_error(void);
-PUBLIC void TRANS_scan(void);
-PUBLIC void TRANS_randomize(void);
-PUBLIC void TRANS_mid(void);
+void TRANS_print(void);
+void TRANS_input(void);
+void TRANS_read(void);
+void TRANS_write(void);
+void TRANS_open(void);
+void TRANS_pipe(void);
+void TRANS_close(void);
+void TRANS_lock(void);
+void TRANS_unlock(void);
+void TRANS_seek(void);
+void TRANS_line_input(void);
+void TRANS_flush(void);
+void TRANS_stop(void);
+void TRANS_quit(void);
+void TRANS_exec(void);
+void TRANS_shell(void);
+void TRANS_wait(void);
+void TRANS_sleep(void);
+void TRANS_kill(void);
+void TRANS_move(void);
+void TRANS_inc(void);
+void TRANS_dec(void);
+void TRANS_swap(void);
+void TRANS_mkdir(void);
+void TRANS_rmdir(void);
+void TRANS_use(void);
+void TRANS_copy(void);
+void TRANS_link(void);
+void TRANS_input_from(void);
+void TRANS_output_to(void);
+void TRANS_debug(void);
+void TRANS_error(void);
+void TRANS_scan(void);
+void TRANS_randomize(void);
+void TRANS_mid(void);
 
 #endif
 

@@ -33,8 +33,8 @@
 
 //#define DEBUG_ME 1
 
-PUBLIC void *EVENT_Last = NULL;
-PUBLIC char *EVENT_Name = NULL;
+void *EVENT_Last = NULL;
+char *EVENT_Name = NULL;
 
 static EVENT_POST *_post_list = NULL;
 
@@ -58,7 +58,7 @@ static void check_event_method(CLASS *class, const char *name, CLASS_DESC_METHOD
 }
 
 
-PUBLIC void EVENT_search(CLASS *class, ushort *event, const char *name, OBJECT *parent)
+void EVENT_search(CLASS *class, ushort *event, const char *name, OBJECT *parent)
 {
 	//ushort *event;
 	//ushort *self;
@@ -143,7 +143,7 @@ PUBLIC void EVENT_search(CLASS *class, ushort *event, const char *name, OBJECT *
 
 
 
-PUBLIC void EVENT_exit()
+void EVENT_exit()
 {
   EVENT_POST *ep;
 
@@ -178,12 +178,12 @@ static void post(void (*func)(), int nparam, intptr_t param, intptr_t param2)
 }
 
 
-PUBLIC void EVENT_post(void (*func)(), intptr_t param)
+void EVENT_post(void (*func)(), intptr_t param)
 {
 	post(func, 1, param, 0);
 }
 
-PUBLIC void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2)
+void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2)
 {
 	post(func, 2, param, param2);
 }
@@ -194,7 +194,7 @@ static void post_event(void *object, int event)
 	GB_Unref(&object);
 }
 
-PUBLIC void EVENT_post_event(void *object, int event)
+void EVENT_post_event(void *object, int event)
 {
 	/*if (!GB_CanRaise(object, event))
 	{
@@ -207,7 +207,7 @@ PUBLIC void EVENT_post_event(void *object, int event)
 }
 
 
-PUBLIC bool EVENT_check_post(void)
+bool EVENT_check_post(void)
 {
   EVENT_POST *ep;
   EVENT_POST save;

@@ -61,7 +61,7 @@ typedef
   HEADER_SPECIAL;
 
 
-PUBLIC void HEADER_do(void);
+void HEADER_do(void);
 
 #endif
 

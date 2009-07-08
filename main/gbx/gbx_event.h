@@ -46,12 +46,12 @@ typedef
   EVENT_POST;
 
 
-PUBLIC void EVENT_search(CLASS *class, ushort *event, const char *name, OBJECT *parent);
-PUBLIC void EVENT_post(void (*func)(), intptr_t param);
-PUBLIC void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2);
-PUBLIC bool EVENT_check_post(void);
-PUBLIC void EVENT_init(void);
-PUBLIC void EVENT_exit(void);
-PUBLIC void EVENT_post_event(void *object, int event);
+void EVENT_search(CLASS *class, ushort *event, const char *name, OBJECT *parent);
+void EVENT_post(void (*func)(), intptr_t param);
+void EVENT_post2(void (*func)(), intptr_t param, intptr_t param2);
+bool EVENT_check_post(void);
+void EVENT_init(void);
+void EVENT_exit(void);
+void EVENT_post_event(void *object, int event);
 
 #endif

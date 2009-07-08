@@ -30,10 +30,10 @@
 EXTERN sigjmp_buf CHECK_jump;
 #endif
 
-PUBLIC void CHECK_enter(void);
-PUBLIC void CHECK_leave(void);
-PUBLIC bool CHECK_got_error(void);
-PUBLIC bool CHECK_address(void *ptr, size_t len);
-PUBLIC bool CHECK_strlen(char *ptr, size_t *len);
+void CHECK_enter(void);
+void CHECK_leave(void);
+bool CHECK_got_error(void);
+bool CHECK_address(void *ptr, size_t len);
+bool CHECK_strlen(char *ptr, size_t *len);
 
 #endif

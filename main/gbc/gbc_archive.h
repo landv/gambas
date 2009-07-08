@@ -48,10 +48,10 @@ EXTERN bool ARCH_swap;
 
 #endif
 
-PUBLIC void ARCH_init(void);
-PUBLIC void ARCH_exit(void);
-PUBLIC void ARCH_define_project(const char *project);
-PUBLIC void ARCH_define_output(const char *path);
-PUBLIC int ARCH_add_file(const char *path);
+void ARCH_init(void);
+void ARCH_exit(void);
+void ARCH_define_project(const char *project);
+void ARCH_define_output(const char *path);
+int ARCH_add_file(const char *path);
 
 #endif

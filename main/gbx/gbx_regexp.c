@@ -122,8 +122,8 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 
     if (cp == '[' && len_pattern > 0)
     {
-      boolean not = FALSE;
-      boolean in = FALSE;
+      bool not = FALSE;
+      bool in = FALSE;
       unsigned char cb = 0;
 
       _next_pattern();

@@ -148,7 +148,7 @@ static HASH_FUNC get_hash_func(HASH_TABLE *hash)
 }
 
 
-PUBLIC void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode)
+void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode)
 {
   HASH_TABLE *hash_table;
   /*int i;*/
@@ -169,7 +169,7 @@ PUBLIC void HASH_TABLE_create(HASH_TABLE **hash, size_t s_value, HASH_FLAG mode)
 }
 
 
-PUBLIC void HASH_TABLE_delete(HASH_TABLE **hash)
+void HASH_TABLE_delete(HASH_TABLE **hash)
 {
   int i;
   HASH_TABLE *hash_table = *hash;
@@ -185,7 +185,7 @@ PUBLIC void HASH_TABLE_delete(HASH_TABLE **hash)
 }
 
 
-PUBLIC int HASH_TABLE_size(HASH_TABLE *hash_table)
+int HASH_TABLE_size(HASH_TABLE *hash_table)
 {
   return hash_table->nnodes;
 }
@@ -256,7 +256,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
 }
 
 
-PUBLIC void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len)
+void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len)
 {
   HASH_NODE *node;
 
@@ -267,7 +267,7 @@ PUBLIC void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len)
 }
 
 
-PUBLIC void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len)
+void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len)
 {
   HASH_NODE **node;
 
@@ -288,7 +288,7 @@ PUBLIC void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len)
 }
 
 
-PUBLIC void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len)
+void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len)
 {
   HASH_NODE **node, *dest;
 
@@ -324,7 +324,7 @@ PUBLIC void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len)
 }
 
 
-PUBLIC void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter)
+void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter)
 {
   #ifdef KEEP_ORDER
 
@@ -471,7 +471,7 @@ static void hash_nodes_destroy(HASH_NODE *hash_node)
 }
 
 
-PUBLIC void HASH_TABLE_get_key(HASH_TABLE *hash_table, HASH_NODE *node, char **key, int *len)
+void HASH_TABLE_get_key(HASH_TABLE *hash_table, HASH_NODE *node, char **key, int *len)
 {
   HASH_KEY *node_key;
   
@@ -486,7 +486,7 @@ PUBLIC void HASH_TABLE_get_key(HASH_TABLE *hash_table, HASH_NODE *node, char **k
 }
 
 
-PUBLIC bool HASH_TABLE_get_last_key(HASH_TABLE *hash_table, char **key, int *len)
+bool HASH_TABLE_get_last_key(HASH_TABLE *hash_table, char **key, int *len)
 {
   if (hash_table->last == NULL)
     return TRUE;

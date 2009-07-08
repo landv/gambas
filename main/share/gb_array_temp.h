@@ -32,7 +32,7 @@
 
 
 
-PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, int inc)
+void ARRAY_create_with_size(void *p_data, size_t size, int inc)
 {
   ARRAY *array;
 
@@ -49,7 +49,7 @@ PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, int inc)
 }
 
 
-PUBLIC void ARRAY_delete(void *p_data)
+void ARRAY_delete(void *p_data)
 {
   void **data = (void **)p_data;
   ARRAY *alloc = DATA_TO_ARRAY(*data);
@@ -62,7 +62,7 @@ PUBLIC void ARRAY_delete(void *p_data)
   *data = NULL;
 }
 
-PUBLIC void *ARRAY_add_data(void *p_data, int num, boolean zero)
+void *ARRAY_add_data(void *p_data, int num, bool zero)
 {
   void **data = (void **)p_data;
   register ARRAY *array = DATA_TO_ARRAY(*data);
@@ -87,7 +87,7 @@ PUBLIC void *ARRAY_add_data(void *p_data, int num, boolean zero)
   return ptr;
 }
 
-PUBLIC void *ARRAY_add_data_one(void *p_data, boolean zero)
+void *ARRAY_add_data_one(void *p_data, bool zero)
 {
   void **data = (void **)p_data;
   register ARRAY *array = DATA_TO_ARRAY(*data);
@@ -114,7 +114,7 @@ PUBLIC void *ARRAY_add_data_one(void *p_data, boolean zero)
 
 
 
-PUBLIC void ARRAY_remove_last(void *p_data)
+void ARRAY_remove_last(void *p_data)
 {
   void **data = (void **)p_data;
   ARRAY *array = DATA_TO_ARRAY(*data);
@@ -126,7 +126,7 @@ PUBLIC void ARRAY_remove_last(void *p_data)
 }
 
 #if 0
-PUBLIC void *ARRAY_get(void *data, int pos)
+void *ARRAY_get(void *data, int pos)
 {
   ARRAY *array = DATA_TO_ARRAY(data);
 
@@ -134,7 +134,7 @@ PUBLIC void *ARRAY_get(void *data, int pos)
 }
 #endif
 
-PUBLIC void *ARRAY_insert_many(void *p_data, int pos, int count)
+void *ARRAY_insert_many(void *p_data, int pos, int count)
 {
   void **data;
   ARRAY *array;
@@ -162,7 +162,7 @@ PUBLIC void *ARRAY_insert_many(void *p_data, int pos, int count)
 }
 
 
-PUBLIC void ARRAY_remove_many(void *p_data, int pos, int count)
+void ARRAY_remove_many(void *p_data, int pos, int count)
 {
   void **data = (void **)p_data;
   ARRAY *array = DATA_TO_ARRAY(*data);
@@ -195,7 +195,7 @@ PUBLIC void ARRAY_remove_many(void *p_data, int pos, int count)
 }
 
 
-PUBLIC void ARRAY_qsort(void *data, ARRAY_COMP_FUNC cmp)
+void ARRAY_qsort(void *data, ARRAY_COMP_FUNC cmp)
 {
   ARRAY *array = DATA_TO_ARRAY(data);
 

@@ -76,59 +76,59 @@ typedef
 
 #ifndef GBX_INFO
 
-PUBLIC const char *FILE_cat(const char *path, ...);
-PUBLIC char *FILE_buffer(void);
-PUBLIC int FILE_buffer_length(void);
-PUBLIC const char *FILE_get_dir(const char *path);
-PUBLIC const char *FILE_get_name(const char *path);
-PUBLIC const char *FILE_get_ext(const char *path);
-PUBLIC const char *FILE_get_basename(const char *path);
+const char *FILE_cat(const char *path, ...);
+char *FILE_buffer(void);
+int FILE_buffer_length(void);
+const char *FILE_get_dir(const char *path);
+const char *FILE_get_name(const char *path);
+const char *FILE_get_ext(const char *path);
+const char *FILE_get_basename(const char *path);
 /*PUBLIC const char *FILE_get(const char *path);*/
-PUBLIC const char *FILE_set_ext(const char *path, const char *ext);
+const char *FILE_set_ext(const char *path, const char *ext);
 
-PUBLIC const char *FILE_getcwd(const char *subdir);
+const char *FILE_getcwd(const char *subdir);
 #define FILE_get_current_dir() FILE_getcwd(NULL)
 
-PUBLIC const char *FILE_readlink(const char *link);
-PUBLIC bool FILE_is_dir(const char *path);
+const char *FILE_readlink(const char *link);
+bool FILE_is_dir(const char *path);
 #define FILE_isdir FILE_is_dir
 
-PUBLIC const char *FILE_find_gambas(void);
+const char *FILE_find_gambas(void);
 
-PUBLIC bool FILE_exist(const char *path);
+bool FILE_exist(const char *path);
 
 #ifdef PROJECT_EXEC
 
-PUBLIC void FILE_init(void);
-PUBLIC void FILE_remove_temp_file(void);
-PUBLIC void FILE_exit(void);
+void FILE_init(void);
+void FILE_remove_temp_file(void);
+void FILE_exit(void);
 
-PUBLIC bool FILE_exist_real(const char *path);
+bool FILE_exist_real(const char *path);
 
-PUBLIC void FILE_stat(const char *path, FILE_STAT *info, bool follow);
-PUBLIC void FILE_dir_first(const char *path, const char *pattern, int attr);
-PUBLIC bool FILE_dir_next(char **path, int *len);
+void FILE_stat(const char *path, FILE_STAT *info, bool follow);
+void FILE_dir_first(const char *path, const char *pattern, int attr);
+bool FILE_dir_next(char **path, int *len);
 
-PUBLIC void FILE_unlink(const char *path);
-PUBLIC void FILE_rmdir(const char *path);
-PUBLIC void FILE_mkdir(const char *path);
-PUBLIC void FILE_rename(const char *src, const char *dst);
-PUBLIC void FILE_copy(const char *src, const char *dst);
+void FILE_unlink(const char *path);
+void FILE_rmdir(const char *path);
+void FILE_mkdir(const char *path);
+void FILE_rename(const char *src, const char *dst);
+void FILE_copy(const char *src, const char *dst);
 
-PUBLIC bool FILE_access(const char *path, int mode);
-PUBLIC void FILE_link(const char *src, const char *dst);
+bool FILE_access(const char *path, int mode);
+void FILE_link(const char *src, const char *dst);
 
-PUBLIC char *FILE_make_temp(int *len, char *pattern);
+char *FILE_make_temp(int *len, char *pattern);
 
-PUBLIC void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr);
+void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*afterfound)(const char *), int attr);
 
-PUBLIC void FILE_make_path_dir(const char *path);
+void FILE_make_path_dir(const char *path);
 
-PUBLIC int64_t FILE_free(const char *path);
+int64_t FILE_free(const char *path);
 
 #else
 
-PUBLIC time_t FILE_get_time(const char *path);
+time_t FILE_get_time(const char *path);
 
 #endif
 

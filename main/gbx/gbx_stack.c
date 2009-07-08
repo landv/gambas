@@ -123,7 +123,7 @@ void STACK_pop_frame(STACK_CONTEXT *context)
   //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
 }
 
-boolean STACK_has_error_handler(void)
+bool STACK_has_error_handler(void)
 {
   int i;
 

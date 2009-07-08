@@ -61,7 +61,7 @@ static void dump_name(int index)
 }
 
 
-static void dump_type(TYPE type, boolean as)
+static void dump_type(TYPE type, bool as)
 {
   int value;
   TYPE_ID id;
@@ -134,7 +134,7 @@ static void dump_function(FUNCTION *func)
 
 
 
-PUBLIC void CLASS_dump(void)
+void CLASS_dump(void)
 {
   int i;
   TYPE type;
@@ -562,7 +562,7 @@ static void insert_class_info(CLASS *class, FILE *fw)
 	}
 }
 
-PUBLIC void CLASS_export(void)
+void CLASS_export(void)
 {
 	FILE *fw = NULL;
 	FILE *fr;

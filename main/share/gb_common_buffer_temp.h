@@ -26,14 +26,14 @@
 
 #include "gb_common.h"
 
-PUBLIC char COMMON_buffer[256];
-PUBLIC int COMMON_pos;
+char COMMON_buffer[256];
+int COMMON_pos;
 
 static char *common_buffer;
 static int common_len;
 static int common_last;
 
-PUBLIC void COMMON_buffer_init(char *str, int len)
+void COMMON_buffer_init(char *str, int len)
 {
   common_buffer = str;
   common_len = len;
@@ -42,7 +42,7 @@ PUBLIC void COMMON_buffer_init(char *str, int len)
 }
 
 
-PUBLIC int COMMON_look_char(void)
+int COMMON_look_char(void)
 {
   if (COMMON_pos >= common_len)
     return (-1);
@@ -51,7 +51,7 @@ PUBLIC int COMMON_look_char(void)
 }
 
 
-PUBLIC int COMMON_get_char(void)
+int COMMON_get_char(void)
 {
   if (COMMON_pos >= common_len)
     common_last = (-1);
@@ -62,13 +62,13 @@ PUBLIC int COMMON_get_char(void)
 }
 
 
-PUBLIC int COMMON_last_char(void)
+int COMMON_last_char(void)
 {
   return common_last;
 }
 
 
-PUBLIC int COMMON_put_char(char c)
+int COMMON_put_char(char c)
 {
   if (COMMON_pos >= common_len)
     return (-1);
@@ -78,7 +78,7 @@ PUBLIC int COMMON_put_char(char c)
 }
 
 
-PUBLIC void COMMON_jump_space(void)
+void COMMON_jump_space(void)
 {
   int c;
 
@@ -92,13 +92,13 @@ PUBLIC void COMMON_jump_space(void)
 }
 
 
-PUBLIC char *COMMON_get_current(void)
+char *COMMON_get_current(void)
 {
   return &common_buffer[COMMON_pos];
 }
 
 
-PUBLIC int COMMON_get_size_left(void)
+int COMMON_get_size_left(void)
 {
   return common_len - COMMON_pos;
 }

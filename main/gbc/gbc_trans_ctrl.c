@@ -570,7 +570,7 @@ void TRANS_goto()
 
 void TRANS_do(PATTERN type)
 {
-  boolean is_until;
+  bool is_until;
 
   control_enter(type);
   control_set_value(CODE_get_current_pos());
@@ -605,7 +605,7 @@ void TRANS_loop(PATTERN type)
 {
   ushort pos;
 
-  boolean is_until;
+  bool is_until;
 
   if (type == RS_LOOP)
     control_check(RS_DO, "LOOP without DO", "Unexpected LOOP");
@@ -647,7 +647,7 @@ void TRANS_loop(PATTERN type)
 }
 
 
-static void trans_select_break(boolean do_not_add_pos)
+static void trans_select_break(bool do_not_add_pos)
 {
 	BEGIN_NO_BREAK
 	{

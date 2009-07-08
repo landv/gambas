@@ -816,7 +816,7 @@ static bool header_library(void)
 }
 
 
-PUBLIC void HEADER_do(void)
+void HEADER_do(void)
 {
   union {
     TRANS_DECL decl;

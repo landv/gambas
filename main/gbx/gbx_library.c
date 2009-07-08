@@ -396,7 +396,7 @@ void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface)
 }
 
 
-boolean LIBRARY_get_interface_by_name(const char *name, int version, void *iface)
+bool LIBRARY_get_interface_by_name(const char *name, int version, void *iface)
 {
   COMPONENT *comp;
 
@@ -486,7 +486,7 @@ void LIBRARY_load(LIBRARY *lib)
 	lib->info = (int(*)())get_symbol(lib, LIB_INFO, FALSE);
 
   /* Initialisation */
-  lib->persistent = (boolean)(*func)();
+  lib->persistent = (bool)(*func)();
 
   /* Déclaration des classes */
   desc = get_symbol(lib, LIB_CLASS, FALSE);

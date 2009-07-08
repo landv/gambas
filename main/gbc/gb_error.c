@@ -84,7 +84,7 @@ void ERROR_define(const char *pattern, const char *arg[])
 {
   int n;
   uchar c;
-  boolean subst;
+  bool subst;
 
   void _add_char(uchar c)
   {

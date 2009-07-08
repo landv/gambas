@@ -68,7 +68,7 @@ static INLINE void VARIANT_keep(VARIANT *var)
   }
 }
 
-static INLINE boolean VARIANT_is_null(VARIANT *var)
+static INLINE bool VARIANT_is_null(VARIANT *var)
 {
   if (var->type == T_NULL)
     return TRUE;

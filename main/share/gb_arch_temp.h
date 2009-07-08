@@ -149,7 +149,7 @@ static void load_arch(ARCH *arch, const char *path)
 }
 
 
-PUBLIC ARCH *ARCH_open(const char *path)
+ARCH *ARCH_open(const char *path)
 {
   ARCH *arch;
 
@@ -160,7 +160,7 @@ PUBLIC ARCH *ARCH_open(const char *path)
   return arch;
 }
 
-PUBLIC void ARCH_close(ARCH *arch)
+void ARCH_close(ARCH *arch)
 {
   if (arch->fd)
   {
@@ -174,7 +174,7 @@ PUBLIC void ARCH_close(ARCH *arch)
 }
 
 
-PUBLIC void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path)
+void ARCH_get_absolute_path(const char *path, int len_path, char *abs_path, int *len_abs_path)
 {
   const char *p, *lp;
   char *ap;
@@ -239,7 +239,7 @@ PUBLIC void ARCH_get_absolute_path(const char *path, int len_path, char *abs_pat
 	*ap = 0;
 }
 
-PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
+bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 {
   int ind;
   ARCH_SYMBOL *sym;
@@ -298,7 +298,7 @@ PUBLIC bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *fin
 }
 
 
-PUBLIC bool ARCH_read(ARCH *arch, int pos, void *buffer, int len)
+bool ARCH_read(ARCH *arch, int pos, void *buffer, int len)
 {
   /*if (lseek(arch->fd, pos, SEEK_SET) < 0)
     return TRUE;

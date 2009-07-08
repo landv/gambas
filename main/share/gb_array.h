@@ -43,14 +43,14 @@ typedef
 #define ARRAY_create(data) ARRAY_create_with_size((data), sizeof(**(data)), 32)
 #define ARRAY_create_inc(data, inc) ARRAY_create_with_size((data), sizeof(**(data)), (inc))
 
-PUBLIC void ARRAY_create_with_size(void *p_data, size_t size, int inc);
-PUBLIC void ARRAY_delete(void *p_data);
+void ARRAY_create_with_size(void *p_data, size_t size, int inc);
+void ARRAY_delete(void *p_data);
 
 #define ARRAY_size(_data) (DATA_TO_ARRAY(_data)->size)
 #define ARRAY_count(_data) ((_data) ? DATA_TO_ARRAY(_data)->count : 0)
 
-PUBLIC void *ARRAY_add_data(void *p_data, int num, bool zero);
-PUBLIC void *ARRAY_add_data_one(void *p_data, bool zero);
+void *ARRAY_add_data(void *p_data, int num, bool zero);
+void *ARRAY_add_data_one(void *p_data, bool zero);
 
 #define ARRAY_add(_pdata) ARRAY_add_data_one(_pdata, FALSE)
 #define ARRAY_add_void(_pdata) ARRAY_add_data_one(_pdata, TRUE)
@@ -60,13 +60,13 @@ PUBLIC void *ARRAY_add_data_one(void *p_data, bool zero);
 //PUBLIC void *ARRAY_get(void *data, int pos);
 #define ARRAY_get(_data, _pos) ((char *)(_data) + DATA_TO_ARRAY(_data)->size * (_pos))
 
-PUBLIC void *ARRAY_insert_many(void *p_data, int pos, int count);
+void *ARRAY_insert_many(void *p_data, int pos, int count);
 #define ARRAY_insert(_pdata, _pos) ARRAY_insert_many(_pdata, _pos, 1);
-PUBLIC void ARRAY_remove_many(void *p_data, int pos, int count);
+void ARRAY_remove_many(void *p_data, int pos, int count);
 #define ARRAY_remove(_pdata, _pos) ARRAY_remove_many(_pdata, _pos, 1);
 
-PUBLIC void ARRAY_remove_last(void *p_data);
+void ARRAY_remove_last(void *p_data);
 
-PUBLIC void ARRAY_qsort(void *data, ARRAY_COMP_FUNC cmp);
+void ARRAY_qsort(void *data, ARRAY_COMP_FUNC cmp);
 
 #endif

@@ -73,23 +73,23 @@ enum {
 
 #define DATE_NDAY_BC 1753350
 
-PUBLIC void DATE_init(void);
-PUBLIC DATE_SERIAL *DATE_split(VALUE *value);
-PUBLIC bool DATE_make(DATE_SERIAL *date, VALUE *val);
-PUBLIC void DATE_from_time(time_t time, int usec, VALUE *val);
-PUBLIC void DATE_now(VALUE *val);
+void DATE_init(void);
+DATE_SERIAL *DATE_split(VALUE *value);
+bool DATE_make(DATE_SERIAL *date, VALUE *val);
+void DATE_from_time(time_t time, int usec, VALUE *val);
+void DATE_now(VALUE *val);
 
-PUBLIC int DATE_to_string(char *buffer, VALUE *value);
-PUBLIC boolean DATE_from_string(const char *str, int len, VALUE *val, boolean local);
-PUBLIC int DATE_comp_value(VALUE *date1, VALUE *date2);
-PUBLIC int DATE_comp(DATE *date1, DATE *date2);
+int DATE_to_string(char *buffer, VALUE *value);
+bool DATE_from_string(const char *str, int len, VALUE *val, bool local);
+int DATE_comp_value(VALUE *date1, VALUE *date2);
+int DATE_comp(DATE *date1, DATE *date2);
 
-PUBLIC bool DATE_timer(double *time, int from_start);
+bool DATE_timer(double *time, int from_start);
 
-PUBLIC void DATE_void_value(VALUE *value);
+void DATE_void_value(VALUE *value);
 
-PUBLIC void DATE_add(VALUE *date, int period, int val);
-PUBLIC int DATE_diff(VALUE *date1, VALUE *date2, int period);
+void DATE_add(VALUE *date, int period, int val);
+int DATE_diff(VALUE *date1, VALUE *date2, int period);
 
 #endif
 

@@ -493,7 +493,7 @@ static void fill_buffer(STREAM *stream, char *addr)
 }
 
 
-static void input(STREAM *stream, char **addr, boolean line)
+static void input(STREAM *stream, char **addr, bool line)
 {
 	int len = 0;
 	int start;

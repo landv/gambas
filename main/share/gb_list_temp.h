@@ -32,7 +32,7 @@
 #define TO_LIST(_node) ((LIST *)(((char *)_node) + ((char *)list - (char *)node)))
 
 
-PUBLIC void LIST_insert(void *p_first, void *node, LIST *list)
+void LIST_insert(void *p_first, void *node, LIST *list)
 {
   void **first = (void **)p_first;
   void *last;
@@ -56,7 +56,7 @@ PUBLIC void LIST_insert(void *p_first, void *node, LIST *list)
 }
 
 
-PUBLIC void LIST_remove(void *p_first, void *node, LIST *list)
+void LIST_remove(void *p_first, void *node, LIST *list)
 {
   void **first = (void **)p_first;
   void *next, *prev, *last;

@@ -123,7 +123,7 @@ void *ARRAY_get_address(ARRAY_DESC *desc, void *addr, int nparam, int *param)
 {
   int max;
   int i;
-  boolean stop = FALSE;
+  bool stop = FALSE;
   offset_t pos = 0;
 
   for (i = 0;; i++)

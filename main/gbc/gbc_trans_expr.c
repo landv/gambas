@@ -151,7 +151,7 @@ static void trans_class(int index)
 }
 
 
-static void trans_identifier(int index, boolean first, boolean point, PATTERN next)
+static void trans_identifier(int index, bool first, bool point, PATTERN next)
 {
   CLASS_SYMBOL *sym = CLASS_get_symbol(JOB->class, index);
   bool is_static;
@@ -419,13 +419,13 @@ static void trans_expr_from_tree(TRANS_TREE *tree)
 }
 
 
-PUBLIC void TRANS_new(void)
+void TRANS_new(void)
 {
   int index;
   int i, nparam;
-  boolean array = FALSE;
-  boolean event = FALSE;
-  boolean collection = FALSE;
+  bool array = FALSE;
+  bool event = FALSE;
+  bool collection = FALSE;
   bool check_param = FALSE;
 
   nparam = 0;
@@ -543,7 +543,7 @@ PUBLIC void TRANS_new(void)
 }
 
 
-PUBLIC void TRANS_expression(boolean check_statement)
+void TRANS_expression(bool check_statement)
 {
   TRANS_TREE *tree;
 
@@ -564,14 +564,14 @@ PUBLIC void TRANS_expression(boolean check_statement)
   }
 }
 
-PUBLIC void TRANS_ignore_expression()
+void TRANS_ignore_expression()
 {
   TRANS_TREE *tree = TRANS_tree(FALSE);
   ARRAY_delete(&tree);
 }
 
 
-PUBLIC void TRANS_reference(void)
+void TRANS_reference(void)
 {
   TRANS_expression(FALSE);
 
@@ -580,7 +580,7 @@ PUBLIC void TRANS_reference(void)
 }
 
 
-PUBLIC boolean TRANS_affectation(bool dup)
+bool TRANS_affectation(bool dup)
 {
   static TRANS_STATEMENT statement[] = {
     //{ RS_NEW, TRANS_new },

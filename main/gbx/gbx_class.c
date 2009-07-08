@@ -463,7 +463,7 @@ CLASS *CLASS_find_global(const char *name)
 }
 
 
-boolean CLASS_inherits(CLASS *class, CLASS *parent)
+bool CLASS_inherits(CLASS *class, CLASS *parent)
 {
 	for(;;)
 	{
@@ -634,7 +634,7 @@ void CLASS_ref(void *object)
 	fflush(stdout);
 }
 
-bool CLASS_unref(void *ob, boolean can_free)
+bool CLASS_unref(void *ob, bool can_free)
 {
 	OBJECT *object = (OBJECT *)ob;
 	
@@ -979,7 +979,7 @@ void CLASS_make_description(CLASS *class, CLASS_DESC *desc, int n_desc, int *fir
 /* 'all' means that size_dynamic is the entire size of the object, not just the size of the data */
 /* And check if the class is a stream */
 
-void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, boolean all, int size_static)
+void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static)
 {
 	if (class->parent)
 	{

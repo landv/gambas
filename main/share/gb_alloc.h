@@ -57,14 +57,14 @@ EXTERN FILE *MEMORY_log;
 
 #define GET_ALLOC_ID(_ptr) (((ALLOC *)((char *)(_ptr) - sizeof(ALLOC)))->id)
 
-PUBLIC void MEMORY_alloc(void *p_ptr, size_t size, const char *src);
-PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size, const char *src);
-PUBLIC void MEMORY_realloc(void *p_ptr, size_t size, const char *src);
-PUBLIC void MEMORY_free(void *p_ptr, const char *src);
-PUBLIC void MEMORY_check(void);
+void MEMORY_alloc(void *p_ptr, size_t size, const char *src);
+void MEMORY_alloc_zero(void *p_ptr, size_t size, const char *src);
+void MEMORY_realloc(void *p_ptr, size_t size, const char *src);
+void MEMORY_free(void *p_ptr, const char *src);
+void MEMORY_check(void);
 
-PUBLIC void MEMORY_verify(void);
-PUBLIC void MEMORY_check_ptr(void *ptr);
+void MEMORY_verify(void);
+void MEMORY_check_ptr(void *ptr);
 
 #elif OPTIMIZE_MEMORY
 
@@ -84,16 +84,16 @@ int THROW_MEMORY();
 #define FREE(_ptr, _src)                MEMORY_free((void *)_ptr)
 #define IFREE(_ptr, _src)               FREE(&(_ptr), _src)
 
-PUBLIC void MEMORY_alloc(void *p_ptr, size_t size);
-PUBLIC void MEMORY_alloc_zero(void *p_ptr, size_t size);
-PUBLIC void MEMORY_realloc(void *p_ptr, size_t size);
-PUBLIC void MEMORY_free(void *p_ptr);
-PUBLIC void MEMORY_check(void);
+void MEMORY_alloc(void *p_ptr, size_t size);
+void MEMORY_alloc_zero(void *p_ptr, size_t size);
+void MEMORY_realloc(void *p_ptr, size_t size);
+void MEMORY_free(void *p_ptr);
+void MEMORY_check(void);
 
 #endif
 
-PUBLIC void MEMORY_init(void);
-PUBLIC void MEMORY_exit(void);
+void MEMORY_init(void);
+void MEMORY_exit(void);
 
 #endif
 

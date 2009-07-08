@@ -152,7 +152,7 @@ void TYPE_signature_length(const char *sign, char *len_min, char *len_max, char 
 {
   char c;
   int len = 0;
-  boolean brace = FALSE;
+  bool brace = FALSE;
 
   *len_min = 0;
   *len_max = 0;
@@ -227,7 +227,7 @@ TYPE TYPE_from_string(const char **ptype)
 {
   const char *start;
   const char *type;
-  boolean quote = FALSE;
+  bool quote = FALSE;
 
   for(;;)
   {

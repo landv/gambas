@@ -37,7 +37,7 @@
 
 #include "gb_str.h"
 
-PUBLIC char *STR_add(char *d, const char *s)
+char *STR_add(char *d, const char *s)
 {
   for(;;)
   {
@@ -51,7 +51,7 @@ PUBLIC char *STR_add(char *d, const char *s)
   return d;
 }
 
-PUBLIC char *STR_copy(const char *str)
+char *STR_copy(const char *str)
 {
   char *cpy;
 
@@ -60,7 +60,7 @@ PUBLIC char *STR_copy(const char *str)
   return cpy;
 }
 
-PUBLIC char *STR_cat(const char *str, ...)
+char *STR_cat(const char *str, ...)
 {
   va_list args;
   char *cpy;

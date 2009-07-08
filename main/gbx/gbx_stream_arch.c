@@ -80,7 +80,7 @@ static int stream_close(STREAM *stream)
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-  boolean strip = FALSE;
+  bool strip = FALSE;
   int max;
 
   max = stream->arch.size - stream->arch.pos;
