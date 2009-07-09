@@ -534,7 +534,7 @@ STATIC PRIVATE SUB MakeInheritance(hModule AS Object, cSymbol AS Collection, sPa
 END
 
 
-STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule AS Boolean, OPTIONAL bCanInherit AS Boolean = TRUE)
+STATIC PRIVATE SUB ScanClass(hModule AS FEditor, cSymbol AS Collection, bModule AS Boolean, OPTIONAL bCanInherit AS Boolean = TRUE)
 
   DIM hEditor AS Editor
   DIM iLine AS Integer
@@ -571,7 +571,7 @@ STATIC PRIVATE SUB ScanClass(hModule AS Object, cSymbol AS Collection, bModule A
     hClass = Classes[hClass.Parent]
   ENDIF
   
-  IF hClass THEN 
+  IF hClass AND IF bCanInherit THEN 
     sParent = hModule.Name
     MakeInheritance(hModule, cSymbol, sParent, hClass.ParentComponent)
     bCanInherit = FALSE
