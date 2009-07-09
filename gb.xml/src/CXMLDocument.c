@@ -122,6 +122,7 @@ BEGIN_METHOD(CXMLDocument_ToString, GB_STRING Encoding)
 
 	xmlChar *mem;
 	int size;
+	char *encoding;
 
 	if (!THIS->doc) 
 	{
@@ -129,9 +130,15 @@ BEGIN_METHOD(CXMLDocument_ToString, GB_STRING Encoding)
 		return;
 	}
 
-	xmlDocDumpFormatMemory(THIS->doc,&mem ,&size , 1);
+	if (MISSING(Encoding))
+		encoding = "UTF-8";
+	else
+		encoding = GB.ToZeroString(ARG(Encoding));
 
+	xmlDocDumpFormatMemoryEnc(THIS->doc, &mem, &size, encoding, 1);
+	
 	GB.ReturnNewString((char*)mem,size);
+	xmlFree(mem);
 
 END_METHOD
 
