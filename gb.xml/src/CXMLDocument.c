@@ -123,7 +123,11 @@ BEGIN_METHOD(CXMLDocument_ToString, GB_STRING Encoding)
 	xmlChar *mem;
 	int size;
 
-	if (!THIS->doc) return;
+	if (!THIS->doc) 
+	{
+		GB.ReturnNull();
+		return;
+	}
 
 	xmlDocDumpFormatMemory(THIS->doc,&mem ,&size , 1);
 
@@ -139,11 +143,9 @@ END_PROPERTY
 
 BEGIN_PROPERTY (CXMLDocument_Encoding)
 
-
+	GB.ReturnConstZeroString("UTF-8");
 
 END_PROPERTY
-
-
 
 GB_DESC CXmlDocumentDesc[] =
 {
