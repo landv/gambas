@@ -527,15 +527,19 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_stacking)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(WINDOW->getStacking()); return; }
-	WINDOW->setStacking(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WINDOW->getStacking());
+	else
+		WINDOW->setStacking(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_sticky)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(WINDOW->getSticky()); return; }
-	WINDOW->setSticky(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->getSticky());
+	else
+		WINDOW->setSticky(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -703,8 +707,8 @@ GB_DESC CWindowDesc[] =
   GB_PROPERTY_READ("TopLevel", "b", CWINDOW_top_level),
   GB_PROPERTY_READ("Closed", "b", CWINDOW_closed),
 
-  GB_PROPERTY("Stacking","i",CWINDOW_stacking),
-  GB_PROPERTY("Sticky","b",CWINDOW_sticky),
+  GB_PROPERTY("Stacking", "i", CWINDOW_stacking),
+  GB_PROPERTY("Sticky", "b", CWINDOW_sticky),
   GB_PROPERTY("Persistent", "b", CWINDOW_persistent),
   GB_PROPERTY("Text", "s", CWINDOW_text),
   GB_PROPERTY("Title", "s", CWINDOW_text),

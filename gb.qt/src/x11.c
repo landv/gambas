@@ -131,6 +131,7 @@ static void save_window_state(Window win, Atom prop)
 	{
   	XChangeProperty(_display, win, prop, XA_ATOM, 32, PropModeReplace,
       	(unsigned char *)_window_prop.atoms, _window_prop.count);
+		//XFlush(_display);
 	}
 }
 
@@ -414,6 +415,7 @@ PUBLIC void X11_window_set_desktop(Window window, bool visible, int desktop)
   {
   	XChangeProperty(_display, window, X11_atom_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
       	(unsigned char *)&desktop, 1);
+		//XFlush(_display);
   }
 }
 
