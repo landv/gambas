@@ -1042,7 +1042,7 @@ BEGIN_PROPERTY(CWINDOW_stacking)
 	}
 	else
 	{
-		p = PROP(GB_INTEGER);
+		p = VPROP(GB_INTEGER);
 		if (p >= 0 && p <= 2)
 		{
 			THIS->stacking = p;
