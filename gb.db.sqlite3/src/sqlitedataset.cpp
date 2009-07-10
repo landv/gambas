@@ -1078,8 +1078,8 @@ fType GetFieldType(const char *Type, unsigned int *length)
 	if (rType == ft_String)
 	{
 		/* if a length has been defined it will be between () */
-		_right = rindex(Type, ')');
-		_left = index(Type, '(');
+		_right = (char *)rindex(Type, ')');
+		_left = (char *)index(Type, '(');
 		if (_right)
 		{
 			_right = '\0';
