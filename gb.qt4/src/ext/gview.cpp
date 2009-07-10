@@ -261,10 +261,11 @@ int GEditor::posToColumn(int y, int px) const
 			continue;
 		}
 		
+		d = i;
 		break;
 	}
 	
-	return i;
+	return d;
 }
 
 int GEditor::findLargestLine()
@@ -335,7 +336,7 @@ UPDATE_WIDTH:
 	
 void GEditor::updateHeight()
 {
-	setCellHeight(fm.lineSpacing());
+	setCellHeight(fm.lineSpacing() + 1);
 	updateCache();
 		
 	if (pattern.height() < cellHeight())
@@ -359,6 +360,7 @@ void GEditor::changeEvent(QEvent *e)
 		italicFont.setItalic(true);
 		
 		updateMargin();
+		updateWidth();
 		updateHeight();
 		updateContents();
 	}
@@ -1592,7 +1594,7 @@ void GEditor::resizeEvent(QResizeEvent *e)
 {
 	Q3GridView::resizeEvent(e);
 	baptizeVisible();
-	updateWidth(-1);
+	updateWidth();
 }
 
 bool GEditor::isCursorVisible() const

@@ -102,7 +102,7 @@ private:
 
 	int lineWidth(int y) const;
 	int lineWidth(int y, int len) const;
-	void updateWidth(int y);
+	void updateWidth(int y = -1);
 	void updateMargin();
 	void updateHeight();
 	void updateCache();
