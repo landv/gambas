@@ -232,24 +232,39 @@ int GEditor::lineWidth(int y, int len) const
 
 int GEditor::posToColumn(int y, int px) const
 {
-	int i, lw, lw2;
+	int i = 0, lw;
 	int len = doc->lineLength(y);
+	int d, f;
 	
 	if (len == 0)
 		return 0;
 		
 	px += contentsX();
 	
-	lw = lineWidth(y, 0);
-	for (i = 0; i < len; i++)
+	d = 0;
+	f = len;
+	while (f > d)
 	{
-		lw2 = lineWidth(y, i + 1);
-		if (px <= ((lw + lw2) / 2))
-			return i;
-		lw = lw2;
+		i = (d + f) / 2;
+		
+		lw = lineWidth(y, i);
+		if (px < lw)
+		{
+			f = i;
+			continue;
+		}
+		
+		lw = lineWidth(y, i + 1);
+		if (px >= lw)
+		{
+			d = i + 1;
+			continue;
+		}
+		
+		break;
 	}
 	
-	return len;
+	return i;
 }
 
 int GEditor::findLargestLine()
