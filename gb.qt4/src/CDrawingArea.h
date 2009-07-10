@@ -28,6 +28,7 @@
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QEvent>
+#include <QFrame>
 
 #include "CWidget.h"
 #include "CContainer.h"
