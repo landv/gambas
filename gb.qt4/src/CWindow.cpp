@@ -1033,19 +1033,16 @@ BEGIN_PROPERTY(CWINDOW_stacking)
 	
 	if (READ_PROPERTY)
 	{
-		if (CWINDOW_has_property(WINDOW, X11_atom_net_wm_state_above))
-			p = 1;
-		else if (CWINDOW_has_property(WINDOW, X11_atom_net_wm_state_below))
-			p = 2;
-		else
-			p = 0;
-
-		GB.ReturnInteger(p);
+		GB.ReturnInteger(THIS->stacking);
 	}
 	else
 	{
-		THIS->stacking = p = VPROP(GB_INTEGER);
-		WINDOW->initProperties();
+		p = VPROP(GB_INTEGER);
+		if (p >= 0 && p <= 2)
+		{
+			THIS->stacking = p;
+			WINDOW->initProperties();
+		}
 	}
 
 END_PROPERTY
@@ -1062,7 +1059,7 @@ BEGIN_PROPERTY(CWINDOW_top_only)
 	
 	if (READ_PROPERTY)
 	{
-		GB.ReturnBoolean(CWINDOW_has_property(WINDOW, X11_atom_net_wm_state_above));
+		GB.ReturnBoolean(THIS->stacking = 1);
 	}
 	else
 	{
@@ -1093,9 +1090,12 @@ BEGIN_PROPERTY(CWINDOW_sticky)
 	}
 	
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(X11_window_get_desktop(WINDOW->winId()) < 0);
+		GB.ReturnBoolean(THIS->sticky);
 	else
-		X11_window_set_desktop(WINDOW->winId(), WINDOW->isVisible(), VPROP(GB_BOOLEAN) ? 0xFFFFFFFF : X11_get_current_desktop());
+	{
+		THIS->sticky = VPROP(GB_BOOLEAN);
+		X11_window_set_desktop(WINDOW->winId(), WINDOW->isVisible(), THIS->sticky ? 0xFFFFFFFF : X11_get_current_desktop());
+	}
 
 END_PROPERTY
 
@@ -1536,6 +1536,10 @@ MyMainWindow::~MyMainWindow()
 
 void MyMainWindow::showEvent(QShowEvent *e)
 {
+	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
+	
+	emit_open_event(THIS);
+	
 	if (_activate)
 	{
 		raise();
@@ -1545,7 +1549,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
 		_activate = false;
 	}
 	
-	CWINDOW_fix_menubar((CWINDOW *)CWidget::get(this));
+	CWINDOW_fix_menubar(THIS);
 }
 
 void MyMainWindow::initProperties()

@@ -539,18 +539,21 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_stacking)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(WINDOW->getStacking()); return; }
-	WINDOW->setStacking(VPROP(GB_INTEGER));
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WINDOW->getStacking());
+	else
+		WINDOW->setStacking(VPROP(GB_INTEGER));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CWINDOW_sticky)
 
-	if (READ_PROPERTY) { GB.ReturnInteger(WINDOW->getSticky()); return; }
-	WINDOW->setSticky(VPROP(GB_BOOLEAN));
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOW->getSticky());
+	else
+		WINDOW->setSticky(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
-
 
 BEGIN_METHOD_VOID(CWINDOW_menu_next)
 

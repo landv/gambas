@@ -1925,6 +1925,25 @@ Private Sub CreateMenu()
 
 End
 
+Private Sub FillShowTabMenu()
+  
+  Dim hTabStrip As Object = Master.Control
+  Dim hMenu As Menu
+  Dim iIndex As Integer
+  
+  'If hTabStrip.Count = 1 Then Return
+  
+  mnuShowTab.Children.Clear
+  
+  For iIndex = 0 To hTabStrip.Count - 1
+    hMenu = New Menu(mnuShowTab) As "mnuShowTab"
+    hMenu.Text = CStr(iIndex) & " - " & hTabStrip[iIndex].Text
+    hMenu.Tag = iIndex
+  Next
+  
+End
+
+
 
 Sub RefreshMenu()
 
@@ -1953,10 +1972,13 @@ Sub RefreshMenu()
   Action[".same-*", Me].Visible = bOn
 
   If Selection.Count = 1 And If Master.IsMultiContainer() Then
-    mnuTab.Visible = True
+    mnuShowTab.Show
+    mnuMoveTab.Show
     Action[".move-tab", Me].Visible = True
+    FillShowTabMenu
   Else 
-    mnuTab.Visible = False
+    mnuShowTab.Hide
+    mnuMoveTab.Hide
     Action[".move-tab", Me].Visible = False
   Endif
 
@@ -2999,6 +3021,33 @@ Private Sub MoveTab(hCtrl As CControl, iWhere As Integer)
   
 End
 
+Public Sub mnuShowTab_Show()
+  
+  Dim hTabStrip As Object = Master.Control
+  Dim iIndex As Integer
+  
+  For iIndex = 0 To hTabStrip.Count - 1
+    mnuShowTab.Children[iIndex].Checked = iIndex = hTabStrip.Index
+  Next
+  
+End
+
+
+Public Sub mnuShowTab_Click()
+  
+  Dim hTabStrip As Object = Master.Control
+  
+  hTabStrip.Index = Last.Tag
+  
+End
+
+
+Public Sub btnTabMenu_Click()
+
+  mnuShowTab.Popup
+
+End
+
 Public Sub SelectControl(sControl As String)
 
   UnselectAll
@@ -3064,3 +3113,4 @@ Public Sub mnuStartup_Click()
   Project.DefineStartup(Path)
   
 End
+

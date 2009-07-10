@@ -686,17 +686,18 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
   'IF hModule.Name = "Desktop" THEN STOP
 
-  hClass = Classes[hModule.Name]
-  
-  ' If hClass And If hClass.Component = Project.Name And If hClass.Parent Then 
-  '   hClass = Classes[hClass.Parent]
-  ' Endif
-  
-  If hClass And If hClass.Component <> Project.Name Then
-    'sParent = hModule.Name
-    MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
-    bCanInherit = False
-  Endif 
+  If bCanInherit Then
+    hClass = Classes[hModule.Name]
+    
+    ' If hClass And If hClass.Component = Project.Name And If hClass.Parent Then 
+    '   hClass = Classes[hClass.Parent]
+    ' Endif
+    
+    If hClass And If hClass.Component <> Project.Name Then
+      MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
+      bCanInherit = False
+    Endif 
+  Endif
   
   For iLine = 0 To hEditor.Lines.Count - 1
 

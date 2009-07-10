@@ -35,10 +35,14 @@
     { Menu3 Menu
       Text = ("")
     }
-    { mnuTab Menu
+    { mnuShowTab Menu
+      Text = ("Show tab")
+      Picture = Picture["img/16/tabstrip.png"]
+    }
+    { mnuMoveTab Menu
       Action = ".move-tab"
       Text = ("Move tab")
-      Picture = Picture["img/16/tabstrip.png"]
+      Picture = Picture["img/16/tabmove.png"]
       { mnuTabFirst Menu
         Action = ".move-tab-first"
         Text = ("&First")
@@ -414,7 +418,7 @@
       }
     }
     { tlbTab ToolBar
-      MoveScaled(5,9,18,4)
+      MoveScaled(5,9,31,4)
       Key = "tabstrip"
       Text = ("Tabstrip")
       Action = ".move-tab"
@@ -445,6 +449,12 @@
         Action = ".move-tab-last"
         Text = ("")
         Picture = Picture["icon:/small/last"]
+      }
+      { btnTabMenu ToolButton
+        MoveScaled(16,0,4,4)
+        ToolTip = ("Show tab")
+        Text = ("")
+        Picture = Picture["img/16/tabstrip.png"]
       }
     }
   }
@@ -630,7 +640,7 @@
   { Action move-tab
     Text = "Tabstrip"
     Shortcut = ""
-    Picture = "img/16/tabstrip.png"
+    Picture = "img/16/tabmove.png"
   }
   { Action move-tab-first
     Text = "&First"
@@ -723,6 +733,6 @@
   { Toolbar tabstrip
     Text = "Tabstrip"
     List = "move-tab-first,move-tab-previous,move-tab-next,move-tab-last"
-    Default = "move-tab-first,move-tab-previous,move-tab-next,move-tab-last"
+    Default = "move-tab-first,move-tab-previous,move-tab-next,move-tab-last,$btnTabMenu"
   }
 }

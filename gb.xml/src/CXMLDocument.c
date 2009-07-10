@@ -122,12 +122,23 @@ BEGIN_METHOD(CXMLDocument_ToString, GB_STRING Encoding)
 
 	xmlChar *mem;
 	int size;
+	char *encoding;
 
-	if (!THIS->doc) return;
+	if (!THIS->doc) 
+	{
+		GB.ReturnNull();
+		return;
+	}
 
-	xmlDocDumpFormatMemory(THIS->doc,&mem ,&size , 1);
+	if (MISSING(Encoding))
+		encoding = "UTF-8";
+	else
+		encoding = GB.ToZeroString(ARG(Encoding));
 
+	xmlDocDumpFormatMemoryEnc(THIS->doc, &mem, &size, encoding, 1);
+	
 	GB.ReturnNewString((char*)mem,size);
+	xmlFree(mem);
 
 END_METHOD
 
@@ -137,30 +148,22 @@ BEGIN_PROPERTY (CXMLDocument_Root)
 
 END_PROPERTY
 
-BEGIN_PROPERTY (CXMLDocument_Encoding)
-
-
-
-END_PROPERTY
-
-
 
 GB_DESC CXmlDocumentDesc[] =
 {
 
 	GB_DECLARE("XmlDocument", sizeof(CXMLDOCUMENT)),
 
-	GB_PROPERTY_READ("Encoding","s",CXMLDocument_Encoding),
 	GB_PROPERTY_READ("Root","XmlNode",CXMLDocument_Root),
 
 	GB_METHOD("_free",NULL,CXMLDocument_Free,NULL),
 
-	GB_METHOD("Open",NULL,CXMLDocument_Open,"(FileName)s"),
-	GB_METHOD("FromString",NULL,CXMLDocument_FromString,"(Data)s"),
-	GB_METHOD("HtmlFromString",NULL,CXMLDocument_HtmlFromString,"(Data)s"),
-	GB_METHOD("Write",NULL,CXMLDocument_Write,"(FileName)s[(Encoding)s]"),
+	GB_METHOD("Open", NULL, CXMLDocument_Open, "(FileName)s"),
+	GB_METHOD("FromString", NULL, CXMLDocument_FromString, "(Data)s"),
+	GB_METHOD("HtmlFromString", NULL, CXMLDocument_HtmlFromString, "(Data)s"),
+	GB_METHOD("Write", NULL, CXMLDocument_Write, "(FileName)s[(Encoding)s]"),
 	//GB_METHOD("Write",NULL,CXMLDocument_Write,"(FileName)s[(Encoding)s]"),
-	GB_METHOD("ToString","s",CXMLDocument_ToString,"[(Encoding)s]"),
+	GB_METHOD("ToString", "s", CXMLDocument_ToString, "[(Encoding)s]"),
 
 
 

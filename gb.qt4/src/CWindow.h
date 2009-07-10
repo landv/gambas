@@ -85,6 +85,7 @@ typedef
 		unsigned closing : 1;
 		unsigned hideMenuBar : 1;
 		unsigned showMenuBar : 1;
+		unsigned sticky : 1;
 		}
 	CWINDOW;
 
