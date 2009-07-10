@@ -498,7 +498,7 @@ msgid "Provides"
 msgstr ""
 
 #: CModule.class:28 FCreateFile.class:617 FEditor.class:3035 FForm.class:3481
-#: FInfo.class:91
+#: FInfo.class:88
 msgid "Form"
 msgstr "Forma"
 
@@ -645,7 +645,7 @@ msgstr ""
 #: FNewTranslation.class:70 FOpenProject.class:410 FPasteSpecial.class:279
 #: FPropertyProject.class:1184 FSave.class:125 FSelectExtraFile.class:78
 #: FSelectIcon.class:271 FText.class:107 FTextEditor.class:465
-#: FTranslate.class:581 Project.module:310
+#: FTranslate.class:605 Project.module:310
 msgid "Cancel"
 msgstr "Otkaži"
 
@@ -737,7 +737,7 @@ msgid "&Edit"
 msgstr "&Uredi"
 
 #: FConflict.class:25 FFindList.class:169 FIconEditor.class:1412
-#: FInfo.class:468 FMakeInstall.class:260 FOption.class:1097 FTips.class:232
+#: FInfo.class:465 FMakeInstall.class:260 FOption.class:1097 FTips.class:232
 msgid "Close"
 msgstr "Zatvori"
 
@@ -787,7 +787,7 @@ msgstr "Tekst"
 msgid "Image"
 msgstr ""
 
-#: FConflict.class:411 FInfo.class:428
+#: FConflict.class:411 FInfo.class:425
 msgid "Details"
 msgstr ""
 
@@ -795,7 +795,7 @@ msgstr ""
 msgid "Resolve conflict with"
 msgstr ""
 
-#: FConflict.class:437 FInfo.class:279
+#: FConflict.class:437 FInfo.class:276
 msgid "Information"
 msgstr ""
 
@@ -843,16 +843,16 @@ msgstr ""
 msgid "New"
 msgstr "Novo"
 
-#: FCreateFile.class:579 FInfo.class:83
+#: FCreateFile.class:579 FInfo.class:80
 msgid "Module"
 msgstr "Modul"
 
-#: FCreateFile.class:598 FFindList.class:47 FInfo.class:87
+#: FCreateFile.class:598 FFindList.class:47 FInfo.class:84
 #: FPropertyProject.class:874
 msgid "Class"
 msgstr "Klasa"
 
-#: FCreateFile.class:693 FInfo.class:100
+#: FCreateFile.class:693 FInfo.class:97
 msgid "HTML file"
 msgstr ""
 
@@ -878,7 +878,7 @@ msgstr ""
 msgid "Height"
 msgstr ""
 
-#: FCreateFile.class:778 FCreateProject.class:362 FInfo.class:347
+#: FCreateFile.class:778 FCreateProject.class:362 FInfo.class:344
 #: FPropertyProject.class:876
 msgid "Type"
 msgstr "Tip"
@@ -1165,7 +1165,7 @@ msgid "Stack backtrace"
 msgstr ""
 
 #: FEditor.class:2076 FForm.class:2802 FIconEditor.class:2032
-#: FTextEditor.class:465 FTranslate.class:675
+#: FTextEditor.class:465 FTranslate.class:699
 msgid "Reload"
 msgstr "Ponovo učitaj"
 
@@ -1300,7 +1300,7 @@ msgstr ""
 msgid "Replace"
 msgstr "Zamjeni"
 
-#: FFind.class:395 FFindList.class:239 FOutput.class:307 FTranslate.class:550
+#: FFind.class:395 FFindList.class:239 FOutput.class:307 FTranslate.class:566
 msgid "Search string cannot be found."
 msgstr "Traženi niz nije pronađen."
 
@@ -1436,7 +1436,7 @@ msgstr "Izaberi sve"
 msgid "Unselect all"
 msgstr ""
 
-#: FForm.class:3343 FMain.class:204 FTranslate.class:581
+#: FForm.class:3343 FMain.class:204 FTranslate.class:605
 msgid "Delete"
 msgstr "Obriši"
 
@@ -1705,59 +1705,55 @@ msgstr "Klase"
 msgid "Directory"
 msgstr "Direktorij"
 
-#: FInfo.class:95 FMenu.class:1008
+#: FInfo.class:92 FMenu.class:1008
 msgid "Picture"
 msgstr "Slika"
 
-#: FInfo.class:97
+#: FInfo.class:94
 msgid "Text file"
 msgstr ""
 
-#: FInfo.class:103
+#: FInfo.class:100
 msgid "CSS file"
 msgstr ""
 
-#: FInfo.class:106
+#: FInfo.class:103
 msgid "XML file"
 msgstr ""
 
-#: FInfo.class:110
+#: FInfo.class:107
 msgid "ChangeLog"
 msgstr ""
 
-#: FInfo.class:113
+#: FInfo.class:110 FTranslate.class:67
 msgid "File"
 msgstr "Datoteka"
 
-#: FInfo.class:135
-msgid "&1 K, &2 line(s)"
+#: FInfo.class:132
+msgid "&1, &2 line(s)"
 msgstr ""
 
-#: FInfo.class:137
-msgid "&1 K"
-msgstr "&1 K"
-
-#: FInfo.class:313 FOption.class:674 FPropertyProject.class:1535
+#: FInfo.class:310 FOption.class:674 FPropertyProject.class:1535
 msgid "General"
 msgstr "Općenito"
 
-#: FInfo.class:327
+#: FInfo.class:324
 msgid "Link to"
 msgstr ""
 
-#: FInfo.class:367 FSelectIcon.class:235
+#: FInfo.class:364 FSelectIcon.class:235 FTranslate.class:68
 msgid "Size"
 msgstr "Veličina"
 
-#: FInfo.class:387
+#: FInfo.class:384
 msgid "Last modified"
 msgstr ""
 
-#: FInfo.class:442 FPropertyProject.class:1956
+#: FInfo.class:439 FPropertyProject.class:1956
 msgid "Versioning"
 msgstr ""
 
-#: FInfo.class:453
+#: FInfo.class:450
 #, fuzzy
 msgid "This file has not been modified since the last commit."
 msgstr ""
@@ -1776,7 +1772,7 @@ msgstr "Uredi vrijednsti popisa"
 msgid "&Insert"
 msgstr "&Umetni"
 
-#: FList.class:197 FMenu.class:830 FTranslate.class:1625
+#: FList.class:197 FMenu.class:830 FTranslate.class:1706
 msgid "&Delete"
 msgstr "&Obriši"
 
@@ -2596,7 +2592,7 @@ msgstr "Potvrđeno"
 msgid "Click on Insert to add a new menu."
 msgstr "Kliknite na Umetni da biste dodali novi izibornik"
 
-#: FNewTranslation.class:59 FTranslate.class:1610
+#: FNewTranslation.class:59 FTranslate.class:1691
 msgid "New translation"
 msgstr ""
 
@@ -3197,147 +3193,151 @@ msgstr "Komentari"
 msgid "Language"
 msgstr ""
 
-#: FTranslate.class:327
+#: FTranslate.class:343
 msgid "Cannot read translation file for language '&1'"
 msgstr "Ne mogu pročitati prijevod za '&1' jezik"
 
-#: FTranslate.class:475
+#: FTranslate.class:491
 msgid "Cannot save translation."
 msgstr "Ne mogu snimiti prijevod."
 
-#: FTranslate.class:581
+#: FTranslate.class:605
 msgid "Do you really want to delete this translation ?"
 msgstr "Želite li zbilja obrisati ovaj prijevod?"
 
-#: FTranslate.class:675
+#: FTranslate.class:699
 msgid "Do you really want to reload this translation ?"
 msgstr "Želite li zbilja ponovo učitati ovaj prijevod?"
 
-#: FTranslate.class:690
+#: FTranslate.class:714
 msgid "Export a translation"
 msgstr "Izvezi prijevod"
 
-#: FTranslate.class:692
+#: FTranslate.class:716
 msgid "Translation files"
 msgstr "Datoteke za prevođenje"
 
-#: FTranslate.class:854
+#: FTranslate.class:878
 msgid "Import a translation"
 msgstr "Uvezi prijevod"
 
-#: FTranslate.class:881
+#: FTranslate.class:905
 msgid "No translation were picked up."
 msgstr ""
 
-#: FTranslate.class:883
+#: FTranslate.class:907
 msgid "One translation was picked up."
 msgstr ""
 
-#: FTranslate.class:885
+#: FTranslate.class:909
 msgid "&1 translations were picked up."
 msgstr ""
 
-#: FTranslate.class:894
+#: FTranslate.class:918
 msgid "Cannot import translation file."
 msgstr "Ne mogu importirati datoteku s prijevodima."
 
-#: FTranslate.class:946
+#: FTranslate.class:970
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Prevedeni simboli nizova ne odgovaraju neprevedenima. "
 
-#: FTranslate.class:959
+#: FTranslate.class:983
 msgid "Everything seems to be correct."
 msgstr "Sve se čini u redu."
 
-#: FTranslate.class:977
+#: FTranslate.class:1001
 msgid "&1 strings (&2 not translated) - &3 % done"
 msgstr "&1 izraza (&2 nije prevedeno) - &3 % gotovo"
 
-#: FTranslate.class:1106
+#: FTranslate.class:1130
 msgid "The 'msgmerge' command has failed"
 msgstr "Naredba 'msgmerge' nije uspjela "
 
-#: FTranslate.class:1189
+#: FTranslate.class:1213
 msgid "All files"
 msgstr "Sve datoteke"
 
-#: FTranslate.class:1401
+#: FTranslate.class:1473
 msgid "Project translation"
 msgstr ""
 
-#: FTranslate.class:1449
+#: FTranslate.class:1525
 msgid "Show statistics"
 msgstr ""
 
-#: FTranslate.class:1464
+#: FTranslate.class:1544
 msgid "ComboBox1"
 msgstr ""
 
-#: FTranslate.class:1496
+#: FTranslate.class:1551
+msgid "Toggle language list"
+msgstr ""
+
+#: FTranslate.class:1576
 msgid "Save translation"
 msgstr ""
 
-#: FTranslate.class:1503
+#: FTranslate.class:1583
 msgid "Clear this translation"
 msgstr "Obriši ovaj prijevod"
 
-#: FTranslate.class:1510
+#: FTranslate.class:1590
 msgid "This string must not be translated"
 msgstr "Ovaj niz se ne smije prevoditi"
 
-#: FTranslate.class:1517
+#: FTranslate.class:1597
 msgid "Copy untranslated string"
 msgstr "Kopiraj neprevedeni niz"
 
-#: FTranslate.class:1524
+#: FTranslate.class:1604
 msgid "Verify the translation"
 msgstr "Provjeri prijevod"
 
-#: FTranslate.class:1531
+#: FTranslate.class:1611
 msgid "Find next untranslated string"
 msgstr "Nađi slijedeći neprevedeni izraz"
 
-#: FTranslate.class:1538
+#: FTranslate.class:1618
 msgid "Find previous untranslated string"
 msgstr ""
 
-#: FTranslate.class:1555
+#: FTranslate.class:1635
 msgid "Find a string in translation"
 msgstr "Traži niz u prijevodu"
 
-#: FTranslate.class:1611
+#: FTranslate.class:1692
 msgid "&New..."
 msgstr ""
 
-#: FTranslate.class:1617
+#: FTranslate.class:1698
 msgid "Reload translation"
 msgstr "Ponovo učitaj prijevod"
 
-#: FTranslate.class:1618
+#: FTranslate.class:1699
 msgid "&Reload"
 msgstr ""
 
-#: FTranslate.class:1624
+#: FTranslate.class:1705
 msgid "Delete translation"
 msgstr "Obriši prijevod"
 
-#: FTranslate.class:1631
+#: FTranslate.class:1712
 msgid "Import a translation file"
 msgstr ""
 
-#: FTranslate.class:1632
+#: FTranslate.class:1713
 msgid "&Import..."
 msgstr ""
 
-#: FTranslate.class:1638
+#: FTranslate.class:1719
 msgid "Export to a translation file"
 msgstr ""
 
-#: FTranslate.class:1639
+#: FTranslate.class:1720
 msgid "&Export..."
 msgstr ""
 
-#: FTranslate.class:1650
+#: FTranslate.class:1731
 msgid "&Close"
 msgstr "&Zatvori"
 
@@ -4037,11 +4037,14 @@ msgstr ""
 msgid "Cannot save file !"
 msgstr "Ne mogu spremiti datoteku!"
 
-#~ msgid "Edit &form"
-#~ msgstr "Uredi &formu"
+#~ msgid "Warning ! The translation file does not match the current language."
+#~ msgstr "Pažnja! Datoteka prijevoda ne podudara se s trenunim jezikom."
 
 #~ msgid "Automatic completion"
 #~ msgstr "Autom. dopunjavanje izraza"
 
-#~ msgid "Warning ! The translation file does not match the current language."
-#~ msgstr "Pažnja! Datoteka prijevoda ne podudara se s trenunim jezikom."
+#~ msgid "Edit &form"
+#~ msgstr "Uredi &formu"
+
+#~ msgid "&1 K"
+#~ msgstr "&1 K"

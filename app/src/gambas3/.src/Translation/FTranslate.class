@@ -315,9 +315,9 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
   $bIgnore = False
 
-  cvwTranslate.MoveTo(sCurrent)
-  If Not cvwTranslate.Item Then cvwTranslate.MoveFirst
+  If cvwTranslate.MoveTo(sCurrent) Then cvwTranslate.MoveFirst
   cvwTranslate.Item.Selected = True
+  cvwTranslate.Item.EnsureVisible
 
   $sLang = sLang
   $sPath = sPath

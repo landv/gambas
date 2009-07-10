@@ -2710,3 +2710,9 @@ Public Sub panToolBar_Configure()
   Endif  
 
 End
+
+Public Sub Editors_DblClick()
+
+  If Mouse.Control Then FindDefinition
+
+End

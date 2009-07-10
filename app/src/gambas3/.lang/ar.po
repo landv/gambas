@@ -551,7 +551,7 @@ msgid "Provides"
 msgstr ""
 
 #: CModule.class:28 FCreateFile.class:617 FEditor.class:3035 FForm.class:3481
-#: FInfo.class:91
+#: FInfo.class:88
 msgid "Form"
 msgstr "فورم"
 
@@ -691,7 +691,7 @@ msgstr "خالى"
 #: FNewTranslation.class:70 FOpenProject.class:410 FPasteSpecial.class:279
 #: FPropertyProject.class:1184 FSave.class:125 FSelectExtraFile.class:78
 #: FSelectIcon.class:271 FText.class:107 FTextEditor.class:465
-#: FTranslate.class:574 Project.module:310
+#: FTranslate.class:605 Project.module:310
 msgid "Cancel"
 msgstr " ألغاء"
 
@@ -783,7 +783,7 @@ msgid "&Edit"
 msgstr "&تحرير"
 
 #: FConflict.class:25 FFindList.class:169 FIconEditor.class:1412
-#: FInfo.class:468 FMakeInstall.class:260 FOption.class:1097 FTips.class:232
+#: FInfo.class:465 FMakeInstall.class:260 FOption.class:1097 FTips.class:232
 msgid "Close"
 msgstr " اغلق"
 
@@ -833,7 +833,7 @@ msgstr "نّصوص"
 msgid "Image"
 msgstr "صورة"
 
-#: FConflict.class:411 FInfo.class:428
+#: FConflict.class:411 FInfo.class:425
 msgid "Details"
 msgstr "التفاصيل"
 
@@ -841,7 +841,7 @@ msgstr "التفاصيل"
 msgid "Resolve conflict with"
 msgstr ""
 
-#: FConflict.class:437 FInfo.class:279
+#: FConflict.class:437 FInfo.class:276
 msgid "Information"
 msgstr "المعلومات"
 
@@ -889,16 +889,16 @@ msgstr ""
 msgid "New"
 msgstr " جديد"
 
-#: FCreateFile.class:579 FInfo.class:83
+#: FCreateFile.class:579 FInfo.class:80
 msgid "Module"
 msgstr "المركبة"
 
-#: FCreateFile.class:598 FFindList.class:47 FInfo.class:87
+#: FCreateFile.class:598 FFindList.class:47 FInfo.class:84
 #: FPropertyProject.class:874
 msgid "Class"
 msgstr " الطّبقه"
 
-#: FCreateFile.class:693 FInfo.class:100
+#: FCreateFile.class:693 FInfo.class:97
 msgid "HTML file"
 msgstr ""
 
@@ -924,7 +924,7 @@ msgstr "العرض"
 msgid "Height"
 msgstr "الإرتفاع"
 
-#: FCreateFile.class:778 FCreateProject.class:362 FInfo.class:347
+#: FCreateFile.class:778 FCreateProject.class:362 FInfo.class:344
 #: FPropertyProject.class:876
 msgid "Type"
 msgstr " النّوع"
@@ -1211,7 +1211,7 @@ msgid "Stack backtrace"
 msgstr ""
 
 #: FEditor.class:2076 FForm.class:2802 FIconEditor.class:2032
-#: FTextEditor.class:465 FTranslate.class:668
+#: FTextEditor.class:465 FTranslate.class:699
 msgid "Reload"
 msgstr " أعد التحميل"
 
@@ -1343,7 +1343,7 @@ msgstr ""
 msgid "Replace"
 msgstr "استبدل"
 
-#: FFind.class:395 FFindList.class:239 FOutput.class:307 FTranslate.class:543
+#: FFind.class:395 FFindList.class:239 FOutput.class:307 FTranslate.class:566
 msgid "Search string cannot be found."
 msgstr "المتغير الحرفي لا يمكن أن يُوجَد ."
 
@@ -1478,7 +1478,7 @@ msgstr " اختر الكلّ"
 msgid "Unselect all"
 msgstr ""
 
-#: FForm.class:3343 FMain.class:204 FTranslate.class:574
+#: FForm.class:3343 FMain.class:204 FTranslate.class:605
 msgid "Delete"
 msgstr " احذف"
 
@@ -1744,59 +1744,55 @@ msgstr " الطّبقات"
 msgid "Directory"
 msgstr " الدّليل"
 
-#: FInfo.class:95 FMenu.class:1008
+#: FInfo.class:92 FMenu.class:1008
 msgid "Picture"
 msgstr " الصّورة"
 
-#: FInfo.class:97
+#: FInfo.class:94
 msgid "Text file"
 msgstr ""
 
-#: FInfo.class:103
+#: FInfo.class:100
 msgid "CSS file"
 msgstr ""
 
-#: FInfo.class:106
+#: FInfo.class:103
 msgid "XML file"
 msgstr ""
 
-#: FInfo.class:110
+#: FInfo.class:107
 msgid "ChangeLog"
 msgstr ""
 
-#: FInfo.class:113
+#: FInfo.class:110 FTranslate.class:67
 msgid "File"
 msgstr "ملف"
 
-#: FInfo.class:135
-msgid "&1 K, &2 line(s)"
+#: FInfo.class:132
+msgid "&1, &2 line(s)"
 msgstr ""
 
-#: FInfo.class:137
-msgid "&1 K"
-msgstr "-"
-
-#: FInfo.class:313 FOption.class:674 FPropertyProject.class:1535
+#: FInfo.class:310 FOption.class:674 FPropertyProject.class:1535
 msgid "General"
 msgstr "عام"
 
-#: FInfo.class:327
+#: FInfo.class:324
 msgid "Link to"
 msgstr ""
 
-#: FInfo.class:367 FSelectIcon.class:235
+#: FInfo.class:364 FSelectIcon.class:235 FTranslate.class:68
 msgid "Size"
 msgstr " الحجم"
 
-#: FInfo.class:387
+#: FInfo.class:384
 msgid "Last modified"
 msgstr ""
 
-#: FInfo.class:442 FPropertyProject.class:1956
+#: FInfo.class:439 FPropertyProject.class:1956
 msgid "Versioning"
 msgstr ""
 
-#: FInfo.class:453
+#: FInfo.class:450
 #, fuzzy
 msgid "This file has not been modified since the last commit."
 msgstr " هذه الصّورة قد عُدِّلَتْ. هل تريد حفظها؟"
@@ -1813,7 +1809,7 @@ msgstr "حرر خاصية القائمة"
 msgid "&Insert"
 msgstr "&ادخال"
 
-#: FList.class:197 FMenu.class:830 FTranslate.class:1610
+#: FList.class:197 FMenu.class:830 FTranslate.class:1706
 msgid "&Delete"
 msgstr "&احذف"
 
@@ -2634,7 +2630,7 @@ msgstr " مختار"
 msgid "Click on Insert to add a new menu."
 msgstr "اضغط ادخال لاضافة قائمه جديده"
 
-#: FNewTranslation.class:59 FTranslate.class:1595
+#: FNewTranslation.class:59 FTranslate.class:1691
 msgid "New translation"
 msgstr ""
 
@@ -3233,143 +3229,151 @@ msgstr " التّعليقات"
 msgid "Language"
 msgstr ""
 
-#: FTranslate.class:320
+#: FTranslate.class:343
 msgid "Cannot read translation file for language '&1'"
 msgstr " لا يمكن أن يقرأ ملفّ التّرجمة لللّغة &1"
 
-#: FTranslate.class:468
+#: FTranslate.class:491
 msgid "Cannot save translation."
 msgstr " لا يمكن حفظ التّرجمة."
 
-#: FTranslate.class:574
+#: FTranslate.class:605
 msgid "Do you really want to delete this translation ?"
 msgstr " هل تريد حذف هذه التّرجمة فعلاً ؟"
 
-#: FTranslate.class:668
+#: FTranslate.class:699
 msgid "Do you really want to reload this translation ?"
 msgstr " هل تريد إعادة تحميل هذه التّرجمة فعلاً ؟"
 
-#: FTranslate.class:683
+#: FTranslate.class:714
 msgid "Export a translation"
 msgstr " صدّر ترجمةً"
 
-#: FTranslate.class:685
+#: FTranslate.class:716
 msgid "Translation files"
 msgstr " ملفّات التّرجمة"
 
-#: FTranslate.class:847
+#: FTranslate.class:878
 msgid "Import a translation"
 msgstr " استورد ترجمةً"
 
-#: FTranslate.class:874
+#: FTranslate.class:905
 msgid "No translation were picked up."
 msgstr ""
 
-#: FTranslate.class:876
+#: FTranslate.class:907
 msgid "One translation was picked up."
 msgstr ""
 
-#: FTranslate.class:878
+#: FTranslate.class:909
 msgid "&1 translations were picked up."
 msgstr ""
 
-#: FTranslate.class:887
+#: FTranslate.class:918
 msgid "Cannot import translation file."
 msgstr ""
 
-#: FTranslate.class:939
+#: FTranslate.class:970
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "لا تلائم رموز الحرفيات المترجمة رموز الحرفيات الغير المترجمة "
 
-#: FTranslate.class:952
+#: FTranslate.class:983
 msgid "Everything seems to be correct."
 msgstr " كل شيئ يبدو صحيحا."
 
-#: FTranslate.class:970
+#: FTranslate.class:1001
 msgid "&1 strings (&2 not translated) - &3 % done"
 msgstr ""
 
-#: FTranslate.class:1099
+#: FTranslate.class:1130
 msgid "The 'msgmerge' command has failed"
 msgstr "-"
 
-#: FTranslate.class:1182
+#: FTranslate.class:1213
 msgid "All files"
 msgstr "كل الملفات"
 
-#: FTranslate.class:1393
+#: FTranslate.class:1473
 msgid "Project translation"
 msgstr ""
 
-#: FTranslate.class:1441
+#: FTranslate.class:1525
 msgid "Show statistics"
 msgstr ""
 
-#: FTranslate.class:1481
+#: FTranslate.class:1544
+msgid "ComboBox1"
+msgstr ""
+
+#: FTranslate.class:1551
+msgid "Toggle language list"
+msgstr ""
+
+#: FTranslate.class:1576
 msgid "Save translation"
 msgstr ""
 
-#: FTranslate.class:1488
+#: FTranslate.class:1583
 msgid "Clear this translation"
 msgstr "امسح هذه التّرجمة"
 
-#: FTranslate.class:1495
+#: FTranslate.class:1590
 msgid "This string must not be translated"
 msgstr " هذا المتغير الحرفي لا يجب أن يُتَرْجَم"
 
-#: FTranslate.class:1502
+#: FTranslate.class:1597
 msgid "Copy untranslated string"
 msgstr "نسخ الحرفى غير مترجم"
 
-#: FTranslate.class:1509
+#: FTranslate.class:1604
 msgid "Verify the translation"
 msgstr " تحقّق من التّرجمة"
 
-#: FTranslate.class:1516
+#: FTranslate.class:1611
 msgid "Find next untranslated string"
 msgstr ""
 
-#: FTranslate.class:1523
+#: FTranslate.class:1618
 msgid "Find previous untranslated string"
 msgstr ""
 
-#: FTranslate.class:1540
+#: FTranslate.class:1635
 msgid "Find a string in translation"
 msgstr " أوجد حرفي في التّرجمة"
 
-#: FTranslate.class:1596
+#: FTranslate.class:1692
 msgid "&New..."
 msgstr "&جديد..."
 
-#: FTranslate.class:1602
+#: FTranslate.class:1698
 msgid "Reload translation"
 msgstr " أعد تحميل التّرجمة"
 
-#: FTranslate.class:1603
+#: FTranslate.class:1699
 msgid "&Reload"
 msgstr "أ&عد التحميل"
 
-#: FTranslate.class:1609
+#: FTranslate.class:1705
 msgid "Delete translation"
 msgstr " احذف التّرجمة"
 
-#: FTranslate.class:1616
+#: FTranslate.class:1712
 msgid "Import a translation file"
 msgstr ""
 
-#: FTranslate.class:1617
+#: FTranslate.class:1713
 msgid "&Import..."
 msgstr "&إستيراد..."
 
-#: FTranslate.class:1623
+#: FTranslate.class:1719
 msgid "Export to a translation file"
 msgstr ""
 
-#: FTranslate.class:1624
+#: FTranslate.class:1720
 msgid "&Export..."
 msgstr "&تصدير..."
 
-#: FTranslate.class:1635
+#: FTranslate.class:1731
 msgid "&Close"
 msgstr "&اغلق"
 
@@ -4068,8 +4072,11 @@ msgstr ""
 msgid "Cannot save file !"
 msgstr ""
 
+#~ msgid "Konqueror"
+#~ msgstr "Konqueror"
+
 #~ msgid "KDE"
 #~ msgstr "KDE"
 
-#~ msgid "Konqueror"
-#~ msgstr "Konqueror"
+#~ msgid "&1 K"
+#~ msgstr "-"

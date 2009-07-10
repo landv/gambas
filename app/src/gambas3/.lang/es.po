@@ -292,7 +292,7 @@ msgid "Provides"
 msgstr "Provee"
 
 #: CModule.class:28 FCreateFile.class:617 FEditor.class:3035 FForm.class:3481
-#: FInfo.class:91
+#: FInfo.class:88
 msgid "Form"
 msgstr "Formulario"
 
@@ -441,7 +441,7 @@ msgstr "Libre"
 #: FNewTranslation.class:70 FOpenProject.class:410 FPasteSpecial.class:279
 #: FPropertyProject.class:1184 FSave.class:125 FSelectExtraFile.class:78
 #: FSelectIcon.class:271 FText.class:107 FTextEditor.class:465
-#: FTranslate.class:581 Project.module:310
+#: FTranslate.class:605 Project.module:310
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -532,7 +532,7 @@ msgid "&Edit"
 msgstr "&Editar"
 
 #: FConflict.class:25 FFindList.class:169 FIconEditor.class:1412
-#: FInfo.class:468 FMakeInstall.class:260 FOption.class:1097 FTips.class:232
+#: FInfo.class:465 FMakeInstall.class:260 FOption.class:1097 FTips.class:232
 msgid "Close"
 msgstr "Cerrar"
 
@@ -588,7 +588,7 @@ msgstr "Texto"
 msgid "Image"
 msgstr "Imagen"
 
-#: FConflict.class:411 FInfo.class:428
+#: FConflict.class:411 FInfo.class:425
 msgid "Details"
 msgstr "Detalles"
 
@@ -596,7 +596,7 @@ msgstr "Detalles"
 msgid "Resolve conflict with"
 msgstr "Resolver conflicto con"
 
-#: FConflict.class:437 FInfo.class:279
+#: FConflict.class:437 FInfo.class:276
 msgid "Information"
 msgstr "Información"
 
@@ -645,16 +645,16 @@ msgstr "Nuevo archivo"
 msgid "New"
 msgstr "Nuevo"
 
-#: FCreateFile.class:579 FInfo.class:83
+#: FCreateFile.class:579 FInfo.class:80
 msgid "Module"
 msgstr "Módulo"
 
-#: FCreateFile.class:598 FFindList.class:47 FInfo.class:87
+#: FCreateFile.class:598 FFindList.class:47 FInfo.class:84
 #: FPropertyProject.class:874
 msgid "Class"
 msgstr "Clase"
 
-#: FCreateFile.class:693 FInfo.class:100
+#: FCreateFile.class:693 FInfo.class:97
 msgid "HTML file"
 msgstr "Archivo HTML"
 
@@ -680,7 +680,7 @@ msgstr "Ancho"
 msgid "Height"
 msgstr "Altura"
 
-#: FCreateFile.class:778 FCreateProject.class:362 FInfo.class:347
+#: FCreateFile.class:778 FCreateProject.class:362 FInfo.class:344
 #: FPropertyProject.class:876
 msgid "Type"
 msgstr "Tipo"
@@ -974,7 +974,7 @@ msgid "Stack backtrace"
 msgstr "Trazado de la pila"
 
 #: FEditor.class:2076 FForm.class:2802 FIconEditor.class:2032
-#: FTextEditor.class:465 FTranslate.class:675
+#: FTextEditor.class:465 FTranslate.class:699
 msgid "Reload"
 msgstr "Recargar"
 
@@ -1109,7 +1109,7 @@ msgstr "¿Está seguro de reemplazarlo todo?"
 msgid "Replace"
 msgstr "Reemplazar"
 
-#: FFind.class:395 FFindList.class:239 FOutput.class:307 FTranslate.class:550
+#: FFind.class:395 FFindList.class:239 FOutput.class:307 FTranslate.class:566
 msgid "Search string cannot be found."
 msgstr "La cadena buscada no se encontró."
 
@@ -1248,7 +1248,7 @@ msgstr "Seleccionar todo"
 msgid "Unselect all"
 msgstr "Deseleccionar todo"
 
-#: FForm.class:3343 FMain.class:204 FTranslate.class:581
+#: FForm.class:3343 FMain.class:204 FTranslate.class:605
 msgid "Delete"
 msgstr "Borrar"
 
@@ -1516,59 +1516,56 @@ msgstr "Clases"
 msgid "Directory"
 msgstr "Directorio"
 
-#: FInfo.class:95 FMenu.class:1008
+#: FInfo.class:92 FMenu.class:1008
 msgid "Picture"
 msgstr "Imagen"
 
-#: FInfo.class:97
+#: FInfo.class:94
 msgid "Text file"
 msgstr "Archivo de texto"
 
-#: FInfo.class:103
+#: FInfo.class:100
 msgid "CSS file"
 msgstr "Archivo CSS"
 
-#: FInfo.class:106
+#: FInfo.class:103
 msgid "XML file"
 msgstr "Archivo XML"
 
-#: FInfo.class:110
+#: FInfo.class:107
 msgid "ChangeLog"
 msgstr "ChangeLog"
 
-#: FInfo.class:113
+#: FInfo.class:110 FTranslate.class:67
 msgid "File"
 msgstr "Archivo"
 
-#: FInfo.class:135
-msgid "&1 K, &2 line(s)"
+#: FInfo.class:132
+#, fuzzy
+msgid "&1, &2 line(s)"
 msgstr "&1 K, &2 línea(s)"
 
-#: FInfo.class:137
-msgid "&1 K"
-msgstr "&1 K"
-
-#: FInfo.class:313 FOption.class:674 FPropertyProject.class:1535
+#: FInfo.class:310 FOption.class:674 FPropertyProject.class:1535
 msgid "General"
 msgstr "General"
 
-#: FInfo.class:327
+#: FInfo.class:324
 msgid "Link to"
 msgstr "Vincular a"
 
-#: FInfo.class:367 FSelectIcon.class:235
+#: FInfo.class:364 FSelectIcon.class:235 FTranslate.class:68
 msgid "Size"
 msgstr "Tamaño"
 
-#: FInfo.class:387
+#: FInfo.class:384
 msgid "Last modified"
 msgstr "Última modificación"
 
-#: FInfo.class:442 FPropertyProject.class:1956
+#: FInfo.class:439 FPropertyProject.class:1956
 msgid "Versioning"
 msgstr "Versionado"
 
-#: FInfo.class:453
+#: FInfo.class:450
 #, fuzzy
 msgid "This file has not been modified since the last commit."
 msgstr ""
@@ -1587,7 +1584,7 @@ msgstr "Editar lista de propiedades"
 msgid "&Insert"
 msgstr "&Insertar"
 
-#: FList.class:197 FMenu.class:830 FTranslate.class:1624
+#: FList.class:197 FMenu.class:830 FTranslate.class:1706
 msgid "&Delete"
 msgstr "&Borrar"
 
@@ -2411,7 +2408,7 @@ msgstr "Marcado"
 msgid "Click on Insert to add a new menu."
 msgstr "Haga click en Insertar para añadir un menú nuevo."
 
-#: FNewTranslation.class:59 FTranslate.class:1609
+#: FNewTranslation.class:59 FTranslate.class:1691
 msgid "New translation"
 msgstr "Nueva traducción"
 
@@ -3008,147 +3005,151 @@ msgstr "Comentarios"
 msgid "Language"
 msgstr "Languaje"
 
-#: FTranslate.class:327
+#: FTranslate.class:343
 msgid "Cannot read translation file for language '&1'"
 msgstr "No es posible cargar el archivo de traducción del idioma '&1'"
 
-#: FTranslate.class:475
+#: FTranslate.class:491
 msgid "Cannot save translation."
 msgstr "No es posible guardar la traducción."
 
-#: FTranslate.class:581
+#: FTranslate.class:605
 msgid "Do you really want to delete this translation ?"
 msgstr "¿Realmente quiere borrar esta traducción?"
 
-#: FTranslate.class:675
+#: FTranslate.class:699
 msgid "Do you really want to reload this translation ?"
 msgstr "¿Realmente quiere recargar esta traducción?"
 
-#: FTranslate.class:690
+#: FTranslate.class:714
 msgid "Export a translation"
 msgstr "Exportar una traducción"
 
-#: FTranslate.class:692
+#: FTranslate.class:716
 msgid "Translation files"
 msgstr "Archivos de traducción"
 
-#: FTranslate.class:854
+#: FTranslate.class:878
 msgid "Import a translation"
 msgstr "Importar una traducción"
 
-#: FTranslate.class:881
+#: FTranslate.class:905
 msgid "No translation were picked up."
 msgstr "No fue seleccionada ninguna traducción."
 
-#: FTranslate.class:883
+#: FTranslate.class:907
 msgid "One translation was picked up."
 msgstr "Una traducción fue seleccionada."
 
-#: FTranslate.class:885
+#: FTranslate.class:909
 msgid "&1 translations were picked up."
 msgstr "&1 traducciones fueron tomadas."
 
-#: FTranslate.class:894
+#: FTranslate.class:918
 msgid "Cannot import translation file."
 msgstr "No es posible importar el archivo de traducción."
 
-#: FTranslate.class:946
+#: FTranslate.class:970
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Los símbolos de las cadenas traducidas no concuerdan con los de las cadenas sin traducir."
 
-#: FTranslate.class:959
+#: FTranslate.class:983
 msgid "Everything seems to be correct."
 msgstr "Todo parece estar correcto."
 
-#: FTranslate.class:977
+#: FTranslate.class:1001
 msgid "&1 strings (&2 not translated) - &3 % done"
 msgstr "&1 cadenas (&2 sin traducir) - &3 % terminado"
 
-#: FTranslate.class:1106
+#: FTranslate.class:1130
 msgid "The 'msgmerge' command has failed"
 msgstr "El comando 'msgmerge' ha fallado"
 
-#: FTranslate.class:1189
+#: FTranslate.class:1213
 msgid "All files"
 msgstr "Todos los Archivos"
 
-#: FTranslate.class:1401
+#: FTranslate.class:1473
 msgid "Project translation"
 msgstr "Traducción del proyecto"
 
-#: FTranslate.class:1449
+#: FTranslate.class:1525
 msgid "Show statistics"
 msgstr "Mostrar estadísticas"
 
-#: FTranslate.class:1464
+#: FTranslate.class:1544
 msgid "ComboBox1"
 msgstr ""
 
-#: FTranslate.class:1495
+#: FTranslate.class:1551
+msgid "Toggle language list"
+msgstr ""
+
+#: FTranslate.class:1576
 msgid "Save translation"
 msgstr "Guardar traducción"
 
-#: FTranslate.class:1502
+#: FTranslate.class:1583
 msgid "Clear this translation"
 msgstr "Limpiar esta traducción"
 
-#: FTranslate.class:1509
+#: FTranslate.class:1590
 msgid "This string must not be translated"
 msgstr "La cadena no debe ser traducida"
 
-#: FTranslate.class:1516
+#: FTranslate.class:1597
 msgid "Copy untranslated string"
 msgstr "Copiar cadena no traducida"
 
-#: FTranslate.class:1523
+#: FTranslate.class:1604
 msgid "Verify the translation"
 msgstr "Verificar la traducción"
 
-#: FTranslate.class:1530
+#: FTranslate.class:1611
 msgid "Find next untranslated string"
 msgstr "Encontrar la siguiente cadena sin traducir"
 
-#: FTranslate.class:1537
+#: FTranslate.class:1618
 msgid "Find previous untranslated string"
 msgstr "Encontrar la cadena sin traducción previa"
 
-#: FTranslate.class:1554
+#: FTranslate.class:1635
 msgid "Find a string in translation"
 msgstr "Encontrar una cadena en la traducción"
 
-#: FTranslate.class:1610
+#: FTranslate.class:1692
 msgid "&New..."
 msgstr "&Nuevo..."
 
-#: FTranslate.class:1616
+#: FTranslate.class:1698
 msgid "Reload translation"
 msgstr "Recargar traducción"
 
-#: FTranslate.class:1617
+#: FTranslate.class:1699
 msgid "&Reload"
 msgstr "&Recargar"
 
-#: FTranslate.class:1623
+#: FTranslate.class:1705
 msgid "Delete translation"
 msgstr "Borrar traducción"
 
-#: FTranslate.class:1630
+#: FTranslate.class:1712
 msgid "Import a translation file"
 msgstr "Importar un archivo de traducción"
 
-#: FTranslate.class:1631
+#: FTranslate.class:1713
 msgid "&Import..."
 msgstr "&Importar..."
 
-#: FTranslate.class:1637
+#: FTranslate.class:1719
 msgid "Export to a translation file"
 msgstr "Exportar a un archivo de traducciones"
 
-#: FTranslate.class:1638
+#: FTranslate.class:1720
 msgid "&Export..."
 msgstr "&Exportar..."
 
-#: FTranslate.class:1649
+#: FTranslate.class:1731
 msgid "&Close"
 msgstr "&Cerrar"
 
@@ -3847,11 +3848,14 @@ msgstr "Imposible actulizar todos los formualarios."
 msgid "Cannot save file !"
 msgstr "¡No es posible guardar el archivo!"
 
-#~ msgid "Stack size"
-#~ msgstr "Tamaño de la pila"
+#~ msgid "Show message bar"
+#~ msgstr "Mostrar barra de mensajes"
 
 #~ msgid "Automatic completion"
 #~ msgstr "Autocompletado"
 
-#~ msgid "Show message bar"
-#~ msgstr "Mostrar barra de mensajes"
+#~ msgid "Stack size"
+#~ msgstr "Tamaño de la pila"
+
+#~ msgid "&1 K"
+#~ msgstr "&1 K"
