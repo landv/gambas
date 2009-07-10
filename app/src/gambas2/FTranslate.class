@@ -150,8 +150,11 @@ PRIVATE SUB SetLang(OPTIONAL sLang AS String) AS Boolean
   DIM sMsgComment AS String
   DIM iIndex AS Integer
   DIM sMsg AS String
+  DIM sCurrent AS String
 
   INC Application.Busy
+
+  sCurrent = cvwTranslate.Key
 
   SaveTranslate
 
@@ -287,8 +290,11 @@ PRIVATE SUB SetLang(OPTIONAL sLang AS String) AS Boolean
 
   $bIgnore = FALSE
 
-  cvwTranslate.MoveFirst
+  IF cvwTranslate.MoveTo(sCurrent) THEN
+    cvwTranslate.MoveFirst
+  ENDIF
   cvwTranslate.Item.Selected = TRUE
+  cvwTranslate.Item.EnsureVisible
 
   $sLang = sLang
   $sPath = sPath
