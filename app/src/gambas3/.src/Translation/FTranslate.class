@@ -60,21 +60,32 @@ Public Sub _new()
   End With
 
   With cvwLang
-    .Columns.Count = 3
+    .Columns.Count = 5
     .Columns[0].Text = ("Language")
     .Columns[1].Text = " % "
+    .Columns[1].Alignment = Align.Right
+    .Columns[2].Text = ("File")
+    .Columns[3].Text = ("Size")
+    .Columns[3].Alignment = Align.Right
   End With  
   
 End
+
+Private Sub GetLangPath(sLang As String, sExt As String) As String
+  
+  Return Project.Dir &/ ".lang" &/ sLang & "." & sExt
+  
+End
+
 
 Private Sub GetTransCount(sLang As String) As Integer
   
   Dim hFile As File
   Dim iVal As Integer
   
-  If Not Exist(Project.Dir &/ ".lang" &/ sLang & ".mo") Then Return 
+  If Not Exist(GetLangPath(sLang, "mo")) Then Return 
   
-  hFile = Open Project.Dir &/ ".lang" &/ sLang & ".mo"
+  hFile = Open GetLangPath(sLang, "mo")
   
   Read #hFile, iVal
   If (iVal = &h950412DE) Xor (System.ByteOrder = gb.BigEndian) Then
@@ -106,6 +117,8 @@ Private Sub DisplayCompiledTrans(sLang As String, Optional nTrans As Integer)
   Else 
     cvwLang[sLang][1] = "?"
   Endif
+  cvwLang[sLang][2] = sLang & ".po"
+  Try cvwLang[sLang][3] = Project.GetFileSize(Stat(GetLangPath(sLang, "po")).Size)
   
 End
 
@@ -121,12 +134,13 @@ Public Sub Form_Open()
   Settings.Read(panLang)
 
   cvwLang.Clear
+  cmbLang.Clear
   For Each sLang In Language.GetAll()
     If Project.HasTranslation(sLang) Then 
       cvwLang.Add(sLang, Language.ToName(sLang))
+      cmbLang.Add(Language.ToName(sLang))
     Endif
   Next
-  chkStat.Value = False
 
   Dec Application.Busy
 
@@ -134,6 +148,9 @@ Public Sub Form_Open()
     Me.Close
   Endif
   
+  chkStat.Value = False
+  UpdateStat
+
 End
 
 
@@ -151,17 +168,22 @@ Private Sub SetLang(Optional sLang As String) As Boolean
   Dim sMsgComment As String
   Dim iIndex As Integer
   Dim sMsg As String
+  Dim sCurrent As String
+  Dim sName As String
 
   Inc Application.Busy
+
+  sCurrent = cvwTranslate.Key
 
   SaveTranslate
 
   If Not sLang Then sLang = Language.Find(System.Language)
 
   sDir = Project.Dir &/ ".lang"
-  sPath = sDir &/ sLang & ".po"
+  sPath = GetLangPath(sLang, "po")
 
-  lblFile.Text = File.Name(sPath)
+  'lblFile.Text = File.Name(sPath)
+  cmbLang.ToolTip = File.Name(sPath)
 
   $bDeleteIfVoid = False
 
@@ -293,16 +315,21 @@ Private Sub SetLang(Optional sLang As String) As Boolean
 
   $bIgnore = False
 
-  cvwTranslate.MoveFirst
+  cvwTranslate.MoveTo(sCurrent)
+  If Not cvwTranslate.Item Then cvwTranslate.MoveFirst
   cvwTranslate.Item.Selected = True
 
   $sLang = sLang
   $sPath = sPath
   $bModify = False
   
-  Try cvwLang.Add($sLang, Language.ToName($sLang))
+  sName = Language.ToName($sLang)
+  Try cvwLang.Add($sLang, sName)
+  If Not Error Then cmbLang.Add(sName)
   If Not Error And If chkStat.Value Then cvwLang[$sLang][1] = "0%"
+  
   Try cvwLang[$sLang].Selected = True
+  Try cmbLang.Index = cmbLang.Find(sName)
 
   DisplayTrans
 
@@ -558,10 +585,18 @@ Public Sub cvwLang_Select()
 
   If sLang = $sLang Then Return
 
-  'sLang = vvwLang.ItemLanguage.FromName(cmbLang.Text)
-  'Project.Config.WriteString("/Language", sLang)
   SetLang(sLang)
 
+End
+
+Public Sub cmbLang_Click()
+  
+  Dim sLang As String = Language.FromName(cmbLang.Text)
+
+  If sLang = $sLang Then Return
+
+  SetLang(sLang)
+  
 End
 
 
@@ -685,7 +720,7 @@ Public Sub btnExport_Click()
   Settings["/FTranslate/ExportPath"] = File.Dir(Dialog.Path)
 
   SaveTranslate
-  Shell "cp -f " & Shell$(Project.Dir &/ ".lang" &/ $sLang & ".po") & " " & Shell$(Dialog.Path) Wait
+  Shell "cp -f " & Shell$(GetLangPath($sLang, "po")) & " " & Shell$(Dialog.Path) Wait
 
 End
 
@@ -855,7 +890,7 @@ Public Sub btnImport_Click()
 
   Inc Application.Busy
 
-  sPath = Project.Dir &/ ".lang" &/ $sLang & ".po"
+  sPath = GetLangPath($sLang, "po")
 
   'SHELL "msgmerge -o " & Project.Quote(sPath & ".new") & " " & Project.Quote(Dialog.Path) & " " & Project.Quote(sPath) & " 2>/dev/null" WAIT
   'MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(Dialog.Path) & " " & Quote.Shell(sPath))
@@ -1262,6 +1297,8 @@ Private Sub UpdateStat()
   Dim sLang As String
   Dim nTrans As Integer
   Dim sRes As String
+  Dim iCol As Integer
+  Dim iWidth As Integer
 
   If chkStat.Value Then
 
@@ -1272,15 +1309,11 @@ Private Sub UpdateStat()
     Shell "grep -c \"^msgid\" " & Shell$(Project.Dir &/ ".lang/.pot") To sRes
     nTrans = Val(sRes) - 1 ' Remove the < msgid "" > line
   
-    cvwLang.Columns[1].Width = -1
-  
     For Each sLang In Language.GetAll()
       If Project.HasTranslation(sLang) Then  
         DisplayCompiledTrans(sLang, nTrans)
       Endif
     Next
-    
-    panLang.Width = Max(panLang.Width, cvwLang.Columns[0].Width + cvwLang.Columns[1].Width)
     
     Dec Application.Busy
     
@@ -1293,11 +1326,25 @@ Private Sub UpdateStat()
     For Each sLang In Language.GetAll()
       If Project.HasTranslation(sLang) Then  
         cvwLang[sLang][1] = ""
+        cvwLang[sLang][2] = ""
+        cvwLang[sLang][3] = ""
       Endif
     Next
   
   Endif
+
+  'cvwLang.Resizable = True
+  For iCol = 0 To 3
+    cvwLang.Columns[iCol].Width = -1
+  Next
+  'cvwLang.Resizable = False
   
+  For iCol = 0 To If(chkStat.Value, 3, 0)
+    iWidth += cvwLang.Columns[iCol].Width
+  Next
+  
+  panLang.Width = iWidth + panLang.Width - panLang.ClientWidth + 8
+    
 End
 
 Public Sub chkStat_Click()
@@ -1325,16 +1372,51 @@ Public Sub cvwLang_Compare(Key As String, OtherKey As String)
 
   iComp = String.Comp(cvwLang[Key][0], cvwLang[OtherKey][0])
   
-  If cvwLang.Columns.Sort = 1 Then 
-    iVal = Val(Replace(cvwLang[Key][1], "%", ""))
-    iOtherVal = Val(Replace(cvwLang[OtherKey][1], "%", ""))
-    If iVal < iOtherVal Then 
-      iComp = 1
-    Else If iVal > iOtherVal Then 
-      iComp = -1
-    Endif
-  Endif
+  Select Case cvwLang.Columns.Sort
+  
+    Case 1
+      iVal = Val(Replace(cvwLang[Key][1], "%", ""))
+      iOtherVal = Val(Replace(cvwLang[OtherKey][1], "%", ""))
+      If iVal < iOtherVal Then 
+        iComp = 1
+      Else If iVal > iOtherVal Then 
+        iComp = -1
+      Endif
+  
+    Case 2
+      iComp = String.Comp(cvwLang[Key][2], cvwLang[OtherKey][2])
+      
+    Case 3
+      iVal = Stat(GetLangPath(Key, "po")).Size
+      iOtherVal = Stat(GetLangPath(OtherKey, "po")).Size
+      If iVal < iOtherVal Then
+        iComp = -1
+      Else If iVal > iOtherVal Then
+        iComp = 1
+      Endif
+  
+  End Select
 
   cvwLang.Compare = iComp
+
+End
+
+Public Sub panLang_Show()
+
+  panLang.Show
+  cmbLang.Hide
+
+End
+
+Public Sub panLang_Hide()
+
+  cmbLang.Show
+  panLang.Hide
+
+End
+
+Public Sub btnShowStat_Click()
+
+  panLang.Hidden = Not btnShowStat.Value
 
 End

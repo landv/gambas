@@ -4394,3 +4394,17 @@ Catch
   FGambas.Error(("Unable to update all forms.") & "\n\n" & Error.Text)
   
 End
+
+Public Sub GetFileSize(iSize As Long) As String
+  
+  If iSize < 1000 Then
+    Return Subst("&1 B", CStr(iSize))
+  Else If iSize < 1000000 Then
+    Return Subst("&1 KiB", Format(iSize / 1000, "#.#"))
+  Else If iSize < 1000000000 Then
+    Return Subst("&1 MiB", Format(iSize / 1000000, "#.#"))
+  Else
+    Return Subst("&1 GiB", Format(iSize / 1000000000, "#.#"))
+  Endif
+  
+End

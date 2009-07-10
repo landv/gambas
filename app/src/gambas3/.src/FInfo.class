@@ -74,9 +74,6 @@ Private Sub GetInfo(sPath As String)
       For Each sFile In RDir(sPath)
         iSize += Stat(sPath &/ sFile).Size
       Next
-      iSize = (iSize + 1023) \ 1024
-      'SHELL "(cd " & Quote.Shell(sPath) & "; du -k | tail -n1" & ")" TO sSize
-      'iSize = Val(sSize)
     Else
       Select Case File.Ext(sPath)
         Case "module"
@@ -114,7 +111,7 @@ Private Sub GetInfo(sPath As String)
           Endif
       End Select
   
-      iSize = CInt((.Size + 1023) \ 1024)
+      iSize = .Size
       If Not sInfo Then 
         If sLink Then 
           sInfo = sLink
@@ -132,9 +129,9 @@ Private Sub GetInfo(sPath As String)
       Try sLine = Split(sOutput, " ")[0]
     Endif
     If sLine Then
-      sSize = Subst(("&1 K, &2 line(s)"), iSize, sLine)
+      sSize = Subst(("&1, &2 line(s)"), Project.GetFileSize(iSize), sLine)
     Else
-      sSize = Subst(("&1 K"), iSize)
+      sSize = Project.GetFileSize(iSize)
     Endif
 
     If sLink Then 

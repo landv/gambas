@@ -357,6 +357,7 @@ static MyListView *listview_init(void *_object, void *parent)
 
   wid->setSorting(-1);
   wid->setSelectionMode(Q3ListView::Single);
+	wid->setItemMargin(2);
 
   CWIDGET_new(wid, (void *)_object);
 
@@ -464,8 +465,8 @@ BEGIN_METHOD_VOID(CCOLUMNVIEW_clear)
 		for (int i = 0; i < WIDGET->columns(); i++)
 		{
 			WIDGET->setColumnWidthMode(i, Q3ListView::Manual);
-			WIDGET->setColumnWidth(i, 16);
 			WIDGET->setColumnText(i, WIDGET->columnText(i));
+			WIDGET->setColumnWidth(i, WIDGET->minimumWidth(i));
 			WIDGET->setColumnWidthMode(i, Q3ListView::Maximum);  	
 		}
 		
@@ -1346,17 +1347,17 @@ BEGIN_PROPERTY(CLISTVIEW_column_width)
 		mode = WIDGET->resizeMode();
 		WIDGET->setResizeMode(Q3ListView::NoColumn);
 		    
+		WIDGET->setColumnWidthMode(WIDGET->_column, Q3ListView::Manual);
     if (w < 0)
     {
-			//WIDGET->setColumnWidthMode(WIDGET->_column, QListView::Manual);
-    	//WIDGET->setColumnWidth(WIDGET->_column, WIDGET->minimumWidth(WIDGET->_column));
-    	WIDGET->setColumnWidthMode(WIDGET->_column, Q3ListView::Maximum);
+			WIDGET->adjustColumn(WIDGET->_column);
+    	WIDGET->setColumnWidth(WIDGET->_column, QMAX(WIDGET->minimumWidth(WIDGET->_column), WIDGET->columnWidth(WIDGET->_column)) + 16);
     }
     else
     {
-			WIDGET->setColumnWidthMode(WIDGET->_column, Q3ListView::Manual);
     	WIDGET->setColumnWidth(WIDGET->_column, w);
     }
+		WIDGET->setColumnWidthMode(WIDGET->_column, Q3ListView::Maximum);
     
     WIDGET->setResizeMode(mode);
   }

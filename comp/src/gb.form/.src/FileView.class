@@ -45,6 +45,7 @@ Static Public Sub _init()
   
   $cExt["html"] = "html"
   $cExt["htm"] = "html"
+  $cExt["css"] = "html"
   $cExt["tar"] = "archive"
   $cExt["gz"] = "archive"
   $cExt["tgz"] = "archive"
@@ -138,6 +139,20 @@ Catch
 End
 
 
+Private Sub GetFileSize(iSize As Long) As String
+  
+  If iSize < 1000 Then
+    Return Subst("&1 B", CStr(iSize))
+  Else If iSize < 1000000 Then
+    Return Subst("&1 KiB", Format(iSize / 1000, "#.#"))
+  Else If iSize < 1000000000 Then
+    Return Subst("&1 MiB", Format(iSize / 1000000, "#.#"))
+  Else
+    Return Subst("&1 GiB", Format(iSize / 1000000000, "#.#"))
+  Endif
+  
+End
+
 Private Sub RefreshView()
 
   Dim sFile As String
@@ -185,7 +200,7 @@ Private Sub RefreshView()
       Endif
       If $hColumnView.Visible Then
         $hColumnView.Add(sPrefix & sFile, sFile, hPict)
-        $hColumnView[sPrefix & sFile][1] = "  " & Subst(("&1 K"), (.Size + 1023) \ 1024)
+        $hColumnView[sPrefix & sFile][1] = "  " & GetFileSize(.Size)
         $hColumnView[sPrefix & sFile][2] = "  " & Str(.Time)
       Else
         $hIconView.Add(sPrefix & sFile, sFile, hPict)
