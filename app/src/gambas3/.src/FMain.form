@@ -323,7 +323,7 @@
     }
   }
   { mnuPopup Menu
-    Text = ("Popup")
+    Text = ("")
     Enabled = False
     Visible = False
     { mnuNew Menu
@@ -472,6 +472,31 @@
     }
     { mnuInformation Menu
       Action = "info"
+      Text = ("&Properties...")
+      Picture = Picture["icon:/small/info"]
+      Shortcut = "Ctrl+I"
+    }
+  }
+  { mnuDatabase Menu
+    Text = ("")
+    Enabled = False
+    { mnuNewConnection Menu
+      Text = ("&New connection...")
+      Picture = Picture["icon:/small/new"]
+    }
+    { Menu17 Menu
+      Text = ("")
+    }
+    { mnuEditConnection Menu
+      Text = ("&Open")
+      Picture = Picture["icon:/small/edit"]
+    }
+    { mnuKillConnection Menu
+      Text = ("&Remove")
+      Picture = Picture["icon:/small/delete"]
+      Shortcut = "Del"
+    }
+    { mnuInfoConnection Menu
       Text = ("&Properties...")
       Picture = Picture["icon:/small/info"]
       Shortcut = "Ctrl+I"

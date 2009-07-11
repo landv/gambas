@@ -98,7 +98,7 @@ Private Const IMAGE_DIR As String = "img/16"
 Public Const KEY_SOURCE As String = "$S"
 Public Const KEY_MISC As String = "$O"
 Public Const KEY_PROJECT As String = "$P"
-Public Const KEY_DATABASE As String = "$D"
+Public Const KEY_CONNECTION As String = "$D"
 
 Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789"
 Private Const CLASS_AUTH_FIRST_CAR As String = "abcdefghijklmnopqrstuvwxyz_"
@@ -129,6 +129,8 @@ Private $bDoRefresh As Boolean
 Private $cImageCache As New Collection
 
 Private $cSourceDir As Collection
+
+Private $hCurrentPopup As Menu
 
 
 Public Sub _init()
@@ -1170,7 +1172,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
     .Add(KEY_SOURCE, ("Sources"), Picture["icon:/small/directory"], sKey)
     
     If Libraries.Exist("gb.db") Then
-      .Add(KEY_DATABASE, ("Connections"), Picture["icon:/small/directory"], sKey)
+      .Add(KEY_CONNECTION, ("Connections"), Picture["icon:/small/directory"], sKey)
     Endif
     
     ' For Each hModule In CModule.All
@@ -2206,6 +2208,14 @@ Private Sub CheckProjectVersion(sPath As String) As String
   
 End
 
+' Private Sub CreateConnectionDirectory()
+'   
+'   If Libraries.Exist("gb.db") Then 
+'     Mkdir Project.Dir &/ ".connection"
+'   Endif
+'   
+' End
+
 
 Public Sub ReadProject() 
 
@@ -2458,6 +2468,7 @@ Public Sub ReadProject()
 
   FMain.UpdateTranslate
   RefreshLibrary
+  'CreateConnectionDirectory
 
 End
 
@@ -2645,6 +2656,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Endif
   
   FMain.UpdateTranslate
+  'CreateConnectionDirectory
 
 Catch
 
@@ -3525,6 +3537,12 @@ Public Function IsImagePath(sPath As String) As Boolean
   
 End
 
+Public Sub IsConnectionPath(sPath As String) As Boolean
+  
+  Return sPath Like (Project.Dir &/ ".connection" &/ "*")
+  
+End
+
 
 Public Function StripPath(sPath As String) As String
 
@@ -3810,7 +3828,7 @@ End
 ' END
 
 
-Public Function GetNewName(sPrefix As String) As String
+Public Function GetNewName(sPrefix As String, Optional sDir As String) As String
 
   Dim iInd As Integer
   Dim sName As String
@@ -3818,7 +3836,12 @@ Public Function GetNewName(sPrefix As String) As String
   Do
     Inc iInd
     sName = sPrefix & iInd
-    If Not Project.Exist(sName) Then Return sName
+    If sDir Then
+      If Not Exist(sDir) Then Return sName
+      If Dir(sDir, sName & ".*").Count = 0 And If Not Exist(sDir &/ sName) Then Return sName
+    Else
+      If Not Project.Exist(sName) Then Return sName
+    Endif
   Loop
 
 End
@@ -4406,5 +4429,15 @@ Public Sub GetFileSize(iSize As Long) As String
   Else
     Return Subst("&1 GiB", Format(iSize / 1000000000, "#.#"))
   Endif
+  
+End
+
+
+Public Sub SetCurrentPopup(hMenu As Menu)
+  
+  Try $hCurrentPopup.Enabled = False
+  $hCurrentPopup = hMenu
+  Try $hCurrentPopup.Enabled = True
+  Debug $hCurrentPopup.Name;; $hCurrentPopup.Window.Title
   
 End

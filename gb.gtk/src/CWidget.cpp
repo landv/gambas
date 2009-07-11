@@ -501,6 +501,12 @@ BEGIN_PROPERTY(CWIDGET_enabled)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CWIDGET_has_focus)
+
+	GB.ReturnBoolean(CONTROL == gDesktop::activeControl());
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CWIDGET_expand)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(CONTROL->expand()); return; }
@@ -826,88 +832,90 @@ END_PROPERTY
 
 GB_DESC CWidgetDesc[] =
 {
-  GB_DECLARE("Control", sizeof(CWIDGET)),
+	GB_DECLARE("Control", sizeof(CWIDGET)),
 
-  GB_NOT_CREATABLE(),
-  GB_HOOK_CHECK(CWIDGET_check),
+	GB_NOT_CREATABLE(),
+	GB_HOOK_CHECK(CWIDGET_check),
 
-  //GB_METHOD("_free", 0, CWIDGET_delete, 0),
+	//GB_METHOD("_free", 0, CWIDGET_delete, 0),
 
-  GB_METHOD("Move", 0, CWIDGET_move, "(X)i(Y)i[(Width)i(Height)i]"),
-  GB_METHOD("Resize", 0, CWIDGET_resize, "(Width)i(Height)i"),
-  GB_METHOD("MoveScaled", 0, CWIDGET_moveScaled, "(X)f(Y)f[(Width)f(Height)f]"),
-  GB_METHOD("ResizeScaled", 0, CWIDGET_resizeScaled, "(Width)f(Height)f"),
-  GB_METHOD("Delete", 0, CWIDGET_delete, 0),
-  GB_METHOD("Show", 0, CWIDGET_show, 0),
-  GB_METHOD("Hide", 0, CWIDGET_hide, 0),
-  GB_METHOD("Reparent",0,CWIDGET_reparent,"(Parent)Container;[(X)i(Y)i]"),
-  
-  GB_METHOD("Raise", 0, CWIDGET_raise, 0),
-  GB_METHOD("Lower", 0, CWIDGET_lower, 0),
+	GB_METHOD("Move", 0, CWIDGET_move, "(X)i(Y)i[(Width)i(Height)i]"),
+	GB_METHOD("Resize", 0, CWIDGET_resize, "(Width)i(Height)i"),
+	GB_METHOD("MoveScaled", 0, CWIDGET_moveScaled, "(X)f(Y)f[(Width)f(Height)f]"),
+	GB_METHOD("ResizeScaled", 0, CWIDGET_resizeScaled, "(Width)f(Height)f"),
+	GB_METHOD("Delete", 0, CWIDGET_delete, 0),
+	GB_METHOD("Show", 0, CWIDGET_show, 0),
+	GB_METHOD("Hide", 0, CWIDGET_hide, 0),
+	GB_METHOD("Reparent",0,CWIDGET_reparent,"(Parent)Container;[(X)i(Y)i]"),
+	
+	GB_METHOD("Raise", 0, CWIDGET_raise, 0),
+	GB_METHOD("Lower", 0, CWIDGET_lower, 0),
 
-  GB_PROPERTY("Next", "Control", CWIDGET_next),
-  GB_PROPERTY("Previous", "Control", CWIDGET_previous),
-  
-  GB_METHOD("SetFocus", 0, CWIDGET_set_focus, 0),
-  GB_METHOD("Refresh", 0, CWIDGET_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
-  GB_METHOD("Grab", "Picture", CWIDGET_grab, 0),
-  GB_METHOD("Drag", 0, CWIDGET_drag, "(Data)v[(Format)s]"),
+	GB_PROPERTY("Next", "Control", CWIDGET_next),
+	GB_PROPERTY("Previous", "Control", CWIDGET_previous),
+	
+	GB_METHOD("SetFocus", 0, CWIDGET_set_focus, 0),
+	GB_METHOD("Refresh", 0, CWIDGET_refresh, "[(X)i(Y)i(Width)i(Height)i]"),
+	GB_METHOD("Grab", "Picture", CWIDGET_grab, 0),
+	GB_METHOD("Drag", 0, CWIDGET_drag, "(Data)v[(Format)s]"),
 
-  GB_PROPERTY("X", "i", CWIDGET_x),
-  GB_PROPERTY("Y", "i", CWIDGET_y),
-  GB_PROPERTY_READ("ScreenX", "i", CWIDGET_screen_x),
-  GB_PROPERTY_READ("ScreenY", "i", CWIDGET_screen_y),
-  GB_PROPERTY("W", "i", CWIDGET_w),
-  GB_PROPERTY("H", "i", CWIDGET_h),
-  GB_PROPERTY("Left", "i", CWIDGET_x),
-  GB_PROPERTY("Top", "i", CWIDGET_y),
-  GB_PROPERTY("Width", "i", CWIDGET_w),
-  GB_PROPERTY("Height", "i", CWIDGET_h),
+	GB_PROPERTY("X", "i", CWIDGET_x),
+	GB_PROPERTY("Y", "i", CWIDGET_y),
+	GB_PROPERTY_READ("ScreenX", "i", CWIDGET_screen_x),
+	GB_PROPERTY_READ("ScreenY", "i", CWIDGET_screen_y),
+	GB_PROPERTY("W", "i", CWIDGET_w),
+	GB_PROPERTY("H", "i", CWIDGET_h),
+	GB_PROPERTY("Left", "i", CWIDGET_x),
+	GB_PROPERTY("Top", "i", CWIDGET_y),
+	GB_PROPERTY("Width", "i", CWIDGET_w),
+	GB_PROPERTY("Height", "i", CWIDGET_h),
 
-  GB_PROPERTY("Visible", "b", CWIDGET_visible),
-  GB_PROPERTY("Enabled", "b", CWIDGET_enabled),
-  GB_PROPERTY("Expand", "b", CWIDGET_expand),
-  GB_PROPERTY("Ignore", "b", CWIDGET_ignore),
+	GB_PROPERTY("Visible", "b", CWIDGET_visible),
+	GB_PROPERTY("Enabled", "b", CWIDGET_enabled),
+	GB_PROPERTY_READ("HasFocus", "b", CWIDGET_has_focus),
 
-  GB_PROPERTY("Font", "Font", CCONTROL_font),
-  GB_PROPERTY("Background", "i", CWIDGET_background),
-  GB_PROPERTY("Foreground", "i", CWIDGET_foreground),
+	GB_PROPERTY("Expand", "b", CWIDGET_expand),
+	GB_PROPERTY("Ignore", "b", CWIDGET_ignore),
 
-  GB_PROPERTY("Design", "b", CWIDGET_design),
-  GB_PROPERTY("Name", "s", CCONTROL_name),
-  GB_PROPERTY("Tag", "v", CWIDGET_tag),
-  GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
-  GB_PROPERTY("Mouse", "i", CWIDGET_mouse), 
-  GB_PROPERTY("Cursor", "Cursor", CWIDGET_cursor),
-  GB_PROPERTY("ToolTip", "s", CWIDGET_tooltip),
-  GB_PROPERTY("Drop", "b", CWIDGET_drop),
-  GB_PROPERTY("Action", "s", CCONTROL_action),
+	GB_PROPERTY("Font", "Font", CCONTROL_font),
+	GB_PROPERTY("Background", "i", CWIDGET_background),
+	GB_PROPERTY("Foreground", "i", CWIDGET_foreground),
 
-  GB_PROPERTY_READ("Parent", "Container", CWIDGET_parent),
-  GB_PROPERTY_READ("Window", "Window", CWIDGET_window),
-  GB_PROPERTY_READ("Id", "i", CWIDGET_id),
-  GB_PROPERTY_READ("Handle", "i", CWIDGET_id),
+	GB_PROPERTY("Design", "b", CWIDGET_design),
+	GB_PROPERTY("Name", "s", CCONTROL_name),
+	GB_PROPERTY("Tag", "v", CWIDGET_tag),
+	GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
+	GB_PROPERTY("Mouse", "i", CWIDGET_mouse), 
+	GB_PROPERTY("Cursor", "Cursor", CWIDGET_cursor),
+	GB_PROPERTY("ToolTip", "s", CWIDGET_tooltip),
+	GB_PROPERTY("Drop", "b", CWIDGET_drop),
+	GB_PROPERTY("Action", "s", CCONTROL_action),
 
-  GB_EVENT("Enter", 0, 0, &EVENT_Enter),
-  GB_EVENT("GotFocus", 0, 0, &EVENT_GotFocus),
-  GB_EVENT("LostFocus", 0, 0, &EVENT_LostFocus),
-  GB_EVENT("KeyPress", 0, 0, &EVENT_KeyPress),
-  GB_EVENT("KeyRelease", 0, 0, &EVENT_KeyRelease),
-  GB_EVENT("Leave", 0, 0, &EVENT_Leave),
-  GB_EVENT("MouseDown", 0, 0, &EVENT_MouseDown),
-  GB_EVENT("MouseMove", 0, 0, &EVENT_MouseMove),
-  GB_EVENT("MouseDrag", 0, 0, &EVENT_MouseDrag),
-  GB_EVENT("MouseUp", 0, 0, &EVENT_MouseUp),
-  GB_EVENT("MouseWheel", 0, 0, &EVENT_MouseWheel),
-  GB_EVENT("DblClick", 0, 0, &EVENT_DblClick),
-  GB_EVENT("Menu", 0, 0, &EVENT_Menu),
-  GB_EVENT("Drag", 0, 0, &EVENT_Drag),
-  GB_EVENT("DragMove", 0, 0, &EVENT_DragMove),
-  GB_EVENT("Drop", 0, 0, &EVENT_Drop),
+	GB_PROPERTY_READ("Parent", "Container", CWIDGET_parent),
+	GB_PROPERTY_READ("Window", "Window", CWIDGET_window),
+	GB_PROPERTY_READ("Id", "i", CWIDGET_id),
+	GB_PROPERTY_READ("Handle", "i", CWIDGET_id),
+
+	GB_EVENT("Enter", 0, 0, &EVENT_Enter),
+	GB_EVENT("GotFocus", 0, 0, &EVENT_GotFocus),
+	GB_EVENT("LostFocus", 0, 0, &EVENT_LostFocus),
+	GB_EVENT("KeyPress", 0, 0, &EVENT_KeyPress),
+	GB_EVENT("KeyRelease", 0, 0, &EVENT_KeyRelease),
+	GB_EVENT("Leave", 0, 0, &EVENT_Leave),
+	GB_EVENT("MouseDown", 0, 0, &EVENT_MouseDown),
+	GB_EVENT("MouseMove", 0, 0, &EVENT_MouseMove),
+	GB_EVENT("MouseDrag", 0, 0, &EVENT_MouseDrag),
+	GB_EVENT("MouseUp", 0, 0, &EVENT_MouseUp),
+	GB_EVENT("MouseWheel", 0, 0, &EVENT_MouseWheel),
+	GB_EVENT("DblClick", 0, 0, &EVENT_DblClick),
+	GB_EVENT("Menu", 0, 0, &EVENT_Menu),
+	GB_EVENT("Drag", 0, 0, &EVENT_Drag),
+	GB_EVENT("DragMove", 0, 0, &EVENT_DragMove),
+	GB_EVENT("Drop", 0, 0, &EVENT_Drop),
 
 	CONTROL_DESCRIPTION,
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 GB_DESC CPluginDesc[] =

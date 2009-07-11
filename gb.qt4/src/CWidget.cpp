@@ -573,6 +573,12 @@ BEGIN_PROPERTY(CCONTROL_enabled)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CCONTROL_has_focus)
+
+	GB.ReturnBoolean(WIDGET->hasFocus());
+
+END_PROPERTY
+
 BEGIN_PROPERTY(CCONTROL_expand)
 
 	if (READ_PROPERTY)
@@ -2309,6 +2315,7 @@ GB_DESC CControlDesc[] =
 
 	GB_PROPERTY("Visible", "b", CCONTROL_visible),
 	GB_PROPERTY("Enabled", "b", CCONTROL_enabled),
+	GB_PROPERTY_READ("HasFocus", "b", CCONTROL_has_focus),
 	
 	GB_PROPERTY("Expand", "b", CCONTROL_expand),
 	GB_PROPERTY("Ignore", "b", CCONTROL_ignore),

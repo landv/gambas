@@ -43,7 +43,12 @@ Public Sub lstType_Click()
   If Not $bDoNotSetName Then   
     sPrefix = UCase(Left(sPrefix)) & Mid(sPrefix, 2)
     Object.Lock(txtName)
-    txtName.Text = Project.GetNewName(sPrefix)
+    Select Case LCase(sPrefix)
+      Case "text", "image", "html", "css"
+        txtName.Text = Project.GetNewName(sPrefix, $sDir)
+      Case Else
+        txtName.Text = Project.GetNewName(sPrefix)
+    End Select
     txtName.SelectAll
     Object.Unlock(txtName)
   Endif 

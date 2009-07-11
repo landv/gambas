@@ -2786,13 +2786,13 @@ End
 
 Public Sub Form_Activate()
 
-  mnuForm.Enabled = True
+  Project.SetCurrentPopup(mnuForm)
 
 End
 
 Public Sub Form_Deactivate()
 
-  mnuForm.Enabled = False
+  'mnuForm.Enabled = False
 
 End
 

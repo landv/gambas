@@ -2286,14 +2286,15 @@ Public Sub Form_Activate()
 
   'mnuEditor.Enabled = True
   RefreshLineInfo(True)
+  Project.SetCurrentPopup(mnuEditor)
 
 End
 
 Public Sub Editors_GotFocus()
   
   Editor = Last 
-  mnuEditor.Enabled = True
-  
+  Project.SetCurrentPopup(mnuEditor)
+
 End
 
 Public Sub Editors_MouseUp()
@@ -2524,7 +2525,7 @@ End
 
 Public Sub cmbProc_GotFocus()
 
-  'Editor.SetFocus
+  Editor.SetFocus
 
 End
 
@@ -2668,7 +2669,7 @@ End
 
 Public Sub Editors_LostFocus()
 
-  mnuEditor.Enabled = False
+  'mnuEditor.Enabled = False
 
 End
 

@@ -1,0 +1,100 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Text,Picture,ReadOnly"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+
+Property Picture As Picture
+Property Text As String
+Property ReadOnly As Boolean
+
+Private $hPanel As Panel
+Private $hBackground As TextBox
+Private $hTextBox As TextBox
+Private $hButton As Button
+
+Public Sub _new()
+  
+  $hPanel = New Panel(Me) As "Panel"
+  '$hPanel.Border = Border.Sunken
+  '$hPanel.Background = Color.TextBackground
+  $hPanel.Arrangement = Arrange.Horizontal
+  $hPanel.Padding = 2
+  
+  $hBackground = New TextBox($hPanel) As "Background"
+  $hBackground.ReadOnly = True
+  $hBackground.Ignore = True
+  '$hBackground.Enabled = False
+  
+  $hTextBox = New TextBox($hPanel)
+  $hTextBox.Expand = True
+  $hTextBox.Border = False
+  
+  $hButton = New Button($hPanel) As "Button"
+  $hButton.W = Desktop.Scale * 3
+  $hButton.Picture = Picture["img/select.png"]
+  
+  $hTextBox.SetFocus
+  
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hButton.Picture
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  If Not Value Then Value = Picture["img/select.png"]
+  $hButton.Picture = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return $hTextBox.Text
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $hTextBox.Text = Value
+
+End
+
+Public Sub Button_Click()
+  
+  $hTextBox.SetFocus
+  Raise Click
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hTextBox.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hTextBox.ReadOnly = Value
+
+End
+
+Public Sub Panel_Arrange()
+  
+  $hBackground.Move(0, 0, $hPanel.W, $hPanel.H)
+  
+End
+
+Public Sub Background_GotFocus()
+  
+  $hTextBox.SetFocus
+  
+End

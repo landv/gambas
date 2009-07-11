@@ -69,6 +69,7 @@ Public Sub Form_Open()
   mnuOpenExample.Tag = "."
 
   Try Project.ActiveForm.SetFocus
+  tvwProject_LostFocus
   
 End
 
@@ -228,7 +229,12 @@ End
 Public Sub tvwProject_Menu()
 
   'mnuPopup.Enabled = TRUE
-  mnuPopup.Popup
+  GetCurrent
+  If $sKey Like (Project.KEY_CONNECTION & "*") Then
+    mnuDatabase.Popup
+  Else
+    mnuPopup.Popup
+  Endif
   'mnuPopup.Enabled = FALSE
 
 End
@@ -383,6 +389,19 @@ Public Sub mnuPopup_Show()
     Endif
 
   Endif
+End
+
+Public Sub mnuDatabase_Show()
+  
+  Dim sCurrent As String = GetCurrent()
+  Dim bVisible As Boolean
+  
+  bVisible = $sKey <> Project.KEY_CONNECTION
+  
+  mnuEditConnection.Visible = bVisible
+  mnuKillConnection.Visible = bVisible
+  mnuInfoConnection.Visible = bVisible
+  
 End
 
 
@@ -811,23 +830,18 @@ End
 
 Public Sub tvwProject_Select()
 
-  Dim sKey As String
-  Dim sSave As String
-  Dim aKey As String[]
-  Dim hEdit As Editor
-  Dim iLine As Integer
-  Dim iCol As Integer
-  Dim iLen As Integer
-
-  sKey = tvwProject.Key
-  ' WITH tvwProject.Current
-  '   DEBUG .X;; .Y;; .W;; .H
-  ' END WITH
-
-  mnuPopup_Show
-  
   If tvwProject.Current.Children Then tvwProject.Current.Expanded = True
 
+  GetCurrent()
+
+  If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
+    Project.SetCurrentPopup(mnuDatabase)
+    mnuDatabase_Show
+  Else
+    Project.SetCurrentPopup(mnuPopup)
+    mnuPopup_Show
+  Endif
+  
 End
 
 ' PUBLIC SUB tvwProject_Expand()
@@ -1111,7 +1125,7 @@ End
 Public Sub tvwProject_GotFocus()
 
   'Debug
-  mnuPopup.Enabled = True
+  'mnuPopup.Enabled = True
 
 End
 
@@ -1119,6 +1133,7 @@ Public Sub tvwProject_LostFocus()
 
   'Debug
   mnuPopup.Enabled = False
+  mnuDatabase.Enabled = False
 
 End
 
@@ -1522,4 +1537,13 @@ Public Sub mnuStatusBar_Click()
   Settings["/ShowMessages"] = mnuStatusBar.Value
   ReadConfig
 
+End
+
+Public Sub mnuNewConnection_Click()
+  
+  Dim sPath As String
+  
+  sPath = FNewConnection.Run()
+  If Not sPath Then Return
+  
 End

@@ -64,6 +64,8 @@ End
 Public Sub ReadConfig()
 
   FTextEditor.ReadConfigEditor(edtOutput)
+  edtOutput.Flags[Editor.ShowModifiedLines] = False
+  edtOutput.Flags[Editor.ShowLineNumbers] = False
 
 End
 

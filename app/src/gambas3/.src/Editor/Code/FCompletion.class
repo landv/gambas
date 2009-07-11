@@ -42,6 +42,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dim iPos As Integer
   Dim hCont As Container
   Dim sText As String
+  Dim H As Integer
 
   hEditor = GetEditor()
 
@@ -91,10 +92,11 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     Return
   Endif
   
-  Me.Resize(($iMaxLen + 6) * Me.Font.Width("A"), (Max(18, Me.Font.Height(" ") + 3)) * Min(8, lvwComp.Count) + 2)
-
   'PRINT "Open: $hEditor = "; $hEditor
 
+  lvwComp.MoveFirst
+  H = lvwComp.Item.H
+  
   If sMode = "<" Or sMode = "A" Then 
     If FindItem(True) Then 
       Dec Application.Busy
@@ -105,6 +107,8 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
     lvwComp.Item.Selected = True
     lvwComp.Item.EnsureVisible
   Endif 
+
+  Me.Resize(($iMaxLen + 6) * Me.Font.Width("A"), (H * Min(8, lvwComp.Count) + 2))
 
   sText = String.Left(hEditor.Lines[hEditor.Line].Text, $iCol)
   

@@ -1,0 +1,59 @@
+' Gambas class file
+
+Private $sPath As String
+
+Public Sub Run(Optional sPath As String) As String
+
+  $sPath = sPath
+  If Me.ShowModal() Then Return $sPath
+
+End
+
+Public Sub btnOK_Click()
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub _new()
+
+  If $sPath Then
+    Me.Title = ("Connection properties")
+    'Me.Icon = Picture["icon:/small/info"]
+    txtName.Text = File.BaseName($sPath)
+    txtName.ReadOnly = True
+    cmbType.SetFocus
+  Else
+    Me.Title = ("New connection")
+    'Me.Icon = Picture["icon:/small/new"]
+    txtName.Text = Project.GetNewName("Connection", Project.Dir &/ ".connection")
+    txtName.SetFocus
+  Endif
+
+End
+
+Public Sub txtPath_Click()
+
+End
+
+Public Sub cmbType_Click()
+
+  Debug
+  If LCase(cmbType.Text) = "sqlite" Then
+    panPath.Show
+    panHost.Hide
+    txtPath.SetFocus
+  Else
+    panPath.Hide
+    panHost.Show
+    txtHost.SetFocus
+  Endif
+
+End
