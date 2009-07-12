@@ -5,7 +5,7 @@
   Text = ("")
   Arrangement = Arrange.Vertical
   { panToolBar ToolBar
-    MoveScaled(0,0,70,4)
+    MoveScaled(0,0,93,4)
     Key = "connection-editor"
     Text = ("Connection editor")
     { btnSave ToolButton mnuSave
@@ -28,35 +28,35 @@
       MoveScaled(8,0,1,4)
     }
     { btnNewTable ToolButton
-      MoveScaled(10,0,9,4)
+      MoveScaled(10,0,15,4)
       ToolTip = ("Rename")
       AutoResize = True
       Text = ("New table")
       Picture = Picture["icon:/small/new"]
     }
     { btnNewRequest ToolButton
-      MoveScaled(20,0,9,4)
+      MoveScaled(25,0,15,4)
       ToolTip = ("Rename")
       AutoResize = True
       Text = ("New request")
       Picture = Picture["icon:/small/find"]
     }
     { btnImport ToolButton
-      MoveScaled(29,0,7,4)
+      MoveScaled(40,0,12,4)
       ToolTip = ("Rename")
       AutoResize = True
       Text = ("Import...")
       Picture = Picture["icon:/small/open"]
     }
     { btnRename ToolButton
-      MoveScaled(37,0,7,4)
+      MoveScaled(51,0,13,4)
       ToolTip = ("Rename")
       AutoResize = True
       Text = ("Rename...")
       Picture = Picture["icon:/small/edit"]
     }
     { btnKill ToolButton
-      MoveScaled(45,0,7,4)
+      MoveScaled(64,0,10,4)
       ToolTip = ("Delete")
       AutoResize = True
       Text = ("Delete")
@@ -73,6 +73,7 @@
       { lvwTable ListView
         MoveScaled(1,2,19,26)
         Expand = True
+        Sorted = True
       }
     }
     { splTable VSplit
@@ -91,7 +92,7 @@
           Transparent = True
         }
         { edtRequest Editor
-          MoveScaled(37,4,27,17)
+          MoveScaled(42,3,18,5)
           Expand = True
         }
         { tabTable TabStrip
@@ -103,34 +104,34 @@
           Index = 0
           Text = ("Fields")
           { ToolBar1 ToolBar
-            MoveScaled(1,1,49,4)
+            MoveScaled(1,1,65,4)
             Text = ("")
             { btnSaveTable ToolButton
-              MoveScaled(1,0,7,4)
+              MoveScaled(0,0,9,4)
               AutoResize = True
               Text = ("Save")
               Picture = Picture["icon:/small/save"]
             }
             { ToolButton1 ToolButton
-              MoveScaled(8,0,7,4)
+              MoveScaled(9,0,8,4)
               AutoResize = True
               Text = ("Add")
               Picture = Picture["icon:/small/add"]
             }
             { ToolButton2 ToolButton
-              MoveScaled(16,0,12,4)
+              MoveScaled(17,0,12,4)
               AutoResize = True
               Text = ("Remove")
               Picture = Picture["icon:/small/remove"]
             }
             { ToolButton3 ToolButton
-              MoveScaled(27,0,10,4)
+              MoveScaled(28,0,9,4)
               AutoResize = True
               Text = ("Down")
               Picture = Picture["icon:/small/down"]
             }
             { ToolButton4 ToolButton
-              MoveScaled(36,0,8,4)
+              MoveScaled(37,0,25,4)
               AutoResize = True
               Text = ("Up")
               Picture = Picture["icon:/small/up"]
@@ -147,32 +148,39 @@
           { ToolBar2 ToolBar
             MoveScaled(1,1,63,4)
             Text = ("")
+            { btnSaveTable2 ToolButton btnSaveTable
+              Name = "btnSaveTable2"
+              MoveScaled(0,0,9,4)
+              AutoResize = True
+              Text = ("Save")
+              Picture = Picture["icon:/small/save"]
+            }
             { ToolButton9 ToolButton
-              MoveScaled(0,0,14,4)
+              MoveScaled(9,0,14,4)
               AutoResize = True
               Text = ("New index")
               Picture = Picture["icon:/small/new"]
             }
             { ToolButton5 ToolButton
-              MoveScaled(14,0,8,4)
+              MoveScaled(23,0,8,4)
               AutoResize = True
               Text = ("Add")
               Picture = Picture["icon:/small/add"]
             }
             { ToolButton6 ToolButton
-              MoveScaled(22,0,12,4)
+              MoveScaled(31,0,12,4)
               AutoResize = True
               Text = ("Remove")
               Picture = Picture["icon:/small/remove"]
             }
             { ToolButton7 ToolButton
-              MoveScaled(33,0,10,4)
+              MoveScaled(42,0,10,4)
               AutoResize = True
               Text = ("Down")
               Picture = Picture["icon:/small/down"]
             }
             { ToolButton8 ToolButton
-              MoveScaled(42,0,8,4)
+              MoveScaled(51,0,8,4)
               AutoResize = True
               Text = ("Up")
               Picture = Picture["icon:/small/up"]
@@ -194,13 +202,13 @@
           MoveScaled(2,1,60,4)
           Text = ("")
           { btnRunQuery ToolButton
-            MoveScaled(0,0,11,4)
+            MoveScaled(0,0,13,4)
             AutoResize = True
             Text = ("Run query")
             Picture = Picture["icon:/small/play"]
           }
           { panEditData HBox
-            MoveScaled(12,0,28,4)
+            MoveScaled(14,0,30,4)
             Visible = False
             AutoResize = True
             { btnSaveData ToolButton
@@ -211,20 +219,20 @@
               Picture = Picture["icon:/small/save"]
             }
             { btnAddData ToolButton
-              MoveScaled(9,0,7,4)
+              MoveScaled(9,0,8,4)
               AutoResize = True
               Text = ("Add")
               Picture = Picture["icon:/small/add"]
             }
             { btnRemoveData ToolButton
-              MoveScaled(18,0,7,4)
+              MoveScaled(18,0,10,4)
               AutoResize = True
               Text = ("Delete")
               Picture = Picture["icon:/small/remove"]
             }
           }
           { btnExportData ToolButton
-            MoveScaled(40,0,7,4)
+            MoveScaled(45,0,12,4)
             AutoResize = True
             Text = ("Export...")
             Picture = Picture["icon:/small/save-as"]

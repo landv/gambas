@@ -1321,27 +1321,6 @@ BEGIN_METHOD(CGRIDROWS_insert, GB_INTEGER start; GB_INTEGER length)
 	
 END_METHOD
 
-BEGIN_PROPERTY(CGRIDROWS_visible)
-
-	int y = WIDGET->rowPos(THIS->row) - WIDGET->contentsY() + WIDGET->clipper()->y() - WIDGET->horizontalHeader()->height() - 2;
-	int h = WIDGET->rowHeight(THIS->row);
-	
-	GB.ReturnBoolean((y + h) >= 0 && y < WIDGET->clipper()->height());
-
-END_PROPERTY
-
-BEGIN_METHOD_VOID(CGRIDROWS_ensure_visible)
-
-	int y = WIDGET->rowPos(THIS->row) - WIDGET->contentsY() + WIDGET->clipper()->y() - WIDGET->horizontalHeader()->height() - 2;
-	int h = WIDGET->rowHeight(THIS->row);
-
-	if ((y + h) < 0)
-		WIDGET->setContentsPos(WIDGET->contentsX(), WIDGET->rowPos(THIS->row));
-	else if (y > WIDGET->clipper()->height())
-		WIDGET->setContentsPos(WIDGET->contentsX(), QMAX(0, WIDGET->rowPos(THIS->row) - WIDGET->clipper()->height() + h));
-
-END_METHOD
-
 /***************************************************************************
 
 	GridViewCols
@@ -1888,8 +1867,6 @@ GB_DESC CGridRowDesc[] =
 	GB_PROPERTY("Selected", "b", CGRIDROWS_selected),
 	GB_METHOD("Refresh", NULL, CGRIDROWS_refresh, NULL),
 	GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
-	GB_PROPERTY_READ("Visible", "b", CGRIDROWS_visible),
-	GB_METHOD("EnsureVisible", NULL, CGRIDROWS_ensure_visible, NULL),
 
 	GB_END_DECLARE
 };
@@ -1919,6 +1896,7 @@ GB_DESC CGridRowsDesc[] =
 	GB_METHOD("_get", ".GridViewRow", CGRIDROWS_get, "(Row)i"),
 	GB_PROPERTY("Count", "i", CGRIDROWS_count),
 	GB_PROPERTY("Height", "i", CGRIDROWS_height),
+	GB_PROPERTY_READ("HeaderHeight", "i", CGRIDCOLS_height),
 	GB_PROPERTY("H", "i", CGRIDROWS_height),
 	GB_PROPERTY_READ("Width", "i", CGRIDROWS_width),
 	GB_PROPERTY_READ("W", "i", CGRIDROWS_width),
@@ -1940,6 +1918,7 @@ GB_DESC CGridColumnsDesc[] =
 	GB_METHOD("_get", ".GridViewColumn", CGRIDCOLS_get, "(Column)i"),
 	GB_PROPERTY("Count", "i", CGRIDCOLS_count),
 	GB_PROPERTY("Width", "i", CGRIDCOLS_width),
+	GB_PROPERTY_READ("HeaderWidth", "i", CGRIDROWS_width),
 	GB_PROPERTY("W", "i", CGRIDCOLS_width),
 	GB_PROPERTY_READ("Height", "i", CGRIDCOLS_height),
 	GB_PROPERTY_READ("H", "i", CGRIDCOLS_height),

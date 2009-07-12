@@ -398,6 +398,18 @@ BEGIN_PROPERTY(CBUTTON_autoresize)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CTOOLBUTTON_autoresize)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->autoresize);
+	else if (THIS->autoresize != VPROP(GB_BOOLEAN))
+	{
+		THIS->autoresize = VPROP(GB_BOOLEAN);
+		WIDGET_TOOL->calcMinimumSize();
+	}
+
+END_PROPERTY
+
 #if 0
 BEGIN_PROPERTY(CBUTTON_stretch)
 
@@ -496,7 +508,7 @@ GB_DESC CToolButtonDesc[] =
   GB_PROPERTY("Toggle", "b", CTOOLBUTTON_toggle),
   GB_PROPERTY("Border", "b", CTOOLBUTTON_border),
   GB_PROPERTY("Radio", "b", CTOOLBUTTON_radio),
-  GB_PROPERTY("AutoResize", "b", CBUTTON_autoresize),
+  GB_PROPERTY("AutoResize", "b", CTOOLBUTTON_autoresize),
 
 	TOOLBUTTON_DESCRIPTION,
 
@@ -540,6 +552,7 @@ void MyPushButton::changeEvent(QEvent *e)
 void MyPushButton::calcMinimumSize()
 {
 	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
+	QSize size;
 	
   if (text().length() > 0)
   {
@@ -550,7 +563,11 @@ void MyPushButton::calcMinimumSize()
     setMinimumHeight(0);
 
 	if (THIS->autoresize)
-		setMinimumWidth(sizeHint().width());
+	{
+		size = sizeHint();
+		setMinimumWidth(size.width());
+		CWIDGET_resize(THIS, size.width(), height());
+	}
 	else
 		setMinimumWidth(0);
 
@@ -595,13 +612,25 @@ void MyToolButton::changeEvent(QEvent *e)
 
 void MyToolButton::calcMinimumSize()
 {
-  if (text().length() > 0)
+	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
+	QSize size;
+
+	if (text().length() > 0)
   {
     QFontMetrics fm = fontMetrics();
     setMinimumHeight(fm.lineSpacing() + 4);
   }
   else
     setMinimumHeight(0);
+
+	if (THIS->autoresize)
+	{
+		size = sizeHint();
+		setMinimumWidth(size.width());
+		CWIDGET_resize(THIS, size.width(), height());
+	}
+	else
+		setMinimumWidth(0);
 }
 
 void MyToolButton::resizeEvent(QResizeEvent *e)

@@ -18,16 +18,16 @@ Public Function GetWidth(hCtrl As Control) As Integer
       iWidth = hCtrl.Font.Width(Str(False))
 
     Case db.Integer
-      iWidth = hCtrl.Font.Width("0") * 8
+      iWidth = hCtrl.Font.Width("9") * 8
 
     Case db.Long, db.Serial
-      iWidth = hCtrl.Font.Width("0") * 16
+      iWidth = hCtrl.Font.Width("9") * 16
 
     Case db.Float
-      iWidth = hCtrl.Font.Width("0") * 16
+      iWidth = hCtrl.Font.Width("9") * 16
 
     Case db.Date
-      iWidth = hCtrl.Font.Width("00/00/0000 00:00:00")
+      iWidth = hCtrl.Font.Width("9") * 20
 
     Case db.String
       iLen = Length

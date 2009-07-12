@@ -857,6 +857,7 @@ END_PROPERTY
 Headers, Footers, and Row Separators
 
 ****************************************************************************/
+
 BEGIN_PROPERTY(CGRIDVIEWHEADER_visible)
 
 	if (READ_PROPERTY) { GB.ReturnInteger(WIDGET->headersVisible()); return; }
@@ -984,6 +985,7 @@ GB_DESC CGridViewColumnsDesc[] =
   GB_PROPERTY("Resizable","b",CGRIDVIEW_columns_resizable),
   GB_PROPERTY("Count", "i", CGRIDVIEW_columns_count),
   GB_PROPERTY("Width", "i", CGRIDCOLS_width),
+  GB_PROPERTY_READ("HeaderWidth", "i", CGRIDROWS_width),
   GB_PROPERTY("W", "i", CGRIDCOLS_width),
   GB_PROPERTY_READ("Height", "i", CGRIDCOLS_height),
   GB_PROPERTY_READ("H", "i", CGRIDCOLS_height),
@@ -1012,6 +1014,7 @@ GB_DESC CGridViewRowsDesc[] =
   GB_PROPERTY("Count", "i", CGRIDVIEW_count),
   GB_PROPERTY("Resizable","b",CGRIDVIEW_rows_resizable),
   GB_PROPERTY("Height", "i", CGRIDROWS_height),
+  GB_PROPERTY_READ("HeaderHeight", "i", CGRIDCOLS_height),
   GB_PROPERTY("H", "i", CGRIDROWS_height),
   GB_PROPERTY_READ("Width", "i", CGRIDROWS_width),
   GB_PROPERTY_READ("W", "i", CGRIDROWS_width),

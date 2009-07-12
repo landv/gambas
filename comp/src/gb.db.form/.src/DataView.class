@@ -209,6 +209,42 @@ Private Sub Columns_Write(aCol As String[])
   
 End
 
+Private Sub IsRowVisible(Row As Integer) As Boolean
+  
+  Dim Y As Integer 
+  Dim H As Integer 
+  Dim HH As Integer
+  
+  Y = $hCtrl.Rows[Row].Y
+  H = $hCtrl.Rows[Row].H
+  HH = $hCtrl.Columns.H
+  
+  Return (Y + H) >= HH And Y < ($hCtrl.ClientH + HH)
+
+Catch
+  
+End
+
+Private Sub EnsureRowVisible(Row As Integer)
+  
+  Dim Y As Integer 
+  Dim H As Integer 
+  Dim HH As Integer
+  
+  Y = $hCtrl.Rows[Row].Y
+  H = $hCtrl.Rows[Row].H
+  HH = $hCtrl.Columns.H
+  
+  If (Y + H) < HH Then
+    $hCtrl.ScrollY -= HH - (Y + H)
+  Else If (Y > ($hCtrl.ClientH + HH - H)) Then
+    $hCtrl.ScrollY += Y - ($hCtrl.ClientH + HH - H)
+  Endif
+  
+End
+
+
+
 Public Sub GridView_Timer()
   
   Dim iRow As Integer
@@ -216,7 +252,7 @@ Public Sub GridView_Timer()
   
   $hTimer.Stop
 
-  Try bVisible = $hCtrl.Rows[$hCtrl.Row].Visible 
+  Try bVisible = IsRowVisible($hCtrl.Row)
   
   If bVisible Then
     $aAdjust.Push($hCtrl.Row)
@@ -228,7 +264,7 @@ Public Sub GridView_Timer()
     Try $hCtrl.Rows[iRow].H = -1
   Wend
   
-  If bVisible Then $hCtrl.Rows[$hCtrl.Row].EnsureVisible
+  If bVisible Then EnsureRowVisible($hCtrl.Row)
   
   $bAdjust = False
   $bTimer = False
