@@ -653,6 +653,7 @@ fType GetFieldType(const char *Type, unsigned int *length )
 		upper[i] = toupper(upper[i]);
 	
 	Type = upper;
+	if (!Type) Type = "";
 
      if (strstr(Type, "BLOB")
         || strstr(Type, "CHAR(") /* note the opening bracket */
