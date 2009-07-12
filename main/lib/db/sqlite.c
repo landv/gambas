@@ -152,9 +152,7 @@ static char *FindDatabase(char *name, char *hostName)
 
 static int open_database(DB_DESC *desc, DB_DATABASE * db)
 {
-	char *name = NULL;
 	char *db_fullpath = NULL;
-	//bool memory = FALSE;
 	bool ver2 = FALSE;
 
 	if (!desc->name) // memory database
@@ -163,7 +161,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE * db)
 	db_fullpath = FindDatabase(desc->name, desc->host);
 	if (!db_fullpath)
 	{
-		GB.Error("Unable to locate database: &1", name);
+		GB.Error("Unable to locate database: &1", desc->name);
 		return TRUE;
 	}
 					 	

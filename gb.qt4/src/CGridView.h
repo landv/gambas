@@ -173,6 +173,11 @@ public slots:
   virtual void setNumCols(int);
   virtual void setNumRows(int);
   virtual void columnWidthChanged(int col);
+  virtual void rowHeightChanged(int col);
+  void updateLastColumn();
+	
+private slots:
+	void enableUpdates();
 
 protected:
 
@@ -183,7 +188,7 @@ private:
 
 	void drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph);
   void updateHeaders();
-  void updateLastColumn();
+	void updateLastColumnLater();
   int _header;
   MyTableItem *_item;
   int _rows;
@@ -193,6 +198,9 @@ private:
   int _last_col_width;
   bool _updating_last_column;
 	bool _autoresize;
+	bool _updateLastColumn;
+	bool _enableUpdates;
+	int _min_row;
 };
 
 class CGridView : public QObject

@@ -17,8 +17,13 @@ Private $hPanel As Panel
 Private $hBackground As TextBox
 Private $hTextBox As TextBox
 Private $hButton As Button
+Private $hObserver As Observer
 
 Public Sub _new()
+  
+  Dim sEventName As String = Object.LastEventName
+  
+  $hObserver = New Observer(Me) As "Observer"
   
   $hPanel = New Panel(Me) As "Panel"
   '$hPanel.Border = Border.Sunken
@@ -31,9 +36,10 @@ Public Sub _new()
   $hBackground.Ignore = True
   '$hBackground.Enabled = False
   
-  $hTextBox = New TextBox($hPanel)
+  $hTextBox = New TextBox($hPanel) 
   $hTextBox.Expand = True
   $hTextBox.Border = False
+  Object.Attach($hTextBox, Object.Parent(Me), sEventName)
   
   $hButton = New Button($hPanel) As "Button"
   $hButton.W = Desktop.Scale * 3
@@ -42,6 +48,14 @@ Public Sub _new()
   $hTextBox.SetFocus
   
 End
+
+Public Sub _attach(Parent As Object, Name As String)
+  
+  If Not Name Then Return
+  If $hTextBox Then Object.Attach($hTextBox, Parent, Name)
+  
+End
+
 
 Private Function Picture_Read() As Picture
 
@@ -98,3 +112,10 @@ Public Sub Background_GotFocus()
   $hTextBox.SetFocus
   
 End
+
+Public Sub Observer_GotFocus()
+  
+  $hTextBox.SetFocus
+  
+End
+

@@ -361,7 +361,10 @@ End
 
 Private Sub SetReadOnly()
 
-  edtEditor.ReadOnly = Project.ReadOnly Or Project.Running Or Stat(Path).Type = gb.Link
+  edtEditor.ReadOnly = False
+  If Project.ReadOnly Or If Project.Running Or If Not Exist(Path) Or If Stat(Path).Type = gb.Link Then
+    edtEditor.ReadOnly = True
+  Endif
 
   If $hEditor1 Then $hEditor1.ReadOnly = edtEditor.ReadOnly
   If $hEditor2 Then $hEditor2.ReadOnly = edtEditor.ReadOnly

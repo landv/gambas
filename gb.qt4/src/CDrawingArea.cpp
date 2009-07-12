@@ -27,13 +27,13 @@
 #include <QPixmap>
 #include <QPainter>
 
+#include "CDraw.h"
+#include "CDrawingArea.h"
+
 #ifndef NO_X_WINDOW
 #include <QX11Info>
 #include <X11/Xlib.h>
 #endif
-
-#include "CDraw.h"
-#include "CDrawingArea.h"
 
 DECLARE_EVENT(EVENT_draw);
 

@@ -662,11 +662,12 @@ BEGIN_METHOD(object_attach, GB_OBJECT object; GB_OBJECT parent; GB_STRING name)
 
   void *object = VARG(object);
   void *parent = VARG(parent);
+	char *name = GB_ToZeroString(ARG(name));
 
   if (GB_CheckObject(object))
     return;
 
-	if (!parent)
+	if (!parent || !name || !*name)
 	{
 		OBJECT_detach(object);
 		return;
@@ -675,7 +676,7 @@ BEGIN_METHOD(object_attach, GB_OBJECT object; GB_OBJECT parent; GB_STRING name)
   if (GB_CheckObject(parent))
     return;
 
- 	OBJECT_attach(object, parent, GB_ToZeroString(ARG(name)));
+ 	OBJECT_attach(object, parent, name);
 	
 	if (OBJECT_is(object, CLASS_Observer))
 		COBSERVER_attach((COBSERVER *)object, parent, GB_ToZeroString(ARG(name)));

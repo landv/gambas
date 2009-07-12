@@ -1,0 +1,12 @@
+' Gambas class file
+
+
+Public Sub Button1_Click()
+
+  If DataSource1.Table Then
+    DataSource1.Table = ""
+  Else
+    DataSource1.Table = "test"
+  Endif
+
+End

@@ -103,13 +103,13 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hCtrl = New Frame(hParent)
       hCtrl.Caption = sName
 
-    Case "tabstrip"
-      hCtrl = New TabStrip(hParent)
-      'hCtrl.Caption = sName
-
-    Case "panel"
-      hCtrl = New Panel(hParent)
-
+    ' Case "tabstrip"
+    '   hCtrl = New TabStrip(hParent)
+    '   'hCtrl.Caption = sName
+    ' 
+    ' Case "panel"
+    '   hCtrl = New Panel(hParent)
+    ' 
     Case "button"
       hCtrl = New Button(hParent)
       hCtrl.Caption = sName
@@ -198,9 +198,6 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
     Case "menu"
       hCtrl = New Menu(hParent)
 
-    Case "scrollview"
-      hCtrl = New ScrollView(hParent)
-
     Case "progressbar"
       hCtrl = New ProgressBar(hParent)
       hCtrl.Value = 0.5
@@ -212,7 +209,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
         hCtrl = New Splitter(hParent)
       Endif
 
-    Case "-", "drawingarea", "vbox", "hbox", "vpanel", "hpanel", "vsplit", "hsplit", "embedder"
+    Case "-", "drawingarea", "panel", "vbox", "hbox", "vpanel", "hpanel", "vsplit", "hsplit", "embedder", "datasource"
       hCtrl = New DrawingArea(hParent)
       hCtrl.Merge = True
 
@@ -223,9 +220,6 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hWindow.Background = Color.Mix(Color.Foreground, Color.Background)
       hCtrl.Add(hWindow)
       
-    Case "toolbar"
-      hCtrl = New ToolBar(hParent)
-
     Case Else
 
       If bExist Then
@@ -514,6 +508,7 @@ _DO_NOT_APPLY:
   Endif
 
   If hProp.UpdateName Then UpdateName
+  If Control Is DrawingArea Then Control.Refresh
 
   Return
 

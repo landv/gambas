@@ -106,30 +106,30 @@ EXTERN bool EXEC_got_error;
 
 #endif
 
-/* Pointeur de r��ence des variables locales */
+/* Local variables base pointer */
 #define BP EXEC_current.bp
-/* Classe en cours */
+/* Current class */
 #define CP EXEC_current.cp
-/* Objet en cours */
+/* Current object */
 #define OP EXEC_current.op
-/* Pointeur de r��ence des param�res */
+/* Paramters base pointer */
 #define PP EXEC_current.pp
-/* Sauvegarde du pointeur de pile pour un TRY */
+/* Save stack pointer for a TRY */
 #define EP EXEC_current.ep
-/* fonction en cours */
+/* Current function */
 #define FP EXEC_current.fp
-/* Pointeur de programme */
+/* Program counter */
 #define PC EXEC_current.pc
-/* Emplacement o aller en cas d'erreur */
+/* Where to go if there is an error */
 #define EC EXEC_current.ec
-/* Emplacement de sauvegarde pour TRY */
+/* Save register for TRY */
 #define ET EXEC_current.et
 /* Last break in the function */
 #define TC EXEC_current.tc
 /* Stack at the last break in the function */
 #define TP EXEC_current.tp
 
-/* Valeur de retour d'une fonction */
+/* Function return value pointer */
 #define RP (&RET)
 
 #define HOOK(func) (!EXEC_Hook.func) ? 0 : (*EXEC_Hook.func)

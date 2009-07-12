@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,59)
+  Text = ("")
+  Arrangement = Arrange.Vertical
+  Margin = True
+  { Button1 Button
+    MoveScaled(21,1,13,4)
+    Text = ("Clear")
+  }
+  { DataSource1 DataSource
+    MoveScaled(1,6,66,52)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Table = "test"
+    { DataView1 DataView
+      MoveScaled(4,8,49,43)
+      Mode = Select.Single
+    }
+  }
+}

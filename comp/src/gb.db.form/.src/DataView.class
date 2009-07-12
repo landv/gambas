@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multi}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
 Public Const _DrawWith As String = "GridView"
 
 Event Activate
@@ -12,6 +12,7 @@ Property Mode As Integer
 Property Header As Integer
 Property Grid As Boolean
 Property Highlight As Boolean
+'Property Adjust As Boolean
 
 'PROPERTY Connection AS Connection
 'PROPERTY Table AS String
@@ -27,20 +28,30 @@ Private $hCtrl As GridView
 'PRIVATE $sTable AS String
 'PRIVATE $sFilter AS String
 Private $hTable As DataTable
+Private $bAllColumns As Boolean
 Private $aColumns As String[]
+Private $aColumnsIndex As Integer[]
 Private $bCreate As Boolean
-Private $bRefreshColumn As Boolean
+'Private $bRefreshColumn As Boolean
 Private $bNoActivate As Boolean
 Private $iHighlight As Integer
 Private $bHighlight As Boolean
 
+Private $hObserver As Observer
+Private $iLastSize As Integer
+Private $hTimer As Timer
+
+Private $bTimer As Boolean
+Private $bAdjust As Boolean
+Private $aAdjust As New Integer[]
+
 Public Sub _new()
   
   $hCtrl = New GridView(Me) As "GridView"
+  $hTimer = New Timer As "GridView"
   $hCtrl.Header = GridView.Both
-  '''$hCtrl.AutoResize = TRUE
-  '''$hCtrl.Resizable = FALSE
   $hCtrl.Grid = False
+  $bAllColumns = True
   Create()
   Refresh
   
@@ -53,29 +64,35 @@ Private Sub RefreshColumns()
   
   Dim iInd As Integer
   Dim sTable As String
+  Dim aFields As String[]
   
   If Common.CheckDB() Then Return
-  If Not $bRefreshColumn Then Return
+  'If Not $bRefreshColumn Then Return
   
-  $bRefreshColumn = False
+  '$bRefreshColumn = False
   
   sTable = $hTable.Name
   
-  If Not $aColumns Or If $aColumns.Count = 0 Then
-    $aColumns = DataConnection.GetFields(sTable)
-  Endif
+  aFields = $hTable.GetFields()
+  
+  If $bAllColumns Then $aColumns = aFields
+
+  $aColumnsIndex = New Integer[$aColumns.Count]
+  For iInd = 0 To $aColumns.Max
+    $aColumnsIndex[iInd] = aFields.Find($aColumns[iInd])
+  Next
   
   'Object.Lock($hCtrl)
   $bNoActivate = True
   $hCtrl.Columns.Count = $aColumns.Count
   For iInd = 0 To $aColumns.Max
-    With DataConnection[sTable, $aColumns[iInd]]
-      'Debug .Name;; $hCtrl.Columns[iInd].Width;; .GetWidth($hCtrl)
+    With $hTable.GetFieldInfo($aColumns[iInd])
       $hCtrl.Columns[iInd].Text = .Name
       $hCtrl.Columns[iInd].Width = .GetWidth($hCtrl)
-      'Debug "--> "; $hCtrl.Columns[iInd].Width
     End With
   Next
+  '$hCtrl.AutoResize = False
+  '$hCtrl.AutoResize = True
   $bNoActivate = False
   'Object.Unlock($hCtrl)
   
@@ -83,30 +100,39 @@ Private Sub RefreshColumns()
   
 End
 
+Private Sub UpdateObserver()
+  
+  If Not $bAdjust Then Return
+  $hObserver = New Observer($hTable) As "Table"
+  
+End
+
 
 Private Sub Load()
   
   Dim hSrc As DataSource
+  Dim hTable As DataTable
+  Dim bReset As Boolean
   
   If Common.CheckDB() Then Return
   
-  'TRY DB.Open
-
-  'IF NOT $sTable THEN
-    hSrc = Common.GetSource(Me)
-    If hSrc Then
-      $hTable = hSrc._GetTable()
+  hSrc = Common.GetSource(Me)
+  If hSrc Then
+    hTable = hSrc._GetTable()
+    If hTable <> $hTable Then
+      $hTable = hTable
+      bReset = True
+      UpdateObserver
+      If $hTable Then RefreshColumns
     Endif
-  'ELSE
-  '  $hTable = NEW DataTable($sTable, $sFilter)
-  'ENDIF
+  Endif
 
   If Not $hTable Then
     $hCtrl.Rows.Count = 0
+    $hCtrl.Columns.Count = 0
     Return
   Endif
-    
-  RefreshColumns
+  
   'Object.Lock($hCtrl)
   $bNoActivate = True
   $hCtrl.Rows.Count = $hTable.Count
@@ -118,6 +144,7 @@ Private Sub Load()
   If hSrc.Index < 0 Then 
     $bCreate = True
     $hCtrl.Rows.UnSelect
+    If bReset Then $hCtrl.MoveTo(0, 0)
   Else
     $hCtrl.Row = hSrc.Index
     $hCtrl.Rows[$hCtrl.Row].Selected = True
@@ -172,37 +199,62 @@ Private Sub Columns_Write(aCol As String[])
   
   If Not aCol Then
     $aColumns = Null
+    $bAllColumns = True
   Else
     $aColumns = aCol.Copy()
+    $bAllColumns = $aColumns.Count = 0
   Endif
 
-  $bRefreshColumn = True  
   RefreshColumns
+  
+End
+
+Public Sub GridView_Timer()
+  
+  Dim iRow As Integer
+  Dim bVisible As Boolean
+  
+  $hTimer.Stop
+
+  Try bVisible = $hCtrl.Rows[$hCtrl.Row].Visible 
+  
+  If bVisible Then
+    $aAdjust.Push($hCtrl.Row)
+  Endif
+  
+  $bAdjust = True
+  While $aAdjust.Count
+    iRow = $aAdjust.Pop()
+    Try $hCtrl.Rows[iRow].H = -1
+  Wend
+  
+  If bVisible Then $hCtrl.Rows[$hCtrl.Row].EnsureVisible
+  
+  $bAdjust = False
+  $bTimer = False
   
 End
 
 Public Sub GridView_Data(Row As Integer, Column As Integer)
   
-  Dim rData As Result
-  Dim vVal As Variant
+  With $hCtrl.Data
+    Try .Text = Str($hTable[Row][$aColumnsIndex[Column]])
+    .Alignment = Align.TopNormal
+    
+    If $bHighlight And If Row And 1 Then .Background = $iHighlight
+  End With
   
-  rData = $hTable[Row]
-  If Not rData Then Return
-  If Not rData.Available Then Return
-  
-  If $aColumns Then
-    vVal = rData[$aColumns[Column]]
-  Else
-    vVal = rData[Column]
+  If Not $bAdjust Then
+    If Not $aAdjust.Exist(Row) Then $aAdjust.Push(Row)
+    If Not $bTimer Then 
+      $bTimer = True
+      $hTimer.Trigger
+    Endif
   Endif
   
-  If IsBoolean(vVal) Then 
-    $hCtrl.Data.Text = If(vVal, ("True"), ("False"))
-  Else
-    $hCtrl.Data.Text = Str(vVal)
-  Endif
+  Return
   
-  If $bHighlight And If Row And 1 Then $hCtrl.Data.Background = $iHighlight
+  $hCtrl.Data.Text = If(1, ("True"), ("False"))
   
 End
 
@@ -218,6 +270,7 @@ Public Sub GridView_Change()
   If $bNoActivate Then Return
 
   $bCreate = False
+  $hCtrl.Rows[$hCtrl.Row].H = -1
   Raise Activate
   
 End
@@ -270,16 +323,14 @@ End
 
 Public Sub MoveFirst()
 
-  Try $hCtrl.Row = 0
-  $hCtrl.Rows[$hCtrl.Row].Selected = True
+  MoveTo(0)
   $bCreate = False
   
 End
 
 Public Sub MoveLast()
   
-  $hCtrl.Row = $hCtrl.Rows.Count - 1
-  $hCtrl.Rows[$hCtrl.Row].Selected = True
+  MoveTo($hCtrl.Rows.Count - 1)
   $bCreate = False
   
 End
@@ -368,6 +419,7 @@ Public Sub GridView_ColumnClick(Column As Integer)
     hSrc.Sort = ""
   Endif
   
+  $iLastSize = 0
   $hCtrl.Refresh
 
 End
@@ -396,3 +448,50 @@ Private Sub Highlight_Write(Value As Boolean)
   $bHighlight = Value
 
 End
+
+
+' Public Sub Table_CacheResize()
+'   
+'   Dim iRow As Integer
+'   Dim bBusy As Boolean
+'   Dim iNewSize As Integer
+'   
+'   If Not $bAdjust Then Return
+'   
+'   iNewSize = $hTable.CacheSize
+'   bBusy = (iNewSize - $iLastSize) > 128
+'   
+'   If bBusy Then Inc Application.Busy
+'   For iRow = $iLastSize To iNewSize - 1
+'     $hCtrl.Rows[iRow].Height = -1
+'   Next
+'   '$hCtrl.Show
+'   If bBusy Then Dec Application.Busy
+'   
+'   $iLastSize = iNewSize
+'   If $hCtrl.Current.Y >= $hCtrl.ScrollY Then 
+'     If Not $hTimer.Enabled Then
+'       $hTimer.Delay = 50
+'       $hTimer.Enabled = True
+'     Endif
+'   Endif
+'   
+' End
+
+' Private Function Adjust_Read() As Boolean
+' 
+'   Return $bAdjust
+' 
+' End
+' 
+' Private Sub Adjust_Write(Value As Boolean)
+' 
+'   If $bAdjust = Value Then Return
+'   
+'   $bAdjust = Value
+'   If $hTable Then
+'     UpdateObserver
+'     Table_CacheResize()
+'   Endif
+' 
+' End

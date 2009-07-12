@@ -121,7 +121,21 @@ void OBJECT_detach(OBJECT *ob)
 
   if (parent)
   {
-  	lock = OBJECT_is_locked(ob);
+		if (class->special[SPEC_ATTACH] != NO_SYMBOL)
+		{
+			STACK_check(2);
+			
+			SP->_object.class = OBJECT_class(parent);
+			SP->_object.object = parent;
+			PUSH();
+			
+			SP->type = T_NULL;
+			SP++;
+			
+			EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
+		}
+  	
+		lock = OBJECT_is_locked(ob);
     ev->parent = NULL;
     OBJECT_lock(ob, lock);
     #if DEBUG_EVENT || DEBUG_REF
@@ -198,6 +212,23 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 
   EventObject = ob;
 
+	if (class->special[SPEC_ATTACH] != NO_SYMBOL)
+	{
+		STACK_check(2);
+		
+		SP->_object.class = OBJECT_class(parent);
+		SP->_object.object = parent;
+		PUSH();
+		
+		SP->type = T_STRING;
+		SP->_string.addr = EVENT_Name;
+		SP->_string.start = 0;
+		SP->_string.len = STRING_length(EVENT_Name);
+		PUSH();
+		
+		EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
+	}
+	
 	//dump_attach("OBJECT_attach");
 }
 

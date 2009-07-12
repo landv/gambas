@@ -460,12 +460,10 @@ void TRANS_new(void)
 
   JOB->current++;
 
-  if (PATTERN_is(*JOB->current, RS_LSQR))
+  if (TRANS_is(RS_LSQR))
   {
     if (collection)
       THROW("Array declaration is forbidden with typed collection");
-
-    JOB->current++;
 
     if (!PATTERN_is(*JOB->current, RS_RSQR))
     {
@@ -492,10 +490,8 @@ void TRANS_new(void)
   }
   else
   {
-    if (PATTERN_is(*JOB->current, RS_LBRA))
+    if (TRANS_is(RS_LBRA))
     {
-      JOB->current++;
-
       for(;;)
       {
         if (nparam > MAX_PARAM_FUNC)
@@ -522,9 +518,8 @@ void TRANS_new(void)
         THROW("Not enough argument to New()");
     }
 
-    if (PATTERN_is(*JOB->current, RS_AS))
+    if (TRANS_is(RS_AS))
     {
-      JOB->current++;
       TRANS_expression(FALSE);
       nparam++;
       event = TRUE;
@@ -547,6 +542,12 @@ void TRANS_expression(bool check_statement)
 {
   TRANS_TREE *tree;
 
+	if (TRANS_is(RS_NEW))
+	{
+		TRANS_new();
+		return;
+	}
+	
   tree = TRANS_tree(check_statement);
 
   trans_expr_from_tree(tree);
@@ -645,9 +646,8 @@ bool TRANS_affectation(bool dup)
 
   if (op == RS_NONE && (PATTERN_is_reserved(*JOB->current)))
   {
-    if (PATTERN_is(*JOB->current, RS_NEW))
+    if (TRANS_is(RS_NEW))
     {
-      JOB->current++;
       TRANS_in_affectation++;
       TRANS_new();
       TRANS_in_affectation--;
@@ -657,9 +657,8 @@ bool TRANS_affectation(bool dup)
     {
       for (st = statement; st->id; st++)
       {
-        if (PATTERN_is(*JOB->current, st->id))
+        if (TRANS_is(st->id))
         {
-          JOB->current++;
           TRANS_in_affectation++;
           (*st->func)();
           TRANS_in_affectation--;

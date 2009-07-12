@@ -163,6 +163,10 @@ Static Public Sub Raise(Control As Object)
   Dim hLock As Integer[]
 
   If $iGlobalLock Then Return
+  If Not Object.IsValid(Control) Then
+    Debug "warning: invalid control: "; Control
+    Return
+  Endif
 
   sKey = Get(Control)
   'DEBUG Control;; sKey

@@ -21,10 +21,14 @@ Orientation
 p
 i
 
+Adjust
+p
+b
+
 _Properties
 C
 s
-*,Control=True,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
+*,Control=True,Adjust,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
 _new
 m
 
@@ -301,10 +305,14 @@ Sort
 p
 s
 
+CacheSize
+p
+i
+
 _Properties
 C
 s
-*,Table,Filter,ReadOnly
+*,Table,Filter,ReadOnly,CacheSize{Range:0;1024;64}
 _new
 m
 
@@ -371,7 +379,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.None;Single;Multi}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns
+*,Mode{Select.None;Single;Multiple}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns
 _DrawWith
 C
 s
@@ -428,6 +436,14 @@ Refresh
 m
 
 
+MoveTo
+m
+
+(Index)i
+GridView_Timer
+m
+
+
 GridView_Data
 m
 
@@ -452,10 +468,6 @@ MovePrevious
 m
 
 
-MoveTo
-m
-
-(Index)i
 Remove
 m
 b

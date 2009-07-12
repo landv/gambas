@@ -1217,7 +1217,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CWINDOW_closed)
 
-	GB.ReturnBoolean(CWIDGET_test_flag(THIS, WF_CLOSED));
+	GB.ReturnBoolean(!THIS->opened);
 
 END_PROPERTY
 

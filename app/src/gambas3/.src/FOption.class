@@ -183,6 +183,8 @@ End
 
 Private Sub RefreshWindow()
   
+  Dim hFile As Object
+  
   If $bNoChange Then Return
 
   FProperty.ReadConfig
@@ -192,6 +194,9 @@ Private Sub RefreshWindow()
   FFormStack.ReadConfig
   FToolBox.ReadConfig
   FDebugExpr.ReadConfig
+  For Each hFile In Project.Files
+    Try hFile.ReadConfig
+  Next
 
 End
 

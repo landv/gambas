@@ -1,0 +1,75 @@
+' Gambas class file
+
+Public Name As String
+Public Type As Integer
+Public ReadOnly As Boolean
+Public Length As Integer
+Public Key As Boolean
+Public {Default} As Variant
+
+Public Function GetWidth(hCtrl As Control) As Integer
+
+  Dim iWidth As Integer
+  Dim iLen As Integer
+
+  Select Case Type
+
+    Case db.Boolean
+      iWidth = hCtrl.Font.Width(Str(False))
+
+    Case db.Integer
+      iWidth = hCtrl.Font.Width("0") * 8
+
+    Case db.Long, db.Serial
+      iWidth = hCtrl.Font.Width("0") * 16
+
+    Case db.Float
+      iWidth = hCtrl.Font.Width("0") * 16
+
+    Case db.Date
+      iWidth = hCtrl.Font.Width("00/00/0000 00:00:00")
+
+    Case db.String
+      iLen = Length
+      If iLen = 0 Then iLen = 255
+      iLen = Min(32, iLen)
+      iWidth = hCtrl.Font.Width("0") * iLen
+
+  End Select
+
+  iWidth = Max(iWidth, hCtrl.Font.Width(Name) + 16)
+
+  Return iWidth
+
+End
+
+Public Sub FromField(hField As Object, Optional hTable As Table)
+  
+  Dim iType As Integer
+  Dim bReadOnly As Boolean
+  'Dim bResultField As Boolean = hField Is ResultField
+  
+  iType = hField.Type
+  Name = hField.Name
+  If hTable Then 
+    Key = hTable.PrimaryKey.Exist(Name)
+    {Default} = hField.Default
+
+    If iType = db.Serial Then
+      iType = db.Long
+      bReadOnly = True
+    Else
+      bReadOnly = Key
+    Endif
+  Else
+    bReadOnly = True
+  Endif
+
+  Type = iType
+  ReadOnly = bReadOnly
+  
+  If iType = db.String Then
+    Length = hField.Length
+  Endif
+  
+End

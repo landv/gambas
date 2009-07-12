@@ -41,16 +41,17 @@ enum {
   };
 
 enum {
-  HS_ERROR = 0,
-  HS_PUBLIC = 1,
-  HS_STATIC = 2,
-  HS_DYNAMIC = 4,
-  HS_PROCEDURE = 8,
-  HS_FUNCTION = 16,
-  HS_PUT = 32,
-  HS_UNKNOWN = 64,
-  HS_NOPARAM = 128,
-  HS_COMPARE = 256,
+  HS_ERROR 			= 0,
+  HS_PUBLIC 		= 1 << 0,
+  HS_STATIC 		= 1 << 1,
+  HS_DYNAMIC 		= 1 << 2,
+  HS_PROCEDURE 	= 1 << 3,
+  HS_FUNCTION 	= 1 << 4,
+  HS_PUT 				= 1 << 5,
+  HS_UNKNOWN 		= 1 << 6,
+  HS_NOPARAM 		= 1 << 7,
+  HS_COMPARE 		= 1 << 8,
+	HS_ATTACH 		= 1 << 9
   };
 
 typedef

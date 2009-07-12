@@ -1441,9 +1441,11 @@ bool EXEC_spec(int special, CLASS *class, void *object, int nparam, bool drop)
 		//EXEC.func = &class->load->func[(long)desc->method.exec]
 		EXEC.index = (int)(intptr_t)desc->method.exec;
 		EXEC.native = FALSE;
-		EXEC_function_real(!drop);
-		if (!drop)
+		if (drop)
+			EXEC_function();
+		else
 		{
+			EXEC_function_keep();
 			//*SP++ = *RP;
 			COPY_VALUE(SP, RP);
 			SP++;
@@ -1628,7 +1630,9 @@ void EXEC_new(void)
 		//printf("**** name %s\n", class->name);
 
 		STRING_ref(name);
+		SP++;
 		OBJECT_new(&object, class, name, ((OP == NULL) ? (OBJECT *)CP : (OBJECT *)OP));
+		SP--;
 		STRING_unref(&name);
 
 		RELEASE(SP);

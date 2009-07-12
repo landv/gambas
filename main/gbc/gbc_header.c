@@ -491,6 +491,7 @@ static bool header_function(TRANS_FUNC *func)
     { "_next",      HS_PUBLIC + HS_NOPARAM },
     { "_unknown",   HS_PUBLIC + HS_UNKNOWN },
     { "_compare",   HS_PUBLIC + HS_DYNAMIC + HS_FUNCTION + HS_COMPARE },
+		{ "_attach",    HS_PUBLIC + HS_DYNAMIC + HS_PROCEDURE + HS_ATTACH },
     { NULL, 0 }
   };
 
@@ -608,6 +609,14 @@ static bool header_function(TRANS_FUNC *func)
 				if (func->nparam != 1)
       		THROW("The special method must take exactly one argument");
       }
+			
+			if (hsp->flag & HS_ATTACH)
+			{
+				if (func->nparam != 2)
+      		THROW("The special method must take exactly two arguments");
+				if (func->param[0].type.t.id != T_OBJECT || func->param[1].type.t.id != T_STRING)
+      		THROW("The special method signature is incorrect");
+			}
 
       break;
     }

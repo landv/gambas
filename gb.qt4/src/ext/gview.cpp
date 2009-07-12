@@ -1516,7 +1516,7 @@ void GEditor::mousePressEvent(QMouseEvent *e)
 
 void GEditor::mouseMoveEvent(QMouseEvent *e)
 {
-	if ((e->state() & Qt::MouseButtonMask) == Qt::LeftButton)
+	if ((e->buttons() & Qt::MouseButtonMask) == Qt::LeftButton)
 	{
 		if (left)
 		{

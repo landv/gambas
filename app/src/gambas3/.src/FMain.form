@@ -409,8 +409,7 @@
       Picture = Picture["icon:/small/edit"]
     }
     { mnuEditClass Menu
-      Text = ("Edit &class")
-      Picture = Picture["img/16/class.png"]
+      Text = ("Edit &code")
     }
     { mnuEditWith Menu
       Text = ("Edit with")
@@ -813,13 +812,9 @@
     }
   }
   { timMessage #Timer
-    #X = 567
-    #Y = 63
+    #X = 700
+    #Y = 105
     Delay = 2000
-  }
-  { timOpen #Timer
-    #X = 567
-    #Y = 119
   }
   { panMessage Panel
     MoveScaled(1,77,53,4)
@@ -833,6 +828,10 @@
       AutoResize = True
       Text = ("OK")
     }
+  }
+  { timOpen #Timer
+    #X = 644
+    #Y = 105
   }
 }
 

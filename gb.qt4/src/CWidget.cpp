@@ -381,28 +381,38 @@ void CWIDGET_move(void *_object, int x, int y)
 void CWIDGET_resize(void *_object, int w, int h)
 {
   QWidget *wid = get_widget_resize(THIS);
+	bool window;
+	bool resizable = true;
 
-	if (wid)
+	if (!wid)
+		return;
+	
+	window = wid->isTopLevel();
+	
+	if (w < 0 && h < 0)
+		return;
+
+	if (w < 0)
+		w = wid->width();
+
+	if (h < 0)
+		h = wid->height();
+
+	if (w == wid->width() && h == wid->height())
+		return;
+
+	if (window)
 	{
-		if (w < 0 && h < 0)
-			return;
-
-		if (w < 0)
-			w = wid->width();
-
-		if (h < 0)
-			h = wid->height();
-
-		if (w == wid->width() && h == wid->height())
-			return;
-
-  	wid->resize(qMax(0, w), qMax(0, h));
+		resizable = ((MyMainWindow *)wid)->isResizable();
+		if (!resizable)
+			((MyMainWindow *)wid)->setResizable(true);
 	}
+  
+	wid->resize(qMax(0, w), qMax(0, h));
 
-  if (GB.Is(THIS, CLASS_Window))
+  if (window)
   {
-    //qDebug("CWIDGET_resize: %d %d", w, h);
-
+		((MyMainWindow *)wid)->setResizable(resizable);
     ((CWINDOW *)_object)->w = w;
     ((CWINDOW *)_object)->h = h;
     // menu bar height is ignored

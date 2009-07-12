@@ -1939,6 +1939,7 @@ Private Sub FillShowTabMenu()
     hMenu = New Menu(mnuShowTab) As "mnuShowTab"
     hMenu.Text = CStr(iIndex) & " - " & hTabStrip[iIndex].Text
     hMenu.Tag = iIndex
+    hMenu.Checked = iIndex = hTabStrip.Index
   Next
   
 End
@@ -1971,14 +1972,16 @@ Sub RefreshMenu()
   Action[".align-*", Me].Visible = bOn
   Action[".same-*", Me].Visible = bOn
 
+  mnuShowTab.Hide
+  mnuMoveTab.Hide
+
   If Selection.Count = 1 And If Master.IsMultiContainer() Then
-    mnuShowTab.Show
-    mnuMoveTab.Show
+    If Master.Control.Count >= 2 Then
+      mnuShowTab.Show
+      mnuMoveTab.Show
+    Endif
     Action[".move-tab", Me].Visible = True
-    FillShowTabMenu
   Else 
-    mnuShowTab.Hide
-    mnuMoveTab.Hide
     Action[".move-tab", Me].Visible = False
   Endif
 
@@ -2059,6 +2062,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
   Dim hCCtrl As CControl = Control[hCtrl.Tag]
   Dim hPict As Picture
   Dim W As Integer = 1
+  Dim iBorder As Integer
   
   If Not hCCtrl Then Return
 
@@ -2111,6 +2115,27 @@ Public Sub Control_Draw(Optional iIndex As Integer)
         Draw.Tile(Picture["img/16/red-arrow-c.png"], hCtrl.W / 2 - 4, 4, 8, hCtrl.H - 8)
       Endif
       Draw.Foreground = &HFF8080&
+      
+    Case "Panel"
+    
+      Select Case hCCtrl.GetProperty("Border")
+        Case "Raised"
+          iBorder = Border.Raised
+        Case "Sunken"
+          iBorder = Border.Sunken
+        Case "Etched"
+          iBorder = Border.Etched
+        Case "Plain"
+          iBorder = Border.Plain
+        Default
+          iBorder = Border.None
+      End Select
+      
+      If iBorder Then
+        Draw.Style.Panel(0, 0, hCtrl.W, hCtrl.H, iBorder)
+        Return
+      Endif
+      Draw.Foreground = Color.Mix(Color.Background, &H808080&)
     
     Case Else 
 
@@ -2124,76 +2149,20 @@ Public Sub Control_Draw(Optional iIndex As Integer)
       Else
         Draw.Text(hCtrl.Tag, 4, 4)
       Endif
-      Draw.Foreground = &H808080&
+      Draw.Foreground = Color.Mix(Color.Background, &H808080&)
       
-    End Select
+  End Select
 
+  Draw.LineStyle = Line.Dash
+  Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
   Draw.LineStyle = Line.None
 
-  Draw.FillStyle = Fill.Solid
-  Draw.FillColor = Draw.Foreground 'Color.White
-  Draw.Rect(0, 0, hCtrl.W, W)
-  Draw.Rect(hCtrl.W - W, 0, W, hCtrl.H)
-  Draw.Rect(0, W, W, hCtrl.H - W)
-  Draw.Rect(W, hCtrl.H - W, hCtrl.W - W * 2, W)
-
-  ' Draw.FillStyle = Fill.Dense50
-  ' Draw.FillColor = Draw.Foreground
+  ' Draw.FillStyle = Fill.Solid
+  ' Draw.FillColor = Draw.Foreground 'Color.White
   ' Draw.Rect(0, 0, hCtrl.W, W)
   ' Draw.Rect(hCtrl.W - W, 0, W, hCtrl.H)
   ' Draw.Rect(0, W, W, hCtrl.H - W)
   ' Draw.Rect(W, hCtrl.H - W, hCtrl.W - W * 2, W)
-
-  'Draw.Rect(0, 0, LAST.W, LAST.H)
-
-'   IF NOT Project.ShowGrid THEN RETURN
-' 
-'   'hForm = LAST.Parent
-' 
-'   'IF hForm.Picture THEN
-'   '  Draw.Picture(hForm.Picture, 0, 0)
-'   'ENDIF
-' 
-'   'PRINT Draw.Clip.X; Draw.Clip.Y; Draw.Clip.Width; Draw.Clip.Height
-' 
-'   'Project.Snap = Desktop.Scale
-' 
-'   DX = Desktop.Scale
-'   WHILE (DX < 4)
-'     DX = DX + Desktop.Scale
-'   WEND
-' 
-'   DY = Desktop.Scale
-'   WHILE (DY < 4)
-'     DY = DY + Desktop.Scale
-'   WEND
-' 
-' '   hGrid = NEW Picture(DX, DY, TRUE)
-' '   Draw.Begin(hGrid)
-' '   Draw.ForeColor = Color.White
-' '   Draw.Point(0, 0)
-' '   Draw.End
-' 
-'   SX = Draw.Clip.X
-'   iMod = SX MOD DX
-'   IF iMod THEN SX = SX + DX - iMod
-' 
-'   SY = Draw.Clip.Y
-'   iMod = SY MOD DY
-'   IF iMod THEN SY = SY + DY - iMod
-' 
-'   SXF = Draw.Clip.X + Draw.Clip.Width - 1
-'   SYF = Draw.Clip.Y + Draw.Clip.Height - 1
-' 
-'   Draw.Invert = TRUE
-' '   Draw.Tile(hGrid, Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
-' 
-'   Draw.ForeColor = Color.White
-'   FOR X = SX TO SXF STEP DX
-'     FOR Y = SY TO SYF STEP DY
-'       Draw.Point(X, Y)
-'     NEXT
-'   NEXT
 
 End
 
@@ -2334,7 +2303,7 @@ Private Sub DoAlign(sKey As String)
 
       iPos = Master.Control.W
     
-      For Each hCtrl In Selection
+      For Each hCtrl In Selection 
         hCtrl.Resize(iPos, hCtrl.Control.H)
       Next
       
@@ -2353,7 +2322,10 @@ End
 
 Private Sub SetReadOnly()
 
-  $bReadOnly = Project.ReadOnly Or Project.Running Or Stat(Path).Type = gb.Link Or $bLocked
+  $bReadOnly = False
+  If Project.ReadOnly Or If Project.Running Or If Not Exist(Path) Or If Stat(Path).Type = gb.Link Or If $bLocked Then
+    $bReadOnly = True
+  Endif
   FFormStack.RefreshReadOnly
   RefreshProperty(True)
 
@@ -3023,12 +2995,7 @@ End
 
 Public Sub mnuShowTab_Show()
   
-  Dim hTabStrip As Object = Master.Control
-  Dim iIndex As Integer
-  
-  For iIndex = 0 To hTabStrip.Count - 1
-    mnuShowTab.Children[iIndex].Checked = iIndex = hTabStrip.Index
-  Next
+  FillShowTabMenu
   
 End
 
@@ -3044,6 +3011,10 @@ End
 
 Public Sub btnTabMenu_Click()
 
+  Dim hTabStrip As Object = Master.Control
+  
+  If hTabStrip.Count <= 1 Then Return
+  
   mnuShowTab.Popup
 
 End

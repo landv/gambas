@@ -33,7 +33,6 @@
 #include <QResizeEvent>
 #include <QChildEvent>
 #include <QFrame>
-#include <QStyleOptionFrame>
 
 #include "gambas.h"
 #include "gb_common.h"
@@ -333,16 +332,19 @@ void MyContainer::setFrameStyle(int frame)
 	update();
 }
 
-void MyContainer::drawFrame(QPainter *p)
+void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w)
 {
-	if (_frame == 0)
+	QStyle *style;
+	
+	if (frame == 0)
 		return;
 	
-	QStyleOptionFrame opt;
-	opt.init(this);
-	opt.rect = QRect(0, 0, width(), height());
-
-	switch (_frame)
+	if (w)
+		style = w->style();
+	else
+		style = QApplication::style();
+	
+	switch (frame)
 	{
 		case BORDER_PLAIN:
 			qDrawPlainRect(p, opt.rect, opt.palette.foreground().color(), 1);
@@ -352,14 +354,14 @@ void MyContainer::drawFrame(QPainter *p)
 			opt.lineWidth = 2;
 			opt.midLineWidth = 2;
 			opt.state |= QStyle::State_Sunken;
-			style()->drawPrimitive(QStyle::PE_Frame, &opt, p, this);
+			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);
 			break;
 			
 		case BORDER_RAISED:
 			opt.lineWidth = 2;
 			opt.midLineWidth = 2;
 			opt.state |= QStyle::State_Raised;
-			style()->drawPrimitive(QStyle::PE_Frame, &opt, p, this);
+			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);
 			break;
 			
 		case BORDER_ETCHED:
@@ -369,6 +371,15 @@ void MyContainer::drawFrame(QPainter *p)
 		default:
 			break;
 	}
+}
+
+void MyContainer::drawFrame(QPainter *p)
+{
+	QStyleOptionFrame opt;
+	opt.init(this);
+	opt.rect = QRect(0, 0, width(), height());
+
+	CCONTAINER_draw_frame(p, _frame, opt, this);
 }
 
 #if 0

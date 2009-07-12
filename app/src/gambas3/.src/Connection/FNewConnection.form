@@ -1,11 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,70,47)
+  MoveScaled(0,0,70,61)
   Text = ("")
   Icon = Picture["icon:/small/server"]
   Resizable = False
   Arrangement = Arrange.Vertical
+  AutoResize = True
   Spacing = True
   Margin = True
   { HBox7 HBox
@@ -29,29 +30,42 @@
     { cmbType ComboBox
       MoveScaled(27,0,22,4)
       Expand = True
-      Text = ("ComboBox1")
+      Text = ("")
       ReadOnly = True
       List = [("MySQL"), ("PostgreSQL"), ("SQLite"), ("Firebird"), ("ODBC")]
     }
   }
-  { panHost VBox
-    MoveScaled(1,11,68,17)
-    AutoResize = True
-    Spacing = True
-    { HBox3 HBox
-      MoveScaled(0,0,68,4)
-      { Label2 Label
-        MoveScaled(0,0,18,4)
-        Text = ("Host")
-      }
-      { txtHost TextBox
-        MoveScaled(27,0,23,4)
-        Expand = True
-        Text = ("")
-      }
+  { panHost HBox
+    MoveScaled(1,11,68,4)
+    { Label2 Label
+      MoveScaled(0,0,18,4)
+      Text = ("Host")
     }
+    { txtHost TextBox
+      MoveScaled(27,0,23,4)
+      Expand = True
+      Text = ("")
+    }
+  }
+  { panPath HBox
+    MoveScaled(1,16,68,4)
+    Visible = False
+    { Label5 Label
+      MoveScaled(0,0,18,4)
+      Text = ("Path")
+    }
+    { txtPath ButtonBox
+      MoveScaled(27,0,23,4)
+      Expand = True
+      Text = ("")
+      ReadOnly = True
+    }
+  }
+  { panLogin VBox
+    MoveScaled(1,21,68,13)
+    Spacing = True
     { HBox4 HBox
-      MoveScaled(0,5,68,4)
+      MoveScaled(0,0,68,4)
       { Label3 Label
         MoveScaled(0,0,18,4)
         Text = ("User")
@@ -63,7 +77,7 @@
       }
     }
     { HBox5 HBox
-      MoveScaled(0,10,68,4)
+      MoveScaled(0,5,68,4)
       { Label4 Label
         MoveScaled(0,0,18,4)
         Text = ("Password")
@@ -76,32 +90,20 @@
       }
     }
     { HBox9 HBox
-      MoveScaled(0,14,66,3)
+      MoveScaled(0,10,68,3)
       { Label9 Label
         MoveScaled(0,0,18,3)
         Text = ("")
       }
-      { CheckBox1 CheckBox
+      { chkRememberPassword CheckBox
         MoveScaled(27,0,24,3)
+        Expand = True
         Text = ("Remember password")
       }
     }
   }
-  { panPath HBox
-    MoveScaled(1,29,68,4)
-    Visible = False
-    { Label5 Label
-      MoveScaled(0,0,18,4)
-      Text = ("Path")
-    }
-    { txtPath ButtonBox
-      MoveScaled(27,0,23,4)
-      Expand = True
-      Text = ("")
-    }
-  }
   { HBox6 HBox
-    MoveScaled(1,34,68,4)
+    MoveScaled(1,35,68,4)
     { Label6 Label
       MoveScaled(0,0,18,4)
       Text = ("Database")
@@ -110,25 +112,23 @@
       MoveScaled(27,0,23,4)
       Expand = True
       Text = ("")
+      Picture = Picture["icon:/small/view-detail"]
     }
   }
-  { HBox8 HBox
-    MoveScaled(1,38,67,3)
+  { panDatabase HBox
+    MoveScaled(1,40,68,15)
+    Visible = False
     { Label8 Label
-      MoveScaled(0,0,18,2)
+      MoveScaled(0,0,18,3)
       Text = ("")
     }
-    { chkCreate CheckBox
-      MoveScaled(27,0,38,3)
-      Text = ("Create database if it does not exist")
+    { lvwDatabase ListView
+      MoveScaled(27,0,31,14)
+      Expand = True
     }
   }
-  { Panel2 Panel
-    MoveScaled(6,41,7,2)
-    Expand = True
-  }
   { HBox1 HBox
-    MoveScaled(1,43,66,4)
+    MoveScaled(1,56,68,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)

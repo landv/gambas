@@ -1,0 +1,587 @@
+' Gambas class file
+
+Export
+
+Inherits Panel
+
+Property Table As String
+Property Filter As String
+Property Read Modified As Boolean
+Property Read Current As Variant[]
+Property Read Index As Integer
+Property ReadOnly As Boolean
+Property Sort As String
+Property CacheSize As Integer
+
+' Pb si on fait de Connection une propriété de l'IDE: le controle
+' Connection doit être créé AVANT l'affectation à la propriété,
+' et l'IDE ne sait pas géré ça!
+
+Public Const _Properties As String = "*,Table,Filter,ReadOnly,CacheSize{Range:0;1024;64}"
+'PUBLIC CONST _DrawWith AS String = "DrawingArea"
+
+Private $sTable As String
+Private $sFilter As String
+Private $bReadOnly As Boolean
+
+Private $bCreate As Boolean
+
+Private $hTable As DataTable
+Private $iIndex As Integer
+Private $bNotVoid As Boolean
+Private $bCheckModified As Boolean
+
+Private Const ACTION_SAVE As Integer = 0
+Private Const ACTION_CONTINUE As Integer = 1
+Private Const ACTION_CANCEL As Integer = 2
+
+Public Sub _new()
+  
+  Me.Arrangement = Arrange.None
+  $iIndex = -1
+  $bCreate = True
+  
+End
+
+Private Sub IsMultiContainer(hCont As Container) As Boolean
+  
+  Dim hObj As Object = hCont
+  Dim iCount As Integer
+  
+  Try iCount = hObj.Count
+  Return Not Error 
+  
+End
+
+Private Sub AddChild(aChild As Object[], hChild As Control)
+  
+  If Not hChild.Visible Then Return
+  If Common.IsControl(hChild) Or If hChild Is DataSource Or If hChild Is DataBrowser Or If hChild Is DataView Then
+    aChild.Add(hChild)
+  Else If hChild Is Container Then
+    aChild.Insert(GetChildren(hChild))
+  Endif
+  
+End
+
+
+Private Function GetChildren(Optional hParent As Container = Me) As Object[]
+
+  Dim hChild As Control
+  Dim aChild As New Object[]
+  Dim hTab As Object
+  Dim iTab As Integer
+  
+  If IsMultiContainer(hParent) Then 
+  
+    hTab = hParent
+    For iTab = 0 To hTab.Count - 1
+      For Each hChild In hTab[iTab].Children
+        AddChild(aChild, hChild)
+      Next
+    Next
+  
+  Else
+  
+    For Each hChild In hParent.Children
+      AddChild(aChild, hChild)
+    Next
+    
+  Endif
+  
+  Return aChild
+  
+End
+
+
+Private Sub SetFocus(sKey As String)
+  
+  Dim hChild As Object
+  
+  For Each hChild In GetChildren()
+  
+    If Common.IsControl(hChild) Then
+      If hChild.Field = sKey Then
+        hChild.SetFocus
+        Return
+      Endif
+    Endif
+  
+  Next
+  
+End
+
+
+Private Function GetFilter() As String
+
+  Dim hSrc As DataSource  
+  Dim sReq As String
+  Dim vVal As Variant
+  Dim sField As String
+  Dim iPos As Integer
+  
+  hSrc = Common.GetSource(Me)
+  If hSrc Then 
+    For Each sField In hSrc.GetKeys()
+      'iPos = $hTable.Keys.Find(sField) 
+      'IF iPos < 0 THEN CONTINUE
+      vVal = hSrc[sField]
+      If IsNull(vVal) Then Continue
+      If sReq Then sReq &= " AND "
+      sReq &= DB.Subst(sField & " = &1", vVal)
+    Next
+  Endif
+  
+  If $sFilter Then
+    If sReq Then sReq &= " AND "
+    sReq &= $sFilter
+  Endif
+
+  Return sReq
+
+End
+
+Private Function CheckModified(Optional bSave As Boolean = True) As Boolean
+
+  Dim hChild As Object
+  Dim bModified As Boolean
+  Dim iAction As Integer
+  
+  For Each hChild In GetChildren()
+    If Common.IsControl(hChild) Or If hChild Is DataSource Then
+      If hChild.Modified Then
+        bModified = True
+        Break
+      Endif
+    Endif
+  Next
+  
+  If bModified And bSave Then
+    $bCheckModified = True
+    Me.Save()
+    $bCheckModified = False
+    Return False
+  Else
+    Return bModified
+  Endif
+  
+End
+
+
+Public Function MoveFirst() As Boolean
+
+  If CheckModified() Then Return True
+  If $hTable.Count = 0 Then Return True
+
+  $iIndex = 0
+  Redraw
+  
+End
+
+Public Function MovePrevious() As Boolean
+
+  If $bCreate Then Return MoveFirst()
+  If $iIndex = 0 Then Return
+  If CheckModified() Then Return True
+
+  Dec $iIndex  
+  Redraw
+  
+End
+
+Public Function MoveNext() As Boolean
+
+  If $bCreate Then Return MoveFirst()
+  If $iIndex >= $hTable.Count - 1 Then Return  
+  If CheckModified() Then Return True
+
+  Inc $iIndex
+  Redraw
+  
+End
+
+Public Function MoveLast() As Boolean
+  
+  If CheckModified() Then Return True
+  If $hTable.Count = 0 Then Return True
+
+  $iIndex = $hTable.Count - 1
+  Redraw
+  
+End
+
+Public Function MoveTo(iIndex As Integer) As Boolean
+  
+  If CheckModified() Then Return True
+  If iIndex = $iIndex Then Return
+
+  $iIndex = iIndex
+  Redraw
+  
+End
+
+
+Private Sub Redraw(Optional bRefresh As Boolean)
+
+  Dim hChild As Object
+
+  SetCreateMode($iIndex < 0)
+
+  For Each hChild In GetChildren()
+    'DEBUG hChild.Name
+    If Common.IsControl(hChild) Or If hChild Is DataSource Then
+      hChild.Refresh
+    Else If hChild Is DataBrowser Or If hChild Is DataView Then
+      If bRefresh Then 
+        hChild.Refresh
+      Endif
+    Endif
+  Next
+
+End
+
+Public Sub Refresh()
+  
+  Load
+  
+End
+
+Public Sub Cancel()
+  
+  Redraw  
+  
+End
+
+Private Function Load() As Boolean
+  
+  Dim sReq As String
+  Dim hSrc As DataSource
+  Dim sField As String
+  Dim iPos As Integer
+  
+  If Not $sTable Or If Common.CheckDB() Then Goto VOID
+  
+  Try $hTable = New DataTable($sTable, GetFilter())
+  If Error Then Goto VOID
+
+  $iIndex = -1
+  
+  Redraw(True)
+  $bNotVoid = True
+  Return
+  
+VOID:
+
+  $hTable = Null
+  $iIndex = -1
+  If $bNotVoid Then
+    $bNotVoid = False
+    Redraw(True)
+  Endif
+  Return True
+  
+End
+
+Public Sub Create(Optional bRefresh As Boolean)
+  
+  If CheckModified() Then Return
+
+  If bRefresh Then $hTable.Refresh
+  $iIndex = -1
+  Redraw(bRefresh)
+  SetFocus($hTable.Keys[0])
+  
+End
+
+
+Public Function Save(Optional bMessage As Boolean = True) As Boolean
+  
+  Dim aKey As String[]
+  
+  Dim hChild As Object
+  Dim bModified As Boolean
+  Dim rData As Result
+  Dim sReq As String
+  Dim hSrc As DataSource
+  Dim sKey As String
+  Dim iInd As Integer
+  Dim aVal As Variant[]
+  Dim iPos As Integer
+
+  Inc Application.Busy
+  
+  For Each hChild In GetChildren()
+    If Common.IsControl(hChild) Then
+      If Not hChild.Valid Then
+        Dec Application.Busy
+        Message.Warning(("Invalid value."))
+        hChild.SetFocus
+        Return True
+      Endif
+    Endif
+  Next
+    
+  aKey = $hTable.Keys
+  
+  If $bCreate Then
+
+    rData = DB.Create($sTable)
+
+    hSrc = Common.GetSource(Me)
+    If hSrc Then
+      For Each sKey In hSrc.GetKeys()
+        Try rData[sKey] = hSrc[sKey]
+      Next
+    Endif
+
+    For Each hChild In GetChildren()
+      If Common.IsControl(hChild) Then
+        rData[hChild.Field] = hChild.Value
+      Endif
+    Next
+    
+    For Each sKey In aKey
+      If _GetInfo(sKey).ReadOnly Then Continue
+      If IsNull(rData[sKey]) Then
+        Dec Application.Busy
+        Message.Warning(("You must fill all mandatory fields."))
+        SetFocus(sKey)
+        Return True
+      Endif
+    Next
+    
+    aVal = New Variant[aKey.Count]
+    For iInd = 0 To aKey.Max
+      aVal[iInd] = rData[aKey[iInd]]
+    Next
+    
+    rData.Update
+  
+    Redraw(True)
+    If Not $bCheckModified Then Create(True)
+
+  Else
+
+    aVal = Me.Current
+    
+    hSrc = Common.GetSource(Me)
+    If hSrc Then
+      For Each sKey In hSrc.GetKeys()
+        iPos = aKey.Find(sKey)
+        If iPos >= 0 Then aVal[iPos] = hSrc[sKey]
+      Next
+    Endif
+
+    rData = DB.Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
+    'rData = $hTable[$iIndex]
+    If Not rData.Available Then Return True
+
+    For Each hChild In GetChildren()
+      If Common.IsControl(hChild) Then
+        rData[hChild.Field] = hChild.Value
+      Endif
+    Next
+    
+    rData.Update
+    $hTable.Refresh
+
+    Redraw(True)
+    
+    If $iIndex >= $hTable.Count Then
+      Create(True)
+    Endif
+    '$iIndex = -1
+    'MoveTo($iIndex)
+  
+  Endif
+  
+Finally
+
+  Dec Application.Busy
+
+Catch
+
+  If bMessage Then Message.Error(Error.Text)
+  Return True
+  
+End
+
+Public Function Remove() As Boolean
+
+  Dim aVal As Variant[]
+  Dim aKey As String[]
+  Dim hSrc As DataSource
+  Dim sKey As String
+  Dim iPos As Integer
+  Dim sReq As String
+
+  If $bCreate Then
+    Create()
+    Return
+  Endif
+  
+  aKey = $hTable.Keys
+  aVal = Me.Current
+  
+  hSrc = Common.GetSource(Me)
+  If hSrc Then
+    For Each sKey In hSrc.GetKeys()
+      iPos = aKey.Find(sKey)
+      If iPos >= 0 Then aVal[iPos] = hSrc[sKey]
+    Next
+  Endif
+
+  DB.Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get())
+  
+  Create(True)
+  
+End
+
+
+Public Function _get(Key As String) As Variant
+  
+  If $iIndex < 0 Then
+    Return DataConnection.GetDefaultValue($sTable, Key)
+  Else 
+    Try Return $hTable[$iIndex][Key]
+  Endif
+  
+End
+
+Public Function _GetInfo(Key As String) As DataField
+  
+  If Not $sTable Then Return
+  If Common.CheckDB() Then Return
+  
+  Return DataConnection[$sTable, Key, $bCreate]
+  
+End
+
+Public Function GetKeys() As String[]
+  
+  Return $hTable.Keys
+  
+End
+
+' PRIVATE FUNCTION Connection_Read() AS Connection
+' 
+'   IF $hConn <> DB.Current THEN RETURN $hConn
+'   
+' END
+' 
+' PRIVATE SUB Connection_Write(hConn AS Connection)
+'   
+'   IF NOT hConn THEN hConn = DB.Current
+'   
+'   $hConn = hConn
+'   Load
+'   
+' END
+
+
+Private Function Table_Read() As String
+  
+  Return $sTable
+  
+End
+
+Private Sub Table_Write(sTable As String)
+  
+  $sTable = sTable
+  Load
+  
+End
+
+Private Function Filter_Read() As String
+  
+  Return $sFilter
+  
+End
+
+Private Sub Filter_Write(sFilter As String)
+  
+  $sFilter = sFilter
+  Load
+  
+End
+
+Private Function Modified_Read() As Boolean
+  
+  Return CheckModified()  
+  
+End
+
+Private Function Current_Read() As Variant[]
+
+  If $iIndex >= 0 Then
+    Return $hTable.GetKeys($iIndex).Copy()
+  Endif
+  
+End
+
+Private Sub SetCreateMode(bCreate As Boolean)
+
+  If bCreate = $bCreate Then Return
+  $bCreate = bCreate
+  '$cInfo.Clear
+  
+End
+
+Private Function Index_Read() As Integer
+  
+  Return $iIndex
+  
+End
+
+
+Public Function _GetTable() As DataTable
+  
+  Return $hTable
+  
+End
+
+
+Private Function ReadOnly_Read() As Boolean
+  
+  Return $bReadOnly
+  
+End
+
+Private Sub ReadOnly_Write(bReadOnly As Boolean)
+  
+  If $bReadOnly = bReadOnly Then Return
+  $bReadOnly = bReadOnly
+  Load
+  
+End
+
+
+Private Function Sort_Read() As String
+
+  Return $hTable.Sort  
+
+End
+
+Private Sub Sort_Write(Value As String)
+
+  If CheckModified() Then
+    If Save() Then Return
+  Endif
+  $hTable.Sort = Value
+  Redraw
+
+End
+
+Private Function CacheSize_Read() As Integer
+
+  Return $hTable.LIMIT_INC
+
+End
+
+Private Sub CacheSize_Write(Value As Integer)
+
+  If Value <= 0 Then Value = 64
+  
+  $hTable.LIMIT_INC = Value
+
+End

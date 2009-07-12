@@ -261,7 +261,7 @@ static int get_message_length(const char *pattern, char *arg[])
 		if (c == '&')
 		{
 			c = *pattern++;
-			if (c >= '1' && c <= '4')
+			if (c >= '1' && c <= '4' && arg[c - '1'])
 				len += strlen(arg[c - '1']);
 		}
 		else
@@ -318,9 +318,12 @@ void ERROR_define(const char *pattern, char *arg[])
 					if (c >= '1' && c <= '4')
 					{
 						c -= '1';
-						len = strlen(arg[c]);
-						memcpy(msg, arg[c], len);
-						msg += len;
+						if (arg[c])
+						{
+							len = strlen(arg[c]);
+							memcpy(msg, arg[c], len);
+							msg += len;
+						}
 					}
 				}
 				else

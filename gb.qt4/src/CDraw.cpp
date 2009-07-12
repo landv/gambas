@@ -1103,12 +1103,16 @@ static void style_button(GB_DRAW *d, int x, int y, int w, int h, int value, int 
 static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int state)
 {
 	QStyleOptionFrame opt;
-	QStyle::PrimitiveElement pe;
 	
 	opt.rect = QRect(x, y, w ,h);
 	if (!state)
 		opt.state |= QStyle::State_Enabled;
-	opt.lineWidth = 2;
+	
+	CCONTAINER_draw_frame(DP(d), border, opt);
+	if (DPM(d))
+		CCONTAINER_draw_frame(DPM(d), border, opt);
+	
+	/*opt.lineWidth = 2;
 	opt.midLineWidth = 0;	
 	
 	if (border == BORDER_NONE)
@@ -1118,13 +1122,13 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 	{
 		DP(d)->save();
 		DP(d)->setPen(state == GB_DRAW_STATE_DISABLED ? QApplication::palette().color(QPalette::Active, QPalette::WindowText) : QApplication::palette().color(QPalette::Disabled, QPalette::WindowText));
-		DP(d)->drawRect(x, y, w, h);
+		DP(d)->drawRect(x, y, w - 1, h - 1);
 		DP(d)->restore();
 		if DPM(d) 
 		{	
 			DPM(d)->save();
 			DPM(d)->setPen(Qt::color1);
-			DPM(d)->drawRect(x, y, w, h);
+			DPM(d)->drawRect(x, y, w - 1, h - 1);
 			DPM(d)->restore();
 		}
 		return;
@@ -1150,7 +1154,7 @@ static void style_panel(GB_DRAW *d, int x, int y, int w, int h, int border, int 
 		//DPM(d)->setRasterOp(Qt::OrROP);
 		QApplication::style()->drawPrimitive(pe, &opt, DPM(d));
 		//DPM(d)->setRasterOp(Qt::CopyROP);
-	}
+	}*/
 }
 			
 static void style_handle(GB_DRAW *d, int x, int y, int w, int h, int vertical, int state)

@@ -24,15 +24,15 @@
 
 #include "main.h"
 
-#include <qapplication.h>
-#include <q3header.h>
-#include <qpainter.h>
-#include <qpalette.h>
-//Added by qt3to4:
+#include <QApplication>
+#include <Q3Header>
+#include <QPainter>
+#include <QPalette>
 #include <QPixmap>
 #include <QResizeEvent>
 #include <QPaintEvent>
 #include <QColor>
+#include <QTimer>
 
 #include "CConst.h"
 #include "CColor.h"
@@ -330,6 +330,9 @@ Q3Table(0, 0, parent)
 	_no_col = true;
 	_updating_last_column = false;
 	_autoresize = true;
+	_updateLastColumn = false;
+	_enableUpdates = false;
+	_min_row = -1;
 	
 	setSelectionMode(NoSelection);
 	setFocusStyle(FollowStyle);
@@ -376,14 +379,43 @@ void MyTable::paintCell(QPainter *p, int row, int col, const QRect &cr, bool sel
 		rowPos( numRows() - 1 ) + rowHeight( numRows() - 1 ) );
 }*/
 
+void MyTable::enableUpdates()
+{
+	horizontalHeader()->setUpdatesEnabled(true);
+	verticalHeader()->setUpdatesEnabled(true);
+	setUpdatesEnabled(true);
+	_enableUpdates = false;
+	rowHeightChanged(_min_row);
+}
+
+void MyTable::rowHeightChanged(int row)
+{
+	if (_enableUpdates)
+	{
+		_min_row = QMIN(_min_row, row);
+		return;
+	}
+	Q3Table::rowHeightChanged(row);
+}
 
 void MyTable::setRowHeight(int row, int height)
 {
-	//qDebug("MyTable::setRowHeight(%d, %ld)", row, height);
+	/*verticalHeader()->setUpdatesEnabled(false);
+	horizontalHeader()->setUpdatesEnabled(false);
+	setUpdatesEnabled(false);
+	if (!_enableUpdates)
+	{
+		_enableUpdates = true;
+		_min_row = numRows();
+		QTimer::singleShot(0, this, SLOT(enableUpdates()));
+	}*/
+	
 	if (height < 0)
 		adjustRow(row);
-	else
+	else if (height != rowHeight(row))
+	{
 		Q3Table::setRowHeight(row, height);
+	}
 }
 
 
@@ -705,6 +737,15 @@ void MyTable::updateLastColumn()
 		setColumnWidth(n, visibleWidth() - columnPos(n));
 
 	_updating_last_column = false;
+	_updateLastColumn = false;
+}
+
+void MyTable::updateLastColumnLater()
+{
+	if (_updateLastColumn)
+		return;
+	_updateLastColumn = true;
+	QTimer::singleShot(0, this, SLOT(updateLastColumn()));	
 }
 
 void MyTable::resizeEvent(QResizeEvent *e)
@@ -718,7 +759,7 @@ void MyTable::columnWidthChanged(int col)
 	//qDebug("MyTable::columnWidthChanged");
 	Q3Table::columnWidthChanged(col);
 	//if (col != (numCols() - 1))
-		updateLastColumn();
+	updateLastColumnLater();
 }
 
 void MyTableItem::move(int srow, int scol, int drow, int dcol)
@@ -1280,6 +1321,26 @@ BEGIN_METHOD(CGRIDROWS_insert, GB_INTEGER start; GB_INTEGER length)
 	
 END_METHOD
 
+BEGIN_PROPERTY(CGRIDROWS_visible)
+
+	int y = WIDGET->rowPos(THIS->row) - WIDGET->contentsY() + WIDGET->clipper()->y() - WIDGET->horizontalHeader()->height() - 2;
+	int h = WIDGET->rowHeight(THIS->row);
+	
+	GB.ReturnBoolean((y + h) >= 0 && y < WIDGET->clipper()->height());
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(CGRIDROWS_ensure_visible)
+
+	int y = WIDGET->rowPos(THIS->row) - WIDGET->contentsY() + WIDGET->clipper()->y() - WIDGET->horizontalHeader()->height() - 2;
+	int h = WIDGET->rowHeight(THIS->row);
+
+	if ((y + h) < 0)
+		WIDGET->setContentsPos(WIDGET->contentsX(), WIDGET->rowPos(THIS->row));
+	else if (y > WIDGET->clipper()->height())
+		WIDGET->setContentsPos(WIDGET->contentsX(), QMAX(0, WIDGET->rowPos(THIS->row) - WIDGET->clipper()->height() + h));
+
+END_METHOD
 
 /***************************************************************************
 
@@ -1330,6 +1391,8 @@ BEGIN_PROPERTY(CGRIDCOLS_width)
 		}
 		else
 			WIDGET->setColumnWidth(col, VPROP(GB_INTEGER));
+		
+		WIDGET->updateLastColumn();
 	}
 
 END_PROPERTY
@@ -1825,6 +1888,8 @@ GB_DESC CGridRowDesc[] =
 	GB_PROPERTY("Selected", "b", CGRIDROWS_selected),
 	GB_METHOD("Refresh", NULL, CGRIDROWS_refresh, NULL),
 	GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
+	GB_PROPERTY_READ("Visible", "b", CGRIDROWS_visible),
+	GB_METHOD("EnsureVisible", NULL, CGRIDROWS_ensure_visible, NULL),
 
 	GB_END_DECLARE
 };

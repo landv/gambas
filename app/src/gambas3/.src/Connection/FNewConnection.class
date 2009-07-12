@@ -5,12 +5,101 @@ Private $sPath As String
 Public Sub Run(Optional sPath As String) As String
 
   $sPath = sPath
-  If Me.ShowModal() Then Return $sPath
+  Return Not Me.ShowModal() 
 
 End
 
+Private Sub LoadConnection()
+  
+  Dim hConfig As Settings
+  Dim iInd As Integer  
+  Dim sType As String
+  
+  hConfig = New Settings($sPath, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  
+  sType = LCase(hConfig["Connection/Type"])
+
+  txtHost.Text = hConfig["Connection/Host"] 
+  txtUser.Text = hConfig["Connection/User"] 
+  txtPath.Text = hConfig["Connection/Path"] 
+  chkRememberPassword.Value = If(hConfig["Connection/RememberPassword"], 1, 0)
+
+  For iInd = 0 To cmbType.Count - 1
+    If LCase(cmbType[iInd].Text) = sType Then
+      cmbType.Index = iInd
+      Break
+    Endif
+  Next
+
+  If chkRememberPassword.Value Then txtPassword.Text = MConnection.LoadPassword(txtName.Text)
+  txtDatabase.Text = hConfig["Connection/Database"] 
+  
+End
+
+Private Sub FillConfig(hConfig As Object, Optional bPassword As Boolean)
+  
+  hConfig["Connection/Type"] = LCase(cmbType.Text)
+  hConfig["Connection/Host"] = txtHost.Text
+  hConfig["Connection/User"] = txtUser.Text
+  hConfig["Connection/Path"] = txtPath.Text
+  hConfig["Connection/RememberPassword"] = CBool(chkRememberPassword.Value)
+  hConfig["Connection/Database"] = txtDatabase.Text
+  If bPassword Then hConfig["Connection/Password"] = txtPassword.Text
+  
+End
+
+
+Private Sub UpdateConnection() As Boolean
+  
+  Dim sMsg As String
+  Dim sName As String
+  Dim sDir As String
+  Dim sPath As String
+  Dim hConfig As Settings
+  Dim bCreate As Boolean
+  Dim hEditor As FConnectionEditor
+
+  sName = txtName.Text & ".connection"
+  sDir = Project.Dir &/ ".connection"
+  sPath = sDir &/ sName
+
+  If Not Exist(sPath) Then 
+    bCreate = True
+    sMsg = Project.CheckFileName(sName, sDir)
+    If sMsg Then 
+      txtName.SetFocus
+      Balloon.Warning(sMsg, txtName)
+      Return True
+    Endif
+    Try Mkdir sDir
+  Endif
+
+  If Not Trim(txtDatabase.Text) Then
+    Balloon.Warning(("Please enter the name of the database."), txtDatabase)
+    Return True
+  Endif
+
+  hConfig = New Settings(sPath, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  FillConfig(hConfig)
+  hConfig.Save
+  
+  If LCase(cmbType.Text) <> "sqlite" Then
+    If chkRememberPassword.Value Then MConnection.SavePassword(txtName.Text, txtPassword.Text)
+  Endif
+  
+  If bCreate Then 
+    Project.InsertFile(sName, sDir)
+  Else
+    Try hEditor = Project.Files[sPath]
+    If hEditor Then hEditor.Reload
+  Endif
+  
+End
+
+
 Public Sub btnOK_Click()
 
+  If UpdateConnection() Then Return
   Me.Close(True)
 
 End
@@ -22,7 +111,7 @@ Public Sub btnCancel_Click()
 End
 
 
-Public Sub _new()
+Public Sub Form_Open()
 
   If $sPath Then
     Me.Title = ("Connection properties")
@@ -30,6 +119,7 @@ Public Sub _new()
     txtName.Text = File.BaseName($sPath)
     txtName.ReadOnly = True
     cmbType.SetFocus
+    LoadConnection
   Else
     Me.Title = ("New connection")
     'Me.Icon = Picture["icon:/small/new"]
@@ -39,21 +129,102 @@ Public Sub _new()
 
 End
 
+Private Sub ResetDatabase()
+  
+  panDatabase.Hide
+  txtDatabase.Text = ""
+  
+End
+
 Public Sub txtPath_Click()
+
+  Dialog.Path = txtPath.Text
+  Dialog.Title = ("Select a directory")
+  If Dialog.SelectDirectory() Then Return
+  txtPath.Text = Dialog.Path
+  ResetDatabase
 
 End
 
 Public Sub cmbType_Click()
 
-  Debug
   If LCase(cmbType.Text) = "sqlite" Then
     panPath.Show
     panHost.Hide
+    panLogin.Enabled = False
     txtPath.SetFocus
+    chkRememberPassword.Value = 0
+    txtUser.Text = ""
+    txtPassword.Text = ""
   Else
     panPath.Hide
     panHost.Show
+    panLogin.Enabled = True
     txtHost.SetFocus
   Endif
+  ResetDatabase
+
+End
+
+Public Sub txtDatabase_Click()
+
+  Dim hConn As New Connection
+  Dim hConfig As New Collection
+  Dim hDatabase As Database
+
+  If Not panDatabase.Visible Then
+  
+    Inc Application.Busy
+    lvwDatabase.Clear
+    FillConfig(hConfig, True)
+    MConnection.InitFrom(hConn, hConfig, txtName.Text)
+    hConn.Open
+    For Each hDatabase In hConn.Databases
+      lvwDatabase.Add(hDatabase.Name, hDatabase.Name, Picture["img/16/database.png"])
+    Next
+    hConn.Close
+    panDatabase.Show
+    Dec Application.Busy
+  
+  Else
+  
+    panDatabase.Hide
+  
+  Endif
+
+Catch
+
+  Application.Busy = 0
+  Balloon.Error(Error.Text, txtDatabase)
+
+End
+
+Public Sub lvwDatabase_Select()
+
+  txtDatabase.Text = lvwDatabase.Current.Text
+
+End
+
+Public Sub txtHost_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub txtUser_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub txtPassword_Change()
+
+  ResetDatabase
+
+End
+
+Public Sub lvwDatabase_Activate()
+
+  panDatabase.Hide
 
 End

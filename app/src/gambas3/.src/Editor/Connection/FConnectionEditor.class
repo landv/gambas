@@ -1,0 +1,354 @@
+' Gambas class file
+
+Public Path As String
+
+Property Read ReadOnly As Boolean
+
+Private $hConn As Connection
+Private $bModify As Boolean
+Private $sTable As String
+Private $bReadOnly As Boolean
+
+Private $aField As New CField[]
+Private $cFieldName As New Collection
+Private $aIndexField As New CIndexField[]
+
+Public Sub _new(sPath As String)
+
+  Path = sPath
+  Me.Name = File.BaseName(Path)
+
+  With tbvField
+
+    .Columns.Count = 5
+
+    With tbvField.Columns[0]
+      .Text = " "
+      .Width = 24
+    End With
+
+    With tbvField.Columns[1]
+      .Text = ("Name")
+      .Width = 160
+    End With
+
+    With tbvField.Columns[2]
+      .Text = ("Type")
+      .Width = 96
+    End With
+
+    With tbvField.Columns[3]
+      .Text = ("Length")
+      .Width = 80
+    End With
+
+    With tbvField.Columns[4]
+      .Text = ("Default value")
+      .Width = 160
+    End With
+
+  End With
+
+  With tbvIndex
+
+    .Columns.Count = 3
+
+    With tbvIndex.Columns[0]
+      .Text = ("Index")
+      .Width = 160
+    End With
+
+    With tbvIndex.Columns[1]
+      .Text = ("Unique")
+      .Width = 64
+    End With
+
+    With tbvIndex.Columns[2]
+      .Text = ("Field")
+      .Width = 160
+    End With
+
+  End With
+  
+End
+
+Private Sub LoadList()
+  
+  Dim hTable As Table
+  Dim hPict As Picture
+  
+  lvwTable.Clear
+  
+  'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
+  lvwTable_Select
+  
+  For Each hTable In $hConn.Tables
+    If hTable.System Then
+      hPict = Picture["img/16/system-table.png"]
+    Else
+      hPict = Picture["img/16/table.png"]
+    Endif
+    lvwTable.Add("T" & hTable.Name, hTable.Name, hPict)
+  Next
+
+End
+
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Public Sub Form_Activate()
+
+  DB.Current = $hConn
+  Try edtRequest.SetFocus
+
+End
+
+Public Sub Reload()
+  
+  Dim hConfig As Settings
+
+  Inc Application.Busy
+
+  hConfig = New Settings(Path)
+  
+  If $hConn Then $hConn.Close
+  $hConn = New Connection
+  MConnection.InitFrom($hConn, hConfig, Me.Name, True)
+  $hConn.Open
+  
+  datData.Table = ""
+  
+  LoadList
+  
+  DrawTitle
+  Me.Enabled = True
+  
+  Dec Application.Busy
+  
+Catch
+
+  Application.Busy = 0
+  Me.Enabled = False
+  Message.Error(("Unable to connect to database.") & "\n\n" & Error.Text)
+  
+End
+
+
+Public Sub LoadFile()
+
+  ReadConfig
+  Reload
+
+End
+
+Public Function Save() As Boolean
+
+  If Not $bModify Then Return
+
+  $bModify = False
+  DrawTitle
+
+End
+
+Private Sub DrawTitle()
+
+  Project.DrawTitle(Me)
+
+End
+
+Public Sub Modify(Optional bReset As Boolean)
+
+  If Project.ReadOnly Then Return
+  If $bModify <> bReset Then Return
+
+  $bModify = Not bReset
+  DrawTitle
+  If $bModify Then Inc Project.TimeStamp
+
+End
+
+
+Public Function IsModified() As Boolean
+
+  Return $bModify
+
+End
+
+Public Sub Form_Close()
+
+  datData.Enabled = False 
+  splTable.Hide
+  $hConn.Close
+
+  Project.Files[Path] = Null
+
+End
+
+Public Sub ReadConfig()
+  
+  FTextEditor.ReadConfigEditor(edtRequest)
+  tabTable.Font.Grade = - Settings["/TabStripFont", 0]
+  datData.Font = tabTable.Font
+  
+End
+
+Private Sub LoadTable()
+  
+  Dim hTable As Table
+  Dim hField As Field
+  Dim hIndex As Index
+  Dim hCField As CField
+  Dim hCIndexField As CIndexField
+  Dim sField As String
+  Dim bCreate As Boolean
+
+  $aField.Clear
+  $cFieldName.Clear
+  $aIndexField.Clear
+
+  hTable = $hConn.Tables[$sTable]
+
+  For Each hField In hTable.Fields
+    hCField = New CField(hField)
+    $aField.Add(hCField)
+    $cFieldName[hField.Name] = True
+  Next
+
+  For Each hIndex In hTable.Indexes
+
+    If hIndex.Primary Then Continue
+
+    hCIndexField = New CIndexField(hIndex)
+    $aIndexField.Add(hCIndexField)
+    bCreate = False
+
+    For Each sField In Split(hIndex.Fields)
+      If bCreate Then
+        hCIndexField = New CIndexField
+        $aIndexField.Add(hCIndexField)
+      Else
+        bCreate = True
+      Endif
+      hCIndexField.Field = sField
+    Next
+
+  Next
+
+  tbvField.Rows.Count = $aField.Count
+  'tbvField.Columns.Width = -1
+  tbvField.MoveTo(0, 1)
+
+  tbvIndex.Rows.Count = $aIndexField.Count
+
+  $bModify = False
+  DrawTitle
+  
+  datData.Table = $sTable
+  datData.Refresh
+  
+End
+
+
+Public Sub lvwTable_Select()
+
+  Dim sKey As String 
+  
+  Try sKey = lvwTable.Current.Key
+  
+  Select Left$(sKey)
+  
+    Case "T"
+      $sTable = Mid$(sKey, 2)
+      LoadTable()
+      edtRequest.Hide
+      tabTable.Show
+      btnRunQuery.Hide
+      panEditData.Show
+  
+    Case Else
+      edtRequest.Show
+      tabTable.Hide
+      btnRunQuery.Show
+      panEditData.Hide
+
+  End Select
+
+End
+
+Public Sub btnRunQuery_Click()
+
+  Try datData.Table = edtRequest.Text
+  If Error Then Balloon.Error(("Unable to run query.") & "\n\n" & Error.Text, btnRunQuery)
+
+End
+
+Public Sub tbvField_Data(Row As Integer, Column As Integer)
+
+  Dim hCField As CField
+
+  hCField = $aField[Row]
+  If Not hCField Then Return
+
+  With tbvField.Data
+
+    Select Case Column
+
+      Case 0
+        If hCField.Key Then
+          .Picture = Picture["img/16/key.png"]
+          .Alignment = Align.Center
+        Endif
+
+      Case 1
+        .Text = hCField.Name
+
+      Case 2
+        .Text = MConnection.TypeToString(hCField.Type)
+
+      Case 3
+        If hCField.Type = gb.String Then
+          If hCField.Length Then
+            .Text = hCField.Length
+          Else
+            .Text = ("unlimited")
+          Endif
+        Endif
+
+      Case 4
+        .Text = Str(hCField.DefaultValue)
+
+    End Select
+
+  End With
+
+End
+
+Public Sub tbvIndex_Data(Row As Integer, Column As Integer)
+
+  Dim hIndexField As CIndexField
+
+  hIndexField = $aIndexField[Row]
+  If Not hIndexField Then Return
+
+  With tbvIndex.Data
+
+    Select Case Column
+
+      Case 0
+        .Text = hIndexField.Index
+
+      Case 1
+        If hIndexField.Index Then .Text = Str(hIndexField.Unique)
+
+      Case 2
+        .Text = hIndexField.Field
+
+    End Select
+
+  End With
+
+End

@@ -9,8 +9,9 @@ Property Control As Boolean
 Property Read GridView As GridView
 Property Header As Boolean
 Property Orientation As Integer
+Property Adjust As Boolean
 
-Public Const _Properties As String = "*,Control=True,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
+Public Const _Properties As String = "*,Control=True,Adjust,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
 
 Private $hForm As FBrowser
 
@@ -91,5 +92,17 @@ End
 Private Sub Orientation_Write(Value As Integer)
 
   $hForm.SetOrientation(Value)
+
+End
+
+Private Function Adjust_Read() As Boolean
+
+  Return $hForm.DataView.Adjust
+
+End
+
+Private Sub Adjust_Write(Value As Boolean)
+
+  $hForm.DataView.Adjust = Value
 
 End

@@ -75,6 +75,7 @@ Public Const PROJECT_MAGIC_1 As String = "# Gambas Project File 1.0"
 Public Const PROJECT_MAGIC_2 As String = "# Gambas Project File 2.0"
 Public Const PROJECT_MAGIC As String = "# Gambas Project File 3.0"
 Public Const ACTION_MAGIC As String = "# Gambas Action File 3.0"
+Public Const CONNECTION_MAGIC As String = "# Gambas Connection File 3.0"
 
 Public Const DEFAULT_FONT As String = "Monospace,9"
 
@@ -158,6 +159,7 @@ Public Sub Main()
   'Print Desktop.Scale
   'Application.Font = Font["Sans,8"]
   Application.Theme = Settings["/Theme"]
+  'DB.Debug = True
   
   OUTPUT_FILE = Temp$()
   'CLASSES_FILE = Temp$()
@@ -614,12 +616,15 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
   Dim bConflict As Boolean
   Dim hConflict As Image
   Dim sModule As String
+  Dim sLocalPrefix As String
   
   If iSize Then 
     sPrefix = "icon:/" & iSize
+    sLocalPrefix = "img/" & iSize
     'bNoStartup = iSize <> 16
   Else  
     sPrefix = "icon:/small"
+    sLocalPrefix = "img/16"
   Endif
   
   With Stat(sPath)
@@ -674,6 +679,9 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
         
         Case "txt", "text"
           sIcon = sPrefix &/ "text"
+          
+        Case "connection"
+          sIcon = sLocalPrefix &/ "database.png"
       
       End Select
     
@@ -816,6 +824,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     sParent = KEY_PROJECT
   Else If sDir = SourceDir Then 
     sParent = KEY_SOURCE
+  Else If sDir = Project.Dir &/ ".connection" Then
+    sParent = KEY_CONNECTION
   Endif
 
   With Stat(sPath)
@@ -888,6 +898,10 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           sFile = File.BaseName(sFile)
           
         Endif
+
+      Else If IsConnectionPath(sDir &/ sFile) Then
+
+        sFile = File.BaseName(sFile)
 
       Endif
       
@@ -1187,6 +1201,7 @@ Private Sub DoRefresh(Optional bReset As Boolean)
 
     AddDir()
     If Exist(Project.Dir &/ ".hidden") Then AddDir(Project.Dir &/ ".hidden")
+    If Exist(Project.Dir &/ ".connection") Then AddDir(Project.Dir &/ ".connection")
 
   End With
 
@@ -1310,6 +1325,10 @@ Public Function LoadFile(sPath As String) As Object
           Endif
           
         End Select 
+        
+    Else If IsConnectionPath(sPath) Then
+    
+      hForm = New FConnectionEditor(sPath)
     
     Endif
 
@@ -1385,20 +1404,10 @@ End
 
 Public Sub ShowFile(hForm As Form)
   
-  Select Case Object.Type(hForm)
-  
-    Case "FEditor", "FTextEditor", "FIconEditor", "FForm"
-      Workspace.Add(hForm)
-      Workspace.ActiveWindow = hForm
-      hForm.SetFocus
+  Workspace.Add(hForm)
+  Workspace.ActiveWindow = hForm
+  hForm.SetFocus
       
-'     CASE "FForm"
-'       Workspace.Add(hForm, TRUE)
-'       Workspace.SetResizable(hForm, TRUE, Project.Snap)
-'       Workspace.ActiveWindow = hForm
-
-  End Select 
-  
 Catch
 
   FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
@@ -3787,7 +3796,7 @@ Public Sub MoveFile(sSrc As String, sDst As String, Optional bOther As Boolean)
     VersionControl.MoveDir(sSrc, sDst)
   Else
     Copy sSrc To sDst
-    VersionControl.MoveFile(sSrc, sDst)
+    If Right(sSrc) <> "~" Then VersionControl.MoveFile(sSrc, sDst)
     Try Kill sSrc
   Endif
 
@@ -4352,10 +4361,17 @@ Public Sub IsStockAllowed() As Boolean
 End
 
 Public Sub DrawTitle(hForm As Object) 
-  
+
+  Dim sPath As String  
   Dim sTitle As String
 
-  sTitle = File.Name(hForm.Path)
+  sPath = hForm.Path
+  If IsSourcePath(sPath) Or If IsConnectionPath(sPath) Then
+    sTitle = File.BaseName(sPath)
+  Else
+    sTitle = File.Name(sPath)
+  Endif
+  
   If hForm.IsModified() Then sTitle &= " [*]" & Left(("modified"), 0)
   If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
   If hForm.Title <> sTitle Then hForm.Title = sTitle 
@@ -4435,9 +4451,11 @@ End
 
 Public Sub SetCurrentPopup(hMenu As Menu)
   
+  If hMenu = $hCurrentPopup And If hMenu.Enabled Then Return
+  
   Try $hCurrentPopup.Enabled = False
   $hCurrentPopup = hMenu
   Try $hCurrentPopup.Enabled = True
-  Debug $hCurrentPopup.Name;; $hCurrentPopup.Window.Title
+  'Debug $hCurrentPopup.Name;; $hCurrentPopup.Window.Title
   
 End

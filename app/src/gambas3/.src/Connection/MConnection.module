@@ -1,0 +1,97 @@
+' Gambas module file
+
+Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean)
+  
+  Dim sPassword As String
+  
+  hConn.Type = LCase(hConfig["Connection/Type"])
+  If hConn.Type = "sqlite" Then
+    hConn.Host = hConfig["Connection/Path"]
+  Else
+    hConn.Host = hConfig["Connection/Host"]
+    hConn.User = hConfig["Connection/User"]
+    
+    sPassword = hConfig["Connection/Password"]
+    If Not sPassword Then
+      If hConfig["Connection/RememberPassword"] Then
+        hConn.Password = LoadPassword(sName)
+      Endif
+    Endif
+    'hConn.Password = hConfig["Connection/User"]
+  Endif
+  
+  If bWithDatabase Then hConn.Name = hConfig["Connection/Database"]
+  
+End
+
+Public Sub LoadPassword(sName As String) As String
+  
+  Return Desktop.Passwords["/gambas3" &/ Project.Name &/ sName]
+  
+End
+
+Public Sub SavePassword(sName As String, sPassword As String)
+  
+  Desktop.Passwords["/gambas3" &/ Project.Name &/ sName] = sPassword
+  
+End
+
+
+Public Function WidthFromType(hCtrl As Control, iType As Integer, iLength As Integer, sTitle As String) As Integer
+
+  Dim iWidth As Integer
+
+  Select Case iType
+
+    Case gb.Boolean
+      iWidth = hCtrl.Font.Width(Str(False)) + 32
+
+    Case gb.Integer
+      iWidth = hCtrl.Font.Width("1234567890") + 8
+
+    Case gb.Long
+      iWidth = hCtrl.Font.Width("1234567890") * 2 + 8
+
+    Case gb.Float
+      iWidth = hCtrl.Font.Width(CStr(Pi) & "E+999") + 8
+
+    Case gb.Date
+      iWidth = hCtrl.Font.Width(Str(Now)) + 8
+
+    Case gb.String
+      If iLength = 0 Then iLength = 255
+      iLength = Min(32, iLength)
+      iWidth = hCtrl.Font.Width("X") * iLength + 8
+
+  End Select
+
+  iWidth = Max(iWidth, hCtrl.Font.Width(sTitle) + 8)
+
+  Return iWidth
+
+End
+
+Public Function TypeToString(iType As Integer) As String
+
+  Select Case iType
+    Case db.Integer
+      Return ("Integer")
+    Case db.Long
+      Return ("Long")
+    Case db.Float
+      Return ("Float")
+    Case db.Date
+      Return ("Date")
+    Case db.Boolean
+      Return ("Boolean")
+    Case db.String
+      Return ("String")
+    Case db.Serial
+      Return ("Serial")
+    Case db.Blob
+      Return ("Blob")
+    Default
+      Return "?"
+  End Select
+
+End

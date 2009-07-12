@@ -69,7 +69,7 @@ Public Sub Form_Open()
   mnuOpenExample.Tag = "."
 
   Try Project.ActiveForm.SetFocus
-  tvwProject_LostFocus
+  'tvwProject_LostFocus
   
 End
 
@@ -230,7 +230,7 @@ Public Sub tvwProject_Menu()
 
   'mnuPopup.Enabled = TRUE
   GetCurrent
-  If $sKey Like (Project.KEY_CONNECTION & "*") Then
+  If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
     mnuDatabase.Popup
   Else
     mnuPopup.Popup
@@ -834,14 +834,6 @@ Public Sub tvwProject_Select()
 
   GetCurrent()
 
-  If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
-    Project.SetCurrentPopup(mnuDatabase)
-    mnuDatabase_Show
-  Else
-    Project.SetCurrentPopup(mnuPopup)
-    mnuPopup_Show
-  Endif
-  
 End
 
 ' PUBLIC SUB tvwProject_Expand()
@@ -1124,17 +1116,16 @@ End
 
 Public Sub tvwProject_GotFocus()
 
-  'Debug
-  'mnuPopup.Enabled = True
+  GetCurrent
 
-End
-
-Public Sub tvwProject_LostFocus()
-
-  'Debug
-  mnuPopup.Enabled = False
-  mnuDatabase.Enabled = False
-
+  If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
+    Project.SetCurrentPopup(mnuDatabase)
+    mnuDatabase_Show
+  Else
+    Project.SetCurrentPopup(mnuPopup)
+    mnuPopup_Show
+  Endif
+  
 End
 
 Public Sub wrkProject_WindowMenu()
@@ -1541,9 +1532,12 @@ End
 
 Public Sub mnuNewConnection_Click()
   
-  Dim sPath As String
+  FNewConnection.Run()
   
-  sPath = FNewConnection.Run()
-  If Not sPath Then Return
+End
+
+Public Sub mnuInfoConnection_Click()
+  
+  FNewConnection.Run($sKey)
   
 End

@@ -187,23 +187,12 @@ Public Sub Debug_Read(Data As String)
   
       FDebugInfo.FillStack(aPos)
 
-      If aData[1] Then
-        FGambas.Animate("Depressive")
-        ' iPos = InStr(sErr, ":")
-        ' IF Left(LTrim(Mid$(sErr, iPos + 1))) = "#" THEN
-        '   iPos = InStr(sErr, ":", iPos + 1)
-        ' ENDIF
-        ' sErr = Mid$(sErr, iPos + 1)
-        'WAIT
-        FGambas.Error(aData[1])
-      Endif 
-
       FDebugInfo.DefineLocal(Trim(aData[3]))
       FDebugInfo.DefineObject(Trim(aData[4]))
 
-      SetState(STATE_DEBUG)
+      If aData[1] Then Message.Error(aData[1])
 
-      If aData[1] And If aPos.Count = 1 And If aPos[0] = "?" Then Me.Stop
+      SetState(STATE_DEBUG)
 
     Case "I", "W"
     

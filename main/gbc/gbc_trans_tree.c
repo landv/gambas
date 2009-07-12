@@ -367,7 +367,7 @@ static void analyze_single(int op)
   }
 
   /* NULL, TRUE, FALSE, ME, PARENT, LAST, ERROR */
-  /* nombre, chaine ou symbole */
+  /* number, string or symbol */
 
   else if (PATTERN_is(*current, RS_NULL)
            || PATTERN_is(*current, RS_ME)
@@ -615,9 +615,6 @@ static void analyze_expr(short priority, short op_main)
 
   op_curr = op_main;
   nparam = (op_main == RS_NONE || op_main == RS_UNARY) ? 0 : 1;
-
-  /* cas particulier de NEW */
-  /* obsol�e : ne doit jamais servir, l'analyse est faite ailleurs */
 
   if (PATTERN_is(*current, RS_NEW))
     THROW("Cannot use NEW operator there");

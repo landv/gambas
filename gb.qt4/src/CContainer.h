@@ -25,11 +25,12 @@
 #ifndef __CCONTAINER_H
 #define __CCONTAINER_H
 
-//Added by qt3to4:
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QChildEvent>
 #include <QEvent>
+#include <QStyle>
+#include <QStyleOptionFrame>
 
 #include "gambas.h"
 
@@ -103,6 +104,7 @@ void CCONTAINER_arrange(void *_object);
 void CCONTAINER_get_max_size(void *_object, int *w, int *h);
 void CCONTAINER_insert_child(void *_object);
 void CCONTAINER_remove_child(void *_object);
+void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w = 0);
 
 class MyContainer : public QWidget
 {

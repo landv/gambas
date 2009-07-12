@@ -1,0 +1,86 @@
+' Gambas class file
+
+Static Private $cInfo As New Collection
+Static Private $cKey As New Collection
+Static Private $cFields As New Collection
+Static Private $cTable As New Collection
+
+Static Public Sub _init()
+  
+  Try DB.Open
+  
+End
+
+
+Static Public Function _get(sTable As String, sField As String, Optional bCreate As Boolean) As DataField
+  
+  Dim hTable As Table
+  Dim hField As Field
+  Dim iType As Integer
+  Dim bReadOnly As Boolean
+  Dim hInfo As DataField
+  Dim sKey As String
+  
+  sKey = sTable & "." & sField
+  If bCreate Then sKey &= "."
+  
+  If Not $cInfo.Exist(sKey) Then
+
+    hTable = DB.Tables[sTable]
+    hField = hTable.Fields[sField]
+
+    hInfo = New DataField
+    hInfo.FromField(hField, hTable)
+    If bCreate Then hInfo.ReadOnly = False
+    
+    $cInfo[sKey] = hInfo
+    
+  Endif
+  
+  Return $cInfo[sKey]
+  
+End
+
+
+Static Public Function GetDefaultValue(sTable As String, sField As String) As Variant
+  
+  Return DataConnection[sTable, sField].Default
+  
+End
+
+Static Public Function GetPrimaryKey(sTable As String) As String[]
+  
+  If Not $cKey.Exist(sTable) Then
+    $cKey[sTable] = DB.Tables[sTable].PrimaryKey
+  Endif
+  
+  Return $cKey[sTable]  
+  
+End
+
+Static Public Function GetFields(sTable As String) As String[]
+
+  Dim aField As String[]
+  Dim hField As Field
+  
+  If Not $cFields.Exist(sTable) Then
+    aField = New String[]
+    For Each hField In DB.Tables[sTable].Fields
+      aField.Add(hField.Name)
+    Next
+    $cFields[sTable] = aField
+  Endif
+  
+  Return $cFields[sTable]  
+  
+End
+
+Static Public Function ExistTable(sTable As String) As Boolean
+  
+  If Not $cTable.Exist(sTable) Then
+    $cTable[sTable] = DB.Tables.Exist(sTable)
+  Endif
+  Return $cTable[sTable]  
+  
+End
+

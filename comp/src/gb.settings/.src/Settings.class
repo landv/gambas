@@ -126,7 +126,7 @@ Public Sub Save()
 
   $bModify = False
 
-  Open $sPath For Create As #hFile
+  hFile = Open $sPath For Create 
 
   If $sTitle Then
     Print #hFile, "# "; $sTitle
