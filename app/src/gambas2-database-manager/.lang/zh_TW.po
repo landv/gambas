@@ -246,23 +246,23 @@ msgstr "無法建立Table '&1`."
 msgid "Cannot delete table '&1'."
 msgstr " 無法刪除table '&1'."
 
-#: CServer.class:140
+#: CServer.class:163
 msgid "Cannot create user."
 msgstr "無法建立使用者."
 
-#: CServer.class:158
+#: CServer.class:183
 msgid "Cannot delete user."
 msgstr "無法刪除使用者."
 
-#: CServer.class:186
+#: CServer.class:213
 msgid "Cannot edit user."
 msgstr "無法修改使用者."
 
-#: CServer.class:204
+#: CServer.class:231
 msgid "Cannot create database."
 msgstr "無法建立資料庫."
 
-#: CServer.class:224
+#: CServer.class:251
 msgid "Cannot delete database."
 msgstr "無法刪除資料庫."
 
@@ -270,11 +270,11 @@ msgstr "無法刪除資料庫."
 msgid "This field cannot be void."
 msgstr "這個欄位不可以空白."
 
-#: FAbout.class:27 FMain.class:1313
+#: FAbout.class:29 FMain.class:1337
 msgid "About..."
 msgstr "關於..."
 
-#: FAbout.class:32
+#: FAbout.class:34
 msgid ""
 "<h1 align=center>Gambas Database<br>Manager</h1>\n"
 "\n"
@@ -291,8 +291,8 @@ msgid ""
 "Public License for more details.</p>\n"
 msgstr ""
 
-#: FAbout.class:38 FDatabase.class:153 FNewTable.class:108 FPassword.class:86
-#: FServer.class:148 FUser.class:189
+#: FAbout.class:40 FDatabase.class:155 FNewTable.class:110 FPassword.class:88
+#: FServer.class:170 FUser.class:191
 msgid "OK"
 msgstr "OK"
 
@@ -316,52 +316,53 @@ msgstr "Server : &1"
 msgid "Database: &1"
 msgstr "資料庫 : &1"
 
-#: FCode.class:276
+#: FCode.class:278
 msgid "Generate Gambas code"
 msgstr "產生Gambas程式碼"
 
-#: FCode.class:286
+#: FCode.class:288
 msgid ""
 "This dialog allows you to generate a <b>Gambas</b> procedure that will "
 "initialize the structure of your database."
 msgstr "這對話程序允許您產生<b>Gambas</b>初始化資料庫的程序."
 
-#: FCode.class:308 FPasteDatabase.class:341 FPasteTable.class:315
+#: FCode.class:310 FPasteDatabase.class:343 FPasteTable.class:319
+#: FServer.class:147
 msgid "Database"
 msgstr "資料庫"
 
-#: FCode.class:313 FDatabase.class:132 FUser.class:152
+#: FCode.class:315 FDatabase.class:134 FUser.class:154
 msgid "Server"
 msgstr "Server"
 
-#: FCode.class:328 FDatabase.class:143 FNewTable.class:120
-#: FPasteDatabase.class:281 FPasteTable.class:255 FTable.class:57
-#: FUser.class:163
+#: FCode.class:330 FDatabase.class:145 FNewTable.class:122
+#: FPasteDatabase.class:283 FPasteTable.class:259 FTable.class:57
+#: FUser.class:165
 msgid "Name"
 msgstr "名稱"
 
-#: FCode.class:333
+#: FCode.class:335
 msgid "Module"
 msgstr "Module"
 
-#: FCode.class:343
+#: FCode.class:345
 msgid "Procedure"
 msgstr "程序"
 
-#: FCode.class:353
+#: FCode.class:355
 msgid "Update at database close."
 msgstr "在關閉資料庫時更新."
 
-#: FCode.class:358
+#: FCode.class:360
 msgid "Generate"
 msgstr "產生"
 
-#: FCode.class:363 FImport.class:566 FPasteDatabase.class:320
-#: FPasteTable.class:294
+#: FCode.class:365 FImport.class:590 FPasteDatabase.class:322
+#: FPasteTable.class:298
 msgid "Close"
 msgstr "關閉"
 
-#: FCode.class:381
+#: FCode.class:383
 msgid "Project"
 msgstr "專案"
 
@@ -373,8 +374,8 @@ msgstr "建立資料庫"
 msgid "Please type a database name."
 msgstr "請輸入一個資料庫名稱."
 
-#: FDatabase.class:159 FData.class:520 FImport.class:30 FMain.class:553
-#: FNewTable.class:114 FServer.class:160 FTable.class:779 FUser.class:195
+#: FDatabase.class:161 FData.class:520 FImport.class:34 FMain.class:566
+#: FNewTable.class:116 FServer.class:176 FTable.class:779 FUser.class:197
 msgid "Cancel"
 msgstr "取消"
 
@@ -406,207 +407,207 @@ msgstr "儲存"
 msgid "Do not save"
 msgstr "無法儲存"
 
-#: FData.class:584
+#: FData.class:587
 msgid "Save data"
 msgstr "儲存資料"
 
-#: FData.class:592
+#: FData.class:595
 msgid "Reload data"
 msgstr "重新載入資料"
 
-#: FData.class:599
+#: FData.class:602
 msgid "New record"
 msgstr "新的資料"
 
-#: FData.class:606
+#: FData.class:609
 msgid "Delete record"
 msgstr "刪除資料"
 
-#: FImport.class:33
+#: FImport.class:37
 msgid "Import"
 msgstr ""
 
-#: FImport.class:117
+#: FImport.class:121
 msgid "(Automatic key)"
 msgstr ""
 
-#: FImport.class:230
+#: FImport.class:252
 #, fuzzy
 msgid "Field_&1"
 msgstr "欄位"
 
-#: FImport.class:309 FTable.class:93
+#: FImport.class:331 FTable.class:93
 msgid "Field"
 msgstr "欄位"
 
-#: FImport.class:337
+#: FImport.class:359
 msgid "Not enough values"
 msgstr ""
 
-#: FImport.class:339
+#: FImport.class:361
 msgid "Too many values"
 msgstr ""
 
-#: FImport.class:358
+#: FImport.class:380
 msgid "Cancelled by user"
 msgstr ""
 
-#: FImport.class:367
+#: FImport.class:389
 msgid "No record imported."
 msgstr ""
 
-#: FImport.class:369
+#: FImport.class:391
 msgid "One record imported."
 msgstr ""
 
-#: FImport.class:371
+#: FImport.class:393
 msgid "&1 records imported."
 msgstr ""
 
-#: FImport.class:424
+#: FImport.class:448
 msgid "Import CSV file"
 msgstr ""
 
-#: FImport.class:443
+#: FImport.class:467
 msgid "Options"
 msgstr ""
 
-#: FImport.class:448 FPasteDatabase.class:276 FPasteTable.class:250
+#: FImport.class:472 FPasteDatabase.class:278 FPasteTable.class:254
 msgid "Source"
 msgstr "Source"
 
-#: FImport.class:460
+#: FImport.class:484
 msgid "Charset"
 msgstr ""
 
-#: FImport.class:465
+#: FImport.class:489
 msgid "End of line"
 msgstr ""
 
-#: FImport.class:470
+#: FImport.class:494
 msgid "Delimiter character"
 msgstr ""
 
-#: FImport.class:475
+#: FImport.class:499
 msgid "Enclose character"
 msgstr ""
 
-#: FImport.class:480
+#: FImport.class:504
 msgid "Strip useless white spaces"
 msgstr ""
 
-#: FImport.class:486 FPasteDatabase.class:327 FPasteTable.class:301
+#: FImport.class:510 FPasteDatabase.class:329 FPasteTable.class:305
 msgid "Destination"
 msgstr "目的"
 
-#: FImport.class:491 FPasteTable.class:340
+#: FImport.class:515 FPasteTable.class:344
 msgid "Table"
 msgstr "Table"
 
-#: FImport.class:496
+#: FImport.class:520
 msgid "The first line contains field names"
 msgstr ""
 
-#: FImport.class:501
+#: FImport.class:525
 msgid "Key field"
 msgstr ""
 
-#: FImport.class:507
+#: FImport.class:531
 #, fuzzy
 msgid "Tab"
 msgstr "Table"
 
-#: FImport.class:507
+#: FImport.class:531
 #, fuzzy
 msgid "Space"
 msgstr "儲存"
 
-#: FImport.class:507
+#: FImport.class:531
 msgid ","
 msgstr ""
 
-#: FImport.class:507
+#: FImport.class:531
 msgid ";"
 msgstr ""
 
-#: FImport.class:507
+#: FImport.class:531
 msgid ":"
 msgstr ""
 
-#: FImport.class:513
+#: FImport.class:537
 msgid "'"
 msgstr ""
 
-#: FImport.class:513
+#: FImport.class:537
 msgid "\""
 msgstr ""
 
-#: FImport.class:531
+#: FImport.class:555
 msgid "UTF-8"
 msgstr ""
 
-#: FImport.class:531
+#: FImport.class:555
 msgid "ISO 8859-1"
 msgstr ""
 
-#: FImport.class:531
+#: FImport.class:555
 msgid "ISO 8859-15"
 msgstr ""
 
-#: FImport.class:531
+#: FImport.class:555
 msgid "WINDOWS-1252"
 msgstr ""
 
-#: FImport.class:538
+#: FImport.class:562
 #, fuzzy
 msgid "Unix"
 msgstr "Unique"
 
-#: FImport.class:538
+#: FImport.class:562
 msgid "Windows"
 msgstr ""
 
-#: FImport.class:538
+#: FImport.class:562
 msgid "Mac"
 msgstr ""
 
-#: FImport.class:541
-msgid "Messages"
-msgstr ""
-
-#: FImport.class:547
+#: FImport.class:565
 msgid "Preview"
 msgstr ""
 
-#: FMain.class:155
+#: FImport.class:574
+msgid "Messages"
+msgstr ""
+
+#: FMain.class:162
 msgid "Cannot connect to server"
 msgstr "無法與Server連線"
 
-#: FMain.class:273
+#: FMain.class:283
 msgid "Cannot connect to database"
 msgstr "無法與資料庫連線"
 
-#: FMain.class:374
+#: FMain.class:385
 msgid "Users"
 msgstr "使用者"
 
-#: FMain.class:392
+#: FMain.class:404
 msgid "Cannot connect to database '&1'"
 msgstr "無法與資料庫'&1'連線"
 
-#: FMain.class:480
+#: FMain.class:493
 msgid "&Use encoding (&1)"
 msgstr "&Use encoding (&1)"
 
-#: FMain.class:553
+#: FMain.class:566
 msgid "Do you really want to delete the user '&1' ?"
 msgstr "您決定要刪除使用者'&1'嗎?"
 
-#: FMain.class:553
+#: FMain.class:566
 msgid "Delete"
 msgstr "刪除"
 
-#: FMain.class:572
+#: FMain.class:585
 msgid ""
 "Do you really want to remove the following server ?\n"
 "\n"
@@ -616,11 +617,11 @@ msgstr ""
 "\n"
 "&1"
 
-#: FMain.class:572
+#: FMain.class:585
 msgid "Remove"
 msgstr "移除"
 
-#: FMain.class:589
+#: FMain.class:603
 msgid ""
 "Do you really want to delete the database '&1' ?\n"
 "\n"
@@ -630,155 +631,155 @@ msgstr ""
 "\n"
 "注意!所有的資料將會消失."
 
-#: FMain.class:635
+#: FMain.class:649
 msgid "Select the CSV file to import"
 msgstr ""
 
-#: FMain.class:636 FRequest.class:305
+#: FMain.class:650 FRequest.class:305
 msgid "CSV files"
 msgstr ""
 
-#: FMain.class:636 FRequest.class:177
+#: FMain.class:650 FRequest.class:177
 msgid "All files"
 msgstr "全部的檔案"
 
-#: FMain.class:648
+#: FMain.class:662
 msgid "Do you really want to delete the table '&1' ?"
 msgstr "您決定要刪除table '&1'嗎?"
 
-#: FMain.class:681
+#: FMain.class:695
 msgid "Cannot refresh connection."
 msgstr "無法刷新連線."
 
-#: FMain.class:701
+#: FMain.class:715
 msgid "Cannot close database."
 msgstr "無法關閉資料庫."
 
-#: FMain.class:814
+#: FMain.class:836
 msgid "Do you really want to remove all servers ?"
 msgstr "您決定要移除全部的servers嗎?"
 
-#: FMain.class:814
+#: FMain.class:836
 msgid "Remove all"
 msgstr "全部移除"
 
-#: FMain.class:1053 FPassword.class:58
+#: FMain.class:1077 FPassword.class:60
 msgid "Gambas Database Manager"
 msgstr "Gambas資料庫管理員"
 
-#: FMain.class:1058
+#: FMain.class:1082
 msgid "&Server"
 msgstr "&Server"
 
-#: FMain.class:1061
+#: FMain.class:1085
 msgid "&New server..."
 msgstr "新的server(&N)..."
 
-#: FMain.class:1067
+#: FMain.class:1091
 msgid "&Scan database servers"
 msgstr "瀏覽資料庫servers(&S)"
 
-#: FMain.class:1076
+#: FMain.class:1100
 msgid "&Close all"
 msgstr "全部關閉(&C)"
 
-#: FMain.class:1080
+#: FMain.class:1104
 msgid "Re&move all servers"
 msgstr "移除全部的servers(&m)"
 
-#: FMain.class:1089
+#: FMain.class:1113
 msgid "&Database component debugging"
 msgstr ""
 
-#: FMain.class:1097
+#: FMain.class:1121
 msgid "&Quit"
 msgstr "結束(&Q)"
 
-#: FMain.class:1108
+#: FMain.class:1132
 msgid "&Open"
 msgstr "開啟(&O)"
 
-#: FMain.class:1113
+#: FMain.class:1137
 msgid "&Create database..."
 msgstr "建立資料庫(&C)..."
 
-#: FMain.class:1119
+#: FMain.class:1143
 msgid "&Paste database..."
 msgstr "貼上資料庫(&P)..."
 
-#: FMain.class:1124
+#: FMain.class:1148
 msgid "&Create user..."
 msgstr "建立使用者(&C)..."
 
-#: FMain.class:1133
+#: FMain.class:1157
 msgid "&Close"
 msgstr "關閉(&C)"
 
-#: FMain.class:1138
+#: FMain.class:1162
 msgid "&Remove"
 msgstr "移除(&R)"
 
-#: FMain.class:1149
+#: FMain.class:1173
 msgid "&Create..."
 msgstr "新建(&C)..."
 
-#: FMain.class:1154
+#: FMain.class:1178
 msgid "&Paste..."
 msgstr "貼上(&P)..."
 
-#: FMain.class:1168
+#: FMain.class:1192
 msgid "&Create table..."
 msgstr "建立table(&C)..."
 
-#: FMain.class:1174
+#: FMain.class:1198
 msgid "&Paste table..."
 msgstr "貼上table(&P)..."
 
-#: FMain.class:1179
+#: FMain.class:1203
 msgid "&SQL request..."
 msgstr "SQL 命令(&S)..."
 
-#: FMain.class:1184
+#: FMain.class:1208
 msgid "&Import CSV file..."
 msgstr ""
 
-#: FMain.class:1193
+#: FMain.class:1217
 msgid "&Make Gambas code..."
 msgstr "產生Gambas程式碼..."
 
-#: FMain.class:1198
+#: FMain.class:1222
 msgid "-"
 msgstr "-"
 
-#: FMain.class:1202
+#: FMain.class:1226
 msgid "Show system tables"
 msgstr "顯示system tables"
 
-#: FMain.class:1210
+#: FMain.class:1234
 msgid "&Copy"
 msgstr "複製(&C)"
 
-#: FMain.class:1215
+#: FMain.class:1239
 msgid "&Delete"
 msgstr "刪除(&D)"
 
-#: FMain.class:1224
+#: FMain.class:1248
 msgid "&Refresh"
 msgstr "刷新(&R)"
 
-#: FMain.class:1245
+#: FMain.class:1269
 msgid "&Edit..."
 msgstr "修改(&E)..."
 
-#: FMain.class:1280
+#: FMain.class:1304
 msgid "&Rename..."
 msgstr "重新命名(&R)..."
 
-#: FMain.class:1310
+#: FMain.class:1334
 msgid "&?"
 msgstr "-"
 
-#: FNewTable.class:28 FTable.class:1258
+#: FNewTable.class:28 FTable.class:1261
 msgid "Rename table"
 msgstr "table重新命名"
 
@@ -790,7 +791,7 @@ msgstr "建立table"
 msgid "Please enter a table name."
 msgstr "請輸入一個table名稱."
 
-#: FNewTable.class:125 FServer.class:107 FTable.class:62
+#: FNewTable.class:127 FServer.class:165 FTable.class:62
 msgid "Type"
 msgstr "類型"
 
@@ -798,15 +799,15 @@ msgstr "類型"
 msgid "Please enter at least eight characters."
 msgstr ""
 
-#: FPassword.class:69
+#: FPassword.class:71
 msgid "Please enter the key string used for crypting database passwords."
 msgstr ""
 
-#: FPassword.class:81
+#: FPassword.class:83
 msgid "Continue"
 msgstr ""
 
-#: FPassword.class:92
+#: FPassword.class:94
 msgid "Quit"
 msgstr ""
 
@@ -818,31 +819,36 @@ msgstr "請輸入一個資料庫名稱.."
 msgid "Cannot copy database."
 msgstr "無法複製資料庫."
 
-#: FPasteDatabase.class:270
+#: FPasteDatabase.class:272
 msgid "Duplicate database"
 msgstr "複製資料庫"
 
-#: FPasteDatabase.class:291 FPasteTable.class:265
+#: FPasteDatabase.class:293 FPasteTable.class:269
 msgid "Copy structure &and data"
 msgstr "複製結構與資料(&a)"
 
-#: FPasteDatabase.class:296 FPasteTable.class:270
+#: FPasteDatabase.class:298 FPasteTable.class:274
 msgid "Copy &structure only"
 msgstr "僅複製結構(&s)"
 
-#: FPasteDatabase.class:314 FPasteTable.class:288
+#: FPasteDatabase.class:316 FPasteTable.class:292
 msgid "Duplicate"
 msgstr "複製"
 
-#: FPasteDatabase.class:336 FPasteTable.class:310
+#: FPasteDatabase.class:338 FPasteTable.class:314
 msgid "Connection"
 msgstr "連線"
 
-#: FPasteTable.class:244
+#: FPasteTable.class:132
+#, fuzzy
+msgid "Table already exists"
+msgstr "Table已經存在."
+
+#: FPasteTable.class:248
 msgid "Duplicate table"
 msgstr "複製table"
 
-#: FRequest.class:40 FTable.class:1265
+#: FRequest.class:40 FTable.class:1268
 msgid "SQL request"
 msgstr "SQL 命令"
 
@@ -882,31 +888,31 @@ msgstr "無法儲存SQL Script檔."
 msgid "Cannot export data."
 msgstr "無法匯出資料."
 
-#: FRequest.class:385
+#: FRequest.class:387
 msgid "Run"
 msgstr "執行"
 
-#: FRequest.class:392
+#: FRequest.class:394
 msgid "New request"
 msgstr "新的命令"
 
-#: FRequest.class:399
+#: FRequest.class:401
 msgid "Load request"
 msgstr ""
 
-#: FRequest.class:406
+#: FRequest.class:408
 msgid "Save request"
 msgstr ""
 
-#: FRequest.class:414
+#: FRequest.class:416
 msgid "Find"
 msgstr "尋找"
 
-#: FRequest.class:453
+#: FRequest.class:455
 msgid "Export data"
 msgstr "匯出資料"
 
-#: FRequest.class:460
+#: FRequest.class:462
 msgid "Copy data in clipboard"
 msgstr "複製資料到剪貼薄"
 
@@ -923,49 +929,53 @@ msgstr "主機"
 msgid "Select a &1 database"
 msgstr "複製資料庫"
 
-#: FServer.class:89
+#: FServer.class:94
 msgid "New connection"
 msgstr "新的連線"
 
-#: FServer.class:96
-msgid "New server"
-msgstr "新的server"
-
-#: FServer.class:118
+#: FServer.class:101
 msgid "Choose..."
 msgstr ""
 
-#: FServer.class:126
-msgid "User"
-msgstr "使用者"
-
-#: FServer.class:131 FUser.class:173
-msgid "Password"
-msgstr "密碼"
-
-#: FServer.class:155
-msgid "postgresql"
-msgstr ""
-
-#: FServer.class:155
+#: FServer.class:108
 msgid "mysql"
 msgstr ""
 
-#: FServer.class:155
+#: FServer.class:108
+msgid "postgresql"
+msgstr ""
+
+#: FServer.class:108
 msgid "sqlite"
 msgstr ""
 
-#: FServer.class:155
+#: FServer.class:108
 msgid "sqlite2"
 msgstr ""
 
-#: FServer.class:155
+#: FServer.class:108
 msgid "sqlite3"
 msgstr ""
 
-#: FServer.class:155
+#: FServer.class:108
 msgid "odbc"
 msgstr ""
+
+#: FServer.class:108
+msgid "firebird"
+msgstr ""
+
+#: FServer.class:137
+msgid "User"
+msgstr "使用者"
+
+#: FServer.class:142 FUser.class:175
+msgid "Password"
+msgstr "密碼"
+
+#: FServer.class:154
+msgid "New server"
+msgstr "新的server"
 
 #: FTable.class:67
 msgid "Length"
@@ -1063,59 +1073,59 @@ msgstr ""
 "這個table '&1' 已經修改.\n"
 "您要儲存嗎?"
 
-#: FTable.class:1151
+#: FTable.class:1152
 msgid "This table name is already in use."
 msgstr "這個table名稱已經存在."
 
-#: FTable.class:1244
+#: FTable.class:1247
 msgid "Save table"
 msgstr "儲存table"
 
-#: FTable.class:1251
+#: FTable.class:1254
 msgid "Reload table"
 msgstr "重新載入table"
 
-#: FTable.class:1276
+#: FTable.class:1279
 msgid "Fields"
 msgstr "欄位"
 
-#: FTable.class:1281
+#: FTable.class:1284
 msgid "Move field up"
 msgstr "欄位上移"
 
-#: FTable.class:1288
+#: FTable.class:1291
 msgid "Move field down"
 msgstr "欄位下移"
 
-#: FTable.class:1295
+#: FTable.class:1298
 msgid "Toggle primary key"
 msgstr "切換 primary key"
 
-#: FTable.class:1302
+#: FTable.class:1305
 msgid "Delete field"
 msgstr "刪除欄位"
 
-#: FTable.class:1309
+#: FTable.class:1312
 msgid "New field"
 msgstr "新的欄位"
 
-#: FTable.class:1320
+#: FTable.class:1323
 msgid "Indexes"
 msgstr "索引"
 
-#: FTable.class:1325
+#: FTable.class:1328
 msgid "New index"
 msgstr "新的索引"
 
-#: FTable.class:1332
+#: FTable.class:1335
 msgid "New index field"
 msgstr "新的索引欄"
 
-#: FTable.class:1339
+#: FTable.class:1342
 msgid "Delete index field"
 msgstr "刪除索引欄"
 
-#: FTable.class:1364
+#: FTable.class:1367
 msgid "Data"
 msgstr "資料"
 
@@ -1131,7 +1141,7 @@ msgstr "建立使用者"
 msgid "Please type a user name."
 msgstr "請輸入一個使用者名稱."
 
-#: FUser.class:184
+#: FUser.class:186
 msgid "This user is a database administrator"
 msgstr "這使用者是資料庫管理員"
 

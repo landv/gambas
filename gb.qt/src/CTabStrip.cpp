@@ -51,14 +51,15 @@ public:
 	CPICTURE *icon;
 	int id;
 	bool visible;
+	bool enabled;
 	
 	CTab(CTABSTRIP *parent, QWidget *page);
 	~CTab();
 	
 	bool isEmpty() { return widget->children() == NULL; }
 	void ensureVisible() { WIDGET->showPage(widget); }
-	void setEnabled(bool e) { WIDGET->setTabEnabled(widget, e); }
-	bool isEnabled() { return WIDGET->isTabEnabled(widget); }
+	void setEnabled(bool e) { enabled = e; WIDGET->setTabEnabled(widget, e && WIDGET->isEnabled()); }
+	bool isEnabled() { return enabled; }
 	bool isVisible() { return visible; }
 	void setVisible(bool v);
 	void updateIcon();
@@ -76,7 +77,7 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 	//id = THIS->id;
 	id = THIS->stack->count();
 	visible = true; 
-  setEnabled(WIDGET->isEnabled());
+  setEnabled(true);
 }	
 
 CTab::~CTab()
@@ -86,7 +87,8 @@ CTab::~CTab()
 
 void CTab::setVisible(bool v)
 {
-	int i;
+	int i, index;
+	CTab *page;
 	
 	if (v == visible)
 		return;
@@ -97,17 +99,25 @@ void CTab::setVisible(bool v)
 	{
 		text = WIDGET->tabLabel(widget);
 		WIDGET->removePage(widget);
+		widget->hide();
 	}
 	else
 	{
+		index = 0;
 		for (i = 0; i < (int)THIS->stack->count(); i++)
 		{
+			page = THIS->stack->at(i);
+			if (!page->isVisible())
+				continue;
 			if (id == THIS->stack->at(i)->id)
 				break;
+			index++;
 		}
-		WIDGET->insertTab(widget, text, i);
-	  setEnabled(WIDGET->isEnabled());
+		WIDGET->insertTab(widget, text, index);
+	  setEnabled(enabled);
 		updateIcon();
+		if (WIDGET->count() == 1)
+			ensureVisible();
 	}
 }
 
@@ -433,8 +443,8 @@ BEGIN_PROPERTY(CTAB_picture)
 
   index = THIS->index;
   if (index < 0)
-    index = WIDGET->currentPageIndex();
-    
+    index = get_real_index(THIS);
+	
   page = get_page(THIS);
 
   if (READ_PROPERTY)
@@ -458,12 +468,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTAB_enabled)
 
-  QWidget *page = get_page(THIS);
-
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->isTabEnabled(page));
+    GB.ReturnBoolean(THIS->stack->at(THIS->index)->isEnabled());
   else
-    WIDGET->setTabEnabled(page, VPROP(GB_BOOLEAN));
+    THIS->stack->at(THIS->index)->setEnabled(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

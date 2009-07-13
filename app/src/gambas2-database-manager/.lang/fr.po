@@ -246,23 +246,23 @@ msgstr "Impossible de créer la table '&1'."
 msgid "Cannot delete table '&1'."
 msgstr "Impossible de supprimer la table '&1'."
 
-#: CServer.class:140
+#: CServer.class:163
 msgid "Cannot create user."
 msgstr "Impossible de créer l'utilisateur."
 
-#: CServer.class:158
+#: CServer.class:183
 msgid "Cannot delete user."
 msgstr "Impossible de supprimer l'utilisateur."
 
-#: CServer.class:186
+#: CServer.class:213
 msgid "Cannot edit user."
 msgstr "Impossible de modifier l'utilisateur."
 
-#: CServer.class:204
+#: CServer.class:231
 msgid "Cannot create database."
 msgstr "Impossible de créer la base de données."
 
-#: CServer.class:224
+#: CServer.class:251
 msgid "Cannot delete database."
 msgstr "Impossible de supprimer la base de données."
 
@@ -270,7 +270,7 @@ msgstr "Impossible de supprimer la base de données."
 msgid "This field cannot be void."
 msgstr "Ce champ ne peut être vide."
 
-#: FAbout.class:29 FMain.class:1323
+#: FAbout.class:29 FMain.class:1337
 msgid "About..."
 msgstr "A propos de..."
 
@@ -305,7 +305,7 @@ msgstr ""
 "d'information.</p>\n"
 
 #: FAbout.class:40 FDatabase.class:155 FNewTable.class:110 FPassword.class:88
-#: FServer.class:150 FUser.class:191
+#: FServer.class:170 FUser.class:191
 msgid "OK"
 msgstr "OK"
 
@@ -342,6 +342,7 @@ msgstr ""
 "initialisera la structure de votre base de données."
 
 #: FCode.class:310 FPasteDatabase.class:343 FPasteTable.class:319
+#: FServer.class:147
 msgid "Database"
 msgstr "Base de données"
 
@@ -388,8 +389,8 @@ msgstr "Créer une base de données"
 msgid "Please type a database name."
 msgstr "Vous devez saisir un nom de base de données."
 
-#: FDatabase.class:161 FData.class:520 FImport.class:34 FMain.class:553
-#: FNewTable.class:116 FServer.class:162 FTable.class:779 FUser.class:197
+#: FDatabase.class:161 FData.class:520 FImport.class:34 FMain.class:566
+#: FNewTable.class:116 FServer.class:176 FTable.class:779 FUser.class:197
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -589,35 +590,35 @@ msgstr "Aperçu"
 msgid "Messages"
 msgstr "Messages"
 
-#: FMain.class:155
+#: FMain.class:162
 msgid "Cannot connect to server"
 msgstr "Connexion au serveur impossible"
 
-#: FMain.class:273
+#: FMain.class:283
 msgid "Cannot connect to database"
 msgstr "Connexion à la base de données impossible"
 
-#: FMain.class:374
+#: FMain.class:385
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: FMain.class:392
+#: FMain.class:404
 msgid "Cannot connect to database '&1'"
 msgstr "Impossible de se connecter à la base de données '&1'"
 
-#: FMain.class:480
+#: FMain.class:493
 msgid "&Use encoding (&1)"
 msgstr "&Utiliser l'encodage (&1)"
 
-#: FMain.class:553
+#: FMain.class:566
 msgid "Do you really want to delete the user '&1' ?"
 msgstr "Désirez-vous réellement supprimer l'utilisateur '&1' ?"
 
-#: FMain.class:553
+#: FMain.class:566
 msgid "Delete"
 msgstr "Supprimer"
 
-#: FMain.class:572
+#: FMain.class:585
 msgid ""
 "Do you really want to remove the following server ?\n"
 "\n"
@@ -627,11 +628,11 @@ msgstr ""
 "\n"
 "&1"
 
-#: FMain.class:572
+#: FMain.class:585
 msgid "Remove"
 msgstr "Supprimer"
 
-#: FMain.class:589
+#: FMain.class:603
 msgid ""
 "Do you really want to delete the database '&1' ?\n"
 "\n"
@@ -641,155 +642,155 @@ msgstr ""
 "\n"
 "ATTENTION ! Toutes les données seront perdues."
 
-#: FMain.class:635
+#: FMain.class:649
 msgid "Select the CSV file to import"
 msgstr "Choisissez le fichier CSV à importer"
 
-#: FMain.class:636 FRequest.class:305
+#: FMain.class:650 FRequest.class:305
 msgid "CSV files"
 msgstr "Fichiers CSV"
 
-#: FMain.class:636 FRequest.class:177
+#: FMain.class:650 FRequest.class:177
 msgid "All files"
 msgstr "Tous les fichiers"
 
-#: FMain.class:648
+#: FMain.class:662
 msgid "Do you really want to delete the table '&1' ?"
 msgstr "Désirez-vous réellement supprimer la table '&1' ?"
 
-#: FMain.class:681
+#: FMain.class:695
 msgid "Cannot refresh connection."
 msgstr "Impossible de rafraîchir la connexion."
 
-#: FMain.class:701
+#: FMain.class:715
 msgid "Cannot close database."
 msgstr "Impossible de fermer la base de données."
 
-#: FMain.class:822
+#: FMain.class:836
 msgid "Do you really want to remove all servers ?"
 msgstr "Désirez-vous réellement supprimer toutes les connexions ?"
 
-#: FMain.class:822
+#: FMain.class:836
 msgid "Remove all"
 msgstr "Tout supprimer"
 
-#: FMain.class:1063 FPassword.class:60
+#: FMain.class:1077 FPassword.class:60
 msgid "Gambas Database Manager"
 msgstr "Gestionnaire de base de données de Gambas"
 
-#: FMain.class:1068
+#: FMain.class:1082
 msgid "&Server"
 msgstr "&Serveur"
 
-#: FMain.class:1071
+#: FMain.class:1085
 msgid "&New server..."
 msgstr "&Nouveau serveur..."
 
-#: FMain.class:1077
+#: FMain.class:1091
 msgid "&Scan database servers"
 msgstr "&Découvrir les serveurs de bases de données"
 
-#: FMain.class:1086
+#: FMain.class:1100
 msgid "&Close all"
 msgstr "&Fermer tout"
 
-#: FMain.class:1090
+#: FMain.class:1104
 msgid "Re&move all servers"
 msgstr "Supprimer &toutes les connexions"
 
-#: FMain.class:1099
+#: FMain.class:1113
 msgid "&Database component debugging"
 msgstr "&Débogage du composant base de données"
 
-#: FMain.class:1107
+#: FMain.class:1121
 msgid "&Quit"
 msgstr "&Quitter"
 
-#: FMain.class:1118
+#: FMain.class:1132
 msgid "&Open"
 msgstr "&Ouvrir"
 
-#: FMain.class:1123
+#: FMain.class:1137
 msgid "&Create database..."
 msgstr "&Créer une base de données..."
 
-#: FMain.class:1129
+#: FMain.class:1143
 msgid "&Paste database..."
 msgstr "Coller la &base de données..."
 
-#: FMain.class:1134
+#: FMain.class:1148
 msgid "&Create user..."
 msgstr "&Créer un utilisateur..."
 
-#: FMain.class:1143
+#: FMain.class:1157
 msgid "&Close"
 msgstr "&Fermer"
 
-#: FMain.class:1148
+#: FMain.class:1162
 msgid "&Remove"
 msgstr "&Supprimer"
 
-#: FMain.class:1159
+#: FMain.class:1173
 msgid "&Create..."
 msgstr "&Créer..."
 
-#: FMain.class:1164
+#: FMain.class:1178
 msgid "&Paste..."
 msgstr "Co&ller..."
 
-#: FMain.class:1178
+#: FMain.class:1192
 msgid "&Create table..."
 msgstr "&Créer une table..."
 
-#: FMain.class:1184
+#: FMain.class:1198
 msgid "&Paste table..."
 msgstr "Coller la &table..."
 
-#: FMain.class:1189
+#: FMain.class:1203
 msgid "&SQL request..."
 msgstr "&Requête SQL..."
 
-#: FMain.class:1194
+#: FMain.class:1208
 msgid "&Import CSV file..."
 msgstr "&Importer un fichier CSV..."
 
-#: FMain.class:1203
+#: FMain.class:1217
 msgid "&Make Gambas code..."
 msgstr "&Générer le code Gambas..."
 
-#: FMain.class:1208
+#: FMain.class:1222
 msgid "-"
 msgstr "-"
 
-#: FMain.class:1212
+#: FMain.class:1226
 msgid "Show system tables"
 msgstr "Afficher les tables systèmes"
 
-#: FMain.class:1220
+#: FMain.class:1234
 msgid "&Copy"
 msgstr "&Copier"
 
-#: FMain.class:1225
+#: FMain.class:1239
 msgid "&Delete"
 msgstr "&Supprimer"
 
-#: FMain.class:1234
+#: FMain.class:1248
 msgid "&Refresh"
 msgstr "&Rafraîchir"
 
-#: FMain.class:1255
+#: FMain.class:1269
 msgid "&Edit..."
 msgstr "&Editer..."
 
-#: FMain.class:1290
+#: FMain.class:1304
 msgid "&Rename..."
 msgstr "&Renommer..."
 
-#: FMain.class:1320
+#: FMain.class:1334
 msgid "&?"
 msgstr "-"
 
-#: FNewTable.class:28 FTable.class:1260
+#: FNewTable.class:28 FTable.class:1261
 msgid "Rename table"
 msgstr "Renommer la table"
 
@@ -801,7 +802,7 @@ msgstr "Créer une table"
 msgid "Please enter a table name."
 msgstr "Veuillez saisir le nom de la table."
 
-#: FNewTable.class:127 FServer.class:109 FTable.class:62
+#: FNewTable.class:127 FServer.class:165 FTable.class:62
 msgid "Type"
 msgstr "Type"
 
@@ -860,7 +861,7 @@ msgstr "La table existe déjà."
 msgid "Duplicate table"
 msgstr "Dupliquer la table"
 
-#: FRequest.class:40 FTable.class:1267
+#: FRequest.class:40 FTable.class:1268
 msgid "SQL request"
 msgstr "Requête SQL"
 
@@ -940,49 +941,53 @@ msgstr "Hôte"
 msgid "Select a &1 database"
 msgstr "Sélectionnez une base de données &1"
 
-#: FServer.class:91
+#: FServer.class:94
 msgid "New connection"
 msgstr "Nouvelle connexion"
 
-#: FServer.class:98
-msgid "New server"
-msgstr "Nouveau serveur"
-
-#: FServer.class:120
+#: FServer.class:101
 msgid "Choose..."
 msgstr "Sélectionner..."
 
-#: FServer.class:128
-msgid "User"
-msgstr "Utilisateur"
-
-#: FServer.class:133 FUser.class:175
-msgid "Password"
-msgstr "Mot de passe"
-
-#: FServer.class:157
-msgid "postgresql"
-msgstr "-"
-
-#: FServer.class:157
+#: FServer.class:108
 msgid "mysql"
 msgstr "-"
 
-#: FServer.class:157
+#: FServer.class:108
+msgid "postgresql"
+msgstr "-"
+
+#: FServer.class:108
 msgid "sqlite"
 msgstr "-"
 
-#: FServer.class:157
+#: FServer.class:108
 msgid "sqlite2"
 msgstr "-"
 
-#: FServer.class:157
+#: FServer.class:108
 msgid "sqlite3"
 msgstr "-"
 
-#: FServer.class:157
+#: FServer.class:108
 msgid "odbc"
 msgstr "-"
+
+#: FServer.class:108
+msgid "firebird"
+msgstr ""
+
+#: FServer.class:137
+msgid "User"
+msgstr "Utilisateur"
+
+#: FServer.class:142 FUser.class:175
+msgid "Password"
+msgstr "Mot de passe"
+
+#: FServer.class:154
+msgid "New server"
+msgstr "Nouveau serveur"
 
 #: FTable.class:67
 msgid "Length"
@@ -1080,59 +1085,59 @@ msgstr ""
 "La table '&1' a été modifiée.\n"
 "Désirez-vous l'enregistrer ?"
 
-#: FTable.class:1151
+#: FTable.class:1152
 msgid "This table name is already in use."
 msgstr "Ce nom de table est déjà utilisé."
 
-#: FTable.class:1246
+#: FTable.class:1247
 msgid "Save table"
 msgstr "Enregistrer la table"
 
-#: FTable.class:1253
+#: FTable.class:1254
 msgid "Reload table"
 msgstr "Recharger la table"
 
-#: FTable.class:1278
+#: FTable.class:1279
 msgid "Fields"
 msgstr "Champs"
 
-#: FTable.class:1283
+#: FTable.class:1284
 msgid "Move field up"
 msgstr "Déplacer le champ vers le haut"
 
-#: FTable.class:1290
+#: FTable.class:1291
 msgid "Move field down"
 msgstr "Déplacer le champ vers le bas"
 
-#: FTable.class:1297
+#: FTable.class:1298
 msgid "Toggle primary key"
 msgstr "Clef primaire"
 
-#: FTable.class:1304
+#: FTable.class:1305
 msgid "Delete field"
 msgstr "Supprimer le champ"
 
-#: FTable.class:1311
+#: FTable.class:1312
 msgid "New field"
 msgstr "Nouveau champ"
 
-#: FTable.class:1322
+#: FTable.class:1323
 msgid "Indexes"
 msgstr "Index"
 
-#: FTable.class:1327
+#: FTable.class:1328
 msgid "New index"
 msgstr "Nouvel index"
 
-#: FTable.class:1334
+#: FTable.class:1335
 msgid "New index field"
 msgstr "Nouveau champ d'index"
 
-#: FTable.class:1341
+#: FTable.class:1342
 msgid "Delete index field"
 msgstr "Supprimer le champ d'index"
 
-#: FTable.class:1366
+#: FTable.class:1367
 msgid "Data"
 msgstr "Données"
 
