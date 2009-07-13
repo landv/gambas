@@ -33,7 +33,7 @@ Public Function GetWidth(hCtrl As Control) As Integer
       iLen = Length
       If iLen = 0 Then iLen = 255
       iLen = Min(32, iLen)
-      iWidth = hCtrl.Font.Width("0") * iLen
+      iWidth = hCtrl.Font.Width("M") * iLen
 
   End Select
 

@@ -40,7 +40,7 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
 
 End
 
-Public Sub LoadFile()
+Public Sub LoadFile() As Boolean
   
   Dim sExt As String = LCase(File.Ext(Path))
   

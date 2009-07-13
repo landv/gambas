@@ -103,7 +103,7 @@
           Count = 2
           Index = 0
           Text = ("Fields")
-          { ToolBar1 ToolBar
+          { tlbField ToolBar
             MoveScaled(1,1,65,4)
             Text = ("")
             { btnSaveTable ToolButton
@@ -140,12 +140,11 @@
           { tbvField TableView
             MoveScaled(1,7,61,13)
             Expand = True
-            Mode = Select.Single
             Header = GridView.Horizontal
           }
           Index = 1
           Text = ("Indexes")
-          { ToolBar2 ToolBar
+          { tlbIndex ToolBar
             MoveScaled(1,1,63,4)
             Text = ("")
             { btnSaveTable2 ToolButton btnSaveTable
@@ -189,7 +188,6 @@
           { tbvIndex TableView
             MoveScaled(1,7,61,14)
             Expand = True
-            Mode = Select.Single
             Header = GridView.Horizontal
           }
           Index = 0
@@ -198,8 +196,8 @@
       { datData DataSource
         MoveScaled(6,37,66,26)
         Arrangement = Arrange.Vertical
-        { ToolBar3 ToolBar
-          MoveScaled(2,1,60,4)
+        { tlbData ToolBar
+          MoveScaled(2,1,61,4)
           Text = ("")
           { btnRunQuery ToolButton
             MoveScaled(0,0,13,4)

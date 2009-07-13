@@ -269,6 +269,7 @@ Private Sub LastOpenedFiles()
     If Not Exist(sPath) Then sPath = FindPath(File.Name(sPath))
     If Not Exist(sPath) Then Continue
     If VersionControl.InConflict(sPath) Then Continue
+    If IsConnectionPath(sPath) Then Continue
     hForm = OpenFile(sPath)
     If Not hForm Then Continue
     If aOpen.Count = 2 Then Try hForm.SetState(aOpen[1])
@@ -1291,6 +1292,7 @@ End
 Public Function LoadFile(sPath As String) As Object
 
   Dim hForm As Object
+  Dim bError As Boolean
   'DIM hActive AS Object
 
   hForm = Files[sPath]
@@ -1348,7 +1350,13 @@ Public Function LoadFile(sPath As String) As Object
     
     Files[sPath] = hForm
     If hForm Then 
-      hForm.LoadFile()
+      bError = hForm.LoadFile()
+      If bError Then
+        Files[sPath] = Null
+        Try hForm.Delete
+        Dec Application.Busy
+        Return
+      Endif
       hForm.Icon = GetFileIcon(sPath, 16)
     Endif
     
@@ -1360,10 +1368,11 @@ Public Function LoadFile(sPath As String) As Object
 
   Return hForm
 
-'Catch
+Catch
 
-'  Dec Application.Busy
-'  FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  Dec Application.Busy
+  Files[sPath] = Null
+  FGambas.Error(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where)
 
 End
 

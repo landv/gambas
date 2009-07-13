@@ -9,9 +9,9 @@ Control
 p
 b
 
-GridView
+View
 r
-GridView
+TableView
 
 Header
 p
@@ -379,11 +379,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.None;Single;Multiple}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns
-_DrawWith
-C
-s
-GridView
+*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns
 :Activate
 :
 
@@ -420,9 +416,9 @@ Index
 r
 i
 
-GridView
+View
 r
-GridView
+TableView
 
 _new
 m
@@ -440,15 +436,15 @@ MoveTo
 m
 
 (Index)i
-GridView_Timer
+TableView_Timer
 m
 
 
-GridView_Data
+TableView_Data
 m
 
 (Row)i(Column)i
-GridView_Change
+TableView_Change
 m
 
 
@@ -472,7 +468,7 @@ Remove
 m
 b
 
-GridView_ColumnClick
+TableView_ColumnClick
 m
 
 (Column)i

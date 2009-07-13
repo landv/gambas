@@ -102,11 +102,6 @@ Public Sub _new(sPath As String)
 
   SetReadOnly
 
-  Reload
-
-  DrawTitle
-  UpdateMenu
-
   For Each hModule In CModule.All
     If Exist(File.SetExt(Path, hModule.Key)) Then
       $sModule = hModule.Key
@@ -2070,7 +2065,12 @@ Public Sub Reload()
 
 End
 
-Public Sub LoadFile()
+Public Sub LoadFile() As Boolean
+
+  Reload
+
+  DrawTitle
+  UpdateMenu
 
 End
 

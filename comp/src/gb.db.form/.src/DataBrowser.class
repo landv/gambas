@@ -6,7 +6,7 @@ Inherits UserControl
 'PROPERTY Border AS Integer "<Border>"
 Property Columns As String[]
 Property Control As Boolean
-Property Read GridView As GridView
+Property Read View As TableView
 Property Header As Boolean
 Property Orientation As Integer
 Property Adjust As Boolean
@@ -64,9 +64,9 @@ Private Sub Control_Write(bVisible As Boolean)
   
 End
 
-Private Function GridView_Read() As GridView
+Private Function View_Read() As TableView
   
-  Return $hForm.DataView.GridView
+  Return $hForm.DataView.View
   
 End
 

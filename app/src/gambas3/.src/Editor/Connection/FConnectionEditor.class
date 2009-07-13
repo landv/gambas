@@ -29,22 +29,22 @@ Public Sub _new(sPath As String)
 
     With tbvField.Columns[1]
       .Text = ("Name")
-      .Width = 160
+      .Width = Desktop.Scale * 24
     End With
 
     With tbvField.Columns[2]
       .Text = ("Type")
-      .Width = 96
+      .Width = Desktop.Scale * 14
     End With
 
     With tbvField.Columns[3]
       .Text = ("Length")
-      .Width = 80
+      .Width = Desktop.Scale * 14
     End With
 
     With tbvField.Columns[4]
       .Text = ("Default value")
-      .Width = 160
+      .Width = Desktop.Scale * 24
     End With
 
   End With
@@ -55,17 +55,17 @@ Public Sub _new(sPath As String)
 
     With tbvIndex.Columns[0]
       .Text = ("Index")
-      .Width = 160
+      .Width = Desktop.Scale * 24
     End With
 
     With tbvIndex.Columns[1]
       .Text = ("Unique")
-      .Width = 64
+      .Width = Desktop.Scale * 8
     End With
 
     With tbvIndex.Columns[2]
       .Text = ("Field")
-      .Width = 160
+      .Width = Desktop.Scale * 24
     End With
 
   End With
@@ -107,7 +107,7 @@ Public Sub Form_Activate()
 
 End
 
-Public Sub Reload()
+Public Sub Reload() As Boolean
   
   Dim hConfig As Settings
 
@@ -134,14 +134,15 @@ Catch
   Application.Busy = 0
   Me.Enabled = False
   Message.Error(("Unable to connect to database.") & "\n\n" & Error.Text)
+  Return True
   
 End
 
 
-Public Sub LoadFile()
+Public Sub LoadFile() As Boolean
 
   ReadConfig
-  Reload
+  Return Reload()
 
 End
 
@@ -182,7 +183,7 @@ Public Sub Form_Close()
 
   datData.Enabled = False 
   splTable.Hide
-  $hConn.Close
+  Try $hConn.Close
 
   Project.Files[Path] = Null
 
@@ -190,9 +191,15 @@ End
 
 Public Sub ReadConfig()
   
+  Dim hCtrl As Control
+  
   FTextEditor.ReadConfigEditor(edtRequest)
   tabTable.Font.Grade = - Settings["/TabStripFont", 0]
-  datData.Font = tabTable.Font
+  tlbData.Font.Grade = - Settings["/GlobalFont", 0]
+  
+  For Each hCtrl In [tlbField, tbvField, tlbIndex, tbvIndex, lvwTable, dvwData]
+    hCtrl.Font = tlbData.Font
+  Next
   
 End
 
@@ -205,6 +212,8 @@ Private Sub LoadTable()
   Dim hCIndexField As CIndexField
   Dim sField As String
   Dim bCreate As Boolean
+
+  Inc Application.Busy
 
   $aField.Clear
   $cFieldName.Clear
@@ -240,15 +249,28 @@ Private Sub LoadTable()
 
   tbvField.Rows.Count = $aField.Count
   'tbvField.Columns.Width = -1
+  tbvField.Rows.H = -1
   tbvField.MoveTo(0, 1)
 
   tbvIndex.Rows.Count = $aIndexField.Count
+  tbvIndex.Rows.H = -1
 
   $bModify = False
   DrawTitle
   
   datData.Table = $sTable
   datData.Refresh
+  
+  splTable.Enabled = True
+  
+  Dec Application.Busy
+  
+Catch
+
+  splTable.Enabled = False
+  Dec Application.Busy
+  Message.Error(("Unable to load table data.") & "\n\n" & Error.Text)
+  
   
 End
 
@@ -322,7 +344,9 @@ Public Sub tbvField_Data(Row As Integer, Column As Integer)
         .Text = Str(hCField.DefaultValue)
 
     End Select
-
+    
+    .Padding = 4
+    
   End With
 
 End
@@ -349,6 +373,49 @@ Public Sub tbvIndex_Data(Row As Integer, Column As Integer)
 
     End Select
 
+    .Padding = 4
+
   End With
+
+End
+
+Public Sub tbvField_Click()
+
+  Dim hField As CField
+  
+  If $bReadOnly Then Return
+  
+  hField = $aField[tbvField.Row]
+  
+  Select Case tbvField.Column
+  
+    Case 0
+      hField.Key = Not hField.Key
+      tbvField.Current.Refresh
+      Modify
+  
+    Case 1
+      '.ShowTextBox(True, True)
+      tbvField.Edit
+
+    Case 2
+      '.ShowComboBox([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True, True)
+      tbvField.Edit([("Boolean"), ("Integer"), ("Long"), ("Serial"), ("Float"), ("String"), ("Date"), ("Blob")], True)
+
+    Case 3
+      If hField.Type = gb.String Then
+        tbvField.Edit([("unlimited")])
+      Else
+        'tbvField.Cancel
+      Endif
+
+    Case 4
+      If hField.Type = gb.Boolean Then
+        tbvField.Edit(["True", "False"]) ' Non traduisible !
+      Else
+        tbvField.Edit
+      Endif
+  
+  End Select
 
 End

@@ -135,7 +135,7 @@ Private Sub SetReadOnly()
 
 End
 
-Public Sub LoadFile()
+Public Sub LoadFile() As Boolean
 
   dwgPreview.Resize($hImage.W + 8, $hImage.H + 8)
   panPreview.Dimension = dwgPreview.W + 8

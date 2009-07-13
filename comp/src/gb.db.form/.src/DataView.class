@@ -3,8 +3,8 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{GridView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
-Public Const _DrawWith As String = "GridView"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
+'Public Const _DrawWith As String = "GridView"
 
 Event Activate
 
@@ -21,10 +21,10 @@ Property Columns As String[]
 Property Read Current As Variant[]
 Property Read Count As Integer
 Property Read Index As Integer
-Property Read GridView As GridView
+Property Read View As TableView
 
 'PRIVATE $hConn AS Connection
-Private $hCtrl As GridView
+Private $hCtrl As TableView
 'PRIVATE $sTable AS String
 'PRIVATE $sFilter AS String
 Private $hTable As DataTable
@@ -47,9 +47,9 @@ Private $aAdjust As New Integer[]
 
 Public Sub _new()
   
-  $hCtrl = New GridView(Me) As "GridView"
-  $hTimer = New Timer As "GridView"
-  $hCtrl.Header = GridView.Both
+  $hCtrl = New TableView(Me) As "TableView"
+  $hTimer = New Timer As "TableView"
+  $hCtrl.Header = TableView.Both
   $hCtrl.Grid = False
   $bAllColumns = True
   Create()
@@ -245,7 +245,7 @@ End
 
 
 
-Public Sub GridView_Timer()
+Public Sub TableView_Timer()
   
   Dim iRow As Integer
   Dim bVisible As Boolean
@@ -271,10 +271,10 @@ Public Sub GridView_Timer()
   
 End
 
-Public Sub GridView_Data(Row As Integer, Column As Integer)
+Public Sub TableView_Data(Row As Integer, Column As Integer)
   
   With $hCtrl.Data
-    Try .Text = Str($hTable[Row][$aColumnsIndex[Column]])
+    Try .Text = Left(Str($hTable[Row][$aColumnsIndex[Column]]), 1024)
     .Alignment = Align.TopNormal
     
     If $bHighlight And If Row And 1 Then .Background = $iHighlight
@@ -301,7 +301,7 @@ End
 ' END
 
 
-Public Sub GridView_Change()
+Public Sub TableView_Change()
 
   If $bNoActivate Then Return
 
@@ -436,13 +436,7 @@ Public Function Remove() As Boolean
   
 End
 
-Private Function GridView_Read() As GridView
-  
-  Return $hCtrl
-  
-End
-
-Public Sub GridView_ColumnClick(Column As Integer)
+Public Sub TableView_ColumnClick(Column As Integer)
   
   Dim hSrc As DataSource
   
@@ -531,3 +525,9 @@ End
 '   Endif
 ' 
 ' End
+
+Private Function View_Read() As TableView
+
+  Return $hCtrl
+
+End

@@ -26,13 +26,13 @@ End
 
 Public Sub LoadPassword(sName As String) As String
   
-  Return Desktop.Passwords["/gambas3" &/ Project.Name &/ sName]
+  Return Desktop.Passwords[Project.Name &/ sName]
   
 End
 
 Public Sub SavePassword(sName As String, sPassword As String)
   
-  Desktop.Passwords["/gambas3" &/ Project.Name &/ sName] = sPassword
+  Desktop.Passwords[Project.Name &/ sName] = sPassword
   
 End
 
