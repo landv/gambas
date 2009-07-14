@@ -24,16 +24,19 @@ Public Sub Button1_Click()
   aWindow = _Desktop.GetWindowProperty(_NET_CLIENT_LIST, _Desktop.RootWindow)
   For Each hWindow In aWindow
     iDesktop = _Desktop.GetWindowProperty("_NET_WM_DESKTOP", hWindow)[0]
-    If iDesktop <> iCurrentDesktop And If iDesktop >= 0 Then Continue
-    aIcon = _Desktop.GetWindowProperty("_NET_WM_ICON", hWindow)
+    'If iDesktop <> iCurrentDesktop And If iDesktop >= 0 Then Continue
+    
+    aIcon = _Desktop.GetWindowProperty(_NET_WM_ICON, hWindow)
     hPictureBox = New PictureBox(ScrollView1)
     hPictureBox.Border = Border.Plain
+    hPictureBox.Alignment = Align.Center
+    hPictureBox.Resize(16, 16)
     If aIcon Then
-      hImage = _Desktop.MakeIcon(aIcon) 
-      hPictureBox.Picture = hImage.Picture
-      hPictureBox.Resize(hImage.W, hImage.H)
-    Else
-      hPictureBox.Resize(8, 8)
+      hImage = _Desktop.MakeIcon(aIcon)
+      If hImage Then
+        hPictureBox.Picture = hImage.Picture
+        hPictureBox.Resize(hImage.W + 4, hImage.H + 4)
+      Endif
     Endif
   Next
 

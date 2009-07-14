@@ -495,18 +495,62 @@ BEGIN_METHOD(CDESKTOP_get_window_geometry, GB_INTEGER window)
 
 END_METHOD
 
-BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data)
+BEGIN_METHOD(CDESKTOP_make_icon, GB_OBJECT data; GB_INTEGER width; GB_INTEGER height)
 
 	GB_ARRAY array;
 	int *data;
+	int count;
+	int size;
+	int width = VARGOPT(width, -1);
+	int height = VARGOPT(height, width);
+	int w, h;
 	
 	array = VARG(data);
 	if (GB.CheckObject(array))
 		return;
 	
 	data = (int *)GB.Array.Get(array, 0);
+	count = GB.Array.Count(array);
 	
-	GB.ReturnObject(IMAGE.Create(data[0], data[1], GB_IMAGE_BGRA, (unsigned char *)&data[2]));
+	if (width < 0)
+	{
+		for(;;)
+		{
+			if (count < 2)
+				break;
+			w = data[0];
+			h = data[1];
+			if (w > width)
+			{
+				width = w;
+				height = h;
+			}
+			size = w * h + 2;
+			data += size;
+			count -= size;
+		}
+
+		data = (int *)GB.Array.Get(array, 0);
+		count = GB.Array.Count(array);
+	}
+	
+	for(;;)
+	{
+		if (count < 2)
+		{
+			GB.ReturnNull();
+			return;
+		}
+		w = data[0];
+		h = data[1];
+		if (w == width && h == height)
+			break;
+		size = w * h + 2;
+		data += size;
+		count -= size;
+	}
+	
+	GB.ReturnObject(IMAGE.Create(w, h, GB_IMAGE_BGRA, (unsigned char *)&data[2]));
 
 END_METHOD
 
@@ -549,7 +593,7 @@ GB_DESC CDesktopDesc[] =
   GB_STATIC_PROPERTY("EventFilter", "b", CDESKTOP_event_filter),
   GB_STATIC_METHOD("WatchWindow", NULL, CDESKTOP_watch_window, "(Window)i(Watch)b"),
   GB_STATIC_METHOD("GetWindowGeometry", "Integer[]", CDESKTOP_get_window_geometry, "(Window)i"),
-  GB_STATIC_METHOD("MakeIcon", "Image", CDESKTOP_make_icon, "(Data)Array;"),
+  GB_STATIC_METHOD("MakeIcon", "Image", CDESKTOP_make_icon, "(Data)Array;[(Width)i(Height)h]"),
   GB_STATIC_METHOD("MinimizeWindow", NULL, CDESKTOP_minimize_window, "(Window)i(Minimized)b"),
   
   GB_END_DECLARE
