@@ -232,11 +232,11 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 				GB.ReturnObject(array);
 				break;
 				
-			case 32:
+			case 32: // A "long", not necessarily 32 bits!!
 				count = GB.StringLength(value) / 4;
 				GB.Array.New(&array, GB_T_INTEGER, count);
 				for (i = 0; i < count; i++)
-					*((int *)GB.Array.Get(array, i)) = *((int *)value + i);
+					*((int *)GB.Array.Get(array, i)) = *((long *)value + i);
 				GB.ReturnObject(array);
 				break;
 				
@@ -285,56 +285,63 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 			data = &VARG(value)._integer.value;
 			count = 1;
 			break;
-			
-		case GB_T_OBJECT:
 		
-			object = VARG(value)._object.value;
-			if (GB.Is(object, GB.FindClass("Array")))
+		default:
+			if (VARG(value).type >= GB_T_OBJECT)
 			{
-				data = GB.Array.Get((GB_ARRAY)object, 0);
-				count = GB.Array.Count((GB_ARRAY)object);
-				
-				switch((int)GB.Array.Type(object))
+				object = VARG(value)._object.value;
+				if (GB.Is(object, GB.FindClass("Array")))
 				{
-					case GB_T_BYTE:
-						format = 8;
-						break;
-						
-					case GB_T_SHORT:
-						format = 16;
-						break;
-						
-					case GB_T_INTEGER:
-						format = 32;
-						break;
-						
-					case GB_T_STRING:
-						if (type == X11_UTF8_STRING)
-						{
-							int i, len;
-							char *p;
-							char **d = (char **)data;
-							
-							len = 0;
-							for (i = 0; i < count; i++)
-								len += GB.StringLength(d[i]) + 1;
-								
-							GB.Alloc(&buffer, len);
-							
+					data = GB.Array.Get((GB_ARRAY)object, 0);
+					count = GB.Array.Count((GB_ARRAY)object);
+					
+					switch((int)GB.Array.Type(object))
+					{
+						case GB_T_BYTE:
 							format = 8;
-							data = buffer;
-							count = len;
+							break;
 							
-							p = buffer;
-							for (i = 0; i < count; i++)
+						case GB_T_SHORT:
+							format = 16;
+							break;
+							
+						case GB_T_INTEGER:
+							format = 32;
+							break;
+							
+						case GB_T_STRING:
+							if (type == X11_UTF8_STRING)
 							{
-								len = GB.StringLength(d[i]);
-								memcpy(p, d[i], len + 1);
-								p += len + 1;
+								int i, len;
+								char *p;
+								char **d = (char **)data;
+								
+								len = 0;
+								for (i = 0; i < count; i++)
+									len += GB.StringLength(d[i]) + 1;
+									
+								GB.Alloc(&buffer, len);
+								
+								format = 8;
+								data = buffer;
+								count = len;
+								
+								p = buffer;
+								for (i = 0; i < count; i++)
+								{
+									len = GB.StringLength(d[i]);
+									memcpy(p, d[i], len + 1);
+									p += len + 1;
+								}
 							}
-						}
+						default:
+							goto __ERROR;
+					}
 				}
 			}
+			else
+				goto __ERROR;
+			
 			break;
 	}
 	
@@ -343,6 +350,12 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 		
 	if (buffer)
 		GB.Free(&buffer);
+	
+	return;
+	
+__ERROR:
+
+	GB.Error("Cannot deal with that datatype");
 
 END_METHOD
 

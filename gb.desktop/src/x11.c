@@ -126,14 +126,17 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format)
 	uchar *data;
   unsigned long count;
   unsigned long after;
+	int size;
 
 	if (XGetWindowProperty(_display, wid, prop, 0, PROPERTY_START_READ / 4,
 			False, AnyPropertyType, type, format,
 			&count, &after, &data) != Success)
 		return NULL;
 	
+	size = *format == 32 ? sizeof(long) : ( *format == 16 ? sizeof(short) : 1 );
+	
 	GB.FreeString(&_property_value);
-	GB.NewString(&_property_value, (char *)data, count * *format / 8);
+	GB.NewString(&_property_value, (char *)data, count * size);
 	XFree(data);
 	
 	if (after)
@@ -143,7 +146,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format)
 				&count, &after, &data) != Success)
 			return NULL;
 		
-		GB.AddString(&_property_value, (char *)data, count * *format / 8);
+		GB.AddString(&_property_value, (char *)data, count * size);
 		XFree(data);
 	}
 	
