@@ -449,16 +449,11 @@ static void analyze_call()
 
 	if (subr_pattern && subr_pattern == PATTERN_make(RT_SUBR, SUBR_VarPtr))
 	{
-		if (!PATTERN_is_identifier(*current))
+		if (!PATTERN_is_identifier(current[0]) || !!PATTERN_is(current[1], RS_RBRA))
 			THROW("Syntax error. VarPtr() takes only one identifier");
 		
 		add_pattern(*current);
-		current++;
-		
-		if (!PATTERN_is(*current, RS_RBRA))
-			THROW("Syntax error. VarPtr() takes only one identifier");
-		current++;
-	
+		current += 2;
 		add_subr(subr_pattern, 1);
 	}
 	else

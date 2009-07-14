@@ -113,7 +113,7 @@ Private Sub DisplayCompiledTrans(sLang As String, Optional nTrans As Integer)
   Try nStr = GetTransCount(sLang)
   If Not Error Then
     'DEBUG sLang;; nStr;; nTrans
-    cvwLang[sLang][1] = Min(100, (nStr * 100) \ nTrans) & "%"
+    cvwLang[sLang][1] = Min(100, (nStr * 100) \ nTrans) & "% "
   Else 
     cvwLang[sLang][1] = "?"
   Endif

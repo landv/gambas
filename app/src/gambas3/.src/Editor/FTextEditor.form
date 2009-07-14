@@ -120,7 +120,7 @@
   }
   { panToolBar ToolBar
     MoveScaled(0,0,70,4)
-    Key = "text-editor"
+    Key = "text"
     Text = ("Text editor")
     { btnSave ToolButton mnuSave
       Name = "btnSave"
@@ -189,12 +189,14 @@
     { btnIndent ToolButton
       MoveScaled(33,0,4,4)
       ToolTip = ("Indent")
+      Action = ".indent"
       Text = ("")
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
       MoveScaled(36,0,4,4)
       ToolTip = ("Unindent")
+      Action = ".unindent"
       Text = ("")
       Picture = Picture["icon:/small/unindent"]
     }
@@ -276,6 +278,10 @@
     Text = "Go to line..."
     Shortcut = "Ctrl+G"
   }
+  { Action indent
+    Text = "Indent"
+    Picture = "icon:/small/indent"
+  }
   { Action paste
     Text = "Paste"
     Shortcut = "Ctrl+V"
@@ -313,6 +319,10 @@
     Shortcut = "Ctrl+Z"
     Picture = "icon:/small/undo"
   }
+  { Action unindent
+    Text = "Unindent"
+    Picture = "icon:/small/unindent"
+  }
   { Action view-hsplit
     Text = "Horizontal split"
     Shortcut = "Ctrl+H"
@@ -331,9 +341,9 @@
 }
 
 { Toolbars
-  { Toolbar text-editor
+  { Toolbar text
     Text = "Text editor"
-    List = "save,reload,show-class,cut,copy,paste,undo,redo,view-nosplit,view-hsplit,view-vsplit"
-    Default = "save,reload,show-class,cut,copy,paste,undo,redo,$btnIndent,$btnUnindent,view-nosplit,view-hsplit,view-vsplit,$lblEditor"
+    List = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit"
+    Default = "save,reload,show-class,cut,copy,paste,undo,redo,indent,unindent,view-nosplit,view-hsplit,view-vsplit,$lblEditor"
   }
 }

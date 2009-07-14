@@ -148,14 +148,14 @@ static int convState(int state)
   }
 }
 
-static void analyze(const char *src, int len_src, bool rewrite)
+static void analyze(const char *src, int len_src, bool rewrite, int state)
 {
   GB_ARRAY garray, tarray, parray;
   int i, n, pos, len, p, upos, ulen, l;
   char *str;
   EVAL_ANALYZE result;
 
-  EVAL_analyze(src, len_src, &result, rewrite);
+  EVAL_analyze(src, len_src, state == HIGHLIGHT_COMMENT ? EVAL_TYPE_COMMENT : EVAL_TYPE_END, &result, rewrite);
 
   n = 0;
   for (i = 0; i < result.len; i++)
@@ -237,9 +237,9 @@ BEGIN_METHOD(CHIGHLIGHT_purge, GB_STRING text; GB_BOOLEAN comment; GB_BOOLEAN st
 
 END_METHOD
 
-BEGIN_METHOD(CHIGHLIGHT_analyze, GB_STRING text; GB_BOOLEAN rewrite)
+BEGIN_METHOD(CHIGHLIGHT_analyze, GB_STRING text; GB_BOOLEAN rewrite; GB_INTEGER state)
 
-  analyze(STRING(text), LENGTH(text), VARGOPT(rewrite, FALSE));
+  analyze(STRING(text), LENGTH(text), VARGOPT(rewrite, FALSE), VARGOPT(state, HIGHLIGHT_NORMAL));
   GB.ReturnObject(_analyze_symbol);
 
 END_METHOD
@@ -292,7 +292,7 @@ GB_DESC CHighlightDesc[] =
   GB_CONSTANT("Alternate", "i", HIGHLIGHT_ALTERNATE),
   
   GB_STATIC_METHOD("_exit", NULL, CHIGHLIGHT_exit, NULL),
-  GB_STATIC_METHOD("Analyze", "String[]", CHIGHLIGHT_analyze, "(Code)s[(Rewrite)b]"),
+  GB_STATIC_METHOD("Analyze", "String[]", CHIGHLIGHT_analyze, "(Code)s[(Rewrite)b(State)i]"),
   GB_STATIC_PROPERTY_READ("Symbols", "String[]", CHIGHLIGHT_analyze_symbols),
   GB_STATIC_PROPERTY_READ("Types", "Integer[]", CHIGHLIGHT_analyze_types),
   GB_STATIC_PROPERTY_READ("Positions", "Integer[]", CHIGHLIGHT_analyze_positions),

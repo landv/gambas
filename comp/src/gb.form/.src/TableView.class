@@ -36,10 +36,11 @@ Public Sub _new()
 
 End
 
-Private Sub SaveEditor()
+Private Sub SaveEditor() As Boolean
   
   Dim sText As String
   Dim sCurrent As String
+  Dim bCancel As Boolean
   
   Try sCurrent = Me[$iRow, $iCol].Text 
   If Error Then Return
@@ -48,14 +49,15 @@ Private Sub SaveEditor()
 
   If sText = sCurrent Then Return
   
-  Raise Save($iRow, $iCol, sText)
+  bCancel = Raise Save($iRow, $iCol, sText)
   Me[$iRow, $iCol].Refresh
+  Return bCancel
   
 End
 
-Public Sub Save()
+Public Sub Save() As Boolean
   
-  HideEditor
+  Return HideEditor()
   
 End
 
@@ -65,15 +67,21 @@ Public Sub Cancel()
   
 End
 
-Private Sub HideEditor(Optional bNoSave As Boolean)
+Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
+  
+  Dim bCancel As Boolean
   
   If $hEditor Then
-    If Not bNoSave Then SaveEditor 
+    If Not bNoSave Then 
+      bCancel = SaveEditor()
+    Endif
     If $hEditor Then
       $hEditor.Hide
       $hEditor = Null
     Endif
   Endif
+  
+  Return bCancel
   
 End
 
@@ -250,74 +258,73 @@ Public Sub Editor_KeyPress()
       Wend
 
     Case Key.Left
-      If $bTextBox Then 
-        If $hEditor.Pos = 0 Then
-          Do
-            If Me.Column > 0 Then 
-              Dec Me.Column
-              Raise Click
-            Else If Me.Row > 0 Then
-              Me.MoveTo(Me.Row - 1, Me.Columns.Count - 1) 
-              Raise Click
-            Else
-              Break
-            Endif
-            If $hEditor Then
-              $hEditor.Pos = $hEditor.Length
-              Stop Event
-              Break
-            Endif
-          Loop
-        Endif 
-      Endif
+      If $bTextBox And If $hEditor.Pos > 0 Then Return
+      Do
+        If Me.Column > 0 Then 
+          Dec Me.Column
+          Raise Click
+        Else If Me.Row > 0 Then
+          Me.MoveTo(Me.Row - 1, Me.Columns.Count - 1) 
+          Raise Click
+        Else
+          Break
+        Endif
+        If $hEditor Then
+          Try $hEditor.Pos = $hEditor.Length
+          Stop Event
+          Break
+        Endif
+      Loop
 
     Case Key.Right
-      If $bTextBox Then 
-        If $hEditor.Pos = $hEditor.Length Then
-          Do
-            If Me.Column < (Me.Columns.Count - 1) Then 
-              Inc Me.Column
-              Raise Click
-            Else If Me.Row < (Me.Rows.Count - 1) Then
-              Me.MoveTo(Me.Row + 1, 0)
-              Raise Click
-            Else
-              Break
-            Endif
-            If $hEditor Then
-              $hEditor.Pos = 0
-              Stop Event
-              Break
-            Endif
-          Loop
-        Endif 
-      Endif
+      If $bTextBox And If $hEditor.Pos < $hEditor.Length Then Return
+      Do
+        If Me.Column < (Me.Columns.Count - 1) Then 
+          Inc Me.Column
+          Raise Click
+        Else If Me.Row < (Me.Rows.Count - 1) Then
+          Me.MoveTo(Me.Row + 1, 0)
+          Raise Click
+        Else
+          Break
+        Endif
+        If $hEditor Then
+          Try $hEditor.Pos = 0
+          Stop Event
+          Break
+        Endif
+      Loop
       
     Case Key.Enter, Key.Return
-      If $bTextBox Then 
-        Do
-          If Me.Column < (Me.Columns.Count - 1) Then 
-            Inc Me.Column
-            Raise Click
-          Else If Me.Row < (Me.Rows.Count - 1) Then
-            Me.MoveTo(Me.Row + 1, 0)
-            Raise Click
-          Else 
-            Raise Insert
-            Stop Event
-            Break
-          Endif
-          If $hEditor Then
-            $hEditor.Pos = 0
-            Stop Event
-            Break
-          Endif
-        Loop
-      Endif
+      Do
+        If Me.Column < (Me.Columns.Count - 1) Then 
+          Inc Me.Column
+          Raise Click
+        Else If Me.Row < (Me.Rows.Count - 1) Then
+          Me.MoveTo(Me.Row + 1, 0)
+          Raise Click
+        Else 
+          Raise Insert
+          Stop Event
+          Break
+        Endif
+        If $hEditor Then
+          Try $hEditor.Pos = 0
+          Stop Event
+          Break
+        Endif
+      Loop
 
   End Select 
   
 End
+
+Public Sub Editor_LostFocus()
+  
+  Stop
+  
+End
+
 
 Private Function Editor_Read() As Control
 

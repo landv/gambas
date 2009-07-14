@@ -35,6 +35,7 @@
 
 
 //#define DEBUG 1
+//#define ENABLE_BIG_COMMENT
 
 PUBLIC const char *READ_source_ptr;
 #define source_ptr READ_source_ptr
@@ -53,8 +54,9 @@ enum
   GOTO_STRING, 
   GOTO_IDENT, 
   GOTO_QUOTED_IDENT, 
+	GOTO_NUMBER,
   GOTO_ERROR,
-  GOTO_OTHER,
+  GOTO_OTHER
 };
 
 static void READ_init(void)
@@ -79,6 +81,8 @@ static void READ_init(void)
         first_car[i] = GOTO_IDENT;
       else if (i == '{')
         first_car[i] = GOTO_QUOTED_IDENT;
+			else if (i >= '0' && i <= '9')
+				first_car[i] = GOTO_NUMBER;
       else if (i >= 127)
         first_car[i] = GOTO_ERROR;
       else
@@ -136,7 +140,12 @@ PUBLIC char *READ_get_pattern(PATTERN *pattern)
       strcpy(_buffer, COMP_subr_info[index].name);
       break;
 
-    default:
+		case RT_COMMENT:
+			strncpy(_buffer, TABLE_get_symbol_name(EVAL->string, index), BUF_MAX);
+			_buffer[BUF_MAX] = 0;
+			break;
+
+		default:
       sprintf(_buffer, "%s?%08X?%s", before, *pattern, after);
   }
 
@@ -154,7 +163,7 @@ PUBLIC void READ_dump_pattern(PATTERN *pattern)
   if (pos < 0 || pos >= EVAL->pattern_count)
     return;
   
-  printf("%ld ", pos);
+  printf("%d ", pos);
 
   if (PATTERN_flag(*pattern) & RT_FIRST)
     printf("!");
@@ -188,15 +197,17 @@ PUBLIC void READ_dump_pattern(PATTERN *pattern)
   else if (type == RT_TSTRING)
     printf("TSTRING      %s\n", READ_get_pattern(pattern));
   else if (type == RT_NEWLINE)
-    printf("NEWLINE      (%ld)\n", index);
+    printf("NEWLINE      (%d)\n", index);
   else if (type == RT_END)
     printf("END\n");
   else if (type == RT_PARAM)
-    printf("PARAM        %ld\n", index);
+    printf("PARAM        %d\n", index);
   else if (type == RT_SUBR)
     printf("SUBR         %s\n", READ_get_pattern(pattern));
+  else if (type == RT_COMMENT)
+    printf("COMMENT      %s\n", READ_get_pattern(pattern));
   else
-    printf("?            %ld\n", index);
+    printf("?            %d\n", index);
 
   _no_quote = FALSE;
 }
@@ -751,6 +762,78 @@ static void add_string()
   source_ptr -= newline;
 }
 
+#if ENABLE_BIG_COMMENT
+static void add_big_comment()
+{
+  unsigned char car;
+  const char *start;
+  int len;
+  int index;
+  int type;
+  //bool space = FALSE;
+
+  start = source_ptr;
+	len = 0;
+	EVAL->comment = TRUE;
+
+  /*for(;;)
+  {
+    if (start == EVAL->source)
+      break;
+    
+    start--;
+    car = *start;
+    if (car == '\n')
+      break;
+    
+    if (car > ' ')
+    {
+      start++;
+      space = TRUE;
+      break;
+    }
+    len++;
+  }
+
+  if (!space)
+  {
+    start = source_ptr;
+    len = 1;
+  }*/
+
+  for(;;)
+  {
+    car = get_char();
+    if (car == 0)
+      break;
+		
+		/*if (car == '\n')
+		{
+			TABLE_add_symbol(EVAL->string, start, len, NULL, &index);
+			type = RT_COMMENT;
+			add_pattern(type, index);
+			add_newline();
+			len = 1;
+			start = source_ptr + 1;
+			continue;
+		}*/
+		
+		if (car == '*' && get_char_offset(1) == '/')
+		{
+			source_ptr += 2;
+			len += 2;
+			EVAL->comment = FALSE;
+			break;
+		}
+    len++;
+    source_ptr++;
+  }
+
+  TABLE_add_symbol(EVAL->string, start, len, NULL, &index);
+  type = RT_COMMENT;
+  add_pattern(type, index);
+}
+#endif
 
 static void add_comment()
 {
@@ -846,7 +929,7 @@ static void add_string_for_analyze()
 
 PUBLIC void EVAL_read(void)
 {
-  static void *jump_char[8] =
+  static void *jump_char[9] =
   {
     &&__BREAK, 
     &&__SPACE, 
@@ -854,6 +937,7 @@ PUBLIC void EVAL_read(void)
     &&__STRING, 
     &&__IDENT, 
     &&__QUOTED_IDENT,
+		&&__NUMBER,
     &&__ERROR, 
     &&__OTHER
   };
@@ -864,6 +948,11 @@ PUBLIC void EVAL_read(void)
 
   source_ptr = EVAL->source;
   begin_line = TRUE;
+	
+#if ENABLE_BIG_COMMENT
+	if (EVAL->comment)
+		goto __BIG_COMMENT;
+#endif
 
   for(;;)
   {
@@ -934,18 +1023,53 @@ PUBLIC void EVAL_read(void)
     }
     begin_line = FALSE;
     continue;
+		
+	__NUMBER:
+	
+		add_number();
+		begin_line = FALSE;
+		continue;
   
   __OTHER:
   
-    if (is_number())
-    {
-      add_number();
-      begin_line = FALSE;
-      continue;
-    }
+#if ENABLE_BIG_COMMENT
+		if (car == '/' && get_char_offset(1) == '*')
+			goto __BIG_COMMENT;
+#endif
+
+		if (is_number())
+			goto __NUMBER;
 
     add_operator();
     begin_line = FALSE;
+		continue;
+	
+#if ENABLE_BIG_COMMENT
+	__BIG_COMMENT:
+
+		if (EVAL->analyze)
+			add_big_comment();
+		else
+		{
+			for(;;)
+			{
+				car = get_char();
+				if (car == 0)
+					break;
+				if (car == '*' && get_char_offset(1) == '/')
+				{
+					source_ptr += 2;
+					break;
+				}
+				if (car == '\n')
+					add_newline();
+				source_ptr++;
+			}
+		}
+
+		begin_line = FALSE;
+		continue;
+#endif
   }
 
 __BREAK:
@@ -954,6 +1078,5 @@ __BREAK:
   add_end();
   add_end();
   add_end();
-
 }
 

@@ -55,6 +55,7 @@ typedef
 		EVAL_COLOR *color;
 		int len;
 		int proc;
+		int state;
 	}
 	EVAL_ANALYZE;
 
@@ -106,7 +107,7 @@ typedef
 typedef
 	struct {
 		int version;
-		void (*Analyze)(const char *src, int len, EVAL_ANALYZE *result, bool rewrite);
+		void (*Analyze)(const char *src, int len, int state, EVAL_ANALYZE *result, bool rewrite);
 		void (*New)(EVAL_EXPRESSION *expr, const char *src, int len);
 		bool (*Compile)(EVAL_EXPRESSION expr, bool assign);
 		GB_VALUE *(*Run)(EVAL_EXPRESSION expr, EVAL_FUNCTION func);

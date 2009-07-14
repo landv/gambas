@@ -56,6 +56,7 @@ Private $iSaveY As Integer
 'PRIVATE $iIndent AS INTEGER
 Private $iSaveLevel As Integer
 Private $bSelectNew As Boolean
+Private $aSelectNew As CControl[]
 Private $bDoNotArrange As Boolean
 Private $cAction As Collection
 Private $cToolbar As Collection
@@ -192,11 +193,11 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   Dim aVal As String[]
   Dim iInd As Integer
   Dim iLevel As Integer
-  Dim bFirst As Boolean
   Dim sEventName As String
   Dim bBackport As Boolean
   Dim cCoord As String[]
   Dim eW, eH As Float
+  Dim bFirst As Boolean
 
   hCtrl = hParent
   bFirst = True
@@ -280,6 +281,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
       If iLevel = 0 Then
         If $bSelectNew Then
+          '$aSelectNew.Add(hCtrl)
           hCtrl.Select(Me, bFirst)
           bFirst = False
         Endif
@@ -1554,13 +1556,17 @@ End
 
 Public Sub PutSelection(sData As String, hParent As CControl)
   
+  Dim iInd As Integer
+  
   If Not sData Then Return
 
   'PRINT Clipboard.Text
   $bSelectNew = True
+  '$aSelectNew = New CControl[]
   FromString(sData, hParent)
   $bSelectNew = False
 
+  SelectionChange
   RefreshProperty
   FFormStack.RefreshAll
   

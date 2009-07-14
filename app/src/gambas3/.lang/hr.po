@@ -329,7 +329,7 @@ msgstr ""
 msgid "Image management"
 msgstr ""
 
-#: CComponent.class:89 FPropertyProject.class:2075
+#: CComponent.class:89 FPropertyProject.class:2076
 msgid "Image loading and saving"
 msgstr ""
 
@@ -345,7 +345,7 @@ msgstr ""
 msgid "MySQL specific routines"
 msgstr ""
 
-#: CComponent.class:93 Project.module:142
+#: CComponent.class:93 Project.module:145
 msgid "Networking"
 msgstr ""
 
@@ -453,15 +453,15 @@ msgstr ""
 msgid "Web applications tools"
 msgstr ""
 
-#: CComponent.class:121 FPropertyProject.class:2026
+#: CComponent.class:121 FPropertyProject.class:2027
 msgid "Graphical form management"
 msgstr ""
 
-#: CComponent.class:122 FPropertyProject.class:2032
+#: CComponent.class:122 FPropertyProject.class:2033
 msgid "Event loop management"
 msgstr ""
 
-#: CComponent.class:124 FPropertyProject.class:2044
+#: CComponent.class:124 FPropertyProject.class:2045
 msgid "OpenGL display"
 msgstr ""
 
@@ -481,7 +481,7 @@ msgstr ""
 msgid "Authors"
 msgstr ""
 
-#: CComponentBox.class:207 FPropertyProject.class:2048
+#: CComponentBox.class:207 FPropertyProject.class:2049
 msgid "Requires"
 msgstr ""
 
@@ -497,7 +497,7 @@ msgstr ""
 msgid "Provides"
 msgstr ""
 
-#: CModule.class:28 FCreateFile.class:617 FEditor.class:3035 FForm.class:3481
+#: CModule.class:28 FCreateFile.class:622 FEditor.class:3046 FForm.class:3463
 #: FInfo.class:88
 msgid "Form"
 msgstr "Forma"
@@ -515,7 +515,7 @@ msgstr "Gambas forme"
 msgid "Gambas web pages"
 msgstr "Gambas klase"
 
-#: CModule.class:29 FCreateFile.class:636
+#: CModule.class:29 FCreateFile.class:641
 msgid "WebPage"
 msgstr ""
 
@@ -537,7 +537,7 @@ msgstr "Ponovi"
 msgid "Reports"
 msgstr ""
 
-#: Design.module:285
+#: Design.module:274
 msgid ""
 "The program has stopped unexpectedly\n"
 "by raising signal #&1.\n"
@@ -551,7 +551,7 @@ msgstr ""
 "Molim pošaljite izvješće o grešci na adresu\n"
 "gambas@users.sourceforge.net."
 
-#: Design.module:289
+#: Design.module:278
 msgid ""
 "The program has returned\n"
 "the value: &1"
@@ -559,20 +559,21 @@ msgstr ""
 "Program je vratio\n"
 "vrijednost: &1"
 
-#: Design.module:343 FAbout.class:566 FColorChooser.class:197
-#: FCommit.class:329 FCreateFile.class:871 FFontChooser.class:80
-#: FGotoLine.class:57 FList.class:167 FMain.class:2628
-#: FMakeExecutable.class:146 FMenu.class:1091 FNewTranslation.class:64
-#: FOpenProject.class:404 FPasteSpecial.class:273 FPropertyProject.class:251
+#: Design.module:332 FAbout.class:566 FColorChooser.class:197
+#: FCommit.class:329 FCreateFile.class:876 FFontChooser.class:80
+#: FGotoLine.class:57 FList.class:167 FMain.class:2685
+#: FMakeExecutable.class:146 FMenu.class:1091 FNewConnection.class:438
+#: FNewTable.class:155 FNewTranslation.class:64 FOpenProject.class:404
+#: FPasteSpecial.class:273 FPropertyProject.class:251
 #: FSelectExtraFile.class:72 FSelectIcon.class:266 FText.class:101
 msgid "OK"
 msgstr "-"
 
-#: Design.module:738
+#: Design.module:727
 msgid "Output terminal"
 msgstr ""
 
-#: Design.module:759
+#: Design.module:748
 msgid "No terminal emulator found."
 msgstr ""
 
@@ -638,14 +639,16 @@ msgid "Free"
 msgstr ""
 
 #: FColorChooser.class:203 FCommit.class:335 FConflict.class:191
-#: FCreateFile.class:877 FDebugInfo.class:349 FEditor.class:2076
-#: FFind.class:114 FFindList.class:161 FFontChooser.class:86 FForm.class:2802
-#: FGotoLine.class:63 FIconEditor.class:1393 FList.class:107 FMain.class:204
+#: FConnectionEditor.class:214 FCreateFile.class:882 FDebugInfo.class:349
+#: FEditor.class:2080 FFind.class:114 FFindList.class:161
+#: FFontChooser.class:86 FForm.class:2780 FGotoLine.class:63
+#: FIconEditor.class:1393 FList.class:107 FMain.class:205
 #: FMakeExecutable.class:152 FMakeInstall.class:309 FMenu.class:1097
-#: FNewTranslation.class:70 FOpenProject.class:410 FPasteSpecial.class:279
-#: FPropertyProject.class:1184 FSave.class:125 FSelectExtraFile.class:78
-#: FSelectIcon.class:271 FText.class:107 FTextEditor.class:465
-#: FTranslate.class:605 Project.module:310
+#: FNewConnection.class:444 FNewTable.class:161 FNewTranslation.class:70
+#: FOpenProject.class:410 FPasteSpecial.class:279 FPropertyProject.class:1184
+#: FSave.class:125 FSelectExtraFile.class:78 FSelectIcon.class:271
+#: FText.class:107 FTextEditor.class:462 FTranslate.class:605
+#: Project.module:315
 msgid "Cancel"
 msgstr "Otkaži"
 
@@ -673,11 +676,11 @@ msgstr "Opis"
 msgid "Authentification"
 msgstr ""
 
-#: FCommit.class:189
+#: FCommit.class:189 FNewConnection.class:354
 msgid "User"
 msgstr ""
 
-#: FCommit.class:205
+#: FCommit.class:205 FNewConnection.class:369
 msgid "Password"
 msgstr ""
 
@@ -686,39 +689,42 @@ msgstr ""
 msgid "Commit description"
 msgstr "Opis"
 
-#: FCommit.class:232 FConflict.class:327 FEditor.class:2881 FForm.class:3322
-#: FIconEditor.class:2168 FOutput.class:475 FTextEditor.class:665
+#: FCommit.class:232 FConflict.class:327 FConnectionEditor.class:1499
+#: FEditor.class:2892 FForm.class:3304 FIconEditor.class:2168
+#: FOutput.class:477 FTextEditor.class:656
 msgid "Cut"
 msgstr "Izreži"
 
-#: FCommit.class:239 FConflict.class:334 FEditor.class:2887 FForm.class:3329
-#: FIconEditor.class:2177 FOutput.class:482 FTextEditor.class:672
+#: FCommit.class:239 FConflict.class:334 FConnectionEditor.class:1515
+#: FEditor.class:2898 FForm.class:3311 FIconEditor.class:2177
+#: FOutput.class:484 FTextEditor.class:663
 msgid "Copy"
 msgstr "Kopiraj"
 
-#: FCommit.class:246 FConflict.class:341 FEditor.class:2893 FForm.class:3336
-#: FIconEditor.class:2186 FOutput.class:489 FTextEditor.class:679
+#: FCommit.class:246 FConflict.class:341 FConnectionEditor.class:1523
+#: FEditor.class:2904 FForm.class:3318 FIconEditor.class:2186
+#: FOutput.class:491 FTextEditor.class:670
 msgid "Paste"
 msgstr "Umetni"
 
-#: FCommit.class:253 FConflict.class:348 FEditor.class:2864 FForm.class:3564
-#: FIconEditor.class:2150 FOption.class:1076 FOutput.class:457
-#: FTextEditor.class:647
+#: FCommit.class:253 FConflict.class:348 FConnectionEditor.class:1531
+#: FEditor.class:2875 FForm.class:3546 FIconEditor.class:2150
+#: FOption.class:1081 FOutput.class:459 FTextEditor.class:638
 msgid "Undo"
 msgstr "Vrati"
 
-#: FCommit.class:260 FConflict.class:355 FEditor.class:2871 FForm.class:3575
-#: FOutput.class:464 FTextEditor.class:654
+#: FCommit.class:260 FConflict.class:355 FConnectionEditor.class:1539
+#: FEditor.class:2882 FForm.class:3557 FOutput.class:466 FTextEditor.class:645
 msgid "Redo"
 msgstr "Ponovi"
 
-#: FCommit.class:267 FConflict.class:362 FEditor.class:3123
-#: FTextEditor.class:845
+#: FCommit.class:267 FConflict.class:362 FEditor.class:3134
+#: FTextEditor.class:836
 msgid "Indent"
 msgstr "Uvlačenje"
 
-#: FCommit.class:274 FConflict.class:369 FEditor.class:3132
-#: FTextEditor.class:852
+#: FCommit.class:274 FConflict.class:369 FEditor.class:3143
+#: FTextEditor.class:844
 msgid "Unindent"
 msgstr "Poništi uvlačenje"
 
@@ -732,12 +738,12 @@ msgstr "Obriši"
 msgid "Changes"
 msgstr "Otkaži"
 
-#: FConflict.class:25 FMain.class:2167
+#: FConflict.class:25 FMain.class:2197
 msgid "&Edit"
 msgstr "&Uredi"
 
 #: FConflict.class:25 FFindList.class:169 FIconEditor.class:1412
-#: FInfo.class:465 FMakeInstall.class:260 FOption.class:1097 FTips.class:232
+#: FInfo.class:465 FMakeInstall.class:260 FOption.class:1102 FTips.class:232
 msgid "Close"
 msgstr "Zatvori"
 
@@ -765,7 +771,7 @@ msgstr ""
 msgid "Unable to resolve the conflict."
 msgstr ""
 
-#: FConflict.class:254 FOpenProject.class:322 Project.module:310
+#: FConflict.class:254 FOpenProject.class:322 Project.module:315
 msgid "Open"
 msgstr ""
 
@@ -779,11 +785,11 @@ msgstr ""
 msgid "Conflict files"
 msgstr ""
 
-#: FConflict.class:394 FCreateFile.class:674 FFindList.class:52
+#: FConflict.class:394 FCreateFile.class:679 FFindList.class:52
 msgid "Text"
 msgstr "Tekst"
 
-#: FConflict.class:402 FCreateFile.class:655
+#: FConflict.class:402 FCreateFile.class:660
 msgid "Image"
 msgstr ""
 
@@ -807,119 +813,339 @@ msgstr ""
 msgid "Sol&ve"
 msgstr ""
 
-#: FCreateFile.class:72
-msgid "Gambas classes"
-msgstr "Gambas klase"
-
-#: FCreateFile.class:72
-msgid "Gambas modules"
-msgstr "Gambas moduli"
-
-#: FCreateFile.class:82
-msgid "Cascading style sheets"
-msgstr ""
-
-#: FCreateFile.class:82
-msgid "HTML files"
-msgstr ""
-
-#: FCreateFile.class:82 FSelectIcon.class:27
-msgid "Picture files"
-msgstr "Datoteke slika"
-
-#: FCreateFile.class:102
-msgid "(No parent)"
-msgstr ""
-
-#: FCreateFile.class:423
-msgid "Cannot add file."
-msgstr ""
-
-#: FCreateFile.class:539
-msgid "New file"
-msgstr ""
-
-#: FCreateFile.class:554 FMain.class:2075
-msgid "New"
-msgstr "Novo"
-
-#: FCreateFile.class:579 FInfo.class:80
-msgid "Module"
-msgstr "Modul"
-
-#: FCreateFile.class:598 FFindList.class:47 FInfo.class:84
-#: FPropertyProject.class:874
-msgid "Class"
-msgstr "Klasa"
-
-#: FCreateFile.class:693 FInfo.class:97
-msgid "HTML file"
-msgstr ""
-
-#: FCreateFile.class:712
-msgid "Style sheet"
-msgstr ""
-
-#: FCreateFile.class:725 FCreateProject.class:637 FDebugInfo.class:20
-#: FMenu.class:884
+#: FConnectionEditor.class:31 FCreateFile.class:730 FCreateProject.class:637
+#: FDebugInfo.class:20 FMenu.class:884 FNewConnection.class:286
+#: FNewTable.class:105
 msgid "Name"
 msgstr "Naziv"
 
-#: FCreateFile.class:736 FCreateProject.class:532 FMakeExecutable.class:98
-#: FOption.class:910 FPropertyProject.class:1618
-msgid "Options"
-msgstr "Opcije"
-
-#: FCreateFile.class:745
-msgid "Width"
-msgstr ""
-
-#: FCreateFile.class:758
-msgid "Height"
-msgstr ""
-
-#: FCreateFile.class:778 FCreateProject.class:362 FInfo.class:344
+#: FConnectionEditor.class:36 FCreateFile.class:783 FCreateProject.class:362
+#: FInfo.class:344 FNewConnection.class:301 FNewTable.class:121
 #: FPropertyProject.class:876
 msgid "Type"
 msgstr "Tip"
 
-#: FCreateFile.class:785
-msgid "GIF"
+#: FConnectionEditor.class:41
+msgid "Length"
 msgstr ""
 
-#: FCreateFile.class:785
-msgid "PNG"
+#: FConnectionEditor.class:46
+#, fuzzy
+msgid "Default value"
+msgstr "Uobičajena veličina tabulatora"
+
+#: FConnectionEditor.class:57 FDebugExpr.class:391
+msgid "Index"
+msgstr "Indeks"
+
+#: FConnectionEditor.class:62
+msgid "Unique"
 msgstr ""
 
-#: FCreateFile.class:785
-msgid "XPM"
+#: FConnectionEditor.class:67
+#, fuzzy
+msgid "Field"
+msgstr "Traži"
+
+#: FConnectionEditor.class:136
+msgid "Unable to connect to database."
+msgstr ""
+
+#: FConnectionEditor.class:214
+#, fuzzy
+msgid "Do not save"
+msgstr "Ne otvaraj"
+
+#: FConnectionEditor.class:214 FEditor.class:3014 FForm.class:3449
+#: FIconEditor.class:1412 FTextEditor.class:751
+msgid "Save"
+msgstr "Spremi"
+
+#: FConnectionEditor.class:214
+#, fuzzy
+msgid "The table '&1' has been modified. Do you want to save it?"
+msgstr ""
+"Ova slika je mijenjana.\n"
+"Želite li je spremiti?"
+
+#: FConnectionEditor.class:307
+#, fuzzy
+msgid "Unable to load table '&1'."
+msgstr "Ne mogu promjeniti naziv '&1'"
+
+#: FConnectionEditor.class:336
+#, fuzzy
+msgid "Unable to run query."
+msgstr "Ne mogu promjeniti naziv '&1'"
+
+#: FConnectionEditor.class:368
+msgid "unlimited"
+msgstr ""
+
+#: FConnectionEditor.class:450 MConnection.module:92
+msgid "Blob"
+msgstr ""
+
+#: FConnectionEditor.class:450 MConnection.module:86
+msgid "Boolean"
+msgstr ""
+
+#: FConnectionEditor.class:450 MConnection.module:84
+#, fuzzy
+msgid "Date"
+msgstr "Podatak"
+
+#: FConnectionEditor.class:450 MConnection.module:82
+#, fuzzy
+msgid "Float"
+msgstr "Font"
+
+#: FConnectionEditor.class:450 MConnection.module:78
+msgid "Integer"
+msgstr ""
+
+#: FConnectionEditor.class:450 MConnection.module:80
+msgid "Long"
+msgstr ""
+
+#: FConnectionEditor.class:450 MConnection.module:90
+#, fuzzy
+msgid "Serial"
+msgstr "Vertikalno"
+
+#: FConnectionEditor.class:450 MConnection.module:88
+#, fuzzy
+msgid "String"
+msgstr "Nizovi"
+
+#: FConnectionEditor.class:528
+#, fuzzy
+msgid "This name is already in used."
+msgstr "Taj naziv je već u upotrebi."
+
+#: FConnectionEditor.class:553
+#, fuzzy
+msgid "Please enter a number."
+msgstr "Molim unesite svoje ime."
+
+#: FConnectionEditor.class:558
+msgid "The length must be greater than 1 and lower than 255."
+msgstr ""
+
+#: FConnectionEditor.class:582
+msgid "Type mismatch."
+msgstr ""
+
+#: FConnectionEditor.class:622
+#, fuzzy
+msgid "This name already exists."
+msgstr "Ovaj projekt već postoji. "
+
+#: FConnectionEditor.class:701
+#, fuzzy
+msgid "This field is used in an index."
+msgstr "Taj naziv je već u upotrebi."
+
+#: FConnectionEditor.class:1014
+msgid "The table '&1' has no primary key."
+msgstr ""
+
+#: FConnectionEditor.class:1088
+#, fuzzy
+msgid "Cannot write table '&1'."
+msgstr "Ne mogu premjestiti datoteku &1."
+
+#: FConnectionEditor.class:1194 FForm.class:3325 FMain.class:205
+#: FTranslate.class:605
+msgid "Delete"
+msgstr "Obriši"
+
+#: FConnectionEditor.class:1194
+#, fuzzy
+msgid "Do you really want to delete table '&1'?"
+msgstr "želite li zbilja obrisati ovu datoteku?"
+
+#: FConnectionEditor.class:1204
+#, fuzzy
+msgid "Cannot delete table '&1'."
+msgstr "Ne mogu premjestiti datoteku &1."
+
+#: FConnectionEditor.class:1275
+#, fuzzy
+msgid "Connection editor"
+msgstr "Nastavi"
+
+#: FConnectionEditor.class:1289 FEditor.class:2080 FForm.class:2780
+#: FIconEditor.class:2032 FTextEditor.class:462 FTranslate.class:699
+msgid "Reload"
+msgstr "Ponovo učitaj"
+
+#: FConnectionEditor.class:1301
+#, fuzzy
+msgid "Rename"
+msgstr "P&romjeni ime..."
+
+#: FConnectionEditor.class:1303 FNewTable.class:91
+msgid "New table"
+msgstr ""
+
+#: FConnectionEditor.class:1311
+#, fuzzy
+msgid "Import..."
+msgstr "&Forma..."
+
+#: FConnectionEditor.class:1319
+#, fuzzy
+msgid "Rename..."
+msgstr "P&romjeni ime..."
+
+#: FConnectionEditor.class:1335
+msgid "SQL request"
+msgstr ""
+
+#: FConnectionEditor.class:1372
+#, fuzzy
+msgid "Fields"
+msgstr "Traži"
+
+#: FConnectionEditor.class:1389
+msgid "Add"
+msgstr ""
+
+#: FConnectionEditor.class:1396 FMakeInstall.class:933
+#, fuzzy
+msgid "Remove"
+msgstr "Ponovi"
+
+#: FConnectionEditor.class:1403
+msgid "Down"
+msgstr ""
+
+#: FConnectionEditor.class:1410
+msgid "Up"
+msgstr ""
+
+#: FConnectionEditor.class:1422
+#, fuzzy
+msgid "Indexes"
+msgstr "Indeks"
+
+#: FConnectionEditor.class:1440
+msgid "New index"
+msgstr ""
+
+#: FConnectionEditor.class:1493
+msgid "Run query"
+msgstr ""
+
+#: FConnectionEditor.class:1568
+#, fuzzy
+msgid "Export..."
+msgstr "&Forma..."
+
+#: FCreateFile.class:77
+msgid "Gambas classes"
+msgstr "Gambas klase"
+
+#: FCreateFile.class:77
+msgid "Gambas modules"
+msgstr "Gambas moduli"
+
+#: FCreateFile.class:87
+msgid "Cascading style sheets"
+msgstr ""
+
+#: FCreateFile.class:87
+msgid "HTML files"
+msgstr ""
+
+#: FCreateFile.class:87 FSelectIcon.class:27
+msgid "Picture files"
+msgstr "Datoteke slika"
+
+#: FCreateFile.class:107
+msgid "(No parent)"
+msgstr ""
+
+#: FCreateFile.class:428
+msgid "Cannot add file."
+msgstr ""
+
+#: FCreateFile.class:544
+msgid "New file"
+msgstr ""
+
+#: FCreateFile.class:559 FMain.class:2105
+msgid "New"
+msgstr "Novo"
+
+#: FCreateFile.class:584 FInfo.class:80
+msgid "Module"
+msgstr "Modul"
+
+#: FCreateFile.class:603 FFindList.class:47 FInfo.class:84
+#: FPropertyProject.class:874
+msgid "Class"
+msgstr "Klasa"
+
+#: FCreateFile.class:698 FInfo.class:97
+msgid "HTML file"
+msgstr ""
+
+#: FCreateFile.class:717
+msgid "Style sheet"
+msgstr ""
+
+#: FCreateFile.class:741 FCreateProject.class:532 FMakeExecutable.class:98
+#: FOption.class:915 FPropertyProject.class:1618
+msgid "Options"
+msgstr "Opcije"
+
+#: FCreateFile.class:750
+msgid "Width"
+msgstr ""
+
+#: FCreateFile.class:763
+msgid "Height"
 msgstr ""
 
 #: FCreateFile.class:790
+msgid "GIF"
+msgstr ""
+
+#: FCreateFile.class:790
+msgid "PNG"
+msgstr ""
+
+#: FCreateFile.class:790
+msgid "XPM"
+msgstr ""
+
+#: FCreateFile.class:795
 msgid "px"
 msgstr ""
 
-#: FCreateFile.class:805
+#: FCreateFile.class:810
 msgid "Dialog box management"
 msgstr ""
 
-#: FCreateFile.class:815
+#: FCreateFile.class:820
 msgid "Parent class"
 msgstr ""
 
-#: FCreateFile.class:826
+#: FCreateFile.class:831
 msgid "Exported"
 msgstr ""
 
-#: FCreateFile.class:836
+#: FCreateFile.class:841
 msgid "Automatic extension"
 msgstr ""
 
-#: FCreateFile.class:843
+#: FCreateFile.class:848
 msgid "Existing"
 msgstr "Postojeći"
 
-#: FCreateFile.class:855
+#: FCreateFile.class:860
 msgid "Create a symbolic link"
 msgstr ""
 
@@ -939,7 +1165,7 @@ msgstr ""
 msgid "The project has been successfully created."
 msgstr ""
 
-#: FCreateProject.class:330 FMain.class:2268
+#: FCreateProject.class:330 FMain.class:2328
 msgid "New project"
 msgstr "Novi projekt"
 
@@ -1046,10 +1272,6 @@ msgstr ""
 msgid "not available"
 msgstr ""
 
-#: FDebugExpr.class:391
-msgid "Index"
-msgstr "Indeks"
-
 #: FDebugExpr.class:393 FDebugInfo.class:21 FPropertyProject.class:131
 msgid "Value"
 msgstr "Vrijednost"
@@ -1083,7 +1305,7 @@ msgid "Dynamic variables"
 msgstr ""
 
 #: FDebugInfo.class:349 FIconEditor.class:1393 FList.class:107
-#: FOutput.class:496
+#: FOutput.class:498
 msgid "Clear"
 msgstr "Obriši"
 
@@ -1091,11 +1313,11 @@ msgstr "Obriši"
 msgid "Do you want to clear the expression list ?"
 msgstr "Želite li obrisai popis izraza?"
 
-#: FDebugInfo.class:722 FMain.class:2564
+#: FDebugInfo.class:722 FMain.class:2624
 msgid "Debug"
 msgstr "Uklanjanje grešaka"
 
-#: FDebugInfo.class:736 FMain.class:2409
+#: FDebugInfo.class:736 FMain.class:2469
 msgid "Console"
 msgstr "Konzola"
 
@@ -1127,7 +1349,7 @@ msgstr "Pazi"
 msgid "Add expression"
 msgstr ""
 
-#: FDebugInfo.class:805 FMakeInstall.class:1558 FPropertyProject.class:2120
+#: FDebugInfo.class:805 FMakeInstall.class:1558 FPropertyProject.class:2121
 msgid "&Add"
 msgstr ""
 
@@ -1135,7 +1357,8 @@ msgstr ""
 msgid "Remove current expression"
 msgstr ""
 
-#: FDebugInfo.class:813 FMakeInstall.class:1564 FPropertyProject.class:1898
+#: FDebugInfo.class:813 FMain.class:2303 FMakeInstall.class:1564
+#: FPropertyProject.class:1898
 msgid "&Remove"
 msgstr ""
 
@@ -1164,12 +1387,7 @@ msgstr ""
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:2076 FForm.class:2802 FIconEditor.class:2032
-#: FTextEditor.class:465 FTranslate.class:699
-msgid "Reload"
-msgstr "Ponovo učitaj"
-
-#: FEditor.class:2076 FIconEditor.class:2032 FTextEditor.class:465
+#: FEditor.class:2080 FIconEditor.class:2032 FTextEditor.class:462
 msgid ""
 "The file has been modified.\n"
 "\n"
@@ -1179,116 +1397,111 @@ msgstr ""
 "\n"
 "Sve promjene bit će izgubljene."
 
-#: FEditor.class:2397
+#: FEditor.class:2401
 msgid "(Declarations)"
 msgstr ""
 
-#: FEditor.class:2798
+#: FEditor.class:2809
 msgid "Go to"
 msgstr "Idi na "
 
-#: FEditor.class:2803 FTextEditor.class:637
+#: FEditor.class:2814 FTextEditor.class:628
 msgid "Go to line..."
 msgstr "Idi na liniju..."
 
-#: FEditor.class:2809
+#: FEditor.class:2820
 msgid "Find definition"
 msgstr ""
 
-#: FEditor.class:2816
+#: FEditor.class:2827
 msgid "Go back"
 msgstr ""
 
-#: FEditor.class:2823
+#: FEditor.class:2834
 msgid "Open form"
 msgstr ""
 
-#: FEditor.class:2830 FForm.class:3253 FMain.class:2239
+#: FEditor.class:2841 FForm.class:3232 FMain.class:2268
 msgid "&Startup class"
 msgstr "&Početna klasa"
 
-#: FEditor.class:2839
+#: FEditor.class:2850
 msgid "Run &until current line"
 msgstr "Izvrši do tren&utne linije"
 
-#: FEditor.class:2846
+#: FEditor.class:2857
 msgid "Toggle &breakpoint"
 msgstr "Uklj/isklj preki&dnu točku"
 
-#: FEditor.class:2853
+#: FEditor.class:2864
 msgid "&Watch expression..."
 msgstr "Pr&omatraj izraz..."
 
-#: FEditor.class:2899
+#: FEditor.class:2910
 msgid "Paste special..."
 msgstr ""
 
-#: FEditor.class:2909 FTextEditor.class:690
+#: FEditor.class:2920 FTextEditor.class:681
 msgid "Select &All"
 msgstr "Izaberi &Sve"
 
-#: FEditor.class:2919
+#: FEditor.class:2930
 msgid "Comment"
 msgstr "Komentar"
 
-#: FEditor.class:2926
+#: FEditor.class:2937
 msgid "Uncomment"
 msgstr "Ukloni komentar"
 
-#: FEditor.class:2937 FTextEditor.class:700
+#: FEditor.class:2948 FTextEditor.class:691
 msgid "Find..."
 msgstr "Traži..."
 
-#: FEditor.class:2943 FTextEditor.class:706
+#: FEditor.class:2954 FTextEditor.class:697
 msgid "Replace..."
 msgstr ""
 
-#: FEditor.class:2950 FTextEditor.class:713
+#: FEditor.class:2961 FTextEditor.class:704
 msgid "Find Next"
 msgstr "Traži slijedeći"
 
-#: FEditor.class:2957 FTextEditor.class:720
+#: FEditor.class:2968 FTextEditor.class:711
 msgid "Find Previous"
 msgstr "Traži prethodni"
 
-#: FEditor.class:2967 FTextEditor.class:730
+#: FEditor.class:2978 FTextEditor.class:721
 msgid "View"
 msgstr ""
 
-#: FEditor.class:2971 FTextEditor.class:734
+#: FEditor.class:2982 FTextEditor.class:725
 msgid "No split"
 msgstr ""
 
-#: FEditor.class:2978 FTextEditor.class:741
+#: FEditor.class:2989 FTextEditor.class:732
 msgid "Horizontal split"
 msgstr ""
 
-#: FEditor.class:2985 FTextEditor.class:748
+#: FEditor.class:2996 FTextEditor.class:739
 msgid "Vertical split"
 msgstr ""
 
-#: FEditor.class:3003 FForm.class:3467 FIconEditor.class:1412
-#: FTextEditor.class:760
-msgid "Save"
-msgstr "Spremi"
-
-#: FEditor.class:3012 FOption.class:891
+#: FEditor.class:3023 FOption.class:896
 msgid "Editor"
 msgstr "Uređivač teksta"
 
-#: FEditor.class:3075 FPasteSpecial.class:253
+#: FEditor.class:3086 FPasteSpecial.class:253
 msgid "Paste as string"
 msgstr ""
 
-#: FEditor.class:3085 FPasteSpecial.class:258
+#: FEditor.class:3096 FPasteSpecial.class:258
 msgid "Paste as multi-line string"
 msgstr ""
 
-#: FEditor.class:3095 FPasteSpecial.class:243
+#: FEditor.class:3106 FPasteSpecial.class:243
 msgid "Paste as comments"
 msgstr ""
 
-#: FEditor.class:3189
+#: FEditor.class:3200
 msgid "Function browser"
 msgstr ""
 
@@ -1300,7 +1513,7 @@ msgstr ""
 msgid "Replace"
 msgstr "Zamjeni"
 
-#: FFind.class:395 FFindList.class:239 FOutput.class:307 FTranslate.class:566
+#: FFind.class:395 FFindList.class:239 FOutput.class:309 FTranslate.class:566
 msgid "Search string cannot be found."
 msgstr "Traženi niz nije pronađen."
 
@@ -1312,15 +1525,15 @@ msgstr "Traženi niz zamjenjen jednom."
 msgid "Search string replaced &1 times."
 msgstr "Traženi niz zamjenjen &1 puta."
 
-#: FFind.class:704 FOutput.class:506
+#: FFind.class:704 FOutput.class:508
 msgid "Find"
 msgstr "Traži"
 
-#: FFind.class:711 FOutput.class:587
+#: FFind.class:711 FOutput.class:589
 msgid "Find next"
 msgstr "Traži slijedeći"
 
-#: FFind.class:719 FOutput.class:595
+#: FFind.class:719 FOutput.class:597
 msgid "Find previous"
 msgstr "Traži prethodni"
 
@@ -1344,7 +1557,7 @@ msgstr ""
 msgid "Search in project"
 msgstr ""
 
-#: FFind.class:798 FOutput.class:603
+#: FFind.class:798 FOutput.class:605
 msgid "Case sensitive"
 msgstr ""
 
@@ -1360,7 +1573,7 @@ msgstr ""
 msgid "Search in strings"
 msgstr ""
 
-#: FFindList.class:49 FIconEditor.class:2278 FOption.class:927
+#: FFindList.class:49 FIconEditor.class:2278 FOption.class:932
 msgid "Line"
 msgstr "Linijia"
 
@@ -1376,192 +1589,188 @@ msgstr ""
 msgid "Select a font"
 msgstr ""
 
-#: FForm.class:112
+#: FForm.class:113
 msgid "Bad form file"
 msgstr "Neispravna datoteka forme"
 
-#: FForm.class:2802
+#: FForm.class:2780
 msgid ""
 "The form has been modified.\n"
 "\n"
 "All your changes will be lost."
 msgstr ""
 
-#: FForm.class:3229 FIconEditor.class:2258
+#: FForm.class:3208 FIconEditor.class:2258
 msgid "Select"
 msgstr "Izaberi"
 
-#: FForm.class:3234
+#: FForm.class:3213
 msgid "Event"
 msgstr "Događaj"
 
-#: FForm.class:3240
+#: FForm.class:3219
 #, fuzzy
 msgid "Change into"
 msgstr "Zahvaljujemo: "
 
-#: FForm.class:3246
+#: FForm.class:3225
 msgid "Open code"
 msgstr ""
 
-#: FForm.class:3262
+#: FForm.class:3241
 msgid "Show tab"
 msgstr ""
 
-#: FForm.class:3268
+#: FForm.class:3250
 msgid "Move tab"
 msgstr ""
 
-#: FForm.class:3273
+#: FForm.class:3255
 msgid "&First"
 msgstr ""
 
-#: FForm.class:3280 FTips.class:220
+#: FForm.class:3262 FTips.class:220
 msgid "&Previous"
 msgstr ""
 
-#: FForm.class:3287 FMenu.class:818 FTips.class:226
+#: FForm.class:3269 FMenu.class:818 FTips.class:226
 msgid "&Next"
 msgstr "&Slijedeći"
 
-#: FForm.class:3294
+#: FForm.class:3276
 msgid "&Last"
 msgstr ""
 
-#: FForm.class:3306
+#: FForm.class:3288
 msgid "Select all"
 msgstr "Izaberi sve"
 
-#: FForm.class:3312
+#: FForm.class:3294
 msgid "Unselect all"
 msgstr ""
 
-#: FForm.class:3343 FMain.class:204 FTranslate.class:605
-msgid "Delete"
-msgstr "Obriši"
-
-#: FForm.class:3353
+#: FForm.class:3335
 msgid "Arrangement"
 msgstr "Posloži"
 
-#: FForm.class:3357
+#: FForm.class:3339
 msgid "Bring to foreground"
 msgstr "Pozovi u prvi plan"
 
-#: FForm.class:3364
+#: FForm.class:3346
 msgid "Send to background"
 msgstr "Pošalji u pozadinu"
 
-#: FForm.class:3375
+#: FForm.class:3357
 msgid "Horizontal"
 msgstr "Vodoravno"
 
-#: FForm.class:3382
+#: FForm.class:3364
 msgid "Rows"
 msgstr ""
 
-#: FForm.class:3388
+#: FForm.class:3370
 msgid "Vertical"
 msgstr "Vertikalno"
 
-#: FForm.class:3395
+#: FForm.class:3377
 msgid "Columns"
 msgstr ""
 
-#: FForm.class:3401
+#: FForm.class:3383
 msgid "Alignment"
 msgstr "Poravnanje"
 
-#: FForm.class:3405
+#: FForm.class:3387
 msgid "Align to &left"
 msgstr "Poravnaj &lijevo"
 
-#: FForm.class:3411
+#: FForm.class:3393
 msgid "Align to &right"
 msgstr "Poravnaj &desno"
 
-#: FForm.class:3417
+#: FForm.class:3399
 msgid "Align to &top"
 msgstr "Poravnaj s &vrhom"
 
-#: FForm.class:3423
+#: FForm.class:3405
 msgid "Align to &bottom"
 msgstr "Poravnaj s d&nom"
 
-#: FForm.class:3433
+#: FForm.class:3415
 msgid "Same &width"
 msgstr "Ista širi&na"
 
-#: FForm.class:3439
+#: FForm.class:3421
 msgid "Same &height"
 msgstr "Ista v&eličina"
 
-#: FForm.class:3450
+#: FForm.class:3432
 msgid "Menu editor..."
 msgstr "Uređivač izbornika..."
 
-#: FForm.class:3504 FTextEditor.class:792
+#: FForm.class:3486 FTextEditor.class:783
 msgid "Code"
 msgstr "Kod"
 
-#: FForm.class:3512
+#: FForm.class:3494
 msgid "Lock form"
 msgstr ""
 
-#: FForm.class:3583 FMenu.class:26
+#: FForm.class:3565 FMenu.class:26
 msgid "Menu editor"
 msgstr "Uređivač izbornika"
 
-#: FForm.class:3591
+#: FForm.class:3573
 msgid "Toggle grid"
 msgstr ""
 
-#: FForm.class:3623
+#: FForm.class:3605
 msgid "Align to top"
 msgstr ""
 
-#: FForm.class:3631
+#: FForm.class:3613
 msgid "Align to bottom"
 msgstr ""
 
-#: FForm.class:3639
+#: FForm.class:3621
 msgid "Align to left"
 msgstr ""
 
-#: FForm.class:3647
+#: FForm.class:3629
 msgid "Align to right"
 msgstr ""
 
-#: FForm.class:3655
+#: FForm.class:3637
 msgid "Same width"
 msgstr ""
 
-#: FForm.class:3663
+#: FForm.class:3645
 msgid "Same height"
 msgstr ""
 
-#: FForm.class:3709
+#: FForm.class:3691
 #, fuzzy
 msgid "Tabstrip"
 msgstr "Veličina tabulatora"
 
-#: FForm.class:3714
+#: FForm.class:3696
 msgid "Move tab first"
 msgstr ""
 
-#: FForm.class:3722
+#: FForm.class:3704
 msgid "Move tab left"
 msgstr ""
 
-#: FForm.class:3730
+#: FForm.class:3712
 msgid "Move tab right"
 msgstr ""
 
-#: FForm.class:3738
+#: FForm.class:3720
 msgid "Move tab last"
 msgstr ""
 
-#: FFormStack.class:286 FMain.class:2586
+#: FFormStack.class:286 FMain.class:2646
 msgid "Hierarchy"
 msgstr "Hijerarhija"
 
@@ -1733,7 +1942,7 @@ msgstr "Datoteka"
 msgid "&1, &2 line(s)"
 msgstr ""
 
-#: FInfo.class:310 FOption.class:674 FPropertyProject.class:1535
+#: FInfo.class:310 FOption.class:679 FPropertyProject.class:1535
 msgid "General"
 msgstr "Općenito"
 
@@ -1776,447 +1985,453 @@ msgstr "&Umetni"
 msgid "&Delete"
 msgstr "&Obriši"
 
-#: FMain.class:204
+#: FMain.class:205
 msgid "Do you really want to delete this directory ?"
 msgstr "Želite li zbilja obrisati ovaj direktorij?"
 
-#: FMain.class:215
+#: FMain.class:216
 msgid "Do you really want to delete this file ?"
 msgstr "želite li zbilja obrisati ovu datoteku?"
 
-#: FMain.class:223
+#: FMain.class:224
 msgid "Cannot delete file or directory"
 msgstr "Ne mogu obrisati datoteku ili direktorij"
 
-#: FMain.class:419
+#: FMain.class:438
 msgid "&Clear history"
 msgstr "&Obriši povijest"
 
-#: FMain.class:425
+#: FMain.class:444
 msgid "&Sort by path"
 msgstr ""
 
-#: FMain.class:618
+#: FMain.class:637
 msgid "New folder"
 msgstr ""
 
-#: FMain.class:687
+#: FMain.class:706
 msgid ""
 "The GNU translation tools are not installed on your system.\n"
 "\n"
 "Please install them to be able to do the translation."
 msgstr ""
 
-#: FMain.class:1133
+#: FMain.class:1139
 msgid "Do you really want to update all forms?"
 msgstr ""
 
-#: FMain.class:1133
+#: FMain.class:1139
 msgid "Update"
 msgstr ""
 
-#: FMain.class:1305
+#: FMain.class:1311
 msgid "All backup or generated files will be removed from the project directory."
 msgstr ""
 
-#: FMain.class:1305
+#: FMain.class:1311
 msgid "Clean"
 msgstr ""
 
-#: FMain.class:1687
+#: FMain.class:1717
 msgid "&File"
 msgstr "&Datoteka"
 
-#: FMain.class:1691
+#: FMain.class:1721
 msgid "&New project..."
 msgstr "&Novi projekt..."
 
-#: FMain.class:1698
+#: FMain.class:1728
 msgid "&Open project..."
 msgstr "&Otvori projekt..."
 
-#: FMain.class:1704
+#: FMain.class:1734
 msgid "Open &recent"
 msgstr "Otvo&ri nedavni"
 
-#: FMain.class:1712
+#: FMain.class:1742
 msgid "Open &example"
 msgstr "Otvori primj&er"
 
-#: FMain.class:1725
+#: FMain.class:1755
 msgid "&Save project"
 msgstr ""
 
-#: FMain.class:1732
+#: FMain.class:1762
 msgid "Save project &as..."
 msgstr ""
 
-#: FMain.class:1743
+#: FMain.class:1773
 msgid "&Quit"
 msgstr "&Završi"
 
-#: FMain.class:1750
+#: FMain.class:1780
 msgid "&Project"
 msgstr "&Projekt"
 
-#: FMain.class:1754
+#: FMain.class:1784
 msgid "&Compile"
 msgstr "&Prevedi"
 
-#: FMain.class:1761
+#: FMain.class:1791
 msgid "Compile &All"
 msgstr "Prevedi &sve"
 
-#: FMain.class:1772
+#: FMain.class:1802
 msgid "&Translate..."
 msgstr "&Prevedi..."
 
-#: FMain.class:1782
+#: FMain.class:1812
 msgid "Make"
 msgstr ""
 
-#: FMain.class:1786
+#: FMain.class:1816
 msgid "E&xecutable..."
 msgstr ""
 
-#: FMain.class:1793
+#: FMain.class:1823
 msgid "&Source archive..."
 msgstr ""
 
-#: FMain.class:1800
+#: FMain.class:1830
 msgid "&Installation package..."
 msgstr ""
 
-#: FMain.class:1812
+#: FMain.class:1842
 msgid "&Clean up"
 msgstr ""
 
-#: FMain.class:1818
+#: FMain.class:1848
 msgid "&Refresh"
 msgstr "&Osvježi"
 
-#: FMain.class:1828
+#: FMain.class:1858
 msgid "&Properties..."
 msgstr "&Svojstva..."
 
-#: FMain.class:1835
+#: FMain.class:1865
 msgid "&Debug"
 msgstr "&Otkrivač grešaka"
 
-#: FMain.class:1839
+#: FMain.class:1869
 msgid "&Run"
 msgstr "&Pokreni"
 
-#: FMain.class:1850
+#: FMain.class:1880
 msgid "&Pause"
 msgstr "&Pauza"
 
-#: FMain.class:1857
+#: FMain.class:1887
 msgid "&Stop"
 msgstr "&Stop"
 
-#: FMain.class:1864
+#: FMain.class:1894
 msgid "St&ep"
 msgstr ""
 
-#: FMain.class:1871
+#: FMain.class:1901
 msgid "&Forward"
 msgstr "&Naprijed"
 
-#: FMain.class:1878
+#: FMain.class:1908
 msgid "Finis&h"
 msgstr ""
 
-#: FMain.class:1885
+#: FMain.class:1915
 msgid "Run &until"
 msgstr ""
 
-#: FMain.class:1896
+#: FMain.class:1926
 msgid "&Toggle breakpoint"
 msgstr ""
 
-#: FMain.class:1904
+#: FMain.class:1934
 msgid "Clear &all breakpoints"
 msgstr ""
 
-#: FMain.class:1913
+#: FMain.class:1943
 msgid "&Watch expression"
 msgstr ""
 
-#: FMain.class:1919
+#: FMain.class:1949
 msgid "Close all &debug windows"
 msgstr ""
 
-#: FMain.class:1924
+#: FMain.class:1954
 msgid "&View"
 msgstr "Po&gled"
 
-#: FMain.class:1928
+#: FMain.class:1958
 msgid "Pro&ject"
 msgstr "Pro&jekt"
 
-#: FMain.class:1937
+#: FMain.class:1967
 msgid "&Properties"
 msgstr "&Svojstva"
 
-#: FMain.class:1945
+#: FMain.class:1975
 msgid "&Toolbox"
 msgstr "&Kutija s alatima"
 
-#: FMain.class:1953
+#: FMain.class:1983
 msgid "&Console"
 msgstr "&Konzola"
 
-#: FMain.class:1964
+#: FMain.class:1994
 msgid "Status bar"
 msgstr ""
 
-#: FMain.class:1971
+#: FMain.class:2001
 msgid "Hide menubar"
 msgstr ""
 
-#: FMain.class:1978
+#: FMain.class:2008
 msgid "Close &all windows"
 msgstr "Z&atvori sve prozore"
 
-#: FMain.class:1984
+#: FMain.class:2014
 msgid "&Tools"
 msgstr "&Alati"
 
-#: FMain.class:1988
+#: FMain.class:2018
 msgid "&Find && replace"
 msgstr ""
 
-#: FMain.class:1999
+#: FMain.class:2029
 msgid "&Browse project..."
 msgstr ""
 
-#: FMain.class:2006
+#: FMain.class:2036
 msgid "&Open a terminal..."
 msgstr ""
 
-#: FMain.class:2013
+#: FMain.class:2043
 msgid "&Update all forms"
 msgstr ""
 
-#: FMain.class:2019
+#: FMain.class:2049
 msgid "&Database manager..."
 msgstr "&Upravljač bazom podataka..."
 
-#: FMain.class:2029
+#: FMain.class:2059
 #, fuzzy
 msgid "&Shortcuts..."
 msgstr "Kratica"
 
-#: FMain.class:2035
+#: FMain.class:2065
 msgid "&Preferences..."
 msgstr "&Svojstva..."
 
-#: FMain.class:2043
+#: FMain.class:2073
 msgid "&?"
 msgstr "&?"
 
-#: FMain.class:2047
+#: FMain.class:2077
 msgid "&Help browser"
 msgstr "P&retraživač pomoći"
 
-#: FMain.class:2054
+#: FMain.class:2084
 msgid "&Tips of the day"
 msgstr "&Trikovi dana"
 
-#: FMain.class:2064
+#: FMain.class:2094
 msgid "&About Gambas..."
 msgstr "&O Gambasu..."
 
-#: FMain.class:2070
-msgid "Popup"
-msgstr "-"
-
-#: FMain.class:2079
+#: FMain.class:2109
 msgid "&Directory"
 msgstr ""
 
-#: FMain.class:2090
+#: FMain.class:2120
 msgid "&Module..."
 msgstr "&Modul..."
 
-#: FMain.class:2098
+#: FMain.class:2128
 msgid "&Class..."
 msgstr "&Klasa..."
 
-#: FMain.class:2106
+#: FMain.class:2136
 msgid "&Form..."
 msgstr "&Forma..."
 
-#: FMain.class:2114
+#: FMain.class:2144
 #, fuzzy
 msgid "&WebPage..."
 msgstr "P&romjeni ime..."
 
-#: FMain.class:2122
+#: FMain.class:2152
 #, fuzzy
 msgid "&Report..."
 msgstr "&Forma..."
 
-#: FMain.class:2134
+#: FMain.class:2164
 msgid "&Image..."
 msgstr ""
 
-#: FMain.class:2141
+#: FMain.class:2171
 #, fuzzy
 msgid "&HTML file..."
 msgstr "&Modul..."
 
-#: FMain.class:2148
+#: FMain.class:2178
 msgid "&Style sheet..."
 msgstr ""
 
-#: FMain.class:2156
+#: FMain.class:2186
 msgid "&Other..."
 msgstr ""
 
-#: FMain.class:2172
-msgid "Edit &class"
-msgstr "Uredi &klase"
+#: FMain.class:2202
+#, fuzzy
+msgid "Edit &code"
+msgstr "Uredi &formu"
 
-#: FMain.class:2177
+#: FMain.class:2206
 msgid "Edit with"
 msgstr ""
 
-#: FMain.class:2190
+#: FMain.class:2219
 msgid "&Cut"
 msgstr "&Izreži"
 
-#: FMain.class:2197
+#: FMain.class:2226
 msgid "&Copy"
 msgstr "&Kopiraj"
 
-#: FMain.class:2204
+#: FMain.class:2233
 msgid "&Paste"
 msgstr "&Umetni"
 
-#: FMain.class:2211
+#: FMain.class:2240
 msgid "&Rename..."
 msgstr "P&romjeni ime..."
 
-#: FMain.class:2218
+#: FMain.class:2247
 msgid "&Delete..."
 msgstr "&Obriši..."
 
-#: FMain.class:2229
+#: FMain.class:2258
 msgid "Copy file pat&h"
 msgstr ""
 
-#: FMain.class:2276
+#: FMain.class:2289
+#, fuzzy
+msgid "&New connection..."
+msgstr "&Novi projekt..."
+
+#: FMain.class:2298
+msgid "&Open"
+msgstr ""
+
+#: FMain.class:2336
 msgid "Open project"
 msgstr "Otvori projekt"
 
-#: FMain.class:2284
+#: FMain.class:2344
 msgid "Save project"
 msgstr "Spremi projekt"
 
-#: FMain.class:2292 Project.module:1840
+#: FMain.class:2352 Project.module:1860
 msgid "Save project as"
 msgstr ""
 
-#: FMain.class:2300 FPropertyProject.class:51
+#: FMain.class:2360 FPropertyProject.class:51
 msgid "Project properties"
 msgstr "Svojstva projekta"
 
-#: FMain.class:2309
+#: FMain.class:2369
 msgid "Refresh project"
 msgstr ""
 
-#: FMain.class:2317 FOption.class:631
+#: FMain.class:2377 FOption.class:636
 msgid "Preferences"
 msgstr "Svojstva"
 
-#: FMain.class:2327
+#: FMain.class:2387
 #, fuzzy
 msgid "Shortcuts"
 msgstr "Kratica"
 
-#: FMain.class:2339
+#: FMain.class:2399
 msgid "Translate"
 msgstr "Prevedi"
 
-#: FMain.class:2348
+#: FMain.class:2408
 msgid "Make source archive"
 msgstr ""
 
-#: FMain.class:2356 FMakeExecutable.class:81
+#: FMain.class:2416 FMakeExecutable.class:81
 msgid "Make executable"
 msgstr "Načini izvršnu datoteku"
 
-#: FMain.class:2365 FMakeInstall.class:1168
+#: FMain.class:2425 FMakeInstall.class:1168
 msgid "Make installation package"
 msgstr ""
 
-#: FMain.class:2378 FSelectIcon.class:214 Project.module:1167
+#: FMain.class:2438 FSelectIcon.class:214 Project.module:1184
 msgid "Project"
 msgstr "Projekt"
 
-#: FMain.class:2389
+#: FMain.class:2449
 msgid "Properties sheet"
 msgstr "Popis svojstava"
 
-#: FMain.class:2399
+#: FMain.class:2459
 msgid "Toolbox"
 msgstr "Kutija s alatima"
 
-#: FMain.class:2418
+#: FMain.class:2478
 msgid "Find & replace"
 msgstr ""
 
-#: FMain.class:2431
+#: FMain.class:2491
 msgid "Compile"
 msgstr "Prevedi"
 
-#: FMain.class:2439
+#: FMain.class:2499
 msgid "Compile all"
 msgstr "Prevedi sve"
 
-#: FMain.class:2447
+#: FMain.class:2507
 msgid "Run"
 msgstr "Pokreni"
 
-#: FMain.class:2455
+#: FMain.class:2515
 msgid "Pause"
 msgstr "Stanka"
 
-#: FMain.class:2463
+#: FMain.class:2523
 msgid "Stop"
 msgstr "Stani"
 
-#: FMain.class:2471
+#: FMain.class:2531
 msgid "Step"
 msgstr "Korak"
 
-#: FMain.class:2479
+#: FMain.class:2539
 msgid "Forward"
 msgstr "Naprijed"
 
-#: FMain.class:2487
+#: FMain.class:2547
 msgid "Finish current function"
 msgstr ""
 
-#: FMain.class:2496
+#: FMain.class:2556
 msgid "Run until current line"
 msgstr "Izvrši do trenutne linije"
 
-#: FMain.class:2505
+#: FMain.class:2565
 msgid "Watch expression"
 msgstr "Promatraj izraz"
 
-#: FMain.class:2513
+#: FMain.class:2573
 msgid "Toggle breakpoint"
 msgstr "Uklj/isklj prekidnu točku."
 
-#: FMain.class:2522
+#: FMain.class:2582
 msgid "Show menu bar"
 msgstr ""
 
-#: FMain.class:2573 FProperty.class:1051
+#: FMain.class:2633 FProperty.class:1051
 msgid "Properties"
 msgstr "Svojstva"
 
@@ -2284,7 +2499,7 @@ msgid "Please enter your e-mail address."
 msgstr "Molim unesite svoju e-mail adresu."
 
 #: FMakeInstall.class:309 FPropertyProject.class:1184 FSave.class:118
-#: Project.module:2454
+#: Project.module:2482
 msgid "Continue"
 msgstr "Nastavi"
 
@@ -2340,11 +2555,6 @@ msgstr ""
 #, fuzzy
 msgid "Do you really want to remove all extra dependencies?"
 msgstr "Želite li zbilja ponovo učitati ovaj prijevod?"
-
-#: FMakeInstall.class:933
-#, fuzzy
-msgid "Remove"
-msgstr "Ponovi"
 
 #: FMakeInstall.class:982
 msgid "Select the destination directory"
@@ -2592,6 +2802,83 @@ msgstr "Potvrđeno"
 msgid "Click on Insert to add a new menu."
 msgstr "Kliknite na Umetni da biste dodali novi izibornik"
 
+#: FNewConnection.class:78
+#, fuzzy
+msgid "Please enter the name of the database."
+msgstr "Molim unesite svoje ime."
+
+#: FNewConnection.class:117
+#, fuzzy
+msgid "Connection properties"
+msgstr "Svojstva projekta"
+
+#: FNewConnection.class:124
+#, fuzzy
+msgid "New connection"
+msgstr "Nastavi"
+
+#: FNewConnection.class:142
+#, fuzzy
+msgid "Select a directory"
+msgstr "Izaberite projekt"
+
+#: FNewConnection.class:309
+msgid "Firebird"
+msgstr ""
+
+#: FNewConnection.class:309
+msgid "MySQL"
+msgstr ""
+
+#: FNewConnection.class:309
+msgid "ODBC"
+msgstr ""
+
+#: FNewConnection.class:309
+msgid "PostgreSQL"
+msgstr ""
+
+#: FNewConnection.class:309
+#, fuzzy
+msgid "SQLite"
+msgstr "Linijia"
+
+#: FNewConnection.class:318
+msgid "Host"
+msgstr ""
+
+#: FNewConnection.class:334
+#, fuzzy
+msgid "Path"
+msgstr "Umetni"
+
+#: FNewConnection.class:391
+msgid "Remember password"
+msgstr ""
+
+#: FNewConnection.class:401 Project.module:141
+msgid "Database"
+msgstr ""
+
+#: FNewTable.class:29
+#, fuzzy
+msgid "Rename table"
+msgstr "Izaberi sve"
+
+#: FNewTable.class:32
+msgid "Create table"
+msgstr ""
+
+#: FNewTable.class:47
+#, fuzzy
+msgid "Please enter the name of the new table."
+msgstr "Molim unesite svoje ime."
+
+#: FNewTable.class:53 MConnection.module:263
+#, fuzzy
+msgid "Table '&1' already exists."
+msgstr "Datoteka već postoji."
+
 #: FNewTranslation.class:59 FTranslate.class:1691
 msgid "New translation"
 msgstr ""
@@ -2676,159 +2963,159 @@ msgstr ""
 msgid "Export a theme file"
 msgstr ""
 
-#: FOption.class:264
+#: FOption.class:269
 msgid "Select a theme file"
 msgstr ""
 
-#: FOption.class:294
+#: FOption.class:299
 msgid "You need to restart the application to see your changes."
 msgstr ""
 
-#: FOption.class:643
+#: FOption.class:648
 msgid "Foreground color..."
 msgstr ""
 
-#: FOption.class:647
+#: FOption.class:652
 msgid "Background color..."
 msgstr ""
 
-#: FOption.class:655
+#: FOption.class:660
 msgid "Bold"
 msgstr ""
 
-#: FOption.class:659
+#: FOption.class:664
 msgid "Italic"
 msgstr ""
 
-#: FOption.class:663
+#: FOption.class:668
 msgid "Underline"
 msgstr ""
 
-#: FOption.class:679
+#: FOption.class:684
 msgid "Interface"
 msgstr ""
 
-#: FOption.class:688
+#: FOption.class:693
 msgid "Font size"
 msgstr ""
 
-#: FOption.class:696
+#: FOption.class:701
 msgid "Normal"
 msgstr ""
 
-#: FOption.class:696
+#: FOption.class:701
 msgid "Small"
 msgstr ""
 
-#: FOption.class:706
+#: FOption.class:711
 msgid "Tabstrip font size"
 msgstr ""
 
-#: FOption.class:714
+#: FOption.class:719
 msgid "Tiny"
 msgstr ""
 
-#: FOption.class:724
+#: FOption.class:729
 msgid "Toolbox size"
 msgstr ""
 
-#: FOption.class:742
+#: FOption.class:747
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.class:749 FPropertyProject.class:1667
+#: FOption.class:754 FPropertyProject.class:1667
 msgid "No"
 msgstr ""
 
-#: FOption.class:749 FPropertyProject.class:1667
+#: FOption.class:754 FPropertyProject.class:1667
 msgid "Yes"
 msgstr ""
 
-#: FOption.class:759 FWelcome.class:47
+#: FOption.class:764 FWelcome.class:47
 msgid "Recent projects"
 msgstr "Zadnji projekti"
 
-#: FOption.class:772
+#: FOption.class:777
 msgid "Max."
 msgstr ""
 
-#: FOption.class:782
+#: FOption.class:787
 msgid "Quiet external commands"
 msgstr ""
 
-#: FOption.class:799
+#: FOption.class:804
 msgid "Display property help"
 msgstr ""
 
-#: FOption.class:816
+#: FOption.class:821
 msgid "Minimize at runtime"
 msgstr ""
 
-#: FOption.class:833
+#: FOption.class:838
 msgid "Show tooltips"
 msgstr "Pokaži savjete"
 
-#: FOption.class:861
+#: FOption.class:866
 msgid "Icon theme"
 msgstr ""
 
-#: FOption.class:879
+#: FOption.class:884
 msgid "Browser"
 msgstr ""
 
-#: FOption.class:896
+#: FOption.class:901
 msgid "Font"
 msgstr "Font"
 
-#: FOption.class:919
+#: FOption.class:924
 msgid "Procedure separation"
 msgstr ""
 
-#: FOption.class:927
+#: FOption.class:932
 msgid "Blend"
 msgstr ""
 
-#: FOption.class:927 FProperty.class:685
+#: FOption.class:932 FProperty.class:685
 msgid "None"
 msgstr ""
 
-#: FOption.class:937
+#: FOption.class:942
 msgid "Highlight current line"
 msgstr "Osvjetli trenutnu liniju"
 
-#: FOption.class:954
+#: FOption.class:959
 msgid "Highlight modified lines"
 msgstr ""
 
-#: FOption.class:971
+#: FOption.class:976
 msgid "Show line numbers"
 msgstr ""
 
-#: FOption.class:988
+#: FOption.class:993
 msgid "Fold procedures by default"
 msgstr ""
 
-#: FOption.class:1005
+#: FOption.class:1010
 msgid "Default tab size"
 msgstr "Uobičajena veličina tabulatora"
 
-#: FOption.class:1018
+#: FOption.class:1023
 msgid "spaces"
 msgstr ""
 
-#: FOption.class:1028
+#: FOption.class:1033
 msgid "Keywords in upper case"
 msgstr ""
 
-#: FOption.class:1039
+#: FOption.class:1044
 msgid "Theme"
 msgstr ""
 
-#: FOption.class:1062
+#: FOption.class:1067
 msgid "Import theme"
 msgstr ""
 
-#: FOption.class:1069
+#: FOption.class:1074
 msgid "Export theme"
 msgstr ""
 
@@ -2844,23 +3131,23 @@ msgstr ""
 " izrazom, zatim pritisnite tipku Return.\n"
 "\n"
 
-#: FOutput.class:445
+#: FOutput.class:447
 msgid "Console - Gambas"
 msgstr ""
 
-#: FOutput.class:519
+#: FOutput.class:521
 msgid "Undock console"
 msgstr ""
 
-#: FOutput.class:527
+#: FOutput.class:529
 msgid "Keep above"
 msgstr ""
 
-#: FOutput.class:535
+#: FOutput.class:537
 msgid "Clear console"
 msgstr ""
 
-#: FOutput.class:616
+#: FOutput.class:618
 msgid "Use system charset"
 msgstr ""
 
@@ -3101,15 +3388,15 @@ msgstr ""
 msgid "Exported classes"
 msgstr ""
 
-#: FPropertyProject.class:2038
+#: FPropertyProject.class:2039
 msgid "Image provider"
 msgstr ""
 
-#: FPropertyProject.class:2053
+#: FPropertyProject.class:2054
 msgid "Features"
 msgstr ""
 
-#: FPropertyProject.class:2132
+#: FPropertyProject.class:2133
 msgid "Remove All"
 msgstr ""
 
@@ -3156,7 +3443,7 @@ msgstr "Uredi vrijednosti teksta"
 msgid "Use a fixed font"
 msgstr "Koristi jednoobrazni font (fixed)"
 
-#: FTextEditor.class:769
+#: FTextEditor.class:760
 #, fuzzy
 msgid "Text editor"
 msgstr "Uređivač izbornika"
@@ -3263,10 +3550,6 @@ msgstr ""
 
 #: FTranslate.class:1525
 msgid "Show statistics"
-msgstr ""
-
-#: FTranslate.class:1544
-msgid "ComboBox1"
 msgstr ""
 
 #: FTranslate.class:1551
@@ -3591,6 +3874,11 @@ msgstr "Tradicionalni kineski (Tajvan)"
 msgid "Unknown"
 msgstr "Nepoznat"
 
+#: MConnection.module:276
+#, fuzzy
+msgid "Cannot create table '&1'."
+msgstr "Ne mogu kopirati &1."
+
 #: MHelp.module:256
 msgid "No help found."
 msgstr ""
@@ -3745,291 +4033,291 @@ msgstr ""
 msgid "'tar' has returned the following error code:"
 msgstr ""
 
-#: Project.module:136
+#: Project.module:139
 msgid "Automation"
 msgstr ""
 
-#: Project.module:137
+#: Project.module:140
 msgid "Basic"
 msgstr ""
 
-#: Project.module:138
-msgid "Database"
-msgstr ""
-
-#: Project.module:139
+#: Project.module:142
 msgid "Drawing"
 msgstr ""
 
-#: Project.module:140
+#: Project.module:143
 msgid "Games"
 msgstr ""
 
-#: Project.module:141
+#: Project.module:144
 msgid "Miscellaneous"
 msgstr "Razno"
 
-#: Project.module:143
+#: Project.module:146
 msgid "OpenGL"
 msgstr ""
 
-#: Project.module:144
+#: Project.module:147
 msgid "Printing"
 msgstr ""
 
-#: Project.module:145
+#: Project.module:148
 msgid "Sound"
 msgstr ""
 
-#: Project.module:146
+#: Project.module:149
 msgid "Video"
 msgstr ""
 
-#: Project.module:147
+#: Project.module:150
 msgid "Controls"
 msgstr ""
 
-#: Project.module:298
+#: Project.module:303
 msgid "This project does not exist."
 msgstr ""
 
-#: Project.module:308
+#: Project.module:313
 msgid "This is not a Gambas project."
 msgstr ""
 
-#: Project.module:310
+#: Project.module:315
 msgid ""
 "This is a Gambas &1 project.\n"
 "\n"
 "Do you want to open it anyway?"
 msgstr ""
 
-#: Project.module:319
+#: Project.module:324
 msgid "Do not open"
 msgstr "Ne otvaraj"
 
-#: Project.module:319
+#: Project.module:324
 msgid "Open after all"
 msgstr "Otvori nakon svega"
 
-#: Project.module:319
+#: Project.module:324
 msgid ""
 "This project seems to be already opened.\n"
 "\n"
 "Opening the same project twice can lead to data loss."
 msgstr ""
 
-#: Project.module:342
+#: Project.module:347
 #, fuzzy
 msgid "It cannot be converted."
 msgstr "Traženi niz nije pronađen."
 
-#: Project.module:342
+#: Project.module:347
 msgid "This project is read-only."
 msgstr "Projekt je read-only."
 
-#: Project.module:395
+#: Project.module:400
 msgid "Cannot open project file :\n"
 msgstr "Ne mogu otvoriti projekt:\n"
 
-#: Project.module:986
+#: Project.module:1003
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: Project.module:1170
+#: Project.module:1187
 #, fuzzy
 msgid "Sources"
 msgstr "Izvorni paketi"
 
-#: Project.module:1173
+#: Project.module:1190
 #, fuzzy
 msgid "Connections"
 msgstr "Nastavi"
 
-#: Project.module:1182
+#: Project.module:1199
 msgid "Data"
 msgstr "Podatak"
 
-#: Project.module:1218
+#: Project.module:1236
 msgid "read-only"
 msgstr ""
 
-#: Project.module:1220
+#: Project.module:1238
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr ""
 
-#: Project.module:1287
+#: Project.module:1306
 msgid "Loading &1..."
 msgstr ""
 
-#: Project.module:1402
+#: Project.module:1375
 msgid "Cannot open file."
 msgstr "Ne mogu otvoriti datoteku."
 
-#: Project.module:1414
+#: Project.module:1434
 msgid "File not found!"
 msgstr ""
 
-#: Project.module:1515
+#: Project.module:1535
 #, fuzzy
 msgid "Cannot compile the project."
 msgstr "Ne mogu načiniti projekt! "
 
-#: Project.module:1535
+#: Project.module:1555
 msgid "in form definition"
 msgstr ""
 
-#: Project.module:1539
+#: Project.module:1559
 msgid "at line &1 in &2"
 msgstr "u redu &1 u &2"
 
-#: Project.module:1691
+#: Project.module:1711
 msgid ""
 "Some project source files are in conflict.\n"
 "Please solve them if you want to compile the project."
 msgstr ""
 
-#: Project.module:1695
+#: Project.module:1715
 msgid "Compiling project"
 msgstr "Prevođenje projekta"
 
-#: Project.module:1707
+#: Project.module:1727
 msgid "Nothing to do."
 msgstr "Ništa za obaviti."
 
-#: Project.module:1846
+#: Project.module:1866
 msgid "This project already exists."
 msgstr "Ovaj projekt već postoji. "
 
-#: Project.module:1859
+#: Project.module:1879
 msgid "Unable to save the project."
 msgstr ""
 
-#: Project.module:1901
+#: Project.module:1921
 msgid "File already exists."
 msgstr "Datoteka već postoji."
 
-#: Project.module:1946
+#: Project.module:1966
 msgid "Cannot copy template file."
 msgstr "Ne mogu kopirati predložak."
 
-#: Project.module:1965
+#: Project.module:1985
 msgid "Directory already exists."
 msgstr "Direktorij već postoji."
 
-#: Project.module:2115
+#: Project.module:2135
 msgid "Making executable..."
 msgstr "Radim aplikaciju..."
 
-#: Project.module:2157
+#: Project.module:2177
 msgid "Cannot make executable."
 msgstr ""
 
-#: Project.module:2453
+#: Project.module:2481
 msgid "Some components are missing: &1"
 msgstr "Neke komponente nedostaju: &1"
 
-#: Project.module:2651
+#: Project.module:2681
 msgid "Cannot write project file."
 msgstr "Ne mogu zapisati projektnu datoteku."
 
-#: Project.module:2684
+#: Project.module:2714
 msgid "Unable to create desktop shortcut."
 msgstr ""
 
-#: Project.module:2765
+#: Project.module:2795
 msgid "Unable to install component."
 msgstr ""
 
-#: Project.module:2803
+#: Project.module:2833
 msgid "Unable to uninstall component."
 msgstr ""
 
-#: Project.module:2943
+#: Project.module:2973
 msgid "The directory will be removed at the next commit."
 msgstr ""
 
-#: Project.module:2962
+#: Project.module:2992
 msgid "You must define a startup class or form!"
 msgstr "Morate definirati početnu klasu ili formu!"
 
-#: Project.module:2994
+#: Project.module:3024
 msgid "Please type a name."
 msgstr "Molim unesite naziv."
 
-#: Project.module:2998
+#: Project.module:3028
 msgid "This name contains a forbidden character:"
 msgstr ""
 
-#: Project.module:3002
+#: Project.module:3032
+msgid "The name cannot begins with a dot."
+msgstr ""
+
+#: Project.module:3036
 msgid "This name is already used. Choose another one."
 msgstr "Ovaj naziv već postoji. Izaberite neki drugi."
 
-#: Project.module:3033
+#: Project.module:3067
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr ""
 
-#: Project.module:3220
+#: Project.module:3254
 msgid "Unable to rename '&1'"
 msgstr "Ne mogu promjeniti naziv '&1'"
 
-#: Project.module:3339
+#: Project.module:3373
 msgid "Please type a project name."
 msgstr "Molim upišite naziv projekta."
 
-#: Project.module:3347
+#: Project.module:3381
 msgid "The project name cannot begin with a dot."
 msgstr ""
 
-#: Project.module:3350
+#: Project.module:3384
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr ""
 
-#: Project.module:3351
+#: Project.module:3385
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr ""
 
-#: Project.module:3361
+#: Project.module:3395
 msgid "The project directory already exists."
 msgstr ""
 
-#: Project.module:3363
+#: Project.module:3397
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr ""
 
-#: Project.module:3409
+#: Project.module:3443
 msgid "Create source package"
 msgstr "Napravi paket s izvornim kodom"
 
-#: Project.module:3410
+#: Project.module:3444
 msgid "Source packages"
 msgstr "Izvorni paketi"
 
-#: Project.module:3676
+#: Project.module:3716
 msgid "Cannot copy file &1."
 msgstr "Ne mogu kopirati &1."
 
-#: Project.module:3688
+#: Project.module:3728
 msgid "Linking a directory is forbidden."
 msgstr ""
 
-#: Project.module:3718
+#: Project.module:3758
 msgid "Cannot create link &1."
 msgstr ""
 
-#: Project.module:3734
+#: Project.module:3774
 msgid "Cannot move a directory inside itself."
 msgstr ""
 
-#: Project.module:3801
+#: Project.module:3841
 msgid "Cannot move file &1."
 msgstr "Ne mogu premjestiti datoteku &1."
 
-#: Project.module:4336
+#: Project.module:4388
 msgid "modified"
 msgstr "mijenjan"
 
-#: Project.module:4394
+#: Project.module:4446
 msgid "Unable to update all forms."
 msgstr ""
 
@@ -4037,14 +4325,17 @@ msgstr ""
 msgid "Cannot save file !"
 msgstr "Ne mogu spremiti datoteku!"
 
-#~ msgid "Warning ! The translation file does not match the current language."
-#~ msgstr "Pažnja! Datoteka prijevoda ne podudara se s trenunim jezikom."
+#~ msgid "&1 K"
+#~ msgstr "&1 K"
 
 #~ msgid "Automatic completion"
 #~ msgstr "Autom. dopunjavanje izraza"
 
-#~ msgid "Edit &form"
-#~ msgstr "Uredi &formu"
+#~ msgid "Warning ! The translation file does not match the current language."
+#~ msgstr "Pažnja! Datoteka prijevoda ne podudara se s trenunim jezikom."
 
-#~ msgid "&1 K"
-#~ msgstr "&1 K"
+#~ msgid "Edit &class"
+#~ msgstr "Uredi &klase"
+
+#~ msgid "Popup"
+#~ msgstr "-"

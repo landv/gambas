@@ -54,7 +54,8 @@ typedef
     short last_code2;
     unsigned analyze : 1;
     unsigned rewrite : 1;
-    unsigned _reserved : 14;
+		unsigned comment : 1;
+    unsigned _reserved : 13;
     int stack_usage;
     void *op;
     }

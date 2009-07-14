@@ -56,6 +56,138 @@ static char *_title = 0;
 static int make_message(int type, int nbmax, void *_param)
 {
 	MSG_PARAM *_p = (MSG_PARAM *)_param;
+	QString msg = QSTRING_ARG(msg);
+	QPushButton *button[3];
+	int ret, nbutton;
+	QMessageBox::ButtonRole role;
+	QMessageBox::Icon icon;
+	const char *stock;
+	QString title;
+	QWidget *parent;
+	int i, n;
+	QMessageBox *mb;
+	
+	if (_global_lock)
+	{
+		GB.Error("Message box already displayed");
+		return 0;
+	}
+	
+	_global_lock++;
+
+	// Make message box
+	
+	parent = qApp->activeWindow();
+	if (!parent)
+	{
+		if (CWINDOW_Main)
+			parent = CWINDOW_Main->widget.widget;
+	}
+	mb = new QMessageBox(parent);
+	
+	// Number of buttons
+	
+	nbutton = 0;
+	for (i = 0; i < nbmax; i++)
+	{
+		if (MISSING(btn[i]))
+			continue;
+		nbutton++;
+	}
+		
+	// Create the buttons with their role
+	
+	for (i = 0, n = 0; i < nbmax; i++)
+	{
+		if (MISSING(btn[i]))
+			continue;
+		if (n == 0)
+			role = QMessageBox::AcceptRole;
+		else if (n == (nbutton - 1))
+			role = QMessageBox::RejectRole;
+		else
+			role = QMessageBox::ActionRole;
+		button[n] = mb->addButton(QSTRING_ARG(btn[i]), role);
+		n++;
+	}
+
+	// Icon
+
+	switch (type)
+	{
+		case MSG_INFO:
+			icon = QMessageBox::Information;
+			stock = "icon:/32/info";
+			break;
+		case MSG_WARNING:
+			icon = QMessageBox::Warning;
+			stock = "icon:/32/warning";
+			break;
+		case MSG_ERROR:
+			icon = QMessageBox::Critical;
+			stock = "icon:/32/error";
+			break;
+		case MSG_QUESTION:
+			icon = QMessageBox::Information;
+			stock = "icon:/32/question";
+			break;
+		case MSG_DELETE:
+			icon = QMessageBox::Information;
+			stock = "icon:/32/trash";
+			break;
+		default:
+			icon = QMessageBox::Information;
+			stock = 0;
+	}
+
+	mb->setIcon(icon);
+	if (stock)
+	{
+		CPICTURE *pict = CPICTURE_get_picture(stock);
+		if (pict)
+			mb->setIconPixmap(*pict->pixmap);
+	}
+	
+	// Title
+
+	if (_title && *_title)
+	{
+		title = TO_QSTRING(_title);
+		GB.FreeString(&_title);
+	}
+	else
+		title = TO_QSTRING(GB.Application.Title());
+
+	mb->setWindowTitle(title);
+	
+	// Message
+	
+	mb->setText(msg);
+	
+	// Run the message box
+	
+	mb->exec();
+	
+	// Returned value
+	
+	ret = nbutton - 1;
+	for (i = 0; i < nbutton; i++)
+	{
+		if (button[i] == mb->clickedButton())
+			ret = i;
+	}
+	
+	_global_lock--;
+	
+	delete mb;
+	
+	return ret;
+}
+
+#if 0
+static int old_make_message(int type, int nbmax, void *_param)
+{
+	MSG_PARAM *_p = (MSG_PARAM *)_param;
 
 	QString msg = QSTRING_ARG(msg);
 	QString btn[3];
@@ -205,7 +337,7 @@ static int make_message(int type, int nbmax, void *_param)
 	
 	return ret;
 }
-
+#endif
 
 BEGIN_METHOD(CMESSAGE_info, GB_STRING msg; GB_STRING btn)
 
@@ -312,12 +444,12 @@ void MyMessageBox::showEvent(QShowEvent *e)
 			(qApp->desktop()->height() - height()) / 2
 			);
 
-		//qDebug("%d x %d / %d x %d", qApp->desktop()->width(), qApp->desktop()->height(), mb.width(), mb.height());
-		//qDebug("(%d, %d) / (%d, %d)", p.x(), p.y(), mb.parentWidget()->x(), mb.parentWidget()->y());
-		//p = mb.parentWidget()->mapFromGlobal(p);
+		//qDebug("%d x %d / %d x %d", qApp->desktop()->width(), qApp->desktop()->height(), mb->width(), mb->height());
+		//qDebug("(%d, %d) / (%d, %d)", p.x(), p.y(), mb->parentWidget()->x(), mb->parentWidget()->y());
+		//p = mb->parentWidget()->mapFromGlobal(p);
 		//qDebug("==> (%d, %d)", p.x(), p.y());
-		//mb.reparent(mb.parentWidget(), Qt::WStyle_Customize | Qt::WStyle_DialogBorder | Qt::WStyle_Title | Qt::WStyle_SysMenu | Qt::WType_Dialog, p);
-		//qDebug("move MessageBox to (%d %d)", mb.pos().x(), mb.pos().y());
+		//mb->reparent(mb->parentWidget(), Qt::WStyle_Customize | Qt::WStyle_DialogBorder | Qt::WStyle_Title | Qt::WStyle_SysMenu | Qt::WType_Dialog, p);
+		//qDebug("move MessageBox to (%d %d)", mb->pos().x(), mb->pos().y());
 		
 		move(64, 64);  
 		center = false;

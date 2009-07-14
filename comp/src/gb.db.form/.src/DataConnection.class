@@ -1,13 +1,14 @@
 ' Gambas class file
 
-Static Private $cInfo As New Collection
-Static Private $cKey As New Collection
-Static Private $cFields As New Collection
-Static Private $cTable As New Collection
+Static Private $cInfo As Collection
+Static Private $cKey As Collection
+Static Private $cFields As Collection
+Static Private $cTable As Collection
 
 Static Public Sub _init()
   
   Try DB.Open
+  Reset()
   
 End
 
@@ -84,3 +85,12 @@ Static Public Function ExistTable(sTable As String) As Boolean
   
 End
 
+
+Static Public Sub Reset()
+  
+  $cInfo = New Collection
+  $cKey = New Collection
+  $cFields = New Collection
+  $cTable = New Collection
+  
+End

@@ -47,6 +47,7 @@
 
 
 //#define DEBUG
+//#define BIG_COMMENT 1
 
 static bool is_init = FALSE;
 static COMPILE *comp;
@@ -65,8 +66,9 @@ enum
   GOTO_STRING, 
   GOTO_IDENT, 
   GOTO_QUOTED_IDENT, 
+	GOTO_NUMBER,
   GOTO_ERROR,
-  GOTO_OTHER,
+  GOTO_OTHER
 };
 
 static void READ_init(void)
@@ -93,6 +95,8 @@ static void READ_init(void)
         first_car[i] = GOTO_IDENT;
       else if (i == '{')
         first_car[i] = GOTO_QUOTED_IDENT;
+			else if (i >= '0' && i <= '9')
+				first_car[i] = GOTO_NUMBER;
       else if (i >= 127)
         first_car[i] = GOTO_ERROR;
       else
@@ -864,7 +868,7 @@ static void add_command()
 
 void READ_do(void)
 {
-  static void *jump_char[8] =
+  static void *jump_char[9] =
   {
     &&__BREAK, 
     &&__SPACE, 
@@ -872,6 +876,7 @@ void READ_do(void)
     &&__STRING, 
     &&__IDENT, 
     &&__QUOTED_IDENT,
+		&&__NUMBER,
     &&__ERROR, 
     &&__OTHER
   };
@@ -935,6 +940,11 @@ void READ_do(void)
     add_identifier(TRUE);
     begin_line = FALSE;
     continue;
+		
+	__NUMBER:
+		add_number();
+		begin_line = FALSE;
+		continue;
   
   __OTHER:
   
@@ -944,13 +954,32 @@ void READ_do(void)
   		begin_line = FALSE;
   		continue;
   	}
+		
+#if BIG_COMMENT
+		if (car == '/' && get_char_offset(1) == '*')
+		{
+			for(;;)
+			{
+				source_ptr++;
+				car = get_char();
+				if (car == 0)
+					break;
+				if (car == '*' && get_char_offset(1) == '/')
+				{
+					source_ptr += 2;
+					break;
+				}
+				if (car == '\n')
+					add_newline();
+			}
+
+  		begin_line = FALSE;
+  		continue;
+		}
+#endif
   	
     if (is_number())
-    {
-      add_number();
-      begin_line = FALSE;
-      continue;
-    }
+			goto __NUMBER;
 
     add_operator();
     begin_line = FALSE;

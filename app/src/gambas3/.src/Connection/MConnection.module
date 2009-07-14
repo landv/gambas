@@ -95,3 +95,185 @@ Public Function TypeToString(iType As Integer) As String
   End Select
 
 End
+
+Public Function TypeFromString(sType As String) As Integer
+
+  Select Case sType
+    Case ("Integer")
+      Return db.Integer
+    Case ("Long")
+      Return db.Long
+    Case ("Float")
+      Return db.Float
+    Case ("Date")
+      Return db.Date
+    Case ("Boolean")
+      Return db.Boolean
+    Case ("String")
+      Return db.String
+    Case ("Serial")
+      Return db.Serial
+    Case ("Blob")
+      Return db.Blob
+    Default
+      Return db.Integer
+  End Select
+
+End
+
+Public Function GetTempTableName(Handle As Connection) As String
+
+  Dim iInd As Integer
+  Dim sTemp As String
+
+  For iInd = 0 To 99
+    sTemp = "_gambas_table"
+    If iInd Then sTemp = sTemp & "_" & iInd
+    If Not Handle.Tables.Exist(sTemp) Then Break
+    Inc iInd
+    sTemp = ""
+  Next
+
+  If Not sTemp Then Error.Raise("Cannot find a free temporary table name")
+
+  Return sTemp
+
+End
+
+Public Function CopyTableData(Handle As Connection, sTable As String) As String
+
+  Dim sTemp As String
+  Dim iInd As Integer
+  Dim sReq As String
+  Dim hSrc As Table
+  Dim hDst As Table
+  Dim rSrc As Result
+  Dim rDst As Result
+  Dim sField As String
+  Dim hField As Field
+  Dim sError As String
+
+  sTemp = GetTempTableName(Handle)
+
+  Select Case Handle.Type
+
+    Case "postgresql"
+      sReq = "SELECT * INTO TABLE " & sTemp & " FROM \"" & sTable & "\""
+      Handle.Exec(sReq)
+
+    Case "mysql"
+      sReq = "CREATE TABLE " & sTemp & " SELECT * FROM `" & sTable & "`"
+      Handle.Exec(sReq)
+
+    'CASE "sqlite"
+    '  sReq = "INSERT INTO " & sTemp & " SELECT * FROM " & sTable
+
+    Default
+
+      hSrc = Handle.Tables[sTable]
+      hDst = Handle.Tables.Add(sTemp, hSrc.Type)
+
+      'IF NOT hSrc.PrimaryKey THEN Error.Raise("No primary key")
+
+      For Each hField In hSrc.Fields
+        With hField
+          hDst.Fields.Add(.Name, .Type, .Length, .Default)
+        End With
+      Next
+
+      hDst.PrimaryKey = hSrc.PrimaryKey
+
+      hDst.Update
+
+      Handle.Begin
+
+      rSrc = Handle.Find(sTable)
+      rDst = Handle.Create(sTemp)
+
+      For Each rSrc
+'         FOR EACH hField IN rSrc.Fields
+'           sField = hField.Name
+'           rDst[sField] = rSrc[sField]
+'         NEXT
+        For iInd = 0 To rSrc.Fields.Count - 1
+          rDst[iInd] = rSrc[iInd]
+        Next
+        rDst.Update
+      Next
+
+      Handle.Commit
+
+  End Select
+
+  Return sTemp
+
+Catch
+
+  sError = Error.Text
+
+  Select Case Handle.Type
+
+    Case "postgresql"
+
+    Case "mysql"
+      Try Handle.Rollback
+      If Handle.Tables.Exist(sTable) Then
+         Try Handle.Tables.Remove(sTemp)
+      Else
+         If Handle.Tables.Exist(sTemp) Then
+            sReq = "RENAME TABLE " & sTemp & " TO " & sTable
+            Try Handle.Exec(sReq)
+         Else
+            Error.Raise("Severe Error: Table has been lost!!")
+         Endif
+      Endif
+
+    Default
+      Try Handle.Rollback
+      If Handle.Tables.Exist(sTable) Then
+         Try Handle.Tables.Remove(sTemp)
+      Else
+         If Handle.Tables.Exist(sTable) Then
+            Error.Raise("Severe Error: Table " & sTable & " has not been recreated. Data held in " & sTemp)
+         Endif
+      Endif
+
+  End Select
+
+  Error.Raise("Cannot copy table data: " & sError)
+
+End
+
+
+Public Function CountTableData(Handle As Connection, sTable As String) As Integer
+
+  Dim rResult As Result
+
+  rResult = Handle.Exec("SELECT COUNT(*) AS nRecord FROM " & Handle.Quote(sTable))
+  Return rResult!nRecord
+
+End
+
+
+Public Function CreateTable(Handle As Connection, sTable As String, sType As String) As Boolean
+
+  Dim hTable As Table
+
+  If Handle.Tables.Exist(sTable) Then
+    Message.Warning(Subst(("Table '&1' already exists."), sTable))
+    Return True
+  Endif
+
+  hTable = Handle.Tables.Add(sTable, sType)
+  With hTable
+    .Fields.Add("id", gb.Integer)
+    .PrimaryKey = ["id"]
+    .Update
+  End With
+
+Catch
+
+  Message(Subst(("Cannot create table '&1'."), sTable) & "\n\n" & Error.Text)
+  Return True
+
+End

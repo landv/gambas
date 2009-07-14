@@ -71,8 +71,8 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
   Endif
   
   ' We must be sure that the Open event is raised! (why should I have to do that?)
-  hWin.Show
-  hWin.Hide
+  'hWin.Show
+  'hWin.Hide
   
   hWindow = New CWindow
   hWindow.Window = hWin

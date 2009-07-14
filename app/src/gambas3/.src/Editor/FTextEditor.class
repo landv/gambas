@@ -254,7 +254,7 @@ End
 Public Sub Editors_GotFocus()
   
   Editor = Last 
-  mnuEditor.Enabled = True
+  Project.SetCurrentPopup(mnuEditor)
   
 End
 
@@ -432,13 +432,7 @@ End
 
 Public Sub Form_Activate()
 
-  mnuEditor.Enabled = True
-
-End
-
-Public Sub Form_Deactivate()
-
-  mnuEditor.Enabled = False
+  Editor.SetFocus
 
 End
 
@@ -560,13 +554,6 @@ End
 Public Sub mnuVerticalSplit_Click()
 
   SetViewMode(VIEWMODE_VERTICAL)
-
-End
-
-
-Public Sub Editors_LostFocus()
-
-  mnuEditor.Enabled = False
 
 End
 

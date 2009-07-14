@@ -53,6 +53,7 @@ public:
 	CPICTURE *icon;
 	int id;
 	bool visible;
+	bool enabled;
 	
 	CTab(CTABSTRIP *parent, QWidget *page);
 	~CTab();
@@ -60,8 +61,8 @@ public:
 	int index() { return WIDGET->indexOf(widget); }
 	bool isEmpty() { return widget->children().count() == 0; }
 	void ensureVisible() { WIDGET->setCurrentIndex(index()); }
-	void setEnabled(bool e) { WIDGET->setTabEnabled(index(), e); }
-	bool isEnabled() { return WIDGET->isTabEnabled(index()); }
+	void setEnabled(bool e) { enabled = e; WIDGET->setTabEnabled(index(), e && WIDGET->isEnabled()); }
+	bool isEnabled() { return enabled; }
 	bool isVisible() { return visible; }
 	void setVisible(bool v);
 	void updateIcon();
@@ -77,7 +78,7 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 	icon = 0; 
 	id = WIDGET->stack.count();
 	visible = true; 
-  setEnabled(WIDGET->isEnabled());
+  setEnabled(true);
 	
 	page->setAutoFillBackground(true);
 	page->hide();
@@ -90,7 +91,8 @@ CTab::~CTab()
 
 void CTab::setVisible(bool v)
 {
-	int i;
+	int i, ind;
+	CTab *page;
 	
 	if (v == visible)
 		return;
@@ -101,17 +103,25 @@ void CTab::setVisible(bool v)
 	{
 		text = WIDGET->tabText(index());
 		WIDGET->removeTab(index());
+		widget->hide();
 	}
 	else
 	{
+		ind = 0;
 		for (i = 0; i < (int)WIDGET->stack.count(); i++)
 		{
+			page = WIDGET->stack.at(i);
+			if (!page->isVisible())
+				continue;
 			if (id == WIDGET->stack.at(i)->id)
 				break;
+			ind++;
 		}
-		WIDGET->insertTab(i, widget, text);
-	  setEnabled(WIDGET->isEnabled());
+		WIDGET->insertTab(ind, widget, text);
+	  setEnabled(enabled);
 		updateIcon();
+		if (WIDGET->count() == 1)
+			ensureVisible();
 	}
 }
 
@@ -418,7 +428,7 @@ static int get_page_index(CTABSTRIP *_object)
   int index = THIS->index;
 
   if (index < 0)
-    return WIDGET->currentIndex();
+    return get_real_index(THIS);
 
   return WIDGET->stack.at(index)->index();
 }
@@ -472,12 +482,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTAB_enabled)
 
-  int index = get_page_index(THIS);
+  CTab *tab = WIDGET->stack.at(THIS->index);
 
   if (READ_PROPERTY)
-    GB.ReturnBoolean(WIDGET->isTabEnabled(index));
+    GB.ReturnBoolean(tab->isEnabled());
   else
-    WIDGET->setTabEnabled(index, VPROP(GB_BOOLEAN));
+    tab->setEnabled(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 

@@ -207,8 +207,11 @@ static void analyze(EVAL_ANALYZE *result)
   if (EVAL->len <= 0)
     return;
 
-  nspace = get_indent(&empty);
-  add_data(EVAL_TYPE_END, nspace);
+	if (!EVAL->comment)
+	{
+		nspace = get_indent(&empty);
+		add_data(EVAL_TYPE_END, nspace);
+	}
 
   if (empty)
     return;
@@ -219,7 +222,7 @@ static void analyze(EVAL_ANALYZE *result)
   if (nspace)
     GB.AddString(&result->str, EVAL->source, nspace);
 
-  type = EVAL_TYPE_END;
+  type = EVAL->comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END;
   next_type = EVAL_TYPE_END;
   space_after = FALSE;
   in_quote = FALSE;
@@ -427,7 +430,7 @@ static void add_end_pattern(void)
 }
 
 
-PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result, bool rewrite)
+PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *result, bool rewrite)
 {
 	int nspace = 0;
 
@@ -458,6 +461,9 @@ PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result, bool re
 		
 		EVAL->analyze = TRUE;
 		EVAL->rewrite = rewrite;
+		EVAL->comment = state == EVAL_TYPE_COMMENT;
+		
+		//fprintf(stderr, "EVAL_analyze: [%d] %.*s\n", EVAL->comment, len, src);
 
     EVAL_start(EVAL);
 
@@ -471,9 +477,12 @@ PUBLIC void EVAL_analyze(const char *src, int len, EVAL_ANALYZE *result, bool re
 		}
 		END_TRY
 
-		result->proc = is_proc();
 	  analyze(result);
-	  
+		result->proc = is_proc();
+		result->state = EVAL->comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END;
+
+		//fprintf(stderr, "--> [%d]\n", EVAL->comment);
+		
 	  GB.FreeString(&EVAL->source);
 	}
 	else

@@ -3004,7 +3004,7 @@ Public Function CheckFileName(sName As String, Optional sDir As String) As Strin
 
   If String.Left$(sName) = "." Then 
     iInd = 1
-    Goto BAD_CHAR
+    Goto BAD_START
   Endif
 
   For iInd = 1 To String.Len(sName)
@@ -3026,6 +3026,10 @@ VOID_NAME:
 BAD_CHAR:
 
   Return ("This name contains a forbidden character:") & " [ " & String.Mid$(sName, iInd, 1) & " ]"
+
+BAD_START:
+
+  Return ("The name cannot begins with a dot.")
 
 ALREADY_EXIST:
 
@@ -3203,7 +3207,7 @@ Public Sub RenameFile(sPath As String, sNewName As String)
   sDir = File.Dir(sPath)
   sExt = File.Ext(sPath)
   
-  If Project.IsSourcePath(sPath) Then
+  If Not IsDir(sPath) And If Project.IsSourcePath(sPath) Then
 
     sName = File.BaseName(sPath)
     If sName = sNewName Then Return
