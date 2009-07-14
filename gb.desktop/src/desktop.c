@@ -257,6 +257,7 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 	#if OS_64BITS
 	long padded_value;
 	long *padded_data;
+	int i;
 	#endif
 	
 	if (X11_init())
@@ -284,7 +285,7 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 		case GB_T_INTEGER:
 			format = 32;
 			#if OS_64BITS
-			padded_data = &VARG(value)._integer.value;
+			padded_data = VARG(value)._integer.value;
 			data = &padded_data;
 			#else
 			data = &VARG(value)._integer.value;
@@ -401,6 +402,7 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data; GB
 	int format = 0;
 	#if OS_64BITS
 	long *padded_data;
+	int i;
 	#endif
 	
 	if (X11_init())
