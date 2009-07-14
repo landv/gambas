@@ -40,14 +40,12 @@
 #include "CMenu.h"
 #include "CScrollView.h"
 
-#include <qnamespace.h>
-#include <qapplication.h>
-#include <qobject.h>
-#include <qpalette.h>
-#include <qtooltip.h>
-#include <qpushbutton.h>
-#include <qmap.h>
-//Added by qt3to4:
+#include <QApplication>
+#include <QObject>
+#include <QPalette>
+#include <QToolTip>
+#include <QPushButton>
+#include <QMap>
 #include <QContextMenuEvent>
 #include <QKeyEvent>
 #include <QPixmap>
@@ -1560,8 +1558,6 @@ void CWidget::add(QObject *o, void *object, bool no_filter)
 
 	GB.Ref(object);
 }
-
-
 
 CWIDGET *CWidget::get(QObject *o)
 {

@@ -103,7 +103,7 @@ void CTab::setVisible(bool v)
 	{
 		text = WIDGET->tabText(index());
 		WIDGET->removeTab(index());
-		widget->hide();
+		//widget->hide();
 	}
 	else
 	{
@@ -208,6 +208,7 @@ bool MyTabWidget::eventFilter(QObject *o, QEvent *e)
 
   return QObject::eventFilter(o, e);
 }
+
 
 /***************************************************************************
 

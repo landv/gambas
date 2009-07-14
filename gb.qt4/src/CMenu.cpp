@@ -47,7 +47,7 @@ static void clear_menu(CMENU *_object);
 
 static int check_menu(void *_object)
 {
-  return THIS->deleted;
+  return THIS->deleted || ACTION == 0;
 }
 
 static void set_menu_visible(void *_object, bool v)

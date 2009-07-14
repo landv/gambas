@@ -551,10 +551,13 @@ void MyPushButton::changeEvent(QEvent *e)
 
 void MyPushButton::calcMinimumSize()
 {
-	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
+	CBUTTON *_object = (CBUTTON *)CWidget::getReal(this);
 	QSize size;
 	
-  if (text().length() > 0)
+	if (!THIS || CWIDGET_test_flag(THIS, WF_DESIGN))
+		return;
+
+	if (text().length() > 0)
   {
     QFontMetrics fm = fontMetrics();
     setMinimumHeight(fm.lineSpacing() + 4);
@@ -615,6 +618,9 @@ void MyToolButton::calcMinimumSize()
 	CBUTTON *_object = (CBUTTON *)CWidget::get(this);
 	QSize size;
 
+	if (!THIS || CWIDGET_test_flag(THIS, WF_DESIGN))
+		return;
+	
 	if (text().length() > 0)
   {
     QFontMetrics fm = fontMetrics();
