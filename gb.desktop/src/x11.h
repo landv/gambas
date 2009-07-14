@@ -95,7 +95,7 @@ int X11_get_current_desktop();
 char *X11_send_key(char *key, bool press);
 
 Atom X11_intern_atom(const char *name, bool create);
-char *X11_get_property(Window wid, Atom prop, Atom *type, int *format);
+char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *count);
 Atom X11_get_property_type(Window wid, Atom prop, int *format);
 void X11_set_property(Window wid, Atom prop, Atom type, int format, void *data, int count);
 void X11_send_client_message(Window dest, Window window, Atom message, char *data, int format, int count);

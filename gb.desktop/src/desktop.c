@@ -122,10 +122,8 @@ BEGIN_METHOD(CDESKTOP_find, GB_STRING title; GB_STRING klass; GB_STRING role)
 				continue;
 		}
 
-		*((Window *)GB.Array.Add(result)) = win;
+		*((int *)GB.Array.Add(result)) = (int)win;
 	}
-
-	XFree(windows);
 
 	GB.ReturnObject(result);
 
@@ -150,7 +148,7 @@ BEGIN_PROPERTY(CDESKTOP_root)
 	if (X11_init())
 		return;
 	
-	GB.ReturnPointer((void *)X11_root);
+	GB.ReturnInteger(X11_root);
 
 END_PROPERTY
 
@@ -178,7 +176,7 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 	
 	window = VARGOPT(window, X11_root);
 	
-	value = X11_get_property(window, prop, &type, &format);
+	value = X11_get_property(window, prop, &type, &format, &count);
 	if (!value)
 	{
 		GB.ReturnNull();
@@ -191,7 +189,6 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 	
 	if (type == XA_ATOM)
 	{
-		count = GB.StringLength(value) / sizeof(Atom);
 		GB.Array.New(&array, GB_T_STRING, count);
 		for (i = 0; i < count; i++)
 		{
@@ -225,7 +222,7 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 		switch(format)
 		{
 			case 16:
-				count = GB.StringLength(value) / 2;
+				count = GB.StringLength(value) / sizeof(int);
 				GB.Array.New(&array, GB_T_SHORT, count);
 				for (i = 0; i < count; i++)
 					*((short *)GB.Array.Get(array, i)) = *((short *)value + i);
@@ -233,7 +230,7 @@ BEGIN_METHOD(CDESKTOP_get_window_property, GB_STRING name; GB_INTEGER window)
 				break;
 				
 			case 32: // A "long", not necessarily 32 bits!!
-				count = GB.StringLength(value) / 4;
+				count = GB.StringLength(value) / sizeof(long);
 				GB.Array.New(&array, GB_T_INTEGER, count);
 				for (i = 0; i < count; i++)
 					*((int *)GB.Array.Get(array, i)) = *((long *)value + i);
@@ -257,6 +254,10 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 	void *object;
 	Window window;
 	void *buffer = NULL;
+	#if OS_64BITS
+	long padded_value;
+	long *padded_data;
+	#endif
 	
 	if (X11_init())
 		return;
@@ -282,7 +283,12 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 		case GB_T_SHORT:
 		case GB_T_INTEGER:
 			format = 32;
+			#if OS_64BITS
+			padded_data = &VARG(value)._integer.value;
+			data = &padded_data;
+			#else
 			data = &VARG(value)._integer.value;
+			#endif
 			count = 1;
 			break;
 		
@@ -307,6 +313,12 @@ BEGIN_METHOD(CDESKTOP_set_window_property, GB_STRING name; GB_STRING type; GB_VA
 							
 						case GB_T_INTEGER:
 							format = 32;
+							#if OS_64BITS
+							padded_data = (long *)alloca(sizeof(long) * count);
+							for (i = 0; i < count; i++)
+								padded_data[i] = *((long *)data + i);
+							data = padded_data;
+							#endif
 							break;
 							
 						case GB_T_STRING:
@@ -363,6 +375,7 @@ BEGIN_METHOD(CDESKTOP_intern_atom, GB_STRING atom; GB_BOOLEAN create)
 
 	if (X11_init())
 		return;
+	
 	GB.ReturnInteger(X11_intern_atom(GB.ToZeroString(ARG(atom)), !VARGOPT(create, FALSE)));
 
 END_METHOD
@@ -386,6 +399,9 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data; GB
 	char *data = NULL;
 	int count = 0;
 	int format = 0;
+	#if OS_64BITS
+	long *padded_data;
+	#endif
 	
 	if (X11_init())
 		return;
@@ -408,6 +424,12 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data; GB
 				
 			case GB_T_INTEGER:
 				format = 32;
+				#if OS_64BITS
+					padded_data = (long *)alloca(sizeof(long) * count);
+					for (i = 0; i < count; i++)
+						padded_data[i] = *((long *)data + i);
+					data = padded_data;
+				#endif
 				break;
 				
 			/*case GB_T_STRING:
@@ -423,7 +445,6 @@ BEGIN_METHOD(CDESKTOP_send_client_message, GB_STRING message; GB_OBJECT data; GB
 	X11_send_client_message(X11_root, VARGOPT(window, X11_root),
 		X11_intern_atom(GB.ToZeroString(ARG(message)), TRUE),
 		data, format, count);
-		
 
 END_METHOD
 
@@ -450,9 +471,9 @@ BEGIN_METHOD(CDESKTOP_watch_window, GB_INTEGER window; GB_BOOLEAN watch)
 	XGetWindowAttributes(X11_display, VARG(window), &attr);
 
 	if (VPROP(GB_BOOLEAN))
-		XSelectInput(X11_display, VARG(window), attr.your_event_mask | mask);
+		XSelectInput(X11_display, (Window)VARG(window), attr.your_event_mask | mask);
 	else
-		XSelectInput(X11_display, VARG(window), attr.your_event_mask & ~mask);
+		XSelectInput(X11_display, (Window)VARG(window), attr.your_event_mask & ~mask);
 
 END_METHOD
 
@@ -493,7 +514,7 @@ BEGIN_METHOD(CDESKTOP_minimize_window, GB_INTEGER window; GB_BOOLEAN minimized)
 
 	if (VARG(minimized))
 	{
-		int state = IconicState;
+		long state = IconicState;
 		
 		X11_send_client_message(X11_root, VARG(window),
 			X11_intern_atom("WM_CHANGE_STATE", TRUE),

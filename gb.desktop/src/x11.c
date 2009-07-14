@@ -108,6 +108,66 @@ static void init_atoms()
   _atom_init = TRUE;
 }
 
+#define PROPERTY_START_READ 256
+
+#if 0
+	// On 64 bits OS, format 32 are actually long, i.e. int padded to 64 bits!
+	#if OS_64BITS
+	if (format == 32)
+	{
+		int *p = (int *)_property_value;
+		for (i = 0; i < count; i++)
+			p[i] = *((long *)data + i);
+	}
+	else
+	#endif
+	{
+		memcpy(_property_value, (char *)data, count * size);
+	}
+#endif
+
+char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcount)
+{
+	uchar *data;
+  unsigned long count;
+  unsigned long after;
+	int size;
+	#if OS_64BITS
+	int i;
+	#endif
+
+	*pcount = 0;
+
+	if (XGetWindowProperty(_display, wid, prop, 0, PROPERTY_START_READ / sizeof(long),
+			False, AnyPropertyType, type, format,
+			&count, &after, &data) != Success)
+		return NULL;
+	
+	*pcount += count;
+	
+	size = *format == 32 ? sizeof(int) : ( *format == 16 ? sizeof(short) : 1 );
+	
+	GB.FreeString(&_property_value);
+	GB.NewString(&_property_value, (char *)data, count * size);
+	XFree(data);
+	
+	if (after)
+	{
+		if (XGetWindowProperty(_display, wid, prop, PROPERTY_START_READ / sizeof(long), (after + 3) / sizeof(long),
+				False, AnyPropertyType, type, format,
+				&count, &after, &data) != Success)
+			return NULL;
+
+		*pcount += count;
+		
+		GB.AddString(&_property_value, (char *)data, count * size);
+		XFree(data);
+	}
+	
+	return _property_value;
+}
+
+#if 0
 static void get_property(Window wid, Atom prop, int maxlength, unsigned char **data, unsigned long *count)
 {
   Atom type;
@@ -118,39 +178,14 @@ static void get_property(Window wid, Atom prop, int maxlength, unsigned char **d
     False, AnyPropertyType, &type, &format,
     count, &after, data);
 }
+#endif
 
-#define PROPERTY_START_READ 256
-
-char *X11_get_property(Window wid, Atom prop, Atom *type, int *format)
+static char *get_property(Window wid, Atom prop, int *count)
 {
-	uchar *data;
-  unsigned long count;
-  unsigned long after;
-	int size;
-
-	if (XGetWindowProperty(_display, wid, prop, 0, PROPERTY_START_READ / 4,
-			False, AnyPropertyType, type, format,
-			&count, &after, &data) != Success)
-		return NULL;
+	Atom type;
+	int format;
 	
-	size = *format == 32 ? sizeof(long) : ( *format == 16 ? sizeof(short) : 1 );
-	
-	GB.FreeString(&_property_value);
-	GB.NewString(&_property_value, (char *)data, count * size);
-	XFree(data);
-	
-	if (after)
-	{
-		if (XGetWindowProperty(_display, wid, prop, PROPERTY_START_READ / 4, (after + 3) / 4,
-				False, AnyPropertyType, type, format,
-				&count, &after, &data) != Success)
-			return NULL;
-		
-		GB.AddString(&_property_value, (char *)data, count * size);
-		XFree(data);
-	}
-	
-	return _property_value;
+	return X11_get_property(wid, prop, &type, &format, count);
 }
 
 Atom X11_get_property_type(Window wid, Atom prop, int *format)
@@ -160,7 +195,7 @@ Atom X11_get_property_type(Window wid, Atom prop, int *format)
   unsigned long after;
   Atom type;
 
-	if (XGetWindowProperty(X11_display, wid, prop, 0, PROPERTY_START_READ / 4,
+	if (XGetWindowProperty(X11_display, wid, prop, 0, PROPERTY_START_READ / sizeof(long),
 			False, AnyPropertyType, &type, format,
 			&count, &after, &data) != Success)
 		return None;
@@ -168,6 +203,20 @@ Atom X11_get_property_type(Window wid, Atom prop, int *format)
 	XFree(data);
 	return type;
 }
+
+#if 0
+	#if OS_64BITS
+	long padded_data[count];
+	int i;
+	
+	if (format == 32)
+	{
+		for (i = 0; i < count; i++)
+			padded_data[i] = ((int *)data)[i];
+	}
+	data = padded_data;
+	#endif
+#endif
 
 void X11_set_property(Window wid, Atom prop, Atom type, int format, void *data, int count)
 {
@@ -186,21 +235,18 @@ Atom X11_intern_atom(const char *name, bool create)
 
 static void load_window_state(Window win, Atom prop)
 {
-  unsigned long length = 0;
-  unsigned char *data = NULL;
+  int length;
+  char *data;
 
   _window_prop.count = 0;
 
-	//get_property(win, X11_atom_net_wm_state, MAX_WINDOW_STATE * sizeof(Atom), &data, &length);
-	get_property(win, prop, MAX_WINDOW_PROP * sizeof(Atom), &data, &length);
+	data = get_property(win, prop, &length);
 
   if (length > MAX_WINDOW_PROP)
     length = MAX_WINDOW_PROP;
 
   _window_prop.count = length;
   memcpy(_window_prop.atoms, data, length * sizeof(Atom));
-
-  XFree(data);
 }
 
 static void save_window_state(Window win, Atom prop)
@@ -445,46 +491,34 @@ void X11_window_startup(Window window, int x, int y, int w, int h)
   XSetWMNormalHints(_display, window, &s);
 }
 
-// ### Do not forget to call XFree() on window_list once finished with it
-
 void X11_find_windows(Window **window_list, int *count)
 {
 	static Atom _net_client_list = 0;
-	unsigned long n;
 
 	if (!_net_client_list)
 		_net_client_list = XInternAtom(_display, "_NET_CLIENT_LIST", True);
 
-	get_property(_root, _net_client_list, 1024 * sizeof(Window), (unsigned char **)window_list, &n);
-	*count = (int)n;
+	*window_list = (Window *)get_property(_root, _net_client_list, count);
 }
-
-// ### Do not forget to call XFree() on result once finished with it
 
 void X11_get_window_title(Window window, char **result, int *length)
 {
-	unsigned long n;
-	get_property(window, XA_WM_NAME, 256, (unsigned char **)result, &n);
-	*length = (int)n;
+	*result = get_property(window, XA_WM_NAME, length);
 }
 
 void X11_get_window_class(Window window, char **result, int *length)
 {
-	unsigned long n;
-	get_property(window, XA_WM_CLASS, 256, (unsigned char **)result, &n);
-	*length = (int)n;
+	*result = get_property(window, XA_WM_CLASS, length);
 }
 
 void X11_get_window_role(Window window, char **result, int *length)
 {
 	static Atom wm_window_role = (Atom)0;
-	unsigned long n;
 
 	if (!wm_window_role)
 		wm_window_role = XInternAtom(_display, "WM_WINDOW_ROLE", True);
 
-	get_property(window, wm_window_role, 256, (unsigned char **)result, &n);
-	*length = (int)n;
+	*result = get_property(window, wm_window_role, length);
 }
 
 
@@ -549,34 +583,22 @@ void X11_window_set_desktop(Window window, bool visible, int desktop)
 
 int X11_window_get_desktop(Window window)
 {
-	unsigned long length = 0;
-	unsigned char *data = NULL;
-	int desktop = 0;
+	int length;
+	unsigned long *data;
 
-	get_property(window, X11_atom_net_wm_desktop, sizeof(int), &data, &length);
+	data = (unsigned long *)get_property(window, X11_atom_net_wm_desktop, &length);
 
-	if (data)
-	{
-		desktop = *((int *)data);
-		XFree(data);
-	}
-	
-	return desktop;
+	return data ? *data : 0;
 }
 
 int X11_get_current_desktop()
 {
-	unsigned long length = 0;
-	unsigned char *data = NULL;
-	long desktop;
+	int length;
+	unsigned long *data;
 
-	get_property(_root, X11_atom_net_current_desktop, sizeof(int), &data, &length);
+	data = (unsigned long *)get_property(_root, X11_atom_net_current_desktop, &length);
 
-	desktop = *((int *)data);
-
-	XFree(data);
-	
-	return desktop;
+	return data ? *data : 0;
 }
 
 static void init_keycode()
