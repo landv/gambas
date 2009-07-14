@@ -212,11 +212,11 @@ Private Sub CheckCurrent() As Boolean
   
   If $bModify Then
     Select Case Message.Warning(Subst(("The table '&1' has been modified. Do you want to save it?"), $sTable), ("Save"), ("Do not save"), ("Cancel"))
-      Case 0
-        If Save() Then Goto CANCEL
       Case 1
-        Modify(True)
+        If Save() Then Goto CANCEL
       Case 2
+        Modify(True)
+      Case 3
         Goto CANCEL
     End Select
   Endif
@@ -1195,7 +1195,7 @@ End
 
 Public Sub btnKill_Click()
 
-  If Message.Warning(Subst(("Do you really want to delete table '&1'?"), $sTable), ("Delete"), ("Cancel")) = 1 Then Return
+  If Message.Warning(Subst(("Do you really want to delete table '&1'?"), $sTable), ("Delete"), ("Cancel")) = 2 Then Return
 
   If CheckCurrent() Then Return
 

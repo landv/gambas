@@ -24,15 +24,13 @@
 
 #define __CMESSAGE_CPP
 
-
 #include "gambas.h"
 #include "main.h"
 
-#include <qnamespace.h>
-#include <qpixmap.h>
-#include <qsizepolicy.h>
-#include <qeventloop.h>
-#include <qapplication.h>
+#include <QPixmap>
+#include <QSizePolicy>
+#include <QEventLoop>
+#include <QApplication>
 #include <QShowEvent>
 #include <QEvent>
 #include <QDesktopWidget>
@@ -174,7 +172,7 @@ static int make_message(int type, int nbmax, void *_param)
 	for (i = 0; i < nbutton; i++)
 	{
 		if (button[i] == mb->clickedButton())
-			ret = i;
+			ret = i + 1;
 	}
 	
 	_global_lock--;

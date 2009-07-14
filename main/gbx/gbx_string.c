@@ -656,8 +656,11 @@ void STRING_add(char **ptr, const char *src, int len)
 	old_len = STRING_length(*ptr);
 
 	STRING_extend(ptr, old_len + len);
-	memcpy(&((*ptr)[old_len]), src, len);
-	(*ptr)[old_len + len] = 0;
+	if (src)
+	{
+		memcpy(&((*ptr)[old_len]), src, len);
+		(*ptr)[old_len + len] = 0;
+	}
 }
 
 

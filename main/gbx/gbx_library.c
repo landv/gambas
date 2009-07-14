@@ -472,7 +472,7 @@ void LIBRARY_load(LIBRARY *lib)
   #endif
 
   if (lib->handle == NULL)
-    THROW(E_LIBRARY, path, lt_dlerror());
+    THROW(E_LIBRARY, lib->name, lt_dlerror());
 
   func = get_symbol(lib, LIB_INIT, TRUE);
 

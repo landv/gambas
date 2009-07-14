@@ -4379,11 +4379,11 @@ Public Sub DrawTitle(hForm As Object)
   Dim sTitle As String
 
   sPath = hForm.Path
-  If IsSourcePath(sPath) Or If IsConnectionPath(sPath) Then
-    sTitle = File.BaseName(sPath)
-  Else
+  'If IsSourcePath(sPath) Or If IsConnectionPath(sPath) Then
+  '  sTitle = File.BaseName(sPath)
+  'Else
     sTitle = File.Name(sPath)
-  Endif
+  'Endif
   
   If hForm.IsModified() Then sTitle &= " [*]" & Left(("modified"), 0)
   If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
