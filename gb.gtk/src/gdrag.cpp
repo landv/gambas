@@ -411,7 +411,7 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 		hide_frame(NULL);
 		
 	// Don't know why I should do that...
-	if (GTK_IS_SCROLLED_WINDOW(control->border))
+	if (control->_scroll)
 	{
 		parent = control->widget->window;
 		w -= control->getFrameWidth();

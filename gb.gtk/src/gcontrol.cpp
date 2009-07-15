@@ -237,16 +237,17 @@ void gControl::initAll(gContainer *parent)
 	no_input_method = false;
 	_no_default_mouse_event = false;
 
-	onFinish=NULL;
-	onFocusEvent=NULL;
-	onKeyEvent=NULL;
-	onMouseEvent=NULL;
-	onDrag=NULL;
-	onDragMove=NULL;
-	onDrop=NULL;
-	onEnterLeave=NULL;
+	onFinish = NULL;
+	onFocusEvent = NULL;
+	onKeyEvent = NULL;
+	onMouseEvent = NULL;
+	onDrag = NULL;
+	onDragMove = NULL;
+	onDrop = NULL;
+	onEnterLeave = NULL;
 
-	frame = border = widget = 0;
+	frame = border = widget = NULL;
+	_scroll = NULL;
 	hFree = NULL;
 	
 	controls = g_list_append(controls,this);
@@ -923,6 +924,8 @@ void gControl::lower()
 	if (border->window)
 	{
 		gdk_window_lower(border->window);
+		if (widget->window)
+			gdk_window_lower(widget->window);
 	}
 	else
 	{	
@@ -979,6 +982,8 @@ void gControl::raise()
 	if (border->window)
 	{
 		gdk_window_raise(border->window);
+		if (widget->window)
+			gdk_window_raise(widget->window);
 	}
 	else
 	{	
@@ -1208,34 +1213,37 @@ static void add_container(GtkWidget *parent, GtkWidget *child)
 
 void gControl::realize(bool make_frame)
 {
-  if (!make_frame)
-  {
-    frame = widget;
-  }
-  else if (!frame)
-  {
-    frame = gtk_alignment_new(0, 0, 1, 1);
-    gtk_widget_set_redraw_on_allocate(frame, TRUE);
-  }
-  
-  if (!border)
-    border = widget;
-  
-  //printf("border = %p / frame = %p / widget =%p\n", border, frame, widget);
-  
-  if (border != frame)
-  {
-    //printf("frame -> border\n");
-    add_container(border, frame);
-  }
-  if (frame != widget && border != widget)
-  {
-    //printf("widget -> frame\n");
-    add_container(frame, widget);
-  }
-  
-  if (!make_frame)
-    frame = 0;
+	if (!_scroll)
+	{
+		if (!make_frame)
+		{
+			frame = widget;
+		}
+		else if (!frame)
+		{
+			frame = gtk_alignment_new(0, 0, 1, 1);
+			gtk_widget_set_redraw_on_allocate(frame, TRUE);
+		}
+		
+		if (!border)
+			border = widget;
+		
+		//printf("border = %p / frame = %p / widget =%p\n", border, frame, widget);
+		
+		if (border != frame)
+		{
+			//printf("frame -> border\n");
+			add_container(border, frame);
+		}
+		if (frame != widget && border != widget)
+		{
+			//printf("widget -> frame\n");
+			add_container(frame, widget);
+		}
+		
+		if (!make_frame)
+			frame = 0;
+	}
 
 	connectParent();
 	initSignals();
@@ -1245,6 +1253,21 @@ void gControl::realize(bool make_frame)
 		
 	if (isContainer() && widget != border)
 		g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
+}
+
+void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
+{
+	border = gtk_event_box_new();
+	widget = wid;
+	frame = 0;
+
+	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
+	gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
+	gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_container_add(GTK_CONTAINER(_scroll), widget);
+	
+	if (!doNotRealize)
+		realize(false);
 }
 
 void gControl::updateBorder()
@@ -1285,13 +1308,8 @@ int gControl::getFrameWidth()
   	return p;
   }
   
-  if (GTK_IS_SCROLLED_WINDOW(border))
-  {
-		if (gtk_scrolled_window_get_shadow_type(GTK_SCROLLED_WINDOW(border)) == GTK_SHADOW_NONE)
-			return 0;
-		else
-			return 2;
-  }
+  if (_scroll)
+		return hasBorder() ? 2 : 0;
   
   switch (frame_border)
   {
@@ -1311,6 +1329,26 @@ void gControl::setFrameBorder(int border)
   updateBorder();
 }
 
+bool gControl::hasBorder()
+{
+	if (_scroll)
+		return gtk_scrolled_window_get_shadow_type(_scroll) != GTK_SHADOW_NONE;
+	else
+		return getFrameBorder() != BORDER_NONE;
+}
+
+void gControl::setBorder(bool vl)
+{
+	if (_scroll)
+	{
+		if (vl)
+			gtk_scrolled_window_set_shadow_type(_scroll, GTK_SHADOW_IN);
+		else
+			gtk_scrolled_window_set_shadow_type(_scroll, GTK_SHADOW_NONE);
+	}
+	else
+		setFrameBorder(vl ? BORDER_SUNKEN : BORDER_NONE);
+}
 
 void gControl::setFramePadding(int padding)
 {
@@ -1473,18 +1511,19 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 
 int gControl::scrollX()
 {
-	if (!GTK_IS_SCROLLED_WINDOW(border))
+	if (_scroll)
+		return (int)gtk_scrolled_window_get_hadjustment(_scroll)->value;
+	else
 		return 0;
-	
-	return (int)gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(border))->value;
 }
 
 int gControl::scrollY()
 {
-	if (!GTK_IS_SCROLLED_WINDOW(border))
+	if (_scroll)
+		return (int)gtk_scrolled_window_get_vadjustment(_scroll)->value;
+	else
 		return 0;
 	
-	return (int)gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(border))->value;
 }
 
 void gControl::setScrollX(int vl)
@@ -1492,10 +1531,10 @@ void gControl::setScrollX(int vl)
 	GtkAdjustment* adj;
 	int max;
 	
-	if (!GTK_IS_SCROLLED_WINDOW(border))
+	if (!_scroll)
 		return;
 		
-	adj = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(border));
+	adj = gtk_scrolled_window_get_hadjustment(_scroll);
 	
 	max = (int)(adj->upper - adj->page_size);
 	
@@ -1512,10 +1551,10 @@ void gControl::setScrollY(int vl)
 	GtkAdjustment* adj;
 	int max;
 	
-	if (!GTK_IS_SCROLLED_WINDOW(border))
+	if (!_scroll)
 		return;
 		
-	adj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(border));
+	adj = gtk_scrolled_window_get_vadjustment(_scroll);
 	
 	max = (int)(adj->upper - adj->page_size);
 	
@@ -1558,10 +1597,10 @@ int gControl::scrollBar()
 	GtkPolicyType h, v;
 	int ret = 3;
 	
-	if (!GTK_IS_SCROLLED_WINDOW(border))
+	if (!_scroll)
 		return 0;
 	
-	gtk_scrolled_window_get_policy(GTK_SCROLLED_WINDOW(border), &h, &v);
+	gtk_scrolled_window_get_policy(_scroll, &h, &v);
 	if (h == GTK_POLICY_NEVER) ret--;
 	if (v == GTK_POLICY_NEVER) ret -= 2;
 	
@@ -1570,22 +1609,22 @@ int gControl::scrollBar()
 
 void gControl::setScrollBar(int vl)
 {
-	if (!GTK_IS_SCROLLED_WINDOW(border))
+	if (!_scroll)
 		return;
 	
 	switch(vl)
 	{
 		case 0:
-			gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(border), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_NEVER, GTK_POLICY_NEVER);
 			break;
 		case 1:
-			gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(border), GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
+			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
 			break;
 		case 2:
-			gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(border), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 			break;
 		case 3:
-			gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(border), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 			break;
 	}
 }

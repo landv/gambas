@@ -542,16 +542,16 @@ END_METHOD
 
 BEGIN_PROPERTY(CTREEVIEWITEM_key)
 
-	GB.ReturnNewZeroString(THIS->item);
+        GB.ReturnNewZeroString(THIS->item);
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTREEVIEWITEM_picture)
 
-	if (READ_PROPERTY)
-	{
-		gPicture *pic = WIDGET->itemPicture(THIS->item);
+        if (READ_PROPERTY)
+        {
+                gPicture *pic = WIDGET->itemPicture(THIS->item);
 		GB.ReturnObject(pic ? pic->getTagValue() : 0);
 	}
 	else
@@ -893,21 +893,21 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTREEVIEW_client_width)
 
-
+	GB.ReturnInteger(WIDGET->clientWidth());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTREEVIEW_client_height)
 
-
+	GB.ReturnInteger(WIDGET->clientHeight());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CTREEVIEW_border)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->getBorder());
+		GB.ReturnBoolean(WIDGET->hasBorder());
 	else
 		WIDGET->setBorder(VPROP(GB_BOOLEAN));
 

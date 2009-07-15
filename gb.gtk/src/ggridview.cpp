@@ -677,16 +677,16 @@ static gboolean cb_scroll(GtkWidget *wid, GdkEventScroll *e, gGridView *data)
 	#else
 	g_object_get(G_OBJECT(adj), "step-increment", &step, (void *)NULL);
 	#endif
-	
-	switch (e->direction)
-	{
-		case GDK_SCROLL_UP: data->setScrollY(data->scrollY() - (int)step); break;
-		case GDK_SCROLL_DOWN: data->setScrollY(data->scrollY() + (int)step); break;
-		case GDK_SCROLL_LEFT: data->setScrollX(data->scrollX() - (int)step); break;
-		case GDK_SCROLL_RIGHT:  data->setScrollX(data->scrollX() + (int)step); break;
-	}
-	
-	return TRUE;
+        
+        switch (e->direction)
+        {
+                case GDK_SCROLL_UP: data->setScrollY(data->scrollY() - (int)step); break;
+                case GDK_SCROLL_DOWN: data->setScrollY(data->scrollY() + (int)step); break;
+                case GDK_SCROLL_LEFT: data->setScrollX(data->scrollX() - (int)step); break;
+                case GDK_SCROLL_RIGHT:  data->setScrollY(data->scrollX() + (int)step); break;
+        }
+        
+        return TRUE;
 }
 
 static gboolean cb_keypress(GtkWidget *wid,GdkEventKey *e,gGridView *data)
@@ -749,18 +749,18 @@ gGridView::gGridView(gContainer *parent) : gControl(parent)
 	sel_row=-1;
 	sel_mode=0;
 	sel_current = -1;
-	scroll=3;
-	hdata=NULL;
-	vdata=NULL;
-	_last_col_width = 0;
-	scroll_timer = 0;
-	_updating_last_column = false;
+        scroll=3;
+        hdata=NULL;
+        vdata=NULL;
+        _last_col_width = 0;
+        scroll_timer = 0;
+        _updating_last_column = false;
 
-	border=gtk_event_box_new();
-	widget=gtk_table_new(3,3,FALSE);
-	//gtk_container_set_border_width  (GTK_CONTAINER(widget),1);
+        border=gtk_event_box_new();
+        widget=gtk_table_new(3,3,FALSE);
+        //gtk_container_set_border_width  (GTK_CONTAINER(widget),1);
 
-	//gtk_container_add(GTK_CONTAINER(border),widget);
+        //gtk_container_add(GTK_CONTAINER(border),widget);
 	hbar=gtk_hscrollbar_new(NULL);
 	vbar=gtk_vscrollbar_new(NULL);
 	
@@ -1906,19 +1906,19 @@ void gGridView::setForeground(gColor color)
 
 void gGridView::updateLastColumn()
 {
-	int n = columnCount() - 1;
-	int vw = visibleWidth();
-	
-	if (n < 0)
-		return;
-		
-	if (_updating_last_column)
-		return;
-		
-	_updating_last_column = true;
-	
-	if (!_last_col_width)
-		_last_col_width = columnWidth(n);
+        int n = columnCount() - 1;
+        int vw = visibleWidth();
+        
+        if (n < 0)
+                return;
+                
+        if (_updating_last_column)
+                return;
+                
+        _updating_last_column = true;
+        
+        if (!_last_col_width)
+                _last_col_width = columnWidth(n);
 	
 	//fprintf(stderr, "updateLastColumn: vw = %d columnPos = %d %d _lcw = %d \n", vw, columnPos(n), columnPos(n), _last_col_width);
 	
@@ -1943,9 +1943,9 @@ void gGridView::startScrollTimer(GSourceFunc func)
 void gGridView::stopScrollTimer()
 {
 	if (scroll_timer)
-	{
-		g_source_remove(scroll_timer);
-		scroll_timer = 0;
-	}
+        {
+                g_source_remove(scroll_timer);
+                scroll_timer = 0;
+        }
 }
 

@@ -13,7 +13,7 @@ public:
 //"Properties"
 	int count();
 	
-	long      itemChildren(char *key);
+	int      itemChildren(char *key);
 	char*     itemText(char *key);
 	gPicture* itemPicture(char *key);
 	bool      isItemSelected(char *key);
@@ -28,14 +28,12 @@ public:
 	
 	int       mode();
 	void      setMode(int vl);
-	bool      getBorder();
-	void      setBorder(bool vl);
-	long      visibleWidth();
-	long      visibleHeight();
-	long      scrollBar();
-	void      setScrollBar(long vl);
-	bool			headers() { return tree->headers(); }
-	void			setHeaders(bool vl) { tree->setHeaders(vl); }
+	int      visibleWidth();
+	int      visibleHeight();
+	int clientWidth();
+	int clientHeight();
+	bool                    headers() { return tree->headers(); }
+	void                    setHeaders(bool vl) { tree->setHeaders(vl); }
 	
 	bool isEditable() { return tree->isEditable(); }
 	void setEditable(bool vl) { tree->setEditable(vl); }
@@ -102,14 +100,15 @@ public:
 	void (*onRemove)(gTreeView *sender, char *key);
 	void (*onRename)(gTreeView *sender, char *key);
 	void (*onCancel)(gTreeView *sender, char *key);
-	bool (*onCompare)(gTreeView *sender, char *keya, char *keyb, int *comp);
+        bool (*onCompare)(gTreeView *sender, char *keya, char *keyb, int *comp);
 
 //"Private"
-	char*     find(GtkTreePath *path) { return tree->pathToKey(path, false); }
-	void refreshExpanded(char *parent, bool ex);
+        char*     find(GtkTreePath *path) { return tree->pathToKey(path, false); }
+        void refreshExpanded(char *parent, bool ex);
 
-private:
-	gTree *tree;
+protected:
+        gTree *tree;
+        GtkWidget *treeview;
 };
 
 #endif

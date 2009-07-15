@@ -4,26 +4,24 @@
 class gTextArea : public gControl
 {
 public:
-	gTextArea(gContainer *parent);
+        gTextArea(gContainer *parent);
 
 //"Properties"
-	bool hasBorder();
-	int column();
-	int length();
-	int line();
-	int position();
-	bool readOnly();
-	char* text();
-	bool wrap();
-	bool isSelected();
+        int column();
+        int length();
+        int line();
+        int position();
+        bool readOnly();
+        char* text();
+        bool wrap();
+        bool isSelected();
 
-	void setBorder(bool vl);
-	void setColumn(int vl);
-	void setLine(int vl);
-	void setPosition(int vl);
-	void setReadOnly(bool vl);
-	void setText(const char *txt);
-	void setWrap(bool vl);
+        void setColumn(int vl);
+        void setLine(int vl);
+        void setPosition(int vl);
+        void setReadOnly(bool vl);
+        void setText(const char *txt);
+        void setWrap(bool vl);
 	
 	int textWidth();
 	int textHeight();
@@ -50,12 +48,15 @@ public:
 	void selSelect(int start,int length);
 
 //"Signals"
-	void (*onChange)(gTextArea *sender);
-	void (*onCursor)(gTextArea *sender);
+        void (*onChange)(gTextArea *sender);
+        void (*onCursor)(gTextArea *sender);
 
 //"Private"
   void updateCursor(GdkCursor *cursor);
   void waitForLayout(int *tw, int *th);
+
+private:
+        GtkWidget *textview;
 };
 
 #endif

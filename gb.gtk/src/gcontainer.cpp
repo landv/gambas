@@ -423,8 +423,8 @@ int gContainer::clientWidth()
 			return cont->allocation.width;
 	}
 	
-	if (GTK_IS_SCROLLED_WINDOW(border))
-		return (int)gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(border))->page_size;
+	if (_scroll)
+		return (int)gtk_scrolled_window_get_hadjustment(_scroll)->page_size;
 	
 	return width() - getFrameWidth() * 2;
 }
@@ -453,8 +453,8 @@ int gContainer::clientHeight()
 			return cont->allocation.height;
 	}
 	
-	if (GTK_IS_SCROLLED_WINDOW(border))
-		return (int)gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(border))->page_size;
+	if (_scroll)
+		return (int)gtk_scrolled_window_get_vadjustment(_scroll)->page_size;
 	
 	return height() - getFrameWidth() * 2;
 }

@@ -102,21 +102,19 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	tree->setHeaders(false);
 	tree->onRemove = cb_remove;
 	
-	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(tree->widget), true);
+	treeview = tree->widget;
+
+	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(treeview), true);
 	
-	border=gtk_scrolled_window_new(NULL,NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(border), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	widget=tree->widget;
-	
+	realizeScrolledWindow(treeview, true);
 	// BM: must occurs before!
-	g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
-	
-	realize();
-		
+	g_signal_connect(G_OBJECT(treeview), "button-press-event", G_CALLBACK(cb_button_press), (gpointer)this);
+	realize(false);
+					
 	setMode(SELECT_SINGLE);
 	setBorder(true);
 
-	onActivate = NULL;	
+	onActivate = NULL;      
 	onSelect = NULL;
 	onClick = NULL;
 	onCollapse = NULL;
@@ -126,13 +124,13 @@ gTreeView::gTreeView(gContainer *parent, bool list) : gControl(parent)
 	onCancel = NULL;
 	onCompare = NULL;
 	
-	sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree->widget));
+	sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 	
-	g_signal_connect(G_OBJECT(widget),"row-activated",G_CALLBACK(cb_activate),(gpointer)this);
+	g_signal_connect(G_OBJECT(treeview),"row-activated",G_CALLBACK(cb_activate),(gpointer)this);
 	g_signal_connect(G_OBJECT(sel),"changed",G_CALLBACK(cb_select),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"row-expanded",G_CALLBACK(cb_expand),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"row-collapsed",G_CALLBACK(cb_collapse),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"cursor-changed",G_CALLBACK(cb_click),(gpointer)this);
+	g_signal_connect(G_OBJECT(treeview),"row-expanded",G_CALLBACK(cb_expand),(gpointer)this);
+	g_signal_connect(G_OBJECT(treeview),"row-collapsed",G_CALLBACK(cb_collapse),(gpointer)this);
+	g_signal_connect(G_OBJECT(treeview),"cursor-changed",G_CALLBACK(cb_click),(gpointer)this);
 }
 
 gTreeView::~gTreeView()
@@ -180,7 +178,7 @@ int gTreeView::count()
 
 int gTreeView::mode()
 {
-	GtkTreeSelection *sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(tree->widget));
+	GtkTreeSelection *sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 	
 	switch (gtk_tree_selection_get_mode (sel))
 	{
@@ -192,27 +190,27 @@ int gTreeView::mode()
 
 void gTreeView::setMode(int vl)
 {
-	GtkTreeSelection *sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(tree->widget));
+	GtkTreeSelection *sel=gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 	
 	switch (vl)
 	{
 		case SELECT_NONE:
 			gtk_tree_selection_set_mode(sel,GTK_SELECTION_NONE); break;
 		case SELECT_SINGLE:
-			gtk_tree_selection_set_mode(sel,GTK_SELECTION_SINGLE); break;
-		case SELECT_MULTIPLE:
-			gtk_tree_selection_set_mode(sel,GTK_SELECTION_MULTIPLE); break; 
-	}
+                        gtk_tree_selection_set_mode(sel,GTK_SELECTION_SINGLE); break;
+                case SELECT_MULTIPLE:
+                        gtk_tree_selection_set_mode(sel,GTK_SELECTION_MULTIPLE); break; 
+        }
 }
 
-long gTreeView::visibleWidth()
+int gTreeView::visibleWidth()
 {
-	return tree->visibleWidth();
+        return tree->visibleWidth();
 }
 
-long gTreeView::visibleHeight()
+int gTreeView::visibleHeight()
 {
-	return tree->visibleHeight();
+        return tree->visibleHeight();
 }
 
 
@@ -223,16 +221,16 @@ char* gTreeView::itemText(char *key)
 
 void gTreeView::setItemText(char *key, const char *vl)
 {
-	setItemText(key, 0, vl);
+        setItemText(key, 0, vl);
 }
 
-long gTreeView::itemChildren(char *key)
+int gTreeView::itemChildren(char *key)
 {
-	gTreeRow *row;
-	
-	if (!key) return 0;
-	row=tree->getRow(key);
-	if (!row) return 0;
+        gTreeRow *row;
+        
+        if (!key) return 0;
+        row=tree->getRow(key);
+        if (!row) return 0;
 	return row->children();
 
 }
@@ -334,59 +332,11 @@ char* gTreeView::find(int x, int y)
 {
 	GtkTreePath *path;
 
-	if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tree->widget), x, y, &path, NULL, NULL, NULL))
-		return tree->pathToKey(path);
-	else
-		return NULL;
+        if (gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview), x, y, &path, NULL, NULL, NULL))
+                return tree->pathToKey(path);
+        else
+                return NULL;
 }
-
-bool gTreeView::getBorder()
-{
-	return gtk_scrolled_window_get_shadow_type(GTK_SCROLLED_WINDOW(border)) != GTK_SHADOW_NONE;
-}
-
-void gTreeView::setBorder(bool vl)
-{
-	GtkScrolledWindow *wr=GTK_SCROLLED_WINDOW(border);
-	
-	if (vl)
-		gtk_scrolled_window_set_shadow_type(wr,GTK_SHADOW_IN);
-	else
-		gtk_scrolled_window_set_shadow_type(wr,GTK_SHADOW_NONE);
-}
-
-long gTreeView::scrollBar()
-{
-	GtkPolicyType h,v;
-	long ret=3;
-	
-	gtk_scrolled_window_get_policy(GTK_SCROLLED_WINDOW(border),&h,&v);
-	if (h==GTK_POLICY_NEVER) ret--;
-	if (v==GTK_POLICY_NEVER) ret-=2;
-	
-	return ret;
-}
-
-void gTreeView::setScrollBar(long vl)
-{
-	GtkScrolledWindow *sc=GTK_SCROLLED_WINDOW(border);
-	switch(vl)
-	{
-		case 0:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_NEVER,GTK_POLICY_NEVER);
-			break;
-		case 1:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_AUTOMATIC,GTK_POLICY_NEVER);
-			break;
-		case 2:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_NEVER,GTK_POLICY_AUTOMATIC);
-			break;
-		case 3:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
-			break;
-	}
-}
-
 
 bool gTreeView::isItemExpanded(char *key)
 {
@@ -504,3 +454,20 @@ char *gTreeView::intern(char *key)
 	gTreeRow *row = (*tree)[key];
 	return row ? row->key() : NULL;
 }
+
+int gTreeView::clientWidth()
+{
+	GtkAdjustment* Adj;
+	
+	Adj=gtk_scrolled_window_get_hadjustment(_scroll);
+	return (int)Adj->page_size;
+}
+
+int gTreeView::clientHeight()
+{
+	GtkAdjustment* Adj;
+	
+	Adj=gtk_scrolled_window_get_vadjustment(_scroll);
+	return (int)Adj->page_size;
+}
+

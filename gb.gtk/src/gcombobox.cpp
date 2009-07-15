@@ -46,7 +46,8 @@ static void cb_click(GtkComboBox *widget,gComboBox *data)
 	{
 		data->lock();
 		int index = data->index();
-		const char *text = index >= 0 ? data->itemText(index) : "";
+		const char *text = index >= 0 ? data->itemText(index) : NULL;
+		if (!text) text = "";
 		gtk_entry_set_text(GTK_ENTRY(data->entry), text);
 		data->unlock();
 		data->emit(SIGNAL(data->onChange));

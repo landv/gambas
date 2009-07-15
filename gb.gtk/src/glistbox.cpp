@@ -32,15 +32,15 @@
 
 gListBox::gListBox(gContainer *parent) : gTreeView(parent, true)
 {
-	g_typ=Type_gListBox;
-	_last_key = 0;
-	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(widget), false);
+        g_typ=Type_gListBox;
+        _last_key = 0;
+        gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(treeview), false);
 }
 
 static int pathToIndex(GtkTreePath *path)
 {
-	gint *indices;
-	
+        gint *indices;
+        
 	if (!path) 
 		return -1;
 	
@@ -66,25 +66,25 @@ char *gListBox::indexToKey(int index)
 
 int gListBox::index()
 {
-	GtkTreePath *path;
-	
-	if (mode() == SELECT_NONE)
-		return -1;
-	
-	gtk_tree_view_get_cursor(GTK_TREE_VIEW(widget), &path, NULL);
-	return pathToIndex(path);
+        GtkTreePath *path;
+        
+        if (mode() == SELECT_NONE)
+                return -1;
+        
+        gtk_tree_view_get_cursor(GTK_TREE_VIEW(treeview), &path, NULL);
+        return pathToIndex(path);
 }
 
 void gListBox::setIndex(int ind)
 {
-	GtkTreePath *path = indexToPath(ind);
-	gtk_tree_view_set_cursor(GTK_TREE_VIEW(widget), path, NULL, false);
-	gtk_tree_path_free(path);
+        GtkTreePath *path = indexToPath(ind);
+        gtk_tree_view_set_cursor(GTK_TREE_VIEW(treeview), path, NULL, false);
+        gtk_tree_path_free(path);
 }
 
 bool gListBox::isItemSelected(int ind)
 {
-	return gTreeView::isItemSelected(indexToKey(ind));
+        return gTreeView::isItemSelected(indexToKey(ind));
 }
 
 void gListBox::setItemSelected(int ind, bool vl)

@@ -70,24 +70,21 @@ gIconView::gIconView(gContainer *parent) : gControl(parent)
 	tree = new gIcon(this);
 	tree->onRemove = cb_remove;
 	
-	border = gtk_scrolled_window_new(NULL,NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(border), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	widget = tree->widget;
+	iconview = tree->widget;
+	realizeScrolledWindow(iconview);
 	
-	realize();
-		
 	setMode(SELECT_SINGLE);
 	setBorder(true);
 
-	onActivate = NULL;	
+	onActivate = NULL;      
 	onSelect = NULL;
 	onClick = NULL;
 	onRemove = NULL;
 	onCompare = NULL;
 	
-	g_signal_connect(G_OBJECT(widget), "item-activated", G_CALLBACK(cb_activate), (gpointer)this);
-	g_signal_connect(G_OBJECT(widget), "selection-changed", G_CALLBACK(cb_select), (gpointer)this);
-	g_signal_connect(G_OBJECT(widget), "button-release-event", G_CALLBACK(cb_click), (gpointer)this);
+	g_signal_connect(G_OBJECT(iconview), "item-activated", G_CALLBACK(cb_activate), (gpointer)this);
+	g_signal_connect(G_OBJECT(iconview), "selection-changed", G_CALLBACK(cb_select), (gpointer)this);
+	g_signal_connect(G_OBJECT(iconview), "button-release-event", G_CALLBACK(cb_click), (gpointer)this);
 }
 
 gIconView::~gIconView()
@@ -127,35 +124,35 @@ bool gIconView::exists(char *key)
 
 int gIconView::count()
 {
-	return tree->rowCount();
+        return tree->rowCount();
 }
 
 int gIconView::mode()
 {
-	switch (gtk_icon_view_get_selection_mode(GTK_ICON_VIEW(widget)))
-	{
-		case GTK_SELECTION_NONE:     return SELECT_NONE;
-		case GTK_SELECTION_SINGLE:   return SELECT_SINGLE;
-		default: return SELECT_MULTIPLE;
-	}
+        switch (gtk_icon_view_get_selection_mode(GTK_ICON_VIEW(iconview)))
+        {
+                case GTK_SELECTION_NONE:     return SELECT_NONE;
+                case GTK_SELECTION_SINGLE:   return SELECT_SINGLE;
+                default: return SELECT_MULTIPLE;
+        }
 }
 
 void gIconView::setMode(int vl)
 {
-	switch (vl)
-	{
-		case SELECT_NONE:
-			gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(widget), GTK_SELECTION_NONE); break;
-		case SELECT_SINGLE:
-			gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(widget), GTK_SELECTION_SINGLE); break;
-		case SELECT_MULTIPLE:
-			gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(widget), GTK_SELECTION_MULTIPLE); break;
-	}
+        switch (vl)
+        {
+                case SELECT_NONE:
+                        gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(iconview), GTK_SELECTION_NONE); break;
+                case SELECT_SINGLE:
+                        gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(iconview), GTK_SELECTION_SINGLE); break;
+                case SELECT_MULTIPLE:
+                        gtk_icon_view_set_selection_mode(GTK_ICON_VIEW(iconview), GTK_SELECTION_MULTIPLE); break;
+        }
 }
 
 char* gIconView::itemText(char *key)
 {
-	gIconRow *row;
+        gIconRow *row;
 	
 	if (!key) return NULL;
 	row=tree->getRow(key);
@@ -238,62 +235,14 @@ char* gIconView::prevItem(char *vl)
 
 char* gIconView::find(int x, int y)
 {
-	GtkTreePath *path;
+        GtkTreePath *path;
 
-	path = gtk_icon_view_get_path_at_pos(GTK_ICON_VIEW(widget), x, y);
-	if (path)
-		return tree->pathToKey(path);
-	else
-		return NULL;
+        path = gtk_icon_view_get_path_at_pos(GTK_ICON_VIEW(iconview), x, y);
+        if (path)
+                return tree->pathToKey(path);
+        else
+                return NULL;
 }
-
-bool gIconView::getBorder()
-{
-	return gtk_scrolled_window_get_shadow_type(GTK_SCROLLED_WINDOW(border)) != GTK_SHADOW_NONE;
-}
-
-void gIconView::setBorder(bool vl)
-{
-	GtkScrolledWindow *wr=GTK_SCROLLED_WINDOW(border);
-	
-	if (vl)
-		gtk_scrolled_window_set_shadow_type(wr,GTK_SHADOW_IN);
-	else
-		gtk_scrolled_window_set_shadow_type(wr,GTK_SHADOW_NONE);
-}
-
-long gIconView::scrollBar()
-{
-	GtkPolicyType h,v;
-	long ret=3;
-	
-	gtk_scrolled_window_get_policy(GTK_SCROLLED_WINDOW(border),&h,&v);
-	if (h==GTK_POLICY_NEVER) ret--;
-	if (v==GTK_POLICY_NEVER) ret-=2;
-	
-	return ret;
-}
-
-void gIconView::setScrollBar(long vl)
-{
-	GtkScrolledWindow *sc=GTK_SCROLLED_WINDOW(border);
-	switch(vl)
-	{
-		case 0:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_NEVER,GTK_POLICY_NEVER);
-			break;
-		case 1:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_AUTOMATIC,GTK_POLICY_NEVER);
-			break;
-		case 2:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_NEVER,GTK_POLICY_AUTOMATIC);
-			break;
-		case 3:
-			gtk_scrolled_window_set_policy(sc,GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
-			break;
-	}
-}
-
 
 void gIconView::moveItemFirst(char *key)
 {
@@ -325,7 +274,7 @@ int gIconView::clientWidth()
 {
 	GtkAdjustment* Adj;
 	
-	Adj=gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(border));
+	Adj=gtk_scrolled_window_get_hadjustment(_scroll);
 	return (int)Adj->page_size;
 }
 
@@ -333,7 +282,7 @@ int gIconView::clientHeight()
 {
 	GtkAdjustment* Adj;
 	
-	Adj=gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(border));
+	Adj=gtk_scrolled_window_get_vadjustment(_scroll);
 	return (int)Adj->page_size;
 }
 

@@ -145,6 +145,7 @@ public:
 	GtkWidget *widget;
 	GtkWidget *border;
 	GtkWidget *frame;
+	GtkScrolledWindow *_scroll;
 	short g_typ;
 	short mous;
 	
@@ -183,6 +184,7 @@ public:
 	void setParent(gContainer *parent) { pr = parent; }
 	void initAll(gContainer *pr);
 	void realize(bool make_frame = false);
+	void realizeScrolledWindow(GtkWidget *wid, bool doNotRealize = false);
 	void updateGeometry();
 	bool mustUpdateCursor() { return mouse() != -1 || have_cursor; }
 	
@@ -191,6 +193,8 @@ public:
 	virtual void updateBorder();
 	int getFrameBorder() { return frame_border; }
 	void setFrameBorder(int border);
+	void setBorder(bool b);
+	bool hasBorder();
 	int getFramePadding() { return frame_padding; }
 	void setFramePadding(int padding);
 	virtual int getFrameWidth();

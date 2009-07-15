@@ -20,16 +20,12 @@ public:
 	void      setItemSelected(char *key, bool vl);
 	void      setItemText(char *key,char *vl);
 	void      setItemPicture(char *key, gPicture *vl);
-	
+        
 	bool isItemEditable(char *key) { return tree->isRowEditable(key); }
 	void setItemEditable(char *key, bool vl) { tree->setRowEditable(key, vl); }
 	
 	int       mode();
 	void      setMode(int vl);
-	bool      getBorder();
-	void      setBorder(bool vl);
-	long      scrollBar();
-	void      setScrollBar(long vl);
 	int gridWidth() { return tree->gridWidth(); }
 	void setGridWidth(int w) { tree->setGridWidth(w); }
 	int clientWidth();
@@ -77,10 +73,11 @@ public:
 	bool (*onCompare)(gIconView *sender, char *keya, char *keyb, int *comp);
 
 //"Private"
-	char *find(GtkTreePath *path) { return tree->pathToKey(path, false); }
+        char *find(GtkTreePath *path) { return tree->pathToKey(path, false); }
 
 private:
-	gIcon *tree;
+        gIcon *tree;
+        GtkWidget *iconview;
 };
 
 #endif
