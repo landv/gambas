@@ -27,7 +27,7 @@ Public Sub Form_Open()
   fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Picture files")]
   fchIcon.Root = Project.Dir
   
-  cmbSize.List = ["small", "medium", "large", "huge", "16", "24", "32", "48", "64", "96", "128"]
+  cmbSize.List = ["small", "medium", "large", "huge", "16", "22", "32", "48", "64", "96", "128"]
   
   tabIcon[1].Visible = Not $bNoStock
   

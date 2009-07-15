@@ -478,10 +478,11 @@ void MyTable::setHeaders(int h)
 	updateHeaders();
 }
 
-void MyTable::fontChange(const QFont &oldFont)
+void MyTable::changeEvent(QEvent *e)
 {
-	Q3Table::fontChange(oldFont);
-	updateHeaders();
+	Q3Table::changeEvent(e);
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
+		updateHeaders();
 }
 
 Q3TableItem *MyTable::item( int row, int col ) const

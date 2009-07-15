@@ -28,8 +28,7 @@
 
 #include <q3asciidict.h>
 #include <q3table.h>
-#include <qevent.h>
-//Added by qt3to4:
+#include <QEvent>
 #include <QResizeEvent>
 #include <QPixmap>
 
@@ -127,12 +126,9 @@ public:
 
   virtual void setRowHeight(int row, int height);
   virtual void setColumnWidth(int col, int width);
-  //virtual void adjustColumn( int col );
 
   void setHeaders(int);
   int headers() const { return _header; }
-
-  //void setTableView(CTABLEVIEW *tv) { tableView = tv; }
 
   void resizeData( int ) { }
   Q3TableItem *item( int r, int c ) const;
@@ -181,7 +177,7 @@ private slots:
 
 protected:
 
-  virtual void fontChange(const QFont &old);
+  virtual void changeEvent(QEvent *e);
   virtual void resizeEvent(QResizeEvent *e);
 
 private:

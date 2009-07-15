@@ -4,11 +4,11 @@
 
 Public Sub Form_Open()
 
-  With DataBrowser2.GridView
+  With DataBrowser2.View
     .Columns[0].Text = "Color"
   End With
   
-  With DataBrowser1.GridView
+  With DataBrowser1.View
     .Columns[0].Text = "Id"
     .Columns[0].Width = 48
     .Columns[1].Text = "Active"

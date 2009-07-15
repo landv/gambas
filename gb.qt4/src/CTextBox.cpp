@@ -614,7 +614,7 @@ MyComboBox::MyComboBox(QWidget *parent) :
 void MyComboBox::changeEvent(QEvent *e)
 {
 	QComboBox::changeEvent(e);
-	if (e->type() == QEvent::FontChange)
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
 		calcMinimumHeight();
 }
 

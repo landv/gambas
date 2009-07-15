@@ -41,21 +41,27 @@ End
 
 Public Sub btnOK_Click()
 
-  TableName = Trim(txtName.Text)
+  Dim sName As String = Trim(txtName.Text)
 
-  If Not TableName Then
+  If TableName And If TableName = sName Then
+    Me.Close
+    Return
+  Endif
+
+  If Not TableName And If Not sName Then
     Balloon.Warning(("Please enter the name of the new table."), txtName)
     txtName.SetFocus
     Return
   Endif
   
-  If DB.Tables.Exist(TableName) Then
+  If DB.Tables.Exist(sName) Then
     Balloon.Warning(Subst(("Table '&1' already exists."), TableName), txtName)
     txtName.SetFocus
     Return
   Endif
 
-  TableType = cmbType.Text
+  If TableName Then TableType = cmbType.Text
+  TableName = sName
 
   Me.Close(True)
 

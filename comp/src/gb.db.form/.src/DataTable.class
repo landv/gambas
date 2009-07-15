@@ -29,6 +29,8 @@ Public Sub _new(Table As String, Filter As String)
   $sTable = Table
   $sFilter = Filter
   
+  DataConnection.CheckTable(Table)
+  
   If $sTable Like "SELECT *" Then $bRequest = True
   
   RefreshKey
@@ -318,4 +320,14 @@ Private Function CacheSize_Read() As Integer
     Return $aVal.Count
   Endif
 
+End
+
+Public Sub Reset()
+
+  If $bRequest Then
+    DataConnection.Reset()
+  Else
+    DataConnection.Reset($sTable)
+  Endif
+  
 End

@@ -7,14 +7,14 @@ Public Sub Main()
   Dim rTest As Result
   Dim aText As String[]
 
-  $hConn.Type = "mysql"
-  $hConn.User = "root"
-  '$hConn.Name = "dbsqlite.db"
-  $hConn.Name = "test"
-  '$hConn.Host = "/home/benoit"
+  $hConn.Type = "sqlite"
+  '$hConn.User = "root"
+  $hConn.Name = "dbsqlite.db"
+  '$hConn.Name = "test"
+  $hConn.Host = "/home/benoit"
 
   ' $hConn.Open
-  ' 
+  
   ' aText = ["la nuit est", "un long fleuve", "tranquille", "qui dort le long", "des pleurs infidèles"]
   ' DB.Begin
   ' rTest = DB.Edit("test")
@@ -28,6 +28,6 @@ Public Sub Main()
 
   'Application.Theme = "gnome"
 
-  FMain.Show
+  FTest.Show
 
 End

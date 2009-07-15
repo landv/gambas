@@ -545,7 +545,7 @@ MyPushButton::~MyPushButton()
 void MyPushButton::changeEvent(QEvent *e)
 {
   QWidget::changeEvent(e);
-	if (e->type() == QEvent::FontChange)
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
 		calcMinimumSize();
 }
 
@@ -609,7 +609,7 @@ MyToolButton::~MyToolButton()
 void MyToolButton::changeEvent(QEvent *e)
 {
   QWidget::changeEvent(e);
-	if (e->type() == QEvent::FontChange)
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
 		calcMinimumSize();
 }
 

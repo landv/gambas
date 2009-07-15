@@ -21,11 +21,15 @@ Static Public Function _get(sTable As String, sField As String, Optional bCreate
   Dim bReadOnly As Boolean
   Dim hInfo As DataField
   Dim sKey As String
+  Dim cInfoTable As Collection
   
-  sKey = sTable & "." & sField
+  sKey = sField
   If bCreate Then sKey &= "."
   
-  If Not $cInfo.Exist(sKey) Then
+  If Not $cInfo.Exist(sTable) Then $cInfo[sTable] = New Collection
+  cInfoTable = $cInfo[sTable]
+  
+  If Not cInfoTable.Exist(sKey) Then
 
     hTable = DB.Tables[sTable]
     hField = hTable.Fields[sField]
@@ -34,11 +38,11 @@ Static Public Function _get(sTable As String, sField As String, Optional bCreate
     hInfo.FromField(hField, hTable)
     If bCreate Then hInfo.ReadOnly = False
     
-    $cInfo[sKey] = hInfo
+    cInfoTable[sKey] = hInfo
     
   Endif
   
-  Return $cInfo[sKey]
+  Return cInfoTable[sKey]
   
 End
 
@@ -86,11 +90,29 @@ Static Public Function ExistTable(sTable As String) As Boolean
 End
 
 
-Static Public Sub Reset()
+Static Public Sub Reset(Optional sTable As String)
   
-  $cInfo = New Collection
-  $cKey = New Collection
-  $cFields = New Collection
-  $cTable = New Collection
+  Dim hDataField As DataField
+  
+  If sTable Then
+    If $cInfo Then 
+      $cInfo.Remove(sTable)
+      $cKey.Remove(sTable)
+      $cFields.Remove(sTable)
+      $cTable.Remove(sTable)
+    Endif
+  Else
+    $cInfo = New Collection
+    $cKey = New Collection
+    $cFields = New Collection
+    $cTable = New Collection
+  Endif
+  
+End
+
+Static Public Sub CheckTable(sTable As String)
+  
+  If DB.Tables.Exist(sTable) Then Return
+  Reset(sTable)
   
 End

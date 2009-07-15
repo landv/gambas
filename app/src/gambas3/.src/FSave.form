@@ -6,34 +6,36 @@
   Icon = Picture["img/16/quit.png"]
   Resizable = False
   { btnSave Button
-    MoveScaled(1,41,17,4)
+    MoveScaled(1,40,17,5)
     Text = ("&All")
-    Picture = Picture["icon:/small/save"]
+    Picture = Picture["icon:/medium/save"]
   }
   { btnQuit Button
-    MoveScaled(37,41,17,4)
+    MoveScaled(37,40,17,5)
     Enabled = False
     Text = ("Continue")
-    Picture = Picture["icon:/small/play"]
+    Picture = Picture["icon:/medium/play"]
     Default = True
   }
   { btnCancel Button
-    MoveScaled(55,41,17,4)
+    MoveScaled(55,40,17,5)
     Text = ("Cancel")
-    Picture = Picture["icon:/small/close"]
+    Picture = Picture["icon:/medium/close"]
     Cancel = True
   }
   { Panel1 Panel
     MoveScaled(1,1,71,8)
-    { TextLabel1 TextLabel
-      MoveScaled(7,0,62,6)
-      Font = Font["Bold,+1"]
-      Text = ("These files have been modified.\nDo&nbsp;you want to save them?")
-      Alignment = Align.Normal
-    }
+    Arrangement = Arrange.Horizontal
     { Image1 PictureBox
       MoveScaled(0,0,5,6)
       Picture = Picture["icon:/32/save"]
+      Alignment = Align.Center
+    }
+    { TextLabel1 TextLabel
+      MoveScaled(7,0,56,6)
+      Font = Font["Bold,+1"]
+      Expand = True
+      Text = ("These files have been modified.\nDo&nbsp;you want to save them?")
       Alignment = Align.Center
     }
   }
@@ -42,8 +44,8 @@
     Mode = Select.Multiple
   }
   { btnIgnore Button
-    MoveScaled(19,41,17,4)
+    MoveScaled(19,40,17,5)
     Text = ("&None")
-    Picture = Picture["icon:/small/cancel"]
+    Picture = Picture["icon:/medium/cancel"]
   }
 }

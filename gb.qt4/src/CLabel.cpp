@@ -229,7 +229,8 @@ MyLabel::MyLabel(QWidget *parent) : QLabel(parent)
 void MyLabel::changeEvent(QEvent *e)
 {
   QLabel::changeEvent(e);
-  calcMinimumHeight();
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
+		calcMinimumHeight();
 }
 
 void MyLabel::setText(const QString &text)

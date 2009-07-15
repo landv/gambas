@@ -48,8 +48,71 @@ typedef
 		}
 	MSG_PARAM;
 
+typedef
+	struct {
+		const char *text;
+		//QMessageBox::ButtonRole role;
+		QMessageBox::StandardButton button;
+		}
+	MSG_BUTTON_ROLE;
+	
 static int _global_lock = 0;
 static char *_title = 0;
+
+static MSG_BUTTON_ROLE _button_role[] =
+{
+	{ "Apply", QMessageBox::Apply },
+	{ "Abort", QMessageBox::Abort },
+	{ "Cancel", QMessageBox::Cancel },
+	{ "Close", QMessageBox::Close },
+	{ "Discard", QMessageBox::Discard },
+	{ "Don't save", QMessageBox::Discard },
+	{ "Do not save", QMessageBox::Discard },
+	{ "Help", QMessageBox::Help },
+	{ "Ignore", QMessageBox::Ignore },
+	{ "No", QMessageBox::No },
+	{ "OK", QMessageBox::Ok },
+	{ "Open", QMessageBox::Open },
+	{ "Reset", QMessageBox::Reset },
+	{ "Restore defaults", QMessageBox::RestoreDefaults },
+	{ "Retry", QMessageBox::Retry },
+	{ "Save", QMessageBox::Save },
+	{ "Save all", QMessageBox::SaveAll },
+	{ "Yes", QMessageBox::Yes },
+	{ NULL }
+};
+
+static bool compare_text(char *text, char *button)
+{
+	int it, ib;
+	
+	it = ib = 0;
+	for(;;)
+	{
+		if (button[ib] == '&')
+			ib++;
+		
+		if (text[it] != button[ib])
+			return false;
+		if (!text[it])
+			return true;
+		it++;
+		ib++;
+	}
+}
+
+static QMessageBox::StandardButton get_standard_button(char *text)
+{
+	MSG_BUTTON_ROLE *pb;
+	
+	for (pb = _button_role; pb->text; pb++)
+	{
+		if (compare_text(text, GB.Translate(pb->text)))
+			return pb->button;
+	}
+	
+	return QMessageBox::NoButton;
+}
 
 static int make_message(int type, int nbmax, void *_param)
 {
@@ -58,6 +121,7 @@ static int make_message(int type, int nbmax, void *_param)
 	QPushButton *button[3];
 	int ret, nbutton;
 	QMessageBox::ButtonRole role;
+	QMessageBox::StandardButton std;
 	QMessageBox::Icon icon;
 	const char *stock;
 	QString title;
@@ -99,14 +163,33 @@ static int make_message(int type, int nbmax, void *_param)
 	{
 		if (MISSING(btn[i]))
 			continue;
-		if (n == 0)
-			role = QMessageBox::AcceptRole;
-		else if (n == (nbutton - 1))
-			role = QMessageBox::RejectRole;
+		
+		std = get_standard_button(GB.ToZeroString(ARG(btn[i])));
+		if (std)
+		{
+			button[n] = mb->addButton(std);
+		}
 		else
-			role = QMessageBox::ActionRole;
-		button[n] = mb->addButton(QSTRING_ARG(btn[i]), role);
+		{
+			if (n == 0)
+				role = QMessageBox::AcceptRole;
+			else if (n == (nbutton - 1))
+				role = QMessageBox::RejectRole;
+			else
+				role = QMessageBox::ActionRole;
+		
+			button[n] = mb->addButton(QSTRING_ARG(btn[i]), role);
+		}
+		
 		n++;
+	}
+
+	// Default and cancel buttons
+	
+	if (nbutton)
+	{
+		mb->setDefaultButton(button[0]);
+		mb->setEscapeButton(button[nbutton - 1]);
 	}
 
 	// Icon
@@ -168,12 +251,17 @@ static int make_message(int type, int nbmax, void *_param)
 	
 	// Returned value
 	
-	ret = nbutton - 1;
-	for (i = 0; i < nbutton; i++)
+	if (nbutton)
 	{
-		if (button[i] == mb->clickedButton())
-			ret = i + 1;
+		ret = nbutton;
+		for (i = 0; i < nbutton; i++)
+		{
+			if (button[i] == mb->clickedButton())
+				ret = i + 1;
+		}
 	}
+	else
+		ret = 1;
 	
 	_global_lock--;
 	

@@ -5,7 +5,7 @@
   Text = ("")
   Arrangement = Arrange.Vertical
   { panToolBar ToolBar
-    MoveScaled(0,0,93,4)
+    MoveScaled(0,0,100,4)
     Key = "connection"
     Text = ("Connection editor")
     { btnSave ToolButton mnuSave
@@ -24,43 +24,56 @@
       Text = ("")
       Picture = Picture["icon:/small/refresh"]
     }
-    { Separator1 Separator
-      MoveScaled(8,0,1,4)
-    }
     { btnNewTable ToolButton
-      MoveScaled(10,0,15,4)
-      ToolTip = ("Rename")
+      MoveScaled(10,0,4,4)
+      ToolTip = ("New table")
       AutoResize = True
-      Text = ("New table")
+      Text = ("")
       Picture = Picture["icon:/small/new"]
     }
-    { btnImport ToolButton
-      MoveScaled(23,0,12,4)
-      ToolTip = ("Rename")
+    { btnKill ToolButton
+      MoveScaled(14,0,4,4)
+      ToolTip = ("Delete table")
       AutoResize = True
-      Text = ("Import...")
-      Picture = Picture["icon:/small/open"]
+      Text = ("")
+      Picture = Picture["icon:/small/delete"]
     }
     { btnRename ToolButton
-      MoveScaled(34,0,13,4)
-      ToolTip = ("Rename")
+      MoveScaled(18,0,13,4)
+      ToolTip = ("Rename table")
       AutoResize = True
       Text = ("Rename...")
       Picture = Picture["icon:/small/edit"]
     }
-    { btnKill ToolButton
-      MoveScaled(47,0,10,4)
-      ToolTip = ("Delete")
+    { btnImport ToolButton
+      MoveScaled(31,0,12,4)
+      ToolTip = ("Import text file")
       AutoResize = True
-      Text = ("Delete")
-      Picture = Picture["icon:/small/delete"]
+      Text = ("Import...")
+      Picture = Picture["icon:/small/open"]
     }
     { btnRequest ToolButton
-      MoveScaled(57,0,15,4)
-      ToolTip = ("Rename")
+      MoveScaled(43,0,15,4)
+      ToolTip = ("SQL request")
       AutoResize = True
       Text = ("SQL request")
       Picture = Picture["icon:/small/find"]
+    }
+    { HBox2 HBox
+      MoveScaled(62,0,32,4)
+      Expand = True
+      { Panel1 Panel
+        MoveScaled(5,1,2,2)
+        Expand = True
+      }
+      { lblTitle Label
+        MoveScaled(14,0,14,4)
+        Font = Font["Bold"]
+        Background = Color.ButtonBackground
+        AutoResize = True
+        Text = ("Label1")
+        Border = Border.Plain
+      }
     }
   }
   { HBox1 HBox
@@ -83,109 +96,8 @@
         MoveScaled(3,3,71,35)
         Arrangement = Arrange.Fill
         Spacing = True
-        { tabTable TabStrip
-          MoveScaled(2,5,68,26)
-          Visible = False
-          Expand = True
-          Arrangement = Arrange.Vertical
-          Count = 2
-          Index = 0
-          Text = ("Fields")
-          { tlbField ToolBar
-            MoveScaled(1,1,65,4)
-            Text = ("")
-            { btnSaveTable ToolButton
-              MoveScaled(0,0,9,4)
-              Visible = False
-              AutoResize = True
-              Text = ("Save")
-              Picture = Picture["icon:/small/save"]
-            }
-            { btnNewField ToolButton
-              MoveScaled(9,0,8,4)
-              AutoResize = True
-              Text = ("Add")
-              Picture = Picture["icon:/small/add"]
-            }
-            { btnKillField ToolButton
-              MoveScaled(17,0,12,4)
-              AutoResize = True
-              Text = ("Remove")
-              Picture = Picture["icon:/small/remove"]
-            }
-            { btnDownField ToolButton
-              MoveScaled(28,0,9,4)
-              AutoResize = True
-              Text = ("Down")
-              Picture = Picture["icon:/small/down"]
-            }
-            { btnUpField ToolButton
-              MoveScaled(37,0,25,4)
-              AutoResize = True
-              Text = ("Up")
-              Picture = Picture["icon:/small/up"]
-            }
-          }
-          { tbvField TableView
-            MoveScaled(1,7,61,13)
-            Expand = True
-            Mode = Select.Single
-            Header = GridView.Horizontal
-          }
-          Index = 1
-          Text = ("Indexes")
-          { tlbIndex ToolBar
-            MoveScaled(1,1,63,4)
-            Text = ("")
-            { btnSaveTable2 ToolButton btnSaveTable
-              Name = "btnSaveTable2"
-              MoveScaled(0,0,9,4)
-              Visible = False
-              AutoResize = True
-              Text = ("Save")
-              Picture = Picture["icon:/small/save"]
-            }
-            { btnNewIndex ToolButton
-              MoveScaled(9,0,14,4)
-              AutoResize = True
-              Text = ("New index")
-              Picture = Picture["icon:/small/new"]
-            }
-            { btnNewIndexField ToolButton
-              MoveScaled(23,0,8,4)
-              AutoResize = True
-              Text = ("Add")
-              Picture = Picture["icon:/small/add"]
-            }
-            { btnKillIndex ToolButton
-              MoveScaled(31,0,12,4)
-              AutoResize = True
-              Text = ("Remove")
-              Picture = Picture["icon:/small/remove"]
-            }
-            { btnDownIndex ToolButton
-              MoveScaled(42,0,10,4)
-              AutoResize = True
-              Text = ("Down")
-              Picture = Picture["icon:/small/down"]
-            }
-            { btnUpIndex ToolButton
-              MoveScaled(51,0,8,4)
-              AutoResize = True
-              Text = ("Up")
-              Picture = Picture["icon:/small/up"]
-            }
-          }
-          { tbvIndex TableView
-            MoveScaled(1,7,61,14)
-            Expand = True
-            Mode = Select.Single
-            Header = GridView.Horizontal
-          }
-          Index = 0
-        }
         { panRequest VBox
-          MoveScaled(4,1,61,24)
+          MoveScaled(6,8,61,24)
           Visible = False
           { tlbData2 ToolBar
             MoveScaled(0,0,41,4)
@@ -243,6 +155,107 @@
             Expand = True
           }
         }
+        { tabTable TabStrip
+          MoveScaled(3,2,68,26)
+          Visible = False
+          Expand = True
+          Arrangement = Arrange.Vertical
+          Count = 2
+          Index = 0
+          Text = ("Fields")
+          { tlbField ToolBar
+            MoveScaled(1,1,65,4)
+            Text = ("")
+            { btnSaveTable ToolButton
+              MoveScaled(0,0,9,4)
+              Visible = False
+              AutoResize = True
+              Text = ("Save")
+              Picture = Picture["icon:/small/save"]
+            }
+            { btnNewField ToolButton
+              MoveScaled(9,0,8,4)
+              AutoResize = True
+              Text = ("Add")
+              Picture = Picture["icon:/small/add"]
+            }
+            { btnKillField ToolButton
+              MoveScaled(17,0,12,4)
+              AutoResize = True
+              Text = ("Remove")
+              Picture = Picture["icon:/small/remove"]
+            }
+            { btnDownField ToolButton
+              MoveScaled(28,0,9,4)
+              AutoResize = True
+              Text = ("Down")
+              Picture = Picture["icon:/small/down"]
+            }
+            { btnUpField ToolButton
+              MoveScaled(37,0,14,4)
+              AutoResize = True
+              Text = ("Up")
+              Picture = Picture["icon:/small/up"]
+            }
+          }
+          { tbvField TableView
+            MoveScaled(1,7,55,14)
+            Expand = True
+            Mode = Select.Single
+            Header = GridView.Horizontal
+          }
+          Index = 1
+          Text = ("Indexes")
+          { tlbIndex ToolBar
+            MoveScaled(1,1,63,4)
+            Text = ("")
+            { btnSaveTable2 ToolButton btnSaveTable
+              Name = "btnSaveTable2"
+              MoveScaled(0,0,9,4)
+              Visible = False
+              AutoResize = True
+              Text = ("Save")
+              Picture = Picture["icon:/small/save"]
+            }
+            { btnNewIndex ToolButton
+              MoveScaled(9,0,14,4)
+              AutoResize = True
+              Text = ("New index")
+              Picture = Picture["icon:/small/new"]
+            }
+            { btnNewIndexField ToolButton
+              MoveScaled(23,0,8,4)
+              AutoResize = True
+              Text = ("Add")
+              Picture = Picture["icon:/small/add"]
+            }
+            { btnKillIndex ToolButton
+              MoveScaled(31,0,12,4)
+              AutoResize = True
+              Text = ("Remove")
+              Picture = Picture["icon:/small/remove"]
+            }
+            { btnDownIndex ToolButton
+              MoveScaled(42,0,10,4)
+              AutoResize = True
+              Text = ("Down")
+              Picture = Picture["icon:/small/down"]
+            }
+            { btnUpIndex ToolButton
+              MoveScaled(51,0,8,4)
+              AutoResize = True
+              Text = ("Up")
+              Picture = Picture["icon:/small/up"]
+            }
+          }
+          { tbvIndex TableView
+            MoveScaled(1,7,61,14)
+            Expand = True
+            Mode = Select.Single
+            Header = GridView.Horizontal
+          }
+          Index = 0
+        }
       }
       { panData Panel
         MoveScaled(2,39,72,31)
@@ -269,7 +282,7 @@
           }
         }
         { datData DataSource
-          MoveScaled(4,1,66,26)
+          MoveScaled(6,1,66,26)
           Arrangement = Arrange.Vertical
           { tlbData ToolBar
             MoveScaled(2,1,61,4)
@@ -331,6 +344,6 @@
   { Toolbar connection
     Text = "Connection editor"
     List = "save,reload"
-    Default = "save,reload,|,$btnNewTable,$btnImport,$btnRename,$btnKill,$btnRequest"
+    Default = "save,reload,$btnNewTable,$btnKill,$btnRename,$btnImport,$btnRequest,$HBox2"
   }
 }

@@ -7,11 +7,13 @@ Property Read ReadOnly As Boolean
 Private $hConn As Connection
 Private $bModify As Boolean
 Private $sTable As String
+Private $sType As String
 Private $bReadOnly As Boolean
 
 Private $aField As New CField[]
 Private $cFieldName As New Collection
 Private $aIndexField As New CIndexField[]
+Private $bIgnoreNextSelect As Boolean
 
 Public Sub _new(sPath As String)
 
@@ -72,10 +74,11 @@ Public Sub _new(sPath As String)
   
 End
 
-Private Sub LoadList()
+Private Sub LoadList(Optional sTable As String)
   
   Dim hTable As Table
   Dim hPict As Picture
+  Dim sKey As String
   
   lvwTable.Clear
   
@@ -89,7 +92,12 @@ Private Sub LoadList()
     lvwTable.Add("T" & hTable.Name, hTable.Name, hPict)
   Next
   
-  btnRequest_Click
+  If Not sTable Then 
+    btnRequest_Click
+  Else
+    $sTable = ""
+    LoadTable(sTable)
+  Endif
 
 End
 
@@ -100,6 +108,18 @@ Private Function ReadOnly_Read() As Boolean
 
 End
 
+Private Sub SetReadOnly(bReadOnly As Boolean)
+  
+  btnKill.Enabled = Not bReadOnly
+  btnRename.Enabled = Not bReadOnly
+  tlbField.Enabled = Not bReadOnly
+  tlbIndex.Enabled = Not bReadOnly
+  $bReadOnly = bReadOnly
+  DrawTitle
+  
+End
+
+
 Public Sub Form_Activate()
 
   DB.Current = $hConn
@@ -109,20 +129,41 @@ End
 Public Sub Reload() As Boolean
   
   Dim hConfig As Settings
+  Dim sTitle As String
 
   Inc Application.Busy
 
   hConfig = New Settings(Path)
   
-  If $hConn Then $hConn.Close
+  If $hConn Then 
+    'datData.Table = ""
+    'datRequest.Table = ""
+    $hConn.Close
+  Endif
+
   $hConn = New Connection
   MConnection.InitFrom($hConn, hConfig, Me.Name, True)
   $hConn.Open
+  DB.Current = $hConn
   
-  datData.Table = ""
-  datRequest.Table = ""
+  sTitle = $hConn.Type & "://"
+  If $hConn.User Then sTitle &= $hConn.User & "@"
+  If $hConn.Host Then
+    sTitle &= $hConn.Host
+  Else
+    If $hConn.Type = "sqlite" Then
+      sTitle &= "~"
+    Else
+      sTitle &= "localhost"
+    Endif
+  Endif
+  sTitle &= "/" & $hConn.Name
   
-  LoadList
+  lblTitle.Text = "  " & sTitle & "  "
+  
+  DataSource.ResetAll
+
+  LoadList($sTable)
   
   DrawTitle
   Me.Enabled = True
@@ -225,6 +266,7 @@ Private Sub CheckCurrent() As Boolean
   
 CANCEL:
 
+  $bIgnoreNextSelect = True
   lvwTable["T" & $sTable].Selected = True
   Return True
   
@@ -243,6 +285,8 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
 
   If CheckCurrent() Then Return True
 
+  Try lvwTable["T" & sNewTable].Selected = True
+
   If Not sNewTable Or If sNewTable = $sTable Then Return
 
   Inc Application.Busy
@@ -254,6 +298,7 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
   $aIndexField.Clear
 
   hTable = $hConn.Tables[$sTable]
+  $sType = hTable.Type
 
   For Each hField In hTable.Fields
     hCField = New CField(hField)
@@ -298,7 +343,14 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
   datData.Refresh
   
   splTable.Enabled = True
+
+  panRequest.Hide
+  tabTable.Show
+  datRequest.Hide
+  datData.Show
   
+  SetReadOnly(hTable.System)
+
   Dec Application.Busy
   
 Catch
@@ -311,7 +363,7 @@ End
 
 
 
-Public Sub lvwTable_Select()
+Public Sub lvwTable_MouseUp()
 
   Dim sKey As String 
   
@@ -322,10 +374,6 @@ Public Sub lvwTable_Select()
   
     Case "T"
       If LoadTable(Mid$(sKey, 2)) Then Return
-      panRequest.Hide
-      tabTable.Show
-      datRequest.Hide
-      datData.Show
   
   End Select
 
@@ -992,7 +1040,7 @@ End
 
 
 
-Private Function WriteTable() As Boolean
+Private Sub WriteTable(Optional sOldTable As String) As Boolean
 
   Dim aPrimaryKey As New String[]
   Dim hCField As CField
@@ -1000,7 +1048,6 @@ Private Function WriteTable() As Boolean
   Dim rTemp As Result
   Dim rTable As Result
   Dim hForm As Object
-  Dim sType As String
   Dim sError As String
 
   ' If $hFieldEditor.Hide() Then Return True
@@ -1025,14 +1072,25 @@ Private Function WriteTable() As Boolean
 
   Inc Application.Busy
 
-  If MConnection.CountTableData($hConn, $sTable) Then
-    sTemp = MConnection.CopyTableData($hConn, $sTable)
+  If sOldTable Then
+  
+    If MConnection.CountTableData($hConn, sOldTable) Then
+      sTemp = sOldTable 'MConnection.CopyTableData($hConn, sOldName)
+    Endif
+  
+    'WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+    WriteTableDef($sTable, $sType, aPrimaryKey)
+
+  Else
+
+    If MConnection.CountTableData($hConn, $sTable) Then
+      sTemp = MConnection.CopyTableData($hConn, $sTable)
+    Endif
+  
+    WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+    WriteTableDef($sTable, $sType, aPrimaryKey)
+    
   Endif
-
-  sType = $hConn.Tables[$sTable].Type
-
-  WriteTableDef(MConnection.GetTempTableName($hConn), sType, aPrimaryKey, True)
-  WriteTableDef($sTable, sType, aPrimaryKey)
 
   'hTable = $hConn.Handle.Tables.Add($sName, sType)
 
@@ -1042,9 +1100,9 @@ Private Function WriteTable() As Boolean
 
     rTemp = $hConn.Find(sTemp)
     rTable = $hConn.Create($sTable)
-
+    
     For Each rTemp
-
+    
       For Each hCField In $aField
         If hCField.OldName Then
           Try rTable[hCField.Name] = rTemp[hCField.OldName]
@@ -1061,27 +1119,24 @@ Private Function WriteTable() As Boolean
 
   Endif
 
-  'IF frmData THEN
-  '  frmData.btnRefresh_Click
-  'ENDIF
   datData.Reset
+  'datRequest.Reset
 
-  Modify(False)
+  Modify(True)
 
 Finally
 
   sError = Error.Text
 
+  'If Not sOldTable Then
+
   If sTemp Then
     Try $hConn.Tables.Remove(sTemp)
-    'IF Error THEN PRINT "Delete temporary table: "; Error.Text
+  Else If sOldTable
+    Try $hConn.Tables.Remove(sOldTable)
   Endif
-
-  ' If $sTable <> $sName Then
-  '   Try Connection.RefreshTree
-  '   $sTable = $sName
-  '   Table = $sName
-  ' Endif
+    
+  'Endif
 
   Dec Application.Busy
 
@@ -1098,6 +1153,8 @@ Private Function SaveTable() As Boolean
 
   If tbvField.Save() Then Return True
   If tbvIndex.Save() Then Return True
+  
+  If Not $bModify Then Return
 
   If WriteTable() Then Return True
   
@@ -1190,6 +1247,7 @@ Public Sub btnRequest_Click()
   edtRequest.SetFocus
   datData.Hide
   datRequest.Show
+  SetReadOnly(True)
 
 End
 
@@ -1206,5 +1264,33 @@ Public Sub btnKill_Click()
 Catch
 
   Message(Subst(("Cannot delete table '&1'."), $sTable) & "\n\n" & Error.Text)
+
+End
+
+Public Sub btnRename_Click()
+
+  Dim sNewName As String
+  Dim sOldName As String
+
+  If $bReadOnly Then Return
+  If SaveTable() Then Return
+
+  If FNewTable.Run($sTable, $sType) Then Return
+
+  sNewName = FNewTable.TableName
+  If Not sNewName Then Return
+  If sNewName = $sTable Then Return
+
+  sOldName = $sTable
+  $sTable = sNewName
+
+  ' sOldName table will be deleted by WriteTable
+  If WriteTable(sOldName) Then 
+    $sTable = sOldName
+    Return
+  Endif
+
+  'Try $hConn.DeleteTable(sOldName)
+  LoadList($sTable)
 
 End

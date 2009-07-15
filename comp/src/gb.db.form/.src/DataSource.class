@@ -588,7 +588,15 @@ End
 
 Public Sub Reset()
   
-  DataConnection.Reset()
+  If Not $hTable Then Return
+  $hTable.Reset()
+  $hTable = Null
   Refresh()
+  
+End
+
+Static Public Sub ResetAll()
+  
+  DataConnection.Reset
   
 End

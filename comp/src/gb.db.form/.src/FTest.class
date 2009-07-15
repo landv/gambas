@@ -3,10 +3,13 @@
 
 Public Sub Button1_Click()
 
-  If DataSource1.Table Then
-    DataSource1.Table = ""
-  Else
-    DataSource1.Table = "test"
-  Endif
+  DB.Close
+  DB.Open
+  DataSource1.Reset
+  ' If DataSource1.Table Then
+  '   DataSource1.Table = ""
+  ' Else
+  '   DataSource1.Table = "test"
+  ' Endif
 
 End
