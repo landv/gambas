@@ -59,46 +59,31 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	_mw = _mh = 0;
 	_timer = 0;
 	
-	_scroll = gtk_scrolled_window_new(NULL,NULL);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(_scroll), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  
-  //gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(border), GTK_SHADOW_ETCHED_IN);	
-	//gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(border), widget);
-	//gtk_container_add(GTK_CONTAINER(border), widget);
-	
-  viewport = gtk_viewport_new(gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(_scroll)),
-                              gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW(_scroll)));
+	border = gtk_event_box_new();
+	widget = gtk_layout_new(0, 0);
+	frame = 0;
+
+	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
+	gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
+	gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+
+  viewport = gtk_viewport_new(gtk_scrolled_window_get_hadjustment(_scroll), gtk_scrolled_window_get_vadjustment(_scroll));
   
   gtk_viewport_set_shadow_type(GTK_VIEWPORT(viewport), GTK_SHADOW_NONE);
   gtk_container_add(GTK_CONTAINER(_scroll), viewport);
-  
-	border = _scroll; 
-  widget = gtk_layout_new(0,0);
+	gtk_container_add(GTK_CONTAINER(viewport), widget);
+	
 	realize(false);
 	
 	setBorder(true);
 	
-	Adj=gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(_scroll));
+	Adj=gtk_scrolled_window_get_hadjustment(_scroll);
 	g_signal_connect(G_OBJECT(Adj),"value-changed",G_CALLBACK(cb_scroll),this);
-	Adj=gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(_scroll));
+	Adj=gtk_scrolled_window_get_vadjustment(_scroll);
 	g_signal_connect(G_OBJECT(Adj),"value-changed",G_CALLBACK(cb_scroll),this);
 	g_signal_connect(G_OBJECT(viewport), "size-allocate", G_CALLBACK(cb_inside_resize), (gpointer)this);
 }
 
-
-bool gScrollView::hasBorder()
-{
-	if (gtk_scrolled_window_get_shadow_type(GTK_SCROLLED_WINDOW(border))==GTK_SHADOW_NONE) return false;
-	return true;
-}
-
-void gScrollView::setBorder(bool vl)
-{
-	if (vl)
-		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(border),GTK_SHADOW_IN);
-	else
-		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(border),GTK_SHADOW_NONE);
-}
 
 void gScrollView::updateSize()
 {
@@ -158,7 +143,7 @@ void gScrollView::resize(int w, int h)
 
 void gScrollView::ensureVisible(int x, int y, int w, int h)
 {
-	if (!GTK_IS_SCROLLED_WINDOW(border))
+	if (!_scroll)
 		return;
 	
 	GtEnsureVisible arg;

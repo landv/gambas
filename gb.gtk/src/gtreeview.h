@@ -13,7 +13,7 @@ public:
 //"Properties"
 	int count();
 	
-	long      itemChildren(char *key);
+	int      itemChildren(char *key);
 	char*     itemText(char *key);
 	gPicture* itemPicture(char *key);
 	bool      isItemSelected(char *key);
@@ -28,12 +28,12 @@ public:
 	
 	int       mode();
 	void      setMode(int vl);
-	bool      getBorder();
-	void      setBorder(bool vl);
-	long      visibleWidth();
-	long      visibleHeight();
-	long      scrollBar();
-	void      setScrollBar(long vl);
+	int      visibleWidth();
+	int      visibleHeight();
+	int clientWidth();
+	int clientHeight();
+	int      scrollBar();
+	void      setScrollBar(int vl);
 	bool			headers() { return tree->headers(); }
 	void			setHeaders(bool vl) { tree->setHeaders(vl); }
 	
@@ -108,8 +108,9 @@ public:
 	char*     find(GtkTreePath *path) { return tree->pathToKey(path, false); }
 	void refreshExpanded(char *parent, bool ex);
 
-private:
+protected:
 	gTree *tree;
+	GtkWidget *treeview;
 };
 
 #endif

@@ -7,7 +7,6 @@ public:
 	gTextArea(gContainer *parent);
 
 //"Properties"
-	bool hasBorder();
 	int column();
 	int length();
 	int line();
@@ -17,7 +16,6 @@ public:
 	bool wrap();
 	bool isSelected();
 
-	void setBorder(bool vl);
 	void setColumn(int vl);
 	void setLine(int vl);
 	void setPosition(int vl);
@@ -56,6 +54,9 @@ public:
 //"Private"
   void updateCursor(GdkCursor *cursor);
   void waitForLayout(int *tw, int *th);
+
+private:
+	GtkWidget *textview;
 };
 
 #endif

@@ -464,7 +464,7 @@ void gControl::borderSignals()
 	if (isContainer())
 		g_signal_connect(G_OBJECT(border), "show", G_CALLBACK(cb_show), (gpointer)this);
 
-	if (border != widget && !GTK_IS_SCROLLED_WINDOW(border))
+	if (border != widget && !_scroll)
 	{
 		if (!_no_default_mouse_event)
 		{
@@ -479,7 +479,7 @@ void gControl::borderSignals()
 
 void gControl::widgetSignals()
 {
-	if (!(border != widget && !GTK_IS_SCROLLED_WINDOW(border)))
+	if (!(border != widget && !_scroll))
 	{
 		g_signal_connect(G_OBJECT(widget),"scroll-event",G_CALLBACK(sg_scroll),(gpointer)this);
 		if (!_no_default_mouse_event)

@@ -26,10 +26,6 @@ public:
 	
 	int       mode();
 	void      setMode(int vl);
-	bool      getBorder();
-	void      setBorder(bool vl);
-	long      scrollBar();
-	void      setScrollBar(long vl);
 	int gridWidth() { return tree->gridWidth(); }
 	void setGridWidth(int w) { tree->setGridWidth(w); }
 	int clientWidth();
@@ -81,6 +77,7 @@ public:
 
 private:
 	gIcon *tree;
+	GtkWidget *iconview;
 };
 
 #endif

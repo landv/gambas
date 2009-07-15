@@ -899,21 +899,21 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CTREEVIEW_client_width)
 
-
+	GB.ReturnInteger(WIDGET->clientWidth());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(CTREEVIEW_client_height)
 
-
+	GB.ReturnInteger(WIDGET->clientHeight());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(CTREEVIEW_border)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->getBorder());
+		GB.ReturnBoolean(WIDGET->hasBorder());
 	else
 		WIDGET->setBorder(VPROP(GB_BOOLEAN));
 

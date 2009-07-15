@@ -34,7 +34,7 @@ gListBox::gListBox(gContainer *parent) : gTreeView(parent, true)
 {
 	g_typ=Type_gListBox;
 	_last_key = 0;
-	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(widget), false);
+	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(treeview), false);
 }
 
 static int pathToIndex(GtkTreePath *path)
@@ -71,14 +71,14 @@ int gListBox::index()
 	if (mode() == SELECT_NONE)
 		return -1;
 	
-	gtk_tree_view_get_cursor(GTK_TREE_VIEW(widget), &path, NULL);
+	gtk_tree_view_get_cursor(GTK_TREE_VIEW(treeview), &path, NULL);
 	return pathToIndex(path);
 }
 
 void gListBox::setIndex(int ind)
 {
 	GtkTreePath *path = indexToPath(ind);
-	gtk_tree_view_set_cursor(GTK_TREE_VIEW(widget), path, NULL, false);
+	gtk_tree_view_set_cursor(GTK_TREE_VIEW(treeview), path, NULL, false);
 	gtk_tree_path_free(path);
 }
 

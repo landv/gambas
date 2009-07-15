@@ -294,7 +294,7 @@ END_METHOD
 BEGIN_PROPERTY(CICONVIEW_border)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->getBorder());
+		GB.ReturnBoolean(WIDGET->hasBorder());
 	else
 		WIDGET->setBorder(VPROP(GB_BOOLEAN));
 

@@ -7,9 +7,6 @@ public:
 	gScrollView(gContainer *parent);
 
 //"Properties"
-	bool hasBorder();
-	void setBorder(bool vl);
-
 	virtual int scrollWidth() { return _mw; }
 	virtual int scrollHeight() { return _mh; }
 
@@ -26,7 +23,6 @@ public:
   guint _timer;
 	
 private:
-  GtkWidget *_scroll;
 	GtkWidget *viewport;
   int _mw, _mh;
 };
