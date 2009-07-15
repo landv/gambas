@@ -23,6 +23,8 @@
 #ifndef __CPROGRESS_H
 #define __CPROGRESS_H
 
+#include <QWindowsStyle>
+
 #include "gambas.h"
 
 #include "CWidget.h"
@@ -41,5 +43,19 @@ typedef
     CWIDGET widget;
     }
   CPROGRESS;
+
+class MyWindowsStyle : public QWindowsStyle
+{
+    Q_OBJECT
+
+public:
+    //MyCleanlooksStyle();
+    //~MyCleanlooksStyle();
+
+protected:
+    void timerEvent(QTimerEvent *event);
+};
+
+void CPROGRESS_style_hack(void *_object);
 
 #endif

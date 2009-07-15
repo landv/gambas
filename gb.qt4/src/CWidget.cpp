@@ -39,6 +39,7 @@
 #include "CClipboard.h"
 #include "CMenu.h"
 #include "CScrollView.h"
+#include "CProgress.h"
 
 #include <QApplication>
 #include <QObject>
@@ -57,6 +58,7 @@
 #include <QHash>
 #include <QAbstractScrollArea>
 #include <Q3ScrollView>
+#include <QProgressBar>
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
@@ -312,6 +314,9 @@ void CWIDGET_destroy(CWIDGET *object)
 	CWIDGET_set_flag(object, WF_DELETED);
 	CWIDGET_set_visible(object, false);
 
+	if (qobject_cast<QProgressBar *>(object->widget))
+		CPROGRESS_style_hack(object);
+	
 	object->widget->deleteLater();
 }
 

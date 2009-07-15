@@ -22,18 +22,33 @@
 
 #define __CPROGRESS_CPP
 
+#include <QStyle>
+#include <QWindowsStyle>
 #include <QProgressBar>
 
 #include "gambas.h"
 
 #include "CProgress.h"
 
+static MyWindowsStyle _style;
+
+void MyWindowsStyle::timerEvent(QTimerEvent *e)
+{
+	e->ignore();
+}
+
+void CPROGRESS_style_hack(void *_object)
+{
+	THIS->widget.widget->setStyle(&_style);
+}
 
 BEGIN_METHOD(CPROGRESS_new, GB_OBJECT parent)
 
   QProgressBar *wid = new QProgressBar(QCONTAINER(VARG(parent)));
 
-  wid->setMaximum(10000);
+	//QObject::connect(wid, SIGNAL(destroyed()), &CProgress::manager, SLOT(destroy()));
+
+	wid->setMaximum(10000);
   wid->setTextVisible(true);
 
   CWIDGET_new(wid, (void *)_object);
