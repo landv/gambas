@@ -454,7 +454,7 @@ static gboolean cb_widget_expose(GtkWidget *wid, GdkEventExpose *e, gGridView *d
 
 static gboolean tbheader_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *data)
 {
-	GtkCellRenderer *rend=NULL;
+	GtkCellRenderer *rend;
 	GdkRectangle rect={0,0,0,0};
 	GdkGC *gc;
 	char *buf;
@@ -492,6 +492,7 @@ static gboolean tbheader_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *data
 			NULL, wid->parent, NULL,
 			0, ph - 1, 0);
 	}*/
+	rend = gtk_cell_renderer_text_new();
 	 
 	bpos = data->render->offCol - data->render->getOffsetX();
 	for (bc = data->render->firstCol; bc < data->columnCount(); bc++)
@@ -519,14 +520,15 @@ static gboolean tbheader_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *data
 		
 		if (footer) buf=data->footerText(bc);
 		else        buf=data->headerText(bc);
-		if ( buf != NULL )
+		if (buf && pw >= 16)
 		{
-			if (!rend) rend=gtk_cell_renderer_text_new();
 			g_object_set(G_OBJECT(rend),
 				"text", buf,
-				"xalign", 0.5,
+				"xalign", 0.0,
 				"yalign", 0.5,
 				"font-desc", data->font()->desc(),
+				"ellipsize", PANGO_ELLIPSIZE_END,
+				"ellipsize-set", TRUE,
 				(void *)NULL);
 			rect.x=bpos;
 			rect.y=0;
@@ -539,19 +541,21 @@ static gboolean tbheader_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *data
 		bpos += data->columnWidth(bc);
 	}
 	
+	gt_object_unref_sink(G_OBJECT(rend));
 	g_object_unref(G_OBJECT(gc));
 	return false;
 }
 
 static gboolean tblateral_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *data)
 {
-	GtkCellRenderer *rend=NULL;
+	GtkCellRenderer *rend;
 	GdkRectangle rect={0,0,0,0};
 	GdkGC *gc;
 	GdkWindow *win=data->lateral->window;
 	int pw,ph,maxh;
 	int bc;
 	int bpos;
+	char *text;
 	
 	gc=gdk_gc_new(win);
 	gdk_gc_set_clip_origin(gc,0,0);
@@ -571,6 +575,8 @@ static gboolean tblateral_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *dat
 			0, ph - 1, 0);
 	}*/
 	 
+	rend = gtk_cell_renderer_text_new();
+			
 	bpos = data->render->offRow - data->render->getOffsetY(); 
 	for (bc=data->render->firstRow; bc<data->rowCount(); bc++)
 	{
@@ -590,29 +596,33 @@ static gboolean tblateral_expose(GtkWidget *wid,GdkEventExpose *e,gGridView *dat
 			NULL, wid->parent, NULL,
 			3, ph - 4, bpos + pw - 1);
 		
-		if (!rend) rend=gtk_cell_renderer_text_new();
-		
-		g_object_set(G_OBJECT(rend),
-			"text", data->rowText(bc),
-			"xalign", 0.5,
-			"yalign", 0.5,
-			"font-desc", data->font()->desc(),
-			(void *)NULL);
-		
-		rect.x = 0;
-		rect.y = bpos;
-		rect.width = ph-1;
-		rect.height = pw-1;
+		text = data->rowText(bc);
+		if (text && pw >= 16)
+		{
+			g_object_set(G_OBJECT(rend),
+				"text", data->rowText(bc),
+				"xalign", 0.0,
+				"yalign", 0.5,
+				"font-desc", data->font()->desc(),
+				"ellipsize", PANGO_ELLIPSIZE_END,
+				"ellipsize-set", TRUE,
+				(void *)NULL);
+			
+			rect.x = 0;
+			rect.y = bpos;
+			rect.width = ph-1;
+			rect.height = pw-1;
 
-		gtk_cell_renderer_render(GTK_CELL_RENDERER(rend),wid->window,wid,
-																								&rect,&rect,NULL,(GtkCellRendererState)0);
+			gtk_cell_renderer_render(GTK_CELL_RENDERER(rend),wid->window,wid,
+																									&rect,&rect,NULL,(GtkCellRendererState)0);
+		}
 
 		bpos+=data->rowHeight(bc);
 	
 	}
 
+	gt_object_unref_sink(G_OBJECT(rend));
 	g_object_unref(G_OBJECT(gc));
-
 	return false;
 }
 

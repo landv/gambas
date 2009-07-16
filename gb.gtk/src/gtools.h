@@ -111,3 +111,5 @@ void gt_set_layout_from_font(PangoLayout *layout, gFont *font);
 void gt_add_layout_from_font(PangoLayout *layout, gFont *font);
 
 #define gt_pango_to_pixel(_pango) (((_pango) + PANGO_SCALE - 1) / PANGO_SCALE)
+
+#define gt_object_unref_sink(_object) (g_object_ref_sink(G_OBJECT(_object)), g_object_unref(G_OBJECT(_object)))

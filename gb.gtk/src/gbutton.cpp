@@ -221,8 +221,8 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	switch(typ)
 	{
 		case Toggle:
-			rendtxt=gtk_cell_renderer_text_new();
-			border=gtk_toggle_button_new();
+			rendtxt = gtk_cell_renderer_text_new();
+			border = gtk_toggle_button_new();
 			break;
 			
 		case Check:
@@ -245,13 +245,13 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 			break;
 		
 		case Tool:
-			rendtxt=gtk_cell_renderer_text_new();
-			border=gtk_toggle_button_new();
+			rendtxt = gtk_cell_renderer_text_new();
+			border = gtk_toggle_button_new();
 			break;
 		
 		default:
-			border=gtk_button_new();
-			rendtxt=gtk_cell_renderer_text_new();
+			border = gtk_button_new();
+			rendtxt = gtk_cell_renderer_text_new();
 			typ = Button;
 			break;
 	}
@@ -295,6 +295,8 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 
 gButton::~gButton()
 {
+	if (rendtxt) gt_object_unref_sink(rendtxt);
+	
 	setDefault(false);
 	setCancel(false);
   setPicture(0);

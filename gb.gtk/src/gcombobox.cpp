@@ -177,6 +177,7 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 
 gComboBox::~gComboBox()
 {
+	gt_object_unref_sink(cell);
 	g_object_unref(G_OBJECT(tree->store));
 }
 
