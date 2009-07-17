@@ -230,6 +230,26 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: FImportTable.class:537
+msgid ","
+msgstr "-"
+
+#: FImportTable.class:537
+msgid ";"
+msgstr "-"
+
+#: FImportTable.class:537
+msgid ":"
+msgstr "-"
+
+#: FImportTable.class:549
+msgid "'"
+msgstr "-"
+
+#: FImportTable.class:549
+msgid "\""
+msgstr "-"
+
 #: FMain.class:2073
 msgid "&?"
 msgstr "-"
@@ -249,6 +269,10 @@ msgstr "'&1' et '&2' sont introuvables."
 #: Package.module:51
 msgid "'&1' is missing."
 msgstr "'&1' est introuvable."
+
+#: FImportTable.class:401
+msgid "&1 records imported."
+msgstr "&1 enregistrements importés."
 
 #: FTranslate.class:1001
 msgid "&1 strings (&2 not translated) - &3 % done"
@@ -286,7 +310,7 @@ msgstr "Un nom de classe doit commencer par une lettre ou un caractère '_', et 
 msgid "Action"
 msgstr "Action"
 
-#: FConnectionEditor.class:1430
+#: FConnectionEditor.class:1595
 msgid "Add"
 msgstr "Ajouter"
 
@@ -306,39 +330,39 @@ msgstr "Ajout de tests supplémentaires au processus de configuration.<p><b>Lais
 msgid "Albanian (Albania)"
 msgstr "Albanais (Albanie)"
 
-#: FForm.class:3383
+#: FForm.class:3384
 msgid "Alignment"
 msgstr "Alignement"
 
-#: FForm.class:3613
+#: FForm.class:3614
 msgid "Align to bottom"
 msgstr "Aligner sur le bas"
 
-#: FForm.class:3405
+#: FForm.class:3406
 msgid "Align to &bottom"
 msgstr "Aligner sur le &bas"
 
-#: FForm.class:3621
+#: FForm.class:3622
 msgid "Align to left"
 msgstr "Aligner sur la gauche"
 
-#: FForm.class:3387
+#: FForm.class:3388
 msgid "Align to &left"
 msgstr "Aligner sur la &gauche"
 
-#: FForm.class:3629
+#: FForm.class:3630
 msgid "Align to right"
 msgstr "Aligner sur la droite"
 
-#: FForm.class:3393
+#: FForm.class:3394
 msgid "Align to &right"
 msgstr "Aligner sur la &droite"
 
-#: FForm.class:3605
+#: FForm.class:3606
 msgid "Align to top"
 msgstr "Aligner sur le haut"
 
-#: FForm.class:3399
+#: FForm.class:3400
 msgid "Align to &top"
 msgstr "Aligner sur le &haut"
 
@@ -350,7 +374,7 @@ msgstr "&Tous"
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Les fichiers de sauvegarde et les fichiers générés du projet vont être supprimés."
 
-#: FTranslate.class:1213
+#: FConnectionEditor.class:1314 FTranslate.class:1213
 msgid "All files"
 msgstr "Tous les fichiers"
 
@@ -406,7 +430,7 @@ msgstr "Désirez-vous vraiment tout remplacer ?"
 msgid "Arguments"
 msgstr "Arguments"
 
-#: FForm.class:3335
+#: FForm.class:3336
 msgid "Arrangement"
 msgstr "Disposition"
 
@@ -429,6 +453,10 @@ msgstr "Auteur(s)"
 #: FCreateFile.class:841
 msgid "Automatic extension"
 msgstr "Extension automatique"
+
+#: FImportTable.class:127
+msgid "(Automatic key)"
+msgstr "(Clef automatique)"
 
 #: Project.module:139
 msgid "Automation"
@@ -482,7 +510,7 @@ msgstr "<b>$(FILE)</b> sera remplacé par le chemin vers l'exécutable"
 msgid "Blend"
 msgstr "Dégradé"
 
-#: FConnectionEditor.class:464 MConnection.module:92
+#: FConnectionEditor.class:510 MConnection.module:92
 msgid "Blob"
 msgstr "Blob"
 
@@ -490,7 +518,7 @@ msgstr "Blob"
 msgid "Bold"
 msgstr "Gras"
 
-#: FConnectionEditor.class:464 MConnection.module:86
+#: FConnectionEditor.class:510 MConnection.module:86
 msgid "Boolean"
 msgstr "Booléen"
 
@@ -502,7 +530,7 @@ msgstr "Contour seulement"
 msgid "Breakpoints"
 msgstr "Points d'arrêt"
 
-#: FForm.class:3339
+#: FForm.class:3340
 msgid "Bring to foreground"
 msgstr "Au premier plan"
 
@@ -526,9 +554,13 @@ msgstr "-"
 msgid "Cairo graphic library"
 msgstr "Bibliothèque graphique Cairo"
 
-#: Project.module:315
+#: FTranslate.class:605 Project.module:315
 msgid "Cancel"
 msgstr "Annuler"
+
+#: FImportTable.class:388
+msgid "Cancelled by user"
+msgstr "Annulé par l'utilisateur"
 
 #: FCreateFile.class:428
 msgid "Cannot add file."
@@ -562,7 +594,7 @@ msgstr "Impossible de créer la table '&1'."
 msgid "Cannot delete file or directory"
 msgstr "Impossible de supprimer le fichier ou le répertoire"
 
-#: FConnectionEditor.class:1218
+#: FConnectionEditor.class:1277
 msgid "Cannot delete table '&1'."
 msgstr "Impossible de supprimer la table '&1'."
 
@@ -610,7 +642,7 @@ msgstr "Impossible d'écrire le fichier de description du composant."
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
-#: FConnectionEditor.class:1100
+#: FConnectionEditor.class:1156
 msgid "Cannot write table '&1'."
 msgstr "Impossible d'écrire la table '&1'."
 
@@ -638,7 +670,7 @@ msgstr "Catégories"
 msgid "CGI Web application"
 msgstr "Application Web CGI"
 
-#: FForm.class:3219
+#: FForm.class:3220
 msgid "Change into"
 msgstr "Transformer en"
 
@@ -657,6 +689,10 @@ msgstr "Modifications"
 #: FPropertyProject.class:1961
 msgid "Changes since last commit"
 msgstr "Modifications depuis le dernier envoi"
+
+#: FImportTable.class:505
+msgid "Charset"
+msgstr "Jeu de caractères"
 
 #: CComponent.class:65
 msgid "Chart drawing"
@@ -734,7 +770,7 @@ msgstr "Cliquez sur Insérer pour ajouter un nouveau menu."
 msgid "Clipboard contents"
 msgstr "Contenu du presse-papiers"
 
-#: FInfo.class:465 FMakeInstall.class:260 FOption.class:1102 FTips.class:232
+#: FOption.class:1102 FTips.class:232
 msgid "Close"
 msgstr "Fermer"
 
@@ -750,7 +786,7 @@ msgstr "Fermer toutes les fenêtres de &débogage"
 msgid "Close &all windows"
 msgstr "Fermer &toutes les fenêtres"
 
-#: FForm.class:3486 FTextEditor.class:783
+#: FForm.class:3487 FTextEditor.class:783
 msgid "Code"
 msgstr "Code"
 
@@ -758,7 +794,7 @@ msgstr "Code"
 msgid "Column"
 msgstr "Colonne"
 
-#: FForm.class:3377
+#: FForm.class:3378
 msgid "Columns"
 msgstr "Colonnes"
 
@@ -830,7 +866,7 @@ msgstr "Compression et décompression"
 msgid "Conflict files"
 msgstr "Fichiers en conflits"
 
-#: FConnectionEditor.class:1316
+#: FConnectionEditor.class:1397
 msgid "Connection editor"
 msgstr "Editeur de connexion"
 
@@ -934,6 +970,10 @@ msgstr "Croate (Croatie)"
 msgid "CSS file"
 msgstr "Feuille de style CSS"
 
+#: FConnectionEditor.class:1314
+msgid "CSV files"
+msgstr "Fichiers CSV"
+
 #: FMenu.class:974
 msgid "CTRL"
 msgstr "-"
@@ -986,7 +1026,7 @@ msgstr "Contrôles liés aux données"
 msgid "Data types"
 msgstr "Types de données"
 
-#: FConnectionEditor.class:464 MConnection.module:84
+#: FConnectionEditor.class:510 MConnection.module:84
 msgid "Date"
 msgstr "Date"
 
@@ -1042,13 +1082,17 @@ msgstr "&Supprimer"
 msgid "&Delete..."
 msgstr "&Supprimer..."
 
-#: FConnectionEditor.class:1352
+#: FConnectionEditor.class:1427
 msgid "Delete table"
 msgstr "Supprimer la table"
 
 #: FTranslate.class:1706
 msgid "Delete translation"
 msgstr "Supprimer la traduction"
+
+#: FImportTable.class:530
+msgid "Delimiter character"
+msgstr "Caractère délimiteur"
 
 #: FCommit.class:175 FMakeInstall.class:1272 FPropertyProject.class:1595
 msgid "Description"
@@ -1061,6 +1105,10 @@ msgstr "Bureau"
 #: CComponent.class:78
 msgid "Desktop-neutral routines from Portland project"
 msgstr "Routines indépendantes du bureau du projet Portland"
+
+#: FImportTable.class:562
+msgid "Destination"
+msgstr "Destination"
 
 #: FMakeInstall.class:100
 msgid "Destination directory"
@@ -1098,11 +1146,11 @@ msgstr "Afficher l'aide des propriétés"
 msgid "Do not open"
 msgstr "Ne pas ouvrir"
 
-#: FConnectionEditor.class:221
+#: FConnectionEditor.class:269
 msgid "Do not save"
 msgstr "Ne pas enregistrer"
 
-#: FConnectionEditor.class:1444
+#: FConnectionEditor.class:1609
 msgid "Down"
 msgstr "Descendre"
 
@@ -1110,7 +1158,7 @@ msgstr "Descendre"
 msgid "&Down"
 msgstr "&Descendre"
 
-#: FConnectionEditor.class:1208
+#: FConnectionEditor.class:1267
 msgid "Do you really want to delete table '&1'?"
 msgstr "Voulez-vous vraiment supprimer la table '&1' ?"
 
@@ -1226,6 +1274,14 @@ msgstr "Emeraude"
 msgid "Enabled"
 msgstr "-"
 
+#: FImportTable.class:542
+msgid "Enclose character"
+msgstr "Caractère d'échappement"
+
+#: FImportTable.class:517
+msgid "End of line"
+msgstr "Fin de ligne"
+
 #: Language.module:31
 msgid "English (Australia)"
 msgstr "Anglais (Australie)"
@@ -1270,7 +1326,7 @@ msgstr "Esperanto (Partout!)"
 msgid "Estonian (Estonia)"
 msgstr "Estonien (Estonie)"
 
-#: FForm.class:3213
+#: FForm.class:3214
 msgid "Event"
 msgstr "Evènement"
 
@@ -1310,7 +1366,7 @@ msgstr "Expérimental"
 msgid "&Export..."
 msgstr "&Exporter..."
 
-#: FConnectionEditor.class:1609
+#: FConnectionEditor.class:1705
 msgid "Export..."
 msgstr "Exporter..."
 
@@ -1370,11 +1426,15 @@ msgstr "Fonctionnalités"
 msgid "Fedora"
 msgstr "-"
 
-#: FConnectionEditor.class:69
+#: FConnectionEditor.class:69 FImportTable.class:339
 msgid "Field"
 msgstr "Champ"
 
-#: FConnectionEditor.class:1413
+#: FImportTable.class:260
+msgid "Field_&1"
+msgstr "Champ_&1"
+
+#: FConnectionEditor.class:1578
 msgid "Fields"
 msgstr "Champs"
 
@@ -1478,11 +1538,11 @@ msgstr "-"
 msgid "Firebird database driver"
 msgstr "Pilote de base de données Firebird"
 
-#: FForm.class:3255
+#: FForm.class:3256
 msgid "&First"
 msgstr "&Début"
 
-#: FConnectionEditor.class:464 MConnection.module:82
+#: FConnectionEditor.class:510 MConnection.module:82
 msgid "Float"
 msgstr "Décimal"
 
@@ -1758,7 +1818,7 @@ msgstr "Indiquer les lignes modifiées"
 msgid "Hindi (India)"
 msgstr "Hindi (Inde)"
 
-#: FForm.class:3357
+#: FForm.class:3358
 msgid "Horizontal"
 msgstr "Horizontal"
 
@@ -1838,11 +1898,19 @@ msgstr "Gestion des images"
 msgid "Implements"
 msgstr "Implémente"
 
+#: FImportTable.class:41
+msgid "Import"
+msgstr "Importer"
+
+#: FImportTable.class:642
+msgid "&Import"
+msgstr "&Importer"
+
 #: FTranslate.class:1714
 msgid "&Import..."
 msgstr "&Importer..."
 
-#: FConnectionEditor.class:1368
+#: FConnectionEditor.class:1445
 msgid "Import..."
 msgstr "Importer..."
 
@@ -1854,7 +1922,11 @@ msgstr "Importer une traduction"
 msgid "Import a translation file"
 msgstr "Importer un fichier de traduction"
 
-#: FConnectionEditor.class:1366
+#: FImportTable.class:468
+msgid "Import file"
+msgstr "Importer un fichier"
+
+#: FConnectionEditor.class:1443
 msgid "Import text file"
 msgstr "Importer un fichier texte"
 
@@ -1878,7 +1950,7 @@ msgstr "Indenter"
 msgid "Index"
 msgstr "Index"
 
-#: FConnectionEditor.class:1463
+#: FConnectionEditor.class:1628
 msgid "Indexes"
 msgstr "Index"
 
@@ -1922,7 +1994,7 @@ msgstr "Paquetage d'&installation..."
 msgid "Install in the user component directory"
 msgstr "Installer dans le répertoire des composants utilisateurs"
 
-#: FConnectionEditor.class:464 MConnection.module:78
+#: FConnectionEditor.class:510 MConnection.module:78
 msgid "Integer"
 msgstr "Entier"
 
@@ -1945,6 +2017,14 @@ msgstr "Internationalisation"
 #: Language.module:62
 msgid "Irish (Ireland)"
 msgstr "Irlandais (Irlande)"
+
+#: FImportTable.class:512
+msgid "ISO 8859-1"
+msgstr "-"
+
+#: FImportTable.class:512
+msgid "ISO 8859-15"
+msgstr "-"
 
 #: Language.module:64
 msgid "Italian (Italy)"
@@ -1982,6 +2062,10 @@ msgstr "Conserver les informations de débogage dans l'exécutable"
 msgid "Key"
 msgstr "Clef"
 
+#: FImportTable.class:593
+msgid "Key field"
+msgstr "Champ clef"
+
 #: MTheme.module:6
 msgid "Keywords"
 msgstr "Mots-clés"
@@ -2002,7 +2086,7 @@ msgstr "Coréen (Corée)"
 msgid "Language"
 msgstr "Langage"
 
-#: FForm.class:3276
+#: FForm.class:3277
 msgid "&Last"
 msgstr "&Fin"
 
@@ -2046,7 +2130,7 @@ msgstr "Chargement des informations sur le composant &1..."
 msgid "Local variables"
 msgstr "Variables locales"
 
-#: FForm.class:3494
+#: FForm.class:3495
 msgid "Lock form"
 msgstr "Verrouiller le formulaire"
 
@@ -2054,9 +2138,13 @@ msgstr "Verrouiller le formulaire"
 msgid "Lock property"
 msgstr "Verrouiller la propriété"
 
-#: FConnectionEditor.class:464 MConnection.module:80
+#: FConnectionEditor.class:510 MConnection.module:80
 msgid "Long"
 msgstr "Entier long"
+
+#: FImportTable.class:525
+msgid "Mac"
+msgstr "-"
 
 #: Language.module:74
 msgid "Macedonian (Republic of Macedonia)"
@@ -2114,11 +2202,11 @@ msgstr "Version max."
 msgid "MD5/DES crypting"
 msgstr "Chiffrement MD5/DES"
 
-#: FForm.class:3565 FMenu.class:26
+#: FForm.class:3566 FMenu.class:26
 msgid "Menu editor"
 msgstr "Editeur de menu"
 
-#: FForm.class:3432
+#: FForm.class:3433
 msgid "Menu editor..."
 msgstr "Editeur de menu..."
 
@@ -2129,6 +2217,10 @@ msgstr "Entrée de menu"
 #: FMakeInstall.class:669
 msgid "Menus"
 msgstr "Menus"
+
+#: FImportTable.class:614
+msgid "Messages"
+msgstr "Messages"
 
 #: FOption.class:821
 msgid "Minimize at runtime"
@@ -2174,23 +2266,23 @@ msgstr "Déplacer tout en bas"
 msgid "Move down"
 msgstr "Déplacer vers le bas"
 
-#: FForm.class:3250
+#: FForm.class:3251
 msgid "Move tab"
 msgstr "Déplacer l'onglet"
 
-#: FForm.class:3696
+#: FForm.class:3697
 msgid "Move tab first"
 msgstr "Déplacer l'onglet au début"
 
-#: FForm.class:3720
+#: FForm.class:3721
 msgid "Move tab last"
 msgstr "Déplacer l'onglet à la fin"
 
-#: FForm.class:3704
+#: FForm.class:3705
 msgid "Move tab left"
 msgstr "Déplacer l'onglet à gauche"
 
-#: FForm.class:3712
+#: FForm.class:3713
 msgid "Move tab right"
 msgstr "Déplacer l'onglet à droite"
 
@@ -2262,7 +2354,7 @@ msgstr "Nouveau fichier"
 msgid "New folder"
 msgstr "Nouveau dossier"
 
-#: FConnectionEditor.class:1481
+#: FConnectionEditor.class:1646
 msgid "New index"
 msgstr "Nouvel index"
 
@@ -2278,7 +2370,7 @@ msgstr "Nouveau projet"
 msgid "New project..."
 msgstr "Nouveau projet..."
 
-#: FConnectionEditor.class:1342 FNewTable.class:97
+#: FConnectionEditor.class:1419 FNewTable.class:97
 msgid "New table"
 msgstr "Nouvelle table"
 
@@ -2286,7 +2378,7 @@ msgstr "Nouvelle table"
 msgid "New translation"
 msgstr "Nouvelle traduction"
 
-#: FForm.class:3269 FMenu.class:818 FTips.class:226
+#: FForm.class:3270 FMenu.class:818 FTips.class:226
 msgid "&Next"
 msgstr "&Suivant"
 
@@ -2318,6 +2410,10 @@ msgstr "-"
 msgid "(No parent)"
 msgstr "(Aucune)"
 
+#: FImportTable.class:397
+msgid "No record imported."
+msgstr "Aucun enregistrement importé."
+
 #: FOption.class:701
 msgid "Normal"
 msgstr "Normal"
@@ -2337,6 +2433,10 @@ msgstr "Affichage complet"
 #: FDebugExpr.class:4
 msgid "not available"
 msgstr "non disponible"
+
+#: FImportTable.class:367
+msgid "Not enough values"
+msgstr "Pas assez de valeurs"
 
 #: Design.module:748
 msgid "No terminal emulator found."
@@ -2382,6 +2482,10 @@ msgstr "OK"
 msgid "Once the information entered, you can\nclick on the <b>OK</b> button to create the project.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
 msgstr "Une fois les informations saisies, vous pouvez\ncliquer sur le bouton <b>OK</b> pour créer le projet.\n<p>Cliquez sur le bouton <b>Précédent</b> si vous avez fait une erreur.\n<p>Cliquez sur le bouton <b>Annuler</b> pour abandonner l'opération.\n\n"
 
+#: FImportTable.class:399
+msgid "One record imported."
+msgstr "Un enregistrement importé."
+
 #: FTranslate.class:907
 msgid "One translation was picked up."
 msgstr "Une traduction a été récupérée."
@@ -2406,7 +2510,7 @@ msgstr "Ouvrir malgré tout"
 msgid "&Open a terminal..."
 msgstr "&Ouvrir un terminal..."
 
-#: FForm.class:3225
+#: FForm.class:3226
 msgid "Open code"
 msgstr "Ouvrir le code"
 
@@ -2470,7 +2574,7 @@ msgstr "-"
 msgid "Operators"
 msgstr "Opérateurs"
 
-#: FOption.class:915 FPropertyProject.class:1618
+#: FMakeExecutable.class:98 FOption.class:915 FPropertyProject.class:1618
 msgid "Options"
 msgstr "Options"
 
@@ -2606,7 +2710,7 @@ msgstr "Veuillez sélectionner un groupe de paquetage pour chaque distribution c
 msgid "Please enter a menu name."
 msgstr "Veuillez entrer un nom de menu."
 
-#: FConnectionEditor.class:567
+#: FConnectionEditor.class:613
 msgid "Please enter a number."
 msgstr "Veuillez saisir un nombre."
 
@@ -2686,7 +2790,11 @@ msgstr "&Préférences..."
 msgid "Prefix package name with the vendor name"
 msgstr "Prefixer le nom du paquetage avec le nom du vendeur"
 
-#: FForm.class:3262 FTips.class:220
+#: FImportTable.class:605
+msgid "Preview"
+msgstr "Aperçu"
+
+#: FForm.class:3263 FTips.class:220
 msgid "&Previous"
 msgstr "&Précédent"
 
@@ -2842,7 +2950,7 @@ msgstr "Projets récents"
 msgid "Rectangle"
 msgstr "Rectangle"
 
-#: FEditor.class:2882 FForm.class:3557 FOutput.class:466 FTextEditor.class:645
+#: FEditor.class:2882 FForm.class:3558 FOutput.class:466 FTextEditor.class:645
 msgid "Redo"
 msgstr "Rétablir"
 
@@ -2874,7 +2982,7 @@ msgstr "Recharger la traduction"
 msgid "Remember password"
 msgstr "Se souvenir du mot de passe"
 
-#: FConnectionEditor.class:1437 FMakeInstall.class:933
+#: FConnectionEditor.class:1602 FMakeInstall.class:933
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -2910,11 +3018,11 @@ msgstr "Supprimer l'expression sélectionnée"
 msgid "&Rename..."
 msgstr "&Renommer..."
 
-#: FConnectionEditor.class:1360
+#: FConnectionEditor.class:1437
 msgid "Rename..."
 msgstr "Renommer..."
 
-#: FConnectionEditor.class:1358 FNewTable.class:29
+#: FConnectionEditor.class:1435 FNewTable.class:29
 msgid "Rename table"
 msgstr "Renommer la table"
 
@@ -2982,7 +3090,7 @@ msgstr "Rotation de 90° vers la droite"
 msgid "Rotate counter-clockwise"
 msgstr "Rotation de 90° vers la gauche"
 
-#: FForm.class:3364
+#: FForm.class:3365
 msgid "Rows"
 msgstr "Lignes"
 
@@ -3002,7 +3110,7 @@ msgstr "Démarrer"
 msgid "&Run"
 msgstr "Déma&rrer"
 
-#: FConnectionEditor.class:1534
+#: FConnectionEditor.class:1513
 msgid "Run query"
 msgstr "Exécuter la requête"
 
@@ -3034,19 +3142,19 @@ msgstr "Mêmes dépendances pour toutes les cibles"
 msgid "Same files for all targets"
 msgstr "Mêmes fichiers pour toutes les cibles"
 
-#: FForm.class:3645
+#: FForm.class:3646
 msgid "Same height"
 msgstr "Même hauteur"
 
-#: FForm.class:3421
+#: FForm.class:3422
 msgid "Same &height"
 msgstr "Même hau&teur"
 
-#: FForm.class:3637
+#: FForm.class:3638
 msgid "Same width"
 msgstr "Même largeur"
 
-#: FForm.class:3415
+#: FForm.class:3416
 msgid "Same &width"
 msgstr "Même &largeur"
 
@@ -3142,7 +3250,7 @@ msgstr "La chaîne de caractères a été remplacée &1 fois."
 msgid "Search string replaced once."
 msgstr "La chaîne de caractères recherchée à été remplacée une fois."
 
-#: FForm.class:3208 FIconEditor.class:2258
+#: FForm.class:3209 FIconEditor.class:2258
 msgid "Select"
 msgstr "Sélectionner"
 
@@ -3158,7 +3266,7 @@ msgstr "Choisissez un répertoire"
 msgid "Select a font"
 msgstr "Choisissez une police"
 
-#: FForm.class:3288
+#: FForm.class:3289
 msgid "Select all"
 msgstr "Sélectionner tout"
 
@@ -3190,11 +3298,15 @@ msgstr "Choisissez un fichier thème"
 msgid "Selection"
 msgstr "Sélection"
 
+#: FConnectionEditor.class:1313
+msgid "Select the CSV file to import"
+msgstr "Choisissez le fichier CSV à importer"
+
 #: FMakeInstall.class:982
 msgid "Select the destination directory"
 msgstr "Sélectionnez le répertoire destination"
 
-#: FForm.class:3346
+#: FForm.class:3347
 msgid "Send to background"
 msgstr "A l'arrière-plan"
 
@@ -3202,7 +3314,7 @@ msgstr "A l'arrière-plan"
 msgid "Serbian (Serbia & Montenegro)"
 msgstr "Serbe (Serbie & Montenegro)"
 
-#: FConnectionEditor.class:464 MConnection.module:90
+#: FConnectionEditor.class:510 MConnection.module:90
 msgid "Serial"
 msgstr "Série"
 
@@ -3250,7 +3362,7 @@ msgstr "Afficher uniquement les composants utilisés dans le projet"
 msgid "Show statistics"
 msgstr "Afficher les statistiques"
 
-#: FForm.class:3241
+#: FForm.class:3242
 msgid "Show tab"
 msgstr "Afficher l'onglet"
 
@@ -3326,6 +3438,10 @@ msgstr "Trier les propriétés"
 msgid "Sound"
 msgstr "Son"
 
+#: FImportTable.class:487
+msgid "Source"
+msgstr "Source"
+
 #: FMain.class:1823
 msgid "&Source archive..."
 msgstr "Archive des fichiers &source..."
@@ -3341,6 +3457,10 @@ msgstr "Sources"
 #: Package.module:493
 msgid "Sources are being debianizated."
 msgstr "\"Debianisation\" des sources..."
+
+#: FImportTable.class:537
+msgid "Space"
+msgstr "Espace"
 
 #: FOption.class:1023
 msgid "spaces"
@@ -3370,7 +3490,7 @@ msgstr "Pilote de base de données SQLite 2"
 msgid "SQLite 3 database driver"
 msgstr "Pilote de base de données SQLite 3"
 
-#: FConnectionEditor.class:1374
+#: FConnectionEditor.class:1451
 msgid "SQL request"
 msgstr "Requête SQL"
 
@@ -3382,7 +3502,7 @@ msgstr "État de la pile"
 msgid "Standard components"
 msgstr "Composants standards"
 
-#: FEditor.class:2841 FForm.class:3232 FMain.class:2268
+#: FEditor.class:2841 FForm.class:3233 FMain.class:2268
 msgid "&Startup class"
 msgstr "Cla&sse de démarrage"
 
@@ -3418,13 +3538,17 @@ msgstr "Arrêter"
 msgid "&Stop"
 msgstr "&Stop"
 
-#: FConnectionEditor.class:464 MConnection.module:88
+#: FConnectionEditor.class:510 MConnection.module:88
 msgid "String"
 msgstr "Chaîne"
 
 #: MTheme.module:6
 msgid "Strings"
 msgstr "Chaînes"
+
+#: FImportTable.class:555
+msgid "Strip useless white spaces"
+msgstr "Supprimer les espaces inutiles"
 
 #: FMain.class:2178
 msgid "&Style sheet..."
@@ -3462,6 +3586,14 @@ msgstr "Routines de coloration syntaxique"
 msgid "System"
 msgstr "Système"
 
+#: FImportTable.class:537
+msgid "Tab"
+msgstr "-"
+
+#: FImportTable.class:572
+msgid "Table"
+msgstr "Table"
+
 #: FNewTable.class:58 MConnection.module:263
 msgid "Table '&1' already exists."
 msgstr "La table '&1' existe déjà."
@@ -3470,7 +3602,7 @@ msgstr "La table '&1' existe déjà."
 msgid "Tab size"
 msgstr "Tabulations"
 
-#: FForm.class:3691
+#: FForm.class:3692
 msgid "Tabstrip"
 msgstr "Onglets"
 
@@ -3534,6 +3666,10 @@ msgstr "Le fichier a été modifié.\nDésirez-vous réellement ouvrir un autre 
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
 
+#: FImportTable.class:588
+msgid "The first line contains field names"
+msgstr "La première ligne contient les noms des champs"
+
 #: Project.module:3385
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ ESPACE"
@@ -3542,7 +3678,7 @@ msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\
 msgid "The following classes have circular inheritance:"
 msgstr "Les classes suivantes ont un héritage circulaire :"
 
-#: FForm.class:2780
+#: FForm.class:2781
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
 
@@ -3550,7 +3686,7 @@ msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
 msgstr "Les outils de traduction GNU ne sont pas installés sur votre système.\n\nVeuillez les installer pour pouvoir effectuer la traduction."
 
-#: FConnectionEditor.class:572
+#: FConnectionEditor.class:618
 msgid "The length must be greater than 1 and lower than 255."
 msgstr "La longueur doit être comprise entre 1 et 255."
 
@@ -3626,15 +3762,15 @@ msgstr "Ces composants sont incompatibles entre eux:<br>&1."
 msgid "These files have been modified.\nDo&nbsp;you want to save them?"
 msgstr "Ces fichiers ont été modifiés.\nDésirez-vous les enregistrer ?"
 
-#: FConnectionEditor.class:221
+#: FConnectionEditor.class:269
 msgid "The table '&1' has been modified. Do you want to save it?"
 msgstr "La table '&1' a été modifiée. Voulez-vous l'enregistrer ?"
 
-#: FConnectionEditor.class:1028
+#: FConnectionEditor.class:1074
 msgid "The table '&1' has no primary key."
 msgstr "La table '&1' n'a pas de clef primaire."
 
-#: FConnectionEditor.class:715
+#: FConnectionEditor.class:761
 msgid "This field is used in an index."
 msgstr "Le champ est utilisé dans un index."
 
@@ -3666,7 +3802,7 @@ msgstr "Cette ligne et les suivantes seront ignorées"
 msgid "This menu is too deep !"
 msgstr "Ce menu est trop profond !"
 
-#: FConnectionEditor.class:636
+#: FConnectionEditor.class:682
 msgid "This name already exists."
 msgstr "Ce nom existe déjà."
 
@@ -3678,7 +3814,7 @@ msgstr "Ce nom contient un caractère interdit:"
 msgid "This name is already in use."
 msgstr "Ce nom de contrôle est déjà utilisé."
 
-#: FConnectionEditor.class:542
+#: FConnectionEditor.class:588
 msgid "This name is already in used."
 msgstr "Ce nom est déjà utilisé."
 
@@ -3750,7 +3886,7 @@ msgstr "Basculer un point d'arrêt"
 msgid "Toggle &breakpoint"
 msgstr "Basculer un &point d'arrêt"
 
-#: FForm.class:3573
+#: FForm.class:3574
 msgid "Toggle grid"
 msgstr "Bascule l'affichage de la grille"
 
@@ -3773,6 +3909,10 @@ msgstr "Taille de la boîte à outils"
 #: FMain.class:2014
 msgid "&Tools"
 msgstr "&Outils"
+
+#: FImportTable.class:369
+msgid "Too many values"
+msgstr "Trop de valeurs"
 
 #: Language.module:107
 msgid "Traditional chinese (Taiwan)"
@@ -3810,7 +3950,7 @@ msgstr "Turque (Turquie)"
 msgid "Type"
 msgstr "Type"
 
-#: FConnectionEditor.class:596
+#: FConnectionEditor.class:642
 msgid "Type mismatch."
 msgstr "Type de données incorrect."
 
@@ -3818,7 +3958,7 @@ msgstr "Type de données incorrect."
 msgid "Ubuntu"
 msgstr "-"
 
-#: FConnectionEditor.class:143
+#: FConnectionEditor.class:191
 msgid "Unable to connect to database."
 msgstr "Impossible de se connecter à la base de données."
 
@@ -3830,7 +3970,7 @@ msgstr "Imposible de créer le raccourci sur le bureau."
 msgid "Unable to install component."
 msgstr "Impossible d'installer le composant."
 
-#: FConnectionEditor.class:324
+#: FConnectionEditor.class:376
 msgid "Unable to load table '&1'."
 msgstr "Impossible de charger la table '&1'."
 
@@ -3850,7 +3990,7 @@ msgstr "Impossible de renommer '&1'"
 msgid "Unable to resolve the conflict."
 msgstr "Impossible de résoudre le conflit."
 
-#: FConnectionEditor.class:350
+#: FConnectionEditor.class:396
 msgid "Unable to run query."
 msgstr "Impossible d'exécuter la requête."
 
@@ -3890,6 +4030,10 @@ msgstr "Désindenter"
 msgid "Unique"
 msgstr "Unique"
 
+#: FImportTable.class:525
+msgid "Unix"
+msgstr "-"
+
 #: Language.module:154
 msgid "Unknown"
 msgstr "Inconnu"
@@ -3898,11 +4042,11 @@ msgstr "Inconnu"
 msgid "Unknown format"
 msgstr "Format inconnu"
 
-#: FConnectionEditor.class:382
+#: FConnectionEditor.class:428
 msgid "unlimited"
 msgstr "illimité"
 
-#: FForm.class:3294
+#: FForm.class:3295
 msgid "Unselect all"
 msgstr "Déselectionner tout"
 
@@ -3910,7 +4054,7 @@ msgstr "Déselectionner tout"
 msgid "Untranslated"
 msgstr "Non traduit"
 
-#: FConnectionEditor.class:1451
+#: FConnectionEditor.class:1616
 msgid "Up"
 msgstr "Monter"
 
@@ -3954,6 +4098,10 @@ msgstr "Composants utilisateurs"
 msgid "Use system charset"
 msgstr "Utiliser le jeu de caractères du système"
 
+#: FImportTable.class:512
+msgid "UTF-8"
+msgstr "-"
+
 #: Language.module:88
 msgid "Valencian (Valencian Community, Spain)"
 msgstr "Valencien (Communauté Valencienne, Espagne)"
@@ -3986,7 +4134,7 @@ msgstr "Conflit de version"
 msgid "Versioning"
 msgstr "Suivi"
 
-#: FForm.class:3370
+#: FForm.class:3371
 msgid "Vertical"
 msgstr "Vertical"
 
@@ -4085,6 +4233,14 @@ msgstr "Gallois (Royaume-Uni)"
 #: FCreateFile.class:750
 msgid "Width"
 msgstr "Largeur"
+
+#: FImportTable.class:525
+msgid "Windows"
+msgstr "-"
+
+#: FImportTable.class:512
+msgid "WINDOWS-1252"
+msgstr "-"
 
 #: FFind.class:808
 msgid "Word only"

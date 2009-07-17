@@ -150,7 +150,6 @@ Public Sub RefreshAll()
 
   grdProperty.Rows.Count = aProp.Count + 2
   grdProperty.Clear
-  grdProperty.Rows.Height = -1
 
   grdProperty.Columns.Count = 2
 
@@ -213,6 +212,7 @@ Public Sub RefreshAll()
 
   ' Can be lesser than predicted, as some properties may be hidden
   grdProperty.Rows.Count = iRow
+  grdProperty.Rows.Height = -1
 
   'grdProperty.Rows.Count = iRow
 

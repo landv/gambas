@@ -300,7 +300,7 @@ Public Sub GetFieldInfo(sField As String) As DataField
   
   If $bRequest Then
     hField = New DataField
-    hField.FromField($rData.Fields[sField])
+    hField.FromField(Me[0].Fields[sField])
     Return hField
   Else
     Return DataConnection[$sTable, sField]

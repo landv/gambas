@@ -24,8 +24,6 @@
 
 #define __CPANEL_CPP
 
-
-
 #include <qapplication.h>
 #include <qframe.h>
 #include <qobjectlist.h>
@@ -111,6 +109,7 @@ GB_DESC CPanelDesc[] =
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
 	PANEL_DESCRIPTION,
 	
@@ -128,6 +127,7 @@ GB_DESC CHBoxDesc[] =
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
 	HBOX_DESCRIPTION,
 	
@@ -145,6 +145,7 @@ GB_DESC CVBoxDesc[] =
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
 	GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
 	VBOX_DESCRIPTION,
 	
@@ -162,6 +163,7 @@ GB_DESC CHPanelDesc[] =
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
 	HPANEL_DESCRIPTION,
 	
@@ -179,6 +181,7 @@ GB_DESC CVPanelDesc[] =
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
 	VPANEL_DESCRIPTION,
 	

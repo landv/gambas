@@ -13,7 +13,7 @@ struct gContainerArrangement
 	unsigned dirty : 1;
 	unsigned autoresize : 1;
 	unsigned margin : 1;
-	unsigned _reserved : 3;
+	unsigned indent : 3;
 }; 
 
 class gContainer : public gControl
@@ -29,6 +29,7 @@ public:
 	int padding();
 	bool spacing();
 	bool margin();
+	int indent();
 	virtual int clientWidth();
 	virtual int clientHeight();
 	virtual int clientX();
@@ -42,6 +43,7 @@ public:
 	void setPadding(int vl);
 	void setSpacing(bool vl);
 	void setMargin(bool vl);
+	void setIndent(int vl);
 
 	virtual int childCount();
 	virtual gControl* child(int index);

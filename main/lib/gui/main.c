@@ -35,7 +35,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
   NULL
 };
 
-char *GB_INCLUDE EXPORT = "gb.qt";
+char *GB_INCLUDE EXPORT = "gb.qt4";
 
 int EXPORT GB_INIT(void)
 {

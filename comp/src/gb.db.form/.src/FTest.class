@@ -3,13 +3,13 @@
 
 Public Sub Button1_Click()
 
-  DB.Close
-  DB.Open
-  DataSource1.Reset
-  ' If DataSource1.Table Then
-  '   DataSource1.Table = ""
-  ' Else
-  '   DataSource1.Table = "test"
-  ' Endif
+  ' DB.Close
+  ' DB.Open
+  ' DataSource1.Reset
+  If DataSource1.Table = "sqlite_master" Then
+    DataSource1.Table = "pictures"
+  Else
+    DataSource1.Table = "sqlite_master"
+  Endif
 
 End

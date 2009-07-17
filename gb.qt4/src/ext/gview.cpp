@@ -131,6 +131,7 @@ GEditor::GEditor(QWidget *parent)
 	_showRow = -1;
 	_showCol = 0;
 	_showLen = 0;
+	lineWidthCacheY = -1;
 	
 	for (i = 0; i < GLine::NUM_STATE; i++)
 	{
@@ -222,18 +223,38 @@ int GEditor::lineWidth(int y) const
 }
 
 
-int GEditor::lineWidth(int y, int len) const
+int GEditor::lineWidth(int y, int len)
 {
 	if (len <= 0)
 		return margin;
 	else
-		return margin + fm.width(doc->lines.at(y)->s.getString(), len);
+	{
+		QString s = doc->lines.at(y)->s.getString();
+		len = QMIN(len, s.length());
+		
+		if (y != lineWidthCacheY)
+		{
+			lineWidthCacheY = y;
+			lineWidthCache.clear();
+			//qDebug("y = %d", y);
+		}
+		
+		int lw = lineWidthCache[len];
+		if (!lw)
+		{
+			//qDebug("lineWidthCache: %d", len);
+			lw = fm.width(s, len);
+			lineWidthCache.insert(len, lw);
+		}
+		return margin + lw;
+	}
 }
 
-int GEditor::posToColumn(int y, int px) const
+int GEditor::posToColumn(int y, int px)
 {
-	int i = 0, lw;
+	int i = -1, lw;
 	int len = doc->lineLength(y);
+	QString s = doc->lines.at(y)->s.getString();
 	int d, f;
 	
 	if (len == 0)
@@ -245,7 +266,10 @@ int GEditor::posToColumn(int y, int px) const
 	f = len;
 	while (f > d)
 	{
-		i = (d + f) / 2;
+		if (i < 0)
+			i = px / fm.width("m");
+		else
+			i = (d + f) / 2;
 		
 		lw = lineWidth(y, i);
 		if (px < lw)
@@ -254,7 +278,7 @@ int GEditor::posToColumn(int y, int px) const
 			continue;
 		}
 		
-		lw = lineWidth(y, i + 1);
+		lw += fm.width(s[i]);
 		if (px >= lw)
 		{
 			d = i + 1;
@@ -358,7 +382,7 @@ void GEditor::changeEvent(QEvent *e)
 		fm = fontMetrics();
 		italicFont = font();
 		italicFont.setItalic(true);
-		
+		clearLineWidthCache();
 		updateMargin();
 		updateWidth();
 		updateHeight();
@@ -381,16 +405,19 @@ static int find_last_non_space(const QString &s)
 void GEditor::paintDottedSpaces(QPainter &p, int row, int ps, int ls)
 {
 	QPoint pa[ls];
-	int i, y;
+	int i, x, y, w;
 
+	x = lineWidth(row, ps) + 1;
 	y = fm.ascent();
+	w = fm.width(" ");
 	for (i = 0; i < ls; i++)
 	{
-		pa[i].setX(lineWidth(row, ps + i) + 1);
+		pa[i].setX(x);
 		pa[i].setY(y);
+		x += w;
 	}
 
-	p.drawPoints(pa, ls);
+	p.drawPoints(pa, i);
 }
 
 void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax, int h, int xs1, int xs2, int row)
@@ -467,7 +494,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 			
 			if (ps >= 0 && pos >= ps)
 			{
-				paintDottedSpaces(p, row, pos, sd.length());
+				paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, sd.length()));
 			}
 			else
 			{
@@ -494,7 +521,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 	{
 		p.setPen(styles[GLine::Normal].color);
 		p.drawText(x, y, l->s.mid(pos).getString());
-		paintDottedSpaces(p, row, pos, l->s.length() - pos);
+		paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, (int)l->s.length() - pos));
 	}
 }
 
@@ -610,7 +637,7 @@ static void highlight_text(QPainter &p, int x, int y, int x2, int yy, QString s,
 	p.drawRect(x, 0, x2 - x - 1, yy - 1);
 }
 
-void GEditor::paintCell(QPainter * painter, int row, int)
+void GEditor::paintCell(QPainter *painter, int row, int)
 {
 	QRect ur;
 	GLine *l;
@@ -846,7 +873,7 @@ void GEditor::checkMatching()
 	by = -1;
 	ignore = false;
 
-	if (len == 0)
+	if (len == 0 || x > len)
 		goto __OK;
 
 	pos = -1;
@@ -881,7 +908,7 @@ void GEditor::checkMatching()
 
 	c = 0;
 
-	if (x > 0)
+	if (x > 0 && x <= len)
 	{
 		bx2 = x - 1;
 		c = s[bx2];
@@ -982,8 +1009,11 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 	else if (nx > lineLength(ny))
 		nx = lineLength(ny);
 	
-	if (ny != y && getFlag(HighlightCurrent))
-		doc->colorize(y);
+	if (ny != y)
+	{
+		if (getFlag(HighlightCurrent))
+			doc->colorize(y);
+	}
 
 	if (y != ny || x != nx)
 	{
@@ -1443,7 +1473,7 @@ int GEditor::posToLine(int py) const
 	return viewToReal(ny); 
 }
 
-void GEditor::posToCursor(int px, int py, int *y, int *x) const
+void GEditor::posToCursor(int px, int py, int *y, int *x)
 {
 	int nx, ny;
 
@@ -1457,7 +1487,7 @@ void GEditor::posToCursor(int px, int py, int *y, int *x) const
 	*x = nx;
 }
 
-void GEditor::cursorToPos(int y, int x, int *px, int *py) const
+void GEditor::cursorToPos(int y, int x, int *px, int *py)
 {
 	int npx, npy;
 
@@ -1597,7 +1627,7 @@ void GEditor::resizeEvent(QResizeEvent *e)
 	updateWidth();
 }
 
-bool GEditor::isCursorVisible() const
+bool GEditor::isCursorVisible()
 {
 	int px, py;
 	
@@ -1773,6 +1803,7 @@ void GEditor::docTextChangedLater()
 
 void GEditor::docTextChanged()
 {
+	clearLineWidthCache();
 	if (painting)
 		QTimer::singleShot(0, this, SLOT(docTextChangedLater()));
 	else
@@ -1866,7 +1897,8 @@ void GEditor::inputMethodEvent(QInputMethodEvent *e)
 QVariant GEditor::inputMethodQuery(Qt::InputMethodQuery property) const
 {
 	//qDebug("inputMethodQuery: %d\n", (int)property);
-
+	GEditor *that = (GEditor *)this;
+	
 	switch(property) 
 	{
 		case Qt::ImMicroFocus:
@@ -1874,7 +1906,7 @@ QVariant GEditor::inputMethodQuery(Qt::InputMethodQuery property) const
 			int cx, cy, px, py;
 			
 			getCursor(&cy, &cx);
-			cursorToPos(cy, cx, &px, &py);
+			that->cursorToPos(cy, cx, &px, &py);
 			return QRect(px, py, 1, cellHeight());
 		}
 		case Qt::ImFont:
@@ -2258,4 +2290,40 @@ void GEditor::showWord(int y, int x, int len)
 	_showCol = x;
 	_showLen = len;
 	updateLine(y);
+}
+
+void GEditor::updateLine(int y)
+{
+	QRect r(0, realToView(y) * cellHeight(), cellWidth(), cellHeight());
+	updateContents(r);
+}
+
+void GEditor::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
+{
+	int colfirst = columnAt(cx);
+	int rowfirst = rowAt(cy);
+	int rowlast = rowAt(cy + ch - 1);
+
+	if (rowfirst == -1 || colfirst == -1) 
+	{
+		paintEmptyArea(p, cx, cy, cw, ch);
+		return;
+	}
+
+	if (rowlast < 0 || rowlast >= numLines())
+		rowlast = numLines() - 1;
+
+	// Go through the rows
+	for (int r = rowfirst; r <= rowlast; ++r) 
+	{
+		// get row position and height
+		int rowp = r * cellHeight();
+		// Translate painter and draw the cell
+		p->translate(0, rowp);
+		paintCell(p, r, 0);
+		p->translate(0, -rowp);
+	}
+
+	// Paint empty rects
+	paintEmptyArea(p, cx, cy, cw, ch);
 }

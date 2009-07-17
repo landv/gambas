@@ -22,6 +22,8 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
   
   If bWithDatabase Then hConn.Name = hConfig["Connection/Database"]
   
+  hConn.IgnoreCharset = hConfig["/Connection/IgnoreCharset"]
+  
 End
 
 Public Sub LoadPassword(sName As String) As String

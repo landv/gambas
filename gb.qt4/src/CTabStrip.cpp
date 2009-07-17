@@ -757,6 +757,7 @@ GB_DESC CTabStripDesc[] =
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
   GB_METHOD("_get", ".Tab", CTABSTRIP_get, "(Index)i"),
 

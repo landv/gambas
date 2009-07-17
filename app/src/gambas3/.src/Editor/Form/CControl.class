@@ -25,7 +25,7 @@ Static Private $cLibRef As New Collection
 
 Private $cValue As New Collection
 
-Private $aPanel As Panel[8]
+Private $aPanel As DrawingArea[1] '8
 
 'PRIVATE CONST PAN_H AS Integer = 6
 'PRIVATE CONST PAN_W AS Integer = 6
@@ -35,6 +35,7 @@ Private $X As Integer
 Private $Y As Integer
 Private $MX As Integer
 Private $MY As Integer
+Private $bMaster As Boolean
 
 Static Private $bDoNotMoveHandle As Boolean
 
@@ -248,7 +249,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
         If Not hCtrl Then
           'PRINT "DrawingArea: sClass"
-          hCtrl = New DrawingArea(hParent)
+          hCtrl = New Panel(hParent)
           hCtrl.Merge = True
           'hCtrl.Text = sClass & " ?"
           hCtrl.Design = True
@@ -266,6 +267,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   'PRINT "< CreateControl "; sClass
 
   'IF hCtrl IS UserControl OR NOT hCtrl IS Container THEN
+  Try hCtrl.Tracking = True
   Try hCtrl.Design = True
   'ENDIF
   Return hCtrl
@@ -820,13 +822,13 @@ Public Sub Select(hForm As FForm, Optional bMaster As Boolean)
   Endif
 
   CreatePanel(0, "NW", Mouse.SizeNW, bMaster)
-  CreatePanel(1, "N", Mouse.SizeN, bMaster)
-  CreatePanel(2, "NE", Mouse.SizeNE, bMaster)
-  CreatePanel(3, "E", Mouse.SizeE, bMaster)
-  CreatePanel(4, "SE", Mouse.SizeSE, bMaster)
-  CreatePanel(5, "S", Mouse.SizeS, bMaster)
-  CreatePanel(6, "SW", Mouse.SizeSW, bMaster)
-  CreatePanel(7, "W", Mouse.SizeW, bMaster)
+  ' CreatePanel(1, "N", Mouse.SizeN, bMaster)
+  ' CreatePanel(2, "NE", Mouse.SizeNE, bMaster)
+  ' CreatePanel(3, "E", Mouse.SizeE, bMaster)
+  ' CreatePanel(4, "SE", Mouse.SizeSE, bMaster)
+  ' CreatePanel(5, "S", Mouse.SizeS, bMaster)
+  ' CreatePanel(6, "SW", Mouse.SizeSW, bMaster)
+  ' CreatePanel(7, "W", Mouse.SizeW, bMaster)
 
   Try Control.ToolTip = Subst("&1 ( &2 x &3 )", Name, Control.Width, Control.Height)
   Selected = True
@@ -851,7 +853,7 @@ Public Sub UnSelect(hForm As FForm, Optional bDoNotRemove As Boolean)
 
   If Not Selected Then Return
 
-  For iInd = 0 To 7
+  For iInd = 0 To $aPanel.Max
     $aPanel[iInd].Delete
     $aPanel[iInd] = Null
   Next
@@ -870,27 +872,27 @@ End
 
 Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bMaster As Boolean)
 
-  Dim hPanel As Panel
+  Dim hPanel As DrawingArea
   Dim hCont As Object
-
+  Dim hHide As DrawingArea
+  Dim iInd As Integer
+  
   hCont = Control.Parent
 
-  hPanel = New Panel(hCont) As "Panel"
+  hPanel = New DrawingArea(hCont) As "Panel"
   hPanel.Resize(PAN_W, PAN_H)
-  hPanel.Mouse = iMouse
-  hPanel.Tag = "#" & sTag
+  hPanel.Tracking = True
+  hPanel.Merge = True
 
   $aPanel[iIndex] = hPanel
+  $bMaster = bMaster
+  
+  ' hPanel.Background = Color.SelectedBackground
+  ' If $bMaster Then
+  '   hPanel.Border = Border.Plain
+  '   hPanel.Foreground = Color.White
+  ' Endif
   MovePanel(iIndex)
-
-  hPanel.Border = Border.Plain
-  If bMaster Then
-    hPanel.Background = Color.White
-    hPanel.Foreground = Color.Black
-  Else
-    hPanel.Background = Color.Black
-    hPanel.Foreground = Color.White
-  Endif
 
 End
 
@@ -898,41 +900,48 @@ End
 Private Sub MovePanel(iPanel As Integer)
 
   Dim hCtrl As Control
-  Dim hPanel As Panel
+  Dim hPanel As DrawingArea
+  Dim X, Y, D As Integer
+  Dim iInd As Integer
 
   hCtrl = Control
   hPanel = $aPanel[iPanel]
-  hPanel.Raise
+  If hPanel.Next <> hCtrl Then hPanel.Next = hCtrl
+
+  hPanel.Move(hCtrl.X - 3, hCtrl.Y - 3, hCtrl.W + 6, hCtrl.H + 6)
+  Return
 
   Select Case Mid$(hPanel.Tag, 2)
 
     Case "NW", "N", "NE"
-      hPanel.Y = hCtrl.Y - PAN_H \ 2
+      Y = hCtrl.Y - PAN_H \ 2 + 1
       'hPanel.Y = hCtrl.Y
 
     Case "SW", "S", "SE"
-      hPanel.Y = hCtrl.Y + hCtrl.Height - PAN_H \ 2
+      Y = hCtrl.Y + hCtrl.Height - PAN_H \ 2 - 1
       'hPanel.Y = hCtrl.Y + hCtrl.Height - PAN_H
 
     Default
-      hPanel.Y = hCtrl.Y + (hCtrl.Height - PAN_H) \ 2
+      Y = hCtrl.Y + (hCtrl.Height - PAN_H) \ 2
 
   End Select
 
   Select Case Mid$(hPanel.Tag, 2)
 
     Case "NW", "W", "SW"
-      hPanel.X = hCtrl.X - PAN_W \ 2
+      X = hCtrl.X - PAN_W \ 2 + 1
       'hPanel.X = hCtrl.X
 
     Case "NE", "E", "SE"
-      hPanel.X = hCtrl.X + hCtrl.Width - PAN_W \ 2
+      X = hCtrl.X + hCtrl.Width - PAN_W \ 2 - 1
       'hPanel.X = hCtrl.X + hCtrl.Width - PAN_W
 
     Default
-      hPanel.X = hCtrl.X + (hCtrl.Width - PAN_W) \ 2
+      X = hCtrl.X + (hCtrl.Width - PAN_W) \ 2
 
   End Select
+
+  hPanel.Move(X, Y)
 
 End
 
@@ -944,7 +953,7 @@ Private Sub MoveAllHandle()
   If Not Selected Then Return
   If $bDoNotMoveHandle Then Return
 
-  For iInd = 0 To 7
+  For iInd = 0 To $aPanel.Max
     MovePanel(iInd)
   Next
 
@@ -1053,12 +1062,13 @@ Public Procedure Panel_MouseDown()
 
   If Project.Running Then Return
   If GetForm().ReadOnly Then Return
+  If Not Last.Tag Then Return
 
   $bMove = True
   $MX = Mouse.ScreenX
   $MY = Mouse.ScreenY
-  $X = Last.X
-  $Y = Last.Y
+  $X = Last.X + Mouse.X
+  $Y = Last.Y + Mouse.Y
 
 End
 
@@ -1072,11 +1082,51 @@ Public Procedure Panel_MouseMove()
   Dim iPanX As Integer
   Dim iPanY As Integer
 
-  Dim hPanel As Panel
+  Dim hPanel As DrawingArea = Last
   Dim hCtrl As Control
 
   Dim iXP As Integer
   Dim iYP As Integer
+
+  If Mouse.Button = 0 Then
+  
+    iX = Mouse.X
+    iY = Mouse.Y
+  
+    If iY < PAN_H Then
+      If iX < PAN_W Then
+        hPanel.Mouse = Mouse.SizeNW
+        hPanel.Tag = "#NW"
+      Else If iX >= (hPanel.W - PAN_W) Then
+        hPanel.Mouse = Mouse.SizeNE
+        hPanel.Tag = "#NE"
+      Else
+        hPanel.Mouse = Mouse.SizeN
+        hPanel.Tag = "#N"
+      Endif
+    Else If iY >= (hPanel.H - PAN_H) Then
+      If iX < PAN_W Then
+        hPanel.Mouse = Mouse.SizeSW
+        hPanel.Tag = "#SW"
+      Else If iX >= (hPanel.W - PAN_W) Then
+        hPanel.Mouse = Mouse.SizeSE
+        hPanel.Tag = "#SE"
+      Else
+        hPanel.Mouse = Mouse.SizeS
+        hPanel.Tag = "#S"
+      Endif
+    Else If iX < PAN_W Then
+      hPanel.Mouse = Mouse.SizeW
+      hPanel.Tag = "#W"
+    Else If iX >= (hPanel.W - PAN_W) Then
+      hPanel.Mouse = Mouse.SizeE
+      hPanel.Tag = "#E"
+    Else
+      hPanel.Mouse = Mouse.Default
+      hPanel.Tag = Null
+    Endif
+  
+  Endif
 
   If Not $bMove Then Return
 
@@ -1084,35 +1134,33 @@ Public Procedure Panel_MouseMove()
 
   CControl.SetGrid(Not Mouse.Shift)
 
-  hPanel = Last
   hCtrl = Control
 
   iPanX = $X + Mouse.ScreenX - $MX
-  iPanY = $Y + Mouse.ScreenY - $MY
+  iPanY = $Y + Mouse.ScreenY - $MY 
 
-  Select Case Mid$(hPanel.Tag, 2)
-
-    Case "N", "S"
-      iPanX = hPanel.X
-
-    Case "W", "E"
-      iPanY = hPanel.Y
-
-  End Select
+  ' Select Case Mid$(hPanel.Tag, 2)
+  ' 
+  '   Case "N", "S"
+  '     iPanX = hPanel.X
+  ' 
+  '   Case "W", "E"
+  '     iPanY = hPanel.Y
+  ' 
+  ' End Select
 
   iX = Control.X
   iY = Control.Y
   iW = Control.W
   iH = Control.H
 
-  'iPanX = iPanX - GetAbsoluteX(hCtrl.Parent)
-  'iPanY = iPanY - GetAbsoluteY(hCtrl.Parent)
+  'Debug hCtrl.X;; hCtrl.Y; " / "; $X;; $Y; " -> "; iPanX;; iPanY
 
   Select Case Mid$(hPanel.Tag, 2)
 
     Case "N", "NW", "NE"
 
-      iY = Grid(iPanY + PAN_H, Project.Snap)
+      iY = Grid(iPanY, Project.Snap)
       iH = Grid(hCtrl.H + hCtrl.Y - iY, Project.Snap)
 
     Case "S", "SW", "SE"
@@ -1125,7 +1173,7 @@ Public Procedure Panel_MouseMove()
 
     Case "W", "NW", "SW"
 
-      iX = Grid(iPanX + PAN_W, Project.Snap)
+      iX = Grid(iPanX, Project.Snap)
       iW = Grid(hCtrl.W + hCtrl.X - iX, Project.Snap)
 
     Case "E", "NE", "SE"
@@ -1166,6 +1214,25 @@ Public Sub Panel_Menu()
 
   GetForm().Control_Menu
 
+End
+
+Public Sub Panel_Draw()
+  
+  Dim hPanel As DrawingArea = Last
+  
+  If $bMaster Then
+    Draw.Background = Color.White
+    Draw.Foreground = Color.SelectedBackground
+  Else
+    Draw.Background = Color.SelectedBackground
+    Draw.Foreground = Color.Black
+  Endif
+  Draw.FillRect(0, 0, hPanel.W, 3)
+  Draw.FillRect(0, hPanel.H - 3, hPanel.W, 3)
+  Draw.FillRect(0, 3, 3, hPanel.H - 6)
+  Draw.FillRect(hPanel.W - 3, 3, 3, hPanel.H - 6)
+  Draw.Rect(0, 0, hPanel.W, hPanel.H)
+  
 End
 
 

@@ -13,7 +13,6 @@ Private $bReadOnly As Boolean
 Private $aField As New CField[]
 Private $cFieldName As New Collection
 Private $aIndexField As New CIndexField[]
-Private $bIgnoreNextSelect As Boolean
 
 Public Sub _new(sPath As String)
 
@@ -85,11 +84,10 @@ Private Sub LoadList(Optional sTable As String)
   'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
   For Each hTable In $hConn.Tables
     If hTable.System Then
-      hPict = Picture["img/16/system-table.png"]
+      lvwTable.Add("S" & hTable.Name, hTable.Name, Picture["img/16/system-table.png"])
     Else
-      hPict = Picture["img/16/table.png"]
+      lvwTable.Add("T" & hTable.Name, hTable.Name, Picture["img/16/table.png"])
     Endif
-    lvwTable.Add("T" & hTable.Name, hTable.Name, hPict)
   Next
   
   If Not sTable Then 
@@ -100,6 +98,21 @@ Private Sub LoadList(Optional sTable As String)
   Endif
 
 End
+
+Private Sub GetTableList() As String[]
+  
+  Dim aTable As New String[]
+  
+  lvwTable.MoveFirst
+  While lvwTable.Available
+    aTable.Add(lvwTable.Item.Text)
+    lvwTable.MoveNext
+  Wend
+  
+  Return aTable
+  
+End
+
 
 
 Private Function ReadOnly_Read() As Boolean
@@ -159,7 +172,7 @@ Public Sub Reload() As Boolean
   Endif
   sTitle &= "/" & $hConn.Name
   
-  lblTitle.Text = "  " & sTitle & "  "
+  btnTitle.Text = "  " & sTitle & "  "
   
   DataSource.ResetAll
 
@@ -266,8 +279,8 @@ Private Sub CheckCurrent() As Boolean
   
 CANCEL:
 
-  $bIgnoreNextSelect = True
-  lvwTable["T" & $sTable].Selected = True
+  Try lvwTable["T" & $sTable].Selected = True
+  If Error Then Try lvwTable["S" & $sTable].Selected = True
   Return True
   
 End
@@ -286,6 +299,7 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
   If CheckCurrent() Then Return True
 
   Try lvwTable["T" & sNewTable].Selected = True
+  Try lvwTable["S" & sNewTable].Selected = True
 
   If Not sNewTable Or If sNewTable = $sTable Then Return
 
@@ -348,6 +362,7 @@ Private Sub LoadTable(Optional sNewTable As String) As Boolean
   tabTable.Show
   datRequest.Hide
   datData.Show
+  tlbData.Show
   
   SetReadOnly(hTable.System)
 
@@ -370,12 +385,7 @@ Public Sub lvwTable_MouseUp()
   Try sKey = lvwTable.Current.Key
   If Not sKey Then Return
   
-  Select Left$(sKey)
-  
-    Case "T"
-      If LoadTable(Mid$(sKey, 2)) Then Return
-  
-  End Select
+  If LoadTable(Mid$(sKey, 2)) Then Return
 
 End
 
@@ -452,6 +462,7 @@ Public Sub tbvIndex_Data(Row As Integer, Column As Integer)
     End Select
 
     .Padding = 4
+    If hIndexField.Index Then .Background = Color.LightBackground
 
   End With
 
@@ -822,7 +833,7 @@ Public Sub btnNewIndex_Click()
 
   $aIndexField.Add(hIndexField)
   Inc tbvIndex.Rows.Count
-  tbvField.Rows[tbvField.Rows.Count - 1].H = -1
+  tbvIndex.Rows[tbvIndex.Rows.Count - 1].H = -1
 
   Modify
 
@@ -1247,6 +1258,7 @@ Public Sub btnRequest_Click()
   edtRequest.SetFocus
   datData.Hide
   datRequest.Show
+  tlbData.Hide
   SetReadOnly(True)
 
 End
@@ -1292,5 +1304,36 @@ Public Sub btnRename_Click()
 
   'Try $hConn.DeleteTable(sOldName)
   LoadList($sTable)
+
+End
+
+Public Sub btnImport_Click()
+
+  If SaveTable() Then Return
+  
+  Dialog.Title = ("Select the CSV file to import")
+  Dialog.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
+  Dialog.Path = Settings["/Connection/ImportPath"]
+  If Dialog.OpenFile() Then Return
+  Settings["/Connection/ImportPath"] = Dialog.Path
+  
+  FImportTable.Run($hConn, GetTableList(), Dialog.Path) 
+  If FImportTable.Table Then
+    LoadList(FImportTable.Table)
+  Else
+    LoadList($sTable)
+  Endif
+
+End
+
+Public Sub btnTitle_Click()
+
+  FNewConnection.Run(Path)
+
+End
+
+Public Sub btnRemoveData_Click()
+
+  If Message.Warning(("Do you really want to remove the selected rows?"), ("Remove"), ("Cancel")) = 2 Then Return
 
 End

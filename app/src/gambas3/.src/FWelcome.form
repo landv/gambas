@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,69,69)
+  MoveScaled(0,2,71,69)
   Background = Color.TextBackground
   Foreground = Color.TextForeground
   Text = ("Welcome to Gambas 3")
@@ -10,22 +10,40 @@
   Spacing = True
   Margin = True
   { panBackground Panel
-    MoveScaled(1,1,64,19)
+    MoveScaled(1,1,67,19)
     Background = Color.SelectedBackground
-    Foreground = Color.Background
     Arrangement = Arrange.Horizontal
     Margin = True
+    Border = Border.Plain
     { panLeft VBox
       MoveScaled(1,2,44,16)
       Expand = True
       Spacing = True
       { lblGambas Label
-        MoveScaled(0,0,32,9)
+        MoveScaled(0,0,32,10)
         Font = Font["Bold,+10"]
         Foreground = Color.SelectedForeground
         AutoResize = True
         Text = ("Gambas")
         Alignment = Align.TopNormal
+      }
+      { HBox2 HBox
+        MoveScaled(1,8,35,3)
+        { lblWebSite Label
+          MoveScaled(0,0,28,3)
+          Font = Font["Underline"]
+          Foreground = Color.Background
+          Mouse = Mouse.Pointing
+          AutoResize = True
+          Text = ("http://gambas.sourceforge.net")
+        }
+      }
+      { lblMessage TextLabel
+        MoveScaled(1,11,38,4)
+        Font = Font["Bold"]
+        Foreground = Color.SelectedForeground
+        AutoResize = True
+        Text = ("This program is published under the GNU General Public Licence.")
       }
       { lblVersion Label
         MoveScaled(30,1,27,5)
@@ -36,28 +54,11 @@
         Text = ("")
         Alignment = Align.TopNormal
       }
-      { HBox2 HBox
-        MoveScaled(1,8,35,3)
-        { lblWebSite Label
-          MoveScaled(0,0,28,3)
-          Font = Font["Underline"]
-          Mouse = Mouse.Pointing
-          AutoResize = True
-          Text = ("http://gambas.sourceforge.net")
-        }
-      }
-      { lblMessage TextLabel
-        MoveScaled(1,11,38,4)
-        Font = Font["Bold"]
-        AutoResize = True
-        Text = ("This program is published under the GNU General Public Licence.")
-      }
     }
     { Panel1 Panel
-      MoveScaled(45,1,19,17)
-      { imgGambas PictureBox
-        MoveScaled(0,-1,18,18)
-        Picture = Picture["img/logo/new-logo.png"]
+      MoveScaled(48,2,15,16)
+      { picMadeIn PictureBox
+        MoveScaled(0,0,15,15)
         Stretch = True
       }
     }
@@ -75,8 +76,8 @@
       Background = Color.SelectedBackground
       Expand = True
       Arrangement = Arrange.Vertical
-      Spacing = True
       Padding = 4
+      Border = Border.Plain
       { lblList Label
         MoveScaled(1,0,24,3)
         Font = Font["Bold"]
@@ -85,10 +86,8 @@
         Alignment = Align.TopNormal
       }
       { panSort HBox
-        MoveScaled(1,4,25,3)
-        { Panel2 Panel
-          MoveScaled(1,0,1,3)
-        }
+        MoveScaled(1,3,25,4)
+        Indent = True
         { chkSortRecent CheckBox
           MoveScaled(2,0,21,3)
           Foreground = Color.SelectedForeground
@@ -114,6 +113,12 @@
         Border = False
         ScrollBar = Scroll.Vertical
       }
+    }
+    { timMadeIn #Timer
+      #X = 308
+      #Y = 238
+      Enabled = True
+      Delay = 50
     }
   }
 }

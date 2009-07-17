@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,70,61)
+  MoveScaled(0,0,70,65)
   Text = ("")
   Icon = Picture["icon:/small/server"]
   Resizable = False
@@ -127,8 +127,20 @@
       Expand = True
     }
   }
+  { HBox3 HBox
+    MoveScaled(1,56,68,3)
+    { Label10 Label
+      MoveScaled(0,0,18,3)
+      Text = ("")
+    }
+    { chkIgnoreCharset CheckBox
+      MoveScaled(27,0,24,3)
+      Expand = True
+      Text = ("Ignore database charset")
+    }
+  }
   { HBox1 HBox
-    MoveScaled(1,56,68,4)
+    MoveScaled(1,60,68,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(4,0,4,4)

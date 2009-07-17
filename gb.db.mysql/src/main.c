@@ -613,9 +613,6 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
     return TRUE;
   }
 
-  /* Character Set cannot be set at this point int time */
-  //printf("Character set GB[%s] mysql[%s]\n", GB.System.Charset(), mysql_character_set_name(conn));
-  
   /* set dbversion */
 	db->handle = conn;
   db->version = db_version(db);

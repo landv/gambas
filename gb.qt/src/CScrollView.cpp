@@ -538,6 +538,7 @@ GB_DESC CScrollViewDesc[] =
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
   /*GB_EVENT("ChildInsert", NULL, "(Child)Control;", &EVENT_ChildInsert),
   GB_EVENT("ChildRemove", NULL, "(Child)Control;", &EVENT_ChildRemove),

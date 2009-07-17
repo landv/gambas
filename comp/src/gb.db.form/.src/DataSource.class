@@ -72,7 +72,7 @@ Private Function GetChildren(Optional hParent As Container = Me) As Object[]
   Dim hTab As Object
   Dim iTab As Integer
   
-  If IsMultiContainer(hParent) Then 
+  If IsMultiContainer(hParent) Then
   
     hTab = hParent
     For iTab = 0 To hTab.Count - 1
@@ -599,4 +599,16 @@ Static Public Sub ResetAll()
   
   DataConnection.Reset
   
+End
+
+Private Function IgnoreCharset_Read() As Boolean
+
+  
+
+End
+
+Private Sub IgnoreCharset_Write(Value As Boolean)
+
+  
+
 End

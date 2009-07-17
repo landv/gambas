@@ -38,6 +38,7 @@ the following fields:
 - spacing : if children must be separate by Desktop.Scale
 - padding : number of pixels around the arrangement area.
 - margin : if the arrangement area must have a margin of Desktop.Scale
+- indent: if the arrangement area must have an indentation of Desktop.Scale
 - autoresize : if the container must try to fit its contents.
 - locked : if the container is being arranged.
 - user : if the container is a UserControl or a UserContainer.
@@ -145,6 +146,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
   bool rtl = IS_RIGHT_TO_LEFT();
   int rtlm = rtl ? -1 : 1;
   int padding;
+	int indent;
 
   if (!CAN_ARRANGE(_object))
     return;
@@ -195,6 +197,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
 		padding = arr->padding;
 		if (arr->margin) padding += DESKTOP_SCALE;
+		indent = arr->indent * DESKTOP_SCALE;
 
 		for(i = 0; i < 3; i++)
 		{
@@ -217,6 +220,22 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
 			//	fprintf(stderr, "#0: %d %d %d %d\n", xc, yc, wc, hc);
 				
+			if (indent)
+			{
+				if (swap)
+				{
+					yc += indent;
+					hc -= indent;
+				}
+				else
+				{
+					if (!rtl)
+						xc += indent;
+					wc -= indent;
+				}
+			}
+
+			// Beware! This is not the same test!
 			if (autoresize)
 			{
 				if (wc <= 0 && hc <= 0)
@@ -237,7 +256,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 			if (rtl && !swap)
 				x += wc;
-
+			
 			wid = 0;
 			RESET_CHILDREN_LIST();
 
@@ -249,7 +268,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 					sexp = 0;
 					nexp = 0;
 					dmax = 0;
-
+					
 					for(;;)
 					{
 						wid = GET_NEXT_CHILD_WIDGET();
@@ -310,7 +329,14 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						if (!ob || IS_IGNORE(ob))
 							continue;
 
-						if (!first)
+						if (first)
+						{
+							if (swap)
+								y += indent;
+							else
+								x += indent * rtlm;
+						}
+						else
 						{
 							if (swap)
 								y += arr->spacing;
@@ -390,7 +416,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						{
 							if (rtl)
 							{
-								if ((y > yc) && ((y + (IS_EXPAND(ob) ? 8 : GET_WIDGET_H(wid))) > hc))
+								if ((y > yc) && ((y + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_H(wid))) > hc))
 								{
 									y = yc;
 									x -= w + arr->spacing;
@@ -413,7 +439,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							}
 							else
 							{
-								if ((y > yc) && ((y + (IS_EXPAND(ob) ? 8 : GET_WIDGET_H(wid))) > hc))
+								if ((y > yc) && ((y + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_H(wid))) > hc))
 								{
 									y = yc;
 									x += w + arr->spacing;
@@ -439,7 +465,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						{
 							if (rtl)
 							{
-								if ((x < (xc + wc)) && ((x - (IS_EXPAND(ob) ? 8 : GET_WIDGET_W(wid))) < xc))
+								if ((x < (xc + wc)) && ((x - (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_W(wid))) < xc))
 								{
 									x = xc + wc;
 									y += h + arr->spacing;
@@ -462,7 +488,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 							}
 							else
 							{
-								if ((x > xc) && ((x + (IS_EXPAND(ob) ? 8 : GET_WIDGET_W(wid))) > wc))
+								if ((x > xc) && ((x + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_W(wid))) > wc))
 								{
 									x = xc;
 									y += h + arr->spacing;

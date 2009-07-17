@@ -121,6 +121,7 @@ GB_DESC CPanelDesc[] =
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
   PANEL_DESCRIPTION,
 	
@@ -138,6 +139,7 @@ GB_DESC CHBoxDesc[] =
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
   HBOX_DESCRIPTION,
 
@@ -155,6 +157,7 @@ GB_DESC CVBoxDesc[] =
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
   VBOX_DESCRIPTION,
 
@@ -172,6 +175,7 @@ GB_DESC CHPanelDesc[] =
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
   HPANEL_DESCRIPTION,
 
@@ -189,6 +193,7 @@ GB_DESC CVPanelDesc[] =
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("AutoResize", "b", CCONTAINER_auto_resize),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
 
   VPANEL_DESCRIPTION,
 

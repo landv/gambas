@@ -23,6 +23,7 @@ Private Sub LoadConnection()
   txtUser.Text = hConfig["Connection/User"] 
   txtPath.Text = hConfig["Connection/Path"] 
   chkRememberPassword.Value = If(hConfig["Connection/RememberPassword"], 1, 0)
+  chkIgnoreCharset.Value = If(hConfig["Connection/IgnoreCharset"], 1, 0)
 
   For iInd = 0 To cmbType.Count - 1
     If LCase(cmbType[iInd].Text) = sType Then
@@ -43,6 +44,7 @@ Private Sub FillConfig(hConfig As Object, Optional bPassword As Boolean)
   hConfig["Connection/User"] = txtUser.Text
   hConfig["Connection/Path"] = txtPath.Text
   hConfig["Connection/RememberPassword"] = CBool(chkRememberPassword.Value)
+  hConfig["Connection/IgnoreCharset"] = CBool(chkIgnoreCharset.Value)
   hConfig["Connection/Database"] = txtDatabase.Text
   If bPassword Then hConfig["Connection/Password"] = txtPassword.Text
   

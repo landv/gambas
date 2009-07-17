@@ -6,15 +6,23 @@ Public Sub Main()
 
   Dim rTest As Result
   Dim aText As String[]
+  Dim hTable As Table
 
   $hConn.Type = "sqlite"
-  '$hConn.User = "root"
-  $hConn.Name = "dbsqlite.db"
-  '$hConn.Name = "test"
+  $hConn.Name = "picturedatabase"
   $hConn.Host = "/home/benoit"
-
-  ' $hConn.Open
   
+  ' $hConn.Open
+  ' For Each hTable In $hConn.Tables
+  '   Print hTable.Name
+  ' Next
+
+  ' $hConn.Type = "mysql"
+  ' $hConn.User = "root"
+  ' $hConn.Name = "test"
+  
+  
+  ' $hConn.Open
   ' aText = ["la nuit est", "un long fleuve", "tranquille", "qui dort le long", "des pleurs infidèles"]
   ' DB.Begin
   ' rTest = DB.Edit("test")

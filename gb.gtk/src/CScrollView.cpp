@@ -146,10 +146,12 @@ GB_DESC CScrollViewDesc[] =
   GB_PROPERTY_READ("ScrollWidth", "i", CSCROLLVIEW_scroll_w),
   GB_PROPERTY_READ("ScrollH", "i", CSCROLLVIEW_scroll_h),
   GB_PROPERTY_READ("ScrollHeight", "i", CSCROLLVIEW_scroll_h),
-  GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
+
+	GB_PROPERTY("Spacing", "b", CCONTAINER_spacing),
   GB_PROPERTY("Margin", "b", CCONTAINER_margin),
   GB_PROPERTY("Padding", "i", CCONTAINER_padding),
   GB_PROPERTY("Arrangement", "i", CCONTAINER_arrangement),
+  GB_PROPERTY("Indent", "b", CCONTAINER_indent),
   
   GB_METHOD("Scroll", 0, CSCROLLVIEW_scroll, "(X)i(Y)i"),
   GB_METHOD("EnsureVisible", 0, CSCROLLVIEW_ensure_visible, "(X)i(Y)i(Width)i(Height)i"),

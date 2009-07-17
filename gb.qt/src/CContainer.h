@@ -48,7 +48,7 @@ typedef
     unsigned dirty : 1;
     unsigned autoresize : 1;
     unsigned margin : 1;
-    unsigned _reserved : 3;
+    unsigned indent : 3;
     }
   CARRANGEMENT;
 
@@ -73,7 +73,7 @@ typedef
     unsigned dirty : 1;
     unsigned autoresize : 1;
     unsigned margin : 1;
-    unsigned _reserved : 3;
+    unsigned indent : 3;
     }
   CCONTAINER_ARRANGEMENT;
 
@@ -97,6 +97,7 @@ typedef
 DECLARE_PROPERTY(CCONTAINER_arrangement);
 DECLARE_PROPERTY(CCONTAINER_auto_resize);
 DECLARE_PROPERTY(CCONTAINER_padding);
+DECLARE_PROPERTY(CCONTAINER_indent);
 DECLARE_PROPERTY(CCONTAINER_spacing);
 DECLARE_PROPERTY(CCONTAINER_margin);
 

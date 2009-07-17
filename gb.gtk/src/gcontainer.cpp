@@ -129,7 +129,7 @@ static void resize_container(gControl *cont, int w, int h)
 #define RAISE_ARRANGE_EVENT(_object) cb_arrange((gContainer *)_object);
 #define RAISE_BEFORE_ARRANGE_EVENT(_object) cb_before_arrange((gContainer *)_object);
 
-#define DESKTOP_SCALE gDesktop::scale();
+#define DESKTOP_SCALE gDesktop::scale()
 
 #define FUNCTION_NAME arrangeContainer
 
@@ -271,6 +271,22 @@ void gContainer::setMargin(bool vl)
 {
 	arrangement.margin = vl;
 	performArrange();
+}
+
+int gContainer::indent()
+{
+	return arrangement.indent;
+}
+
+void gContainer::setIndent(int vl)
+{
+	if (vl < 0)
+		vl = 1;
+	if (vl >= 0 && vl <= 7) 
+	{
+		arrangement.indent = vl;
+		performArrange();
+	}
 }
 
 bool gContainer::autoResize()

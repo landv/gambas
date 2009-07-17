@@ -34,6 +34,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
+#include <QHash>
 
 #include "gdocument.h"
 #include "../gb.qt.h"
@@ -92,6 +93,9 @@ private:
 	GHighlightStyle styles[GLine::NUM_STATE];
 	int flags;
 	QPixmap pattern;
+	
+	QHash<int, int> lineWidthCache;
+	int lineWidthCacheY;
 
 	int lineLength(int y) const { return doc->lineLength(y); }
 	int numLines() const { return doc->numLines(); }
@@ -101,7 +105,7 @@ private:
 	bool updateCursor();
 
 	int lineWidth(int y) const;
-	int lineWidth(int y, int len) const;
+	int lineWidth(int y, int len);
 	void updateWidth(int y = -1);
 	void updateMargin();
 	void updateHeight();
@@ -121,7 +125,8 @@ private:
 	int viewToReal(int row) const;
 	int realToView(int row) const;
 	int checkCursor(int y);	
-	bool isCursorVisible() const;
+	bool isCursorVisible();
+	void clearLineWidthCache() { lineWidthCache.clear(); lineWidthCacheY = -1; }
 
 	//static void updateBreakpoint(uint bg, uint fg);
 
@@ -149,6 +154,7 @@ protected:
 	virtual void focusOutEvent(QFocusEvent *);
 	virtual bool focusNextPrevChild(bool);
 	virtual void inputMethodEvent(QInputMethodEvent *e);
+	virtual void drawContents(QPainter *p, int cx, int cy, int cw, int ch);
 
 public:
 
@@ -206,13 +212,13 @@ public:
 
 	int getLineHeight() const { return cellHeight(); }
 	int getCharWidth() const;
-	void cursorToPos(int y, int x, int *px, int *py) const;
+	void cursorToPos(int y, int x, int *px, int *py);
 	int posToLine(int py) const;
-	int posToColumn(int y, int px) const;
-	void posToCursor(int px, int py, int *y, int *x) const;
+	int posToColumn(int y, int px);
+	void posToCursor(int px, int py, int *y, int *x);
 	int lastVisibleRow(int y) const { return rowAt(y + visibleHeight() - 1); }
 	int lastVisibleRow() const { return lastVisibleRow(contentsY()); }
-	void updateLine(int y) { updateCell(realToView(y), 0); }
+	void updateLine(int y);
 
 	virtual void setNumRows(int);
 

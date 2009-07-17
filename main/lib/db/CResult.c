@@ -800,7 +800,7 @@ GB_DESC CResultDesc[] =
 
 	GB_METHOD("Update", NULL, CRESULT_update, NULL),
 	GB_METHOD("Delete", NULL, CRESULT_delete, "[(Keep)b]"),
-
+	
 	GB_PROPERTY_READ("Fields", ".ResultFields", CRESULT_fields),
 	GB_PROPERTY_READ("Connection", "Connection", CRESULT_connection),
 

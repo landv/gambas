@@ -12,7 +12,6 @@ Property Mode As Integer
 Property Header As Integer
 Property Grid As Boolean
 Property Highlight As Boolean
-'Property Adjust As Boolean
 
 'PROPERTY Connection AS Connection
 'PROPERTY Table AS String
@@ -30,6 +29,7 @@ Private $hCtrl As TableView
 Private $hTable As DataTable
 Private $bAllColumns As Boolean
 Private $aColumns As String[]
+Private $aType As DataField[]
 Private $aColumnsIndex As Integer[]
 Private $bCreate As Boolean
 'Private $bRefreshColumn As Boolean
@@ -78,8 +78,10 @@ Private Sub RefreshColumns()
   If $bAllColumns Then $aColumns = aFields
 
   $aColumnsIndex = New Integer[$aColumns.Count]
+  $aType = New DataField[$aColumns.Count]
   For iInd = 0 To $aColumns.Max
     $aColumnsIndex[iInd] = aFields.Find($aColumns[iInd])
+    $aType[iInd] = $hTable.GetFieldInfo($aColumns[iInd])
   Next
   
   'Object.Lock($hCtrl)
@@ -123,15 +125,13 @@ Private Sub Load()
       $hTable = hTable
       bReset = True
       UpdateObserver
+      $hCtrl.Rows.Count = 0
+      $hCtrl.Columns.Count = 0
       If $hTable Then RefreshColumns
     Endif
   Endif
 
-  If Not $hTable Then
-    $hCtrl.Rows.Count = 0
-    $hCtrl.Columns.Count = 0
-    Return
-  Endif
+  If Not $hTable Then Return
   
   'Object.Lock($hCtrl)
   $bNoActivate = True
@@ -273,11 +273,35 @@ End
 
 Public Sub TableView_Data(Row As Integer, Column As Integer)
   
+  Dim iIndex As Integer
+  Dim hField As DataField
+  
   With $hCtrl.Data
-    Try .Text = Left(Str($hTable[Row][$aColumnsIndex[Column]]), 1024)
+    iIndex = $aColumnsIndex[Column]
+
+    Select Case $aType[Column].Type
+      Case db.Blob
+        .Text = "BLOB"
+        .Font.Bold = True
+        If $bHighlight And If Row And 1 Then 
+          .Background = Color.Mix($iHighlight, Color.LightGray)
+        Else
+          .Background = Color.Mix(Color.TextBackground, Color.LightGray)
+        Endif
+      Case db.String
+        If DB.IgnoreCharset Then
+          .Text = Left($hTable[Row][iIndex], 1024)
+        Else
+          Try .Text = Conv$(Left($hTable[Row][iIndex], 1024), DB.Charset, Desktop.Charset)
+        Endif
+        If $bHighlight And If Row And 1 Then .Background = $iHighlight
+      Case Else
+        Try .Text = Left(Str($hTable[Row][iIndex]), 1024)
+        If $bHighlight And If Row And 1 Then .Background = $iHighlight
+    End Select
+    
     .Alignment = Align.TopNormal
     
-    If $bHighlight And If Row And 1 Then .Background = $iHighlight
   End With
   
   If Not $bAdjust Then
@@ -291,6 +315,10 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
   Return
   
   $hCtrl.Data.Text = If(1, ("True"), ("False"))
+  
+Catch
+
+  $hCtrl.Data.Text = "#ERROR#"
   
 End
 
@@ -454,7 +482,6 @@ Public Sub TableView_ColumnClick(Column As Integer)
 
 End
 
-
 Private Function Grid_Read() As Boolean
 
   Return $hCtrl.Grid
@@ -478,53 +505,6 @@ Private Sub Highlight_Write(Value As Boolean)
   $bHighlight = Value
 
 End
-
-
-' Public Sub Table_CacheResize()
-'   
-'   Dim iRow As Integer
-'   Dim bBusy As Boolean
-'   Dim iNewSize As Integer
-'   
-'   If Not $bAdjust Then Return
-'   
-'   iNewSize = $hTable.CacheSize
-'   bBusy = (iNewSize - $iLastSize) > 128
-'   
-'   If bBusy Then Inc Application.Busy
-'   For iRow = $iLastSize To iNewSize - 1
-'     $hCtrl.Rows[iRow].Height = -1
-'   Next
-'   '$hCtrl.Show
-'   If bBusy Then Dec Application.Busy
-'   
-'   $iLastSize = iNewSize
-'   If $hCtrl.Current.Y >= $hCtrl.ScrollY Then 
-'     If Not $hTimer.Enabled Then
-'       $hTimer.Delay = 50
-'       $hTimer.Enabled = True
-'     Endif
-'   Endif
-'   
-' End
-
-' Private Function Adjust_Read() As Boolean
-' 
-'   Return $bAdjust
-' 
-' End
-' 
-' Private Sub Adjust_Write(Value As Boolean)
-' 
-'   If $bAdjust = Value Then Return
-'   
-'   $bAdjust = Value
-'   If $hTable Then
-'     UpdateObserver
-'     Table_CacheResize()
-'   Endif
-' 
-' End
 
 Private Function View_Read() As TableView
 

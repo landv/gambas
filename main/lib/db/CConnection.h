@@ -47,6 +47,7 @@ typedef
     GB_SUBCOLLECTION users;
     int limit;
     int trans;
+		bool ignore_charset;
     }
   CCONNECTION;
 

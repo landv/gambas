@@ -691,6 +691,36 @@ BEGIN_PROPERTY(CUSERCONTAINER_padding)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(CCONTAINER_indent)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS_ARRANGEMENT->indent);
+	else
+	{
+		int val = VPROP(GB_INTEGER);
+		if (val < 0) val = 1;
+		if (val >= 0 && val < 7)
+		{
+			THIS_ARRANGEMENT->indent = val;
+			arrange_now(CONTAINER);
+		}
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CUSERCONTAINER_indent)
+
+	CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
+	CCONTAINER_indent(cont, _param);
+	if (!READ_PROPERTY)
+	{
+		THIS_USERCONTAINER->save = cont->arrangement;
+		//qDebug("(%s %p): save = %08X (spacing)", GB.GetClassName(THIS), THIS, THIS_USERCONTAINER->save);
+	}
+
+END_PROPERTY
+
+
 BEGIN_METHOD(CUSERCONTROL_new, GB_OBJECT parent)
 
 	MyContainer *wid = new MyContainer(QCONTAINER(VARG(parent)));
@@ -870,6 +900,7 @@ GB_DESC CUserContainerDesc[] =
 	GB_PROPERTY("Margin", "b", CUSERCONTAINER_margin),
 	GB_PROPERTY("Spacing", "b", CUSERCONTAINER_spacing),
 	GB_PROPERTY("Padding", "i", CUSERCONTAINER_padding),
+	GB_PROPERTY("Indent", "i", CUSERCONTAINER_indent),
 	
 	GB_PROPERTY("Design", "b", CUSERCONTAINER_design),
 

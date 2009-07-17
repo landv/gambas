@@ -140,11 +140,9 @@ static void close_connection(CCONNECTION *_object)
 }
 
 
-// BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
-BEGIN_METHOD_VOID(CCONNECTION_new)
+BEGIN_METHOD(CCONNECTION_new, GB_STRING url)
 
-  /*int i, state, p;
-  char c;*/
+	char *url, *name, *p;
 
   THIS->db.handle = NULL;
   THIS->db.ignore_case = FALSE; // Now case is sensitive by default!
@@ -152,76 +150,51 @@ BEGIN_METHOD_VOID(CCONNECTION_new)
   if (_current == NULL)
     _current = THIS;
 
-#if 0
-  if (!MISSING(url))
-  {
-    char *url = GB.ToZeroString(ARG(url));
+	if (MISSING(url))
+		return;
+	
+	url = GB.ToZeroString(ARG(url));
+	
+	p = index(url, ':');
+	if (!p || p == url) goto __BAD_URL;
+	*p++ = 0;
+	if (p[0] != '/' || p[1] != '/') goto __BAD_URL;
+	p += 2;
+	
+	GB.NewString(&THIS->desc.type, url, 0);
+	url = p;
+	
+	p = rindex(url, '/');
+	if (!p || p == url) goto __BAD_URL;
+	*p++ = 0;
+	
+	name = p;
+	
+	p = index(url, '@');
+	if (p)
+	{
+		if (p == url)
+			goto __BAD_URL;
+		*p = 0;
+		GB.NewString(&THIS->desc.user, url, 0);
+		url = p + 1;
+	}
+	
+	p = index(url, ':');
+	if (p)
+	{
+		*p = 0;
+		GB.NewString(&THIS->desc.port, p + 1, 0);
+	}
 
-    state = 0;
-    p = 0;
-    for (i = 0; i <= LENGTH(url); i++)
-    {
-      c = url[i];
+	GB.NewString(&THIS->desc.host, url, 0);
+	
+	GB.NewString(&THIS->desc.name, name, 0);
 
-      switch (state)
-      {
-        case 0: /* type */
-          if (c == ':' || c == 0)
-          {
-            GB.NewString(&THIS->desc.type, &url[p], i - p);
-            state++;
-            p = i + 3; /* On saute '://' */
-          }
-          break;
-
-        case 1: /* // */
-        case 2:
-          if (c && c != '/')
-            goto BAD_URL;
-
-          state++;
-          break;
-
-        case 3: /* host */
-          if (c == ':' || c == '/' || c == 0)
-          {
-            if (i > p)
-              GB.NewString(&THIS->desc.host, &url[p], i - p);
-            p = i + 1;
-            state++;
-            if (c != ':')
-              state++;
-          }
-          break;
-
-        case 4: /* port */
-          if (c == '/' || c == 0)
-          {
-            if (i == p)
-              goto BAD_URL;
-
-            GB.NewString(&THIS->desc.port, &url[p], i - p);
-            p = i + 1;
-            state++;
-          }
-          break;
-
-        case 5: /* name */
-          if (c == 0 && i > p)
-            GB.NewString(&THIS->desc.name, &url[p], i - p);
-          break;
-      }
-    }
-  }
-
-  return;
-
-BAD_URL:
+__BAD_URL:
 
   GB.Error("Malformed URL");
-  return;
-#endif
-
+	
 END_METHOD
 
 
@@ -312,7 +285,7 @@ BEGIN_METHOD_VOID(CCONNECTION_close)
 
 END_METHOD
 
-
+#if 0
 BEGIN_PROPERTY(CCONNECTION_ignore_case)
 
 	CHECK_DB();
@@ -334,7 +307,18 @@ BEGIN_PROPERTY(CCONNECTION_ignore_case)
 	}
 
 END_PROPERTY
+#endif
 
+BEGIN_PROPERTY(CCONNECTION_ignore_charset)
+
+  CHECK_DB();
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->ignore_charset);
+	else
+		THIS->ignore_charset = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
 
 BEGIN_METHOD_VOID(CCONNECTION_begin)
 
@@ -701,7 +685,7 @@ GB_DESC CConnectionDesc[] =
 {
   GB_DECLARE("Connection", sizeof(CCONNECTION)),
 
-  GB_METHOD("_new", NULL, CCONNECTION_new, NULL), //"[(URL)s]"),
+  GB_METHOD("_new", NULL, CCONNECTION_new, "[(DatabaseURL)s]"),
   GB_METHOD("_free", NULL, CCONNECTION_free, NULL),
 
   GB_PROPERTY("Type", "s", CCONNECTION_type),
@@ -715,7 +699,7 @@ GB_DESC CConnectionDesc[] =
   GB_PROPERTY_READ("Version", "i", CCONNECTION_version),
   GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_PROPERTY_READ("Error", "i", CCONNECTION_error),
-  //GB_PROPERTY("IgnoreCase", "b", CCONNECTION_ignore_case),
+  GB_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
 
   GB_METHOD("Open", NULL, CCONNECTION_open, NULL),
   GB_METHOD("Close", NULL, CCONNECTION_close, NULL),
@@ -767,7 +751,7 @@ GB_DESC CDBDesc[] =
   GB_STATIC_PROPERTY_READ("Version", "i", CCONNECTION_version),
   GB_STATIC_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_STATIC_PROPERTY_READ("Error", "i", CCONNECTION_error),
-  //GB_STATIC_PROPERTY("IgnoreCase", "b", CCONNECTION_ignore_case),
+  GB_STATIC_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
 
   GB_STATIC_PROPERTY("Debug", "b", CCONNECTION_debug),
 

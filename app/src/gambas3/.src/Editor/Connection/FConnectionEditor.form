@@ -66,13 +66,11 @@
         MoveScaled(5,1,2,2)
         Expand = True
       }
-      { lblTitle Label
-        MoveScaled(14,0,14,4)
+      { btnTitle Button
+        MoveScaled(13,0,13,4)
         Font = Font["Bold"]
-        Background = Color.ButtonBackground
         AutoResize = True
-        Text = ("Label1")
-        Border = Border.Plain
+        Text = ("")
       }
     }
   }
@@ -310,13 +308,14 @@
             }
             { btnExportData ToolButton
               MoveScaled(34,0,12,4)
+              Visible = False
               AutoResize = True
               Text = ("Export...")
               Picture = Picture["icon:/small/save-as"]
             }
           }
           { dvwData DataView
-            MoveScaled(4,12,46,13)
+            MoveScaled(4,8,46,17)
             Expand = True
             Mode = Select.Multiple
             Grid = True

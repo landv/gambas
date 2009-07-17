@@ -1,5 +1,163 @@
 # Gambas Form File 3.0
 
-{ FImportTable Form
-  MoveScaled(0, 0, 68, 64)
+{ Form Form
+  MoveScaled(0,0,70,67)
+  Text = ("Import file")
+  Icon = Picture["icon:/medium/open"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { tabImport TabStrip
+    MoveScaled(1,1,66,60)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Margin = True
+    Count = 3
+    Index = 0
+    Text = ("Options")
+    { Label8 Label
+      MoveScaled(1,1,36,3)
+      Font = Font["Bold"]
+      Text = ("Source")
+    }
+    { HPanel1 HPanel
+      MoveScaled(1,4,62,30)
+      Spacing = True
+      Indent = True
+      { txtPath TextBox
+        MoveScaled(0,0,60,4)
+        Background = Color.Background
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+      }
+      { Label6 Label
+        MoveScaled(0,5,23,3)
+        Text = ("Charset")
+      }
+      { cmbCharset ComboBox
+        MoveScaled(25,5,35,4)
+        Expand = True
+        Text = ("")
+        List = [("UTF-8"), ("ISO 8859-1"), ("ISO 8859-15"), ("WINDOWS-1252")]
+      }
+      { Label7 Label
+        MoveScaled(0,10,23,3)
+        Text = ("End of line")
+      }
+      { cmbEndOfLine ComboBox
+        MoveScaled(25,10,35,4)
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+        List = [("Unix"), ("Windows"), ("Mac")]
+      }
+      { Label2 Label
+        MoveScaled(0,15,23,3)
+        Text = ("Delimiter character")
+      }
+      { cmbDelim ComboBox
+        MoveScaled(25,15,35,4)
+        Expand = True
+        Text = ("")
+        List = [("Tab"), ("Space"), (","), (";"), (":")]
+      }
+      { Label3 Label
+        MoveScaled(0,20,23,3)
+        Text = ("Enclose character")
+      }
+      { cmbEscape ComboBox
+        MoveScaled(25,20,35,4)
+        Expand = True
+        Text = ("")
+        List = [(""), ("'"), ("\"")]
+      }
+      { chkStrip CheckBox
+        MoveScaled(1,25,47,4)
+        Expand = True
+        Text = ("Strip useless white spaces")
+      }
+    }
+    { Label9 Label
+      MoveScaled(1,35,36,3)
+      Font = Font["Bold"]
+      Text = ("Destination")
+    }
+    { HPanel2 HPanel
+      MoveScaled(1,38,64,16)
+      Spacing = True
+      Indent = True
+      { Label1 Label
+        MoveScaled(0,0,16,4)
+        Text = ("Table")
+      }
+      { cmbTable ComboBox
+        MoveScaled(16,0,44,4)
+        Expand = True
+        Text = ("")
+      }
+      { Panel2 Panel
+        MoveScaled(0,5,16,3)
+      }
+      { chkFirstLine CheckBox
+        MoveScaled(16,5,35,3)
+        Expand = True
+        Text = ("The first line contains field names")
+      }
+      { Label5 Label
+        MoveScaled(0,10,16,3)
+        Text = ("Key field")
+      }
+      { cmbKey ComboBox
+        MoveScaled(16,10,44,4)
+        Enabled = False
+        Expand = True
+        Text = ("")
+        ReadOnly = True
+      }
+    }
+    Index = 1
+    Text = ("Preview")
+    { txtPreview TextArea
+      MoveScaled(1,1,61,43)
+      Expand = True
+      Text = ("")
+      ReadOnly = True
+    }
+    Index = 2
+    Text = ("Messages")
+    { lstMessage ListBox
+      MoveScaled(1,1,61,43)
+      Expand = True
+    }
+    Index = 0
+  }
+  { HBox1 HBox
+    MoveScaled(1,62,66,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(0,0,28,4)
+      Expand = True
+      Arrangement = Arrange.Fill
+      Padding = 4
+      { pgbImport ProgressBar
+        MoveScaled(0,1,29,2)
+        Visible = False
+        Expand = True
+      }
+    }
+    { btnOK Button
+      MoveScaled(31,0,16,4)
+      Text = ("&Import")
+      Picture = Picture["icon:/small/open"]
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,16,4)
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Cancel = True
+    }
+  }
 }

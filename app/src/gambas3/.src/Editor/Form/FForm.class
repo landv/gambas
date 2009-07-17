@@ -938,6 +938,7 @@ Public Sub Control_MouseMove()
   Dim bMoveX As Boolean
   Dim bMoveY As Boolean
   Dim hParent As CControl
+  Dim hControl As Control
 
   If Not Mouse.Left Then Return
 
@@ -1339,6 +1340,7 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
   Dim hChild As Control
   Dim hCtrl As CControl
   Dim bFirst As Boolean
+  Dim aSelect As New CControl[]
 
   If W < 0 Then
     X = X + W
@@ -1377,11 +1379,15 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
     If (hChild.X + hChild.W) < X Then Continue
     If (hChild.Y + hChild.H) < Y Then Continue
 
-    hCtrl.Select(Me, bFirst)
-    $bSelChange = True
-    bFirst = False
+    aSelect.Add(hCtrl)
 
   Next
+  
+  For Each hCtrl In aSelect
+    hCtrl.Select(Me, bFirst)
+    bFirst = False
+  Next
+  $bSelChange = aSelect.Count > 0
 
   If $bSelChange Then
     SelectionChange
@@ -1710,13 +1716,13 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bRe
     If iIndex < 0 Then
       For Each hCtrl In hParent.Children
         If Not hCtrl.Tag Then Continue
-        If Control.Exist(hCtrl.Tag) Then aCtrl.Add(hCtrl)
+        If Control.Exist(hCtrl.Tag) And If IsNull(Control[hCtrl.Tag].GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
       Next
     Else ' Multicontainer
       hTab = hParent
       For Each hCtrl In hTab[iIndex].Children
         If Not hCtrl.Tag Then Continue
-        If Control.Exist(hCtrl.Tag) Then aCtrl.Add(hCtrl)
+        If Control.Exist(hCtrl.Tag) And If IsNull(Control[hCtrl.Tag].GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
       Next
     Endif
   Else If Selection.Count >= 2 Then
@@ -2141,6 +2147,7 @@ Public Sub Control_Draw(Optional iIndex As Integer)
         Draw.Style.Panel(0, 0, hCtrl.W, hCtrl.H, iBorder)
         Return
       Endif
+      If hCCtrl.GetProperty("Background") Then Return
       Draw.Foreground = Color.Mix(Color.Background, &H808080&)
     
     Case Else 
@@ -2222,6 +2229,7 @@ Public Sub mnuSelectAll_Click()
   Dim hCtrl As CControl
   Dim bFirst As Boolean
   Dim hParent As CControl
+  Dim aSelect As New CControl[]
   
   If Master Then 
     hParent = Master
@@ -2234,15 +2242,15 @@ Public Sub mnuSelectAll_Click()
   bFirst = True
 
   For Each hChild In hParent.Control.Children
-
     hCtrl = Control[hChild.Tag]
-
     If IsNull(hCtrl) Then Continue 'panel
-
+    aSelect.Add(hCtrl)
+  Next
+  
+  For Each hCtrl In aSelect
     hCtrl.Select(Me, bFirst)
     $bSelChange = True
     bFirst = False
-
   Next
 
   If $bSelChange Then
