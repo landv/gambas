@@ -249,7 +249,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
         If Not hCtrl Then
           'PRINT "DrawingArea: sClass"
-          hCtrl = New Panel(hParent)
+          hCtrl = New DrawingArea(hParent)
           hCtrl.Merge = True
           'hCtrl.Text = sClass & " ?"
           hCtrl.Design = True
@@ -267,7 +267,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   'PRINT "< CreateControl "; sClass
 
   'IF hCtrl IS UserControl OR NOT hCtrl IS Container THEN
-  Try hCtrl.Tracking = True
+  'Try hCtrl.Tracking = True
   Try hCtrl.Design = True
   'ENDIF
   Return hCtrl
