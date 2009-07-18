@@ -151,10 +151,12 @@ PRIVATE SUB SetLang(OPTIONAL sLang AS String) AS Boolean
   DIM iIndex AS Integer
   DIM sMsg AS String
   DIM sCurrent AS String
+  DIM sCurrentFile AS String
 
   INC Application.Busy
 
   sCurrent = cvwTranslate.Key
+  sCurrentFile = cbxFileChoice.Text
 
   SaveTranslate
 
@@ -290,12 +292,6 @@ PRIVATE SUB SetLang(OPTIONAL sLang AS String) AS Boolean
 
   $bIgnore = FALSE
 
-  IF cvwTranslate.MoveTo(sCurrent) THEN
-    cvwTranslate.MoveFirst
-  ENDIF
-  cvwTranslate.Item.Selected = TRUE
-  cvwTranslate.Item.EnsureVisible
-
   $sLang = sLang
   $sPath = sPath
   $bModify = FALSE
@@ -305,6 +301,15 @@ PRIVATE SUB SetLang(OPTIONAL sLang AS String) AS Boolean
   TRY cvwLang[$sLang].Selected = TRUE
 
   DisplayTrans
+
+  cbxFileChoice.Text = sCurrentFile
+  cbxFileChoice_Click
+
+  IF cvwTranslate.MoveTo(sCurrent) THEN
+    cvwTranslate.MoveFirst
+  ENDIF
+  cvwTranslate.Item.Selected = TRUE
+  cvwTranslate.Item.EnsureVisible
 
 FINALLY
 
