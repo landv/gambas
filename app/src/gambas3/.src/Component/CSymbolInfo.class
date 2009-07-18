@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Static Private $cTypeName As New Collection
+Static Private $cNameType As New Collection(gb.IgnoreCase)
 
 Public Name As String
 Public Type As String
@@ -19,6 +20,8 @@ Private $iShowArg As Integer
 
 Static Public Sub _init()
 
+  Dim sType As String
+
   $cTypeName["b"] = "Boolean"
   $cTypeName["c"] = "Byte"
   $cTypeName["h"] = "Short"
@@ -31,6 +34,10 @@ Static Public Sub _init()
   $cTypeName["s"] = "String"
   $cTypeName["o"] = "Object"
   $cTypeName["p"] = "Pointer"
+
+  For Each sType In $cTypeName
+    $cNameType[sType] = $cTypeName.Key
+  Next
 
 End
 
@@ -207,6 +214,71 @@ Private Sub MakeArgBold(sCode As String, iShowArg As Integer) As String
   
 End
 
+Private Sub MakeSignature(sSign As String) As String
+  
+  Dim iInd As Integer
+  Dim aWait As New String[]
+  Dim bOptional As Boolean
+  Dim sSym As String
+  Dim sType As String
+
+  Highlight.Analyze(sSign)
+  sSign = ""
+  
+  For iInd = 0 To Highlight.Symbols.Max
+  
+    sSym = Highlight.Symbols[iInd]
+    
+    If sSym = "(" Then
+      aWait.Push(")")
+    Else If sSym = "[" Then
+      aWait.Push("]")
+    Else If aWait.Count Then
+      If sSym = aWait[aWait.Max] Then
+        aWait.Pop
+      Endif
+    Else 
+    
+      If iInd > 0 And If sSym <> "," Then Continue
+    
+      If iInd Then
+        Inc iInd
+        sSym = Highlight.Symbols[iInd]
+      Endif
+      
+      If sSym = "..." Then
+        sSign &= "."
+        Break
+      Endif
+      
+      If UCase(sSym) = "OPTIONAL" Then
+        If Not bOptional Then
+          sSign &= "["
+          bOptional = True
+        Endif
+        Inc iInd
+        sSym = Highlight.Symbols[iInd]
+      Endif
+    
+      iInd += 2
+      sType = Highlight.Symbols[iInd]
+      If $cNameType.Exist(sType) Then
+        sType = $cNameType[sType]
+      Else
+        sType &= ";"
+      Endif
+      sSign &= "(" & sSym & ")" & sType
+
+    Endif
+  
+  Next
+  
+  If bOptional Then sSign &= "]"
+  
+  Return sSign
+  
+End
+
 
 Public Function GetSignature(Optional iShowArg As Integer = -1) As String
 
@@ -217,130 +289,131 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   Dim bName As Boolean
   Dim bFirst As Boolean
   Dim sSign As String
+  Dim sKeywordAs As String
 
   sSign = Signature
+  sKeywordAs = If(Settings["/Editor/KeywordsUseUpperCase"], "AS", "As")
   
   If Left$(sSign) = "#" Then
+    'sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
+    Debug Mid$(sSign, 2)
+    sSign = MakeSignature(Mid$(sSign, 2))
+    Debug "--> "; sSign
+  Endif
   
-    sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
+  bFirst = True
   
-  Else
+  $iArg = -1
+  $iShowArg = iShowArg
 
-    bFirst = True
-    
-    $iArg = -1
-    $iShowArg = iShowArg
-  
-    Do
-  
-      Inc iInd
-  
-      If iInd > Len(sSign) Then Break
-  
-      sCar = Mid$(sSign, iInd, 1)
-  
-      If sCar = "'" Or sCar = "(" Then
-  
-        If sCar = "'" Then
-          iPos = InStr(sSign, "'", iInd + 1)
-        Else
-          iPos = InStr(sSign, ")", iInd + 1)
-        Endif
-  
-        If iPos = 0 Then Break
-  
-        If bFirst Then
-          bFirst = False
-          NextArg
-        Else
-          sRes &= $sArgAfter & ", "
-          NextArg
-        Endif
-  
-        sRes &= $sArgBefore & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " AS "
-  
-        iInd = iPos
-        bName = True
-  
-        Continue
-  
+  Do
+
+    Inc iInd
+
+    If iInd > Len(sSign) Then Break
+
+    sCar = Mid$(sSign, iInd, 1)
+
+    If sCar = "'" Or sCar = "(" Then
+
+      If sCar = "'" Then
+        iPos = InStr(sSign, "'", iInd + 1)
+      Else
+        iPos = InStr(sSign, ")", iInd + 1)
       Endif
-  
-      If sCar = "<" Then
-  
-        iPos = InStr(sSign, ">", iInd + 1)
-        If iPos = 0 Then Break
-        iInd = iPos
-        Continue
-  
-      Endif
-  
-      If sCar = "[" Then
-  
-        sRes &= $sArgAfter & " ["
-        $sArgAfter = ""
-        Continue
-  
-      Endif
-  
-      If sCar = "]" Then
-  
-        sRes &= $sArgAfter & " ] "
-        $sArgAfter = ""
-        Continue
-  
-      Endif
-  
-      If Not bName Then
-  
-        If bFirst Then
-          bFirst = False
-        Else
-          sRes &= $sArgAfter & ", "
-          NextArg
-        Endif
-  
-        sRes &= $sArgBefore & "? AS " 
-        bName = False
-  
-      Endif
-      
-      If sCar = "." Then
-        sRes &= $sArgAfter & ", " 
+
+      If iPos = 0 Then Break
+
+      If bFirst Then
+        bFirst = False
         NextArg
-        If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "<u>"
-        sRes &= $sArgBefore & "..."
-        If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "</u>"
-        Continue
+      Else
+        sRes &= $sArgAfter & ", "
+        NextArg
       Endif
-  
-      If (sCar >= "A" And sCar <= "Z") Or sCar = "." Then
-  
-        iPos = InStr(sSign, ";", iInd)
-        If iPos = 0 Then iPos = Len(sSign) + 1
-  
-        sRes &= Mid$(sSign, iInd, iPos - iInd)
-  
-        iInd = iPos
-        Continue
-  
-      Endif
-  
-      sRes &= GetType(sCar)
-  
-    Loop
-    
-    sRes &= $sArgAfter
-    
-  Endif
 
+      sRes &= $sArgBefore & Mid$(sSign, iInd + 1, iPos - iInd - 1) & " " & sKeywordAs & " "
+
+      iInd = iPos
+      bName = True
+
+      Continue
+
+    Endif
+
+    If sCar = "<" Then
+
+      iPos = InStr(sSign, ">", iInd + 1)
+      If iPos = 0 Then Break
+      iInd = iPos
+      Continue
+
+    Endif
+
+    If sCar = "[" Then
+
+      sRes &= $sArgAfter & "<font color=#C0C0C0>"
+      $sArgAfter = ""
+      Continue
+
+    Endif
+
+    If sCar = "]" Then
+
+      sRes &= $sArgAfter & "</font>"
+      $sArgAfter = ""
+      Continue
+
+    Endif
+
+    If Not bName Then
+
+      If bFirst Then
+        bFirst = False
+      Else
+        sRes &= $sArgAfter & ", "
+        NextArg
+      Endif
+
+      sRes &= $sArgBefore & "? AS " 
+      bName = False
+
+    Endif
+    
+    If sCar = "." Then
+      sRes &= $sArgAfter & ", " 
+      NextArg
+      If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "<u>"
+      sRes &= $sArgBefore & "..."
+      If $iShowArg >= 0 And If $iShowArg > $iArg Then sRes &= "</u>"
+      Continue
+    Endif
+
+    If (sCar >= "A" And sCar <= "Z") Or sCar = "." Then
+
+      iPos = InStr(sSign, ";", iInd)
+      If iPos = 0 Then iPos = Len(sSign) + 1
+
+      sRes &= Mid$(sSign, iInd, iPos - iInd)
+
+      iInd = iPos
+      Continue
+
+    Endif
+
+    sRes &= GetType(sCar)
+
+  Loop
+  
+  sRes &= $sArgAfter
+    
   If Name = "_get" Or Name = "_put" Then
-    sRes = "<b>[</b> " & sRes & " <b>]</b>"
+    sRes = "<b>[</b>" & sRes & "<b>]</b>"
   Else
-    sRes = "<b>(</b> " & sRes & " <b>)</b>"
+    sRes = "<b>(</b>" & sRes & "<b>)</b>"
   Endif
   
-  If Type Then sRes &= " " & If(Settings["/Editor/KeywordsUseUpperCase"], "AS", "As") & " " & GetType(Type)
+  If Type Then sRes &= " " & sKeywordAs & " " & GetType(Type)
 
   Return sRes
 

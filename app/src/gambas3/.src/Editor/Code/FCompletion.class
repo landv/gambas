@@ -45,6 +45,7 @@ Public Sub Open(sMode As String, Optional sClass As String, Optional bStatic As 
   Dim H As Integer
 
   hEditor = GetEditor()
+  Me.Font = hEditor.font
 
   Inc Application.Busy
 
