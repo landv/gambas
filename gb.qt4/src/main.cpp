@@ -599,6 +599,7 @@ static void hook_lang(char *lang, int rtl)
 
 static void hook_main(int *argc, char **argv)
 {
+	//QApplication::setGraphicsSystem("raster");
 	new MyApplication(*argc, argv);
 	
 	QT_Init();

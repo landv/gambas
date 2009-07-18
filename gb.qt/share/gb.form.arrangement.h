@@ -305,9 +305,9 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 					{
 					 // TODO: use rtl
 						if (swap)
-							wc = dmax;
+							wc = dmax + indent;
 						else
-							hc = dmax;
+							hc = dmax + indent;
 						//fprintf(stderr, "%s: dmax = %d\n", ((CWIDGET *)_object)->name, dmax);
 					}
 
@@ -329,14 +329,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						if (!ob || IS_IGNORE(ob))
 							continue;
 
-						if (first)
-						{
-							if (swap)
-								y += indent;
-							else
-								x += indent * rtlm;
-						}
-						else
+						if (!first)
 						{
 							if (swap)
 								y += arr->spacing;

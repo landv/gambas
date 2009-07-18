@@ -175,6 +175,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			//delete p;
 
 			//paint.setClipRegion( event->region().intersect( contentsRect() ) );
+			
 			paint.drawPixmap(r.x(), r.y(), *cache);
 			delete cache;
 			cache = 0;

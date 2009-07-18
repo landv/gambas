@@ -102,6 +102,7 @@
     { HBox13 HBox
       MoveScaled(2,5,83,4)
       Spacing = True
+      Indent = True
       { Label1 Label
         MoveScaled(0,0,46,4)
         Text = ("Tab size")
@@ -125,6 +126,7 @@
     { HBox12 HBox
       MoveScaled(2,14,83,4)
       Spacing = True
+      Indent = True
       { Label21 Label
         MoveScaled(0,0,46,4)
         Text = ("Module symbols are public by default")
@@ -139,6 +141,7 @@
     { HBox11 HBox
       MoveScaled(2,19,83,4)
       Spacing = True
+      Indent = True
       { Label22 Label
         MoveScaled(0,0,46,4)
         Text = ("Form controls are public")
@@ -153,6 +156,7 @@
     { HBox10 HBox
       MoveScaled(2,24,83,4)
       Spacing = True
+      Indent = True
       { Label23 Label
         MoveScaled(0,0,46,4)
         Text = ("Get version from program")
@@ -171,6 +175,7 @@
     { HBox9 HBox
       MoveScaled(2,33,83,4)
       Spacing = True
+      Indent = True
       { Label24 Label
         MoveScaled(0,0,46,4)
         Text = ("Project is translatable")
@@ -185,6 +190,7 @@
     { HBox8 HBox
       MoveScaled(2,38,83,4)
       Spacing = True
+      Indent = True
       { Label20 Label
         MoveScaled(0,0,46,4)
         Text = ("Default language")
@@ -204,6 +210,7 @@
     { HBox16 HBox
       MoveScaled(2,47,83,4)
       Spacing = True
+      Indent = True
       { Label6 Label
         MoveScaled(0,0,46,4)
         Text = ("Dump stack on error")
@@ -223,6 +230,7 @@
     { HBox17 HBox
       MoveScaled(2,56,83,4)
       Spacing = True
+      Indent = True
       { Label28 Label
         MoveScaled(0,0,46,4)
         Text = ("Use a terminal emulator")
@@ -242,6 +250,7 @@
     { HBox6 HBox
       MoveScaled(2,65,83,4)
       Spacing = True
+      Indent = True
       { Label25 Label
         MoveScaled(0,0,46,4)
         Text = ("This project is a component")
@@ -256,6 +265,7 @@
     { HBox5 HBox
       MoveScaled(2,70,83,4)
       Spacing = True
+      Indent = True
       { Label26 Label
         MoveScaled(0,0,46,4)
         Text = ("Component advancement")
@@ -419,12 +429,6 @@
       Font = Font["Bold"]
       Text = ("Exported classes")
     }
-    { cmbControl ComboBox
-      MoveScaled(23,26,19,4)
-      Visible = False
-      Ignore = True
-      Text = ("")
-    }
     { panImplement Panel
       MoveScaled(14,32,34,12)
       Visible = False
@@ -450,6 +454,12 @@
         Text = ("OpenGL display")
       }
     }
+    { cmbControl ComboBox
+      MoveScaled(23,26,19,4)
+      Visible = False
+      Ignore = True
+      Text = ("")
+    }
     Index = 6
     Text = ("Requires")
     { Label15 Label
@@ -460,6 +470,7 @@
     { panNeed Panel
       MoveScaled(1,5,83,17)
       Arrangement = Arrange.Vertical
+      Indent = True
       { CheckBox5 CheckBox
         MoveScaled(0,0,82,4)
         Tag = "Form"
@@ -490,6 +501,7 @@
       MoveScaled(1,26,84,48)
       Expand = True
       Spacing = True
+      Indent = True
       { VBox4 VBox
         MoveScaled(1,1,56,35)
         Expand = True

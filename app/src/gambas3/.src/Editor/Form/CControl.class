@@ -25,7 +25,7 @@ Static Private $cLibRef As New Collection
 
 Private $cValue As New Collection
 
-Private $aPanel As DrawingArea[1] '8
+Private $aPanel As Panel[8] 'DrawingArea[1] '8
 
 'PRIVATE CONST PAN_H AS Integer = 6
 'PRIVATE CONST PAN_W AS Integer = 6
@@ -35,7 +35,7 @@ Private $X As Integer
 Private $Y As Integer
 Private $MX As Integer
 Private $MY As Integer
-Private $bMaster As Boolean
+'Private $bMaster As Boolean
 
 Static Private $bDoNotMoveHandle As Boolean
 
@@ -100,25 +100,6 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
   Select Case LCase(sClass)
 
-    Case "frame"
-      hCtrl = New Frame(hParent)
-      hCtrl.Caption = sName
-
-    ' Case "tabstrip"
-    '   hCtrl = New TabStrip(hParent)
-    '   'hCtrl.Caption = sName
-    ' 
-    ' Case "panel"
-    '   hCtrl = New Panel(hParent)
-    ' 
-    Case "button"
-      hCtrl = New Button(hParent)
-      hCtrl.Caption = sName
-
-    Case "togglebutton"
-      hCtrl = New ToggleButton(hParent)
-      hCtrl.Caption = sName
-      
     Case "toolbutton"
       hCtrl = New ToolButton(hParent)
       hCtrl.Picture = Picture["img/logo/new-logo-16.png"]
@@ -138,22 +119,6 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hCtrl.Text = sName
       'hCtrl.Add(" ")
       hCtrl.Mouse = Mouse.Arrow
-
-    Case "checkbox"
-      hCtrl = New CheckBox(hParent)
-      hCtrl.Caption = sName
-
-    Case "radiobutton"
-      hCtrl = New RadioButton(hParent)
-      hCtrl.Caption = sName
-
-    Case "label"
-      hCtrl = New Label(hParent)
-      hCtrl.Caption = sName
-
-    Case "textlabel"
-      hCtrl = New TextLabel(hParent)
-      hCtrl.Caption = sName
 
     Case "picturebox"
       hCtrl = New PictureBox(hParent)
@@ -195,6 +160,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hCtrl.Rows.Count = 4
       hCtrl.Grid = True
       hCtrl[0, 0].Text = sName
+      hCtrl.Rows.H = -1
 
     Case "menu"
       hCtrl = New Menu(hParent)
@@ -822,13 +788,13 @@ Public Sub Select(hForm As FForm, Optional bMaster As Boolean)
   Endif
 
   CreatePanel(0, "NW", Mouse.SizeNW, bMaster)
-  ' CreatePanel(1, "N", Mouse.SizeN, bMaster)
-  ' CreatePanel(2, "NE", Mouse.SizeNE, bMaster)
-  ' CreatePanel(3, "E", Mouse.SizeE, bMaster)
-  ' CreatePanel(4, "SE", Mouse.SizeSE, bMaster)
-  ' CreatePanel(5, "S", Mouse.SizeS, bMaster)
-  ' CreatePanel(6, "SW", Mouse.SizeSW, bMaster)
-  ' CreatePanel(7, "W", Mouse.SizeW, bMaster)
+  CreatePanel(1, "N", Mouse.SizeN, bMaster)
+  CreatePanel(2, "NE", Mouse.SizeNE, bMaster)
+  CreatePanel(3, "E", Mouse.SizeE, bMaster)
+  CreatePanel(4, "SE", Mouse.SizeSE, bMaster)
+  CreatePanel(5, "S", Mouse.SizeS, bMaster)
+  CreatePanel(6, "SW", Mouse.SizeSW, bMaster)
+  CreatePanel(7, "W", Mouse.SizeW, bMaster)
 
   Try Control.ToolTip = Subst("&1 ( &2 x &3 )", Name, Control.Width, Control.Height)
   Selected = True
@@ -872,44 +838,50 @@ End
 
 Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bMaster As Boolean)
 
-  Dim hPanel As DrawingArea
+  Dim hPanel As Panel
   Dim hCont As Object
-  Dim hHide As DrawingArea
   Dim iInd As Integer
   
   hCont = Control.Parent
 
-  hPanel = New DrawingArea(hCont) As "Panel"
+  hPanel = New Panel(hCont) As "Panel"
   hPanel.Resize(PAN_W, PAN_H)
-  hPanel.Tracking = True
-  hPanel.Merge = True
+  hPanel.Tag = "#" & sTag
+  hPanel.Mouse = iMouse
+  'hPanel.Tracking = True
+  'hPanel.Merge = True
 
   $aPanel[iIndex] = hPanel
-  $bMaster = bMaster
   
-  ' hPanel.Background = Color.SelectedBackground
-  ' If $bMaster Then
-  '   hPanel.Border = Border.Plain
-  '   hPanel.Foreground = Color.White
-  ' Endif
+  If bMaster Then
+    hPanel.Background = Color.LightBackground
+    hPanel.Foreground = Color.Black
+  Else
+    hPanel.Background = Color.SelectedBackground
+    hPanel.Foreground = Color.White
+  Endif
+  
   MovePanel(iIndex)
 
+  hPanel.Border = Border.Plain
+  
 End
 
 
 Private Sub MovePanel(iPanel As Integer)
 
   Dim hCtrl As Control
-  Dim hPanel As DrawingArea
+  Dim hPanel As Panel
   Dim X, Y, D As Integer
   Dim iInd As Integer
 
   hCtrl = Control
   hPanel = $aPanel[iPanel]
-  If hPanel.Next <> hCtrl Then hPanel.Next = hCtrl
+  hPanel.Raise
+  'If hPanel.Previous <> hCtrl Then hPanel.Next = hCtrl
 
-  hPanel.Move(hCtrl.X - 3, hCtrl.Y - 3, hCtrl.W + 6, hCtrl.H + 6)
-  Return
+  'hPanel.Move(hCtrl.X - 3, hCtrl.Y - 3, hCtrl.W + 6, hCtrl.H + 6)
+  'Return
 
   Select Case Mid$(hPanel.Tag, 2)
 
@@ -1082,51 +1054,51 @@ Public Procedure Panel_MouseMove()
   Dim iPanX As Integer
   Dim iPanY As Integer
 
-  Dim hPanel As DrawingArea = Last
+  Dim hPanel As Panel = Last
   Dim hCtrl As Control
 
   Dim iXP As Integer
   Dim iYP As Integer
 
-  If Mouse.Button = 0 Then
-  
-    iX = Mouse.X
-    iY = Mouse.Y
-  
-    If iY < PAN_H Then
-      If iX < PAN_W Then
-        hPanel.Mouse = Mouse.SizeNW
-        hPanel.Tag = "#NW"
-      Else If iX >= (hPanel.W - PAN_W) Then
-        hPanel.Mouse = Mouse.SizeNE
-        hPanel.Tag = "#NE"
-      Else
-        hPanel.Mouse = Mouse.SizeN
-        hPanel.Tag = "#N"
-      Endif
-    Else If iY >= (hPanel.H - PAN_H) Then
-      If iX < PAN_W Then
-        hPanel.Mouse = Mouse.SizeSW
-        hPanel.Tag = "#SW"
-      Else If iX >= (hPanel.W - PAN_W) Then
-        hPanel.Mouse = Mouse.SizeSE
-        hPanel.Tag = "#SE"
-      Else
-        hPanel.Mouse = Mouse.SizeS
-        hPanel.Tag = "#S"
-      Endif
-    Else If iX < PAN_W Then
-      hPanel.Mouse = Mouse.SizeW
-      hPanel.Tag = "#W"
-    Else If iX >= (hPanel.W - PAN_W) Then
-      hPanel.Mouse = Mouse.SizeE
-      hPanel.Tag = "#E"
-    Else
-      hPanel.Mouse = Mouse.Default
-      hPanel.Tag = Null
-    Endif
-  
-  Endif
+  ' If Mouse.Button = 0 Then
+  ' 
+  '   iX = Mouse.X
+  '   iY = Mouse.Y
+  ' 
+  '   If iY < PAN_H Then
+  '     If iX < PAN_W Then
+  '       hPanel.Mouse = Mouse.SizeNW
+  '       hPanel.Tag = "#NW"
+  '     Else If iX >= (hPanel.W - PAN_W) Then
+  '       hPanel.Mouse = Mouse.SizeNE
+  '       hPanel.Tag = "#NE"
+  '     Else
+  '       hPanel.Mouse = Mouse.SizeN
+  '       hPanel.Tag = "#N"
+  '     Endif
+  '   Else If iY >= (hPanel.H - PAN_H) Then
+  '     If iX < PAN_W Then
+  '       hPanel.Mouse = Mouse.SizeSW
+  '       hPanel.Tag = "#SW"
+  '     Else If iX >= (hPanel.W - PAN_W) Then
+  '       hPanel.Mouse = Mouse.SizeSE
+  '       hPanel.Tag = "#SE"
+  '     Else
+  '       hPanel.Mouse = Mouse.SizeS
+  '       hPanel.Tag = "#S"
+  '     Endif
+  '   Else If iX < PAN_W Then
+  '     hPanel.Mouse = Mouse.SizeW
+  '     hPanel.Tag = "#W"
+  '   Else If iX >= (hPanel.W - PAN_W) Then
+  '     hPanel.Mouse = Mouse.SizeE
+  '     hPanel.Tag = "#E"
+  '   Else
+  '     hPanel.Mouse = Mouse.Default
+  '     hPanel.Tag = Null
+  '   Endif
+  ' 
+  ' Endif
 
   If Not $bMove Then Return
 
@@ -1216,24 +1188,24 @@ Public Sub Panel_Menu()
 
 End
 
-Public Sub Panel_Draw()
-  
-  Dim hPanel As DrawingArea = Last
-  
-  If $bMaster Then
-    Draw.Background = Color.White
-    Draw.Foreground = Color.SelectedBackground
-  Else
-    Draw.Background = Color.SelectedBackground
-    Draw.Foreground = Color.Black
-  Endif
-  Draw.FillRect(0, 0, hPanel.W, 3)
-  Draw.FillRect(0, hPanel.H - 3, hPanel.W, 3)
-  Draw.FillRect(0, 3, 3, hPanel.H - 6)
-  Draw.FillRect(hPanel.W - 3, 3, 3, hPanel.H - 6)
-  Draw.Rect(0, 0, hPanel.W, hPanel.H)
-  
-End
+' Public Sub Panel_Draw()
+'   
+'   Dim hPanel As DrawingArea = Last
+'   
+'   If $bMaster Then
+'     Draw.Background = Color.White
+'     Draw.Foreground = Color.SelectedBackground
+'   Else
+'     Draw.Background = Color.SelectedBackground
+'     Draw.Foreground = Color.Black
+'   Endif
+'   Draw.FillRect(0, 0, hPanel.W, 3)
+'   Draw.FillRect(0, hPanel.H - 3, hPanel.W, 3)
+'   Draw.FillRect(0, 3, 3, hPanel.H - 6)
+'   Draw.FillRect(hPanel.W - 3, 3, 3, hPanel.H - 6)
+'   Draw.Rect(0, 0, hPanel.W, hPanel.H)
+'   
+' End
 
 
 

@@ -29,14 +29,13 @@
     { Image1 PictureBox
       MoveScaled(0,0,5,6)
       Picture = Picture["icon:/32/save"]
-      Alignment = Align.Center
+      Alignment = Align.Top
     }
     { TextLabel1 TextLabel
       MoveScaled(7,0,56,6)
       Font = Font["Bold,+1"]
       Expand = True
       Text = ("These files have been modified.\nDo&nbsp;you want to save them?")
-      Alignment = Align.Center
     }
   }
   { lvwFile ListView
