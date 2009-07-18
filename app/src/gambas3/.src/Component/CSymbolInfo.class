@@ -296,9 +296,9 @@ Public Function GetSignature(Optional iShowArg As Integer = -1) As String
   
   If Left$(sSign) = "#" Then
     'sRes = MakeArgBold(Mid$(sSign, 2), iShowArg)
-    Debug Mid$(sSign, 2)
+    'Debug Mid$(sSign, 2)
     sSign = MakeSignature(Mid$(sSign, 2))
-    Debug "--> "; sSign
+    'Debug "--> "; sSign
   Endif
   
   bFirst = True

@@ -134,18 +134,26 @@ static void load_arch(ARCH *arch, const char *path)
   /* String relocation */
 
   pos = 0;
-  for (i = 0; i < arch->header.n_symbol; i++)
-  {
-    if (_swap)
-    {
-    	SWAP_short((short *)&arch->symbol[i].sym.sort);
-    	SWAP_short((short *)&arch->symbol[i].sym.len);
+	if (_swap)
+	{
+		for (i = 0; i < arch->header.n_symbol; i++)
+		{
+			SWAP_short((short *)&arch->symbol[i].sym.sort);
+			SWAP_short((short *)&arch->symbol[i].sym.len);
 			SWAP_int(&arch->symbol[i].pos);
 			SWAP_int(&arch->symbol[i].len);
-    }
-    arch->symbol[i].sym.name = &arch->string[pos];
-    pos += arch->symbol[i].sym.len;
-  }
+			arch->symbol[i].sym.name = &arch->string[pos];
+			pos += arch->symbol[i].sym.len;
+		}
+	}
+	else
+	{
+		for (i = 0; i < arch->header.n_symbol; i++)
+		{
+			arch->symbol[i].sym.name = &arch->string[pos];
+			pos += arch->symbol[i].sym.len;
+		}
+	}
 }
 
 

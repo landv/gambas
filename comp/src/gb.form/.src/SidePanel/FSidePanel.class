@@ -360,6 +360,8 @@ Public Sub panMove_MouseDown()
       $MX = Mouse.ScreenX + Me.W
       $iMax = Me.Parent.X + Me.Parent.W
   End Select
+  
+  $iMax -= Desktop.Scale * 8
 
 End
 
@@ -367,7 +369,7 @@ Private Function GetDim(H As Integer) As Integer
   
   Dim iMin As Integer
 
-  iMin = Min($iMax, Max(BUTTON_H, 64))
+  iMin = Min($iMax, Max(BUTTON_H, Desktop.Scale * 8))
 
   If H < BUTTON_H Then
     H = BUTTON_H

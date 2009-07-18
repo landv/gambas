@@ -1,0 +1,181 @@
+' Gambas class file
+
+Export
+Inherits UserContainer
+
+Public Const _Properties As String = "*,Action,Orientation{Align.Top;Bottom;Left;Right}=Top,Resizable=True,Border,Hidden"
+
+Event Show
+Event Hide
+Event Resize
+
+Property Orientation As Integer
+Property Border As Boolean
+Property Hidden As Boolean
+Property Resizable As Boolean
+Property Dimension As Integer
+Property Tooltip As String
+Property Value As Boolean
+Property Action As String
+Property Design As Boolean
+Property Settings As String
+
+Private $hForm As FSidePanel
+Private $bAnimate As Boolean
+
+Public Sub _new()
+
+  $hForm = New FSidePanel(Me)
+  $hForm.Move(0, 0)
+  'Object.Attach($hForm, ME, "Form")
+  Me._Container = $hForm.GetContainer()
+
+End
+
+Private Function Orientation_Read() As Integer
+
+  Return $hForm.GetOrientation()
+
+End
+
+
+Private Sub Orientation_Write(iOrientation As Integer)
+
+  $hForm.SetOrientation(iOrientation)
+
+End
+
+
+Private Function Border_Read() As Boolean
+
+  Return $hForm.GetContainer().Border <> Border.None
+
+End
+
+Private Sub Border_Write(bBorder As Boolean)
+
+  $hForm.GetContainer().Border = If(bBorder, Border.Sunken, Border.None)
+
+End
+
+Private Function Hidden_Read() As Boolean
+
+  Return $hForm.IsHidden()
+
+End
+
+Private Sub Hidden_Write(bHidden As Boolean)
+
+  $hForm.SetHidden(bHidden)
+
+End
+
+Private Function Dimension_Read() As Integer
+
+  Return $hForm.GetDimension()
+
+End
+
+
+Private Function Resizable_Read() As Boolean
+
+  Return Not $hForm.IsFixed()
+
+End
+
+Private Sub Resizable_Write(bResizable As Boolean)
+
+  $hForm.SetFixed(Not bResizable)
+
+End
+
+Public Sub _Show()
+
+  Raise Show
+
+End
+
+Public Sub _Hide()
+
+  Raise Hide
+
+End
+
+
+Public Sub _Resize()
+
+  Raise Resize
+
+End
+
+
+Private Sub Dimension_Write(Value As Integer)
+
+  $hForm.SetDimension(Value)  
+
+End
+
+Private Function Tooltip_Read() As String
+
+  Return $hForm.GetTooltip()  
+
+End
+
+Private Sub Tooltip_Write(Value As String)
+
+  $hForm.SetTooltip(Value)
+
+End
+
+Private Function Action_Read() As String
+
+  Return Action.Get(Me)
+
+End
+
+Private Sub Action_Write(Value As String)
+
+  Action.Register(Me, Value)
+
+End
+
+Private Function Value_Read() As Boolean
+
+  Return Not Hidden_Read()  
+
+End
+
+Private Sub Value_Write(Value As Boolean)
+
+  Hidden_Write(Not Value)
+
+End
+
+Private Function Design_Read() As Boolean
+
+  Return Super.Design  
+
+End
+
+Private Sub Design_Write(Value As Boolean)
+
+  Super.Design = Value
+  $hForm.SetDesign  
+
+End
+
+
+Private Function Settings_Read() As String
+
+  Return If(Hidden_Read(), "1", "0") & "," & CStr(Dimension_Read())
+
+End
+
+Private Sub Settings_Write(Value As String)
+
+  Dim aVal As String[] = Split(Value, ",")
+  
+  Try Dimension_Write(CInt(aVal[1]))
+  Try Hidden_Write(aVal[0] <> "0")
+
+End

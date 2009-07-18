@@ -1,0 +1,117 @@
+' Gambas class file
+
+Export
+
+Class Desktop
+
+Static Property Read Key As String
+
+Static Private $cConn As New Collection
+Static Private $aConn As String[]
+Static Private $sKey As String
+
+Static Public Sub Exist(Name As String) As Boolean
+  
+  If $cConn.Exist(Name) Or If Exist("../.connection" &/ Name & ".connection") Then Return True
+  
+End
+
+Static Private Sub Init()
+  
+  Dim sFile As String
+  
+  If $aConn Then Return
+  $aConn = New String[]
+  
+  For Each sFile In Dir("../.connection", "*.connection")
+    $aConn.Add(File.BaseName(sFile))
+  Next
+  
+End
+
+
+Static Public Sub _get(Name As String) As Connection
+  
+  Dim sPath As String
+  Dim hFile As File
+  Dim hConn As Connection
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim bPassword As Boolean
+  
+  Init()
+  
+  If $cConn.Exist(Name) Then Return $cConn[Name]
+  
+  sPath = "../.connection" &/ Name & ".connection"
+  If Not Exist(sPath) Then Return
+  
+  hConn = New Connection
+  hFile = Open sPath
+  
+  While Not Eof(hFile)
+    
+    Line Input #hFile, sLine
+    If Left(sLine) = "#" Then Continue
+    If Left(sLine) = "[" Then Continue
+    
+    aLine = Scan(sLine, "*=*")
+    If aLine.Count < 2 Then Continue
+    
+    Select Case LCase(aLine[0])
+    
+      Case "type"
+        hConn.Type = Unquote(aLine[1])
+      
+      Case "path", "host"
+        hConn.Host = Unquote(aLine[1])
+        
+      Case "database"
+        hConn.Name = Unquote(aLine[1])
+        
+      Case "ignorecharset"
+        hConn.IgnoreCharset = LCase(aLine[1]) = "true"
+        
+      Case "user"
+        hConn.User = Unquote(aLine[1])
+        
+      Case "rememberpassword"
+        bPassword = LCase(aLine[1]) = "true"
+    
+    End Select
+    
+  Wend
+  
+  Close #hFile
+  
+  If bPassword Then
+    Try hConn.Password = Desktop.Passwords[Application.Name &/ Name]
+  Endif
+  
+  $cConn[Name] = hConn
+  Return hConn
+  
+End
+
+Static Public Sub _next() As Connection
+  
+  Init()
+  
+  If Not Enum.Index Then Enum.Index = 0
+  
+  If Enum.Index >= $aConn.Count Then
+    $sKey = ""
+    Enum.Stop
+  Else
+    Inc Enum.Index
+    $sKey = $aConn[Enum.Index - 1]
+    Return _get($sKey)
+  Endif
+  
+End
+
+Static Private Function Key_Read() As String
+
+  Return $sKey
+
+End
