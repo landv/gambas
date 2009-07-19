@@ -630,7 +630,7 @@ PUBLIC SUB mnuCreateTable_Click()
   DIM aType AS String[]
   DIM sTable AS String
 
-  IF $hConn.Handle.Type = "mysql" THEN
+  IF LCase($hConn.Handle.Type) = "mysql" THEN
     'aType = [ "InnoDB", "BDB", "HEAP", "ISAM", "MERGE", "MRG_MYISAM", "MYISAM" ]
     aType = ["MyISAM", "MERGE", "HEAP", "InnoDB", "BDB", "ISAM"]
   ENDIF

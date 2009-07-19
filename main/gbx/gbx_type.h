@@ -62,7 +62,7 @@ enum {
 /* Si type >= T_OBJECT, il s'agit de l'identificateur de classe */
 
 typedef
-  intptr_t TYPE;
+  uintptr_t TYPE;
 
 typedef
   void (*TYPE_FUNC)();
