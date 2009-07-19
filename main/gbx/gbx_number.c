@@ -51,16 +51,23 @@
 #define buffer_pos COMMON_pos
 #define get_size_left COMMON_get_size_left
 
-static bool _can_be_integer;
+#define IS_PURE_INTEGER(_int64_val) ((_int64_val) == ((int)(_int64_val)))
 
 
-static bool read_integer(int base, int64_t *result, bool read_long)
+static bool read_integer(int base, int64_t *result)
 {
   uint64_t nbr2, nbr;
-  int d, n, c;
+  int d, n, c, nmax;
 
   n = 0;
   nbr = 0;
+	
+	switch (base)
+	{
+		case 2: nmax = 64; break;
+		case 10: nmax = 19; break;
+		case 16: nmax = 16; break;
+	}
 
   c = last_char();
 
@@ -80,52 +87,53 @@ static bool read_integer(int base, int64_t *result, bool read_long)
 
     n++;
     
-    nbr2 = nbr * base + d;
+    nbr2 = nbr * base;
     
-    if (read_long)
-    {
-      //if (n > 20)
-      //  return TRUE;
-      if (nbr2 < nbr)
-        return TRUE;
-    }
-    else
-    {
-      //if (n > 10)
-      //  return TRUE;
-      if (nbr2 >> 32)
-        return TRUE;
-    }
-    nbr = nbr2;
+		//if (n >= nmax)
+		//{
+			if (((int64_t)nbr2 / base) != (int64_t)nbr)
+				return TRUE;
+		//}
+		
+    nbr = nbr2 + d;
 
     c = get_char();
     if (c < 0)
       break;
   }
 
+ 	c = last_char();
+	
+	if ((c == '&' || c == 'u' || c == 'U') && base != 10)
+		c = get_char();
+	else
+	{
+		if (nbr >= 0x8000L && nbr <= 0xFFFFL)
+			nbr |= INT64_C(0xFFFFFFFFFFFF0000);
+	}
+	
+	if (c > 0 && !isspace(c))
+		return TRUE;
+	
   if (n == 0)
     return TRUE;
-
-  /*if (c >= 0 && !isspace(c))
-    return TRUE;*/
 
   *((int64_t *)result) = nbr;  
   return FALSE;
 }
 
 
-static bool read_float(double *result, boolean local, int c)
+static bool read_float(double *result, bool local)
 {
   LOCAL_INFO *local_info;
   char point;
   char thsep;
+	int c;
 
   double nint;
   double nfrac, n;
   int nexp;
-  boolean nexp_minus;
-
-  _can_be_integer = TRUE;
+  bool nexp_minus;
 
   local_info = LOCAL_get(local);
   point = local_info->decimal_point;
@@ -136,6 +144,8 @@ static bool read_float(double *result, boolean local, int c)
   nexp = 0;
   nexp_minus = FALSE;
 
+	c = last_char();
+	
   /* Integer part */
 
   for(;;)
@@ -156,28 +166,26 @@ static bool read_float(double *result, boolean local, int c)
     if (c == 'e' || c == 'E')
       break;
 
-    if (thsep && c == thsep)
+    if (c == thsep)
       c = get_char();
     
     if ((c < 0) || isspace(c))
-      goto __FIN;
+      goto __END;
   }
 
   /* Decimal part */
 
-  _can_be_integer = FALSE;
+	n = 0.1;
+	for(;;)
+	{
+		if (!isdigit(c) || (c < 0))
+			break;
 
-  n = 0.1;
-  for(;;)
-  {
-    if (!isdigit(c) || (c < 0))
-      break;
+		nfrac += n * (c - '0');
+		n /= 10;
 
-    nfrac += n * (c - '0');
-    n /= 10;
-
-    c = get_char();
-  }
+		c = get_char();
+	}
 
   /* Exponent */
 
@@ -211,8 +219,8 @@ static bool read_float(double *result, boolean local, int c)
   if (c >= 0 && !isspace(c))
     return TRUE;
 
-__FIN:
-
+__END:
+	
   *result = (nint + nfrac) * pow(10, nexp_minus ? (-nexp) : nexp);
 
   return FALSE;
@@ -222,16 +230,14 @@ __FIN:
 bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
 {
   int c;
-  int64_t val;
-  double dval = 0;
+  int64_t val = 0;
+  double dval = 0.0;
   TYPE type;
-
   int base = 10;
   bool minus = FALSE;
-  bool is_unsigned = FALSE;
+	int pos;
 
   buffer_init(str, len);
-
   jump_space();
 
   c = get_char();
@@ -278,77 +284,40 @@ bool NUMBER_from_string(int option, const char *str, int len, VALUE *value)
     return TRUE;
 
   errno = 0;
+	pos = COMMON_pos - 1;
+
+	if (!read_integer(base, &val))
+	{
+		if ((option & NB_READ_INTEGER) && IS_PURE_INTEGER(val))
+		{
+			type = T_INTEGER;
+			goto __END;
+		}
+		else if ((option & NB_READ_LONG))
+		{
+      type = T_LONG;
+      goto __END;
+		}
+		else if ((option & NB_READ_FLOAT) && base == 10)
+		{
+			type = T_FLOAT;
+			dval = (double)val;
+			goto __END;
+		}
+	}
 
   if ((option & NB_READ_FLOAT) && base == 10)
   {
-    if (!read_float(&dval, (option & NB_LOCAL) != 0, c))
+		COMMON_pos = pos;
+		get_char();
+    if (!read_float(&dval, (option & NB_LOCAL) != 0))
     {
-      if ((option & NB_READ_INTEGER) && _can_be_integer)
-      {
-        type = T_INTEGER;
-        val = (int)dval;
-        if ((double)val == dval)
-          goto __END;
-      }
-
-      if ((option & NB_READ_LONG) && _can_be_integer)
-      {
-        type = T_LONG;
-        val = (int64_t)dval;
-        if ((double)val == dval)
-          goto __END;
-      }
-
       type = T_FLOAT;
       goto __END;
     }
   }
 
-  if (option & NB_READ_LONG)
-  {
-    if (!read_integer(base, &val, TRUE))
-    {
-      type = T_LONG;
-      goto __INTEGER_LONG;
-    }
-  }
-  else if (option & NB_READ_INTEGER)
-  {
-    if (!read_integer(base, &val, FALSE))
-    {
-      type = T_INTEGER;
-      goto __INTEGER_LONG;
-    }
-  }
-
   return TRUE;
-
-__INTEGER_LONG:
-
-  if (base != 10)
-  {
-  	c = last_char();
-  	if (c == '&')
-  	{
-  		is_unsigned = TRUE;
-  		c = get_char();
-  	}
-  	
-		if ((uint)val == (uint64_t)val)
-			type = T_INTEGER;
-    
-    if (!is_unsigned)
-    {
-			if (val >= 0x8000L && val <= 0xFFFFL)
-				val |= INT64_C(0xFFFFFFFFFFFF0000);
-		}
-		else
-		{
-			if (type == T_INTEGER && ((int)val < 0))
-				type = T_LONG;
-		}
-    
-  }
 
 __END:
 

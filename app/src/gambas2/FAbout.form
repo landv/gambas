@@ -1,43 +1,43 @@
 # Gambas Form File 2.0
 
 { Form Form
-  MoveScaled(3.4286,6,65,54)
+  MoveScaled(3.4286,6,67,55)
   Background = Color.TextBackground
   Text = ("About Gambas...")
   Icon = Picture["img/16/logo.png"]
   Border = Window.Fixed
   { TabStrip1 TabStrip
-    MoveScaled(1,18,63,31)
+    MoveScaled(1,18,65,31)
     Count = 2
     Index = 0
     Text = ("About")
     { svwAuthor ScrollView
-      MoveScaled(0,1,62,25)
+      MoveScaled(0,1,64,25)
       Border = False
       ScrollBar = Scroll.None
       { txtAuthor TextEdit
-        MoveScaled(1,78,60,16)
+        MoveScaled(2,78,60,16)
         ReadOnly = True
         Border = False
       }
       { Image1 PictureBox
-        MoveScaled(24,31,14,14)
+        MoveScaled(25,31,14,14)
         Background = &HFFFFFF&
         Picture = Picture["img/logo/new-logo.png"]
         Stretch = True
         Alignment = Align.Center
       }
       { TextLabel2 TextLabel
-        MoveScaled(1,45,60,29)
+        MoveScaled(2,45,60,29)
         Text = ("<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
       }
       { TextLabel3 TextLabel
-        MoveScaled(6,74,50,4)
+        MoveScaled(7,74,50,4)
         Text = ("<h2 align=center>Authors</h2>\n")
         Alignment = Align.Center
       }
       { TextLabel4 TextLabel
-        MoveScaled(2,25,58,7)
+        MoveScaled(3,25,58,7)
         Font = Font["Bold,+4"]
         Text = ("Gambas Almost Means Basic!")
         Alignment = Align.Center
@@ -52,19 +52,19 @@
     Index = 1
     Text = ("Support")
     { TextLabel1 TextLabel
-      MoveScaled(2,1,59,14)
+      MoveScaled(2,1,61,14)
       Text = ("You can support <b>Gambas</b> by writing components, documentation, examples, and so on...\n<p>\nYou can also make a gift to the project by using PayPal:")
     }
     { btnGift Button
-      MoveScaled(2,13,56,8)
+      MoveScaled(2,13,61,8)
       Font = Font["Bold,+1"]
       Text = ("Make a gift!")
       Picture = Picture["img/donate.png"]
     }
     { panGift Panel
-      MoveScaled(2,22,59,4)
+      MoveScaled(2,22,61,4)
       { txtGift TextEdit
-        MoveScaled(0,0,59,4)
+        MoveScaled(0,0,61,4)
         Font = Font["Bold,+2"]
         ScrollBar = Scroll.None
         Border = False
@@ -73,12 +73,12 @@
     Index = 0
   }
   { btnClose Button
-    MoveScaled(25,50,15,3)
+    MoveScaled(26,51,15,3)
     Text = ("OK")
     Default = True
   }
   { panBackground Panel
-    MoveScaled(1,1,63,16)
+    MoveScaled(1,1,65,16)
     Background = Color.SelectedBackground
     Foreground = Color.Background
     { panTitle Panel
@@ -92,7 +92,7 @@
         Alignment = Align.TopNormal
       }
       { lblVersion Label
-        MoveScaled(25,0,21,7)
+        MoveScaled(25,0,23,7)
         Font = Font["Bold,+6"]
         Background = Color.SelectedBackground
         Foreground = Color.SelectedForeground
@@ -116,7 +116,7 @@
       }
     }
     { imgGambas PictureBox
-      MoveScaled(47,1,15,15)
+      MoveScaled(49,1,15,15)
       Background = Color.SelectedBackground
       Picture = Picture["img/logo/new-logo.png"]
       Stretch = True
