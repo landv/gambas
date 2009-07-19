@@ -34,6 +34,8 @@ Thu Aug 16 2001 */
 
 #include <errno.h>
 #include <sys/socket.h>
+#include <time.h>
+#include <locale.h>
 
 #include "libsmtp.h"
 #include "libsmtp_mime.h"
@@ -413,12 +415,33 @@ int libsmtp_dialogue_send (char *libsmtp_dialogue_string, \
 }
 
 
+static const char *get_current_time()
+{
+	static char date[32];
+	time_t now;
+  struct tm *tm;
+
+	if (time(&now) == ((time_t)-1))
+		return NULL;
+	
+  tm = localtime(&now);
+  if (!tm)
+		return NULL;
+	
+  setlocale (LC_TIME, "C");
+	
+	strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S %z" , tm);
+	
+  setlocale (LC_TIME, "");
+	return date;
+}
+
 /* This function starts the DATA part. No more dialogue stuff can be sent
    from this time on. */
 
 int libsmtp_headers (struct libsmtp_session_struct *libsmtp_session)
 {
-
+	const char *date;
   int libsmtp_temp;
   GString *libsmtp_temp_gstring = NULL;
   GList *libsmtp_temp_glist;
@@ -463,6 +486,18 @@ int libsmtp_headers (struct libsmtp_session_struct *libsmtp_session)
 
   /* Now we send through all the headers. No more responses will come from
      the mailserver until we end the DATA part. */
+
+	// BM: Put the Date field
+	// For example: Date: Sat, 18 Jul 2009 12:47:43 +0100
+	
+	date = get_current_time();
+	if (date)
+	{
+		g_string_sprintf (libsmtp_temp_gstring, "Date: %s\r\n", date);
+
+		if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
+			return LIBSMTP_ERRORSENDFATAL;
+	}
 
   /* First the From: header */
 
