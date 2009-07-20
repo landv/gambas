@@ -79,6 +79,11 @@ static bool trans_stream(int default_stream)
       if (PATTERN_is_newline(*JOB->current))
         THROW(E_SYNTAX);
     }
+		else
+		{
+      if (!PATTERN_is_newline(*JOB->current))
+        THROW(E_SYNTAX);
+		}
 
     return FALSE;
   }
