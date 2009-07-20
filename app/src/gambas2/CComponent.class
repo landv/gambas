@@ -356,7 +356,8 @@ PUBLIC SUB Load()
   sPath &/= "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
   
   IF NOT Exist(sPath) THEN
-    ERROR "Warning: cannot find "; sPath
+    'Ignore, this is possible with gb.db.* drivers
+    'ERROR "Warning: cannot find "; sPath
     RETURN
   ENDIF
 
