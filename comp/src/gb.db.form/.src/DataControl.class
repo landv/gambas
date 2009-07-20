@@ -1,138 +1,139 @@
 ' Gambas class file
 
-EXPORT
+Export
 
-INHERITS UserControl
+Inherits UserControl
 
-EVENT Validate(Value AS Variant)
+Event Validate(Value As Variant)
 'EVENT GotFocus
 'EVENT LostFocus
 
-PROPERTY Field AS String
-PROPERTY Value AS Variant
-PROPERTY READ Valid AS Boolean
-PROPERTY READ Modified AS Boolean
+Property Field As String
+Property Value As Variant
+Property Read Valid As Boolean
+Property Read Modified As Boolean
 
-PUBLIC CONST _Properties AS String = "*,Field"
-PUBLIC CONST _DrawWith AS String = "TextBox"
+Public Const _Properties As String = "*,Field"
+Public Const _DrawWith As String = "TextBox"
 
-PRIVATE $sKey AS String
-PRIVATE $hCtrl AS Object
-PRIVATE $hInfo AS DataField
-PRIVATE $vVal AS Variant
-PRIVATE $hSource AS DataSource
-PRIVATE $sEventName AS String
+Private $sKey As String
+Private $hCtrl As Object
+Private $hInfo As DataField
+Private $vVal As Variant
+Private $hSource As DataSource
+Private $sEventName As String
 
-PUBLIC SUB _new()
+Public Sub _new()
   
   $sEventName = Object.LastEventName
-  ME._AutoResize = TRUE
+  Me._AutoResize = True
   
-END
+End
 
 
-PRIVATE SUB CreateControl()
+Private Sub CreateControl()
   
-  DIM hTextBox AS TextBox
-  DIM hTextArea AS TextArea
-  DIM hComboBox AS ComboBox
-  DIM hSpinBox AS SpinBox
-  DIM sType AS String
-  DIM bFocus AS Boolean
-  DIM bReadOnly AS Boolean
+  Dim hTextBox As TextBox
+  Dim hTextArea As TextArea
+  Dim hComboBox As ComboBox
+  Dim hSpinBox As SpinBox
+  Dim sType As String
+  Dim bFocus As Boolean
+  Dim bReadOnly As Boolean
   
-  SELECT $hInfo.Type
+  Select $hInfo.Type
   
-    CASE db.Integer, db.Long, db.Date, db.Float
+    Case db.Integer, db.Long, db.Date, db.Float
       sType = "TextBox"
     
-    CASE db.Boolean
+    Case db.Boolean
       sType = "ComboBox"
     
-    CASE db.String
-      IF $hInfo.Length > 0 AND $hInfo.Length < 256 THEN
+    Case db.String
+      If $hInfo.Length > 0 And $hInfo.Length < 256 Then
         sType = "TextBox"
-      ELSE
+      Else
         sType = "TextArea"
-      ENDIF
+      Endif
   
-  END SELECT
+  End Select
   
-  IF $hCtrl AND IF sType <> Object.Type($hCtrl) THEN
+  If $hCtrl And If sType <> Object.Type($hCtrl) Then
     bFocus = Application.ActiveControl = $hCtrl
     $hCtrl.Delete
-    $hCtrl = NULL
-  ENDIF
+    $hCtrl = Null
+  Endif
 
-  IF NOT $hCtrl THEN 
-    $hCtrl = Object.New(sType, [ME])
-    Object.Attach($hCtrl, Object.Parent(ME), $sEventName)
-  ENDIF
+  If Not $hCtrl Then 
+    $hCtrl = Object.New(sType, [Me])
+    Object.Attach($hCtrl, Object.Parent(Me), $sEventName)
+  Endif
   
-  SELECT $hInfo.Type
+  Select $hInfo.Type
   
-    CASE db.Integer, db.Long, db.Date
+    Case db.Integer, db.Long, db.Date
       hTextBox = $hCtrl
     
-    CASE db.Date
+    Case db.Date
     
-    CASE db.Boolean
+    Case db.Boolean
       hComboBox = $hCtrl
-      hComboBox.ReadOnly = TRUE
+      hComboBox.ReadOnly = True
       hComboBox.Clear
       hComboBox.Add(("True"))
       hComboBox.Add(("False"))
-      IF IsNull($hInfo.Default) THEN hComboBox.Add(("Unknown"))
+      If IsNull($hInfo.Default) Then hComboBox.Add(("Unknown"))
     
-    CASE db.Float
+    Case db.Float
     
-    CASE db.String
-      IF $hInfo.Length > 0 AND $hInfo.Length < 256 THEN
+    Case db.String
+      If $hInfo.Length > 0 And $hInfo.Length < 256 Then
         hTextBox = $hCtrl
         hTextBox.MaxLength = $hInfo.Length
         'hTextBox.ReadOnly = $hInfo.ReadOnly
-      ELSE
+      Else
         hTextArea = $hCtrl
         hTextArea.ScrollBar = Scroll.Vertical
         'hTextArea.ReadOnly = $hInfo.ReadOnly
-      ENDIF
+      Endif
   
-  END SELECT
+  End Select
   
   bReadOnly = $hInfo.ReadOnly
   'IF $hSource.Index < 0 AND $hInfo.Key THEN bReadOnly = FALSE
   
-  IF $hCtrl IS ComboBox THEN
-    $hCtrl.Enabled = NOT bReadOnly
-  ELSE
-    TRY $hCtrl.ReadOnly = bReadOnly
-  ENDIF
+  If $hCtrl Is ComboBox Then
+    $hCtrl.Enabled = Not bReadOnly
+  Else
+    Try $hCtrl.ReadOnly = bReadOnly
+  Endif
   $hCtrl.Font.Bold = $hInfo.Key
   $hCtrl.Background = If(bReadOnly, Color.ButtonBackground, Color.Default)
-  IF bFocus THEN $hCtrl.SetFocus
+  If bFocus Then $hCtrl.SetFocus
   
-END
+End
 
 
-PUBLIC SUB Refresh()
+Public Sub Refresh()
   
-  DIM hInfo AS DataField
+  Dim hInfo As DataField
   
-  IF NOT $sKey THEN RETURN
+  If Not $sKey Then Return
   
-  $hSource = Common.GetSource(ME)
-  IF NOT $hSource THEN RETURN
+  $hSource = Common.GetSource(Me)
+  If Not $hSource Then Return
+  If $hSource._Check() Then Return
   
   hInfo = $hSource._GetInfo($sKey)
-  IF hInfo <> $hInfo THEN
+  If hInfo <> $hInfo Then
     $hInfo = hInfo
     CreateControl
-  ENDIF
+  Endif
   
   $vVal = $hSource[$sKey]
   SetValue($vVal)
   
-END
+End
 
 
 ' PRIVATE FUNCTION Source_Read() AS DataSource
@@ -147,168 +148,168 @@ END
 '   
 ' END
 
-PRIVATE FUNCTION Modified_Read() AS Boolean
+Private Function Modified_Read() As Boolean
   
-  DIM vVal AS Variant
+  Dim vVal As Variant
   
-  TRY vVal = GetValue()
-  IF ERROR THEN RETURN
-  RETURN vVal <> $vVal  
+  Try vVal = GetValue()
+  If Error Then Return
+  Return vVal <> $vVal  
   
-END
+End
 
 
-PRIVATE FUNCTION Valid_Read() AS Boolean
+Private Function Valid_Read() As Boolean
   
-  DIM vVal AS Variant
-  DIM bCancel AS Boolean
+  Dim vVal As Variant
+  Dim bCancel As Boolean
   
-  TRY vVal = GetValue()
-  IF ERROR THEN RETURN FALSE
-  bCancel = RAISE Validate(vVal)
-  RETURN NOT bCancel
+  Try vVal = GetValue()
+  If Error Then Return False
+  bCancel = Raise Validate(vVal)
+  Return Not bCancel
   
-END
+End
 
 
 
-PRIVATE FUNCTION Value_Read() AS Variant
+Private Function Value_Read() As Variant
 
-  DIM vVal AS Variant
+  Dim vVal As Variant
   
-  TRY vVal = GetValue()
-  IF ERROR THEN RETURN $vVal
-  RETURN vVal
+  Try vVal = GetValue()
+  If Error Then Return $vVal
+  Return vVal
   
-END
+End
 
-PRIVATE SUB Value_Write(vVal AS Variant)
+Private Sub Value_Write(vVal As Variant)
 
-  IF NOT IsNull(vVal) THEN
-    SELECT $hInfo.Type
+  If Not IsNull(vVal) Then
+    Select $hInfo.Type
   
-      CASE db.Integer
+      Case db.Integer
         vVal = CInt(vVal)
     
-      CASE db.Long
+      Case db.Long
         vVal = CLong(vVal)
     
-      CASE db.Date
+      Case db.Date
         vVal = CDate(vVal)
     
-      CASE db.Boolean
+      Case db.Boolean
         vVal = CBool(vVal)
         
-      CASE db.Float
+      Case db.Float
         vVal = CFloat(vVal)
     
-      CASE db.String
+      Case db.String
         vVal = CStr(vVal)
   
-    END SELECT
-  ENDIF
+    End Select
+  Endif
 
   SetValue(vVal)
   
-CATCH
+Catch
   
-END
+End
 
-PRIVATE FUNCTION Field_Read() AS String
+Private Function Field_Read() As String
   
-  RETURN $sKey
+  Return $sKey
   
-END
+End
 
-PRIVATE SUB Field_Write(sKey AS String)
+Private Sub Field_Write(sKey As String)
   
-  IF sKey = $sKey THEN RETURN
+  If sKey = $sKey Then Return
   $sKey = sKey
-  ME.Refresh
+  Me.Refresh
   
-END
+End
 
 
-PRIVATE SUB SetValue(vVal AS Variant)
+Private Sub SetValue(vVal As Variant)
   
-  SELECT $hInfo.Type
+  Select $hInfo.Type
   
-    CASE db.Integer, db.Long
+    Case db.Integer, db.Long
       $hCtrl.Text = Str(vVal)
     
-    CASE db.Date
+    Case db.Date
       $hCtrl.Text = Str(vVal)
     
-    CASE db.Boolean
-      IF IsNull(vVal) THEN
+    Case db.Boolean
+      If IsNull(vVal) Then
         $hCtrl.Index = 2
-      ELSE IF vVal THEN
+      Else If vVal Then
         $hCtrl.Index = 0
-      ELSE
+      Else
         $hCtrl.Index = 1
-      ENDIF
+      Endif
         
-    CASE db.Float
+    Case db.Float
       $hCtrl.Text = Str(vVal)
     
-    CASE db.String
+    Case db.String
       $hCtrl.Text = vVal
   
-  END SELECT
+  End Select
   
-END
+End
 
-PRIVATE FUNCTION GetValue() AS Variant
+Private Function GetValue() As Variant
   
-  DIM vVal AS Variant
+  Dim vVal As Variant
   
-  SELECT $hInfo.Type
+  Select $hInfo.Type
   
-    CASE db.Integer
-      IF NOT Trim($hCtrl.Text) THEN
-        RETURN NULL
-      ELSE
-        RETURN CInt($hCtrl.Text)
-      ENDIF
+    Case db.Integer
+      If Not Trim($hCtrl.Text) Then
+        Return Null
+      Else
+        Return CInt($hCtrl.Text)
+      Endif
     
-    CASE db.Long
-      IF NOT Trim($hCtrl.Text) THEN
-        RETURN NULL
-      ELSE
-        RETURN CLong($hCtrl.Text)
-      ENDIF
+    Case db.Long
+      If Not Trim($hCtrl.Text) Then
+        Return Null
+      Else
+        Return CLong($hCtrl.Text)
+      Endif
     
-    CASE db.Float
-      IF NOT Trim($hCtrl.Text) THEN
-        RETURN NULL
-      ELSE
-        RETURN CFloat(Val($hCtrl.Text))
-      ENDIF
+    Case db.Float
+      If Not Trim($hCtrl.Text) Then
+        Return Null
+      Else
+        Return CFloat(Val($hCtrl.Text))
+      Endif
     
-    CASE db.Date
-      IF NOT Trim($hCtrl.Text) THEN
-        RETURN NULL
-      ELSE
+    Case db.Date
+      If Not Trim($hCtrl.Text) Then
+        Return Null
+      Else
         vVal = Val($hCtrl.Text)
-        IF NOT IsDate(vVal) THEN Error.Raise("Bad date")
-        RETURN vVal
-      ENDIF
+        If Not IsDate(vVal) Then Error.Raise("Bad date")
+        Return vVal
+      Endif
     
-    CASE db.Boolean
-      RETURN Choose($hCtrl.Index + 1, TRUE, FALSE, NULL)
+    Case db.Boolean
+      Return Choose($hCtrl.Index + 1, True, False, Null)
         
-    CASE db.String
-      RETURN $hCtrl.Text
+    Case db.String
+      Return $hCtrl.Text
   
-  END SELECT
+  End Select
   
-END
+End
 
-PUBLIC SUB SetFocus()
+Public Sub SetFocus()
   
-  IF $hCtrl THEN $hCtrl.SetFocus
+  If $hCtrl Then $hCtrl.SetFocus
   
-END
+End
 
 ' PUBLIC SUB Control_GotFocus()
 '   

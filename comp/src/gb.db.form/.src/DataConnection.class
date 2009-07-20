@@ -1,20 +1,47 @@
 ' Gambas class file
 
-Static Private $cInfo As Collection
-Static Private $cKey As Collection
-Static Private $cFields As Collection
-Static Private $cTable As Collection
-Static Private $cBlob As Collection
+Static Private $cConn As New Collection(gb.IgnoreCase)
 
-Static Public Sub _init()
+Property Read Connection As Connection
+
+Private $hConn As Connection
+Private $cInfo As Collection
+Private $cKey As Collection
+Private $cFields As Collection
+Private $cTable As Collection
+Private $cBlob As Collection
+
+Static Public Sub Get(sConnection As String) As DataConnection
   
-  Try DB.Open
+  Dim hConn As Connection
+  
+  If Not sConnection Then sConnection = "."
+  
+  If Not $cConn.Exist(sConnection) Then 
+    If sConnection = "." Then
+      hConn = DB.Current
+    Else
+      hConn = Connections[sConnection]
+    Endif
+    If Not hConn Then Return
+    $cConn[sConnection] = New DataConnection(hConn)
+  Endif
+  
+  Return $cConn[sConnection]
+  
+End
+
+
+Public Sub _new(hConn As Connection)
+  
+  $hConn = hConn
+  Try $hConn.Open
   Reset()
   
 End
 
 
-Static Public Function _get(sTable As String, sField As String, Optional bCreate As Boolean) As DataField
+Public Function _get(sTable As String, sField As String, Optional bCreate As Boolean) As DataField
   
   Dim hTable As Table
   Dim hField As Field
@@ -32,7 +59,7 @@ Static Public Function _get(sTable As String, sField As String, Optional bCreate
   
   If Not cInfoTable.Exist(sKey) Then
 
-    hTable = DB.Tables[sTable]
+    hTable = $hConn.Tables[sTable]
     hField = hTable.Fields[sField]
 
     hInfo = New DataField
@@ -48,30 +75,30 @@ Static Public Function _get(sTable As String, sField As String, Optional bCreate
 End
 
 
-Static Public Function GetDefaultValue(sTable As String, sField As String) As Variant
+Public Function GetDefaultValue(sTable As String, sField As String) As Variant
   
-  Return DataConnection[sTable, sField].Default
+  Return Me[sTable, sField].Default
   
 End
 
-Static Public Function GetPrimaryKey(sTable As String) As String[]
+Public Function GetPrimaryKey(sTable As String) As String[]
   
   If Not $cKey.Exist(sTable) Then
-    $cKey[sTable] = DB.Tables[sTable].PrimaryKey
+    $cKey[sTable] = $hConn.Tables[sTable].PrimaryKey
   Endif
   
   Return $cKey[sTable]  
   
 End
 
-Static Public Function GetFields(sTable As String) As String[]
+Public Function GetFields(sTable As String) As String[]
 
   Dim aField As String[]
   Dim hField As Field
   
   If Not $cFields.Exist(sTable) Then
     aField = New String[]
-    For Each hField In DB.Tables[sTable].Fields
+    For Each hField In $hConn.Tables[sTable].Fields
       aField.Add(hField.Name)
     Next
     $cFields[sTable] = aField
@@ -81,17 +108,17 @@ Static Public Function GetFields(sTable As String) As String[]
   
 End
 
-Static Public Function ExistTable(sTable As String) As Boolean
+Public Function ExistTable(sTable As String) As Boolean
   
   If Not $cTable.Exist(sTable) Then
-    $cTable[sTable] = DB.Tables.Exist(sTable)
+    $cTable[sTable] = $hConn.Tables.Exist(sTable)
   Endif
   Return $cTable[sTable]  
   
 End
 
 
-Static Public Sub Reset(Optional sTable As String)
+Public Sub Reset(Optional sTable As String)
   
   Dim hDataField As DataField
   
@@ -111,9 +138,15 @@ Static Public Sub Reset(Optional sTable As String)
   
 End
 
-Static Public Sub CheckTable(sTable As String)
+Public Sub CheckTable(sTable As String)
   
-  If DB.Tables.Exist(sTable) Then Return
+  If $hConn.Tables.Exist(sTable) Then Return
   Reset(sTable)
   
+End
+
+Private Function Connection_Read() As Connection
+
+  Return $hConn
+
 End

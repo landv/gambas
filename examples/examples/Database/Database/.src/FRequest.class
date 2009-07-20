@@ -57,14 +57,8 @@ Private Sub ReadData()
 
     Inc iInd
   Next
-' ODBC Changes
-  If $rData.Count = -1 Then
-    tbvData.Rows.Count = rowcount()
-'      $rData.Count
 
-  Else
   tbvData.Rows.Count = $rData.Count
-  Endif
 
 Finally
 
@@ -122,19 +116,19 @@ Private Function WidthFromType(hCtrl As control, iType As Integer, iLength As In
 
 End
 
-Private Function rowcount() As Integer
-
-  Dim rows As Integer
-
-  rows = 0
-  Do
-    $rData.MoveTo(rows)
-   Inc rows
-  Loop
-
-Catch
-
-  Return rows
-
-End
+' Private Function rowcount() As Integer
+' 
+'   Dim rows As Integer
+' 
+'   rows = 0
+'   Do
+'     $rData.MoveTo(rows)
+'    Inc rows
+'   Loop
+' 
+' Catch
+' 
+'   Return rows
+' 
+' End
 

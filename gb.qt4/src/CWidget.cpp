@@ -212,21 +212,6 @@ int CCONTROL_check(void *object)
 	return QWIDGET(object) == NULL || CWIDGET_test_flag(object, WF_DELETED);
 }
 
-static void arrange_parent(CWIDGET *_object)
-{
-	void *parent = CWIDGET_get_parent(THIS);
-	if (!parent)
-		return;
-	if (CCONTROL_check(parent))
-		return;
-	CCONTAINER_arrange(parent);
-	if (GB.Is(parent, CLASS_ScrollView))
-	{
-		//qDebug("CSCROLLVIEW_arrange: %p: %p %d", THIS, THIS->widget, CWIDGET_test_flag(THIS, WF_DELETED));
-		CSCROLLVIEW_arrange(parent, THIS);
-	}
-}
-
 static QWidget *get_viewport(QWidget *w)
 {
 	if (qobject_cast<QAbstractScrollArea *>(w))
@@ -290,6 +275,7 @@ void CWIDGET_new(QWidget *w, void *_object, bool no_show, bool no_filter, bool n
 
 	if (!no_show)
 	{
+		w->setGeometry(-8, -8, 8, 8);
 		CWIDGET_set_visible(THIS, true);
 		w->raise();
 	}
@@ -363,6 +349,27 @@ static QWidget *get_widget_resize(void *_object)
 #define get_widget(_object) QWIDGET(_object)
 #define get_widget_resize(_object) QWIDGET(_object)
 
+static void arrange_parent(CWIDGET *_object)
+{
+	void *parent = CWIDGET_get_parent(THIS);
+	if (!parent)
+		return;
+	if (CCONTROL_check(parent))
+		return;
+	CCONTAINER_arrange(parent);
+}
+
+static void CWIDGET_after_geometry_change(void *_object, bool arrange)
+{
+	if (arrange)
+	{
+		if (GB.Is(THIS, CLASS_Container))
+			CCONTAINER_arrange(THIS);
+	}
+	
+  arrange_parent(THIS);
+}
+
 void CWIDGET_move(void *_object, int x, int y)
 {
   QWidget *wid = get_widget(THIS);
@@ -381,7 +388,18 @@ void CWIDGET_move(void *_object, int x, int y)
     ((CWINDOW *)_object)->y = y;
   }
   
-  arrange_parent(THIS);
+	CWIDGET_after_geometry_change(THIS, false);
+}
+
+void CWIDGET_move_cached(void *_object, int x, int y)
+{
+  if (GB.Is(THIS, CLASS_Window))
+  {
+    ((CWINDOW *)_object)->x = x;
+    ((CWINDOW *)_object)->y = y;
+  }
+  
+	CWIDGET_after_geometry_change(THIS, false);
 }
 
 void CWIDGET_resize(void *_object, int w, int h)
@@ -425,9 +443,18 @@ void CWIDGET_resize(void *_object, int w, int h)
     //((CWINDOW *)_object)->container->resize(w, h);
   }
 
-	if (GB.Is(THIS, CLASS_Container))
-		CCONTAINER_arrange(THIS);
-  arrange_parent(THIS);
+	CWIDGET_after_geometry_change(THIS, true);
+}
+
+void CWIDGET_resize_cached(void *_object, int w, int h)
+{
+  if (GB.Is(THIS, CLASS_Window))
+  {
+    ((CWINDOW *)_object)->w = w;
+    ((CWINDOW *)_object)->h = h;
+  }
+
+	CWIDGET_after_geometry_change(THIS, true);
 }
 
 
@@ -464,9 +491,20 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
     //((CWINDOW *)_object)->container->resize(w, h);
   }
 
-	if (GB.Is(THIS, CLASS_Container))
-		CCONTAINER_arrange(THIS);
-  arrange_parent(THIS);
+	CWIDGET_after_geometry_change(THIS, true);
+}
+
+void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
+{
+  if (GB.Is(THIS, CLASS_Window))
+  {
+    ((CWINDOW *)_object)->x = x;
+    ((CWINDOW *)_object)->y = y;
+    ((CWINDOW *)_object)->w = w;
+    ((CWINDOW *)_object)->h = h;
+  }
+
+	CWIDGET_after_geometry_change(THIS, true);
 }
 
 BEGIN_PROPERTY(CCONTROL_x)

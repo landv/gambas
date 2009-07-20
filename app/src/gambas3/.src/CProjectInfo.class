@@ -29,16 +29,16 @@ Public Sub _new(sPath As String)
   Dim sVal As String
   
   sPath = GetProjectPath(sPath)
-  If NOT sPath Then Return
+  If Not sPath Then Return
   
   Name = File.Name(sPath)
     
   hFile = Open sPath &/ ".project"
   
-  While NOT Eof(hFile)
+  While Not Eof(hFile)
     Line Input #hFile, sLine
     sLine = Trim(sLine)
-    If NOT sLine Then Continue 
+    If Not sLine Then Continue 
     If Left(sLine) = "#" Then Continue
 
     iPos = InStr(sLine, "=")
@@ -56,10 +56,10 @@ Public Sub _new(sPath As String)
         Version = sVal
         
       Case "description"
-        Description = Replace(sVal, "\\n", "\n")
+        Description = Unquote(sVal)
 
       Case "authors"
-        Authors = Split(Replace(sVal, "\\n", "\n"), "\n")
+        Authors = Split(Unquote(sVal), "\n")
 
       Case "icon"
         sIcon = sVal

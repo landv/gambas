@@ -354,7 +354,7 @@ void MyTable::setRowHeight(int row, int height)
   //qDebug("MyTable::setRowHeight(%d, %ld)", row, height);
   if (height < 0)
     adjustRow(row);
-  else
+  else if (height != rowHeight(row))
     QTable::setRowHeight(row, height);
 }
 
@@ -364,7 +364,7 @@ void MyTable::setColumnWidth(int col, int width)
   //qDebug("MyTable::setColumnWidth(%d, %ld): %d", col, width, columnWidth(col));
   if (width < 0)
     adjustColumn(col);
-  else
+  else if (width != columnWidth(col))
     QTable::setColumnWidth(col, width);
 	
 	if (col == (numCols() - 1) && !_updating_last_column)

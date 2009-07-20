@@ -3936,7 +3936,7 @@ Public Function StretchIcon(sPath As String, Optional iSize As Integer = 48) As 
 
 Catch
 
-  Return Image.Load("img/logo/new-logo-32.png").Stretch(iSize, iSize)
+  Return Image.Load("img/logo/logo-32.png").Stretch(iSize, iSize)
   
 End
 
@@ -3965,7 +3965,7 @@ Public Function GetIcon(sPath As String, Optional iSize As Integer) As Picture
   If sIcon Then 
     sPath = sPath &/ sIcon
   Else 
-    sPath = "img/logo/new-logo-32.png"
+    sPath = "img/logo/logo-32.png"
   Endif
 
   If iSize Then
@@ -3976,7 +3976,7 @@ Public Function GetIcon(sPath As String, Optional iSize As Integer) As Picture
 
 Catch
 
-  sPath = "img/logo/new-logo-32.png"
+  sPath = "img/logo/logo-32.png"
 
   If iSize Then
     Return StretchIcon(sPath, iSize).Picture

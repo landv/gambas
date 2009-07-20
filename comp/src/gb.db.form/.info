@@ -28,12 +28,16 @@ b
 _Properties
 C
 s
-*,Control=True,Adjust,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
+*,Control=True,Adjust,Columns{Field[]},Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom
 _new
 m
 
 
 Refresh
+m
+
+
+_OnDatabaseChange
 m
 
 
@@ -92,6 +96,10 @@ _DrawWith
 C
 s
 ComboBox
+_Event
+C
+s
+Click
 _new
 m
 
@@ -115,6 +123,10 @@ m
 GetFilter
 m
 s
+
+_OnDatabaseChange
+m
+
 
 #DataComboMulti
 UserControl
@@ -277,6 +289,10 @@ m
 #DataSource
 Panel
 C
+Connection
+p
+Connection
+
 Table
 p
 s
@@ -305,14 +321,10 @@ Sort
 p
 s
 
-CacheSize
-p
-i
-
 _Properties
 C
 s
-*,Table,Filter,ReadOnly,CacheSize{Range:0;1024;64}
+*,Connection{Connection},Table{Table},Filter,ReadOnly
 _new
 m
 
@@ -320,6 +332,10 @@ m
 GetKeys
 m
 String[]
+
+_GetDB
+m
+Connection
 
 Save
 m
@@ -349,9 +365,17 @@ Refresh
 m
 
 
+_OnDatabaseChange
+m
+
+
 Cancel
 m
 
+
+_Check
+m
+b
 
 Create
 m
@@ -369,6 +393,10 @@ _get
 m
 v
 (Key)s
+_GetDataConnection
+m
+DataConnection
+
 _GetTable
 m
 DataTable
@@ -378,7 +406,7 @@ m
 
 
 ResetAll
-M
+m
 
 
 #DataView
@@ -387,7 +415,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns
+*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]}
 :Activate
 :
 
@@ -480,3 +508,7 @@ TableView_ColumnClick
 m
 
 (Column)i
+_OnDatabaseChange
+m
+
+

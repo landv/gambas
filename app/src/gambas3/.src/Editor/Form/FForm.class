@@ -342,6 +342,8 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
             vValue = Mid$(sValue, 7, -2)
           Else If Left$(sValue, 8) = "Picture[" Then
             vValue = Mid$(sValue, 10, -2)
+          Else If Left$(sValue, 12) = "Connections[" Then
+            vValue = Mid$(sValue, 14, -2)
             'PRINT File.Dir(Project.Path) &/ Mid$(sValue, 9, -1)
             'vValue = Picture[File.Dir(Project.Path) &/ Mid$(sValue, 9, -1)]
           Else If UCase(sValue) = "TRUE" Then
@@ -945,6 +947,10 @@ Public Sub Control_MouseMove()
   'PRINT "Control_MouseMove  Mode ="; $iMode
 
   If Mouse.Shift Then CControl.SetGrid(False)
+
+  X = svwWorkspace.ScrollX + Mouse.ScreenX - svwWorkspace.ScreenX
+  Y = svwWorkspace.ScrollY + Mouse.ScreenY - svwWorkspace.ScreenY
+  svwWorkspace.EnsureVisible(X - 4, Y - 4, 8, 8)
 
   X = Mouse.X
   Y = Mouse.Y
@@ -1893,18 +1899,26 @@ Private Sub CreateMenu()
 
       mnuEvent.Children.Clear
       cSymbol = CComponent.GetClassSymbols(Me.Name)
+      
+      If cSymbol Then
 
-      For Each sName In cCtrl
-
-        hMenu = New Menu(mnuEvent) As "mnuEvent"
-        hMenu.Text = sName
-
-        hSymbol = cSymbol[sGroup & "_" & sName]
-        If hSymbol Then
-          If hSymbol.Kind = "m" Then hMenu.Checked = True
-        Endif
-
-      Next
+        For Each sName In cCtrl
+  
+          hMenu = New Menu(mnuEvent) As "mnuEvent"
+          hMenu.Text = sName
+  
+          hSymbol = cSymbol[sGroup & "_" & sName]
+          If hSymbol Then
+            If hSymbol.Kind = "m" Then hMenu.Checked = True
+          Endif
+  
+        Next
+        
+      Else
+        
+        Debug "cSymbol = NULL ?"
+        
+      Endif
 
       mnuEvent.Visible = True
 

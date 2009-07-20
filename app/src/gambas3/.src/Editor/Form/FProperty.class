@@ -150,6 +150,7 @@ Public Sub RefreshAll()
 
   grdProperty.Rows.Count = aProp.Count + 2
   grdProperty.Clear
+  grdProperty.Rows.Height = -1
 
   grdProperty.Columns.Count = 2
 
@@ -204,7 +205,7 @@ Public Sub RefreshAll()
     Endif
 
     grdProperty[iRow, 1].Text = sVal
-    grdProperty[iRow, 0].Padding = 2
+    'grdProperty[iRow, 0].Padding = 4
 
     Inc iRow
 
@@ -212,7 +213,6 @@ Public Sub RefreshAll()
 
   ' Can be lesser than predicted, as some properties may be hidden
   grdProperty.Rows.Count = iRow
-  grdProperty.Rows.Height = -1
 
   'grdProperty.Rows.Count = iRow
 
@@ -378,7 +378,7 @@ Public Function SaveProperty() As Boolean
 
     Case "s", "Font", "Picture", "Constant", "List", "Path"
     
-    Case "String[]"
+    Case "String[]", "Field[]"
     
       Try vVal = Split(vVal, "\n")
       If Error Then Goto _BAD
@@ -613,7 +613,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]"
+    Case "String[]", "Field[]"
       bButton = True
       txtProperty.ReadOnly = True
 
@@ -676,7 +676,19 @@ Private Sub ShowProperty(Optional sFocus As String)
       spnProperty.MaxValue = 4096
       spnProperty.Step = Desktop.Scale
       'spnProperty.Suffix = ""
+    
+    Case "Table"
+      bButton = True
       
+    Case "Field"
+    
+    Case "Connection"
+
+      hEditor = cmbProperty
+      cmbProperty.ReadOnly = True
+      cmbProperty.List = MConnection.GetConnections()
+      cmbProperty.Add("", 0)
+    
     Case Else 'object
     
       hEditor = cmbProperty
@@ -750,7 +762,7 @@ End
 Public Sub txtProperty_KeyPress()
 
   If txtProperty.ReadOnly Then
-    If $sType = "Font" Or $sType = "Picture" Or $sType = "String[]" Or $sType = "Path" Or $sType = "Color" Then
+    If $sType = "Font" Or If $sType = "Picture" Or If $sType = "String[]" Or If $sType = "Path" Or If $sType = "Color" Or If $sType = "Field[]" Then
       If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
 
         txtProperty.Text = ""
@@ -847,6 +859,15 @@ Public Sub btnProperty_Click()
       Dialog.Path = $sOldVal
       If Dialog.OpenFile() Then Goto _EXIT
       $hEditor.Text = Dialog.Path
+      
+    Case "Table"
+      FTableChooser.Table = $sOldVal
+      If FTableChooser.Run() Then Goto _exit
+      $hEditor.Text = FTableChooser.Table
+
+    Case "Field[]"
+      If FList.Run(Split($sOldVal, "\n"), ("Edit field list")) Then Goto _EXIT
+      $hEditor.Text = FList.Value.Join("\n")
 
   End Select
 
@@ -1023,6 +1044,17 @@ Public Sub btnLock_Click()
     iRow = FindProperty($sFocus)
     If iRow >= 0 Then grdProperty[iRow, 0].Picture = Null
     $sFocus = ""
+  Endif
+
+End
+
+Public Sub cmbProperty_KeyPress()
+
+  If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
+
+    cmbProperty.Text = ""
+    SaveProperty
+
   Endif
 
 End

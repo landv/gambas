@@ -65,7 +65,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   panName = New HPanel(panVBox) As "panComp"
   
   hVBox = New VBox(panName)
-  hVBox.W = Desktop.Scale * 4
+  hVBox.Resize(24, 24)
   
   hSpace = New Panel(hVBox)
   hSpace.H = 4
@@ -73,7 +73,7 @@ Public Sub _new(hComp As CComponent, bDark As Boolean)
   picCheck = New PictureBox(hVBox) As "picCheck"
   picCheck.Alignment = Align.Top
   picCheck.Picture = Picture["img/16/unchecked.png"]
-  picCheck.Resize(Desktop.Scale * 4, 16)
+  picCheck.Resize(24, 16)
   
   txtName = New TextLabel(panName)
   txtName.Padding = 2

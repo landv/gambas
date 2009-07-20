@@ -192,9 +192,13 @@ int CWIDGET_get_background(CWIDGET *_object);
 int CWIDGET_get_foreground(CWIDGET *_object);
 void *CWIDGET_get_parent(void *_object);
 void CWIDGET_set_visible(CWIDGET *_object, bool v);
+
 void CWIDGET_move(void *_object, int x, int y);
 void CWIDGET_resize(void *_object, int w, int h);
 void CWIDGET_move_resize(void *_object, int x, int y, int w, int h);
+void CWIDGET_move_cached(void *_object, int x, int y);
+void CWIDGET_resize_cached(void *_object, int w, int h);
+void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h);
 
 void CACTION_register(void *control, const char *key);
 void CACTION_raise(void *control);

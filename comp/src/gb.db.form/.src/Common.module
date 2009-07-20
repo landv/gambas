@@ -1,95 +1,92 @@
 ' Gambas module file
 
-PUBLIC FUNCTION GetSource(hCtrl AS Control) AS DataSource
+Public Function GetSource(hCtrl As Control) As DataSource
   
-  DIM hCont AS Container
+  Dim hCont As Container
   
   hCont = hCtrl.Parent
-  DO
-    IF hCont IS DataSource THEN RETURN hCont
+  Do
+    If hCont Is DataSource Then Return hCont
     hCont = hCont.Parent
-    IF NOT hCont THEN RETURN
-  LOOP
+    If Not hCont Then Return
+  Loop
   
-END
+End
 
-PUBLIC FUNCTION GetValue(hCtrl AS DataControl) AS Variant
+Public Function GetValue(hCtrl As DataControl) As Variant
   
-  DIM hSource AS DataSource
+  Dim hSource As DataSource
   
-  IF NOT hCtrl.Key THEN RETURN
+  If Not hCtrl.Key Then Return
   
   hSource = GetSource(hCtrl)
-  IF NOT hSource THEN RETURN
+  If Not hSource Then Return
   
-  RETURN hSource[hCtrl.Key]
+  Return hSource[hCtrl.Key]
   
-END
+End
 
+Public Function CheckDB(hConn As Connection) As Boolean
 
-
-
-PUBLIC FUNCTION CheckDB() AS Boolean
-
-  IF NOT DB.Current THEN RETURN TRUE  
-  IF DB.Opened THEN RETURN
+  If Not hConn Then Return True  
+  If hConn.Opened Then Return
   
-  DB.Open
-  RETURN NOT DB.Opened
+  hConn.Open
+  Return Not hConn.Opened
   
-END
+End
 
 
-PUBLIC FUNCTION MakeWhere(aKey AS String[], aVal AS Variant[]) AS String
+Public Function MakeWhere(aKey As String[], aVal As Variant[]) As String
   
-  DIM iInd AS Integer
-  DIM sReq AS String
+  Dim iInd As Integer
+  Dim sReq As String
   
-  FOR iInd = 0 TO aKey.Max
-    IF iInd THEN sReq &= " AND "
+  For iInd = 0 To aKey.Max
+    If iInd Then sReq &= " AND "
     sReq &= DB.Subst(aKey[iInd] & " = &1", aVal[iInd])
-  NEXT
+  Next
   
-  RETURN sReq
+  Return sReq
   
-END
+End
 
-PUBLIC FUNCTION MakeNextWhere(aKey AS String[], aVal AS Variant[]) AS String
+Public Function MakeNextWhere(aKey As String[], aVal As Variant[]) As String
   
-  DIM iInd AS Integer
-  DIM sReq AS String
-  DIM sTest AS String
+  Dim iInd As Integer
+  Dim sReq As String
+  Dim sTest As String
   
-  FOR iInd = 0 TO aKey.Max
-    IF iInd THEN sReq &= " OR "
-    IF sTest THEN sReq &= "(" & sTest & " AND "
+  For iInd = 0 To aKey.Max
+    If iInd Then sReq &= " OR "
+    If sTest Then sReq &= "(" & sTest & " AND "
     sReq &= DB.Subst(aKey[iInd] & " > &1 ", aVal[iInd])
-    IF sTest THEN sReq &= ") "
-    IF sTest THEN sTest &= " AND "
+    If sTest Then sReq &= ") "
+    If sTest Then sTest &= " AND "
     sTest &= DB.Subst(aKey[iInd] & " = &1", aVal[iInd])
-  NEXT
+  Next
   
-  RETURN sReq
+  Return sReq
   
-END
+End
 
 
-PUBLIC FUNCTION Compare(aVal AS Variant[], aVal2 AS Variant[]) AS Boolean
+Public Function Compare(aVal As Variant[], aVal2 As Variant[]) As Boolean
   
-  DIM iInd AS Integer
+  Dim iInd As Integer
   
-  IF aVal.Count <> aVal2.Count THEN RETURN
+  If aVal.Count <> aVal2.Count Then Return
   
-  FOR iInd = 0 TO aVal.Max
-    IF aVal[iInd] <> aVal2[iInd] THEN RETURN
-  NEXT
+  For iInd = 0 To aVal.Max
+    If aVal[iInd] <> aVal2[iInd] Then Return
+  Next
   
-  RETURN TRUE
+  Return True
   
-END
+End
 
-PUBLIC FUNCTION IsControl(hCtrl AS Control) AS Boolean
+Public Function IsControl(hCtrl As Control) As Boolean
   
-  RETURN hCtrl IS DataControl OR hCtrl IS DataCombo
+  Return hCtrl Is DataControl Or hCtrl Is DataCombo
   
-END
+End

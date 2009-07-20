@@ -1,0 +1,212 @@
+' Gambas class file
+
+Static Public Value As String[]
+
+Static Private $aChoice As String[]
+Static Private $sTitle As String
+
+Private $bCombo As Boolean
+Private $aUndo As String[]
+
+Static Public Function Run(aValue As String[], Optional sTitle As String) As Boolean
+  
+  Dim hForm As Form
+  
+  Value = aValue
+  '$aChoice = aChoice
+  $sTitle = sTitle
+  
+  hForm = New FList
+  Return Not hForm.ShowModal()
+
+End
+
+
+Public Sub Form_Open()
+
+  If $sTitle Then Me.Title = $sTitle
+  
+  If $aChoice Then
+    cmbValue.Show
+    cmbValue.List = $aChoice
+    txtValue.Hide
+    $bCombo = True
+  Else
+    txtValue.Show
+    cmbValue.Hide
+    $bCombo = False
+  Endif
+  
+  $aUndo = Value
+  SetList(Value)
+
+End
+
+Private Sub SetList(aValue As String[])
+  
+  lstValue.List = aValue
+  If lstValue.Count Then lstValue.Index = 0
+  Refresh
+  
+End
+
+
+Public Sub btnOK_Click()
+
+  Value = lstValue.List
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub lstValue_Click()
+
+  'PRINT "lstValue_Click"
+
+  If Not lstValue.Current Then Return
+
+  If $bCombo
+    cmbValue.Text = lstValue.Current.Text
+    cmbValue.SetFocus
+    cmbValue.SelectAll
+  Else
+    txtValue.Text = lstValue.Current.Text
+    txtValue.SetFocus
+    txtValue.SelectAll
+  Endif
+
+End
+
+
+Public Sub txtValue_Change()
+
+  If lstValue.Current Then
+    lstValue.Current.Text = txtValue.Text
+  Endif
+
+End
+
+Public Sub cmbValue_Change()
+
+  If lstValue.Current Then
+    lstValue.Current.Text = cmbValue.Text
+  Endif
+
+End
+
+
+Public Sub btnInsert_Click()
+
+  lstValue.Add(Subst(("Item &1"), CStr(lstValue.Count + 1)))
+  'PRINT "Count ="; lstValue.Count
+  Refresh
+  lstValue.Index = lstValue.Count - 1
+  'PRINT "Index ="; lstValue.Index; " /"; lstValue.Count
+
+End
+
+
+Private Sub Refresh()
+  
+  Dim bEnabled As Boolean
+  
+  bEnabled = lstValue.Count
+  
+  txtValue.Enabled = bEnabled
+  cmbValue.Enabled = bEnabled
+  btnDelete.Enabled = bEnabled
+  btnUp.Enabled = bEnabled
+  btnDown.Enabled = bEnabled
+  btnClear.Enabled = bEnabled
+  btnCopy.Enabled = bEnabled
+  
+  If Not bEnabled Then 
+    txtValue.Text = ""
+    cmbValue.Text = ""
+  Endif
+  
+End
+
+Public Sub btnDelete_Click()
+
+  Dim iIndex As Integer
+  
+  iIndex = lstValue.Index
+
+  If iIndex < 0 Then Return
+  
+  lstValue.Remove(iIndex)
+
+  If iIndex >= lstValue.Count Then Dec iIndex
+
+  lstValue.Index = iIndex
+
+  Refresh
+
+End
+
+Public Sub btnClear_Click()
+
+  If Message.Question(("Do you really want to clear the list?"), ("Clear"), ("Cancel")) <> 1 Then Return
+
+  lstValue.Clear
+  Refresh
+
+End
+
+Public Sub btnDown_Click()
+
+  Dim iInd As Integer
+
+  iInd = lstValue.Index
+
+  If iInd < (lstValue.Count - 1) Then
+    Swap lstValue[iInd].Text, lstValue[iInd + 1].Text
+    lstValue.Index = iInd + 1
+  Endif
+
+End
+
+Public Sub btnUp_Click()
+
+  Dim iInd As Integer
+
+  iInd = lstValue.Index
+
+  If iInd > 0 Then
+    Swap lstValue[iInd].Text, lstValue[iInd - 1].Text
+    lstValue.Index = iInd - 1
+  Endif
+
+End
+
+
+Public Sub btnCopy_Click()
+
+  Clipboard.Copy(lstValue.List.Join("\n") & "\n", MMime.LIST)
+
+End
+
+Public Sub btnPaste_Click()
+
+  Dim sValue As String
+  Dim aList As String[]
+
+  sValue = Clipboard.Paste(MMime.LIST)
+  If Not sValue Then Return
+  aList = Split(sValue, "\n")
+  aList.Remove(aList.Max)
+  SetList(aList)
+
+End
+
+Public Sub btnUndo_Click()
+
+  SetList($aUndo)
+
+End

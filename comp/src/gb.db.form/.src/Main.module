@@ -1,6 +1,6 @@
 ' Gambas module file
 
-Private $hConn As New Connection
+Public Conn As New Connection
 
 Public Sub Main()
 
@@ -8,9 +8,11 @@ Public Sub Main()
   Dim aText As String[]
   Dim hTable As Table
 
-  $hConn.Type = "sqlite"
-  $hConn.Name = "picturedatabase"
-  $hConn.Host = "/home/benoit"
+  ' DB.Debug = True
+
+  Conn.Type = "sqlite"
+  Conn.Name = "test"
+  Conn.Host = "/home/benoit"
   
   ' $hConn.Open
   ' For Each hTable In $hConn.Tables
@@ -36,6 +38,6 @@ Public Sub Main()
 
   'Application.Theme = "gnome"
 
-  FTest.Show
+  FMain.Show
 
 End

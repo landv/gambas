@@ -1,0 +1,58 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,47)
+  Text = ("Choose a table")
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { HPanel1 HPanel
+    MoveScaled(1,2,65,35)
+    AutoResize = True
+    Spacing = True
+    { Label1 Label
+      MoveScaled(1,1,19,4)
+      Text = ("Connection")
+    }
+    { cmbConnection ComboBox
+      MoveScaled(22,1,42,4)
+      Expand = True
+      Text = ("")
+      ReadOnly = True
+    }
+    { Label2 Label
+      MoveScaled(1,6,19,4)
+      Visible = False
+      Text = ("Table")
+      Alignment = Align.TopNormal
+    }
+    { lvwTable ListView
+      MoveScaled(22,6,41,25)
+      Expand = True
+      Sorted = True
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(22,38,4,1)
+  }
+  { HBox1 HBox
+    MoveScaled(1,41,66,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(31,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(48,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

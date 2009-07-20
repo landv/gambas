@@ -52,7 +52,7 @@ Public Sub Panel_Enter()
 
   If Object.Type(Last) <> "Panel" Then Return
   $iColor = Last.Foreground
-  Last.Background = Color.SelectedBackground '&88D5FF&
+  Last.Background = Color.LightBackground '&88D5FF&
   Last.Foreground = Color.SelectedForeground '&88D5FF&
 
 End
@@ -112,7 +112,7 @@ Public Sub Panel_MouseUp()
   '$hImage.Move($hImage.X - 1, $hImage.Y - 1)
 
 
-  If (X >= 0 AND Y >= 0 AND X < hPanel.W AND Y < hPanel.H) Then
+  If (X >= 0 And Y >= 0 And X < hPanel.W And Y < hPanel.H) Then
 
     Raise Click()
 

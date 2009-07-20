@@ -349,20 +349,18 @@ Public Sub panMove_MouseDown()
   Select Case $iOrientation
     Case Align.Top
       $MY = Mouse.ScreenY - Me.Parent.H
-      $iMax = Me.Parent.Parent.ClientH - Me.Parent.Y
+      $iMax = Me.Parent.Parent.ClientH - Me.Parent.Y '- Desktop.Scale * 8
     Case Align.Bottom
       $MY = Mouse.ScreenY + Me.H
-      $iMax = Me.Parent.Y + Me.Parent.H
+      $iMax = Me.Parent.Y + Me.Parent.H '+ Desktop.Scale * 8
     Case Align.Left
       $MX = Mouse.ScreenX - Me.Parent.W
-      $iMax = Me.Parent.Parent.ClientW - Me.Parent.X
+      $iMax = Me.Parent.Parent.ClientW - Me.Parent.X '- Desktop.Scale * 8
     Case Align.Right
       $MX = Mouse.ScreenX + Me.W
-      $iMax = Me.Parent.X + Me.Parent.W
+      $iMax = Me.Parent.X + Me.Parent.W '+ Desktop.Scale * 8
   End Select
   
-  $iMax -= Desktop.Scale * 8
-
 End
 
 Private Function GetDim(H As Integer) As Integer
@@ -385,23 +383,25 @@ End
 Public Sub panMove_MouseMove()
 
   Dim H As Integer
+  Dim iMax As Integer
 
   If Not Mouse.Left Then Return
   If Not $bVisible Then Return
   If Me.Parent.Design Then Return
   If $bFixed Then Return
 
+  iMax = Max(0, $iMax - Desktop.Scale * 8)
+
   Select Case $iOrientation
     Case Align.Top
-      Me.Parent.H = GetDim(Min($iMax, Mouse.ScreenY - $MY))
+      Me.Parent.H = GetDim(Min(iMax, Mouse.ScreenY - $MY))
     Case Align.Bottom
-      H = GetDim(Min($iMax, $MY - Mouse.ScreenY))
-      'H = Max(iMin, Min($iMax, $MY - Mouse.ScreenY))
+      H = GetDim(Min(iMax, $MY - Mouse.ScreenY))
       Me.Parent.Move(Me.Parent.X, $iMax - H, Me.Parent.W, H)
     Case Align.Left
-      Me.Parent.W = GetDim(Min($iMax, Mouse.ScreenX - $MX))
+      Me.Parent.W = GetDim(Min(iMax, Mouse.ScreenX - $MX))
     Case Align.Right
-      H = GetDim(Min($iMax, $MX - Mouse.ScreenX))
+      H = GetDim(Min(iMax, $MX - Mouse.ScreenX))
       Me.Parent.Move($iMax - H, Me.Parent.Y, H, Me.Parent.H)
   End Select
 

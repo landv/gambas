@@ -1038,6 +1038,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 			updateLine(y);
 			
 		ensureCursorVisible();
+		//QTimer::singleShot(0, this, SLOT(ensureCursorVisible()));
 		
 		change = true;
 		
@@ -1049,8 +1050,6 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 
 	checkMatching();
 	
-	//QTimer::singleShot(30, this, SLOT(ensureCursorVisible()));
-
 	return change;
 }
 
@@ -1645,8 +1644,6 @@ void GEditor::ensureCursorVisible()
 	
 	if (!isCursorVisible())
 	{
-		qApp->sendPostedEvents(viewport(), QEvent::Paint);
-		
 		yy = realToView(y);
 		
 		if (center)

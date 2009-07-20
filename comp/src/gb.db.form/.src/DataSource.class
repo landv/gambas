@@ -4,6 +4,7 @@ Export
 
 Inherits Panel
 
+Property Connection As Connection
 Property Table As String
 Property Filter As String
 Property Read Modified As Boolean
@@ -11,13 +12,13 @@ Property Read Current As Variant[]
 Property Read Index As Integer
 Property ReadOnly As Boolean
 Property Sort As String
-Property CacheSize As Integer
+'Property CacheSize As Integer
 
 ' Pb si on fait de Connection une propriété de l'IDE: le controle
 ' Connection doit être créé AVANT l'affectation à la propriété,
 ' et l'IDE ne sait pas géré ça!
 
-Public Const _Properties As String = "*,Table,Filter,ReadOnly,CacheSize{Range:0;1024;64}"
+Public Const _Properties As String = "*,Connection{Connection},Table{Table},Filter,ReadOnly" ',CacheSize{Range:0;1024;64}"
 'PUBLIC CONST _DrawWith AS String = "DrawingArea"
 
 Private $sTable As String
@@ -25,6 +26,9 @@ Private $sFilter As String
 Private $bReadOnly As Boolean
 
 Private $bCreate As Boolean
+
+Private $hConn As DataConnection
+Private $DB As Connection
 
 Private $hTable As DataTable
 Private $iIndex As Integer
@@ -128,7 +132,7 @@ Private Function GetFilter() As String
       vVal = hSrc[sField]
       If IsNull(vVal) Then Continue
       If sReq Then sReq &= " AND "
-      sReq &= DB.Subst(sField & " = &1", vVal)
+      sReq &= _GetDB().Subst(sField & " = &1", vVal)
     Next
   Endif
   
@@ -240,6 +244,25 @@ Private Sub Redraw(Optional bRefresh As Boolean)
 
 End
 
+Public Sub _OnDatabaseChange()
+  
+  Dim hChild As Object
+
+  $hConn = Null
+  Load
+  
+  For Each hChild In GetChildren()
+    'DEBUG hChild.Name
+    If hChild Is DataSource Then
+      If Not hChild.Connection Then hChild._OnDatabaseChange()
+    Else If Common.IsControl(hChild) Or If hChild Is DataBrowser Or If hChild Is DataView Then
+      Try hChild._OnDatabaseChange()
+    Endif
+  Next
+  
+End
+
+
 Public Sub Refresh()
   
   Load
@@ -252,6 +275,24 @@ Public Sub Cancel()
   
 End
 
+Public Sub _Check() As Boolean
+
+  Dim hDB As Connection
+
+  If Not $sTable Then Return True
+  
+  hDB = _GetDB()
+  
+  If Not $hConn Then
+    $hConn = New DataConnection(hDB)
+  Endif
+  
+  If Not $hConn Then Return True
+  Return Common.CheckDB(hDB)
+  
+End
+
+
 Private Function Load() As Boolean
   
   Dim sReq As String
@@ -259,9 +300,9 @@ Private Function Load() As Boolean
   Dim sField As String
   Dim iPos As Integer
   
-  If Not $sTable Or If Common.CheckDB() Then Goto VOID
+  If _Check() Then Goto VOID
   
-  Try $hTable = New DataTable($sTable, GetFilter())
+  Try $hTable = New DataTable($hConn, $sTable, GetFilter())
   If Error Then Goto VOID
 
   $iIndex = -1
@@ -325,7 +366,7 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
   
   If $bCreate Then
 
-    rData = DB.Create($sTable)
+    rData = _GetDB().Create($sTable)
 
     hSrc = Common.GetSource(Me)
     If hSrc Then
@@ -372,7 +413,7 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
       Next
     Endif
 
-    rData = DB.Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
+    rData = _GetDB().Edit($sTable, Replace(Common.MakeWhere(aKey, aVal), "&", "&&"))
     'rData = $hTable[$iIndex]
     If Not rData.Available Then Return True
 
@@ -431,7 +472,7 @@ Public Function Remove() As Boolean
     Next
   Endif
 
-  DB.Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get())
+  _GetDB().Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get())
   
   Create(True)
   
@@ -441,7 +482,7 @@ End
 Public Function _get(Key As String) As Variant
   
   If $iIndex < 0 Then
-    Return DataConnection.GetDefaultValue($sTable, Key)
+    Return $hConn.GetDefaultValue($sTable, Key)
   Else 
     Try Return $hTable[$iIndex][Key]
   Endif
@@ -450,12 +491,17 @@ End
 
 Public Function _GetInfo(Key As String) As DataField
   
-  If Not $sTable Then Return
-  If Common.CheckDB() Then Return
-  
-  Return DataConnection[$sTable, Key, $bCreate]
+  If _Check() Then Return
+  Return $hConn[$sTable, Key, $bCreate]
   
 End
+
+Public Sub _GetDataConnection() As DataConnection
+  
+  Return $hConn
+  
+End
+
 
 Public Function GetKeys() As String[]
   
@@ -540,6 +586,18 @@ Public Function _GetTable() As DataTable
   
 End
 
+Public Function _GetDB() As Connection
+  
+  Dim hSrc As DataSource
+  
+  If $DB Then Return $DB
+  hSrc = Common.GetSource(Me)
+  If hSrc Then Return hSrc._GetDB()
+  Return DB.Current
+  
+End
+
+
 
 Private Function ReadOnly_Read() As Boolean
   
@@ -595,20 +653,21 @@ Public Sub Reset()
   
 End
 
-Static Public Sub ResetAll()
+Public Sub ResetAll()
   
-  DataConnection.Reset
+  $hConn.Reset
   
 End
 
-Private Function IgnoreCharset_Read() As Boolean
+Private Function Connection_Read() As Connection
 
-  
+  Return $DB
 
 End
 
-Private Sub IgnoreCharset_Write(Value As Boolean)
+Private Sub Connection_Write(Value As Connection)
 
-  
+  $DB = Value
+  _OnDatabaseChange()
 
 End

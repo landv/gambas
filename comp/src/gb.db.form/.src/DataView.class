@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Header{TableView.None;Horizontal;Vertical;Both}=Both,Grid,Highlight=True,Columns{Field[]}"
 'Public Const _DrawWith As String = "GridView"
 
 Event Activate
@@ -66,10 +66,8 @@ Private Sub RefreshColumns()
   Dim sTable As String
   Dim aFields As String[]
   
-  If Common.CheckDB() Then Return
-  'If Not $bRefreshColumn Then Return
-  
-  '$bRefreshColumn = False
+  If Common.GetSource(Me)._Check() Then Return
+  If Not $hTable Then Return
   
   sTable = $hTable.Name
   
@@ -116,9 +114,9 @@ Private Sub Load()
   Dim hTable As DataTable
   Dim bReset As Boolean
   
-  If Common.CheckDB() Then Return
-  
   hSrc = Common.GetSource(Me)
+  If hSrc._Check() Then Return
+  
   If hSrc Then
     hTable = hSrc._GetTable()
     If hTable <> $hTable Then
@@ -144,7 +142,11 @@ Private Sub Load()
   If hSrc.Index < 0 Then 
     $bCreate = True
     $hCtrl.Rows.UnSelect
-    If bReset Then $hCtrl.MoveTo(0, 0)
+    If bReset Then 
+      $bNoActivate = True
+      $hCtrl.MoveTo(0, 0)
+      $bNoActivate = False
+    Endif
   Else
     $hCtrl.Row = hSrc.Index
     $hCtrl.Rows[$hCtrl.Row].Selected = True
@@ -159,35 +161,6 @@ Public Sub Refresh()
   
 End
 
-
-
-' PRIVATE FUNCTION Table_Read() AS String
-'   
-'   RETURN $sTable
-'   
-' END
-' 
-' PRIVATE SUB Table_Write(sTable AS String)
-' 
-'   IF $sTable = sTable THEN RETURN  
-'   $sTable = sTable
-'   Load
-'   
-' END
-' 
-' PRIVATE FUNCTION Filter_Read() AS String
-'   
-'   RETURN $sFilter
-'   
-' END
-' 
-' PRIVATE SUB Filter_Write(sFilter AS String)
-'   
-'   IF $sFilter = sFilter THEN RETURN
-'   $sFilter = sFilter
-'   Load
-'   
-' END
 
 Private Function Columns_Read() As String[]
   
@@ -364,21 +337,6 @@ Private Sub Header_Write(iHeader As Integer)
   
 End
 
-' PRIVATE FUNCTION Connection_Read() AS Connection
-' 
-'   IF $hConn <> DB.Current THEN RETURN $hConn
-'   
-' END
-' 
-' PRIVATE SUB Connection_Write(hConn AS Connection)
-'   
-'   IF NOT hConn THEN hConn = DB.Current
-'   
-'   $hConn = hConn
-'   Load
-'   
-' END
-' 
 Private Function Current_Read() As Variant[]
   
   Return $hTable.GetKeys($hCtrl.Row)
@@ -510,4 +468,10 @@ Private Function View_Read() As TableView
 
   Return $hCtrl
 
+End
+
+Public Sub _OnDatabaseChange()
+  
+  Refresh()
+  
 End

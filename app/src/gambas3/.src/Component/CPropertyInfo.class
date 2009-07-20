@@ -77,7 +77,7 @@ Static Public Sub _init()
   
   $cRedirect["*.AutoResize"] = True
 
-  '$cRedirect["*.Table"] = TRUE
+  $cRedirect["*.Connection"] = True
 
   $cTranslate["Text"] = True
   $cTranslate["Title"] = True
@@ -246,57 +246,6 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   
         Type = "Color"
   
-      ' ELSE IF sSign THEN
-      ' 
-      '   Type = "Constant"
-      ' 
-      '   ConstantList = NEW Collection
-      ' 
-      '   cList = Split(hSym.Signature)
-      '   ConstantClass = cList[0]
-      '   cList.Remove(0)
-      ' 
-      '   IF cList.Count THEN
-      ' 
-      '     FOR EACH sList IN cList
-      ' 
-      '       hSym = CComponent.Classes[ConstantClass].Symbols[sList]
-      '       ' Maybe the constant declared in the property don't really exist
-      '       TRY ConstantList[CStr(hSym.Value)] = sList
-      ' 
-      '     NEXT
-      ' 
-      '   ELSE
-      ' 
-      '     FOR EACH hSym IN CComponent.Classes[ConstantClass].Symbols
-      ' 
-      '       IF hSym.Kind = "C" THEN
-      '         IF NOT hSym.IsHidden() THEN
-      '           ConstantList[CStr(hSym.Value)] = hSym.Name
-      '           IF NOT sFirst THEN sFirst = hSym.Name
-      '         ENDIF
-      '       ENDIF
-      ' 
-      '     NEXT
-      ' 
-      '   ENDIF
-      ' 
-      '   sList = ConstantList[CStr(DefaultValue)]
-      '   IF sList THEN DefaultValue = sList
-      '   'IF ERROR THEN 
-      '   '  sList = sFirst
-      '   'ENDIF
-      '   'DEBUG sClass & "." & sName; ": "; ConstantClass; "."; DefaultValue
-      '   'DefaultValue = sList
-      ' 
-      '   'PRINT sClass; "."; sName; " is constant"
-      ' 
-      '   'PRINT ConstantClass; " = ";
-      '   'FOR EACH sList IN ConstantList
-      '   '  PRINT sList; "("; CLASS[ConstantClass].Symbols[sList].Value; " ) ";
-      '   'NEXT
-      '   'PRINT
-      ' 
       Endif
   
     Else If Type = "s" Then

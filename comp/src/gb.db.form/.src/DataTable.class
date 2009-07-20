@@ -10,6 +10,8 @@ Property Read Count As Integer
 Property Sort As String
 Property Read CacheSize As Integer
 
+Private $hConn As DataConnection
+Private $DB As Connection
 Private $sTable As String
 Private $bRequest As Boolean
 Private $sFilter As String
@@ -24,12 +26,14 @@ Private $iDataIndex As Integer
 
 Private $aCol As String[]
 
-Public Sub _new(Table As String, Filter As String)
+Public Sub _new(hConn As DataConnection, Table As String, Filter As String)
   
+  $hConn = hConn
+  $DB = hConn.Connection
   $sTable = Table
   $sFilter = Filter
   
-  DataConnection.CheckTable(Table)
+  $hConn.CheckTable(Table)
   
   If $sTable Like "SELECT *" Then $bRequest = True
   
@@ -42,7 +46,7 @@ Private Sub RefreshKey()
   If $bRequest Then
     $aKey = New String[]
   Else  
-    $aKey = DataConnection.GetPrimaryKey($sTable)
+    $aKey = $hConn.GetPrimaryKey($sTable)
     If $sSort Then 
       $aKey = $aKey.Copy()
       $aKey.Add($sSort, 0)
@@ -90,13 +94,13 @@ Private Sub LoadUntil(iIndex As Integer)
   hReq = Request.Select($aKey).From($sTable).Where($sFilter).OrderBy($aKey)
   
   If $aVal.Count = 0 Then
-    rData = DB.Limit(iLimit).Exec(hReq.Get())
+    rData = $DB.Limit(iLimit).Exec(hReq.Get())
     iCount = rData.Count
   Else
     aVal = $aVal[$aVal.Max]
     'sReq &= " WHERE " & Where(aVal)
     hReq = hReq.Where(Common.MakeNextWhere($aKey, aVal))
-    rData = DB.Limit(iLimit).Exec(hReq.Get())
+    rData = $DB.Limit(iLimit).Exec(hReq.Get())
     ' TODO: ne pas faire MoveNext si l'enregistrement $aVal[$aVal.Max] a disparu
     'rData.MoveNext
     iCount = rData.Count '- 1
@@ -161,9 +165,9 @@ Public Function _get(Index As Integer) As Result
       
       If $bRequest Then
         If $sSort Then
-          $rData = DB.Exec($sTable & " ORDER BY " & $sSort)
+          $rData = $DB.Exec($sTable & " ORDER BY " & $sSort)
         Else
-          $rData = DB.Exec($sTable)
+          $rData = $DB.Exec($sTable)
         Endif
       Else
         If $sSort Then
@@ -175,7 +179,7 @@ Public Function _get(Index As Integer) As Result
         Else
           hReq = Request.Select(sCol).From($sTable).Where($sFilter)
         Endif
-        $rData = DB.Exec(hReq.Get())
+        $rData = $DB.Exec(hReq.Get())
       Endif
       
       Raise CacheResize
@@ -203,7 +207,7 @@ Public Function _get(Index As Integer) As Result
   Else
     hReq = Request.Select(sCol).From($sTable).Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex - 1])).OrderBy($aKey)
   Endif
-  $rData = DB.Limit(LIMIT_INC).Exec(hReq.Get())
+  $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get())
   
   'hReq = Request().Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex]))
   '$rData = DB.Limit(LIMIT_INC).Edit($sTable, hReq.Get())
@@ -219,7 +223,7 @@ Private Function Keys_Read() As String[]
   If $bRequest Then
     Return New String[]
   Else
-    Return DataConnection.GetPrimaryKey($sTable)
+    Return $hConn.GetPrimaryKey($sTable)
   Endif
   
 End
@@ -269,7 +273,7 @@ Private Function Count_Read() As Integer
     If $bRequest Then
       $iCount = Me[0].Count
     Else
-      $iCount = DB.Exec(Request.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter).Get())[0]
+      $iCount = $DB.Exec(Request.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter).Get())[0]
     Endif
   Endif
 
@@ -289,7 +293,7 @@ Public Sub GetFields() As String[]
     Next
     Return aField
   Else
-    Return DataConnection.GetFields($sTable)
+    Return $hConn.GetFields($sTable)
   Endif
   
 End
@@ -303,7 +307,7 @@ Public Sub GetFieldInfo(sField As String) As DataField
     hField.FromField(Me[0].Fields[sField])
     Return hField
   Else
-    Return DataConnection[$sTable, sField]
+    Return $hConn[$sTable, sField]
   Endif
   
 End
@@ -325,9 +329,9 @@ End
 Public Sub Reset()
 
   If $bRequest Then
-    DataConnection.Reset()
+    $hConn.Reset()
   Else
-    DataConnection.Reset($sTable)
+    $hConn.Reset($sTable)
   Endif
   
 End

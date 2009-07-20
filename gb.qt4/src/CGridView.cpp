@@ -413,9 +413,7 @@ void MyTable::setRowHeight(int row, int height)
 	if (height < 0)
 		adjustRow(row);
 	else if (height != rowHeight(row))
-	{
 		Q3Table::setRowHeight(row, height);
-	}
 }
 
 
@@ -424,7 +422,7 @@ void MyTable::setColumnWidth(int col, int width)
 	//qDebug("MyTable::setColumnWidth(%d, %ld): %d", col, width, columnWidth(col));
 	if (width < 0)
 		adjustColumn(col);
-	else
+	else if (width != columnWidth(width))
 		Q3Table::setColumnWidth(col, width);
 		
 	if (col == (numCols() - 1) && !_updating_last_column)

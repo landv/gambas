@@ -57,27 +57,6 @@ MyScrollView::MyScrollView(QWidget *parent)
 	_noscroll = false;
 }
 
-/*
-void MyScrollView::frameChanged(void)
-{
-  CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(this);
-
-  QScrollArea::frameChanged();
-  if (THIS->container)
-  	THIS->container->autoResize();
-}
-*/
-
-void MyScrollView::resizeEvent(QResizeEvent *e)
-{
-  CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(this);
-  
-  QScrollArea::resizeEvent(e);
-  if (THIS->container)
-	  THIS->container->autoResize();
-}
-
-
 void MyScrollView::showEvent(QShowEvent *e)
 {
   CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(this);
@@ -114,7 +93,9 @@ void MyContents::autoResize(void)
   bool locked;
   int i;
 	int x, y;
-  
+
+	//qDebug("autoResize: %s", THIS->widget.name);
+	
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
 	ww = hh = -1;
@@ -382,7 +363,7 @@ void MyContents::checkAutoResizeLater()
 	timer = true;	
 }
 
-void CSCROLLVIEW_arrange(void *_object, CWIDGET *child)
+void CSCROLLVIEW_arrange(void *_object)
 {
 	if (THIS->container)
 		THIS->container->checkAutoResizeLater();

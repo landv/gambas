@@ -102,7 +102,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "toolbutton"
       hCtrl = New ToolButton(hParent)
-      hCtrl.Picture = Picture["img/logo/new-logo-16.png"]
+      hCtrl.Picture = Picture["img/logo/logo-16.png"]
 
     Case "textbox"
       hCtrl = New TextBox(hParent)
@@ -122,7 +122,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "picturebox"
       hCtrl = New PictureBox(hParent)
-      hCtrl.Picture = Picture["img/logo/new-logo.png"]
+      hCtrl.Picture = Picture["img/logo/logo.png"]
 
     Case "treeview"
       hCtrl = New TreeView(hParent)
@@ -234,6 +234,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
   'IF hCtrl IS UserControl OR NOT hCtrl IS Container THEN
   'Try hCtrl.Tracking = True
+  hCtrl.Raise
   Try hCtrl.Design = True
   'ENDIF
   Return hCtrl
@@ -424,7 +425,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
         Endif
 
         vRealVal = hPict
-
+        
       Case "Constant"
 
         'IF IsNumber(vRealVal) THEN
@@ -563,11 +564,11 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path"
+    Case "List", "Path", "Picture", "Font", "Table"
 
       Return CStr(vVal)
       
-    Case "String[]"
+    Case "String[]", "Field[]"
     
       Return vVal.Join("\n")
 
@@ -579,10 +580,6 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
       Else
         Return vVal
       Endif
-
-    Case "Picture", "Font"
-
-      Return CStr(vVal)
 
     Case "Constant"
 
@@ -1242,16 +1239,6 @@ Private Function GetCoord(iCoord As Integer) As Float
 End
 
 
-' PRIVATE FUNCTION QuoteString(sVal AS String) AS String
-'   
-'   sVal = Replace(sVal, "\\", "\\\\")
-'   sVal = Replace(sVal, Chr$(34), "\\" & Chr$(34))
-'   sVal = Replace(sVal, gb.NewLine, "\\n")
-'   RETURN sVal
-'   
-' END
-
-
 Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale As Boolean) As String[]
 
   Dim cLine As New String[]
@@ -1301,7 +1288,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
       vVal = vVal - DX
     Else If sProp = "Y" Then
       vVal = vVal - DY
-    Else If hProp.Type <> "String[]" Then
+    Else If Right(hProp.Type, 2) <> "[]" Then
       vVal = ConvertToString(vVal, hProp)
     Endif
 
@@ -1315,7 +1302,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
       Select Case hProp.Type
 
-        Case "s", "List", "Path"
+        Case "s", "List", "Path", "Table"
           vVal = Quote(vVal)
 
           If hProp.Translate Then
@@ -1324,7 +1311,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
             sLine = sLine & vVal
           Endif
           
-        Case "String[]"
+        Case "String[]", "Field[]"
         
           aVal = vVal.Copy()
           
@@ -1368,6 +1355,9 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
         Case "Picture"
           sLine = sLine & "Picture[" & Chr$(34) & vVal & Chr$(34) & "]"
+
+        Case "Connection"
+          sLine = sLine & "Connections[" & Chr$(34) & vVal & Chr$(34) & "]"
 
         Case "Constant"
           sLine = sLine & hProp.ConstantClass & "." & vVal

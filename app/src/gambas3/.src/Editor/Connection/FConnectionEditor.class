@@ -79,16 +79,7 @@ Private Sub LoadList(Optional sTable As String)
   Dim hPict As Picture
   Dim sKey As String
   
-  lvwTable.Clear
-  
-  'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
-  For Each hTable In $hConn.Tables
-    If hTable.System Then
-      lvwTable.Add("S" & hTable.Name, hTable.Name, Picture["img/16/system-table.png"])
-    Else
-      lvwTable.Add("T" & hTable.Name, hTable.Name, Picture["img/16/table.png"])
-    Endif
-  Next
+  MConnection.FillListViewWithTables(lvwTable, $hConn)
   
   If Not sTable Then 
     btnRequest_Click
@@ -157,7 +148,7 @@ Public Sub Reload() As Boolean
   $hConn = New Connection
   MConnection.InitFrom($hConn, hConfig, Me.Name, True)
   $hConn.Open
-  DB.Current = $hConn
+  'DB.Current = $hConn
   
   sTitle = $hConn.Type & "://"
   If $hConn.User Then sTitle &= $hConn.User & "@"
@@ -174,7 +165,8 @@ Public Sub Reload() As Boolean
   
   btnTitle.Text = "  " & sTitle & "  "
   
-  DataSource.ResetAll
+  datData.Connection = $hConn
+  datRequest.Connection = $hConn
 
   LoadList($sTable)
   
@@ -1335,5 +1327,18 @@ End
 Public Sub btnRemoveData_Click()
 
   If Message.Warning(("Do you really want to remove the selected rows?"), ("Remove"), ("Cancel")) = 2 Then Return
+
+End
+
+Public Sub btnCopyFieldList_Click()
+
+  Dim iInd As Integer
+  Dim aList As New String[]
+  
+  For iInd = 0 To tbvField.Rows.Count - 1
+    aList.Add($aField[iInd].Name)
+  Next
+  
+  Clipboard.Copy(aList.Join("\n") & "\n", MMime.LIST)
 
 End

@@ -915,8 +915,7 @@ End
 Public Sub Send(sStr As String)
 
   If $iState <> STATE_RUNNING Then Return
-  Print #$hProcess, sStr;
-  'Debug.Write(sStr)
+  Write #$hProcess, sStr, Len(sStr)
 
 End
 

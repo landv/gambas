@@ -23,6 +23,8 @@ Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 Private Const SCALE_DRAWING As Integer = 3
 Private $hLogo As Image
 Private $hMadeIn As Image
+Private $hDraw As Picture
+
 Private $eAng As Float
 Private $eIncAng As Float = 1.4
 
@@ -72,7 +74,7 @@ Public Sub Form_Open()
     Toggle(LIST_EXAMPLE)
   Endif
 
-  $hLogo = Image.Load("img/logo/new-logo.png")
+  $hLogo = Image.Load("img/logo/logo.png")
 
   hImage = New Image($hLogo.W * SCALE_DRAWING, $hLogo.H * SCALE_DRAWING, Color.Transparent)
   hImage.Draw($hLogo, ($hLogo.W * SCALE_DRAWING) \ 6 + 16, ($hLogo.H * SCALE_DRAWING) \ 6, ($hLogo.W * SCALE_DRAWING * 2) \ 3, ($hLogo.H * SCALE_DRAWING * 2) \ 3)
@@ -392,15 +394,24 @@ Public Sub timMadeIn_Timer()
   $eAng += $eIncAng
   If $eAng >= 360 Then $eAng -= 360
   
+  'If Me.Minimized Then Return
+  
   hImage = $hLogo.Copy()
   hMadeIn = $hMadeIn.Rotate(Rad($eAng))
   hImage.Draw(hMadeIn, - (hMadeIn.W - hImage.W) / 2, - (hMadeIn.H - hImage.H) / 2)
-  picMadeIn.Picture = hImage.Picture
-
+  $hDraw = hImage.Picture
+  dwgLogo.Refresh
+  
 End
 
 Public Sub picMadeIn_MouseUp()
 
   $eIncAng = - $eIncAng
+
+End
+
+Public Sub dwgLogo_Draw()
+
+  if $hDraw then Draw.Picture($hDraw, 0, 0, Draw.W, Draw.W)
 
 End

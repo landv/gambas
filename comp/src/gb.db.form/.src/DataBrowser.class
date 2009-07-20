@@ -11,7 +11,7 @@ Property Header As Boolean
 Property Orientation As Integer
 Property Adjust As Boolean
 
-Public Const _Properties As String = "*,Control=True,Adjust,Columns,Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
+Public Const _Properties As String = "*,Control=True,Adjust,Columns{Field[]},Header=True,Orientation{Align.Bottom;Left;Right;Top}=Bottom"
 
 Private $hForm As FBrowser
 
@@ -105,4 +105,10 @@ Private Sub Adjust_Write(Value As Boolean)
 
   $hForm.DataView.Adjust = Value
 
+End
+
+Public Sub _OnDatabaseChange()
+  
+  Refresh
+  
 End

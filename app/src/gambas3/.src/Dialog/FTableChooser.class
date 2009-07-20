@@ -1,0 +1,65 @@
+' Gambas class file
+
+Static Public Table As String
+
+Private $hConn As New Connection
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Table = ""
+  If lvwTable.Enabled Then Try Table = lvwTable.Current.Text
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+
+Public Sub Form_Open()
+
+  cmbConnection.List = MConnection.GetConnections()
+  Try cmbConnection.Text = Project.Config["/Connection/Default"]
+  If cmbConnection.Index < 0 Then cmbConnection.Index = 0
+  cmbConnection_Click
+  
+End
+
+Public Sub cmbConnection_Click()
+
+  Dim sName As String = cmbConnection.Text
+  Dim hConfig As Settings
+  
+  If Not sName Then Return
+  
+  hConfig = New Settings(Project.Dir &/ ".connection" &/ sName & ".connection")
+  
+  $hConn.Close
+  MConnection.InitFrom($hConn, hConfig, sName, True)
+  $hConn.Open
+  MConnection.FillListViewWithTables(lvwTable, $hConn)
+  Try lvwTable["T" & Table].Selected = True 
+  Try lvwTable["S" & Table].Selected = True 
+  Try lvwTable.Current.EnsureVisible
+  
+Catch
+
+  Balloon.Error(("Unable to open connection.") & "\n\n" & Error.Text, cmbConnection)
+  lvwTable.Enabled = False
+  
+End
+
+Public Sub lvwTable_Activate()
+
+  btnOK.Value = True
+
+End

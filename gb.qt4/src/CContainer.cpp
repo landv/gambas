@@ -24,15 +24,14 @@
 
 #define __CCONTAINER_CPP
 
-#include <qnamespace.h>
-#include <qapplication.h>
-#include <qlayout.h>
-#include <qevent.h>
-//Added by qt3to4:
+#include <QApplication>
+#include <QLayout>
+#include <QEvent>
 #include <QShowEvent>
 #include <QResizeEvent>
 #include <QChildEvent>
 #include <QFrame>
+#include <QHash>
 
 #include "gambas.h"
 #include "gb_common.h"
@@ -44,38 +43,17 @@
 
 #include "CContainer.h"
 
-// #define DEBUG_ME
+//#define DEBUG_ME
+//#define USE_CACHE 1
 
 DECLARE_EVENT(EVENT_Insert);
 //DECLARE_EVENT(EVENT_Remove);
 DECLARE_EVENT(EVENT_BeforeArrange);
 DECLARE_EVENT(EVENT_Arrange);
 
-#if DEBUG_CONTAINER
-static int _count_move, _count_resize, _count_set_geom;
-#endif
-
-static QWidget *get_next_widget(QObjectList &list, int &index)
-{
-	QObject *ob;
-	
-	for(;;)
-	{
-		if (index >= list.count())
-			return NULL;
-	
-		ob = list.at(index); // ob might be null if we are inside the QWidget destructor
-		index++;
-		
-		if (ob && ob->isWidgetType())
-		{
-			if (!((QWidget *)ob)->isHidden() && !qobject_cast<QSizeGrip *>(ob))
-				return (QWidget *)ob;
-		}
-	}
-}
-
 #if 0
+static int _count_move, _count_resize, _count_set_geom;
+
 static void move_widget(QWidget *wid, int x, int y)
 {
 	if (wid->x() != x || wid->y() != y)
@@ -110,10 +88,133 @@ static void move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 }
 #endif
 
+#if USE_CACHE
+static QHash<QWidget *, QRect *> _cache;
+static int _cache_level = 0;
+#endif
+
+static QWidget *get_next_widget(QObjectList &list, int &index)
+{
+	QObject *ob;
+	
+	for(;;)
+	{
+		if (index >= list.count())
+			return NULL;
+	
+		ob = list.at(index); // ob might be null if we are inside the QWidget destructor
+		index++;
+		
+		if (ob && ob->isWidgetType())
+		{
+			if (!((QWidget *)ob)->isHidden() && !qobject_cast<QSizeGrip *>(ob))
+				return (QWidget *)ob;
+		}
+	}
+}
+
+#if USE_CACHE
+
+static QRect *ensure_widget_geometry(QWidget *w)
+{
+	if (_cache.contains(w))
+		return _cache.value(w);
+	else
+	{
+		QRect *r = new QRect(w->geometry());
+		_cache.insert(w, r);
+		return r;
+	}
+}
+
+static QRect *get_widget_geometry(QWidget *w)
+{
+	static QRect wg;
+	
+	if (_cache.contains(w))
+		return _cache.value(w);
+	else
+	{
+		wg = w->geometry();
+		return &wg;
+	}
+}
+
+static void move_widget(void *_object, int x, int y)
+{
+	QRect *r = ensure_widget_geometry(WIDGET);
+	if (x == r->x() && y == r->y())
+		return;
+	r->setX(x);
+	r->setY(y);
+	CWIDGET_move_cached(THIS, x, y);
+}
+
+static void resize_widget(void *_object, int w, int h)
+{
+	QRect *r = ensure_widget_geometry(WIDGET);
+	if (w == r->width() && h == r->height())
+		return;
+	r->setWidth(w);
+	r->setHeight(h);
+	CWIDGET_resize_cached(THIS, w, h);
+}
+
+static void move_resize_widget(void *_object, int x, int y, int w, int h)
+{
+	QRect *r = ensure_widget_geometry(WIDGET);
+	if (x == r->x() && y == r->y() && w == r->width() && h == r->height())
+		return;
+	r->setRect(x, y, w, h);
+	CWIDGET_move_resize_cached(THIS, x, y, w, h);
+}
+
+static void get_widget_contents(QWidget *wid, int &x, int &y, int &w, int &h)
+{
+	QRect wc = wid->contentsRect();
+	QRect wg = wid->geometry();
+	QRect *g = get_widget_geometry(wid);
+	
+	x = wc.x();
+	y = wc.y();
+	w = wc.width() + g->width() - wg.width();
+	h = wc.height() + g->height() - wg.height();
+}
+
+static void flush_cache()
+{
+	QHash<QWidget *, QRect *> hash;
+	QWidget *w;
+	QRect *r;
+	
+	hash = _cache;
+	_cache.clear();
+	
+	QHashIterator<QWidget *, QRect *> it(_cache);
+	while (it.hasNext()) 
+	{
+		it.next();
+		w = it.key();
+		r = it.value();
+		w->setGeometry(*r);
+		delete r;
+		//CWIDGET_move_resize(CWidget::getReal(w), r->x(), r->y(), r->width(), r->height());
+	}
+	
+	_cache.clear();
+}
+
+
+#endif
+
 static void resize_container(void *_object, QWidget *cont, int w, int h)
 {
 	QWidget *wid = ((CWIDGET *)_object)->widget;
+	#if USE_CACHE
+	resize_widget(_object, w + wid->width() - cont->width(), h + wid->height() - cont->height());
+	#else
 	CWIDGET_resize(_object, w + wid->width() - cont->width(), h + wid->height() - cont->height());
+	#endif
 }
 
 
@@ -134,6 +235,20 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 #define CAN_ARRANGE(_object) ((_object) && ((CWIDGET *)(_object))->flag.shown && !CWIDGET_test_flag(_object, WF_DELETED))
 //(IS_WIDGET_VISIBLE(GET_CONTAINER(_object)) || IS_WIDGET_VISIBLE(GET_WIDGET(_object))))
 
+#if USE_CACHE
+
+#define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) get_widget_contents(_widget, _x, _y, _w, _h)
+#define GET_WIDGET_X(_widget) get_widget_geometry(_widget)->x()
+#define GET_WIDGET_Y(_widget) get_widget_geometry(_widget)->y()
+#define GET_WIDGET_W(_widget) get_widget_geometry(_widget)->width()
+#define GET_WIDGET_H(_widget) get_widget_geometry(_widget)->height()
+#define MOVE_WIDGET(_object, _widget, _x, _y) move_widget((_object), (_x), (_y))
+#define RESIZE_WIDGET(_object, _widget, _w, _h) resize_widget((_object), (_w), (_h))
+#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) move_resize_widget((_object), (_x), (_y), (_w), (_h))
+#define RESIZE_CONTAINER(_object, _cont, _w, _h) resize_container((_object), (_cont), (_w), (_h))
+
+#else
+
 #define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
 	_x = (_widget)->contentsRect().x(); \
 	_y = (_widget)->contentsRect().y(); \
@@ -147,6 +262,8 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 #define RESIZE_WIDGET(_object, _widget, _w, _h) CWIDGET_resize((_object), (_w), (_h))
 #define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) CWIDGET_move_resize((_object), (_x), (_y), (_w), (_h))
 #define RESIZE_CONTAINER(_object, _cont, _w, _h) resize_container((_object), (_cont), (_w), (_h))
+
+#endif
 
 #define INIT_CHECK_CHILDREN_LIST(_widget) \
 	QObjectList list = (_widget)->children(); \
@@ -177,6 +294,9 @@ static void resize_container(void *_object, QWidget *cont, int w, int h)
 
 void CCONTAINER_arrange(void *_object)
 {
+	if (GB.Is(THIS, CLASS_ScrollView))
+		CSCROLLVIEW_arrange(THIS);
+
 	#if DEBUG_CONTAINER
 	static int level = 0;
 	
@@ -185,7 +305,21 @@ void CCONTAINER_arrange(void *_object)
 	level++;
 	#endif
 
+	#if USE_CACHE
+	qDebug("CCONTAINER_arrange: %s %p", GB.GetClassName(THIS), THIS->widget.widget);
+	_cache_level++;
+	#endif
+
 	CCONTAINER_arrange_real(_object);
+	
+	#if USE_CACHE
+	_cache_level--;
+	
+	if (!_cache_level)
+	{
+		flush_cache();
+	}
+	#endif
 
 	//QWidget *cont = GET_CONTAINER(_object);
 	//if (cont->isA("MyContents"))
@@ -1058,4 +1192,5 @@ GB_DESC CUserContainerDesc[] =
 	
 	GB_END_DECLARE
 };
+
 

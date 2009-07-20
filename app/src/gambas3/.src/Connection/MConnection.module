@@ -279,3 +279,38 @@ Catch
   Return True
 
 End
+
+
+Public Sub GetConnections() As String[]
+  
+  Dim sFile As String
+  Dim aConn As New String[]
+  
+  For Each sFile In Dir(Project.Dir &/ ".connection", "*.connection")
+    aConn.Add(File.BaseName(sFile))
+  Next
+
+Finally 
+
+  Return aConn
+  
+End
+
+Public Sub FillListViewWithTables(lvwTable As ListView, hConn As Connection)
+  
+  Dim hTable As Table
+  
+  lvwTable.Clear
+  
+  'lvwTable.Add("$", ("SQL request"), Picture["img/16/sql.png"])
+  For Each hTable In hConn.Tables
+    If hTable.System Then
+      lvwTable.Add("S" & hTable.Name, hTable.Name, Picture["img/16/system-table.png"])
+    Else
+      lvwTable.Add("T" & hTable.Name, hTable.Name, Picture["img/16/table.png"])
+    Endif
+  Next
+  
+  
+  
+End

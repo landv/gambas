@@ -5,7 +5,7 @@
   Background = Color.TextBackground
   Foreground = Color.TextForeground
   Text = ("Welcome to Gambas 3")
-  Icon = Picture["img/logo/new-logo-32.png"]
+  Icon = Picture["img/logo/logo-32.png"]
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
@@ -39,7 +39,7 @@
         }
       }
       { lblMessage TextLabel
-        MoveScaled(1,11,38,4)
+        MoveScaled(1,11,38,5)
         Font = Font["Bold"]
         Foreground = Color.SelectedForeground
         AutoResize = True
@@ -55,12 +55,8 @@
         Alignment = Align.TopNormal
       }
     }
-    { Panel1 Panel
-      MoveScaled(48,2,15,16)
-      { picMadeIn PictureBox
-        MoveScaled(0,0,15,15)
-        Stretch = True
-      }
+    { dwgLogo DrawingArea
+      MoveScaled(48,1,17,14)
     }
   }
   { HBox1 HBox
@@ -87,7 +83,6 @@
       }
       { panSort HBox
         MoveScaled(1,3,25,4)
-        Indent = True
         { chkSortRecent CheckBox
           MoveScaled(2,0,21,3)
           Foreground = Color.SelectedForeground

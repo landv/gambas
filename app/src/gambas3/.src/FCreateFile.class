@@ -246,9 +246,12 @@ Private Sub CreateFile() As Boolean
       
       If chkDialog.Value Then
         sTemp &= "  Resizable = False\n"
+                 "  Arrangement = Arrangement.Vertical\n"
+                 "  Spacing = True\n"
+                 "  Margin = True\n"
         sTemp &= "{ HBox1 HBox\n"
                  "  MoveScaled(1,59,66,4)\n"
-                 "  Spacing = 8\n"
+                 "  Spacing = True\n"
                  "  { Panel1 Panel\n"
                  "    MoveScaled(4,0,4,4)\n"
                  "    'Move(24,0,24,24)\n"

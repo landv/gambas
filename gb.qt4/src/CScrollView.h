@@ -67,7 +67,7 @@ public:
 protected:
 
   //void frameChanged();
-  void resizeEvent(QResizeEvent *);
+  //void resizeEvent(QResizeEvent *);
   void showEvent(QShowEvent *);
 };
 
@@ -112,6 +112,6 @@ public slots:
   void scrolled(void);
 };
 
-void CSCROLLVIEW_arrange(void *_object, CWIDGET *child);
+void CSCROLLVIEW_arrange(void *_object);
 
 #endif
