@@ -922,7 +922,7 @@ Public Sub tvwControl_Data(Row As Integer, Column As Integer)
     Case 0
       tvwControl.Data.Text = hExportInfo.Name
       If hExportInfo.Control Then 
-        Try hPict = Project.GetPicture("control" &/ LCase(hExportInfo.Name) & ".png")
+        Try hPict = Project.GetPicture(".hidden/control" &/ LCase(hExportInfo.Name) & ".png")
         If Not hPict Then hPict = Picture["img/control/unknown.png"]
         hPict = hPict.Image.Stretch(24, 24).Picture
       Else

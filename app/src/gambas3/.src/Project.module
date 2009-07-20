@@ -2775,7 +2775,7 @@ Public Sub InstallComponent()
   For Each sClass In GetClasses(True)
     If Not IsExported(sClass) Then Continue
     sClass = LCase(File.BaseName(sClass))
-    sIcon = Project.Dir &/ "control" &/ sClass & ".png"
+    sIcon = Project.Dir &/ ".hidden/control" &/ sClass & ".png"
     If Exist(sIcon) Then 
       MakeDir(sDir)
       MakeLink(sIcon, sDir &/ sClass & ".png")
@@ -4465,6 +4465,8 @@ End
 Public Sub SetCurrentPopup(hMenu As Menu)
   
   If hMenu = $hCurrentPopup And If hMenu.Enabled Then Return
+  
+  'Debug hMenu.Name
   
   Try $hCurrentPopup.Enabled = False
   $hCurrentPopup = hMenu

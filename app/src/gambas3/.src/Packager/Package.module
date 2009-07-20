@@ -526,7 +526,7 @@ Private Function MakeDebPackage(sSys As String)
   hFile = Open sPackagePath &/ "debian/dirs" For Create
   If Project.CreateComponent Then
       Print #hFile, "usr/share/gambas"; System.Version; "/info\nusr/lib/gambas"; System.Version 
-      If Exist(Project.Dir &/ "control") Then Print #hFile, "usr/share/gambas"; System.Version; "/control/"; Shell$($sName)
+      If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "usr/share/gambas"; System.Version; "/control/"; Shell$($sName)
   Else 
       Print #hFile, "usr/bin\nusr/share/applications\nusr/share/pixmaps"  
   Endif 
@@ -537,7 +537,7 @@ Private Function MakeDebPackage(sSys As String)
   hFile = Open sPackagePath &/ "debian/install" For Create
   If Project.CreateComponent Then 
       Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/lib/gambas" & System.Version
-      If Exist(Project.Dir &/ "control") Then Print #hFile, "src/"; $sName; "/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Shell$($sName)    
+      If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "src/"; $sName; "/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Shell$($sName)    
   Else 
       Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/bin"
       Print #hFile, "src/"; $sName; "/"; sIcon; " usr/share/pixmaps"
@@ -840,7 +840,7 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "install -p .info %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".info"
     Print #hFile, "install -p .list %{buildroot}/%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".list"
 
-    If Exist(Project.Dir &/ "control") Then 
+    If Exist(Project.Dir &/ ".hidden/control") Then 
       Print #hFile, "install -d %{buildroot}/%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName)
       Print #hFile, "install -p "; "control/*.png %{buildroot}/%{_datadir}/gambas" & System.Version &/ "control" &/ Shell$($sName)
     Endif
@@ -986,7 +986,7 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".info"
     Print #hFile, "%{_datadir}/gambas"; System.Version; "/info/"; Shell$($sName); ".list"
 
-    If Exist(Project.Dir &/ "control") Then 
+    If Exist(Project.Dir &/ ".hiddencontrol") Then 
       Print #hFile, "%{_datadir}/gambas"; System.Version; "/control/"; Shell$($sName); "/*.png"
     Endif
     Print #hFile, GetExtraFiles(sSys, "&2/&3")
@@ -1175,11 +1175,11 @@ Private Sub MakeTgzPackage(sSys As String)
     Copy Project.Dir &/ ".info" To sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".info"
     Copy Project.Dir &/ ".list" To sBuildDir &/ "/usr/share/gambas" & System.Version &/ "info/" & $sName & ".list"
   
-    If Exist(Project.Dir &/ "control") Then 
+    If Exist(Project.Dir &/ ".hiddencontrol") Then 
       Try Mkdir sBuildDir &/ "/usr/share/gambas" & System.Version & "/control"
       Try Mkdir sBuildDir &/ "/usr/share/gambas" & System.Version & "/control/" & $sName
-      For Each sFile In Dir(Project.Dir &/ "control", "*.png") 
-        Copy Project.Dir &/ "control" &/ sFile To sBuildDir &/ "/usr/share/gambas" & System.Version & "/control/" & $sName &/ sFile
+      For Each sFile In Dir(Project.Dir &/ ".hidden/control", "*.png") 
+        Copy Project.Dir &/ ".hidden/control" &/ sFile To sBuildDir &/ "/usr/share/gambas" & System.Version & "/control/" & $sName &/ sFile
       Next
     Endif
   

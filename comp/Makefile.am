@@ -35,6 +35,11 @@ install-exec-local:
 	  chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.info; \
 	  $(INSTALL) .list $(DESTDIR)$(gbdatadir)/info/$$p.list; \
 	  chmod a-x $(DESTDIR)$(gbdatadir)/info/$$p.list; \
+	  if test -d .hidden/control; then \
+	    $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
+	    $(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$$p; \
+	    $(INSTALL) .hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$$p; \
+	  fi \
 	  done; true)
 
 uninstall-local:

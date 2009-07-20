@@ -15,12 +15,17 @@ install-data-hook:
 			$(INSTALL) $(COMPONENT).gambas $(DESTDIR)$(gblibdir); \
 		) \
 	fi
+	@echo;
+	@echo "Installing the $(COMPONENT) control icons if needed...";
 	@if test -d control; then \
-		echo; \
-		echo "Installing the $(COMPONENT) control icons..."; \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
 		$(INSTALL) control/*.png $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
+	fi
+	@if test -d $(COMPONENT)/.hidden/control; then \
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control; \
+		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
+		$(INSTALL) $(COMPONENT)/.hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
 	fi
 	@echo
 	@echo "Creating the information files for $(COMPONENT) component..."

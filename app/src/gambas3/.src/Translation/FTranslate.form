@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(7,15,141,75)
+  MoveScaled(7,15,120,80)
   Text = ("Project translation")
   Icon = Picture["icon:/small/language"]
   Persistent = True
@@ -27,33 +27,18 @@
       Text = ("Project translation")
     }
   }
-  { HBox2 HBox
-    MoveScaled(1,8,116,60)
+  { tabTranslate TabStrip
+    MoveScaled(1,8,115,64)
     Expand = True
-    { panLang SidePanel
-      MoveScaled(1,2,25,56)
-      Visible = False
-      Arrangement = Arrange.Vertical
-      Orientation = Align.Left
-      Hidden = True
-      { cvwLang ColumnView
-        MoveScaled(1,4,19,25)
-        Mouse = Mouse.Arrow
-        Expand = True
-        Sorted = True
-        Header = False
-        Resizable = True
-        ScrollBar = Scroll.Vertical
-      }
-      { chkStat CheckBox
-        MoveScaled(3,49,22,4)
-        Text = ("Show statistics")
-      }
-    }
+    Arrangement = Arrange.Fill
+    Margin = True
+    Count = 2
+    Index = 0
+    Text = ("Translation")
     { VSplit1 VSplit
-      MoveScaled(28,3,87,55)
+      MoveScaled(2,1,87,55)
       Expand = True
-      { VBox1 VBox
+      { panTranslate VBox
         MoveScaled(1,1,86,28)
         Expand = True
         Spacing = True
@@ -65,13 +50,6 @@
             Text = ("")
             ReadOnly = True
             Sorted = True
-          }
-          { btnShowStat ToolButton
-            MoveScaled(25,0,4,4)
-            ToolTip = ("Toggle language list")
-            Text = ("")
-            Picture = Picture["icon:/small/view-detail"]
-            Toggle = True
           }
           { cbxFileChoice ComboBox
             MoveScaled(32,0,31,4)
@@ -176,9 +154,22 @@
         }
       }
     }
+    Index = 1
+    Text = ("Statistics")
+    { cvwLang ColumnView
+      MoveScaled(4,3,19,25)
+      Mouse = Mouse.Arrow
+      Expand = True
+      Mode = Select.None
+      Sorted = True
+      Header = False
+      Resizable = True
+      ScrollBar = Scroll.Vertical
+    }
+    Index = 0
   }
   { VBox3 VBox
-    MoveScaled(0,69,118,5)
+    MoveScaled(1,73,118,5)
     { Panel3 Panel
       MoveScaled(55,0,4,1)
     }

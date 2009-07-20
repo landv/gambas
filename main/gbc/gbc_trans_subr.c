@@ -84,6 +84,11 @@ static bool trans_stream(int default_stream)
       if (PATTERN_is_newline(*JOB->current))
         THROW(E_SYNTAX);
     }
+		else
+		{
+      if (!PATTERN_is_newline(*JOB->current))
+        THROW(E_SYNTAX);
+		}
 
     return FALSE;
   }
@@ -98,7 +103,7 @@ static bool trans_stream(int default_stream)
 }
 
 
-static void trans_print_debug(void)
+static void trans_print_debug()
 {
   int nparam = 1;
   bool semicolon = FALSE;
@@ -149,7 +154,7 @@ static void trans_print_debug(void)
 
 void TRANS_print(void)
 {
-  trans_stream(TS_STDOUT);
+	trans_stream(TS_STDOUT);
   trans_print_debug();
 }
 

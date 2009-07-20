@@ -833,6 +833,7 @@ Public Sub tvwProject_Select()
   If tvwProject.Current.Children Then tvwProject.Current.Expanded = True
 
   GetCurrent()
+  RefreshMenu
 
 End
 
@@ -1114,8 +1115,8 @@ Public Sub Action_Activate(Key As String) As Boolean
   
 End
 
-Public Sub tvwProject_GotFocus()
-
+Private Sub RefreshMenu()
+  
   GetCurrent
 
   If $sKey = Project.KEY_CONNECTION Or If Project.IsConnectionPath($sKey) Then
@@ -1125,6 +1126,13 @@ Public Sub tvwProject_GotFocus()
     Project.SetCurrentPopup(mnuPopup)
     mnuPopup_Show
   Endif
+  
+End
+
+
+Public Sub tvwProject_GotFocus()
+
+  RefreshMenu
   
 End
 

@@ -50,12 +50,6 @@ static int check_menu(void *_object)
   return THIS->deleted || ACTION == 0;
 }
 
-static void set_menu_visible(void *_object, bool v)
-{
-	THIS->visible = v;
-	ACTION->setVisible(v);
-}
-
 static void refresh_menubar(CMENU *menu)
 {
 	int i;
@@ -165,13 +159,13 @@ static void update_accel(CMENU *_object)
 	
 	if (THIS->accel && !THIS->accel->isEmpty() && is_fully_enabled(THIS))
 	{
-		//if (ACTION->text() == "&Cut!")
-		//	qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().utf8());
+		//if (!qstrcmp(THIS->widget.name, "mnuCopy"))
+		//	qDebug("update_accel: %s: %s", THIS->widget.name, (const char *)THIS->accel->toString().toUtf8());
 		ACTION->setShortcut(*(THIS->accel));
 	}
 	else
 	{
-		//if (ACTION->text() == "&Cut!")
+		//if (!qstrcmp(THIS->widget.name, "mnuCopy"))
 		//	qDebug("update_accel: %s: NULL", THIS->widget.name);
 		ACTION->setShortcut(QKeySequence());
 	}
@@ -205,6 +199,13 @@ static void update_check(CMENU *_object)
 		ACTION->setCheckable(false);
 		ACTION->setChecked(false);
 	}
+}
+
+static void set_menu_visible(void *_object, bool v)
+{
+	THIS->visible = v;
+	ACTION->setVisible(v);
+	//update_accel_recursive(THIS);
 }
 
 #if 0

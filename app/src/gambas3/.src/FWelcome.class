@@ -396,7 +396,11 @@ Public Sub timMadeIn_Timer()
   
   'If Me.Minimized Then Return
   
-  hImage = $hLogo.Copy()
+  If $eIncAng < 0 Then
+    hImage = $hLogo.Flip()
+  Else
+    hImage = $hLogo.Copy()
+  Endif
   hMadeIn = $hMadeIn.Rotate(Rad($eAng))
   hImage.Draw(hMadeIn, - (hMadeIn.W - hImage.W) / 2, - (hMadeIn.H - hImage.H) / 2)
   $hDraw = hImage.Picture
@@ -404,7 +408,7 @@ Public Sub timMadeIn_Timer()
   
 End
 
-Public Sub picMadeIn_MouseUp()
+Public Sub dwgLogo_MouseUp()
 
   $eIncAng = - $eIncAng
 
@@ -412,6 +416,18 @@ End
 
 Public Sub dwgLogo_Draw()
 
-  if $hDraw then Draw.Picture($hDraw, 0, 0, Draw.W, Draw.W)
+  If $hDraw Then Draw.Picture($hDraw, 0, 0, Draw.W, Draw.W)
+
+End
+
+Public Sub lblWebSite_Enter()
+
+  lblWebSite.Foreground = Color.LightBackground
+
+End
+
+Public Sub lblWebSite_Leave()
+
+  lblWebSite.Foreground = Color.Default
 
 End
