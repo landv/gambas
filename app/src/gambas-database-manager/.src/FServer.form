@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(43.6667,26.1667,43,31)
+  MoveScaled(43.5714,26.1429,43,32)
   Text = ("New connection")
   Icon = Picture["img/16/host.png"]
   Resizable = False
@@ -49,7 +49,7 @@
     }
   }
   { btnOK Button
-    MoveScaled(17,27,12,4)
+    MoveScaled(13,27,14,4)
     Text = ("OK")
     Default = True
   }
@@ -59,7 +59,7 @@
     List = [("postgresql"), ("mysql"), ("sqlite"), ("sqlite2"), ("sqlite3"), ("odbc")]
   }
   { btnCancel Button
-    MoveScaled(30,27,12,4)
+    MoveScaled(28,27,14,4)
     Text = ("Cancel")
     Cancel = True
   }

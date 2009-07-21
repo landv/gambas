@@ -32,8 +32,6 @@ public:
 	int      visibleHeight();
 	int clientWidth();
 	int clientHeight();
-	int      scrollBar();
-	void      setScrollBar(int vl);
 	bool			headers() { return tree->headers(); }
 	void			setHeaders(bool vl) { tree->setHeaders(vl); }
 	

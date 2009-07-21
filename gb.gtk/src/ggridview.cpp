@@ -216,8 +216,9 @@ static void tblateral_select(gGridView *data, int bcurrent, bool move)
 		case SELECT_MULTIPLE:
 			if (!move)
 			{
-				data->sel_row = bcurrent;
 				data->setCursor(bcurrent, col);
+				data->getCursor(&bcurrent, &col);
+				data->sel_row = bcurrent;
 				if (data->sel_current != bcurrent)
 				{
 					data->sel_current = bcurrent;
@@ -300,15 +301,17 @@ static gboolean tblateral_press(GtkWidget *wid,GdkEventButton *e,gGridView *data
 	bcurrent = data->findRow(pos);
 	if (bcurrent < 0) return false;
 
-	tblateral_select(data, bcurrent, false);
-
 	if (!is_lateral)
 	{
 		int row = bcurrent;
 		int col = data->render->findVisibleColumn((int)e->x);
 	
 		data->setCursor(row, col);
+		data->getCursor(&row, &col);
+		bcurrent = row;
 	}
+
+	tblateral_select(data, bcurrent, false);
 
 	return false;
 }
@@ -329,12 +332,11 @@ static gboolean lateral_do_move(gGridView *data)
 
 static gboolean contents_do_move(gGridView *data)
 {
-	int index, mode, pos;
+	int index, pos;
 	
 	pos = data->mouse_pos + data->scrollY();
 	
 	index = data->findRow(pos);
-	mode = data->selectionMode();
 	
 	if (index >= 0)
 		tblateral_select(data, index, true);
@@ -399,6 +401,7 @@ static gboolean tblateral_release(GtkWidget *wid,GdkEventButton *e,gGridView *da
 		int col = data->render->findVisibleColumn((int)e->x);
 	
 		data->setCursor(row, col);
+		data->getCursor(&row, &col);
 		if (data->onClick)
 			data->onClick(data, row, col);
 	}
@@ -636,6 +639,7 @@ static gboolean tbheader_release(GtkWidget *wid,GdkEventButton *e,gGridView *dat
 
 	data->getCursor(&bc,NULL);
 	data->setCursor(bc,bcurrent);
+	data->getCursor(&bc,&bcurrent);
 
 	if (bfooter)
 		{ if (data->onFooterClick) data->onFooterClick(data,bcurrent); }
@@ -1220,6 +1224,8 @@ void  gGridView::getCursor(int *row,int *col)
 
 void  gGridView::setCursor(int row,int col)
 {
+	int rowspan, colspan;
+	
 	if (row < 0 || row >= rowCount())
 		row = -1;
 	
@@ -1228,6 +1234,12 @@ void  gGridView::setCursor(int row,int col)
 	
 	if (row == cursor_row && col == cursor_col)
 		return;
+	
+	getItemSpan(row, col, &rowspan, &colspan);
+	if (rowspan < 0)
+		row += rowspan;
+	if (colspan < 0)
+		col += colspan;
 	
 	cursor_row = row;
 	cursor_col = col;
@@ -1954,4 +1966,18 @@ void gGridView::setAutoResize(bool v)
 {
 	_autoresize = v;
 	updateLastColumn();
+}
+
+void gGridView::setItemSpan(int row, int col, int rowspan, int colspan)
+{
+	if (rowspan < 0 || colspan < 0 || rowspan >= 32767 || colspan >= 32767)
+		return;
+	
+	if (rowspan > 0 && colspan < 0)
+		colspan = 0;
+	if (colspan > 0 && rowspan < 0)
+		rowspan = 0;
+	
+	render->setSpan(col, row, colspan, rowspan);
+	refresh();
 }

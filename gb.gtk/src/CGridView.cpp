@@ -372,21 +372,61 @@ END_PROPERTY*/
 
 BEGIN_METHOD_VOID(CGRIDVIEWITEM_clear)
 
-	WIDGET->clearItem(THIS->row,THIS->col);
+	WIDGET->clearItem(THIS->row, THIS->col);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CGRIDVIEWITEM_refresh)
 
-	WIDGET->queryUpdate(THIS->row,THIS->col);
+	WIDGET->queryUpdate(THIS->row, THIS->col);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(CGRIDVIEWITEM_ensure_visible)
 
-	WIDGET->ensureVisible(THIS->row,THIS->col);
+	WIDGET->ensureVisible(THIS->row, THIS->col);
 
 END_METHOD
+
+BEGIN_PROPERTY(CGRIDVIEWITEM_row_span)
+
+	int rowspan, colspan;
+	
+	WIDGET->getItemSpan(THIS->row, THIS->col, &rowspan, &colspan);
+
+	if (READ_PROPERTY)
+	{
+		if (rowspan >= 0)
+			GB.ReturnInteger(rowspan + 1);
+		else
+			GB.ReturnInteger(rowspan);
+	}
+	else
+	{
+		WIDGET->setItemSpan(THIS->row, THIS->col, VPROP(GB_INTEGER) - 1, colspan);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CGRIDVIEWITEM_column_span)
+
+	int rowspan, colspan;
+	
+	WIDGET->getItemSpan(THIS->row, THIS->col, &rowspan, &colspan);
+
+	if (READ_PROPERTY)
+	{
+		if (colspan >= 0)
+			GB.ReturnInteger(colspan + 1);
+		else
+			GB.ReturnInteger(colspan);
+	}
+	else
+	{
+		WIDGET->setItemSpan(THIS->row, THIS->col, rowspan, VPROP(GB_INTEGER) - 1);
+	}
+
+END_PROPERTY
 
 /*************************************************
 
@@ -938,7 +978,10 @@ GB_DESC CGridViewItemDesc[] =
   GB_PROPERTY("Font", "Font", CGRIDVIEWITEM_font),
   //GB_PROPERTY("Selected","b",CGRIDVIEWITEM_selected),
 
-  GB_METHOD("Clear", 0, CGRIDVIEWITEM_clear, 0),
+  GB_PROPERTY("RowSpan", "i", CGRIDVIEWITEM_row_span),
+  GB_PROPERTY("ColumnSpan", "i", CGRIDVIEWITEM_column_span),
+
+	GB_METHOD("Clear", 0, CGRIDVIEWITEM_clear, 0),
   GB_METHOD("Refresh",0,CGRIDVIEWITEM_refresh,0),
   GB_METHOD("EnsureVisible", 0, CGRIDVIEWITEM_ensure_visible, 0),
   GB_END_DECLARE

@@ -82,6 +82,10 @@ MyTableData::~MyTableData()
 
 /** MyTableItem **************************************************************/
 
+#define GET_ROW_SPAN(_span) ((int)(short)(((int)_span) & 0xFFFF))
+#define GET_COL_SPAN(_span) ((int)(short)((((int)_span) >> 16) & 0xFFFF))
+#define MAKE_SPAN(_rowspan, _colspan) (((uint)(unsigned short)(_rowspan)) | (((uint)(unsigned short)(_colspan)) << 16))
+
 MyTableItem::MyTableItem(Q3Table *table, CGRIDVIEW *view)
 : Q3TableItem(table, Q3TableItem::Never, 0)
 {
@@ -209,8 +213,9 @@ void MyTableItem::paint( QPainter *p, const QColorGroup &cg, const QRect &cr, bo
 	
 	/*if (((MyTable *)table())->noSelection())
 		selected = false;
-	else*/ if (row() == table()->currentRow() && col() == table()->currentColumn())
-		selected = ((MyTable *)table())->isRowReallySelected(row());
+	else*/ 
+	/*if (row() == table()->currentRow() && col() == table()->currentColumn())
+		selected = ((MyTable *)table())->isRowReallySelected(row());*/
 	
 	p->fillRect(x, y, w, h,
 		selected ?
@@ -316,6 +321,106 @@ QSize MyTableItem::sizeHint() const
 	return s;
 }
 
+void MyTableItem::getSpan(int row, int col, int *rowspan, int *colspan)
+{
+	int span;
+	
+	*colspan = 0;
+	*rowspan = 0;
+
+	if ((col < 0) || (col >= table()->numCols())) return;
+	if ((row < 0) || (row >= table()->numRows())) return;
+
+	span = _span.value(getKey(row, col), 0);
+	if (!span)
+		return;
+
+	*colspan = GET_COL_SPAN(span);
+	*rowspan = GET_ROW_SPAN(span);
+}
+
+void MyTableItem::setSpan(int row, int col, int rowspan, int colspan)
+{
+	int i, j, key;
+	int oldcs, oldrs;
+	int span;
+
+	if ((col < 0) || (col >= table()->numCols())) return;
+	if ((row < 0) || (row >= table()->numRows())) return;
+
+	if (rowspan < -32768 || rowspan > 32767)
+		return;
+	if (colspan < -32768 || colspan > 32767)
+		return;
+	
+	if (rowspan > 0 && colspan < 0)
+		colspan = 0;
+	if (colspan > 0 && rowspan < 0)
+		rowspan = 0;
+
+	key = getKey(row, col);
+	span = _span.value(key, 0);
+	
+	oldcs = GET_COL_SPAN(span);
+	oldrs = GET_ROW_SPAN(span);
+	if ((oldcs < 0 || oldrs < 0) && (colspan != 0 || rowspan != 0))
+		return;
+	
+	_span.remove(key);
+	
+	if (oldcs > 0 || oldrs > 0)
+	{
+		i = 1; j = 0;
+		for(;;)
+		{
+			if (i > oldcs)
+			{
+				i = 0;
+				j++;
+				if (j > oldrs)
+					break;
+			}
+			setSpan(col + i, row + j, 0, 0);
+			i++;
+		}
+	}
+
+	if (rowspan == 0 && colspan == 0)
+		return;
+	
+	_span.insert(key, MAKE_SPAN(rowspan, colspan));
+	
+	if (rowspan >= 0 && colspan >= 0)
+	{
+		i = 1; j = 0;
+		for(;;)
+		{
+			if (i > colspan)
+			{
+				i = 0;
+				j++;
+				if (j > rowspan)
+					break;
+			}
+			setSpan(row + j, col + i, -j, -i);
+			i++;
+		}
+	}
+}
+
+void MyTableItem::move(int srow, int scol, int drow, int dcol)
+{
+	MyTableData *data;
+	int skey = getKey(srow, scol);
+	int dkey = getKey(drow, dcol);
+	
+	_dict.remove(dkey);
+	
+	data = _dict.take(skey);
+	if (data)
+		_dict.insert(dkey, data);
+}
+
 /** MyTable ******************************************************************/
 
 MyTable::MyTable(QWidget *parent, CGRIDVIEW *view) :
@@ -333,12 +438,14 @@ Q3Table(0, 0, parent)
 	_updateLastColumn = false;
 	_enableUpdates = false;
 	_min_row = -1;
+	_show_grid = true;
 	
 	setSelectionMode(NoSelection);
 	setFocusStyle(FollowStyle);
 	verticalHeader()->setMovingEnabled(false);
 	horizontalHeader()->setMovingEnabled(false);
 	setDragEnabled(false);
+	setShowGrid(false);
 	updateHeaders();
 }
 
@@ -349,13 +456,13 @@ MyTable::~MyTable()
 
 void MyTable::paintFocus( QPainter *p, const QRect &r )
 {
-	//QTable::paintFocus(p, r);
+	//Q3Table::paintFocus(p, r);
 }
 
 void MyTable::paintCell(QPainter *p, int row, int col, const QRect &cr, bool selected, const QColorGroup &cg)
 {
 	Q3Table::paintCell(p, row, col, cr, selected, cg);
-	if (showGrid())
+	if (_show_grid)
 	{
     QPalette pal = cg;
     int w = cr.width();
@@ -363,8 +470,6 @@ void MyTable::paintCell(QPainter *p, int row, int col, const QRect &cr, bool sel
     int x2 = w - 1;
     int y2 = h - 1;
 		QPen pen(p->pen());
-		//int gridColor =        style()->styleHint(QStyle::SH_Table_GridLineColor, 0, this);
-		//if (gridColor != -1) {
 		p->setPen(pal.mid().color());
 		p->drawLine(x2, 0, x2, y2);
 		p->drawLine(0, y2, x2, y2);
@@ -372,12 +477,119 @@ void MyTable::paintCell(QPainter *p, int row, int col, const QRect &cr, bool sel
 	}
 }
 
-
-/*QSize MyTable::tableSize() const
+void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 {
-	return QSize( columnPos( numCols() - 1 ) + columnWidth( numCols() - 1 ),
-		rowPos( numRows() - 1 ) + rowHeight( numRows() - 1 ) );
-}*/
+	int colspan, rowspan, rs, cs;
+	int colfirst = columnAt(cx);
+	int collast = columnAt(cx + cw);
+	int rowfirst = rowAt(cy);
+	int rowlast = rowAt(cy + ch);
+
+	if (rowfirst == -1 || colfirst == -1) 
+	{
+		paintEmptyArea(p, cx, cy, cw, ch);
+		return;
+	}
+
+	/*drawActiveSelection = hasFocus() || viewport()->hasFocus() || d->inMenuMode
+											|| is_child_of(qApp->focusWidget(), viewport())
+											|| !style()->styleHint(QStyle::SH_ItemView_ChangeHighlightOnFocus, 0, this);*/
+	if (rowlast == -1)
+			rowlast = numRows() - 1;
+	if (collast == -1)
+			collast = numCols() - 1;
+
+	// Go through the rows
+	for (int r = rowfirst; r <= rowlast; ++r) {
+		// get row position and height
+		int rowp = rowPos(r);
+		int rowh = rowHeight(r);
+
+		// Go through the columns in row r
+		// if we know from where to where, go through [colfirst, collast],
+		// else go through all of them
+		for (int c = colfirst; c <= collast; ++c) 
+		{
+			// get position and width of column c
+			int colp, colw;
+			colp = columnPos(c);
+			colw = columnWidth(c);
+			int oldrp = rowp;
+			int oldrh = rowh;
+
+			MyTableItem *itm = (MyTableItem *)item(r, c);
+			itm->getSpan(r, c, &rowspan, &colspan);
+			if (rowspan < 0 || colspan < 0)
+			{
+				rs = r + rowspan;
+				cs = c + colspan;
+				updateCell(rs, cs);
+				continue;
+				/*itm->getSpan(rs, cs, &rowspan, &colspan);
+				if (rowspan < 0 && colspan < 0)
+				{
+					rs = r;
+					cs = c;
+					rowspan = 0;
+					colspan = 0;
+				}
+				else
+				{
+					rowp = rowPos(rs);
+					colp = columnPos(cs);
+				}*/
+			}
+			else
+			{
+				rs = r;
+				cs = c;
+			}
+			
+			if (rowspan > 0 || colspan > 0)
+			{
+				rowh = 0;
+				int i;
+				for (i = 0; i <= rowspan; ++i)
+						rowh += rowHeight(i + rs);
+				colw = 0;
+				for (i = 0; i <= colspan; ++i)
+					colw += columnWidth(i + cs);
+			}
+
+			// Translate painter and draw the cell
+			p->translate(colp, rowp);
+			//bool selected = isSelected(rs, cs);
+			/*if (focusStl != FollowStyle && selected && !currentInSelection &&
+						r == curRow && c == curCol )
+					selected = false;*/
+			paintCell(p, rs, cs, QRect(colp, rowp, colw, rowh), isRowReallySelected(rs), colorGroup());
+			p->translate(-colp, -rowp);
+
+			rowp = oldrp;
+			rowh = oldrh;
+
+			/*QWidget *w = cellWidget(r, c);
+			QRect cg(cellGeometry(r, c));
+			if (w && w->geometry() != QRect(contentsToViewport(cg.topLeft()), cg.size() - QSize(1, 1))) {
+					moveChild(w, colp, rowp);
+					w->resize(cg.size() - QSize(1, 1));
+			}*/
+		}
+	}
+	
+	//d->lastVisCol = collast;
+	//d->lastVisRow = rowlast;
+
+	// draw indication of current cell
+	/*QRect focusRect = cellGeometry(currentRow(), currentColumn());
+	p->translate(focusRect.x(), focusRect.y());
+	paintFocus(p, focusRect);
+	p->translate(-focusRect.x(), -focusRect.y());*/
+
+	// Paint empty rects
+	paintEmptyArea(p, cx, cy, cw, ch);
+}
+
 
 void MyTable::enableUpdates()
 {
@@ -550,11 +762,11 @@ void MyTable::updateRow(int row)
 {
 	if (row < 0 || row >= numRows() || numCols() == 0)
 		return;
-
+	
 	QRect cg = cellGeometry(row, 0);
 
 	QRect r(contentsToViewport( QPoint( contentsX(), cg.y() - 2 ) ),
-		QSize( contentsWidth(), cg.height() + 4 ) );
+		QSize( contentsWidth(), cg.height()) );
 
 	QApplication::postEvent(viewport(), new QPaintEvent(r));
 }
@@ -577,13 +789,15 @@ void MyTable::updateColumn(int col)
 	QRect cg = cellGeometry(0, col);
 
 	QRect r(contentsToViewport( QPoint( cg.x() - 2, contentsY() ) ),
-		QSize( cg.width() + 4, contentsHeight() ) );
+		QSize( cg.width(), contentsHeight() ) );
 
 	QApplication::postEvent(viewport(), new QPaintEvent(r));
 }
 
 void MyTable::setCurrentCell(int row, int col)
 {
+	int rowspan, colspan;
+	
 	_no_row = row < 0 || row >= numRows();
 	_no_col = col < 0 || col >= numCols();
 	
@@ -593,6 +807,16 @@ void MyTable::setCurrentCell(int row, int col)
 		return;
 	}
 	
+	if (selectionMode() != MultiRow)
+	{
+		_item->getSpan(row, col, &rowspan, &colspan);
+	
+		if (rowspan < 0)
+			row += rowspan;
+		if (colspan < 0)
+			col += colspan;
+	}
+
 	Q3Table::setCurrentCell(row, col);
 }
 
@@ -761,18 +985,32 @@ void MyTable::columnWidthChanged(int col)
 	updateLastColumnLater();
 }
 
-void MyTableItem::move(int srow, int scol, int drow, int dcol)
+QRect MyTable::cellGeometry(int row, int col) const
 {
-	MyTableData *data;
-	int skey = getKey(srow, scol);
-	int dkey = getKey(drow, dcol);
+	QRect r;
+	int rowspan, colspan, i;
 	
-	_dict.remove(dkey);
+	_item->getSpan(row, col, &rowspan, &colspan);
+	r = Q3Table::cellGeometry(row, col);
 	
-	data = _dict.take(skey);
-	if (data)
-		_dict.insert(dkey, data);
+	if (rowspan == 0 && colspan == 0)
+		return r;
+	
+	if (rowspan <= 0 && colspan <= 0)
+		return cellGeometry(row + rowspan, col + colspan);
+	
+	for (i = 1; i <= rowspan; i++)
+		r.setHeight(r.height() + rowHeight(row + i));
+	for (i = 1; i <= colspan; i++)
+		r.setWidth(r.width() + columnWidth(col + i));
+	
+	return r;
 }
+
+/*QRect MyTable::cellRect(int row, int col)
+{
+}*/
+
 
 
 
@@ -917,11 +1155,6 @@ static void padding_property(void *_object, void *_param, bool create)
 	}
 }
 
-void MyTable::drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph)
-{
-	if (isVisible())
-		Q3Table::drawContents(p, clipx, clipy, clipw, cliph);
-}
 
 /***************************************************************************
 
@@ -1115,6 +1348,46 @@ BEGIN_METHOD_VOID(CGRIDITEM_clear)
 	WIDGET->updateCell(THIS->row, THIS->col);
 
 END_METHOD
+
+BEGIN_PROPERTY(CGRIDITEM_row_span)
+
+	int rowspan, colspan;
+	
+	WIDGET->item()->getSpan(THIS->row, THIS->col, &rowspan, &colspan);
+
+	if (READ_PROPERTY)
+	{
+		if (rowspan >= 0)
+			GB.ReturnInteger(rowspan + 1);
+		else
+			GB.ReturnInteger(rowspan);
+	}
+	else
+	{
+		WIDGET->item()->setSpan(THIS->row, THIS->col, VPROP(GB_INTEGER) - 1, colspan);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CGRIDITEM_column_span)
+
+	int rowspan, colspan;
+	
+	WIDGET->item()->getSpan(THIS->row, THIS->col, &rowspan, &colspan);
+
+	if (READ_PROPERTY)
+	{
+		if (colspan >= 0)
+			GB.ReturnInteger(colspan + 1);
+		else
+			GB.ReturnInteger(colspan);
+	}
+	else
+	{
+		WIDGET->item()->setSpan(THIS->row, THIS->col, rowspan, VPROP(GB_INTEGER) - 1);
+	}
+
+END_PROPERTY
 
 /***************************************************************************
 
@@ -1570,9 +1843,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CGRIDVIEW_grid)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->showGrid());
+		GB.ReturnBoolean(WIDGET->hasGrid());
 	else
-		WIDGET->setShowGrid(VPROP(GB_BOOLEAN));
+		WIDGET->setGrid(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -1845,6 +2118,9 @@ GB_DESC CGridItemDesc[] =
 	GB_PROPERTY_READ("W", "i", CGRIDITEM_width),
 	GB_PROPERTY_READ("H", "i", CGRIDITEM_height),
 
+  GB_PROPERTY("RowSpan", "i", CGRIDITEM_row_span),
+  GB_PROPERTY("ColumnSpan", "i", CGRIDITEM_column_span),
+
 	GB_METHOD("Clear", NULL, CGRIDITEM_clear, NULL),
 	GB_METHOD("EnsureVisible", NULL, CGRIDITEM_ensure_visible, NULL),
 	GB_METHOD("Refresh", NULL, CGRIDITEM_refresh, NULL),
@@ -2063,7 +2339,11 @@ void CGridView::selected(void)
 	if (WIDGET->selectionMode() == Q3Table::SingleRow)
 		GB.Raise(THIS, EVENT_Select, 0);
 	else
+	{
+		//QRect r(WIDGET->contentsToViewport(QPoint(WIDGET->contentsX(), WIDGET->contentsY())), QSize(WIDGET->contentsWidth(), WIDGET->contentsHeight()));
+		WIDGET->viewport()->update();
 		GB.RaiseLater(THIS, EVENT_Select);
+	}
 }
 
 void CGridView::clicked(void)

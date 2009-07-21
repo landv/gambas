@@ -167,6 +167,7 @@ void gContainer::initialize()
 	arrangement.locked=false;
 	arrangement.user=false;
 	arrangement.margin = false;
+	arrangement.indent = 0;
 }
 
 gContainer::gContainer() 

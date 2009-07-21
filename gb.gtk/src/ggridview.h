@@ -94,6 +94,9 @@ public:
 	void setItemPicture(int row, int col, gPicture *vl);
 	void setItemFont(int row, int col, gFont *vl);
 	void    setItemSelected(int row,int col,bool vl);
+	
+	void getItemSpan(int row, int col, int *rowspan, int *colspan) { render->getSpan(col, row, colspan, rowspan); }
+	void setItemSpan(int row, int col, int rowspan, int colspan);
 
 	virtual void setBackground(gColor color = COLOR_DEFAULT);
 	virtual void setForeground(gColor color = COLOR_DEFAULT);

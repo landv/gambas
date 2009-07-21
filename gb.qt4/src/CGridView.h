@@ -101,6 +101,9 @@ public:
   void clearAll() { invalidate(); _dict.clear(); }
   
   void move(int srow, int scol, int drow, int dcol);
+	
+	void setSpan(int row, int col, int rowspan, int colspan);
+	void getSpan(int row, int col, int *rowspan, int *colspan);
   
 private:
 
@@ -109,6 +112,7 @@ private:
   CGRIDVIEW *_view;
 	MyTableData _default;
   Q3IntDict<MyTableData> _dict;
+	QHash<int, int> _span;
 	MyTableData *_data;
 };
 
@@ -163,6 +167,12 @@ public:
 
 	bool isAutoResize() const { return _autoresize; }
 	void setAutoResize(bool v) { _autoresize = v; updateLastColumn(); }
+	
+	bool hasGrid() const { return _show_grid; }
+	void setGrid(bool v) { _show_grid = v; update(); }
+
+	virtual QRect cellGeometry(int row, int col) const;
+	//virtual QRect cellRect(int row, int col) const
 
 public slots:
 
@@ -179,10 +189,10 @@ protected:
 
   virtual void changeEvent(QEvent *e);
   virtual void resizeEvent(QResizeEvent *e);
+  virtual void drawContents(QPainter *p, int cx, int cy, int cw, int ch);
 
 private:
 
-	void drawContents(QPainter *p, int clipx, int clipy, int clipw, int cliph);
   void updateHeaders();
 	void updateLastColumnLater();
   int _header;
@@ -197,6 +207,7 @@ private:
 	bool _updateLastColumn;
 	bool _enableUpdates;
 	int _min_row;
+	bool _show_grid;
 };
 
 class CGridView : public QObject

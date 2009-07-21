@@ -34,6 +34,13 @@ public:
 	~gTableData();
 };
 
+class gTableSpan
+{
+	public:
+		char rowspan;
+		char colspan;
+};
+
 
 class gTable
 {
@@ -47,6 +54,7 @@ class gTable
 protected:
 	GHashTable *data;
 	GHashTable *seldata;
+	GHashTable *spanHash;
 
 public:
 	gTable();
@@ -90,6 +98,9 @@ public:
 	
 	bool          getFieldSelected (int col,int row);
 	void          setFieldSelected (int col,int row,bool value);
+	
+	void setSpan(int col, int row, int colspan, int rowspan);
+	void getSpan(int col, int row, int *colspan, int *rowspan);
   
   void moveCell(int srow, int scol, int drow, int dcol);
 	

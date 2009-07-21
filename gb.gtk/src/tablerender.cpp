@@ -6,6 +6,10 @@
 #include "ggridview.h"
 #include "tablerender.h"
 
+#define GET_ROW_SPAN(_span) ((int)(short)(((int)_span) & 0xFFFF))
+#define GET_COL_SPAN(_span) ((int)(short)((((int)_span) >> 16) & 0xFFFF))
+#define MAKE_SPAN(_rowspan, _colspan) ((gpointer)(((uint)(unsigned short)(_rowspan)) | (((uint)(unsigned short)(_colspan)) << 16)))
+
 //***********************************
 // gTableData
 //***********************************
@@ -122,16 +126,16 @@ gTable::gTable()
 	columns=0;
 	rows=0;
 	doNotInvalidate = false;
-	seldata=g_hash_table_new_full((GHashFunc)g_int_hash,(GEqualFunc)gTable_equal,
-                         (GDestroyNotify)gTable_ekey,NULL);
-	data=g_hash_table_new_full((GHashFunc)g_int_hash,(GEqualFunc)gTable_equal,
-                         (GDestroyNotify)gTable_ekey,(GDestroyNotify)gTable_edata);
+	seldata = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, NULL);
+	spanHash = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, NULL);
+	data = g_hash_table_new_full((GHashFunc)g_int_hash, (GEqualFunc)gTable_equal, (GDestroyNotify)gTable_ekey, (GDestroyNotify)gTable_edata);
 }
 
 gTable::~gTable()
 {
 	g_hash_table_destroy(data);
 	g_hash_table_destroy(seldata);
+	g_hash_table_destroy(spanHash);
 	g_free(rowsize);
 	g_free(rowpos);
 	g_free(colsize);
@@ -189,8 +193,9 @@ void gTable::setRowCount(int number)
 			rowpos = g_renew(int, rowpos, number);
 		}
 		
-		g_hash_table_foreach_remove (data,(GHRFunc)gTable_remove_row,(gpointer)number);
-		g_hash_table_foreach_remove (seldata,(GHRFunc)gTable_remove_row,(gpointer)number);
+		g_hash_table_foreach_remove(data, (GHRFunc)gTable_remove_row, (gpointer)number);
+		g_hash_table_foreach_remove(seldata, (GHRFunc)gTable_remove_row, (gpointer)number);
+		g_hash_table_foreach_remove(spanHash, (GHRFunc)gTable_remove_row, (gpointer)number);
 	}
 	
 	rows = number;
@@ -237,8 +242,9 @@ void gTable::setColumnCount(int number)
 			colpos = g_renew(int, colpos, number);
 		}
 
-		g_hash_table_foreach_remove (data,(GHRFunc)gTable_remove_col,(gpointer)number);
-		g_hash_table_foreach_remove (seldata,(GHRFunc)gTable_remove_col,(gpointer)number);
+		g_hash_table_foreach_remove(data, (GHRFunc)gTable_remove_col, (gpointer)number);
+		g_hash_table_foreach_remove(seldata, (GHRFunc)gTable_remove_col, (gpointer)number);
+		g_hash_table_foreach_remove(spanHash, (GHRFunc)gTable_remove_col, (gpointer)number);
 	}
 	
 	columns = number;
@@ -494,6 +500,93 @@ void gTable::setFieldSelected (int col,int row,bool value)
 	g_hash_table_insert(seldata,(gpointer)key,(gpointer)value);
 }
 
+void gTable::getSpan(int col, int row, int *colspan, int *rowspan)
+{
+	gTablePair pair = { row, col };
+	gpointer span;
+
+	*colspan = 0;
+	*rowspan = 0;
+
+	if ((col < 0) || (col >= columns)) return;
+	if ((row < 0) || (row >= rows)) return;
+
+	span = g_hash_table_lookup(spanHash, (gpointer)&pair);
+	if (!span)
+		return;
+
+	*colspan = GET_COL_SPAN(span);
+	*rowspan = GET_ROW_SPAN(span);
+}
+
+void gTable::setSpan(int col, int row, int colspan, int rowspan)
+{
+	gTablePair pair = { row, col };
+	gTablePair *key;
+	int i, j;
+	int oldcs, oldrs;
+	gpointer span;
+
+	if ((col < 0) || (col >= columns)) return;
+	if ((row < 0) || (row >= rows)) return;
+
+	if (rowspan < -32768 || rowspan > 32767)
+		return;
+	if (colspan < -32768 || colspan > 32767)
+		return;
+
+	span = g_hash_table_lookup(spanHash, (gpointer)&pair);
+	
+	oldcs = GET_COL_SPAN(span);
+	oldrs = GET_ROW_SPAN(span);
+	if ((oldcs < 0 || oldrs < 0) && (colspan != 0 || rowspan != 0))
+		return;
+	
+	g_hash_table_remove(spanHash, (gpointer)&pair);
+	
+	if (oldcs > 0 || oldrs > 0)
+	{
+		i = 1; j = 0;
+		for(;;)
+		{
+			if (i > oldcs)
+			{
+				i = 0;
+				j++;
+				if (j > oldrs)
+					break;
+			}
+			setSpan(col + i, row + j, 0, 0);
+			i++;
+		}
+	}
+
+	if (rowspan == 0 && colspan == 0)
+		return;
+	
+	key = (gTablePair*)g_malloc(sizeof(gTablePair));
+	key->row = row;
+	key->col = col;
+	g_hash_table_insert(spanHash, (gpointer)key, (gpointer)MAKE_SPAN(rowspan, colspan));
+	
+	if (rowspan >= 0 && colspan >= 0)
+	{
+		i = 1; j = 0;
+		for(;;)
+		{
+			if (i > colspan)
+			{
+				i = 0;
+				j++;
+				if (j > rowspan)
+					break;
+			}
+			setSpan(col + i, row + j, -i, -j);
+			i++;
+		}
+	}
+}
+
 int gTable::getColumnPos(int index)
 {
 	int pos, i;
@@ -641,30 +734,98 @@ gTableRender::gTableRender(gGridView *v)
 	//g_signal_connect(G_OBJECT(sf),"size-allocate",G_CALLBACK(cb_render_size_allocate),this);
 }
 
-void gTableRender::queryUpdate(int row,int col)
+void gTableRender::queryUpdate(int row, int col)
 {
-	GdkRectangle rect={-getOffsetX(),-getOffsetY(),0,0};
-	int bc;
+	GdkRectangle rect;
+	int i;
+	int srow, scol;
+	int rowspan, colspan;
 
-	if (row>=rowCount()) return;
-	if (col>=columnCount()) return;
+	if (row >= rowCount()) return;
+	if (col >= columnCount()) return;
 	if (!sf->window) return;
-
-	for (bc=0; bc<col;bc++) rect.x+=getColumnSize(bc);
-	for (bc=0; bc<row;bc++) rect.y+=getRowSize(bc);
-	rect.width=getColumnSize(bc);
-	rect.height=getRowSize(bc);
 
 	if (col < 0)
 	{
-		rect.x = 0;
-		gdk_drawable_get_size(sf->window,&rect.width,NULL);
+		rect.x = -getOffsetX();
+		gdk_drawable_get_size(sf->window, &rect.width, NULL);
 	}
+	else
+	{
+		rect.x = getColumnPos(col) - getOffsetX();
+		rect.width = getColumnSize(col);
+	}
+	
 	if (row < 0)
 	{
-		rect.y = 0;
-		gdk_drawable_get_size(sf->window,NULL,&rect.height);
+		rect.y = -getOffsetY();
+		gdk_drawable_get_size(sf->window, NULL, &rect.height);
 	}
+	else
+	{
+		rect.y = getRowPos(row) - getOffsetY();
+		rect.height = getRowSize(row);
+	}
+
+	if (col < 0)
+	{
+		gdk_window_invalidate_rect(sf->window, &rect, TRUE); 
+		for (i = 0; i < columnCount(); i++)
+			queryUpdate(row, i);
+		return;
+	}
+	
+	if (row < 0)
+	{
+		gdk_window_invalidate_rect(sf->window, &rect, TRUE); 
+		for (i = 0; i < rowCount(); i++)
+			queryUpdate(i, col);
+		return;
+	}
+	
+	//for (i = 0; i < col; i++) rect.x += getColumnSize(i);
+	//for (i = 0; i < row; i++) rect.y += getRowSize(i);
+	getSpan(col, row, &colspan, &rowspan);
+
+	if (colspan >= 0 && rowspan >= 0)
+	{
+		for (i = 1; i <= colspan; i++)
+			rect.width += getColumnSize(col + i);
+		
+		for (i = 1; i <= rowspan; i++)
+			rect.height += getRowSize(row + i);
+	}
+	else
+	{
+		srow = row + colspan;
+		scol = col + rowspan;
+		
+		for (i = scol; i < col; i++)
+			rect.x -= getColumnSize(i);
+		for (i = srow; i < row; i++)
+			rect.y -= getRowSize(i);
+		
+		getSpan(scol, srow, &colspan, &rowspan);
+		
+		rect.width = 0;
+		rect.height = 0;
+		
+		for (i = 0; i <= colspan; i++)
+			rect.width += getColumnSize(scol + i);
+		for (i = 0; i <= rowspan; i++)
+			rect.height += getRowSize(srow + i);
+	}
+
+// 	if (col < 0)
+// 	{
+// 		rect.x = 0;
+// 		gdk_drawable_get_size(sf->window,&rect.width,NULL);
+// 	}
+// 	if (row < 0)
+// 	{
+// 		rect.y = 0;
+// 		gdk_drawable_get_size(sf->window,NULL,&rect.height);
+// 	}
 
 	gdk_window_invalidate_rect(sf->window,&rect,TRUE); 
 }
@@ -786,11 +947,31 @@ void gTableRender::setOffsetY(int vl)
 void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, bool sel)
 {
 	GdkColor color;
-	GtkStyle *st;
 	char *markup = data->markup;
 	char *buf = data->text;
 	int padding = data->padding;
 	double xa, ya;
+
+	if (sel)
+		gdk_gc_set_foreground(gc, &sf->style->base[GTK_STATE_SELECTED]);
+	else if (data->bg != COLOR_DEFAULT)
+	{
+		fill_gdk_color(&color, data->bg);
+		gdk_gc_set_foreground(gc, &color);
+	}
+	else
+		goto __NO_BG; //fill_gdk_color(&color, view->realBackground());
+	
+	gdk_draw_rectangle(sf->window, gc, TRUE, rect->x, rect->y, rect->width, rect->height);
+	
+__NO_BG:
+
+	if (grid)
+	{
+		gdk_gc_set_foreground(gc, &sf->style->mid[GTK_STATE_NORMAL]);
+		gdk_draw_line(sf->window, gc, rect->x + rect->width - 1, rect->y, rect->x + rect->width - 1, rect->y + rect->height - 1);
+		gdk_draw_line(sf->window, gc, rect->x, rect->y + rect->height - 1, rect->x + rect->width - 1, rect->y + rect->height - 1);
+	}
 
 	if (padding < 1)
 		padding = 1;
@@ -814,32 +995,19 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 		
 	gt_set_cell_renderer_text_from_font(txt, data->font ? data->font : view->font());
 	
+	g_object_set(G_OBJECT(txt),
+		"foreground-set", sel || data->fg != COLOR_DEFAULT,
+		"background-set", FALSE,
+		(void *)NULL);
+			
 	if (sel)
 	{
-		st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
-		g_object_set(G_OBJECT(txt),"foreground-gdk",
-																					&st->text[GTK_STATE_SELECTED],(void *)NULL);
-		g_object_set(G_OBJECT(txt),"background-gdk",
-																					&st->base[GTK_STATE_SELECTED],(void *)NULL);
+		g_object_set(G_OBJECT(txt),"foreground-gdk", &sf->style->text[GTK_STATE_SELECTED],(void *)NULL);
 	}
-	else
+	else if (data->fg != COLOR_DEFAULT)
 	{
-		g_object_set(G_OBJECT(txt),
-			"foreground-set", data->fg != COLOR_DEFAULT,
-			"background-set", data->bg != COLOR_DEFAULT,
-			(void *)NULL);
-			
-		if (data->fg != COLOR_DEFAULT)
-		{
-			fill_gdk_color(&color, data->fg);
-			g_object_set(G_OBJECT(txt),"foreground-gdk", &color, (void *)NULL);
-		}
-		
-		if (data->bg != COLOR_DEFAULT)
-		{
-			fill_gdk_color(&color, data->bg);
-			g_object_set(G_OBJECT(txt),"background-gdk", &color, (void *)NULL);
-		}
+		fill_gdk_color(&color, data->fg);
+		g_object_set(G_OBJECT(txt),"foreground-gdk", &color, (void *)NULL);
 	}
 	
 	if (markup)
@@ -850,7 +1018,7 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 	gtk_cell_renderer_render(GTK_CELL_RENDERER(txt),sf->window,sf,rect,rect,rect,(GtkCellRendererState)0);
 	
 	if (data->picture)
-	{
+	{/**/
 		if ((markup && *markup) || (buf && *buf))
 		{
 			xa = 0;
@@ -868,13 +1036,13 @@ void gTableRender::renderCell(gTableData *data, GdkGC *gc, GdkRectangle *rect, b
 void gTableRender::render(GdkRectangle *ar)
 {
 	bool  sel;
-	int   pos;
-	int   bx,by;
+	int   bx,by,sbx,sby;
 	int   bpos;
 	int   cpos;
 	int   pmaxX;
 	int   pmaxY;
-	int   bufW = 0;
+	int colspan, rowspan;
+	int i;
 	GdkGC *gc;
 	GdkRectangle rect;
 	gTableData *cell;
@@ -902,6 +1070,44 @@ void gTableRender::render(GdkRectangle *ar)
 	gdk_gc_set_clip_origin(gc,0,0);
 	gdk_gc_set_clip_rectangle(gc,ar);
 
+	#if 0
+	if (grid)
+	{
+		gdk_gc_set_clip_origin(gc,0,0);
+		gdk_gc_set_clip_rectangle(gc,ar);
+		//gint8 dashes[2] = { 1, 1 };
+		//gdk_gc_set_line_attributes(gc, 1, GDK_LINE_ON_OFF_DASH, GDK_CAP_NOT_LAST, GDK_JOIN_MITER);
+		gdk_gc_set_foreground(gc, &sf->style->mid[GTK_STATE_NORMAL]);
+
+		// Horizontal lines
+		//gdk_gc_set_dashes(gc, offY & 1, dashes, 2);
+		bpos = offRow;
+		for (bx = firstRow; bx < rowCount(); bx++)
+		{
+			bpos += getRowSize(bx);
+			pos = bpos - offY - 1;
+			
+			if (pos > visibleHeight())
+				break;
+			if (pos >= 0)
+				gdk_draw_line(sf->window, gc, 0, pos, pmaxX - 1, pos);
+		}
+		
+		// Vertical lines
+		//gdk_gc_set_dashes(gc, offX & 1, dashes, 2);
+		bpos = offCol;
+		for (bx = firstCol; bx < columnCount(); bx++)
+		{
+			bpos += getColumnSize(bx);
+			pos = bpos - offX - 1;
+			
+			if (pos >= visibleWidth()) break;
+			if (pos >= 0)  
+				gdk_draw_line(sf->window, gc, pos, 0, pos, pmaxY - 1);		
+		}
+	}
+	#endif
+	
 	// Rendering texts and pixbufs
 	bpos = offCol;
 	for (bx=firstCol; bx<columnCount(); bx++)
@@ -933,16 +1139,52 @@ void gTableRender::render(GdkRectangle *ar)
 			if ((cpos - offY) >= (ar->y + ar->height))
 				break;
 			
-			rect.x=bpos-offX+bufW;
-			rect.y=cpos-offY;
-			rect.width=getColumnSize(bx)-bufW;
-			rect.height=getRowSize(by);
+			getSpan(bx, by, &colspan, &rowspan);
+			
+			rect.x = bpos - offX;
+			rect.y = cpos - offY;
+			rect.width = getColumnSize(bx);
+			rect.height = getRowSize(by);
 
-			sel=getFieldSelected(bx,by);
-			cell = getData(by, bx);
 			gdk_gc_set_clip_rectangle(gc, &rect);
-			renderCell(cell, gc, &rect, sel);
+
+			if (colspan >= 0 && rowspan >= 0)
+			{
+				sel = getFieldSelected(bx, by);
+				
+				for (i = 1; i <= colspan; i++)
+					rect.width += getColumnSize(bx + i);
+				
+				for (i = 1; i <= rowspan; i++)
+					rect.height += getRowSize(by + i);
+				
+				cell = getData(by, bx);
+			}
+			else
+			{
+				sbx = bx + colspan;
+				sby = by + rowspan;
+				sel = getFieldSelected(sbx, sby);
+				cell = getData(sby, sbx);
+				
+				for (i = sbx; i < bx; i++)
+					rect.x -= getColumnSize(i);
+				for (i = sby; i < by; i++)
+					rect.y -= getRowSize(i);
+				
+				getSpan(sbx, sby, &colspan, &rowspan);
+				
+				rect.width = 0;
+				rect.height = 0;
+				
+				for (i = 0; i <= colspan; i++)
+					rect.width += getColumnSize(sbx + i);
+				for (i = 0; i <= rowspan; i++)
+					rect.height += getRowSize(sby + i);
+			}
 						
+			renderCell(cell, gc, &rect, sel);
+			
 			cpos += getRowSize(by);
 		}
 
@@ -950,41 +1192,6 @@ void gTableRender::render(GdkRectangle *ar)
 	}
 
 	delete caux;
-	if (!grid) { g_object_unref(G_OBJECT(gc)); return; }
-
-	gdk_gc_set_clip_origin(gc,0,0);
-	gdk_gc_set_clip_rectangle(gc,ar);
-	//gint8 dashes[2] = { 1, 1 };
-	//gdk_gc_set_line_attributes(gc, 1, GDK_LINE_ON_OFF_DASH, GDK_CAP_NOT_LAST, GDK_JOIN_MITER);
-	gdk_gc_set_foreground(gc, &sf->style->mid[GTK_STATE_NORMAL]);
-
-	// Horizontal lines
-	//gdk_gc_set_dashes(gc, offY & 1, dashes, 2);
-	bpos = offRow;
-	for (bx = firstRow; bx < rowCount(); bx++)
-	{
-		bpos += getRowSize(bx);
-		pos = bpos - offY - 1;
-		
-		if (pos > visibleHeight())
-			break;
-		if (pos >= 0)
-			gdk_draw_line(sf->window, gc, 0, pos, pmaxX - 1, pos);
-	}
-	
-	// Vertical lines
-	//gdk_gc_set_dashes(gc, offX & 1, dashes, 2);
-	bpos = offCol;
-	for (bx = firstCol; bx < columnCount(); bx++)
-	{
-		bpos += getColumnSize(bx);
-		pos = bpos - offX - 1;
-		
-		if (pos >= visibleWidth()) break;
-		if (pos >= 0)  
-			gdk_draw_line(sf->window, gc, pos, 0, pos, pmaxY - 1);		
-	}
-	
 	g_object_unref(G_OBJECT(gc));
 }
 
@@ -1109,7 +1316,7 @@ void gTableRender::setRowSelected(int row,bool value)
 		return;
 		
 	gTable::setRowSelected(row,value);
-	queryUpdate(row,-1);
+	queryUpdate(row, -1);
 	//view->emit(SIGNAL(view->onSelect));
 }
 
