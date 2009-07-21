@@ -44,15 +44,19 @@ static void cb_click(GtkComboBox *widget,gComboBox *data)
 	
 	if (!data->isReadOnly() && data->count())
 	{
-		data->lock();
 		int index = data->index();
-		const char *text = index >= 0 ? data->itemText(index) : NULL;
-		if (!text) text = "";
-		gtk_entry_set_text(GTK_ENTRY(data->entry), text);
-		data->unlock();
-		data->emit(SIGNAL(data->onChange));
+		if (index >= 0)
+		{
+			const char *text = index >= 0 ? data->itemText(index) : NULL;
+			if (!text) text = "";
+			data->lock();
+			gtk_entry_set_text(GTK_ENTRY(data->entry), text);
+			data->setIndex(index);
+			data->unlock();
+			data->emit(SIGNAL(data->onChange));
+		}
 	}
-	
+
 	if (!data->_no_click)
 		data->emit(SIGNAL(data->onClick));
 }
@@ -127,6 +131,84 @@ char *gComboBox::indexToKey(int index)
 	return key;	
 }
 
+void gComboBox::create(bool readOnly)
+{
+	bool first = !border;
+	int ind = -1;
+	
+	if (first)
+		border = gtk_event_box_new();
+	else
+		ind = index();
+	
+	if (widget)
+	{
+		if (cell) g_object_unref(cell);
+		cell = NULL;
+		gtk_widget_destroy(widget);
+	}
+	
+	if (readOnly)
+	{
+		widget = gtk_combo_box_new_with_model(GTK_TREE_MODEL(tree->store));
+		entry = NULL;
+
+		cell = gtk_cell_renderer_text_new ();
+		g_object_ref_sink(cell);
+		gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), cell, true);
+		//gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
+		g_object_set(cell, "ypad", 0, (void *)NULL);
+		gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
+	}
+	else
+	{
+		GList *cells;
+		
+		widget = gtk_combo_box_entry_new_with_model(GTK_TREE_MODEL(tree->store), 0);
+		entry = gtk_bin_get_child(GTK_BIN(widget));
+
+		g_signal_handler_disconnect(widget, g_signal_handler_find(widget, G_SIGNAL_MATCH_ID, g_signal_lookup("changed", G_OBJECT_TYPE(widget)), 0, 0, 0, 0));
+		
+		cells = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(widget));
+		cell = (GtkCellRenderer *)cells->data;
+		g_list_free(cells);
+		g_object_ref(cell);
+		//gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
+		g_object_set(cell, "ypad", 0, (void *)NULL);
+		gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
+	}
+	
+	if (first)
+	{
+		realize(false);
+	}
+	else
+	{
+		gtk_container_add(GTK_CONTAINER(border), widget);
+		gtk_widget_show(widget);
+		widgetSignals();
+	}
+	
+	g_signal_connect(G_OBJECT(widget), "changed", G_CALLBACK(cb_click), (gpointer)this);
+
+	if (entry)
+	{
+		initEntry();
+		g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
+		g_signal_connect(G_OBJECT(entry), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
+		g_signal_connect(G_OBJECT(entry), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
+		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
+	}
+	
+	updateFocusHandler();
+	setBackground(background());
+	setForeground(foreground());
+	setFont(font());
+
+	if (ind >= 0)
+		setIndex(ind);
+}
+
 gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 {
 	/*if (!_style_init)
@@ -148,36 +230,26 @@ gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 	_last_key = 0;
 	_model_dirty = false;
 	sort = false;
+	border = widget = NULL;
 	entry = NULL;
 	_button = NULL;
+	cell = NULL;
 	
 	g_typ = Type_gComboBox;
 	
 	tree = new gTree(NULL);
 	tree->addColumn();
+	//tree->addColumn();
 	tree->setHeaders(false);
 	
-	border = gtk_event_box_new();
-	widget = gtk_combo_box_new_with_model(GTK_TREE_MODEL(tree->store));
-	
-	cell = gtk_cell_renderer_text_new ();
-	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), cell, true);
-	//gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
-	g_object_set(cell, "ypad", 0, (void *)NULL);
-	gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
-	
-	realize(false);
-	
-	g_signal_connect(G_OBJECT(widget), "changed", G_CALLBACK(cb_click), (gpointer)this);
-
-	//button = ((_GtkComboBoxPrivate *)GTK_COMBO_BOX(widget)->priv)->arrow->parent;
-	updateFocusHandler();
-	setReadOnly(false);
+	create(false);
 }
 
 gComboBox::~gComboBox()
 {
-	g_object_unref(G_OBJECT(tree->store));
+	if (cell) g_object_unref(cell);
+	delete tree;
+	//g_object_unref(G_OBJECT(tree->store));
 }
 
 void gComboBox::popup()
@@ -296,38 +368,7 @@ void gComboBox::setReadOnly(bool vl)
 {
 	if (isReadOnly() == vl)
 		return;
-	
-	if ((!vl) && (!entry) )
-	{		
-		entry = gtk_entry_new ();
-		/* this flag is a hack to tell the entry to fill its allocation. */
-		GTK_ENTRY(entry)->is_cell_renderer = TRUE;
-		gtk_container_add(GTK_CONTAINER(widget), entry);
-		//gtk_widget_set_size_request(entry, width(), height());
-		gtk_widget_show(entry);
-
-		if (count())
-			gTextBox::setText(itemText(index()));
-		
-		setBackground(background());
-		setForeground(foreground());
-		setFont(font());
-		
-		initEntry();
-		g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
-		g_signal_connect(G_OBJECT(entry), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
-		g_signal_connect(G_OBJECT(entry), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
-		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
-	}
-	
-	if ( vl && entry ) 
-	{
-		gtk_widget_destroy(entry);
-		//gtk_container_remove(GTK_CONTAINER(widget), entry);
-		entry = NULL;
-	}
-	
-	updateFocusHandler();
+	create(!isReadOnly());
 }
 
 void gComboBox::setSorted(bool vl)
@@ -449,9 +490,9 @@ void gComboBox::resize(int w, int h)
 void gComboBox::setFont(gFont *f)
 {
 	gControl::setFont(f);
-	g_object_set(G_OBJECT(cell), "font-desc", font() ? font()->desc() : NULL, (void *)NULL);
-	if (entry)
-		gtk_widget_modify_font(entry, font() ? font()->desc() : NULL);
+	if (cell) g_object_set(G_OBJECT(cell), "font-desc", font() ? font()->desc() : NULL, (void *)NULL);
+	//if (entry)
+	//	gtk_widget_modify_font(entry, font() ? font()->desc() : NULL);
 }
 
 void gComboBox::setFocus()

@@ -474,8 +474,8 @@ void gMainWindow::setVisible(bool vl)
 			if (active && active != this)
 				gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(active->border));
 			
-			gtk_window_present(GTK_WINDOW(border));
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
+			gtk_window_present(GTK_WINDOW(border));
 		}
 		else 
 		{

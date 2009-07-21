@@ -672,17 +672,17 @@ gTree::gTree(gTreeView *v)
 	
 	datakey = g_hash_table_new((GHashFunc)g_str_hash,(GEqualFunc)gTree_equal);
 	
-	store = gtk_tree_store_new(1, G_TYPE_POINTER); //, G_TYPE_BOOLEAN);
-	
 	if (v)
 	{
+		store = gtk_tree_store_new(1, G_TYPE_POINTER);
 		widget = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
 		g_object_unref(G_OBJECT(store));
 		
 		view = v;
 	}
-	else
+	else // combo-box !
 	{
+		store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
 		view = NULL;
 		widget = NULL;
 	}
@@ -730,8 +730,11 @@ gTree::~gTree()
 {
 	clear();
 	g_hash_table_destroy(datakey);
-	g_object_unref(rgraph);
-	g_object_unref(rtext);
+	if (view)
+	{
+		g_object_unref(rgraph);
+		g_object_unref(rtext);
+	}
 }
 
 void gTree::clear()
@@ -790,7 +793,7 @@ int gTree::visibleHeight()
 char *gTree::iterToKey(GtkTreeIter *iter)
 {
 	char *key;
-	gtk_tree_model_get(GTK_TREE_MODEL(store), iter, 0, &key, -1);
+	gtk_tree_model_get(GTK_TREE_MODEL(store), iter, view ? 0 : 1, &key, -1);
 	return key;
 }
 
@@ -977,7 +980,7 @@ gTreeRow* gTree::addRow(char *key,char *parent,char *after)
 	buf = g_strdup(key); // Will be freed by ~gTreeRow()
 	row = new gTreeRow(this, buf, gtk_tree_iter_copy(&iter));
 	g_hash_table_insert(datakey,(gpointer)buf,(gpointer)row);
-	gtk_tree_store_set(store, &iter, 0, buf, -1);
+	gtk_tree_store_set(store, &iter, view ? 0 : 1, buf, -1);
   
   if (parent)
   {
@@ -1266,7 +1269,7 @@ void gTree::setSorted(bool v)
 		return;
 		
 	_sorted = v;
-	_sort_column = v ? 0 : -1;
+	_sort_column = v ? (view ? 0 : 1) : -1;
 	updateSort();
 }
 

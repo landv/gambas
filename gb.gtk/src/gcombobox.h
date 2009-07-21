@@ -58,6 +58,7 @@ public:
 	char* find(GtkTreePath *path) { return tree->pathToKey(path, false); }
 	void checkIndex();
 	void updateFocusHandler();
+	void create(bool readOnly);
 };
 
 #endif
