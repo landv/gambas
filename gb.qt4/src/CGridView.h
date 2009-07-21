@@ -169,7 +169,7 @@ public:
 	void setAutoResize(bool v) { _autoresize = v; updateLastColumn(); }
 	
 	bool hasGrid() const { return _show_grid; }
-	void setGrid(bool v) { _show_grid = v; update(); }
+	void setGrid(bool v) { _show_grid = v; viewport()->update(); }
 
 	virtual QRect cellGeometry(int row, int col) const;
 	//virtual QRect cellRect(int row, int col) const

@@ -6,8 +6,8 @@
 #include "ggridview.h"
 #include "tablerender.h"
 
-#define GET_ROW_SPAN(_span) ((int)(short)(((int)_span) & 0xFFFF))
-#define GET_COL_SPAN(_span) ((int)(short)((((int)_span) >> 16) & 0xFFFF))
+#define GET_ROW_SPAN(_span) ((int)(short)(((intptr_t)_span) & 0xFFFF))
+#define GET_COL_SPAN(_span) ((int)(short)((((intptr_t)_span) >> 16) & 0xFFFF))
 #define MAKE_SPAN(_rowspan, _colspan) ((gpointer)(((uint)(unsigned short)(_rowspan)) | (((uint)(unsigned short)(_colspan)) << 16)))
 
 //***********************************
@@ -516,7 +516,11 @@ void gTable::getSpan(int col, int row, int *colspan, int *rowspan)
 		return;
 
 	*colspan = GET_COL_SPAN(span);
+	if (*colspan >= (columns - col - 1))
+		*colspan = columns - col - 1;
 	*rowspan = GET_ROW_SPAN(span);
+	if (*rowspan >= (rows - row - 1))
+		*rowspan = rows - row - 1;
 }
 
 void gTable::setSpan(int col, int row, int colspan, int rowspan)
@@ -1047,6 +1051,7 @@ void gTableRender::render(GdkRectangle *ar)
 	GdkRectangle rect;
 	gTableData *cell;
 	gTableData *caux;
+	int fcol, frow;
 
 	if (!sf->window) return;
 
@@ -1109,6 +1114,9 @@ void gTableRender::render(GdkRectangle *ar)
 	#endif
 	
 	// Rendering texts and pixbufs
+	
+	fcol = frow = -1;
+	
 	bpos = offCol;
 	for (bx=firstCol; bx<columnCount(); bx++)
 	{
@@ -1125,6 +1133,9 @@ void gTableRender::render(GdkRectangle *ar)
 			break;
 
 		cpos = offRow;
+		if (fcol < 0) 
+			fcol = bx;
+		
 		for (by = firstRow; by < rowCount(); by++)
 		{
 			if ((cpos + getRowSize(by) - offY) < ar->y ) 
@@ -1139,31 +1150,37 @@ void gTableRender::render(GdkRectangle *ar)
 			if ((cpos - offY) >= (ar->y + ar->height))
 				break;
 			
+			if (frow < 0) 
+			{
+				frow = by;
+			}
+			
 			getSpan(bx, by, &colspan, &rowspan);
 			
 			rect.x = bpos - offX;
 			rect.y = cpos - offY;
-			rect.width = getColumnSize(bx);
-			rect.height = getRowSize(by);
-
-			gdk_gc_set_clip_rectangle(gc, &rect);
+			rect.width = 0;
+			rect.height = 0;
 
 			if (colspan >= 0 && rowspan >= 0)
 			{
 				sel = getFieldSelected(bx, by);
 				
-				for (i = 1; i <= colspan; i++)
+				for (i = 0; i <= colspan; i++)
 					rect.width += getColumnSize(bx + i);
 				
-				for (i = 1; i <= rowspan; i++)
+				for (i = 0; i <= rowspan; i++)
 					rect.height += getRowSize(by + i);
 				
+				gdk_gc_set_clip_rectangle(gc, &rect);
 				cell = getData(by, bx);
+				renderCell(cell, gc, &rect, sel);
 			}
-			else
+			else if ((bx == fcol && colspan < 0) || (by == frow && rowspan < 0))
 			{
 				sbx = bx + colspan;
 				sby = by + rowspan;
+				
 				sel = getFieldSelected(sbx, sby);
 				cell = getData(sby, sbx);
 				
@@ -1174,17 +1191,15 @@ void gTableRender::render(GdkRectangle *ar)
 				
 				getSpan(sbx, sby, &colspan, &rowspan);
 				
-				rect.width = 0;
-				rect.height = 0;
-				
 				for (i = 0; i <= colspan; i++)
 					rect.width += getColumnSize(sbx + i);
 				for (i = 0; i <= rowspan; i++)
 					rect.height += getRowSize(sby + i);
+				
+				gdk_gc_set_clip_rectangle(gc, &rect);
+				renderCell(cell, gc, &rect, sel);
 			}
 						
-			renderCell(cell, gc, &rect, sel);
-			
 			cpos += getRowSize(by);
 		}
 

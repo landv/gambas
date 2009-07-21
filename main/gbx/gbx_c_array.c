@@ -28,6 +28,8 @@
 
 #ifndef GBX_INFO
 
+#include <limits.h>
+
 #include "gb_common.h"
 #include "gb_error.h"
 #include "gb_array.h"
@@ -271,7 +273,8 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 
 	TYPE type;
 	CLASS *klass;
-	int size;
+	uint64_t size;
+	int max_size;
 	int inc;
 	GB_INTEGER *sizes = ARG(size);
 	int nsize = GB_NParam() + 1;
@@ -316,10 +319,13 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 	//printf("CARRAY_new: type = %d nsize = %d\n", type, nsize);
 
 	THIS->type = type;
+	max_size = INT_MAX / TYPE_sizeof_memory(type);
 
 	if (nsize <= 1)
 	{
 		size = VARGOPT(size, 0);
+		if (size > max_size)
+			THROW(E_MEMORY);
 		if (size < 0)
 			size = 0;
 
@@ -349,6 +355,8 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 				return;
 			}
 			size *= sizes[i].value;
+			if (size > max_size)
+				THROW(E_MEMORY);
 		}
 
 		ALLOC_ZERO(&THIS->dim, nsize * sizeof(int), "CARRAY_new");
@@ -358,7 +366,7 @@ BEGIN_METHOD(CARRAY_new, GB_INTEGER size)
 		THIS->dim[nsize - 1] = (-THIS->dim[nsize - 1]);
 
 		ARRAY_create_with_size(&THIS->data, TYPE_sizeof_memory(type), 8);
-		ARRAY_add_many_void(&THIS->data, size);
+		ARRAY_add_many_void(&THIS->data, (int)size);
 	}
 
 END_METHOD

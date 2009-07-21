@@ -335,8 +335,8 @@ void MyTableItem::getSpan(int row, int col, int *rowspan, int *colspan)
 	if (!span)
 		return;
 
-	*colspan = GET_COL_SPAN(span);
-	*rowspan = GET_ROW_SPAN(span);
+	*colspan = qMin(GET_COL_SPAN(span), table()->numCols() - col - 1);
+	*rowspan = qMin(GET_ROW_SPAN(span), table()->numRows() - row - 1);
 }
 
 void MyTableItem::setSpan(int row, int col, int rowspan, int colspan)
@@ -519,13 +519,16 @@ void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 
 			MyTableItem *itm = (MyTableItem *)item(r, c);
 			itm->getSpan(r, c, &rowspan, &colspan);
-			if (rowspan < 0 || colspan < 0)
+			if (rowspan >= 0 && colspan >= 0)
+			{
+				rs = r;
+				cs = c;
+			}
+			else if ((c == colfirst && colspan < 0) || (r == rowfirst && rowspan < 0))
 			{
 				rs = r + rowspan;
 				cs = c + colspan;
-				updateCell(rs, cs);
-				continue;
-				/*itm->getSpan(rs, cs, &rowspan, &colspan);
+				itm->getSpan(rs, cs, &rowspan, &colspan);
 				if (rowspan < 0 && colspan < 0)
 				{
 					rs = r;
@@ -537,20 +540,17 @@ void MyTable::drawContents(QPainter *p, int cx, int cy, int cw, int ch)
 				{
 					rowp = rowPos(rs);
 					colp = columnPos(cs);
-				}*/
+				}
 			}
 			else
-			{
-				rs = r;
-				cs = c;
-			}
+				continue;
 			
 			if (rowspan > 0 || colspan > 0)
 			{
 				rowh = 0;
 				int i;
 				for (i = 0; i <= rowspan; ++i)
-						rowh += rowHeight(i + rs);
+					rowh += rowHeight(i + rs);
 				colw = 0;
 				for (i = 0; i <= colspan; ++i)
 					colw += columnWidth(i + cs);
