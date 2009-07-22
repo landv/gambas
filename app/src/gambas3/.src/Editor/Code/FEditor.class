@@ -1546,6 +1546,29 @@ Private Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As
 
 End
 
+Private Function GetHelpLine(iLine As Integer) As Integer
+  Dim aSym As String[]
+  
+  Inc iLine
+  
+  Do
+    Dec iLine
+    If iLine < 0 Then Return 0
+    aSym = Highlight.Analyze(Editor.Lines[iLine].Text)
+    If aSym.Count = 1 Then
+      If aSym[0] = "END" Then Return 0
+    Endif
+    If aSym[0] = "DIM" Then Return 0
+    If Highlight.State = Highlight.Comment Then
+      If InStr(Editor.Lines[iLine].Text, "<? ") > 0 Then
+        Return iLine
+      Endif
+    Endif 
+  Loop
+  
+  
+End
+
 
 Private Sub GetSymbolWith(aExpr As String[], aType As Integer[], Optional iInd As Integer = -1)
 
@@ -2718,5 +2741,23 @@ End
 Public Sub Editors_DblClick()
 
   If Mouse.Control Then FindDefinition
+
+End
+
+Public Sub Editors_MouseMove()
+
+  'If FDebugInfo.IsHelpVisible Then tmrHelp.Enabled = True
+
+End
+
+Public Sub Editors_Leave()
+
+  tmrHelp.Enabled = False
+
+End
+
+Public Sub tmrHelp_Timer()
+
+  tmrHelp.Enabled = False
 
 End

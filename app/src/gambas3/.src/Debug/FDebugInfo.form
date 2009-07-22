@@ -8,11 +8,11 @@
   { splDebug HSplit
     MoveScaled(1,1,103,45)
     { tabDebug TabStrip
-      MoveScaled(1,2,77,38)
+      MoveScaled(2,2,77,38)
       Expand = True
       Arrangement = Arrange.Vertical
       Padding = 4
-      Count = 5
+      Count = 6
       Index = 0
       Text = ("Console")
       Picture = Picture["icon:/small/terminal"]
@@ -22,6 +22,26 @@
         Arrangement = Arrange.Fill
       }
       Index = 1
+      Text = ("Help")
+      Picture = Picture["img/16/find-definition.png"]
+      { HBox4 HBox
+        MoveScaled(1,2,74,31)
+        Expand = True
+        { panNavHelp SidePanel
+          MoveScaled(0,0,26,30)
+          Arrangement = Arrange.Fill
+          Orientation = Align.Left
+          { tvwNavHelp TreeView
+            MoveScaled(1,1,21,28)
+          }
+        }
+        { txtEHelp TextEdit
+          MoveScaled(27,0.7143,45,31)
+          Expand = True
+          ReadOnly = True
+        }
+      }
+      Index = 2
       Text = ("Local variables")
       Picture = Picture["img/16/local.png"]
       { cvwLocal ColumnView
@@ -34,7 +54,7 @@
         MoveScaled(2,30,28,4)
         Text = ("Sort local variables")
       }
-      Index = 2
+      Index = 3
       Text = ("Current object")
       Picture = Picture["img/16/current.png"]
       { cvwObject ColumnView
@@ -59,7 +79,7 @@
           Picture = Picture["icon:/small/fullscreen"]
         }
       }
-      Index = 3
+      Index = 4
       Text = ("Watch")
       Picture = Picture["icon:/small/watch"]
       { HBox1 HBox
@@ -96,7 +116,7 @@
         Expand = True
         ScrollBar = Scroll.Vertical
       }
-      Index = 4
+      Index = 5
       Text = ("Breakpoints")
       Picture = Picture["icon:/small/flag"]
       { VBox1 HBox

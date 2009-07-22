@@ -3,10 +3,11 @@
 Public Shown As Boolean
 
 Private Const TAB_CONSOLE As Integer = 0
-Private Const TAB_LOCAL As Integer = 1
-Private Const TAB_ME As Integer = 2
-Private Const TAB_WATCH As Integer = 3
-Private Const TAB_BREAK As Integer = 4
+Private Const TAB_HELP As Integer = 1
+Private Const TAB_LOCAL As Integer = 2
+Private Const TAB_ME As Integer = 3
+Private Const TAB_WATCH As Integer = 4
+Private Const TAB_BREAK As Integer = 5
 
 Private $cRefresh As New Collection
 
@@ -682,5 +683,11 @@ Public Sub GetBreakpoints() As String[]
   Next
   
   Return aBreakPoint
+  
+End
+
+Public Function IsHelpVisible() As Boolean
+  
+  Return tabDebug.Index = TAB_HELP
   
 End
