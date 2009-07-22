@@ -75,10 +75,15 @@ void MyScrollView::showEvent(QShowEvent *e)
 MyContents::MyContents(MyScrollView *scrollview)
 : MyContainer(scrollview)
 {
-  right = 0;
+  CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(scrollview);
+	bool shown;
+
+	right = 0;
   bottom = 0;
   sw = scrollview;
+	shown = THIS->widget.flag.shown;
   sw->setWidget(this);
+	THIS->widget.flag.shown = shown;
   timer = false;
 	_mustfind = false;
 }
@@ -94,7 +99,7 @@ void MyContents::autoResize(void)
   int i;
 	int x, y;
 
-	//qDebug("autoResize: %s", THIS->widget.name);
+	//qDebug("autoResize: (%s %p)", THIS->widget.name, THIS);
 	
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
@@ -118,7 +123,7 @@ void MyContents::autoResize(void)
 		ww = sw->width() - sw->frameWidth() * 2;
 		hh = sw->height() - sw->frameWidth() * 2;
 	
-		//qDebug("autoResize: (%d %d) (%d %d)", sw->visibleWidth(), sw->visibleHeight(), ww, hh);
+		//qDebug("autoResize: (%d %d) (%d %d)", sw->viewport()->width(), sw->viewport()->height(), ww, hh);
 	
 		resize(ww, hh);
 		//sw->updateScrollBars();
@@ -582,14 +587,6 @@ GB_DESC CScrollViewDesc[] =
 
 CScrollView CScrollView::manager;
 
-
-bool CScrollView::eventFilter(QObject *o, QEvent *e)
-{
-  if (e->type() == QEvent::LayoutRequest)
-    qDebug("Layout hint %p", sender());
-
-  return QObject::eventFilter(o, e);
-}
 
 static void send_scroll(void *param)
 {

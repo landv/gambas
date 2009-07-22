@@ -207,7 +207,7 @@ Public Sub mnuDeleteFile_Click()
 
   Else
 
-    If Project.IsSourcePath(sPath) Then
+    If Project.IsSourcePath(sPath) Or Project.IsConnectionPath(sPath) Then
       sName = File.BaseName(sPath)
     Else
       sName = File.Name(sPath)

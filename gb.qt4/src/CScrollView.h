@@ -105,9 +105,6 @@ class CScrollView : public QObject
 public:
   static CScrollView manager;
 
-protected:
-  bool eventFilter(QObject *, QEvent *);
-
 public slots:
   void scrolled(void);
 };

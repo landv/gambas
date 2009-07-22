@@ -87,6 +87,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
   Dim bVirtual As Boolean
   Dim hWindow As Window
   Dim hClass As CClassInfo
+  Dim hLabel As Label
   'DIM iInd AS Integer
 
   'PRINT "> CreateControl "; sClass
@@ -186,6 +187,12 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hWindow.Title = sName
       hWindow.Background = Color.Mix(Color.Foreground, Color.Background)
       hCtrl.Add(hWindow)
+      
+    ' Case "listcontainer"
+    '   hCtrl = New ListContainer(hParent)
+    '   hLabel = New Label(hCtrl)
+    '   hLabel.H = Desktop.Scale * 4
+    '   hLabel.Text = sName
       
     Case Else
 
@@ -698,6 +705,8 @@ End
 
 Public Sub UpdateName()
   
+  Dim hLabel As Label
+  
   Select Case Object.Type(Control)
 
     Case "TextBox", "TextArea"
@@ -730,7 +739,11 @@ Public Sub UpdateName()
       
     Case "Workspace"
       Control.ActiveWindow.Title = Name
-      
+    
+    ' Case "ListContainer"
+    '   hLabel = Control.Children[0]
+    '   hLabel.Text = Name
+    
     Case Else
 
       If Unknown Then 

@@ -17,7 +17,6 @@ Property Current As Control
 Property Background As Integer
 
 Private $hScrollView As ScrollView
-'PRIVATE $hWatcher AS Watcher
 Private $hLast As Control
 Private $hSelected As Control
 Private $bNoMouse As Boolean
@@ -32,9 +31,12 @@ Private $bMouseDown As Boolean
 Public Sub _new()
   
   $hScrollView = New ScrollView(Me) As "ScrollView"
+  $hScrollView.Resize(80, 60)
   $hScrollView.Name = Me.Name & ".ScrollView"
+
   $hTimer = New Timer As "Child"
   $hTimer.Delay = 80
+
   With $hScrollView
     .Border = Border.Sunken
     .ScrollBar = Scroll.Vertical
@@ -43,9 +45,7 @@ Public Sub _new()
     $iSaveBackground = .Background
     $iSaveForeground = Color.TextForeground
   End With 
-  
-  '$hWatcher = NEW Watcher($hScrollView) AS "ScrollView"
-  
+
   Me._Container = $hScrollView
   Me.Arrangement = Arrange.Vertical
   
@@ -82,6 +82,7 @@ End
 
 Public Sub ScrollView_Insert(Child As Control)
 
+  'Debug Me.Name
   If Me.Design Then Return 
   AttachRec(Child)
   
@@ -89,6 +90,7 @@ End
 
 Public Sub ScrollView_Scroll()
   
+  'Debug Me.Name
   Raise Scroll
   
 End
@@ -96,6 +98,7 @@ End
 
 Public Sub Child_Insert(Child As Control)
 
+  'Debug Me.Name
   If Me.Design Then Return 
   AttachRec(Child)
   
@@ -301,7 +304,7 @@ Public Sub Clear()
   'Next
   $hScrollView.Children.Clear
   $hSelected = Null
-  Wait
+  'Wait
   
 End
 

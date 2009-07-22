@@ -156,8 +156,6 @@ Public Sub Main()
   Dim sPath As String
   Dim iTest As Integer
   
-  'Print Desktop.Scale
-  'Application.Font = Font["Sans,8"]
   Application.Theme = Settings["/Theme"]
   'DB.Debug = True
   
@@ -902,7 +900,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
       Else If IsConnectionPath(sDir &/ sFile) Then
 
-        sFile = File.BaseName(sFile)
+        If sExt = "connection" Then sFile = File.BaseName(sFile)
 
       Endif
       

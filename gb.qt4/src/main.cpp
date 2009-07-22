@@ -33,21 +33,17 @@
 
 #include "gambas.h"
 
-#include <qapplication.h>
-#include <qtooltip.h>
-#include <qmessagebox.h>
-#include <qclipboard.h>
-#include <qstring.h>
-#include <qmap.h>
-#include <qmime.h>
-#include <qfileinfo.h>
-#include <qbuffer.h>
-#include <qwidget.h>
-#include <qevent.h>
-#include <qtextcodec.h>
-#include <qtimer.h>
-
-//Added by qt3to4:
+#include <QApplication>
+#include <QMessageBox>
+#include <QClipboard>
+#include <QString>
+#include <QMap>
+#include <QFileInfo>
+#include <QBuffer>
+#include <QWidget>
+#include <QEvent>
+#include <QTextCodec>
+#include <QTimer>
 #include <QTranslator>
 #include <QTimerEvent>
 #include <QKeyEvent>
@@ -56,7 +52,6 @@
 #include <QEventLoop>
 #include <QDesktopWidget>
 #include <QX11Info>
-
 #include <QPaintDevice>
 
 #include "gb.image.h"
@@ -525,8 +520,9 @@ void MAIN_check_quit(void)
 
 void MAIN_update_scale(void)
 {
-	QFontMetrics fm(qApp->desktop()->font());
-	MAIN_scale = GET_DESKTOP_SCALE(fm.height());
+	//QFontMetrics fm(qApp->desktop()->font());
+	//MAIN_scale = GET_DESKTOP_SCALE(fm.height());
+	MAIN_scale = GET_DESKTOP_SCALE(qApp->desktop()->font().pointSize(), QX11Info::appDpiY());
 }
 
 static void QT_InitEventLoop(void)

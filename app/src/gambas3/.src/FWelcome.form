@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,73,69)
+  MoveScaled(0,2,75,69)
   Background = Color.TextBackground
   Foreground = Color.TextForeground
   Text = ("Welcome to Gambas 3")
@@ -30,7 +30,7 @@
       { HBox2 HBox
         MoveScaled(1,8,35,3)
         { lblWebSite Label
-          MoveScaled(0,0,28,3)
+          MoveScaled(0,0,32,3)
           Font = Font["Underline"]
           Mouse = Mouse.Pointing
           AutoResize = True
@@ -44,14 +44,14 @@
         AutoResize = True
         Text = ("This program is published under the GNU General Public Licence.")
       }
-      { lblVersion Label
-        MoveScaled(30,1,27,5)
+      { lblVersion TextLabel
+        MoveScaled(24,1,17,5)
         Font = Font["Bold,+6"]
         Background = Color.SelectedBackground
         Foreground = Color.SelectedForeground
         Ignore = True
+        AutoResize = True
         Text = ("")
-        Alignment = Align.TopNormal
       }
     }
     { dwgLogo DrawingArea

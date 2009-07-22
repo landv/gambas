@@ -26,7 +26,7 @@
 #define FONT_STEP 20
 #define GRADE_TO_SIZE(_grade, _desktop) ((int)(powf(_desktop, 1.0 + ((_grade) / (double)FONT_STEP)) + 0.5))
 #define SIZE_TO_GRADE(_size, _desktop)  ((int)(FONT_STEP * (logf(_size) / logf(_desktop)) + 0.5) - FONT_STEP)
-#define GET_DESKTOP_SCALE(_font_height) (1 + (_font_height + 2) / 3)
+#define GET_DESKTOP_SCALE(_font_size, _dpi) (1 + ((_font_size) * (_dpi) * 2 / 3 / 96))
 
 #endif
 

@@ -361,11 +361,11 @@ Public Sub Main()
     sTrans = Replace(sTrans, "\"", "\\\"")
     sData &= "  $cTr[\"" & sTrans & "\"] = (\"" & sTrans & "\")\n"
   Next
-  sFile = File.Load(Application.Path &/ "MTranslation.module")
+  sFile = File.Load(Application.Path &/ ".src/MTranslation.module")
   iPos = InStr(sFile, "'{")
   iPos2 = InStr(sFile, "'}", iPos)
   sFile = Left$(sFile, iPos - 1) & "'{\n" & sData & "  '}" & Mid$(sFile, iPos2 + 2)
-  File.Save(Application.Path &/ "MTranslation.module", sFile)
+  File.Save(Application.Path &/ ".src/MTranslation.module", sFile)
   
   Print
   Print "**** DONE! ****"

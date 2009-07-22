@@ -344,8 +344,6 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
             vValue = Mid$(sValue, 10, -2)
           Else If Left$(sValue, 12) = "Connections[" Then
             vValue = Mid$(sValue, 14, -2)
-            'PRINT File.Dir(Project.Path) &/ Mid$(sValue, 9, -1)
-            'vValue = Picture[File.Dir(Project.Path) &/ Mid$(sValue, 9, -1)]
           Else If UCase(sValue) = "TRUE" Then
             vValue = True
           Else If UCase(sValue) = "FALSE" Then
@@ -844,7 +842,7 @@ Public Sub Control_MouseDown()
   Dim X As Integer
   Dim Y As Integer
 
-  Me.SetFocus
+  Project.SetCurrentPopup(mnuForm)
 
   X = Mouse.X
   Y = Mouse.Y
@@ -963,7 +961,6 @@ Public Sub Control_MouseMove()
 
       hParent = $hCurrent
       $hCurrent = CreateControl($sTool, hParent)
-      FFormStack.RefreshAll
 
       FindContainer(hParent, $X, $Y, COORD_INSIDE_TO_CONTROL)
       $X = $iContX
@@ -980,6 +977,8 @@ Public Sub Control_MouseMove()
       $hCurrent.Move($X, $Y)
       $hCurrent.Resize(MIN_WIDTH, MIN_HEIGHT)
       $hCurrent.Control.Mouse = Mouse.Cross
+
+      FFormStack.RefreshAll
 
     Endif
 

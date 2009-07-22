@@ -485,9 +485,10 @@ void MAIN_check_quit(void)
 
 void MAIN_update_scale(void)
 {
-	QFontMetrics fm(qApp->desktop()->font());
-  MAIN_scale = GET_DESKTOP_SCALE(fm.height());
+	//QFontMetrics fm(qApp->desktop()->font());
+  //MAIN_scale = GET_DESKTOP_SCALE(fm.height());
   //qDebug("%s %d %d -> %d", qApp->font().family().latin1(), qApp->font().pointSize(), fm.height(), MAIN_scale);
+	MAIN_scale = GET_DESKTOP_SCALE(qApp->desktop()->font().pointSize(), QPaintDevice::x11AppDpiY());
 }
 
 static void QT_InitEventLoop(void)

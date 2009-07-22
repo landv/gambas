@@ -1,23 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,89,87)
+  MoveScaled(0,2,89,88)
   Text = ("Project properties")
   Icon = Picture["icon:/small/properties"]
   Persistent = True
   Resizable = False
-  { btnOK Button
-    MoveScaled(55,82,16,4)
-    Text = ("OK")
-    Default = True
-  }
-  { btnCancel Button
-    MoveScaled(72,82,16,4)
-    Text = ("Cancel")
-    Cancel = True
-  }
   { tabProject TabStrip
-    MoveScaled(1,1,87,80)
+    MoveScaled(1,1,87,81)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
@@ -26,18 +16,18 @@
     Index = 0
     Text = ("General")
     { Panel1 Panel
-      MoveScaled(1,0,85,12)
-      { btnIcon ToolButton
-        MoveScaled(73,1,11,11)
-        Text = ("")
-        Border = True
-      }
+      MoveScaled(1,0,85,10)
       { txtName TextLabel
-        MoveScaled(0,1,72,11)
-        Padding = 2
+        MoveScaled(0,1,74,9)
+        Padding = 4
         Text = ("")
         Alignment = Align.Left
         Border = Border.Sunken
+      }
+      { btnIcon ToolButton
+        MoveScaled(75,1,9,9)
+        Text = ("")
+        Border = True
       }
     }
     { HBox1 HBox
@@ -98,6 +88,7 @@
       MoveScaled(1,1,84,3)
       Font = Font["Bold"]
       Text = ("Edition")
+      Alignment = Align.BottomNormal
     }
     { HBox13 HBox
       MoveScaled(2,5,83,4)
@@ -121,7 +112,9 @@
     { Label8 Label
       MoveScaled(1,10,84,3)
       Font = Font["Bold"]
+      Expand = True
       Text = ("Compilation")
+      Alignment = Align.BottomNormal
     }
     { HBox12 HBox
       MoveScaled(2,14,83,4)
@@ -170,7 +163,9 @@
     { Label19 Label
       MoveScaled(1,29,84,3)
       Font = Font["Bold"]
+      Expand = True
       Text = ("Translation")
+      Alignment = Align.BottomNormal
     }
     { HBox9 HBox
       MoveScaled(2,33,83,4)
@@ -205,7 +200,9 @@
     { Label9 Label
       MoveScaled(1,43,84,3)
       Font = Font["Bold"]
+      Expand = True
       Text = ("Execution")
+      Alignment = Align.BottomNormal
     }
     { HBox16 HBox
       MoveScaled(2,47,83,4)
@@ -225,7 +222,9 @@
     { Label27 Label
       MoveScaled(1,52,84,3)
       Font = Font["Bold"]
+      Expand = True
       Text = ("Debugging")
+      Alignment = Align.BottomNormal
     }
     { HBox17 HBox
       MoveScaled(2,56,83,4)
@@ -245,7 +244,9 @@
     { Label16 Label
       MoveScaled(1,61,84,3)
       Font = Font["Bold"]
+      Expand = True
       Text = ("Component")
+      Alignment = Align.BottomNormal
     }
     { HBox6 HBox
       MoveScaled(2,65,83,4)
@@ -538,5 +539,15 @@
       }
     }
     Index = 0
+  }
+  { btnOK Button
+    MoveScaled(55,83,16,4)
+    Text = ("OK")
+    Default = True
+  }
+  { btnCancel Button
+    MoveScaled(72,83,16,4)
+    Text = ("Cancel")
+    Cancel = True
   }
 }

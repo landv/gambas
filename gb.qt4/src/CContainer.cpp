@@ -107,8 +107,9 @@ static QWidget *get_next_widget(QObjectList &list, int &index)
 		
 		if (ob && ob->isWidgetType())
 		{
-			if (!((QWidget *)ob)->isHidden() && !qobject_cast<QSizeGrip *>(ob))
-				return (QWidget *)ob;
+			QWidget *w = (QWidget *)ob;
+			if (!w->isHidden() && !qobject_cast<QSizeGrip *>(w))
+				return w;
 		}
 	}
 }
@@ -438,8 +439,9 @@ void MyContainer::showEvent(QShowEvent *e)
 	void *_object = CWidget::get(this);
 	QWidget::showEvent(e);
 	THIS->widget.flag.shown = TRUE;
-	//qDebug("%s %s %p: SHOWN = 1 (%d %d)", GB.GetClassName(THIS), THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
 	CCONTAINER_arrange(THIS);
+	//if (!qstrcmp(GB.GetClassName(THIS), "ListContainer"))
+	//	qDebug("MyContainer::showEvent: %s %p: SHOWN = 1 (%d %d)", THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
 }
 
 void MyContainer::hideEvent(QHideEvent *e)
@@ -447,7 +449,11 @@ void MyContainer::hideEvent(QHideEvent *e)
 	void *_object = CWidget::get(this);
 	QWidget::hideEvent(e);
 	THIS->widget.flag.shown = FALSE;
-	//qDebug("%s %s %p: SHOWN = 0", GB.GetClassName(THIS), THIS->widget.name, THIS);
+	/*if (!qstrcmp(GB.GetClassName(THIS), "ListContainer"))
+	{
+		qDebug("MyContainer::hideEvent: %s %p: SHOWN = 0", THIS->widget.name, THIS);
+		//BREAKPOINT();
+	}*/
 }
 
 void MyContainer::setFrameStyle(int frame)
@@ -1095,6 +1101,7 @@ BEGIN_PROPERTY(CUSERCONTAINER_design)
 		CCONTAINER *cont = (CCONTAINER *)CWidget::get(CONTAINER);
 		
 		cont->arrangement = 0;
+		((CCONTAINER_ARRANGEMENT *)cont)->user = true;
 		THIS_USERCONTAINER->save = cont->arrangement;
 	}
 
