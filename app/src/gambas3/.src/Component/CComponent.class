@@ -849,18 +849,17 @@ End
 
 Static Private Function GetHelpLine(iLine As Integer, hEditor As Editor) As Integer
   Dim aSym As String[]
+  Dim HelpLine As Integer
   Do
     Dec iLine
-    If iLine < 0 Then Return 0
+    If iLine < 0 Then Return HelpLine
     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
     If aSym.Count = 1 Then
-      If Left(aSym[0], 1) = "'" Then
-        If Left(asym[0], 3) = "'/#" Then Return iLine
-      Else
-        Return 0
-      Endif
-    
+      If Left(aSym[0], 1) = "''" Then HelpLine = iLine
+    Else
+        Return HelpLine
     Endif
+
   Loop
 End
 

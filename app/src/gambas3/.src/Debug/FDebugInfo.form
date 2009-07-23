@@ -24,22 +24,10 @@
       Index = 1
       Text = ("Help")
       Picture = Picture["img/16/find-definition.png"]
-      { HBox4 HBox
-        MoveScaled(1,2,74,31)
+      { panHelp Panel
+        MoveScaled(7,3,54,25)
         Expand = True
-        { panNavHelp SidePanel
-          MoveScaled(0,0,26,30)
-          Arrangement = Arrange.Fill
-          Orientation = Align.Left
-          { tvwNavHelp TreeView
-            MoveScaled(1,1,21,28)
-          }
-        }
-        { txtEHelp TextEdit
-          MoveScaled(27,0.7143,45,31)
-          Expand = True
-          ReadOnly = True
-        }
+        Arrangement = Arrange.Fill
       }
       Index = 2
       Text = ("Local variables")

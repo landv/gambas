@@ -2248,6 +2248,87 @@ Private Sub FindDefinition()
 
 End
 
+Private Sub ShowHelp()
+
+  Dim sLig As String
+  Dim iCol As Integer
+  Dim hSymbol As CSymbolInfo
+  Dim hClass As CClassInfo
+  Dim iCpt As Integer
+  Dim sKeyword As String
+  Dim sKeyword2 As String
+
+  sLig = Highlight.Purge(Editor.Lines[Editor.Line].Text)
+  If Editor.Selected Then 
+    If Editor.Selection.EndLine > Editor.Selection.StartLine Then Return
+    iCol = Editor.Selection.EndColumn
+  Else
+    iCol = Editor.Column
+  Endif
+
+  Repeat
+    Inc iCol
+    If iCol > Len(sLig) Then Break
+  Until InStr(IDENT_CAR, Mid$(sLig, iCol, 1)) = 0
+
+  If iCol < Len(sLig) Then
+    If InStr("[(", Mid$(sLig, iCol, 1)) Then
+      Inc iCol
+    Endif
+  Endif
+  
+  sLig = Left$(sLig, iCol - 1)
+  If Right(sLig) = "[" Then sLig &= "]"
+  
+  Highlight.Analyze(sLig)
+  'IF IsCurrentProc() THEN RETURN
+
+  iCpt = Highlight.Types.Count - 1
+
+  If iCpt >= 0 Then
+    If IsKeyword(iCpt) Then
+
+      sKeyword = Highlight.Symbols[iCpt]
+      If iCpt > 0 Then
+        Dec iCpt
+        If IsKeyword(iCpt) Then
+          sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
+        Endif
+      Endif
+      FHelp.ShowKeywordHelp(sKeyword, sKeyword2)
+      'MHelp.GotoKeyword(sKeyword, sKeyword2)
+      Return
+
+    Else If Highlight.Types[iCpt] = Highlight.DataType Then 
+
+      sKeyword = Highlight.Symbols[iCpt]
+      If FHelp.ShowDataTypeHelp(sKeyword) Then
+        hClass = CComponent.Classes[sKeyword]
+        If hClass Then 
+          FHelp.ShowClassHelp(hClass.Component, hClass.Name)
+          'MHelp.GotoClass(hClass.Component, hClass.Name)
+        Endif
+      Endif
+      Return
+    Endif
+  Endif
+
+  'Editor.Analyze(Left$(sLig, iCol - 1))
+  hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
+  If Not hSymbol Then Return
+
+  'PRINT hSymbol.Class
+
+  'If hSymbol.LineNumber Then
+  '  Project.SavePosition()
+  '  Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
+  'Else
+    FHelp.ShowSymbolHelp(hSymbol)
+    'MHelp.GotoSymbol(hSymbol)
+  'Endif
+
+End
+
 Public Sub OnProjectDebug()
 
   SetReadOnly
@@ -2744,7 +2825,7 @@ End
 Public Sub Editors_DblClick()
 
   If Mouse.Control Then FindDefinition
-
+  If Mouse.Shift Then ShowHelp
 End
 
 Public Sub Editors_MouseMove()

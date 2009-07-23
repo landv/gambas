@@ -37,6 +37,8 @@ Public Sub Form_Open()
   End With
 
   FOutput.Load
+  FHelp.Load
+  FHelp.Reparent(panHelp, 0, 0)
 
 End
 
@@ -691,3 +693,10 @@ Public Function IsHelpVisible() As Boolean
   Return tabDebug.Index = TAB_HELP
   
 End
+
+Public Sub SetHelpVisible()
+  
+  tabDebug.Index = TAB_HELP
+  
+End
+

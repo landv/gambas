@@ -1,0 +1,86 @@
+' Gambas class file
+
+Public Sub ShowKeywordHelp(sName As String, Optional sName2 As String) As Boolean
+   Dim sPath As String
+      txtHelp.RichText = "<font color=blue>Gambas Keyword: </font>" & sName
+      'txtHelp.RichText &= GetHelp(GetPath("help/lang/type" &/ LCase(sName)) & ".html")
+      
+
+  If sName2 Then
+    If Not ShowKeywordHelp(sName2) Then Return
+  Endif
+
+  If Right(sName) = "$" Then sName = Left$(sName, -1)
+
+  sPath = GetPath("help/lang" &/ LCase(sName)) & ".html"
+  If Not Exist(sPath) Then Return True
+  txtHelp.RichText &= GetHelp(sPath)
+  'Project.OpenWebPage(sPath)
+  
+Catch
+
+  Return True
+End
+
+
+Public Sub ShowSymbolHelp(hSymbol As CSymbolInfo)
+  
+  If hSymbol.LineNumber Then
+  'Symbole locale
+  Else
+  'Symbole externe
+    txtHelp.RichText = "<font color=green>Component: </font>" & hSymbol.Component & 
+                       "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & hSymbol.Class & 
+                       "&nbsp;&nbsp;&nbsp;<Font color=blue>Symbol: </font>" & hSymbol.Name 
+  Endif
+  
+  
+End
+
+Public Sub ShowClassHelp(sComponent As String, sName As String)
+  
+  'Description de la Classe
+  txtHelp.RichText = "<font color=green>Component: </font>" & sComponent & 
+                     "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & sName
+  
+End
+
+Private Function GetHelp(sFile As String) As String
+  Dim aHelp As String[]
+  FDebugInfo.SetHelpVisible
+  If Exist(sFile) Then
+    ahelp = Scan(File.Load(sFile), "*<div class=\"title\">*<p>*\n<p>\n*")
+    
+    Return "<br><br>" & aHelp[1] & "<br>" & aHelp[2]
+  'Else
+  '  Return "Help Not Found"
+  Endif
+  
+  'Catch
+    'Return "Error"
+  
+End
+
+Public Function ShowDatatypeHelp(sName As String) As Boolean
+
+  Dim sPath As String
+
+  sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
+  If Not Exist(sPath) Then Return True
+  txtHelp.RichText = "<font color=blue>Gambas DataType: </font>" & sName
+  
+  txtHelp.RichText &= GetHelp(GetPath("help/lang/type" &/ LCase(sName)) & ".html")
+  
+'Catch
+
+'  Return True
+
+End
+
+Private Sub GetPath(sPath As String) As String
+  
+  sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
+  sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
+  Return System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
+  
+End
