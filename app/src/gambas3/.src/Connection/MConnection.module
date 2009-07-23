@@ -1,6 +1,6 @@
 ' Gambas module file
 
-Private $cPassword As New Collection
+Public Password As New Collection
 
 Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean)
   
@@ -25,11 +25,11 @@ Public Sub LoadPassword(sName As String, bDesktop As Boolean) As String
   
   Dim sPassword As String
   
-  sPassword = $cPassword[sName]
+  sPassword = Password[sName]
   If Not sPassword Then 
     If bDesktop Then
       sPassword = Desktop.Passwords[Project.Name &/ sName]
-      $cPassword[sName] = sPassword
+      Password[sName] = sPassword
     Endif
   Endif
   
@@ -39,7 +39,7 @@ End
 
 Public Sub SavePassword(sName As String, sPassword As String, bDesktop As Boolean)
   
-  $cPassword[sName] = sPassword
+  Password[sName] = sPassword
   If sPassword Then Desktop.Passwords[Project.Name &/ sName] = sPassword
   
 End

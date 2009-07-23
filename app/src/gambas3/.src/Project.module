@@ -366,6 +366,8 @@ Public Function Open(sDir As String) As Boolean
 
   Inc Project.TimeStamp
 
+  MConnection.Password.Clear
+
   Refresh
   
   DefineStartup(Startup, True)
