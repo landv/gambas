@@ -14,10 +14,10 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
     sPassword = hConfig["Connection/Password"]
     If Not sPassword Then
       If hConfig["Connection/RememberPassword"] Then
-        hConn.Password = LoadPassword(sName)
+        sPassword = LoadPassword(sName)
       Endif
     Endif
-    'hConn.Password = hConfig["Connection/User"]
+    hConn.Password = sPassword
   Endif
   
   If bWithDatabase Then hConn.Name = hConfig["Connection/Database"]
