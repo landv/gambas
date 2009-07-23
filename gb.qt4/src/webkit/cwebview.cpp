@@ -95,6 +95,7 @@ BEGIN_PROPERTY(WebView_SelectedText)
 
 END_PROPERTY
 
+#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
 BEGIN_PROPERTY(WebView_Zoom)
 
 	if (READ_PROPERTY)
@@ -103,6 +104,7 @@ BEGIN_PROPERTY(WebView_Zoom)
 		WIDGET->setZoomFactor(VPROP(GB_FLOAT));
 
 END_PROPERTY
+#endif
 
 BEGIN_PROPERTY(WebView_TextZoom)
 
@@ -163,7 +165,11 @@ GB_DESC CWebViewDesc[] =
 	GB_PROPERTY_READ("Text", "s", WebView_Text),
 	GB_PROPERTY_READ("Icon", "Picture", WebView_Icon),
 	GB_PROPERTY_READ("SelectedText", "s", WebView_SelectedText),
+	#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
 	GB_PROPERTY("Zoom", "f", WebView_Zoom),
+	#else
+	GB_PROPERTY("Zoom", "f", WebView_TextZoom),
+	#endif
 	GB_PROPERTY("TextZoom", "f", WebView_TextZoom),
 	GB_PROPERTY_READ("Title", "s", WebView_Title),
 	
