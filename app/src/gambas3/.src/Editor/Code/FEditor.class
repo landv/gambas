@@ -2410,10 +2410,14 @@ End
 Public Sub Editors_MouseUp()
 
   HideMessage
-
-  If Not Project.Running Then Return 
   If Not Editor.Selected Then Return 
   If Editor.Selection.StartLine < Editor.Selection.EndLine Then Return 
+  If Not Project.Running Then 
+    If FDebugInfo.IsHelpVisible Then ShowHelp
+    Return 
+  Endif
+  
+  
   
   FDebugInfo.InstantWatch(Trim(Editor.Selection.Text), Editor, 
     Editor.CursorX + Editor.CharWidth * ((Editor.Selection.StartColumn + Editor.Selection.EndColumn) / 2 - Editor.Column), 
@@ -2825,23 +2829,6 @@ End
 Public Sub Editors_DblClick()
 
   If Mouse.Control Then FindDefinition
-  If Mouse.Shift Then ShowHelp
+  'If Mouse.Shift Then ShowHelp
 End
 
-Public Sub Editors_MouseMove()
-
-  'If FDebugInfo.IsHelpVisible Then tmrHelp.Enabled = True
-
-End
-
-Public Sub Editors_Leave()
-
-  tmrHelp.Enabled = False
-
-End
-
-Public Sub tmrHelp_Timer()
-
-  tmrHelp.Enabled = False
-
-End

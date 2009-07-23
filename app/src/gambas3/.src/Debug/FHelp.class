@@ -24,18 +24,42 @@ End
 
 
 Public Sub ShowSymbolHelp(hSymbol As CSymbolInfo)
-  
+  Dim sLink As String
+  Dim sName As String
+  Dim sComp As String
   If hSymbol.LineNumber Then
   'Symbole locale
   Else
   'Symbole externe
     txtHelp.RichText = "<font color=green>Component: </font>" & hSymbol.Component & 
-                       "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & hSymbol.Class & 
-                       "&nbsp;&nbsp;&nbsp;<Font color=blue>Symbol: </font>" & hSymbol.Name 
+                     "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & hSymbol.Class & 
+                     "&nbsp;&nbsp;&nbsp;<Font color=blue>Symbol: </font>" & hSymbol.Name 
+  
+    
+    sName = LCase(hSymbol.Name)
+    
+    If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
+      sLink = "help/lang"
+    Else
+      sLink = "help/comp"
+      sComp = hSymbol.Component
+      If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+      sLink &= "/" & sComp
+      If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
+    Endif
+  
+    sLink &/= sName 
+    
+    If Exist(GetPath(FormatName(sLink)) & ".html")
+      sLink = GetPath(FormatName(sLink)) & ".html"
+    Else
+      sLink = "http://gambasdoc.org" &/ sLink & "?v3&" & GetLanguage()
+    Endif
+      txtHelp.RichText &= GetHelp(sLink)
+      
   Endif
-  
-  
 End
+  
 
 Public Sub ShowClassHelp(sComponent As String, sName As String)
   
@@ -47,17 +71,18 @@ End
 
 Private Function GetHelp(sFile As String) As String
   Dim aHelp As String[]
-  FDebugInfo.SetHelpVisible
+  'FDebugInfo.SetHelpVisible
   If Exist(sFile) Then
     ahelp = Scan(File.Load(sFile), "*<div class=\"title\">*<p>*\n<p>\n*")
-    
+    If ahelp.Count < 3 Then ahelp = Scan(File.Load(sFile), "*<div class=\"title\">*<p>*</div>*")
+    aHelp[1] = Replace(ahelp[1], "<font size=\"-2\">", "")
     Return "<br><br>" & aHelp[1] & "<br>" & aHelp[2]
   'Else
   '  Return "Help Not Found"
   Endif
   
-  'Catch
-    'Return "Error"
+  Catch
+    Return "</br>Error"
   
 End
 
@@ -82,5 +107,29 @@ Private Sub GetPath(sPath As String) As String
   sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
   sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
   Return System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
+  
+End
+
+Private Sub FormatName(sName As String) As String
+
+  sName = LCase(sName)
+  sName = Replace(sName, "_", "+")
+  sName = Replace(sName, "/.", "/_")
+  sName = Replace(sName, "/+", "/_")
+  sName = Replace(sName, ".", "+")
+  sName = Replace(sName, ":", "+")
+  
+  Return sName
+  
+End
+
+Private Sub GetLanguage() As String
+  
+  Dim sLang As String = System.Language
+  Dim iPos As Integer
+  
+  iPos = InStr(sLang, ".")
+  If iPos Then sLang = Left$(sLang, iPos - 1)
+  Return sLang
   
 End
