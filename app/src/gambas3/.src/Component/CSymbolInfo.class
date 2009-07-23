@@ -56,6 +56,7 @@ Public Sub Copy(sType As String, sNewType As String) As CSymbolInfo
     .Component = Component
     .NotPublic = NotPublic
     .LineNumber = 0
+    .HelpLineNumber = 0
   End With
   
   Return hSym

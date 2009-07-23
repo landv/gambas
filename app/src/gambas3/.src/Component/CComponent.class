@@ -786,7 +786,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
       .Kind = sKind
       .NotPublic = Not bPublic
       .LineNumber = iLine + 1
-      
+      .HelpLineNumber = GetHelpLine(iLine + 1, hEditor)
       If sKind = "m" Then
 
         For iStart = iInd + 1 To aSym.Count - 1
@@ -847,6 +847,22 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
 End
 
+Static Private Function GetHelpLine(iLine As Integer, hEditor As Editor) As Integer
+  Dim aSym As String[]
+  Do
+    Dec iLine
+    If iLine < 0 Then Return 0
+    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+    If aSym.Count = 1 Then
+      If Left(aSym[0], 1) = "'" Then
+        If Left(asym[0], 3) = "'/#" Then Return iLine
+      Else
+        Return 0
+      Endif
+    
+    Endif
+  Loop
+End
 
 Static Private Sub ScanForm(hForm As FForm, cSymbol As Collection)
 
