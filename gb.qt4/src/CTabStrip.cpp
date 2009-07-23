@@ -321,10 +321,6 @@ BEGIN_METHOD(CTABSTRIP_new, GB_OBJECT parent)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CTABSTRIP_free)
-
-END_METHOD
-
 
 BEGIN_PROPERTY(CTABSTRIP_count)
 
@@ -761,7 +757,6 @@ GB_DESC CTabStripDesc[] =
   GB_DECLARE("TabStrip", sizeof(CTABSTRIP)), GB_INHERITS("Container"),
 
   GB_METHOD("_new", NULL, CTABSTRIP_new, "(Parent)Container;"),
-  GB_METHOD("_free", NULL, CTABSTRIP_free, NULL),
 
   GB_PROPERTY("Count", "i", CTABSTRIP_count),
   GB_PROPERTY("Text", "s", CTABSTRIP_text),

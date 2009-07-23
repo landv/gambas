@@ -182,6 +182,19 @@ BEGIN_METHOD_VOID(CTAB_next)
 
 END_METHOD
 
+BEGIN_METHOD(CTAB_get, GB_INTEGER index)
+
+	int index = VARG(index);
+	
+	if (index < 0 || index >= TABSTRIP->tabCount(THIS->index))
+	{
+		GB.Error(GB_ERR_BOUND);
+		return;
+	}
+
+	GB.ReturnObject(GetObject(TABSTRIP->tabChild(THIS->index, index)));
+
+END_METHOD
 
 BEGIN_PROPERTY(CTAB_count)
 
@@ -245,8 +258,9 @@ GB_DESC CTabChildrenDesc[] =
 {
   GB_DECLARE(".TabChildren", 0), GB_VIRTUAL_CLASS(),
 
-  GB_METHOD("_next", "Control", CTAB_next, 0),
+  GB_METHOD("_next", "Control", CTAB_next, NULL),
   GB_PROPERTY_READ("Count", "i", CTAB_count),
+  GB_METHOD("_get", "Control", CTAB_next, NULL),
 
   GB_END_DECLARE
 };

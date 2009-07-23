@@ -603,7 +603,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
 
   if test "$have_$1" = "no"; then
   
-    if test "$4" = "src" && test $gb_in_component_search != "yes"; then
+    if test "$4" = "src" && test "$gb_in_component_search" != "yes"; then
       touch DISABLED
     fi
     AC_MSG_RESULT(no)
@@ -626,7 +626,7 @@ dnl    fi
     $2_LIB=""
     $2_LDFLAGS=""
     $2_DIR=""
-    if test $gb_in_component_search != "yes"; then
+    if test "$gb_in_component_search" != "yes"; then
       if test x"$6" = x; then
 	AC_MSG_WARN([*** $3 is disabled])
       else

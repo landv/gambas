@@ -301,7 +301,7 @@ End
 
 Private Sub GetFontSize(hUser As CUser) As Float
   
-  Return 8 + hUser.Score
+  Return 8 + Min(32, hUser.Score)
   
 End
 
