@@ -1,5 +1,7 @@
 ' Gambas module file
 
+Private $cPassword As New Collection
+
 Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean)
   
   Dim sPassword As String
@@ -10,14 +12,7 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
   Else
     hConn.Host = hConfig["Connection/Host"]
     hConn.User = hConfig["Connection/User"]
-    
-    sPassword = hConfig["Connection/Password"]
-    If Not sPassword Then
-      If hConfig["Connection/RememberPassword"] Then
-        sPassword = LoadPassword(sName)
-      Endif
-    Endif
-    hConn.Password = sPassword
+    hConn.Password = LoadPassword(sName, hConfig["Connection/RememberPassword"])
   Endif
   
   If bWithDatabase Then hConn.Name = hConfig["Connection/Database"]
@@ -26,15 +21,26 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
   
 End
 
-Public Sub LoadPassword(sName As String) As String
+Public Sub LoadPassword(sName As String, bDesktop As Boolean) As String
   
-  Return Desktop.Passwords[Project.Name &/ sName]
+  Dim sPassword As String
+  
+  sPassword = $cPassword[sName]
+  If Not sPassword Then 
+    If bDesktop Then
+      sPassword = Desktop.Passwords[Project.Name &/ sName]
+      $cPassword[sName] = sPassword
+    Endif
+  Endif
+  
+  Return sPassword
   
 End
 
-Public Sub SavePassword(sName As String, sPassword As String)
+Public Sub SavePassword(sName As String, sPassword As String, bDesktop As Boolean)
   
-  Desktop.Passwords[Project.Name &/ sName] = sPassword
+  $cPassword[sName] = sPassword
+  If sPassword Then Desktop.Passwords[Project.Name &/ sName] = sPassword
   
 End
 
@@ -311,6 +317,31 @@ Public Sub FillListViewWithTables(lvwTable As ListView, hConn As Connection)
     Endif
   Next
   
+End
+
+Public Sub NeedPassword(sType As String) As Boolean
   
+  Return LCase(sType) <> "sqlite"
+  
+End
+
+Public Sub CheckPassword(sPath As String) As Boolean
+  
+  Dim hConfig As Settings
+  Dim hConn As New Connection
+  Dim iBusy As Integer 
+  Dim bRet As Boolean
+  
+  iBusy = Application.Busy
+  Application.Busy = 0
+  
+  hConfig = New Settings(sPath)
+  InitFrom(hConn, hConfig, File.BaseName(sPath))
+  If NeedPassword(hConn.Type) And If Not hConn.Password Then 
+    bRet = FNewConnection.Run(sPath, True)
+  Endif
+  
+  Application.Busy = iBusy
+  Return bRet
   
 End

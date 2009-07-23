@@ -1328,6 +1328,10 @@ Public Function LoadFile(sPath As String) As Object
         
     Else If IsConnectionPath(sPath) Then
     
+      If MConnection.CheckPassword(sPath) Then 
+        Dec Application.Busy
+        Return
+      Endif
       hForm = New FConnectionEditor(sPath)
     
     Endif

@@ -135,8 +135,6 @@ Public Sub Reload() As Boolean
   Dim hConfig As Settings
   Dim sTitle As String
 
-  Inc Application.Busy
-
   hConfig = New Settings(Path)
   
   If $hConn Then 
@@ -147,6 +145,9 @@ Public Sub Reload() As Boolean
 
   $hConn = New Connection
   MConnection.InitFrom($hConn, hConfig, Me.Name, True)
+
+  Inc Application.Busy
+
   $hConn.Open
   'DB.Current = $hConn
   

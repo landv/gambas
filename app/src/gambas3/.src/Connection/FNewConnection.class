@@ -1,10 +1,12 @@
 ' Gambas class file
 
 Private $sPath As String
+Private $bAskPassword As Boolean
 
-Public Sub Run(Optional sPath As String) As String
+Public Sub Run(Optional sPath As String, Optional bAskPassword As Boolean) As Boolean
 
   $sPath = sPath
+  $bAskPassword = bAskPassword
   Return Not Me.ShowModal() 
 
 End
@@ -32,7 +34,9 @@ Private Sub LoadConnection()
     Endif
   Next
 
-  If chkRememberPassword.Value Then txtPassword.Text = MConnection.LoadPassword(txtName.Text)
+  If MConnection.NeedPassword(sType) Then
+    txtPassword.Text = MConnection.LoadPassword(txtName.Text, chkRememberPassword.Value)
+  Endif
   txtDatabase.Text = hConfig["Connection/Database"] 
   
 End
@@ -46,7 +50,6 @@ Private Sub FillConfig(hConfig As Object, Optional bPassword As Boolean)
   hConfig["Connection/RememberPassword"] = CBool(chkRememberPassword.Value)
   hConfig["Connection/IgnoreCharset"] = CBool(chkIgnoreCharset.Value)
   hConfig["Connection/Database"] = txtDatabase.Text
-  If bPassword Then hConfig["Connection/Password"] = txtPassword.Text
   
 End
 
@@ -85,8 +88,8 @@ Private Sub UpdateConnection() As Boolean
   FillConfig(hConfig)
   hConfig.Save
   
-  If LCase(cmbType.Text) <> "sqlite" Then
-    If chkRememberPassword.Value Then MConnection.SavePassword(txtName.Text, txtPassword.Text)
+  If MConnection.NeedPassword(cmbType.Text) Then
+    MConnection.SavePassword(txtName.Text, txtPassword.Text, chkRememberPassword.Value)
   Endif
   
   If bCreate Then 
@@ -116,12 +119,20 @@ End
 Public Sub Form_Open()
 
   If $sPath Then
-    Me.Title = ("Connection properties")
+    If $bAskPassword Then
+      Me.Title = ("Please enter password")
+    Else
+      Me.Title = ("Connection properties")
+    Endif
     'Me.Icon = Picture["icon:/small/info"]
     txtName.Text = File.BaseName($sPath)
     txtName.ReadOnly = True
-    cmbType.SetFocus
     LoadConnection
+    If $bAskPassword Then
+      txtPassword.SetFocus
+    Else
+      cmbType.SetFocus
+    Endif
   Else
     Me.Title = ("New connection")
     'Me.Icon = Picture["icon:/small/new"]
