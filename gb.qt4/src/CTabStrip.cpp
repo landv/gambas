@@ -548,6 +548,34 @@ BEGIN_METHOD_VOID(CTAB_next)
 
 END_METHOD
 
+BEGIN_METHOD(CTAB_get, GB_INTEGER index)
+
+	QObjectList list = WIDGET->stack.at(THIS->index)->widget->children();
+	int index = VARG(index);
+	int i;
+	CWIDGET *widget;
+
+	if (index >= 0)
+	{
+		i = 0;
+		for(i = 0; i < list.count(); i++)
+		{
+			widget = CWidget::getRealExisting(list.at(i));
+			if (!widget)
+				continue;
+			if (index == 0)
+			{
+				GB.ReturnObject(widget);
+				return;
+			}
+			index--;
+		}
+	}
+
+	GB.Error(GB_ERR_BOUND);
+
+END_METHOD
+
 
 BEGIN_PROPERTY(CTAB_count)
 
@@ -676,7 +704,7 @@ CTabStrip CTabStrip::manager;
 void CTabStrip::currentChanged(int index)
 {
 	QWidget *wid;
-  GET_SENDER(_object);
+  GET_SENDER();
 
 	wid = WIDGET->currentWidget();
 
@@ -706,6 +734,7 @@ GB_DESC CTabChildrenDesc[] =
 
   GB_METHOD("_next", "Control", CTAB_next, NULL),
   GB_PROPERTY_READ("Count", "i", CTAB_count),
+	GB_METHOD("_get", "Control", CTAB_get, "(Index)i"),
 
   GB_END_DECLARE
 };

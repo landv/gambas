@@ -43,10 +43,12 @@
 #ifdef DO_NOT_USE_QT_INTERFACE
 
   #define TO_UTF8(_str) QT_ToUTF8(_str)
+	#define GET_SENDER() void *_object = QT_GetObject((QWidget*)sender())
 
 #else
 
   #define TO_UTF8(_str) QT.ToUTF8(_str)
+	#define GET_SENDER() void *_object = QT.GetObject((QWidget*)sender())
 
 #endif
 
@@ -116,6 +118,7 @@ typedef
     void (*ScrollBarProperty)(void *, void *);
     void (*FontProperty)(void *, void *);
     QT_FONT *(*CreateFont)(const QFont &, QT_FONT_FUNC, void *);
+		QT_PICTURE (*CreatePicture)(const QPixmap &);
     //QMimeSourceFactory *(*MimeSourceFactory)(void);
     QPixmap *(*GetPixmap)(QT_PICTURE);
     const char *(*ToUTF8)(const QString &);

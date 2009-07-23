@@ -2315,7 +2315,7 @@ void CGridView::changed(void)
 {
 	int row, col;
 	
-	GET_SENDER(_object);
+	GET_SENDER();
 	MyTable *w = (MyTable *)sender();
 
 	w->updateCurrentCell();
@@ -2329,13 +2329,13 @@ void CGridView::changed(void)
 
 void CGridView::activated(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	GB.Raise(THIS, EVENT_Activate, 0);
 }
 
 void CGridView::selected(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	if (WIDGET->selectionMode() == Q3Table::SingleRow)
 		GB.Raise(THIS, EVENT_Select, 0);
 	else
@@ -2348,7 +2348,7 @@ void CGridView::selected(void)
 
 void CGridView::clicked(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	GB.Raise(THIS, EVENT_Click, 0);
 }
 
@@ -2360,7 +2360,7 @@ static void send_scroll(void *param)
 
 void CGridView::scrolled(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 
 	GB.Ref(THIS);
 	GB.Post((void (*)())send_scroll, (intptr_t)THIS);
@@ -2368,25 +2368,25 @@ void CGridView::scrolled(void)
 
 void CGridView::columnClicked(int col)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	GB.Raise(THIS, EVENT_ColumnClick, 1, GB_T_INTEGER, col);
 }
 
 void CGridView::rowClicked(int row)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	GB.Raise(THIS, EVENT_RowClick, 1, GB_T_INTEGER, row);
 }
 
 void CGridView::columnResized(int col)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	GB.Raise(THIS, EVENT_ColumnResize, 1, GB_T_INTEGER, col);
 }
 
 void CGridView::rowResized(int row)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	GB.Raise(THIS, EVENT_RowResize, 1, GB_T_INTEGER, row);
 }
 

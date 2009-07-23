@@ -145,7 +145,7 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 	
 	*pcount += count;
 	
-	size = *format == 32 ? sizeof(int) : ( *format == 16 ? sizeof(short) : 1 );
+	size = *format == 32 ? sizeof(long) : ( *format == 16 ? sizeof(short) : 1 );
 	
 	GB.FreeString(&_property_value);
 	GB.NewString(&_property_value, (char *)data, count * size);

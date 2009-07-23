@@ -113,5 +113,6 @@ void MAIN_process_events(void);
 const char *QT_ToUTF8(const QString &str);
 void QT_RegisterAction(void *object, const char *key, int on);
 void QT_RaiseAction(const char *key);
+void *QT_GetObject(QWidget *);
 
 #endif

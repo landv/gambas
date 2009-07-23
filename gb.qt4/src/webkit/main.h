@@ -1,8 +1,6 @@
 /***************************************************************************
 
-  CRadioButton.h
-
-  The RadioButton class
+  main.h
 
   (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
 
@@ -22,41 +20,15 @@
 
 ***************************************************************************/
 
-#ifndef __CRADIOBUTTON_H
-#define __CRADIOBUTTON_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
 #include "gambas.h"
+#include "../gb.qt.h"
 
-#include "CWidget.h"
-
-#ifndef __CRADIOBUTTON_CPP
-extern GB_DESC CRadioButtonDesc[];
-#else
-
-#define QRADIOBUTTON(object) ((QRadioButton *)((CWIDGET *)object)->widget)
-#define THIS ((CRADIOBUTTON *)_object)
-#define WIDGET QRADIOBUTTON(_object)
-
+#ifndef __MAIN_CPP
+extern "C" GB_INTERFACE GB;
+extern "C" QT_INTERFACE QT;
 #endif
-
-typedef
-  struct {
-    CWIDGET widget;
-    }
-  CRADIOBUTTON;
-
-class CRadioButton : public QObject
-{
-  Q_OBJECT
-
-public:
-
-  static CRadioButton manager;
-
-public slots:
-
-  void clicked(bool on);
-
-};
 
 #endif

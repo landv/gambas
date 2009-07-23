@@ -33,6 +33,14 @@ GB_COMPONENT_PKG_CONFIG(
   QtCore ">= 4.3.4" QtGui Qt3Support
 )
 
+GB_COMPONENT_PKG_CONFIG(
+  qtwebkit,
+  QTWEBKIT,
+  [QT4 webkit component],
+  [webkit],
+  QtCore ">= 4.3.4" QtGui QtWebKit
+)
+
 GB_COMPONENT(
   opengl,
   OPENGL,
@@ -57,5 +65,6 @@ AC_OUTPUT( \
 Makefile \
 src/Makefile \
 src/ext/Makefile \
+src/webkit/Makefile \
 src/opengl/Makefile \
 )

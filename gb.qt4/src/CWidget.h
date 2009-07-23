@@ -130,29 +130,27 @@ DECLARE_PROPERTY(CCONTROL_action);
 #define CWIDGET_clear_flag(wid, _f) (((CWIDGET *)wid)->flag.f &= ~_f)
 #define CWIDGET_test_flag(wid, _f) ((((CWIDGET *)wid)->flag.f & _f) != 0)
 
-#define GET_SENDER(_ob)   CWIDGET *_ob = CWidget::get((QObject *)sender())
-
 #define RAISE_EVENT(_event) \
 { \
-	GET_SENDER(ob); \
+	GET_SENDER(); \
 \
-	if (ob == NULL) \
+	if (_object == NULL) \
 		return; \
 \
-	GB.Raise(ob, _event, 0); \
+	GB.Raise(_object, _event, 0); \
 }
 
 #define RAISE_EVENT_ACTION(_event) \
 { \
-	GET_SENDER(ob); \
+	GET_SENDER(); \
 \
-	if (ob == NULL) \
+	if (_object == NULL) \
 		return; \
 \
-	GB.Ref(ob); \
-	GB.Raise(ob, _event, 0); \
-	CACTION_raise(ob); \
-	GB.Unref(POINTER(&ob)); \
+	GB.Ref(_object); \
+	GB.Raise(_object, _event, 0); \
+	CACTION_raise(_object); \
+	GB.Unref(POINTER(&_object)); \
 }
 
 

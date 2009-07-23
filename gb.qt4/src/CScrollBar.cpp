@@ -180,8 +180,8 @@ CScrollBar CScrollBar::manager;
 
 void CScrollBar::event_change(void)
 {
-  GET_SENDER(object);
-  GB.Raise(object, EVENT_Change, 0);
+  GET_SENDER();
+  GB.Raise(THIS, EVENT_Change, 0);
 }
 
 /*void CScrollBar::event_sliderpressed(void)

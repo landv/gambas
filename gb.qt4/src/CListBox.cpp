@@ -446,7 +446,7 @@ static void post_select_event(void *_object)
 
 void CListBox::selected(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	if (WIDGET->selectionMode() == QAbstractItemView::SingleSelection)
 		GB.Raise(_object, EVENT_Select, 0);
 	else
@@ -465,7 +465,7 @@ void CListBox::activated(QListWidgetItem *)
 #if 0
 void CListBox::highlighted(int index)
 {
-  GET_SENDER(_object);
+  GET_SENDER();
 
   /*if (currentItem(WIDGET) < 0)
     return;
@@ -481,7 +481,7 @@ void CListBox::highlighted(int index)
 void CListBox::clicked(QListWidgetItem *i)
 {
 	int current;
-  GET_SENDER(_object);
+  GET_SENDER();
 
   if (!i)
     return;
@@ -503,7 +503,7 @@ void CListBox::clicked(QListWidgetItem *item)
 {
   int current;
 
-  GET_SENDER(_object);
+  GET_SENDER();
 
   if (!item)
     return;

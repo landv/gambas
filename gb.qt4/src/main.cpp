@@ -783,7 +783,7 @@ static void QT_InitWidget(QWidget *widget, void *object)
 	CWIDGET_new(widget, object);
 }
 
-static void *QT_GetObject(QWidget *widget)
+void *QT_GetObject(QWidget *widget)
 {
 	return CWidget::get((QObject *)widget);
 }
@@ -819,9 +819,14 @@ const char *QT_ToUTF8(const QString &str)
 	return res;
 }
 
-static void QT_CreateFont(const QFont &f, FONT_FUNC func, void *object)
+static void *QT_CreateFont(const QFont &f, FONT_FUNC func, void *object)
 {
-	CFONT_create(f, func, object);
+	return CFONT_create(f, func, object);
+}
+
+static void *QT_CreatePicture(const QPixmap &p)
+{
+	return CPICTURE_create(&p);
 }
 
 static void *QT_GetDrawInterface()
@@ -884,6 +889,7 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)CWIDGET_scrollbar,
 	(void *)CCONTROL_font,
 	(void *)QT_CreateFont,
+	(void *)QT_CreatePicture,
 	//(void *)QT_MimeSourceFactory,
 	(void *)QT_GetPixmap,
 	(void *)QT_ToUTF8,

@@ -865,7 +865,7 @@ MyIconViewItem *CIconView::getItem(CICONVIEW *treeview, char *key)
 
 void CIconView::raiseEvent(int ev, Q3IconViewItem *it)
 {
-  GET_SENDER(_object);
+  GET_SENDER();
   MyIconViewItem *old = THIS->item;
 
   if (!it)

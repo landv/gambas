@@ -163,6 +163,14 @@ CPICTURE *CPICTURE_grab(QWidget *wid)
     THIS->pixmap->setMask(THIS->pixmap->createHeuristicMask());
 }*/
 
+CPICTURE *CPICTURE_create(const QPixmap *pixmap)
+{
+	CPICTURE *pict;
+
+	create(&pict);
+	if (pixmap) *pict->pixmap = *pixmap;
+	return pict;
+}
 
 /*******************************************************************************
 

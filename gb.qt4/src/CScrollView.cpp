@@ -596,7 +596,7 @@ static void send_scroll(void *param)
 
 void CScrollView::scrolled(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	
 	if (WIDGET->_noscroll)
 		return;

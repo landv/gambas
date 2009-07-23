@@ -73,5 +73,6 @@ extern GB_DESC CPictureDesc[];
 CPICTURE *CPICTURE_grab(QWidget *wid);
 CPICTURE *CPICTURE_get_picture(const char *path);
 bool CPICTURE_load_image(QImage **p, const char *path, int lenp);
+CPICTURE *CPICTURE_create(const QPixmap *pixmap);
 
 #endif

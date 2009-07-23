@@ -842,6 +842,7 @@ Public Sub Control_MouseDown()
   Dim X As Integer
   Dim Y As Integer
 
+  Me.SetFocus
   Project.SetCurrentPopup(mnuForm)
 
   X = Mouse.X

@@ -1963,7 +1963,7 @@ static void raise_event(void *_object, int ev, Q3ListViewItem *it)
 
 void CTreeView::raiseEvent(int ev, Q3ListViewItem *it)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	raise_event(_object, ev, it);
 }
 
@@ -1976,7 +1976,7 @@ static void post_select_event(void *_object)
 
 void CTreeView::selected(void)
 {
-  GET_SENDER(_object);
+  GET_SENDER();
   if (WIDGET->selectionMode() == Q3ListView::Single)
 	  raise_event(_object, EVENT_Select, 0);
 	else
@@ -2008,7 +2008,7 @@ static void post_rename_event(void *_object)
 
 void CTreeView::renamed(Q3ListViewItem *it, int col)
 {
-  GET_SENDER(_object);
+  GET_SENDER();
 
   if (it == 0)
     return;
@@ -2020,7 +2020,7 @@ void CTreeView::renamed(Q3ListViewItem *it, int col)
 
 // void CTreeView::columnClicked(QListViewItem *it, const QPoint &p, int c)
 // {
-//   GET_SENDER(_object);
+//   GET_SENDER();
 // 
 //   if (it == 0)
 //     return;

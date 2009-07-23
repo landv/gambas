@@ -74,7 +74,7 @@ CRadioButton CRadioButton::manager;
 void CRadioButton::clicked(bool on)
 {
   QRadioButton *wid = (QRadioButton *)sender();
-  GET_SENDER(ob);
+  GET_SENDER();
   QObject *parent = wid->parent();
 
   QList<QRadioButton *> list = parent->findChildren<QRadioButton *>();
@@ -94,7 +94,7 @@ void CRadioButton::clicked(bool on)
     }
 
     //if (!on)
-      GB.Raise(ob, EVENT_Click, 0);
+      GB.Raise(THIS, EVENT_Click, 0);
   }
   else
   {

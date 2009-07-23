@@ -697,7 +697,7 @@ void CButton::clicked(void)
 
 void CButton::clickedToggle(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	
 	if (THIS->radio)
 	{ 
@@ -715,7 +715,7 @@ void CButton::clickedToggle(void)
 
 void CButton::clickedTool(void)
 {
-	GET_SENDER(_object);
+	GET_SENDER();
 	
 	if (THIS->radio)
 	{ 

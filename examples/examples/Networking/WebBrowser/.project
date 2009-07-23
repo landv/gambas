@@ -1,10 +1,12 @@
 # Gambas Project File 3.0
+# Compiled with Gambas 2.99.0 (r2148)
 Startup=FBrowser
-Icon=webbrowser.png
+Icon=konqueror.png
 Version=0.0.13
-Library=gb.qt
-Library=gb.qt.kde
-Library=gb.qt.kde.html
+Component=gb.image
+Component=gb.qt4
+Component=gb.form
+Component=gb.qt4.webkit
 TabSize=2
 Translate=1
 Language=fr
@@ -16,3 +18,5 @@ Systems=mandriva
 Menus=More Applications/Development/Other
 Categories=
 Groups=Development/Other
+ExtraDependencies=
+ExtraFiles=
