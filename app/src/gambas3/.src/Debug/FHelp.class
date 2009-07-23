@@ -73,10 +73,9 @@ Private Function GetHelp(sFile As String) As String
   Dim aHelp As String[]
   'FDebugInfo.SetHelpVisible
   If Exist(sFile) Then
-    ahelp = Scan(File.Load(sFile), "*<div class=\"title\">*<p>*\n<p>\n*")
-    If ahelp.Count < 3 Then ahelp = Scan(File.Load(sFile), "*<div class=\"title\">*<p>*</div>*")
-    aHelp[1] = Replace(ahelp[1], "<font size=\"-2\">", "")
-    Return "<br><br>" & aHelp[1] & "<br>" & aHelp[2]
+    ahelp = Scan(File.Load(sFile), "*<div class=\"title\">*</body>*")
+
+    Return "<br><br>" & aHelp[1]
   'Else
   '  Return "Help Not Found"
   Endif
