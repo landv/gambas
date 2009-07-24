@@ -142,14 +142,26 @@ End
 Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
     Dim hForm As Object
     Dim hEdit As Editor
-    Dim sClass As String
+    Dim sClass, sResult, s As String
+    Dim iLine As Integer
+    
     sClass = Project.FindPath(hSymbol.Class)
     hForm = Project.LoadFile(sClass)
     Try hEdit = hForm.Editor
     If Not hEdit Then Return  
     'hEdit.Goto(hSymbol.HelpLineNumber, 0)
-    If hSymbol.HelpLineNumber Then Return Mid(LTrim(hEdit.Lines[hSymbol.HelpLineNumber].Text), 2)
-
-  
+    If hSymbol.HelpLineNumber Then 
+      iLine = hSymbol.HelpLineNumber
+      sResult = "<b><u>Syntax</u></b><br>"
+      sResult &= hSymbol.Name & hSymbol.GetSignature(0) & "<br><br>"
+      Do
+        s = LTrim(hEdit.Lines[iLine].Text)
+        If Left(s, 2) <> "''" Then Break
+        sResult &= Mid(s, 3) & "<br>"
+        Inc iLine
+        If iLine >= hEdit.Lines.Count Then Break
+      Loop
+      Return sResult
+    Endif
 End
 

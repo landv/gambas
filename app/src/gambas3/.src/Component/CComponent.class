@@ -674,7 +674,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim sLine As String
   Dim iPos As Integer
   Dim sSign As String
-
+  Dim iLastHelpLine As Integer
+  Dim bIsSameHelpBlock As Boolean
   'Debug "ScanClass "; hModule.Name
   'DEBUG "> "; hModule.Name
 
@@ -702,6 +703,15 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
 
     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
     If aSym.Count = 0 Then Continue
+    
+    'Gestion de l'aide
+    If Left(aSym[0], 2) = "''" And iLastHelpLine < iLine Then 
+      If Not bIsSameHelpBlock Then iLastHelpLine = iLine
+      bIsSameHelpBlock = True
+    Else
+      bIsSameHelpBlock = False
+    Endif
+    
     
     If aSym.Count = 2 Then
       If bCanInherit Then
@@ -785,7 +795,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
       .Kind = sKind
       .NotPublic = Not bPublic
       .LineNumber = iLine + 1
-      .HelpLineNumber = GetHelpLine(iLine, hEditor)
+      .HelpLineNumber = iLastHelpLine
       If sKind = "m" Then
 
         For iStart = iInd + 1 To aSym.Count - 1
