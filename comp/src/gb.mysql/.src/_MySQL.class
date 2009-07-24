@@ -16,6 +16,7 @@ Private $View As _View
 Private $User As _User
 Private $Trigger As _Trigger
 Private $Routines As _Routines
+Private $Event As _Event
 Private $asEngines As New String[]
 Private $asCollations As New String[]
 Private $asCharsets As New String[]
@@ -40,6 +41,7 @@ Property Read Charsets As String[]
 Property Read Databases As String[]
 Property Read Users As String[]
 Property Read Query As String
+Property Read {Event} As _Event
 
 Private Function Engine_Read() As String
 
@@ -281,5 +283,12 @@ Public Function Password(Password As String) As String
 
   modMain.$Query = "SELECT PASSWORD('" & Password & "') AS `Pass`"
   Return modMain.$Connection.Exec(modMain.$Query)!Pass
+
+End
+
+Private Function Event_Read() As _Event
+
+  $Event = New _Event
+  Return $Event
 
 End
