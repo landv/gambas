@@ -30,6 +30,7 @@
 
 DECLARE_EVENT(EVENT_CLICK);
 DECLARE_EVENT(EVENT_LINK);
+DECLARE_EVENT(EVENT_PROGRESS);
 DECLARE_EVENT(EVENT_LOAD);
 DECLARE_EVENT(EVENT_ERROR);
 DECLARE_EVENT(EVENT_ICON);
@@ -55,6 +56,12 @@ BEGIN_METHOD(WebView_new, GB_OBJECT parent)
   
 	QObject::connect(wid->page(), SIGNAL(linkHovered(const QString &, const QString &, const QString &)), &CWebView::manager, 
 										SLOT(linkHovered(const QString &, const QString &, const QString &)));
+
+END_METHOD
+
+BEGIN_METHOD_VOID(WebView_free)
+
+	GB.FreeString(&THIS->status);
 
 END_METHOD
 
@@ -154,17 +161,36 @@ BEGIN_PROPERTY(WebView_NewView)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(WebView_Progress)
+
+	GB.ReturnFloat(THIS->progress);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebView_Status)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->status);
+	else
+		GB.StoreString(PROP(GB_STRING), &THIS->status);
+
+END_PROPERTY
+
 GB_DESC CWebViewDesc[] =
 {
   GB_DECLARE("WebView", sizeof(CWEBVIEW)), GB_INHERITS("Control"),
 	
   GB_METHOD("_new", NULL, WebView_new, "(Parent)Container;"),
+  GB_METHOD("_free", NULL, WebView_free, NULL),
 	
 	GB_PROPERTY("Url", "s", WebView_Url),
+	GB_PROPERTY("Status", "s", WebView_Status),
+
 	GB_PROPERTY_READ("HTML", "s", WebView_HTML),
 	GB_PROPERTY_READ("Text", "s", WebView_Text),
 	GB_PROPERTY_READ("Icon", "Picture", WebView_Icon),
 	GB_PROPERTY_READ("SelectedText", "s", WebView_SelectedText),
+	GB_PROPERTY_READ("Progress", "f", WebView_Progress),
 	#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
 	GB_PROPERTY("Zoom", "f", WebView_Zoom),
 	#else
@@ -184,12 +210,13 @@ GB_DESC CWebViewDesc[] =
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_CLICK),
 	GB_EVENT("Link", NULL, "(Url)s", &EVENT_LINK),
-	GB_EVENT("Load", NULL, "(Progress)f", &EVENT_LOAD),
+	GB_EVENT("Progress", NULL, NULL, &EVENT_PROGRESS),
+	GB_EVENT("Load", NULL, NULL, &EVENT_LOAD),
 	GB_EVENT("Error", NULL, NULL, &EVENT_ERROR),
 	GB_EVENT("Icon", NULL, NULL, &EVENT_ICON),
 	GB_EVENT("Title", NULL, NULL, &EVENT_TITLE),
 	GB_EVENT("Select", NULL, NULL, &EVENT_SELECT),
-	GB_EVENT("Status", NULL, "(Status)s", &EVENT_STATUS),
+	GB_EVENT("Status", NULL, NULL, &EVENT_STATUS),
 	GB_EVENT("NewWindow", NULL, "(Modal)b", &EVENT_NEW_WINDOW),
 
 	GB_END_DECLARE
@@ -236,8 +263,9 @@ void CWebView::linkClicked(const QUrl &url)
 void CWebView::loadFinished(bool ok)
 {
 	GET_SENDER();
+	THIS->progress = 1;
 	if (ok)
-		GB.Raise(THIS, EVENT_LOAD, 1, GB_T_FLOAT, 1.0);
+		GB.Raise(THIS, EVENT_LOAD, 0);
 	else
 		GB.Raise(THIS, EVENT_ERROR, 0);
 }
@@ -245,13 +273,15 @@ void CWebView::loadFinished(bool ok)
 void CWebView::loadProgress(int progress)
 {
 	GET_SENDER();
-	GB.Raise(THIS, EVENT_LOAD, 1, GB_T_FLOAT, progress / 100.0);
+	THIS->progress = progress / 100.0;
+	GB.Raise(THIS, EVENT_PROGRESS, 0);
 }
 
 void CWebView::loadStarted()
 {
 	GET_SENDER();
-	GB.Raise(THIS, EVENT_LOAD, 1, GB_T_FLOAT, 0.0);
+	THIS->progress = 0;
+	GB.Raise(THIS, EVENT_PROGRESS, 0);
 }
 
 void CWebView::selectionChanged()
@@ -263,8 +293,9 @@ void CWebView::selectionChanged()
 void CWebView::statusBarMessage(const QString &text)
 {
 	GET_SENDER();
-	const char *str = TO_UTF8(text);
-	GB.Raise(THIS, EVENT_STATUS, 1, GB_T_STRING, str, strlen(str));
+	GB.FreeString(&THIS->status);
+	GB.NewString(&THIS->status, TO_UTF8(text), 0);
+	GB.Raise(THIS, EVENT_STATUS, 0);
 }
 	
 void CWebView::titleChanged(const QString &title)

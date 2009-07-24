@@ -58,14 +58,15 @@ public:
 	CTab(CTABSTRIP *parent, QWidget *page);
 	~CTab();
 	
-	int index() { return WIDGET->indexOf(widget); }
-	bool isEmpty() { return widget->children().count() == 0; }
-	void ensureVisible() { WIDGET->setCurrentIndex(index()); }
+	int index() const { return WIDGET->indexOf(widget); }
+	void ensureVisible() const { WIDGET->setCurrentIndex(index()); }
 	void setEnabled(bool e) { enabled = e; WIDGET->setTabEnabled(index(), e && WIDGET->isEnabled()); }
-	bool isEnabled() { return enabled; }
-	bool isVisible() { return visible; }
+	bool isEnabled() const { return enabled; }
+	bool isVisible() const { return visible; }
 	void setVisible(bool v);
 	void updateIcon();
+	int count() const;
+	bool isEmpty() const { return count() == 0; }
 
 private:
 	CTABSTRIP *_object;
@@ -87,6 +88,23 @@ CTab::CTab(CTABSTRIP *parent, QWidget *page)
 CTab::~CTab()
 {
 	GB.Unref(POINTER(&icon));
+}
+
+int CTab::count() const
+{
+	QObjectList list = widget->children();
+	QObject *ob;
+	int n = 0;
+	int i;
+	
+	for(i = 0; i < list.count(); i++)
+	{
+		ob = list.at(i);
+		if (ob->isWidgetType() && CWidget::getRealExisting(ob))
+			n++;
+	}
+	
+	return n;
 }
 
 void CTab::setVisible(bool v)
@@ -575,20 +593,7 @@ END_METHOD
 
 BEGIN_PROPERTY(CTAB_count)
 
-  QWidget *page = WIDGET->stack.at(THIS->index)->widget;
-	QObjectList list = page->children();
-	QObject *ob;
-	int n = 0;
-	int i;
-	
-	for(i = 0; i < list.count(); i++)
-	{
-		ob = list.at(i);
-		if (ob->isWidgetType() && CWidget::getRealExisting(ob))
-			n++;
-	}
-  
-  GB.ReturnInteger(n);
+	GB.ReturnInteger(WIDGET->stack.at(THIS->index)->count());
 
 END_PROPERTY
 

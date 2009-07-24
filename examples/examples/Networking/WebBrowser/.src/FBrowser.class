@@ -49,41 +49,40 @@ Public Sub WebView_Link(Url As String)
 
 End
 
-Public Sub WebView_Status(Status As String)
+Public Sub WebView_Status()
 
   If Not IsLastCurrentView() Then Return
-  $sStatus = Status
-  lblStatus.Text = Status
+  lblStatus.Text = GetView().Status
 
 End
 
-Public Sub WebView_Load(Progress As Float)
+Public Sub WebView_Progress()
 
-  Dim hIcon As Picture
-
+  GetView().Status = "Loading..."
   If Not IsLastCurrentView() Then Return
 
-  pgbLoad.Value = Progress
-  If Progress = 0 Then
-    panLoad.Show
-    lblStatus.Text = "Loading " & GetView().Url & "..."
-    'WebView1.Mouse = Mouse.Wait
-  Else If Progress = 1 Then
-    panLoad.Hide
-    lblStatus.Text = $sStatus
-    txtURL.Text = GetView().Url
-    hIcon = GetView().Icon
-    Me.Icon = hIcon
-    'WebView1.Mouse = Mouse.Default
-  Endif
+  lblStatus.Text = GetView().Status
+  pgbLoad.Value = GetView().Progress
+  panLoad.Show
 
 End
 
 Public Sub WebView_Error()
 
+  GetView().Status = "Unable to load page"
   If Not IsLastCurrentView() Then Return
 
-  lblStatus.Text = "Unable to load page"
+  lblStatus.Text = GetView().Status
+  pgbLoad.Hide
+
+End
+
+Public Sub WebView_Load()
+
+  GetView().Status = ""
+  If Not IsLastCurrentView() Then Return
+
+  lblStatus.Text = ""
   pgbLoad.Hide
 
 End
@@ -130,13 +129,13 @@ End
 
 Public Sub btnZoomIn_Click()
 
-  GetView().Zoom = Round(GetView().Zoom / 1.25, -2)
+  GetView().Zoom = Round(GetView().Zoom * 1.25, -2)
 
 End
 
 Public Sub btnZoomOut_Click()
 
-  GetView().Zoom = Round(GetView().Zoom * 1.25, -2)
+  GetView().Zoom = Round(GetView().Zoom / 1.25, -2)
 
 End
 
@@ -148,16 +147,19 @@ End
 
 Public Sub WebView_Title()
 
+  Dim hView As WebView = Last
+  tabBrowser[hView.Tag].Text = hView.Title
   If Not IsLastCurrentView() Then Return
-  Me.Title = GetView().Title & " - Gambas WebKit"
-  tabBrowser[tabBrowser.Index].Text = GetView().Title
+  Me.Title = hView.Title & " - Gambas WebKit"
 
 End
 
 Public Sub WebView_Icon()
 
+  Dim hView As WebView = Last
+  tabBrowser[hView.Tag].Picture = hView.Icon
   If Not IsLastCurrentView() Then Return
-  Me.Icon = GetView().Icon
+  Me.Icon = hView.Icon
 
 End
 
@@ -189,6 +191,7 @@ Private Sub CreateView()
   tabBrowser[iLast].Picture = Null
   tabBrowser.Index = iLast
   hView = New WebView(tabBrowser) As "WebView"
+  hView.Tag = tabBrowser.Index
   Object.Unlock(tabBrowser)
   tabBrowser_Click
   
@@ -207,8 +210,15 @@ Public Sub tabBrowser_Click()
     Me.Title = hView.Title & " - Gambas WebKit"
     tabBrowser.Text = hView.Title
     Me.Icon = hView.Icon
+    tabBrowser.Picture = hView.Icon
     txtURL.Text = hView.Url
-    lblStatus.text = ""
+    lblStatus.Text = hView.Status
+    pgbLoad.Value = hView.Progress
+    If hView.Progress > 0 And If hView.Progress < 1 Then
+      panLoad.Show
+    Else
+      panLoad.Hide
+    Endif
   Endif
   
 End
@@ -216,14 +226,15 @@ End
 Public Sub btnClose_Click()
 
   GetView().Delete
-
+  
   Object.Lock(tabBrowser)
-  tabBrowser[tabBrowser.Index].Text = "[Deleted]"
-  ' tabBrowser[].Visible does not work yet...
-  tabBrowser[tabBrowser.Index].Enabled = False
+  tabBrowser[tabBrowser.Index].Delete
   Object.UnLock(tabBrowser)
-  tabBrowser_Click
-  Inc $iHidden
+  If tabBrowser.Index = (tabBrowser.Count - 1) And If tabBrowser.Index > 0 Then
+    tabBrowser.Index = tabBrowser.Index - 1
+  Else
+    tabBrowser_Click
+  Endif
   
   ' If (tabBrowser.Count - $iHidden) = 1 Then
   '   tabBrowser.Count = 1

@@ -57,6 +57,8 @@ typedef
 	{
 		QT_WIDGET widget;
 		void *new_view;
+		double progress;
+		char *status;
 	}
 	CWEBVIEW;
 
