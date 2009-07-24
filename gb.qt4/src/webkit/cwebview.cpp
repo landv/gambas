@@ -26,6 +26,7 @@
 #include <QWebPage>
 #include <QWebFrame>
 
+#include "cwebframe.h"
 #include "cwebview.h"
 
 DECLARE_EVENT(EVENT_CLICK);
@@ -62,6 +63,7 @@ END_METHOD
 BEGIN_METHOD_VOID(WebView_free)
 
 	GB.FreeString(&THIS->status);
+	GB.Unref(POINTER(&THIS->icon));
 
 END_METHOD
 
@@ -88,11 +90,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(WebView_Icon)
 
-	QIcon icon = WIDGET->icon();
-	if (icon.isNull())
-		GB.ReturnNull();
-	else
-		GB.ReturnObject(QT.CreatePicture(icon.pixmap(32, 32)));
+	GB.ReturnObject(THIS->icon);
 
 END_PROPERTY
 
@@ -176,6 +174,18 @@ BEGIN_PROPERTY(WebView_Status)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(WebView_Frame)
+
+	GB.ReturnObject(CWEBFRAME_get(WIDGET->page()->mainFrame()));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebView_Current)
+
+	GB.ReturnObject(CWEBFRAME_get(WIDGET->page()->currentFrame()));
+
+END_PROPERTY
+
 GB_DESC CWebViewDesc[] =
 {
   GB_DECLARE("WebView", sizeof(CWEBVIEW)), GB_INHERITS("Control"),
@@ -198,6 +208,9 @@ GB_DESC CWebViewDesc[] =
 	#endif
 	GB_PROPERTY("TextZoom", "f", WebView_TextZoom),
 	GB_PROPERTY_READ("Title", "s", WebView_Title),
+	
+	GB_PROPERTY_READ("Frame", "WebFrame", WebView_Frame),
+	GB_PROPERTY_READ("Current", "WebFrame", WebView_Current),
 	
 	GB_METHOD("Back", NULL, WebView_Back, NULL),
 	GB_METHOD("Forward", NULL, WebView_Forward, NULL),
@@ -251,6 +264,9 @@ CWebView CWebView::manager;
 void CWebView::iconChanged()
 {
 	GET_SENDER();
+	QIcon icon = WIDGET->icon();
+	GB.Unref(POINTER(&THIS->icon));
+	THIS->icon = QT.CreatePicture(icon.pixmap(32, 32));
 	GB.Raise(THIS, EVENT_ICON, 0);
 }
 

@@ -79,11 +79,19 @@ End
 
 Public Sub WebView_Load()
 
+  Dim iInd As Integer
+
   GetView().Status = ""
   If Not IsLastCurrentView() Then Return
 
   lblStatus.Text = ""
+  txtURL.Text = GetView().Url
   pgbLoad.Hide
+  
+  ' Debug GetView().Frame
+  ' For iInd = 0 To GetView().Frame.Children.Count - 1
+  '   Debug "["; iInd; "] "; GetView().Frame.Children[iInd]
+  ' Next
 
 End
 
@@ -157,6 +165,7 @@ End
 Public Sub WebView_Icon()
 
   Dim hView As WebView = Last
+  Debug
   tabBrowser[hView.Tag].Picture = hView.Icon
   If Not IsLastCurrentView() Then Return
   Me.Icon = hView.Icon

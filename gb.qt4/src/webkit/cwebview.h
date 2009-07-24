@@ -59,6 +59,7 @@ typedef
 		void *new_view;
 		double progress;
 		char *status;
+		QT_PICTURE icon;
 	}
 	CWEBVIEW;
 

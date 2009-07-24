@@ -135,6 +135,8 @@ static bool _check_quit_posted = false;
 static void (*_x11_event_filter)(XEvent *) = 0;
 #endif
 
+static QHash<void *, void *> _link_map;
+
 //static MyApplication *myApp;
 
 /***************************************************************************
@@ -834,6 +836,26 @@ static void *QT_GetDrawInterface()
 	return (void *)&DRAW_Interface;
 }
 
+void MyApplication::linkDestroyed(QObject *qobject)
+{
+	void *object = _link_map.value(qobject, 0);
+	_link_map.remove(qobject);
+	if (object)
+		GB.Unref(POINTER(&object));
+}
+
+void QT_Link(QObject *qobject, void *object)
+{
+	_link_map.insert(qobject, object);
+  QObject::connect(qobject, SIGNAL(destroyed(QObject *)), qApp, SLOT(linkDestroyed(QObject *)));
+	GB.Ref(object);
+}
+
+void *QT_GetLink(QObject *qobject)
+{
+	return _link_map.value(qobject, 0);
+}
+
 extern "C" {
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -897,6 +919,8 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)QT_Notify,
 	(void *)QT_GetDrawInterface,
 	(void *)CCONST_alignment,
+	(void *)QT_Link,
+	(void *)QT_GetLink,
 	NULL
 };
 

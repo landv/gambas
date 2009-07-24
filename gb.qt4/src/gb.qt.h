@@ -126,6 +126,8 @@ typedef
     bool (*Notify)(void *, bool);
     void *(*GetDrawInterface)();
     int (*Alignment)(int, int, bool);
+		void (*Link)(QObject *, void *);
+		void *(*GetLink)(QObject *);
     void *_null;
     }
   QT_INTERFACE;

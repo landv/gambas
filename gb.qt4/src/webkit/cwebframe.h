@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  main.cpp
+  cwebframe.h
 
-  (c) 2000-2007 Benoit Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2009 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,39 +20,35 @@
 
 ***************************************************************************/
 
-#define __MAIN_CPP
+#ifndef __CWEBFRAME_H
+#define __CWEBFRAME_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-
-#include "cwebframe.h"
-#include "cwebview.h"
 #include "main.h"
 
-extern "C" {
+#include <QUrl>
+#include <QWebFrame>
+#include <QWebPage>
 
-GB_INTERFACE GB EXPORT;
-QT_INTERFACE QT;
+#ifndef __CWEBFRAME_CPP
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-	CWebFrameChildrenDesc,
-	CWebFrameDesc,
-  CWebViewDesc,
-  NULL
-};
+extern GB_DESC CWebFrameChildrenDesc[];
+extern GB_DESC CWebFrameDesc[];
 
-int EXPORT GB_INIT(void)
-{
-  GB.GetInterface("gb.qt4", QT_INTERFACE_VERSION, &QT);
-  return FALSE;
-}
+#else
 
-void EXPORT GB_EXIT()
-{
-}
+#define THIS      ((CWEBFRAME *)_object)
+#define FRAME     (THIS->frame)
 
-}
+#endif
 
+typedef
+	struct 
+	{
+		GB_BASE ob;
+		QWebFrame *frame;
+	}
+	CWEBFRAME;
+
+CWEBFRAME *CWEBFRAME_get(QWebFrame *frame);
+
+#endif

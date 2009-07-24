@@ -79,6 +79,10 @@ public:
   static void setTooltipEnabled(bool b);
   
   static QEventLoop *eventLoop;
+	
+public slots:
+	
+	void linkDestroyed(QObject *);
   
 private:
   static bool _tooltip_disable;
@@ -114,5 +118,7 @@ const char *QT_ToUTF8(const QString &str);
 void QT_RegisterAction(void *object, const char *key, int on);
 void QT_RaiseAction(const char *key);
 void *QT_GetObject(QWidget *);
+void QT_Link(QObject *, void *);
+void *QT_GetLink(QObject *);
 
 #endif

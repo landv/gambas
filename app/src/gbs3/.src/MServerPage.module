@@ -12,7 +12,7 @@ Private Sub PrintHTML(sStr As String)
     If $iLenPrint > 32000 Then $bLastPrint = False
     If Not $bLastPrint Then 
       $iLenPrint = Len(sStr)
-      Print #$hOut "PRINT ";
+      Print #$hOut, "PRINT ";
     Else 
       Print #$hOut, " ";
     Endif
