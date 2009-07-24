@@ -29,6 +29,12 @@ Public Sub ShowSymbolHelp(hSymbol As CSymbolInfo)
   Dim sComp As String
   If hSymbol.LineNumber Then
   'Symbole locale
+    txtHelp.RichText = "<font color=green>Component: </font>This project" & 
+                       "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & hSymbol.Class & 
+                       "&nbsp;&nbsp;&nbsp;<Font color=blue>Symbol: </font>" & hSymbol.Name 
+  
+    txtHelp.RichText &= "<br><br>" & GetLocalHelp(hSymbol)
+  
   Else
   'Symbole externe
     txtHelp.RichText = "<font color=green>Component: </font>" & hSymbol.Component & 
@@ -132,3 +138,18 @@ Private Sub GetLanguage() As String
   Return sLang
   
 End
+
+Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
+    Dim hForm As Object
+    Dim hEdit As Editor
+    Dim sClass As String
+    sClass = Project.FindPath(hSymbol.Class)
+    hForm = Project.LoadFile(sClass)
+    Try hEdit = hForm.Editor
+    If Not hEdit Then Return  
+    'hEdit.Goto(hSymbol.HelpLineNumber, 0)
+    If hSymbol.HelpLineNumber Then Return Mid(LTrim(hEdit.Lines[hSymbol.HelpLineNumber].Text), 2)
+
+  
+End
+
