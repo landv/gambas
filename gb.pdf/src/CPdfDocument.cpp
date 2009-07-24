@@ -159,6 +159,9 @@ static void aux_return_unicode_string(Unicode *uni, int32_t  len)
 
 static LinkDest *get_dest(LinkAction *act)
 {
+	if (!act)
+		return 0;
+	
 	switch (act->getKind())
 	{
 		case actionGoTo: return ((LinkGoTo*)act)->getDest();
@@ -1065,6 +1068,15 @@ BEGIN_PROPERTY (PDFPAGELINKDATA_type)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(PDFPAGELINKDATA_check)
+
+	if (THIS->action)
+		RETURN_SELF();
+	else
+		GB.ReturnNull();
+
+END_PROPERTY
+
 void aux_get_link_dimensions(void *_object,int32_t *left, int32_t *top, int32_t *width, int32_t *height)
 {
 	double l,t,w,h;
@@ -1341,7 +1353,7 @@ GB_DESC PdfLinkDesc[]=
 	GB_PROPERTY_READ("Top","i",PDFPAGELINK_top),
 	GB_PROPERTY_READ("Width","i",PDFPAGELINK_width),
 	GB_PROPERTY_READ("Height","i",PDFPAGELINK_height),
-	GB_PROPERTY_SELF("Data",".PdfLinkData"),
+	GB_PROPERTY_READ("Data",".PdfLinkData", PDFPAGELINKDATA_check),
 
 	GB_END_DECLARE
 };
@@ -1355,7 +1367,7 @@ GB_DESC PdfIndexDesc[]=
 	GB_PROPERTY_READ("HasChildren","b",PDFINDEX_has_children),
 	GB_PROPERTY_READ("Title","s",PDFINDEX_title),
 
-	GB_PROPERTY_SELF("Data",".PdfLinkData"),
+	GB_PROPERTY_READ("Data", ".PdfLinkData", PDFPAGELINKDATA_check),
 	GB_METHOD("MovePrevious","b",PDFINDEX_prev,0),
 	GB_METHOD("MoveNext","b",PDFINDEX_next,0),
 	GB_METHOD("MoveChild","b",PDFINDEX_child,0),

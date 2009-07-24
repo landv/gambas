@@ -1,75 +1,73 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,77,49)
+  MoveScaled(0,0,81,49)
   Text = ("Simple PDF document viewer")
   Arrangement = Arrange.Vertical
   { HBox1 HBox
-    MoveScaled(0,1,76,7)
-    Spacing = 4
-    Padding = 4
-    { BtOpen Button
-      MoveScaled(1,1,6,4)
+    MoveScaled(0,1,76,4)
+    { BtOpen ToolButton
+      MoveScaled(0,0,4,4)
       ToolTip = ("Open file...")
       Text = ("")
-      Picture = Picture["icon:/24/open"]
+      Picture = Picture["icon:/small/open"]
     }
-    { Button1 Button
-      MoveScaled(7,1,6,4)
+    { Button1 ToolButton
+      MoveScaled(6,0,4,4)
       ToolTip = ("Open file...")
       Text = ("")
-      Picture = Picture["icon:/24/question"]
+      Picture = Picture["icon:/small/question"]
     }
-    { Label1 Label
-      MoveScaled(13,2,5,3)
-      Expand = True
-      Text = ("")
-    }
-    { TxtFind TextBox
-      MoveScaled(18,1,12,4)
-      Enabled = False
-      ToolTip = ("Find text")
-      Text = ("")
-    }
-    { btRotate Button
-      MoveScaled(31,1,6,4)
+    { btRotate ToolButton
+      MoveScaled(10,0,4,4)
       Enabled = False
       ToolTip = ("Rotate")
       Text = ("")
-      Picture = Picture["icon:/24/rotate-right"]
+      Picture = Picture["icon:/small/rotate-right"]
     }
-    { btZoomOut Button
-      MoveScaled(38,1,6,4)
+    { btZoomOut ToolButton
+      MoveScaled(14,0,4,4)
       Enabled = False
       ToolTip = ("Zoom out")
       Text = ("")
-      Picture = Picture["icon:/24/zoom-out"]
+      Picture = Picture["icon:/small/zoom-out"]
     }
-    { btZoomIn Button
-      MoveScaled(45,1,6,4)
+    { btZoomIn ToolButton
+      MoveScaled(18,0,4,4)
       Enabled = False
       ToolTip = ("Zoom in")
       Text = ("")
-      Picture = Picture["icon:/24/zoom-in"]
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+    { TxtFind TextBox
+      MoveScaled(24,0,12,4)
+      Enabled = False
+      ToolTip = ("Find text")
+      Expand = True
+      Text = ("")
     }
     { LblInfo Label
-      MoveScaled(52,1,9,4)
+      MoveScaled(44,0,15,4)
+      Expand = True
       Text = ("")
-      Alignment = Align.Center
+      Alignment = Align.Right
     }
-    { BtPrev Button
-      MoveScaled(62,1,6,4)
+    { Separator1 Separator
+      MoveScaled(60,0,1,4)
+    }
+    { BtPrev ToolButton
+      MoveScaled(61,0,4,4)
       Enabled = False
       ToolTip = ("Previous page")
       Text = ("")
-      Picture = Picture["icon:/24/left"]
+      Picture = Picture["icon:/small/left"]
     }
-    { BtNext Button
-      MoveScaled(69,1,6,4)
+    { BtNext ToolButton
+      MoveScaled(68,0,4,4)
       Enabled = False
       ToolTip = ("Next page")
       Text = ("")
-      Picture = Picture["icon:/24/right"]
+      Picture = Picture["icon:/small/right"]
     }
   }
   { HBox2 HBox
@@ -84,11 +82,12 @@
       }
       { ViewPort ScrollView
         MoveScaled(21,1,30,32)
+        Background = Color.TextBackground
         Expand = True
+        Border = False
         { PBox PictureBox
           MoveScaled(3,2,24,21)
           Visible = False
-          Border = Border.Etched
         }
       }
     }
