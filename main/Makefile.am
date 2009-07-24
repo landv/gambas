@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = libltdl gbx gbc lib share
+SUBDIRS = libltdl gbc gbx lib share
 EXTRA_DIST = TODO reconf spec README mime
 
 install-exec-local:

@@ -1,4 +1,4 @@
-SUBDIRS = debug eval db compress vb option draw gui image
+SUBDIRS = . debug eval db compress vb option draw image gui
 
 dist_gblib_DATA = gb.component
 gblib_DATA = gb.component
