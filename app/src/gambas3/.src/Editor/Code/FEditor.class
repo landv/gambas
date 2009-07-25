@@ -2278,6 +2278,8 @@ Private Sub ShowHelp()
   Endif
   
   sLig = Left$(sLig, iCol - 1)
+
+
   If Right(sLig) = "[" Then sLig &= "]"
   
   Highlight.Analyze(sLig)
@@ -2295,17 +2297,17 @@ Private Sub ShowHelp()
           sKeyword2 = Highlight.Symbols[iCpt] & sKeyword
         Endif
       Endif
-      FHelp.ShowKeywordHelp(sKeyword, sKeyword2)
+      FHelp.ShowKeywordHelp(Editor, sKeyword, sKeyword2)
       'MHelp.GotoKeyword(sKeyword, sKeyword2)
       Return
 
     Else If Highlight.Types[iCpt] = Highlight.DataType Then 
 
       sKeyword = Highlight.Symbols[iCpt]
-      If FHelp.ShowDataTypeHelp(sKeyword) Then
+      If FHelp.ShowDataTypeHelp(Editor, sKeyword) Then
         hClass = CComponent.Classes[sKeyword]
         If hClass Then 
-          FHelp.ShowClassHelp(hClass.Component, hClass.Name)
+          FHelp.ShowClassHelp(Editor, hClass.Component, hClass.Name)
           'MHelp.GotoClass(hClass.Component, hClass.Name)
         Endif
       Endif
@@ -2323,7 +2325,7 @@ Private Sub ShowHelp()
   '  Project.SavePosition()
   '  Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
   'Else
-    FHelp.ShowSymbolHelp(hSymbol)
+    FHelp.ShowSymbolHelp(Editor, hSymbol)
     'MHelp.GotoSymbol(hSymbol)
   'Endif
 
@@ -2412,8 +2414,8 @@ Public Sub Editors_MouseUp()
   HideMessage
   If Not Editor.Selected Then Return 
   If Editor.Selection.StartLine < Editor.Selection.EndLine Then Return 
-  If Not Project.Running Then 
-    If FDebugInfo.IsHelpVisible() Then ShowHelp
+  If Not Project.Running Then
+    ShowHelp
     Return 
   Endif
   

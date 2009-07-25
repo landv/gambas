@@ -2,11 +2,22 @@
 
 { Form Form
   MoveScaled(0,0,68,64)
+  Background = Color.SelectedBackground
   Expand = True
   Text = ("")
+  Persistent = True
+  Border = False
+  Type = WindowType.Notification
+  Stacking = Window.Above
+  SkipTaskbar = True
   Arrangement = Arrange.Fill
   { txtHelp TextEdit
     MoveScaled(2,3,58,47)
     ReadOnly = True
+  }
+  { tmrHide #Timer
+    #X = 406
+    #Y = 315
+    Delay = 3000
   }
 }

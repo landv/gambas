@@ -493,6 +493,12 @@ Public Sub tabDebug_Click()
       FOutput.SetFocus
     Case TAB_BREAK
       timBreakpoint_Timer
+    Case TAB_HELP
+      FHelp.Background = Color.Background
+      FHelp.Reparent(panHelp)
+      FHelp.Ignore = False
+      
+      FHelp.Visible = True
   End Select   
 
 End

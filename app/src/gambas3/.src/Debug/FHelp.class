@@ -1,7 +1,44 @@
 ' Gambas class file
 
-Public Sub ShowKeywordHelp(sName As String, Optional sName2 As String) As Boolean
+
+Private Sub ShowHelp(hEditor As Editor)
+  Dim iX, iY As Integer
+  Dim hCont As Container
+  If Not FDebugInfo.IsHelpVisible() Then
+    Me.Background = Color.SelectedBackground
+    Me.Ignore = True
+    Me.Reparent(hEditor.Parent)
+    Me.H = Desktop.Height / 6
+    Me.w = Desktop.Width / 3
+    iY = hEditor.Y + hEditor.CursorY + 5 + hEditor.LineHeight
+    
+    If (iY + Me.Height) > (hEditor.Y + hEditor.H) Then
+      iY = hEditor.Y + hEditor.CursorY - 5 - Me.Height
+    Endif
+    hcont = hEditor.Parent
+    iX = hEditor.CursorX
+    Do
+      If hCont Is Form Then Break
+      iX += hCont.X
+      iY += hCont.Y
+      hCont = hCont.Parent
+    Loop
+  
+    iX = Max(0, Min(iX, hEditor.W - Me.Width))
+    
+    Me.Move(iX, iY)
+    
+    Me.Visible = True
+    Form_Show
+    hEditor.Window.SetFocus
+  Endif 
+  
+End
+
+
+Public Sub ShowKeywordHelp(hEditor As Editor, sName As String, Optional sName2 As String) As Boolean
    Dim sPath As String
+   ShowHelp(hEditor)
       txtHelp.RichText = "<font color=blue>Gambas Keyword: </font>" & sName
       'txtHelp.RichText &= GetHelp(GetPath("help/lang/type" &/ LCase(sName)) & ".html")
       
@@ -23,10 +60,11 @@ Catch
 End
 
 
-Public Sub ShowSymbolHelp(hSymbol As CSymbolInfo)
+Public Sub ShowSymbolHelp(hEditor As Editor, hSymbol As CSymbolInfo)
   Dim sLink As String
   Dim sName As String
   Dim sComp As String
+  ShowHelp(hEditor)
   If hSymbol.LineNumber Then
   'Symbole locale
     txtHelp.RichText = "<font color=green>Component: </font>This project" & 
@@ -67,8 +105,8 @@ Public Sub ShowSymbolHelp(hSymbol As CSymbolInfo)
 End
   
 
-Public Sub ShowClassHelp(sComponent As String, sName As String)
-  
+Public Sub ShowClassHelp(hEditor As Editor, sComponent As String, sName As String)
+  ShowHelp(hEditor)
   'Description de la Classe
   txtHelp.RichText = "<font color=green>Component: </font>" & sComponent & 
                      "&nbsp;&nbsp;&nbsp;<Font color=red>Class: </font>" & sName
@@ -91,10 +129,10 @@ Private Function GetHelp(sFile As String) As String
   
 End
 
-Public Function ShowDatatypeHelp(sName As String) As Boolean
+Public Function ShowDatatypeHelp(hEditor As Editor, sName As String) As Boolean
 
   Dim sPath As String
-
+  ShowHelp(hEditor)
   sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
   If Not Exist(sPath) Then Return True
   txtHelp.RichText = "<font color=blue>Gambas DataType: </font>" & sName
@@ -150,10 +188,11 @@ Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
     Try hEdit = hForm.Editor
     If Not hEdit Then Return  
     'hEdit.Goto(hSymbol.HelpLineNumber, 0)
-    If hSymbol.HelpLineNumber Then 
+    
       iLine = hSymbol.HelpLineNumber
       sResult = "<b><u>Syntax</u></b><br>"
       sResult &= hSymbol.Name & hSymbol.GetSignature(0) & "<br><br>"
+    If hSymbol.HelpLineNumber Then 
       Do
         s = LTrim(hEdit.Lines[iLine].Text)
         If Left(s, 2) <> "''" Then Break
@@ -165,3 +204,34 @@ Private Function GetLocalHelp(hSymbol As CSymbolInfo) As String
     Endif
 End
 
+Public Sub Form_Show()
+
+  If Not FDebugInfo.IsHelpVisible() Then tmrHide.Enabled = True
+
+End
+
+Public Sub tmrHide_Timer()
+
+  If Not FDebugInfo.IsHelpVisible() Then Me.Hide
+  tmrHide.Stop
+
+End
+
+Public Sub txtHelp_Enter()
+
+  tmrHide.Enabled = False
+
+End
+
+Public Sub txtHelp_Leave()
+
+  
+  If Not FDebugInfo.IsHelpVisible() Then tmrHide.Enabled = True
+
+End
+
+Public Sub txtHelp_LostFocus()
+
+  If Not FDebugInfo.IsHelpVisible() Then Me.Hide
+
+End
