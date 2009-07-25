@@ -1024,13 +1024,237 @@ BEGIN_METHOD(CWEBCAM_size,GB_INTEGER Width; GB_INTEGER Height;)
 END_METHOD
 
 BEGIN_PROPERTY(CWEBCAM_source)
+/*
+http://www.linuxtv.org/downloads/video4linux/API/V4L2_API/spec/index.html
+*/
+//	video_device_t *vd = DEVICE;
+//	struct video_tuner vtuner;
 
 	long Source=0,Norm=0;
 
 	if( THIS->is_v4l2 ) {
 		gv4l2_debug("'Source' not currently implemented for V4L2");
+
+// BM: What is that all? I comment everything...
 		return;
 	}
+
+#if 0
+  	if (READ_PROPERTY)
+  	{
+/*
+Example 1-1. Information about the current video input
+struct v4l2_input input;
+int index;
+
+if (-1 == ioctl (fd, VIDIOC_G_INPUT, &index)) {
+        perror ("VIDIOC_G_INPUT");
+        exit (EXIT_FAILURE);
+}
+
+memset (&input, 0, sizeof (input));
+input.index = index;
+
+if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
+        perror ("VIDIOC_ENUMINPUT");
+        exit (EXIT_FAILURE);
+}
+
+printf ("Current input: %s\n", input.name);
+*/
+
+      struct v4l2_input input;
+      int index;
+      index=0;
+//--------------------------vvvv
+/*
+      if (-1 == vd_ioctl (DEVICE, VIDIOC_G_INPUT, &index)) {
+      //  perror ("VIDIOC_G_INPUT");
+      //  exit (EXIT_FAILURE);
+      }
+*/
+//-------------------------^^^^^
+      
+/*
+      memset (&input, 0, sizeof (input));
+      input.index = index;
+
+      if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
+              perror ("VIDIOC_ENUMINPUT");
+              exit (EXIT_FAILURE);
+      }
+      printf ("Current input: %s\n", input.name;
+*/
+
+      // if (!vd_ioctl(DEVICE, VIDIOCGCHAN, &DEVICE->vchan))
+      // {
+//--------------------------vvvv
+/*
+*/
+//-------------------------^^^^^
+      switch (index)//DEVICE->vchan.channel)
+      {
+        case IN_TV: Source=0; break;
+        case IN_COMPOSITE1:  Source=1; break;
+        case IN_COMPOSITE2: Source=2; break;
+        case IN_SVIDEO: Source=3; break;
+      }
+  		gv4l2_debug("Source=" + Source);
+
+/*
+Example 1-6. Listing the video standards supported by the current input
+struct v4l2_input input;
+struct v4l2_standard standard;
+
+memset (&input, 0, sizeof (input));
+
+if (-1 == ioctl (fd, VIDIOC_G_INPUT, &input.index)) {
+        perror ("VIDIOC_G_INPUT");
+        exit (EXIT_FAILURE);
+}
+
+if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
+        perror ("VIDIOC_ENUM_INPUT");
+        exit (EXIT_FAILURE);
+}
+
+printf ("Current input %s supports:\n", input.name);
+
+memset (&standard, 0, sizeof (standard));
+standard.index = 0;
+
+while (0 == ioctl (fd, VIDIOC_ENUMSTD, &standard)) {
+        if (standard.id & input.std)
+                printf ("%s\n", standard.name);
+
+        standard.index++;
+}
+
+// EINVAL indicates the end of the enumeration, which cannot be
+//   empty unless this device falls under the USB exception. 
+
+if (errno != EINVAL || standard.index == 0) {
+        perror ("VIDIOC_ENUMSTD");
+        exit (EXIT_FAILURE);
+}
+ */
+//dbl        //struct v4l2_input input;
+//nu        struct v4l2_standard standard;
+       int std;
+        std=0;
+        std=NORM_SECAM;
+//--------------------------vvvv
+/*
+        if (-1 == vd_ioctl (DEVICE, VIDIOC_G_STD, &std)) {
+          //   perror ("VIDIOC_G_INPUT");
+          //   exit (EXIT_FAILURE);
+        }
+*/
+//-------------------------^^^^^
+        switch(std) //DEVICE->vchan.norm)
+        {
+          case NORM_PAL: Norm=0; break;
+          case NORM_NTSC: Norm=4; break;
+          case NORM_SECAM: Norm=8; break;
+          case NORM_AUTO: Norm=12; break;
+        }
+
+      //printf ("Current input: %lu\n",Source);
+      //printf ("Current norm: %lu\n", Norm);
+
+  		GB.ReturnInteger(Source+Norm);
+
+      return;
+    }
+
+// property write starts here *********************************************
+  	Source=VPROP(GB_INTEGER) & 3;
+  	Norm=(VPROP(GB_INTEGER)>>2) & 3;
+gv4l2_debug("Source write2" );
+
+/*
+Example 1-2. Switching to the first video input
+int index;
+
+index = 0;
+
+if (-1 == ioctl (fd, VIDIOC_S_INPUT, &index)) {
+        perror ("VIDIOC_S_INPUT");
+        exit (EXIT_FAILURE);
+}
+*/
+
+//	vd_setup_video_source(DEVICE,channel,norm);
+// vd_setup_video_source(DEVICE,Source,Norm);
+
+//vd_setup_video_source(video_device_t *vd, int input, int norm);
+//vd_setup_video_source(DEVICE, Source, Norm);
+
+
+
+//--------------------------vvvv
+/*
+    int index;
+    index = 2;// Source; //0
+    if (!vd_ioctl (DEVICE, VIDIOC_S_INPUT, &DEVICE->vchan.channel)) {
+      gv4l2_debug ("VIDIOC_S_INPUT2");
+      // exit (EXIT_FAILURE);
+    }
+
+*/
+//-------------------------^^^^^
+
+/*
+Example 1-7. Selecting a new video standard
+struct v4l2_input input;
+v4l2_std_id std_id;
+
+memset (&input, 0, sizeof (input));
+
+if (-1 == ioctl (fd, VIDIOC_G_INPUT, &input.index)) {
+        perror ("VIDIOC_G_INPUT");
+        exit (EXIT_FAILURE);
+}
+
+if (-1 == ioctl (fd, VIDIOC_ENUMINPUT, &input)) {
+        perror ("VIDIOC_ENUM_INPUT");
+        exit (EXIT_FAILURE);
+}
+
+if (0 == (input.std & V4L2_STD_PAL_BG)) {
+        fprintf (stderr, "Oops. B/G PAL is not supported.\n");
+        exit (EXIT_FAILURE);
+}
+
+// Note this is also supposed to work when only B
+//   or G/PAL is supported
+
+std_id = V4L2_STD_PAL_BG;
+
+if (-1 == ioctl (fd, VIDIOC_S_STD, &std_id)) {
+        perror ("VIDIOC_S_STD");
+        exit (EXIT_FAILURE);
+}
+
+*/
+    int std_id;
+    std_id = Norm; //V4L2_STD_PAL_BG;
+    
+//--------------------------vvvv
+/*
+    if (!vd_ioctl (DEVICE, VIDIOC_S_STD, &std_id)) {
+       gv4l2_debug ("VIDIOC_S_STD2");
+      // exit (EXIT_FAILURE);
+    }
+*/
+//-------------------------^^^^^
+       gv4l2_debug ("VIDIOC_S_done2");
+
+		return;
+	} // end v4l2
+
+	gv4l2_debug("'Source' now for V4L1");
+#endif
 
 	if (READ_PROPERTY)
 	{
@@ -1214,7 +1438,7 @@ BEGIN_METHOD(CWEBCAM_save,GB_STRING File; GB_INTEGER Quality;)
 	
 	if (!format)
 	{ 
-		GB.Error("Unknown format (jpeg|jpg|png|ppm"); 
+		GB.Error("Unknown format (jpeg|jpg|png|ppm)"); 
 		return; 
 	}
 

@@ -205,6 +205,8 @@ int gv4l2_whiteness( CWEBCAM * _object , int value )
 {
 	return gv4l2_camera_get( THIS, V4L2_CID_WHITENESS , value );
 }
+//=============================================================================
+//
 //
 //=============================================================================
 //
@@ -591,6 +593,13 @@ void gv4l2_process_image (CWEBCAM * _object, void *start)
 
 	switch(format) 
 	{
+/*
+  For adding new formats use the #ifdef method.
+  It is not safe to asume every videodev2.h has the V4L2_PIX_FMT_
+  V4L2_PIX_FMT_Y16 was not aviable in Ubuntu 8.04 but exists in Ubuntu 8.10
+  Some other where also missing
+  Add by:R.Onstenk 22-feb-2009
+*/
 		case V4L2_PIX_FMT_RGB332: 	gv4l2_debug("RGB332");	break;
 		case V4L2_PIX_FMT_RGB444: 	gv4l2_debug("RGB444"); 	break;
 		case V4L2_PIX_FMT_RGB555: 	gv4l2_debug("RGB555"); 	break;
@@ -602,10 +611,14 @@ void gv4l2_process_image (CWEBCAM * _object, void *start)
 		case V4L2_PIX_FMT_BGR32: 	gv4l2_debug("BGR32"); 	break;  
 		case V4L2_PIX_FMT_RGB32:	/* DEFAULT - NO CONV */	break;
 		case V4L2_PIX_FMT_GREY: 	gv4l2_debug("GREY"); 	break;  
+
+#ifdef V4L2_PIX_FMT_Y16
 		case V4L2_PIX_FMT_Y16: 		gv4l2_debug("Y16"); 	break;   
+#endif
 		case V4L2_PIX_FMT_PAL8: 	gv4l2_debug("PAL8"); 	break;   
 		case V4L2_PIX_FMT_YVU410: 	gv4l2_debug("YVU410"); 	break;
 		case V4L2_PIX_FMT_YVU420: 	gv4l2_debug("YVU420"); 	break; 
+
 		case V4L2_PIX_FMT_YUV420: 	
 			//gv4l2_debug("YUV420");
 			yuv420p_to_rgb (start,THIS->frame,w,h,3);
@@ -630,8 +643,13 @@ void gv4l2_process_image (CWEBCAM * _object, void *start)
 		case V4L2_PIX_FMT_HI240: 	gv4l2_debug("HI240"); 	break;  
 		case V4L2_PIX_FMT_HM12: 	gv4l2_debug("HM12"); 	break;   
 		case V4L2_PIX_FMT_SBGGR8: 	gv4l2_debug("SBGGR8"); 	break; 
+#ifdef V4L2_PIX_FMT_SGBRG8
 		case V4L2_PIX_FMT_SGBRG8: 	gv4l2_debug("SBGRG8"); 	break; 
+#endif
+#ifdef V4L2_PIX_FMT_SBGGR16
 		case V4L2_PIX_FMT_SBGGR16: 	gv4l2_debug("SBGGR16"); break;
+#endif
+
 		case V4L2_PIX_FMT_MJPEG: 	gv4l2_debug("MJPEG"); 	break;  
 		case V4L2_PIX_FMT_JPEG: 	gv4l2_debug("JPEG"); 	break;   
 		case V4L2_PIX_FMT_DV: 		gv4l2_debug("DV"); 	break;     
@@ -641,15 +659,30 @@ void gv4l2_process_image (CWEBCAM * _object, void *start)
 		case V4L2_PIX_FMT_PWC1: 	gv4l2_debug("PWC1"); 	break;   
 		case V4L2_PIX_FMT_PWC2: 	gv4l2_debug("PWC2"); 	break;   
 		case V4L2_PIX_FMT_ET61X251: 	gv4l2_debug("ET61X251");break;
+#ifdef V4L2_PIX_FMT_SPCA501
 		case V4L2_PIX_FMT_SPCA501: 	gv4l2_debug("SPCA501"); break; 
+#endif
+#ifdef V4L2_PIX_FMT_SPCA505
 		case V4L2_PIX_FMT_SPCA505: 	gv4l2_debug("SPCA505"); break; 
+#endif
+#ifdef V4L2_PIX_FMT_SPCA508
 		case V4L2_PIX_FMT_SPCA508: 	gv4l2_debug("SPCA508"); break; 
+#endif
+#ifdef V4L2_PIX_FMT_SPCA561
 		case V4L2_PIX_FMT_SPCA561: 	gv4l2_debug("SPCA561"); break; 
+#endif
+#ifdef V4L2_PIX_FMT_PAC207
 		case V4L2_PIX_FMT_PAC207: 	gv4l2_debug("PAC207"); 	break;  
+#endif
+#ifdef V4L2_PIX_FMT_PJPG
 		case V4L2_PIX_FMT_PJPG: 	gv4l2_debug("PJPG"); 	break;    
+#endif
+#ifdef V4L2_PIX_FMT_YVYU
 		case V4L2_PIX_FMT_YVYU: 	gv4l2_debug("YVYU"); 	break;    
+#endif
+
 		default:
-			gv4l2_debug("Frame in unknown format");
+			gv4l2_debug("Frame in unknown format. Format:0x" + format);
 			break;
 	}
 	memcpy(THIS->frame,start,size);
